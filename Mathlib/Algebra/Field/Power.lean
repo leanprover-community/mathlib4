@@ -28,14 +28,18 @@ set_option linter.deprecated false in
 @[simp]
 theorem zpow_bit1_neg (a : α) (n : ℤ) : (-a) ^ bit1 n = -a ^ bit1 n := by
   rw [zpow_bit1', zpow_bit1', neg_mul_neg, neg_mul_eq_mul_neg]
+  -- 🎉 no goals
 #align zpow_bit1_neg zpow_bit1_neg
 
 theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   obtain ⟨k, rfl⟩ := h.exists_bit1
+  -- ⊢ (-a) ^ bit1 k = -a ^ bit1 k
   exact zpow_bit1_neg _ _
+  -- 🎉 no goals
 #align odd.neg_zpow Odd.neg_zpow
 
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
+                                                               -- 🎉 no goals
 #align odd.neg_one_zpow Odd.neg_one_zpow
 
 end DivisionRing

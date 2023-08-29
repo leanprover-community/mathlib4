@@ -69,11 +69,14 @@ theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
+  -- 🎉 no goals
 #align linear_map.zero_mem_polar LinearMap.zero_mem_polar
 
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
+  -- ⊢ x✝ ∈ polar B s ↔ x✝ ∈ ⋂ (x : E) (_ : x ∈ s), {y | ‖↑(↑B x) y‖ ≤ 1}
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
+  -- 🎉 no goals
 #align linear_map.polar_eq_Inter LinearMap.polar_eq_iInter
 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
@@ -106,13 +109,18 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 @[simp]
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
   refine' Set.eq_univ_iff_forall.mpr fun y x hx => _
+  -- ⊢ ‖↑(↑B x) y‖ ≤ 1
   rw [Set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
+  -- ⊢ 0 ≤ 1
   exact zero_le_one
+  -- 🎉 no goals
 #align linear_map.polar_zero LinearMap.polar_zero
 
 theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]
+  -- ⊢ ‖↑(↑B x) y‖ ≤ 1
   exact hy x hx
+  -- 🎉 no goals
 #align linear_map.subset_bipolar LinearMap.subset_bipolar
 
 @[simp]
@@ -124,8 +132,11 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
   rw [polar_eq_iInter]
+  -- ⊢ IsClosed (⋂ (x : E) (_ : x ∈ s), {y | ‖↑(↑B x) y‖ ≤ 1})
   refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
+  -- ⊢ IsClosed {y | ‖↑(↑B x) y‖ ≤ 1}
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
+  -- 🎉 no goals
 #align linear_map.polar_weak_closed LinearMap.polar_weak_closed
 
 end NormedRing
@@ -141,9 +152,13 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
+  -- ⊢ 0 ∈ polar B Set.univ ∧ ∀ (x : F), x ∈ polar B Set.univ → x = 0
   refine' ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => _⟩
+  -- ⊢ ↑(↑B x) y = 0
   refine' norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => _)
+  -- ⊢ ‖↑(↑B x) y‖ ≤ ε
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
+  -- ⊢ ‖↑(↑B x) y‖ ≤ ε
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by
       rw [B.map_smul, LinearMap.smul_apply, Algebra.id.smul_eq_mul, norm_mul, norm_inv,

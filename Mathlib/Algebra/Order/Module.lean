@@ -41,7 +41,9 @@ where `DistribMulActionWithZero k M`is the conjunction of `DistribMulAction k M`
 `SMulWithZero k M`.-/
 theorem smul_neg_iff_of_pos (hc : 0 < c) : c • a < 0 ↔ a < 0 := by
   rw [← neg_neg a, smul_neg, neg_neg_iff_pos, neg_neg_iff_pos]
+  -- ⊢ 0 < c • -a ↔ 0 < -a
   exact smul_pos_iff_of_pos hc
+  -- 🎉 no goals
 #align smul_neg_iff_of_pos smul_neg_iff_of_pos
 
 end Semiring
@@ -52,37 +54,51 @@ variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] 
 
 theorem smul_lt_smul_of_neg (h : a < b) (hc : c < 0) : c • b < c • a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_lt_neg_iff]
+  -- ⊢ -c • a < -c • b
   exact smul_lt_smul_of_pos h (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align smul_lt_smul_of_neg smul_lt_smul_of_neg
 
 theorem smul_le_smul_of_nonpos (h : a ≤ b) (hc : c ≤ 0) : c • b ≤ c • a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_le_neg_iff]
+  -- ⊢ -c • a ≤ -c • b
   exact smul_le_smul_of_nonneg h (neg_nonneg_of_nonpos hc)
+  -- 🎉 no goals
 #align smul_le_smul_of_nonpos smul_le_smul_of_nonpos
 
 theorem eq_of_smul_eq_smul_of_neg_of_le (hab : c • a = c • b) (hc : c < 0) (h : a ≤ b) : a = b := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_inj] at hab
+  -- ⊢ a = b
   exact eq_of_smul_eq_smul_of_pos_of_le hab (neg_pos_of_neg hc) h
+  -- 🎉 no goals
 #align eq_of_smul_eq_smul_of_neg_of_le eq_of_smul_eq_smul_of_neg_of_le
 
 theorem lt_of_smul_lt_smul_of_nonpos (h : c • a < c • b) (hc : c ≤ 0) : b < a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_lt_neg_iff] at h
+  -- ⊢ b < a
   exact lt_of_smul_lt_smul_of_nonneg h (neg_nonneg_of_nonpos hc)
+  -- 🎉 no goals
 #align lt_of_smul_lt_smul_of_nonpos lt_of_smul_lt_smul_of_nonpos
 
 theorem smul_lt_smul_iff_of_neg (hc : c < 0) : c • a < c • b ↔ b < a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_lt_neg_iff]
+  -- ⊢ -c • b < -c • a ↔ b < a
   exact smul_lt_smul_iff_of_pos (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align smul_lt_smul_iff_of_neg smul_lt_smul_iff_of_neg
 
 theorem smul_neg_iff_of_neg (hc : c < 0) : c • a < 0 ↔ 0 < a := by
   rw [← neg_neg c, neg_smul, neg_neg_iff_pos]
+  -- ⊢ 0 < -c • a ↔ 0 < a
   exact smul_pos_iff_of_pos (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align smul_neg_iff_of_neg smul_neg_iff_of_neg
 
 theorem smul_pos_iff_of_neg (hc : c < 0) : 0 < c • a ↔ a < 0 := by
   rw [← neg_neg c, neg_smul, neg_pos]
+  -- ⊢ -c • a < 0 ↔ a < 0
   exact smul_neg_iff_of_pos (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align smul_pos_iff_of_neg smul_pos_iff_of_neg
 
 theorem smul_nonpos_of_nonpos_of_nonneg (hc : c ≤ 0) (ha : 0 ≤ a) : c • a ≤ 0 :=
@@ -116,17 +132,24 @@ theorem strict_anti_smul_left (hc : c < 0) : StrictAnti (SMul.smul c : M → M) 
 theorem smul_add_smul_le_smul_add_smul [ContravariantClass M M (· + ·) (· ≤ ·)] {a b : k} {c d : M}
     (hab : a ≤ b) (hcd : c ≤ d) : a • d + b • c ≤ a • c + b • d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
+  -- ⊢ a • d + (a + b) • c ≤ a • c + (a + b) • d
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
+  -- ⊢ a • (c + d) + (a + b) • c ≤ a • c + (a + b) • (c + d)
   rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
+  -- ⊢ a • c + (a + b) • c + a • d ≤ a • c + (a + b) • c + (a • d + b • d)
   rw [le_add_iff_nonneg_right] at hab hcd
+  -- ⊢ a • c + (a + b) • c + a • d ≤ a • c + (a + b) • c + (a • d + b • d)
   exact add_le_add_left (le_add_of_nonneg_right <| smul_nonneg hab hcd) _
+  -- 🎉 no goals
 #align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
 
 /-- Binary **rearrangement inequality**. -/
 theorem smul_add_smul_le_smul_add_smul' [ContravariantClass M M (· + ·) (· ≤ ·)] {a b : k} {c d : M}
     (hba : b ≤ a) (hdc : d ≤ c) : a • d + b • c ≤ a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
+  -- ⊢ b • c + a • d ≤ b • d + a • c
   exact smul_add_smul_le_smul_add_smul hba hdc
+  -- 🎉 no goals
 #align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
 
 /-- Binary strict **rearrangement inequality**. -/
@@ -134,10 +157,15 @@ theorem smul_add_smul_lt_smul_add_smul [CovariantClass M M (· + ·) (· < ·)]
     [ContravariantClass M M (· + ·) (· < ·)] {a b : k} {c d : M} (hab : a < b) (hcd : c < d) :
     a • d + b • c < a • c + b • d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
+  -- ⊢ a • d + (a + b) • c < a • c + (a + b) • d
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
+  -- ⊢ a • (c + d) + (a + b) • c < a • c + (a + b) • (c + d)
   rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
+  -- ⊢ a • c + (a + b) • c + a • d < a • c + (a + b) • c + (a • d + b • d)
   rw [lt_add_iff_pos_right] at hab hcd
+  -- ⊢ a • c + (a + b) • c + a • d < a • c + (a + b) • c + (a • d + b • d)
   exact add_lt_add_left (lt_add_of_pos_right _ <| smul_pos hab hcd) _
+  -- 🎉 no goals
 #align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
 
 /-- Binary strict **rearrangement inequality**. -/
@@ -145,7 +173,9 @@ theorem smul_add_smul_lt_smul_add_smul' [CovariantClass M M (· + ·) (· < ·)]
     [ContravariantClass M M (· + ·) (· < ·)] {a b : k} {c d : M} (hba : b < a) (hdc : d < c) :
     a • d + b • c < a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
+  -- ⊢ b • c + a • d < b • d + a • c
   exact smul_add_smul_lt_smul_add_smul hba hdc
+  -- 🎉 no goals
 #align smul_add_smul_lt_smul_add_smul' smul_add_smul_lt_smul_add_smul'
 
 end Ring
@@ -157,23 +187,29 @@ variable [LinearOrderedField k] [OrderedAddCommGroup M] [Module k M] [OrderedSMu
 
 theorem smul_le_smul_iff_of_neg (hc : c < 0) : c • a ≤ c • b ↔ b ≤ a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_le_neg_iff]
+  -- ⊢ -c • b ≤ -c • a ↔ b ≤ a
   exact smul_le_smul_iff_of_pos (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align smul_le_smul_iff_of_neg smul_le_smul_iff_of_neg
 
 theorem inv_smul_le_iff_of_neg (h : c < 0) : c⁻¹ • a ≤ b ↔ c • b ≤ a := by
   rw [← smul_le_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  -- 🎉 no goals
 #align inv_smul_le_iff_of_neg inv_smul_le_iff_of_neg
 
 theorem inv_smul_lt_iff_of_neg (h : c < 0) : c⁻¹ • a < b ↔ c • b < a := by
   rw [← smul_lt_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  -- 🎉 no goals
 #align inv_smul_lt_iff_of_neg inv_smul_lt_iff_of_neg
 
 theorem smul_inv_le_iff_of_neg (h : c < 0) : a ≤ c⁻¹ • b ↔ b ≤ c • a := by
   rw [← smul_le_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  -- 🎉 no goals
 #align smul_inv_le_iff_of_neg smul_inv_le_iff_of_neg
 
 theorem smul_inv_lt_iff_of_neg (h : c < 0) : a < c⁻¹ • b ↔ b < c • a := by
   rw [← smul_lt_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  -- 🎉 no goals
 #align smul_inv_lt_iff_of_neg smul_inv_lt_iff_of_neg
 
 variable (M)

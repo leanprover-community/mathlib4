@@ -87,6 +87,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
 #align cstar_ring CstarRing
 
 instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+                                                          -- 🎉 no goals
 
 namespace CstarRing
 
@@ -99,9 +100,13 @@ variable [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
   ⟨by
     intro x
+    -- ⊢ ‖x⋆‖ = ‖x‖
     by_cases htriv : x = 0
+    -- ⊢ ‖x⋆‖ = ‖x‖
     · simp only [htriv, star_zero]
+      -- 🎉 no goals
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
+      -- ⊢ ‖x⋆‖ = ‖x‖
       have hnt_star : 0 < ‖x⋆‖ :=
         norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv (M := E)).mpr htriv)
       have h₁ :=
@@ -113,14 +118,18 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
           ‖x⋆‖ * ‖x⋆‖ = ‖x * x⋆‖ := by rw [← norm_star_mul_self, star_star]
           _ ≤ ‖x‖ * ‖x⋆‖ := norm_mul_le _ _
       exact le_antisymm (le_of_mul_le_mul_right h₂ hnt_star) (le_of_mul_le_mul_right h₁ hnt)⟩
+      -- 🎉 no goals
 #align cstar_ring.to_normed_star_group CstarRing.to_normedStarGroup
 
 theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
+  -- ⊢ ‖x⋆⋆ * x⋆‖ = ‖x‖ * ‖x‖
   simp only [norm_star_mul_self, norm_star]
+  -- 🎉 no goals
 #align cstar_ring.norm_self_mul_star CstarRing.norm_self_mul_star
 
 theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := by rw [norm_star_mul_self, norm_star]
+                                                                  -- 🎉 no goals
 #align cstar_ring.norm_star_mul_self' CstarRing.norm_star_mul_self'
 
 theorem nnnorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
@@ -134,20 +143,25 @@ theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖�
 @[simp]
 theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
   rw [← norm_eq_zero, norm_star_mul_self]
+  -- ⊢ ‖x‖ * ‖x‖ = 0 ↔ x = 0
   exact mul_self_eq_zero.trans norm_eq_zero
+  -- 🎉 no goals
 #align cstar_ring.star_mul_self_eq_zero_iff CstarRing.star_mul_self_eq_zero_iff
 
 theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne.def, star_mul_self_eq_zero_iff]
+  -- 🎉 no goals
 #align cstar_ring.star_mul_self_ne_zero_iff CstarRing.star_mul_self_ne_zero_iff
 
 @[simp]
 theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
   simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ (star x)
+  -- 🎉 no goals
 #align cstar_ring.mul_star_self_eq_zero_iff CstarRing.mul_star_self_eq_zero_iff
 
 theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne.def, mul_star_self_eq_zero_iff]
+  -- 🎉 no goals
 #align cstar_ring.mul_star_self_ne_zero_iff CstarRing.mul_star_self_ne_zero_iff
 
 end NonUnital
@@ -173,19 +187,33 @@ variable [Fintype ι] [∀ i, CstarRing (R i)]
 instance _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
   norm_star_mul_self {x} := by
     dsimp only [norm]
+    -- ⊢ ‖(x⋆ * x).fst‖ ⊔ ‖(x⋆ * x).snd‖ = (‖x.fst‖ ⊔ ‖x.snd‖) * (‖x.fst‖ ⊔ ‖x.snd‖)
     simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self, ← sq]
+    -- ⊢ ‖x.fst‖ ^ 2 ⊔ ‖x.snd‖ ^ 2 = (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2
     refine' le_antisymm _ _
+    -- ⊢ ‖x.fst‖ ^ 2 ⊔ ‖x.snd‖ ^ 2 ≤ (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2
     · refine' max_le _ _ <;> rw [sq_le_sq, abs_of_nonneg (norm_nonneg _)]
+      -- ⊢ ‖x.fst‖ ^ 2 ≤ (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2
+                             -- ⊢ ‖x.fst‖ ≤ |‖x.fst‖ ⊔ ‖x.snd‖|
+                             -- ⊢ ‖x.snd‖ ≤ |‖x.fst‖ ⊔ ‖x.snd‖|
       exact (le_max_left _ _).trans (le_abs_self _)
+      -- ⊢ ‖x.snd‖ ≤ |‖x.fst‖ ⊔ ‖x.snd‖|
       exact (le_max_right _ _).trans (le_abs_self _)
+      -- 🎉 no goals
     · rw [le_sup_iff]
+      -- ⊢ (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2 ≤ ‖x.fst‖ ^ 2 ∨ (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2 ≤ ‖x.snd‖ ^ 2
       rcases le_total ‖x.fst‖ ‖x.snd‖ with (h | h) <;> simp [h]
+      -- ⊢ (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2 ≤ ‖x.fst‖ ^ 2 ∨ (‖x.fst‖ ⊔ ‖x.snd‖) ^ 2 ≤ ‖x.snd‖ ^ 2
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
 #align prod.cstar_ring Prod.cstarRing
 
 instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
   norm_star_mul_self {x} := by
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
+    -- ⊢ ↑(Finset.sup Finset.univ fun b => ‖x b‖₊ ^ 2) = ↑(Finset.sup Finset.univ fun …
     norm_cast
+    -- ⊢ (Finset.sup Finset.univ fun b => ‖x b‖₊ ^ 2) = (Finset.sup Finset.univ fun b …
     exact
       (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
@@ -205,7 +233,9 @@ variable [NormedRing E] [StarRing E] [CstarRing E]
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
+  -- ⊢ ‖1‖ = 1
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]
+  -- 🎉 no goals
 #align cstar_ring.norm_one CstarRing.norm_one
 
 -- see Note [lower instance priority]
@@ -225,7 +255,9 @@ theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U
 @[simp]
 theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
   nontriviality E
+  -- ⊢ ‖↑U * A‖ = ‖A‖
   refine' le_antisymm _ _
+  -- ⊢ ‖↑U * A‖ ≤ ‖A‖
   · calc
       _ ≤ ‖(U : E)‖ * ‖A‖ := norm_mul_le _ _
       _ = ‖A‖ := by rw [norm_coe_unitary, one_mul]
@@ -250,7 +282,9 @@ theorem norm_mem_unitary_mul {U : E} (A : E) (hU : U ∈ unitary E) : ‖U * A�
 theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
   calc
     _ = ‖((U : E)⋆ * A⋆)⋆‖ := by simp only [star_star, star_mul]
+                                 -- 🎉 no goals
     _ = ‖(U : E)⋆ * A⋆‖ := by rw [norm_star]
+                              -- 🎉 no goals
     _ = ‖A⋆‖ := (norm_mem_unitary_mul (star A) (unitary.star_mem U.prop))
     _ = ‖A‖ := norm_star _
 #align cstar_ring.norm_mul_coe_unitary CstarRing.norm_mul_coe_unitary
@@ -266,10 +300,15 @@ end CstarRing
 theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] {x : E}
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
+  -- ⊢ ‖x ^ 2 ^ Nat.zero‖₊ = ‖x‖₊ ^ 2 ^ Nat.zero
   · simp only [pow_zero, pow_one, Nat.zero_eq]
+    -- 🎉 no goals
   · rw [pow_succ, pow_mul', sq]
+    -- ⊢ ‖x ^ 2 ^ k * x ^ 2 ^ k‖₊ = ‖x‖₊ ^ (2 * 2 ^ k)
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
+    -- ⊢ ‖x⋆ ^ 2 ^ k * x ^ 2 ^ k‖₊ = ‖x‖₊ ^ (2 * 2 ^ k)
     rw [← star_pow, CstarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
+    -- 🎉 no goals
 #align is_self_adjoint.nnnorm_pow_two_pow IsSelfAdjoint.nnnorm_pow_two_pow
 
 theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] (x : selfAdjoint E)

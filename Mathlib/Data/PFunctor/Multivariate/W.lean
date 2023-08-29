@@ -75,6 +75,7 @@ set_option linter.uppercaseLean3 false in
 def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W} (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := by
   intro i x;
+  -- ⊢ α i
   match x with
   | WPath.root _ _ i c => exact g' i c
   | WPath.child _ _ i j c => exact g j i c
@@ -109,6 +110,10 @@ set_option linter.uppercaseLean3 false in
 theorem wPathCasesOn_eta {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : P.wPathCasesOn (P.wPathDestLeft h) (P.wPathDestRight h) = h := by
   ext i x; cases x <;> rfl
+  -- ⊢ wPathCasesOn P (wPathDestLeft P h) (wPathDestRight P h) i x = h i x
+           -- ⊢ wPathCasesOn P (wPathDestLeft P h) (wPathDestRight P h) i (WPath.root a (fun …
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_cases_on_eta MvPFunctor.wPathCasesOn_eta
 
@@ -116,6 +121,10 @@ theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.l
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     h ⊚ P.wPathCasesOn g' g = P.wPathCasesOn (h ⊚ g') fun i => h ⊚ g i := by
   ext i x; cases x <;> rfl
+  -- ⊢ (h ⊚ wPathCasesOn P g' g) i x = wPathCasesOn P (h ⊚ g') (fun i => h ⊚ g i) i x
+           -- ⊢ (h ⊚ wPathCasesOn P g' g) i (WPath.root a (fun j => f j) i c✝) = wPathCasesO …
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.comp_W_path_cases_on MvPFunctor.comp_wPathCasesOn
 
@@ -137,6 +146,8 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W MvPFunctor.W
 
 instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
+                                          -- ⊢ MvFunctor fun α => Obj (wp P) α
+                                                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.mvfunctor_W MvPFunctor.mvfunctorW
 
@@ -208,8 +219,13 @@ theorem wRec_eq {α : TypeVec n} {C : Type*}
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
   rw [wMk, wRec]; dsimp; rw [wpRec_eq]
+  -- ⊢ (match
+                  -- ⊢ wpRec P (fun a f h h' => g a (wPathDestLeft P h) (fun i => { fst := f i, snd …
+                         -- ⊢ (g a (wPathDestLeft P (wPathCasesOn P f' fun i => (f i).snd)) (fun i => { fs …
   dsimp only [wPathDestLeft_wPathCasesOn, wPathDestRight_wPathCasesOn]
+  -- ⊢ (g a f' (fun i => { fst := (f i).fst, snd := (f i).snd }) fun i => wpRec P ( …
   congr
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_rec_eq MvPFunctor.wRec_eq
 
@@ -219,13 +235,23 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := by
   intro x; cases' x with a f
+  -- ⊢ C x
+           -- ⊢ C { fst := a, snd := f }
   apply @wp_ind n P α fun a f => C ⟨a, f⟩
+  -- ⊢ ∀ (a : P.A) (f : PFunctor.B (last P) a → PFunctor.W (last P)) (f' : WPath P  …
   intro a f f' ih'
+  -- ⊢ C { fst := WType.mk a f, snd := f' }
   dsimp [wMk] at ih
+  -- ⊢ C { fst := WType.mk a f, snd := f' }
   let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
+  -- ⊢ C { fst := WType.mk a f, snd := f' }
   dsimp at ih''; rw [wPathCasesOn_eta] at ih''
+  -- ⊢ C { fst := WType.mk a f, snd := f' }
+                 -- ⊢ C { fst := WType.mk a f, snd := f' }
   apply ih''
+  -- ⊢ ∀ (i : PFunctor.B (last P) a), C { fst := f i, snd := wPathDestRight P f' i }
   apply ih'
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_ind MvPFunctor.w_ind
 
@@ -249,21 +275,28 @@ set_option linter.uppercaseLean3 false in
 theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
   show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
+  -- ⊢ g <$$> wMk P a f' f = wMk P a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
     dsimp [Function.comp]
     cases f i
     rfl
   rw [this]
+  -- ⊢ g <$$> wMk P a f' f = wMk P a (g ⊚ f') fun i => { fst := (f i).fst, snd := g …
   have : f = fun i => ⟨(f i).fst, (f i).snd⟩ := by
     ext1 x
     cases f x
     rfl
   rw [this]
+  -- ⊢ (g <$$> wMk P a f' fun i => { fst := (f i).fst, snd := (f i).snd }) = wMk P  …
   dsimp
+  -- ⊢ (g <$$> wMk P a f' fun i => { fst := (f i).fst, snd := (f i).snd }) = wMk P  …
   rw [wMk_eq, wMk_eq]
+  -- ⊢ g <$$> { fst := WType.mk a fun i => (f i).fst, snd := wPathCasesOn P f' fun  …
   have h := MvPFunctor.map_eq P.wp g
+  -- ⊢ g <$$> { fst := WType.mk a fun i => (f i).fst, snd := wPathCasesOn P f' fun  …
   rw [h, comp_wPathCasesOn]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_map_W_mk MvPFunctor.w_map_wMk
 
@@ -282,6 +315,8 @@ theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.dro
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
       P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) :=
   by rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
+     -- ⊢ { fst := a, snd := splitFun (g ⊚ f') (wMap P g ∘ f) } = { fst := a, snd := s …
+                                                                      -- 🎉 no goals
 #align mvpfunctor.map_obj_append1 MvPFunctor.map_objAppend1
 
 /-!
@@ -305,11 +340,14 @@ set_option linter.uppercaseLean3 false in
 
 theorem wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wDest' (P.wMk a f' f) = ⟨a, splitFun f' f⟩ := by rw [wDest', wRec_eq]
+                                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest'_W_mk MvPFunctor.wDest'_wMk
 
 theorem wDest'_wMk' {α : TypeVec n} (x : P.Obj (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
   cases' x with a f; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
+  -- ⊢ wDest' P (wMk' P { fst := a, snd := f }) = { fst := a, snd := f }
+                     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest'_W_mk' MvPFunctor.wDest'_wMk'
 

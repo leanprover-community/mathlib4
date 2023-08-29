@@ -39,22 +39,33 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
   induction' Δ' using SimplexCategory.rec with m
+  -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ X.map i.op = 0
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
+  -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ X.map i.op = 0
   rcases k with _|k
+  -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ X.map i.op = 0
   · change n = m + 1 at hk
+    -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ X.map i.op = 0
     subst hk
+    -- ⊢ HomologicalComplex.Hom.f PInfty (m + 1) ≫ X.map i.op = 0
     obtain ⟨j, rfl⟩ := eq_δ_of_mono i
+    -- ⊢ HomologicalComplex.Hom.f PInfty (m + 1) ≫ X.map (SimplexCategory.δ j).op = 0
     rw [Isδ₀.iff] at h₂
+    -- ⊢ HomologicalComplex.Hom.f PInfty (m + 1) ≫ X.map (SimplexCategory.δ j).op = 0
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
       exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
     exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by linarith)
+    -- 🎉 no goals
   · simp only [Nat.succ_eq_add_one, ← add_assoc] at hk
+    -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ X.map i.op = 0
     clear h₂ hi
+    -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ X.map i.op = 0
     subst hk
+    -- ⊢ HomologicalComplex.Hom.f PInfty (m + k + 1 + 1) ≫ X.map i.op = 0
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
         have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
@@ -66,16 +77,27 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
         dsimp at h'
         linarith
     by_cases hj₁ : j₁ = 0
+    -- ⊢ HomologicalComplex.Hom.f PInfty (m + k + 1 + 1) ≫ X.map ((i ≫ SimplexCategor …
     · subst hj₁
+      -- ⊢ HomologicalComplex.Hom.f PInfty (m + k + 1 + 1) ≫ X.map ((i ≫ SimplexCategor …
       rw [assoc, ← SimplexCategory.δ_comp_δ'' (Fin.zero_le _)]
+      -- ⊢ HomologicalComplex.Hom.f PInfty (m + k + 1 + 1) ≫ X.map (i ≫ SimplexCategory …
       simp only [op_comp, X.map_comp, assoc, PInfty_f]
+      -- ⊢ HomologicalComplex.Hom.f (P (m + k + 1 + 1)) (m + k + 1 + 1) ≫ X.map (Simple …
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ j₂.succ_ne_zero, zero_comp]
+      -- ⊢ m + k + 1 + 2 ≤ ↑(Fin.succ j₂) + (m + k + 1 + 1)
       simp only [Nat.succ_eq_add_one, Nat.add, Fin.succ]
+      -- ⊢ m + k + 1 + 2 ≤ ↑j₂ + 1 + (m + k + 1 + 1)
       linarith
+      -- 🎉 no goals
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
+      -- ⊢ HomologicalComplex.Hom.f (P (m + k + 1 + 1)) (m + k + 1 + 1) ≫ X.map (Simple …
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
+      -- ⊢ m + k + 1 + 2 ≤ ↑j₁ + (m + k + 1 + 1)
       by_contra
+      -- ⊢ False
       exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; linarith)
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_comp_map_mono_eq_zero AlgebraicTopology.DoldKan.PInfty_comp_map_mono_eq_zero
 
@@ -85,43 +107,72 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
     Γ₀.Obj.Termwise.mapMono (AlternatingFaceMapComplex.obj X) i ≫ PInfty.f Δ.len =
       PInfty.f Δ'.len ≫ X.map i.op := by
   induction' Δ using SimplexCategory.rec with n
+  -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty (len [n]) = …
   induction' Δ' using SimplexCategory.rec with n'
+  -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty (len [n]) = …
   dsimp
+  -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
   -- We start with the case `i` is an identity
   by_cases n = n'
+  -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
+  -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
   · subst h
+    -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
     simp only [SimplexCategory.eq_id_of_mono i, Γ₀.Obj.Termwise.mapMono_id, op_id, X.map_id]
+    -- ⊢ 𝟙 (HomologicalComplex.X K[X] (len [n])) ≫ HomologicalComplex.Hom.f PInfty n  …
     dsimp
+    -- ⊢ 𝟙 (X.obj (op [n])) ≫ HomologicalComplex.Hom.f PInfty n = HomologicalComplex. …
     simp only [id_comp, comp_id]
+    -- 🎉 no goals
   by_cases hi : Isδ₀ i
+  -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
   -- The case `i = δ 0`
   · have h' : n' = n + 1 := hi.left
+    -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
     subst h'
+    -- ⊢ Γ₀.Obj.Termwise.mapMono K[X] i ≫ HomologicalComplex.Hom.f PInfty n = Homolog …
     simp only [Γ₀.Obj.Termwise.mapMono_δ₀' _ i hi]
+    -- ⊢ HomologicalComplex.d K[X] (len [n + 1]) (len [n]) ≫ HomologicalComplex.Hom.f …
     dsimp
+    -- ⊢ HomologicalComplex.d K[X] (n + 1) n ≫ HomologicalComplex.Hom.f PInfty n = Ho …
     rw [← PInfty.comm _ n, AlternatingFaceMapComplex.obj_d_eq]
+    -- ⊢ (HomologicalComplex.Hom.f PInfty (n + 1) ≫ Finset.sum Finset.univ fun i => ( …
     simp only [eq_self_iff_true, id_comp, if_true, Preadditive.comp_sum]
+    -- ⊢ (Finset.sum Finset.univ fun j => HomologicalComplex.Hom.f PInfty (n + 1) ≫ ( …
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]
     rotate_left
     · intro b _ hb
+      -- ⊢ HomologicalComplex.Hom.f PInfty (n + 1) ≫ ((-1) ^ ↑b • SimplicialObject.δ X  …
       rw [Preadditive.comp_zsmul]
+      -- ⊢ (-1) ^ ↑b • HomologicalComplex.Hom.f PInfty (n + 1) ≫ SimplicialObject.δ X b …
       erw [PInfty_comp_map_mono_eq_zero X (SimplexCategory.δ b) h
           (by
             rw [Isδ₀.iff]
             exact hb),
         zsmul_zero]
     · simp only [Finset.mem_univ, not_true, IsEmpty.forall_iff]
+      -- 🎉 no goals
     · simp only [hi.eq_δ₀, Fin.val_zero, pow_zero, one_zsmul]
+      -- ⊢ HomologicalComplex.Hom.f PInfty (n + 1) ≫ SimplicialObject.δ X 0 = Homologic …
       rfl
+      -- 🎉 no goals
   -- The case `i ≠ δ 0`
   · rw [Γ₀.Obj.Termwise.mapMono_eq_zero _ i _ hi, zero_comp]
+    -- ⊢ 0 = HomologicalComplex.Hom.f PInfty n' ≫ X.map i.op
     swap
+    -- ⊢ [n'] ≠ [n]
     · by_contra h'
+      -- ⊢ False
       exact h (congr_arg SimplexCategory.len h'.symm)
+      -- 🎉 no goals
     rw [PInfty_comp_map_mono_eq_zero]
+    -- ⊢ len [n] ≠ n'
     · exact h
+      -- 🎉 no goals
     · by_contra h'
+      -- ⊢ False
       exact hi h'
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₀_obj_termwise_map_mono_comp_P_infty AlgebraicTopology.DoldKan.Γ₀_obj_termwise_mapMono_comp_PInfty
 
@@ -137,27 +188,43 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
         { app := fun Δ => (Γ₀.splitting K[X]).desc Δ fun A => PInfty.f A.1.unop.len ≫ X.map A.e.op
           naturality := fun Δ Δ' θ => by
             apply (Γ₀.splitting K[X]).hom_ext'
+            -- ⊢ ∀ (A : Splitting.IndexSet Δ), Splitting.ιSummand (Γ₀.splitting K[X]) A ≫ ((N …
             intro A
+            -- ⊢ Splitting.ιSummand (Γ₀.splitting K[X]) A ≫ ((N₁ ⋙ Γ₂).obj X).X.map θ ≫ (fun  …
             change _ ≫ (Γ₀.obj K[X]).map θ ≫ _ = _
+            -- ⊢ Splitting.ιSummand (Γ₀.splitting K[X]) A ≫ (Γ₀.obj K[X]).map θ ≫ (fun Δ => S …
             simp only [Splitting.ι_desc_assoc, assoc, Γ₀.Obj.map_on_summand'_assoc,
               Splitting.ι_desc]
             erw [Γ₀_obj_termwise_mapMono_comp_PInfty_assoc X (image.ι (θ.unop ≫ A.e))]
+            -- ⊢ HomologicalComplex.Hom.f PInfty (len A.fst.unop) ≫ X.map (image.ι (θ.unop ≫  …
             dsimp only [toKaroubi]
+            -- ⊢ HomologicalComplex.Hom.f PInfty (len A.fst.unop) ≫ X.map (image.ι (θ.unop ≫  …
             simp only [← X.map_comp]
+            -- ⊢ HomologicalComplex.Hom.f PInfty (len A.fst.unop) ≫ X.map ((image.ι (θ.unop ≫ …
             congr 2
+            -- ⊢ (image.ι (θ.unop ≫ Splitting.IndexSet.e A)).op ≫ (Splitting.IndexSet.e (Spli …
             simp only [eqToHom_refl, id_comp, comp_id, ← op_comp]
+            -- ⊢ (Splitting.IndexSet.e (Splitting.IndexSet.pull A θ) ≫ image.ι (θ.unop ≫ Spli …
             exact Quiver.Hom.unop_inj (A.fac_pull θ) }
+            -- 🎉 no goals
       comm := by
         apply (Γ₀.splitting K[X]).hom_ext
+        -- ⊢ ∀ (n : ℕ), Splitting.φ (Γ₀.splitting K[X]) (NatTrans.mk fun Δ => Splitting.d …
         intro n
+        -- ⊢ Splitting.φ (Γ₀.splitting K[X]) (NatTrans.mk fun Δ => Splitting.desc (Γ₀.spl …
         dsimp [N₁]
+        -- ⊢ (Splitting.ι (Γ₀.splitting K[X]) n ≫ Splitting.desc (Γ₀.splitting K[X]) (op  …
         simp only [← Splitting.ιSummand_id, Splitting.ι_desc, comp_id, Splitting.ι_desc_assoc,
           assoc, PInfty_f_idem_assoc] }
   naturality {X Y} f := by
     ext1
+    -- ⊢ ((N₁ ⋙ Γ₂).map f ≫ (fun X => Karoubi.Hom.mk (NatTrans.mk fun Δ => Splitting. …
     apply (Γ₀.splitting K[X]).hom_ext
+    -- ⊢ ∀ (n : ℕ), Splitting.φ (Γ₀.splitting K[X]) ((N₁ ⋙ Γ₂).map f ≫ (fun X => Karo …
     intro n
+    -- ⊢ Splitting.φ (Γ₀.splitting K[X]) ((N₁ ⋙ Γ₂).map f ≫ (fun X => Karoubi.Hom.mk  …
     dsimp [N₁, toKaroubi]
+    -- ⊢ (Splitting.ι (Γ₀.splitting K[X]) n ≫ (Splitting.desc (Γ₀.splitting K[X]) (op …
     simp only [← Splitting.ιSummand_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
       PInfty_f_idem_assoc, Karoubi.comp_f, NatTrans.comp_app, Γ₂_map_f_app,
       HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
@@ -174,6 +241,7 @@ end Γ₂N₁
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
 def compatibility_Γ₂N₁_Γ₂N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
   eqToIso (by rw [← Functor.assoc, compatibility_N₁_N₂])
+              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.compatibility_Γ₂N₁_Γ₂N₂ AlgebraicTopology.DoldKan.compatibility_Γ₂N₁_Γ₂N₂
 
@@ -181,8 +249,11 @@ set_option linter.uppercaseLean3 false in
 lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
     compatibility_Γ₂N₁_Γ₂N₂.hom.app X =
       eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+                  -- 🎉 no goals
   dsimp only [compatibility_Γ₂N₁_Γ₂N₂, CategoryTheory.eqToIso]
+  -- ⊢ NatTrans.app (eqToHom (_ : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ = N₁ ⋙ Γ …
   apply eqToHom_app
+  -- 🎉 no goals
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
@@ -190,6 +261,7 @@ attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
 lemma compatibility_Γ₂N₁_Γ₂N₂_inv_app (X : SimplicialObject C) :
     compatibility_Γ₂N₁_Γ₂N₂.inv.app X =
       eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+                  -- 🎉 no goals
   rw [← cancel_mono (compatibility_Γ₂N₁_Γ₂N₂.hom.app X), Iso.inv_hom_id_app,
     compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_trans, eqToHom_refl]
 
@@ -199,6 +271,7 @@ namespace Γ₂N₂
 def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ :=
   ((whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
     (by exact compatibility_Γ₂N₁_Γ₂N₂.hom ≫ Γ₂N₁.natTrans)
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂.nat_trans AlgebraicTopology.DoldKan.Γ₂N₂.natTrans
 
@@ -207,6 +280,7 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
       exact (N₂ ⋙ Γ₂).map P.decompId_i ≫
         (compatibility_Γ₂N₁_Γ₂N₂.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
   dsimp only [natTrans]
+  -- ⊢ NatTrans.app (((whiskeringLeft (SimplicialObject C) (Karoubi (SimplicialObje …
   rw [whiskeringLeft_obj_preimage_app
     (compatibility_Γ₂N₁_Γ₂N₂.hom ≫ Γ₂N₁.natTrans : _ ⟶ toKaroubi _ ⋙ 𝟭 _) P, Functor.id_map]
 set_option linter.uppercaseLean3 false in
@@ -222,17 +296,23 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
       (compatibility_Γ₂N₁_Γ₂N₂.app X).inv ≫
         Γ₂N₂.natTrans.app ((toKaroubi (SimplicialObject C)).obj X) := by
   rw [Γ₂N₂.natTrans_app_f_app]
+  -- ⊢ NatTrans.app Γ₂N₁.natTrans X = (compatibility_Γ₂N₁_Γ₂N₂.app X).inv ≫ (N₂ ⋙ Γ …
   dsimp only [Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi, Functor.comp_map,
     NatTrans.comp_app]
   rw [N₂.map_id, Γ₂.map_id, Iso.app_inv]
+  -- ⊢ NatTrans.app Γ₂N₁.natTrans X = NatTrans.app compatibility_Γ₂N₁_Γ₂N₂.inv X ≫  …
   dsimp only [toKaroubi]
+  -- ⊢ NatTrans.app Γ₂N₁.natTrans X = NatTrans.app compatibility_Γ₂N₁_Γ₂N₂.inv X ≫  …
   erw [id_comp]
+  -- ⊢ NatTrans.app Γ₂N₁.natTrans X = NatTrans.app compatibility_Γ₂N₁_Γ₂N₂.inv X ≫  …
   rw [comp_id, Iso.inv_hom_id_app_assoc]
+  -- 🎉 no goals
 
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
   (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫ N₂.map (Γ₂N₂.natTrans.app P) =
     𝟙 (N₂.obj P) := by
   ext n
+  -- ⊢ HomologicalComplex.Hom.f (NatTrans.app N₂Γ₂.inv (N₂.obj P) ≫ N₂.map (NatTran …
   have eq₁ : (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) ≫
       (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) := by
     simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
@@ -257,9 +337,11 @@ theorem identity_N₂ :
   (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
   ext P : 2
+  -- ⊢ NatTrans.app ((𝟙 N₂ ◫ N₂Γ₂.inv) ≫ (Functor.associator N₂ Γ₂ N₂).inv ≫ Γ₂N₂.n …
   dsimp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,
     NatTrans.id_app, Functor.comp_obj]
   rw [Γ₂.map_id, N₂.map_id, comp_id, id_comp, id_comp, identity_N₂_objectwise P]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂ AlgebraicTopology.DoldKan.identity_N₂
 
@@ -273,6 +355,7 @@ instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ 
       infer_instance
     exact isIso_of_reflects_iso _ N₂
   apply NatIso.isIso_of_isIso_app
+  -- 🎉 no goals
 
 instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ ⟶ _) := by
   have : ∀ X : SimplicialObject C, IsIso (Γ₂N₁.natTrans.app X) := by
@@ -280,6 +363,7 @@ instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ �
     rw [compatibility_Γ₂N₁_Γ₂N₂_natTrans]
     infer_instance
   apply NatIso.isIso_of_isIso_app
+  -- 🎉 no goals
 
 /-- The unit isomorphism of the Dold-Kan equivalence. -/
 @[simps! inv]

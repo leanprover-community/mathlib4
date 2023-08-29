@@ -67,12 +67,19 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
   uniquePath b :=
     ⟨Classical.inhabited_of_nonempty (by
       rcases show ∃ n, height b < n from ⟨_, Nat.lt.base _⟩ with ⟨n, hn⟩
+      -- ⊢ Nonempty (Path r b)
       induction' n with n ih generalizing b
+      -- ⊢ Nonempty (Path r b)
       · exact False.elim (Nat.not_lt_zero _ hn)
+        -- 🎉 no goals
       rcases root_or_arrow b with (⟨⟨⟩⟩ | ⟨a, ⟨e⟩⟩)
+      -- ⊢ Nonempty (Path r r)
       · exact ⟨Path.nil⟩
+        -- 🎉 no goals
       · rcases ih a (lt_of_lt_of_le (height_lt e) (Nat.lt_succ_iff.mp hn)) with ⟨p⟩
+        -- ⊢ Nonempty (Path r b)
         exact ⟨p.cons e⟩), by
+        -- 🎉 no goals
       have height_le : ∀ {a b}, Path a b → height a ≤ height b := by
         intro a b p
         induction' p with b c _ e ih
@@ -82,12 +89,21 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
         intro p
         apply this
       intro p q
+      -- ⊢ p = q
       induction' p with a c p e ih <;> cases' q with b _ q f
+      -- ⊢ Path.nil = q
+                                       -- ⊢ Path.nil = Path.nil
+                                       -- ⊢ Path.cons p e = Path.nil
       · rfl
+        -- 🎉 no goals
       · exact False.elim (lt_irrefl _ (lt_of_le_of_lt (height_le q) (height_lt f)))
+        -- 🎉 no goals
       · exact False.elim (lt_irrefl _ (lt_of_le_of_lt (height_le p) (height_lt e)))
+        -- 🎉 no goals
       · rcases unique_arrow e f with ⟨⟨⟩, ⟨⟩⟩
+        -- ⊢ Path.cons p e = Path.cons q e
         rw [ih]⟩
+        -- 🎉 no goals
 #align quiver.arborescence_mk Quiver.arborescenceMk
 
 /-- `RootedConnected r` means that there is a path from `r` to any other vertex. -/
@@ -120,17 +136,29 @@ noncomputable instance geodesicArborescence : Arborescence (geodesicSubtree r) :
   arborescenceMk r (fun a => (shortestPath r a).length)
     (by
       rintro a b ⟨e, p, h⟩
+      -- ⊢ (fun a => Path.length (shortestPath r a)) a < (fun a => Path.length (shortes …
       simp_rw [h, Path.length_cons, Nat.lt_succ_iff]
+      -- ⊢ Path.length (shortestPath r a) ≤ Path.length p
       apply shortest_path_spec)
+      -- 🎉 no goals
     (by
       rintro a b c ⟨e, p, h⟩ ⟨f, q, j⟩
+      -- ⊢ a = b ∧ HEq { val := e, property := (_ : ∃ p, shortestPath r c = Path.cons p …
       cases h.symm.trans j
+      -- ⊢ a = a ∧ HEq { val := e, property := (_ : ∃ p, shortestPath r c = Path.cons p …
       constructor <;> rfl)
+      -- ⊢ a = a
+                      -- 🎉 no goals
+                      -- 🎉 no goals
     (by
       intro b
+      -- ⊢ b = r ∨ ∃ a, Nonempty (a ⟶ b)
       rcases hp : shortestPath r b with (_ | ⟨p, e⟩)
+      -- ⊢ r = r ∨ ∃ a, Nonempty (a ⟶ r)
       · exact Or.inl rfl
+        -- 🎉 no goals
       · exact Or.inr ⟨_, ⟨⟨e, p, hp⟩⟩⟩)
+        -- 🎉 no goals
 #align quiver.geodesic_arborescence Quiver.geodesicArborescence
 
 end GeodesicSubtree

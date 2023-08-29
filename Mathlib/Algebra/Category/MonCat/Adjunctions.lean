@@ -55,13 +55,21 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
     { homEquiv := fun S M => WithOne.lift.symm
       homEquiv_naturality_left_symm := by
         intro S T M f g
+        -- ⊢ ↑((fun S M => WithOne.lift.symm) S M).symm (f ≫ g) = adjoinOne.map f ≫ ↑((fu …
         ext x
+        -- ⊢ ↑(↑((fun S M => WithOne.lift.symm) S M).symm (f ≫ g)) x = ↑(adjoinOne.map f  …
         simp only [Equiv.symm_symm, adjoinOne_map, coe_comp]
+        -- ⊢ ↑(↑WithOne.lift (f ≫ g)) x = ↑(WithOne.map f ≫ ↑WithOne.lift g) x
         simp_rw [WithOne.map]
+        -- ⊢ ↑(↑WithOne.lift (f ≫ g)) x = ↑(↑WithOne.lift (MulHom.comp WithOne.coeMulHom  …
         cases x
+        -- ⊢ ↑(↑WithOne.lift (f ≫ g)) none = ↑(↑WithOne.lift (MulHom.comp WithOne.coeMulH …
         · rfl
+          -- 🎉 no goals
         · simp
+          -- ⊢ ↑(↑WithOne.lift (f ≫ g)) (some val✝) = ↑(↑WithOne.lift g) (↑(↑WithOne.lift ( …
           rfl }
+          -- 🎉 no goals
 #align adjoin_one_adj adjoinOneAdj
 #align adjoin_zero_adj adjoinZeroAdj
 

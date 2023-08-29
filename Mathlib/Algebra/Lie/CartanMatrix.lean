@@ -154,11 +154,15 @@ def adF : B × B → FreeLieAlgebra R (Generators B) :=
 
 private theorem adE_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
+  -- ⊢ adE R A (i, i) = 0
   simp [adE, h, h']
+  -- 🎉 no goals
 
 private theorem adF_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
+  -- ⊢ adF R A (i, i) = 0
   simp [adF, h, h']
+  -- 🎉 no goals
 
 /-- The union of all the relations as a subset of the free Lie algebra. -/
 def toSet : Set (FreeLieAlgebra R (Generators B)) :=

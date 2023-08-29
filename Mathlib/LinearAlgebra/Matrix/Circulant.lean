@@ -58,12 +58,16 @@ theorem circulant_col_zero_eq [AddGroup n] (v : n → α) (i : n) : circulant v 
 
 theorem circulant_injective [AddGroup n] : Injective (circulant : (n → α) → Matrix n n α) := by
   intro v w h
+  -- ⊢ v = w
   ext k
+  -- ⊢ v k = w k
   rw [← circulant_col_zero_eq v, ← circulant_col_zero_eq w, h]
+  -- 🎉 no goals
 #align matrix.circulant_injective Matrix.circulant_injective
 
 theorem Fin.circulant_injective : ∀ n, Injective fun v : Fin n → α => circulant v
   | 0 => by simp [Injective]
+            -- 🎉 no goals
   | n + 1 => Matrix.circulant_injective
 #align matrix.fin.circulant_injective Matrix.Fin.circulant_injective
 
@@ -79,20 +83,26 @@ theorem Fin.circulant_inj {n} {v w : Fin n → α} : circulant v = circulant w �
 
 theorem transpose_circulant [AddGroup n] (v : n → α) :
     (circulant v)ᵀ = circulant fun i => v (-i) := by ext; simp
+                                                     -- ⊢ (circulant v)ᵀ i✝ x✝ = circulant (fun i => v (-i)) i✝ x✝
+                                                          -- 🎉 no goals
 #align matrix.transpose_circulant Matrix.transpose_circulant
 
 theorem conjTranspose_circulant [Star α] [AddGroup n] (v : n → α) :
     (circulant v)ᴴ = circulant (star fun i => v (-i)) := by ext; simp
+                                                            -- ⊢ (circulant v)ᴴ i✝ x✝ = circulant (star fun i => v (-i)) i✝ x✝
+                                                                 -- 🎉 no goals
 #align matrix.conj_transpose_circulant Matrix.conjTranspose_circulant
 
 theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i => v (-i)
   | 0 => by simp [Injective]
+            -- 🎉 no goals
   | n + 1 => Matrix.transpose_circulant
 #align matrix.fin.transpose_circulant Matrix.Fin.transpose_circulant
 
 theorem Fin.conjTranspose_circulant [Star α] :
     ∀ {n} (v : Fin n → α), (circulant v)ᴴ = circulant (star fun i => v (-i))
   | 0 => by simp [Injective]
+            -- 🎉 no goals
   | n + 1 => Matrix.conjTranspose_circulant
 #align matrix.fin.conj_transpose_circulant Matrix.Fin.conjTranspose_circulant
 
@@ -125,15 +135,21 @@ theorem circulant_sub [Sub α] [Sub n] (v w : n → α) :
 theorem circulant_mul [Semiring α] [Fintype n] [AddGroup n] (v w : n → α) :
     circulant v * circulant w = circulant (mulVec (circulant v) w) := by
   ext i j
+  -- ⊢ (circulant v * circulant w) i j = circulant (mulVec (circulant v) w) i j
   simp only [mul_apply, mulVec, circulant_apply, dotProduct]
+  -- ⊢ ∑ x : n, v (i - x) * w (x - j) = ∑ x : n, v (i - j - x) * w x
   refine' Fintype.sum_equiv (Equiv.subRight j) _ _ _
+  -- ⊢ ∀ (x : n), v (i - x) * w (x - j) = v (i - j - ↑(Equiv.subRight j) x) * w (↑( …
   intro x
+  -- ⊢ v (i - x) * w (x - j) = v (i - j - ↑(Equiv.subRight j) x) * w (↑(Equiv.subRi …
   simp only [Equiv.subRight_apply, sub_sub_sub_cancel_right]
+  -- 🎉 no goals
 #align matrix.circulant_mul Matrix.circulant_mul
 
 theorem Fin.circulant_mul [Semiring α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant (mulVec (circulant v) w)
   | 0 => by simp [Injective]
+            -- 🎉 no goals
   | n + 1 => Matrix.circulant_mul
 #align matrix.fin.circulant_mul Matrix.Fin.circulant_mul
 
@@ -141,17 +157,26 @@ theorem Fin.circulant_mul [Semiring α] :
 theorem circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] [Fintype n] [AddCommGroup n]
     (v w : n → α) : circulant v * circulant w = circulant w * circulant v := by
   ext i j
+  -- ⊢ (circulant v * circulant w) i j = (circulant w * circulant v) i j
   simp only [mul_apply, circulant_apply, mul_comm]
+  -- ⊢ ∑ x : n, v (i - x) * w (x - j) = ∑ x : n, w (i - x) * v (x - j)
   refine' Fintype.sum_equiv ((Equiv.subLeft i).trans (Equiv.addRight j)) _ _ _
+  -- ⊢ ∀ (x : n), v (i - x) * w (x - j) = w (i - ↑((Equiv.subLeft i).trans (Equiv.a …
   intro x
+  -- ⊢ v (i - x) * w (x - j) = w (i - ↑((Equiv.subLeft i).trans (Equiv.addRight j)) …
   simp [mul_comm]
+  -- ⊢ v (i - x) * w (x - j) = v (i - x) * w (i - (i - x + j))
   congr 2
+  -- ⊢ x - j = i - (i - x + j)
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align matrix.circulant_mul_comm Matrix.circulant_mul_comm
 
 theorem Fin.circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant w * circulant v
   | 0 => by simp [Injective]
+            -- 🎉 no goals
   | n + 1 => Matrix.circulant_mul_comm
 #align matrix.fin.circulant_mul_comm Matrix.Fin.circulant_mul_comm
 
@@ -164,14 +189,18 @@ theorem circulant_smul [Sub n] [SMul R α] (k : R) (v : n → α) :
 theorem circulant_single_one (α n) [Zero α] [One α] [DecidableEq n] [AddGroup n] :
     circulant (Pi.single 0 1 : n → α) = (1 : Matrix n n α) := by
   ext i j
+  -- ⊢ circulant (Pi.single 0 1) i j = OfNat.ofNat 1 i j
   simp [one_apply, Pi.single_apply, sub_eq_zero]
+  -- 🎉 no goals
 #align matrix.circulant_single_one Matrix.circulant_single_one
 
 @[simp]
 theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype n] (a : α) :
     circulant (Pi.single 0 a : n → α) = scalar n a := by
   ext i j
+  -- ⊢ circulant (Pi.single 0 a) i j = ↑(scalar n) a i j
   simp [Pi.single_apply, one_apply, sub_eq_zero]
+  -- 🎉 no goals
 #align matrix.circulant_single Matrix.circulant_single
 
 /-- Note we use `↑i = 0` instead of `i = 0` as `Fin 0` has no `0`.
@@ -179,20 +208,26 @@ This means that we cannot state this with `Pi.single` as we did with `Matrix.cir
 theorem Fin.circulant_ite (α) [Zero α] [One α] :
     ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
   | 0 => by simp [Injective]
+            -- 🎉 no goals
   | n + 1 => by
     rw [← circulant_single_one]
+    -- ⊢ (circulant fun i => if ↑i = 0 then 1 else 0) = circulant (Pi.single 0 1)
     congr with j
+    -- ⊢ circulant (fun i => if ↑i = 0 then 1 else 0) j x✝ = circulant (Pi.single 0 1 …
     simp [Pi.single_apply, Fin.ext_iff]
+    -- 🎉 no goals
 #align matrix.fin.circulant_ite Matrix.Fin.circulant_ite
 
 /-- A circulant of `v` is symmetric iff `v` equals its reverse. -/
 theorem circulant_isSymm_iff [AddGroup n] {v : n → α} :
     (circulant v).IsSymm ↔ ∀ i, v (-i) = v i := by
   rw [IsSymm, transpose_circulant, circulant_inj, funext_iff]
+  -- 🎉 no goals
 #align matrix.circulant_is_symm_iff Matrix.circulant_isSymm_iff
 
 theorem Fin.circulant_isSymm_iff : ∀ {n} {v : Fin n → α}, (circulant v).IsSymm ↔ ∀ i, v (-i) = v i
   | 0 => by simp [IsSymm.ext_iff, IsEmpty.forall_iff]
+            -- 🎉 no goals
   | n + 1 => Matrix.circulant_isSymm_iff
 #align matrix.fin.circulant_is_symm_iff Matrix.Fin.circulant_isSymm_iff
 

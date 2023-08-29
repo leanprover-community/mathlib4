@@ -58,6 +58,8 @@ def pullback.snd : pullback f g ⟶ Y where
 @[reassoc]
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
   ext ⟨_,h⟩; exact h
+  -- ⊢ ↑(fst f g ≫ f) { val := val✝, property := h } = ↑(snd f g ≫ g) { val := val✝ …
+             -- 🎉 no goals
 
 /--
 Construct a morphism to the explicit pullback given morphisms to the factors
@@ -67,10 +69,15 @@ This is essentially the universal property of the pullback.
 def pullback.lift {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g where
   toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (fun q => q z) at w; exact w⟩
+                                    -- ⊢ (↑a z, ↑b z) ∈ {xy | ↑f xy.fst = ↑g xy.snd}
+                                                                   -- 🎉 no goals
   continuous_toFun := by
     apply Continuous.subtype_mk
+    -- ⊢ Continuous fun x => (↑a x, ↑b x)
     rw [continuous_prod_mk]
+    -- ⊢ (Continuous fun x => ↑a x) ∧ Continuous fun x => ↑b x
     exact ⟨a.continuous, b.continuous⟩
+    -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
@@ -84,11 +91,17 @@ lemma pullback.hom_ext {Z : CompHaus.{u}} (a b : Z ⟶ pullback f g)
     (hfst : a ≫ pullback.fst f g = b ≫ pullback.fst f g)
     (hsnd : a ≫ pullback.snd f g = b ≫ pullback.snd f g) : a = b := by
   ext z
+  -- ⊢ ↑a z = ↑b z
   apply_fun (fun q => q z) at hfst hsnd
+  -- ⊢ ↑a z = ↑b z
   apply Subtype.ext
+  -- ⊢ ↑(↑a z) = ↑(↑b z)
   apply Prod.ext
+  -- ⊢ (↑(↑a z)).fst = (↑(↑b z)).fst
   · exact hfst
+    -- 🎉 no goals
   · exact hsnd
+    -- 🎉 no goals
 
 /--
 The pullback cone whose cone point is the explicit pullback.
@@ -123,12 +136,16 @@ CompHaus.homeoOfIso (pullbackIsoPullback f g)
 theorem pullback_fst_eq :
     CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
   dsimp [pullbackIsoPullback]
+  -- ⊢ pullback.fst f g = (Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit  …
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
+  -- 🎉 no goals
 
 theorem pullback_snd_eq :
     CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
   dsimp [pullbackIsoPullback]
+  -- ⊢ pullback.snd f g = (Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit  …
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
+  -- 🎉 no goals
 
 end Isos
 
@@ -161,7 +178,10 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
     apply continuous_sigma
+    -- ⊢ ∀ (i : α),
     intro a; exact (e a).continuous
+    -- ⊢ Continuous fun a_1 =>
+             -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
@@ -170,9 +190,13 @@ lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) 
 lemma finiteCoproduct.hom_ext {B : CompHaus.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a,x⟩
+  -- ⊢ ↑f { fst := a, snd := x } = ↑g { fst := a, snd := x }
   specialize h a
+  -- ⊢ ↑f { fst := a, snd := x } = ↑g { fst := a, snd := x }
   apply_fun (fun q => q x) at h
+  -- ⊢ ↑f { fst := a, snd := x } = ↑g { fst := a, snd := x }
   exact h
+  -- 🎉 no goals
 
 /--
 The coproduct cocone associated to the explicit finite coproduct.
@@ -191,9 +215,13 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) wher
   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
     specialize hm ⟨a⟩
+    -- ⊢ ι (fun a => X a) a ≫ m = ι (fun a => X a) a ≫ (fun s => desc (fun a => X a)  …
     ext t
+    -- ⊢ ↑(ι (fun a => X a) a ≫ m) t = ↑(ι (fun a => X a) a ≫ (fun s => desc (fun a = …
     apply_fun (fun q => q t) at hm
+    -- ⊢ ↑(ι (fun a => X a) a ≫ m) t = ↑(ι (fun a => X a) a ≫ (fun s => desc (fun a = …
     exact hm
+    -- 🎉 no goals
 
 section Iso
 
@@ -205,6 +233,7 @@ Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
     (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
   dsimp [coproductIsoCoproduct]
+  -- ⊢ Limits.Sigma.ι X a ≫ (Limits.IsColimit.coconePointUniqueUpToIso (finiteCopro …
   simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
     finiteCoproduct.cocone_ι, Discrete.natTrans_app]
 
@@ -217,7 +246,9 @@ end Iso
 
 lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduct.ι X a) := by
   intro x y hxy
+  -- ⊢ x = y
   exact eq_of_heq (Sigma.ext_iff.mp hxy).2
+  -- 🎉 no goals
 
 lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
     ∃ (a : α) (r : X a), R = finiteCoproduct.ι X a r := ⟨R.fst, R.snd, rfl⟩
@@ -225,8 +256,11 @@ lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
 lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
   intro x
+  -- ⊢ ↑(desc X π) (↑(ι X a) x) = ↑(π a) x
   change (ι X a ≫ desc X π) _ = _
+  -- ⊢ ↑(ι X a ≫ desc X π) x = ↑(π a) x
   simp only [ι_desc]
+  -- 🎉 no goals
 -- `elementwise` should work here, but doesn't
 
 end FiniteCoproducts

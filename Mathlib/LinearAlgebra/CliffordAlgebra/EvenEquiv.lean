@@ -75,27 +75,34 @@ theorem ι_eq_v_add_smul_e0 (m : M) (r : R) : ι (Q' Q) (m, r) = v Q m + r • e
 
 theorem e0_mul_e0 : e0 Q * e0 Q = -1 :=
   (ι_sq_scalar _ _).trans <| by simp
+                                -- 🎉 no goals
 #align clifford_algebra.equiv_even.e0_mul_e0 CliffordAlgebra.EquivEven.e0_mul_e0
 
 theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
   (ι_sq_scalar _ _).trans <| by simp
+                                -- 🎉 no goals
 #align clifford_algebra.equiv_even.v_sq_scalar CliffordAlgebra.EquivEven.v_sq_scalar
 
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
+  -- ⊢ ↑(algebraMap R (CliffordAlgebra (Q' Q))) (QuadraticForm.polar ↑(Q' Q) (0, 1) …
   dsimp [QuadraticForm.polar]
+  -- ⊢ ↑(algebraMap R (CliffordAlgebra (Q' Q))) (↑Q (0 + m) + -((1 + 0) * (1 + 0))  …
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
     add_sub_cancel, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
 theorem neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by
   rw [neg_eq_iff_eq_neg]
+  -- ⊢ ↑(v Q) m * e0 Q = -(e0 Q * ↑(v Q) m)
   exact (neg_e0_mul_v _ m).symm
+  -- 🎉 no goals
 #align clifford_algebra.equiv_even.neg_v_mul_e0 CliffordAlgebra.EquivEven.neg_v_mul_e0
 
 @[simp]
 theorem e0_mul_v_mul_e0 (m : M) : e0 Q * v Q m * e0 Q = v Q m := by
   rw [← neg_v_mul_e0, ← neg_mul, mul_assoc, e0_mul_e0, mul_neg_one, neg_neg]
+  -- 🎉 no goals
 #align clifford_algebra.equiv_even.e0_mul_v_mul_e0 CliffordAlgebra.EquivEven.e0_mul_v_mul_e0
 
 @[simp]
@@ -125,23 +132,36 @@ open EquivEven
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
+  -- ⊢ M →ₗ[R] { x // x ∈ even (Q' Q) }
   · refine' LinearMap.codRestrict _ _ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ _
+    -- ⊢ M →ₗ[R] CliffordAlgebra (Q' Q)
     exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
+    -- ⊢ ↑(LinearMap.comp (LinearMap.mulLeft R (e0 Q)) (v Q)) m ∈ LinearMap.range (ι  …
     rw [Subtype.coe_mk, pow_two]
+    -- ⊢ ↑(LinearMap.comp (LinearMap.mulLeft R (e0 Q)) (v Q)) m ∈ LinearMap.range (ι  …
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
+    -- 🎉 no goals
   · ext1
+    -- ⊢ ↑(↑(LinearMap.codRestrict (⨆ (i : { n // ↑n = 0 }), LinearMap.range (ι (Q' Q …
     rw [Subalgebra.coe_mul]  -- porting note: was part of the `dsimp only` below
+    -- ⊢ ↑(↑(LinearMap.codRestrict (⨆ (i : { n // ↑n = 0 }), LinearMap.range (ι (Q' Q …
     erw [LinearMap.codRestrict_apply] -- porting note: was part of the `dsimp only` below
+    -- ⊢ ↑(LinearMap.comp (LinearMap.mulLeft R (e0 Q)) (v Q)) m * ↑(LinearMap.comp (L …
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
+    -- ⊢ e0 Q * ↑(v Q) m * (e0 Q * ↑(v Q) m) = ↑(algebraMap R (CliffordAlgebra (Q' Q) …
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
+    -- 🎉 no goals
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
 @[simp]
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
+  -- ⊢ ↑(↑(LinearMap.codRestrict (⨆ (i : { n // ↑n = 0 }), LinearMap.range (ι (Q' Q …
   -- porting note: was `rw`
   erw [LinearMap.codRestrict_apply]
+  -- ⊢ ↑(LinearMap.comp (LinearMap.mulLeft R (e0 Q)) (v Q)) m = e0 Q * ↑(v Q) m
   rfl
+  -- 🎉 no goals
 #align clifford_algebra.to_even_ι CliffordAlgebra.toEven_ι
 
 /-- The embedding from the even subalgebra with an extra dimension into the original algebra. -/
@@ -161,15 +181,22 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
   haveI f_apply : ∀ x y, f x y = (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
     fun x y => by rfl
   haveI hc : ∀ (r : R) (x : CliffordAlgebra Q), Commute (algebraMap _ _ r) x := Algebra.commutes
+  -- ⊢ { x // x ∈ even (Q' Q) } →ₐ[R] CliffordAlgebra Q
   haveI hm :
     ∀ m : M × R,
       ι Q m.1 * ι Q m.1 - algebraMap R _ m.2 * algebraMap R _ m.2 = algebraMap R _ (Q' Q m) := by
     intro m
     rw [ι_sq_scalar, ← RingHom.map_mul, ← RingHom.map_sub, sub_eq_add_neg, Q'_apply, sub_eq_add_neg]
   refine' even.lift (Q' Q) ⟨f, _, _⟩ <;> simp_rw [f_apply]
+  -- ⊢ ∀ (m : M × R), ↑(↑f m) m = ↑(algebraMap R (CliffordAlgebra Q)) (↑(Q' Q) m)
+                                         -- ⊢ ∀ (m : M × R), (↑(ι Q) m.fst + ↑(algebraMap R (CliffordAlgebra Q)) m.snd) *  …
+                                         -- ⊢ ∀ (m₁ m₂ m₃ : M × R), (↑(ι Q) m₁.fst + ↑(algebraMap R (CliffordAlgebra Q)) m …
   · intro m
+    -- ⊢ (↑(ι Q) m.fst + ↑(algebraMap R (CliffordAlgebra Q)) m.snd) * (↑(ι Q) m.fst - …
     rw [← (hc _ _).symm.mul_self_sub_mul_self_eq, hm]
+    -- 🎉 no goals
   · intro m₁ m₂ m₃
+    -- ⊢ (↑(ι Q) m₁.fst + ↑(algebraMap R (CliffordAlgebra Q)) m₁.snd) * (↑(ι Q) m₂.fs …
     rw [← mul_smul_comm, ← mul_assoc, mul_assoc (_ + _), ← (hc _ _).symm.mul_self_sub_mul_self_eq',
       Algebra.smul_def, ← mul_assoc, hm]
 #align clifford_algebra.of_even CliffordAlgebra.ofEven
@@ -179,10 +206,14 @@ theorem ofEven_ι (x y : M × R) :
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
   -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
   unfold ofEven
+  -- ⊢ ↑(let f := LinearMap.compl₂ (LinearMap.comp (AlgHom.toLinearMap (Algebra.lmu …
   lift_lets
+  -- ⊢ let f := LinearMap.compl₂ (LinearMap.comp (AlgHom.toLinearMap (Algebra.lmul  …
   intro f
+  -- ⊢ ↑(↑(even.lift (Q' Q)) { bilin := f, contract := (_ : ∀ (m : M × R), ↑(↑(Line …
   -- TODO: replacing `?_` with `_` takes way longer?
   refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
+  -- 🎉 no goals
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
@@ -214,8 +245,10 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
                 have h3 : -algebraMap R _ (r₁ * r₂) = r₁ • e0 Q * r₂ • e0 Q := by
                   rw [Algebra.algebraMap_eq_smul_one, smul_mul_smul, e0_mul_e0, smul_neg]
                 rw [sub_eq_add_neg, sub_eq_add_neg, h1, h2, h3]
+                -- 🎉 no goals
               _ = ι (Q' Q) (m₁, r₁) * ι (Q' Q) (m₂, r₂) := by
                 rw [ι_eq_v_add_smul_e0, ι_eq_v_add_smul_e0, mul_add, add_mul, add_mul, add_assoc]
+                -- 🎉 no goals
 #align clifford_algebra.to_even_comp_of_even CliffordAlgebra.toEven_comp_ofEven
 
 theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
@@ -224,10 +257,14 @@ theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
       calc
         ofEven Q (toEven Q (ι Q m)) = ofEven Q ⟨_, (toEven Q (ι Q m)).prop⟩ := by
           rw [Subtype.coe_eta]
+          -- 🎉 no goals
         _ = (ι Q 0 + algebraMap R _ 1) * (ι Q m - algebraMap R _ 0) := by
           simp_rw [toEven_ι]
+          -- ⊢ ↑(ofEven Q) { val := e0 Q * ↑(v Q) m, property := (_ : (fun x => x ∈ even (Q …
           exact ofEven_ι Q _ _
+          -- 🎉 no goals
         _ = ι Q m := by rw [map_one, map_zero, map_zero, sub_zero, zero_add, one_mul]
+                        -- 🎉 no goals
 #align clifford_algebra.of_even_comp_to_even CliffordAlgebra.ofEven_comp_toEven
 
 /-- Any clifford algebra is isomorphic to the even subalgebra of a clifford algebra with an extra
@@ -245,13 +282,18 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
   induction x using CliffordAlgebra.induction
   case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
+  -- 🎉 no goals
   case h_grade1 m =>
     -- porting note: added `letI`
     letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
   case h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
+  -- ⊢ ↑(↑(toEven Q) (↑reverse (↑involute (a✝² + b✝)))) = ↑reverse ↑(↑(toEven Q) (a …
+  -- 🎉 no goals
   case h_add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
@@ -284,9 +326,11 @@ set_option synthInstance.maxHeartbeats 100000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4
+  -- ⊢ ↑(↑(EvenHom.compr₂ (even.ι Q) (AlgHom.comp (evenToNeg Q' Q h') (evenToNeg Q  …
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply, AlgHom.id_apply]
   rw [evenToNeg_ι, map_neg, evenToNeg_ι, neg_neg]
+  -- 🎉 no goals
 #align clifford_algebra.even_to_neg_comp_even_to_neg CliffordAlgebra.evenToNeg_comp_evenToNeg
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.

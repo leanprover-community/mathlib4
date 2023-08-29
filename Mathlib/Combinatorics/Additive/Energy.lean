@@ -71,13 +71,16 @@ theorem multiplicativeEnergy_mono_right (ht : t₁ ⊆ t₂) :
 @[to_additive le_additiveEnergy]
 theorem le_multiplicativeEnergy : s.card * t.card ≤ multiplicativeEnergy s t := by
   rw [← card_product]
+  -- ⊢ card (s ×ˢ t) ≤ multiplicativeEnergy s t
   refine'
     card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
     -- porting note: changed this from a `simp` proof without `only` because of a timeout
       simp only [ ← and_imp, mem_product, and_imp, Prod.forall, mem_filter,
         and_self, and_true, imp_self, implies_true]) fun a _ b _ => _
   simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
+  -- ⊢ a.fst = b.fst → a.snd = b.snd → a = b
   exact Prod.ext
+  -- 🎉 no goals
 #align finset.le_multiplicative_energy Finset.le_multiplicativeEnergy
 #align finset.le_additive_energy Finset.le_additiveEnergy
 
@@ -93,12 +96,14 @@ variable (s t)
 @[to_additive (attr := simp) additiveEnergy_empty_left]
 theorem multiplicativeEnergy_empty_left : multiplicativeEnergy ∅ t = 0 := by
   simp [multiplicativeEnergy]
+  -- 🎉 no goals
 #align finset.multiplicative_energy_empty_left Finset.multiplicativeEnergy_empty_left
 #align finset.additive_energy_empty_left Finset.additiveEnergy_empty_left
 
 @[to_additive (attr := simp) additiveEnergy_empty_right]
 theorem multiplicativeEnergy_empty_right : multiplicativeEnergy s ∅ = 0 := by
   simp [multiplicativeEnergy]
+  -- 🎉 no goals
 #align finset.multiplicative_energy_empty_right Finset.multiplicativeEnergy_empty_right
 #align finset.additive_energy_empty_right Finset.additiveEnergy_empty_right
 
@@ -109,7 +114,11 @@ theorem multiplicativeEnergy_pos_iff : 0 < multiplicativeEnergy s t ↔ s.Nonemp
   ⟨fun h =>
     of_not_not fun H => by
       simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
+      -- ⊢ False
       obtain rfl | rfl := H <;> simp [Nat.not_lt_zero] at h,
+      -- ⊢ False
+                                -- 🎉 no goals
+                                -- 🎉 no goals
     fun h => multiplicativeEnergy_pos h.1 h.2⟩
 #align finset.multiplicative_energy_pos_iff Finset.multiplicativeEnergy_pos_iff
 #align finset.additive_energy_pos_iff Finset.additiveEnergy_pos_iff
@@ -117,6 +126,7 @@ theorem multiplicativeEnergy_pos_iff : 0 < multiplicativeEnergy s t ↔ s.Nonemp
 @[to_additive (attr := simp) additive_energy_eq_zero_iff]
 theorem multiplicativeEnergy_eq_zero_iff : multiplicativeEnergy s t = 0 ↔ s = ∅ ∨ t = ∅ := by
   simp [← (Nat.zero_le _).not_gt_iff_eq, not_and_or, imp_iff_or_not, or_comm]
+  -- 🎉 no goals
 #align finset.multiplicative_energy_eq_zero_iff Finset.multiplicativeEnergy_eq_zero_iff
 #align finset.additive_energy_eq_zero_iff Finset.additive_energy_eq_zero_iff
 
@@ -130,7 +140,9 @@ variable [CommMonoid α]
 theorem multiplicativeEnergy_comm (s t : Finset α) :
     multiplicativeEnergy s t = multiplicativeEnergy t s := by
   rw [multiplicativeEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
+  -- ⊢ card (filter ((fun x => x.fst.fst * x.snd.fst = x.fst.snd * x.snd.snd) ∘ ↑(E …
   simp [-Finset.card_map, eq_comm, multiplicativeEnergy, mul_comm, map_eq_image, Function.comp]
+  -- 🎉 no goals
 #align finset.multiplicative_energy_comm Finset.multiplicativeEnergy_comm
 #align finset.additive_energy_comm Finset.additiveEnergy_comm
 
@@ -144,19 +156,26 @@ variable [CommGroup α] [Fintype α] (s t : Finset α)
 theorem multiplicativeEnergy_univ_left :
     multiplicativeEnergy univ t = Fintype.card α * t.card ^ 2 := by
   simp only [multiplicativeEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
+  -- ⊢ card (filter (fun x => x.fst.fst * x.snd.fst = x.fst.snd * x.snd.snd) (univ  …
   let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
+  -- ⊢ card (filter (fun x => x.fst.fst * x.snd.fst = x.fst.snd * x.snd.snd) (univ  …
   have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
     simp_rw [Prod.ext_iff] at h
     obtain ⟨h, rfl, rfl⟩ := h
     rw [mul_right_cancel h.1]
   rw [← card_image_of_injOn this]
+  -- ⊢ card (filter (fun x => x.fst.fst * x.snd.fst = x.fst.snd * x.snd.snd) (univ  …
   congr with a
+  -- ⊢ a ∈ filter (fun x => x.fst.fst * x.snd.fst = x.fst.snd * x.snd.snd) (univ ×ˢ …
   simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
     Prod.exists]
   refine' ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [mul_right_comm, h.2]⟩, _⟩
+  -- ⊢ (∃ a_1 a_2 b, (a_2 ∈ t ∧ b ∈ t) ∧ ((a_1 * b, a_1 * a_2), a_2, b) = a) → (a.s …
   rintro ⟨b, c, d, hcd, rfl⟩
+  -- ⊢ (((b * d, b * c), c, d).snd.fst ∈ t ∧ ((b * d, b * c), c, d).snd.snd ∈ t) ∧  …
   simpa [mul_right_comm]
+  -- 🎉 no goals
 #align finset.multiplicative_energy_univ_left Finset.multiplicativeEnergy_univ_left
 #align finset.additive_energy_univ_left Finset.additiveEnergy_univ_left
 
@@ -164,6 +183,7 @@ theorem multiplicativeEnergy_univ_left :
 theorem multiplicativeEnergy_univ_right :
     multiplicativeEnergy s univ = Fintype.card α * s.card ^ 2 := by
   rw [multiplicativeEnergy_comm, multiplicativeEnergy_univ_left]
+  -- 🎉 no goals
 #align finset.multiplicative_energy_univ_right Finset.multiplicativeEnergy_univ_right
 #align finset.additive_energy_univ_right Finset.additiveEnergy_univ_right
 

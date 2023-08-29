@@ -91,6 +91,7 @@ theorem projective_def :
 theorem projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
   by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
+     -- 🎉 no goals
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -106,13 +107,19 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     a map `φ : (P →₀ R) →ₗ M`.
     -/
   let φ : (P →₀ R) →ₗ[R] M := Finsupp.total _ _ _ fun p => Function.surjInv hf (g p)
+  -- ⊢ ∃ h, comp f h = g
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
   cases' h.out with s hs
+  -- ⊢ ∃ h, comp f h = g
   -- Compose to get `P →ₗ M`. This works.
   use φ.comp s
+  -- ⊢ comp f (comp φ s) = g
   ext p
+  -- ⊢ ↑(comp f (comp φ s)) p = ↑g p
   conv_rhs => rw [← hs p]
+  -- ⊢ ↑(comp f (comp φ s)) p = ↑g (↑(Finsupp.total P P R id) (↑s p))
   simp [Finsupp.total_apply, Function.surjInv_eq hf]
+  -- 🎉 no goals
 #align module.projective_lifting_property Module.projective_lifting_property
 
 /-- A module which satisfies the universal property is projective: If all surjections of
@@ -129,10 +136,15 @@ variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
 instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine .of_lifting_property'' fun f hf ↦ ?_
+  -- ⊢ ∃ h, comp f h = LinearMap.id
   rcases projective_lifting_property f (.inl _ _ _) hf with ⟨g₁, hg₁⟩
+  -- ⊢ ∃ h, comp f h = LinearMap.id
   rcases projective_lifting_property f (.inr _ _ _) hf with ⟨g₂, hg₂⟩
+  -- ⊢ ∃ h, comp f h = LinearMap.id
   refine ⟨coprod g₁ g₂, ?_⟩
+  -- ⊢ comp f (coprod g₁ g₂) = LinearMap.id
   rw [LinearMap.comp_coprod, hg₁, hg₂, LinearMap.coprod_inl_inr]
+  -- 🎉 no goals
 
 variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
@@ -156,10 +168,13 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
+  -- ⊢ Function.LeftInverse ↑(Finsupp.total P P R id) ↑(↑(Basis.constr b ℕ) fun i = …
   intro m
+  -- ⊢ ↑(Finsupp.total P P R id) (↑(↑(Basis.constr b ℕ) fun i => Finsupp.single (↑b …
   simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
     LinearMap.map_finsupp_sum]
   exact b.total_repr m
+  -- 🎉 no goals
 #align module.projective_of_basis Module.Projective.of_basis
 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=

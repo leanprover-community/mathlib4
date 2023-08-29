@@ -186,6 +186,12 @@ set_option linter.uppercaseLean3 false in
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_smul' := by intros; apply Quot.sound; apply Relation.smul
+                  -- ⊢ AddHom.toFun { toFun := coconeFun F j, map_add' := (_ : ∀ (x y : ↑(F.obj j)) …
+                 -- ⊢ coconeFun F j (x✝ + y✝) = coconeFun F j x✝ + coconeFun F j y✝
+                         -- ⊢ Setoid.r (Prequotient.of j (x✝ + y✝)) (add (Prequotient.of j x✝) (Prequotien …
+                                           -- 🎉 no goals
+                          -- ⊢ Setoid.r (Prequotient.of j (r✝ • x✝)) (smul (↑(RingHom.id R) r✝) (Prequotien …
+                                            -- 🎉 no goals
   map_add' := by intros; apply Quot.sound; apply Relation.add
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_morphism ModuleCat.Colimits.coconeMorphism
@@ -194,8 +200,11 @@ set_option linter.uppercaseLean3 false in
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
+  -- ⊢ ↑(F.map f ≫ coconeMorphism F j') x✝ = ↑(coconeMorphism F j) x✝
   apply Quot.sound
+  -- ⊢ Setoid.r (Prequotient.of j' (↑(F.map f) x✝)) (Prequotient.of j x✝)
   apply ModuleCat.Colimits.Relation.map
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_naturality ModuleCat.Colimits.cocone_naturality
 
@@ -203,7 +212,9 @@ set_option linter.uppercaseLean3 false in
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
+  -- ⊢ ↑(coconeMorphism F j') (↑(F.map f) x) = ↑(F.map f ≫ coconeMorphism F j') x
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_naturality_components ModuleCat.Colimits.cocone_naturality_components
 
@@ -228,56 +239,104 @@ set_option linter.uppercaseLean3 false in
 /-- The function from the colimit module to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
+  -- ⊢ Prequotient F → ↑s.pt
   · exact descFunLift F s
+    -- 🎉 no goals
   · intro x y r
+    -- ⊢ descFunLift F s x = descFunLift F s y
     induction' r with h₁ r_x r_y r_h r_ih r_x r_y r_z r_h r_k r_ih_h r_ih_k r_j r_j' r_f r_x j j x
       j x y j s x u v r r_ih u v w r r_ih u v w r r_ih s u v r r_ih <;> try dsimp
+                                                                        -- 🎉 no goals
+                                                                        -- ⊢ descFunLift F s r_y = descFunLift F s r_x
+                                                                        -- ⊢ descFunLift F s r_x = descFunLift F s r_z
+                                                                        -- ⊢ ↑(NatTrans.app s.ι r_j') (↑(F.map r_f) r_x) = ↑(NatTrans.app s.ι r_j) r_x
+                                                                        -- ⊢ ↑(NatTrans.app s.ι j) 0 = 0
+                                                                        -- ⊢ ↑(NatTrans.app s.ι j) (-x) = -↑(NatTrans.app s.ι j) x
+                                                                        -- ⊢ ↑(NatTrans.app s.ι j) (x + y) = ↑(NatTrans.app s.ι j) x + ↑(NatTrans.app s.ι …
+                                                                        -- ⊢ ↑(NatTrans.app s✝.ι j) (s • x) = s • ↑(NatTrans.app s✝.ι j) x
+                                                                        -- ⊢ -descFunLift F s u = -descFunLift F s v
+                                                                        -- ⊢ descFunLift F s u + descFunLift F s w = descFunLift F s v + descFunLift F s w
+                                                                        -- ⊢ descFunLift F s u + descFunLift F s v = descFunLift F s u + descFunLift F s w
+                                                                        -- ⊢ s • descFunLift F s✝ u = s • descFunLift F s✝ v
+                                                                        -- ⊢ 0 + descFunLift F s x✝ = descFunLift F s x✝
+                                                                        -- ⊢ descFunLift F s x✝ + 0 = descFunLift F s x✝
+                                                                        -- ⊢ -descFunLift F s x✝ + descFunLift F s x✝ = 0
+                                                                        -- ⊢ descFunLift F s x✝ + descFunLift F s y✝ = descFunLift F s y✝ + descFunLift F …
+                                                                        -- ⊢ descFunLift F s x✝ + descFunLift F s y✝ + descFunLift F s z✝ = descFunLift F …
+                                                                        -- ⊢ 1 • descFunLift F s x✝ = descFunLift F s x✝
+                                                                        -- ⊢ (s✝ * t✝) • descFunLift F s x✝ = s✝ • t✝ • descFunLift F s x✝
+                                                                        -- ⊢ s✝ • (descFunLift F s x✝ + descFunLift F s y✝) = s✝ • descFunLift F s x✝ + s …
+                                                                        -- ⊢ s✝ • 0 = 0
+                                                                        -- ⊢ (s✝ + t✝) • descFunLift F s x✝ = s✝ • descFunLift F s x✝ + t✝ • descFunLift  …
+                                                                        -- ⊢ 0 • descFunLift F s x✝ = 0
     -- refl
     -- · rfl -- porting note: `dsimp` (above) now closes this
     -- symm
     · exact r_ih.symm
+      -- 🎉 no goals
     -- trans
     · exact Eq.trans r_ih_h r_ih_k
+      -- 🎉 no goals
     -- map
     · exact s.w_apply r_f r_x -- porting note: `simp` failed
+      -- 🎉 no goals
     -- zero
     · simp
+      -- 🎉 no goals
     -- neg
     · simp
+      -- 🎉 no goals
     -- add
     · simp
+      -- 🎉 no goals
     -- smul,
     · simp
+      -- 🎉 no goals
     -- neg_1
     · rw [r_ih]
+      -- 🎉 no goals
     -- add_1
     · rw [r_ih]
+      -- 🎉 no goals
     -- add_2
     · rw [r_ih]
+      -- 🎉 no goals
     -- smul_1
     · rw [r_ih]
+      -- 🎉 no goals
     -- zero_add
     · rw [zero_add]
+      -- 🎉 no goals
     -- add_zero
     · rw [add_zero]
+      -- 🎉 no goals
     -- add_left_neg
     · rw [add_left_neg]
+      -- 🎉 no goals
     -- add_comm
     · rw [add_comm]
+      -- 🎉 no goals
     -- add_assoc
     · rw [add_assoc]
+      -- 🎉 no goals
     -- one_smul
     · rw [one_smul]
+      -- 🎉 no goals
     -- mul_smul
     · rw [mul_smul]
+      -- 🎉 no goals
     -- smul_add
     · rw [smul_add]
+      -- 🎉 no goals
     -- smul_zero
     · rw [smul_zero]
+      -- 🎉 no goals
     -- add_smul
     · rw [add_smul]
+      -- 🎉 no goals
     -- zero_smul
     · rw [zero_smul]
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_fun ModuleCat.Colimits.descFun
 
@@ -285,6 +344,11 @@ set_option linter.uppercaseLean3 false in
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
   map_smul' s x := by rcases x; rfl
+                      -- ⊢ AddHom.toFun { toFun := descFun F s✝, map_add' := (_ : ∀ (x y : ↑(colimit F) …
+                     -- ⊢ descFun F s (Quot.mk Setoid.r a✝ + y) = descFun F s (Quot.mk Setoid.r a✝) +  …
+                               -- ⊢ descFun F s (Quot.mk Setoid.r a✝¹ + Quot.mk Setoid.r a✝) = descFun F s (Quot …
+                                         -- 🎉 no goals
+                                -- 🎉 no goals
   map_add' x y := by rcases x; rcases y; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_morphism ModuleCat.Colimits.descMorphism
@@ -294,23 +358,37 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
+    -- ⊢ ↑m x = ↑((fun s => descMorphism F s) s) x
     -- porting note: was `induction x` but now need `Quot.rec` with explicit `motive`
     refine Quot.rec (motive := fun x ↦ m x = _) (fun x ↦ ?_) (fun x_a x_b x_p ↦ ?_) x
+    -- ⊢ (fun x => ↑m x = ↑((fun s => descMorphism F s) s) x) (Quot.mk Setoid.r x)
     dsimp
+    -- ⊢ ↑m (Quot.mk Setoid.r x) = ↑(descMorphism F s) (Quot.mk Setoid.r x)
     induction' x with x_j x_x
     · have w' :=
         congr_fun (congr_arg (fun f : F.obj x_j ⟶ s.pt => (f : F.obj x_j → s.pt)) (w x_j)) x_x
       simp only at w'
+      -- ⊢ ↑m (Quot.mk Setoid.r (Prequotient.of x_j x_x)) = ↑(descMorphism F s) (Quot.m …
       erw [w']
+      -- ⊢ ↑(NatTrans.app s.ι x_j) x_x = ↑(descMorphism F s) (Quot.mk Setoid.r (Prequot …
       rfl
+      -- 🎉 no goals
     · rw [quot_zero, map_zero] -- porting note: was `simp` but `map_zero` won't fire
+      -- ⊢ 0 = ↑(descMorphism F s) 0
       rfl
+      -- 🎉 no goals
     · simpa
+      -- 🎉 no goals
     · rw [quot_add, map_add, map_add]  -- porting note: this was closed by `simp [*]`
+      -- ⊢ ↑m (ColimitType.mk a✝¹) + ↑m (ColimitType.mk a✝) = ↑(descMorphism F s) (Coli …
       congr 1
+      -- 🎉 no goals
     · rw [quot_smul, map_smul, map_smul]  -- porting note: this was closed by `simp [*]`
+      -- ⊢ a✝¹ • ↑m (ColimitType.mk a✝) = a✝¹ • ↑(descMorphism F s) (ColimitType.mk a✝)
       congr 1
+      -- 🎉 no goals
     · rfl -- porting note: this wasn't here
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit_cocone_is_colimit ModuleCat.Colimits.colimitCoconeIsColimit
 

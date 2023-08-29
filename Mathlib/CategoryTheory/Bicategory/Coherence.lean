@@ -94,8 +94,11 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj a = a :=
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
+  -- ⊢ PrelaxFunctor.map₂ (preinclusion B) { down := { down := down✝ } } = eqToHom  …
   cases Discrete.ext _ _ (by assumption)
+  -- ⊢ PrelaxFunctor.map₂ (preinclusion B) { down := { down := down✝ } } = eqToHom  …
   convert (inclusionPath a b).map_id _
+  -- 🎉 no goals
 #align category_theory.free_bicategory.preinclusion_map₂ CategoryTheory.FreeBicategory.preinclusion_map₂
 
 /-- The normalization of the composition of `p : Path a b` and `f : Hom b c`.
@@ -148,8 +151,11 @@ def normalizeIso {a : B} :
 theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     normalizeAux p f = normalizeAux p g := by
   rcases η with ⟨η'⟩
+  -- ⊢ normalizeAux p f = normalizeAux p g
   apply @congr_fun _ _ fun p => normalizeAux p f
+  -- ⊢ (fun p => normalizeAux p f) = fun p => normalizeAux p g
   clear p η
+  -- ⊢ (fun p => normalizeAux p f) = fun p => normalizeAux p g
   induction η' with
   | vcomp _ _ _ _ => apply Eq.trans <;> assumption
   | whisker_left _ _ ih => funext; apply congr_fun ih
@@ -163,6 +169,8 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
   rcases η with ⟨η'⟩; clear η;
+  -- ⊢ (↑(preinclusion B)).map { as := p } ◁ Quot.mk Rel η' ≫ (normalizeIso p g).ho …
+                      -- ⊢ (↑(preinclusion B)).map { as := p } ◁ Quot.mk Rel η' ≫ (normalizeIso p g).ho …
   induction η' with
   | id => simp
   | vcomp η θ ihf ihg =>
@@ -209,9 +217,13 @@ def normalizeUnitIso (a b : FreeBicategory B) :
   NatIso.ofComponents (fun f => (λ_ f).symm ≪≫ normalizeIso nil f)
     (by
       intro f g η
+      -- ⊢ (𝟭 (a ⟶ b)).map η ≫ ((fun f => (λ_ f).symm ≪≫ normalizeIso nil f) g).hom = ( …
       erw [leftUnitor_inv_naturality_assoc, assoc]
+      -- ⊢ (λ_ ((𝟭 (a ⟶ b)).obj f)).inv ≫ 𝟙 a ◁ (𝟭 (a ⟶ b)).map η ≫ (normalizeIso nil g …
       congr 1
+      -- ⊢ 𝟙 a ◁ (𝟭 (a ⟶ b)).map η ≫ (normalizeIso nil g).hom = (normalizeIso nil f).ho …
       exact normalize_naturality nil η)
+      -- 🎉 no goals
 #align category_theory.free_bicategory.normalize_unit_iso CategoryTheory.FreeBicategory.normalizeUnitIso
 
 /-- Normalization as an equivalence of categories. -/
@@ -219,11 +231,16 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
     (Discrete.natIso fun f => eqToIso (by
       induction' f with f
+      -- ⊢ (inclusionPath a b ⋙ Pseudofunctor.mapFunctor (normalize B) a b).obj { as := …
       induction' f with _ _ _ _ ih
+      -- ⊢ (inclusionPath a a ⋙ Pseudofunctor.mapFunctor (normalize B) a a).obj { as := …
       -- Porting note: `tidy` closes the goal in mathlib3 but `aesop` doesn't here.
       · rfl
+        -- 🎉 no goals
       · ext1
+        -- ⊢ ((inclusionPath a c✝ ⋙ Pseudofunctor.mapFunctor (normalize B) a c✝).obj { as …
         injection ih with ih
+        -- ⊢ ((inclusionPath a c✝ ⋙ Pseudofunctor.mapFunctor (normalize B) a c✝).obj { as …
         conv =>
           rhs
           rw [←ih]))

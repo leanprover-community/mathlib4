@@ -52,12 +52,14 @@ theorem exists_continuous_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t 
     (H : ∀ x : X, ∃ U ∈ 𝓝 x, ∃ g : X → E, ContinuousOn g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C(X, E), ∀ x, g x ∈ t x := by
   choose U hU g hgc hgt using H
+  -- ⊢ ∃ g, ∀ (x : X), ↑g x ∈ t x
   obtain ⟨f, hf⟩ := PartitionOfUnity.exists_isSubordinate isClosed_univ (fun x => interior (U x))
     (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   refine' ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
     hf.continuous_finsum_smul (fun i => isOpen_interior) fun i => (hgc i).mono interior_subset⟩,
     fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ _) (ht _)⟩
   exact interior_subset (hf _ <| subset_closure hi)
+  -- 🎉 no goals
 #align exists_continuous_forall_mem_convex_of_local exists_continuous_forall_mem_convex_of_local
 
 /-- Let `X` be a normal paracompact topological space (e.g., any extended metric space). Let `E` be

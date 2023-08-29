@@ -65,11 +65,15 @@ theorem forall_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) 
     have h1 : fab = Sum.rec (fun a => fab (Sum.inl a)) (fun b => fab (Sum.inr b)) := by
       ext ab; cases ab <;> rfl
     rw [h1]; exact h _ _⟩
+    -- ⊢ p fun t => rec (fun a => fab (inl a)) (fun b => fab (inr b)) t
+             -- 🎉 no goals
 
 theorem exists_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
   rw [← not_forall_not, forall_sum_pi]
+  -- ⊢ (¬∀ (fa : (val : α) → γ (inl val)) (fb : (val : β) → γ (inr val)), ¬p fun t  …
   simp
+  -- 🎉 no goals
 
 theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ ↦ inl.inj
 #align sum.inl_injective Sum.inl_injective
@@ -117,46 +121,78 @@ variable {x y : Sum α β}
 
 @[simp] theorem getLeft?_eq_none_iff : x.getLeft? = none ↔ x.isRight := by
   cases x <;> simp only [getLeft?, isRight, eq_self_iff_true]
+  -- ⊢ getLeft? (inl val✝) = none ↔ isRight (inl val✝) = true
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.get_left_eq_none_iff Sum.getLeft?_eq_none_iff
 
 @[simp] theorem getRight?_eq_none_iff : x.getRight? = none ↔ x.isLeft := by
   cases x <;> simp only [getRight?, isLeft, eq_self_iff_true]
+  -- ⊢ getRight? (inl val✝) = none ↔ isLeft (inl val✝) = true
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.get_right_eq_none_iff Sum.getRight?_eq_none_iff
 
 @[simp] lemma getLeft?_eq_some_iff {a : α} : x.getLeft? = a ↔ x = inl a := by
   cases x <;> simp only [getLeft?, Option.some.injEq, inl.injEq]
+  -- ⊢ getLeft? (inl val✝) = some a ↔ inl val✝ = inl a
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.get_left_eq_some_iff Sum.getLeft?_eq_some_iff
 
 @[simp] lemma getRight?_eq_some_iff {b : β} : x.getRight? = b ↔ x = inr b := by
   cases x <;> simp only [getRight?, Option.some.injEq, inr.injEq]
+  -- ⊢ getRight? (inl val✝) = some b ↔ inl val✝ = inr b
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
 
 @[simp]
 theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl
+                                                                  -- ⊢ (!isLeft (inl val✝)) = isRight (inl val✝)
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
 #align sum.bnot_is_left Sum.not_isLeft
 
 @[simp]
 theorem isLeft_eq_false : x.isLeft = false ↔ x.isRight := by cases x <;> simp
+                                                             -- ⊢ isLeft (inl val✝) = false ↔ isRight (inl val✝) = true
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
 #align sum.is_left_eq_ff Sum.isLeft_eq_false
 
 theorem Not_isLeft : ¬x.isLeft ↔ x.isRight := by simp
+                                                 -- 🎉 no goals
 #align sum.not_is_left Sum.Not_isLeft
 
 @[simp]
 theorem not_isRight (x : Sum α β) : !x.isRight = x.isLeft := by cases x <;> rfl
+                                                                -- ⊢ (!decide (isRight (inl val✝) = isLeft (inl val✝))) = true
+                                                                            -- 🎉 no goals
+                                                                            -- 🎉 no goals
 #align sum.bnot_is_right Sum.not_isRight
 
 @[simp]
 theorem isRight_eq_false : x.isRight = false ↔ x.isLeft := by cases x <;> simp
+                                                              -- ⊢ isRight (inl val✝) = false ↔ isLeft (inl val✝) = true
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align sum.is_right_eq_ff Sum.isRight_eq_false
 
 theorem Not_isRight : ¬x.isRight ↔ x.isLeft := by simp
+                                                  -- 🎉 no goals
 #align sum.not_is_right Sum.Not_isRight
 
 theorem isLeft_iff : x.isLeft ↔ ∃ y, x = Sum.inl y := by cases x <;> simp
+                                                         -- ⊢ isLeft (inl val✝) = true ↔ ∃ y, inl val✝ = inl y
+                                                                     -- 🎉 no goals
+                                                                     -- 🎉 no goals
 #align sum.is_left_iff Sum.isLeft_iff
 
 theorem isRight_iff : x.isRight ↔ ∃ y, x = Sum.inr y := by cases x <;> simp
+                                                           -- ⊢ isRight (inl val✝) = true ↔ ∃ y, inl val✝ = inr y
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
 #align sum.is_right_iff Sum.isRight_iff
 
 end get
@@ -253,6 +289,9 @@ theorem map_id_id (α β) : Sum.map (@id α) (@id β) = id :=
 theorem elim_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} {x} :
     Sum.elim f₂ g₂ (Sum.map f₁ g₁ x) = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) x := by
   cases x <;> rfl
+  -- ⊢ Sum.elim f₂ g₂ (Sum.map f₁ g₁ (inl val✝)) = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) (in …
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.elim_map Sum.elim_map
 
 theorem elim_comp_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} :
@@ -263,22 +302,34 @@ theorem elim_comp_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β �
 @[simp]
 theorem isLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isLeft (x.map f g) = isLeft x := by
   cases x <;> rfl
+  -- ⊢ isLeft (Sum.map f g (inl val✝)) = isLeft (inl val✝)
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.is_left_map Sum.isLeft_map
 
 @[simp]
 theorem isRight_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isRight (x.map f g) = isRight x := by
   cases x <;> rfl
+  -- ⊢ isRight (Sum.map f g (inl val✝)) = isRight (inl val✝)
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.is_right_map Sum.isRight_map
 
 @[simp]
 theorem getLeft?_map (f : α → β) (g : γ → δ) (x : Sum α γ) :
     (x.map f g).getLeft? = x.getLeft?.map f := by
   cases x <;> rfl
+  -- ⊢ getLeft? (Sum.map f g (inl val✝)) = Option.map f (getLeft? (inl val✝))
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.get_left_map Sum.getLeft?_map
 
 @[simp]
 theorem getRight?_map (f : α → β) (g : γ → δ) (x : α ⊕ γ) :
     (x.map f g).getRight? = x.getRight?.map g := by cases x <;> rfl
+                                                    -- ⊢ getRight? (Sum.map f g (inl val✝)) = Option.map g (getRight? (inl val✝))
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align sum.get_right_map Sum.getRight?_map
 
 open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
@@ -287,12 +338,16 @@ open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_o
 theorem update_elim_inl [DecidableEq α] [DecidableEq (Sum α β)] {f : α → γ} {g : β → γ} {i : α}
     {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
   update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+                      -- 🎉 no goals
+                               -- 🎉 no goals
 #align sum.update_elim_inl Sum.update_elim_inl
 
 @[simp]
 theorem update_elim_inr [DecidableEq β] [DecidableEq (Sum α β)] {f : α → γ} {g : β → γ} {i : β}
     {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
   update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+                      -- 🎉 no goals
+                               -- 🎉 no goals
 #align sum.update_elim_inr Sum.update_elim_inr
 
 @[simp]
@@ -305,6 +360,7 @@ theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (Sum α β)] {f : Sum 
 theorem update_inl_apply_inl [DecidableEq α] [DecidableEq (Sum α β)] {f : Sum α β → γ} {i j : α}
     {x : γ} : update f (inl i) x (inl j) = update (f ∘ inl) i x j := by
   rw [← update_inl_comp_inl, Function.comp_apply]
+  -- 🎉 no goals
 #align sum.update_inl_apply_inl Sum.update_inl_apply_inl
 
 @[simp]
@@ -339,6 +395,7 @@ theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (Sum α β)] {f : Sum 
 theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (Sum α β)] {f : Sum α β → γ} {i j : β}
     {x : γ} : update f (inr i) x (inr j) = update (f ∘ inr) i x j := by
   rw [← update_inr_comp_inr, Function.comp_apply]
+  -- 🎉 no goals
 #align sum.update_inr_apply_inr Sum.update_inr_apply_inr
 
 /-- Swap the factors of a sum type -/
@@ -358,6 +415,9 @@ theorem swap_inr (x : β) : swap (inr x : Sum α β) = inl x :=
 
 @[simp]
 theorem swap_swap (x : Sum α β) : swap (swap x) = x := by cases x <;> rfl
+                                                          -- ⊢ swap (swap (inl val✝)) = inl val✝
+                                                                      -- 🎉 no goals
+                                                                      -- 🎉 no goals
 #align sum.swap_swap Sum.swap_swap
 
 @[simp]
@@ -377,18 +437,30 @@ theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
 
 @[simp]
 theorem isLeft_swap (x : Sum α β) : x.swap.isLeft = x.isRight := by cases x <;> rfl
+                                                                    -- ⊢ isLeft (swap (inl val✝)) = isRight (inl val✝)
+                                                                                -- 🎉 no goals
+                                                                                -- 🎉 no goals
 #align sum.is_left_swap Sum.isLeft_swap
 
 @[simp]
 theorem isRight_swap (x : Sum α β) : x.swap.isRight = x.isLeft := by cases x <;> rfl
+                                                                     -- ⊢ isRight (swap (inl val✝)) = isLeft (inl val✝)
+                                                                                 -- 🎉 no goals
+                                                                                 -- 🎉 no goals
 #align sum.is_right_swap Sum.isRight_swap
 
 @[simp]
 theorem getLeft?_swap (x : Sum α β) : x.swap.getLeft? = x.getRight? := by cases x <;> rfl
+                                                                          -- ⊢ getLeft? (swap (inl val✝)) = getRight? (inl val✝)
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 #align sum.get_left_swap Sum.getLeft?_swap
 
 @[simp]
 theorem getRight?_swap (x : Sum α β) : x.swap.getRight? = x.getLeft? := by cases x <;> rfl
+                                                                           -- ⊢ getRight? (swap (inl val✝)) = getLeft? (inl val✝)
+                                                                                       -- 🎉 no goals
+                                                                                       -- 🎉 no goals
 #align sum.get_right_swap Sum.getRight?_swap
 
 section LiftRel
@@ -407,7 +479,9 @@ variable {r r₁ r₂ : α → γ → Prop} {s s₁ s₂ : β → δ → Prop} {
 theorem liftRel_inl_inl : LiftRel r s (inl a) (inl c) ↔ r a c :=
   ⟨fun h ↦ by
     cases h
+    -- ⊢ r a c
     assumption, LiftRel.inl⟩
+    -- 🎉 no goals
 #align sum.lift_rel_inl_inl Sum.liftRel_inl_inl
 
 @[simp]
@@ -424,7 +498,9 @@ theorem not_liftRel_inr_inl : ¬LiftRel r s (inr b) (inl c) :=
 theorem liftRel_inr_inr : LiftRel r s (inr b) (inr d) ↔ s b d :=
   ⟨fun h ↦ by
     cases h
+    -- ⊢ s b d
     assumption, LiftRel.inr⟩
+    -- 🎉 no goals
 #align sum.lift_rel_inr_inr Sum.liftRel_inr_inr
 
 instance [∀ a c, Decidable (r a c)] [∀ b d, Decidable (s b d)] :
@@ -437,8 +513,11 @@ instance [∀ a c, Decidable (r a c)] [∀ b d, Decidable (s b d)] :
 theorem LiftRel.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b → s₂ a b)
   (h : LiftRel r₁ s₁ x y) : LiftRel r₂ s₂ x y := by
   cases h
+  -- ⊢ LiftRel r₂ s₂ (inl a✝¹) (inl c✝)
   · exact LiftRel.inl (hr _ _ ‹_›)
+    -- 🎉 no goals
   · exact LiftRel.inr (hs _ _ ‹_›)
+    -- 🎉 no goals
 #align sum.lift_rel.mono Sum.LiftRel.mono
 
 theorem LiftRel.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) (h : LiftRel r₁ s x y) :
@@ -453,15 +532,20 @@ theorem LiftRel.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : LiftRel r 
 
 protected theorem LiftRel.swap (h : LiftRel r s x y) : LiftRel s r x.swap y.swap := by
   cases h
+  -- ⊢ LiftRel s r (swap (inl a✝¹)) (swap (inl c✝))
   · exact LiftRel.inr ‹_›
+    -- 🎉 no goals
   · exact LiftRel.inl ‹_›
+    -- 🎉 no goals
 #align sum.lift_rel.swap Sum.LiftRel.swap
 
 @[simp]
 theorem liftRel_swap_iff : LiftRel s r x.swap y.swap ↔ LiftRel r s x y :=
   ⟨fun h ↦ by
     rw [← swap_swap x, ← swap_swap y]
+    -- ⊢ LiftRel r s (swap (swap x)) (swap (swap y))
     exact h.swap, LiftRel.swap⟩
+    -- 🎉 no goals
 #align sum.lift_rel_swap_iff Sum.liftRel_swap_iff
 
 end LiftRel
@@ -488,14 +572,18 @@ variable {r r₁ r₂ : α → α → Prop} {s s₁ s₂ : β → β → Prop} {
 theorem lex_inl_inl : Lex r s (inl a₁) (inl a₂) ↔ r a₁ a₂ :=
   ⟨fun h ↦ by
     cases h
+    -- ⊢ r a₁ a₂
     assumption, Lex.inl⟩
+    -- 🎉 no goals
 #align sum.lex_inl_inl Sum.lex_inl_inl
 
 @[simp]
 theorem lex_inr_inr : Lex r s (inr b₁) (inr b₂) ↔ s b₁ b₂ :=
   ⟨fun h ↦ by
     cases h
+    -- ⊢ s b₁ b₂
     assumption, Lex.inr⟩
+    -- 🎉 no goals
 #align sum.lex_inr_inr Sum.lex_inr_inr
 
 @[simp]
@@ -511,8 +599,11 @@ instance instDecidableRelSumLex [DecidableRel r] [DecidableRel s] : DecidableRel
 
 protected theorem LiftRel.lex {a b : Sum α β} (h : LiftRel r s a b) : Lex r s a b := by
   cases h
+  -- ⊢ Lex r s (inl a✝¹) (inl c✝)
   · exact Lex.inl ‹_›
+    -- 🎉 no goals
   · exact Lex.inr ‹_›
+    -- 🎉 no goals
 #align sum.lift_rel.lex Sum.LiftRel.lex
 
 theorem liftRel_subrelation_lex : Subrelation (LiftRel r s) (Lex r s) := LiftRel.lex
@@ -522,8 +613,11 @@ theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b �
     Lex r₂ s₂ x y := by
   cases h
   · exact Lex.inl (hr _ _ ‹_›)
+    -- 🎉 no goals
   · exact Lex.inr (hs _ _ ‹_›)
+    -- 🎉 no goals
   · exact Lex.sep _ _
+    -- 🎉 no goals
 #align sum.lex.mono Sum.Lex.mono
 
 theorem Lex.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) (h : Lex r₁ s x y) : Lex r₂ s x y :=
@@ -536,20 +630,31 @@ theorem Lex.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r s₁ x y
 
 theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
   induction' aca with a _ IH
+  -- ⊢ Acc (Lex r s) (inl a)
   constructor
+  -- ⊢ ∀ (y : α ⊕ β), Lex r s y (inl a) → Acc (Lex r s) y
   intro y h
+  -- ⊢ Acc (Lex r s) y
   cases' h with a' _ h'
+  -- ⊢ Acc (Lex r s) (inl a')
   exact IH _ h'
+  -- 🎉 no goals
 #align sum.lex_acc_inl Sum.lex_acc_inl
 
 theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) :
     Acc (Lex r s) (inr b) := by
   induction' acb with b _ IH
+  -- ⊢ Acc (Lex r s) (inr b)
   constructor
+  -- ⊢ ∀ (y : α ⊕ β), Lex r s y (inr b) → Acc (Lex r s) y
   intro y h
+  -- ⊢ Acc (Lex r s) y
   cases' h with _ _ _ b' _ h' a
+  -- ⊢ Acc (Lex r s) (inr b')
   · exact IH _ h'
+    -- 🎉 no goals
   · exact aca _
+    -- 🎉 no goals
 #align sum.lex_acc_inr Sum.lex_acc_inr
 
 theorem lex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (Lex r s) :=
@@ -615,12 +720,18 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
   ⟨ fun h => ⟨
       (fun c => by
         obtain ⟨a | b, h⟩ := h (inl c)
+        -- ⊢ ∃ a, f a = c
         · exact ⟨a, inl_injective h⟩
+          -- 🎉 no goals
         · cases h),
+          -- 🎉 no goals
       (fun d => by
         obtain ⟨a | b, h⟩ := h (inr d)
+        -- ⊢ ∃ a, g a = d
         · cases h
+          -- 🎉 no goals
         · exact ⟨b, inr_injective h⟩)⟩,
+          -- 🎉 no goals
     fun h => h.1.sum_map h.2⟩
 #align sum.map_surjective Sum.map_surjective
 
@@ -633,7 +744,11 @@ theorem map_bijective {f : α → γ} {g : β → δ} :
 theorem elim_const_const (c : γ) :
     Sum.elim (const _ c : α → γ) (const _ c : β → γ) = const _ c := by
   ext x
+  -- ⊢ Sum.elim (const α c) (const β c) x = const (α ⊕ β) c x
   cases x <;> rfl
+  -- ⊢ Sum.elim (const α c) (const β c) (inl val✝) = const (α ⊕ β) c (inl val✝)
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.elim_const_const Sum.elim_const_const
 
 @[simp]
@@ -645,23 +760,37 @@ theorem elim_lam_const_lam_const (c : γ) :
 theorem elim_update_left [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : α) (c : γ) :
     Sum.elim (Function.update f i c) g = Function.update (Sum.elim f g) (inl i) c := by
   ext x
+  -- ⊢ Sum.elim (update f i c) g x = update (Sum.elim f g) (inl i) c x
   rcases x with x | x
+  -- ⊢ Sum.elim (update f i c) g (inl x) = update (Sum.elim f g) (inl i) c (inl x)
   · by_cases h : x = i
+    -- ⊢ Sum.elim (update f i c) g (inl x) = update (Sum.elim f g) (inl i) c (inl x)
     · subst h
+      -- ⊢ Sum.elim (update f x c) g (inl x) = update (Sum.elim f g) (inl x) c (inl x)
       simp
+      -- 🎉 no goals
     · simp [h]
+      -- 🎉 no goals
   · simp
+    -- 🎉 no goals
 #align sum.elim_update_left Sum.elim_update_left
 
 theorem elim_update_right [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : β) (c : γ) :
     Sum.elim f (Function.update g i c) = Function.update (Sum.elim f g) (inr i) c := by
   ext x
+  -- ⊢ Sum.elim f (update g i c) x = update (Sum.elim f g) (inr i) c x
   rcases x with x | x
+  -- ⊢ Sum.elim f (update g i c) (inl x) = update (Sum.elim f g) (inr i) c (inl x)
   · simp
+    -- 🎉 no goals
   · by_cases h : x = i
+    -- ⊢ Sum.elim f (update g i c) (inr x) = update (Sum.elim f g) (inr i) c (inr x)
     · subst h
+      -- ⊢ Sum.elim f (update g x c) (inr x) = update (Sum.elim f g) (inr x) c (inr x)
       simp
+      -- 🎉 no goals
     · simp [h]
+      -- 🎉 no goals
 #align sum.elim_update_right Sum.elim_update_right
 
 end Sum

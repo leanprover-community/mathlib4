@@ -40,7 +40,9 @@ which are used to deduce corresponding results for Euclidean affine spaces.
 theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧ x + y = k • (x - y))
     (h₂ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
   obtain ⟨k, hk_ne_one, hk⟩ := h₁
+  -- ⊢ ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2|
   let r := (k - 1)⁻¹ * (k + 1)
+  -- ⊢ ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2|
   have hxy : x = r • y := by
     rw [← smul_smul, eq_inv_smul_iff₀ (sub_ne_zero.mpr hk_ne_one), ← sub_eq_zero]
     calc
@@ -53,6 +55,7 @@ theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧
     rwa [inner_eq_zero_iff_angle_eq_pi_div_two, ← norm_add_eq_norm_sub_iff_angle_eq_pi_div_two,
       eq_comm]
   have hzx : ⟪z, x⟫ = 0 := by rw [hxy, inner_smul_right, hzy, mul_zero]
+  -- ⊢ ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2|
   calc
     ‖x - y‖ * ‖x + y‖ = ‖(r - 1) • y‖ * ‖(r + 1) • y‖ := by simp [sub_smul, add_smul, hxy]
     _ = ‖r - 1‖ * ‖y‖ * (‖r + 1‖ * ‖y‖) := by simp_rw [norm_smul]
@@ -84,16 +87,25 @@ variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
     (hq : dist a q = dist b q) : dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2| := by
   let m : P := midpoint ℝ a b
+  -- ⊢ dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2|
   have h1 := vsub_sub_vsub_cancel_left a p m
+  -- ⊢ dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2|
   have h2 := vsub_sub_vsub_cancel_left p q m
+  -- ⊢ dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2|
   have h3 := vsub_sub_vsub_cancel_left a q m
+  -- ⊢ dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2|
   have h : ∀ r, b -ᵥ r = m -ᵥ r + (m -ᵥ a) := fun r => by
     rw [midpoint_vsub_left, ← right_vsub_midpoint, add_comm, vsub_add_vsub_cancel]
   iterate 4 rw [dist_eq_norm_vsub V]
+  -- ⊢ ‖a -ᵥ p‖ * ‖b -ᵥ p‖ = |‖b -ᵥ q‖ ^ 2 - ‖p -ᵥ q‖ ^ 2|
   rw [← h1, ← h2, h, h]
+  -- ⊢ ‖m -ᵥ p - (m -ᵥ a)‖ * ‖m -ᵥ p + (m -ᵥ a)‖ = |‖m -ᵥ q + (m -ᵥ a)‖ ^ 2 - ‖m -ᵥ …
   rw [← h1, h] at hp
+  -- ⊢ ‖m -ᵥ p - (m -ᵥ a)‖ * ‖m -ᵥ p + (m -ᵥ a)‖ = |‖m -ᵥ q + (m -ᵥ a)‖ ^ 2 - ‖m -ᵥ …
   rw [dist_eq_norm_vsub V a q, dist_eq_norm_vsub V b q, ← h3, h] at hq
+  -- ⊢ ‖m -ᵥ p - (m -ᵥ a)‖ * ‖m -ᵥ p + (m -ᵥ a)‖ = |‖m -ᵥ q + (m -ᵥ a)‖ ^ 2 - ‖m -ᵥ …
   exact mul_norm_eq_abs_sub_sq_norm hp hq
+  -- 🎉 no goals
 #align euclidean_geometry.mul_dist_eq_abs_sub_sq_dist EuclideanGeometry.mul_dist_eq_abs_sub_sq_dist
 
 /-- If `A`, `B`, `C`, `D` are cospherical and `P` is on both lines `AB` and `CD`, then
@@ -103,10 +115,15 @@ theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a
     (hcpd : ∃ k₂ : ℝ, k₂ ≠ 1 ∧ d -ᵥ p = k₂ • (c -ᵥ p)) :
     dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨q, r, h'⟩ := (cospherical_def {a, b, c, d}).mp h
+  -- ⊢ dist a p * dist b p = dist c p * dist d p
   obtain ⟨ha, hb, hc, hd⟩ := h' a (by simp), h' b (by simp), h' c (by simp), h' d (by simp)
+  -- ⊢ dist a p * dist b p = dist c p * dist d p
   · rw [← hd] at hc
+    -- ⊢ dist a p * dist b p = dist c p * dist d p
     rw [← hb] at ha
+    -- ⊢ dist a p * dist b p = dist c p * dist d p
     rw [mul_dist_eq_abs_sub_sq_dist hapb ha, hb, mul_dist_eq_abs_sub_sq_dist hcpd hc, hd]
+    -- 🎉 no goals
 #align euclidean_geometry.mul_dist_eq_mul_dist_of_cospherical EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical
 
 /-- **Intersecting Chords Theorem**. -/
@@ -114,8 +131,11 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hapb : ∠ a p b = π) (hcpd : ∠ c p d = π) :
     dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨-, k₁, _, hab⟩ := angle_eq_pi_iff.mp hapb
+  -- ⊢ dist a p * dist b p = dist c p * dist d p
   obtain ⟨-, k₂, _, hcd⟩ := angle_eq_pi_iff.mp hcpd
+  -- ⊢ dist a p * dist b p = dist c p * dist d p
   exact mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, by linarith, hab⟩ ⟨k₂, by linarith, hcd⟩
+  -- 🎉 no goals
 #align euclidean_geometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi
 
 /-- **Intersecting Secants Theorem**. -/
@@ -123,10 +143,18 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hab : a ≠ b) (hcd : c ≠ d) (hapb : ∠ a p b = 0)
     (hcpd : ∠ c p d = 0) : dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨-, k₁, -, hab₁⟩ := angle_eq_zero_iff.mp hapb
+  -- ⊢ dist a p * dist b p = dist c p * dist d p
   obtain ⟨-, k₂, -, hcd₁⟩ := angle_eq_zero_iff.mp hcpd
+  -- ⊢ dist a p * dist b p = dist c p * dist d p
   refine' mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, _, hab₁⟩ ⟨k₂, _, hcd₁⟩ <;> by_contra hnot <;>
+  -- ⊢ k₁ ≠ 1
+                                                                                -- ⊢ False
+                                                                                -- ⊢ False
     simp_all only [Classical.not_not, one_smul]
+    -- ⊢ False
+    -- ⊢ False
   exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+  -- 🎉 no goals
 #align euclidean_geometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero
 
 end EuclideanGeometry

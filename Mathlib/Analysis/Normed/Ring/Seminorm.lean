@@ -82,10 +82,15 @@ instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toAddGroupSeminorm := toAddGroupSeminorm✝, mul_le' := mul_le'✝ } = g
     cases g
+    -- ⊢ { toAddGroupSeminorm := toAddGroupSeminorm✝¹, mul_le' := mul_le'✝¹ } = { toA …
     congr
+    -- ⊢ toAddGroupSeminorm✝¹ = toAddGroupSeminorm✝
     ext x
+    -- ⊢ ↑toAddGroupSeminorm✝¹ x = ↑toAddGroupSeminorm✝ x
     exact congr_fun h x
+    -- 🎉 no goals
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -115,6 +120,7 @@ theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
 #align ring_seminorm.eq_zero_iff RingSeminorm.eq_zero_iff
 
 theorem ne_zero_iff {p : RingSeminorm R} : p ≠ 0 ↔ ∃ x, p x ≠ 0 := by simp [eq_zero_iff]
+                                                                      -- 🎉 no goals
 #align ring_seminorm.ne_zero_iff RingSeminorm.ne_zero_iff
 
 instance : Inhabited (RingSeminorm R) :=
@@ -126,11 +132,20 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
+        -- ⊢ AddGroupSeminorm.toFun { toFun := src✝.toFun, map_zero' := (_ : AddGroupSemi …
         · refine' (if_pos h).trans_le (mul_nonneg _ _) <;>
+          -- ⊢ 0 ≤ AddGroupSeminorm.toFun { toFun := src✝.toFun, map_zero' := (_ : AddGroup …
             · change _ ≤ ite _ _ _
+              -- ⊢ 0 ≤ if x = 0 then 0 else 1
+              -- ⊢ 0 ≤ if y = 0 then 0 else 1
+              -- ⊢ 0 ≤ 0
               split_ifs
+              -- 🎉 no goals
+              -- ⊢ 0 ≤ 0
               exacts [le_rfl, zero_le_one]
+              -- 🎉 no goals
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
+          -- ⊢ (if x * y = 0 then 0 else 1) ≤ (if x = 0 then 0 else 1) * if y = 0 then 0 el …
           simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩
 
@@ -154,11 +169,17 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
           exact one_ne_zero⟩,
       fun h => ?_⟩
   obtain hp0 | hp0 := (map_nonneg p (1 : R)).eq_or_gt
+  -- ⊢ ↑p 1 = 1
   · exfalso
+    -- ⊢ False
     refine h (ext fun x => (map_nonneg _ _).antisymm' ?_)
+    -- ⊢ ↑p x ≤ 0
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
+    -- 🎉 no goals
   · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
+    -- ⊢ ↑p 1 ≤ ↑p 1 * ↑p 1
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
+    -- 🎉 no goals
 #align ring_seminorm.seminorm_one_eq_one_iff_ne_zero RingSeminorm.seminorm_one_eq_one_iff_ne_zero
 
 end Ring
@@ -180,10 +201,15 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toRingSeminorm := toRingSeminorm✝, eq_zero_of_map_eq_zero' := eq_zero_of_m …
     cases g
+    -- ⊢ { toRingSeminorm := toRingSeminorm✝¹, eq_zero_of_map_eq_zero' := eq_zero_of_ …
     congr
+    -- ⊢ toRingSeminorm✝¹ = toRingSeminorm✝
     ext x
+    -- ⊢ ↑toRingSeminorm✝¹ x = ↑toRingSeminorm✝ x
     exact congr_fun h x
+    -- 🎉 no goals
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -230,10 +256,15 @@ instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ w
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toAddGroupSeminorm := toAddGroupSeminorm✝, map_one' := map_one'✝, map_mul' …
     cases g
+    -- ⊢ { toAddGroupSeminorm := toAddGroupSeminorm✝¹, map_one' := map_one'✝¹, map_mu …
     congr
+    -- ⊢ toAddGroupSeminorm✝¹ = toAddGroupSeminorm✝
     ext x
+    -- ⊢ ↑toAddGroupSeminorm✝¹ x = ↑toAddGroupSeminorm✝ x
     exact congr_fun h x
+    -- 🎉 no goals
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
@@ -264,10 +295,15 @@ instance : One (MulRingSeminorm R) :=
       map_one' := if_neg one_ne_zero
       map_mul' := fun x y => by
         obtain rfl | hx := eq_or_ne x 0
+        -- ⊢ AddGroupSeminorm.toFun { toFun := src✝.toFun, map_zero' := (_ : AddGroupSemi …
         · simp
+          -- 🎉 no goals
         obtain rfl | hy := eq_or_ne y 0
+        -- ⊢ AddGroupSeminorm.toFun { toFun := src✝.toFun, map_zero' := (_ : AddGroupSemi …
         · simp
+          -- 🎉 no goals
         · simp [hx, hy] }⟩
+          -- 🎉 no goals
 
 @[simp]
 theorem apply_one (x : R) : (1 : MulRingSeminorm R) x = if x = 0 then 0 else 1 :=
@@ -287,10 +323,15 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toMulRingSeminorm := toMulRingSeminorm✝, eq_zero_of_map_eq_zero' := eq_zer …
     cases g
+    -- ⊢ { toMulRingSeminorm := toMulRingSeminorm✝¹, eq_zero_of_map_eq_zero' := eq_ze …
     congr
+    -- ⊢ toMulRingSeminorm✝¹ = toMulRingSeminorm✝
     ext x
+    -- ⊢ ↑toMulRingSeminorm✝¹ x = ↑toMulRingSeminorm✝ x
     exact congr_fun h x
+    -- 🎉 no goals
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
@@ -338,7 +379,9 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
   { f with
     eq_zero_of_map_eq_zero' := fun x hx => by
       obtain ⟨c, hc⟩ := RingSeminorm.ne_zero_iff.mp hnt
+      -- ⊢ x = 0
       by_contra hn0
+      -- ⊢ False
       have hc0 : f c = 0 := by
         rw [← mul_one c, ← mul_inv_cancel hn0, ← mul_assoc, mul_comm c, mul_assoc]
         exact
@@ -348,6 +391,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
                 zero_mul]))
             (map_nonneg f _)
       exact hc hc0 }
+      -- 🎉 no goals
 #align ring_seminorm.to_ring_norm RingSeminorm.toRingNorm
 
 /-- The norm of a `NonUnitalNormedRing` as a `RingNorm`. -/

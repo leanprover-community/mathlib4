@@ -43,6 +43,7 @@ theorem le_self_pow {n : ℕ} (hn : n ≠ 0) : ∀ m : ℕ, m ≤ m ^ n
 
 theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
   | 0 => by simp [zero_lt_one]
+            -- 🎉 no goals
   | n + 1 =>
     calc
       n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self h _) _
@@ -51,11 +52,14 @@ theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
 
 theorem lt_two_pow (n : ℕ) : n < 2 ^ n :=
   lt_pow_self (by decide) n
+                  -- 🎉 no goals
 #align nat.lt_two_pow Nat.lt_two_pow
 
 theorem one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by
   rw [← one_pow n]
+  -- ⊢ 1 ^ n ≤ m ^ n
   exact Nat.pow_le_pow_of_le_left h n
+  -- 🎉 no goals
 #align nat.one_le_pow Nat.one_le_pow
 
 theorem one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
@@ -64,11 +68,14 @@ theorem one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
 
 theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
   one_le_pow n 2 (by decide)
+                     -- 🎉 no goals
 #align nat.one_le_two_pow Nat.one_le_two_pow
 
 theorem one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
   rw [← one_pow n]
+  -- ⊢ 1 ^ n < m ^ n
   exact pow_lt_pow_of_lt_left h₁ h₀
+  -- 🎉 no goals
 #align nat.one_lt_pow Nat.one_lt_pow
 
 theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
@@ -78,24 +85,39 @@ theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
 @[simp]
 theorem one_lt_pow_iff {k n : ℕ} (h : 0 ≠ k) : 1 < n ^ k ↔ 1 < n := by
   rcases n with (rfl | n)
+  -- ⊢ 1 < zero ^ k ↔ 1 < zero
   · cases k <;> simp [zero_pow_eq]
+    -- ⊢ 1 < zero ^ zero ↔ 1 < zero
+                -- 🎉 no goals
+                -- 🎉 no goals
   rcases n with (rfl | n)
+  -- ⊢ 1 < succ zero ^ k ↔ 1 < succ zero
   · rw [← Nat.one_eq_succ_zero, one_pow]
+    -- 🎉 no goals
   refine' ⟨fun _ => one_lt_succ_succ n, fun _ => _⟩
+  -- ⊢ 1 < succ (succ n) ^ k
   induction' k with k hk
+  -- ⊢ 1 < succ (succ n) ^ zero
   · exact absurd rfl h
+    -- 🎉 no goals
   rcases k with (rfl | k)
+  -- ⊢ 1 < succ (succ n) ^ succ zero
   · simp [← Nat.one_eq_succ_zero]
+    -- 🎉 no goals
   rw [pow_succ']
+  -- ⊢ 1 < succ (succ n) * succ (succ n) ^ (k + 1)
   exact one_lt_mul (one_lt_succ_succ _).le (hk (succ_ne_zero k).symm)
+  -- 🎉 no goals
 #align nat.one_lt_pow_iff Nat.one_lt_pow_iff
 
 theorem one_lt_two_pow (n : ℕ) (h₀ : 0 < n) : 1 < 2 ^ n :=
   one_lt_pow n 2 h₀ (by decide)
+                        -- 🎉 no goals
 #align nat.one_lt_two_pow Nat.one_lt_two_pow
 
 theorem one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
   one_lt_pow (n + 1) 2 (succ_pos n) (by decide)
+                                        -- 🎉 no goals
 #align nat.one_lt_two_pow' Nat.one_lt_two_pow'
 
 theorem pow_right_strictMono {x : ℕ} (k : 2 ≤ x) : StrictMono fun n : ℕ => x ^ n := fun _ _ =>
@@ -120,7 +142,9 @@ theorem pow_left_strictMono {m : ℕ} (k : 1 ≤ m) : StrictMono fun x : ℕ => 
 
 theorem mul_lt_mul_pow_succ {n a q : ℕ} (a0 : 0 < a) (q1 : 1 < q) : n * q < a * q ^ (n + 1) := by
   rw [pow_succ, ← mul_assoc, mul_lt_mul_right (zero_lt_one.trans q1)]
+  -- ⊢ n < a * q ^ n
   exact lt_mul_of_one_le_of_lt (Nat.succ_le_iff.mpr a0) (Nat.lt_pow_self q1 n)
+  -- 🎉 no goals
 #align nat.mul_lt_mul_pow_succ Nat.mul_lt_mul_pow_succ
 
 end Nat
@@ -146,7 +170,9 @@ theorem pow_left_injective {m : ℕ} (k : 1 ≤ m) : Function.Injective fun x : 
 
 theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   rw [sq, sq]
+  -- ⊢ a * a - b * b = (a + b) * (a - b)
   exact Nat.mul_self_sub_mul_self_eq a b
+  -- 🎉 no goals
 #align nat.sq_sub_sq Nat.sq_sub_sq
 
 alias pow_two_sub_pow_two := sq_sub_sq
@@ -157,13 +183,19 @@ alias pow_two_sub_pow_two := sq_sub_sq
 
 theorem pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
   induction' b with b ih
+  -- ⊢ a ^ zero % n = (a % n) ^ zero % n
   rfl; simp [pow_succ, Nat.mul_mod, ih]
+  -- ⊢ a ^ succ b % n = (a % n) ^ succ b % n
+       -- 🎉 no goals
 #align nat.pow_mod Nat.pow_mod
 
 theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w) + m % b := by
   by_cases b_h : b = 0
+  -- ⊢ m % b ^ succ w = b * (m / b % b ^ w) + m % b
   · simp [b_h, pow_succ]
+    -- 🎉 no goals
   have b_pos := Nat.pos_of_ne_zero b_h
+  -- ⊢ m % b ^ succ w = b * (m / b % b ^ w) + m % b
   induction m using Nat.strong_induction_on with
     | h p IH =>
       cases' lt_or_ge p (b ^ succ w) with h₁ h₁
@@ -194,19 +226,29 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
 theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l
   | x + 1, w => by
     constructor
+    -- ⊢ (x + 1) ^ k ∣ (x + 1) ^ l → (x + 1) ^ k ≤ (x + 1) ^ l
     · intro a
+      -- ⊢ (x + 1) ^ k ≤ (x + 1) ^ l
       exact le_of_dvd (pow_pos (succ_pos x) l) a
+      -- 🎉 no goals
     · intro a
+      -- ⊢ (x + 1) ^ k ∣ (x + 1) ^ l
       cases' x with x
+      -- ⊢ (zero + 1) ^ k ∣ (zero + 1) ^ l
       · simp
+        -- 🎉 no goals
       · have le := (pow_le_iff_le_right (Nat.le_add_left _ _)).mp a
+        -- ⊢ (succ x + 1) ^ k ∣ (succ x + 1) ^ l
         use (x + 2) ^ (l - k)
+        -- ⊢ (succ x + 1) ^ l = (succ x + 1) ^ k * (x + 2) ^ (l - k)
         rw [← pow_add, add_comm k, tsub_add_cancel_of_le le]
+        -- 🎉 no goals
 #align nat.pow_dvd_pow_iff_pow_le_pow Nat.pow_dvd_pow_iff_pow_le_pow
 
 /-- If `1 < x`, then `x^k` divides `x^l` if and only if `k` is at most `l`. -/
 theorem pow_dvd_pow_iff_le_right {x k l : ℕ} (w : 1 < x) : x ^ k ∣ x ^ l ↔ k ≤ l := by
   rw [pow_dvd_pow_iff_pow_le_pow (lt_of_succ_lt w), pow_le_iff_le_right w]
+  -- 🎉 no goals
 #align nat.pow_dvd_pow_iff_le_right Nat.pow_dvd_pow_iff_le_right
 
 theorem pow_dvd_pow_iff_le_right' {b k l : ℕ} : (b + 2) ^ k ∣ (b + 2) ^ l ↔ k ≤ l :=
@@ -216,13 +258,17 @@ theorem pow_dvd_pow_iff_le_right' {b k l : ℕ} : (b + 2) ^ k ∣ (b + 2) ^ l �
 theorem not_pos_pow_dvd : ∀ {p k : ℕ} (_ : 1 < p) (_ : 1 < k), ¬p ^ k ∣ p
   | succ p, succ k, hp, hk, h =>
     have : succ p * succ p ^ k ∣ succ p * 1 := by simpa [pow_succ'] using h
+                                                  -- 🎉 no goals
     have : succ p ^ k ∣ 1 := Nat.dvd_of_mul_dvd_mul_left (succ_pos _) this
     have he : succ p ^ k = 1 := eq_one_of_dvd_one this
     have : k < succ p ^ k := lt_pow_self hp k
     have : k < 1 := by rwa [he] at this
+                       -- 🎉 no goals
     have : k = 0 := Nat.eq_zero_of_le_zero <| le_of_lt_succ this
     have : 1 < 1 := by rwa [this] at hk
+                       -- 🎉 no goals
     absurd this (by decide)
+                    -- 🎉 no goals
 #align nat.not_pos_pow_dvd Nat.not_pos_pow_dvd
 
 theorem pow_dvd_of_le_of_pow_dvd {p m n k : ℕ} (hmn : m ≤ n) (hdiv : p ^ n ∣ k) : p ^ m ∣ k :=
@@ -231,15 +277,20 @@ theorem pow_dvd_of_le_of_pow_dvd {p m n k : ℕ} (hmn : m ≤ n) (hdiv : p ^ n �
 
 theorem dvd_of_pow_dvd {p k m : ℕ} (hk : 1 ≤ k) (hpk : p ^ k ∣ m) : p ∣ m := by
   rw [← pow_one p]; exact pow_dvd_of_le_of_pow_dvd hk hpk
+  -- ⊢ p ^ 1 ∣ m
+                    -- 🎉 no goals
 #align nat.dvd_of_pow_dvd Nat.dvd_of_pow_dvd
 
 theorem pow_div {x m n : ℕ} (h : n ≤ m) (hx : 0 < x) : x ^ m / x ^ n = x ^ (m - n) := by
   rw [Nat.div_eq_iff_eq_mul_left (pow_pos hx n) (pow_dvd_pow _ h), pow_sub_mul_pow _ h]
+  -- 🎉 no goals
 #align nat.pow_div Nat.pow_div
 
 theorem lt_of_pow_dvd_right {p i n : ℕ} (hn : n ≠ 0) (hp : 2 ≤ p) (h : p ^ i ∣ n) : i < n := by
   rw [← pow_lt_iff_lt_right hp]
+  -- ⊢ p ^ i < p ^ n
   exact lt_of_le_of_lt (le_of_dvd hn.bot_lt h) (lt_pow_self (succ_le_iff.mp hp) n)
+  -- 🎉 no goals
 #align nat.lt_of_pow_dvd_right Nat.lt_of_pow_dvd_right
 
 end Nat

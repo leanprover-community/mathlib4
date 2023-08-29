@@ -53,6 +53,7 @@ theorem Ico_disjoint_Ico_same {a b c : α} : Disjoint (Ico a b) (Ico b c) :=
 @[simp]
 theorem Ici_disjoint_Iic : Disjoint (Ici a) (Iic b) ↔ ¬a ≤ b := by
   rw [Set.disjoint_iff_inter_eq_empty, Ici_inter_Iic, Icc_eq_empty_iff]
+  -- 🎉 no goals
 #align set.Ici_disjoint_Iic Set.Ici_disjoint_Iic
 
 @[simp]
@@ -73,21 +74,25 @@ theorem iUnion_Ici : ⋃ a : α, Ici a = univ :=
 @[simp]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
   simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
+  -- 🎉 no goals
 #align set.Union_Icc_right Set.iUnion_Icc_right
 
 @[simp]
 theorem iUnion_Ioc_right (a : α) : ⋃ b, Ioc a b = Ioi a := by
   simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
+  -- 🎉 no goals
 #align set.Union_Ioc_right Set.iUnion_Ioc_right
 
 @[simp]
 theorem iUnion_Icc_left (b : α) : ⋃ a, Icc a b = Iic b := by
   simp only [← Ici_inter_Iic, ← iUnion_inter, iUnion_Ici, univ_inter]
+  -- 🎉 no goals
 #align set.Union_Icc_left Set.iUnion_Icc_left
 
 @[simp]
 theorem iUnion_Ico_left (b : α) : ⋃ a, Ico a b = Iio b := by
   simp only [← Ici_inter_Iio, ← iUnion_inter, iUnion_Ici, univ_inter]
+  -- 🎉 no goals
 #align set.Union_Ico_left Set.iUnion_Ico_left
 
 @[simp]
@@ -103,21 +108,25 @@ theorem iUnion_Ioi [NoMinOrder α] : ⋃ a : α, Ioi a = univ :=
 @[simp]
 theorem iUnion_Ico_right [NoMaxOrder α] (a : α) : ⋃ b, Ico a b = Ici a := by
   simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio, inter_univ]
+  -- 🎉 no goals
 #align set.Union_Ico_right Set.iUnion_Ico_right
 
 @[simp]
 theorem iUnion_Ioo_right [NoMaxOrder α] (a : α) : ⋃ b, Ioo a b = Ioi a := by
   simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio, inter_univ]
+  -- 🎉 no goals
 #align set.Union_Ioo_right Set.iUnion_Ioo_right
 
 @[simp]
 theorem iUnion_Ioc_left [NoMinOrder α] (b : α) : ⋃ a, Ioc a b = Iic b := by
   simp only [← Ioi_inter_Iic, ← iUnion_inter, iUnion_Ioi, univ_inter]
+  -- 🎉 no goals
 #align set.Union_Ioc_left Set.iUnion_Ioc_left
 
 @[simp]
 theorem iUnion_Ioo_left [NoMinOrder α] (b : α) : ⋃ a, Ioo a b = Iio b := by
   simp only [← Ioi_inter_Iio, ← iUnion_inter, iUnion_Ioi, univ_inter]
+  -- 🎉 no goals
 #align set.Union_Ioo_left Set.iUnion_Ioo_left
 
 end Preorder
@@ -135,7 +144,9 @@ theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
+  -- ⊢ Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁
   simpa only [dual_Ico] using h
+  -- 🎉 no goals
 #align set.Ioc_disjoint_Ioc Set.Ioc_disjoint_Ioc
 
 /-- If two half-open intervals are disjoint and the endpoint of one lies in the other,
@@ -143,32 +154,39 @@ theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂
 theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x₂) (Ico y₁ y₂)) (hx : x₁ < x₂)
     (h2 : x₂ ∈ Ico y₁ y₂) : y₁ = x₂ := by
   rw [Ico_disjoint_Ico, min_eq_left (le_of_lt h2.2), le_max_iff] at h
+  -- ⊢ y₁ = x₂
   apply le_antisymm h2.1
+  -- ⊢ x₂ ≤ y₁
   exact h.elim (fun h => absurd hx (not_lt_of_le h)) id
+  -- 🎉 no goals
 #align set.eq_of_Ico_disjoint Set.eq_of_Ico_disjoint
 
 @[simp]
 theorem iUnion_Ico_eq_Iio_self_iff {f : ι → α} {a : α} :
     ⋃ i, Ico (f i) a = Iio a ↔ ∀ x < a, ∃ i, f i ≤ x := by
   simp [← Ici_inter_Iio, ← iUnion_inter, subset_def]
+  -- 🎉 no goals
 #align set.Union_Ico_eq_Iio_self_iff Set.iUnion_Ico_eq_Iio_self_iff
 
 @[simp]
 theorem iUnion_Ioc_eq_Ioi_self_iff {f : ι → α} {a : α} :
     ⋃ i, Ioc a (f i) = Ioi a ↔ ∀ x, a < x → ∃ i, x ≤ f i := by
   simp [← Ioi_inter_Iic, ← inter_iUnion, subset_def]
+  -- 🎉 no goals
 #align set.Union_Ioc_eq_Ioi_self_iff Set.iUnion_Ioc_eq_Ioi_self_iff
 
 @[simp]
 theorem biUnion_Ico_eq_Iio_self_iff {p : ι → Prop} {f : ∀ i, p i → α} {a : α} :
     ⋃ (i) (hi : p i), Ico (f i hi) a = Iio a ↔ ∀ x < a, ∃ i hi, f i hi ≤ x := by
   simp [← Ici_inter_Iio, ← iUnion_inter, subset_def]
+  -- 🎉 no goals
 #align set.bUnion_Ico_eq_Iio_self_iff Set.biUnion_Ico_eq_Iio_self_iff
 
 @[simp]
 theorem biUnion_Ioc_eq_Ioi_self_iff {p : ι → Prop} {f : ∀ i, p i → α} {a : α} :
     ⋃ (i) (hi : p i), Ioc a (f i hi) = Ioi a ↔ ∀ x, a < x → ∃ i hi, x ≤ f i hi := by
   simp [← Ioi_inter_Iic, ← inter_iUnion, subset_def]
+  -- 🎉 no goals
 #align set.bUnion_Ioc_eq_Ioi_self_iff Set.biUnion_Ioc_eq_Ioi_self_iff
 
 end LinearOrder
@@ -181,9 +199,13 @@ variable [LinearOrder α] {s : Set α} {a : α} {f : ι → α}
 
 theorem IsGLB.biUnion_Ioi_eq (h : IsGLB s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
+  -- ⊢ Ioi x ⊆ Ioi a
   · exact Ioi_subset_Ioi (h.1 hx)
+    -- 🎉 no goals
   · rcases h.exists_between hx with ⟨y, hys, _, hyx⟩
+    -- ⊢ x ∈ ⋃ (i : α) (_ : i ∈ s), Ioi i
     exact mem_biUnion hys hyx
+    -- 🎉 no goals
 #align is_glb.bUnion_Ioi_eq IsGLB.biUnion_Ioi_eq
 
 theorem IsGLB.iUnion_Ioi_eq (h : IsGLB (range f) a) : ⋃ x, Ioi (f x) = Ioi a :=
@@ -201,18 +223,27 @@ theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
+  -- ⊢ Ici x ⊆ Ioi a
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
+    -- 🎉 no goals
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
+    -- ⊢ x ∈ ⋃ (i : α) (_ : i ∈ s), Ici i
     apply mem_iUnion₂.mpr
+    -- ⊢ ∃ i j, x ∈ Ici i
     refine' ⟨y, hys, hyx.le⟩
+    -- 🎉 no goals
 #align is_glb.bUnion_Ici_eq_Ioi IsGLB.biUnion_Ici_eq_Ioi
 
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     ⋃ x ∈ s, Ici x = Ici a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
+  -- ⊢ Ici x ⊆ Ici a
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
+    -- 🎉 no goals
   · apply mem_iUnion₂.mpr
+    -- ⊢ ∃ i j, x ∈ Ici i
     refine' ⟨a, a_mem, hx⟩
+    -- 🎉 no goals
 #align is_glb.bUnion_Ici_eq_Ici IsGLB.biUnion_Ici_eq_Ici
 
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :

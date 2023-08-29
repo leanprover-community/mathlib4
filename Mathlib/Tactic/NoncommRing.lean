@@ -24,8 +24,10 @@ variable {R : Type*} [NonAssocSemiring R] (r : R) (n : ℕ)
 
 lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : no_index (OfNat.ofNat n) * r = n • r := by
   simp only [nsmul_eq_mul, Nat.cast_eq_ofNat]
+  -- 🎉 no goals
 lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * no_index (OfNat.ofNat n) = n • r := by
   simp only [nsmul_eq_mul', Nat.cast_eq_ofNat]
+  -- 🎉 no goals
 
 end nat_lit_mul
 

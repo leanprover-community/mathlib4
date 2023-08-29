@@ -94,8 +94,11 @@ object `j`.
       a custom chosen object `j`."]
 theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
+  -- ⊢ ∃ k f g, ↑(F.map f) { fst := Nonempty.some (_ : Nonempty J), snd := 1 }.snd  …
   refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
+  -- ⊢ ↑(F.map (IsFiltered.leftToMax { fst := Nonempty.some (_ : Nonempty J), snd : …
   simp
+  -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
 #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
 
@@ -119,22 +122,35 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     (hxx' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) x x') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
+  -- ⊢ colimitMulAux F { fst := j₁, snd := x } y = colimitMulAux F x' y
+                      -- ⊢ colimitMulAux F { fst := j₁, snd := x } { fst := j₂, snd := y } = colimitMul …
+                                          -- ⊢ colimitMulAux F { fst := j₁, snd := x } { fst := j₂, snd := y } = colimitMul …
   obtain ⟨l, f, g, hfg⟩ := hxx'
+  -- ⊢ colimitMulAux F { fst := j₁, snd := x } { fst := j₂, snd := y } = colimitMul …
   simp at hfg
+  -- ⊢ colimitMulAux F { fst := j₁, snd := x } { fst := j₂, snd := y } = colimitMul …
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.leftToMax j₁ j₂) (IsFiltered.rightToMax j₁ j₂)
       (IsFiltered.rightToMax j₃ j₂) (IsFiltered.leftToMax j₃ j₂) f g
   apply M.mk_eq
+  -- ⊢ ∃ k f g, ↑(F.map f) { fst := IsFiltered.max { fst := j₁, snd := x }.fst { fs …
   use s, α, γ
+  -- ⊢ ↑(F.map α) { fst := IsFiltered.max { fst := j₁, snd := x }.fst { fst := j₂,  …
   dsimp
+  -- ⊢ ↑(F.map α) (↑(F.map (IsFiltered.leftToMax j₁ j₂)) x * ↑(F.map (IsFiltered.ri …
   simp_rw [MonoidHom.map_mul]
+  -- ⊢ ↑(F.map α) (↑(F.map (IsFiltered.leftToMax j₁ j₂)) x) * ↑(F.map α) (↑(F.map ( …
   -- Porting note : Lean cannot seem to use lemmas from concrete categories directly
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂, h₃, F.map_comp]
+  -- ⊢ ↑(F.map f ≫ F.map β) x * ↑(F.map (IsFiltered.rightToMax j₃ j₂) ≫ F.map γ) y  …
   congr 1
+  -- ⊢ ↑(F.map f ≫ F.map β) x = ↑(F.map g ≫ F.map β) x'
   change F.map _ (F.map _ _) = F.map _ (F.map _ _)
+  -- ⊢ ↑(F.map β) (↑(F.map f) x) = ↑(F.map β) (↑(F.map g) x')
   rw [hfg]
+  -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_mul_aux_eq_of_rel_left MonCat.FilteredColimits.colimitMulAux_eq_of_rel_left
 #align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_left AddMonCat.FilteredColimits.colimitAddAux_eq_of_rel_left
 
@@ -144,22 +160,35 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     (hyy' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) y y') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
+  -- ⊢ colimitMulAux F x { fst := j₁, snd := y } = colimitMulAux F x y'
+                      -- ⊢ colimitMulAux F { fst := j₂, snd := x } { fst := j₁, snd := y } = colimitMul …
+                                          -- ⊢ colimitMulAux F { fst := j₂, snd := x } { fst := j₁, snd := y } = colimitMul …
   obtain ⟨l, f, g, hfg⟩ := hyy'
+  -- ⊢ colimitMulAux F { fst := j₂, snd := x } { fst := j₁, snd := y } = colimitMul …
   simp at hfg
+  -- ⊢ colimitMulAux F { fst := j₂, snd := x } { fst := j₁, snd := y } = colimitMul …
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
   apply M.mk_eq
+  -- ⊢ ∃ k f g, ↑(F.map f) { fst := IsFiltered.max { fst := j₂, snd := x }.fst { fs …
   use s, α, γ
+  -- ⊢ ↑(F.map α) { fst := IsFiltered.max { fst := j₂, snd := x }.fst { fst := j₁,  …
   dsimp
+  -- ⊢ ↑(F.map α) (↑(F.map (IsFiltered.leftToMax j₂ j₁)) x * ↑(F.map (IsFiltered.ri …
   simp_rw [MonoidHom.map_mul]
+  -- ⊢ ↑(F.map α) (↑(F.map (IsFiltered.leftToMax j₂ j₁)) x) * ↑(F.map α) (↑(F.map ( …
   -- Porting note : Lean cannot seem to use lemmas from concrete categories directly
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂, h₃, F.map_comp]
+  -- ⊢ ↑(F.map (IsFiltered.leftToMax j₂ j₃) ≫ F.map γ) x * ↑(F.map f ≫ F.map β) y = …
   congr 1
+  -- ⊢ ↑(F.map f ≫ F.map β) y = ↑(F.map g ≫ F.map β) y'
   change F.map _ (F.map _ _) = F.map _ (F.map _ _)
+  -- ⊢ ↑(F.map β) (↑(F.map f) y) = ↑(F.map β) (↑(F.map g) y')
   rw [hfg]
+  -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_mul_aux_eq_of_rel_right MonCat.FilteredColimits.colimitMulAux_eq_of_rel_right
 #align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_right AddMonCat.FilteredColimits.colimitAddAux_eq_of_rel_right
 
@@ -168,14 +197,23 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
     refine' Quot.lift₂ (colimitMulAux F) _ _ x y
+    -- ⊢ ∀ (a b₁ b₂ : (j : J) × ↑(F.obj j)), Types.Quot.Rel (F ⋙ forget MonCat) b₁ b₂ …
     · intro x y y' h
+      -- ⊢ colimitMulAux F x y = colimitMulAux F x y'
       apply colimitMulAux_eq_of_rel_right
+      -- ⊢ Types.FilteredColimit.Rel (F ⋙ forget MonCat) y y'
       apply Types.FilteredColimit.rel_of_quot_rel
+      -- ⊢ Types.Quot.Rel (F ⋙ forget MonCat) y y'
       exact h
+      -- 🎉 no goals
     · intro x x' y h
+      -- ⊢ colimitMulAux F x y = colimitMulAux F x' y
       apply colimitMulAux_eq_of_rel_left
+      -- ⊢ Types.FilteredColimit.Rel (F ⋙ forget MonCat) x x'
       apply Types.FilteredColimit.rel_of_quot_rel
+      -- ⊢ Types.Quot.Rel (F ⋙ forget MonCat) x x'
       exact h }
+      -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_has_mul MonCat.FilteredColimits.colimitMul
 #align AddMon.filtered_colimits.colimit_has_add AddMonCat.FilteredColimits.colimitAdd
 
@@ -190,16 +228,23 @@ using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`.
 theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
     M.mk.{v, u} F x * M.mk F y = M.mk F ⟨k, F.map f x.2 * F.map g y.2⟩ := by
   cases' x with j₁ x; cases' y with j₂ y
+  -- ⊢ M.mk F { fst := j₁, snd := x } * M.mk F y = M.mk F { fst := k, snd := ↑(F.ma …
+                      -- ⊢ M.mk F { fst := j₁, snd := x } * M.mk F { fst := j₂, snd := y } = M.mk F { f …
   obtain ⟨s, α, β, h₁, h₂⟩ := IsFiltered.bowtie (IsFiltered.leftToMax j₁ j₂) f
     (IsFiltered.rightToMax j₁ j₂) g
   apply M.mk_eq
+  -- ⊢ ∃ k_1 f_1 g_1, ↑(F.map f_1) { fst := IsFiltered.max { fst := j₁, snd := x }. …
   use s, α, β
+  -- ⊢ ↑(F.map α) { fst := IsFiltered.max { fst := j₁, snd := x }.fst { fst := j₂,  …
   dsimp
+  -- ⊢ ↑(F.map α) (↑(F.map (IsFiltered.leftToMax j₁ j₂)) x * ↑(F.map (IsFiltered.ri …
   simp_rw [MonoidHom.map_mul]
+  -- ⊢ ↑(F.map α) (↑(F.map (IsFiltered.leftToMax j₁ j₂)) x) * ↑(F.map α) (↑(F.map ( …
   -- Porting note : Lean cannot seem to use lemmas from concrete categories directly
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂]
+  -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_mul_mk_eq MonCat.FilteredColimits.colimit_mul_mk_eq
 #align AddMon.filtered_colimits.colimit_add_mk_eq AddMonCat.FilteredColimits.colimit_add_mk_eq
 
@@ -209,33 +254,49 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
     colimitMul F with
     one_mul := fun x => by
       refine Quot.inductionOn x ?_
+      -- ⊢ ∀ (a : (j : J) × (F ⋙ forget MonCat).obj j), 1 * Quot.mk (Types.Quot.Rel (F  …
       intro x
+      -- ⊢ 1 * Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) x = Quot.mk (Types.Quot.Rel …
       cases' x with j x
+      -- ⊢ 1 * Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) { fst := j, snd := x } = Qu …
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         one_mul, F.map_id]
       -- Porting note : `id_apply` does not work here, but the two sides are def-eq
       rfl
+      -- 🎉 no goals
     mul_one := fun x => by
       refine Quot.inductionOn x ?_
+      -- ⊢ ∀ (a : (j : J) × (F ⋙ forget MonCat).obj j), Quot.mk (Types.Quot.Rel (F ⋙ fo …
       intro x
+      -- ⊢ Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) x * 1 = Quot.mk (Types.Quot.Rel …
       cases' x with j x
+      -- ⊢ Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) { fst := j, snd := x } * 1 = Qu …
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         mul_one, F.map_id]
       -- Porting note : `id_apply` does not work here, but the two sides are def-eq
       rfl }
+      -- 🎉 no goals
 
 @[to_additive]
 noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
   { colimitMulOneClass F with
     mul_assoc := fun x y z => by
       refine Quot.induction_on₃ x y z ?_
+      -- ⊢ ∀ (a b c : (j : J) × (F ⋙ forget MonCat).obj j), Quot.mk (Types.Quot.Rel (F  …
       clear x y z
+      -- ⊢ ∀ (a b c : (j : J) × (F ⋙ forget MonCat).obj j), Quot.mk (Types.Quot.Rel (F  …
       intro x y z
+      -- ⊢ Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) x * Quot.mk (Types.Quot.Rel (F  …
       cases' x with j₁ x
+      -- ⊢ Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) { fst := j₁, snd := x } * Quot. …
       cases' y with j₂ y
+      -- ⊢ Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) { fst := j₁, snd := x } * Quot. …
       cases' z with j₃ z
+      -- ⊢ Quot.mk (Types.Quot.Rel (F ⋙ forget MonCat)) { fst := j₁, snd := x } * Quot. …
       change M.mk F _ * M.mk F _ * M.mk F _ = M.mk F _ * M.mk F _
+      -- ⊢ M.mk F { fst := j₁, snd := x } * M.mk F { fst := j₂, snd := y } * M.mk F { f …
       dsimp
+      -- ⊢ M.mk F { fst := j₁, snd := x } * M.mk F { fst := j₂, snd := y } * M.mk F { f …
       rw [colimit_mul_mk_eq F ⟨j₁, x⟩ ⟨j₂, y⟩ (IsFiltered.max j₁ (IsFiltered.max j₂ j₃))
           (IsFiltered.leftToMax j₁ (IsFiltered.max j₂ j₃))
           (IsFiltered.leftToMax j₂ j₃ ≫ IsFiltered.rightToMax _ _),
@@ -245,10 +306,13 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
         colimit_mul_mk_eq.{v, u} F ⟨j₁, x⟩ ⟨IsFiltered.max j₂ j₃, _⟩ _
           (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _)]
       congr 2
+      -- ⊢ ↑(F.map (𝟙 { fst := IsFiltered.max j₁ (IsFiltered.max j₂ j₃), snd := ↑(F.map …
       dsimp only
+      -- ⊢ ↑(F.map (𝟙 (IsFiltered.max j₁ (IsFiltered.max j₂ j₃)))) (↑(F.map (IsFiltered …
       rw [F.map_id, show ∀ x, (𝟙 (F.obj (IsFiltered.max j₁ (IsFiltered.max j₂ j₃)))) x = x
         from fun _ => rfl, mul_assoc, MonoidHom.map_mul, F.map_comp, F.map_comp]
       rfl }
+      -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_monoid MonCat.FilteredColimits.colimitMonoid
 #align AddMon.filtered_colimits.colimit_add_monoid AddMonCat.FilteredColimits.colimitAddMonoid
 
@@ -269,8 +333,11 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit.{v, u} F where
   map_one' := (colimit_one_eq F j).symm
   map_mul' x y := by
     convert (colimit_mul_mk_eq.{v, u} F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 j) (𝟙 j)).symm
+    -- ⊢ OneHom.toFun { toFun := NatTrans.app (Types.colimitCocone (F ⋙ forget MonCat …
     rw [F.map_id]
+    -- ⊢ OneHom.toFun { toFun := NatTrans.app (Types.colimitCocone (F ⋙ forget MonCat …
     rfl
+    -- 🎉 no goals
 #align Mon.filtered_colimits.cocone_morphism MonCat.FilteredColimits.coconeMorphism
 #align AddMon.filtered_colimits.cocone_morphism AddMonCat.FilteredColimits.coconeMorphism
 
@@ -302,21 +369,33 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
   toFun := (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
   map_one' := by
     rw [colimit_one_eq F IsFiltered.Nonempty.some]
+    -- ⊢ IsColimit.desc (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)) ((forget M …
     exact MonoidHom.map_one _
+    -- 🎉 no goals
   map_mul' x y := by
     refine Quot.induction_on₂ x y ?_
+    -- ⊢ ∀ (a b : (j : J) × (F ⋙ forget MonCat).obj j), OneHom.toFun { toFun := IsCol …
     clear x y
+    -- ⊢ ∀ (a b : (j : J) × (F ⋙ forget MonCat).obj j), OneHom.toFun { toFun := IsCol …
     intro x y
+    -- ⊢ OneHom.toFun { toFun := IsColimit.desc (Types.colimitCoconeIsColimit (F ⋙ fo …
     cases' x with i x
+    -- ⊢ OneHom.toFun { toFun := IsColimit.desc (Types.colimitCoconeIsColimit (F ⋙ fo …
     cases' y with j y
+    -- ⊢ OneHom.toFun { toFun := IsColimit.desc (Types.colimitCoconeIsColimit (F ⋙ fo …
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
     dsimp [Types.colimitCoconeIsColimit]
+    -- ⊢ ↑(NatTrans.app t.ι (IsFiltered.max i j)) (↑(F.map (IsFiltered.leftToMax i j) …
     rw [MonoidHom.map_mul]
+    -- ⊢ ↑(NatTrans.app t.ι (IsFiltered.max i j)) (↑(F.map (IsFiltered.leftToMax i j) …
     -- Porting note : `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
     congr 1 <;>
+    -- ⊢ ↑(NatTrans.app t.ι (IsFiltered.max i j)) (↑(F.map (IsFiltered.leftToMax i j) …
     exact t.w_apply _ _
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align Mon.filtered_colimits.colimit_desc MonCat.FilteredColimits.colimitDesc
 #align AddMon.filtered_colimits.colimit_desc AddMonCat.FilteredColimits.colimitDesc
 
@@ -369,15 +448,23 @@ noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F):=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_
+      -- ⊢ ∀ (a b : (j : J) × ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat).obj j), …
       clear x y
+      -- ⊢ ∀ (a b : (j : J) × ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat).obj j), …
       intro x y
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat)) x …
       let k := max' x.1 y.1
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat)) x …
       let f := IsFiltered.leftToMax x.1 y.1
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat)) x …
       let g := IsFiltered.rightToMax x.1 y.1
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat)) x …
       rw [colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) x y k f g,
         colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) y x k g f]
       dsimp
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ CommMonCat MonCat) { fst := IsFilt …
       rw [mul_comm] }
+      -- 🎉 no goals
 #align CommMon.filtered_colimits.colimit_comm_monoid CommMonCat.FilteredColimits.colimitCommMonoid
 #align AddCommMon.filtered_colimits.colimit_add_comm_monoid AddCommMonCat.FilteredColimits.colimitAddCommMonoid
 

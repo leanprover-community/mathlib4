@@ -49,15 +49,25 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by simpa only [ext_ring_iff, Ne.def, norm_eq_zero] using nonzero
+  -- ⊢ IsConformalMap (restrictScalars ℝ map)
   refine' ⟨‖map 1‖, minor₁, ⟨‖map 1‖⁻¹ • ((map : ℂ →ₗ[ℂ] E) : ℂ →ₗ[ℝ] E), _⟩, _⟩
+  -- ⊢ ∀ (x : ℂ), ‖↑(‖↑map 1‖⁻¹ • ↑ℝ ↑map) x‖ = ‖x‖
   · intro x
+    -- ⊢ ‖↑(‖↑map 1‖⁻¹ • ↑ℝ ↑map) x‖ = ‖x‖
     simp only [LinearMap.smul_apply]
+    -- ⊢ ‖‖↑map 1‖⁻¹ • ↑(↑ℝ ↑map) x‖ = ‖x‖
     have : x = x • (1 : ℂ) := by rw [smul_eq_mul, mul_one]
+    -- ⊢ ‖‖↑map 1‖⁻¹ • ↑(↑ℝ ↑map) x‖ = ‖x‖
     nth_rw 1 [this]
+    -- ⊢ ‖‖↑map 1‖⁻¹ • ↑(↑ℝ ↑map) (x • 1)‖ = ‖x‖
     rw [LinearMap.coe_restrictScalars]
+    -- ⊢ ‖‖↑map 1‖⁻¹ • ↑↑map (x • 1)‖ = ‖x‖
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
+    -- ⊢ ‖↑map 1‖⁻¹ * (‖x‖ * ‖↑map 1‖) = ‖x‖
     field_simp only [one_mul]
+    -- 🎉 no goals
   · ext1
+    -- ⊢ ↑(restrictScalars ℝ map) x✝ = ↑(‖↑map 1‖ • LinearIsometry.toContinuousLinear …
     -- Porting note: was simp
     rw [coe_restrictScalars', coe_smul', LinearIsometry.coe_toContinuousLinearMap,
       LinearIsometry.coe_mk, Pi.smul_apply, LinearMap.smul_apply, LinearMap.coe_restrictScalars,
@@ -81,18 +91,24 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     (∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
       ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle := by
   rcases h with ⟨c, -, li, rfl⟩
+  -- ⊢ (∃ map, restrictScalars ℝ map = c • LinearIsometry.toContinuousLinearMap li) …
   obtain ⟨li, rfl⟩ : ∃ li' : ℂ ≃ₗᵢ[ℝ] ℂ, li'.toLinearIsometry = li :=
     ⟨li.toLinearIsometryEquiv rfl, by ext1; rfl⟩
   rcases linear_isometry_complex li with ⟨a, rfl | rfl⟩
+  -- ⊢ (∃ map, restrictScalars ℝ map = c • LinearIsometry.toContinuousLinearMap (Li …
   -- let rot := c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ,
   · refine' Or.inl ⟨c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ, _⟩
+    -- ⊢ restrictScalars ℝ (c • ↑a • ContinuousLinearMap.id ℂ ℂ) = c • LinearIsometry …
     ext1
+    -- ⊢ ↑(restrictScalars ℝ (c • ↑a • ContinuousLinearMap.id ℂ ℂ)) x✝ = ↑(c • Linear …
     -- Porting note: was simp
     rw [coe_restrictScalars', smul_apply, smul_apply, smul_apply,
       LinearIsometry.coe_toContinuousLinearMap,
       LinearIsometryEquiv.coe_toLinearIsometry, rotation_apply, id_apply, smul_eq_mul]
   · refine' Or.inr ⟨c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ, _⟩
+    -- ⊢ restrictScalars ℝ (c • ↑a • ContinuousLinearMap.id ℂ ℂ) = ContinuousLinearMa …
     ext1
+    -- ⊢ ↑(restrictScalars ℝ (c • ↑a • ContinuousLinearMap.id ℂ ℂ)) x✝ = ↑(Continuous …
     -- Porting note: was simp
     rw [coe_restrictScalars', smul_apply, smul_apply, comp_apply, smul_apply,
       LinearIsometry.coe_toContinuousLinearMap, LinearIsometryEquiv.coe_toLinearIsometry,
@@ -108,19 +124,29 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
           ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle) ∧
         g ≠ 0 := by
   constructor
+  -- ⊢ IsConformalMap g → ((∃ map, restrictScalars ℝ map = g) ∨ ∃ map, restrictScal …
   · exact fun h => ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
+    -- 🎉 no goals
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
+    -- ⊢ IsConformalMap (restrictScalars ℝ map)
     · refine' isConformalMap_complex_linear _
+      -- ⊢ map ≠ 0
       contrapose! h₂ with w
+      -- ⊢ restrictScalars ℝ map = 0
       simp only [w, restrictScalars_zero]
+      -- 🎉 no goals
     · have minor₁ : g = map.restrictScalars ℝ ∘L ↑conjCle := by
         ext1
         simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
           conjCle_apply, starRingEnd_self_apply]
       rw [minor₁] at h₂ ⊢
+      -- ⊢ IsConformalMap (comp (restrictScalars ℝ map) ↑conjCle)
       refine' isConformalMap_complex_linear_conj _
+      -- ⊢ map ≠ 0
       contrapose! h₂ with w
+      -- ⊢ comp (restrictScalars ℝ map) ↑conjCle = 0
       simp only [w, restrictScalars_zero, zero_comp]
+      -- 🎉 no goals
 #align is_conformal_map_iff_is_complex_or_conj_linear isConformalMap_iff_is_complex_or_conj_linear
 
 end ConformalIntoComplexPlane

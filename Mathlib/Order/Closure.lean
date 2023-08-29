@@ -69,6 +69,9 @@ namespace ClosureOperator
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   coe c := c.1
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact FunLike.ext' h
+                       -- ⊢ { toOrderHom := toOrderHom✝¹, le_closure' := le_closure'✝¹, idempotent' := i …
+                                       -- ⊢ toOrderHom✝¹ = toOrderHom✝
+                                              -- 🎉 no goals
   map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply)
@@ -95,6 +98,7 @@ variable {α} [PartialOrder α] (c : ClosureOperator α)
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (c₁ : α → α) = (c₂ : α → α) → c₁ = c₂
   | ⟨⟨c₁, _⟩, _, _⟩, ⟨⟨c₂, _⟩, _, _⟩, h => by
     congr
+    -- 🎉 no goals
 #align closure_operator.ext ClosureOperator.ext
 
 /-- Constructor for a closure operator using the weaker idempotency axiom: `f (f x) ≤ f x`. -/
@@ -191,7 +195,9 @@ theorem closed_eq_range_close : c.closed = Set.range c :=
   Set.ext fun x =>
     ⟨fun h => ⟨x, h⟩, by
       rintro ⟨y, rfl⟩
+      -- ⊢ ↑c y ∈ closed c
       apply c.idempotent⟩
+      -- 🎉 no goals
 #align closure_operator.closed_eq_range_close ClosureOperator.closed_eq_range_close
 
 /-- Send an `x` to an element of the set of closed elements (by taking the closure). -/
@@ -202,6 +208,7 @@ def toClosed (x : α) : c.closed :=
 @[simp]
 theorem closure_le_closed_iff_le (x : α) {y : α} (hy : c.closed y) : c x ≤ y ↔ x ≤ y := by
   rw [← c.closure_eq_self_of_mem_closed hy, ← le_closure_iff]
+  -- 🎉 no goals
 #align closure_operator.closure_le_closed_iff_le ClosureOperator.closure_le_closed_iff_le
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
@@ -211,7 +218,9 @@ theorem eq_mk₃_closed (c : ClosureOperator α) :
       mk₃ c c.closed c.le_closure c.closure_is_closed fun x y hxy hy =>
         (c.closure_le_closed_iff_le x hy).2 hxy := by
   ext
+  -- ⊢ ↑c x✝ = ↑(mk₃ (↑c) (closed c) (_ : ∀ (x : α), x ≤ ↑c x) (_ : ∀ (x : α), ↑c x …
   rfl
+  -- 🎉 no goals
 #align closure_operator.eq_mk₃_closed ClosureOperator.eq_mk₃_closed
 
 /-- The property `p` fed into the `mk₃` constructor implies being closed. -/
@@ -260,10 +269,12 @@ theorem closure_sup_closure_left (x y : α) : c (c x ⊔ y) = c (x ⊔ y) :=
 
 theorem closure_sup_closure_right (x y : α) : c (x ⊔ c y) = c (x ⊔ y) := by
   rw [sup_comm, closure_sup_closure_left, sup_comm (a := x)]
+  -- 🎉 no goals
 #align closure_operator.closure_sup_closure_right ClosureOperator.closure_sup_closure_right
 
 theorem closure_sup_closure (x y : α) : c (c x ⊔ c y) = c (x ⊔ y) := by
   rw [closure_sup_closure_left, closure_sup_closure_right]
+  -- 🎉 no goals
 #align closure_operator.closure_sup_closure ClosureOperator.closure_sup_closure
 
 end SemilatticeSup
@@ -335,6 +346,7 @@ theorem gc : GaloisConnection l u :=
 theorem ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α → β) → l₁ = l₂
   | ⟨l₁, _⟩, ⟨l₂, _⟩, h => by
     congr
+    -- 🎉 no goals
 #align lower_adjoint.ext LowerAdjoint.ext
 
 @[mono]
@@ -489,7 +501,9 @@ theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
 
 theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
+  -- ⊢ toFun l {x} ≤ toFun l s ↔ ∀ (S : α), toFun l s ≤ S → toFun l {x} ≤ S
   exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
+  -- 🎉 no goals
 #align lower_adjoint.mem_iff LowerAdjoint.mem_iff
 
 theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
@@ -512,6 +526,7 @@ theorem closure_union_closure_right (x y : α) : l (x ∪ l y) = l (x ∪ y) :=
 
 theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
   rw [closure_union_closure_right, closure_union_closure_left]
+  -- 🎉 no goals
 #align lower_adjoint.closure_union_closure LowerAdjoint.closure_union_closure
 
 @[simp]
@@ -568,5 +583,7 @@ Note that the inverse in the opposite direction does not hold in general. -/
 theorem closureOperator_gi_self [PartialOrder α] (c : ClosureOperator α) :
     c.gi.gc.closureOperator = c := by
   ext x
+  -- ⊢ ↑(GaloisConnection.closureOperator (_ : GaloisConnection (ClosureOperator.to …
   rfl
+  -- 🎉 no goals
 #align closure_operator_gi_self closureOperator_gi_self

@@ -45,7 +45,9 @@ def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
 -- Porting note: `deriving` didn't work. Create this instance manually.
 instance : Inhabited (MonoidalSingleObj C) := by
   unfold MonoidalSingleObj
+  -- ⊢ Inhabited PUnit
   infer_instance
+  -- 🎉 no goals
 
 open MonoidalCategory
 
@@ -60,11 +62,17 @@ instance : Bicategory (MonoidalSingleObj C) where
   rightUnitor X := ρ_ X
   comp_whiskerLeft _ _ _ _ _ := by
     simp_rw [associator_inv_naturality, Iso.hom_inv_id_assoc, tensor_id]
+    -- 🎉 no goals
   whisker_assoc _ _ _ _ _ := by simp_rw [associator_inv_naturality, Iso.hom_inv_id_assoc]
+                                -- 🎉 no goals
+                         -- 🎉 no goals
+                                -- 🎉 no goals
   whiskerRight_comp _ _ _ := by simp_rw [← tensor_id, associator_naturality, Iso.inv_hom_id_assoc]
+                          -- 🎉 no goals
   id_whiskerLeft _ := by simp_rw [leftUnitor_inv_naturality, Iso.hom_inv_id_assoc]
   whiskerRight_id _ := by simp_rw [rightUnitor_inv_naturality, Iso.hom_inv_id_assoc]
   pentagon _ _ _ _ := by simp_rw [pentagon]
+                         -- 🎉 no goals
 
 namespace MonoidalSingleObj
 
@@ -88,8 +96,10 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
   μ X Y := 𝟙 _
   μ_natural f g := by
     simp_rw [Category.id_comp, Category.comp_id]
+    -- ⊢ f ⊗ g = f ⊗ g
     -- Should we provide further simp lemmas so this goal becomes visible?
     exact (tensor_id_comp_id_tensor _ _).symm
+    -- 🎉 no goals
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
 
 /-- The equivalence between the endomorphisms of the single object

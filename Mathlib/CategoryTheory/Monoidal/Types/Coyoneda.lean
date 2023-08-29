@@ -41,18 +41,30 @@ def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     ε := fun _p => 𝟙 _
     μ := fun X Y p => (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ p.2)
     μ_natural := by aesop_cat
+                    -- 🎉 no goals
     associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h
+      -- ⊢ (((fun X Y p => (λ_ (𝟙_ C)).inv ≫ (p.fst ⊗ p.snd)) X Y ⊗ 𝟙 ((Functor.mk src✝ …
+                       -- ⊢ (((fun X Y p => (λ_ (𝟙_ C)).inv ≫ (p.fst ⊗ p.snd)) X Y ⊗ 𝟙 ((Functor.mk src✝ …
       dsimp; simp only [Iso.cancel_iso_inv_left, Category.assoc]
+      -- ⊢ ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (f ⊗ g) ⊗ h)) ≫ (α_ X Y Z).hom = (λ_ ( …
+             -- ⊢ ((λ_ (𝟙_ C)).inv ≫ (f ⊗ g) ⊗ h) ≫ (α_ X Y Z).hom = f ⊗ (λ_ (𝟙_ C)).inv ≫ (g  …
       conv_lhs =>
         rw [← Category.id_comp h, tensor_comp, Category.assoc, associator_naturality, ←
           Category.assoc, unitors_inv_equal, triangle_assoc_comp_right_inv]
       conv_rhs => rw [← Category.id_comp f, tensor_comp]
+      -- 🎉 no goals
     left_unitality := by aesop_cat
+                         -- 🎉 no goals
     right_unitality := fun X => by
       ext ⟨f, ⟨⟩⟩; dsimp at f
+      -- ⊢ (ρ_ ((Functor.mk src✝.toPrefunctor).obj X)).hom (f, PUnit.unit) = ((𝟙 ((Func …
+                   -- ⊢ (ρ_ ((Functor.mk src✝.toPrefunctor).obj X)).hom (f, PUnit.unit) = ((𝟙 ((Func …
       dsimp; simp only [Category.assoc]
+      -- ⊢ f = ((λ_ (𝟙_ C)).inv ≫ (f ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ X).hom
+             -- ⊢ f = (λ_ (𝟙_ C)).inv ≫ (f ⊗ 𝟙 (𝟙_ C)) ≫ (ρ_ X).hom
       rw [rightUnitor_naturality, unitors_inv_equal, Iso.inv_hom_id_assoc] }
+      -- 🎉 no goals
 #align category_theory.coyoneda_tensor_unit CategoryTheory.coyonedaTensorUnit
 
 end CategoryTheory

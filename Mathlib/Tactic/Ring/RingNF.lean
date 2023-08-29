@@ -115,16 +115,22 @@ variable [CommSemiring R]
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
 theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
+                                                                 -- 🎉 no goals
 theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
 theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
+                                                      -- 🎉 no goals
 theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
+                                                      -- 🎉 no goals
 theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
 theorem int_rawCast_1 {R} [Ring R] : (Int.rawCast (.negOfNat 1) : R) = -1 := by
   simp [Int.negOfNat_eq]
+  -- 🎉 no goals
 theorem int_rawCast_2 {R} [Ring R] [Nat.AtLeastTwo n] :
     (Int.rawCast (.negOfNat n) : R) = -OfNat.ofNat n := by
   simp [Int.negOfNat_eq, OfNat.ofNat]
+  -- 🎉 no goals
 theorem rat_rawCast_2 {R} [DivisionRing R] : (Rat.rawCast n d : R) = n / d := by simp
+                                                                                 -- 🎉 no goals
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:

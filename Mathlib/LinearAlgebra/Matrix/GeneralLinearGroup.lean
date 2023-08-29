@@ -68,7 +68,9 @@ def det : GL n R →* Rˣ where
     { val := (↑A : Matrix n n R).det
       inv := (↑A⁻¹ : Matrix n n R).det
       val_inv := by rw [← det_mul, A.mul_inv, det_one]
+                    -- 🎉 no goals
       inv_val := by rw [← det_mul, A.inv_mul, det_one] }
+                    -- 🎉 no goals
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
@@ -216,6 +218,7 @@ instance : Neg (GLPos n R) :=
       rw [mem_glpos, GeneralLinearGroup.val_det_apply, Units.val_neg, det_neg,
         (Fact.out (p := Even <| Fintype.card n)).neg_one_pow, one_mul]
       exact g.prop⟩⟩
+      -- 🎉 no goals
 
 @[simp]
 theorem GLPos.coe_neg_GL (g : GLPos n R) : ↑(-g) = -(g : GL n R) :=
@@ -302,6 +305,7 @@ $GL_2(R)$ if `a ^ 2 + b ^ 2` is nonzero. -/
 def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
     Matrix.GeneralLinearGroup (Fin 2) R :=
   GeneralLinearGroup.mkOfDetNeZero !![a, -b; b, a] (by simpa [det_fin_two, sq] using hab)
+                                                       -- 🎉 no goals
 #align matrix.plane_conformal_matrix Matrix.planeConformalMatrix
 
 /- TODO: Add Iwasawa matrices `n_x=!![1,x; 0,1]`, `a_t=!![exp(t/2),0;0,exp(-t/2)]` and

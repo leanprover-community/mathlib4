@@ -31,13 +31,17 @@ theorem isFibAux_two_mul {n a b n' a' b' : ℕ} (H : IsFibAux n a b)
     (hn : 2 * n = n') (h1 : a * (2 * b - a) = a') (h2 : a * a + b * b = b') :
     IsFibAux n' a' b' :=
   ⟨by rw [← hn, fib_two_mul, H.1, H.2, ← h1],
+      -- 🎉 no goals
    by rw [← hn, fib_two_mul_add_one, H.1, H.2, pow_two, pow_two, add_comm, h2]⟩
+      -- 🎉 no goals
 
 theorem isFibAux_two_mul_add_one {n a b n' a' b' : ℕ} (H : IsFibAux n a b)
     (hn : 2 * n + 1 = n') (h1 : a * a + b * b = a') (h2 : b * (2 * a + b) = b') :
     IsFibAux n' a' b' :=
   ⟨by rw [← hn, fib_two_mul_add_one, H.1, H.2, pow_two, pow_two, add_comm, h1],
+      -- 🎉 no goals
    by rw [← hn, fib_two_mul_add_two, H.1, H.2, h2]⟩
+      -- 🎉 no goals
 
 partial def proveNatFibAux (en' : Q(ℕ)) : (ea' eb' : Q(ℕ)) × Q(IsFibAux $en' $ea' $eb') :=
   match en'.natLit! with

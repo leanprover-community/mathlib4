@@ -39,7 +39,9 @@ noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙
           (Homotopy.add (homotopyPToId q) (Homotopy.compLeft (homotopyHσToZero q) (P q)))
           (Homotopy.ofEq _))
     · simp only [P_succ, comp_add, comp_id]
+      -- 🎉 no goals
     · simp only [add_zero, comp_zero]
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_to_id AlgebraicTopology.DoldKan.homotopyPToId
 
@@ -57,6 +59,7 @@ theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
     Homotopy.nullHomotopy'_hom, ComplexShape.down_Rel, hσ'_eq_zero hqn (c_mk (n + 1) n rfl),
     dite_eq_ite, ite_self, comp_zero, zero_add, homotopyPToId]
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_to_id_eventually_constant AlgebraicTopology.DoldKan.homotopyPToId_eventually_constant
 
@@ -68,6 +71,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
     rcases n with _|n
+    -- ⊢ HomologicalComplex.Hom.f PInfty Nat.zero = ((↑(dNext Nat.zero) fun i j => Ho …
     · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, Nat.zero_eq, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
     · -- Porting note: this branch had been:
@@ -81,9 +85,13 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
       rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex, PInfty_f,
         ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1)]
       erw [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
+      -- ⊢ HomologicalComplex.Hom.f (P (n + 1 + 1)) (n + 1) = HomologicalComplex.d K[X] …
       have := (homotopyPToId X (n + 2)).comm (n + 1)
+      -- ⊢ HomologicalComplex.Hom.f (P (n + 1 + 1)) (n + 1) = HomologicalComplex.d K[X] …
       rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex] at this
+      -- ⊢ HomologicalComplex.Hom.f (P (n + 1 + 1)) (n + 1) = HomologicalComplex.d K[X] …
       exact this
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_infty_to_id AlgebraicTopology.DoldKan.homotopyPInftyToId
 

@@ -34,6 +34,7 @@ instance : IsWellOrder ℕ+ (· < ·) where
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
   rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
+  -- 🎉 no goals
 #align pnat.one_add_nat_pred PNat.one_add_natPred
 
 @[simp]
@@ -284,35 +285,50 @@ instance : Sub ℕ+ :=
 
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
+  -- ⊢ ↑(toPNat' (↑a - ↑b)) = if b < a then ↑a - ↑b else 1
   split_ifs with h
+  -- ⊢ ↑(toPNat' (↑a - ↑b)) = ↑a - ↑b
   · exact toPNat'_coe (tsub_pos_of_lt h)
+    -- 🎉 no goals
   · rw [tsub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
+    -- ⊢ ↑(toPNat' 0) = 1
     rfl
+    -- 🎉 no goals
 #align pnat.sub_coe PNat.sub_coe
 
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
       rw [add_coe, sub_coe, if_pos h]
+      -- ⊢ ↑a + (↑b - ↑a) = ↑b
       exact add_tsub_cancel_of_le h.le
+      -- 🎉 no goals
 #align pnat.add_sub_of_lt PNat.add_sub_of_lt
 
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
   | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
   | ⟨n + 2, _⟩, _ => ⟨⟨n + 1, by simp⟩, rfl⟩
+                                 -- 🎉 no goals
 #align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
 
 /-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
 def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
   apply strongInductionOn a
+  -- ⊢ (k : ℕ+) → ((m : ℕ+) → m < k → p m) → p k
   rintro ⟨k, kprop⟩ hk
+  -- ⊢ p { val := k, property := kprop }
   cases' k with k
+  -- ⊢ p { val := zero, property := kprop }
   · exact (lt_irrefl 0 kprop).elim
+    -- 🎉 no goals
   cases' k with k
+  -- ⊢ p { val := succ zero, property := kprop }
   · exact hz
+    -- 🎉 no goals
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (lt_succ_iff.2 hm)
+  -- 🎉 no goals
 #align pnat.case_strong_induction_on PNat.caseStrongInductionOn
 
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
@@ -320,11 +336,17 @@ not only to `Prop`. -/
 @[elab_as_elim]
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
+  -- ⊢ p { val := n, property := h }
   induction' n with n IH
+  -- ⊢ p { val := zero, property := h }
   · exact absurd h (by decide)
+    -- 🎉 no goals
   · cases' n with n
+    -- ⊢ p { val := succ zero, property := h }
     · exact p1
+      -- 🎉 no goals
     · exact hp _ (IH n.succ_pos)
+      -- 🎉 no goals
 #align pnat.rec_on PNat.recOn
 
 @[simp]
@@ -336,7 +358,9 @@ theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
+  -- ⊢ recOn ({ val := n, property := h } + 1) p1 hp = hp { val := n, property := h …
   cases n <;> [exact absurd h (by decide); rfl]
+  -- 🎉 no goals
 #align pnat.rec_on_succ PNat.recOn_succ
 
 theorem modDivAux_spec :
@@ -345,18 +369,23 @@ theorem modDivAux_spec :
   | k, 0, 0, h => (h ⟨rfl, rfl⟩).elim
   | k, 0, q + 1, _ => by
     change (k : ℕ) + (k : ℕ) * (q + 1).pred = 0 + (k : ℕ) * (q + 1)
+    -- ⊢ ↑k + ↑k * pred (q + 1) = 0 + ↑k * (q + 1)
     rw [Nat.pred_succ, Nat.mul_succ, zero_add, add_comm]
+    -- 🎉 no goals
   | k, r + 1, q, _ => rfl
 #align pnat.mod_div_aux_spec PNat.modDivAux_spec
 
 theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
   let h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)
+  -- ⊢ ↑(mod m k) + ↑k * div m k = ↑m
   have : ¬((m : ℕ) % (k : ℕ) = 0 ∧ (m : ℕ) / (k : ℕ) = 0) := by
     rintro ⟨hr, hq⟩
     rw [hr, hq, mul_zero, zero_add] at h₀
     exact (m.ne_zero h₀.symm).elim
   have := modDivAux_spec k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ)) this
+  -- ⊢ ↑(mod m k) + ↑k * div m k = ↑m
   exact this.trans h₀
+  -- 🎉 no goals
 #align pnat.mod_add_div PNat.mod_add_div
 
 theorem div_add_mod (m k : ℕ+) : (k * div m k + mod m k : ℕ) = m :=
@@ -365,37 +394,58 @@ theorem div_add_mod (m k : ℕ+) : (k * div m k + mod m k : ℕ) = m :=
 
 theorem mod_add_div' (m k : ℕ+) : (mod m k + div m k * k : ℕ) = m := by
   rw [mul_comm]
+  -- ⊢ ↑(mod m k) + ↑k * div m k = ↑m
   exact mod_add_div _ _
+  -- 🎉 no goals
 #align pnat.mod_add_div' PNat.mod_add_div'
 
 theorem div_add_mod' (m k : ℕ+) : (div m k * k + mod m k : ℕ) = m := by
   rw [mul_comm]
+  -- ⊢ ↑k * div m k + ↑(mod m k) = ↑m
   exact div_add_mod _ _
+  -- 🎉 no goals
 #align pnat.div_add_mod' PNat.div_add_mod'
 
 theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   change (mod m k : ℕ) ≤ (m : ℕ) ∧ (mod m k : ℕ) ≤ (k : ℕ)
+  -- ⊢ ↑(mod m k) ≤ ↑m ∧ ↑(mod m k) ≤ ↑k
   rw [mod_coe]
+  -- ⊢ (if ↑m % ↑k = 0 then ↑k else ↑m % ↑k) ≤ ↑m ∧ (if ↑m % ↑k = 0 then ↑k else ↑m …
   split_ifs with h
+  -- ⊢ ↑k ≤ ↑m ∧ ↑k ≤ ↑k
   · have hm : (m : ℕ) > 0 := m.pos
+    -- ⊢ ↑k ≤ ↑m ∧ ↑k ≤ ↑k
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
+    -- ⊢ ↑k ≤ ↑k * (↑m / ↑k) ∧ ↑k ≤ ↑k
     by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
+    -- ⊢ ↑k ≤ ↑k * (↑m / ↑k) ∧ ↑k ≤ ↑k
     · rw [h₁, mul_zero] at hm
+      -- ⊢ ↑k ≤ ↑k * (↑m / ↑k) ∧ ↑k ≤ ↑k
       exact (lt_irrefl _ hm).elim
+      -- 🎉 no goals
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
         -- Porting note : Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂
+      -- ⊢ ↑k ≤ ↑k * (↑m / ↑k) ∧ ↑k ≤ ↑k
       exact ⟨h₂, le_refl (k : ℕ)⟩
+      -- 🎉 no goals
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
+    -- 🎉 no goals
 #align pnat.mod_le PNat.mod_le
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
+  -- ⊢ k ∣ m → ↑k ∣ ↑m
+                  -- ⊢ ↑k ∣ ↑m
+                  -- ⊢ k ∣ m
   · rcases h with ⟨_, rfl⟩
+    -- ⊢ ↑k ∣ ↑(k * w✝)
     apply dvd_mul_right
+    -- 🎉 no goals
   · rcases h with ⟨a, h⟩
+    -- ⊢ k ∣ m
     cases a with
     | zero =>
       contrapose h
@@ -407,29 +457,49 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [dvd_iff]
+  -- ⊢ ↑k ∣ ↑m ↔ mod m k = k
   rw [Nat.dvd_iff_mod_eq_zero]; constructor
+  -- ⊢ ↑m % ↑k = 0 ↔ mod m k = k
+                                -- ⊢ ↑m % ↑k = 0 → mod m k = k
   · intro h
+    -- ⊢ mod m k = k
     apply PNat.eq
+    -- ⊢ ↑(mod m k) = ↑k
     rw [mod_coe, if_pos h]
+    -- 🎉 no goals
   · intro h
+    -- ⊢ ↑m % ↑k = 0
     by_cases h' : (m : ℕ) % (k : ℕ) = 0
+    -- ⊢ ↑m % ↑k = 0
     · exact h'
+      -- 🎉 no goals
     · replace h : (mod m k : ℕ) = (k : ℕ) := congr_arg _ h
+      -- ⊢ ↑m % ↑k = 0
       rw [mod_coe, if_neg h'] at h
+      -- ⊢ ↑m % ↑k = 0
       exact ((Nat.mod_lt (m : ℕ) k.pos).ne h).elim
+      -- 🎉 no goals
 #align pnat.dvd_iff' PNat.dvd_iff'
 
 theorem le_of_dvd {m n : ℕ+} : m ∣ n → m ≤ n := by
   rw [dvd_iff']
+  -- ⊢ mod n m = m → m ≤ n
   intro h
+  -- ⊢ m ≤ n
   rw [← h]
+  -- ⊢ mod n m ≤ n
   apply (mod_le n m).left
+  -- 🎉 no goals
 #align pnat.le_of_dvd PNat.le_of_dvd
 
 theorem mul_div_exact {m k : ℕ+} (h : k ∣ m) : k * divExact m k = m := by
   apply PNat.eq; rw [mul_coe]
+  -- ⊢ ↑(k * divExact m k) = ↑m
+                 -- ⊢ ↑k * ↑(divExact m k) = ↑m
   change (k : ℕ) * (div m k).succ = m
+  -- ⊢ ↑k * succ (div m k) = ↑m
   rw [← div_add_mod m k, dvd_iff'.mp h, Nat.mul_succ]
+  -- 🎉 no goals
 #align pnat.mul_div_exact PNat.mul_div_exact
 
 theorem dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm =>
@@ -442,9 +512,13 @@ theorem dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
 
 theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   apply pos_iff_ne_zero.2
+  -- ⊢ a ≠ 0
   intro hzero
+  -- ⊢ False
   rw [hzero] at h
+  -- ⊢ False
   exact PNat.ne_zero n (eq_zero_of_zero_dvd h)
+  -- 🎉 no goals
 #align pnat.pos_of_div_pos PNat.pos_of_div_pos
 
 end PNat

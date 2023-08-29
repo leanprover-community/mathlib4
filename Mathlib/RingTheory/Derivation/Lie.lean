@@ -36,6 +36,7 @@ instance : Bracket (Derivation R A A) (Derivation R A A) :=
       simp only [Ring.lie_def, map_add, Algebra.id.smul_eq_mul, LinearMap.mul_apply, leibniz,
         coeFn_coe, LinearMap.sub_apply]
       ring⟩
+      -- 🎉 no goals
 
 @[simp]
 theorem commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ :=
@@ -48,14 +49,29 @@ theorem commutator_apply : ⁅D1, D2⁆ a = D1 (D2 a) - D2 (D1 a) :=
 
 instance : LieRing (Derivation R A A) where
   add_lie d e f := by ext a; simp only [commutator_apply, add_apply, map_add]; ring
+                      -- ⊢ ↑⁅d + e, f⁆ a = ↑(⁅d, f⁆ + ⁅e, f⁆) a
+                             -- ⊢ ↑d (↑f a) + ↑e (↑f a) - (↑f (↑d a) + ↑f (↑e a)) = ↑d (↑f a) - ↑f (↑d a) + (↑ …
+                                                                               -- 🎉 no goals
   lie_add d e f := by ext a; simp only [commutator_apply, add_apply, map_add]; ring
+                      -- ⊢ ↑⁅d, e + f⁆ a = ↑(⁅d, e⁆ + ⁅d, f⁆) a
+                             -- ⊢ ↑d (↑e a) + ↑d (↑f a) - (↑e (↑d a) + ↑f (↑d a)) = ↑d (↑e a) - ↑e (↑d a) + (↑ …
+                                                                               -- 🎉 no goals
   lie_self d := by ext a; simp only [commutator_apply, add_apply, map_add]; ring_nf; simp
+                   -- ⊢ ↑⁅d, d⁆ a = ↑0 a
+                          -- ⊢ ↑d (↑d a) - ↑d (↑d a) = ↑0 a
+                                                                            -- ⊢ 0 = ↑0 a
+                                                                                     -- 🎉 no goals
   leibniz_lie d e f := by ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; ring
+                          -- ⊢ ↑⁅d, ⁅e, f⁆⁆ a = ↑(⁅⁅d, e⁆, f⁆ + ⁅e, ⁅d, f⁆⁆) a
+                                 -- ⊢ ↑d (↑e (↑f a)) - ↑d (↑f (↑e a)) - (↑e (↑f (↑d a)) - ↑f (↑e (↑d a))) = ↑d (↑e …
+                                                                                              -- 🎉 no goals
 
 instance instLieAlgebra: LieAlgebra R (Derivation R A A) :=
   { Derivation.instModule with
     lie_smul := fun r d e => by
       ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply] }
+      -- ⊢ ↑⁅d, r • e⁆ a = ↑(r • ⁅d, e⁆) a
+             -- 🎉 no goals
 
 end LieStructures
 

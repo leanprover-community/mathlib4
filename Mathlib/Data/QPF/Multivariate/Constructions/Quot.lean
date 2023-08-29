@@ -46,7 +46,11 @@ def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
   abs p := FG_abs (abs p)
   repr x := repr (FG_repr x)
   abs_repr x := by dsimp; rw [abs_repr, FG_abs_repr]
+                   -- ⊢ FG_abs (abs (repr (FG_repr x))) = x
+                          -- 🎉 no goals
   abs_map f p := by dsimp; rw [abs_map, FG_abs_map]
+                    -- ⊢ FG_abs (abs (f <$$> p)) = f <$$> FG_abs (abs p)
+                           -- 🎉 no goals
 #align mvqpf.quotient_qpf MvQPF.quotientQPF
 
 end repr

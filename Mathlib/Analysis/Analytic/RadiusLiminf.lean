@@ -48,19 +48,31 @@ theorem radius_eq_liminf :
         NNReal.one_rpow n⁻¹, NNReal.rpow_le_rpow_iff (inv_pos.2 this), mul_comm,
         NNReal.rpow_nat_cast]
   apply le_antisymm <;> refine' ENNReal.le_of_forall_nnreal_lt fun r hr => _
+  -- ⊢ radius p ≤ liminf (fun n => 1 / ↑(‖p n‖₊ ^ (1 / ↑n))) atTop
+                        -- ⊢ ↑r ≤ liminf (fun n => 1 / ↑(‖p n‖₊ ^ (1 / ↑n))) atTop
+                        -- ⊢ ↑r ≤ radius p
   · have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * r ^ n) 1).out 1 7).1
       (p.isLittleO_of_lt_radius hr)
     obtain ⟨a, ha, H⟩ := this
+    -- ⊢ ↑r ≤ liminf (fun n => 1 / ↑(‖p n‖₊ ^ (1 / ↑n))) atTop
     apply le_liminf_of_le
+    -- ⊢ autoParam (IsCoboundedUnder (fun x x_1 => x ≥ x_1) atTop fun n => 1 / ↑(‖p n …
     · infer_param
+      -- 🎉 no goals
     · rw [←eventually_map]
+      -- ⊢ ∀ᶠ (b : ℝ≥0∞) in map (fun n => 1 / ↑(‖p n‖₊ ^ (1 / ↑n))) atTop, ↑r ≤ b
       refine'
         H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 _))
       push_cast
+      -- ⊢ ‖p n‖ * ↑r ^ n ≤ 1
       exact (le_abs_self _).trans (hn.trans (pow_le_one _ ha.1.le ha.2.le))
+      -- 🎉 no goals
   · refine' p.le_radius_of_isBigO (IsBigO.of_bound 1 _)
+    -- ⊢ ∀ᶠ (x : ℕ) in atTop, ‖‖p x‖ * ↑r ^ x‖ ≤ 1 * ‖1‖
     refine' (eventually_lt_of_lt_liminf hr).mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => _)
+    -- ⊢ ‖‖p n‖ * ↑r ^ n‖ ≤ 1 * ‖1‖
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)
+    -- 🎉 no goals
 #align formal_multilinear_series.radius_eq_liminf FormalMultilinearSeries.radius_eq_liminf
 
 end FormalMultilinearSeries

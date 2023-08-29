@@ -72,10 +72,13 @@ variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 
 instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
   ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
+      -- ⊢ Splits (algebraMap F L) f
+                                                          -- 🎉 no goals
     Subalgebra.restrictScalars_injective F <| by
       rw [rootSet, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
+      -- 🎉 no goals
 #align polynomial.is_splitting_field.map Polynomial.IsSplittingField.map
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
@@ -84,14 +87,21 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
+    -- ⊢ y ∈ ↑⊥
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
+    -- ⊢ y ∈ ↑⊥
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
+    -- ⊢ y ∈ ↑⊥
     rw [← hxy]
+    -- ⊢ ↑(algebraMap K L) x ∈ ↑⊥
     exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _,
+    -- 🎉 no goals
     fun h => @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
       (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h) ▸ by
         rw [RingEquiv.toRingHom_trans]
+        -- ⊢ Splits (RingHom.comp (RingEquiv.toRingHom (RingEquiv.symm (RingEquiv.ofBijec …
         exact splits_comp_of_splits _ _ (splits L f)⟩
+        -- 🎉 no goals
 #align polynomial.is_splitting_field.splits_iff Polynomial.IsSplittingField.splits_iff
 
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
@@ -118,9 +128,12 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
         rw [← (splits_iff L f).1 (show f.Splits (RingHom.id K) from hf0.symm ▸ splits_zero _)]
+        -- ⊢ L →ₐ[K] { x // x ∈ ⊤ }
         exact Algebra.toTop
+        -- 🎉 no goals
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f];
+    -- ⊢ { x // x ∈ Algebra.adjoin K (rootSet f L) } →ₐ[K] F
     exact Classical.choice (lift_of_splits _ fun y hy =>
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)
@@ -132,6 +145,8 @@ theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensiona
   ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
     adjoin_rootSet L f ▸ FG_adjoin_of_finite (Finset.finite_toSet _) fun y hy =>
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
+                            -- ⊢ IsIntegral K y
+                                                         -- 🎉 no goals
       else
         isAlgebraic_iff_isIntegral.1 ⟨f, hf, (eval₂_eq_eval_map _).trans <|
           (mem_roots <| map_ne_zero hf).1 (Multiset.mem_toFinset.mp hy)⟩⟩
@@ -140,8 +155,11 @@ theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensiona
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
+  -- ⊢ Splits (algebraMap K L) p
   · rw [← f.toAlgHom.comp_algebraMap]
+    -- ⊢ Splits (RingHom.comp (↑↑f) (algebraMap K F)) p
     exact splits_comp_of_splits _ _ (splits F p)
+    -- 🎉 no goals
   · rw [← (Algebra.range_top_iff_surjective f.toAlgHom).mpr f.surjective,
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 #align polynomial.is_splitting_field.of_alg_equiv Polynomial.IsSplittingField.of_algEquiv
@@ -159,14 +177,18 @@ variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
 theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
   simp_rw [rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
+  -- ⊢ Splits (algebraMap K { x // x ∈ F }) p
   rw [splits_iff_exists_multiset]
+  -- ⊢ ∃ s, Polynomial.map (algebraMap K { x // x ∈ F }) p = ↑C (↑(algebraMap K { x …
   refine' ⟨Multiset.pmap Subtype.mk _ hF, map_injective _ (algebraMap F L).injective _⟩
+  -- ⊢ Polynomial.map (algebraMap { x // x ∈ F } L) (Polynomial.map (algebraMap K { …
   conv_lhs =>
     rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, eq_prod_roots_of_splits h, ←
       Multiset.pmap_eq_map _ _ _ hF]
   simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
     map_C, map_X]
   rfl
+  -- 🎉 no goals
 #align intermediate_field.splits_of_splits IntermediateField.splits_of_splits
 
 end IntermediateField

@@ -99,7 +99,9 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   smul g m :=
     ⟨g • (m : M), (g⁻¹ • ((m⁻¹ : Mˣ) : M)),
       by rw [smul_mul_smul, Units.mul_inv, mul_right_inv, one_smul],
+         -- 🎉 no goals
       by rw [smul_mul_smul, Units.inv_mul, mul_left_inv, one_smul]⟩
+         -- 🎉 no goals
   one_smul m := Units.ext <| one_smul _ _
   mul_smul g₁ g₂ m := Units.ext <| mul_smul _ _ _
 #align units.mul_action' Units.mulAction'

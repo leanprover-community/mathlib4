@@ -44,7 +44,9 @@ def Presieve (X : C) :=
 
 instance : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
+  -- ⊢ CompleteLattice (⦃Y : C⦄ → Set (Y ⟶ X))
   infer_instance
+  -- 🎉 no goals
 
 namespace Presieve
 
@@ -95,10 +97,15 @@ lemma singleton.mk {f : Y ⟶ X} : singleton f f := singleton'.mk
 @[simp]
 theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
   constructor
+  -- ⊢ singleton f g → f = g
   · rintro ⟨a, rfl⟩
+    -- ⊢ f = f
     rfl
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ singleton f f
     apply singleton.mk
+    -- 🎉 no goals
 #align category_theory.presieve.singleton_eq_iff_domain CategoryTheory.Presieve.singleton_eq_iff_domain
 
 theorem singleton_self : singleton f f :=
@@ -117,12 +124,19 @@ inductive pullbackArrows [HasPullbacks C] (R : Presieve X) : Presieve Y
 theorem pullback_singleton [HasPullbacks C] (g : Z ⟶ X) :
     pullbackArrows f (singleton g) = singleton (pullback.snd : pullback g f ⟶ _) := by
   funext W
+  -- ⊢ pullbackArrows f (singleton g) = singleton pullback.snd
   ext h
+  -- ⊢ h ∈ pullbackArrows f (singleton g) ↔ h ∈ singleton pullback.snd
   constructor
+  -- ⊢ h ∈ pullbackArrows f (singleton g) → h ∈ singleton pullback.snd
   · rintro ⟨W, _, _, _⟩
+    -- ⊢ pullback.snd ∈ singleton pullback.snd
     exact singleton.mk
+    -- 🎉 no goals
   · rintro ⟨_⟩
+    -- ⊢ pullback.snd ∈ pullbackArrows f (singleton g)
     exact pullbackArrows.mk Z g singleton.mk
+    -- 🎉 no goals
 #align category_theory.presieve.pullback_singleton CategoryTheory.Presieve.pullback_singleton
 
 /-- Construct the presieve given by the family of arrows indexed by `ι`. -/
@@ -132,25 +146,40 @@ inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve
 
 theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
   funext Y
+  -- ⊢ (ofArrows (fun x => Y✝) fun x => f) = singleton f
   ext g
+  -- ⊢ (g ∈ ofArrows (fun x => Y✝) fun x => f) ↔ g ∈ singleton f
   constructor
+  -- ⊢ (g ∈ ofArrows (fun x => Y✝) fun x => f) → g ∈ singleton f
   · rintro ⟨_⟩
+    -- ⊢ f ∈ singleton f
     apply singleton.mk
+    -- 🎉 no goals
   · rintro ⟨_⟩
+    -- ⊢ f ∈ ofArrows (fun x => Y✝) fun x => f
     exact ofArrows.mk PUnit.unit
+    -- 🎉 no goals
 #align category_theory.presieve.of_arrows_punit CategoryTheory.Presieve.ofArrows_pUnit
 
 theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
     (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
+  -- ⊢ (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) = pullbackArrow …
   ext h
+  -- ⊢ (h ∈ ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) ↔ h ∈ pullb …
   constructor
+  -- ⊢ (h ∈ ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) → h ∈ pullb …
   · rintro ⟨hk⟩
+    -- ⊢ pullback.snd ∈ pullbackArrows f (ofArrows Z g)
     exact pullbackArrows.mk _ _ (ofArrows.mk hk)
+    -- 🎉 no goals
   · rintro ⟨W, k, hk₁⟩
+    -- ⊢ pullback.snd ∈ ofArrows (fun i => pullback (g i) f) fun i => pullback.snd
     cases' hk₁ with i hi
+    -- ⊢ pullback.snd ∈ ofArrows (fun i => pullback (g i) f) fun i => pullback.snd
     apply ofArrows.mk
+    -- 🎉 no goals
 #align category_theory.presieve.of_arrows_pullback CategoryTheory.Presieve.ofArrows_pullback
 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
@@ -160,12 +189,19 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
       ofArrows (fun i : Σi, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
         k (g ij.1) _ ij.2 ≫ g ij.1 := by
   funext Y
+  -- ⊢ (bind (ofArrows Z g) fun Y f H => ofArrows (W f H) (k f H)) = ofArrows (fun  …
   ext f
+  -- ⊢ (f ∈ bind (ofArrows Z g) fun Y f H => ofArrows (W f H) (k f H)) ↔ f ∈ ofArro …
   constructor
+  -- ⊢ (f ∈ bind (ofArrows Z g) fun Y f H => ofArrows (W f H) (k f H)) → f ∈ ofArro …
   · rintro ⟨_, _, _, ⟨i⟩, ⟨i'⟩, rfl⟩
+    -- ⊢ k (g i) (_ : ofArrows Z g (g i)) i' ≫ g i ∈ ofArrows (fun i => W (g i.fst) ( …
     exact ofArrows.mk (Sigma.mk _ _)
+    -- 🎉 no goals
   · rintro ⟨i⟩
+    -- ⊢ k (g i.fst) (_ : ofArrows Z g (g i.fst)) i.snd ≫ g i.fst ∈ bind (ofArrows Z  …
     exact bind_comp _ (ofArrows.mk _) (ofArrows.mk _)
+    -- 🎉 no goals
 #align category_theory.presieve.of_arrows_bind CategoryTheory.Presieve.ofArrows_bind
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
@@ -222,23 +258,33 @@ structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) w
 noncomputable def getFunctorPushforwardStructure {F : C ⥤ D} {S : Presieve X} {Y : D}
     {f : Y ⟶ F.obj X} (h : S.functorPushforward F f) : FunctorPushforwardStructure F S f := by
   choose Z f' g h₁ h using h
+  -- ⊢ FunctorPushforwardStructure F S f
   exact ⟨Z, f', g, h₁, h⟩
+  -- 🎉 no goals
 #align category_theory.presieve.get_functor_pushforward_structure CategoryTheory.Presieve.getFunctorPushforwardStructure
 
 theorem functorPushforward_comp (R : Presieve X) :
     R.functorPushforward (F ⋙ G) = (R.functorPushforward F).functorPushforward G := by
   funext x
+  -- ⊢ functorPushforward (F ⋙ G) R = functorPushforward G (functorPushforward F R)
   ext f
+  -- ⊢ f ∈ functorPushforward (F ⋙ G) R ↔ f ∈ functorPushforward G (functorPushforw …
   constructor
+  -- ⊢ f ∈ functorPushforward (F ⋙ G) R → f ∈ functorPushforward G (functorPushforw …
   · rintro ⟨X, f₁, g₁, h₁, rfl⟩
+    -- ⊢ g₁ ≫ (F ⋙ G).map f₁ ∈ functorPushforward G (functorPushforward F R)
     exact ⟨F.obj X, F.map f₁, g₁, ⟨X, f₁, 𝟙 _, h₁, by simp⟩, rfl⟩
+    -- 🎉 no goals
   · rintro ⟨X, f₁, g₁, ⟨X', f₂, g₂, h₁, rfl⟩, rfl⟩
+    -- ⊢ g₁ ≫ G.map (g₂ ≫ F.map f₂) ∈ functorPushforward (F ⋙ G) R
     exact ⟨X', f₂, g₁ ≫ G.map g₂, h₁, by simp⟩
+    -- 🎉 no goals
 #align category_theory.presieve.functor_pushforward_comp CategoryTheory.Presieve.functorPushforward_comp
 
 theorem image_mem_functorPushforward (R : Presieve X) {f : Y ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨Y, f, 𝟙 _, h, by simp⟩
+                    -- 🎉 no goals
 #align category_theory.presieve.image_mem_functor_pushforward CategoryTheory.Presieve.image_mem_functorPushforward
 
 end FunctorPushforward
@@ -271,7 +317,9 @@ attribute [simp] downward_closed
 
 theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
   rintro ⟨_, _⟩ ⟨_, _⟩ rfl
+  -- ⊢ { arrows := arrows✝, downward_closed := downward_closed✝¹ } = { arrows := {  …
   rfl
+  -- 🎉 no goals
 #align category_theory.sieve.arrows_ext CategoryTheory.Sieve.arrows_ext
 
 @[ext]
@@ -291,7 +339,9 @@ protected def sup (𝒮 : Set (Sieve X)) : Sieve X
   arrows Y := { f | ∃ S ∈ 𝒮, Sieve.arrows S f }
   downward_closed {_ _ f} hf _ := by
     obtain ⟨S, hS, hf⟩ := hf
+    -- ⊢ setOf (fun f => ∃ S, S ∈ 𝒮 ∧ S.arrows f) (x✝ ≫ f)
     exact ⟨S, hS, S.downward_closed hf _⟩
+    -- 🎉 no goals
 #align category_theory.sieve.Sup CategoryTheory.Sieve.sup
 
 /-- The infimum of a collection of sieves: the intersection of them all. -/
@@ -306,6 +356,9 @@ protected def union (S R : Sieve X) : Sieve X
     where
   arrows Y f := S f ∨ R f
   downward_closed := by rintro _ _ _ (h | h) g <;> simp [h]
+                        -- ⊢ S.arrows (g ≫ f✝) ∨ R.arrows (g ≫ f✝)
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
 #align category_theory.sieve.union CategoryTheory.Sieve.union
 
 /-- The intersection of two sieves is a sieve. -/
@@ -314,7 +367,9 @@ protected def inter (S R : Sieve X) : Sieve X
   arrows Y f := S f ∧ R f
   downward_closed := by
     rintro _ _ _ ⟨h₁, h₂⟩ g
+    -- ⊢ S.arrows (g ≫ f✝) ∧ R.arrows (g ≫ f✝)
     simp [h₁, h₂]
+    -- 🎉 no goals
 #align category_theory.sieve.inter CategoryTheory.Sieve.inter
 
 /-- Sieves on an object `X` form a complete lattice.
@@ -344,8 +399,11 @@ instance : CompleteLattice (Sieve X)
   le_sup_right _ _ _ _ := Or.inr
   sup_le _ _ _ h₁ h₂ _ f := by--ℰ S hS Y f := by
     rintro (hf | hf)
+    -- ⊢ x✝¹.arrows f
     · exact h₁ _ hf
+      -- 🎉 no goals
     · exact h₂ _ hf
+      -- 🎉 no goals
   inf_le_left _ _ _ _ := And.left
   inf_le_right _ _ _ _ := And.right
   le_inf _ _ _ p q _ _ z := ⟨p _ z, q _ z⟩
@@ -367,6 +425,7 @@ theorem sInf_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
 theorem sSup_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
     sSup Ss f ↔ ∃ (S : Sieve X) (_ : S ∈ Ss), S f := by
   simp [sSup, Sieve.sup, setOf]
+  -- 🎉 no goals
 #align category_theory.sieve.Sup_apply CategoryTheory.Sieve.sSup_apply
 
 @[simp]
@@ -391,7 +450,9 @@ def generate (R : Presieve X) : Sieve X
   arrows Z f := ∃ (Y : _) (h : Z ⟶ Y) (g : Y ⟶ X), R g ∧ h ≫ g = f
   downward_closed := by
     rintro Y Z _ ⟨W, g, f, hf, rfl⟩ h
+    -- ⊢ ∃ Y_1 h_1 g_1, R g_1 ∧ h_1 ≫ g_1 = h ≫ g ≫ f
     exact ⟨_, h ≫ g, _, hf, by simp⟩
+    -- 🎉 no goals
 #align category_theory.sieve.generate CategoryTheory.Sieve.generate
 
 /-- Given a presieve on `X`, and a sieve on each domain of an arrow in the presieve, we can bind to
@@ -403,7 +464,9 @@ def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) :
   arrows := S.bind fun Y f h => R h
   downward_closed := by
     rintro Y Z f ⟨W, f, h, hh, hf, rfl⟩ g
+    -- ⊢ Presieve.bind S (fun Y f h => (R h).arrows) (g ≫ f ≫ h)
     exact ⟨_, g ≫ f, _, hh, by simp [hf]⟩
+    -- 🎉 no goals
 #align category_theory.sieve.bind CategoryTheory.Sieve.bind
 
 open Order Lattice
@@ -411,7 +474,9 @@ open Order Lattice
 theorem sets_iff_generate (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
   ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
     rintro ⟨Z, f, g, hg, rfl⟩
+    -- ⊢ S.arrows (f ≫ g)
     exact S.downward_closed (ss Z hg) f⟩
+    -- 🎉 no goals
 #align category_theory.sieve.sets_iff_generate CategoryTheory.Sieve.sets_iff_generate
 
 /-- Show that there is a galois insertion (generate, set_over). -/
@@ -435,13 +500,16 @@ theorem generate_sieve (S : Sieve X) : generate S = S :=
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
+                                       -- 🎉 no goals
 #align category_theory.sieve.id_mem_iff_eq_top CategoryTheory.Sieve.id_mem_iff_eq_top
 
 /-- If an arrow set contains a split epi, it generates the maximal sieve. -/
 theorem generate_of_contains_isSplitEpi {R : Presieve X} (f : Y ⟶ X) [IsSplitEpi f] (hf : R f) :
     generate R = ⊤ := by
   rw [← id_mem_iff_eq_top]
+  -- ⊢ (generate R).arrows (𝟙 X)
   exact ⟨_, section_ f, f, hf, by simp⟩
+  -- 🎉 no goals
 #align category_theory.sieve.generate_of_contains_is_split_epi CategoryTheory.Sieve.generate_of_contains_isSplitEpi
 
 @[simp]
@@ -463,10 +531,12 @@ def pullback (h : Y ⟶ X) (S : Sieve X) : Sieve Y
     where
   arrows Y sl := S (sl ≫ h)
   downward_closed g := by simp [g]
+                          -- 🎉 no goals
 #align category_theory.sieve.pullback CategoryTheory.Sieve.pullback
 
 @[simp]
 theorem pullback_id : S.pullback (𝟙 _) = S := by simp [Sieve.ext_iff]
+                                                 -- 🎉 no goals
 #align category_theory.sieve.pullback_id CategoryTheory.Sieve.pullback_id
 
 @[simp]
@@ -476,15 +546,18 @@ theorem pullback_top {f : Y ⟶ X} : (⊤ : Sieve X).pullback f = ⊤ :=
 
 theorem pullback_comp {f : Y ⟶ X} {g : Z ⟶ Y} (S : Sieve X) :
     S.pullback (g ≫ f) = (S.pullback f).pullback g := by simp [Sieve.ext_iff]
+                                                         -- 🎉 no goals
 #align category_theory.sieve.pullback_comp CategoryTheory.Sieve.pullback_comp
 
 @[simp]
 theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
     (S ⊓ R).pullback f = S.pullback f ⊓ R.pullback f := by simp [Sieve.ext_iff]
+                                                           -- 🎉 no goals
 #align category_theory.sieve.pullback_inter CategoryTheory.Sieve.pullback_inter
 
 theorem pullback_eq_top_iff_mem (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
   rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
+  -- 🎉 no goals
 #align category_theory.sieve.pullback_eq_top_iff_mem CategoryTheory.Sieve.pullback_eq_top_iff_mem
 
 theorem pullback_eq_top_of_mem (S : Sieve X) {f : Y ⟶ X} : S f → S.pullback f = ⊤ :=
@@ -499,6 +572,8 @@ def pushforward (f : Y ⟶ X) (R : Sieve Y) : Sieve X
     where
   arrows Z gf := ∃ g, g ≫ f = gf ∧ R g
   downward_closed := fun ⟨j, k, z⟩ h => ⟨h ≫ j, by simp [k], by simp [z]⟩
+                                                   -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align category_theory.sieve.pushforward CategoryTheory.Sieve.pushforward
 
 theorem pushforward_apply_comp {R : Sieve Y} {Z : C} {g : Z ⟶ Y} (hg : R g) (f : Y ⟶ X) :
@@ -510,7 +585,10 @@ theorem pushforward_comp {f : Y ⟶ X} {g : Z ⟶ Y} (R : Sieve Z) :
     R.pushforward (g ≫ f) = (R.pushforward g).pushforward f :=
   Sieve.ext fun W h =>
     ⟨fun ⟨f₁, hq, hf₁⟩ => ⟨f₁ ≫ g, by simpa, f₁, rfl, hf₁⟩, fun ⟨y, hy, z, hR, hz⟩ =>
+                                      -- 🎉 no goals
       ⟨z, by rw [← Category.assoc, hR]; tauto⟩⟩
+             -- ⊢ y ≫ f = h ∧ R.arrows z
+                                        -- 🎉 no goals
 #align category_theory.sieve.pushforward_comp CategoryTheory.Sieve.pushforward_comp
 
 theorem galoisConnection (f : Y ⟶ X) : GaloisConnection (Sieve.pushforward f) (Sieve.pullback f) :=
@@ -541,43 +619,63 @@ theorem pushforward_union {f : Y ⟶ X} (S R : Sieve Y) :
 theorem pushforward_le_bind_of_mem (S : Presieve X) (R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y)
     (f : Y ⟶ X) (h : S f) : (R h).pushforward f ≤ bind S R := by
   rintro Z _ ⟨g, rfl, hg⟩
+  -- ⊢ (bind S R).arrows (g ≫ f)
   exact ⟨_, g, f, h, hg, rfl⟩
+  -- 🎉 no goals
 #align category_theory.sieve.pushforward_le_bind_of_mem CategoryTheory.Sieve.pushforward_le_bind_of_mem
 
 theorem le_pullback_bind (S : Presieve X) (R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) (f : Y ⟶ X)
     (h : S f) : R h ≤ (bind S R).pullback f := by
   rw [← galoisConnection f]
+  -- ⊢ pushforward f (R h) ≤ bind S R
   apply pushforward_le_bind_of_mem
+  -- 🎉 no goals
 #align category_theory.sieve.le_pullback_bind CategoryTheory.Sieve.le_pullback_bind
 
 /-- If `f` is a monomorphism, the pushforward-pullback adjunction on sieves is coreflective. -/
 def galoisCoinsertionOfMono (f : Y ⟶ X) [Mono f] :
     GaloisCoinsertion (Sieve.pushforward f) (Sieve.pullback f) := by
   apply (galoisConnection f).toGaloisCoinsertion
+  -- ⊢ ∀ (a : Sieve Y), pullback f (pushforward f a) ≤ a
   rintro S Z g ⟨g₁, hf, hg₁⟩
+  -- ⊢ S.arrows g
   rw [cancel_mono f] at hf
+  -- ⊢ S.arrows g
   rwa [← hf]
+  -- 🎉 no goals
 #align category_theory.sieve.galois_coinsertion_of_mono CategoryTheory.Sieve.galoisCoinsertionOfMono
 
 /-- If `f` is a split epi, the pushforward-pullback adjunction on sieves is reflective. -/
 def galoisInsertionOfIsSplitEpi (f : Y ⟶ X) [IsSplitEpi f] :
     GaloisInsertion (Sieve.pushforward f) (Sieve.pullback f) := by
   apply (galoisConnection f).toGaloisInsertion
+  -- ⊢ ∀ (b : Sieve X), b ≤ pushforward f (pullback f b)
   intro S Z g hg
+  -- ⊢ (pushforward f (pullback f S)).arrows g
   refine' ⟨g ≫ section_ f, by simpa⟩
+  -- 🎉 no goals
 #align category_theory.sieve.galois_insertion_of_is_split_epi CategoryTheory.Sieve.galoisInsertionOfIsSplitEpi
 
 theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presieve X) :
     Sieve.generate (R.pullbackArrows f) = (Sieve.generate R).pullback f := by
   ext W g
+  -- ⊢ (generate (Presieve.pullbackArrows f R)).arrows g ↔ (pullback f (generate R) …
   constructor
+  -- ⊢ (generate (Presieve.pullbackArrows f R)).arrows g → (pullback f (generate R) …
   · rintro ⟨_, h, k, hk, rfl⟩
+    -- ⊢ (pullback f (generate R)).arrows (h ≫ k)
     cases' hk with W g hg
+    -- ⊢ (pullback f (generate R)).arrows (h ≫ pullback.snd)
     change (Sieve.generate R).pullback f (h ≫ pullback.snd)
+    -- ⊢ (pullback f (generate R)).arrows (h ≫ pullback.snd)
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
+    -- ⊢ (generate R).arrows ((h ≫ pullback.fst) ≫ g)
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst)
+    -- 🎉 no goals
   · rintro ⟨W, h, k, hk, comm⟩
+    -- ⊢ (generate (Presieve.pullbackArrows f R)).arrows g
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩
+    -- 🎉 no goals
 #align category_theory.sieve.pullback_arrows_comm CategoryTheory.Sieve.pullbackArrows_comm
 
 section Functor
@@ -593,9 +691,13 @@ def functorPullback (R : Sieve (F.obj X)) : Sieve X
   arrows := Presieve.functorPullback F R
   downward_closed := by
     intro _ _ f hf g
+    -- ⊢ Presieve.functorPullback F R.arrows (g ≫ f)
     unfold Presieve.functorPullback
+    -- ⊢ R.arrows (F.map (g ≫ f))
     rw [F.map_comp]
+    -- ⊢ R.arrows (F.map g ≫ F.map f)
     exact R.downward_closed hf (F.map g)
+    -- 🎉 no goals
 #align category_theory.sieve.functor_pullback CategoryTheory.Sieve.functorPullback
 
 @[simp]
@@ -607,24 +709,35 @@ theorem functorPullback_arrows (R : Sieve (F.obj X)) :
 @[simp]
 theorem functorPullback_id (R : Sieve X) : R.functorPullback (𝟭 _) = R := by
   ext
+  -- ⊢ (functorPullback (𝟭 C) R).arrows f✝ ↔ R.arrows f✝
   rfl
+  -- 🎉 no goals
 #align category_theory.sieve.functor_pullback_id CategoryTheory.Sieve.functorPullback_id
 
 theorem functorPullback_comp (R : Sieve ((F ⋙ G).obj X)) :
     R.functorPullback (F ⋙ G) = (R.functorPullback G).functorPullback F := by
   ext
+  -- ⊢ (functorPullback (F ⋙ G) R).arrows f✝ ↔ (functorPullback F (functorPullback  …
   rfl
+  -- 🎉 no goals
 #align category_theory.sieve.functor_pullback_comp CategoryTheory.Sieve.functorPullback_comp
 
 theorem functorPushforward_extend_eq {R : Presieve X} :
     (generate R).arrows.functorPushforward F = R.functorPushforward F := by
   funext Y
+  -- ⊢ Presieve.functorPushforward F (generate R).arrows = Presieve.functorPushforw …
   ext f
+  -- ⊢ f ∈ Presieve.functorPushforward F (generate R).arrows ↔ f ∈ Presieve.functor …
   constructor
+  -- ⊢ f ∈ Presieve.functorPushforward F (generate R).arrows → f ∈ Presieve.functor …
   · rintro ⟨X', g, f', ⟨X'', g', f'', h₁, rfl⟩, rfl⟩
+    -- ⊢ f' ≫ F.map (g' ≫ f'') ∈ Presieve.functorPushforward F R
     exact ⟨X'', f'', f' ≫ F.map g', h₁, by simp⟩
+    -- 🎉 no goals
   · rintro ⟨X', g, f', h₁, h₂⟩
+    -- ⊢ f ∈ Presieve.functorPushforward F (generate R).arrows
     exact ⟨X', g, f', le_generate R _ h₁, h₂⟩
+    -- 🎉 no goals
 #align category_theory.sieve.functor_pushforward_extend_eq CategoryTheory.Sieve.functorPushforward_extend_eq
 
 /-- The sieve generated by the image of `R` under `F`. -/
@@ -634,39 +747,60 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X)
   arrows := R.arrows.functorPushforward F
   downward_closed := by
     intro _ _ f h g
+    -- ⊢ Presieve.functorPushforward F R.arrows (g ≫ f)
     obtain ⟨X, α, β, hα, rfl⟩ := h
+    -- ⊢ Presieve.functorPushforward F R.arrows (g ≫ β ≫ F.map α)
     exact ⟨X, α, g ≫ β, hα, by simp⟩
+    -- 🎉 no goals
 #align category_theory.sieve.functor_pushforward CategoryTheory.Sieve.functorPushforward
 
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by
   ext X f
+  -- ⊢ (functorPushforward (𝟭 C) R).arrows f ↔ R.arrows f
   constructor
+  -- ⊢ (functorPushforward (𝟭 C) R).arrows f → R.arrows f
   · intro hf
+    -- ⊢ R.arrows f
     obtain ⟨X, g, h, hg, rfl⟩ := hf
+    -- ⊢ R.arrows (h ≫ (𝟭 C).map g)
     exact R.downward_closed hg h
+    -- 🎉 no goals
   · intro hf
+    -- ⊢ (functorPushforward (𝟭 C) R).arrows f
     exact ⟨X, f, 𝟙 _, hf, by simp⟩
+    -- 🎉 no goals
 #align category_theory.sieve.functor_pushforward_id CategoryTheory.Sieve.functorPushforward_id
 
 theorem functorPushforward_comp (R : Sieve X) :
     R.functorPushforward (F ⋙ G) = (R.functorPushforward F).functorPushforward G := by
   ext
+  -- ⊢ (functorPushforward (F ⋙ G) R).arrows f✝ ↔ (functorPushforward G (functorPus …
   simp [R.arrows.functorPushforward_comp F G]
+  -- 🎉 no goals
 #align category_theory.sieve.functor_pushforward_comp CategoryTheory.Sieve.functorPushforward_comp
 
 theorem functor_galoisConnection (X : C) :
     GaloisConnection (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
   intro R S
+  -- ⊢ functorPushforward F R ≤ S ↔ R ≤ functorPullback F S
   constructor
+  -- ⊢ functorPushforward F R ≤ S → R ≤ functorPullback F S
   · intro hle X f hf
+    -- ⊢ (functorPullback F S).arrows f
     apply hle
+    -- ⊢ (functorPushforward F R).arrows (F.map f)
     refine' ⟨X, f, 𝟙 _, hf, _⟩
+    -- ⊢ F.map f = 𝟙 (F.obj X) ≫ F.map f
     rw [id_comp]
+    -- 🎉 no goals
   · rintro hle Y f ⟨X, g, h, hg, rfl⟩
+    -- ⊢ S.arrows (h ≫ F.map g)
     apply Sieve.downward_closed S
+    -- ⊢ S.arrows (F.map g)
     exact hle g hg
+    -- 🎉 no goals
 #align category_theory.sieve.functor_galois_connection CategoryTheory.Sieve.functor_galoisConnection
 
 theorem functorPullback_monotone (X : C) :
@@ -712,8 +846,11 @@ theorem functorPushforward_bot (F : C ⥤ D) (X : C) : (⊥ : Sieve X).functorPu
 @[simp]
 theorem functorPushforward_top (F : C ⥤ D) (X : C) : (⊤ : Sieve X).functorPushforward F = ⊤ := by
   refine' (generate_sieve _).symm.trans _
+  -- ⊢ generate (functorPushforward F ⊤).arrows = ⊤
   apply generate_of_contains_isSplitEpi (𝟙 (F.obj X))
+  -- ⊢ (functorPushforward F ⊤).arrows (𝟙 (F.obj X))
   refine' ⟨X, 𝟙 _, 𝟙 _, trivial, by simp⟩
+  -- 🎉 no goals
 #align category_theory.sieve.functor_pushforward_top CategoryTheory.Sieve.functorPushforward_top
 
 @[simp]
@@ -729,6 +866,7 @@ theorem functorPullback_top (F : C ⥤ D) (X : C) : (⊤ : Sieve (F.obj X)).func
 theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨V, f, 𝟙 _, h, by simp⟩
+                    -- 🎉 no goals
 #align category_theory.sieve.image_mem_functor_pushforward CategoryTheory.Sieve.image_mem_functorPushforward
 
 /-- When `F` is essentially surjective and full, the galois connection is a galois insertion. -/
@@ -736,9 +874,13 @@ def essSurjFullFunctorGaloisInsertion [EssSurj F] [Full F] (X : C) :
     GaloisInsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisInsertion
+  -- ⊢ ∀ (b : Sieve (F.obj X)), b ≤ functorPushforward F (functorPullback F b)
   intro S Y f hf
+  -- ⊢ (functorPushforward F (functorPullback F S)).arrows f
   refine' ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, _⟩
+  -- ⊢ (functorPullback F S).arrows (F.preimage ((Functor.objObjPreimageIso F Y).ho …
   simpa using S.downward_closed hf _
+  -- 🎉 no goals
 #align category_theory.sieve.ess_surj_full_functor_galois_insertion CategoryTheory.Sieve.essSurjFullFunctorGaloisInsertion
 
 /-- When `F` is fully faithful, the galois connection is a galois coinsertion. -/
@@ -746,10 +888,15 @@ def fullyFaithfulFunctorGaloisCoinsertion [Full F] [Faithful F] (X : C) :
     GaloisCoinsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisCoinsertion
+  -- ⊢ ∀ (a : Sieve X), functorPullback F (functorPushforward F a) ≤ a
   rintro S Y f ⟨Z, g, h, h₁, h₂⟩
+  -- ⊢ S.arrows f
   rw [← F.image_preimage h, ← F.map_comp] at h₂
+  -- ⊢ S.arrows f
   rw [F.map_injective h₂]
+  -- ⊢ S.arrows (F.preimage h ≫ g)
   exact S.downward_closed h₁ _
+  -- 🎉 no goals
 #align category_theory.sieve.fully_faithful_functor_galois_coinsertion CategoryTheory.Sieve.fullyFaithfulFunctorGaloisCoinsertion
 
 end Functor
@@ -783,7 +930,9 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
+    -- ⊢ NatTrans.app f Y y = NatTrans.app g Y y
     simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
+    -- 🎉 no goals
 #align category_theory.sieve.functor_inclusion_is_mono CategoryTheory.Sieve.functorInclusion_is_mono
 
 -- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
@@ -796,19 +945,30 @@ def sieveOfSubfunctor {R} (f : R ⟶ yoneda.obj X) : Sieve X
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = g
   downward_closed := by
     rintro Y Z _ ⟨t, rfl⟩ g
+    -- ⊢ ∃ t_1, NatTrans.app f (Opposite.op Z) t_1 = g ≫ NatTrans.app f (Opposite.op  …
     refine' ⟨R.map g.op t, _⟩
+    -- ⊢ NatTrans.app f (Opposite.op Z) (R.map g.op t) = g ≫ NatTrans.app f (Opposite …
     rw [FunctorToTypes.naturality _ _ f]
+    -- ⊢ (yoneda.obj X).map g.op (NatTrans.app f (Opposite.op Y) t) = g ≫ NatTrans.ap …
     simp
+    -- 🎉 no goals
 #align category_theory.sieve.sieve_of_subfunctor CategoryTheory.Sieve.sieveOfSubfunctor
 
 theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusion = S := by
   ext
+  -- ⊢ (sieveOfSubfunctor (functorInclusion S)).arrows f✝ ↔ S.arrows f✝
   simp only [functorInclusion_app, sieveOfSubfunctor_apply]
+  -- ⊢ (∃ t, ↑t = f✝) ↔ S.arrows f✝
   constructor
+  -- ⊢ (∃ t, ↑t = f✝) → S.arrows f✝
   · rintro ⟨⟨f, hf⟩, rfl⟩
+    -- ⊢ S.arrows ↑{ val := f, property := hf }
     exact hf
+    -- 🎉 no goals
   · intro hf
+    -- ⊢ ∃ t, ↑t = f✝
     exact ⟨⟨_, hf⟩, rfl⟩
+    -- 🎉 no goals
 #align category_theory.sieve.sieve_of_subfunctor_functor_inclusion CategoryTheory.Sieve.sieveOfSubfunctor_functorInclusion
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=

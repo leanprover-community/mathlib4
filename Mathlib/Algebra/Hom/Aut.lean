@@ -56,9 +56,40 @@ instance : Group (MulAut M) := by
     zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
     .. } <;>
   intros <;>
+  -- ⊢ a✝ * b✝ * c✝ = a✝ * (b✝ * c✝)
+  -- ⊢ 1 * a✝ = a✝
+  -- ⊢ a✝ * 1 = a✝
+  -- ⊢ npowRec 0 x✝ = 1
+  -- ⊢ npowRec (n✝ + 1) x✝ = x✝ * npowRec n✝ x✝
+  -- ⊢ a✝ / b✝ = a✝ * b✝⁻¹
+  -- ⊢ zpowRec 0 a✝ = 1
+  -- ⊢ zpowRec (Int.ofNat (Nat.succ n✝)) a✝ = a✝ * zpowRec (Int.ofNat n✝) a✝
+  -- ⊢ zpowRec (Int.negSucc n✝) a✝ = (zpowRec (↑(Nat.succ n✝)) a✝)⁻¹
+  -- ⊢ a✝⁻¹ * a✝ = 1
   ext <;>
+  -- ⊢ ↑(a✝ * b✝ * c✝) x✝ = ↑(a✝ * (b✝ * c✝)) x✝
+  -- ⊢ ↑(1 * a✝) x✝ = ↑a✝ x✝
+  -- ⊢ ↑(a✝ * 1) x✝ = ↑a✝ x✝
+  -- ⊢ ↑(npowRec 0 x✝¹) x✝ = ↑1 x✝
+  -- ⊢ ↑(npowRec (n✝ + 1) x✝¹) x✝ = ↑(x✝¹ * npowRec n✝ x✝¹) x✝
+  -- ⊢ ↑(a✝ / b✝) x✝ = ↑(a✝ * b✝⁻¹) x✝
+  -- ⊢ ↑(zpowRec 0 a✝) x✝ = ↑1 x✝
+  -- ⊢ ↑(zpowRec (Int.ofNat (Nat.succ n✝)) a✝) x✝ = ↑(a✝ * zpowRec (Int.ofNat n✝) a …
+  -- ⊢ ↑(zpowRec (Int.negSucc n✝) a✝) x✝ = ↑(zpowRec (↑(Nat.succ n✝)) a✝)⁻¹ x✝
+  -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
   try rfl
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
   apply Equiv.left_inv
+  -- 🎉 no goals
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -108,6 +139,11 @@ theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : MulAut M →* Equiv.Perm M := by
   refine' { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
+  -- ⊢ 1.toEquiv = 1
+                                               -- ⊢ 1.toEquiv = 1
+                                               -- ⊢ OneHom.toFun { toFun := MulEquiv.toEquiv, map_one' := ?refine'_1 } (x✝ * y✝) …
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
 #align mul_aut.to_perm MulAut.toPerm
 
 /-- The tautological action by `MulAut M` on `M`.
@@ -140,12 +176,21 @@ def conj [Group G] : G →* MulAut G where
     { toFun := fun h => g * h * g⁻¹
       invFun := fun h => g⁻¹ * h * g
       left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, mul_left_inv, mul_one]
+                              -- 🎉 no goals
       right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_right_inv, mul_one]
+                               -- 🎉 no goals
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
+                     -- 🎉 no goals
   map_mul' g₁ g₂ := by
     ext h
+    -- ⊢ ↑(OneHom.toFun { toFun := fun g => { toEquiv := { toFun := fun h => g * h *  …
     show g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
+    -- ⊢ g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
+                 -- ⊢ ↑((fun g => { toEquiv := { toFun := fun h => g * h * g⁻¹, invFun := fun h => …
+                      -- ⊢ ↑{ toEquiv := { toFun := fun h => h, invFun := fun h => h, left_inv := (_ :  …
+                                                                        -- 🎉 no goals
     simp only [mul_assoc, mul_inv_rev]
+    -- 🎉 no goals
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 #align mul_aut.conj MulAut.conj
 
@@ -183,9 +228,40 @@ instance group : Group (AddAut A) := by
     zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
     .. } <;>
   intros <;>
+  -- ⊢ a✝ * b✝ * c✝ = a✝ * (b✝ * c✝)
+  -- ⊢ 1 * a✝ = a✝
+  -- ⊢ a✝ * 1 = a✝
+  -- ⊢ npowRec 0 x✝ = 1
+  -- ⊢ npowRec (n✝ + 1) x✝ = x✝ * npowRec n✝ x✝
+  -- ⊢ a✝ / b✝ = a✝ * b✝⁻¹
+  -- ⊢ zpowRec 0 a✝ = 1
+  -- ⊢ zpowRec (Int.ofNat (Nat.succ n✝)) a✝ = a✝ * zpowRec (Int.ofNat n✝) a✝
+  -- ⊢ zpowRec (Int.negSucc n✝) a✝ = (zpowRec (↑(Nat.succ n✝)) a✝)⁻¹
+  -- ⊢ a✝⁻¹ * a✝ = 1
   ext <;>
+  -- ⊢ ↑(a✝ * b✝ * c✝) x✝ = ↑(a✝ * (b✝ * c✝)) x✝
+  -- ⊢ ↑(1 * a✝) x✝ = ↑a✝ x✝
+  -- ⊢ ↑(a✝ * 1) x✝ = ↑a✝ x✝
+  -- ⊢ ↑(npowRec 0 x✝¹) x✝ = ↑1 x✝
+  -- ⊢ ↑(npowRec (n✝ + 1) x✝¹) x✝ = ↑(x✝¹ * npowRec n✝ x✝¹) x✝
+  -- ⊢ ↑(a✝ / b✝) x✝ = ↑(a✝ * b✝⁻¹) x✝
+  -- ⊢ ↑(zpowRec 0 a✝) x✝ = ↑1 x✝
+  -- ⊢ ↑(zpowRec (Int.ofNat (Nat.succ n✝)) a✝) x✝ = ↑(a✝ * zpowRec (Int.ofNat n✝) a …
+  -- ⊢ ↑(zpowRec (Int.negSucc n✝) a✝) x✝ = ↑(zpowRec (↑(Nat.succ n✝)) a✝)⁻¹ x✝
+  -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
   try rfl
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
   apply Equiv.left_inv
+  -- 🎉 no goals
 #align add_aut.group AddAut.group
 
 instance : Inhabited (AddAut A) :=
@@ -236,6 +312,11 @@ theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : AddAut A →* Equiv.Perm A := by
   refine' { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
+  -- ⊢ 1.toEquiv = 1
+                                                -- ⊢ 1.toEquiv = 1
+                                                -- ⊢ OneHom.toFun { toFun := AddEquiv.toEquiv, map_one' := ?refine'_1 } (x✝ * y✝) …
+                                                           -- 🎉 no goals
+                                                           -- 🎉 no goals
 #align add_aut.to_perm AddAut.toPerm
 
 /-- The tautological action by `AddAut A` on `A`.
@@ -269,12 +350,23 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         -- this definition is chosen to match `MulAut.conj`
         invFun := fun h => -g + h + g
         left_inv := fun _ => by simp only [add_assoc, neg_add_cancel_left, add_left_neg, add_zero]
+                                -- 🎉 no goals
         right_inv := fun _ => by simp only [add_assoc, add_neg_cancel_left, add_right_neg, add_zero]
+                                 -- 🎉 no goals
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
+                       -- 🎉 no goals
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
+    -- ⊢ ↑Additive.toMul (ZeroHom.toFun { toFun := fun g => ↑Additive.ofMul { toEquiv …
+                                    -- ⊢ ↑(↑Additive.toMul (ZeroHom.toFun { toFun := fun g => ↑Additive.ofMul { toEqu …
     show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    -- ⊢ g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    -- ⊢ ↑Additive.toMul ((fun g => ↑Additive.ofMul { toEquiv := { toFun := fun h =>  …
+                                    -- ⊢ ↑(↑Additive.toMul ((fun g => ↑Additive.ofMul { toEquiv := { toFun := fun h = …
     simp only [add_assoc, neg_add_rev]
+    -- ⊢ ↑{ toEquiv := { toFun := fun h => h, invFun := fun h => h, left_inv := (_ :  …
+    -- 🎉 no goals
+    -- 🎉 no goals
   map_zero' := by
     apply Additive.toMul.injective; ext
     simp only [zero_add, neg_zero, add_zero, toMul_ofMul, toMul_zero, one_apply]

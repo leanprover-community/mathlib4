@@ -78,8 +78,11 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
       funext fun h =>
         have :
           Pi.cons s a b e₁ e (by simpa only [Multiset.mem_cons, mem_insert] using h) =
+                                 -- 🎉 no goals
             Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) :=
+                                   -- 🎉 no goals
           by rw [eq]
+             -- 🎉 no goals
         this
 #align finset.pi.cons_injective Finset.Pi.cons_injective
 
@@ -92,7 +95,9 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
     (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
+  -- ⊢ (pi (insert a s) t).val = (Finset.biUnion (t a) fun b => image (Pi.cons s a  …
   rw [← (pi (insert a s) t).2.dedup]
+  -- ⊢ dedup (pi (insert a s) t).val = (Finset.biUnion (t a) fun b => image (Pi.con …
   refine'
     (fun s' (h : s' = a ::ₘ s.1) =>
         (_ :
@@ -104,19 +109,31 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
                     Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
       _ (insert_val_of_not_mem ha)
   subst s'; rw [pi_cons]
+  -- ⊢ dedup (Multiset.pi (a ::ₘ s.val) fun a => (t a).val) = dedup (Multiset.bind  …
+            -- ⊢ dedup (Multiset.bind (t a).val fun b => Multiset.map (Multiset.Pi.cons s.val …
   congr; funext b
+  -- ⊢ (fun b => Multiset.map (Multiset.Pi.cons s.val a b) (Multiset.pi s.val fun a …
+         -- ⊢ Multiset.map (Multiset.Pi.cons s.val a b) (Multiset.pi s.val fun a => (t a). …
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
+  -- 🎉 no goals
 #align finset.pi_insert Finset.pi_insert
 
 theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
     (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
   rw [eq_singleton_iff_unique_mem]
+  -- ⊢ ((fun a x => f a) ∈ pi s fun a => {f a}) ∧ ∀ (x : (a : α) → a ∈ s → β), (x ∈ …
   constructor
+  -- ⊢ (fun a x => f a) ∈ pi s fun a => {f a}
   · simp
+    -- 🎉 no goals
   intro a ha
+  -- ⊢ a = fun a x => f a
   ext i hi
+  -- ⊢ a i hi = f i
   rw [mem_pi] at ha
+  -- ⊢ a i hi = f i
   simpa using ha i hi
+  -- 🎉 no goals
 #align finset.pi_singletons Finset.pi_singletons
 
 theorem pi_const_singleton {β : Type*} (s : Finset α) (i : β) :

@@ -101,11 +101,17 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L
 theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext f
+  -- ⊢ f ∈ fixingSubgroup ⊥ ↔ f ∈ ⊤
   refine' ⟨fun _ => Subgroup.mem_top _, fun _ => _⟩
+  -- ⊢ f ∈ fixingSubgroup ⊥
   rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
+  -- ⊢ f • ↑{ val := x, property := hx } = ↑{ val := x, property := hx }
   rw [IntermediateField.mem_bot] at hx
+  -- ⊢ f • ↑{ val := x, property := hx✝ } = ↑{ val := x, property := hx✝ }
   rcases hx with ⟨y, rfl⟩
+  -- ⊢ f • ↑{ val := ↑(algebraMap K L) y, property := hx } = ↑{ val := ↑(algebraMap …
   exact f.commutes y
+  -- 🎉 no goals
 #align intermediate_field.fixing_subgroup.bot IntermediateField.fixingSubgroup.bot
 
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L` -/
@@ -132,7 +138,9 @@ theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field 
 theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
     {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup := by
   rintro σ hσ ⟨x, hx⟩
+  -- ⊢ σ • ↑{ val := x, property := hx } = ↑{ val := x, property := hx }
   exact hσ ⟨x, h12 hx⟩
+  -- 🎉 no goals
 #align intermediate_field.fixing_subgroup.antimono IntermediateField.fixingSubgroup.antimono
 
 /-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `L ≃ₐ[K] L` whose sets
@@ -142,9 +150,13 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
   nonempty := ⟨⊤, ⊤, top_fixedByFinite, rfl⟩
   inter_sets := by
     rintro X Y ⟨H1, ⟨E1, h_E1, rfl⟩, rfl⟩ ⟨H2, ⟨E2, h_E2, rfl⟩, rfl⟩
+    -- ⊢ ∃ z, z ∈ (fun g => g.carrier) '' fixedByFinite K L ∧ z ⊆ (fun g => g.carrier …
     use (IntermediateField.fixingSubgroup (E1 ⊔ E2)).carrier
+    -- ⊢ (IntermediateField.fixingSubgroup (E1 ⊔ E2)).toSubmonoid.toSubsemigroup.carr …
     refine' ⟨⟨_, ⟨_, finiteDimensional_sup E1 E2 h_E1 h_E2, rfl⟩, rfl⟩, _⟩
+    -- ⊢ (IntermediateField.fixingSubgroup (E1 ⊔ E2)).toSubmonoid.toSubsemigroup.carr …
     rw [Set.subset_inter_iff]
+    -- ⊢ (IntermediateField.fixingSubgroup (E1 ⊔ E2)).toSubmonoid.toSubsemigroup.carr …
     exact
       ⟨IntermediateField.fixingSubgroup.antimono le_sup_left,
         IntermediateField.fixingSubgroup.antimono le_sup_right⟩
@@ -166,29 +178,47 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   mul' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
+      -- ⊢ (fun g => g.carrier) H * (fun g => g.carrier) H ⊆ (fun g => g.carrier) H
       rintro x ⟨a, b, haH, hbH, rfl⟩
+      -- ⊢ (fun x x_1 => x * x_1) a b ∈ (fun g => g.carrier) H
       exact H.mul_mem haH hbH⟩
+      -- 🎉 no goals
   inv' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
+      -- ⊢ (fun g => g.carrier) H ⊆ (fun x => x⁻¹) ⁻¹' (fun g => g.carrier) H
       exact fun _ => H.inv_mem'⟩
+      -- 🎉 no goals
   conj' := by
     rintro σ U ⟨H, ⟨E, hE, rfl⟩, rfl⟩
+    -- ⊢ ∃ V, V ∈ (galBasis K L).sets ∧ V ⊆ (fun x => σ * x * σ⁻¹) ⁻¹' (fun g => g.ca …
     let F : IntermediateField K L := E.map σ.symm.toAlgHom
+    -- ⊢ ∃ V, V ∈ (galBasis K L).sets ∧ V ⊆ (fun x => σ * x * σ⁻¹) ⁻¹' (fun g => g.ca …
     refine' ⟨F.fixingSubgroup.carrier, ⟨⟨F.fixingSubgroup, ⟨F, _, rfl⟩, rfl⟩, fun g hg => _⟩⟩
+    -- ⊢ F ∈ finiteExts K L
     · have : FiniteDimensional K E := hE
+      -- ⊢ F ∈ finiteExts K L
       apply im_finiteDimensional σ.symm
+      -- 🎉 no goals
     change σ * g * σ⁻¹ ∈ E.fixingSubgroup
+    -- ⊢ σ * g * σ⁻¹ ∈ IntermediateField.fixingSubgroup E
     rw [IntermediateField.mem_fixingSubgroup_iff]
+    -- ⊢ ∀ (x : L), x ∈ E → ↑(σ * g * σ⁻¹) x = x
     intro x hx
+    -- ⊢ ↑(σ * g * σ⁻¹) x = x
     change σ (g (σ⁻¹ x)) = x
+    -- ⊢ ↑σ (↑g (↑σ⁻¹ x)) = x
     have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp; rw [← AlgEquiv.invFun_eq_symm]; rfl⟩
+    -- ⊢ ↑σ (↑g (↑σ⁻¹ x)) = x
     have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x := by
       rw [Subgroup.mem_carrier, IntermediateField.mem_fixingSubgroup_iff F g] at hg
       exact hg (σ⁻¹ x) h_in_F
     rw [h_g_fix]
+    -- ⊢ ↑σ (↑σ⁻¹ x) = x
     change σ (σ⁻¹ x) = x
+    -- ⊢ ↑σ (↑σ⁻¹ x) = x
     exact AlgEquiv.apply_symm_apply σ x
+    -- 🎉 no goals
 #align gal_group_basis galGroupBasis
 
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
@@ -214,7 +244,9 @@ theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L
   have h_basis : E.fixingSubgroup.carrier ∈ galGroupBasis K L :=
     ⟨E.fixingSubgroup, ⟨E, ‹_›, rfl⟩, rfl⟩
   have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
+  -- ⊢ IsOpen ↑(fixingSubgroup E)
   exact Subgroup.isOpen_of_mem_nhds _ h_nhd
+  -- 🎉 no goals
 #align intermediate_field.fixing_subgroup_is_open IntermediateField.fixingSubgroup_isOpen
 
 /-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ L ≃ₐ[K] L` is
@@ -230,33 +262,51 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       cases' FunLike.exists_ne hfg with x hx
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       have hφx : φ x ≠ x := by
         apply ne_of_apply_ne f
         change f (f.symm (g x)) ≠ f x
         rw [AlgEquiv.apply_symm_apply f (g x), ne_comm]
         exact hx
       let E : IntermediateField K L := IntermediateField.adjoin K {x}
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       let h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional (h_int x)
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       let H := E.fixingSubgroup
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       have h_basis : (H : Set (L ≃ₐ[K] L)) ∈ galGroupBasis K L := ⟨H, ⟨E, ⟨h_findim, rfl⟩⟩, rfl⟩
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       rw [mem_nhds_iff] at h_nhd
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       rcases h_nhd with ⟨W, hWH, hW_open, hW_1⟩
+      -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ f ∈ u ∧ g ∈ v ∧ Disjoint u v
       refine' ⟨leftCoset f W, leftCoset g W,
         ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, _⟩⟩
       rw [Set.disjoint_left]
+      -- ⊢ ∀ ⦃a : L ≃ₐ[K] L⦄, a ∈ leftCoset f W → ¬a ∈ leftCoset g W
       rintro σ ⟨w1, hw1, h⟩ ⟨w2, hw2, rfl⟩
+      -- ⊢ False
       rw [eq_inv_mul_iff_mul_eq.symm, ← mul_assoc, mul_inv_eq_iff_eq_mul.symm] at h
+      -- ⊢ False
       have h_in_H : w1 * w2⁻¹ ∈ H := H.mul_mem (hWH hw1) (H.inv_mem (hWH hw2))
+      -- ⊢ False
       rw [h] at h_in_H
+      -- ⊢ False
       change φ ∈ E.fixingSubgroup at h_in_H
+      -- ⊢ False
       rw [IntermediateField.mem_fixingSubgroup_iff] at h_in_H
+      -- ⊢ False
       specialize h_in_H x
+      -- ⊢ False
       have hxE : x ∈ E := by
         apply IntermediateField.subset_adjoin
         apply Set.mem_singleton
       exact hφx (h_in_H hxE) }
+      -- 🎉 no goals
 #align krull_topology_t2 krullTopology_t2
 
 end KrullT2
@@ -268,17 +318,24 @@ section TotallyDisconnected
 theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
   apply isTotallyDisconnected_of_clopen_set
+  -- ⊢ Pairwise fun x y => ∃ U, IsClopen U ∧ x ∈ U ∧ ¬y ∈ U
   intro σ τ h_diff
+  -- ⊢ ∃ U, IsClopen U ∧ σ ∈ U ∧ ¬τ ∈ U
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
+  -- ⊢ ∃ U, IsClopen U ∧ σ ∈ U ∧ ¬τ ∈ U
   rcases FunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
+  -- ⊢ ∃ U, IsClopen U ∧ σ ∈ U ∧ ¬τ ∈ U
   let E := IntermediateField.adjoin K ({x} : Set L)
+  -- ⊢ ∃ U, IsClopen U ∧ σ ∈ U ∧ ¬τ ∈ U
   haveI := IntermediateField.adjoin.finiteDimensional (h_int x)
+  -- ⊢ ∃ U, IsClopen U ∧ σ ∈ U ∧ ¬τ ∈ U
   refine' ⟨leftCoset σ E.fixingSubgroup,
     ⟨E.fixingSubgroup_isOpen.leftCoset σ, E.fixingSubgroup_isClosed.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, _⟩
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
     not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
+  -- 🎉 no goals
 #align krull_topology_totally_disconnected krullTopology_totallyDisconnected
 
 end TotallyDisconnected

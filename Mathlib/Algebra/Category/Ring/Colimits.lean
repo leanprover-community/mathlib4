@@ -168,13 +168,19 @@ instance : CommRing (ColimitType.{v} F) :=
     mul_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.mul_comm _ _
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
+      -- ⊢ Quot.map₂ mul (_ : ∀ (x y y' : Prequotient F), Relation F y y' → Relation F  …
       exact Quot.sound (Relation.mul_assoc _ _ _)
+      -- 🎉 no goals
     mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
     zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
+      -- ⊢ Quot.map₂ mul (_ : ∀ (x y y' : Prequotient F), Relation F y y' → Relation F  …
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+      -- 🎉 no goals
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
+      -- ⊢ Quot.map₂ mul (_ : ∀ (x y y' : Prequotient F), Relation F y y' → Relation F  …
     right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+      -- 🎉 no goals
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
@@ -227,23 +233,37 @@ ring. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_one' := by apply Quot.sound; apply Relation.one
+                 -- ⊢ Setoid.r (Prequotient.of j 1) one
+                                   -- 🎉 no goals
   map_mul' := by intros; apply Quot.sound; apply Relation.mul
+                 -- ⊢ OneHom.toFun { toFun := coconeFun F j, map_one' := (_ : Quot.mk Setoid.r (Pr …
+                         -- ⊢ Setoid.r (Prequotient.of j (x✝ * y✝)) (mul (Prequotient.of j x✝) (Prequotien …
+                                           -- 🎉 no goals
   map_zero' := by apply Quot.sound; apply Relation.zero
+                  -- ⊢ Setoid.r (Prequotient.of j 0) zero
+                                    -- 🎉 no goals
   map_add' := by intros; apply Quot.sound; apply Relation.add
+                 -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := coconeFun F j, map_one' := (_ : Quot …
+                         -- ⊢ Setoid.r (Prequotient.of j (x✝ + y✝)) (add (Prequotient.of j x✝) (Prequotien …
+                                           -- 🎉 no goals
 #align CommRing.colimits.cocone_morphism CommRingCat.Colimits.coconeMorphism
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
+  -- ⊢ ↑(F.map f ≫ coconeMorphism F j') x✝ = ↑(coconeMorphism F j) x✝
   apply Quot.sound
+  -- ⊢ Setoid.r (Prequotient.of j' (↑(F.map f) x✝)) (Prequotient.of j x✝)
   apply Relation.map
+  -- 🎉 no goals
 #align CommRing.colimits.cocone_naturality CommRingCat.Colimits.cocone_naturality
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f, comp_apply]
+  -- 🎉 no goals
 #align CommRing.colimits.cocone_naturality_components CommRingCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit commutative ring. -/
@@ -267,8 +287,11 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
 /-- The function from the colimit commutative ring to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
+  -- ⊢ Prequotient F → ↑s.pt
   · exact descFunLift F s
+    -- 🎉 no goals
   · intro x y r
+    -- ⊢ descFunLift F s x = descFunLift F s y
     induction r with
     | refl => rfl
     | symm x y _ ih => exact ih.symm
@@ -307,9 +330,14 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_zero' := rfl
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
+    -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := descFun F s, map_one' := (_ : descFu …
     dsimp [descFun, (· + ·)]
+    -- ⊢ Quot.lift (descFunLift F s) (_ : ∀ (x y : Prequotient F), Setoid.r x y → des …
     rw [←quot_add]
+                     -- 🎉 no goals
+    -- ⊢ Quot.lift (descFunLift F s) (_ : ∀ (x y : Prequotient F), Setoid.r x y → des …
     rfl
+    -- 🎉 no goals
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl
 #align CommRing.colimits.desc_morphism CommRingCat.Colimits.descMorphism
 
@@ -318,8 +346,11 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := RingHom.ext fun x => by
     change (colimitCocone F).pt →+* s.pt at m
+    -- ⊢ ↑m x = ↑((fun s => descMorphism F s) s) x
     refine Quot.inductionOn x ?_
+    -- ⊢ ∀ (a : Prequotient F), ↑m (Quot.mk Setoid.r a) = ↑((fun s => descMorphism F  …
     intro x
+    -- ⊢ ↑m (Quot.mk Setoid.r x) = ↑((fun s => descMorphism F s) s) (Quot.mk Setoid.r …
     induction x with
     | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
     | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]

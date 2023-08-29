@@ -76,16 +76,19 @@ variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype
 
 theorem exp_diagonal (v : m → 𝔸) : exp 𝕂 (diagonal v) = diagonal (exp 𝕂 v) := by
   simp_rw [exp_eq_tsum, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
+  -- 🎉 no goals
 #align matrix.exp_diagonal Matrix.exp_diagonal
 
 theorem exp_blockDiagonal (v : m → Matrix n n 𝔸) :
     exp 𝕂 (blockDiagonal v) = blockDiagonal (exp 𝕂 v) := by
   simp_rw [exp_eq_tsum, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
+  -- 🎉 no goals
 #align matrix.exp_block_diagonal Matrix.exp_blockDiagonal
 
 theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
     exp 𝕂 (blockDiagonal' v) = blockDiagonal' (exp 𝕂 v) := by
   simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
+  -- 🎉 no goals
 #align matrix.exp_block_diagonal' Matrix.exp_blockDiagonal'
 
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
@@ -107,6 +110,7 @@ variable [Fintype m] [DecidableEq m] [Field 𝕂] [CommRing 𝔸] [TopologicalSp
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp 𝕂 Aᵀ = (exp 𝕂 A)ᵀ := by
   simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]
+  -- 🎉 no goals
 #align matrix.exp_transpose Matrix.exp_transpose
 
 theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp 𝕂 A).IsSymm :=
@@ -125,9 +129,13 @@ variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  -- ⊢ exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  -- ⊢ exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
+  -- ⊢ exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B
   exact exp_add_of_commute h
+  -- 🎉 no goals
 #align matrix.exp_add_of_commute Matrix.exp_add_of_commute
 
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
@@ -135,32 +143,48 @@ nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m �
     exp 𝕂 (∑ i in s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  -- ⊢ exp 𝕂 (∑ i in s, f i) = Finset.noncommProd s (fun i => exp 𝕂 (f i)) (_ : ∀ ( …
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  -- ⊢ exp 𝕂 (∑ i in s, f i) = Finset.noncommProd s (fun i => exp 𝕂 (f i)) (_ : ∀ ( …
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
+  -- ⊢ exp 𝕂 (∑ i in s, f i) = Finset.noncommProd s (fun i => exp 𝕂 (f i)) (_ : ∀ ( …
   exact exp_sum_of_commute s f h
+  -- 🎉 no goals
 #align matrix.exp_sum_of_commute Matrix.exp_sum_of_commute
 
 nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = exp 𝕂 A ^ n := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  -- ⊢ exp 𝕂 (n • A) = exp 𝕂 A ^ n
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  -- ⊢ exp 𝕂 (n • A) = exp 𝕂 A ^ n
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
+  -- ⊢ exp 𝕂 (n • A) = exp 𝕂 A ^ n
   exact exp_nsmul n A
+  -- 🎉 no goals
 #align matrix.exp_nsmul Matrix.exp_nsmul
 
 nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  -- ⊢ IsUnit (exp 𝕂 A)
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  -- ⊢ IsUnit (exp 𝕂 A)
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
+  -- ⊢ IsUnit (exp 𝕂 A)
   exact isUnit_exp _ A
+  -- 🎉 no goals
 #align matrix.is_unit_exp Matrix.isUnit_exp
 
 -- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp 𝕂 (U.val * A * (U⁻¹).val) = U.val * exp 𝕂 A * (U⁻¹).val := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  -- ⊢ exp 𝕂 (↑U * A * ↑U⁻¹) = ↑U * exp 𝕂 A * ↑U⁻¹
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  -- ⊢ exp 𝕂 (↑U * A * ↑U⁻¹) = ↑U * exp 𝕂 A * ↑U⁻¹
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
+  -- ⊢ exp 𝕂 (↑U * A * ↑U⁻¹) = ↑U * exp 𝕂 A * ↑U⁻¹
   exact exp_units_conj _ U A
+  -- 🎉 no goals
 #align matrix.exp_units_conj Matrix.exp_units_conj
 
 -- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
@@ -178,29 +202,40 @@ variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
   rw [nonsing_inv_eq_ring_inverse]
+  -- ⊢ exp 𝕂 (-A) = Ring.inverse (exp 𝕂 A)
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  -- ⊢ exp 𝕂 (-A) = Ring.inverse (exp 𝕂 A)
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
+  -- ⊢ exp 𝕂 (-A) = Ring.inverse (exp 𝕂 A)
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
+  -- ⊢ exp 𝕂 (-A) = Ring.inverse (exp 𝕂 A)
   exact (Ring.inverse_exp _ A).symm
+  -- 🎉 no goals
 #align matrix.exp_neg Matrix.exp_neg
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp 𝕂 A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
+  -- ⊢ exp 𝕂 (↑n • A) = exp 𝕂 A ^ ↑n
   · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul]
+    -- 🎉 no goals
   · have : IsUnit (exp 𝕂 A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _ _)
+    -- ⊢ exp 𝕂 (-↑n • A) = exp 𝕂 A ^ (-↑n)
     rw [Matrix.zpow_neg this, zpow_ofNat, neg_smul, exp_neg, coe_nat_zsmul, exp_nsmul]
+    -- 🎉 no goals
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj 𝕂 u A
+          -- 🎉 no goals
 #align matrix.exp_conj Matrix.exp_conj
 
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' 𝕂 u A
+          -- 🎉 no goals
 #align matrix.exp_conj' Matrix.exp_conj'
 
 end NormedComm

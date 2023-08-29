@@ -36,6 +36,7 @@ end circle
 
 theorem arg_expMapCircle {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (expMapCircle x) = x := by
   rw [expMapCircle_apply, exp_mul_I, arg_cos_add_sin_mul_I ⟨h₁, h₂⟩]
+  -- 🎉 no goals
 #align arg_exp_map_circle arg_expMapCircle
 
 @[simp]
@@ -85,13 +86,18 @@ theorem surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ 
 theorem expMapCircle_eq_expMapCircle {x y : ℝ} :
     expMapCircle x = expMapCircle y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, expMapCircle_apply, expMapCircle_apply, exp_eq_exp_iff_exists_int]
+  -- ⊢ (∃ n, ↑x * I = ↑y * I + ↑n * (2 * ↑π * I)) ↔ ∃ m, x = y + ↑m * (2 * π)
   refine' exists_congr fun n => _
+  -- ⊢ ↑x * I = ↑y * I + ↑n * (2 * ↑π * I) ↔ x = y + ↑n * (2 * π)
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero]
+  -- ⊢ ↑x = ↑y + ↑n * (2 * ↑π) ↔ x = y + ↑n * (2 * π)
   norm_cast
+  -- 🎉 no goals
 #align exp_map_circle_eq_exp_map_circle expMapCircle_eq_expMapCircle
 
 theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
   expMapCircle_eq_expMapCircle.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
+                                        -- 🎉 no goals
 #align periodic_exp_map_circle periodic_expMapCircle
 
 @[simp]
@@ -120,33 +126,42 @@ theorem Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _roo
 theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
     (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I := by
   induction θ using Real.Angle.induction_on
+  -- ⊢ ↑(expMapCircle ↑x✝) = ↑(cos ↑x✝) + ↑(sin ↑x✝) * I
   simp [Complex.exp_mul_I]
+  -- 🎉 no goals
 #align real.angle.coe_exp_map_circle Real.Angle.coe_expMapCircle
 
 @[simp]
 theorem Real.Angle.expMapCircle_zero : Real.Angle.expMapCircle 0 = 1 := by
   rw [← Real.Angle.coe_zero, Real.Angle.expMapCircle_coe, _root_.expMapCircle_zero]
+  -- 🎉 no goals
 #align real.angle.exp_map_circle_zero Real.Angle.expMapCircle_zero
 
 @[simp]
 theorem Real.Angle.expMapCircle_neg (θ : Real.Angle) :
     Real.Angle.expMapCircle (-θ) = (Real.Angle.expMapCircle θ)⁻¹ := by
   induction θ using Real.Angle.induction_on
+  -- ⊢ expMapCircle (-↑x✝) = (expMapCircle ↑x✝)⁻¹
   simp_rw [← Real.Angle.coe_neg, Real.Angle.expMapCircle_coe, _root_.expMapCircle_neg]
+  -- 🎉 no goals
 #align real.angle.exp_map_circle_neg Real.Angle.expMapCircle_neg
 
 @[simp]
 theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) : Real.Angle.expMapCircle (θ₁ + θ₂) =
     Real.Angle.expMapCircle θ₁ * Real.Angle.expMapCircle θ₂ := by
   induction θ₁ using Real.Angle.induction_on
+  -- ⊢ expMapCircle (↑x✝ + θ₂) = expMapCircle ↑x✝ * expMapCircle θ₂
   induction θ₂ using Real.Angle.induction_on
+  -- ⊢ expMapCircle (↑x✝¹ + ↑x✝) = expMapCircle ↑x✝¹ * expMapCircle ↑x✝
   exact _root_.expMapCircle_add _ _
+  -- 🎉 no goals
 #align real.angle.exp_map_circle_add Real.Angle.expMapCircle_add
 
 @[simp]
 theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
     (arg (Real.Angle.expMapCircle θ) : Real.Angle) = θ := by
   induction θ using Real.Angle.induction_on
+  -- ⊢ ↑(arg ↑(expMapCircle ↑x✝)) = ↑x✝
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle

@@ -87,19 +87,27 @@ def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
 
 theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
   obtain ⟨h, -⟩ := (P.isPartition.2 v).choose_spec.1
+  -- ⊢ partOfVertex P v ∈ P.parts
   exact h
+  -- 🎉 no goals
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
 theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
   obtain ⟨⟨h1, h2⟩, _h3⟩ := (P.isPartition.2 v).choose_spec
+  -- ⊢ v ∈ partOfVertex P v
   exact h2.1
+  -- 🎉 no goals
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
 theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by
   intro hn
+  -- ⊢ False
   have hw := P.mem_partOfVertex w
+  -- ⊢ False
   rw [← hn] at hw
+  -- ⊢ False
   exact P.independent _ (P.partOfVertex_mem v) (P.mem_partOfVertex v) hw (G.ne_of_adj h) h
+  -- 🎉 no goals
 #align simple_graph.partition.part_of_vertex_ne_of_adj SimpleGraph.Partition.partOfVertex_ne_of_adj
 
 /-- Create a coloring using the parts themselves as the colors.
@@ -107,7 +115,9 @@ Each vertex is colored by the part it's contained in. -/
 def toColoring : G.Coloring P.parts :=
   Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦ by
     rw [Ne.def, Subtype.mk_eq_mk]
+    -- ⊢ ¬partOfVertex P v✝ = partOfVertex P w✝
     exact P.partOfVertex_ne_of_adj hvw
+    -- 🎉 no goals
 #align simple_graph.partition.to_coloring SimpleGraph.Partition.toColoring
 
 /-- Like `SimpleGraph.Partition.toColoring` but uses `Set V` as the coloring type. -/
@@ -131,7 +141,9 @@ def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
   isPartition := C.colorClasses_isPartition
   independent := by
     rintro s ⟨c, rfl⟩
+    -- ⊢ IsAntichain G.Adj {x | Setoid.Rel (Setoid.ker ↑C) x c}
     apply C.color_classes_independent
+    -- 🎉 no goals
 #align simple_graph.coloring.to_partition SimpleGraph.Coloring.toPartition
 
 /-- The partition where every vertex is in its own part. -/
@@ -140,16 +152,27 @@ instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
+  -- ⊢ Partitionable G n → Colorable G n
   · rintro ⟨P, hf, hc⟩
+    -- ⊢ Colorable G n
     have : Fintype P.parts := hf.fintype
+    -- ⊢ Colorable G n
     rw [Set.Finite.card_toFinset hf] at hc
+    -- ⊢ Colorable G n
     apply P.to_colorable.mono hc
+    -- 🎉 no goals
   · rintro ⟨C⟩
+    -- ⊢ Partitionable G n
     refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
+    -- ⊢ Finset.card (Set.Finite.toFinset (_ : Set.Finite (Coloring.colorClasses C))) …
     generalize_proofs h
+    -- ⊢ Finset.card (Set.Finite.toFinset h) ≤ Fintype.card (Fin n)
     haveI : Fintype C.colorClasses := C.colorClasses_finite.fintype
+    -- ⊢ Finset.card (Set.Finite.toFinset h) ≤ Fintype.card (Fin n)
     rw [h.card_toFinset]
+    -- ⊢ Fintype.card ↑(Coloring.colorClasses C) ≤ Fintype.card (Fin n)
     exact C.card_colorClasses_le
+    -- 🎉 no goals
 #align simple_graph.partitionable_iff_colorable SimpleGraph.partitionable_iff_colorable
 
 end SimpleGraph

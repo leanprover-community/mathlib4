@@ -56,6 +56,7 @@ theorem bot_eq [Preorder α] {a : α} : (⊥ : { x : α // a ≤ x }) = ⟨a, le
 
 instance noMaxOrder [PartialOrder α] [NoMaxOrder α] {a : α} : NoMaxOrder { x : α // a ≤ x } :=
   show NoMaxOrder (Ici a) by infer_instance
+                             -- 🎉 no goals
 #align nonneg.no_max_order Nonneg.noMaxOrder
 
 instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup { x : α // a ≤ x } :=
@@ -95,9 +96,13 @@ protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCo
       (Function.funext_iff.1 (@subset_sSup_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
         Subtype.eq <| by
           rw [bot_eq]
+          -- ⊢ ↑(if ht : sSup (Subtype.val '' ∅) ∈ Ici a then { val := sSup (Subtype.val '' …
           cases' h.lt_or_eq with h2 h2
+          -- ⊢ ↑(if ht : sSup (Subtype.val '' ∅) ∈ Ici a then { val := sSup (Subtype.val '' …
           · simp [h2.not_le]
+            -- 🎉 no goals
           simp [h2] }
+          -- 🎉 no goals
 #align nonneg.conditionally_complete_linear_order_bot Nonneg.conditionallyCompleteLinearOrderBot
 
 instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=
@@ -225,7 +230,10 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
+                       -- 🎉 no goals
     natCast_succ := fun _ => by simp; rfl }
+                                -- ⊢ { val := ↑x✝ + 1, property := (_ : (fun x => 0 ≤ x) (↑x✝ + 1)) } = { val :=  …
+                                      -- 🎉 no goals
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
@@ -283,10 +291,12 @@ instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
 -- These prevent noncomputable instances being found, as it does not require `LinearOrder` which
 -- is frequently non-computable.
 instance monoidWithZero [OrderedSemiring α] : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
+                                                                                      -- 🎉 no goals
 #align nonneg.monoid_with_zero Nonneg.monoidWithZero
 
 instance commMonoidWithZero [OrderedCommSemiring α] : CommMonoidWithZero { x : α // 0 ≤ x } := by
   infer_instance
+  -- 🎉 no goals
 #align nonneg.comm_monoid_with_zero Nonneg.commMonoidWithZero
 
 instance semiring [OrderedSemiring α] : Semiring { x : α // 0 ≤ x } :=
@@ -336,7 +346,9 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
   { Nonneg.canonicallyOrderedAddMonoid, Nonneg.orderedCommSemiring with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
+      -- ⊢ { val := a, property := ha } * { val := b, property := hb } = 0 → { val := a …
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
+      -- 🎉 no goals
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
 
 instance canonicallyLinearOrderedAddMonoid [LinearOrderedRing α] :
@@ -360,6 +372,7 @@ theorem coe_toNonneg {a : α} : (toNonneg a : α) = max a 0 :=
 
 @[simp]
 theorem toNonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := by simp [toNonneg, h]
+                                                                           -- 🎉 no goals
 #align nonneg.to_nonneg_of_nonneg Nonneg.toNonneg_of_nonneg
 
 @[simp]
@@ -370,13 +383,17 @@ theorem toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
 @[simp]
 theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b := by
   cases' b with b hb
+  -- ⊢ toNonneg a ≤ { val := b, property := hb } ↔ a ≤ ↑{ val := b, property := hb }
   simp [toNonneg, hb]
+  -- 🎉 no goals
 #align nonneg.to_nonneg_le Nonneg.toNonneg_le
 
 @[simp]
 theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
   cases' a with a ha
+  -- ⊢ { val := a, property := ha } < toNonneg b ↔ ↑{ val := a, property := ha } < b
   simp [toNonneg, ha.not_lt]
+  -- 🎉 no goals
 #align nonneg.to_nonneg_lt Nonneg.toNonneg_lt
 
 instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
@@ -394,6 +411,7 @@ end LinearOrder
 instance orderedSub [LinearOrderedRing α] : OrderedSub { x : α // 0 ≤ x } :=
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
+    -- ⊢ { val := a, property := ha } - { val := b, property := hb } ≤ { val := c, pr …
     simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le,
       Subtype.coe_mk]⟩
 #align nonneg.has_ordered_sub Nonneg.orderedSub

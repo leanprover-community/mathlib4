@@ -47,6 +47,8 @@ open scoped Classical BigOperators nonZeroDivisors
 theorem Int.not_isField : ¬IsField ℤ := fun h =>
   Int.not_even_one <|
     (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
+                                                   -- ⊢ 2 * a = 1 → 1 = 2 * a
+                                                                   -- 🎉 no goals
 #align int.not_is_field Int.not_isField
 
 namespace NumberField
@@ -75,7 +77,9 @@ theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
 theorem isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x ∈ 𝓞 K) :
     IsIntegral ℤ (⟨x, hx⟩ : 𝓞 K) := by
   obtain ⟨P, hPm, hP⟩ := hx
+  -- ⊢ IsIntegral ℤ { val := x, property := (_ : ∃ p, Polynomial.Monic p ∧ Polynomi …
   refine' ⟨P, hPm, _⟩
+  -- ⊢ Polynomial.eval₂ (algebraMap ℤ { x // x ∈ 𝓞 K }) { val := x, property := (_  …
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_def, Subtype.coe_mk, hP]
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.isIntegral_of_mem_ringOfIntegers
@@ -85,9 +89,13 @@ instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L k, IsIntegral.algebraMap k.2⟩
       map_zero' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
+                                     -- 🎉 no goals
+                                    -- 🎉 no goals
       map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, map_one]
       map_add' := fun x y =>
         Subtype.ext <| by simp only [map_add, Subalgebra.coe_add, Subtype.coe_mk]
+                          -- 🎉 no goals
+                          -- 🎉 no goals
       map_mul' := fun x y =>
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
 #align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
@@ -134,7 +142,9 @@ instance : IsNoetherian ℤ (𝓞 K) :=
 /-- The ring of integers of a number field is not a field. -/
 theorem not_isField : ¬IsField (𝓞 K) := by
   have h_inj : Function.Injective (algebraMap ℤ (𝓞 K)) := RingHom.injective_int (algebraMap ℤ (𝓞 K))
+  -- ⊢ ¬IsField { x // x ∈ 𝓞 K }
   intro hf
+  -- ⊢ False
   exact Int.not_isField
     (((IsIntegralClosure.isIntegral_algebra ℤ K).isField_iff_isField h_inj).mpr hf)
 #align number_field.ring_of_integers.not_is_field NumberField.RingOfIntegers.not_isField
@@ -189,6 +199,7 @@ instance numberField : NumberField ℚ where
   -- all char 0 fields have a canonical embedding of `ℚ` (used in `NumberField`).
   -- Show that these coincide:
     convert (inferInstance : FiniteDimensional ℚ ℚ)
+    -- 🎉 no goals
 #align rat.number_field Rat.numberField
 
 /-- The ring of integers of `ℚ` as a number field is just `ℤ`. -/
@@ -211,6 +222,7 @@ is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
   to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finiteDimensional
+                             -- 🎉 no goals
 
 end
 

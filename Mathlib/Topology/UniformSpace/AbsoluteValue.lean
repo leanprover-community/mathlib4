@@ -35,6 +35,7 @@ variable {R : Type*} [CommRing R] (abv : AbsoluteValue R 𝕜)
 /-- The uniform structure coming from an absolute value. -/
 def uniformSpace : UniformSpace R :=
   .ofFun (fun x y => abv (y - x)) (by simp) (fun x y => abv.map_sub y x)
+                                      -- 🎉 no goals
     (fun x y z => (abv.sub_le _ _ _).trans_eq (add_comm _ _))
     fun ε ε0 => ⟨ε / 2, half_pos ε0, fun _ h₁ _ h₂ => (add_lt_add h₁ h₂).trans_eq (add_halves ε)⟩
 #align absolute_value.uniform_space AbsoluteValue.uniformSpace

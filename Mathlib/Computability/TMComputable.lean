@@ -102,6 +102,8 @@ def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg where
   var := tm.initialState
   stk k :=
     @dite (List (tm.Γ k)) (k = tm.k₀) (tm.kDecidableEq k tm.k₀) (fun h => by rw [h]; exact s)
+                                                                             -- ⊢ List (FinTM2.Γ tm tm.k₀)
+                                                                                     -- 🎉 no goals
       fun _ => []
 #align turing.init_list Turing.initList
 
@@ -111,6 +113,8 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
   var := tm.initialState
   stk k :=
     @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h => by rw [h]; exact s)
+                                                                             -- ⊢ List (FinTM2.Γ tm tm.k₁)
+                                                                                     -- 🎉 no goals
       fun _ => []
 #align turing.halt_list Turing.haltList
 
@@ -142,6 +146,7 @@ def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
 def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
     (h₁ : EvalsTo f a b) (h₂ : EvalsTo f b c) : EvalsTo f a c :=
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
+                           -- 🎉 no goals
 #align turing.evals_to.trans Turing.EvalsTo.trans
 
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
@@ -261,6 +266,7 @@ def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
     { steps := 1
       evals_in_steps := rfl
       steps_le_m := by simp only [Polynomial.eval_one] }
+                       -- 🎉 no goals
 #align turing.id_computable_in_poly_time Turing.idComputableInPolyTime
 
 instance inhabitedTM2ComputableInPolyTime :

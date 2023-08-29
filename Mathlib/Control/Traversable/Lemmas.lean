@@ -60,7 +60,9 @@ def PureTransformation :
   preserves_pure' x := rfl
   preserves_seq' f x := by
     simp only [map_pure, seq_pure]
+    -- ⊢ pure (Seq.seq f fun x_1 => x) = pure (f x)
     rfl
+    -- 🎉 no goals
 #align traversable.pure_transformation Traversable.PureTransformation
 
 @[simp]
@@ -77,40 +79,56 @@ theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
 
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by
   rw [map_eq_traverse_id f]
+  -- ⊢ traverse (pure ∘ f) <$> traverse g x = traverse (map f ∘ g) x
   refine' (comp_traverse (pure ∘ f) g x).symm.trans _
+  -- ⊢ traverse (Comp.mk ∘ map (pure ∘ f) ∘ g) x = traverse (map f ∘ g) x
   congr; apply Comp.applicative_comp_id
+  -- ⊢ Comp.instApplicativeComp = inst✝³
+         -- 🎉 no goals
 #align traversable.map_traverse Traversable.map_traverse
 
 theorem traverse_map (f : β → F γ) (g : α → β) (x : t α) :
     traverse f (g <$> x) = traverse (f ∘ g) x := by
   rw [@map_eq_traverse_id t _ _ _ _ g]
+  -- ⊢ traverse f (traverse (pure ∘ g) x) = traverse (f ∘ g) x
   refine' (comp_traverse (G := Id) f (pure ∘ g) x).symm.trans _
+  -- ⊢ traverse (Comp.mk ∘ map f ∘ pure ∘ g) x = traverse (f ∘ g) x
   congr; apply Comp.applicative_id_comp
+  -- ⊢ Comp.instApplicativeComp = inst✝³
+         -- 🎉 no goals
 #align traversable.traverse_map Traversable.traverse_map
 
 theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by
   have : traverse pure x = pure (traverse (m := Id) pure x) :=
       (naturality (PureTransformation F) pure x).symm
   rwa [id_traverse] at this
+  -- 🎉 no goals
 #align traversable.pure_traverse Traversable.pure_traverse
 
 theorem id_sequence (x : t α) : sequence (f := Id) (pure <$> x) = pure x := by
   simp [sequence, traverse_map, id_traverse]
+  -- 🎉 no goals
 #align traversable.id_sequence Traversable.id_sequence
 
 theorem comp_sequence (x : t (F (G α))) :
     sequence (Comp.mk <$> x) = Comp.mk (sequence <$> sequence x) := by
   simp [sequence, traverse_map]; rw [← comp_traverse]; simp [map_id]
+  -- ⊢ traverse Comp.mk x = Comp.mk (traverse id <$> traverse id x)
+                                 -- ⊢ traverse Comp.mk x = traverse (Comp.mk ∘ map id ∘ id) x
+                                                       -- 🎉 no goals
 #align traversable.comp_sequence Traversable.comp_sequence
 
 theorem naturality' (η : ApplicativeTransformation F G) (x : t (F α)) :
     η (sequence x) = sequence (@η _ <$> x) := by simp [sequence, naturality, traverse_map]
+                                                 -- 🎉 no goals
 #align traversable.naturality' Traversable.naturality'
 
 @[functor_norm]
 theorem traverse_id : traverse pure = (pure : t α → Id (t α)) := by
   ext
+  -- ⊢ traverse pure x✝ = pure x✝
   exact id_traverse _
+  -- 🎉 no goals
 #align traversable.traverse_id Traversable.traverse_id
 
 @[functor_norm]
@@ -118,32 +136,42 @@ theorem traverse_comp (g : α → F β) (h : β → G γ) :
     traverse (Comp.mk ∘ map h ∘ g) =
       (Comp.mk ∘ map (traverse h) ∘ traverse g : t α → Comp F G (t γ)) := by
   ext
+  -- ⊢ traverse (Comp.mk ∘ map h ∘ g) x✝ = (Comp.mk ∘ map (traverse h) ∘ traverse g …
   exact comp_traverse _ _ _
+  -- 🎉 no goals
 #align traversable.traverse_comp Traversable.traverse_comp
 
 theorem traverse_eq_map_id' (f : β → γ) :
   traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
   ext
+  -- ⊢ traverse (pure ∘ f) x✝ = (pure ∘ map f) x✝
   exact traverse_eq_map_id _ _
+  -- 🎉 no goals
 #align traversable.traverse_eq_map_id' Traversable.traverse_eq_map_id'
 
 -- @[functor_norm]
 theorem traverse_map' (g : α → β) (h : β → G γ) :
     traverse (h ∘ g) = (traverse h ∘ map g : t α → G (t γ)) := by
   ext
+  -- ⊢ traverse (h ∘ g) x✝ = (traverse h ∘ map g) x✝
   rw [comp_apply, traverse_map]
+  -- 🎉 no goals
 #align traversable.traverse_map' Traversable.traverse_map'
 
 theorem map_traverse' (g : α → G β) (h : β → γ) :
     traverse (map h ∘ g) = (map (map h) ∘ traverse g : t α → G (t γ)) := by
   ext
+  -- ⊢ traverse (map h ∘ g) x✝ = (map (map h) ∘ traverse g) x✝
   rw [comp_apply, map_traverse]
+  -- 🎉 no goals
 #align traversable.map_traverse' Traversable.map_traverse'
 
 theorem naturality_pf (η : ApplicativeTransformation F G) (f : α → F β) :
     traverse (@η _ ∘ f) = @η _ ∘ (traverse f : t α → F (t β)) := by
   ext
+  -- ⊢ traverse ((fun {α} => ApplicativeTransformation.app η α) ∘ f) x✝ = ((fun {α} …
   rw [comp_apply, naturality]
+  -- 🎉 no goals
 #align traversable.naturality_pf Traversable.naturality_pf
 
 end Traversable

@@ -90,6 +90,7 @@ variable {S}
 
 theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
+  -- 🎉 no goals
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
 
 instance (s : S) : RatCast s :=
@@ -103,6 +104,7 @@ theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
 theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
+  -- 🎉 no goals
 #align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
 
 instance (s : S) : SMul ℚ s :=
@@ -120,9 +122,39 @@ variable (S)
 instance (priority := 75) toField (s : S) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
     (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
+        -- 🎉 no goals
+                 -- 🎉 no goals
+                          -- ⊢ ↑(x✝ + y✝) = ↑x✝ + ↑y✝
+                                      -- 🎉 no goals
+                                               -- ⊢ ↑(x✝ * y✝) = ↑x✝ * ↑y✝
+                                                           -- 🎉 no goals
+                                                                    -- ⊢ ↑(-x✝) = -↑x✝
+                                                                              -- 🎉 no goals
     (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
+        -- ⊢ ↑(x✝ - y✝) = ↑x✝ - ↑y✝
+                    -- 🎉 no goals
+                             -- ⊢ ↑x✝⁻¹ = (↑x✝)⁻¹
+                                       -- 🎉 no goals
+                                                -- ⊢ ↑(x✝ / y✝) = ↑x✝ / ↑y✝
+                                                            -- 🎉 no goals
+                                                                     -- ⊢ ↑(n✝ • x✝) = n✝ • ↑x✝
+                                                                                 -- 🎉 no goals
     (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
+        -- ⊢ ↑(n✝ • x✝) = n✝ • ↑x✝
+                    -- 🎉 no goals
+                             -- ⊢ ↑(n✝ • x✝) = n✝ • ↑x✝
+                                         -- 🎉 no goals
+                                                  -- ⊢ ↑(x✝ ^ n✝) = ↑x✝ ^ n✝
+                                                              -- 🎉 no goals
+                                                                       -- ⊢ ↑(x✝ ^ n✝) = ↑x✝ ^ n✝
+                                                                                   -- 🎉 no goals
     (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
+        -- ⊢ ↑↑n✝ = ↑n✝
+                  -- 🎉 no goals
+                           -- ⊢ ↑↑n✝ = ↑n✝
+                                     -- 🎉 no goals
+                                              -- ⊢ ↑↑n✝ = ↑n✝
+                                                        -- 🎉 no goals
 #align subfield_class.to_field SubfieldClass.toField
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
@@ -165,6 +197,10 @@ def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+                             -- ⊢ { toSubring := toSubring✝, inv_mem' := inv_mem'✝ } = q
+                                      -- ⊢ { toSubring := toSubring✝¹, inv_mem' := inv_mem'✝¹ } = { toSubring := toSubr …
+                                               -- ⊢ toSubring✝¹ = toSubring✝
+                                                      -- 🎉 no goals
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
@@ -328,8 +364,11 @@ protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
+  -- ⊢ x ^ Int.ofNat a✝ ∈ s
   · simpa using s.pow_mem hx _
+    -- 🎉 no goals
   · simpa [pow_succ] using s.inv_mem (s.mul_mem hx (s.pow_mem hx _))
+    -- 🎉 no goals
 #align subfield.zpow_mem Subfield.zpow_mem
 
 instance : Ring s :=
@@ -480,7 +519,9 @@ def comap (s : Subfield L) : Subfield K :=
     inv_mem' := fun x hx =>
       show f x⁻¹ ∈ s by
         rw [map_inv₀ f]
+        -- ⊢ (↑f x)⁻¹ ∈ s
         exact s.inv_mem hx }
+        -- 🎉 no goals
 #align subfield.comap Subfield.comap
 
 @[simp]
@@ -506,7 +547,9 @@ def map (s : Subfield K) : Subfield L :=
   { s.toSubring.map f with
     inv_mem' := by
       rintro _ ⟨x, hx, rfl⟩
+      -- ⊢ (↑f x)⁻¹ ∈ { toSubsemiring := src✝.toSubsemiring, neg_mem' := (_ : ∀ {x : L} …
       exact ⟨x⁻¹, s.inv_mem hx, map_inv₀ f x⟩ }
+      -- 🎉 no goals
 #align subfield.map Subfield.map
 
 @[simp]
@@ -517,7 +560,9 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
 @[simp]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
+  -- ⊢ (y ∈
   simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]
+  -- 🎉 no goals
 #align subfield.mem_map Subfield.mem_map
 
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
@@ -559,11 +604,14 @@ theorem mem_fieldRange {f : K →+* L} {y : L} : y ∈ f.fieldRange ↔ ∃ x, f
 
 theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
   ext
+  -- ⊢ x✝ ∈ fieldRange f ↔ x✝ ∈ Subfield.map f ⊤
   simp
+  -- 🎉 no goals
 #align ring_hom.field_range_eq_map RingHom.fieldRange_eq_map
 
 theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
   simpa only [fieldRange_eq_map] using (⊤ : Subfield K).map_map g f
+  -- 🎉 no goals
 #align ring_hom.map_field_range RingHom.map_fieldRange
 
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
@@ -603,15 +651,21 @@ instance : InfSet (Subfield K) :=
     { sInf (Subfield.toSubring '' S) with
       inv_mem' := by
         rintro x hx
+        -- ⊢ x⁻¹ ∈ { toSubsemiring := src✝.toSubsemiring, neg_mem' := (_ : ∀ {x : K}, x ∈ …
         apply Subring.mem_sInf.mpr
+        -- ⊢ ∀ (p : Subring K), p ∈ toSubring '' S → x⁻¹ ∈ p
         rintro _ ⟨p, p_mem, rfl⟩
+        -- ⊢ x⁻¹ ∈ p.toSubring
         exact p.inv_mem (Subring.mem_sInf.mp hx p.toSubring ⟨p, p_mem, rfl⟩) }⟩
+        -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
   show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
     ext x
+    -- ⊢ x ∈ ↑(sInf (toSubring '' S)) ↔ x ∈ ⋂ (s : Subfield K) (_ : s ∈ S), ↑s
     rw [Subring.coe_sInf, Set.mem_iInter, Set.mem_iInter]
+    -- ⊢ (∀ (i : Subring K), x ∈ ⋂ (_ : i ∈ toSubring '' S), ↑i) ↔ ∀ (i : Subfield K) …
     exact
       ⟨fun h s s' ⟨s_mem, s'_eq⟩ => h s.toSubring _ ⟨⟨s, s_mem, rfl⟩, s'_eq⟩,
         fun h s s' ⟨⟨s'', s''_mem, s_eq⟩, (s'_eq : ↑s = s')⟩ =>
@@ -627,8 +681,11 @@ theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, 
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
+  -- ⊢ x ∈ (sInf s).toSubring ↔ x ∈ ⨅ (t : Subfield K) (_ : t ∈ s), t.toSubring
   rw [mem_toSubring, mem_sInf]
+  -- ⊢ (∀ (p : Subfield K), p ∈ s → x ∈ p) ↔ x ∈ ⨅ (t : Subfield K) (_ : t ∈ s), t. …
   erw [Subring.mem_sInf]
+  -- ⊢ (∀ (p : Subfield K), p ∈ s → x ∈ p) ↔ ∀ (p : Subring K), (p ∈ Set.range fun  …
   exact
     ⟨fun h p ⟨p', hp⟩ => hp ▸ Subring.mem_sInf.mpr fun p ⟨hp', hp⟩ => hp ▸ h _ hp', fun h p hp =>
       h p.toSubring
@@ -640,9 +697,13 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
+  -- ⊢ IsGLB S (sInf S)
   refine' IsGLB.of_image this _
+  -- ⊢ IsGLB ((fun {x} => ↑x) '' S) ↑(sInf S)
   convert isGLB_biInf (s := S) (f := SetLike.coe)
+  -- ⊢ ↑(sInf S) = ⨅ (x : Subfield K) (_ : x ∈ S), ↑x
   exact coe_sInf _
+  -- 🎉 no goals
 #align subfield.is_glb_Inf Subfield.isGLB_sInf
 
 /-- Subfields of a ring form a complete lattice. -/
@@ -665,9 +726,21 @@ def closure (s : Set K) : Subfield K where
   one_mem' := ⟨1, Subring.one_mem _, 1, Subring.one_mem _, div_one _⟩
   neg_mem' {x} := by
     rintro ⟨y, hy, z, hz, x_eq⟩
+    -- ⊢ -x ∈ { toSubmonoid := { toSubsemigroup := { carrier := {z | ∃ x x_1 y x_2, x …
     exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
+    -- 🎉 no goals
   inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm ⟩
+    -- ⊢ nx / dx + b✝ ∈ { toSubsemigroup := { carrier := {z | ∃ x x_1 y x_2, x / y =  …
+                   -- ⊢ x⁻¹ ∈ { toSubsemiring := { toSubmonoid := { toSubsemigroup := { carrier := { …
+    -- ⊢ nx / dx + ny / dy ∈ { toSubsemigroup := { carrier := {z | ∃ x x_1 y x_2, x / …
+                                                -- 🎉 no goals
+    -- ⊢ nx / dx + ny / dy ∈ { toSubsemigroup := { carrier := {z | ∃ x x_1 y x_2, x / …
+                             -- 🎉 no goals
   add_mem' x_mem y_mem := by
+    -- ⊢ nx / dx + ny / dy ∈ { toSubsemigroup := { carrier := {z | ∃ x x_1 y x_2, x / …
+    -- ⊢ nx / dx * b✝ ∈ {z | ∃ x x_1 y x_2, x / y = z}
+                             -- 🎉 no goals
+    -- ⊢ nx / dx * (ny / dy) ∈ {z | ∃ x x_1 y x_2, x / y = z}
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem
     obtain ⟨ny, hny, dy, hdy, rfl⟩ := id y_mem
     by_cases hx0 : dx = 0; · rwa [hx0, div_zero, zero_add]
@@ -686,7 +759,9 @@ def closure (s : Set K) : Subfield K where
 theorem mem_closure_iff {s : Set K} {x} :
     x ∈ closure s ↔ ∃ y ∈ Subring.closure s, ∃ z ∈ Subring.closure s, y / z = x := by
   change x ∈ (closure s).carrier ↔ ∃ y ∈ Subring.closure s, ∃ z ∈ Subring.closure s, y / z = x
+  -- ⊢ x ∈ (closure s).toSubring.toSubsemiring.toSubmonoid.toSubsemigroup.carrier ↔ …
   simp only [closure, exists_prop, Set.mem_setOf_eq]
+  -- 🎉 no goals
 #align subfield.mem_closure_iff Subfield.mem_closure_iff
 
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring := fun x hx =>
@@ -740,6 +815,7 @@ theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s)
         by intro _ _; exact Hadd _ _, @add_neg_self K _ 1 ▸ Hadd _ _ H1 (Hneg _ H1)⟩,
           by intro _; exact Hneg _⟩, Hinv⟩
     exact (closure_le (t := this)).2 Hs h
+    -- 🎉 no goals
 #align subfield.closure_induction Subfield.closure_induction
 
 variable (K)
@@ -815,36 +891,52 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
     {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  -- ⊢ x ∈ ⨆ (i : ι), S i → ∃ i, x ∈ S i
   suffices x ∈ closure (⋃ i, (S i : Set K)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq]
   refine' fun hx => closure_induction hx (fun x => Set.mem_iUnion.mp) _ _ _ _ _
   · exact hι.elim fun i => ⟨i, (S i).one_mem⟩
+    -- 🎉 no goals
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+    -- ⊢ ∃ i, x + y ∈ S i
     obtain ⟨k, hki, hkj⟩ := hS i j
+    -- ⊢ ∃ i, x + y ∈ S i
     exact ⟨k, (S k).add_mem (hki hi) (hkj hj)⟩
+    -- 🎉 no goals
   · rintro x ⟨i, hi⟩
+    -- ⊢ ∃ i, -x ∈ S i
     exact ⟨i, (S i).neg_mem hi⟩
+    -- 🎉 no goals
   · rintro x ⟨i, hi⟩
+    -- ⊢ ∃ i, x⁻¹ ∈ S i
     exact ⟨i, (S i).inv_mem hi⟩
+    -- 🎉 no goals
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+    -- ⊢ ∃ i, x * y ∈ S i
     obtain ⟨k, hki, hkj⟩ := hS i j
+    -- ⊢ ∃ i, x * y ∈ S i
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
+    -- 🎉 no goals
 #align subfield.mem_supr_of_directed Subfield.mem_iSup_of_directed
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Subfield K) : Set K) = ⋃ i, ↑(S i) :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
+                      -- 🎉 no goals
 #align subfield.coe_supr_of_directed Subfield.coe_iSup_of_directed
 
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
+  -- ⊢ x ∈ sSup S ↔ ∃ s, s ∈ S ∧ x ∈ s
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+  -- 🎉 no goals
 #align subfield.mem_Sup_of_directed_on Subfield.mem_sSup_of_directedOn
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+                      -- 🎉 no goals
 #align subfield.coe_Sup_of_directed_on Subfield.coe_sSup_of_directedOn
 
 end Subfield
@@ -870,6 +962,7 @@ the equalizer of f and g as a subfield of R -/
 def eqLocusField (f g : K →+* L) : Subfield K :=
   { (f : K →+* L).eqLocus g with
     inv_mem' := fun x (hx : f x = g x) => show f x⁻¹ = g x⁻¹ by rw [map_inv₀ f, map_inv₀ g, hx]
+                                                                -- 🎉 no goals
     carrier := { x | f x = g x } }
 #align ring_hom.eq_locus_field RingHom.eqLocusField
 

@@ -55,6 +55,7 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
     (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
     (hfg : deriv f =O[l] g) : ¬IntervalIntegrable g volume a b := by
   intro hgi
+  -- ⊢ False
   obtain ⟨C, hC₀, s, hsl, hsub, hfd, hg⟩ :
     ∃ (C : ℝ) (_ : 0 ≤ C), ∃ s ∈ l, (∀ x ∈ s, ∀ y ∈ s, [[x, y]] ⊆ [[a, b]]) ∧
       (∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], DifferentiableAt ℝ f z) ∧
@@ -68,21 +69,29 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
     exact ⟨C, C₀, s, hsl, fun x hx y hy z hz => (hs x hx y hy z hz).2, fun x hx y hy z hz =>
       (hs x hx y hy z hz).1.1, fun x hx y hy z hz => (hs x hx y hy z hz).1.2⟩
   replace hgi : IntervalIntegrable (fun x => C * ‖g x‖) volume a b
+  -- ⊢ IntervalIntegrable (fun x => C * ‖g x‖) volume a b
   · convert hgi.norm.smul C using 1
+    -- 🎉 no goals
   obtain ⟨c, hc, d, hd, hlt⟩ : ∃ c ∈ s, ∃ d ∈ s, (‖f c‖ + ∫ y in Ι a b, C * ‖g y‖) < ‖f d‖ := by
     rcases Filter.nonempty_of_mem hsl with ⟨c, hc⟩
     have : ∀ᶠ x in l, (‖f c‖ + ∫ y in Ι a b, C * ‖g y‖) < ‖f x‖ :=
       hf.eventually (eventually_gt_atTop _)
     exact ⟨c, hc, (this.and hsl).exists.imp fun d hd => ⟨hd.2, hd.1⟩⟩
   specialize hsub c hc d hd; specialize hfd c hc d hd
+  -- ⊢ False
+                             -- ⊢ False
   replace hg : ∀ x ∈ Ι c d, ‖deriv f x‖ ≤ C * ‖g x‖;
+  -- ⊢ ∀ (x : ℝ), x ∈ Ι c d → ‖deriv f x‖ ≤ C * ‖g x‖
   exact fun z hz => hg c hc d hd z ⟨hz.1.le, hz.2⟩
+  -- ⊢ False
   have hg_ae : ∀ᵐ x ∂volume.restrict (Ι c d), ‖deriv f x‖ ≤ C * ‖g x‖ :=
     (ae_restrict_mem measurableSet_uIoc).mono hg
   have hsub' : Ι c d ⊆ Ι a b := uIoc_subset_uIoc_of_uIcc_subset_uIcc hsub
+  -- ⊢ False
   have hfi : IntervalIntegrable (deriv f) volume c d :=
     (hgi.mono_set hsub).mono_fun' (aestronglyMeasurable_deriv _ _) hg_ae
   refine' hlt.not_le (sub_le_iff_le_add'.1 _)
+  -- ⊢ ‖f d‖ - ‖f c‖ ≤ ∫ (y : ℝ) in Ι a b, C * ‖g y‖
   calc
     ‖f d‖ - ‖f c‖ ≤ ‖f d - f c‖ := norm_sub_norm_le _ _
     _ = ‖∫ x in c..d, deriv f x‖ := (congr_arg _ (integral_deriv_eq_sub hfd hfi).symm)
@@ -115,6 +124,7 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff
       rw [← Ici_diff_left]
       exact diff_mem_nhdsWithin_diff (Icc_mem_nhdsWithin_Ici ⟨hc.1, hlt⟩) _
   have : l ≤ 𝓝[[[a, b]] \ {c}] c := le_inf hle (le_principal_iff.2 hmem)
+  -- ⊢ ¬IntervalIntegrable g volume a b
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter l
     (mem_of_superset hmem (diff_subset _ _)) (h_deriv.filter_mono this) (h_infty.mono_left this)
     (hg.mono this)
@@ -159,12 +169,19 @@ set_option linter.uppercaseLean3 false in
 theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
     IntervalIntegrable (fun x => (x - c)⁻¹) volume a b ↔ a = b ∨ c ∉ [[a, b]] := by
   constructor
+  -- ⊢ IntervalIntegrable (fun x => (x - c)⁻¹) volume a b → a = b ∨ ¬c ∈ [[a, b]]
   · refine' fun h => or_iff_not_imp_left.2 fun hne hc => _
+    -- ⊢ False
     exact not_intervalIntegrable_of_sub_inv_isBigO_punctured (isBigO_refl _ _) hne hc h
+    -- 🎉 no goals
   · rintro (rfl | h₀)
+    -- ⊢ IntervalIntegrable (fun x => (x - c)⁻¹) volume a a
     · exact IntervalIntegrable.refl
+      -- 🎉 no goals
     refine' ((continuous_sub_right c).continuousOn.inv₀ _).intervalIntegrable
+    -- ⊢ ∀ (x : ℝ), x ∈ [[a, b]] → x - c ≠ 0
     exact fun x hx => sub_ne_zero.2 <| ne_of_mem_of_not_mem hx h₀
+    -- 🎉 no goals
 #align interval_integrable_sub_inv_iff intervalIntegrable_sub_inv_iff
 
 /-- The function `fun x => x⁻¹` is integrable on `a..b` if and only if
@@ -173,4 +190,5 @@ theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
 theorem intervalIntegrable_inv_iff {a b : ℝ} :
     IntervalIntegrable (fun x => x⁻¹) volume a b ↔ a = b ∨ (0 : ℝ) ∉ [[a, b]] := by
   simp only [← intervalIntegrable_sub_inv_iff, sub_zero]
+  -- 🎉 no goals
 #align interval_integrable_inv_iff intervalIntegrable_inv_iff

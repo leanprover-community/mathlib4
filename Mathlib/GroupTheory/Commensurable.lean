@@ -42,6 +42,7 @@ open Pointwise
 
 @[refl]
 protected theorem refl (H : Subgroup G) : Commensurable H H := by simp [Commensurable]
+                                                                  -- 🎉 no goals
 #align commensurable.refl Commensurable.refl
 
 theorem comm {H K : Subgroup G} : Commensurable H K ↔ Commensurable K H := and_comm
@@ -66,10 +67,12 @@ def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
     K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
   Quotient.congr (K.equivSMul g).toEquiv fun a b => by
     dsimp
+    -- ⊢ Setoid.r a b ↔ Setoid.r (↑(Subgroup.equivSMul g K) a) (↑(Subgroup.equivSMul  …
     rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq', QuotientGroup.eq',
       Subgroup.mem_subgroupOf, Subgroup.mem_subgroupOf, ← MulEquiv.map_inv, ← MulEquiv.map_mul,
       Subgroup.equivSMul_apply_coe]
     exact Subgroup.smul_mem_pointwise_smul_iff.symm
+    -- 🎉 no goals
 #align commensurable.quot_conj_equiv Commensurable.quotConjEquiv
 
 theorem commensurable_conj {H K : Subgroup G} (g : ConjAct G) :
@@ -80,6 +83,7 @@ theorem commensurable_conj {H K : Subgroup G} (g : ConjAct G) :
 
 theorem commensurable_inv (H : Subgroup G) (g : ConjAct G) :
     Commensurable (g • H) H ↔ Commensurable H (g⁻¹ • H) := by rw [commensurable_conj, inv_smul_smul]
+                                                              -- 🎉 no goals
 #align commensurable.commensurable_inv Commensurable.commensurable_inv
 
 /-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : conjAut G`
@@ -87,10 +91,14 @@ such that `Commensurable (g • H) H` -/
 def commensurator' (H : Subgroup G) : Subgroup (ConjAct G) where
   carrier := { g : ConjAct G | Commensurable (g • H) H }
   one_mem' := by rw [Set.mem_setOf_eq, one_smul]
+                 -- 🎉 no goals
   mul_mem' ha hb := by
+    -- ⊢ Commensurable (a✝ • b✝ • H) H
     rw [Set.mem_setOf_eq, mul_smul]
+    -- 🎉 no goals
     exact trans ((commensurable_conj _).mp hb) ha
   inv_mem' _ := by rwa [Set.mem_setOf_eq, comm, ← commensurable_inv]
+                   -- 🎉 no goals
 #align commensurable.commensurator' Commensurable.commensurator'
 
 /-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : G`

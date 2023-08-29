@@ -42,13 +42,22 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
         r i x (g i) → p g → p (update g i (insert x (g i)))) :
     p f := by
   cases nonempty_fintype ι
+  -- ⊢ p f
   induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
+  -- ⊢ p f
+                                                                                         -- ⊢ p f
   cases' eq_empty_or_nonempty (univ.sigma f) with he hne
+  -- ⊢ p f
   · convert h0 using 1
+    -- ⊢ f = fun x => ∅
     simpa [funext_iff] using he
+    -- 🎉 no goals
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
+    -- ⊢ p f
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩
+    -- ⊢ p f
     set g := update f i ((f i).erase x) with hg
+    -- ⊢ p f
 -- Porting note: this tactic does not exist yet
 --  clear_value g
     have hx' : x ∉ g i := by
@@ -57,9 +66,13 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     rw [show f = update g i (insert x (g i)) by
       rw [hg, update_idem, update_same, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
     clear hg
+    -- ⊢ p (update g i (insert x (g i)))
     rw [update_same, erase_insert hx'] at hr
+    -- ⊢ p (update g i (insert x (g i)))
     refine step _ _ _ hr (ihs (univ.sigma g) ?_ _ rfl)
+    -- ⊢ Finset.sigma univ g ⊂ Finset.sigma univ (update g i (insert x (g i)))
     rw [ssubset_iff_of_subset (sigma_mono (Subset.refl _) _)]
+    -- ⊢ ∃ x_1, x_1 ∈ Finset.sigma univ (update g i (insert x (g i))) ∧ ¬x_1 ∈ Finset …
     exacts [⟨⟨i, x⟩, mem_sigma.2 ⟨mem_univ _, by simp⟩, by simp [hx']⟩,
       (@le_update_iff _ _ _ _ g g i _).2 ⟨subset_insert _ _, fun _ _ ↦ le_rfl⟩]
 #align finset.induction_on_pi_of_choice Finset.induction_on_pi_of_choice

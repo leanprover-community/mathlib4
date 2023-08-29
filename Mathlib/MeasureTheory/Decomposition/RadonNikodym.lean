@@ -46,6 +46,7 @@ namespace Measure
 theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] (h : μ ≪ ν) :
     ν.withDensity (rnDeriv μ ν) = μ := by
   obtain ⟨_, ⟨E, hE₁, hE₂, hE₃⟩, hadd⟩ := haveLebesgueDecomposition_spec μ ν
+  -- ⊢ withDensity ν (rnDeriv μ ν) = μ
   have : singularPart μ ν = 0 := by
     refine' le_antisymm (fun A (_ : MeasurableSet A) => _) (Measure.zero_le _)
     suffices singularPart μ ν Set.univ = 0 by
@@ -56,7 +57,9 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
     rw [Measure.coe_add, Pi.add_apply, h hE₃] at this
     exact (add_eq_zero_iff.1 this).1
   rw [this, zero_add] at hadd
+  -- ⊢ withDensity ν (rnDeriv μ ν) = μ
   exact hadd.symm
+  -- 🎉 no goals
 #align measure_theory.measure.with_density_rn_deriv_eq MeasureTheory.Measure.withDensity_rnDeriv_eq
 
 /-- **The Radon-Nikodym theorem**: Given two measures `μ` and `ν`, if
@@ -71,11 +74,15 @@ theorem withDensity_rnDeriv_toReal_eq {μ ν : Measure α} [IsFiniteMeasure μ]
     [HaveLebesgueDecomposition μ ν] (h : μ ≪ ν) {i : Set α} (hi : MeasurableSet i) :
     (∫ x in i, (μ.rnDeriv ν x).toReal ∂ν) = (μ i).toReal := by
   rw [integral_toReal, ← withDensity_apply _ hi, withDensity_rnDeriv_eq μ ν h]
+  -- ⊢ AEMeasurable fun x => rnDeriv μ ν x
   · measurability
+    -- 🎉 no goals
   · refine' ae_lt_top (μ.measurable_rnDeriv ν)
       (lt_of_le_of_lt (lintegral_mono_set i.subset_univ) _).ne
     rw [← withDensity_apply _ MeasurableSet.univ, withDensity_rnDeriv_eq μ ν h]
+    -- ⊢ ↑↑μ Set.univ < ⊤
     exact measure_lt_top _ _
+    -- 🎉 no goals
 #align measure_theory.measure.with_density_rn_deriv_to_real_eq MeasureTheory.Measure.withDensity_rnDeriv_toReal_eq
 
 end Measure
@@ -89,11 +96,15 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
   rw [absolutelyContinuous_ennreal_iff, (_ : μ.toENNRealVectorMeasure.ennrealToMeasure = μ),
     totalVariation_absolutelyContinuous_iff] at h
   · ext1 i hi
+    -- ⊢ ↑(withDensityᵥ μ (rnDeriv s μ)) i = ↑s i
     rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv, integral_sub,
       withDensity_rnDeriv_toReal_eq h.1 hi, withDensity_rnDeriv_toReal_eq h.2 hi]
     · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
+      -- ⊢ ENNReal.toReal (↑↑(toJordanDecomposition s).posPart i) - ENNReal.toReal (↑↑( …
       erw [VectorMeasure.sub_apply]
+      -- ⊢ ENNReal.toReal (↑↑(toJordanDecomposition s).posPart i) - ENNReal.toReal (↑↑( …
       rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
+      -- 🎉 no goals
     all_goals
       rw [← integrableOn_univ]
       refine' IntegrableOn.restrict _ MeasurableSet.univ
@@ -103,6 +114,7 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
       · rw [set_lintegral_univ]
         exact (lintegral_rnDeriv_lt_top _ _).ne
   · exact equivMeasure.right_inv μ
+    -- 🎉 no goals
 #align measure_theory.signed_measure.with_densityᵥ_rn_deriv_eq MeasureTheory.SignedMeasure.withDensityᵥ_rnDeriv_eq
 
 /-- The Radon-Nikodym theorem for signed measures. -/

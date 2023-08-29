@@ -39,11 +39,17 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     change x ∈ Subsemiring.closure (_ ∪ S) ↔ x ∈ Subsemiring.closure (_ ∪ S)
     rw [this]
   ext x
+  -- ⊢ x ∈ Set.range ↑(algebraMap D E) ↔ x ∈ Set.range ↑(algebraMap { x // x ∈ Suba …
   constructor
+  -- ⊢ x ∈ Set.range ↑(algebraMap D E) → x ∈ Set.range ↑(algebraMap { x // x ∈ Suba …
   · rintro ⟨y, hy⟩
+    -- ⊢ x ∈ Set.range ↑(algebraMap { x // x ∈ Subalgebra.map (IsScalarTower.toAlgHom …
     exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
+    -- 🎉 no goals
   · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
+    -- ⊢ x ∈ Set.range ↑(algebraMap D E)
     exact ⟨z, Eq.trans h1 h2⟩
+    -- 🎉 no goals
 #align algebra.adjoin_restrict_scalars Algebra.adjoin_restrictScalars
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
@@ -93,11 +99,17 @@ open Classical
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
   cases' hAC with x hx
+  -- ⊢ ∃ B₀, Subalgebra.FG B₀ ∧ FG ⊤
   cases' hBC with y hy
+  -- ⊢ ∃ B₀, Subalgebra.FG B₀ ∧ FG ⊤
   have := hy
+  -- ⊢ ∃ B₀, Subalgebra.FG B₀ ∧ FG ⊤
   simp_rw [eq_top_iff', mem_span_finset] at this
+  -- ⊢ ∃ B₀, Subalgebra.FG B₀ ∧ FG ⊤
   choose f hf using this
+  -- ⊢ ∃ B₀, Subalgebra.FG B₀ ∧ FG ⊤
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
+  -- ⊢ ∃ B₀, Subalgebra.FG B₀ ∧ FG ⊤
   have hxy :
     ∀ xi ∈ x, xi ∈ span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) :=
     fun xi hxi =>
@@ -128,7 +140,9 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
                   mem_image₂_of_mem (mem_union_right _ <| mul_mem_mul hyi hyj) hyk⟩
               (subset_span <| Set.mem_insert_of_mem _ hyk : yk ∈ _))
   refine' ⟨Algebra.adjoin A (↑s : Set B), Subalgebra.fg_adjoin_finset _, insert 1 y, _⟩
+  -- ⊢ span { x // x ∈ Algebra.adjoin A ↑s } ↑(insert 1 y) = ⊤
   refine' restrictScalars_injective A (Algebra.adjoin A s) C _
+  -- ⊢ restrictScalars A (span { x // x ∈ Algebra.adjoin A ↑s } ↑(insert 1 y)) = re …
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
   refine' fun r hr =>

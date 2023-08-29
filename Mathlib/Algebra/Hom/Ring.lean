@@ -108,10 +108,15 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toMulHom := toMulHom✝, map_zero' := map_zero'✝, map_add' := map_add'✝ } = g
     cases g
+    -- ⊢ { toMulHom := toMulHom✝¹, map_zero' := map_zero'✝¹, map_add' := map_add'✝¹ } …
     congr
+    -- ⊢ toMulHom✝¹ = toMulHom✝
     apply FunLike.coe_injective'
+    -- ⊢ ↑toMulHom✝¹ = ↑toMulHom✝
     exact h
+    -- 🎉 no goals
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
@@ -202,6 +207,12 @@ variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
 protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α := by
   refine' { toFun := id.. } <;> intros <;> rfl
+                                -- ⊢ id (x✝ * y✝) = id x✝ * id y✝
+                                -- ⊢ MulHom.toFun { toFun := id, map_mul' := (_ : ∀ (x y : α), id (x * y) = id x  …
+                                -- ⊢ MulHom.toFun { toFun := id, map_mul' := (_ : ∀ (x y : α), id (x * y) = id x  …
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
 instance : Zero (α →ₙ+* β) :=
@@ -275,13 +286,17 @@ theorem coe_comp_mulHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
 @[simp]
 theorem comp_zero (g : β →ₙ+* γ) : g.comp (0 : α →ₙ+* β) = 0 := by
   ext
+  -- ⊢ ↑(comp g 0) x✝ = ↑0 x✝
   simp
+  -- 🎉 no goals
 #align non_unital_ring_hom.comp_zero NonUnitalRingHom.comp_zero
 
 @[simp]
 theorem zero_comp (f : α →ₙ+* β) : (0 : β →ₙ+* γ).comp f = 0 := by
   ext
+  -- ⊢ ↑(comp 0 f) x✝ = ↑0 x✝
   rfl
+  -- 🎉 no goals
 #align non_unital_ring_hom.zero_comp NonUnitalRingHom.zero_comp
 
 @[simp]
@@ -330,6 +345,7 @@ theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Sur
 theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+                                  -- 🎉 no goals
 #align non_unital_ring_hom.cancel_left NonUnitalRingHom.cancel_left
 
 end NonUnitalRingHom
@@ -382,6 +398,7 @@ set_option linter.deprecated false in
 /-- Ring homomorphisms preserve `bit1`. -/
 @[simp] lemma map_bit1 [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
     (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
+                                                          -- 🎉 no goals
 #align map_bit1 map_bit1
 
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
@@ -418,10 +435,15 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toMonoidHom := toMonoidHom✝, map_zero' := map_zero'✝, map_add' := map_add' …
     cases g
+    -- ⊢ { toMonoidHom := toMonoidHom✝¹, map_zero' := map_zero'✝¹, map_add' := map_ad …
     congr
+    -- ⊢ toMonoidHom✝¹ = toMonoidHom✝
     apply FunLike.coe_injective'
+    -- ⊢ ↑toMonoidHom✝¹ = ↑toMonoidHom✝
     exact h
+    -- 🎉 no goals
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'
   map_mul f := f.map_mul'
@@ -474,6 +496,7 @@ theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
 -- @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
+  -- 🎉 no goals
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
 @[simp]
@@ -575,22 +598,30 @@ protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
 theorem map_ite_zero_one {F : Type*} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
   split_ifs with h <;> simp [h]
+  -- ⊢ ↑f (if p then 0 else 1) = 0
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align ring_hom.map_ite_zero_one RingHom.map_ite_zero_one
 
 @[simp]
 theorem map_ite_one_zero {F : Type*} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
   split_ifs with h <;> simp [h]
+  -- ⊢ ↑f (if p then 1 else 0) = 1
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align ring_hom.map_ite_one_zero RingHom.map_ite_one_zero
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
 theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw [map_one, eq_comm]
+                                                                           -- 🎉 no goals
 #align ring_hom.codomain_trivial_iff_map_one_eq_zero RingHom.codomain_trivial_iff_map_one_eq_zero
 
 /-- `f : α →+* β` has a trivial codomain iff it has a trivial range. -/
 theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
   f.codomain_trivial_iff_map_one_eq_zero.trans
     ⟨fun h x => by rw [← mul_one x, map_mul, h, mul_zero], fun h => h 1⟩
+                   -- 🎉 no goals
 #align ring_hom.codomain_trivial_iff_range_trivial RingHom.codomain_trivial_iff_range_trivial
 
 /-- `f : α →+* β` has a trivial codomain iff its range is `{0}`. -/
@@ -598,6 +629,8 @@ theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.rang
   f.codomain_trivial_iff_range_trivial.trans
     ⟨fun h =>
       Set.ext fun y => ⟨fun ⟨x, hx⟩ => by simp [← hx, h x], fun hy => ⟨0, by simpa using hy.symm⟩⟩,
+                                          -- 🎉 no goals
+                                                                             -- 🎉 no goals
       fun h x => Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
 #align ring_hom.codomain_trivial_iff_range_eq_singleton_zero RingHom.codomain_trivial_iff_range_eq_singleton_zero
 
@@ -609,6 +642,7 @@ theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
 /-- If there is a homomorphism `f : α →+* β` and `β` is nontrivial, then `α` is nontrivial. -/
 theorem domain_nontrivial [Nontrivial β] : Nontrivial α :=
   ⟨⟨1, 0, mt (fun h => show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
+                                       -- 🎉 no goals
 #align ring_hom.domain_nontrivial RingHom.domain_nontrivial
 
 theorem codomain_trivial (f : α →+* β) [h : Subsingleton α] : Subsingleton β :=
@@ -654,6 +688,14 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 /-- The identity ring homomorphism from a semiring to itself. -/
 def id (α : Type*) [NonAssocSemiring α] : α →+* α := by
   refine' { toFun := _root_.id.. } <;> intros <;> rfl
+                                       -- ⊢ _root_.id 1 = 1
+                                       -- ⊢ OneHom.toFun { toFun := _root_.id, map_one' := ?refine'_1 } (x✝ * y✝) = OneH …
+                                       -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := _root_.id, map_one' := ?refine'_1 }, …
+                                       -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := _root_.id, map_one' := ?refine'_1 }, …
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
 #align ring_hom.id RingHom.id
 
 instance : Inhabited (α →+* α) :=
@@ -679,6 +721,7 @@ variable {_ : NonAssocSemiring γ}
 /-- Composition of ring homomorphisms is a ring homomorphism. -/
 def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
   { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with toFun := g ∘ f, map_one' := by simp }
+                                                                                       -- 🎉 no goals
 #align ring_hom.comp RingHom.comp
 
 /-- Composition of semiring homomorphisms is associative. -/
@@ -740,6 +783,7 @@ theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjectiv
 theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => RingHom.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+                                          -- 🎉 no goals
 #align ring_hom.cancel_left RingHom.cancel_left
 
 end RingHom
@@ -748,9 +792,13 @@ end RingHom
 protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
     (hf : Injective f) : IsDomain β := by
   haveI := pullback_nonzero f f.map_zero f.map_one
+  -- ⊢ IsDomain β
   haveI := IsRightCancelMulZero.to_noZeroDivisors α
+  -- ⊢ IsDomain β
   haveI := hf.noZeroDivisors f f.map_zero f.map_mul
+  -- ⊢ IsDomain β
   exact NoZeroDivisors.to_isDomain β
+  -- 🎉 no goals
 #align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom
@@ -769,13 +817,16 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
     map_one' := h_one,
     map_mul' := fun x y => by
       have hxy := h (x + y)
+      -- ⊢ OneHom.toFun { toFun := f.toFun, map_one' := h_one } (x * y) = OneHom.toFun  …
       rw [mul_add, add_mul, add_mul, f.map_add, f.map_add, f.map_add, f.map_add, h x, h y, add_mul,
         mul_add, mul_add, ← sub_eq_zero, add_comm (f x * f x + f (y * x)), ← sub_sub, ← sub_sub,
         ← sub_sub, mul_comm y x, mul_comm (f y) (f x)] at hxy
       simp only [add_assoc, add_sub_assoc, add_sub_cancel'_right] at hxy
+      -- ⊢ OneHom.toFun { toFun := f.toFun, map_one' := h_one } (x * y) = OneHom.toFun  …
       rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
         sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
+      -- 🎉 no goals
 #align add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
 
 @[simp]
@@ -789,7 +840,9 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext
+  -- ⊢ ↑↑(mkRingHomOfMulSelfOfTwoNeZero f h h_two h_one) x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom

@@ -37,12 +37,18 @@ instance algebra : Algebra R (A × B) :=
     RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by
       rintro r ⟨a, b⟩
+      -- ⊢ ↑{ toMonoidHom := ↑src✝, map_zero' := (_ : OneHom.toFun (↑↑src✝) 0 = 0), map …
       dsimp
+      -- ⊢ (↑(algebraMap R A) r * a, ↑(algebraMap R B) r * b) = (a * ↑(algebraMap R A)  …
       rw [commutes r a, commutes r b]
+      -- 🎉 no goals
     smul_def' := by
       rintro r ⟨a, b⟩
+      -- ⊢ r • (a, b) = ↑{ toMonoidHom := ↑src✝, map_zero' := (_ : OneHom.toFun (↑↑src✝ …
       dsimp
+      -- ⊢ (r • a, r • b) = (↑(algebraMap R A) r * a, ↑(algebraMap R B) r * b)
       rw [Algebra.smul_def r a, Algebra.smul_def r b] }
+      -- 🎉 no goals
 #align prod.algebra Prod.algebra
 
 variable {R A B}
@@ -85,10 +91,14 @@ theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.pr
 
 @[simp]
 theorem fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (prod f g) = f := by ext; rfl
+                                                                                         -- ⊢ ↑(comp (fst R B C) (prod f g)) x✝ = ↑f x✝
+                                                                                              -- 🎉 no goals
 #align alg_hom.fst_prod AlgHom.fst_prod
 
 @[simp]
 theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext; rfl
+                                                                                         -- ⊢ ↑(comp (snd R B C) (prod f g)) x✝ = ↑g x✝
+                                                                                              -- 🎉 no goals
 #align alg_hom.snd_prod AlgHom.snd_prod
 
 @[simp]
@@ -104,7 +114,13 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C)
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
+                   -- ⊢ ↑((fun f => (comp (fst R B C) f, comp (snd R B C) f)) ((fun f => prod f.fst  …
+                           -- 🎉 no goals
+                           -- 🎉 no goals
   right_inv f := by ext <;> rfl
+                    -- ⊢ (↑((fun f => prod f.fst f.snd) ((fun f => (comp (fst R B C) f, comp (snd R B …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align alg_hom.prod_equiv AlgHom.prodEquiv
 
 end AlgHom

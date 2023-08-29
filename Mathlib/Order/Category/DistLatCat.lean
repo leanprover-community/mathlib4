@@ -71,10 +71,14 @@ def Iso.mk {α β : DistLatCat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : LatticeHom β α)
   hom_inv_id := by
     ext
+    -- ⊢ ↑({ toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑α), ↑e (a ⊔ b) = ↑ …
     exact e.symm_apply_apply _
+    -- 🎉 no goals
   inv_hom_id := by
     ext
+    -- ⊢ ↑({ toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ : ∀ (a b : ↑β) …
     exact e.apply_symm_apply _
+    -- 🎉 no goals
 #align DistLat.iso.mk DistLatCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/

@@ -33,8 +33,11 @@ instance : SetLike (ClopenUpperSet α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
+    -- ⊢ { toClopens := { carrier := carrier✝, clopen' := clopen'✝ }, upper' := upper …
     obtain ⟨⟨_, _⟩, _⟩ := t
+    -- ⊢ { toClopens := { carrier := carrier✝¹, clopen' := clopen'✝¹ }, upper' := upp …
     congr
+    -- 🎉 no goals
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s

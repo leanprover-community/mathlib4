@@ -39,43 +39,58 @@ theorem opow_def (a b : Ordinal) :
 
 -- Porting note: `if_pos rfl` → `if_true`
 theorem zero_opow' (a : Ordinal) : (0^a) = 1 - a := by simp only [opow_def, if_true]
+                                                       -- 🎉 no goals
 #align ordinal.zero_opow' Ordinal.zero_opow'
 
 @[simp]
 theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0^a) = 0 := by
   rwa [zero_opow', Ordinal.sub_eq_zero_iff_le, one_le_iff_ne_zero]
+  -- 🎉 no goals
 #align ordinal.zero_opow Ordinal.zero_opow
 
 @[simp]
 theorem opow_zero (a : Ordinal) : (a^0) = 1 := by
   by_cases h : a = 0
+  -- ⊢ a ^ 0 = 1
   · simp only [opow_def, if_pos h, sub_zero]
+    -- 🎉 no goals
   · simp only [opow_def, if_neg h, limitRecOn_zero]
+    -- 🎉 no goals
 #align ordinal.opow_zero Ordinal.opow_zero
 
 @[simp]
 theorem opow_succ (a b : Ordinal) : (a^succ b) = (a^b) * a :=
   if h : a = 0 then by subst a; simp only [zero_opow (succ_ne_zero _), mul_zero]
+                       -- ⊢ 0 ^ succ b = 0 ^ b * 0
+                                -- 🎉 no goals
   else by simp only [opow_def, limitRecOn_succ, if_neg h]
+          -- 🎉 no goals
 #align ordinal.opow_succ Ordinal.opow_succ
 
 theorem opow_limit {a b : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
     (a^b) = bsup.{u, u} b fun c _ => a^c := by
   simp only [opow_def, if_neg a0]; rw [limitRecOn_limit _ _ _ _ h]
+  -- ⊢ (limitRecOn b 1 (fun x IH => IH * a) fun b x => bsup b) = bsup b fun c x =>  …
+                                   -- 🎉 no goals
 #align ordinal.opow_limit Ordinal.opow_limit
 
 theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
     (a^b) ≤ c ↔ ∀ b' < b, (a^b') ≤ c := by rw [opow_limit a0 h, bsup_le_iff]
+                                           -- 🎉 no goals
 #align ordinal.opow_le_of_limit Ordinal.opow_le_of_limit
 
 theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
     a < (b^c) ↔ ∃ c' < c, a < (b^c') := by
   rw [← not_iff_not, not_exists]; simp only [not_lt, opow_le_of_limit b0 h, exists_prop, not_and]
+  -- ⊢ ¬a < b ^ c ↔ ∀ (x : Ordinal.{u_1}), ¬(x < c ∧ a < b ^ x)
+                                  -- 🎉 no goals
 #align ordinal.lt_opow_of_limit Ordinal.lt_opow_of_limit
 
 @[simp]
 theorem opow_one (a : Ordinal) : (a^1) = a := by
   rw [← succ_zero, opow_succ]; simp only [opow_zero, one_mul]
+  -- ⊢ a ^ 0 * a = a
+                               -- 🎉 no goals
 #align ordinal.opow_one Ordinal.opow_one
 
 @[simp]
@@ -92,6 +107,7 @@ theorem one_opow (a : Ordinal) : (1^a) = 1 := by
 
 theorem opow_pos {a : Ordinal} (b) (a0 : 0 < a) : 0 < (a^b) := by
   have h0 : 0 < (a^0) := by simp only [opow_zero, zero_lt_one]
+  -- ⊢ 0 < a ^ b
   induction b using limitRecOn with
   | H₁ => exact h0
   | H₂ b IH =>
@@ -108,6 +124,7 @@ theorem opow_ne_zero {a : Ordinal} (b) (a0 : a ≠ 0) : (a^b) ≠ 0 :=
 theorem opow_isNormal {a : Ordinal} (h : 1 < a) : IsNormal ((·^·) a) :=
   have a0 : 0 < a := zero_lt_one.trans h
   ⟨fun b => by simpa only [mul_one, opow_succ] using (mul_lt_mul_iff_left (opow_pos b a0)).2 h,
+               -- 🎉 no goals
     fun b l c => opow_le_of_limit (ne_of_gt a0) l⟩
 #align ordinal.opow_is_normal Ordinal.opow_isNormal
 
@@ -130,27 +147,41 @@ theorem opow_isLimit {a b : Ordinal} (a1 : 1 < a) : IsLimit b → IsLimit (a^b) 
 theorem opow_isLimit_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a^b) := by
   rcases zero_or_succ_or_limit b with (e | ⟨b, rfl⟩ | l')
   · exact absurd e hb
+    -- 🎉 no goals
   · rw [opow_succ]
+    -- ⊢ IsLimit (a ^ b * a)
     exact mul_isLimit (opow_pos _ l.pos) l
+    -- 🎉 no goals
   · exact opow_isLimit l.one_lt l'
+    -- 🎉 no goals
 #align ordinal.opow_is_limit_left Ordinal.opow_isLimit_left
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : (a^b) ≤ (a^c) := by
   cases' lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ h₁
+  -- ⊢ a ^ b ≤ a ^ c
   · exact (opow_le_opow_iff_right h₁).2 h₂
+    -- 🎉 no goals
   · subst a
+    -- ⊢ 1 ^ b ≤ 1 ^ c
     -- Porting note: `le_refl` is required.
     simp only [one_opow, le_refl]
+    -- 🎉 no goals
 #align ordinal.opow_le_opow_right Ordinal.opow_le_opow_right
 
 theorem opow_le_opow_left {a b : Ordinal} (c) (ab : a ≤ b) : (a^c) ≤ (b^c) := by
   by_cases a0 : a = 0
+  -- ⊢ a ^ c ≤ b ^ c
   -- Porting note: `le_refl` is required.
   · subst a
+    -- ⊢ 0 ^ c ≤ b ^ c
     by_cases c0 : c = 0
+    -- ⊢ 0 ^ c ≤ b ^ c
     · subst c
+      -- ⊢ 0 ^ 0 ≤ b ^ 0
       simp only [opow_zero, le_refl]
+      -- 🎉 no goals
     · simp only [zero_opow c0, Ordinal.zero_le]
+      -- 🎉 no goals
   · induction c using limitRecOn with
     | H₁ => simp only [opow_zero, le_refl]
     | H₂ c IH =>
@@ -163,13 +194,21 @@ theorem opow_le_opow_left {a b : Ordinal} (c) (ab : a ≤ b) : (a^c) ≤ (b^c) :
 
 theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ (a^b) := by
   nth_rw 1 [← opow_one a]
+  -- ⊢ a ^ 1 ≤ a ^ b
   cases' le_or_gt a 1 with a1 a1
+  -- ⊢ a ^ 1 ≤ a ^ b
   · cases' lt_or_eq_of_le a1 with a0 a1
+    -- ⊢ a ^ 1 ≤ a ^ b
     · rw [lt_one_iff_zero] at a0
+      -- ⊢ a ^ 1 ≤ a ^ b
       rw [a0, zero_opow Ordinal.one_ne_zero]
+      -- ⊢ 0 ≤ 0 ^ b
       exact Ordinal.zero_le _
+      -- 🎉 no goals
     rw [a1, one_opow, one_opow]
+    -- 🎉 no goals
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
+  -- 🎉 no goals
 #align ordinal.left_le_opow Ordinal.left_le_opow
 
 theorem right_le_opow {a : Ordinal} (b) (a1 : 1 < a) : b ≤ (a^b) :=
@@ -178,6 +217,7 @@ theorem right_le_opow {a : Ordinal} (b) (a1 : 1 < a) : b ≤ (a^b) :=
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : (a^succ c) < (b^succ c) := by
   rw [opow_succ, opow_succ]
+  -- ⊢ a ^ c * a < b ^ c * b
   exact
     (mul_le_mul_right' (opow_le_opow_left c ab.le) a).trans_lt
       (mul_lt_mul_of_pos_left ab (opow_pos c ((Ordinal.zero_le a).trans_lt ab)))
@@ -185,12 +225,19 @@ theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : (a^succ c) < 
 
 theorem opow_add (a b c : Ordinal) : a^(b + c) = (a^b) * (a^c) := by
   rcases eq_or_ne a 0 with (rfl | a0)
+  -- ⊢ 0 ^ (b + c) = 0 ^ b * 0 ^ c
   · rcases eq_or_ne c 0 with (rfl | c0)
+    -- ⊢ 0 ^ (b + 0) = 0 ^ b * 0 ^ 0
     · simp
+      -- 🎉 no goals
     have : b + c ≠ 0 := ((Ordinal.pos_iff_ne_zero.2 c0).trans_le (le_add_left _ _)).ne'
+    -- ⊢ 0 ^ (b + c) = 0 ^ b * 0 ^ c
     simp only [zero_opow c0, zero_opow this, mul_zero]
+    -- 🎉 no goals
   rcases eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with (rfl | a1)
+  -- ⊢ 1 ^ (b + c) = 1 ^ b * 1 ^ c
   · simp only [one_opow, mul_one]
+    -- 🎉 no goals
   induction c using limitRecOn with
   | H₁ => simp
   | H₂ c IH =>
@@ -208,10 +255,12 @@ theorem opow_add (a b c : Ordinal) : a^(b + c) = (a^b) * (a^c) := by
 #align ordinal.opow_add Ordinal.opow_add
 
 theorem opow_one_add (a b : Ordinal) : a^(1 + b) = a * (a^b) := by rw [opow_add, opow_one]
+                                                                   -- 🎉 no goals
 #align ordinal.opow_one_add Ordinal.opow_one_add
 
 theorem opow_dvd_opow (a) {b c : Ordinal} (h : b ≤ c) : (a^b) ∣ (a^c) :=
   ⟨a^(c - b), by rw [← opow_add, Ordinal.add_sub_cancel_of_le h]⟩
+                 -- 🎉 no goals
 #align ordinal.opow_dvd_opow Ordinal.opow_dvd_opow
 
 theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : (a^b) ∣ (a^c) ↔ b ≤ c :=
@@ -224,14 +273,24 @@ theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : (a^b) ∣ (a^c) ↔ b
 
 theorem opow_mul (a b c : Ordinal) : a^(b * c) = ((a^b)^c) := by
   by_cases b0 : b = 0; · simp only [b0, zero_mul, opow_zero, one_opow]
+  -- ⊢ a ^ (b * c) = (a ^ b) ^ c
+                         -- 🎉 no goals
   by_cases a0 : a = 0
+  -- ⊢ a ^ (b * c) = (a ^ b) ^ c
   · subst a
+    -- ⊢ 0 ^ (b * c) = (0 ^ b) ^ c
     by_cases c0 : c = 0
+    -- ⊢ 0 ^ (b * c) = (0 ^ b) ^ c
     · simp only [c0, mul_zero, opow_zero]
+      -- 🎉 no goals
     simp only [zero_opow b0, zero_opow c0, zero_opow (mul_ne_zero b0 c0)]
+    -- 🎉 no goals
   cases' eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with a1 a1
+  -- ⊢ a ^ (b * c) = (a ^ b) ^ c
   · subst a1
+    -- ⊢ 1 ^ (b * c) = (1 ^ b) ^ c
     simp only [one_opow]
+    -- 🎉 no goals
   induction c using limitRecOn with
   | H₁ => simp only [mul_zero, opow_zero]
   | H₂ c IH =>
@@ -264,10 +323,12 @@ theorem log_nonempty {b x : Ordinal} (h : 1 < b) : { o | x < (b^o) }.Nonempty :=
 
 theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf { o | x < (b^o) }) :=
   by simp only [log, dif_pos h]
+     -- 🎉 no goals
 #align ordinal.log_def Ordinal.log_def
 
 theorem log_of_not_one_lt_left {b : Ordinal} (h : ¬1 < b) (x : Ordinal) : log b x = 0 := by
   simp only [log, dif_neg h]
+  -- 🎉 no goals
 #align ordinal.log_of_not_one_lt_left Ordinal.log_of_not_one_lt_left
 
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) : ∀ x, log b x = 0 :=
@@ -283,11 +344,17 @@ theorem log_zero_left : ∀ b, log 0 b = 0 :=
 theorem log_zero_right (b : Ordinal) : log b 0 = 0 :=
   if b1 : 1 < b then by
     rw [log_def b1, ← Ordinal.le_zero, pred_le]
+    -- ⊢ sInf {o | 0 < b ^ o} ≤ succ 0
     apply csInf_le'
+    -- ⊢ succ 0 ∈ {o | 0 < b ^ o}
     dsimp
+    -- ⊢ 0 < b ^ succ 0
     rw [succ_zero, opow_one]
+    -- ⊢ 0 < b
     exact zero_lt_one.trans b1
+    -- 🎉 no goals
   else by simp only [log_of_not_one_lt_left b1]
+          -- 🎉 no goals
 #align ordinal.log_zero_right Ordinal.log_zero_right
 
 @[simp]
@@ -298,32 +365,51 @@ theorem log_one_left : ∀ b, log 1 b = 0 :=
 theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     succ (log b x) = sInf { o | x < (b^o) } := by
   let t := sInf { o | x < (b^o) }
+  -- ⊢ succ (log b x) = sInf {o | x < b ^ o}
   have : x < (b^t) := csInf_mem (log_nonempty hb)
+  -- ⊢ succ (log b x) = sInf {o | x < b ^ o}
   rcases zero_or_succ_or_limit t with (h | h | h)
   · refine' ((one_le_iff_ne_zero.2 hx).not_lt _).elim
+    -- ⊢ x < 1
     simpa only [h, opow_zero] using this
+    -- 🎉 no goals
   · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
+    -- 🎉 no goals
   · rcases(lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
+    -- ⊢ succ (log b x) = sInf {o | x < b ^ o}
     exact h₁.not_le.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
+    -- 🎉 no goals
 #align ordinal.succ_log_def Ordinal.succ_log_def
 
 theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
     x < (b^succ (log b x)) := by
   rcases eq_or_ne x 0 with (rfl | hx)
+  -- ⊢ 0 < b ^ succ (log b 0)
   · apply opow_pos _ (zero_lt_one.trans hb)
+    -- 🎉 no goals
   · rw [succ_log_def hb hx]
+    -- ⊢ x < b ^ sInf {o | x < b ^ o}
     exact csInf_mem (log_nonempty hb)
+    -- 🎉 no goals
 #align ordinal.lt_opow_succ_log_self Ordinal.lt_opow_succ_log_self
 
 theorem opow_log_le_self (b) {x : Ordinal} (hx : x ≠ 0) : (b^log b x) ≤ x := by
   rcases eq_or_ne b 0 with (rfl | b0)
+  -- ⊢ 0 ^ log 0 x ≤ x
   · rw [zero_opow']
+    -- ⊢ 1 - log 0 x ≤ x
     refine' (sub_le_self _ _).trans (one_le_iff_ne_zero.2 hx)
+    -- 🎉 no goals
   rcases lt_or_eq_of_le (one_le_iff_ne_zero.2 b0) with (hb | rfl)
+  -- ⊢ b ^ log b x ≤ x
   · refine' le_of_not_lt fun h => (lt_succ (log b x)).not_le _
+    -- ⊢ succ (log b x) ≤ log b x
     have := @csInf_le' _ _ { o | x < (b^o) } _ h
+    -- ⊢ succ (log b x) ≤ log b x
     rwa [← succ_log_def hb hx] at this
+    -- 🎉 no goals
   · rwa [one_opow, one_le_iff_ne_zero]
+    -- 🎉 no goals
 #align ordinal.opow_log_le_self Ordinal.opow_log_le_self
 
 /-- `opow b` and `log b` (almost) form a Galois connection. -/
@@ -341,33 +427,45 @@ theorem lt_opow_iff_log_lt {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) : x < (
 
 theorem log_pos {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) : 0 < log b o := by
   rwa [← succ_le_iff, succ_zero, ← opow_le_iff_le_log hb ho, opow_one]
+  -- 🎉 no goals
 #align ordinal.log_pos Ordinal.log_pos
 
 theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   rcases eq_or_ne o 0 with (rfl | ho)
+  -- ⊢ log b 0 = 0
   · exact log_zero_right b
+    -- 🎉 no goals
   cases' le_or_lt b 1 with hb hb
+  -- ⊢ log b o = 0
   · rcases le_one_iff.1 hb with (rfl | rfl)
+    -- ⊢ log 0 o = 0
     · exact log_zero_left o
+      -- 🎉 no goals
     · exact log_one_left o
+      -- 🎉 no goals
   · rwa [← Ordinal.le_zero, ← lt_succ_iff, succ_zero, ← lt_opow_iff_log_lt hb ho, opow_one]
+    -- 🎉 no goals
 #align ordinal.log_eq_zero Ordinal.log_eq_zero
 
 @[mono]
 theorem log_mono_right (b) {x y : Ordinal} (xy : x ≤ y) : log b x ≤ log b y :=
   if hx : x = 0 then by simp only [hx, log_zero_right, Ordinal.zero_le]
+                        -- 🎉 no goals
   else
     if hb : 1 < b then
       (opow_le_iff_le_log hb (lt_of_lt_of_le (Ordinal.pos_iff_ne_zero.2 hx) xy).ne').1 <|
         (opow_log_le_self _ hx).trans xy
     else by simp only [log_of_not_one_lt_left hb, Ordinal.zero_le]
+            -- 🎉 no goals
 #align ordinal.log_mono_right Ordinal.log_mono_right
 
 theorem log_le_self (b x : Ordinal) : log b x ≤ x :=
   if hx : x = 0 then by simp only [hx, log_zero_right, Ordinal.zero_le]
+                        -- 🎉 no goals
   else
     if hb : 1 < b then (right_le_opow _ hb).trans (opow_log_le_self b hx)
     else by simp only [log_of_not_one_lt_left hb, Ordinal.zero_le]
+            -- 🎉 no goals
 #align ordinal.log_le_self Ordinal.log_le_self
 
 @[simp]
@@ -377,20 +475,31 @@ theorem log_one_right (b : Ordinal) : log b 1 = 0 :=
 
 theorem mod_opow_log_lt_self (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : o % (b^log b o) < o := by
   rcases eq_or_ne b 0 with (rfl | hb)
+  -- ⊢ o % 0 ^ log 0 o < o
   · simpa using Ordinal.pos_iff_ne_zero.2 ho
+    -- 🎉 no goals
   · exact (mod_lt _ <| opow_ne_zero _ hb).trans_le (opow_log_le_self _ ho)
+    -- 🎉 no goals
 #align ordinal.mod_opow_log_lt_self Ordinal.mod_opow_log_lt_self
 
 theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) :
     log b (o % (b^log b o)) < log b o := by
   cases' eq_or_ne (o % (b^log b o)) 0 with h h
+  -- ⊢ log b (o % b ^ log b o) < log b o
   · rw [h, log_zero_right]
+    -- ⊢ 0 < log b o
     apply log_pos hb ho hbo
+    -- 🎉 no goals
   · rw [← succ_le_iff, succ_log_def hb h]
+    -- ⊢ sInf {o_1 | o % b ^ log b o < b ^ o_1} ≤ log b o
     apply csInf_le'
+    -- ⊢ log b o ∈ {o_1 | o % b ^ log b o < b ^ o_1}
     apply mod_lt
+    -- ⊢ b ^ log b o ≠ 0
     rw [← Ordinal.pos_iff_ne_zero]
+    -- ⊢ 0 < b ^ log b o
     exact opow_pos _ (zero_lt_one.trans hb)
+    -- 🎉 no goals
 #align ordinal.log_mod_opow_log_lt_log_self Ordinal.log_mod_opow_log_lt_log_self
 
 theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u) (hv : v ≠ 0) (w) : 0 < (b^u) * v + w :=
@@ -400,6 +509,7 @@ theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u) (hv : v ≠ 0) (w) :
 
 theorem opow_mul_add_lt_opow_mul_succ {b u w : Ordinal} (v : Ordinal) (hw : w < (b^u)) :
     (b^u) * v + w < (b^u) * succ v := by rwa [mul_succ, add_lt_add_iff_left]
+                                         -- 🎉 no goals
 #align ordinal.opow_mul_add_lt_opow_mul_succ Ordinal.opow_mul_add_lt_opow_mul_succ
 
 theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < (b^u)) :
@@ -407,45 +517,65 @@ theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < (b
   convert (opow_mul_add_lt_opow_mul_succ v hw).trans_le (mul_le_mul_left' (succ_le_of_lt hvb) _)
     using 1
   exact opow_succ b u
+  -- 🎉 no goals
 #align ordinal.opow_mul_add_lt_opow_succ Ordinal.opow_mul_add_lt_opow_succ
 
 theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : v < b)
     (hw : w < (b^u)) : log b ((b^u) * v + w) = u := by
   have hne' := (opow_mul_add_pos (zero_lt_one.trans hb).ne' u hv w).ne'
+  -- ⊢ log b (b ^ u * v + w) = u
   by_contra' hne
+  -- ⊢ False
   cases' lt_or_gt_of_ne hne with h h
+  -- ⊢ False
   · rw [← lt_opow_iff_log_lt hb hne'] at h
+    -- ⊢ False
     exact h.not_le ((le_mul_left _ (Ordinal.pos_iff_ne_zero.2 hv)).trans (le_add_right _ _))
+    -- 🎉 no goals
   · conv at h => change u < log b (b ^ u * v + w)
+    -- ⊢ False
     rw [← succ_le_iff, ← opow_le_iff_le_log hb hne'] at h
+    -- ⊢ False
     exact (not_lt_of_le h) (opow_mul_add_lt_opow_succ hvb hw)
+    -- 🎉 no goals
 #align ordinal.log_opow_mul_add Ordinal.log_opow_mul_add
 
 theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b^x) = x := by
   convert log_opow_mul_add hb zero_ne_one.symm hb (opow_pos x (zero_lt_one.trans hb))
     using 1
   rw [add_zero, mul_one]
+  -- 🎉 no goals
 #align ordinal.log_opow Ordinal.log_opow
 
 theorem div_opow_log_pos (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : 0 < o / (b^log b o) := by
   rcases eq_zero_or_pos b with (rfl | hb)
+  -- ⊢ 0 < o / 0 ^ log 0 o
   · simpa using Ordinal.pos_iff_ne_zero.2 ho
+    -- 🎉 no goals
   · rw [div_pos (opow_ne_zero _ hb.ne')]
+    -- ⊢ b ^ log b o ≤ o
     exact opow_log_le_self b ho
+    -- 🎉 no goals
 #align ordinal.div_opow_log_pos Ordinal.div_opow_log_pos
 
 theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / (b^log b o) < b := by
   rw [div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]
+  -- ⊢ o < b ^ succ (log b o)
   exact lt_opow_succ_log_self hb o
+  -- 🎉 no goals
 #align ordinal.div_opow_log_lt Ordinal.div_opow_log_lt
 
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :
     log b x + log b y ≤ log b (x * y) := by
   by_cases hb : 1 < b
+  -- ⊢ log b x + log b y ≤ log b (x * y)
   · rw [← opow_le_iff_le_log hb (mul_ne_zero hx hy), opow_add]
+    -- ⊢ b ^ log b x * b ^ log b y ≤ x * y
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
+    -- 🎉 no goals
   -- Porting note: `le_refl` is required.
   simp only [log_of_not_one_lt_left hb, zero_add, le_refl]
+  -- 🎉 no goals
 #align ordinal.add_log_le_log_mul Ordinal.add_log_le_log_mul
 
 /-! ### Interaction with `Nat.cast` -/
@@ -453,17 +583,25 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
 @[simp, norm_cast]
 theorem nat_cast_opow (m : ℕ) : ∀ n : ℕ, ((m ^ n : ℕ) : Ordinal) = (m^n)
   | 0 => by simp
+            -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ', nat_cast_mul, nat_cast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
+    -- 🎉 no goals
 #align ordinal.nat_cast_opow Ordinal.nat_cast_opow
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o^n) = (o^ω) := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
+  -- ⊢ (sup fun n => o ^ ↑n) = o ^ ω
   · exact (opow_isNormal ho₁).apply_omega
+    -- 🎉 no goals
   · rw [one_opow]
+    -- ⊢ (sup fun n => 1 ^ ↑n) = 1
     refine' le_antisymm (sup_le fun n => by rw [one_opow]) _
+    -- ⊢ 1 ≤ sup fun n => 1 ^ ↑n
     convert le_sup (fun n : ℕ => 1^n) 0
+    -- ⊢ 1 = 1 ^ ↑0
     rw [Nat.cast_zero, opow_zero]
+    -- 🎉 no goals
 #align ordinal.sup_opow_nat Ordinal.sup_opow_nat
 
 end Ordinal

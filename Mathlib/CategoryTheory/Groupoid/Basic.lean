@@ -22,7 +22,9 @@ section Thin
 
 theorem isThin_iff : Quiver.IsThin C ↔ ∀ c : C, Subsingleton (c ⟶ c) := by
   refine' ⟨fun h c => h c c, fun h c d => Subsingleton.intro fun f g => _⟩
+  -- ⊢ f = g
   haveI := h d
+  -- ⊢ f = g
   calc
     f = f ≫ inv g ≫ g := by simp only [inv_eq_inv, IsIso.inv_hom_id, Category.comp_id]
     _ = f ≫ inv f ≫ g := by congr 1

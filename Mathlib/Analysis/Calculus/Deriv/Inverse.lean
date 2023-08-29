@@ -107,6 +107,7 @@ theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ f x :=
   (hasDerivAt_iff_hasFDerivAt.1 h).eventually_ne
     ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf'] ⟩
+                         -- 🎉 no goals
 #align has_deriv_at.eventually_ne HasDerivAt.eventually_ne
 
 theorem HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
@@ -119,13 +120,19 @@ theorem not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero {
     {s t : Set 𝕜} (ha : a ∈ s) (hsu : UniqueDiffWithinAt 𝕜 s a) (hf : HasDerivWithinAt f 0 t (g a))
     (hst : MapsTo g s t) (hfg : f ∘ g =ᶠ[𝓝[s] a] id) : ¬DifferentiableWithinAt 𝕜 g s a := by
   intro hg
+  -- ⊢ False
   have := (hf.comp a hg.hasDerivWithinAt hst).congr_of_eventuallyEq_of_mem hfg.symm ha
+  -- ⊢ False
   simpa using hsu.eq_deriv _ this (hasDerivWithinAt_id _ _)
+  -- 🎉 no goals
 #align not_differentiable_within_at_of_local_left_inverse_has_deriv_within_at_zero not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero
 
 theorem not_differentiableAt_of_local_left_inverse_hasDerivAt_zero {f g : 𝕜 → 𝕜} {a : 𝕜}
     (hf : HasDerivAt f 0 (g a)) (hfg : f ∘ g =ᶠ[𝓝 a] id) : ¬DifferentiableAt 𝕜 g a := by
   intro hg
+  -- ⊢ False
   have := (hf.comp a hg.hasDerivAt).congr_of_eventuallyEq hfg.symm
+  -- ⊢ False
   simpa using this.unique (hasDerivAt_id a)
+  -- 🎉 no goals
 #align not_differentiable_at_of_local_left_inverse_has_deriv_at_zero not_differentiableAt_of_local_left_inverse_hasDerivAt_zero

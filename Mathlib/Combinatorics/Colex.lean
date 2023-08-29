@@ -102,10 +102,15 @@ theorem Colex.le_def [LT α] (A B : Finset α) :
 theorem Nat.sum_two_pow_lt {k : ℕ} {A : Finset ℕ} (h₁ : ∀ {x}, x ∈ A → x < k) :
     A.sum (Nat.pow 2) < 2 ^ k := by
   apply lt_of_le_of_lt (sum_le_sum_of_subset fun t => mem_range.2 ∘ h₁)
+  -- ⊢ ∑ x in range k, Nat.pow 2 x < 2 ^ k
   have z := geom_sum_mul_add 1 k
+  -- ⊢ ∑ x in range k, Nat.pow 2 x < 2 ^ k
   rw [mul_one, one_add_one_eq_two] at z
+  -- ⊢ ∑ x in range k, Nat.pow 2 x < 2 ^ k
   rw [← z]
+  -- ⊢ ∑ x in range k, Nat.pow 2 x < ∑ i in range k, 2 ^ i + 1
   apply Nat.lt_succ_self
+  -- 🎉 no goals
 #align nat.sum_two_pow_lt Nat.sum_two_pow_lt
 
 namespace Colex
@@ -115,21 +120,29 @@ theorem hom_lt_iff {β : Type*} [LinearOrder α] [DecidableEq β] [Preorder β] 
     (h₁ : StrictMono f) (A B : Finset α) :
     (A.image f).toColex < (B.image f).toColex ↔ A.toColex < B.toColex := by
   simp only [Colex.lt_def, not_exists, mem_image, exists_prop, not_and]
+  -- ⊢ (∃ k, (∀ {x : β}, k < x → ((∃ a, a ∈ A ∧ f a = x) ↔ ∃ a, a ∈ B ∧ f a = x)) ∧ …
   constructor
+  -- ⊢ (∃ k, (∀ {x : β}, k < x → ((∃ a, a ∈ A ∧ f a = x) ↔ ∃ a, a ∈ B ∧ f a = x)) ∧ …
   · rintro ⟨k, z, q, k', _, rfl⟩
+    -- ⊢ ∃ k, (∀ {x : α}, k < x → (x ∈ A ↔ x ∈ B)) ∧ ¬k ∈ A ∧ k ∈ B
     exact
       ⟨k', @fun x hx => by
         simpa [h₁.injective.eq_iff] using z (h₁ hx), fun t => q _ t rfl, ‹k' ∈ B›⟩
   rintro ⟨k, z, ka, _⟩
+  -- ⊢ ∃ k, (∀ {x : β}, k < x → ((∃ a, a ∈ A ∧ f a = x) ↔ ∃ a, a ∈ B ∧ f a = x)) ∧  …
   refine' ⟨f k, @fun x hx => _, _, k, ‹k ∈ B›, rfl⟩
+  -- ⊢ (∃ a, a ∈ A ∧ f a = x) ↔ ∃ a, a ∈ B ∧ f a = x
   · constructor
+    -- ⊢ (∃ a, a ∈ A ∧ f a = x) → ∃ a, a ∈ B ∧ f a = x
     any_goals
       rintro ⟨x', hx', rfl⟩
       refine' ⟨x', _, rfl⟩
       first |rwa [← z _]|rwa [z _]
       rwa [StrictMono.lt_iff_lt h₁] at hx
   · simp only [h₁.injective, Function.Injective.eq_iff]
+    -- ⊢ ∀ (x : α), x ∈ A → ¬x = k
     exact fun x hx => ne_of_mem_of_not_mem hx ka
+    -- 🎉 no goals
 #align colex.hom_lt_iff Colex.hom_lt_iff
 
 /-- A special case of `Colex.hom_lt_iff` which is sometimes useful. -/
@@ -138,7 +151,9 @@ theorem hom_fin_lt_iff {n : ℕ} (A B : Finset (Fin n)) :
     (A.image fun i : Fin n => (i : ℕ)).toColex < (B.image fun i : Fin n => (i : ℕ)).toColex ↔
       A.toColex < B.toColex := by
   refine' Colex.hom_lt_iff _ _ _
+  -- ⊢ StrictMono fun i => ↑i
   exact (fun x y k => k)
+  -- 🎉 no goals
 #align colex.hom_fin_lt_iff Colex.hom_fin_lt_iff
 
 instance [LT α] : IsIrrefl (Finset.Colex α) (· < ·) :=
@@ -147,14 +162,23 @@ instance [LT α] : IsIrrefl (Finset.Colex α) (· < ·) :=
 @[trans]
 theorem lt_trans [LinearOrder α] {a b c : Finset.Colex α} : a < b → b < c → a < c := by
   rintro ⟨k₁, k₁z, notinA, inB⟩ ⟨k₂, k₂z, notinB, inC⟩
+  -- ⊢ a < c
   cases' lt_or_gt_of_ne (ne_of_mem_of_not_mem inB notinB) with h h
+  -- ⊢ a < c
   · refine' ⟨k₂, @fun x hx => _, _, inC⟩
+    -- ⊢ x ∈ a ↔ x ∈ c
     rw [← k₂z hx]
+    -- ⊢ x ∈ a ↔ x ∈ b
     apply k₁z (Trans.trans h hx)
+    -- ⊢ ¬k₂ ∈ a
     rwa [k₁z h]
+    -- 🎉 no goals
   · refine' ⟨k₁, @fun x hx => _, notinA, by rwa [← k₂z h]⟩
+    -- ⊢ x ∈ a ↔ x ∈ c
     rw [k₁z hx]
+    -- ⊢ x ∈ b ↔ x ∈ c
     apply k₂z (Trans.trans h hx)
+    -- 🎉 no goals
 #align colex.lt_trans Colex.lt_trans
 
 @[trans]
@@ -167,30 +191,50 @@ instance [LinearOrder α] : IsTrans (Finset.Colex α) (· < ·) :=
 
 theorem lt_trichotomy [LinearOrder α] (A B : Finset.Colex α) : A < B ∨ A = B ∨ B < A := by
   by_cases h₁ : A = B
+  -- ⊢ A < B ∨ A = B ∨ B < A
   · tauto
+    -- 🎉 no goals
   have h : Finset.Nonempty (A \ B ∪ B \ A) := by
     rw [nonempty_iff_ne_empty]
     intro a
     simp only [union_eq_empty_iff, sdiff_eq_empty_iff_subset] at a
     apply h₁ (Subset.antisymm a.1 a.2)
   rcases exists_max_image (A \ B ∪ B \ A) id h with ⟨k, ⟨hk, z⟩⟩
+  -- ⊢ A < B ∨ A = B ∨ B < A
   · simp only [mem_union, mem_sdiff] at hk
+    -- ⊢ A < B ∨ A = B ∨ B < A
     cases' hk with hk hk
+    -- ⊢ A < B ∨ A = B ∨ B < A
     · right
+      -- ⊢ A = B ∨ B < A
       right
+      -- ⊢ B < A
       refine' ⟨k, @fun t th => _, hk.2, hk.1⟩
+      -- ⊢ t ∈ B ↔ t ∈ A
       specialize z t
+      -- ⊢ t ∈ B ↔ t ∈ A
       by_contra h₂
+      -- ⊢ False
       simp only [mem_union, mem_sdiff, id.def] at z
+      -- ⊢ False
       rw [not_iff, iff_iff_and_or_not_and_not, not_not, and_comm] at h₂
+      -- ⊢ False
       apply not_le_of_lt th (z h₂)
+      -- 🎉 no goals
     · left
+      -- ⊢ A < B
       refine' ⟨k, @fun t th => _, hk.2, hk.1⟩
+      -- ⊢ t ∈ A ↔ t ∈ B
       specialize z t
+      -- ⊢ t ∈ A ↔ t ∈ B
       by_contra h₃
+      -- ⊢ False
       simp only [mem_union, mem_sdiff, id.def] at z
+      -- ⊢ False
       rw [not_iff, iff_iff_and_or_not_and_not, not_not, and_comm, or_comm] at h₃
+      -- ⊢ False
       apply not_le_of_lt th (z h₃)
+      -- 🎉 no goals
 #align colex.lt_trichotomy Colex.lt_trichotomy
 
 instance [LinearOrder α] : IsTrichotomous (Finset.Colex α) (· < ·) :=
@@ -201,11 +245,17 @@ instance decidableLt [LinearOrder α] : ∀ {A B : Finset.Colex α}, Decidable (
     decidable_of_iff' (∃ k ∈ B, (∀ x ∈ A ∪ B, k < x → (x ∈ A ↔ x ∈ B)) ∧ k ∉ A)
       (by
         rw [Colex.lt_def]
+        -- ⊢ (∃ k, (∀ {x : α}, k < x → (x ∈ A ↔ x ∈ B)) ∧ ¬k ∈ A ∧ k ∈ B) ↔ ∃ k, k ∈ B ∧  …
         apply exists_congr
+        -- ⊢ ∀ (a : α), (∀ {x : α}, a < x → (x ∈ A ↔ x ∈ B)) ∧ ¬a ∈ A ∧ a ∈ B ↔ a ∈ B ∧ ( …
         simp only [mem_union, exists_prop, or_imp, and_comm (a := _ ∈ B), and_assoc]
+        -- ⊢ ∀ (a : α), (∀ {x : α}, a < x → (x ∈ A ↔ x ∈ B)) ∧ ¬a ∈ A ∧ a ∈ B ↔ (∀ (x : α …
         intro k
+        -- ⊢ (∀ {x : α}, k < x → (x ∈ A ↔ x ∈ B)) ∧ ¬k ∈ A ∧ k ∈ B ↔ (∀ (x : α), (x ∈ A → …
         refine' and_congr_left' (forall_congr' _)
+        -- ⊢ ∀ (a : α), k < a → (a ∈ A ↔ a ∈ B) ↔ (a ∈ A → k < a → (a ∈ A ↔ a ∈ B)) ∧ (a  …
         tauto)
+        -- 🎉 no goals
 #align colex.decidable_lt Colex.decidableLt
 
 instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
@@ -220,17 +270,28 @@ instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
     -- Porting note: we must give some hints for instances
     decidableLE := by
       letI : DecidableEq (Finset.Colex α) := inferInstanceAs (DecidableEq (Finset α))
+      -- ⊢ DecidableRel fun x x_1 => x ≤ x_1
       exact fun A B => inferInstanceAs (Decidable (A < B ∨ A = B))
+      -- 🎉 no goals
     decidableLT := inferInstance
     decidableEq := inferInstanceAs (DecidableEq (Finset α))
+      -- ⊢ A < B → A ≤ B ∧ ¬B ≤ A
     lt_iff_le_not_le := fun A B => by
+        -- ⊢ A ≤ B ∧ ¬B ≤ A
       constructor
+        -- ⊢ ¬B ≤ A
       · intro t
+        -- ⊢ False
         refine' ⟨Or.inl t, _⟩
+          -- 🎉 no goals
         rintro (i | rfl)
+          -- 🎉 no goals
         · apply asymm_of _ t i
+      -- ⊢ A < B
         · apply irrefl _ t
+        -- 🎉 no goals
       rintro ⟨h₁ | rfl, h₂⟩
+      -- 🎉 no goals
       · apply h₁
       apply h₂.elim (Or.inr rfl) }
 
@@ -242,6 +303,7 @@ example [LinearOrder α] : IsStrictTotalOrder (Finset.Colex α) (· < ·) :=
 theorem hom_le_iff {β : Type*} [LinearOrder α] [LinearOrder β] {f : α → β} (h₁ : StrictMono f)
     (A B : Finset α) : (A.image f).toColex ≤ (B.image f).toColex ↔ A.toColex ≤ B.toColex := by
   rw [le_iff_le_iff_lt_iff_lt, hom_lt_iff h₁]
+  -- 🎉 no goals
 #align colex.hom_le_iff Colex.hom_le_iff
 
 -- Porting note: fixed the doc
@@ -258,26 +320,42 @@ theorem hom_fin_le_iff {n : ℕ} (A B : Finset (Fin n)) :
 theorem forall_lt_of_colex_lt_of_forall_lt [LinearOrder α] {A B : Finset α} (t : α)
     (h₁ : A.toColex < B.toColex) (h₂ : ∀ x ∈ B, x < t) : ∀ x ∈ A, x < t := by
   rw [Colex.lt_def] at h₁
+  -- ⊢ ∀ (x : α), x ∈ A → x < t
   rcases h₁ with ⟨k, z, _, _⟩
+  -- ⊢ ∀ (x : α), x ∈ A → x < t
   intro x hx
+  -- ⊢ x < t
   apply lt_of_not_ge
+  -- ⊢ ¬x ≥ t
   intro a
+  -- ⊢ False
   refine' not_lt_of_ge a (h₂ x _)
+  -- ⊢ x ∈ B
   rwa [← z]
+  -- ⊢ k < x
   apply lt_of_lt_of_le (h₂ k ‹_›) a
+  -- 🎉 no goals
 #align colex.forall_lt_of_colex_lt_of_forall_lt Colex.forall_lt_of_colex_lt_of_forall_lt
 
 /-- `s.toColex < {r}.toColex` iff all elements of `s` are less than `r`. -/
 theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
     s.toColex < ({r} : Finset α).toColex ↔ ∀ x ∈ s, x < r := by
   simp only [lt_def, mem_singleton, ← and_assoc, exists_eq_right]
+  -- ⊢ (∀ {x : α}, r < x → (x ∈ s ↔ x = r)) ∧ ¬r ∈ s ↔ ∀ (x : α), x ∈ s → x < r
   constructor
+  -- ⊢ (∀ {x : α}, r < x → (x ∈ s ↔ x = r)) ∧ ¬r ∈ s → ∀ (x : α), x ∈ s → x < r
   · intro t x hx
+    -- ⊢ x < r
     rw [← not_le]
+    -- ⊢ ¬r ≤ x
     intro h
+    -- ⊢ False
     rcases lt_or_eq_of_le h with (h₁ | rfl)
+    -- ⊢ False
     · exact ne_of_irrefl h₁ ((t.1 h₁).1 hx).symm
+      -- 🎉 no goals
     · exact t.2 hx
+      -- 🎉 no goals
   · exact fun h =>
       ⟨fun {z} hz => ⟨fun i => (asymm hz (h _ i)).elim, fun i => (hz.ne' i).elim⟩,
           by simpa using h r⟩
@@ -289,18 +367,22 @@ theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
 theorem mem_le_of_singleton_le [LinearOrder α] {r : α} {s : Finset α} :
     ({r} : Finset α).toColex ≤ s.toColex ↔ ∃ x ∈ s, r ≤ x := by
   simp only [← not_lt]
+  -- ⊢ ¬toColex s < toColex {r} ↔ ∃ x, x ∈ s ∧ ¬x < r
   simp [lt_singleton_iff_mem_lt]
+  -- 🎉 no goals
 #align colex.mem_le_of_singleton_le Colex.mem_le_of_singleton_le
 
 /-- Colex is an extension of the base ordering on α. -/
 theorem singleton_lt_iff_lt [LinearOrder α] {r s : α} :
     ({r} : Finset α).toColex < ({s} : Finset α).toColex ↔ r < s := by simp [lt_singleton_iff_mem_lt]
+                                                                      -- 🎉 no goals
 #align colex.singleton_lt_iff_lt Colex.singleton_lt_iff_lt
 
 /-- Colex is an extension of the base ordering on α. -/
 theorem singleton_le_iff_le [LinearOrder α] {r s : α} :
     ({r} : Finset α).toColex ≤ ({s} : Finset α).toColex ↔ r ≤ s := by
   rw [le_iff_le_iff_lt_iff_lt, singleton_lt_iff_lt]
+  -- 🎉 no goals
 #align colex.singleton_le_iff_le Colex.singleton_le_iff_le
 
 /-- Colex doesn't care if you remove the other set -/
@@ -308,19 +390,33 @@ theorem singleton_le_iff_le [LinearOrder α] {r s : α} :
 theorem sdiff_lt_sdiff_iff_lt [LT α] [DecidableEq α] (A B : Finset α) :
     (A \ B).toColex < (B \ A).toColex ↔ A.toColex < B.toColex := by
   rw [Colex.lt_def, Colex.lt_def]
+  -- ⊢ (∃ k, (∀ {x : α}, k < x → (x ∈ A \ B ↔ x ∈ B \ A)) ∧ ¬k ∈ A \ B ∧ k ∈ B \ A) …
   apply exists_congr
+  -- ⊢ ∀ (a : α), (∀ {x : α}, a < x → (x ∈ A \ B ↔ x ∈ B \ A)) ∧ ¬a ∈ A \ B ∧ a ∈ B …
   intro k
+  -- ⊢ (∀ {x : α}, k < x → (x ∈ A \ B ↔ x ∈ B \ A)) ∧ ¬k ∈ A \ B ∧ k ∈ B \ A ↔ (∀ { …
   simp only [mem_sdiff, not_and, not_not]
+  -- ⊢ (∀ {x : α}, k < x → (x ∈ A ∧ ¬x ∈ B ↔ x ∈ B ∧ ¬x ∈ A)) ∧ (k ∈ A → k ∈ B) ∧ k …
   constructor
+  -- ⊢ (∀ {x : α}, k < x → (x ∈ A ∧ ¬x ∈ B ↔ x ∈ B ∧ ¬x ∈ A)) ∧ (k ∈ A → k ∈ B) ∧ k …
   · rintro ⟨z, kAB, kB, kA⟩
+    -- ⊢ (∀ {x : α}, k < x → (x ∈ A ↔ x ∈ B)) ∧ ¬k ∈ A ∧ k ∈ B
     refine' ⟨_, kA, kB⟩
+    -- ⊢ ∀ {x : α}, k < x → (x ∈ A ↔ x ∈ B)
     · intro x hx
+      -- ⊢ x ∈ A ↔ x ∈ B
       specialize z hx
+      -- ⊢ x ∈ A ↔ x ∈ B
       tauto
+      -- 🎉 no goals
   · rintro ⟨z, kA, kB⟩
+    -- ⊢ (∀ {x : α}, k < x → (x ∈ A ∧ ¬x ∈ B ↔ x ∈ B ∧ ¬x ∈ A)) ∧ (k ∈ A → k ∈ B) ∧ k …
     refine' ⟨_, fun _ => kB, kB, kA⟩
+    -- ⊢ ∀ {x : α}, k < x → (x ∈ A ∧ ¬x ∈ B ↔ x ∈ B ∧ ¬x ∈ A)
     intro x hx
+    -- ⊢ x ∈ A ∧ ¬x ∈ B ↔ x ∈ B ∧ ¬x ∈ A
     rw [z hx]
+    -- 🎉 no goals
 #align colex.sdiff_lt_sdiff_iff_lt Colex.sdiff_lt_sdiff_iff_lt
 
 /-- Colex doesn't care if you remove the other set -/
@@ -328,15 +424,21 @@ theorem sdiff_lt_sdiff_iff_lt [LT α] [DecidableEq α] (A B : Finset α) :
 theorem sdiff_le_sdiff_iff_le [LinearOrder α] (A B : Finset α) :
     (A \ B).toColex ≤ (B \ A).toColex ↔ A.toColex ≤ B.toColex := by
   rw [le_iff_le_iff_lt_iff_lt, sdiff_lt_sdiff_iff_lt]
+  -- 🎉 no goals
 #align colex.sdiff_le_sdiff_iff_le Colex.sdiff_le_sdiff_iff_le
 
 theorem empty_toColex_lt [LinearOrder α] {A : Finset α} (hA : A.Nonempty) :
     (∅ : Finset α).toColex < A.toColex := by
   rw [Colex.lt_def]
+  -- ⊢ ∃ k, (∀ {x : α}, k < x → (x ∈ ∅ ↔ x ∈ A)) ∧ ¬k ∈ ∅ ∧ k ∈ A
   refine' ⟨max' _ hA, _, by simp, max'_mem _ _⟩
+  -- ⊢ ∀ {x : α}, max' A hA < x → (x ∈ ∅ ↔ x ∈ A)
   simp only [false_iff_iff, not_mem_empty]
+  -- ⊢ ∀ {x : α}, max' A hA < x → ¬x ∈ A
   intro x hx t
+  -- ⊢ False
   apply not_le_of_lt hx (le_max' _ _ t)
+  -- 🎉 no goals
 #align colex.empty_to_colex_lt Colex.empty_toColex_lt
 
 /-- If `A ⊂ B`, then `A` is less than `B` in the colex order. Note the converse does not hold, as
@@ -344,14 +446,19 @@ theorem empty_toColex_lt [LinearOrder α] {A : Finset α} (hA : A.Nonempty) :
 theorem colex_lt_of_ssubset [LinearOrder α] {A B : Finset α} (h : A ⊂ B) :
     A.toColex < B.toColex := by
   rw [← sdiff_lt_sdiff_iff_lt, sdiff_eq_empty_iff_subset.2 h.1]
+  -- ⊢ toColex ∅ < toColex (B \ A)
   exact empty_toColex_lt (by simpa [Finset.Nonempty] using exists_of_ssubset h)
+  -- 🎉 no goals
 #align colex.colex_lt_of_ssubset Colex.colex_lt_of_ssubset
 
 @[simp]
 theorem empty_toColex_le [LinearOrder α] {A : Finset α} : (∅ : Finset α).toColex ≤ A.toColex := by
   rcases A.eq_empty_or_nonempty with (rfl | hA)
+  -- ⊢ toColex ∅ ≤ toColex ∅
   · simp
+    -- 🎉 no goals
   · apply (empty_toColex_lt hA).le
+    -- 🎉 no goals
 #align colex.empty_to_colex_le Colex.empty_toColex_le
 
 /-- If `A ⊆ B`, then `A ≤ B` in the colex order. Note the converse does not hold, as `⊆` is not a
@@ -359,7 +466,9 @@ linear order. -/
 theorem colex_le_of_subset [LinearOrder α] {A B : Finset α} (h : A ⊆ B) :
     A.toColex ≤ B.toColex := by
   rw [← sdiff_le_sdiff_iff_le, sdiff_eq_empty_iff_subset.2 h]
+  -- ⊢ toColex ∅ ≤ toColex (B \ A)
   apply empty_toColex_le
+  -- 🎉 no goals
 #align colex.colex_le_of_subset Colex.colex_le_of_subset
 
 /-- The function from finsets to finsets with the colex order is a relation homomorphism. -/
@@ -411,13 +520,16 @@ theorem sum_two_pow_lt_iff_lt (A B : Finset ℕ) :
   refine'
     ⟨fun h => (lt_trichotomy A B).resolve_right fun h₁ => h₁.elim _ (not_lt_of_gt h ∘ z _ _), z A B⟩
   rintro rfl
+  -- ⊢ False
   apply irrefl _ h
+  -- 🎉 no goals
 #align colex.sum_two_pow_lt_iff_lt Colex.sum_two_pow_lt_iff_lt
 
 /-- For subsets of ℕ, we can show that colex is equivalent to binary. -/
 theorem sum_two_pow_le_iff_lt (A B : Finset ℕ) :
     ((∑ i in A, 2 ^ i) ≤ ∑ i in B, 2 ^ i) ↔ A.toColex ≤ B.toColex := by
   rw [le_iff_le_iff_lt_iff_lt, sum_two_pow_lt_iff_lt]
+  -- 🎉 no goals
 #align colex.sum_two_pow_le_iff_lt Colex.sum_two_pow_le_iff_lt
 
 end Colex

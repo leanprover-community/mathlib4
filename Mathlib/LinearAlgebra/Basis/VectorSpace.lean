@@ -53,6 +53,7 @@ noncomputable def extend (hs : LinearIndependent K ((↑) : s → V)) :
   Basis.mk
     (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
     (SetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
+                                     -- 🎉 no goals
 #align basis.extend Basis.extend
 
 theorem extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
@@ -68,6 +69,7 @@ theorem coe_extend (hs : LinearIndependent K ((↑) : s → V)) : ⇑(Basis.exte
 theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
+  -- 🎉 no goals
 #align basis.range_extend Basis.range_extend
 
 -- Porting note: adding this to make the statement of `subExtend` more readable
@@ -117,7 +119,9 @@ instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V 
 
 theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x := by
   unfold ofVectorSpace
+  -- ⊢ ↑(extend (_ : LinearIndependent K fun x => ↑x)) x = ↑x
   exact Basis.mk_apply _ _ _
+  -- 🎉 no goals
 #align basis.of_vector_space_apply_self Basis.ofVectorSpace_apply_self
 
 @[simp]
@@ -128,8 +132,11 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
   convert (ofVectorSpace K V).linearIndependent
+  -- ⊢ Subtype.val = ↑(ofVectorSpace K V)
   ext x
+  -- ⊢ ↑x = ↑(ofVectorSpace K V) x
   rw [ofVectorSpace_apply_self]
+  -- 🎉 no goals
 #align basis.of_vector_space_index.linear_independent Basis.ofVectorSpaceIndex.linearIndependent
 
 theorem range_ofVectorSpace : range (ofVectorSpace K V) = ofVectorSpaceIndex K V :=
@@ -163,18 +170,31 @@ variable {K V}
 lattice of submodules. -/
 theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodule K V) := by
   constructor
+  -- ⊢ span K {v} ≠ ⊥
   · rw [Submodule.ne_bot_iff]
+    -- ⊢ ∃ x, x ∈ span K {v} ∧ x ≠ 0
     exact ⟨v, ⟨mem_span_singleton_self v, hv⟩⟩
+    -- 🎉 no goals
   · intro T hT
+    -- ⊢ T = ⊥
     by_contra h
+    -- ⊢ False
     apply hT.2
+    -- ⊢ ↑(span K {v}) ⊆ ↑T
     change span K {v} ≤ T
+    -- ⊢ span K {v} ≤ T
     simp_rw [span_singleton_le_iff_mem, ← Ne.def, Submodule.ne_bot_iff] at *
+    -- ⊢ v ∈ T
     rcases h with ⟨s, ⟨hs, hz⟩⟩
+    -- ⊢ v ∈ T
     rcases mem_span_singleton.1 (hT.1 hs) with ⟨a, rfl⟩
+    -- ⊢ v ∈ T
     rcases eq_or_ne a 0 with rfl | h
+    -- ⊢ v ∈ T
     · simp only [zero_smul, ne_eq, not_true] at hz
+      -- 🎉 no goals
     · rwa [T.smul_mem_iff h] at hs
+      -- 🎉 no goals
 #align nonzero_span_atom nonzero_span_atom
 
 /-- The atoms of the lattice of submodules of a module over a division ring are the
@@ -182,23 +202,36 @@ submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ (v : V) (_ : v ≠ 0), W = span K {v} := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ ∃ v x, W = span K {v}
   · cases' h with hbot h
+    -- ⊢ ∃ v x, W = span K {v}
     rcases(Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
+    -- ⊢ ∃ v x, W = span K {v}
     refine' ⟨v, ⟨hv, _⟩⟩
+    -- ⊢ W = span K {v}
     by_contra heq
+    -- ⊢ False
     specialize h (span K {v})
+    -- ⊢ False
     rw [span_singleton_eq_bot, lt_iff_le_and_ne] at h
+    -- ⊢ False
     exact hv (h ⟨(span_singleton_le_iff_mem v W).2 hW, Ne.symm heq⟩)
+    -- 🎉 no goals
   · rcases h with ⟨v, ⟨hv, rfl⟩⟩
+    -- ⊢ IsAtom (span K {v})
     exact nonzero_span_atom v hv
+    -- 🎉 no goals
 #align atom_iff_nonzero_span atom_iff_nonzero_span
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
 instance : IsAtomistic (Submodule K V) where
   eq_sSup_atoms W := by
     refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
+    -- ⊢ ∀ (a : Submodule K V), a ∈ {T | ∃ m x x, T = span K {m}} → IsAtom a
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
+    -- ⊢ IsAtom (span K {w})
     exact nonzero_span_atom w hw
+    -- 🎉 no goals
 
 end AtomsOfSubmoduleLattice
 
@@ -207,24 +240,36 @@ variable {K V}
 theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
     ∃ g : V' →ₗ[K] V, g.comp f = LinearMap.id := by
   let B := Basis.ofVectorSpaceIndex K V
+  -- ⊢ ∃ g, comp g f = id
   let hB := Basis.ofVectorSpace K V
+  -- ⊢ ∃ g, comp g f = id
   have hB₀ : _ := hB.linearIndependent.to_subtype_range
+  -- ⊢ ∃ g, comp g f = id
   have : LinearIndependent K (fun x => x : f '' B → V') := by
     have h₁ : LinearIndependent K ((↑) : ↥(f '' Set.range (Basis.ofVectorSpace K V)) → V') :=
       @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ f hB₀ (show Disjoint _ _ by simp [hf_inj])
     rwa [Basis.range_ofVectorSpace K V] at h₁
   let C := this.extend (subset_univ _)
+  -- ⊢ ∃ g, comp g f = id
   have BC := this.subset_extend (subset_univ _)
+  -- ⊢ ∃ g, comp g f = id
   let hC := Basis.extend this
+  -- ⊢ ∃ g, comp g f = id
   haveI Vinh : Inhabited V := ⟨0⟩
+  -- ⊢ ∃ g, comp g f = id
   refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => _⟩
+  -- ⊢ ↑(comp (↑(Basis.constr hC ℕ) (Set.restrict C (invFun ↑f))) f) (↑hB b) = ↑id  …
   rw [image_subset_iff] at BC
+  -- ⊢ ↑(comp (↑(Basis.constr hC ℕ) (Set.restrict C (invFun ↑f))) f) (↑hB b) = ↑id  …
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
   dsimp []
+  -- ⊢ ↑(↑(Basis.constr (Basis.extend this) ℕ) (Set.restrict (LinearIndependent.ext …
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
+  -- ⊢ Set.restrict (LinearIndependent.extend this (_ : ↑f '' Basis.ofVectorSpaceIn …
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
+  -- 🎉 no goals
 #align linear_map.exists_left_inverse_of_injective LinearMap.exists_leftInverse_of_injective
 
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
@@ -239,11 +284,17 @@ instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K
 theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
     ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
   let C := Basis.ofVectorSpaceIndex K V'
+  -- ⊢ ∃ g, comp f g = id
   let hC := Basis.ofVectorSpace K V'
+  -- ⊢ ∃ g, comp f g = id
   haveI : Inhabited V := ⟨0⟩
+  -- ⊢ ∃ g, comp f g = id
   refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => _⟩
+  -- ⊢ ↑(comp f (↑(Basis.constr hC ℕ) (Set.restrict C (invFun ↑f)))) (↑hC c) = ↑id  …
   rw [LinearMap.comp_apply, hC.constr_basis]
+  -- ⊢ ↑f (Set.restrict C (invFun ↑f) c) = ↑id (↑hC c)
   simp [rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
+  -- 🎉 no goals
 #align linear_map.exists_right_inverse_of_surjective LinearMap.exists_rightInverse_of_surjective
 
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
@@ -252,6 +303,7 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
     ∃ g : V →ₗ[K] V', g.comp p.subtype = f :=
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
+                -- 🎉 no goals
 #align linear_map.exists_extend LinearMap.exists_extend
 
 open Submodule LinearMap
@@ -261,15 +313,26 @@ open Submodule LinearMap
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
+  -- ⊢ ∃ f, f ≠ 0 ∧ p ≤ ker f
+                                                   -- ⊢ ∃ f, f ≠ 0 ∧ p ≤ ker f
   rcases(LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
+  -- ⊢ ∃ f, f ≠ 0 ∧ p ≤ ker f
   refine' ⟨f, _, _⟩
+  -- ⊢ f ≠ 0
   · rintro rfl
+    -- ⊢ False
     rw [LinearMap.zero_comp] at hf
+    -- ⊢ False
     have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv 0 p.zero_mem 1
+    -- ⊢ False
     simpa using (LinearMap.congr_fun hf _).trans this
+    -- 🎉 no goals
   · refine' fun x hx => mem_ker.2 _
+    -- ⊢ ↑f x = 0
     have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv x hx 0
+    -- ⊢ ↑f x = 0
     simpa using (LinearMap.congr_fun hf _).trans this
+    -- 🎉 no goals
 #align submodule.exists_le_ker_of_lt_top Submodule.exists_le_ker_of_lt_top
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=

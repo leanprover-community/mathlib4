@@ -84,10 +84,12 @@ theorem _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
 theorem _root_.IsOpen.measure_zero_iff_eq_empty (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ :=
   ⟨fun h ↦ (hU.measure_eq_zero_iff μ).mp h, fun h ↦ by simp [h]⟩
+                                                       -- 🎉 no goals
 
 theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
     U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by
   rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
+  -- 🎉 no goals
 
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
@@ -96,17 +98,21 @@ theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0)
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
   refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
+  -- ⊢ F = univ
   rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
+  -- 🎉 no goals
 
 theorem _root_.IsClosed.measure_eq_univ_iff_eq [OpensMeasurableSpace X] [IsFiniteMeasure μ]
     (hF : IsClosed F) :
     μ F = μ univ ↔ F = univ := by
   rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_eq_univ_iff_eq]
+  -- 🎉 no goals
 
 theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsProbabilityMeasure μ]
     (hF : IsClosed F) :
     μ F = 1 ↔ F = univ := by
   rw [← measure_univ (μ := μ), hF.measure_eq_univ_iff_eq]
+  -- 🎉 no goals
 
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
@@ -117,7 +123,9 @@ equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
+  -- ⊢ EqOn f g U
   simp only [EventuallyEq, ae_iff, not_imp] at h
+  -- ⊢ EqOn f g U
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
     refine' isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) _
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ (diagonal Y)ᶜ⟩
@@ -125,7 +133,9 @@ theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : I
       (hf.continuousAt (hU.mem_nhds ha)).prod_mk_nhds (hg.continuousAt (hU.mem_nhds ha))
         (isClosed_diagonal.isOpen_compl.mem_nhds ha')
   replace := (this.eq_empty_of_measure_zero h).le
+  -- ⊢ EqOn f g U
   exact fun x hx => Classical.not_not.1 fun h => this ⟨hx, h⟩
+  -- 🎉 no goals
 #align measure_theory.measure.eq_on_open_of_ae_eq MeasureTheory.Measure.eqOn_open_of_ae_eq
 
 /-- If two continuous functions are a.e. equal, then they are equal. -/
@@ -156,8 +166,11 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
     (Measure.map f μ).IsOpenPosMeasure := by
   refine' ⟨fun U hUo hUne => _⟩
+  -- ⊢ ↑↑(map f μ) U ≠ 0
   rw [Measure.map_apply hf.measurable hUo.measurableSet]
+  -- ⊢ ↑↑μ (f ⁻¹' U) ≠ 0
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
+  -- 🎉 no goals
 #align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
 
 end Basic
@@ -232,8 +245,11 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
     (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
     0 < μ (closedBall x r) ↔ 0 < r := by
   refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
+  -- ⊢ 0 < r
   contrapose! h
+  -- ⊢ ↑↑μ (closedBall x r) ≤ 0
   rw [(subsingleton_closedBall x h).measure_zero μ]
+  -- 🎉 no goals
 
 end Metric
 

@@ -44,16 +44,22 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬Injective f by
     rwa [strongRankCondition_iff_succ R]
   intro n f
+  -- ⊢ ¬Injective ↑f
   by_contra hf
+  -- ⊢ False
   -- Porting note: Lean can now find these instances without help...
   -- letI : Module.Finite R (Fin n.succ → R) := Module.Finite.pi
   -- letI : Module.Free R (Fin n.succ → R) := Module.Free.pi _ _
   let g : (Fin (n + 1) → R) →ₗ[R] Fin (n + 1) → R := (ExtendByZero.linearMap R castSucc).comp f
+  -- ⊢ False
   have hg : Injective g := (extend_injective Fin.strictMono_castSucc.injective _).comp hf
+  -- ⊢ False
   have hnex : ¬∃ i : Fin n, castSucc i = last n :=
     fun ⟨i, hi⟩ => ne_of_lt (castSucc_lt_last i) hi
   let a₀ := (minpoly R g).coeff 0
+  -- ⊢ False
   have : a₀ ≠ 0 := minpoly_coeff_zero_of_injective hg
+  -- ⊢ False
   have : a₀ = 0 := by
     -- Evaluate `(minpoly R g) g` at the vector `(0,...,0,1)`
     have heval := LinearMap.congr_fun (minpoly.aeval R g) (Pi.single (Fin.last n) 1)
@@ -63,4 +69,5 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
     -- Porting note: ...it's just that this line gives a timeout without slightly raising heartbeats
     simpa [hnex] using heval
   contradiction
+  -- 🎉 no goals
 #align comm_ring_strong_rank_condition commRing_strongRankCondition

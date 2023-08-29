@@ -41,15 +41,18 @@ nonrec theorem ZeroAtFilter.add [TopologicalSpace β] [AddZeroClass β] [Continu
     {l : Filter α} {f g : α → β} (hf : ZeroAtFilter l f) (hg : ZeroAtFilter l g) :
     ZeroAtFilter l (f + g) := by
   simpa using hf.add hg
+  -- 🎉 no goals
 #align filter.zero_at_filter.add Filter.ZeroAtFilter.add
 
 nonrec theorem ZeroAtFilter.neg [TopologicalSpace β] [AddGroup β] [ContinuousNeg β] {l : Filter α}
     {f : α → β} (hf : ZeroAtFilter l f) : ZeroAtFilter l (-f) := by simpa using hf.neg
+                                                                    -- 🎉 no goals
 #align filter.zero_at_filter.neg Filter.ZeroAtFilter.neg
 
 theorem ZeroAtFilter.smul {𝕜 : Type*} [TopologicalSpace 𝕜] [TopologicalSpace β] [Zero 𝕜] [Zero β]
     [SMulWithZero 𝕜 β] [ContinuousSMul 𝕜 β] {l : Filter α} {f : α → β} (c : 𝕜)
     (hf : ZeroAtFilter l f) : ZeroAtFilter l (c • f) := by simpa using hf.const_smul c
+                                                           -- 🎉 no goals
 #align filter.zero_at_filter.smul Filter.ZeroAtFilter.smul
 
 /-- `zeroAtFilterSubmodule l` is the submodule of `f : α → β` which
@@ -80,7 +83,9 @@ def BoundedAtFilter [Norm β] (l : Filter α) (f : α → β) : Prop :=
 theorem ZeroAtFilter.boundedAtFilter [NormedAddCommGroup β] {l : Filter α} {f : α → β}
     (hf : ZeroAtFilter l f) : BoundedAtFilter l f := by
   rw [ZeroAtFilter, ← Asymptotics.isLittleO_const_iff (one_ne_zero' ℝ)] at hf
+  -- ⊢ BoundedAtFilter l f
   exact hf.isBigO
+  -- 🎉 no goals
 #align filter.zero_at_filter.bounded_at_filter Filter.ZeroAtFilter.boundedAtFilter
 
 theorem const_boundedAtFilter [NormedField β] (l : Filter α) (c : β) :
@@ -91,6 +96,7 @@ theorem const_boundedAtFilter [NormedField β] (l : Filter α) (c : β) :
 nonrec theorem BoundedAtFilter.add [NormedAddCommGroup β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
   simpa using hf.add hg
+  -- 🎉 no goals
 #align filter.bounded_at_filter.add Filter.BoundedAtFilter.add
 
 theorem BoundedAtFilter.neg [NormedAddCommGroup β] {l : Filter α} {f : α → β}
@@ -106,8 +112,11 @@ theorem BoundedAtFilter.smul {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGro
 nonrec theorem BoundedAtFilter.mul [NormedField β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f * g) := by
   refine' (hf.mul hg).trans _
+  -- ⊢ (fun x => OfNat.ofNat 1 x * OfNat.ofNat 1 x) =O[l] 1
   convert Asymptotics.isBigO_refl (E := ℝ) _ l
+  -- ⊢ OfNat.ofNat 1 x✝ = OfNat.ofNat 1 x✝ * OfNat.ofNat 1 x✝
   simp
+  -- 🎉 no goals
 #align filter.bounded_at_filter.mul Filter.BoundedAtFilter.mul
 
 /-- The submodule of functions that are bounded along a filter `l`. -/
@@ -121,8 +130,11 @@ def boundedFilterSubmodule [NormedField β] (l : Filter α) : Submodule β (α �
 /-- The subalgebra of functions that are bounded along a filter `l`. -/
 def boundedFilterSubalgebra [NormedField β] (l : Filter α) : Subalgebra β (α → β) := by
   refine' Submodule.toSubalgebra (boundedFilterSubmodule l) _ fun f g hf hg ↦ _
+  -- ⊢ 1 ∈ boundedFilterSubmodule l
   · exact const_boundedAtFilter l (1 : β)
+    -- 🎉 no goals
   · simpa only [Pi.one_apply, mul_one, norm_mul] using hf.mul hg
+    -- 🎉 no goals
 #align filter.bounded_filter_subalgebra Filter.boundedFilterSubalgebra
 
 end Filter

@@ -137,7 +137,9 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
       { preserves := fun hb =>
           isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
+            -- ⊢ (Finset.sum Finset.univ fun x => F.map (Bicone.π b✝ x ≫ Bicone.ι b✝ x)) = 𝟙  …
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])} }
+            -- 🎉 no goals
 #align category_theory.functor.preserves_finite_biproducts_of_additive CategoryTheory.Functor.preservesFiniteBiproductsOfAdditive
 
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
@@ -160,6 +162,7 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
+                                               -- 🎉 no goals
 #align category_theory.equivalence.inverse_additive CategoryTheory.Equivalence.inverse_additive
 
 end Equivalence

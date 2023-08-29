@@ -36,11 +36,14 @@ def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
   lift F hF := (h.lift F.rightOp hF.rightOp).leftOp
   fac F hF := by
     convert congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
+    -- 🎉 no goals
   uniq F₁ F₂ eq := by
     suffices F₁.rightOp = F₂.rightOp by
       rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
     have eq' := congr_arg Functor.rightOp eq
+    -- ⊢ F₁.rightOp = F₂.rightOp
     exact h.uniq _ _ eq'
+    -- 🎉 no goals
 #align category_theory.localization.strict_universal_property_fixed_target.op CategoryTheory.Localization.StrictUniversalPropertyFixedTarget.op
 
 instance isLocalization_op : W.Q.op.IsLocalization W.op :=

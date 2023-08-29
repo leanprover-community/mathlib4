@@ -48,11 +48,16 @@ def decodeList : ℕ → Option (List α)
 instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, fun l => by
     induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
+    -- ⊢ decodeList (encodeList []) = some []
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 #align list.encodable List.encodable
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
   haveI := Encodable.ofCountable α
+  -- ⊢ Countable (List α)
   infer_instance
+  -- 🎉 no goals
 #align list.countable List.countable
 
 @[simp]
@@ -69,6 +74,7 @@ theorem encode_list_cons (a : α) (l : List α) :
 @[simp]
 theorem decode_list_zero : decode (α := List α) 0 = some [] :=
   show decodeList 0 = some [] by rw [decodeList]
+                                 -- 🎉 no goals
 #align encodable.decode_list_zero Encodable.decode_list_zero
 
 @[simp, nolint unusedHavesSuffices] -- Porting note: false positive
@@ -77,7 +83,10 @@ theorem decode_list_succ (v : ℕ) :
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
   show decodeList (succ v) = _ by
     cases' e : unpair v with v₁ v₂
+    -- ⊢ decodeList (succ v) = Seq.seq ((fun x x_1 => x :: x_1) <$> decode (v₁, v₂).f …
     simp [decodeList, e]; rfl
+    -- ⊢ (Seq.seq (Option.map (fun x x_1 => x :: x_1) (decode v₁)) fun x => decodeLis …
+                          -- 🎉 no goals
 #align encodable.decode_list_succ Encodable.decode_list_succ
 
 theorem length_le_encode : ∀ l : List α, length l ≤ encode l
@@ -99,7 +108,9 @@ private theorem enle.isLinearOrder : IsLinearOrder α enle :=
 
 private def decidable_enle (a b : α) : Decidable (enle a b) := by
   unfold enle Order.Preimage
+  -- ⊢ Decidable ((fun x x_1 => x ≤ x_1) (encode a) (encode b))
   infer_instance
+  -- 🎉 no goals
 
 attribute [local instance] enle.isLinearOrder decidable_enle
 
@@ -116,6 +127,7 @@ def decodeMultiset (n : ℕ) : Option (Multiset α) :=
 /-- If `α` is encodable, then so is `Multiset α`. -/
 instance _root_.Multiset.encodable : Encodable (Multiset α) :=
   ⟨encodeMultiset, decodeMultiset, fun s => by simp [encodeMultiset, decodeMultiset, encodek]⟩
+                                               -- 🎉 no goals
 #align multiset.encodable Multiset.encodable
 
 /-- If `α` is countable, then so is `Multiset α`. -/
@@ -142,6 +154,7 @@ It is not made into a global instance, since it involves an arbitrary choice.
 This can be locally made into an instance with `local attribute [instance] Fintype.toEncodable`. -/
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
+  -- 🎉 no goals
 #align fintype.to_encodable Fintype.toEncodable
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
@@ -248,16 +261,24 @@ section List
 @[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
+            -- ⊢ ∃ a, a ∈ some [] ∧ encodeList a = 0
+                             -- 🎉 no goals
   | succ v => by
     cases' e : unpair v with v₁ v₂
+    -- ⊢ ∃ a, a ∈ decodeList (succ v) ∧ encodeList a = succ v
     have h := unpair_right_le v
+    -- ⊢ ∃ a, a ∈ decodeList (succ v) ∧ encodeList a = succ v
     rw [e] at h
+    -- ⊢ ∃ a, a ∈ decodeList (succ v) ∧ encodeList a = succ v
     rcases have : v₂ < succ v := lt_succ_of_le h
       denumerable_list_aux v₂ with
       ⟨a, h₁, h₂⟩
     rw [Option.mem_def] at h₁
+    -- ⊢ ∃ a, a ∈ decodeList (succ v) ∧ encodeList a = succ v
     use ofNat α v₁ :: a
+    -- ⊢ ofNat α v₁ :: a ∈ decodeList (succ v) ∧ encodeList (ofNat α v₁ :: a) = succ v
     simp [decodeList, e, h₂, h₁, encodeList, pair_unpair' e]
+    -- 🎉 no goals
 #align denumerable.denumerable_list_aux Denumerable.denumerable_list_aux
 
 /-- If `α` is denumerable, then so is `List α`. -/
@@ -267,6 +288,7 @@ instance denumerableList : Denumerable (List α) :=
 
 @[simp]
 theorem list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
+                                                      -- 🎉 no goals
 #align denumerable.list_of_nat_zero Denumerable.list_ofNat_zero
 
 @[simp, nolint unusedHavesSuffices] -- Porting note: false positive
@@ -275,7 +297,9 @@ theorem list_ofNat_succ (v : ℕ) :
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
       cases' e : unpair v with v₁ v₂
+      -- ⊢ decodeList (succ v) = some (ofNat α (v₁, v₂).fst :: ofNat (List α) (v₁, v₂). …
       simp [decodeList, e]
+      -- ⊢ (Seq.seq (some fun x => ofNat α v₁ :: x) fun x => decodeList v₂) = some (ofN …
       rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some,
         Option.some.injEq]
 #align denumerable.list_of_nat_succ Denumerable.list_ofNat_succ
@@ -301,13 +325,16 @@ def raise : List ℕ → ℕ → List ℕ
 theorem lower_raise : ∀ l n, lower (raise l n) n = l
   | [], n => rfl
   | m :: l, n => by rw [raise, lower, add_tsub_cancel_right, lower_raise l]
+                    -- 🎉 no goals
 #align denumerable.lower_raise Denumerable.lower_raise
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
+    -- ⊢ raise (lower (m :: l) n) n = m :: l
     simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
+    -- 🎉 no goals
 #align denumerable.raise_lower Denumerable.raise_lower
 
 theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
@@ -332,8 +359,10 @@ instance multiset : Denumerable (Multiset α) :=
       have :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.coe_map, this],
+      -- 🎉 no goals
      fun n => by
       simp [-Multiset.coe_map, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
+      -- 🎉 no goals
 #align denumerable.multiset Denumerable.multiset
 
 end Multiset
@@ -358,12 +387,14 @@ def raise' : List ℕ → ℕ → List ℕ
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], n => rfl
   | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
+                    -- 🎉 no goals
 #align denumerable.lower_raise' Denumerable.lower_raise'
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], n, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
+    -- ⊢ raise' (lower' (m :: l) n) n = m :: l
     simp [raise', lower', tsub_add_cancel_of_le this,
       raise_lower' (List.rel_of_sorted_cons h₂ : ∀ a ∈ l, m < a) h₂.of_cons]
 #align denumerable.raise_lower' Denumerable.raise_lower'
@@ -410,6 +441,7 @@ def listUnitEquiv : List Unit ≃ ℕ where
   toFun := List.length
   invFun n := List.replicate n ()
   left_inv u := List.length_injective (by simp)
+                                          -- 🎉 no goals
   right_inv n := List.length_replicate n ()
 #align equiv.list_unit_equiv Equiv.listUnitEquiv
 

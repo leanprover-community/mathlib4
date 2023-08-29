@@ -80,13 +80,18 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
     (h_map : ∀ (X Y : V) (f : X ⟶ Y),
       F.map f = Eq.recOn (h_obj Y).symm (Eq.recOn (h_obj X).symm (G.map f))) : F = G := by
   cases' F with F_obj _
+  -- ⊢ { obj := F_obj, map := map✝ } = G
   cases' G with G_obj _
+  -- ⊢ { obj := F_obj, map := map✝¹ } = { obj := G_obj, map := map✝ }
   obtain rfl : F_obj = G_obj := by
     ext X
     apply h_obj
   congr
+  -- ⊢ map✝¹ = map✝
   funext X Y f
+  -- ⊢ map✝¹ f = map✝ f
   simpa using h_map X Y f
+  -- 🎉 no goals
 #align prefunctor.ext Prefunctor.ext
 
 /-- The identity morphism between quivers. -/

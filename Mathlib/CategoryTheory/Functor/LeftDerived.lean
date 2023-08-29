@@ -113,15 +113,26 @@ theorem Functor.leftDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C
         (homologyFunctor D _ n).map ((F.mapHomologicalComplex _).map g) ≫
           (F.leftDerivedObjIso n Q).inv := by
   dsimp only [Functor.leftDerived, Functor.leftDerivedObjIso]
+  -- ⊢ (projectiveResolutions C ⋙ mapHomotopyCategory F (ComplexShape.down ℕ) ⋙ Hom …
   dsimp; simp only [Category.comp_id, Category.id_comp]
+  -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((mapHomoto …
+         -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((mapHomoto …
   rw [← homologyFunctor_map, HomotopyCategory.homologyFunctor_map_factors]
+  -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((mapHomoto …
   simp only [← Functor.map_comp]
+  -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((mapHomoto …
   congr 1
+  -- ⊢ (mapHomotopyCategory F (ComplexShape.down ℕ)).map ((projectiveResolutions C) …
   apply HomotopyCategory.eq_of_homotopy
+  -- ⊢ Homotopy ((mapHomologicalComplex F (ComplexShape.down ℕ)).map (projectiveRes …
   apply Functor.mapHomotopy
+  -- ⊢ Homotopy (projectiveResolution.lift f) ((ProjectiveResolution.homotopyEquiv  …
   apply ProjectiveResolution.liftHomotopy f
+  -- ⊢ projectiveResolution.lift f ≫ (projectiveResolution Y).π = (projectiveResolu …
   · simp
+    -- 🎉 no goals
   · simp [w]
+    -- 🎉 no goals
 #align category_theory.functor.left_derived_map_eq CategoryTheory.Functor.leftDerived_map_eq
 
 /-- The natural transformation between left-derived functors induced by a natural transformation. -/
@@ -136,7 +147,9 @@ def NatTrans.leftDerived {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G
 theorem NatTrans.leftDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.leftDerived (𝟙 F) n = 𝟙 (F.leftDerived n) := by
   simp [NatTrans.leftDerived]
+  -- ⊢ 𝟙 (projectiveResolutions C ⋙ Functor.mapHomotopyCategory F (ComplexShape.dow …
   rfl
+  -- 🎉 no goals
 #align category_theory.nat_trans.left_derived_id CategoryTheory.NatTrans.leftDerived_id
 
 -- porting note: removed "The `simp_nf` linter times out here, so we disable it."
@@ -145,6 +158,7 @@ theorem NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H
     (β : G ⟶ H) (n : ℕ) :
     NatTrans.leftDerived (α ≫ β) n = NatTrans.leftDerived α n ≫ NatTrans.leftDerived β n := by
   simp [NatTrans.leftDerived]
+  -- 🎉 no goals
 #align category_theory.nat_trans.left_derived_comp CategoryTheory.NatTrans.leftDerived_comp
 
 /-- A component of the natural transformation between left-derived functors can be computed
@@ -157,17 +171,29 @@ theorem NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : 
         (homologyFunctor D _ n).map ((NatTrans.mapHomologicalComplex α _).app P.complex) ≫
           (G.leftDerivedObjIso n P).inv := by
   symm
+  -- ⊢ (Functor.leftDerivedObjIso F n P).hom ≫ (homologyFunctor D (ComplexShape.dow …
   dsimp [NatTrans.leftDerived, Functor.leftDerivedObjIso]
+  -- ⊢ ((HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((Homotopy …
   simp only [Category.comp_id, Category.id_comp]
+  -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((HomotopyC …
   rw [← homologyFunctor_map, HomotopyCategory.homologyFunctor_map_factors]
+  -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((HomotopyC …
   simp only [← Functor.map_comp]
+  -- ⊢ (HomotopyCategory.homologyFunctor D (ComplexShape.down ℕ) n).map ((HomotopyC …
   congr 1
+  -- ⊢ (HomotopyCategory.quotient D (ComplexShape.down ℕ)).map ((Functor.mapHomolog …
   apply HomotopyCategory.eq_of_homotopy
+  -- ⊢ Homotopy ((Functor.mapHomologicalComplex F (ComplexShape.down ℕ)).map (Proje …
   simp only [NatTrans.mapHomologicalComplex_naturality_assoc, ← Functor.map_comp]
+  -- ⊢ Homotopy (app (mapHomologicalComplex α (ComplexShape.down ℕ)) ((projectiveRe …
   apply Homotopy.compLeftId
+  -- ⊢ Homotopy ((Functor.mapHomologicalComplex G (ComplexShape.down ℕ)).map ((Proj …
   refine' (Functor.mapHomotopy _ (HomotopyEquiv.homotopyHomInvId _) ).trans _
+  -- ⊢ Homotopy ((Functor.mapHomologicalComplex G (ComplexShape.down ℕ)).map (𝟙 ((p …
   apply Homotopy.ofEq
+  -- ⊢ (Functor.mapHomologicalComplex G (ComplexShape.down ℕ)).map (𝟙 ((projectiveR …
   simp only [Functor.map_id]
+  -- 🎉 no goals
 #align category_theory.nat_trans.left_derived_eq CategoryTheory.NatTrans.leftDerived_eq
 
 -- TODO:

@@ -45,7 +45,9 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
+            -- ⊢ Comma.hom f.obj x ∈ (fun f => Set.range f.obj.hom) g
             exact ⟨t.1 x, congr_fun t.w x⟩) }
+            -- 🎉 no goals
   inverse :=
     { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
       map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }

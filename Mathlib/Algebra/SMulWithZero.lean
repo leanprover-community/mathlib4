@@ -92,6 +92,8 @@ protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.
     SMulWithZero R M' where
   smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
+                          -- 🎉 no goals
+                          -- 🎉 no goals
   smul_zero a := hf <| by simp [smul]
 #align function.injective.smul_with_zero Function.Injective.smulWithZero
 
@@ -104,7 +106,10 @@ protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function
   smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
+    -- ⊢ 0 • ↑f x = 0
     simp [← smul]
+                    -- 🎉 no goals
+    -- 🎉 no goals
   smul_zero c := by rw [←f.map_zero, ←smul, smul_zero]
 #align function.surjective.smul_with_zero Function.Surjective.smulWithZero
 
@@ -115,6 +120,8 @@ def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
   smul := (· • ·) ∘ f
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
+                    -- ⊢ ↑f 0 • m = 0
+                                        -- 🎉 no goals
 #align smul_with_zero.comp_hom SMulWithZero.compHom
 
 end Zero
@@ -166,6 +173,7 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
 protected lemma MulActionWithZero.subsingleton
     [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
   ⟨λ x y => by rw [←one_smul R x, ←one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+               -- 🎉 no goals
 #align mul_action_with_zero.subsingleton MulActionWithZero.subsingleton
 
 protected lemma MulActionWithZero.nontrivial
@@ -200,6 +208,10 @@ def MulActionWithZero.compHom (f : R' →*₀ R) : MulActionWithZero R' M :=
   { SMulWithZero.compHom M f.toZeroHom with
     smul := (· • ·) ∘ f
     mul_smul := fun r s m => by show f (r * s) • m = (f r) • (f s) • m; simp [mul_smul]
+                                -- ⊢ ↑f (r * s) • m = ↑f r • ↑f s • m
+                            -- ⊢ ↑f 1 • m = m
+                                                -- 🎉 no goals
+                                                                        -- 🎉 no goals
     one_smul := fun m => by show (f 1) • m = m; simp }
 #align mul_action_with_zero.comp_hom MulActionWithZero.compHom
 
@@ -212,11 +224,17 @@ variable {α β : Type*} [GroupWithZero α] [GroupWithZero β] [MulActionWithZer
 theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
   obtain rfl | hc := eq_or_ne c 0
+  -- ⊢ (0 • x)⁻¹ = 0⁻¹ • x⁻¹
   · simp only [inv_zero, zero_smul]
+    -- 🎉 no goals
   obtain rfl | hx := eq_or_ne x 0
+  -- ⊢ (c • 0)⁻¹ = c⁻¹ • 0⁻¹
   · simp only [inv_zero, smul_zero]
+    -- 🎉 no goals
   · refine' inv_eq_of_mul_eq_one_left _
+    -- ⊢ c⁻¹ • x⁻¹ * c • x = 1
     rw [smul_mul_smul, inv_mul_cancel hc, inv_mul_cancel hx, one_smul]
+    -- 🎉 no goals
 #align smul_inv₀ smul_inv₀
 
 end GroupWithZero

@@ -149,6 +149,10 @@ instance : SetLike (NonUnitalSubring R) R
     where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+                             -- ⊢ { toNonUnitalSubsemiring := toNonUnitalSubsemiring✝, neg_mem' := neg_mem'✝ } …
+                                      -- ⊢ { toNonUnitalSubsemiring := toNonUnitalSubsemiring✝¹, neg_mem' := neg_mem'✝¹ …
+                                               -- ⊢ toNonUnitalSubsemiring✝¹ = toNonUnitalSubsemiring✝
+                                                      -- 🎉 no goals
 
 instance : NonUnitalSubringClass (NonUnitalSubring R) R
     where
@@ -327,6 +331,7 @@ theorem val_zero : ((0 : s) : R) = 0 :=
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
   simp
+  -- 🎉 no goals
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
@@ -485,12 +490,15 @@ theorem mem_range {f : R →ₙ+* S} {y : S} : y ∈ f.range ↔ ∃ x, f x = y 
   Iff.rfl
 
 theorem range_eq_map (f : R →ₙ+* S) : f.range = NonUnitalSubring.map f ⊤ := by ext; simp
+                                                                               -- ⊢ x✝ ∈ range f ↔ x✝ ∈ NonUnitalSubring.map f ⊤
+                                                                                    -- 🎉 no goals
 
 theorem mem_range_self (f : R →ₙ+* S) (x : R) : f x ∈ f.range :=
   mem_range.mpr ⟨x, rfl⟩
 
 theorem map_range : f.range.map g = (g.comp f).range := by
   simpa only [range_eq_map] using (⊤ : NonUnitalSubring R).map_map g f
+  -- 🎉 no goals
 
 /-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
@@ -523,6 +531,7 @@ theorem coe_bot : ((⊥ : NonUnitalSubring R) : Set R) = {0} :=
 
 theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubring R) ↔ x = 0 :=
   show x ∈ ((⊥ : NonUnitalSubring R) : Set R) ↔ x = 0 by rw [coe_bot, Set.mem_singleton_iff]
+                                                         -- 🎉 no goals
 
 /-! ## inf -/
 
@@ -545,6 +554,8 @@ instance : InfSet (NonUnitalSubring R) :=
   ⟨fun s =>
     NonUnitalSubring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubring.toSubsemigroup t)
       (⨅ t ∈ s, NonUnitalSubring.toAddSubgroup t) (by simp) (by simp)⟩
+                                                      -- 🎉 no goals
+                                                                -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (NonUnitalSubring R)) :
@@ -557,9 +568,11 @@ theorem mem_sInf {S : Set (NonUnitalSubring R)} {x : R} : x ∈ sInf S ↔ ∀ p
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
+  -- 🎉 no goals
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} {x : R} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+                                        -- 🎉 no goals
 
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubring R)) :
@@ -684,15 +697,22 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
+    -- ⊢ ∃ x, p { val := b, property := x }
     refine'
       closure_induction hb (fun x hx => ⟨subset_closure hx, Hs x hx⟩) ⟨zero_mem (closure s), H0⟩ _ _
         _
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
+      -- ⊢ ∃ x_1, p { val := x + y, property := x_1 }
       exact ⟨add_mem hx hy, Hadd _ _ hpx hpy⟩
+      -- 🎉 no goals
     · rintro x ⟨hx, hpx⟩
+      -- ⊢ ∃ x_1, p { val := -x, property := x_1 }
       exact ⟨neg_mem hx, Hneg _ hpx⟩
+      -- 🎉 no goals
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
+      -- ⊢ ∃ x_1, p { val := x * y, property := x_1 }
       exact ⟨mul_mem hx hy, Hmul _ _ hpx hpy⟩
+      -- 🎉 no goals
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
@@ -704,10 +724,14 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
   refine' closure_induction hb _ (H0_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
+  -- ⊢ ∀ (x : R), x ∈ s → p a x
   refine' closure_induction ha Hs (fun x _ => H0_left x) _ _ _
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
+    -- 🎉 no goals
   · exact fun x hx z zs => Hneg_left x z (hx z zs)
+    -- 🎉 no goals
   · exact fun x y H₁ H₂ z zs => Hmul_left x y z (H₁ z zs) (H₂ z zs)
+    -- 🎉 no goals
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
@@ -720,15 +744,29 @@ theorem mem_closure_iff {s : Set R} {x} :
           AddSubgroup.closure_induction hx
             (fun p hp => AddSubgroup.subset_closure ((Subsemigroup.closure s).mul_mem hp hq))
             (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
+                -- ⊢ 0 ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
+                                 -- 🎉 no goals
             (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
+                                       -- ⊢ p₁ * q + p₂ * q ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
+                                                             -- 🎉 no goals
             fun x hx => by
             have f : -x * q = -(x * q) := by simp
+            -- ⊢ -x * q ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
             rw [f]; apply AddSubgroup.neg_mem _ hx)
+            -- ⊢ -(x * q) ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
+                    -- 🎉 no goals
         (by rw [mul_zero x]; apply AddSubgroup.zero_mem _)
+            -- ⊢ 0 ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
+                             -- 🎉 no goals
         (fun q₁ q₂ ihq₁ ihq₂ => by rw [mul_add x q₁ q₂]; apply AddSubgroup.add_mem _ ihq₁ ihq₂)
+                                   -- ⊢ x * q₁ + x * q₂ ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
+                                                         -- 🎉 no goals
         fun z hz => by
         have f : x * -z = -(x * z) := by simp
+        -- ⊢ x * -z ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
         rw [f]; apply AddSubgroup.neg_mem _ hz,
+        -- ⊢ -(x * z) ∈ AddSubgroup.closure ↑(Subsemigroup.closure s)
+                -- 🎉 no goals
     fun h =>
     AddSubgroup.closure_induction h
       (fun x hx =>
@@ -742,7 +780,9 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
   { (closure s).toNonUnitalRing with
     mul_comm := fun x y => by
       ext
+      -- ⊢ ↑(x * y) = ↑(y * x)
       simp only [NonUnitalSubring.val_mul]
+      -- ⊢ ↑x * ↑y = ↑y * ↑x
       refine'
         closure_induction₂ x.prop y.prop hcomm
           (fun x => by simp only [mul_zero, zero_mul])
@@ -839,10 +879,12 @@ theorem prod_mono_left (t : NonUnitalSubring S) : Monotone fun s : NonUnitalSubr
 theorem prod_top (s : NonUnitalSubring R) :
     s.prod (⊤ : NonUnitalSubring S) = s.comap (NonUnitalRingHom.fst R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+                  -- 🎉 no goals
 
 theorem top_prod (s : NonUnitalSubring S) :
     (⊤ : NonUnitalSubring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+                  -- 🎉 no goals
 
 @[simp]
 theorem top_prod_top : (⊤ : NonUnitalSubring R).prod (⊤ : NonUnitalSubring S) = ⊤ :=
@@ -860,26 +902,32 @@ def prodEquiv (s : NonUnitalSubring R) (t : NonUnitalSubring S) : s.prod t ≃+*
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubring R}
     (hS : Directed (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  -- ⊢ x ∈ ⨆ (i : ι), S i → ∃ i, x ∈ S i
   let U : NonUnitalSubring R :=
     NonUnitalSubring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubsemigroup) (⨆ i, (S i).toAddSubgroup)
       (Subsemigroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
   suffices (⨆ i, S i) ≤ U by simpa using @this x
+  -- ⊢ ⨆ (i : ι), S i ≤ U
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
+  -- 🎉 no goals
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubring R}
     (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubring R) : Set R) = ⋃ i, ↑(S i) :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
+                      -- 🎉 no goals
 
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
+  -- ⊢ x ∈ sSup S ↔ ∃ s, s ∈ S ∧ x ∈ s
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
     exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+                      -- 🎉 no goals
 
 theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubring R} {x : S} :
     x ∈ K.map (f : R →ₙ+* S) ↔ f.symm x ∈ K :=
@@ -923,6 +971,7 @@ theorem rangeRestrict_surjective (f : R →ₙ+* S) : Function.Surjective f.rang
 theorem range_top_iff_surjective {f : R →ₙ+* S} :
     f.range = (⊤ : NonUnitalSubring S) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
+                                          -- 🎉 no goals
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
@@ -1018,6 +1067,7 @@ def ofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g 
       Subtype.ext <|
         let ⟨x', hx'⟩ := NonUnitalRingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
+                            -- 🎉 no goals
 
 @[simp]
 theorem ofLeftInverse'_apply {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) (x : R) :

@@ -83,8 +83,11 @@ lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedFiel
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     (a b : 𝓜(𝕜, A)) (h : a.toProd = b.toProd) : a = b := by
   cases a
+  -- ⊢ { toProd := toProd✝, central := central✝ } = b
   cases b
+  -- ⊢ { toProd := toProd✝¹, central := central✝¹ } = { toProd := toProd✝, central  …
   simpa using h
+  -- 🎉 no goals
 
 namespace DoubleCentralizer
 
@@ -109,7 +112,9 @@ theorem range_toProd :
   Set.ext fun x =>
     ⟨by
       rintro ⟨a, rfl⟩
+      -- ⊢ a.toProd ∈ {lr | ∀ (x y : A), ↑lr.snd x * y = x * ↑lr.fst y}
       exact a.central, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
+      -- 🎉 no goals
 #align double_centralizer.range_to_prod DoubleCentralizer.range_toProd
 
 instance instAdd : Add 𝓜(𝕜, A) where
@@ -118,6 +123,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
       central := fun x y =>
         show (a.snd + b.snd) x * y = x * (a.fst + b.fst) y by
           simp only [ContinuousLinearMap.add_apply, mul_add, add_mul, central] }
+          -- 🎉 no goals
 
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
@@ -130,6 +136,7 @@ instance instNeg : Neg 𝓜(𝕜, A) where
       central := fun x y =>
         show -a.snd x * y = x * -a.fst y by
           simp only [ContinuousLinearMap.neg_apply, neg_mul, mul_neg, central] }
+          -- 🎉 no goals
 
 instance instSub : Sub 𝓜(𝕜, A) where
   sub a b :=
@@ -137,6 +144,7 @@ instance instSub : Sub 𝓜(𝕜, A) where
       central := fun x y =>
         show (a.snd - b.snd) x * y = x * (a.fst - b.fst) y by
           simp only [ContinuousLinearMap.sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
+          -- 🎉 no goals
 
 section Scalars
 
@@ -149,6 +157,7 @@ instance instSMul : SMul S 𝓜(𝕜, A) where
       central := fun x y =>
         show (s • a.snd) x * y = x * (s • a.fst) y by
           simp only [ContinuousLinearMap.smul_apply, mul_smul_comm, smul_mul_assoc, central] }
+          -- 🎉 no goals
 
 @[simp]
 theorem smul_toProd (s : S) (a : 𝓜(𝕜, A)) : (s • a).toProd = s • a.toProd :=
@@ -186,26 +195,35 @@ instance instMul : Mul 𝓜(𝕜, A) where
   mul a b :=
     { toProd := (a.fst.comp b.fst, b.snd.comp a.snd)
       central := fun x y => show b.snd (a.snd x) * y = x * a.fst (b.fst y) by simp only [central] }
+                                                                              -- 🎉 no goals
 
 instance instNatCast : NatCast 𝓜(𝕜, A) where
   natCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_natCast, Prod.fst_natCast]
+      -- ⊢ ↑↑n x * y = x * ↑↑n y
       simp only [← Nat.smul_one_eq_coe, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
+      -- 🎉 no goals
 
 instance instIntCast : IntCast 𝓜(𝕜, A) where
   intCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_intCast, Prod.fst_intCast]
+      -- ⊢ ↑↑n x * y = x * ↑↑n y
       simp only [← Int.smul_one_eq_coe, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
+      -- 🎉 no goals
 
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
     ⟨a.toProd ^ n, fun x y => by
       induction' n with k hk generalizing x y
+      -- ⊢ ↑(a.toProd ^ Nat.zero).snd x * y = x * ↑(a.toProd ^ Nat.zero).fst y
       · rfl
+        -- 🎉 no goals
       · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
+        -- ⊢ ↑(a.snd ^ Nat.succ k) x * y = x * ↑(a.fst ^ Nat.succ k) y
         rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
+        -- 🎉 no goals
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩
@@ -343,7 +361,9 @@ theorem range_toProdMulOpposite :
   Set.ext fun x =>
     ⟨by
       rintro ⟨a, rfl⟩
+      -- ⊢ toProdMulOpposite a ∈ {lr | ∀ (x y : A), ↑(unop lr.snd) x * y = x * ↑lr.fst y}
       exact a.central, fun hx => ⟨⟨(x.1, unop x.2), hx⟩, Prod.ext rfl rfl⟩⟩
+      -- 🎉 no goals
 #align double_centralizer.range_to_prod_mul_opposite DoubleCentralizer.range_toProdMulOpposite
 
 /-- The ring structure is inherited as the pullback under the injective map
@@ -432,6 +452,7 @@ instance instStar : Star 𝓜(𝕜, A) where
           ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
       central := fun x y => by
         simpa only [star_mul, star_star] using (congr_arg star (a.central (star y) (star x))).symm }
+        -- 🎉 no goals
 
 @[simp]
 theorem star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=
@@ -446,20 +467,30 @@ theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (sta
 instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStar with
     star_involutive := fun x => by ext <;> simp only [star_fst, star_snd, star_star]
+                                   -- ⊢ ↑(star (star x)).fst x✝ = ↑x.fst x✝
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
     star_add := fun x y => by
       ext <;>
+      -- ⊢ ↑(star (x + y)).fst x✝ = ↑(star x + star y).fst x✝
         simp only [star_fst, star_snd, add_fst, add_snd, ContinuousLinearMap.add_apply, star_add] }
+        -- 🎉 no goals
+        -- 🎉 no goals
 
 instance instStarRing : StarRing 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid with
     star_mul := fun a b => by
       ext <;>
+      -- ⊢ ↑(star (a * b)).fst x✝ = ↑(star b * star a).fst x✝
         simp only [star_fst, star_snd, mul_fst, mul_snd, star_star, ContinuousLinearMap.coe_mul,
           Function.comp_apply] }
 
 instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid (𝕜 := 𝕜) (A := A) with
     star_smul := fun k a => by ext <;> exact star_smul _ _ }
+                               -- ⊢ ↑(star (k • a)).fst x✝ = ↑(star k • star a).fst x✝
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 
 end Star
 
@@ -505,9 +536,13 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
 
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
   ext x : 3
+  -- ⊢ (↑𝕜 x).toProd.fst = (↑(algebraMap 𝕜 𝓜(𝕜, 𝕜)) x).fst
   · rfl -- `fst` is defeq
+    -- 🎉 no goals
   · refine ContinuousLinearMap.ext fun y => ?_
+    -- ⊢ ↑(↑𝕜 x).toProd.snd y = ↑(↑(algebraMap 𝕜 𝓜(𝕜, 𝕜)) x).snd y
     exact mul_comm y x  -- `snd` multiplies on the wrong side
+    -- 🎉 no goals
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra
@@ -544,6 +579,7 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 noncomputable instance : NormedRing 𝓜(𝕜, A) :=
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
     (by simpa using toProdMulOpposite_injective)
+        -- 🎉 no goals
 
 -- even though the definition is actually in terms of `DoubleCentralizer.toProdMulOpposite`, we
 -- choose to see through that here to avoid `MulOpposite.op` appearing.
@@ -576,13 +612,18 @@ theorem uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposit
 
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range uniformEmbedding_toProdMulOpposite.toUniformInducing]
+  -- ⊢ IsComplete (Set.range toProdMulOpposite)
   apply IsClosed.isComplete
+  -- ⊢ IsClosed (Set.range toProdMulOpposite)
   simp only [range_toProdMulOpposite, Set.setOf_forall]
+  -- ⊢ IsClosed (⋂ (i : A) (i_1 : A), {x | ↑(unop x.snd) i * i_1 = i * ↑x.fst i_1})
   refine' isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq _ _
+  -- ⊢ Continuous fun x_1 => ↑(unop x_1.snd) x * y
   exact
     ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
       continuous_const
   exact continuous_const.mul ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp continuous_fst)
+  -- 🎉 no goals
 
 variable [StarRing A] [CstarRing A]
 
@@ -627,6 +668,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_op_nnnorm _) _
 
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
+  -- 🎉 no goals
 #align double_centralizer.norm_fst_eq_snd DoubleCentralizer.norm_fst_eq_snd
 
 theorem nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
@@ -636,11 +678,13 @@ theorem nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ 
 @[simp]
 theorem norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
   simp only [norm_def, toProdHom_apply, Prod.norm_def, norm_fst_eq_snd, max_eq_right le_rfl]
+  -- 🎉 no goals
 
 #align double_centralizer.norm_fst DoubleCentralizer.norm_fst
 
 @[simp]
 theorem norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_fst, norm_fst_eq_snd]
+                                                     -- 🎉 no goals
 #align double_centralizer.norm_snd DoubleCentralizer.norm_snd
 
 @[simp]
@@ -690,24 +734,43 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
               (a.fst.le_op_norm_of_le hy))
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
+      -- ⊢ ‖(star a * a).snd‖₊ = ‖a‖₊ * ‖a‖₊
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
+      -- ⊢ sSup ((fun a_1 => ‖↑a.snd (star (↑a.fst (star a_1)))‖₊) '' Metric.closedBall …
       simp only [← @op_nnnorm_mul_apply 𝕜 _ A]
+      -- ⊢ sSup ((fun a_1 => ‖↑(ContinuousLinearMap.mul 𝕜 A) (↑a.snd (star (↑a.fst (sta …
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
+      -- ⊢ sSup ((fun a_1 => sSup ((fun a_2 => ‖↑a.snd (star (↑a.fst (star a_1))) * a_2 …
       refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
+      -- ⊢ ∀ (a_1 : ℝ≥0), a_1 ∈ (fun a_2 => sSup ((fun a_3 => ‖↑a.snd (star (↑a.fst (st …
       · rintro - ⟨x, hx, rfl⟩
+        -- ⊢ (fun a_1 => sSup ((fun a_2 => ‖↑a.snd (star (↑a.fst (star a_1))) * a_2‖₊) '' …
         refine' csSup_le (hball.image _) _
+        -- ⊢ ∀ (b : ℝ≥0), b ∈ (fun a_1 => ‖↑a.snd (star (↑a.fst (star x))) * a_1‖₊) '' Me …
         rintro - ⟨y, hy, rfl⟩
+        -- ⊢ (fun a_1 => ‖↑a.snd (star (↑a.fst (star x))) * a_1‖₊) y ≤ ‖a‖₊ * ‖a‖₊
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
+        -- 🎉 no goals
       · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
+        -- ⊢ ∃ a_1, a_1 ∈ Metric.closedBall 0 1 ∧ r < sSup ((fun a_2 => ‖↑a.snd (star (↑a …
         have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt_iff.2 hr
+        -- ⊢ ∃ a_1, a_1 ∈ Metric.closedBall 0 1 ∧ r < sSup ((fun a_2 => ‖↑a.snd (star (↑a …
         simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
+        -- ⊢ ∃ a_1, a_1 ∈ Metric.closedBall 0 1 ∧ r < sSup ((fun a_2 => ‖↑a.snd (star (↑a …
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
+        -- ⊢ ∃ a_1, a_1 ∈ Metric.closedBall 0 1 ∧ r < sSup ((fun a_2 => ‖↑a.snd (star (↑a …
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
+        -- ⊢ ∃ a_1, a_1 ∈ Metric.closedBall 0 1 ∧ r < sSup ((fun a_2 => ‖↑a.snd (star (↑a …
         refine' ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), _⟩
+        -- ⊢ r < sSup ((fun a_1 => ‖↑a.snd (star (↑a.fst (star (star x)))) * a_1‖₊) '' Me …
         refine' lt_csSup_of_lt _ ⟨x, hx, rfl⟩ _
+        -- ⊢ BddAbove ((fun a_1 => ‖↑a.snd (star (↑a.fst (star (star x)))) * a_1‖₊) '' Me …
         · refine' ⟨‖a‖₊ * ‖a‖₊, _⟩
+          -- ⊢ ‖a‖₊ * ‖a‖₊ ∈ upperBounds ((fun a_1 => ‖↑a.snd (star (↑a.fst (star (star x)) …
           rintro - ⟨y, hy, rfl⟩
+          -- ⊢ (fun a_1 => ‖↑a.snd (star (↑a.fst (star (star x)))) * a_1‖₊) y ≤ ‖a‖₊ * ‖a‖₊
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
+          -- 🎉 no goals
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
             using pow_lt_pow_of_lt_left hxr zero_le' two_pos
 

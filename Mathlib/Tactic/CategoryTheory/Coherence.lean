@@ -195,10 +195,12 @@ example {W X Y Z : C} (f : W ⟶ (X ⊗ Y) ⊗ Z) : W ⟶ X ⊗ (Y ⊗ Z) := f �
 @[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ⊗≫ g = f ≫ g := by
   simp [monoidalComp]
+  -- 🎉 no goals
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
   simp [monoidalComp]
+  -- 🎉 no goals
 
 end lifting
 
@@ -298,10 +300,12 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
 lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
   simpa using w
+  -- 🎉 no goals
 
 lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
     f = g := by
   simpa using w
+  -- 🎉 no goals
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
 def insertTrailingIds (g : MVarId) : MetaM MVarId := do

@@ -41,30 +41,35 @@ theorem two_power_aleph0 : 2 ^ aleph0.{u} = continuum.{u} :=
 @[simp]
 theorem lift_continuum : lift.{v} 𝔠 = 𝔠 := by
   rw [← two_power_aleph0, lift_two_power, lift_aleph0, two_power_aleph0]
+  -- 🎉 no goals
 #align cardinal.lift_continuum Cardinal.lift_continuum
 
 @[simp]
 theorem continuum_le_lift {c : Cardinal.{u}} : 𝔠 ≤ lift.{v} c ↔ 𝔠 ≤ c := by
   -- porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_le]
+  -- 🎉 no goals
 #align cardinal.continuum_le_lift Cardinal.continuum_le_lift
 
 @[simp]
 theorem lift_le_continuum {c : Cardinal.{u}} : lift.{v} c ≤ 𝔠 ↔ c ≤ 𝔠 := by
   -- porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_le]
+  -- 🎉 no goals
 #align cardinal.lift_le_continuum Cardinal.lift_le_continuum
 
 @[simp]
 theorem continuum_lt_lift {c : Cardinal.{u}} : 𝔠 < lift.{v} c ↔ 𝔠 < c := by
   -- porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_lt]
+  -- 🎉 no goals
 #align cardinal.continuum_lt_lift Cardinal.continuum_lt_lift
 
 @[simp]
 theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 := by
   -- porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_lt]
+  -- 🎉 no goals
 #align cardinal.lift_lt_continuum Cardinal.lift_lt_continuum
 
 /-!
@@ -82,6 +87,7 @@ theorem aleph0_le_continuum : ℵ₀ ≤ 𝔠 :=
 
 @[simp]
 theorem beth_one : beth 1 = 𝔠 := by simpa using beth_succ 0
+                                    -- 🎉 no goals
 #align cardinal.beth_one Cardinal.beth_one
 
 theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
@@ -89,6 +95,7 @@ theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
 #align cardinal.nat_lt_continuum Cardinal.nat_lt_continuum
 
 theorem mk_set_nat : #(Set ℕ) = 𝔠 := by simp
+                                        -- 🎉 no goals
 #align cardinal.mk_set_nat Cardinal.mk_set_nat
 
 theorem continuum_pos : 0 < 𝔠 :=
@@ -101,7 +108,9 @@ theorem continuum_ne_zero : 𝔠 ≠ 0 :=
 
 theorem aleph_one_le_continuum : aleph 1 ≤ 𝔠 := by
   rw [← succ_aleph0]
+  -- ⊢ Order.succ ℵ₀ ≤ 𝔠
   exact Order.succ_le_of_lt aleph0_lt_continuum
+  -- 🎉 no goals
 #align cardinal.aleph_one_le_continuum Cardinal.aleph_one_le_continuum
 
 @[simp]
@@ -192,6 +201,7 @@ theorem nat_power_aleph0 {n : ℕ} (hn : 2 ≤ n) : (n ^ aleph0.{u} : Cardinal.{
 @[simp]
 theorem continuum_power_aleph0 : continuum.{u} ^ aleph0.{u} = 𝔠 := by
   rw [← two_power_aleph0, ← power_mul, mul_eq_left le_rfl le_rfl aleph0_ne_zero]
+  -- 🎉 no goals
 #align cardinal.continuum_power_aleph_0 Cardinal.continuum_power_aleph0
 
 end Cardinal

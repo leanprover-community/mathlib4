@@ -42,8 +42,11 @@ theorem exists_subset_iUnion_ball_radius_lt {r : ι → ℝ} (hs : IsClosed s)
   rcases exists_subset_iUnion_closed_subset hs (fun i => @isOpen_ball _ _ (c i) (r i)) uf us with
     ⟨v, hsv, hvc, hcv⟩
   have := fun i => exists_lt_subset_ball (hvc i) (hcv i)
+  -- ⊢ ∃ r', s ⊆ ⋃ (i : ι), ball (c i) (r' i) ∧ ∀ (i : ι), r' i < r i
   choose r' hlt hsub using this
+  -- ⊢ ∃ r', s ⊆ ⋃ (i : ι), ball (c i) (r' i) ∧ ∀ (i : ι), r' i < r i
   exact ⟨r', hsv.trans <| iUnion_mono <| hsub, hlt⟩
+  -- 🎉 no goals
 #align exists_subset_Union_ball_radius_lt exists_subset_iUnion_ball_radius_lt
 
 /-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
@@ -65,8 +68,11 @@ theorem exists_subset_iUnion_ball_radius_pos_lt {r : ι → ℝ} (hr : ∀ i, 0 
   rcases exists_subset_iUnion_closed_subset hs (fun i => @isOpen_ball _ _ (c i) (r i)) uf us with
     ⟨v, hsv, hvc, hcv⟩
   have := fun i => exists_pos_lt_subset_ball (hr i) (hvc i) (hcv i)
+  -- ⊢ ∃ r', s ⊆ ⋃ (i : ι), ball (c i) (r' i) ∧ ∀ (i : ι), r' i ∈ Ioo 0 (r i)
   choose r' hlt hsub using this
+  -- ⊢ ∃ r', s ⊆ ⋃ (i : ι), ball (c i) (r' i) ∧ ∀ (i : ι), r' i ∈ Ioo 0 (r i)
   exact ⟨r', hsv.trans <| iUnion_mono hsub, hlt⟩
+  -- 🎉 no goals
 #align exists_subset_Union_ball_radius_pos_lt exists_subset_iUnion_ball_radius_pos_lt
 
 /-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
@@ -104,6 +110,7 @@ theorem exists_locallyFinite_subset_iUnion_ball_radius_lt (hs : IsClosed s) {R :
       (fun x _ => hfin.point_finite x) hsub' with
     ⟨r, hsub, hlt⟩
   exact ⟨ι, c, r, r', fun i => ⟨(hr' i).1, (hlt i).1, (hlt i).2, (hr' i).2.2⟩, hfin, hsub⟩
+  -- 🎉 no goals
 #align exists_locally_finite_subset_Union_ball_radius_lt exists_locallyFinite_subset_iUnion_ball_radius_lt
 
 /-- Let `R : α → ℝ` be a (possibly discontinuous) positive function on a proper metric space. Then

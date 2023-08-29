@@ -108,7 +108,9 @@ theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ 
   x.modOf_apply_of_not_exists_add s s'
     (by
       rintro ⟨d, rfl⟩
+      -- ⊢ False
       exact h le_self_add)
+      -- 🎉 no goals
 #align mv_polynomial.coeff_mod_monomial_of_not_le MvPolynomial.coeff_modMonomial_of_not_le
 
 @[simp]
@@ -221,10 +223,15 @@ end XLemmas
 theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     monomial i r ∣ monomial j s ↔ (s = 0 ∨ i ≤ j) ∧ r ∣ s := by
   constructor
+  -- ⊢ ↑(monomial i) r ∣ ↑(monomial j) s → (s = 0 ∨ i ≤ j) ∧ r ∣ s
   · rintro ⟨x, hx⟩
+    -- ⊢ (s = 0 ∨ i ≤ j) ∧ r ∣ s
     rw [MvPolynomial.ext_iff] at hx
+    -- ⊢ (s = 0 ∨ i ≤ j) ∧ r ∣ s
     have hj := hx j
+    -- ⊢ (s = 0 ∨ i ≤ j) ∧ r ∣ s
     have hi := hx i
+    -- ⊢ (s = 0 ∨ i ≤ j) ∧ r ∣ s
     classical
       simp_rw [coeff_monomial, if_pos] at hj hi
       simp_rw [coeff_monomial_mul'] at hi hj
@@ -233,24 +240,33 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
       · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
     -- Porting note: two goals remain at this point in Lean 4
     · simp_all only [or_true, dvd_mul_right]
+      -- 🎉 no goals
     · simp_all only [ite_self, le_refl, ite_true, dvd_mul_right]
+      -- 🎉 no goals
   · rintro ⟨h | hij, d, rfl⟩
+    -- ⊢ ↑(monomial i) r ∣ ↑(monomial j) (r * d)
     · simp_rw [h, monomial_zero, dvd_zero]
+      -- 🎉 no goals
     · refine' ⟨monomial (j - i) d, _⟩
+      -- ⊢ ↑(monomial j) (r * d) = ↑(monomial i) r * ↑(monomial (j - i)) d
       rw [monomial_mul, add_tsub_cancel_of_le hij]
+      -- 🎉 no goals
 #align mv_polynomial.monomial_dvd_monomial MvPolynomial.monomial_dvd_monomial
 
 @[simp]
 theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
     monomial i (1 : R) ∣ monomial j 1 ↔ i ≤ j := by
   rw [monomial_dvd_monomial]
+  -- ⊢ (1 = 0 ∨ i ≤ j) ∧ 1 ∣ 1 ↔ i ≤ j
   simp_rw [one_ne_zero, false_or_iff, dvd_rfl, and_true_iff]
+  -- 🎉 no goals
 #align mv_polynomial.monomial_one_dvd_monomial_one MvPolynomial.monomial_one_dvd_monomial_one
 
 @[simp]
 theorem X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine' monomial_one_dvd_monomial_one.trans _
+  -- ⊢ Finsupp.single i 1 ≤ Finsupp.single j 1 ↔ i = j
   simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
     and_true_iff]
 set_option linter.uppercaseLean3 false in
@@ -260,7 +276,9 @@ set_option linter.uppercaseLean3 false in
 theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
     (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 := by
   refine' monomial_dvd_monomial.trans _
+  -- ⊢ (r = 0 ∨ Finsupp.single i 1 ≤ j) ∧ 1 ∣ r ↔ r = 0 ∨ ↑j i ≠ 0
   simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_monomial MvPolynomial.X_dvd_monomial
 

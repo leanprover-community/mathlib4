@@ -20,9 +20,12 @@ instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (Vector α n) :=
 
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) := by
   refine @Quotient.fintype _ _ _ ?_
+  -- ⊢ DecidableRel fun x x_1 => x ≈ x_1
   -- Porting note: had to build the instance manually
   intros x y
+  -- ⊢ Decidable ((fun x x_1 => x ≈ x_1) x y)
   apply List.decidablePerm
+  -- 🎉 no goals
 
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) :=
   Fintype.ofEquiv _ Sym.symEquivSym'.symm

@@ -45,6 +45,7 @@ def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.
 /-- `Cone.toStructuredArrow` can be expressed in terms of `Functor.toStructuredArrow`. -/
 def Cone.toStructuredArrowIsoToStructuredArrow {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ≅ (𝟭 J).toStructuredArrow c.pt F c.π.app (by simp) :=
+                                                                     -- 🎉 no goals
   Iso.refl _
 
 /-- `Functor.toStructuredArrow` can be expressed in terms of `Cone.toStructuredArrow`. -/
@@ -53,6 +54,7 @@ def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J �
     (h : ∀ {Y Z : J} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) :
     G.toStructuredArrow X F f h ≅
       (Cone.mk X ⟨f, by simp [h]⟩).toStructuredArrow ⋙ StructuredArrow.pre _ _ _ :=
+                        -- 🎉 no goals
   Iso.refl _
 
 /-- Interpreting the legs of a cone as a structured arrow and then forgetting the arrow again does
@@ -116,8 +118,11 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
     { Hom := f.left
       w := fun j => by
         convert congr_fun (congr_arg NatTrans.app f.w) j
+        -- ⊢ ((fun c => { pt := c.left, π := c.hom }) X✝).π = X✝.hom ≫ (fromPUnit F).map  …
         dsimp
+        -- ⊢ X✝.hom = X✝.hom ≫ 𝟙 F
         simp }
+        -- 🎉 no goals
 #align category_theory.limits.cone.from_costructured_arrow CategoryTheory.Limits.Cone.fromCostructuredArrow
 
 /-
@@ -142,7 +147,9 @@ def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTer
     { toFun := fun h => IsTerminal.ofUnique _
       invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
       left_inv := by aesop_cat
+                     -- 🎉 no goals
       right_inv := by aesop_cat }
+                      -- 🎉 no goals
 #align category_theory.limits.cone.is_limit_equiv_is_terminal CategoryTheory.Limits.Cone.isLimitEquivIsTerminal
 
 theorem hasLimit_iff_hasTerminal_cone (F : J ⥤ C) : HasLimit F ↔ HasTerminal (Cone F) :=
@@ -196,6 +203,7 @@ def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ Costructured
 /-- `Cocone.toCostructuredArrow` can be expressed in terms of `Functor.toCostructuredArrow`. -/
 def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ≅ (𝟭 J).toCostructuredArrow F c.pt c.ι.app (by simp) :=
+                                                                         -- 🎉 no goals
   Iso.refl _
 
 /-- `Functor.toCostructuredArrow` can be expressed in terms of `Cocone.toCostructuredArrow`. -/
@@ -204,6 +212,7 @@ def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G :
     (h : ∀ {Y Z : J} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) :
     G.toCostructuredArrow F X f h ≅
       (Cocone.mk X ⟨f, by simp [h]⟩).toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _ :=
+                          -- 🎉 no goals
   Iso.refl _
 
 /-- Interpreting the legs of a cocone as a costructured arrow and then forgetting the arrow again
@@ -265,8 +274,11 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
     { Hom := f.right
       w := fun j => by
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
+        -- ⊢ ((fun c => { pt := c.right, ι := c.hom }) Y✝).ι = (fromPUnit F).map f.left ≫ …
         dsimp
+        -- ⊢ Y✝.hom = 𝟙 F ≫ Y✝.hom
         simp }
+        -- 🎉 no goals
 #align category_theory.limits.cocone.from_structured_arrow CategoryTheory.Limits.Cocone.fromStructuredArrow
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
@@ -284,7 +296,9 @@ def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c �
     { toFun := fun h => IsInitial.ofUnique _
       invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
       left_inv := by aesop_cat
+                     -- 🎉 no goals
       right_inv := by aesop_cat }
+                      -- 🎉 no goals
 #align category_theory.limits.cocone.is_colimit_equiv_is_initial CategoryTheory.Limits.Cocone.isColimitEquivIsInitial
 
 theorem hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasInitial (Cocone F) :=

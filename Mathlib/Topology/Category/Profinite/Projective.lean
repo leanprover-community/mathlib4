@@ -38,18 +38,30 @@ set_option linter.uppercaseLean3 false
 instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
+    -- ⊢ ∃ f', f' ≫ g = f
     obtain ⟨g', hg'⟩ := hg.hasRightInverse
+    -- ⊢ ∃ f', f' ≫ g = f
     let t : X → Y := g' ∘ f ∘ (pure : X → Ultrafilter X)
+    -- ⊢ ∃ f', f' ≫ g = f
     let h : Ultrafilter X → Y := Ultrafilter.extend t
+    -- ⊢ ∃ f', f' ≫ g = f
     have hh : Continuous h := continuous_ultrafilter_extend _
+    -- ⊢ ∃ f', f' ≫ g = f
     use ⟨h, hh⟩
+    -- ⊢ ContinuousMap.mk h ≫ g = f
     apply Faithful.map_injective (F := forget Profinite)
+    -- ⊢ (forget Profinite).map (ContinuousMap.mk h ≫ g) = (forget Profinite).map f
     simp only [ContinuousMap.coe_mk, coe_comp]
+    -- ⊢ (forget Profinite).map (ContinuousMap.mk (Ultrafilter.extend (g' ∘ ↑f ∘ pure …
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
+    -- ⊢ (↑g ∘ h) ∘ pure = ↑f ∘ pure
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`
     let g'' : ContinuousMap Y Z := g
+    -- ⊢ (↑g ∘ h) ∘ pure = ↑f ∘ pure
     have : g'' ∘ g' = id := hg'.comp_eq_id
+    -- ⊢ (↑g ∘ h) ∘ pure = ↑f ∘ pure
     rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
+    -- 🎉 no goals
 #align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
 
 /-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/

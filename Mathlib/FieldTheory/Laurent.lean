@@ -38,8 +38,11 @@ variable {R : Type u} [CommRing R] [hdomain : IsDomain R] (r s : R) (p q : R[X])
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff]
+  -- ⊢ ∀ (x : (fun x => R[X]) p), x * ↑(taylor r) p = 0 → x = 0
   intro x hx
+  -- ⊢ x = 0
   have : x = taylor (r - r) x := by simp
+  -- ⊢ x = 0
   rwa [this, sub_eq_add_neg, ← taylor_taylor, ← taylor_mul,
     LinearMap.map_eq_zero_iff _ (taylor_injective _), mul_right_mem_nonZeroDivisors_eq_zero_iff hp,
     LinearMap.map_eq_zero_iff _ (taylor_injective _)] at hx
@@ -68,6 +71,7 @@ theorem laurentAux_div :
       algebraMap _ _ (taylor r p) / algebraMap _ _ (taylor r q) :=
   -- porting note: added `by exact taylor_mem_nonZeroDivisors r`
   map_apply_div _ (by exact taylor_mem_nonZeroDivisors r) _ _
+                      -- 🎉 no goals
 #align ratfunc.laurent_aux_div RatFunc.laurentAux_div
 
 @[simp]
@@ -96,26 +100,33 @@ theorem laurent_algebraMap : laurent r (algebraMap _ _ p) = algebraMap _ _ (tayl
 @[simp]
 theorem laurent_X : laurent r X = X + C r := by
   rw [← algebraMap_X, laurent_algebraMap, taylor_X, _root_.map_add, algebraMap_C]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_X RatFunc.laurent_X
 
 @[simp]
 theorem laurent_C (x : R) : laurent r (C x) = C x := by
   rw [← algebraMap_C, laurent_algebraMap, taylor_C]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_C RatFunc.laurent_C
 
 @[simp]
 theorem laurent_at_zero : laurent 0 f = f := by induction f using RatFunc.induction_on; simp
+                                                -- ⊢ ↑(laurent 0) (↑(algebraMap R[X] (RatFunc R)) p✝ / ↑(algebraMap R[X] (RatFunc …
+                                                                                        -- 🎉 no goals
 #align ratfunc.laurent_at_zero RatFunc.laurent_at_zero
 
 theorem laurent_laurent : laurent r (laurent s f) = laurent (r + s) f := by
   induction f using RatFunc.induction_on
+  -- ⊢ ↑(laurent r) (↑(laurent s) (↑(algebraMap R[X] (RatFunc R)) p✝ / ↑(algebraMap …
   simp_rw [laurent_div, taylor_taylor]
+  -- 🎉 no goals
 #align ratfunc.laurent_laurent RatFunc.laurent_laurent
 
 theorem laurent_injective : Function.Injective (laurent r) := fun _ _ h => by
   simpa [laurent_laurent] using congr_arg (laurent (-r)) h
+  -- 🎉 no goals
 #align ratfunc.laurent_injective RatFunc.laurent_injective
 
 end

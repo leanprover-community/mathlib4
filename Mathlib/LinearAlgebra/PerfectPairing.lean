@@ -42,15 +42,22 @@ noncomputable def flip : M ≃ₗ[R] Dual R N :=
 @[simp] lemma symm_flip : e.flip.symm = e.symm.dualMap.trans (evalEquiv R M).symm := rfl
 
 lemma trans_dualMap_symm_flip : e.trans e.flip.symm.dualMap = Dual.eval R N := by ext; simp
+                                                                                  -- ⊢ ↑(↑↑(trans e (dualMap (symm (flip e)))) x✝¹) x✝ = ↑(↑(Dual.eval R N) x✝¹) x✝
+                                                                                       -- 🎉 no goals
 
 /-- If `N` is in perfect pairing with `M`, then it is reflexive. -/
 lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
   constructor
+  -- ⊢ Function.Bijective ↑(Dual.eval R N)
   rw [← trans_dualMap_symm_flip e]
+  -- ⊢ Function.Bijective ↑↑(trans e (dualMap (symm (flip e))))
   exact LinearEquiv.bijective _
+  -- 🎉 no goals
 
 @[simp] lemma flip_flip (h : IsReflexive R N := isReflexive_of_equiv_dual_of_isReflexive e) :
   e.flip.flip = e :=
 by ext; rfl
+   -- ⊢ ↑(↑(flip (flip e)) x✝¹) x✝ = ↑(↑e x✝¹) x✝
+        -- 🎉 no goals
 
 end LinearEquiv

@@ -66,6 +66,7 @@ def integer : Subalgebra R K :=
     (⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation x ≤ 1} <|
       Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
+                          -- 🎉 no goals
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 #align set.integer Set.integer
 
@@ -75,6 +76,8 @@ theorem integer_eq :
   SetLike.ext' <| by
     -- Porting note: was `simpa only [integer, Subring.copy_eq]`
     ext; simp
+    -- ⊢ x✝ ∈ ↑(Subalgebra.toSubring (integer S K)) ↔ x✝ ∈ ↑(⨅ (v : HeightOneSpectrum …
+         -- 🎉 no goals
 #align set.integer_eq Set.integer_eq
 
 theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
@@ -94,6 +97,7 @@ def unit : Subgroup Kˣ :=
       -- Porting note: was
       -- simpa only [SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
       simp only [mem_setOf, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
+      -- 🎉 no goals
 #align set.unit Set.unit
 
 theorem unit_eq :
@@ -122,9 +126,16 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
           -- Porting note: was
           -- rw [← map_mul]; convert v.valuation.map_one; exact subtype.mk_eq_mk.mp x.val_inv⟩
           rw [Units.val_mk0, ← map_mul, Subtype.mk_eq_mk.mp x.val_inv, v.valuation.map_one]⟩
+          -- 🎉 no goals
   left_inv _ := by ext; rfl
+                   -- ⊢ ↑↑((fun x => { val := Units.mk0 ↑↑x (_ : ↑↑x = 0 → False), property := (_ :  …
+                        -- 🎉 no goals
   right_inv _ := by ext; rfl
+                    -- ⊢ ↑↑((fun x => { val := { val := ↑↑x, property := (_ : ∀ (v : HeightOneSpectru …
+                         -- 🎉 no goals
   map_mul' _ _ := by ext; rfl
+                     -- ⊢ ↑↑(Equiv.toFun { toFun := fun x => { val := { val := ↑↑x, property := (_ : ∀ …
+                          -- 🎉 no goals
 #align set.unit_equiv_units_integer Set.unitEquivUnitsInteger
 
 end

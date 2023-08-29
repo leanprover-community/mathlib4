@@ -55,6 +55,7 @@ theorem top_arrow (X : C) : (⊤ : MonoOver X).arrow = 𝟙 X :=
 /-- `map f` sends `⊤ : MonoOver X` to `⟨X, f⟩ : MonoOver Y`. -/
 def mapTop (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ ≅ mk' f :=
   iso_of_both_ways (homMk (𝟙 _) rfl) (homMk (𝟙 _) (by simp [id_comp f]))
+                                                      -- 🎉 no goals
 #align category_theory.mono_over.map_top CategoryTheory.MonoOver.mapTop
 
 section
@@ -66,6 +67,7 @@ is (isomorphic to) the top object in `MonoOver X`. -/
 def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
   iso_of_both_ways (leTop _)
     (homMk (pullback.lift f (𝟙 _) (by aesop_cat)) (pullback.lift_snd _ _ _))
+                                      -- 🎉 no goals
 #align category_theory.mono_over.pullback_top CategoryTheory.MonoOver.pullbackTop
 
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
@@ -146,10 +148,15 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
+        -- ⊢ (((fun f => pullback (arrow f) ⋙ map (arrow f)) X✝).obj g).obj.left ⟶ (((fun …
         apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
+        -- ⊢ pullback.fst ≫ ((forget A).obj g).hom = (pullback.snd ≫ k.left) ≫ arrow Y✝
         rw [pullback.condition, assoc, w k]
+        -- ⊢ pullback.lift pullback.fst (pullback.snd ≫ k.left) (_ : pullback.fst ≫ ((for …
         dsimp
+        -- ⊢ pullback.lift pullback.fst (pullback.snd ≫ k.left) (_ : pullback.fst ≫ arrow …
         rw [pullback.lift_snd_assoc, assoc, w k] }
+        -- 🎉 no goals
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the first object. -/
@@ -165,9 +172,13 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
+  -- ⊢ h ⟶ (inf.obj f).obj g
   refine' homMk (pullback.lift k₂.left k₁.left _) _
+  -- ⊢ k₂.left ≫ ((forget A).obj g).hom = k₁.left ≫ arrow f
   rw [w k₁, w k₂]
+  -- ⊢ pullback.lift k₂.left k₁.left (_ : k₂.left ≫ ((forget A).obj g).hom = k₁.lef …
   erw [pullback.lift_snd_assoc, w k₁]
+  -- 🎉 no goals
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
 
 end Inf
@@ -186,26 +197,39 @@ def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
   refine' homMk (coprod.inl ≫ factorThruImage _) _
+  -- ⊢ (coprod.inl ≫ factorThruImage ((uncurry.obj Over.coprod).obj ((Functor.prod  …
   erw [Category.assoc, image.fac, coprod.inl_desc]
+  -- ⊢ ((Functor.prod (forget A) (forget A)).obj (f, g)).fst.hom = arrow f
   rfl
+  -- 🎉 no goals
 #align category_theory.mono_over.le_sup_left CategoryTheory.MonoOver.leSupLeft
 
 /-- A morphism version of `le_sup_right`. -/
 def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   refine' homMk (coprod.inr ≫ factorThruImage _) _
+  -- ⊢ (coprod.inr ≫ factorThruImage ((uncurry.obj Over.coprod).obj ((Functor.prod  …
   erw [Category.assoc, image.fac, coprod.inr_desc]
+  -- ⊢ ((Functor.prod (forget A) (forget A)).obj (f, g)).snd.hom = arrow g
   rfl
+  -- 🎉 no goals
 #align category_theory.mono_over.le_sup_right CategoryTheory.MonoOver.leSupRight
 
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
+  -- ⊢ (sup.obj f).obj g ⟶ h
   refine' homMk _ _
+  -- ⊢ ((sup.obj f).obj g).obj.left ⟶ h.obj.left
   apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+  -- ⊢ coprod.desc k₁.left k₂.left ≫ arrow h = ((uncurry.obj Over.coprod).obj ((Fun …
   · ext
+    -- ⊢ coprod.inl ≫ coprod.desc k₁.left k₂.left ≫ arrow h = coprod.inl ≫ ((uncurry. …
     · simp [w k₁]
+      -- 🎉 no goals
     · simp [w k₂]
+      -- 🎉 no goals
   · apply image.lift_fac
+    -- 🎉 no goals
 #align category_theory.mono_over.sup_le CategoryTheory.MonoOver.supLe
 
 end Sup
@@ -220,7 +244,9 @@ instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
     refine' Quotient.ind' fun f => _
+    -- ⊢ Quotient.mk'' f ≤ ⊤
     exact ⟨MonoOver.leTop f⟩
+    -- 🎉 no goals
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
 instance {X : C} : Inhabited (Subobject X) :=
@@ -232,12 +258,16 @@ theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
 
 theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
   convert underlyingIso_hom_comp_eq_mk (𝟙 B)
+  -- ⊢ (underlyingIso (𝟙 B)).hom = (underlyingIso (𝟙 B)).hom ≫ 𝟙 B
   simp only [comp_id]
+  -- 🎉 no goals
 #align category_theory.subobject.underlying_iso_top_hom CategoryTheory.Subobject.underlyingIso_top_hom
 
 instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
   rw [← underlyingIso_top_hom]
+  -- ⊢ IsIso (underlyingIso (𝟙 B)).hom
   infer_instance
+  -- 🎉 no goals
 #align category_theory.subobject.top_arrow_is_iso CategoryTheory.Subobject.top_arrow_isIso
 
 @[reassoc (attr := simp)]
@@ -258,14 +288,18 @@ theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
 theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
   ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
     rw [← ofMkLEMk_comp h.le, Category.comp_id]
+    -- ⊢ IsIso (ofMkLEMk f (𝟙 Y) (_ : mk f ≤ ⊤))
     exact IsIso.of_iso (isoOfMkEqMk _ _ h)⟩
+    -- 🎉 no goals
 #align category_theory.subobject.is_iso_iff_mk_eq_top CategoryTheory.Subobject.isIso_iff_mk_eq_top
 
 theorem isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P = ⊤ := by
   rw [isIso_iff_mk_eq_top, mk_arrow]
+  -- 🎉 no goals
 #align category_theory.subobject.is_iso_arrow_iff_eq_top CategoryTheory.Subobject.isIso_arrow_iff_eq_top
 
 instance isIso_top_arrow {Y : C} : IsIso (⊤ : Subobject Y).arrow := by rw [isIso_arrow_iff_eq_top]
+                                                                       -- 🎉 no goals
 #align category_theory.subobject.is_iso_top_arrow CategoryTheory.Subobject.isIso_top_arrow
 
 theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
@@ -300,7 +334,9 @@ instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
     refine' Quotient.ind' fun f => _
+    -- ⊢ ⊥ ≤ Quotient.mk'' f
     exact ⟨MonoOver.botLE f⟩
+    -- 🎉 no goals
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -333,6 +369,7 @@ variable [HasZeroMorphisms C]
 
 theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
   mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial) (by simp)
+                                                                                        -- 🎉 no goals
 #align category_theory.subobject.bot_eq_zero CategoryTheory.Subobject.bot_eq_zero
 
 @[simp]
@@ -343,16 +380,21 @@ theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
 theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
   ⟨by
     rintro ⟨h, rfl⟩
+    -- ⊢ h ≫ MonoOver.arrow ⊥ = 0
     simp only [MonoOver.bot_arrow_eq_zero, Functor.id_obj, Functor.const_obj_obj,
       MonoOver.bot_left, comp_zero],
    by
     rintro rfl
+    -- ⊢ Factors ⊥ 0
     exact ⟨0, by simp⟩⟩
+    -- 🎉 no goals
 #align category_theory.subobject.bot_factors_iff_zero CategoryTheory.Subobject.bot_factors_iff_zero
 
 theorem mk_eq_bot_iff_zero {f : X ⟶ Y} [Mono f] : Subobject.mk f = ⊥ ↔ f = 0 :=
   ⟨fun h => by simpa [h, bot_factors_iff_zero] using mk_factors_self f, fun h =>
+               -- 🎉 no goals
     mk_eq_mk_of_comm _ _ ((isoZeroOfMonoEqZero h).trans HasZeroObject.zeroIsoInitial) (by simp [h])⟩
+                                                                                          -- 🎉 no goals
 #align category_theory.subobject.mk_eq_bot_iff_zero CategoryTheory.Subobject.mk_eq_bot_iff_zero
 
 end ZeroOrderBot
@@ -393,7 +435,9 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
   Quotient.inductionOn₃' h f g
     (by
       rintro f g h ⟨k⟩ ⟨l⟩
+      -- ⊢ Quotient.mk'' f ≤ (inf.obj (Quotient.mk'' g)).obj (Quotient.mk'' h)
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
+      -- 🎉 no goals
 #align category_theory.subobject.le_inf CategoryTheory.Subobject.le_inf
 
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
@@ -417,17 +461,23 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
   ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
+    -- ⊢ ∀ {X Y : Subobject B}, Factors X f ∧ Factors Y f → Factors (X ⊓ Y) f
     apply Quotient.ind₂'
+    -- ⊢ ∀ (a₁ a₂ : MonoOver B), Factors (Quotient.mk'' a₁) f ∧ Factors (Quotient.mk' …
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
+    -- ⊢ Factors (Quotient.mk'' X ⊓ Quotient.mk'' Y) (g₁ ≫ MonoOver.arrow X)
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
+    -- 🎉 no goals
 #align category_theory.subobject.inf_factors CategoryTheory.Subobject.inf_factors
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩
+                                                              -- 🎉 no goals
 #align category_theory.subobject.inf_arrow_factors_left CategoryTheory.Subobject.inf_arrow_factors_left
 
 theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) Y (inf_le_right X Y), by simp⟩
+                                                               -- 🎉 no goals
 #align category_theory.subobject.inf_arrow_factors_right CategoryTheory.Subobject.inf_arrow_factors_right
 
 @[simp]
@@ -461,7 +511,9 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
   induction' f₂ using Quotient.inductionOn' with f₂
+  -- ⊢ (inf.obj (Quotient.mk'' f₁)).obj (Quotient.mk'' f₂) = (map (MonoOver.arrow f …
   rfl
+  -- 🎉 no goals
 #align category_theory.subobject.inf_eq_map_pullback' CategoryTheory.Subobject.inf_eq_map_pullback'
 
 theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
@@ -472,9 +524,13 @@ theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
   apply le_antisymm
+  -- ⊢ (f₁ ⨯ f₂) ≤ f₁ ⊓ f₂
   · refine' le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
+    -- 🎉 no goals
   · apply leOfHom
+    -- ⊢ f₁ ⊓ f₂ ⟶ f₁ ⨯ f₂
     exact prod.lift (inf_le_left _ _).hom (inf_le_right _ _).hom
+    -- 🎉 no goals
 #align category_theory.subobject.prod_eq_inf CategoryTheory.Subobject.prod_eq_inf
 
 theorem inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
@@ -485,23 +541,33 @@ theorem inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
 theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
     (pullback g).obj (f₁ ⊓ f₂) = (pullback g).obj f₁ ⊓ (pullback g).obj f₂ := by
   revert f₁
+  -- ⊢ ∀ (f₁ : Subobject Y), (pullback g).obj (f₁ ⊓ f₂) = (pullback g).obj f₁ ⊓ (pu …
   apply Quotient.ind'
+  -- ⊢ ∀ (a : MonoOver Y), (pullback g).obj (Quotient.mk'' a ⊓ f₂) = (pullback g).o …
   intro f₁
+  -- ⊢ (pullback g).obj (Quotient.mk'' f₁ ⊓ f₂) = (pullback g).obj (Quotient.mk'' f …
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← pullback_comp, ←
     map_pullback pullback.condition (pullbackIsPullback f₁.arrow g), ← pullback_comp,
     pullback.condition]
   rfl
+  -- 🎉 no goals
 #align category_theory.subobject.inf_pullback CategoryTheory.Subobject.inf_pullback
 
 /-- `⊓` commutes with map. -/
 theorem inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
     (map g).obj (f₁ ⊓ f₂) = (map g).obj f₁ ⊓ (map g).obj f₂ := by
   revert f₁
+  -- ⊢ ∀ (f₁ : Subobject Y), (map g).obj (f₁ ⊓ f₂) = (map g).obj f₁ ⊓ (map g).obj f₂
   apply Quotient.ind'
+  -- ⊢ ∀ (a : MonoOver Y), (map g).obj (Quotient.mk'' a ⊓ f₂) = (map g).obj (Quotie …
   intro f₁
+  -- ⊢ (map g).obj (Quotient.mk'' f₁ ⊓ f₂) = (map g).obj (Quotient.mk'' f₁) ⊓ (map  …
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← map_comp]
+  -- ⊢ (map (MonoOver.arrow f₁ ≫ g)).obj ((pullback (MonoOver.arrow f₁)).obj f₂) =  …
   dsimp
+  -- ⊢ (map (MonoOver.arrow f₁ ≫ g)).obj ((pullback (MonoOver.arrow f₁)).obj f₂) =  …
   rw [pullback_comp, pullback_map_self]
+  -- 🎉 no goals
 #align category_theory.subobject.inf_map CategoryTheory.Subobject.inf_map
 
 end SemilatticeInfTop
@@ -593,8 +659,11 @@ def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s
           (k _
             (by
               rcases j with ⟨-, ⟨g, ⟨m, rfl⟩⟩⟩
+              -- ⊢ ↑(equivShrink (Subobject A)).symm ↑{ val := ↑(equivShrink (Subobject A)) g,  …
               simpa using m))))
+              -- 🎉 no goals
     (by aesop_cat)
+        -- 🎉 no goals
 #align category_theory.subobject.le_Inf_cone CategoryTheory.Subobject.leInfCone
 
 @[simp]
@@ -621,11 +690,17 @@ instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbac
   ⟨fun u v h =>
     limit.hom_ext fun j => by
       cases j
+      -- ⊢ u ≫ limit.π (wideCospan s) none = v ≫ limit.π (wideCospan s) none
       · exact h
+        -- 🎉 no goals
       · apply (cancel_mono ((equivShrink (Subobject A)).symm _).arrow).1
+        -- ⊢ (u ≫ limit.π (wideCospan s) (some val✝)) ≫ arrow (↑(equivShrink (Subobject A …
         rw [assoc, assoc]
+        -- ⊢ u ≫ limit.π (wideCospan s) (some val✝) ≫ arrow (↑(equivShrink (Subobject A)) …
         erw [limit.w (wideCospan s) (WidePullbackShape.Hom.term _)]
+        -- ⊢ u ≫ limit.π (wideCospan s) none = v ≫ limit.π (wideCospan s) none
         exact h⟩
+        -- 🎉 no goals
 #align category_theory.subobject.wide_pullback_ι_mono CategoryTheory.Subobject.widePullbackι_mono
 
 /-- When `[WellPowered C]` and `[HasWidePullbacks C]`, `Subobject A` has arbitrary infimums.
@@ -636,24 +711,32 @@ def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
 
 theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
   fapply le_of_comm
+  -- ⊢ underlying.obj (sInf s) ⟶ underlying.obj f
   · exact (underlyingIso _).hom ≫
       Limits.limit.π (wideCospan s)
         (some ⟨equivShrink (Subobject A) f,
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
       eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
   · dsimp [sInf]
+    -- ⊢ ((underlyingIso (widePullbackι s)).hom ≫ limit.π (wideCospan s) (some { val  …
     simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
+    -- ⊢ eqToHom (_ : underlying.obj (↑(equivShrink (Subobject A)).symm (↑(equivShrin …
     aesop_cat
+    -- 🎉 no goals
 #align category_theory.subobject.Inf_le CategoryTheory.Subobject.sInf_le
 
 theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
   fapply le_of_comm
+  -- ⊢ underlying.obj f ⟶ underlying.obj (sInf s)
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv
+    -- 🎉 no goals
   · dsimp [sInf]
+    -- ⊢ (limit.lift (wideCospan s) (leInfCone s f k) ≫ (underlyingIso (widePullbackι …
     rw [assoc, underlyingIso_arrow, widePullbackι, limit.lift_π, leInfCone_π_app_none]
+    -- 🎉 no goals
 #align category_theory.subobject.le_Inf CategoryTheory.Subobject.le_inf
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
@@ -684,32 +767,49 @@ def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
 
 theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
+  -- ⊢ underlying.obj f ⟶ underlying.obj (sSup s)
   · refine' eqToHom _ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
+    -- 🎉 no goals
   · simp [sSup, smallCoproductDesc]
+    -- 🎉 no goals
 #align category_theory.subobject.le_Sup CategoryTheory.Subobject.le_sSup
 
 theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
   ⟨fun h => ⟨e.symm x, h, by simp⟩, by
+                             -- 🎉 no goals
     rintro ⟨a, m, rfl⟩
+    -- ⊢ ↑e.symm (↑e a) ∈ s
     simpa using m⟩
+    -- 🎉 no goals
 #align category_theory.subobject.symm_apply_mem_iff_mem_image CategoryTheory.Subobject.symm_apply_mem_iff_mem_image
 
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
+  -- ⊢ underlying.obj (sSup s) ⟶ underlying.obj f
   · refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
+    -- ⊢ (∐ fun j => underlying.obj (↑(equivShrink (Subobject A)).symm ↑j)) ⟶ underly …
     · refine' Sigma.desc _
+      -- ⊢ (b : ↑(↑(equivShrink (Subobject A)) '' s)) → underlying.obj (↑(equivShrink ( …
       rintro ⟨g, m⟩
+      -- ⊢ underlying.obj (↑(equivShrink (Subobject A)).symm ↑{ val := g, property := m …
       refine' underlying.map (homOfLE (k _ _))
+      -- ⊢ ↑(equivShrink (Subobject A)).symm ↑{ val := g, property := m } ∈ s
       simpa using m
+      -- 🎉 no goals
     · ext
+      -- ⊢ Sigma.ι (fun j => underlying.obj (↑(equivShrink (Subobject A)).symm ↑j)) b✝  …
       dsimp [smallCoproductDesc]
+      -- ⊢ Sigma.ι (fun j => underlying.obj (↑(equivShrink (Subobject A)).symm ↑j)) b✝  …
       simp
+      -- 🎉 no goals
   · dsimp [sSup]
+    -- ⊢ ((underlyingIso (image.ι (smallCoproductDesc s))).hom ≫ image.lift (MonoFact …
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
+    -- 🎉 no goals
 #align category_theory.subobject.Sup_le CategoryTheory.Subobject.sSup_le
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
@@ -752,18 +852,26 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
   toFun Z :=
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
+                                                                        -- 🎉 no goals
   invFun Z := Subobject.mk (ofLE _ _ Z.2)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
+                                                      -- 🎉 no goals
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by
           dsimp
+          -- ⊢ (underlyingIso (ofLE (↑Z) Y (_ : ↑Z ∈ Set.Iic Y))).hom ≫ arrow ↑Z = arrow (m …
           simp [← Iso.eq_inv_comp]))
+          -- 🎉 no goals
   map_rel_iff' {W Z} := by
     dsimp
+    -- ⊢ { val := mk (arrow W ≫ arrow Y), property := (_ : mk (arrow W ≫ arrow Y) ∈ S …
     constructor
+    -- ⊢ { val := mk (arrow W ≫ arrow Y), property := (_ : mk (arrow W ≫ arrow Y) ∈ S …
     · intro h
+      -- ⊢ W ≤ Z
       exact le_of_comm (((underlyingIso _).inv ≫ ofLE _ _ (Subtype.mk_le_mk.mp h) ≫
         (underlyingIso _).hom)) (by aesop_cat)
     · intro h
+      -- ⊢ { val := mk (arrow W ≫ arrow Y), property := (_ : mk (arrow W ≫ arrow Y) ∈ S …
       exact Subtype.mk_le_mk.mpr (le_of_comm
         ((underlyingIso _).hom ≫ ofLE _ _ h ≫ (underlyingIso _).inv) (by simp))
 #align category_theory.subobject.subobject_order_iso CategoryTheory.Subobject.subobjectOrderIso

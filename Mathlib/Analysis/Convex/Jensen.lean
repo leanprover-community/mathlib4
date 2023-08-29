@@ -49,7 +49,10 @@ theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t,
   have hmem' : ∀ i ∈ t, (p i, (f ∘ p) i) ∈ { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 } := fun i hi =>
     ⟨hmem i hi, le_rfl⟩
   convert(hf.convex_epigraph.centerMass_mem h₀ h₁ hmem').2 <;>
+  -- ⊢ centerMass t w p = (centerMass t (fun i => w i) fun i => (p i, (f ∘ p) i)).fst
     simp only [centerMass, Function.comp, Prod.smul_fst, Prod.fst_sum, Prod.smul_snd, Prod.snd_sum]
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align convex_on.map_center_mass_le ConvexOn.map_centerMass_le
 
 /-- Concave **Jensen's inequality**, `Finset.centerMass` version. -/
@@ -88,6 +91,7 @@ theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
     f x ≤ s.sup' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f := by
   obtain ⟨w, hw₀, hw₁, rfl⟩ := mem_convexHull.1 hx
+  -- ⊢ f (centerMass s w _root_.id) ≤ sup' s (_ : Finset.Nonempty s) f
   exact (hf.map_centerMass_le hw₀ (by positivity) <| subset_convexHull _ _).trans
     (centerMass_le_sup hw₀ <| by positivity)
 #align le_sup_of_mem_convex_hull le_sup_of_mem_convexHull
@@ -104,15 +108,23 @@ theorem ConvexOn.exists_ge_of_centerMass (h : ConvexOn 𝕜 s f) (hw₀ : ∀ i 
     (hw₁ : 0 < ∑ i in t, w i) (hp : ∀ i ∈ t, p i ∈ s) :
     ∃ i ∈ t, f (t.centerMass w p) ≤ f (p i) := by
   set y := t.centerMass w p
+  -- ⊢ ∃ i, i ∈ t ∧ f y ≤ f (p i)
   obtain ⟨i, hi, hfi⟩ : ∃ i ∈ t.filter fun i => w i ≠ 0, w i • f y ≤ w i • (f ∘ p) i
+  -- ⊢ ∃ i, i ∈ filter (fun i => w i ≠ 0) t ∧ w i • f y ≤ w i • (f ∘ p) i
   rotate_left
+  -- ⊢ ∃ i, i ∈ t ∧ f y ≤ f (p i)
   · rw [mem_filter] at hi
+    -- ⊢ ∃ i, i ∈ t ∧ f y ≤ f (p i)
     exact ⟨i, hi.1, (smul_le_smul_iff_of_pos <| (hw₀ i hi.1).lt_of_ne hi.2.symm).1 hfi⟩
+    -- 🎉 no goals
   have hw' : (0 : 𝕜) < ∑ i in filter (fun i => w i ≠ 0) t, w i := by rwa [sum_filter_ne_zero]
+  -- ⊢ ∃ i, i ∈ filter (fun i => w i ≠ 0) t ∧ w i • f y ≤ w i • (f ∘ p) i
   refine' exists_le_of_sum_le (nonempty_of_sum_ne_zero hw'.ne') _
+  -- ⊢ ∑ i in filter (fun i => w i ≠ 0) t, w i • f y ≤ ∑ i in filter (fun i => w i  …
   rw [← sum_smul, ← smul_le_smul_iff_of_pos (inv_pos.2 hw'), inv_smul_smul₀ hw'.ne', ←
     Finset.centerMass, Finset.centerMass_filter_ne_zero]
   exact h.map_centerMass_le hw₀ hw₁ hp
+  -- 🎉 no goals
 #align convex_on.exists_ge_of_center_mass ConvexOn.exists_ge_of_centerMass
 
 /-- If a function `f` is concave on `s`, then the value it takes at some center of mass of points of
@@ -127,11 +139,14 @@ then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
   rw [_root_.convexHull_eq] at hx
+  -- ⊢ ∃ y, y ∈ s ∧ f x ≤ f y
   obtain ⟨α, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx
+  -- ⊢ ∃ y, y ∈ s ∧ f (centerMass t w p) ≤ f y
   rcases hf.exists_ge_of_centerMass hw₀ (hw₁.symm ▸ zero_lt_one) fun i hi =>
       subset_convexHull 𝕜 s (hp i hi) with
     ⟨i, hit, Hi⟩
   exact ⟨p i, hp i hit, Hi⟩
+  -- 🎉 no goals
 #align convex_on.exists_ge_of_mem_convex_hull ConvexOn.exists_ge_of_mem_convexHull
 
 /-- Minimum principle for concave functions. If a function `f` is concave on the convex hull of `s`,

@@ -68,7 +68,9 @@ theorem incMatrix_apply [Zero R] [One R] {a : α} {e : Sym2 α} :
 theorem incMatrix_apply' [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] {a : α}
     {e : Sym2 α} : G.incMatrix R a e = if e ∈ G.incidenceSet a then 1 else 0 := by
   unfold incMatrix Set.indicator -- Porting note: was `convert rfl`
+  -- ⊢ (if e ∈ incidenceSet G a then OfNat.ofNat 1 e else 0) = if e ∈ incidenceSet  …
   simp only [Pi.one_apply]
+  -- 🎉 no goals
 #align simple_graph.inc_matrix_apply' SimpleGraph.incMatrix_apply'
 
 section MulZeroOneClass
@@ -84,31 +86,46 @@ theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
     G.incMatrix R a e * G.incMatrix R b e = 0 := by
   rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_not_mem]
+  -- ⊢ ¬e ∈ incidenceSet G a ∩ incidenceSet G b
   rw [G.incidenceSet_inter_incidenceSet_of_not_adj h hab]
+  -- ⊢ ¬e ∈ ∅
   exact Set.not_mem_empty e
+  -- 🎉 no goals
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply_of_not_adj SimpleGraph.incMatrix_apply_mul_incMatrix_apply_of_not_adj
 
 theorem incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
   rw [incMatrix_apply, Set.indicator_of_not_mem h]
+  -- 🎉 no goals
 #align simple_graph.inc_matrix_of_not_mem_incidence_set SimpleGraph.incMatrix_of_not_mem_incidenceSet
 
 theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
+  -- 🎉 no goals
 #align simple_graph.inc_matrix_of_mem_incidence_set SimpleGraph.incMatrix_of_mem_incidenceSet
 
 variable [Nontrivial R]
 
 theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenceSet a := by
   simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
+  -- 🎉 no goals
 #align simple_graph.inc_matrix_apply_eq_zero_iff SimpleGraph.incMatrix_apply_eq_zero_iff
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
   -- Porting note: was `convert one_ne_zero.ite_eq_left_iff; infer_instance`
   unfold incMatrix Set.indicator
+  -- ⊢ (if e ∈ incidenceSet G a then OfNat.ofNat 1 e else 0) = 1 ↔ e ∈ incidenceSet …
   simp only [Pi.one_apply]
+  -- ⊢ (if e ∈ incidenceSet G a then 1 else 0) = 1 ↔ e ∈ incidenceSet G a
   apply Iff.intro <;> intro h
+  -- ⊢ (if e ∈ incidenceSet G a then 1 else 0) = 1 → e ∈ incidenceSet G a
+                      -- ⊢ e ∈ incidenceSet G a
+                      -- ⊢ (if e ∈ incidenceSet G a then 1 else 0) = 1
   · split at h <;> simp_all only [zero_ne_one]
+    -- ⊢ e ∈ incidenceSet G a
+                   -- 🎉 no goals
+                   -- 🎉 no goals
   · simp_all only [ite_true]
+    -- 🎉 no goals
 #align simple_graph.inc_matrix_apply_eq_one_iff SimpleGraph.incMatrix_apply_eq_one_iff
 
 end MulZeroOneClass
@@ -120,13 +137,17 @@ variable [Fintype α] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
     ∑ e, G.incMatrix R a e = G.degree a := by
   simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
+  -- 🎉 no goals
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
 theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   rw [← sum_incMatrix_apply]
+  -- ⊢ (incMatrix R G * (incMatrix R G)ᵀ) a a = ∑ e : Sym2 α, incMatrix R G a e
   simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
+  -- ⊢ (∑ x : Sym2 α, if x ∈ incidenceSet G a then if x ∈ incidenceSet G a then 1 e …
   simp_all only [ite_true, sum_boole]
+  -- 🎉 no goals
 #align simple_graph.inc_matrix_mul_transpose_diag SimpleGraph.incMatrix_mul_transpose_diag
 
 theorem sum_incMatrix_apply_of_mem_edgeSet :
@@ -188,11 +209,16 @@ theorem incMatrix_mul_transpose [Fintype α] [DecidableEq α] [DecidableRel G.Ad
     G.incMatrix R * (G.incMatrix R)ᵀ = fun a b =>
       if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b
+  -- ⊢ (incMatrix R G * (incMatrix R G)ᵀ) a b = if a = b then ↑(degree G a) else if …
   split_ifs with h h'
   · subst b
+    -- ⊢ (incMatrix R G * (incMatrix R G)ᵀ) a a = ↑(degree G a)
     rename Semiring R => sr
+    -- ⊢ (incMatrix R G * (incMatrix R G)ᵀ) a a = ↑(degree G a)
     convert @incMatrix_mul_transpose_diag _ _ _ _ sr.toNonAssocSemiring _ _ _
+    -- 🎉 no goals
   · exact G.incMatrix_mul_transpose_apply_of_adj h'
+    -- 🎉 no goals
   · simp only [Matrix.mul_apply, Matrix.transpose_apply,
       G.incMatrix_apply_mul_incMatrix_apply_of_not_adj h h', sum_const_zero]
 #align simple_graph.inc_matrix_mul_transpose SimpleGraph.incMatrix_mul_transpose

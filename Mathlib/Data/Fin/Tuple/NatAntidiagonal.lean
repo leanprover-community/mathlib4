@@ -97,28 +97,51 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n) := by
   induction' k with k ih generalizing n
+  -- ⊢ Nodup (antidiagonalTuple Nat.zero n)
   · cases n
+    -- ⊢ Nodup (antidiagonalTuple Nat.zero Nat.zero)
     · simp
+      -- 🎉 no goals
     · simp [eq_comm]
+      -- 🎉 no goals
   simp_rw [antidiagonalTuple, List.nodup_bind]
+  -- ⊢ (∀ (x : ℕ × ℕ), x ∈ antidiagonal n → Nodup (map (fun x_1 => Fin.cons x.fst x …
   constructor
+  -- ⊢ ∀ (x : ℕ × ℕ), x ∈ antidiagonal n → Nodup (map (fun x_1 => Fin.cons x.fst x_ …
   · intro i _
+    -- ⊢ Nodup (map (fun x => Fin.cons i.fst x) (antidiagonalTuple k i.snd))
     exact (ih i.snd).map (Fin.cons_right_injective (α := fun _ => ℕ) i.fst)
+    -- 🎉 no goals
   induction' n with n n_ih
+  -- ⊢ Pairwise (fun a b => Disjoint (map (fun x => Fin.cons a.fst x) (antidiagonal …
   · exact List.pairwise_singleton _ _
+    -- 🎉 no goals
   · rw [List.Nat.antidiagonal_succ]
+    -- ⊢ Pairwise (fun a b => Disjoint (map (fun x => Fin.cons a.fst x) (antidiagonal …
     refine' List.Pairwise.cons (fun a ha x hx₁ hx₂ => _) (n_ih.map _ fun a b h x hx₁ hx₂ => _)
+    -- ⊢ False
     · rw [List.mem_map] at hx₁ hx₂ ha
+      -- ⊢ False
       obtain ⟨⟨a, -, rfl⟩, ⟨x₁, -, rfl⟩, ⟨x₂, -, h⟩⟩ := ha, hx₁, hx₂
+      -- ⊢ False
       rw [Fin.cons_eq_cons] at h
+      -- ⊢ False
       injection h.1
+      -- 🎉 no goals
     · rw [List.mem_map] at hx₁ hx₂
+      -- ⊢ False
       obtain ⟨⟨x₁, hx₁, rfl⟩, ⟨x₂, hx₂, h₁₂⟩⟩ := hx₁, hx₂
+      -- ⊢ False
       dsimp at h₁₂
+      -- ⊢ False
       rw [Fin.cons_eq_cons, Nat.succ_inj'] at h₁₂
+      -- ⊢ False
       obtain ⟨h₁₂, rfl⟩ := h₁₂
+      -- ⊢ False
       rw [h₁₂] at h
+      -- ⊢ False
       exact h (List.mem_map_of_mem _ hx₁) (List.mem_map_of_mem _ hx₂)
+      -- 🎉 no goals
 #align list.nat.nodup_antidiagonal_tuple List.Nat.nodup_antidiagonalTuple
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
@@ -127,6 +150,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
     rw [antidiagonalTuple, antidiagonal_zero, List.bind_singleton, antidiagonalTuple_zero_right k,
       List.map_singleton]
     exact congr_arg (fun x => [x]) Matrix.cons_zero_zero
+    -- 🎉 no goals
 #align list.nat.antidiagonal_tuple_zero_right List.Nat.antidiagonalTuple_zero_right
 
 @[simp]
@@ -134,19 +158,29 @@ theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
     tsub_self, List.append_bind, List.bind_singleton, List.map_bind]
   conv_rhs => rw [← List.nil_append [![n]]]
+  -- ⊢ (List.bind (range n) fun a => map (fun x => Fin.cons a x) (antidiagonalTuple …
   congr 1
+  -- ⊢ (List.bind (range n) fun a => map (fun x => Fin.cons a x) (antidiagonalTuple …
   simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
+  -- ⊢ ∀ (x : ℕ), x < n → antidiagonalTuple 0 (n - x) = []
   intro x hx
+  -- ⊢ antidiagonalTuple 0 (n - x) = []
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hx
+  -- ⊢ antidiagonalTuple 0 (x + m + 1 - x) = []
   rw [add_assoc, add_tsub_cancel_left, antidiagonalTuple_zero_succ]
+  -- 🎉 no goals
 #align list.nat.antidiagonal_tuple_one List.Nat.antidiagonalTuple_one
 
 theorem antidiagonalTuple_two (n : ℕ) :
     antidiagonalTuple 2 n = (antidiagonal n).map fun i => ![i.1, i.2] := by
   rw [antidiagonalTuple]
+  -- ⊢ (List.bind (antidiagonal n) fun ni => map (fun x => Fin.cons ni.fst x) (anti …
   simp_rw [antidiagonalTuple_one, List.map_singleton]
+  -- ⊢ (List.bind (antidiagonal n) fun ni => [Fin.cons ni.fst ![ni.snd]]) = map (fu …
   rw [List.map_eq_bind]
+  -- ⊢ (List.bind (antidiagonal n) fun ni => [Fin.cons ni.fst ![ni.snd]]) = List.bi …
   rfl
+  -- 🎉 no goals
 #align list.nat.antidiagonal_tuple_two List.Nat.antidiagonalTuple_two
 
 theorem antidiagonalTuple_pairwise_pi_lex :
@@ -157,20 +191,33 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
+    -- ⊢ (∀ (a b : ℕ), a + b = n → Pairwise (fun a_2 b => Pi.Lex (fun x x_1 => x < x_ …
     simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and_iff, lt_self_iff_false,
       false_or_iff]
     refine' ⟨fun _ _ _ => antidiagonalTuple_pairwise_pi_lex k _, _⟩
+    -- ⊢ Pairwise (fun a₁ a₂ => ∀ (a : Fin (Nat.add k 0) → ℕ), a ∈ antidiagonalTuple  …
     induction' n with n n_ih
+    -- ⊢ Pairwise (fun a₁ a₂ => ∀ (a : Fin (Nat.add k 0) → ℕ), a ∈ antidiagonalTuple  …
     · rw [antidiagonal_zero]
+      -- ⊢ Pairwise (fun a₁ a₂ => ∀ (a : Fin (Nat.add k 0) → ℕ), a ∈ antidiagonalTuple  …
       exact List.pairwise_singleton _ _
+      -- 🎉 no goals
     · rw [antidiagonal_succ, List.pairwise_cons, List.pairwise_map]
+      -- ⊢ (∀ (a' : ℕ × ℕ), a' ∈ map (Prod.map Nat.succ id) (antidiagonal n) → ∀ (a : F …
       refine' ⟨fun p hp x hx y hy => _, _⟩
+      -- ⊢ (0, n + 1).fst < p.fst ∨ (0, n + 1).fst = p.fst ∧ Pi.Lex (fun x x_1 => x < x …
       · rw [List.mem_map, Prod.exists] at hp
+        -- ⊢ (0, n + 1).fst < p.fst ∨ (0, n + 1).fst = p.fst ∧ Pi.Lex (fun x x_1 => x < x …
         obtain ⟨a, b, _, rfl : (Nat.succ a, b) = p⟩ := hp
+        -- ⊢ (0, n + 1).fst < (Nat.succ a, b).fst ∨ (0, n + 1).fst = (Nat.succ a, b).fst  …
         exact Or.inl (Nat.zero_lt_succ _)
+        -- 🎉 no goals
       dsimp
+      -- ⊢ Pairwise (fun a b => ∀ (a_1 : Fin k → ℕ), a_1 ∈ antidiagonalTuple k a.snd →  …
       simp_rw [Nat.succ_inj', Nat.succ_lt_succ_iff]
+      -- ⊢ Pairwise (fun a b => ∀ (a_1 : Fin k → ℕ), a_1 ∈ antidiagonalTuple k a.snd →  …
       exact n_ih
+      -- 🎉 no goals
 #align list.nat.antidiagonal_tuple_pairwise_pi_lex List.Nat.antidiagonalTuple_pairwise_pi_lex
 
 end List.Nat

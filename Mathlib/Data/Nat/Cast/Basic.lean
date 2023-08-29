@@ -49,6 +49,9 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
 @[simp, norm_cast]
 theorem cast_mul [NonAssocSemiring α] (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
   induction n <;> simp [mul_succ, mul_add, *]
+  -- ⊢ ↑(m * zero) = ↑m * ↑zero
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align nat.cast_mul Nat.cast_mul
 
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
@@ -95,6 +98,8 @@ variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
+    -- ⊢ ↑n ≤ ↑n + 1
+                        -- 🎉 no goals
 #align nat.mono_cast Nat.mono_cast
 
 @[simp low]
@@ -117,6 +122,9 @@ theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
 
 @[simp low]
 theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
+                                                      -- ⊢ 0 < ↑zero ↔ 0 < zero
+                                                                  -- 🎉 no goals
+                                                                  -- 🎉 no goals
 
 -- without this more specific version Lean often chokes
 @[simp]
@@ -150,19 +158,23 @@ theorem cast_lt : (m : α) < n ↔ m < n :=
 
 @[simp, norm_cast]
 theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
+                                                -- 🎉 no goals
 #align nat.one_lt_cast Nat.one_lt_cast
 
 @[simp, norm_cast]
 theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
+                                                -- 🎉 no goals
 #align nat.one_le_cast Nat.one_le_cast
 
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
   rw [← cast_one, cast_lt, lt_succ_iff, ← bot_eq_zero, le_bot_iff]
+  -- 🎉 no goals
 #align nat.cast_lt_one Nat.cast_lt_one
 
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
+                                                -- 🎉 no goals
 #align nat.cast_le_one Nat.cast_le_one
 
 end OrderedSemiring
@@ -173,10 +185,15 @@ for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -
 theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   cases' le_total m n with h h
+  -- ⊢ ↑(m - n) = ↑m - ↑n
   · rw [tsub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
+    -- ⊢ ↑m ≤ ↑n
     exact mono_cast h
+    -- 🎉 no goals
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
+    -- ⊢ ↑(m + n - n) = ↑(m + n) - ↑n
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
+    -- 🎉 no goals
 #align nat.cast_tsub Nat.cast_tsub
 
 @[simp, norm_cast]
@@ -204,6 +221,7 @@ end Nat
 
 instance [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_ne :=
   ⟨1, 0, (Nat.cast_one (R := α) ▸ Nat.cast_ne_zero.2 (by decide))⟩
+                                                         -- 🎉 no goals
 
 section AddMonoidHomClass
 
@@ -212,6 +230,7 @@ variable {A B F : Type*} [AddMonoidWithOne B]
 theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   FunLike.ext f g <| by
     intro n
+    -- ⊢ ↑f n = ↑g n
     induction n with
     | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
     | succ n ihn =>
@@ -228,14 +247,18 @@ variable [AddMonoidWithOne A]
 -- these versions are primed so that the `RingHomClass` versions aren't
 theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
   | 0 => by simp [map_zero f]
+            -- 🎉 no goals
   | n + 1 => by rw [map_add, h1, eq_natCast' f h1 n, Nat.cast_add_one]
+                -- 🎉 no goals
 #align eq_nat_cast' eq_natCast'
 
 theorem map_natCast' {A} [AddMonoidWithOne A] [AddMonoidHomClass F A B] (f : F) (h : f 1 = 1) :
     ∀ n : ℕ, f n = n
   | 0 => by simp [map_zero f]
+            -- 🎉 no goals
   | n + 1 => by
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
+    -- 🎉 no goals
 #align map_nat_cast' map_natCast'
 
 end AddMonoidHomClass
@@ -248,9 +271,13 @@ variable {A F : Type*} [MulZeroOneClass A]
 theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
   apply FunLike.ext
+  -- ⊢ ∀ (x : ℕ), ↑f x = ↑g x
   rintro (_ | n)
+  -- ⊢ ↑f Nat.zero = ↑g Nat.zero
   · simp [map_zero f, map_zero g]
+    -- 🎉 no goals
   · exact h_pos n.succ_pos
+    -- 🎉 no goals
 #align ext_nat'' ext_nat''
 
 @[ext]
@@ -282,16 +309,19 @@ theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
 
 theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp only [map_one f, map_one g]
+                     -- 🎉 no goals
 #align ext_nat ext_nat
 
 theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
+                                             -- 🎉 no goals
 #align ne_zero.nat_of_injective NeZero.nat_of_injective
 
 theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S] {F} [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])
+                                 -- 🎉 no goals
 #align ne_zero.nat_of_ne_zero NeZero.nat_of_neZero
 
 end RingHomClass

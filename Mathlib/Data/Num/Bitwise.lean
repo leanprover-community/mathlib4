@@ -327,9 +327,15 @@ def bit1 : SNum → SNum :=
 #align snum.bit1 SNum.bit1
 
 theorem bit_zero (b : Bool) : (b :: zero b) = zero b := by cases b <;> rfl
+                                                           -- ⊢ (false::zero false) = zero false
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
 #align snum.bit_zero SNum.bit_zero
 
 theorem bit_one (b : Bool) : (b :: zero (Not b)) = msb b := by cases b <;> rfl
+                                                               -- ⊢ (false::zero (decide ¬false = true)) = nz (msb false)
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
 #align snum.bit_one SNum.bit_one
 
 end SNum
@@ -343,6 +349,8 @@ open SNum
 def drec' {C : SNum → Sort*} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
   | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
+                -- ⊢ C (b::zero (decide ¬b = true))
+                                -- 🎉 no goals
   | bit b p => s b p (drec' z s p)
 #align nzsnum.drec' NzsNum.drec'
 

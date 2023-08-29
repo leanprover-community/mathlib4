@@ -104,9 +104,13 @@ theorem exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p 
     [HasCountableSeparatingOn α p t] :
     ∃ S : ℕ → Set α, (∀ n, p (S n)) ∧ ∀ x ∈ t, ∀ y ∈ t, (∀ n, x ∈ S n ↔ y ∈ S n) → x = y := by
   rcases exists_nonempty_countable_separating α hp t with ⟨S, hSne, hSc, hS⟩
+  -- ⊢ ∃ S, (∀ (n : ℕ), p (S n)) ∧ ∀ (x : α), x ∈ t → ∀ (y : α), y ∈ t → (∀ (n : ℕ) …
   rcases hSc.exists_eq_range hSne with ⟨S, rfl⟩
+  -- ⊢ ∃ S, (∀ (n : ℕ), p (S n)) ∧ ∀ (x : α), x ∈ t → ∀ (y : α), y ∈ t → (∀ (n : ℕ) …
   use S
+  -- ⊢ (∀ (n : ℕ), p (S n)) ∧ ∀ (x : α), x ∈ t → ∀ (y : α), y ∈ t → (∀ (n : ℕ), x ∈ …
   simpa only [forall_range_iff] using hS
+  -- 🎉 no goals
 
 theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
@@ -119,11 +123,17 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
     {q : Set t → Prop} [h : HasCountableSeparatingOn t q univ]
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
+  -- ⊢ HasCountableSeparatingOn α p t
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
+  -- ⊢ HasCountableSeparatingOn α p t
   refine ⟨⟨V '' S, hSc.image _, ball_image_iff.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
+  -- ⊢ x = y
   refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
+  -- ⊢ { val := x, property := hx } ∈ U ↔ { val := y, property := hy } ∈ U
   rw [← hV U hU]
+  -- ⊢ { val := x, property := hx } ∈ Subtype.val ⁻¹' V U ↔ { val := y, property := …
   exact h _ (mem_image_of_mem _ hU)
+  -- 🎉 no goals
 
 namespace Filter
 
@@ -146,11 +156,16 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     {s : Set α} [h : HasCountableSeparatingOn α p s] (hs : s ∈ l)
     (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) : ∃ t, t ⊆ s ∧ t.Subsingleton ∧ t ∈ l := by
   rcases h.1 with ⟨S, hSc, hSp, hS⟩
+  -- ⊢ ∃ t, t ⊆ s ∧ Set.Subsingleton t ∧ t ∈ l
   refine ⟨s ∩ ⋂₀ (S ∩ l.sets) ∩ ⋂ (U ∈ S) (_ : Uᶜ ∈ l), Uᶜ, ?_, ?_, ?_⟩
   · exact fun _ h ↦ h.1.1
+    -- 🎉 no goals
   · intro x hx y hy
+    -- ⊢ x = y
     simp only [mem_sInter, mem_inter_iff, mem_iInter, mem_compl_iff] at hx hy
+    -- ⊢ x = y
     refine hS x hx.1.1 y hy.1.1 (fun s hsS ↦ ?_)
+    -- ⊢ x ∈ s ↔ y ∈ s
     cases hl s (hSp s hsS) with
     | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
@@ -162,15 +177,21 @@ theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Se
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hne : s.Nonempty)
     (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) : ∃ a ∈ s, {a} ∈ l := by
   rcases exists_subset_subsingleton_mem_of_forall_separating p hs hl with ⟨t, hts, ht, htl⟩
+  -- ⊢ ∃ a, a ∈ s ∧ {a} ∈ l
   rcases ht.eq_empty_or_singleton with rfl | ⟨x, rfl⟩
+  -- ⊢ ∃ a, a ∈ s ∧ {a} ∈ l
   · exact hne.imp fun a ha ↦ ⟨ha, mem_of_superset htl (empty_subset _)⟩
+    -- 🎉 no goals
   · exact ⟨x, hts rfl, htl⟩
+    -- 🎉 no goals
 
 theorem exists_singleton_mem_of_mem_of_forall_separating [Nonempty α] (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) :
     ∃ a, {a} ∈ l := by
   rcases s.eq_empty_or_nonempty with rfl | hne
+  -- ⊢ ∃ a, {a} ∈ l
   · exact ‹Nonempty α›.elim fun a ↦ ⟨a, mem_of_superset hs (empty_subset _)⟩
+    -- 🎉 no goals
   · exact (exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating p hs hne hl).imp fun _ ↦
       And.right
 
@@ -225,9 +246,11 @@ theorem of_eventually_mem_of_forall_separating_mem_iff (p : Set β → Prop) {s 
     [h' : HasCountableSeparatingOn β p s] (hf : ∀ᶠ x in l, f x ∈ s) (hg : ∀ᶠ x in l, g x ∈ s)
     (h : ∀ U : Set β, p U → ∀ᶠ x in l, f x ∈ U ↔ g x ∈ U) : f =ᶠ[l] g := by
   rcases h'.1 with ⟨S, hSc, hSp, hS⟩
+  -- ⊢ f =ᶠ[l] g
   have H : ∀ᶠ x in l, ∀ s ∈ S, f x ∈ s ↔ g x ∈ s :=
     (eventually_countable_ball hSc).2 fun s hs ↦ (h _ (hSp _ hs))
   filter_upwards [H, hf, hg] with x hx hxf hxg using hS _ hxf _ hxg hx
+  -- 🎉 no goals
 
 theorem of_forall_separating_mem_iff (p : Set β → Prop)
     [HasCountableSeparatingOn β p univ] (h : ∀ U : Set β, p U → ∀ᶠ x in l, f x ∈ U ↔ g x ∈ U) :

@@ -39,17 +39,25 @@ structure IsSubfield extends IsSubring S : Prop where
 theorem IsSubfield.div_mem {S : Set F} (hS : IsSubfield S) {x y : F} (hx : x ∈ S) (hy : y ∈ S) :
     x / y ∈ S := by
   rw [div_eq_mul_inv]
+  -- ⊢ x * y⁻¹ ∈ S
   exact hS.toIsSubring.toIsSubmonoid.mul_mem hx (hS.inv_mem hy)
+  -- 🎉 no goals
 #align is_subfield.div_mem IsSubfield.div_mem
 
 theorem IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h : a ∈ s) :
     a ^ n ∈ s := by
   cases' n with n n
+  -- ⊢ a ^ Int.ofNat n ∈ s
   · suffices a ^ (n : ℤ) ∈ s by exact this
+    -- ⊢ a ^ ↑n ∈ s
     rw [zpow_ofNat]
+    -- ⊢ a ^ n ∈ s
     exact hs.toIsSubring.toIsSubmonoid.pow_mem h
+    -- 🎉 no goals
   · rw [zpow_negSucc]
+    -- ⊢ (a ^ (n + 1))⁻¹ ∈ s
     exact hs.inv_mem (hs.toIsSubring.toIsSubmonoid.pow_mem h)
+    -- 🎉 no goals
 #align is_subfield.pow_mem IsSubfield.pow_mem
 
 theorem Univ.isSubfield : IsSubfield (@Set.univ F) :=
@@ -62,7 +70,9 @@ theorem Preimage.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set K} (h
   { f.isSubring_preimage hs.toIsSubring with
     inv_mem := fun {a} (ha : f a ∈ s) ↦ show f a⁻¹ ∈ s by
       rw [map_inv₀]
+      -- ⊢ (↑f a)⁻¹ ∈ s
       exact hs.inv_mem ha }
+      -- 🎉 no goals
 #align preimage.is_subfield Preimage.isSubfield
 
 theorem Image.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set F} (hs : IsSubfield s) :
@@ -73,7 +83,9 @@ theorem Image.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set F} (hs :
 
 theorem Range.isSubfield {K : Type*} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
   rw [← Set.image_univ]
+  -- ⊢ IsSubfield (↑f '' Set.univ)
   apply Image.isSubfield _ Univ.isSubfield
+  -- 🎉 no goals
 #align range.is_subfield Range.isSubfield
 
 namespace Field
@@ -92,6 +104,7 @@ theorem ring_closure_subset : Ring.closure S ⊆ closure S :=
 theorem closure.isSubmonoid : IsSubmonoid (closure S) :=
   { mul_mem := by
       rintro _ _ ⟨p, hp, q, hq, hq0, rfl⟩ ⟨r, hr, s, hs, hs0, rfl⟩
+      -- ⊢ p / q * (r / s) ∈ closure S
       exact ⟨p * r, IsSubmonoid.mul_mem Ring.closure.isSubring.toIsSubmonoid hp hr, q * s,
         IsSubmonoid.mul_mem Ring.closure.isSubring.toIsSubmonoid hq hs,
         (div_mul_div_comm _ _ _ _).symm⟩
@@ -102,12 +115,19 @@ theorem closure.isSubfield : IsSubfield (closure S) :=
   { closure.isSubmonoid with
     add_mem := by
       intro a b ha hb
+      -- ⊢ a + b ∈ closure S
       rcases id ha with ⟨p, hp, q, hq, rfl⟩
+      -- ⊢ p / q + b ∈ closure S
       rcases id hb with ⟨r, hr, s, hs, rfl⟩
+      -- ⊢ p / q + r / s ∈ closure S
       by_cases hq0 : q = 0
+      -- ⊢ p / q + r / s ∈ closure S
       · rwa [hq0, div_zero, zero_add]
+        -- 🎉 no goals
       by_cases hs0 : s = 0
+      -- ⊢ p / q + r / s ∈ closure S
       · rwa [hs0, div_zero, add_zero]
+        -- 🎉 no goals
       exact ⟨p * s + q * r,
         IsAddSubmonoid.add_mem Ring.closure.isSubring.toIsAddSubgroup.toIsAddSubmonoid
           (Ring.closure.isSubring.toIsSubmonoid.mul_mem hp hs)
@@ -116,10 +136,14 @@ theorem closure.isSubfield : IsSubfield (closure S) :=
     zero_mem := ring_closure_subset Ring.closure.isSubring.toIsAddSubgroup.toIsAddSubmonoid.zero_mem
     neg_mem := by
       rintro _ ⟨p, hp, q, hq, rfl⟩
+      -- ⊢ -(p / q) ∈ closure S
       exact ⟨-p, Ring.closure.isSubring.toIsAddSubgroup.neg_mem hp, q, hq, neg_div q p⟩
+      -- 🎉 no goals
     inv_mem := by
       rintro _ ⟨p, hp, q, hq, rfl⟩
+      -- ⊢ (p / q)⁻¹ ∈ closure S
       exact ⟨q, hq, p, hp, (inv_div _ _).symm⟩ }
+      -- 🎉 no goals
 #align field.closure.is_subfield Field.closure.isSubfield
 
 theorem mem_closure {a : F} (ha : a ∈ S) : a ∈ closure S :=
@@ -132,6 +156,7 @@ theorem subset_closure : S ⊆ closure S :=
 
 theorem closure_subset {T : Set F} (hT : IsSubfield T) (H : S ⊆ T) : closure S ⊆ T := by
   rintro _ ⟨p, hp, q, hq, hq0, rfl⟩
+  -- ⊢ p / q ∈ T
   exact hT.div_mem (Ring.closure_subset hT.toIsSubring H hp)
     (Ring.closure_subset hT.toIsSubring H hq)
 #align field.closure_subset Field.closure_subset

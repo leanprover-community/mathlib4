@@ -27,9 +27,13 @@ variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
+  -- ⊢ ∀ (m : A), m ∈ ↑toSubmodule S → ∀ (n : A), n ∈ ↑toSubmodule T → m * n ∈ ↑toS …
   intro y hy z hz
+  -- ⊢ y * z ∈ ↑toSubmodule (S ⊔ T)
   show y * z ∈ S ⊔ T
+  -- ⊢ y * z ∈ S ⊔ T
   exact mul_mem (Algebra.mem_sup_left hy) (Algebra.mem_sup_right hz)
+  -- 🎉 no goals
 #align subalgebra.mul_to_submodule_le Subalgebra.mul_toSubmodule_le
 
 /-- As submodules, subalgebras are idempotent. -/
@@ -37,11 +41,17 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
 theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule S)
     = (Subalgebra.toSubmodule S) := by
   apply le_antisymm
+  -- ⊢ ↑toSubmodule S * ↑toSubmodule S ≤ ↑toSubmodule S
   · refine' (mul_toSubmodule_le _ _).trans_eq _
+    -- ⊢ ↑toSubmodule (S ⊔ S) = ↑toSubmodule S
     rw [sup_idem]
+    -- 🎉 no goals
   · intro x hx1
+    -- ⊢ x ∈ ↑toSubmodule S * ↑toSubmodule S
     rw [← mul_one x]
+    -- ⊢ x * 1 ∈ ↑toSubmodule S * ↑toSubmodule S
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
+    -- 🎉 no goals
 #align subalgebra.mul_self Subalgebra.mul_self
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
@@ -49,18 +59,28 @@ theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
         = Subalgebra.toSubmodule (S ⊔ T) := by
   refine' le_antisymm (mul_toSubmodule_le _ _) _
+  -- ⊢ ↑toSubmodule (S ⊔ T) ≤ ↑toSubmodule S * ↑toSubmodule T
   rintro x (hx : x ∈ Algebra.adjoin R (S ∪ T : Set A))
+  -- ⊢ x ∈ ↑toSubmodule S * ↑toSubmodule T
   refine'
     Algebra.adjoin_induction hx (fun x hx => _) (fun r => _) (fun _ _ => Submodule.add_mem _)
       fun x y hx hy => _
   · cases' hx with hxS hxT
+    -- ⊢ x ∈ ↑toSubmodule S * ↑toSubmodule T
     · rw [← mul_one x]
+      -- ⊢ x * 1 ∈ ↑toSubmodule S * ↑toSubmodule T
       exact Submodule.mul_mem_mul hxS (show (1 : A) ∈ T from one_mem T)
+      -- 🎉 no goals
     · rw [← one_mul x]
+      -- ⊢ 1 * x ∈ ↑toSubmodule S * ↑toSubmodule T
       exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) hxT
+      -- 🎉 no goals
   · rw [← one_mul (algebraMap _ _ _)]
+    -- ⊢ 1 * ↑(algebraMap R A) r ∈ ↑toSubmodule S * ↑toSubmodule T
     exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem T _)
+    -- 🎉 no goals
   have := Submodule.mul_mem_mul hx hy
+  -- ⊢ x * y ∈ ↑toSubmodule S * ↑toSubmodule T
   rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S),
     mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
 #align subalgebra.mul_to_submodule Subalgebra.mul_toSubmodule

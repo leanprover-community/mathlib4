@@ -28,13 +28,17 @@ namespace ULift
 
 instance mulZeroClass [MulZeroClass α] : MulZeroClass (ULift α) :=
   { zero := (0 : ULift α), mul := (· * ·), zero_mul := fun _ => (Equiv.ulift).injective (by simp),
+                                                                                            -- 🎉 no goals
     mul_zero := fun _ => (Equiv.ulift).injective (by simp) }
+                                                     -- 🎉 no goals
 #align ulift.mul_zero_class ULift.mulZeroClass
 
 instance distrib [Distrib α] : Distrib (ULift α) :=
   { add := (· + ·), mul := (· * ·),
     left_distrib := fun _ _ _ => (Equiv.ulift).injective (by simp [left_distrib]),
+                                                             -- 🎉 no goals
     right_distrib := fun _ _ _ => (Equiv.ulift).injective (by simp [right_distrib]) }
+                                                              -- 🎉 no goals
 #align ulift.distrib ULift.distrib
 
 instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :

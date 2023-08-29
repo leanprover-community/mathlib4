@@ -122,6 +122,7 @@ theorem principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F :=
 #align order.pfilter.mem_principal Order.PFilter.mem_principal
 
 theorem principal_le_principal_iff {p q : P} : principal q ≤ principal p ↔ p ≤ q := by simp
+                                                                                       -- 🎉 no goals
 #align order.pfilter.principal_le_principal_iff Order.PFilter.principal_le_principal_iff
 
 -- defeq abuse
@@ -175,7 +176,9 @@ theorem sInf_gc :
     GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
   fun x F => by
   simp
+  -- ⊢ ↑toDual (principal x) ≤ F ↔ ∀ (b : P), b ∈ ↑ofDual F → x ≤ b
   rfl
+  -- 🎉 no goals
 #align order.pfilter.Inf_gc Order.PFilter.sInf_gc
 
 /-- If a poset `P` admits arbitrary `Inf`s, then `principal` and `Inf` form a Galois coinsertion. -/

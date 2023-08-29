@@ -63,7 +63,9 @@ deriving instance LargeCategory for SemiRingCat
 
 instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
+  -- ⊢ ConcreteCategory (Bundled Semiring)
   infer_instance
+  -- 🎉 no goals
 
 instance : CoeSort SemiRingCat (Type*) where
   coe X := X.α
@@ -157,9 +159,13 @@ def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) 
 instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
   reflects {X Y} f _ := by
     let i := asIso ((forget SemiRingCat).map f)
+    -- ⊢ IsIso f
     let ff : X →+* Y := f
+    -- ⊢ IsIso f
     let e : X ≃+* Y := { ff, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    -- 🎉 no goals
 
 end SemiRingCat
 
@@ -181,7 +187,9 @@ deriving instance LargeCategory for RingCat
 
 instance : ConcreteCategory RingCat := by
   dsimp [RingCat]
+  -- ⊢ ConcreteCategory (Bundled Ring)
   infer_instance
+  -- 🎉 no goals
 
 instance : CoeSort RingCat (Type*) where
   coe X := X.α
@@ -282,7 +290,9 @@ deriving instance LargeCategory for CommSemiRingCat
 
 instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
+  -- ⊢ ConcreteCategory (Bundled CommSemiring)
   infer_instance
+  -- 🎉 no goals
 
 instance : CoeSort CommSemiRingCat (Type*) where
   coe X := X.α
@@ -363,6 +373,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
   HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun R => rfl)
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
+                                                                     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
@@ -378,9 +389,13 @@ def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e :
 instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommSemiRingCat).map f)
+    -- ⊢ IsIso f
     let ff : X →+* Y := f
+    -- ⊢ IsIso f
     let e : X ≃+* Y := { ff, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    -- 🎉 no goals
 
 end CommSemiRingCat
 
@@ -401,7 +416,9 @@ deriving instance LargeCategory for CommRingCat
 
 instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
+  -- ⊢ ConcreteCategory (Bundled CommRing)
   infer_instance
+  -- 🎉 no goals
 
 instance : CoeSort CommRingCat (Type*) where
   coe X := X.α
@@ -477,6 +494,7 @@ set_option linter.uppercaseLean3 false in
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
   HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
     (fun {R₁ R₂} f => f) (by rfl)
+                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
@@ -486,6 +504,7 @@ end CommRingCat
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 example {R S : CommRingCat} (i : R ⟶ S) (r : R) (h : r = 0) : i r = 0 := by simp [h]
+                                                                            -- 🎉 no goals
 
 namespace RingEquiv
 
@@ -520,7 +539,11 @@ def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
   invFun := i.inv
   -- Porting note: All these proofs were much easier in lean3.
   left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
+                                                     -- ⊢ ↑(𝟙 X) x = x
+                                                                        -- 🎉 no goals
   right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
+                                                      -- ⊢ ↑(𝟙 Y) x = x
+                                                                         -- 🎉 no goals
   map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
   map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
 set_option linter.uppercaseLean3 false in
@@ -533,7 +556,11 @@ def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
   invFun := i.inv
   -- Porting note: All these proofs were much easier in lean3.
   left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
+                                                     -- ⊢ ↑(𝟙 X) x = x
+                                                                        -- 🎉 no goals
   right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
+                                                      -- ⊢ ↑(𝟙 Y) x = x
+                                                                         -- 🎉 no goals
   map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
   map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
 set_option linter.uppercaseLean3 false in
@@ -544,7 +571,9 @@ set_option linter.uppercaseLean3 false in
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
   ext
+  -- ⊢ ↑(RingEquiv.toRingHom (commRingCatIsoToRingEquiv i)) x✝ = ↑i.hom x✝
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
@@ -553,7 +582,9 @@ set_option linter.uppercaseLean3 false in
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
+  -- ⊢ ↑(RingEquiv.toRingHom (RingEquiv.symm (commRingCatIsoToRingEquiv i))) x✝ = ↑ …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_symm_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_symm_toRingHom
 
@@ -581,18 +612,26 @@ set_option linter.uppercaseLean3 false in
 instance RingCat.forget_reflects_isos : ReflectsIsomorphisms (forget RingCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget RingCat).map f)
+    -- ⊢ IsIso f
     let ff : X →+* Y := f
+    -- ⊢ IsIso f
     let e : X ≃+* Y := { ff, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toRingCatIso).1⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
 instance CommRingCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommRingCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommRingCat).map f)
+    -- ⊢ IsIso f
     let ff : X →+* Y := f
+    -- ⊢ IsIso f
     let e : X ≃+* Y := { ff, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toCommRingCatIso).1⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_reflects_isos CommRingCat.forget_reflects_isos
 
@@ -615,3 +654,4 @@ set_option linter.uppercaseLean3 false in
 attribute [local instance] reflectsIsomorphisms_forget₂
 
 example : ReflectsIsomorphisms (forget₂ RingCat AddCommGroupCat) := by infer_instance
+                                                                       -- 🎉 no goals

@@ -134,9 +134,11 @@ section
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {X' X : C} {Y Y' : D}
 
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
+                                                                            -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_id CategoryTheory.Adjunction.homEquiv_id
 
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
+                                                                                          -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_symm_id CategoryTheory.Adjunction.homEquiv_symm_id
 
 /-
@@ -148,6 +150,7 @@ valued
 theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
   rw [homEquiv_counit, F.map_comp, assoc, adj.homEquiv_counit.symm]
+  -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_naturality_left_symm CategoryTheory.Adjunction.homEquiv_naturality_left_symm
 
 -- Porting note: Same as above
@@ -155,7 +158,9 @@ theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]
+  -- ⊢ F.map f ≫ g = ↑(homEquiv adj X' Y).symm (f ≫ ↑(homEquiv adj X Y) g)
   simp only [Equiv.symm_apply_apply,eq_self_iff_true,homEquiv_naturality_left_symm]
+  -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_naturality_left CategoryTheory.Adjunction.homEquiv_naturality_left
 
 -- Porting note: Same as above
@@ -163,6 +168,7 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
   rw [homEquiv_unit, G.map_comp, ← assoc, ← homEquiv_unit]
+  -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_naturality_right CategoryTheory.Adjunction.homEquiv_naturality_right
 
 -- Porting note: Same as above
@@ -170,21 +176,31 @@ theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]
+  -- ⊢ f ≫ G.map g = ↑(homEquiv adj X Y') (↑(homEquiv adj X Y).symm f ≫ g)
   simp only [homEquiv_naturality_right,eq_self_iff_true,Equiv.apply_symm_apply]
+  -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.homEquiv_naturality_right_symm
 
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
   ext; dsimp
+  -- ⊢ NatTrans.app (whiskerRight adj.unit F ≫ whiskerLeft F adj.counit) x✝ = NatTr …
+       -- ⊢ F.map (NatTrans.app adj.unit x✝) ≫ NatTrans.app adj.counit (F.obj x✝) = 𝟙 (F …
   erw [← adj.homEquiv_counit, Equiv.symm_apply_eq, adj.homEquiv_unit]
+  -- ⊢ NatTrans.app adj.unit x✝ = NatTrans.app adj.unit x✝ ≫ G.map (𝟙 (F.obj x✝))
   simp
+  -- 🎉 no goals
 #align category_theory.adjunction.left_triangle CategoryTheory.Adjunction.left_triangle
 
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; dsimp
+  -- ⊢ NatTrans.app (whiskerLeft G adj.unit ≫ whiskerRight adj.counit G) x✝ = NatTr …
+       -- ⊢ NatTrans.app adj.unit (G.obj x✝) ≫ G.map (NatTrans.app adj.counit x✝) = 𝟙 (G …
   erw [← adj.homEquiv_unit, ← Equiv.eq_symm_apply, adj.homEquiv_counit]
+  -- ⊢ NatTrans.app adj.counit x✝ = F.map (𝟙 (G.obj x✝)) ≫ NatTrans.app adj.counit x✝
   simp
+  -- 🎉 no goals
 #align category_theory.adjunction.right_triangle CategoryTheory.Adjunction.right_triangle
 
 @[reassoc (attr := simp)]
@@ -215,18 +231,26 @@ theorem homEquiv_apply_eq {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     adj.homEquiv A B f = g ↔ f = (adj.homEquiv A B).symm g :=
   ⟨fun h => by
     cases h
+    -- ⊢ f = ↑(homEquiv adj A B).symm (↑(homEquiv adj A B) f)
     simp, fun h => by
+    -- 🎉 no goals
     cases h
+    -- ⊢ ↑(homEquiv adj A B) (↑(homEquiv adj A B).symm g) = g
     simp⟩
+    -- 🎉 no goals
 #align category_theory.adjunction.hom_equiv_apply_eq CategoryTheory.Adjunction.homEquiv_apply_eq
 
 theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   ⟨fun h => by
     cases h
+    -- ⊢ ↑(homEquiv adj A B).symm (↑(homEquiv adj A B) f) = f
     simp, fun h => by
+    -- 🎉 no goals
     cases h
+    -- ⊢ g = ↑(homEquiv adj A B) (↑(homEquiv adj A B).symm g)
     simp⟩
+    -- 🎉 no goals
 #align category_theory.adjunction.eq_hom_equiv_apply CategoryTheory.Adjunction.eq_homEquiv_apply
 
 end
@@ -277,22 +301,30 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : CoreHomEquiv F G) {X' X : C} {Y Y' :
 theorem homEquiv_naturality_left_aux (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' (F.obj X)) (F.map f) ≫ G.map g = f ≫ (adj.homEquiv X Y) g := by
   rw [← homEquiv_naturality_right, ← Equiv.eq_symm_apply]; simp
+  -- ⊢ F.map f ≫ g = ↑(homEquiv adj X' Y).symm (f ≫ ↑(homEquiv adj X Y) g)
+                                                           -- 🎉 no goals
 
 -- @[simp] -- Porting note: LHS simplifies, added aux lemma above
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]; simp
+  -- ⊢ F.map f ≫ g = ↑(homEquiv adj X' Y).symm (f ≫ ↑(homEquiv adj X Y) g)
+                              -- 🎉 no goals
 #align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_left CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_left
 
 @[simp]
 theorem homEquiv_naturality_right_symm_aux (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     F.map f ≫ (adj.homEquiv (G.obj Y) Y').symm (G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [← homEquiv_naturality_left_symm, Equiv.symm_apply_eq]; simp
+  -- ⊢ f ≫ G.map g = ↑(homEquiv adj X Y') (↑(homEquiv adj X Y).symm f ≫ g)
+                                                             -- 🎉 no goals
 
 -- @[simp] -- Porting note: LHS simplifies, added aux lemma above
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]; simp
+  -- ⊢ f ≫ G.map g = ↑(homEquiv adj X Y') (↑(homEquiv adj X Y).symm f ≫ g)
+                            -- 🎉 no goals
 #align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_right_symm
 
 end CoreHomEquiv
@@ -344,16 +376,28 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
       { app := fun X => (adj.homEquiv X (F.obj X)) (𝟙 (F.obj X))
         naturality := by
           intros
+          -- ⊢ (𝟭 C).map f✝ ≫ (fun X => ↑(CoreHomEquiv.homEquiv adj X (F.obj X)) (𝟙 (F.obj  …
           erw [← adj.homEquiv_naturality_left, ← adj.homEquiv_naturality_right]
+          -- ⊢ ↑(CoreHomEquiv.homEquiv adj ((𝟭 C).obj X✝) (F.obj Y✝)) (F.map ((𝟭 C).map f✝) …
           dsimp; simp }
+          -- ⊢ ↑(CoreHomEquiv.homEquiv adj X✝ (F.obj Y✝)) (F.map f✝ ≫ 𝟙 (F.obj Y✝)) = ↑(Cor …
+                 -- 🎉 no goals
     counit :=
       { app := fun Y => (adj.homEquiv _ _).invFun (𝟙 (G.obj Y))
         naturality := by
           intros
+          -- ⊢ (G ⋙ F).map f✝ ≫ (fun Y => Equiv.invFun (CoreHomEquiv.homEquiv adj (G.obj Y) …
           erw [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm]
+          -- ⊢ ↑(CoreHomEquiv.homEquiv adj (G.obj X✝) ((𝟭 D).obj Y✝)).symm (G.map f✝ ≫ 𝟙 (G …
           dsimp; simp }
+          -- ⊢ ↑(CoreHomEquiv.homEquiv adj (G.obj X✝) Y✝).symm (G.map f✝ ≫ 𝟙 (G.obj Y✝)) =  …
+                 -- 🎉 no goals
     homEquiv_unit := @fun X Y f => by erw [← adj.homEquiv_naturality_right]; simp
+                                      -- ⊢ ↑(CoreHomEquiv.homEquiv adj X Y) f = ↑(CoreHomEquiv.homEquiv adj ((𝟭 C).obj  …
+                                                                             -- 🎉 no goals
     homEquiv_counit := @fun X Y f => by erw [← adj.homEquiv_naturality_left_symm]; simp
+                                        -- ⊢ ↑(CoreHomEquiv.homEquiv adj X Y).symm f = ↑(CoreHomEquiv.homEquiv adj X ((𝟭  …
+                                                                                   -- 🎉 no goals
   }
 #align category_theory.adjunction.mk_of_hom_equiv CategoryTheory.Adjunction.mkOfHomEquiv
 
@@ -368,20 +412,34 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
         invFun := fun g => F.map g ≫ adj.counit.app Y
         left_inv := fun f => by
           change F.map (_ ≫ _) ≫ _ = _
+          -- ⊢ F.map (NatTrans.app adj.unit X ≫ G.map f) ≫ NatTrans.app adj.counit Y = f
           rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
+          -- ⊢ (F.map (NatTrans.app adj.unit X) ≫ NatTrans.app adj.counit (F.obj X)) ≫ (𝟭 D …
           convert id_comp f
+          -- ⊢ F.map (NatTrans.app adj.unit X) ≫ NatTrans.app adj.counit (F.obj X) = 𝟙 (F.o …
           have t := congrArg (fun (s : NatTrans (𝟭 C ⋙ F) (F ⋙ 𝟭 D)) => s.app X) adj.left_triangle
+          -- ⊢ F.map (NatTrans.app adj.unit X) ≫ NatTrans.app adj.counit (F.obj X) = 𝟙 (F.o …
           dsimp at t
+          -- ⊢ F.map (NatTrans.app adj.unit X) ≫ NatTrans.app adj.counit (F.obj X) = 𝟙 (F.o …
           simp only [id_comp] at t
+          -- ⊢ F.map (NatTrans.app adj.unit X) ≫ NatTrans.app adj.counit (F.obj X) = 𝟙 (F.o …
           exact t
+          -- 🎉 no goals
         right_inv := fun g => by
           change _ ≫ G.map (_ ≫ _) = _
+          -- ⊢ NatTrans.app adj.unit X ≫ G.map (F.map g ≫ NatTrans.app adj.counit Y) = g
           rw [G.map_comp, ← assoc, ← Functor.comp_map, ← adj.unit.naturality, assoc]
+          -- ⊢ (𝟭 C).map g ≫ NatTrans.app adj.unit (G.obj Y) ≫ G.map (NatTrans.app adj.coun …
           convert comp_id g
+          -- ⊢ NatTrans.app adj.unit (G.obj Y) ≫ G.map (NatTrans.app adj.counit Y) = 𝟙 (G.o …
           have t := congrArg (fun t : NatTrans (G ⋙ 𝟭 C) (𝟭 D ⋙ G) => t.app Y) adj.right_triangle
+          -- ⊢ NatTrans.app adj.unit (G.obj Y) ≫ G.map (NatTrans.app adj.counit Y) = 𝟙 (G.o …
           dsimp at t
+          -- ⊢ NatTrans.app adj.unit (G.obj Y) ≫ G.map (NatTrans.app adj.counit Y) = 𝟙 (G.o …
           simp only [id_comp] at t
+          -- ⊢ NatTrans.app adj.unit (G.obj Y) ≫ G.map (NatTrans.app adj.counit Y) = 𝟙 (G.o …
           exact t } }
+          -- 🎉 no goals
 #align category_theory.adjunction.mk_of_unit_counit CategoryTheory.Adjunction.mkOfUnitCounit
 
 /- Porting note: simpNF linter claims these are solved by simp but that
@@ -408,7 +466,9 @@ def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
   toFun f := iso.inv.app _ ≫ f
   invFun g := iso.hom.app _ ≫ g
   left_inv f := by simp
+                   -- 🎉 no goals
   right_inv g := by simp
+                    -- 🎉 no goals
 #align category_theory.adjunction.equiv_homset_left_of_nat_iso CategoryTheory.Adjunction.equivHomsetLeftOfNatIso
 
 /-- If G and H are naturally isomorphic functors, establish an equivalence of hom-sets. -/
@@ -419,7 +479,9 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   toFun f := f ≫ iso.hom.app _
   invFun g := g ≫ iso.inv.app _
   left_inv f := by simp
+                   -- 🎉 no goals
   right_inv g := by simp
+                    -- 🎉 no goals
 #align category_theory.adjunction.equiv_homset_right_of_nat_iso CategoryTheory.Adjunction.equivHomsetRightOfNatIso
 
 /-- Transport an adjunction along a natural isomorphism on the left. -/
@@ -497,6 +559,9 @@ variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
 private theorem he' {X Y Y'} (f g) : (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
   intros; rw [Equiv.symm_apply_eq, he]; simp
+  -- ⊢ ↑(e X Y').symm (f ≫ G.map g) = ↑(e X Y).symm f ≫ g
+          -- ⊢ f ≫ G.map g = ↑(e X Y) (↑(e X Y).symm f) ≫ G.map g
+                                        -- 🎉 no goals
 -- #align category_theory.adjunction.he' category_theory.adjunction.he'
 
 /-- Construct a left adjoint functor to `G`, given the functor's value on objects `F_obj` and
@@ -509,10 +574,12 @@ def leftAdjointOfEquiv : C ⥤ D where
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
   map_comp := fun f f' => by
     rw [Equiv.symm_apply_eq, he, Equiv.apply_symm_apply]
+    -- ⊢ (f ≫ f') ≫ ↑(e Z✝ (F_obj Z✝)) (𝟙 (F_obj Z✝)) = (f ≫ ↑(e Y✝ (F_obj Y✝)) (𝟙 (F …
     conv =>
       rhs
       rw [assoc, ← he, id_comp, Equiv.apply_symm_apply]
     simp
+    -- 🎉 no goals
 #align category_theory.adjunction.left_adjoint_of_equiv CategoryTheory.Adjunction.leftAdjointOfEquiv
 
 /-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
@@ -523,11 +590,17 @@ def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
     { homEquiv := e
       homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
         have := @he' C _ D _ G F_obj e he
+        -- ⊢ ↑(e X' Y).symm (f ≫ g) = (leftAdjointOfEquiv e he).map f ≫ ↑(e X Y).symm g
         erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
+        -- ⊢ ↑(e X' Y) (↑(e X' Y).symm (f ≫ g)) = ↑(e X' Y) (↑(e X' Y).symm ((f ≫ ↑(e X ( …
         simp [(he X' (F_obj X) Y (e X Y |>.symm g) (leftAdjointOfEquiv e he |>.map f)).symm]
+        -- ⊢ f ≫ g = f ≫ ↑(e X (F_obj X)) (𝟙 (F_obj X)) ≫ G.map (↑(e X Y).symm g)
         congr
+        -- ⊢ g = ↑(e X (F_obj X)) (𝟙 (F_obj X)) ≫ G.map (↑(e X Y).symm g)
         rw [← he]
+        -- ⊢ g = ↑(e X Y) (𝟙 (F_obj X) ≫ ↑(e X Y).symm g)
         simp
+        -- 🎉 no goals
     }
 #align category_theory.adjunction.adjunction_of_equiv_left CategoryTheory.Adjunction.adjunctionOfEquivLeft
 
@@ -544,6 +617,9 @@ variable (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
 
 private theorem he'' {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
   intros; rw [Equiv.eq_symm_apply, he]; simp
+  -- ⊢ F.map f ≫ ↑(e X Y).symm g = ↑(e X' Y).symm (f ≫ g)
+          -- ⊢ f ≫ ↑(e X Y) (↑(e X Y).symm g) = f ≫ g
+                                        -- 🎉 no goals
 -- #align category_theory.adjunction.he' category_theory.adjunction.he'
 
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and
@@ -556,10 +632,12 @@ def rightAdjointOfEquiv : D ⥤ C where
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
   map_comp := fun {Y} {Y'} {Y''} g g' => by
     rw [← Equiv.eq_symm_apply, ← he'' e he, Equiv.symm_apply_apply]
+    -- ⊢ ↑(e (G_obj Y) Y).symm (𝟙 (G_obj Y)) ≫ g ≫ g' = F.map ({ obj := G_obj, map := …
     conv =>
       rhs
       rw [← assoc, he'' e he, comp_id, Equiv.symm_apply_apply]
     simp
+    -- 🎉 no goals
 #align category_theory.adjunction.right_adjoint_of_equiv CategoryTheory.Adjunction.rightAdjointOfEquiv
 
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
@@ -570,9 +648,16 @@ def adjunctionOfEquivRight : F ⊣ (rightAdjointOfEquiv e he) :=
     { homEquiv := e
       homEquiv_naturality_left_symm := by
         intro X X' Y f g; rw [Equiv.symm_apply_eq]; dsimp; rw [he]; simp
+        -- ⊢ ↑(e X Y).symm (f ≫ g) = F.map f ≫ ↑(e X' Y).symm g
+                          -- ⊢ f ≫ g = ↑(e X Y) (F.map f ≫ ↑(e X' Y).symm g)
+                                                    -- ⊢ f ≫ g = ↑(e X Y) (F.map f ≫ ↑(e X' Y).symm g)
+                                                           -- ⊢ f ≫ g = f ≫ ↑(e X' Y) (↑(e X' Y).symm g)
+                                                                    -- 🎉 no goals
       homEquiv_naturality_right := by
         intro X Y Y' g h
+        -- ⊢ ↑(e X Y') (g ≫ h) = ↑(e X Y) g ≫ (rightAdjointOfEquiv e he).map h
         erw [← he, Equiv.apply_eq_iff_eq, ← assoc, he'' e he, comp_id, Equiv.symm_apply_apply] }
+        -- 🎉 no goals
 #align category_theory.adjunction.adjunction_of_equiv_right CategoryTheory.Adjunction.adjunctionOfEquivRight
 
 end ConstructRight
@@ -614,13 +699,21 @@ def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by
       ext
+      -- ⊢ NatTrans.app (whiskerRight (unit e) e.functor ≫ (Functor.associator e.functo …
       dsimp
+      -- ⊢ e.functor.map (NatTrans.app (unit e) x✝) ≫ 𝟙 (e.functor.obj (e.inverse.obj ( …
       simp only [id_comp]
+      -- ⊢ e.functor.map (NatTrans.app (unit e) x✝) ≫ NatTrans.app (counit e) (e.functo …
       exact e.functor_unit_comp _, by
+      -- 🎉 no goals
       ext
+      -- ⊢ NatTrans.app (whiskerLeft e.inverse (unit e) ≫ (Functor.associator e.inverse …
       dsimp
+      -- ⊢ NatTrans.app (unit e) (e.inverse.obj x✝) ≫ 𝟙 (e.inverse.obj (e.functor.obj ( …
       simp only [id_comp]
+      -- ⊢ NatTrans.app (unit e) (e.inverse.obj x✝) ≫ e.inverse.map (NatTrans.app (coun …
       exact e.unit_inverse_comp _⟩
+      -- 🎉 no goals
 #align category_theory.equivalence.to_adjunction CategoryTheory.Equivalence.toAdjunction
 
 @[simp]

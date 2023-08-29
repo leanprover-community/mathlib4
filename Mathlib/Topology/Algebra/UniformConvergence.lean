@@ -148,10 +148,14 @@ protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : �
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, f x ∈ b i } := by
   have := h.comap fun p : G × G => p.2 / p.1
+  -- ⊢ HasBasis (𝓝 1) p fun i => {f | ∀ (x : α), f x ∈ b i}
   rw [← uniformity_eq_comap_nhds_one] at this
+  -- ⊢ HasBasis (𝓝 1) p fun i => {f | ∀ (x : α), f x ∈ b i}
   convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) this
+  -- ⊢ (∀ (x : α), x✝ x ∈ b x✝¹) ↔ (1, x✝) ∈ UniformFun.gen α G ((fun p => p.snd /  …
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformFun.gen]
+  -- 🎉 no goals
 #align uniform_fun.has_basis_nhds_one_of_basis UniformFun.hasBasis_nhds_one_of_basis
 #align uniform_fun.has_basis_nhds_zero_of_basis UniformFun.hasBasis_nhds_zero_of_basis
 
@@ -183,10 +187,14 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   have := h.comap fun p : G × G => p.1 / p.2
+  -- ⊢ HasBasis (𝓝 1) (fun Si => Si.fst ∈ 𝔖 ∧ p Si.snd) fun Si => {f | ∀ (x : α), x …
   rw [← uniformity_eq_comap_nhds_one_swapped] at this
+  -- ⊢ HasBasis (𝓝 1) (fun Si => Si.fst ∈ 𝔖 ∧ p Si.snd) fun Si => {f | ∀ (x : α), x …
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
+  -- ⊢ (∀ (x : α), x ∈ x✝¹.fst → x✝ x ∈ b x✝¹.snd) ↔ (x✝, 1) ∈ UniformOnFun.gen 𝔖 x …
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformOnFun.gen]
+  -- 🎉 no goals
 #align uniform_on_fun.has_basis_nhds_one_of_basis UniformOnFun.hasBasis_nhds_one_of_basis
 #align uniform_on_fun.has_basis_nhds_zero_of_basis UniformOnFun.hasBasis_nhds_zero_of_basis
 
@@ -228,38 +236,64 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
     exact (UniformOnFun.hasBasis_nhds_zero 𝔖 h𝔖₁ h𝔖₂).comap φ
   refine' ContinuousSMul.of_basis_zero this _ _ _
   · rintro ⟨S, V⟩ ⟨hS, hV⟩
+    -- ⊢ ∃ V_1, V_1 ∈ 𝓝 0 ∧ ∃ j x, V_1 • ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.s …
     have : Tendsto (fun kx : 𝕜 × E => kx.1 • kx.2) (𝓝 (0, 0)) (𝓝 <| (0 : 𝕜) • (0 : E)) :=
       continuous_smul.tendsto (0 : 𝕜 × E)
     rw [zero_smul, nhds_prod_eq] at this
+    -- ⊢ ∃ V_1, V_1 ∈ 𝓝 0 ∧ ∃ j x, V_1 • ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.s …
     have := this hV
+    -- ⊢ ∃ V_1, V_1 ∈ 𝓝 0 ∧ ∃ j x, V_1 • ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.s …
     rw [mem_map, mem_prod_iff] at this
+    -- ⊢ ∃ V_1, V_1 ∈ 𝓝 0 ∧ ∃ j x, V_1 • ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.s …
     rcases this with ⟨U, hU, W, hW, hUW⟩
+    -- ⊢ ∃ V_1, V_1 ∈ 𝓝 0 ∧ ∃ j x, V_1 • ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.s …
     refine' ⟨U, hU, ⟨S, W⟩, ⟨hS, hW⟩, _⟩
+    -- ⊢ U • ↑φ ⁻¹' {f | ∀ (x : α), x ∈ (S, W).fst → f x ∈ (S, W).snd} ⊆ ↑φ ⁻¹' {f |  …
     rw [Set.smul_subset_iff]
+    -- ⊢ ∀ (a : 𝕜), a ∈ U → ∀ (b : H), b ∈ ↑φ ⁻¹' {f | ∀ (x : α), x ∈ (S, W).fst → f  …
     intro a ha u hu x hx
+    -- ⊢ ↑φ (a • u) x ∈ (S, V).snd
     rw [SMulHomClass.map_smul]
+    -- ⊢ (a • ↑φ u) x ∈ (S, V).snd
     exact hUW (⟨ha, hu x hx⟩ : (a, φ u x) ∈ U ×ˢ W)
+    -- 🎉 no goals
   · rintro a ⟨S, V⟩ ⟨hS, hV⟩
+    -- ⊢ ∃ j x, ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.snd} ⊆ (fun x => a • x) ⁻¹ …
     have : Tendsto (fun x : E => a • x) (𝓝 0) (𝓝 <| a • (0 : E)) := tendsto_id.const_smul a
+    -- ⊢ ∃ j x, ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.snd} ⊆ (fun x => a • x) ⁻¹ …
     rw [smul_zero] at this
+    -- ⊢ ∃ j x, ↑φ ⁻¹' {f | ∀ (x : α), x ∈ j.fst → f x ∈ j.snd} ⊆ (fun x => a • x) ⁻¹ …
     refine' ⟨⟨S, (a • ·) ⁻¹' V⟩, ⟨hS, this hV⟩, fun f hf x hx => _⟩
+    -- ⊢ ↑φ ((fun x => a • x) f) x ∈ (S, V).snd
     rw [SMulHomClass.map_smul]
+    -- ⊢ (a • ↑φ f) x ∈ (S, V).snd
     exact hf x hx
+    -- 🎉 no goals
   · rintro u ⟨S, V⟩ ⟨hS, hV⟩
+    -- ⊢ ∀ᶠ (x : 𝕜) in 𝓝 0, x • u ∈ ↑φ ⁻¹' {f | ∀ (x : α), x ∈ (S, V).fst → f x ∈ (S, …
     rcases h u S hS hV with ⟨r, hrpos, hr⟩
+    -- ⊢ ∀ᶠ (x : 𝕜) in 𝓝 0, x • u ∈ ↑φ ⁻¹' {f | ∀ (x : α), x ∈ (S, V).fst → f x ∈ (S, …
     rw [Metric.eventually_nhds_iff_ball]
+    -- ⊢ ∃ ε, ε > 0 ∧ ∀ (y : 𝕜), y ∈ Metric.ball 0 ε → y • u ∈ ↑φ ⁻¹' {f | ∀ (x : α), …
     refine' ⟨r⁻¹, inv_pos.mpr hrpos, fun a ha x hx => _⟩
+    -- ⊢ ↑φ (a • u) x ∈ (S, V).snd
     by_cases ha0 : a = 0
+    -- ⊢ ↑φ (a • u) x ∈ (S, V).snd
     · rw [ha0]
+      -- ⊢ ↑φ (0 • u) x ∈ (S, V).snd
       simpa using mem_of_mem_nhds hV
+      -- 🎉 no goals
     · rw [mem_ball_zero_iff] at ha
+      -- ⊢ ↑φ (a • u) x ∈ (S, V).snd
       rw [SMulHomClass.map_smul, Pi.smul_apply]
+      -- ⊢ a • ↑φ u x ∈ (S, V).snd
       have : φ u x ∈ a⁻¹ • V := by
         have ha0 : 0 < ‖a‖ := norm_pos_iff.mpr ha0
         refine' (hr a⁻¹ _) (Set.mem_image_of_mem (φ u) hx)
         rw [norm_inv, le_inv hrpos ha0]
         exact ha.le
       rwa [Set.mem_inv_smul_set_iff₀ ha0] at this
+      -- 🎉 no goals
 #align uniform_on_fun.has_continuous_smul_induced_of_image_bounded UniformOnFun.continuousSMul_induced_of_image_bounded
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any

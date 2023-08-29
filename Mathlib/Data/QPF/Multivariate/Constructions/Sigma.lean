@@ -74,8 +74,13 @@ instance : MvQPF (Sigma F) where
   abs {α} := @Sigma.abs _ _ F _ _ α
   repr {α} := @Sigma.repr _ _ F _ _ α
   abs_repr := by rintro α ⟨x, f⟩; simp only [Sigma.abs, Sigma.repr, Sigma.eta, abs_repr]
+                 -- ⊢ (fun {α} => Sigma.abs F) ((fun {α} => Sigma.repr F) { fst := x, snd := f })  …
+                                  -- 🎉 no goals
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Sigma.abs, MvPFunctor.map_eq]
+                -- ⊢ (fun {α} => Sigma.abs F) (f <$$> { fst := x, snd := g }) = f <$$> (fun {α} = …
+                                     -- ⊢ { fst := x.fst, snd := abs { fst := x.snd, snd := f ⊚ g } } = f <$$> { fst : …
                 simp only [(· <$$> ·), ← abs_map, ← MvPFunctor.map_eq]
+                -- 🎉 no goals
 
 end Sigma
 
@@ -106,7 +111,12 @@ instance : MvQPF (Pi F) where
   abs := @Pi.abs _ _ F _ _
   repr := @Pi.repr _ _ F _ _
   abs_repr := by rintro α f; simp only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
+                 -- ⊢ Pi.abs F (Pi.repr F f) = f
+                             -- 🎉 no goals
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Pi.abs, (· <$$> ·), ← abs_map]; rfl
+                -- ⊢ Pi.abs F (f <$$> { fst := x, snd := g }) = f <$$> Pi.abs F { fst := x, snd : …
+                                     -- ⊢ (match MvPFunctor.map (Pi.P F) f { fst := x, snd := g } with
+                                                                                -- 🎉 no goals
 
 end Pi
 

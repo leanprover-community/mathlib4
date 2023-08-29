@@ -44,7 +44,9 @@ variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
 @[to_additive]
 theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := by
   rintro _ y hxy ⟨x, hx, rfl⟩
+  -- ⊢ y ∈ a • s
   exact mem_smul_set_iff_inv_smul_mem.2 (hs (le_inv_mul_iff_mul_le.2 hxy) hx)
+  -- 🎉 no goals
 #align is_upper_set.smul IsUpperSet.smul
 #align is_upper_set.vadd IsUpperSet.vadd
 
@@ -57,21 +59,27 @@ theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
 @[to_additive]
 theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := by
   rw [← hs.upperClosure_inter_lowerClosure, smul_set_inter]
+  -- ⊢ OrdConnected (a • ↑(upperClosure s) ∩ a • ↑(lowerClosure s))
   exact (upperClosure _).upper.smul.ordConnected.inter (lowerClosure _).lower.smul.ordConnected
+  -- 🎉 no goals
 #align set.ord_connected.smul Set.OrdConnected.smul
 #align set.ord_connected.vadd Set.OrdConnected.vadd
 
 @[to_additive]
 theorem IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) := by
   rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+  -- ⊢ IsUpperSet (⋃ (a : α) (_ : a ∈ s), a • t)
   exact isUpperSet_iUnion₂ fun x _ ↦ ht.smul
+  -- 🎉 no goals
 #align is_upper_set.mul_left IsUpperSet.mul_left
 #align is_upper_set.add_left IsUpperSet.add_left
 
 @[to_additive]
 theorem IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
   rw [mul_comm]
+  -- ⊢ IsUpperSet (t * s)
   exact hs.mul_left
+  -- 🎉 no goals
 #align is_upper_set.mul_right IsUpperSet.mul_right
 #align is_upper_set.add_right IsUpperSet.add_right
 
@@ -100,14 +108,18 @@ theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ 
 @[to_additive]
 theorem IsUpperSet.div_left (ht : IsUpperSet t) : IsLowerSet (s / t) := by
   rw [div_eq_mul_inv]
+  -- ⊢ IsLowerSet (s * t⁻¹)
   exact ht.inv.mul_left
+  -- 🎉 no goals
 #align is_upper_set.div_left IsUpperSet.div_left
 #align is_upper_set.sub_left IsUpperSet.sub_left
 
 @[to_additive]
 theorem IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
   rw [div_eq_mul_inv]
+  -- ⊢ IsUpperSet (s * t⁻¹)
   exact hs.mul_right
+  -- 🎉 no goals
 #align is_upper_set.div_right IsUpperSet.div_right
 #align is_upper_set.sub_right IsUpperSet.sub_right
 
@@ -179,7 +191,9 @@ private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ left_mem_Ici).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+      -- ⊢ ⋃ (a : α) (_ : a ∈ Set.Ici 1), a • ↑s ⊆ ↑s
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
+      -- 🎉 no goals
 
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
@@ -188,7 +202,9 @@ instance : CommMonoid (UpperSet α) :=
     one_mul := one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
+      -- ⊢ 1 * s = s
       exact one_mul _ }
+      -- 🎉 no goals
 
 end UpperSet
 
@@ -242,7 +258,9 @@ private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ right_mem_Iic).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+      -- ⊢ ⋃ (a : α) (_ : a ∈ Set.Iic 1), a • ↑s ⊆ ↑s
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
+      -- 🎉 no goals
 
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
@@ -251,7 +269,9 @@ instance : CommMonoid (LowerSet α) :=
     one_mul := one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
+      -- ⊢ 1 * s = s
       exact one_mul _ }
+      -- 🎉 no goals
 
 end LowerSet
 
@@ -286,6 +306,7 @@ theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
   simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, upperClosure_iUnion, upperClosure_smul,
     UpperSet.coe_iInf₂]
   rfl
+  -- 🎉 no goals
 #align mul_upper_closure mul_upperClosure
 #align add_upper_closure add_upperClosure
 
@@ -294,20 +315,25 @@ theorem mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
   simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, lowerClosure_iUnion, lowerClosure_smul,
     LowerSet.coe_iSup₂]
   rfl
+  -- 🎉 no goals
 #align mul_lower_closure mul_lowerClosure
 #align add_lower_closure add_lowerClosure
 
 @[to_additive]
 theorem upperClosure_mul : ↑(upperClosure s) * t = upperClosure (s * t) := by
   simp_rw [mul_comm _ t]
+  -- ⊢ t * ↑(upperClosure s) = ↑(upperClosure (t * s))
   exact mul_upperClosure _ _
+  -- 🎉 no goals
 #align upper_closure_mul upperClosure_mul
 #align upper_closure_add upperClosure_add
 
 @[to_additive]
 theorem lowerClosure_mul : ↑(lowerClosure s) * t = lowerClosure (s * t) := by
   simp_rw [mul_comm _ t]
+  -- ⊢ t * ↑(lowerClosure s) = ↑(lowerClosure (t * s))
   exact mul_lowerClosure _ _
+  -- 🎉 no goals
 #align lower_closure_mul lowerClosure_mul
 #align lower_closure_add lowerClosure_add
 
@@ -315,6 +341,7 @@ theorem lowerClosure_mul : ↑(lowerClosure s) * t = lowerClosure (s * t) := by
 theorem upperClosure_mul_distrib : upperClosure (s * t) = upperClosure s * upperClosure t :=
   SetLike.coe_injective <| by
     rw [UpperSet.coe_mul, mul_upperClosure, upperClosure_mul, UpperSet.upperClosure]
+    -- 🎉 no goals
 #align upper_closure_mul_distrib upperClosure_mul_distrib
 #align upper_closure_add_distrib upperClosure_add_distrib
 
@@ -322,6 +349,7 @@ theorem upperClosure_mul_distrib : upperClosure (s * t) = upperClosure s * upper
 theorem lowerClosure_mul_distrib : lowerClosure (s * t) = lowerClosure s * lowerClosure t :=
   SetLike.coe_injective <| by
     rw [LowerSet.coe_mul, mul_lowerClosure, lowerClosure_mul, LowerSet.lowerClosure]
+    -- 🎉 no goals
 #align lower_closure_mul_distrib lowerClosure_mul_distrib
 #align lower_closure_add_distrib lowerClosure_add_distrib
 

@@ -77,7 +77,9 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     s ⊆ range (enumerateCountable h default) := fun x hx =>
   ⟨@Encodable.encode s h.toEncodable ⟨x, hx⟩, by
     letI := h.toEncodable
+    -- ⊢ enumerateCountable h default (encode { val := x, property := hx }) = x
     simp [enumerateCountable, Encodable.encodek]⟩
+    -- 🎉 no goals
 #align set.subset_range_enumerate Set.subset_range_enumerate
 
 end Enumerate
@@ -94,7 +96,9 @@ theorem countable_iff_exists_subset_range [Nonempty α] {s : Set α} :
     s.Countable ↔ ∃ f : ℕ → α, s ⊆ range f :=
   ⟨fun h => by
     inhabit α
+    -- ⊢ ∃ f, s ⊆ range f
     exact ⟨enumerateCountable h default, subset_range_enumerate _ _⟩, fun ⟨f, hsf⟩ =>
+    -- 🎉 no goals
     (countable_range f).mono hsf⟩
 #align set.countable_iff_exists_subset_range Set.countable_iff_exists_subset_range
 
@@ -121,8 +125,11 @@ theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
 theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty) :
     ∃ f : ℕ → α, s = range f := by
   rcases hc.exists_surjective hs with ⟨f, hf⟩
+  -- ⊢ ∃ f, s = range f
   refine' ⟨(↑) ∘ f, _⟩
+  -- ⊢ s = range (Subtype.val ∘ f)
   rw [hf.range_comp, Subtype.range_coe]
+  -- 🎉 no goals
 #align set.countable.exists_eq_range Set.Countable.exists_eq_range
 
 @[simp] theorem countable_empty : (∅ : Set α).Countable := to_countable _
@@ -133,8 +140,11 @@ theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonemp
 
 theorem Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' s).Countable := by
   rw [image_eq_range]
+  -- ⊢ Set.Countable (range fun x => f ↑x)
   haveI := hs.to_subtype
+  -- ⊢ Set.Countable (range fun x => f ↑x)
   apply countable_range
+  -- 🎉 no goals
 #align set.countable.image Set.Countable.image
 
 theorem MapsTo.countable_of_injOn {s : Set α} {t : Set β} {f : α → β} (hf : MapsTo f s t)
@@ -157,18 +167,31 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
     (∃ s : ℕ → α, (∀ n, p (s n)) ∧ ⨆ n, s n = ⊤) ↔
       ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
+  -- ⊢ (∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤) → ∃ S, Set.Countable S ∧ (∀ …
   · rintro ⟨s, hps, hs⟩
+    -- ⊢ ∃ S, Set.Countable S ∧ (∀ (s : α), s ∈ S → p s) ∧ sSup S = ⊤
     refine' ⟨range s, countable_range s, forall_range_iff.2 hps, _⟩
+    -- ⊢ sSup (range s) = ⊤
     rwa [sSup_range]
+    -- 🎉 no goals
   · rintro ⟨S, hSc, hps, hS⟩
+    -- ⊢ ∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤
     rcases eq_empty_or_nonempty S with (rfl | hne)
+    -- ⊢ ∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤
     · rw [sSup_empty] at hS
+      -- ⊢ ∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤
       haveI := subsingleton_of_bot_eq_top hS
+      -- ⊢ ∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤
       rcases h with ⟨x, hx⟩
+      -- ⊢ ∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
+      -- 🎉 no goals
     · rcases(Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
+      -- ⊢ ∃ s, (∀ (n : ℕ), p (s n)) ∧ ⨆ (n : ℕ), s n = ⊤
       refine' ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
+      -- ⊢ ⨆ (n : ℕ), (fun n => ↑(s n)) n = ⊤
       rwa [hs.iSup_comp, ← sSup_eq_iSup']
+      -- 🎉 no goals
 #align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable
 
 theorem exists_seq_cover_iff_countable {p : Set α → Prop} (h : ∃ s, p s) :
@@ -185,8 +208,11 @@ theorem countable_of_injective_of_countable_image {s : Set α} {f : α → β} (
 theorem countable_iUnion {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).Countable) :
     (⋃ i, t i).Countable := by
   haveI := fun a => (ht a).to_subtype
+  -- ⊢ Set.Countable (⋃ (i : ι), t i)
   rw [iUnion_eq_range_psigma]
+  -- ⊢ Set.Countable (range fun a => ↑a.snd)
   apply countable_range
+  -- 🎉 no goals
 #align set.countable_Union Set.countable_iUnion
 
 @[simp]
@@ -198,11 +224,14 @@ theorem countable_iUnion_iff [Countable ι] {t : ι → Set α} :
 theorem Countable.biUnion_iff {s : Set α} {t : ∀ a ∈ s, Set β} (hs : s.Countable) :
     (⋃ a ∈ s, t a ‹_›).Countable ↔ ∀ a (ha : a ∈ s), (t a ha).Countable := by
   haveI := hs.to_subtype
+  -- ⊢ Set.Countable (⋃ (a : α) (h : a ∈ s), t a h) ↔ ∀ (a : α) (ha : a ∈ s), Set.C …
   rw [biUnion_eq_iUnion, countable_iUnion_iff, SetCoe.forall']
+  -- 🎉 no goals
 #align set.countable.bUnion_iff Set.Countable.biUnion_iff
 
 theorem Countable.sUnion_iff {s : Set (Set α)} (hs : s.Countable) :
     (⋃₀ s).Countable ↔ ∀ a ∈ s, (a : _).Countable := by rw [sUnion_eq_biUnion, hs.biUnion_iff]
+                                                        -- 🎉 no goals
 #align set.countable.sUnion_iff Set.Countable.sUnion_iff
 
 alias ⟨_, Countable.biUnion⟩ := Countable.biUnion_iff
@@ -214,6 +243,7 @@ alias ⟨_, Countable.sUnion⟩ := Countable.sUnion_iff
 @[simp]
 theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧ t.Countable := by
   simp [union_eq_iUnion, and_comm]
+  -- 🎉 no goals
 #align set.countable_union Set.countable_union
 
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
@@ -226,6 +256,7 @@ theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countab
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by
   simp only [insert_eq, countable_union, countable_singleton, true_and_iff]
+  -- 🎉 no goals
 #align set.countable_insert Set.countable_insert
 
 protected theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (insert a s).Countable :=
@@ -257,11 +288,17 @@ theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Co
 theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by
   haveI := hs.to_subtype
+  -- ⊢ Set.Countable {t | Set.Finite t ∧ t ⊆ s}
   refine' Countable.mono _ (countable_range fun t : Finset s => Subtype.val '' (t : Set s))
+  -- ⊢ {t | Set.Finite t ∧ t ⊆ s} ⊆ range fun t => Subtype.val '' ↑t
   rintro t ⟨ht, hts⟩
+  -- ⊢ t ∈ range fun t => Subtype.val '' ↑t
   lift t to Set s using hts
+  -- ⊢ (fun x x_1 => x '' x_1) Subtype.val t ∈ range fun t => Subtype.val '' ↑t
   lift t to Finset s using ht.of_finite_image (Subtype.val_injective.injOn _)
+  -- ⊢ (fun x x_1 => x '' x_1) Subtype.val ↑t ∈ range fun t => Subtype.val '' ↑t
   exact mem_range_self _
+  -- 🎉 no goals
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
@@ -273,19 +310,25 @@ theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)
 theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
     { f : ∀ a, π a | ∀ a, f a ∈ s a }.Countable := by
   simpa only [← mem_univ_pi] using countable_univ_pi hs
+  -- 🎉 no goals
 #align set.countable_pi Set.countable_pi
 
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
     Set.Countable (s ×ˢ t) := by
   haveI : Countable s := hs.to_subtype
+  -- ⊢ Set.Countable (s ×ˢ t)
   haveI : Countable t := ht.to_subtype
+  -- ⊢ Set.Countable (s ×ˢ t)
   exact (Countable.of_equiv _ <| (Equiv.Set.prod _ _).symm).to_set
+  -- 🎉 no goals
 #align set.countable.prod Set.Countable.prod
 
 theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable)
     (f : α → β → γ) : (image2 f s t).Countable := by
   rw [← image_prod]
+  -- ⊢ Set.Countable ((fun x => f x.fst x.snd) '' s ×ˢ t)
   exact (hs.prod ht).image _
+  -- 🎉 no goals
 #align set.countable.image2 Set.Countable.image2
 
 end Set

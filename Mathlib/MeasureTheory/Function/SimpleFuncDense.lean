@@ -87,37 +87,59 @@ theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
     nearestPtInd e (N + 1) x =
       if ∀ k ≤ N, edist (e (N + 1)) x < edist (e k) x then N + 1 else nearestPtInd e N x := by
   simp only [nearestPtInd, coe_piecewise, Set.piecewise]
+  -- ⊢ (if x ∈ ⋂ (k : ℕ) (_ : k ≤ Nat.add N 0), {x | edist (e (Nat.add N 0 + 1)) x  …
   congr
+  -- ⊢ (x ∈ ⋂ (k : ℕ) (_ : k ≤ Nat.add N 0), {x | edist (e (Nat.add N 0 + 1)) x < e …
   simp
+  -- 🎉 no goals
 #align measure_theory.simple_func.nearest_pt_ind_succ MeasureTheory.SimpleFunc.nearestPtInd_succ
 
 theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
   induction' N with N ihN; · simp
+  -- ⊢ ↑(nearestPtInd e Nat.zero) x ≤ Nat.zero
+                             -- 🎉 no goals
   simp only [nearestPtInd_succ]
+  -- ⊢ (if ∀ (k : ℕ), k ≤ N → edist (e (N + 1)) x < edist (e k) x then N + 1 else ↑ …
   split_ifs
+  -- ⊢ N + 1 ≤ Nat.succ N
   exacts [le_rfl, ihN.trans N.le_succ]
+  -- 🎉 no goals
 #align measure_theory.simple_func.nearest_pt_ind_le MeasureTheory.SimpleFunc.nearestPtInd_le
 
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
   induction' N with N ihN generalizing k
+  -- ⊢ edist (↑(nearestPt e Nat.zero) x) x ≤ edist (e k) x
   · simp [nonpos_iff_eq_zero.1 hk, le_refl]
+    -- 🎉 no goals
   · simp only [nearestPt, nearestPtInd_succ, map_apply]
+    -- ⊢ edist (e (if ∀ (k : ℕ), k ≤ N → edist (e (N + 1)) x < edist (e k) x then N + …
     split_ifs with h
+    -- ⊢ edist (e (N + 1)) x ≤ edist (e k) x
     · rcases hk.eq_or_lt with (rfl | hk)
+      -- ⊢ edist (e (N + 1)) x ≤ edist (e (Nat.succ N)) x
       exacts [le_rfl, (h k (Nat.lt_succ_iff.1 hk)).le]
+      -- 🎉 no goals
     · push_neg at h
+      -- ⊢ edist (e (↑(nearestPtInd e N) x)) x ≤ edist (e k) x
       rcases h with ⟨l, hlN, hxl⟩
+      -- ⊢ edist (e (↑(nearestPtInd e N) x)) x ≤ edist (e k) x
       rcases hk.eq_or_lt with (rfl | hk)
+      -- ⊢ edist (e (↑(nearestPtInd e N) x)) x ≤ edist (e (Nat.succ N)) x
       exacts [(ihN hlN).trans hxl, ihN (Nat.lt_succ_iff.1 hk)]
+      -- 🎉 no goals
 #align measure_theory.simple_func.edist_nearest_pt_le MeasureTheory.SimpleFunc.edist_nearestPt_le
 
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
   refine' (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => _
+  -- ⊢ ∃ ia, True ∧ ∀ (x_1 : ℕ), x_1 ∈ Set.Ici ia → ↑(nearestPt e x_1) x ∈ ball x ε
   rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
+  -- ⊢ ∃ ia, True ∧ ∀ (x_1 : ℕ), x_1 ∈ Set.Ici ia → ↑(nearestPt e x_1) x ∈ ball x ε
   rw [edist_comm] at hN
+  -- ⊢ ∃ ia, True ∧ ∀ (x_1 : ℕ), x_1 ∈ Set.Ici ia → ↑(nearestPt e x_1) x ∈ ball x ε
   exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
+  -- 🎉 no goals
 #align measure_theory.simple_func.tendsto_nearest_pt MeasureTheory.SimpleFunc.tendsto_nearestPt
 
 variable [MeasurableSpace β] {f : β → α}
@@ -139,9 +161,13 @@ theorem approxOn_zero {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : �
 theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (n : ℕ) (x : β) : approxOn f hf s y₀ h₀ n x ∈ s := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
+  -- ⊢ ↑(approxOn f hf s y₀ h₀ n) x ∈ s
   suffices ∀ n, (Nat.casesOn n y₀ ((↑) ∘ denseSeq s) : α) ∈ s by apply this
+  -- ⊢ ∀ (n : ℕ), Nat.casesOn n y₀ (Subtype.val ∘ denseSeq ↑s) ∈ s
   rintro (_ | n)
+  -- ⊢ Nat.casesOn Nat.zero y₀ (Subtype.val ∘ denseSeq ↑s) ∈ s
   exacts [h₀, Subtype.mem _]
+  -- 🎉 no goals
 #align measure_theory.simple_func.approx_on_mem MeasureTheory.SimpleFunc.approxOn_mem
 
 @[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
@@ -155,10 +181,15 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
     [SeparableSpace s] {x : β} (hx : f x ∈ closure s) :
     Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
+  -- ⊢ Tendsto (fun n => ↑(approxOn f hf s y₀ h₀ n) x) atTop (𝓝 (f x))
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
+  -- ⊢ Tendsto (fun n => ↑(approxOn f hf s y₀ h₀ n) x) atTop (𝓝 (f x))
   simp (config := { iota := false }) only [approxOn, coe_comp]
+  -- ⊢ Tendsto (fun n => (↑(nearestPt (fun k => Nat.casesOn k y₀ (Subtype.val ∘ den …
   refine' tendsto_nearestPt (closure_minimal _ isClosed_closure hx)
+  -- ⊢ Subtype.val '' closure (Set.range (denseSeq ↑s)) ⊆ closure (Set.range fun k  …
   simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
+  -- ⊢ Subtype.val '' closure (Set.range (denseSeq ↑s)) ⊆ closure {y₀} ∪ closure (S …
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
       (subset_union_right _ _)
@@ -168,7 +199,9 @@ theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y�
     [SeparableSpace s] (x : β) {m n : ℕ} (h : m ≤ n) :
     edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist (approxOn f hf s y₀ h₀ m x) (f x) := by
   dsimp only [approxOn, coe_comp, Function.comp]
+  -- ⊢ edist (↑(nearestPt (fun k => Nat.rec y₀ (fun n n_ih => ↑(denseSeq (↑s) n)) k …
   exact edist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
+  -- 🎉 no goals
 #align measure_theory.simple_func.edist_approx_on_mono MeasureTheory.SimpleFunc.edist_approxOn_mono
 
 theorem edist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)

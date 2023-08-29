@@ -61,6 +61,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- NB: This proof can be shortened somewhat by telescoping together some of the steps in the calc
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
+  -- ⊢ fourierCoeff (Periodic.lift (_ : Periodic (↑(∑' (n : ℤ), ContinuousMap.comp  …
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
     have : ∀ x : ℝ, ‖e x‖ = 1 := fun x => abs_coe_circle (AddCircle.toCircle (-m • x))
     intro K g
@@ -116,12 +117,17 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     convert h_sum
     exact Real.fourierCoeff_tsum_comp_add h_norm _
   convert (has_pointwise_sum_fourier_series_of_summable this 0).tsum_eq.symm using 1
+  -- ⊢ ∑' (n : ℤ), ↑f ↑n = ↑F 0
   · have := (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum 0).tsum_eq
+    -- ⊢ ∑' (n : ℤ), ↑f ↑n = ↑F 0
     simpa only [coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add] using this
   · congr 1 with n : 1
+    -- ⊢ 𝓕 ↑f ↑n = fourierCoeff (↑F) n • ↑(fourier n) 0
     rw [← Real.fourierCoeff_tsum_comp_add h_norm n, fourier_eval_zero, smul_eq_mul, mul_one]
+    -- ⊢ fourierCoeff (Periodic.lift (_ : Periodic (↑(∑' (n : ℤ), ContinuousMap.comp  …
     rfl
+    -- 🎉 no goals
 #align real.tsum_eq_tsum_fourier_integral Real.tsum_eq_tsum_fourierIntegral
 
 section RpowDecay
@@ -158,21 +164,35 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     exact rpow_le_rpow (mul_pos one_half_pos hx.1).le (by linarith) hb.le
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
+  -- ⊢ (fun x => ‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖) =O[atTop] fun x  …
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
+  -- ⊢ ∃ c a, ∀ (b_1 : ℝ), b_1 ≥ a → ‖‖ContinuousMap.restrict (Icc (b_1 + R) (b_1 + …
   obtain ⟨d, hd⟩ := hc'
+  -- ⊢ ∃ c a, ∀ (b_1 : ℝ), b_1 ≥ a → ‖‖ContinuousMap.restrict (Icc (b_1 + R) (b_1 + …
   refine' ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => _⟩⟩
+  -- ⊢ ‖‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖‖ ≤ c * (1 / 2) ^ (-b) * ‖| …
   rw [ge_iff_le, max_le_iff] at hx
+  -- ⊢ ‖‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖‖ ≤ c * (1 / 2) ^ (-b) * ‖| …
   have hx' : max 0 (-2 * R) < x := by linarith
+  -- ⊢ ‖‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖‖ ≤ c * (1 / 2) ^ (-b) * ‖| …
   rw [max_lt_iff] at hx'
+  -- ⊢ ‖‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖‖ ≤ c * (1 / 2) ^ (-b) * ‖| …
   rw [norm_norm,
     ContinuousMap.norm_le _
       (mul_nonneg (mul_nonneg hc.le <| rpow_nonneg_of_nonneg one_half_pos.le _) (norm_nonneg _))]
   refine' fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans _
+  -- ⊢ c * ‖|↑y| ^ (-b)‖ ≤ c * (1 / 2) ^ (-b) * ‖|x| ^ (-b)‖
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
+  -- ⊢ c * ‖|↑y| ^ (-b)‖ ≤ c * (1 / 2) ^ (-b) * ‖|x| ^ (-b)‖
   rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
+  -- ⊢ |↑y| ^ (-b) ≤ (1 / 2) ^ (-b) * |x| ^ (-b)
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
+  -- ⊢ |↑y| = ↑y
   · apply abs_of_nonneg; linarith [y.2.1]
+    -- ⊢ 0 ≤ ↑y
+                         -- 🎉 no goals
   · exact abs_of_pos hx'.1
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
@@ -183,18 +203,26 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     convert hf.comp_tendsto tendsto_neg_atTop_atBot using 1
     ext1 x; simp only [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
+  -- ⊢ (fun x => ‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖) =O[atBot] fun x  …
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
     ext1 x; simp only [Function.comp_apply, abs_neg]
   rw [this] at h2
+  -- ⊢ (fun x => ‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖) =O[atBot] fun x  …
   refine' (isBigO_of_le _ fun x => _).trans h2
+  -- ⊢ ‖‖ContinuousMap.restrict (Icc (x + R) (x + S)) f‖‖ ≤ ‖((fun x => ‖Continuous …
   -- equality holds, but less work to prove `≤` alone
   rw [norm_norm, Function.comp_apply, norm_norm, ContinuousMap.norm_le _ (norm_nonneg _)]
+  -- ⊢ ∀ (x_1 : ↑(Icc (x + R) (x + S))), ‖↑(ContinuousMap.restrict (Icc (x + R) (x  …
   rintro ⟨x, hx⟩
+  -- ⊢ ‖↑(ContinuousMap.restrict (Icc (x✝ + R) (x✝ + S)) f) { val := x, property := …
   rw [ContinuousMap.restrict_apply_mk]
+  -- ⊢ ‖↑f x‖ ≤ ‖ContinuousMap.restrict (Icc (-x✝ + -S) (-x✝ + -R)) (ContinuousMap. …
   refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, _⟩)
+  -- ⊢ ‖↑f x‖ = ‖↑(ContinuousMap.restrict (Icc (-x✝ + -S) (-x✝ + -R)) (ContinuousMa …
   rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
     ContinuousMap.coe_mk, neg_neg]
   exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
@@ -203,7 +231,9 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
   obtain ⟨r, hr⟩ := K.isCompact.bounded.subset_ball 0
+  -- ⊢ (fun x => ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap. …
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
+  -- ⊢ (fun x => ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap. …
   have :
     ∀ x : ℝ,
       ‖(f.comp (ContinuousMap.addRight x)).restrict K‖ ≤ ‖f.restrict (Icc (x - r) (x + r))‖ := by
@@ -214,11 +244,19 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     · simp_rw [ContinuousMap.restrict_apply, ContinuousMap.comp_apply, ContinuousMap.coe_addRight]
     · exact ⟨by linarith [(hr hy).1], by linarith [(hr hy).2]⟩
   simp_rw [cocompact_eq, isBigO_sup] at hf ⊢
+  -- ⊢ ((fun x => ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap …
   constructor
+  -- ⊢ (fun x => ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap. …
   · refine' (isBigO_of_le atBot _).trans (isBigO_norm_Icc_restrict_atBot hb hf.1 (-r) r)
+    -- ⊢ ∀ (x : ℝ), ‖‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMa …
     simp_rw [norm_norm]; exact this
+    -- ⊢ ∀ (x : ℝ), ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap …
+                         -- 🎉 no goals
   · refine' (isBigO_of_le atTop _).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
+    -- ⊢ ∀ (x : ℝ), ‖‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMa …
     simp_rw [norm_norm]; exact this
+    -- ⊢ ∀ (x : ℝ), ‖ContinuousMap.restrict (↑K) (ContinuousMap.comp f (ContinuousMap …
+                         -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_restrict_cocompact isBigO_norm_restrict_cocompact
 
@@ -257,10 +295,13 @@ theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hf
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
   simp_rw [← hfg]
+  -- ⊢ ∑' (n : ℤ), ↑f ↑n = ∑' (n : ℤ), 𝓕 ↑f ↑n
   rw [Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
     (f.isBigO_cocompact_rpow (-2))]
   rw [hfg]
+  -- ⊢ ↑g =O[cocompact ℝ] fun x => |x| ^ (-2)
   exact g.isBigO_cocompact_rpow (-2)
+  -- 🎉 no goals
 #align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
 end Schwartz

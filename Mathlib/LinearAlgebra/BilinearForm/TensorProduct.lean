@@ -73,9 +73,13 @@ attribute [ext] TensorProduct.ext in
 lemma IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [isSymm_iff_flip R]
+  -- ⊢ ↑(flipHom R) (BilinForm.tmul B₁ B₂) = BilinForm.tmul B₁ B₂
   apply toLin.injective
+  -- ⊢ ↑toLin (↑(flipHom R) (BilinForm.tmul B₁ B₂)) = ↑toLin (BilinForm.tmul B₁ B₂)
   ext x₁ x₂ y₁ y₂
+  -- ⊢ ↑(↑(AlgebraTensorModule.curry (↑(↑(AlgebraTensorModule.curry (↑toLin (↑(flip …
   exact (congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)).symm
+  -- 🎉 no goals
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -136,9 +140,13 @@ variable (R M₁ M₂) in
 theorem tensorDistribEquiv_toLinearMap :
     (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
   ext B₁ B₂ : 3
+  -- ⊢ ↑(↑(AlgebraTensorModule.curry ↑(tensorDistribEquiv R)) B₁) B₂ = ↑(↑(AlgebraT …
   apply toLin.injective
+  -- ⊢ ↑toLin (↑(↑(AlgebraTensorModule.curry ↑(tensorDistribEquiv R)) B₁) B₂) = ↑to …
   ext
+  -- ⊢ ↑(↑(AlgebraTensorModule.curry (↑(↑(AlgebraTensorModule.curry (↑toLin (↑(↑(Al …
   exact mul_comm _ _
+  -- 🎉 no goals
 
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :

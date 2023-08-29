@@ -144,11 +144,21 @@ theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
 
 @[simp]
 theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
+                                                  -- ⊢ none + ⊤ = ⊤
+                                                              -- 🎉 no goals
+                                                              -- 🎉 no goals
 #align with_top.add_top WithTop.add_top
 
 @[simp]
 theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   cases a <;> cases b <;> simp [none_eq_top, some_eq_coe, ← WithTop.coe_add]
+  -- ⊢ none + b = ⊤ ↔ none = ⊤ ∨ b = ⊤
+              -- ⊢ none + none = ⊤ ↔ none = ⊤ ∨ none = ⊤
+              -- ⊢ Option.some val✝ + none = ⊤ ↔ Option.some val✝ = ⊤ ∨ none = ⊤
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align with_top.add_eq_top WithTop.add_eq_top
 
 theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
@@ -157,33 +167,47 @@ theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
 
 theorem add_lt_top [LT α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
   simp_rw [WithTop.lt_top_iff_ne_top, add_ne_top]
+  -- 🎉 no goals
 #align with_top.add_lt_top WithTop.add_lt_top
 
 theorem add_eq_coe :
     ∀ {a b : WithTop α} {c : α}, a + b = c ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = c
   | none, b, c => by simp [none_eq_top]
+                     -- 🎉 no goals
   | Option.some a, none, c => by simp [none_eq_top]
+                                 -- 🎉 no goals
   | Option.some a, Option.some b, c =>
   by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left]
+     -- 🎉 no goals
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
 -- Porting note: simp can already prove this.
 -- @[simp]
 theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by
   induction x using WithTop.recTopCoe <;> simp [← coe_add]
+  -- ⊢ ⊤ + ↑y = ⊤ ↔ ⊤ = ⊤
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
 #align with_top.add_coe_eq_top_iff WithTop.add_coe_eq_top_iff
 
 -- Porting note: simp can already prove this.
 -- @[simp]
 theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by
   induction y using WithTop.recTopCoe <;> simp [← coe_add]
+  -- ⊢ ↑x + ⊤ = ⊤ ↔ ⊤ = ⊤
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
 #align with_top.coe_add_eq_top_iff WithTop.coe_add_eq_top_iff
 
 theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
   lift a to α using ha
+  -- ⊢ b + ↑a = c + ↑a ↔ b = c
   obtain rfl | hb := (eq_or_ne b ⊤)
+  -- ⊢ ⊤ + ↑a = c + ↑a ↔ ⊤ = c
   · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
+    -- 🎉 no goals
   lift b to α using hb
+  -- ⊢ ↑b + ↑a = c + ↑a ↔ ↑b = c
   simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
     exists_eq_left, add_left_inj, exists_eq_right, eq_comm]
 
@@ -192,9 +216,13 @@ theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (h : b + a = c +
 
 theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
   lift a to α using ha
+  -- ⊢ ↑a + b = ↑a + c ↔ b = c
   obtain rfl | hb := (eq_or_ne b ⊤)
+  -- ⊢ ↑a + ⊤ = ↑a + c ↔ ⊤ = c
   · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
+    -- 🎉 no goals
   lift b to α using hb
+  -- ⊢ ↑a + ↑b = ↑a + c ↔ ↑b = c
   simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
     exists_and_left, exists_eq_left', add_right_inj, exists_eq_right']
 
@@ -205,74 +233,132 @@ instance covariantClass_add_le [LE α] [CovariantClass α α (· + ·) (· ≤ �
     CovariantClass (WithTop α) (WithTop α) (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
     cases a <;> cases c <;> try exact le_top
+    -- ⊢ none + b ≤ none + c
+                -- ⊢ none + b ≤ none + none
+                -- ⊢ Option.some val✝ + b ≤ Option.some val✝ + none
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- ⊢ Option.some val✝¹ + b ≤ Option.some val✝¹ + Option.some val✝
     rcases le_coe_iff.1 h with ⟨b, rfl, _⟩
+    -- ⊢ Option.some val✝¹ + ↑b ≤ Option.some val✝¹ + Option.some val✝
     exact coe_le_coe.2 (add_le_add_left (coe_le_coe.1 h) _)⟩
+    -- 🎉 no goals
 #align with_top.covariant_class_add_le WithTop.covariantClass_add_le
 
 instance covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithTop α) (WithTop α) (swap (· + ·)) (· ≤ ·) :=
   ⟨fun a b c h => by
     cases a <;> cases c <;> try exact le_top
+    -- ⊢ swap (fun x x_1 => x + x_1) none b ≤ swap (fun x x_1 => x + x_1) none c
+                -- ⊢ swap (fun x x_1 => x + x_1) none b ≤ swap (fun x x_1 => x + x_1) none none
+                -- ⊢ swap (fun x x_1 => x + x_1) (Option.some val✝) b ≤ swap (fun x x_1 => x + x_ …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- ⊢ swap (fun x x_1 => x + x_1) (Option.some val✝¹) b ≤ swap (fun x x_1 => x + x …
     rcases le_coe_iff.1 h with ⟨b, rfl, _⟩
+    -- ⊢ swap (fun x x_1 => x + x_1) (Option.some val✝¹) ↑b ≤ swap (fun x x_1 => x +  …
     exact coe_le_coe.2 (add_le_add_right (coe_le_coe.1 h) _)⟩
+    -- 🎉 no goals
 #align with_top.covariant_class_swap_add_le WithTop.covariantClass_swap_add_le
 
 instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (· + ·) (· < ·) :=
   ⟨fun a b c h => by
     induction a using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
+    -- ⊢ b < c
+                                           -- 🎉 no goals
     induction b using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
+    -- ⊢ ⊤ < c
+                                           -- 🎉 no goals
     induction c using WithTop.recTopCoe
+    -- ⊢ ↑a✝ < ⊤
     · exact coe_lt_top _
+      -- 🎉 no goals
     · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
+      -- 🎉 no goals
 #align with_top.contravariant_class_add_lt WithTop.contravariantClass_add_lt
 
 instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (swap (· + ·)) (· < ·) :=
   ⟨fun a b c h => by
     cases a <;> cases b <;> try exact (not_none_lt _ h).elim
+    -- ⊢ b < c
+                -- ⊢ none < c
+                -- ⊢ none < c
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- ⊢ Option.some val✝ < c
     cases c
+    -- ⊢ Option.some val✝ < none
     · exact coe_lt_top _
+      -- 🎉 no goals
     · exact coe_lt_coe.2 (lt_of_add_lt_add_right <| coe_lt_coe.1 h)⟩
+      -- 🎉 no goals
 #align with_top.contravariant_class_swap_add_lt WithTop.contravariantClass_swap_add_lt
 
 protected theorem le_of_add_le_add_left [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊤)
     (h : a + b ≤ a + c) : b ≤ c := by
   lift a to α using ha
+  -- ⊢ b ≤ c
   induction c using WithTop.recTopCoe
+  -- ⊢ b ≤ ⊤
   · exact le_top
+    -- 🎉 no goals
   · induction b using WithTop.recTopCoe
+    -- ⊢ ⊤ ≤ ↑a✝
     · exact (not_top_le_coe _ h).elim
+      -- 🎉 no goals
     · simp only [← coe_add, coe_le_coe] at h ⊢
+      -- ⊢ a✝ ≤ a✝¹
       exact le_of_add_le_add_left h
+      -- 🎉 no goals
 #align with_top.le_of_add_le_add_left WithTop.le_of_add_le_add_left
 
 protected theorem le_of_add_le_add_right [LE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≠ ⊤) (h : b + a ≤ c + a) : b ≤ c := by
   lift a to α using ha
+  -- ⊢ b ≤ c
   cases c
+  -- ⊢ b ≤ none
   · exact le_top
+    -- 🎉 no goals
   · cases b
+    -- ⊢ none ≤ Option.some val✝
     · exact (not_top_le_coe _ h).elim
+      -- 🎉 no goals
     · exact coe_le_coe.2 (le_of_add_le_add_right <| coe_le_coe.1 h)
+      -- 🎉 no goals
 #align with_top.le_of_add_le_add_right WithTop.le_of_add_le_add_right
 
 protected theorem add_lt_add_left [LT α] [CovariantClass α α (· + ·) (· < ·)] (ha : a ≠ ⊤)
     (h : b < c) : a + b < a + c := by
   lift a to α using ha
+  -- ⊢ ↑a + b < ↑a + c
   rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
+  -- ⊢ ↑a + ↑b < ↑a + c
   cases c
+  -- ⊢ ↑a + ↑b < ↑a + none
   · exact coe_lt_top _
+    -- 🎉 no goals
   · exact coe_lt_coe.2 (add_lt_add_left (coe_lt_coe.1 h) _)
+    -- 🎉 no goals
 #align with_top.add_lt_add_left WithTop.add_lt_add_left
 
 protected theorem add_lt_add_right [LT α] [CovariantClass α α (swap (· + ·)) (· < ·)] (ha : a ≠ ⊤)
     (h : b < c) : b + a < c + a := by
   lift a to α using ha
+  -- ⊢ b + ↑a < c + ↑a
   rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
+  -- ⊢ ↑b + ↑a < c + ↑a
   cases c
+  -- ⊢ ↑b + ↑a < none + ↑a
   · exact coe_lt_top _
+    -- 🎉 no goals
   · exact coe_lt_coe.2 (add_lt_add_right (coe_lt_coe.1 h) _)
+    -- 🎉 no goals
 #align with_top.add_lt_add_right WithTop.add_lt_add_right
 
 protected theorem add_le_add_iff_left [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -312,11 +398,17 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [CovariantClass α α (·
 protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
   induction a using WithTop.recTopCoe
+  -- ⊢ map (↑f) (⊤ + b) = map ↑f ⊤ + map (↑f) b
   · exact (top_add _).symm
+    -- 🎉 no goals
   · induction b using WithTop.recTopCoe
+    -- ⊢ map (↑f) (↑a✝ + ⊤) = map ↑f ↑a✝ + map ↑f ⊤
     · exact (add_top _).symm
+      -- 🎉 no goals
     · rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
+      -- ⊢ map ↑f ↑(a✝¹ + a✝) = ↑(↑f (a✝¹ + a✝))
       rfl
+      -- 🎉 no goals
 #align with_top.map_add WithTop.map_add
 
 end Add
@@ -345,10 +437,14 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
     natCast := fun n => ↑(n : α),
     natCast_zero := by
       simp only -- Porting note: Had to add this...?
+      -- ⊢ ↑↑0 = 0
       rw [Nat.cast_zero, WithTop.coe_zero],
+      -- 🎉 no goals
     natCast_succ := fun n => by
       simp only -- Porting note: Had to add this...?
+      -- ⊢ ↑↑(n + 1) = ↑↑n + 1
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
+      -- 🎉 no goals
   }
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
@@ -358,10 +454,17 @@ instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (
   { WithTop.partialOrder, WithTop.addCommMonoid with
     add_le_add_left := by
       rintro a b h (_ | c); · simp [none_eq_top]
+      -- ⊢ none + a ≤ none + b
+                              -- 🎉 no goals
       rcases b with (_ | b); · simp [none_eq_top]
+      -- ⊢ Option.some c + a ≤ Option.some c + none
+                               -- 🎉 no goals
       rcases le_coe_iff.1 h with ⟨a, rfl, _⟩
+      -- ⊢ Option.some c + ↑a ≤ Option.some c + Option.some b
       simp only [some_eq_coe, ← coe_add, coe_le_coe] at h ⊢
+      -- ⊢ c + a ≤ c + b
       exact add_le_add_left h c }
+      -- 🎉 no goals
 
 instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
@@ -372,10 +475,13 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
   ⟨fun {a} {b} =>
     match a, b with
     | ⊤, ⊤ => by simp
+                 -- 🎉 no goals
     | (a : α), ⊤ => fun _ => ⟨⊤, rfl⟩
     | (a : α), (b : α) => fun h => by
       obtain ⟨c, rfl⟩ := exists_add_of_le (WithTop.coe_le_coe.1 h)
+      -- ⊢ ∃ c_1, ↑(a + c) = ↑a + c_1
       exact ⟨c, rfl⟩
+      -- 🎉 no goals
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
 instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
@@ -440,6 +546,7 @@ protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
+                 -- 🎉 no goals
 #align one_hom.with_top_map OneHom.withTopMap
 #align zero_hom.with_top_map ZeroHom.withTopMap
 #align one_hom.with_top_map_apply OneHom.withTopMap_apply
@@ -600,6 +707,9 @@ theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
 
 @[simp]
 theorem add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
+                                                  -- ⊢ none + ⊥ = ⊥
+                                                              -- 🎉 no goals
+                                                              -- 🎉 no goals
 #align with_bot.add_bot WithBot.add_bot
 
 @[simp]
@@ -657,6 +767,7 @@ protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
+                 -- 🎉 no goals
 #align one_hom.with_bot_map OneHom.withBotMap
 #align zero_hom.with_bot_map ZeroHom.withBotMap
 #align one_hom.with_bot_map_apply OneHom.withBotMap_apply

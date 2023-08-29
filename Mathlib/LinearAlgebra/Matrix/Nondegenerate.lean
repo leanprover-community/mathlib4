@@ -50,28 +50,42 @@ See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDet
 theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) :
     Nondegenerate M := by
   intro v hv
+  -- ⊢ v = 0
   ext i
+  -- ⊢ v i = OfNat.ofNat 0 i
   specialize hv (M.cramer (Pi.single i 1))
+  -- ⊢ v i = OfNat.ofNat 0 i
   refine' (mul_eq_zero.mp _).resolve_right hM
+  -- ⊢ v i * det M = 0
   convert hv
+  -- ⊢ v i * det M = v ⬝ᵥ mulVec M (↑(cramer M) (Pi.single i 1))
   simp only [mulVec_cramer M (Pi.single i 1), dotProduct, Pi.smul_apply, smul_eq_mul]
+  -- ⊢ v i * det M = Finset.sum Finset.univ fun x => v x * (det M * Pi.single i 1 x)
   rw [Finset.sum_eq_single i, Pi.single_eq_same, mul_one]
+  -- ⊢ ∀ (b : m), b ∈ Finset.univ → b ≠ i → v b * (det M * Pi.single i 1 b) = 0
   · intro j _ hj
+    -- ⊢ v j * (det M * Pi.single i 1 j) = 0
     simp [hj]
+    -- 🎉 no goals
   · intros
+    -- ⊢ v i * (det M * Pi.single i 1 i) = 0
     have := Finset.mem_univ i
+    -- ⊢ v i * (det M * Pi.single i 1 i) = 0
     contradiction
+    -- 🎉 no goals
 #align matrix.nondegenerate_of_det_ne_zero Matrix.nondegenerate_of_det_ne_zero
 
 theorem eq_zero_of_vecMul_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : M.vecMul v = 0) : v = 0 :=
   (nondegenerate_of_det_ne_zero hM).eq_zero_of_ortho fun w => by
     rw [dotProduct_mulVec, hv, zero_dotProduct]
+    -- 🎉 no goals
 #align matrix.eq_zero_of_vec_mul_eq_zero Matrix.eq_zero_of_vecMul_eq_zero
 
 theorem eq_zero_of_mulVec_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : M.mulVec v = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero (by rwa [det_transpose]) ((vecMul_transpose M v).trans hv)
+                                -- 🎉 no goals
 #align matrix.eq_zero_of_mul_vec_eq_zero Matrix.eq_zero_of_mulVec_eq_zero
 
 end Matrix

@@ -57,10 +57,15 @@ def limitCone (F : J ⥤ TopCatMax.{v, u}) : Cone F where
       naturality := fun X Y f => by
         -- Automation fails in various ways in this proof. Why?!
         dsimp
+        -- ⊢ (𝟙 (of { x // ∀ {i j : J} (f : i ⟶ j), ↑(F.map f) (x i) = x j }) ≫ Continuou …
         rw [Category.id_comp]
+        -- ⊢ (ContinuousMap.mk fun u => ↑u Y) = (ContinuousMap.mk fun u => ↑u X) ≫ F.map f
         apply ContinuousMap.ext
+        -- ⊢ ∀ (a : { x // ∀ {i j : J} (f : i ⟶ j), ↑(F.map f) (x i) = x j }), ↑(Continuo …
         intro a
+        -- ⊢ ↑(ContinuousMap.mk fun u => ↑u Y) a = ↑((ContinuousMap.mk fun u => ↑u X) ≫ F …
         exact (a.2 f).symm }
+        -- 🎉 no goals
 #align Top.limit_cone TopCat.limitCone
 
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat` whose topology is defined as an
@@ -88,18 +93,31 @@ def limitConeIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitCone.{v,u} F) 
     { toFun := fun x =>
         ⟨fun j => S.π.app _ x, fun f => by
           dsimp
+          -- ⊢ ↑(F.map f) (↑(NatTrans.app S.π i✝) x) = ↑(NatTrans.app S.π j✝) x
           erw [← S.w f]
+          -- ⊢ ↑(F.map f) (↑(NatTrans.app S.π i✝) x) = ↑(NatTrans.app S.π i✝ ≫ F.map f) x
           rfl⟩
+          -- 🎉 no goals
       continuous_toFun :=
         Continuous.subtype_mk (continuous_pi <| fun j => (S.π.app j).2) fun x i j f => by
           dsimp
+          -- ⊢ ↑(F.map f) (↑(NatTrans.app S.π i) x) = ↑(NatTrans.app S.π j) x
           rw [← S.w f]
+          -- ⊢ ↑(F.map f) (↑(NatTrans.app S.π i) x) = ↑(NatTrans.app S.π i ≫ F.map f) x
           rfl }
+          -- 🎉 no goals
   uniq S m h := by
     apply ContinuousMap.ext; intros a; apply Subtype.ext; funext j
+    -- ⊢ ∀ (a : ↑S.pt), ↑m a = ↑((fun S => ContinuousMap.mk fun x => { val := fun j = …
+                             -- ⊢ ↑m a = ↑((fun S => ContinuousMap.mk fun x => { val := fun j => ↑(NatTrans.ap …
+                                       -- ⊢ ↑(↑m a) = ↑(↑((fun S => ContinuousMap.mk fun x => { val := fun j => ↑(NatTra …
+                                                          -- ⊢ ↑(↑m a) j = ↑(↑((fun S => ContinuousMap.mk fun x => { val := fun j => ↑(NatT …
     dsimp
+    -- ⊢ ↑(↑m a) j = ↑(NatTrans.app S.π j) a
     rw [← h]
+    -- ⊢ ↑(↑m a) j = ↑(m ≫ NatTrans.app (limitCone F).π j) a
     rfl
+    -- 🎉 no goals
 #align Top.limit_cone_is_limit TopCat.limitConeIsLimit
 
 /-- The chosen cone `TopCat.limitConeInfi F` for a functor `F : J ⥤ TopCat` is a limit cone.
@@ -111,16 +129,22 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
     -- Porting note: previously could infer all ?_ except continuity
     (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
+    -- ⊢ ∀ {j j' : J} (f : j ⟶ j'), forget.map (F.map f) (forget.map (NatTrans.app s. …
     intro _ _ _
+    -- ⊢ forget.map (F.map f✝) (forget.map (NatTrans.app s.π j✝) v) = forget.map (Nat …
     rw [←comp_apply', forget_map_eq_coe, ←s.π.naturality, forget_map_eq_coe]
+    -- ⊢ ↑(((Functor.const J).obj s.pt).map f✝ ≫ NatTrans.app s.π j'✝) v = ↑(NatTrans …
     dsimp
+    -- ⊢ ↑(𝟙 s.pt ≫ NatTrans.app s.π j'✝) v = ↑(NatTrans.app s.π j'✝) v
     rw [Category.id_comp]
+    -- 🎉 no goals
   · exact
     continuous_iff_coinduced_le.mpr
       (le_iInf fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
   · rfl
+    -- 🎉 no goals
 #align Top.limit_cone_infi_is_limit TopCat.limitConeInfiIsLimit
 
 instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCatMax.{v, u} where
@@ -174,16 +198,22 @@ def colimitCoconeIsColimit (F : J ⥤ TopCatMax.{v, u}) : IsColimit (colimitCoco
     -- Porting note: previously function was inferred
       ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
   · intro _ _ ⟨_, h⟩
+    -- ⊢ (fun p => NatTrans.app (forget.mapCocone s).ι p.fst p.snd) a✝ = (fun p => Na …
     dsimp
+    -- ⊢ forget.map (NatTrans.app s.ι a✝.fst) a✝.snd = forget.map (NatTrans.app s.ι b …
     rw [h, Functor.comp_map, ← comp_apply', s.ι.naturality]
+    -- ⊢ forget.map (NatTrans.app s.ι a✝.fst) a✝.snd = forget.map (NatTrans.app s.ι a …
     dsimp
+    -- ⊢ forget.map (NatTrans.app s.ι a✝.fst) a✝.snd = forget.map (NatTrans.app s.ι a …
     rw [Category.comp_id]
+    -- 🎉 no goals
   · exact
     continuous_iff_le_induced.mpr
       (iSup_le fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
   · rfl
+    -- 🎉 no goals
 #align Top.colimit_cocone_is_colimit TopCat.colimitCoconeIsColimit
 
 instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCatMax.{v, u} where
@@ -214,6 +244,9 @@ instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Ty
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
     ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+                               -- 🎉 no goals
+                                                         -- ⊢ ↑f x✝ = ↑default x✝
+                                                              -- 🎉 no goals
   Limits.IsTerminal.ofUnique _
 #align Top.is_terminal_punit TopCat.isTerminalPUnit
 
@@ -226,6 +259,8 @@ def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
     ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+                           -- 🎉 no goals
+                                                     -- 🎉 no goals
   Limits.IsInitial.ofUnique _
 #align Top.is_initial_pempty TopCat.isInitialPEmpty
 

@@ -76,6 +76,7 @@ theorem mul_def [Mul M] [Mul N] (p q : M × N) : p * q = (p.1 * q.1, p.2 * q.2) 
 theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
     ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) :=
   by rw [mk_mul_mk, mul_one]
+     -- 🎉 no goals
 #align prod.one_mk_mul_one_mk Prod.one_mk_mul_one_mk
 #align prod.zero_mk_add_zero_mk Prod.zero_mk_add_zero_mk
 
@@ -83,6 +84,7 @@ theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
 theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
     (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) :=
   by rw [mk_mul_mk, mul_one]
+     -- 🎉 no goals
 #align prod.mk_one_mul_mk_one Prod.mk_one_mul_mk_one
 #align prod.mk_zero_add_mk_zero Prod.mk_zero_add_mk_zero
 
@@ -201,7 +203,9 @@ instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (
 
 instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) :=
   { zero_mul := by simp,
+                   -- 🎉 no goals
     mul_zero := by simp }
+                   -- 🎉 no goals
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
@@ -214,7 +218,9 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     npow_zero := fun z => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
     npow_succ := fun z a => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
+                  -- 🎉 no goals
     mul_one := by simp }
+                  -- 🎉 no goals
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
@@ -231,10 +237,13 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
       ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
         (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
     inv_inv := by simp }
+                  -- 🎉 no goals
 
 @[to_additive SubtractionCommMonoid]
 instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) :=
   { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
+                                           -- ⊢ (fst✝ * g₁, snd✝ * h₁) = (fst✝, snd✝) * (g₁, h₁)
+                                                                                     -- 🎉 no goals
 
 @[to_additive]
 instance instGroup [Group G] [Group H] : Group (G × H) :=
@@ -253,40 +262,54 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
   { mul_one := by simp,
+                  -- 🎉 no goals
+                  -- 🎉 no goals
     one_mul := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
+                  -- 🎉 no goals
+                  -- 🎉 no goals
     one_mul := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
   { mul_right_cancel := by simp only [mul_left_inj, imp_self, forall_const] }
+                           -- 🎉 no goals
 
 @[to_additive]
 instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+                                          -- 🎉 no goals
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+                                          -- 🎉 no goals
 
 instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
   { zero_mul := by simp,
+                   -- 🎉 no goals
     mul_zero := by simp }
+                   -- 🎉 no goals
 
 instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) :=
   { zero_mul := by simp,
+                   -- 🎉 no goals
     mul_zero := by simp }
+                   -- 🎉 no goals
 
 instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) :=
   { zero_mul := by simp,
+                   -- 🎉 no goals
     mul_zero := by simp }
+                   -- 🎉 no goals
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
+                                          -- 🎉 no goals
 
 end Prod
 
@@ -367,6 +390,7 @@ theorem snd_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (snd N P).comp (f.pr
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+                  -- 🎉 no goals
 #align mul_hom.prod_unique MulHom.prod_unique
 #align add_hom.prod_unique AddHom.prod_unique
 
@@ -429,6 +453,7 @@ theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
 theorem comp_coprod {Q : Type*} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →ₙ* P) (g : N →ₙ* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
+                  -- 🎉 no goals
 #align mul_hom.comp_coprod MulHom.comp_coprod
 #align add_hom.comp_coprod AddHom.comp_coprod
 
@@ -578,6 +603,7 @@ theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+                  -- 🎉 no goals
 #align monoid_hom.prod_unique MonoidHom.prod_unique
 #align add_monoid_hom.prod_unique AddMonoidHom.prod_unique
 
@@ -639,18 +665,21 @@ theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
 @[to_additive (attr := simp)]
 theorem coprod_comp_inl : (f.coprod g).comp (inl M N) = f :=
   ext fun x => by simp [coprod_apply]
+                  -- 🎉 no goals
 #align monoid_hom.coprod_comp_inl MonoidHom.coprod_comp_inl
 #align add_monoid_hom.coprod_comp_inl AddMonoidHom.coprod_comp_inl
 
 @[to_additive (attr := simp)]
 theorem coprod_comp_inr : (f.coprod g).comp (inr M N) = g :=
   ext fun x => by simp [coprod_apply]
+                  -- 🎉 no goals
 #align monoid_hom.coprod_comp_inr MonoidHom.coprod_comp_inr
 #align add_monoid_hom.coprod_comp_inr AddMonoidHom.coprod_comp_inr
 
 @[to_additive (attr := simp)]
 theorem coprod_unique (f : M × N →* P) : (f.comp (inl M N)).coprod (f.comp (inr M N)) = f :=
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
+                  -- 🎉 no goals
 #align monoid_hom.coprod_unique MonoidHom.coprod_unique
 #align add_monoid_hom.coprod_unique AddMonoidHom.coprod_unique
 
@@ -665,6 +694,7 @@ theorem coprod_inl_inr {M N : Type*} [CommMonoid M] [CommMonoid N] :
 theorem comp_coprod {Q : Type*} [CommMonoid Q] (h : P →* Q) (f : M →* P) (g : N →* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
+                  -- 🎉 no goals
 #align monoid_hom.comp_coprod MonoidHom.comp_coprod
 #align add_monoid_hom.comp_coprod AddMonoidHom.comp_coprod
 
@@ -767,6 +797,8 @@ variable [Monoid M] [Monoid N]
 def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
   invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
+                                                -- 🎉 no goals
+                                                         -- 🎉 no goals
   left_inv u := by
     simp only [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd,
       Prod.mk.eta, Units.coe_map_inv, Units.mk_val]
@@ -774,6 +806,7 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
       MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
     exact ⟨rfl, rfl⟩
+    -- 🎉 no goals
   map_mul' := MonoidHom.map_mul _
 #align mul_equiv.prod_units MulEquiv.prodUnits
 #align add_equiv.prod_add_units AddEquiv.prodAddUnits
@@ -795,7 +828,9 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
   toFun x := ⟨x, op ↑x⁻¹⟩
   map_one' := by
     simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
+    -- 🎉 no goals
   map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
+                     -- 🎉 no goals
 #align units.embed_product Units.embedProduct
 #align add_units.embed_product AddUnits.embedProduct
 #align units.embed_product_apply Units.embedProduct_apply

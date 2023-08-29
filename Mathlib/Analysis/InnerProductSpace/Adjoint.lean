@@ -87,26 +87,38 @@ theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointA
 theorem adjointAux_inner_right (A : E →L[𝕜] F) (x : E) (y : F) :
     ⟪x, adjointAux A y⟫ = ⟪A x, y⟫ := by
   rw [← inner_conj_symm, adjointAux_inner_left, inner_conj_symm]
+  -- 🎉 no goals
 #align continuous_linear_map.adjoint_aux_inner_right ContinuousLinearMap.adjointAux_inner_right
 
 variable [CompleteSpace F]
 
 theorem adjointAux_adjointAux (A : E →L[𝕜] F) : adjointAux (adjointAux A) = A := by
   ext v
+  -- ⊢ ↑(↑adjointAux (↑adjointAux A)) v = ↑A v
   refine' ext_inner_left 𝕜 fun w => _
+  -- ⊢ inner w (↑(↑adjointAux (↑adjointAux A)) v) = inner w (↑A v)
   rw [adjointAux_inner_right, adjointAux_inner_left]
+  -- 🎉 no goals
 #align continuous_linear_map.adjoint_aux_adjoint_aux ContinuousLinearMap.adjointAux_adjointAux
 
 @[simp]
 theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := by
   refine' le_antisymm _ _
+  -- ⊢ ‖↑adjointAux A‖ ≤ ‖A‖
   · refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun x => _
+    -- ⊢ ‖↑(↑adjointAux A) x‖ ≤ ‖A‖ * ‖x‖
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
+    -- ⊢ ‖↑(↑toSesqForm A) x‖ ≤ ‖A‖ * ‖x‖
     exact toSesqForm_apply_norm_le
+    -- 🎉 no goals
   · nth_rw 1 [← adjointAux_adjointAux A]
+    -- ⊢ ‖↑adjointAux (↑adjointAux A)‖ ≤ ‖↑adjointAux A‖
     refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun x => _
+    -- ⊢ ‖↑(↑adjointAux (↑adjointAux A)) x‖ ≤ ‖↑adjointAux A‖ * ‖x‖
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
+    -- ⊢ ‖↑(↑toSesqForm (↑adjointAux A)) x‖ ≤ ‖↑adjointAux A‖ * ‖x‖
     exact toSesqForm_apply_norm_le
+    -- 🎉 no goals
 #align continuous_linear_map.adjoint_aux_norm ContinuousLinearMap.adjointAux_norm
 
 /-- The adjoint of a bounded operator from Hilbert space `E` to Hilbert space `F`. -/
@@ -139,62 +151,82 @@ in reverse order. -/
 @[simp]
 theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† = B† ∘L A† := by
   ext v
+  -- ⊢ ↑(↑adjoint (comp A B)) v = ↑(comp (↑adjoint B) (↑adjoint A)) v
   refine' ext_inner_left 𝕜 fun w => _
+  -- ⊢ inner w (↑(↑adjoint (comp A B)) v) = inner w (↑(comp (↑adjoint B) (↑adjoint  …
   simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
+  -- 🎉 no goals
 #align continuous_linear_map.adjoint_comp ContinuousLinearMap.adjoint_comp
 
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
     ‖A x‖ ^ 2 = re ⟪(A† * A) x, x⟫ := by
   have h : ⟪(A† * A) x, x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_left]; rfl
+  -- ⊢ ‖↑A x‖ ^ 2 = ↑re (inner (↑(↑adjoint A * A) x) x)
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
+  -- 🎉 no goals
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_left ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_left
 
 theorem apply_norm_eq_sqrt_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
     ‖A x‖ = Real.sqrt (re ⟪(A† * A) x, x⟫) := by
   rw [← apply_norm_sq_eq_inner_adjoint_left, Real.sqrt_sq (norm_nonneg _)]
+  -- 🎉 no goals
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_left ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_left
 
 theorem apply_norm_sq_eq_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
     ‖A x‖ ^ 2 = re ⟪x, (A† * A) x⟫ := by
   have h : ⟪x, (A† * A) x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_right]; rfl
+  -- ⊢ ‖↑A x‖ ^ 2 = ↑re (inner x (↑(↑adjoint A * A) x))
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
+  -- 🎉 no goals
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_right ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_right
 
 theorem apply_norm_eq_sqrt_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
     ‖A x‖ = Real.sqrt (re ⟪x, (A† * A) x⟫) := by
   rw [← apply_norm_sq_eq_inner_adjoint_right, Real.sqrt_sq (norm_nonneg _)]
+  -- 🎉 no goals
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_right ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_right
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
+  -- ⊢ A = ↑adjoint B
   ext x
+  -- ⊢ ↑A x = ↑(↑adjoint B) x
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+  -- 🎉 no goals
 #align continuous_linear_map.eq_adjoint_iff ContinuousLinearMap.eq_adjoint_iff
 
 @[simp]
 theorem adjoint_id :
     ContinuousLinearMap.adjoint (ContinuousLinearMap.id 𝕜 E) = ContinuousLinearMap.id 𝕜 E := by
   refine' Eq.symm _
+  -- ⊢ id 𝕜 E = ↑adjoint (id 𝕜 E)
   rw [eq_adjoint_iff]
+  -- ⊢ ∀ (x : E) (y : (fun x => E) x), inner (↑(id 𝕜 E) x) y = inner x (↑(id 𝕜 E) y)
   simp
+  -- 🎉 no goals
 #align continuous_linear_map.adjoint_id ContinuousLinearMap.adjoint_id
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = orthogonalProjection U := by
   symm
+  -- ⊢ orthogonalProjection U = ↑adjoint (Submodule.subtypeL U)
   rw [eq_adjoint_iff]
+  -- ⊢ ∀ (x : E) (y : (fun x => { x // x ∈ U }) x), inner (↑(orthogonalProjection U …
   intro x u
+  -- ⊢ inner (↑(orthogonalProjection U) x) u = inner x (↑(Submodule.subtypeL U) u)
   rw [U.coe_inner, inner_orthogonalProjection_left_eq_right,
     orthogonalProjection_mem_subspace_eq_self]
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align submodule.adjoint_subtypeL Submodule.adjoint_subtypeL
 
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
     (orthogonalProjection U : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
+  -- 🎉 no goals
 #align submodule.adjoint_orthogonal_projection Submodule.adjoint_orthogonalProjection
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
@@ -226,13 +258,18 @@ set_option maxHeartbeats 300000 in -- Porting note: Added to prevent timeout.
 instance : CstarRing (E →L[𝕜] E) :=
   ⟨by
     intro A
+    -- ⊢ ‖star A * A‖ = ‖A‖ * ‖A‖
     rw [star_eq_adjoint]
+    -- ⊢ ‖↑adjoint A * A‖ = ‖A‖ * ‖A‖
     refine' le_antisymm _ _
+    -- ⊢ ‖↑adjoint A * A‖ ≤ ‖A‖ * ‖A‖
     · calc
         ‖A† * A‖ ≤ ‖A†‖ * ‖A‖ := op_norm_comp_le _ _
         _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
     · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
+      -- ⊢ ‖A‖ ≤ Real.sqrt ‖↑adjoint A * A‖
       refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
+      -- ⊢ ‖↑A x‖ ≤ Real.sqrt ‖↑adjoint A * A‖ * ‖x‖
       have :=
         calc
           re ⟪(A† * A) x, x⟫ ≤ ‖(A† * A) x‖ * ‖x‖ := re_inner_le_norm _ _
@@ -259,7 +296,9 @@ theorem isAdjointPair_inner (A : E' →L[ℝ] F') :
     LinearMap.IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ)
       (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A (A†) := by
   intro x y
+  -- ⊢ ↑(↑sesqFormOfInner (↑↑A x)) y = ↑(↑sesqFormOfInner x) (↑↑(↑adjoint A) y)
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left, coe_coe]
+  -- 🎉 no goals
 #align continuous_linear_map.is_adjoint_pair_inner ContinuousLinearMap.isAdjointPair_inner
 
 end Real
@@ -282,23 +321,31 @@ theorem adjoint_eq {A : E →L[𝕜] E} (hA : IsSelfAdjoint A) : ContinuousLinea
 /-- Every self-adjoint operator on an inner product space is symmetric. -/
 theorem isSymmetric {A : E →L[𝕜] E} (hA : IsSelfAdjoint A) : (A : E →ₗ[𝕜] E).IsSymmetric := by
   intro x y
+  -- ⊢ inner (↑↑A x) y = inner x (↑↑A y)
   rw_mod_cast [← A.adjoint_inner_right, hA.adjoint_eq]
+  -- 🎉 no goals
 #align is_self_adjoint.is_symmetric IsSelfAdjoint.isSymmetric
 
 /-- Conjugating preserves self-adjointness. -/
 theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[𝕜] F) :
     IsSelfAdjoint (S ∘L T ∘L ContinuousLinearMap.adjoint S) := by
   rw [isSelfAdjoint_iff'] at hT ⊢
+  -- ⊢ ↑adjoint (comp S (comp T (↑adjoint S))) = comp S (comp T (↑adjoint S))
   simp only [hT, adjoint_comp, adjoint_adjoint]
+  -- ⊢ comp (comp S T) (↑adjoint S) = comp S (comp T (↑adjoint S))
   exact ContinuousLinearMap.comp_assoc _ _ _
+  -- 🎉 no goals
 #align is_self_adjoint.conj_adjoint IsSelfAdjoint.conj_adjoint
 
 /-- Conjugating preserves self-adjointness. -/
 theorem adjoint_conj {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : F →L[𝕜] E) :
     IsSelfAdjoint (ContinuousLinearMap.adjoint S ∘L T ∘L S) := by
   rw [isSelfAdjoint_iff'] at hT ⊢
+  -- ⊢ ↑adjoint (comp (↑adjoint S) (comp T S)) = comp (↑adjoint S) (comp T S)
   simp only [hT, adjoint_comp, adjoint_adjoint]
+  -- ⊢ comp (comp (↑adjoint S) T) S = comp (↑adjoint S) (comp T S)
   exact ContinuousLinearMap.comp_assoc _ _ _
+  -- 🎉 no goals
 #align is_self_adjoint.adjoint_conj IsSelfAdjoint.adjoint_conj
 
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric {A : E →L[𝕜] E} :
@@ -310,6 +357,7 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric {A : E →L[�
 theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
     (hA : (A : E →ₗ[𝕜] E).IsSymmetric) : IsSelfAdjoint A := by
   rwa [← ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric] at hA
+  -- 🎉 no goals
 #align linear_map.is_symmetric.is_self_adjoint LinearMap.IsSymmetric.isSelfAdjoint
 
 /-- The orthogonal projection is self-adjoint. -/
@@ -323,8 +371,11 @@ theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U
     IsSelfAdjoint
       (U.subtypeL ∘L orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U) := by
   rw [← ContinuousLinearMap.comp_assoc]
+  -- ⊢ IsSelfAdjoint (comp (comp (Submodule.subtypeL U) (orthogonalProjection U)) ( …
   nth_rw 1 [← (orthogonalProjection_isSelfAdjoint U).adjoint_eq]
+  -- ⊢ IsSelfAdjoint (comp (↑adjoint (comp (Submodule.subtypeL U) (orthogonalProjec …
   refine' hT.adjoint_conj _
+  -- 🎉 no goals
 #align is_self_adjoint.conj_orthogonal_projection IsSelfAdjoint.conj_orthogonalProjection
 
 end IsSelfAdjoint
@@ -387,13 +438,17 @@ theorem adjoint_eq_toClm_adjoint (A : E →ₗ[𝕜] F) :
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
+  -- ⊢ inner (↑↑(↑ContinuousLinearMap.adjoint (↑toContinuousLinearMap ↑(↑toContinuo …
   exact ContinuousLinearMap.adjoint_inner_left _ x y
+  -- 🎉 no goals
 #align linear_map.adjoint_inner_left LinearMap.adjoint_inner_left
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
+  -- ⊢ inner x (↑↑(↑ContinuousLinearMap.adjoint (↑toContinuousLinearMap ↑(↑toContin …
   exact ContinuousLinearMap.adjoint_inner_right _ x y
+  -- 🎉 no goals
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
 
 end synthOrder
@@ -402,8 +457,11 @@ end synthOrder
 @[simp]
 theorem adjoint_adjoint (A : E →ₗ[𝕜] F) : LinearMap.adjoint (LinearMap.adjoint A) = A := by
   ext v
+  -- ⊢ ↑(↑adjoint (↑adjoint A)) v = ↑A v
   refine' ext_inner_left 𝕜 fun w => _
+  -- ⊢ inner w (↑(↑adjoint (↑adjoint A)) v) = inner w (↑A v)
   rw [adjoint_inner_right, adjoint_inner_left]
+  -- 🎉 no goals
 #align linear_map.adjoint_adjoint LinearMap.adjoint_adjoint
 
 /-- The adjoint of the composition of two operators is the composition of the two adjoints
@@ -412,8 +470,11 @@ in reverse order. -/
 theorem adjoint_comp (A : F →ₗ[𝕜] G) (B : E →ₗ[𝕜] F) :
     LinearMap.adjoint (A ∘ₗ B) = LinearMap.adjoint B ∘ₗ LinearMap.adjoint A := by
   ext v
+  -- ⊢ ↑(↑adjoint (comp A B)) v = ↑(comp (↑adjoint B) (↑adjoint A)) v
   refine' ext_inner_left 𝕜 fun w => _
+  -- ⊢ inner w (↑(↑adjoint (comp A B)) v) = inner w (↑(comp (↑adjoint B) (↑adjoint  …
   simp only [adjoint_inner_right, LinearMap.coe_comp, Function.comp_apply]
+  -- 🎉 no goals
 #align linear_map.adjoint_comp LinearMap.adjoint_comp
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
@@ -421,8 +482,11 @@ for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
+  -- ⊢ A = ↑adjoint B
   ext x
+  -- ⊢ ↑A x = ↑(↑adjoint B) x
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+  -- 🎉 no goals
 #align linear_map.eq_adjoint_iff LinearMap.eq_adjoint_iff
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
@@ -431,21 +495,29 @@ theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
+  -- ⊢ A = ↑adjoint B
   refine' Basis.ext b₁ fun i₁ => _
+  -- ⊢ ↑A (↑b₁ i₁) = ↑(↑adjoint B) (↑b₁ i₁)
   exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
+  -- 🎉 no goals
 #align linear_map.eq_adjoint_iff_basis LinearMap.eq_adjoint_iff_basis
 
 theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => Basis.ext b fun i => _⟩
+  -- ⊢ ↑A (↑b i) = ↑(↑adjoint B) (↑b i)
   exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
+  -- 🎉 no goals
 #align linear_map.eq_adjoint_iff_basis_left LinearMap.eq_adjoint_iff_basis_left
 
 theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
+  -- ⊢ A = ↑adjoint B
   ext x
+  -- ⊢ ↑A x = ↑(↑adjoint B) x
   refine' ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
+  -- 🎉 no goals
 #align linear_map.eq_adjoint_iff_basis_right LinearMap.eq_adjoint_iff_basis_right
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/
@@ -475,7 +547,9 @@ theorem isSelfAdjoint_iff' {A : E →ₗ[𝕜] E} : IsSelfAdjoint A ↔ LinearMa
 
 theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔ IsSelfAdjoint A := by
   rw [isSelfAdjoint_iff', IsSymmetric, ← LinearMap.eq_adjoint_iff]
+  -- ⊢ A = ↑adjoint A ↔ ↑adjoint A = A
   exact eq_comm
+  -- 🎉 no goals
 #align linear_map.is_symmetric_iff_is_self_adjoint LinearMap.isSymmetric_iff_isSelfAdjoint
 
 section Real
@@ -493,7 +567,9 @@ theorem isAdjointPair_inner (A : E' →ₗ[ℝ] F') :
     IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ) (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A
       (LinearMap.adjoint A) := by
   intro x y
+  -- ⊢ ↑(↑sesqFormOfInner (↑A x)) y = ↑(↑sesqFormOfInner x) (↑(↑adjoint A) y)
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
+  -- 🎉 no goals
 #align linear_map.is_adjoint_pair_inner LinearMap.isAdjointPair_inner
 
 end Real
@@ -501,22 +577,29 @@ end Real
 /-- The Gram operator T†T is symmetric. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (LinearMap.adjoint T * T) := by
   intro x y
+  -- ⊢ inner (↑(↑adjoint T * T) x) y = inner x (↑(↑adjoint T * T) y)
   simp only [mul_apply, adjoint_inner_left, adjoint_inner_right]
+  -- 🎉 no goals
 #align linear_map.is_symmetric_adjoint_mul_self LinearMap.isSymmetric_adjoint_mul_self
 
 /-- The Gram operator T†T is a positive operator. -/
 theorem re_inner_adjoint_mul_self_nonneg (T : E →ₗ[𝕜] E) (x : E) :
     0 ≤ re ⟪x, (LinearMap.adjoint T * T) x⟫ := by
   simp only [mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  -- ⊢ 0 ≤ ↑re (↑‖↑T x‖ ^ 2)
   norm_cast
+  -- ⊢ 0 ≤ ‖↑T x‖ ^ 2
   exact sq_nonneg _
+  -- 🎉 no goals
 #align linear_map.re_inner_adjoint_mul_self_nonneg LinearMap.re_inner_adjoint_mul_self_nonneg
 
 @[simp]
 theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
     im ⟪x, LinearMap.adjoint T (T x)⟫ = 0 := by
   simp only [mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  -- ⊢ ↑im (↑‖↑T x‖ ^ 2) = 0
   norm_cast
+  -- 🎉 no goals
 #align linear_map.im_inner_adjoint_mul_self_eq_zero LinearMap.im_inner_adjoint_mul_self_eq_zero
 
 end LinearMap
@@ -532,7 +615,9 @@ conjugate transpose of that matrix. -/
 theorem toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
     Matrix.toEuclideanLin A.conjTranspose = LinearMap.adjoint (Matrix.toEuclideanLin A) := by
   rw [LinearMap.eq_adjoint_iff]
+  -- ⊢ ∀ (x : EuclideanSpace 𝕜 m) (y : (fun x => EuclideanSpace 𝕜 n) x), inner (↑(↑ …
   intro x y
+  -- ⊢ inner (↑(↑toEuclideanLin Aᴴ) x) y = inner x (↑(↑toEuclideanLin A) y)
   simp_rw [EuclideanSpace.inner_eq_star_dotProduct, piLp_equiv_toEuclideanLin, toLin'_apply,
     star_mulVec, conjTranspose_conjTranspose, dotProduct_mulVec]
 #align matrix.to_euclidean_lin_conj_transpose_eq_adjoint Matrix.toEuclideanLin_conjTranspose_eq_adjoint

@@ -118,6 +118,7 @@ theorem inv_eq_iff_eq {f : Perm α} {x y : α} : f⁻¹ x = y ↔ x = f y :=
 theorem zpow_apply_comm {α : Type*} (σ : Perm α) (m n : ℤ) {x : α} :
     (σ ^ m) ((σ ^ n) x) = (σ ^ n) ((σ ^ m) x) := by
   rw [← Equiv.Perm.mul_apply, ← Equiv.Perm.mul_apply, zpow_mul_comm]
+  -- 🎉 no goals
 #align equiv.perm.zpow_apply_comm Equiv.Perm.zpow_apply_comm
 
 @[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
@@ -217,10 +218,17 @@ def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (Sum α β) where
 
 theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom α β) := by
   rintro ⟨⟩ ⟨⟩ h
+  -- ⊢ (fst✝¹, snd✝¹) = (fst✝, snd✝)
   rw [Prod.mk.inj_iff]
+  -- ⊢ fst✝¹ = fst✝ ∧ snd✝¹ = snd✝
   constructor <;> ext i
+  -- ⊢ fst✝¹ = fst✝
+                  -- ⊢ ↑fst✝¹ i = ↑fst✝ i
+                  -- ⊢ ↑snd✝¹ i = ↑snd✝ i
   · simpa using Equiv.congr_fun h (Sum.inl i)
+    -- 🎉 no goals
   · simpa using Equiv.congr_fun h (Sum.inr i)
+    -- 🎉 no goals
 #align equiv.perm.sum_congr_hom_injective Equiv.Perm.sumCongrHom_injective
 
 @[simp]
@@ -271,8 +279,11 @@ def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) �
 theorem sigmaCongrRightHom_injective {α : Type*} {β : α → Type*} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
+  -- ⊢ x = y
   ext a b
+  -- ⊢ ↑(x a) b = ↑(y a) b
   simpa using Equiv.congr_fun h ⟨a, b⟩
+  -- 🎉 no goals
 #align equiv.perm.sigma_congr_right_hom_injective Equiv.Perm.sigmaCongrRightHom_injective
 
 /-- `Equiv.Perm.subtypeCongr` as a `MonoidHom`. -/
@@ -288,8 +299,15 @@ def subtypeCongrHom (p : α → Prop) [DecidablePred p] :
 theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
   rintro ⟨⟩ ⟨⟩ h
+  -- ⊢ (fst✝¹, snd✝¹) = (fst✝, snd✝)
   rw [Prod.mk.inj_iff]
+  -- ⊢ fst✝¹ = fst✝ ∧ snd✝¹ = snd✝
   constructor <;> ext i <;> simpa using Equiv.congr_fun h i
+  -- ⊢ fst✝¹ = fst✝
+                  -- ⊢ ↑(↑fst✝¹ i) = ↑(↑fst✝ i)
+                  -- ⊢ ↑(↑snd✝¹ i) = ↑(↑snd✝ i)
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align equiv.perm.subtype_congr_hom_injective Equiv.Perm.subtypeCongrHom_injective
 
 /-- If `e` is also a permutation, we can write `permCongr`
@@ -361,8 +379,11 @@ variable {p : α → Prop} {f : Perm α}
 def subtypePerm (f : Perm α) (h : ∀ x, p x ↔ p (f x)) : Perm { x // p x } where
   toFun := fun x => ⟨f x, (h _).1 x.2⟩
   invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).2 <| by simpa using x.2⟩
+                                                 -- 🎉 no goals
   left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta, Subtype.coe_mk]
+                   -- 🎉 no goals
   right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta, Subtype.coe_mk]
+                    -- 🎉 no goals
 #align equiv.perm.subtype_perm Equiv.Perm.subtypePerm
 
 @[simp]
@@ -385,6 +406,7 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
 
 private theorem inv_aux : (∀ x, p x ↔ p (f x)) ↔ ∀ x, p x ↔ p (f⁻¹ x) :=
   f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
+                                    -- 🎉 no goals
 
 /-- See `Equiv.Perm.inv_subtypePerm`-/
 theorem subtypePerm_inv (f : Perm α) (hf) :
@@ -407,22 +429,30 @@ private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x �
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
     (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
   induction' n with n ih
+  -- ⊢ subtypePerm f hf ^ Nat.zero = subtypePerm (f ^ Nat.zero) (_ : ∀ (x : α), p x …
   · simp
+    -- 🎉 no goals
   · simp_rw [pow_succ', ih, subtypePerm_mul]
+    -- 🎉 no goals
 #align equiv.perm.subtype_perm_pow Equiv.Perm.subtypePerm_pow
 
 private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x ↔ p ((f ^ n) x)
   | Int.ofNat n => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
+    -- ⊢ ∀ (x : α), p x ↔ p (↑(f ^ (n + 1))⁻¹ x)
     exact inv_aux.1 (pow_aux hf)
+    -- 🎉 no goals
 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
   induction' n with n ih
+  -- ⊢ subtypePerm f hf ^ Int.ofNat n = subtypePerm (f ^ Int.ofNat n) (_ : ∀ (x : α …
   · exact subtypePerm_pow _ _ _
+    -- 🎉 no goals
   · simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
+    -- 🎉 no goals
 #align equiv.perm.subtype_perm_zpow Equiv.Perm.subtypePerm_zpow
 
 variable [DecidablePred p] {a : α}
@@ -439,12 +469,18 @@ theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h�
     ofSubtype (subtypePerm f h₁) = f :=
   Equiv.ext fun x => by
     by_cases hx : p x
+    -- ⊢ ↑(↑ofSubtype (subtypePerm f h₁)) x = ↑f x
     · exact (subtypePerm f h₁).extendDomain_apply_subtype _ hx
+      -- 🎉 no goals
     · rw [ofSubtype, MonoidHom.coe_mk]
+      -- ⊢ ↑(↑{ toFun := fun f => extendDomain f (Equiv.refl { x // p x }), map_one' := …
       -- Porting note: added `dsimp`
       dsimp only [OneHom.coe_mk]
+      -- ⊢ ↑(extendDomain (subtypePerm f h₁) (Equiv.refl { x // p x })) x = ↑f x
       rw [Equiv.Perm.extendDomain_apply_not_subtype _ _ hx]
+      -- ⊢ x = ↑f x
       exact not_not.mp fun h => hx (h₂ x (Ne.symm h))
+      -- 🎉 no goals
 #align equiv.perm.of_subtype_subtype_perm Equiv.Perm.ofSubtype_subtypePerm
 
 theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a = f ⟨a, ha⟩ :=
@@ -464,7 +500,9 @@ theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
     p x ↔ p ((ofSubtype f : α → α) x) :=
   if h : p x then by
     simpa only [h, true_iff_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    -- 🎉 no goals
   else by simp [h, ofSubtype_apply_of_not_mem f h]
+          -- 🎉 no goals
 #align equiv.perm.mem_iff_of_subtype_apply_mem Equiv.Perm.mem_iff_ofSubtype_apply_mem
 
 @[simp]
@@ -523,16 +561,28 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
     simp only [Perm.mul_apply, swap_apply_def]
+    -- ⊢ (if ↑f z = x then y else if ↑f z = y then x else ↑f z) = ↑f (if z = ↑f⁻¹ x t …
     split_ifs <;>
       simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, eq_self_iff_true, not_true]
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align equiv.swap_mul_eq_mul_swap Equiv.swap_mul_eq_mul_swap
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
   rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
+  -- 🎉 no goals
 #align equiv.mul_swap_eq_swap_mul Equiv.mul_swap_eq_swap_mul
 
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]
+  -- 🎉 no goals
 #align equiv.swap_apply_apply Equiv.swap_apply_apply
 
 /-- Left-multiplying a permutation with `swap i j` twice gives the original permutation.
@@ -542,6 +592,7 @@ theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap 
 @[simp]
 theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ := by
   rw [← mul_assoc, swap_mul_self, one_mul]
+  -- 🎉 no goals
 #align equiv.swap_mul_self_mul Equiv.swap_mul_self_mul
 
 /-- Right-multiplying a permutation with `swap i j` twice gives the original permutation.
@@ -551,6 +602,7 @@ theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.sw
 @[simp]
 theorem mul_swap_mul_self (i j : α) (σ : Perm α) : σ * Equiv.swap i j * Equiv.swap i j = σ := by
   rw [mul_assoc, swap_mul_self, mul_one]
+  -- 🎉 no goals
 #align equiv.mul_swap_mul_self Equiv.mul_swap_mul_self
 
 /-- A stronger version of `mul_right_injective` -/
@@ -574,26 +626,63 @@ theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j
   ⟨fun h => by
     -- Porting note: added `_root_.`
     have swap_id : swap i j = 1 := mul_right_cancel (_root_.trans h (one_mul σ).symm)
+    -- ⊢ i = j
     rw [← swap_apply_right i j, swap_id]
+    -- ⊢ ↑1 j = j
     rfl,
+    -- 🎉 no goals
    fun h => by erw [h, swap_self, one_mul]⟩
+               -- 🎉 no goals
 #align equiv.swap_mul_eq_iff Equiv.swap_mul_eq_iff
 
 theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j :=
   ⟨fun h => by
     -- Porting note: added `_root_.`
     have swap_id : swap i j = 1 := mul_left_cancel (_root_.trans h (one_mul σ).symm)
+    -- ⊢ i = j
     rw [← swap_apply_right i j, swap_id]
+    -- ⊢ ↑1 j = j
     rfl,
+    -- 🎉 no goals
    fun h => by erw [h, swap_self, mul_one]⟩
+               -- 🎉 no goals
 #align equiv.mul_swap_eq_iff Equiv.mul_swap_eq_iff
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x :=
   Equiv.ext fun n => by
     simp only [swap_apply_def, Perm.mul_apply]
+    -- ⊢ (if (if (if n = y then z else if n = z then y else n) = x then y else if (if …
     -- Porting note: was `cc`
     split_ifs <;> aesop
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align equiv.swap_mul_swap_mul_swap Equiv.swap_mul_swap_mul_swap
 
 end Swap
@@ -623,10 +712,14 @@ variable [AddGroup α] (a b : α)
 
 @[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
   ext; simp [Perm.coe_pow]
+  -- ⊢ ↑(Equiv.addLeft a ^ n) x✝ = ↑(Equiv.addLeft (n • a)) x✝
+       -- 🎉 no goals
 #align equiv.pow_add_left Equiv.pow_addLeft
 
 @[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
   ext; simp [Perm.coe_pow]
+  -- ⊢ ↑(Equiv.addRight a ^ n) x✝ = ↑(Equiv.addRight (n • a)) x✝
+       -- 🎉 no goals
 #align equiv.pow_add_right Equiv.pow_addRight
 
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
@@ -635,7 +728,9 @@ variable [AddGroup α] (a b : α)
 
 @[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
   | (Int.ofNat n) => by simp
+                        -- 🎉 no goals
   | (Int.negSucc n) => by simp
+                          -- 🎉 no goals
 #align equiv.zpow_add_right Equiv.zpow_addRight
 
 end AddGroup
@@ -672,11 +767,15 @@ lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.co
 @[to_additive existing (attr := simp) pow_addLeft]
 lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
+  -- ⊢ ↑(Equiv.mulLeft a ^ n) x✝ = ↑(Equiv.mulLeft (a ^ n)) x✝
+       -- 🎉 no goals
 #align equiv.pow_mul_left Equiv.pow_mulLeft
 
 @[to_additive existing (attr := simp) pow_addRight]
 lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
+  -- ⊢ ↑(Equiv.mulRight a ^ n) x✝ = ↑(Equiv.mulRight (a ^ n)) x✝
+       -- 🎉 no goals
 #align equiv.pow_mul_right Equiv.pow_mulRight
 
 @[to_additive existing (attr := simp) zpow_addLeft]
@@ -687,7 +786,9 @@ lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
 @[to_additive existing (attr := simp) zpow_addRight]
 lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
   | (Int.ofNat n) => by simp
+                        -- 🎉 no goals
   | (Int.negSucc n) => by simp
+                          -- 🎉 no goals
 #align equiv.zpow_mul_right Equiv.zpow_mulRight
 
 end Group
@@ -703,12 +804,18 @@ lemma BijOn.perm_inv (hf : BijOn f s s) : BijOn ↑(f⁻¹) s s := hf.symm f.inv
 
 lemma MapsTo.perm_pow : MapsTo f s s → ∀ n : ℕ, MapsTo (f ^ n) s s := by
   simp_rw [Equiv.Perm.coe_pow]; exact MapsTo.iterate
+  -- ⊢ MapsTo (↑f) s s → ∀ (n : ℕ), MapsTo (↑f)^[n] s s
+                                -- 🎉 no goals
 #align set.maps_to.perm_pow Set.MapsTo.perm_pow
 lemma SurjOn.perm_pow : SurjOn f s s → ∀ n : ℕ, SurjOn (f ^ n) s s := by
   simp_rw [Equiv.Perm.coe_pow]; exact SurjOn.iterate
+  -- ⊢ SurjOn (↑f) s s → ∀ (n : ℕ), SurjOn (↑f)^[n] s s
+                                -- 🎉 no goals
 #align set.surj_on.perm_pow Set.SurjOn.perm_pow
 lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
   simp_rw [Equiv.Perm.coe_pow]; exact BijOn.iterate
+  -- ⊢ BijOn (↑f) s s → ∀ (n : ℕ), BijOn (↑f)^[n] s s
+                                -- 🎉 no goals
 #align set.bij_on.perm_pow Set.BijOn.perm_pow
 
 lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s

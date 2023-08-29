@@ -173,7 +173,9 @@ theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
 
 instance orderedStructure_LE [LE M] : OrderedStructure Language.order M := by
   rw [orderedStructure_iff, orderLHom_order]
+  -- ⊢ LHom.IsExpansionOn (LHom.id Language.order) M
   exact LHom.id_isExpansionOn M
+  -- 🎉 no goals
 #align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_LE
 
 instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
@@ -181,6 +183,7 @@ instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
     Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
+  -- 🎉 no goals
 #align first_order.language.model_preorder FirstOrder.Language.model_preorder
 
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
@@ -188,6 +191,7 @@ instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrder
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
     forall_eq, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
+  -- 🎉 no goals
 #align first_order.language.model_partial_order FirstOrder.Language.model_partialOrder
 
 instance model_linearOrder [LinearOrder M] : M ⊨ Language.order.linearOrderTheory := by
@@ -195,6 +199,7 @@ instance model_linearOrder [LinearOrder M] : M ⊨ Language.order.linearOrderThe
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
     Relations.realize_transitive, forall_eq, Relations.realize_total]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
+  -- 🎉 no goals
 #align first_order.language.model_linear_order FirstOrder.Language.model_linearOrder
 
 section OrderedStructure
@@ -205,7 +210,9 @@ variable [IsOrdered L] [L.Structure M]
 theorem relMap_leSymb [LE M] [L.OrderedStructure M] {a b : M} :
     RelMap (leSymb : L.Relations 2) ![a, b] ↔ a ≤ b := by
   rw [← orderLHom_leSymb, LHom.map_onRelation]
+  -- ⊢ RelMap leSymb ![a, b] ↔ a ≤ b
   rfl
+  -- 🎉 no goals
 #align first_order.language.rel_map_le_symb FirstOrder.Language.relMap_leSymb
 
 @[simp]
@@ -213,6 +220,7 @@ theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum �
     {xs : Fin n → M} :
     (t₁.le t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
   simp [Term.le]
+  -- 🎉 no goals
 #align first_order.language.term.realize_le FirstOrder.Language.Term.realize_le
 
 @[simp]
@@ -220,6 +228,7 @@ theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term 
     {v : α → M} {xs : Fin n → M} :
     (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
   simp [Term.lt, lt_iff_le_not_le]
+  -- 🎉 no goals
 #align first_order.language.term.realize_lt FirstOrder.Language.Term.realize_lt
 
 end OrderedStructure
@@ -233,8 +242,11 @@ theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoT
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
   refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
+  -- ⊢ NoTopOrder M → ∀ (a : M), ∃ a_1, ¬Fin.snoc (Fin.snoc default a) a_1 1 ≤ Fin. …
   intro h a
+  -- ⊢ ∃ a_1, ¬Fin.snoc (Fin.snoc default a) a_1 1 ≤ Fin.snoc (Fin.snoc default a)  …
   exact exists_not_le a
+  -- 🎉 no goals
 #align first_order.language.realize_no_top_order_iff FirstOrder.Language.realize_noTopOrder_iff
 
 @[simp]
@@ -247,8 +259,11 @@ theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoB
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
   refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
+  -- ⊢ NoBotOrder M → ∀ (a : M), ∃ a_1, ¬Fin.snoc (Fin.snoc default a) a_1 0 ≤ Fin. …
   intro h a
+  -- ⊢ ∃ a_1, ¬Fin.snoc (Fin.snoc default a) a_1 0 ≤ Fin.snoc (Fin.snoc default a)  …
   exact exists_not_ge a
+  -- 🎉 no goals
 #align first_order.language.realize_no_bot_order_iff FirstOrder.Language.realize_noBotOrder_iff
 
 @[simp]
@@ -264,8 +279,11 @@ theorem realize_denselyOrdered_iff [Preorder M] :
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
     Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
   refine' ⟨fun h => ⟨fun a b ab => h a b ab⟩, _⟩
+  -- ⊢ DenselyOrdered M → ∀ (a a_1 : M), Fin.snoc (Fin.snoc default a) a_1 0 < Fin. …
   intro h a b ab
+  -- ⊢ ∃ a_1, Fin.snoc (Fin.snoc (Fin.snoc default a) b) a_1 0 < Fin.snoc (Fin.snoc …
   exact exists_between ab
+  -- 🎉 no goals
 #align first_order.language.realize_densely_ordered_iff FirstOrder.Language.realize_denselyOrdered_iff
 
 @[simp]
@@ -280,7 +298,9 @@ instance model_dlo [LinearOrder M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder
     forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered,
     true_and_iff]
   rw [← Theory.model_iff]
+  -- ⊢ M ⊨ linearOrderTheory Language.order
   infer_instance
+  -- 🎉 no goals
 #align first_order.language.model_DLO FirstOrder.Language.model_dlo
 
 end Language

@@ -112,7 +112,9 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => LinearMap.ext (fun x => by
     dsimp at h
+    -- ⊢ ↑a₁✝ x = ↑a₂✝ x
     rw [h])⟩
+    -- 🎉 no goals
 #align Module.Module_concrete_category ModuleCat.moduleConcreteCategory
 
 -- Porting note:
@@ -202,12 +204,18 @@ def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
 theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
   unique_to X := ⟨⟨⟨(0 : M →ₗ[R] X)⟩, fun f => by
     ext x
+    -- ⊢ ↑f x = ↑default x
     rw [Subsingleton.elim x (0 : M)]
+    -- ⊢ ↑f 0 = ↑default 0
     dsimp
+    -- ⊢ ↑f 0 = ↑0 0
     simp⟩⟩
+    -- 🎉 no goals
   unique_from X := ⟨⟨⟨(0 : X →ₗ[R] M)⟩, fun f => by
     ext x
+    -- ⊢ ↑f x = ↑default x
     apply Subsingleton.elim⟩⟩
+    -- 🎉 no goals
 #align Module.is_zero_of_subsingleton ModuleCat.isZero_of_subsingleton
 
 instance : HasZeroObject (ModuleCat.{v} R) :=
@@ -274,7 +282,11 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   hom := (e : X₁ →ₗ[R] X₂)
   inv := (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id := by ext; apply e.left_inv
+                   -- ⊢ ↑(↑e ≫ ↑(symm e)) x✝ = ↑(𝟙 (ModuleCat.of R X₁)) x✝
+                        -- 🎉 no goals
   inv_hom_id := by ext; apply e.right_inv
+                   -- ⊢ ↑(↑(symm e) ≫ ↑e) x✝ = ↑(𝟙 (ModuleCat.of R X₂)) x✝
+                        -- 🎉 no goals
 #align linear_equiv.to_Module_iso LinearEquiv.toModuleIso
 
 -- porting note: for the following three definitions, Lean3 is not able to see that
@@ -307,11 +319,17 @@ def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y where
   left_inv x := by
     -- porting note: was `by tidy`
     change (i.hom ≫ i.inv) x = x
+    -- ⊢ ↑(i.hom ≫ i.inv) x = x
     simp
+    -- 🎉 no goals
   right_inv x := by
     -- porting note: was `by tidy`
     change (i.inv ≫ i.hom) x = x
+                 -- 🎉 no goals
+    -- ⊢ ↑(i.inv ≫ i.hom) x = x
+                  -- 🎉 no goals
     simp
+    -- 🎉 no goals
   map_add' := by simp
   map_smul' := by simp
 #align category_theory.iso.to_linear_equiv CategoryTheory.Iso.toLinearEquiv
@@ -336,12 +354,18 @@ instance {M N : ModuleCat.{v} R} : AddCommGroup (M ⟶ N) := LinearMap.addCommGr
 instance : Preadditive (ModuleCat.{v} R) where
   add_comp P Q R f f' g := by
     ext
+    -- ⊢ ↑((f + f') ≫ g) x✝ = ↑(f ≫ g + f' ≫ g) x✝
     dsimp
+    -- ⊢ ↑g (↑(f + f') x✝) = ↑(f ≫ g + f' ≫ g) x✝
     erw [map_add]
+    -- ⊢ ↑g (↑f x✝) + ↑g (↑f' x✝) = ↑(f ≫ g + f' ≫ g) x✝
     rfl
+    -- 🎉 no goals
   comp_add P Q R f g g' := by
     ext
+    -- ⊢ ↑(f ≫ (g + g')) x✝ = ↑(f ≫ g + f ≫ g') x✝
     rfl
+    -- 🎉 no goals
 
 instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
     where
@@ -355,14 +379,22 @@ instance : Linear S (ModuleCat.{v} S) where
   homModule X Y := LinearMap.module
   smul_comp := by
     intros
+    -- ⊢ (r✝ • f✝) ≫ g✝ = r✝ • f✝ ≫ g✝
     ext
+    -- ⊢ ↑((r✝ • f✝) ≫ g✝) x✝ = ↑(r✝ • f✝ ≫ g✝) x✝
     dsimp
+    -- ⊢ ↑g✝ (↑(r✝ • f✝) x✝) = ↑(r✝ • f✝ ≫ g✝) x✝
     rw [LinearMap.smul_apply, LinearMap.smul_apply, map_smul]
+    -- ⊢ r✝ • ↑g✝ (↑f✝ x✝) = r✝ • ↑(f✝ ≫ g✝) x✝
     rfl
+    -- 🎉 no goals
   comp_smul := by
     intros
+    -- ⊢ f✝ ≫ (r✝ • g✝) = r✝ • f✝ ≫ g✝
     ext
+    -- ⊢ ↑(f✝ ≫ (r✝ • g✝)) x✝ = ↑(r✝ • f✝ ≫ g✝) x✝
     rfl
+    -- 🎉 no goals
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 

@@ -42,11 +42,15 @@ set_option linter.uppercaseLean3 false in
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
+  -- ⊢ ∀ (o : Set ℝ), o ∈ ⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo ↑a ↑b} → Set.Nonempty …
   simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ a b hlt rfl _
+  -- ⊢ Set.Nonempty (Ioo ↑a ↑b ∩ {x | Irrational x})
   rw [inter_comm]
+  -- ⊢ Set.Nonempty ({x | Irrational x} ∩ Ioo ↑a ↑b)
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)
+  -- 🎉 no goals
 #align dense_irrational dense_irrational
 
 theorem eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
@@ -64,9 +68,11 @@ instance : OrderTopology { x // Irrational x } :=
 
 instance : NoMaxOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
+                                                   -- 🎉 no goals
 
 instance : NoMinOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_nat 1⟩, by simp⟩⟩
+                                                   -- 🎉 no goals
 
 instance : DenselyOrdered { x // Irrational x } :=
   ⟨fun _ _ hlt =>
@@ -81,10 +87,15 @@ theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     rintro ⟨m, rfl⟩
     simp at hx
   rcases Metric.mem_nhds_iff.1 (A.isOpen_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
+  -- ⊢ ∀ᶠ (ε : ℝ) in 𝓝 0, ∀ (m : ℤ), ε ≤ dist x (↑m / ↑n)
   refine' (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => _
+  -- ⊢ False
   rw [dist_comm] at hlt
+  -- ⊢ False
   refine' hε (ball_subset_ball hδ hlt) ⟨m, _⟩
+  -- ⊢ (fun m => (↑n)⁻¹ * ↑m) m = ↑m / ↑n
   simp [div_eq_inv_mul]
+  -- 🎉 no goals
 #align irrational.eventually_forall_le_dist_cast_div Irrational.eventually_forall_le_dist_cast_div
 
 theorem eventually_forall_le_dist_cast_div_of_denom_le (hx : Irrational x) (n : ℕ) :
@@ -96,6 +107,7 @@ theorem eventually_forall_le_dist_cast_rat_of_den_le (hx : Irrational x) (n : �
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ r : ℚ, r.den ≤ n → ε ≤ dist x r :=
   (hx.eventually_forall_le_dist_cast_div_of_denom_le n).mono fun ε H r hr => by
     simpa only [Rat.cast_def] using H r.den hr r.num
+    -- 🎉 no goals
 #align irrational.eventually_forall_le_dist_cast_rat_of_denom_le Irrational.eventually_forall_le_dist_cast_rat_of_den_le
 
 end Irrational

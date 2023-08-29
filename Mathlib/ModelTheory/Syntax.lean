@@ -109,8 +109,11 @@ def relabel (g : α → β) : L.Term α → L.Term β
 
 theorem relabel_id (t : L.Term α) : t.relabel id = t := by
   induction' t with _ _ _ _ ih
+  -- ⊢ relabel id (var _a✝) = var _a✝
   · rfl
+    -- 🎉 no goals
   · simp [ih]
+    -- 🎉 no goals
 #align first_order.language.term.relabel_id FirstOrder.Language.Term.relabel_id
 
 @[simp]
@@ -122,8 +125,11 @@ theorem relabel_id_eq_id : (Term.relabel id : L.Term α → L.Term α) = id :=
 theorem relabel_relabel (f : α → β) (g : β → γ) (t : L.Term α) :
     (t.relabel f).relabel g = t.relabel (g ∘ f) := by
   induction' t with _ _ _ _ ih
+  -- ⊢ relabel g (relabel f (var _a✝)) = relabel (g ∘ f) (var _a✝)
   · rfl
+    -- 🎉 no goals
   · simp [ih]
+    -- 🎉 no goals
 #align first_order.language.term.relabel_relabel FirstOrder.Language.Term.relabel_relabel
 
 @[simp]
@@ -136,6 +142,8 @@ theorem relabel_comp_relabel (f : α → β) (g : β → γ) :
 @[simps]
 def relabelEquiv (g : α ≃ β) : L.Term α ≃ L.Term β :=
   ⟨relabel g, relabel g.symm, fun t => by simp, fun t => by simp⟩
+                                          -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align first_order.language.term.relabel_equiv FirstOrder.Language.Term.relabelEquiv
 
 --Porting note: universes in different order
@@ -203,19 +211,37 @@ def varsToConstants : L.Term (Sum γ α) → L[[γ]].Term α
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (Sum γ α) :=
   ⟨constantsToVars, varsToConstants, by
     intro t
+    -- ⊢ varsToConstants (constantsToVars t) = t
     induction' t with _ n f _ ih
+    -- ⊢ varsToConstants (constantsToVars (var _a✝)) = var _a✝
     · rfl
+      -- 🎉 no goals
     · cases n
+      -- ⊢ varsToConstants (constantsToVars (func f _ts✝)) = func f _ts✝
       · cases f
+        -- ⊢ varsToConstants (constantsToVars (func (Sum.inl val✝) _ts✝)) = func (Sum.inl …
         · simp [constantsToVars, varsToConstants, ih]
+          -- 🎉 no goals
         · simp [constantsToVars, varsToConstants, Constants.term]
+          -- 🎉 no goals
       · cases' f with f f
+        -- ⊢ varsToConstants (constantsToVars (func (Sum.inl f) _ts✝)) = func (Sum.inl f) …
         · simp [constantsToVars, varsToConstants, ih]
+          -- 🎉 no goals
         · exact isEmptyElim f, by
+          -- 🎉 no goals
     intro t
+    -- ⊢ constantsToVars (varsToConstants t) = t
     induction' t with x n f _ ih
+    -- ⊢ constantsToVars (varsToConstants (var x)) = var x
     · cases x <;> rfl
+      -- ⊢ constantsToVars (varsToConstants (var (Sum.inl val✝))) = var (Sum.inl val✝)
+                  -- 🎉 no goals
+                  -- 🎉 no goals
     · cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+      -- ⊢ constantsToVars (varsToConstants (func f _ts✝)) = func f _ts✝
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 #align first_order.language.term.constants_vars_equiv FirstOrder.Language.Term.constantsVarsEquiv
 
 /-- A bijection between terms with constants and terms with extra variables. -/
@@ -276,10 +302,15 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem id_onTerm : ((LHom.id L).onTerm : L.Term α → L.Term α) = id := by
   ext t
+  -- ⊢ onTerm (LHom.id L) t = id t
   induction' t with _ _ _ _ ih
+  -- ⊢ onTerm (LHom.id L) (var _a✝) = id (var _a✝)
   · rfl
+    -- 🎉 no goals
   · simp_rw [onTerm, ih]
+    -- ⊢ (func (onFunction (LHom.id L) _f✝) fun i => id (_ts✝ i)) = id (func _f✝ _ts✝)
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align first_order.language.LHom.id_on_term FirstOrder.Language.LHom.id_onTerm
 
@@ -287,10 +318,15 @@ set_option linter.uppercaseLean3 false in
 theorem comp_onTerm {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
     ((φ.comp ψ).onTerm : L.Term α → L''.Term α) = φ.onTerm ∘ ψ.onTerm := by
   ext t
+  -- ⊢ onTerm (comp φ ψ) t = (onTerm φ ∘ onTerm ψ) t
   induction' t with _ _ _ _ ih
+  -- ⊢ onTerm (comp φ ψ) (var _a✝) = (onTerm φ ∘ onTerm ψ) (var _a✝)
   · rfl
+    -- 🎉 no goals
   · simp_rw [onTerm, ih]
+    -- ⊢ (func (onFunction (comp φ ψ) _f✝) fun i => (onTerm φ ∘ onTerm ψ) (_ts✝ i)) = …
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align first_order.language.LHom.comp_on_term FirstOrder.Language.LHom.comp_onTerm
 
@@ -303,8 +339,10 @@ def Lequiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   invFun := φ.invLHom.onTerm
   left_inv := by
     rw [Function.leftInverse_iff_comp, ← LHom.comp_onTerm, φ.left_inv, LHom.id_onTerm]
+    -- 🎉 no goals
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lequiv.on_term FirstOrder.Language.Lequiv.onTerm
 
@@ -447,24 +485,42 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
+    -- 🎉 no goals
   · simp [Fin.castLE_of_eq]
+    -- 🎉 no goals
   · simp [Fin.castLE_of_eq]
+    -- 🎉 no goals
   · simp [Fin.castLE_of_eq, ih1, ih2]
+    -- 🎉 no goals
   · simp [Fin.castLE_of_eq, ih3]
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.cast_le_rfl FirstOrder.Language.BoundedFormula.castLE_rfl
 
 @[simp]
 theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
     (φ.castLE km).castLE mn = φ.castLE (km.trans mn) := by
   revert m n
+  -- ⊢ ∀ {m n : ℕ} (km : k ≤ m) (mn : m ≤ n), castLE mn (castLE km φ) = castLE (_ : …
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 <;> intro m n km mn
+                                                              -- ⊢ castLE mn (castLE km falsum) = castLE (_ : n✝ ≤ n) falsum
+                                                              -- ⊢ castLE mn (castLE km (equal t₁✝ t₂✝)) = castLE (_ : n✝ ≤ n) (equal t₁✝ t₂✝)
+                                                              -- ⊢ castLE mn (castLE km (rel R✝ ts✝)) = castLE (_ : n✝ ≤ n) (rel R✝ ts✝)
+                                                              -- ⊢ castLE mn (castLE km (imp f₁✝ f₂✝)) = castLE (_ : n✝ ≤ n) (imp f₁✝ f₂✝)
+                                                              -- ⊢ castLE mn (castLE km (all f✝)) = castLE (_ : n✝ ≤ n) (all f✝)
   · rfl
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · simp only [castLE, eq_self_iff_true, heq_iff_eq, true_and_iff]
+    -- ⊢ rel R✝ (Term.relabel (Sum.map id (Fin.castLE mn)) ∘ Term.relabel (Sum.map id …
     rw [← Function.comp.assoc, Term.relabel_comp_relabel]
+    -- ⊢ rel R✝ (Term.relabel (Sum.map id (Fin.castLE mn) ∘ Sum.map id (Fin.castLE km …
     simp
+    -- 🎉 no goals
   · simp [ih1, ih2]
+    -- 🎉 no goals
   · simp only [castLE, ih3]
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.cast_le_cast_le FirstOrder.Language.BoundedFormula.castLE_castLE
 
 @[simp]
@@ -524,6 +580,7 @@ def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFor
   fun {n} n' m φ =>
   φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
     castLE (by rw [add_assoc, add_comm 1, add_assoc])
+               -- 🎉 no goals
 #align first_order.language.bounded_formula.lift_at FirstOrder.Language.BoundedFormula.liftAt
 
 @[simp]
@@ -536,10 +593,15 @@ theorem mapTermRel_mapTermRel {L'' : Language}
       φ.mapTermRel (fun _ => ft' _ ∘ ft _) (fun _ => fr' _ ∘ fr _) fun _ => id := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
+    -- 🎉 no goals
   · simp [mapTermRel]
+    -- 🎉 no goals
   · simp [mapTermRel]
+    -- 🎉 no goals
   · simp [mapTermRel, ih1, ih2]
+    -- 🎉 no goals
   · simp [mapTermRel, ih3]
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.map_term_rel_map_term_rel FirstOrder.Language.BoundedFormula.mapTermRel_mapTermRel
 
 @[simp]
@@ -547,10 +609,15 @@ theorem mapTermRel_id_id_id {n} (φ : L.BoundedFormula α n) :
     (φ.mapTermRel (fun _ => id) (fun _ => id) fun _ => id) = φ := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
+    -- 🎉 no goals
   · simp [mapTermRel]
+    -- 🎉 no goals
   · simp [mapTermRel]
+    -- 🎉 no goals
   · simp [mapTermRel, ih1, ih2]
+    -- 🎉 no goals
   · simp [mapTermRel, ih3]
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.map_term_rel_id_id_id FirstOrder.Language.BoundedFormula.mapTermRel_id_id_id
 
 /-- An equivalence of bounded formulas given by an equivalence of terms and an equivalence of
@@ -560,7 +627,9 @@ def mapTermRelEquiv (ft : ∀ n, L.Term (Sum α (Fin n)) ≃ L'.Term (Sum β (Fi
     (fr : ∀ n, L.Relations n ≃ L'.Relations n) {n} : L.BoundedFormula α n ≃ L'.BoundedFormula β n :=
   ⟨mapTermRel (fun n => ft n) (fun n => fr n) fun _ => id,
     mapTermRel (fun n => (ft n).symm) (fun n => (fr n).symm) fun _ => id, fun φ => by simp, fun φ =>
+                                                                                      -- 🎉 no goals
     by simp⟩
+       -- 🎉 no goals
 #align first_order.language.bounded_formula.map_term_rel_equiv FirstOrder.Language.BoundedFormula.mapTermRelEquiv
 
 /-- A function to help relabel the variables in bounded formulas. -/
@@ -573,17 +642,28 @@ theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → Sum β (Fin n)} {v : β �
     {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
     Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
+  -- ⊢ (Sum.elim v xs ∘ relabelAux g m) x = Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ …
   cases' x with x x
+  -- ⊢ (Sum.elim v xs ∘ relabelAux g m) (Sum.inl x) = Sum.elim (Sum.elim v (xs ∘ ca …
   · simp only [BoundedFormula.relabelAux, Function.comp_apply, Sum.map_inl, Sum.elim_inl]
+    -- ⊢ Sum.elim v xs (Sum.map id (↑finSumFinEquiv) (↑(Equiv.sumAssoc β (Fin n) (Fin …
     cases' g x with l r <;> simp
+    -- ⊢ Sum.elim v xs (Sum.map id (↑finSumFinEquiv) (↑(Equiv.sumAssoc β (Fin n) (Fin …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
   · simp [BoundedFormula.relabelAux]
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.sum_elim_comp_relabel_aux FirstOrder.Language.BoundedFormula.sum_elim_comp_relabelAux
 
 @[simp]
 theorem relabelAux_sum_inl (k : ℕ) :
     relabelAux (Sum.inl : α → Sum α (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
+  -- ⊢ relabelAux Sum.inl k x = Sum.map id (natAdd n) x
   cases x <;> · simp [relabelAux]
+  -- ⊢ relabelAux Sum.inl k (Sum.inl val✝) = Sum.map id (natAdd n) (Sum.inl val✝)
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align first_order.language.bounded_formula.relabel_aux_sum_inl FirstOrder.Language.BoundedFormula.relabelAux_sum_inl
 
 /-- Relabels a bounded formula's variables along a particular function. -/
@@ -618,30 +698,41 @@ theorem relabel_imp (g : α → Sum β (Fin n)) {k} (φ ψ : L.BoundedFormula α
 @[simp]
 theorem relabel_not (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α k) :
     φ.not.relabel g = (φ.relabel g).not := by simp [BoundedFormula.not]
+                                              -- 🎉 no goals
 #align first_order.language.bounded_formula.relabel_not FirstOrder.Language.BoundedFormula.relabel_not
 
 @[simp]
 theorem relabel_all (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.all.relabel g = (φ.relabel g).all := by
   rw [relabel, mapTermRel, relabel]
+  -- ⊢ all (castLE (_ : n + k + 1 ≥ n + (k + 1)) (mapTermRel (fun x t => Term.relab …
   simp
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.relabel_all FirstOrder.Language.BoundedFormula.relabel_all
 
 @[simp]
 theorem relabel_ex (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.ex.relabel g = (φ.relabel g).ex := by simp [BoundedFormula.ex]
+                                            -- 🎉 no goals
 #align first_order.language.bounded_formula.relabel_ex FirstOrder.Language.BoundedFormula.relabel_ex
 
 @[simp]
 theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
     (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
   simp only [relabel, relabelAux_sum_inl]
+  -- ⊢ mapTermRel (fun x t => Term.relabel (Sum.map id (natAdd 0)) t) (fun x => id) …
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
+    -- 🎉 no goals
   · simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
+    -- 🎉 no goals
   · simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
+    -- ⊢ (fun i => Term.relabel (Sum.map id (Fin.cast (_ : n✝ = 0 + n✝))) (ts✝ i)) =  …
+                                                      -- 🎉 no goals
   · simp [mapTermRel, ih1, ih2]
+    -- 🎉 no goals
   · simp [mapTermRel, ih3, castLE]
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.relabel_sum_inl FirstOrder.Language.BoundedFormula.relabel_sum_inl
 
 /-- Substitutes the variables in a given formula with terms. -/
@@ -683,9 +774,11 @@ inductive IsAtomic : L.BoundedFormula α n → Prop
 
 theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic := fun con => by
   cases con
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.not_all_is_atomic FirstOrder.Language.BoundedFormula.not_all_isAtomic
 
 theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
+                                                                                           -- 🎉 no goals
 #align first_order.language.bounded_formula.not_ex_is_atomic FirstOrder.Language.BoundedFormula.not_ex_isAtomic
 
 theorem IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
@@ -736,13 +829,18 @@ theorem IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
   cases' con with _ con
+  -- ⊢ False
   exact φ.not_all_isAtomic con
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.not_all_is_qf FirstOrder.Language.BoundedFormula.not_all_isQF
 
 theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
   cases' con with _ con _ _ con
+  -- ⊢ False
   · exact φ.not_ex_isAtomic con
+    -- 🎉 no goals
   · exact not_all_isQF _ con
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.not_ex_is_qf FirstOrder.Language.BoundedFormula.not_ex_isQF
 
 /-- Indicates that a bounded formula is in prenex normal form - that is, it consists of quantifiers
@@ -772,7 +870,9 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
 theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → Sum β (Fin n)) : (φ.relabel f).IsPrenex :=
   IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
+                                                                    -- 🎉 no goals
     fun _ h => by simp [h.ex]
+                  -- 🎉 no goals
 #align first_order.language.bounded_formula.is_prenex.relabel FirstOrder.Language.BoundedFormula.IsPrenex.relabel
 
 theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
@@ -812,9 +912,13 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
     IsPrenex (φ.toPrenexImpRight ψ) := by
   induction' hψ with _ _ hψ _ _ _ ih1 _ _ _ ih2
   · rw [hψ.toPrenexImpRight]
+    -- ⊢ IsPrenex (imp φ φ✝)
     exact (hφ.imp hψ).isPrenex
+    -- 🎉 no goals
   · exact (ih1 hφ.liftAt).all
+    -- 🎉 no goals
   · exact (ih2 hφ.liftAt).ex
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.is_prenex_to_prenex_imp_right FirstOrder.Language.BoundedFormula.isPrenex_toPrenexImpRight
 
 --Porting note: universes in different order
@@ -842,9 +946,13 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
     IsPrenex (φ.toPrenexImp ψ) := by
   induction' hφ with _ _ hφ _ _ _ ih1 _ _ _ ih2
   · rw [hφ.toPrenexImp]
+    -- ⊢ IsPrenex (toPrenexImpRight φ✝ ψ)
     exact isPrenex_toPrenexImpRight hφ hψ
+    -- 🎉 no goals
   · exact (ih1 hψ.liftAt).ex
+    -- 🎉 no goals
   · exact (ih2 hψ.liftAt).all
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.is_prenex_to_prenex_imp FirstOrder.Language.BoundedFormula.isPrenex_toPrenexImp
 
 --Porting note: universes in different order
@@ -886,13 +994,20 @@ set_option linter.uppercaseLean3 false in
 theorem id_onBoundedFormula :
     ((LHom.id L).onBoundedFormula : L.BoundedFormula α n → L.BoundedFormula α n) = id := by
   ext f
+  -- ⊢ onBoundedFormula (LHom.id L) f = id f
   induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
+    -- 🎉 no goals
   · rw [onBoundedFormula, LHom.id_onTerm, id.def, id.def, id.def, Term.bdEqual]
+    -- 🎉 no goals
   · rw [onBoundedFormula, LHom.id_onTerm]
+    -- ⊢ Relations.boundedFormula (onRelation (LHom.id L) R✝) (id ∘ ts✝) = id (rel R✝ …
     rfl
+    -- 🎉 no goals
   · rw [onBoundedFormula, ih1, ih2, id.def, id.def, id.def]
+    -- 🎉 no goals
   · rw [onBoundedFormula, ih3, id.def, id.def]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.id_on_bounded_formula FirstOrder.Language.LHom.id_onBoundedFormula
 
@@ -901,13 +1016,20 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
     ((φ.comp ψ).onBoundedFormula : L.BoundedFormula α n → L''.BoundedFormula α n) =
       φ.onBoundedFormula ∘ ψ.onBoundedFormula := by
   ext f
+  -- ⊢ onBoundedFormula (comp φ ψ) f = (onBoundedFormula φ ∘ onBoundedFormula ψ) f
   induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
+    -- 🎉 no goals
   · simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
+    -- 🎉 no goals
   · simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]
+    -- ⊢ Relations.boundedFormula (onRelation φ (onRelation ψ R✝)) ((onTerm φ ∘ onTer …
     rfl
+    -- 🎉 no goals
   · simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
+    -- 🎉 no goals
   · simp only [ih3, onBoundedFormula, Function.comp_apply]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.comp_on_bounded_formula FirstOrder.Language.LHom.comp_onBoundedFormula
 

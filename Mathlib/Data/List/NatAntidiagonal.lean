@@ -37,20 +37,31 @@ def antidiagonal (n : ℕ) : List (ℕ × ℕ) :=
 @[simp]
 theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_map]; constructor
+  -- ⊢ (∃ a, a ∈ range (n + 1) ∧ (a, n - a) = x) ↔ x.fst + x.snd = n
+                              -- ⊢ (∃ a, a ∈ range (n + 1) ∧ (a, n - a) = x) → x.fst + x.snd = n
   · rintro ⟨i, hi, rfl⟩
+    -- ⊢ (i, n - i).fst + (i, n - i).snd = n
     rw [mem_range, lt_succ_iff] at hi
+    -- ⊢ (i, n - i).fst + (i, n - i).snd = n
     exact add_tsub_cancel_of_le hi
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ ∃ a, a ∈ range (x.fst + x.snd + 1) ∧ (a, x.fst + x.snd - a) = x
     refine' ⟨x.fst, _, _⟩
+    -- ⊢ x.fst ∈ range (x.fst + x.snd + 1)
     · rw [mem_range, add_assoc, lt_add_iff_pos_right]
+      -- ⊢ 0 < x.snd + 1
       exact zero_lt_succ _
+      -- 🎉 no goals
     · exact Prod.ext rfl (by simp only [add_tsub_cancel_left])
+      -- 🎉 no goals
 #align list.nat.mem_antidiagonal List.Nat.mem_antidiagonal
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
 theorem length_antidiagonal (n : ℕ) : (antidiagonal n).length = n + 1 := by
   rw [antidiagonal, length_map, length_range]
+  -- 🎉 no goals
 #align list.nat.length_antidiagonal List.Nat.length_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
@@ -70,7 +81,10 @@ theorem antidiagonal_succ {n : ℕ} :
   simp only [antidiagonal, range_succ_eq_map, map_cons, true_and_iff, Nat.add_succ_sub_one,
     add_zero, id.def, eq_self_iff_true, tsub_zero, map_map, Prod.map_mk]
   apply congr rfl (congr rfl _)
+  -- ⊢ map ((fun i => (i, n + 1 - i)) ∘ succ ∘ succ) (range n) = map (Prod.map succ …
   ext; simp
+  -- ⊢ a✝ ∈ get? (map ((fun i => (i, n + 1 - i)) ∘ succ ∘ succ) (range n)) n✝ ↔ a✝  …
+       -- 🎉 no goals
 #align list.nat.antidiagonal_succ List.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' {n : ℕ} :
@@ -78,17 +92,24 @@ theorem antidiagonal_succ' {n : ℕ} :
   simp only [antidiagonal, range_succ, add_tsub_cancel_left, map_append, append_assoc, tsub_self,
     singleton_append, map_map, map]
   congr 1
+  -- ⊢ map (fun i => (i, n + 1 - i)) (range n) = map (Prod.map id succ ∘ fun i => ( …
   apply map_congr
+  -- ⊢ ∀ (x : ℕ), x ∈ range n → (x, n + 1 - x) = (Prod.map id succ ∘ fun i => (i, n …
   simp (config := { contextual := true }) [le_of_lt, Nat.succ_eq_add_one, Nat.sub_add_comm]
+  -- 🎉 no goals
 #align list.nat.antidiagonal_succ' List.Nat.antidiagonal_succ'
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
+  -- ⊢ map (Prod.map id succ) (antidiagonal (n + 1)) ++ [(n + 1 + 1, 0)] = (0, n +  …
   simp
+  -- ⊢ map (Prod.map id succ ∘ Prod.map succ id) (antidiagonal n) = map (Prod.map s …
   ext
+  -- ⊢ a✝ ∈ get? (map (Prod.map id succ ∘ Prod.map succ id) (antidiagonal n)) n✝ ↔  …
   simp
+  -- 🎉 no goals
 #align list.nat.antidiagonal_succ_succ' List.Nat.antidiagonal_succ_succ'
 
 theorem map_swap_antidiagonal {n : ℕ} :
@@ -96,7 +117,9 @@ theorem map_swap_antidiagonal {n : ℕ} :
   rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]
   apply map_congr
+  -- ⊢ ∀ (x : ℕ), x ∈ range (n + 1) → (Prod.swap ∘ fun i => (i, n - i)) x = ((fun i …
   simp (config := { contextual := true }) [Nat.sub_sub_self, lt_succ_iff]
+  -- 🎉 no goals
 #align list.nat.map_swap_antidiagonal List.Nat.map_swap_antidiagonal
 
 end Nat

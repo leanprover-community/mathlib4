@@ -39,26 +39,43 @@ def reesAlgebra : Subalgebra R R[X] where
   carrier := { f | ∀ i, f.coeff i ∈ I ^ i }
   mul_mem' hf hg i := by
     rw [coeff_mul]
+    -- ⊢ ∑ x in Finset.Nat.antidiagonal i, coeff a✝ x.fst * coeff b✝ x.snd ∈ I ^ i
     apply Ideal.sum_mem
+    -- ⊢ ∀ (c : ℕ × ℕ), c ∈ Finset.Nat.antidiagonal i → coeff a✝ c.fst * coeff b✝ c.s …
     rintro ⟨j, k⟩ e
+    -- ⊢ coeff a✝ (j, k).fst * coeff b✝ (j, k).snd ∈ I ^ i
     rw [← Finset.Nat.mem_antidiagonal.mp e, pow_add]
+    -- ⊢ coeff a✝ (j, k).fst * coeff b✝ (j, k).snd ∈ I ^ (j, k).fst * I ^ (j, k).snd
     exact Ideal.mul_mem_mul (hf j) (hg k)
+    -- 🎉 no goals
   one_mem' i := by
     rw [coeff_one]
+    -- ⊢ (if 0 = i then 1 else 0) ∈ I ^ i
     split_ifs with h
+    -- ⊢ 1 ∈ I ^ i
     · subst h
+      -- ⊢ 1 ∈ I ^ 0
       simp
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   add_mem' hf hg i := by
     rw [coeff_add]
+    -- ⊢ coeff a✝ i + coeff b✝ i ∈ I ^ i
     exact Ideal.add_mem _ (hf i) (hg i)
+    -- 🎉 no goals
   zero_mem' i := Ideal.zero_mem _
   algebraMap_mem' r i := by
     rw [algebraMap_apply, coeff_C]
+    -- ⊢ (if i = 0 then ↑(algebraMap R R) r else 0) ∈ I ^ i
     split_ifs with h
+    -- ⊢ ↑(algebraMap R R) r ∈ I ^ i
     · subst h
+      -- ⊢ ↑(algebraMap R R) r ∈ I ^ 0
       simp
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
 #align rees_algebra reesAlgebra
 
 theorem mem_reesAlgebra_iff (f : R[X]) : f ∈ reesAlgebra I ↔ ∀ i, f.coeff i ∈ I ^ i :=
@@ -68,9 +85,13 @@ theorem mem_reesAlgebra_iff (f : R[X]) : f ∈ reesAlgebra I ↔ ∀ i, f.coeff 
 theorem mem_reesAlgebra_iff_support (f : R[X]) :
     f ∈ reesAlgebra I ↔ ∀ i ∈ f.support, f.coeff i ∈ I ^ i := by
   apply forall_congr'
+  -- ⊢ ∀ (a : ℕ), coeff f a ∈ I ^ a ↔ a ∈ support f → coeff f a ∈ I ^ a
   intro a
+  -- ⊢ coeff f a ∈ I ^ a ↔ a ∈ support f → coeff f a ∈ I ^ a
   rw [mem_support_iff, Iff.comm, imp_iff_right_iff, Ne.def, ← imp_iff_not_or]
+  -- ⊢ coeff f a = 0 → coeff f a ∈ I ^ a
   exact fun e => e.symm ▸ (I ^ a).zero_mem
+  -- 🎉 no goals
 #align mem_rees_algebra_iff_support mem_reesAlgebra_iff_support
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
@@ -82,30 +103,48 @@ theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :
     monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
   induction' n with n hn generalizing r
+  -- ⊢ ↑(monomial Nat.zero) r ∈ Algebra.adjoin R ↑(Submodule.map (monomial 1) I)
   · exact Subalgebra.algebraMap_mem _ _
+    -- 🎉 no goals
   · rw [pow_succ] at hr
+    -- ⊢ ↑(monomial (Nat.succ n)) r ∈ Algebra.adjoin R ↑(Submodule.map (monomial 1) I)
     apply Submodule.smul_induction_on
       -- Porting note: did not need help with motive previously
       (p := fun r => (monomial (Nat.succ n)) r ∈ Algebra.adjoin R (Submodule.map (monomial 1) I)) hr
     · intro r hr s hs
+      -- ⊢ ↑(monomial (Nat.succ n)) (r • s) ∈ Algebra.adjoin R ↑(Submodule.map (monomia …
       rw [Nat.succ_eq_one_add, smul_eq_mul, ← monomial_mul_monomial]
+      -- ⊢ ↑(monomial 1) r * ↑(monomial n) s ∈ Algebra.adjoin R ↑(Submodule.map (monomi …
       exact Subalgebra.mul_mem _ (Algebra.subset_adjoin (Set.mem_image_of_mem _ hr)) (hn hs)
+      -- 🎉 no goals
     · intro x y hx hy
+      -- ⊢ ↑(monomial (Nat.succ n)) (x + y) ∈ Algebra.adjoin R ↑(Submodule.map (monomia …
       rw [monomial_add]
+      -- ⊢ ↑(monomial (Nat.succ n)) x + ↑(monomial (Nat.succ n)) y ∈ Algebra.adjoin R ↑ …
       exact Subalgebra.add_mem _ hx hy
+      -- 🎉 no goals
 #align monomial_mem_adjoin_monomial monomial_mem_adjoin_monomial
 
 theorem adjoin_monomial_eq_reesAlgebra :
     Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) = reesAlgebra I := by
   apply le_antisymm
+  -- ⊢ Algebra.adjoin R ↑(Submodule.map (monomial 1) I) ≤ reesAlgebra I
   · apply Algebra.adjoin_le _
+    -- ⊢ ↑(Submodule.map (monomial 1) I) ⊆ ↑(reesAlgebra I)
     rintro _ ⟨r, hr, rfl⟩
+    -- ⊢ ↑(monomial 1) r ∈ ↑(reesAlgebra I)
     exact reesAlgebra.monomial_mem.mpr (by rwa [pow_one])
+    -- 🎉 no goals
   · intro p hp
+    -- ⊢ p ∈ Algebra.adjoin R ↑(Submodule.map (monomial 1) I)
     rw [p.as_sum_support]
+    -- ⊢ ∑ i in support p, ↑(monomial i) (coeff p i) ∈ Algebra.adjoin R ↑(Submodule.m …
     apply Subalgebra.sum_mem _ _
+    -- ⊢ ∀ (x : ℕ), x ∈ support p → ↑(monomial x) (coeff p x) ∈ Algebra.adjoin R ↑(Su …
     rintro i -
+    -- ⊢ ↑(monomial i) (coeff p i) ∈ Algebra.adjoin R ↑(Submodule.map (monomial 1) I)
     exact monomial_mem_adjoin_monomial (hp i)
+    -- 🎉 no goals
 #align adjoin_monomial_eq_rees_algebra adjoin_monomial_eq_reesAlgebra
 
 variable {I}

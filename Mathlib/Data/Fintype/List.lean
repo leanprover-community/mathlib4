@@ -38,8 +38,11 @@ namespace Multiset
 def lists : Multiset α → Finset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations.toFinset) fun l l' (h : l ~ l') => by
     ext sl
+    -- ⊢ sl ∈ (fun l => List.toFinset (permutations l)) l ↔ sl ∈ (fun l => List.toFin …
     simp only [mem_permutations, List.mem_toFinset]
+    -- ⊢ sl ~ l ↔ sl ~ l'
     exact ⟨fun hs => hs.trans h, fun hs => hs.trans h.symm⟩
+    -- 🎉 no goals
 #align multiset.lists Multiset.lists
 
 @[simp]
@@ -50,7 +53,9 @@ theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations.toFin
 @[simp]
 theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = ⟦l⟧ := by
   induction s using Quotient.inductionOn
+  -- ⊢ l ∈ lists (Quotient.mk (isSetoid α) a✝) ↔ Quotient.mk (isSetoid α) a✝ = Quot …
   simpa using perm_comm
+  -- 🎉 no goals
 #align multiset.mem_lists_iff Multiset.mem_lists_iff
 
 end Multiset
@@ -58,10 +63,17 @@ end Multiset
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
   Fintype.subtype ((Finset.univ : Finset α).powerset.biUnion fun s => s.val.lists) fun l => by
     suffices (∃ a : Finset α, a.val = ↑l) ↔ l.Nodup by simpa
+    -- ⊢ (∃ a, a.val = ↑l) ↔ Nodup l
     constructor
+    -- ⊢ (∃ a, a.val = ↑l) → Nodup l
     · rintro ⟨s, hs⟩
+      -- ⊢ Nodup l
       simpa [← Multiset.coe_nodup, ← hs] using s.nodup
+      -- 🎉 no goals
     · intro hl
+      -- ⊢ ∃ a, a.val = ↑l
       refine' ⟨⟨↑l, hl⟩, _⟩
+      -- ⊢ { val := ↑l, nodup := hl }.val = ↑l
       simp
+      -- 🎉 no goals
 #align fintype_nodup_list fintypeNodupList

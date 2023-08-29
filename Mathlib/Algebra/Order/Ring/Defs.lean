@@ -240,10 +240,14 @@ theorem bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right
 theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
   | 0 => by
     rw [pow_zero]
+    -- ⊢ 0 ≤ 1
     exact zero_le_one
+    -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ]
+    -- ⊢ 0 ≤ a * a ^ n
     exact mul_nonneg H (pow_nonneg H _)
+    -- 🎉 no goals
 #align pow_nonneg pow_nonneg
 
 -- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
@@ -252,6 +256,7 @@ theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (
     a + (2 + b) ≤ a + (a + a * b) :=
       add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| (@one_le_two α).trans a2) a
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
+                          -- 🎉 no goals
 #align add_le_mul_two_add add_le_mul_two_add
 
 theorem one_le_mul_of_one_le_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) : (1 : α) ≤ a * b :=
@@ -301,7 +306,9 @@ theorem bit1_pos [Nontrivial α] (h : 0 ≤ a) : 0 < bit1 a :=
 
 theorem bit1_pos' (h : 0 < a) : 0 < bit1 a := by
   nontriviality
+  -- ⊢ 0 < bit1 a
   exact bit1_pos h.le
+  -- 🎉 no goals
 #align bit1_pos' bit1_pos'
 
 end
@@ -340,20 +347,25 @@ instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
   { ‹OrderedRing α›, (Ring.toSemiring : Semiring α) with
     mul_le_mul_of_nonneg_left := fun a b c h hc => by
       simpa only [mul_sub, sub_nonneg] using OrderedRing.mul_nonneg _ _ hc (sub_nonneg.2 h),
+      -- 🎉 no goals
     mul_le_mul_of_nonneg_right := fun a b c h hc => by
       simpa only [sub_mul, sub_nonneg] using OrderedRing.mul_nonneg _ _ (sub_nonneg.2 h) hc }
+      -- 🎉 no goals
 #align ordered_ring.to_ordered_semiring OrderedRing.toOrderedSemiring
 
 theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
   simpa only [neg_mul, neg_le_neg_iff] using mul_le_mul_of_nonneg_left h (neg_nonneg.2 hc)
+  -- 🎉 no goals
 #align mul_le_mul_of_nonpos_left mul_le_mul_of_nonpos_left
 
 theorem mul_le_mul_of_nonpos_right (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   simpa only [mul_neg, neg_le_neg_iff] using mul_le_mul_of_nonneg_right h (neg_nonneg.2 hc)
+  -- 🎉 no goals
 #align mul_le_mul_of_nonpos_right mul_le_mul_of_nonpos_right
 
 theorem mul_nonneg_of_nonpos_of_nonpos (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a * b := by
   simpa only [zero_mul] using mul_le_mul_of_nonpos_right ha hb
+  -- 🎉 no goals
 #align mul_nonneg_of_nonpos_of_nonpos mul_nonneg_of_nonpos_of_nonpos
 
 theorem mul_le_mul_of_nonneg_of_nonpos (hca : c ≤ a) (hbd : b ≤ d) (hc : 0 ≤ c) (hb : b ≤ 0) :
@@ -389,21 +401,25 @@ theorem mul_le_mul_of_nonpos_of_nonpos' (hca : c ≤ a) (hdb : d ≤ b) (ha : a 
 /-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative.  -/
 theorem le_mul_of_le_one_left (hb : b ≤ 0) (h : a ≤ 1) : b ≤ a * b := by
   simpa only [one_mul] using mul_le_mul_of_nonpos_right h hb
+  -- 🎉 no goals
 #align le_mul_of_le_one_left le_mul_of_le_one_left
 
 /-- Variant of `le_mul_of_one_le_left` for `b` non-positive instead of non-negative. -/
 theorem mul_le_of_one_le_left (hb : b ≤ 0) (h : 1 ≤ a) : a * b ≤ b := by
   simpa only [one_mul] using mul_le_mul_of_nonpos_right h hb
+  -- 🎉 no goals
 #align mul_le_of_one_le_left mul_le_of_one_le_left
 
 /-- Variant of `mul_le_of_le_one_right` for `a` non-positive instead of non-negative. -/
 theorem le_mul_of_le_one_right (ha : a ≤ 0) (h : b ≤ 1) : a ≤ a * b := by
   simpa only [mul_one] using mul_le_mul_of_nonpos_left h ha
+  -- 🎉 no goals
 #align le_mul_of_le_one_right le_mul_of_le_one_right
 
 /-- Variant of `le_mul_of_one_le_right` for `a` non-positive instead of non-negative. -/
 theorem mul_le_of_one_le_right (ha : a ≤ 0) (h : 1 ≤ b) : a * b ≤ a := by
   simpa only [mul_one] using mul_le_mul_of_nonpos_left h ha
+  -- 🎉 no goals
 #align mul_le_of_one_le_right mul_le_of_one_le_right
 
 section Monotone
@@ -452,8 +468,11 @@ end Monotone
 
 theorem le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c :=
   ⟨fun h => ⟨b - a, sub_nonneg.mpr h, by simp⟩, fun ⟨c, hc, h⟩ => by
+                                         -- 🎉 no goals
     rw [h, le_add_iff_nonneg_right]
+    -- ⊢ 0 ≤ c
     exact hc⟩
+    -- 🎉 no goals
 #align le_iff_exists_nonneg_add le_iff_exists_nonneg_add
 
 end OrderedRing
@@ -491,16 +510,26 @@ def StrictOrderedSemiring.toOrderedSemiring' [@DecidableRel α (· ≤ ·)] : Or
   { ‹StrictOrderedSemiring α› with
     mul_le_mul_of_nonneg_left := fun a b c hab hc => by
       obtain rfl | hab := Decidable.eq_or_lt_of_le hab
+      -- ⊢ c * a ≤ c * a
       · rfl
+        -- 🎉 no goals
       obtain rfl | hc := Decidable.eq_or_lt_of_le hc
+      -- ⊢ 0 * a ≤ 0 * b
       · simp
+        -- 🎉 no goals
       · exact (mul_lt_mul_of_pos_left hab hc).le,
+        -- 🎉 no goals
     mul_le_mul_of_nonneg_right := fun a b c hab hc => by
       obtain rfl | hab := Decidable.eq_or_lt_of_le hab
+      -- ⊢ a * c ≤ a * c
       · rfl
+        -- 🎉 no goals
       obtain rfl | hc := Decidable.eq_or_lt_of_le hc
+      -- ⊢ a * 0 ≤ b * 0
       · simp
+        -- 🎉 no goals
       · exact (mul_lt_mul_of_pos_right hab hc).le }
+        -- 🎉 no goals
 #align strict_ordered_semiring.to_ordered_semiring' StrictOrderedSemiring.toOrderedSemiring'
 
 -- see Note [lower instance priority]
@@ -526,11 +555,16 @@ theorem mul_lt_mul' (hac : a ≤ c) (hbd : b < d) (hb : 0 ≤ b) (hc : 0 < c) : 
 theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
   | 0 => by
     nontriviality
+    -- ⊢ 0 < a ^ 0
     rw [pow_zero]
+    -- ⊢ 0 < 1
     exact zero_lt_one
+    -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ]
+    -- ⊢ 0 < a * a ^ n
     exact mul_pos H (pow_pos H _)
+    -- 🎉 no goals
 #align pow_pos pow_pos
 
 theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
@@ -550,6 +584,8 @@ protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a 
     (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 => mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 => by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
+    -- ⊢ 0 < c * d
+                         -- 🎉 no goals
 #align decidable.mul_lt_mul'' Decidable.mul_lt_mul''
 
 theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
@@ -558,12 +594,16 @@ theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d
 
 theorem lt_mul_left (hn : 0 < a) (hm : 1 < b) : a < b * a := by
   convert mul_lt_mul_of_pos_right hm hn
+  -- ⊢ a = 1 * a
   rw [one_mul]
+  -- 🎉 no goals
 #align lt_mul_left lt_mul_left
 
 theorem lt_mul_right (hn : 0 < a) (hm : 1 < b) : a < a * b := by
   convert mul_lt_mul_of_pos_left hm hn
+  -- ⊢ a = a * 1
   rw [mul_one]
+  -- 🎉 no goals
 #align lt_mul_right lt_mul_right
 
 theorem lt_mul_self (hn : 1 < a) : a < a * a :=
@@ -657,8 +697,10 @@ instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrd
     le_of_add_le_add_left := @le_of_add_le_add_left α _ _ _,
     mul_lt_mul_of_pos_left := fun a b c h hc => by
       simpa only [mul_sub, sub_pos] using StrictOrderedRing.mul_pos _ _ hc (sub_pos.2 h),
+      -- 🎉 no goals
     mul_lt_mul_of_pos_right := fun a b c h hc => by
       simpa only [sub_mul, sub_pos] using StrictOrderedRing.mul_pos _ _ (sub_pos.2 h) hc }
+      -- 🎉 no goals
 #align strict_ordered_ring.to_strict_ordered_semiring StrictOrderedRing.toStrictOrderedSemiring
 
 -- See note [reducible non-instances]
@@ -669,10 +711,15 @@ def StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRin
   { ‹StrictOrderedRing α›, (Ring.toSemiring : Semiring α) with
     mul_nonneg := fun a b ha hb => by
       obtain ha | ha := Decidable.eq_or_lt_of_le ha
+      -- ⊢ 0 ≤ a * b
       · rw [← ha, zero_mul]
+        -- 🎉 no goals
       obtain hb | hb := Decidable.eq_or_lt_of_le hb
+      -- ⊢ 0 ≤ a * b
       · rw [← hb, mul_zero]
+        -- 🎉 no goals
       · exact (StrictOrderedRing.mul_pos _ _ ha hb).le }
+        -- 🎉 no goals
 #align strict_ordered_ring.to_ordered_ring' StrictOrderedRing.toOrderedRing'
 
 -- see Note [lower instance priority]
@@ -685,34 +732,41 @@ instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
 
 theorem mul_lt_mul_of_neg_left (h : b < a) (hc : c < 0) : c * a < c * b := by
   simpa only [neg_mul, neg_lt_neg_iff] using mul_lt_mul_of_pos_left h (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align mul_lt_mul_of_neg_left mul_lt_mul_of_neg_left
 
 theorem mul_lt_mul_of_neg_right (h : b < a) (hc : c < 0) : a * c < b * c := by
   simpa only [mul_neg, neg_lt_neg_iff] using mul_lt_mul_of_pos_right h (neg_pos_of_neg hc)
+  -- 🎉 no goals
 #align mul_lt_mul_of_neg_right mul_lt_mul_of_neg_right
 
 theorem mul_pos_of_neg_of_neg {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
   simpa only [zero_mul] using mul_lt_mul_of_neg_right ha hb
+  -- 🎉 no goals
 #align mul_pos_of_neg_of_neg mul_pos_of_neg_of_neg
 
 /-- Variant of `mul_lt_of_lt_one_left` for `b` negative instead of positive. -/
 theorem lt_mul_of_lt_one_left (hb : b < 0) (h : a < 1) : b < a * b := by
   simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
+  -- 🎉 no goals
 #align lt_mul_of_lt_one_left lt_mul_of_lt_one_left
 
 /-- Variant of `lt_mul_of_one_lt_left` for `b` negative instead of positive. -/
 theorem mul_lt_of_one_lt_left (hb : b < 0) (h : 1 < a) : a * b < b := by
   simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
+  -- 🎉 no goals
 #align mul_lt_of_one_lt_left mul_lt_of_one_lt_left
 
 /-- Variant of `mul_lt_of_lt_one_right` for `a` negative instead of positive. -/
 theorem lt_mul_of_lt_one_right (ha : a < 0) (h : b < 1) : a < a * b := by
   simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
+  -- 🎉 no goals
 #align lt_mul_of_lt_one_right lt_mul_of_lt_one_right
 
 /-- Variant of `lt_mul_of_lt_one_right` for `a` negative instead of positive. -/
 theorem mul_lt_of_one_lt_right (ha : a < 0) (h : 1 < b) : a * b < a := by
   simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
+  -- 🎉 no goals
 #align mul_lt_of_one_lt_right mul_lt_of_one_lt_right
 
 section Monotone
@@ -795,14 +849,22 @@ attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiri
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
+  -- ⊢ ¬(¬(0 ≤ a ∧ 0 ≤ b) ∧ ¬(a ≤ 0 ∧ b ≤ 0))
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
+  -- ⊢ (0 ≤ a → b < 0) → ¬(a ≤ 0 → 0 < b)
+                               -- ⊢ False
+                                             -- ⊢ a * b < 0
   -- Porting note: for the middle case, we used to have `rfl`, but it is now rejected.
   -- https://github.com/leanprover/std4/issues/62
   rcases lt_trichotomy 0 a with (ha | ha | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
+    -- 🎉 no goals
   · subst ha
+    -- ⊢ 0 * b < 0
     exact ((ab le_rfl).asymm (nab le_rfl)).elim
+    -- 🎉 no goals
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
+    -- 🎉 no goals
 #align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
 
 theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
@@ -836,11 +898,13 @@ theorem zero_le_mul_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
   -- simp
   -- but the `convert` no longer works.
   simpa using (mul_le_mul_left h : c * 0 ≤ c * b ↔ 0 ≤ b)
+  -- 🎉 no goals
 #align zero_le_mul_left zero_le_mul_left
 
 @[simp]
 theorem zero_le_mul_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
   simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
+  -- 🎉 no goals
 #align zero_le_mul_right zero_le_mul_right
 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
@@ -884,11 +948,13 @@ section
 @[simp]
 theorem bit0_le_bit0 : bit0 a ≤ bit0 b ↔ a ≤ b := by
   rw [bit0, bit0, ← two_mul, ← two_mul, mul_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  -- 🎉 no goals
 #align bit0_le_bit0 bit0_le_bit0
 
 @[simp]
 theorem bit0_lt_bit0 : bit0 a < bit0 b ↔ a < b := by
   rw [bit0, bit0, ← two_mul, ← two_mul, mul_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  -- 🎉 no goals
 #align bit0_lt_bit0 bit0_lt_bit0
 
 @[simp]
@@ -904,21 +970,25 @@ theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
 @[simp]
 theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
   rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  -- 🎉 no goals
 #align one_le_bit1 one_le_bit1
 
 @[simp]
 theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
   rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  -- 🎉 no goals
 #align one_lt_bit1 one_lt_bit1
 
 @[simp]
 theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
   rw [bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  -- 🎉 no goals
 #align zero_le_bit0 zero_le_bit0
 
 @[simp]
 theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
   rw [bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  -- 🎉 no goals
 #align zero_lt_bit0 zero_lt_bit0
 
 end
@@ -1027,8 +1097,14 @@ instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α 
   { ‹LinearOrderedRing α› with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro a b hab
+      -- ⊢ a = 0 ∨ b = 0
       refine' Decidable.or_iff_not_and_not.2 fun h => _; revert hab
+      -- ⊢ False
+                                                         -- ⊢ a * b = 0 → False
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
+      -- ⊢ a * b = 0 → False
+                                               -- ⊢ a * b = 0 → False
+                                               -- ⊢ a * b = 0 → False
       exacts [(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
 #align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
@@ -1039,10 +1115,14 @@ instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
   { (inferInstance : Nontrivial α) with
     mul_left_cancel_of_ne_zero := fun {a b c} ha h => by
       rw [← sub_eq_zero, ← mul_sub] at h
+      -- ⊢ b = c
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha),
+      -- 🎉 no goals
     mul_right_cancel_of_ne_zero := fun {a b c} hb h => by
       rw [← sub_eq_zero, ← sub_mul] at h
+      -- ⊢ a = c
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+      -- 🎉 no goals
 #align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
@@ -1052,6 +1132,7 @@ theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
 
 theorem mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff, neg_pos, neg_lt_zero]
+  -- 🎉 no goals
 #align mul_neg_iff mul_neg_iff
 
 theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
@@ -1062,9 +1143,13 @@ theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b �
 /-- Out of three elements of a `LinearOrderedRing`, two must have the same sign. -/
 theorem mul_nonneg_of_three (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤ c * a := by
   iterate 3 rw [mul_nonneg_iff]
+  -- ⊢ (0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0) ∨ (0 ≤ b ∧ 0 ≤ c ∨ b ≤ 0 ∧ c ≤ 0) ∨ 0 ≤ c ∧  …
   have or_a := le_total 0 a
+  -- ⊢ (0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0) ∨ (0 ≤ b ∧ 0 ≤ c ∨ b ≤ 0 ∧ c ≤ 0) ∨ 0 ≤ c ∧  …
   have or_b := le_total 0 b
+  -- ⊢ (0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0) ∨ (0 ≤ b ∧ 0 ≤ c ∨ b ≤ 0 ∧ c ≤ 0) ∨ 0 ≤ c ∧  …
   have or_c := le_total 0 c
+  -- ⊢ (0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0) ∨ (0 ≤ b ∧ 0 ≤ c ∨ b ≤ 0 ∧ c ≤ 0) ∨ 0 ≤ c ∧  …
   -- Porting note used to be by `itauto` from here
   exact Or.elim or_c
     (fun (h0 : 0 ≤ c) =>
@@ -1087,6 +1172,7 @@ theorem mul_nonneg_of_three (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤
 
 theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
   rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
+  -- 🎉 no goals
 #align mul_nonpos_iff mul_nonpos_iff
 
 theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
@@ -1096,17 +1182,20 @@ theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
 @[simp]
 theorem neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
   simp [neg_le_iff_add_nonneg, ← two_mul, mul_nonneg_iff, zero_le_one, (zero_lt_two' α).not_le]
+  -- 🎉 no goals
 #align neg_le_self_iff neg_le_self_iff
 
 @[simp]
 theorem neg_lt_self_iff : -a < a ↔ 0 < a := by
   simp [neg_lt_iff_pos_add, ← two_mul, mul_pos_iff, zero_lt_one, (zero_lt_two' α).not_lt]
+  -- 🎉 no goals
 #align neg_lt_self_iff neg_lt_self_iff
 
 @[simp]
 theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
   calc
     a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
+                             -- 🎉 no goals
     _ ↔ 0 ≤ -a := neg_le_self_iff
     _ ↔ a ≤ 0 := neg_nonneg
 #align le_neg_self_iff le_neg_self_iff
@@ -1115,6 +1204,7 @@ theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
 theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
   calc
     a < -a ↔ - -a < -a := by rw [neg_neg]
+                             -- 🎉 no goals
     _ ↔ 0 < -a := neg_lt_self_iff
     _ ↔ a < 0 := neg_pos
 #align lt_neg_self_iff lt_neg_self_iff
@@ -1145,10 +1235,12 @@ theorem mul_lt_mul_right_of_neg {a b c : α} (h : c < 0) : a * c < b * c ↔ b <
 
 theorem lt_of_mul_lt_mul_of_nonpos_left (h : c * a < c * b) (hc : c ≤ 0) : b < a :=
   lt_of_mul_lt_mul_left (by rwa [neg_mul, neg_mul, neg_lt_neg_iff]) <| neg_nonneg.2 hc
+                            -- 🎉 no goals
 #align lt_of_mul_lt_mul_of_nonpos_left lt_of_mul_lt_mul_of_nonpos_left
 
 theorem lt_of_mul_lt_mul_of_nonpos_right (h : a * c < b * c) (hc : c ≤ 0) : b < a :=
   lt_of_mul_lt_mul_right (by rwa [mul_neg, mul_neg, neg_lt_neg_iff]) <| neg_nonneg.2 hc
+                             -- 🎉 no goals
 #align lt_of_mul_lt_mul_of_nonpos_right lt_of_mul_lt_mul_of_nonpos_right
 
 theorem cmp_mul_neg_left {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) = cmp c b :=
@@ -1166,12 +1258,19 @@ theorem sub_one_lt (a : α) : a - 1 < a :=
 @[simp]
 theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
   constructor
+  -- ⊢ 0 < a * a → a ≠ 0
   · rintro h rfl
+    -- ⊢ False
     rw [mul_zero] at h
+    -- ⊢ False
     exact h.false
+    -- 🎉 no goals
   · intro h
+    -- ⊢ 0 < a * a
     cases' h.lt_or_lt with h h
+    -- ⊢ 0 < a * a
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
+    -- 🎉 no goals
 #align mul_self_pos mul_self_pos
 
 theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=
@@ -1207,6 +1306,9 @@ theorem pos_iff_neg_of_mul_neg (hab : a * b < 0) : 0 < a ↔ b < 0 :=
 /-- The sum of two squares is zero iff both elements are zero. -/
 theorem mul_self_add_mul_self_eq_zero {x y : α} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
   rw [add_eq_zero_iff', mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
+  -- ⊢ 0 ≤ x * x
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align mul_self_add_mul_self_eq_zero mul_self_add_mul_self_eq_zero
 
 theorem eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
@@ -1238,6 +1340,8 @@ theorem max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
+             -- 🎉 no goals
+                                                      -- 🎉 no goals
 #align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
 
 end LinearOrderedCommRing

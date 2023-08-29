@@ -78,8 +78,11 @@ protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} 
     (fract_a_ne_zero : Int.fract a ≠ 0) :
     ((⌊a⌋ : K) * b + c) / Int.fract a + b = (b * a + c) / Int.fract a := by
   field_simp [fract_a_ne_zero]
+  -- ⊢ ↑⌊a⌋ * b + c + b * Int.fract a = b * a + c
   rw [Int.fract]
+  -- ⊢ ↑⌊a⌋ * b + c + b * (a - ↑⌊a⌋) = b * a + c
   ring
+  -- 🎉 no goals
 #align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some_aux_comp
 
 open GeneralizedContinuedFraction
@@ -104,14 +107,19 @@ theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
       v = compExactValue ((of v).continuantsAux n) ((of v).continuantsAux <| n + 1) ifp_n.fr := by
   let g := of v
+  -- ⊢ ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n → v = compE …
   induction' n with n IH
+  -- ⊢ ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v Nat.zero = some ifp_n → v  …
   · intro ifp_zero stream_zero_eq
+    -- ⊢ v = compExactValue (continuantsAux (of v) Nat.zero) (continuantsAux (of v) ( …
     -- Nat.zero
     have : IntFractPair.of v = ifp_zero := by
       have : IntFractPair.stream v 0 = some (IntFractPair.of v) := rfl
       simpa only [Nat.zero_eq, this, Option.some.injEq] using stream_zero_eq
     cases this
+    -- ⊢ v = compExactValue (continuantsAux (of v) Nat.zero) (continuantsAux (of v) ( …
     cases' Decidable.em (Int.fract v = 0) with fract_eq_zero fract_ne_zero
+    -- ⊢ v = compExactValue (continuantsAux (of v) Nat.zero) (continuantsAux (of v) ( …
     -- Int.fract v = 0; we must then have `v = ⌊v⌋`
     · suffices v = ⌊v⌋ by
         -- Porting note: was `simpa [continuantsAux, fract_eq_zero, compExactValue]`
@@ -126,32 +134,46 @@ theorem compExactValue_correctness_of_stream_eq_some :
         of_h_eq_floor, compExactValue]
       -- Porting note: this and the if_neg rewrite are needed
       have : (IntFractPair.of v).fr = Int.fract v := rfl
+      -- ⊢ v = if (IntFractPair.of v).fr = 0 then ↑⌊v⌋ else ↑⌊v⌋ + (IntFractPair.of v).fr
       rw [this, if_neg fract_ne_zero, Int.floor_add_fract]
+      -- 🎉 no goals
   · intro ifp_succ_n succ_nth_stream_eq
+    -- ⊢ v = compExactValue (continuantsAux (of v) (Nat.succ n)) (continuantsAux (of  …
     -- Nat.succ
     obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :
       ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
         ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
     exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+    -- ⊢ v = compExactValue (continuantsAux (of v) (Nat.succ n)) (continuantsAux (of  …
     -- introduce some notation
     let conts := g.continuantsAux (n + 2)
+    -- ⊢ v = compExactValue (continuantsAux (of v) (Nat.succ n)) (continuantsAux (of  …
     set pconts := g.continuantsAux (n + 1) with pconts_eq
+    -- ⊢ v = compExactValue pconts (continuantsAux (of v) (Nat.succ n + 1)) ifp_succ_ …
     set ppconts := g.continuantsAux n with ppconts_eq
+    -- ⊢ v = compExactValue pconts (continuantsAux (of v) (Nat.succ n + 1)) ifp_succ_ …
     cases' Decidable.em (ifp_succ_n.fr = 0) with ifp_succ_n_fr_eq_zero ifp_succ_n_fr_ne_zero
+    -- ⊢ v = compExactValue pconts (continuantsAux (of v) (Nat.succ n + 1)) ifp_succ_ …
     -- ifp_succ_n.fr = 0
     · suffices v = conts.a / conts.b by simpa [compExactValue, ifp_succ_n_fr_eq_zero]
+      -- ⊢ v = conts.a / conts.b
       -- use the IH and the fact that ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ to prove this case
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_inv_eq_floor⟩ :
         ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋
       exact IntFractPair.exists_succ_nth_stream_of_fr_zero succ_nth_stream_eq ifp_succ_n_fr_eq_zero
+      -- ⊢ v = conts.a / conts.b
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
+      -- ⊢ v = conts.a / conts.b
       cases this
+      -- ⊢ v = conts.a / conts.b
       have s_nth_eq : g.s.get? n = some ⟨1, ⌊ifp_n.fr⁻¹⌋⟩ :=
         get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq nth_fract_ne_zero
       rw [← ifp_n_fract_inv_eq_floor] at s_nth_eq
+      -- ⊢ v = conts.a / conts.b
       suffices v = compExactValue ppconts pconts ifp_n.fr by
         simpa [continuantsAux, s_nth_eq, compExactValue, nth_fract_ne_zero] using this
       exact IH nth_stream_eq
+      -- 🎉 no goals
     -- ifp_succ_n.fr ≠ 0
     · -- use the IH to show that the following equality suffices
       suffices
@@ -164,17 +186,24 @@ theorem compExactValue_correctness_of_stream_eq_some :
         ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
           ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
       exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       cases this
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       -- get the correspondence between ifp_n and g.s.nth n
       have s_nth_eq : g.s.get? n = some ⟨1, (⌊ifp_n.fr⁻¹⌋ : K)⟩ :=
         get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq ifp_n_fract_ne_zero
       -- the claim now follows by unfolding the definitions and tedious calculations
       -- some shorthand notation
       let ppA := ppconts.a
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       let ppB := ppconts.b
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       let pA := pconts.a
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       let pB := pconts.b
+      -- ⊢ compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts (IntFra …
       have : compExactValue ppconts pconts ifp_n.fr =
           (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
         -- unfold compExactValue and the convergent computation once
@@ -182,14 +211,18 @@ theorem compExactValue_correctness_of_stream_eq_some :
           nextDenominator]
         ac_rfl
       rw [this]
+      -- ⊢ (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) = compExactValue pconts co …
       -- two calculations needed to show the claim
       have tmp_calc :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pA ppA ifp_succ_n_fr_ne_zero
       have tmp_calc' :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
       let f := Int.fract (1 / ifp_n.fr)
+      -- ⊢ (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) = compExactValue pconts co …
       have f_ne_zero : f ≠ 0 := by simpa using ifp_succ_n_fr_ne_zero
+      -- ⊢ (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) = compExactValue pconts co …
       rw [inv_eq_one_div] at tmp_calc tmp_calc'
+      -- ⊢ (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) = compExactValue pconts co …
       -- Porting note: the `tmp_calc`s need to be massaged, and some processing after `ac_rfl` done,
       -- because `field_simp` is not as powerful
       have hA : (↑⌊1 / ifp_n.fr⌋ * pA + ppA) + pA * f = pA * (1 / ifp_n.fr) + ppA := by
@@ -204,10 +237,15 @@ theorem compExactValue_correctness_of_stream_eq_some :
       field_simp [compExactValue, continuantsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
         nextContinuants, nextNumerator, nextDenominator]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
+      -- ⊢ ((continuantsAux (of v) n).a * ifp_n.fr + (continuantsAux (of v) (n + 1)).a) …
       rw [one_div, if_neg _, ← one_div, hfr]
+      -- ⊢ ((continuantsAux (of v) n).a * ifp_n.fr + (continuantsAux (of v) (n + 1)).a) …
       field_simp [hA, hB]
+      -- ⊢ ((continuantsAux (of v) n).a * ifp_n.fr + (continuantsAux (of v) (n + 1)).a) …
       ac_rfl
+      -- ⊢ ¬(IntFractPair.of ifp_n.fr⁻¹).fr = 0
       rwa [inv_eq_one_div, hfr]
+      -- 🎉 no goals
 #align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some
 
 open GeneralizedContinuedFraction (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
@@ -267,12 +305,19 @@ be `v`.
 theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
     ∀ᶠ n in atTop, v = (of v).convergents n := by
   rw [eventually_atTop]
+  -- ⊢ ∃ a, ∀ (b : ℕ), b ≥ a → v = convergents (of v) b
   obtain ⟨n, terminated_at_n⟩ : ∃ n, (of v).TerminatedAt n
+  -- ⊢ ∃ n, TerminatedAt (of v) n
   exact terminates
+  -- ⊢ ∃ a, ∀ (b : ℕ), b ≥ a → v = convergents (of v) b
   use n
+  -- ⊢ ∀ (b : ℕ), b ≥ n → v = convergents (of v) b
   intro m m_geq_n
+  -- ⊢ v = convergents (of v) m
   rw [convergents_stable_of_terminated m_geq_n terminated_at_n]
+  -- ⊢ v = convergents (of v) n
   exact of_correctness_of_terminatedAt terminated_at_n
+  -- 🎉 no goals
 #align generalized_continued_fraction.of_correctness_at_top_of_terminates GeneralizedContinuedFraction.of_correctness_atTop_of_terminates
 
 end GeneralizedContinuedFraction

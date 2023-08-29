@@ -38,7 +38,9 @@ def FreeBicategory (B : Type u) :=
 
 instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := by
   intro h
+  -- ⊢ Inhabited (FreeBicategory B)
   exact id h
+  -- 🎉 no goals
 
 namespace FreeBicategory
 
@@ -173,13 +175,19 @@ instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   comp := @fun f g h => Quot.map₂ Hom₂.vcomp Rel.vcomp_right Rel.vcomp_left
   id_comp := by
     rintro f g ⟨η⟩
+    -- ⊢ 𝟙 f ≫ Quot.mk Rel η = Quot.mk Rel η
     exact Quot.sound (Rel.id_comp η)
+    -- 🎉 no goals
   comp_id := by
     rintro f g ⟨η⟩
+    -- ⊢ Quot.mk Rel η ≫ 𝟙 g = Quot.mk Rel η
     exact Quot.sound (Rel.comp_id η)
+    -- 🎉 no goals
   assoc := by
     rintro f g h i ⟨η⟩ ⟨θ⟩ ⟨ι⟩
+    -- ⊢ (Quot.mk Rel η ≫ Quot.mk Rel θ) ≫ Quot.mk Rel ι = Quot.mk Rel η ≫ Quot.mk Re …
     exact Quot.sound (Rel.assoc η θ ι)
+    -- 🎉 no goals
 #align category_theory.free_bicategory.hom_category CategoryTheory.FreeBicategory.homCategory
 
 /-- Bicategory structure on the free bicategory. -/
@@ -204,30 +212,46 @@ instance bicategory : Bicategory (FreeBicategory B) where
       inv_hom_id := Quot.sound (Rel.right_unitor_inv_hom f) }
   whiskerLeft_comp := by
     rintro a b c f g h i ⟨η⟩ ⟨θ⟩
+    -- ⊢ (fun a b c f g h η => Quot.map (Hom₂.whisker_left f) (_ : ∀ (η η' : Hom₂ g h …
     exact Quot.sound (Rel.whisker_left_comp f η θ)
+    -- 🎉 no goals
   id_whiskerLeft := by
     rintro a b f g ⟨η⟩
+    -- ⊢ (fun a b c f g h η => Quot.map (Hom₂.whisker_left f) (_ : ∀ (η η' : Hom₂ g h …
     exact Quot.sound (Rel.id_whisker_left η)
+    -- 🎉 no goals
   comp_whiskerLeft := by
     rintro a b c d f g h h' ⟨η⟩
+    -- ⊢ (fun a b c f g h η => Quot.map (Hom₂.whisker_left f) (_ : ∀ (η η' : Hom₂ g h …
     exact Quot.sound (Rel.comp_whisker_left f g η)
+    -- 🎉 no goals
   whiskerRight := @fun a b c f g η h => Quot.map (Hom₂.whisker_right h) (Rel.whisker_right f g h) η
   id_whiskerRight := @fun a b c f g => Quot.sound (Rel.id_whisker_right f g)
   comp_whiskerRight := by
     rintro a b c f g h ⟨η⟩ ⟨θ⟩ i
+    -- ⊢ (fun a b c f g η h => Quot.map (Hom₂.whisker_right h) (_ : ∀ (η η' : Hom₂ f  …
     exact Quot.sound (Rel.comp_whisker_right i η θ)
+    -- 🎉 no goals
   whiskerRight_id := by
     rintro a b f g ⟨η⟩
+    -- ⊢ (fun a b c f g η h => Quot.map (Hom₂.whisker_right h) (_ : ∀ (η η' : Hom₂ f  …
     exact Quot.sound (Rel.whisker_right_id η)
+    -- 🎉 no goals
   whiskerRight_comp := by
     rintro a b c d f f' ⟨η⟩ g h
+    -- ⊢ (fun a b c f g η h => Quot.map (Hom₂.whisker_right h) (_ : ∀ (η η' : Hom₂ f  …
     exact Quot.sound (Rel.whisker_right_comp g h η)
+    -- 🎉 no goals
   whisker_assoc := by
     rintro a b c d f g g' ⟨η⟩ h
+    -- ⊢ (fun a b c f g η h => Quot.map (Hom₂.whisker_right h) (_ : ∀ (η η' : Hom₂ f  …
     exact Quot.sound (Rel.whisker_assoc f η h)
+    -- 🎉 no goals
   whisker_exchange := by
     rintro a b c f g h i ⟨η⟩ ⟨θ⟩
+    -- ⊢ (fun a b c f g h η => Quot.map (Hom₂.whisker_left f) (_ : ∀ (η η' : Hom₂ g h …
     exact Quot.sound (Rel.whisker_exchange η θ)
+    -- 🎉 no goals
   pentagon := @fun a b c d e f g h i => Quot.sound (Rel.pentagon f g h i)
   triangle := @fun a b c f g => Quot.sound (Rel.triangle f g)
 #align category_theory.free_bicategory.bicategory CategoryTheory.FreeBicategory.bicategory
@@ -363,6 +387,56 @@ attribute [local simp] whisker_exchange
 
 theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
     liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; aesop_cat)
+                                                       -- ⊢ liftHom₂ F η✝ ≫ liftHom₂ F θ₁✝ = liftHom₂ F η✝ ≫ liftHom₂ F θ₂✝
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom₂ F η₁✝ ≫ liftHom₂ F θ✝ = liftHom₂ F η₂✝ ≫ liftHom₂ F θ✝
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ 𝟙 (liftHom F f✝) ≫ liftHom₂ F η✝ = liftHom₂ F η✝
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom₂ F η✝ ≫ 𝟙 (liftHom F g✝) = liftHom₂ F η✝
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (liftHom₂ F η✝ ≫ liftHom₂ F θ✝) ≫ liftHom₂ F ι✝ = liftHom₂ F η✝ ≫ liftHom₂ F …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom F f✝ ◁ liftHom₂ F η✝ = liftHom F f✝ ◁ liftHom₂ F η'✝
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom F f✝ ◁ 𝟙 (liftHom F g✝) = 𝟙 (liftHom F f✝ ≫ liftHom F g✝)
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom F f✝ ◁ (liftHom₂ F η✝ ≫ liftHom₂ F θ✝) = liftHom F f✝ ◁ liftHom₂ F η …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ 𝟙 (F.obj a✝) ◁ liftHom₂ F η✝ = (λ_ (liftHom F f✝)).hom ≫ liftHom₂ F η✝ ≫ (λ_ …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (liftHom F f✝ ≫ liftHom F g✝) ◁ liftHom₂ F η✝ = (α_ (liftHom F f✝) (liftHom  …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom₂ F η✝ ▷ liftHom F h✝ = liftHom₂ F η'✝ ▷ liftHom F h✝
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ 𝟙 (liftHom F f✝) ▷ liftHom F g✝ = 𝟙 (liftHom F f✝ ≫ liftHom F g✝)
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (liftHom₂ F η✝ ≫ liftHom₂ F θ✝) ▷ liftHom F i✝ = liftHom₂ F η✝ ▷ liftHom F i …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom₂ F η✝ ▷ 𝟙 (F.obj b✝) = (ρ_ (liftHom F f✝)).hom ≫ liftHom₂ F η✝ ≫ (ρ_ …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom₂ F η✝ ▷ (liftHom F g✝ ≫ liftHom F h✝) = (α_ (liftHom F f✝) (liftHom  …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (liftHom F f✝ ◁ liftHom₂ F η✝) ▷ liftHom F h✝ = (α_ (liftHom F f✝) (liftHom  …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ liftHom F f✝ ◁ liftHom₂ F θ✝ ≫ liftHom₂ F η✝ ▷ liftHom F i✝ = liftHom₂ F η✝  …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (α_ (liftHom F f✝) (liftHom F g✝) (liftHom F h✝)).hom ≫ (α_ (liftHom F f✝) ( …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (α_ (liftHom F f✝) (liftHom F g✝) (liftHom F h✝)).inv ≫ (α_ (liftHom F f✝) ( …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (λ_ (liftHom F f✝)).hom ≫ (λ_ (liftHom F f✝)).inv = 𝟙 (𝟙 (F.obj a✝) ≫ liftHo …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (λ_ (liftHom F f✝)).inv ≫ (λ_ (liftHom F f✝)).hom = 𝟙 (liftHom F f✝)
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (ρ_ (liftHom F f✝)).hom ≫ (ρ_ (liftHom F f✝)).inv = 𝟙 (liftHom F f✝ ≫ 𝟙 (F.o …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (ρ_ (liftHom F f✝)).inv ≫ (ρ_ (liftHom F f✝)).hom = 𝟙 (liftHom F f✝)
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (α_ (liftHom F f✝) (liftHom F g✝) (liftHom F h✝)).hom ▷ liftHom F i✝ ≫ (α_ ( …
+                                                                         -- 🎉 no goals
+                                                       -- ⊢ (α_ (liftHom F f✝) (𝟙 (F.obj b✝)) (liftHom F g✝)).hom ≫ liftHom F f✝ ◁ (λ_ ( …
+                                                                         -- 🎉 no goals
 #align category_theory.free_bicategory.lift_hom₂_congr CategoryTheory.FreeBicategory.liftHom₂_congr
 
 /-- A prefunctor from a quiver `B` to a bicategory `C` can be lifted to a pseudofunctor from
@@ -379,19 +453,40 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by
     intros a b f g h η θ
+    -- ⊢ PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} => lif …
     apply Quot.rec _ _ η
+    -- ⊢ ∀ (a_1 : Hom₂ f g), PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map …
     · intro η
+      -- ⊢ PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} => lif …
       apply Quot.rec _ _ θ
+      -- ⊢ ∀ (a_1 : Hom₂ g h), PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map …
       · intro θ; rfl
+        -- ⊢ PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} => lif …
+                 -- 🎉 no goals
       · intros; rfl
+        -- ⊢ (_ : PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} = …
+                -- 🎉 no goals
     · intros; rfl
+      -- ⊢ (_ : PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} = …
+              -- 🎉 no goals
   -- Porting note: still borked from here. The infoview doesn't update properly for me.
   map₂_whisker_left := by
     intro a b c f g h η
+    -- ⊢ PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} => lif …
     apply Quot.rec _ _ η
+    -- ⊢ ∀ (a_1 : Hom₂ g h), PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map …
     · intros; aesop_cat
+      -- ⊢ PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} => lif …
+              -- 🎉 no goals
     · intros; rfl
+      -- ⊢ (_ : PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} = …
+              -- 🎉 no goals
   map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; apply Quot.rec _ _ η <;> aesop_cat
+                           -- ⊢ PrelaxFunctor.map₂ { toPrefunctor := { obj := F.obj, map := fun {X Y} => lif …
+                                                -- ⊢ Quot.lift (liftHom₂ F) (_ : ∀ (η θ : Hom₂ (f✝ ≫ h) (g✝ ≫ h)), Rel η θ → lift …
+                                                       -- ⊢ ∀ (a : Hom₂ f✝ g✝), Quot.lift (liftHom₂ F) (_ : ∀ (η θ : Hom₂ (f✝ ≫ h) (g✝ ≫ …
+                                                                                -- 🎉 no goals
+                                                                                -- 🎉 no goals
 #align category_theory.free_bicategory.lift CategoryTheory.FreeBicategory.lift
 
 end

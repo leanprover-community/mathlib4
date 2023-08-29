@@ -21,7 +21,11 @@ instance : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
     intCast := fun n => (n, n)
     intCast_ofNat := fun _ => by simp; rfl
+                                 -- ⊢ (↑x✝, ↑x✝) = ↑x✝
+                                       -- 🎉 no goals
     intCast_negSucc := fun _ => by simp; rfl }
+                                   -- ⊢ (-1 + -↑x✝, -1 + -↑x✝) = -1 + -↑x✝
+                                         -- 🎉 no goals
 
 @[simp]
 theorem fst_intCast (n : ℤ) : (n : α × β).fst = n :=

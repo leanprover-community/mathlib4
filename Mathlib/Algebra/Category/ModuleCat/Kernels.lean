@@ -30,6 +30,9 @@ variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
 def kernelCone : KernelFork f :=
   -- Porting note: previously proven by tidy
   KernelFork.ofι (asHom f.ker.subtype) <| by ext x; cases x; assumption
+                                             -- ⊢ ↑(↟(Submodule.subtype (LinearMap.ker f)) ≫ f) x = ↑0 x
+                                                    -- ⊢ ↑(↟(Submodule.subtype (LinearMap.ker f)) ≫ f) { val := val✝, property := pro …
+                                                             -- 🎉 no goals
 #align Module.kernel_cone ModuleCat.kernelCone
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
@@ -42,8 +45,11 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
           rw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp, Fork.condition,
             HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
+          -- 🎉 no goals
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
     LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
+                                                     -- ⊢ ↑m x = ↑(LinearMap.codRestrict (LinearMap.ker f) (m ≫ Fork.ι (kernelCone f)) …
+                                                                 -- 🎉 no goals
 #align Module.kernel_is_limit ModuleCat.kernelIsLimit
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
@@ -62,7 +68,9 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     -- Porting note: broken dot notation
     apply (cancel_epi (asHom (LinearMap.range f).mkQ)).1
+    -- ⊢ ↟(Submodule.mkQ (LinearMap.range f)) ≫ m = ↟(Submodule.mkQ (LinearMap.range  …
     convert h
+    -- 🎉 no goals
     -- Porting note : no longer necessary
     -- exact Submodule.liftQ_mkQ _ _ _
 #align Module.cokernel_is_colimit ModuleCat.cokernelIsColimit
@@ -126,6 +134,7 @@ theorem cokernel_π_cokernelIsoRangeQuotient_hom :
     cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = f.range.mkQ := by
   -- Porting note: needs help with F but got rid of rfl after
   convert colimit.isoColimitCocone_ι_hom (F := parallelPair f 0) _ _
+  -- 🎉 no goals
 #align Module.cokernel_π_cokernel_iso_range_quotient_hom ModuleCat.cokernel_π_cokernelIsoRangeQuotient_hom
 
 @[simp, elementwise]
@@ -137,7 +146,9 @@ theorem range_mkQ_cokernelIsoRangeQuotient_inv :
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
+  -- ⊢ ↑(cokernel.π f) (y + ↑f m) = ↑(cokernel.π f) y
   simpa only [map_add, add_right_eq_self] using cokernel.condition_apply f m
+  -- 🎉 no goals
 #align Module.cokernel_π_ext ModuleCat.cokernel_π_ext
 
 end ModuleCat

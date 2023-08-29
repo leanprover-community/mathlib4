@@ -108,16 +108,22 @@ irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
       rw [← AlgHom.map_add]
+      -- ⊢ (fun m => ↑(RingQuot.mkAlgHom R (Rel R M)) (FreeAlgebra.ι R m)) (x + y) = ↑( …
       exact RingQuot.mkAlgHom_rel R Rel.add
+      -- 🎉 no goals
     map_smul' := fun r x => by
       rw [← AlgHom.map_smul]
+      -- ⊢ AddHom.toFun { toFun := fun m => ↑(RingQuot.mkAlgHom R (Rel R M)) (FreeAlgeb …
       exact RingQuot.mkAlgHom_rel R Rel.smul }
+      -- 🎉 no goals
 #align tensor_algebra.ι TensorAlgebra.ι
 
 theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
     RingQuot.mkAlgHom R (Rel R M) (FreeAlgebra.ι R m) = ι R m := by
   rw [ι]
+  -- ⊢ ↑(RingQuot.mkAlgHom R (Rel R M)) (FreeAlgebra.ι R m) = ↑{ toAddHom := { toFu …
   rfl
+  -- 🎉 no goals
 #align tensor_algebra.ring_quot_mk_alg_hom_free_algebra_ι_eq_ι TensorAlgebra.ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι
 
 -- Porting note: Changed `irreducible_def` to `def` to get `@[simps symm_apply]` to work
@@ -130,18 +136,23 @@ def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlg
       RingQuot.liftAlgHom R ∘ fun f =>
         ⟨FreeAlgebra.lift R (⇑f), fun x y (h : Rel R M x y) => by
           induction h <;>
+          -- ⊢ ↑(↑(FreeAlgebra.lift R) ↑f) (FreeAlgebra.ι R (a✝ + b✝)) = ↑(↑(FreeAlgebra.li …
             simp only [Algebra.smul_def, FreeAlgebra.lift_ι_apply, LinearMap.map_smulₛₗ,
               RingHom.id_apply, map_mul, AlgHom.commutes, map_add]⟩
     invFun := fun F => F.toLinearMap.comp (ι R)
     left_inv := fun f => by
       rw [ι]
+      -- ⊢ (fun F => LinearMap.comp (AlgHom.toLinearMap F) { toAddHom := { toFun := fun …
       ext1 x
+      -- ⊢ ↑((fun F => LinearMap.comp (AlgHom.toLinearMap F) { toAddHom := { toFun := f …
       exact (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply f x)
+      -- 🎉 no goals
     right_inv := fun F =>
       RingQuot.ringQuot_ext' _ _ _ <|
         FreeAlgebra.hom_ext <|
           funext fun x => by
             rw [ι]
+            -- ⊢ (↑(AlgHom.comp ((↑(RingQuot.liftAlgHom R) ∘ fun f => { val := ↑(FreeAlgebra. …
             exact
               (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply _ _) }
 #align tensor_algebra.lift TensorAlgebra.lift
@@ -152,19 +163,23 @@ variable {R}
 theorem ι_comp_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
     (lift R f).toLinearMap.comp (ι R) = f := by
   convert (lift R).symm_apply_apply f
+  -- 🎉 no goals
 #align tensor_algebra.ι_comp_lift TensorAlgebra.ι_comp_lift
 
 @[simp]
 theorem lift_ι_apply {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) (x) :
     lift R f (ι R x) = f x := by
   conv_rhs => rw [← ι_comp_lift f]
+  -- 🎉 no goals
 #align tensor_algebra.lift_ι_apply TensorAlgebra.lift_ι_apply
 
 @[simp]
 theorem lift_unique {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
     (g : TensorAlgebra R M →ₐ[R] A) : g.toLinearMap.comp (ι R) = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq]
+  -- ⊢ LinearMap.comp (AlgHom.toLinearMap g) (ι R) = f ↔ ↑(lift R).symm g = f
   simp only [lift, Equiv.coe_fn_symm_mk]
+  -- 🎉 no goals
 #align tensor_algebra.lift_unique TensorAlgebra.lift_unique
 
 -- Marking `TensorAlgebra` irreducible makes `Ring` instances inaccessible on quotients.
@@ -174,7 +189,9 @@ theorem lift_unique {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
 theorem lift_comp_ι {A : Type*} [Semiring A] [Algebra R A] (g : TensorAlgebra R M →ₐ[R] A) :
     lift R (g.toLinearMap.comp (ι R)) = g := by
   rw [← lift_symm_apply]
+  -- ⊢ ↑(lift R) (↑(lift R).symm g) = g
   exact (lift R).apply_symm_apply g
+  -- 🎉 no goals
 #align tensor_algebra.lift_comp_ι TensorAlgebra.lift_comp_ι
 
 /-- See note [partially-applied ext lemmas]. -/
@@ -182,7 +199,9 @@ theorem lift_comp_ι {A : Type*} [Semiring A] [Algebra R A] (g : TensorAlgebra R
 theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
     (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
+  -- ⊢ f = g
   exact (lift R).symm.injective w
+  -- 🎉 no goals
 #align tensor_algebra.hom_ext TensorAlgebra.hom_ext
 
 -- This proof closely follows `FreeAlgebra.induction`
@@ -202,7 +221,9 @@ theorem induction {C : TensorAlgebra R M → Prop}
       algebraMap_mem' := h_grade0 }
   -- porting note: Added `h`. `h` is needed for `of`.
   let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
+  -- ⊢ C a
   let of : M →ₗ[R] s := (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
+  -- ⊢ C a
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
@@ -210,7 +231,9 @@ theorem induction {C : TensorAlgebra R M → Prop}
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]
+  -- ⊢ C (↑(AlgHom.comp (Subalgebra.val s) (↑(lift R) of)) a)
   exact Subtype.prop (lift R of a)
+  -- 🎉 no goals
 #align tensor_algebra.induction TensorAlgebra.induction
 
 /-- The left-inverse of `algebraMap`. -/
@@ -223,6 +246,7 @@ variable (M)
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x => by
   simp [algebraMapInv]
+  -- 🎉 no goals
 #align tensor_algebra.algebra_map_left_inverse TensorAlgebra.algebraMap_leftInverse
 
 @[simp]
@@ -262,13 +286,17 @@ As an implementation detail, we implement this using `TrivSqZeroExt` which has a
 algebra structure. -/
 def ιInv : TensorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  -- ⊢ TensorAlgebra R M →ₗ[R] M
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  -- ⊢ TensorAlgebra R M →ₗ[R] M
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
+  -- 🎉 no goals
 #align tensor_algebra.ι_inv TensorAlgebra.ιInv
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x => by
   -- porting note: needs the last two `simp` lemmas explicitly in order to use them
   simp [ιInv, (AlgHom.toLinearMap_apply), toTrivSqZeroExt_ι _]
+  -- 🎉 no goals
 #align tensor_algebra.ι_left_inverse TensorAlgebra.ι_leftInverse
 
 variable (R)
@@ -280,6 +308,7 @@ theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
 
 @[simp]
 theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+                                                        -- 🎉 no goals
 #align tensor_algebra.ι_eq_zero_iff TensorAlgebra.ι_eq_zero_iff
 
 variable {R}
@@ -287,20 +316,31 @@ variable {R}
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
+  -- ⊢ x = 0 ∧ r = 0
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+    -- ⊢ x = 0 ∧ r = 0
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+    -- ⊢ x = 0 ∧ r = 0
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _
+    -- ⊢ x = 0 ∧ r = 0
     rw [h, AlgHom.commutes] at hf0
+    -- ⊢ x = 0 ∧ r = 0
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
+    -- ⊢ x = 0 ∧ r = 0
     exact this.symm.imp_left Eq.symm
+    -- 🎉 no goals
   · rintro ⟨rfl, rfl⟩
+    -- ⊢ ↑(ι R) 0 = ↑(algebraMap R (TensorAlgebra R M)) 0
     rw [LinearMap.map_zero, RingHom.map_zero]
+    -- 🎉 no goals
 #align tensor_algebra.ι_eq_algebra_map_iff TensorAlgebra.ι_eq_algebraMap_iff
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
   rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  -- ⊢ ¬(x = 0 ∧ 1 = 0)
   exact one_ne_zero ∘ And.right
+  -- 🎉 no goals
 #align tensor_algebra.ι_ne_one TensorAlgebra.ι_ne_one
 
 /-- The generators of the tensor algebra are disjoint from its scalars. -/
@@ -308,9 +348,13 @@ theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
       (1 : Submodule R (TensorAlgebra R M)) := by
   rw [Submodule.disjoint_def]
+  -- ⊢ ∀ (x : TensorAlgebra R M), x ∈ LinearMap.range (ι R) → x ∈ 1 → x = 0
   rintro _ ⟨x, hx⟩ ⟨r, rfl⟩
+  -- ⊢ ↑(Algebra.linearMap R (TensorAlgebra R M)) r = 0
   rw [Algebra.linearMap_apply, ι_eq_algebraMap_iff] at hx
+  -- ⊢ ↑(Algebra.linearMap R (TensorAlgebra R M)) r = 0
   rw [hx.2, map_zero]
+  -- 🎉 no goals
 #align tensor_algebra.ι_range_disjoint_one TensorAlgebra.ι_range_disjoint_one
 
 variable (R M)
@@ -344,6 +388,7 @@ def toTensor : FreeAlgebra R M →ₐ[R] TensorAlgebra R M :=
 @[simp]
 theorem toTensor_ι (m : M) : FreeAlgebra.toTensor (FreeAlgebra.ι R m) = TensorAlgebra.ι R m := by
   simp [toTensor]
+  -- 🎉 no goals
 #align free_algebra.to_tensor_ι FreeAlgebra.toTensor_ι
 
 end FreeAlgebra

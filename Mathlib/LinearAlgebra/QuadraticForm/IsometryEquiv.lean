@@ -57,6 +57,9 @@ instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   left_inv f := f.toLinearEquiv.left_inv
   right_inv f := f.toLinearEquiv.right_inv
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+                           -- ⊢ (fun f => ↑f.toLinearEquiv) { toLinearEquiv := toLinearEquiv✝, map_app' := m …
+                                    -- ⊢ (fun f => ↑f.toLinearEquiv) { toLinearEquiv := toLinearEquiv✝¹, map_app' :=  …
+                                             -- 🎉 no goals
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
@@ -88,6 +91,10 @@ def refl (Q : QuadraticForm R M) : Q.IsometryEquiv Q :=
 def symm (f : Q₁.IsometryEquiv Q₂) : Q₂.IsometryEquiv Q₁ :=
   { (f : M₁ ≃ₗ[R] M₂).symm with
     map_app' := by intro m; rw [← f.map_app]; congr; exact f.toLinearEquiv.apply_symm_apply m }
+                   -- ⊢ ↑Q₁ (AddHom.toFun (↑{ toLinearMap := ↑src✝, invFun := src✝.invFun, left_inv  …
+                            -- ⊢ ↑Q₂ (↑f (AddHom.toFun (↑{ toLinearMap := ↑src✝, invFun := src✝.invFun, left_ …
+                                              -- ⊢ ↑f (AddHom.toFun (↑{ toLinearMap := ↑src✝, invFun := src✝.invFun, left_inv : …
+                                                     -- 🎉 no goals
 #align quadratic_form.isometry.symm QuadraticForm.IsometryEquiv.symm
 
 /-- The composition of two isometric equivalences between quadratic forms. -/
@@ -95,6 +102,9 @@ def symm (f : Q₁.IsometryEquiv Q₂) : Q₂.IsometryEquiv Q₁ :=
 def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.IsometryEquiv Q₃ :=
   { (f : M₁ ≃ₗ[R] M₂).trans (g : M₂ ≃ₗ[R] M₃) with
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
+                   -- ⊢ ↑Q₃ (AddHom.toFun (↑{ toLinearMap := ↑src✝, invFun := src✝.invFun, left_inv  …
+                            -- ⊢ ↑Q₃ (AddHom.toFun (↑{ toLinearMap := ↑src✝, invFun := src✝.invFun, left_inv  …
+                                                           -- 🎉 no goals
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
 
 end IsometryEquiv
@@ -128,6 +138,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticForm R M) (f : M₁ ≃ₗ[R] M
   { f.symm with
     map_app' := by
       intro
+      -- ⊢ ↑(comp Q ↑f) (AddHom.toFun (↑{ toLinearMap := ↑src✝, invFun := src✝.invFun,  …
       simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
         LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
 #align quadratic_form.isometry_of_comp_linear_equiv QuadraticForm.isometryEquivOfCompLinearEquiv
@@ -147,9 +158,13 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
+  -- ⊢ IsometryEquiv Q (weightedSumSquares K fun i => ↑Q (↑v i))
   refine' ⟨iso, fun m => _⟩
+  -- ⊢ ↑(weightedSumSquares K fun i => ↑Q (↑v i)) (AddHom.toFun iso.toAddHom m) = ↑ …
   convert iso.map_app m
+  -- ⊢ (weightedSumSquares K fun i => ↑Q (↑v i)) = basisRepr Q v
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
+  -- 🎉 no goals
 #align quadratic_form.isometry_weighted_sum_squares QuadraticForm.isometryEquivWeightedSumSquares
 
 variable [FiniteDimensional K V]
@@ -166,9 +181,13 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
     (hQ : (associated (R₁ := K) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
+  -- ⊢ ∃ w, Equivalent Q (weightedSumSquares K w)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ
+  -- ⊢ ∃ w, Equivalent Q (weightedSumSquares K w)
   simp_rw [IsOrtho, associated_eq_self_apply] at hv₂
+  -- ⊢ ∃ w, Equivalent Q (weightedSumSquares K w)
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
+  -- 🎉 no goals
 #align quadratic_form.equivalent_weighted_sum_squares_units_of_nondegenerate' QuadraticForm.equivalent_weightedSumSquares_units_of_nondegenerate'
 
 end QuadraticForm

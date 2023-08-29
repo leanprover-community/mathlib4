@@ -53,6 +53,7 @@ section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
   cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+                            -- 🎉 no goals
 
 end CharP
 
@@ -60,6 +61,7 @@ section CharZero
 
 instance [CharZero R] : CharZero (MvPolynomial σ R) where
   cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
+                               -- 🎉 no goals
 
 end CharZero
 
@@ -68,8 +70,11 @@ section Homomorphism
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
+  -- ⊢ ∑ x in support p, Finsupp.mapRange ↑f (_ : ↑f 0 = 0) (↑(monomial x) (coeff x …
   refine' Finset.sum_congr rfl fun n _ => _
+  -- ⊢ Finsupp.mapRange ↑f (_ : ↑f 0 = 0) (↑(monomial n) (coeff n p)) = ↑(map f) (↑ …
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
+  -- 🎉 no goals
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map
 
 end Homomorphism
@@ -92,13 +97,17 @@ variable {R}
 theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
     p ∈ restrictTotalDegree σ R m ↔ p.totalDegree ≤ m := by
   rw [totalDegree, Finset.sup_le_iff]
+  -- ⊢ p ∈ restrictTotalDegree σ R m ↔ ∀ (b : σ →₀ ℕ), b ∈ support p → (Finsupp.sum …
   rfl
+  -- 🎉 no goals
 #align mv_polynomial.mem_restrict_total_degree MvPolynomial.mem_restrictTotalDegree
 
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, Finsupp.mem_supported]
+  -- ⊢ ↑p.support ⊆ {n_1 | ∀ (i : σ), ↑n_1 i ≤ n} ↔ ∀ (s : σ →₀ ℕ), s ∈ support p → …
   rfl
+  -- 🎉 no goals
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
 theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
@@ -106,6 +115,7 @@ theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n :
   simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
   exact ⟨fun h n s hs => h s hs n, fun h s hs n => h n s hs⟩
+  -- 🎉 no goals
 #align mv_polynomial.mem_restrict_degree_iff_sup MvPolynomial.mem_restrictDegree_iff_sup
 
 variable (R)

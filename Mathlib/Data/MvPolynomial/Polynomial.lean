@@ -22,19 +22,29 @@ theorem polynomial_eval_eval₂ [CommSemiring R] [CommSemiring S]
       eval₂ ((Polynomial.evalRingHom x).comp f) (fun s => Polynomial.eval x (g s)) p := by
   apply induction_on p
   · simp
+    -- 🎉 no goals
   · intro p q hp hq
+    -- ⊢ Polynomial.eval x (eval₂ f g (p + q)) = eval₂ (RingHom.comp (Polynomial.eval …
     simp [hp, hq]
+    -- 🎉 no goals
   · intro p n hp
+    -- ⊢ Polynomial.eval x (eval₂ f g (p * X n)) = eval₂ (RingHom.comp (Polynomial.ev …
     simp [hp]
+    -- 🎉 no goals
 
 theorem eval_polynomial_eval_finSuccEquiv
     [CommSemiring R] (f : MvPolynomial (Fin (n + 1)) R) (q : MvPolynomial (Fin n) R) :
     (eval x) (Polynomial.eval q (finSuccEquiv R n f)) = eval (Fin.cases (eval x q) x) f := by
   simp only [finSuccEquiv_apply, coe_eval₂Hom, polynomial_eval_eval₂, eval_eval₂]
+  -- ⊢ eval₂ (RingHom.comp (eval x) (RingHom.comp (Polynomial.evalRingHom q) (RingH …
   conv in RingHom.comp _ _ =>
   { refine @RingHom.ext _ _ _ _ _ (RingHom.id _) fun r => ?_
     simp }
   simp only [eval₂_id]
+  -- ⊢ ↑(eval fun s => ↑(eval x) (Polynomial.eval q (Fin.cases Polynomial.X (fun k  …
   congr
+  -- ⊢ (fun s => ↑(eval x) (Polynomial.eval q (Fin.cases Polynomial.X (fun k => ↑Po …
   funext i
+  -- ⊢ ↑(eval x) (Polynomial.eval q (Fin.cases Polynomial.X (fun k => ↑Polynomial.C …
   refine Fin.cases (by simp) (by simp) i
+  -- 🎉 no goals

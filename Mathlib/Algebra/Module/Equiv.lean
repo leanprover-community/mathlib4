@@ -274,6 +274,8 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
     map_smul' := fun r x => by dsimp only; rw [map_smulₛₗ] }
+                               -- ⊢ ↑(LinearMap.inverse (↑e) e.invFun (_ : LeftInverse e.invFun e.toFun) (_ : Fu …
+                                           -- 🎉 no goals
 #align linear_equiv.symm LinearEquiv.symm
 
 -- Porting note: this is new
@@ -429,29 +431,57 @@ variable [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃] [RingHomCompTriple σ₃
 theorem eq_comp_toLinearMap_symm (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     f = g.comp e₁₂.symm.toLinearMap ↔ f.comp e₁₂.toLinearMap = g := by
   constructor <;> intro H <;> ext
+  -- ⊢ f = LinearMap.comp g ↑(symm e₁₂) → LinearMap.comp f ↑e₁₂ = g
+                  -- ⊢ LinearMap.comp f ↑e₁₂ = g
+                  -- ⊢ f = LinearMap.comp g ↑(symm e₁₂)
+                              -- ⊢ ↑(LinearMap.comp f ↑e₁₂) x✝ = ↑g x✝
+                              -- ⊢ ↑f x✝ = ↑(LinearMap.comp g ↑(symm e₁₂)) x✝
   · simp [H, e₁₂.toEquiv.eq_comp_symm f g]
+    -- 🎉 no goals
   · simp [← H, ← e₁₂.toEquiv.eq_comp_symm f g]
+    -- 🎉 no goals
 #align linear_equiv.eq_comp_to_linear_map_symm LinearEquiv.eq_comp_toLinearMap_symm
 
 theorem comp_toLinearMap_symm_eq (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     g.comp e₁₂.symm.toLinearMap = f ↔ g = f.comp e₁₂.toLinearMap := by
   constructor <;> intro H <;> ext
+  -- ⊢ LinearMap.comp g ↑(symm e₁₂) = f → g = LinearMap.comp f ↑e₁₂
+                  -- ⊢ g = LinearMap.comp f ↑e₁₂
+                  -- ⊢ LinearMap.comp g ↑(symm e₁₂) = f
+                              -- ⊢ ↑g x✝ = ↑(LinearMap.comp f ↑e₁₂) x✝
+                              -- ⊢ ↑(LinearMap.comp g ↑(symm e₁₂)) x✝ = ↑f x✝
   · simp [← H, ← e₁₂.toEquiv.comp_symm_eq f g]
+    -- 🎉 no goals
   · simp [H, e₁₂.toEquiv.comp_symm_eq f g]
+    -- 🎉 no goals
 #align linear_equiv.comp_to_linear_map_symm_eq LinearEquiv.comp_toLinearMap_symm_eq
 
 theorem eq_toLinearMap_symm_comp (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ →ₛₗ[σ₃₂] M₂) :
     f = e₁₂.symm.toLinearMap.comp g ↔ e₁₂.toLinearMap.comp f = g := by
   constructor <;> intro H <;> ext
+  -- ⊢ f = LinearMap.comp (↑(symm e₁₂)) g → LinearMap.comp (↑e₁₂) f = g
+                  -- ⊢ LinearMap.comp (↑e₁₂) f = g
+                  -- ⊢ f = LinearMap.comp (↑(symm e₁₂)) g
+                              -- ⊢ ↑(LinearMap.comp (↑e₁₂) f) x✝ = ↑g x✝
+                              -- ⊢ ↑f x✝ = ↑(LinearMap.comp (↑(symm e₁₂)) g) x✝
   · simp [H, e₁₂.toEquiv.eq_symm_comp f g]
+    -- 🎉 no goals
   · simp [← H, ← e₁₂.toEquiv.eq_symm_comp f g]
+    -- 🎉 no goals
 #align linear_equiv.eq_to_linear_map_symm_comp LinearEquiv.eq_toLinearMap_symm_comp
 
 theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ →ₛₗ[σ₃₂] M₂) :
     e₁₂.symm.toLinearMap.comp g = f ↔ g = e₁₂.toLinearMap.comp f := by
   constructor <;> intro H <;> ext
+  -- ⊢ LinearMap.comp (↑(symm e₁₂)) g = f → g = LinearMap.comp (↑e₁₂) f
+                  -- ⊢ g = LinearMap.comp (↑e₁₂) f
+                  -- ⊢ LinearMap.comp (↑(symm e₁₂)) g = f
+                              -- ⊢ ↑g x✝ = ↑(LinearMap.comp (↑e₁₂) f) x✝
+                              -- ⊢ ↑(LinearMap.comp (↑(symm e₁₂)) g) x✝ = ↑f x✝
   · simp [← H, ← e₁₂.toEquiv.symm_comp_eq f g]
+    -- 🎉 no goals
   · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
+    -- 🎉 no goals
 #align linear_equiv.to_linear_map_symm_comp_eq LinearEquiv.toLinearMap_symm_comp_eq
 
 @[simp]
@@ -462,13 +492,17 @@ theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=
 @[simp]
 theorem self_trans_symm (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.trans f.symm = LinearEquiv.refl R₁ M₁ := by
   ext x
+  -- ⊢ ↑(trans f (symm f)) x = ↑(refl R₁ M₁) x
   simp
+  -- 🎉 no goals
 #align linear_equiv.self_trans_symm LinearEquiv.self_trans_symm
 
 @[simp]
 theorem symm_trans_self (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.symm.trans f = LinearEquiv.refl R₂ M₂ := by
   ext x
+  -- ⊢ ↑(trans (symm f) f) x = ↑(refl R₂ M₂) x
   simp
+  -- 🎉 no goals
 #align linear_equiv.symm_trans_self LinearEquiv.symm_trans_self
 
 @[simp]  -- Porting note: norm_cast
@@ -514,7 +548,9 @@ theorem map_ne_zero_iff {x : M} : e x ≠ 0 ↔ x ≠ 0 :=
 @[simp]
 theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
   cases e
+  -- ⊢ symm (symm { toLinearMap := toLinearMap✝, invFun := invFun✝, left_inv := lef …
   rfl
+  -- 🎉 no goals
 #align linear_equiv.symm_symm LinearEquiv.symm_symm
 
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
@@ -721,7 +757,9 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
   ext
+  -- ⊢ ↑(ofSubsingleton M M) x✝ = ↑(refl R M) x✝
   simp
+  -- 🎉 no goals
 #align linear_equiv.of_subsingleton_self LinearEquiv.ofSubsingleton_self
 
 end OfSubsingleton
@@ -807,7 +845,9 @@ theorem coe_toLinearEquiv_symm (h : ∀ (c : R) (x), e (c • x) = c • e x) :
 def toNatLinearEquiv : M ≃ₗ[ℕ] M₂ :=
   e.toLinearEquiv fun c a => by
     erw [e.toAddMonoidHom.map_nsmul]
+    -- ⊢ c • ↑(toAddMonoidHom e) a = c • ↑e a
     rfl
+    -- 🎉 no goals
 #align add_equiv.to_nat_linear_equiv AddEquiv.toNatLinearEquiv
 
 @[simp]
@@ -818,7 +858,9 @@ theorem coe_toNatLinearEquiv : ⇑e.toNatLinearEquiv = e :=
 @[simp]
 theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e := by
   ext
+  -- ⊢ ↑↑(toNatLinearEquiv e) x✝ = ↑e x✝
   rfl
+  -- 🎉 no goals
 #align add_equiv.to_nat_linear_equiv_to_add_equiv AddEquiv.toNatLinearEquiv_toAddEquiv
 
 @[simp]
@@ -865,7 +907,9 @@ theorem coe_toIntLinearEquiv : ⇑e.toIntLinearEquiv = e :=
 @[simp]
 theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
   ext
+  -- ⊢ ↑↑(toIntLinearEquiv e) x✝ = ↑e x✝
   rfl
+  -- 🎉 no goals
 #align add_equiv.to_int_linear_equiv_to_add_equiv AddEquiv.toIntLinearEquiv_toAddEquiv
 
 @[simp]

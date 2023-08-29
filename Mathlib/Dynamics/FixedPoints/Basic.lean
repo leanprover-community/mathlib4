@@ -92,12 +92,15 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
 #align function.is_fixed_pt.map Function.IsFixedPt.map
 
 protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
+                                                                               -- 🎉 no goals
 #align function.is_fixed_pt.apply Function.IsFixedPt.apply
 
 theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
     IsFixedPt (Set.preimage f^[n]) s := by
   rw [Set.preimage_iterate_eq]
+  -- ⊢ IsFixedPt (Set.preimage f)^[n] s
   exact h.iterate n
+  -- 🎉 no goals
 #align function.is_fixed_pt.preimage_iterate Function.IsFixedPt.preimage_iterate
 
 protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
@@ -110,7 +113,9 @@ protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
 
 protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
   rw [Equiv.Perm.coe_pow]
+  -- ⊢ IsFixedPt (↑e)^[n] x
   exact h.iterate _
+  -- 🎉 no goals
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
 protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e ^ n)) x
@@ -143,11 +148,13 @@ theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
 
 theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
   rfl
+  -- 🎉 no goals
 #align function.mem_fixed_points_iff Function.mem_fixedPoints_iff
 
 @[simp]
 theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
   Set.ext fun _ => by simpa using isFixedPt_id _
+                      -- 🎉 no goals
 #align function.fixed_points_id Function.fixedPoints_id
 
 theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
@@ -183,6 +190,7 @@ of `f ∘ g`. This is a particular case of `Function.invOn_fixedPoints_comp`. -/
 theorem Commute.invOn_fixedPoints_comp (h : Commute f g) :
     Set.InvOn f g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using Function.invOn_fixedPoints_comp f g
+  -- 🎉 no goals
 #align function.commute.inv_on_fixed_pts_comp Function.Commute.invOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then `f` is bijective on the set of fixed points of `f ∘ g`.
@@ -190,6 +198,7 @@ This is a particular case of `Function.bijOn_fixedPoints_comp`. -/
 theorem Commute.left_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn f (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp g f
+  -- 🎉 no goals
 #align function.commute.left_bij_on_fixed_pts_comp Function.Commute.left_bijOn_fixedPoints_comp
 
 /-- If self-maps `f` and `g` commute, then `g` is bijective on the set of fixed points of `f ∘ g`.
@@ -197,6 +206,7 @@ This is a particular case of `Function.bijOn_fixedPoints_comp`. -/
 theorem Commute.right_bijOn_fixedPoints_comp (h : Commute f g) :
     Set.BijOn g (fixedPoints <| f ∘ g) (fixedPoints <| f ∘ g) := by
   simpa only [h.comp_eq] using bijOn_fixedPoints_comp f g
+  -- 🎉 no goals
 #align function.commute.right_bij_on_fixed_pts_comp Function.Commute.right_bijOn_fixedPoints_comp
 
 end Function

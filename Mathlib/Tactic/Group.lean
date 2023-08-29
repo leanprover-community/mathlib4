@@ -36,18 +36,21 @@ open Lean.Elab.Tactic
 @[to_additive]
 theorem zpow_trick {G : Type*} [Group G] (a b : G) (n m : ℤ) :
     a * b ^ n * b ^ m = a * b ^ (n + m) := by rw [mul_assoc, ← zpow_add]
+                                              -- 🎉 no goals
 #align tactic.group.zpow_trick Mathlib.Tactic.Group.zpow_trick
 #align tactic.group.zsmul_trick Mathlib.Tactic.Group.zsmul_trick
 
 @[to_additive]
 theorem zpow_trick_one {G : Type*} [Group G] (a b : G) (m : ℤ) :
     a * b * b ^ m = a * b ^ (m + 1) := by rw [mul_assoc, mul_self_zpow]
+                                          -- 🎉 no goals
 #align tactic.group.zpow_trick_one Mathlib.Tactic.Group.zpow_trick_one
 #align tactic.group.zsmul_trick_zero Mathlib.Tactic.Group.zsmul_trick_zero
 
 @[to_additive]
 theorem zpow_trick_one' {G : Type*} [Group G] (a b : G) (n : ℤ) :
     a * b ^ n * b = a * b ^ (n + 1) := by rw [mul_assoc, mul_zpow_self]
+                                          -- 🎉 no goals
 #align tactic.group.zpow_trick_one' Mathlib.Tactic.Group.zpow_trick_one'
 #align tactic.group.zsmul_trick_zero' Mathlib.Tactic.Group.zsmul_trick_zero'
 

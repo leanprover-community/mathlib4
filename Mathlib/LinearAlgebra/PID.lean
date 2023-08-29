@@ -34,14 +34,22 @@ lemma trace_restrict_eq_of_forall_mem [IsDomain R] [IsPrincipalIdealRing R]
     (hf : ∀ x, f x ∈ p) (hf' : ∀ x ∈ p, f x ∈ p := fun x _ ↦ hf x) :
     trace R p (f.restrict hf') = trace R M f := by
   let ι := Module.Free.ChooseBasisIndex R M
+  -- ⊢ ↑(trace R { x // x ∈ p }) (restrict f hf') = ↑(trace R M) f
   obtain ⟨n, snf : Basis.SmithNormalForm p ι n⟩ := p.smithNormalForm (Module.Free.chooseBasis R M)
+  -- ⊢ ↑(trace R { x // x ∈ p }) (restrict f hf') = ↑(trace R M) f
   rw [trace_eq_matrix_trace R snf.bM, trace_eq_matrix_trace R snf.bN]
+  -- ⊢ Matrix.trace (↑(toMatrix snf.bN snf.bN) (restrict f hf')) = Matrix.trace (↑( …
   set A : Matrix (Fin n) (Fin n) R := toMatrix snf.bN snf.bN (f.restrict hf')
+  -- ⊢ Matrix.trace A = Matrix.trace (↑(toMatrix snf.bM snf.bM) f)
   set B : Matrix ι ι R := toMatrix snf.bM snf.bM f
+  -- ⊢ Matrix.trace A = Matrix.trace B
   have aux : ∀ i, B i i ≠ 0 → i ∈ Set.range snf.f := fun i hi ↦ by
     contrapose! hi; exact snf.repr_eq_zero_of_nmem_range ⟨_, (hf _)⟩ hi
   change ∑ i, A i i = ∑ i, B i i
+  -- ⊢ ∑ i : Fin n, A i i = ∑ i : ι, B i i
   rw [← Finset.sum_filter_of_ne (p := fun j ↦ j ∈ Set.range snf.f) (by simpa using aux)]
+  -- ⊢ ∑ i : Fin n, A i i = ∑ x in Finset.filter (fun j => j ∈ Set.range ↑snf.f) Fi …
   simp
+  -- 🎉 no goals
 
 end LinearMap

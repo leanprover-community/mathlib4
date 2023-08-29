@@ -450,10 +450,13 @@ attribute [to_additive] MulOneClass
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
+  -- ⊢ mk one_mul₁ mul_one₁ = mk one_mul₂ mul_one₂
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
   -- congr
   suffices one₁ = one₂ by cases this; rfl
+  -- ⊢ one₁ = one₂
   exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
+  -- 🎉 no goals
 #align mul_one_class.ext MulOneClass.ext
 #align add_zero_class.ext AddZeroClass.ext
 
@@ -657,6 +660,7 @@ variable {M : Type u} [Monoid M]
 @[to_additive]
 theorem left_inv_eq_right_inv {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
+  -- 🎉 no goals
 #align left_inv_eq_right_inv left_inv_eq_right_inv
 #align left_neg_eq_right_neg left_neg_eq_right_neg
 
@@ -958,13 +962,17 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
+  -- ⊢ a ^ Int.negSucc n = (a ^ ↑(n + 1))⁻¹
   exact DivInvMonoid.zpow_neg' n a
+  -- 🎉 no goals
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
   Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
+  -- ⊢ Int.negSucc n • a = -(↑(n + 1) • a)
   exact SubNegMonoid.zsmul_neg' n a
+  -- 🎉 no goals
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 
 attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
@@ -1123,6 +1131,7 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
 @[to_additive (attr := simp)]
 theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
   by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
+     -- 🎉 no goals
 #align mul_right_inv mul_right_inv
 #align add_right_neg add_right_neg
 
@@ -1135,24 +1144,28 @@ theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
   by rw [← mul_assoc, mul_left_inv, one_mul]
+     -- 🎉 no goals
 #align inv_mul_cancel_left inv_mul_cancel_left
 #align neg_add_cancel_left neg_add_cancel_left
 
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
   by rw [← mul_assoc, mul_right_inv, one_mul]
+     -- 🎉 no goals
 #align mul_inv_cancel_left mul_inv_cancel_left
 #align add_neg_cancel_left add_neg_cancel_left
 
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
   by rw [mul_assoc, mul_right_inv, mul_one]
+     -- 🎉 no goals
 #align mul_inv_cancel_right mul_inv_cancel_right
 #align add_neg_cancel_right add_neg_cancel_right
 
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
   by rw [mul_assoc, mul_left_inv, mul_one]
+     -- 🎉 no goals
 #align inv_mul_cancel_right inv_mul_cancel_right
 #align neg_add_cancel_right neg_add_cancel_right
 
@@ -1161,6 +1174,7 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
   { inv_inv := fun a ↦ inv_eq_of_mul (mul_left_inv a)
     mul_inv_rev :=
       fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
+                                    -- 🎉 no goals
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- see Note [lower instance priority]
@@ -1168,6 +1182,8 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
     mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
+                                         -- 🎉 no goals
+                                        -- 🎉 no goals
     mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
 
 end Group
@@ -1175,6 +1191,8 @@ end Group
 @[to_additive]
 theorem Group.toDivInvMonoid_injective {G : Type*} :
     Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+                                                       -- ⊢ mk mul_left_inv✝¹ = mk mul_left_inv✝
+                                                                        -- 🎉 no goals
 #align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
 
@@ -1192,6 +1210,8 @@ attribute [to_additive existing] CommGroup.toCommMonoid
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+  -- ⊢ mk mul_comm✝¹ = mk mul_comm✝
+                   -- 🎉 no goals
 #align comm_group.to_group_injective CommGroup.toGroup_injective
 #align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 

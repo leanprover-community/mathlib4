@@ -57,6 +57,7 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
     (by
       rintro (a | b) (a | b) (f | f | f)
       all_goals aesop_cat)
+      -- 🎉 no goals
 #align category_theory.grothendieck_topology.cover.multicospan_comp CategoryTheory.GrothendieckTopology.Cover.multicospanComp
 
 @[simp]
@@ -104,12 +105,17 @@ def mapMultifork :
   Cones.ext (eqToIso rfl)
     (by
       rintro (a | b)
+      -- ⊢ NatTrans.app (F.mapCone (multifork S P)).π (WalkingMulticospan.left a) = (eq …
       · dsimp
+        -- ⊢ F.map (P.map a.f.op) = 𝟙 (F.obj (P.obj (Opposite.op X))) ≫ F.map (P.map a.f. …
         erw [Category.id_comp, multicospanComp_hom_app_left, eqToHom_refl, Category.comp_id]
+        -- 🎉 no goals
       · dsimp
+        -- ⊢ F.map (P.map (MulticospanIndex.fstTo (index S P) b).f.op ≫ MulticospanIndex. …
         erw [Functor.map_comp, Category.assoc, Category.id_comp,
           multicospanComp_hom_app_right, eqToHom_refl, Category.comp_id]
         rfl)
+        -- 🎉 no goals
 #align category_theory.grothendieck_topology.cover.map_multifork CategoryTheory.GrothendieckTopology.Cover.mapMultifork
 
 end GrothendieckTopology.Cover
@@ -121,11 +127,17 @@ variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.ind
 theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
     Presheaf.IsSheaf J (P ⋙ F) := by
   rw [Presheaf.isSheaf_iff_multifork] at hP ⊢
+  -- ⊢ ∀ (X : C) (S : GrothendieckTopology.Cover J X), Nonempty (IsLimit (Grothendi …
   intro X S
+  -- ⊢ Nonempty (IsLimit (GrothendieckTopology.Cover.multifork S (P ⋙ F)))
   obtain ⟨h⟩ := hP X S
+  -- ⊢ Nonempty (IsLimit (GrothendieckTopology.Cover.multifork S (P ⋙ F)))
   replace h := isLimitOfPreserves F h
+  -- ⊢ Nonempty (IsLimit (GrothendieckTopology.Cover.multifork S (P ⋙ F)))
   replace h := Limits.IsLimit.ofIsoLimit h (S.mapMultifork F P)
+  -- ⊢ Nonempty (IsLimit (GrothendieckTopology.Cover.multifork S (P ⋙ F)))
   exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
+  -- 🎉 no goals
 #align category_theory.presheaf.is_sheaf.comp CategoryTheory.Presheaf.IsSheaf.comp
 
 variable (J)

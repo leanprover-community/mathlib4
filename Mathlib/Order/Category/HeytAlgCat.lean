@@ -59,7 +59,9 @@ deriving instance LargeCategory for HeytAlgCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory HeytAlgCat := by
   dsimp [HeytAlgCat]
+  -- ⊢ ConcreteCategory (Bundled HeytingAlgebra)
   infer_instance
+  -- 🎉 no goals
 
 -- Porting note: No idea why it does not find this instance...
 instance {X Y : HeytAlgCat.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
@@ -78,7 +80,11 @@ def Iso.mk {α β : HeytAlgCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : HeytingHom _ _)
   inv := (e.symm : HeytingHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑({ toLatticeHom := { toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑ …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑({ toLatticeHom := { toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := …
+                        -- 🎉 no goals
 #align HeytAlg.iso.mk HeytAlgCat.Iso.mk
 
 end HeytAlgCat

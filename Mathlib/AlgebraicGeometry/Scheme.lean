@@ -114,6 +114,9 @@ theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
 theorem id_app {X : Scheme} (U : (Opens X.carrier)ᵒᵖ) :
     (𝟙 X : _).val.c.app U =
       X.presheaf.map (eqToHom (by induction' U with U; cases U; rfl)) :=
+                                  -- ⊢ op U = op U
+                                                       -- ⊢ op { carrier := carrier✝, is_open' := is_open'✝ } = op { carrier := carrier✝ …
+                                                                -- 🎉 no goals
   PresheafedSpace.id_c_app X.toPresheafedSpace U
 #align algebraic_geometry.Scheme.id_app AlgebraicGeometry.Scheme.id_app
 
@@ -138,6 +141,7 @@ theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g).val.base x = g.val.base (f.val.base x) := by
   simp
+  -- 🎉 no goals
 #align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
@@ -148,7 +152,12 @@ theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.val.c.app U = g.val.c.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)) := by
+                                                                -- ⊢ (Opens.map f.val.base).op.obj U = (Opens.map f.val.base).op.obj U
+                                                                         -- 🎉 no goals
   subst e; dsimp; simp
+  -- ⊢ NatTrans.app f.val.c U = NatTrans.app f.val.c U ≫ X.presheaf.map (eqToHom (_ …
+           -- ⊢ NatTrans.app f.val.c U = NatTrans.app f.val.c U ≫ X.presheaf.map (𝟙 (op ((Op …
+                  -- 🎉 no goals
 #align algebraic_geometry.Scheme.congr_app AlgebraicGeometry.Scheme.congr_app
 
 theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) :
@@ -157,8 +166,11 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
         f.val.c.app (op V) ≫
           X.presheaf.map (eqToHom (congr_arg (Opens.map f.val.base).obj e)).op := by
   rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.val.c.naturality, Presheaf.pushforwardObj_map]
+  -- ⊢ NatTrans.app f.val.c (op V) ≫ X.presheaf.map ((Opens.map f.val.base).op.map  …
   cases e
+  -- ⊢ NatTrans.app f.val.c (op U) ≫ X.presheaf.map ((Opens.map f.val.base).op.map  …
   rfl
+  -- 🎉 no goals
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
 
 -- Porting note : in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
@@ -166,6 +178,7 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
 lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
   rw [eqToHom_op, eqToHom_map]
+  -- 🎉 no goals
 
 instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=
@@ -182,10 +195,15 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
     (inv f).val.c.app (op U) =
       X.presheaf.map
           (eqToHom <| by rw [IsIso.hom_inv_id]; ext1; rfl :
+                         -- ⊢ (Opens.map (𝟙 X).val.base).obj U = U
+                                                -- ⊢ ↑((Opens.map (𝟙 X).val.base).obj U) = ↑U
+                                                      -- 🎉 no goals
               (Opens.map (f ≫ inv f).1.base).obj U ⟶ U).op ≫
         inv (f.val.c.app (op <| (Opens.map _).obj U)) := by
   rw [IsIso.eq_comp_inv]
+  -- ⊢ NatTrans.app (inv f).val.c (op U) ≫ NatTrans.app f.val.c (op ((Opens.map (in …
   erw [← Scheme.comp_val_c_app]
+  -- ⊢ NatTrans.app (f ≫ inv f).val.c (op U) = X.presheaf.map (eqToHom (_ : (Opens. …
   rw [Scheme.congr_app (IsIso.hom_inv_id f), Scheme.id_app, ← Functor.map_comp, eqToHom_trans,
     eqToHom_op]
 #align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
@@ -236,7 +254,9 @@ def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
   map_id R := by simp
+                 -- 🎉 no goals
   map_comp f g := by simp [specMap_comp]
+                     -- 🎉 no goals
 #align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
 /-- The empty scheme.
@@ -302,10 +322,15 @@ theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.ge
 theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
   fconstructor
+  -- ⊢ x ∈ basicOpen X f → ∃ m, IsUnit (↑(Presheaf.germ X.presheaf { val := x, prop …
   · rintro ⟨y, hy1, rfl⟩
+    -- ⊢ ∃ m, IsUnit (↑(Presheaf.germ X.presheaf { val := ↑y, property := m }) f)
     exact ⟨y.2, hy1⟩
+    -- 🎉 no goals
   · rintro ⟨m, hm⟩
+    -- ⊢ x ∈ basicOpen X f
     exact ⟨⟨x, m⟩, hm, rfl⟩
+    -- 🎉 no goals
 
 @[simp]
 theorem mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
@@ -360,8 +385,11 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
       PrimeSpectrum.basicOpen f := by
   ext x
+  -- ⊢ x ∈ ↑(Scheme.basicOpen (Scheme.Spec.obj (op R)) (↑(SpecΓIdentity.app R).inv  …
   erw [Scheme.mem_basicOpen_top]
+  -- ⊢ IsUnit (↑(Presheaf.germ (Scheme.Spec.obj (op R)).presheaf { val := x, proper …
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
+  -- ⊢ IsUnit (↑(StructureSheaf.toStalk (↑R) x) f) ↔ ¬f ∈ x.asIdeal
   erw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
     StructureSheaf.stalkToFiberRingHom_toStalk]
   exact
@@ -376,7 +404,9 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat}
     (Scheme.Spec.obj <| op R).basicOpen f =
       PrimeSpectrum.basicOpen ((SpecΓIdentity.app R).hom f) := by
   convert basicOpen_eq_of_affine ((SpecΓIdentity.app R).hom f)
+  -- ⊢ f = ↑(SpecΓIdentity.app ((𝟭 CommRingCat).obj R)).inv (↑(SpecΓIdentity.app R) …
   exact (Iso.hom_inv_id_apply (SpecΓIdentity.app R) f).symm
+  -- 🎉 no goals
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
 
 end AlgebraicGeometry

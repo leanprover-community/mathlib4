@@ -43,8 +43,11 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
 
 theorem locallyOfFiniteType_eq : @LocallyOfFiniteType = affineLocally @RingHom.FiniteType := by
   ext X Y f
+  -- ⊢ LocallyOfFiniteType f ↔ affineLocally (@RingHom.FiniteType) f
   rw [LocallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
+  -- ⊢ RingHom.RespectsIso @RingHom.FiniteType
   exact RingHom.finiteType_respectsIso
+  -- 🎉 no goals
 #align algebraic_geometry.locally_of_finite_type_eq AlgebraicGeometry.locallyOfFiniteType_eq
 
 instance (priority := 900) locallyOfFiniteTypeOfIsOpenImmersion {X Y : Scheme} (f : X ⟶ Y)
@@ -65,10 +68,15 @@ instance locallyOfFiniteTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 theorem locallyOfFiniteTypeOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFiniteType (f ≫ g)] : LocallyOfFiniteType f := by
   revert hf
+  -- ⊢ ∀ [hf : LocallyOfFiniteType (f ≫ g)], LocallyOfFiniteType f
   rw [locallyOfFiniteType_eq]
+  -- ⊢ ∀ [hf : affineLocally (@RingHom.FiniteType) (f ≫ g)], affineLocally (@RingHo …
   apply RingHom.finiteType_is_local.affineLocally_of_comp
+  -- ⊢ ∀ {R S T : Type u_1} [inst : CommRing R] [inst_1 : CommRing S] [inst_2 : Com …
   introv H
+  -- ⊢ RingHom.FiniteType g
   exact RingHom.FiniteType.of_comp_finiteType H
+  -- 🎉 no goals
 #align algebraic_geometry.locally_of_finite_type_of_comp AlgebraicGeometry.locallyOfFiniteTypeOfComp
 
 theorem LocallyOfFiniteType.affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)

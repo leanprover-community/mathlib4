@@ -24,6 +24,9 @@ variable {α β : Type*}
 @[to_additive]
 theorem fn_min_mul_fn_max [LinearOrder α] [CommSemigroup β] (f : α → β) (n m : α) :
     f (min n m) * f (max n m) = f n * f m := by cases' le_total n m with h h <;> simp [h, mul_comm]
+                                                -- ⊢ f (min n m) * f (max n m) = f n * f m
+                                                                                 -- 🎉 no goals
+                                                                                 -- 🎉 no goals
 #align fn_min_mul_fn_max fn_min_mul_fn_max
 #align fn_min_add_fn_max fn_min_add_fn_max
 
@@ -82,7 +85,9 @@ theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ < a₂ * b₂ → a₁ < a₂ ∨ b₁ < b₂ := by
   contrapose!
+  -- ⊢ a₂ ≤ a₁ ∧ b₂ ≤ b₁ → a₂ * b₂ ≤ a₁ * b₁
   exact fun h => mul_le_mul' h.1 h.2
+  -- 🎉 no goals
 #align lt_or_lt_of_mul_lt_mul lt_or_lt_of_mul_lt_mul
 #align lt_or_lt_of_add_lt_add lt_or_lt_of_add_lt_add
 
@@ -91,7 +96,9 @@ theorem le_or_lt_of_mul_le_mul [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ < b₂ := by
   contrapose!
+  -- ⊢ a₂ < a₁ ∧ b₂ ≤ b₁ → a₂ * b₂ < a₁ * b₁
   exact fun h => mul_lt_mul_of_lt_of_le h.1 h.2
+  -- 🎉 no goals
 #align le_or_lt_of_mul_le_mul le_or_lt_of_mul_le_mul
 #align le_or_lt_of_add_le_add le_or_lt_of_add_le_add
 
@@ -100,7 +107,9 @@ theorem lt_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ < a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
+  -- ⊢ a₂ ≤ a₁ ∧ b₂ < b₁ → a₂ * b₂ < a₁ * b₁
   exact fun h => mul_lt_mul_of_le_of_lt h.1 h.2
+  -- 🎉 no goals
 #align lt_or_le_of_mul_le_mul lt_or_le_of_mul_le_mul
 #align lt_or_le_of_add_le_add lt_or_le_of_add_le_add
 
@@ -109,7 +118,9 @@ theorem le_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
+  -- ⊢ a₂ < a₁ ∧ b₂ < b₁ → a₂ * b₂ < a₁ * b₁
   exact fun h => mul_lt_mul_of_lt_of_lt h.1 h.2
+  -- 🎉 no goals
 #align le_or_le_of_mul_le_mul le_or_le_of_mul_le_mul
 #align le_or_le_of_add_le_add le_or_le_of_add_le_add
 
@@ -119,9 +130,13 @@ theorem mul_lt_mul_iff_of_le_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂)
     (hb : b₁ ≤ b₂) : a₁ * b₁ < a₂ * b₂ ↔ a₁ < a₂ ∨ b₁ < b₂ := by
   refine' ⟨lt_or_lt_of_mul_lt_mul, fun h => _⟩
+  -- ⊢ a₁ * b₁ < a₂ * b₂
   cases' h with ha' hb'
+  -- ⊢ a₁ * b₁ < a₂ * b₂
   · exact mul_lt_mul_of_lt_of_le ha' hb
+    -- 🎉 no goals
   · exact mul_lt_mul_of_le_of_lt ha hb'
+    -- 🎉 no goals
 #align mul_lt_mul_iff_of_le_of_le mul_lt_mul_iff_of_le_of_le
 #align add_lt_add_iff_of_le_of_le add_lt_add_iff_of_le_of_le
 

@@ -43,16 +43,23 @@ def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
 theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
   ⟨0, bi, bu, by
     simp only [eval_zero, RingHom.map_zero, mul_zero, Polynomial.map_zero]⟩
+    -- 🎉 no goals
 #align denoms_clearable_zero denomsClearable_zero
 
 theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
     (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
   refine' ⟨r * a ^ n * b ^ (N - n), bi, bu, _⟩
+  -- ⊢ ↑i (r * a ^ n * b ^ (N - n)) = ↑i b ^ N * eval (↑i a * bi) (Polynomial.map i …
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
+  -- ⊢ ↑i (r * a ^ n * b ^ (N - n)) = ↑i b ^ N * (↑i r * eval (↑i a * bi) X ^ n)
   rw [RingHom.map_mul, RingHom.map_mul, RingHom.map_pow, RingHom.map_pow, eval_X, mul_comm]
+  -- ⊢ ↑i b ^ (N - n) * (↑i r * ↑i a ^ n) = ↑i b ^ N * (↑i r * (↑i a * bi) ^ n)
   rw [← tsub_add_cancel_of_le nN]
+  -- ⊢ ↑i b ^ (N - n + n - n) * (↑i r * ↑i a ^ n) = ↑i b ^ (N - n + n) * (↑i r * (↑ …
   conv_lhs => rw [← mul_one (i a), ← bu]
+  -- ⊢ ↑i b ^ (N - n + n - n) * (↑i r * (↑i a * (bi * ↑i b)) ^ n) = ↑i b ^ (N - n + …
   simp [mul_assoc, mul_comm, mul_left_comm, pow_add, mul_pow]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align denoms_clearable_C_mul_X_pow denomsClearable_C_mul_X_pow
 
@@ -61,8 +68,13 @@ theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
   fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ =>
   ⟨Df + Dg, bf, bfu, by
     rw [RingHom.map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
+    -- ⊢ ↑i b ^ N * eval (↑i a * bf) (Polynomial.map i f) + ↑i b ^ N * eval (↑i a * b …
     congr
+    -- ⊢ bg = bf
     refine' @inv_unique K _ (i b) bg bf _ _ <;> rwa [mul_comm]⟩
+    -- ⊢ ↑i b * bg = 1
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
 #align denoms_clearable.add DenomsClearable.add
 
 theorem denomsClearable_of_natDegree_le (N : ℕ) (a : R) (bu : bi * i b = 1) :
@@ -98,12 +110,21 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[
         rw [Int.cast_ne_zero]
         exact b0.ne.symm)
   obtain Fa := _root_.congr_arg abs hF
+  -- ⊢ 1 ≤ ↑b ^ natDegree f * |eval (↑a / ↑b) (Polynomial.map (algebraMap ℤ K) f)|
   rw [eq_one_div_of_mul_eq_one_left bu, eq_intCast, eq_intCast, abs_mul] at Fa
+  -- ⊢ 1 ≤ ↑b ^ natDegree f * |eval (↑a / ↑b) (Polynomial.map (algebraMap ℤ K) f)|
   rw [abs_of_pos (pow_pos (Int.cast_pos.mpr b0) _ : 0 < (b : K) ^ _), one_div, eq_intCast] at Fa
+  -- ⊢ 1 ≤ ↑b ^ natDegree f * |eval (↑a / ↑b) (Polynomial.map (algebraMap ℤ K) f)|
   rw [div_eq_mul_inv, ←Fa, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
+  -- ⊢ 1 ≤ |ev|
   refine' Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 => fab _))
+  -- ⊢ eval (↑a / ↑b) (Polynomial.map (algebraMap ℤ K) f) = 0
   rw [eq_one_div_of_mul_eq_one_left bu, F0, one_div, eq_intCast, Int.cast_zero, zero_eq_mul] at hF
+  -- ⊢ eval (↑a / ↑b) (Polynomial.map (algebraMap ℤ K) f) = 0
   cases' hF with hF hF
+  -- ⊢ eval (↑a / ↑b) (Polynomial.map (algebraMap ℤ K) f) = 0
   · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (pow_eq_zero hF)))).elim
+    -- 🎉 no goals
   · rwa [div_eq_mul_inv]
+    -- 🎉 no goals
 #align one_le_pow_mul_abs_eval_div one_le_pow_mul_abs_eval_div

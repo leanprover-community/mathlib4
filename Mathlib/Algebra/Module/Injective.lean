@@ -65,7 +65,9 @@ theorem Module.injective_object_of_injective_module [Module.Injective.{u, v} R Q
     CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R) :=
   { factors := fun g f mn => by
       rcases Module.Injective.out _ _ f ((ModuleCat.mono_iff_injective f).mp mn) g with ⟨h, eq1⟩
+      -- ⊢ ∃ h, CategoryTheory.CategoryStruct.comp f h = g
       exact ⟨h, LinearMap.ext eq1⟩ }
+      -- 🎉 no goals
 #align module.injective_object_of_injective_module Module.injective_object_of_injective_module
 
 theorem Module.injective_module_of_injective_object
@@ -73,10 +75,12 @@ theorem Module.injective_module_of_injective_object
     Module.Injective.{u, v} R Q :=
   { out := fun X Y ins1 ins2 ins3 ins4 f hf g => by
       skip
+      -- ⊢ ∃ h, ∀ (x : X), ↑h (↑f x) = ↑g x
       rcases@CategoryTheory.Injective.factors (ModuleCat R) _ ⟨Q⟩ _ ⟨X⟩ ⟨Y⟩ g f
           ((ModuleCat.mono_iff_injective _).mpr hf) with
         ⟨h, rfl⟩
       exact ⟨h, fun x => rfl⟩ }
+      -- 🎉 no goals
 #align module.injective_module_of_injective_object Module.injective_module_of_injective_object
 
 theorem Module.injective_iff_injective_object :
@@ -118,9 +122,13 @@ theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain
       ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
     a = b := by
   rcases a with ⟨a, a_le, e1⟩
+  -- ⊢ { toLinearPMap := a, le := a_le, is_extension := e1 } = b
   rcases b with ⟨b, b_le, e2⟩
+  -- ⊢ { toLinearPMap := a, le := a_le, is_extension := e1 } = { toLinearPMap := b, …
   congr
+  -- ⊢ a = b
   exact LinearPMap.ext domain_eq to_fun_eq
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.ext Module.Baer.ExtensionOf.ext
 
@@ -128,6 +136,7 @@ theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
   ⟨fun r => r ▸ ⟨rfl, fun x y h => congr_arg a.toFun <| by exact_mod_cast h⟩, fun ⟨h1, h2⟩ =>
+                                                           -- 🎉 no goals
     ExtensionOf.ext h1 h2⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.ext_iff Module.Baer.ExtensionOf.ext_iff
@@ -141,8 +150,11 @@ instance : Inf (ExtensionOf i f) where
       le := fun x hx =>
         (by
           rcases hx with ⟨x, rfl⟩
+          -- ⊢ ↑i x ∈ LinearPMap.eqLocus X1.toLinearPMap X2.toLinearPMap
           refine' ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), _⟩
+          -- ⊢ ↑X1.toLinearPMap { val := ↑i x, property := (_ : ↑i x ∈ X1.domain) } = ↑X2.t …
           rw [← X1.is_extension x, ← X2.is_extension x] :
+          -- 🎉 no goals
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun m => X1.is_extension _ }
 
@@ -150,6 +162,7 @@ instance : SemilatticeInf (ExtensionOf i f) :=
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
     (fun X Y h =>
       ExtensionOf.ext (by rw [h]) fun x y h' => by
+                          -- 🎉 no goals
         -- Porting note: induction didn't handle dependent rw like in Lean 3
         have : {x y : N} → (h'' : x = y) → (hx : x ∈ X.toLinearPMap.domain) →
           (hy : y ∈ Y.toLinearPMap.domain) → X.toLinearPMap ⟨x,hx⟩ = Y.toLinearPMap ⟨y,hy⟩ := by
@@ -157,10 +170,13 @@ instance : SemilatticeInf (ExtensionOf i f) :=
             intro _ _ h _ _
             congr
         apply this h' _ _)
+        -- 🎉 no goals
     fun X Y =>
     LinearPMap.ext rfl fun x y h => by
       congr
+      -- ⊢ x = y
       exact_mod_cast h
+      -- 🎉 no goals
 
 variable {i f}
 
@@ -168,7 +184,9 @@ theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
     (hchain : IsChain (· ≤ ·) c) :
     IsChain (· ≤ ·) <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
   rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ neq
+  -- ⊢ (fun x x_1 => x ≤ x_1) ((fun x => x.toLinearPMap) a) ((fun x => x.toLinearPM …
   exact hchain a_mem b_mem (ne_of_apply_ne _ neq)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.chain_linear_pmap_of_chain_extension_of Module.Baer.chain_linearPMap_of_chain_extensionOf
 
@@ -186,11 +204,16 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
+      -- ⊢ ∀ {c : Set (ExtensionOf i f)} (hchain : IsChain (fun x x_1 => x ≤ x_1) c),
       · -- porting note: this subgoal didn't exist before the reenableeta branch
         intros c hchain _
+        -- ⊢ let src := LinearPMap.sSup ((fun x => x.toLinearPMap) '' c) (_ : DirectedOn  …
         exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
+        -- 🎉 no goals
       symm
+      -- ⊢ ↑{ domain := src✝.domain, toFun := src✝.toFun } { val := ↑i m, property := ( …
       generalize_proofs _ h1
+      -- ⊢ ↑{ domain := src✝.domain, toFun := src✝.toFun } { val := ↑i m, property := h …
       exact
         LinearPMap.sSup_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
           ((Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩) ⟨i m, h1⟩ }
@@ -214,19 +237,30 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
         { toFun := fun x => f x.2.choose
           map_add' := fun x y => by
             have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
+            -- ⊢ (fun x => ↑f (Exists.choose (_ : ↑x ∈ LinearMap.range i))) (x + y) = (fun x  …
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
+            -- ⊢ (fun x => ↑f (Exists.choose (_ : ↑x ∈ LinearMap.range i))) (x + y) = (fun x  …
             dsimp
+            -- ⊢ ↑f (Exists.choose (_ : ↑(x + y) ∈ LinearMap.range i)) = ↑f (Exists.choose (_ …
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
+            -- 🎉 no goals
           map_smul' := fun r x => by
             have eq1 : r • _ = (r • x).1 := congr_arg ((· • ·) r) x.2.choose_spec
+            -- ⊢ AddHom.toFun { toFun := fun x => ↑f (Exists.choose (_ : ↑x ∈ LinearMap.range …
             rw [← LinearMap.map_smul, ← (r • x).2.choose_spec] at eq1
+            -- ⊢ AddHom.toFun { toFun := fun x => ↑f (Exists.choose (_ : ↑x ∈ LinearMap.range …
             dsimp
+            -- ⊢ ↑f (Exists.choose (_ : ↑(r • x) ∈ LinearMap.range i)) = r • ↑f (Exists.choos …
             rw [← Fact.out (p := Function.Injective i) eq1, LinearMap.map_smul] }
+            -- 🎉 no goals
       le := le_refl _
       is_extension := fun m => by
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
+        -- ⊢ ↑f m = ↑{ toFun := fun x => ↑f (Exists.choose (_ : ↑x ∈ LinearMap.range i)), …
         dsimp
+        -- ⊢ ↑f m = ↑f (Exists.choose (_ : ↑i m ∈ LinearMap.range i))
         apply congrArg
+        -- ⊢ m = Exists.choose (_ : ↑i m ∈ LinearMap.range i)
         exact Fact.out (p := Function.Injective i)
           (⟨i m, ⟨_, rfl⟩⟩ : LinearMap.range i).2.choose_spec.symm }
 set_option linter.uppercaseLean3 false in
@@ -258,11 +292,17 @@ variable {f}
 private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
+  -- ⊢ ∃ a b, ↑x = ↑a + b • y
   rw [Submodule.coe_sup] at mem1
+  -- ⊢ ∃ a b, ↑x = ↑a + b • y
   rcases mem1 with ⟨a, b, a_mem, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
+  -- ⊢ ∃ a b, ↑x = ↑a + b • y
   rw [Submodule.mem_span_singleton] at b_mem
+  -- ⊢ ∃ a b, ↑x = ↑a + b • y
   rcases b_mem with ⟨z, eq2⟩
+  -- ⊢ ∃ a b, ↑x = ↑a + b • y
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩
+  -- 🎉 no goals
 set_option align.precheck false in
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.aux1 Module.Baer.extensionOfMax_adjoin.aux1
@@ -301,13 +341,19 @@ def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →�
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
     -- porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_add]
+    -- ⊢ ↑(extensionOfMax i f).toLinearPMap { val := ↑(z1 + z2) • y, property := (_ : …
     congr
+    -- ⊢ ↑(z1 + z2) • y = ↑{ val := ↑z1 • y, property := (_ : ↑z1 ∈ ideal i f y) } +  …
     apply add_smul
+    -- 🎉 no goals
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
     -- porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_smul]
+    -- ⊢ ↑(extensionOfMax i f).toLinearPMap { val := ↑(z1 • z2) • y, property := (_ : …
     congr 2
+    -- ⊢ ↑(z1 • z2) • y = ↑(RingHom.id R) z1 • ↑{ val := ↑z2 • y, property := (_ : ↑z …
     apply mul_smul
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.ideal_to Module.Baer.ExtensionOfMaxAdjoin.idealTo
 
@@ -332,7 +378,9 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r 
     rw [eq1]
     apply Submodule.zero_mem _
   rw [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h y r this]
+  -- ⊢ ↑(idealTo i f y) { val := r, property := this } = 0
   dsimp [ExtensionOfMaxAdjoin.idealTo]
+  -- ⊢ ↑(extensionOfMax i f).toLinearPMap { val := r • y, property := (_ : ↑{ val : …
   simp only [LinearMap.coe_mk, eq1, Subtype.coe_mk, ← ZeroMemClass.zero_def,
     (extensionOfMax i f).toLinearPMap.map_zero]
 set_option linter.uppercaseLean3 false in
@@ -342,8 +390,11 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
+  -- ⊢ ↑(extendIdealTo i f h y) (r - r') = 0
   convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
+  -- ⊢ (r - r') • y = 0
   rw [sub_smul, sub_eq_zero, eq1]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extend_ideal_to_wd Module.Baer.ExtensionOfMaxAdjoin.extendIdealTo_wd
 
@@ -371,6 +422,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     ExtensionOfMaxAdjoin.extensionToFun i f h x =
       (extensionOfMax i f).toLinearPMap a + ExtensionOfMaxAdjoin.extendIdealTo i f h y r := by
   cases' a with a ha
+  -- ⊢ extensionToFun i f h x = ↑(extensionOfMax i f).toLinearPMap { val := a, prop …
   have eq2 :
     (ExtensionOfMaxAdjoin.fst i x - a : N) = (r - ExtensionOfMaxAdjoin.snd i x) • y := by
     change x = a + r • y at eq1
@@ -380,13 +432,21 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     ExtensionOfMaxAdjoin.extendIdealTo_eq i f h (r - ExtensionOfMaxAdjoin.snd i x)
       (by rw [← eq2]; exact Submodule.sub_mem _ (ExtensionOfMaxAdjoin.fst i x).2 ha)
   simp only [map_sub, sub_smul, sub_eq_iff_eq_add] at eq3
+  -- ⊢ extensionToFun i f h x = ↑(extensionOfMax i f).toLinearPMap { val := a, prop …
   unfold ExtensionOfMaxAdjoin.extensionToFun
+  -- ⊢ ↑(extensionOfMax i f).toLinearPMap (fst i x) + ↑(extendIdealTo i f h y) (snd …
   rw [eq3, ← add_assoc, ← (extensionOfMax i f).toLinearPMap.map_add, AddMemClass.mk_add_mk]
+  -- ⊢ ↑(extensionOfMax i f).toLinearPMap (fst i x) + ↑(extendIdealTo i f h y) (snd …
   congr
+  -- ⊢ fst i x = { val := a + (r • y - snd i x • y), property := (_ : a + (r • y -  …
   ext
+  -- ⊢ ↑(fst i x) = ↑{ val := a + (r • y - snd i x • y), property := (_ : a + (r •  …
   dsimp
+  -- ⊢ ↑(fst i x) = a + (r • y - snd i x • y)
   rw [Subtype.coe_mk, add_sub, ← eq1]
+  -- ⊢ ↑(fst i x) = ↑x - snd i x • y
   exact eq_sub_of_add_eq (ExtensionOfMaxAdjoin.eqn i x).symm
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extension_to_fun_wd Module.Baer.ExtensionOfMaxAdjoin.extensionToFun_wd
 
@@ -406,9 +466,13 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
         rw [ExtensionOfMaxAdjoin.extensionToFun_wd (y := y) i f h (a + b) _ _ eq1,
           LinearPMap.map_add, map_add]
         unfold ExtensionOfMaxAdjoin.extensionToFun
+        -- ⊢ ↑(extensionOfMax i f).toLinearPMap (ExtensionOfMaxAdjoin.fst i a) + ↑(extens …
         abel
+        -- 🎉 no goals
+        -- 🎉 no goals
       map_smul' := fun r a => by
         dsimp
+        -- ⊢ ExtensionOfMaxAdjoin.extensionToFun i f h (r • a) = r • ExtensionOfMaxAdjoin …
         have eq1 :
           r • (a : N) =
             ↑(r • ExtensionOfMaxAdjoin.fst i a) + (r • ExtensionOfMaxAdjoin.snd i a) • y := by
@@ -417,11 +481,14 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
         rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a) _ _ eq1, LinearMap.map_smul,
           LinearPMap.map_smul, ← smul_add]
         congr }
+        -- 🎉 no goals
   is_extension m := by
     dsimp
+    -- ⊢ ↑f m = ExtensionOfMaxAdjoin.extensionToFun i f h { val := ↑i m, property :=  …
     rw [(extensionOfMax i f).is_extension,
       ExtensionOfMaxAdjoin.extensionToFun_wd i f h _ ⟨i m, _⟩ 0 _, map_zero, add_zero]
     simp
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin Module.Baer.extensionOfMaxAdjoin
 
@@ -429,7 +496,9 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
     extensionOfMax i f ≤ extensionOfMaxAdjoin i f h y :=
   ⟨le_sup_left, fun x x' EQ => by
     symm
+    -- ⊢ ↑(extensionOfMaxAdjoin i f h y).toLinearPMap x' = ↑(extensionOfMax i f).toLi …
     change ExtensionOfMaxAdjoin.extensionToFun i f h _ = _
+    -- ⊢ ExtensionOfMaxAdjoin.extensionToFun i f h x' = ↑(extensionOfMax i f).toLinea …
     rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h x' x 0 (by simp [EQ]), map_zero,
       add_zero]⟩
 set_option linter.uppercaseLean3 false in
@@ -438,10 +507,13 @@ set_option linter.uppercaseLean3 false in
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
   refine' Submodule.eq_top_iff'.mpr fun y => _
+  -- ⊢ y ∈ (extensionOfMax i f).toLinearPMap.domain
   dsimp
+  -- ⊢ y ∈ (extensionOfMax i f).toLinearPMap.domain
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]
   exact ⟨0, Submodule.zero_mem _, y, Submodule.mem_span_singleton_self _, zero_add _⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_to_submodule_eq_top Module.Baer.extensionOfMax_to_submodule_eq_top
 
@@ -455,11 +527,15 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
               ⟨y, (extensionOfMax_to_submodule_eq_top i f h).symm ▸ trivial⟩
           map_add' := fun x y => by
             rw [← LinearPMap.map_add]
+            -- ⊢ (fun y => ↑(extensionOfMax i f).toLinearPMap { val := y, property := (_ : y  …
             congr
+            -- 🎉 no goals
           map_smul' := fun r x => by
             rw [← LinearPMap.map_smul]
+            -- ⊢ AddHom.toFun { toFun := fun y => ↑(extensionOfMax i f).toLinearPMap { val := …
             -- Porting note: used to be congr
             dsimp },
+            -- 🎉 no goals
         fun x => ((extensionOfMax i f).is_extension x).symm⟩ }
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective

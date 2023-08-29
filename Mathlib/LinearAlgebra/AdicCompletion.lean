@@ -91,18 +91,24 @@ In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (h : m ≤ n), liftQ _ (mkQ _) (by
       rw [ker_mkQ]
+      -- ⊢ I ^ n • ⊤ ≤ I ^ m • ⊤
       exact smul_mono (Ideal.pow_le_pow h) le_rfl)
+      -- 🎉 no goals
     (f n) = f m }
   zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
+                      -- 🎉 no goals
   add_mem' hf hg m n hmn := by
+    -- 🎉 no goals
     rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
   smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
+                                 -- 🎉 no goals
 #align adic_completion adicCompletion
 
 namespace IsHausdorff
 
 instance bot : IsHausdorff (⊥ : Ideal R) M :=
   ⟨fun x hx => by simpa only [pow_one ⊥, bot_smul, SModEq.bot] using hx 1⟩
+                  -- 🎉 no goals
 #align is_Hausdorff.bot IsHausdorff.bot
 
 variable {M}
@@ -110,7 +116,9 @@ variable {M}
 protected theorem subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
   ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n => by
     rw [Ideal.top_pow, top_smul]
+    -- ⊢ x - y ≡ 0 [SMOD ⊤]
     exact SModEq.top⟩
+    -- 🎉 no goals
 #align is_Hausdorff.subsingleton IsHausdorff.subsingleton
 
 variable (M)
@@ -149,9 +157,13 @@ instance : IsHausdorff I (Hausdorffification I M) :=
   ⟨fun x => Quotient.inductionOn' x fun x hx =>
     (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
+      -- ⊢ x ∈ I ^ n • ⊤
       simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
+      -- ⊢ x ∈ I ^ n • ⊤
       rw [← this, map_smul'', mem_comap, Submodule.map_top, range_mkQ, ← SModEq.zero]
+      -- ⊢ ↑(mkQ (⨅ (n : ℕ), I ^ n • ⊤)) x ≡ 0 [SMOD I ^ n • ⊤]
       exact hx n⟩
+      -- 🎉 no goals
 
 variable {M} [h : IsHausdorff I N]
 
@@ -161,7 +173,9 @@ def lift (f : M →ₗ[R] N) : Hausdorffification I M →ₗ[R] N :=
   liftQ _ f <| map_le_iff_le_comap.1 <| h.iInf_pow_smul ▸ le_iInf fun n =>
     le_trans (map_mono <| iInf_le _ n) <| by
       rw [map_smul'']
+      -- ⊢ I ^ n • map f ⊤ ≤ I ^ n • ⊤
       exact smul_mono le_rfl le_top
+      -- 🎉 no goals
 #align Hausdorffification.lift Hausdorffification.lift
 
 theorem lift_of (f : M →ₗ[R] N) (x : M) : lift I f (of I M x) = f x :=
@@ -176,6 +190,7 @@ theorem lift_comp_of (f : M →ₗ[R] N) : (lift I f).comp (of I M) = f :=
 theorem lift_eq (f : M →ₗ[R] N) (g : Hausdorffification I M →ₗ[R] N) (hg : g.comp (of I M) = f) :
     g = lift I f :=
   LinearMap.ext fun x => induction_on x fun x => by rw [lift_of, ← hg, LinearMap.comp_apply]
+                                                    -- 🎉 no goals
 #align Hausdorffification.lift_eq Hausdorffification.lift_eq
 
 end Hausdorffification
@@ -184,22 +199,32 @@ namespace IsPrecomplete
 
 instance bot : IsPrecomplete (⊥ : Ideal R) M := by
   refine' ⟨fun f hf => ⟨f 1, fun n => _⟩⟩
+  -- ⊢ f n ≡ f 1 [SMOD ⊥ ^ n • ⊤]
   cases' n with n
+  -- ⊢ f Nat.zero ≡ f 1 [SMOD ⊥ ^ Nat.zero • ⊤]
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
+    -- ⊢ f Nat.zero ≡ f 1 [SMOD ⊤]
     exact SModEq.top
+    -- 🎉 no goals
   specialize hf (Nat.le_add_left 1 n)
+  -- ⊢ f (Nat.succ n) ≡ f 1 [SMOD ⊥ ^ Nat.succ n • ⊤]
   rw [pow_one, bot_smul, SModEq.bot] at hf; rw [hf]
+  -- ⊢ f (Nat.succ n) ≡ f 1 [SMOD ⊥ ^ Nat.succ n • ⊤]
+                                            -- 🎉 no goals
 #align is_precomplete.bot IsPrecomplete.bot
 
 instance top : IsPrecomplete (⊤ : Ideal R) M :=
   ⟨fun f _ =>
     ⟨0, fun n => by
       rw [Ideal.top_pow, top_smul]
+      -- ⊢ f n ≡ 0 [SMOD ⊤]
       exact SModEq.top⟩⟩
+      -- 🎉 no goals
 #align is_precomplete.top IsPrecomplete.top
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsPrecomplete I M :=
   ⟨fun f _ => ⟨0, fun n => by rw [Subsingleton.elim (f n) 0]⟩⟩
+                              -- 🎉 no goals
 #align is_precomplete.of_subsingleton IsPrecomplete.of_subsingleton
 
 end IsPrecomplete
@@ -265,6 +290,7 @@ instance : IsHausdorff I (adicCompletion I M) :=
     ((eval I M n).map_smul r x).symm ▸
       Quotient.inductionOn' (eval I M n x) fun x => SModEq.zero.2 <| smul_mem_smul hr mem_top)
     fun _ _ ih1 ih2 => by rw [LinearMap.map_add, ih1, ih2, LinearMap.map_zero, add_zero]⟩
+                          -- 🎉 no goals
 
 end adicCompletion
 
@@ -286,10 +312,15 @@ open Finset
 
 theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
   intro x hx
+  -- ⊢ x ∈ Ideal.jacobson ⊥
   rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
+  -- ⊢ ∀ (y : R), IsUnit (-x * y + 1)
   intro y
+  -- ⊢ IsUnit (-x * y + 1)
   rw [add_comm]
+  -- ⊢ IsUnit (1 + -x * y)
   let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i
+  -- ⊢ IsUnit (1 + -x * y)
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
     simp only [Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
@@ -300,22 +331,34 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     rw [mul_pow, pow_add, mul_assoc]
     exact Ideal.mul_mem_right _ (I ^ m) (Ideal.pow_mem_pow hx m)
   obtain ⟨L, hL⟩ := IsPrecomplete.prec toIsPrecomplete @hf
+  -- ⊢ IsUnit (1 + -x * y)
   · rw [isUnit_iff_exists_inv]
+    -- ⊢ ∃ b, (1 + -x * y) * b = 1
     use L
+    -- ⊢ (1 + -x * y) * L = 1
     rw [← sub_eq_zero, neg_mul]
+    -- ⊢ (1 + -(x * y)) * L - 1 = 0
     apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
+    -- ⊢ ∀ (n : ℕ), (1 + -(x * y)) * L - 1 ≡ 0 [SMOD I ^ n • ⊤]
     intro n
+    -- ⊢ (1 + -(x * y)) * L - 1 ≡ 0 [SMOD I ^ n • ⊤]
     specialize hL n
+    -- ⊢ (1 + -(x * y)) * L - 1 ≡ 0 [SMOD I ^ n • ⊤]
     rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
+    -- ⊢ (1 + -(x * y)) * L - 1 - 0 ∈ I ^ n
     rw [sub_zero]
+    -- ⊢ (1 + -(x * y)) * L - 1 ∈ I ^ n
     suffices (1 - x * y) * f n - 1 ∈ I ^ n by
       convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
       ring
     cases n
+    -- ⊢ (1 - x * y) * f Nat.zero - 1 ∈ I ^ Nat.zero
     · simp only [Ideal.one_eq_top, pow_zero, Nat.zero_eq, mem_top]
+      -- 🎉 no goals
     · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm, ← sub_sub,
         sub_self, zero_sub, @neg_mem_iff, mul_pow]
       exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
+      -- 🎉 no goals
 #align is_adic_complete.le_jacobson_bot IsAdicComplete.le_jacobson_bot
 
 end IsAdicComplete

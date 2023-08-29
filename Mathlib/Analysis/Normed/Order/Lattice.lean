@@ -64,6 +64,7 @@ theorem LatticeOrderedAddCommGroup.isSolid_ball (r : ℝ) :
 instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
 
 instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le] ⟩
+                                              -- 🎉 no goals
 
 end SolidNorm
 
@@ -95,12 +96,19 @@ open LatticeOrderedGroup LatticeOrderedCommGroup HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
+  -- ⊢ |a| ≤ |b|
   rw [abs_eq_sup_neg]
+  -- ⊢ a ⊔ -a ≤ |b|
   nth_rw 1 [← neg_neg a]
+  -- ⊢ - -a ⊔ -a ≤ |b|
   rw [← neg_inf_eq_sup_neg]
+  -- ⊢ -(-a ⊓ a) ≤ |b|
   rw [abs_eq_sup_neg]
+  -- ⊢ -(-a ⊓ a) ≤ b ⊔ -b
   nth_rw 1 [← neg_neg b]
+  -- ⊢ -(-a ⊓ a) ≤ - -b ⊔ -b
   rwa [← neg_inf_eq_sup_neg, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
+  -- 🎉 no goals
 #align dual_solid dual_solid
 
 -- see Note [lower instance priority]
@@ -117,8 +125,11 @@ theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
 
 theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
+  -- ⊢ ‖a ⊓ b - c ⊓ d‖ ≤ ‖|a - c|‖ + ‖|b - d|‖
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
+  -- ⊢ |a ⊓ b - c ⊓ d| ≤ ||a - c| + |b - d||
   rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
+  -- ⊢ |a ⊓ b - c ⊓ d| ≤ |a - c| + |b - d|
   calc
     |a ⊓ b - c ⊓ d| = |a ⊓ b - c ⊓ b + (c ⊓ b - c ⊓ d)| := by rw [sub_add_sub_cancel]
     _ ≤ |a ⊓ b - c ⊓ b| + |c ⊓ b - c ⊓ d| := (abs_add_le _ _)
@@ -131,8 +142,11 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
 
 theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
+  -- ⊢ ‖a ⊔ b - c ⊔ d‖ ≤ ‖|a - c|‖ + ‖|b - d|‖
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
+  -- ⊢ |a ⊔ b - c ⊔ d| ≤ ||a - c| + |b - d||
   rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
+  -- ⊢ |a ⊔ b - c ⊔ d| ≤ |a - c| + |b - d|
   calc
     |a ⊔ b - c ⊔ d| = |a ⊔ b - c ⊔ b + (c ⊔ b - c ⊔ d)| := by rw [sub_add_sub_cancel]
     _ ≤ |a ⊔ b - c ⊔ b| + |c ⊔ b - c ⊔ d| := (abs_add_le _ _)
@@ -145,12 +159,16 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
 
 theorem norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊓ y - 0 ⊓ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_inf_sub_inf_le_add_norm x y 0 0
+  -- ⊢ ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖
   simpa only [inf_idem, sub_zero] using h
+  -- 🎉 no goals
 #align norm_inf_le_add norm_inf_le_add
 
 theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊔ y - 0 ⊔ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_sup_sub_sup_le_add_norm x y 0 0
+  -- ⊢ ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖
   simpa only [sup_idem, sub_zero] using h
+  -- 🎉 no goals
 #align norm_sup_le_add norm_sup_le_add
 
 -- see Note [lower instance priority]
@@ -158,12 +176,15 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 -/
 instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousInf α := by
   refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_tendsto_zero.2 <| _⟩
+  -- ⊢ Filter.Tendsto (fun e => ‖e.fst ⊓ e.snd - (fun p => p.fst ⊓ p.snd) q‖) (nhds …
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine' squeeze_zero (fun e => norm_nonneg _) this _
+  -- ⊢ Filter.Tendsto (fun t => ‖t.fst - q.fst‖ + ‖t.snd - q.snd‖) (nhds q) (nhds 0)
   convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
+  -- 🎉 no goals
 #align normed_lattice_add_comm_group_has_continuous_inf NormedLatticeAddCommGroup.continuousInf
 
 -- see Note [lower instance priority]
@@ -195,7 +216,9 @@ theorem norm_inf_sub_inf_le_norm (x y z : α) : ‖x ⊓ z - y ⊓ z‖ ≤ ‖x
 theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
   LipschitzWith.of_dist_le_mul fun x y => by
     rw [NNReal.coe_one, one_mul, dist_eq_norm, dist_eq_norm]
+    -- ⊢ ‖x ⊔ z - y ⊔ z‖ ≤ ‖x - y‖
     exact norm_sup_sub_sup_le_norm x y z
+    -- 🎉 no goals
 #align lipschitz_with_sup_right lipschitzWith_sup_right
 
 theorem lipschitzWith_pos : LipschitzWith 1 (PosPart.pos : α → α) :=
@@ -208,6 +231,7 @@ theorem continuous_pos : Continuous (PosPart.pos : α → α) :=
 
 theorem continuous_neg' : Continuous (NegPart.neg : α → α) := by
   refine continuous_pos.comp <| @continuous_neg _ _ _ TopologicalAddGroup.toContinuousNeg
+  -- 🎉 no goals
   -- porting note: see the [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/can't.20infer.20.60ContinuousNeg.60)
 #align continuous_neg' continuous_neg'
 
@@ -216,6 +240,7 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
     rw [this]
     exact IsClosed.preimage continuous_neg' isClosed_singleton
   ext1 x
+  -- ⊢ x ∈ {x | 0 ≤ x} ↔ x ∈ NegPart.neg ⁻¹' {0}
   simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
     @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
   -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
@@ -228,7 +253,9 @@ theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalS
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=
     by ext1 p; simp only [sub_nonneg, Set.preimage_setOf_eq]
   rw [this]
+  -- ⊢ IsClosed ((fun p => p.snd - p.fst) ⁻¹' {x | 0 ≤ x})
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
+  -- 🎉 no goals
 #align is_closed_le_of_is_closed_nonneg isClosed_le_of_isClosed_nonneg
 
 -- See note [lower instance priority]

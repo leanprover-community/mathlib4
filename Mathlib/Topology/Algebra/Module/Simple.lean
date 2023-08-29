@@ -28,8 +28,13 @@ dense. Applies, e.g., to the case when `R = N` is a division ring. -/
 theorem LinearMap.isClosed_or_dense_ker (l : M →ₗ[R] N) :
     IsClosed (LinearMap.ker l : Set M) ∨ Dense (LinearMap.ker l : Set M) := by
   rcases l.surjective_or_eq_zero with (hl | rfl)
+  -- ⊢ IsClosed ↑(ker l) ∨ Dense ↑(ker l)
   · exact l.ker.isClosed_or_dense_of_isCoatom (LinearMap.isCoatom_ker_of_surjective hl)
+    -- 🎉 no goals
   · rw [LinearMap.ker_zero]
+    -- ⊢ IsClosed ↑⊤ ∨ Dense ↑⊤
     left
+    -- ⊢ IsClosed ↑⊤
     exact isClosed_univ
+    -- 🎉 no goals
 #align linear_map.is_closed_or_dense_ker LinearMap.isClosed_or_dense_ker

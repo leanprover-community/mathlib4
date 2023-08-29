@@ -68,6 +68,7 @@ theorem infix_rfl : l <:+: l :=
 #align list.suffix_cons List.suffix_cons
 
 theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
+                                                           -- 🎉 no goals
 #align list.prefix_concat List.prefix_concat
 
 #align list.infix_cons List.infix_cons
@@ -144,6 +145,7 @@ theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.lengt
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, add_comm]
+                                                             -- 🎉 no goals
   _ <+ take n l ++ drop n l := (Sublist.refl _).append (drop_sublist _ _)
   _ = _ := take_append_drop _ _
 #align list.slice_sublist List.dropSlice_sublist
@@ -166,10 +168,13 @@ theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p <:+ l :=
 
 theorem dropLast_prefix : ∀ l : List α, l.dropLast <+: l
   | [] => ⟨nil, by rw [dropLast, List.append_nil]⟩
+                   -- 🎉 no goals
   | a :: l => ⟨_, dropLast_append_getLast (cons_ne_nil a l)⟩
 #align list.init_prefix List.dropLast_prefix
 
 theorem tail_suffix (l : List α) : tail l <:+ l := by rw [← drop_one]; apply drop_suffix
+                                                      -- ⊢ drop 1 l <:+ l
+                                                                       -- 🎉 no goals
 #align list.tail_suffix List.tail_suffix
 
 theorem dropLast_sublist (l : List α) : l.dropLast <+ l :=
@@ -198,10 +203,14 @@ theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
 
 theorem prefix_iff_eq_append : l₁ <+: l₂ ↔ l₁ ++ drop (length l₁) l₂ = l₂ :=
   ⟨by rintro ⟨r, rfl⟩; rw [drop_left], fun e => ⟨_, e⟩⟩
+      -- ⊢ l₁ ++ drop (length l₁) (l₁ ++ r) = l₁ ++ r
+                       -- 🎉 no goals
 #align list.prefix_iff_eq_append List.prefix_iff_eq_append
 
 theorem suffix_iff_eq_append : l₁ <:+ l₂ ↔ take (length l₂ - length l₁) l₂ ++ l₁ = l₂ :=
   ⟨by rintro ⟨r, rfl⟩; simp only [length_append, add_tsub_cancel_right, take_left], fun e =>
+      -- ⊢ take (length (r ++ l₁) - length l₁) (r ++ l₁) ++ l₁ = r ++ l₁
+                       -- 🎉 no goals
     ⟨_, e⟩⟩
 #align list.suffix_iff_eq_append List.suffix_iff_eq_append
 
@@ -221,14 +230,17 @@ instance decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
   | a :: l₁, b :: l₂ =>
     if h : a = b then
       @decidable_of_decidable_of_iff _ _ (decidablePrefix l₁ l₂) (by rw [← h, prefix_cons_inj])
+                                                                     -- 🎉 no goals
     else
       isFalse fun ⟨t, te⟩ => h <| by injection te
+                                     -- 🎉 no goals
 #align list.decidable_prefix List.decidablePrefix
 
 -- Alternatively, use mem_tails
 instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+ l₂)
   | [], l₂ => isTrue ⟨l₂, append_nil _⟩
   | a :: l₁, [] => isFalse <| mt (Sublist.length_le ∘ isSuffix.sublist) (by simp)
+                                                                            -- 🎉 no goals
   | l₁, b :: l₂ =>
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ _ (l₁.decidableSuffix l₂))
@@ -239,6 +251,7 @@ termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
+                                                -- 🎉 no goals
   | l₁, b :: l₂ =>
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂))
@@ -249,6 +262,7 @@ termination_by decidableInfix l₁ l₂ => (l₁, l₂)
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
     L.take m <+: L.take n ↔ m ≤ n := by
   simp only [prefix_iff_eq_take, length_take]
+  -- ⊢ take m L = take (min m (length L)) (take n L) ↔ m ≤ n
   induction m generalizing L n with
   | zero => simp [min_eq_left, eq_self_iff_true, Nat.zero_le, take]
   | succ m IH =>
@@ -270,33 +284,52 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
 
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
   constructor
+  -- ⊢ a :: l₁ <+: b :: l₂ → a = b ∧ l₁ <+: l₂
   · rintro ⟨L, hL⟩
+    -- ⊢ a = b ∧ l₁ <+: l₂
     simp only [cons_append] at hL
+    -- ⊢ a = b ∧ l₁ <+: l₂
     injection hL with hLLeft hLRight
+    -- ⊢ a = b ∧ l₁ <+: l₂
     exact ⟨hLLeft, ⟨L, hLRight⟩⟩
+    -- 🎉 no goals
   · rintro ⟨rfl, h⟩
+    -- ⊢ a :: l₁ <+: a :: l₂
     rwa [prefix_cons_inj]
+    -- 🎉 no goals
 #align list.cons_prefix_iff List.cons_prefix_iff
 
 theorem isPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
   induction' l₁ with hd tl hl generalizing l₂
+  -- ⊢ List.map f [] <+: List.map f l₂
   · simp only [nil_prefix, map_nil]
+    -- 🎉 no goals
   · cases' l₂ with hd₂ tl₂
+    -- ⊢ List.map f (hd :: tl) <+: List.map f []
     · simpa only using eq_nil_of_prefix_nil h
+      -- 🎉 no goals
     · rw [cons_prefix_iff] at h
+      -- ⊢ List.map f (hd :: tl) <+: List.map f (hd₂ :: tl₂)
       simp only [List.map_cons, h, prefix_cons_inj, hl, map]
+      -- 🎉 no goals
 #align list.is_prefix.map List.isPrefix.map
 
 theorem isPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
     l₁.filterMap f <+: l₂.filterMap f := by
   induction' l₁ with hd₁ tl₁ hl generalizing l₂
+  -- ⊢ filterMap f [] <+: filterMap f l₂
   · simp only [nil_prefix, filterMap_nil]
+    -- 🎉 no goals
   · cases' l₂ with hd₂ tl₂
+    -- ⊢ filterMap f (hd₁ :: tl₁) <+: filterMap f []
     · simpa only using eq_nil_of_prefix_nil h
+      -- 🎉 no goals
     · rw [cons_prefix_iff] at h
+      -- ⊢ filterMap f (hd₁ :: tl₁) <+: filterMap f (hd₂ :: tl₂)
       rw [← @singleton_append _ hd₁ _, ← @singleton_append _ hd₂ _, filterMap_append,
         filterMap_append, h.left, prefix_append_right_inj]
       exact hl h.right
+      -- 🎉 no goals
 #align list.is_prefix.filter_map List.isPrefix.filter_map
 
 theorem isPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
@@ -331,20 +364,27 @@ section InitsTails
 theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
   | s, [] =>
     suffices s = nil ↔ s <+: nil by simpa only [inits, mem_singleton]
+                                    -- 🎉 no goals
     ⟨fun h => h.symm ▸ prefix_refl [], eq_nil_of_prefix_nil⟩
   | s, a :: t =>
     suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+: a :: t by simpa
+                                                                     -- 🎉 no goals
     ⟨fun o =>
       match s, o with
       | _, Or.inl rfl => ⟨_, rfl⟩
       | s, Or.inr ⟨r, hr, hs⟩ => by
+        -- ⊢ s✝ <+: a :: t
         let ⟨s, ht⟩ := (mem_inits _ _).1 hr
+        -- ⊢ a :: r <+: a :: (r ++ s)
+                         -- 🎉 no goals
         rw [← hs, ← ht]; exact ⟨s, rfl⟩,
       fun mi =>
       match s, mi with
       | [], ⟨_, rfl⟩ => Or.inl rfl
       | b :: s, ⟨r, hr⟩ =>
         (List.noConfusion hr) fun ba (st : s ++ r = t) =>
+                       -- ⊢ ∃ l, l ∈ inits t ∧ a :: l = a :: s
+                                -- 🎉 no goals
           Or.inr <| by rw [ba]; exact ⟨_, (mem_inits _ _).2 ⟨_, st⟩, rfl⟩⟩
 #align list.mem_inits List.mem_inits
 
@@ -352,8 +392,10 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
 theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
   | s, [] => by
     simp only [tails, mem_singleton, suffix_nil]
+    -- 🎉 no goals
   | s, a :: t => by
     simp only [tails, mem_cons, mem_tails s t];
+    -- ⊢ s = a :: t ∨ s <:+ t ↔ s <:+ a :: t
     exact
       show s = a :: t ∨ s <:+ t ↔ s <:+ a :: t from
         ⟨fun o =>
@@ -368,66 +410,90 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
 
 theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t => a :: t := by
   simp
+  -- 🎉 no goals
 #align list.inits_cons List.inits_cons
 
 theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails := by simp
+                                                                                     -- 🎉 no goals
 #align list.tails_cons List.tails_cons
 
 @[simp]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
+                 -- 🎉 no goals
   | [], a :: t => by simp[· ∘ ·]
+                     -- 🎉 no goals
   | a :: s, t => by simp [inits_append s t, · ∘ ·]
+                    -- 🎉 no goals
 #align list.inits_append List.inits_append
 
 @[simp]
 theorem tails_append :
     ∀ s t : List α, tails (s ++ t) = (s.tails.map fun l => l ++ t) ++ t.tails.tail
   | [], [] => by simp
+                 -- 🎉 no goals
   | [], a :: t => by simp
+                     -- 🎉 no goals
   | a :: s, t => by simp [tails_append s t]
+                    -- 🎉 no goals
 #align list.tails_append List.tails_append
 
 -- the lemma names `inits_eq_tails` and `tails_eq_inits` are like `sublists_eq_sublists'`
 theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| tails <| reverse l)
   | [] => by simp
+             -- 🎉 no goals
   | a :: l => by simp [inits_eq_tails l, map_eq_map_iff, reverse_map]
+                 -- 🎉 no goals
 #align list.inits_eq_tails List.inits_eq_tails
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
   | [] => by simp
+             -- 🎉 no goals
   | a :: l => by simp [tails_eq_inits l, append_left_inj]
+                 -- 🎉 no goals
 #align list.tails_eq_inits List.tails_eq_inits
 
 theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
+  -- ⊢ inits (reverse l) = reverse (map reverse (reverse (map reverse (inits (rever …
   simp [reverse_involutive.comp_self, reverse_map]
+  -- 🎉 no goals
 #align list.inits_reverse List.inits_reverse
 
 theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
+  -- ⊢ tails (reverse l) = reverse (map reverse (reverse (map reverse (tails (rever …
   simp [reverse_involutive.comp_self, reverse_map]
+  -- 🎉 no goals
 #align list.tails_reverse List.tails_reverse
 
 theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
+  -- ⊢ map reverse (reverse (map reverse (tails (reverse l)))) = reverse (tails (re …
   simp [reverse_involutive.comp_self, reverse_map]
+  -- 🎉 no goals
 #align list.map_reverse_inits List.map_reverse_inits
 
 theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
+  -- ⊢ map reverse (reverse (map reverse (inits (reverse l)))) = reverse (inits (re …
   simp [reverse_involutive.comp_self, reverse_map]
+  -- 🎉 no goals
 #align list.map_reverse_tails List.map_reverse_tails
 
 @[simp]
 theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
   induction' l with x l IH
+  -- ⊢ length (tails []) = length [] + 1
   · simp
+    -- 🎉 no goals
   · simpa using IH
+    -- 🎉 no goals
 #align list.length_tails List.length_tails
 
 @[simp]
 theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp [inits_eq_tails]
+                                                                          -- 🎉 no goals
 #align list.length_inits List.length_inits
 
 section deprecated
@@ -437,20 +503,30 @@ set_option linter.deprecated false -- TODO(Henrik): make replacements for theore
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
     nthLe (tails l) n hn = l.drop n := by
   induction' l with x l IH generalizing n
+  -- ⊢ nthLe (tails []) n hn = drop n []
   · simp
+    -- 🎉 no goals
   · cases n
+    -- ⊢ nthLe (tails (x :: l)) zero hn = drop zero (x :: l)
     · simp[nthLe_cons]
+      -- 🎉 no goals
     · simpa[nthLe_cons] using IH _ _
+      -- 🎉 no goals
 #align list.nth_le_tails List.nth_le_tails
 
 @[simp]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
     nthLe (inits l) n hn = l.take n := by
   induction' l with x l IH generalizing n
+  -- ⊢ nthLe (inits []) n hn = take n []
   · simp
+    -- 🎉 no goals
   · cases n
+    -- ⊢ nthLe (inits (x :: l)) zero hn = take zero (x :: l)
     · simp[nthLe_cons]
+      -- 🎉 no goals
     · simpa[nthLe_cons] using IH _ _
+      -- 🎉 no goals
 #align list.nth_le_inits List.nth_le_inits
 end deprecated
 
@@ -479,8 +555,11 @@ theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else 
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases h : a ∈ l
+  -- ⊢ l <:+ List.insert a l
   · simp only [insert_of_mem h, insert, suffix_refl]
+    -- 🎉 no goals
   · simp only [insert_of_not_mem h, suffix_cons, insert]
+    -- 🎉 no goals
 #align list.suffix_insert List.suffix_insert
 
 theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=

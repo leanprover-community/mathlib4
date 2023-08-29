@@ -59,9 +59,13 @@ instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [Partial
     [StarOrderedRing R] : OrderedAddCommMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
+    -- ⊢ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ z + y = z +  …
     refine hle.imp fun s hs ↦ ?_
+    -- ⊢ s ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ z + y = z + x + s
     rw [hs.2, add_assoc]
+    -- ⊢ s ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ z + (x + s) = z + …
     exact ⟨hs.1, rfl⟩
+    -- 🎉 no goals
 #align star_ordered_ring.to_ordered_add_comm_monoid StarOrderedRing.toOrderedAddCommMonoid
 
 -- see note [lower instance priority]
@@ -94,16 +98,27 @@ def ofLeIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff := fun x y => by
     refine' ⟨fun h => _, _⟩
+    -- ⊢ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
     · obtain ⟨p, hp⟩ := (h_le_iff x y).mp h
+      -- ⊢ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
+      -- 🎉 no goals
     · rintro ⟨p, hp, hpxy⟩
+      -- ⊢ x ≤ y
       revert x y hpxy
+      -- ⊢ ∀ (x y : R), y = x + p → x ≤ y
       refine' AddSubmonoid.closure_induction hp _ (fun x y h => add_zero x ▸ h.ge) _
+      -- ⊢ ∀ (x : R), (x ∈ Set.range fun s => star s * s) → ∀ (x_1 y : R), y = x_1 + x  …
       · rintro _ ⟨s, rfl⟩ x y rfl
+        -- ⊢ x ≤ x + (fun s => star s * s) s
         exact (h_le_iff _ _).mpr ⟨s, rfl⟩
+        -- 🎉 no goals
       · rintro a b ha hb x y rfl
+        -- ⊢ x ≤ x + (a + b)
         rw [← add_assoc]
+        -- ⊢ x ≤ x + a + b
         exact (ha _ _ rfl).trans (hb _ _ rfl)
+        -- 🎉 no goals
 #align star_ordered_ring.of_le_iff StarOrderedRing.ofLeIffₓ
 
 -- set note [reducible non-instances]
@@ -117,7 +132,9 @@ def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     StarOrderedRing R where
   le_iff := fun x y => by
     haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
+    -- ⊢ x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y =  …
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
+    -- 🎉 no goals
 #align star_ordered_ring.of_nonneg_iff StarOrderedRing.ofNonnegIff
 
 -- set note [reducible non-instances]
@@ -134,12 +151,15 @@ def ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
   ofLeIff <| by
     haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
+    -- ⊢ ∀ (x y : R), x ≤ y ↔ ∃ s, y = x + star s * s
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
+    -- 🎉 no goals
 #align star_ordered_ring.of_nonneg_iff' StarOrderedRing.ofNonnegIff'
 
 theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] {x : R} :
     0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
   simp only [le_iff, zero_add, exists_eq_right']
+  -- 🎉 no goals
 #align star_ordered_ring.nonneg_iff StarOrderedRing.nonneg_iff
 
 end StarOrderedRing
@@ -154,15 +174,20 @@ theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
 
 theorem star_mul_self_nonneg' (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
+  -- 🎉 no goals
 #align star_mul_self_nonneg' star_mul_self_nonneg'
 
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
+  -- ⊢ 0 ≤ star c * a * c
   refine' AddSubmonoid.closure_induction ha (fun x hx => _)
     (by rw [mul_zero, zero_mul]) fun x y hx hy => _
   · obtain ⟨x, rfl⟩ := hx
+    -- ⊢ 0 ≤ star c * (fun s => star s * s) x * c
     convert star_mul_self_nonneg (x * c) using 1
+    -- ⊢ star c * (fun s => star s * s) x * c = star (x * c) * (x * c)
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
+    -- 🎉 no goals
   · calc
       0 ≤ star c * x * c + 0 := by rw [add_zero]; exact hx
       _ ≤ star c * x * c + star c * y * c := add_le_add_left hy _
@@ -171,18 +196,24 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
 
 theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
   simpa only [star_star] using conjugate_nonneg ha (star c)
+  -- 🎉 no goals
 #align conjugate_nonneg' conjugate_nonneg'
 
 theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     star c * a * c ≤ star c * b * c := by
   rw [StarOrderedRing.le_iff] at hab ⊢
+  -- ⊢ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ star c * b * …
   obtain ⟨p, hp, rfl⟩ := hab
+  -- ⊢ ∃ p_1, p_1 ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ star c * …
   simp_rw [← StarOrderedRing.nonneg_iff] at hp ⊢
+  -- ⊢ ∃ p_1, 0 ≤ p_1 ∧ star c * (a + p) * c = star c * a * c + p_1
   exact ⟨star c * p * c, conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
+  -- 🎉 no goals
 #align conjugate_le_conjugate conjugate_le_conjugate
 
 theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
   by simpa only [star_star] using conjugate_le_conjugate hab (star c)
+     -- 🎉 no goals
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 end NonUnitalSemiring

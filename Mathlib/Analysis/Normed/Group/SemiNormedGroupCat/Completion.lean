@@ -61,6 +61,7 @@ def completion.incl {V : SemiNormedGroupCat} : V ⟶ completion.obj V where
   toFun v := (v : Completion V)
   map_add' := Completion.coe_add
   bound' := ⟨1, fun v => by simp⟩
+                            -- 🎉 no goals
 #align SemiNormedGroup.Completion.incl SemiNormedGroupCat.completion.incl
 
 theorem completion.norm_incl_eq {V : SemiNormedGroupCat} {v : V} : ‖completion.incl v‖ = ‖v‖ :=
@@ -98,14 +99,19 @@ instance : Preadditive SemiNormedGroupCat.{u} where
   homGroup P Q := inferInstanceAs <| AddCommGroup <| NormedAddGroupHom P Q
   add_comp := by
     intros _ Q _ f f' g; ext x
+    -- ⊢ (f + f') ≫ g = f ≫ g + f' ≫ g
+                         -- ⊢ ↑((f + f') ≫ g) x = ↑(f ≫ g + f' ≫ g) x
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]
     rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
     convert map_add g (f x) (f' x)
+    -- 🎉 no goals
   comp_add := by
     intros; ext
+    -- ⊢ f✝ ≫ (g✝ + g'✝) = f✝ ≫ g✝ + f✝ ≫ g'✝
+            -- ⊢ ↑(f✝ ≫ (g✝ + g'✝)) x✝ = ↑(f✝ ≫ g✝ + f✝ ≫ g'✝) x✝
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]

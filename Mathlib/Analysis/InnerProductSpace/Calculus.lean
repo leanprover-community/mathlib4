@@ -114,12 +114,14 @@ theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : 
     (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x) :
     HasDerivWithinAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) s x := by
   simpa using (hf.hasFDerivWithinAt.inner 𝕜 hg.hasFDerivWithinAt).hasDerivWithinAt
+  -- 🎉 no goals
 #align has_deriv_within_at.inner HasDerivWithinAt.inner
 
 theorem HasDerivAt.inner {f g : ℝ → E} {f' g' : E} {x : ℝ} :
     HasDerivAt f f' x → HasDerivAt g g' x →
       HasDerivAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) x :=
   by simpa only [← hasDerivWithinAt_univ] using HasDerivWithinAt.inner 𝕜
+     -- 🎉 no goals
 #align has_deriv_at.inner HasDerivAt.inner
 
 theorem DifferentiableWithinAt.inner (hf : DifferentiableWithinAt ℝ f s x)
@@ -144,6 +146,8 @@ theorem Differentiable.inner (hf : Differentiable ℝ f) (hg : Differentiable �
 theorem fderiv_inner_apply (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) (y : G) :
     fderiv ℝ (fun t => ⟪f t, g t⟫) x y = ⟪f x, fderiv ℝ g x y⟫ + ⟪fderiv ℝ f x y, g x⟫ := by
   rw [(hf.hasFDerivAt.inner 𝕜 hg.hasFDerivAt).fderiv]; rfl
+  -- ⊢ ↑(ContinuousLinearMap.comp (fderivInnerClm 𝕜 (f x, g x)) (ContinuousLinearMa …
+                                                       -- 🎉 no goals
 #align fderiv_inner_apply fderiv_inner_apply
 
 theorem deriv_inner_apply {f g : ℝ → E} {x : ℝ} (hf : DifferentiableAt ℝ f x)
@@ -154,7 +158,9 @@ theorem deriv_inner_apply {f g : ℝ → E} {x : ℝ} (hf : DifferentiableAt ℝ
 
 theorem contDiff_norm_sq : ContDiff ℝ n fun x : E => ‖x‖ ^ 2 := by
   convert (reClm : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
+  -- ⊢ ‖x✝‖ ^ 2 = (↑reClm ∘ fun x => inner (id x) (id x)) x✝
   exact (inner_self_eq_norm_sq _).symm
+  -- 🎉 no goals
 #align cont_diff_norm_sq contDiff_norm_sq
 
 theorem ContDiff.norm_sq (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => ‖f x‖ ^ 2 :=
@@ -172,7 +178,9 @@ nonrec theorem ContDiffAt.norm_sq (hf : ContDiffAt ℝ n f x) : ContDiffAt ℝ n
 
 theorem contDiffAt_norm {x : E} (hx : x ≠ 0) : ContDiffAt ℝ n norm x := by
   have : ‖id x‖ ^ 2 ≠ 0 := pow_ne_zero 2 (norm_pos_iff.2 hx).ne'
+  -- ⊢ ContDiffAt ℝ n Norm.norm x
   simpa only [id, sqrt_sq, norm_nonneg] using (contDiffAt_id.norm_sq 𝕜).sqrt this
+  -- 🎉 no goals
 #align cont_diff_at_norm contDiffAt_norm
 
 theorem ContDiffAt.norm (hf : ContDiffAt ℝ n f x) (h0 : f x ≠ 0) :
@@ -183,7 +191,9 @@ theorem ContDiffAt.norm (hf : ContDiffAt ℝ n f x) (h0 : f x ≠ 0) :
 theorem ContDiffAt.dist (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) (hne : f x ≠ g x) :
     ContDiffAt ℝ n (fun y => dist (f y) (g y)) x := by
   simp only [dist_eq_norm]
+  -- ⊢ ContDiffAt ℝ n (fun y => ‖f y - g y‖) x
   exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
+  -- 🎉 no goals
 #align cont_diff_at.dist ContDiffAt.dist
 
 theorem ContDiffWithinAt.norm (hf : ContDiffWithinAt ℝ n f s x) (h0 : f x ≠ 0) :
@@ -194,6 +204,8 @@ theorem ContDiffWithinAt.norm (hf : ContDiffWithinAt ℝ n f s x) (h0 : f x ≠ 
 theorem ContDiffWithinAt.dist (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x)
     (hne : f x ≠ g x) : ContDiffWithinAt ℝ n (fun y => dist (f y) (g y)) s x := by
   simp only [dist_eq_norm]; exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
+  -- ⊢ ContDiffWithinAt ℝ n (fun y => ‖f y - g y‖) s x
+                            -- 🎉 no goals
 #align cont_diff_within_at.dist ContDiffWithinAt.dist
 
 theorem ContDiffOn.norm_sq (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun y => ‖f y‖ ^ 2) s :=
@@ -222,9 +234,13 @@ theorem ContDiff.dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (hne : ∀
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]
+  -- ⊢ HasStrictFDerivAt (fun x => ↑re (inner x x)) (2 • ↑(innerSL ℝ) x) x
   convert (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
+  -- ⊢ 2 • ↑(innerSL ℝ) x = ContinuousLinearMap.comp (fderivInnerClm ℝ (id x, id x) …
   ext y
+  -- ⊢ ↑(2 • ↑(innerSL ℝ) x) y = ↑(ContinuousLinearMap.comp (fderivInnerClm ℝ (id x …
   simp [two_smul, real_inner_comm]
+  -- 🎉 no goals
 #align has_strict_fderiv_at_norm_sq hasStrictFDerivAt_norm_sqₓ
 
 theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt f f' x) :
@@ -248,6 +264,8 @@ theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
   simp only [dist_eq_norm]; exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
+  -- ⊢ DifferentiableAt ℝ (fun y => ‖f y - g y‖) x
+                            -- 🎉 no goals
 #align differentiable_at.dist DifferentiableAt.dist
 
 theorem Differentiable.norm_sq (hf : Differentiable ℝ f) : Differentiable ℝ fun y => ‖f y‖ ^ 2 :=
@@ -277,7 +295,9 @@ theorem DifferentiableWithinAt.dist (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (hne : f x ≠ g x) :
     DifferentiableWithinAt ℝ (fun y => dist (f y) (g y)) s x := by
   simp only [dist_eq_norm]
+  -- ⊢ DifferentiableWithinAt ℝ (fun y => ‖f y - g y‖) s x
   exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
+  -- 🎉 no goals
 #align differentiable_within_at.dist DifferentiableWithinAt.dist
 
 theorem DifferentiableOn.norm_sq (hf : DifferentiableOn ℝ f s) :
@@ -305,61 +325,81 @@ variable {𝕜 ι H : Type*} [IsROrC 𝕜] [NormedAddCommGroup H] [NormedSpace �
 theorem differentiableWithinAt_euclidean :
     DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableWithinAt_iff, differentiableWithinAt_pi]
+  -- ⊢ (∀ (i : ι), DifferentiableWithinAt 𝕜 (fun x => (↑(EuclideanSpace.equiv ι 𝕜)  …
   rfl
+  -- 🎉 no goals
 #align differentiable_within_at_euclidean differentiableWithinAt_euclidean
 
 theorem differentiableAt_euclidean :
     DifferentiableAt 𝕜 f y ↔ ∀ i, DifferentiableAt 𝕜 (fun x => f x i) y := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableAt_iff, differentiableAt_pi]
+  -- ⊢ (∀ (i : ι), DifferentiableAt 𝕜 (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x …
   rfl
+  -- 🎉 no goals
 #align differentiable_at_euclidean differentiableAt_euclidean
 
 theorem differentiableOn_euclidean :
     DifferentiableOn 𝕜 f t ↔ ∀ i, DifferentiableOn 𝕜 (fun x => f x i) t := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiableOn_iff, differentiableOn_pi]
+  -- ⊢ (∀ (i : ι), DifferentiableOn 𝕜 (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x …
   rfl
+  -- 🎉 no goals
 #align differentiable_on_euclidean differentiableOn_euclidean
 
 theorem differentiable_euclidean : Differentiable 𝕜 f ↔ ∀ i, Differentiable 𝕜 fun x => f x i := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_differentiable_iff, differentiable_pi]
+  -- ⊢ (∀ (i : ι), Differentiable 𝕜 fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x i) …
   rfl
+  -- 🎉 no goals
 #align differentiable_euclidean differentiable_euclidean
 
 theorem hasStrictFDerivAt_euclidean :
     HasStrictFDerivAt f f' y ↔
       ∀ i, HasStrictFDerivAt (fun x => f x i) (EuclideanSpace.proj i ∘L f') y := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_hasStrictFDerivAt_iff, hasStrictFDerivAt_pi']
+  -- ⊢ (∀ (i : ι), HasStrictFDerivAt (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x  …
   rfl
+  -- 🎉 no goals
 #align has_strict_fderiv_at_euclidean hasStrictFDerivAt_euclidean
 
 theorem hasFDerivWithinAt_euclidean :
     HasFDerivWithinAt f f' t y ↔
       ∀ i, HasFDerivWithinAt (fun x => f x i) (EuclideanSpace.proj i ∘L f') t y := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
+  -- ⊢ (∀ (i : ι), HasFDerivWithinAt (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x  …
   rfl
+  -- 🎉 no goals
 #align has_fderiv_within_at_euclidean hasFDerivWithinAt_euclidean
 
 theorem contDiffWithinAt_euclidean {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffWithinAt_iff, contDiffWithinAt_pi]
+  -- ⊢ (∀ (i : ι), ContDiffWithinAt 𝕜 n (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) …
   rfl
+  -- 🎉 no goals
 #align cont_diff_within_at_euclidean contDiffWithinAt_euclidean
 
 theorem contDiffAt_euclidean {n : ℕ∞} :
     ContDiffAt 𝕜 n f y ↔ ∀ i, ContDiffAt 𝕜 n (fun x => f x i) y := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffAt_iff, contDiffAt_pi]
+  -- ⊢ (∀ (i : ι), ContDiffAt 𝕜 n (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x i)  …
   rfl
+  -- 🎉 no goals
 #align cont_diff_at_euclidean contDiffAt_euclidean
 
 theorem contDiffOn_euclidean {n : ℕ∞} :
     ContDiffOn 𝕜 n f t ↔ ∀ i, ContDiffOn 𝕜 n (fun x => f x i) t := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiffOn_iff, contDiffOn_pi]
+  -- ⊢ (∀ (i : ι), ContDiffOn 𝕜 n (fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x i)  …
   rfl
+  -- 🎉 no goals
 #align cont_diff_on_euclidean contDiffOn_euclidean
 
 theorem contDiff_euclidean {n : ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i := by
   rw [← (EuclideanSpace.equiv ι 𝕜).comp_contDiff_iff, contDiff_pi]
+  -- ⊢ (∀ (i : ι), ContDiff 𝕜 n fun x => (↑(EuclideanSpace.equiv ι 𝕜) ∘ f) x i) ↔ ∀ …
   rfl
+  -- 🎉 no goals
 #align cont_diff_euclidean contDiff_euclidean
 
 end PiLike
@@ -372,19 +412,28 @@ variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ 
 
 theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ from this.smul contDiff_id
+  -- ⊢ ContDiff ℝ n fun x => (sqrt (1 + ‖x‖ ^ 2))⁻¹
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
+  -- ⊢ ContDiff ℝ n fun x => (sqrt (1 + ‖x‖ ^ 2))⁻¹
   refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
+  -- ⊢ ContDiff ℝ n fun x => sqrt (1 + ‖x‖ ^ 2)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
+  -- 🎉 no goals
 
 theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
     ContDiffOn ℝ n univUnitBall.symm (ball (0 : E) 1) := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
+  -- ⊢ ContDiffAt ℝ n (↑(LocalHomeomorph.symm univUnitBall)) y
   suffices ContDiffAt ℝ n (fun y : E => ((1 : ℝ) - ‖y‖ ^ 2).sqrt⁻¹) y from this.smul contDiffAt_id
+  -- ⊢ ContDiffAt ℝ n (fun y => (sqrt (1 - ‖y‖ ^ 2))⁻¹) y
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
   refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)
+  -- ⊢ ContDiffAt ℝ n (fun y => sqrt (1 - ‖y‖ ^ 2)) y
   refine' (contDiffAt_sqrt h.ne').comp y _
+  -- ⊢ ContDiffAt ℝ n (fun y => 1 - ‖y‖ ^ 2) y
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
+  -- 🎉 no goals
 
 theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
   LocalHomeomorph.contDiff_univUnitBall
@@ -409,16 +458,26 @@ theorem contDiff_unitBallBall_symm (hr : 0 < r) : ContDiff ℝ n (unitBallBall c
 
 theorem contDiff_univBall : ContDiff ℝ n (univBall c r) := by
   unfold univBall; split_ifs with h
+  -- ⊢ ContDiff ℝ n ↑(if h : 0 < r then LocalHomeomorph.trans' univUnitBall (unitBa …
+                   -- ⊢ ContDiff ℝ n ↑(LocalHomeomorph.trans' univUnitBall (unitBallBall c r h) (_ : …
   · exact (contDiff_unitBallBall h).comp contDiff_univUnitBall
+    -- 🎉 no goals
   · exact contDiff_id.add contDiff_const
+    -- 🎉 no goals
 
 theorem contDiffOn_univBall_symm :
     ContDiffOn ℝ n (univBall c r).symm (ball c r) := by
   unfold univBall; split_ifs with h
+  -- ⊢ ContDiffOn ℝ n (↑(LocalHomeomorph.symm (if h : 0 < r then LocalHomeomorph.tr …
+                   -- ⊢ ContDiffOn ℝ n (↑(LocalHomeomorph.symm (LocalHomeomorph.trans' univUnitBall  …
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
+    -- ⊢ ball c r ⊆ (fun x => ↑(LocalEquiv.symm (unitBallBall c r h).toLocalEquiv) x) …
     rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
+    -- ⊢ (unitBallBall c r h).toLocalEquiv.target ⊆ (fun x => ↑(LocalEquiv.symm (unit …
     apply LocalHomeomorph.symm_mapsTo
+    -- 🎉 no goals
   · exact contDiffOn_id.sub contDiffOn_const
+    -- 🎉 no goals
 
 end LocalHomeomorph
 

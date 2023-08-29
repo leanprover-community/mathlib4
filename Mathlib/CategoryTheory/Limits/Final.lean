@@ -129,9 +129,11 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
           (Relation.ReflTransGen.single
             (show Zag f u from
               Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp)⟩))
+                                                                                      -- 🎉 no goals
           (Relation.ReflTransGen.single
             (show Zag u g from
               Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp)⟩)) }
+                                                                                      -- 🎉 no goals
 #align category_theory.functor.final_of_adjunction CategoryTheory.Functor.final_of_adjunction
 
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
@@ -144,9 +146,11 @@ theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Init
           (Relation.ReflTransGen.single
             (show Zag f u from
               Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp)⟩))
+                                                                                -- 🎉 no goals
           (Relation.ReflTransGen.single
             (show Zag u g from
               Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp)⟩)) }
+                                                                                -- 🎉 no goals
 #align category_theory.functor.initial_of_adjunction CategoryTheory.Functor.initial_of_adjunction
 
 instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [h : IsRightAdjoint F] : Final F :=
@@ -210,19 +214,30 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
         k₁ ≫ F.map f = k₂ → Z X₂ k₂ → Z X₁ k₁)
     {X₀ : C} {k₀ : d ⟶ F.obj X₀} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
+  -- ⊢ Nonempty (Z (lift F d) (homToLift F d))
   apply
     @isPreconnected_induction _ _ _ (fun Y : StructuredArrow d F => Z Y.right Y.hom) _ _
       (StructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
+    -- ⊢ Z j₂.right j₂.hom
     fapply h₁ _ _ _ _ f.right _ a
+    -- ⊢ j₁.hom ≫ F.map f.right = j₂.hom
     convert f.w.symm
+    -- ⊢ j₂.hom = (fromPUnit d).map f.left ≫ j₂.hom
     dsimp
+    -- ⊢ j₂.hom = 𝟙 d ≫ j₂.hom
     simp
+    -- 🎉 no goals
   · intro j₁ j₂ f a
+    -- ⊢ Z j₁.right j₁.hom
     fapply h₂ _ _ _ _ f.right _ a
+    -- ⊢ j₁.hom ≫ F.map f.right = j₂.hom
     convert f.w.symm
+    -- ⊢ j₂.hom = (fromPUnit d).map f.left ≫ j₂.hom
     dsimp
+    -- ⊢ j₂.hom = 𝟙 d ≫ j₂.hom
     simp
+    -- 🎉 no goals
 #align category_theory.functor.final.induction CategoryTheory.Functor.Final.induction
 
 variable {F G}
@@ -238,17 +253,25 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
         { app := fun X => G.map (homToLift F X) ≫ c.ι.app (lift F X)
           naturality := fun X Y f => by
             dsimp; simp
+            -- ⊢ G.map f ≫ G.map (homToLift F Y) ≫ NatTrans.app c.ι (lift F Y) = (G.map (homT …
+                   -- ⊢ G.map f ≫ G.map (homToLift F Y) ≫ NatTrans.app c.ι (lift F Y) = G.map (homTo …
             -- This would be true if we'd chosen `lift F X` to be `lift F Y`
             -- and `homToLift F X` to be `f ≫ homToLift F Y`.
             apply
               induction F fun Z k =>
                 G.map f ≫ G.map (homToLift F Y) ≫ c.ι.app (lift F Y) = G.map k ≫ c.ι.app Z
             · intro Z₁ Z₂ k₁ k₂ g a z
+              -- ⊢ G.map f ≫ G.map (homToLift F Y) ≫ NatTrans.app c.ι (lift F Y) = G.map k₂ ≫ N …
               rw [← a, Functor.map_comp, Category.assoc, ← Functor.comp_map, c.w, z]
+              -- 🎉 no goals
             · intro Z₁ Z₂ k₁ k₂ g a z
+              -- ⊢ G.map f ≫ G.map (homToLift F Y) ≫ NatTrans.app c.ι (lift F Y) = G.map k₁ ≫ N …
               rw [← a, Functor.map_comp, Category.assoc, ← Functor.comp_map, c.w] at z
+              -- ⊢ G.map f ≫ G.map (homToLift F Y) ≫ NatTrans.app c.ι (lift F Y) = G.map k₁ ≫ N …
               rw [z]
+              -- 🎉 no goals
             · rw [← Functor.map_comp_assoc] } }
+              -- 🎉 no goals
   map f := { Hom := f.Hom }
 #align category_theory.functor.final.extend_cocone CategoryTheory.Functor.Final.extendCocone
 
@@ -259,14 +282,23 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
   apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j : _)
   · intro j₁ j₂ k₁ k₂ f w h
+    -- ⊢ G.map k₂ ≫ NatTrans.app s.ι j₂ = NatTrans.app s.ι j
     rw [← w]
+    -- ⊢ G.map (k₁ ≫ F.map f) ≫ NatTrans.app s.ι j₂ = NatTrans.app s.ι j
     rw [← s.w f] at h
+    -- ⊢ G.map (k₁ ≫ F.map f) ≫ NatTrans.app s.ι j₂ = NatTrans.app s.ι j
     simpa using h
+    -- 🎉 no goals
   · intro j₁ j₂ k₁ k₂ f w h
+    -- ⊢ G.map k₁ ≫ NatTrans.app s.ι j₁ = NatTrans.app s.ι j
     rw [← w] at h
+    -- ⊢ G.map k₁ ≫ NatTrans.app s.ι j₁ = NatTrans.app s.ι j
     rw [← s.w f]
+    -- ⊢ G.map k₁ ≫ (F ⋙ G).map f ≫ NatTrans.app s.ι j₂ = NatTrans.app s.ι j
     simpa using h
+    -- 🎉 no goals
   · exact s.w (𝟙 _)
+    -- 🎉 no goals
 #align category_theory.functor.final.colimit_cocone_comp_aux CategoryTheory.Functor.Final.colimit_cocone_comp_aux
 
 variable (F G)
@@ -316,16 +348,24 @@ instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G)
 theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
     ((isColimitWhiskerEquiv F _).symm P).desc (t.whisker F) = 𝟙 t.pt := by
   dsimp [isColimitWhiskerEquiv]
+  -- ⊢ IsColimit.desc (↑(IsColimit.ofCoconeEquiv (Equivalence.symm (coconesEquiv F  …
   apply P.hom_ext
+  -- ⊢ ∀ (j : D), NatTrans.app t.ι j ≫ IsColimit.desc (↑(IsColimit.ofCoconeEquiv (E …
   intro j
+  -- ⊢ NatTrans.app t.ι j ≫ IsColimit.desc (↑(IsColimit.ofCoconeEquiv (Equivalence. …
   simp
+  -- 🎉 no goals
 #align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
 
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
+  -- ⊢ IsIso ((colimit.isoColimitCocone (colimitCoconeComp F (getColimitCocone G))) …
   erw [colimit_pre_is_iso_aux]
+  -- ⊢ IsIso ((colimit.isoColimitCocone (colimitCoconeComp F (getColimitCocone G))) …
   dsimp
+  -- ⊢ IsIso ((colimit.isoColimitCocone (colimitCoconeComp F (getColimitCocone G))) …
   infer_instance
+  -- 🎉 no goals
 #align category_theory.functor.final.colimit_pre_is_iso CategoryTheory.Functor.Final.colimit_pre_isIso
 
 section
@@ -403,6 +443,8 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
     left; fconstructor
     exact StructuredArrow.homMk f
   case refl => fconstructor
+  -- ⊢ Zigzag (StructuredArrow.mk y✝.snd) (StructuredArrow.mk x✝.snd)
+  -- 🎉 no goals
   case symm x y _ ih =>
     apply zigzag_symmetric
     exact ih
@@ -423,15 +465,22 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
       obtain ⟨j, y, rfl⟩ := Limits.Types.jointly_surjective'.{v, v} this
       exact ⟨StructuredArrow.mk y⟩
     apply zigzag_isConnected
+    -- ⊢ ∀ (j₁ j₂ : StructuredArrow d F), Zigzag j₁ j₂
     rintro ⟨⟨⟨⟩⟩, X₁, f₁⟩ ⟨⟨⟨⟩⟩, X₂, f₂⟩
+    -- ⊢ Zigzag { left := { as := PUnit.unit }, right := X₁, hom := f₁ } { left := {  …
     let y₁ := colimit.ι (F ⋙ coyoneda.obj (op d)) X₁ f₁
+    -- ⊢ Zigzag { left := { as := PUnit.unit }, right := X₁, hom := f₁ } { left := {  …
     let y₂ := colimit.ι (F ⋙ coyoneda.obj (op d)) X₂ f₂
+    -- ⊢ Zigzag { left := { as := PUnit.unit }, right := X₁, hom := f₁ } { left := {  …
     have e : y₁ = y₂ := by
       apply (I d).toEquiv.injective
       ext
     have t := Types.colimit_eq.{v, v} e
+    -- ⊢ Zigzag { left := { as := PUnit.unit }, right := X₁, hom := f₁ } { left := {  …
     clear e y₁ y₂
+    -- ⊢ Zigzag { left := { as := PUnit.unit }, right := X₁, hom := f₁ } { left := {  …
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
+    -- 🎉 no goals
 #align category_theory.functor.final.cofinal_of_colimit_comp_coyoneda_iso_punit CategoryTheory.Functor.cofinal_of_colimit_comp_coyoneda_iso_pUnit
 
 end LocallySmall
@@ -497,19 +546,30 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
         F.map f ≫ k₂ = k₁ → Z X₂ k₂ → Z X₁ k₁)
     {X₀ : C} {k₀ : F.obj X₀ ⟶ d} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
+  -- ⊢ Nonempty (Z (lift F d) (homToLift F d))
   apply
     @isPreconnected_induction _ _ _ (fun Y : CostructuredArrow F d => Z Y.left Y.hom) _ _
       (CostructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
+    -- ⊢ Z j₂.left j₂.hom
     fapply h₁ _ _ _ _ f.left _ a
+    -- ⊢ F.map f.left ≫ j₂.hom = j₁.hom
     convert f.w
+    -- ⊢ j₁.hom = j₁.hom ≫ (fromPUnit d).map f.right
     dsimp
+    -- ⊢ j₁.hom = j₁.hom ≫ 𝟙 d
     simp
+    -- 🎉 no goals
   · intro j₁ j₂ f a
+    -- ⊢ Z j₁.left j₁.hom
     fapply h₂ _ _ _ _ f.left _ a
+    -- ⊢ F.map f.left ≫ j₂.hom = j₁.hom
     convert f.w
+    -- ⊢ j₁.hom = j₁.hom ≫ (fromPUnit d).map f.right
     dsimp
+    -- ⊢ j₁.hom = j₁.hom ≫ 𝟙 d
     simp
+    -- 🎉 no goals
 #align category_theory.functor.initial.induction CategoryTheory.Functor.Initial.induction
 
 variable {F G}
@@ -525,6 +585,8 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
         { app := fun d => c.π.app (lift F d) ≫ G.map (homToLift F d)
           naturality := fun X Y f => by
             dsimp; simp
+            -- ⊢ 𝟙 c.pt ≫ NatTrans.app c.π (lift F Y) ≫ G.map (homToLift F Y) = (NatTrans.app …
+                   -- ⊢ NatTrans.app c.π (lift F Y) ≫ G.map (homToLift F Y) = NatTrans.app c.π (lift …
             -- This would be true if we'd chosen `lift F Y` to be `lift F X`
             -- and `homToLift F Y` to be `homToLift F X ≫ f`.
             apply
@@ -532,13 +594,17 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
                 (c.π.app Z ≫ G.map k : c.pt ⟶ _) =
                   c.π.app (lift F X) ≫ G.map (homToLift F X) ≫ G.map f
             · intro Z₁ Z₂ k₁ k₂ g a z
+              -- ⊢ NatTrans.app c.π Z₂ ≫ G.map k₂ = NatTrans.app c.π (lift F X) ≫ G.map (homToL …
               rw [← a, Functor.map_comp, ← Functor.comp_map, ← Category.assoc, ← Category.assoc,
                 c.w] at z
               rw [z, Category.assoc]
+              -- 🎉 no goals
             · intro Z₁ Z₂ k₁ k₂ g a z
+              -- ⊢ NatTrans.app c.π Z₁ ≫ G.map k₁ = NatTrans.app c.π (lift F X) ≫ G.map (homToL …
               rw [← a, Functor.map_comp, ← Functor.comp_map, ← Category.assoc, ← Category.assoc,
                 c.w, z, Category.assoc]
             · rw [← Functor.map_comp] } }
+              -- 🎉 no goals
   map f := { Hom := f.Hom }
 #align category_theory.functor.initial.extend_cone CategoryTheory.Functor.Initial.extendCone
 
@@ -549,14 +615,23 @@ theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
   apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j : _)
   · intro j₁ j₂ k₁ k₂ f w h
+    -- ⊢ NatTrans.app s.π j₂ ≫ G.map k₂ = NatTrans.app s.π j
     rw [← s.w f]
+    -- ⊢ (NatTrans.app s.π j₁ ≫ (F ⋙ G).map f) ≫ G.map k₂ = NatTrans.app s.π j
     rw [← w] at h
+    -- ⊢ (NatTrans.app s.π j₁ ≫ (F ⋙ G).map f) ≫ G.map k₂ = NatTrans.app s.π j
     simpa using h
+    -- 🎉 no goals
   · intro j₁ j₂ k₁ k₂ f w h
+    -- ⊢ NatTrans.app s.π j₁ ≫ G.map k₁ = NatTrans.app s.π j
     rw [← s.w f] at h
+    -- ⊢ NatTrans.app s.π j₁ ≫ G.map k₁ = NatTrans.app s.π j
     rw [← w]
+    -- ⊢ NatTrans.app s.π j₁ ≫ G.map (F.map f ≫ k₂) = NatTrans.app s.π j
     simpa using h
+    -- 🎉 no goals
   · exact s.w (𝟙 _)
+    -- 🎉 no goals
 #align category_theory.functor.initial.limit_cone_comp_aux CategoryTheory.Functor.Initial.limit_cone_comp_aux
 
 variable (F G)
@@ -605,16 +680,24 @@ instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
 theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
     ((isLimitWhiskerEquiv F _).symm P).lift (t.whisker F) = 𝟙 t.pt := by
   change 𝟙 t.pt ≫ P.lift (extendCone.obj (Cone.whisker F t)) = 𝟙 t.pt
+  -- ⊢ 𝟙 t.pt ≫ IsLimit.lift P (extendCone.obj (Cone.whisker F t)) = 𝟙 t.pt
   apply P.hom_ext
+  -- ⊢ ∀ (j : D), (𝟙 t.pt ≫ IsLimit.lift P (extendCone.obj (Cone.whisker F t))) ≫ N …
   intro j
+  -- ⊢ (𝟙 t.pt ≫ IsLimit.lift P (extendCone.obj (Cone.whisker F t))) ≫ NatTrans.app …
   simp
+  -- 🎉 no goals
 #align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
 
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
+  -- ⊢ IsIso ((limit.isoLimitCone (getLimitCone G)).hom ≫ IsLimit.lift (limitConeCo …
   erw [limit_pre_is_iso_aux]
+  -- ⊢ IsIso ((limit.isoLimitCone (getLimitCone G)).hom ≫ 𝟙 (getLimitCone G).cone.p …
   dsimp
+  -- ⊢ IsIso ((limit.isoLimitCone (getLimitCone G)).hom ≫ 𝟙 (getLimitCone G).cone.p …
   infer_instance
+  -- 🎉 no goals
 #align category_theory.functor.initial.limit_pre_is_iso CategoryTheory.Functor.Initial.limit_pre_isIso
 
 section
@@ -744,8 +827,11 @@ theorem initial_iff_equivalence_comp [IsEquivalence F] : Initial G ↔ Initial (
 
 theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
+  -- ⊢ Final (F ⋙ G)
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
+  -- ⊢ Final (F ⋙ G)
   let s₃ : E ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} E := AsSmall.equiv
+  -- ⊢ Final (F ⋙ G)
   let i : s₁.inverse ⋙ (F ⋙ G) ⋙ s₃.functor ≅
       (s₁.inverse ⋙ F ⋙ s₂.functor) ⋙ (s₂.inverse ⋙ G ⋙ s₃.functor) :=
     isoWhiskerLeft (s₁.inverse ⋙ F) (isoWhiskerRight s₂.unitIso (G ⋙ s₃.functor))
@@ -756,17 +842,25 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   rw [final_iff_comp_equivalence G s₃.functor, final_iff_equivalence_comp s₂.inverse,
     final_iff_isIso_colimit_pre] at hG
   simp only [← colimit.pre_pre]
+  -- ⊢ ∀ (G_1 : AsSmall E ⥤ Type (max (max (max (max (max u₁ u₂) u₃) v₁) v₂) v₃)),  …
   infer_instance
+  -- 🎉 no goals
 
 theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
   suffices : Final (F ⋙ G).op
+  -- ⊢ Initial (F ⋙ G)
   · exact initial_of_final_op _
+    -- 🎉 no goals
   exact final_comp F.op G.op
+  -- 🎉 no goals
 
 theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
+  -- ⊢ Final G
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
+  -- ⊢ Final G
   let s₃ : E ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} E := AsSmall.equiv
+  -- ⊢ Final G
   let _i : s₁.inverse ⋙ (F ⋙ G) ⋙ s₃.functor ≅
       (s₁.inverse ⋙ F ⋙ s₂.functor) ⋙ (s₂.inverse ⋙ G ⋙ s₃.functor) :=
     isoWhiskerLeft (s₁.inverse ⋙ F) (isoWhiskerRight s₂.unitIso (G ⋙ s₃.functor))
@@ -777,13 +871,19 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   rw [final_iff_comp_equivalence (F ⋙ G) s₃.functor, final_iff_equivalence_comp s₁.inverse,
     final_natIso_iff _i, final_iff_isIso_colimit_pre] at hFG
   simp only [← colimit.pre_pre] at hFG
+  -- ⊢ ∀ (G_1 : AsSmall E ⥤ Type (max (max (max (max (max u₁ u₂) u₃) v₁) v₂) v₃)),  …
   exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
+  -- 🎉 no goals
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
   suffices : Final G.op
+  -- ⊢ Initial G
   · exact initial_of_final_op _
+    -- 🎉 no goals
   have : Final (F.op ⋙ G.op) := show Final (F ⋙ G).op from inferInstance
+  -- ⊢ Final G.op
   exact final_of_final_comp F.op G.op
+  -- 🎉 no goals
 
 /-- The hypotheses also imply that `F` is final, see `final_of_comp_full_faithful`. -/
 theorem final_of_comp_full_faithful' [Full G] [Faithful G] [Final (F ⋙ G)] : Final G :=
@@ -834,18 +934,29 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     let P : StructuredArrow X F → Prop := fun h => ∃ (Z : C) (q₁ : h.right ⟶ Z)
       (q₂ : Final.lift F Y ⟶ Z), h.hom ≫ F.map q₁ = f ≫ Final.homToLift F Y ≫ F.map q₂
     rsuffices ⟨Z, q₁, q₂, h⟩ : Nonempty (P (StructuredArrow.mk (g ≫ Final.homToLift F Y)))
+    -- ⊢ ∃ Z h, f ≫ h = g ≫ h
     · refine' ⟨F.obj (IsFiltered.coeq q₁ q₂),
         Final.homToLift F Y ≫ F.map (q₁ ≫ IsFiltered.coeqHom q₁ q₂), _⟩
       conv_lhs => rw [IsFiltered.coeq_condition]
+      -- ⊢ f ≫ Final.homToLift F Y ≫ F.map (q₂ ≫ IsFiltered.coeqHom q₁ q₂) = g ≫ Final. …
       simp only [F.map_comp, ← reassoc_of% h, StructuredArrow.mk_hom_eq_self, Category.assoc]
+      -- 🎉 no goals
     have h₀ : P (StructuredArrow.mk (f ≫ Final.homToLift F Y)) := ⟨_, 𝟙 _, 𝟙 _, by simp⟩
+    -- ⊢ Nonempty (P (StructuredArrow.mk (g ≫ Final.homToLift F Y)))
     refine' isPreconnected_induction P _ _ h₀ _
+    -- ⊢ ∀ {j₁ j₂ : StructuredArrow X F}, (j₁ ⟶ j₂) → P j₁ → P j₂
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
+      -- ⊢ P V
       obtain ⟨W, q₃, q₄, hq'⟩ := IsFiltered.span q₁ h.right
+      -- ⊢ P V
       refine' ⟨W, q₄, q₂ ≫ q₃, _⟩
+      -- ⊢ V.hom ≫ F.map q₄ = f ≫ Final.homToLift F Y ≫ F.map (q₂ ≫ q₃)
       rw [F.map_comp, ← reassoc_of% hq, ← F.map_comp, hq', F.map_comp, StructuredArrow.w_assoc]
+      -- 🎉 no goals
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
+      -- ⊢ P U
       exact ⟨Z, h.right ≫ q₁, q₂, by simp only [F.map_comp, StructuredArrow.w_assoc, hq]⟩
+      -- 🎉 no goals
 
 /-- Final functors preserve filteredness.
 

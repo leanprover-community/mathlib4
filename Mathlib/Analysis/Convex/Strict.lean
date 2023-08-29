@@ -65,8 +65,11 @@ theorem strictConvex_empty : StrictConvex 𝕜 (∅ : Set E) :=
 
 theorem strictConvex_univ : StrictConvex 𝕜 (univ : Set E) := by
   intro x _ y _ _ a b _ _ _
+  -- ⊢ a • x + b • y ∈ interior univ
   rw [interior_univ]
+  -- ⊢ a • x + b • y ∈ univ
   exact mem_univ _
+  -- 🎉 no goals
 #align strict_convex_univ strictConvex_univ
 
 protected nonrec theorem StrictConvex.eq (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s)
@@ -77,24 +80,35 @@ protected nonrec theorem StrictConvex.eq (hs : StrictConvex 𝕜 s) (hx : x ∈ 
 protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s ∩ t) := by
   intro x hx y hy hxy a b ha hb hab
+  -- ⊢ a • x + b • y ∈ interior (s ∩ t)
   rw [interior_inter]
+  -- ⊢ a • x + b • y ∈ interior s ∩ interior t
   exact ⟨hs hx.1 hy.1 hxy ha hb hab, ht hx.2 hy.2 hxy ha hb hab⟩
+  -- 🎉 no goals
 #align strict_convex.inter StrictConvex.inter
 
 theorem Directed.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hs : ∀ ⦃i : ι⦄, StrictConvex 𝕜 (s i)) : StrictConvex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy hxy a b ha hb hab
+  -- ⊢ a • x + b • y ∈ interior (⋃ (i : ι), s i)
   rw [mem_iUnion] at hx hy
+  -- ⊢ a • x + b • y ∈ interior (⋃ (i : ι), s i)
   obtain ⟨i, hx⟩ := hx
+  -- ⊢ a • x + b • y ∈ interior (⋃ (i : ι), s i)
   obtain ⟨j, hy⟩ := hy
+  -- ⊢ a • x + b • y ∈ interior (⋃ (i : ι), s i)
   obtain ⟨k, hik, hjk⟩ := hdir i j
+  -- ⊢ a • x + b • y ∈ interior (⋃ (i : ι), s i)
   exact interior_mono (subset_iUnion s k) (hs (hik hx) (hjk hy) hxy ha hb hab)
+  -- 🎉 no goals
 #align directed.strict_convex_Union Directed.strictConvex_iUnion
 
 theorem DirectedOn.strictConvex_sUnion {S : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) S)
     (hS : ∀ s ∈ S, StrictConvex 𝕜 s) : StrictConvex 𝕜 (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
+  -- ⊢ StrictConvex 𝕜 (⋃ (i : ↑S), ↑i)
   exact (directedOn_iff_directed.1 hdir).strictConvex_iUnion fun s => hS _ s.2
+  -- 🎉 no goals
 #align directed_on.strict_convex_sUnion DirectedOn.strictConvex_sUnion
 
 end SMul
@@ -129,8 +143,11 @@ theorem StrictConvex.linear_image [Semiring 𝕝] [Module 𝕝 E] [Module 𝕝 F
     [LinearMap.CompatibleSMul E F 𝕜 𝕝] (hs : StrictConvex 𝕜 s) (f : E →ₗ[𝕝] F) (hf : IsOpenMap f) :
     StrictConvex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ hxy a b ha hb hab
+  -- ⊢ a • ↑f x + b • ↑f y ∈ interior (↑f '' s)
   refine' hf.image_interior_subset _ ⟨a • x + b • y, hs hx hy (ne_of_apply_ne _ hxy) ha hb hab, _⟩
+  -- ⊢ ↑f (a • x + b • y) = a • ↑f x + b • ↑f y
   rw [map_add, f.map_smul_of_tower a, f.map_smul_of_tower b]
+  -- 🎉 no goals
 #align strict_convex.linear_image StrictConvex.linear_image
 
 theorem StrictConvex.is_linear_image (hs : StrictConvex 𝕜 s) {f : E → F} (h : IsLinearMap 𝕜 f)
@@ -141,9 +158,13 @@ theorem StrictConvex.is_linear_image (hs : StrictConvex 𝕜 s) {f : E → F} (h
 theorem StrictConvex.linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) (f : E →ₗ[𝕜] F)
     (hf : Continuous f) (hfinj : Injective f) : StrictConvex 𝕜 (s.preimage f) := by
   intro x hx y hy hxy a b ha hb hab
+  -- ⊢ a • x + b • y ∈ interior (↑f ⁻¹' s)
   refine' preimage_interior_subset_interior_preimage hf _
+  -- ⊢ a • x + b • y ∈ ↑f ⁻¹' interior s
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
+  -- ⊢ a • ↑f x + b • ↑f y ∈ interior s
   exact hs hx hy (hfinj.ne hxy) ha hb hab
+  -- 🎉 no goals
 #align strict_convex.linear_preimage StrictConvex.linear_preimage
 
 theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {f : E → F}
@@ -160,7 +181,9 @@ variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopol
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
   refine' strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => _
+  -- ⊢ (fun x y => openSegment 𝕜 x y ⊆ interior s) x y
   cases' hxy.lt_or_lt with hlt hlt <;> [skip; rw [openSegment_symm]] <;>
+  -- ⊢ openSegment 𝕜 x y ⊆ interior s
     exact
       (openSegment_subset_Ioo hlt).trans
         (isOpen_Ioo.subset_interior_iff.2 <| Ioo_subset_Icc_self.trans <| hs.out ‹_› ‹_›)
@@ -220,15 +243,20 @@ variable [AddCancelCommMonoid E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
 theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
     StrictConvex 𝕜 ((fun x => z + x) ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
+  -- ⊢ a • x + b • y ∈ interior ((fun x => z + x) ⁻¹' s)
   refine' preimage_interior_subset_interior_preimage (continuous_add_left _) _
+  -- ⊢ a • x + b • y ∈ (fun b => z + b) ⁻¹' interior s
   have h := hs hx hy ((add_right_injective _).ne hxy) ha hb hab
+  -- ⊢ a • x + b • y ∈ (fun b => z + b) ⁻¹' interior s
   rwa [smul_add, smul_add, add_add_add_comm, ← _root_.add_smul, hab, one_smul] at h
+  -- 🎉 no goals
 #align strict_convex.preimage_add_right StrictConvex.preimage_add_right
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_left (hs : StrictConvex 𝕜 s) (z : E) :
     StrictConvex 𝕜 ((fun x => x + z) ⁻¹' s) := by
   simpa only [add_comm] using hs.preimage_add_right z
+  -- 🎉 no goals
 #align strict_convex.preimage_add_left StrictConvex.preimage_add_left
 
 end AddCancelCommMonoid
@@ -244,10 +272,15 @@ variable [ContinuousAdd E] {s t : Set E}
 theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s + t) := by
   rintro _ ⟨v, w, hv, hw, rfl⟩ _ ⟨x, y, hx, hy, rfl⟩ h a b ha hb hab
+  -- ⊢ a • (fun x x_1 => x + x_1) v w + b • (fun x x_1 => x + x_1) x y ∈ interior ( …
   rw [smul_add, smul_add, add_add_add_comm]
+  -- ⊢ a • v + b • x + (a • w + b • y) ∈ interior (s + t)
   obtain rfl | hvx := eq_or_ne v x
+  -- ⊢ a • v + b • v + (a • w + b • y) ∈ interior (s + t)
   · refine' interior_mono (add_subset_add (singleton_subset_iff.2 hv) Subset.rfl) _
+    -- ⊢ a • v + b • v + (a • w + b • y) ∈ interior ({v} + t)
     rw [Convex.combo_self hab, singleton_add]
+    -- ⊢ v + (a • w + b • y) ∈ interior ((fun x x_1 => x + x_1) v '' t)
     exact
       (isOpenMap_add_left _).image_interior_subset _
         (mem_image_of_mem _ <| ht hw hy (ne_of_apply_ne _ h) ha hb hab)
@@ -259,10 +292,12 @@ theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
 theorem StrictConvex.add_left (hs : StrictConvex 𝕜 s) (z : E) :
     StrictConvex 𝕜 ((fun x => z + x) '' s) := by
   simpa only [singleton_add] using (strictConvex_singleton z).add hs
+  -- 🎉 no goals
 #align strict_convex.add_left StrictConvex.add_left
 
 theorem StrictConvex.add_right (hs : StrictConvex 𝕜 s) (z : E) :
     StrictConvex 𝕜 ((fun x => x + z) '' s) := by simpa only [add_comm] using hs.add_left z
+                                                 -- 🎉 no goals
 #align strict_convex.add_right StrictConvex.add_right
 
 /-- The translation of a strictly convex set is also strictly convex. -/
@@ -279,8 +314,11 @@ variable [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
 
 theorem StrictConvex.smul (hs : StrictConvex 𝕜 s) (c : 𝕝) : StrictConvex 𝕜 (c • s) := by
   obtain rfl | hc := eq_or_ne c 0
+  -- ⊢ StrictConvex 𝕜 (0 • s)
   · exact (subsingleton_zero_smul_set _).strictConvex
+    -- 🎉 no goals
   · exact hs.linear_image (LinearMap.lsmul _ _ c) (isOpenMap_smul₀ hc)
+    -- 🎉 no goals
 #align strict_convex.smul StrictConvex.smul
 
 theorem StrictConvex.affinity [ContinuousAdd E] (hs : StrictConvex 𝕜 s) (z : E) (c : 𝕝) :
@@ -332,6 +370,7 @@ theorem StrictConvex.eq_of_openSegment_subset_frontier [Nontrivial 𝕜] [Densel
     (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) (h : openSegment 𝕜 x y ⊆ frontier s) :
     x = y := by
   obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : 𝕜) 1 zero_lt_one
+  -- ⊢ x = y
   classical
     by_contra hxy
     exact
@@ -344,35 +383,47 @@ theorem StrictConvex.add_smul_mem (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy
   have h : x + t • y = (1 - t) • x + t • (x + y) := by
     rw [smul_add, ← add_assoc, ← _root_.add_smul, sub_add_cancel, one_smul]
   rw [h]
+  -- ⊢ (1 - t) • x + t • (x + y) ∈ interior s
   refine' hs hx hxy (fun h => hy <| add_left_cancel _) (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel _ _)
+  -- ⊢ ?refine'_2 h + y = ?refine'_2 h + 0
   rw [← h, add_zero]
+  -- 🎉 no goals
 #align strict_convex.add_smul_mem StrictConvex.add_smul_mem
 
 theorem StrictConvex.smul_mem_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)
     (hx : x ∈ s) (hx₀ : x ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : t • x ∈ interior s := by
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) hx₀ ht₀ ht₁
+  -- 🎉 no goals
 #align strict_convex.smul_mem_of_zero_mem StrictConvex.smul_mem_of_zero_mem
 
 theorem StrictConvex.add_smul_sub_mem (h : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y)
     {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • (y - x) ∈ interior s := by
   apply h.openSegment_subset hx hy hxy
+  -- ⊢ x + t • (y - x) ∈ openSegment 𝕜 x y
   rw [openSegment_eq_image']
+  -- ⊢ x + t • (y - x) ∈ (fun θ => x + θ • (y - x)) '' Ioo 0 1
   exact mem_image_of_mem _ ⟨ht₀, ht₁⟩
+  -- 🎉 no goals
 #align strict_convex.add_smul_sub_mem StrictConvex.add_smul_sub_mem
 
 /-- The preimage of a strictly convex set under an affine map is strictly convex. -/
 theorem StrictConvex.affine_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {f : E →ᵃ[𝕜] F}
     (hf : Continuous f) (hfinj : Injective f) : StrictConvex 𝕜 (f ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
+  -- ⊢ a • x + b • y ∈ interior (↑f ⁻¹' s)
   refine' preimage_interior_subset_interior_preimage hf _
+  -- ⊢ a • x + b • y ∈ ↑f ⁻¹' interior s
   rw [mem_preimage, Convex.combo_affine_apply hab]
+  -- ⊢ a • ↑f x + b • ↑f y ∈ interior s
   exact hs hx hy (hfinj.ne hxy) ha hb hab
+  -- 🎉 no goals
 #align strict_convex.affine_preimage StrictConvex.affine_preimage
 
 /-- The image of a strictly convex set under an affine map is strictly convex. -/
 theorem StrictConvex.affine_image (hs : StrictConvex 𝕜 s) {f : E →ᵃ[𝕜] F} (hf : IsOpenMap f) :
     StrictConvex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ hxy a b ha hb hab
+  -- ⊢ a • ↑f x + b • ↑f y ∈ interior (↑f '' s)
   exact
     hf.image_interior_subset _
       ⟨a • x + b • y, ⟨hs hx hy (ne_of_apply_ne _ hxy) ha hb hab, Convex.combo_affine_apply hab⟩⟩
@@ -407,15 +458,23 @@ theorem strictConvex_iff_div :
         ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → (a / (a + b)) • x + (b / (a + b)) • y ∈ interior s :=
   ⟨fun h x hx y hy hxy a b ha hb => by
     apply h hx hy hxy (div_pos ha <| add_pos ha hb) (div_pos hb <| add_pos ha hb)
+    -- ⊢ a / (a + b) + b / (a + b) = 1
     rw [← add_div]
+    -- ⊢ (a + b) / (a + b) = 1
     exact div_self (add_pos ha hb).ne', fun h x hx y hy hxy a b ha hb hab => by
+    -- 🎉 no goals
     convert h hx hy hxy ha hb <;> rw [hab, div_one]⟩
+    -- ⊢ a = a / (a + b)
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align strict_convex_iff_div strictConvex_iff_div
 
 theorem StrictConvex.mem_smul_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)
     (hx : x ∈ s) (hx₀ : x ≠ 0) {t : 𝕜} (ht : 1 < t) : x ∈ t • interior s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans ht).ne']
+  -- ⊢ t⁻¹ • x ∈ interior s
   exact hs.smul_mem_of_zero_mem zero_mem hx hx₀ (inv_pos.2 <| zero_lt_one.trans ht) (inv_lt_one ht)
+  -- 🎉 no goals
 #align strict_convex.mem_smul_of_zero_mem StrictConvex.mem_smul_of_zero_mem
 
 end AddCommGroup

@@ -57,11 +57,17 @@ def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) 
   counitIso := N₂Γ₂
   functor_unitIso_comp P := by
     let α := N.mapIso (Γ₂N₂.app P)
+    -- ⊢ N.map (NatTrans.app Γ₂N₂.hom P) ≫ NatTrans.app N₂Γ₂.hom (N.obj P) = 𝟙 (N.obj …
     let β := N₂Γ₂.app (N.obj P)
+    -- ⊢ N.map (NatTrans.app Γ₂N₂.hom P) ≫ NatTrans.app N₂Γ₂.hom (N.obj P) = 𝟙 (N.obj …
     symm
+    -- ⊢ 𝟙 (N.obj P) = N.map (NatTrans.app Γ₂N₂.hom P) ≫ NatTrans.app N₂Γ₂.hom (N.obj …
     change 𝟙 _ = α.hom ≫ β.hom
+    -- ⊢ 𝟙 (N.obj ((𝟭 (Karoubi (SimplicialObject C))).obj P)) = α.hom ≫ β.hom
     rw [← Iso.inv_comp_eq, comp_id, ← comp_id β.hom, ← Iso.inv_comp_eq]
+    -- ⊢ β.inv ≫ α.inv = 𝟙 ((𝟭 (Karoubi (ChainComplex C ℕ))).obj (N.obj P))
     exact AlgebraicTopology.DoldKan.identity_N₂_objectwise P
+    -- 🎉 no goals
 #align category_theory.preadditive.dold_kan.equivalence CategoryTheory.Preadditive.DoldKan.equivalence
 
 end DoldKan

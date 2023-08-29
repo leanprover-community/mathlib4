@@ -68,11 +68,14 @@ abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y�
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
+                                                                 -- ⊢ mk' F x (cast (_ : E x = E x) b) = { proj := x, snd := b }
+                                                                          -- 🎉 no goals
 #align bundle.total_space.mk_cast Bundle.TotalSpace.mk_cast
 
 @[simp 1001, mfld_simps 1001]
 theorem TotalSpace.mk_inj {b : B} {y y' : E b} : mk' F b y = mk' F b y' ↔ y = y' := by
   simp [TotalSpace.ext_iff]
+  -- 🎉 no goals
 
 theorem TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F E) := fun _ _ ↦
   mk_inj.1
@@ -94,10 +97,15 @@ theorem TotalSpace.exists {p : TotalSpace F E → Prop} : (∃ x, p x) ↔ ∃ b
 @[simp]
 theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = π F E ⁻¹' {b} := by
   apply Subset.antisymm
+  -- ⊢ range (mk b) ⊆ proj ⁻¹' {b}
   · rintro _ ⟨x, rfl⟩
+    -- ⊢ { proj := b, snd := x } ∈ proj ⁻¹' {b}
     rfl
+    -- 🎉 no goals
   · rintro ⟨_, x⟩ rfl
+    -- ⊢ { proj := proj✝, snd := x } ∈ range (mk { proj := proj✝, snd := x }.proj)
     exact ⟨x, rfl⟩
+    -- 🎉 no goals
 
 /-- Notation for the direct sum of two bundles over the same base. -/
 notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x

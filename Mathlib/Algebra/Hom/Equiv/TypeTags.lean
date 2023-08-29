@@ -23,7 +23,11 @@ def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
      AddMonoidHom.toMultiplicative f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   invFun f := ⟨⟨f.toMonoidHom, f.symm.toMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   left_inv x := by ext; rfl
+                   -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(MulEquiv.toMonoidHom f), invFun := ↑(M …
+                        -- 🎉 no goals
   right_inv x := by ext; rfl
+                    -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(↑AddMonoidHom.toMultiplicative (toAddM …
+                         -- 🎉 no goals
 #align add_equiv.to_multiplicative AddEquiv.toMultiplicative
 
 /-- Reinterpret `G ≃* H` as `Additive G ≃+ Additive H`. -/
@@ -33,7 +37,11 @@ def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
               MonoidHom.toAdditive f.symm.toMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   invFun f := ⟨⟨f.toAddMonoidHom, f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   left_inv x := by ext; rfl
+                   -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(AddEquiv.toAddMonoidHom f), invFun :=  …
+                        -- 🎉 no goals
   right_inv x := by ext; rfl
+                    -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(↑MonoidHom.toAdditive (toMonoidHom f)) …
+                         -- 🎉 no goals
 #align mul_equiv.to_additive MulEquiv.toAdditive
 
 /-- Reinterpret `Additive G ≃+ H` as `G ≃* Multiplicative H`. -/
@@ -44,7 +52,11 @@ def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
      AddMonoidHom.toMultiplicative'' f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   invFun f := ⟨⟨f.toMonoidHom, f.symm.toMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   left_inv x := by ext; rfl
+                   -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(MulEquiv.toMonoidHom f), invFun := ↑(M …
+                        -- 🎉 no goals
   right_inv x := by ext; rfl
+                    -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(↑AddMonoidHom.toMultiplicative' (toAdd …
+                         -- 🎉 no goals
 #align add_equiv.to_multiplicative' AddEquiv.toMultiplicative'
 
 /-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H` as. -/
@@ -61,7 +73,11 @@ def AddEquiv.toMultiplicative'' [AddZeroClass G] [MulOneClass H] :
      AddMonoidHom.toMultiplicative' f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   invFun f := ⟨⟨f.toMonoidHom, f.symm.toMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   left_inv x := by ext; rfl
+                   -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(MulEquiv.toMonoidHom f), invFun := ↑(M …
+                        -- 🎉 no goals
   right_inv x := by ext; rfl
+                    -- ⊢ ↑((fun f => { toEquiv := { toFun := ↑(↑AddMonoidHom.toMultiplicative'' (toAd …
+                         -- 🎉 no goals
 #align add_equiv.to_multiplicative'' AddEquiv.toMultiplicative''
 
 /-- Reinterpret `Multiplicative G ≃* H` as `G ≃+ Additive H` as. -/

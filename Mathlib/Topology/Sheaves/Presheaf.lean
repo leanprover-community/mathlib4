@@ -61,9 +61,14 @@ namespace Presheaf
 lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by
   apply NatTrans.ext
+  -- ⊢ f.app = g.app
   ext U
+  -- ⊢ NatTrans.app f U = NatTrans.app g U
   induction U with | _ U => ?_
+  -- ⊢ NatTrans.app f (op U) = NatTrans.app g (op U)
+  -- ⊢ NatTrans.app f U = NatTrans.app g U
   apply w
+  -- 🎉 no goals
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
   CategoryTheory.ConcreteCategory.funLike
@@ -89,6 +94,7 @@ macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 
 example {X : TopCat} {v w x y z : Opens X} (h₀ : v ≤ x) (h₁ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v ≤ y :=
   by restrict_tac
+     -- 🎉 no goals
 
 
 /-- The restriction of a section along an inclusion of open sets.
@@ -129,8 +135,11 @@ theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategor
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
+  -- ⊢ ↑(F.map (homOfLE (_ : ∀ ⦃a : ↑X⦄, a ∈ ↑U → a ∈ ↑V)).op) (↑(F.map (homOfLE (_ …
   rw [← comp_apply, ← Functor.map_comp]
+  -- ⊢ ↑(F.map ((homOfLE (_ : ∀ ⦃a : ↑X⦄, a ∈ ↑V → a ∈ ↑W)).op ≫ (homOfLE (_ : ∀ ⦃a …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.restrict_restrict TopCat.Presheaf.restrict_restrict
 
@@ -140,7 +149,9 @@ theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
+  -- ⊢ ↑(NatTrans.app e (op U)) (↑(F.map (homOfLE (_ : ∀ ⦃a : ↑X⦄, a ∈ ↑U → a ∈ ↑V) …
   rw [← comp_apply, NatTrans.naturality, comp_apply]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.map_restrict TopCat.Presheaf.map_restrict
 
@@ -180,6 +191,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
     f _* ℱ = g _* ℱ := by rw [h]
+                          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq' TopCat.Presheaf.pushforward_eq'
 
@@ -188,13 +200,20 @@ theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
   (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
       ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
+                -- ⊢ op ((Opens.map f).obj U.unop) ⟶ op ((Opens.map g).obj U.unop)
+                                    -- ⊢ (Opens.map g).obj U.unop ⟶ (Opens.map f).obj U.unop
+                                                         -- ⊢ (Opens.map g).obj U.unop = (Opens.map f).obj U.unop
+                                                                        -- 🎉 no goals
   by simp [pushforwardEq]
+     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq_hom_app TopCat.Presheaf.pushforwardEq_hom_app
 
 theorem pushforward_eq'_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C)
     (U) : NatTrans.app (eqToHom (pushforward_eq' h ℱ)) U = ℱ.map (eqToHom (by rw [h])) := by
+                                                                              -- 🎉 no goals
   rw [eqToHom_app, eqToHom_map]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq'_hom_app TopCat.Presheaf.pushforward_eq'_hom_app
 
@@ -203,7 +222,9 @@ set_option linter.uppercaseLean3 false in
 theorem pushforwardEq_rfl {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq (rfl : f = f) ℱ).hom.app (op U) = 𝟙 _ := by
   dsimp [pushforwardEq]
+  -- ⊢ ℱ.map (𝟙 (op ((Opens.map f).obj U))) = 𝟙 (ℱ.obj (op ((Opens.map f).obj U)))
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq_rfl TopCat.Presheaf.pushforwardEq_rfl
 
@@ -226,8 +247,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem id_eq : 𝟙 X _* ℱ = ℱ := by
   unfold pushforwardObj
+  -- ⊢ (Opens.map (𝟙 X)).op ⋙ ℱ = ℱ
   rw [Opens.map_id_eq]
+  -- ⊢ (𝟭 (Opens ↑X)).op ⋙ ℱ = ℱ
   erw [Functor.id_comp]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_eq TopCat.Presheaf.Pushforward.id_eq
 
@@ -235,7 +259,9 @@ set_option linter.uppercaseLean3 false in
 @[simp (high)]
 theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
+  -- ⊢ NatTrans.app (whiskerRight (NatTrans.op (Opens.mapId X).inv) ℱ ≫ (Functor.le …
   simp [CategoryStruct.comp]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
@@ -250,14 +276,18 @@ attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
   -- was `tidy`, see porting note above.
   induction U
+  -- ⊢ NatTrans.app (id ℱ).hom (op X✝) = ℱ.map (eqToHom (_ : (Opens.map (𝟙 X)).op.o …
   apply id_hom_app'
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
 
 @[simp]
 theorem id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
+  -- ⊢ NatTrans.app ((Functor.leftUnitor ℱ).inv ≫ whiskerRight (NatTrans.op (Opens. …
   simp [CategoryStruct.comp]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_inv_app' TopCat.Presheaf.Pushforward.id_inv_app'
 
@@ -277,12 +307,14 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem comp_hom_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (comp ℱ f g).hom.app U = 𝟙 _ := by simp [comp]
+                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp_hom_app TopCat.Presheaf.Pushforward.comp_hom_app
 
 @[simp]
 theorem comp_inv_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (comp ℱ f g).inv.app U = 𝟙 _ := by simp [comp]
+                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp_inv_app TopCat.Presheaf.Pushforward.comp_inv_app
 
@@ -295,6 +327,8 @@ def pushforwardMap {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (�
     f _* ℱ ⟶ f _* 𝒢 where
   app U := α.app _
   naturality _ _ i := by erw [α.naturality]; rfl
+                         -- ⊢ NatTrans.app α ((Opens.map f).op.obj x✝¹) ≫ 𝒢.map ((Opens.map f).op.map i) = …
+                                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_map TopCat.Presheaf.pushforwardMap
 
@@ -340,6 +374,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
       fac := fun _ _ => by ext; simp
       uniq := fun _ _ _ => by ext; simp }
   exact IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitOfDiagramTerminal hx _)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_obj_obj_of_image_open TopCat.Presheaf.pullbackObjObjOfImageOpen
 
@@ -352,17 +387,25 @@ def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
   NatIso.ofComponents
     (fun U =>
       pullbackObjObjOfImageOpen (𝟙 _) ℱ (unop U) (by simpa using U.unop.2) ≪≫
+                                                     -- 🎉 no goals
         ℱ.mapIso (eqToIso (by simp)))
+                              -- 🎉 no goals
     fun {U V} i => by
       simp only [pullbackObj_obj]
+      -- ⊢ (pullbackObj (𝟙 Y) ℱ).map i ≫ (pullbackObjObjOfImageOpen (𝟙 Y) ℱ V.unop (_ : …
       ext
+      -- ⊢ colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ U) j✝ ≫ (pullbackObj (𝟙 Y) ℱ). …
       simp only [Functor.comp_obj, CostructuredArrow.proj_obj, pullbackObj_map,
         Iso.trans_hom, Functor.mapIso_hom, eqToIso.hom, Category.assoc]
       erw [colimit.pre_desc_assoc, colimit.ι_desc_assoc, colimit.ι_desc_assoc]
+      -- ⊢ NatTrans.app
       dsimp
+      -- ⊢ ℱ.map (IsTerminal.from (IsLimit.mk fun s => CostructuredArrow.homMk (homOfLE …
       simp only [← ℱ.map_comp]
+      -- ⊢ ℱ.map ((IsTerminal.from (IsLimit.mk fun s => CostructuredArrow.homMk (homOfL …
       -- Porting note : `congr` does not work, but `congr 1` does
       congr 1
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback.id TopCat.Presheaf.Pullback.id
 
@@ -370,11 +413,18 @@ theorem id_inv_app (U : Opens Y) :
     (id ℱ).inv.app (op U) =
       colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U))
         (@CostructuredArrow.mk _ _ _ _ _ (op U) _ (eqToHom (by simp))) := by
+                                                               -- 🎉 no goals
   rw [← Category.id_comp ((id ℱ).inv.app (op U)), ← NatIso.app_inv, Iso.comp_inv_eq]
+  -- ⊢ 𝟙 (ℱ.obj (op U)) = colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U)) (Co …
   dsimp [id]
+  -- ⊢ 𝟙 (ℱ.obj (op U)) = colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U)) (Co …
   erw [colimit.ι_desc_assoc]
+  -- ⊢ 𝟙 (ℱ.obj (op U)) = NatTrans.app (coconeOfDiagramTerminal (IsLimit.mk fun s = …
   dsimp
+  -- ⊢ 𝟙 (ℱ.obj (op U)) = ℱ.map (IsTerminal.from (IsLimit.mk fun s => CostructuredA …
   rw [← ℱ.map_comp, ← ℱ.map_id]; rfl
+  -- ⊢ ℱ.map (𝟙 (op U)) = ℱ.map ((IsTerminal.from (IsLimit.mk fun s => Costructured …
+                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback.id_inv_app TopCat.Presheaf.Pullback.id_inv_app
 
@@ -401,12 +451,17 @@ set_option linter.uppercaseLean3 false in
 
 theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
+  -- ⊢ autoParam (∀ (X_1 Y : Presheaf C X) (f : X_1 ⟶ Y), (pushforward C (𝟙 X)).map …
   · intros a b f
+    -- ⊢ (pushforward C (𝟙 X)).map f = eqToHom (_ : ?F.obj a = ?G.obj a) ≫ (𝟭 (Preshe …
     ext U
+    -- ⊢ NatTrans.app ((pushforward C (𝟙 X)).map f) (op U) = NatTrans.app (eqToHom (_ …
     · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
+      -- ⊢ a.map (eqToHom (_ : (Opens.map (𝟙 X)).op.obj (op U) = op U)) ≫ NatTrans.app  …
       simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
         Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
 
@@ -435,13 +490,17 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
+                         -- 🎉 no goals
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   delta toPushforwardOfIso
+  -- ⊢ NatTrans.app (↑(Adjunction.homEquiv (Equivalence.toAdjunction (presheafEquiv …
   -- Porting note : originally is a single invocation of `simp`
   simp only [pushforwardObj_obj, Functor.op_obj, Equivalence.toAdjunction, Adjunction.homEquiv_unit,
     Functor.id_obj, Functor.comp_obj, Adjunction.mkOfUnitCounit_unit, unop_op, eqToHom_map]
   rw [NatTrans.comp_app, presheafEquivOfIso_inverse_map_app, Equivalence.Equivalence_mk'_unit]
+  -- ⊢ NatTrans.app (NatTrans.app (presheafEquivOfIso C H₁).unitIso.hom ℱ) U ≫ NatT …
   congr 1
+  -- ⊢ NatTrans.app (NatTrans.app (presheafEquivOfIso C H₁).unitIso.hom ℱ) U = eqTo …
   simp only [Equivalence.unit, Equivalence.op, CategoryTheory.Equivalence.symm, Opens.mapMapIso,
     Functor.id_obj, Functor.comp_obj, Iso.symm_hom, NatIso.op_inv, Iso.symm_inv, NatTrans.op_app,
     NatIso.ofComponents_hom_app, eqToIso.hom, eqToHom_op, Equivalence.Equivalence_mk'_unitInv,
@@ -466,7 +525,9 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
+                           -- 🎉 no goals
   simp [pushforwardToOfIso, Equivalence.toAdjunction, CategoryStruct.comp]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app
 

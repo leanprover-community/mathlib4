@@ -50,31 +50,46 @@ instance : StarRing (FreeAlgebra R X) where
   star := MulOpposite.unop ∘ lift R (MulOpposite.op ∘ ι R)
   star_involutive x := by
     unfold Star.star
+    -- ⊢ { star := MulOpposite.unop ∘ ↑(↑(lift R) (MulOpposite.op ∘ ι R)) }.1 ({ star …
     simp only [Function.comp_apply]
+    -- ⊢ MulOpposite.unop (↑(↑(lift R) (MulOpposite.op ∘ ι R)) (MulOpposite.unop (↑(↑ …
     refine' FreeAlgebra.induction R X _ _ _ _ x
     · intros
+      -- ⊢ MulOpposite.unop (↑(↑(lift R) (MulOpposite.op ∘ ι R)) (MulOpposite.unop (↑(↑ …
       simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op]
+      -- 🎉 no goals
     · intros
+      -- ⊢ MulOpposite.unop (↑(↑(lift R) (MulOpposite.op ∘ ι R)) (MulOpposite.unop (↑(↑ …
       simp only [lift_ι_apply, Function.comp_apply, MulOpposite.unop_op]
+      -- 🎉 no goals
     · intros
+      -- ⊢ MulOpposite.unop (↑(↑(lift R) (MulOpposite.op ∘ ι R)) (MulOpposite.unop (↑(↑ …
       simp only [*, map_mul, MulOpposite.unop_mul]
+      -- 🎉 no goals
     · intros
+      -- ⊢ MulOpposite.unop (↑(↑(lift R) (MulOpposite.op ∘ ι R)) (MulOpposite.unop (↑(↑ …
       simp only [*, map_add, MulOpposite.unop_add]
+      -- 🎉 no goals
   star_mul a b := by simp only [Function.comp_apply, map_mul, MulOpposite.unop_mul]
+                     -- 🎉 no goals
   star_add a b := by simp only [Function.comp_apply, map_add, MulOpposite.unop_add]
+                     -- 🎉 no goals
 
 @[simp]
 theorem star_ι (x : X) : star (ι R x) = ι R x := by simp [star, Star.star]
+                                                    -- 🎉 no goals
 #align free_algebra.star_ι FreeAlgebra.star_ι
 
 @[simp]
 theorem star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = algebraMap R _ r := by
   simp [star, Star.star]
+  -- 🎉 no goals
 #align free_algebra.star_algebra_map FreeAlgebra.star_algebraMap
 
 /-- `star` as an `AlgEquiv` -/
 def starHom : FreeAlgebra R X ≃ₐ[R] (FreeAlgebra R X)ᵐᵒᵖ :=
   { starRingEquiv with commutes' := fun r => by simp [star_algebraMap] }
+                                                -- 🎉 no goals
 #align free_algebra.star_hom FreeAlgebra.starHom
 
 end FreeAlgebra

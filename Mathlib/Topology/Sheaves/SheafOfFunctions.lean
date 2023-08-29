@@ -56,24 +56,33 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
     -- We do this one point at a time. Using the axiom of choice, we can pick for each
     -- `x : ↑(iSup U)` an index `i : ι` such that `x` lies in `U i`
     choose index index_spec using fun x : ↑(iSup U) => Opens.mem_iSup.mp x.2
+    -- ⊢ ∃! s, IsGluing (presheafToTypes X T) U sf s
     -- Using this data, we can glue our functions together to a single section
     let s : ∀ x : ↑(iSup U), T x := fun x => sf (index x) ⟨x.1, index_spec x⟩
+    -- ⊢ ∃! s, IsGluing (presheafToTypes X T) U sf s
     refine' ⟨s, _, _⟩
+    -- ⊢ (fun s => IsGluing (presheafToTypes X T) U sf s) s
     · intro i
+      -- ⊢ ↑((presheafToTypes X T).map (leSupr U i).op) s = sf i
       funext x
+      -- ⊢ ↑((presheafToTypes X T).map (leSupr U i).op) s x = sf i x
       -- Now we need to verify that this lifted function restricts correctly to each set `U i`.
       -- Of course, the difficulty is that at any given point `x ∈ U i`,
       -- we may have used the axiom of choice to pick a different `j` with `x ∈ U j`
       -- when defining the function.
       -- Thus we'll need to use the fact that the restrictions are compatible.
       exact congr_fun (hsf (index ⟨x, _⟩) i) ⟨x, ⟨index_spec ⟨x.1, _⟩, x.2⟩⟩
+      -- 🎉 no goals
     · -- Now we just need to check that the lift we picked was the only possible one.
       -- So we suppose we had some other gluing `t` of our sections
       intro t ht
+      -- ⊢ t = s
       -- and observe that we need to check that it agrees with our choice
       -- for each `x ∈ ↑(iSup U)`.
       funext x
+      -- ⊢ t x = s x
       exact congr_fun (ht (index x)) ⟨x.1, index_spec x⟩
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false
 #align Top.presheaf.to_Types_is_sheaf TopCat.Presheaf.toTypes_isSheaf
 

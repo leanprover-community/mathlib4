@@ -37,22 +37,31 @@ theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 theorem pow_succ_factors_toFinset (n k : ℕ) :
     (n ^ (k + 1)).factors.toFinset = n.factors.toFinset := by
   rcases eq_or_ne n 0 with (rfl | hn)
+  -- ⊢ List.toFinset (factors (0 ^ (k + 1))) = List.toFinset (factors 0)
   · simp
+    -- 🎉 no goals
   induction' k with k ih
+  -- ⊢ List.toFinset (factors (n ^ (zero + 1))) = List.toFinset (factors n)
   · simp
+    -- 🎉 no goals
   · rw [pow_succ', factors_mul_toFinset hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
+    -- 🎉 no goals
 #align nat.pow_succ_factors_to_finset Nat.pow_succ_factors_toFinset
 
 theorem pow_factors_toFinset (n : ℕ) {k : ℕ} (hk : k ≠ 0) :
     (n ^ k).factors.toFinset = n.factors.toFinset := by
   cases k
+  -- ⊢ List.toFinset (factors (n ^ zero)) = List.toFinset (factors n)
   · simp at hk
+    -- 🎉 no goals
   rw [pow_succ_factors_toFinset]
+  -- 🎉 no goals
 #align nat.pow_factors_to_finset Nat.pow_factors_toFinset
 
 /-- The only prime divisor of positive prime power `p^k` is `p` itself -/
 theorem prime_pow_prime_divisor {p k : ℕ} (hk : k ≠ 0) (hp : Prime p) :
     (p ^ k).factors.toFinset = {p} := by simp [pow_factors_toFinset p hk, factors_prime hp]
+                                         -- 🎉 no goals
 #align nat.prime_pow_prime_divisor Nat.prime_pow_prime_divisor
 
 theorem factors_mul_toFinset_of_coprime {a b : ℕ} (hab : coprime a b) :

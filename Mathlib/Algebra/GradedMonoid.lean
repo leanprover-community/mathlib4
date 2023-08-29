@@ -412,13 +412,16 @@ theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, 
 theorem GradedMonoid.list_prod_map_eq_dProd (l : List α) (f : α → GradedMonoid A) :
     (l.map f).prod = GradedMonoid.mk _ (l.dProd (fun i => (f i).1) fun i => (f i).2) := by
   rw [GradedMonoid.mk_list_dProd, GradedMonoid.mk]
+  -- ⊢ List.prod (List.map f l) = List.prod (List.map (fun a => { fst := (f a).fst, …
   simp_rw [Sigma.eta]
+  -- 🎉 no goals
 #align graded_monoid.list_prod_map_eq_dprod GradedMonoid.list_prod_map_eq_dProd
 
 theorem GradedMonoid.list_prod_ofFn_eq_dProd {n : ℕ} (f : Fin n → GradedMonoid A) :
     (List.ofFn f).prod =
       GradedMonoid.mk _ ((List.finRange n).dProd (fun i => (f i).1) fun i => (f i).2) :=
   by rw [List.ofFn_eq_map, GradedMonoid.list_prod_map_eq_dProd]
+     -- 🎉 no goals
 #align graded_monoid.list_prod_of_fn_eq_dprod GradedMonoid.list_prod_ofFn_eq_dProd
 
 end DProd
@@ -579,7 +582,9 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
 theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : ∀ j, r j ∈ A (i j)) :
     (List.ofFn r).prod ∈ A (List.ofFn i).sum := by
   rw [List.ofFn_eq_map, List.ofFn_eq_map]
+  -- ⊢ List.prod (List.map r (List.finRange n)) ∈ A (List.sum (List.map i (List.fin …
   exact list_prod_map_mem_graded _ _ _ fun _ _ => h _
+  -- 🎉 no goals
 #align set_like.list_prod_of_fn_mem_graded SetLike.list_prod_ofFn_mem_graded
 
 end SetLike

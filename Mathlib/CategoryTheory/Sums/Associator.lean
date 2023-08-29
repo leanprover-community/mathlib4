@@ -39,8 +39,38 @@ def associator : Sum (Sum C D) E ⥤ Sum C (Sum D E)
     | inl (inr _), inl (inr _), f => f
     | inr _, inr _, f => f
   map_id := by rintro ((_|_)|_) <;> rfl
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
   map_comp := by
     rintro ((_|_)|_) ((_|_)|_) ((_|_)|_) f g <;> first | cases f | cases g | aesop_cat
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
 #align category_theory.sum.associator CategoryTheory.sum.associator
 
 @[simp]
@@ -90,8 +120,38 @@ def inverseAssociator : Sum C (Sum D E) ⥤ Sum (Sum C D) E
     | inr (inl _), inr (inl _), f => f
     | inr (inr _), inr (inr _), f => f
   map_id := by rintro (_|(_|_)) <;> rfl
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
   map_comp := by
     rintro (_|(_|_)) (_|(_|_)) (_|(_|_)) f g <;> first | cases f | cases g | aesop_cat
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
 #align category_theory.sum.inverse_associator CategoryTheory.sum.inverseAssociator
 
 @[simp]
@@ -134,18 +194,44 @@ def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
     (NatIso.ofComponents (fun X => eqToIso
       (by rcases X with ((_|_)|_) <;> rfl)) -- Porting notes: aesop_cat fails
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
       (by rintro ((_|_)|_) ((_|_)|_) f <;> first | cases f | aesop_cat))
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
     (NatIso.ofComponents (fun X => eqToIso
       (by rcases X with (_|(_|_)) <;> rfl)) -- Porting notes: aesop_cat fails
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
       (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align category_theory.sum.associativity CategoryTheory.sum.associativity
 
 instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
   (by infer_instance : IsEquivalence (associativity C D E).functor)
+      -- 🎉 no goals
 #align category_theory.sum.associator_is_equivalence CategoryTheory.sum.associatorIsEquivalence
 
 instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
   (by infer_instance : IsEquivalence (associativity C D E).inverse)
+      -- 🎉 no goals
 #align category_theory.sum.inverse_associator_is_equivalence CategoryTheory.sum.inverseAssociatorIsEquivalence
 
 -- TODO unitors?

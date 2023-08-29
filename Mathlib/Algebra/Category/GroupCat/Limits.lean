@@ -41,7 +41,9 @@ namespace GroupCat
 @[to_additive]
 instance groupObj (F : J ⥤ GroupCatMax.{v, u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
   change Group (F.obj j)
+  -- ⊢ Group ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Group.group_obj GroupCat.groupObj
 set_option linter.uppercaseLean3 false in
@@ -56,8 +58,11 @@ def sectionsSubgroup (F : J ⥤ GroupCat) : Subgroup (∀ j, F.obj j) :=
     carrier := (F ⋙ forget GroupCat).sections
     inv_mem' := fun {a} ah j j' f => by
       simp only [Functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
+      -- ⊢ (forget GroupCat).map (F.map f) (a j)⁻¹ = (a j')⁻¹
       dsimp [Functor.sections] at ah ⊢
+      -- ⊢ ↑(F.map f) (a j)⁻¹ = (a j')⁻¹
       rw [(F.map f).map_inv (a j), ah f] }
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Group.sections_subgroup GroupCat.sectionsSubgroup
 set_option linter.uppercaseLean3 false in
@@ -67,7 +72,9 @@ set_option linter.uppercaseLean3 false in
 noncomputable instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
     Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
+  -- ⊢ Group { x // x ∈ sectionsSubgroup F }
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Group.limit_group GroupCat.limitGroup
 set_option linter.uppercaseLean3 false in
@@ -96,6 +103,7 @@ noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCatMax.{v, u}) :
                 (MonCat.HasLimits.limitCone
                       (F ⋙ forget₂ GroupCat MonCat.{max v u})).π.naturality } }
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
+                      -- 🎉 no goals
       makesLimit :=
         IsLimit.ofFaithful (forget₂ GroupCat MonCat.{max v u}) (MonCat.HasLimits.limitConeIsLimit _)
           (fun s => _) fun s => rfl }
@@ -230,7 +238,9 @@ namespace CommGroupCat
 instance commGroupObj (F : J ⥤ CommGroupCatMax.{v, u}) (j) :
     CommGroup ((F ⋙ forget CommGroupCatMax).obj j) := by
   change CommGroup (F.obj j)
+  -- ⊢ CommGroup ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommGroup.comm_group_obj CommGroupCat.commGroupObj
 set_option linter.uppercaseLean3 false in
@@ -268,9 +278,11 @@ noncomputable instance Forget₂.createsLimit (F : J ⥤ CommGroupCatMax.{v, u})
                 (F ⋙ forget₂ CommGroupCat GroupCat.{max v u} ⋙ forget₂ GroupCat MonCat.{max v u})
               naturality := (MonCat.HasLimits.limitCone _).π.naturality } }
       validLift := by apply IsLimit.uniqueUpToIso (GroupCat.limitConeIsLimit _) t
+                      -- 🎉 no goals
       makesLimit :=
         IsLimit.ofFaithful (forget₂ _ GroupCat.{max v u} ⋙ forget₂ _ MonCat.{max v u})
           (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
+              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂.creates_limit CommGroupCat.Forget₂.createsLimit
 set_option linter.uppercaseLean3 false in
@@ -333,6 +345,7 @@ of groups.)
 noncomputable instance forget₂GroupPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u})
     where preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
+                                                                            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂_Group_preserves_limits_of_size CommGroupCat.forget₂GroupPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
@@ -402,6 +415,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGroupCat) : HasProduct f := by infer_instance
+                                                       -- 🎉 no goals
 
 end CommGroupCat
 
@@ -416,41 +430,66 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
+        -- ⊢ ↑((fun g => { val := ↑(kernel.ι f) g, property := (_ : ↑(kernel.ι f ≫ f) g = …
         simp [(AddSubgroup.coe_zero _).symm]
+        -- 🎉 no goals
       map_add' := fun g g' => by
         refine Subtype.ext ?_
+        -- ⊢ ↑(ZeroHom.toFun { toFun := fun g => { val := ↑(kernel.ι f) g, property := (_ …
         change _ = _ + _
+        -- ⊢ ↑(ZeroHom.toFun { toFun := fun g => { val := ↑(kernel.ι f) g, property := (_ …
         dsimp
+        -- ⊢ ↑(kernel.ι f) (g + g') = ↑(kernel.ι f) g + ↑(kernel.ι f) g'
         simp }
+        -- 🎉 no goals
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
     -- porting note : used to be `tidy`, but `aesop` can't do it
     refine FunLike.ext _ _ ?_
+    -- ⊢ ∀ (x : ↑(of { x // x ∈ AddMonoidHom.ker f })), ↑(AddSubgroup.subtype (AddMon …
     rintro ⟨x, (hx : f _ = 0)⟩
+    -- ⊢ ↑(AddSubgroup.subtype (AddMonoidHom.ker f) ≫ f) { val := x, property := hx } …
     exact hx
+    -- 🎉 no goals
   hom_inv_id := by
     -- Porting note: it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
     refine equalizer.hom_ext ?_
+    -- ⊢ ({ toZeroHom := { toFun := fun g => { val := ↑(kernel.ι f) g, property := (_ …
     ext x
+    -- ⊢ ↑(({ toZeroHom := { toFun := fun g => { val := ↑(kernel.ι f) g, property :=  …
     dsimp
+    -- ⊢ ↑(kernel.ι f) (↑(kernel.lift f (AddSubgroup.subtype (AddMonoidHom.ker f)) (_ …
     generalize_proofs _ h1 h2
+    -- ⊢ ↑(kernel.ι f) (↑(kernel.lift f (AddSubgroup.subtype (AddMonoidHom.ker f)) h1 …
     erw [FunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
+    -- ⊢ ↑(AddSubgroup.subtype (AddMonoidHom.ker f)) { val := ↑(kernel.ι f) x, proper …
     rfl
+    -- 🎉 no goals
   inv_hom_id := by
     apply AddCommGroupCat.ext
+    -- ⊢ ∀ (x : ↑(of { x // x ∈ AddMonoidHom.ker f })), ↑(kernel.lift f (AddSubgroup. …
     simp only [AddMonoidHom.coe_mk, coe_id, coe_comp]
+    -- ⊢ ∀ (x : ↑(of { x // x ∈ AddMonoidHom.ker f })), (↑{ toFun := fun g => { val : …
     rintro ⟨x, mem⟩
+    -- ⊢ (↑{ toFun := fun g => { val := ↑(kernel.ι f) g, property := (_ : ↑(kernel.ι  …
     refine Subtype.ext ?_
+    -- ⊢ ↑((↑{ toFun := fun g => { val := ↑(kernel.ι f) g, property := (_ : ↑(kernel. …
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
+    -- ⊢ ↑(kernel.ι f) (↑(kernel.lift f (AddSubgroup.subtype (AddMonoidHom.ker f)) (_ …
     generalize_proofs _ h1 h2
+    -- ⊢ ↑(kernel.ι f) (↑(kernel.lift f (AddSubgroup.subtype (AddMonoidHom.ker f)) h1 …
     erw [FunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
+    -- ⊢ ↑(AddSubgroup.subtype (AddMonoidHom.ker f)) { val := x, property := mem } = x
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer
 
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext; rfl
+                                                                        -- ⊢ ↑((kernelIsoKer f).hom ≫ AddSubgroup.subtype (AddMonoidHom.ker f)) x✝ = ↑(ke …
+                                                                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_hom_comp_subtype AddCommGroupCat.kernelIsoKer_hom_comp_subtype
 
@@ -458,7 +497,9 @@ set_option linter.uppercaseLean3 false in
 theorem kernelIsoKer_inv_comp_ι {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).inv ≫ kernel.ι f = AddSubgroup.subtype f.ker := by
   ext
+  -- ⊢ ↑((kernelIsoKer f).inv ≫ kernel.ι f) x✝ = ↑(AddSubgroup.subtype (AddMonoidHo …
   simp [kernelIsoKer]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_inv_comp_ι AddCommGroupCat.kernelIsoKer_inv_comp_ι
 

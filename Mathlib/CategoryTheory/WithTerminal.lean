@@ -99,9 +99,43 @@ instance : Category.{v} (WithTerminal C) where
     -- so the `false_of_from_star` destruct rule below can be used here.
     -- That works, but causes mysterious failures of `aesop_cat` in `map`.
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
     · exact (h : PEmpty).elim
+      -- 🎉 no goals
     · exact (g : PEmpty).elim
+      -- 🎉 no goals
     · exact (h : PEmpty).elim
+      -- 🎉 no goals
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -144,6 +178,7 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
     | of _ => PUnit.unit
     | star => PUnit.unit
   uniq := by aesop_cat
+             -- 🎉 no goals
 
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
@@ -185,7 +220,9 @@ theorem lift_map_liftStar {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : �
     (lift F M hM).map (starTerminal.from (incl.obj x)) ≫ (liftStar F M hM).hom =
       (inclLift F M hM).hom.app x ≫ M x := by
   erw [Category.id_comp, Category.comp_id]
+  -- ⊢ (lift F M hM).map (Limits.IsTerminal.from starTerminal (incl.obj x)) = M x
   rfl
+  -- 🎉 no goals
 #align category_theory.with_terminal.lift_map_lift_star CategoryTheory.WithTerminal.lift_map_liftStar
 
 /-- The uniqueness of `lift`. -/
@@ -204,12 +241,19 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.
     (by
       rintro (X | X) (Y | Y) f
       · apply h.hom.naturality
+        -- 🎉 no goals
       · cases f
+        -- ⊢ G.map PUnit.unit ≫
         exact hh _
+        -- 🎉 no goals
       · cases f
+        -- 🎉 no goals
       · cases f
+        -- ⊢ G.map PUnit.unit ≫
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
+        -- ⊢ G.map (𝟙 star) ≫ hG.hom = hG.hom ≫ 𝟙 Z
         simp)
+        -- 🎉 no goals
 #align category_theory.with_terminal.lift_unique CategoryTheory.WithTerminal.liftUnique
 
 /-- A variant of `lift` with `Z` a terminal object. -/
@@ -286,9 +330,43 @@ instance : Category.{v} (WithInitial C) where
     -- Porting note: it would be nice to automate this away as well.
     -- See the note on `Category (WithTerminal C)`
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
+    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                            -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                        -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- ⊢ (f ≫ g) ≫ h = f ≫ g ≫ h
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
     · exact (g : PEmpty).elim
+      -- 🎉 no goals
     · exact (f : PEmpty).elim
+      -- 🎉 no goals
     · exact (f : PEmpty).elim
+      -- 🎉 no goals
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -332,6 +410,7 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
     | of _x => PUnit.unit
     | star => PUnit.unit
   uniq := by aesop_cat
+             -- 🎉 no goals
 
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
@@ -373,7 +452,9 @@ theorem liftStar_lift_map {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : �
     (liftStar F M hM).hom ≫ (lift F M hM).map (starInitial.to (incl.obj x)) =
       M x ≫ (inclLift F M hM).hom.app x := by
   erw [Category.id_comp, Category.comp_id]
+  -- ⊢ (lift F M hM).map (Limits.IsInitial.to starInitial (incl.obj x)) = M x
   rfl
+  -- 🎉 no goals
 #align category_theory.with_initial.lift_star_lift_map CategoryTheory.WithInitial.liftStar_lift_map
 
 /-- The uniqueness of `lift`. -/
@@ -392,15 +473,25 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z 
     (by
       rintro (X | X) (Y | Y) f
       · apply h.hom.naturality
+        -- 🎉 no goals
       · cases f
+        -- 🎉 no goals
       · cases f
+        -- ⊢ G.map PUnit.unit ≫
         change G.map _ ≫ h.hom.app _ = hG.hom ≫ _
+        -- ⊢ G.map PUnit.unit ≫ NatTrans.app h.hom Y = hG.hom ≫ (lift F M hM).map PUnit.u …
         symm
+        -- ⊢ hG.hom ≫ (lift F M hM).map PUnit.unit = G.map PUnit.unit ≫ NatTrans.app h.ho …
         erw [← Iso.eq_inv_comp, ← Category.assoc, hh]
+        -- ⊢ (lift F M hM).map PUnit.unit = (M Y ≫ NatTrans.app h.symm.hom Y) ≫ NatTrans. …
         simp
+        -- 🎉 no goals
       · cases f
+        -- ⊢ G.map PUnit.unit ≫
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
+        -- ⊢ G.map (𝟙 star) ≫ hG.hom = hG.hom ≫ 𝟙 Z
         simp)
+        -- 🎉 no goals
 #align category_theory.with_initial.lift_unique CategoryTheory.WithInitial.liftUnique
 
 /-- A variant of `lift` with `Z` an initial object. -/

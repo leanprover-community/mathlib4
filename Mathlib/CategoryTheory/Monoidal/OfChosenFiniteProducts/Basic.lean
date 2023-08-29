@@ -63,12 +63,22 @@ theorem BinaryFan.swap_snd {P Q : C} (t : BinaryFan P Q) : t.swap.snd = t.fst :=
 def IsLimit.swapBinaryFan {P Q : C} {t : BinaryFan P Q} (I : IsLimit t) : IsLimit t.swap where
   lift s := I.lift (BinaryFan.swap s)
   fac s := by rintro ⟨⟨⟩⟩ <;> simp
+              -- ⊢ (fun s => lift I (BinaryFan.swap s)) s ≫ NatTrans.app (BinaryFan.swap t).π { …
+                              -- 🎉 no goals
+                              -- 🎉 no goals
   uniq s m w := by
     have h := I.uniq (BinaryFan.swap s) m
+    -- ⊢ m = (fun s => lift I (BinaryFan.swap s)) s
     rw [h]
+    -- ⊢ ∀ (j : Discrete WalkingPair), m ≫ NatTrans.app t.π j = NatTrans.app (BinaryF …
     rintro ⟨j⟩
+    -- ⊢ m ≫ NatTrans.app t.π { as := j } = NatTrans.app (BinaryFan.swap s).π { as := …
     specialize w ⟨WalkingPair.swap j⟩
+    -- ⊢ m ≫ NatTrans.app t.π { as := j } = NatTrans.app (BinaryFan.swap s).π { as := …
     cases j <;> exact w
+    -- ⊢ m ≫ NatTrans.app t.π { as := WalkingPair.left } = NatTrans.app (BinaryFan.sw …
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align category_theory.limits.is_limit.swap_binary_fan CategoryTheory.Limits.IsLimit.swapBinaryFan
 
 /-- Construct `HasBinaryProduct Q P` from `HasBinaryProduct P Q`.
@@ -142,23 +152,48 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
   lift t := R.lift (BinaryFan.assocInv P t)
   fac t := by
     rintro ⟨⟨⟩⟩ <;> simp
+    -- ⊢ (fun t => lift R (BinaryFan.assocInv P t)) t ≫ NatTrans.app (BinaryFan.assoc …
+                    -- 🎉 no goals
+                    -- ⊢ lift R (BinaryFan.assocInv P t) ≫ lift Q (BinaryFan.mk (BinaryFan.fst s ≫ Bi …
     apply Q.hom_ext
+    -- ⊢ ∀ (j : Discrete WalkingPair), (lift R (BinaryFan.assocInv P t) ≫ lift Q (Bin …
     rintro ⟨⟨⟩⟩ <;> simp
+    -- ⊢ (lift R (BinaryFan.assocInv P t) ≫ lift Q (BinaryFan.mk (BinaryFan.fst s ≫ B …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
   uniq t m w := by
     have h := R.uniq (BinaryFan.assocInv P t) m
+    -- ⊢ m = (fun t => lift R (BinaryFan.assocInv P t)) t
     rw [h]
+    -- ⊢ ∀ (j : Discrete WalkingPair), m ≫ NatTrans.app s.π j = NatTrans.app (BinaryF …
     rintro ⟨⟨⟩⟩ <;> simp
+    -- ⊢ m ≫ NatTrans.app s.π { as := WalkingPair.left } = NatTrans.app (BinaryFan.as …
+                    -- ⊢ m ≫ BinaryFan.fst s = lift P (BinaryFan.mk (BinaryFan.fst t) (BinaryFan.snd  …
+                    -- ⊢ m ≫ BinaryFan.snd s = BinaryFan.snd t ≫ BinaryFan.snd sYZ
     apply P.hom_ext
+    -- ⊢ ∀ (j : Discrete WalkingPair), (m ≫ BinaryFan.fst s) ≫ NatTrans.app sXY.π j = …
     rintro ⟨⟨⟩⟩ <;> simp
+    -- ⊢ (m ≫ BinaryFan.fst s) ≫ NatTrans.app sXY.π { as := WalkingPair.left } = lift …
+                    -- ⊢ m ≫ BinaryFan.fst s ≫ BinaryFan.fst sXY = BinaryFan.fst t
+                    -- ⊢ m ≫ BinaryFan.fst s ≫ BinaryFan.snd sXY = BinaryFan.snd t ≫ BinaryFan.fst sYZ
     · exact w ⟨WalkingPair.left⟩
+      -- 🎉 no goals
     · specialize w ⟨WalkingPair.right⟩
+      -- ⊢ m ≫ BinaryFan.fst s ≫ BinaryFan.snd sXY = BinaryFan.snd t ≫ BinaryFan.fst sYZ
       simp at w
+      -- ⊢ m ≫ BinaryFan.fst s ≫ BinaryFan.snd sXY = BinaryFan.snd t ≫ BinaryFan.fst sYZ
       rw [← w]
+      -- ⊢ m ≫ BinaryFan.fst s ≫ BinaryFan.snd sXY = (m ≫ lift Q (BinaryFan.mk (BinaryF …
       simp
+      -- 🎉 no goals
     · specialize w ⟨WalkingPair.right⟩
+      -- ⊢ m ≫ BinaryFan.snd s = BinaryFan.snd t ≫ BinaryFan.snd sYZ
       simp at w
+      -- ⊢ m ≫ BinaryFan.snd s = BinaryFan.snd t ≫ BinaryFan.snd sYZ
       rw [← w]
+      -- ⊢ m ≫ BinaryFan.snd s = (m ≫ lift Q (BinaryFan.mk (BinaryFan.fst s ≫ BinaryFan …
       simp
+      -- 🎉 no goals
 #align category_theory.limits.is_limit.assoc CategoryTheory.Limits.IsLimit.assoc
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
@@ -198,10 +233,15 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
   -- Porting note: this should be automatable:
   hom_inv_id := by
     apply Q.hom_ext
+    -- ⊢ ∀ (j : Discrete WalkingPair), (snd t ≫ IsLimit.lift Q (mk (IsLimit.lift P {  …
     rintro ⟨⟨⟩⟩
+    -- ⊢ (snd t ≫ IsLimit.lift Q (mk (IsLimit.lift P { pt := X, π := NatTrans.mk fun  …
     · apply P.hom_ext
+      -- ⊢ ∀ (j : Discrete PEmpty), ((snd t ≫ IsLimit.lift Q (mk (IsLimit.lift P { pt : …
       rintro ⟨⟨⟩⟩
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
 #align category_theory.limits.binary_fan.left_unitor CategoryTheory.Limits.BinaryFan.leftUnitor
 
 /-- Construct a right unitor from specified limit cones.
@@ -221,10 +261,15 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit 
             { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } }))
   hom_inv_id := by
     apply Q.hom_ext
+    -- ⊢ ∀ (j : Discrete WalkingPair), (fst t ≫ IsLimit.lift Q (mk (𝟙 X) (IsLimit.lif …
     rintro ⟨⟨⟩⟩
+    -- ⊢ (fst t ≫ IsLimit.lift Q (mk (𝟙 X) (IsLimit.lift P { pt := X, π := NatTrans.m …
     · simp
+      -- 🎉 no goals
     · apply P.hom_ext
+      -- ⊢ ∀ (j : Discrete PEmpty), ((fst t ≫ IsLimit.lift Q (mk (𝟙 X) (IsLimit.lift P  …
       rintro ⟨⟨⟩⟩
+      -- 🎉 no goals
 #align category_theory.limits.binary_fan.right_unitor CategoryTheory.Limits.BinaryFan.rightUnitor
 
 end
@@ -261,17 +306,29 @@ def tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : tensorObj ℬ W Y ⟶ 
 
 theorem tensor_id (X₁ X₂ : C) : tensorHom ℬ (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj ℬ X₁ X₂) := by
   apply IsLimit.hom_ext (ℬ _ _).isLimit;
+  -- ⊢ ∀ (j : Discrete WalkingPair), tensorHom ℬ (𝟙 X₁) (𝟙 X₂) ≫ NatTrans.app (ℬ X₁ …
   rintro ⟨⟨⟩⟩ <;>
+  -- ⊢ tensorHom ℬ (𝟙 X₁) (𝟙 X₂) ≫ NatTrans.app (ℬ X₁ X₂).cone.π { as := WalkingPai …
     · dsimp [tensorHom]
+      -- ⊢ IsLimit.lift (ℬ X₁ X₂).isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X₁ X₂).cone ≫ …
+      -- ⊢ IsLimit.lift (ℬ X₁ X₂).isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X₁ X₂).cone ≫ …
+      -- 🎉 no goals
       simp
+      -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.tensor_id CategoryTheory.MonoidalOfChosenFiniteProducts.tensor_id
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ := by
   apply IsLimit.hom_ext (ℬ _ _).isLimit;
+  -- ⊢ ∀ (j : Discrete WalkingPair), tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) ≫ NatTrans.app …
   rintro ⟨⟨⟩⟩ <;>
+  -- ⊢ tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) ≫ NatTrans.app (ℬ Z₁ Z₂).cone.π { as := Walk …
     · dsimp [tensorHom]
+      -- ⊢ IsLimit.lift (ℬ Z₁ Z₂).isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X₁ X₂).cone ≫ …
+      -- ⊢ IsLimit.lift (ℬ Z₁ Z₂).isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X₁ X₂).cone ≫ …
+      -- 🎉 no goals
       simp
+      -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.tensor_comp CategoryTheory.MonoidalOfChosenFiniteProducts.tensor_comp
 
 theorem pentagon (W X Y Z : C) :
@@ -281,15 +338,26 @@ theorem pentagon (W X Y Z : C) :
       (BinaryFan.associatorOfLimitCone ℬ (tensorObj ℬ W X) Y Z).hom ≫
         (BinaryFan.associatorOfLimitCone ℬ W X (tensorObj ℬ Y Z)).hom := by
   dsimp [tensorHom]
+  -- ⊢ IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone.pt Z).isLimit (BinaryFan.mk (Bina …
   apply IsLimit.hom_ext (ℬ _ _).isLimit; rintro ⟨⟨⟩⟩
+  -- ⊢ ∀ (j : Discrete WalkingPair), (IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone.pt …
+                                         -- ⊢ (IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone.pt Z).isLimit (BinaryFan.mk (Bin …
   · simp
+    -- 🎉 no goals
   · apply IsLimit.hom_ext (ℬ _ _).isLimit
+    -- ⊢ ∀ (j : Discrete WalkingPair), ((IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone.p …
     rintro ⟨⟨⟩⟩
+    -- ⊢ ((IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone.pt Z).isLimit (BinaryFan.mk (Bi …
     · simp
+      -- 🎉 no goals
     apply IsLimit.hom_ext (ℬ _ _).isLimit
+    -- ⊢ ∀ (j : Discrete WalkingPair), (((IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone. …
     rintro ⟨⟨⟩⟩
+    -- ⊢ (((IsLimit.lift (ℬ (ℬ W (ℬ X Y).cone.pt).cone.pt Z).isLimit (BinaryFan.mk (B …
     · simp
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.pentagon CategoryTheory.MonoidalOfChosenFiniteProducts.pentagon
 
 theorem triangle (X Y : C) :
@@ -297,33 +365,50 @@ theorem triangle (X Y : C) :
         tensorHom ℬ (𝟙 X) (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt Y).isLimit).hom =
       tensorHom ℬ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit).hom (𝟙 Y) := by
   dsimp [tensorHom]
+  -- ⊢ (BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.pt Y).hom ≫ IsLimit.lift (ℬ X Y) …
   apply IsLimit.hom_ext (ℬ _ _).isLimit; rintro ⟨⟨⟩⟩ <;> simp
+  -- ⊢ ∀ (j : Discrete WalkingPair), ((BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.p …
+                                         -- ⊢ ((BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.pt Y).hom ≫ IsLimit.lift (ℬ X Y …
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.triangle CategoryTheory.MonoidalOfChosenFiniteProducts.triangle
 
 theorem leftUnitor_naturality {X₁ X₂ : C} (f : X₁ ⟶ X₂) :
     tensorHom ℬ (𝟙 𝒯.cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₂).isLimit).hom =
       (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₁).isLimit).hom ≫ f := by
   dsimp [tensorHom]
+  -- ⊢ IsLimit.lift (ℬ 𝒯.cone.pt X₂).isLimit (BinaryFan.mk (BinaryFan.fst (ℬ 𝒯.cone …
   simp
+  -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.left_unitor_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.leftUnitor_naturality
 
 theorem rightUnitor_naturality {X₁ X₂ : C} (f : X₁ ⟶ X₂) :
     tensorHom ℬ f (𝟙 𝒯.cone.pt) ≫ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₂ 𝒯.cone.pt).isLimit).hom =
       (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₁ 𝒯.cone.pt).isLimit).hom ≫ f := by
   dsimp [tensorHom]
+  -- ⊢ IsLimit.lift (ℬ X₂ 𝒯.cone.pt).isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X₁ 𝒯.c …
   simp
+  -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.right_unitor_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.rightUnitor_naturality
 
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom ℬ (tensorHom ℬ f₁ f₂) f₃ ≫ (BinaryFan.associatorOfLimitCone ℬ Y₁ Y₂ Y₃).hom =
       (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) := by
   dsimp [tensorHom]
+  -- ⊢ IsLimit.lift (ℬ (tensorObj ℬ Y₁ Y₂) Y₃).isLimit (BinaryFan.mk (BinaryFan.fst …
   apply IsLimit.hom_ext (ℬ _ _).isLimit; rintro ⟨⟨⟩⟩
+  -- ⊢ ∀ (j : Discrete WalkingPair), (IsLimit.lift (ℬ (tensorObj ℬ Y₁ Y₂) Y₃).isLim …
+                                         -- ⊢ (IsLimit.lift (ℬ (tensorObj ℬ Y₁ Y₂) Y₃).isLimit (BinaryFan.mk (BinaryFan.fs …
   · simp
+    -- 🎉 no goals
   · apply IsLimit.hom_ext (ℬ _ _).isLimit
+    -- ⊢ ∀ (j : Discrete WalkingPair), ((IsLimit.lift (ℬ (tensorObj ℬ Y₁ Y₂) Y₃).isLi …
     rintro ⟨⟨⟩⟩
+    -- ⊢ ((IsLimit.lift (ℬ (tensorObj ℬ Y₁ Y₂) Y₃).isLimit (BinaryFan.mk (BinaryFan.f …
     · simp
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.associator_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.associator_naturality
 
 end MonoidalOfChosenFiniteProducts
@@ -366,7 +451,9 @@ def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{v} 
 
 instance : Category (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) := by
   dsimp [MonoidalOfChosenFiniteProductsSynonym]
+  -- ⊢ Category.{?u.82278, u} C
   infer_instance
+  -- 🎉 no goals
 
 instance : MonoidalCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) :=
   monoidalOfChosenFiniteProducts 𝒯 ℬ

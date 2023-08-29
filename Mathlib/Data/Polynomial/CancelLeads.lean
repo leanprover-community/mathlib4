@@ -53,22 +53,34 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     (h : p.natDegree ≤ q.natDegree) (hq : 0 < q.natDegree) :
     (p.cancelLeads q).natDegree < q.natDegree := by
   by_cases hp : p = 0
+  -- ⊢ natDegree (cancelLeads p q) < natDegree q
   · convert hq
+    -- ⊢ natDegree (cancelLeads p q) = 0
     simp [hp, cancelLeads]
+    -- 🎉 no goals
   rw [cancelLeads, sub_eq_add_neg, tsub_eq_zero_iff_le.mpr h, pow_zero, mul_one]
+  -- ⊢ natDegree (↑C (leadingCoeff p) * q + -(↑C (leadingCoeff q) * X ^ (natDegree  …
   by_cases h0 :
     C p.leadingCoeff * q + -(C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p) = 0
   · exact (le_of_eq (by simp only [h0, natDegree_zero])).trans_lt hq
+    -- 🎉 no goals
   apply lt_of_le_of_ne
+  -- ⊢ natDegree (↑C (leadingCoeff p) * q + -(↑C (leadingCoeff q) * X ^ (natDegree  …
   · -- porting note: was compute_degree_le; repeat' rwa [Nat.sub_add_cancel]
     rw [natDegree_add_le_iff_left]
+    -- ⊢ natDegree (↑C (leadingCoeff p) * q) ≤ natDegree q
     · apply natDegree_C_mul_le
+      -- 🎉 no goals
     refine (natDegree_neg (C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p)).le.trans ?_
+    -- ⊢ natDegree (↑C (leadingCoeff q) * X ^ (natDegree q - natDegree p) * p) ≤ natD …
     exact natDegree_mul_le.trans <| Nat.add_le_of_le_sub h <| natDegree_C_mul_X_pow_le _ _
+    -- 🎉 no goals
   · contrapose! h0
+    -- ⊢ ↑C (leadingCoeff p) * q + -(↑C (leadingCoeff q) * X ^ (natDegree q - natDegr …
     rw [← leadingCoeff_eq_zero, leadingCoeff, h0, mul_assoc, X_pow_mul, ← tsub_add_cancel_of_le h,
       add_comm _ p.natDegree]
     simp only [coeff_mul_X_pow, coeff_neg, coeff_C_mul, add_tsub_cancel_left, coeff_add]
+    -- ⊢ leadingCoeff p * coeff q (natDegree p + (natDegree q - natDegree p)) + -(lea …
     rw [add_comm p.natDegree, tsub_add_cancel_of_le h, ← leadingCoeff, ← leadingCoeff, comm,
       add_right_neg]
 #align polynomial.nat_degree_cancel_leads_lt_of_nat_degree_le_nat_degree_of_comm Polynomial.natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm

@@ -28,7 +28,9 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
   have ha₀ : 0 < a := one_pos.trans_le ha
+  -- ⊢ a ^ m ≤ a ^ n
   lift n - m to ℕ using sub_nonneg.2 h with k hk
+  -- ⊢ a ^ m ≤ a ^ n
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ ≤ a ^ m * a ^ k :=
@@ -46,7 +48,9 @@ theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
 
 protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
   apply zpow_pos_of_pos
+  -- ⊢ 0 < ↑a
   exact_mod_cast h
+  -- 🎉 no goals
 #align nat.zpow_pos_of_pos Nat.zpow_pos_of_pos
 
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
@@ -91,8 +95,11 @@ theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
 
 theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective ((· ^ ·) a : ℤ → α) := by
   rcases h₁.lt_or_lt with (H | H)
+  -- ⊢ Injective ((fun x x_1 => x ^ x_1) a)
   · exact (zpow_strictAnti h₀ H).injective
+    -- 🎉 no goals
   · exact (zpow_strictMono H).injective
+    -- 🎉 no goals
 #align zpow_injective zpow_injective
 
 @[simp]
@@ -109,6 +116,7 @@ theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b
 theorem zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) ↔ min a b ≤ c := by
   simp_rw [le_max_iff, min_le_iff, zpow_le_iff_le hx, neg_le_neg_iff]
+  -- 🎉 no goals
 #align zpow_le_max_iff_min_le zpow_le_max_iff_min_le
 
 end LinearOrderedSemifield
@@ -129,6 +137,7 @@ theorem zpow_bit0_nonneg (a : α) (n : ℤ) : 0 ≤ a ^ bit0 n :=
 
 theorem zpow_two_nonneg (a : α) : 0 ≤ a ^ (2 : ℤ) := by
   convert zpow_bit0_nonneg a 1
+  -- 🎉 no goals
 #align zpow_two_nonneg zpow_two_nonneg
 
 theorem zpow_neg_two_nonneg (a : α) : 0 ≤ a ^ (-2 : ℤ) :=
@@ -141,14 +150,18 @@ theorem zpow_bit0_pos (h : a ≠ 0) (n : ℤ) : 0 < a ^ bit0 n :=
 
 theorem zpow_two_pos_of_ne_zero (h : a ≠ 0) : 0 < a ^ (2 : ℤ) := by
   convert zpow_bit0_pos h 1
+  -- 🎉 no goals
 #align zpow_two_pos_of_ne_zero zpow_two_pos_of_ne_zero
 
 @[simp]
 theorem zpow_bit0_pos_iff (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
   ⟨by
     rintro h rfl
+    -- ⊢ False
     refine' (zero_zpow _ _).not_gt h
+    -- ⊢ bit0 n ≠ 0
     rwa [bit0_ne_zero],
+    -- 🎉 no goals
    fun h => zpow_bit0_pos h _⟩
 #align zpow_bit0_pos_iff zpow_bit0_pos_iff
 
@@ -156,6 +169,8 @@ theorem zpow_bit0_pos_iff (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
 theorem zpow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
   ⟨fun h => not_le.1 fun h' => not_le.2 h <| zpow_nonneg h' _, fun h => by
     rw [bit1, zpow_add_one₀ h.ne]; exact mul_neg_of_pos_of_neg (zpow_bit0_pos h.ne _) h⟩
+    -- ⊢ a ^ bit0 n * a < 0
+                                   -- 🎉 no goals
 #align zpow_bit1_neg_iff zpow_bit1_neg_iff
 
 @[simp]
@@ -166,6 +181,7 @@ theorem zpow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a :=
 @[simp]
 theorem zpow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, zpow_bit1_neg_iff, zpow_eq_zero_iff (Int.bit1_ne_zero n)]
+  -- 🎉 no goals
 #align zpow_bit1_nonpos_iff zpow_bit1_nonpos_iff
 
 @[simp]
@@ -177,26 +193,38 @@ end bits
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; exact zpow_bit0_nonneg _ _
+  -- ⊢ 0 ≤ a ^ (k + k)
+                         -- 🎉 no goals
 #align even.zpow_nonneg Even.zpow_nonneg
 
 theorem Even.zpow_pos_iff (hn : Even n) (h : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 := by
   obtain ⟨k, rfl⟩ := hn; exact zpow_bit0_pos_iff (by rintro rfl; simp at h)
+  -- ⊢ 0 < a ^ (k + k) ↔ a ≠ 0
+                         -- 🎉 no goals
 #align even.zpow_pos_iff Even.zpow_pos_iff
 
 theorem Odd.zpow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
   cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_neg_iff
+  -- ⊢ a ^ n < 0 ↔ a < 0
+                       -- 🎉 no goals
 #align odd.zpow_neg_iff Odd.zpow_neg_iff
 
 protected theorem Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a := by
   cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_nonneg_iff
+  -- ⊢ 0 ≤ a ^ n ↔ 0 ≤ a
+                       -- 🎉 no goals
 #align odd.zpow_nonneg_iff Odd.zpow_nonneg_iff
 
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_nonpos_iff
+  -- ⊢ a ^ n ≤ 0 ↔ a ≤ 0
+                       -- 🎉 no goals
 #align odd.zpow_nonpos_iff Odd.zpow_nonpos_iff
 
 theorem Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := by
   cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_pos_iff
+  -- ⊢ 0 < a ^ n ↔ 0 < a
+                       -- 🎉 no goals
 #align odd.zpow_pos_iff Odd.zpow_pos_iff
 
 alias ⟨_, Even.zpow_pos⟩ := Even.zpow_pos_iff
@@ -210,6 +238,9 @@ alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
+  -- ⊢ |a| ^ p = a ^ p
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align even.zpow_abs Even.zpow_abs
 
 set_option linter.deprecated false in

@@ -78,14 +78,18 @@ instance preservesMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesMonom
     [PreservesMonomorphisms G] : PreservesMonomorphisms (F ⋙ G) where
   preserves f h := by
     rw [comp_map]
+    -- ⊢ Mono (G.map (F.map f))
     exact inferInstance
+    -- 🎉 no goals
 #align category_theory.functor.preserves_monomorphisms_comp CategoryTheory.Functor.preservesMonomorphisms_comp
 
 instance preservesEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesEpimorphisms F]
     [PreservesEpimorphisms G] : PreservesEpimorphisms (F ⋙ G) where
   preserves f h := by
     rw [comp_map]
+    -- ⊢ Epi (G.map (F.map f))
     exact inferInstance
+    -- 🎉 no goals
 #align category_theory.functor.preserves_epimorphisms_comp CategoryTheory.Functor.preservesEpimorphisms_comp
 
 instance reflectsMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsMonomorphisms F]
@@ -122,8 +126,11 @@ theorem preservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F]
     PreservesMonomorphisms G :=
   { preserves := fun {X} {Y} f h => by
       haveI : Mono (F.map f ≫ (α.app Y).hom) := mono_comp _ _
+      -- ⊢ Mono (G.map f)
       convert (mono_comp _ _ : Mono ((α.app X).inv ≫ F.map f ≫ (α.app Y).hom))
+      -- ⊢ G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+      -- 🎉 no goals
 #align category_theory.functor.preserves_monomorphisms.of_iso CategoryTheory.Functor.preservesMonomorphisms.of_iso
 
 theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -135,8 +142,11 @@ theorem preservesEpimorphisms.of_iso {F G : C ⥤ D} [PreservesEpimorphisms F] (
     PreservesEpimorphisms G :=
   { preserves := fun {X} {Y} f h => by
       haveI : Epi (F.map f ≫ (α.app Y).hom) := epi_comp _ _
+      -- ⊢ Epi (G.map f)
       convert (epi_comp _ _ : Epi ((α.app X).inv ≫ F.map f ≫ (α.app Y).hom))
+      -- ⊢ G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+      -- 🎉 no goals
 #align category_theory.functor.preserves_epimorphisms.of_iso CategoryTheory.Functor.preservesEpimorphisms.of_iso
 
 theorem preservesEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -148,9 +158,13 @@ theorem reflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (
     ReflectsMonomorphisms G :=
   { reflects := fun {X} {Y} f h => by
       apply F.mono_of_mono_map
+      -- ⊢ Mono (F.map f)
       haveI : Mono (G.map f ≫ (α.app Y).inv) := mono_comp _ _
+      -- ⊢ Mono (F.map f)
       convert (mono_comp _ _ : Mono ((α.app X).hom ≫ G.map f ≫ (α.app Y).inv))
+      -- ⊢ F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv
       rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+      -- 🎉 no goals
 #align category_theory.functor.reflects_monomorphisms.of_iso CategoryTheory.Functor.reflectsMonomorphisms.of_iso
 
 theorem reflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -162,9 +176,13 @@ theorem reflectsEpimorphisms.of_iso {F G : C ⥤ D} [ReflectsEpimorphisms F] (α
     ReflectsEpimorphisms G :=
   { reflects := fun {X} {Y} f h => by
       apply F.epi_of_epi_map
+      -- ⊢ Epi (F.map f)
       haveI : Epi (G.map f ≫ (α.app Y).inv) := epi_comp _ _
+      -- ⊢ Epi (F.map f)
       convert (epi_comp _ _ : Epi ((α.app X).hom ≫ G.map f ≫ (α.app Y).inv))
+      -- ⊢ F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv
       rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+      -- 🎉 no goals
 #align category_theory.functor.reflects_epimorphisms.of_iso CategoryTheory.Functor.reflectsEpimorphisms.of_iso
 
 theorem reflectsEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -177,7 +195,9 @@ theorem preservesEpimorphsisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
   { preserves := fun {X} {Y} f hf =>
       ⟨by
         intro Z g h H
+        -- ⊢ g = h
         replace H := congr_arg (adj.homEquiv X Z) H
+        -- ⊢ g = h
         rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
           Equiv.apply_eq_iff_eq] at H⟩ }
 #align category_theory.functor.preserves_epimorphsisms_of_adjunction CategoryTheory.Functor.preservesEpimorphsisms_of_adjunction
@@ -192,7 +212,9 @@ theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
   { preserves := fun {X} {Y} f hf =>
       ⟨by
         intro Z g h H
+        -- ⊢ g = h
         replace H := congr_arg (adj.homEquiv Z Y).symm H
+        -- ⊢ g = h
         rwa [adj.homEquiv_naturality_right_symm, adj.homEquiv_naturality_right_symm, cancel_mono,
           Equiv.apply_eq_iff_eq] at H⟩ }
 #align category_theory.functor.preserves_monomorphisms_of_adjunction CategoryTheory.Functor.preservesMonomorphisms_of_adjunction
@@ -207,6 +229,7 @@ instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Fait
     where reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
+                                                     -- 🎉 no goals
 #align category_theory.functor.reflects_monomorphisms_of_faithful CategoryTheory.Functor.reflectsMonomorphisms_of_faithful
 
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
@@ -214,6 +237,7 @@ instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faith
     where reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
+                                                    -- 🎉 no goals
 #align category_theory.functor.reflects_epimorphisms_of_faithful CategoryTheory.Functor.reflectsEpimorphisms_of_faithful
 
 section
@@ -226,24 +250,38 @@ def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
   toFun f := f.map F
   invFun s := by
     refine' ⟨F.preimage s.section_, _⟩
+    -- ⊢ F.preimage s.section_ ≫ f = 𝟙 Y
     apply F.map_injective
+    -- ⊢ F.map (F.preimage s.section_ ≫ f) = F.map (𝟙 Y)
     simp only [map_comp, image_preimage, map_id]
+    -- ⊢ s.section_ ≫ F.map f = 𝟙 (F.obj Y)
     apply SplitEpi.id
+    -- 🎉 no goals
   left_inv := by aesop_cat
+                 -- 🎉 no goals
   right_inv := by
       simp only [Function.RightInverse,Function.LeftInverse]
+      -- ⊢ ∀ (x : SplitEpi (F.map f)), SplitEpi.map (SplitEpi.mk (F.preimage x.section_ …
       intro x
+      -- ⊢ SplitEpi.map (SplitEpi.mk (F.preimage x.section_)) F = x
       simp only [SplitEpi.map, preimage]
+      -- ⊢ SplitEpi.mk (F.map (Full.preimage x.section_)) = x
       aesop_cat
+      -- 🎉 no goals
 #align category_theory.functor.split_epi_equiv CategoryTheory.Functor.splitEpiEquiv
 
 @[simp]
 theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitEpi f := by
   constructor
+  -- ⊢ IsSplitEpi (F.map f) → IsSplitEpi f
   · intro h
+    -- ⊢ IsSplitEpi f
     exact IsSplitEpi.mk' ((splitEpiEquiv F f).invFun h.exists_splitEpi.some)
+    -- 🎉 no goals
   · intro h
+    -- ⊢ IsSplitEpi (F.map f)
     exact IsSplitEpi.mk' ((splitEpiEquiv F f).toFun h.exists_splitEpi.some)
+    -- 🎉 no goals
 #align category_theory.functor.is_split_epi_iff CategoryTheory.Functor.isSplitEpi_iff
 
 /-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/
@@ -252,42 +290,64 @@ def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
   toFun f := f.map F
   invFun s := by
     refine' ⟨F.preimage s.retraction, _⟩
+    -- ⊢ f ≫ F.preimage s.retraction = 𝟙 X
     apply F.map_injective
+    -- ⊢ F.map (f ≫ F.preimage s.retraction) = F.map (𝟙 X)
     simp only [map_comp, image_preimage, map_id]
+    -- ⊢ F.map f ≫ s.retraction = 𝟙 (F.obj X)
     apply SplitMono.id
+    -- 🎉 no goals
   left_inv := by aesop_cat
+                 -- 🎉 no goals
   right_inv := by
     simp only [Function.RightInverse, Function.LeftInverse]
+    -- ⊢ ∀ (x : SplitMono (F.map f)), SplitMono.map (SplitMono.mk (F.preimage x.retra …
     intro x
+    -- ⊢ SplitMono.map (SplitMono.mk (F.preimage x.retraction)) F = x
     simp only [SplitMono.map,preimage]
+    -- ⊢ SplitMono.mk (F.map (Full.preimage x.retraction)) = x
     aesop_cat
+    -- 🎉 no goals
 #align category_theory.functor.split_mono_equiv CategoryTheory.Functor.splitMonoEquiv
 
 @[simp]
 theorem isSplitMono_iff [Full F] [Faithful F] : IsSplitMono (F.map f) ↔ IsSplitMono f := by
   constructor
+  -- ⊢ IsSplitMono (F.map f) → IsSplitMono f
   · intro h
+    -- ⊢ IsSplitMono f
     exact IsSplitMono.mk' ((splitMonoEquiv F f).invFun h.exists_splitMono.some)
+    -- 🎉 no goals
   · intro h
+    -- ⊢ IsSplitMono (F.map f)
     exact IsSplitMono.mk' ((splitMonoEquiv F f).toFun h.exists_splitMono.some)
+    -- 🎉 no goals
 #align category_theory.functor.is_split_mono_iff CategoryTheory.Functor.isSplitMono_iff
 
 @[simp]
 theorem epi_map_iff_epi [hF₁ : PreservesEpimorphisms F] [hF₂ : ReflectsEpimorphisms F] :
     Epi (F.map f) ↔ Epi f := by
   constructor
+  -- ⊢ Epi (F.map f) → Epi f
   · exact F.epi_of_epi_map
+    -- 🎉 no goals
   · intro h
+    -- ⊢ Epi (F.map f)
     exact F.map_epi f
+    -- 🎉 no goals
 #align category_theory.functor.epi_map_iff_epi CategoryTheory.Functor.epi_map_iff_epi
 
 @[simp]
 theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMonomorphisms F] :
     Mono (F.map f) ↔ Mono f := by
   constructor
+  -- ⊢ Mono (F.map f) → Mono f
   · exact F.mono_of_mono_map
+    -- 🎉 no goals
   · intro h
+    -- ⊢ Mono (F.map f)
     exact F.map_mono f
+    -- 🎉 no goals
 #align category_theory.functor.mono_map_iff_mono CategoryTheory.Functor.mono_map_iff_mono
 
 /-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `split_epi_category`,
@@ -296,8 +356,11 @@ theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C
     SplitEpiCategory D :=
   ⟨fun {X} {Y} f => by
     intro
+    -- ⊢ IsSplitEpi f
     rw [← F.inv.isSplitEpi_iff f]
+    -- ⊢ IsSplitEpi ((inv F).map f)
     apply isSplitEpi_of_epi⟩
+    -- 🎉 no goals
 #align category_theory.functor.split_epi_category_imp_of_is_equivalence CategoryTheory.Functor.splitEpiCategoryImpOfIsEquivalence
 
 end
@@ -312,8 +375,11 @@ theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.Pre
     [h₂ : F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
   ⟨inferInstance, fun X Y Z => by
     intro
+    -- ⊢ HasLiftingProperty (F.map f) Z
     rw [adj.hasLiftingProperty_iff]
+    -- ⊢ HasLiftingProperty f (F'.map Z)
     infer_instance⟩
+    -- 🎉 no goals
 #align category_theory.adjunction.strong_epi_map_of_strong_epi CategoryTheory.Adjunction.strongEpi_map_of_strongEpi
 
 instance strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : StrongEpi f] :
@@ -331,13 +397,19 @@ variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A 
 theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :
     StrongEpi (F.map f) ↔ StrongEpi f := by
   constructor
+  -- ⊢ StrongEpi (F.map f) → StrongEpi f
   · intro
+    -- ⊢ StrongEpi f
     have e : Arrow.mk f ≅ Arrow.mk (F.inv.map (F.map f)) :=
       Arrow.isoOfNatIso F.asEquivalence.unitIso (Arrow.mk f)
     rw [StrongEpi.iff_of_arrow_iso e]
+    -- ⊢ StrongEpi ((inv F).map (F.map f))
     infer_instance
+    -- 🎉 no goals
   · intro
+    -- ⊢ StrongEpi (F.map f)
     infer_instance
+    -- 🎉 no goals
 #align category_theory.functor.strong_epi_map_iff_strong_epi_of_is_equivalence CategoryTheory.Functor.strongEpi_map_iff_strongEpi_of_isEquivalence
 
 end CategoryTheory.Functor

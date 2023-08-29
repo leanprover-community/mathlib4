@@ -60,10 +60,12 @@ theorem abs_coe_circle (z : circle) : abs z = 1 :=
 #align abs_coe_circle abs_coe_circle
 
 theorem mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by simp [Complex.abs]
+                                                                        -- 🎉 no goals
 #align mem_circle_iff_norm_sq mem_circle_iff_normSq
 
 @[simp]
 theorem normSq_eq_of_mem_circle (z : circle) : normSq z = 1 := by simp [normSq_eq_abs]
+                                                                  -- 🎉 no goals
 #align norm_sq_eq_of_mem_circle normSq_eq_of_mem_circle
 
 theorem ne_zero_of_mem_circle (z : circle) : (z : ℂ) ≠ 0 :=
@@ -80,6 +82,7 @@ theorem coe_inv_circle (z : circle) : ↑z⁻¹ = (z : ℂ)⁻¹ :=
 
 theorem coe_inv_circle_eq_conj (z : circle) : ↑z⁻¹ = conj (z : ℂ) := by
   rw [coe_inv_circle, inv_def, normSq_eq_of_mem_circle, inv_one, ofReal_one, mul_one]
+  -- 🎉 no goals
 #align coe_inv_circle_eq_conj coe_inv_circle_eq_conj
 
 @[simp]
@@ -110,11 +113,14 @@ instance : TopologicalGroup circle :=
 def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
   ⟨conj z / z,
     mem_circle_iff_abs.2 <| by rw [map_div₀, abs_conj, div_self]; exact Complex.abs.ne_zero hz⟩
+                               -- ⊢ ↑Complex.abs z ≠ 0
+                                                                  -- 🎉 no goals
 #align circle.of_conj_div_self circle.ofConjDivSelf
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
 def expMapCircle : C(ℝ, circle)
     where toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
+                                      -- 🎉 no goals
 #align exp_map_circle expMapCircle
 
 @[simp]
@@ -126,12 +132,14 @@ theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Co
 theorem expMapCircle_zero : expMapCircle 0 = 1 :=
   Subtype.ext <| by
     rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
+    -- 🎉 no goals
 #align exp_map_circle_zero expMapCircle_zero
 
 @[simp]
 theorem expMapCircle_add (x y : ℝ) : expMapCircle (x + y) = expMapCircle x * expMapCircle y :=
   Subtype.ext <| by
     simp only [expMapCircle_apply, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add]
+    -- 🎉 no goals
 #align exp_map_circle_add expMapCircle_add
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,

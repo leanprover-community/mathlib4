@@ -56,7 +56,9 @@ variable [Countable ι]
 
 theorem measurableSet_coe : MeasurableSet (I : Set (ι → ℝ)) := by
   rw [coe_eq_pi]
+  -- ⊢ MeasurableSet (pi univ fun i => Ioc (lower I i) (upper I i))
   exact MeasurableSet.univ_pi fun i => measurableSet_Ioc
+  -- 🎉 no goals
 #align box_integral.box.measurable_set_coe BoxIntegral.Box.measurableSet_coe
 
 theorem measurableSet_Icc : MeasurableSet (Box.Icc I) :=
@@ -73,7 +75,9 @@ variable [Fintype ι]
 
 theorem coe_ae_eq_Icc : (I : Set (ι → ℝ)) =ᵐ[volume] Box.Icc I := by
   rw [coe_eq_pi]
+  -- ⊢ (pi univ fun i => Ioc (lower I i) (upper I i)) =ᵐ[volume] ↑Box.Icc I
   exact Measure.univ_pi_Ioc_ae_eq_Icc
+  -- 🎉 no goals
 #align box_integral.box.coe_ae_eq_Icc BoxIntegral.Box.coe_ae_eq_Icc
 
 theorem Ioo_ae_eq_Icc : Box.Ioo I =ᵐ[volume] Box.Icc I :=
@@ -86,7 +90,9 @@ theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepar
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
     (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
+  -- ⊢ ∀ (b : Box ι), b ∈ π.boxes → MeasurableSet ↑b
   exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
+  -- 🎉 no goals
 #align box_integral.prepartition.measure_Union_to_real BoxIntegral.Prepartition.measure_iUnion_toReal
 
 end BoxIntegral
@@ -105,6 +111,7 @@ function. -/
 def toBoxAdditive (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
   toFun J := (μ J).toReal
   sum_partition_boxes' J _ π hπ := by rw [← π.measure_iUnion_toReal, hπ.iUnion_eq]
+                                      -- 🎉 no goals
 #align measure_theory.measure.to_box_additive MeasureTheory.Measure.toBoxAdditive
 
 end Measure
@@ -121,17 +128,20 @@ namespace Box
 theorem volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
   rw [Measure.toBoxAdditive_apply, coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
+  -- 🎉 no goals
 #align box_integral.box.volume_apply BoxIntegral.Box.volume_apply
 
 @[simp]
 theorem volume_apply' (I : Box ι) :
     ((volume : Measure (ι → ℝ)) I).toReal = ∏ i, (I.upper i - I.lower i) := by
   rw [coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
+  -- 🎉 no goals
 
 theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
     (∏ j, ((I.face i).upper j - (I.face i).lower j)) * (I.upper i - I.lower i) =
       ∏ j, (I.upper j - I.lower j) := by
   simp only [face_lower, face_upper, (· ∘ ·), Fin.prod_univ_succAbove _ i, mul_comm]
+  -- 🎉 no goals
 #align box_integral.box.volume_face_mul BoxIntegral.Box.volume_face_mul
 
 end Box
@@ -147,7 +157,9 @@ protected def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι
 theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
     BoxAdditiveMap.volume I x = (∏ j, (I.upper j - I.lower j)) • x := by
   rw [BoxAdditiveMap.volume, toSMul_apply]
+  -- ⊢ ↑(Measure.toBoxAdditive volume) I • x = (∏ j : ι, (upper I j - lower I j)) • x
   exact congr_arg₂ (· • ·) I.volume_apply rfl
+  -- 🎉 no goals
 #align box_integral.box_additive_map.volume_apply BoxIntegral.BoxAdditiveMap.volume_apply
 
 end BoxAdditiveMap

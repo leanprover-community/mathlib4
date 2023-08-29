@@ -43,6 +43,8 @@ theorem continuous_projIcc : Continuous (projIcc a b h) :=
 theorem quotientMap_projIcc : QuotientMap (projIcc a b h) :=
   quotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
+                                                                    -- ⊢ x✝ ∈ Subtype.val ⁻¹' (projIcc a b h ⁻¹' s) ↔ x✝ ∈ s
+                                                                         -- 🎉 no goals
 #align quotient_map_proj_Icc quotientMap_projIcc
 
 @[simp]

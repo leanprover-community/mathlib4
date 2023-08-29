@@ -82,16 +82,21 @@ def FactorsThru {X : C} (S T : Presieve X) : Prop :=
 lemma factorsThruAlong_id {X : C} (S T : Presieve X) :
     S.FactorsThruAlong T (𝟙 X) ↔ S.FactorsThru T := by
   simp [FactorsThruAlong, FactorsThru]
+  -- 🎉 no goals
 
 lemma factorsThru_of_le {X : C} (S T : Presieve X) (h : S ≤ T) :
     S.FactorsThru T :=
   fun Y g hg => ⟨Y, 𝟙 _, g, h _ hg, by simp⟩
+                                       -- 🎉 no goals
 
 lemma le_of_factorsThru_sieve {X : C} (S : Presieve X) (T : Sieve X) (h : S.FactorsThru T) :
     S ≤ T := by
   rintro Y f hf
+  -- ⊢ f ∈ T.arrows
   obtain ⟨W, i, e, h1, rfl⟩ := h hf
+  -- ⊢ i ≫ e ∈ T.arrows
   exact T.downward_closed h1 _
+  -- 🎉 no goals
 
 lemma factorsThru_top {X : C} (S : Presieve X) : S.FactorsThru ⊤ :=
   factorsThru_of_le _ _ le_top
@@ -104,12 +109,19 @@ lemma isSheafFor_of_factorsThru
       R.IsSeparatedFor P ∧ R.FactorsThruAlong S f):
     T.IsSheafFor P := by
   simp only [←Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
+  -- ⊢ IsSeparatedFor P T ∧ ∀ (x : FamilyOfElements P T), FamilyOfElements.Compatib …
   choose W i e h1 h2 using H
+  -- ⊢ IsSeparatedFor P T ∧ ∀ (x : FamilyOfElements P T), FamilyOfElements.Compatib …
   refine ⟨?_, fun x hx => ?_⟩
+  -- ⊢ IsSeparatedFor P T
   · intro x y₁ y₂ h₁ h₂
+    -- ⊢ y₁ = y₂
     refine hS.1.ext (fun Y g hg => ?_)
+    -- ⊢ P.map g.op y₁ = P.map g.op y₂
     simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1 _)]
+    -- 🎉 no goals
   let y : S.FamilyOfElements P := fun Y g hg => P.map (i _).op (x (e hg) (h1 _))
+  -- ⊢ ∃ t, FamilyOfElements.IsAmalgamation x t
   have hy : y.Compatible := by
     intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
     rw [← types_comp_apply (P.map (i h₁).op) (P.map g₁.op),
@@ -118,16 +130,24 @@ lemma isSheafFor_of_factorsThru
     apply hx
     simp only [h2, h, Category.assoc]
   let ⟨_, h2'⟩ := hS
+  -- ⊢ ∃ t, FamilyOfElements.IsAmalgamation x t
   obtain ⟨z, hz⟩ := h2' y hy
+  -- ⊢ ∃ t, FamilyOfElements.IsAmalgamation x t
   refine ⟨z, fun Y g hg => ?_⟩
+  -- ⊢ P.map g.op z = x g hg
   obtain ⟨R, hR1, hR2⟩ := h hg
+  -- ⊢ P.map g.op z = x g hg
   choose WW ii ee hh1 hh2 using hR2
+  -- ⊢ P.map g.op z = x g hg
   refine hR1.ext (fun Q t ht => ?_)
+  -- ⊢ P.map t.op (P.map g.op z) = P.map t.op (x g hg)
   rw [← types_comp_apply (P.map g.op) (P.map t.op), ← P.map_comp, ← op_comp, ← hh2 ht,
     op_comp, P.map_comp, types_comp_apply, hz _ (hh1 _),
     ← types_comp_apply _ (P.map (ii ht).op), ← P.map_comp, ← op_comp]
   apply hx
+  -- ⊢ (ii ht ≫ i (_ : S (ee ht))) ≫ e (_ : S (ee ht)) = t ≫ g
   simp only [Category.assoc, h2, hh2]
+  -- 🎉 no goals
 
 
 end Presieve
@@ -166,10 +186,15 @@ def ofGrothendieck (J : GrothendieckTopology C) : Coverage C where
   covering X := { S | Sieve.generate S ∈ J X }
   pullback := by
     intro X Y f S (hS : Sieve.generate S ∈ J X)
+    -- ⊢ ∃ T, T ∈ (fun X => {S | Sieve.generate S ∈ GrothendieckTopology.sieves J X}) …
     refine ⟨(Sieve.generate S).pullback f, ?_, fun Z g h => h⟩
+    -- ⊢ (Sieve.pullback f (Sieve.generate S)).arrows ∈ (fun X => {S | Sieve.generate …
     dsimp
+    -- ⊢ Sieve.generate (Sieve.pullback f (Sieve.generate S)).arrows ∈ GrothendieckTo …
     rw [Sieve.generate_sieve]
+    -- ⊢ Sieve.pullback f (Sieve.generate S) ∈ GrothendieckTopology.sieves J Y
     exact J.pullback_stable _ hS
+    -- 🎉 no goals
 
 lemma ofGrothendieck_iff {X : C} {S : Presieve X} (J : GrothendieckTopology C) :
     S ∈ ofGrothendieck _ J X ↔ Sieve.generate S ∈ J X := Iff.rfl
@@ -189,18 +214,28 @@ inductive saturate (K : Coverage C) : (X : C) → Sieve X → Prop where
 lemma eq_top_pullback {X Y : C} {S T : Sieve X} (h : S ≤ T) (f : Y ⟶ X) (hf : S f) :
     T.pullback f = ⊤ := by
   ext Z g
+  -- ⊢ (Sieve.pullback f T).arrows g ↔ ⊤.arrows g
   simp only [Sieve.pullback_apply, Sieve.top_apply, iff_true]
+  -- ⊢ T.arrows (g ≫ f)
   apply h
+  -- ⊢ S.arrows (g ≫ f)
   apply S.downward_closed
+  -- ⊢ S.arrows f
   exact hf
+  -- 🎉 no goals
 
 lemma saturate_of_superset (K : Coverage C) {X : C} {S T : Sieve X} (h : S ≤ T)
     (hS : saturate K X S) : saturate K X T := by
   apply saturate.transitive _ _ _ hS
+  -- ⊢ ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S.arrows f → saturate K Y (Sieve.pullback f T)
   intro Y g hg
+  -- ⊢ saturate K Y (Sieve.pullback g T)
   rw [eq_top_pullback (h := h)]
+  -- ⊢ saturate K Y ⊤
   · apply saturate.top
+    -- 🎉 no goals
   · assumption
+    -- 🎉 no goals
 
 variable (C) in
 /--
@@ -220,6 +255,7 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
   top_mem' := .top
   pullback_stable' := by
     intro X Y S f hS
+    -- ⊢ Sieve.pullback f S ∈ saturate K Y
     induction hS generalizing Y with
     | of X S hS =>
       obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
@@ -255,10 +291,18 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
   choice_eq := fun _ _ => rfl
   le_l_u J X S hS := by
     rw [← Sieve.generate_sieve S]
+    -- ⊢ Sieve.generate S.arrows ∈ GrothendieckTopology.sieves (toGrothendieck C (ofG …
     apply saturate.of
+    -- ⊢ S.arrows ∈ covering (ofGrothendieck C J) X
     dsimp [ofGrothendieck]
+    -- ⊢ Sieve.generate S.arrows ∈ GrothendieckTopology.sieves J X
+    -- ⊢ toGrothendieck C K ≤ J → K ≤ ofGrothendieck C J
     rwa [Sieve.generate_sieve S]
+      -- ⊢ S ∈ covering (ofGrothendieck C J) X
+    -- 🎉 no goals
+      -- 🎉 no goals
   gc K J := by
+      -- ⊢ S ∈ GrothendieckTopology.sieves J X
     constructor
     · intro H X S hS
       exact H _ <| saturate.of _ _ hS
@@ -275,15 +319,22 @@ it is the infimum of all Grothendieck topologies whose associated coverage conta
 theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     sInf {J | K ≤ ofGrothendieck _ J } := by
   apply le_antisymm
+  -- ⊢ toGrothendieck C K ≤ sInf {J | K ≤ ofGrothendieck C J}
   · apply le_sInf; intro J hJ
+    -- ⊢ ∀ (b : GrothendieckTopology C), b ∈ {J | K ≤ ofGrothendieck C J} → toGrothen …
+                   -- ⊢ toGrothendieck C K ≤ J
     intro X S hS
+    -- ⊢ S ∈ GrothendieckTopology.sieves J X
     induction hS with
     | of X S hS => apply hJ; assumption
     | top => apply J.top_mem
     | transitive X R S _ _ H1 H2 => exact J.transitive H1 _ H2
   · apply sInf_le
+    -- ⊢ toGrothendieck C K ∈ {J | K ≤ ofGrothendieck C J}
     intro X S hS
+    -- ⊢ S ∈ covering (ofGrothendieck C (toGrothendieck C K)) X
     apply saturate.of _ _ hS
+    -- 🎉 no goals
 
 end Coverage
 
@@ -300,10 +351,15 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (toGrothendieck _ K) P ↔
     (∀ {X : C} (R : Presieve X), R ∈ K X → Presieve.IsSheafFor P R) := by
   constructor
+  -- ⊢ IsSheaf (toGrothendieck C K) P → ∀ {X : C} (R : Presieve X), R ∈ covering K  …
   · intro H X R hR
+    -- ⊢ IsSheafFor P R
     rw [Presieve.isSheafFor_iff_generate]
+    -- ⊢ IsSheafFor P (Sieve.generate R).arrows
     apply H _ <| saturate.of _ _ hR
+    -- 🎉 no goals
   · intro H X S hS
+    -- ⊢ IsSheafFor P S.arrows
     -- This is the key point of the proof:
     -- We must generalize the induction in the correct way.
     suffices ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f).arrows by

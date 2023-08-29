@@ -38,24 +38,42 @@ def isLimitOfIsLimitπ (c : Cone F)
       τ₃ := h₃.lift (π₃.mapCone s)
       comm₁₂ := h₂.hom_ext (fun j => by
         have eq₁ := h₁.fac (π₁.mapCone s)
+        -- ⊢ (IsLimit.lift h₁ (π₁.mapCone s) ≫ c.pt.f) ≫ NatTrans.app (π₂.mapCone c).π j  …
         have eq₂ := h₂.fac (π₂.mapCone s)
+        -- ⊢ (IsLimit.lift h₁ (π₁.mapCone s) ≫ c.pt.f) ≫ NatTrans.app (π₂.mapCone c).π j  …
         have eq₁₂ := fun j => (c.π.app j).comm₁₂
+        -- ⊢ (IsLimit.lift h₁ (π₁.mapCone s) ≫ c.pt.f) ≫ NatTrans.app (π₂.mapCone c).π j  …
         have eq₁₂' := fun j => (s.π.app j).comm₁₂
+        -- ⊢ (IsLimit.lift h₁ (π₁.mapCone s) ≫ c.pt.f) ≫ NatTrans.app (π₂.mapCone c).π j  …
         dsimp at eq₁ eq₂ eq₁₂ eq₁₂' ⊢
+        -- ⊢ (IsLimit.lift h₁ (π₁.mapCone s) ≫ c.pt.f) ≫ (NatTrans.app c.π j).τ₂ = (s.pt. …
         rw [assoc, assoc, ← eq₁₂, reassoc_of% eq₁, eq₂, eq₁₂'])
+        -- 🎉 no goals
       comm₂₃ := h₃.hom_ext (fun j => by
         have eq₂ := h₂.fac (π₂.mapCone s)
+        -- ⊢ (IsLimit.lift h₂ (π₂.mapCone s) ≫ c.pt.g) ≫ NatTrans.app (π₃.mapCone c).π j  …
         have eq₃ := h₃.fac (π₃.mapCone s)
+        -- ⊢ (IsLimit.lift h₂ (π₂.mapCone s) ≫ c.pt.g) ≫ NatTrans.app (π₃.mapCone c).π j  …
         have eq₂₃ := fun j => (c.π.app j).comm₂₃
+        -- ⊢ (IsLimit.lift h₂ (π₂.mapCone s) ≫ c.pt.g) ≫ NatTrans.app (π₃.mapCone c).π j  …
         have eq₂₃' := fun j => (s.π.app j).comm₂₃
+        -- ⊢ (IsLimit.lift h₂ (π₂.mapCone s) ≫ c.pt.g) ≫ NatTrans.app (π₃.mapCone c).π j  …
         dsimp at eq₂ eq₃ eq₂₃ eq₂₃' ⊢
+        -- ⊢ (IsLimit.lift h₂ (π₂.mapCone s) ≫ c.pt.g) ≫ (NatTrans.app c.π j).τ₃ = (s.pt. …
         rw [assoc, assoc, ← eq₂₃, reassoc_of% eq₂, eq₃, eq₂₃']) }
+        -- 🎉 no goals
   fac s j := by ext <;> apply IsLimit.fac
+                        -- 🎉 no goals
+                        -- 🎉 no goals
+                        -- 🎉 no goals
   uniq s m hm := by
     ext
     · exact h₁.uniq (π₁.mapCone s) _ (fun j => π₁.congr_map (hm j))
+      -- 🎉 no goals
     · exact h₂.uniq (π₂.mapCone s) _ (fun j => π₂.congr_map (hm j))
+      -- 🎉 no goals
     · exact h₃.uniq (π₃.mapCone s) _ (fun j => π₃.congr_map (hm j))
+      -- 🎉 no goals
 
 section
 
@@ -66,8 +84,11 @@ of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
   Cone.mk (ShortComplex.mk (limMap (whiskerLeft F π₁Toπ₂)) (limMap (whiskerLeft F π₂Toπ₃))
       (by aesop_cat))
+          -- 🎉 no goals
     { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
         (by aesop_cat) (by aesop_cat)
+            -- 🎉 no goals
+                           -- 🎉 no goals
       naturality := fun _ _ f => by
         ext
         all_goals
@@ -77,14 +98,17 @@ noncomputable def limitCone : Cone F :=
 /-- `limitCone F` becomes limit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₁MapConeLimitCone : IsLimit (π₁.mapCone (limitCone F)) :=
   (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+                                                                    -- 🎉 no goals
 
 /-- `limitCone F` becomes limit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₂MapConeLimitCone : IsLimit (π₂.mapCone (limitCone F)) :=
   (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+                                                                    -- 🎉 no goals
 
 /-- `limitCone F` becomes limit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₃MapConeLimitCone : IsLimit (π₃.mapCone (limitCone F)) :=
   (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+                                                                    -- 🎉 no goals
 
 /-- `limitCone F` is limit. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
@@ -166,28 +190,46 @@ def isColimitOfIsColimitπ (c : Cocone F)
       τ₃ := h₃.desc (π₃.mapCocone s)
       comm₁₂ := h₁.hom_ext (fun j => by
         have eq₁ := h₁.fac (π₁.mapCocone s)
+        -- ⊢ NatTrans.app (π₁.mapCocone c).ι j ≫ IsColimit.desc h₁ (π₁.mapCocone s) ≫ s.p …
         have eq₂ := h₂.fac (π₂.mapCocone s)
+        -- ⊢ NatTrans.app (π₁.mapCocone c).ι j ≫ IsColimit.desc h₁ (π₁.mapCocone s) ≫ s.p …
         have eq₁₂ := fun j => (c.ι.app j).comm₁₂
+        -- ⊢ NatTrans.app (π₁.mapCocone c).ι j ≫ IsColimit.desc h₁ (π₁.mapCocone s) ≫ s.p …
         have eq₁₂' := fun j => (s.ι.app j).comm₁₂
+        -- ⊢ NatTrans.app (π₁.mapCocone c).ι j ≫ IsColimit.desc h₁ (π₁.mapCocone s) ≫ s.p …
         dsimp at eq₁ eq₂ eq₁₂ eq₁₂' ⊢
+        -- ⊢ (NatTrans.app c.ι j).τ₁ ≫ IsColimit.desc h₁ (π₁.mapCocone s) ≫ s.pt.f = (Nat …
         rw [reassoc_of% (eq₁ j), eq₁₂', reassoc_of% eq₁₂, eq₂])
+        -- 🎉 no goals
       comm₂₃ := h₂.hom_ext (fun j => by
         have eq₂ := h₂.fac (π₂.mapCocone s)
+        -- ⊢ NatTrans.app (π₂.mapCocone c).ι j ≫ IsColimit.desc h₂ (π₂.mapCocone s) ≫ s.p …
         have eq₃ := h₃.fac (π₃.mapCocone s)
+        -- ⊢ NatTrans.app (π₂.mapCocone c).ι j ≫ IsColimit.desc h₂ (π₂.mapCocone s) ≫ s.p …
         have eq₂₃ := fun j => (c.ι.app j).comm₂₃
+        -- ⊢ NatTrans.app (π₂.mapCocone c).ι j ≫ IsColimit.desc h₂ (π₂.mapCocone s) ≫ s.p …
         have eq₂₃' := fun j => (s.ι.app j).comm₂₃
+        -- ⊢ NatTrans.app (π₂.mapCocone c).ι j ≫ IsColimit.desc h₂ (π₂.mapCocone s) ≫ s.p …
         dsimp at eq₂ eq₃ eq₂₃ eq₂₃' ⊢
+        -- ⊢ (NatTrans.app c.ι j).τ₂ ≫ IsColimit.desc h₂ (π₂.mapCocone s) ≫ s.pt.g = (Nat …
         rw [reassoc_of% (eq₂ j), eq₂₃', reassoc_of% eq₂₃, eq₃]) }
+        -- 🎉 no goals
   fac s j := by
     ext
     · apply IsColimit.fac h₁
+      -- 🎉 no goals
     · apply IsColimit.fac h₂
+      -- 🎉 no goals
     · apply IsColimit.fac h₃
+      -- 🎉 no goals
   uniq s m hm := by
     ext
     · exact h₁.uniq (π₁.mapCocone s) _ (fun j => π₁.congr_map (hm j))
+      -- 🎉 no goals
     · exact h₂.uniq (π₂.mapCocone s) _ (fun j => π₂.congr_map (hm j))
+      -- 🎉 no goals
     · exact h₃.uniq (π₃.mapCocone s) _ (fun j => π₃.congr_map (hm j))
+      -- 🎉 no goals
 
 section
 
@@ -198,28 +240,40 @@ of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
   Cocone.mk (ShortComplex.mk (colimMap (whiskerLeft F π₁Toπ₂)) (colimMap (whiskerLeft F π₂Toπ₃))
       (by aesop_cat))
+          -- 🎉 no goals
     { app := fun j => Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
         (colimit.ι (F ⋙ π₃) _) (by aesop_cat) (by aesop_cat)
+                                   -- 🎉 no goals
+                                                  -- 🎉 no goals
       naturality := fun _ _ f => by
         ext
         · dsimp; erw [comp_id, colimit.w (F ⋙ π₁)]
+          -- ⊢ (F.map f).τ₁ ≫ colimit.ι (F ⋙ π₁) x✝ = colimit.ι (F ⋙ π₁) x✝¹ ≫ 𝟙 (colimit ( …
+                 -- 🎉 no goals
         · dsimp; erw [comp_id, colimit.w (F ⋙ π₂)]
+          -- ⊢ (F.map f).τ₂ ≫ colimit.ι (F ⋙ π₂) x✝ = colimit.ι (F ⋙ π₂) x✝¹ ≫ 𝟙 (colimit ( …
+                 -- 🎉 no goals
         · dsimp; erw [comp_id, colimit.w (F ⋙ π₃)] }
+          -- ⊢ (F.map f).τ₃ ≫ colimit.ι (F ⋙ π₃) x✝ = colimit.ι (F ⋙ π₃) x✝¹ ≫ 𝟙 (colimit ( …
+                 -- 🎉 no goals
 
 /-- `colimitCocone F` becomes colimit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₁MapCoconeColimitCocone :
     IsColimit (π₁.mapCocone (colimitCocone F)) :=
   (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+                                                                              -- 🎉 no goals
 
 /-- `colimitCocone F` becomes colimit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₂MapCoconeColimitCocone :
     IsColimit (π₂.mapCocone (colimitCocone F)) :=
   (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+                                                                              -- 🎉 no goals
 
 /-- `colimitCocone F` becomes colimit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₃MapCoconeColimitCocone :
     IsColimit (π₃.mapCocone (colimitCocone F)) :=
   (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+                                                                              -- 🎉 no goals
 
 /-- `colimitCocone F` is colimit. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=

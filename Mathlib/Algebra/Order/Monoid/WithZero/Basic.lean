@@ -28,13 +28,23 @@ instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
     [ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
   refine ⟨fun a b c h => ?_⟩
+  -- ⊢ b < c
   have := ((zero_le _).trans_lt h).ne'
+  -- ⊢ b < c
   induction a using WithZero.recZeroCoe
+  -- ⊢ b < c
   · exfalso; exact left_ne_zero_of_mul this rfl
+    -- ⊢ False
+             -- 🎉 no goals
   induction c using WithZero.recZeroCoe
+  -- ⊢ b < 0
   · exfalso; exact right_ne_zero_of_mul this rfl
+    -- ⊢ False
+             -- 🎉 no goals
   induction b using WithZero.recZeroCoe
+  -- ⊢ 0 < ↑a✝
   exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
+  -- 🎉 no goals
 #align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
 
 end WithZero

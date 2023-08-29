@@ -25,6 +25,9 @@ open Finset
 instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β) where
   elems := univ.disjSum univ
   complete := by rintro (_ | _) <;> simp
+                 -- ⊢ Sum.inl val✝ ∈ disjSum univ univ
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 
 @[simp]
 theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
@@ -42,36 +45,58 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
 def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
+    -- 🎉 no goals
 #align fintype_of_fintype_ne fintypeOfFintypeNe
 
 theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : β) (b : α → β) :
     image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
   apply subset_antisymm
+  -- ⊢ image (fun i => b ↑i) univ ⊆ erase (image b univ) k
   · rw [image_subset_iff]
+    -- ⊢ ∀ (x : { a // b a ≠ k }), x ∈ univ → b ↑x ∈ erase (image b univ) k
     intro i _
+    -- ⊢ b ↑i ∈ erase (image b univ) k
     apply mem_erase_of_ne_of_mem i.2 (mem_image_of_mem _ (mem_univ _))
+    -- 🎉 no goals
   · intro i hi
+    -- ⊢ i ∈ image (fun i => b ↑i) univ
     rw [mem_image]
+    -- ⊢ ∃ a, a ∈ univ ∧ b ↑a = i
     rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, _, ha⟩
+    -- ⊢ ∃ a, a ∈ univ ∧ b ↑a = i
     subst ha
+    -- ⊢ ∃ a_1, a_1 ∈ univ ∧ b ↑a_1 = b a
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
+    -- 🎉 no goals
 #align image_subtype_ne_univ_eq_image_erase image_subtype_ne_univ_eq_image_erase
 
 theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
     (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
     image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
   constructor
+  -- ⊢ image (fun i => b ↑i) univ ⊆ image b univ
   · intro x hx
+    -- ⊢ x ∈ image b univ
     rcases mem_image.1 hx with ⟨y, _, hy⟩
+    -- ⊢ x ∈ image b univ
     exact hy ▸ mem_image_of_mem b (mem_univ (y : α))
+    -- 🎉 no goals
   · intro h
+    -- ⊢ False
     rw [mem_image] at hk
+    -- ⊢ False
     rcases hk with ⟨k', _, hk'⟩
+    -- ⊢ False
     subst hk'
+    -- ⊢ False
     have := h (mem_image_of_mem b (mem_univ k'))
+    -- ⊢ False
     rw [mem_image] at this
+    -- ⊢ False
     rcases this with ⟨j, _, hj'⟩
+    -- ⊢ False
     exact hp (hj' ▸ j.2)
+    -- 🎉 no goals
 #align image_subtype_univ_ssubset_image_univ image_subtype_univ_ssubset_image_univ
 
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
@@ -138,8 +163,13 @@ open Classical
 @[simp]
 theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by
   refine' ⟨fun H => _, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
+  -- ⊢ Infinite α ∨ Infinite β
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
+  -- ⊢ ¬Infinite (α ⊕ β)
+                 -- ⊢ ¬Infinite (α ⊕ β)
+                                                    -- ⊢ ¬Infinite (α ⊕ β)
   exact Infinite.false
+  -- 🎉 no goals
 #align infinite_sum infinite_sum
 
 end

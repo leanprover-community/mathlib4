@@ -99,7 +99,11 @@ def id (a : B) : 𝟙 a ⊣ 𝟙 a where
   unit := (ρ_ _).inv
   counit := (ρ_ _).hom
   left_triangle := by dsimp; coherence
+                      -- ⊢ (ρ_ (𝟙 a)).inv ▷ 𝟙 a ⊗≫ 𝟙 a ◁ (ρ_ (𝟙 a)).hom = (λ_ (𝟙 a)).hom ≫ (ρ_ (𝟙 a)).inv
+                             -- 🎉 no goals
   right_triangle := by dsimp; coherence
+                       -- ⊢ 𝟙 a ◁ (ρ_ (𝟙 a)).inv ⊗≫ (ρ_ (𝟙 a)).hom ▷ 𝟙 a = (ρ_ (𝟙 a)).hom ≫ (λ_ (𝟙 a)).inv
+                              -- 🎉 no goals
 
 instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
   ⟨id a⟩
@@ -131,10 +135,12 @@ theorem rightZigzagIso_hom : (rightZigzagIso η ε).hom = rightZigzag η.hom ε.
 @[simp]
 theorem leftZigzagIso_inv : (leftZigzagIso η ε).inv = rightZigzag ε.inv η.inv := by
   simp [bicategoricalComp, bicategoricalIsoComp]
+  -- 🎉 no goals
 
 @[simp]
 theorem rightZigzagIso_inv : (rightZigzagIso η ε).inv = leftZigzag ε.inv η.inv := by
   simp [bicategoricalComp, bicategoricalIsoComp]
+  -- 🎉 no goals
 
 @[simp]
 theorem leftZigzagIso_symm : (leftZigzagIso η ε).symm = rightZigzagIso ε.symm η.symm :=
@@ -151,7 +157,9 @@ def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫
 theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     leftZigzagIso η (adjointifyCounit η ε) = λ_ f ≪≫ (ρ_ f).symm := by
   apply Iso.ext
+  -- ⊢ (leftZigzagIso η (adjointifyCounit η ε)).hom = (λ_ f ≪≫ (ρ_ f).symm).hom
   dsimp [adjointifyCounit, bicategoricalIsoComp]
+  -- ⊢ η.hom ▷ f ≫ ((α_ f g f).hom ≫ 𝟙 f ▷ (g ≫ f)) ≫ f ◁ (g ◁ ((ρ_ f).inv ≫ (f ◁ ε …
   calc
     _ = 𝟙 _ ⊗≫ (η.hom ▷ (f ≫ 𝟙 b) ≫ (f ≫ g) ◁ f ◁ ε.inv) ⊗≫
           f ◁ g ◁ η.inv ▷ f ⊗≫ f ◁ ε.hom := by
@@ -184,6 +192,8 @@ namespace Equivalence
 
 /-- The identity 1-morphism is an equivalence. -/
 def id (a : B) : a ≌ a := ⟨_, _, (ρ_ _).symm, ρ_ _, by ext; simp [bicategoricalIsoComp]⟩
+                                                       -- ⊢ (leftZigzagIso (ρ_ (𝟙 a)).symm (ρ_ (𝟙 a))).hom = (λ_ (𝟙 a) ≪≫ (ρ_ (𝟙 a)).sym …
+                                                            -- 🎉 no goals
 
 instance : Inhabited (Equivalence a a) := ⟨id a⟩
 

@@ -24,5 +24,7 @@ instance smallVector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector 
 
 instance smallList {α : Type v} [Small.{u} α] : Small.{u} (List α) := by
   let e : (Σn, Vector α n) ≃ List α := Equiv.sigmaFiberEquiv List.length
+  -- ⊢ Small.{u, v} (List α)
   exact small_of_surjective e.surjective
+  -- 🎉 no goals
 #align small_list smallList

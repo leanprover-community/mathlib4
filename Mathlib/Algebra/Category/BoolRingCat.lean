@@ -60,7 +60,9 @@ deriving instance LargeCategory for BoolRingCat
 
 instance : ConcreteCategory BoolRingCat := by
   dsimp [BoolRingCat]
+  -- ⊢ ConcreteCategory (Bundled BooleanRing)
   infer_instance
+  -- 🎉 no goals
 
 -- Porting note: disabled `simps`
 --   Invalid simp lemma BoolRingCat.hasForgetToCommRing_forget₂_obj_str_add.
@@ -77,7 +79,11 @@ def Iso.mk {α β : BoolRingCat.{u}} (e : α ≃+* β) : α ≅ β where
   hom := (e : RingHom _ _)
   inv := (e.symm : RingHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑(↑e ≫ ↑(RingEquiv.symm e)) x✝ = ↑(𝟙 α) x✝
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑(↑(RingEquiv.symm e) ≫ ↑e) x✝ = ↑(𝟙 β) x✝
+                        -- 🎉 no goals
 #align BoolRing.iso.mk BoolRingCat.Iso.mk
 
 end BoolRingCat

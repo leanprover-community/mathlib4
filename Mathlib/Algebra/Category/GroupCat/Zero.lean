@@ -27,11 +27,17 @@ namespace GroupCat
 @[to_additive]
 theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
+  -- ⊢ f = default
   · ext x
+    -- ⊢ ↑f x = ↑default x
     have : x = 1 := Subsingleton.elim _ _
+    -- ⊢ ↑f x = ↑default x
     rw [this, map_one, map_one]
+    -- 🎉 no goals
   · ext
+    -- ⊢ ↑f x✝ = ↑default x✝
     apply Subsingleton.elim
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Group.is_zero_of_subsingleton GroupCat.isZero_of_subsingleton
 set_option linter.uppercaseLean3 false in
@@ -48,11 +54,17 @@ namespace CommGroupCat
 @[to_additive]
 theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
+  -- ⊢ f = default
   · ext x
+    -- ⊢ ↑f x = ↑default x
     have : x = 1 := Subsingleton.elim _ _
+    -- ⊢ ↑f x = ↑default x
     rw [this, map_one, map_one]
+    -- 🎉 no goals
   · ext
+    -- ⊢ ↑f x✝ = ↑default x✝
     apply Subsingleton.elim
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommGroup.is_zero_of_subsingleton CommGroupCat.isZero_of_subsingleton
 set_option linter.uppercaseLean3 false in

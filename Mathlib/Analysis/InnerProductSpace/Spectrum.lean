@@ -69,27 +69,40 @@ variable {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
 theorem invariant_orthogonalComplement_eigenspace (μ : 𝕜) (v : E) (hv : v ∈ (eigenspace T μ)ᗮ) :
     T v ∈ (eigenspace T μ)ᗮ := by
   intro w hw
+  -- ⊢ inner w (↑T v) = 0
   have : T w = (μ : 𝕜) • w := by rwa [mem_eigenspace_iff] at hw
+  -- ⊢ inner w (↑T v) = 0
   simp [← hT w, this, inner_smul_left, hv w hw]
+  -- 🎉 no goals
 #align linear_map.is_symmetric.invariant_orthogonal_eigenspace LinearMap.IsSymmetric.invariant_orthogonalComplement_eigenspace
 
 /-- The eigenvalues of a self-adjoint operator are real. -/
 theorem conj_eigenvalue_eq_self {μ : 𝕜} (hμ : HasEigenvalue T μ) : conj μ = μ := by
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
+  -- ⊢ ↑(starRingEnd 𝕜) μ = μ
   rw [mem_eigenspace_iff] at hv₁
+  -- ⊢ ↑(starRingEnd 𝕜) μ = μ
   simpa [hv₂, inner_smul_left, inner_smul_right, hv₁] using hT v v
+  -- 🎉 no goals
 #align linear_map.is_symmetric.conj_eigenvalue_eq_self LinearMap.IsSymmetric.conj_eigenvalue_eq_self
 
 /-- The eigenspaces of a self-adjoint operator are mutually orthogonal. -/
 theorem orthogonalFamily_eigenspaces :
     OrthogonalFamily 𝕜 (fun μ => eigenspace T μ) fun μ => (eigenspace T μ).subtypeₗᵢ := by
   rintro μ ν hμν ⟨v, hv⟩ ⟨w, hw⟩
+  -- ⊢ inner (↑((fun μ => Submodule.subtypeₗᵢ (eigenspace T μ)) μ) { val := v, prop …
   by_cases hv' : v = 0
+  -- ⊢ inner (↑((fun μ => Submodule.subtypeₗᵢ (eigenspace T μ)) μ) { val := v, prop …
   · simp [hv']
+    -- 🎉 no goals
   have H := hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector ⟨hv, hv'⟩)
+  -- ⊢ inner (↑((fun μ => Submodule.subtypeₗᵢ (eigenspace T μ)) μ) { val := v, prop …
   rw [mem_eigenspace_iff] at hv hw
+  -- ⊢ inner (↑((fun μ => Submodule.subtypeₗᵢ (eigenspace T μ)) μ) { val := v, prop …
   refine' Or.resolve_left _ hμν.symm
+  -- ⊢ ν = μ ∨ inner (↑((fun μ => Submodule.subtypeₗᵢ (eigenspace T μ)) μ) { val := …
   simpa [inner_smul_left, inner_smul_right, hv, hw, H] using (hT v w).symm
+  -- 🎉 no goals
 #align linear_map.is_symmetric.orthogonal_family_eigenspaces LinearMap.IsSymmetric.orthogonalFamily_eigenspaces
 
 theorem orthogonalFamily_eigenspaces' :
@@ -103,7 +116,9 @@ product space is an invariant subspace of the operator. -/
 theorem orthogonalComplement_iSup_eigenspaces_invariant ⦃v : E⦄ (hv : v ∈ (⨆ μ, eigenspace T μ)ᗮ) :
     T v ∈ (⨆ μ, eigenspace T μ)ᗮ := by
   rw [← Submodule.iInf_orthogonal] at hv ⊢
+  -- ⊢ ↑T v ∈ ⨅ (i : 𝕜), (eigenspace T i)ᗮ
   exact T.iInf_invariant hT.invariant_orthogonalComplement_eigenspace v hv
+  -- 🎉 no goals
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_invariant LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_invariant
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on an inner
@@ -111,9 +126,13 @@ product space has no eigenvalues. -/
 theorem orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
     eigenspace (T.restrict hT.orthogonalComplement_iSup_eigenspaces_invariant) μ = ⊥ := by
   set p : Submodule 𝕜 E := (⨆ μ, eigenspace T μ)ᗮ
+  -- ⊢ eigenspace (restrict T (_ : ∀ ⦃v : E⦄, v ∈ (⨆ (μ : 𝕜), eigenspace T μ)ᗮ → ↑T …
   refine' eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant _
+  -- ⊢ Disjoint (eigenspace T μ) (⨆ (μ : 𝕜), eigenspace T μ)ᗮ
   have H₂ : eigenspace T μ ⟂ p := (Submodule.isOrtho_orthogonal_right _).mono_left (le_iSup _ _)
+  -- ⊢ Disjoint (eigenspace T μ) (⨆ (μ : 𝕜), eigenspace T μ)ᗮ
   exact H₂.disjoint
+  -- 🎉 no goals
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces
 
 /-! ### Finite-dimensional theory -/
@@ -130,12 +149,14 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
   haveI :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
   exact Submodule.eq_bot_of_subsingleton _
+  -- 🎉 no goals
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
     (⨆ μ : Eigenvalues T, eigenspace T μ)ᗮ = ⊥ :=
   show (⨆ μ : { μ // eigenspace T μ ≠ ⊥ }, eigenspace T μ)ᗮ = ⊥ by
     rw [iSup_ne_bot_subtype, hT.orthogonalComplement_iSup_eigenspaces_eq_bot]
+    -- 🎉 no goals
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot' LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot'
 
 -- porting note: a modest increast in the `synthInstance.maxHeartbeats`, but we should still fix it.
@@ -147,6 +168,7 @@ Note this takes `hT` as a `Fact` to allow it to be an instance. -/
 noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
     DirectSum.Decomposition fun μ : Eigenvalues T => eigenspace T μ :=
   haveI h : ∀ μ : Eigenvalues T, CompleteSpace (eigenspace T μ) := fun μ => by infer_instance
+                                                                               -- 🎉 no goals
   hT.out.orthogonalFamily_eigenspaces'.decomposition
     (Submodule.orthogonal_eq_bot_iff.mp hT.out.orthogonalComplement_iSup_eigenspaces_eq_bot')
 #align linear_map.is_symmetric.direct_sum_decomposition LinearMap.IsSymmetric.directSumDecomposition
@@ -190,8 +212,11 @@ theorem diagonalization_apply_self_apply (v : E) (μ : Eigenvalues T) :
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
       congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
   intro w
+  -- ⊢ ↑T (↑(LinearIsometryEquiv.symm (diagonalization hT)) w) = ↑(LinearIsometryEq …
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
+  -- ⊢ ↑T (↑(LinearIsometryEquiv.symm (diagonalization hT)) w) = ↑(LinearIsometryEq …
   simp only [hwT, diagonalization_symm_apply, map_sum, Submodule.coe_smul_of_tower]
+  -- 🎉 no goals
 #align linear_map.is_symmetric.diagonalization_apply_self_apply LinearMap.IsSymmetric.diagonalization_apply_self_apply
 
 end Version1
@@ -221,11 +246,14 @@ noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
 theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
   let v : E := hT.eigenvectorBasis hn i
+  -- ⊢ HasEigenvector T (↑(eigenvalues hT hn i)) (↑(eigenvectorBasis hT hn) i)
   let μ : 𝕜 :=
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces').val
   simp_rw [eigenvalues]
+  -- ⊢ HasEigenvector T (↑(↑IsROrC.re (↑T (DirectSum.IsInternal.subordinateOrthonor …
   change HasEigenvector T (IsROrC.re μ) v
+  -- ⊢ HasEigenvector T (↑(↑IsROrC.re μ)) v
   have key : HasEigenvector T μ v := by
     have H₁ : v ∈ eigenspace T μ := by
       simp_rw [eigenvectorBasis]
@@ -238,6 +266,7 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     rw [← IsROrC.conj_eq_iff_re]
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
+  -- 🎉 no goals
 #align linear_map.is_symmetric.has_eigenvector_eigenvector_basis LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis
 
 theorem hasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.eigenvalues hn i) :=
@@ -264,11 +293,15 @@ theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
   intro w
+  -- ⊢ ↑T (↑(LinearIsometryEquiv.symm (eigenvectorBasis hT hn).repr) w) = ↑(LinearI …
   simp_rw [← OrthonormalBasis.sum_repr_symm, LinearMap.map_sum, LinearMap.map_smul,
     apply_eigenvectorBasis]
   apply Fintype.sum_congr
+  -- ⊢ ∀ (a : Fin n), w a • ↑(eigenvalues hT hn a) • ↑(eigenvectorBasis hT hn) a =  …
   intro a
+  -- ⊢ w a • ↑(eigenvalues hT hn a) • ↑(eigenvectorBasis hT hn) a = (↑(eigenvalues  …
   rw [smul_smul, mul_comm]
+  -- 🎉 no goals
 #align linear_map.is_symmetric.diagonalization_basis_apply_self_apply LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply
 
 end Version2
@@ -285,30 +318,37 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : v ∈ Module.End.eigenspace T μ) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
   simp only [mem_eigenspace_iff.mp h, inner_smul_right, inner_self_eq_norm_sq_to_K]
+  -- 🎉 no goals
 #align inner_product_apply_eigenvector inner_product_apply_eigenvector
 
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 ≤ IsROrC.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
+  -- ⊢ 0 ≤ μ
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
+  -- ⊢ 0 ≤ μ
   have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
     rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
     exact_mod_cast this
   exact (zero_le_mul_right hpos).mp (this ▸ hnn v)
+  -- 🎉 no goals
 #align eigenvalue_nonneg_of_nonneg eigenvalue_nonneg_of_nonneg
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 < IsROrC.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
+  -- ⊢ 0 < μ
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
+  -- ⊢ 0 < μ
   have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
     rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
     exact_mod_cast this
   exact (zero_lt_mul_right hpos).mp (this ▸ hnn v)
+  -- 🎉 no goals
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos
 
 end Nonneg

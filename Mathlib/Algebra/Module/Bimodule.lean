@@ -88,18 +88,25 @@ def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p
     carrier := p
     smul_mem' := fun ab m =>
       TensorProduct.induction_on ab (fun _ => by simpa only [zero_smul] using p.zero_mem)
+                                                 -- 🎉 no goals
         (fun a b hm => by simpa only [TensorProduct.Algebra.smul_def] using hA a (hB b hm))
+                          -- 🎉 no goals
         fun z w hz hw hm => by simpa only [add_smul] using p.add_mem (hz hm) (hw hm) }
+                               -- 🎉 no goals
 #align subbimodule.mk Subbimodule.mk
 
 theorem smul_mem (p : Submodule (A ⊗[R] B) M) (a : A) {m : M} (hm : m ∈ p) : a • m ∈ p := by
   suffices a • m = a ⊗ₜ[R] (1 : B) • m by exact this.symm ▸ p.smul_mem _ hm
+  -- ⊢ a • m = a ⊗ₜ[R] 1 • m
   simp [TensorProduct.Algebra.smul_def]
+  -- 🎉 no goals
 #align subbimodule.smul_mem Subbimodule.smul_mem
 
 theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) : b • m ∈ p := by
   suffices b • m = (1 : A) ⊗ₜ[R] b • m by exact this.symm ▸ p.smul_mem _ hm
+  -- ⊢ b • m = 1 ⊗ₜ[R] b • m
   simp [TensorProduct.Algebra.smul_def]
+  -- 🎉 no goals
 #align subbimodule.smul_mem' Subbimodule.smul_mem'
 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"

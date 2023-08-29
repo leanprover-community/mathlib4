@@ -57,8 +57,10 @@ then it semiconjugates `x + x'` to `y + y'`."]
 theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x * x') (y * y') := by
   unfold SemiconjBy
+  -- ⊢ a * (x * x') = y * y' * a
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
   rw [←mul_assoc, h.eq, mul_assoc, h'.eq, ←mul_assoc]
+  -- 🎉 no goals
 #align semiconj_by.mul_right SemiconjBy.mul_right
 #align add_semiconj_by.add_right AddSemiconjBy.add_right
 
@@ -68,7 +70,9 @@ semiconjugates `x` to `z`. -/
 semiconjugates `x` to `z`."]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
   unfold SemiconjBy
+  -- ⊢ a * b * x = z * (a * b)
   rw [mul_assoc, hb.eq, ←mul_assoc, ha.eq, mul_assoc]
+  -- 🎉 no goals
 #align semiconj_by.mul_left SemiconjBy.mul_left
 #align add_semiconj_by.add_left AddSemiconjBy.add_left
 
@@ -90,6 +94,7 @@ variable [MulOneClass M]
 /-- Any element semiconjugates `1` to `1`. -/
 @[to_additive (attr := simp) "Any element semiconjugates `0` to `0`."]
 theorem one_right (a : M) : SemiconjBy a 1 1 := by rw [SemiconjBy, mul_one, one_mul]
+                                                   -- 🎉 no goals
 #align semiconj_by.one_right SemiconjBy.one_right
 #align add_semiconj_by.zero_right AddSemiconjBy.zero_right
 
@@ -121,7 +126,9 @@ semiconjugates `-x` to `-y`."]
 theorem units_inv_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy a ↑x⁻¹ ↑y⁻¹ :=
   calc
     a * ↑x⁻¹ = ↑y⁻¹ * (y * a) * ↑x⁻¹ := by rw [Units.inv_mul_cancel_left]
+                                           -- 🎉 no goals
     _        = ↑y⁻¹ * a              := by rw [← h.eq, mul_assoc, Units.mul_inv_cancel_right]
+                                           -- 🎉 no goals
 #align semiconj_by.units_inv_right SemiconjBy.units_inv_right
 #align add_semiconj_by.add_units_neg_right AddSemiconjBy.addUnits_neg_right
 
@@ -137,7 +144,9 @@ theorem units_inv_right_iff {a : M} {x y : Mˣ} : SemiconjBy a ↑x⁻¹ ↑y⁻
 theorem units_inv_symm_left {a : Mˣ} {x y : M} (h : SemiconjBy (↑a) x y) : SemiconjBy (↑a⁻¹) y x :=
   calc
     ↑a⁻¹ * y = ↑a⁻¹ * (y * a * ↑a⁻¹) := by rw [Units.mul_inv_cancel_right]
+                                           -- 🎉 no goals
     _ = x * ↑a⁻¹ := by rw [← h.eq, ← mul_assoc, Units.inv_mul_cancel_left]
+                       -- 🎉 no goals
 #align semiconj_by.units_inv_symm_left SemiconjBy.units_inv_symm_left
 #align add_semiconj_by.add_units_neg_symm_left AddSemiconjBy.addUnits_neg_symm_left
 
@@ -168,10 +177,15 @@ theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x 
 @[to_additive (attr := simp)]
 theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
   induction' n with n ih
+  -- ⊢ SemiconjBy a (x ^ Nat.zero) (y ^ Nat.zero)
   · rw [pow_zero, pow_zero]
+    -- ⊢ SemiconjBy a 1 1
     exact SemiconjBy.one_right _
+    -- 🎉 no goals
   · rw [pow_succ, pow_succ]
+    -- ⊢ SemiconjBy a (x * x ^ n) (y * y ^ n)
     exact h.mul_right ih
+    -- 🎉 no goals
 #align semiconj_by.pow_right SemiconjBy.pow_right
 #align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 
@@ -185,6 +199,7 @@ variable [DivisionMonoid G] {a x y : G}
 theorem inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x :=
   inv_involutive.injective.eq_iff.symm.trans <| by
     rw [mul_inv_rev, mul_inv_rev, inv_inv, inv_inv, inv_inv, eq_comm, SemiconjBy]
+    -- 🎉 no goals
 #align semiconj_by.inv_inv_symm_iff SemiconjBy.inv_inv_symm_iff
 #align add_semiconj_by.neg_neg_symm_iff AddSemiconjBy.neg_neg_symm_iff
 
@@ -229,6 +244,8 @@ theorem inv_symm_left : SemiconjBy a x y → SemiconjBy a⁻¹ y x :=
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
   unfold SemiconjBy; rw [mul_assoc, inv_mul_self, mul_one]
+  -- ⊢ a * x = a * x * a⁻¹ * a
+                     -- 🎉 no goals
 #align semiconj_by.conj_mk SemiconjBy.conj_mk
 #align add_semiconj_by.conj_mk AddSemiconjBy.conj_mk
 
@@ -239,6 +256,7 @@ end SemiconjBy
 @[to_additive (attr := simp) addSemiconjBy_iff_eq]
 theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ x = y :=
   ⟨fun h => mul_left_cancel (h.trans (mul_comm _ _)), fun h => by rw [h, SemiconjBy, mul_comm]⟩
+                                                                  -- 🎉 no goals
 #align semiconj_by_iff_eq semiconjBy_iff_eq
 #align add_semiconj_by_iff_eq addSemiconjBy_iff_eq
 
@@ -246,5 +264,7 @@ theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y �
 @[to_additive AddUnits.mk_addSemiconjBy "`a` semiconjugates `x` to `a + x + -a`."]
 theorem Units.mk_semiconjBy [Monoid M] (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
   unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
+  -- ⊢ ↑u * x = ↑u * x * ↑u⁻¹ * ↑u
+                     -- 🎉 no goals
 #align units.mk_semiconj_by Units.mk_semiconjBy
 #align add_units.mk_semiconj_by AddUnits.mk_addSemiconjBy

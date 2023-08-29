@@ -26,6 +26,7 @@ open Classical
 theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
     ∃ (s : α → α → Prop) (_ : IsLinearOrder α s), r ≤ s := by
   let S := { s | IsPartialOrder α s }
+  -- ⊢ ∃ s x, r ≤ s
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
@@ -50,27 +51,43 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
       · exact antisymm (h _ _ h₂s₁) h₂s₂
       · apply antisymm h₂s₁ (h _ _ h₂s₂)
   obtain ⟨s, hs₁ : IsPartialOrder _ _, rs, hs₂⟩ := zorn_nonempty_partialOrder₀ S hS r ‹_›
+  -- ⊢ ∃ s x, r ≤ s
   haveI : IsPartialOrder α s := hs₁
+  -- ⊢ ∃ s x, r ≤ s
   refine ⟨s, { total := ?_, refl := hs₁.refl, trans := hs₁.trans, antisymm := hs₁.antisymm } , rs⟩
+  -- ⊢ ∀ (a b : α), s a b ∨ s b a
   intro x y
+  -- ⊢ s x y ∨ s y x
   by_contra' h
+  -- ⊢ False
   let s' x' y' := s x' y' ∨ s x' x ∧ s y y'
+  -- ⊢ False
   rw [← hs₂ s' _ fun _ _ ↦ Or.inl] at h
+  -- ⊢ False
   · apply h.1 (Or.inr ⟨refl _, refl _⟩)
+    -- 🎉 no goals
   · refine'
     { refl := fun x ↦ Or.inl (refl _)
       trans := _
       antisymm := _ }
     rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
     · exact Or.inl (_root_.trans ab bc)
+      -- 🎉 no goals
     · exact Or.inr ⟨_root_.trans ab bx, yc⟩
+      -- 🎉 no goals
     · exact Or.inr ⟨ax, _root_.trans yb bc⟩
+      -- 🎉 no goals
     · exact Or.inr ⟨ax, yc⟩
+      -- 🎉 no goals
     rintro a b (ab | ⟨ax : s a x, yb : s y b⟩) (ba | ⟨bx : s b x, ya : s y a⟩)
     · exact antisymm ab ba
+      -- 🎉 no goals
     · exact (h.2 (_root_.trans ya (_root_.trans ab bx))).elim
+      -- 🎉 no goals
     · exact (h.2 (_root_.trans yb (_root_.trans ba ax))).elim
+      -- 🎉 no goals
     · exact (h.2 (_root_.trans yb bx)).elim
+      -- 🎉 no goals
 #align extend_partial_order extend_partialOrder
 
 /-- A type alias for `α`, intended to extend a partial order on `α` to a linear order. -/

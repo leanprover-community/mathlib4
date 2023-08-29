@@ -72,6 +72,8 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   map w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
   -- Porting note: was 'obviously'
   map_comp f g := by apply Submodule.linearMap_qext; rfl
+                     -- ⊢ LinearMap.comp ({ obj := fun t => ModuleCat.of R (R ⧸ I.obj t), map := fun { …
+                                                     -- 🎉 no goals
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
 -- Porting note: TODO:  Once this file is ported, move this instance to the right location.
@@ -209,9 +211,13 @@ valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
+    -- ⊢ J ≤ Ideal.radical (J ^ k.unop)
     cases' unop k with n
+    -- ⊢ J ≤ Ideal.radical (J ^ Nat.zero)
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top, Nat.zero_eq]
+      -- 🎉 no goals
     · simp only [J.radical_pow _ n.succ_pos, Ideal.le_radical]
+      -- 🎉 no goals
 #align local_cohomology.ideal_powers_to_self_le_radical localCohomology.idealPowersToSelfLERadical
 
 variable {I J K : Ideal R}
@@ -224,7 +230,9 @@ to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
+  -- ⊢ ∃ k, I ^ k ≤ J
   use k
+  -- ⊢ I ^ k ≤ J
   calc
     I ^ k ≤ J.radical ^ k := Ideal.pow_mono hIJ _
     _ ≤ J := hk
@@ -236,15 +244,25 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
     apply (config := {allowSynthFailures := true }) zigzag_isConnected
+    -- ⊢ Nonempty (CostructuredArrow (idealPowersToSelfLERadical J) J')
     · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
+      -- ⊢ Nonempty (CostructuredArrow (idealPowersToSelfLERadical J) J')
       exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
+      -- 🎉 no goals
     · intro j1 j2
+      -- ⊢ Zigzag j1 j2
       apply Relation.ReflTransGen.single
+      -- ⊢ Zag j1 j2
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
       cases' le_total (unop j1.left) (unop j2.left) with h h
+      -- ⊢ Zag j1 j2
       right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      -- ⊢ Nonempty (j2 ⟶ j1)
+             -- ⊢ Zag j1 j2
       left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      -- ⊢ Nonempty (j1 ⟶ j2)
+            -- 🎉 no goals
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
 
 -- FIXME again, this instance is not found by `inferInstance`, but `#synth` finds it just fine.
@@ -267,7 +285,9 @@ subcategory of ideals with radical containing `K`. -/
 def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfLERadical K :=
   FullSubcategory.map fun L hL => by
     rw [← Ideal.radical_le_radical_iff] at hL ⊢
+    -- ⊢ Ideal.radical K ≤ Ideal.radical L
     exact hJK.symm.trans_le hL
+    -- 🎉 no goals
 #align local_cohomology.self_le_radical.cast localCohomology.SelfLERadical.cast
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.

@@ -62,8 +62,11 @@ noncomputable def lift : Push σ ⥤q W' where
   map :=
     @PushQuiver.rec V _ W σ (fun X Y _ => τ X ⟶ τ Y) @fun X Y f => by
       dsimp only
+      -- ⊢ τ (σ X) ⟶ τ (σ Y)
       rw [← h X, ← h Y]
+      -- ⊢ φ.obj X ⟶ φ.obj Y
       exact φ.map f
+      -- 🎉 no goals
 #align quiver.push.lift Quiver.Push.lift
 
 theorem lift_obj : (lift σ φ τ h).obj = τ :=
@@ -72,34 +75,55 @@ theorem lift_obj : (lift σ φ τ h).obj = τ :=
 
 theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
   fapply Prefunctor.ext
+  -- ⊢ ∀ (X : V), (of σ ⋙q lift σ φ τ h).obj X = φ.obj X
   · rintro X
+    -- ⊢ (of σ ⋙q lift σ φ τ h).obj X = φ.obj X
     simp only [Prefunctor.comp_obj]
+    -- ⊢ (lift σ φ τ h).obj ((of σ).obj X) = φ.obj X
     apply Eq.symm
+    -- ⊢ φ.obj X = (lift σ φ τ h).obj ((of σ).obj X)
     exact h X
+    -- 🎉 no goals
   · rintro X Y f
+    -- ⊢ (of σ ⋙q lift σ φ τ h).map f = Eq.recOn (_ : φ.obj Y = (of σ ⋙q lift σ φ τ h …
     simp only [Prefunctor.comp_map]
+    -- ⊢ (lift σ φ τ h).map ((of σ).map f) = (_ : φ.obj Y = (of σ ⋙q lift σ φ τ h).ob …
     apply eq_of_heq
+    -- ⊢ HEq ((lift σ φ τ h).map ((of σ).map f)) ((_ : φ.obj Y = (of σ ⋙q lift σ φ τ  …
     iterate 2 apply (cast_heq _ _).trans
+    -- ⊢ HEq (φ.map f) ((_ : φ.obj Y = (of σ ⋙q lift σ φ τ h).obj Y) ▸ (_ : φ.obj X = …
     apply HEq.symm
+    -- ⊢ HEq ((_ : φ.obj Y = (of σ ⋙q lift σ φ τ h).obj Y) ▸ (_ : φ.obj X = (of σ ⋙q  …
     apply (eqRec_heq _ _).trans
+    -- ⊢ HEq ((_ : φ.obj X = (of σ ⋙q lift σ φ τ h).obj X) ▸ φ.map f) (φ.map f)
     have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), HEq (p ▸ b) b := by
       intros
       subst_vars
       rfl
     apply this
+    -- 🎉 no goals
 #align quiver.push.lift_comp Quiver.Push.lift_comp
 
 theorem lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of σ ⋙q Φ) = φ) :
     Φ = lift σ φ τ h := by
   dsimp only [of, lift]
+  -- ⊢ Φ = { obj := τ, map := @PushQuiver.rec V inst✝¹ W σ (fun X Y x => τ X ⟶ τ Y) …
   fapply Prefunctor.ext
+  -- ⊢ ∀ (X : Push σ), Φ.obj X = { obj := τ, map := @PushQuiver.rec V inst✝¹ W σ (f …
   · intro X
+    -- ⊢ Φ.obj X = { obj := τ, map := @PushQuiver.rec V inst✝¹ W σ (fun X Y x => τ X  …
     simp only
+    -- ⊢ Φ.obj X = τ X
     rw [Φ₀]
+    -- 🎉 no goals
   · rintro _ _ ⟨⟩
+    -- ⊢ Φ.map (PushQuiver.arrow f✝) = Eq.recOn (_ : { obj := τ, map := @PushQuiver.r …
     subst_vars
+    -- ⊢ Φ.map (PushQuiver.arrow f✝) = Eq.recOn (_ : { obj := Φ.obj, map := @PushQuiv …
     simp only [Prefunctor.comp_map, cast_eq]
+    -- ⊢ Φ.map (PushQuiver.arrow f✝) = id (Eq.mpr (_ : (Φ.obj (σ X✝) ⟶ Φ.obj (σ Y✝))  …
     rfl
+    -- 🎉 no goals
 #align quiver.push.lift_unique Quiver.Push.lift_unique
 
 end Push

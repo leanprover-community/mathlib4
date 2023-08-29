@@ -36,20 +36,32 @@ theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
   apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
+  -- ⊢ ∀ (j : ι), LinearIndependent R fun x => single j (f j x)
   · intro i
+    -- ⊢ LinearIndependent R fun x => single i (f i x)
     have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
       rw [ker_lsingle]
       exact disjoint_bot_right
     apply (hf i).map h_disjoint
+    -- 🎉 no goals
   · intro i t _ hit
+    -- ⊢ Disjoint (span R (Set.range fun x => single i (f i x))) (⨆ (i : ι) (_ : i ∈  …
     refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
+    -- ⊢ span R (Set.range fun x => single i (f i x)) ≤ ⨆ (a : ι) (_ : a ∈ {i}), Line …
     · rw [span_le]
+      -- ⊢ (Set.range fun x => single i (f i x)) ⊆ ↑(⨆ (a : ι) (_ : a ∈ {i}), LinearMap …
       simp only [iSup_singleton]
+      -- ⊢ (Set.range fun x => single i (f i x)) ⊆ ↑(LinearMap.range (lsingle i))
       rw [range_coe]
+      -- ⊢ (Set.range fun x => single i (f i x)) ⊆ Set.range ↑(lsingle i)
       apply range_comp_subset_range _ (lsingle i)
+      -- 🎉 no goals
     · refine' iSup₂_mono fun i hi => _
+      -- ⊢ span R (Set.range fun x => single i (f i x)) ≤ LinearMap.range (lsingle i)
       rw [span_le, range_coe]
+      -- ⊢ (Set.range fun x => single i (f i x)) ⊆ Set.range ↑(lsingle i)
       apply range_comp_subset_range _ (lsingle i)
+      -- 🎉 no goals
 #align finsupp.linear_independent_single Finsupp.linearIndependent_single
 
 end Ring
@@ -71,25 +83,39 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
           support := g.support.sigma fun i => ((b i).repr (g i)).support
           mem_support_toFun := fun ix => by
             simp only [Finset.mem_sigma, mem_support_iff, and_iff_right_iff_imp, Ne.def]
+            -- ⊢ ¬↑(↑(b ix.fst).repr (↑g ix.fst)) ix.snd = 0 → ¬↑g ix.fst = 0
             intro b hg
+            -- ⊢ False
             simp [hg] at b }
+            -- 🎉 no goals
       invFun := fun g =>
         { toFun := fun i =>
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
             rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply, FunLike.ext_iff]
+            -- ⊢ i ∈ Finset.image Sigma.fst g.support ↔ ¬∀ (x : φ i), ↑(comapDomain (Sigma.mk …
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
       left_inv := fun g => by
         ext i
+        -- ⊢ ↑((fun g => { support := Finset.image Sigma.fst g.support, toFun := fun i => …
         rw [← (b i).repr.injective.eq_iff]
+        -- ⊢ ↑(b i).repr (↑((fun g => { support := Finset.image Sigma.fst g.support, toFu …
         ext x
+        -- ⊢ ↑(↑(b i).repr (↑((fun g => { support := Finset.image Sigma.fst g.support, to …
         simp only [coe_mk, LinearEquiv.apply_symm_apply, comapDomain_apply]
+        -- 🎉 no goals
+        -- ⊢ ↑((fun g => { support := Finset.sigma g.support fun i => (↑(b i).repr (↑g i) …
       right_inv := fun g => by
+        -- 🎉 no goals
         ext ⟨i, x⟩
+        -- ⊢ ↑(AddHom.toFun { toAddHom := { toFun := fun g => { support := Finset.sigma g …
+        -- ⊢ ↑(AddHom.toFun { toFun := fun g => { support := Finset.sigma g.support fun i …
         simp only [coe_mk, LinearEquiv.apply_symm_apply, comapDomain_apply]
+        -- 🎉 no goals
+        -- 🎉 no goals
       map_add' := fun g h => by
         ext ⟨i, x⟩
         simp only [coe_mk, add_apply, LinearEquiv.map_add]
@@ -154,14 +180,20 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
   rw [Finset.sum_congr_set {i} (fun x : n => Finsupp.single x (ite (i = x) a 0)) fun _ =>
       Finsupp.single i a]
   · simp
+    -- 🎉 no goals
   · intro x hx
+    -- ⊢ Finsupp.single x (if i = x then a else 0) = Finsupp.single i a
     rw [Set.mem_singleton_iff] at hx
+    -- ⊢ Finsupp.single x (if i = x then a else 0) = Finsupp.single i a
     simp [hx]
+    -- 🎉 no goals
   intro x hx
+  -- ⊢ Finsupp.single x (if i = x then a else 0) = 0
   have hx' : ¬i = x := by
     refine' ne_comm.mp _
     rwa [mem_singleton_iff] at hx
   simp [hx']
+  -- 🎉 no goals
 #align finset.sum_single_ite Finset.sum_single_ite
 
 -- Porting note: LHS of equivFun_symm_stdBasis simplifies to this
@@ -169,10 +201,12 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
 theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
     (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
   simp only [ite_smul, zero_smul, one_smul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
+  -- 🎉 no goals
 
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   simp
+  -- 🎉 no goals
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
 end Basis

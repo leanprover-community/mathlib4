@@ -68,12 +68,19 @@ noncomputable def equivSmallModel (C : Type u) [Category.{v} C] [EssentiallySmal
 theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D := by
   fconstructor
+  -- ⊢ EssentiallySmall C → EssentiallySmall D
   · rintro ⟨S, 𝒮, ⟨f⟩⟩
+    -- ⊢ EssentiallySmall D
     skip
+    -- ⊢ EssentiallySmall D
     exact EssentiallySmall.mk' (e.symm.trans f)
+    -- 🎉 no goals
   · rintro ⟨S, 𝒮, ⟨f⟩⟩
+    -- ⊢ EssentiallySmall C
     skip
+    -- ⊢ EssentiallySmall C
     exact EssentiallySmall.mk' (e.trans f)
+    -- 🎉 no goals
 #align category_theory.essentially_small_congr CategoryTheory.essentiallySmall_congr
 
 theorem Discrete.essentiallySmallOfSmall {α : Type u} [Small.{w} α] :
@@ -100,18 +107,31 @@ instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D := by
   fconstructor
+  -- ⊢ LocallySmall C → LocallySmall D
   · rintro ⟨L⟩
+    -- ⊢ LocallySmall D
     fconstructor
+    -- ⊢ autoParam (∀ (X Y : D), Small.{w, v'} (X ⟶ Y)) _auto✝
     intro X Y
+    -- ⊢ Small.{w, v'} (X ⟶ Y)
     specialize L (e.inverse.obj X) (e.inverse.obj Y)
+    -- ⊢ Small.{w, v'} (X ⟶ Y)
     refine' (small_congr _).mpr L
+    -- ⊢ (X ⟶ Y) ≃ (e.inverse.obj X ⟶ e.inverse.obj Y)
     exact equivOfFullyFaithful e.inverse
+    -- 🎉 no goals
   · rintro ⟨L⟩
+    -- ⊢ LocallySmall C
     fconstructor
+    -- ⊢ autoParam (∀ (X Y : C), Small.{w, v} (X ⟶ Y)) _auto✝
     intro X Y
+    -- ⊢ Small.{w, v} (X ⟶ Y)
     specialize L (e.functor.obj X) (e.functor.obj Y)
+    -- ⊢ Small.{w, v} (X ⟶ Y)
     refine' (small_congr _).mpr L
+    -- ⊢ (X ⟶ Y) ≃ (e.functor.obj X ⟶ e.functor.obj Y)
     exact equivOfFullyFaithful e.functor
+    -- 🎉 no goals
 #align category_theory.locally_small_congr CategoryTheory.locallySmall_congr
 
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] : LocallySmall.{v} C
@@ -204,19 +224,33 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
     EssentiallySmall.{w} C ↔ Small.{w} (Skeleton C) ∧ LocallySmall.{w} C := by
   -- This theorem is the only bit of real work in this file.
   fconstructor
+  -- ⊢ EssentiallySmall C → Small.{w, u} (Skeleton C) ∧ LocallySmall C
   · intro h
+    -- ⊢ Small.{w, u} (Skeleton C) ∧ LocallySmall C
     fconstructor
+    -- ⊢ Small.{w, u} (Skeleton C)
     · rcases h with ⟨S, 𝒮, ⟨e⟩⟩
+      -- ⊢ Small.{w, u} (Skeleton C)
       skip
+      -- ⊢ Small.{w, u} (Skeleton C)
       refine' ⟨⟨Skeleton S, ⟨_⟩⟩⟩
+      -- ⊢ Skeleton C ≃ Skeleton S
       exact e.skeletonEquiv
+      -- 🎉 no goals
     · skip
+      -- ⊢ LocallySmall C
       infer_instance
+      -- 🎉 no goals
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
+    -- ⊢ EssentiallySmall C
     skip
+    -- ⊢ EssentiallySmall C
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
+    -- ⊢ EssentiallySmall C
     letI : Category S := InducedCategory.category (e'.trans e).symm
+    -- ⊢ EssentiallySmall C
     refine' ⟨⟨S, this, ⟨_⟩⟩⟩
+    -- ⊢ C ≌ S
     refine' (ShrinkHoms.equivalence C).trans <|
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
@@ -234,6 +268,7 @@ A thin category is essentially small if and only if the underlying type of its s
 theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThin C] :
     EssentiallySmall.{w} C ↔ Small.{w} (Skeleton C) := by
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
+  -- 🎉 no goals
 #align category_theory.essentially_small_iff_of_thin CategoryTheory.essentiallySmall_iff_of_thin
 
 end CategoryTheory

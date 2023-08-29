@@ -52,9 +52,14 @@ functions f on X such that `f ≥ 1` on K. -/
 theorem rieszContentAux_image_nonempty (K : Compacts X) :
     (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
   rw [nonempty_image_iff]
+  -- ⊢ Set.Nonempty {f | ∀ (x : X), x ∈ K → 1 ≤ ↑f x}
   use (1 : X →ᵇ ℝ≥0)
+  -- ⊢ 1 ∈ {f | ∀ (x : X), x ∈ K → 1 ≤ ↑f x}
   intro x _
+  -- ⊢ 1 ≤ ↑1 x
   simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
+  -- ⊢ 1 ≤ 1
+                                                               -- 🎉 no goals
 #align riesz_content_aux_image_nonempty rieszContentAux_image_nonempty
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
@@ -86,8 +91,11 @@ theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos
     exists_lt_of_csInf_lt (rieszContentAux_image_nonempty Λ K)
       (lt_add_of_pos_right (rieszContentAux Λ K) εpos)
   refine' ⟨f, f_hyp.left, _⟩
+  -- ⊢ ↑Λ f < rieszContentAux Λ K + ε
   rw [f_hyp.right]
+  -- ⊢ α < rieszContentAux Λ K + ε
   exact α_hyp
+  -- 🎉 no goals
 #align exists_lt_riesz_content_aux_add_pos exists_lt_rieszContentAux_add_pos
 
 /-- The Riesz content λ associated to a given positive linear functional Λ is
@@ -95,10 +103,14 @@ finitely subadditive: `λ(K₁ ∪ K₂) ≤ λ(K₁) + λ(K₂)` for any compac
 theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
     rieszContentAux Λ (K1 ⊔ K2) ≤ rieszContentAux Λ K1 + rieszContentAux Λ K2 := by
   apply NNReal.le_of_forall_pos_le_add
+  -- ⊢ ∀ (ε : ℝ≥0), 0 < ε → rieszContentAux Λ (K1 ⊔ K2) ≤ rieszContentAux Λ K1 + ri …
   intro ε εpos
+  -- ⊢ rieszContentAux Λ (K1 ⊔ K2) ≤ rieszContentAux Λ K1 + rieszContentAux Λ K2 + ε
   --get test functions s.t. `λ(Ki) ≤ Λfi ≤ λ(Ki) + ε/2, i=1,2`
   obtain ⟨f1, f_test_function_K1⟩ := exists_lt_rieszContentAux_add_pos Λ K1 (half_pos εpos)
+  -- ⊢ rieszContentAux Λ (K1 ⊔ K2) ≤ rieszContentAux Λ K1 + rieszContentAux Λ K2 + ε
   obtain ⟨f2, f_test_function_K2⟩ := exists_lt_rieszContentAux_add_pos Λ K2 (half_pos εpos)
+  -- ⊢ rieszContentAux Λ (K1 ⊔ K2) ≤ rieszContentAux Λ K1 + rieszContentAux Λ K2 + ε
   --let `f := f1 + f2` test function for the content of `K`
   have f_test_function_union : ∀ x ∈ K1 ⊔ K2, (1 : ℝ≥0) ≤ (f1 + f2) x := by
     rintro x (x_in_K1 | x_in_K2)
@@ -106,11 +118,14 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
     · exact le_add_left (f_test_function_K2.left x x_in_K2)
   --use that `Λf` is an upper bound for `λ(K1⊔K2)`
   apply (rieszContentAux_le Λ f_test_function_union).trans (le_of_lt _)
+  -- ⊢ ↑Λ (f1 + f2) < rieszContentAux Λ K1 + rieszContentAux Λ K2 + ε
   rw [map_add]
+  -- ⊢ ↑Λ f1 + ↑Λ f2 < rieszContentAux Λ K1 + rieszContentAux Λ K2 + ε
   --use that `Λfi` are lower bounds for `λ(Ki) + ε/2`
   apply lt_of_lt_of_le (_root_.add_lt_add f_test_function_K1.right f_test_function_K2.right)
     (le_of_eq _)
   rw [add_assoc, add_comm (ε / 2), add_assoc, add_halves ε, add_assoc]
+  -- 🎉 no goals
 #align riesz_content_aux_sup_le rieszContentAux_sup_le
 
 end RieszSubadditive

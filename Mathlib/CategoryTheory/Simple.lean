@@ -61,21 +61,32 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
       haveI : Mono (f ≫ i.hom) := mono_comp _ _
+      -- ⊢ IsIso f ↔ f ≠ 0
       constructor
+      -- ⊢ IsIso f → f ≠ 0
       · intro h w
+        -- ⊢ False
         have j : IsIso (f ≫ i.hom)
+        -- ⊢ IsIso (f ≫ i.hom)
         infer_instance
+        -- ⊢ False
         rw [Simple.mono_isIso_iff_nonzero] at j
+        -- ⊢ False
         subst w
+        -- ⊢ False
         simp at j
+        -- 🎉 no goals
       · intro h
+        -- ⊢ IsIso f
         have j : IsIso (f ≫ i.hom) := by
           apply isIso_of_mono_of_nonzero
           intro w
           apply h
           simpa using (cancel_mono i.inv).2 w
         rw [← Category.comp_id f, ← i.hom_inv_id, ← Category.assoc]
+        -- ⊢ IsIso ((f ≫ i.hom) ≫ i.inv)
         infer_instance }
+        -- 🎉 no goals
 #align category_theory.simple.of_iso CategoryTheory.Simple.of_iso
 
 theorem Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
@@ -97,8 +108,11 @@ theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [H
 theorem epi_of_nonzero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X ⟶ Y} [HasImage f]
     (w : f ≠ 0) : Epi f := by
   rw [← image.fac f]
+  -- ⊢ Epi (factorThruImage f ≫ image.ι f)
   haveI : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h => w (eq_zero_of_image_eq_zero h)
+  -- ⊢ Epi (factorThruImage f ≫ image.ι f)
   apply epi_comp
+  -- 🎉 no goals
 #align category_theory.epi_of_nonzero_to_simple CategoryTheory.epi_of_nonzero_to_simple
 
 theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
@@ -110,6 +124,7 @@ theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono 
 
 theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
+                                               -- 🎉 no goals
 #align category_theory.id_nonzero CategoryTheory.id_nonzero
 
 instance (X : C) [Simple.{v} X] : Nontrivial (End X) :=
@@ -119,6 +134,7 @@ section
 
 theorem Simple.not_isZero (X : C) [Simple X] : ¬IsZero X := by
   simpa [Limits.IsZero.iff_id_eq_zero] using id_nonzero X
+  -- 🎉 no goals
 #align category_theory.simple.not_is_zero CategoryTheory.Simple.not_isZero
 
 variable [HasZeroObject C]
@@ -130,6 +146,7 @@ variable (C)
 /-- We don't want the definition of 'simple' to include the zero object, so we check that here. -/
 theorem zero_not_simple [Simple (0 : C)] : False :=
   (Simple.mono_isIso_iff_nonzero (0 : (0 : C) ⟶ (0 : C))).mp ⟨⟨0, by aesop_cat⟩⟩ rfl
+                                                                     -- 🎉 no goals
 #align category_theory.zero_not_simple CategoryTheory.zero_not_simple
 
 end
@@ -193,24 +210,38 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
 theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
   rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
+  -- ⊢ biprod.snd ≫ biprod.inr = 0 ↔ IsZero Y
   constructor
+  -- ⊢ biprod.snd ≫ biprod.inr = 0 → IsZero Y
   · intro h
+    -- ⊢ IsZero Y
     replace h := h =≫ biprod.snd
+    -- ⊢ IsZero Y
     simpa [← IsZero.iff_isSplitEpi_eq_zero (biprod.snd : X ⊞ Y ⟶ Y)] using h
+    -- 🎉 no goals
   · intro h
+    -- ⊢ biprod.snd ≫ biprod.inr = 0
     rw [IsZero.iff_isSplitEpi_eq_zero (biprod.snd : X ⊞ Y ⟶ Y)] at h
+    -- ⊢ biprod.snd ≫ biprod.inr = 0
     rw [h, zero_comp]
+    -- 🎉 no goals
 #align category_theory.biprod.is_iso_inl_iff_is_zero CategoryTheory.Biprod.isIso_inl_iff_isZero
 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
   ⟨Simple.not_isZero X, fun Y Z i => by
     refine' or_iff_not_imp_left.mpr fun h => _
+    -- ⊢ IsZero Z
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
+    -- ⊢ IsZero Z
     change biprod.inl ≠ 0 at h
+    -- ⊢ IsZero Z
     have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed
+    -- ⊢ IsZero Z
     rw [← Simple.mono_isIso_iff_nonzero biprod.inl] at h
+    -- ⊢ IsZero Z
     rwa [Biprod.isIso_inl_iff_isZero] at h⟩
+    -- 🎉 no goals
 #align category_theory.indecomposable_of_simple CategoryTheory.indecomposable_of_simple
 
 end Indecomposable
@@ -229,33 +260,55 @@ instance {X : C} [Simple X] : Nontrivial (Subobject X) :=
 instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
   eq_bot_or_eq_top := by
     rintro ⟨⟨⟨Y : C, ⟨⟨⟩⟩, f : Y ⟶ X⟩, m : Mono f⟩⟩
+    -- ⊢ Quot.mk Setoid.r { obj := { left := Y, right := { as := PUnit.unit }, hom := …
     change mk f = ⊥ ∨ mk f = ⊤
+    -- ⊢ mk f = ⊥ ∨ mk f = ⊤
     by_cases h : f = 0
+    -- ⊢ mk f = ⊥ ∨ mk f = ⊤
     · exact Or.inl (mk_eq_bot_iff_zero.mpr h)
+      -- 🎉 no goals
     · refine' Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
+      -- 🎉 no goals
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
   constructor; intros Y f hf; constructor
+  -- ⊢ ∀ {Y : C} (f : Y ⟶ X) [inst : Mono f], IsIso f ↔ f ≠ 0
+               -- ⊢ IsIso f ↔ f ≠ 0
+                              -- ⊢ IsIso f → f ≠ 0
   · intro i
+    -- ⊢ f ≠ 0
     rw [Subobject.isIso_iff_mk_eq_top] at i
+    -- ⊢ f ≠ 0
     intro w
+    -- ⊢ False
     rw [← Subobject.mk_eq_bot_iff_zero] at w
+    -- ⊢ False
     exact IsSimpleOrder.bot_ne_top (w.symm.trans i)
+    -- 🎉 no goals
   · intro i
+    -- ⊢ IsIso f
     rcases IsSimpleOrder.eq_bot_or_eq_top (Subobject.mk f) with (h | h)
+    -- ⊢ IsIso f
     · rw [Subobject.mk_eq_bot_iff_zero] at h
+      -- ⊢ IsIso f
       exact False.elim (i h)
+      -- 🎉 no goals
     · exact (Subobject.isIso_iff_mk_eq_top _).mpr h
+      -- 🎉 no goals
 #align category_theory.simple_of_is_simple_order_subobject CategoryTheory.simple_of_isSimpleOrder_subobject
 
 /-- `X` is simple iff it has subobject lattice `{⊥, ⊤}`. -/
 theorem simple_iff_subobject_isSimpleOrder (X : C) : Simple X ↔ IsSimpleOrder (Subobject X) :=
   ⟨by
     intro h
+    -- ⊢ IsSimpleOrder (Subobject X)
     infer_instance, by
+    -- 🎉 no goals
     intro h
+    -- ⊢ Simple X
     exact simple_of_isSimpleOrder_subobject X⟩
+    -- 🎉 no goals
 #align category_theory.simple_iff_subobject_is_simple_order CategoryTheory.simple_iff_subobject_isSimpleOrder
 
 /-- A subobject is simple iff it is an atom in the subobject lattice. -/

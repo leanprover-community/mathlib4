@@ -98,6 +98,7 @@ theorem smulAddMonoidHom_apply_of_of [DecidableEq ι] [GMonoid A] [Gmodule A M] 
     (y : M j) :
     smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i + j) (GSmul.smul x y) := by
   simp [smulAddMonoidHom]
+  -- 🎉 no goals
 #align direct_sum.gmodule.smul_add_monoid_hom_apply_of_of DirectSum.Gmodule.smulAddMonoidHom_apply_of_of
 
 -- @[simp] -- Porting note: simpNF lint
@@ -113,10 +114,16 @@ open AddMonoidHom
 private theorem one_smul' [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, M i) :
     (1 : ⨁ i, A i) • x = x := by
   suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from FunLike.congr_fun this x
+  -- ⊢ ↑(smulAddMonoidHom A M) 1 = AddMonoidHom.id (⨁ (i : ι), M i)
   apply DirectSum.addHom_ext; intro i xi
+  -- ⊢ ∀ (i : ι) (y : M i), ↑(↑(smulAddMonoidHom A M) 1) (↑(of (fun i => M i) i) y) …
+                              -- ⊢ ↑(↑(smulAddMonoidHom A M) 1) (↑(of (fun i => M i) i) xi) = ↑(AddMonoidHom.id …
   rw [show (1 : DirectSum ι fun i => A i) = (of A 0) GOne.one by rfl]
+  -- ⊢ ↑(↑(smulAddMonoidHom A M) (↑(of A 0) GOne.one)) (↑(of (fun i => M i) i) xi)  …
   rw [smulAddMonoidHom_apply_of_of]
+  -- ⊢ ↑(of M (0 + i)) (GSmul.smul GOne.one xi) = ↑(AddMonoidHom.id (⨁ (i : ι), M i …
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
+  -- 🎉 no goals
 
 -- Porting note: renamed to mul_smul' since DirectSum.Gmodule.mul_smul already exists
 -- Almost identical to the proof of `direct_sum.mul_assoc`
@@ -132,7 +139,9 @@ private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : �
     from-- `fun a b c ↦ a • (b • c)` as a bundled hom
       FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
+  -- ⊢ ↑(comp (↑(comp (↑(comp (comp (↑compHom (smulAddMonoidHom A M)) (mulHom A)) ( …
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
+  -- ⊢ ↑(↑(smulAddMonoidHom A M) (↑(↑(mulHom A) (↑(of (fun i => A i) ai) ax)) (↑(of …
   rw [smulAddMonoidHom_apply_of_of, smulAddMonoidHom_apply_of_of, DirectSum.mulHom_of_of,
     smulAddMonoidHom_apply_of_of]
   exact
@@ -147,7 +156,9 @@ instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A 
   smul_add r := (smulAddMonoidHom A M r).map_add
   smul_zero r := (smulAddMonoidHom A M r).map_zero
   add_smul r s x := by simp only [smul_def, map_add, AddMonoidHom.add_apply]
+                       -- 🎉 no goals
   zero_smul x := by simp only [smul_def, map_zero, AddMonoidHom.zero_apply]
+                    -- 🎉 no goals
 #align direct_sum.gmodule.module DirectSum.Gmodule.module
 
 end
@@ -223,11 +234,15 @@ def isModule [DecidableEq ι] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
 def linearEquiv [DecidableEq ι] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜] :
     @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
     _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
+            -- ⊢ Module A (⨁ (i : ι), { x // x ∈ 𝓜 i })
+                                  -- 🎉 no goals
   letI h := isModule 𝓐 𝓜
+  -- ⊢ M ≃ₗ[A] ⨁ (i : ι), { x // x ∈ 𝓜 i }
   refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, ?_⟩,
     (DirectSum.decomposeAddEquiv 𝓜).symm.toFun, (DirectSum.decomposeAddEquiv 𝓜).left_inv,
     (DirectSum.decomposeAddEquiv 𝓜).right_inv⟩
   intro x y
+  -- ⊢ AddHom.toFun (AddEquiv.toAddHom (decomposeAddEquiv 𝓜)) (x • y) = ↑(RingHom.i …
   classical
   rw [AddHom.toFun_eq_coe, ← DirectSum.sum_support_decompose 𝓐 x, map_sum, Finset.sum_smul,
     AddEquiv.coe_toAddHom, map_sum, Finset.sum_smul]

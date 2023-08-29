@@ -62,19 +62,25 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
 
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
+  -- 🎉 no goals
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
 an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`. -/
 def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
+  -- ⊢ α ≃ Fin (Nat.card α)
   · simpa only [card_eq_fintype_card] using Fintype.equivFin α
+    -- 🎉 no goals
   · simp only [card_eq_zero_of_infinite, ne_eq] at h
+    -- 🎉 no goals
 #align nat.equiv_fin_of_card_pos Nat.equivFinOfCardPos
 
 theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   letI := Fintype.ofSubsingleton a
+  -- ⊢ Nat.card α = 1
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
+  -- 🎉 no goals
 #align nat.card_of_subsingleton Nat.card_of_subsingleton
 
 -- @[simp] -- Porting note: simp can prove this
@@ -95,17 +101,22 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
 #align nat.card_eq_two_iff' Nat.card_eq_two_iff'
 
 theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp
+                                                           -- 🎉 no goals
 #align nat.card_of_is_empty Nat.card_of_isEmpty
 
 @[simp]
 theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
   have := Fintype.ofFinite α
+  -- ⊢ Nat.card (α ⊕ β) = Nat.card α + Nat.card β
   have := Fintype.ofFinite β
+  -- ⊢ Nat.card (α ⊕ β) = Nat.card α + Nat.card β
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
+  -- 🎉 no goals
 
 @[simp]
 theorem card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
   simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
+  -- 🎉 no goals
 #align nat.card_prod Nat.card_prod
 
 @[simp]
@@ -120,18 +131,24 @@ theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, toNat_finset_prod]
+  -- 🎉 no goals
 #align nat.card_pi Nat.card_pi
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
   haveI := Fintype.ofFinite α
+  -- ⊢ Nat.card (α → β) = Nat.card β ^ Nat.card α
   rw [Nat.card_pi, Finset.prod_const, Finset.card_univ, ← Nat.card_eq_fintype_card]
+  -- 🎉 no goals
 #align nat.card_fun Nat.card_fun
 
 @[simp]
 theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
   cases n
+  -- ⊢ Nat.card (ZMod zero) = zero
   · exact @Nat.card_eq_zero_of_infinite _ Int.infinite
+    -- 🎉 no goals
   · rw [Nat.card_eq_fintype_card, ZMod.card]
+    -- 🎉 no goals
 #align nat.card_zmod Nat.card_zmod
 
 end Nat
@@ -158,6 +175,7 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
 theorem card_sum (α β : Type*) :
     PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
   simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
+  -- 🎉 no goals
 
 theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
   Cardinal.toPartENat_congr f
@@ -187,12 +205,14 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
   ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
   rw [← toPartENat_cast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  -- 🎉 no goals
 #align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
   toPartENat c ≤ n ↔ c ≤ n := by
   rw [← toPartENat_cast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
+  -- 🎉 no goals
 #align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
 
 @[simp]
@@ -206,39 +226,54 @@ theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
 theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
   Cardinal.toPartENat c = n ↔ c = n := by
 rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
+-- 🎉 no goals
 #align cardinal.to_part_nat_eq_coe_nat_iff_eq Cardinal.toPartENat_eq_natCast_iff
 
 @[simp]
 theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
   ↑n < toPartENat c ↔ ↑n < c := by
   simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
+  -- 🎉 no goals
 #align part_enat.coe_nat_lt_coe_iff_lt Cardinal.natCast_lt_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
    toPartENat c < ↑n ↔ c < ↑n :=
 by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+   -- 🎉 no goals
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
+  -- ⊢ card α = 0 ↔ #α = 0
   conv_rhs => rw [← Nat.cast_zero]
+  -- ⊢ card α = 0 ↔ #α = ↑0
   simp only [← Cardinal.toPartENat_eq_natCast_iff]
+  -- ⊢ card α = 0 ↔ ↑toPartENat #α = ↑0
   simp only [PartENat.card, Nat.cast_zero]
+  -- 🎉 no goals
 #align part_enat.card_eq_zero_iff_empty PartENat.card_eq_zero_iff_empty
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
+  -- ⊢ card α ≤ 1 ↔ #α ≤ 1
   conv_rhs => rw [← Nat.cast_one]
+  -- ⊢ card α ≤ 1 ↔ #α ≤ ↑1
   rw [← Cardinal.toPartENat_le_natCast_iff]
+  -- ⊢ card α ≤ 1 ↔ ↑toPartENat #α ≤ ↑1
   simp only [PartENat.card, Nat.cast_one]
+  -- 🎉 no goals
 #align part_enat.card_le_one_iff_subsingleton PartENat.card_le_one_iff_subsingleton
 
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
+  -- ⊢ 1 < card α ↔ 1 < #α
   conv_rhs => rw [← Nat.cast_one]
+  -- ⊢ 1 < card α ↔ ↑1 < #α
   rw [← natCast_lt_toPartENat_iff]
+  -- ⊢ 1 < card α ↔ ↑1 < ↑toPartENat #α
   simp only [PartENat.card, Nat.cast_one]
+  -- 🎉 no goals
 #align part_enat.one_lt_card_iff_nontrivial PartENat.one_lt_card_iff_nontrivial
 
 end PartENat

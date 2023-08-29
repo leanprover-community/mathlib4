@@ -154,6 +154,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 
 theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+                  -- 🎉 no goals
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
 end Prod
@@ -241,6 +242,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 
 theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+                  -- 🎉 no goals
 #align ring_hom.prod_unique RingHom.prod_unique
 
 end Prod
@@ -350,7 +352,11 @@ def prodZeroRing : R ≃+* R × S where
   toFun x := (x, 0)
   invFun := Prod.fst
   map_add' := by simp
+                 -- 🎉 no goals
+                 -- 🎉 no goals
   map_mul' := by simp
+                    -- ⊢ (fun x => (x, 0)) (fst✝, snd✝).fst = (fst✝, snd✝)
+                             -- 🎉 no goals
   left_inv x := rfl
   right_inv x := by cases x; simp
 #align ring_equiv.prod_zero_ring RingEquiv.prodZeroRing
@@ -363,7 +369,11 @@ def zeroRingProd : R ≃+* S × R where
   toFun x := (0, x)
   invFun := Prod.snd
   map_add' := by simp
+                 -- 🎉 no goals
+                 -- 🎉 no goals
   map_mul' := by simp
+                    -- ⊢ (fun x => (0, x)) (fst✝, snd✝).snd = (fst✝, snd✝)
+                             -- 🎉 no goals
   left_inv x := rfl
   right_inv x := by cases x; simp
 #align ring_equiv.zero_ring_prod RingEquiv.zeroRingProd
@@ -378,9 +388,13 @@ theorem false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [I
   have :=
     NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero (show ((0 : R), (1 : S)) * (1, 0) = 0 by simp)
   rw [Prod.mk_eq_zero, Prod.mk_eq_zero] at this
+  -- ⊢ False
   rcases this with (⟨_, h⟩ | ⟨h, _⟩)
+  -- ⊢ False
   · exact zero_ne_one h.symm
+    -- 🎉 no goals
   · exact zero_ne_one h.symm
+    -- 🎉 no goals
 #align false_of_nontrivial_of_product_domain false_of_nontrivial_of_product_domain
 
 /-! ### Order -/

@@ -391,6 +391,7 @@ theorem lt_iff_le_and_ne [PartialOrder α] {a b : α} : a < b ↔ a ≤ b ∧ a 
 
 theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : x ≤ y → y = x ↔ ¬x < y := by
   rw [lt_iff_le_and_ne, not_and, Classical.not_not, eq_comm]
+  -- 🎉 no goals
 #align eq_iff_not_lt_of_le eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
@@ -463,20 +464,28 @@ theorem ne_iff_lt_iff_le [PartialOrder α] {a b : α} : (a ≠ b ↔ a < b) ↔ 
 -- Variant of `min_def` with the branches reversed.
 theorem min_def' [LinearOrder α] (a b : α) : min a b = if b ≤ a then b else a := by
   rw [min_def]
+  -- ⊢ (if a ≤ b then a else b) = if b ≤ a then b else a
   rcases lt_trichotomy a b with (lt | eq | gt)
   · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
+    -- 🎉 no goals
   · rw [if_pos eq.le, if_pos eq.ge, eq]
+    -- 🎉 no goals
   · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
+    -- 🎉 no goals
 #align min_def' min_def'
 
 -- Variant of `min_def` with the branches reversed.
 -- This is sometimes useful as it used to be the default.
 theorem max_def' [LinearOrder α] (a b : α) : max a b = if b ≤ a then a else b := by
   rw [max_def]
+  -- ⊢ (if a ≤ b then b else a) = if b ≤ a then a else b
   rcases lt_trichotomy a b with (lt | eq | gt)
   · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
+    -- 🎉 no goals
   · rw [if_pos eq.le, if_pos eq.ge, eq]
+    -- 🎉 no goals
   · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
+    -- 🎉 no goals
 #align max_def' max_def'
 
 theorem lt_of_not_le [LinearOrder α] {a b : α} (h : ¬b ≤ a) : a < b :=
@@ -600,7 +609,9 @@ theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutat
     (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Associative f := fun a b c ↦
   le_antisymm (assoc _ _ _) <| by
     rw [comm, comm b, comm _ c, comm a]
+    -- ⊢ f (f c b) a ≤ f c (f b a)
     exact assoc _ _ _
+    -- 🎉 no goals
 #align associative_of_commutative_of_le associative_of_commutative_of_le
 
 end PartialOrder
@@ -611,21 +622,28 @@ theorem Preorder.toLE_injective {α : Type*} : Function.Injective (@Preorder.toL
   | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
     { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
     cases h
+    -- ⊢ mk le_refl✝¹ le_trans✝¹ = mk le_refl✝ le_trans✝
     have : A_lt = B_lt := by
       funext a b
       show (LT.mk A_lt).lt a b = (LT.mk B_lt).lt a b
       rw [A_iff, B_iff]
     cases this
+    -- ⊢ mk le_refl✝¹ le_trans✝¹ = mk le_refl✝ le_trans✝
     congr
+    -- 🎉 no goals
 #align preorder.to_has_le_injective Preorder.toLE_injective
 
 @[ext]
 theorem PartialOrder.toPreorder_injective {α : Type*} :
     Function.Injective (@PartialOrder.toPreorder α) := fun A B h ↦ by
   cases A
+  -- ⊢ mk le_antisymm✝ = B
   cases B
+  -- ⊢ mk le_antisymm✝¹ = mk le_antisymm✝
   cases h
+  -- ⊢ mk le_antisymm✝¹ = mk le_antisymm✝
   congr
+  -- 🎉 no goals
 #align partial_order.to_preorder_injective PartialOrder.toPreorder_injective
 
 @[ext]
@@ -641,39 +659,52 @@ theorem LinearOrder.toPartialOrder_injective {α : Type*} :
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     cases h
+    -- ⊢ mk le_total✝¹ A_decidableLE A_decidableEq A_decidableLT = mk le_total✝ B_dec …
     obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
+    -- ⊢ mk le_total✝¹ A_decidableLE A_decidableEq A_decidableLT = mk le_total✝ A_dec …
     obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
+    -- ⊢ mk le_total✝¹ A_decidableLE A_decidableEq A_decidableLT = mk le_total✝ A_dec …
     obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
+    -- ⊢ mk le_total✝¹ A_decidableLE A_decidableEq A_decidableLT = mk le_total✝ A_dec …
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
     cases this
+    -- ⊢ mk le_total✝¹ A_decidableLE A_decidableEq A_decidableLT = mk le_total✝ A_dec …
     have : A_max = B_max := by
       funext a b
       exact (A_max_def _ _).trans (B_max_def _ _).symm
     cases this
+    -- ⊢ mk le_total✝¹ A_decidableLE A_decidableEq A_decidableLT = mk le_total✝ A_dec …
     have : A_compare = B_compare := by
       funext a b
       exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm
     congr
+    -- 🎉 no goals
 #align linear_order.to_partial_order_injective LinearOrder.toPartialOrder_injective
 
 theorem Preorder.ext {α} {A B : Preorder α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y
+  -- ⊢ x ≤ y ↔ x ≤ y
   exact H x y
+  -- 🎉 no goals
 #align preorder.ext Preorder.ext
 
 theorem PartialOrder.ext {α} {A B : PartialOrder α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y
+  -- ⊢ x ≤ y ↔ x ≤ y
   exact H x y
+  -- 🎉 no goals
 #align partial_order.ext PartialOrder.ext
 
 theorem LinearOrder.ext {α} {A B : LinearOrder α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y
+  -- ⊢ x ≤ y ↔ x ≤ y
   exact H x y
+  -- 🎉 no goals
 #align linear_order.ext LinearOrder.ext
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
@@ -733,7 +764,11 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
+                                                -- ⊢ (if b ≤ a then a else b) = if a ≤ b then a else b
+                                                                        -- 🎉 no goals
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
+                                                -- ⊢ (if b ≤ a then b else a) = if a ≤ b then b else a
+                                                                        -- 🎉 no goals
   decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.instLinearOrder
@@ -819,6 +854,7 @@ instance Pi.preorder {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)]
 theorem Pi.lt_def {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] {x y : ∀ i, α i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
   simp (config := { contextual := true }) [lt_iff_le_not_le, Pi.le_def]
+  -- 🎉 no goals
 #align pi.lt_def Pi.lt_def
 
 instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
@@ -843,7 +879,9 @@ theorem le_of_strongLT (h : a ≺ b) : a ≤ b := fun _ ↦ (h _).le
 
 theorem lt_of_strongLT [Nonempty ι] (h : a ≺ b) : a < b := by
   inhabit ι
+  -- ⊢ a < b
   exact Pi.lt_def.2 ⟨le_of_strongLT h, default, h _⟩
+  -- 🎉 no goals
 #align lt_of_strong_lt lt_of_strongLT
 
 theorem strongLT_of_strongLT_of_le (hab : a ≺ b) (hbc : b ≤ c) : a ≺ c := fun _ ↦
@@ -882,11 +920,13 @@ theorem update_le_iff : Function.update x i a ≤ y ↔ a ≤ y i ∧ ∀ (j) (_
 theorem update_le_update_iff :
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
   simp (config := { contextual := true }) [update_le_iff]
+  -- 🎉 no goals
 #align update_le_update_iff update_le_update_iff
 
 @[simp]
 theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by
   simp [update_le_update_iff]
+  -- 🎉 no goals
 #align update_le_update_iff' update_le_update_iff'
 
 @[simp]
@@ -896,18 +936,22 @@ theorem update_lt_update_iff : update x i a < update x i b ↔ a < b :=
 
 @[simp]
 theorem le_update_self_iff : x ≤ update x i a ↔ x i ≤ a := by simp [le_update_iff]
+                                                              -- 🎉 no goals
 #align le_update_self_iff le_update_self_iff
 
 @[simp]
 theorem update_le_self_iff : update x i a ≤ x ↔ a ≤ x i := by simp [update_le_iff]
+                                                              -- 🎉 no goals
 #align update_le_self_iff update_le_self_iff
 
 @[simp]
 theorem lt_update_self_iff : x < update x i a ↔ x i < a := by simp [lt_iff_le_not_le]
+                                                              -- 🎉 no goals
 #align lt_update_self_iff lt_update_self_iff
 
 @[simp]
 theorem update_lt_self_iff : update x i a < x ↔ a < x i := by simp [lt_iff_le_not_le]
+                                                              -- 🎉 no goals
 #align update_lt_self_iff update_lt_self_iff
 
 end Function
@@ -933,10 +977,12 @@ variable [Preorder α] [Nonempty β] {a b : α}
 
 @[simp]
 theorem const_le_const : const β a ≤ const β b ↔ a ≤ b := by simp [Pi.le_def]
+                                                             -- 🎉 no goals
 #align function.const_le_const Function.const_le_const
 
 @[simp]
 theorem const_lt_const : const β a < const β b ↔ a < b := by simpa [Pi.lt_def] using le_of_lt
+                                                             -- 🎉 no goals
 #align function.const_lt_const Function.const_lt_const
 
 end Function
@@ -967,12 +1013,16 @@ theorem max_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (max x y) :=
 
 theorem min_def_lt (x y : α) : min x y = if x < y then x else y := by
   rw [min_comm, min_def, ← ite_not]
+  -- ⊢ (if ¬y ≤ x then x else y) = if x < y then x else y
   simp only [not_le]
+  -- 🎉 no goals
 #align min_def_lt min_def_lt
 
 theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
   rw [max_comm, max_def, ← ite_not]
+  -- ⊢ (if ¬y ≤ x then y else x) = if x < y then y else x
   simp only [not_le]
+  -- 🎉 no goals
 #align max_def_lt max_def_lt
 
 end MinMaxRec
@@ -1027,12 +1077,27 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     compare (f a) (f b) =
       @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
   have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  -- ⊢ compare (f a) (f b) = compareOfLessAndEq a b
   simp only [h, compareOfLessAndEq]
+  -- ⊢ (if f a < f b then Ordering.lt else if f a = f b then Ordering.eq else Order …
   split_ifs <;> try (first | rfl | contradiction)
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- ⊢ False
+                -- 🎉 no goals
+                -- ⊢ False
+                -- 🎉 no goals
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h
+    -- ⊢ False
     contradiction
+    -- 🎉 no goals
   · have : f a = f b := by rename_i h; exact congrArg f h
+    -- ⊢ False
     contradiction
+    -- 🎉 no goals
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
@@ -1056,14 +1121,22 @@ def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) 
     max := (· ⊔ ·)
     min_def := by
       intros x y
+      -- ⊢ min x y = if x ≤ y then x else y
       apply inj
+      -- ⊢ f (min x y) = f (if x ≤ y then x else y)
       rw [apply_ite f]
+      -- ⊢ f (min x y) = if x ≤ y then f x else f y
       exact (hinf _ _).trans (min_def _ _)
+      -- 🎉 no goals
     max_def := by
       intros x y
+      -- ⊢ max x y = if x ≤ y then y else x
       apply inj
+      -- ⊢ f (max x y) = f (if x ≤ y then y else x)
       rw [apply_ite f]
+      -- ⊢ f (max x y) = if x ≤ y then f y else f x
       exact (hsup _ _).trans (max_def _ _)
+      -- 🎉 no goals
     compare_eq_compareOfLessAndEq := fun a b ↦
       compare_of_injective_eq_compareOfLessAndEq a b f inj }
 
@@ -1103,14 +1176,22 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
     max := (· ⊔ ·)
     min_def := by
       intros x y
+      -- ⊢ min x y = if x ≤ y then x else y
       apply inj
+      -- ⊢ f (min x y) = f (if x ≤ y then x else y)
       rw [apply_ite f]
+      -- ⊢ f (min x y) = if x ≤ y then f x else f y
       exact (hinf _ _).trans (min_def _ _)
+      -- 🎉 no goals
     max_def := by
       intros x y
+      -- ⊢ max x y = if x ≤ y then y else x
       apply inj
+      -- ⊢ f (max x y) = f (if x ≤ y then y else x)
       rw [apply_ite f]
+      -- ⊢ f (max x y) = if x ≤ y then f y else f x
       exact (hsup _ _).trans (max_def _ _)
+      -- 🎉 no goals
     compare_eq_compareOfLessAndEq := fun a b ↦
       (compare_f a b).trans <| compare_of_injective_eq_compareOfLessAndEq a b f inj }
 
@@ -1251,12 +1332,19 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
 
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
   refine' ⟨fun h ↦ _, _⟩
+  -- ⊢ x.fst < y.fst ∧ x.snd ≤ y.snd ∨ x.fst ≤ y.fst ∧ x.snd < y.snd
   · by_cases h₁ : y.1 ≤ x.1
+    -- ⊢ x.fst < y.fst ∧ x.snd ≤ y.snd ∨ x.fst ≤ y.fst ∧ x.snd < y.snd
     · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
+      -- 🎉 no goals
     · exact Or.inl ⟨LE.le.lt_of_not_le h.1.1 h₁, h.1.2⟩
+      -- 🎉 no goals
   · rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
+    -- ⊢ x < y
     · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_le h.1⟩
+      -- 🎉 no goals
     · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_le h.2⟩
+      -- 🎉 no goals
 #align prod.lt_iff Prod.lt_iff
 
 @[simp]
@@ -1297,16 +1385,23 @@ instance OrderDual.denselyOrdered (α : Type u) [LT α] [h : DenselyOrdered α] 
 @[simp]
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
   ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
+      -- 🎉 no goals
 #align densely_ordered_order_dual denselyOrdered_orderDual
 
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) :=
   ⟨fun a b ↦ by
     simp_rw [Prod.lt_iff]
+    -- ⊢ a.fst < b.fst ∧ a.snd ≤ b.snd ∨ a.fst ≤ b.fst ∧ a.snd < b.snd → ∃ a_2, (a.fs …
     rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
+    -- ⊢ ∃ a_1, (a.fst < a_1.fst ∧ a.snd ≤ a_1.snd ∨ a.fst ≤ a_1.fst ∧ a.snd < a_1.sn …
     · obtain ⟨c, ha, hb⟩ := exists_between h₁
+      -- ⊢ ∃ a_1, (a.fst < a_1.fst ∧ a.snd ≤ a_1.snd ∨ a.fst ≤ a_1.fst ∧ a.snd < a_1.sn …
       exact ⟨(c, _), Or.inl ⟨ha, h₂⟩, Or.inl ⟨hb, le_rfl⟩⟩
+      -- 🎉 no goals
     · obtain ⟨c, ha, hb⟩ := exists_between h₂
+      -- ⊢ ∃ a_1, (a.fst < a_1.fst ∧ a.snd ≤ a_1.snd ∨ a.fst ≤ a_1.fst ∧ a.snd < a_1.sn …
       exact ⟨(_, c), Or.inr ⟨h₁, ha⟩, Or.inr ⟨le_rfl, hb⟩⟩⟩
+      -- 🎉 no goals
 
 instance {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] :
     DenselyOrdered (∀ i, α i) :=
@@ -1355,10 +1450,20 @@ theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
 lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
+  -- ⊢ False
   simp only [not_or, ← Ne.def] at hne
+  -- ⊢ False
   cases' hne.1.lt_or_lt with h₁ h₁ <;> cases' hne.2.1.lt_or_lt with h₂ h₂ <;>
+  -- ⊢ False
+                                       -- ⊢ False
+                                       -- ⊢ False
     cases' hne.2.2.lt_or_lt with h₃ h₃
+    -- ⊢ False
+    -- ⊢ False
+    -- ⊢ False
+    -- ⊢ False
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
+  -- 🎉 no goals
 #align eq_or_eq_or_eq_of_forall_not_lt_lt eq_or_eq_or_eq_of_forall_not_lt_lt
 
 namespace PUnit
@@ -1374,8 +1479,17 @@ instance linearOrder: LinearOrder PUnit where
   decidableLE := fun _ _ ↦ Decidable.isTrue trivial
   decidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial
+                    -- ⊢ a✝ ≤ a✝
+                            -- 🎉 no goals
   le_trans    := by intros; trivial
+                    -- ⊢ a✝² ≤ c✝
+                            -- 🎉 no goals
   le_total    := by intros; exact Or.inl trivial
+                    -- ⊢ a✝ ≤ b✝ ∨ b✝ ≤ a✝
+                    -- ⊢ a✝² = b✝
+                         -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
   le_antisymm := by intros; rfl
   lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
 

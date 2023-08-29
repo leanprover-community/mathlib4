@@ -67,9 +67,13 @@ variable [PartialOrder α] [PriestleySpace α] {x y : α}
 theorem exists_clopen_upper_or_lower_of_ne (h : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ y ∉ U := by
   obtain h | h := h.not_le_or_not_le
+  -- ⊢ ∃ U, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ ¬y ∈ U
   · exact (exists_clopen_upper_of_not_le h).imp fun _ ↦ And.imp_right <| And.imp_left Or.inl
+    -- 🎉 no goals
   · obtain ⟨U, hU, hU', hy, hx⟩ := exists_clopen_lower_of_not_le h
+    -- ⊢ ∃ U, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ ¬y ∈ U
     exact ⟨U, hU, Or.inr hU', hx, hy⟩
+    -- 🎉 no goals
 #align exists_clopen_upper_or_lower_of_ne exists_clopen_upper_or_lower_of_ne
 
 -- See note [lower instance priority]

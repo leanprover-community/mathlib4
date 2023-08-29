@@ -181,10 +181,14 @@ instance : LE PosNum :=
 
 instance decidableLT : @DecidableRel PosNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
+               -- ⊢ Decidable (cmp a b = lt)
+                              -- 🎉 no goals
 #align pos_num.decidable_lt PosNum.decidableLT
 
 instance decidableLE : @DecidableRel PosNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
+               -- ⊢ Decidable ¬b < a
+                              -- 🎉 no goals
 #align pos_num.decidable_le PosNum.decidableLE
 
 end PosNum
@@ -311,10 +315,14 @@ instance : LE Num :=
 
 instance decidableLT : @DecidableRel Num (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
+               -- ⊢ Decidable (cmp a b = lt)
+                              -- 🎉 no goals
 #align num.decidable_lt Num.decidableLT
 
 instance decidableLE : @DecidableRel Num (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
+               -- ⊢ Decidable ¬b < a
+                              -- 🎉 no goals
 #align num.decidable_le Num.decidableLE
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -548,10 +556,14 @@ instance : LE ZNum :=
 
 instance decidableLT : @DecidableRel ZNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
+               -- ⊢ Decidable (cmp a b = lt)
+                              -- 🎉 no goals
 #align znum.decidable_lt ZNum.decidableLT
 
 instance decidableLE : @DecidableRel ZNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
+               -- ⊢ Decidable ¬b < a
+                              -- 🎉 no goals
 #align znum.decidable_le ZNum.decidableLE
 
 end ZNum

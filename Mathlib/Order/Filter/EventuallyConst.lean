@@ -33,6 +33,7 @@ def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingl
 theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
   (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, ball_image_iff]
+                                         -- 🎉 no goals
 
 theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
@@ -58,10 +59,12 @@ alias ⟨EventuallyConst.eventuallyEq_const, _⟩ := eventuallyConst_iff_exists_
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
   simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists_iff]
+  -- 🎉 no goals
 
 theorem eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
+  -- 🎉 no goals
 
 theorem eventuallyConst_set' {s : Set α} :
     EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
@@ -74,6 +77,7 @@ theorem eventuallyConst_set {s : Set α} :
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
     EventuallyConst f l ↔ EventuallyConst g l := by
   simp only [EventuallyConst, map_congr h]
+  -- 🎉 no goals
 
 @[simp] theorem eventuallyConst_id : EventuallyConst id l ↔ l.Subsingleton := Iff.rfl
 
@@ -131,11 +135,13 @@ variable [One β] {s : Set α} {c : β}
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
     EventuallyConst s l := by
   simpa [(· ∘ ·), hc, imp_false] using h.comp (· = c)
+  -- 🎉 no goals
 
 @[to_additive]
 theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l := by
   classical exact h.comp (if · then c else 1)
+  -- 🎉 no goals
 
 @[to_additive]
 theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
@@ -146,6 +152,9 @@ theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
 theorem mulIndicator_const_iff :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l := by
   rcases eq_or_ne c 1 with rfl | hc <;> simp [mulIndicator_const_iff_of_ne, *]
+  -- ⊢ EventuallyConst (mulIndicator s fun x => 1) l ↔ 1 = 1 ∨ EventuallyConst s l
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
 
 end EventuallyConst
 
@@ -153,12 +162,16 @@ lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
   (atTop_basis.eventuallyConst_iff' fun i _ ↦ left_mem_Ici).trans <| by
     simp only [true_and, mem_Ici]
+    -- 🎉 no goals
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :
     EventuallyConst f atTop ↔ ∃ n, ∀ m, n ≤ m → f (m + 1) = f m := by
   rw [eventuallyConst_atTop]
+  -- ⊢ (∃ i, ∀ (j : ℕ), i ≤ j → f j = f i) ↔ ∃ n, ∀ (m : ℕ), n ≤ m → f (m + 1) = f m
   refine exists_congr fun n ↦ ⟨fun h m hm ↦ ?_, fun h m hm ↦ ?_⟩
+  -- ⊢ f (m + 1) = f m
   · exact (h (m + 1) (hm.trans m.le_succ)).trans (h m hm).symm
+    -- 🎉 no goals
   · induction m, hm using Nat.le_induction with
     | base => rfl
     | succ m hm ihm => exact (h m hm).trans ihm

@@ -48,7 +48,9 @@ def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
   map {U V} i g := fun x : V.unop => g (i.unop x)
   map_id U := by
     ext g
+    -- ⊢ { obj := fun U => (x : { x // x ∈ U.unop }) → T ↑x, map := fun {U V} i g x = …
     rfl
+    -- 🎉 no goals
   map_comp {U V W} i j := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types TopCat.presheafToTypes
@@ -81,7 +83,9 @@ def presheafToType (T : Type v) : X.Presheaf (Type v) where
   map {U V} i g := g ∘ i.unop
   map_id U := by
     ext g
+    -- ⊢ { obj := fun U => { x // x ∈ U.unop } → T, map := fun {U V} i g => g ∘ fun x …
     rfl
+    -- 🎉 no goals
   map_comp {U V W} i j := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Type TopCat.presheafToType
@@ -122,6 +126,7 @@ def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRi
   -- hence forms a ring
   @CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R) <|
   show CommRing (ContinuousMap _ _) by infer_instance
+                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.continuous_functions TopCat.continuousFunctions
 
@@ -134,6 +139,8 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   map_one' := rfl
   map_zero' := rfl
   map_add' := by aesop_cat
+                 -- 🎉 no goals
+                 -- 🎉 no goals
   map_mul' := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align Top.continuous_functions.pullback TopCat.continuousFunctions.pullback
@@ -163,14 +170,18 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
       map := fun {X Y} f => continuousFunctions.pullback f R
       map_id := fun X => by
         ext
+        -- ⊢ ↑({ obj := fun X => continuousFunctions X R, map := fun {X Y} f => continuou …
         rfl
+        -- 🎉 no goals
       map_comp := fun {X Y Z} f g => rfl }
   map {R S} φ :=
     { app := fun X => continuousFunctions.map X φ
       naturality := fun X Y f => rfl }
   map_id X := by
     ext
+    -- ⊢ ↑(NatTrans.app ({ obj := fun R => CategoryTheory.Functor.mk { obj := fun X = …
     rfl
+    -- 🎉 no goals
   map_comp {X Y Z} f g := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.CommRing_yoneda TopCat.commRingYoneda

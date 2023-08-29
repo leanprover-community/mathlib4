@@ -67,8 +67,11 @@ instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ ↦ ℕ → �
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T
+    -- ⊢ { entry := entry✝, row_weak' := row_weak'✝, col_strict' := col_strict'✝, zer …
     cases T'
+    -- ⊢ { entry := entry✝¹, row_weak' := row_weak'✝¹, col_strict' := col_strict'✝¹,  …
     congr
+    -- 🎉 no goals
 #align ssyt.fun_like Ssyt.funLike
 
 /-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
@@ -84,7 +87,9 @@ theorem to_fun_eq_coe {μ : YoungDiagram} {T : Ssyt μ} : T.entry = (T : ℕ →
 theorem ext {μ : YoungDiagram} {T T' : Ssyt μ} (h : ∀ i j, T i j = T' i j) : T = T' :=
   FunLike.ext T T' fun _ ↦ by
     funext
+    -- ⊢ ↑T x✝¹ x✝ = ↑T' x✝¹ x✝
     apply h
+    -- 🎉 no goals
 #align ssyt.ext Ssyt.ext
 
 /-- Copy of an `Ssyt μ` with a new `entry` equal to the old one. Useful to fix definitional
@@ -125,15 +130,21 @@ theorem zeros {μ : YoungDiagram} (T : Ssyt μ) {i j : ℕ} (not_cell : (i, j) �
 theorem row_weak_of_le {μ : YoungDiagram} (T : Ssyt μ) {i j1 j2 : ℕ} (hj : j1 ≤ j2)
     (cell : (i, j2) ∈ μ) : T i j1 ≤ T i j2 := by
   cases' eq_or_lt_of_le hj with h h
+  -- ⊢ ↑T i j1 ≤ ↑T i j2
   · rw [h]
+    -- 🎉 no goals
   · exact T.row_weak h cell
+    -- 🎉 no goals
 #align ssyt.row_weak_of_le Ssyt.row_weak_of_le
 
 theorem col_weak {μ : YoungDiagram} (T : Ssyt μ) {i1 i2 j : ℕ} (hi : i1 ≤ i2) (cell : (i2, j) ∈ μ) :
     T i1 j ≤ T i2 j := by
   cases' eq_or_lt_of_le hi with h h
+  -- ⊢ ↑T i1 j ≤ ↑T i2 j
   · rw [h]
+    -- 🎉 no goals
   · exact le_of_lt (T.col_strict h cell)
+    -- 🎉 no goals
 #align ssyt.col_weak Ssyt.col_weak
 
 /-- The "highest weight" SSYT of a given shape has all i's in row i, for each i. -/
@@ -141,10 +152,14 @@ def highestWeight (μ : YoungDiagram) : Ssyt μ where
   entry i j := if (i, j) ∈ μ then i else 0
   row_weak' hj hcell := by
     simp only
+    -- ⊢ (if (i✝, j1✝) ∈ μ then i✝ else 0) ≤ if (i✝, j2✝) ∈ μ then i✝ else 0
     rw [if_pos hcell, if_pos (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
+    -- 🎉 no goals
   col_strict' hi hcell := by
     simp only
+    -- ⊢ (if (i1✝, j✝) ∈ μ then i1✝ else 0) < if (i2✝, j✝) ∈ μ then i2✝ else 0
     rwa [if_pos hcell, if_pos (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
+    -- 🎉 no goals
   zeros' not_cell := if_neg not_cell
 #align ssyt.highest_weight Ssyt.highestWeight
 

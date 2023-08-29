@@ -50,12 +50,16 @@ noncomputable def withDensity (κ : kernel α β) [IsSFiniteKernel κ] (f : α �
     (⟨fun a => (κ a).withDensity (f a),
       by
         refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+        -- ⊢ Measurable fun b => ↑↑(Measure.withDensity (↑κ b) (f b)) s
         simp_rw [withDensity_apply _ hs]
+        -- ⊢ Measurable fun b => ∫⁻ (a : β) in s, f b a ∂↑κ b
         exact hf.set_lintegral_kernel_prod_right hs⟩ : kernel α β)) fun _ => 0
+        -- 🎉 no goals
 #align probability_theory.kernel.with_density ProbabilityTheory.kernel.withDensity
 
 theorem withDensity_of_not_measurable (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : ¬Measurable (Function.uncurry f)) : withDensity κ f = 0 := by classical exact dif_neg hf
+                                                                        -- 🎉 no goals
 #align probability_theory.kernel.with_density_of_not_measurable ProbabilityTheory.kernel.withDensity_of_not_measurable
 
 protected theorem withDensity_apply (κ : kernel α β) [IsSFiniteKernel κ]
@@ -70,6 +74,7 @@ theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) {s : Set β} (hs : MeasurableSet s) :
     withDensity κ f a s = ∫⁻ b in s, f a b ∂κ a := by
   rw [kernel.withDensity_apply κ hf, withDensity_apply _ hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
 theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
@@ -78,6 +83,7 @@ theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
   rw [kernel.withDensity_apply _ hf,
     lintegral_withDensity_eq_lintegral_mul _ (Measurable.of_uncurry_left hf) hg]
   simp_rw [Pi.mul_apply]
+  -- 🎉 no goals
 #align probability_theory.kernel.lintegral_with_density ProbabilityTheory.kernel.lintegral_withDensity
 
 theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -85,18 +91,25 @@ theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
     (hg : Measurable (Function.uncurry g)) :
     ∫ b, f b ∂withDensity κ (fun a b => g a b) a = ∫ b, g a b • f b ∂κ a := by
   rw [kernel.withDensity_apply, integral_withDensity_eq_integral_smul]
+  -- ⊢ Measurable fun b => g a b
   · exact Measurable.of_uncurry_left hg
+    -- 🎉 no goals
   · exact measurable_coe_nnreal_ennreal.comp hg
+    -- 🎉 no goals
 #align probability_theory.kernel.integral_with_density ProbabilityTheory.kernel.integral_withDensity
 
 theorem withDensity_add_left (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
+  -- ⊢ withDensity (κ + η) f = withDensity κ f + withDensity η f
   · ext a s
+    -- ⊢ ↑↑(↑(withDensity (κ + η) f) a) s = ↑↑(↑(withDensity κ f + withDensity η f) a …
     simp only [kernel.withDensity_apply _ hf, coeFn_add, Pi.add_apply, withDensity_add_measure,
       Measure.add_apply]
   · simp_rw [withDensity_of_not_measurable _ hf]
+    -- ⊢ 0 = 0 + 0
     rw [zero_add]
+    -- 🎉 no goals
 #align probability_theory.kernel.with_density_add_left ProbabilityTheory.kernel.withDensity_add_left
 
 theorem withDensity_kernel_sum [Countable ι] (κ : ι → kernel α β) (hκ : ∀ i, IsSFiniteKernel (κ i))
@@ -104,34 +117,48 @@ theorem withDensity_kernel_sum [Countable ι] (κ : ι → kernel α β) (hκ : 
     @withDensity _ _ _ _ (kernel.sum κ) (isSFiniteKernel_sum hκ) f =
       kernel.sum fun i => withDensity (κ i) f := by
   by_cases hf : Measurable (Function.uncurry f)
+  -- ⊢ withDensity (kernel.sum κ) f = kernel.sum fun i => withDensity (κ i) f
   · ext1 a
+    -- ⊢ ↑(withDensity (kernel.sum κ) f) a = ↑(kernel.sum fun i => withDensity (κ i)  …
     simp_rw [sum_apply, kernel.withDensity_apply _ hf, sum_apply,
       withDensity_sum (fun n => κ n a) (f a)]
   · simp_rw [withDensity_of_not_measurable _ hf]
+    -- ⊢ 0 = kernel.sum fun i => 0
     exact sum_zero.symm
+    -- 🎉 no goals
 #align probability_theory.kernel.with_density_kernel_sum ProbabilityTheory.kernel.withDensity_kernel_sum
 
 theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
     withDensity κ (∑' n, f n) = kernel.sum fun n => withDensity κ (f n) := by
   have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => ENNReal.summable
+  -- ⊢ withDensity κ (∑' (n : ι), f n) = kernel.sum fun n => withDensity κ (f n)
   have h_sum : Summable fun n => f n := Pi.summable.mpr h_sum_a
+  -- ⊢ withDensity κ (∑' (n : ι), f n) = kernel.sum fun n => withDensity κ (f n)
   ext a s hs
+  -- ⊢ ↑↑(↑(withDensity κ (∑' (n : ι), f n)) a) s = ↑↑(↑(kernel.sum fun n => withDe …
   rw [sum_apply' _ a hs, withDensity_apply' κ _ a hs]
+  -- ⊢ ∫⁻ (b : β) in s, tsum (fun n => f n) a b ∂↑κ a = ∑' (n : ι), ↑↑(↑(withDensit …
   swap
+  -- ⊢ Measurable (Function.uncurry (∑' (n : ι), f n))
   · have : Function.uncurry (∑' n, f n) = ∑' n, Function.uncurry (f n) := by
       ext1 p
       simp only [Function.uncurry_def]
       rw [tsum_apply h_sum, tsum_apply (h_sum_a _), tsum_apply]
       exact Pi.summable.mpr fun p => ENNReal.summable
     rw [this]
+    -- ⊢ Measurable (∑' (n : ι), Function.uncurry (f n))
     exact Measurable.ennreal_tsum' hf
+    -- 🎉 no goals
   have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b => f n a b) b ∂κ a := by
     congr with b
     rw [tsum_apply h_sum, tsum_apply (h_sum_a a)]
   rw [this, lintegral_tsum fun n => (Measurable.of_uncurry_left (hf n)).aemeasurable]
+  -- ⊢ ∑' (i : ι), ∫⁻ (a_1 : β) in s, f i a a_1 ∂↑κ a = ∑' (n : ι), ↑↑(↑(withDensit …
   congr with n
+  -- ⊢ ∫⁻ (a_1 : β) in s, f n a a_1 ∂↑κ a = ↑↑(↑(withDensity κ (f n)) a) s
   rw [withDensity_apply' _ (hf n) a hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.with_density_tsum ProbabilityTheory.kernel.withDensity_tsum
 
 /-- If a kernel `κ` is finite and a function `f : α → β → ℝ≥0∞` is bounded, then `withDensity κ f`
@@ -139,6 +166,7 @@ is finite. -/
 theorem isFiniteKernel_withDensity_of_bounded (κ : kernel α β) [IsFiniteKernel κ] {B : ℝ≥0∞}
     (hB_top : B ≠ ∞) (hf_B : ∀ a b, f a b ≤ B) : IsFiniteKernel (withDensity κ f) := by
   by_cases hf : Measurable (Function.uncurry f)
+  -- ⊢ IsFiniteKernel (withDensity κ f)
   · exact ⟨⟨B * IsFiniteKernel.bound κ, ENNReal.mul_lt_top hB_top (IsFiniteKernel.bound_ne_top κ),
       fun a => by
         rw [withDensity_apply' κ hf a MeasurableSet.univ]
@@ -148,7 +176,9 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : kernel α β) [IsFiniteKerne
             simp only [Measure.restrict_univ, MeasureTheory.lintegral_const]
           _ ≤ B * IsFiniteKernel.bound κ := mul_le_mul_left' (measure_le_bound κ a Set.univ) _⟩⟩
   · rw [withDensity_of_not_measurable _ hf]
+    -- ⊢ IsFiniteKernel 0
     infer_instance
+    -- 🎉 no goals
 #align probability_theory.kernel.is_finite_kernel_with_density_of_bounded ProbabilityTheory.kernel.isFiniteKernel_withDensity_of_bounded
 
 /-- Auxiliary lemma for `IsSFiniteKernel.withDensity`.
@@ -160,8 +190,13 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   -- functions, and decompose an s-finite kernel as a sum of finite kernels. We then use that
   -- `withDensity` commutes with sums for both arguments and get a sum of finite kernels.
   by_cases hf : Measurable (Function.uncurry f)
+  -- ⊢ IsSFiniteKernel (withDensity κ f)
   swap; · rw [withDensity_of_not_measurable _ hf]; infer_instance
+  -- ⊢ IsSFiniteKernel (withDensity κ f)
+          -- ⊢ IsSFiniteKernel 0
+                                                   -- 🎉 no goals
   let fs : ℕ → α → β → ℝ≥0∞ := fun n a b => min (f a b) (n + 1) - min (f a b) n
+  -- ⊢ IsSFiniteKernel (withDensity κ f)
   have h_le : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → f a b ≤ n := by
     intro a b n hn
     have : (f a b).toReal ≤ n := Nat.le_of_ceil_le hn
@@ -199,11 +234,18 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
     rw [Filter.EventuallyEq, Filter.eventually_atTop]
     exact ⟨⌈(f a b).toReal⌉₊, fun n hn => (min_eq_left (h_le a b n hn)).symm⟩
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
+  -- ⊢ IsSFiniteKernel (kernel.sum fun n => withDensity κ (fs n))
   swap; · exact fun _ => (hf.min measurable_const).sub (hf.min measurable_const)
+  -- ⊢ ∀ (n : ℕ), Measurable (Function.uncurry (fs n))
+          -- 🎉 no goals
   refine' isSFiniteKernel_sum fun n => _
+  -- ⊢ IsSFiniteKernel (withDensity κ (fs n))
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
+  -- ⊢ IsFiniteKernel (withDensity κ (fs n))
   refine' isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => _
+  -- ⊢ fs n a b ≤ ↑((fun x x_1 => x + x_1) (↑n) 1)
   norm_cast
+  -- ⊢ fs n a b ≤ ↑(n + 1)
   calc
     fs n a b ≤ min (f a b) (n + 1) := tsub_le_self
     _ ≤ n + 1 := (min_le_right _ _)
@@ -219,6 +261,7 @@ nonrec theorem IsSFiniteKernel.withDensity (κ : kernel α β) [IsSFiniteKernel 
     congr
     exact (kernel_sum_seq κ).symm
   rw [h_eq_sum]
+  -- ⊢ IsSFiniteKernel (kernel.sum fun i => kernel.withDensity (seq κ i) f)
   exact isSFiniteKernel_sum fun n =>
     isSFiniteKernel_withDensity_of_isFiniteKernel (seq κ n) hf_ne_top
 #align probability_theory.kernel.is_s_finite_kernel.with_density ProbabilityTheory.kernel.IsSFiniteKernel.withDensity

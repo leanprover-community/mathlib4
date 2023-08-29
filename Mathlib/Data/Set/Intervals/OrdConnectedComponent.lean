@@ -37,7 +37,9 @@ theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
   ext <| (Surjective.forall toDual.surjective).2 fun x => by
     rw [mem_ordConnectedComponent, dual_uIcc]
+    -- ⊢ ↑ofDual ⁻¹' [[x✝, x]] ⊆ ↑ofDual ⁻¹' s ↔ ↑toDual x ∈ ↑ofDual ⁻¹' ordConnected …
     rfl
+    -- 🎉 no goals
 #align set.dual_ord_connected_component Set.dual_ordConnectedComponent
 
 theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
@@ -51,6 +53,7 @@ theorem subset_ordConnectedComponent {t} [h : OrdConnected s] (hs : x ∈ s) (ht
 @[simp]
 theorem self_mem_ordConnectedComponent : x ∈ ordConnectedComponent s x ↔ x ∈ s := by
   rw [mem_ordConnectedComponent, uIcc_self, singleton_subset_iff]
+  -- 🎉 no goals
 #align set.self_mem_ord_connected_component Set.self_mem_ordConnectedComponent
 
 @[simp]
@@ -61,6 +64,7 @@ theorem nonempty_ordConnectedComponent : (ordConnectedComponent s x).Nonempty �
 @[simp]
 theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x ∉ s := by
   rw [← not_nonempty_iff_eq_empty, nonempty_ordConnectedComponent]
+  -- 🎉 no goals
 #align set.ord_connected_component_eq_empty Set.ordConnectedComponent_eq_empty
 
 @[simp]
@@ -71,16 +75,19 @@ theorem ordConnectedComponent_empty : ordConnectedComponent ∅ x = ∅ :=
 @[simp]
 theorem ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by
   simp [ordConnectedComponent]
+  -- 🎉 no goals
 #align set.ord_connected_component_univ Set.ordConnectedComponent_univ
 
 theorem ordConnectedComponent_inter (s t : Set α) (x : α) :
     ordConnectedComponent (s ∩ t) x = ordConnectedComponent s x ∩ ordConnectedComponent t x := by
   simp [ordConnectedComponent, setOf_and]
+  -- 🎉 no goals
 #align set.ord_connected_component_inter Set.ordConnectedComponent_inter
 
 theorem mem_ordConnectedComponent_comm :
     y ∈ ordConnectedComponent s x ↔ x ∈ ordConnectedComponent s y := by
   rw [mem_ordConnectedComponent, mem_ordConnectedComponent, uIcc_comm]
+  -- 🎉 no goals
 #align set.mem_ord_connected_component_comm Set.mem_ordConnectedComponent_comm
 
 theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
@@ -126,10 +133,15 @@ theorem ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
 theorem ordConnectedProj_eq {x y : s} :
     ordConnectedProj s x = ordConnectedProj s y ↔ [[(x : α), y]] ⊆ s := by
   constructor <;> intro h
+  -- ⊢ ordConnectedProj s x = ordConnectedProj s y → [[↑x, ↑y]] ⊆ s
+                  -- ⊢ [[↑x, ↑y]] ⊆ s
+                  -- ⊢ ordConnectedProj s x = ordConnectedProj s y
   · rw [← mem_ordConnectedComponent, ← ordConnectedComponent_ordConnectedProj, h,
       ordConnectedComponent_ordConnectedProj, self_mem_ordConnectedComponent]
     exact y.2
+    -- 🎉 no goals
   · simp only [ordConnectedProj, ordConnectedComponent_eq h]
+    -- 🎉 no goals
 #align set.ord_connected_proj_eq Set.ordConnectedProj_eq
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
@@ -141,9 +153,13 @@ def ordConnectedSection (s : Set α) : Set α :=
 theorem dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
   simp_rw [ordConnectedSection, ordConnectedProj]
+  -- ⊢ (range fun x => Nonempty.some (_ : Set.Nonempty (ordConnectedComponent (↑ofD …
   ext x
+  -- ⊢ (x ∈ range fun x => Nonempty.some (_ : Set.Nonempty (ordConnectedComponent ( …
   simp [dual_ordConnectedComponent]
+  -- ⊢ (∃ a h, Nonempty.some (_ : Set.Nonempty (↑ofDual ⁻¹' ordConnectedComponent s …
   tauto
+  -- 🎉 no goals
 #align set.dual_ord_connected_section Set.dual_ordConnectedSection
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
@@ -153,6 +169,8 @@ theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
 theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSection s)
     (hy : y ∈ ordConnectedSection s) (h : [[x, y]] ⊆ s) : x = y := by
   rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
+  -- ⊢ ordConnectedProj s x = y
+                           -- ⊢ ordConnectedProj s x = ordConnectedProj s y
   exact
     ordConnectedProj_eq.2
       (mem_ordConnectedComponent_trans
@@ -195,14 +213,24 @@ def ordT5Nhd (s t : Set α) : Set α :=
 
 theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rw [disjoint_iff_inf_le]
+  -- ⊢ ordT5Nhd s t ⊓ ordT5Nhd t s ≤ ⊥
   rintro x ⟨hx₁, hx₂⟩
+  -- ⊢ x ∈ ⊥
   rcases mem_iUnion₂.1 hx₁ with ⟨a, has, ha⟩
+  -- ⊢ x ∈ ⊥
   clear hx₁
+  -- ⊢ x ∈ ⊥
   rcases mem_iUnion₂.1 hx₂ with ⟨b, hbt, hb⟩
+  -- ⊢ x ∈ ⊥
   clear hx₂
+  -- ⊢ x ∈ ⊥
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
+  -- ⊢ x ∈ ⊥
   cases' le_total a b with hab hab
+  -- ⊢ x ∈ ⊥
   on_goal 2 => swap_var a ↔ b, s ↔ t, ha ↔ hb, has ↔ hbt
+  -- ⊢ x ∈ ⊥
+  -- ⊢ x ∈ ⊥
   all_goals
 -- porting note: wlog not implemented yet, the following replaces the three previous lines
 -- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s

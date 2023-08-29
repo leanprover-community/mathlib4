@@ -34,8 +34,11 @@ def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} [On
     mul_le_mul_left := fun a b ab c =>
       show f (c * a) ≤ f (c * b) by
         rw [mul, mul]
+        -- ⊢ f c * f a ≤ f c * f b
         apply mul_le_mul_left'
+        -- ⊢ f a ≤ f b
         exact ab }
+        -- 🎉 no goals
 #align function.injective.ordered_comm_monoid Function.Injective.orderedCommMonoid
 #align function.injective.ordered_add_comm_monoid Function.Injective.orderedAddCommMonoid
 
@@ -84,9 +87,14 @@ theorem eq_and_eq_of_le_of_le_of_mul_le [Mul α] [LinearOrder α]
     [ContravariantClass α α (· * ·) (· ≤ ·)] {a b a0 b0 : α} (ha : a0 ≤ a) (hb : b0 ≤ b)
     (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by
   haveI := Mul.to_covariantClass_right α
+  -- ⊢ a = a0 ∧ b = b0
   have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt (mul_lt_mul_of_lt_of_le · hb)
+  -- ⊢ a = a0 ∧ b = b0
   have hb' : ¬a0 * b0 < a * b → ¬b0 < b := mt (mul_lt_mul_of_le_of_lt ha ·)
+  -- ⊢ a = a0 ∧ b = b0
   push_neg at ha' hb'
+  -- ⊢ a = a0 ∧ b = b0
   exact ⟨ha.antisymm' (ha' ab), hb.antisymm' (hb' ab)⟩
+  -- 🎉 no goals
 #align eq_and_eq_of_le_of_le_of_mul_le eq_and_eq_of_le_of_le_of_mul_le
 #align eq_and_eq_of_le_of_le_of_add_le eq_and_eq_of_le_of_le_of_add_le

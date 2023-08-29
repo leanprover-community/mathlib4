@@ -65,6 +65,7 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
     (g : γ → β) : (∏ x in s, f x, ∏ x in s, g x) = ∏ x in s, (f x, g x) :=
   haveI := Classical.decEq γ
   Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
+                                -- 🎉 no goals
 #align prod_mk_prod prod_mk_prod
 #align prod_mk_sum prod_mk_sum
 
@@ -78,7 +79,9 @@ variable [∀ i, CommMonoid (Z i)]
 theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :
     (∏ i, Pi.mulSingle i (f i)) = f := by
   ext a
+  -- ⊢ Finset.prod univ (fun i => Pi.mulSingle i (f i)) a = f a
   simp
+  -- 🎉 no goals
 #align finset.univ_prod_mul_single Finset.univ_prod_mulSingle
 #align finset.univ_sum_single Finset.univ_sum_single
 
@@ -86,9 +89,13 @@ theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :
 theorem MonoidHom.functions_ext [Finite I] (G : Type*) [CommMonoid G] (g h : (∀ i, Z i) →* G)
     (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
+  -- ⊢ g = h
   ext k
+  -- ⊢ ↑g k = ↑h k
   rw [← Finset.univ_prod_mulSingle k, g.map_prod, h.map_prod]
+  -- ⊢ ∏ x : I, ↑g (Pi.mulSingle x (k x)) = ∏ x : I, ↑h (Pi.mulSingle x (k x))
   simp only [H]
+  -- 🎉 no goals
 #align monoid_hom.functions_ext MonoidHom.functions_ext
 #align add_monoid_hom.functions_ext AddMonoidHom.functions_ext
 

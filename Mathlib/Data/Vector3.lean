@@ -44,8 +44,11 @@ def nil : Vector3 α 0 :=
 @[match_pattern]
 def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i => by
   refine' i.cases' _ _
+  -- ⊢ α
   exact a
+  -- ⊢ Fin2 n → α
   exact v
+  -- 🎉 no goals
 #align vector3.cons Vector3.cons
 
 section
@@ -113,12 +116,16 @@ theorem cons_head_tail (v : Vector3 α (succ n)) : (head v :: tail v) = v :=
 @[elab_as_elim]  -- porting note: add `elab_as_elim`
 def nilElim {C : Vector3 α 0 → Sort u} (H : C []) (v : Vector3 α 0) : C v := by
   rw [eq_nil v]; apply H
+  -- ⊢ C []
+                 -- 🎉 no goals
 #align vector3.nil_elim Vector3.nilElim
 
 /-- Recursion principle for a nonempty vector. -/
 @[elab_as_elim]  -- porting note: add `elab_as_elim`
 def consElim {C : Vector3 α (succ n) → Sort u} (H : ∀ (a : α) (t : Vector3 α n), C (a :: t))
     (v : Vector3 α (succ n)) : C v := by rw [← cons_head_tail v]; apply H
+                                         -- ⊢ C (head v :: tail v)
+                                                                  -- 🎉 no goals
 #align vector3.cons_elim Vector3.consElim
 
 @[simp]
@@ -170,7 +177,9 @@ theorem append_cons (a : α) (v : Vector3 α m) (w : Vector3 α n) : (a :: v) +-
 theorem append_left :
     ∀ {m} (i : Fin2 m) (v : Vector3 α m) {n} (w : Vector3 α n), (v +-+ w) (left n i) = v i
   | _, @fz m, v, n, w => v.consElim fun a _t => by simp [*, left]
+                                                   -- 🎉 no goals
   | _, @fs m i, v, n, w => v.consElim fun _a t => by simp [append_left, left]
+                                                     -- 🎉 no goals
 #align vector3.append_left Vector3.append_left
 
 @[simp]
@@ -178,6 +187,7 @@ theorem append_add :
     ∀ {m} (v : Vector3 α m) {n} (w : Vector3 α n) (i : Fin2 n), (v +-+ w) (add i m) = w i
   | 0, v, n, w, i => rfl
   | succ m, v, n, w, i => v.consElim fun _a t => by simp [append_add, add]
+                                                    -- 🎉 no goals
 #align vector3.append_add Vector3.append_add
 
 /-- Insert `a` into `v` at index `i`. -/
@@ -188,6 +198,11 @@ def insert (a : α) (v : Vector3 α n) (i : Fin2 (succ n)) : Vector3 α (succ n)
 @[simp]
 theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
   refine' funext fun j => j.cases' _ _ <;> intros <;> rfl
+  -- ⊢ insert a v fz fz = (a :: v) fz
+                                           -- ⊢ insert a v fz fz = (a :: v) fz
+                                           -- ⊢ insert a v fz (fs n✝) = (a :: v) (fs n✝)
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
 #align vector3.insert_fz Vector3.insert_fz
 
 @[simp]
@@ -195,14 +210,22 @@ theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (succ n)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
   funext fun j => by
     refine' j.cases' _ fun j => _ <;> simp [insert, insertPerm]
+    -- ⊢ insert a (b :: v) (fs i) fz = (b :: insert a v i) fz
+                                      -- 🎉 no goals
+                                      -- ⊢ (a :: b :: v)
     refine' Fin2.cases' _ _ (insertPerm i j) <;> simp [insertPerm]
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
 #align vector3.insert_fs Vector3.insert_fs
 
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (succ n))
     (e : succ n + m = succ (n + m)) :
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
   refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e; rfl
+  -- ⊢ insert a ([] +-+ v) (Eq.recOn e (add i 0)) = Eq.recOn e ([] +-+ insert a v i)
+                                                                 -- ⊢ insert a ((b :: t) +-+ v) (Eq.recOn x✝ (add i (succ k))) = Eq.recOn x✝ ((b : …
   have e' := succ_add n k
+  -- ⊢ insert a ((b :: t) +-+ v) (Eq.recOn x✝ (add i (succ k))) = Eq.recOn x✝ ((b : …
   change
     insert a (b :: t +-+ v) (Eq.recOn (congr_arg succ e') (fs (add i k))) =
       Eq.recOn (congr_arg succ e') (b :: t +-+ insert a v i)
@@ -211,6 +234,9 @@ theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (
       fs (Eq.recOn e' (i.add k) : Fin2 (succ (n + k))) =
         Eq.recOn (congr_arg succ e') (fs (i.add k)))]
   simp; rw [IH]; exact Eq.recOn e' rfl
+  -- ⊢ (b :: insert a (t +-+ v) (e' ▸ add i k)) = (_ : succ (succ n + k) = succ (su …
+        -- ⊢ (b :: Eq.recOn e' (t +-+ insert a v i)) = (_ : succ (succ n + k) = succ (suc …
+                 -- 🎉 no goals
 #align vector3.append_insert Vector3.append_insert
 
 end Vector3
@@ -233,10 +259,14 @@ def VectorAll : ∀ k, (Vector3 α k → Prop) → Prop
 
 theorem exists_vector_zero (f : Vector3 α 0 → Prop) : Exists f ↔ f [] :=
   ⟨fun ⟨v, fv⟩ => by rw [← eq_nil v]; exact fv, fun f0 => ⟨[], f0⟩⟩
+                     -- ⊢ f v
+                                      -- 🎉 no goals
 #align exists_vector_zero exists_vector_zero
 
 theorem exists_vector_succ (f : Vector3 α (succ n) → Prop) : Exists f ↔ ∃ x v, f (x :: v) :=
   ⟨fun ⟨v, fv⟩ => ⟨_, _, by rw [cons_head_tail v]; exact fv⟩, fun ⟨x, v, fxv⟩ => ⟨_, fxv⟩⟩
+                            -- ⊢ f v
+                                                   -- 🎉 no goals
 #align exists_vector_succ exists_vector_succ
 
 theorem vectorEx_iff_exists : ∀ {n} (f : Vector3 α n → Prop), VectorEx n f ↔ Exists f
@@ -278,15 +308,20 @@ theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
 theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by
   refine' v.recOn _ _
+  -- ⊢ VectorAllP p [] ↔ ∀ (i : Fin2 0), p []
   · exact ⟨fun _ => Fin2.elim0, fun _ => trivial⟩
+    -- 🎉 no goals
   · simp only [vectorAllP_cons]
+    -- ⊢ ∀ {n : ℕ} (a : α) (w : Vector3 α n), (VectorAllP p w ↔ ∀ (i : Fin2 n), p (w  …
     refine' fun {n} a v IH =>
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
           refine' i.cases' _ _
           exacts [pa, h], fun h => ⟨_, fun i => _⟩⟩
     · simpa using h fz
+      -- 🎉 no goals
     · simpa using h (fs i)
+      -- 🎉 no goals
 #align vector_allp_iff_forall vectorAllP_iff_forall
 
 theorem VectorAllP.imp {p q : α → Prop} (h : ∀ x, p x → q x) {v : Vector3 α n}

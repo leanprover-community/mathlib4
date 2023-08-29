@@ -54,6 +54,8 @@ instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     ReflectsIsomorphisms F
     where reflects f i :=
     ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
+                                                       -- 🎉 no goals
+                                                                                  -- 🎉 no goals
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
 instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
@@ -61,15 +63,20 @@ instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     ReflectsIsomorphisms (F ⋙ G) :=
   ⟨fun f (hf : IsIso (G.map _)) => by
     haveI := isIso_of_reflects_iso (F.map f) G
+    -- ⊢ IsIso f
     exact isIso_of_reflects_iso f F⟩
+    -- 🎉 no goals
 
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
     ReflectsIsomorphisms F where
   reflects f hf := by
     haveI : Epi f := epi_of_epi_map F inferInstance
+    -- ⊢ IsIso f
     haveI : Mono f := mono_of_mono_map F inferInstance
+    -- ⊢ IsIso f
     exact isIso_of_mono_of_epi f
+    -- 🎉 no goals
 #align category_theory.reflects_isomorphisms_of_reflects_monomorphisms_of_reflects_epimorphisms CategoryTheory.reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
 
 end ReflectsIso

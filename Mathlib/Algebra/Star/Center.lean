@@ -18,6 +18,7 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
 
 theorem Set.star_mem_centralizer' (h : ∀ a : R, a ∈ s → star a ∈ s) (ha : a ∈ Set.centralizer s) :
     star a ∈ Set.centralizer s := fun y hy => by simpa using congr_arg star (ha _ (h _ hy)).symm
+                                                 -- 🎉 no goals
 
 open scoped Pointwise
 

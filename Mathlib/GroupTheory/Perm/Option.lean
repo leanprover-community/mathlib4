@@ -25,25 +25,37 @@ theorem Equiv.optionCongr_one {α : Type*} : (1 : Perm α).optionCongr = 1 :=
 theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
     optionCongr (swap x y) = swap (some x) (some y) := by
   ext (_ | i)
+  -- ⊢ a✝ ∈ ↑(optionCongr (swap x y)) none ↔ a✝ ∈ ↑(swap (some x) (some y)) none
   · simp [swap_apply_of_ne_of_ne]
+    -- 🎉 no goals
   · by_cases hx : i = x
+    -- ⊢ a✝ ∈ ↑(optionCongr (swap x y)) (some i) ↔ a✝ ∈ ↑(swap (some x) (some y)) (so …
     simp [hx, swap_apply_of_ne_of_ne]
+    -- ⊢ a✝ ∈ ↑(optionCongr (swap x y)) (some i) ↔ a✝ ∈ ↑(swap (some x) (some y)) (so …
     by_cases hy : i = y <;> simp [hx, hy, swap_apply_of_ne_of_ne]
+    -- ⊢ a✝ ∈ ↑(optionCongr (swap x y)) (some i) ↔ a✝ ∈ ↑(swap (some x) (some y)) (so …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align equiv.option_congr_swap Equiv.optionCongr_swap
 
 @[simp]
 theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
     Perm.sign e.optionCongr = Perm.sign e := by
   refine Perm.swap_induction_on e ?_ ?_
+  -- ⊢ ↑Perm.sign (optionCongr 1) = ↑Perm.sign 1
   · simp [Perm.one_def]
+    -- 🎉 no goals
   · intro f x y hne h
+    -- ⊢ ↑Perm.sign (optionCongr (swap x y * f)) = ↑Perm.sign (swap x y * f)
     simp [h, hne, Perm.mul_def, ← Equiv.optionCongr_trans]
+    -- 🎉 no goals
 #align equiv.option_congr_sign Equiv.optionCongr_sign
 
 @[simp]
 theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α)) :
     (removeNone σ).optionCongr = swap none (σ none) * σ := by
   ext1 x
+  -- ⊢ ↑(optionCongr (removeNone σ)) x = ↑(swap none (↑σ none) * σ) x
   have : Option.map (⇑(removeNone σ)) x = (swap none (σ none)) (σ x) := by
     cases' x with x
     · simp
@@ -53,6 +65,7 @@ theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α
         have hσn : σ (some x) ≠ σ none := σ.injective.ne (by simp)
         simp [removeNone_some _ ⟨_, h⟩, ← h, swap_apply_of_ne_of_ne hn hσn]
   simpa using this
+  -- 🎉 no goals
 #align map_equiv_remove_none map_equiv_removeNone
 
 /-- Permutations of `Option α` are equivalent to fixing an
@@ -64,18 +77,22 @@ def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] : Perm (Option α) 
   toFun σ := (σ none, removeNone σ)
   invFun i := swap none i.1 * i.2.optionCongr
   left_inv σ := by simp
+                   -- 🎉 no goals
   right_inv := fun ⟨x, σ⟩ => by
     have : removeNone (swap none x * σ.optionCongr) = σ :=
       Equiv.optionCongr_injective (by simp [← mul_assoc])
     simp [← Perm.eq_inv_iff_eq, this]
+    -- 🎉 no goals
 #align equiv.perm.decompose_option Equiv.Perm.decomposeOption
 
 theorem Equiv.Perm.decomposeOption_symm_of_none_apply {α : Type*} [DecidableEq α] (e : Perm α)
     (i : Option α) : Equiv.Perm.decomposeOption.symm (none, e) i = i.map e := by simp
+                                                                                 -- 🎉 no goals
 #align equiv.perm.decompose_option_symm_of_none_apply Equiv.Perm.decomposeOption_symm_of_none_apply
 
 theorem Equiv.Perm.decomposeOption_symm_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
     Perm.sign (Equiv.Perm.decomposeOption.symm (none, e)) = Perm.sign e := by simp
+                                                                              -- 🎉 no goals
 #align equiv.perm.decompose_option_symm_sign Equiv.Perm.decomposeOption_symm_sign
 
 /-- The set of all permutations of `Option α` can be constructed by augmenting the set of

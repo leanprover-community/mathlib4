@@ -34,13 +34,29 @@ def cmpLE {α} [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) : Ordering :=
 theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, *, Ordering.swap]
+  -- ⊢ Ordering.swap (cmpLE x y) = cmpLE y x
+                        -- ⊢ Ordering.swap (cmpLE x y) = cmpLE y x
+                        -- ⊢ Ordering.swap (cmpLE x y) = cmpLE y x
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- ⊢ False
   cases not_or_of_not xy yx (total_of _ _ _)
+  -- 🎉 no goals
 #align cmp_le_swap cmpLE_swap
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)]
     [@DecidableRel α (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
+  -- ⊢ cmpLE x y = cmp x y
+                        -- ⊢ cmpLE x y = cmp x y
+                        -- ⊢ cmpLE x y = cmp x y
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- ⊢ False
   cases not_or_of_not xy yx (total_of _ _ _)
+  -- 🎉 no goals
 #align cmp_le_eq_cmp cmpLE_eq_cmp
 
 namespace Ordering
@@ -67,8 +83,11 @@ lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b ↔ o.Compares b a := by
   cases o
   · exact Iff.rfl
+    -- 🎉 no goals
   · exact eq_comm
+    -- 🎉 no goals
   · exact Iff.rfl
+    -- 🎉 no goals
 #align ordering.compares_swap Ordering.compares_swap
 
 alias ⟨Compares.of_swap, Compares.swap⟩ := compares_swap
@@ -77,24 +96,31 @@ alias ⟨Compares.of_swap, Compares.swap⟩ := compares_swap
 
 theorem swap_eq_iff_eq_swap {o o' : Ordering} : o.swap = o' ↔ o = o'.swap := by
   rw [← swap_inj, swap_swap]
+  -- 🎉 no goals
 #align ordering.swap_eq_iff_eq_swap Ordering.swap_eq_iff_eq_swap
 
 theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = lt ↔ a < b)
   | lt, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
   | eq, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h' h).elim⟩
+                                -- 🎉 no goals
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
+                                -- 🎉 no goals
 #align ordering.compares.eq_lt Ordering.Compares.eq_lt
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
   | lt, a, b, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
   | eq, a, b, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
+                                                       -- 🎉 no goals
   | gt, a, b, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
+                                                       -- 🎉 no goals
 #align ordering.compares.ne_lt Ordering.Compares.ne_lt
 
 theorem Compares.eq_eq [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = eq ↔ a = b)
   | lt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h h').elim⟩
+                                -- 🎉 no goals
   | eq, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_gt h h').elim⟩
+                                -- 🎉 no goals
 #align ordering.compares.eq_eq Ordering.Compares.eq_eq
 
 theorem Compares.eq_gt [Preorder α] {o} {a b : α} (h : Compares o a b) : o = gt ↔ b < a :=
@@ -128,22 +154,43 @@ theorem Compares.inj [Preorder α] {o₁} :
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
   refine' ⟨h, fun ho => _⟩
+  -- ⊢ Compares o a b
   cases' lt_trichotomy a b with hab hab
+  -- ⊢ Compares o a b
   · have hab : Compares Ordering.lt a b := hab
+    -- ⊢ Compares o a b
     rwa [ho.inj (h hab)]
+    -- 🎉 no goals
   · cases' hab with hab hab
+    -- ⊢ Compares o a b
     · have hab : Compares Ordering.eq a b := hab
+      -- ⊢ Compares o a b
       rwa [ho.inj (h hab)]
+      -- 🎉 no goals
     · have hab : Compares Ordering.gt a b := hab
+      -- ⊢ Compares o a b
       rwa [ho.inj (h hab)]
+      -- 🎉 no goals
 #align ordering.compares_iff_of_compares_impl Ordering.compares_iff_of_compares_impl
 
 theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := by
   cases o₁ <;> rfl
+               -- 🎉 no goals
+               -- 🎉 no goals
+               -- 🎉 no goals
 #align ordering.swap_or_else Ordering.swap_orElse
 
 theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
   cases o₁ <;> cases o₂ <;> exact by decide
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align ordering.or_else_eq_lt Ordering.orElse_eq_lt
 
 end Ordering
@@ -155,6 +202,7 @@ theorem toDual_compares_toDual [LT α] {a b : α} {o : Ordering} :
     Compares o (toDual a) (toDual b) ↔ Compares o b a := by
   cases o
   exacts [Iff.rfl, eq_comm, Iff.rfl]
+  -- 🎉 no goals
 #align to_dual_compares_to_dual toDual_compares_toDual
 
 @[simp]
@@ -162,10 +210,14 @@ theorem ofDual_compares_ofDual [LT α] {a b : αᵒᵈ} {o : Ordering} :
     Compares o (ofDual a) (ofDual b) ↔ Compares o b a := by
   cases o
   exacts [Iff.rfl, eq_comm, Iff.rfl]
+  -- 🎉 no goals
 #align of_dual_compares_of_dual ofDual_compares_ofDual
 
 theorem cmp_compares [LinearOrder α] (a b : α) : (cmp a b).Compares a b := by
   obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_lt]
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
 #align cmp_compares cmp_compares
 
 theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h : o.Compares a b) :
@@ -176,8 +228,17 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
 @[simp]
 theorem cmp_swap [Preorder α] [@DecidableRel α (· < ·)] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
+  -- ⊢ swap (if (fun x x_1 => x < x_1) a b then lt else if (fun x x_1 => x < x_1) b …
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
+  -- ⊢ swap (if (fun x x_1 => x < x_1) a b then lt else if (fun x x_1 => x < x_1) b …
+                         -- ⊢ swap (if (fun x x_1 => x < x_1) a b then lt else if (fun x x_1 => x < x_1) b …
+                         -- ⊢ swap (if (fun x x_1 => x < x_1) a b then lt else if (fun x x_1 => x < x_1) b …
+                                                 -- ⊢ False
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
   exact lt_asymm h h₂
+  -- 🎉 no goals
 #align cmp_swap cmp_swap
 
 -- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
@@ -239,24 +300,32 @@ theorem cmp_eq_gt_iff : cmp x y = Ordering.gt ↔ y < x :=
 
 @[simp]
 theorem cmp_self_eq_eq : cmp x x = Ordering.eq := by rw [cmp_eq_eq_iff]
+                                                     -- 🎉 no goals
 #align cmp_self_eq_eq cmp_self_eq_eq
 
 variable {x y} {β : Type*} [LinearOrder β] {x' y' : β}
 
 theorem cmp_eq_cmp_symm : cmp x y = cmp x' y' ↔ cmp y x = cmp y' x' :=
   ⟨fun h => by rwa [← cmp_swap x', ← cmp_swap, swap_inj],
+               -- 🎉 no goals
    fun h => by rwa [← cmp_swap y', ← cmp_swap, swap_inj]⟩
+               -- 🎉 no goals
 #align cmp_eq_cmp_symm cmp_eq_cmp_symm
 
 theorem lt_iff_lt_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x < y ↔ x' < y' := by
   rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff, h]
+  -- 🎉 no goals
 #align lt_iff_lt_of_cmp_eq_cmp lt_iff_lt_of_cmp_eq_cmp
 
 theorem le_iff_le_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x ≤ y ↔ x' ≤ y' := by
   rw [← not_lt, ← not_lt]
+  -- ⊢ ¬y < x ↔ ¬y' < x'
   apply not_congr
+  -- ⊢ y < x ↔ y' < x'
   apply lt_iff_lt_of_cmp_eq_cmp
+  -- ⊢ cmp y x = cmp y' x'
   rwa [cmp_eq_cmp_symm]
+  -- 🎉 no goals
 #align le_iff_le_of_cmp_eq_cmp le_iff_le_of_cmp_eq_cmp
 
 theorem eq_iff_eq_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x = y ↔ x' = y' := by

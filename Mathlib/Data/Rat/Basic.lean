@@ -44,5 +44,6 @@ instance field : Field ℚ :=
 
 -- Extra instances to short-circuit type class resolution
 instance divisionRing : DivisionRing ℚ := by infer_instance
+                                             -- 🎉 no goals
 
 end Rat

@@ -58,7 +58,11 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
       map_mul' := fun x y => WithOne.cases_on x (by rw [one_mul]; exact (one_mul _).symm)
+                                                    -- ⊢ OneHom.toFun { toFun := fun x => Option.casesOn x 1 ↑f, map_one' := (_ : (fu …
+                                                                  -- 🎉 no goals
         (fun x => WithOne.cases_on y (by rw [mul_one]; exact (mul_one _).symm)
+                                         -- ⊢ OneHom.toFun { toFun := fun x => Option.casesOn x 1 ↑f, map_one' := (_ : (fu …
+                                                       -- 🎉 no goals
           (fun y => f.map_mul x y)) }
   invFun F := F.toMulHom.comp coeMulHom
   left_inv f := MulHom.ext fun x => rfl
@@ -112,13 +116,20 @@ theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
 @[to_additive (attr := simp)]
 theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
   ext x
+  -- ⊢ ↑(map (MulHom.id α)) x = ↑(MonoidHom.id (WithOne α)) x
   induction x using WithOne.cases_on <;> rfl
+  -- ⊢ ↑(map (MulHom.id α)) 1 = ↑(MonoidHom.id (WithOne α)) 1
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
 #align with_one.map_id WithOne.map_id
 #align with_zero.map_id WithZero.map_id
 
 @[to_additive]
 theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = map (g.comp f) x := by
   induction x using WithOne.cases_on <;> rfl
+  -- ⊢ ↑(map g) (↑(map f) 1) = ↑(map (MulHom.comp g f)) 1
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
 #align with_one.map_map WithOne.map_map
 #align with_zero.map_map WithZero.map_map
 

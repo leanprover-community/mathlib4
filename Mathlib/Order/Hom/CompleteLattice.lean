@@ -127,18 +127,22 @@ attribute [simp] map_sSup map_sInf
 
 theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp]
+                                      -- 🎉 no goals
 #align map_supr map_iSup
 
 theorem map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨆ (i) (j), g i j) = ⨆ (i) (j), f (g i j) := by simp_rw [map_iSup]
+                                                      -- 🎉 no goals
 #align map_supr₂ map_iSup₂
 
 theorem map_iInf [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ι → α) :
     f (⨅ i, g i) = ⨅ i, f (g i) := by simp [iInf, ← Set.range_comp, Function.comp]
+                                      -- 🎉 no goals
 #align map_infi map_iInf
 
 theorem map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨅ (i) (j), g i j) = ⨅ (i) (j), f (g i j) := by simp_rw [map_iInf]
+                                                      -- 🎉 no goals
 #align map_infi₂ map_iInf
 
 -- See note [lower instance priority]
@@ -147,11 +151,15 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
   {  ‹sSupHomClass F α β› with
     map_sup := fun f a b => by
       rw [← sSup_pair, map_sSup]
+      -- ⊢ sSup (↑f '' {a, b}) = ↑f a ⊔ ↑f b
       simp only [Set.image_pair, sSup_insert, sSup_singleton]
+      -- 🎉 no goals
     map_bot := fun f => by
       rw [← sSup_empty, map_sSup, Set.image_empty]
+      -- ⊢ sSup ∅ = ⊥
       -- Porting note: rw [sSup_empty] does not work, but exact sSup_empty does?
       exact sSup_empty }
+      -- 🎉 no goals
 #align Sup_hom_class.to_sup_bot_hom_class sSupHomClass.toSupBotHomClass
 
 -- See note [lower instance priority]
@@ -160,11 +168,15 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
   { ‹sInfHomClass F α β› with
     map_inf := fun f a b => by
       rw [← sInf_pair, map_sInf, Set.image_pair]
+      -- ⊢ sInf {↑f a, ↑f b} = ↑f a ⊓ ↑f b
       simp only [Set.image_pair, sInf_insert, sInf_singleton]
+      -- 🎉 no goals
     map_top := fun f => by
       rw [← sInf_empty, map_sInf, Set.image_empty]
+      -- ⊢ sInf ∅ = ⊤
       -- Porting note: rw [sInf_empty] does not work, but exact sInf_empty does?
       exact sInf_empty }
+      -- 🎉 no goals
 #align Inf_hom_class.to_inf_top_hom_class sInfHomClass.toInfTopHomClass
 
 -- See note [lower instance priority]
@@ -198,6 +210,7 @@ instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     map_sSup := fun f s =>
       eq_of_forall_ge_iff fun c => by
         simp only [← le_map_inv_iff, sSup_le_iff, Set.ball_image_iff] }
+        -- 🎉 no goals
 #align order_iso_class.to_Sup_hom_class OrderIsoClass.tosSupHomClass
 
 -- See note [lower instance priority]
@@ -207,6 +220,7 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
     map_sInf := fun f s =>
       eq_of_forall_le_iff fun c => by
         simp only [← map_inv_le_iff, le_sInf_iff, Set.ball_image_iff] }
+        -- 🎉 no goals
 #align order_iso_class.to_Inf_hom_class OrderIsoClass.tosInfHomClass
 
 -- See note [lower instance priority]
@@ -246,6 +260,9 @@ instance : sSupHomClass (sSupHom α β) α β
     where
   coe := sSupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, map_sSup' := map_sSup'✝ } = g
+                                      -- ⊢ { toFun := toFun✝¹, map_sSup' := map_sSup'✝¹ } = { toFun := toFun✝, map_sSup …
+                                               -- 🎉 no goals
   map_sSup := sSupHom.map_sSup'
 
 -- Porting note: We do not want CoeFun for this in lean 4
@@ -287,6 +304,7 @@ variable (α)
 /-- `id` as a `sSupHom`. -/
 protected def id : sSupHom α α :=
   ⟨id, fun s => by rw [id, Set.image_id]⟩
+                   -- 🎉 no goals
 #align Sup_hom.id sSupHom.id
 
 instance : Inhabited (sSupHom α α) :=
@@ -309,6 +327,8 @@ def comp (f : sSupHom β γ) (g : sSupHom α β) : sSupHom α γ
     where
   toFun := f ∘ g
   map_sSup' s := by rw [comp_apply, map_sSup, map_sSup, Set.image_image]; simp only [Function.comp]
+                    -- ⊢ sSup ((fun x => ↑f (↑g x)) '' s) = sSup (↑f ∘ ↑g '' s)
+                                                                          -- 🎉 no goals
 #align Sup_hom.comp sSupHom.comp
 
 @[simp]
@@ -345,6 +365,7 @@ theorem cancel_right {g₁ g₂ : sSupHom β γ} {f : sSupHom α β} (hf : Surje
 theorem cancel_left {g : sSupHom β γ} {f₁ f₂ : sSupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align Sup_hom.cancel_left sSupHom.cancel_left
 
 end SupSet
@@ -357,8 +378,11 @@ instance : PartialOrder (sSupHom α β) :=
 instance : Bot (sSupHom α β) :=
   ⟨⟨fun _ => ⊥, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
+      -- ⊢ (fun x => ⊥) (sSup ∅) = sSup ((fun x => ⊥) '' ∅)
       · rw [Set.image_empty, sSup_empty]
+        -- 🎉 no goals
       · rw [hs.image_const, sSup_singleton]⟩⟩
+        -- 🎉 no goals
 
 instance : OrderBot (sSupHom α β) where
   bot := ⊥
@@ -391,6 +415,9 @@ instance : sInfHomClass (sInfHom α β) α β
     where
   coe := sInfHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, map_sInf' := map_sInf'✝ } = g
+                                      -- ⊢ { toFun := toFun✝¹, map_sInf' := map_sInf'✝¹ } = { toFun := toFun✝, map_sInf …
+                                               -- 🎉 no goals
   map_sInf := sInfHom.map_sInf'
 
 -- Porting note: Do not want these CoeFun instances in lean4
@@ -431,6 +458,7 @@ variable (α)
 /-- `id` as an `sInfHom`. -/
 protected def id : sInfHom α α :=
   ⟨id, fun s => by rw [id, Set.image_id]⟩
+                   -- 🎉 no goals
 #align Inf_hom.id sInfHom.id
 
 instance : Inhabited (sInfHom α α) :=
@@ -453,6 +481,8 @@ def comp (f : sInfHom β γ) (g : sInfHom α β) : sInfHom α γ
     where
   toFun := f ∘ g
   map_sInf' s := by rw [comp_apply, map_sInf, map_sInf, Set.image_image]; simp only [Function.comp]
+                    -- ⊢ sInf ((fun x => ↑f (↑g x)) '' s) = sInf (↑f ∘ ↑g '' s)
+                                                                          -- 🎉 no goals
 #align Inf_hom.comp sInfHom.comp
 
 @[simp]
@@ -489,6 +519,7 @@ theorem cancel_right {g₁ g₂ : sInfHom β γ} {f : sInfHom α β} (hf : Surje
 theorem cancel_left {g : sInfHom β γ} {f₁ f₂ : sInfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align Inf_hom.cancel_left sInfHom.cancel_left
 
 end InfSet
@@ -501,8 +532,11 @@ instance : PartialOrder (sInfHom α β) :=
 instance : Top (sInfHom α β) :=
   ⟨⟨fun _ => ⊤, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
+      -- ⊢ (fun x => ⊤) (sInf ∅) = sInf ((fun x => ⊤) '' ∅)
       · rw [Set.image_empty, sInf_empty]
+        -- 🎉 no goals
       · rw [hs.image_const, sInf_singleton]⟩⟩
+        -- 🎉 no goals
 
 instance : OrderTop (sInfHom α β) where
   top := ⊤
@@ -532,8 +566,11 @@ instance : FrameHomClass (FrameHom α β) α β
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
+    -- ⊢ { toInfTopHom := { toInfHom := { toFun := toFun✝, map_inf' := map_inf'✝ }, m …
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
+    -- ⊢ { toInfTopHom := { toInfHom := { toFun := toFun✝¹, map_inf' := map_inf'✝¹ }, …
     congr
+    -- 🎉 no goals
   map_sSup f := f.map_sSup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
@@ -642,6 +679,7 @@ theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Sur
 theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align frame_hom.cancel_left FrameHom.cancel_left
 
 instance : PartialOrder (FrameHom α β) :=
@@ -660,6 +698,9 @@ instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+                             -- ⊢ { tosInfHom := { toFun := toFun✝, map_sInf' := map_sInf'✝ }, map_sSup' := ma …
+                                                      -- ⊢ { tosInfHom := { toFun := toFun✝¹, map_sInf' := map_sInf'✝¹ }, map_sSup' :=  …
+                                                                               -- 🎉 no goals
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 
@@ -772,6 +813,7 @@ theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLattice
 theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
     (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align complete_lattice_hom.cancel_left CompleteLatticeHom.cancel_left
 
 end CompleteLatticeHom
@@ -913,6 +955,8 @@ def setPreimage (f : α → β) : CompleteLatticeHom (Set β) (Set α)
     where
   toFun := preimage f
   map_sSup' s := preimage_sUnion.trans <| by simp only [Set.sSup_eq_sUnion, Set.sUnion_image]
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
   map_sInf' s := preimage_sInter.trans <| by simp only [Set.sInf_eq_sInter, Set.sInter_image]
 #align complete_lattice_hom.set_preimage CompleteLatticeHom.setPreimage
 
@@ -941,12 +985,19 @@ end CompleteLatticeHom
 
 theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) := by
   ext b
+  -- ⊢ b ∈ f '' sSup s ↔ b ∈ sSup (image f '' s)
   simp only [sSup_eq_sUnion, mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
+  -- ⊢ (∃ x, (∃ t, t ∈ s ∧ x ∈ t) ∧ f x = b) ↔ ∃ i, i ∈ s ∧ ∃ x, x ∈ i ∧ f x = b
   constructor
+  -- ⊢ (∃ x, (∃ t, t ∈ s ∧ x ∈ t) ∧ f x = b) → ∃ i, i ∈ s ∧ ∃ x, x ∈ i ∧ f x = b
   · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+    -- ⊢ ∃ i, i ∈ s ∧ ∃ x, x ∈ i ∧ f x = f a
     exact ⟨t, ht₁, a, ht₂, rfl⟩
+    -- 🎉 no goals
   · rintro ⟨t, ht₁, a, ht₂, rfl⟩
+    -- ⊢ ∃ x, (∃ t, t ∈ s ∧ x ∈ t) ∧ f x = f a
     exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+    -- 🎉 no goals
 #align set.image_Sup Set.image_sSup
 
 /-- Using `Set.image`, a function between types yields a `sSupHom` between their lattices of
@@ -967,9 +1018,12 @@ def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
   toFun s := e '' s
   invFun s := e.symm '' s
   left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id.def, image_id']
+                   -- 🎉 no goals
   right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id.def, image_id']
+                    -- 🎉 no goals
   map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
+                 -- 🎉 no goals
 #align equiv.to_order_iso_set Equiv.toOrderIsoSet
 
 variable [CompleteLattice α] (x : α × α)
@@ -978,12 +1032,14 @@ variable [CompleteLattice α] (x : α × α)
 def supsSupHom : sSupHom (α × α) α where
   toFun x := x.1 ⊔ x.2
   map_sSup' s := by simp_rw [Prod.fst_sSup, Prod.snd_sSup, sSup_image, iSup_sup_eq]
+                    -- 🎉 no goals
 #align sup_Sup_hom supsSupHom
 
 /-- The map `(a, b) ↦ a ⊓ b` as an `sInfHom`. -/
 def infsInfHom : sInfHom (α × α) α where
   toFun x := x.1 ⊓ x.2
   map_sInf' s := by simp_rw [Prod.fst_sInf, Prod.snd_sInf, sInf_image, iInf_inf_eq]
+                    -- 🎉 no goals
 #align inf_Inf_hom infsInfHom
 
 @[simp, norm_cast]

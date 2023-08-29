@@ -110,10 +110,18 @@ noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α]
   { toCompleteLattice α with
     iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
+      -- ⊢ ⨅ (b : α) (_ : b ∈ s), a ⊔ b = inf (Set.toFinset s) fun i => a ⊔ id i
       rw [Finset.inf_eq_iInf]
+      -- ⊢ ⨅ (b : α) (_ : b ∈ s), a ⊔ b = ⨅ (a_1 : α) (_ : a_1 ∈ Set.toFinset s), a ⊔ i …
       simp_rw [Set.mem_toFinset]
+      -- ⊢ ⨅ (b : α) (_ : b ∈ s), a ⊔ b = ⨅ (a_1 : α) (_ : a_1 ∈ s), a ⊔ id a_1
+      -- ⊢ ⨆ (b : α) (_ : b ∈ s), a ⊓ b = sup (Set.toFinset s) fun i => a ⊓ id i
       rfl
+      -- ⊢ ⨆ (b : α) (_ : b ∈ s), a ⊓ b = ⨆ (a_1 : α) (_ : a_1 ∈ Set.toFinset s), a ⊓ i …
+      -- 🎉 no goals
+      -- ⊢ ⨆ (b : α) (_ : b ∈ s), a ⊓ b = ⨆ (a_1 : α) (_ : a_1 ∈ s), a ⊓ id a_1
     inf_sSup_le_iSup_inf := fun a s => by
+      -- 🎉 no goals
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
       rw [Finset.sup_eq_iSup]
       simp_rw [Set.mem_toFinset]
@@ -136,10 +144,18 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
     ‹BooleanAlgebra α› with
     iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
+      -- ⊢ ⨅ (b : α) (_ : b ∈ s), a ⊔ b = inf (Set.toFinset s) fun i => a ⊔ id i
       rw [Finset.inf_eq_iInf]
+      -- ⊢ ⨅ (b : α) (_ : b ∈ s), a ⊔ b = ⨅ (a_1 : α) (_ : a_1 ∈ Set.toFinset s), a ⊔ i …
       simp_rw [Set.mem_toFinset]
+      -- ⊢ ⨅ (b : α) (_ : b ∈ s), a ⊔ b = ⨅ (a_1 : α) (_ : a_1 ∈ s), a ⊔ id a_1
+      -- ⊢ ⨆ (b : α) (_ : b ∈ s), a ⊓ b = sup (Set.toFinset s) fun i => a ⊓ id i
       rfl
+      -- ⊢ ⨆ (b : α) (_ : b ∈ s), a ⊓ b = ⨆ (a_1 : α) (_ : a_1 ∈ Set.toFinset s), a ⊓ i …
+      -- 🎉 no goals
+      -- ⊢ ⨆ (b : α) (_ : b ∈ s), a ⊓ b = ⨆ (a_1 : α) (_ : a_1 ∈ s), a ⊓ id a_1
     inf_sSup_le_iSup_inf := fun a s => by
+      -- 🎉 no goals
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
       rw [Finset.sup_eq_iSup]
       simp_rw [Set.mem_toFinset]
@@ -219,14 +235,22 @@ theorem Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)
 theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*}
     [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_le f
+  -- ⊢ BddAbove (Set.range f)
   refine' ⟨M, fun a ha => _⟩
+  -- ⊢ a ≤ M
   obtain ⟨b, rfl⟩ := ha
+  -- ⊢ f b ≤ M
   exact hM b
+  -- 🎉 no goals
 #align fintype.bdd_above_range Fintype.bddAbove_range
 
 theorem Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*}
     [Fintype β] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_ge f
+  -- ⊢ BddBelow (Set.range f)
   refine' ⟨M, fun a ha => _⟩
+  -- ⊢ M ≤ a
   obtain ⟨b, rfl⟩ := ha
+  -- ⊢ M ≤ f b
   exact hM b
+  -- 🎉 no goals

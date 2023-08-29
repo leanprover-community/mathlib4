@@ -90,6 +90,8 @@ set_option linter.uppercaseLean3 false in
 -/
 theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf :=
   fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by aesop_cat, fun _ => by aesop_cat⟩
+                                                          -- 🎉 no goals
+                                                                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unit TopCat.Presheaf.isSheaf_unit
 

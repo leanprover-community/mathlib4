@@ -85,10 +85,13 @@ def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i => c i + 
 
 theorem torusMap_sub_center (c : ℂⁿ) (R : ℝⁿ) (θ : ℝⁿ) : torusMap c R θ - c = torusMap 0 R θ := by
   ext1 i; simp [torusMap]
+  -- ⊢ (torusMap c R θ - c) i = torusMap 0 R θ i
+          -- 🎉 no goals
 #align torus_map_sub_center torusMap_sub_center
 
 theorem torusMap_eq_center_iff {c : ℂⁿ} {R : ℝⁿ} {θ : ℝⁿ} : torusMap c R θ = c ↔ R = 0 := by
   simp [funext_iff, torusMap, exp_ne_zero]
+  -- 🎉 no goals
 #align torus_map_eq_center_iff torusMap_eq_center_iff
 
 @[simp]
@@ -114,6 +117,7 @@ variable {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 /-- Constant functions are torus integrable -/
 theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ => a) c R := by
   simp [TorusIntegrable, measure_Icc_lt_top]
+  -- 🎉 no goals
 #align torus_integrable.torus_integrable_const TorusIntegrable.torusIntegrable_const
 
 /-- If `f` is torus integrable then `-f` is torus integrable. -/
@@ -134,7 +138,9 @@ protected nonrec theorem sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable 
 
 theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusIntegrable f c 0 := by
   rw [TorusIntegrable, torusMap_zero_radius]
+  -- ⊢ IntegrableOn (fun θ => f (const (Fin n → ℝ) c θ)) (Icc 0 fun x => 2 * π)
   apply torusIntegrable_const (f c) c 0
+  -- 🎉 no goals
 #align torus_integrable.torus_integrable_zero_radius TorusIntegrable.torusIntegrable_zero_radius
 
 /-- The function given in the definition of `torusIntegral` is integrable. -/
@@ -142,8 +148,12 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
   refine' (hf.norm.const_mul (∏ i, |R i|)).mono' _ _
+  -- ⊢ AEStronglyMeasurable (fun θ => (∏ i : Fin n, ↑(R i) * exp (↑(θ i) * I) * I)  …
   · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; continuity
+    -- ⊢ Continuous fun θ => ∏ i : Fin n, ↑(R i) * exp (↑(θ i) * I) * I
+                                                           -- 🎉 no goals
   simp [norm_smul, map_prod]
+  -- 🎉 no goals
 #align torus_integrable.function_integrable TorusIntegrable.function_integrable
 
 end TorusIntegrable
@@ -166,6 +176,7 @@ theorem torusIntegral_radius_zero (hn : n ≠ 0) (f : ℂⁿ → E) (c : ℂⁿ)
 
 theorem torusIntegral_neg (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :
     (∯ x in T(c, R), -f x) = -∯ x in T(c, R), f x := by simp [torusIntegral, integral_neg]
+                                                        -- 🎉 no goals
 #align torus_integral_neg torusIntegral_neg
 
 theorem torusIntegral_add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
@@ -177,11 +188,13 @@ theorem torusIntegral_add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
 theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     (∯ x in T(c, R), f x - g x) = (∯ x in T(c, R), f x) - ∯ x in T(c, R), g x := by
   simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
+  -- 🎉 no goals
 #align torus_integral_sub torusIntegral_sub
 
 theorem torusIntegral_smul {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
   simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
+  -- 🎉 no goals
 #align torus_integral_smul torusIntegral_smul
 
 theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R : ℝⁿ) :
@@ -200,6 +213,7 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
           ‖(∏ i : Fin n, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)‖ =
               (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ :=
             by simp [norm_smul]
+               -- 🎉 no goals
           _ ≤ (∏ i : Fin n, |R i|) * C :=
             mul_le_mul_of_nonneg_left (hf _) (Finset.prod_nonneg fun _ _ => abs_nonneg _)
     _ = ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C := by
@@ -229,6 +243,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
     ← ((volume_preserving_funUnique (Fin 1) ℝ).symm _).set_integral_preimage_emb
       (MeasurableEquiv.measurableEmbedding _), H₁, H₂]
   simp [circleMap_zero]
+  -- 🎉 no goals
 #align torus_integral_dim1 torusIntegral_dim1
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
@@ -237,6 +252,7 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
     (∯ x in T(c, R), f x) =
       ∮ x in C(c i, R i), ∯ y in T(c ∘ i.succAbove, R ∘ i.succAbove), f (i.insertNth x y) := by
   set e : ℝ × ℝⁿ ≃ᵐ ℝⁿ⁺¹ := (MeasurableEquiv.piFinSuccAboveEquiv (fun _ => ℝ) i).symm
+  -- ⊢ (∯ (x : Fin (n + 1) → ℂ) in T(c, R), f x) = ∮ (x : ℂ) in C(c i, R i), ∯ (y : …
   have hem : MeasurePreserving e :=
     (volume_preserving_piFinSuccAboveEquiv (fun _ : Fin (n + 1) => ℝ) i).symm _
   have heπ : (e ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ => 2 * π :=
@@ -244,16 +260,21 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
   rw [torusIntegral, ← hem.map_eq, set_integral_map_equiv, heπ, Measure.volume_eq_prod,
     set_integral_prod, circleIntegral_def_Icc]
   · refine' set_integral_congr measurableSet_Icc fun θ _ => _
+    -- ⊢ ∫ (y : Fin n → ℝ) in Icc 0 fun x => 2 * π, (∏ i : Fin (n + 1), ↑(R i) * exp  …
     simp only [torusIntegral, ← integral_smul, deriv_circleMap, i.prod_univ_succAbove _, smul_smul,
       torusMap, circleMap_zero]
     refine' set_integral_congr measurableSet_Icc fun Θ _ => _
+    -- ⊢ ((↑(R i) * exp (↑(↑(MeasurableEquiv.symm (MeasurableEquiv.piFinSuccAboveEqui …
     simp only [MeasurableEquiv.piFinSuccAboveEquiv_symm_apply, i.insertNth_apply_same,
       i.insertNth_apply_succAbove, (· ∘ ·)]
     congr 2
+    -- ⊢ (fun i_1 => c i_1 + ↑(R i_1) * exp (↑(Fin.insertNth i θ Θ i_1) * I)) = Fin.i …
     simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
       eq_self_iff_true, Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]
   · have := hf.function_integrable
+    -- ⊢ IntegrableOn (fun x => (∏ i : Fin (n + 1), ↑(R i) * exp (↑(↑e x i) * I) * I) …
     rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this
+    -- 🎉 no goals
 #align torus_integral_succ_above torusIntegral_succAbove
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succAbove`. -/
@@ -261,4 +282,5 @@ theorem torusIntegral_succ {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ
     (∯ x in T(c, R), f x) =
       ∮ x in C(c 0, R 0), ∯ y in T(c ∘ Fin.succ, R ∘ Fin.succ), f (Fin.cons x y) := by
   simpa using torusIntegral_succAbove hf 0
+  -- 🎉 no goals
 #align torus_integral_succ torusIntegral_succ

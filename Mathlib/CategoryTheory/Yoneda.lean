@@ -62,7 +62,9 @@ namespace Yoneda
 theorem obj_map_id {X Y : C} (f : op X ⟶ op Y) :
     (yoneda.obj X).map f (𝟙 X) = (yoneda.map f.unop).app (op Y) (𝟙 Y) := by
   dsimp
+  -- ⊢ f.unop ≫ 𝟙 X = 𝟙 Y ≫ f.unop
   simp
+  -- 🎉 no goals
 #align category_theory.yoneda.obj_map_id CategoryTheory.Yoneda.obj_map_id
 
 @[simp]
@@ -86,6 +88,11 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 instance yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
   map_injective {X} {Y} f g p := by
     convert congr_fun (congr_app p (op X)) (𝟙 X) using 1 <;> dsimp <;> simp
+    -- ⊢ f = NatTrans.app (yoneda.map f) (op X) (𝟙 X)
+                                                             -- ⊢ f = 𝟙 X ≫ f
+                                                             -- ⊢ g = 𝟙 X ≫ g
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
 #align category_theory.yoneda.yoneda_faithful CategoryTheory.Yoneda.yoneda_faithful
 
 /-- Extensionality via Yoneda. The typical usage would be
@@ -124,12 +131,16 @@ theorem naturality {X Y : Cᵒᵖ} (α : coyoneda.obj X ⟶ coyoneda.obj Y) {Z Z
 instance coyonedaFull : Full (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
   preimage {X} _ f := (f.app _ (𝟙 X.unop)).op
   witness {X} {Y} f := by simp only [coyoneda]; aesop_cat
+                          -- ⊢ (NatTrans.mk fun Y_1 g => (NatTrans.app f X.unop (𝟙 X.unop)).op.unop ≫ g) = f
+                                                -- 🎉 no goals
 #align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyonedaFull
 
 instance coyoneda_faithful : Faithful (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
   map_injective {X} _ _ _ p := by
     have t := congr_fun (congr_app p X.unop) (𝟙 _)
+    -- ⊢ x✝¹ = x✝
     simpa using congr_arg Quiver.Hom.op t
+    -- 🎉 no goals
 #align category_theory.coyoneda.coyoneda_faithful CategoryTheory.Coyoneda.coyoneda_faithful
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
@@ -222,9 +233,13 @@ theorem reprW_hom : F.reprW.hom = F.reprF :=
 theorem reprW_app_hom (X : Cᵒᵖ) (f : unop X ⟶ F.reprX) :
     (F.reprW.app X).hom f = F.map f.op F.reprx := by
   change F.reprF.app X f = (F.reprF.app (op F.reprX) ≫ F.map f.op) (𝟙 F.reprX)
+  -- ⊢ NatTrans.app (reprF F) X f = (NatTrans.app (reprF F) (op (reprX F)) ≫ F.map  …
   rw [← F.reprF.naturality]
+  -- ⊢ NatTrans.app (reprF F) X f = ((yoneda.obj (reprX F)).map f.op ≫ NatTrans.app …
   dsimp
+  -- ⊢ NatTrans.app (reprF F) X f = NatTrans.app (reprF F) X (f ≫ 𝟙 (reprX F))
   simp
+  -- 🎉 no goals
 #align category_theory.functor.repr_w_app_hom CategoryTheory.Functor.reprW_app_hom
 
 end Representable
@@ -266,9 +281,13 @@ noncomputable def coreprW : coyoneda.obj (op F.coreprX) ≅ F :=
 theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
     (F.coreprW.app X).hom f = F.map f F.coreprx := by
   change F.coreprF.app X f = (F.coreprF.app F.coreprX ≫ F.map f) (𝟙 F.coreprX)
+  -- ⊢ NatTrans.app (coreprF F) X f = (NatTrans.app (coreprF F) (coreprX F) ≫ F.map …
   rw [← F.coreprF.naturality]
+  -- ⊢ NatTrans.app (coreprF F) X f = ((coyoneda.obj (op (coreprX F))).map f ≫ NatT …
   dsimp
+  -- ⊢ NatTrans.app (coreprF F) X f = NatTrans.app (coreprF F) X (𝟙 (coreprX F) ≫ f)
   simp
+  -- 🎉 no goals
 #align category_theory.functor.corepr_w_app_hom CategoryTheory.Functor.coreprW_app_hom
 
 end Corepresentable
@@ -348,35 +367,58 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
     { app := fun F x => ULift.up ((x.app F.1) (𝟙 (unop F.1)))
       naturality := by
         intro X Y f
+        -- ⊢ (yonedaPairing C).map f ≫ (fun F x => { down := NatTrans.app x F.fst (𝟙 F.fs …
         simp only [yonedaEvaluation]
+        -- ⊢ ((yonedaPairing C).map f ≫ fun x => { down := NatTrans.app x Y.fst (𝟙 Y.fst. …
         ext
+        -- ⊢ ((yonedaPairing C).map f ≫ fun x => { down := NatTrans.app x Y.fst (𝟙 Y.fst. …
         dsimp
+        -- ⊢ { down := NatTrans.app f.snd Y.fst (NatTrans.app a✝ Y.fst (𝟙 Y.fst.unop ≫ f. …
         erw [Category.id_comp, ←FunctorToTypes.naturality]
+        -- ⊢ { down := NatTrans.app f.snd Y.fst (NatTrans.app a✝ Y.fst f.fst.unop) } = {  …
         simp only [Category.comp_id, yoneda_obj_map] }
+        -- 🎉 no goals
   inv :=
     { app := fun F x =>
         { app := fun X a => (F.2.map a.op) x.down
           naturality := by
             intro X Y f
+            -- ⊢ ((Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁))).obj F).fst.unop.map f ≫ (fun X …
             ext
+            -- ⊢ (((Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁))).obj F).fst.unop.map f ≫ (fun  …
             dsimp
+            -- ⊢ F.snd.map (a✝.op ≫ f) x.down = F.snd.map f (F.snd.map a✝.op x.down)
             rw [FunctorToTypes.map_comp_apply] }
+            -- 🎉 no goals
       naturality := by
         intro X Y f
+        -- ⊢ (yonedaEvaluation C).map f ≫ (fun F x => NatTrans.mk fun X a => F.snd.map a. …
         simp only [yoneda]
+        -- ⊢ ((yonedaEvaluation C).map f ≫ fun x => NatTrans.mk fun X a => Y.snd.map a.op …
         ext
+        -- ⊢ NatTrans.app (((yonedaEvaluation C).map f ≫ fun x => NatTrans.mk fun X a =>  …
         dsimp
+        -- ⊢ Y.snd.map a✝.op (NatTrans.app f.snd Y.fst (X.snd.map f.fst a✝¹.down)) = NatT …
         rw [←FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
+        -- 🎉 no goals
   hom_inv_id := by
     ext
+    -- ⊢ NatTrans.app (NatTrans.app ((NatTrans.mk fun F x => { down := NatTrans.app x …
     dsimp
+    -- ⊢ x✝.snd.map a✝.op (NatTrans.app a✝¹ x✝.fst (𝟙 x✝.fst.unop)) = NatTrans.app a✝ …
     erw [← FunctorToTypes.naturality, obj_map_id]
+    -- ⊢ NatTrans.app a✝¹ Y✝ (NatTrans.app (yoneda.map a✝.op.unop) (op Y✝.unop) (𝟙 Y✝ …
     simp only [yoneda_map_app, Quiver.Hom.unop_op]
+    -- ⊢ NatTrans.app a✝¹ Y✝ (𝟙 Y✝.unop ≫ a✝) = NatTrans.app a✝¹ Y✝ a✝
     erw [Category.id_comp]
+    -- 🎉 no goals
   inv_hom_id := by
     ext
+    -- ⊢ NatTrans.app ((NatTrans.mk fun F x => NatTrans.mk fun X a => F.snd.map a.op  …
     dsimp
+    -- ⊢ { down := x✝.snd.map (𝟙 x✝.fst) a✝.down } = a✝
     rw [FunctorToTypes.map_id_apply, ULift.up_down]
+    -- 🎉 no goals
 #align category_theory.yoneda_lemma CategoryTheory.yonedaLemma
 
 variable {C}
@@ -412,9 +454,13 @@ theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.ob
 theorem yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F) (g : Y ⟶ X) :
     F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) := by
   change (f.app (op X) ≫ F.map g.op) (𝟙 X) = f.app (op Y) (𝟙 Y ≫ g)
+  -- ⊢ (NatTrans.app f (op X) ≫ F.map g.op) (𝟙 X) = NatTrans.app f (op Y) (𝟙 Y ≫ g)
   rw [← f.naturality]
+  -- ⊢ ((yoneda.obj X).map g.op ≫ NatTrans.app f (op Y)) (𝟙 X) = NatTrans.app f (op …
   dsimp
+  -- ⊢ NatTrans.app f (op Y) (g ≫ 𝟙 X) = NatTrans.app f (op Y) (𝟙 Y ≫ g)
   simp
+  -- 🎉 no goals
 #align category_theory.yoneda_equiv_naturality CategoryTheory.yonedaEquiv_naturality
 
 lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
@@ -432,12 +478,16 @@ lemma yonedaEquiv_comp' {X : Cᵒᵖ} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda
 @[simp]
 lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f) = f := by
   rw [yonedaEquiv_apply]
+  -- ⊢ NatTrans.app (yoneda.map f) (op X) (𝟙 X) = f
   simp
+  -- 🎉 no goals
 
 lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type v₁} (t : F.obj X) :
     yonedaEquiv.symm (F.map f t) = yoneda.map f.unop ≫ yonedaEquiv.symm t := by
   obtain ⟨u, rfl⟩ := yonedaEquiv.surjective t
+  -- ⊢ ↑yonedaEquiv.symm (F.map f (↑yonedaEquiv u)) = yoneda.map f.unop ≫ ↑yonedaEq …
   rw [yonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
+  -- 🎉 no goals
 
 /-- When `C` is a small category, we can restate the isomorphism from `yoneda_sections`
 without having to change universes.
@@ -470,17 +520,29 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial) ≪≫
     eqToIso ?_
   · apply Functor.ext
+    -- ⊢ autoParam (∀ (X Y : Cᵒᵖ) (f : X ⟶ Y), (yoneda.op ⋙ coyoneda).map f = eqToHom …
     · intro X Y f
+      -- ⊢ (yoneda.op ⋙ coyoneda).map f = eqToHom (_ : ?F.obj X = ?G.obj X) ≫ (curry.ob …
       ext
+      -- ⊢ NatTrans.app ((yoneda.op ⋙ coyoneda).map f) x✝ a✝ = NatTrans.app (eqToHom (_ …
       simp
+      -- 🎉 no goals
     · aesop_cat
+      -- 🎉 no goals
   · apply Functor.ext
+    -- ⊢ autoParam (∀ (X Y : Cᵒᵖ) (f : X ⟶ Y), (curry.obj (evaluationUncurried Cᵒᵖ (T …
     · intro X Y f
+      -- ⊢ (curry.obj (evaluationUncurried Cᵒᵖ (Type u₁) ⋙ 𝟭 (Type u₁))).map f = eqToHo …
       ext
+      -- ⊢ NatTrans.app ((curry.obj (evaluationUncurried Cᵒᵖ (Type u₁) ⋙ 𝟭 (Type u₁))). …
       simp
+      -- 🎉 no goals
     · intro X
+      -- ⊢ (curry.obj (evaluationUncurried Cᵒᵖ (Type u₁) ⋙ 𝟭 (Type u₁))).obj X = (evalu …
       simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
+      -- ⊢ Functor.mk { obj := fun Y => (evaluationUncurried Cᵒᵖ (Type u₁) ⋙ 𝟭 (Type u₁ …
       aesop_cat
+      -- 🎉 no goals
 #align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
 
 /-- The curried version of yoneda lemma when `C` is small. -/
@@ -491,10 +553,15 @@ def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
     (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial :_))
     ≪≫ eqToIso ?_
   · apply Functor.ext
+    -- ⊢ autoParam (∀ (X Y : Cᵒᵖ ⥤ Type u₁) (f : X ⟶ Y), (yoneda ⋙ (whiskeringLeft Cᵒ …
     · intro X Y f
+      -- ⊢ (yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op).ma …
       aesop_cat
+      -- 🎉 no goals
   · apply Functor.ext
+    -- ⊢ autoParam (∀ (X Y : Cᵒᵖ ⥤ Type u₁) (f : X ⟶ Y), (curry.obj (Prod.swap (Cᵒᵖ ⥤ …
     · aesop_cat
+      -- 🎉 no goals
 #align category_theory.curried_yoneda_lemma' CategoryTheory.curriedYonedaLemma'
 
 end CategoryTheory

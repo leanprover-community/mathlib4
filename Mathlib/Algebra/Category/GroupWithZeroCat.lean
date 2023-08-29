@@ -56,10 +56,15 @@ instance : LargeCategory.{u} GroupWithZeroCat where
 instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
   ⟨fun f => f.toFun, fun f g h => by
     cases f
+    -- ⊢ { toZeroHom := toZeroHom✝, map_one' := map_one'✝, map_mul' := map_mul'✝ } = g
     cases g
+    -- ⊢ { toZeroHom := toZeroHom✝¹, map_one' := map_one'✝¹, map_mul' := map_mul'✝¹ } …
     congr
+    -- ⊢ toZeroHom✝¹ = toZeroHom✝
     apply FunLike.coe_injective'
+    -- ⊢ ↑toZeroHom✝¹ = ↑toZeroHom✝
     exact h⟩
+    -- 🎉 no goals
 
 -- porting note: added
 lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
@@ -100,10 +105,14 @@ def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
   inv := (e.symm : β →*₀ α)
   hom_inv_id := by
     ext
+    -- ⊢ ↑(↑e ≫ ↑(MulEquiv.symm e)) x✝ = ↑(𝟙 α) x✝
     exact e.symm_apply_apply _
+    -- 🎉 no goals
   inv_hom_id := by
     ext
+    -- ⊢ ↑(↑(MulEquiv.symm e) ≫ ↑e) x✝ = ↑(𝟙 β) x✝
     exact e.apply_symm_apply _
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.iso.mk GroupWithZeroCat.Iso.mk
 

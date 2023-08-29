@@ -202,11 +202,17 @@ variable {P L}
 theorem HasLines.pointCount_le_lineCount [HasLines P L] {p : P} {l : L} (h : p ∉ l)
     [Finite { l : L // p ∈ l }] : pointCount P l ≤ lineCount L p := by
   by_cases hf : Infinite { p : P // p ∈ l }
+  -- ⊢ pointCount P l ≤ lineCount L p
   · exact (le_of_eq Nat.card_eq_zero_of_infinite).trans (zero_le (lineCount L p))
+    -- 🎉 no goals
   haveI := fintypeOfNotInfinite hf
+  -- ⊢ pointCount P l ≤ lineCount L p
   cases nonempty_fintype { l : L // p ∈ l }
+  -- ⊢ pointCount P l ≤ lineCount L p
   rw [lineCount, pointCount, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
+  -- ⊢ Fintype.card { p // p ∈ l } ≤ Fintype.card { l // p ∈ l }
   have : ∀ p' : { p // p ∈ l }, p ≠ p' := fun p' hp' => h ((congr_arg (· ∈ l) hp').mpr p'.2)
+  -- ⊢ Fintype.card { p // p ∈ l } ≤ Fintype.card { l // p ∈ l }
   exact
     Fintype.card_le_of_injective (fun p' => ⟨mkLine (this p'), (mkLine_ax (this p')).1⟩)
       fun p₁ p₂ hp =>
@@ -397,20 +403,33 @@ variable {P}
 
 theorem lineCount_eq_lineCount [Finite P] [Finite L] (p q : P) : lineCount L p = lineCount L q := by
   cases nonempty_fintype P
+  -- ⊢ lineCount L p = lineCount L q
   cases nonempty_fintype L
+  -- ⊢ lineCount L p = lineCount L q
   obtain ⟨p₁, p₂, p₃, l₁, l₂, l₃, h₁₂, h₁₃, h₂₁, h₂₂, h₂₃, h₃₁, h₃₂, h₃₃⟩ := @exists_config P L _ _
+  -- ⊢ lineCount L p = lineCount L q
   have h := card_points_eq_card_lines P L
+  -- ⊢ lineCount L p = lineCount L q
   let n := lineCount L p₂
+  -- ⊢ lineCount L p = lineCount L q
   have hp₂ : lineCount L p₂ = n := rfl
+  -- ⊢ lineCount L p = lineCount L q
   have hl₁ : pointCount P l₁ = n := (HasLines.lineCount_eq_pointCount h h₂₁).symm.trans hp₂
+  -- ⊢ lineCount L p = lineCount L q
   have hp₃ : lineCount L p₃ = n := (HasLines.lineCount_eq_pointCount h h₃₁).trans hl₁
+  -- ⊢ lineCount L p = lineCount L q
   have hl₃ : pointCount P l₃ = n := (HasLines.lineCount_eq_pointCount h h₃₃).symm.trans hp₃
+  -- ⊢ lineCount L p = lineCount L q
   have hp₁ : lineCount L p₁ = n := (HasLines.lineCount_eq_pointCount h h₁₃).trans hl₃
+  -- ⊢ lineCount L p = lineCount L q
   have hl₂ : pointCount P l₂ = n := (HasLines.lineCount_eq_pointCount h h₁₂).symm.trans hp₁
+  -- ⊢ lineCount L p = lineCount L q
   suffices ∀ p : P, lineCount L p = n by exact (this p).trans (this q).symm
+  -- ⊢ ∀ (p : P), lineCount L p = n
   refine' fun p =>
     or_not.elim (fun h₂ => _) fun h₂ => (HasLines.lineCount_eq_pointCount h h₂).trans hl₂
   refine' or_not.elim (fun h₃ => _) fun h₃ => (HasLines.lineCount_eq_pointCount h h₃).trans hl₃
+  -- ⊢ lineCount L p = n
   rw [(eq_or_eq h₂ h₂₂ h₃ h₂₃).resolve_right fun h =>
       h₃₃ ((congr_arg (Membership.mem p₃) h).mp h₃₂)]
 #align configuration.projective_plane.line_count_eq_line_count Configuration.ProjectivePlane.lineCount_eq_lineCount
@@ -420,6 +439,7 @@ variable (P) {L}
 theorem pointCount_eq_pointCount [Finite P] [Finite L] (l m : L) :
     pointCount P l = pointCount P m := by
   apply lineCount_eq_lineCount (Dual P)
+  -- 🎉 no goals
 #align configuration.projective_plane.point_count_eq_point_count Configuration.ProjectivePlane.pointCount_eq_pointCount
 
 -- porting note: left out {L} to avoid redundant binder annotation
@@ -430,8 +450,11 @@ theorem lineCount_eq_pointCount [Finite P] [Finite L] (p : P) (l : L) :
   Exists.elim (exists_point l) fun q hq =>
     (lineCount_eq_lineCount L p q).trans <| by
       cases nonempty_fintype P
+      -- ⊢ lineCount L q = pointCount P l
       cases nonempty_fintype L
+      -- ⊢ lineCount L q = pointCount P l
       exact HasLines.lineCount_eq_pointCount (card_points_eq_card_lines P L) hq
+      -- 🎉 no goals
 #align configuration.projective_plane.line_count_eq_point_count Configuration.ProjectivePlane.lineCount_eq_pointCount
 
 variable (P L)
@@ -462,11 +485,15 @@ variable (L)
 
 theorem one_lt_order [Finite P] [Finite L] : 1 < order P L := by
   obtain ⟨p₁, p₂, p₃, l₁, l₂, l₃, -, -, h₂₁, h₂₂, h₂₃, h₃₁, h₃₂, h₃₃⟩ := @exists_config P L _ _
+  -- ⊢ 1 < order P L
   cases nonempty_fintype { p : P // p ∈ l₂ }
+  -- ⊢ 1 < order P L
   rw [← add_lt_add_iff_right 1, ← pointCount_eq _ l₂, pointCount, Nat.card_eq_fintype_card,
     Fintype.two_lt_card_iff]
   simp_rw [Ne, Subtype.ext_iff]
+  -- ⊢ ∃ a b c, ¬↑a = ↑b ∧ ¬↑a = ↑c ∧ ¬↑b = ↑c
   have h := mkPoint_ax fun h => h₂₁ ((congr_arg _ h).mpr h₂₂)
+  -- ⊢ ∃ a b c, ¬↑a = ↑b ∧ ¬↑a = ↑c ∧ ¬↑b = ↑c
   exact
     ⟨⟨mkPoint _, h.2⟩, ⟨p₂, h₂₂⟩, ⟨p₃, h₃₂⟩, ne_of_mem_of_not_mem h.1 h₂₁,
       ne_of_mem_of_not_mem h.1 h₃₁, ne_of_mem_of_not_mem h₂₃ h₃₃⟩
@@ -476,12 +503,14 @@ variable {P}
 
 theorem two_lt_lineCount [Finite P] [Finite L] (p : P) : 2 < lineCount L p := by
   simpa only [lineCount_eq L p, Nat.succ_lt_succ_iff] using one_lt_order P L
+  -- 🎉 no goals
 #align configuration.projective_plane.two_lt_line_count Configuration.ProjectivePlane.two_lt_lineCount
 
 variable (P) {L}
 
 theorem two_lt_pointCount [Finite P] [Finite L] (l : L) : 2 < pointCount P l := by
   simpa only [pointCount_eq P l, Nat.succ_lt_succ_iff] using one_lt_order P L
+  -- 🎉 no goals
 #align configuration.projective_plane.two_lt_point_count Configuration.ProjectivePlane.two_lt_pointCount
 
 -- porting note: left out (P) to avoid redundant binder annotation
@@ -489,7 +518,9 @@ variable (L)
 
 theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + order P L + 1 := by
   cases nonempty_fintype L
+  -- ⊢ Fintype.card P = order P L ^ 2 + order P L + 1
   obtain ⟨p, -⟩ := @exists_config P L _ _
+  -- ⊢ Fintype.card P = order P L ^ 2 + order P L + 1
   let ϕ : { q // q ≠ p } ≃ Σl : { l : L // p ∈ l }, { q // q ∈ l.1 ∧ q ≠ p } :=
     { toFun := fun q => ⟨⟨mkLine q.2, (mkLine_ax q.2).2⟩, q, (mkLine_ax q.2).1, q.2⟩
       invFun := fun lq => ⟨lq.2, lq.2.2.2⟩

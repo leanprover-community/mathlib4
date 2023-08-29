@@ -70,6 +70,7 @@ scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
     (s.card • ∑ i in s, f i • g i) ≤ (∑ i in s, f i) • ∑ i in s, g i := by
   refine hfg.dual_right.sum_smul_sum_le_card_smul_sum
+  -- 🎉 no goals
 #align antivary_on.card_smul_sum_le_sum_smul_sum AntivaryOn.card_smul_sum_le_sum_smul_sum
 
 variable [Fintype ι]
@@ -88,6 +89,7 @@ scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
     (Fintype.card ι • ∑ i, f i • g i) ≤ (∑ i, f i) • ∑ i, g i := by
   refine (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
+  -- 🎉 no goals
 #align antivary.card_smul_sum_le_sum_smul_sum Antivary.card_smul_sum_le_sum_smul_sum
 
 end Smul
@@ -109,7 +111,9 @@ product. -/
 theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
     ((∑ i in s, f i) * ∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i := by
   rw [← nsmul_eq_mul]
+  -- ⊢ (∑ i in s, f i) * ∑ i in s, g i ≤ card s • ∑ i in s, f i * g i
   exact hfg.sum_smul_sum_le_card_smul_sum
+  -- 🎉 no goals
 #align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
@@ -118,14 +122,18 @@ product. -/
 theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
     ((s.card : α) * ∑ i in s, f i * g i) ≤ (∑ i in s, f i) * ∑ i in s, g i := by
   rw [← nsmul_eq_mul]
+  -- ⊢ card s • ∑ i in s, f i * g i ≤ (∑ i in s, f i) * ∑ i in s, g i
   exact hfg.card_smul_sum_le_sum_smul_sum
+  -- 🎉 no goals
 #align antivary_on.card_mul_sum_le_sum_mul_sum AntivaryOn.card_mul_sum_le_sum_mul_sum
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square
 of the sum is less than the size of the set times the sum of the squares. -/
 theorem sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 := by
   simp_rw [sq]
+  -- ⊢ (∑ i in s, f i) * ∑ i in s, f i ≤ ↑(card s) * ∑ x in s, f x * f x
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
+  -- 🎉 no goals
 #align sq_sum_le_card_mul_sum_sq sq_sum_le_card_mul_sum_sq
 
 variable [Fintype ι]
@@ -153,9 +161,13 @@ variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
 theorem sum_div_card_sq_le_sum_sq_div_card :
     ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card := by
   obtain rfl | hs := s.eq_empty_or_nonempty
+  -- ⊢ ((∑ i in ∅, f i) / ↑(card ∅)) ^ 2 ≤ (∑ i in ∅, f i ^ 2) / ↑(card ∅)
   · simp
+    -- 🎉 no goals
   rw [← card_pos, ← @Nat.cast_pos α] at hs
+  -- ⊢ ((∑ i in s, f i) / ↑(card s)) ^ 2 ≤ (∑ i in s, f i ^ 2) / ↑(card s)
   rw [div_pow, div_le_div_iff (sq_pos_of_ne_zero _ hs.ne') hs, sq (s.card : α), mul_left_comm, ←
     mul_assoc]
   exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq hs.le
+  -- 🎉 no goals
 #align sum_div_card_sq_le_sum_sq_div_card sum_div_card_sq_le_sum_sq_div_card

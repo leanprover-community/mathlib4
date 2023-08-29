@@ -33,8 +33,11 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
   (s.pi t).map
     ⟨fun f => DFinsupp.mk s fun i => f i i.2, by
       refine' (mk_injective _).comp fun f g h => _
+      -- ⊢ f = g
       ext i hi
+      -- ⊢ f i hi = g i hi
       convert congr_fun h ⟨i, hi⟩⟩
+      -- 🎉 no goals
 #align finset.dfinsupp Finset.dfinsupp
 
 @[simp]
@@ -47,15 +50,25 @@ variable [∀ i, DecidableEq (α i)]
 
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
+  -- ⊢ (∃ a, a ∈ pi s t ∧ ↑{ toFun := fun f => DFinsupp.mk s fun i => f ↑i (_ : ↑i  …
   · rintro ⟨f, hf, rfl⟩
+    -- ⊢ support (↑{ toFun := fun f => DFinsupp.mk s fun i => f ↑i (_ : ↑i ∈ ↑s), inj …
     rw [Function.Embedding.coeFn_mk] -- porting note: added to avoid heartbeat timeout
+    -- ⊢ support (DFinsupp.mk s fun i => f ↑i (_ : ↑i ∈ ↑s)) ⊆ s ∧ ∀ (i : ι), i ∈ s → …
     refine' ⟨support_mk_subset, fun i hi => _⟩
+    -- ⊢ ↑(DFinsupp.mk s fun i => f ↑i (_ : ↑i ∈ ↑s)) i ∈ t i
     convert mem_pi.1 hf i hi
+    -- ⊢ ↑(DFinsupp.mk s fun i => f ↑i (_ : ↑i ∈ ↑s)) i = f i hi
     exact mk_of_mem hi
+    -- 🎉 no goals
   · refine' fun h => ⟨fun i _ => f i, mem_pi.2 h.2, _⟩
+    -- ⊢ (↑{ toFun := fun f => DFinsupp.mk s fun i => f ↑i (_ : ↑i ∈ ↑s), inj' := (_  …
     ext i
+    -- ⊢ ↑(↑{ toFun := fun f => DFinsupp.mk s fun i => f ↑i (_ : ↑i ∈ ↑s), inj' := (_ …
     dsimp
+    -- ⊢ (if i ∈ s then ↑f i else 0) = ↑f i
     exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
+    -- 🎉 no goals
 #align finset.mem_dfinsupp_iff Finset.mem_dfinsupp_iff
 
 /-- When `t` is supported on `s`, `f ∈ s.dfinsupp t` precisely means that `f` is pointwise in `t`.
@@ -67,10 +80,15 @@ theorem mem_dfinsupp_iff_of_support_subset {t : Π₀ i, Finset (α i)} (ht : t.
       ⟨ fun h => _,
         fun h => ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
+    -- ⊢ ↑f i ∈ ↑t i
     · exact h.2 hi
+      -- 🎉 no goals
     · rw [not_mem_support_iff.1 (mt h.1 hi), not_mem_support_iff.1 (not_mem_mono ht hi)]
+      -- ⊢ 0 ∈ 0
       exact zero_mem_zero
+      -- 🎉 no goals
   · rwa [H, mem_zero] at h
+    -- 🎉 no goals
 #align finset.mem_dfinsupp_iff_of_support_subset Finset.mem_dfinsupp_iff_of_support_subset
 
 end Finset
@@ -112,7 +130,9 @@ def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_left _ _) h)
         -- porting note: was rw, but was rewriting under lambda, so changed to simp_rw
         simp_rw [hf, hg]
+        -- ⊢ Icc 0 0 = 0
         exact Icc_self _⟩
+        -- 🎉 no goals
 #align dfinsupp.range_Icc DFinsupp.rangeIcc
 
 @[simp]
@@ -125,11 +145,15 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
   refine' fun x hx => _
+  -- ⊢ x ∈ support f ∪ support g
   by_contra h
+  -- ⊢ False
   refine' not_mem_support_iff.2 _ hx
+  -- ⊢ ↑(rangeIcc f g) x = 0
   rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono (subset_union_left _ _) h),
     not_mem_support_iff.1 (not_mem_mono (subset_union_right _ _) h)]
   exact Icc_self _
+  -- 🎉 no goals
 #align dfinsupp.support_range_Icc_subset DFinsupp.support_rangeIcc_subset
 
 end BundledIcc
@@ -151,7 +175,9 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
 @[simp]
 theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_dfinsupp]
+  -- ⊢ ∏ i in support f, card (↑f i) = prod f fun i => ↑(card (↑f i))
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
+  -- 🎉 no goals
 #align dfinsupp.card_pi DFinsupp.card_pi
 
 end Pi
@@ -167,8 +193,11 @@ instance : LocallyFiniteOrder (Π₀ i, α i) :=
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by
       refine' (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans _
+      -- ⊢ (∀ (i : ι), ↑x i ∈ ↑(rangeIcc f g) i) ↔ f ≤ x ∧ x ≤ g
       simp_rw [mem_rangeIcc_apply_iff, forall_and]
+      -- ⊢ ((∀ (x_1 : ι), ↑f x_1 ≤ ↑x x_1) ∧ ∀ (x_1 : ι), ↑x x_1 ≤ ↑g x_1) ↔ f ≤ x ∧ x  …
       rfl)
+      -- 🎉 no goals
 
 variable (f g : Π₀ i, α i)
 
@@ -181,14 +210,17 @@ theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i)
 
 theorem card_Ico : (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
+  -- 🎉 no goals
 #align dfinsupp.card_Ico DFinsupp.card_Ico
 
 theorem card_Ioc : (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
+  -- 🎉 no goals
 #align dfinsupp.card_Ioc DFinsupp.card_Ioc
 
 theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
+  -- 🎉 no goals
 #align dfinsupp.card_Ioo DFinsupp.card_Ioo
 
 end PartialOrder
@@ -199,6 +231,8 @@ variable [DecidableEq ι] [∀ i, DecidableEq (α i)] [∀ i, Lattice (α i)] [�
 
 theorem card_uIcc : (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
   rw [←support_inf_union_support_sup]; exact card_Icc _ _
+  -- ⊢ card (uIcc f g) = ∏ i in support (f ⊓ g) ∪ support (f ⊔ g), card (uIcc (↑f i …
+                                       -- 🎉 no goals
 #align dfinsupp.card_uIcc DFinsupp.card_uIcc
 
 end Lattice
@@ -218,6 +252,7 @@ theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by
 
 theorem card_Iio : (Iio f).card = (∏ i in f.support, (Iic (f i)).card) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
+  -- 🎉 no goals
 #align dfinsupp.card_Iio DFinsupp.card_Iio
 
 end CanonicallyOrdered

@@ -44,15 +44,22 @@ theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
 -- See Note [decidable namespace]
 protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
   rcases exists_pair_ne α with ⟨y, y', h⟩
+  -- ⊢ ∃ y, y ≠ x
   by_cases hx:x = y
+  -- ⊢ ∃ y, y ≠ x
   · rw [← hx] at h
+    -- ⊢ ∃ y, y ≠ x
     exact ⟨y', h.symm⟩
+    -- 🎉 no goals
   · exact ⟨y, Ne.symm hx⟩
+    -- 🎉 no goals
 #align decidable.exists_ne Decidable.exists_ne
 
 
 theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := by
   letI := Classical.decEq α; exact Decidable.exists_ne x
+  -- ⊢ ∃ y, y ≠ x
+                             -- 🎉 no goals
 #align exists_ne exists_ne
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
@@ -67,7 +74,11 @@ theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
 
 theorem exists_pair_lt (α : Type*) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
   rcases exists_pair_ne α with ⟨x, y, hxy⟩
+  -- ⊢ ∃ x y, x < y
   cases lt_or_gt_of_ne hxy <;> exact ⟨_, _, ‹_›⟩
+  -- ⊢ ∃ x y, x < y
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 #align exists_pair_lt exists_pair_lt
 
 theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x < y :=
@@ -81,6 +92,7 @@ theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
   simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff]
+  -- 🎉 no goals
 #align subtype.nontrivial_iff_exists_ne Subtype.nontrivial_iff_exists_ne
 
 instance : Nontrivial Prop :=
@@ -104,17 +116,22 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
       { default := default,
         uniq := fun x : α ↦ by
           by_contra H
+          -- ⊢ False
           exact h ⟨_, _, H⟩ }
+          -- 🎉 no goals
 #align nontrivial_psum_unique nontrivialPSumUnique
 
 theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
   ⟨by
     intro h
+    -- ⊢ ∀ (x y : α), x = y
     exact Subsingleton.elim, fun h ↦ ⟨h⟩⟩
+    -- 🎉 no goals
 #align subsingleton_iff subsingleton_iff
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
   simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, not_not]
+  -- 🎉 no goals
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
@@ -128,7 +145,9 @@ theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
 /-- A type is either a subsingleton or nontrivial. -/
 theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, or_comm]
+  -- ⊢ Nontrivial α ∨ ¬Nontrivial α
   exact Classical.em _
+  -- 🎉 no goals
 #align subsingleton_or_nontrivial subsingleton_or_nontrivial
 
 theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsingleton α] : False :=
@@ -137,7 +156,9 @@ theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsin
 
 instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
+  -- ⊢ Nontrivial (Option α)
   exact ⟨none, some default, fun .⟩
+  -- 🎉 no goals
 
 /-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
@@ -150,12 +171,16 @@ protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
 protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
     (hf : Function.Surjective f) : Nontrivial α := by
   rcases exists_pair_ne β with ⟨x, y, h⟩
+  -- ⊢ Nontrivial α
   rcases hf x with ⟨x', hx'⟩
+  -- ⊢ Nontrivial α
   rcases hf y with ⟨y', hy'⟩
+  -- ⊢ Nontrivial α
   have : x' ≠ y' := by
     refine fun H ↦ h ?_
     rw [← hx', ← hy', H]
   exact ⟨⟨x', y', this⟩⟩
+  -- 🎉 no goals
 #align function.surjective.nontrivial Function.Surjective.nontrivial
 
 /-- An injective function from a nontrivial type has an argument at
@@ -163,9 +188,13 @@ which it does not take a given value. -/
 protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
     (hf : Function.Injective f) (y : β) : ∃ x, f x ≠ y := by
   rcases exists_pair_ne α with ⟨x₁, x₂, hx⟩
+  -- ⊢ ∃ x, f x ≠ y
   by_cases h:f x₂ = y
+  -- ⊢ ∃ x, f x ≠ y
   · exact ⟨x₁, (hf.ne_iff' h).2 hx⟩
+    -- 🎉 no goals
   · exact ⟨x₂, h⟩
+    -- 🎉 no goals
 #align function.injective.exists_ne Function.Injective.exists_ne
 
 
@@ -183,7 +212,9 @@ variable {I : Type*} {f : I → Type*}
 theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
     Nontrivial (∀ i : I, f i) := by
   letI := Classical.decEq (∀ i : I, f i)
+  -- ⊢ Nontrivial ((i : I) → f i)
   exact (Function.update_injective (fun i ↦ Classical.choice (inst i)) i').nontrivial
+  -- 🎉 no goals
 #align pi.nontrivial_at Pi.nontrivial_at
 
 /-- As a convenience, provide an instance automatically if `(f default)` is nontrivial.

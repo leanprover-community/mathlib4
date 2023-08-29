@@ -43,9 +43,13 @@ theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMe
     [TopologicalSpace.SecondCountableTopology E] {μ : MeasureTheory.Measure α} {f g : α → E}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : AEMeasurable (fun x => ⟪f x, g x⟫) μ := by
   refine' ⟨fun x => ⟪hf.mk f x, hg.mk g x⟫, hf.measurable_mk.inner hg.measurable_mk, _⟩
+  -- ⊢ (fun x => Inner.inner (f x) (g x)) =ᶠ[MeasureTheory.Measure.ae μ] fun x => I …
   refine' hf.ae_eq_mk.mp (hg.ae_eq_mk.mono fun x hxg hxf => _)
+  -- ⊢ (fun x => Inner.inner (f x) (g x)) x = (fun x => Inner.inner (mk f hf x) (mk …
   dsimp only
+  -- ⊢ Inner.inner (f x) (g x) = Inner.inner (mk f hf x) (mk g hg x)
   congr
+  -- 🎉 no goals
 #align ae_measurable.inner AEMeasurable.inner
 
 set_option linter.unusedVariables false in

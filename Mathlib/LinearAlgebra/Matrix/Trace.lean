@@ -137,6 +137,7 @@ variable [DecidableEq n] [AddCommMonoidWithOne R]
 @[simp]
 theorem trace_one : trace (1 : Matrix n n R) = Fintype.card n := by
   simp_rw [trace, diag_one, Pi.one_def, Finset.sum_const, nsmul_one, Finset.card_univ]
+  -- 🎉 no goals
 #align matrix.trace_one Matrix.trace_one
 
 end One
@@ -151,23 +152,28 @@ theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Ma
 
 theorem trace_mul_comm [AddCommMonoid R] [CommSemigroup R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
+                                        -- 🎉 no goals
 #align matrix.trace_mul_comm Matrix.trace_mul_comm
 
 theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
+  -- 🎉 no goals
 #align matrix.trace_mul_cycle Matrix.trace_mul_cycle
 
 theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
+  -- 🎉 no goals
 #align matrix.trace_mul_cycle' Matrix.trace_mul_cycle'
 
 @[simp]
 theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
     trace (col a * row b) = dotProduct a b := by
   apply Finset.sum_congr rfl
+  -- ⊢ ∀ (x : n), x ∈ Finset.univ → diag (col a * row b) x = a x * b x
   simp [mul_apply]
+  -- 🎉 no goals
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row
 
 end Mul
@@ -198,7 +204,9 @@ theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :
 
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
+  -- ⊢ trace A = A 0 0 + (A 1 1 + (A 2 2 + 0))
   rfl
+  -- 🎉 no goals
 #align matrix.trace_fin_three Matrix.trace_fin_three
 
 end Fin

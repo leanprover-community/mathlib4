@@ -86,17 +86,23 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) :
     ∃ x₀ : E, ‖x₀‖ ≤ R ∧ ∀ y ∈ F, 1 ≤ ‖x₀ - y‖ := by
   have Rpos : 0 < R := (norm_nonneg _).trans_lt hR
+  -- ⊢ ∃ x₀, ‖x₀‖ ≤ R ∧ ∀ (y : E), y ∈ F → 1 ≤ ‖x₀ - y‖
   have : ‖c‖ / R < 1 := by
     rw [div_lt_iff Rpos]
     simpa using hR
   rcases riesz_lemma hFc hF this with ⟨x, xF, hx⟩
+  -- ⊢ ∃ x₀, ‖x₀‖ ≤ R ∧ ∀ (y : E), y ∈ F → 1 ≤ ‖x₀ - y‖
   have x0 : x ≠ 0 := fun H => by simp [H] at xF
+  -- ⊢ ∃ x₀, ‖x₀‖ ≤ R ∧ ∀ (y : E), y ∈ F → 1 ≤ ‖x₀ - y‖
   obtain ⟨d, d0, dxlt, ledx, -⟩ :
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < R ∧ R / ‖c‖ ≤ ‖d • x‖ ∧ ‖d‖⁻¹ ≤ R⁻¹ * ‖c‖ * ‖x‖ :=
     rescale_to_shell hc Rpos x0
   refine' ⟨d • x, dxlt.le, fun y hy => _⟩
+  -- ⊢ 1 ≤ ‖d • x - y‖
   set y' := d⁻¹ • y
+  -- ⊢ 1 ≤ ‖d • x - y‖
   have yy' : y = d • y' := by simp [smul_smul, mul_inv_cancel d0]
+  -- ⊢ 1 ≤ ‖d • x - y‖
   calc
     1 = ‖c‖ / R * (R / ‖c‖) := by field_simp [Rpos.ne', (zero_lt_one.trans hc).ne']
     _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
@@ -110,8 +116,13 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
     closedBall x (infDist x sᶜ) ⊆ closure s := by
   cases' eq_or_ne (infDist x sᶜ) 0 with h₀ h₀
+  -- ⊢ closedBall x (infDist x sᶜ) ⊆ closure s
   · rw [h₀, closedBall_zero']
+    -- ⊢ closure {x} ⊆ closure s
     exact closure_mono (singleton_subset_iff.2 hx)
+    -- 🎉 no goals
   · rw [← closure_ball x h₀]
+    -- ⊢ closure (ball x (infDist x sᶜ)) ⊆ closure s
     exact closure_mono ball_infDist_compl_subset
+    -- 🎉 no goals
 #align metric.closed_ball_inf_dist_compl_subset_closure Metric.closedBall_infDist_compl_subset_closure

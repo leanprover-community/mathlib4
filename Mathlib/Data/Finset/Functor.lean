@@ -42,6 +42,7 @@ instance lawfulFunctor : LawfulFunctor Finset where
   id_map s := image_id
   comp_map f g s := image_image.symm
   map_const {α} {β} := by simp only [Functor.mapConst, Functor.map]
+                          -- 🎉 no goals
 
 @[simp]
 theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
@@ -92,56 +93,92 @@ because of the lack of universe polymorphism. -/
 theorem image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by
   ext
+  -- ⊢ a✝ ∈ image₂ f s t ↔ a✝ ∈ Seq.seq (f <$> s) fun x => t
   simp [mem_sup]
+  -- 🎉 no goals
 #align finset.image₂_def Finset.image₂_def
 
 instance lawfulApplicative : LawfulApplicative Finset :=
   { Finset.lawfulFunctor with
     seqLeft_eq := fun s t => by
       rw [seq_def, fmap_def, seqLeft_def]
+      -- ⊢ (if t = ∅ then ∅ else s) = sup (image (const β✝) s) fun f => image f t
       obtain rfl | ht := t.eq_empty_or_nonempty
+      -- ⊢ (if ∅ = ∅ then ∅ else s) = sup (image (const β✝) s) fun f => image f ∅
       · simp_rw [image_empty, if_true]
+        -- ⊢ ∅ = sup (image (const β✝) s) fun f => ∅
         exact (sup_bot _).symm
+        -- 🎉 no goals
       · ext a
+        -- ⊢ (a ∈ if t = ∅ then ∅ else s) ↔ a ∈ sup (image (const β✝) s) fun f => image f t
         rw [if_neg ht.ne_empty, mem_sup]
+        -- ⊢ a ∈ s ↔ ∃ v, v ∈ image (const β✝) s ∧ a ∈ image v t
         refine' ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, _⟩
+        -- ⊢ (∃ v, v ∈ image (const β✝) s ∧ a ∈ image v t) → a ∈ s
         rintro ⟨f, hf, ha⟩
+        -- ⊢ a ∈ s
         rw [mem_image] at hf ha
+        -- ⊢ a ∈ s
         obtain ⟨b, hb, rfl⟩ := hf
+        -- ⊢ a ∈ s
         obtain ⟨_, _, rfl⟩ := ha
+        -- ⊢ const β✝ b w✝ ∈ s
         exact hb
+        -- 🎉 no goals
     seqRight_eq := fun s t => by
       rw [seq_def, fmap_def, seqRight_def]
+      -- ⊢ (if s = ∅ then ∅ else t) = sup (image (const α✝ id) s) fun f => image f t
       obtain rfl | hs := s.eq_empty_or_nonempty
+      -- ⊢ (if ∅ = ∅ then ∅ else t) = sup (image (const α✝ id) ∅) fun f => image f t
       · rw [if_pos rfl, image_empty, sup_empty, bot_eq_empty]
+        -- 🎉 no goals
       · ext a
+        -- ⊢ (a ∈ if s = ∅ then ∅ else t) ↔ a ∈ sup (image (const α✝ id) s) fun f => imag …
         rw [if_neg hs.ne_empty, mem_sup]
+        -- ⊢ a ∈ t ↔ ∃ v, v ∈ image (const α✝ id) s ∧ a ∈ image v t
         refine' ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, _⟩
+        -- ⊢ (∃ v, v ∈ image (const α✝ id) s ∧ a ∈ image v t) → a ∈ t
         rintro ⟨f, hf, ha⟩
+        -- ⊢ a ∈ t
         rw [mem_image] at hf ha
+        -- ⊢ a ∈ t
         obtain ⟨b, hb, rfl⟩ := ha
+        -- ⊢ f b ∈ t
         obtain ⟨_, _, rfl⟩ := hf
+        -- ⊢ const α✝ id w✝ b ∈ t
         exact hb
+        -- 🎉 no goals
     pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
+                              -- 🎉 no goals
     map_pure := fun f a => image_singleton _ _
     seq_pure := fun s a => sup_singleton'' _ _
     seq_assoc := fun s t u => by
       ext a
+      -- ⊢ (a ∈ Seq.seq u fun x => Seq.seq t fun x => s) ↔ a ∈ Seq.seq (Seq.seq (comp < …
       simp_rw [seq_def, fmap_def]
+      -- ⊢ (a ∈ sup u fun f => image f (sup t fun f => image f s)) ↔ a ∈ sup (sup (imag …
       simp only [exists_prop, mem_sup, mem_image]
+      -- ⊢ (∃ v, v ∈ u ∧ ∃ a_1, (∃ v, v ∈ t ∧ ∃ a, a ∈ s ∧ v a = a_1) ∧ v a_1 = a) ↔ ∃  …
       constructor
+      -- ⊢ (∃ v, v ∈ u ∧ ∃ a_1, (∃ v, v ∈ t ∧ ∃ a, a ∈ s ∧ v a = a_1) ∧ v a_1 = a) → ∃  …
       · rintro ⟨g, hg, b, ⟨f, hf, a, ha, rfl⟩, rfl⟩
+        -- ⊢ ∃ v, (∃ v_1, (∃ a, a ∈ u ∧ comp a = v_1) ∧ ∃ a, a ∈ t ∧ v_1 a = v) ∧ ∃ a_1,  …
         exact ⟨g ∘ f, ⟨comp g, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
+        -- 🎉 no goals
       · rintro ⟨c, ⟨_, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
+        -- ⊢ ∃ v, v ∈ u ∧ ∃ a_1, (∃ v, v ∈ t ∧ ∃ a, a ∈ s ∧ v a = a_1) ∧ v a_1 = (g ∘ f) a
         exact ⟨g, hg, f a, ⟨f, hf, a, ha, rfl⟩, rfl⟩ }
+        -- 🎉 no goals
 
 instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
+      -- ⊢ Finset.biUnion s ((fun f => image f t) ∘ Prod.mk) = Finset.biUnion t ((fun f …
       change (s.biUnion fun a => t.image fun b => (a, b))
         = t.biUnion fun b => s.image fun a => (a, b)
       trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
+      -- 🎉 no goals
 
 end Applicative
 
@@ -166,6 +203,7 @@ instance : LawfulMonad Finset :=
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
     bind_assoc := fun s f g => by simp only [bind, ←sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+                                  -- 🎉 no goals
 
 end Monad
 
@@ -199,7 +237,9 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
 @[simp]
 theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
+  -- ⊢ Multiset.toFinset <$> s.val = s
   exact s.val_toFinset
+  -- 🎉 no goals
 #align finset.id_traverse Finset.id_traverse
 
 open Classical
@@ -213,8 +253,11 @@ theorem map_comp_coe (h : α → β) :
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
+  -- ⊢ Functor.map h <$> Multiset.toFinset <$> Multiset.traverse g s.val = Multiset …
   simp only [map_comp_coe, functor_norm]
+  -- ⊢ (Multiset.toFinset ∘ Functor.map h) <$> Multiset.traverse g s.val = Multiset …
   rw [LawfulFunctor.comp_map, Multiset.map_traverse]
+  -- 🎉 no goals
 #align finset.map_traverse Finset.map_traverse
 
 end Traversable

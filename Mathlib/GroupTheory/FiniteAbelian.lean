@@ -31,6 +31,7 @@ variable (M : Type u)
 theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
     (hM : Module.IsTorsion ℤ M) : _root_.Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
+  -- ⊢ _root_.Finite M
   haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr <| pow_ne_zero (e i) (h i).ne_zero⟩
   haveI : ∀ i : ι, _root_.Finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i =>
@@ -38,6 +39,7 @@ theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ 
   haveI : _root_.Finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
     Finite.of_equiv _ DFinsupp.equivFunOnFintype.symm
   exact Finite.of_equiv _ l.symm.toEquiv
+  -- 🎉 no goals
 #align module.finite_of_fg_torsion Module.finite_of_fg_torsion
 
 end Module
@@ -57,7 +59,10 @@ theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ :=
     @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG)
   refine' ⟨n, ι, fι, fun i => (p i).natAbs, fun i => _, e, ⟨_⟩⟩
+  -- ⊢ Nat.Prime ((fun i => Int.natAbs (p i)) i)
   · rw [← Int.prime_iff_natAbs_prime, ← GCDMonoid.irreducible_iff_prime]; exact hp i
+    -- ⊢ Irreducible (p i)
+                                                                          -- 🎉 no goals
   exact
     f.toAddEquiv.trans
       ((AddEquiv.refl _).prodCongr <|
@@ -72,12 +77,17 @@ theorem equiv_directSum_zmod_of_fintype [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
   cases nonempty_fintype G
+  -- ⊢ ∃ ι x p x e, Nonempty (G ≃+ ⨁ (i : ι), ZMod (p i ^ e i))
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
+  -- ⊢ ∃ ι x p x e, Nonempty (G ≃+ ⨁ (i : ι), ZMod (p i ^ e i))
   cases' n with n
+  -- ⊢ ∃ ι x p x e, Nonempty (G ≃+ ⨁ (i : ι), ZMod (p i ^ e i))
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
       { uniq := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton] }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
+    -- 🎉 no goals
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
+    -- ⊢ ∃ ι x p x e, Nonempty (G ≃+ ⨁ (i : ι), ZMod (p i ^ e i))
     exact
       (Fintype.ofSurjective (fun f : Fin n.succ →₀ ℤ => f 0) fun a =>
             ⟨Finsupp.single 0 a, Finsupp.single_eq_same⟩).false.elim

@@ -41,6 +41,7 @@ instance : LocallyFiniteOrder (Multiset α) :=
     (fun s t => (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
       Multiset.equivDFinsupp.toEquiv.symm.toEmbedding)
     fun s t x => by simp
+                    -- 🎉 no goals
 
 theorem Icc_eq :
     Finset.Icc s t = (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
@@ -52,6 +53,7 @@ theorem uIcc_eq :
     uIcc s t =
       (uIcc (toDFinsupp s) (toDFinsupp t)).map Multiset.equivDFinsupp.toEquiv.symm.toEmbedding :=
   (Icc_eq _ _).trans <| by simp [uIcc]
+                           -- 🎉 no goals
 #align multiset.uIcc_eq Multiset.uIcc_eq
 
 theorem card_Icc :
@@ -63,16 +65,19 @@ theorem card_Icc :
 theorem card_Ico :
     (Finset.Ico s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
+  -- 🎉 no goals
 #align multiset.card_Ico Multiset.card_Ico
 
 theorem card_Ioc :
     (Finset.Ioc s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
+  -- 🎉 no goals
 #align multiset.card_Ioc Multiset.card_Ioc
 
 theorem card_Ioo :
     (Finset.Ioo s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
+  -- 🎉 no goals
 #align multiset.card_Ioo Multiset.card_Ioo
 
 theorem card_uIcc :
@@ -83,6 +88,7 @@ theorem card_uIcc :
 
 theorem card_Iic : (Finset.Iic s).card = ∏ i in s.toFinset, (s.count i + 1) := by
   simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero, tsub_zero]
+  -- 🎉 no goals
 #align multiset.card_Iic Multiset.card_Iic
 
 end Multiset

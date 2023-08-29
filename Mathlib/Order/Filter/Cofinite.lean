@@ -32,8 +32,10 @@ namespace Filter
 def cofinite : Filter α where
   sets := { s | sᶜ.Finite }
   univ_sets := by simp only [compl_univ, finite_empty, mem_setOf_eq]
+                  -- 🎉 no goals
   sets_of_superset hs st := hs.subset <| compl_subset_compl.2 st
   inter_sets hs ht := by simpa only [compl_inter, mem_setOf_eq] using hs.union ht
+                         -- 🎉 no goals
 #align filter.cofinite Filter.cofinite
 
 @[simp]
@@ -59,6 +61,7 @@ instance cofinite_neBot [Infinite α] : NeBot (@cofinite α) :=
 @[simp]
 theorem cofinite_eq_bot_iff : @cofinite α = ⊥ ↔ Finite α := by
   simp [← empty_mem_iff_bot, finite_univ_iff]
+  -- 🎉 no goals
 
 @[simp]
 theorem cofinite_eq_bot [Finite α] : @cofinite α = ⊥ := cofinite_eq_bot_iff.2 ‹_›
@@ -93,8 +96,11 @@ theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine' ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => _⟩
+  -- ⊢ s ∈ l
   rw [← compl_compl s, ← biUnion_of_singleton sᶜ, compl_iUnion₂, Filter.biInter_mem hs]
+  -- ⊢ ∀ (i : α), i ∈ sᶜ → {i}ᶜ ∈ l
   exact fun x _ => h x
+  -- 🎉 no goals
 #align filter.le_cofinite_iff_compl_singleton_mem Filter.le_cofinite_iff_compl_singleton_mem
 
 theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
@@ -115,18 +121,21 @@ theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
 theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) = cofinite :=
   Filter.coext fun s => by
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
+    -- 🎉 no goals
 #align filter.coprod_cofinite Filter.coprod_cofinite
 
 theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
     (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
   Filter.coext fun s => by
     simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align filter.Coprod_cofinite Filter.coprodᵢ_cofinite
 
 @[simp]
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
   simp only [hasBasis_cofinite.disjoint_iff l.basis_sets, id, disjoint_compl_left_iff_subset]
+  -- ⊢ (∃ i, Set.Finite i ∧ ∃ i', i' ∈ l ∧ i' ⊆ i) ↔ ∃ s, s ∈ l ∧ Set.Finite s
   exact ⟨fun ⟨s, hs, t, ht, hts⟩ => ⟨t, ht, hs.subset hts⟩,
     fun ⟨s, hs, hsf⟩ => ⟨s, hsf, s, hs, Subset.rfl⟩⟩
 #align filter.disjoint_cofinite_left Filter.disjoint_cofinite_left
@@ -140,8 +149,11 @@ theorem disjoint_cofinite_right : Disjoint l cofinite ↔ ∃ s ∈ l, Set.Finit
 theorem countable_compl_sInter_sets [l.IsCountablyGenerated] (h : cofinite ≤ l) :
     Set.Countable (⋂₀ l.sets)ᶜ := by
   rcases exists_antitone_basis l with ⟨s, hs⟩
+  -- ⊢ Set.Countable (⋂₀ l.sets)ᶜ
   simp only [hs.sInter_sets, iInter_true, compl_iInter]
+  -- ⊢ Set.Countable (⋃ (i : ℕ), (s i)ᶜ)
   exact countable_iUnion fun n ↦ Set.Finite.countable <| h <| hs.mem _
+  -- 🎉 no goals
 
 /-- If `f` tends to a countably generated filter `l` along `Filter.cofinite`,
 then for all but countably many elements, `f x ∈ ⋂₀ l.sets`. -/
@@ -149,7 +161,9 @@ theorem Tendsto.countable_compl_preimage_sInter_sets {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
     Set.Countable (f ⁻¹' (⋂₀ l.sets))ᶜ := by
   erw [preimage_sInter, ← sInter_comap_sets]
+  -- ⊢ Set.Countable (⋂₀ (comap f l).sets)ᶜ
   exact countable_compl_sInter_sets h.le_comap
+  -- 🎉 no goals
 
 end Filter
 
@@ -158,30 +172,42 @@ open Filter
 /-- For natural numbers the filters `Filter.cofinite` and `Filter.atTop` coincide. -/
 theorem Nat.cofinite_eq_atTop : @cofinite ℕ = atTop := by
   refine' le_antisymm _ atTop_le_cofinite
+  -- ⊢ cofinite ≤ atTop
   refine' atTop_basis.ge_iff.2 fun N _ => _
+  -- ⊢ Ici N ∈ cofinite
   simpa only [mem_cofinite, compl_Ici] using finite_lt_nat N
+  -- 🎉 no goals
 #align nat.cofinite_eq_at_top Nat.cofinite_eq_atTop
 
 theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
     (∃ᶠ n in atTop, p n) ↔ Set.Infinite { n | p n } := by
   rw [← Nat.cofinite_eq_atTop, frequently_cofinite_iff_infinite]
+  -- 🎉 no goals
 #align nat.frequently_at_top_iff_infinite Nat.frequently_atTop_iff_infinite
 
 theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :
     ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a := by
   rcases em (∃ y ∈ s, ∃ x, f y < x) with (⟨y, hys, x, hx⟩ | not_all_top)
+  -- ⊢ ∃ a₀, a₀ ∈ s ∧ ∀ (a : α), a ∈ s → f a₀ ≤ f a
   · -- the set of points `{y | f y < x}` is nonempty and finite, so we take `min` over this set
     have : { y | ¬x ≤ f y }.Finite := Filter.eventually_cofinite.mp (tendsto_atTop.1 hf x)
+    -- ⊢ ∃ a₀, a₀ ∈ s ∧ ∀ (a : α), a ∈ s → f a₀ ≤ f a
     simp only [not_le] at this
+    -- ⊢ ∃ a₀, a₀ ∈ s ∧ ∀ (a : α), a ∈ s → f a₀ ≤ f a
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
     refine' ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim _ (le_trans ha₀.le)⟩
+    -- ⊢ f a < x → f a₀ ≤ f a
     exact fun h => others_bigger a ⟨h, has⟩
+    -- 🎉 no goals
   · -- in this case, f is constant because all values are at top
     push_neg at not_all_top
+    -- ⊢ ∃ a₀, a₀ ∈ s ∧ ∀ (a : α), a ∈ s → f a₀ ≤ f a
     obtain ⟨a₀, ha₀s⟩ := hs
+    -- ⊢ ∃ a₀, a₀ ∈ s ∧ ∀ (a : α), a ∈ s → f a₀ ≤ f a
     exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
+    -- 🎉 no goals
 #align filter.tendsto.exists_within_forall_le Filter.Tendsto.exists_within_forall_le
 
 theorem Filter.Tendsto.exists_forall_le [Nonempty α] [LinearOrder β] {f : α → β}

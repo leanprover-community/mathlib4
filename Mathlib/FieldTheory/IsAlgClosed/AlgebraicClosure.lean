@@ -80,6 +80,7 @@ theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f
   rw [toSplittingField, evalXSelf, ← AlgHom.coe_toRingHom, hom_eval₂, AlgHom.coe_toRingHom,
     MvPolynomial.aeval_X, dif_pos hf, ← algebraMap_eq, AlgHom.comp_algebraMap]
   exact map_rootOfSplits _ _ _
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_closure.to_splitting_field_eval_X_self AlgebraicClosure.toSplittingField_evalXSelf
 
@@ -87,10 +88,15 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [Ideal.ne_top_iff_one, spanEval, Ideal.span, ← Set.image_univ,
     Finsupp.mem_span_image_iff_total]
   rintro ⟨v, _, hv⟩
+  -- ⊢ False
   replace hv := congr_arg (toSplittingField k v.support) hv
+  -- ⊢ False
   rw [AlgHom.map_one, Finsupp.total_apply, Finsupp.sum, AlgHom.map_sum, Finset.sum_eq_zero] at hv
+  -- ⊢ False
   · exact zero_ne_one hv
+    -- 🎉 no goals
   intro j hj
+  -- ⊢ ↑(toSplittingField k v.support) (↑v j • evalXSelf k j) = 0
   rw [smul_eq_mul, AlgHom.map_mul, toSplittingField_evalXSelf (s := v.support) hj,
     mul_zero]
 #align algebraic_closure.span_eval_ne_top AlgebraicClosure.spanEval_ne_top
@@ -137,7 +143,9 @@ theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.
 
 theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
+  -- ⊢ IsIntegral k z
   rw [← hp]
+  -- ⊢ IsIntegral k (↑(Ideal.Quotient.mk (maxIdeal k)) p)
   induction p using MvPolynomial.induction_on generalizing z with
     | h_C => exact isIntegral_algebraMap
     | h_add _ _ ha hb => exact isIntegral_add (ha _ rfl) (hb _ rfl)
@@ -152,7 +160,9 @@ theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f)
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
     rw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
+    -- ⊢ Polynomial.eval₂ MvPolynomial.C (MvPolynomial.X { val := f, property := (_ : …
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
+    -- 🎉 no goals
 #align algebraic_closure.adjoin_monic.exists_root AlgebraicClosure.AdjoinMonic.exists_root
 
 /-- The `n`th step of constructing `AlgebraicClosure`, together with its `Field` instance. -/
@@ -198,8 +208,10 @@ theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
 -- Porting note: original proof was `@AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi`,
 -- but it timeouts.
   obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
+  -- ⊢ ∃ x, Polynomial.eval₂ (toStepSucc k n) x f = 0
 -- Porting note: using `hx` instead of `by apply hx` timeouts.
   exact ⟨x, by apply hx⟩
+  -- 🎉 no goals
 #align algebraic_closure.to_step_succ.exists_root AlgebraicClosure.toStepSucc.exists_root
 
 -- Porting note: the following two declarations were added during the port to be used in the
@@ -211,8 +223,11 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
     (toStepSucc k n) ∘ toStepOfLE' k m n h := by
   ext x
+  -- ⊢ AlgebraicClosure.toStepOfLE' k m (Nat.succ n) (_ : m ≤ Nat.succ n) x = (↑(to …
   convert Nat.leRecOn_succ h x
+  -- ⊢ m ≤ n + 1
   exact h.trans n.le_succ
+  -- 🎉 no goals
 
 /-- The canonical ring homomorphism to a step with a greater index. -/
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
@@ -221,26 +236,47 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
 -- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
 --                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
     induction' h with a h ih
+    -- ⊢ AlgebraicClosure.toStepOfLE' k m m (_ : Nat.le m m) 1 = 1
     · exact Nat.leRecOn_self 1
+      -- 🎉 no goals
     · rw [toStepOfLE'.succ k m a h]; simp [ih]
+      -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) 1 = 1
+                                     -- 🎉 no goals
   map_mul' x y := by
 -- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
 --                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
     induction' h with a h ih
+    -- ⊢ OneHom.toFun { toFun := AlgebraicClosure.toStepOfLE' k m m (_ : Nat.le m m), …
     · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
+      -- ⊢ Nat.leRecOn (_ : Nat.le m m) (fun a => ↑(toStepSucc k a)) (x * y) = Nat.leRe …
+                           -- 🎉 no goals
     · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+      -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) (x * y) = (↑(toSt …
+                                          -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) (x * y) = (↑(toSt …
+                                                           -- 🎉 no goals
 -- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
 --                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
   map_zero' := by
     induction' h with a h ih
+    -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := AlgebraicClosure.toStepOfLE' k m m ( …
     · exact Nat.leRecOn_self 0
+      -- 🎉 no goals
     · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+      -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) 0 = 0
+                                          -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) 0 = 0
+                                                           -- 🎉 no goals
   map_add' x y := by
 -- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
 --                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
     induction' h with a h ih
+    -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := AlgebraicClosure.toStepOfLE' k m m ( …
     · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
+      -- ⊢ Nat.leRecOn (_ : Nat.le m m) (fun a => ↑(toStepSucc k a)) (x + y) = Nat.leRe …
+                           -- 🎉 no goals
     · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+      -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) (x + y) = (↑(toSt …
+                                          -- ⊢ (↑(toStepSucc k a) ∘ AlgebraicClosure.toStepOfLE' k m a h) (x + y) = (↑(toSt …
+                                                           -- 🎉 no goals
 #align algebraic_closure.to_step_of_le AlgebraicClosure.toStepOfLE
 
 @[simp]
@@ -263,32 +299,55 @@ private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     toStepOfLE k 0 (n + 1) (h.trans n.le_succ) =
     (toStepSucc k n).comp (toStepOfLE k 0 n h) := by
     ext1 x
+    -- ⊢ ↑(toStepOfLE k 0 (n + 1) (_ : 0 ≤ n + 1)) x = ↑(RingHom.comp (toStepSucc k n …
     rw [RingHom.comp_apply]
+    -- ⊢ ↑(toStepOfLE k 0 (n + 1) (_ : 0 ≤ n + 1)) x = ↑(toStepSucc k n) (↑(toStepOfL …
     simp only [toStepOfLE, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    -- ⊢ AlgebraicClosure.toStepOfLE' k 0 (n + 1) (_ : 0 ≤ n + 1) x = ↑(toStepSucc k  …
     change _ = (_ ∘ _) x
+    -- ⊢ AlgebraicClosure.toStepOfLE' k 0 (n + 1) (_ : 0 ≤ n + 1) x = (↑(toStepSucc k …
     rw [toStepOfLE'.succ k 0 n h]
+    -- 🎉 no goals
 
 theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
   induction' n with a h
+  -- ⊢ ∀ (z : Step k Nat.zero), IsIntegral k z
   · intro z
+    -- ⊢ IsIntegral k z
     exact isIntegral_algebraMap
+    -- 🎉 no goals
   · intro z
+    -- ⊢ IsIntegral k z
     change RingHom.IsIntegralElem _ _
+    -- ⊢ RingHom.IsIntegralElem (algebraMap k (Step k (Nat.succ a))) z
     revert z
+    -- ⊢ ∀ (z : Step k (Nat.succ a)), RingHom.IsIntegralElem (algebraMap k (Step k (N …
     change RingHom.IsIntegral _
+    -- ⊢ RingHom.IsIntegral (algebraMap k (Step k (Nat.succ a)))
     unfold algebraMap
+    -- ⊢ RingHom.IsIntegral Algebra.toRingHom
     unfold Algebra.toRingHom
+    -- ⊢ RingHom.IsIntegral (algebra k (Nat.succ a)).2
     unfold algebra
+    -- ⊢ RingHom.IsIntegral (RingHom.toAlgebra (toStepOfLE k 0 (Nat.succ a) (_ : 0 ≤  …
     unfold RingHom.toAlgebra
+    -- ⊢ RingHom.IsIntegral (RingHom.toAlgebra' (toStepOfLE k 0 (Nat.succ a) (_ : 0 ≤ …
     unfold RingHom.toAlgebra'
+    -- ⊢ RingHom.IsIntegral (Algebra.mk (toStepOfLE k 0 (Nat.succ a) (_ : 0 ≤ Nat.suc …
     simp only
+    -- ⊢ RingHom.IsIntegral (toStepOfLE k 0 (Nat.succ a) (_ : 0 ≤ Nat.succ a))
     rw [toStepOfLE.succ k a a.zero_le]
+    -- ⊢ RingHom.IsIntegral (RingHom.comp (toStepSucc k a) (toStepOfLE k 0 a (_ : 0 ≤ …
     apply @RingHom.isIntegral_trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
         (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
     · intro z
+      -- ⊢ RingHom.IsIntegralElem (toStepSucc k a) z
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
+      -- ⊢ RingHom.IsIntegralElem (toStepSucc k a) z
       convert this
+      -- 🎉 no goals
     · convert h --Porting Note: This times out at 500000
+      -- 🎉 no goals
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
@@ -322,14 +381,21 @@ instance algebraOfStep (n) : Algebra (Step k n) (AlgebraicClosure k) :=
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
+  -- ⊢ ↑(RingHom.comp (ofStep k (n + 1)) (toStepSucc k n)) x = ↑(ofStep k n) x
   have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
+  -- ⊢ ↑(RingHom.comp (ofStep k (n + 1)) (toStepSucc k n)) x = ↑(ofStep k n) x
   unfold ofStep
+  -- ⊢ ↑(RingHom.comp (Ring.DirectLimit.of (Step k) (fun i j h => ↑(toStepOfLE k i  …
   rw [RingHom.comp_apply]
+  -- ⊢ ↑(Ring.DirectLimit.of (Step k) (fun i j h => ↑(toStepOfLE k i j h)) (n + 1)) …
   dsimp [toStepOfLE]
+  -- ⊢ ↑(Ring.DirectLimit.of (Step k) (fun i j h => AlgebraicClosure.toStepOfLE' k  …
   rw [← hx]
+  -- ⊢ ↑(Ring.DirectLimit.of (Step k) (fun i j h => AlgebraicClosure.toStepOfLE' k  …
   change Ring.DirectLimit.of (Step k) (toStepOfLE' k) (n + 1) (_) =
       Ring.DirectLimit.of (Step k) (toStepOfLE' k) n x
   convert Ring.DirectLimit.of_f n.le_succ x
+  -- 🎉 no goals
   -- Porting Note: Original proof timed out at 2 mil. Heartbeats. The problem was likely
   -- in comparing `toStepOfLE'` with `toStepSucc`. In the above, I made some things more explicit
   -- Original proof:
@@ -347,11 +413,17 @@ theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi :
   have : ∃ n p, Polynomial.map (ofStep k n) p = f := by
     convert Ring.DirectLimit.Polynomial.exists_of f
   obtain ⟨n, p, rfl⟩ := this
+  -- ⊢ ∃ x, eval x (map (ofStep k n) p) = 0
   rw [monic_map_iff] at hfm
+  -- ⊢ ∃ x, eval x (map (ofStep k n) p) = 0
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
+  -- ⊢ ∃ x, eval x (map (ofStep k n) p) = 0
   obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
+  -- ⊢ ∃ x, eval x (map (ofStep k n) p) = 0
   refine' ⟨ofStep k (n + 1) x, _⟩
+  -- ⊢ eval (↑(ofStep k (n + 1)) x) (map (ofStep k n) p) = 0
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
+  -- 🎉 no goals
 #align algebraic_closure.exists_root AlgebraicClosure.exists_root
 
 instance instIsAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
@@ -371,10 +443,15 @@ theorem algebraMap_def {R : Type*} [CommSemiring R] [alg : Algebra R k] :
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
   apply IsScalarTower.of_algebraMap_eq _
+  -- ⊢ ∀ (x : R), ↑(algebraMap R (AlgebraicClosure k)) x = ↑(algebraMap S (Algebrai …
   intro x
+  -- ⊢ ↑(algebraMap R (AlgebraicClosure k)) x = ↑(algebraMap S (AlgebraicClosure k) …
   simp only [algebraMap_def]
+  -- ⊢ ↑(RingHom.comp (ofStep k 0) (algebraMap R (Step k 0))) x = ↑(RingHom.comp (o …
   rw [RingHom.comp_apply, RingHom.comp_apply]
+  -- ⊢ ↑(ofStep k 0) (↑(algebraMap R (Step k 0)) x) = ↑(ofStep k 0) (↑(algebraMap S …
   exact RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
+  -- 🎉 no goals
   -- Porting Note: Original proof (without `by`) didn't work anymore, I think it couldn't figure
   -- out `algebraMap_def`. Orignally:
   -- IsScalarTower.of_algebraMap_eq fun x =>
@@ -387,6 +464,7 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosure k :=
     --Porting Note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
     -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
       intro x
+      -- ⊢ OneHom.toFun (↑↑{ toMonoidHom := ↑src✝, map_zero' := (_ : OneHom.toFun (↑↑sr …
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
           MonoidHom.coe_coe]
       convert @Ring.DirectLimit.of_f ℕ _ (Step k) _ (fun m n h => (toStepOfLE k m n h : _ → _))

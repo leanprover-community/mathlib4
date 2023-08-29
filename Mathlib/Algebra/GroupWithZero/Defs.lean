@@ -35,6 +35,7 @@ variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
 -- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
 theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
   add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
+                                                  -- 🎉 no goals
 
 -- Porting note:
 -- This theorem was introduced during ad-hoc porting
@@ -210,8 +211,11 @@ variable (M₀)
 /-- In a nontrivial monoid with zero, zero and one are different. -/
 instance NeZero.one : NeZero (1 : M₀) := ⟨by
   intro h
+  -- ⊢ False
   rcases exists_pair_ne M₀ with ⟨x, y, hx⟩
+  -- ⊢ False
   apply hx
+  -- ⊢ x = y
   calc
     x = 1 * x := by rw [one_mul]
     _ = 0 := by rw [h, zero_mul]
@@ -226,7 +230,9 @@ theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f
     Nontrivial M₀' :=
   ⟨⟨0, 1, mt (congr_arg f) <| by
     rw [zero, one]
+    -- ⊢ ¬0 = 1
     exact zero_ne_one⟩⟩
+    -- 🎉 no goals
 #align pullback_nonzero pullback_nonzero
 
 end NeZero
@@ -255,6 +261,7 @@ theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
 equals zero. -/
 @[simp]
 theorem zero_eq_mul : 0 = a * b ↔ a = 0 ∨ b = 0 := by rw [eq_comm, mul_eq_zero]
+                                                      -- 🎉 no goals
 #align zero_eq_mul zero_eq_mul
 
 /-- If `α` has no zero divisors, then the product of two elements is nonzero iff both of them
@@ -274,9 +281,11 @@ theorem mul_ne_zero_comm : a * b ≠ 0 ↔ b * a ≠ 0 := mul_eq_zero_comm.not
 #align mul_ne_zero_comm mul_ne_zero_comm
 
 theorem mul_self_eq_zero : a * a = 0 ↔ a = 0 := by simp
+                                                   -- 🎉 no goals
 #align mul_self_eq_zero mul_self_eq_zero
 
 theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
+                                                   -- 🎉 no goals
 #align zero_eq_mul_self zero_eq_mul_self
 
 theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not

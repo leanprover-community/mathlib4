@@ -56,8 +56,11 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
       rw [this]
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩
+    -- ⊢ Upto.GT p { val := a, property := ha } { val := b, property := property✝ } ↔ …
     dsimp [InvImage, Upto.GT]
+    -- ⊢ a > b ↔ x - a < x - b
     rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
+    -- 🎉 no goals
 #align nat.upto.wf Nat.Upto.wf
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
@@ -69,6 +72,7 @@ def zero : Nat.Upto p :=
 def succ (x : Nat.Upto p) (h : ¬p x.val) : Nat.Upto p :=
   ⟨x.val.succ, fun j h' => by
     rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.2 _ h'; exact h]⟩
+    -- 🎉 no goals
 #align nat.upto.succ Nat.Upto.succ
 
 end Upto

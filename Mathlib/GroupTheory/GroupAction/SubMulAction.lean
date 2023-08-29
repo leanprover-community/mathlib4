@@ -110,6 +110,7 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
 theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
+               -- 🎉 no goals
 #align set_like.forall_smul_mem_iff SetLike.forall_smul_mem_iff
 
 end SetLike
@@ -128,6 +129,9 @@ variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr ⟩
+                                         -- ⊢ { carrier := carrier✝, smul_mem' := smul_mem'✝ } = q
+                                                  -- ⊢ { carrier := carrier✝¹, smul_mem' := smul_mem'✝¹ } = { carrier := carrier✝,  …
+                                                           -- 🎉 no goals
 
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -198,6 +202,8 @@ variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. }; simp [val_smul]
+                                       -- ⊢ ∀ (m : R) (x : { x // x ∈ p }), ↑(m • x) = m • ↑x
+                                                                           -- 🎉 no goals
 #align sub_mul_action.subtype SubMulAction.subtype
 
 @[simp]
@@ -247,7 +253,9 @@ variable (p : SubMulAction R M)
 
 theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   rw [← one_smul R x, ← smul_assoc]
+  -- ⊢ (s • 1) • x ∈ p
   exact p.smul_mem _ h
+  -- 🎉 no goals
 #align sub_mul_action.smul_of_tower_mem SubMulAction.smul_of_tower_mem
 
 instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
@@ -313,7 +321,9 @@ lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) := by
   ext
+  -- ⊢ x✝ ∈ MulAction.Stabilizer.submonoid R m ↔ x✝ ∈ MulAction.Stabilizer.submonoi …
   simp only [MulAction.mem_stabilizer_submonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
+  -- 🎉 no goals
 #align sub_mul_action.stabilizer_of_sub_mul.submonoid SubMulAction.stabilizer_of_subMul.submonoid
 
 end MulActionMonoid
@@ -326,7 +336,9 @@ variable [Group R] [MulAction R M]
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_eq]
+  -- ⊢ (MulAction.stabilizer R m).toSubmonoid = (MulAction.stabilizer R ↑m).toSubmo …
   exact stabilizer_of_subMul.submonoid m
+  -- 🎉 no goals
 #align sub_mul_action.stabilizer_of_sub_mul SubMulAction.stabilizer_of_subMul
 
 end MulActionGroup
@@ -363,14 +375,18 @@ variable {r : R} {x y : M}
 
 theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
   rw [← neg_one_smul R]
+  -- ⊢ -1 • x ∈ p
   exact p.smul_mem _ hx
+  -- 🎉 no goals
 #align sub_mul_action.neg_mem SubMulAction.neg_mem
 
 @[simp]
 theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
   ⟨fun h => by
     rw [← neg_neg x]
+    -- ⊢ - -x ∈ p
     exact neg_mem _ h, neg_mem _⟩
+    -- 🎉 no goals
 #align sub_mul_action.neg_mem_iff SubMulAction.neg_mem_iff
 
 instance : Neg p :=

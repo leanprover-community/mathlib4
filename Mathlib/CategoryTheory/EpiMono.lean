@@ -121,6 +121,8 @@ instance retraction_isSplitEpi {X Y : C} (f : X ⟶ Y) [IsSplitMono f] :
 /-- A split mono which is epi is an iso. -/
 theorem isIso_of_epi_of_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitMono f] [Epi f] : IsIso f :=
   ⟨⟨retraction f, ⟨by simp, by simp [← cancel_epi f]⟩⟩⟩
+                      -- 🎉 no goals
+                               -- 🎉 no goals
 #align category_theory.is_iso_of_epi_of_is_split_mono CategoryTheory.isIso_of_epi_of_isSplitMono
 
 /-- The chosen section of a split epimorphism.
@@ -148,6 +150,8 @@ instance section_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsSplitMon
 /-- A split epi which is mono is an iso. -/
 theorem isIso_of_mono_of_isSplitEpi {X Y : C} (f : X ⟶ Y) [Mono f] [IsSplitEpi f] : IsIso f :=
   ⟨⟨section_ f, ⟨by simp [← cancel_mono f], by simp⟩⟩⟩
+                    -- 🎉 no goals
+                                               -- 🎉 no goals
 #align category_theory.is_iso_of_mono_of_is_split_epi CategoryTheory.isIso_of_mono_of_isSplitEpi
 
 /-- Every iso is a split mono. -/
@@ -162,6 +166,8 @@ instance (priority := 100) IsSplitEpi.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
 
 theorem SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
   { right_cancellation := fun g h w => by replace w := w =≫ sm.retraction; simpa using w }
+                                          -- ⊢ g = h
+                                                                           -- 🎉 no goals
 #align category_theory.split_mono.mono CategoryTheory.SplitMono.mono
 
 /-- Every split mono is a mono. -/
@@ -171,6 +177,8 @@ instance (priority := 100) IsSplitMono.mono {X Y : C} (f : X ⟶ Y) [hf : IsSpli
 
 theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
   { left_cancellation := fun g h w => by replace w := se.section_ ≫= w; simpa using w }
+                                         -- ⊢ g = h
+                                                                        -- 🎉 no goals
 #align category_theory.split_epi.epi CategoryTheory.SplitEpi.epi
 
 /-- Every split epi is an epi. -/
@@ -182,6 +190,8 @@ instance (priority := 100) IsSplitEpi.epi {X Y : C} (f : X ⟶ Y) [hf : IsSplitE
 theorem IsIso.of_mono_retraction' {X Y : C} {f : X ⟶ Y} (hf : SplitMono f) [Mono <| hf.retraction] :
     IsIso f :=
   ⟨⟨hf.retraction, ⟨by simp, (cancel_mono_id <| hf.retraction).mp (by simp)⟩⟩⟩
+                       -- 🎉 no goals
+                                                                      -- 🎉 no goals
 #align category_theory.is_iso.of_mono_retraction' CategoryTheory.IsIso.of_mono_retraction'
 
 /-- Every split mono whose retraction is mono is an iso. -/
@@ -194,6 +204,8 @@ theorem IsIso.of_mono_retraction {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f]
 theorem IsIso.of_epi_section' {X Y : C} {f : X ⟶ Y} (hf : SplitEpi f) [Epi <| hf.section_] :
     IsIso f :=
   ⟨⟨hf.section_, ⟨(cancel_epi_id <| hf.section_).mp (by simp), by simp⟩⟩⟩
+                                                        -- 🎉 no goals
+                                                                  -- 🎉 no goals
 #align category_theory.is_iso.of_epi_section' CategoryTheory.IsIso.of_epi_section'
 
 /-- Every split epi whose section is epi is an iso. -/
@@ -207,10 +219,15 @@ theorem IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : 
 noncomputable def Groupoid.ofTruncSplitMono
     (all_split_mono : ∀ {X Y : C} (f : X ⟶ Y), Trunc (IsSplitMono f)) : Groupoid.{v₁} C := by
   apply Groupoid.ofIsIso
+  -- ⊢ ∀ {X Y : C} (f : X ⟶ Y), IsIso f
   intro X Y f
+  -- ⊢ IsIso f
   have ⟨a,_⟩ := Trunc.exists_rep <| all_split_mono f
+  -- ⊢ IsIso f
   have ⟨b,_⟩ := Trunc.exists_rep <| all_split_mono <| retraction f
+  -- ⊢ IsIso f
   apply IsIso.of_mono_retraction
+  -- 🎉 no goals
 #align category_theory.groupoid.of_trunc_split_mono CategoryTheory.Groupoid.ofTruncSplitMono
 
 section
@@ -255,6 +272,7 @@ def SplitMono.map {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) (F : C ⥤ D) : Spl
     where
   retraction := F.map sm.retraction
   id := by rw [← Functor.map_comp, SplitMono.id, Functor.map_id]
+           -- 🎉 no goals
 #align category_theory.split_mono.map CategoryTheory.SplitMono.map
 
 /-- Split epimorphisms are also absolute epimorphisms. -/
@@ -263,6 +281,7 @@ def SplitEpi.map {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) (F : C ⥤ D) : Split
     where
   section_ := F.map se.section_
   id := by rw [← Functor.map_comp, SplitEpi.id, Functor.map_id]
+           -- 🎉 no goals
 #align category_theory.split_epi.map CategoryTheory.SplitEpi.map
 
 instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] (F : C ⥤ D) : IsSplitMono (F.map f) :=

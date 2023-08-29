@@ -68,6 +68,8 @@ namespace Partition
 
 instance decidableEqParition: DecidableEq (Partition n)
   | p, q => by simp [Partition.ext_iff]; exact decidableEq p.parts q.parts
+               -- ⊢ Decidable (p.parts = q.parts)
+                                         -- 🎉 no goals
 
 /-- A composition induces a partition (just convert the list to a multiset). -/
 def ofComposition (n : ℕ) (c : Composition n) : Partition n
@@ -75,13 +77,18 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n
   parts := c.blocks
   parts_pos {i} hi := c.blocks_pos hi
   parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
+                  -- 🎉 no goals
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
+  -- ⊢ ∃ a, ofComposition n a = { parts := b, parts_pos := hb₁, parts_sum := hb₂ }
   rcases Quotient.exists_rep b with ⟨b, rfl⟩
+  -- ⊢ ∃ a, ofComposition n a = { parts := Quotient.mk (List.isSetoid ℕ) b, parts_p …
   refine' ⟨⟨b, fun {i} hi => hb₁ hi, _⟩, Partition.ext _ _ rfl⟩
+  -- ⊢ List.sum b = n
   simpa using hb₂
+  -- 🎉 no goals
 #align nat.partition.of_composition_surj Nat.Partition.ofComposition_surj
 
 -- The argument `n` is kept explicit here since it is useful in tactic mode proofs to generate the
@@ -93,13 +100,17 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
     where
   parts := l.filter (· ≠ 0)
   parts_pos {i} hi := Nat.pos_of_ne_zero <| by apply of_mem_filter hi
+                                               -- 🎉 no goals
   parts_sum := by
     have lt : l.filter (· = 0) + l.filter (· ≠ 0) = l := filter_add_not _ l
+    -- ⊢ sum (filter (fun x => x ≠ 0) l) = n
     apply_fun Multiset.sum at lt
+    -- ⊢ sum (filter (fun x => x ≠ 0) l) = n
     have lz : (l.filter (· = 0)).sum = 0 := by
       rw [Multiset.sum_eq_zero_iff]
       simp
     rwa [sum_add (filter (fun x => x = 0) l) (filter (fun x => ¬x = 0) l),lz,hl, zero_add] at lt
+    -- 🎉 no goals
 #align nat.partition.of_sums Nat.Partition.ofSums
 
 /-- A `Multiset ℕ` induces a partition on its sum. -/

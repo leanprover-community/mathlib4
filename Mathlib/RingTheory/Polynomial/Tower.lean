@@ -39,6 +39,7 @@ variable {R B}
 @[simp]
 theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
   rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
+  -- 🎉 no goals
 #align polynomial.aeval_map_algebra_map Polynomial.aeval_map_algebraMap
 
 end Semiring
@@ -54,6 +55,7 @@ variable {R A}
 theorem aeval_algebraMap_apply (x : A) (p : R[X]) :
     aeval (algebraMap A B x) p = algebraMap A B (aeval x p) := by
   rw [aeval_def, aeval_def, hom_eval₂, ← IsScalarTower.algebraMap_eq]
+  -- 🎉 no goals
 #align polynomial.aeval_algebra_map_apply Polynomial.aeval_algebraMap_apply
 
 @[simp]
@@ -68,6 +70,7 @@ variable {B}
 theorem aeval_algebraMap_eq_zero_iff_of_injective {x : A} {p : R[X]}
     (h : Function.Injective (algebraMap A B)) : aeval (algebraMap A B x) p = 0 ↔ aeval x p = 0 := by
   rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
+  -- 🎉 no goals
 #align polynomial.aeval_algebra_map_eq_zero_iff_of_injective Polynomial.aeval_algebraMap_eq_zero_iff_of_injective
 
 end CommSemiring

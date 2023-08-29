@@ -92,6 +92,7 @@ open ZeroObject
 
 instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 : C) where
   factors f e _ := ⟨0, by ext⟩
+                          -- 🎉 no goals
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
 end
@@ -100,6 +101,7 @@ theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
   factors f e e_epi :=
     let ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
     ⟨i.inv ≫ f', by simp [hf']⟩
+                    -- 🎉 no goals
 #align category_theory.projective.of_iso CategoryTheory.Projective.of_iso
 
 theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
@@ -119,18 +121,22 @@ instance Type.enoughProjectives : EnoughProjectives (Type u) where
 instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Projective (P ⨿ Q) where
   factors f e epi := ⟨coprod.desc (factorThru (coprod.inl ≫ f) e) (factorThru (coprod.inr ≫ f) e),
     by aesop_cat⟩
+       -- 🎉 no goals
 
 instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
   factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by aesop_cat⟩
+                                                                             -- 🎉 no goals
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] [Projective Q] :
     Projective (P ⊞ Q) where
   factors f e epi := ⟨biprod.desc (factorThru (biprod.inl ≫ f) e) (factorThru (biprod.inr ≫ f) e),
     by aesop_cat⟩
+       -- 🎉 no goals
 
 instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀ b, Projective (g b)] :
     Projective (⨁ g) where
   factors f e epi := ⟨biproduct.desc fun b => factorThru (biproduct.ι g b ≫ f) e, by aesop_cat⟩
+                                                                                     -- 🎉 no goals
 
 theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     Projective P ↔ (coyoneda.obj (op P)).PreservesEpimorphisms :=
@@ -206,19 +212,28 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     Projective (F.obj P) where
   factors f g _ := by
     rcases hP.factors (adj.unit.app P ≫ G.map f) (G.map g) with ⟨f', hf'⟩
+    -- ⊢ ∃ f', f' ≫ g = f
     use F.map f' ≫ adj.counit.app _
+    -- ⊢ (F.map f' ≫ NatTrans.app adj.counit E✝) ≫ g = f
     rw [Category.assoc, ← Adjunction.counit_naturality, ← Category.assoc, ← F.map_comp, hf']
+    -- ⊢ F.map (NatTrans.app adj.unit P ≫ G.map f) ≫ NatTrans.app adj.counit X✝ = f
     simp
+    -- 🎉 no goals
 #align category_theory.adjunction.map_projective CategoryTheory.Adjunction.map_projective
 
 theorem projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
     haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
+    -- ⊢ ∃ f', f' ≫ g = f
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
+    -- ⊢ ∃ f', f' ≫ g = f
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
+    -- ⊢ (NatTrans.app adj.unit P ≫ G.map f' ≫ inv (NatTrans.app adj.unit E✝)) ≫ g = f
     refine' Faithful.map_injective (F := F) _
+    -- ⊢ F.map ((NatTrans.app adj.unit P ≫ G.map f' ≫ inv (NatTrans.app adj.unit E✝)) …
     simpa
+    -- 🎉 no goals
 #align category_theory.adjunction.projective_of_map_projective CategoryTheory.Adjunction.projective_of_map_projective
 
 /-- Given an adjunction `F ⊣ G` such that `G` preserves epis, `F` maps a projective presentation of
@@ -249,7 +264,9 @@ def projectivePresentationOfMapProjectivePresentation (X : C)
 
 theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
   constructor
+  -- ⊢ EnoughProjectives C → EnoughProjectives D
   all_goals intro H; constructor; intro X; constructor
+  -- ⊢ ProjectivePresentation X
   · exact F.symm.projectivePresentationOfMapProjectivePresentation _
       (Nonempty.some (H.presentation (F.inverse.obj X)))
   · exact F.projectivePresentationOfMapProjectivePresentation X
@@ -280,12 +297,14 @@ def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R �
 theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
     (hfg : Exact f g) (w : h ≫ g = 0) : Exact.lift h f g hfg w ≫ f = h := by
   simp only [Exact.lift]
+  -- ⊢ factorThru (factorThru (factorThruKernelSubobject g h w) (imageToKernel f g  …
   conv_lhs =>
     congr
     rfl
     rw [← imageSubobject_arrow_comp f]
   -- See the porting note on `Exact.epi`.
   haveI := hfg.epi
+  -- ⊢ factorThru (factorThru (factorThruKernelSubobject g h w) (imageToKernel f g  …
   rw [← Category.assoc, factorThru_comp, ← imageToKernel_arrow f g, ← Category.assoc,
     CategoryTheory.Projective.factorThru_comp, factorThruKernelSubobject_comp_arrow]
 #align category_theory.exact.lift_comp CategoryTheory.Exact.lift_comp

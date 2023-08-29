@@ -42,17 +42,25 @@ theorem Memℒp.finStronglyMeasurable_of_stronglyMeasurable (hf : Memℒp f p μ
     (hf_meas : StronglyMeasurable f) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     FinStronglyMeasurable f μ := by
   borelize G
+  -- ⊢ FinStronglyMeasurable f μ
   haveI : SeparableSpace (Set.range f ∪ {0} : Set G) :=
     hf_meas.separableSpace_range_union_singleton
   let fs := SimpleFunc.approxOn f hf_meas.measurable (Set.range f ∪ {0}) 0 (by simp)
+  -- ⊢ FinStronglyMeasurable f μ
   refine' ⟨fs, _, _⟩
+  -- ⊢ ∀ (n : ℕ), ↑↑μ (support ↑(fs n)) < ⊤
   · have h_fs_Lp : ∀ n, Memℒp (fs n) p μ :=
       SimpleFunc.memℒp_approxOn_range hf_meas.measurable hf
     exact fun n => (fs n).measure_support_lt_top_of_memℒp (h_fs_Lp n) hp_ne_zero hp_ne_top
+    -- 🎉 no goals
   · intro x
+    -- ⊢ Tendsto (fun n => ↑(fs n) x) atTop (𝓝 (f x))
     apply SimpleFunc.tendsto_approxOn
+    -- ⊢ f x ∈ closure (Set.range f ∪ {0})
     apply subset_closure
+    -- ⊢ f x ∈ Set.range f ∪ {0}
     simp
+    -- 🎉 no goals
 #align measure_theory.mem_ℒp.fin_strongly_measurable_of_strongly_measurable MeasureTheory.Memℒp.finStronglyMeasurable_of_stronglyMeasurable
 
 theorem Memℒp.aefinStronglyMeasurable (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :

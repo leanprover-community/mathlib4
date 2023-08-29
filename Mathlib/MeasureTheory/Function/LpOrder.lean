@@ -41,22 +41,37 @@ variable [NormedLatticeAddCommGroup E]
 
 theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]
+  -- 🎉 no goals
 #align measure_theory.Lp.coe_fn_le MeasureTheory.Lp.coeFn_le
 
 theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← coeFn_le]
+  -- ⊢ 0 ≤ᵐ[μ] ↑↑f ↔ ↑↑0 ≤ᵐ[μ] ↑↑f
   have h0 := Lp.coeFn_zero E p μ
+  -- ⊢ 0 ≤ᵐ[μ] ↑↑f ↔ ↑↑0 ≤ᵐ[μ] ↑↑f
   constructor <;> intro h <;> filter_upwards [h, h0] with _ _ h2
+  -- ⊢ 0 ≤ᵐ[μ] ↑↑f → ↑↑0 ≤ᵐ[μ] ↑↑f
+                  -- ⊢ ↑↑0 ≤ᵐ[μ] ↑↑f
+                  -- ⊢ 0 ≤ᵐ[μ] ↑↑f
+                              -- ⊢ ↑↑0 a✝¹ ≤ ↑↑f a✝¹
+                              -- ⊢ OfNat.ofNat 0 a✝¹ ≤ ↑↑f a✝¹
   · rwa [h2]
+    -- 🎉 no goals
   · rwa [← h2]
+    -- 🎉 no goals
 #align measure_theory.Lp.coe_fn_nonneg MeasureTheory.Lp.coeFn_nonneg
 
 instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·) (· ≤ ·) := by
   refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
+  -- ⊢ f + g₁ ≤ f + g₂
   rw [← coeFn_le] at hg₁₂ ⊢
+  -- ⊢ ↑↑(f + g₁) ≤ᵐ[μ] ↑↑(f + g₂)
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3
+  -- ⊢ ↑↑(f + g₁) a✝ ≤ ↑↑(f + g₂) a✝
   rw [h1, h2, Pi.add_apply, Pi.add_apply]
+  -- ⊢ ↑↑f a✝ + ↑↑g₁ a✝ ≤ ↑↑f a✝ + ↑↑g₂ a✝
   exact add_le_add le_rfl h3
+  -- 🎉 no goals
 #align measure_theory.Lp.has_le.le.covariant_class MeasureTheory.Lp.instCovariantClassLE
 
 instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
@@ -84,10 +99,14 @@ instance instLattice : Lattice (Lp E p μ) :=
   Subtype.lattice
     (fun f g hf hg => by
       rw [mem_Lp_iff_memℒp] at *
+      -- ⊢ Memℒp (↑(f ⊔ g)) p
       exact (memℒp_congr_ae (AEEqFun.coeFn_sup _ _)).mpr (hf.sup hg))
+      -- 🎉 no goals
     fun f g hf hg => by
     rw [mem_Lp_iff_memℒp] at *
+    -- ⊢ Memℒp (↑(f ⊓ g)) p
     exact (memℒp_congr_ae (AEEqFun.coeFn_inf _ _)).mpr (hf.inf hg)
+    -- 🎉 no goals
 #align measure_theory.Lp.lattice MeasureTheory.Lp.instLattice
 
 theorem coeFn_sup (f g : Lp E p μ) : ⇑(f ⊔ g) =ᵐ[μ] ⇑f ⊔ ⇑g :=
@@ -108,11 +127,17 @@ noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :
     add_le_add_left := fun f g => add_le_add_left
     solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
+      -- ⊢ ‖f‖ ≤ ‖g‖
       simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top f) (Lp.snorm_ne_top g)]
+      -- ⊢ snorm (↑↑f) p μ ≤ snorm (↑↑g) p μ
       refine' snorm_mono_ae _
+      -- ⊢ ∀ᵐ (x : α) ∂μ, ‖↑↑f x‖ ≤ ‖↑↑g x‖
       filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
+      -- ⊢ ‖↑↑f x‖ ≤ ‖↑↑g x‖
       rw [hxf, hxg] at hx
+      -- ⊢ ‖↑↑f x‖ ≤ ‖↑↑g x‖
       exact HasSolidNorm.solid hx }
+      -- 🎉 no goals
 #align measure_theory.Lp.normed_lattice_add_comm_group MeasureTheory.Lp.instNormedLatticeAddCommGroup
 
 end Order

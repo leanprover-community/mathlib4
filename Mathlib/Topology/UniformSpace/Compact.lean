@@ -49,12 +49,14 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
   refine' nhdsSet_diagonal_le_uniformity.antisymm _
+  -- ⊢ 𝓤 α ≤ 𝓝ˢ (diagonal α)
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
       (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
   refine' (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => _
+  -- ⊢ ⋃ (x : α × α) (_ : x ∈ diagonal α), ball x ((fun p => ((p.fst.fst, p.snd.fst …
   exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_iUnion₂.2
     ⟨(x, x), rfl, refl_mem_uniformity hU, hxy⟩
 #align nhds_set_diagonal_eq_uniformity nhdsSet_diagonal_eq_uniformity
@@ -69,9 +71,13 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
     {u u' : UniformSpace γ} (h : u.toTopologicalSpace = t) (h' : u'.toTopologicalSpace = t) :
     u = u' := by
   refine UniformSpace.ext ?_
+  -- ⊢ 𝓤 γ = 𝓤 γ
   have : @CompactSpace γ u.toTopologicalSpace := by rwa [h]
+  -- ⊢ 𝓤 γ = 𝓤 γ
   have : @CompactSpace γ u'.toTopologicalSpace := by rwa [h']
+  -- ⊢ 𝓤 γ = 𝓤 γ
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
+  -- 🎉 no goals
 #align unique_uniformity_of_compact unique_uniformity_of_compact
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
@@ -85,26 +91,37 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
         -/
     set 𝓝Δ := 𝓝ˢ (diagonal γ)
+    -- ⊢ (Filter.lift' 𝓝Δ fun s => s ○ s) ≤ 𝓝Δ
     -- The filter of neighborhoods of Δ
     set F := 𝓝Δ.lift' fun s : Set (γ × γ) => s ○ s
+    -- ⊢ F ≤ 𝓝Δ
     -- Compositions of neighborhoods of Δ
     -- If this weren't true, then there would be V ∈ 𝓝Δ such that F ⊓ 𝓟 Vᶜ ≠ ⊥
     rw [le_iff_forall_inf_principal_compl]
+    -- ⊢ ∀ (V : Set (γ × γ)), V ∈ 𝓝Δ → F ⊓ 𝓟 Vᶜ = ⊥
     intro V V_in
+    -- ⊢ F ⊓ 𝓟 Vᶜ = ⊥
     by_contra H
+    -- ⊢ False
     haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
+    -- ⊢ False
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
     obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := cluster_point_of_compact _
+    -- ⊢ False
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
+    -- ⊢ False
     have : (x, y) ∉ interior V := by
       have : (x, y) ∈ closure Vᶜ := by rwa [mem_closure_iff_clusterPt]
       rwa [closure_compl] at this
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
+    -- ⊢ False
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
+    -- ⊢ False
     -- Since γ is compact and Hausdorff, it is normal, hence T₃.
     haveI : NormalSpace γ := normalOfCompactT2
+    -- ⊢ False
     -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
     -- disjoint open neighborhoods U₁ and U₂.
     obtain
@@ -113,8 +130,11 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- We set U₃ := (V₁ ∪ V₂)ᶜ so that W := U₁ ×ˢ U₁ ∪ U₂ ×ˢ U₂ ∪ U₃ ×ˢ U₃ is an open
     -- neighborhood of Δ.
     let U₃ := (V₁ ∪ V₂)ᶜ
+    -- ⊢ False
     have U₃_op : IsOpen U₃ := (V₁_cl.union V₂_cl).isOpen_compl
+    -- ⊢ False
     let W := U₁ ×ˢ U₁ ∪ U₂ ×ˢ U₂ ∪ U₃ ×ˢ U₃
+    -- ⊢ False
     have W_in : W ∈ 𝓝Δ := by
       rw [mem_nhdsSet_iff_forall]
       rintro ⟨z, z'⟩ (rfl : z = z')
@@ -124,13 +144,16 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
     have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in
+    -- ⊢ False
       -- Porting note: was `by simpa only using mem_lift' W_in`
     -- And V₁ ×ˢ V₂ ∈ 𝓝 (x, y)
     have hV₁₂ : V₁ ×ˢ V₂ ∈ 𝓝 (x, y) := prod_mem_nhds V₁_in V₂_in
+    -- ⊢ False
     -- But (x, y) is also a cluster point of F so (V₁ ×ˢ V₂) ∩ (W ○ W) ≠ ∅
     -- However the construction of W implies (V₁ ×ˢ V₂) ∩ (W ○ W) = ∅.
     -- Indeed assume for contradiction there is some (u, v) in the intersection.
     obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ := clusterPt_iff.mp hxy.of_inf_left hV₁₂ this
+    -- ⊢ False
     -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w ,v) ∈ W.
     -- Because u is in V₁ which is disjoint from U₂ and U₃, (u, w) ∈ W forces (u, w) ∈ U₁ ×ˢ U₁.
     have uw_in : (u, w) ∈ U₁ ×ˢ U₁ :=
@@ -143,6 +166,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- Hence w ∈ U₁ ∩ U₂ which is empty.
     -- So we have a contradiction
     exact hU₁₂.le_bot ⟨uw_in.2, wv_in.1⟩
+    -- 🎉 no goals
   isOpen_uniformity := by
     -- Here we need to prove the topology induced by the constructed uniformity is the
     -- topology we started with.
@@ -150,11 +174,17 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       intro s
       simp_rw [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
     intro x
+    -- ⊢ Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x
     simp_rw [nhdsSet_diagonal, comap_iSup, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
+    -- ⊢ ⨆ (i : γ), Filter.comap (fun x_1 => x) (𝓝 i) ⊓ 𝓝 i = 𝓝 x
     rw [iSup_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
+    -- ⊢ ⊤ ⊓ 𝓝 x ⊔ ⨆ (i : γ) (_ : i ≠ x), Filter.comap (fun x_2 => x) (𝓝 i) ⊓ 𝓝 i = 𝓝 x
     suffices ∀ (y) (_ : y ≠ x), comap (fun _ : γ => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
+    -- ⊢ ∀ (y : γ), y ≠ x → Filter.comap (fun x_2 => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x
     intro y hxy
+    -- ⊢ Filter.comap (fun x_1 => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x
     simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (Classical.not_not.2 rfl)]
+    -- 🎉 no goals
 #align uniform_space_of_compact_t2 uniformSpaceOfCompactT2
 
 /-!
@@ -168,6 +198,7 @@ theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α �
     (h : Continuous f) : UniformContinuous f :=
 calc map (Prod.map f f) (𝓤 α)
    = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
+                                                -- 🎉 no goals
  _ ≤ 𝓝ˢ (diagonal β)                      := (h.prod_map h).tendsto_nhdsSet mapsTo_prod_map_diagonal
  _ ≤ 𝓤 β                                  := nhdsSet_diagonal_le_uniformity
 #align compact_space.uniform_continuous_of_continuous CompactSpace.uniformContinuous_of_continuous
@@ -177,9 +208,13 @@ continuous. -/
 theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β} (hs : IsCompact s)
     (hf : ContinuousOn f s) : UniformContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict]
+  -- ⊢ UniformContinuous (restrict s f)
   rw [isCompact_iff_compactSpace] at hs
+  -- ⊢ UniformContinuous (restrict s f)
   rw [continuousOn_iff_continuous_restrict] at hf
+  -- ⊢ UniformContinuous (restrict s f)
   exact CompactSpace.uniformContinuous_of_continuous hf
+  -- 🎉 no goals
 #align is_compact.uniform_continuous_on_of_continuous IsCompact.uniformContinuousOn_of_continuous
 
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is
@@ -190,32 +225,49 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
     (hs : IsCompact s) (f : α → β) (hf : ∀ a ∈ s, ContinuousAt f a) (hr : r ∈ 𝓤 β) :
     { x : α × α | x.1 ∈ s → (f x.1, f x.2) ∈ r } ∈ 𝓤 α := by
   obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
+  -- ⊢ {x | x.fst ∈ s → (f x.fst, f x.snd) ∈ r} ∈ 𝓤 α
   choose U hU T hT hb using fun a ha =>
     exists_mem_nhds_ball_subset_of_mem_nhds ((hf a ha).preimage_mem_nhds <| mem_nhds_left _ ht)
   obtain ⟨fs, hsU⟩ := hs.elim_nhds_subcover' U hU
+  -- ⊢ {x | x.fst ∈ s → (f x.fst, f x.snd) ∈ r} ∈ 𝓤 α
   apply mem_of_superset ((biInter_finset_mem fs).2 fun a _ => hT a a.2)
+  -- ⊢ ⋂ (i : ↑s) (_ : i ∈ fs), T ↑i (_ : ↑i ∈ s) ⊆ {x | x.fst ∈ s → (f x.fst, f x. …
   rintro ⟨a₁, a₂⟩ h h₁
+  -- ⊢ (f (a₁, a₂).fst, f (a₁, a₂).snd) ∈ r
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
+  -- ⊢ (f (a₁, a₂).fst, f (a₁, a₂).snd) ∈ r
   apply htr
+  -- ⊢ (f (a₁, a₂).fst, f (a₁, a₂).snd) ∈ t ○ t
   refine' ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
+  -- ⊢ (a₁, a₂).fst ∈ ball (a₁, a₂).fst (T ↑a (_ : ↑a ∈ s))
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
+  -- 🎉 no goals
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=
   uniformContinuous_def.2 fun r hr => by
     obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
+    -- ⊢ {x | (f x.fst, f x.snd) ∈ r} ∈ 𝓤 α
     obtain ⟨s, hs, hst⟩ := mem_cocompact.1 (hx <| mem_nhds_left _ ht)
+    -- ⊢ {x | (f x.fst, f x.snd) ∈ r} ∈ 𝓤 α
     apply
       mem_of_superset
         (symmetrize_mem_uniformity <|
           (hs.uniformContinuousAt_of_continuousAt f fun _ _ => h_cont.continuousAt) <|
             symmetrize_mem_uniformity hr)
     rintro ⟨b₁, b₂⟩ h
+    -- ⊢ (b₁, b₂) ∈ {x | (f x.fst, f x.snd) ∈ r}
     by_cases h₁ : b₁ ∈ s; · exact (h.1 h₁).1
+    -- ⊢ (b₁, b₂) ∈ {x | (f x.fst, f x.snd) ∈ r}
+                            -- 🎉 no goals
     by_cases h₂ : b₂ ∈ s; · exact (h.2 h₂).2
+    -- ⊢ (b₁, b₂) ∈ {x | (f x.fst, f x.snd) ∈ r}
+                            -- 🎉 no goals
     apply htr
+    -- ⊢ (f (b₁, b₂).fst, f (b₁, b₂).snd) ∈ t ○ t
     exact ⟨x, htsymm.mk_mem_comm.1 (hst h₁), hst h₂⟩
+    -- 🎉 no goals
 #align continuous.uniform_continuous_of_tendsto_cocompact Continuous.uniformContinuous_of_tendsto_cocompact
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
@@ -224,12 +276,19 @@ theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace �
     (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
   -- porting note: move to src/topology/support.lean once the port is over
   intro N hN
+  -- ⊢ N ∈ map f (cocompact α)
   rw [mem_map, mem_cocompact']
+  -- ⊢ ∃ t, IsCompact t ∧ (f ⁻¹' N)ᶜ ⊆ t
   refine' ⟨mulTSupport f, h.isCompact, _⟩
+  -- ⊢ (f ⁻¹' N)ᶜ ⊆ mulTSupport f
   rw [compl_subset_comm]
+  -- ⊢ (mulTSupport f)ᶜ ⊆ f ⁻¹' N
   intro v hv
+  -- ⊢ v ∈ f ⁻¹' N
   rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
+  -- ⊢ 1 ∈ N
   exact mem_of_mem_nhds hN
+  -- 🎉 no goals
 #align has_compact_mul_support.is_one_at_infty HasCompactMulSupport.is_one_at_infty
 #align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
 
@@ -246,10 +305,12 @@ theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β]
     {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn (↿f) (U ×ˢ univ)) :
     TendstoUniformly f (f x) (𝓝 x) := by
   rcases LocallyCompactSpace.local_compact_nhds _ _ hxU with ⟨K, hxK, hKU, hK⟩
+  -- ⊢ TendstoUniformly f (f x) (𝓝 x)
   have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ)
       (h.mono <| prod_mono hKU Subset.rfl)
   exact this.tendstoUniformly hxK
+  -- 🎉 no goals
 #align continuous_on.tendsto_uniformly ContinuousOn.tendstoUniformly
 
 /-- A continuous family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is
@@ -266,8 +327,11 @@ uniformly equicontinuous. -/
 theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type*} {F : ι → β → α}
     [CompactSpace β] (h : Equicontinuous F) : UniformEquicontinuous F := by
   rw [equicontinuous_iff_continuous] at h
+  -- ⊢ UniformEquicontinuous F
   rw [uniformEquicontinuous_iff_uniformContinuous]
+  -- ⊢ UniformContinuous (↑UniformFun.ofFun ∘ Function.swap F)
   exact CompactSpace.uniformContinuous_of_continuous h
+  -- 🎉 no goals
 #align compact_space.uniform_equicontinuous_of_equicontinuous CompactSpace.uniformEquicontinuous_of_equicontinuous
 
 end UniformConvergence

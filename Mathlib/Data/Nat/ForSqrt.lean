@@ -20,38 +20,71 @@ section Misc
 
 protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
   by_cases hk : k = 0
+  -- ⊢ x * k ≤ y
   case pos => rw [hk, mul_zero]; exact zero_le _
+  -- ⊢ x * k ≤ y
+  -- 🎉 no goals
   case neg => rwa [← le_div_iff_mul_le (pos_iff_ne_zero.2 hk)]
+  -- 🎉 no goals
+  -- 🎉 no goals
 
 protected lemma div_mul_div_le (a b c d : ℕ) :
     (a / b) * (c / d) ≤ (a * c) / (b * d) := by
   by_cases hb : b = 0
+  -- ⊢ a / b * (c / d) ≤ a * c / (b * d)
   case pos => simp [hb]
+  -- ⊢ a / b * (c / d) ≤ a * c / (b * d)
+  -- 🎉 no goals
   by_cases hd : d = 0
+  -- ⊢ a / b * (c / d) ≤ a * c / (b * d)
   case pos => simp [hd]
+  -- ⊢ a / b * (c / d) ≤ a * c / (b * d)
+  -- 🎉 no goals
   have hbd : b * d ≠ 0 := mul_ne_zero hb hd
+  -- ⊢ a / b * (c / d) ≤ a * c / (b * d)
   rw [le_div_iff_mul_le (Nat.pos_of_ne_zero hbd)]
+  -- ⊢ a / b * (c / d) * (b * d) ≤ a * c
   transitivity ((a / b) * b) * ((c / d) * d)
+  -- ⊢ a / b * (c / d) * (b * d) ≤ a / b * b * (c / d * d)
   · apply le_of_eq; simp only [mul_assoc, mul_left_comm]
+    -- ⊢ a / b * (c / d) * (b * d) = a / b * b * (c / d * d)
+                    -- 🎉 no goals
   · apply Nat.mul_le_mul <;> apply div_mul_le_self
+    -- ⊢ a / b * b ≤ a
+                             -- 🎉 no goals
+                             -- 🎉 no goals
 
 private lemma iter_fp_bound (n k : ℕ) :
     let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
     sqrt.iter n k ≤ iter_next n (sqrt.iter n k) := by
   intro iter_next
+  -- ⊢ sqrt.iter n k ≤ iter_next n (sqrt.iter n k)
   unfold sqrt.iter
+  -- ⊢ (let next := (k + n / k) / 2;
   by_cases h : (k + n / k) / 2 < k
   case pos => simp [if_pos h]; exact iter_fp_bound _ _
+  -- ⊢ (let next := (k + n / k) / 2;
+  -- 🎉 no goals
   case neg => simp [if_neg h]; exact Nat.le_of_not_lt h
+  -- 🎉 no goals
+  -- 🎉 no goals
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [mul_zero, zero_mul]; exact zero_le _
+               -- ⊢ 0 ≤ (0 + x✝) * (0 + x✝)
+                                        -- 🎉 no goals
   | _, 0 => by rw [mul_zero]; exact zero_le _
+               -- ⊢ 0 ≤ (x✝ + 0) * (x✝ + 0)
+                              -- 🎉 no goals
   | a + 1, b + 1 => by
     have ih := add_le_add_right (@AM_GM a b) 4
+    -- ⊢ 4 * (a + 1) * (b + 1) ≤ (a + 1 + (b + 1)) * (a + 1 + (b + 1))
     simp only [mul_add, add_mul, show (4 : ℕ) = 1 + 1 + 1 + 1 from rfl, one_mul, mul_one] at ih ⊢
+    -- ⊢ a * b + a * b + a * b + a * b + (b + b + b + b) + (a + a + a + a + (1 + 1 +  …
     simp only [add_assoc, add_left_comm, add_le_add_iff_left] at ih ⊢
+    -- ⊢ a * b + (a * b + (a * b + (a * b + (1 + (1 + (1 + 1)))))) ≤ a * a + (a * b + …
     exact ih
+    -- 🎉 no goals
 
 end Misc
 
@@ -61,9 +94,13 @@ section Std
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
+  -- ⊢ ((let next := (guess + n / guess) / 2;
   let next := (guess + n / guess) / 2
+  -- ⊢ ((let next := (guess + n / guess) / 2;
   by_cases h : next < guess
   case pos => simpa only [dif_pos h] using sqrt.iter_sq_le n next
+  -- ⊢ ((let next := (guess + n / guess) / 2;
+  -- 🎉 no goals
   case neg =>
     simp only [dif_neg h]
     apply Nat.mul_le_of_le_div
@@ -75,8 +112,10 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
     n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
   unfold sqrt.iter
+  -- ⊢ n <
   -- m was `next`
   let m := (guess + n / guess) / 2
+  -- ⊢ n <
   by_cases h : m < guess
   case pos =>
     suffices : n < (m + 1) * (m + 1)

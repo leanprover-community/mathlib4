@@ -23,18 +23,22 @@ namespace Nat
 theorem frequently_modEq {n : ℕ} (h : n ≠ 0) (d : ℕ) : ∃ᶠ m in atTop, m ≡ d [MOD n] :=
   ((tendsto_add_atTop_nat d).comp (tendsto_id.nsmul_atTop h.bot_lt)).frequently <|
     frequently_of_forall fun m => by simp [Nat.modEq_iff_dvd, ← sub_sub]
+                                     -- 🎉 no goals
 #align nat.frequently_modeq Nat.frequently_modEq
 
 theorem frequently_mod_eq {d n : ℕ} (h : d < n) : ∃ᶠ m in atTop, m % n = d := by
   simpa only [Nat.ModEq, mod_eq_of_lt h] using frequently_modEq h.ne_bot d
+  -- 🎉 no goals
 #align nat.frequently_mod_eq Nat.frequently_mod_eq
 
 theorem frequently_even : ∃ᶠ m : ℕ in atTop, Even m := by
   simpa only [even_iff] using frequently_mod_eq zero_lt_two
+  -- 🎉 no goals
 #align nat.frequently_even Nat.frequently_even
 
 theorem frequently_odd : ∃ᶠ m : ℕ in atTop, Odd m := by
   simpa only [odd_iff] using frequently_mod_eq one_lt_two
+  -- 🎉 no goals
 #align nat.frequently_odd Nat.frequently_odd
 
 end Nat

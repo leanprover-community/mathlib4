@@ -317,6 +317,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
   simpa only [lt_iff_not_le] using (isClosed_le hg hf).isOpen_compl
+  -- 🎉 no goals
 #align is_open_lt isOpen_lt
 
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
@@ -354,6 +355,7 @@ theorem interior_Ioo : interior (Ioo a b) = Ioo a b :=
 
 theorem Ioo_subset_closure_interior : Ioo a b ⊆ closure (interior (Ioo a b)) := by
   simp only [interior_Ioo, subset_closure]
+  -- 🎉 no goals
 #align Ioo_subset_closure_interior Ioo_subset_closure_interior
 
 theorem Iio_mem_nhds {a b : α} (h : a < b) : Iio b ∈ 𝓝 a :=
@@ -427,6 +429,8 @@ require the stronger hypothesis `OrderTopology α` -/
 theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ 𝓝[>] b :=
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
+                                -- ⊢ Ioo b c ⊆ Ioo a c
+                                                                -- 🎉 no goals
 #align Ioo_mem_nhds_within_Ioi Ioo_mem_nhdsWithin_Ioi
 
 -- porting note: new lemma; todo: swap `'`?
@@ -474,12 +478,14 @@ theorem nhdsWithin_Ioo_eq_nhdsWithin_Ioi {a b : α} (h : a < b) : 𝓝[Ioo a b] 
 theorem continuousWithinAt_Ioc_iff_Ioi [TopologicalSpace β] {a b : α} {f : α → β} (h : a < b) :
     ContinuousWithinAt f (Ioc a b) a ↔ ContinuousWithinAt f (Ioi a) a := by
   simp only [ContinuousWithinAt, nhdsWithin_Ioc_eq_nhdsWithin_Ioi h]
+  -- 🎉 no goals
 #align continuous_within_at_Ioc_iff_Ioi continuousWithinAt_Ioc_iff_Ioi
 
 @[simp]
 theorem continuousWithinAt_Ioo_iff_Ioi [TopologicalSpace β] {a b : α} {f : α → β} (h : a < b) :
     ContinuousWithinAt f (Ioo a b) a ↔ ContinuousWithinAt f (Ioi a) a := by
   simp only [ContinuousWithinAt, nhdsWithin_Ioo_eq_nhdsWithin_Ioi h]
+  -- 🎉 no goals
 #align continuous_within_at_Ioo_iff_Ioi continuousWithinAt_Ioo_iff_Ioi
 
 /-!
@@ -524,23 +530,27 @@ theorem Icc_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[<] b :
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsWithin_Iio {a b : α} (h : a < b) : 𝓝[Ico a b] b = 𝓝[<] b := by
   simpa only [dual_Ioc] using nhdsWithin_Ioc_eq_nhdsWithin_Ioi h.dual
+  -- 🎉 no goals
 #align nhds_within_Ico_eq_nhds_within_Iio nhdsWithin_Ico_eq_nhdsWithin_Iio
 
 @[simp]
 theorem nhdsWithin_Ioo_eq_nhdsWithin_Iio {a b : α} (h : a < b) : 𝓝[Ioo a b] b = 𝓝[<] b := by
   simpa only [dual_Ioo] using nhdsWithin_Ioo_eq_nhdsWithin_Ioi h.dual
+  -- 🎉 no goals
 #align nhds_within_Ioo_eq_nhds_within_Iio nhdsWithin_Ioo_eq_nhdsWithin_Iio
 
 @[simp]
 theorem continuousWithinAt_Ico_iff_Iio {a b : α} {f : α → γ} (h : a < b) :
     ContinuousWithinAt f (Ico a b) b ↔ ContinuousWithinAt f (Iio b) b := by
   simp only [ContinuousWithinAt, nhdsWithin_Ico_eq_nhdsWithin_Iio h]
+  -- 🎉 no goals
 #align continuous_within_at_Ico_iff_Iio continuousWithinAt_Ico_iff_Iio
 
 @[simp]
 theorem continuousWithinAt_Ioo_iff_Iio {a b : α} {f : α → γ} (h : a < b) :
     ContinuousWithinAt f (Ioo a b) b ↔ ContinuousWithinAt f (Iio b) b := by
   simp only [ContinuousWithinAt, nhdsWithin_Ioo_eq_nhdsWithin_Iio h]
+  -- 🎉 no goals
 #align continuous_within_at_Ioo_iff_Iio continuousWithinAt_Ioo_iff_Iio
 
 /-!
@@ -558,6 +568,7 @@ theorem Ioc_mem_nhdsWithin_Ici {a b c : α} (H : b ∈ Ioo a c) : Ioc a c ∈ �
 theorem Ico_mem_nhdsWithin_Ici {a b c : α} (H : b ∈ Ico a c) : Ico a c ∈ 𝓝[≥] b :=
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by simp only [inter_comm, Ici_inter_Iio, Ico_subset_Ico_left H.1]⟩
+                                -- 🎉 no goals
 #align Ico_mem_nhds_within_Ici Ico_mem_nhdsWithin_Ici
 
 theorem Ico_mem_nhdsWithin_Ici' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
@@ -584,12 +595,14 @@ theorem nhdsWithin_Ico_eq_nhdsWithin_Ici {a b : α} (h : a < b) : 𝓝[Ico a b] 
 theorem continuousWithinAt_Icc_iff_Ici [TopologicalSpace β] {a b : α} {f : α → β} (h : a < b) :
     ContinuousWithinAt f (Icc a b) a ↔ ContinuousWithinAt f (Ici a) a := by
   simp only [ContinuousWithinAt, nhdsWithin_Icc_eq_nhdsWithin_Ici h]
+  -- 🎉 no goals
 #align continuous_within_at_Icc_iff_Ici continuousWithinAt_Icc_iff_Ici
 
 @[simp]
 theorem continuousWithinAt_Ico_iff_Ici [TopologicalSpace β] {a b : α} {f : α → β} (h : a < b) :
     ContinuousWithinAt f (Ico a b) a ↔ ContinuousWithinAt f (Ici a) a := by
   simp only [ContinuousWithinAt, nhdsWithin_Ico_eq_nhdsWithin_Ici h]
+  -- 🎉 no goals
 #align continuous_within_at_Ico_iff_Ici continuousWithinAt_Ico_iff_Ici
 
 /-!
@@ -623,23 +636,27 @@ theorem Icc_mem_nhdsWithin_Iic' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[≤] b
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsWithin_Iic {a b : α} (h : a < b) : 𝓝[Icc a b] b = 𝓝[≤] b := by
   simpa only [dual_Icc] using nhdsWithin_Icc_eq_nhdsWithin_Ici h.dual
+  -- 🎉 no goals
 #align nhds_within_Icc_eq_nhds_within_Iic nhdsWithin_Icc_eq_nhdsWithin_Iic
 
 @[simp]
 theorem nhdsWithin_Ioc_eq_nhdsWithin_Iic {a b : α} (h : a < b) : 𝓝[Ioc a b] b = 𝓝[≤] b := by
   simpa only [dual_Ico] using nhdsWithin_Ico_eq_nhdsWithin_Ici h.dual
+  -- 🎉 no goals
 #align nhds_within_Ioc_eq_nhds_within_Iic nhdsWithin_Ioc_eq_nhdsWithin_Iic
 
 @[simp]
 theorem continuousWithinAt_Icc_iff_Iic [TopologicalSpace β] {a b : α} {f : α → β} (h : a < b) :
     ContinuousWithinAt f (Icc a b) b ↔ ContinuousWithinAt f (Iic b) b := by
   simp only [ContinuousWithinAt, nhdsWithin_Icc_eq_nhdsWithin_Iic h]
+  -- 🎉 no goals
 #align continuous_within_at_Icc_iff_Iic continuousWithinAt_Icc_iff_Iic
 
 @[simp]
 theorem continuousWithinAt_Ioc_iff_Iic [TopologicalSpace β] {a b : α} {f : α → β} (h : a < b) :
     ContinuousWithinAt f (Ioc a b) b ↔ ContinuousWithinAt f (Iic b) b := by
   simp only [ContinuousWithinAt, nhdsWithin_Ioc_eq_nhdsWithin_Iic h]
+  -- 🎉 no goals
 #align continuous_within_at_Ioc_iff_Iic continuousWithinAt_Ioc_iff_Iic
 
 end LinearOrder
@@ -660,9 +677,15 @@ theorem lt_subset_interior_le (hf : Continuous f) (hg : Continuous g) :
 theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b ≤ g b } ⊆ { b | f b = g b } := by
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
+  -- ⊢ {b | f b ≤ g b} ∩ closure {b | f b ≤ g b}ᶜ ⊆ {b | f b = g b}
   rintro b ⟨hb₁, hb₂⟩
+  -- ⊢ b ∈ {b | f b = g b}
   refine' le_antisymm hb₁ (closure_lt_subset_le hg hf _)
+  -- ⊢ b ∈ closure {b | g b < f b}
   convert hb₂ using 2; simp only [not_le.symm]; rfl
+  -- ⊢ {b | g b < f b} = {b | f b ≤ g b}ᶜ
+                       -- ⊢ {b | ¬f b ≤ g b} = {b | f b ≤ g b}ᶜ
+                                                -- 🎉 no goals
 #align frontier_le_subset_eq frontier_le_subset_eq
 
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=
@@ -676,6 +699,7 @@ theorem frontier_Ici_subset (a : α) : frontier (Ici a) ⊆ {a} :=
 theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b < g b } ⊆ { b | f b = g b } := by
   simpa only [← not_lt, ← compl_setOf, frontier_compl, eq_comm] using frontier_le_subset_eq hg hf
+  -- 🎉 no goals
 #align frontier_lt_subset_eq frontier_lt_subset_eq
 
 theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
@@ -683,9 +707,13 @@ theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] 
     (hg' : ContinuousOn g' { x | g x ≤ f x }) (hfg : ∀ x, f x = g x → f' x = g' x) :
     Continuous fun x => if f x ≤ g x then f' x else g' x := by
   refine' continuous_if (fun a ha => hfg _ (frontier_le_subset_eq hf hg ha)) _ (hg'.mono _)
+  -- ⊢ ContinuousOn (fun x => f' x) (closure {x | f x ≤ g x})
   · rwa [(isClosed_le hf hg).closure_eq]
+    -- 🎉 no goals
   · simp only [not_le]
+    -- ⊢ closure {x | g x < f x} ⊆ {x | g x ≤ f x}
     exact closure_lt_subset_le hg hf
+    -- 🎉 no goals
 #align continuous_if_le continuous_if_le
 
 theorem Continuous.if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
@@ -710,7 +738,9 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => min (f b) (g b) := by
   simp only [min_def]
+  -- ⊢ Continuous fun b => if f b ≤ g b then f b else g b
   exact hf.if_le hg hf hg fun x => id
+  -- 🎉 no goals
 #align continuous.min Continuous.min
 
 @[continuity]
@@ -742,25 +772,33 @@ protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tend
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max a (f i)) l (𝓝 a) := by
   convert ((continuous_max.comp (@Continuous.Prod.mk α α _ _ a)).tendsto a).comp h
+  -- ⊢ a = ((fun p => max p.fst p.snd) ∘ fun b => (a, b)) a
   simp
+  -- 🎉 no goals
 #align filter.tendsto.max_right Filter.Tendsto.max_right
 
 protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max (f i) a) l (𝓝 a) := by
   simp_rw [max_comm _ a]
+  -- ⊢ Tendsto (fun i => max a (f i)) l (𝓝 a)
   exact h.max_right
+  -- 🎉 no goals
 #align filter.tendsto.max_left Filter.Tendsto.max_left
 
 theorem Filter.tendsto_nhds_max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
     Tendsto (fun i => max a (f i)) l (𝓝[>] a) := by
   obtain ⟨h₁ : Tendsto f l (𝓝 a), h₂ : ∀ᶠ i in l, f i ∈ Ioi a⟩ := tendsto_nhdsWithin_iff.mp h
+  -- ⊢ Tendsto (fun i => max a (f i)) l (𝓝[Ioi a] a)
   exact tendsto_nhdsWithin_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi => lt_max_of_lt_right hi⟩
+  -- 🎉 no goals
 #align filter.tendsto_nhds_max_right Filter.tendsto_nhds_max_right
 
 theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
     Tendsto (fun i => max (f i) a) l (𝓝[>] a) := by
   simp_rw [max_comm _ a]
+  -- ⊢ Tendsto (fun i => max a (f i)) l (𝓝[Ioi a] a)
   exact Filter.tendsto_nhds_max_right h
+  -- 🎉 no goals
 #align filter.tendsto_nhds_max_left Filter.tendsto_nhds_max_left
 
 theorem Filter.Tendsto.min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
@@ -806,10 +844,15 @@ protected theorem Dense.exists_ge [NoMaxOrder α] {s : Set α} (hs : Dense s) (x
 theorem Dense.exists_le' {s : Set α} (hs : Dense s) (hbot : ∀ x, IsBot x → x ∈ s) (x : α) :
     ∃ y ∈ s, y ≤ x := by
   by_cases hx : IsBot x
+  -- ⊢ ∃ y, y ∈ s ∧ y ≤ x
   · exact ⟨x, hbot x hx, le_rfl⟩
+    -- 🎉 no goals
   · simp only [IsBot, not_forall, not_le] at hx
+    -- ⊢ ∃ y, y ∈ s ∧ y ≤ x
     rcases hs.exists_mem_open isOpen_Iio hx with ⟨y, hys, hy : y < x⟩
+    -- ⊢ ∃ y, y ∈ s ∧ y ≤ x
     exact ⟨y, hys, hy.le⟩
+    -- 🎉 no goals
 #align dense.exists_le' Dense.exists_le'
 
 theorem Dense.exists_ge' {s : Set α} (hs : Dense s) (htop : ∀ x, IsTop x → x ∈ s) (x : α) :
@@ -825,8 +868,11 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
 theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
     Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
   refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
+  -- ⊢ z ∈ ⋃ (y : α) (_ : y ∈ s ∩ Ioi x), Ioi y
   rcases hs.exists_between hz with ⟨y, hys, hxy, hyz⟩
+  -- ⊢ z ∈ ⋃ (y : α) (_ : y ∈ s ∩ Ioi x), Ioi y
   exact mem_iUnion₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
+  -- 🎉 no goals
 
 theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
     Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
@@ -844,8 +890,11 @@ instance [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [Preorder 
 instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, OrderClosedTopology (α i)] : OrderClosedTopology (∀ i, α i) := by
   constructor
+  -- ⊢ IsClosed {p | p.fst ≤ p.snd}
   simp only [Pi.le_def, setOf_forall]
+  -- ⊢ IsClosed (⋂ (i : ι), {x | Prod.fst x i ≤ Prod.snd x i})
   exact isClosed_iInter fun i => isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
+  -- 🎉 no goals
 
 instance Pi.orderClosedTopology' [Preorder β] [TopologicalSpace β] [OrderClosedTopology β] :
     OrderClosedTopology (α → β) :=
@@ -879,11 +928,15 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderTopology α]
 instance : OrderTopology αᵒᵈ :=
   ⟨by
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
+    -- ⊢ x✝¹ = Ioi x✝ ∨ x✝¹ = Iio x✝ ↔ x✝¹ = Ioi x✝ ∨ x✝¹ = Iio x✝
     apply or_comm⟩
+    -- 🎉 no goals
 
 theorem isOpen_iff_generate_intervals {s : Set α} :
     IsOpen s ↔ GenerateOpen { s | ∃ a, s = Ioi a ∨ s = Iio a } s := by
   rw [t.topology_eq_generate_intervals]; rfl
+  -- ⊢ IsOpen s ↔ GenerateOpen {s | ∃ a, s = Ioi a ∨ s = Iio a} s
+                                         -- 🎉 no goals
 #align is_open_iff_generate_intervals isOpen_iff_generate_intervals
 
 theorem isOpen_lt' (a : α) : IsOpen { b : α | a < b } :=
@@ -912,6 +965,7 @@ theorem ge_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b :=
 
 theorem nhds_eq_order (a : α) : 𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ ⨅ b ∈ Ioi a, 𝓟 (Iio b) := by
   rw [t.topology_eq_generate_intervals, nhds_generateFrom]
+  -- ⊢ ⨅ (s : Set α) (_ : s ∈ {s | a ∈ s ∧ s ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}}),  …
   simp_rw [mem_setOf_eq, @and_comm (a ∈ _), exists_or, or_and_right, iInf_or, iInf_and, iInf_exists,
     iInf_inf_eq, iInf_comm (ι := Set α), iInf_iInf_eq_left, mem_Ioi, mem_Iio]
 #align nhds_eq_order nhds_eq_order
@@ -919,15 +973,22 @@ theorem nhds_eq_order (a : α) : 𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ �
 theorem tendsto_order {f : β → α} {a : α} {x : Filter β} :
     Tendsto f x (𝓝 a) ↔ (∀ a' < a, ∀ᶠ b in x, a' < f b) ∧ ∀ a' > a, ∀ᶠ b in x, f b < a' := by
   simp only [nhds_eq_order a, tendsto_inf, tendsto_iInf, tendsto_principal]; rfl
+  -- ⊢ ((∀ (i : α), i ∈ Iio a → ∀ᶠ (a : β) in x, f a ∈ Ioi i) ∧ ∀ (i : α), i ∈ Ioi  …
+                                                                             -- 🎉 no goals
 #align tendsto_order tendsto_order
 
 instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) := by
   simp only [nhds_eq_order, iInf_subtype']
+  -- ⊢ TendstoIxxClass Icc ((⨅ (x : { i // i ∈ Iio a }), 𝓟 (Ioi ↑x)) ⊓ ⨅ (x : { i / …
   refine
     ((hasBasis_iInf_principal_finite _).inf (hasBasis_iInf_principal_finite _)).tendstoIxxClass
       fun s _ => ?_
   refine' ((ordConnected_biInter _).inter (ordConnected_biInter _)).out <;> intro _ _
+  -- ⊢ ∀ (i : { i // i ∈ Iio a }), i ∈ s.fst → OrdConnected (Ioi ↑i)
+                                                                            -- ⊢ OrdConnected (Ioi ↑i✝)
+                                                                            -- ⊢ OrdConnected (Iio ↑i✝)
   exacts [ordConnected_Ioi, ordConnected_Iio]
+  -- 🎉 no goals
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 
 instance tendstoIcoClassNhds (a : α) : TendstoIxxClass Ico (𝓝 a) (𝓝 a) :=
@@ -962,13 +1023,17 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le {f g h : β → α} {b : Filte
 theorem nhds_order_unbounded {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
     𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
   simp only [nhds_eq_order, ← inf_biInf, ← biInf_inf, *, ← inf_principal, ← Ioi_inter_Iio]; rfl
+  -- ⊢ (⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b)) ⊓ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio b …
+                                                                                            -- 🎉 no goals
 #align nhds_order_unbounded nhds_order_unbounded
 
 theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : ∃ u, a < u)
     (hl : ∃ l, l < a) (h : ∀ l u, l < a → a < u → ∀ᶠ b in x, l < f b ∧ f b < u) :
     Tendsto f x (𝓝 a) := by
   simp only [nhds_order_unbounded hu hl, tendsto_iInf, tendsto_principal]
+  -- ⊢ ∀ (i : α), i < a → ∀ (i_2 : α), a < i_2 → ∀ᶠ (a : β) in x, f a ∈ Ioo i i_2
   exact fun l hl u => h l u hl
+  -- 🎉 no goals
 #align tendsto_order_unbounded tendsto_order_unbounded
 
 end Preorder
@@ -983,13 +1048,19 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
     [∀ i, TopologicalSpace (α i)] [∀ i, OrderTopology (α i)] (f : ∀ i, α i) :
     TendstoIxxClass Icc (𝓝 f) (𝓝 f) := by
   constructor
+  -- ⊢ Tendsto (fun p => Icc p.fst p.snd) (𝓝 f ×ˢ 𝓝 f) (smallSets (𝓝 f))
   conv in (𝓝 f).smallSets => rw [nhds_pi, Filter.pi]
+  -- ⊢ Tendsto (fun p => Icc p.fst p.snd) (𝓝 f ×ˢ 𝓝 f) (smallSets (⨅ (i : ι), comap …
   simp only [smallSets_iInf, smallSets_comap, tendsto_iInf, tendsto_lift', (· ∘ ·),
     mem_powerset_iff]
   intro i s hs
+  -- ⊢ ∀ᶠ (a : ((i : ι) → α i) × ((i : ι) → α i)) in 𝓝 f ×ˢ 𝓝 f, Icc a.fst a.snd ⊆  …
   have : Tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).tendsto f
+  -- ⊢ ∀ᶠ (a : ((i : ι) → α i) × ((i : ι) → α i)) in 𝓝 f ×ˢ 𝓝 f, Icc a.fst a.snd ⊆  …
   refine' (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono _
+  -- ⊢ ∀ (x : ((i : ι) → α i) × ((i : ι) → α i)), Icc (((fun g => g i) ∘ Prod.fst)  …
   exact fun p hp g hg => hp ⟨hg.1 _, hg.2 _⟩
+  -- 🎉 no goals
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
 -- porting note: new lemma
@@ -997,10 +1068,16 @@ theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpa
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
     induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
+  -- ⊢ induced f inst✝¹ ≤ Preorder.topology α
+                                -- ⊢ induced f inst✝¹ ≤ Preorder.topology α
   refine le_of_nhds_le_nhds fun x => ?_
+  -- ⊢ 𝓝 x ≤ 𝓝 x
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal, Ioi, Iio, ← hf]
+  -- ⊢ (⨅ (i : β) (_ : i ∈ {x_1 | x_1 < f x}), 𝓟 (f ⁻¹' {x | i < x})) ⊓ ⨅ (i : β) ( …
   refine inf_le_inf (le_iInf₂ fun a ha => ?_) (le_iInf₂ fun a ha => ?_)
+  -- ⊢ ⨅ (i : β) (_ : i ∈ {x_1 | x_1 < f x}), 𝓟 (f ⁻¹' {x | i < x}) ≤ 𝓟 {x | f a <  …
   exacts [iInf₂_le (f a) ha, iInf₂_le (f a) ha]
+  -- 🎉 no goals
 
 -- porting note: new lemma
 theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
@@ -1009,20 +1086,36 @@ theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpa
     (H₂ : ∀ {a b x}, f a < b → ¬(f x < b) → ∃ y, a < y ∧ f y ≤ b) :
     induced f ‹TopologicalSpace β› = Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
+  -- ⊢ induced f inst✝¹ = Preorder.topology α
+                                -- ⊢ induced f inst✝¹ = Preorder.topology α
   refine le_antisymm (induced_topology_le_preorder hf) ?_
+  -- ⊢ Preorder.topology α ≤ induced f inst✝¹
   refine le_of_nhds_le_nhds fun a => ?_
+  -- ⊢ 𝓝 a ≤ 𝓝 a
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal]
+  -- ⊢ (⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b)) ⊓ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio b …
   refine inf_le_inf (le_iInf₂ fun b hb => ?_) (le_iInf₂ fun b hb => ?_)
+  -- ⊢ ⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b) ≤ 𝓟 (f ⁻¹' Ioi b)
   · rcases em (∃ x, ¬(b < f x)) with (⟨x, hx⟩ | hb)
+    -- ⊢ ⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b) ≤ 𝓟 (f ⁻¹' Ioi b)
     · rcases H₁ hb hx with ⟨y, hya, hyb⟩
+      -- ⊢ ⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b) ≤ 𝓟 (f ⁻¹' Ioi b)
       exact iInf₂_le_of_le y hya (principal_mono.2 fun z hz => hyb.trans_lt (hf.2 hz))
+      -- 🎉 no goals
     · push_neg at hb
+      -- ⊢ ⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b) ≤ 𝓟 (f ⁻¹' Ioi b)
       exact le_principal_iff.2 (univ_mem' hb)
+      -- 🎉 no goals
   · rcases em (∃ x, ¬(f x < b)) with (⟨x, hx⟩ | hb)
+    -- ⊢ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio b) ≤ 𝓟 (f ⁻¹' Iio b)
     · rcases H₂ hb hx with ⟨y, hya, hyb⟩
+      -- ⊢ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio b) ≤ 𝓟 (f ⁻¹' Iio b)
       exact iInf₂_le_of_le y hya (principal_mono.2 fun z hz => (hf.2 hz).trans_le hyb)
+      -- 🎉 no goals
     · push_neg at hb
+      -- ⊢ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio b) ≤ 𝓟 (f ⁻¹' Iio b)
       exact le_principal_iff.2 (univ_mem' hb)
+      -- 🎉 no goals
 
 theorem induced_orderTopology' {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
@@ -1046,10 +1139,15 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOr
     [LinearOrder β] [t : TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : t.induced f = Preorder.topology α := by
   refine induced_topology_eq_preorder hf.lt_iff_lt (fun h₁ h₂ => ?_) fun h₁ h₂ => ?_
+  -- ⊢ ∃ y, y < a✝ ∧ b✝ ≤ f y
   · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨not_lt.1 h₂, h₁.le⟩ with ⟨y, rfl⟩
+    -- ⊢ ∃ y_1, y_1 < a✝ ∧ f y ≤ f y_1
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
+    -- 🎉 no goals
   · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨h₁.le, not_lt.1 h₂⟩ with ⟨y, rfl⟩
+    -- ⊢ ∃ y_1, a✝ < y_1 ∧ f y_1 ≤ f y
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
+    -- 🎉 no goals
 
 /-- A strictly monotone function between linear orders with order topology is a topological
 embedding provided that the range of `f` is order-connected. -/
@@ -1064,13 +1162,17 @@ instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [Line
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
   ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder $ by
     rwa [← @Subtype.range_val _ t] at ht⟩
+    -- 🎉 no goals
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≥] a = (⨅ (u) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
+  -- ⊢ ((⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b)) ⊓ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio  …
   refine' le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf _ inf_le_left) inf_le_right)
+  -- ⊢ (⨅ (u : α) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) ≤ ⨅ (b : α) (_ : b ∈ Iio a),  …
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
+  -- 🎉 no goals
 #align nhds_within_Ici_eq'' nhdsWithin_Ici_eq''
 
 theorem nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
@@ -1081,11 +1183,13 @@ theorem nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology �
 theorem nhdsWithin_Ici_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
   simp only [nhdsWithin_Ici_eq'', biInf_inf ha, inf_principal, Iio_inter_Ici]
+  -- 🎉 no goals
 #align nhds_within_Ici_eq' nhdsWithin_Ici_eq'
 
 theorem nhdsWithin_Iic_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : 𝓝[≤] a = ⨅ l < a, 𝓟 (Ioc l a) := by
   simp only [nhdsWithin_Iic_eq'', biInf_inf ha, inf_principal, Ioi_inter_Iic]
+  -- 🎉 no goals
 #align nhds_within_Iic_eq' nhdsWithin_Iic_eq'
 
 theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
@@ -1100,7 +1204,9 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert nhdsWithin_Ici_basis' (α := αᵒᵈ) ha using 2
+  -- ⊢ Ioc x✝ a = Ico a x✝
   exact dual_Ico.symm
+  -- 🎉 no goals
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
 theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
@@ -1115,16 +1221,20 @@ theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopolo
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
     𝓝 (⊤ : α) = ⨅ (l) (h₂ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
+                                                    -- 🎉 no goals
 #align nhds_top_order nhds_top_order
 
 theorem nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderTopology α] :
     𝓝 (⊥ : α) = ⨅ (l) (h₂ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
+                                                    -- 🎉 no goals
 #align nhds_bot_order nhds_bot_order
 
 theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) fun a : α => Ioi a := by
   have : ∃ x : α, x < ⊤ := (exists_ne ⊤).imp fun x hx => hx.lt_top
+  -- ⊢ HasBasis (𝓝 ⊤) (fun a => a < ⊤) fun a => Ioi a
   simpa only [Iic_top, nhdsWithin_univ, Ioc_top] using nhdsWithin_Iic_basis' this
+  -- 🎉 no goals
 #align nhds_top_basis nhds_top_basis
 
 theorem nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
@@ -1147,8 +1257,11 @@ theorem nhds_bot_basis_Iic [TopologicalSpace α] [LinearOrder α] [OrderBot α] 
 theorem tendsto_nhds_top_mono [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ᶠ[l] g) : Tendsto g l (𝓝 ⊤) := by
   simp only [nhds_top_order, tendsto_iInf, tendsto_principal] at hf ⊢
+  -- ⊢ ∀ (i : β), i < ⊤ → ∀ᶠ (a : α) in l, g a ∈ Ioi i
   intro x hx
+  -- ⊢ ∀ᶠ (a : α) in l, g a ∈ Ioi x
   filter_upwards [hf x hx, hg] with _ using lt_of_lt_of_le
+  -- 🎉 no goals
 #align tendsto_nhds_top_mono tendsto_nhds_top_mono
 
 theorem tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
@@ -1234,14 +1347,23 @@ theorem exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) 
 theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : s ∈ 𝓝[≥] a) :
     ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[≥] a ∧ Icc a b ⊆ s := by
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
+  -- ⊢ ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[Ici a] a ∧ Icc a b ⊆ s
   · use a
+    -- ⊢ a ≤ a ∧ Icc a a ∈ 𝓝[Ici a] a ∧ Icc a a ⊆ s
     simpa [ha.Ici_eq] using hs
+    -- 🎉 no goals
   · rcases (nhdsWithin_Ici_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+    -- ⊢ ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[Ici a] a ∧ Icc a b ⊆ s
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
+    -- ⊢ ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[Ici a] a ∧ Icc a b ⊆ s
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
+      -- ⊢ ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[Ici a] a ∧ Icc a b ⊆ s
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsWithin_Ici' hab, hbs⟩⟩
+      -- 🎉 no goals
     · refine' ⟨c, hac.le, Icc_mem_nhdsWithin_Ici' hac, _⟩
+      -- ⊢ Icc a c ⊆ s
       exact (Icc_subset_Ico_right hcb).trans hbs
+      -- 🎉 no goals
 #align exists_Icc_mem_subset_of_mem_nhds_within_Ici exists_Icc_mem_subset_of_mem_nhdsWithin_Ici
 
 theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Iic {a : α} {s : Set α} (hs : s ∈ 𝓝[≤] a) :
@@ -1257,30 +1379,42 @@ theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝
   rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (nhdsWithin_le_nhds hs) with
     ⟨c, hac, hc_nhds, hcs⟩
   refine' ⟨b, c, ⟨hba, hac⟩, _⟩
+  -- ⊢ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s
   rw [← Icc_union_Icc_eq_Icc hba hac, ← nhds_left_sup_nhds_right]
+  -- ⊢ Icc b a ∪ Icc a c ∈ 𝓝[Iic a] a ⊔ 𝓝[Ici a] a ∧ Icc b a ∪ Icc a c ⊆ s
   exact ⟨union_mem_sup hb_nhds hc_nhds, union_subset hbs hcs⟩
+  -- 🎉 no goals
 #align exists_Icc_mem_subset_of_mem_nhds exists_Icc_mem_subset_of_mem_nhds
 
 theorem IsOpen.exists_Ioo_subset [Nontrivial α] {s : Set α} (hs : IsOpen s) (h : s.Nonempty) :
     ∃ a b, a < b ∧ Ioo a b ⊆ s := by
   obtain ⟨x, hx⟩ : ∃ x, x ∈ s := h
+  -- ⊢ ∃ a b, a < b ∧ Ioo a b ⊆ s
   obtain ⟨y, hy⟩ : ∃ y, y ≠ x := exists_ne x
+  -- ⊢ ∃ a b, a < b ∧ Ioo a b ⊆ s
   rcases lt_trichotomy x y with (H | rfl | H)
   · obtain ⟨u, xu, hu⟩ : ∃ u, x < u ∧ Ico x u ⊆ s :=
       exists_Ico_subset_of_mem_nhds (hs.mem_nhds hx) ⟨y, H⟩
     exact ⟨x, u, xu, Ioo_subset_Ico_self.trans hu⟩
+    -- 🎉 no goals
   · exact (hy rfl).elim
+    -- 🎉 no goals
   · obtain ⟨l, lx, hl⟩ : ∃ l, l < x ∧ Ioc l x ⊆ s :=
       exists_Ioc_subset_of_mem_nhds (hs.mem_nhds hx) ⟨y, H⟩
     exact ⟨l, x, lx, Ioo_subset_Ioc_self.trans hl⟩
+    -- 🎉 no goals
 #align is_open.exists_Ioo_subset IsOpen.exists_Ioo_subset
 
 theorem dense_of_exists_between [Nontrivial α] {s : Set α}
     (h : ∀ ⦃a b⦄, a < b → ∃ c ∈ s, a < c ∧ c < b) : Dense s := by
   refine dense_iff_inter_open.2 fun U U_open U_nonempty => ?_
+  -- ⊢ Set.Nonempty (U ∩ s)
   obtain ⟨a, b, hab, H⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ U := U_open.exists_Ioo_subset U_nonempty
+  -- ⊢ Set.Nonempty (U ∩ s)
   obtain ⟨x, xs, hx⟩ : ∃ x ∈ s, a < x ∧ x < b := h hab
+  -- ⊢ Set.Nonempty (U ∩ s)
   exact ⟨x, ⟨H hx, xs⟩⟩
+  -- 🎉 no goals
 #align dense_of_exists_between dense_of_exists_between
 
 /-- A set in a nontrivial densely linear ordered type is dense in the sense of topology if and only
@@ -1296,12 +1430,19 @@ provided `a` is neither a bottom element nor a top element. -/
 theorem mem_nhds_iff_exists_Ioo_subset' {a : α} {s : Set α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
     s ∈ 𝓝 a ↔ ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s := by
   constructor
+  -- ⊢ s ∈ 𝓝 a → ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s
   · intro h
+    -- ⊢ ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s
     rcases exists_Ico_subset_of_mem_nhds h hu with ⟨u, au, hu⟩
+    -- ⊢ ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s
     rcases exists_Ioc_subset_of_mem_nhds h hl with ⟨l, la, hl⟩
+    -- ⊢ ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s
     exact ⟨l, u, ⟨la, au⟩, Ioc_union_Ico_eq_Ioo la au ▸ union_subset hl hu⟩
+    -- 🎉 no goals
   · rintro ⟨l, u, ha, h⟩
+    -- ⊢ s ∈ 𝓝 a
     apply mem_of_superset (Ioo_mem_nhds ha.1 ha.2) h
+    -- 🎉 no goals
 #align mem_nhds_iff_exists_Ioo_subset' mem_nhds_iff_exists_Ioo_subset'
 
 /-- A set is a neighborhood of `a` if and only if it contains an interval `(l, u)` containing `a`.
@@ -1314,6 +1455,7 @@ theorem mem_nhds_iff_exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a : α} 
 theorem nhds_basis_Ioo' {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
     (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
   ⟨fun s => (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
+                                                                -- 🎉 no goals
 #align nhds_basis_Ioo' nhds_basis_Ioo'
 
 theorem nhds_basis_Ioo [NoMaxOrder α] [NoMinOrder α] (a : α) :
@@ -1329,16 +1471,27 @@ theorem Filter.Eventually.exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a :
 theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : Dense s) :
     ‹TopologicalSpace α› = .generateFrom (Ioi '' s ∪ Iio '' s) := by
   refine (OrderTopology.topology_eq_generate_intervals (α := α)).trans ?_
+  -- ⊢ generateFrom {s | ∃ a, s = Ioi a ∨ s = Iio a} = generateFrom (Ioi '' s ∪ Iio …
   refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
+  -- ⊢ Ioi '' s ∪ Iio '' s ⊆ {s | ∃ a, s = Ioi a ∨ s = Iio a}
   · simp only [union_subset_iff, image_subset_iff]
+    -- ⊢ s ⊆ Ioi ⁻¹' {s | ∃ a, s = Ioi a ∨ s = Iio a} ∧ s ⊆ Iio ⁻¹' {s | ∃ a, s = Ioi …
     exact ⟨fun a _ ↦ ⟨a, .inl rfl⟩, fun a _ ↦ ⟨a, .inr rfl⟩⟩
+    -- 🎉 no goals
   · rintro _ ⟨a, rfl | rfl⟩
+    -- ⊢ IsOpen (Ioi a)
     · rw [hs.Ioi_eq_biUnion]
+      -- ⊢ IsOpen (⋃ (y : α) (_ : y ∈ s ∩ Ioi a), Ioi y)
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
+      -- ⊢ IsOpen (⋃ (y : α) (_ : y ∈ s ∩ Ioi a), Ioi y)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inl <| mem_image_of_mem _ h.1
+      -- 🎉 no goals
     · rw [hs.Iio_eq_biUnion]
+      -- ⊢ IsOpen (⋃ (y : α) (_ : y ∈ s ∩ Iio a), Iio y)
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
+      -- ⊢ IsOpen (⋃ (y : α) (_ : y ∈ s ∩ Iio a), Iio y)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
+      -- 🎉 no goals
 
 variable (α)
 
@@ -1348,8 +1501,11 @@ it has second countable topology. Note that the "densely ordered" assumption can
 theorem TopologicalSpace.SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
     [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
+  -- ⊢ SecondCountableTopology α
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
+  -- ⊢ Set.Countable (Ioi '' s ∪ Iio '' s)
   exact (hc.image _).union (hc.image _)
+  -- 🎉 no goals
 
 variable {α}
 
@@ -1359,27 +1515,42 @@ second-countable. -/
 theorem countable_setOf_covby_right [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
+  -- ⊢ Set.Countable {x | ∃ y, x ⋖ y}
   let s := { x : α | ∃ y, x ⋖ y }
+  -- ⊢ Set.Countable {x | ∃ y, x ⋖ y}
   have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x => id
+  -- ⊢ Set.Countable {x | ∃ y, x ⋖ y}
   choose! y hy using this
+  -- ⊢ Set.Countable {x | ∃ y, x ⋖ y}
   have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x := fun x z hx => (hy x hx).le_of_lt
+  -- ⊢ Set.Countable {x | ∃ y, x ⋖ y}
   suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a }
+  -- ⊢ Set.Countable {x | ∃ y, x ⋖ y}
   · have : s ⊆ ⋃ a ∈ countableBasis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } := fun x hx => by
       rcases (isBasis_countableBasis α).exists_mem_of_ne (hy x hx).ne with ⟨a, ab, xa, ya⟩
       exact mem_iUnion₂.2 ⟨a, ab, hx, xa, ya⟩
     refine Set.Countable.mono this ?_
+    -- ⊢ Set.Countable (⋃ (a : Set α) (_ : a ∈ countableBasis α), {x | x ∈ s ∧ x ∈ a  …
     refine' Countable.biUnion (countable_countableBasis α) fun a ha => H _ _
+    -- ⊢ IsOpen a
     exact isOpen_of_mem_countableBasis ha
+    -- 🎉 no goals
   intro a ha
+  -- ⊢ Set.Countable {x | x ∈ s ∧ x ∈ a ∧ ¬y x ∈ a}
   suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x }
+  -- ⊢ Set.Countable {x | x ∈ s ∧ x ∈ a ∧ ¬y x ∈ a}
   · exact H.of_diff (subsingleton_isBot α).countable
+    -- 🎉 no goals
   simp only [and_assoc]
+  -- ⊢ Set.Countable {x | x ∈ {x | ∃ y, x ⋖ y} ∧ x ∈ a ∧ ¬y x ∈ a ∧ ¬IsBot x}
   let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
+  -- ⊢ Set.Countable {x | x ∈ {x | ∃ y, x ⋖ y} ∧ x ∈ a ∧ ¬y x ∈ a ∧ ¬IsBot x}
   have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
     intro x hx
     apply exists_Ioc_subset_of_mem_nhds (ha.mem_nhds hx.2.1)
     simpa only [IsBot, not_forall, not_le] using hx.right.right.right
   choose! z hz h'z using this
+  -- ⊢ Set.Countable {x | x ∈ {x | ∃ y, x ⋖ y} ∧ x ∈ a ∧ ¬y x ∈ a ∧ ¬IsBot x}
   have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
     rcases hxx'.lt_or_lt with (h' | h')
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
@@ -1391,10 +1562,15 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
       by_contra' H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
+  -- ⊢ IsOpen (Ioc (z x) x)
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
+  -- ⊢ IsOpen (Ioc (z x) x)
   · rw [H]
+    -- ⊢ IsOpen (Ioo (z x) (y x))
     exact isOpen_Ioo
+    -- 🎉 no goals
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
+  -- 🎉 no goals
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
@@ -1402,6 +1578,7 @@ second-countable. -/
 theorem countable_of_isolated_right' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
   simpa only [← covby_iff_Ioo_eq] using countable_setOf_covby_right
+  -- 🎉 no goals
 #align countable_of_isolated_right countable_of_isolated_right'
 
 /-- The set of points which are isolated on the left is countable when the space is
@@ -1409,13 +1586,16 @@ second-countable. -/
 theorem countable_setOf_covby_left [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y ⋖ x } := by
   convert countable_setOf_covby_right (α := αᵒᵈ) using 5
+  -- ⊢ x✝ ⋖ x✝¹ ↔ x✝¹ ⋖ x✝
   exact toDual_covby_toDual_iff.symm
+  -- 🎉 no goals
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
 theorem countable_of_isolated_left' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y < x ∧ Ioo y x = ∅ } := by
   simpa only [← covby_iff_Ioo_eq] using countable_setOf_covby_left
+  -- 🎉 no goals
 #align countable_of_isolated_left countable_of_isolated_left'
 
 /-- Consider a disjoint family of intervals `(x, y)` with `x < y` in a second-countable space.
@@ -1471,7 +1651,9 @@ variable [Nonempty ι]
 
 theorem pi_Iio_mem_nhds (ha : ∀ i, x i < a i) : Iio a ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Iio_subset a)
+  -- ⊢ Iio (a i) ∈ 𝓝 (x i)
   exact Iio_mem_nhds (ha i)
+  -- 🎉 no goals
 #align pi_Iio_mem_nhds pi_Iio_mem_nhds
 
 theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
@@ -1488,7 +1670,9 @@ theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
 
 theorem pi_Ioc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioc a b ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioc_subset a b)
+  -- ⊢ Ioc (a i) (b i) ∈ 𝓝 (x i)
   exact Ioc_mem_nhds (ha i) (hb i)
+  -- 🎉 no goals
 #align pi_Ioc_mem_nhds pi_Ioc_mem_nhds
 
 theorem pi_Ioc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ioc a' b' ∈ 𝓝 x' :=
@@ -1497,7 +1681,9 @@ theorem pi_Ioc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 
 theorem pi_Ico_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ico a b ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ico_subset a b)
+  -- ⊢ Ico (a i) (b i) ∈ 𝓝 (x i)
   exact Ico_mem_nhds (ha i) (hb i)
+  -- 🎉 no goals
 #align pi_Ico_mem_nhds pi_Ico_mem_nhds
 
 theorem pi_Ico_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ico a' b' ∈ 𝓝 x' :=
@@ -1506,7 +1692,9 @@ theorem pi_Ico_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 
 theorem pi_Ioo_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioo a b ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioo_subset a b)
+  -- ⊢ Ioo (a i) (b i) ∈ 𝓝 (x i)
   exact Ioo_mem_nhds (ha i) (hb i)
+  -- 🎉 no goals
 #align pi_Ioo_mem_nhds pi_Ioo_mem_nhds
 
 theorem pi_Ioo_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ioo a' b' ∈ 𝓝 x' :=
@@ -1517,8 +1705,11 @@ end Pi
 
 theorem disjoint_nhds_atTop [NoMaxOrder α] (x : α) : Disjoint (𝓝 x) atTop := by
   rcases exists_gt x with ⟨y, hy : x < y⟩
+  -- ⊢ Disjoint (𝓝 x) atTop
   refine' disjoint_of_disjoint_of_mem _ (Iio_mem_nhds hy) (mem_atTop y)
+  -- ⊢ Disjoint (Iio y) {b | y ≤ b}
   exact disjoint_left.mpr fun z => not_le.2
+  -- 🎉 no goals
 #align disjoint_nhds_at_top disjoint_nhds_atTop
 
 @[simp]
@@ -1578,22 +1769,39 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
       ∃ u ∈ Ioc a b, Ioo a u ⊆ s,
       ∃ u ∈ Ioi a, Ioo a u ⊆ s] := by
   tfae_have 1 ↔ 2
+  -- ⊢ s ∈ 𝓝[Ioi a] a ↔ s ∈ 𝓝[Ioc a b] a
   · rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab]
+    -- 🎉 no goals
   tfae_have 1 ↔ 3
+  -- ⊢ s ∈ 𝓝[Ioi a] a ↔ s ∈ 𝓝[Ioo a b] a
   · rw [nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
+    -- 🎉 no goals
   tfae_have 4 → 5
+  -- ⊢ (∃ u, u ∈ Ioc a b ∧ Ioo a u ⊆ s) → ∃ u, u ∈ Ioi a ∧ Ioo a u ⊆ s
   · exact fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+    -- 🎉 no goals
   tfae_have 5 → 1
+  -- ⊢ (∃ u, u ∈ Ioi a ∧ Ioo a u ⊆ s) → s ∈ 𝓝[Ioi a] a
   · rintro ⟨u, hau, hu⟩
+    -- ⊢ s ∈ 𝓝[Ioi a] a
     exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
+    -- 🎉 no goals
   tfae_have 1 → 4
+  -- ⊢ s ∈ 𝓝[Ioi a] a → ∃ u, u ∈ Ioc a b ∧ Ioo a u ⊆ s
   · intro h
+    -- ⊢ ∃ u, u ∈ Ioc a b ∧ Ioo a u ⊆ s
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
+    -- ⊢ ∃ u, u ∈ Ioc a b ∧ Ioo a u ⊆ s
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
+    -- ⊢ ∃ u, u ∈ Ioc a b ∧ Ioo a u ⊆ s
     refine' ⟨u, au, fun x hx => _⟩
+    -- ⊢ x ∈ s
     refine' hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, _⟩
+    -- ⊢ x ∈ Ioi a
     exact hx.1
+    -- 🎉 no goals
   tfae_finish
+  -- 🎉 no goals
 #align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
 theorem mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
@@ -1614,10 +1822,15 @@ theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis
 
 theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
   by_cases ha : IsTop a
+  -- ⊢ 𝓝[Ioi a] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b
   · simp [ha, ha.isMax.Ioi_eq]
+    -- 🎉 no goals
   · simp only [ha, false_or]
+    -- ⊢ 𝓝[Ioi a] a = ⊥ ↔ ∃ b, a ⋖ b
     rw [isTop_iff_isMax, not_isMax_iff] at ha
+    -- ⊢ 𝓝[Ioi a] a = ⊥ ↔ ∃ b, a ⋖ b
     simp only [(nhdsWithin_Ioi_basis' ha).eq_bot_iff, covby_iff_Ioo_eq]
+    -- 🎉 no goals
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
@@ -1632,7 +1845,9 @@ second-countable. -/
 theorem countable_setOf_isolated_right [SecondCountableTopology α] :
     { x : α | 𝓝[>] x = ⊥ }.Countable := by
   simp only [nhdsWithin_Ioi_eq_bot_iff, setOf_or]
+  -- ⊢ Set.Countable ({a | IsTop a} ∪ {a | ∃ b, a ⋖ b})
   exact (subsingleton_isTop α).countable.union countable_setOf_covby_right
+  -- 🎉 no goals
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -1645,12 +1860,19 @@ with `a < u`. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α}
     {s : Set α} : s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioc a u ⊆ s := by
   rw [mem_nhdsWithin_Ioi_iff_exists_Ioo_subset]
+  -- ⊢ (∃ u, u ∈ Ioi a ∧ Ioo a u ⊆ s) ↔ ∃ u, u ∈ Ioi a ∧ Ioc a u ⊆ s
   constructor
+  -- ⊢ (∃ u, u ∈ Ioi a ∧ Ioo a u ⊆ s) → ∃ u, u ∈ Ioi a ∧ Ioc a u ⊆ s
   · rintro ⟨u, au, as⟩
+    -- ⊢ ∃ u, u ∈ Ioi a ∧ Ioc a u ⊆ s
     rcases exists_between au with ⟨v, hv⟩
+    -- ⊢ ∃ u, u ∈ Ioi a ∧ Ioc a u ⊆ s
     exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
+    -- 🎉 no goals
   · rintro ⟨u, au, as⟩
+    -- ⊢ ∃ u, u ∈ Ioi a ∧ Ioo a u ⊆ s
     exact ⟨u, au, Subset.trans Ioo_subset_Ioc_self as⟩
+    -- 🎉 no goals
 #align mem_nhds_within_Ioi_iff_exists_Ioc_subset mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
 
 open List in
@@ -1696,7 +1918,9 @@ with `l < a`. -/
 theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a : α}
     {s : Set α} : s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
+  -- ⊢ s ∈ 𝓝[Iio a] a ↔ ∃ l, l ∈ Iio a ∧ Ico l a ⊆ s
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
+  -- 🎉 no goals
 #align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
 
 theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
@@ -1707,6 +1931,7 @@ theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃
     convert (config := {preTransparency := .default})
       nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
     exact ofDual_covby_ofDual_iff
+    -- 🎉 no goals
 
 open List in
 /-- The following statements are equivalent:
@@ -1724,24 +1949,37 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
       ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
   tfae_have 1 ↔ 2
+  -- ⊢ s ∈ 𝓝[Ici a] a ↔ s ∈ 𝓝[Icc a b] a
   · rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab]
+    -- 🎉 no goals
   tfae_have 1 ↔ 3
+  -- ⊢ s ∈ 𝓝[Ici a] a ↔ s ∈ 𝓝[Ico a b] a
   · rw [nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
+    -- 🎉 no goals
   tfae_have 1 ↔ 5
+  -- ⊢ s ∈ 𝓝[Ici a] a ↔ ∃ u, u ∈ Ioi a ∧ Ico a u ⊆ s
   · exact (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
+    -- 🎉 no goals
   tfae_have 4 → 5
+  -- ⊢ (∃ u, u ∈ Ioc a b ∧ Ico a u ⊆ s) → ∃ u, u ∈ Ioi a ∧ Ico a u ⊆ s
   · exact fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+    -- 🎉 no goals
   tfae_have 5 → 4
+  -- ⊢ (∃ u, u ∈ Ioi a ∧ Ico a u ⊆ s) → ∃ u, u ∈ Ioc a b ∧ Ico a u ⊆ s
   · rintro ⟨u, hua, hus⟩
+    -- ⊢ ∃ u, u ∈ Ioc a b ∧ Ico a u ⊆ s
     exact
       ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
         (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
   tfae_finish
+  -- 🎉 no goals
 #align tfae_mem_nhds_within_Ici TFAE_mem_nhdsWithin_Ici
 
 theorem mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ici hu' s).out 0 3 (by norm_num) (by norm_num)
+                                              -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align mem_nhds_within_Ici_iff_exists_mem_Ioc_Ico_subset mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
@@ -1749,6 +1987,8 @@ with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ici hu' s).out 0 4 (by norm_num) (by norm_num)
+                                              -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align mem_nhds_within_Ici_iff_exists_Ico_subset' mem_nhdsWithin_Ici_iff_exists_Ico_subset'
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
@@ -1769,12 +2009,19 @@ with `a < u`. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Icc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α}
     {s : Set α} : s ∈ 𝓝[≥] a ↔ ∃ u, a < u ∧ Icc a u ⊆ s := by
   rw [mem_nhdsWithin_Ici_iff_exists_Ico_subset]
+  -- ⊢ (∃ u, u ∈ Ioi a ∧ Ico a u ⊆ s) ↔ ∃ u, a < u ∧ Icc a u ⊆ s
   constructor
+  -- ⊢ (∃ u, u ∈ Ioi a ∧ Ico a u ⊆ s) → ∃ u, a < u ∧ Icc a u ⊆ s
   · rintro ⟨u, au, as⟩
+    -- ⊢ ∃ u, a < u ∧ Icc a u ⊆ s
     rcases exists_between au with ⟨v, hv⟩
+    -- ⊢ ∃ u, a < u ∧ Icc a u ⊆ s
     exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
+    -- 🎉 no goals
   · rintro ⟨u, au, as⟩
+    -- ⊢ ∃ u, u ∈ Ioi a ∧ Ico a u ⊆ s
     exact ⟨u, au, Subset.trans Ico_subset_Icc_self as⟩
+    -- 🎉 no goals
 #align mem_nhds_within_Ici_iff_exists_Icc_subset mem_nhdsWithin_Ici_iff_exists_Icc_subset
 
 open List in
@@ -1798,6 +2045,8 @@ theorem TFAE_mem_nhdsWithin_Iic {a b : α} (h : a < b) (s : Set α) :
 theorem mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iic hl' s).out 0 3 (by norm_num) (by norm_num)
+                                              -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align mem_nhds_within_Iic_iff_exists_mem_Ico_Ioc_subset mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
@@ -1805,6 +2054,8 @@ with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iic hl' s).out 0 4 (by norm_num) (by norm_num)
+                                              -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align mem_nhds_within_Iic_iff_exists_Ioc_subset' mem_nhdsWithin_Iic_iff_exists_Ioc_subset'
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
@@ -1823,6 +2074,8 @@ theorem mem_nhdsWithin_Iic_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered
   _ ↔ ∃ u : α, toDual a < toDual u ∧ Icc (toDual a) (toDual u) ⊆ ofDual ⁻¹' s :=
     mem_nhdsWithin_Ici_iff_exists_Icc_subset
   _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
+                                     -- ⊢ (∃ u, ↑toDual a < ↑toDual u ∧ ↑ofDual ⁻¹' Icc u a ⊆ ↑ofDual ⁻¹' s) ↔ ∃ l, l  …
+                                                           -- 🎉 no goals
 #align mem_nhds_within_Iic_iff_exists_Icc_subset mem_nhdsWithin_Iic_iff_exists_Icc_subset
 
 end OrderTopology
@@ -1837,27 +2090,40 @@ variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
   simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
+  -- ⊢ (⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b)) ⊓ ⨅ (b : α) (_ : b ∈ Ioi a), 𝓟 (Iio b …
   refine (congr_arg₂ _ ?_ ?_).trans inf_comm
+  -- ⊢ ⨅ (b : α) (_ : b ∈ Iio a), 𝓟 (Ioi b) = ⨅ (x : α) (_ : x > 0), 𝓟 {a_1 | a - a …
   · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
+    -- ⊢ ⨅ (_ : ↑(Equiv.subLeft a) x > 0), 𝓟 {a_1 | a - a_1 < ↑(Equiv.subLeft a) x} = …
+                                                     -- 🎉 no goals
   · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
+    -- ⊢ ⨅ (_ : ↑(Equiv.subRight a) x > 0), 𝓟 {a_1 | -↑(Equiv.subRight a) x < a - a_1 …
+                                                      -- 🎉 no goals
 #align nhds_eq_infi_abs_sub nhds_eq_iInf_abs_sub
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
   refine' ⟨eq_of_nhds_eq_nhds fun a => _⟩
+  -- ⊢ 𝓝 a = 𝓝 a
   rw [h_nhds]
+  -- ⊢ ⨅ (r : α) (_ : r > 0), 𝓟 {b | |a - b| < r} = 𝓝 a
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
+  -- ⊢ ⨅ (r : α) (_ : r > 0), 𝓟 {b | |a - b| < r} = 𝓝 a
+                               -- ⊢ ⨅ (r : α) (_ : r > 0), 𝓟 {b | |a - b| < r} = 𝓝 a
   exact (nhds_eq_iInf_abs_sub a).symm
+  -- 🎉 no goals
 #align order_topology_of_nhds_abs orderTopology_of_nhds_abs
 
 theorem LinearOrderedAddCommGroup.tendsto_nhds {x : Filter β} {a : α} :
     Tendsto f x (𝓝 a) ↔ ∀ ε > (0 : α), ∀ᶠ b in x, |f b - a| < ε := by
   simp [nhds_eq_iInf_abs_sub, abs_sub_comm a]
+  -- 🎉 no goals
 #align linear_ordered_add_comm_group.tendsto_nhds LinearOrderedAddCommGroup.tendsto_nhds
 
 theorem eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in 𝓝 a, |x - a| < ε :=
   (nhds_eq_iInf_abs_sub a).symm ▸
     mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp only [abs_sub_comm, mem_principal_self])
+                                                -- 🎉 no goals
 #align eventually_abs_sub_lt eventually_abs_sub_lt
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
@@ -1865,9 +2131,13 @@ and `g` tends to `atTop` then `f + g` tends to `atTop`. -/
 theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop := by
   nontriviality α
+  -- ⊢ Tendsto (fun x => f x + g x) l atTop
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
+  -- ⊢ Tendsto (fun x => f x + g x) l atTop
   refine' tendsto_atTop_add_left_of_le' _ C' _ hg
+  -- ⊢ ∀ᶠ (x : β) in l, C' ≤ f x
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
+  -- 🎉 no goals
 #align filter.tendsto.add_at_top Filter.Tendsto.add_atTop
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
@@ -1882,7 +2152,9 @@ theorem Filter.Tendsto.add_atBot {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
 theorem Filter.Tendsto.atTop_add {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x + g x) l atTop := by
   conv in _ + _ => rw [add_comm]
+  -- ⊢ Tendsto (fun x => g x + f x) l atTop
   exact hg.add_atTop hf
+  -- 🎉 no goals
 #align filter.tendsto.at_top_add Filter.Tendsto.atTop_add
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
@@ -1890,13 +2162,17 @@ theorem Filter.Tendsto.atTop_add {C : α} (hf : Tendsto f l atTop) (hg : Tendsto
 theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x + g x) l atBot := by
   conv in _ + _ => rw [add_comm]
+  -- ⊢ Tendsto (fun x => g x + f x) l atBot
   exact hg.add_atBot hf
+  -- 🎉 no goals
 #align filter.tendsto.at_bot_add Filter.Tendsto.atBot_add
 
 theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b - a| < ε } := by
   simp only [nhds_eq_iInf_abs_sub, abs_sub_comm (a := a)]
+  -- ⊢ HasBasis (⨅ (r : α) (_ : r > 0), 𝓟 {b | |b - a| < r}) (fun ε => 0 < ε) fun ε …
   refine hasBasis_biInf_principal' (fun x hx y hy => ?_) (exists_gt _)
+  -- ⊢ ∃ k, k > 0 ∧ {b | |b - a| < k} ⊆ {b | |b - a| < x} ∧ {b | |b - a| < k} ⊆ {b  …
   exact ⟨min x y, lt_min hx hy, fun _ hz => hz.trans_le (min_le_left _ _),
     fun _ hz => hz.trans_le (min_le_right _ _)⟩
 #align nhds_basis_abs_sub_lt nhds_basis_abs_sub_lt
@@ -1904,7 +2180,9 @@ theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
 theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => Ioo (a - ε) (a + ε) := by
   convert nhds_basis_abs_sub_lt a
+  -- ⊢ Ioo (a - x✝) (a + x✝) = {b | |b - a| < x✝}
   simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
+  -- 🎉 no goals
 #align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
 
 theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
@@ -1919,6 +2197,7 @@ variable (α)
 theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
     (𝓝 (0 : α)).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b| < ε } := by
   simpa using nhds_basis_abs_sub_lt (0 : α)
+  -- 🎉 no goals
 #align nhds_basis_zero_abs_sub_lt nhds_basis_zero_abs_sub_lt
 
 variable {α}
@@ -1951,12 +2230,19 @@ variable [TopologicalSpace α] [TopologicalSpace β] [LinearOrder α] [LinearOrd
 theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝[≤] a, x ∈ s := by
   rcases hs with ⟨a', ha'⟩
+  -- ⊢ ∃ᶠ (x : α) in 𝓝[Iic a] a, x ∈ s
   intro h
+  -- ⊢ False
   rcases (ha.1 ha').eq_or_lt with (rfl | ha'a)
+  -- ⊢ False
   · exact h.self_of_nhdsWithin le_rfl ha'
+    -- 🎉 no goals
   · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
+    -- ⊢ False
     rcases ha.exists_between hba with ⟨b', hb's, hb'⟩
+    -- ⊢ False
     exact hb hb' hb's
+    -- 🎉 no goals
 #align is_lub.frequently_mem IsLUB.frequently_mem
 
 theorem IsLUB.frequently_nhds_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
@@ -2004,7 +2290,9 @@ theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upp
 theorem isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (hsf : a ∈ closure s) :
     IsLUB s a := by
   rw [mem_closure_iff_clusterPt, ClusterPt, inf_comm] at hsf
+  -- ⊢ IsLUB s a
   exact isLUB_of_mem_nhds hsa (mem_principal_self s)
+  -- 🎉 no goals
 #align is_lub_of_mem_closure isLUB_of_mem_closure
 
 theorem isGLB_of_mem_nhds :
@@ -2021,10 +2309,15 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsLUB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩
+  -- ⊢ f x ≤ b
   replace ha := ha.inter_Ici_of_mem hx
+  -- ⊢ f x ≤ b
   haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
+  -- ⊢ f x ≤ b
   refine' ge_of_tendsto (hb.mono_left (nhdsWithin_mono _ (inter_subset_left s (Ici x)))) _
+  -- ⊢ ∀ᶠ (c : α) in 𝓝[s ∩ Ici x] a, f x ≤ f c
   exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
+  -- 🎉 no goals
 #align is_lub.mem_upper_bounds_of_tendsto IsLUB.mem_upperBounds_of_tendsto
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as `x : α`
@@ -2100,39 +2393,59 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsLUB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ) …
   replace hvx := hvx.mono_right nhdsWithin_le_nhds
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ) …
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ) …
   have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ) …
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ) …
   refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
+    -- ⊢ v (N^[x✝] 0) < v (N (N^[x✝] 0))
+                              -- 🎉 no goals
   · rw [iterate_succ_apply']; exact hN _
+    -- ⊢ N^[x✝] 0 < N (N^[x✝] 0)
+                              -- 🎉 no goals
 #align is_lub.exists_seq_strict_mono_tendsto_of_not_mem IsLUB.exists_seq_strictMono_tendsto_of_not_mem
 
 theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Monotone u ∧ (∀ n, u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   by_cases h : x ∈ t
+  -- ⊢ ∃ u, Monotone u ∧ (∀ (n : ℕ), u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ),  …
   · exact ⟨fun _ => x, monotone_const, fun n => le_rfl, tendsto_const_nhds, fun _ => h⟩
+    -- 🎉 no goals
   · rcases htx.exists_seq_strictMono_tendsto_of_not_mem h ht with ⟨u, hu⟩
+    -- ⊢ ∃ u, Monotone u ∧ (∀ (n : ℕ), u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ (n : ℕ),  …
     exact ⟨u, hu.1.monotone, fun n => (hu.2.1 n).le, hu.2.2⟩
+    -- 🎉 no goals
 #align is_lub.exists_seq_monotone_tendsto IsLUB.exists_seq_monotone_tendsto
 
 theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [TopologicalSpace α]
     [DenselyOrdered α] [OrderTopology α] [FirstCountableTopology α] {x y : α} (hy : y < x) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x) := by
   have hx : x ∉ Ioo y x := fun h => (lt_irrefl x h.2).elim
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x)
   have ht : Set.Nonempty (Ioo y x) := nonempty_Ioo.2 hy
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x)
   rcases (isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_not_mem hx ht with ⟨u, hu⟩
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x)
   exact ⟨u, hu.1, hu.2.2.symm⟩
+  -- 🎉 no goals
 #align exists_seq_strict_mono_tendsto' exists_seq_strictMono_tendsto'
 
 theorem exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α] [FirstCountableTopology α]
     (x : α) : ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x)
   rcases exists_seq_strictMono_tendsto' hy with ⟨u, hu_mono, hu_mem, hux⟩
+  -- ⊢ ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n < x) ∧ Tendsto u atTop (𝓝 x)
   exact ⟨u, hu_mono, fun n => (hu_mem n).2, hux⟩
+  -- 🎉 no goals
 #align exists_seq_strict_mono_tendsto exists_seq_strictMono_tendsto
 
 theorem exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder α]
@@ -2146,7 +2459,9 @@ theorem exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder �
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddAbove S) : ∃ u : ℕ → α, Monotone u ∧ Tendsto u atTop (𝓝 (sSup S)) ∧ ∀ n, u n ∈ S := by
   rcases (isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
+  -- ⊢ ∃ u, Monotone u ∧ Tendsto u atTop (𝓝 (sSup S)) ∧ ∀ (n : ℕ), u n ∈ S
   exact ⟨u, hu.1, hu.2.2⟩
+  -- 🎉 no goals
 #align exists_seq_tendsto_Sup exists_seq_tendsto_sSup
 
 theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
@@ -2183,7 +2498,9 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
     ∃ u v : ℕ → α, StrictAnti u ∧ StrictMono v ∧ (∀ k, u k ∈ Ioo x y) ∧ (∀ l, v l ∈ Ioo x y) ∧
       (∀ k l, u k < v l) ∧ Tendsto u atTop (𝓝 x) ∧ Tendsto v atTop (𝓝 y) := by
   rcases exists_seq_strictAnti_tendsto' h with ⟨u, hu_anti, hu_mem, hux⟩
+  -- ⊢ ∃ u v, StrictAnti u ∧ StrictMono v ∧ (∀ (k : ℕ), u k ∈ Ioo x y) ∧ (∀ (l : ℕ) …
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
+  -- ⊢ ∃ u v, StrictAnti u ∧ StrictMono v ∧ (∀ (k : ℕ), u k ∈ Ioo x y) ∧ (∀ (l : ℕ) …
   exact
     ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
       fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
@@ -2206,9 +2523,13 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrder
 element. -/
 theorem closure_Ioi' {a : α} (h : (Ioi a).Nonempty) : closure (Ioi a) = Ici a := by
   apply Subset.antisymm
+  -- ⊢ closure (Ioi a) ⊆ Ici a
   · exact closure_minimal Ioi_subset_Ici_self isClosed_Ici
+    -- 🎉 no goals
   · rw [← diff_subset_closure_iff, Ici_diff_Ioi_same, singleton_subset_iff]
+    -- ⊢ a ∈ closure (Ioi a)
     exact isGLB_Ioi.mem_closure h
+    -- 🎉 no goals
 #align closure_Ioi' closure_Ioi'
 
 /-- The closure of the interval `(a, +∞)` is the closed interval `[a, +∞)`. -/
@@ -2233,37 +2554,55 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 @[simp]
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
+  -- ⊢ closure (Ioo a b) ⊆ Icc a b
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
+    -- 🎉 no goals
   · cases' hab.lt_or_lt with hab hab
+    -- ⊢ Icc a b ⊆ closure (Ioo a b)
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
+      -- ⊢ {a, b} ⊆ closure (Ioo a b)
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
+      -- ⊢ {a, b} ⊆ closure (Ioo a b)
       simp only [insert_subset_iff, singleton_subset_iff]
+      -- ⊢ a ∈ closure (Ioo a b) ∧ b ∈ closure (Ioo a b)
       exact ⟨(isGLB_Ioo hab).mem_closure hab', (isLUB_Ioo hab).mem_closure hab'⟩
+      -- 🎉 no goals
     · rw [Icc_eq_empty_of_lt hab]
+      -- ⊢ ∅ ⊆ closure (Ioo a b)
       exact empty_subset _
+      -- 🎉 no goals
 #align closure_Ioo closure_Ioo
 
 /-- The closure of the interval `(a, b]` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ioc {a b : α} (hab : a ≠ b) : closure (Ioc a b) = Icc a b := by
   apply Subset.antisymm
+  -- ⊢ closure (Ioc a b) ⊆ Icc a b
   · exact closure_minimal Ioc_subset_Icc_self isClosed_Icc
+    -- 🎉 no goals
   · apply Subset.trans _ (closure_mono Ioo_subset_Ioc_self)
+    -- ⊢ Icc a b ⊆ closure (Ioo a b)
     rw [closure_Ioo hab]
+    -- 🎉 no goals
 #align closure_Ioc closure_Ioc
 
 /-- The closure of the interval `[a, b)` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ico {a b : α} (hab : a ≠ b) : closure (Ico a b) = Icc a b := by
   apply Subset.antisymm
+  -- ⊢ closure (Ico a b) ⊆ Icc a b
   · exact closure_minimal Ico_subset_Icc_self isClosed_Icc
+    -- 🎉 no goals
   · apply Subset.trans _ (closure_mono Ioo_subset_Ico_self)
+    -- ⊢ Icc a b ⊆ closure (Ioo a b)
     rw [closure_Ioo hab]
+    -- 🎉 no goals
 #align closure_Ico closure_Ico
 
 @[simp]
 theorem interior_Ici' {a : α} (ha : (Iio a).Nonempty) : interior (Ici a) = Ioi a := by
   rw [← compl_Iio, interior_compl, closure_Iio' ha, compl_Iic]
+  -- 🎉 no goals
 #align interior_Ici' interior_Ici'
 
 theorem interior_Ici [NoMinOrder α] {a : α} : interior (Ici a) = Ioi a :=
@@ -2282,16 +2621,19 @@ theorem interior_Iic [NoMaxOrder α] {a : α} : interior (Iic a) = Iio a :=
 @[simp]
 theorem interior_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} : interior (Icc a b) = Ioo a b := by
   rw [← Ici_inter_Iic, interior_inter, interior_Ici, interior_Iic, Ioi_inter_Iio]
+  -- 🎉 no goals
 #align interior_Icc interior_Icc
 
 @[simp]
 theorem interior_Ico [NoMinOrder α] {a b : α} : interior (Ico a b) = Ioo a b := by
   rw [← Ici_inter_Iio, interior_inter, interior_Ici, interior_Iio, Ioi_inter_Iio]
+  -- 🎉 no goals
 #align interior_Ico interior_Ico
 
 @[simp]
 theorem interior_Ioc [NoMaxOrder α] {a b : α} : interior (Ioc a b) = Ioo a b := by
   rw [← Ioi_inter_Iic, interior_inter, interior_Ioi, interior_Iic, Ioi_inter_Iio]
+  -- 🎉 no goals
 #align interior_Ioc interior_Ioc
 
 theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a b)) = Icc a b :=
@@ -2304,7 +2646,9 @@ theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a
 
 theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (Ioc a b)) := by
   rcases eq_or_ne a b with (rfl | h)
+  -- ⊢ Ioc a a ⊆ closure (interior (Ioc a a))
   · simp
+    -- 🎉 no goals
   · calc
       Ioc a b ⊆ Icc a b := Ioc_subset_Icc_self
       _ = closure (Ioo a b) := (closure_Ioo h).symm
@@ -2314,11 +2658,13 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
 
 theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
   simpa only [dual_Ioc] using Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
+  -- 🎉 no goals
 #align Ico_subset_closure_interior Ico_subset_closure_interior
 
 @[simp]
 theorem frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by
   simp [frontier, ha]
+  -- 🎉 no goals
 #align frontier_Ici' frontier_Ici'
 
 theorem frontier_Ici [NoMinOrder α] {a : α} : frontier (Ici a) = {a} :=
@@ -2328,6 +2674,7 @@ theorem frontier_Ici [NoMinOrder α] {a : α} : frontier (Ici a) = {a} :=
 @[simp]
 theorem frontier_Iic' {a : α} (ha : (Ioi a).Nonempty) : frontier (Iic a) = {a} := by
   simp [frontier, ha]
+  -- 🎉 no goals
 #align frontier_Iic' frontier_Iic'
 
 theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
@@ -2337,6 +2684,7 @@ theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
 @[simp]
 theorem frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
   simp [frontier, closure_Ioi' ha, Iic_diff_Iio, Icc_self]
+  -- 🎉 no goals
 #align frontier_Ioi' frontier_Ioi'
 
 theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
@@ -2346,6 +2694,7 @@ theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
 @[simp]
 theorem frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
   simp [frontier, closure_Iio' ha, Iic_diff_Iio, Icc_self]
+  -- 🎉 no goals
 #align frontier_Iio' frontier_Iio'
 
 theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
@@ -2355,26 +2704,31 @@ theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
 @[simp]
 theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
     frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_diff_Ioo_same]
+                                      -- 🎉 no goals
 #align frontier_Icc frontier_Icc
 
 @[simp]
 theorem frontier_Ioo {a b : α} (h : a < b) : frontier (Ioo a b) = {a, b} := by
   rw [frontier, closure_Ioo h.ne, interior_Ioo, Icc_diff_Ioo_same h.le]
+  -- 🎉 no goals
 #align frontier_Ioo frontier_Ioo
 
 @[simp]
 theorem frontier_Ico [NoMinOrder α] {a b : α} (h : a < b) : frontier (Ico a b) = {a, b} := by
   rw [frontier, closure_Ico h.ne, interior_Ico, Icc_diff_Ioo_same h.le]
+  -- 🎉 no goals
 #align frontier_Ico frontier_Ico
 
 @[simp]
 theorem frontier_Ioc [NoMaxOrder α] {a b : α} (h : a < b) : frontier (Ioc a b) = {a, b} := by
   rw [frontier, closure_Ioc h.ne, interior_Ioc, Icc_diff_Ioo_same h.le]
+  -- 🎉 no goals
 #align frontier_Ioc frontier_Ioc
 
 theorem nhdsWithin_Ioi_neBot' {a b : α} (H₁ : (Ioi a).Nonempty) (H₂ : a ≤ b) :
     NeBot (𝓝[Ioi a] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Ioi' H₁]
+                                           -- 🎉 no goals
 #align nhds_within_Ioi_ne_bot' nhdsWithin_Ioi_neBot'
 
 theorem nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Ioi a] b) :=
@@ -2398,6 +2752,7 @@ theorem Filter.Eventually.exists_gt [NoMaxOrder α] {a : α} {p : α → Prop} (
 theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Iio' H₁]
+                                           -- 🎉 no goals
 #align nhds_within_Iio_ne_bot' nhdsWithin_Iio_neBot'
 
 theorem nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Iio b] a) :=
@@ -2436,35 +2791,55 @@ theorem right_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b]
 theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[<] b) = atTop := by
   nontriviality
+  -- ⊢ comap Subtype.val (𝓝[Iio b] b) = atTop
   haveI : Nonempty s := nontrivial_iff_nonempty.1 ‹_›
+  -- ⊢ comap Subtype.val (𝓝[Iio b] b) = atTop
   rcases hs (nonempty_subtype.1 ‹_›) with ⟨a, h, hs⟩
+  -- ⊢ comap Subtype.val (𝓝[Iio b] b) = atTop
   ext u; constructor
+  -- ⊢ u ∈ comap Subtype.val (𝓝[Iio b] b) ↔ u ∈ atTop
+         -- ⊢ u ∈ comap Subtype.val (𝓝[Iio b] b) → u ∈ atTop
   · rintro ⟨t, ht, hts⟩
+    -- ⊢ u ∈ atTop
     obtain ⟨x, ⟨hxa : a ≤ x, hxb : x < b⟩, hxt : Ioo x b ⊆ t⟩ :=
       (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset h).mp ht
     obtain ⟨y, hxy, hyb⟩ := exists_between hxb
+    -- ⊢ u ∈ atTop
     refine' mem_of_superset (mem_atTop ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) _
+    -- ⊢ {b_1 | { val := y, property := (_ : y ∈ s) } ≤ b_1} ⊆ u
     rintro ⟨z, hzs⟩ (hyz : y ≤ z)
+    -- ⊢ { val := z, property := hzs } ∈ u
     exact hts (hxt ⟨hxy.trans_le hyz, hb hzs⟩)
+    -- 🎉 no goals
   · intro hu
+    -- ⊢ u ∈ comap Subtype.val (𝓝[Iio b] b)
     obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_atTop_sets.1 hu
+    -- ⊢ u ∈ comap Subtype.val (𝓝[Iio b] b)
     exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
+    -- 🎉 no goals
 #align comap_coe_nhds_within_Iio_of_Ioo_subset comap_coe_nhdsWithin_Iio_of_Ioo_subset
 
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
     (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by
     simpa only [OrderDual.exists, dual_Ioo] using hs h
+    -- 🎉 no goals
 #align comap_coe_nhds_within_Ioi_of_Ioo_subset comap_coe_nhdsWithin_Ioi_of_Ioo_subset
 
 theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
     map ((↑) : s → α) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
+  -- ⊢ map Subtype.val atTop = 𝓝[Iio b] b
   · have : IsEmpty s := ⟨fun x => hb'.subset (hb x.2)⟩
+    -- ⊢ map Subtype.val atTop = 𝓝[Iio b] b
     rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
+    -- 🎉 no goals
   · rw [← comap_coe_nhdsWithin_Iio_of_Ioo_subset hb fun _ => hs a ha, map_comap_of_mem]
+    -- ⊢ range Subtype.val ∈ 𝓝[Iio b] b
     rw [Subtype.range_val]
+    -- ⊢ s ∈ 𝓝[Iio b] b
     exact (mem_nhdsWithin_Iio_iff_exists_Ioo_subset' ha).2 (hs a ha)
+    -- 🎉 no goals
 #align map_coe_at_top_of_Ioo_subset map_coe_atTop_of_Ioo_subset
 
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
@@ -2473,6 +2848,7 @@ theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b >
   refine' (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
     fun b' hb' => _ : _)
   simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
+  -- 🎉 no goals
 #align map_coe_at_bot_of_Ioo_subset map_coe_atBot_of_Ioo_subset
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
@@ -2523,12 +2899,16 @@ variable {l : Filter β} {f : α → β}
 theorem tendsto_comp_coe_Ioo_atTop (h : a < b) :
     Tendsto (fun x : Ioo a b => f x) atTop l ↔ Tendsto f (𝓝[<] b) l := by
   rw [← map_coe_Ioo_atTop h, tendsto_map'_iff]; rfl
+  -- ⊢ Tendsto (fun x => f ↑x) atTop l ↔ Tendsto (f ∘ Subtype.val) atTop l
+                                                -- 🎉 no goals
 #align tendsto_comp_coe_Ioo_at_top tendsto_comp_coe_Ioo_atTop
 
 @[simp]
 theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
     Tendsto (fun x : Ioo a b => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioo_atBot h, tendsto_map'_iff]; rfl
+  -- ⊢ Tendsto (fun x => f ↑x) atBot l ↔ Tendsto (f ∘ Subtype.val) atBot l
+                                                -- 🎉 no goals
 #align tendsto_comp_coe_Ioo_at_bot tendsto_comp_coe_Ioo_atBot
 
 -- porting note: todo: `simpNF` claims that `simp` can't use this lemma to simplify LHS but it can
@@ -2536,6 +2916,8 @@ theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
 theorem tendsto_comp_coe_Ioi_atBot :
     Tendsto (fun x : Ioi a => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioi_atBot, tendsto_map'_iff]; rfl
+  -- ⊢ Tendsto (fun x => f ↑x) atBot l ↔ Tendsto (f ∘ Subtype.val) atBot l
+                                              -- 🎉 no goals
 #align tendsto_comp_coe_Ioi_at_bot tendsto_comp_coe_Ioi_atBot
 
 -- porting note: todo: `simpNF` claims that `simp` can't use this lemma to simplify LHS but it can
@@ -2543,41 +2925,59 @@ theorem tendsto_comp_coe_Ioi_atBot :
 theorem tendsto_comp_coe_Iio_atTop :
     Tendsto (fun x : Iio a => f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
   rw [← map_coe_Iio_atTop, tendsto_map'_iff]; rfl
+  -- ⊢ Tendsto (fun x => f ↑x) atTop l ↔ Tendsto (f ∘ Subtype.val) atTop l
+                                              -- 🎉 no goals
 #align tendsto_comp_coe_Iio_at_top tendsto_comp_coe_Iio_atTop
 
 @[simp]
 theorem tendsto_Ioo_atTop {f : β → Ioo a b} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] b) := by
   rw [← comap_coe_Ioo_nhdsWithin_Iio, tendsto_comap_iff]; rfl
+  -- ⊢ Tendsto (Subtype.val ∘ f) l (𝓝[Iio b] b) ↔ Tendsto (fun x => ↑(f x)) l (𝓝[Ii …
+                                                          -- 🎉 no goals
 #align tendsto_Ioo_at_top tendsto_Ioo_atTop
 
 @[simp]
 theorem tendsto_Ioo_atBot {f : β → Ioo a b} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioo_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
+  -- ⊢ Tendsto (Subtype.val ∘ f) l (𝓝[Ioi a] a) ↔ Tendsto (fun x => ↑(f x)) l (𝓝[Io …
+                                                          -- 🎉 no goals
 #align tendsto_Ioo_at_bot tendsto_Ioo_atBot
 
 @[simp]
 theorem tendsto_Ioi_atBot {f : β → Ioi a} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioi_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
+  -- ⊢ Tendsto (Subtype.val ∘ f) l (𝓝[Ioi a] a) ↔ Tendsto (fun x => ↑(f x)) l (𝓝[Io …
+                                                          -- 🎉 no goals
 #align tendsto_Ioi_at_bot tendsto_Ioi_atBot
 
 @[simp]
 theorem tendsto_Iio_atTop {f : β → Iio a} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] a) := by
   rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]; rfl
+  -- ⊢ Tendsto (Subtype.val ∘ f) l (𝓝[Iio a] a) ↔ Tendsto (fun x => ↑(f x)) l (𝓝[Ii …
+                                                          -- 🎉 no goals
 #align tendsto_Iio_at_top tendsto_Iio_atTop
 
 instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
   refine forall_mem_nonempty_iff_neBot.1 fun s hs => ?_
+  -- ⊢ Set.Nonempty s
   obtain ⟨u, u_open, xu, us⟩ : ∃ u : Set α, IsOpen u ∧ x ∈ u ∧ u ∩ {x}ᶜ ⊆ s := mem_nhdsWithin.1 hs
+  -- ⊢ Set.Nonempty s
   obtain ⟨a, b, a_lt_b, hab⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ u := u_open.exists_Ioo_subset ⟨x, xu⟩
+  -- ⊢ Set.Nonempty s
   obtain ⟨y, hy⟩ : ∃ y, a < y ∧ y < b := exists_between a_lt_b
+  -- ⊢ Set.Nonempty s
   rcases ne_or_eq x y with (xy | rfl)
+  -- ⊢ Set.Nonempty s
   · exact ⟨y, us ⟨hab hy, xy.symm⟩⟩
+    -- 🎉 no goals
   obtain ⟨z, hz⟩ : ∃ z, a < z ∧ z < x := exists_between hy.1
+  -- ⊢ Set.Nonempty s
   exact ⟨z, us ⟨hab ⟨hz.1, hz.2.trans hy.2⟩, hz.2.ne⟩⟩
+  -- 🎉 no goals
 
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
@@ -2586,12 +2986,18 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
     (hs : Dense s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
+  -- ⊢ ∃ t, t ⊆ s ∧ Set.Countable t ∧ Dense t ∧ (∀ (x : α), IsBot x → ¬x ∈ t) ∧ ∀ ( …
   refine' ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), _, _, _, fun x hx => _, fun x hx => _⟩
   · exact (diff_subset _ _).trans hts
+    -- 🎉 no goals
   · exact htc.mono (diff_subset _ _)
+    -- 🎉 no goals
   · exact htd.diff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
+    -- 🎉 no goals
   · simp [hx]
+    -- 🎉 no goals
   · simp [hx]
+    -- 🎉 no goals
 #align dense.exists_countable_dense_subset_no_bot_top Dense.exists_countable_dense_subset_no_bot_top
 
 variable (α)
@@ -2603,6 +3009,7 @@ For a dense set containing both bot and top elements, see
 theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
     ∃ s : Set α, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s := by
   simpa using dense_univ.exists_countable_dense_subset_no_bot_top
+  -- 🎉 no goals
 #align exists_countable_dense_no_bot_top exists_countable_dense_no_bot_top
 
 end DenselyOrdered
@@ -2628,7 +3035,9 @@ theorem Monotone.map_iSup_of_continuousAt' {ι : Sort*} [Nonempty ι] {f : α �
     (Cf : ContinuousAt f (iSup g)) (Mf : Monotone f)
     (bdd : BddAbove (range g) := by bddDefault) : f (⨆ i, g i) = ⨆ i, f (g i) := by
   rw [iSup, Monotone.map_sSup_of_continuousAt' Cf Mf (range_nonempty g) bdd, ← range_comp, iSup]
+  -- ⊢ sSup (range (f ∘ g)) = sSup (range fun i => f (g i))
   rfl
+  -- 🎉 no goals
 #align monotone.map_supr_of_continuous_at' Monotone.map_iSup_of_continuousAt'
 
 /-- A monotone function continuous at the infimum of a nonempty set sends this infimum to
@@ -2645,7 +3054,9 @@ theorem Monotone.map_iInf_of_continuousAt' {ι : Sort*} [Nonempty ι] {f : α �
     (Cf : ContinuousAt f (iInf g)) (Mf : Monotone f)
     (bdd : BddBelow (range g) := by bddDefault) : f (⨅ i, g i) = ⨅ i, f (g i) := by
   rw [iInf, Monotone.map_sInf_of_continuousAt' Cf Mf (range_nonempty g) bdd, ← range_comp, iInf]
+  -- ⊢ sInf (range (f ∘ g)) = sInf (range fun i => f (g i))
   rfl
+  -- 🎉 no goals
 #align monotone.map_infi_of_continuous_at' Monotone.map_iInf_of_continuousAt'
 
 /-- An antitone function continuous at the infimum of a nonempty set sends this infimum to
@@ -2662,7 +3073,9 @@ theorem Antitone.map_iInf_of_continuousAt' {ι : Sort*} [Nonempty ι] {f : α �
     (Cf : ContinuousAt f (iInf g)) (Af : Antitone f)
     (bdd : BddBelow (range g) := by bddDefault) : f (⨅ i, g i) = ⨆ i, f (g i) := by
   rw [iInf, Antitone.map_sInf_of_continuousAt' Cf Af (range_nonempty g) bdd, ← range_comp, iSup]
+  -- ⊢ sSup (range (f ∘ g)) = sSup (range fun i => f (g i))
   rfl
+  -- 🎉 no goals
 #align antitone.map_infi_of_continuous_at' Antitone.map_iInf_of_continuousAt'
 
 /-- An antitone function continuous at the supremum of a nonempty set sends this supremum to
@@ -2679,7 +3092,9 @@ theorem Antitone.map_iSup_of_continuousAt' {ι : Sort*} [Nonempty ι] {f : α �
     (Cf : ContinuousAt f (iSup g)) (Af : Antitone f)
     (bdd : BddAbove (range g) := by bddDefault) : f (⨆ i, g i) = ⨅ i, f (g i) := by
   rw [iSup, Antitone.map_sSup_of_continuousAt' Cf Af (range_nonempty g) bdd, ← range_comp, iInf]
+  -- ⊢ sInf (range (f ∘ g)) = sInf (range fun i => f (g i))
   rfl
+  -- 🎉 no goals
 #align antitone.map_supr_of_continuous_at' Antitone.map_iSup_of_continuousAt'
 
 end ConditionallyCompleteLinearOrder
@@ -2714,8 +3129,11 @@ this supremum to the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (fbot : f ⊥ = ⊥) : f (sSup s) = sSup (f '' s) := by
   cases' s.eq_empty_or_nonempty with h h
+  -- ⊢ f (sSup s) = sSup (f '' s)
   · simp [h, fbot]
+    -- 🎉 no goals
   · exact Mf.map_sSup_of_continuousAt' Cf h
+    -- 🎉 no goals
 #align monotone.map_Sup_of_continuous_at Monotone.map_sSup_of_continuousAt
 
 /-- If a monotone function sending `bot` to `bot` is continuous at the indexed supremum over
@@ -2724,6 +3142,8 @@ theorem Monotone.map_iSup_of_continuousAt {ι : Sort*} {f : α → β} {g : ι �
     (Cf : ContinuousAt f (iSup g)) (Mf : Monotone f) (fbot : f ⊥ = ⊥) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   rw [iSup, Mf.map_sSup_of_continuousAt Cf fbot, ← range_comp, iSup]; rfl
+  -- ⊢ sSup (range (f ∘ g)) = sSup (range fun i => f (g i))
+                                                                      -- 🎉 no goals
 #align monotone.map_supr_of_continuous_at Monotone.map_iSup_of_continuousAt
 
 /-- A monotone function `f` sending `top` to `top` and continuous at the infimum of a set sends
@@ -2803,8 +3223,11 @@ then it sends this supremum to the supremum of the image of `s`. -/
 theorem Monotone.map_csSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (ne : s.Nonempty) (H : BddAbove s) : f (sSup s) = sSup (f '' s) := by
   refine' ((isLUB_csSup (ne.image f) (Mf.map_bddAbove H)).unique _).symm
+  -- ⊢ IsLUB (f '' s) (f (sSup s))
   refine' (isLUB_csSup ne H).isLUB_of_tendsto (fun x _ y _ xy => Mf xy) ne _
+  -- ⊢ Tendsto f (𝓝[s] sSup s) (𝓝 (f (sSup s)))
   exact Cf.mono_left inf_le_left
+  -- 🎉 no goals
 #align monotone.map_cSup_of_continuous_at Monotone.map_csSup_of_continuousAt
 
 /-- If a monotone function is continuous at the indexed supremum of a bounded function on
@@ -2812,6 +3235,8 @@ a nonempty `Sort`, then it sends this supremum to the supremum of the compositio
 theorem Monotone.map_ciSup_of_continuousAt {f : α → β} {g : γ → α} (Cf : ContinuousAt f (⨆ i, g i))
     (Mf : Monotone f) (H : BddAbove (range g)) : f (⨆ i, g i) = ⨆ i, f (g i) := by
   rw [iSup, Mf.map_csSup_of_continuousAt Cf (range_nonempty _) H, ← range_comp, iSup]; rfl
+  -- ⊢ sSup (range (f ∘ fun i => g i)) = sSup (range fun i => f (g i))
+                                                                                       -- 🎉 no goals
 #align monotone.map_csupr_of_continuous_at Monotone.map_ciSup_of_continuousAt
 
 /-- If a monotone function is continuous at the infimum of a nonempty bounded below set `s`,
@@ -2865,13 +3290,19 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) := by
   rcases eq_empty_or_nonempty (Iio x) with (h | h); · simp [h]
+  -- ⊢ Tendsto f (𝓝[Iio x] x) (𝓝 (sSup (f '' Iio x)))
+                                                      -- 🎉 no goals
   refine' tendsto_order.2 ⟨fun l hl => _, fun m hm => _⟩
+  -- ⊢ ∀ᶠ (b : α) in 𝓝[Iio x] x, l < f b
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
         exists_lt_of_lt_csSup (nonempty_image_iff.2 h) hl
     exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
+    -- 🎉 no goals
   · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
+    -- ⊢ f x✝ ≤ sSup (f '' Iio x)
     exact le_csSup (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)
+    -- 🎉 no goals
 #align monotone.tendsto_nhds_within_Iio Monotone.tendsto_nhdsWithin_Iio
 
 /-- A monotone map has a limit to the right of any point `x`, equal to `sInf (f '' (Ioi x))`. -/

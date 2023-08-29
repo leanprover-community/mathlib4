@@ -184,6 +184,8 @@ def comap (f : M →ₙ* N) (S : Subsemigroup N) :
     Subsemigroup M where
   carrier := f ⁻¹' S
   mul_mem' ha hb := show f (_ * _) ∈ S by rw [map_mul]; exact mul_mem ha hb
+                                          -- ⊢ ↑f a✝ * ↑f b✝ ∈ S
+                                                        -- 🎉 no goals
 #align subsemigroup.comap Subsemigroup.comap
 #align add_subsemigroup.comap AddSubsemigroup.comap
 
@@ -209,6 +211,7 @@ theorem comap_comap (S : Subsemigroup P) (g : N →ₙ* P) (f : M →ₙ* N) :
 @[to_additive (attr := simp)]
 theorem comap_id (S : Subsemigroup P) : S.comap (MulHom.id _) = S :=
   ext (by simp)
+          -- 🎉 no goals
 #align subsemigroup.comap_id Subsemigroup.comap_id
 #align add_subsemigroup.comap_id AddSubsemigroup.comap_id
 
@@ -220,7 +223,9 @@ def map (f : M →ₙ* N) (S : Subsemigroup M) : Subsemigroup N where
   carrier := f '' S
   mul_mem' := by
     rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
+    -- ⊢ ↑f x * ↑f y ∈ ↑f '' ↑S
     exact ⟨x * y, @mul_mem (Subsemigroup M) M _ _ _ _ _ _ hx hy, by rw [map_mul]⟩
+    -- 🎉 no goals
 #align subsemigroup.map Subsemigroup.map
 #align add_subsemigroup.map AddSubsemigroup.map
 
@@ -380,6 +385,7 @@ variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
+                                                     -- 🎉 no goals
 #align subsemigroup.gci_map_comap Subsemigroup.gciMapComap
 #align add_subsemigroup.gci_map_comap AddSubsemigroup.gciMapComap
 
@@ -451,6 +457,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
     mem_map.2 ⟨y, by simp [hy, h]⟩
+                     -- 🎉 no goals
 #align subsemigroup.gi_map_comap Subsemigroup.giMapComap
 #align add_subsemigroup.gi_map_comap AddSubsemigroup.giMapComap
 
@@ -627,7 +634,9 @@ theorem closure_closure_coe_preimage {s : Set M} :
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
       refine' closure_induction' _ (fun g hg => subset_closure hg) (fun g₁ g₂ hg₁ hg₂ => _) hx
+      -- ⊢ { val := g₁, property := g₂ } ∈ closure (Subtype.val ⁻¹' s) → { val := hg₁,  …
       · exact Subsemigroup.mul_mem _
+        -- 🎉 no goals
 #align subsemigroup.closure_closure_coe_preimage Subsemigroup.closure_closure_coe_preimage
 #align add_subsemigroup.closure_closure_coe_preimage AddSubsemigroup.closure_closure_coe_preimage
 
@@ -666,12 +675,14 @@ theorem prod_mono {s₁ s₂ : Subsemigroup M} {t₁ t₂ : Subsemigroup N} (hs 
 @[to_additive prod_top]
 theorem prod_top (s : Subsemigroup M) : s.prod (⊤ : Subsemigroup N) = s.comap (MulHom.fst M N) :=
   ext fun x => by simp [mem_prod, MulHom.coe_fst]
+                  -- 🎉 no goals
 #align subsemigroup.prod_top Subsemigroup.prod_top
 #align add_subsemigroup.prod_top AddSubsemigroup.prod_top
 
 @[to_additive top_prod]
 theorem top_prod (s : Subsemigroup N) : (⊤ : Subsemigroup M).prod s = s.comap (MulHom.snd M N) :=
   ext fun x => by simp [mem_prod, MulHom.coe_snd]
+                  -- 🎉 no goals
 #align subsemigroup.top_prod Subsemigroup.top_prod
 #align add_subsemigroup.top_prod AddSubsemigroup.top_prod
 
@@ -684,6 +695,7 @@ theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+                              -- 🎉 no goals
 #align subsemigroup.bot_prod_bot Subsemigroup.bot_prod_bot
 #align add_subsemigroup.bot_sum_bot AddSubsemigroup.bot_prod_bot
 
@@ -729,14 +741,23 @@ theorem map_equiv_top (f : M ≃* N) : (⊤ : Subsemigroup M).map (f : M →ₙ*
 theorem le_prod_iff {s : Subsemigroup M} {t : Subsemigroup N} {u : Subsemigroup (M × N)} :
     u ≤ s.prod t ↔ u.map (fst M N) ≤ s ∧ u.map (snd M N) ≤ t := by
   constructor
+  -- ⊢ u ≤ prod s t → map (fst M N) u ≤ s ∧ map (snd M N) u ≤ t
   · intro h
+    -- ⊢ map (fst M N) u ≤ s ∧ map (snd M N) u ≤ t
     constructor
+    -- ⊢ map (fst M N) u ≤ s
     · rintro x ⟨⟨y1, y2⟩, ⟨hy1, rfl⟩⟩
+      -- ⊢ ↑(fst M N) (y1, y2) ∈ s
       exact (h hy1).1
+      -- 🎉 no goals
     · rintro x ⟨⟨y1, y2⟩, ⟨hy1, rfl⟩⟩
+      -- ⊢ ↑(snd M N) (y1, y2) ∈ t
       exact (h hy1).2
+      -- 🎉 no goals
   · rintro ⟨hH, hK⟩ ⟨x1, x2⟩ h
+    -- ⊢ (x1, x2) ∈ prod s t
     exact ⟨hH ⟨_, h, rfl⟩, hK ⟨_, h, rfl⟩⟩
+    -- 🎉 no goals
 #align subsemigroup.le_prod_iff Subsemigroup.le_prod_iff
 #align add_subsemigroup.le_prod_iff AddSubsemigroup.le_prod_iff
 
@@ -776,6 +797,7 @@ theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map 
 @[to_additive]
 theorem map_srange (g : N →ₙ* P) (f : M →ₙ* N) : f.srange.map g = (g.comp f).srange := by
   simpa only [srange_eq_map] using (⊤ : Subsemigroup M).map_map g f
+  -- 🎉 no goals
 #align mul_hom.map_srange MulHom.map_srange
 #align add_hom.map_srange AddHom.map_srange
 
@@ -783,6 +805,7 @@ theorem map_srange (g : N →ₙ* P) (f : M →ₙ* N) : f.srange.map g = (g.com
 theorem srange_top_iff_surjective {N} [Mul N] {f : M →ₙ* N} :
     f.srange = (⊤ : Subsemigroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_iff_surjective
+                                          -- 🎉 no goals
 #align mul_hom.srange_top_iff_surjective MulHom.srange_top_iff_surjective
 #align add_hom.srange_top_iff_surjective AddHom.srange_top_iff_surjective
 
@@ -897,7 +920,9 @@ def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
 theorem subsemigroupMap_surjective (f : M →ₙ* N) (M' : Subsemigroup M) :
     Function.Surjective (f.subsemigroupMap M') := by
   rintro ⟨_, x, hx, rfl⟩
+  -- ⊢ ∃ a, ↑(subsemigroupMap f M') a = { val := ↑f x, property := (_ : ∃ a, a ∈ ↑M …
   exact ⟨⟨x, hx⟩, rfl⟩
+  -- 🎉 no goals
 #align mul_hom.subsemigroup_map_surjective MulHom.subsemigroupMap_surjective
 #align add_hom.subsemigroup_map_surjective AddHom.subsemigroupMap_surjective
 
@@ -982,6 +1007,7 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
       Subtype.ext <|
         let ⟨x', hx'⟩ := MulHom.mem_srange.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
+                            -- 🎉 no goals
 #align mul_equiv.of_left_inverse MulEquiv.ofLeftInverse
 #align add_equiv.of_left_inverse AddEquiv.ofLeftInverse
 #align mul_equiv.of_left_inverse_apply MulEquiv.ofLeftInverse_apply

@@ -33,6 +33,7 @@ protected def GradedAlgebra.ι :
     M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i) :=
   DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
+                                    -- 🎉 no goals
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
 -- porting note: replaced coercion to sort with an explicit subtype notation
@@ -40,6 +41,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun i => {x // x ∈ (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)}) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
+                   -- 🎉 no goals
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
 
@@ -49,7 +51,9 @@ instance (α : Type*) [MulZeroClass α] : Zero α := MulZeroClass.toZero
 
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
+  -- ⊢ ↑(DirectSum.of (fun i => { x // x ∈ LinearMap.range (ι R) ^ i }) (1 + 1)) (G …
   refine DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
+  -- 🎉 no goals
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
 set_option maxHeartbeats 400000 in
@@ -59,6 +63,7 @@ def GradedAlgebra.liftι :
   ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
     (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i : Submodule R (ExteriorAlgebra R M)) :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
+             -- 🎉 no goals
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
 set_option synthInstance.maxHeartbeats 30000 in
@@ -70,7 +75,9 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
       ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
       Submodule R (ExteriorAlgebra R M))) i x := by
   cases' x with x hx
+  -- ⊢ ↑(liftι R M) ↑{ val := x, property := hx } = ↑(DirectSum.of (fun i => { x // …
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
+  -- ⊢ ↑(liftι R M) x = ↑(DirectSum.of (fun i => { x // x ∈ LinearMap.range (ι R) ^ …
   -- Porting note: original statement was
   --  refine Submodule.pow_induction_on_left' _ (fun r => ?_) (fun x y i hx hy ihx ihy => ?_)
   --    (fun m hm i x hx ih => ?_) hx
@@ -92,13 +99,17 @@ instance gradedAlgebra :
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
+       -- 🎉 no goals
     -- the proof from here onward is identical to the `tensor_algebra` case
     (by
       ext m
+      -- ⊢ ↑(LinearMap.comp (AlgHom.toLinearMap (AlgHom.comp (DirectSum.coeAlgHom fun x …
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
         AlgHom.id_apply, GradedAlgebra.liftι]
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
+      -- 🎉 no goals
     (by apply GradedAlgebra.liftι_eq R M)
+        -- 🎉 no goals
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 
 end ExteriorAlgebra

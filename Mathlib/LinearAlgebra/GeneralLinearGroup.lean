@@ -45,7 +45,11 @@ def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
   { f.val with
     invFun := f.inv.toFun
     left_inv := fun m ↦ show (f.inv * f.val) m = m by erw [f.inv_val]; simp
+                                                      -- ⊢ ↑1 m = m
+                                                                       -- 🎉 no goals
     right_inv := fun m ↦ show (f.val * f.inv) m = m by erw [f.val_inv]; simp }
+                                                       -- ⊢ ↑1 m = m
+                                                                        -- 🎉 no goals
 #align linear_map.general_linear_group.to_linear_equiv LinearMap.GeneralLinearGroup.toLinearEquiv
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
@@ -64,13 +68,21 @@ def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M where
   toFun := toLinearEquiv
   invFun := ofLinearEquiv
   left_inv f := by ext; rfl
+                   -- ⊢ ↑↑(ofLinearEquiv (toLinearEquiv f)) x✝ = ↑↑f x✝
+                        -- 🎉 no goals
   right_inv f := by ext; rfl
+                    -- ⊢ ↑(toLinearEquiv (ofLinearEquiv f)) x✝ = ↑f x✝
+                         -- 🎉 no goals
   map_mul' x y := by ext; rfl
+                     -- ⊢ ↑(Equiv.toFun { toFun := toLinearEquiv, invFun := ofLinearEquiv, left_inv := …
+                          -- 🎉 no goals
 #align linear_map.general_linear_group.general_linear_equiv LinearMap.GeneralLinearGroup.generalLinearEquiv
 
 @[simp]
 theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :
     (generalLinearEquiv R M f : M →ₗ[R] M) = f := by ext; rfl
+                                                     -- ⊢ ↑↑(↑(generalLinearEquiv R M) f) x✝ = ↑↑f x✝
+                                                          -- 🎉 no goals
 #align linear_map.general_linear_group.general_linear_equiv_to_linear_map LinearMap.GeneralLinearGroup.generalLinearEquiv_to_linearMap
 
 @[simp]

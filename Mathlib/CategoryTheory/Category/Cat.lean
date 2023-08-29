@@ -76,8 +76,14 @@ set_option linter.uppercaseLean3 false in
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
   id_comp {C} {D} F := by cases F; rfl
+                          -- ⊢ 𝟙 C ≫ Functor.mk toPrefunctor✝ = Functor.mk toPrefunctor✝
+                                   -- 🎉 no goals
   comp_id {C} {D} F := by cases F; rfl
+                          -- ⊢ Functor.mk toPrefunctor✝ ≫ 𝟙 D = Functor.mk toPrefunctor✝
+                                   -- 🎉 no goals
   assoc := by intros; rfl
+              -- ⊢ (f✝ ≫ g✝) ≫ h✝ = f✝ ≫ g✝ ≫ h✝
+                      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
@@ -144,16 +150,27 @@ def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
   map := fun {X} {Y} f => by
     dsimp
+    -- ⊢ Cat.of (Discrete X) ⟶ Cat.of (Discrete Y)
     exact Discrete.functor (Discrete.mk ∘ f)
+    -- 🎉 no goals
   map_id X := by
     apply Functor.ext
+    -- ⊢ autoParam (∀ (X_1 Y : ↑({ obj := fun X => Cat.of (Discrete X), map := fun {X …
     · intro X Y f
+      -- ⊢ ({ obj := fun X => Cat.of (Discrete X), map := fun {X Y} f => id (Discrete.f …
       cases f
+      -- ⊢ ({ obj := fun X => Cat.of (Discrete X), map := fun {X Y} f => id (Discrete.f …
       simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
+      -- ⊢ (Discrete.functor (Discrete.mk ∘ 𝟙 X✝)).map { down := down✝ } = { down := do …
       apply ULift.ext
+      -- ⊢ ((Discrete.functor (Discrete.mk ∘ 𝟙 X✝)).map { down := down✝ }).down = { dow …
       aesop_cat
+      -- 🎉 no goals
     · aesop_cat
+      -- 🎉 no goals
   map_comp f g := by apply Functor.ext; aesop_cat
+                     -- ⊢ autoParam (∀ (X Y : ↑({ obj := fun X => Cat.of (Discrete X), map := fun {X Y …
+                                        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Type_to_Cat CategoryTheory.typeToCat
 
@@ -165,13 +182,22 @@ instance : Full typeToCat.{u} where
   preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
   witness := by
     intro X Y F
+    -- ⊢ typeToCat.map ((fun {X Y} F => Discrete.as ∘ F.obj ∘ Discrete.mk) F) = F
     apply Functor.ext
+    -- ⊢ autoParam (∀ (X_1 Y_1 : ↑(typeToCat.obj X)) (f : X_1 ⟶ Y_1), (typeToCat.map  …
     · intro x y f
+      -- ⊢ (typeToCat.map ((fun {X Y} F => Discrete.as ∘ F.obj ∘ Discrete.mk) F)).map f …
       dsimp
+      -- ⊢ (Discrete.functor (Discrete.mk ∘ Discrete.as ∘ F.obj ∘ Discrete.mk)).map f = …
       apply ULift.ext
+      -- ⊢ ((Discrete.functor (Discrete.mk ∘ Discrete.as ∘ F.obj ∘ Discrete.mk)).map f) …
       aesop_cat
+      -- 🎉 no goals
     · rintro ⟨x⟩
+      -- ⊢ (typeToCat.map ((fun {X Y} F => Discrete.as ∘ F.obj ∘ Discrete.mk) F)).obj { …
       apply Discrete.ext
+      -- ⊢ ((typeToCat.map ((fun {X Y} F => Discrete.as ∘ F.obj ∘ Discrete.mk) F)).obj  …
       rfl
+      -- 🎉 no goals
 
 end CategoryTheory

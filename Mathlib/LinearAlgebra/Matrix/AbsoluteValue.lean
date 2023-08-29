@@ -44,12 +44,15 @@ theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i 
     _ ≤ ∑ σ : Perm n, abv (Perm.sign σ • ∏ i, A (σ i) i) := abv.sum_le _ _
     _ = ∑ σ : Perm n, ∏ i, abv (A (σ i) i) :=
       (sum_congr rfl fun σ _ => by rw [abv.map_units_int_smul, abv.map_prod])
+                                   -- 🎉 no goals
     _ ≤ ∑ σ : Perm n, ∏ _i : n, x :=
       (sum_le_sum fun _ _ => prod_le_prod (fun _ _ => abv.nonneg _) fun _ _ => hx _ _)
     _ = ∑ _σ : Perm n, x ^ Fintype.card n :=
       (sum_congr rfl fun _ _ => by rw [prod_const, Finset.card_univ])
+                                   -- 🎉 no goals
     _ = Nat.factorial (Fintype.card n) • x ^ Fintype.card n := by
       rw [sum_const, Finset.card_univ, Fintype.card_perm]
+      -- 🎉 no goals
 #align matrix.det_le Matrix.det_le
 
 theorem det_sum_le {ι : Type*} (s : Finset ι) {A : ι → Matrix n n R} {abv : AbsoluteValue R S}
@@ -59,6 +62,7 @@ theorem det_sum_le {ι : Type*} (s : Finset ι) {A : ι → Matrix n n R} {abv :
   det_le fun i j =>
     calc
       abv ((∑ k in s, A k) i j) = abv (∑ k in s, A k i j) := by simp only [sum_apply]
+                                                                -- 🎉 no goals
       _ ≤ ∑ k in s, abv (A k i j) := (abv.sum_le _ _)
       _ ≤ ∑ _k in s, x := (sum_le_sum fun k _ => hx k i j)
       _ = s.card • x := sum_const _

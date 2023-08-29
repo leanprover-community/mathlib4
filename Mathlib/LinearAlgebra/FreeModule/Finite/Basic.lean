@@ -35,12 +35,19 @@ variable [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
 noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
     Fintype (Module.Free.ChooseBasisIndex R M) := by
   refine @Fintype.ofFinite _ ?_
+  -- ⊢ _root_.Finite (ChooseBasisIndex R M)
   cases subsingleton_or_nontrivial R
+  -- ⊢ _root_.Finite (ChooseBasisIndex R M)
   · have := Module.subsingleton R M
+    -- ⊢ _root_.Finite (ChooseBasisIndex R M)
     rw [ChooseBasisIndex]
+    -- ⊢ _root_.Finite ↑(Exists.choose (_ : ∃ S, Nonempty (Basis (↑S) R M)))
     infer_instance
+    -- 🎉 no goals
   · obtain ⟨s, hs⟩ := id ‹Module.Finite R M›
+    -- ⊢ _root_.Finite (ChooseBasisIndex R M)
     exact basis_finite_of_finite_spans (↑s) s.finite_toSet hs (chooseBasis _ _)
+    -- 🎉 no goals
 #align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
 end Ring
@@ -57,6 +64,7 @@ variable {R}
 theorem _root_.Module.Finite.of_basis {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     [_root_.Finite ι] (b : Basis ι R M) : Module.Finite R M := by
   cases nonempty_fintype ι
+  -- ⊢ Finite R M
   classical
     refine' ⟨⟨Finset.univ.image b, _⟩⟩
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
@@ -65,8 +73,11 @@ theorem _root_.Module.Finite.of_basis {R M ι : Type*} [CommRing R] [AddCommGrou
 instance _root_.Module.Finite.matrix {ι₁ ι₂ : Type*} [_root_.Finite ι₁] [_root_.Finite ι₂] :
     Module.Finite R (Matrix ι₁ ι₂ R) := by
   cases nonempty_fintype ι₁
+  -- ⊢ Finite R (Matrix ι₁ ι₂ R)
   cases nonempty_fintype ι₂
+  -- ⊢ Finite R (Matrix ι₁ ι₂ R)
   exact Module.Finite.of_basis (Pi.basis fun _ => Pi.basisFun R _)
+  -- 🎉 no goals
 #align module.finite.matrix Module.Finite.matrix
 
 end CommRing

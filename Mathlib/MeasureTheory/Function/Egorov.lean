@@ -49,7 +49,9 @@ variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
     x ∈ notConvergentSeq f g n j ↔ ∃ (k : _) (_ : j ≤ k), 1 / (n + 1 : ℝ) < dist (f k x) (g x) := by
   simp_rw [notConvergentSeq, Set.mem_iUnion]
+  -- ⊢ (∃ i i_1, x ∈ {x | 1 / (↑n + 1) < dist (f i x) (g x)}) ↔ ∃ k x_1, 1 / (↑n +  …
   rfl
+  -- 🎉 no goals
 #align measure_theory.egorov.mem_not_convergent_seq_iff MeasureTheory.Egorov.mem_notConvergentSeq_iff
 
 theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g n) :=
@@ -60,14 +62,23 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 := by
   simp_rw [Metric.tendsto_atTop, ae_iff] at hfg
+  -- ⊢ ↑↑μ (s ∩ ⋂ (j : ι), notConvergentSeq f g n j) = 0
   rw [← nonpos_iff_eq_zero, ← hfg]
+  -- ⊢ ↑↑μ (s ∩ ⋂ (j : ι), notConvergentSeq f g n j) ≤ ↑↑μ {a | ¬(a ∈ s → ∀ (ε : ℝ) …
   refine' measure_mono fun x => _
+  -- ⊢ x ∈ s ∩ ⋂ (j : ι), notConvergentSeq f g n j → x ∈ {a | ¬(a ∈ s → ∀ (ε : ℝ),  …
   simp only [Set.mem_inter_iff, Set.mem_iInter, ge_iff_le, mem_notConvergentSeq_iff]
+  -- ⊢ (x ∈ s ∧ ∀ (i : ι), ∃ k x_1, 1 / (↑n + 1) < dist (f k x) (g x)) → x ∈ {a | ¬ …
   push_neg
+  -- ⊢ (x ∈ s ∧ ∀ (i : ι), ∃ k x_1, 1 / (↑n + 1) < dist (f k x) (g x)) → x ∈ {a | a …
   rintro ⟨hmem, hx⟩
+  -- ⊢ x ∈ {a | a ∈ s ∧ ∃ ε, ε > 0 ∧ ∀ (N : ι), ∃ n, N ≤ n ∧ ε ≤ dist (f n a) (g a)}
   refine' ⟨hmem, 1 / (n + 1 : ℝ), Nat.one_div_pos_of_nat, fun N => _⟩
+  -- ⊢ ∃ n_1, N ≤ n_1 ∧ 1 / (↑n + 1) ≤ dist (f n_1 x) (g x)
   obtain ⟨n, hn₁, hn₂⟩ := hx N
+  -- ⊢ ∃ n, N ≤ n ∧ 1 / (↑n✝ + 1) ≤ dist (f n x) (g x)
   exact ⟨n, hn₁, hn₂.le⟩
+  -- 🎉 no goals
 #align measure_theory.egorov.measure_inter_not_convergent_seq_eq_zero MeasureTheory.Egorov.measure_inter_notConvergentSeq_eq_zero
 
 theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
@@ -83,11 +94,15 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
   cases' isEmpty_or_nonempty ι with h h
+  -- ⊢ Tendsto (fun j => ↑↑μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0)
   · have : (fun j => μ (s ∩ notConvergentSeq f g n j)) = fun j => 0 := by
       simp only [eq_iff_true_of_subsingleton]
     rw [this]
+    -- ⊢ Tendsto (fun j => 0) atTop (𝓝 0)
     exact tendsto_const_nhds
+    -- 🎉 no goals
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
+  -- ⊢ Tendsto (fun j => ↑↑μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 (↑↑μ (⋂ (i :  …
   refine' tendsto_measure_iInter (fun n => hsm.inter <| notConvergentSeq_measurableSet hf hg)
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
     ⟨h.some,
@@ -105,7 +120,9 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε) (hf : ∀ n, StronglyMeasurabl
       rw [gt_iff_lt, ENNReal.ofReal_pos]
       exact mul_pos hε (pow_pos (by norm_num) n))
   rw [zero_add] at hN
+  -- ⊢ ∃ j, ↑↑μ (s ∩ notConvergentSeq f g n j) ≤ ENNReal.ofReal (ε * 2⁻¹ ^ n)
   exact ⟨N, (hN N le_rfl).2⟩
+  -- 🎉 no goals
 #align measure_theory.egorov.exists_not_convergent_seq_lt MeasureTheory.Egorov.exists_notConvergentSeq_lt
 
 /-- Given some `ε > 0`, `notConvergentSeqLTIndex` provides the index such that
@@ -151,11 +168,15 @@ theorem measure_iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasu
   refine' le_trans (measure_iUnion_le _) (le_trans
     (ENNReal.tsum_le_tsum <| notConvergentSeqLTIndex_spec (half_pos hε) hf hg hsm hs hfg) _)
   simp_rw [ENNReal.ofReal_mul (half_pos hε).le]
+  -- ⊢ ∑' (a : ℕ), ENNReal.ofReal (ε / 2) * ENNReal.ofReal (2⁻¹ ^ a) ≤ ENNReal.ofRe …
   rw [ENNReal.tsum_mul_left, ← ENNReal.ofReal_tsum_of_nonneg, inv_eq_one_div, tsum_geometric_two,
     ← ENNReal.ofReal_mul (half_pos hε).le, div_mul_cancel ε two_ne_zero]
   · exact fun n => pow_nonneg (by norm_num) _
+    -- 🎉 no goals
   · rw [inv_eq_one_div]
+    -- ⊢ Summable fun i => (1 / 2) ^ i
     exact summable_geometric_two
+    -- 🎉 no goals
 #align measure_theory.egorov.measure_Union_not_convergent_seq MeasureTheory.Egorov.measure_iUnionNotConvergentSeq
 
 theorem iUnionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
@@ -163,7 +184,9 @@ theorem iUnionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasur
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     iUnionNotConvergentSeq hε hf hg hsm hs hfg ⊆ s := by
   rw [iUnionNotConvergentSeq, ← Set.inter_iUnion]
+  -- ⊢ s ∩ ⋃ (i : ℕ), notConvergentSeq (fun n => f n) g i (notConvergentSeqLTIndex  …
   exact Set.inter_subset_left _ _
+  -- 🎉 no goals
 #align measure_theory.egorov.Union_not_convergent_seq_subset MeasureTheory.Egorov.iUnionNotConvergentSeq_subset
 
 theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
@@ -171,18 +194,29 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hg hsm hs hfg) := by
   rw [Metric.tendstoUniformlyOn_iff]
+  -- ⊢ ∀ (ε_1 : ℝ), ε_1 > 0 → ∀ᶠ (n : ι) in atTop, ∀ (x : α), x ∈ s \ iUnionNotConv …
   intro δ hδ
+  -- ⊢ ∀ᶠ (n : ι) in atTop, ∀ (x : α), x ∈ s \ iUnionNotConvergentSeq hε hf hg hsm  …
   obtain ⟨N, hN⟩ := exists_nat_one_div_lt hδ
+  -- ⊢ ∀ᶠ (n : ι) in atTop, ∀ (x : α), x ∈ s \ iUnionNotConvergentSeq hε hf hg hsm  …
   rw [eventually_atTop]
+  -- ⊢ ∃ a, ∀ (b : ι), b ≥ a → ∀ (x : α), x ∈ s \ iUnionNotConvergentSeq hε hf hg h …
   refine' ⟨Egorov.notConvergentSeqLTIndex (half_pos hε) hf hg hsm hs hfg N, fun n hn x hx => _⟩
+  -- ⊢ dist (g x) (f n x) < δ
   simp only [Set.mem_diff, Egorov.iUnionNotConvergentSeq, not_exists, Set.mem_iUnion,
     Set.mem_inter_iff, not_and, exists_and_left] at hx
   obtain ⟨hxs, hx⟩ := hx
+  -- ⊢ dist (g x) (f n x) < δ
   specialize hx hxs N
+  -- ⊢ dist (g x) (f n x) < δ
   rw [Egorov.mem_notConvergentSeq_iff] at hx
+  -- ⊢ dist (g x) (f n x) < δ
   push_neg at hx
+  -- ⊢ dist (g x) (f n x) < δ
   rw [dist_comm]
+  -- ⊢ dist (f n x) (g x) < δ
   exact lt_of_le_of_lt (hx n hn) hN
+  -- 🎉 no goals
 #align measure_theory.egorov.tendsto_uniformly_on_diff_Union_not_convergent_seq MeasureTheory.Egorov.tendstoUniformlyOn_diff_iUnionNotConvergentSeq
 
 end Egorov
@@ -217,7 +251,9 @@ theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ] (hf : ∀ n, Stro
   have ⟨t, _, ht, htendsto⟩ := tendstoUniformlyOn_of_ae_tendsto hf hg MeasurableSet.univ
     (measure_ne_top μ Set.univ) (by filter_upwards [hfg] with _ htendsto _ using htendsto) hε
   refine' ⟨_, ht, _⟩
+  -- ⊢ ↑↑μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop tᶜ
   rwa [Set.compl_eq_univ_diff]
+  -- 🎉 no goals
 #align measure_theory.tendsto_uniformly_on_of_ae_tendsto' MeasureTheory.tendstoUniformlyOn_of_ae_tendsto'
 
 end MeasureTheory

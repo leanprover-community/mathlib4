@@ -62,7 +62,13 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v} where
           map_add' := fun g g' => add_comp _ _ _ _ _ _ }
       naturality := fun X X' g => AddCommGroupCat.ext fun x => Category.assoc _ _ _ }
   map_id _ := by ext; dsimp; simp
+                 -- ⊢ ↑(NatTrans.app ({ obj := fun Y => preadditiveYonedaObj Y ⋙ forget₂ (ModuleCa …
+                      -- ⊢ x✝ ≫ 𝟙 x✝² = x✝
+                             -- 🎉 no goals
   map_comp f g := by ext; dsimp; simp
+                     -- ⊢ ↑(NatTrans.app ({ obj := fun Y => preadditiveYonedaObj Y ⋙ forget₂ (ModuleCa …
+                          -- ⊢ x✝ ≫ f ≫ g = (x✝ ≫ f) ≫ g
+                                 -- 🎉 no goals
 #align category_theory.preadditive_yoneda CategoryTheory.preadditiveYoneda
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
@@ -92,7 +98,13 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
       naturality := fun Y Y' g =>
         AddCommGroupCat.ext fun x => Eq.symm <| Category.assoc _ _ _ }
   map_id _ := by ext; dsimp; simp
+                 -- ⊢ ↑(NatTrans.app ({ obj := fun X => preadditiveCoyonedaObj X ⋙ forget₂ (Module …
+                      -- ⊢ 𝟙 x✝².unop ≫ x✝ = x✝
+                             -- 🎉 no goals
   map_comp f g := by ext; dsimp; simp
+                     -- ⊢ ↑(NatTrans.app ({ obj := fun X => preadditiveCoyonedaObj X ⋙ forget₂ (Module …
+                          -- ⊢ (g.unop ≫ f.unop) ≫ x✝ = g.unop ≫ f.unop ≫ x✝
+                                 -- 🎉 no goals
 #align category_theory.preadditive_coyoneda CategoryTheory.preadditiveCoyoneda
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where

@@ -74,6 +74,7 @@ theorem measurable_of_re_im (hre : Measurable fun x => IsROrC.re (f x))
   convert Measurable.add (M := 𝕜) (IsROrC.measurable_ofReal.comp hre)
       ((IsROrC.measurable_ofReal.comp him).mul_const IsROrC.I)
   exact (IsROrC.re_add_im _).symm
+  -- 🎉 no goals
 #align measurable_of_re_im measurable_of_re_im
 
 theorem aemeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
@@ -81,6 +82,7 @@ theorem aemeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
   convert AEMeasurable.add (M := 𝕜) (IsROrC.measurable_ofReal.comp_aemeasurable hre)
       ((IsROrC.measurable_ofReal.comp_aemeasurable him).mul_const IsROrC.I)
   exact (IsROrC.re_add_im _).symm
+  -- 🎉 no goals
 #align ae_measurable_of_re_im aemeasurable_of_re_im
 
 end

@@ -59,15 +59,20 @@ theorem intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
 
 @[simp]
 theorem intersecting_singleton : ({a} : Set α).Intersecting ↔ a ≠ ⊥ := by simp [Intersecting]
+                                                                          -- 🎉 no goals
 #align set.intersecting_singleton Set.intersecting_singleton
 
 protected theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥)
     (h : ∀ b ∈ s, ¬Disjoint a b) : (insert a s).Intersecting := by
   rintro b (rfl | hb) c (rfl | hc)
   · rwa [disjoint_self]
+    -- 🎉 no goals
   · exact h _ hc
+    -- 🎉 no goals
   · exact fun H => h _ hb H.symm
+    -- 🎉 no goals
   · exact hs hb hc
+    -- 🎉 no goals
 #align set.intersecting.insert Set.Intersecting.insert
 
 theorem intersecting_insert :
@@ -81,11 +86,17 @@ theorem intersecting_insert :
 theorem intersecting_iff_pairwise_not_disjoint :
     s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} := by
   refine' ⟨fun h => ⟨fun a ha b hb _ => h ha hb, _⟩, fun h a ha b hb hab => _⟩
+  -- ⊢ s ≠ {⊥}
   · rintro rfl
+    -- ⊢ False
     exact intersecting_singleton.1 h rfl
+    -- 🎉 no goals
   have := h.1.eq ha hb (Classical.not_not.2 hab)
+  -- ⊢ False
   rw [this, disjoint_self] at hab
+  -- ⊢ False
   rw [hab] at hb
+  -- ⊢ False
   exact
     h.2
       (eq_singleton_iff_unique_mem.2
@@ -102,9 +113,13 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
     subsingleton_of_subsingleton.intersecting.trans
       ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem _, _⟩
   · obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
+    -- ⊢ ⊥ ∈ s
     rwa [Subsingleton.elim ⊥ a]
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ ∅ ≠ {⊥}
     exact (Set.singleton_nonempty _).ne_empty.symm
+    -- 🎉 no goals
 #align set.intersecting_iff_eq_empty_of_subsingleton Set.intersecting_iff_eq_empty_of_subsingleton
 
 /-- Maximal intersecting families are upper sets. -/
@@ -155,9 +170,13 @@ theorem Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by
   rw [Finset.disjoint_left]
+  -- ⊢ ∀ ⦃a : α⦄, a ∈ s → ¬a ∈ map { toFun := compl, inj' := (_ : Function.Injectiv …
   rintro x hx hxc
+  -- ⊢ False
   obtain ⟨x, hx', rfl⟩ := mem_map.mp hxc
+  -- ⊢ False
   exact hs.not_compl_mem hx' hx
+  -- 🎉 no goals
 #align set.intersecting.disjoint_map_compl Set.Intersecting.disjoint_map_compl
 
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
@@ -197,17 +216,29 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
 theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
     ∃ t, s ⊆ t ∧ 2 * t.card = Fintype.card α ∧ (t : Set α).Intersecting := by
   have := hs.card_le
+  -- ⊢ ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   rw [mul_comm, ← Nat.le_div_iff_mul_le' two_pos] at this
+  -- ⊢ ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   revert hs
+  -- ⊢ Intersecting ↑s → ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   refine' s.strongDownwardInductionOn _ this
+  -- ⊢ ∀ (t₁ : Finset α), (∀ {t₂ : Finset α}, card t₂ ≤ Fintype.card α / 2 → t₁ ⊂ t …
   rintro s ih _hcard hs
+  -- ⊢ ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
+  -- ⊢ ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
+    -- 🎉 no goals
   push_neg at h
+  -- ⊢ ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   obtain ⟨t, ht, hst⟩ := h
+  -- ⊢ ∃ t, s ⊆ t ∧ 2 * card t = Fintype.card α ∧ Intersecting ↑t
   refine' (ih _ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
+  -- ⊢ card t ≤ Fintype.card α / 2
   rw [Nat.le_div_iff_mul_le' two_pos, mul_comm]
+  -- ⊢ 2 * card t ≤ Fintype.card α
   exact ht.card_le
+  -- 🎉 no goals
 #align set.intersecting.exists_card_eq Set.Intersecting.exists_card_eq
 
 end Set

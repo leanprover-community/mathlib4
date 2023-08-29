@@ -53,20 +53,31 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     `uⱼ` and since `Iⱼ` is a fundamental domain for this action, we must have
     `μ (s ∩ Iⱼ) = nⱼ * μ s = (μ Iⱼ) * μ s`. We thus have `μ s → 1` and thus `μ s = 1`. -/
   set μ := (volume : Measure <| AddCircle T)
+  -- ⊢ s =ᶠ[ae μ] ∅ ∨ s =ᶠ[ae μ] univ
   set n : ι → ℕ := addOrderOf ∘ u
+  -- ⊢ s =ᶠ[ae μ] ∅ ∨ s =ᶠ[ae μ] univ
   have hT₀ : 0 < T := hT.out
+  -- ⊢ s =ᶠ[ae μ] ∅ ∨ s =ᶠ[ae μ] univ
   have hT₁ : ENNReal.ofReal T ≠ 0 := by simpa
+  -- ⊢ s =ᶠ[ae μ] ∅ ∨ s =ᶠ[ae μ] univ
   rw [ae_eq_empty, ae_eq_univ_iff_measure_eq hs, AddCircle.measure_univ]
+  -- ⊢ ↑↑μ s = 0 ∨ ↑↑μ s = ENNReal.ofReal T
   cases' eq_or_ne (μ s) 0 with h h; · exact Or.inl h
+  -- ⊢ ↑↑μ s = 0 ∨ ↑↑μ s = ENNReal.ofReal T
+                                      -- 🎉 no goals
   right
+  -- ⊢ ↑↑μ s = ENNReal.ofReal T
   obtain ⟨d, -, hd⟩ : ∃ d, d ∈ s ∧ ∀ {ι'} {l : Filter ι'} (w : ι' → AddCircle T) (δ : ι' → ℝ),
     Tendsto δ l (𝓝[>] 0) → (∀ᶠ j in l, d ∈ closedBall (w j) (1 * δ j)) →
       Tendsto (fun j => μ (s ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) :=
     exists_mem_of_measure_ne_zero_of_ae h
       (IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div μ s 1)
   let I : ι → Set (AddCircle T) := fun j => closedBall d (T / (2 * ↑(n j)))
+  -- ⊢ ↑↑μ s = ENNReal.ofReal T
   replace hd : Tendsto (fun j => μ (s ∩ I j) / μ (I j)) l (𝓝 1)
+  -- ⊢ Tendsto (fun j => ↑↑μ (s ∩ I j) / ↑↑μ (I j)) l (𝓝 1)
   · let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
+    -- ⊢ Tendsto (fun j => ↑↑μ (s ∩ I j) / ↑↑μ (I j)) l (𝓝 1)
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_atTop 0).mono fun j hj => div_pos hT₀ <| by positivity
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
@@ -80,15 +91,22 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
       simp only [comp_apply, one_mul, mem_closedBall, dist_self]
       apply hj.le
     exact hd _ δ hδ₁ hw
+    -- 🎉 no goals
   suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by
     replace hd := hd.congr' this
     rwa [tendsto_const_nhds_iff, ENNReal.div_eq_one_iff hT₁ ENNReal.ofReal_ne_top] at hd
   refine' (hu₂.eventually_gt_atTop 0).mono fun j hj => _
+  -- ⊢ ↑↑μ (s ∩ I j) / ↑↑μ (I j) = ↑↑μ s / ENNReal.ofReal T
   have : addOrderOf (u j) = n j := rfl
+  -- ⊢ ↑↑μ (s ∩ I j) / ↑↑μ (I j) = ↑↑μ s / ENNReal.ofReal T
   have huj : IsOfFinAddOrder (u j) := addOrderOf_pos_iff.mp hj
+  -- ⊢ ↑↑μ (s ∩ I j) / ↑↑μ (I j) = ↑↑μ s / ENNReal.ofReal T
   have huj' : 1 ≤ (↑(n j) : ℝ) := by norm_cast
+  -- ⊢ ↑↑μ (s ∩ I j) / ↑↑μ (I j) = ↑↑μ s / ENNReal.ofReal T
   have hI₀ : μ (I j) ≠ 0 := (measure_closedBall_pos _ d <| by positivity).ne.symm
+  -- ⊢ ↑↑μ (s ∩ I j) / ↑↑μ (I j) = ↑↑μ s / ENNReal.ofReal T
   have hI₁ : μ (I j) ≠ ⊤ := measure_ne_top _ _
+  -- ⊢ ↑↑μ (s ∩ I j) / ↑↑μ (I j) = ↑↑μ s / ENNReal.ofReal T
   have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T := by
     rw [volume_closedBall, mul_div, mul_div_mul_left T _ two_ne_zero,
       min_eq_right (div_le_self hT₀.le huj'), mul_comm, ← nsmul_eq_mul, ← ENNReal.ofReal_nsmul,
@@ -103,7 +121,9 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
   { measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn) with
     ae_empty_or_univ := fun s hs hs' => by
       let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
+      -- ⊢ s =ᶠ[ae volume] ∅ ∨ s =ᶠ[ae volume] univ
       replace hn : 1 < n.natAbs := by rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn
+      -- ⊢ s =ᶠ[ae volume] ∅ ∨ s =ᶠ[ae volume] univ
       have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j => by
         convert addOrderOf_div_of_gcd_eq_one (p := T) (m := 1)
           (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
@@ -116,32 +136,44 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact Nat.tendsto_pow_atTop_atTop_of_one_lt hn
       exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂ }
+      -- 🎉 no goals
 #align add_circle.ergodic_zsmul AddCircle.ergodic_zsmul
 
 theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n • y :=
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
+                    -- 🎉 no goals
 #align add_circle.ergodic_nsmul AddCircle.ergodic_nsmul
 
 theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
   set f : AddCircle T → AddCircle T := fun y => n • y + x
+  -- ⊢ Ergodic f
   let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft (DivisibleBy.div x <| n - 1)
+  -- ⊢ Ergodic f
   have he : MeasurePreserving e volume volume :=
     measurePreserving_add_left volume (DivisibleBy.div x <| n - 1)
   suffices e ∘ f ∘ e.symm = fun y => n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
   replace h : n - 1 ≠ 0
+  -- ⊢ n - 1 ≠ 0
   · rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
+    -- ⊢ n - 1 ≠ 0
+                         -- ⊢ n ≠ 1
+                                           -- 🎉 no goals
   have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
     conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]
   ext y
+  -- ⊢ (↑e ∘ f ∘ ↑(MeasurableEquiv.symm e)) y = n • y
   simp only [hnx, MeasurableEquiv.coe_addLeft, MeasurableEquiv.symm_addLeft, comp_apply, smul_add,
     zsmul_neg', neg_smul, neg_add_rev]
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align add_circle.ergodic_zsmul_add AddCircle.ergodic_zsmul_add
 
 theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y => n • y + x :=
   ergodic_zsmul_add x (by simp [h] : 1 < |(n : ℤ)|)
+                          -- 🎉 no goals
 #align add_circle.ergodic_nsmul_add AddCircle.ergodic_nsmul_add
 
 end AddCircle

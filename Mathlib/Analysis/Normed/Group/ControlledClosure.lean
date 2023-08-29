@@ -34,16 +34,22 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     (hC : 0 < C) (hε : 0 < ε) (hyp : f.SurjectiveOnWith K C) :
     f.SurjectiveOnWith K.topologicalClosure (C + ε) := by
   rintro (h : H) (h_in : h ∈ K.topologicalClosure)
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   -- We first get rid of the easy case where `h = 0`.
   by_cases hyp_h : h = 0
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   · rw [hyp_h]
+    -- ⊢ ∃ g, ↑f g = 0 ∧ ‖g‖ ≤ (C + ε) * ‖0‖
     use 0
+    -- ⊢ ↑f 0 = 0 ∧ ‖0‖ ≤ (C + ε) * ‖0‖
     simp
+    -- 🎉 no goals
   /- The desired preimage will be constructed as the sum of a series. Convergence of
     the series will be guaranteed by completeness of `G`. We first write `h` as the sum
     of a sequence `v` of elements of `K` which starts close to `h` and then quickly goes to zero.
     The sequence `b` below quantifies this. -/
   set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   have b_pos : ∀ i, 0 < b i := by
     intro i
     field_simp [hC]
@@ -56,10 +62,13 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   /- The controlled surjectivity assumption on `f` allows to build preimages `u n` for all
     elements `v n` of the `v` sequence. -/
   have : ∀ n, ∃ m' : G, f m' = v n ∧ ‖m'‖ ≤ C * ‖v n‖ := fun n : ℕ => hyp (v n) (v_in n)
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   choose u hu hnorm_u using this
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   /- The desired series `s` is then obtained by summing `u`. We then check our choice of
     `b` ensures `s` is Cauchy. -/
   set s : ℕ → G := fun n => ∑ k in range (n + 1), u k
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   have : CauchySeq s := by
     apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by norm_num) one_half_lt_one
     rintro n (hn : n ≥ 1)
@@ -70,7 +79,9 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
+  -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ (C + ε) * ‖h‖
   refine' ⟨g, _, _⟩
+  -- ⊢ ↑f g = h
   · -- We indeed get a preimage. First note:
     have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n
@@ -79,11 +90,16 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       definition of `g` while the right-hand-side converges to `h` by construction of `v` so
       `g` is indeed a preimage of `h`. -/
     rw [← this] at lim_v
+    -- ⊢ ↑f g = h
     exact tendsto_nhds_unique ((f.continuous.tendsto g).comp hg) lim_v
+    -- 🎉 no goals
   · -- Then we need to estimate the norm of `g`, using our careful choice of `b`.
     suffices : ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖
+    -- ⊢ ‖g‖ ≤ (C + ε) * ‖h‖
     exact le_of_tendsto' (continuous_norm.continuousAt.tendsto.comp hg) this
+    -- ⊢ ∀ (n : ℕ), ‖s n‖ ≤ (C + ε) * ‖h‖
     intro n
+    -- ⊢ ‖s n‖ ≤ (C + ε) * ‖h‖
     have hnorm₀ : ‖u 0‖ ≤ C * b 0 + C * ‖h‖ := by
       have :=
         calc
@@ -123,9 +139,15 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     (hC : 0 < C) (hε : 0 < ε) (hyp : ∀ k, ∃ g, f g = j k ∧ ‖g‖ ≤ C * ‖k‖) :
     f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
   replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖
+  -- ⊢ ∀ (h : H), h ∈ NormedAddGroupHom.range j → ∃ g, ↑f g = h ∧ ‖g‖ ≤ C * ‖h‖
   · intro h h_in
+    -- ⊢ ∃ g, ↑f g = h ∧ ‖g‖ ≤ C * ‖h‖
     rcases(j.mem_range _).mp h_in with ⟨k, rfl⟩
+    -- ⊢ ∃ g, ↑f g = ↑j k ∧ ‖g‖ ≤ C * ‖↑j k‖
     rw [hj]
+    -- ⊢ ∃ g, ↑f g = ↑j k ∧ ‖g‖ ≤ C * ‖k‖
     exact hyp k
+    -- 🎉 no goals
   exact controlled_closure_of_complete hC hε hyp
+  -- 🎉 no goals
 #align controlled_closure_range_of_complete controlled_closure_range_of_complete

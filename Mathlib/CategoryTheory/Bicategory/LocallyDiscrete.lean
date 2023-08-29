@@ -83,18 +83,27 @@ instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
   associator f g h :=
     eqToIso <| by
       apply Discrete.ext
+      -- ⊢ ((f ≫ g) ≫ h).as = (f ≫ g ≫ h).as
       change (f.as ≫ g.as) ≫ h.as = f.as ≫ (g.as ≫ h.as)
+      -- ⊢ (f.as ≫ g.as) ≫ h.as = f.as ≫ g.as ≫ h.as
       rw [Category.assoc]
+      -- 🎉 no goals
   leftUnitor f :=
     eqToIso <| by
       apply Discrete.ext
+      -- ⊢ (𝟙 a✝ ≫ f).as = f.as
       change 𝟙 _ ≫ _ = _
+      -- ⊢ 𝟙 a✝ ≫ f.as = f.as
       rw [Category.id_comp]
+      -- 🎉 no goals
   rightUnitor f :=
     eqToIso <| by
       apply Discrete.ext
+      -- ⊢ (f ≫ 𝟙 b✝).as = f.as
       change _ ≫ 𝟙 _ = _
+      -- ⊢ f.as ≫ 𝟙 b✝ = f.as
       rw [Category.comp_id]
+      -- 🎉 no goals
 #align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
 /-- A locally discrete bicategory is strict. -/
@@ -102,16 +111,25 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C)
     where
   id_comp := by
     intros
+    -- ⊢ 𝟙 a✝ ≫ f✝ = f✝
     apply Discrete.ext
+    -- ⊢ (𝟙 a✝ ≫ f✝).as = f✝.as
     apply Category.id_comp
+    -- 🎉 no goals
   comp_id := by
     intros
+    -- ⊢ f✝ ≫ 𝟙 b✝ = f✝
     apply Discrete.ext
+    -- ⊢ (f✝ ≫ 𝟙 b✝).as = f✝.as
     apply Category.comp_id
+    -- 🎉 no goals
   assoc := by
     intros
+    -- ⊢ (f✝ ≫ g✝) ≫ h✝ = f✝ ≫ g✝ ≫ h✝
     apply Discrete.ext
+    -- ⊢ ((f✝ ≫ g✝) ≫ h✝).as = (f✝ ≫ g✝ ≫ h✝).as
     apply Category.assoc
+    -- 🎉 no goals
 #align category_theory.locally_discrete_bicategory.strict CategoryTheory.locallyDiscreteBicategory.strict
 
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]

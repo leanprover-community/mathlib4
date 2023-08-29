@@ -35,6 +35,26 @@ theorem down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
 
 instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
   refine' down_injective.divisionSemiring down .. <;> intros <;> rfl
+                                                      -- ⊢ 0.down = 0
+                                                      -- ⊢ 1.down = 1
+                                                      -- ⊢ (x✝ + y✝).down = x✝.down + y✝.down
+                                                      -- ⊢ (x✝ * y✝).down = x✝.down * y✝.down
+                                                      -- ⊢ x✝⁻¹.down = x✝.down⁻¹
+                                                      -- ⊢ (x✝ / y✝).down = x✝.down / y✝.down
+                                                      -- ⊢ (n✝ • x✝).down = n✝ • x✝.down
+                                                      -- ⊢ (x✝ ^ n✝).down = x✝.down ^ n✝
+                                                      -- ⊢ (x✝ ^ n✝).down = x✝.down ^ n✝
+                                                      -- ⊢ (↑n✝).down = ↑n✝
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
 #align ulift.division_semiring ULift.divisionSemiring
 
 instance semifield [Semifield α] : Semifield (ULift α) :=
@@ -43,6 +63,38 @@ instance semifield [Semifield α] : Semifield (ULift α) :=
 
 instance divisionRing [DivisionRing α] : DivisionRing (ULift α) := by
   refine' down_injective.divisionRing down .. <;> intros <;> rfl
+                                                  -- ⊢ 0.down = 0
+                                                  -- ⊢ 1.down = 1
+                                                  -- ⊢ (x✝ + y✝).down = x✝.down + y✝.down
+                                                  -- ⊢ (x✝ * y✝).down = x✝.down * y✝.down
+                                                  -- ⊢ (-x✝).down = -x✝.down
+                                                  -- ⊢ (x✝ - y✝).down = x✝.down - y✝.down
+                                                  -- ⊢ x✝⁻¹.down = x✝.down⁻¹
+                                                  -- ⊢ (x✝ / y✝).down = x✝.down / y✝.down
+                                                  -- ⊢ (n✝ • x✝).down = n✝ • x✝.down
+                                                  -- ⊢ (n✝ • x✝).down = n✝ • x✝.down
+                                                  -- ⊢ (n✝ • x✝).down = n✝ • x✝.down
+                                                  -- ⊢ (x✝ ^ n✝).down = x✝.down ^ n✝
+                                                  -- ⊢ (x✝ ^ n✝).down = x✝.down ^ n✝
+                                                  -- ⊢ (↑n✝).down = ↑n✝
+                                                  -- ⊢ (↑n✝).down = ↑n✝
+                                                  -- ⊢ (↑n✝).down = ↑n✝
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
 #align ulift.division_ring ULift.divisionRing
 
 instance field [Field α] : Field (ULift α) :=

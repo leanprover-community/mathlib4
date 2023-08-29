@@ -47,10 +47,14 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
     generateFrom_prod.symm isPiSystem_prod _ _ _ _ ht
   ·-- case `t = ∅`
     simp only [preimage_empty, measure_empty, measurable_const]
+    -- 🎉 no goals
   · -- case of a box: `t = t₁ ×ˢ t₂` for measurable sets `t₁` and `t₂`
     intro t' ht'
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (Prod.mk a ⁻¹' t')
     simp only [Set.mem_image2, Set.mem_setOf_eq, exists_and_left] at ht'
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (Prod.mk a ⁻¹' t')
     obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht'
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (Prod.mk a ⁻¹' t₁ ×ˢ t₂)
     classical
     simp_rw [mk_preimage_prod_right_eq_if]
     have h_eq_ite : (fun a => κ a (ite (a ∈ t₁) t₂ ∅)) = fun a => ite (a ∈ t₁) (κ a t₂) 0 := by
@@ -61,11 +65,13 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
     exact Measurable.ite ht₁ (kernel.measurable_coe κ ht₂) measurable_const
   · -- we assume that the result is true for `t` and we prove it for `tᶜ`
     intro t' ht' h_meas
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (Prod.mk a ⁻¹' t'ᶜ)
     have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' t'ᶜ = Set.univ \ Prod.mk a ⁻¹' t' := by
       intro a
       ext1 b
       simp only [mem_compl_iff, mem_preimage, mem_diff, mem_univ, true_and_iff]
     simp_rw [h_eq_sdiff]
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (univ \ Prod.mk a ⁻¹' t')
     have :
       (fun a => κ a (Set.univ \ Prod.mk a ⁻¹' t')) = fun a =>
         κ a Set.univ - κ a (Prod.mk a ⁻¹' t') := by
@@ -74,15 +80,19 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
       · exact (@measurable_prod_mk_left α β _ _ a) ht'
       · exact measure_ne_top _ _
     rw [this]
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) univ - ↑↑(↑κ a) (Prod.mk a ⁻¹' t')
     exact Measurable.sub (kernel.measurable_coe κ MeasurableSet.univ) h_meas
+    -- 🎉 no goals
   · -- we assume that the result is true for a family of disjoint sets and prove it for their union
     intro f h_disj hf_meas hf
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (Prod.mk a ⁻¹' ⋃ (i : ℕ), f i)
     have h_Union :
       (fun a => κ a (Prod.mk a ⁻¹' ⋃ i, f i)) = fun a => κ a (⋃ i, Prod.mk a ⁻¹' f i) := by
       ext1 a
       congr with b
       simp only [mem_iUnion, mem_preimage]
     rw [h_Union]
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (⋃ (i : ℕ), Prod.mk a ⁻¹' f i)
     have h_tsum :
       (fun a => κ a (⋃ i, Prod.mk a ⁻¹' f i)) = fun a => ∑' i, κ a (Prod.mk a ⁻¹' f i) := by
       ext1 a
@@ -94,18 +104,24 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
           Set.mem_empty_iff_false] using h_disj hij habi habj
       · exact fun i => (@measurable_prod_mk_left α β _ _ a) (hf_meas i)
     rw [h_tsum]
+    -- ⊢ Measurable fun a => ∑' (i : ℕ), ↑↑(↑κ a) (Prod.mk a ⁻¹' f i)
     exact Measurable.ennreal_tsum hf
+    -- 🎉 no goals
 #align probability_theory.kernel.measurable_kernel_prod_mk_left_of_finite ProbabilityTheory.kernel.measurable_kernel_prod_mk_left_of_finite
 
 theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   rw [← kernel.kernel_sum_seq κ]
+  -- ⊢ Measurable fun a => ↑↑(↑(kernel.sum (seq κ)) a) (Prod.mk a ⁻¹' t)
   have : ∀ a, kernel.sum (kernel.seq κ) a (Prod.mk a ⁻¹' t) =
       ∑' n, kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
     kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
   simp_rw [this]
+  -- ⊢ Measurable fun a => ∑' (n : ℕ), ↑↑(↑(seq κ n) a) (Prod.mk a ⁻¹' t)
   refine' Measurable.ennreal_tsum fun n => _
+  -- ⊢ Measurable fun a => ↑↑(↑(seq κ n) a) (Prod.mk a ⁻¹' t)
   exact measurable_kernel_prod_mk_left_of_finite ht inferInstance
+  -- 🎉 no goals
 #align probability_theory.kernel.measurable_kernel_prod_mk_left ProbabilityTheory.kernel.measurable_kernel_prod_mk_left
 
 theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
@@ -113,8 +129,11 @@ theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)
   have : ∀ b, Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := by
     intro b; rfl
   simp_rw [this]
+  -- ⊢ Measurable fun b => ↑↑(↑η (a, b)) {c | ((a, b), c) ∈ {p | (p.fst.snd, p.snd) …
   refine' (measurable_kernel_prod_mk_left _).comp measurable_prod_mk_left
+  -- ⊢ MeasurableSet {p | (p.fst.snd, p.snd) ∈ s}
   exact (measurable_fst.snd.prod_mk measurable_snd) hs
+  -- 🎉 no goals
 #align probability_theory.kernel.measurable_kernel_prod_mk_left' ProbabilityTheory.kernel.measurable_kernel_prod_mk_left'
 
 theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)}
@@ -141,6 +160,7 @@ theorem kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : M
     ext
     erw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]
   exact Measurable.const_mul (measurable_kernel_prod_mk_left ht) c
+  -- 🎉 no goals
 #align probability_theory.kernel.measurable_lintegral_indicator_const ProbabilityTheory.kernel.measurable_lintegral_indicator_const
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is measurable when seen as a
@@ -149,26 +169,36 @@ measurable. -/
 theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun a => ∫⁻ b, f a b ∂κ a := by
   let F : ℕ → SimpleFunc (α × β) ℝ≥0∞ := SimpleFunc.eapprox (uncurry f)
+  -- ⊢ Measurable fun a => ∫⁻ (b : β), f a b ∂↑κ a
   have h : ∀ a, ⨆ n, F n a = uncurry f a := SimpleFunc.iSup_eapprox_apply (uncurry f) hf
+  -- ⊢ Measurable fun a => ∫⁻ (b : β), f a b ∂↑κ a
   simp only [Prod.forall, uncurry_apply_pair] at h
+  -- ⊢ Measurable fun a => ∫⁻ (b : β), f a b ∂↑κ a
   simp_rw [← h]
+  -- ⊢ Measurable fun a => ∫⁻ (b : β), ⨆ (n : ℕ), ↑(SimpleFunc.eapprox (uncurry f)  …
   have : ∀ a, (∫⁻ b, ⨆ n, F n (a, b) ∂κ a) = ⨆ n, ∫⁻ b, F n (a, b) ∂κ a := by
     intro a
     rw [lintegral_iSup]
     · exact fun n => (F n).measurable.comp measurable_prod_mk_left
     · exact fun i j hij b => SimpleFunc.monotone_eapprox (uncurry f) hij _
   simp_rw [this]
+  -- ⊢ Measurable fun a => ⨆ (n : ℕ), ∫⁻ (b : β), ↑(SimpleFunc.eapprox (uncurry f)  …
   -- Porting note: trouble finding the induction motive
   -- refine' measurable_iSup fun n => SimpleFunc.induction _ _ (F n)
   refine' measurable_iSup fun n => _
+  -- ⊢ Measurable fun a => ∫⁻ (b : β), ↑(SimpleFunc.eapprox (uncurry f) n) (a, b) ∂ …
   refine' SimpleFunc.induction
     (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) _ _ (F n)
   · intro c t ht
+    -- ⊢ Measurable fun a => ∫⁻ (b : β), ↑(SimpleFunc.piecewise t ht (SimpleFunc.cons …
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
     exact kernel.measurable_lintegral_indicator_const (κ := κ) ht c
+    -- 🎉 no goals
   · intro g₁ g₂ _ hm₁ hm₂
+    -- ⊢ Measurable fun a => ∫⁻ (b : β), ↑(g₁ + g₂) (a, b) ∂↑κ a
     simp only [SimpleFunc.coe_add, Pi.add_apply]
+    -- ⊢ Measurable fun a => ∫⁻ (b : β), ↑g₁ (a, b) + ↑g₂ (a, b) ∂↑κ a
     have h_add :
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
@@ -178,15 +208,19 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
       erw [lintegral_add_left (g₁.measurable.comp measurable_prod_mk_left)]
       simp_rw [Function.comp_apply]
     rw [h_add]
+    -- ⊢ Measurable ((fun a => ∫⁻ (b : β), ↑g₁ (a, b) ∂↑κ a) + fun a => ∫⁻ (b : β), ↑ …
     exact Measurable.add hm₁ hm₂
+    -- 🎉 no goals
 #align measurable.lintegral_kernel_prod_right Measurable.lintegral_kernel_prod_right
 
 theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f (a, b) ∂κ a := by
   refine' Measurable.lintegral_kernel_prod_right _
+  -- ⊢ Measurable (uncurry fun a b => f (a, b))
   have : (uncurry fun (a : α) (b : β) => f (a, b)) = f := by
     ext x; rw [← @Prod.mk.eta _ _ x, uncurry_apply_pair]
   rwa [this]
+  -- 🎉 no goals
 #align measurable.lintegral_kernel_prod_right' Measurable.lintegral_kernel_prod_right'
 
 theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥0∞} (hf : Measurable f) :
@@ -199,12 +233,15 @@ theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥
   refine' (Measurable.lintegral_kernel_prod_right' (κ := η)
     (f := (fun u ↦ f (u.fst.snd, u.snd))) _).comp measurable_prod_mk_left
   exact hf.comp (measurable_fst.snd.prod_mk measurable_snd)
+  -- 🎉 no goals
 #align measurable.lintegral_kernel_prod_right'' Measurable.lintegral_kernel_prod_right''
 
 theorem _root_.Measurable.set_lintegral_kernel_prod_right {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => ∫⁻ b in s, f a b ∂κ a := by
   simp_rw [← lintegral_restrict κ hs]; exact hf.lintegral_kernel_prod_right
+  -- ⊢ Measurable fun a => ∫⁻ (b : β), f a b ∂↑(kernel.restrict κ hs) a
+                                       -- 🎉 no goals
 #align measurable.set_lintegral_kernel_prod_right Measurable.set_lintegral_kernel_prod_right
 
 theorem _root_.Measurable.lintegral_kernel_prod_left' {f : β × α → ℝ≥0∞} (hf : Measurable f) :
@@ -221,6 +258,8 @@ theorem _root_.Measurable.set_lintegral_kernel_prod_left {f : β → α → ℝ�
     (hf : Measurable (uncurry f)) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun b => ∫⁻ a in s, f a b ∂κ b := by
   simp_rw [← lintegral_restrict κ hs]; exact hf.lintegral_kernel_prod_left
+  -- ⊢ Measurable fun b => ∫⁻ (a : β), f a b ∂↑(kernel.restrict κ hs) b
+                                       -- 🎉 no goals
 #align measurable.set_lintegral_kernel_prod_left Measurable.set_lintegral_kernel_prod_left
 
 theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) :
@@ -232,7 +271,9 @@ theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Mea
     (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
   -- Porting note: was term mode proof (`Function.comp` reducibility)
   refine Measurable.set_lintegral_kernel_prod_right ?_ hs
+  -- ⊢ Measurable (uncurry fun a b => f b)
   convert (hf.comp measurable_snd)
+  -- 🎉 no goals
 #align measurable.set_lintegral_kernel Measurable.set_lintegral_kernel
 
 end Lintegral
@@ -242,7 +283,9 @@ variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKerne
 theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and_iff]
+  -- ⊢ MeasurableSet {x | HasFiniteIntegral (f x)}
   exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.ennnorm) measurable_const
+  -- 🎉 no goals
 #align probability_theory.measurable_set_kernel_integrable ProbabilityTheory.measurableSet_kernel_integrable
 
 end ProbabilityTheory
@@ -305,7 +348,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
 theorem StronglyMeasurable.integral_kernel_prod_right' ⦃f : α × β → E⦄ (hf : StronglyMeasurable f) :
     StronglyMeasurable fun x => ∫ y, f (x, y) ∂κ x := by
   rw [← uncurry_curry f] at hf
+  -- ⊢ StronglyMeasurable fun x => ∫ (y : β), f (x, y) ∂↑κ x
   exact hf.integral_kernel_prod_right
+  -- 🎉 no goals
 #align measure_theory.strongly_measurable.integral_kernel_prod_right' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right'
 
 theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
@@ -314,12 +359,14 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
     StronglyMeasurable
       ((fun x => ∫ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
   refine' StronglyMeasurable.comp_measurable _ measurable_prod_mk_left
+  -- ⊢ StronglyMeasurable fun x => ∫ (y : γ), (fun u => f (u.fst.snd, u.snd)) (x, y …
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' _
   -- exact hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd)
   have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
     (hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd))
   simpa using this
+  -- 🎉 no goals
 #align measure_theory.strongly_measurable.integral_kernel_prod_right'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right''
 
 theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
@@ -338,12 +385,14 @@ theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf 
     StronglyMeasurable
       ((fun y => ∫ x, (fun u : γ × α × β => f (u.1, u.2.2)) (x, y) ∂η y) ∘ fun x => (a, x))
   refine' StronglyMeasurable.comp_measurable _ measurable_prod_mk_left
+  -- ⊢ StronglyMeasurable fun y => ∫ (x : γ), (fun u => f (u.fst, u.snd.snd)) (x, y …
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' _
   -- exact hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd)
   have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
     (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))
   simpa using this
+  -- 🎉 no goals
 #align measure_theory.strongly_measurable.integral_kernel_prod_left'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left''
 
 end MeasureTheory

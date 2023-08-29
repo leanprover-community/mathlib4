@@ -59,53 +59,80 @@ theorem bracket_tmul (s t : A) (x y : L) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = 
 
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
+  -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) x) x = 0
   refine' x.induction_on _ _ _
   · simp only [LinearMap.map_zero, eq_self_iff_true, LinearMap.zero_apply]
+    -- 🎉 no goals
   · intro a l
+    -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a ⊗ₜ[R] l)) (a ⊗ₜ[R] l) = 0
     simp only [bracket'_tmul, TensorProduct.tmul_zero, eq_self_iff_true, lie_self]
+    -- 🎉 no goals
   · intro z₁ z₂ h₁ h₂
+    -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (z₁ + z₂)) (z₁ + z₂) = 0
     suffices bracket' R A L z₁ z₂ + bracket' R A L z₂ z₁ = 0 by
       rw [LinearMap.map_add, LinearMap.map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
         zero_add, add_zero, add_comm, this]
     refine' z₁.induction_on _ _ _
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
+      -- 🎉 no goals
     · intro a₁ l₁; refine' z₂.induction_on _ _ _
+      -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) z₂ + ↑(↑(LieAlge …
       · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
+        -- 🎉 no goals
       · intro a₂ l₂
+        -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (a₂ ⊗ₜ[R] l₂) +  …
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
           add_right_neg]
       · intro y₁ y₂ hy₁ hy₂
+        -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (y₁ + y₂) + ↑(↑( …
         simp only [hy₁, hy₂, add_add_add_comm, add_zero, LinearMap.add_apply, LinearMap.map_add]
+        -- 🎉 no goals
     · intro y₁ y₂ hy₁ hy₂
+      -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (y₁ + y₂)) z₂ + ↑(↑(LieAlgebra. …
       simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, LinearMap.map_add]
+      -- 🎉 no goals
 
 private theorem bracket_leibniz_lie (x y z : A ⊗[R] L) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   -- Porting note: replaced some `simp`s by `rw`s to avoid raising heartbeats
   simp only [bracket_def]
+  -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) x) (↑(↑(LieAlgebra.ExtendScalar …
   refine' x.induction_on _ _ _
   · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
+    -- 🎉 no goals
   · intro a₁ l₁
+    -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (↑(↑(LieAlgebra. …
     refine' y.induction_on _ _ _
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
+      -- 🎉 no goals
     · intro a₂ l₂
+      -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (↑(↑(LieAlgebra. …
       refine' z.induction_on _ _ _
       · rw [LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero,
           add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
+        -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (↑(↑(LieAlgebra. …
+                     -- ⊢ (a₁ * (a₂ * a₃)) ⊗ₜ[R] ⁅l₁, ⁅l₂, l₃⁆⁆ = (a₁ * a₂ * a₃) ⊗ₜ[R] ⁅⁅l₁, l₂⁆, l₃⁆  …
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
+        -- 🎉 no goals
       · intro u₁ u₂ h₁ h₂
+        -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (↑(↑(LieAlgebra. …
         rw [map_add, map_add, map_add, map_add, map_add, h₁, h₂, add_add_add_comm]
+        -- 🎉 no goals
     · intro u₁ u₂ h₁ h₂
+      -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (a₁ ⊗ₜ[R] l₁)) (↑(↑(LieAlgebra. …
       rw [map_add, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add, map_add,
         LinearMap.add_apply, h₁, h₂, add_add_add_comm]
   · intro u₁ u₂ h₁ h₂
+    -- ⊢ ↑(↑(LieAlgebra.ExtendScalars.bracket' R A L) (u₁ + u₂)) (↑(↑(LieAlgebra.Exte …
     rw [map_add, LinearMap.add_apply, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add,
       LinearMap.add_apply, h₁, h₂, add_add_add_comm]
 
 instance : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]
+                      -- 🎉 no goals
   lie_add x y z := by simp only [bracket_def, LinearMap.map_add]
+                      -- 🎉 no goals
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L
 

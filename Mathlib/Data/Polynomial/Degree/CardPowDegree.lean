@@ -45,26 +45,47 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
     nonneg' := fun p => by
       dsimp
+      -- ⊢ 0 ≤ if p = 0 then 0 else ↑(Fintype.card Fq) ^ natDegree p
       split_ifs
+      -- ⊢ 0 ≤ 0
       · rfl
+        -- 🎉 no goals
       exact pow_nonneg (Int.ofNat_zero_le _) _
+      -- 🎉 no goals
     eq_zero' := fun p =>
       ite_eq_left_iff.trans <|
         ⟨fun h => by
           contrapose! h
+          -- ⊢ p ≠ 0 ∧ ↑(Fintype.card Fq) ^ natDegree p ≠ 0
           exact ⟨h, (pow_pos _).ne'⟩, absurd⟩
+          -- 🎉 no goals
     add_le' := fun p q => by
       by_cases hp : p = 0; · simp [hp]
+      -- ⊢ MulHom.toFun { toFun := fun p => if p = 0 then 0 else ↑(Fintype.card Fq) ^ n …
+                             -- 🎉 no goals
       by_cases hq : q = 0; · simp [hq]
+      -- ⊢ MulHom.toFun { toFun := fun p => if p = 0 then 0 else ↑(Fintype.card Fq) ^ n …
+                             -- 🎉 no goals
       by_cases hpq : p + q = 0
+      -- ⊢ (fun p => if p = 0 then 0 else ↑(Fintype.card Fq) ^ natDegree p) (p * q) = ( …
+                             -- 🎉 no goals
+      -- ⊢ MulHom.toFun { toFun := fun p => if p = 0 then 0 else ↑(Fintype.card Fq) ^ n …
+      -- ⊢ (fun p => if p = 0 then 0 else ↑(Fintype.card Fq) ^ natDegree p) (p * q) = ( …
+                             -- 🎉 no goals
       · simp only [hpq, hp, hq, eq_self_iff_true, if_true, if_false]
+      -- ⊢ (fun p => if p = 0 then 0 else ↑(Fintype.card Fq) ^ natDegree p) (p * q) = ( …
+        -- ⊢ 0 ≤ ↑(Fintype.card Fq) ^ natDegree p + ↑(Fintype.card Fq) ^ natDegree q
         exact add_nonneg (pow_pos _).le (pow_pos _).le
+        -- 🎉 no goals
       simp only [hpq, hp, hq, if_false]
+      -- ⊢ ↑(Fintype.card Fq) ^ natDegree (p + q) ≤ ↑(Fintype.card Fq) ^ natDegree p +  …
       refine' le_trans (pow_le_pow (by linarith) (Polynomial.natDegree_add_le _ _)) _
+      -- ⊢ ↑(Fintype.card Fq) ^ max (natDegree p) (natDegree q) ≤ ↑(Fintype.card Fq) ^  …
       refine'
         le_trans (le_max_iff.mpr _)
           (max_le_add_of_nonneg (pow_nonneg (by linarith) _) (pow_nonneg (by linarith) _))
       exact (max_choice p.natDegree q.natDegree).imp (fun h => by rw [h]) fun h => by rw [h]
+      -- 🎉 no goals
     map_mul' := fun p q => by
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
@@ -94,15 +115,20 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
     pow_pos (Int.coe_nat_pos.mpr card_pos) n
   { map_lt_map_iff' := fun {p q} => by
       show cardPowDegree p < cardPowDegree q ↔ degree p < degree q
+      -- ⊢ ↑cardPowDegree p < ↑cardPowDegree q ↔ degree p < degree q
       simp only [cardPowDegree_apply]
+      -- ⊢ ((if p = 0 then 0 else ↑(Fintype.card Fq) ^ natDegree p) < if q = 0 then 0 e …
       split_ifs with hp hq hq
       · simp only [hp, hq, lt_self_iff_false]
+        -- 🎉 no goals
       · simp only [hp, hq, degree_zero, Ne.def, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
+        -- 🎉 no goals
       · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_withBot, Nat.cast_withBot,
           WithBot.coe_lt_coe, pow_lt_pow_iff]
         exact_mod_cast @Fintype.one_lt_card Fq _ _ }
+        -- 🎉 no goals
 #align polynomial.card_pow_degree_is_euclidean Polynomial.cardPowDegree_isEuclidean
 
 end Polynomial

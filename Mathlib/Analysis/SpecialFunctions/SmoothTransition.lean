@@ -49,6 +49,7 @@ namespace expNegInvGlue
 
 /-- The function `expNegInvGlue` vanishes on `(-∞, 0]`. -/
 theorem zero_of_nonpos {x : ℝ} (hx : x ≤ 0) : expNegInvGlue x = 0 := by simp [expNegInvGlue, hx]
+                                                                        -- 🎉 no goals
 #align exp_neg_inv_glue.zero_of_nonpos expNegInvGlue.zero_of_nonpos
 
 @[simp] -- porting note: new lemma
@@ -57,6 +58,7 @@ protected theorem zero : expNegInvGlue 0 = 0 := zero_of_nonpos le_rfl
 /-- The function `expNegInvGlue` is positive on `(0, +∞)`. -/
 theorem pos_of_pos {x : ℝ} (hx : 0 < x) : 0 < expNegInvGlue x := by
   simp [expNegInvGlue, not_le.2 hx, exp_pos]
+  -- 🎉 no goals
 #align exp_neg_inv_glue.pos_of_pos expNegInvGlue.pos_of_pos
 
 /-- The function `expNegInvGlue` is nonnegative. -/
@@ -96,30 +98,48 @@ induction, then deduce smoothness of $f$ by setting $p=1$.
 theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
     Tendsto (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) (𝓝 0) (𝓝 0) := by
   simp only [expNegInvGlue, mul_ite, mul_zero]
+  -- ⊢ Tendsto (fun x => if x ≤ 0 then 0 else Polynomial.eval x⁻¹ p * exp (-x⁻¹)) ( …
   refine tendsto_const_nhds.if ?_
+  -- ⊢ Tendsto (fun x => Polynomial.eval x⁻¹ p * exp (-x⁻¹)) (𝓝 0 ⊓ 𝓟 {x | ¬x ≤ 0}) …
   simp only [not_le]
+  -- ⊢ Tendsto (fun x => Polynomial.eval x⁻¹ p * exp (-x⁻¹)) (𝓝 0 ⊓ 𝓟 {x | 0 < x})  …
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
     p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
+  -- ⊢ x ∈ {x | (fun x => Polynomial.eval x⁻¹ p / exp x⁻¹ = (fun x => Polynomial.ev …
   simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
+  -- 🎉 no goals
 
 theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     HasDerivAt (fun x ↦ p.eval x⁻¹ * expNegInvGlue x)
       ((X ^ 2 * (p - derivative (R := ℝ) p)).eval x⁻¹ * expNegInvGlue x) x := by
   rcases lt_trichotomy x 0 with hx | rfl | hx
   · rw [zero_of_nonpos hx.le, mul_zero]
+    -- ⊢ HasDerivAt (fun x => Polynomial.eval x⁻¹ p * expNegInvGlue x) 0 x
     refine (hasDerivAt_const _ 0).congr_of_eventuallyEq ?_
+    -- ⊢ (fun x => Polynomial.eval x⁻¹ p * expNegInvGlue x) =ᶠ[𝓝 x] fun x => 0
     filter_upwards [gt_mem_nhds hx] with y hy
+    -- ⊢ Polynomial.eval y⁻¹ p * expNegInvGlue y = 0
     rw [zero_of_nonpos hy.le, mul_zero]
+    -- 🎉 no goals
   · rw [expNegInvGlue.zero, mul_zero, hasDerivAt_iff_tendsto_slope]
+    -- ⊢ Tendsto (slope (fun x => Polynomial.eval x⁻¹ p * expNegInvGlue x) 0) (𝓝[{0}ᶜ …
     refine ((tendsto_polynomial_inv_mul_zero (p * X)).mono_left inf_le_left).congr fun x ↦ ?_
+    -- ⊢ Polynomial.eval x⁻¹ (p * X) * expNegInvGlue x = slope (fun x => Polynomial.e …
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
+    -- 🎉 no goals
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
+    -- ⊢ HasDerivAt (fun x => Polynomial.eval x⁻¹ p * expNegInvGlue x) (Polynomial.ev …
     convert this.congr_of_eventuallyEq _ using 1
+    -- ⊢ Polynomial.eval x⁻¹ (X ^ 2 * (p - ↑derivative p)) * expNegInvGlue x = (Polyn …
     · simp [expNegInvGlue, hx.not_le]
+      -- ⊢ (x ^ 2)⁻¹ * (Polynomial.eval x⁻¹ p - Polynomial.eval x⁻¹ (↑derivative p)) *  …
       ring
+      -- 🎉 no goals
     · filter_upwards [lt_mem_nhds hx] with y hy
+      -- ⊢ Polynomial.eval y⁻¹ p * expNegInvGlue y = ((fun y => Polynomial.eval y p * e …
       simp [expNegInvGlue, hy.not_le]
+      -- 🎉 no goals
 
 theorem differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :
     Differentiable ℝ (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := fun x ↦
@@ -132,6 +152,7 @@ theorem continuous_polynomial_eval_inv_mul (p : ℝ[X]) :
 theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
     ContDiff ℝ n (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := by
   apply contDiff_all_iff_nat.2 (fun m => ?_) n
+  -- ⊢ ContDiff ℝ ↑m fun x => Polynomial.eval x⁻¹ p * expNegInvGlue x
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>
@@ -142,6 +163,7 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
 /-- The function `expNegInvGlue` is smooth. -/
 protected theorem contDiff {n} : ContDiff ℝ n expNegInvGlue := by
   simpa using contDiff_polynomial_eval_inv_mul 1
+  -- 🎉 no goals
 #align exp_neg_inv_glue.cont_diff expNegInvGlue.contDiff
 
 end expNegInvGlue
@@ -167,11 +189,13 @@ theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
   (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
+                                                   -- 🎉 no goals
 #align real.smooth_transition.one_of_one_le Real.smoothTransition.one_of_one_le
 
 @[simp] -- porting note: new theorem
 nonrec theorem zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by
   simp only [smoothTransition, _root_.div_eq_zero_iff, (pos_denom x).ne', zero_iff_nonpos, or_false]
+  -- 🎉 no goals
 
 theorem zero_of_nonpos (h : x ≤ 0) : smoothTransition x = 0 := zero_iff_nonpos.2 h
 #align real.smooth_transition.zero_of_nonpos Real.smoothTransition.zero_of_nonpos
@@ -192,8 +216,11 @@ projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`.
 protected theorem projIcc :
     smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by
   refine' congr_fun (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => _) fun x hx => _) x
+  -- ⊢ smoothTransition x = smoothTransition 0
   · rw [smoothTransition.zero, zero_of_nonpos hx.le]
+    -- 🎉 no goals
   · rw [smoothTransition.one, one_of_one_le hx.le]
+    -- 🎉 no goals
 #align real.smooth_transition.proj_Icc Real.smoothTransition.projIcc
 
 theorem le_one (x : ℝ) : smoothTransition x ≤ 1 :=

@@ -26,16 +26,27 @@ variable {M : Type*} [CommMonoidWithZero M]
 /-- Prime `p` divides the product of a list `L` iff it divides some `a ∈ L` -/
 theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod ↔ ∃ a ∈ L, p ∣ a := by
   constructor
+  -- ⊢ p ∣ prod L → ∃ a, a ∈ L ∧ p ∣ a
   · intro h
+    -- ⊢ ∃ a, a ∈ L ∧ p ∣ a
     induction' L with L_hd L_tl L_ih
+    -- ⊢ ∃ a, a ∈ [] ∧ p ∣ a
     · rw [prod_nil] at h
+      -- ⊢ ∃ a, a ∈ [] ∧ p ∣ a
       exact absurd h pp.not_dvd_one
+      -- 🎉 no goals
     · rw [prod_cons] at h
+      -- ⊢ ∃ a, a ∈ L_hd :: L_tl ∧ p ∣ a
       cases' pp.dvd_or_dvd h with hd hd
+      -- ⊢ ∃ a, a ∈ L_hd :: L_tl ∧ p ∣ a
       · exact ⟨L_hd, mem_cons_self L_hd L_tl, hd⟩
+        -- 🎉 no goals
       · obtain ⟨x, hx1, hx2⟩ := L_ih hd
+        -- ⊢ ∃ a, a ∈ L_hd :: L_tl ∧ p ∣ a
         exact ⟨x, mem_cons_of_mem L_hd hx1, hx2⟩
+        -- 🎉 no goals
   · exact fun ⟨a, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod ha1)
+    -- 🎉 no goals
 #align prime.dvd_prod_iff Prime.dvd_prod_iff
 
 theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
@@ -52,7 +63,9 @@ variable {M : Type*} [CancelCommMonoidWithZero M] [Unique (Units M)]
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by
   obtain ⟨x, hx1, hx2⟩ := hp.dvd_prod_iff.mp hpL
+  -- ⊢ p ∈ L
   rwa [(prime_dvd_prime_iff_eq hp (hL x hx1)).mp hx2]
+  -- 🎉 no goals
 #align mem_list_primes_of_dvd_prod mem_list_primes_of_dvd_prod
 
 theorem perm_of_prod_eq_prod :

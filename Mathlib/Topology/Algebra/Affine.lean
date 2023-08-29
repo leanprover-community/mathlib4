@@ -37,12 +37,19 @@ variable [Ring R] [Module R E] [Module R F]
 `AffineMap.continuous_linear_iff`. -/
 theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linear := by
   constructor
+  -- ⊢ Continuous ↑f → Continuous ↑f.linear
   · intro hc
+    -- ⊢ Continuous ↑f.linear
     rw [decomp' f]
+    -- ⊢ Continuous (↑f - fun x => ↑f 0)
     exact hc.sub continuous_const
+    -- 🎉 no goals
   · intro hc
+    -- ⊢ Continuous ↑f
     rw [decomp f]
+    -- ⊢ Continuous (↑f.linear + fun x => ↑f 0)
     exact hc.add continuous_const
+    -- 🎉 no goals
 #align affine_map.continuous_iff AffineMap.continuous_iff
 
 /-- The line map is continuous. -/
@@ -66,7 +73,9 @@ theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t := by
     exact ((continuous_id.sub continuous_const).const_smul _).add continuous_const
     -- Porting note: proof was `by continuity`
   ext y
+  -- ⊢ ↑(homothety x t) y = t • (y - x) + x
   simp [homothety_apply]
+  -- 🎉 no goals
 #align affine_map.homothety_continuous AffineMap.homothety_continuous
 
 end CommRing
@@ -77,7 +86,12 @@ variable [Field R] [Module R F] [ContinuousConstSMul R F]
 
 theorem homothety_isOpenMap (x : F) (t : R) (ht : t ≠ 0) : IsOpenMap <| homothety x t := by
   apply IsOpenMap.of_inverse (homothety_continuous x t⁻¹) <;> intro e <;>
+  -- ⊢ Function.LeftInverse ↑(homothety x t) ↑(homothety x t⁻¹)
+                                                              -- ⊢ ↑(homothety x t) (↑(homothety x t⁻¹) e) = e
+                                                              -- ⊢ ↑(homothety x t⁻¹) (↑(homothety x t) e) = e
     simp [← AffineMap.comp_apply, ← homothety_mul, ht]
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align affine_map.homothety_is_open_map AffineMap.homothety_isOpenMap
 
 end Field

@@ -24,12 +24,16 @@ namespace Nat
 
 theorem cast_choose {a b : ℕ} (h : a ≤ b) : (b.choose a : K) = b ! / (a ! * (b - a)!) := by
   have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := Nat.cast_ne_zero.2 (factorial_ne_zero _)
+  -- ⊢ ↑(choose b a) = ↑b ! / (↑a ! * ↑(b - a)!)
   rw [eq_div_iff_mul_eq (mul_ne_zero this this)]
+  -- ⊢ ↑(choose b a) * (↑a ! * ↑(b - a)!) = ↑b !
   rw_mod_cast [← mul_assoc, choose_mul_factorial_mul_factorial h]
+  -- 🎉 no goals
 #align nat.cast_choose Nat.cast_choose
 
 theorem cast_add_choose {a b : ℕ} : ((a + b).choose a : K) = (a + b)! / (a ! * b !) := by
   rw [cast_choose K (_root_.le_add_right le_rfl), add_tsub_cancel_left]
+  -- 🎉 no goals
 #align nat.cast_add_choose Nat.cast_add_choose
 
 theorem cast_choose_eq_pochhammer_div (a b : ℕ) :

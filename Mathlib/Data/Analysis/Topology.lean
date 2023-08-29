@@ -70,14 +70,19 @@ def ofEquiv (E : σ ≃ τ) : Ctop α σ → Ctop α τ
     { f := fun a ↦ f (E.symm a)
       top := fun x ↦ E (T x)
       top_mem := fun x ↦ by simpa using h₁ x
+                            -- 🎉 no goals
       inter := fun a b x h ↦ E (I (E.symm a) (E.symm b) x h)
       inter_mem := fun a b x h ↦ by simpa using h₂ (E.symm a) (E.symm b) x h
+                                    -- 🎉 no goals
       inter_sub := fun a b x h ↦ by simpa using h₃ (E.symm a) (E.symm b) x h }
+                                    -- 🎉 no goals
 #align ctop.of_equiv Ctop.ofEquiv
 
 @[simp]
 theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
   cases F; rfl
+  -- ⊢ f (ofEquiv E { f := f✝, top := top✝, top_mem := top_mem✝, inter := inter✝, i …
+           -- 🎉 no goals
 #align ctop.of_equiv_val Ctop.ofEquiv_val
 
 end
@@ -127,11 +132,15 @@ namespace Ctop.Realizer
 protected theorem is_basis [T : TopologicalSpace α] (F : Realizer α) :
     TopologicalSpace.IsTopologicalBasis (Set.range F.F.f) := by
   have := toTopsp_isTopologicalBasis F.F; rwa [F.eq] at this
+  -- ⊢ TopologicalSpace.IsTopologicalBasis (range F.F.f)
+                                          -- 🎉 no goals
 #align ctop.realizer.is_basis Ctop.Realizer.is_basis
 
 protected theorem mem_nhds [T : TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
   s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
   have := @mem_nhds_toTopsp _ _ F.F s a; rwa [F.eq] at this
+  -- ⊢ s ∈ 𝓝 a ↔ ∃ b, a ∈ f F.F b ∧ f F.F b ⊆ s
+                                         -- 🎉 no goals
 #align ctop.realizer.mem_nhds Ctop.Realizer.mem_nhds
 
 theorem isOpen_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
@@ -146,7 +155,10 @@ theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
       forall_congr' fun a ↦
         show (a ∉ s → ∃ b : F.σ, a ∈ F.F b ∧ ∀ z ∈ F.F b, z ∉ s) ↔ _ by
           haveI := Classical.propDecidable; rw [not_imp_comm]
+          -- ⊢ (¬a ∈ s → ∃ b, a ∈ f F.F b ∧ ∀ (z : α), z ∈ f F.F b → ¬z ∈ s) ↔ (∀ (b : F.σ) …
+                                            -- ⊢ (¬∃ b, a ∈ f F.F b ∧ ∀ (z : α), z ∈ f F.F b → ¬z ∈ s) → a ∈ s ↔ (∀ (b : F.σ) …
           simp [not_exists, not_and, not_forall, and_comm]
+          -- 🎉 no goals
 #align ctop.realizer.is_closed_iff Ctop.Realizer.isClosed_iff
 
 theorem mem_interior_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
@@ -156,13 +168,17 @@ theorem mem_interior_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} {a
 
 protected theorem isOpen [TopologicalSpace α] (F : Realizer α) (s : F.σ) : IsOpen (F.F s) :=
   isOpen_iff_nhds.2 fun a m ↦ by simpa using F.mem_nhds.2 ⟨s, m, Subset.refl _⟩
+                                 -- 🎉 no goals
 #align ctop.realizer.is_open Ctop.Realizer.isOpen
 
 theorem ext' [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ}
     (H : ∀ a s, s ∈ 𝓝 a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T := by
   refine' eq_of_nhds_eq_nhds fun x ↦ _
+  -- ⊢ 𝓝 x = 𝓝 x
   ext s
+  -- ⊢ s ∈ 𝓝 x ↔ s ∈ 𝓝 x
   rw [mem_nhds_toTopsp, H]
+  -- 🎉 no goals
 #align ctop.realizer.ext' Ctop.Realizer.ext'
 
 theorem ext [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ} (H₁ : ∀ a, IsOpen (F a))
@@ -194,6 +210,8 @@ def ofEquiv (F : Realizer α) (E : F.σ ≃ τ) : Realizer α :=
     ext' fun a s ↦
       F.mem_nhds.trans <|
         ⟨fun ⟨s, h⟩ ↦ ⟨E s, by simpa using h⟩, fun ⟨t, h⟩ ↦ ⟨E.symm t, by simpa using h⟩⟩⟩
+                               -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align ctop.realizer.of_equiv Ctop.Realizer.ofEquiv
 
 @[simp]
@@ -203,6 +221,8 @@ theorem ofEquiv_σ (F : Realizer α) (E : F.σ ≃ τ) : (F.ofEquiv E).σ = τ :
 @[simp]
 theorem ofEquiv_F (F : Realizer α) (E : F.σ ≃ τ) (s : τ) : (F.ofEquiv E).F s = F.F (E.symm s) := by
   delta ofEquiv; simp
+  -- ⊢ f { σ := τ, F := Ctop.ofEquiv E F.F, eq := (_ : toTopsp (Ctop.ofEquiv E F.F) …
+                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align ctop.realizer.of_equiv_F Ctop.Realizer.ofEquiv_F
 
@@ -279,5 +299,9 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
 instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
     suffices : f = ⊥; exact absurd this h
+    -- ⊢ { a // a ∈ ∅ ∧ 𝓝 a ⊓ f ≠ ⊥ }
+                      -- ⊢ f = ⊥
     rw [← F.eq, eq_bot_iff]
+    -- ⊢ CFilter.toFilter F.F ≤ ⊥
     exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩
+    -- 🎉 no goals

@@ -51,12 +51,16 @@ theorem strongTopology.locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
     @LocallyConvexSpace R (E →SL[σ] F) _ _ _ (strongTopology σ F 𝔖) := by
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
+  -- ⊢ LocallyConvexSpace R (E →SL[σ] F)
   haveI : TopologicalAddGroup (E →SL[σ] F) := strongTopology.topologicalAddGroup _ _ _
+  -- ⊢ LocallyConvexSpace R (E →SL[σ] F)
   apply LocallyConvexSpace.ofBasisZero _ _ _ _
     (strongTopology.hasBasis_nhds_zero_of_basis _ _ _ h𝔖₁ h𝔖₂
       (LocallyConvexSpace.convex_basis_zero R F)) _
   rintro ⟨S, V⟩ ⟨_, _, hVconvex⟩ f hf g hg a b ha hb hab x hx
+  -- ⊢ ↑(a • f + b • g) x ∈ _root_.id (S, V).snd
   exact hVconvex (hf x hx) (hg x hx) ha hb hab
+  -- 🎉 no goals
 #align continuous_linear_map.strong_topology.locally_convex_space ContinuousLinearMap.strongTopology.locallyConvexSpace
 
 end General

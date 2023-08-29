@@ -107,6 +107,8 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
 
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
   by unfold Antisymmetrization; infer_instance
+     -- ⊢ Inhabited (Quotient (AntisymmRel.setoid α r))
+                                -- 🎉 no goals
 
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :
@@ -153,7 +155,9 @@ instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization �
 theorem antisymmetrization_fibration :
     Relation.Fibration (· < ·) (· < ·) (@toAntisymmetrization α (· ≤ ·) _) := by
   rintro a ⟨b⟩ h
+  -- ⊢ ∃ a', (fun x x_1 => x < x_1) a' a ∧ toAntisymmetrization (fun x x_1 => x ≤ x …
   exact ⟨b, h, rfl⟩
+  -- 🎉 no goals
 #align antisymmetrization_fibration antisymmetrization_fibration
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
@@ -250,7 +254,9 @@ def OrderIso.dualAntisymmetrization :
   toFun := (Quotient.map' id) fun _ _ => And.symm
   invFun := (Quotient.map' id) fun _ _ => And.symm
   left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
+                                                    -- 🎉 no goals
   right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
+                                                     -- 🎉 no goals
   map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun a b => Iff.rfl
 #align order_iso.dual_antisymmetrization OrderIso.dualAntisymmetrization
 

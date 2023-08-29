@@ -56,6 +56,7 @@ theorem Algebra.map_leftMulMatrix_localization {ι : Type*} [Fintype ι] [Decida
     (algebraMap R Rₘ).mapMatrix (leftMulMatrix b a) =
     leftMulMatrix (b.localizationLocalization Rₘ M Sₘ) (algebraMap S Sₘ a) := by
   ext i j
+  -- ⊢ ↑(RingHom.mapMatrix (algebraMap R Rₘ)) (↑(leftMulMatrix b) a) i j = ↑(leftMu …
   simp only [Matrix.map_apply, RingHom.mapMatrix_apply, leftMulMatrix_eq_repr_mul, ← map_mul,
     Basis.localizationLocalization_apply, Basis.localizationLocalization_repr_algebraMap]
 
@@ -65,10 +66,15 @@ Then the norm of `a : Sₘ` over `Rₘ` is the norm of `a : S` over `R` if `S` i
 theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) :
     Algebra.norm Rₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.norm R a) := by
   cases subsingleton_or_nontrivial R
+  -- ⊢ ↑(norm Rₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(norm R) a)
   · haveI : Subsingleton Rₘ := Module.subsingleton R Rₘ
+    -- ⊢ ↑(norm Rₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(norm R) a)
     simp
+    -- 🎉 no goals
   let b := Module.Free.chooseBasis R S
+  -- ⊢ ↑(norm Rₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(norm R) a)
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
+  -- ⊢ ↑(norm Rₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(norm R) a)
   rw [Algebra.norm_eq_matrix_det (b.localizationLocalization Rₘ M Sₘ),
     Algebra.norm_eq_matrix_det b, RingHom.map_det, ← Algebra.map_leftMulMatrix_localization]
 #align algebra.norm_localization Algebra.norm_localization
@@ -79,13 +85,19 @@ Then the trace of `a : Sₘ` over `Rₘ` is the trace of `a : S` over `R` if `S`
 theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S] (a : S) :
     Algebra.trace Rₘ Sₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.trace R S a) := by
   cases subsingleton_or_nontrivial R
+  -- ⊢ ↑(trace Rₘ Sₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(trace R S) a)
   · haveI : Subsingleton Rₘ := Module.subsingleton R Rₘ
+    -- ⊢ ↑(trace Rₘ Sₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(trace R S) a)
     simp
+    -- 🎉 no goals
   let b := Module.Free.chooseBasis R S
+  -- ⊢ ↑(trace Rₘ Sₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(trace R S) a)
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
+  -- ⊢ ↑(trace Rₘ Sₘ) (↑(algebraMap S Sₘ) a) = ↑(algebraMap R Rₘ) (↑(trace R S) a)
   rw [Algebra.trace_eq_matrix_trace (b.localizationLocalization Rₘ M Sₘ),
     Algebra.trace_eq_matrix_trace b, ← Algebra.map_leftMulMatrix_localization]
   exact (AddMonoidHom.map_trace (algebraMap R Rₘ).toAddMonoidHom _).symm
+  -- 🎉 no goals
 
 section LocalizationLocalization
 
@@ -101,11 +113,15 @@ theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
     Algebra.traceMatrix Rₘ (b.localizationLocalization Rₘ M Sₘ) =
       (algebraMap R Rₘ).mapMatrix (Algebra.traceMatrix R b) := by
   have : Module.Finite R S := Module.Finite.of_basis b
+  -- ⊢ traceMatrix Rₘ ↑(Basis.localizationLocalization Rₘ M Sₘ b) = ↑(RingHom.mapMa …
   have : Module.Free R S := Module.Free.of_basis b
+  -- ⊢ traceMatrix Rₘ ↑(Basis.localizationLocalization Rₘ M Sₘ b) = ↑(RingHom.mapMa …
   ext i j : 2
+  -- ⊢ traceMatrix Rₘ (↑(Basis.localizationLocalization Rₘ M Sₘ b)) i j = ↑(RingHom …
   simp_rw [RingHom.mapMatrix_apply, Matrix.map_apply, traceMatrix_apply, traceForm_apply,
     Basis.localizationLocalization_apply, ← map_mul]
   exact Algebra.trace_localization R M _
+  -- 🎉 no goals
 
 /-- Let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M` of `R S` respectively. Let
 `b` be a `R`-basis of `S`. Then discriminant of the `Rₘ`-basis of `Sₘ` induced by `b` is the

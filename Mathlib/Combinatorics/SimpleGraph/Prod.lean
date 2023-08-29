@@ -44,7 +44,9 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
   symm x y := by simp [and_comm, or_comm, eq_comm, adj_comm]
+                 -- 🎉 no goals
   loopless x := by simp
+                   -- 🎉 no goals
 #align simple_graph.box_prod SimpleGraph.boxProd
 
 -- mathport name: «expr □ »
@@ -60,18 +62,23 @@ theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Ad
 --@[simp] porting note: `simp` can prove
 theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
+  -- 🎉 no goals
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
 --@[simp] porting note: `simp` can prove
 theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
+  -- 🎉 no goals
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
 theorem boxProd_neighborSet (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
+  -- ⊢ (a', b') ∈ neighborSet (G □ H) x ↔ (a', b') ∈ neighborSet G x.fst ×ˢ {x.snd} …
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
+  -- ⊢ Adj G x.fst a' ∧ x.snd = b' ∨ Adj H x.snd b' ∧ x.fst = a' ↔ Adj G x.fst a' ∧ …
   simp only [eq_comm, and_comm]
+  -- 🎉 no goals
 #align simple_graph.box_prod_neighbor_set SimpleGraph.boxProd_neighborSet
 
 variable (G H)
@@ -150,7 +157,9 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
   | cons' x y z h w => by
     rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dif_pos, ← Walk.boxProdLeft]
     simp [ofBoxProdLeft_boxProdLeft]
+    -- ⊢ Adj G (x, b).fst (↑(Embedding.toHom (boxProdLeft G H b)) y).fst ∧ (x, b).snd …
     exact ⟨h, rfl⟩
+    -- 🎉 no goals
 #align simple_graph.walk.of_box_prod_left_box_prod_left SimpleGraph.Walk.ofBoxProdLeft_boxProdLeft
 
 @[simp]
@@ -161,7 +170,9 @@ theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
     simp [ofBoxProdLeft_boxProdRight]
+    -- ⊢ Adj G (a, x).snd (↑(Embedding.toHom (boxProdRight G G a)) y).snd ∧ (a, x).fs …
     exact⟨h, rfl⟩
+    -- 🎉 no goals
 #align simple_graph.walk.of_box_prod_left_box_prod_right SimpleGraph.Walk.ofBoxProdLeft_boxProdRight
 
 end Walk
@@ -171,10 +182,15 @@ variable {G H}
 protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnected) :
     (G □ H).Preconnected := by
   rintro x y
+  -- ⊢ Reachable (G □ H) x y
   obtain ⟨w₁⟩ := hG x.1 y.1
+  -- ⊢ Reachable (G □ H) x y
   obtain ⟨w₂⟩ := hH x.2 y.2
+  -- ⊢ Reachable (G □ H) x y
   rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
+  -- ⊢ Reachable (G □ H) (x.fst, x.snd) (y.fst, y.snd)
   exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
+  -- 🎉 no goals
 #align simple_graph.preconnected.box_prod SimpleGraph.Preconnected.boxProd
 
 protected theorem Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Preconnected) :
@@ -195,20 +211,29 @@ protected theorem Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preco
 
 protected theorem Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
   haveI := hG.nonempty
+  -- ⊢ Connected (G □ H)
   haveI := hH.nonempty
+  -- ⊢ Connected (G □ H)
   exact ⟨hG.preconnected.boxProd hH.preconnected⟩
+  -- 🎉 no goals
 #align simple_graph.connected.box_prod SimpleGraph.Connected.boxProd
 
 protected theorem Connected.ofBoxProdLeft (h : (G □ H).Connected) : G.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
+  -- ⊢ Connected G
   haveI := (nonempty_prod.1 h.nonempty).2
+  -- ⊢ Connected G
   exact ⟨h.preconnected.ofBoxProdLeft⟩
+  -- 🎉 no goals
 #align simple_graph.connected.of_box_prod_left SimpleGraph.Connected.ofBoxProdLeft
 
 protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
+  -- ⊢ Connected H
   haveI := (nonempty_prod.1 h.nonempty).2
+  -- ⊢ Connected H
   exact ⟨h.preconnected.ofBoxProdRight⟩
+  -- 🎉 no goals
 #align simple_graph.connected.of_box_prod_right SimpleGraph.Connected.ofBoxProdRight
 
 @[simp]
@@ -226,6 +251,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
         mem_neighborSet, Equiv.refl_apply, boxProd_adj]
       simp only [eq_comm, and_comm])
+      -- 🎉 no goals
 #align simple_graph.box_prod_fintype_neighbor_set SimpleGraph.boxProdFintypeNeighborSet
 
 theorem boxProd_neighborFinset (x : α × β)
@@ -235,15 +261,20 @@ theorem boxProd_neighborFinset (x : α × β)
         (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
+  -- ⊢ neighborFinset (G □ H) x = Finset.disjUnion (neighborFinset G x.fst ×ˢ {x.sn …
   convert_to (G □ H).neighborFinset x = _ using 2
+  -- ⊢ neighborFinset (G □ H) x = Finset.disjUnion (neighborFinset G x.fst ×ˢ {x.sn …
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
+  -- 🎉 no goals
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
 theorem boxProd_degree (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
+  -- ⊢ Finset.card (neighborFinset G x.fst ×ˢ {x.snd}) + Finset.card ({x.fst} ×ˢ ne …
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
+  -- 🎉 no goals
 #align simple_graph.box_prod_degree SimpleGraph.boxProd_degree
 
 end SimpleGraph

@@ -106,6 +106,7 @@ theorem tendstoIxxClass_principal {s t : Set α} {Ixx : α → α → Set α} :
 theorem tendstoIxxClass_inf {l₁ l₁' l₂ l₂' : Filter α} {Ixx} [h : TendstoIxxClass Ixx l₁ l₂]
     [h' : TendstoIxxClass Ixx l₁' l₂'] : TendstoIxxClass Ixx (l₁ ⊓ l₁') (l₂ ⊓ l₂') :=
   ⟨by simpa only [prod_inf_prod, smallSets_inf] using h.1.inf h'.1⟩
+      -- 🎉 no goals
 #align filter.tendsto_Ixx_class_inf Filter.tendstoIxxClass_inf
 
 theorem tendstoIxxClass_of_subset {l₁ l₂ : Filter α} {Ixx Ixx' : α → α → Set α}
@@ -222,19 +223,24 @@ variable [PartialOrder α]
 
 instance tendsto_Icc_pure_pure {a : α} : TendstoIxxClass Icc (pure a) (pure a : Filter α) := by
   rw [← principal_singleton]
+  -- ⊢ TendstoIxxClass Icc (𝓟 {a}) (𝓟 {a})
   exact tendstoIxxClass_principal.2 ordConnected_singleton.out
+  -- 🎉 no goals
 #align filter.tendsto_Icc_pure_pure Filter.tendsto_Icc_pure_pure
 
 instance tendsto_Ico_pure_bot {a : α} : TendstoIxxClass Ico (pure a) ⊥ :=
   ⟨by simp⟩
+      -- 🎉 no goals
 #align filter.tendsto_Ico_pure_bot Filter.tendsto_Ico_pure_bot
 
 instance tendsto_Ioc_pure_bot {a : α} : TendstoIxxClass Ioc (pure a) ⊥ :=
   ⟨by simp⟩
+      -- 🎉 no goals
 #align filter.tendsto_Ioc_pure_bot Filter.tendsto_Ioc_pure_bot
 
 instance tendsto_Ioo_pure_bot {a : α} : TendstoIxxClass Ioo (pure a) ⊥ :=
   ⟨by simp⟩
+      -- 🎉 no goals
 #align filter.tendsto_Ioo_pure_bot Filter.tendsto_Ioo_pure_bot
 
 end PartialOrder
@@ -256,14 +262,23 @@ instance tendsto_Ioc_uIcc_uIcc {a b : α} : TendstoIxxClass Ioc (𝓟 [[a, b]]) 
 instance tendsto_uIcc_of_Icc {l : Filter α} [TendstoIxxClass Icc l l] :
     TendstoIxxClass uIcc l l := by
   refine' ⟨fun s hs => mem_map.2 <| mem_prod_self_iff.2 _⟩
+  -- ⊢ ∃ t, t ∈ l ∧ t ×ˢ t ⊆ (fun p => [[p.fst, p.snd]]) ⁻¹' s
   obtain ⟨t, htl, hts⟩ : ∃ t ∈ l, ∀ p ∈ (t : Set α) ×ˢ t, Icc (p : α × α).1 p.2 ∈ s
+  -- ⊢ ∃ t, t ∈ l ∧ ∀ (p : α × α), p ∈ t ×ˢ t → Icc p.fst p.snd ∈ s
   exact mem_prod_self_iff.1 (mem_map.1 (tendsto_fst.Icc tendsto_snd hs))
+  -- ⊢ ∃ t, t ∈ l ∧ t ×ˢ t ⊆ (fun p => [[p.fst, p.snd]]) ⁻¹' s
   refine' ⟨t, htl, fun p hp => _⟩
+  -- ⊢ p ∈ (fun p => [[p.fst, p.snd]]) ⁻¹' s
   cases' le_total p.1 p.2 with h h
+  -- ⊢ p ∈ (fun p => [[p.fst, p.snd]]) ⁻¹' s
   · rw [mem_preimage, uIcc_of_le h]
+    -- ⊢ Icc p.fst p.snd ∈ s
     exact hts p hp
+    -- 🎉 no goals
   · rw [mem_preimage, uIcc_of_ge h]
+    -- ⊢ Icc p.snd p.fst ∈ s
     exact hts ⟨p.2, p.1⟩ ⟨hp.2, hp.1⟩
+    -- 🎉 no goals
 #align filter.tendsto_uIcc_of_Icc Filter.tendsto_uIcc_of_Icc
 
 protected theorem Tendsto.uIcc {l : Filter α} [TendstoIxxClass Icc l l] {f g : β → α}

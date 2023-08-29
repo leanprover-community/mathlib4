@@ -29,9 +29,13 @@ namespace Commute
 theorem list_sum_right [NonUnitalNonAssocSemiring R] (a : R) (l : List R)
     (h : ∀ b ∈ l, Commute a b) : Commute a l.sum := by
   induction' l with x xs ih
+  -- ⊢ Commute a (sum [])
   · exact Commute.zero_right _
+    -- 🎉 no goals
   · rw [List.sum_cons]
+    -- ⊢ Commute a (x + sum xs)
     exact (h _ <| mem_cons_self _ _).add_right (ih fun j hj => h _ <| mem_cons_of_mem _ hj)
+    -- 🎉 no goals
 #align commute.list_sum_right Commute.list_sum_right
 
 theorem list_sum_left [NonUnitalNonAssocSemiring R] (b : R) (l : List R)
@@ -56,12 +60,16 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
     l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
+    -- ⊢ ℕ
+                                                              -- ⊢ length l = length l
+                                                                                -- 🎉 no goals
 #align list.prod_eq_one_iff List.prod_eq_one_iff
 #align list.sum_eq_zero_iff List.sum_eq_zero_iff
 
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
 theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
   obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
+  -- ⊢ -1 ∈ l
   exact
     Or.resolve_left
         (Int.isUnit_iff.mp
@@ -74,21 +82,32 @@ theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : 
 by the sum of the elements. -/
 theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
   induction' L with j L IH h; · simp
+  -- ⊢ length [] ≤ sum []
+                                -- 🎉 no goals
   rw [sum_cons, length, add_comm]
+  -- ⊢ 1 + length L ≤ j + sum L
   exact add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
+  -- 🎉 no goals
 #align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
 
 theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
   let ⟨s, t, h⟩ := mem_split ha
+  -- ⊢ a ∣ prod l
   rw [h, prod_append, prod_cons, mul_left_comm]
+  -- ⊢ a ∣ a * (prod s * prod t)
   exact dvd_mul_right _ _
+  -- 🎉 no goals
 #align list.dvd_prod List.dvd_prod
 
 theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
   induction' l with x l ih
+  -- ⊢ a ∣ sum []
   · exact dvd_zero _
+    -- 🎉 no goals
   · rw [List.sum_cons]
+    -- ⊢ a ∣ x + sum l
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun x hx => h x (mem_cons_of_mem _ hx))
+    -- 🎉 no goals
 #align list.dvd_sum List.dvd_sum
 
 section Alternating
@@ -100,6 +119,7 @@ theorem alternatingProd_append :
     ∀ l₁ l₂ : List α,
       alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
   | [], l₂ => by simp
+                 -- 🎉 no goals
   | a :: l₁, l₂ => by
     simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ,
       neg_mul, one_mul, zpow_neg, ← div_eq_mul_inv, div_div]
@@ -110,11 +130,13 @@ theorem alternatingProd_append :
 theorem alternatingProd_reverse :
     ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
   | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
+             -- 🎉 no goals
   | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
       alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ, neg_mul,
       one_mul, zpow_neg, inv_inv]
     rw [mul_comm, ← div_eq_mul_inv, div_zpow]
+    -- 🎉 no goals
 #align list.alternating_prod_reverse List.alternatingProd_reverse
 #align list.alternating_sum_reverse List.alternatingSum_reverse
 
@@ -140,6 +162,7 @@ variable [Monoid M]
 
 theorem op_list_prod : ∀ l : List M, op l.prod = (l.map op).reverse.prod := by
   intro l; induction l with
+  -- ⊢ op (prod l) = prod (reverse (map op l))
   | nil => rfl
   | cons x xs ih =>
     rw [List.prod_cons, List.map_cons, List.reverse_cons', List.prod_concat, op_mul, ih]
@@ -160,6 +183,7 @@ variable [Monoid M] [Monoid N]
 theorem unop_map_list_prod {F : Type*} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
+  -- 🎉 no goals
 #align unop_map_list_prod unop_map_list_prod
 
 namespace MonoidHom

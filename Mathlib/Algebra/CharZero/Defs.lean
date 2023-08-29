@@ -49,15 +49,23 @@ theorem charZero_of_inj_zero [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 �
     CharZero R :=
   ⟨@fun m n h => by
     induction' m with m ih generalizing n
+    -- ⊢ Nat.zero = n
     · rw [H n]
+      -- ⊢ ↑n = 0
       rw [← h, Nat.cast_zero]
+      -- 🎉 no goals
 
     cases' n with n
+    -- ⊢ Nat.succ m = Nat.zero
     · apply H
+      -- ⊢ ↑(Nat.succ m) = 0
       rw [h, Nat.cast_zero]
+      -- 🎉 no goals
 
     simp only [Nat.cast_succ, add_right_cancel_iff] at h
+    -- ⊢ Nat.succ m = Nat.succ n
     rwa [ih]⟩
+    -- 🎉 no goals
 #align char_zero_of_inj_zero charZero_of_inj_zero
 
 namespace Nat
@@ -75,6 +83,7 @@ theorem cast_inj {m n : ℕ} : (m : R) = n ↔ m = n :=
 
 @[simp, norm_cast]
 theorem cast_eq_zero {n : ℕ} : (n : R) = 0 ↔ n = 0 := by rw [← cast_zero, cast_inj]
+                                                         -- 🎉 no goals
 #align nat.cast_eq_zero Nat.cast_eq_zero
 
 @[norm_cast]
@@ -85,11 +94,14 @@ theorem cast_ne_zero {n : ℕ} : (n : R) ≠ 0 ↔ n ≠ 0 :=
 theorem cast_add_one_ne_zero (n : ℕ) : (n + 1 : R) ≠ 0 := by
   -- porting note: old proof was `exact_mod_cast n.succ_ne_zero`
   norm_cast
+  -- ⊢ ¬n + 1 = 0
   exact n.succ_ne_zero
+  -- 🎉 no goals
 #align nat.cast_add_one_ne_zero Nat.cast_add_one_ne_zero
 
 @[simp, norm_cast]
 theorem cast_eq_one {n : ℕ} : (n : R) = 1 ↔ n = 1 := by rw [← cast_one, cast_inj]
+                                                        -- 🎉 no goals
 #align nat.cast_eq_one Nat.cast_eq_one
 
 @[norm_cast]
@@ -111,7 +123,9 @@ variable [AddMonoidWithOne R] [CharZero R]
 
 @[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 1 := by
   rw [← Nat.cast_eq_ofNat, ← @Nat.cast_one R, Ne.def, Nat.cast_inj]
+  -- ⊢ ¬n = 1
   exact ne_of_gt h.prop
+  -- 🎉 no goals
 
 @[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ no_index (ofNat n) :=
   (ofNat_ne_one n).symm

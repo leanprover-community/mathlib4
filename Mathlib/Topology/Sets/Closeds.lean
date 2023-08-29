@@ -40,6 +40,9 @@ namespace Closeds
 instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
+                             -- ⊢ { carrier := carrier✝, closed' := closed'✝ } = t
+                                      -- ⊢ { carrier := carrier✝¹, closed' := closed'✝¹ } = { carrier := carrier✝, clos …
+                                               -- 🎉 no goals
 
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
@@ -160,15 +163,20 @@ theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S,
 
 @[simp]
 theorem mem_iInf {ι} {x : α} {s : ι → Closeds α} : x ∈ iInf s ↔ ∀ i, x ∈ s i := by simp [iInf]
+                                                                                   -- 🎉 no goals
 #align topological_space.closeds.mem_infi TopologicalSpace.Closeds.mem_iInf
 
 @[simp, norm_cast]
 theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set α) = ⋂ i, s i := by
   ext; simp
+  -- ⊢ x✝ ∈ ↑(⨅ (i : ι), s i) ↔ x✝ ∈ ⋂ (i : ι), ↑(s i)
+       -- 🎉 no goals
 #align topological_space.closeds.coe_infi TopologicalSpace.Closeds.coe_iInf
 
 theorem iInf_def {ι} (s : ι → Closeds α) :
     ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+                                                                  -- ⊢ ↑(⨅ (i : ι), s i) = ↑{ carrier := ⋂ (i : ι), ↑(s i), closed' := (_ : IsClose …
+                                                                        -- 🎉 no goals
 #align topological_space.closeds.infi_def TopologicalSpace.Closeds.iInf_def
 
 @[simp]
@@ -182,6 +190,7 @@ instance : Coframe (Closeds α) :=
     sInf := sInf
     iInf_sup_le_sup_sInf := fun a s =>
       (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
+                                   -- 🎉 no goals
 
 /-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
@@ -228,7 +237,9 @@ def Closeds.complOrderIso : Closeds α ≃o (Opens α)ᵒᵈ where
   toFun := OrderDual.toDual ∘ Closeds.compl
   invFun := Opens.compl ∘ OrderDual.ofDual
   left_inv s := by simp [Closeds.compl_compl]
+                   -- 🎉 no goals
   right_inv s := by simp [Opens.compl_compl]
+                    -- 🎉 no goals
   map_rel_iff' := (@OrderDual.toDual_le_toDual (Opens α)).trans compl_subset_compl
 #align topological_space.closeds.compl_order_iso TopologicalSpace.Closeds.complOrderIso
 
@@ -239,7 +250,9 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
   toFun := OrderDual.toDual ∘ Opens.compl
   invFun := Closeds.compl ∘ OrderDual.ofDual
   left_inv s := by simp [Opens.compl_compl]
+                   -- 🎉 no goals
   right_inv s := by simp [Closeds.compl_compl]
+                    -- 🎉 no goals
   map_rel_iff' := (@OrderDual.toDual_le_toDual (Closeds α)).trans compl_subset_compl
 #align topological_space.opens.compl_order_iso TopologicalSpace.Opens.complOrderIso
 
@@ -257,6 +270,7 @@ theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     obtain ⟨x, rfl⟩ := t.isAtom_iff.mp ht
     exact closure_singleton
   simp only [← this, (s : Set α).isAtom_iff, SetLike.ext'_iff, Closeds.singleton_coe]
+  -- 🎉 no goals
 #align topological_space.closeds.is_atom_iff TopologicalSpace.Closeds.isAtom_iff
 
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
@@ -264,7 +278,9 @@ theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
     IsCoatom s ↔ ∃ x, s = (Closeds.singleton x).compl := by
   rw [← s.compl_compl, ← isAtom_dual_iff_isCoatom]
+  -- ⊢ IsAtom (↑toDual (Closeds.compl (compl s))) ↔ ∃ x, Closeds.compl (compl s) =  …
   change IsAtom (Closeds.complOrderIso α s.compl) ↔ _
+  -- ⊢ IsAtom (↑(Closeds.complOrderIso α) (compl s)) ↔ ∃ x, Closeds.compl (compl s) …
   simp only [(Closeds.complOrderIso α).isAtom_iff, Closeds.isAtom_iff,
     Closeds.compl_bijective.injective.eq_iff]
 #align topological_space.opens.is_coatom_iff TopologicalSpace.Opens.isCoatom_iff
@@ -283,6 +299,9 @@ namespace Clopens
 instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
+                             -- ⊢ { carrier := carrier✝, clopen' := clopen'✝ } = t
+                                      -- ⊢ { carrier := carrier✝¹, clopen' := clopen'✝¹ } = { carrier := carrier✝, clop …
+                                               -- 🎉 no goals
 
 theorem clopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.clopen'

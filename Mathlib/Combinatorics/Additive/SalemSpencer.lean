@@ -131,7 +131,9 @@ theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s
 theorem MulSalemSpencer.image [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : MulSalemSpencer s) : MulSalemSpencer (f '' s) := by
   rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
+  -- ⊢ ↑f a = ↑f b
   rw [h ha hb hc (hf (mul_mem_mul ha hb) (mul_mem_mul hc hc) <| by rwa [map_mul, map_mul])]
+  -- 🎉 no goals
 #align mul_salem_spencer.image MulSalemSpencer.image
 #align add_salem_spencer.image AddSalemSpencer.image
 
@@ -149,43 +151,67 @@ theorem mulSalemSpencer_insert : MulSalemSpencer (insert a s) ↔ MulSalemSpence
     fun b c hb hc => hs (Or.inl rfl) (Or.inr hb) (Or.inr hc),
     fun b c hb hc => hs (Or.inr hb) (Or.inr hc) (Or.inl rfl)⟩, _⟩
   rintro ⟨hs, ha, ha'⟩ b c d hb hc hd h
+  -- ⊢ b = c
   rw [mem_insert_iff] at hb hc hd
+  -- ⊢ b = c
   obtain rfl | hb := hb <;> obtain rfl | hc := hc
+  -- ⊢ b = c
+                            -- ⊢ c = c
+                            -- ⊢ b = c
   · rfl
+    -- 🎉 no goals
   all_goals obtain rfl | hd := hd
   · exact (mul_left_cancel h).symm
+    -- 🎉 no goals
   · exact ha hc hd h
+    -- 🎉 no goals
   · exact mul_right_cancel h
+    -- 🎉 no goals
   · exact (ha hb hd <| (mul_comm _ _).trans h).symm
+    -- 🎉 no goals
   · exact ha' hb hc h
+    -- 🎉 no goals
   · exact hs hb hc hd h
+    -- 🎉 no goals
 #align mul_salem_spencer_insert mulSalemSpencer_insert
 #align add_salem_spencer_insert addSalemSpencer_insert
 
 @[to_additive (attr := simp)]
 theorem mulSalemSpencer_pair (a b : α) : MulSalemSpencer ({a, b} : Set α) := by
   rw [mulSalemSpencer_insert]
+  -- ⊢ MulSalemSpencer {b} ∧ (∀ ⦃b_1 c : α⦄, b_1 ∈ {b} → c ∈ {b} → a * b_1 = c * c  …
   refine' ⟨mulSalemSpencer_singleton _, _, _⟩
+  -- ⊢ ∀ ⦃b_1 c : α⦄, b_1 ∈ {b} → c ∈ {b} → a * b_1 = c * c → a = b_1
   · rintro c d (rfl : c = b) (rfl : d = c)
+    -- ⊢ a * d = d * d → a = d
     exact mul_right_cancel
+    -- 🎉 no goals
   · rintro c d (rfl : c = b) (rfl : d = c) _
+    -- ⊢ d = d
     rfl
+    -- 🎉 no goals
 #align mul_salem_spencer_pair mulSalemSpencer_pair
 #align add_salem_spencer_pair addSalemSpencer_pair
 
 @[to_additive]
 theorem MulSalemSpencer.mul_left (hs : MulSalemSpencer s) : MulSalemSpencer ((· * ·) a '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
+  -- ⊢ (fun x x_1 => x * x_1) a b = (fun x x_1 => x * x_1) a c
   rw [mul_mul_mul_comm, mul_mul_mul_comm a d] at h
+  -- ⊢ (fun x x_1 => x * x_1) a b = (fun x x_1 => x * x_1) a c
   rw [hs hb hc hd (mul_left_cancel h)]
+  -- 🎉 no goals
 #align mul_salem_spencer.mul_left MulSalemSpencer.mul_left
 #align add_salem_spencer.add_left AddSalemSpencer.add_left
 
 @[to_additive]
 theorem MulSalemSpencer.mul_right (hs : MulSalemSpencer s) : MulSalemSpencer ((· * a) '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
+  -- ⊢ (fun x => x * a) b = (fun x => x * a) c
   rw [mul_mul_mul_comm, mul_mul_mul_comm d] at h
+  -- ⊢ (fun x => x * a) b = (fun x => x * a) c
   rw [hs hb hc hd (mul_right_cancel h)]
+  -- 🎉 no goals
 #align mul_salem_spencer.mul_right MulSalemSpencer.mul_right
 #align add_salem_spencer.add_right AddSalemSpencer.add_right
 
@@ -195,6 +221,7 @@ theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((· * ·) a '' s) ↔ Mu
     mul_left_cancel
       (hs (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) (mem_image_of_mem _ hd) <| by
         rw [mul_mul_mul_comm, h, mul_mul_mul_comm]),
+        -- 🎉 no goals
     MulSalemSpencer.mul_left⟩
 #align mul_salem_spencer_mul_left_iff mulSalemSpencer_mul_left_iff
 #align add_salem_spencer_add_left_iff addSalemSpencer_add_left_iff
@@ -205,6 +232,7 @@ theorem mulSalemSpencer_mul_right_iff : MulSalemSpencer ((· * a) '' s) ↔ MulS
     mul_right_cancel
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
         rw [mul_mul_mul_comm, h, mul_mul_mul_comm]),
+        -- 🎉 no goals
     MulSalemSpencer.mul_right⟩
 #align mul_salem_spencer_mul_right_iff mulSalemSpencer_mul_right_iff
 #align add_salem_spencer_add_right_iff addSalemSpencer_add_right_iff
@@ -220,8 +248,11 @@ theorem mulSalemSpencer_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     MulSalemSpencer (insert a s) ↔
       MulSalemSpencer s ∧ ∀ ⦃b c⦄, b ∈ s → c ∈ s → a * b = c * c → a = b := by
   refine' mulSalemSpencer_insert.trans _
+  -- ⊢ (MulSalemSpencer s ∧ (∀ ⦃b c : α⦄, b ∈ s → c ∈ s → a * b = c * c → a = b) ∧  …
   rw [← and_assoc]
+  -- ⊢ ((MulSalemSpencer s ∧ ∀ ⦃b c : α⦄, b ∈ s → c ∈ s → a * b = c * c → a = b) ∧  …
   exact and_iff_left fun b c hb hc h => ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
+  -- 🎉 no goals
 #align mul_salem_spencer_insert_of_lt mulSalemSpencer_insert_of_lt
 #align add_salem_spencer_insert_of_lt addSalemSpencer_insert_of_lt
 
@@ -234,15 +265,21 @@ variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 theorem MulSalemSpencer.mul_left₀ (hs : MulSalemSpencer s) (ha : a ≠ 0) :
     MulSalemSpencer ((· * ·) a '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
+  -- ⊢ (fun x x_1 => x * x_1) a b = (fun x x_1 => x * x_1) a c
   rw [mul_mul_mul_comm, mul_mul_mul_comm a d] at h
+  -- ⊢ (fun x x_1 => x * x_1) a b = (fun x x_1 => x * x_1) a c
   rw [hs hb hc hd (mul_left_cancel₀ (mul_ne_zero ha ha) h)]
+  -- 🎉 no goals
 #align mul_salem_spencer.mul_left₀ MulSalemSpencer.mul_left₀
 
 theorem MulSalemSpencer.mul_right₀ (hs : MulSalemSpencer s) (ha : a ≠ 0) :
     MulSalemSpencer ((· * a) '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
+  -- ⊢ (fun x => x * a) b = (fun x => x * a) c
   rw [mul_mul_mul_comm, mul_mul_mul_comm d] at h
+  -- ⊢ (fun x => x * a) b = (fun x => x * a) c
   rw [hs hb hc hd (mul_right_cancel₀ (mul_ne_zero ha ha) h)]
+  -- 🎉 no goals
 #align mul_salem_spencer.mul_right₀ MulSalemSpencer.mul_right₀
 
 theorem mulSalemSpencer_mul_left_iff₀ (ha : a ≠ 0) :
@@ -251,6 +288,7 @@ theorem mulSalemSpencer_mul_left_iff₀ (ha : a ≠ 0) :
     mul_left_cancel₀ ha
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
         rw [mul_mul_mul_comm, h, mul_mul_mul_comm]),
+        -- 🎉 no goals
     fun hs => hs.mul_left₀ ha⟩
 #align mul_salem_spencer_mul_left_iff₀ mulSalemSpencer_mul_left_iff₀
 
@@ -260,6 +298,7 @@ theorem mulSalemSpencer_mul_right_iff₀ (ha : a ≠ 0) :
     mul_right_cancel₀ ha
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
         rw [mul_mul_mul_comm, h, mul_mul_mul_comm]),
+        -- 🎉 no goals
     fun hs => hs.mul_right₀ ha⟩
 #align mul_salem_spencer_mul_right_iff₀ mulSalemSpencer_mul_right_iff₀
 
@@ -270,11 +309,17 @@ section Nat
 theorem addSalemSpencer_iff_eq_right {s : Set ℕ} :
     AddSalemSpencer s ↔ ∀ ⦃a b c⦄, a ∈ s → b ∈ s → c ∈ s → a + b = c + c → a = c := by
   refine' forall₄_congr fun a b c _ => forall₃_congr fun _ _ habc => ⟨_, _⟩
+  -- ⊢ a = b → a = c
   · rintro rfl
+    -- ⊢ a = c
     simp_rw [← two_mul] at habc
+    -- ⊢ a = c
     exact mul_left_cancel₀ two_ne_zero habc
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ a = b
     exact (add_left_cancel habc).symm
+    -- 🎉 no goals
 #align add_salem_spencer_iff_eq_right addSalemSpencer_iff_eq_right
 
 end Nat
@@ -286,6 +331,7 @@ theorem addSalemSpencer_frontier [LinearOrderedField 𝕜] [TopologicalSpace E] 
     [Module 𝕜 E] {s : Set E} (hs₀ : IsClosed s) (hs₁ : StrictConvex 𝕜 s) :
     AddSalemSpencer (frontier s) := by
   intro a b c ha hb hc habc
+  -- ⊢ a = b
   obtain rfl : (1 / 2 : 𝕜) • a + (1 / 2 : 𝕜) • b = c := by
     rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by norm_num), two_smul]
   exact
@@ -296,10 +342,15 @@ theorem addSalemSpencer_frontier [LinearOrderedField 𝕜] [TopologicalSpace E] 
 theorem addSalemSpencer_sphere [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E]
     (x : E) (r : ℝ) : AddSalemSpencer (sphere x r) := by
   obtain rfl | hr := eq_or_ne r 0
+  -- ⊢ AddSalemSpencer (sphere x 0)
   · rw [sphere_zero]
+    -- ⊢ AddSalemSpencer {x}
     exact addSalemSpencer_singleton _
+    -- 🎉 no goals
   · convert addSalemSpencer_frontier isClosed_ball (strictConvex_closedBall ℝ x r)
+    -- ⊢ sphere x r = frontier (closedBall x r)
     exact (frontier_closedBall _ hr).symm
+    -- 🎉 no goals
 #align add_salem_spencer_sphere addSalemSpencer_sphere
 
 end SalemSpencer
@@ -324,9 +375,13 @@ def mulRothNumber : Finset α →o ℕ :=
     Nat.findGreatest (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α))
       s.card, by
     rintro t u htu
+    -- ⊢ (fun s => Nat.findGreatest (fun m => ∃ t x, card t = m ∧ MulSalemSpencer ↑t) …
     refine' Nat.findGreatest_mono (fun m => _) (card_le_of_subset htu)
+    -- ⊢ (∃ t_1 x, card t_1 = m ∧ MulSalemSpencer ↑t_1) ≤ ∃ t x, card t = m ∧ MulSale …
     rintro ⟨v, hvt, hv⟩
+    -- ⊢ ∃ t x, card t = m ∧ MulSalemSpencer ↑t
     exact ⟨v, hvt.trans htu, hv⟩⟩
+    -- 🎉 no goals
 #align mul_roth_number mulRothNumber
 #align add_roth_number addRothNumber
 
@@ -341,6 +396,8 @@ theorem mulRothNumber_spec :
   @Nat.findGreatest_spec _ _
     (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) _ (Nat.zero_le _)
     ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
+                                       -- ⊢ MulSalemSpencer ∅
+                                                  -- 🎉 no goals
 #align mul_roth_number_spec mulRothNumber_spec
 #align add_roth_number_spec addRothNumber_spec
 
@@ -369,8 +426,11 @@ theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
 @[to_additive (attr := simp)]
 theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
   refine' MulSalemSpencer.roth_number_eq _
+  -- ⊢ MulSalemSpencer ↑{a}
   rw [coe_singleton]
+  -- ⊢ MulSalemSpencer {a}
   exact mulSalemSpencer_singleton a
+  -- 🎉 no goals
 #align mul_roth_number_singleton mulRothNumber_singleton
 #align add_roth_number_singleton addRothNumber_singleton
 
@@ -381,6 +441,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
     _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, (inter_eq_left_iff_subset _ _).2 hus]
+                                   -- 🎉 no goals
     _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
@@ -392,11 +453,17 @@ theorem mulRothNumber_union_le (s t : Finset α) :
 theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
     mulRothNumber s * mulRothNumber t ≤ mulRothNumber (s ×ˢ t) := by
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
+  -- ⊢ ↑mulRothNumber s * ↑mulRothNumber t ≤ ↑mulRothNumber (s ×ˢ t)
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
+  -- ⊢ ↑mulRothNumber s * ↑mulRothNumber t ≤ ↑mulRothNumber (s ×ˢ t)
   rw [← hucard, ← hvcard, ← card_product]
+  -- ⊢ card (u ×ˢ v) ≤ ↑mulRothNumber (s ×ˢ t)
   refine' MulSalemSpencer.le_mulRothNumber _ (product_subset_product hus hvt)
+  -- ⊢ MulSalemSpencer ↑(u ×ˢ v)
   rw [coe_product]
+  -- ⊢ MulSalemSpencer (↑u ×ˢ ↑v)
   exact hu.prod hv
+  -- 🎉 no goals
 #align le_mul_roth_number_product le_mulRothNumber_product
 #align le_add_roth_number_product le_addRothNumber_product
 
@@ -405,10 +472,15 @@ theorem mulRothNumber_lt_of_forall_not_mulSalemSpencer
     (h : ∀ t ∈ powersetLen n s, ¬MulSalemSpencer ((t : Finset α) : Set α)) :
     mulRothNumber s < n := by
   obtain ⟨t, hts, hcard, ht⟩ := mulRothNumber_spec s
+  -- ⊢ ↑mulRothNumber s < n
   rw [← hcard, ← not_le]
+  -- ⊢ ¬n ≤ card t
   intro hn
+  -- ⊢ False
   obtain ⟨u, hut, rfl⟩ := exists_smaller_set t n hn
+  -- ⊢ False
   exact h _ (mem_powersetLen.2 ⟨hut.trans hts, rfl⟩) (ht.mono hut)
+  -- 🎉 no goals
 #align mul_roth_number_lt_of_forall_not_mul_salem_spencer mulRothNumber_lt_of_forall_not_mulSalemSpencer
 #align add_roth_number_lt_of_forall_not_add_salem_spencer addRothNumber_lt_of_forall_not_addSalemSpencer
 
@@ -422,18 +494,28 @@ variable [CancelCommMonoid α] (s : Finset α) (a : α)
 theorem mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
   refine' le_antisymm _ _
+  -- ⊢ ↑mulRothNumber (map (mulLeftEmbedding a) s) ≤ ↑mulRothNumber s
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
+    -- ⊢ ↑mulRothNumber (map (mulLeftEmbedding a) s) ≤ ↑mulRothNumber s
     rw [subset_map_iff] at hus
+    -- ⊢ ↑mulRothNumber (map (mulLeftEmbedding a) s) ≤ ↑mulRothNumber s
     obtain ⟨u, hus, rfl⟩ := hus
+    -- ⊢ ↑mulRothNumber (map (mulLeftEmbedding a) s) ≤ ↑mulRothNumber s
     rw [coe_map] at hu
+    -- ⊢ ↑mulRothNumber (map (mulLeftEmbedding a) s) ≤ ↑mulRothNumber s
     rw [← hcard, card_map]
+    -- ⊢ card u ≤ ↑mulRothNumber s
     exact (mulSalemSpencer_mul_left_iff.1 hu).le_mulRothNumber hus
+    -- 🎉 no goals
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec s
+    -- ⊢ ↑mulRothNumber s ≤ ↑mulRothNumber (map (mulLeftEmbedding a) s)
     have h : MulSalemSpencer (u.map <| mulLeftEmbedding a : Set α) := by
       rw [coe_map]
       exact hu.mul_left
     convert h.le_mulRothNumber (map_subset_map.2 hus) using 1
+    -- ⊢ ↑mulRothNumber s = card (map (mulLeftEmbedding a) u)
     rw [card_map, hcard]
+    -- 🎉 no goals
 #align mul_roth_number_map_mul_left mulRothNumber_map_mul_left
 #align add_roth_number_map_add_left addRothNumber_map_add_left
 
@@ -441,6 +523,7 @@ theorem mulRothNumber_map_mul_left :
 theorem mulRothNumber_map_mul_right :
     mulRothNumber (s.map <| mulRightEmbedding a) = mulRothNumber s := by
   rw [← mul_left_embedding_eq_mul_right_embedding, mulRothNumber_map_mul_left s a]
+  -- 🎉 no goals
 #align mul_roth_number_map_mul_right mulRothNumber_map_mul_right
 #align add_roth_number_map_add_right addRothNumber_map_add_right
 
@@ -489,8 +572,11 @@ limit is actually `0`. -/
 theorem rothNumberNat_add_le (M N : ℕ) :
     rothNumberNat (M + N) ≤ rothNumberNat M + rothNumberNat N := by
   simp_rw [rothNumberNat_def]
+  -- ⊢ ↑addRothNumber (range (M + N)) ≤ ↑addRothNumber (range M) + ↑addRothNumber ( …
   rw [range_add_eq_union, ← addRothNumber_map_add_left (range N) M]
+  -- ⊢ ↑addRothNumber (range M ∪ map (addLeftEmbedding M) (range N)) ≤ ↑addRothNumb …
   exact addRothNumber_union_le _ _
+  -- 🎉 no goals
 #align roth_number_nat_add_le rothNumberNat_add_le
 
 @[simp]
@@ -500,11 +586,17 @@ theorem rothNumberNat_zero : rothNumberNat 0 = 0 :=
 
 theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat (b - a) := by
   obtain h | h := le_total b a
+  -- ⊢ ↑addRothNumber (Ico a b) = ↑rothNumberNat (b - a)
   · rw [tsub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
+    -- 🎉 no goals
   convert addRothNumber_map_add_left _ a
+  -- ⊢ Ico a b = map (addLeftEmbedding a) (range (b - a))
   rw [range_eq_Ico, map_eq_image]
+  -- ⊢ Ico a b = image (↑(addLeftEmbedding a)) (Ico 0 (b - a))
   convert(image_add_left_Ico 0 (b - a) _).symm
+  -- ⊢ b = a + (b - a)
   exact (add_tsub_cancel_of_le h).symm
+  -- 🎉 no goals
 #align add_roth_number_Ico addRothNumber_Ico
 
 open Asymptotics Filter
@@ -512,6 +604,7 @@ open Asymptotics Filter
 theorem rothNumberNat_isBigOWith_id :
     IsBigOWith 1 atTop (fun N => (rothNumberNat N : ℝ)) fun N => (N : ℝ) :=
   isBigOWith_of_le _ <| by simpa only [Real.norm_coe_nat, Nat.cast_le] using rothNumberNat_le
+                           -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align roth_number_nat_is_O_with_id rothNumberNat_isBigOWith_id
 

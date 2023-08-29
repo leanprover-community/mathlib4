@@ -108,8 +108,11 @@ set_option linter.uppercaseLean3 false in
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
+  -- ⊢ Hom.hom (actionDiagonalSucc G Nat.zero).hom f = (f 0, fun i => (f (Fin.castS …
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
+    -- 🎉 no goals
   · refine' Prod.ext rfl (funext fun x => _)
+    -- ⊢ Prod.snd (Hom.hom (actionDiagonalSucc G (Nat.succ n)).hom f) x = Prod.snd (f …
 /- Porting note: broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -120,20 +123,30 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
     · dsimp [actionDiagonalSucc]
+      -- ⊢ ↑(Equiv.piFinSuccAboveEquiv (fun x => G) 0).symm (↑(FunctorCategoryEquivalen …
       erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
+      -- ⊢ ↑(Equiv.piFinSuccAboveEquiv (fun x => G) 0).symm (↑(FunctorCategoryEquivalen …
       exact Fin.cases rfl (fun i => rfl) x
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply GroupCohomology.Resolution.actionDiagonalSucc_hom_apply
 
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
   revert g
+  -- ⊢ ∀ (g : G), Hom.hom (actionDiagonalSucc G n).inv (g, f) = g • partialProd f
   induction' n with n hn
+  -- ⊢ ∀ (g : G), Hom.hom (actionDiagonalSucc G Nat.zero).inv (g, f) = g • partialP …
   · intro g
+    -- ⊢ Hom.hom (actionDiagonalSucc G Nat.zero).inv (g, f) = g • partialProd f
     funext (x : Fin 1)
+    -- ⊢ Hom.hom (actionDiagonalSucc G Nat.zero).inv (g, f) x = (g • partialProd f) x
     simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
+    -- ⊢ Hom.hom (actionDiagonalSucc G Nat.zero).inv (g, f) 0 = g
     rfl
+    -- 🎉 no goals
   · intro g
+    -- ⊢ Hom.hom (actionDiagonalSucc G (Nat.succ n)).inv (g, f) = g • partialProd f
 /- Porting note: broken proof was
     ext
     dsimp only [actionDiagonalSucc]
@@ -145,12 +158,19 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     · intro i
       simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
     funext x
+    -- ⊢ Hom.hom (actionDiagonalSucc G (Nat.succ n)).inv (g, f) x = (g • partialProd  …
     dsimp [actionDiagonalSucc]
+    -- ⊢ ↑(Equiv.piFinSuccAboveEquiv (fun a => G) 0).symm (g, Hom.hom (actionDiagonal …
     erw [hn, Equiv.piFinSuccAboveEquiv_symm_apply]
+    -- ⊢ (fun f => Fin.insertNth 0 f.fst f.snd) (g, Limits.BinaryFan.fst (Limits.Bina …
     refine' Fin.cases _ (fun i => _) x
+    -- ⊢ (fun f => Fin.insertNth 0 f.fst f.snd) (g, Limits.BinaryFan.fst (Limits.Bina …
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
+      -- 🎉 no goals
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ←mul_assoc]
+      -- ⊢ Fin.insertNth 0 g (Limits.BinaryFan.fst (Limits.BinaryFan.mk (NatTrans.app ( …
       rfl
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_inv_apply GroupCohomology.Resolution.actionDiagonalSucc_inv_apply
 
@@ -189,11 +209,15 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     ((inv ((linearization k G).μ (Action.leftRegular G) { V := Fin n → G, ρ := 1 })).hom
       ((lmapDomain k k (actionDiagonalSucc G n).hom.hom) (single f a))) = _
   simp only [CategoryTheory.Functor.map_id, linearization_μ_inv_hom]
+  -- ⊢ ↑(𝟙 ((linearization k G).toLaxMonoidalFunctor.toFunctor.obj (Action.leftRegu …
   rw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
   erw [lcongr_single]
+  -- ⊢ ↑(𝟙 ((linearization k G).toLaxMonoidalFunctor.toFunctor.obj (Action.leftRegu …
   rw [TensorProduct.lid_symm_apply, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp_symm_single]
+  -- ⊢ ↑(𝟙 ((linearization k G).toLaxMonoidalFunctor.toFunctor.obj (Action.leftRegu …
   rfl
+  -- 🎉 no goals
 #align group_cohomology.resolution.diagonal_succ_hom_single GroupCohomology.Resolution.diagonalSucc_hom_single
 
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
@@ -215,12 +239,14 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
   rw [finsuppTensorFinsupp_single, lcongr_single, mapDomain_single, Equiv.refl_apply,
     actionDiagonalSucc_inv_apply]
   rfl
+  -- 🎉 no goals
 #align group_cohomology.resolution.diagonal_succ_inv_single_single GroupCohomology.Resolution.diagonalSucc_inv_single_single
 
 theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
       Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine' f.induction _ _
+  -- ⊢ ↑(diagonalSucc k G n).inv.hom (single g r ⊗ₜ[k] 0) = ↑(↑(Finsupp.lift ((Fin  …
 /- Porting note: broken proof was
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x ha hb hx
@@ -228,28 +254,41 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
       zero_mul, single_zero] -/
   · rw [TensorProduct.tmul_zero, map_zero, map_zero]
+    -- 🎉 no goals
   · intro _ _ _ _ _ hx
+    -- ⊢ ↑(diagonalSucc k G n).inv.hom (single g r ⊗ₜ[k] (single a✝² b✝ + f✝)) = ↑(↑( …
     rw [TensorProduct.tmul_add, map_add, map_add, hx]
+    -- ⊢ ↑(diagonalSucc k G n).inv.hom (single g r ⊗ₜ[k] single a✝² b✝) + ↑(↑(Finsupp …
     simp_rw [lift_apply, smul_single, smul_eq_mul, diagonalSucc_inv_single_single]
+    -- ⊢ (single (g • partialProd a✝²) (r * b✝) + sum f✝ fun x r_1 => single (g • par …
     rw [sum_single_index, mul_comm]
+    -- ⊢ single (g • partialProd a✝²) (0 * r) = 0
     · rw [zero_mul, single_zero]
+      -- 🎉 no goals
 #align group_cohomology.resolution.diagonal_succ_inv_single_left GroupCohomology.Resolution.diagonalSucc_inv_single_left
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
       Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine' g.induction _ _
+  -- ⊢ ↑(diagonalSucc k G n).inv.hom (0 ⊗ₜ[k] single f r) = ↑(↑(Finsupp.lift ((Fin  …
 /- Porting note: broken proof was
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
       TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
   · rw [TensorProduct.zero_tmul, map_zero, map_zero]
+    -- 🎉 no goals
   · intro _ _ _ _ _ hx
+    -- ⊢ ↑(diagonalSucc k G n).inv.hom ((single a✝² b✝ + f✝) ⊗ₜ[k] single f r) = ↑(↑( …
     rw [TensorProduct.add_tmul, map_add, map_add, hx]
+    -- ⊢ ↑(diagonalSucc k G n).inv.hom (single a✝² b✝ ⊗ₜ[k] single f r) + ↑(↑(Finsupp …
     simp_rw [lift_apply, smul_single', diagonalSucc_inv_single_single]
+    -- ⊢ (single (a✝² • partialProd f) (b✝ * r) + sum f✝ fun x r_1 => single (x • par …
     rw [sum_single_index]
+    -- ⊢ single (a✝² • partialProd f) (0 * r) = 0
     · rw [zero_mul, single_zero]
+      -- 🎉 no goals
 #align group_cohomology.resolution.diagonal_succ_inv_single_right GroupCohomology.Resolution.diagonalSucc_inv_single_right
 
 end Rep
@@ -268,7 +307,9 @@ def ofMulActionBasisAux :
   { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
+      -- ⊢ ↑src✝ (r • x) = ↑src✝ (r • x)
       congr 1
+      -- ⊢ r • x = r • x
 /- Porting note: broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · simp only [smul_zero]
@@ -280,9 +321,13 @@ def ofMulActionBasisAux :
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · rw [smul_zero, map_zero]
+        -- 🎉 no goals
       · rw [TensorProduct.smul_tmul', smul_eq_mul, ←ofMulAction_self_smul_eq_mul]
+        -- ⊢ (r • x) ⊗ₜ[k] y = ↑(↑(asAlgebraHom (Rep.ρ (Rep.leftRegular k G ⊗ Rep.trivial …
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
+        -- 🎉 no goals
       · rw [smul_add, hz, hy, map_add] }
+        -- 🎉 no goals
 #align group_cohomology.resolution.of_mul_action_basis_aux GroupCohomology.Resolution.ofMulActionBasisAux
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
@@ -338,7 +383,9 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
     LinearMap.comp_apply, Representation.repOfTprodIso_inv_apply,
     diagonalSucc_inv_single_single (1 : G) x, one_smul, one_mul] -/
   change f.hom ((diagonalSucc k G n).inv.hom (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
+  -- ⊢ ↑f.hom (↑(diagonalSucc k G n).inv.hom (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.sing …
   rw [diagonalSucc_inv_single_single, one_smul, one_mul]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
@@ -352,6 +399,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
       A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
   unfold diagonalHomEquiv
+  -- ⊢ ↑(↑(LinearEquiv.symm (LinearEquiv.trans (LinearEquiv.trans (Linear.homCongr  …
 /- Porting note: broken proof was
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Rep.leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Action.comp_hom, Iso.refl_inv,
@@ -366,18 +414,30 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   -- Porting note: This is a sure sign that coercions for morphisms in `ModuleCat`
   -- are still not set up properly.
   rw [ModuleCat.coe_comp]
+  -- ⊢ (↑(↑(TensorProduct.uncurry k (CoeSort.coe (of (Representation.ofMulAction k  …
   simp only [ModuleCat.coe_comp, Function.comp_apply]
+  -- ⊢ ↑(↑(TensorProduct.uncurry k (CoeSort.coe (of (Representation.ofMulAction k G …
   rw [diagonalSucc_hom_single]
+  -- ⊢ ↑(↑(TensorProduct.uncurry k (CoeSort.coe (of (Representation.ofMulAction k G …
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
+  -- ⊢ ↑(1 • ↑(↑(ρ ((ihom (of 1)).obj A)) (x 0)) (↑(Finsupp.llift (CoeSort.coe A) k …
   simp only [one_smul]
+  -- ⊢ ↑(↑(↑(ρ ((ihom (of 1)).obj A)) (x 0)) (↑(Finsupp.llift (CoeSort.coe A) k k ( …
   erw [Representation.linHom_apply]
+  -- ⊢ ↑(LinearMap.comp (↑(ρ A) (x 0)) (LinearMap.comp (↑(Finsupp.llift (CoeSort.co …
   simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+  -- ⊢ ↑(↑(ρ A) (x 0)) (↑(↑(Finsupp.llift (CoeSort.coe A) k k (Fin n → G)) f) (↑(↑( …
   erw [Finsupp.llift_apply]
+  -- ⊢ ↑(↑(ρ A) (x 0)) (↑(↑(Finsupp.lift (CoeSort.coe A) k (Fin n → G)) f) (↑(↑(ρ ( …
   rw [Finsupp.lift_apply]
+  -- ⊢ ↑(↑(ρ A) (x 0)) (Finsupp.sum (↑(↑(ρ (of 1)) (x 0)⁻¹) (Finsupp.single (fun i  …
   erw [Finsupp.sum_single_index]
   rw [one_smul]
+  -- ⊢ (0 • f fun i => (x (Fin.castSucc i))⁻¹ * x (Fin.succ i)) = 0
   · rw [zero_smul]
+    -- 🎉 no goals
   · rw [zero_smul]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_apply Rep.diagonalHomEquiv_symm_apply
 
@@ -392,8 +452,11 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
     Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
     Fin.partialProd_succ]
   congr
+  -- ⊢ (fun i => (Fin.partialProd g (Fin.succAbove (Fin.succ a) (Fin.castSucc i)))⁻ …
   ext
+  -- ⊢ (Fin.partialProd g (Fin.succAbove (Fin.succ a) (Fin.castSucc x✝)))⁻¹ * (Fin. …
   rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_partial_prod_succ Rep.diagonalHomEquiv_symm_partialProd_succ
 
@@ -424,9 +487,13 @@ def cechNerveTerminalFromIso :
     cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
+    -- ⊢ ((cechNerveTerminalFrom (Action.ofMulAction G G)).map f ≫ ((fun n => limit.i …
     dsimp only [cechNerveTerminalFrom, Pi.lift]
+    -- ⊢ (limit.lift (Discrete.functor fun b => Action.ofMulAction G G) (Fan.mk (∏ fu …
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
+    -- ⊢ NatTrans.app (Fan.mk (∏ fun x => Action.ofMulAction G G) fun i => Pi.π (fun  …
     exact (limit.isoLimitCone_hom_π _ _).symm
+    -- 🎉 no goals
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso
 
 /-- As a simplicial set, `cechNerveTerminalFrom` of a monoid `G` is isomorphic to the universal
@@ -519,6 +586,7 @@ theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
       Finset.univ.sum fun p : Fin (n + 1) =>
         Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) :=
   by simp [d]
+     -- 🎉 no goals
 #align group_cohomology.resolution.d_of GroupCohomology.Resolution.d_of
 
 variable (k G)
@@ -543,20 +611,28 @@ set_option linter.uppercaseLean3 false in
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
   refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
+  -- ⊢ ↑(LinearMap.comp (HomologicalComplex.d (resolution k G) (n + 1) n).hom (Fins …
   dsimp [GroupCohomology.resolution]
+  -- ⊢ ↑(HomologicalComplex.d ((alternatingFaceMapComplex (Rep k G)).obj (classifyi …
 /- Porting note: broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
   simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
     Functor.comp_map, ← intCast_smul (k := k) ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
     Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
   rw [LinearMap.coeFn_sum, Fintype.sum_apply]
+  -- ⊢ (Finset.sum Finset.univ fun c => ↑((-1) ^ ↑c • Finsupp.lmapDomain k k ((clas …
   erw [d_of (k := k) x]
+  -- ⊢ (Finset.sum Finset.univ fun c => ↑((-1) ^ ↑c • Finsupp.lmapDomain k k ((clas …
 /- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
 so using Finset.sum_congr to get rid of the binder -/
   refine' Finset.sum_congr rfl fun _ _ => _
+  -- ⊢ ↑((-1) ^ ↑x✝¹ • Finsupp.lmapDomain k k ((classifyingSpaceUniversalCover G).m …
   erw [LinearMap.smul_apply]
+  -- ⊢ (-1) ^ ↑x✝¹ • ↑(Finsupp.lmapDomain k k ((classifyingSpaceUniversalCover G).m …
   rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
+  -- ⊢ Finsupp.single (Action.Hom.hom ((classifyingSpaceUniversalCover G).map (Simp …
   rfl
+  -- 🎉 no goals
 #align group_cohomology.resolution.d_eq GroupCohomology.Resolution.d_eq
 
 section Exactness
@@ -604,6 +680,7 @@ def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
       Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
         Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.single _ _)
     simp only [Finsupp.mapDomain_single, Finsupp.total_single])
+    -- 🎉 no goals
 #align group_cohomology.resolution.ε GroupCohomology.Resolution.ε
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -612,13 +689,21 @@ a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
   show (HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _).f 0 = _
+  -- ⊢ HomologicalComplex.Hom.f ((HomotopyEquiv.ofIso (compForgetAugmentedIso k G). …
   simp only [HomologicalComplex.comp_f]
+  -- ⊢ HomologicalComplex.Hom.f (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).s …
   dsimp
+  -- ⊢ HomologicalComplex.Hom.f (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).s …
   convert Category.id_comp (X := (forget₂ToModuleCat k G).X 0) _
+  -- ⊢ HomologicalComplex.Hom.f (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).s …
   · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso, map_alternatingFaceMapComplex]
+    -- ⊢ HomologicalComplex.Hom.f (eqToIso (_ : ((SimplicialObject.whiskering (Rep k  …
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
+    -- 🎉 no goals
   trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
+  -- ⊢ (forget₂ (Rep k G) (ModuleCat k)).map (ε k G) = LinearMap.comp (Finsupp.tota …
   · dsimp
+    -- ⊢ (forget₂ (Rep k G) (ModuleCat k)).map (ε k G) = LinearMap.comp (Finsupp.tota …
     erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
         (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
@@ -626,24 +711,32 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
         LinearMap.id fun i => rfl,
       LinearMap.id_comp]
     rfl
+    -- 🎉 no goals
   · congr
+    -- ⊢ (Finsupp.total (⊤_ Type u) k k fun x => 1) = HomologicalComplex.Hom.f (Homot …
     · ext x
+      -- ⊢ ↑(LinearMap.comp (Finsupp.total (⊤_ Type u) k k fun x => 1) (Finsupp.lsingle …
       dsimp [HomotopyEquiv.ofIso, Finsupp.LinearEquiv.finsuppUnique]
+      -- ⊢ ↑(Finsupp.total (⊤_ Type u) k k fun x => 1) (Finsupp.single x 1) = ↑(Finsupp …
       rw [Finsupp.total_single, one_smul, @Unique.eq_default _ Types.terminalIso.toEquiv.unique x,
         Finsupp.single_eq_same]
     · exact @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq GroupCohomology.Resolution.forget₂ToModuleCatHomotopyEquiv_f_0_eq
 
 theorem d_comp_ε : (GroupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
+  -- ⊢ (HomologicalComplex.d (resolution k G) 1 0 ≫ ε k G).hom = 0.hom
   refine' LinearMap.ext fun x => _
+  -- ⊢ ↑(HomologicalComplex.d (resolution k G) 1 0 ≫ ε k G).hom x = ↑0.hom x
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
       ←(forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
     exact comp_zero
   exact LinearMap.ext_iff.1 this _
+  -- 🎉 no goals
 #align group_cohomology.resolution.d_comp_ε GroupCohomology.Resolution.d_comp_ε
 
 /-- The chain map from the standard resolution of `k` to `k[0]` given by `∑ nᵢgᵢ ↦ ∑ nᵢ` in
@@ -658,17 +751,25 @@ theorem εToSingle₀_comp_eq :
         (ChainComplex.single₀MapHomologicalComplex _).hom.app _ =
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
   refine' ChainComplex.to_single₀_ext _ _ _
+  -- ⊢ HomologicalComplex.Hom.f ((Functor.mapHomologicalComplex (forget₂ (Rep k G)  …
   dsimp
+  -- ⊢ (forget₂ (Rep k G) (ModuleCat k)).map (HomologicalComplex.Hom.f (εToSingle₀  …
   rw [Category.comp_id]
+  -- ⊢ (forget₂ (Rep k G) (ModuleCat k)).map (HomologicalComplex.Hom.f (εToSingle₀  …
   exact (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
+  -- 🎉 no goals
 #align group_cohomology.resolution.ε_to_single₀_comp_eq GroupCohomology.Resolution.εToSingle₀_comp_eq
 
 theorem quasiIsoOfForget₂εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso _
+  -- ⊢ QuasiIso ((Functor.mapHomologicalComplex (forget₂ (Rep k G) (ModuleCat k)) ( …
   rw [← εToSingle₀_comp_eq k G] at h
+  -- ⊢ QuasiIso ((Functor.mapHomologicalComplex (forget₂ (Rep k G) (ModuleCat k)) ( …
   haveI := h
+  -- ⊢ QuasiIso ((Functor.mapHomologicalComplex (forget₂ (Rep k G) (ModuleCat k)) ( …
   exact quasiIso_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
+  -- 🎉 no goals
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ GroupCohomology.Resolution.quasiIsoOfForget₂εToSingle₀
 
 instance : QuasiIso (εToSingle₀ k G) :=

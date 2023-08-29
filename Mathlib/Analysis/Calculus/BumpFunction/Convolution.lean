@@ -53,6 +53,7 @@ if `g` is constant on `Metric.ball x₀ φ.rOut`. -/
 theorem convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
     (φ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = integral μ φ • g x₀ := by
   simp_rw [convolution_eq_right' _ φ.support_eq.subset hg, lsmul_apply, integral_smul_const]
+  -- 🎉 no goals
 #align cont_diff_bump.convolution_eq_right ContDiffBump.convolution_eq_right
 
 variable [BorelSpace G]
@@ -65,7 +66,9 @@ if `g` is constant on `Metric.ball x₀ φ.rOut`. -/
 theorem normed_convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
     (φ.normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = g x₀ := by
   rw [convolution_eq_right' _ φ.support_normed_eq.subset hg]
+  -- ⊢ ∫ (t : G), ↑(↑(lsmul ℝ ℝ) (ContDiffBump.normed φ μ t)) (g x₀) ∂μ = g x₀
   exact integral_normed_smul φ μ (g x₀)
+  -- 🎉 no goals
 #align cont_diff_bump.normed_convolution_eq_right ContDiffBump.normed_convolution_eq_right
 
 variable [μ.IsAddLeftInvariant]
@@ -76,6 +79,7 @@ theorem dist_normed_convolution_le {x₀ : G} {ε : ℝ} (hmg : AEStronglyMeasur
     (hg : ∀ x ∈ ball x₀ φ.rOut, dist (g x) (g x₀) ≤ ε) :
     dist ((φ.normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) (g x₀) ≤ ε :=
   dist_convolution_le (by simp_rw [← dist_self (g x₀), hg x₀ (mem_ball_self φ.rOut_pos)])
+                          -- 🎉 no goals
     φ.support_normed_eq.subset φ.nonneg_normed φ.integral_normed hmg hg
 #align cont_diff_bump.dist_normed_convolution_le ContDiffBump.dist_normed_convolution_le
 
@@ -115,30 +119,50 @@ theorem ae_convolution_tendsto_right_of_locally_integrable
     (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
     Tendsto (fun i ↦ ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) := by
   have : IsAddHaarMeasure μ := ⟨⟩
+  -- ⊢ ∀ᵐ (x₀ : G) ∂μ, Tendsto (fun i => ContDiffBump.normed (φ i) μ ⋆[lsmul ℝ ℝ, x …
   -- By Lebesgue differentiation theorem, the average of `g` on a small ball converges
   -- almost everywhere to the value of `g` as the radius shrinks to zero.
   -- We will see that this set of points satisfies the desired conclusion.
   filter_upwards [(Besicovitch.vitaliFamily μ).ae_tendsto_average_norm_sub hg] with x₀ h₀
+  -- ⊢ Tendsto (fun i => ContDiffBump.normed (φ i) μ ⋆[lsmul ℝ ℝ, x₀] g) l (𝓝 (g x₀))
   simp only [convolution_eq_swap, lsmul_apply]
+  -- ⊢ Tendsto (fun i => ∫ (t : G), ContDiffBump.normed (φ i) μ (x₀ - t) • g t ∂μ)  …
   have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
     tendsto_nhdsWithin_iff.2 ⟨hφ, eventually_of_forall (fun i ↦ (φ i).rOut_pos)⟩
   have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
+  -- ⊢ Tendsto (fun i => ∫ (t : G), ContDiffBump.normed (φ i) μ (x₀ - t) • g t ∂μ)  …
   simp only [Function.comp] at this
+  -- ⊢ Tendsto (fun i => ∫ (t : G), ContDiffBump.normed (φ i) μ (x₀ - t) • g t ∂μ)  …
   apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this
   · apply eventually_of_forall (fun i ↦ ?_)
+    -- ⊢ IntegrableOn (fun y => g y) (closedBall x₀ (φ i).rOut)
     apply hg.integrableOn_isCompact
+    -- ⊢ IsCompact (closedBall x₀ (φ i).rOut)
     exact isCompact_closedBall _ _
+    -- 🎉 no goals
   · apply tendsto_const_nhds.congr (fun i ↦ ?_)
+    -- ⊢ 1 = ∫ (y : G), ContDiffBump.normed (φ i) μ (x₀ - y) ∂μ
     rw [← integral_neg_eq_self]
+    -- ⊢ 1 = ∫ (x : G), ContDiffBump.normed (φ i) μ (x₀ - -x) ∂μ
     simp only [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
+    -- 🎉 no goals
   · apply eventually_of_forall (fun i ↦ ?_)
+    -- ⊢ (support fun y => ContDiffBump.normed (φ i) μ (x₀ - y)) ⊆ closedBall x₀ (φ i …
     change support ((ContDiffBump.normed (φ i) μ) ∘ (fun y ↦ x₀ - y)) ⊆ closedBall x₀ (φ i).rOut
+    -- ⊢ support (ContDiffBump.normed (φ i) μ ∘ fun y => x₀ - y) ⊆ closedBall x₀ (φ i …
     simp only [support_comp_eq_preimage, support_normed_eq]
+    -- ⊢ (fun y => x₀ - y) ⁻¹' ball 0 (φ i).rOut ⊆ closedBall x₀ (φ i).rOut
     intro x hx
+    -- ⊢ x ∈ closedBall x₀ (φ i).rOut
     simp only [mem_preimage, mem_ball, dist_zero_right] at hx
+    -- ⊢ x ∈ closedBall x₀ (φ i).rOut
     simpa [dist_eq_norm_sub'] using hx.le
+    -- 🎉 no goals
   · filter_upwards [h'φ] with i hi x
+    -- ⊢ |ContDiffBump.normed (φ i) μ (x₀ - x)| ≤ K ^ FiniteDimensional.finrank ℝ G / …
     rw [abs_of_nonneg (nonneg_normed _ _), addHaar_closedBall_center]
+    -- ⊢ ContDiffBump.normed (φ i) μ (x₀ - x) ≤ K ^ FiniteDimensional.finrank ℝ G / E …
     exact (φ i).normed_le_div_measure_closedBall_rOut _ _ hi _
+    -- 🎉 no goals
 
 end ContDiffBump

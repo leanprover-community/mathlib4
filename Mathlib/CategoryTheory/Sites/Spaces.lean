@@ -49,12 +49,18 @@ def grothendieckTopology : GrothendieckTopology (Opens T)
   top_mem' X x hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
+    -- ⊢ ∃ U f_1, (Sieve.pullback f S).arrows f_1 ∧ y ∈ U
     refine' ⟨U ⊓ Y, homOfLE inf_le_right, _, hU, hy⟩
+    -- ⊢ (Sieve.pullback f S).arrows (homOfLE (_ : U ⊓ Y ≤ Y))
     apply S.downward_closed hg (homOfLE inf_le_left)
+    -- 🎉 no goals
   transitive' X S hS R hR x hx := by
     rcases hS x hx with ⟨U, f, hf, hU⟩
+    -- ⊢ ∃ U f, R.arrows f ∧ x ∈ U
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
+    -- ⊢ ∃ U f, R.arrows f ∧ x ∈ U
     exact ⟨_, g ≫ f, hg, hV⟩
+    -- 🎉 no goals
 #align opens.grothendieck_topology Opens.grothendieckTopology
 
 /-- The Grothendieck pretopology associated to a topological space. -/
@@ -64,14 +70,22 @@ def pretopology : Pretopology (Opens T)
   has_isos X Y f i x hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
+    -- ⊢ ∃ U f_1, Presieve.pullbackArrows f S f_1 ∧ x ∈ U
     refine' ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, _⟩
+    -- ⊢ x ∈ pullback g f
     have : U ⊓ Y ≤ pullback g f
+    -- ⊢ U ⊓ Y ≤ pullback g f
     refine' leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
+    -- ⊢ x ∈ pullback g f
     apply this ⟨hU, hx⟩
+    -- 🎉 no goals
   Transitive X S Ti hS hTi x hx := by
     rcases hS x hx with ⟨U, f, hf, hU⟩
+    -- ⊢ ∃ U f, Presieve.bind S Ti f ∧ x ∈ U
     rcases hTi f hf x hU with ⟨V, g, hg, hV⟩
+    -- ⊢ ∃ U f, Presieve.bind S Ti f ∧ x ∈ U
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
+    -- 🎉 no goals
 #align opens.pretopology Opens.pretopology
 
 /-- The pretopology associated to a space is the largest pretopology that
@@ -80,12 +94,19 @@ def pretopology : Pretopology (Opens T)
 theorem pretopology_ofGrothendieck :
     Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T := by
   apply le_antisymm
+  -- ⊢ Pretopology.ofGrothendieck (Opens T) (grothendieckTopology T) ≤ pretopology T
   · intro X R hR x hx
+    -- ⊢ ∃ U f, R f ∧ x ∈ U
     rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, _⟩, hU⟩
+    -- ⊢ ∃ U f, R f ∧ x ∈ U
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
+    -- 🎉 no goals
   · intro X R hR x hx
+    -- ⊢ ∃ U f, (Sieve.generate R).arrows f ∧ x ∈ U
     rcases hR x hx with ⟨U, f, hf, hU⟩
+    -- ⊢ ∃ U f, (Sieve.generate R).arrows f ∧ x ∈ U
     exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
+    -- 🎉 no goals
 #align opens.pretopology_of_grothendieck Opens.pretopology_ofGrothendieck
 
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
@@ -94,7 +115,9 @@ theorem pretopology_ofGrothendieck :
 theorem pretopology_toGrothendieck :
     Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T := by
   rw [← pretopology_ofGrothendieck]
+  -- ⊢ Pretopology.toGrothendieck (Opens T) (Pretopology.ofGrothendieck (Opens T) ( …
   apply (Pretopology.gi (Opens T)).l_u_eq
+  -- 🎉 no goals
 #align opens.pretopology_to_grothendieck Opens.pretopology_toGrothendieck
 
 end Opens

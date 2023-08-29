@@ -149,6 +149,7 @@ instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
     (fun X Y =>
       ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
     fun X Y => by aesop_cat
+                  -- 🎉 no goals
 #align category_theory.monoidal_category.full_braided_subcategory CategoryTheory.MonoidalCategory.fullBraidedSubcategory
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
@@ -158,6 +159,8 @@ instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
 def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C where
   toMonoidalFunctor := fullMonoidalSubcategoryInclusion P
   braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
+                    -- ⊢ LaxMonoidalFunctor.μ (fullMonoidalSubcategoryInclusion P).toLaxMonoidalFunct …
+                                            -- 🎉 no goals
 #align category_theory.monoidal_category.full_braided_subcategory_inclusion CategoryTheory.MonoidalCategory.fullBraidedSubcategoryInclusion
 
 instance fullBraidedSubcategory.full : Full (fullBraidedSubcategoryInclusion P).toFunctor :=
@@ -177,6 +180,8 @@ def fullBraidedSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
     BraidedFunctor (FullSubcategory P) (FullSubcategory P') where
   toMonoidalFunctor := fullMonoidalSubcategory.map h
   braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
+                    -- ⊢ LaxMonoidalFunctor.μ (fullMonoidalSubcategory.map h).toLaxMonoidalFunctor X  …
+                                            -- 🎉 no goals
 #align category_theory.monoidal_category.full_braided_subcategory.map CategoryTheory.MonoidalCategory.fullBraidedSubcategory.map
 
 instance fullBraidedSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
@@ -229,7 +234,13 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
           left_triangle := by ext Y; simp; exact ihom.ev_coev X.1 Y.1
+                              -- ⊢ NatTrans.app (CategoryTheory.whiskerRight (NatTrans.mk fun Y => NatTrans.app …
+                                     -- ⊢ (𝟙 X ⊗ NatTrans.app (ihom.coev X.obj) Y.obj) ≫ NatTrans.app (ihom.ev X.obj)  …
+                                           -- 🎉 no goals
           right_triangle := by ext Y; simp; exact ihom.coev_ev X.1 Y.1 } } }
+                               -- ⊢ NatTrans.app (CategoryTheory.whiskerLeft (FullSubcategory.lift P (fullSubcat …
+                                      -- ⊢ NatTrans.app (ihom.coev X.obj) ((ihom X.obj).obj Y.obj) ≫ (ihom X.obj).map ( …
+                                            -- 🎉 no goals
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

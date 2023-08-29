@@ -45,15 +45,25 @@ inductive Lex (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) : ∀
 
 theorem lex_iff : Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec a.2) b.2 := by
   constructor
+  -- ⊢ Lex r s a b → r a.fst b.fst ∨ ∃ h, s b.fst (h ▸ a.snd) b.snd
   · rintro (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
+    -- ⊢ r { fst := i✝, snd := a }.fst { fst := j✝, snd := b }.fst ∨ ∃ h, s { fst :=  …
     · exact Or.inl hij
+      -- 🎉 no goals
     · exact Or.inr ⟨rfl, hab⟩
+      -- 🎉 no goals
   · obtain ⟨i, a⟩ := a
+    -- ⊢ (r { fst := i, snd := a }.fst b.fst ∨ ∃ h, s b.fst (h ▸ { fst := i, snd := a …
     obtain ⟨j, b⟩ := b
+    -- ⊢ (r { fst := i, snd := a }.fst { fst := j, snd := b }.fst ∨ ∃ h, s { fst := j …
     dsimp only
+    -- ⊢ (r i j ∨ ∃ h, s j (h ▸ a) b) → Lex r s { fst := i, snd := a } { fst := j, sn …
     rintro (h | ⟨rfl, h⟩)
+    -- ⊢ Lex r s { fst := i, snd := a } { fst := j, snd := b }
     · exact Lex.left _ _ h
+      -- 🎉 no goals
     · exact Lex.right _ _ h
+      -- 🎉 no goals
 #align sigma.lex_iff Sigma.lex_iff
 
 instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
@@ -64,8 +74,11 @@ instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Pr
 theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i}
     (h : Lex r₁ s₁ a b) : Lex r₂ s₂ a b := by
   obtain ⟨a, b, hij⟩ | ⟨a, b, hab⟩ := h
+  -- ⊢ Lex r₂ s₂ { fst := i✝, snd := a } { fst := j✝, snd := b }
   · exact Lex.left _ _ (hr _ _ hij)
+    -- 🎉 no goals
   · exact Lex.right _ _ (hs _ _ _ hab)
+    -- 🎉 no goals
 #align sigma.lex.mono Sigma.Lex.mono
 
 theorem Lex.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) {a b : Σ i, α i} (h : Lex r₁ s a b) :
@@ -80,8 +93,13 @@ theorem Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, 
 
 theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap (s i)) b a := by
   constructor <;>
+  -- ⊢ Lex (Function.swap r) s a b → Lex r (fun i => Function.swap (s i)) b a
     · rintro (⟨a, b, h⟩ | ⟨a, b, h⟩)
+      -- ⊢ Lex r (fun i => Function.swap (s i)) { fst := j✝, snd := b } { fst := i✝, sn …
+      -- ⊢ Lex (Function.swap r) s { fst := j✝, snd := b } { fst := i✝, snd := a }
+      -- 🎉 no goals
       exacts [Lex.left _ _ h, Lex.right _ _ h]
+      -- 🎉 no goals
 #align sigma.lex_swap Sigma.lex_swap
 
 instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
@@ -90,23 +108,33 @@ instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
 instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
   ⟨by
     rintro _ (⟨a, b, hi⟩ | ⟨a, b, ha⟩)
+    -- ⊢ False
     · exact irrefl _ hi
+      -- 🎉 no goals
     · exact irrefl _ ha
+      -- 🎉 no goals
       ⟩
 
 instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, c, hk⟩ | ⟨_, c, hc⟩)
     · exact Lex.left _ _ (_root_.trans hij hk)
+      -- 🎉 no goals
     · exact Lex.left _ _ hij
+      -- 🎉 no goals
     · exact Lex.left _ _ hk
+      -- 🎉 no goals
     · exact Lex.right _ _ (_root_.trans hab hc)⟩
+      -- 🎉 no goals
 
 instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
+    -- ⊢ Lex r s { fst := j✝, snd := b } { fst := i✝, snd := a }
     · exact Lex.left _ _ (symm hij)
+      -- 🎉 no goals
     · exact Lex.right _ _ (symm hab)
+      -- 🎉 no goals
       ⟩
 
 attribute [local instance] IsAsymm.isIrrefl
@@ -115,30 +143,46 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
+      -- 🎉 no goals
     · exact (irrefl _ hij).elim
+      -- 🎉 no goals
     · exact (irrefl _ hji).elim
+      -- 🎉 no goals
     · exact ext rfl (heq_of_eq $ antisymm hab hba)⟩
+      -- 🎉 no goals
 
 instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
+    -- ⊢ Lex r s { fst := i, snd := a } { fst := j, snd := b } ∨ Lex r s { fst := j,  …
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
+      -- 🎉 no goals
     · obtain hab | hba := total_of (s i) a b
+      -- ⊢ Lex r s { fst := i, snd := a } { fst := i, snd := b } ∨ Lex r s { fst := i,  …
       · exact Or.inl (Lex.right _ _ hab)
+        -- 🎉 no goals
       · exact Or.inr (Lex.right _ _ hba)
+        -- 🎉 no goals
     · exact Or.inr (Lex.left _ _ hji)⟩
+      -- 🎉 no goals
 
 instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
+    -- ⊢ Lex r s { fst := i, snd := a } { fst := j, snd := b } ∨ { fst := i, snd := a …
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
+      -- 🎉 no goals
     · obtain hab | rfl | hba := trichotomous_of (s i) a b
       · exact Or.inl (Lex.right _ _ hab)
+        -- 🎉 no goals
       · exact Or.inr (Or.inl rfl)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr $ Lex.right _ _ hba)
+        -- 🎉 no goals
     · exact Or.inr (Or.inr $ Lex.left _ _ hji)⟩
+      -- 🎉 no goals
 
 end Sigma
 
@@ -152,15 +196,25 @@ variable {ι : Sort*} {α : ι → Sort*} {r r₁ r₂ : ι → ι → Prop} {s 
 theorem lex_iff {a b : Σ' i, α i} :
     Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec a.2) b.2 := by
   constructor
+  -- ⊢ Lex r s a b → r a.fst b.fst ∨ ∃ h, s b.fst (h ▸ a.snd) b.snd
   · rintro (⟨a, b, hij⟩ | ⟨i, hab⟩)
+    -- ⊢ r { fst := a₁✝, snd := a }.fst { fst := a₂✝, snd := b }.fst ∨ ∃ h, s { fst : …
     · exact Or.inl hij
+      -- 🎉 no goals
     · exact Or.inr ⟨rfl, hab⟩
+      -- 🎉 no goals
   · obtain ⟨i, a⟩ := a
+    -- ⊢ (r { fst := i, snd := a }.fst b.fst ∨ ∃ h, s b.fst (h ▸ { fst := i, snd := a …
     obtain ⟨j, b⟩ := b
+    -- ⊢ (r { fst := i, snd := a }.fst { fst := j, snd := b }.fst ∨ ∃ h, s { fst := j …
     dsimp only
+    -- ⊢ (r i j ∨ ∃ h, s j (h ▸ a) b) → Lex r s { fst := i, snd := a } { fst := j, sn …
     rintro (h | ⟨rfl, h⟩)
+    -- ⊢ Lex r s { fst := i, snd := a } { fst := j, snd := b }
     · exact Lex.left _ _ h
+      -- 🎉 no goals
     · exact Lex.right _ h
+      -- 🎉 no goals
 #align psigma.lex_iff PSigma.lex_iff
 
 instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
@@ -172,8 +226,11 @@ theorem Lex.mono {r₁ r₂ : ι → ι → Prop} {s₁ s₂ : ∀ i, α i → �
   (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ' i, α i}
     (h : Lex r₁ s₁ a b) : Lex r₂ s₂ a b := by
   obtain ⟨a, b, hij⟩ | ⟨i, hab⟩ := h
+  -- ⊢ Lex r₂ s₂ { fst := a₁✝, snd := a } { fst := a₂✝, snd := b }
   · exact Lex.left _ _ (hr _ _ hij)
+    -- 🎉 no goals
   · exact Lex.right _ (hs _ _ _ hab)
+    -- 🎉 no goals
 #align psigma.lex.mono PSigma.Lex.mono
 
 theorem Lex.mono_left {r₁ r₂ : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}

@@ -23,7 +23,9 @@ theorem UnivLE.ofEssSurj.{u, v} (w : EssSurj (uliftFunctor.{u, v} : Type v ⥤ T
     UnivLE.{u, v} :=
   fun a => by
     obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage a
+    -- ⊢ Small.{v, max u v} a
     exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
+    -- 🎉 no goals
 
 instance [UnivLE.{u, v}] : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) where
   mem_essImage α :=

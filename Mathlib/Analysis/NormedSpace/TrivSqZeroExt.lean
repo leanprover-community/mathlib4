@@ -52,6 +52,7 @@ theorem hasSum_fst_expSeries [Field 𝕜] [Ring R] [AddCommGroup M] [Algebra �
     (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
     HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
   simpa [expSeries_apply_eq] using h
+  -- 🎉 no goals
 #align triv_sq_zero_ext.has_sum_fst_exp_series TrivSqZeroExt.hasSum_fst_expSeries
 
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
@@ -63,19 +64,23 @@ theorem hasSum_snd_expSeries_of_smul_comm [Field 𝕜] [CharZero 𝕜] [Ring R] 
     (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
     HasSum (fun n => snd (expSeries 𝕜 (tsze R M) n fun _ => x)) (e • x.snd) := by
   simp_rw [expSeries_apply_eq] at *
+  -- ⊢ HasSum (fun n => snd ((↑(Nat.factorial n))⁻¹ • x ^ n)) (e • snd x)
   conv =>
     congr
     ext n
     rw [snd_smul, snd_pow_of_smul_comm _ _ hx, nsmul_eq_smul_cast 𝕜 n, smul_smul, inv_mul_eq_div, ←
       inv_div, ← smul_assoc]
   apply HasSum.smul_const
+  -- ⊢ HasSum (fun z => (↑(Nat.factorial z) / ↑z)⁻¹ • fst x ^ Nat.pred z) e
   rw [← hasSum_nat_add_iff' 1]
+  -- ⊢ HasSum (fun n => (↑(Nat.factorial (n + 1)) / ↑(n + 1))⁻¹ • fst x ^ Nat.pred  …
   rw [Finset.range_one, Finset.sum_singleton, Nat.cast_zero, div_zero, inv_zero, zero_smul,
     sub_zero]
   simp_rw [← Nat.succ_eq_add_one, Nat.pred_succ, Nat.factorial_succ, Nat.cast_mul, ←
     Nat.succ_eq_add_one,
     mul_div_cancel_left _ ((@Nat.cast_ne_zero 𝕜 _ _ _).mpr <| Nat.succ_ne_zero _)]
   exact h
+  -- 🎉 no goals
 #align triv_sq_zero_ext.has_sum_snd_exp_series_of_smul_comm TrivSqZeroExt.hasSum_snd_expSeries_of_smul_comm
 
 /-- If `exp R x.fst` converges to `e` then `exp R x` converges to `inl e + inr (e • x.snd)`. -/
@@ -109,20 +114,27 @@ variable [CompleteSpace R] [T2Space R] [T2Space M]
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
+  -- ⊢ (∑' (n : ℕ), ↑(expSeries 𝕜 (tsze R M) n) fun x_1 => x) = inl (∑' (n : ℕ), ↑( …
   refine' (hasSum_expSeries_of_smul_comm 𝕜 x hx _).tsum_eq
+  -- ⊢ HasSum (fun n => ↑(expSeries 𝕜 R n) fun x_1 => fst x) (∑' (n : ℕ), ↑(expSeri …
   exact expSeries_hasSum_exp _
+  -- 🎉 no goals
 #align triv_sq_zero_ext.exp_def_of_smul_comm TrivSqZeroExt.exp_def_of_smul_comm
 
 @[simp]
 theorem exp_inl (x : R) : exp 𝕜 (inl x : tsze R M) = inl (exp 𝕜 x) := by
   rw [exp_def_of_smul_comm, snd_inl, fst_inl, smul_zero, inr_zero, add_zero]
+  -- ⊢ MulOpposite.op (fst (inl x)) • snd (inl x) = fst (inl x) • snd (inl x)
   · rw [snd_inl, fst_inl, smul_zero, smul_zero]
+    -- 🎉 no goals
 #align triv_sq_zero_ext.exp_inl TrivSqZeroExt.exp_inl
 
 @[simp]
 theorem exp_inr (m : M) : exp 𝕜 (inr m : tsze R M) = 1 + inr m := by
   rw [exp_def_of_smul_comm, snd_inr, fst_inr, exp_zero, one_smul, inl_one]
+  -- ⊢ MulOpposite.op (fst (inr m)) • snd (inr m) = fst (inr m) • snd (inr m)
   · rw [snd_inr, fst_inr, MulOpposite.op_zero, zero_smul, zero_smul]
+    -- 🎉 no goals
 #align triv_sq_zero_ext.exp_inr TrivSqZeroExt.exp_inr
 
 end NormedRing
@@ -148,11 +160,13 @@ theorem exp_def (x : tsze R M) : exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp �
 @[simp]
 theorem fst_exp (x : tsze R M) : fst (exp 𝕜 x) = exp 𝕜 x.fst := by
   rw [exp_def, fst_add, fst_inl, fst_inr, add_zero]
+  -- 🎉 no goals
 #align triv_sq_zero_ext.fst_exp TrivSqZeroExt.fst_exp
 
 @[simp]
 theorem snd_exp (x : tsze R M) : snd (exp 𝕜 x) = exp 𝕜 x.fst • x.snd := by
   rw [exp_def, snd_add, snd_inl, snd_inr, zero_add]
+  -- 🎉 no goals
 #align triv_sq_zero_ext.snd_exp TrivSqZeroExt.snd_exp
 
 /-- Polar form of trivial-square-zero extension. -/

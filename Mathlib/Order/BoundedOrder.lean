@@ -83,10 +83,15 @@ section OrderTop
 `casesI topOrderOrNoTopOrder α`. -/
 noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
+  -- ⊢ OrderTop α ⊕' NoTopOrder α
   · exact PSum.inr ⟨H⟩
+    -- 🎉 no goals
   · push_neg at H
+    -- ⊢ OrderTop α ⊕' NoTopOrder α
     letI : Top α := ⟨Classical.choose H⟩
+    -- ⊢ OrderTop α ⊕' NoTopOrder α
     exact PSum.inl ⟨Classical.choose_spec H⟩
+    -- 🎉 no goals
 #align top_order_or_no_top_order topOrderOrNoTopOrder
 
 section LE
@@ -216,7 +221,9 @@ theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop
   H.maximal_of_maximal_image
     (fun p => by
       rw [h_top]
+      -- ⊢ p ≤ ⊤
       exact le_top)
+      -- 🎉 no goals
     x
 #align strict_mono.maximal_preimage_top StrictMono.maximal_preimage_top
 
@@ -224,16 +231,24 @@ theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : Par
     (B : OrderTop α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
     (@Top.top α (@OrderTop.toTop α hA.toLE A)) = (@Top.top α (@OrderTop.toTop α hB.toLE B)) := by
   cases PartialOrder.ext H
+  -- ⊢ ⊤ = ⊤
   apply top_unique
+  -- ⊢ ⊤ ≤ ⊤
   exact @le_top _ _ A _
+  -- 🎉 no goals
 #align order_top.ext_top OrderTop.ext_top
 
 theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
   rcases A with ⟨ha⟩
+  -- ⊢ mk ha = B
   rcases B with ⟨hb⟩
+  -- ⊢ mk ha = mk hb
   congr
+  -- ⊢ toTop✝¹ = toTop✝
   ext
+  -- ⊢ ⊤ = ⊤
   exact le_antisymm (hb _) (ha _)
+  -- 🎉 no goals
 #align order_top.ext OrderTop.ext
 
 /-- An order is an `OrderBot` if it has a least element.
@@ -249,10 +264,15 @@ section OrderBot
 `casesI botOrderOrNoBotOrder α`. -/
 noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
+  -- ⊢ OrderBot α ⊕' NoBotOrder α
   · exact PSum.inr ⟨H⟩
+    -- 🎉 no goals
   · push_neg at H
+    -- ⊢ OrderBot α ⊕' NoBotOrder α
     letI : Bot α := ⟨Classical.choose H⟩
+    -- ⊢ OrderBot α ⊕' NoBotOrder α
     exact PSum.inl ⟨Classical.choose_spec H⟩
+    -- 🎉 no goals
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
 
 section LE
@@ -425,7 +445,9 @@ theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [Orde
   H.minimal_of_minimal_image
     (fun p => by
       rw [h_bot]
+      -- ⊢ ⊥ ≤ p
       exact bot_le)
+      -- 🎉 no goals
     x
 #align strict_mono.minimal_preimage_bot StrictMono.minimal_preimage_bot
 
@@ -433,16 +455,24 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
     (B : OrderBot α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
     (@Bot.bot α (@OrderBot.toBot α hA.toLE A)) = (@Bot.bot α (@OrderBot.toBot α hB.toLE B)) := by
   cases PartialOrder.ext H
+  -- ⊢ ⊥ = ⊥
   apply bot_unique
+  -- ⊢ ⊥ ≤ ⊥
   exact @bot_le _ _ A _
+  -- 🎉 no goals
 #align order_bot.ext_bot OrderBot.ext_bot
 
 theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
   rcases A with ⟨ha⟩
+  -- ⊢ mk ha = B
   rcases B with ⟨hb⟩
+  -- ⊢ mk ha = mk hb
   congr
+  -- ⊢ toBot✝¹ = toBot✝
   ext
+  -- ⊢ ⊥ = ⊥
   exact le_antisymm (ha _) (hb _)
+  -- 🎉 no goals
 #align order_bot.ext OrderBot.ext
 
 section SemilatticeSupTop
@@ -477,6 +507,8 @@ theorem sup_bot_eq : a ⊔ ⊥ = a :=
 
 @[simp]
 theorem sup_eq_bot_iff : a ⊔ b = ⊥ ↔ a = ⊥ ∧ b = ⊥ := by rw [eq_bot_iff, sup_le_iff]; simp
+                                                         -- ⊢ a ≤ ⊥ ∧ b ≤ ⊥ ↔ a = ⊥ ∧ b = ⊥
+                                                                                      -- 🎉 no goals
 #align sup_eq_bot_iff sup_eq_bot_iff
 
 end SemilatticeSupBot
@@ -532,10 +564,15 @@ instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : Bounde
 
 theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B := by
   have ht : @BoundedOrder.toOrderTop α _ A = @BoundedOrder.toOrderTop α _ B := OrderTop.ext
+  -- ⊢ A = B
   have hb : @BoundedOrder.toOrderBot α _ A = @BoundedOrder.toOrderBot α _ B := OrderBot.ext
+  -- ⊢ A = B
   cases A
+  -- ⊢ mk = B
   cases B
+  -- ⊢ mk = mk
   congr
+  -- 🎉 no goals
 #align bounded_order.ext BoundedOrder.ext
 
 section Logic
@@ -712,8 +749,10 @@ def OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
   ⟨fun a =>
     map_le _ _ <| by
       rw [map_top]
+      -- ⊢ f a ≤ ⊤
       -- Porting note: lean3 didn't need the type annotation
       exact @le_top β _ _ _⟩
+      -- 🎉 no goals
 #align order_top.lift OrderTop.lift
 
 -- See note [reducible non-instances]
@@ -724,8 +763,10 @@ def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
   ⟨fun a =>
     map_le _ _ <| by
       rw [map_bot]
+      -- ⊢ ⊥ ≤ f a
       -- Porting note: lean3 didn't need the type annotation
       exact @bot_le β _ _ _⟩
+      -- 🎉 no goals
 #align order_bot.lift OrderBot.lift
 
 -- See note [reducible non-instances]
@@ -793,12 +834,14 @@ theorem coe_top [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) : ((⊤ : Su
 theorem coe_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : { x // p x }} :
     (x : α) = ⊥ ↔ x = ⊥ := by
   rw [← coe_bot hbot, ext_iff]
+  -- 🎉 no goals
 #align subtype.coe_eq_bot_iff Subtype.coe_eq_bot_iff
 
 @[simp]
 theorem coe_eq_top_iff [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) {x : { x // p x }} :
     (x : α) = ⊤ ↔ x = ⊤ := by
   rw [← coe_top htop, ext_iff]
+  -- 🎉 no goals
 #align subtype.coe_eq_top_iff Subtype.coe_eq_top_iff
 
 @[simp]
@@ -906,6 +949,7 @@ theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ :=
 @[simp]
 theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
   simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]
+  -- 🎉 no goals
 #align min_eq_bot min_eq_bot
 
 @[simp]

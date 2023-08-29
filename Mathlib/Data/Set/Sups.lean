@@ -73,6 +73,7 @@ variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
 
 @[simp]
 theorem mem_sups : c ∈ s ⊻ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊔ b = c := by simp [(· ⊻ ·)]
+                                                                 -- 🎉 no goals
 #align set.mem_sups Set.mem_sups
 
 theorem sup_mem_sups : a ∈ s → b ∈ t → a ⊔ b ∈ s ⊻ t :=
@@ -185,7 +186,9 @@ theorem image_sup_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊔ x_1) s t 
   have : (s ×ˢ t).image (uncurry (· ⊔ ·)) = Set.image2 (fun x x_1 => x ⊔ x_1) s t := by
     simp only [ge_iff_le, image_uncurry_prod]
   rw [← this]
+  -- ⊢ (uncurry fun x x_1 => x ⊔ x_1) '' s ×ˢ t = s ⊻ t
   exact image_uncurry_prod _ _ _
+  -- 🎉 no goals
 #align set.image_sup_prod Set.image_sup_prod
 
 theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) :=
@@ -228,6 +231,7 @@ variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
 
 @[simp]
 theorem mem_infs : c ∈ s ⊼ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊓ b = c := by simp [(· ⊼ ·)]
+                                                                 -- 🎉 no goals
 #align set.mem_infs Set.mem_infs
 
 theorem inf_mem_infs : a ∈ s → b ∈ t → a ⊓ b ∈ s ⊼ t :=
@@ -340,7 +344,9 @@ theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t 
   have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
     simp only [@ge_iff_le, @Set.image_uncurry_prod]
   rw [← this]
+  -- ⊢ (uncurry fun x x_1 => x ⊓ x_1) '' s ×ˢ t = s ⊼ t
   exact image_uncurry_prod _ _ _
+  -- 🎉 no goals
 #align set.image_inf_prod Set.image_inf_prod
 
 theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) :=
@@ -397,24 +403,36 @@ open SetFamily
 theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
     upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t := by
   ext a
+  -- ⊢ a ∈ ↑(upperClosure (s ⊻ t)) ↔ a ∈ ↑(upperClosure s ⊔ upperClosure t)
   simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups, exists_and_left, exists_prop,
     UpperSet.coe_sup, Set.mem_inter_iff]
   constructor
+  -- ⊢ (∃ a_1, (∃ a, a ∈ s ∧ ∃ b, b ∈ t ∧ a ⊔ b = a_1) ∧ a_1 ≤ a) → (∃ a_2, a_2 ∈ s …
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
+    -- ⊢ (∃ a_1, a_1 ∈ s ∧ a_1 ≤ a) ∧ ∃ a_1, a_1 ∈ t ∧ a_1 ≤ a
     exact ⟨⟨b, hb, le_sup_left.trans ha⟩, c, hc, le_sup_right.trans ha⟩
+    -- 🎉 no goals
   · rintro ⟨⟨b, hb, hab⟩, c, hc, hac⟩
+    -- ⊢ ∃ a_1, (∃ a, a ∈ s ∧ ∃ b, b ∈ t ∧ a ⊔ b = a_1) ∧ a_1 ≤ a
     exact ⟨_, ⟨b, hb, c, hc, rfl⟩, sup_le hab hac⟩
+    -- 🎉 no goals
 #align upper_closure_sups upperClosure_sups
 
 @[simp]
 theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
     lowerClosure (s ⊼ t) = lowerClosure s ⊓ lowerClosure t := by
   ext a
+  -- ⊢ a ∈ ↑(lowerClosure (s ⊼ t)) ↔ a ∈ ↑(lowerClosure s ⊓ lowerClosure t)
   simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs, exists_and_left, exists_prop,
     LowerSet.coe_sup, Set.mem_inter_iff]
   constructor
+  -- ⊢ (∃ a_1, (∃ a, a ∈ s ∧ ∃ b, b ∈ t ∧ a ⊓ b = a_1) ∧ a ≤ a_1) → a ∈ lowerClosur …
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
+    -- ⊢ a ∈ lowerClosure s ⊓ lowerClosure t
     exact ⟨⟨b, hb, ha.trans inf_le_left⟩, c, hc, ha.trans inf_le_right⟩
+    -- 🎉 no goals
   · rintro ⟨⟨b, hb, hab⟩, c, hc, hac⟩
+    -- ⊢ ∃ a_1, (∃ a, a ∈ s ∧ ∃ b, b ∈ t ∧ a ⊓ b = a_1) ∧ a ≤ a_1
     exact ⟨_, ⟨b, hb, c, hc, rfl⟩, le_inf hab hac⟩
+    -- 🎉 no goals
 #align lower_closure_infs lowerClosure_infs

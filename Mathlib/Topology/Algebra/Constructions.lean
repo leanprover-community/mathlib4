@@ -114,6 +114,7 @@ theorem embedding_embedProduct : Embedding (embedProduct M) :=
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
   simp only [inducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
+                                                       -- 🎉 no goals
 #align units.topology_eq_inf Units.topology_eq_inf
 #align add_units.topology_eq_inf AddUnits.topology_eq_inf
 
@@ -125,11 +126,15 @@ lemma embedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     Embedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, ext⟩
+  -- ⊢ instTopologicalSpaceUnits = TopologicalSpace.induced val inst✝
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
   intros u s hs
+  -- ⊢ s ∈ Filter.map (fun u => ↑u⁻¹) (𝓝 u)
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
+  -- ⊢ (fun u => f ↑u) ⁻¹' s ∈ comap val (𝓝 ↑u)
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
+  -- 🎉 no goals
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/

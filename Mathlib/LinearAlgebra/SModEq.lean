@@ -43,6 +43,7 @@ protected theorem SModEq.def :
 namespace SModEq
 
 theorem sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def, Submodule.Quotient.eq]
+                                                   -- 🎉 no goals
 #align smodeq.sub_mem SModEq.sub_mem
 
 @[simp]
@@ -53,6 +54,7 @@ theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
 @[simp]
 theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
   rw [SModEq.def, Submodule.Quotient.eq, mem_bot, sub_eq_zero]
+  -- 🎉 no goals
 #align smodeq.bot SModEq.bot
 
 @[mono]
@@ -84,15 +86,20 @@ nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
+  -- ⊢ Submodule.Quotient.mk (x₁ + x₂) = Submodule.Quotient.mk (y₁ + y₂)
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]
+  -- 🎉 no goals
 #align smodeq.add SModEq.add
 
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
+  -- ⊢ Submodule.Quotient.mk (c • x) = Submodule.Quotient.mk (c • y)
   simp_rw [Quotient.mk_smul, hxy]
+  -- 🎉 no goals
 #align smodeq.smul SModEq.smul
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
+                                            -- 🎉 no goals
 #align smodeq.zero SModEq.zero
 
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
@@ -107,9 +114,13 @@ theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V
 theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
   rw [SModEq.def] at h ⊢
+  -- ⊢ Submodule.Quotient.mk (Polynomial.eval x f) = Submodule.Quotient.mk (Polynom …
   show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)
+  -- ⊢ ↑(Ideal.Quotient.mk I) (Polynomial.eval x f) = ↑(Ideal.Quotient.mk I) (Polyn …
   replace h : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := h
+  -- ⊢ ↑(Ideal.Quotient.mk I) (Polynomial.eval x f) = ↑(Ideal.Quotient.mk I) (Polyn …
   rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval₂_at_apply, h]
+  -- 🎉 no goals
 #align smodeq.eval SModEq.eval
 
 end SModEq

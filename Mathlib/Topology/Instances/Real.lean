@@ -44,6 +44,8 @@ theorem Real.uniformContinuous_add : UniformContinuous fun p : ℝ × ℝ => p.1
 theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [Real.dist_eq, neg_sub_neg] using h⟩
+                        -- ⊢ dist (-a✝) (-b✝) < ε
+                                             -- 🎉 no goals
 #align real.uniform_continuous_neg Real.uniformContinuous_neg
 
 instance : ContinuousStar ℝ := ⟨continuous_id⟩
@@ -53,26 +55,32 @@ instance : UniformAddGroup ℝ :=
 
 -- short-circuit type class inference
 instance : TopologicalAddGroup ℝ := by infer_instance
+                                       -- 🎉 no goals
 instance : TopologicalRing ℝ := inferInstance
 instance : TopologicalDivisionRing ℝ := inferInstance
 
 instance : ProperSpace ℝ where
   isCompact_closedBall x r := by
     rw [Real.closedBall_eq_Icc]
+    -- ⊢ IsCompact (Icc (x - r) (x + r))
     apply isCompact_Icc
+    -- 🎉 no goals
 
 instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
   isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
+                                         -- 🎉 no goals
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
     let ⟨p, hap, hpu⟩ := exists_rat_btwn hu
     ⟨Ioo q p, by
       simp only [mem_iUnion]
+      -- ⊢ ∃ i i_1 i_2, Ioo ↑q ↑p ∈ {Ioo ↑i ↑i_1}
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun a' ⟨hqa', ha'p⟩ =>
+      -- 🎉 no goals
       h ⟨hlq.trans hqa', ha'p.trans hpu⟩⟩
 #align real.is_topological_basis_Ioo_rat Real.isTopologicalBasis_Ioo_rat
 
@@ -90,6 +98,7 @@ lemma uniform_embedding_mul_rat {q : ℚ} (hq : q ≠ 0) : uniform_embedding ((*
 _ -/
 theorem Real.mem_closure_iff {s : Set ℝ} {x : ℝ} : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, |y - x| < ε :=
   by simp [mem_closure_iff_nhds_basis nhds_basis_ball, Real.dist_eq]
+     -- 🎉 no goals
 #align real.mem_closure_iff Real.mem_closure_iff
 
 theorem Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀ x ∈ s, r ≤ |x|) :
@@ -141,16 +150,26 @@ protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p
 
 instance : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
+  -- ⊢ ∀ (u : ℕ → ℝ), CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)
   intro u hu
+  -- ⊢ ∃ a, Tendsto u atTop (𝓝 a)
   let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩
+  -- ⊢ ∃ a, Tendsto u atTop (𝓝 a)
   refine' ⟨c.lim, fun s h => _⟩
+  -- ⊢ s ∈ map u atTop
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
+  -- ⊢ s ∈ map u atTop
   have := c.equiv_lim ε ε0
+  -- ⊢ s ∈ map u atTop
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
+  -- ⊢ ∃ a, ∀ (b : ℕ), b ≥ a → b ∈ u ⁻¹' s
   refine' this.imp fun N hN n hn => hε (hN n hn)
+  -- 🎉 no goals
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
+  -- ⊢ TotallyBounded (Ioo (x - ε) (x + ε))
+                         -- 🎉 no goals
 #align real.totally_bounded_ball Real.totallyBounded_ball
 
 section
@@ -164,6 +183,7 @@ theorem closure_of_rat_image_lt {q : ℚ} :
       let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
       let ⟨p, h₁, h₂⟩ := exists_rat_btwn ((lt_add_iff_pos_right x).2 ε0)
       ⟨p, hε <| by rwa [mem_ball, Real.dist_eq, abs_of_pos (sub_pos.2 h₁), sub_lt_iff_lt_add'],
+                   -- 🎉 no goals
         mem_image_of_mem _ <| Rat.cast_lt.1 <| lt_of_le_of_lt hx.out h₁⟩
 #align closure_of_rat_image_lt closure_of_rat_image_lt
 
@@ -178,11 +198,15 @@ lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
 theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelow s ∧ BddAbove s :=
   ⟨by
     intro bdd
+    -- ⊢ BddBelow s ∧ BddAbove s
     rcases (bounded_iff_subset_ball 0).1 bdd with ⟨r, hr⟩
+    -- ⊢ BddBelow s ∧ BddAbove s
     -- hr : s ⊆ closed_ball 0 r
     rw [Real.closedBall_eq_Icc] at hr
+    -- ⊢ BddBelow s ∧ BddAbove s
     -- hr : s ⊆ Icc (0 - r) (0 + r)
     exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩,
+    -- 🎉 no goals
     fun h => bounded_of_bddAbove_of_bddBelow h.2 h.1⟩
 #align real.bounded_iff_bdd_below_bdd_above Real.bounded_iff_bddBelow_bddAbove
 
@@ -202,7 +226,9 @@ namespace Function
 theorem Periodic.compact_of_continuous [TopologicalSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
     (hc : c ≠ 0) (hf : Continuous f) : IsCompact (range f) := by
   rw [← hp.image_uIcc hc 0]
+  -- ⊢ IsCompact (f '' [[0, 0 + c]])
   exact isCompact_uIcc.image hf
+  -- 🎉 no goals
 #align function.periodic.compact_of_continuous Function.Periodic.compact_of_continuous
 
 @[deprecated Function.Periodic.compact_of_continuous]
@@ -231,19 +257,30 @@ open Metric
 dependencies. -/
 instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   rcases eq_or_ne a 0 with (rfl | ha)
+  -- ⊢ DiscreteTopology { x // x ∈ AddSubgroup.zmultiples 0 }
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
+    -- ⊢ DiscreteTopology { x // x ∈ ⊥ }
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
+    -- 🎉 no goals
   rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  -- ⊢ ∃ t, IsOpen t ∧ Subtype.val ⁻¹' t = {0}
   refine' ⟨ball 0 |a|, isOpen_ball, _⟩
+  -- ⊢ Subtype.val ⁻¹' ball 0 |a| = {0}
   ext ⟨x, hx⟩
+  -- ⊢ { val := x, property := hx } ∈ Subtype.val ⁻¹' ball 0 |a| ↔ { val := x, prop …
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
+  -- ⊢ { val := k • a, property := hx } ∈ Subtype.val ⁻¹' ball 0 |a| ↔ { val := k • …
   simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]
+  -- 🎉 no goals
 
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
 theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by
   apply (castAddHom ℝ).tendsto_coe_cofinite_of_discrete cast_injective
+  -- ⊢ DiscreteTopology { x // x ∈ AddMonoidHom.range (castAddHom ℝ) }
   rw [range_castAddHom]
+  -- ⊢ DiscreteTopology { x // x ∈ AddSubgroup.zmultiples 1 }
   infer_instance
+  -- 🎉 no goals
 #align int.tendsto_coe_cofinite Int.tendsto_coe_cofinite
 
 /-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
@@ -251,8 +288,11 @@ inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
   apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete $ smul_left_injective ℤ ha
+  -- ⊢ DiscreteTopology { x // x ∈ AddMonoidHom.range (↑(zmultiplesHom ℝ) a) }
   rw [AddSubgroup.range_zmultiplesHom]
+  -- ⊢ DiscreteTopology { x // x ∈ AddSubgroup.zmultiples a }
   infer_instance
+  -- 🎉 no goals
 #align int.tendsto_zmultiples_hom_cofinite Int.tendsto_zmultiplesHom_cofinite
 
 end Int

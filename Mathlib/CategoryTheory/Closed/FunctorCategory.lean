@@ -38,11 +38,17 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
   { app := fun X => (ihom.coev (F.obj X)).app (G.obj X)
     naturality := by
       intro X Y f
+      -- ⊢ ((𝟭 (D ⥤ C)).obj G).map f ≫ (fun X => NatTrans.app (ihom.coev (F.obj X)) (G. …
       dsimp
+      -- ⊢ G.map f ≫ NatTrans.app (ihom.coev (F.obj Y)) (G.obj Y) = NatTrans.app (ihom. …
       simp only [ihom.coev_naturality, closedIhom_obj_map, Monoidal.tensorObj_map]
+      -- ⊢ NatTrans.app (ihom.coev (F.obj Y)) (G.obj X) ≫ (ihom (F.obj Y)).map (𝟙 (F.ob …
       dsimp
+      -- ⊢ NatTrans.app (ihom.coev (F.obj Y)) (G.obj X) ≫ (ihom (F.obj Y)).map (𝟙 (F.ob …
       rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
+      -- ⊢ NatTrans.app (ihom.coev (F.obj Y)) (G.obj X) ≫ (ihom (F.obj Y)).map (𝟙 (F.ob …
       simp }
+      -- 🎉 no goals
 #align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
@@ -53,10 +59,15 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
   { app := fun X => (ihom.ev (F.obj X)).app (G.obj X)
     naturality := by
       intro X Y f
+      -- ⊢ ((closedIhom F ⋙ tensorLeft F).obj G).map f ≫ (fun X => NatTrans.app (ihom.e …
       dsimp
+      -- ⊢ (F.map f ⊗ ((closedIhom F).obj G).map f) ≫ NatTrans.app (ihom.ev (F.obj Y))  …
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
+      -- ⊢ (F.map f ⊗ (ihom (F.obj X)).map (G.map f) ≫ NatTrans.app (pre (CategoryTheor …
       rw [← tensor_id_comp_id_tensor, id_tensor_comp]
+      -- ⊢ ((F.map f ⊗ 𝟙 ((ihom (F.obj X)).obj (G.obj X))) ≫ (𝟙 (F.obj Y) ⊗ (ihom (F.ob …
       simp }
+      -- 🎉 no goals
 #align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is
@@ -76,6 +87,7 @@ with the pointwise monoidal structure, is monoidal closed. -/
 @[simps!]
 instance monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
+               -- 🎉 no goals
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
 
 theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=

@@ -36,11 +36,13 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
 @[simp]
 theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩
+               -- 🎉 no goals
 #align units.mul_left_eq_zero Units.mul_left_eq_zero
 
 @[simp]
 theorem mul_right_eq_zero (u : M₀ˣ) {a : M₀} : ↑u * a = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
+               -- 🎉 no goals
 #align units.mul_right_eq_zero Units.mul_right_eq_zero
 
 end Units
@@ -67,6 +69,7 @@ end IsUnit
 @[simp]
 theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
+                                                -- 🎉 no goals
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 #align is_unit_zero_iff isUnit_zero_iff
 
@@ -92,6 +95,7 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
+  -- 🎉 no goals
 #align ring.inverse_unit Ring.inverse_unit
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -102,38 +106,50 @@ theorem inverse_non_unit (x : M₀) (h : ¬IsUnit x) : inverse x = 0 :=
 
 theorem mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * inverse x = 1 := by
   rcases h with ⟨u, rfl⟩
+  -- ⊢ ↑u * inverse ↑u = 1
   rw [inverse_unit, Units.mul_inv]
+  -- 🎉 no goals
 #align ring.mul_inverse_cancel Ring.mul_inverse_cancel
 
 theorem inverse_mul_cancel (x : M₀) (h : IsUnit x) : inverse x * x = 1 := by
   rcases h with ⟨u, rfl⟩
+  -- ⊢ inverse ↑u * ↑u = 1
   rw [inverse_unit, Units.inv_mul]
+  -- 🎉 no goals
 #align ring.inverse_mul_cancel Ring.inverse_mul_cancel
 
 theorem mul_inverse_cancel_right (x y : M₀) (h : IsUnit x) : y * x * inverse x = y := by
   rw [mul_assoc, mul_inverse_cancel x h, mul_one]
+  -- 🎉 no goals
 #align ring.mul_inverse_cancel_right Ring.mul_inverse_cancel_right
 
 theorem inverse_mul_cancel_right (x y : M₀) (h : IsUnit x) : y * inverse x * x = y := by
   rw [mul_assoc, inverse_mul_cancel x h, mul_one]
+  -- 🎉 no goals
 #align ring.inverse_mul_cancel_right Ring.inverse_mul_cancel_right
 
 theorem mul_inverse_cancel_left (x y : M₀) (h : IsUnit x) : x * (inverse x * y) = y := by
   rw [← mul_assoc, mul_inverse_cancel x h, one_mul]
+  -- 🎉 no goals
 #align ring.mul_inverse_cancel_left Ring.mul_inverse_cancel_left
 
 theorem inverse_mul_cancel_left (x y : M₀) (h : IsUnit x) : inverse x * (x * y) = y := by
   rw [← mul_assoc, inverse_mul_cancel x h, one_mul]
+  -- 🎉 no goals
 #align ring.inverse_mul_cancel_left Ring.inverse_mul_cancel_left
 
 theorem inverse_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : inverse x * y = z ↔ y = x * z :=
   ⟨fun h1 => by rw [← h1, mul_inverse_cancel_left _ _ h],
+                -- 🎉 no goals
   fun h1 => by rw [h1, inverse_mul_cancel_left _ _ h]⟩
+               -- 🎉 no goals
 #align ring.inverse_mul_eq_iff_eq_mul Ring.inverse_mul_eq_iff_eq_mul
 
 theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * inverse z ↔ x * z = y :=
   ⟨fun h1 => by rw [h1, inverse_mul_cancel_right _ _ h],
+                -- 🎉 no goals
   fun h1 => by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
+               -- 🎉 no goals
 #align ring.eq_mul_inverse_iff_mul_eq Ring.eq_mul_inverse_iff_mul_eq
 
 variable (M₀)
@@ -146,7 +162,9 @@ theorem inverse_one : inverse (1 : M₀) = 1 :=
 @[simp]
 theorem inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
+  -- ⊢ inverse 0 = 0
   exact inverse_non_unit _ not_isUnit_zero
+  -- 🎉 no goals
 #align ring.inverse_zero Ring.inverse_zero
 
 variable {M₀}
@@ -161,10 +179,15 @@ theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
 theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
+    -- ⊢ IsUnit a
     · convert h
+      -- 🎉 no goals
     · contrapose h
+      -- ⊢ ¬IsUnit (Ring.inverse a)
       rw [Ring.inverse_non_unit _ h]
+      -- ⊢ ¬IsUnit 0
       exact not_isUnit_zero
+      -- 🎉 no goals
       ,
     IsUnit.ring_inverse⟩
 #align is_unit_ring_inverse isUnit_ring_inverse
@@ -186,7 +209,9 @@ def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
 @[simp]
 theorem mk0_one (h := one_ne_zero) : mk0 (1 : G₀) h = 1 := by
   ext
+  -- ⊢ ↑(mk0 1 h) = ↑1
   rfl
+  -- 🎉 no goals
 #align units.mk0_one Units.mk0_one
 
 @[simp]
@@ -212,6 +237,7 @@ theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
   ⟨fun h => by injection h, fun h => Units.ext h⟩
+               -- 🎉 no goals
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
@@ -225,19 +251,26 @@ figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
+                -- 🎉 no goals
   -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
 
 @[simp]
 theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+                                                                        -- 🎉 no goals
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
   by_cases h : a = 0
+  -- ⊢ a = 0 ∨ ∃ u, a = ↑u
   · left
+    -- ⊢ a = 0
     exact h
+    -- 🎉 no goals
   · right
+    -- ⊢ ∃ u, a = ↑u
     simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
+    -- 🎉 no goals
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
@@ -266,7 +299,9 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
   { (‹_› : GroupWithZero G₀) with
     eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h => by
       contrapose! h
+      -- ⊢ a * b ≠ 0
       exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
+      -- 🎉 no goals
 #align group_with_zero.no_zero_divisors GroupWithZero.noZeroDivisors
 
 -- Can't be put next to the other `mk0` lemmas because it depends on the
@@ -276,15 +311,20 @@ theorem Units.mk0_mul (x y : G₀) (hxy) :
     Units.mk0 (x * y) hxy =
       Units.mk0 x (mul_ne_zero_iff.mp hxy).1 * Units.mk0 y (mul_ne_zero_iff.mp hxy).2 := by
   ext; rfl
+  -- ⊢ ↑(mk0 (x * y) hxy) = ↑(mk0 x (_ : x ≠ 0) * mk0 y (_ : y ≠ 0))
+       -- 🎉 no goals
 #align units.mk0_mul Units.mk0_mul
 
 theorem div_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a / b ≠ 0 := by
   rw [div_eq_mul_inv]
+  -- ⊢ a * b⁻¹ ≠ 0
   exact mul_ne_zero ha (inv_ne_zero hb)
+  -- 🎉 no goals
 #align div_ne_zero div_ne_zero
 
 @[simp]
 theorem div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_inv]
+                                                          -- 🎉 no goals
 #align div_eq_zero_iff div_eq_zero_iff
 
 theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
@@ -293,8 +333,11 @@ theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
 
 theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
+  -- ⊢ inverse 0 = 0⁻¹
   · simp
+    -- 🎉 no goals
   · exact Ring.inverse_unit (Units.mk0 a ha)
+    -- 🎉 no goals
 #align ring.inverse_eq_inv Ring.inverse_eq_inv
 
 @[simp]
@@ -338,7 +381,9 @@ noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     inv_zero := dif_pos rfl,
     mul_inv_cancel := fun a h0 => by
       change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
+      -- ⊢ (a * if h0 : a = 0 then 0 else ↑(IsUnit.unit (_ : IsUnit a))⁻¹) = 1
       rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec],
+      -- 🎉 no goals
     exists_pair_ne := Nontrivial.exists_pair_ne }
 #align group_with_zero_of_is_unit_or_eq_zero groupWithZeroOfIsUnitOrEqZero
 

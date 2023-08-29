@@ -47,12 +47,20 @@ def binaryProductLimitCone (G H : AddCommGroupCat.{u}) : Limits.LimitCone (pair 
             Discrete.casesOn j fun j =>
               WalkingPair.casesOn j (AddMonoidHom.fst G H) (AddMonoidHom.snd G H)
           naturality := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟨⟩⟩⟩ <;> rfl } }
+                           -- ⊢ ((Functor.const (Discrete WalkingPair)).obj (of (↑G × ↑H))).map { down := {  …
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
   isLimit :=
     { lift := fun s => AddMonoidHom.prod (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩)
       fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
+                -- ⊢ (fun s => AddMonoidHom.prod (NatTrans.app s.π { as := WalkingPair.left }) (N …
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
       uniq := fun s m w => by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
+        -- ⊢ m = AddMonoidHom.prod (m ≫ AddMonoidHom.fst ↑G ↑H) (m ≫ AddMonoidHom.snd ↑G  …
         rfl }
+        -- 🎉 no goals
 #align AddCommGroup.binary_product_limit_cone AddCommGroupCat.binaryProductLimitCone
 
 @[simp]
@@ -100,10 +108,14 @@ def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j) where
   toFun x j := s.π.app ⟨j⟩ x
   map_zero' := by
     simp only [Functor.const_obj_obj, map_zero]
+    -- ⊢ (fun j => 0) = 0
     rfl
+    -- 🎉 no goals
   map_add' x y := by
     simp only [Functor.const_obj_obj, map_add]
+    -- ⊢ (fun j => ↑(NatTrans.app s.π { as := j }) x + ↑(NatTrans.app s.π { as := j } …
     rfl
+    -- 🎉 no goals
 #align AddCommGroup.has_limit.lift AddCommGroupCat.HasLimit.lift
 
 /-- Construct limit data for a product in `AddCommGroupCat`, using
@@ -119,8 +131,11 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       fac := fun s j => rfl
       uniq := fun s m w => by
         ext x
+        -- ⊢ ↑m x = ↑(lift f s) x
         funext j
+        -- ⊢ ↑m x j = ↑(lift f s) x j
         exact congr_arg (fun g : s.pt ⟶ f j => (g : s.pt → f j) x) (w ⟨j⟩) }
+        -- 🎉 no goals
 #align AddCommGroup.has_limit.product_limit_cone AddCommGroupCat.HasLimit.productLimitCone
 
 end HasLimit

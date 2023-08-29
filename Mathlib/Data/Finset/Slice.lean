@@ -62,13 +62,16 @@ alias ⟨_, sized.union⟩ := sized_union
 @[simp]
 theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
   simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
+  -- ⊢ (∀ ⦃x : Finset α⦄ (x_1 : ι), x ∈ f x_1 → card x = r) ↔ ∀ (i : ι) ⦃x : Finset …
   exact forall_swap
+  -- 🎉 no goals
 #align set.sized_Union Set.sized_iUnion
 
 -- @[simp] -- Porting note: left hand side is not simp-normal form.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
     (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r :=
  by simp only [Set.sized_iUnion]
+    -- 🎉 no goals
 #align set.sized_Union₂ Set.sized_iUnion₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
@@ -105,6 +108,7 @@ variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
 theorem subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
   forall_congr' fun A => by rw [mem_powerset_len_univ_iff, mem_coe]
+                            -- 🎉 no goals
 #align finset.subset_powerset_len_univ_iff Finset.subset_powersetLen_univ_iff
 
 alias ⟨_, _root_.Set.Sized.subset_powersetLen_univ⟩ := subset_powersetLen_univ_iff
@@ -113,7 +117,9 @@ alias ⟨_, _root_.Set.Sized.subset_powersetLen_univ⟩ := subset_powersetLen_un
 theorem Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
   rw [Fintype.card, ← card_powersetLen]
+  -- ⊢ card 𝒜 ≤ card (powersetLen r univ)
   exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
+  -- 🎉 no goals
 #align set.sized.card_le Finset.Set.Sized.card_le
 
 end Sized
@@ -173,8 +179,11 @@ theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.s
 @[simp]
 theorem sum_card_slice : (∑ r in Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
   letI := Classical.decEq α
+  -- ⊢ ∑ r in Iic (Fintype.card α), card (𝒜 # r) = card 𝒜
   rw [← card_biUnion, biUnion_slice]
+  -- ⊢ ∀ (x : ℕ), x ∈ Iic (Fintype.card α) → ∀ (y : ℕ), y ∈ Iic (Fintype.card α) →  …
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
+  -- 🎉 no goals
 #align finset.sum_card_slice Finset.sum_card_slice
 
 end Slice

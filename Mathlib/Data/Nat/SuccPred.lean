@@ -31,16 +31,25 @@ instance : PredOrder ℕ where
   pred_le := pred_le
   min_of_le_pred {a} ha := by
     cases a
+    -- ⊢ IsMin zero
     · exact isMin_bot
+      -- 🎉 no goals
     · exact (not_succ_le_self _ ha).elim
+      -- 🎉 no goals
   le_pred_of_lt {a} {b} h := by
     cases b
+    -- ⊢ a ≤ pred zero
     · exact (a.not_lt_zero h).elim
+      -- 🎉 no goals
     · exact le_of_succ_le_succ h
+      -- 🎉 no goals
   le_of_pred_lt {a} {b} h := by
     cases a
+    -- ⊢ zero ≤ b
     · exact b.zero_le
+      -- 🎉 no goals
     · exact h
+      -- 🎉 no goals
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=
@@ -56,21 +65,27 @@ theorem succ_iterate (a : ℕ) : ∀ n, succ^[n] a = a + n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', add_succ]
+    -- ⊢ (succ ∘ succ^[n]) a = succ (a + n)
     exact congr_arg _ (succ_iterate a n)
+    -- 🎉 no goals
 #align nat.succ_iterate Nat.succ_iterate
 
 theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', sub_succ]
+    -- ⊢ (pred ∘ pred^[n]) a = pred (a - n)
     exact congr_arg _ (pred_iterate a n)
+    -- 🎉 no goals
 #align nat.pred_iterate Nat.pred_iterate
 
 instance : IsSuccArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩
+                               -- 🎉 no goals
 
 instance : IsPredArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
+                               -- 🎉 no goals
 
 lemma forall_ne_zero_iff (P : ℕ → Prop) :
     (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=

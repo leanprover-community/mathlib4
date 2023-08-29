@@ -25,6 +25,8 @@ namespace Nat
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal (n + 1), f p) = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) :=
   by rw [antidiagonal_succ, prod_cons, prod_map]; rfl
+     -- ⊢ f (0, n + 1) * ∏ x in antidiagonal n, f (↑(Function.Embedding.prodMap { toFu …
+                                                  -- 🎉 no goals
 #align finset.nat.prod_antidiagonal_succ Finset.Nat.prod_antidiagonal_succ
 
 theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
@@ -36,13 +38,16 @@ theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
 theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
     ∏ p in antidiagonal n, f p.swap = ∏ p in antidiagonal n, f p := by
   conv_lhs => rw [← map_swap_antidiagonal, Finset.prod_map]
+  -- 🎉 no goals
 #align finset.nat.prod_antidiagonal_swap Finset.Nat.prod_antidiagonal_swap
 #align finset.nat.sum_antidiagonal_swap Finset.Nat.sum_antidiagonal_swap
 
 theorem prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} : (∏ p in antidiagonal (n + 1), f p) =
     f (n + 1, 0) * ∏ p in antidiagonal n, f (p.1, p.2 + 1) := by
   rw [← prod_antidiagonal_swap, prod_antidiagonal_succ, ← prod_antidiagonal_swap]
+  -- ⊢ f (Prod.swap (0, n + 1)) * ∏ p in antidiagonal n, f (Prod.swap ((Prod.swap p …
   rfl
+  -- 🎉 no goals
 #align finset.nat.prod_antidiagonal_succ' Finset.Nat.prod_antidiagonal_succ'
 
 theorem sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
@@ -54,6 +59,7 @@ theorem sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
 theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
     ∏ p in antidiagonal n, f p n = ∏ p in antidiagonal n, f p (p.1 + p.2) :=
   prod_congr rfl fun p hp ↦ by rw [Nat.mem_antidiagonal.1 hp]
+                               -- 🎉 no goals
 #align finset.nat.prod_antidiagonal_subst Finset.Nat.prod_antidiagonal_subst
 #align finset.nat.sum_antidiagonal_subst Finset.Nat.sum_antidiagonal_subst
 

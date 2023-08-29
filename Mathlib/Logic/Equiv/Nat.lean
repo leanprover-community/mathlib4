@@ -28,7 +28,9 @@ def boolProdNatEquivNat : Bool × ℕ ≃ ℕ where
   toFun := uncurry bit
   invFun := boddDiv2
   left_inv := fun ⟨b, n⟩ => by simp only [bodd_bit, div2_bit, uncurry_apply_pair, boddDiv2_eq]
+                               -- 🎉 no goals
   right_inv n := by simp only [bit_decomp, boddDiv2_eq, uncurry_apply_pair]
+                    -- 🎉 no goals
 #align equiv.bool_prod_nat_equiv_nat Equiv.boolProdNatEquivNat
 #align equiv.bool_prod_nat_equiv_nat_symm_apply Equiv.boolProdNatEquivNat_symm_apply
 #align equiv.bool_prod_nat_equiv_nat_apply Equiv.boolProdNatEquivNat_apply
@@ -46,6 +48,9 @@ set_option linter.deprecated false in
 @[simp]
 theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim bit0 bit1 := by
   ext (x | x) <;> rfl
+  -- ⊢ ↑natSumNatEquivNat (Sum.inl x) = Sum.elim bit0 bit1 (Sum.inl x)
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align equiv.nat_sum_nat_equiv_nat_apply Equiv.natSumNatEquivNat_apply
 
 /-- An equivalence between `ℤ` and `ℕ`, through `ℤ ≃ ℕ ⊕ ℕ` and `ℕ ⊕ ℕ ≃ ℕ`.

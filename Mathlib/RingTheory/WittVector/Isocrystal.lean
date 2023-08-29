@@ -200,8 +200,11 @@ theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIs
     Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := by
   -- Porting note: was just `rfl`
   erw [smul_eq_mul]
+  -- ⊢ ↑Φ(p, k) x = ↑(IsFractionRing.lift (_ : Function.Injective ↑(algebraMap (Wit …
   simp only [map_zpow₀, map_natCast]
+  -- ⊢ ↑Φ(p, k) x = ↑p ^ m * ↑φ(p, k) x
   rfl
+  -- 🎉 no goals
 #align witt_vector.standard_one_dim_isocrystal.frobenius_apply WittVector.StandardOneDimIsocrystal.frobenius_apply
 
 end PerfectRing
@@ -212,8 +215,11 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim
+  -- ⊢ ∃ m, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0
+  -- ⊢ ∃ m, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).injective.ne hx
+  -- ⊢ ∃ m, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
     rw [finrank_eq_one_iff_of_nonzero' x hx] at h_dim
     obtain ⟨a, ha⟩ := h_dim (Φ(p, k) x)
@@ -222,9 +228,13 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     apply this
     simp only [← ha, ha', zero_smul]
   obtain ⟨b, hb, m, hmb⟩ := WittVector.exists_frobenius_solution_fractionRing p ha
+  -- ⊢ ∃ m, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   replace hmb : φ(p, k) b * a = (p : K(p, k)) ^ m * b := by convert hmb
+  -- ⊢ ∃ m, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   use m
+  -- ⊢ Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   let F₀ : StandardOneDimIsocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
+  -- ⊢ Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   let F : StandardOneDimIsocrystal p k m ≃ₗ[K(p, k)] V := by
     refine' LinearEquiv.ofBijective F₀ ⟨_, _⟩
     · rw [← LinearMap.ker_eq_bot]
@@ -234,24 +244,35 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
       rw [LinearMap.span_singleton_eq_range]
   -- Porting note: `refine'` below gets confused when this is inlined.
   let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
+  -- ⊢ Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V)
   refine' ⟨⟨E, _⟩⟩
+  -- ⊢ ∀ (x : StandardOneDimIsocrystal p k m), ↑Φ(p, k) (↑E x) = ↑E (↑Φ(p, k) x)
   simp only
+  -- ⊢ ∀ (x_1 : StandardOneDimIsocrystal p k m), ↑Φ(p, k) (↑(LinearEquiv.trans (Lin …
   intro c
+  -- ⊢ ↑Φ(p, k) (↑(LinearEquiv.trans (LinearEquiv.smulOfNeZero K(p, k) (StandardOne …
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
   -- Porting note: was
   -- simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
   --   LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   rw [LinearEquiv.ofBijective_apply, LinearEquiv.ofBijective_apply]
+  -- ⊢ ↑Φ(p, k) (b • ↑(LinearMap.toSpanSingleton K(p, k) V x) c) = b • ↑(LinearMap. …
   erw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
+  -- ⊢ ↑Φ(p, k) (b • c • x) = b • ↑Φ(p, k) c • x
   simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
     LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
+  -- ⊢ (↑φ(p, k) b * (↑φ(p, k) c * a)) • x = (b * ↑p ^ m • ↑φ(p, k) c) • x
   congr 1
+  -- ⊢ ↑φ(p, k) b * (↑φ(p, k) c * a) = b * ↑p ^ m • ↑φ(p, k) c
   -- Porting note: added the next two lines
   erw [smul_eq_mul]
+  -- ⊢ ↑φ(p, k) b * (↑φ(p, k) c * a) = b * (↑(IsFractionRing.lift (_ : Function.Inj …
   simp only [map_zpow₀, map_natCast]
+  -- ⊢ ↑φ(p, k) b * (↑φ(p, k) c * a) = b * (↑p ^ m * ↑φ(p, k) c)
   linear_combination φ(p, k) c * hmb
+  -- 🎉 no goals
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 
 end WittVector

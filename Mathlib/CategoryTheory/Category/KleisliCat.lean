@@ -52,7 +52,16 @@ instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (Kl
   -- refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
   --  simp only [(· >=> ·), functor_norm]
   refine' { id_comp := _, comp_id := _, assoc := _ } <;> intros <;> refine funext (fun x => ?_) <;>
+                                                         -- ⊢ 𝟙 X✝ ≫ f✝ = f✝
+                                                         -- ⊢ f✝ ≫ 𝟙 Y✝ = f✝
+                                                         -- ⊢ (f✝ ≫ g✝) ≫ h✝ = f✝ ≫ g✝ ≫ h✝
+                                                                    -- ⊢ (𝟙 X✝ ≫ f✝) x = f✝ x
+                                                                    -- ⊢ (f✝ ≫ 𝟙 Y✝) x = f✝ x
+                                                                    -- ⊢ ((f✝ ≫ g✝) ≫ h✝) x = (f✝ ≫ g✝ ≫ h✝) x
   simp [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align category_theory.Kleisli.category CategoryTheory.KleisliCat.category
 
 @[simp]

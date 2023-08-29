@@ -62,7 +62,9 @@ variable {r : α → α → Prop}
 theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
   rintro s t ⟨u, a, hr, he⟩
+  -- ⊢ InvImage (Finsupp.Lex (rᶜ ⊓ fun x x_1 => x ≠ x_1) fun x x_1 => x < x_1) (↑to …
   replace hr := fun a' ↦ mt (hr a')
+  -- ⊢ InvImage (Finsupp.Lex (rᶜ ⊓ fun x x_1 => x ≠ x_1) fun x x_1 => x < x_1) (↑to …
   classical
   refine ⟨a, fun b h ↦ ?_, ?_⟩ <;> simp_rw [toFinsupp_apply]
   · apply_fun count b at he
@@ -80,22 +82,31 @@ theorem cutExpand_singleton {s x} (h : ∀ x' ∈ s, r x' x) : CutExpand r s {x}
 
 theorem cutExpand_singleton_singleton {x' x} (h : r x' x) : CutExpand r {x'} {x} :=
   cutExpand_singleton fun a h ↦ by rwa [mem_singleton.1 h]
+                                   -- 🎉 no goals
 #align relation.cut_expand_singleton_singleton Relation.cutExpand_singleton_singleton
 
 theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand r t u :=
   exists₂_congr fun _ _ ↦ and_congr Iff.rfl <| by rw [add_assoc, add_assoc, add_left_cancel_iff]
+                                                  -- 🎉 no goals
 #align relation.cut_expand_add_left Relation.cutExpand_add_left
 
 theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
   simp_rw [CutExpand, add_singleton_eq_iff]
+  -- ⊢ (∃ t a, (∀ (a' : α), a' ∈ t → r a' a) ∧ a ∈ s + t ∧ s' = erase (s + t) a) ↔  …
   refine' exists₂_congr fun t a ↦ ⟨_, _⟩
+  -- ⊢ (∀ (a' : α), a' ∈ t → r a' a) ∧ a ∈ s + t ∧ s' = erase (s + t) a → (∀ (a' :  …
   · rintro ⟨ht, ha, rfl⟩
+    -- ⊢ (∀ (a' : α), a' ∈ t → r a' a) ∧ a ∈ s ∧ erase (s + t) a = erase s a + t
     obtain h | h := mem_add.1 ha
+    -- ⊢ (∀ (a' : α), a' ∈ t → r a' a) ∧ a ∈ s ∧ erase (s + t) a = erase s a + t
     exacts [⟨ht, h, erase_add_left_pos t h⟩, (@irrefl α r _ a (ht a h)).elim]
+    -- 🎉 no goals
   · rintro ⟨ht, h, rfl⟩
+    -- ⊢ (∀ (a' : α), a' ∈ t → r a' a) ∧ a ∈ s + t ∧ erase s a + t = erase (s + t) a
     exact ⟨ht, mem_add.2 (Or.inl h), (erase_add_left_pos t h).symm⟩
+    -- 🎉 no goals
 #align relation.cut_expand_iff Relation.cutExpand_iff
 
 theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
@@ -109,6 +120,8 @@ theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
 theorem cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s ↦ s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
+  -- ⊢ ∃ a', GameAdd (CutExpand r) (CutExpand r) a' (s₁, s₂) ∧ (fun s => s.fst + s. …
+                                    -- ⊢ ∃ a', GameAdd (CutExpand r) (CutExpand r) a' (s₁, s₂) ∧ a'.fst + a'.snd = s
   classical
   -- Porting note: Originally `obtain ⟨ha, rfl⟩`
   -- This is https://github.com/leanprover/std4/issues/62
@@ -129,7 +142,10 @@ theorem cutExpand_fibration (r : α → α → Prop) :
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
   induction s using Multiset.induction
+  -- ⊢ Acc (CutExpand r) 0
   case empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
+  -- ⊢ Acc (CutExpand r) (a✝¹ ::ₘ s✝)
+  -- 🎉 no goals
   case cons a s ihs =>
     rw [← s.singleton_add a]
     rw [forall_mem_cons] at hs
@@ -140,7 +156,9 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
   assuming `r` is irreflexive. -/
 theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction' hacc with a h ih
+  -- ⊢ Acc (CutExpand r) {a}
   refine' Acc.intro _ fun s ↦ _
+  -- ⊢ CutExpand r s {a} → Acc (CutExpand r) s
   classical
   simp only [cutExpand_iff, mem_singleton]
   rintro ⟨t, a, hr, rfl, rfl⟩

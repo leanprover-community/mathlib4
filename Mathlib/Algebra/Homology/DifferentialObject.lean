@@ -55,6 +55,11 @@ set_option linter.uppercaseLean3 false in
 @[reassoc (attr := simp)]
 theorem objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; dsimp; simp
+                                                      -- ⊢ (fun b_1 => b_1 + { as := 1 }.as • b) x = (fun b_1 => b_1 + { as := 1 }.as • …
+                                                               -- 🎉 no goals
+                                                                          -- ⊢ objEqToHom X (_ : x = x) ≫ d X x = d X x ≫ objEqToHom X (_ : (fun b_1 => b_1 …
+                                                                                   -- ⊢ 𝟙 (obj X x) ≫ d X x = d X x ≫ 𝟙 (obj X (x + 1 • b))
+                                                                                          -- 🎉 no goals
 #align homological_complex.eq_to_hom_d CategoryTheory.DifferentialObject.objEqToHom_d
 
 @[reassoc (attr := simp)]
@@ -63,6 +68,8 @@ theorem d_squared_apply : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 @[reassoc (attr := simp)]
 theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
+                                                                        -- ⊢ objEqToHom X (_ : x = x) ≫ Hom.f f x = Hom.f f x ≫ objEqToHom Y (_ : x = x)
+                                                                                 -- 🎉 no goals
 #align homological_complex.eq_to_hom_f' CategoryTheory.DifferentialObject.eqToHom_f'
 
 end CategoryTheory.DifferentialObject
@@ -80,6 +87,8 @@ variable (V : Type*) [Category V] [HasZeroMorphisms V]
 @[reassoc (attr := simp, nolint simpNF)]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
+                                                        -- ⊢ d X x y ≫ eqToHom (_ : HomologicalComplex.X X y = HomologicalComplex.X X y)  …
+                                                                 -- 🎉 no goals
 #align homological_complex.d_eq_to_hom HomologicalComplex.d_eqToHom
 
 set_option maxHeartbeats 800000 in
@@ -93,19 +102,30 @@ def dgoToHomologicalComplex :
     { X := fun i => X.obj i
       d := fun i j =>
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
+                                                                                -- 🎉 no goals
       shape := fun i j w => by dsimp at w; convert dif_neg w
+                               -- ⊢ (fun i j => if h : i + b = j then DifferentialObject.d X i ≫ objEqToHom X (_ …
+                                           -- 🎉 no goals
       d_comp_d' := fun i j k hij hjk => by
         dsimp at hij hjk; substs hij hjk
+        -- ⊢ (fun i j => if h : i + b = j then DifferentialObject.d X i ≫ objEqToHom X (_ …
+                          -- ⊢ (fun i j => if h : i + b = j then DifferentialObject.d X i ≫ objEqToHom X (_ …
         simp }
+        -- 🎉 no goals
   map {X Y} f :=
     { f := f.f
       comm' := fun i j h => by
         dsimp at h ⊢
+        -- ⊢ (DifferentialObject.Hom.f f i ≫ if h : i + b = j then DifferentialObject.d Y …
         subst h
+        -- ⊢ (DifferentialObject.Hom.f f i ≫ if h : i + b = i + b then DifferentialObject …
         simp only [dite_true, Category.assoc, eqToHom_f']
+        -- ⊢ DifferentialObject.Hom.f f i ≫ DifferentialObject.d Y i ≫ objEqToHom Y (_ :  …
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
+        -- ⊢ DifferentialObject.Hom.f f i ≫ DifferentialObject.d Y i ≫ objEqToHom Y (_ :  …
         rw [reassoc_of% this] }
+        -- 🎉 no goals
 #align homological_complex.dgo_to_homological_complex HomologicalComplex.dgoToHomologicalComplex
 
 /-- The functor from homological complexes to differential graded objects.

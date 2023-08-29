@@ -60,6 +60,8 @@ def trivial : Mon_ C where
   one := 𝟙 _
   mul := (λ_ _).hom
   mul_assoc := by coherence
+                  -- 🎉 no goals
+                -- 🎉 no goals
   mul_one := by coherence
 #align Mon_.trivial Mon_.trivial
 
@@ -72,15 +74,18 @@ variable {M : Mon_ C}
 @[simp]
 theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
   rw [← id_tensor_comp_tensor_id, Category.assoc, M.one_mul, leftUnitor_naturality]
+  -- 🎉 no goals
 #align Mon_.one_mul_hom Mon_.one_mul_hom
 
 @[simp]
 theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
   rw [← tensor_id_comp_id_tensor, Category.assoc, M.mul_one, rightUnitor_naturality]
+  -- 🎉 no goals
 #align Mon_.mul_one_hom Mon_.mul_one_hom
 
 theorem assoc_flip :
     (𝟙 M.X ⊗ M.mul) ≫ M.mul = (α_ M.X M.X M.X).inv ≫ (M.mul ⊗ 𝟙 M.X) ≫ M.mul := by simp
+                                                                                   -- 🎉 no goals
 #align Mon_.assoc_flip Mon_.assoc_flip
 
 /-- A morphism of monoid objects. -/
@@ -157,6 +162,7 @@ instance : ReflectsIsomorphisms (forget C) where
           simp only [IsIso.comp_inv_eq, Hom.mul_hom, Category.assoc, ← tensor_comp_assoc,
             IsIso.inv_hom_id, tensor_id, Category.id_comp] },
         by aesop_cat⟩⟩
+           -- 🎉 no goals
 
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
@@ -170,21 +176,34 @@ def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
   inv :=
     { hom := f.inv
       one_hom := by rw [← one_f]; simp
+                    -- ⊢ (M.one ≫ f.hom) ≫ f.inv = M.one
+                                  -- 🎉 no goals
       mul_hom := by
         rw [← cancel_mono f.hom]
+        -- ⊢ (N.mul ≫ f.inv) ≫ f.hom = ((f.inv ⊗ f.inv) ≫ M.mul) ≫ f.hom
         slice_rhs 2 3 => rw [mul_f]
+        -- ⊢ (N.mul ≫ f.inv) ≫ f.hom = (f.inv ⊗ f.inv) ≫ (f.hom ⊗ f.hom) ≫ N.mul
         simp }
+        -- 🎉 no goals
 #align Mon_.iso_of_iso Mon_.isoOfIso
 
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
     { hom := A.one
       one_hom := by dsimp; simp
+                    -- ⊢ 𝟙 (𝟙_ C) ≫ A.one = A.one
+                           -- 🎉 no goals
       mul_hom := by dsimp; simp [A.one_mul, unitors_equal] }
+                    -- ⊢ (λ_ (𝟙_ C)).hom ≫ A.one = (A.one ⊗ A.one) ≫ A.mul
+                           -- 🎉 no goals
   uniq f := by
     ext; simp
+    -- ⊢ f.hom = default.hom
+         -- ⊢ f.hom = A.one
     rw [← Category.id_comp f.hom]
+    -- ⊢ 𝟙 (trivial C).X ≫ f.hom = A.one
     erw [f.one_hom]
+    -- 🎉 no goals
 #align Mon_.unique_hom_from_trivial Mon_.uniqueHomFromTrivial
 
 open CategoryTheory.Limits
@@ -211,36 +230,63 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
       mul := F.μ _ _ ≫ F.map A.mul
       one_mul := by
         conv_lhs => rw [comp_tensor_id, ← F.toFunctor.map_id]
+        -- ⊢ ((F.ε ⊗ F.map (𝟙 A.X)) ≫ (F.map A.one ⊗ F.map (𝟙 A.X))) ≫ μ F A.X A.X ≫ F.ma …
         slice_lhs 2 3 => rw [F.μ_natural]
+        -- ⊢ (F.ε ⊗ F.map (𝟙 A.X)) ≫ (μ F (𝟙_ C) A.X ≫ F.map (A.one ⊗ 𝟙 A.X)) ≫ F.map A.m …
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.one_mul]
+        -- ⊢ (F.ε ⊗ F.map (𝟙 A.X)) ≫ μ F (𝟙_ C) A.X ≫ F.map (λ_ A.X).hom = (λ_ (F.obj A.X …
         rw [F.toFunctor.map_id]
+        -- ⊢ (F.ε ⊗ 𝟙 (F.obj A.X)) ≫ μ F (𝟙_ C) A.X ≫ F.map (λ_ A.X).hom = (λ_ (F.obj A.X …
         rw [F.left_unitality]
+        -- 🎉 no goals
       mul_one := by
         conv_lhs => rw [id_tensor_comp, ← F.toFunctor.map_id]
+        -- ⊢ ((F.map (𝟙 A.X) ⊗ F.ε) ≫ (F.map (𝟙 A.X) ⊗ F.map A.one)) ≫ μ F A.X A.X ≫ F.ma …
         slice_lhs 2 3 => rw [F.μ_natural]
+        -- ⊢ (F.map (𝟙 A.X) ⊗ F.ε) ≫ (μ F A.X (𝟙_ C) ≫ F.map (𝟙 A.X ⊗ A.one)) ≫ F.map A.m …
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_one]
+        -- ⊢ (F.map (𝟙 A.X) ⊗ F.ε) ≫ μ F A.X (𝟙_ C) ≫ F.map (ρ_ A.X).hom = (ρ_ (F.obj A.X …
         rw [F.toFunctor.map_id]
+        -- ⊢ (𝟙 (F.obj A.X) ⊗ F.ε) ≫ μ F A.X (𝟙_ C) ≫ F.map (ρ_ A.X).hom = (ρ_ (F.obj A.X …
         rw [F.right_unitality]
+        -- 🎉 no goals
       mul_assoc := by
         conv_lhs => rw [comp_tensor_id, ← F.toFunctor.map_id]
+        -- ⊢ ((μ F A.X A.X ⊗ F.map (𝟙 A.X)) ≫ (F.map A.mul ⊗ F.map (𝟙 A.X))) ≫ μ F A.X A. …
         slice_lhs 2 3 => rw [F.μ_natural]
+        -- ⊢ (μ F A.X A.X ⊗ F.map (𝟙 A.X)) ≫ (μ F (A.X ⊗ A.X) A.X ≫ F.map (A.mul ⊗ 𝟙 A.X) …
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_assoc]
+        -- ⊢ (μ F A.X A.X ⊗ F.map (𝟙 A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map ((α_ A.X A.X A.X …
         conv_lhs => rw [F.toFunctor.map_id]
+        -- ⊢ (μ F A.X A.X ⊗ 𝟙 (F.obj A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map ((α_ A.X A.X A.X …
         conv_lhs => rw [F.toFunctor.map_comp, F.toFunctor.map_comp]
+        -- ⊢ (μ F A.X A.X ⊗ 𝟙 (F.obj A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map (α_ A.X A.X A.X) …
         conv_rhs => rw [id_tensor_comp, ← F.toFunctor.map_id]
+        -- ⊢ (μ F A.X A.X ⊗ 𝟙 (F.obj A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map (α_ A.X A.X A.X) …
         slice_rhs 3 4 => rw [F.μ_natural]
+        -- ⊢ (μ F A.X A.X ⊗ 𝟙 (F.obj A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map (α_ A.X A.X A.X) …
         conv_rhs => rw [F.toFunctor.map_id]
+        -- ⊢ (μ F A.X A.X ⊗ 𝟙 (F.obj A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map (α_ A.X A.X A.X) …
         slice_rhs 1 3 => rw [← F.associativity]
+        -- ⊢ (μ F A.X A.X ⊗ 𝟙 (F.obj A.X)) ≫ μ F (A.X ⊗ A.X) A.X ≫ F.map (α_ A.X A.X A.X) …
         simp only [Category.assoc] }
+        -- 🎉 no goals
   map f :=
     { hom := F.map f.hom
       one_hom := by dsimp; rw [Category.assoc, ← F.toFunctor.map_comp, f.one_hom]
+                    -- ⊢ (F.ε ≫ F.map X✝.one) ≫ F.map f.hom = F.ε ≫ F.map Y✝.one
+                           -- 🎉 no goals
       mul_hom := by
         dsimp
+        -- ⊢ (μ F X✝.X X✝.X ≫ F.map X✝.mul) ≫ F.map f.hom = (F.map f.hom ⊗ F.map f.hom) ≫ …
         rw [Category.assoc, F.μ_natural_assoc, ← F.toFunctor.map_comp, ← F.toFunctor.map_comp,
           f.mul_hom] }
   map_id A := by ext; simp
+                 -- ⊢ ({ obj := fun A => Mon_.mk (F.obj A.X) (F.ε ≫ F.map A.one) (μ F A.X A.X ≫ F. …
+                      -- 🎉 no goals
   map_comp f g := by ext; simp
+                     -- ⊢ ({ obj := fun A => Mon_.mk (F.obj A.X) (F.ε ≫ F.map A.one) (μ F A.X A.X ≫ F. …
+                          -- 🎉 no goals
 #align category_theory.lax_monoidal_functor.map_Mon CategoryTheory.LaxMonoidalFunctor.mapMon
 
 variable (C D)
@@ -280,6 +326,8 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]
+                                    -- ⊢ 𝟙 X✝.X ≫ f.hom = f.hom ≫ 𝟙 Y✝.X
+                                           -- 🎉 no goals
       unit := f.one_hom
       tensor := fun _ _ => f.mul_hom }
 #align Mon_.equiv_lax_monoidal_functor_punit.Mon_to_lax_monoidal Mon_.EquivLaxMonoidalFunctorPUnit.monToLaxMonoidal
@@ -296,8 +344,13 @@ def unitIso :
   NatIso.ofComponents
     (fun F =>
       MonoidalNatIso.ofComponents (fun _ => F.toFunctor.mapIso (eqToIso (by ext))) (by aesop_cat)
+                                                                            -- 🎉 no goals
+                                                                                       -- 🎉 no goals
         (by aesop_cat) (by aesop_cat))
+            -- 🎉 no goals
+                           -- 🎉 no goals
     (by aesop_cat)
+        -- 🎉 no goals
 #align Mon_.equiv_lax_monoidal_functor_punit.unit_iso Mon_.EquivLaxMonoidalFunctorPUnit.unitIso
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
@@ -308,6 +361,7 @@ def counitIso : monToLaxMonoidal C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon_ C) :=
       { hom := { hom := 𝟙 _ }
         inv := { hom := 𝟙 _ } })
     (by aesop_cat)
+        -- 🎉 no goals
 #align Mon_.equiv_lax_monoidal_functor_punit.counit_iso Mon_.EquivLaxMonoidalFunctorPUnit.counitIso
 
 end EquivLaxMonoidalFunctorPUnit
@@ -381,25 +435,37 @@ theorem one_associator {M N P : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) ⊗ P.one)) ≫ (α_ M.X N.X P.X).hom =
       (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ (λ_ (𝟙_ C)).inv ≫ (N.one ⊗ P.one)) := by
   simp
+  -- ⊢ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) ⊗ P.one) ≫ (α_ M.X N.X P.X).hom = M.one ⊗ …
   slice_lhs 1 3 => rw [← Category.id_comp P.one, tensor_comp]
+  -- ⊢ (((λ_ (𝟙_ C)).inv ⊗ 𝟙 (𝟙_ C)) ≫ ((M.one ⊗ N.one) ⊗ P.one)) ≫ (α_ M.X N.X P.X …
   slice_lhs 2 3 => rw [associator_naturality]
+  -- ⊢ ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (𝟙_ C)) ≫ (α_ tensorUnit' (𝟙_ C) (𝟙_ C)).hom ≫ (M.one ⊗ …
   slice_rhs 1 2 => rw [← Category.id_comp M.one, tensor_comp]
+  -- ⊢ ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (𝟙_ C)) ≫ (α_ tensorUnit' (𝟙_ C) (𝟙_ C)).hom ≫ (M.one ⊗ …
   slice_lhs 1 2 => rw [← leftUnitor_tensor_inv]
+  -- ⊢ (λ_ (tensorUnit' ⊗ 𝟙_ C)).inv ≫ (M.one ⊗ N.one ⊗ P.one) = (𝟙 (𝟙_ C) ⊗ (λ_ (𝟙 …
   rw [← cancel_epi (λ_ (𝟙_ C)).inv]
+  -- ⊢ (λ_ (𝟙_ C)).inv ≫ (λ_ (tensorUnit' ⊗ 𝟙_ C)).inv ≫ (M.one ⊗ N.one ⊗ P.one) =  …
   slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
+  -- ⊢ ((λ_ (𝟙_ C)).inv ≫ (𝟙 tensorUnit' ⊗ (λ_ (𝟙_ C)).inv)) ≫ (M.one ⊗ N.one ⊗ P.o …
   simp only [Category.assoc]
+  -- 🎉 no goals
 #align Mon_.one_associator Mon_.one_associator
 
 theorem one_leftUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by
   slice_lhs 2 3 => rw [leftUnitor_naturality]
+  -- ⊢ (λ_ (𝟙_ C)).inv ≫ (λ_ (𝟙_ C)).hom ≫ M.one = M.one
   simp
+  -- 🎉 no goals
 #align Mon_.one_left_unitor Mon_.one_leftUnitor
 
 theorem one_rightUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ M.X).hom = M.one := by
   slice_lhs 2 3 => rw [rightUnitor_naturality, ← unitors_equal]
+  -- ⊢ (λ_ (𝟙_ C)).inv ≫ (λ_ (𝟙_ C)).hom ≫ M.one = M.one
   simp
+  -- 🎉 no goals
 #align Mon_.one_right_unitor Mon_.one_rightUnitor
 
 variable [BraidedCategory C]
@@ -409,10 +475,15 @@ theorem Mon_tensor_one_mul (M N : Mon_ C) :
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =
       (λ_ (M.X ⊗ N.X)).hom := by
   rw [← Category.id_comp (𝟙 (M.X ⊗ N.X)), tensor_comp]
+  -- ⊢ (((λ_ (𝟙_ C)).inv ⊗ 𝟙 (M.X ⊗ N.X)) ≫ ((M.one ⊗ N.one) ⊗ 𝟙 (M.X ⊗ N.X))) ≫ te …
   slice_lhs 2 3 => rw [← tensor_id, tensor_μ_natural]
+  -- ⊢ ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (M.X ⊗ N.X)) ≫ (tensor_μ C (tensorUnit', 𝟙_ C) (M.X, N. …
   slice_lhs 3 4 => rw [← tensor_comp, one_mul M, one_mul N]
+  -- ⊢ ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (M.X ⊗ N.X)) ≫ tensor_μ C (tensorUnit', 𝟙_ C) (M.X, N.X …
   symm
+  -- ⊢ (λ_ (M.X ⊗ N.X)).hom = ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (M.X ⊗ N.X)) ≫ tensor_μ C (tenso …
   exact tensor_left_unitality C M.X N.X
+  -- 🎉 no goals
 #align Mon_.Mon_tensor_one_mul Mon_.Mon_tensor_one_mul
 
 theorem Mon_tensor_mul_one (M N : Mon_ C) :
@@ -420,10 +491,15 @@ theorem Mon_tensor_mul_one (M N : Mon_ C) :
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =
       (ρ_ (M.X ⊗ N.X)).hom := by
   rw [← Category.id_comp (𝟙 (M.X ⊗ N.X)), tensor_comp]
+  -- ⊢ ((𝟙 (M.X ⊗ N.X) ⊗ (λ_ (𝟙_ C)).inv) ≫ (𝟙 (M.X ⊗ N.X) ⊗ M.one ⊗ N.one)) ≫ tens …
   slice_lhs 2 3 => rw [← tensor_id, tensor_μ_natural]
+  -- ⊢ (𝟙 (M.X ⊗ N.X) ⊗ (λ_ (𝟙_ C)).inv) ≫ (tensor_μ C (M.X, N.X) (tensorUnit', 𝟙_  …
   slice_lhs 3 4 => rw [← tensor_comp, mul_one M, mul_one N]
+  -- ⊢ (𝟙 (M.X ⊗ N.X) ⊗ (λ_ (𝟙_ C)).inv) ≫ tensor_μ C (M.X, N.X) (tensorUnit', 𝟙_ C …
   symm
+  -- ⊢ (ρ_ (M.X ⊗ N.X)).hom = (𝟙 (M.X ⊗ N.X) ⊗ (λ_ (𝟙_ C)).inv) ≫ tensor_μ C (M.X,  …
   exact tensor_right_unitality C M.X N.X
+  -- 🎉 no goals
 #align Mon_.Mon_tensor_mul_one Mon_.Mon_tensor_mul_one
 
 theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
@@ -433,13 +509,20 @@ theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
         (𝟙 (M.X ⊗ N.X) ⊗ tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul)) ≫
           tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) := by
   rw [← Category.id_comp (𝟙 (M.X ⊗ N.X)), tensor_comp]
+  -- ⊢ ((tensor_μ C (M.X, N.X) (M.X, N.X) ⊗ 𝟙 (M.X ⊗ N.X)) ≫ ((M.mul ⊗ N.mul) ⊗ 𝟙 ( …
   slice_lhs 2 3 => rw [← tensor_id, tensor_μ_natural]
+  -- ⊢ (tensor_μ C (M.X, N.X) (M.X, N.X) ⊗ 𝟙 (M.X ⊗ N.X)) ≫ (tensor_μ C (((M.X, N.X …
   slice_lhs 3 4 => rw [← tensor_comp, mul_assoc M, mul_assoc N, tensor_comp, tensor_comp]
+  -- ⊢ (tensor_μ C (M.X, N.X) (M.X, N.X) ⊗ 𝟙 (M.X ⊗ N.X)) ≫ tensor_μ C (((M.X, N.X) …
   -- Porting note: needed to add `dsimp` here.
   slice_lhs 1 3 => dsimp; rw [tensor_associativity]
+  -- ⊢ (((α_ (M.X ⊗ N.X) (M.X ⊗ N.X) (M.X ⊗ N.X)).hom ≫ (𝟙 (M.X ⊗ N.X) ⊗ tensor_μ C …
   slice_lhs 3 4 => rw [← tensor_μ_natural]
+  -- ⊢ (α_ (M.X ⊗ N.X) (M.X ⊗ N.X) (M.X ⊗ N.X)).hom ≫ (𝟙 (M.X ⊗ N.X) ⊗ tensor_μ C ( …
   slice_lhs 2 3 => rw [← tensor_comp, tensor_id]
+  -- ⊢ (α_ (M.X ⊗ N.X) (M.X ⊗ N.X) (M.X ⊗ N.X)).hom ≫ ((𝟙 (M.X ⊗ N.X) ≫ 𝟙 (M.X ⊗ N. …
   simp only [Category.assoc]
+  -- 🎉 no goals
 #align Mon_.Mon_tensor_mul_assoc Mon_.Mon_tensor_mul_assoc
 
 theorem mul_associator {M N P : Mon_ C} :
@@ -450,29 +533,43 @@ theorem mul_associator {M N P : Mon_ C} :
         tensor_μ C (M.X, N.X ⊗ P.X) (M.X, N.X ⊗ P.X) ≫
           (M.mul ⊗ tensor_μ C (N.X, P.X) (N.X, P.X) ≫ (N.mul ⊗ P.mul)) := by
   simp
+  -- ⊢ tensor_μ C (M.X ⊗ N.X, P.X) (M.X ⊗ N.X, P.X) ≫ (tensor_μ C (M.X, N.X) (M.X,  …
   slice_lhs 2 3 => rw [← Category.id_comp P.mul, tensor_comp]
+  -- ⊢ tensor_μ C (M.X ⊗ N.X, P.X) (M.X ⊗ N.X, P.X) ≫ ((tensor_μ C (M.X, N.X) (M.X, …
   slice_lhs 3 4 => rw [associator_naturality]
+  -- ⊢ tensor_μ C (M.X ⊗ N.X, P.X) (M.X ⊗ N.X, P.X) ≫ (tensor_μ C (M.X, N.X) (M.X,  …
   slice_rhs 3 4 => rw [← Category.id_comp M.mul, tensor_comp]
+  -- ⊢ tensor_μ C (M.X ⊗ N.X, P.X) (M.X ⊗ N.X, P.X) ≫ (tensor_μ C (M.X, N.X) (M.X,  …
   slice_lhs 1 3 => rw [associator_monoidal]
+  -- ⊢ (((α_ M.X N.X P.X).hom ⊗ (α_ M.X N.X P.X).hom) ≫ tensor_μ C (M.X, N.X ⊗ P.X) …
   simp only [Category.assoc]
+  -- 🎉 no goals
 #align Mon_.mul_associator Mon_.mul_associator
 
 theorem mul_leftUnitor {M : Mon_ C} :
     (tensor_μ C (𝟙_ C, M.X) (𝟙_ C, M.X) ≫ ((λ_ (𝟙_ C)).hom ⊗ M.mul)) ≫ (λ_ M.X).hom =
       ((λ_ M.X).hom ⊗ (λ_ M.X).hom) ≫ M.mul := by
   rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp M.mul, tensor_comp]
+  -- ⊢ (tensor_μ C (𝟙_ C, M.X) (𝟙_ C, M.X) ≫ ((λ_ (𝟙_ C)).hom ⊗ 𝟙 (M.X ⊗ M.X)) ≫ (𝟙 …
   slice_lhs 3 4 => rw [leftUnitor_naturality]
+  -- ⊢ tensor_μ C (𝟙_ C, M.X) (𝟙_ C, M.X) ≫ ((λ_ (𝟙_ C)).hom ⊗ 𝟙 (M.X ⊗ M.X)) ≫ (λ_ …
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
+  -- ⊢ ((λ_ M.X).hom ⊗ (λ_ M.X).hom) ≫ M.mul = ((λ_ M.X).hom ⊗ (λ_ M.X).hom) ≫ 𝟙 (M …
   simp only [Category.assoc, Category.id_comp]
+  -- 🎉 no goals
 #align Mon_.mul_left_unitor Mon_.mul_leftUnitor
 
 theorem mul_rightUnitor {M : Mon_ C} :
     (tensor_μ C (M.X, 𝟙_ C) (M.X, 𝟙_ C) ≫ (M.mul ⊗ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M.X).hom =
       ((ρ_ M.X).hom ⊗ (ρ_ M.X).hom) ≫ M.mul := by
   rw [← Category.id_comp M.mul, ← Category.comp_id (λ_ (𝟙_ C)).hom, tensor_comp]
+  -- ⊢ (tensor_μ C (M.X, 𝟙_ C) (M.X, 𝟙_ C) ≫ (𝟙 (M.X ⊗ M.X) ⊗ (λ_ (𝟙_ C)).hom) ≫ (M …
   slice_lhs 3 4 => rw [rightUnitor_naturality]
+  -- ⊢ tensor_μ C (M.X, 𝟙_ C) (M.X, 𝟙_ C) ≫ (𝟙 (M.X ⊗ M.X) ⊗ (λ_ (𝟙_ C)).hom) ≫ (ρ_ …
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
+  -- ⊢ ((ρ_ M.X).hom ⊗ (ρ_ M.X).hom) ≫ M.mul = ((ρ_ M.X).hom ⊗ (ρ_ M.X).hom) ≫ 𝟙 (M …
   simp only [Category.assoc, Category.id_comp]
+  -- 🎉 no goals
 #align Mon_.mul_right_unitor Mon_.mul_rightUnitor
 
 instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
@@ -487,23 +584,55 @@ instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
     { hom := f.hom ⊗ g.hom
       one_hom := by
         dsimp
+        -- ⊢ ((λ_ (𝟙_ C)).inv ≫ (X₁✝.one ⊗ X₂✝.one)) ≫ (f.hom ⊗ g.hom) = (λ_ (𝟙_ C)).inv  …
         slice_lhs 2 3 => rw [← tensor_comp, Hom.one_hom f, Hom.one_hom g]
+        -- 🎉 no goals
       mul_hom := by
         dsimp
+        -- ⊢ (tensor_μ C (X₁✝.X, X₂✝.X) (X₁✝.X, X₂✝.X) ≫ (X₁✝.mul ⊗ X₂✝.mul)) ≫ (f.hom ⊗  …
         slice_rhs 1 2 => rw [tensor_μ_natural]
+        -- ⊢ (tensor_μ C (X₁✝.X, X₂✝.X) (X₁✝.X, X₂✝.X) ≫ (X₁✝.mul ⊗ X₂✝.mul)) ≫ (f.hom ⊗  …
         slice_lhs 2 3 => rw [← tensor_comp, Hom.mul_hom f, Hom.mul_hom g, tensor_comp]
+        -- ⊢ tensor_μ C (X₁✝.X, X₂✝.X) (X₁✝.X, X₂✝.X) ≫ ((f.hom ⊗ f.hom) ⊗ g.hom ⊗ g.hom) …
         simp only [Category.assoc] })
+        -- 🎉 no goals
   (tensor_id := by intros; ext; apply tensor_id)
+                   -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) (𝟙 X₁✝) (𝟙 X₂✝) = 𝟙 ((fun  …
+                           -- ⊢ ((fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) (𝟙 X₁✝) (𝟙 X₂✝)).hom = (𝟙 …
+                                -- 🎉 no goals
   (tensor_comp := by intros; ext; apply tensor_comp)
+                     -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) (f₁✝ ≫ g₁✝) (f₂✝ ≫ g₂✝) =  …
+                             -- ⊢ ((fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) (f₁✝ ≫ g₁✝) (f₂✝ ≫ g₂✝)). …
+                                  -- 🎉 no goals
   (tensorUnit' := trivial C)
   (associator := fun M N P ↦ isoOfIso (α_ M.X N.X P.X) one_associator mul_associator)
   (associator_naturality := by intros; ext; dsimp; apply associator_naturality)
+                               -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) ((fun {X₁ Y₁ X₂ Y₂} f g => …
+                                       -- ⊢ ((fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) ((fun {X₁ Y₁ X₂ Y₂} f g = …
+                                            -- ⊢ ((f₁✝.hom ⊗ f₂✝.hom) ⊗ f₃✝.hom) ≫ (isoOfIso (α_ Y₁✝.X Y₂✝.X Y₃✝.X) (_ : ((λ_ …
+                                                   -- 🎉 no goals
   (leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor)
   (leftUnitor_naturality := by intros; ext; dsimp; apply leftUnitor_naturality)
+                               -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) (𝟙 (trivial C)) f✝ ≫ ((fun …
+                                       -- ⊢ ((fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) (𝟙 (trivial C)) f✝ ≫ ((fu …
+                                            -- ⊢ (𝟙 (𝟙_ C) ⊗ f✝.hom) ≫ (isoOfIso (λ_ Y✝.X) (_ : ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C)  …
+                                                   -- 🎉 no goals
   (rightUnitor := fun M ↦ isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor)
   (rightUnitor_naturality := by intros; ext; dsimp; apply rightUnitor_naturality)
+                                -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) f✝ (𝟙 (trivial C)) ≫ ((fun …
+                                        -- ⊢ ((fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) f✝ (𝟙 (trivial C)) ≫ ((fu …
+                                             -- ⊢ (f✝.hom ⊗ 𝟙 (𝟙_ C)) ≫ (isoOfIso (ρ_ Y✝.X) (_ : ((λ_ (𝟙_ C)).inv ≫ (Y✝.one ⊗  …
+                                                    -- 🎉 no goals
   (pentagon := by intros; ext; dsimp; apply pentagon)
+                  -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) ((fun M N P => isoOfIso (α …
+                          -- ⊢ ((fun {X₁ Y₁ X₂ Y₂} f g => Hom.mk (f.hom ⊗ g.hom)) ((fun M N P => isoOfIso ( …
+                               -- ⊢ ((isoOfIso (α_ W✝.X X✝.X Y✝.X) (_ : ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (W …
+                                      -- 🎉 no goals
   (triangle := by intros; ext; dsimp; apply triangle)
+                  -- ⊢ ((fun M N P => isoOfIso (α_ M.X N.X P.X) (_ : ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C) …
+                          -- ⊢ (((fun M N P => isoOfIso (α_ M.X N.X P.X) (_ : ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C …
+                               -- ⊢ (isoOfIso (α_ X✝.X (𝟙_ C) Y✝.X) (_ : ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ ( …
+                                      -- 🎉 no goals
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
 end Mon_

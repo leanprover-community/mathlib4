@@ -42,7 +42,9 @@ agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -
 theorem mk (h : ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀ y ∈ e.source, f y = e y) :
     IsLocallyHomeomorphOn f s := by
   intro x hx
+  -- ⊢ ∃ e, x ∈ e.source ∧ f = ↑e
   obtain ⟨e, hx, he⟩ := h x hx
+  -- ⊢ ∃ e, x ∈ e.source ∧ f = ↑e
   exact
     ⟨{ e with
         toFun := f
@@ -72,9 +74,13 @@ protected theorem continuousOn (hf : IsLocallyHomeomorphOn f s) : ContinuousOn f
 protected theorem comp (hg : IsLocallyHomeomorphOn g t) (hf : IsLocallyHomeomorphOn f s)
     (h : Set.MapsTo f s t) : IsLocallyHomeomorphOn (g ∘ f) s := by
   intro x hx
+  -- ⊢ ∃ e, x ∈ e.source ∧ g ∘ f = ↑e
   obtain ⟨eg, hxg, rfl⟩ := hg (f x) (h hx)
+  -- ⊢ ∃ e, x ∈ e.source ∧ ↑eg ∘ f = ↑e
   obtain ⟨ef, hxf, rfl⟩ := hf x hx
+  -- ⊢ ∃ e, x ∈ e.source ∧ ↑eg ∘ ↑ef = ↑e
   exact ⟨ef.trans eg, ⟨hxf, hxg⟩, rfl⟩
+  -- 🎉 no goals
 #align is_locally_homeomorph_on.comp IsLocallyHomeomorphOn.comp
 
 end IsLocallyHomeomorphOn
@@ -90,6 +96,7 @@ variable {f}
 theorem isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ :
     IsLocallyHomeomorph f ↔ IsLocallyHomeomorphOn f Set.univ := by
   simp only [IsLocallyHomeomorph, IsLocallyHomeomorphOn, Set.mem_univ, forall_true_left]
+  -- 🎉 no goals
 #align is_locally_homeomorph_iff_is_locally_homeomorph_on_univ isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ
 
 protected theorem IsLocallyHomeomorph.isLocallyHomeomorphOn (hf : IsLocallyHomeomorph f) :

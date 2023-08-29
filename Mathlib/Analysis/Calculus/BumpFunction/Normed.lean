@@ -48,10 +48,12 @@ theorem continuous_normed : Continuous (f.normed μ) :=
 
 theorem normed_sub (x : E) : f.normed μ (c - x) = f.normed μ (c + x) := by
   simp_rw [f.normed_def, f.sub]
+  -- 🎉 no goals
 #align cont_diff_bump.normed_sub ContDiffBump.normed_sub
 
 theorem normed_neg (f : ContDiffBump (0 : E)) (x : E) : f.normed μ (-x) = f.normed μ x := by
   simp_rw [f.normed_def, f.neg]
+  -- 🎉 no goals
 #align cont_diff_bump.normed_neg ContDiffBump.normed_neg
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [IsLocallyFiniteMeasure μ]
@@ -68,26 +70,35 @@ variable [μ.IsOpenPosMeasure]
 
 theorem integral_pos : 0 < ∫ x, f x ∂μ := by
   refine' (integral_pos_iff_support_of_nonneg f.nonneg' f.integrable).mpr _
+  -- ⊢ 0 < ↑↑μ (support fun i => ↑f i)
   rw [f.support_eq]
+  -- ⊢ 0 < ↑↑μ (ball c f.rOut)
   exact measure_ball_pos μ c f.rOut_pos
+  -- 🎉 no goals
 #align cont_diff_bump.integral_pos ContDiffBump.integral_pos
 
 theorem integral_normed : ∫ x, f.normed μ x ∂μ = 1 := by
   simp_rw [ContDiffBump.normed, div_eq_mul_inv, mul_comm (f _), ← smul_eq_mul, integral_smul]
+  -- ⊢ (∫ (x : E), ↑f x ∂μ)⁻¹ • ∫ (x : E), ↑f x ∂μ = 1
   exact inv_mul_cancel f.integral_pos.ne'
+  -- 🎉 no goals
 #align cont_diff_bump.integral_normed ContDiffBump.integral_normed
 
 theorem support_normed_eq : Function.support (f.normed μ) = Metric.ball c f.rOut := by
   unfold ContDiffBump.normed
+  -- ⊢ (support fun x => ↑f x / ∫ (x : E), ↑f x ∂μ) = ball c f.rOut
   rw [support_div, f.support_eq, support_const f.integral_pos.ne', inter_univ]
+  -- 🎉 no goals
 #align cont_diff_bump.support_normed_eq ContDiffBump.support_normed_eq
 
 theorem tsupport_normed_eq : tsupport (f.normed μ) = Metric.closedBall c f.rOut := by
   rw [tsupport, f.support_normed_eq, closure_ball _ f.rOut_pos.ne']
+  -- 🎉 no goals
 #align cont_diff_bump.tsupport_normed_eq ContDiffBump.tsupport_normed_eq
 
 theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
   simp only [HasCompactSupport, f.tsupport_normed_eq (μ := μ), isCompact_closedBall]
+  -- 🎉 no goals
 #align cont_diff_bump.has_compact_support_normed ContDiffBump.hasCompactSupport_normed
 
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
@@ -96,9 +107,13 @@ theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : 
   simp_rw [NormedAddCommGroup.tendsto_nhds_zero, Real.norm_eq_abs,
     abs_eq_self.mpr (φ _).rOut_pos.le] at hφ
   rw [nhds_basis_ball.smallSets.tendsto_right_iff]
+  -- ⊢ ∀ (i : ℝ), 0 < i → ∀ᶠ (x : ι) in l, (support fun x_1 => ContDiffBump.normed  …
   refine fun ε hε ↦ (hφ ε hε).mono fun i hi ↦ ?_
+  -- ⊢ (support fun x => ContDiffBump.normed (φ i) μ x) ∈ 𝒫 ball c ε
   rw [(φ i).support_normed_eq]
+  -- ⊢ ball c (φ i).rOut ∈ 𝒫 ball c ε
   exact ball_subset_ball hi.le
+  -- 🎉 no goals
 #align cont_diff_bump.tendsto_support_normed_small_sets ContDiffBump.tendsto_support_normed_smallSets
 
 variable (μ)
@@ -106,6 +121,7 @@ variable (μ)
 theorem integral_normed_smul {X} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [CompleteSpace X] (z : X) : ∫ x, f.normed μ x • z ∂μ = z := by
   simp_rw [integral_smul_const, f.integral_normed (μ := μ), one_smul]
+  -- 🎉 no goals
 #align cont_diff_bump.integral_normed_smul ContDiffBump.integral_normed_smul
 
 theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
@@ -117,10 +133,14 @@ theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ �
 theorem normed_le_div_measure_closedBall_rIn (x : E) :
     f.normed μ x ≤ 1 / (μ (closedBall c f.rIn)).toReal := by
   rw [normed_def]
+  -- ⊢ ↑f x / ∫ (x : E), ↑f x ∂μ ≤ 1 / ENNReal.toReal (↑↑μ (closedBall c f.rIn))
   gcongr
   · exact ENNReal.toReal_pos (measure_closedBall_pos _ _ f.rIn_pos).ne' measure_closedBall_lt_top.ne
+    -- 🎉 no goals
   · exact f.le_one
+    -- 🎉 no goals
   · exact f.measure_closedBall_le_integral μ
+    -- 🎉 no goals
 
 theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ (μ (closedBall c f.rOut)).toReal := by calc
   ∫ x, f x ∂μ = ∫ x in closedBall c f.rOut, f x ∂μ := by
@@ -139,13 +159,16 @@ theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : 
   have K_pos : 0 < K := by
     simpa [f.rIn_pos, not_lt.2 f.rIn_pos.le] using mul_pos_iff.1 (f.rOut_pos.trans_le h)
   apply le_trans _ (f.measure_closedBall_le_integral μ)
+  -- ⊢ ENNReal.toReal (↑↑μ (closedBall c f.rOut)) / K ^ finrank ℝ E ≤ ENNReal.toRea …
   rw [div_le_iff (pow_pos K_pos _), addHaar_closedBall' _ _ f.rIn_pos.le,
     addHaar_closedBall' _ _ f.rOut_pos.le, ENNReal.toReal_mul, ENNReal.toReal_mul,
     ENNReal.toReal_ofReal (pow_nonneg f.rOut_pos.le _),
     ENNReal.toReal_ofReal (pow_nonneg f.rIn_pos.le _), mul_assoc, mul_comm _ (K ^ _), ← mul_assoc,
     ← mul_pow, mul_comm _ K]
   gcongr
+  -- ⊢ 0 ≤ f.rOut
   exact f.rOut_pos.le
+  -- 🎉 no goals
 
 theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn)
     (x : E) :
@@ -157,8 +180,11 @@ theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h
     · exact f.integral_pos.le
     · exact f.le_one
   apply this.trans
+  -- ⊢ 1 / ∫ (y : E), ↑f y ∂μ ≤ K ^ finrank ℝ E / ENNReal.toReal (↑↑μ (closedBall c …
   rw [div_le_div_iff f.integral_pos, one_mul, ← div_le_iff' (pow_pos K_pos _)]
+  -- ⊢ ENNReal.toReal (↑↑μ (closedBall c f.rOut)) / K ^ finrank ℝ E ≤ ∫ (x : E), ↑f …
   · exact f.measure_closedBall_div_le_integral μ K h
+    -- 🎉 no goals
   · exact ENNReal.toReal_pos (measure_closedBall_pos _ _ f.rOut_pos).ne'
       measure_closedBall_lt_top.ne
 

@@ -123,6 +123,9 @@ theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
 theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
+  -- ⊢ ↑m = ↑m
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align nat.cast_ite Nat.cast_ite
 
 end Nat
@@ -132,11 +135,15 @@ namespace Nat
 @[simp, norm_cast]
 theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
+  -- 🎉 no goals
 #align nat.cast_one Nat.cast_oneₓ
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
+  -- ⊢ ↑(m + zero) = ↑m + ↑zero
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
@@ -146,12 +153,18 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
     else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
 decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
+               -- 🎉 no goals
+               -- 🎉 no goals
+               -- 🎉 no goals
+               -- 🎉 no goals
 #align nat.bin_cast Nat.binCast
 
 @[simp]
 theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : ℕ) : R) := by
   apply Nat.strongInductionOn n
+  -- ⊢ ∀ (n : ℕ), (∀ (m : ℕ), m < n → Nat.binCast m = ↑m) → Nat.binCast n = ↑n
   intros k hk
+  -- ⊢ Nat.binCast k = ↑k
   cases k with
   | zero => rw [Nat.binCast, Nat.cast_zero]
   | succ k =>
@@ -178,6 +191,8 @@ theorem cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (
 @[norm_cast, deprecated]
 theorem cast_bit1 [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
   rw [bit1, cast_add_one, cast_bit0]; rfl
+  -- ⊢ bit0 ↑n + 1 = bit1 ↑n
+                                      -- 🎉 no goals
 #align nat.cast_bit1 Nat.cast_bit1
 
 end deprecated
@@ -201,10 +216,14 @@ protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMon
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],
+                       -- 🎉 no goals
     natCast_succ := fun n => by
       dsimp only [NatCast.natCast]
+      -- ⊢ Nat.binCast (n + 1) = Nat.binCast n + 1
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
+      -- ⊢ Nat.binCast (n + 1) = Nat.binCast n + 1
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
+      -- 🎉 no goals
 #align add_monoid_with_one.binary AddMonoidWithOne.binary
 
 namespace NeZero
@@ -215,6 +234,8 @@ lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] :
 
 lemma of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [h : NeZero (n : R)] : NeZero n :=
   ⟨by rintro rfl; exact h.out Nat.cast_zero⟩
+      -- ⊢ False
+                  -- 🎉 no goals
 #align ne_zero.of_ne_zero_coe NeZero.of_neZero_natCast
 
 lemma pos_of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [NeZero (n : R)] : 0 < n :=
@@ -225,17 +246,25 @@ end NeZero
 
 theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
   rw [←Nat.cast_one, ←Nat.cast_add]
+  -- ⊢ ↑(1 + 1) = 2
   apply congrArg
+  -- ⊢ 1 + 1 = 2
   decide
+  -- 🎉 no goals
 #align one_add_one_eq_two one_add_one_eq_two
 
 theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
   rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]
+  -- ⊢ ↑(1 + 1 + 1) = 3
   apply congrArg
+  -- ⊢ 1 + 1 + 1 = 3
   decide
+  -- 🎉 no goals
 
 theorem three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
   rw [←two_add_one_eq_three, ←one_add_one_eq_two, ←Nat.cast_one,
     ←Nat.cast_add, ←Nat.cast_add, ←Nat.cast_add]
   apply congrArg
+  -- ⊢ 1 + 1 + 1 + 1 = 4
   decide
+  -- 🎉 no goals

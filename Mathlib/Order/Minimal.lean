@@ -65,7 +65,9 @@ theorem maximals_singleton : maximals r {a} = {a} :=
     singleton_subset_iff.2 <|
       ⟨rfl, by
         rintro b (rfl : b = a)
+        -- ⊢ r b b → r b b
         exact id⟩
+        -- 🎉 no goals
 #align maximals_singleton maximals_singleton
 
 @[simp]
@@ -95,8 +97,13 @@ theorem eq_of_mem_minimals (ha : a ∈ minimals r s) (hb : b ∈ s) (h : r b a) 
 
 theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
   simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
+  -- ⊢ x ∈ s → ((∀ ⦃b : α⦄, b ∈ s → r x b → r b x) ↔ ∀ ⦃y : α⦄, y ∈ s → r x y → x = …
   refine' fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ _⟩
+  -- ⊢ r y x
   convert hxy <;> rw [h hys hxy]
+  -- ⊢ y = x
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 
 theorem mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
   mem_maximals_iff
@@ -113,19 +120,25 @@ theorem mem_minimals_setOf_iff : x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y
 theorem mem_minimals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
     x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
   simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+  -- 🎉 no goals
 
 theorem mem_maximals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
     x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
   simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+  -- 🎉 no goals
 
 theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
   refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨?_,fun b hbt ↦ hmin (hts hbt)⟩,
     fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ ?_⟩⟩
   · obtain ⟨a', ha', haa'⟩ := h _ has
+    -- ⊢ a ∈ t
     rwa [antisymm (hmin (hts ha') haa') haa']
+    -- 🎉 no goals
   obtain ⟨b', hb't, hb'b⟩ := h b hbs
+  -- ⊢ r a b
   rwa [antisymm (hmin hb't (Trans.trans hb'b hba)) (Trans.trans hb'b hba)]
+  -- 🎉 no goals
 
 theorem maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r x y) : maximals r s = maximals r t :=
@@ -170,6 +183,7 @@ theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
 
 theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
   rw [minimals_of_symm, maximals_of_symm]
+  -- 🎉 no goals
 #align maximals_eq_minimals maximals_eq_minimals
 
 variable {r r₁ r₂ s t a}
@@ -177,7 +191,9 @@ variable {r r₁ r₂ s t a}
 -- porting note: todo: use `h.induction_on`
 theorem Set.Subsingleton.maximals_eq (h : s.Subsingleton) : maximals r s = s := by
   rcases h.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
+  -- ⊢ maximals r ∅ = ∅
   exacts [minimals_empty _, maximals_singleton _ _]
+  -- 🎉 no goals
 #align set.subsingleton.maximals_eq Set.Subsingleton.maximals_eq
 
 theorem Set.Subsingleton.minimals_eq (h : s.Subsingleton) : minimals r s = s :=
@@ -188,23 +204,33 @@ theorem maximals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) 
     maximals r₂ s ⊆ maximals r₁ s := fun a ha =>
   ⟨ha.1, fun b hb hab => by
     have := eq_of_mem_maximals ha hb (h _ _ hab)
+    -- ⊢ r₁ b a
     subst this
+    -- ⊢ r₁ a a
     exact hab⟩
+    -- 🎉 no goals
 #align maximals_mono maximals_mono
 
 theorem minimals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) :
     minimals r₂ s ⊆ minimals r₁ s := fun a ha =>
   ⟨ha.1, fun b hb hab => by
     have := eq_of_mem_minimals ha hb (h _ _ hab)
+    -- ⊢ r₁ a b
     subst this
+    -- ⊢ r₁ a a
     exact hab⟩
+    -- 🎉 no goals
 #align minimals_mono minimals_mono
 
 theorem maximals_union : maximals r (s ∪ t) ⊆ maximals r s ∪ maximals r t := by
   intro a ha
+  -- ⊢ a ∈ maximals r s ∪ maximals r t
   obtain h | h := ha.1
+  -- ⊢ a ∈ maximals r s ∪ maximals r t
   · exact Or.inl ⟨h, fun b hb => ha.2 <| Or.inl hb⟩
+    -- 🎉 no goals
   · exact Or.inr ⟨h, fun b hb => ha.2 <| Or.inr hb⟩
+    -- 🎉 no goals
 #align maximals_union maximals_union
 
 theorem minimals_union : minimals r (s ∪ t) ⊆ minimals r s ∪ minimals r t :=
@@ -231,7 +257,9 @@ theorem IsAntichain.maximals_eq (h : IsAntichain r s) : maximals r s = s :=
   (maximals_subset _ _).antisymm fun a ha =>
     ⟨ha, fun b hb hab => by
       obtain rfl := h.eq ha hb hab
+      -- ⊢ r a a
       exact hab⟩
+      -- 🎉 no goals
 #align is_antichain.maximals_eq IsAntichain.maximals_eq
 
 theorem IsAntichain.minimals_eq (h : IsAntichain r s) : minimals r s = s :=
@@ -253,8 +281,11 @@ equal to `t`. -/
 theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
     (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ maximals r s, r b a) : maximals r s = t := by
   refine' h.antisymm fun a ha => _
+  -- ⊢ a ∈ maximals r s
   obtain ⟨b, hb, hr⟩ := hs ha
+  -- ⊢ a ∈ maximals r s
   rwa [of_not_not fun hab => ht (h hb) ha (Ne.symm hab) hr]
+  -- 🎉 no goals
 #align is_antichain.max_maximals IsAntichain.max_maximals
 
 /-- If `minimals r s` is included in but *shadows* the antichain `t`, then it is actually
@@ -262,8 +293,11 @@ equal to `t`. -/
 theorem IsAntichain.max_minimals (ht : IsAntichain r t) (h : minimals r s ⊆ t)
     (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ minimals r s, r a b) : minimals r s = t := by
   refine' h.antisymm fun a ha => _
+  -- ⊢ a ∈ minimals r s
   obtain ⟨b, hb, hr⟩ := hs ha
+  -- ⊢ a ∈ minimals r s
   rwa [of_not_not fun hab => ht ha (h hb) hab hr]
+  -- 🎉 no goals
 #align is_antichain.max_minimals IsAntichain.max_minimals
 
 variable [PartialOrder α]
@@ -288,8 +322,10 @@ theorem IsAntichain.minimals_upperClosure (hs : IsAntichain (· ≤ ·) s) :
     minimals (· ≤ ·) (upperClosure s : Set α) = s :=
   hs.max_minimals
     (fun a ⟨⟨b, hb, hba⟩, _⟩ => by rwa [eq_of_mem_minimals ‹a ∈ _› (subset_upperClosure hb) hba])
+                                   -- 🎉 no goals
     fun a ha =>
     ⟨a, ⟨subset_upperClosure ha, fun b ⟨c, hc, hcb⟩ hba => by rwa [hs.eq' ha hc (hcb.trans hba)]⟩,
+                                                              -- 🎉 no goals
       le_rfl⟩
 #align is_antichain.minimals_upper_closure IsAntichain.minimals_upperClosure
 
@@ -305,12 +341,19 @@ variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 theorem minimals_image_of_rel_iff_rel (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) :
     minimals s (f '' x) = f '' (minimals r x) := by
   ext a
+  -- ⊢ a ∈ minimals s (f '' x) ↔ a ∈ f '' minimals r x
   simp only [minimals, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  -- ⊢ a ∈ {a | (∃ x_1, x_1 ∈ x ∧ f x_1 = a) ∧ ∀ (a_1 : α), a_1 ∈ x → s (f a_1) a → …
   constructor
+  -- ⊢ a ∈ {a | (∃ x_1, x_1 ∈ x ∧ f x_1 = a) ∧ ∀ (a_1 : α), a_1 ∈ x → s (f a_1) a → …
   · rintro ⟨⟨a, ha, rfl⟩ , h⟩
+    -- ⊢ ∃ x_1, x_1 ∈ {a | a ∈ x ∧ ∀ ⦃b : α⦄, b ∈ x → r b a → r a b} ∧ f x_1 = f a
     exact ⟨a, ⟨ha, fun y hy hya ↦ (hf ha hy).mpr (h _ hy ((hf hy ha).mp hya))⟩, rfl⟩
+    -- 🎉 no goals
   rintro ⟨a,⟨⟨ha,h⟩,rfl⟩⟩
+  -- ⊢ f a ∈ {a | (∃ x_1, x_1 ∈ x ∧ f x_1 = a) ∧ ∀ (a_1 : α), a_1 ∈ x → s (f a_1) a …
   exact ⟨⟨_, ha, rfl⟩, fun y hy hya ↦ (hf ha hy).mp (h hy ((hf hy ha).mpr hya))⟩
+  -- 🎉 no goals
 
 theorem maximals_image_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) :
@@ -320,6 +363,8 @@ theorem maximals_image_of_rel_iff_rel_on
 theorem RelEmbedding.minimals_image_eq (f : r ↪r s) (x : Set α) :
     minimals s (f '' x) = f '' (minimals r x) := by
   rw [minimals_image_of_rel_iff_rel]; simp [f.map_rel_iff]
+  -- ⊢ ∀ ⦃a a' : α⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (↑f a) (↑f a'))
+                                      -- 🎉 no goals
 
 theorem RelEmbedding.maximals_image_eq (f : r ↪r s) (x : Set α) :
     maximals s (f '' x) = f '' (maximals r x) :=
@@ -329,6 +374,7 @@ theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
     x ∩ f ⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) := by
   ext a
+  -- ⊢ a ∈ x ∩ f ⁻¹' minimals s (f '' x ∩ y) ↔ a ∈ minimals r (x ∩ f ⁻¹' y)
   simp only [minimals, mem_inter_iff, mem_image, and_imp, forall_exists_index,
     forall_apply_eq_imp_iff₂, preimage_setOf_eq, mem_setOf_eq, mem_preimage]
   exact ⟨fun ⟨hax,⟨_,hay⟩,h2⟩ ↦ ⟨⟨hax, hay⟩, fun a₁ ha₁ ha₁y ha₁a ↦
@@ -345,38 +391,54 @@ theorem inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset
 theorem RelEmbedding.inter_preimage_minimals_eq (f : r ↪r s) (x : Set α) (y : Set β) :
     x ∩ f⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) :=
   inter_minimals_preimage_inter_eq_of_rel_iff_rel_on (by simp [f.map_rel_iff]) y
+                                                         -- 🎉 no goals
 
 theorem RelEmbedding.inter_preimage_minimals_eq_of_subset (f : r ↪r s) (h : y ⊆ f '' x) :
     x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
   rw [inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
+  -- ⊢ ∀ ⦃a a' : α⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (↑f a) (↑f a'))
+                                                                   -- 🎉 no goals
 
 theorem RelEmbedding.minimals_preimage_eq (f : r ↪r s) (y : Set β) :
   minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
   convert (f.inter_preimage_minimals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
+  -- ⊢ ↑f ⁻¹' y = univ ∩ ↑f ⁻¹' y
+                                                      -- ⊢ ↑f ⁻¹' minimals s (y ∩ range ↑f) = univ ∩ ↑f ⁻¹' minimals s (↑f '' univ ∩ y)
+                                                                         -- 🎉 no goals
 
 theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
     x ∩ f ⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) := by
   apply inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
+  -- ⊢ ∀ ⦃a a' : α⦄, a ∈ x → a' ∈ x → (r a' a ↔ s (f a') (f a))
   exact fun _ _ a b ↦ hf b a
+  -- 🎉 no goals
 
 theorem inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
     x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
   apply inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ hy
+  -- ⊢ ∀ ⦃a a' : α⦄, a ∈ x → a' ∈ x → (r a' a ↔ s (f a') (f a))
   exact fun _ _ a b ↦ hf b a
+  -- 🎉 no goals
 
 theorem RelEmbedding.inter_preimage_maximals_eq (f : r ↪r s) (x : Set α) (y : Set β) :
     x ∩ f⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) :=
   inter_minimals_preimage_inter_eq_of_rel_iff_rel_on (by simp [f.map_rel_iff]) y
+                                                         -- 🎉 no goals
 
 theorem RelEmbedding.inter_preimage_maximals_eq_of_subset (f : r ↪r s) (h : y ⊆ f '' x) :
     x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
   rw [inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
+  -- ⊢ ∀ ⦃a a' : α⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (↑f a) (↑f a'))
+                                                                   -- 🎉 no goals
 
 theorem RelEmbedding.maximals_preimage_eq (f : r ↪r s) (y : Set β) :
     maximals r (f ⁻¹' y) = f ⁻¹' maximals s (y ∩ range f) := by
   convert (f.inter_preimage_maximals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
+  -- ⊢ ↑f ⁻¹' y = univ ∩ ↑f ⁻¹' y
+                                                      -- ⊢ ↑f ⁻¹' maximals s (y ∩ range ↑f) = univ ∩ ↑f ⁻¹' maximals s (↑f '' univ ∩ y)
+                                                                         -- 🎉 no goals
 
 end Image
 
@@ -397,6 +459,8 @@ theorem maximals_Icc (hab : a ≤ b) : maximals (· ≤ ·) (Icc a b) = {b} :=
 
 theorem minimals_Icc (hab : a ≤ b) : minimals (· ≤ ·) (Icc a b) = {a} := by
   simp_rw [Icc, and_comm (a := (a ≤ _))]; exact maximals_Icc (α := αᵒᵈ) hab
+  -- ⊢ minimals (fun x x_1 => x ≤ x_1) {x | x ≤ b ∧ a ≤ x} = {a}
+                                          -- 🎉 no goals
 
 theorem maximals_Ioc (hab : a < b) : maximals (· ≤ ·) (Ioc a b) = {b} :=
   Set.ext fun x ↦ ⟨fun h ↦ h.1.2.antisymm (h.2 ⟨hab, rfl.le⟩ h.1.2),
@@ -404,5 +468,7 @@ theorem maximals_Ioc (hab : a < b) : maximals (· ≤ ·) (Ioc a b) = {b} :=
 
 theorem minimals_Ico (hab : a < b) : minimals (· ≤ ·) (Ico a b) = {a} := by
   simp_rw [Ico, and_comm (a := _ ≤ _)]; exact maximals_Ioc (α := αᵒᵈ) hab
+  -- ⊢ minimals (fun x x_1 => x ≤ x_1) {x | x < b ∧ a ≤ x} = {a}
+                                        -- 🎉 no goals
 
 end Interval

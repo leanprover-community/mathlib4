@@ -79,10 +79,14 @@ def Iso.mk {α β : LatCat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : LatticeHom _ _)
   hom_inv_id := by
     ext
+    -- ⊢ ↑({ toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑α), ↑e (a ⊔ b) = ↑ …
     exact e.symm_apply_apply _
+    -- 🎉 no goals
   inv_hom_id := by
     ext
+    -- ⊢ ↑({ toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ : ∀ (a b : ↑β) …
     exact e.apply_symm_apply _
+    -- 🎉 no goals
 #align Lat.iso.mk LatCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/

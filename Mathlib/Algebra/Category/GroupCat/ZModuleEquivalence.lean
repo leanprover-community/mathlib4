@@ -36,7 +36,12 @@ instance forget₂AddCommGroupFull : Full (forget₂ (ModuleCat ℤ) AddCommGrou
           map_add' := AddMonoidHom.map_add (show A.carrier →+ B.carrier from f) }
         (fun n x => by
           convert AddMonoidHom.map_zsmul (show A.carrier →+ B.carrier from f) x n <;>
+          -- ⊢ SMulZeroClass.toSMul = SubNegMonoid.SMulInt
             ext <;> apply int_smul_eq_zsmul)
+            -- ⊢ SMul.smul x✝¹ x✝ = SMul.smul x✝¹ x✝
+            -- ⊢ SMul.smul x✝¹ x✝ = SMul.smul x✝¹ x✝
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_AddCommGroup_full ModuleCat.forget₂AddCommGroupFull
 

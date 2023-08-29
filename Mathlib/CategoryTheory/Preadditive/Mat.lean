@@ -108,12 +108,18 @@ instance : Category.{v₁} (Mat_ C) where
   id := Hom.id
   comp f g := f.comp g
   id_comp f := by simp [dite_comp]
+                  -- 🎉 no goals
   comp_id f := by simp [comp_dite]
+                  -- 🎉 no goals
   assoc f g h := by
     apply DMatrix.ext
+    -- ⊢ ∀ (i : W✝.ι) (j : Z✝.ι), ((f ≫ g) ≫ h) i j = (f ≫ g ≫ h) i j
     intros
+    -- ⊢ ((f ≫ g) ≫ h) i✝ j✝ = (f ≫ g ≫ h) i✝ j✝
     simp_rw [Hom.comp, sum_comp, comp_sum, Category.assoc]
+    -- ⊢ ∑ x : Y✝.ι, ∑ x_1 : X✝.ι, f i✝ x_1 ≫ g x_1 x ≫ h x j✝ = ∑ x : X✝.ι, ∑ j : Y✝ …
     rw [Finset.sum_comm]
+    -- 🎉 no goals
 
 -- porting note: added because `DMatrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -135,12 +141,14 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_apply_self (M : Mat_ C) (i : M.ι) : (𝟙 M : Hom M M) i i = 𝟙 _ := by simp [id_apply]
+                                                                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_self CategoryTheory.Mat_.id_apply_self
 
 @[simp]
 theorem id_apply_of_ne (M : Mat_ C) (i j : M.ι) (h : i ≠ j) : (𝟙 M : Hom M M) i j = 0 := by
   simp [id_apply, h]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_of_ne CategoryTheory.Mat_.id_apply_of_ne
 
@@ -166,7 +174,9 @@ end
 -- was introduced separately and the lemma `add_apply` was moved upwards
 instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
   change AddCommGroup (DMatrix M.ι N.ι _)
+  -- ⊢ AddCommGroup (DMatrix M.ι N.ι fun i j => (fun i j => X M i ⟶ X N j) i j)
   infer_instance
+  -- 🎉 no goals
 
 @[simp]
 theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
@@ -176,7 +186,11 @@ set_option linter.uppercaseLean3 false in
 
 instance : Preadditive (Mat_ C) where
   add_comp M N K f f' g := by ext; simp [Finset.sum_add_distrib]
+                              -- ⊢ ((f + f') ≫ g) i✝ j✝ = (f ≫ g + f' ≫ g) i✝ j✝
+                                   -- 🎉 no goals
   comp_add M N K f g g' := by ext; simp [Finset.sum_add_distrib]
+                              -- ⊢ (f ≫ (g + g')) i✝ j✝ = (f ≫ g + f ≫ g') i✝ j✝
+                                   -- 🎉 no goals
 
 open CategoryTheory.Limits
 
@@ -194,65 +208,114 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
             π := fun j x y => by
               refine' if h : x.1 = j then _ else 0
+              -- ⊢ (fun i j_1 => X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) p.snd) i ⟶  …
               refine' if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then _ else 0
+              -- ⊢ (fun i j_1 => X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) p.snd) i ⟶  …
               apply eqToHom
+              -- ⊢ X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) p.snd) x = X (f j) y
               substs h h'
+              -- ⊢ X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) p.snd) x = X (f x.fst) (( …
               rfl
+              -- 🎉 no goals
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
               refine' if h : y.1 = j then _ else 0
+              -- ⊢ (fun i j_1 => X (f j) i ⟶ X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) …
               refine' if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then _ else 0
+              -- ⊢ (fun i j_1 => X (f j) i ⟶ X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) …
               apply eqToHom
+              -- ⊢ X (f j) x = X (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) p.snd) y
               substs h h'
+              -- ⊢ X (f y.fst) ((_ : y.fst = y.fst) ▸ y.snd) = X (mk ((j : Fin n) × (f j).ι) fu …
               rfl
+              -- 🎉 no goals
             ι_π := fun j j' => by
               ext x y
+              -- ⊢ ((fun j x y => if h : y.fst = j then if h' : h ▸ y.snd = x then eqToHom (_ : …
               dsimp
+              -- ⊢ (∑ j_1 : (j : Fin n) × (f j).ι, (if h : j_1.fst = j then if h' : h ▸ j_1.snd …
               simp_rw [dite_comp, comp_dite]
+              -- ⊢ (∑ x_1 : (j : Fin n) × (f j).ι, if h : x_1.fst = j then if h_1 : (_ : x_1.fs …
               simp only [ite_self, dite_eq_ite, dif_ctx_congr, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans, Finset.sum_congr]
               erw [Finset.sum_sigma]
+              -- ⊢ (∑ a : Fin n, ∑ s in (fun x => Finset.univ) a, if h : { fst := a, snd := s } …
               dsimp
+              -- ⊢ (∑ a : Fin n, ∑ s : (f a).ι, if h : a = j then if h_1 : (_ : a = j) ▸ s = x  …
               simp only [if_congr, if_true, dif_ctx_congr, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_congr, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'
+                -- ⊢ eqToHom (_ : X (f j) x = X (f j) ((_ : j = j) ▸ x)) = eqToHom (_ : f j = f j …
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
+                -- 🎉 no goals
               · subst h
+                -- ⊢ 0 = eqToHom (_ : f j = f j) x y
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
+                -- 🎉 no goals
               · rfl }
+                -- 🎉 no goals
           (by
             dsimp
+            -- ⊢ (∑ j : Fin n, (fun x y => if h : x.fst = j then if h' : h ▸ x.snd = y then e …
             ext1 ⟨i, j⟩
+            -- ⊢ ∀ (j_1 : (mk ((j : Fin n) × (f j).ι) fun p => X (f p.fst) p.snd).ι), Finset. …
             rintro ⟨i', j'⟩
+            -- ⊢ Finset.sum Finset.univ (fun j => (fun x y => if h : x.fst = j then if h' : h …
             rw [Finset.sum_apply, Finset.sum_apply]
+            -- ⊢ ∑ c : Fin n, ((fun x y => if h : x.fst = c then if h' : h ▸ x.snd = y then e …
             dsimp
+            -- ⊢ (∑ c : Fin n, ∑ j_1 : (f c).ι, (if h : i = c then if h' : h ▸ j = j_1 then e …
             rw [Finset.sum_eq_single i]; rotate_left
             · intro b _ hb
+              -- ⊢ (∑ j_1 : (f b).ι, (if h : i = b then if h' : h ▸ j = j_1 then eqToHom (_ : X …
               apply Finset.sum_eq_zero
+              -- ⊢ ∀ (x : (f b).ι), x ∈ Finset.univ → ((if h : i = b then if h' : h ▸ j = x the …
               intro x _
+              -- ⊢ ((if h : i = b then if h' : h ▸ j = x then eqToHom (_ : X (f i) j = X (f b)  …
               rw [dif_neg hb.symm, zero_comp]
+              -- 🎉 no goals
             · intro hi
+              -- ⊢ (∑ j_1 : (f i).ι, (if h : i = i then if h' : h ▸ j = j_1 then eqToHom (_ : X …
               simp at hi
+              -- 🎉 no goals
             rw [Finset.sum_eq_single j]; rotate_left
             · intro b _ hb
+              -- ⊢ ((if h : i = i then if h' : h ▸ j = b then eqToHom (_ : X (f i) j = X (f i)  …
               rw [dif_pos rfl, dif_neg, zero_comp]
+              -- ⊢ ¬(_ : i = i) ▸ j = b
               simp only
+              -- ⊢ ¬j = b
               tauto
+              -- 🎉 no goals
             · intro hj
+              -- ⊢ ((if h : i = i then if h' : h ▸ j = j then eqToHom (_ : X (f i) j = X (f i)  …
               simp at hj
+              -- 🎉 no goals
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
               Sigma.mk.inj_iff, not_and, id_def]
             by_cases i' = i
+            -- ⊢ (if h : i' = i then if h' : h ▸ j' = j then eqToHom (_ : X (f i) j = X (f i' …
+            -- ⊢ (if h : i' = i then if h' : h ▸ j' = j then eqToHom (_ : X (f i) j = X (f i' …
             · subst h
+              -- ⊢ (if h : i' = i' then if h' : h ▸ j' = j then eqToHom (_ : X (f i') j = X (f  …
               rw [dif_pos rfl]
+              -- ⊢ (if h' : (_ : i' = i') ▸ j' = j then eqToHom (_ : X (f i') j = X (f i') j')  …
               simp only [heq_eq_eq, true_and]
+              -- ⊢ (if h' : j' = j then eqToHom (_ : X (f i') j = X (f i') j') else 0) = if h : …
               by_cases j' = j
+              -- ⊢ (if h' : j' = j then eqToHom (_ : X (f i') j = X (f i') j') else 0) = if h : …
+              -- ⊢ (if h' : j' = j then eqToHom (_ : X (f i') j = X (f i') j') else 0) = if h : …
               · subst h
+                -- ⊢ (if h' : j' = j' then eqToHom (_ : X (f i') j' = X (f i') j') else 0) = if h …
                 simp
+                -- 🎉 no goals
               · rw [dif_neg h, dif_neg (Ne.symm h)]
+                -- 🎉 no goals
             · rw [dif_neg h, dif_neg]
+              -- ⊢ ¬(i = i' ∧ HEq j j')
               tauto ) }
+              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
 
@@ -278,9 +341,15 @@ set_option linter.uppercaseLean3 false in
 @[simps!]
 def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
+                                            -- ⊢ (mapMat_ (𝟭 C)).obj (Mat_.mk ι✝ X✝) = (𝟭 (Mat_ C)).obj (Mat_.mk ι✝ X✝)
+                                                     -- 🎉 no goals
     ext
+    -- ⊢ ((mapMat_ (𝟭 C)).map f ≫ ((fun M => eqToIso (_ : (mapMat_ (𝟭 C)).obj M = (𝟭  …
     cases M; cases N
+    -- ⊢ ((mapMat_ (𝟭 C)).map f ≫ ((fun M => eqToIso (_ : (mapMat_ (𝟭 C)).obj M = (𝟭  …
+             -- ⊢ ((mapMat_ (𝟭 C)).map f ≫ ((fun M => eqToIso (_ : (mapMat_ (𝟭 C)).obj M = (𝟭  …
     simp [comp_dite, dite_comp]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Mat_id CategoryTheory.Functor.mapMatId
 
@@ -290,9 +359,15 @@ set_option linter.uppercaseLean3 false in
 def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
+                                            -- ⊢ (mapMat_ (F ⋙ G)).obj (Mat_.mk ι✝ X✝) = (mapMat_ F ⋙ mapMat_ G).obj (Mat_.mk …
+                                                     -- 🎉 no goals
     ext
+    -- ⊢ ((mapMat_ (F ⋙ G)).map f ≫ ((fun M => eqToIso (_ : (mapMat_ (F ⋙ G)).obj M = …
     cases M; cases N
+    -- ⊢ ((mapMat_ (F ⋙ G)).map f ≫ ((fun M => eqToIso (_ : (mapMat_ (F ⋙ G)).obj M = …
+             -- ⊢ ((mapMat_ (F ⋙ G)).map f ≫ ((fun M => eqToIso (_ : (mapMat_ (F ⋙ G)).obj M = …
     simp [comp_dite, dite_comp]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Mat_comp CategoryTheory.Functor.mapMatComp
 
@@ -307,7 +382,11 @@ def embedding : C ⥤ Mat_ C where
   obj X := ⟨PUnit, fun _ => X⟩
   map f _ _ := f
   map_id _ := by ext ⟨⟩; simp
+                 -- ⊢ { obj := fun X => mk PUnit fun x => X, map := fun {X Y} f x x => f }.map (𝟙  …
+                         -- 🎉 no goals
   map_comp _ _ := by ext ⟨⟩; simp
+                     -- ⊢ { obj := fun X => mk PUnit fun x => X, map := fun {X Y} f x x => f }.map (x✝ …
+                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.embedding CategoryTheory.Mat_.embedding
 
@@ -337,30 +416,49 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
   inv := biproduct.desc fun i j k => if h : i = k then eqToHom (congr_arg M.X h) else 0
   hom_inv_id := by
     simp only [biproduct.lift_desc]
+    -- ⊢ (∑ j : M.ι, (fun j_1 k => if h : j_1 = j then eqToHom (_ : X M j_1 = X M j)  …
     funext i j
+    -- ⊢ Finset.sum Finset.univ (fun j => (fun j_1 k => if h : j_1 = j then eqToHom ( …
     dsimp [id_def]
+    -- ⊢ Finset.sum Finset.univ (fun j => (fun j_1 k => if h : j_1 = j then eqToHom ( …
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
+      -- ⊢ ((fun j k => if h : j = b then eqToHom (_ : X M j = X M b) else 0) ≫ fun j k …
       dsimp
+      -- ⊢ (∑ j_1 in {PUnit.unit}, (if h : i = b then eqToHom (_ : X M i = X M b) else  …
       simp only [Finset.sum_const, Finset.card_singleton, one_smul]
+      -- ⊢ ((if h : i = b then eqToHom (_ : X M i = X M b) else 0) ≫ if h : b = j then  …
       rw [dif_neg hb.symm, zero_comp]
+      -- 🎉 no goals
     · intro h
+      -- ⊢ ((fun j k => if h : j = i then eqToHom (_ : X M j = X M i) else 0) ≫ fun j k …
       simp at h
+      -- 🎉 no goals
     simp
+    -- 🎉 no goals
   inv_hom_id := by
     apply biproduct.hom_ext
+    -- ⊢ ∀ (j : M.ι), ((biproduct.desc fun i j k => if h : i = k then eqToHom (_ : X  …
     intro i
+    -- ⊢ ((biproduct.desc fun i j k => if h : i = k then eqToHom (_ : X M i = X M k)  …
     apply biproduct.hom_ext'
+    -- ⊢ ∀ (j : M.ι), biproduct.ι (fun i => (embedding C).obj (X M i)) j ≫ ((biproduc …
     intro j
+    -- ⊢ biproduct.ι (fun i => (embedding C).obj (X M i)) j ≫ ((biproduct.desc fun i  …
     simp only [Category.id_comp, Category.assoc, biproduct.lift_π, biproduct.ι_desc_assoc,
       biproduct.ι_π]
     ext ⟨⟩ ⟨⟩
+    -- ⊢ ((fun j_1 k => if h : j = k then eqToHom (_ : X M j = X M k) else 0) ≫ fun j …
     simp only [embedding, comp_apply, comp_dite, dite_comp, comp_zero, zero_comp,
       Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
     split_ifs with h
+    -- ⊢ eqToHom (_ : X M j = X M i) = eqToHom (_ : (embedding C).obj (X M j) = (embe …
     · subst h
+      -- ⊢ eqToHom (_ : X M j = X M j) = eqToHom (_ : (embedding C).obj (X M j) = (embe …
       simp
+      -- 🎉 no goals
     · rfl
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.iso_biproduct_embedding CategoryTheory.Mat_.isoBiproductEmbedding
 
@@ -386,16 +484,22 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
     (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i =
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
   dsimp [additiveObjIsoBiproduct]
+  -- ⊢ (F.map (biproduct.lift fun i j k => if h : j = i then eqToHom (_ : X M j = X …
   rw [biproduct.lift_π, Category.assoc]
+  -- ⊢ F.map (biproduct.lift fun i j k => if h : j = i then eqToHom (_ : X M j = X  …
   erw [biproduct.lift_π, ← F.map_comp]
+  -- ⊢ F.map ((biproduct.lift fun i j k => if h : j = i then eqToHom (_ : X M j = X …
   simp
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     biproduct.ι _ i ≫ (additiveObjIsoBiproduct F M).inv =
       F.map (biproduct.ι _ i ≫ M.isoBiproductEmbedding.inv) := by
   dsimp [additiveObjIsoBiproduct, Functor.mapBiproduct, Functor.mapBicone]
+  -- ⊢ biproduct.ι (fun i => F.obj ((embedding C).obj (X M i))) i ≫ (biproduct.desc …
   simp only [biproduct.ι_desc, biproduct.ι_desc_assoc, ← F.map_comp]
+  -- 🎉 no goals
 
 variable [HasFiniteBiproducts D]
 
@@ -406,15 +510,20 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
       (additiveObjIsoBiproduct F M).hom ≫
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
   ext i : 1
+  -- ⊢ (F.map f ≫ (additiveObjIsoBiproduct F N).hom) ≫ biproduct.π (fun i => F.obj  …
   simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
     embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
     ← cancel_epi (additiveObjIsoBiproduct F M).inv, Iso.inv_hom_id_assoc]
   ext j : 1
+  -- ⊢ (biproduct.ι (fun i => F.obj ((embedding C).obj (X M i))) j ≫ (additiveObjIs …
   simp only [ι_additiveObjIsoBiproduct_inv_assoc, isoBiproductEmbedding_inv,
     biproduct.ι_desc, ← F.map_comp]
   congr 1
+  -- ⊢ ((fun j_1 k => if h : j = k then eqToHom (_ : X M j = X M k) else 0) ≫ f ≫ f …
   funext ⟨⟩ ⟨⟩
+  -- ⊢ ((fun j_1 k => if h : j = k then eqToHom (_ : X M j = X M k) else 0) ≫ f ≫ f …
   simp [comp_apply, dite_comp, comp_dite]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality
 
@@ -425,6 +534,7 @@ theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive
       biproduct.matrix (fun i j => F.map ((embedding C).map (f i j)) : _) ≫
         (additiveObjIsoBiproduct F N).inv :=
   by rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, additiveObjIsoBiproduct_naturality]
+     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality' CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality'
 
@@ -438,10 +548,16 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
     dsimp
+    -- ⊢ (biproduct.matrix fun i j => F.map (𝟙 X i j)) = 𝟙 (⨁ fun i => F.obj (Categor …
     ext i j
+    -- ⊢ biproduct.ι (fun i => F.obj (CategoryTheory.Mat_.X X i)) j ≫ (biproduct.matr …
     by_cases h : j = i
+    -- ⊢ biproduct.ι (fun i => F.obj (CategoryTheory.Mat_.X X i)) j ≫ (biproduct.matr …
     · subst h; simp
+      -- ⊢ biproduct.ι (fun i => F.obj (CategoryTheory.Mat_.X X i)) j ≫ (biproduct.matr …
+               -- 🎉 no goals
     · simp [h]
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift CategoryTheory.Mat_.lift
 
@@ -471,16 +587,27 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
             (additiveObjIsoBiproduct (lift F) M).symm)
     fun f => by
       dsimp only [Iso.trans_hom, Iso.symm_hom, biproduct.mapIso_hom]
+      -- ⊢ L.map f ≫ (additiveObjIsoBiproduct L Y✝).hom ≫ (biproduct.map fun b => (α.ap …
       simp only [additiveObjIsoBiproduct_naturality_assoc]
+      -- ⊢ (additiveObjIsoBiproduct L X✝).hom ≫ (biproduct.matrix fun i j => L.map ((em …
       simp only [biproduct.matrix_map_assoc, Category.assoc]
+      -- ⊢ (additiveObjIsoBiproduct L X✝).hom ≫ (biproduct.matrix fun j k => L.map ((em …
       simp only [additiveObjIsoBiproduct_naturality']
+      -- ⊢ (additiveObjIsoBiproduct L X✝).hom ≫ (biproduct.matrix fun j k => L.map ((em …
       simp only [biproduct.map_matrix_assoc, Category.assoc]
+      -- ⊢ (additiveObjIsoBiproduct L X✝).hom ≫ (biproduct.matrix fun j k => L.map ((em …
       congr 3
+      -- ⊢ (fun j k => L.map ((embedding C).map (f j k)) ≫ (α.app (X Y✝ k)).hom ≫ ((emb …
       ext j k
+      -- ⊢ L.map ((embedding C).map (f j k)) ≫ (α.app (X Y✝ k)).hom ≫ ((embeddingLiftIs …
       apply biproduct.hom_ext
+      -- ⊢ ∀ (j_1 : ((embedding C).obj (X Y✝ k)).ι), (L.map ((embedding C).map (f j k)) …
       rintro ⟨⟩
+      -- ⊢ (L.map ((embedding C).map (f j k)) ≫ (α.app (X Y✝ k)).hom ≫ ((embeddingLiftI …
       dsimp
+      -- ⊢ (L.map ((embedding C).map (f j k)) ≫ NatTrans.app α.hom (X Y✝ k) ≫ biproduct …
       simpa using α.hom.naturality (f j k)
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift_unique CategoryTheory.Mat_.liftUnique
 
@@ -550,7 +677,9 @@ set_option linter.uppercaseLean3 false in
 
 instance (R : Type u) : Inhabited (Mat R) := by
   dsimp [Mat]
+  -- ⊢ Inhabited FintypeCat
   infer_instance
+  -- 🎉 no goals
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
   Bundled.coeSort
@@ -562,6 +691,8 @@ instance (R : Type u) [Semiring R] : Category (Mat R) where
   id X := (1 : Matrix X X R)
   comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
   assoc := by intros; simp [Matrix.mul_assoc]
+              -- ⊢ (f✝ ≫ g✝) ≫ h✝ = f✝ ≫ g✝ ≫ h✝
+                      -- 🎉 no goals
 
 namespace Mat
 
@@ -589,12 +720,14 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := by simp [id_apply]
+                                                                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_self CategoryTheory.Mat.id_apply_self
 
 @[simp]
 theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_of_ne CategoryTheory.Mat.id_apply_of_ne
 
@@ -627,21 +760,32 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
   map f i j := MulOpposite.unop (f i j)
   map_id X := by
     ext
+    -- ⊢ { obj := fun X => FintypeCat.of X.ι, map := fun {X Y} f i j => MulOpposite.u …
     simp only [Mat_.id_def, id_def]
+    -- ⊢ MulOpposite.unop (if h : i✝ = j✝ then eqToHom (_ : Mat_.X X i✝ = Mat_.X X j✝ …
     split_ifs <;> rfl
+    -- ⊢ MulOpposite.unop (eqToHom (_ : Mat_.X X i✝ = Mat_.X X j✝)) = 1
+                  -- 🎉 no goals
+                  -- 🎉 no goals
   map_comp f g := by
     -- Porting note: this proof was automatic in mathlib3
     ext
+    -- ⊢ { obj := fun X => FintypeCat.of X.ι, map := fun {X Y} f i j => MulOpposite.u …
     simp only [Mat_.comp_apply, comp_apply]
+    -- ⊢ MulOpposite.unop (∑ j : Y✝.ι, f i✝ j ≫ g j j✝) = ∑ j : ↑(FintypeCat.of Y✝.ι) …
     apply Finset.unop_sum
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj_inverse CategoryTheory.Mat.equivalenceSingleObjInverse
 
 instance : Faithful (equivalenceSingleObjInverse R) where
   map_injective w := by
     ext
+    -- ⊢ a₁✝ i✝ j✝ = a₂✝ i✝ j✝
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
+    -- ⊢ MulOpposite.unop (a₁✝ i✝ j✝) = MulOpposite.unop (a₂✝ i✝ j✝)
     exact congr_fun (congr_fun w _) _
+    -- 🎉 no goals
 
 instance : Full (equivalenceSingleObjInverse R) where
   preimage f i j := MulOpposite.op (f i j)
@@ -650,6 +794,9 @@ instance : EssSurj (equivalenceSingleObjInverse R)
     where mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
+                                                 -- ⊢ FintypeCat.of ↑X = X
+                                                        -- ⊢ FintypeCat.of ↑(Bundled.mk α✝) = Bundled.mk α✝
+                                                                 -- 🎉 no goals
 
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
@@ -662,7 +809,9 @@ set_option linter.uppercaseLean3 false in
 -- porting note: added as this was not found automatically
 instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
   change AddCommGroup (Matrix X Y R)
+  -- ⊢ AddCommGroup (Matrix (↑X) (↑Y) R)
   infer_instance
+  -- 🎉 no goals
 
 variable {R}
 

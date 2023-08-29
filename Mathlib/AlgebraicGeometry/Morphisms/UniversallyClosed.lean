@@ -44,6 +44,8 @@ class UniversallyClosed (f : X ⟶ Y) : Prop where
 
 theorem universallyClosed_eq : @UniversallyClosed = universally (topologically @IsClosedMap) := by
   ext X Y f; rw [UniversallyClosed_iff]
+  -- ⊢ UniversallyClosed f ↔ universally (topologically @IsClosedMap) f
+             -- 🎉 no goals
 #align algebraic_geometry.universally_closed_eq AlgebraicGeometry.universallyClosed_eq
 
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
@@ -56,6 +58,7 @@ theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @Univers
 
 theorem universallyClosed_stableUnderComposition : StableUnderComposition @UniversallyClosed := by
   rw [universallyClosed_eq]
+  -- ⊢ StableUnderComposition (universally (topologically @IsClosedMap))
   exact StableUnderComposition.universally (fun X Y Z f g hf hg =>
     @IsClosedMap.comp _ _ _ _ _ _ g.1.base f.1.base hg hf)
 #align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_stableUnderComposition
@@ -82,13 +85,18 @@ theorem morphismRestrict_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier)
 
 theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
+  -- ⊢ PropertyIsLocalAtTarget (universally (topologically @IsClosedMap))
   apply universallyIsLocalAtTargetOfMorphismRestrict
+  -- ⊢ RespectsIso (topologically @IsClosedMap)
   · exact StableUnderComposition.respectsIso (fun X Y Z f g hf hg =>
         @IsClosedMap.comp _ _ _ _ _ _ g.1.base f.1.base hg hf)
       (fun f => (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso f)).isClosedMap)
   · intro X Y f ι U hU H
+    -- ⊢ topologically (@IsClosedMap) f
     simp_rw [topologically, morphismRestrict_base] at H
+    -- ⊢ topologically (@IsClosedMap) f
     exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
+    -- 🎉 no goals
 #align algebraic_geometry.universally_closed_is_local_at_target AlgebraicGeometry.universallyClosed_is_local_at_target
 
 theorem UniversallyClosed.openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)

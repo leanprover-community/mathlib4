@@ -52,6 +52,8 @@ variable [TopologicalSpace B] [TopologicalSpace F]
 
 theorem inducing_toProd : Inducing (TotalSpace.toProd B F) :=
   ⟨by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl⟩
+      -- ⊢ topologicalSpace B F = induced (Prod.fst ∘ ↑(TotalSpace.toProd B F)) inst✝¹  …
+                                                                          -- 🎉 no goals
 
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
@@ -150,20 +152,31 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   let f₁ : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂ :=
     fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
   let f₂ : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ → (B × F₁) × B × F₂ := fun p ↦ ⟨e₁ p.1, e₂ p.2⟩
+  -- ⊢ ContinuousOn (toFun' e₁ e₂) (TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet))
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
+  -- ⊢ ContinuousOn (toFun' e₁ e₂) (TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet))
   have hf₁ : Continuous f₁ := (Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+  -- ⊢ ContinuousOn (toFun' e₁ e₂) (TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet))
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
     e₁.toLocalHomeomorph.continuousOn.prod_map e₂.toLocalHomeomorph.continuousOn
   have hf₃ : Continuous f₃ :=
     (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
   refine' ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn _).congr _
+  -- ⊢ MapsTo f₁ (TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) (e₁.source ×ˢ e₂.s …
   · rw [e₁.source_eq, e₂.source_eq]
+    -- ⊢ MapsTo f₁ (TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) ((TotalSpace.proj  …
     exact mapsTo_preimage _ _
+    -- 🎉 no goals
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
+  -- ⊢ toFun' e₁ e₂ { proj := b, snd := (v₁, v₂) } = ((f₃ ∘ f₂) ∘ f₁) { proj := b,  …
   simp only [Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true_iff]
+  -- ⊢ b = (↑e₁ { proj := b, snd := v₁ }).fst
   rw [e₁.coe_fst]
+  -- ⊢ { proj := b, snd := v₁ } ∈ e₁.source
   rw [e₁.source_eq, mem_preimage]
+  -- ⊢ { proj := b, snd := v₁ }.proj ∈ e₁.baseSet
   exact hb₁
+  -- 🎉 no goals
 #align trivialization.prod.continuous_to_fun Trivialization.Prod.continuous_to_fun
 
 variable (e₁ e₂) [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)]
@@ -181,25 +194,34 @@ theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
     (h : x ∈ π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) :
     Prod.invFun' e₁ e₂ (Prod.toFun' e₁ e₂ x) = x := by
   obtain ⟨x, v₁, v₂⟩ := x
+  -- ⊢ invFun' e₁ e₂ (toFun' e₁ e₂ { proj := x, snd := (v₁, v₂) }) = { proj := x, s …
   obtain ⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩ := h
+  -- ⊢ invFun' e₁ e₂ (toFun' e₁ e₂ { proj := x, snd := (v₁, v₂) }) = { proj := x, s …
   simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
+  -- 🎉 no goals
 #align trivialization.prod.left_inv Trivialization.Prod.left_inv
 
 theorem Prod.right_inv {x : B × F₁ × F₂}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
   obtain ⟨x, w₁, w₂⟩ := x
+  -- ⊢ toFun' e₁ e₂ (invFun' e₁ e₂ (x, w₁, w₂)) = (x, w₁, w₂)
   obtain ⟨⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩, -⟩ := h
+  -- ⊢ toFun' e₁ e₂ (invFun' e₁ e₂ (x, w₁, w₂)) = (x, w₁, w₂)
   simp only [Prod.toFun', Prod.invFun', apply_mk_symm, h₁, h₂]
+  -- 🎉 no goals
 #align trivialization.prod.right_inv Trivialization.Prod.right_inv
 
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
   rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
+  -- ⊢ ContinuousOn ((fun p => ({ proj := p.proj, snd := p.snd.fst }, { proj := p.p …
   have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) :=
     (continuous_id.prod_map continuous_fst).prod_mk (continuous_id.prod_map continuous_snd)
   refine' (e₁.continuousOn_symm.prod_map e₂.continuousOn_symm).comp H₁.continuousOn _
+  -- ⊢ MapsTo (fun p => ((p.fst, p.snd.fst), p.fst, p.snd.snd)) ((e₁.baseSet ∩ e₂.b …
   exact fun x h ↦ ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
+  -- 🎉 no goals
 #align trivialization.prod.continuous_inv_fun Trivialization.Prod.continuous_inv_fun
 
 variable (e₁ e₂)
@@ -220,7 +242,9 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
     convert (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
+    -- ⊢ x ∈ { toFun := Prod.toFun' e₁ e₂, invFun := Prod.invFun' e₁ e₂, source := To …
     simp only [Trivialization.source_eq, mfld_simps]
+    -- 🎉 no goals
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
   continuous_toFun := Prod.continuous_to_fun
   continuous_invFun := Prod.continuous_inv_fun
@@ -250,7 +274,9 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
 noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_inducing' b := by
     rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).inducing_iff]
+    -- ⊢ Inducing ((fun p => ({ proj := p.proj, snd := p.snd.fst }, { proj := p.proj, …
     exact (totalSpaceMk_inducing F₁ E₁ b).prod_map (totalSpaceMk_inducing F₂ E₂ b)
+    -- 🎉 no goals
   trivializationAtlas' := { e |
     ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
       (_ : MemTrivializationAtlas e₁) (_ : MemTrivializationAtlas e₂),
@@ -280,8 +306,11 @@ variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B
 instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
   -- Porting note: Original proof was `delta_instance bundle.pullback`
   intro x
+  -- ⊢ TopologicalSpace ((f *ᵖ E) x)
   rw [Bundle.Pullback]
+  -- ⊢ TopologicalSpace (E (f x))
   infer_instance
+  -- 🎉 no goals
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
@@ -299,20 +328,26 @@ instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (
 
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  -- ⊢ induced TotalSpace.proj inst✝¹ ⊓ induced (Pullback.lift f) inst✝ ≤ induced T …
   exact inf_le_left
+  -- 🎉 no goals
 #align pullback.continuous_proj Pullback.continuous_proj
 
 theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  -- ⊢ induced TotalSpace.proj inst✝¹ ⊓ induced (Pullback.lift f) inst✝ ≤ induced ( …
   exact inf_le_right
+  -- 🎉 no goals
 #align pullback.continuous_lift Pullback.continuous_lift
 
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     Inducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
+  -- ⊢ Pullback.TotalSpace.topologicalSpace F E f = induced (pullbackTotalSpaceEmbe …
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
     Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   rfl
+  -- 🎉 no goals
 #align inducing_pullback_total_space_embedding inducing_pullbackTotalSpaceEmbedding
 
 section FiberBundle
@@ -324,6 +359,7 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
     induced_inf, Function.comp, induced_const, top_inf_eq, pullbackTopology_def]
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
+  -- 🎉 no goals
 #align pullback.continuous_total_space_mk Pullback.continuous_totalSpaceMk
 
 variable {E F} [∀ _b, Zero (E _b)] {K : Type U} [ContinuousMapClass K B' B]
@@ -339,19 +375,29 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target := (f ⁻¹' e.baseSet) ×ˢ univ
   map_source' x h := by
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj] at h
+    -- ⊢ (fun z => (z.proj, (↑e (Pullback.lift (↑f) z)).snd)) x ∈ (↑f ⁻¹' e.baseSet)  …
     simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff, mem_preimage, h]
+    -- 🎉 no goals
   map_target' y h := by
     rw [mem_prod, mem_preimage] at h
+    -- ⊢ (fun y => { proj := y.fst, snd := Trivialization.symm e (↑f y.fst) y.snd })  …
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj, h.1]
+    -- 🎉 no goals
   left_inv' x h := by
     simp_rw [mem_preimage, e.mem_source, Pullback.lift_proj] at h
+    -- ⊢ (fun y => { proj := y.fst, snd := Trivialization.symm e (↑f y.fst) y.snd })  …
     simp_rw [Pullback.lift, e.symm_apply_apply_mk h]
+    -- 🎉 no goals
   right_inv' x h := by
     simp_rw [mem_prod, mem_preimage, mem_univ, and_true_iff] at h
+    -- ⊢ (fun z => (z.proj, (↑e (Pullback.lift (↑f) z)).snd)) ((fun y => { proj := y. …
     simp_rw [Pullback.lift_mk, e.apply_mk_symm h]
+    -- 🎉 no goals
   open_source := by
     simp_rw [e.source_eq, ← preimage_comp]
+    -- ⊢ IsOpen (TotalSpace.proj ∘ Pullback.lift ↑f ⁻¹' e.baseSet)
     exact e.open_baseSet.preimage ((map_continuous f).comp <| Pullback.continuous_proj F E f)
+    -- 🎉 no goals
   open_target := ((map_continuous f).isOpen_preimage _ e.open_baseSet).prod isOpen_univ
   open_baseSet := (map_continuous f).isOpen_preimage _ e.open_baseSet
   continuous_toFun :=
@@ -360,6 +406,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
   continuous_invFun := by
     dsimp only
+    -- ⊢ ContinuousOn (fun y => { proj := y.fst, snd := Trivialization.symm e (↑f y.f …
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
       pullbackTotalSpaceEmbedding]
     refine'
@@ -368,8 +415,11 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
           Subset.rfl)
   source_eq := by
     dsimp only
+    -- ⊢ Pullback.lift ↑f ⁻¹' e.source = TotalSpace.proj ⁻¹' (↑f ⁻¹' e.baseSet)
     rw [e.source_eq]
+    -- ⊢ Pullback.lift ↑f ⁻¹' (TotalSpace.proj ⁻¹' e.baseSet) = TotalSpace.proj ⁻¹' ( …
     rfl
+    -- 🎉 no goals
   target_eq := rfl
   proj_toFun y _ := rfl
 #align trivialization.pullback Trivialization.pullback

@@ -82,33 +82,44 @@ protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), 
   | i :: is, v, j, hj =>
     if hji : j = i then by
       subst hji
+      -- ⊢ α j
       exact v.1
+      -- 🎉 no goals
     else TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji)
 #align list.tprod.elim List.TProd.elim
 
 @[simp]
 theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [TProd.elim]
+                                                                                  -- 🎉 no goals
 #align list.tprod.elim_self List.TProd.elim_self
 
 @[simp]
 theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
     v.elim hj = TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji) := by simp [TProd.elim, hji]
+                                                                              -- 🎉 no goals
 #align list.tprod.elim_of_ne List.TProd.elim_of_ne
 
 @[simp]
 theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l)) :
     v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj := by
   apply elim_of_ne
+  -- ⊢ j ≠ i
   rintro rfl
+  -- ⊢ False
   exact hl.not_mem hj
+  -- 🎉 no goals
 #align list.tprod.elim_of_mem List.TProd.elim_of_mem
 
 theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
   | i :: is, f, j, hj => by
     by_cases hji : j = i
+    -- ⊢ TProd.elim (TProd.mk (i :: is) f) hj = f j
     · subst hji
+      -- ⊢ TProd.elim (TProd.mk (j :: is) f) hj = f j
       simp
+      -- 🎉 no goals
     · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk is]
+      -- 🎉 no goals
     termination_by elim_mk l f j hj => l.length
 #align list.tprod.elim_mk List.TProd.elim_mk
 
@@ -119,8 +130,12 @@ theorem ext :
   | [], _, v, w, _ => PUnit.ext v w
   | i :: is, hl, v, w, hvw => by
     apply Prod.ext; rw [← elim_self v, hvw, elim_self]
+    -- ⊢ v.fst = w.fst
+                    -- ⊢ v.snd = w.snd
     refine' ext (nodup_cons.mp hl).2 fun j hj => _
+    -- ⊢ TProd.elim v.snd hj = TProd.elim w.snd hj
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
+    -- 🎉 no goals
 #align list.tprod.ext List.TProd.ext
 
 /-- A version of `TProd.elim` when `l` contains all elements. In this case we get a function into
@@ -132,6 +147,7 @@ protected def elim' (h : ∀ i, i ∈ l) (v : TProd α l) (i : ι) : α i :=
 
 theorem mk_elim (hnd : l.Nodup) (h : ∀ i, i ∈ l) (v : TProd α l) : TProd.mk l (v.elim' h) = v :=
   TProd.ext hnd fun i hi => by simp [elim_mk]
+                               -- 🎉 no goals
 #align list.tprod.mk_elim List.TProd.mk_elim
 
 /-- Pi-types are equivalent to iterated products. -/
@@ -157,17 +173,23 @@ protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α 
 theorem mk_preimage_tprod :
     ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
   | [], t => by simp [Set.tprod]
+                -- 🎉 no goals
   | i :: l, t => by
     ext f
+    -- ⊢ f ∈ TProd.mk (i :: l) ⁻¹' Set.tprod (i :: l) t ↔ f ∈ pi {i_1 | i_1 ∈ i :: l} t
     have h : TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
       change f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t
       rw [mk_preimage_tprod l t]
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
+    -- ⊢ f i ∈ t i ∧ TProd.mk l f ∈ Set.tprod l t ↔ ∀ (i_1 : ι), i_1 ∈ {i_2 | i_2 ∈ i …
     simp_rw [mem_setOf_eq, mem_cons]
+    -- ⊢ f i ∈ t i ∧ TProd.mk l f ∈ Set.tprod l t ↔ ∀ (i_1 : ι), i_1 = i ∨ i_1 ∈ l →  …
     rw [forall_eq_or_imp, and_congr_right_iff]
+    -- ⊢ f i ∈ t i → (TProd.mk l f ∈ Set.tprod l t ↔ ∀ (a : ι), a ∈ l → f a ∈ t a)
     exact fun _ => h
+    -- 🎉 no goals
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
@@ -176,8 +198,12 @@ theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀
     ext i
     simp [h]
   rw [← h2, ← mk_preimage_tprod, preimage_preimage]
+  -- ⊢ (fun x => TProd.mk l (TProd.elim' h x)) ⁻¹' Set.tprod l t = Set.tprod l t
   simp only [TProd.mk_elim hnd h]
+  -- ⊢ (fun x => x) ⁻¹' Set.tprod l t = Set.tprod l t
   dsimp; rfl
+  -- ⊢ Set.tprod l t = Set.tprod l t
+         -- 🎉 no goals
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set

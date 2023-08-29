@@ -113,6 +113,7 @@ theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
 @[to_additive]
 protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :=
   by simp only [mul_assoc, h.eq]
+     -- 🎉 no goals
 #align commute.right_comm Commute.right_commₓ
 #align add_commute.right_comm AddCommute.right_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
@@ -120,6 +121,7 @@ protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :
 @[to_additive]
 protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
   by simp only [← mul_assoc, h.eq]
+     -- 🎉 no goals
 #align commute.left_comm Commute.left_commₓ
 #align add_commute.left_comm AddCommute.left_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
@@ -127,6 +129,7 @@ protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
 @[to_additive]
 protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
     a * b * (c * d) = a * c * (b * d) := by simp only [hbc.left_comm, mul_assoc]
+                                            -- 🎉 no goals
 #align commute.mul_mul_mul_comm Commute.mul_mul_mul_comm
 #align add_commute.add_add_add_comm AddCommute.add_add_add_comm
 
@@ -264,9 +267,12 @@ def _root_.Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a 
   val := a
   inv := b * ↑u⁻¹
   val_inv := by rw [← mul_assoc, hu, u.mul_inv]
+                -- 🎉 no goals
   inv_val := by
     have : Commute a u := hu ▸ (Commute.refl _).mul_right hc
+    -- ⊢ b * ↑u⁻¹ * a = 1
     rw [← this.units_inv_right.right_comm, ← hc.eq, hu, u.mul_inv]
+    -- 🎉 no goals
 #align units.left_of_mul Units.leftOfMul
 #align add_units.left_of_add AddUnits.leftOfAdd
 
@@ -312,11 +318,13 @@ theorem inv_inv_iff : Commute a⁻¹ b⁻¹ ↔ Commute a b :=
 
 @[to_additive]
 protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
+                                                                            -- 🎉 no goals
 #align commute.mul_inv Commute.mul_inv
 #align add_commute.add_neg AddCommute.add_neg
 
 @[to_additive]
 protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
+                                                                        -- 🎉 no goals
 #align commute.inv Commute.inv
 #align add_commute.neg AddCommute.neg
 
@@ -324,6 +332,7 @@ protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 protected theorem div_mul_div_comm (hbd : Commute b d) (hbc : Commute b⁻¹ c) :
     a / b * (c / d) = a * c / (b * d) := by
   simp_rw [div_eq_mul_inv, mul_inv_rev, hbd.inv_inv.symm.eq, hbc.mul_mul_mul_comm]
+  -- 🎉 no goals
 #align commute.div_mul_div_comm Commute.div_mul_div_comm
 #align add_commute.sub_add_sub_comm AddCommute.sub_add_sub_comm
 
@@ -375,24 +384,28 @@ theorem inv_left_iff : Commute a⁻¹ b ↔ Commute a b :=
 @[to_additive]
 protected theorem inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
   rw [h.inv_left.eq, inv_mul_cancel_right]
+  -- 🎉 no goals
 #align commute.inv_mul_cancel Commute.inv_mul_cancel
 #align add_commute.neg_add_cancel AddCommute.neg_add_cancel
 
 @[to_additive]
 theorem inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
   rw [← mul_assoc, h.inv_mul_cancel]
+  -- 🎉 no goals
 #align commute.inv_mul_cancel_assoc Commute.inv_mul_cancel_assoc
 #align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
 
 @[to_additive]
 protected theorem mul_inv_cancel (h : Commute a b) : a * b * a⁻¹ = b := by
   rw [h.eq, mul_inv_cancel_right]
+  -- 🎉 no goals
 #align commute.mul_inv_cancel Commute.mul_inv_cancel
 #align add_commute.add_neg_cancel AddCommute.add_neg_cancel
 
 @[to_additive]
 theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
   rw [← mul_assoc, h.mul_inv_cancel]
+  -- 🎉 no goals
 #align commute.mul_inv_cancel_assoc Commute.mul_inv_cancel_assoc
 #align add_commute.add_neg_cancel_assoc AddCommute.add_neg_cancel_assoc
 

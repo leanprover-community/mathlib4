@@ -52,12 +52,23 @@ theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
   intro a h
+  -- ⊢ a ∈ g₁.support ∩ g₂.support
   simp only [mul_apply, mem_support_iff] at h
+  -- ⊢ a ∈ g₁.support ∩ g₂.support
   simp only [mem_support_iff, mem_inter, Ne.def]
+  -- ⊢ ¬↑g₁ a = 0 ∧ ¬↑g₂ a = 0
   rw [← not_or]
+  -- ⊢ ¬(↑g₁ a = 0 ∨ ↑g₂ a = 0)
   intro w
+  -- ⊢ False
   apply h
+  -- ⊢ ↑g₁ a * ↑g₂ a = 0
   cases' w with w w <;> (rw [w]; simp)
+  -- ⊢ ↑g₁ a * ↑g₂ a = 0
+                         -- ⊢ 0 * ↑g₂ a = 0
+                                 -- 🎉 no goals
+                         -- ⊢ ↑g₁ a * 0 = 0
+                                 -- 🎉 no goals
 #align finsupp.support_mul Finsupp.support_mul
 
 instance : MulZeroClass (α →₀ β) :=
@@ -96,11 +107,15 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
+      -- ⊢ (Function.support fun a => f a • ↑g a) ⊆ Function.support ↑g
       simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne.def,
         Finsupp.fun_support_eq, Finset.mem_coe]
       intro x hx h
+      -- ⊢ False
       apply hx
+      -- ⊢ f x • ↑g x = 0
       rw [h, smul_zero])
+      -- 🎉 no goals
 #align finsupp.pointwise_scalar Finsupp.pointwiseScalar
 
 @[simp]

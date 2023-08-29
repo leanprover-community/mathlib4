@@ -37,14 +37,19 @@ def count (n : ℕ) : ℕ :=
 @[simp]
 theorem count_zero : count p 0 = 0 := by
   rw [count, List.range_zero, List.countP, List.countP.go]
+  -- 🎉 no goals
 #align nat.count_zero Nat.count_zero
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
 def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
   apply Fintype.ofFinset ((Finset.range n).filter p)
+  -- ⊢ ∀ (x : ℕ), x ∈ filter p (range n) ↔ x ∈ fun x => x < n ∧ p x
   intro x
+  -- ⊢ x ∈ filter p (range n) ↔ x ∈ fun x => x < n ∧ p x
   rw [mem_filter, mem_range]
+  -- ⊢ x < n ∧ p x ↔ x ∈ fun x => x < n ∧ p x
   rfl
+  -- 🎉 no goals
 #align nat.count_set.fintype Nat.CountSet.fintype
 
 scoped[Count] attribute [instance] Nat.CountSet.fintype
@@ -53,22 +58,32 @@ open Count
 
 theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
   rw [count, List.countP_eq_length_filter]
+  -- ⊢ List.length (List.filter (fun b => decide (p b)) (List.range n)) = card (fil …
   rfl
+  -- 🎉 no goals
 #align nat.count_eq_card_filter_range Nat.count_eq_card_filter_range
 
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
 theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
   rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
+  -- ⊢ (Fintype.card ↑fun x => x < n ∧ p x) = Fintype.card { k // k < n ∧ p k }
   rfl
+  -- 🎉 no goals
 #align nat.count_eq_card_fintype Nat.count_eq_card_fintype
 
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   split_ifs with h <;> simp [count, List.range_succ, h]
+  -- ⊢ count p (n + 1) = count p n + 1
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align nat.count_succ Nat.count_succ
 
 @[mono]
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ fun n ↦ by by_cases h : p n <;> simp [count_succ, h]
+                                     -- ⊢ count p n ≤ count p (n + 1)
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
 #align nat.count_monotone Nat.count_monotone
 
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
@@ -81,19 +96,24 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_disjoint_union this,
     filter_map, addLeftEmbedding, card_map]
   rfl
+  -- 🎉 no goals
 #align nat.count_add Nat.count_add
 
 theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]
+  -- ⊢ count (fun k => p (b + k)) a + count p b = count (fun k => p (k + b)) a + co …
   simp_rw [add_comm b]
+  -- 🎉 no goals
 #align nat.count_add' Nat.count_add'
 
 theorem count_one : count p 1 = if p 0 then 1 else 0 := by simp [count_succ]
+                                                           -- 🎉 no goals
 #align nat.count_one Nat.count_one
 
 theorem count_succ' (n : ℕ) :
     count p (n + 1) = count (fun k ↦ p (k + 1)) n + if p 0 then 1 else 0 := by
   rw [count_add', count_one]
+  -- 🎉 no goals
 #align nat.count_succ' Nat.count_succ'
 
 variable {p}
@@ -101,14 +121,23 @@ variable {p}
 @[simp]
 theorem count_lt_count_succ_iff {n : ℕ} : count p n < count p (n + 1) ↔ p n := by
   by_cases h : p n <;> simp [count_succ, h]
+  -- ⊢ count p n < count p (n + 1) ↔ p n
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align nat.count_lt_count_succ_iff Nat.count_lt_count_succ_iff
 
 theorem count_succ_eq_succ_count_iff {n : ℕ} : count p (n + 1) = count p n + 1 ↔ p n := by
   by_cases h : p n <;> simp [h, count_succ]
+  -- ⊢ count p (n + 1) = count p n + 1 ↔ p n
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align nat.count_succ_eq_succ_count_iff Nat.count_succ_eq_succ_count_iff
 
 theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p n := by
   by_cases h : p n <;> simp [h, count_succ]
+  -- ⊢ count p (n + 1) = count p n ↔ ¬p n
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align nat.count_succ_eq_count_iff Nat.count_succ_eq_count_iff
 
 alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
@@ -119,7 +148,9 @@ alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 
 theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by
   rw [count_eq_card_fintype, ← Cardinal.mk_fintype]
+  -- ⊢ Cardinal.mk { k // k < n ∧ p k } ≤ Cardinal.mk ↑{k | p k}
   exact Cardinal.mk_subtype_mono fun x hx ↦ hx.2
+  -- 🎉 no goals
 #align nat.count_le_cardinal Nat.count_le_cardinal
 
 theorem lt_of_count_lt_count {a b : ℕ} (h : count p a < count p b) : a < b :=
@@ -132,14 +163,20 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
 
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra' h : m ≠ n
+  -- ⊢ False
   wlog hmn : m < n
+  -- ⊢ False
   · exact this hn hm heq.symm h.symm (h.lt_or_lt.resolve_left hmn)
+    -- 🎉 no goals
   · simpa [heq] using count_strict_mono hm hmn
+    -- 🎉 no goals
 #align nat.count_injective Nat.count_injective
 
 theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ hp.toFinset.card := by
   rw [count_eq_card_filter_range]
+  -- ⊢ card (filter p (range n)) ≤ card (Set.Finite.toFinset hp)
   exact Finset.card_mono fun x hx ↦ hp.mem_toFinset.2 (mem_filter.1 hx).2
+  -- 🎉 no goals
 #align nat.count_le_card Nat.count_le_card
 
 theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < hp.toFinset.card :=
@@ -152,7 +189,9 @@ variable [DecidablePred q]
 
 theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
   simp only [count_eq_card_filter_range]
+  -- ⊢ card (filter p (range n)) ≤ card (filter q (range n))
   exact card_le_of_subset ((range n).monotone_filter_right hpq)
+  -- 🎉 no goals
 #align nat.count_mono_left Nat.count_mono_left
 
 end Count

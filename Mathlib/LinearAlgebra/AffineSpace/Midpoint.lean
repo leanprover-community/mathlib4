@@ -73,17 +73,20 @@ theorem Equiv.pointReflection_midpoint_left (x y : P) :
 
 theorem midpoint_comm (x y : P) : midpoint R x y = midpoint R y x := by
   rw [midpoint, ← lineMap_apply_one_sub, one_sub_invOf_two, midpoint]
+  -- 🎉 no goals
 #align midpoint_comm midpoint_comm
 
 theorem AffineEquiv.pointReflection_midpoint_right (x y : P) :
     pointReflection R (midpoint R x y) y = x := by
   rw [midpoint_comm, AffineEquiv.pointReflection_midpoint_left]
+  -- 🎉 no goals
 #align affine_equiv.point_reflection_midpoint_right AffineEquiv.pointReflection_midpoint_right
 
 @[simp] -- Porting note: added variant with `Equiv.pointReflection` for `simp`
 theorem Equiv.pointReflection_midpoint_right (x y : P) :
     (Equiv.pointReflection (midpoint R x y)) y = x := by
   rw [midpoint_comm, Equiv.pointReflection_midpoint_left]
+  -- 🎉 no goals
 
 theorem midpoint_vsub_midpoint (p₁ p₂ p₃ p₄ : P) :
     midpoint R p₁ p₂ -ᵥ midpoint R p₃ p₄ = midpoint R (p₁ -ᵥ p₃) (p₂ -ᵥ p₄) :=
@@ -119,6 +122,7 @@ theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (�
 @[simp]
 theorem midpoint_vsub_right (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₂ = (⅟ 2 : R) • (p₁ -ᵥ p₂) := by
   rw [midpoint_comm, midpoint_vsub_left]
+  -- 🎉 no goals
 #align midpoint_vsub_right midpoint_vsub_right
 
 @[simp]
@@ -129,6 +133,7 @@ theorem left_vsub_midpoint (p₁ p₂ : P) : p₁ -ᵥ midpoint R p₁ p₂ = (�
 @[simp]
 theorem right_vsub_midpoint (p₁ p₂ : P) : p₂ -ᵥ midpoint R p₁ p₂ = (⅟ 2 : R) • (p₂ -ᵥ p₁) := by
   rw [midpoint_comm, left_vsub_midpoint]
+  -- 🎉 no goals
 #align right_vsub_midpoint right_vsub_midpoint
 
 theorem midpoint_vsub (p₁ p₂ p : P) :
@@ -169,21 +174,25 @@ variable (R)
 @[simp]
 theorem midpoint_eq_left_iff {x y : P} : midpoint R x y = x ↔ x = y := by
   rw [midpoint_eq_iff, pointReflection_self]
+  -- 🎉 no goals
 #align midpoint_eq_left_iff midpoint_eq_left_iff
 
 @[simp]
 theorem left_eq_midpoint_iff {x y : P} : x = midpoint R x y ↔ x = y := by
   rw [eq_comm, midpoint_eq_left_iff]
+  -- 🎉 no goals
 #align left_eq_midpoint_iff left_eq_midpoint_iff
 
 @[simp]
 theorem midpoint_eq_right_iff {x y : P} : midpoint R x y = y ↔ x = y := by
   rw [midpoint_comm, midpoint_eq_left_iff, eq_comm]
+  -- 🎉 no goals
 #align midpoint_eq_right_iff midpoint_eq_right_iff
 
 @[simp]
 theorem right_eq_midpoint_iff {x y : P} : y = midpoint R x y ↔ x = y := by
   rw [eq_comm, midpoint_eq_right_iff]
+  -- 🎉 no goals
 #align right_eq_midpoint_iff right_eq_midpoint_iff
 
 theorem midpoint_eq_midpoint_iff_vsub_eq_vsub {x x' y y' : P} :
@@ -211,11 +220,14 @@ theorem midpoint_self (x : P) : midpoint R x x = x :=
 theorem midpoint_add_self (x y : V) : midpoint R x y + midpoint R x y = x + y :=
   calc
     midpoint R x y +ᵥ midpoint R x y = midpoint R x y +ᵥ midpoint R y x := by rw [midpoint_comm]
+                                                                              -- 🎉 no goals
     _ = x + y := by rw [midpoint_vadd_midpoint, vadd_eq_add, vadd_eq_add, add_comm, midpoint_self]
+                    -- 🎉 no goals
 #align midpoint_add_self midpoint_add_self
 
 theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
   (midpoint_eq_midpoint_iff_vsub_eq_vsub R).2 <| by simp [sub_add_eq_sub_sub_swap]
+                                                    -- 🎉 no goals
 #align midpoint_zero_add midpoint_zero_add
 
 theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y) := by
@@ -226,20 +238,26 @@ theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y
 @[simp]
 theorem midpoint_self_neg (x : V) : midpoint R x (-x) = 0 := by
   rw [midpoint_eq_smul_add, add_neg_self, smul_zero]
+  -- 🎉 no goals
 #align midpoint_self_neg midpoint_self_neg
 
 @[simp]
 theorem midpoint_neg_self (x : V) : midpoint R (-x) x = 0 := by simpa using midpoint_self_neg R (-x)
+                                                                -- 🎉 no goals
 #align midpoint_neg_self midpoint_neg_self
 
 @[simp]
 theorem midpoint_sub_add (x y : V) : midpoint R (x - y) (x + y) = x := by
   rw [sub_eq_add_neg, ← vadd_eq_add, ← vadd_eq_add, ← midpoint_vadd_midpoint]; simp
+  -- ⊢ midpoint R x x +ᵥ midpoint R (-y) y = x
+                                                                               -- 🎉 no goals
 #align midpoint_sub_add midpoint_sub_add
 
 @[simp]
 theorem midpoint_add_sub (x y : V) : midpoint R (x + y) (x - y) = x := by
   rw [midpoint_comm]; simp
+  -- ⊢ midpoint R (x - y) (x + y) = x
+                      -- 🎉 no goals
 #align midpoint_add_sub midpoint_add_sub
 
 end
@@ -258,10 +276,13 @@ def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)
   map_add' x y :=
     calc
       f (x + y) = f 0 + f (x + y) := by rw [h0, zero_add]
+                                        -- 🎉 no goals
       _ = midpoint R' (f 0) (f (x + y)) + midpoint R' (f 0) (f (x + y)) :=
         (midpoint_add_self _ _ _).symm
       _ = f (midpoint R x y) + f (midpoint R x y) := by rw [← hm, midpoint_zero_add]
+                                                        -- 🎉 no goals
       _ = f x + f y := by rw [hm, midpoint_add_self]
+                          -- 🎉 no goals
 #align add_monoid_hom.of_map_midpoint AddMonoidHom.ofMapMidpoint
 
 @[simp]

@@ -41,6 +41,7 @@ def IsωSup {α : Type u} [Preorder α] (c : Chain α) (x : α) : Prop :=
 theorem isωSup_iff_isLUB {α : Type u} [Preorder α] {c : Chain α} {x : α} :
     IsωSup c x ↔ IsLUB (range c) x := by
   simp [IsωSup, IsLUB, IsLeast, upperBounds, lowerBounds]
+  -- 🎉 no goals
 #align Scott.is_ωSup_iff_is_lub Scott.isωSup_iff_isLUB
 
 variable (α : Type u) [OmegaCompletePartialOrder α]
@@ -61,7 +62,9 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
+  -- ⊢ Continuous' fun x => x ∈ ⋃₀ s
   convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
+  -- ⊢ x✝ ∈ ⋃₀ s ↔ sSup (setOf ⁻¹' s) x✝
   simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
     SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
 #align Scott.is_open_sUnion Scott.isOpen_sUnion
@@ -97,7 +100,9 @@ def notBelow :=
 
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
+  -- ⊢ IsOpen (notBelow y)
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
+  -- ⊢ ↑{ toFun := fun x => x ∈ notBelow y, monotone' := h } (ωSup c) ≤ z ↔ ωSup (C …
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
     Function.comp_apply, exists_imp, not_forall]
 #align not_below_is_open notBelow_isOpen
@@ -110,8 +115,11 @@ open OmegaCompletePartialOrder
 
 theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor
+  -- ⊢ ∀ (i : ℕ), ↑c i ≤ ωSup c
   · apply le_ωSup
+    -- 🎉 no goals
   · apply ωSup_le
+    -- 🎉 no goals
 #align is_ωSup_ωSup isωSup_ωSup
 
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
@@ -121,23 +129,36 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
+  -- ⊢ ↑{ toFun := f, monotone' := h } (ωSup c) ≤ z ↔ ωSup (Chain.map c { toFun :=  …
   rcases (notBelow_isOpen z).preimage hf with ⟨hf, hf'⟩
+  -- ⊢ ↑{ toFun := f, monotone' := h } (ωSup c) ≤ z ↔ ωSup (Chain.map c { toFun :=  …
   specialize hf' c
+  -- ⊢ ↑{ toFun := f, monotone' := h } (ωSup c) ≤ z ↔ ωSup (Chain.map c { toFun :=  …
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
+  -- ⊢ ↑{ toFun := f, monotone' := h } (ωSup c) ≤ z ↔ ωSup (Chain.map c { toFun :=  …
   rw [← not_iff_not]
+  -- ⊢ ¬↑{ toFun := f, monotone' := h } (ωSup c) ≤ z ↔ ¬ωSup (Chain.map c { toFun : …
   simp only [ωSup_le_iff, hf', ωSup, iSup, sSup, mem_range, Chain.map_coe, Function.comp_apply,
     eq_iff_iff, not_forall, OrderHom.coe_mk]
   tauto
+  -- 🎉 no goals
 #align Scott_continuous_of_continuous scottContinuous_of_continuous
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
     (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
   rw [continuous_def]
+  -- ⊢ ∀ (s : Set (Scott β)), IsOpen s → IsOpen (f ⁻¹' s)
   intro s hs
+  -- ⊢ IsOpen (f ⁻¹' s)
   change Continuous' (s ∘ f)
+  -- ⊢ Continuous' (s ∘ f)
   cases' hs with hs hs'
+  -- ⊢ Continuous' (s ∘ f)
   cases' hf with hf hf'
+  -- ⊢ Continuous' (s ∘ f)
   apply Continuous.of_bundled
+  -- ⊢ OmegaCompletePartialOrder.Continuous { toFun := s ∘ f, monotone' := ?intro.i …
   apply continuous_comp _ _ hf' hs'
+  -- 🎉 no goals
 #align continuous_of_Scott_continuous continuous_of_scottContinuous

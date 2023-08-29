@@ -50,15 +50,20 @@ equivalent to `C(α, β)`.
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
   ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
     ext
+    -- ⊢ ↑(mkOfCompact f).toContinuousMap a✝ = ↑f a✝
     rfl, fun f => by
+    -- 🎉 no goals
     ext
+    -- ⊢ ↑(mkOfCompact f.toContinuousMap) x✝ = ↑f x✝
     rfl⟩
+    -- 🎉 no goals
 #align continuous_map.equiv_bounded_of_compact ContinuousMap.equivBoundedOfCompact
 
 theorem uniformInducing_equivBoundedOfCompact : UniformInducing (equivBoundedOfCompact α β) :=
   UniformInducing.mk'
     (by
       simp only [hasBasis_compactConvergenceUniformity.mem_iff, uniformity_basis_dist_le.mem_iff]
+      -- ⊢ ∀ (s : Set (C(α, β) × C(α, β))), (∃ i, (IsCompact i.fst ∧ ∃ i_1, 0 < i_1 ∧ { …
       exact fun s =>
         ⟨fun ⟨⟨a, b⟩, ⟨_, ⟨ε, hε, hb⟩⟩, hs⟩ =>
           ⟨{ p | ∀ x, (p.1 x, p.2 x) ∈ b }, ⟨ε, hε, fun _ h x => hb ((dist_le hε.le).mp h x)⟩,
@@ -129,11 +134,13 @@ variable {f g : C(α, β)} {C : ℝ}
 /-- The pointwise distance is controlled by the distance between functions, by definition. -/
 theorem dist_apply_le_dist (x : α) : dist (f x) (g x) ≤ dist f g := by
   simp only [← dist_mkOfCompact, dist_coe_le_dist, ← mkOfCompact_apply]
+  -- 🎉 no goals
 #align continuous_map.dist_apply_le_dist ContinuousMap.dist_apply_le_dist
 
 /-- The distance between two functions is controlled by the supremum of the pointwise distances. -/
 theorem dist_le (C0 : (0 : ℝ) ≤ C) : dist f g ≤ C ↔ ∀ x : α, dist (f x) (g x) ≤ C := by
   simp only [← dist_mkOfCompact, BoundedContinuousFunction.dist_le C0, mkOfCompact_apply]
+  -- 🎉 no goals
 #align continuous_map.dist_le ContinuousMap.dist_le
 
 theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (f x) (g x) ≤ C := by
@@ -143,6 +150,7 @@ theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (
 
 theorem dist_lt_iff_of_nonempty [Nonempty α] : dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C := by
   simp only [← dist_mkOfCompact, dist_lt_iff_of_nonempty_compact, mkOfCompact_apply]
+  -- 🎉 no goals
 #align continuous_map.dist_lt_iff_of_nonempty ContinuousMap.dist_lt_iff_of_nonempty
 
 theorem dist_lt_of_nonempty [Nonempty α] (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C :=
@@ -151,7 +159,9 @@ theorem dist_lt_of_nonempty [Nonempty α] (w : ∀ x : α, dist (f x) (g x) < C)
 
 theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C := by
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
+  -- ⊢ (∀ (x : α), dist (↑(mkOfCompact f) x) (↑(mkOfCompact g) x) < C) ↔ ∀ (x : α), …
   simp only [mkOfCompact_apply]
+  -- 🎉 no goals
 #align continuous_map.dist_lt_iff ContinuousMap.dist_lt_iff
 
 end
@@ -187,11 +197,13 @@ instance : NormedAddCommGroup C(α, E) :=
     ContinuousMap.instAddCommGroupContinuousMap with
     dist_eq := fun x y => by
       rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+      -- 🎉 no goals
     dist := dist
     norm := norm }
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
+                 -- 🎉 no goals
 
 section
 
@@ -282,7 +294,9 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
   { addEquivBoundedOfCompact α E with
     map_smul' := fun c f => by
       ext
+      -- ⊢ ↑(AddHom.toFun { toFun := src✝.toFun, map_add' := (_ : ∀ (x y : C(α, E)), Eq …
       norm_cast
+      -- 🎉 no goals
     norm_map' := fun f => rfl }
 #align continuous_map.linear_isometry_bounded_of_compact ContinuousMap.linearIsometryBoundedOfCompact
 
@@ -407,7 +421,9 @@ protected def ContinuousLinearMap.compLeftContinuousCompact (g : β →L[𝕜] �
 theorem ContinuousLinearMap.toLinear_compLeftContinuousCompact (g : β →L[𝕜] γ) :
     (g.compLeftContinuousCompact X : C(X, β) →ₗ[𝕜] C(X, γ)) = g.compLeftContinuous 𝕜 X := by
   ext f
+  -- ⊢ ↑(↑↑(ContinuousLinearMap.compLeftContinuousCompact X g) f) a✝ = ↑(↑(Continuo …
   rfl
+  -- 🎉 no goals
 #align continuous_linear_map.to_linear_comp_left_continuous_compact ContinuousLinearMap.toLinear_compLeftContinuousCompact
 
 @[simp]
@@ -441,10 +457,15 @@ def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [Compa
   toFun g := g.comp f
   continuous_toFun := by
     refine' Metric.continuous_iff.mpr _
+    -- ⊢ ∀ (b : C(Y, T)) (ε : ℝ), ε > 0 → ∃ δ, δ > 0 ∧ ∀ (a : C(Y, T)), dist a b < δ  …
     intro g ε ε_pos
+    -- ⊢ ∃ δ, δ > 0 ∧ ∀ (a : C(Y, T)), dist a g < δ → dist (comp a f) (comp g f) < ε
     refine' ⟨ε, ε_pos, fun g' h => _⟩
+    -- ⊢ dist (comp g' f) (comp g f) < ε
     rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
+    -- ⊢ ∀ (x : X), dist (↑(comp g' f) x) (↑(comp g f) x) < ε
     exact fun x => h (f x)
+    -- 🎉 no goals
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
 
 @[simp]
@@ -491,12 +512,15 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   refine' (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => _
+  -- ⊢ ∃ f, Tendsto (fun i => restrict K (∑ b in i, F b)) atTop (𝓝 f)
   lift K to Compacts X using hK
+  -- ⊢ ∃ f, Tendsto (fun i => restrict (↑K) (∑ b in i, F b)) atTop (𝓝 f)
   have A : ∀ s : Finset ι, restrict (↑K) (∑ i in s, F i) = ∑ i in s, restrict K (F i) := by
     intro s
     ext1 x
     simp
   simpa only [HasSum, A] using summable_of_summable_norm (hF K)
+  -- 🎉 no goals
 #align continuous_map.summable_of_locally_summable_norm ContinuousMap.summable_of_locally_summable_norm
 
 end LocalNormalConvergence
@@ -537,18 +561,27 @@ variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
   norm_star_mul_self {f} := by
     refine' le_antisymm _ _
+    -- ⊢ ‖star f * f‖ ≤ ‖f‖ * ‖f‖
     · rw [← sq, ContinuousMap.norm_le _ (sq_nonneg _)]
+      -- ⊢ ∀ (x : α), ‖↑(star f * f) x‖ ≤ ‖f‖ ^ 2
       intro x
+      -- ⊢ ‖↑(star f * f) x‖ ≤ ‖f‖ ^ 2
       simp only [ContinuousMap.coe_mul, coe_star, Pi.mul_apply, Pi.star_apply,
         CstarRing.norm_star_mul_self, ← sq]
       refine' sq_le_sq' _ _
+      -- ⊢ -‖f‖ ≤ ‖↑f x‖
       · linarith [norm_nonneg (f x), norm_nonneg f]
+        -- 🎉 no goals
       · exact ContinuousMap.norm_coe_le_norm f x
+        -- 🎉 no goals
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
         ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]
       intro x
+      -- ⊢ ‖↑f x‖ ≤ Real.sqrt ‖star f * f‖
       rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+      -- ⊢ ‖star (↑f x) * ↑f x‖ ≤ ‖star f * f‖
       exact ContinuousMap.norm_coe_le_norm (star f * f) x
+      -- 🎉 no goals
 
 end CstarRing
 

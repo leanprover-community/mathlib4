@@ -150,6 +150,7 @@ theorem powers.self_mem {x : M} : x ∈ powers x :=
       addition."]
 theorem powers.mul_mem {x y z : M} : y ∈ powers x → z ∈ powers x → y * z ∈ powers x :=
   fun ⟨n₁, h₁⟩ ⟨n₂, h₂⟩ => ⟨n₁ + n₂, by simp only [pow_add, *]⟩
+                                        -- 🎉 no goals
 #align powers.mul_mem powers.mul_mem
 #align multiples.add_mem multiples.add_mem
 
@@ -166,6 +167,9 @@ theorem powers.isSubmonoid (x : M) : IsSubmonoid (powers x) :=
 /-- A monoid is a submonoid of itself. -/
 @[to_additive "An `AddMonoid` is an `AddSubmonoid` of itself."]
 theorem Univ.isSubmonoid : IsSubmonoid (@Set.univ M) := by constructor <;> simp
+                                                           -- ⊢ 1 ∈ Set.univ
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
 #align univ.is_submonoid Univ.isSubmonoid
 #align univ.is_add_submonoid Univ.isAddSubmonoid
 
@@ -176,8 +180,12 @@ theorem Univ.isSubmonoid : IsSubmonoid (@Set.univ M) := by constructor <;> simp
 theorem IsSubmonoid.preimage {N : Type*} [Monoid N] {f : M → N} (hf : IsMonoidHom f) {s : Set N}
     (hs : IsSubmonoid s) : IsSubmonoid (f ⁻¹' s) :=
   { one_mem := show f 1 ∈ s by (rw [IsMonoidHom.map_one hf]; exact hs.one_mem)
+                                -- ⊢ 1 ∈ s
+                                                             -- 🎉 no goals
     mul_mem := fun {a b} (ha : f a ∈ s) (hb : f b ∈ s) =>
       show f (a * b) ∈ s by (rw [IsMonoidHom.map_mul' hf]; exact hs.mul_mem ha hb) }
+                             -- ⊢ f a * f b ∈ s
+                                                           -- 🎉 no goals
 #align is_submonoid.preimage IsSubmonoid.preimage
 #align is_add_submonoid.preimage IsAddSubmonoid.preimage
 
@@ -190,6 +198,7 @@ theorem IsSubmonoid.image {γ : Type*} [Monoid γ] {f : M → γ} (hf : IsMonoid
   { one_mem := ⟨1, hs.one_mem, hf.map_one⟩
     mul_mem := @fun a b ⟨x, hx⟩ ⟨y, hy⟩ =>
       ⟨x * y, hs.mul_mem hx.1 hy.1, by rw [hf.map_mul, hx.2, hy.2]⟩ }
+                                       -- 🎉 no goals
 #align is_submonoid.image IsSubmonoid.image
 #align is_add_submonoid.image IsAddSubmonoid.image
 
@@ -198,7 +207,9 @@ theorem IsSubmonoid.image {γ : Type*} [Monoid γ] {f : M → γ} (hf : IsMonoid
 theorem Range.isSubmonoid {γ : Type*} [Monoid γ] {f : M → γ} (hf : IsMonoidHom f) :
     IsSubmonoid (Set.range f) := by
   rw [← Set.image_univ]
+  -- ⊢ IsSubmonoid (f '' Set.univ)
   exact Univ.isSubmonoid.image hf
+  -- 🎉 no goals
 #align range.is_submonoid Range.isSubmonoid
 #align range.is_add_submonoid Range.isAddSubmonoid
 
@@ -208,10 +219,14 @@ theorem Range.isSubmonoid {γ : Type*} [Monoid γ] {f : M → γ} (hf : IsMonoid
 theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n : ℕ}, a ^ n ∈ s
   | 0 => by
     rw [pow_zero]
+    -- ⊢ 1 ∈ s
     exact hs.one_mem
+    -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ]
+    -- ⊢ a * a ^ n ∈ s
     exact hs.mul_mem h (IsSubmonoid.pow_mem hs h)
+    -- 🎉 no goals
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
 /-- The set of natural number powers of an element of a submonoid is a subset of the submonoid. -/
@@ -234,6 +249,8 @@ theorem list_prod_mem (hs : IsSubmonoid s) : ∀ {l : List M}, (∀ x ∈ l, x �
   | [], _ => hs.one_mem
   | a :: l, h =>
     suffices a * l.prod ∈ s by simpa
+                               -- 🎉 no goals
+                                        -- 🎉 no goals
     have : a ∈ s ∧ ∀ x ∈ l, x ∈ s := by simpa using h
     hs.mul_mem this.1 (list_prod_mem hs this.2)
 #align is_submonoid.list_prod_mem IsSubmonoid.list_prod_mem
@@ -247,8 +264,11 @@ the submonoid. -/
 theorem multiset_prod_mem {M} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (m : Multiset M) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s := by
   refine' Quotient.inductionOn m fun l hl => _
+  -- ⊢ Multiset.prod (Quotient.mk (List.isSetoid M) l) ∈ s
   rw [Multiset.quot_mk_to_coe, Multiset.coe_prod]
+  -- ⊢ List.prod l ∈ s
   exact list_prod_mem hs hl
+  -- 🎉 no goals
 #align is_submonoid.multiset_prod_mem IsSubmonoid.multiset_prod_mem
 #align is_add_submonoid.multiset_sum_mem IsAddSubmonoid.multiset_sum_mem
 
@@ -260,6 +280,7 @@ of the submonoid. -/
 theorem finset_prod_mem {M A} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (f : A → M) :
     ∀ t : Finset A, (∀ b ∈ t, f b ∈ s) → (∏ b in t, f b) ∈ s
   | ⟨m, hm⟩, _ => multiset_prod_mem hs _ (by simpa)
+                                             -- 🎉 no goals
 #align is_submonoid.finset_prod_mem IsSubmonoid.finset_prod_mem
 #align is_add_submonoid.finset_sum_mem IsAddSubmonoid.finset_sum_mem
 
@@ -316,6 +337,9 @@ theorem subset_closure {s : Set M} : s ⊆ Closure s := fun _ => InClosure.basic
       contains the set."]
 theorem closure_subset {s t : Set M} (ht : IsSubmonoid t) (h : s ⊆ t) : Closure s ⊆ t := fun a ha =>
   by induction ha <;> simp [h _, *, IsSubmonoid.one_mem, IsSubmonoid.mul_mem]
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
 #align monoid.closure_subset Monoid.closure_subset
 #align add_monoid.closure_subset AddMonoid.closure_subset
 
@@ -352,12 +376,18 @@ theorem image_closure {A : Type*} [Monoid A] {f : M → A} (hf : IsMonoidHom f) 
   le_antisymm
     (by
       rintro _ ⟨x, hx, rfl⟩
+      -- ⊢ f x ∈ Closure (f '' s)
       induction' hx with z hz
       · solve_by_elim [subset_closure, Set.mem_image_of_mem]
+        -- 🎉 no goals
       · rw [hf.map_one]
+        -- ⊢ 1 ∈ Closure (f '' s)
         apply IsSubmonoid.one_mem (closure.isSubmonoid (f '' s))
+        -- 🎉 no goals
       · rw [hf.map_mul]
+        -- ⊢ f a✝² * f b✝ ∈ Closure (f '' s)
         solve_by_elim [(closure.isSubmonoid _).mul_mem] )
+        -- 🎉 no goals
     (closure_subset (IsSubmonoid.image hf (closure.isSubmonoid _)) <|
       Set.image_subset _ subset_closure)
 #align monoid.image_closure Monoid.image_closure
@@ -372,7 +402,11 @@ theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
     ∃ l : List M, (∀ x ∈ l, x ∈ s) ∧ l.prod = a := by
   induction h
   case basic a ha => exists [a]; simp [ha]
+  -- ⊢ ∃ l, (∀ (x : M), x ∈ l → x ∈ s) ∧ List.prod l = 1
+  -- 🎉 no goals
   case one => exists []; simp
+  -- ⊢ ∃ l, (∀ (x : M), x ∈ l → x ∈ s) ∧ List.prod l = a✝² * b✝
+  -- 🎉 no goals
   case mul a b _ _ ha hb =>
     rcases ha with ⟨la, ha, eqa⟩
     rcases hb with ⟨lb, hb, eqb⟩
@@ -403,9 +437,11 @@ theorem mem_closure_union_iff {M : Type*} [CommMonoid M] {s t : Set M} {x : M} :
             (fun hs =>
               ⟨hd * y, (closure.isSubmonoid _).mul_mem (subset_closure hs) hy, z, hz, by
                 rw [mul_assoc, List.prod_cons, ← hyzx]⟩)
+                -- 🎉 no goals
             fun ht =>
             ⟨y, hy, z * hd, (closure.isSubmonoid _).mul_mem hz (subset_closure ht), by
               rw [← mul_assoc, List.prod_cons, ← hyzx, mul_comm hd]⟩)
+              -- 🎉 no goals
         HL1,
     fun ⟨y, hy, z, hz, hyzx⟩ =>
     hyzx ▸
@@ -426,5 +462,6 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 @[to_additive]
 theorem Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
   refine' ⟨S.2, S.1.2⟩
+  -- 🎉 no goals
 #align submonoid.is_submonoid Submonoid.isSubmonoid
 #align add_submonoid.is_add_submonoid AddSubmonoid.isAddSubmonoid

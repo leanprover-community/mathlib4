@@ -155,10 +155,14 @@ def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
     toFun := (↑)
     map_add' := fun f g ↦ by
       ext
+      -- ⊢ ↑(f + g) x✝ = (↑f + ↑g) x✝
       rw [add_apply, Pi.add_apply]
+      -- 🎉 no goals
     map_smul' := fun c f ↦ by
       simp_rw [RingHom.id_apply]
+      -- ⊢ ↑(c • f) = c • ↑f
       rw [DFinsupp.coe_smul] }
+      -- 🎉 no goals
 #align direct_sum.linear_equiv_fun_on_fintype DirectSum.linearEquivFunOnFintype
 
 variable {ι M}
@@ -167,22 +171,29 @@ variable {ι M}
 theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
   ext a
+  -- ⊢ ↑(linearEquivFunOnFintype R ι M) (↑(lof R ι M i) m) a = Pi.single i m a
   change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
+  -- ⊢ ↑DFinsupp.equivFunOnFintype (↑(lof R ι M i) m) a = Pi.single i m a
   convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
+  -- 🎉 no goals
 #align direct_sum.linear_equiv_fun_on_fintype_lof DirectSum.linearEquivFunOnFintype_lof
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
   change (DFinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
+  -- ⊢ ↑DFinsupp.equivFunOnFintype.symm (Pi.single i m) = ↑(lof R ι M i) m
   rw [DFinsupp.equivFunOnFintype_symm_single i m]
+  -- ⊢ DFinsupp.single i m = ↑(lof R ι M i) m
   rfl
+  -- 🎉 no goals
 #align direct_sum.linear_equiv_fun_on_fintype_symm_single DirectSum.linearEquivFunOnFintype_symm_single
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
     (linearEquivFunOnFintype R ι M).symm f = f := by
   simp [linearEquivFunOnFintype]
+  -- 🎉 no goals
 #align direct_sum.linear_equiv_fun_on_fintype_symm_coe DirectSum.linearEquivFunOnFintype_symm_coe
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
@@ -210,6 +221,7 @@ theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι
 
 theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
   ⟨fun h _ ↦ by rw [h], ext R⟩
+                -- 🎉 no goals
 #align direct_sum.ext_iff DirectSum.ext_iff
 
 @[simp]
@@ -253,6 +265,7 @@ variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+                                            -- 🎉 no goals
 #align direct_sum.sigma_lcurry DirectSum.sigmaLcurry
 
 @[simp]
@@ -326,7 +339,9 @@ variable {A}
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
 theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
   rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
+  -- ⊢ Function.Surjective ↑(↑(DFinsupp.lsum ℕ) fun i => Submodule.subtype (A i))
   exact Function.Bijective.surjective h
+  -- 🎉 no goals
 #align direct_sum.is_internal.submodule_supr_eq_top DirectSum.IsInternal.submodule_iSup_eq_top
 
 /-- If a direct sum of submodules is internal then the submodules are independent. -/
@@ -348,6 +363,7 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
   funext a
+  -- ⊢ ↑(collectedBasis h v) a = ↑(↑(v a.fst) a.snd)
   -- Porting note: was
   -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
   --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
@@ -361,15 +377,20 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
     sigmaFinsuppAddEquivDFinsupp_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
+  -- ⊢ ↑(toModule R ι M fun i => Submodule.subtype (A i)) (↑(DFinsupp.mapRange.line …
   erw [DFinsupp.mapRange.linearEquiv_apply]
+  -- ⊢ ↑(toModule R ι M fun i => Submodule.subtype (A i)) (DFinsupp.mapRange (fun i …
   simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul,
     toModule]
   erw [DFinsupp.lsum_single]
+  -- ⊢ ↑(Submodule.subtype (A a.fst)) (↑(v a.fst) a.snd) = ↑(↑(v a.fst) a.snd)
   simp only [Submodule.coeSubtype]
+  -- 🎉 no goals
 #align direct_sum.is_internal.collected_basis_coe DirectSum.IsInternal.collectedBasis_coe
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
+                                                                                      -- 🎉 no goals
 #align direct_sum.is_internal.collected_basis_mem DirectSum.IsInternal.collectedBasis_mem
 
 /-- When indexed by only two distinct elements, `DirectSum.IsInternal` implies
@@ -380,6 +401,7 @@ theorem IsInternal.isCompl {A : ι → Submodule R M} {i j : ι} (hij : i ≠ j)
   ⟨hi.submodule_independent.pairwiseDisjoint hij,
     codisjoint_iff.mpr <| Eq.symm <| hi.submodule_iSup_eq_top.symm.trans <| by
       rw [← sSup_pair, iSup, ← Set.image_univ, h, Set.image_insert_eq, Set.image_singleton]⟩
+      -- 🎉 no goals
 #align direct_sum.is_internal.is_compl DirectSum.IsInternal.isCompl
 
 end Semiring
@@ -413,9 +435,11 @@ theorem isInternal_submodule_iff_independent_and_iSup_eq_top (A : ι → Submodu
 theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) := by
   have : ∀ k, k = i ∨ k = j := fun k ↦ by simpa using Set.ext_iff.mp h k
+  -- ⊢ IsInternal A ↔ IsCompl (A i) (A j)
   rw [isInternal_submodule_iff_independent_and_iSup_eq_top, iSup, ← Set.image_univ, h,
     Set.image_insert_eq, Set.image_singleton, sSup_pair, CompleteLattice.independent_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
+  -- 🎉 no goals
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
 
 /-! Now copy the lemmas for subgroup and submonoids. -/

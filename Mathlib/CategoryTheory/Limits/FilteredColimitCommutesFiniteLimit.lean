@@ -325,17 +325,25 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     apply IsIso.comp_isIso
     infer_instance
   apply Cones.cone_iso_of_hom_iso
+  -- 🎉 no goals
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone_iso CategoryTheory.Limits.colimitLimitToLimitColimitCone_iso
 
 noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
+  -- ⊢ (J : Type v) → {𝒥 : SmallCategory J} → FinCategory J → PreservesLimitsOfShap …
   intro J _ _
+  -- ⊢ PreservesLimitsOfShape J colim
   refine ⟨fun {F} => ⟨fun {c} hc => IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩
+  -- ⊢ limit.cone (F ⋙ colim) ≅ colim.mapCone c
   symm
+  -- ⊢ colim.mapCone c ≅ limit.cone (F ⋙ colim)
   trans colim.mapCone (limit.cone F)
+  -- ⊢ colim.mapCone c ≅ colim.mapCone (limit.cone F)
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
+    -- 🎉 no goals
   · exact asIso (colimitLimitToLimitColimitCone.{v, v + 1} F)
+    -- 🎉 no goals
 #align category_theory.limits.filtered_colim_preserves_finite_limits_of_types CategoryTheory.Limits.filteredColimPreservesFiniteLimitsOfTypes
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
@@ -363,8 +371,11 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColi
     [HasFiniteLimits C] [HasColimitsOfShape K C] [ReflectsIsomorphisms (forget C)] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
+  -- ⊢ (J : Type v) → {𝒥 : SmallCategory J} → FinCategory J → PreservesLimitsOfShap …
   intro J _ _
+  -- ⊢ PreservesLimitsOfShape J colim
   infer_instance
+  -- 🎉 no goals
 
 section
 
@@ -385,16 +396,20 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     colimit.ι (limit F) a ≫ (colimitLimitIso F).hom ≫ limit.π (colimit F.flip) b =
       (limit.π F b).app a ≫ (colimit.ι F.flip a).app b := by
   dsimp [colimitLimitIso]
+  -- ⊢ colimit.ι (limit F) a ≫ ((IsLimit.conePointUniqueUpToIso (isLimitOfPreserves …
   simp only [Functor.mapCone_π_app, Iso.symm_hom,
     Limits.limit.conePointUniqueUpToIso_hom_comp_assoc, Limits.limit.cone_π,
     Limits.colimit.ι_map_assoc, Limits.colimitFlipIsoCompColim_inv_app, assoc,
     Limits.HasLimit.isoOfNatIso_hom_π]
   congr 1
+  -- ⊢ colimit.ι (F.obj b) a ≫ (HasColimit.isoOfNatIso (flipCompEvaluation F b)).in …
   simp only [← Category.assoc, Iso.comp_inv_eq,
     Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
   dsimp
+  -- ⊢ colimit.ι (F.obj b) a = 𝟙 ((F.obj b).obj a) ≫ colimit.ι (F.obj b) a
   simp
+  -- 🎉 no goals
 #align category_theory.limits.ι_colimit_limit_iso_limit_π CategoryTheory.Limits.ι_colimitLimitIso_limit_π
 
 end

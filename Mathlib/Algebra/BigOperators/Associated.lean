@@ -31,6 +31,7 @@ variable [CommMonoidWithZero α] {p : α} (hp : Prime p)
 theorem exists_mem_multiset_dvd {s : Multiset α} : p ∣ s.prod → ∃ a ∈ s, p ∣ a :=
   Multiset.induction_on s (fun h => (hp.not_dvd_one h).elim) fun a s ih h =>
     have : p ∣ a * s.prod := by simpa using h
+                                -- 🎉 no goals
     match hp.dvd_or_dvd this with
     | Or.inl h => ⟨a, Multiset.mem_cons_self a s, h⟩
     | Or.inr h =>
@@ -53,33 +54,52 @@ end Prime
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α} (hp : Prime p)
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
+                              -- 🎉 no goals
     rw [Multiset.prod_cons] at hps
+    -- ⊢ ∃ q, q ∈ a ::ₘ s ∧ p ~ᵤ q
     cases' hp.dvd_or_dvd hps with h h
+    -- ⊢ ∃ q, q ∈ a ::ₘ s ∧ p ~ᵤ q
     · have hap := hs a (Multiset.mem_cons.2 (Or.inl rfl))
+      -- ⊢ ∃ q, q ∈ a ::ₘ s ∧ p ~ᵤ q
       exact ⟨a, Multiset.mem_cons_self a _, hp.associated_of_dvd hap h⟩
+      -- 🎉 no goals
     · rcases ih (fun r hr => hs _ (Multiset.mem_cons.2 (Or.inr hr))) h with ⟨q, hq₁, hq₂⟩
+      -- ⊢ ∃ q, q ∈ a ::ₘ s ∧ p ~ᵤ q
       exact ⟨q, Multiset.mem_cons.2 (Or.inr hq₁), hq₂⟩
+      -- 🎉 no goals
 #align exists_associated_mem_of_dvd_prod exists_associated_mem_of_dvd_prod
 
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
   induction' s using Multiset.induction_on with a s induct n primes divs generalizing n
+  -- ⊢ prod 0 ∣ n
   · simp only [Multiset.prod_zero, one_dvd]
+    -- 🎉 no goals
   · rw [Multiset.prod_cons]
+    -- ⊢ a * prod s ∣ n
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
+    -- ⊢ a * prod s ∣ a * k
     apply mul_dvd_mul_left a
+    -- ⊢ prod s ∣ k
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)
       fun a => (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
     · have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)
+      -- ⊢ b ∣ k
       have a_prime := h a (Multiset.mem_cons_self a s)
+      -- ⊢ b ∣ k
       have b_prime := h b (Multiset.mem_cons_of_mem b_in_s)
+      -- ⊢ b ∣ k
       refine' (b_prime.dvd_or_dvd b_div_n).resolve_left fun b_div_a => _
+      -- ⊢ False
       have assoc := b_prime.associated_of_dvd a_prime b_div_a
+      -- ⊢ False
       have := uniq a
+      -- ⊢ False
       rw [Multiset.countP_cons_of_pos _ (Associated.refl _), Nat.succ_le_succ_iff, ← not_lt,
         Multiset.countP_pos] at this
       exact this ⟨b, b_in_s, assoc.symm⟩
+      -- 🎉 no goals
 #align multiset.prod_primes_dvd Multiset.prod_primes_dvd
 
 theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : Finset α} (n : α)
@@ -108,6 +128,8 @@ variable [CommMonoid α]
 
 theorem prod_mk {p : Multiset α} : (p.map Associates.mk).prod = Associates.mk p.prod :=
   Multiset.induction_on p (by simp) fun a s ih => by simp [ih, Associates.mk_mul_mk]
+                              -- 🎉 no goals
+                                                     -- 🎉 no goals
 #align associates.prod_mk Associates.prod_mk
 
 theorem finset_prod_mk {p : Finset β} {f : β → α} :
@@ -116,26 +138,36 @@ theorem finset_prod_mk {p : Finset β} {f : β → α} :
   have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
     funext <| fun x => Function.comp_apply
   rw [Finset.prod_eq_multiset_prod, this, ←Multiset.map_map, prod_mk, ←Finset.prod_eq_multiset_prod]
+  -- 🎉 no goals
 #align associates.finset_prod_mk Associates.finset_prod_mk
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
     Multiset.Rel Associated p q ↔ p.map Associates.mk = q.map Associates.mk := by
   rw [← Multiset.rel_eq, Multiset.rel_map]
+  -- ⊢ Multiset.Rel Associated p q ↔ Multiset.Rel (fun a b => Associates.mk a = Ass …
   simp only [mk_eq_mk_iff_associated]
+  -- 🎉 no goals
 #align associates.rel_associated_iff_map_eq_map Associates.rel_associated_iff_map_eq_map
 
 theorem prod_eq_one_iff {p : Multiset (Associates α)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates α) = 1 :=
   Multiset.induction_on p (by simp)
+                              -- 🎉 no goals
     (by simp (config := { contextual := true }) [mul_eq_one_iff, or_imp, forall_and])
+        -- 🎉 no goals
 #align associates.prod_eq_one_iff Associates.prod_eq_one_iff
 
 theorem prod_le_prod {p q : Multiset (Associates α)} (h : p ≤ q) : p.prod ≤ q.prod := by
   haveI := Classical.decEq (Associates α)
+  -- ⊢ Multiset.prod p ≤ Multiset.prod q
   haveI := Classical.decEq α
+  -- ⊢ Multiset.prod p ≤ Multiset.prod q
   suffices p.prod ≤ (p + (q - p)).prod by rwa [add_tsub_cancel_of_le h] at this
+  -- ⊢ Multiset.prod p ≤ Multiset.prod (p + (q - p))
   suffices p.prod * 1 ≤ p.prod * (q - p).prod by simpa
+  -- ⊢ Multiset.prod p * 1 ≤ Multiset.prod p * Multiset.prod (q - p)
   exact mul_mono (le_refl p.prod) one_le
+  -- 🎉 no goals
 #align associates.prod_le_prod Associates.prod_le_prod
 
 end CommMonoid
@@ -149,6 +181,7 @@ theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Asso
   Multiset.induction_on s (fun ⟨d, Eq⟩ => (hp.ne_one (mul_eq_one_iff.1 Eq.symm).1).elim)
     fun a s ih h =>
     have : p ≤ a * s.prod := by simpa using h
+                                -- 🎉 no goals
     match Prime.le_or_le hp this with
     | Or.inl h => ⟨a, Multiset.mem_cons_self a s, h⟩
     | Or.inr h =>

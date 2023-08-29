@@ -77,8 +77,11 @@ lemma Bornology.ext (t t' : Bornology α)
     (h_cobounded : @Bornology.cobounded α t = @Bornology.cobounded α t') :
     t = t' := by
   cases t
+  -- ⊢ { cobounded' := cobounded'✝, le_cofinite' := le_cofinite'✝ } = t'
   cases t'
+  -- ⊢ { cobounded' := cobounded'✝¹, le_cofinite' := le_cofinite'✝¹ } = { cobounded …
   congr
+  -- 🎉 no goals
 #align bornology.ext Bornology.ext
 
 lemma Bornology.ext_iff (t t' : Bornology α) :
@@ -98,14 +101,21 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
   cobounded' :=
     { sets := { s : Set α | sᶜ ∈ B }
       univ_sets := by rwa [← compl_univ] at empty_mem
+                      -- 🎉 no goals
       sets_of_superset := fun hx hy => subset_mem _ hx _ (compl_subset_compl.mpr hy)
       inter_sets := fun hx hy => by simpa [compl_inter] using union_mem _ hx _ hy }
+                                    -- 🎉 no goals
   le_cofinite' := by
     rw [le_cofinite_iff_compl_singleton_mem]
+    -- ⊢ ∀ (x : α), {x}ᶜ ∈ { sets := {s | sᶜ ∈ B}, univ_sets := (_ : univᶜ ∈ B), sets …
     intro x
+    -- ⊢ {x}ᶜ ∈ { sets := {s | sᶜ ∈ B}, univ_sets := (_ : univᶜ ∈ B), sets_of_superse …
     change {x}ᶜᶜ ∈ B
+    -- ⊢ {x}ᶜᶜ ∈ B
     rw [compl_compl]
+    -- ⊢ {x} ∈ B
     exact singleton_mem x
+    -- 🎉 no goals
 #align bornology.of_bounded Bornology.ofBounded
 #align bornology.of_bounded_cobounded_sets Bornology.ofBounded_cobounded_sets
 
@@ -120,8 +130,11 @@ def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     Bornology α :=
   Bornology.ofBounded B empty_mem subset_mem union_mem fun x => by
     rw [sUnion_eq_univ_iff] at sUnion_univ
+    -- ⊢ {x} ∈ B
     rcases sUnion_univ x with ⟨s, hs, hxs⟩
+    -- ⊢ {x} ∈ B
     exact subset_mem s hs {x} (singleton_subset_iff.mpr hxs)
+    -- 🎉 no goals
 #align bornology.of_bounded' Bornology.ofBounded'
 #align bornology.of_bounded'_cobounded_sets Bornology.ofBounded'_cobounded_sets
 namespace Bornology
@@ -152,6 +165,7 @@ theorem isBounded_def {s : Set α} : IsBounded s ↔ sᶜ ∈ cobounded α :=
 @[simp]
 theorem isBounded_compl_iff : IsBounded sᶜ ↔ IsCobounded s := by
   rw [isBounded_def, isCobounded_def, compl_compl]
+  -- 🎉 no goals
 #align bornology.is_bounded_compl_iff Bornology.isBounded_compl_iff
 
 @[simp]
@@ -170,13 +184,17 @@ alias ⟨IsCobounded.of_compl, IsBounded.compl⟩ := isCobounded_compl_iff
 @[simp]
 theorem isBounded_empty : IsBounded (∅ : Set α) := by
   rw [isBounded_def, compl_empty]
+  -- ⊢ univ ∈ cobounded α
   exact univ_mem
+  -- 🎉 no goals
 #align bornology.is_bounded_empty Bornology.isBounded_empty
 
 @[simp]
 theorem isBounded_singleton : IsBounded ({x} : Set α) := by
   rw [isBounded_def]
+  -- ⊢ {x}ᶜ ∈ cobounded α
   exact le_cofinite _ (finite_singleton x).compl_mem_cofinite
+  -- 🎉 no goals
 #align bornology.is_bounded_singleton Bornology.isBounded_singleton
 
 @[simp]
@@ -196,6 +214,7 @@ theorem IsCobounded.inter (hs : IsCobounded s) (ht : IsCobounded t) : IsCobounde
 @[simp]
 theorem isBounded_union : IsBounded (s ∪ t) ↔ IsBounded s ∧ IsBounded t := by
   simp only [← isCobounded_compl_iff, compl_union, isCobounded_inter]
+  -- 🎉 no goals
 #align bornology.is_bounded_union Bornology.isBounded_union
 
 theorem IsBounded.union (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ∪ t) :=
@@ -221,8 +240,11 @@ theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
     ⟨fun h s hs => _, fun h t ht =>
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
+  -- ⊢ IsBounded (f '' s)
   rw [subset_compl_comm, ← preimage_compl] at hts
+  -- ⊢ IsBounded (f '' s)
   exact (IsCobounded.compl ht).subset ((image_subset f hts).trans <| image_preimage_subset _ _)
+  -- 🎉 no goals
 #align bornology.comap_cobounded_le_iff Bornology.comap_cobounded_le_iff
 
 end
@@ -236,7 +258,9 @@ theorem ext_iff_isBounded {t t' : Bornology α} :
     t = t' ↔ ∀ s, @IsBounded α t s ↔ @IsBounded α t' s :=
   ⟨fun h s => h ▸ Iff.rfl, fun h => by
     ext s
+    -- ⊢ s ∈ cobounded α ↔ s ∈ cobounded α
     simpa [@isBounded_def _ t, isBounded_def, compl_compl] using h sᶜ⟩
+    -- 🎉 no goals
 -- porting note: Lean 3 could do this without `@isBounded_def _ t`
 #align bornology.ext_iff_is_bounded Bornology.ext_iff_isBounded
 
@@ -281,6 +305,7 @@ theorem isCobounded_sInter {S : Set (Set α)} (hs : S.Finite) :
 theorem isBounded_biUnion {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
     IsBounded (⋃ i ∈ s, f i) ↔ ∀ i ∈ s, IsBounded (f i) := by
   simp only [← isCobounded_compl_iff, compl_iUnion, isCobounded_biInter hs]
+  -- 🎉 no goals
 #align bornology.is_bounded_bUnion Bornology.isBounded_biUnion
 
 theorem isBounded_biUnion_finset (s : Finset ι) {f : ι → Set α} :
@@ -290,11 +315,13 @@ theorem isBounded_biUnion_finset (s : Finset ι) {f : ι → Set α} :
 
 theorem isBounded_sUnion {S : Set (Set α)} (hs : S.Finite) :
     IsBounded (⋃₀ S) ↔ ∀ s ∈ S, IsBounded s := by rw [sUnion_eq_biUnion, isBounded_biUnion hs]
+                                                  -- 🎉 no goals
 #align bornology.is_bounded_sUnion Bornology.isBounded_sUnion
 
 @[simp]
 theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i) ↔ ∀ i, IsBounded (s i) :=
   by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_range_iff]
+     -- 🎉 no goals
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
 end Bornology
@@ -332,6 +359,7 @@ theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
 
 theorem cobounded_eq_bot_iff : cobounded α = ⊥ ↔ BoundedSpace α := by
   rw [← isBounded_univ, isBounded_def, compl_univ, empty_mem_iff_bot]
+  -- 🎉 no goals
 #align bornology.cobounded_eq_bot_iff Bornology.cobounded_eq_bot_iff
 
 variable [BoundedSpace α]

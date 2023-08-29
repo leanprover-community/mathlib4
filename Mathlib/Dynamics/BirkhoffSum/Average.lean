@@ -43,12 +43,14 @@ def birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := (n 
 
 theorem birkhoffAverage_zero (f : α → α) (g : α → M) (x : α) :
     birkhoffAverage R f g 0 x = 0 := by simp [birkhoffAverage]
+                                        -- 🎉 no goals
 
 @[simp] theorem birkhoffAverage_zero' (f : α → α) (g : α → M) : birkhoffAverage R f g 0 = 0 :=
   funext <| birkhoffAverage_zero _ _ _
 
 theorem birkhoffAverage_one (f : α → α) (g : α → M) (x : α) :
     birkhoffAverage R f g 1 x = g x := by simp [birkhoffAverage]
+                                          -- 🎉 no goals
 
 @[simp]
 theorem birkhoffAverage_one' (f : α → α) (g : α → M) : birkhoffAverage R f g 1 = g :=
@@ -59,6 +61,7 @@ theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
   simp only [birkhoffAverage, map_inv_nat_cast_smul g' R S, map_birkhoffSum]
+  -- 🎉 no goals
 
 theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
     (f : α → α) (g : α → M) (n : ℕ) (x : α) :
@@ -68,11 +71,15 @@ theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
 theorem birkhoffAverage_congr_ring' (S : Type*) [DivisionSemiring S] [Module S M] :
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
   ext; apply birkhoffAverage_congr_ring
+  -- ⊢ birkhoffAverage R x✝³ x✝² x✝¹ x✝ = birkhoffAverage S x✝³ x✝² x✝¹ x✝
+       -- 🎉 no goals
 
 theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, nsmul_eq_smul_cast R, inv_smul_smul₀]
+  -- ⊢ ↑n ≠ 0
   rwa [Nat.cast_ne_zero]
+  -- 🎉 no goals
 
 end birkhoffAverage
 
@@ -84,3 +91,4 @@ theorem birkhoffAverage_apply_sub_birkhoffAverage (R : Type*) [DivisionRing R]
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by
   simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
+  -- 🎉 no goals

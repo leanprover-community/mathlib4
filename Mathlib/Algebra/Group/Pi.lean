@@ -55,6 +55,9 @@ instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
   { mul := (· * ·)
     --pi_instance
     mul_assoc := by intros; ext; exact mul_assoc _ _ _ }
+                    -- ⊢ a✝ * b✝ * c✝ = a✝ * (b✝ * c✝)
+                            -- ⊢ (a✝ * b✝ * c✝) x✝ = (a✝ * (b✝ * c✝)) x✝
+                                 -- 🎉 no goals
 #align pi.semigroup Pi.semigroup
 #align pi.add_semigroup Pi.addSemigroup
 
@@ -63,6 +66,9 @@ instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I,
   { semigroup with
     --pi_instance
     mul_comm := by intros; ext; exact mul_comm _ _
+                   -- ⊢ a✝ * b✝ = b✝ * a✝
+                           -- ⊢ (a✝ * b✝) x✝ = (b✝ * a✝) x✝
+                                -- 🎉 no goals
   }
 #align pi.comm_semigroup Pi.commSemigroup
 #align pi.add_comm_semigroup Pi.addCommSemigroup
@@ -73,7 +79,13 @@ instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) 
     mul := (· * ·)
     --pi_instance
     one_mul := by intros; ext; exact one_mul _
+                  -- ⊢ 1 * a✝ = a✝
+                          -- ⊢ (1 * a✝) x✝ = a✝ x✝
+                               -- 🎉 no goals
     mul_one := by intros; ext; exact mul_one _
+                  -- ⊢ a✝ * 1 = a✝
+                          -- ⊢ (a✝ * 1) x✝ = a✝ x✝
+                               -- 🎉 no goals
   }
 #align pi.mul_one_class Pi.mulOneClass
 #align pi.add_zero_class Pi.addZeroClass
@@ -83,6 +95,9 @@ instance invOneClass [∀ i, InvOneClass <| f i] : InvOneClass (∀ i : I, f i) 
   { one := (1 : ∀ i, f i)
     inv := (· ⁻¹)
     inv_one := by intros; ext; exact inv_one }
+                  -- ⊢ 1⁻¹ = 1
+                          -- ⊢ 1⁻¹ x✝ = OfNat.ofNat 1 x✝
+                               -- 🎉 no goals
 
 @[to_additive]
 instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
@@ -90,7 +105,13 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
     npow := fun n x i => x i ^ n
     --pi_instance
     npow_zero := by intros; ext; exact Monoid.npow_zero _
+                    -- ⊢ (fun n x i => x i ^ n) 0 x✝ = 1
+                            -- ⊢ (fun n x i => x i ^ n) 0 x✝¹ x✝ = OfNat.ofNat 1 x✝
+                                 -- 🎉 no goals
     npow_succ := by intros; ext; exact Monoid.npow_succ _ _
+                    -- ⊢ (fun n x i => x i ^ n) (n✝ + 1) x✝ = x✝ * (fun n x i => x i ^ n) n✝ x✝
+                            -- ⊢ (fun n x i => x i ^ n) (n✝ + 1) x✝¹ x✝ = (x✝¹ * (fun n x i => x i ^ n) n✝ x✝ …
+                                 -- 🎉 no goals
   }
 #align pi.monoid Pi.monoid
 #align pi.add_monoid Pi.addMonoid
@@ -116,21 +137,38 @@ instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f 
     zpow := fun z x i => x i ^ z
     --pi_instance
     div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
+                         -- ⊢ a✝ / b✝ = a✝ * b✝⁻¹
+                                 -- ⊢ (a✝ / b✝) x✝ = (a✝ * b✝⁻¹) x✝
+                                      -- 🎉 no goals
     zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
+                     -- ⊢ (fun z x i => x i ^ z) 0 a✝ = 1
+                             -- ⊢ (fun z x i => x i ^ z) 0 a✝ x✝ = OfNat.ofNat 1 x✝
+                                  -- 🎉 no goals
     zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
+                     -- ⊢ (fun z x i => x i ^ z) (Int.ofNat (Nat.succ n✝)) a✝ = a✝ * (fun z x i => x i …
+                             -- ⊢ (fun z x i => x i ^ z) (Int.ofNat (Nat.succ n✝)) a✝ x✝ = (a✝ * (fun z x i => …
+                                  -- 🎉 no goals
     zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
+                    -- ⊢ (fun z x i => x i ^ z) (Int.negSucc n✝) a✝ = ((fun z x i => x i ^ z) (↑(Nat. …
+                            -- ⊢ (fun z x i => x i ^ z) (Int.negSucc n✝) a✝ x✝ = ((fun z x i => x i ^ z) (↑(N …
+                                 -- 🎉 no goals
   }
 
 @[to_additive Pi.subNegZeroMonoid]
 instance divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=
   { divInvMonoid with
     inv_one := by ext; exact inv_one }
+                  -- ⊢ 1⁻¹ x✝ = OfNat.ofNat 1 x✝
+                       -- 🎉 no goals
 
 @[to_additive]
 instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
   { inv := Inv.inv
     --pi_instance
     inv_inv := by intros; ext; exact inv_inv _
+                  -- ⊢ x✝⁻¹⁻¹ = x✝
+                          -- ⊢ x✝¹⁻¹⁻¹ x✝ = x✝¹ x✝
+                               -- 🎉 no goals
   }
 
 @[to_additive Pi.subtractionMonoid]
@@ -138,8 +176,14 @@ instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, 
   { divInvMonoid, involutiveInv with
     --pi_instance
     mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
+                      -- ⊢ (a✝ * b✝)⁻¹ = b✝⁻¹ * a✝⁻¹
+                              -- ⊢ (a✝ * b✝)⁻¹ x✝ = (b✝⁻¹ * a✝⁻¹) x✝
+                                   -- 🎉 no goals
     inv_eq_of_mul := by
       intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
+      -- ⊢ a✝⁻¹ = b✝
+                    -- ⊢ a✝⁻¹ x✝ = b✝ x✝
+                         -- 🎉 no goals
   }
 
 @[to_additive Pi.subtractionCommMonoid]
@@ -151,6 +195,9 @@ instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
   { divInvMonoid with
     --pi_instance
     mul_left_inv := by intros; ext; exact mul_left_inv _
+                       -- ⊢ a✝⁻¹ * a✝ = 1
+                               -- ⊢ (a✝⁻¹ * a✝) x✝ = OfNat.ofNat 1 x✝
+                                    -- 🎉 no goals
     }
 #align pi.group Pi.group
 #align pi.add_group Pi.addGroup
@@ -175,6 +222,9 @@ instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
     --pi_instance
     mul_left_cancel := by
       intros _ _ _ h; ext; exact LeftCancelSemigroup.mul_left_cancel _ _ _ (congr_fun h _);
+      -- ⊢ b✝ = c✝
+                      -- ⊢ b✝ x✝ = c✝ x✝
+                           -- 🎉 no goals
   }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 #align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
@@ -186,6 +236,9 @@ instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
     --pi_instance
     mul_right_cancel := by
       intros _ _ _ h; ext; exact RightCancelSemigroup.mul_right_cancel _ _ _ (congr_fun h _)
+      -- ⊢ a✝ = c✝
+                      -- ⊢ a✝ x✝ = c✝ x✝
+                           -- 🎉 no goals
   }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
@@ -219,7 +272,13 @@ instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f 
     mul := (· * ·)
     --pi_instance
     zero_mul := by intros; ext; exact zero_mul _
+                   -- ⊢ 0 * a✝ = 0
+                           -- ⊢ (0 * a✝) x✝ = OfNat.ofNat 0 x✝
+                                -- 🎉 no goals
     mul_zero := by intros; ext; exact mul_zero _
+                   -- ⊢ a✝ * 0 = 0
+                           -- ⊢ (a✝ * 0) x✝ = OfNat.ofNat 0 x✝
+                                -- 🎉 no goals
 }
 #align pi.mul_zero_class Pi.mulZeroClass
 
@@ -347,6 +406,8 @@ protected def MulHom.compLeft {α β : Type*} [Mul α] [Mul β] (f : α →ₙ* 
     (I → α) →ₙ* I → β where
   toFun h := f ∘ h
   map_mul' _ _ := by ext; simp
+                     -- ⊢ (fun h => ↑f ∘ h) (x✝² * x✝¹) x✝ = ((fun h => ↑f ∘ h) x✝² * (fun h => ↑f ∘ h …
+                          -- 🎉 no goals
 #align mul_hom.comp_left MulHom.compLeft
 #align add_hom.comp_left AddHom.compLeft
 #align mul_hom.comp_left_apply MulHom.compLeft_apply
@@ -409,7 +470,12 @@ protected def MonoidHom.compLeft {α β : Type*} [MulOneClass α] [MulOneClass �
     (I : Type*) : (I → α) →* I → β where
   toFun h := f ∘ h
   map_one' := by ext; dsimp; simp
+                 -- ⊢ (fun h => ↑f ∘ h) 1 x✝ = OfNat.ofNat 1 x✝
+                      -- ⊢ ↑f 1 = 1
+                             -- 🎉 no goals
   map_mul' _ _ := by ext; simp
+                     -- ⊢ OneHom.toFun { toFun := fun h => ↑f ∘ h, map_one' := (_ : (fun h => ↑f ∘ h)  …
+                          -- 🎉 no goals
 #align monoid_hom.comp_left MonoidHom.compLeft
 #align add_monoid_hom.comp_left AddMonoidHom.compLeft
 #align monoid_hom.comp_left_apply MonoidHom.compLeft_apply
@@ -551,13 +617,22 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
+  -- ⊢ Commute (mulSingle i x) (mulSingle j y)
+                     -- ⊢ (mulSingle i x * mulSingle j y) k = (mulSingle j y * mulSingle i x) k
   by_cases h1 : i = k;
+  -- ⊢ (mulSingle i x * mulSingle j y) k = (mulSingle j y * mulSingle i x) k
   · subst h1
+    -- ⊢ (mulSingle i x * mulSingle j y) i = (mulSingle j y * mulSingle i x) i
     simp [hij]
+    -- 🎉 no goals
   by_cases h2 : j = k;
+  -- ⊢ (mulSingle i x * mulSingle j y) k = (mulSingle j y * mulSingle i x) k
   · subst h2
+    -- ⊢ (mulSingle i x * mulSingle j y) j = (mulSingle j y * mulSingle i x) j
     simp [hij]
+    -- 🎉 no goals
   simp [h1, h2]
+  -- 🎉 no goals
 #align pi.mul_single_commute Pi.mulSingle_commute
 #align pi.single_commute Pi.single_commute
 
@@ -566,8 +641,11 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
 theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) (i j : I) :
     Commute (mulSingle i (x i)) (mulSingle j (x j)) := by
   obtain rfl | hij := Decidable.eq_or_ne i j
+  -- ⊢ Commute (mulSingle i (x i)) (mulSingle i (x i))
   · rfl
+    -- 🎉 no goals
   · exact Pi.mulSingle_commute hij _ _
+    -- 🎉 no goals
 #align pi.mul_single_apply_commute Pi.mulSingle_apply_commute
 #align pi.single_apply_commute Pi.single_apply_commute
 
@@ -575,9 +653,13 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
 theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
     Function.update g i x = g / mulSingle i (g i) * mulSingle i x := by
   ext j
+  -- ⊢ Function.update g i x j = (g / mulSingle i (g i) * mulSingle i x) j
   rcases eq_or_ne i j with (rfl | h)
+  -- ⊢ Function.update g i x i = (g / mulSingle i (g i) * mulSingle i x) i
   · simp
+    -- 🎉 no goals
   · simp [Function.update_noteq h.symm, h]
+    -- 🎉 no goals
 #align pi.update_eq_div_mul_single Pi.update_eq_div_mul_mulSingle
 #align pi.update_eq_sub_add_single Pi.update_eq_div_mul_mulSingle
 
@@ -587,32 +669,58 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
   refine' ⟨fun h => _, _⟩
+  -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
   · have hk := congr_fun h k
+    -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
     have hl := congr_fun h l
+    -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
     have hm := (congr_fun h m).symm
+    -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
     have hn := (congr_fun h n).symm
+    -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
     simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
+    -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
     rcases eq_or_ne k m with (rfl | hkm)
+    -- ⊢ k = k ∧ l = n ∨ u = v ∧ k = n ∧ l = k ∨ u * v = 1 ∧ k = l ∧ k = n
     · refine' Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv _).elim⟩
+      -- ⊢ v = 1
       rcases eq_or_ne k l with (rfl | hkl)
+      -- ⊢ v = 1
       · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
+        -- 🎉 no goals
       · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl
+        -- 🎉 no goals
     · rcases eq_or_ne m n with (rfl | hmn)
+      -- ⊢ k = m ∧ l = m ∨ u = v ∧ k = m ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = m
       · rcases eq_or_ne k l with (rfl | hkl)
+        -- ⊢ k = m ∧ k = m ∨ u = v ∧ k = m ∧ k = m ∨ u * v = 1 ∧ k = k ∧ m = m
         · rw [if_neg hkm.symm, if_neg hkm.symm, one_mul, if_pos rfl] at hm
+          -- ⊢ k = m ∧ k = m ∨ u = v ∧ k = m ∧ k = m ∨ u * v = 1 ∧ k = k ∧ m = m
           exact Or.inr (Or.inr ⟨hm, rfl, rfl⟩)
+          -- 🎉 no goals
         · simp only [if_neg hkm, if_neg hkl, mul_one] at hk
+          -- ⊢ k = m ∧ l = m ∨ u = v ∧ k = m ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = m
           dsimp at hk
+          -- ⊢ k = m ∧ l = m ∨ u = v ∧ k = m ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = m
           contradiction
+          -- 🎉 no goals
       · rw [if_neg hkm.symm, if_neg hmn, one_mul, mul_one] at hm
+        -- ⊢ k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n
         obtain rfl := (ite_ne_right_iff.mp (ne_of_eq_of_ne hm.symm hu)).1
+        -- ⊢ k = m ∧ m = n ∨ u = v ∧ k = n ∧ m = m ∨ u * v = 1 ∧ k = m ∧ m = n
         rw [if_neg hkm, if_neg hkm, one_mul, mul_one] at hk
+        -- ⊢ k = m ∧ m = n ∨ u = v ∧ k = n ∧ m = m ∨ u * v = 1 ∧ k = m ∧ m = n
         obtain rfl := (ite_ne_right_iff.mp (ne_of_eq_of_ne hk.symm hu)).1
+        -- ⊢ k = m ∧ m = k ∨ u = v ∧ k = k ∧ m = m ∨ u * v = 1 ∧ k = m ∧ m = k
         exact Or.inr (Or.inl ⟨hk.trans (if_pos rfl), rfl, rfl⟩)
+        -- 🎉 no goals
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
     · rfl
+      -- 🎉 no goals
     · apply mul_comm
+      -- 🎉 no goals
     · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
+      -- 🎉 no goals
 #align pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle
 #align pi.single_add_single_eq_single_add_single Pi.single_add_single_eq_single_add_single
 
@@ -701,6 +809,7 @@ noncomputable def Function.ExtendByOne.hom [MulOneClass R] :
   toFun f := Function.extend s f 1
   map_one' := Function.extend_one s
   map_mul' f g := by simpa using Function.extend_mul s f g 1 1
+                     -- 🎉 no goals
 #align function.extend_by_one.hom Function.ExtendByOne.hom
 #align function.extend_by_zero.hom Function.ExtendByZero.hom
 #align function.extend_by_one.hom_apply Function.ExtendByOne.hom_apply

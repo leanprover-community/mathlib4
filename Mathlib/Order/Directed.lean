@@ -55,6 +55,8 @@ variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
   simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+  -- ⊢ (∀ (x : α), x ∈ s → ∀ (y : α), y ∈ s → ∃ z, z ∈ s ∧ r x z ∧ r y z) ↔ ∀ (a :  …
+                               -- 🎉 no goals
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
@@ -62,6 +64,7 @@ alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
+  -- 🎉 no goals
 #align directed_on_range directedOn_range
 
 -- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
@@ -130,15 +133,25 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     (hf : Directed (· ≤ ·) f) (he : Function.Injective e) :
     Directed (· ≤ ·) (Function.extend e f ⊥) := by
   intro a b
+  -- ⊢ ∃ z, (fun x x_1 => x ≤ x_1) (extend e f ⊥ a) (extend e f ⊥ z) ∧ (fun x x_1 = …
   rcases(em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
+  -- ⊢ ∃ z, (fun x x_1 => x ≤ x_1) (extend e f ⊥ a) (extend e f ⊥ z) ∧ (fun x x_1 = …
   · use b
+    -- ⊢ (fun x x_1 => x ≤ x_1) (extend e f ⊥ a) (extend e f ⊥ b) ∧ (fun x x_1 => x ≤ …
     simp [Function.extend_apply' _ _ _ ha]
+    -- 🎉 no goals
   rcases(em (∃ i, e i = b)).symm with (hb | ⟨j, rfl⟩)
+  -- ⊢ ∃ z, (fun x x_1 => x ≤ x_1) (extend e f ⊥ (e i)) (extend e f ⊥ z) ∧ (fun x x …
   · use e i
+    -- ⊢ (fun x x_1 => x ≤ x_1) (extend e f ⊥ (e i)) (extend e f ⊥ (e i)) ∧ (fun x x_ …
     simp [Function.extend_apply' _ _ _ hb]
+    -- 🎉 no goals
   rcases hf i j with ⟨k, hi, hj⟩
+  -- ⊢ ∃ z, (fun x x_1 => x ≤ x_1) (extend e f ⊥ (e i)) (extend e f ⊥ z) ∧ (fun x x …
   use e k
+  -- ⊢ (fun x x_1 => x ≤ x_1) (extend e f ⊥ (e i)) (extend e f ⊥ (e k)) ∧ (fun x x_ …
   simp only [he.extend_apply, *, true_and_iff]
+  -- 🎉 no goals
 #align directed.extend_bot Directed.extend_bot
 
 /-- An antitone function on an inf-semilattice is directed. -/
@@ -180,6 +193,7 @@ theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ 
 #align directed_of directed_of
 
 theorem directed_id [IsDirected α r] : Directed r id := by convert directed_of r
+                                                           -- 🎉 no goals
 #align directed_id directed_id
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
@@ -202,6 +216,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r := by
   rw [← directed_id_iff]; exact IsTotal.directed _
+  -- ⊢ Directed r id
+                          -- 🎉 no goals
 #align is_total.to_is_directed IsTotal.to_isDirected
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
@@ -220,10 +236,12 @@ theorem exists_le_le [LE α] [IsDirected α (· ≥ ·)] (a b : α) : ∃ c, c �
 
 instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirected αᵒᵈ (· ≥ ·) := by
   assumption
+  -- 🎉 no goals
 #align order_dual.is_directed_ge OrderDual.isDirected_ge
 
 instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := by
   assumption
+  -- 🎉 no goals
 #align order_dual.is_directed_le OrderDual.isDirected_le
 
 section Reflexive
@@ -232,12 +250,19 @@ protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd 
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
   · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
+    -- 🎉 no goals
   · obtain ⟨w, hws, hwr⟩ := ha y hy
+    -- ⊢ ∃ z, z ∈ insert x s ∧ r x z ∧ r y z
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
+    -- 🎉 no goals
   · obtain ⟨w, hws, hwr⟩ := ha x hx
+    -- ⊢ ∃ z, z ∈ insert y s ∧ r x z ∧ r y z
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr.symm⟩
+    -- 🎉 no goals
   · obtain ⟨w, hws, hwr⟩ := hd x hx y hy
+    -- ⊢ ∃ z, z ∈ insert a s ∧ r x z ∧ r y z
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
+    -- 🎉 no goals
 #align directed_on.insert DirectedOn.insert
 
 theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
@@ -251,7 +276,9 @@ theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedO
 theorem directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
     DirectedOn r ({b, a} : Set α) := by
   rw [Set.pair_comm]
+  -- ⊢ DirectedOn r {a, b}
   apply directedOn_pair h hab
+  -- 🎉 no goals
 #align directed_on_pair' directedOn_pair'
 
 end Reflexive
@@ -300,8 +327,11 @@ variable (β) [PartialOrder β]
 
 theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
+  -- ⊢ ∃ a b, a < b
   rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
+  -- ⊢ ∃ a b, a < b
   exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
+  -- 🎉 no goals
 #align exists_lt_of_directed_ge exists_lt_of_directed_ge
 
 theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : ∃ a b : β, a < b :=
@@ -356,6 +386,7 @@ def ScottContinuous [Preorder β] (f : α → β) : Prop :=
 protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : ScottContinuous f) :
     Monotone f := by
   intro a b hab
+  -- ⊢ f a ≤ f b
   have e1 : IsLUB (f '' {a, b}) (f b) := by
     apply h
     · exact Set.insert_nonempty _ _
@@ -364,8 +395,11 @@ protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : Sc
         Set.inter_eq_self_of_subset_right (Set.Ici_subset_Ici.mpr hab)]
       exact isLeast_Ici
   apply e1.1
+  -- ⊢ f a ∈ f '' {a, b}
   rw [Set.image_pair]
+  -- ⊢ f a ∈ {f a, f b}
   exact Set.mem_insert _ _
+  -- 🎉 no goals
 #align scott_continuous.monotone ScottContinuous.monotone
 
 end ScottContinuous

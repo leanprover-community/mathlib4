@@ -39,7 +39,9 @@ theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fu
 theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
   ⟨fun h => antisymm h.1 h.2, by
     rintro rfl
+    -- ⊢ r a a ∧ r a a
     exact ⟨refl _, refl _⟩⟩
+    -- 🎉 no goals
 #align antisymm_iff antisymm_iff
 
 /-- A version of `antisymm` with `r` explicit.
@@ -91,6 +93,7 @@ theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
 
 theorem IsTrichotomous.swap (r) [IsTrichotomous α r] : IsTrichotomous α (swap r) :=
   ⟨fun a b => by simpa [Function.swap, or_comm, or_left_comm] using trichotomous_of r a b⟩
+                 -- 🎉 no goals
 #align is_trichotomous.swap IsTrichotomous.swap
 
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
@@ -152,6 +155,7 @@ theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
 
 theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
+                -- 🎉 no goals
 #align eq_empty_relation eq_empty_relation
 
 instance : IsIrrefl α EmptyRelation :=
@@ -160,15 +164,19 @@ instance : IsIrrefl α EmptyRelation :=
 theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
     ¬r b a → r b c → r a c := by
   intro h₁ h₂
+  -- ⊢ r a c
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
+  -- 🎉 no goals
 #align trans_trichotomous_left trans_trichotomous_left
 
 theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
     r a b → ¬r c b → r a c := by
   intro h₁ h₂
+  -- ⊢ r a c
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
+  -- 🎉 no goals
 #align trans_trichotomous_right trans_trichotomous_right
 
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
@@ -201,6 +209,8 @@ def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
   lt_iff_le_not_le x y :=
     ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
+                                                    -- ⊢ False
+                                                                 -- 🎉 no goals
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 set_option linter.uppercaseLean3 false in
 #align partial_order_of_SO partialOrderOfSO
@@ -244,6 +254,7 @@ class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
 theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α r] {a b c}
     (h₁ : ¬r a b) (h₂ : ¬r b c) : ¬r a c :=
   mt (IsOrderConnected.conn a b c) <| by simp [h₁, h₂]
+                                         -- 🎉 no goals
 #align is_order_connected.neg_trans IsOrderConnected.neg_trans
 
 theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected α r] :
@@ -383,18 +394,22 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r :=
   by infer_instance
+     -- 🎉 no goals
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrans α r := by
   infer_instance
+  -- 🎉 no goals
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsIrrefl α r := by
   infer_instance
+  -- 🎉 no goals
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsAsymm α r := by
   infer_instance
+  -- 🎉 no goals
 
 namespace WellFoundedLT
 
@@ -504,6 +519,9 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
         | Or.inr (Or.inl (.refl _)) => Or.inr <| Or.inl rfl
   trans a b c h₁ h₂ := by
     cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
+    -- ⊢ Prod.Lex r s (a₁, a₂) c
+                                                  -- ⊢ Prod.Lex r s (a₁, a₂) (c₁, c₂)
+                                                  -- ⊢ Prod.Lex r s (a₁, b₁) (c₁, c₂)
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
 
@@ -522,15 +540,25 @@ instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [
     WellFoundedLT (α × β) where
   wf := by
     refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    -- ⊢ Subrelation (fun x x_1 => x < x_1) (Prod.Lex (fun x x_1 => x < x_1) fun x x_ …
     rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
+    -- ⊢ Prod.Lex (fun x x_1 => x < x_1) (fun x x_1 => x < x_1) (a₁, b₁) (a₂, b₂)
     simp only [Prod.mk_lt_mk] at w
+    -- ⊢ Prod.Lex (fun x x_1 => x < x_1) (fun x x_1 => x < x_1) (a₁, b₁) (a₂, b₂)
     rcases eq_or_ne a₁ a₂ with rfl | ha
+    -- ⊢ Prod.Lex (fun x x_1 => x < x_1) (fun x x_1 => x < x_1) (a₁, b₁) (a₁, b₂)
     · right
+      -- ⊢ b₁ < b₂
       simpa using w
+      -- 🎉 no goals
     · left
+      -- ⊢ a₁ < a₂
       rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
+      -- ⊢ a₁ < a₂
       · assumption
+        -- 🎉 no goals
       · exact Ne.lt_of_le ha a_le
+        -- 🎉 no goals
 
 instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
     WellFoundedGT (α × β) :=
@@ -551,11 +579,13 @@ def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
 @[simp]
 theorem not_bounded_iff {r : α → α → Prop} (s : Set α) : ¬Bounded r s ↔ Unbounded r s := by
   simp only [Bounded, Unbounded, not_forall, not_exists, exists_prop, not_and, not_not]
+  -- 🎉 no goals
 #align set.not_bounded_iff Set.not_bounded_iff
 
 @[simp]
 theorem not_unbounded_iff {r : α → α → Prop} (s : Set α) : ¬Unbounded r s ↔ Bounded r s := by
   rw [not_iff_comm, not_bounded_iff]
+  -- 🎉 no goals
 #align set.not_unbounded_iff Set.not_unbounded_iff
 
 theorem unbounded_of_isEmpty [IsEmpty α] {r : α → α → Prop} (s : Set α) : Unbounded r s :=
@@ -614,9 +644,11 @@ section Subset
 variable [HasSubset α] {a b c : α}
 
 lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
+                                                                       -- 🎉 no goals
 #align subset_of_eq_of_subset subset_of_eq_of_subset
 
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [←hbc]
+                                                                       -- 🎉 no goals
 #align subset_of_subset_of_eq subset_of_subset_of_eq
 
 @[refl]
@@ -683,9 +715,11 @@ section Ssubset
 variable [HasSSubset α] {a b c : α}
 
 lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
+                                                                         -- 🎉 no goals
 #align ssubset_of_eq_of_ssubset ssubset_of_eq_of_ssubset
 
 lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [←hbc]
+                                                                         -- 🎉 no goals
 #align ssubset_of_ssubset_of_eq ssubset_of_ssubset_of_eq
 
 lemma ssubset_irrefl [IsIrrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
@@ -908,10 +942,13 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
+                                                            -- 🎉 no goals
 
 instance [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
+                                                         -- 🎉 no goals
 
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
+                                                             -- 🎉 no goals
 
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
   transitive_of_trans _

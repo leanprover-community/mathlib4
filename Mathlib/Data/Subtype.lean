@@ -79,8 +79,11 @@ theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x //
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
     {b : {y // q y}} (h : α = β) (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β) := by
   subst h
+  -- ⊢ HEq a b ↔ HEq ↑a ↑b
   subst h'
+  -- ⊢ HEq a b ↔ HEq ↑a ↑b
   rw [heq_iff_eq, heq_iff_eq, ext_iff]
+  -- 🎉 no goals
 #align subtype.heq_iff_coe_heq Subtype.heq_iff_coe_heq
 
 theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
@@ -145,6 +148,7 @@ theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
 theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
   simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
+  -- 🎉 no goals
 #align exists_subtype_mk_eq_iff exists_subtype_mk_eq_iff
 
 /-- Restrict a (dependent) function to a subtype -/
@@ -155,6 +159,7 @@ def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : S
 theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
     restrict p f x = f x.1 := by
   rfl
+  -- 🎉 no goals
 #align subtype.restrict_apply Subtype.restrict_apply
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
@@ -169,9 +174,13 @@ theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Inject
 theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
+  -- ⊢ Surjective fun f => restrict p f
   refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
+  -- ⊢ ∀ (x : Subtype p), (fun f => restrict p f) (fun x => if h : p x then f { val …
   rintro ⟨x, hx⟩
+  -- ⊢ (fun f => restrict p f) (fun x => if h : p x then f { val := x, property :=  …
   exact dif_pos hx
+  -- 🎉 no goals
 #align subtype.surjective_restrict Subtype.surjective_restrict
 
 /-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype`-/
@@ -182,6 +191,7 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
+                                                    -- 🎉 no goals
 #align subtype.coind_injective Subtype.coind_injective
 
 theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :

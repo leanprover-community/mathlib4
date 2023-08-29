@@ -158,6 +158,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
         FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   have ne_bot := Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal R) h
+  -- ⊢ List.TFAE [DiscreteValuationRing R, ValuationRing R, IsDedekindDomain R, IsI …
   classical
   rw [finrank_eq_one_iff']
   tfae_have 1 → 2

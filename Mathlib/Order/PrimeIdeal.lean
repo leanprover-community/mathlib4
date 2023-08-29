@@ -66,8 +66,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem I_isProper : IsProper IF.I := by
   cases' IF.F.nonempty with w h
+  -- ⊢ IsProper IF.I
   apply isProper_of_not_mem (_ : w ∉ IF.I)
+  -- ⊢ ¬w ∈ IF.I
   rwa [← IF.compl_I_eq_F] at h
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_is_proper Order.Ideal.PrimePair.I_isProper
 
@@ -110,7 +113,9 @@ theorem PrimePair.I_isPrime (IF : PrimePair P) : IsPrime IF.I :=
   { IF.I_isProper with
     compl_filter := by
       rw [IF.compl_I_eq_F]
+      -- ⊢ IsPFilter ↑IF.F
       exact IF.F.isPFilter }
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_is_prime Order.Ideal.PrimePair.I_isPrime
 
@@ -122,20 +127,30 @@ variable [SemilatticeInf P] {x y : P} {I : Ideal P}
 
 theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!
+  -- ⊢ ¬x ∈ I ∧ ¬y ∈ I → ¬x ⊓ y ∈ I
   let F := hI.compl_filter.toPFilter
+  -- ⊢ ¬x ∈ I ∧ ¬y ∈ I → ¬x ⊓ y ∈ I
   show x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
+  -- ⊢ x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
   exact fun h => inf_mem h.1 h.2
+  -- 🎉 no goals
 #align order.ideal.is_prime.mem_or_mem Order.Ideal.IsPrime.mem_or_mem
 
 theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
     IsPrime I := by
   rw [IsPrime_iff]
+  -- ⊢ IsProper I ∧ IsPFilter (↑I)ᶜ
   use ‹_›
+  -- ⊢ IsPFilter (↑I)ᶜ
   refine .of_def ?_ ?_ ?_
   · exact Set.nonempty_compl.2 (I.IsProper_iff.1 ‹_›)
+    -- 🎉 no goals
   · intro x hx y hy
+    -- ⊢ ∃ z, z ∈ (↑I)ᶜ ∧ (fun x x_1 => x ≥ x_1) x z ∧ (fun x x_1 => x ≥ x_1) y z
     exact ⟨x ⊓ y, fun h => (hI h).elim hx hy, inf_le_left, inf_le_right⟩
+    -- 🎉 no goals
   · exact @mem_compl_of_ge _ _ _
+    -- 🎉 no goals
 #align order.ideal.is_prime.of_mem_or_mem Order.Ideal.IsPrime.of_mem_or_mem
 
 theorem isPrime_iff_mem_or_mem [IsProper I] : IsPrime I ↔ ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I :=
@@ -150,20 +165,33 @@ variable [DistribLattice P] {I : Ideal P}
 
 instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   rw [isPrime_iff_mem_or_mem]
+  -- ⊢ ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I
   intro x y
+  -- ⊢ x ⊓ y ∈ I → x ∈ I ∨ y ∈ I
   contrapose!
+  -- ⊢ ¬x ∈ I ∧ ¬y ∈ I → ¬x ⊓ y ∈ I
   rintro ⟨hx, hynI⟩ hxy
+  -- ⊢ False
   apply hynI
+  -- ⊢ y ∈ I
   let J := I ⊔ principal x
+  -- ⊢ y ∈ I
   have hJuniv : (J : Set P) = Set.univ :=
     IsMaximal.maximal_proper (lt_sup_principal_of_not_mem ‹_›)
   have hyJ : y ∈ ↑J := Set.eq_univ_iff_forall.mp hJuniv y
+  -- ⊢ y ∈ I
   rw [coe_sup_eq] at hyJ
+  -- ⊢ y ∈ I
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
+  -- ⊢ y ∈ I
   rw [hy]
+  -- ⊢ a ⊔ b ∈ I
   refine' sup_mem ha (I.lower (le_inf hb _) hxy)
+  -- ⊢ b ≤ y
   rw [hy]
+  -- ⊢ b ≤ a ⊔ b
   exact le_sup_right
+  -- 🎉 no goals
 #align order.ideal.is_maximal.is_prime Order.Ideal.IsMaximal.isPrime
 
 end DistribLattice
@@ -174,8 +202,11 @@ variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
 theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
   apply hI.mem_or_mem
+  -- ⊢ x ⊓ xᶜ ∈ I
   rw [inf_compl_eq_bot]
+  -- ⊢ ⊥ ∈ I
   exact I.bot_mem
+  -- 🎉 no goals
 #align order.ideal.is_prime.mem_or_compl_mem Order.Ideal.IsPrime.mem_or_compl_mem
 
 theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
@@ -184,10 +215,15 @@ theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ �
 
 theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
   simp only [isPrime_iff_mem_or_mem, or_iff_not_imp_left]
+  -- ⊢ ∀ {x y : P}, x ⊓ y ∈ I → ¬x ∈ I → y ∈ I
   intro x y hxy hxI
+  -- ⊢ y ∈ I
   have hxcI : xᶜ ∈ I := h.resolve_left hxI
+  -- ⊢ y ∈ I
   have ass : x ⊓ y ⊔ y ⊓ xᶜ ∈ I := sup_mem hxy (I.lower inf_le_right hxcI)
+  -- ⊢ y ∈ I
   rwa [inf_comm, sup_inf_inf_compl] at ass
+  -- 🎉 no goals
 #align order.ideal.is_prime_of_mem_or_compl_mem Order.Ideal.isPrime_of_mem_or_compl_mem
 
 theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I :=
@@ -196,10 +232,15 @@ theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x
 
 instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [IsMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
+  -- ⊢ ∀ ⦃J : Ideal P⦄, I < J → ∀ (x : P), x ∈ ↑J
   intro J hIJ x
+  -- ⊢ x ∈ ↑J
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
+  -- ⊢ x ∈ ↑J
   suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J
+  -- ⊢ x ∈ ↑J
   · rwa [sup_inf_inf_compl] at ass
+    -- 🎉 no goals
   exact
     sup_mem (J.lower inf_le_right hyJ)
       (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)
@@ -232,7 +273,9 @@ theorem _root_.Order.Ideal.PrimePair.F_isPrime (IF : Ideal.PrimePair P) : IsPrim
   {
     compl_ideal := by
       rw [IF.compl_F_eq_I]
+      -- ⊢ IsIdeal ↑IF.I
       exact IF.I.isIdeal }
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.F_is_prime Order.Ideal.PrimePair.F_isPrime
 

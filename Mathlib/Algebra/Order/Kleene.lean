@@ -110,18 +110,27 @@ def IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemi
     le_refl := h
     le_trans := fun a b c hab hbc ↦ by
       simp only
+      -- ⊢ a + c = c
       rw [← hbc, ← add_assoc, hab]
+      -- 🎉 no goals
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
+                                        -- 🎉 no goals
     sup := (· + ·)
     le_sup_left := fun a b ↦ by
       simp only
+      -- ⊢ a + (a + b) = a + b
       rw [← add_assoc, h]
+      -- 🎉 no goals
     le_sup_right := fun a b ↦ by
       simp only
+      -- ⊢ b + (a + b) = a + b
       rw [add_comm, add_assoc, h]
+      -- 🎉 no goals
     sup_le := fun a b c hab hbc ↦ by
       simp only
+      -- ⊢ a + b + c = c
       rwa [add_assoc, hbc]
+      -- 🎉 no goals
     bot := 0
     bot_le := zero_add }
 #align idem_semiring.of_semiring IdemSemiring.ofSemiring
@@ -139,18 +148,22 @@ theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
 scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
+                                           -- 🎉 no goals
 #align add_idem add_idem
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
   | 1, _ => one_nsmul
   | n + 2, _ => fun a ↦ by rw [succ_nsmul, nsmul_eq_self n.succ_ne_zero, add_idem]
+                           -- 🎉 no goals
 #align nsmul_eq_self nsmul_eq_self
 
 theorem add_eq_left_iff_le : a + b = a ↔ b ≤ a := by simp
+                                                     -- 🎉 no goals
 #align add_eq_left_iff_le add_eq_left_iff_le
 
 theorem add_eq_right_iff_le : a + b = b ↔ a ≤ b := by simp
+                                                      -- 🎉 no goals
 #align add_eq_right_iff_le add_eq_right_iff_le
 
 alias ⟨_, LE.le.add_eq_left⟩ := add_eq_left_iff_le
@@ -160,6 +173,7 @@ alias ⟨_, LE.le.add_eq_right⟩ := add_eq_right_iff_le
 #align has_le.le.add_eq_right LE.le.add_eq_right
 
 theorem add_le_iff : a + b ≤ c ↔ a ≤ c ∧ b ≤ c := by simp
+                                                     -- 🎉 no goals
 #align add_le_iff add_le_iff
 
 theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
@@ -172,21 +186,26 @@ instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddMonoid :
   { ‹IdemSemiring α› with
     add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
+      -- ⊢ c ⊔ a ≤ c ⊔ b
       exact sup_le_sup_left hbc _
+      -- 🎉 no goals
     exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
+                                                         -- 🎉 no goals
 #align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddMonoid
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :
     CovariantClass α α (· * ·) (· ≤ ·) :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
+                                              -- 🎉 no goals
 #align idem_semiring.to_covariant_class_mul_le IdemSemiring.toCovariantClass_mul_le
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCovariantClass_swap_mul_le :
     CovariantClass α α (swap (· * ·)) (· ≤ ·) :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
+                                              -- 🎉 no goals
 #align idem_semiring.to_covariant_class_swap_mul_le IdemSemiring.toCovariantClass_swap_mul_le
 
 end IdemSemiring
@@ -226,10 +245,12 @@ theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
 
 theorem kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
   simpa using mul_kstar_le hb
+  -- 🎉 no goals
 #align kstar_le_of_mul_le_left kstar_le_of_mul_le_left
 
 theorem kstar_le_of_mul_le_right (hb : 1 ≤ b) : a * b ≤ b → a∗ ≤ b := by
   simpa using kstar_mul_le hb
+  -- 🎉 no goals
 #align kstar_le_of_mul_le_right kstar_le_of_mul_le_right
 
 @[simp]
@@ -247,6 +268,7 @@ theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
 theorem kstar_eq_one : a∗ = 1 ↔ a ≤ 1 :=
   ⟨le_kstar.trans_eq,
     fun h ↦ one_le_kstar.antisymm' <| kstar_le_of_mul_le_left le_rfl <| by rwa [one_mul]⟩
+                                                                           -- 🎉 no goals
 #align kstar_eq_one kstar_eq_one
 
 @[simp]
@@ -267,6 +289,7 @@ theorem kstar_mul_kstar (a : α) : a∗ * a∗ = a∗ :=
 @[simp]
 theorem kstar_eq_self : a∗ = a ↔ a * a = a ∧ 1 ≤ a :=
   ⟨fun h ↦ ⟨by rw [← h, kstar_mul_kstar], one_le_kstar.trans_eq h⟩,
+               -- 🎉 no goals
     fun h ↦ (kstar_le_of_mul_le_left h.2 h.1.le).antisymm le_kstar⟩
 #align kstar_eq_self kstar_eq_self
 
@@ -280,7 +303,9 @@ theorem pow_le_kstar : ∀ {n : ℕ}, a ^ n ≤ a∗
   | 0 => (pow_zero _).trans_le one_le_kstar
   | n + 1 => by
     rw [pow_succ]
+    -- ⊢ a * a ^ n ≤ a∗
     exact (mul_le_mul_left' pow_le_kstar _).trans mul_kstar_le_kstar
+    -- 🎉 no goals
 #align pow_le_kstar pow_le_kstar
 
 end KleeneAlgebra
@@ -366,6 +391,7 @@ protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β
   { hf.semiring f zero one add mul nsmul npow nat_cast, hf.semilatticeSup _ sup,
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
+                                     -- 🎉 no goals
     bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 #align function.injective.idem_semiring Function.Injective.idemSemiring
@@ -396,25 +422,41 @@ protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul 
     ‹KStar β› with
     one_le_kstar := fun a ↦ one.trans_le <| by
       erw [kstar]
+      -- ⊢ 1 ≤ (f a)∗
       exact one_le_kstar
+      -- 🎉 no goals
     mul_kstar_le_kstar := fun a ↦ by
       change f _ ≤ _
+      -- ⊢ f (a * a∗) ≤ f a∗
       erw [mul, kstar]
+      -- ⊢ f a * (f a)∗ ≤ (f a)∗
       exact mul_kstar_le_kstar
+      -- 🎉 no goals
     kstar_mul_le_kstar := fun a ↦ by
       change f _ ≤ _
+      -- ⊢ f (a∗ * a) ≤ f a∗
       erw [mul, kstar]
+      -- ⊢ (f a)∗ * f a ≤ (f a)∗
       exact kstar_mul_le_kstar
+      -- 🎉 no goals
     mul_kstar_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
+      -- ⊢ f (b * a∗) ≤ f b
       erw [mul, kstar]
+      -- ⊢ f b * (f a)∗ ≤ f b
       erw [mul] at h
+      -- ⊢ f b * (f a)∗ ≤ f b
       exact mul_kstar_le_self h
+      -- 🎉 no goals
     kstar_mul_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
+      -- ⊢ f (a∗ * b) ≤ f b
       erw [mul, kstar]
+      -- ⊢ (f a)∗ * f b ≤ f b
       erw [mul] at h
+      -- ⊢ (f a)∗ * f b ≤ f b
       exact kstar_mul_le_self h }
+      -- 🎉 no goals
 #align function.injective.kleene_algebra Function.Injective.kleeneAlgebra
 
 end Function.Injective

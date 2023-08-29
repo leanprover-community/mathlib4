@@ -147,7 +147,11 @@ theorem map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset 
 theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a ∈ A) (hb : b ∈ A)
     (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) : f a * f b = f c * f d := by
   simp_rw [← prod_pair] at h ⊢
+  -- ⊢ prod {↑f a, ↑f b} = prod {↑f c, ↑f d}
   refine' map_prod_eq_map_prod f _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
+  -- ⊢ ∀ ⦃x : α⦄, x ∈ {a, b} → x ∈ A
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
 #align map_mul_map_eq_map_mul_map map_mul_map_eq_map_mul_map
 #align map_add_map_eq_map_add_map map_add_map_eq_map_add_map
 
@@ -157,6 +161,9 @@ namespace FreimanHom
 instance funLike : FunLike (A →*[n] β) α fun _ => β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, map_prod_eq_map_prod' := map_prod_eq_map_prod'✝ } = g
+                                      -- ⊢ { toFun := toFun✝¹, map_prod_eq_map_prod' := map_prod_eq_map_prod'✝¹ } = { t …
+                                               -- 🎉 no goals
 #align freiman_hom.fun_like FreimanHom.funLike
 #align add_freiman_hom.fun_like AddFreimanHom.funLike
 
@@ -214,6 +221,7 @@ theorem mk_coe (f : A →*[n] β) (h) : mk f h = f :=
 protected def id (A : Set α) (n : ℕ) : A →*[n] α where
   toFun x := x
   map_prod_eq_map_prod' _ _ _ _ h := by rw [map_id', map_id', h]
+                                        -- 🎉 no goals
 #align freiman_hom.id FreimanHom.id
 #align add_freiman_hom.id AddFreimanHom.id
 #align freiman_hom.id_apply FreimanHom.id_apply
@@ -224,11 +232,16 @@ protected def comp (f : B →*[n] γ) (g : A →*[n] β) (hAB : A.MapsTo g B) : 
   toFun := f ∘ g
   map_prod_eq_map_prod' hsA htA hs ht h := by
     rw [← map_map, ← map_map]
+    -- ⊢ prod (map (↑f) (map (↑g) s✝)) = prod (map (↑f) (map (↑g) t✝))
     apply map_prod_eq_map_prod f _ _ ((card_map _ _).trans hs)
     · rwa [card_map]
+      -- 🎉 no goals
     · apply (map_prod_eq_map_prod g hsA htA hs ht h)
+      -- 🎉 no goals
     · simpa using fun a h => hAB (hsA h)
+      -- 🎉 no goals
     · simpa using fun a h => hAB (htA h)
+      -- 🎉 no goals
 #align freiman_hom.comp FreimanHom.comp
 #align add_freiman_hom.comp AddFreimanHom.comp
 
@@ -262,6 +275,7 @@ theorem cancel_right {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : Functio
 theorem cancel_right_on {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : A.SurjOn f B) {hf'} :
     A.EqOn (g₁.comp f hf') (g₂.comp f hf') ↔ B.EqOn g₁ g₂ :=
   by simp [hf.cancel_right hf']
+     -- 🎉 no goals
 #align freiman_hom.cancel_right_on FreimanHom.cancel_right_on
 #align add_freiman_hom.cancel_right_on AddFreimanHom.cancel_right_on
 
@@ -269,6 +283,7 @@ theorem cancel_right_on {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : A.Su
 theorem cancel_left_on {g : B →*[n] γ} {f₁ f₂ : A →*[n] β} (hg : B.InjOn g) {hf₁ hf₂} :
     A.EqOn (g.comp f₁ hf₁) (g.comp f₂ hf₂) ↔ A.EqOn f₁ f₂ :=
   by simp [hg.cancel_left hf₁ hf₂]
+     -- 🎉 no goals
 #align freiman_hom.cancel_left_on FreimanHom.cancel_left_on
 #align add_freiman_hom.cancel_left_on AddFreimanHom.cancel_left_on
 
@@ -290,6 +305,7 @@ def const (A : Set α) (n : ℕ) (b : β) : A →*[n] β where
   toFun _ := b
   map_prod_eq_map_prod' _ _ hs ht _ := by
     simp only [map_const', hs, prod_replicate, ht]
+    -- 🎉 no goals
 #align freiman_hom.const FreimanHom.const
 #align add_freiman_hom.const AddFreimanHom.const
 
@@ -333,8 +349,11 @@ instance : Mul (A →*[n] β) :=
     { toFun := fun x => f x * g x
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
           rw [prod_map_mul, prod_map_mul]
+          -- ⊢ prod (map (fun x => ↑f x) s✝) * prod (map (fun x => ↑g x) s✝) = prod (map (f …
           rw [map_prod_eq_map_prod f hsA htA hs ht h]
+          -- ⊢ prod (map (↑f) t✝) * prod (map (fun x => ↑g x) s✝) = prod (map (fun x => ↑f  …
           rw [map_prod_eq_map_prod g hsA htA hs ht h]}⟩
+          -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem mul_apply (f g : A →*[n] β) (x : α) : (f * g) x = f x * g x :=
@@ -359,6 +378,7 @@ instance : Inv (A →*[n] G) :=
     { toFun := fun x => (f x)⁻¹
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
         rw [prod_map_inv, prod_map_inv, map_prod_eq_map_prod f hsA htA hs ht h] }⟩
+        -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem inv_apply (f : A →*[n] G) (x : α) : f⁻¹ x = (f x)⁻¹ :=
@@ -405,16 +425,24 @@ theorem div_comp (f₁ f₂ : B →*[n] G) (g : A →*[n] β) {hf hf₁ hf₂} :
 instance commMonoid : CommMonoid (A →*[n] β) where
   mul_assoc a b c := by
     ext
+    -- ⊢ ↑(a * b * c) x✝ = ↑(a * (b * c)) x✝
     apply mul_assoc
+    -- 🎉 no goals
   one_mul a := by
     ext
+    -- ⊢ ↑(1 * a) x✝ = ↑a x✝
     apply one_mul
+    -- 🎉 no goals
   mul_one a := by
     ext
+    -- ⊢ ↑(a * 1) x✝ = ↑a x✝
     apply mul_one
+    -- 🎉 no goals
   mul_comm a b := by
     ext
+    -- ⊢ ↑(a * b) x✝ = ↑(b * a) x✝
     apply mul_comm
+    -- 🎉 no goals
 #align freiman_hom.comm_monoid FreimanHom.commMonoid
 #align add_freiman_hom.add_comm_monoid AddFreimanHom.addCommMonoid
 
@@ -426,12 +454,18 @@ instance commGroup {β} [CommGroup β]: CommGroup (A →*[n] β) :=
   { FreimanHom.commMonoid with
     div_eq_mul_inv := by
       intros
+      -- ⊢ a✝ / b✝ = a✝ * b✝⁻¹
       ext
+      -- ⊢ ↑(a✝ / b✝) x✝ = ↑(a✝ * b✝⁻¹) x✝
       apply div_eq_mul_inv
+      -- 🎉 no goals
     mul_left_inv := by
       intros
+      -- ⊢ a✝⁻¹ * a✝ = 1
       ext
+      -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
       apply mul_left_inv}
+      -- 🎉 no goals
 #align freiman_hom.comm_group FreimanHom.commGroup
 #align add_freiman_hom.add_comm_group AddFreimanHom.addCommGroup
 
@@ -455,6 +489,7 @@ inferrable. -/
 instance MonoidHom.freimanHomClass : FreimanHomClass (α →* β) Set.univ β n where
   map_prod_eq_map_prod' f s t _ _ _ _ h := by
     rw [← f.map_multiset_prod, h, f.map_multiset_prod]
+    -- 🎉 no goals
 #align monoid_hom.freiman_hom_class MonoidHom.freimanHomClass
 #align add_monoid_hom.freiman_hom_class AddMonoidHom.addFreimanHomClass
 
@@ -478,6 +513,7 @@ theorem MonoidHom.toFreimanHom_coe (f : α →* β) : (f.toFreimanHom A n : α �
 theorem MonoidHom.toFreimanHom_injective :
     Function.Injective (MonoidHom.toFreimanHom A n : (α →* β) → A →*[n] β) := fun f g h =>
    by rwa [toFreimanHom, toFreimanHom, FreimanHom.mk.injEq, FunLike.coe_fn_eq] at h
+      -- 🎉 no goals
 #align monoid_hom.to_freiman_hom_injective MonoidHom.toFreimanHom_injective
 #align add_monoid_hom.to_freiman_hom_injective AddMonoidHom.toAddFreimanHom_injective
 
@@ -493,31 +529,52 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
     (hs : Multiset.card s = m) (ht : Multiset.card t = m)
     (hst : s.prod = t.prod) (h : m ≤ n) : (s.map f).prod = (t.map f).prod := by
   obtain rfl | hm := m.eq_zero_or_pos
+  -- ⊢ prod (map (↑f) s) = prod (map (↑f) t)
   · rw [card_eq_zero] at hs ht
+    -- ⊢ prod (map (↑f) s) = prod (map (↑f) t)
     rw [hs, ht]
+    -- 🎉 no goals
   simp [← hs, card_pos_iff_exists_mem] at hm
+  -- ⊢ prod (map (↑f) s) = prod (map (↑f) t)
   obtain ⟨a, ha⟩ := hm
+  -- ⊢ prod (map (↑f) s) = prod (map (↑f) t)
   suffices
     ((s + Multiset.replicate (n - m) a).map f).prod =
       ((t + Multiset.replicate (n - m) a).map f).prod by
     simp_rw [Multiset.map_add, prod_add] at this
     exact mul_right_cancel this
   replace ha := hsA _ ha
+  -- ⊢ prod (map (↑f) (s + replicate (n - m) a)) = prod (map (↑f) (t + replicate (n …
   apply map_prod_eq_map_prod f (A := A) (β := β) (n := n) (fun x hx => _) (fun x hx => _) _ _ _
   -- porting note: below could be golfed when wlog is available
   · intro x hx
+    -- ⊢ x ∈ A
     rw [mem_add] at hx
+    -- ⊢ x ∈ A
     cases' hx with hx hx
+    -- ⊢ x ∈ A
     · exact hsA x hx
+      -- 🎉 no goals
     · rwa [eq_of_mem_replicate hx]
+      -- 🎉 no goals
   · intro x hx
+    -- ⊢ x ∈ A
     rw [mem_add] at hx
+    -- ⊢ x ∈ A
     cases' hx with hx hx
+    -- ⊢ x ∈ A
     · exact htA x hx
+      -- 🎉 no goals
     · rwa [eq_of_mem_replicate hx]
+      -- 🎉 no goals
   · rw [_root_.map_add, card_replicate, hs]; simp [h]
+    -- ⊢ m + (n - m) = n
+                                             -- 🎉 no goals
   · rw [_root_.map_add, card_replicate, ht]; simp [h]
+    -- ⊢ m + (n - m) = n
+                                             -- 🎉 no goals
   · rw [prod_add, prod_add, hst]
+    -- 🎉 no goals
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 
@@ -553,6 +610,7 @@ theorem FreimanHom.toFreimanHom_coe (h : m ≤ n) (f : A →*[n] β) :
 theorem FreimanHom.toFreimanHom_injective (h : m ≤ n) :
     Function.Injective (FreimanHom.toFreimanHom h : (A →*[n] β) → A →*[m] β) := fun f g hfg =>
   FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg using 0
+                       -- 🎉 no goals
 #align freiman_hom.to_freiman_hom_injective FreimanHom.toFreimanHom_injective
 #align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.toAddFreimanHom_injective
 

@@ -31,8 +31,11 @@ variable [PartialOrder α] {a b : α}
 
 theorem range_coe : range (some : α → WithTop α) = Iio ⊤ := by
   ext x
+  -- ⊢ x ∈ range some ↔ x ∈ Iio ⊤
   rw [mem_Iio, lt_top_iff_ne_top, mem_range, ← none_eq_top, Option.ne_none_iff_exists]
+  -- ⊢ (∃ y, ↑y = x) ↔ ∃ x_1, Option.some x_1 = x
   rfl
+  -- 🎉 no goals
 #align with_top.range_coe WithTop.range_coe
 
 @[simp]
@@ -57,41 +60,50 @@ theorem preimage_coe_Iic : (some : α → WithTop α) ⁻¹' Iic a = Iic a :=
 
 @[simp]
 theorem preimage_coe_Icc : (some : α → WithTop α) ⁻¹' Icc a b = Icc a b := by simp [← Ici_inter_Iic]
+                                                                              -- 🎉 no goals
 #align with_top.preimage_coe_Icc WithTop.preimage_coe_Icc
 
 @[simp]
 theorem preimage_coe_Ico : (some : α → WithTop α) ⁻¹' Ico a b = Ico a b := by simp [← Ici_inter_Iio]
+                                                                              -- 🎉 no goals
 #align with_top.preimage_coe_Ico WithTop.preimage_coe_Ico
 
 @[simp]
 theorem preimage_coe_Ioc : (some : α → WithTop α) ⁻¹' Ioc a b = Ioc a b := by simp [← Ioi_inter_Iic]
+                                                                              -- 🎉 no goals
 #align with_top.preimage_coe_Ioc WithTop.preimage_coe_Ioc
 
 @[simp]
 theorem preimage_coe_Ioo : (some : α → WithTop α) ⁻¹' Ioo a b = Ioo a b := by simp [← Ioi_inter_Iio]
+                                                                              -- 🎉 no goals
 #align with_top.preimage_coe_Ioo WithTop.preimage_coe_Ioo
 
 @[simp]
 theorem preimage_coe_Iio_top : (some : α → WithTop α) ⁻¹' Iio ⊤ = univ := by
   rw [← range_coe, preimage_range]
+  -- 🎉 no goals
 #align with_top.preimage_coe_Iio_top WithTop.preimage_coe_Iio_top
 
 @[simp]
 theorem preimage_coe_Ico_top : (some : α → WithTop α) ⁻¹' Ico a ⊤ = Ici a := by
   simp [← Ici_inter_Iio]
+  -- 🎉 no goals
 #align with_top.preimage_coe_Ico_top WithTop.preimage_coe_Ico_top
 
 @[simp]
 theorem preimage_coe_Ioo_top : (some : α → WithTop α) ⁻¹' Ioo a ⊤ = Ioi a := by
   simp [← Ioi_inter_Iio]
+  -- 🎉 no goals
 #align with_top.preimage_coe_Ioo_top WithTop.preimage_coe_Ioo_top
 
 theorem image_coe_Ioi : (some : α → WithTop α) '' Ioi a = Ioo (a : WithTop α) ⊤ := by
   rw [← preimage_coe_Ioi, image_preimage_eq_inter_range, range_coe, Ioi_inter_Iio]
+  -- 🎉 no goals
 #align with_top.image_coe_Ioi WithTop.image_coe_Ioi
 
 theorem image_coe_Ici : (some : α → WithTop α) '' Ici a = Ico (a : WithTop α) ⊤ := by
   rw [← preimage_coe_Ici, image_preimage_eq_inter_range, range_coe, Ici_inter_Iio]
+  -- 🎉 no goals
 #align with_top.image_coe_Ici WithTop.image_coe_Ici
 
 theorem image_coe_Iio : (some : α → WithTop α) '' Iio a = Iio (a : WithTop α) := by
@@ -165,41 +177,50 @@ theorem preimage_coe_Iic : (some : α → WithBot α) ⁻¹' Iic a = Iic a :=
 
 @[simp]
 theorem preimage_coe_Icc : (some : α → WithBot α) ⁻¹' Icc a b = Icc a b := by simp [← Ici_inter_Iic]
+                                                                              -- 🎉 no goals
 #align with_bot.preimage_coe_Icc WithBot.preimage_coe_Icc
 
 @[simp]
 theorem preimage_coe_Ico : (some : α → WithBot α) ⁻¹' Ico a b = Ico a b := by simp [← Ici_inter_Iio]
+                                                                              -- 🎉 no goals
 #align with_bot.preimage_coe_Ico WithBot.preimage_coe_Ico
 
 @[simp]
 theorem preimage_coe_Ioc : (some : α → WithBot α) ⁻¹' Ioc a b = Ioc a b := by simp [← Ioi_inter_Iic]
+                                                                              -- 🎉 no goals
 #align with_bot.preimage_coe_Ioc WithBot.preimage_coe_Ioc
 
 @[simp]
 theorem preimage_coe_Ioo : (some : α → WithBot α) ⁻¹' Ioo a b = Ioo a b := by simp [← Ioi_inter_Iio]
+                                                                              -- 🎉 no goals
 #align with_bot.preimage_coe_Ioo WithBot.preimage_coe_Ioo
 
 @[simp]
 theorem preimage_coe_Ioi_bot : (some : α → WithBot α) ⁻¹' Ioi ⊥ = univ := by
   rw [← range_coe, preimage_range]
+  -- 🎉 no goals
 #align with_bot.preimage_coe_Ioi_bot WithBot.preimage_coe_Ioi_bot
 
 @[simp]
 theorem preimage_coe_Ioc_bot : (some : α → WithBot α) ⁻¹' Ioc ⊥ a = Iic a := by
   simp [← Ioi_inter_Iic]
+  -- 🎉 no goals
 #align with_bot.preimage_coe_Ioc_bot WithBot.preimage_coe_Ioc_bot
 
 @[simp]
 theorem preimage_coe_Ioo_bot : (some : α → WithBot α) ⁻¹' Ioo ⊥ a = Iio a := by
   simp [← Ioi_inter_Iio]
+  -- 🎉 no goals
 #align with_bot.preimage_coe_Ioo_bot WithBot.preimage_coe_Ioo_bot
 
 theorem image_coe_Iio : (some : α → WithBot α) '' Iio a = Ioo (⊥ : WithBot α) a := by
   rw [← preimage_coe_Iio, image_preimage_eq_inter_range, range_coe, inter_comm, Ioi_inter_Iio]
+  -- 🎉 no goals
 #align with_bot.image_coe_Iio WithBot.image_coe_Iio
 
 theorem image_coe_Iic : (some : α → WithBot α) '' Iic a = Ioc (⊥ : WithBot α) a := by
   rw [← preimage_coe_Iic, image_preimage_eq_inter_range, range_coe, inter_comm, Ioi_inter_Iic]
+  -- 🎉 no goals
 #align with_bot.image_coe_Iic WithBot.image_coe_Iic
 
 theorem image_coe_Ioi : (some : α → WithBot α) '' Ioi a = Ioi (a : WithBot α) := by

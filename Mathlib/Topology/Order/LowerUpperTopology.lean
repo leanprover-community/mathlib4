@@ -265,10 +265,14 @@ variable {α}
 -/
 def withLowerTopologyHomeomorph : WithLowerTopology α ≃ₜ α :=
   WithLowerTopology.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+                                                       -- ⊢ WithLowerTopology.instTopologicalSpaceWithLowerTopology = generateFrom {s |  …
+                                                                                        -- 🎉 no goals
 #align lower_topology.with_lower_topology_homeomorph LowerTopology.withLowerTopologyHomeomorph
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
+  -- ⊢ IsOpen s ↔ GenerateOpen {t | ∃ a, (Ici a)ᶜ = t} s
+                      -- 🎉 no goals
 #align lower_topology.is_open_iff_generate_Ici_compl LowerTopology.isOpen_iff_generate_Ici_compl
 
 instance instUpperTopologyDual [Preorder α] [TopologicalSpace α] [LowerTopology α] :
@@ -286,18 +290,28 @@ instance : ClosedIciTopology α :=
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
+  -- ⊢ IsClosed (⋃ (i : α) (_ : i ∈ s), ↑(UpperSet.Ici i))
   exact isClosed_biUnion h fun _ _ => isClosed_Ici
+  -- 🎉 no goals
 #align lower_topology.is_closed_upper_closure LowerTopology.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   -- porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
+  -- ⊢ IsLowerSet s
   induction h
   case basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
+  -- 🎉 no goals
   case univ => exact isLowerSet_univ
+  -- ⊢ IsLowerSet (s✝ ∩ t✝)
+  -- 🎉 no goals
   case inter u v _ _ hu2 hv2 => exact hu2.inter hv2
+  -- ⊢ IsLowerSet (⋃₀ S✝)
+  -- 🎉 no goals
   case sUnion _ _ ih => exact isLowerSet_sUnion ih
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align lower_topology.is_lower_set_of_is_open LowerTopology.isLowerSet_of_isOpen
 
 theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
@@ -316,17 +330,29 @@ theorem closure_singleton (a : α) : closure {a} = Ici a :=
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   convert isTopologicalBasis_of_subbasis (topology_eq α)
+  -- ⊢ lowerBasis α = (fun f => ⋂₀ f) '' {f | Set.Finite f ∧ f ⊆ {s | ∃ a, (Ici a)ᶜ …
   simp_rw [lowerBasis, coe_upperClosure, compl_iUnion]
+  -- ⊢ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ = s} = (fun f => ⋂₀ …
   ext s
+  -- ⊢ s ∈ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ = s} ↔ s ∈ (fun …
   constructor
+  -- ⊢ s ∈ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ = s} → s ∈ (fun …
   · rintro ⟨F, hF, rfl⟩
+    -- ⊢ ⋂ (i : α) (_ : i ∈ F), (Ici i)ᶜ ∈ (fun f => ⋂₀ f) '' {f | Set.Finite f ∧ f ⊆ …
     refine' ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, _⟩
+    -- ⊢ (fun f => ⋂₀ f) ((fun a => (Ici a)ᶜ) '' F) = ⋂ (i : α) (_ : i ∈ F), (Ici i)ᶜ
     simp only [sInter_image]
+    -- 🎉 no goals
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
+    -- ⊢ (fun f => ⋂₀ f) F ∈ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ …
     haveI := hF.to_subtype
+    -- ⊢ (fun f => ⋂₀ f) F ∈ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ …
     rw [subset_def, Subtype.forall'] at hs
+    -- ⊢ (fun f => ⋂₀ f) F ∈ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ …
     choose f hf using hs
+    -- ⊢ (fun f => ⋂₀ f) F ∈ {s | ∃ t, Set.Finite t ∧ ⋂ (i : α) (_ : i ∈ t), (Ici i)ᶜ …
     exact ⟨_, finite_range f, by simp_rw [biInter_range, hf, sInter_eq_iInter]⟩
+    -- 🎉 no goals
 #align lower_topology.is_topological_basis LowerTopology.isTopologicalBasis
 
 /-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
@@ -336,9 +362,13 @@ TODO: upgrade to an `iff`. -/
 lemma continuous_of_Ici [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Ici a))) :
     Continuous f := by
   obtain rfl := LowerTopology.topology_eq α
+  -- ⊢ Continuous f
   refine continuous_generateFrom ?_
+  -- ⊢ ∀ (s : Set α), s ∈ {s | ∃ a, (Ici a)ᶜ = s} → IsOpen (f ⁻¹' s)
   rintro _ ⟨a, rfl⟩
+  -- ⊢ IsOpen (f ⁻¹' (Ici a)ᶜ)
   exact (h a).isOpen_compl
+  -- 🎉 no goals
 
 end Preorder
 
@@ -351,6 +381,7 @@ variable [PartialOrder α] [TopologicalSpace α] [LowerTopology α]
 instance (priority := 90) t0Space : T0Space α :=
   (t0Space_iff_inseparable α).2 fun x y h =>
     Ici_injective <| by simpa only [inseparable_iff_closure_eq, closure_singleton] using h
+                        -- 🎉 no goals
 
 end PartialOrder
 
@@ -377,9 +408,13 @@ variable {α}
 -/
 def withUpperTopologyHomeomorph : WithUpperTopology α ≃ₜ α :=
   WithUpperTopology.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+                                                       -- ⊢ WithUpperTopology.instTopologicalSpaceWithUpperTopology = generateFrom {s |  …
+                                                                                        -- 🎉 no goals
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
+  -- ⊢ IsOpen s ↔ GenerateOpen {t | ∃ a, (Iic a)ᶜ = t} s
+                      -- 🎉 no goals
 
 instance instLowerTopologyDual [Preorder α] [TopologicalSpace α] [UpperTopology α] :
     LowerTopology (αᵒᵈ) where
@@ -439,25 +474,38 @@ instance instLowerTopologyProd [Preorder α] [TopologicalSpace α] [LowerTopolog
     [Preorder β] [TopologicalSpace β] [LowerTopology β] [OrderBot β] : LowerTopology (α × β) where
   topology_eq_lowerTopology := by
     refine' le_antisymm (le_generateFrom _) _
+    -- ⊢ ∀ (s : Set (α × β)), s ∈ {s | ∃ a, (Ici a)ᶜ = s} → IsOpen s
     · rintro _ ⟨x, rfl⟩
+      -- ⊢ IsOpen (Ici x)ᶜ
       exact (isClosed_Ici.prod isClosed_Ici).isOpen_compl
+      -- 🎉 no goals
     rw [(LowerTopology.isTopologicalBasis.prod LowerTopology.isTopologicalBasis).eq_generateFrom,
       le_generateFrom_iff_subset_isOpen, image2_subset_iff]
     rintro _ ⟨s, hs, rfl⟩ _ ⟨t, ht, rfl⟩
+    -- ⊢ (↑(upperClosure s))ᶜ ×ˢ (↑(upperClosure t))ᶜ ∈ {s | IsOpen s}
     dsimp
+    -- ⊢ IsOpen ((↑(upperClosure s))ᶜ ×ˢ (↑(upperClosure t))ᶜ)
     simp_rw [coe_upperClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
+    -- ⊢ IsOpen ((⋂ (i : α) (_ : i ∈ s), (Prod.fst ⁻¹' Ici i)ᶜ) ∩ ⋂ (i : β) (_ : i ∈  …
     -- without `let`, `refine` tries to use the product topology and fails
     let _ : TopologicalSpace (α × β) := generateFrom { s | ∃ a, (Ici a)ᶜ = s }
+    -- ⊢ IsOpen ((⋂ (i : α) (_ : i ∈ s), (Prod.fst ⁻¹' Ici i)ᶜ) ∩ ⋂ (i : β) (_ : i ∈  …
     refine (isOpen_biInter hs fun a _ => ?_).inter (isOpen_biInter ht fun b _ => ?_)
+    -- ⊢ IsOpen (Prod.fst ⁻¹' Ici a)ᶜ
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
+      -- 🎉 no goals
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
+      -- 🎉 no goals
 
 instance instUpperTopologyProd [Preorder α] [TopologicalSpace α] [UpperTopology α] [OrderTop α]
     [Preorder β] [TopologicalSpace β] [UpperTopology β] [OrderTop β] : UpperTopology (α × β) where
   topology_eq_upperTopology := by
     suffices : LowerTopology (α × β)ᵒᵈ
+    -- ⊢ instTopologicalSpaceProd = generateFrom {s | ∃ a, (Iic a)ᶜ = s}
     · exact LowerTopology.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
+      -- 🎉 no goals
     exact instLowerTopologyProd (α := αᵒᵈ) (β := βᵒᵈ)
+    -- 🎉 no goals
 
 section CompleteLattice_LowerTopology
 
@@ -466,11 +514,15 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [LowerT
 
 protected theorem sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine LowerTopology.continuous_of_Ici fun b => ?_
+  -- ⊢ IsClosed (↑f ⁻¹' Ici b)
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
+  -- ⊢ ↑f ⁻¹' Ici b = Ici (sInf (↑f ⁻¹' Ici b))
   refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
     OrderHomClass.mono (f : α →o β) ha
   refine' LE.le.trans _ (map_sInf f _).ge
+  -- ⊢ b ≤ sInf (↑f '' (↑f ⁻¹' Ici b))
   simp
+  -- 🎉 no goals
 #align Inf_hom.continuous sInfHom.continuous
 
 -- see Note [lower instance priority]
@@ -497,11 +549,17 @@ end CompleteLattice_UpperTopology
 lemma UpperDual_iff_Lower [Preorder α] [TopologicalSpace α] :
     UpperTopology αᵒᵈ ↔ LowerTopology α := by
   constructor
+  -- ⊢ UpperTopology αᵒᵈ → LowerTopology α
   · apply UpperTopology.instLowerTopologyDual
+    -- 🎉 no goals
   · apply LowerTopology.instUpperTopologyDual
+    -- 🎉 no goals
 
 lemma LowerDual_iff_Upper [Preorder α] [TopologicalSpace α] :
     LowerTopology αᵒᵈ ↔ UpperTopology α := by
   constructor
+  -- ⊢ LowerTopology αᵒᵈ → UpperTopology α
   · apply LowerTopology.instUpperTopologyDual
+    -- 🎉 no goals
   · apply UpperTopology.instLowerTopologyDual
+    -- 🎉 no goals

@@ -146,10 +146,12 @@ def generateEquivalenceOpensLe_inverse' :
   map {_ _} g := Over.homMk g
   map_id _ := by
     refine Over.OverMorphism.ext ?_
+    -- ⊢ ({ obj := fun V => { obj := { left := V.obj, right := { as := PUnit.unit },  …
     simp only [Functor.id_obj, Sieve.generate_apply, Functor.const_obj_obj, Over.homMk_left,
       eq_iff_true_of_subsingleton]
   map_comp {_ _ _} f g := by
     refine Over.OverMorphism.ext ?_
+    -- ⊢ ({ obj := fun V => { obj := { left := V.obj, right := { as := PUnit.unit },  …
     simp only [Functor.id_obj, Sieve.generate_apply, Functor.const_obj_obj, Over.homMk_left,
       eq_iff_true_of_subsingleton]
 
@@ -167,9 +169,20 @@ def generateEquivalenceOpensLe :
   inverse := generateEquivalenceOpensLe_inverse' _ _
   unitIso := eqToIso <| CategoryTheory.Functor.ext
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)
+        -- ⊢ (𝟭 (FullSubcategory fun f => (Sieve.generate (presieveOfCoveringAux U Y)).ar …
+                            -- ⊢ { obj := { left := left✝, right := right✝, hom := hom✝ }, property := proper …
+                                   -- 🎉 no goals
     (by intros; refine Over.OverMorphism.ext ?_; aesop_cat)
+        -- ⊢ (𝟭 (FullSubcategory fun f => (Sieve.generate (presieveOfCoveringAux U Y)).ar …
+                -- ⊢ ((𝟭 (FullSubcategory fun f => (Sieve.generate (presieveOfCoveringAux U Y)).a …
+                                                 -- 🎉 no goals
   counitIso := eqToIso <| CategoryTheory.Functor.hext
     (by intro; refine FullSubcategory.ext _ _ ?_; rfl) (by intros; rfl)
+        -- ⊢ (generateEquivalenceOpensLe_inverse' U (_ : Y = iSup U) ⋙ generateEquivalenc …
+               -- ⊢ ((generateEquivalenceOpensLe_inverse' U (_ : Y = iSup U) ⋙ generateEquivalen …
+                                                  -- 🎉 no goals
+                                                           -- ⊢ HEq ((generateEquivalenceOpensLe_inverse' U (_ : Y = iSup U) ⋙ generateEquiv …
+                                                                   -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.generate_equivalence_opens_le TopCat.Presheaf.generateEquivalenceOpensLe
 
@@ -184,20 +197,30 @@ def whiskerIsoMapGenerateCocone :
     { Hom := F.map (eqToHom (congr_arg op hY.symm))
       w := fun j => by
         erw [← F.map_comp]
+        -- ⊢ F.map (eqToHom (_ : op (opensLeCoverCocone U).pt = op (Presieve.cocone (Siev …
         dsimp
+        -- ⊢ F.map (eqToHom (_ : op (opensLeCoverCocone U).pt = op Y) ≫ j.unop.obj.hom.op …
         congr 1 }
+        -- 🎉 no goals
   inv :=
     { Hom := F.map (eqToHom (congr_arg op hY))
       w := fun j => by
         erw [← F.map_comp]
+        -- ⊢ F.map (eqToHom (_ : op (Presieve.cocone (Sieve.generate (presieveOfCoveringA …
         dsimp
+        -- ⊢ F.map (eqToHom (_ : op Y = op (opensLeCoverCocone U).pt) ≫ (NatTrans.app (op …
         congr 1 }
+        -- 🎉 no goals
   hom_inv_id := by
     ext
+    -- ⊢ (ConeMorphism.mk (F.map (eqToHom (_ : op (opensLeCoverCocone U).pt = op (Pre …
     simp [eqToHom_map]
+    -- 🎉 no goals
   inv_hom_id := by
     ext
+    -- ⊢ (ConeMorphism.mk (F.map (eqToHom (_ : op (Presieve.cocone (Sieve.generate (p …
     simp [eqToHom_map]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.whisker_iso_map_generate_cocone TopCat.Presheaf.whiskerIsoMapGenerateCocone
 
@@ -227,6 +250,7 @@ def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
   convert isLimitOpensLeEquivGenerate₁ F (coveringOfPresieve Y R)
       (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using 1
   rw [covering_presieve_eq_self R]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_limit_opens_le_equiv_generate₂ TopCat.Presheaf.isLimitOpensLeEquivGenerate₂
 
@@ -236,16 +260,27 @@ set_option linter.uppercaseLean3 false in
     require `has_products C`. -/
 theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover := by
   refine' (Presheaf.isSheaf_iff_isLimit _ _).trans _
+  -- ⊢ (∀ ⦃X_1 : Opens ↑X⦄ (S : Sieve X_1), S ∈ GrothendieckTopology.sieves (Opens. …
   constructor
+  -- ⊢ (∀ ⦃X_1 : Opens ↑X⦄ (S : Sieve X_1), S ∈ GrothendieckTopology.sieves (Opens. …
   · intro h ι U
+    -- ⊢ Nonempty (IsLimit (F.mapCone (Cocone.op (opensLeCoverCocone U))))
     rw [(isLimitOpensLeEquivGenerate₁ F U rfl).nonempty_congr]
+    -- ⊢ Nonempty (IsLimit (F.mapCone (Cocone.op (Presieve.cocone (Sieve.generate (pr …
     apply h
+    -- ⊢ Sieve.generate (presieveOfCoveringAux U (iSup U)) ∈ GrothendieckTopology.sie …
     apply presieveOfCovering.mem_grothendieckTopology
+    -- 🎉 no goals
   · intro h Y S
+    -- ⊢ S ∈ GrothendieckTopology.sieves (Opens.grothendieckTopology ↑X) Y → Nonempty …
     rw [← Sieve.generate_sieve S]
+    -- ⊢ Sieve.generate S.arrows ∈ GrothendieckTopology.sieves (Opens.grothendieckTop …
     intro hS
+    -- ⊢ Nonempty (IsLimit (F.mapCone (Cocone.op (Presieve.cocone (Sieve.generate S.a …
     rw [← (isLimitOpensLeEquivGenerate₂ F S.1 hS).nonempty_congr]
+    -- ⊢ Nonempty (IsLimit (F.mapCone (Cocone.op (opensLeCoverCocone (coveringOfPresi …
     apply h
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_iff_is_sheaf_opens_le_cover TopCat.Presheaf.isSheaf_iff_isSheafOpensLeCover
 

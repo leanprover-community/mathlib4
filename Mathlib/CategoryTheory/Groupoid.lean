@@ -81,13 +81,17 @@ theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv 
 @[simps]
 def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
   ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩
+                                           -- 🎉 no goals
+                                                             -- 🎉 no goals
 #align category_theory.groupoid.inv_equiv CategoryTheory.Groupoid.invEquiv
 
 instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C where
   reverse' f := Groupoid.inv f
   inv' f := by
     dsimp [Quiver.reverse]
+    -- ⊢ Groupoid.inv (Groupoid.inv f) = f
     simp
+    -- 🎉 no goals
 #align category_theory.groupoid_has_involutive_reverse CategoryTheory.groupoidHasInvolutiveReverse
 
 @[simp]
@@ -107,6 +111,8 @@ variable (X Y)
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := ⟨f, Groupoid.inv f, (by aesop_cat), (by aesop_cat)⟩
+                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
   left_inv i := Iso.ext rfl
   right_inv f := rfl
 #align category_theory.groupoid.iso_equiv_hom CategoryTheory.Groupoid.isoEquivHom
@@ -154,6 +160,10 @@ instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i
     Groupoid.{max u v} (∀ i : I, J i) where
   inv f := fun i : I => Groupoid.inv (f i)
   comp_inv := fun f => by funext i; apply Groupoid.comp_inv
+                          -- ⊢ (f ≫ (fun {X Y} f i => Groupoid.inv (f i)) f) i = 𝟙 X✝ i
+                          -- ⊢ ((fun {X Y} f i => Groupoid.inv (f i)) f ≫ f) i = 𝟙 Y✝ i
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
   inv_comp := fun f => by funext i; apply Groupoid.inv_comp
 #align category_theory.groupoid_pi CategoryTheory.groupoidPi
 

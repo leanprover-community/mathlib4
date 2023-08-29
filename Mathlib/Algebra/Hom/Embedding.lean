@@ -49,7 +49,9 @@ def mulRightEmbedding {G : Type*} [RightCancelSemigroup G] (g : G) : G ↪ G whe
 theorem mul_left_embedding_eq_mul_right_embedding {G : Type*} [CancelCommMonoid G] (g : G) :
     mulLeftEmbedding g = mulRightEmbedding g := by
   ext
+  -- ⊢ ↑(mulLeftEmbedding g) x✝ = ↑(mulRightEmbedding g) x✝
   exact mul_comm _ _
+  -- 🎉 no goals
 #align mul_left_embedding_eq_mul_right_embedding mul_left_embedding_eq_mul_right_embedding
 #align add_left_embedding_eq_add_right_embedding add_left_embedding_eq_add_right_embedding
 

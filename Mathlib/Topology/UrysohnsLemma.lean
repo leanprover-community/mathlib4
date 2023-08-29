@@ -137,35 +137,58 @@ noncomputable def approx : ℕ → CU X → X → ℝ
 
 theorem approx_of_mem_C (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx n x = 0 := by
   induction' n with n ihn generalizing c
+  -- ⊢ approx Nat.zero c x = 0
   · exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
+    -- 🎉 no goals
   · simp only [approx]
+    -- ⊢ midpoint ℝ (approx n (left c) x) (approx n (right c) x) = 0
     rw [ihn, ihn, midpoint_self]
+    -- ⊢ x ∈ (right c).C
     exacts [c.subset_right_C hx, hx]
+    -- 🎉 no goals
 #align urysohns.CU.approx_of_mem_C Urysohns.CU.approx_of_mem_C
 
 theorem approx_of_nmem_U (c : CU X) (n : ℕ) {x : X} (hx : x ∉ c.U) : c.approx n x = 1 := by
   induction' n with n ihn generalizing c
+  -- ⊢ approx Nat.zero c x = 1
   · rw [← mem_compl_iff] at hx
+    -- ⊢ approx Nat.zero c x = 1
     exact indicator_of_mem hx _
+    -- 🎉 no goals
   · simp only [approx]
+    -- ⊢ midpoint ℝ (approx n (left c) x) (approx n (right c) x) = 1
     rw [ihn, ihn, midpoint_self]
+    -- ⊢ ¬x ∈ (right c).U
     exacts [hx, fun hU => hx <| c.left_U_subset hU]
+    -- 🎉 no goals
 #align urysohns.CU.approx_of_nmem_U Urysohns.CU.approx_of_nmem_U
 
 theorem approx_nonneg (c : CU X) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction' n with n ihn generalizing c
+  -- ⊢ 0 ≤ approx Nat.zero c x
   · exact indicator_nonneg (fun _ _ => zero_le_one) _
+    -- 🎉 no goals
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
+    -- ⊢ 0 ≤ 2⁻¹ • (approx n (left c) x + approx n (right c) x)
     refine' mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg _ _) <;> apply ihn
+    -- ⊢ 0 ≤ approx n (left c) x
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
 #align urysohns.CU.approx_nonneg Urysohns.CU.approx_nonneg
 
 theorem approx_le_one (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   induction' n with n ihn generalizing c
+  -- ⊢ approx Nat.zero c x ≤ 1
   · exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
+    -- 🎉 no goals
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
+    -- ⊢ (approx n (left c) x + approx n (right c) x) / 2 ≤ 1
     have := add_le_add (ihn (left c)) (ihn (right c))
+    -- ⊢ (approx n (left c) x + approx n (right c) x) / 2 ≤ 1
     norm_num at this
+    -- ⊢ (approx n (left c) x + approx n (right c) x) / 2 ≤ 1
     exact Iff.mpr (div_le_one zero_lt_two) this
+    -- 🎉 no goals
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one
 
 theorem bddAbove_range_approx (c : CU X) (x : X) : BddAbove (range fun n => c.approx n x) :=
@@ -175,6 +198,7 @@ theorem bddAbove_range_approx (c : CU X) (x : X) : BddAbove (range fun n => c.ap
 theorem approx_le_approx_of_U_sub_C {c₁ c₂ : CU X} (h : c₁.U ⊆ c₂.C) (n₁ n₂ : ℕ) (x : X) :
     c₂.approx n₂ x ≤ c₁.approx n₁ x := by
   by_cases hx : x ∈ c₁.U
+  -- ⊢ approx n₂ c₂ x ≤ approx n₁ c₁ x
   · calc
       approx n₂ c₂ x = 0 := approx_of_mem_C _ _ (h hx)
       _ ≤ approx n₁ c₁ x := approx_nonneg _ _ _
@@ -186,20 +210,31 @@ theorem approx_le_approx_of_U_sub_C {c₁ c₂ : CU X} (h : c₁.U ⊆ c₂.C) (
 theorem approx_mem_Icc_right_left (c : CU X) (n : ℕ) (x : X) :
     c.approx n x ∈ Icc (c.right.approx n x) (c.left.approx n x) := by
   induction' n with n ihn generalizing c
+  -- ⊢ approx Nat.zero c x ∈ Icc (approx Nat.zero (right c) x) (approx Nat.zero (le …
   · exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
       (fun _ => zero_le_one) _⟩
   · simp only [approx, mem_Icc]
+    -- ⊢ midpoint ℝ (approx n (left (right c)) x) (approx n (right (right c)) x) ≤ mi …
     refine' ⟨midpoint_le_midpoint _ (ihn _).1, midpoint_le_midpoint (ihn _).2 _⟩ <;>
+    -- ⊢ approx n (left (right c)) x ≤ approx n (left c) x
       apply approx_le_approx_of_U_sub_C
+      -- ⊢ (left c).U ⊆ (left (right c)).C
+      -- ⊢ (right (left c)).U ⊆ (right c).C
     exacts [subset_closure, subset_closure]
+    -- 🎉 no goals
 #align urysohns.CU.approx_mem_Icc_right_left Urysohns.CU.approx_mem_Icc_right_left
 
 theorem approx_le_succ (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ c.approx (n + 1) x := by
   induction' n with n ihn generalizing c
+  -- ⊢ approx Nat.zero c x ≤ approx (Nat.zero + 1) c x
   · simp only [approx, right_U, right_le_midpoint]
+    -- ⊢ indicator c.Uᶜ 1 x ≤ indicator (left c).Uᶜ 1 x
     exact (approx_mem_Icc_right_left c 0 x).2
+    -- 🎉 no goals
   · rw [approx, approx]
+    -- ⊢ midpoint ℝ (approx n (left c) x) (approx n (right c) x) ≤ midpoint ℝ (approx …
     exact midpoint_le_midpoint (ihn _) (ihn _)
+    -- 🎉 no goals
 #align urysohns.CU.approx_le_succ Urysohns.CU.approx_le_succ
 
 theorem approx_mono (c : CU X) (x : X) : Monotone fun n => c.approx n x :=
@@ -222,17 +257,22 @@ theorem tendsto_approx_atTop (c : CU X) (x : X) :
 
 theorem lim_of_mem_C (c : CU X) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
   simp only [CU.lim, approx_of_mem_C, h, ciSup_const]
+  -- 🎉 no goals
 #align urysohns.CU.lim_of_mem_C Urysohns.CU.lim_of_mem_C
 
 theorem lim_of_nmem_U (c : CU X) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
   simp only [CU.lim, approx_of_nmem_U c _ h, ciSup_const]
+  -- 🎉 no goals
 #align urysohns.CU.lim_of_nmem_U Urysohns.CU.lim_of_nmem_U
 
 theorem lim_eq_midpoint (c : CU X) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
   refine' tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
+  -- ⊢ Tendsto (fun n => approx (n + 1) c x) atTop (𝓝 (midpoint ℝ (CU.lim (left c)  …
   simp only [approx]
+  -- ⊢ Tendsto (fun n => midpoint ℝ (approx (Nat.add n 0) (left c) x) (approx (Nat. …
   exact (c.left.tendsto_approx_atTop x).midpoint (c.right.tendsto_approx_atTop x)
+  -- 🎉 no goals
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
 
 theorem approx_le_lim (c : CU X) (x : X) (n : ℕ) : c.approx n x ≤ c.lim x :=
@@ -254,37 +294,57 @@ theorem lim_mem_Icc (c : CU X) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
 /-- Continuity of `Urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
 theorem continuous_lim (c : CU X) : Continuous c.lim := by
   obtain ⟨h0, h1234, h1⟩ : 0 < (2⁻¹ : ℝ) ∧ (2⁻¹ : ℝ) < 3 / 4 ∧ (3 / 4 : ℝ) < 1 := by norm_num
+  -- ⊢ Continuous (CU.lim c)
   refine'
     continuous_iff_continuousAt.2 fun x =>
       (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => _
   simp only [Metric.mem_closedBall]
+  -- ⊢ ∀ᶠ (x_1 : X) in 𝓝 x, dist (CU.lim c x_1) (CU.lim c x) ≤ (3 / 4) ^ n
   induction' n with n ihn generalizing c
+  -- ⊢ ∀ᶠ (x_1 : X) in 𝓝 x, dist (CU.lim c x_1) (CU.lim c x) ≤ (3 / 4) ^ Nat.zero
   · refine' eventually_of_forall fun y => _
+    -- ⊢ dist (CU.lim c y) (CU.lim c x) ≤ (3 / 4) ^ Nat.zero
     rw [pow_zero]
+    -- ⊢ dist (CU.lim c y) (CU.lim c x) ≤ 1
     exact Real.dist_le_of_mem_Icc_01 (c.lim_mem_Icc _) (c.lim_mem_Icc _)
+    -- 🎉 no goals
   · by_cases hxl : x ∈ c.left.U
+    -- ⊢ ∀ᶠ (x_1 : X) in 𝓝 x, dist (CU.lim c x_1) (CU.lim c x) ≤ (3 / 4) ^ Nat.succ n
     · filter_upwards [IsOpen.mem_nhds c.left.open_U hxl, ihn c.left]with _ hyl hyd
+      -- ⊢ dist (CU.lim c a✝) (CU.lim c x) ≤ (3 / 4) ^ Nat.succ n
       rw [pow_succ, c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
       refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
+      -- ⊢ (dist (CU.lim (left c) a✝) (CU.lim (left c) x) + dist 0 0) / 2 ≤ 3 / 4 * (3  …
       rw [dist_self, add_zero, div_eq_inv_mul]
+      -- ⊢ 2⁻¹ * dist (CU.lim (left c) a✝) (CU.lim (left c) x) ≤ 3 / 4 * (3 / 4) ^ n
       gcongr
+      -- 🎉 no goals
     · replace hxl : x ∈ c.left.right.Cᶜ
+      -- ⊢ x ∈ (right (left c)).Cᶜ
       exact compl_subset_compl.2 c.left.right.subset hxl
+      -- ⊢ ∀ᶠ (x_1 : X) in 𝓝 x, dist (CU.lim c x_1) (CU.lim c x) ≤ (3 / 4) ^ Nat.succ n
       filter_upwards [IsOpen.mem_nhds (isOpen_compl_iff.2 c.left.right.closed_C) hxl,
         ihn c.left.right, ihn c.right]with y hyl hydl hydr
       replace hxl : x ∉ c.left.left.U
+      -- ⊢ ¬x ∈ (left (left c)).U
       exact compl_subset_compl.2 c.left.left_U_subset_right_C hxl
+      -- ⊢ dist (CU.lim c y) (CU.lim c x) ≤ (3 / 4) ^ Nat.succ n
       replace hyl : y ∉ c.left.left.U
+      -- ⊢ ¬y ∈ (left (left c)).U
       exact compl_subset_compl.2 c.left.left_U_subset_right_C hyl
+      -- ⊢ dist (CU.lim c y) (CU.lim c x) ≤ (3 / 4) ^ Nat.succ n
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_nmem_U _ hxl, c.left.left.lim_of_nmem_U _ hyl]
       refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
+      -- ⊢ (dist (midpoint ℝ 1 (CU.lim (right (left c)) y)) (midpoint ℝ 1 (CU.lim (righ …
       refine' (div_le_div_of_le_of_nonneg (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
         zero_le_two).trans _
       rw [dist_self, zero_add]
+      -- ⊢ (dist (CU.lim (right (left c)) y) (CU.lim (right (left c)) x) / 2 + dist (CU …
       set r := (3 / 4 : ℝ) ^ n
+      -- ⊢ (dist (CU.lim (right (left c)) y) (CU.lim (right (left c)) x) / 2 + dist (CU …
       calc _ ≤ (r / 2 + r) / 2 := by gcongr
         _ = _ := by field_simp; ring
 #align urysohns.CU.continuous_lim Urysohns.CU.continuous_lim
@@ -306,6 +366,7 @@ theorem exists_continuous_zero_one_of_closed {s t : Set X} (hs : IsClosed s) (ht
     (hd : Disjoint s t) : ∃ f : C(X, ℝ), EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
   -- The actual proof is in the code above. Here we just repack it into the expected format.
   set c : Urysohns.CU X := ⟨s, tᶜ, hs, ht.isOpen_compl, disjoint_left.1 hd⟩
+  -- ⊢ ∃ f, EqOn (↑f) 0 s ∧ EqOn (↑f) 1 t ∧ ∀ (x : X), ↑f x ∈ Icc 0 1
   exact ⟨⟨c.lim, c.continuous_lim⟩, c.lim_of_mem_C, fun x hx => c.lim_of_nmem_U _ fun h => h hx,
     c.lim_mem_Icc⟩
 #align exists_continuous_zero_one_of_closed exists_continuous_zero_one_of_closed

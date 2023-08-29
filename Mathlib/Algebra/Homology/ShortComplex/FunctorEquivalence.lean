@@ -42,8 +42,11 @@ def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
     { f := whiskerLeft F π₁Toπ₂
       g := whiskerLeft F π₂Toπ₃
       zero := by aesop_cat }
+                 -- 🎉 no goals
   map φ := Hom.mk (whiskerRight φ π₁) (whiskerRight φ π₂) (whiskerRight φ π₃)
     (by aesop_cat) (by aesop_cat)
+        -- 🎉 no goals
+                       -- 🎉 no goals
 
 /-- The unit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
@@ -51,9 +54,15 @@ def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
 def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
   NatIso.ofComponents (fun _ => isoMk
     (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+                                                   -- 🎉 no goals
     (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+                                                   -- 🎉 no goals
     (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+                                                   -- 🎉 no goals
     (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+        -- 🎉 no goals
+                       -- 🎉 no goals
+                                       -- 🎉 no goals
 
 /-- The counit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
@@ -62,6 +71,10 @@ def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _:=
   NatIso.ofComponents (fun _ => NatIso.ofComponents
     (fun _ => isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by aesop_cat) (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
+          -- 🎉 no goals
+                         -- 🎉 no goals
+                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
 
 end FunctorEquivalence
 

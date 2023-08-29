@@ -51,4 +51,6 @@ instance [UnivLE.{u, v}] (α : Type u) : Small.{v} α :=
 
 example : ¬ UnivLE.{u+1, u} := by
   simp only [Small_iff, not_forall, not_exists, not_nonempty_iff]
+  -- ⊢ ∃ x, ∀ (x_1 : Type u), IsEmpty (x ≃ x_1)
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
+  -- 🎉 no goals

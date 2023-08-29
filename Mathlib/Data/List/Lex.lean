@@ -54,6 +54,8 @@ namespace Lex
 theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
   ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
+               -- ⊢ Lex r l₁ l₂
+                                                    -- 🎉 no goals
 #align list.lex.cons_iff List.Lex.cons_iff
 
 @[simp]
@@ -82,8 +84,11 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
     | a :: l₁, b :: l₂, _ :: l₃, cons h => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
+        -- 🎉 no goals
       · exact (aux _ l₂ _ h).imp cons cons
+        -- 🎉 no goals
       · exact Or.inr (rel ab)
+        -- 🎉 no goals
 #align list.lex.is_order_connected List.Lex.isOrderConnected
 
 -- This can be removed after https://github.com/leanprover/lean4/pull/1866
@@ -99,8 +104,11 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
     | a :: l₁, b :: l₂ => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
+        -- 🎉 no goals
       · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr (rel ab))
+        -- 🎉 no goals
 #align list.lex.is_trichotomous List.Lex.isTrichotomous
 
 -- This can be removed after https://github.com/leanprover/lean4/pull/1866
@@ -125,16 +133,25 @@ instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
+                                  -- 🎉 no goals
   | [], b :: l₂ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
+    -- ⊢ Decidable (Lex r (a :: l₁) (b :: l₂))
     refine' decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => _, fun h => _⟩
+    -- ⊢ Lex r (a :: l₁) (b :: l₂)
     · rcases h with (h | ⟨rfl, h⟩)
+      -- ⊢ Lex r (a :: l₁) (b :: l₂)
       · exact Lex.rel h
+        -- 🎉 no goals
       · exact Lex.cons h
+        -- 🎉 no goals
     · rcases h with (_ | h | h)
+      -- ⊢ r a a ∨ a = a ∧ Lex r l₁ l₂
       · exact Or.inr ⟨rfl, h⟩
+        -- 🎉 no goals
       · exact Or.inl h
+        -- 🎉 no goals
 #align list.lex.decidable_rel List.Lex.decidableRel
 
 theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
@@ -163,14 +180,25 @@ theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
     induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
+    -- ⊢ Lex (fun x x_1 => x ≠ x_1) [] l₂
+                                                   -- ⊢ Lex (fun x x_1 => x ≠ x_1) [] []
+                                                   -- ⊢ Lex (fun x x_1 => x ≠ x_1) (a :: l₁) []
     · contradiction
+      -- 🎉 no goals
     · apply nil
+      -- 🎉 no goals
     · exact (not_lt_of_ge H).elim (succ_pos _)
+      -- 🎉 no goals
     · by_cases ab : a = b
+      -- ⊢ Lex (fun x x_1 => x ≠ x_1) (a :: l₁) (b :: l₂)
       · subst b
+        -- ⊢ Lex (fun x x_1 => x ≠ x_1) (a :: l₁) (a :: l₂)
         apply cons
+        -- ⊢ Lex (fun x x_1 => x ≠ x_1) l₁ l₂
         exact IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
+        -- 🎉 no goals
       · exact rel ab ⟩
+        -- 🎉 no goals
 #align decidable.list.lex.ne_iff Decidable.List.Lex.ne_iff
 
 theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ := by
@@ -199,7 +227,10 @@ instance LE' [LinearOrder α] : LE (List α) :=
 
 theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < ·) l l' := by
   constructor <;>
+  -- ⊢ lt l l' → Lex (fun x x_1 => x < x_1) l l'
   intro h
+  -- ⊢ Lex (fun x x_1 => x < x_1) l l'
+  -- ⊢ lt l l'
   · induction h with
     | nil b bs => exact Lex.nil
     | @head a as b bs hab => apply Lex.rel; assumption

@@ -27,6 +27,7 @@ theorem univ_eq : (univ : Set Bool) = {false, true} :=
 @[simp]
 theorem range_eq {α : Type*} (f : Bool → α) : range f = {f false, f true} := by
   rw [← image_univ, univ_eq, image_pair]
+  -- 🎉 no goals
 #align bool.range_eq Bool.range_eq
 
 @[simp] theorem compl_singleton (b : Bool) : ({b}ᶜ : Set Bool) = {!b} :=

@@ -66,6 +66,7 @@ theorem vcomp_app' (α : F ⟶ G) (β : G ⟶ H) (X : C) : (α ≫ β).app X = �
 #align category_theory.nat_trans.vcomp_app' CategoryTheory.NatTrans.vcomp_app'
 
 theorem congr_app {α β : F ⟶ G} (h : α = β) (X : C) : α.app X = β.app X := by rw [h]
+                                                                              -- 🎉 no goals
 #align category_theory.nat_trans.congr_app CategoryTheory.NatTrans.congr_app
 
 @[simp]
@@ -93,14 +94,18 @@ theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f 
 theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
   ⟨fun g h eq => by
     ext X
+    -- ⊢ app g X = app h X
     rw [← cancel_mono (α.app X), ← comp_app, eq, comp_app]⟩
+    -- 🎉 no goals
 #align category_theory.nat_trans.mono_of_mono_app CategoryTheory.NatTrans.mono_of_mono_app
 
 /-- A natural transformation is an epimorphism if each component is. -/
 theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
   ⟨fun g h eq => by
     ext X
+    -- ⊢ app g X = app h X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
+    -- 🎉 no goals
 #align category_theory.nat_trans.epi_of_epi_app CategoryTheory.NatTrans.epi_of_epi_app
 
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
@@ -118,9 +123,11 @@ infixl:80 " ◫ " => hcomp
 
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
+  -- 🎉 no goals
 #align category_theory.nat_trans.hcomp_id_app CategoryTheory.NatTrans.hcomp_id_app
 
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
+                                                                                       -- 🎉 no goals
 #align category_theory.nat_trans.id_hcomp_app CategoryTheory.NatTrans.id_hcomp_app
 
 -- Note that we don't yet prove a `hcomp_assoc` lemma here: even stating it is painful, because we
@@ -130,6 +137,7 @@ theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app 
 theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) (δ : J ⟶ K) :
     (α ≫ β) ◫ (γ ≫ δ) = (α ◫ γ) ≫ β ◫ δ := by
   aesop_cat
+  -- 🎉 no goals
 #align category_theory.nat_trans.exchange CategoryTheory.NatTrans.exchange
 
 end NatTrans
@@ -156,6 +164,7 @@ end Functor
 theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
+  -- 🎉 no goals
 #align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
 #align category_theory.map_hom_inv_app_assoc CategoryTheory.map_hom_inv_app_assoc
 
@@ -163,6 +172,7 @@ theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
 theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
+  -- 🎉 no goals
 #align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app
 #align category_theory.map_inv_hom_app_assoc CategoryTheory.map_inv_hom_app_assoc
 

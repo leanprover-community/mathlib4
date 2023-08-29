@@ -82,6 +82,8 @@ def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
+                                                           -- ⊢ ↑f (x✝ * y✝) = ↑g (x✝ * y✝)
+                                                                   -- 🎉 no goals
 #align free_magma.hom_ext FreeMagma.hom_ext
 
 end FreeMagma
@@ -116,7 +118,10 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
   left_inv f := by rfl
+                   -- 🎉 no goals
   right_inv F := by ext; rfl
+                    -- ⊢ (↑((fun f => { toFun := liftAux f, map_mul' := (_ : ∀ (x y : FreeMagma α), l …
+                         -- 🎉 no goals
 #align free_magma.lift FreeMagma.lift
 
 @[to_additive (attr := simp)]
@@ -199,7 +204,9 @@ instance instLawfulMonadFreeMagma : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
   (pure_bind := fun f x ↦ rfl)
   (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
+    -- 🎉 no goals
   (id_map := fun x ↦ FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
+    -- 🎉 no goals
     rw [map_mul', ih1, ih2])
 
 end Category
@@ -270,18 +277,25 @@ instance : LawfulTraversable FreeMagma.{u} :=
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
+        -- 🎉 no goals
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
         (fun x ↦ by simp only [(· ∘ ·), traverse_pure, traverse_pure', functor_norm])
+                    -- 🎉 no goals
         (fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul];
+          -- ⊢ (Seq.seq ((fun x x_1 => x * x_1) <$> Functor.Comp.mk (traverse f <$> travers …
           simp [Functor.Comp.map_mk, Functor.map_map, (· ∘ ·), Comp.seq_mk, seq_map_assoc,
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
       FreeMagma.recOnPure x
         (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_apply])
+                    -- 🎉 no goals
         (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
+                              -- 🎉 no goals
     traverse_eq_map_id := fun f x ↦
+        -- ⊢ id.mk (f <$> x) * id.mk (f <$> y) = id.mk (f <$> x * f <$> y)
+                                                            -- 🎉 no goals
       FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]; rfl }
 
@@ -361,11 +375,21 @@ theorem quot_mk_assoc_left (x y z w : α) :
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
     refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
+    -- ⊢ ∀ (a b₁ b₂ : α), AssocRel α b₁ b₂ → (fun x y => Quot.mk (AssocRel α) (x * y) …
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+      -- ⊢ (fun x y => Quot.mk (AssocRel α) (x * y)) a (c * d * e) = (fun x y => Quot.m …
+                                                    -- ⊢ Quot.mk (AssocRel α) (a * (c * d * e)) = Quot.mk (AssocRel α) (a * (c * (d * …
+                                                    -- ⊢ Quot.mk (AssocRel α) (a * (c * (d * e * f))) = Quot.mk (AssocRel α) (a * (c  …
       · exact quot_mk_assoc_left _ _ _ _
+        -- 🎉 no goals
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
+        -- 🎉 no goals
     · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+      -- ⊢ (fun x y => Quot.mk (AssocRel α) (x * y)) (c * d * e) b = (fun x y => Quot.m …
+                                                    -- ⊢ Quot.mk (AssocRel α) (c * d * e * b) = Quot.mk (AssocRel α) (c * (d * e) * b)
+                                                    -- ⊢ Quot.mk (AssocRel α) (c * (d * e * f) * b) = Quot.mk (AssocRel α) (c * (d *  …
       · simp only [quot_mk_assoc, quot_mk_assoc_left]
+        -- 🎉 no goals
       · rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
   mul_assoc x y z :=
@@ -401,6 +425,9 @@ def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
   toFun f :=
   { toFun := fun x ↦
       Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only [map_mul, mul_assoc]
+                            -- ⊢ ↑f (c * d * e) = ↑f (c * (d * e))
+                                                                      -- 🎉 no goals
+                                                                      -- 🎉 no goals
     map_mul' := fun x y ↦ Quot.induction_on₂ x y (map_mul f) }
   invFun f := f.comp of
   left_inv f := (FunLike.ext _ _) fun x ↦ rfl
@@ -492,6 +519,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
   simp [length, ← add_assoc, add_right_comm, List.length, List.length_append]
+  -- 🎉 no goals
 #align free_semigroup.length_mul FreeSemigroup.length_mul
 
 @[to_additive (attr := simp)]
@@ -513,6 +541,7 @@ protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦
     FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
+                                                              -- 🎉 no goals
 #align free_semigroup.hom_ext FreeSemigroup.hom_ext
 
 section lift
@@ -548,6 +577,7 @@ theorem lift_comp_of' (f : FreeSemigroup α →ₙ* β) : lift (f ∘ of) = f :=
 
 @[to_additive]
 theorem lift_of_mul (x y) : lift f (of x * y) = f x * lift f y := by rw [map_mul, lift_of]
+                                                                     -- 🎉 no goals
 #align free_semigroup.lift_of_mul FreeSemigroup.lift_of_mul
 
 end lift
@@ -569,6 +599,7 @@ theorem map_of (x) : map f (of x) = of (f x) := rfl
 @[to_additive (attr := simp)]
 theorem length_map (x) : (map f x).length = x.length :=
   FreeSemigroup.recOnMul x (fun x ↦ rfl) (fun x y hx hy ↦ by simp only [map_mul, length_mul, *])
+                                                             -- 🎉 no goals
 #align free_semigroup.length_map FreeSemigroup.length_map
 
 end Map
@@ -623,6 +654,8 @@ instance instLawfulMonadFreeSemigroup : LawfulMonad FreeSemigroup.{u} := LawfulM
   (pure_bind := fun _ _ ↦ rfl)
   (bind_assoc := fun x g f ↦
     recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
+                                                   -- 🎉 no goals
+                                                                    -- 🎉 no goals
   (id_map := fun x ↦ recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by rw [map_mul', ih1, ih2])
 
 /-- `FreeSemigroup` is traversable. -/
@@ -659,6 +692,8 @@ theorem traverse_mul (x y : FreeSemigroup α) :
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =
           (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2)
         by rw [ih]; simp only [(· ∘ ·), (mul_assoc _ _ _).symm, functor_norm])
+           -- ⊢ (Seq.seq ((fun x x_1 => x * x_1) <$> pure <$> F x) fun x => Seq.seq ((fun x  …
+                    -- 🎉 no goals
     x
 #align free_semigroup.traverse_mul FreeSemigroup.traverse_mul
 
@@ -686,14 +721,21 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
+        -- 🎉 no goals
     comp_traverse := fun f g x ↦
       recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (· ∘ ·)])
+                              -- 🎉 no goals
         fun x y ih1 ih2 ↦ by (rw [traverse_mul, ih1, ih2,
           traverse_mul, Functor.Comp.map_mk]; simp only [Function.comp, functor_norm, traverse_mul])
+                                              -- 🎉 no goals
     naturality := fun η α β f x ↦
       recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp])
+                              -- 🎉 no goals
           (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
+                                -- 🎉 no goals
     traverse_eq_map_id := fun f x ↦
+        -- ⊢ id.mk (f <$> of x) * id.mk (f <$> y) = id.mk (f <$> of x * f <$> y)
+                                                            -- 🎉 no goals
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]; rfl }
 
@@ -726,6 +768,8 @@ theorem toFreeSemigroup_comp_of : @toFreeSemigroup α ∘ of = FreeSemigroup.of 
 theorem toFreeSemigroup_comp_map (f : α → β) :
     toFreeSemigroup.comp (map f) = (FreeSemigroup.map f).comp toFreeSemigroup :=
   by ext1; rfl
+     -- ⊢ ↑(MulHom.comp toFreeSemigroup (map f)) ∘ of = ↑(MulHom.comp (FreeSemigroup.m …
+           -- 🎉 no goals
 #align free_magma.to_free_semigroup_comp_map FreeMagma.toFreeSemigroup_comp_map
 
 @[to_additive]
@@ -738,6 +782,8 @@ theorem toFreeSemigroup_map (f : α → β) (x : FreeMagma α) :
 theorem length_toFreeSemigroup (x : FreeMagma α) : (toFreeSemigroup x).length = x.length :=
   FreeMagma.recOnMul x (fun x ↦ rfl) fun x y hx hy ↦ by
     rw [map_mul, FreeSemigroup.length_mul, hx, hy]; rfl
+    -- ⊢ length x + length y = length (x * y)
+                                                    -- 🎉 no goals
 #align free_magma.length_to_free_semigroup FreeMagma.length_toFreeSemigroup
 
 end FreeMagma
@@ -750,5 +796,9 @@ def FreeMagmaAssocQuotientEquiv (α : Type u) :
       (Magma.AssocQuotient.lift FreeMagma.toFreeSemigroup).toMulEquiv
       (FreeSemigroup.lift (Magma.AssocQuotient.of ∘ FreeMagma.of))
       (by ext; rfl)
+          -- ⊢ (↑(MulHom.comp (MulHom.comp (↑FreeSemigroup.lift (↑Magma.AssocQuotient.of ∘  …
+               -- 🎉 no goals
       (by ext1; rfl)
+          -- ⊢ ↑(MulHom.comp (↑Magma.AssocQuotient.lift FreeMagma.toFreeSemigroup) (↑FreeSe …
+                -- 🎉 no goals
 #align free_magma_assoc_quotient_equiv FreeMagmaAssocQuotientEquiv

@@ -50,6 +50,9 @@ section Lattice
 
 instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
   PartialOrder.lift (fun f => f.toFun) (fun f g _ => by cases f; cases g; congr)
+                                                        -- ⊢ mk toFun✝ = g
+                                                                 -- ⊢ mk toFun✝¹ = mk toFun✝
+                                                                          -- 🎉 no goals
   -- porting note: was `by tidy`, and `by aesop` alone didn't work
 #align continuous_map.partial_order ContinuousMap.partialOrder
 
@@ -81,8 +84,11 @@ instance semilatticeSup [LinearOrder β] [OrderClosedTopology β] : SemilatticeS
   { ContinuousMap.partialOrder,
     ContinuousMap.sup with
     le_sup_left := fun f g => le_def.mpr (by simp [le_refl])
+                                             -- 🎉 no goals
     le_sup_right := fun f g => le_def.mpr (by simp [le_refl])
+                                              -- 🎉 no goals
     sup_le := fun f₁ f₂ g w₁ w₂ => le_def.mpr fun a => by simp [le_def.mp w₁ a, le_def.mp w₂ a] }
+                                                          -- 🎉 no goals
 
 instance inf [LinearOrder β] [OrderClosedTopology β] : Inf C(α, β)
     where inf f g := { toFun := fun a => min (f a) (g a) }
@@ -104,8 +110,11 @@ instance semilatticeInf [LinearOrder β] [OrderClosedTopology β] : SemilatticeI
   { ContinuousMap.partialOrder,
     ContinuousMap.inf with
     inf_le_left := fun f g => le_def.mpr (by simp [le_refl])
+                                             -- 🎉 no goals
     inf_le_right := fun f g => le_def.mpr (by simp [le_refl])
+                                              -- 🎉 no goals
     le_inf := fun f₁ f₂ g w₁ w₂ => le_def.mpr fun a => by simp [le_def.mp w₁ a, le_def.mp w₂ a] }
+                                                          -- 🎉 no goals
 
 instance [LinearOrder β] [OrderClosedTopology β] : Lattice C(α, β) :=
   { ContinuousMap.semilatticeInf, ContinuousMap.semilatticeSup with }
@@ -124,7 +133,9 @@ theorem sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(�
 theorem sup'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
     ((s.sup' H f : C(β, γ)) : β → γ) = s.sup' H fun a => (f a : β → γ) := by
   ext
+  -- ⊢ ↑(Finset.sup' s H f) x✝ = Finset.sup' s H (fun a => ↑(f a)) x✝
   simp [sup'_apply]
+  -- 🎉 no goals
 #align continuous_map.sup'_coe ContinuousMap.sup'_coe
 
 end Sup'

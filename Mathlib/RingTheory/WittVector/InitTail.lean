@@ -72,17 +72,29 @@ def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem coeff_select (x : 𝕎 R) (n : ℕ) :
     (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, selectPoly]
+  -- ⊢ coeff (mk p fun n => if P n then coeff x n else 0) n = ↑(aeval x.coeff) (if  …
   split_ifs with hi
+  -- ⊢ coeff (mk p fun n => if P n then coeff x n else 0) n = ↑(aeval x.coeff) (X n)
   · rw [aeval_X, mk]; simp only [hi]; rfl
+    -- ⊢ coeff { coeff := fun n => if P n then coeff x n else 0 } n = coeff x n
+                      -- ⊢ (if True then coeff x n else 0) = coeff x n
+                                      -- 🎉 no goals
   · rw [AlgHom.map_zero, mk]; simp only [hi]; rfl
+    -- ⊢ coeff { coeff := fun n => if P n then coeff x n else 0 } n = 0
+                              -- ⊢ (if False then coeff x n else 0) = 0
+                                              -- 🎉 no goals
 #align witt_vector.coeff_select WittVector.coeff_select
 
 -- Porting note: replaced `@[is_poly]` with `instance`. Made the argument `P` implicit in doing so.
 instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
   use selectPoly P
+  -- ⊢ ∀ ⦃R : Type ?u.31970⦄ [inst : CommRing R] (x : 𝕎 R), (select P x).coeff = fu …
   rintro R _Rcr x
+  -- ⊢ (select P x).coeff = fun n => ↑(aeval x.coeff) (selectPoly P n)
   funext i
+  -- ⊢ coeff (select P x) i = ↑(aeval x.coeff) (selectPoly P i)
   apply coeff_select
+  -- 🎉 no goals
 #align witt_vector.select_is_poly WittVector.select_isPoly
 
 theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
@@ -91,8 +103,11 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   have : IsPoly p fun {R} [CommRing R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
     IsPoly₂.diag (hf := IsPoly₂.comp)
   ghost_calc x
+  -- ⊢ ∀ (n : ℕ), ↑(ghostComponent n) (select P x + select (fun i => ¬P i) x) = ↑(g …
   intro n
+  -- ⊢ ↑(ghostComponent n) (select P x + select (fun i => ¬P i) x) = ↑(ghostCompone …
   simp only [RingHom.map_add]
+  -- ⊢ ↑(ghostComponent n) (select P x) + ↑(ghostComponent n) (select (fun i => ¬P  …
   suffices
     (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
         (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
@@ -102,20 +117,31 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
     AlgHom.map_mul, bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
+  -- ⊢ ∀ (x : ℕ), x ∈ Finset.range (n + 1) → ↑C (↑p ^ x) * ((if P x then X x else 0 …
   refine' fun m _ => mul_eq_mul_left_iff.mpr (Or.inl _)
+  -- ⊢ (if P m then X m else 0) ^ p ^ (n - m) + (if ¬P m then X m else 0) ^ p ^ (n  …
   rw [ite_pow, zero_pow (pow_pos hp.out.pos _)]
+  -- ⊢ (if P m then X m ^ p ^ (n - m) else 0) + (if ¬P m then X m else 0) ^ p ^ (n  …
   by_cases Pm : P m
+  -- ⊢ (if P m then X m ^ p ^ (n - m) else 0) + (if ¬P m then X m else 0) ^ p ^ (n  …
   · rw [if_pos Pm, if_neg _, zero_pow, add_zero]
+    -- ⊢ 0 < p ^ (n - m)
     · exact Fin.size_positive'
+      -- 🎉 no goals
     · exact not_not_intro Pm
+      -- 🎉 no goals
   · rwa [if_neg Pm, if_pos, zero_add]
+    -- 🎉 no goals
 #align witt_vector.select_add_select_not WittVector.select_add_select_not
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
     (x + y).coeff n = x.coeff n + y.coeff n := by
   let P : ℕ → Prop := fun n => y.coeff n = 0
+  -- ⊢ coeff (x + y) n = coeff x n + coeff y n
   haveI : DecidablePred P := Classical.decPred P
+  -- ⊢ coeff (x + y) n = coeff x n + coeff y n
   set z := mk p fun n => if P n then x.coeff n else y.coeff n
+  -- ⊢ coeff (x + y) n = coeff x n + coeff y n
   have hx : select P z = x := by
     ext1 n; rw [select, coeff_mk, coeff_mk]
     split_ifs with hn
@@ -155,6 +181,7 @@ def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
 @[simp]
 theorem init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
   simp only [init, tail, ← not_lt, select_add_select_not]
+  -- 🎉 no goals
 #align witt_vector.init_add_tail WittVector.init_add_tail
 
 end
@@ -195,37 +222,50 @@ elab_rules : tactic
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
   rw [ext_iff]
+  -- ⊢ ∀ (n_1 : ℕ), coeff (init n (init n x)) n_1 = coeff (init n x) n_1
   intro i
+  -- ⊢ coeff (init n (init n x)) i = coeff (init n x) i
   simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
+  -- ⊢ (if i < n then if i < n then coeff x i else 0 else 0) = if i < n then coeff  …
   by_cases hi : i < n <;> simp [hi]
+  -- ⊢ (if i < n then if i < n then coeff x i else 0 else 0) = if i < n then coeff  …
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align witt_vector.init_init WittVector.init_init
 
 theorem init_add (x y : 𝕎 R) (n : ℕ) : init n (x + y) = init n (init n x + init n y) := by
   init_ring using wittAdd_vars
+  -- 🎉 no goals
 #align witt_vector.init_add WittVector.init_add
 
 theorem init_mul (x y : 𝕎 R) (n : ℕ) : init n (x * y) = init n (init n x * init n y) := by
   init_ring using wittMul_vars
+  -- 🎉 no goals
 #align witt_vector.init_mul WittVector.init_mul
 
 theorem init_neg (x : 𝕎 R) (n : ℕ) : init n (-x) = init n (-init n x) := by
   init_ring using wittNeg_vars
+  -- 🎉 no goals
 #align witt_vector.init_neg WittVector.init_neg
 
 theorem init_sub (x y : 𝕎 R) (n : ℕ) : init n (x - y) = init n (init n x - init n y) := by
   init_ring using wittSub_vars
+  -- 🎉 no goals
 #align witt_vector.init_sub WittVector.init_sub
 
 theorem init_nsmul (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittNSMul_vars p m n
+  -- 🎉 no goals
 #align witt_vector.init_nsmul WittVector.init_nsmul
 
 theorem init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittZSMul_vars p m n
+  -- 🎉 no goals
 #align witt_vector.init_zsmul WittVector.init_zsmul
 
 theorem init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittPow_vars p m n
+  -- 🎉 no goals
 #align witt_vector.init_pow WittVector.init_pow
 
 section

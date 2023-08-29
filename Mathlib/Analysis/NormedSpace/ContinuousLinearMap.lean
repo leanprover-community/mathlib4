@@ -148,7 +148,10 @@ in `LinearMap.toContinuousLinearMap`. -/
 def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[𝕜] E :=
   f.mkContinuous ‖f 1‖ fun x => by
     conv_lhs => rw [← mul_one x]
+    -- ⊢ ‖↑f (x * 1)‖ ≤ ‖↑f 1‖ * ‖x‖
     rw [← smul_eq_mul, f.map_smul, mul_comm]; exact norm_smul_le _ _
+    -- ⊢ ‖x • ↑f 1‖ ≤ ‖x‖ * ‖↑f 1‖
+                                              -- 🎉 no goals
 #align linear_map.to_continuous_linear_map₁ LinearMap.toContinuousLinearMap₁
 
 @[simp]
@@ -200,6 +203,7 @@ variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ σ₂₁] [RingHomIn
 theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E ≃ₛₗ[σ] F) :
     (∀ x : E, ‖f x‖ = a * ‖x‖) → ∀ y : F, ‖f.symm y‖ = a⁻¹ * ‖y‖ := by
   intro hf y
+  -- ⊢ ‖↑(LinearEquiv.symm f) y‖ = a⁻¹ * ‖y‖
   calc
     ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := by
       rw [← mul_assoc, inv_mul_cancel (ne_of_lt ha).symm, one_mul]
@@ -229,7 +233,9 @@ variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [B
 theorem toSpanSingleton_homothety (x : E) (c : 𝕜) :
     ‖LinearMap.toSpanSingleton 𝕜 E x c‖ = ‖x‖ * ‖c‖ := by
   rw [mul_comm]
+  -- ⊢ ‖↑(LinearMap.toSpanSingleton 𝕜 E x) c‖ = ‖c‖ * ‖x‖
   exact norm_smul _ _
+  -- 🎉 no goals
 #align continuous_linear_map.to_span_singleton_homothety ContinuousLinearMap.toSpanSingleton_homothety
 
 end Seminormed

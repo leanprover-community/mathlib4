@@ -94,6 +94,7 @@ variable {𝕂}
 
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n :=
   by simp [expSeries]
+     -- 🎉 no goals
 #align exp_series_apply_eq expSeries_apply_eq
 
 theorem expSeries_apply_eq' (x : 𝔸) :
@@ -112,29 +113,37 @@ theorem exp_eq_tsum : exp 𝕂 = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : 𝕂)
 theorem expSeries_apply_zero (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => (0 : 𝔸)) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
   rw [expSeries_apply_eq]
+  -- ⊢ (↑n !)⁻¹ • 0 ^ n = Pi.single 0 1 n
   cases' n with n
+  -- ⊢ (↑Nat.zero !)⁻¹ • 0 ^ Nat.zero = Pi.single 0 1 Nat.zero
   · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
+    -- 🎉 no goals
   · rw [zero_pow (Nat.succ_pos _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
+    -- 🎉 no goals
 #align exp_series_apply_zero expSeries_apply_zero
 
 @[simp]
 theorem exp_zero : exp 𝕂 (0 : 𝔸) = 1 := by
   simp_rw [exp_eq_tsum, ← expSeries_apply_eq, expSeries_apply_zero, tsum_pi_single]
+  -- 🎉 no goals
 #align exp_zero exp_zero
 
 @[simp]
 theorem exp_op [T2Space 𝔸] (x : 𝔸) : exp 𝕂 (MulOpposite.op x) = MulOpposite.op (exp 𝕂 x) := by
   simp_rw [exp, expSeries_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
+  -- 🎉 no goals
 #align exp_op exp_op
 
 @[simp]
 theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) : exp 𝕂 (MulOpposite.unop x) = MulOpposite.unop (exp 𝕂 x) :=
   by simp_rw [exp, expSeries_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
+     -- 🎉 no goals
 #align exp_unop exp_unop
 
 theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸) :
     star (exp 𝕂 x) = exp 𝕂 (star x) := by
   simp_rw [exp_eq_tsum, ← star_pow, ← star_inv_nat_cast_smul, ← tsum_star]
+  -- 🎉 no goals
 #align star_exp star_exp
 
 variable (𝕂)
@@ -146,7 +155,9 @@ theorem IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {
 
 theorem Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) : Commute x (exp 𝕂 y) := by
   rw [exp_eq_tsum]
+  -- ⊢ Commute x ((fun x => ∑' (n : ℕ), (↑n !)⁻¹ • x ^ n) y)
   exact Commute.tsum_right x fun n => (h.pow_right n).smul_right _
+  -- 🎉 no goals
 #align commute.exp_right Commute.exp_right
 
 theorem Commute.exp_left [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) : Commute (exp 𝕂 x) y :=
@@ -202,8 +213,11 @@ theorem norm_expSeries_summable_of_mem_ball' (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ := by
   change Summable (norm ∘ _)
+  -- ⊢ Summable (norm ∘ fun n => (↑n !)⁻¹ • x ^ n)
   rw [← expSeries_apply_eq']
+  -- ⊢ Summable (norm ∘ fun n => ↑(expSeries 𝕂 𝔸 n) fun x_1 => x)
   exact norm_expSeries_summable_of_mem_ball x hx
+  -- 🎉 no goals
 #align norm_exp_series_summable_of_mem_ball' norm_expSeries_summable_of_mem_ball'
 
 section CompleteAlgebra
@@ -232,7 +246,9 @@ theorem expSeries_hasSum_exp_of_mem_ball' (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasSum (fun n => (n !⁻¹ : 𝕂) • x ^ n) (exp 𝕂 x) := by
   rw [← expSeries_apply_eq']
+  -- ⊢ HasSum (fun n => ↑(expSeries 𝕂 𝔸 n) fun x_1 => x) (exp 𝕂 x)
   exact expSeries_hasSum_exp_of_mem_ball x hx
+  -- 🎉 no goals
 #align exp_series_has_sum_exp_of_mem_ball' expSeries_hasSum_exp_of_mem_ball'
 
 theorem hasFPowerSeriesOnBall_exp_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).radius) :
@@ -252,9 +268,14 @@ theorem continuousOn_exp : ContinuousOn (exp 𝕂 : 𝔸 → 𝔸) (EMetric.ball
 theorem analyticAt_exp_of_mem_ball (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     AnalyticAt 𝕂 (exp 𝕂) x := by
   by_cases h : (expSeries 𝕂 𝔸).radius = 0
+  -- ⊢ AnalyticAt 𝕂 (exp 𝕂) x
   · rw [h] at hx; exact (ENNReal.not_lt_zero hx).elim
+    -- ⊢ AnalyticAt 𝕂 (exp 𝕂) x
+                  -- 🎉 no goals
   · have h := pos_iff_ne_zero.mpr h
+    -- ⊢ AnalyticAt 𝕂 (exp 𝕂) x
     exact (hasFPowerSeriesOnBall_exp_of_radius_pos h).analyticAt_of_mem hx
+    -- 🎉 no goals
 #align analytic_at_exp_of_mem_ball analyticAt_exp_of_mem_ball
 
 /-- In a Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero, if `x` and `y` are
@@ -266,16 +287,21 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
     tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm
       (norm_expSeries_summable_of_mem_ball' x hx) (norm_expSeries_summable_of_mem_ball' y hy)]
   dsimp only
+  -- ⊢ ∑' (n : ℕ), (↑n !)⁻¹ • (x + y) ^ n = ∑' (n : ℕ), ∑ kl in Finset.Nat.antidiag …
   conv_lhs =>
     congr
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine' tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => _
+  -- ⊢ (↑n !)⁻¹ • Nat.choose n kl.fst • (x ^ kl.fst * y ^ kl.snd) = (↑kl.fst !)⁻¹ • …
   rw [nsmul_eq_smul_cast 𝕂, smul_smul, smul_mul_smul, ← Finset.Nat.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.Nat.mem_antidiagonal.mp hkl]
   congr 1
+  -- ⊢ (↑n !)⁻¹ * (↑n ! / (↑kl.fst ! * ↑kl.snd !)) = (↑kl.fst !)⁻¹ * (↑kl.snd !)⁻¹
   have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
+  -- ⊢ (↑n !)⁻¹ * (↑n ! / (↑kl.fst ! * ↑kl.snd !)) = (↑kl.fst !)⁻¹ * (↑kl.snd !)⁻¹
   field_simp [this]
+  -- 🎉 no goals
 #align exp_add_of_commute_of_mem_ball exp_add_of_commute_of_mem_ball
 
 /-- `exp 𝕂 x` has explicit two-sided inverse `exp 𝕂 (-x)`. -/
@@ -304,15 +330,21 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp 𝕂 x)] :
     ⅟ (exp 𝕂 x) = exp 𝕂 (-x) := by letI := invertibleExpOfMemBall hx; convert(rfl : ⅟ (exp 𝕂 x) = _)
+                                   -- ⊢ ⅟(exp 𝕂 x) = exp 𝕂 (-x)
+                                                                      -- 🎉 no goals
 #align inv_of_exp_of_mem_ball invOf_exp_of_mem_ball
 
 /-- Any continuous ring homomorphism commutes with `exp`. -/
 theorem map_exp_of_mem_ball {F} [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : f (exp 𝕂 x) = exp 𝕂 (f x) := by
   rw [exp_eq_tsum, exp_eq_tsum]
+  -- ⊢ ↑f ((fun x => ∑' (n : ℕ), (↑n !)⁻¹ • x ^ n) x) = (fun x_1 => ∑' (n : ℕ), (↑n …
   refine' ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans _
+  -- ⊢ ∑' (b : ℕ), (↑f ∘ fun n => (↑n !)⁻¹ • x ^ n) b = (fun x_1 => ∑' (n : ℕ), (↑n …
   dsimp only [Function.comp]
+  -- ⊢ ∑' (b : ℕ), ↑f ((↑b !)⁻¹ • x ^ b) = ∑' (n : ℕ), (↑n !)⁻¹ • ↑f x ^ n
   simp_rw [map_inv_nat_cast_smul f 𝕂 𝕂, map_pow]
+  -- 🎉 no goals
 #align map_exp_of_mem_ball map_exp_of_mem_ball
 
 end CompleteAlgebra
@@ -335,8 +367,11 @@ theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     Summable fun n => ‖x ^ n / (n ! : 𝔸)‖ := by
   change Summable (norm ∘ _)
+  -- ⊢ Summable (norm ∘ fun n => x ^ n / ↑n !)
   rw [← expSeries_apply_eq_div' (𝕂 := 𝕂) x]
+  -- ⊢ Summable (norm ∘ fun n => ↑(expSeries 𝕂 𝔸 n) fun x_1 => x)
   exact norm_expSeries_summable_of_mem_ball x hx
+  -- 🎉 no goals
 #align norm_exp_series_div_summable_of_mem_ball norm_expSeries_div_summable_of_mem_ball
 
 theorem expSeries_div_summable_of_mem_ball [CompleteSpace 𝔸] (x : 𝔸)
@@ -348,7 +383,9 @@ theorem expSeries_div_hasSum_exp_of_mem_ball [CompleteSpace 𝔸] (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasSum (fun n => x ^ n / n !) (exp 𝕂 x) := by
   rw [← expSeries_apply_eq_div' (𝕂 := 𝕂) x]
+  -- ⊢ HasSum (fun n => ↑(expSeries 𝕂 𝔸 n) fun x_1 => x) (exp 𝕂 x)
   exact expSeries_hasSum_exp_of_mem_ball x hx
+  -- 🎉 no goals
 #align exp_series_div_has_sum_exp_of_mem_ball expSeries_div_hasSum_exp_of_mem_ball
 
 variable {𝕂}
@@ -388,20 +425,29 @@ variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 has an infinite radius of convergence. -/
 theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
   refine' (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => _
+  -- ⊢ Summable fun n => ‖expSeries 𝕂 𝔸 n‖ * ↑r ^ n
   refine' summable_of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) _
+  -- ⊢ ∀ᶠ (i : ℕ) in cofinite, ‖‖expSeries 𝕂 𝔸 i‖ * ↑r ^ i‖ ≤ ↑r ^ i / ↑i !
   filter_upwards [eventually_cofinite_ne 0] with n hn
+  -- ⊢ ‖‖expSeries 𝕂 𝔸 n‖ * ↑r ^ n‖ ≤ ↑r ^ n / ↑n !
   rw [norm_mul, norm_norm (expSeries 𝕂 𝔸 n), expSeries]
+  -- ⊢ ‖(↑n !)⁻¹ • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸‖ * ‖↑r ^ n‖ ≤ ↑r ^ …
   rw [norm_smul (n ! : 𝕂)⁻¹ (ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸)]
+  -- ⊢ ‖(↑n !)⁻¹‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸‖ * ‖↑r ^ n‖ ≤ ↑r …
   -- porting note: Lean needed this to be explicit for some reason
   rw [norm_inv, norm_pow, NNReal.norm_eq, norm_natCast, mul_comm, ← mul_assoc, ← div_eq_mul_inv]
+  -- ⊢ ↑r ^ n / ↑n ! * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸‖ ≤ ↑r ^ n / ↑ …
   have : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸‖ ≤ 1 :=
     norm_mkPiAlgebraFin_le_of_pos (Ei := fun _ => 𝔸) (Nat.pos_of_ne_zero hn)
   exact mul_le_of_le_one_right (div_nonneg (pow_nonneg r.coe_nonneg n) n !.cast_nonneg) this
+  -- 🎉 no goals
 #align exp_series_radius_eq_top expSeries_radius_eq_top
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
+  -- ⊢ 0 < ⊤
   exact WithTop.zero_lt_top
+  -- 🎉 no goals
 #align exp_series_radius_pos expSeries_radius_pos
 
 variable {𝕂 𝔸 𝔹}
@@ -447,6 +493,7 @@ theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
   rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
   exact continuousOn_exp
+  -- 🎉 no goals
 #align exp_continuous exp_continuous
 
 theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 (exp 𝕂) x :=
@@ -508,8 +555,11 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
 
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp 𝕂 (n • x) = exp 𝕂 x ^ n := by
   induction' n with n ih
+  -- ⊢ exp 𝕂 (Nat.zero • x) = exp 𝕂 x ^ Nat.zero
   · rw [Nat.zero_eq, zero_smul, pow_zero, exp_zero]
+    -- 🎉 no goals
   · rw [succ_nsmul, pow_succ, exp_add_of_commute ((Commute.refl x).smul_right n), ih]
+    -- 🎉 no goals
 #align exp_nsmul exp_nsmul
 
 variable (𝕂)
@@ -562,8 +612,11 @@ theorem Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [Dec
     (j : ι) (xj : 𝔸 j) :
     Function.update (exp 𝕂 x) j (exp 𝕂 xj) = exp 𝕂 (Function.update x j xj) := by
   ext i
+  -- ⊢ update (exp 𝕂 x) j (exp 𝕂 xj) i = exp 𝕂 (update x j xj) i
   simp_rw [Pi.exp_def]
+  -- ⊢ update (fun i => exp 𝕂 (x i)) j (exp 𝕂 xj) i = exp 𝕂 (update x j xj i)
   exact (Function.apply_update (fun i => exp 𝕂) x j xj i).symm
+  -- 🎉 no goals
 #align function.update_exp Function.update_exp
 
 end CompleteAlgebra
@@ -603,8 +656,11 @@ theorem exp_neg (x : 𝔸) : exp 𝕂 (-x) = (exp 𝕂 x)⁻¹ :=
 
 theorem exp_zsmul (z : ℤ) (x : 𝔸) : exp 𝕂 (z • x) = exp 𝕂 x ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
+  -- ⊢ exp 𝕂 (↑n • x) = exp 𝕂 x ^ ↑n
   · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul]
+    -- 🎉 no goals
   · rw [zpow_neg, zpow_ofNat, neg_smul, exp_neg, coe_nat_zsmul, exp_nsmul]
+    -- 🎉 no goals
 #align exp_zsmul exp_zsmul
 
 theorem exp_conj (y : 𝔸) (x : 𝔸) (hy : y ≠ 0) : exp 𝕂 (y * x * y⁻¹) = y * exp 𝕂 x * y⁻¹ :=
@@ -631,7 +687,9 @@ theorem exp_add {x y : 𝔸} : exp 𝕂 (x + y) = exp 𝕂 x * exp 𝕂 y :=
 /-- A version of `exp_sum_of_commute` for a commutative Banach-algebra. -/
 theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp 𝕂 (∑ i in s, f i) = ∏ i in s, exp 𝕂 (f i) := by
   rw [exp_sum_of_commute, Finset.noncommProd_eq_prod]
+  -- ⊢ Set.Pairwise ↑s fun i j => Commute (f i) (f j)
   exact fun i _hi j _hj _ => Commute.all _ _
+  -- 🎉 no goals
 #align exp_sum exp_sum
 
 end CommAlgebra
@@ -650,15 +708,20 @@ variable (𝕂 𝕂' 𝔸 : Type*) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [Algeb
 theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
     (expSeries 𝕂 𝔸 n fun _ => x) = expSeries 𝕂' 𝔸 n fun _ => x := by
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_nat_cast_smul_eq 𝕂 𝕂']
+  -- 🎉 no goals
 #align exp_series_eq_exp_series expSeries_eq_expSeries
 
 /-- If a normed ring `𝔸` is a normed algebra over two fields, then they define the same
 exponential function on `𝔸`. -/
 theorem exp_eq_exp : (exp 𝕂 : 𝔸 → 𝔸) = exp 𝕂' := by
   ext x
+  -- ⊢ exp 𝕂 x = exp 𝕂' x
   rw [exp, exp]
+  -- ⊢ FormalMultilinearSeries.sum (expSeries 𝕂 𝔸) x = FormalMultilinearSeries.sum  …
   refine' tsum_congr fun n => _
+  -- ⊢ (↑(expSeries 𝕂 𝔸 n) fun x_1 => x) = ↑(expSeries 𝕂' 𝔸 n) fun x_1 => x
   rw [expSeries_eq_expSeries 𝕂 𝕂' 𝔸 n x]
+  -- 🎉 no goals
 #align exp_eq_exp exp_eq_exp
 
 theorem exp_ℝ_ℂ_eq_exp_ℂ_ℂ : (exp ℝ : ℂ → ℂ) = exp ℂ :=

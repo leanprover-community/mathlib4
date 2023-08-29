@@ -46,8 +46,11 @@ initial object.
 theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v} C] {T : C}
     (hT : ∀ X, Nonempty (T ⟶ X)) : HasInitial C := by
   let endos := T ⟶ T
+  -- ⊢ HasInitial C
   let i := wideEqualizer.ι (id : endos → endos)
+  -- ⊢ HasInitial C
   haveI : Nonempty endos := ⟨𝟙 _⟩
+  -- ⊢ HasInitial C
   have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
     refine' ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => _⟩
@@ -62,6 +65,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v
     rw [← cancel_epi e]
     apply equalizer.condition
   exact hasInitial_of_unique (wideEqualizer (id : endos → endos))
+  -- 🎉 no goals
 #align category_theory.has_initial_of_weakly_initial_and_has_wide_equalizers CategoryTheory.hasInitial_of_weakly_initial_and_hasWideEqualizers
 
 end CategoryTheory

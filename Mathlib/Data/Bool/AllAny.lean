@@ -26,12 +26,16 @@ namespace List
 
 theorem all_iff_forall {p : α → Bool} : all l p ↔ ∀ a ∈ l, p a := by
   induction' l with a l ih
+  -- ⊢ all [] p = true ↔ ∀ (a : α), a ∈ [] → p a = true
   · exact iff_of_true rfl (forall_mem_nil _)
+    -- 🎉 no goals
   simp only [all_cons, Bool.and_coe_iff, ih, forall_mem_cons]
+  -- 🎉 no goals
 #align list.all_iff_forall List.all_iff_forall
 
 theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
   simp only [all_iff_forall, Bool.of_decide_iff]
+  -- 🎉 no goals
 #align list.all_iff_forall_prop List.all_iff_forall_prop
 
 -- Porting note: in Std
@@ -41,11 +45,15 @@ theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
 
 theorem any_iff_exists {p : α → Bool} : any l p ↔ ∃ a ∈ l, p a := by
   induction' l with a l ih
+  -- ⊢ any [] p = true ↔ ∃ a, a ∈ [] ∧ p a = true
   · exact iff_of_false Bool.not_false' (not_exists_mem_nil _)
+    -- 🎉 no goals
   simp only [any_cons, Bool.or_coe_iff, ih, exists_mem_cons_iff]
+  -- 🎉 no goals
 #align list.any_iff_exists List.any_iff_exists
 
 theorem any_iff_exists_prop : (any l fun a => p a) ↔ ∃ a ∈ l, p a := by simp [any_iff_exists]
+                                                                        -- 🎉 no goals
 #align list.any_iff_exists_prop List.any_iff_exists_prop
 
 theorem any_of_mem {p : α → Bool} (h₁ : a ∈ l) (h₂ : p a) : any l p :=

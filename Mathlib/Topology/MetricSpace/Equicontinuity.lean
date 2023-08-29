@@ -60,13 +60,23 @@ protected theorem equicontinuousAt_iff_pair {ι : Type*} [TopologicalSpace β] {
     EquicontinuousAt F x₀ ↔
       ∀ ε > 0, ∃ U ∈ 𝓝 x₀, ∀ x ∈ U, ∀ x' ∈ U, ∀ i, dist (F i x) (F i x') < ε := by
   rw [equicontinuousAt_iff_pair]
+  -- ⊢ (∀ (U : Set (α × α)), U ∈ 𝓤 α → ∃ V, V ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ V → ∀ (y : β) …
   constructor <;> intro H
+  -- ⊢ (∀ (U : Set (α × α)), U ∈ 𝓤 α → ∃ V, V ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ V → ∀ (y : β) …
+                  -- ⊢ ∀ (ε : ℝ), ε > 0 → ∃ U, U ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ U → ∀ (x' : β), x' ∈ U → ∀ …
+                  -- ⊢ ∀ (U : Set (α × α)), U ∈ 𝓤 α → ∃ V, V ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ V → ∀ (y : β), …
   · intro ε hε
+    -- ⊢ ∃ U, U ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ U → ∀ (x' : β), x' ∈ U → ∀ (i : ι), dist (F i …
     exact H _ (dist_mem_uniformity hε)
+    -- 🎉 no goals
   · intro U hU
+    -- ⊢ ∃ V, V ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ V → ∀ (y : β), y ∈ V → ∀ (i : ι), (F i x, F i …
     rcases mem_uniformity_dist.mp hU with ⟨ε, hε, hεU⟩
+    -- ⊢ ∃ V, V ∈ 𝓝 x₀ ∧ ∀ (x : β), x ∈ V → ∀ (y : β), y ∈ V → ∀ (i : ι), (F i x, F i …
     refine' Exists.imp (fun V => And.imp_right fun h => _) (H _ hε)
+    -- ⊢ ∀ (x : β), x ∈ V → ∀ (y : β), y ∈ V → ∀ (i : ι), (F i x, F i y) ∈ U
     exact fun x hx x' hx' i => hεU (h _ hx _ hx' i)
+    -- 🎉 no goals
 #align metric.equicontinuous_at_iff_pair Metric.equicontinuousAt_iff_pair
 
 /-- Characterization of uniform equicontinuity for families of functions taking values in a
@@ -91,7 +101,9 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β
     (b : β → ℝ) (b_lim : Tendsto b (𝓝 x₀) (𝓝 0)) (F : ι → β → α)
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
+  -- ⊢ ∀ (ε : ℝ), ε > 0 → ∀ᶠ (x : β) in 𝓝 x₀, ∀ (i : ι), dist (F i x₀) (F i x) < ε
   intro ε ε0
+  -- ⊢ ∀ᶠ (x : β) in 𝓝 x₀, ∀ (i : ι), dist (F i x₀) (F i x) < ε
   -- porting note: Lean 3 didn't need `Filter.mem_map.mp` here
   filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using
     fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
@@ -104,9 +116,13 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSp
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
     (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : UniformEquicontinuous F := by
   rw [Metric.uniformEquicontinuous_iff]
+  -- ⊢ ∀ (ε : ℝ), ε > 0 → ∃ δ, δ > 0 ∧ ∀ (x y : β), dist x y < δ → ∀ (i : ι), dist  …
   intro ε ε0
+  -- ⊢ ∃ δ, δ > 0 ∧ ∀ (x y : β), dist x y < δ → ∀ (i : ι), dist (F i x) (F i y) < ε
   rcases tendsto_nhds_nhds.1 b_lim ε ε0 with ⟨δ, δ0, hδ⟩
+  -- ⊢ ∃ δ, δ > 0 ∧ ∀ (x y : β), dist x y < δ → ∀ (i : ι), dist (F i x) (F i y) < ε
   refine' ⟨δ, δ0, fun x y hxy i => _⟩
+  -- ⊢ dist (F i x) (F i y) < ε
   calc
     dist (F i x) (F i y) ≤ b (dist x y) := H x y i
     _ ≤ |b (dist x y)| := (le_abs_self _)

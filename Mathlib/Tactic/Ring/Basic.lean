@@ -281,10 +281,13 @@ inductive Overlap (e : Q($α)) where
 
 theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
     x ^ e * a + x ^ e * b = x ^ e * c := by subst_vars; simp [mul_add]
+                                            -- ⊢ x ^ e * a + x ^ e * b = x ^ e * (a + b)
+                                                        -- 🎉 no goals
 
 theorem add_overlap_pf_zero (x : R) (e) :
     IsNat (a + b) (nat_lit 0) → IsNat (x ^ e * a + x ^ e * b) (nat_lit 0)
   | ⟨h⟩ => ⟨by simp [h, ← mul_add]⟩
+               -- 🎉 no goals
 
 /--
 Given monomials `va, vb`, attempts to add them together to get another monomial.
@@ -312,21 +315,30 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
   | _, _ => none
 
 theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
+                                                  -- 🎉 no goals
 
 theorem add_pf_add_zero (a : R) : a + 0 = a := by simp
+                                                  -- 🎉 no goals
 
 theorem add_pf_add_overlap
     (_ : a₁ + b₁ = c₁) (_ : a₂ + b₂ = c₂) : (a₁ + a₂ : R) + (b₁ + b₂) = c₁ + c₂ := by
   subst_vars; simp [add_assoc, add_left_comm]
+  -- ⊢ a₁ + a₂ + (b₁ + b₂) = a₁ + b₁ + (a₂ + b₂)
+              -- 🎉 no goals
 
 theorem add_pf_add_overlap_zero
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
   subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
+  -- ⊢ a₁ + a₂ + (b₁ + b₂) = a₂ + b₂
+              -- 🎉 no goals
 
 theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
+                                                                               -- 🎉 no goals
 
 theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
   subst_vars; simp [add_left_comm]
+  -- ⊢ a + (b₁ + b₂) = b₁ + (a + b₂)
+              -- 🎉 no goals
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
@@ -357,18 +369,26 @@ partial def evalAdd (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q
         ⟨_, .add vb₁ vc, q(add_pf_add_gt $b₁ $pc)⟩
 
 theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast]
+                                                            -- 🎉 no goals
 
 theorem mul_one (a : R) : a * (nat_lit 1).rawCast = a := by simp [Nat.rawCast]
+                                                            -- 🎉 no goals
 
 theorem mul_pf_left (a₁ : R) (a₂) (_ : a₃ * b = c) : (a₁ ^ a₂ * a₃ : R) * b = a₁ ^ a₂ * c := by
   subst_vars; rw [mul_assoc]
+  -- ⊢ a₁ ^ a₂ * a₃ * b = a₁ ^ a₂ * (a₃ * b)
+              -- 🎉 no goals
 
 theorem mul_pf_right (b₁ : R) (b₂) (_ : a * b₃ = c) : a * (b₁ ^ b₂ * b₃) = b₁ ^ b₂ * c := by
   subst_vars; rw [mul_left_comm]
+  -- ⊢ a * (b₁ ^ b₂ * b₃) = b₁ ^ b₂ * (a * b₃)
+              -- 🎉 no goals
 
 theorem mul_pp_pf_overlap (x : R) (_ : ea + eb = e) (_ : a₂ * b₂ = c) :
     (x ^ ea * a₂ : R) * (x ^ eb * b₂) = x ^ e * c := by
   subst_vars; simp [pow_add, mul_mul_mul_comm]
+  -- ⊢ x ^ ea * a₂ * (x ^ eb * b₂) = x ^ (ea + eb) * (a₂ * b₂)
+              -- 🎉 no goals
 
 /-- Multiplies two monomials `va, vb` together to get a normalized result monomial.
 
@@ -413,9 +433,12 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
       ⟨_, .mul vxb veb vc, (q(mul_pf_right $xb $eb $pc) : Expr)⟩
 
 theorem mul_zero (a : R) : a * 0 = 0 := by simp
+                                           -- 🎉 no goals
 
 theorem mul_add (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) :
     a * (b₁ + b₂) = d := by subst_vars; simp [_root_.mul_add]
+                            -- ⊢ a * (b₁ + b₂) = a * b₁ + 0 + a * b₂
+                                        -- 🎉 no goals
 
 /-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
 
@@ -432,9 +455,12 @@ def evalMul₁ (va : ExProd sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a 
     ⟨_, vd, q(mul_add $pc₁ $pc₂ $pd)⟩
 
 theorem zero_mul (b : R) : 0 * b = 0 := by simp
+                                           -- 🎉 no goals
 
 theorem add_mul (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
     (a₁ + a₂) * b = d := by subst_vars; simp [_root_.add_mul]
+                            -- ⊢ (a₁ + a₂) * b = a₁ * b + a₂ * b
+                                        -- 🎉 no goals
 
 /-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
 
@@ -451,14 +477,19 @@ def evalMul (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a * $b
     ⟨_, vd, q(add_mul $pc₁ $pc₂ $pd)⟩
 
 theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
+                                                                          -- 🎉 no goals
 
 theorem natCast_mul (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) : R) = b₃) :
     ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by subst_vars; simp
+                                                  -- ⊢ ↑(a₁ ^ a₂ * a₃) = ↑a₁ ^ a₂ * ↑a₃
+                                                              -- 🎉 no goals
 
 theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
 
 theorem natCast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
+                                        -- ⊢ ↑(a₁ + a₂) = ↑a₁ + ↑a₂
+                                                    -- 🎉 no goals
 
 mutual
 
@@ -508,8 +539,12 @@ partial def ExSum.evalNatCast (va : ExSum sℕ a) : AtomM (Result (ExSum sα) q(
 end
 
 theorem smul_nat (_ : (a * b : ℕ) = c) : a • b = c := by subst_vars; simp
+                                                         -- ⊢ a • b = a * b
+                                                                     -- 🎉 no goals
 
 theorem smul_eq_cast (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by subst_vars; simp
+                                                                                 -- ⊢ a • b = ↑a * b
+                                                                                             -- 🎉 no goals
 
 /-- Constructs the scalar multiplication `n • a`, where both `n : ℕ` and `a : α` are normalized
 polynomial expressions.
@@ -530,9 +565,13 @@ def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : AtomM (Result (ExSum sα)
 
 theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
     -a = b := by subst_vars; simp [Int.negOfNat]
+                 -- ⊢ -a = Int.rawCast (Int.negOfNat 1) * a
+                             -- 🎉 no goals
 
 theorem neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
+                                                        -- ⊢ -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * -a₃
+                                                                    -- 🎉 no goals
 
 /-- Negates a monomial `va` to get another monomial.
 
@@ -556,9 +595,12 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     ⟨_, .mul va₁ va₂ vb, (q(neg_mul $a₁ $a₂ $pb) : Expr)⟩
 
 theorem neg_zero {R} [Ring R] : -(0 : R) = 0 := by simp
+                                                   -- 🎉 no goals
 
 theorem neg_add {R} [Ring R] {a₁ a₂ b₁ b₂ : R}
     (_ : -a₁ = b₁) (_ : -a₂ = b₂) : -(a₁ + a₂) = b₁ + b₂ := by subst_vars; simp [add_comm]
+                                                               -- ⊢ -(a₁ + a₂) = -a₁ + -a₂
+                                                                           -- 🎉 no goals
 
 /-- Negates a polynomial `va` to get another polynomial.
 
@@ -575,6 +617,8 @@ def evalNeg (rα : Q(Ring $α)) (va : ExSum sα a) : Result (ExSum sα) q(-$a) :
 
 theorem sub_pf {R} [Ring R] {a b c d : R}
     (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
+                                                   -- ⊢ a - b = a + -b
+                                                               -- 🎉 no goals
 
 /-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
 
@@ -586,6 +630,7 @@ def evalSub (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (
   ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
 
 theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
+                                                                                    -- 🎉 no goals
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -598,6 +643,7 @@ def evalPowProdAtom (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd s�
   ⟨_, (ExBase.sum va.toSum).toProd vb, q(pow_prod_atom $a $b)⟩
 
 theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp
+                                                                             -- 🎉 no goals
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -642,6 +688,7 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
     haveI : $a =Q Nat.rawCast $lit := ⟨⟩
     haveI p : Nat.ble 1 $lit =Q true := ⟨⟩
     by exact some (q(const_pos $lit $p))
+       -- 🎉 no goals
   | .mul (e := ea₁) vxa₁ _ va₂ => do
     let pa₁ ← vxa₁.evalPos
     let pa₂ ← va₂.evalPos
@@ -663,13 +710,18 @@ partial def ExSum.evalPos (va : ExSum sℕ a) : Option Q(0 < $a) :=
 end
 
 theorem pow_one (a : R) : a ^ nat_lit 1 = a := by simp
+                                                  -- 🎉 no goals
 
 theorem pow_bit0 (_ : (a : R) ^ k = b) (_ : b * b = c) : a ^ (Nat.mul (nat_lit 2) k) = c := by
   subst_vars; simp [Nat.succ_mul, pow_add]
+  -- ⊢ a ^ Nat.mul 2 k = a ^ k * a ^ k
+              -- 🎉 no goals
 
 theorem pow_bit1 (_ : (a : R) ^ k = b) (_ : b * b = c) (_ : c * a = d) :
     a ^ (Nat.add (Nat.mul (nat_lit 2) k) (nat_lit 1)) = d := by
   subst_vars; simp [Nat.succ_mul, pow_add]
+  -- ⊢ a ^ Nat.add (Nat.mul 2 k) 1 = a ^ k * a ^ k * a
+              -- 🎉 no goals
 
 /--
 The main case of exponentiation of ring expressions is when `va` is a polynomial and `n` is a
@@ -698,9 +750,12 @@ partial def evalPowNat (va : ExSum sα a) (n : Q(ℕ)) : Result (ExSum sα) q($a
       ⟨_, vd, (q(pow_bit1 $pb $pc $pd) : Expr)⟩
 
 theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by simp
+                                                                                    -- 🎉 no goals
 
 theorem mul_pow (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) :
     (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by subst_vars; simp [_root_.mul_pow, pow_mul]
+                                                   -- ⊢ (xa₁ ^ ea₁ * a₂) ^ b = xa₁ ^ (ea₁ * b) * a₂ ^ b
+                                                               -- 🎉 no goals
 
 /-- There are several special cases when exponentiating monomials:
 
@@ -746,9 +801,12 @@ structure ExtractCoeff (e : Q(ℕ)) where
   p : Q($e = $e' * $k)
 
 theorem coeff_one (k : ℕ) : k.rawCast = (nat_lit 1).rawCast * k := by simp
+                                                                      -- 🎉 no goals
 
 theorem coeff_mul (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ = (a₁ ^ a₂ * c₂) * k := by
   subst_vars; rw [mul_assoc]
+  -- ⊢ a₁ ^ a₂ * (c₂ * k) = a₁ ^ a₂ * c₂ * k
+              -- 🎉 no goals
 
 /-- Given a monomial expression `va`, splits off the leading coefficient `k` and the remainder
 `e'`, stored in the `ExtractCoeff` structure.
@@ -766,13 +824,18 @@ def extractCoeff (va : ExProd sℕ a) : ExtractCoeff a :=
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
 
 theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp
+                                                                 -- 🎉 no goals
 
 theorem zero_pow (_ : 0 < b) : (0 : R) ^ b = 0 := match b with | b+1 => by simp [pow_succ]
+                                                                           -- 🎉 no goals
 
 theorem single_pow (_ : (a : R) ^ b = c) : (a + 0) ^ b = c + 0 := by simp [*]
+                                                                     -- 🎉 no goals
 
 theorem pow_nat (_ : b = c * k) (_ : a ^ c = d) (_ : d ^ k = e) : (a : R) ^ b = e := by
   subst_vars; simp [pow_mul]
+  -- ⊢ a ^ (c * k) = (a ^ c) ^ k
+              -- 🎉 no goals
 
 /-- Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
 
@@ -788,6 +851,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
   | va, .const 1 =>
     haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
     ⟨_, va, by exact q(pow_one_cast $a)⟩
+               -- 🎉 no goals
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
     | none => evalPowAtom sα (.sum .zero) vb
@@ -803,9 +867,12 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
     else evalPowAtom sα (.sum va) vb
 
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
+                                                                 -- 🎉 no goals
 
 theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
   (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+                                -- ⊢ a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂
+                                            -- 🎉 no goals
 
 /-- Exponentiates two polynomials `va, vb`.
 
@@ -839,15 +906,19 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
 
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
+              -- 🎉 no goals
 
 theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
+              -- 🎉 no goals
 
 theorem cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
+              -- 🎉 no goals
 
 theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
+                 -- 🎉 no goals
 
 /-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
 
@@ -871,9 +942,12 @@ def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
 
 theorem toProd_pf (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
+                                                             -- 🎉 no goals
 theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
+                                                                                      -- 🎉 no goals
 theorem atom_pf' (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
+                                                                 -- 🎉 no goals
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
@@ -893,14 +967,19 @@ theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
     (_ : b₃ * (b₁ ^ a₂ * (nat_lit 1).rawCast) = c) :
     (a₁ ^ a₂ * a₃ : R)⁻¹ = c := by subst_vars; simp
+                                   -- ⊢ (a₁ ^ a₂ * a₃)⁻¹ = a₃⁻¹ * (a₁⁻¹ ^ a₂ * Nat.rawCast 1)
+                                               -- 🎉 no goals
 
 nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
 
 theorem inv_single {R} [DivisionRing R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]
+                                                  -- 🎉 no goals
 
 theorem inv_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
+                                        -- ⊢ ↑(a₁ + a₂) = ↑a₁ + ↑a₂
+                                                    -- 🎉 no goals
 
 section
 variable (dα : Q(DivisionRing $α))
@@ -956,6 +1035,8 @@ end
 
 theorem div_pf {R} [DivisionRing R] {a b c d : R}
     (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by subst_vars; simp [div_eq_mul_inv]
+                                                    -- ⊢ a / b = a * b⁻¹
+                                                                -- 🎉 no goals
 
 /-- Divides two polynomials `va, vb` to get a normalized result polynomial.
 
@@ -969,27 +1050,43 @@ def evalDiv (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : Ex
 
 theorem add_congr (_ : a = a') (_ : b = b')
     (_ : a' + b' = c) : (a + b : R) = c := by subst_vars; rfl
+                                              -- ⊢ a' + b' = a' + b'
+                                                          -- 🎉 no goals
 
 theorem mul_congr (_ : a = a') (_ : b = b')
     (_ : a' * b' = c) : (a * b : R) = c := by subst_vars; rfl
+                                              -- ⊢ a' * b' = a' * b'
+                                                          -- 🎉 no goals
 
 theorem nsmul_congr (_ : (a : ℕ) = a') (_ : b = b')
     (_ : a' • b' = c) : (a • (b : R)) = c := by subst_vars; rfl
+                                                -- ⊢ a' • b' = a' • b'
+                                                            -- 🎉 no goals
 
 theorem pow_congr (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
+                                              -- ⊢ a' ^ b' = a' ^ b'
+                                                          -- 🎉 no goals
 
 theorem neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
     (_ : -a' = b) : (-a : R) = b := by subst_vars; rfl
+                                       -- ⊢ -a' = -a'
+                                                   -- 🎉 no goals
 
 theorem sub_congr {R} [Ring R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' - b' = c) : (a - b : R) = c := by subst_vars; rfl
+                                              -- ⊢ a' - b' = a' - b'
+                                                          -- 🎉 no goals
 
 theorem inv_congr {R} [DivisionRing R] {a a' b : R} (_ : a = a')
     (_ : a'⁻¹ = b) : (a⁻¹ : R) = b := by subst_vars; rfl
+                                         -- ⊢ a'⁻¹ = a'⁻¹
+                                                     -- 🎉 no goals
 
 theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
+                                              -- ⊢ a' / b' = a' / b'
+                                                          -- 🎉 no goals
 
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
@@ -1091,6 +1188,8 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
+                                                          -- ⊢ b = b
+                                                                      -- 🎉 no goals
 
 /--
 This is a routine which is used to clean up the unsolved subgoal

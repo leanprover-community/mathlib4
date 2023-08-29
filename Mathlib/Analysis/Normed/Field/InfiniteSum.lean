@@ -32,6 +32,7 @@ theorem Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable
     (hf' : 0 ≤ f) (hg' : 0 ≤ g) : Summable fun x : ι × ι' => f x.1 * g x.2 :=
   (summable_prod_of_nonneg <| fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
     by simpa only [hg.tsum_mul_left _] using hf.mul_right (∑' x, g x)⟩
+       -- 🎉 no goals
 #align summable.mul_of_nonneg Summable.mul_of_nonneg
 
 theorem Summable.mul_norm {f : ι → R} {g : ι' → R} (hf : Summable fun x => ‖f x‖)
@@ -78,7 +79,9 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
     summable_sum_mul_antidiagonal_of_summable_mul
       (Summable.mul_of_nonneg hf hg (fun _ => norm_nonneg _) fun _ => norm_nonneg _)
   refine' summable_of_nonneg_of_le (fun _ => norm_nonneg _) _ this
+  -- ⊢ ∀ (b : ℕ), ‖∑ kl in antidiagonal b, f kl.fst * g kl.snd‖ ≤ ∑ kl in antidiago …
   intro n
+  -- ⊢ ‖∑ kl in antidiagonal n, f kl.fst * g kl.snd‖ ≤ ∑ kl in antidiagonal n, ‖f k …
   calc
     ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ ≤ ∑ kl in antidiagonal n, ‖f kl.1 * g kl.2‖ :=
       norm_sum_le _ _
@@ -99,7 +102,9 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R
 theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x => ‖f x‖)
     (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k in range (n + 1), f k * g (n - k)‖ := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
+  -- ⊢ Summable fun n => ‖∑ ij in antidiagonal n, f ij.fst * g ij.snd‖
   exact summable_norm_sum_mul_antidiagonal_of_summable_norm hf hg
+  -- 🎉 no goals
 #align summable_norm_sum_mul_range_of_summable_norm summable_norm_sum_mul_range_of_summable_norm
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
@@ -110,7 +115,9 @@ theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g 
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k in range (n + 1), f k * g (n - k) := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
+  -- ⊢ (∑' (n : ℕ), f n) * ∑' (n : ℕ), g n = ∑' (n : ℕ), ∑ ij in antidiagonal n, f  …
   exact tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm hf hg
+  -- 🎉 no goals
 #align tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm
 
 end Nat

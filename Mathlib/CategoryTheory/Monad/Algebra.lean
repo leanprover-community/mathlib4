@@ -149,7 +149,9 @@ def isoMk {A B : Algebra T} (h : A.A ≅ B.A)
     { f := h.inv
       h := by
         rw [h.eq_comp_inv, Category.assoc, ← w, ← Functor.map_comp_assoc]
+        -- ⊢ T.map (h.inv ≫ h.hom) ≫ B.a = B.a
         simp }
+        -- 🎉 no goals
 #align category_theory.monad.algebra.iso_mk CategoryTheory.Monad.Algebra.isoMk
 
 end Algebra
@@ -191,15 +193,23 @@ def adj : T.free ⊣ T.forget :=
             { f := T.map f ≫ Y.a
               h := by
                 dsimp
+                -- ⊢ T.map (T.map f ≫ Y.a) ≫ Y.a = NatTrans.app (μ T) X ≫ T.map f ≫ Y.a
                 simp [← Y.assoc, ← T.μ.naturality_assoc] }
+                -- 🎉 no goals
           left_inv := fun f => by
             ext
+            -- ⊢ ((fun f => Algebra.Hom.mk (T.map f ≫ Y.a)) ((fun f => NatTrans.app (η T) X ≫ …
             dsimp
+            -- ⊢ T.map (NatTrans.app (η T) X ≫ f.f) ≫ Y.a = f.f
             simp
+            -- 🎉 no goals
           right_inv := fun f => by
             dsimp only [forget_obj]
+            -- ⊢ NatTrans.app (η T) X ≫ T.map f ≫ Y.a = f
             rw [← T.η.naturality_assoc, Y.unit]
+            -- ⊢ (𝟭 C).map f ≫ 𝟙 Y.A = f
             apply Category.comp_id } }
+            -- 🎉 no goals
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
@@ -208,8 +218,11 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
   ⟨⟨{   f := inv f.f
         h := by
           rw [IsIso.eq_comp_inv f.f, Category.assoc, ← f.h]
+          -- ⊢ T.map (inv f.f) ≫ T.map f.f ≫ B.a = B.a
           simp },
+          -- 🎉 no goals
       by aesop_cat⟩⟩
+         -- 🎉 no goals
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms T.forget
@@ -256,10 +269,14 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
       a := h.app A.A ≫ A.a
       unit := by
         dsimp
+        -- ⊢ NatTrans.app (η T₂) A.A ≫ NatTrans.app h.toNatTrans A.A ≫ A.a = 𝟙 A.A
         simp [A.unit]
+        -- 🎉 no goals
       assoc := by
         dsimp
+        -- ⊢ NatTrans.app (μ T₂) A.A ≫ NatTrans.app h.toNatTrans A.A ≫ A.a = T₂.map (NatT …
         simp [A.assoc] }
+        -- 🎉 no goals
   map f := { f := f.f }
 #align category_theory.monad.algebra_functor_of_monad_hom CategoryTheory.Monad.algebraFunctorOfMonadHom
 
@@ -301,9 +318,11 @@ def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra 
   unitIso :=
     algebraFunctorOfMonadHomId.symm ≪≫
       algebraFunctorOfMonadHomEq (by simp) ≪≫ algebraFunctorOfMonadHomComp _ _
+                                     -- 🎉 no goals
   counitIso :=
     (algebraFunctorOfMonadHomComp _ _).symm ≪≫
       algebraFunctorOfMonadHomEq (by simp) ≪≫ algebraFunctorOfMonadHomId
+                                     -- 🎉 no goals
 #align category_theory.monad.algebra_equiv_of_iso_monads CategoryTheory.Monad.algebraEquivOfIsoMonads
 
 @[simp]
@@ -430,7 +449,9 @@ def isoMk {A B : Coalgebra G} (h : A.A ≅ B.A)
     { f := h.inv
       h := by
         rw [h.eq_inv_comp, ← reassoc_of% w, ← Functor.map_comp]
+        -- ⊢ A.a ≫ G.map (h.hom ≫ h.inv) = A.a
         simp }
+        -- 🎉 no goals
 #align category_theory.comonad.coalgebra.iso_mk CategoryTheory.Comonad.Coalgebra.isoMk
 
 end Coalgebra
@@ -471,15 +492,23 @@ def adj : G.forget ⊣ G.cofree :=
             { f := X.a ≫ G.map f
               h := by
                 dsimp
+                -- ⊢ X.a ≫ G.map (X.a ≫ G.map f) = (X.a ≫ G.map f) ≫ NatTrans.app (δ G) Y
                 simp [← Coalgebra.coassoc_assoc] }
+                -- 🎉 no goals
           invFun := fun g => g.f ≫ G.ε.app Y
           left_inv := fun f => by
             dsimp
+            -- ⊢ (X.a ≫ G.map f) ≫ NatTrans.app (ε G) Y = f
             rw [Category.assoc, G.ε.naturality, Functor.id_map, X.counit_assoc]
+            -- 🎉 no goals
           right_inv := fun g => by
             ext1; dsimp
+            -- ⊢ ((fun f => Coalgebra.Hom.mk (X.a ≫ G.map f)) ((fun g => g.f ≫ NatTrans.app ( …
+                  -- ⊢ X.a ≫ G.map (g.f ≫ NatTrans.app (ε G) Y) = g.f
             rw [Functor.map_comp, g.h_assoc, cofree_obj_a, Comonad.right_counit]
+            -- ⊢ g.f ≫ 𝟙 (G.obj Y) = g.f
             apply comp_id } }
+            -- 🎉 no goals
 #align category_theory.comonad.adj CategoryTheory.Comonad.adj
 
 /-- Given a coalgebra morphism whose carrier part is an isomorphism, we get a coalgebra isomorphism.
@@ -488,8 +517,11 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
   ⟨⟨{   f := inv f.f
         h := by
           rw [IsIso.eq_inv_comp f.f, ← f.h_assoc]
+          -- ⊢ A.a ≫ G.map f.f ≫ G.map (inv f.f) = A.a
           simp },
+          -- 🎉 no goals
       by aesop_cat⟩⟩
+         -- 🎉 no goals
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms G.forget

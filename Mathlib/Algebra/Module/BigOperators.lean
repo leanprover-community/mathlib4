@@ -31,8 +31,11 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
   induction' s using Multiset.induction with a s ih
+  -- ⊢ sum 0 • sum t = sum (map (fun p => p.fst • p.snd) (0 ×ˢ t))
   · simp
+    -- 🎉 no goals
   · simp [add_smul, ih, ← Multiset.smul_sum]
+    -- 🎉 no goals
 #align multiset.sum_smul_sum Multiset.sum_smul_sum
 
 theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
@@ -42,12 +45,16 @@ theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
     ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ˢ t, f p.fst • g p.snd := by
   rw [Finset.sum_product, Finset.sum_smul, Finset.sum_congr rfl]
+  -- ⊢ ∀ (x : α), x ∈ s → f x • ∑ i in t, g i = ∑ y in t, f (x, y).fst • g (x, y).snd
   intros
+  -- ⊢ f x✝ • ∑ i in t, g i = ∑ y in t, f (x✝, y).fst • g (x✝, y).snd
   rw [Finset.smul_sum]
+  -- 🎉 no goals
 #align finset.sum_smul_sum Finset.sum_smul_sum
 
 end AddCommMonoid
 
 theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ a in s, 1 := by
   rw [Finset.sum_const, Nat.smul_one_eq_coe]
+  -- 🎉 no goals
 #align finset.cast_card Finset.cast_card

@@ -219,10 +219,17 @@ instance : Category (Monad C) where
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
+                                        -- 🎉 no goals
   -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
   id_comp _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
+                                    -- ⊢ NatTrans.app (𝟙 X✝ ≫ x✝¹).toNatTrans x✝ = NatTrans.app x✝¹.toNatTrans x✝
+                                            -- 🎉 no goals
   comp_id _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
+                                    -- ⊢ NatTrans.app (x✝¹ ≫ 𝟙 Y✝).toNatTrans x✝ = NatTrans.app x✝¹.toNatTrans x✝
+                                            -- 🎉 no goals
   assoc _ _ _ := MonadHom.ext _ _ (by funext; simp only [assoc])
+                                      -- ⊢ NatTrans.app ((x✝³ ≫ x✝²) ≫ x✝¹).toNatTrans x✝ = NatTrans.app (x✝³ ≫ x✝² ≫ x …
+                                              -- 🎉 no goals
 
 instance : Category (Comonad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
@@ -230,10 +237,17 @@ instance : Category (Comonad C) where
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
+                                        -- 🎉 no goals
   -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
   id_comp _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
+                                      -- ⊢ NatTrans.app (𝟙 X✝ ≫ x✝¹).toNatTrans x✝ = NatTrans.app x✝¹.toNatTrans x✝
+                                              -- 🎉 no goals
   comp_id _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
+                                      -- ⊢ NatTrans.app (x✝¹ ≫ 𝟙 Y✝).toNatTrans x✝ = NatTrans.app x✝¹.toNatTrans x✝
+                                              -- 🎉 no goals
   assoc _ _ _ := ComonadHom.ext _ _ (by funext; simp only [assoc])
+                                        -- ⊢ NatTrans.app ((x✝³ ≫ x✝²) ≫ x✝¹).toNatTrans x✝ = NatTrans.app (x✝³ ≫ x✝² ≫ x …
+                                                -- 🎉 no goals
 
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
@@ -277,11 +291,14 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
   inv :=
     { toNatTrans := f.inv
       app_η := fun X => by simp [← f_η]
+                           -- 🎉 no goals
       app_μ := fun X => by
         rw [← NatIso.cancel_natIso_hom_right f]
+        -- ⊢ (NatTrans.app (Monad.μ N) X ≫ NatTrans.app f.inv X) ≫ NatTrans.app f.hom X = …
         simp only [NatTrans.naturality, Iso.inv_hom_id_app, assoc, comp_id, f_μ,
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
         simp }
+        -- 🎉 no goals
 #align category_theory.monad_iso.mk CategoryTheory.MonadIso.mk
 
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
@@ -298,11 +315,16 @@ def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
   inv :=
     { toNatTrans := f.inv
       app_ε := fun X => by simp [← f_ε]
+                           -- 🎉 no goals
       app_δ := fun X => by
         rw [← NatIso.cancel_natIso_hom_left f]
+        -- ⊢ NatTrans.app f.hom X ≫ NatTrans.app f.inv X ≫ NatTrans.app (Comonad.δ M) X = …
         simp only [reassoc_of% (f_δ X), Iso.hom_inv_id_app_assoc, NatTrans.naturality_assoc]
+        -- ⊢ NatTrans.app (Comonad.δ M) X = NatTrans.app (Comonad.δ M) X ≫ M.map (NatTran …
         rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
+        -- ⊢ NatTrans.app (Comonad.δ M) X = NatTrans.app (Comonad.δ M) X ≫ 𝟙 (M.obj (M.ob …
         apply (comp_id _).symm }
+        -- 🎉 no goals
 #align category_theory.comonad_iso.mk CategoryTheory.ComonadIso.mk
 
 variable (C)
@@ -320,7 +342,9 @@ instance : Faithful (monadToFunctor C) where
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
+  -- ⊢ NatTrans.app ((monadToFunctor C).mapIso (MonadIso.mk f)).hom x✝ = NatTrans.a …
   rfl
+  -- 🎉 no goals
 #align category_theory.monad_to_functor_map_iso_monad_iso_mk CategoryTheory.monadToFunctor_mapIso_monad_iso_mk
 
 instance : ReflectsIsomorphisms (monadToFunctor C) where
@@ -339,7 +363,9 @@ instance : Faithful (comonadToFunctor C) where
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext
+  -- ⊢ NatTrans.app ((comonadToFunctor C).mapIso (ComonadIso.mk f)).hom x✝ = NatTra …
   rfl
+  -- 🎉 no goals
 #align category_theory.comonad_to_functor_map_iso_comonad_iso_mk CategoryTheory.comonadToFunctor_mapIso_comonad_iso_mk
 
 instance : ReflectsIsomorphisms (comonadToFunctor C) where

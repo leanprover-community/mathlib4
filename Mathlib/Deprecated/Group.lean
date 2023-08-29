@@ -65,6 +65,7 @@ theorem id : IsMulHom (id : α → α) :=
 @[to_additive "The composition of addition preserving maps also preserves addition"]
 theorem comp {f : α → β} {g : β → γ} (hf : IsMulHom f) (hg : IsMulHom g) : IsMulHom (g ∘ f) :=
   { map_mul := fun x y => by simp only [Function.comp, hf.map_mul, hg.map_mul] }
+                             -- 🎉 no goals
 #align is_mul_hom.comp IsMulHom.comp
 #align is_add_hom.comp IsAddHom.comp
 
@@ -77,6 +78,7 @@ theorem mul {α β} [Semigroup α] [CommSemigroup β] {f g : α → β} (hf : Is
     (hg : IsMulHom g) : IsMulHom fun a => f a * g a :=
   { map_mul := fun a b => by
       simp only [hf.map_mul, hg.map_mul, mul_comm, mul_assoc, mul_left_comm] }
+      -- 🎉 no goals
 #align is_mul_hom.mul IsMulHom.mul
 #align is_add_hom.add IsAddHom.add
 
@@ -191,6 +193,7 @@ homomorphism."]
 theorem IsMulHom.to_isMonoidHom [MulOneClass α] [Group β] {f : α → β} (hf : IsMulHom f) :
     IsMonoidHom f :=
   { map_one := mul_right_eq_self.1 <| by rw [← hf.map_mul, one_mul]
+                                         -- 🎉 no goals
     map_mul := hf.map_mul }
 #align is_mul_hom.to_is_monoid_hom IsMulHom.to_isMonoidHom
 #align is_add_hom.to_is_add_monoid_hom IsAddHom.to_isAddMonoidHom
@@ -215,6 +218,7 @@ theorem comp (hf : IsMonoidHom f) {γ} [MulOneClass γ] {g : β → γ} (hg : Is
     IsMonoidHom (g ∘ f) :=
   { IsMulHom.comp hf.toIsMulHom hg.toIsMulHom with
     map_one := show g _ = 1 by rw [hf.map_one, hg.map_one] }
+                               -- 🎉 no goals
 #align is_monoid_hom.comp IsMonoidHom.comp
 #align is_add_monoid_hom.comp IsAddMonoidHom.comp
 
@@ -297,12 +301,14 @@ theorem map_one : f 1 = 1 :=
 @[to_additive "An additive group homomorphism sends negations to negations."]
 theorem map_inv (hf : IsGroupHom f) (a : α) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| by rw [← hf.map_mul, inv_mul_self, hf.map_one]
+                                  -- 🎉 no goals
 #align is_group_hom.map_inv IsGroupHom.map_inv
 #align is_add_group_hom.map_neg IsAddGroupHom.map_neg
 
 @[to_additive]
 theorem map_div (hf : IsGroupHom f) (a b : α) : f (a / b) = f a / f b := by
   simp_rw [div_eq_mul_inv, hf.map_mul, hf.map_inv]
+  -- 🎉 no goals
 #align is_group_hom.map_div IsGroupHom.map_div
 #align is_add_group_hom.map_sub IsAddGroupHom.map_sub
 
@@ -328,7 +334,10 @@ theorem comp (hf : IsGroupHom f) {γ} [Group γ] {g : β → γ} (hg : IsGroupHo
 theorem injective_iff {f : α → β} (hf : IsGroupHom f) :
     Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h _ => by rw [← hf.map_one]; exact @h _ _, fun h x y hxy =>
+                 -- ⊢ f x✝ = f 1 → x✝ = 1
+                                    -- 🎉 no goals
     eq_of_div_eq_one <| h _ <| by rwa [hf.map_div, div_eq_one]⟩
+                                  -- 🎉 no goals
 #align is_group_hom.injective_iff IsGroupHom.injective_iff
 #align is_add_group_hom.injective_iff IsAddGroupHom.injective_iff
 
@@ -405,6 +414,7 @@ homomorphism if the target is commutative. -/
 theorem IsAddGroupHom.sub {α β} [AddGroup α] [AddCommGroup β] {f g : α → β} (hf : IsAddGroupHom f)
     (hg : IsAddGroupHom g) : IsAddGroupHom fun a => f a - g a := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+  -- 🎉 no goals
 #align is_add_group_hom.sub IsAddGroupHom.sub
 
 namespace Units

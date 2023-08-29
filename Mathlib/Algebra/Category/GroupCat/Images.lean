@@ -55,7 +55,9 @@ def factorThruImage : G ⟶ image f :=
 
 theorem image.fac : factorThruImage f ≫ image.ι f = f := by
   ext
+  -- ⊢ ↑(factorThruImage f ≫ ι f) x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align AddCommGroup.image.fac AddCommGroupCat.image.fac
 
 attribute [local simp] image.fac
@@ -67,28 +69,47 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
   toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
   map_zero' := by
     haveI := F'.m_mono
+    -- ⊢ (fun x => ↑F'.e ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑x) ( …
     apply injective_of_mono F'.m
+    -- ⊢ ↑F'.m ((fun x => ↑F'.e ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1  …
     change (F'.e ≫ F'.m) _ = _
+    -- ⊢ ↑(F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x => ↑f x = ↑0) (_ : ↑ …
     rw [F'.fac, AddMonoidHom.map_zero]
+    -- ⊢ ↑f ↑(Classical.indefiniteDescription (fun x => ↑f x = ↑0) (_ : ↑0 ∈ AddMonoi …
     exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
+    -- 🎉 no goals
   map_add' := by
     intro x y
+    -- ⊢ ZeroHom.toFun { toFun := fun x => ↑F'.e ↑(Classical.indefiniteDescription (f …
     haveI := F'.m_mono
+    -- ⊢ ZeroHom.toFun { toFun := fun x => ↑F'.e ↑(Classical.indefiniteDescription (f …
     apply injective_of_mono F'.m
+    -- ⊢ ↑F'.m (ZeroHom.toFun { toFun := fun x => ↑F'.e ↑(Classical.indefiniteDescrip …
     rw [AddMonoidHom.map_add]
+    -- ⊢ ↑F'.m (ZeroHom.toFun { toFun := fun x => ↑F'.e ↑(Classical.indefiniteDescrip …
     change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
+    -- ⊢ ↑(F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑(x +  …
     rw [F'.fac]
+    -- ⊢ ↑f ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑(x + y)) (_ : ↑(x …
     rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+    -- ⊢ ↑(x + y) = ↑f ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑x) (_  …
     rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+    -- ⊢ ↑(x + y) = ↑x + ↑f ↑(Classical.indefiniteDescription (fun x => ↑f x = ↑y) (_ …
     rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+    -- ⊢ ↑(x + y) = ↑x + ↑y
     rfl
+    -- 🎉 no goals
 #align AddCommGroup.image.lift AddCommGroupCat.image.lift
 
 theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
+  -- ⊢ ↑(lift F' ≫ F'.m) x = ↑(ι f) x
   change (F'.e ≫ F'.m) _ = _
+  -- ⊢ ↑(F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑x) (_ …
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
+  -- ⊢ ↑x = ↑(ι f) x
   rfl
+  -- 🎉 no goals
 #align AddCommGroup.image.lift_fac AddCommGroupCat.image.lift_fac
 
 end

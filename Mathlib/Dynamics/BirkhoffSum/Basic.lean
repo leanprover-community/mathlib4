@@ -52,10 +52,12 @@ theorem birkhoffSum_succ' (f : α → α) (g : α → M) (n : ℕ) (x : α) :
 theorem birkhoffSum_add (f : α → α) (g : α → M) (m n : ℕ) (x : α) :
     birkhoffSum f g (m + n) x = birkhoffSum f g m x + birkhoffSum f g n (f^[m] x) := by
   simp_rw [birkhoffSum, sum_range_add, add_comm m, iterate_add_apply]
+  -- 🎉 no goals
 
 theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedPt f x) (g : α → M)
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
+  -- 🎉 no goals
 
 theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [AddMonoidHomClass F M N]
     (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :

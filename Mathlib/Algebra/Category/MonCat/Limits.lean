@@ -42,7 +42,9 @@ variable {J : Type v} [SmallCategory J]
 @[to_additive]
 instance monoidObj (F : J ⥤ MonCatMax.{u,v} ) (j) : Monoid ((F ⋙ forget MonCat).obj j) := by
   change Monoid (F.obj j)
+  -- ⊢ Monoid ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 #align Mon.monoid_obj MonCat.monoidObj
 #align AddMon.add_monoid_obj AddMonCat.addMonoidObj
 
@@ -53,9 +55,13 @@ instance monoidObj (F : J ⥤ MonCatMax.{u,v} ) (j) : Monoid ((F ⋙ forget MonC
 def sectionsSubmonoid (F : J ⥤ MonCatMax.{u,v}) : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp
+                            -- 🎉 no goals
   mul_mem' {a} {b} ah bh {j} {j'} f := by
+    -- ⊢ (forget MonCat).map (F.map f) (a j * b j) = a j' * b j'
     simp only [Functor.comp_map, MonoidHom.map_mul, Pi.mul_apply]
+    -- ⊢ (forget MonCat).map (F.map f) (a j * b j) = a j' * b j'
     dsimp [Functor.sections] at ah bh
+    -- 🎉 no goals
     rw [← ah f, ← bh f, forget_map, map_mul]
 #align Mon.sections_submonoid MonCat.sectionsSubmonoid
 #align AddMon.sections_add_submonoid AddMonCat.sectionsAddSubmonoid
@@ -105,6 +111,8 @@ noncomputable def limitConeIsLimit (F : J ⥤ MonCatMax.{u,v}) : IsLimit (limitC
   refine IsLimit.ofFaithful (forget MonCatMax) (Types.limitConeIsLimit.{v,u} _)
     (fun s => ⟨⟨_, ?_⟩, ?_⟩) (fun s => rfl) <;>
   aesop_cat
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align Mon.has_limits.limit_cone_is_limit MonCat.HasLimits.limitConeIsLimit
 #align AddMon.has_limits.limit_cone_is_limit AddMonCat.HasLimits.limitConeIsLimit
 
@@ -168,7 +176,9 @@ variable {J : Type v} [SmallCategory J]
 instance commMonoidObj (F : J ⥤ CommMonCatMax.{u,v}) (j) :
     CommMonoid ((F ⋙ forget CommMonCatMax.{u,v}).obj j) := by
   change CommMonoid (F.obj j)
+  -- ⊢ CommMonoid ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 #align CommMon.comm_monoid_obj CommMonCat.commMonoidObj
 #align AddCommMon.add_comm_monoid_obj AddCommMonCat.addCommMonoidObj
 
@@ -198,6 +208,7 @@ noncomputable instance forget₂CreatesLimit (F : J ⥤ CommMonCatMax.{u,v}) :
                 (MonCat.HasLimits.limitCone
                       (F ⋙ forget₂ CommMonCat MonCat.{max v u})).π.naturality } }
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t
+                      -- 🎉 no goals
       makesLimit :=
         IsLimit.ofFaithful (forget₂ CommMonCat MonCat.{max v u})
           (MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
@@ -246,6 +257,7 @@ monoids."]
 noncomputable instance forget₂MonPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget₂ CommMonCatMax.{u,v} MonCatMax.{u,v}) where
   preservesLimitsOfShape {J} 𝒥 := { preservesLimit := fun {F} => by infer_instance }
+                                                                    -- 🎉 no goals
 #align CommMon.forget₂_Mon_preserves_limits_of_size CommMonCat.forget₂MonPreservesLimitsOfSize
 #align AddCommMon.forget₂_AddMon_preserves_limits AddCommMonCat.forget₂AddMonPreservesLimits
 

@@ -50,6 +50,7 @@ instance : Abelian AddCommGroupCat.{u} where
 
 theorem exact_iff : Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
+  -- ⊢ f ≫ g = 0 ∧ Fork.ι (kernelCone g) ≫ Cofork.π (cokernelCocone f) = 0 ↔ AddMon …
   exact
     ⟨fun h => ((AddMonoidHom.range_le_ker_iff _ _).mpr h.left).antisymm
         ((QuotientAddGroup.ker_le_range_iff _ _).mpr h.right),
@@ -64,16 +65,26 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
   all_goals replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
     fun j => Functor.map_exact ((evaluation _ _).obj j) η γ h
   · rw [AddMonoidHom.range_le_ker_iff, ← comp_def]
+    -- ⊢ colim.map η ≫ colim.map γ = 0
     exact colimit.hom_ext fun j => by simp [reassoc_of% (h j).w]
+    -- 🎉 no goals
   · intro x (hx : _ = _)
+    -- ⊢ x ∈ AddMonoidHom.range (colim.map η)
     rcases Concrete.colimit_exists_rep G x with ⟨j, y, rfl⟩
+    -- ⊢ ↑(colimit.ι G j) y ∈ AddMonoidHom.range (colim.map η)
     erw [← comp_apply, colimit.ι_map, comp_apply,
       ← map_zero (by exact colimit.ι H j : H.obj j →+ ↑(colimit H))] at hx
     rcases Concrete.colimit_exists_of_rep_eq H _ _ hx with ⟨k, e₁, e₂, hk : _ = H.map e₂ 0⟩
+    -- ⊢ ↑(colimit.ι G j) y ∈ AddMonoidHom.range (colim.map η)
     rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
+    -- ⊢ ↑(colimit.ι G j) y ∈ AddMonoidHom.range (colim.map η)
     rcases ((exact_iff _ _).mp <| h k).ge hk with ⟨t, ht⟩
+    -- ⊢ ↑(colimit.ι G j) y ∈ AddMonoidHom.range (colim.map η)
     use colimit.ι F k t
+    -- ⊢ ↑(colim.map η) (↑(colimit.ι F k) t) = ↑(colimit.ι G j) y
     erw [← comp_apply, colimit.ι_map, comp_apply, ht]
+    -- ⊢ ↑(colimit.ι G k) (↑(G.map e₁) y) = ↑(colimit.ι G j) y
     exact colimit.w_apply G e₁ y
+    -- 🎉 no goals
 
 end AddCommGroupCat

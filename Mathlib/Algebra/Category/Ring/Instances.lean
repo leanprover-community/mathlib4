@@ -24,7 +24,9 @@ instance localization_unit_isIso (R : CommRingCat) :
 instance localization_unit_isIso' (R : CommRingCat) :
     @IsIso CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R (Localization.Away (1 : R))) := by
   cases R
+  -- ⊢ IsIso (CommRingCat.ofHom (algebraMap (↑(Bundled.mk α✝)) (Localization.Away 1 …
   exact localization_unit_isIso _
+  -- 🎉 no goals
 #align localization_unit_is_iso' localization_unit_isIso'
 
 theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
@@ -40,7 +42,9 @@ instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
 instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
     @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M : _) := by
   rcases R with ⟨α, str⟩
+  -- ⊢ Epi (CommRingCat.ofHom (algebraMap (↑(Bundled.mk α)) (Localization M)))
   exact IsLocalization.epi M _
+  -- 🎉 no goals
 #align localization.epi' Localization.epi'
 
 instance CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
@@ -52,7 +56,9 @@ set_option linter.uppercaseLean3 false in
 theorem isLocalRingHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalRingHom f.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.isUnit_map ha
+      -- ⊢ a = ↑f.inv (↑f.hom a)
       exact (RingHom.congr_fun f.hom_inv_id _).symm }
+      -- 🎉 no goals
 #align is_local_ring_hom_of_iso isLocalRingHom_of_iso
 
 -- see Note [lower instance priority]

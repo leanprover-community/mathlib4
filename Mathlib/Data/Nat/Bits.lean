@@ -37,6 +37,9 @@ variable {n : ℕ}
 @[simp]
 theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
   unfold bodd div2; cases boddDiv2 n; rfl
+  -- ⊢ boddDiv2 n = ((boddDiv2 n).fst, (boddDiv2 n).snd)
+                    -- ⊢ (fst✝, snd✝) = ((fst✝, snd✝).fst, (fst✝, snd✝).snd)
+                                      -- 🎉 no goals
 #align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
@@ -69,21 +72,29 @@ theorem div2_bit1 (n) : div2 (bit1 n) = n :=
 @[simp]
 theorem bit0_eq_bit0 {m n : ℕ} : bit0 m = bit0 n ↔ m = n :=
   ⟨Nat.bit0_inj, fun h => by subst h; rfl⟩
+                             -- ⊢ bit0 m = bit0 m
+                                      -- 🎉 no goals
 #align nat.bit0_eq_bit0 Nat.bit0_eq_bit0
 
 @[simp]
 theorem bit1_eq_bit1 {m n : ℕ} : bit1 m = bit1 n ↔ m = n :=
   ⟨Nat.bit1_inj, fun h => by subst h; rfl⟩
+                             -- ⊢ bit1 m = bit1 m
+                                      -- 🎉 no goals
 #align nat.bit1_eq_bit1 Nat.bit1_eq_bit1
 
 @[simp]
 theorem bit1_eq_one {n : ℕ} : bit1 n = 1 ↔ n = 0 :=
   ⟨@Nat.bit1_inj n 0, fun h => by subst h; rfl⟩
+                                  -- ⊢ bit1 0 = 1
+                                           -- 🎉 no goals
 #align nat.bit1_eq_one Nat.bit1_eq_one
 
 @[simp]
 theorem one_eq_bit1 {n : ℕ} : 1 = bit1 n ↔ n = 0 :=
   ⟨fun h => (@Nat.bit1_inj 0 n h).symm, fun h => by subst h; rfl⟩
+                                                    -- ⊢ 1 = bit1 0
+                                                             -- 🎉 no goals
 #align nat.one_eq_bit1 Nat.one_eq_bit1
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
@@ -98,28 +109,37 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
+  -- 🎉 no goals
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
 theorem bit0_mod_two : bit0 n % 2 = 0 := by
   rw [Nat.mod_two_of_bodd]
+  -- ⊢ (bif bodd (bit0 n) then 1 else 0) = 0
   simp
+  -- 🎉 no goals
 #align nat.bit0_mod_two Nat.bit0_mod_two
 
 theorem bit1_mod_two : bit1 n % 2 = 1 := by
   rw [Nat.mod_two_of_bodd]
+  -- ⊢ (bif bodd (bit1 n) then 1 else 0) = 1
   simp
+  -- 🎉 no goals
 #align nat.bit1_mod_two Nat.bit1_mod_two
 
 theorem pos_of_bit0_pos {n : ℕ} (h : 0 < bit0 n) : 0 < n := by
   cases n
+  -- ⊢ 0 < zero
   · cases h
+    -- 🎉 no goals
   · apply succ_pos
+    -- 🎉 no goals
 #align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
 
 @[simp]
 theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
     bitCasesOn (bit b n) H = H b n :=
   eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
+                                            -- 🎉 no goals
 #align nat.bit_cases_on_bit Nat.bitCasesOn_bit
 
 @[simp]
@@ -137,8 +157,11 @@ theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ
 theorem bit_cases_on_injective {C : ℕ → Sort u} :
     Function.Injective fun H : ∀ b n, C (bit b n) => fun n => bitCasesOn n H := by
   intro H₁ H₂ h
+  -- ⊢ H₁ = H₂
   ext b n
+  -- ⊢ H₁ b n = H₂ b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
+  -- 🎉 no goals
 #align nat.bit_cases_on_injective Nat.bit_cases_on_injective
 
 @[simp]
@@ -149,13 +172,20 @@ theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n))
 
 protected theorem bit0_eq_zero {n : ℕ} : bit0 n = 0 ↔ n = 0 :=
   ⟨Nat.eq_zero_of_add_eq_zero_left, fun h => by simp [h]⟩
+                                                -- 🎉 no goals
 #align nat.bit0_eq_zero Nat.bit0_eq_zero
 
 theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   constructor
+  -- ⊢ bit b n = 0 → n = 0 ∧ b = false
   · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero, Nat.bit1_ne_zero]
+    -- ⊢ bit false n = 0 → n = 0 ∧ false = false
+                -- 🎉 no goals
+                -- 🎉 no goals
   · rintro ⟨rfl, rfl⟩
+    -- ⊢ bit false 0 = 0
     rfl
+    -- 🎉 no goals
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
 
 /--
@@ -167,19 +197,29 @@ theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
+  -- ⊢ (if n0 : bit b n = 0 then Eq.mpr (_ : C (bit b n) = C 0) z
   split_ifs with h'
   · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
+    -- ⊢ Eq.mpr (_ : C (bit false 0) = C 0) z = f false 0 (binaryRec z f 0)
     rw [binaryRec_zero]
+    -- ⊢ Eq.mpr (_ : C (bit false 0) = C 0) z = f false 0 z
     simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
+    -- ⊢ Eq.mpr (_ : C (bit false 0) = C 0) z = f false 0 z
     exact h.symm
+    -- 🎉 no goals
   · dsimp only []
+    -- ⊢ Eq.mpr (_ : C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n)))) (f (bod …
     -- Porting note: this line was `generalize_proofs e`:
     generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
       (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e
+    -- ⊢ ∀ (e : C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n)))), Eq.mpr e (f …
     rw [bodd_bit, div2_bit]
+    -- ⊢ ∀ (e : C (bit b n) = C (bit b n)), Eq.mpr e (f b n (binaryRec z f n)) = f b  …
     intros
+    -- ⊢ Eq.mpr e✝ (f b n (binaryRec z f n)) = f b n (binaryRec z f n)
     rfl
+    -- 🎉 no goals
 #align nat.binary_rec_eq' Nat.binaryRec_eq'
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
@@ -191,8 +231,11 @@ def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) 
     if h : n = 0 → b = true then f b n h ih
     else by
       convert z
+      -- ⊢ bit b n = 0
       rw [bit_eq_zero_iff]
+      -- ⊢ n = 0 ∧ b = false
       simpa using h
+      -- 🎉 no goals
 #align nat.binary_rec' Nat.binaryRec'
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
@@ -202,19 +245,24 @@ def binaryRecFromOne {C : ℕ → Sort*} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n,
   binaryRec' z₀ fun b n h ih =>
     if h' : n = 0 then by
       rw [h', h h']
+      -- ⊢ C (bit true 0)
       exact z₁
+      -- 🎉 no goals
     else f b n h' ih
 #align nat.binary_rec_from_one Nat.binaryRecFromOne
 
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
+                                      -- 🎉 no goals
 #align nat.zero_bits Nat.zero_bits
 
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
   rw [Nat.bits, binaryRec_eq']
+  -- ⊢ [false] = [] ∨ (n = 0 → b = true)
   simpa
+  -- 🎉 no goals
 #align nat.bits_append_bit Nat.bits_append_bit
 
 @[simp]
@@ -230,6 +278,7 @@ theorem bit1_bits (n : ℕ) : (bit1 n).bits = true :: n.bits :=
 @[simp]
 theorem one_bits : Nat.bits 1 = [true] := by
   convert bit1_bits 0
+  -- 🎉 no goals
 #align nat.one_bits Nat.one_bits
 
 -- TODO Find somewhere this can live.
@@ -238,12 +287,18 @@ theorem one_bits : Nat.bits 1 = [true] := by
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction' n using Nat.binaryRec' with b n h _; · simp
+  -- ⊢ bodd 0 = List.headI (bits 0)
+                                                    -- 🎉 no goals
   simp [bodd_bit, bits_append_bit _ _ h]
+  -- 🎉 no goals
 #align nat.bodd_eq_bits_head Nat.bodd_eq_bits_head
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
   induction' n using Nat.binaryRec' with b n h _; · simp
+  -- ⊢ bits (div2 0) = List.tail (bits 0)
+                                                    -- 🎉 no goals
   simp [div2_bit, bits_append_bit _ _ h]
+  -- 🎉 no goals
 #align nat.div2_bits_eq_tail Nat.div2_bits_eq_tail
 
 end Nat

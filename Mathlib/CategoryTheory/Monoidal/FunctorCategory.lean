@@ -55,6 +55,8 @@ Tensor product of natural transformations into `D`, when `D` is monoidal.
 def tensorHom : tensorObj F F' ⟶ tensorObj G G' where
   app X := α.app X ⊗ β.app X
   naturality X Y f := by dsimp; rw [← tensor_comp, α.naturality, β.naturality, tensor_comp]
+                         -- ⊢ (F.map f ⊗ F'.map f) ≫ (NatTrans.app α Y ⊗ NatTrans.app β Y) = (NatTrans.app …
+                                -- 🎉 no goals
 #align category_theory.monoidal.functor_category.tensor_hom CategoryTheory.Monoidal.FunctorCategory.tensorHom
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
@@ -63,7 +65,9 @@ def whiskerLeft (F) (β : F' ⟶ G') : tensorObj F F' ⟶ tensorObj F G' where
   app X := F.obj X ◁ β.app X
   naturality X Y f := by
     simp only [← id_tensorHom]
+    -- ⊢ (tensorObj F F').map f ≫ (𝟙 (F.obj Y) ⊗ NatTrans.app β Y) = (𝟙 (F.obj X) ⊗ N …
     apply (tensorHom (𝟙 F) β).naturality
+    -- 🎉 no goals
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
 @[simps]
@@ -71,7 +75,9 @@ def whiskerRight (F') : tensorObj F F' ⟶ tensorObj G F' where
   app X := α.app X ▷ F'.obj X
   naturality X Y f := by
     simp only [← tensorHom_id]
+    -- ⊢ (tensorObj F F').map f ≫ (NatTrans.app α Y ⊗ 𝟙 (F'.obj Y)) = (NatTrans.app α …
     apply (tensorHom α (𝟙 F')).naturality
+    -- 🎉 no goals
 
 end FunctorCategory
 
@@ -87,11 +93,17 @@ instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
   whiskerRight α F := FunctorCategory.whiskerRight α F
   tensorHom_def := by intros; ext; simp [tensorHom_def]
+                      -- ⊢ (fun {X₁ Y₁ X₂ Y₂} α β => FunctorCategory.tensorHom α β) f✝ g✝ = (fun {X₁ X₂ …
+                              -- ⊢ NatTrans.app ((fun {X₁ Y₁ X₂ Y₂} α β => FunctorCategory.tensorHom α β) f✝ g✝ …
+                                   -- 🎉 no goals
   tensorUnit' := (CategoryTheory.Functor.const C).obj (𝟙_ D)
   leftUnitor F := NatIso.ofComponents fun X => λ_ (F.obj X)
   rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
   associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
   pentagon F G H K := by ext X; dsimp; rw [pentagon]
+                         -- ⊢ NatTrans.app ((fun {X₁ Y₁ X₂ Y₂} α β => FunctorCategory.tensorHom α β) ((fun …
+                                -- ⊢ ((α_ (F.obj X) (G.obj X) (H.obj X)).hom ⊗ 𝟙 (K.obj X)) ≫ (α_ (F.obj X) (G.ob …
+                                       -- 🎉 no goals
 #align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 
 @[simp]
@@ -169,7 +181,11 @@ is also braided.
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
   braiding F G := NatIso.ofComponents fun X => β_ _ _
   hexagon_forward F G H := by ext X; apply hexagon_forward
+                              -- ⊢ NatTrans.app ((α_ F G H).hom ≫ ((fun F G => NatIso.ofComponents fun X => β_  …
+                                     -- 🎉 no goals
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
+                              -- ⊢ NatTrans.app ((α_ F G H).inv ≫ ((fun F G => NatIso.ofComponents fun X => β_  …
+                                     -- 🎉 no goals
 #align category_theory.monoidal.functor_category_braided CategoryTheory.Monoidal.functorCategoryBraided
 
 example : BraidedCategory (C ⥤ D) :=
@@ -189,6 +205,8 @@ is also symmetric.
 -/
 instance functorCategorySymmetric : SymmetricCategory (C ⥤ D)
     where symmetry F G := by ext X; apply symmetry
+                             -- ⊢ NatTrans.app ((β_ F G).hom ≫ (β_ G F).hom) X = NatTrans.app (𝟙 (F ⊗ G)) X
+                                    -- 🎉 no goals
 #align category_theory.monoidal.functor_category_symmetric CategoryTheory.Monoidal.functorCategorySymmetric
 
 end SymmetricCategory

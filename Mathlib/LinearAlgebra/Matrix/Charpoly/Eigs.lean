@@ -69,6 +69,7 @@ theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.
 theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
     A.trace = (Matrix.charpoly A).roots.sum := by
   cases' isEmpty_or_nonempty n with h
+  -- ⊢ trace A = Multiset.sum (roots (charpoly A))
   · rw [Matrix.trace, Fintype.sum_empty, Matrix.charpoly,
       det_eq_one_of_card_eq_zero (Fintype.card_eq_zero_iff.2 h), Polynomial.roots_one,
       Multiset.empty_eq_zero, Multiset.sum_zero]

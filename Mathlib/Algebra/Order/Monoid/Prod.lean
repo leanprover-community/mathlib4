@@ -51,6 +51,7 @@ instance orderedCommMonoid [OrderedCommMonoid α]
   mul_le_mul_left x y hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
     (fun hxy => (le_iff _ _).2 <| Or.inr ⟨by rw [hxy.1], mul_le_mul_left' hxy.2 _⟩)
+                                             -- 🎉 no goals
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :

@@ -89,14 +89,17 @@ theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ 
 
 theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t ++ l₂ = l₁ ∪ l₂
   | [], l₂ => ⟨[], by rfl, rfl⟩
+                      -- 🎉 no goals
   | a :: l₁, l₂ =>
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
       ⟨t, sublist_cons_of_sublist _ s, by
         simp only [e, cons_union, insert_of_mem h]⟩
+        -- 🎉 no goals
     else
       ⟨a :: t, s.cons_cons _, by
         simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
+        -- 🎉 no goals
 #align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
@@ -110,6 +113,7 @@ theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l�
 
 theorem forall_mem_union : (∀ x ∈ l₁ ∪ l₂, p x) ↔ (∀ x ∈ l₁, p x) ∧ ∀ x ∈ l₂, p x := by
   simp only [mem_union_iff, or_imp, forall_and]
+  -- 🎉 no goals
 #align list.forall_mem_union List.forall_mem_union
 
 theorem forall_mem_of_forall_mem_union_left (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₁, p x :=
@@ -135,11 +139,13 @@ theorem inter_nil (l : List α) : [] ∩ l = [] :=
 @[simp]
 theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
   simp only [Inter.inter, List.inter, filter_cons_of_pos, h]
+  -- 🎉 no goals
 #align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
 theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
   simp only [Inter.inter, List.inter, filter_cons_of_neg, h]
+  -- 🎉 no goals
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
@@ -147,10 +153,12 @@ theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
 #align list.mem_of_mem_inter_left List.mem_of_mem_inter_left
 
 theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simpa using of_mem_filter h
+                                                                -- 🎉 no goals
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
 theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
   mem_filter_of_mem h₁ $ by simpa using h₂
+                            -- 🎉 no goals
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 #align list.mem_inter List.mem_inter_iff
@@ -168,7 +176,9 @@ theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l
 
 theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := by
   simp only [eq_nil_iff_forall_not_mem, mem_inter_iff, not_and]
+  -- ⊢ (∀ (a : α), a ∈ l₁ → ¬a ∈ l₂) ↔ Disjoint l₁ l₂
   rfl
+  -- 🎉 no goals
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
 
 theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
@@ -184,6 +194,7 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
   simp only [List.inter, mem_reverse]
+  -- 🎉 no goals
 #align list.inter_reverse List.inter_reverse
 
 end Inter
@@ -195,77 +206,124 @@ section BagInter
 
 @[simp]
 theorem nil_bagInter (l : List α) : [].bagInter l = [] := by cases l <;> rfl
+                                                             -- ⊢ List.bagInter [] [] = []
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
 #align list.nil_bag_inter List.nil_bagInter
 
 @[simp]
 theorem bagInter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
+                                                             -- ⊢ List.bagInter [] [] = []
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
 #align list.bag_inter_nil List.bagInter_nil
 
 @[simp]
 theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
     (a :: l₁).bagInter l₂ = a :: l₁.bagInter (l₂.erase a) := by
   cases l₂
+  -- ⊢ List.bagInter (a :: l₁) [] = a :: List.bagInter l₁ (List.erase [] a)
   · exact if_pos h
+    -- 🎉 no goals
   · simp only [List.bagInter, if_pos (elem_eq_true_of_mem h)]
+    -- 🎉 no goals
 #align list.cons_bag_inter_of_pos List.cons_bagInter_of_pos
 
 @[simp]
 theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
   cases l₂; · simp only [bagInter_nil]
+  -- ⊢ List.bagInter (a :: l₁) [] = List.bagInter l₁ []
+              -- 🎉 no goals
   simp only [erase_of_not_mem h, List.bagInter, if_neg (mt mem_of_elem_eq_true h)]
+  -- 🎉 no goals
 #align list.cons_bag_inter_of_neg List.cons_bagInter_of_neg
 
 @[simp]
 theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
   | [], l₂ => by simp only [nil_bagInter, not_mem_nil, false_and_iff]
+                 -- 🎉 no goals
   | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂
+    -- ⊢ a ∈ List.bagInter (b :: l₁) l₂ ↔ a ∈ b :: l₁ ∧ a ∈ l₂
     · rw [cons_bagInter_of_pos _ h, mem_cons, mem_cons, mem_bagInter]
+      -- ⊢ a = b ∨ a ∈ l₁ ∧ a ∈ List.erase l₂ b ↔ (a = b ∨ a ∈ l₁) ∧ a ∈ l₂
       by_cases ba : a = b
+      -- ⊢ a = b ∨ a ∈ l₁ ∧ a ∈ List.erase l₂ b ↔ (a = b ∨ a ∈ l₁) ∧ a ∈ l₂
       · simp only [ba, h, eq_self_iff_true, true_or_iff, true_and_iff]
+        -- 🎉 no goals
       · simp only [mem_erase_of_ne ba, ba, false_or_iff]
+        -- 🎉 no goals
     · rw [cons_bagInter_of_neg _ h, mem_bagInter, mem_cons, or_and_right]
+      -- ⊢ a ∈ l₁ ∧ a ∈ l₂ ↔ a = b ∧ a ∈ l₂ ∨ a ∈ l₁ ∧ a ∈ l₂
       symm
+      -- ⊢ a = b ∧ a ∈ l₂ ∨ a ∈ l₁ ∧ a ∈ l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
       apply or_iff_right_of_imp
+      -- ⊢ a = b ∧ a ∈ l₂ → a ∈ l₁ ∧ a ∈ l₂
       rintro ⟨rfl, h'⟩
+      -- ⊢ a ∈ l₁ ∧ a ∈ l₂
       exact h.elim h'
+      -- 🎉 no goals
 #align list.mem_bag_inter List.mem_bagInter
 
 @[simp]
 theorem count_bagInter {a : α} :
     ∀ {l₁ l₂ : List α}, count a (l₁.bagInter l₂) = min (count a l₁) (count a l₂)
   | [], l₂ => by simp
+                 -- 🎉 no goals
   | l₁, [] => by simp
+                 -- 🎉 no goals
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
+    -- ⊢ count a (List.bagInter (b :: l₁) l₂) = min (count a (b :: l₁)) (count a l₂)
     · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
         min_add_add_right]
       by_cases ab : a = b
+      -- ⊢ min (count a l₁ + if a = b then 1 else 0) ((count a l₂ - if a = b then 1 els …
       · rw [if_pos ab, @tsub_add_cancel_of_le]
+        -- ⊢ 1 ≤ count a l₂
         rwa [succ_le_iff, count_pos_iff_mem, ab]
+        -- 🎉 no goals
       · rw [if_neg ab, tsub_zero, add_zero, add_zero]
+        -- 🎉 no goals
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
+      -- ⊢ min (count a l₁) (count a l₂) = min (count a (b :: l₁)) (count a l₂)
       by_cases ab : a = b
+      -- ⊢ min (count a l₁) (count a l₂) = min (count a (b :: l₁)) (count a l₂)
       · rw [← ab] at hb
+        -- ⊢ min (count a l₁) (count a l₂) = min (count a (b :: l₁)) (count a l₂)
         rw [count_eq_zero.2 hb, min_zero, min_zero]
+        -- 🎉 no goals
       · rw [count_cons_of_ne ab]
+        -- 🎉 no goals
 #align list.count_bag_inter List.count_bagInter
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp
+                 -- 🎉 no goals
   | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
+    -- ⊢ List.bagInter (b :: l₁) l₂ <+ b :: l₁
+                            -- ⊢ b :: List.bagInter l₁ (List.erase l₂ b) <+ b :: l₁
+                            -- ⊢ List.bagInter l₁ l₂ <+ b :: l₁
     · exact (bagInter_sublist_left _ _).cons_cons _
+      -- 🎉 no goals
     · apply sublist_cons_of_sublist
+      -- ⊢ List.bagInter l₁ l₂ <+ l₁
       apply bagInter_sublist_left
+      -- 🎉 no goals
 #align list.bag_inter_sublist_left List.bagInter_sublist_left
 
 theorem bagInter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
   | [], l₂ => by simp
+                 -- 🎉 no goals
   | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂ <;> simp [h]
+    -- ⊢ List.bagInter (b :: l₁) l₂ = [] ↔ (b :: l₁) ∩ l₂ = []
+                            -- 🎉 no goals
+                            -- ⊢ List.bagInter l₁ l₂ = [] ↔ l₁ ∩ l₂ = []
     exact bagInter_nil_iff_inter_nil l₁ l₂
+    -- 🎉 no goals
 #align list.bag_inter_nil_iff_inter_nil List.bagInter_nil_iff_inter_nil
 
 end BagInter

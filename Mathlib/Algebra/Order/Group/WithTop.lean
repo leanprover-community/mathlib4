@@ -27,8 +27,11 @@ instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (Wi
   neg_top := Option.map_none
   add_neg_cancel := by
     rintro (a | a) ha
+    -- ⊢ none + -none = 0
     · exact (ha rfl).elim
+      -- 🎉 no goals
     · exact WithTop.coe_add.symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
+      -- 🎉 no goals
 #align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
 
 @[simp, norm_cast]

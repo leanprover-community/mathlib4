@@ -177,6 +177,7 @@ theorem map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = un
 
 @[simp 1100]
 theorem op_map_id_obj (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).op.obj U = U := by simp
+                                                                         -- 🎉 no goals
 #align topological_space.opens.op_map_id_obj TopologicalSpace.Opens.op_map_id_obj
 
 /-- The inclusion `U ⟶ (map f).obj ⊤` as a morphism in the category of open sets.
@@ -218,7 +219,12 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
   ext1; rw [iSup_def, iSup_def, map_obj]
+  -- ⊢ ↑((map f).obj (iSup U)) = ↑(iSup ((map f).toPrefunctor.obj ∘ U))
+        -- ⊢ ↑{ carrier := ↑f ⁻¹' ⋃ (i : ι), ↑(U i), is_open' := (_ : IsOpen (↑f ⁻¹' ⋃ (i …
   dsimp; rw [Set.preimage_iUnion]; rfl
+  -- ⊢ ↑f ⁻¹' ⋃ (i : ι), ↑(U i) = ⋃ (i : ι), ↑((map f).obj (U i))
+         -- ⊢ ⋃ (i : ι), ↑f ⁻¹' ↑(U i) = ⋃ (i : ι), ↑((map f).obj (U i))
+                                   -- 🎉 no goals
 #align topological_space.opens.map_supr TopologicalSpace.Opens.map_iSup
 
 section
@@ -236,6 +242,7 @@ def mapId : map (𝟙 X) ≅ 𝟭 (Opens X) where
 
 theorem map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := by
   rfl
+  -- 🎉 no goals
 #align topological_space.opens.map_id_eq TopologicalSpace.Opens.map_id_eq
 
 end
@@ -260,11 +267,14 @@ then the functors `Opens Y ⥤ Opens X` they induce are isomorphic.
 -/
 def mapIso (f g : X ⟶ Y) (h : f = g) : map f ≅ map g :=
   NatIso.ofComponents fun U => eqToIso (by rw [congr_arg map h])
+                                           -- 🎉 no goals
 #align topological_space.opens.map_iso TopologicalSpace.Opens.mapIso
 
 theorem map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
   subst h
+  -- ⊢ map f = map f
   rfl
+  -- 🎉 no goals
 #align topological_space.opens.map_eq TopologicalSpace.Opens.map_eq
 
 @[simp]
@@ -275,12 +285,14 @@ theorem mapIso_refl (f : X ⟶ Y) (h) : mapIso f f h = Iso.refl (map _) :=
 @[simp]
 theorem mapIso_hom_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
     (mapIso f g h).hom.app U = eqToHom (by rw [h]) :=
+                                           -- 🎉 no goals
   rfl
 #align topological_space.opens.map_iso_hom_app TopologicalSpace.Opens.mapIso_hom_app
 
 @[simp]
 theorem mapIso_inv_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
     (mapIso f g h).inv.app U = eqToHom (by rw [h]) :=
+                                           -- 🎉 no goals
   rfl
 #align topological_space.opens.map_iso_inv_app TopologicalSpace.Opens.mapIso_inv_app
 
@@ -293,7 +305,9 @@ def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   functor := map H.hom
   inverse := map H.inv
   unitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
+                                                      -- 🎉 no goals
   counitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
+                                                        -- 🎉 no goals
 #align topological_space.opens.map_map_iso TopologicalSpace.Opens.mapMapIso
 
 end TopologicalSpace.Opens
@@ -320,7 +334,9 @@ instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMa
   preimage i :=
     homOfLE fun x hx => by
       obtain ⟨y, hy, eq⟩ := i.le ⟨x, hx, rfl⟩
+      -- ⊢ x ∈ ↑Y✝
       exact (TopCat.mono_iff_injective f).mp H eq ▸ hy
+      -- 🎉 no goals
 #align is_open_map.functor_full_of_mono IsOpenMap.functorFullOfMono
 
 instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
@@ -335,57 +351,84 @@ open TopologicalSpace
 theorem openEmbedding_obj_top {X : TopCat} (U : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
   ext1
+  -- ⊢ ↑((IsOpenMap.functor (_ : IsOpenMap ↑(inclusion U))).obj ⊤) = ↑U
   exact Set.image_univ.trans Subtype.range_coe
+  -- 🎉 no goals
 #align topological_space.opens.open_embedding_obj_top TopologicalSpace.Opens.openEmbedding_obj_top
 
 @[simp]
 theorem inclusion_map_eq_top {X : TopCat} (U : Opens X) : (Opens.map U.inclusion).obj U = ⊤ := by
   ext1
+  -- ⊢ ↑((map (inclusion U)).obj U) = ↑⊤
   exact Subtype.coe_preimage_self _
+  -- 🎉 no goals
 #align topological_space.opens.inclusion_map_eq_top TopologicalSpace.Opens.inclusion_map_eq_top
 
 @[simp]
 theorem adjunction_counit_app_self {X : TopCat} (U : Opens X) :
     U.openEmbedding.isOpenMap.adjunction.counit.app U = eqToHom (by simp) := Subsingleton.elim _ _
+                                                                    -- 🎉 no goals
 #align topological_space.opens.adjunction_counit_app_self TopologicalSpace.Opens.adjunction_counit_app_self
 
 theorem inclusion_top_functor (X : TopCat) :
     (@Opens.openEmbedding X ⊤).isOpenMap.functor = map (inclusionTopIso X).inv := by
   refine' CategoryTheory.Functor.ext _ _
+  -- ⊢ ∀ (X_1 : Opens ↑((toTopCat X).obj ⊤)), (IsOpenMap.functor (_ : IsOpenMap ↑(i …
   · intro U
+    -- ⊢ (IsOpenMap.functor (_ : IsOpenMap ↑(inclusion ⊤))).obj U = (map (inclusionTo …
     ext x
+    -- ⊢ x ∈ ↑((IsOpenMap.functor (_ : IsOpenMap ↑(inclusion ⊤))).obj U) ↔ x ∈ ↑((map …
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
+    -- 🎉 no goals
   · intros U V f
+    -- ⊢ (IsOpenMap.functor (_ : IsOpenMap ↑(inclusion ⊤))).map f = eqToHom (_ : (IsO …
     apply Subsingleton.elim
+    -- 🎉 no goals
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :
     hf.functor.obj ((Opens.map f).obj U) = hf.functor.obj ⊤ ⊓ U := by
   ext
+  -- ⊢ x✝ ∈ ↑((IsOpenMap.functor hf).obj ((map f).obj U)) ↔ x✝ ∈ ↑((IsOpenMap.funct …
   constructor
+  -- ⊢ x✝ ∈ ↑((IsOpenMap.functor hf).obj ((map f).obj U)) → x✝ ∈ ↑((IsOpenMap.funct …
   · rintro ⟨x, hx, rfl⟩
+    -- ⊢ ↑f x ∈ ↑((IsOpenMap.functor hf).obj ⊤ ⊓ U)
     exact ⟨⟨x, trivial, rfl⟩, hx⟩
+    -- 🎉 no goals
   · rintro ⟨⟨x, -, rfl⟩, hx⟩
+    -- ⊢ ↑f x ∈ ↑((IsOpenMap.functor hf).obj ((map f).obj U))
     exact ⟨x, hx, rfl⟩
+    -- 🎉 no goals
 #align topological_space.opens.functor_obj_map_obj TopologicalSpace.Opens.functor_obj_map_obj
 
 -- porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     Set.range ((forget TopCat).map (inclusion U)) = (U : Set X) := by
   ext x
+  -- ⊢ x ∈ Set.range ((forget TopCat).map (inclusion U)) ↔ x ∈ ↑U
   constructor
+  -- ⊢ x ∈ Set.range ((forget TopCat).map (inclusion U)) → x ∈ ↑U
   · rintro ⟨x, rfl⟩
+    -- ⊢ (forget TopCat).map (inclusion U) x ∈ ↑U
     exact x.2
+    -- 🎉 no goals
   · intro h
+    -- ⊢ x ∈ Set.range ((forget TopCat).map (inclusion U))
     exact ⟨⟨x, h⟩, rfl⟩
+    -- 🎉 no goals
 
 @[simp]
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion).obj V) = V ⊓ U := by
   ext1
+  -- ⊢ ↑((IsOpenMap.functor (_ : IsOpenMap ↑(inclusion U))).obj ((map (inclusion U) …
   refine' Set.image_preimage_eq_inter_range.trans _
+  -- ⊢ (V.1 ∩ Set.range fun x => ↑(inclusion U) x) = ↑(V ⊓ U)
   erw [set_range_forget_map_inclusion U]
+  -- ⊢ V.1 ∩ ↑U = ↑(V ⊓ U)
   rfl
+  -- 🎉 no goals
 #align topological_space.opens.functor_map_eq_inf TopologicalSpace.Opens.functor_map_eq_inf
 
 theorem map_functor_eq' {X U : TopCat} (f : U ⟶ X) (hf : OpenEmbedding f) (V) :
@@ -403,7 +446,10 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) :=
+                  -- ⊢ (IsOpenMap.functor (_ : IsOpenMap ↑(inclusion U))).obj ((map (inclusion U)). …
+                         -- 🎉 no goals
   by apply Subsingleton.elim
+     -- 🎉 no goals
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 
 end TopologicalSpace.Opens

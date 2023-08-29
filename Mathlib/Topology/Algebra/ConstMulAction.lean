@@ -118,6 +118,7 @@ action is."]
 instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
     ContinuousConstSMul Mᵐᵒᵖ α :=
   ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
+                                -- 🎉 no goals
 #align has_continuous_const_smul.op ContinuousConstSMul.op
 #align has_continuous_const_vadd.op ContinuousConstVAdd.op
 
@@ -184,6 +185,7 @@ theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
   simp only [Set.setOf_forall]
+  -- ⊢ IsClosed (⋂ (i : M) (i_1 : α), {x | x (i • i_1) = σ i • x i_1})
   exact isClosed_iInter fun c => isClosed_iInter fun x =>
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 #align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
@@ -198,6 +200,7 @@ variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [Continuou
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul c⁻¹, fun h => h.const_smul _⟩
+               -- 🎉 no goals
 #align tendsto_const_smul_iff tendsto_const_smul_iff
 #align tendsto_const_vadd_iff tendsto_const_vadd_iff
 
@@ -227,6 +230,7 @@ theorem continuousAt_const_smul_iff (c : G) :
 @[to_additive]
 theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
   simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
+  -- 🎉 no goals
 #align continuous_const_smul_iff continuous_const_smul_iff
 #align continuous_const_vadd_iff continuous_const_vadd_iff
 
@@ -277,6 +281,8 @@ theorem closure_smul (c : G) (s : Set α) : closure (c • s) = c • closure s 
 @[to_additive]
 theorem Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
   rw [dense_iff_closure_eq] at hs ⊢; rw [closure_smul, hs, smul_set_univ]
+  -- ⊢ closure (c • s) = univ
+                                     -- 🎉 no goals
 #align dense.smul Dense.smul
 #align dense.vadd Dense.vadd
 
@@ -346,11 +352,17 @@ theorem interior_smul₀ {c : G₀} (hc : c ≠ 0) (s : Set α) : interior (c �
 theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
     [ContinuousConstSMul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
   rcases eq_or_ne c 0 with (rfl | hc)
+  -- ⊢ closure (0 • s) = 0 • closure s
   · rcases eq_empty_or_nonempty s with (rfl | hs)
+    -- ⊢ closure (0 • ∅) = 0 • closure ∅
     · simp
+      -- 🎉 no goals
     · rw [zero_smul_set hs, zero_smul_set hs.closure]
+      -- ⊢ closure 0 = 0
       exact closure_singleton
+      -- 🎉 no goals
   · exact ((Homeomorph.smulOfNeZero c hc).image_closure s).symm
+    -- 🎉 no goals
 #align closure_smul₀ closure_smul₀
 
 /-- `smul` is a closed map in the second argument.
@@ -374,9 +386,13 @@ theorem isClosedMap_smul₀ {𝕜 M : Type*} [DivisionRing 𝕜] [AddCommMonoid 
     [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) :
     IsClosedMap fun x : M => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)
+  -- ⊢ IsClosedMap fun x => 0 • x
   · simp only [zero_smul]
+    -- ⊢ IsClosedMap fun x => 0
     exact isClosedMap_const
+    -- 🎉 no goals
   · exact (Homeomorph.smulOfNeZero c hne).isClosedMap
+    -- 🎉 no goals
 #align is_closed_map_smul₀ isClosedMap_smul₀
 
 theorem IsClosed.smul₀ {𝕜 M : Type*} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
@@ -492,7 +508,9 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
     letI := MulAction.orbitRel Γ T
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
+  -- ⊢ IsOpen (⋃ (g : Γ), (fun x x_1 => x • x_1) g '' U)
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
+  -- 🎉 no goals
 #align is_open_map_quotient_mk_mul isOpenMap_quotient_mk'_mul
 #align is_open_map_quotient_mk_add isOpenMap_quotient_mk'_add
 
@@ -503,34 +521,58 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
   letI := MulAction.orbitRel Γ T
+  -- ⊢ T2Space (Quotient (MulAction.orbitRel Γ T))
   set Q := Quotient (MulAction.orbitRel Γ T)
+  -- ⊢ T2Space (Quotient (MulAction.orbitRel Γ T))
   rw [t2Space_iff_nhds]
+  -- ⊢ ∀ {x y : Quotient (MulAction.orbitRel Γ T)}, x ≠ y → ∃ U, U ∈ 𝓝 x ∧ ∃ V, V ∈ …
   let f : T → Q := Quotient.mk'
+  -- ⊢ ∀ {x y : Quotient (MulAction.orbitRel Γ T)}, x ≠ y → ∃ U, U ∈ 𝓝 x ∧ ∃ V, V ∈ …
   have f_op : IsOpenMap f := isOpenMap_quotient_mk'_mul
+  -- ⊢ ∀ {x y : Quotient (MulAction.orbitRel Γ T)}, x ≠ y → ∃ U, U ∈ 𝓝 x ∧ ∃ V, V ∈ …
   rintro ⟨x₀⟩ ⟨y₀⟩ (hxy : f x₀ ≠ f y₀)
+  -- ⊢ ∃ U, U ∈ 𝓝 (Quot.mk Setoid.r x₀) ∧ ∃ V, V ∈ 𝓝 (Quot.mk Setoid.r y₀) ∧ Disjoi …
   show ∃ U ∈ 𝓝 (f x₀), ∃ V ∈ 𝓝 (f y₀), _
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm : _)
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   obtain ⟨K₀, hK₀, K₀_in⟩ := exists_compact_mem_nhds x₀
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   obtain ⟨L₀, hL₀, L₀_in⟩ := exists_compact_mem_nhds y₀
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   let bad_Γ_set := { γ : Γ | (γ • ·) '' K₀ ∩ L₀ ≠ ∅ }
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   have bad_Γ_finite : bad_Γ_set.Finite := finite_disjoint_inter_image (Γ := Γ) hK₀ hL₀
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   choose u v hu hv u_v_disjoint using fun γ => t2_separation_nhds (hγx₀y₀ γ)
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   let U₀₀ := ⋂ γ ∈ bad_Γ_set, (γ • ·) ⁻¹' u γ
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   let U₀ := U₀₀ ∩ K₀
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   let V₀₀ := ⋂ γ ∈ bad_Γ_set, v γ
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   let V₀ := V₀₀ ∩ L₀
+  -- ⊢ ∃ U, U ∈ 𝓝 (f x₀) ∧ ∃ V, V ∈ 𝓝 (f y₀) ∧ Disjoint U V
   have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) := by
     refine f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
     f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
   refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
+  -- ⊢ ∀ (x : T), x ∈ U₀ → ∀ (g : Γ), ¬g • x ∈ V₀
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
+  -- ⊢ ¬γ • x ∈ V₀
   by_cases H : γ ∈ bad_Γ_set
+  -- ⊢ ¬γ • x ∈ V₀
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
+    -- 🎉 no goals
   · rintro ⟨-, h'⟩
+    -- ⊢ False
     simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
+    -- ⊢ False
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
+    -- 🎉 no goals
 #align t2_space_of_properly_discontinuous_smul_of_t2_space t2Space_of_properlyDiscontinuousSMul_of_t2Space
 #align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properlyDiscontinuousVAdd_of_t2Space
 
@@ -555,15 +597,21 @@ variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpa
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) := by
   rw [mem_nhds_iff] at hs ⊢
+  -- ⊢ ∃ t, t ⊆ c • s ∧ IsOpen t ∧ c • x ∈ t
   obtain ⟨U, hs', hU, hU'⟩ := hs
+  -- ⊢ ∃ t, t ⊆ c • s ∧ IsOpen t ∧ c • x ∈ t
   exact ⟨c • U, Set.smul_set_mono hs', hU.smul₀ hc, Set.smul_mem_smul_set hU'⟩
+  -- 🎉 no goals
 #align set_smul_mem_nhds_smul set_smul_mem_nhds_smul
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x := by
   refine' ⟨fun h => _, fun h => set_smul_mem_nhds_smul h hc⟩
+  -- ⊢ s ∈ 𝓝 x
   rw [← inv_smul_smul₀ hc x, ← inv_smul_smul₀ hc s]
+  -- ⊢ c⁻¹ • c • s ∈ 𝓝 (c⁻¹ • c • x)
   exact set_smul_mem_nhds_smul h (inv_ne_zero hc)
+  -- 🎉 no goals
 #align set_smul_mem_nhds_smul_iff set_smul_mem_nhds_smul_iff
 
 end MulAction
@@ -576,7 +624,9 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
   refine' Iff.trans _ (set_smul_mem_nhds_smul_iff hc)
+  -- ⊢ c • s ∈ 𝓝 0 ↔ c • s ∈ 𝓝 (c • 0)
   rw [smul_zero]
+  -- 🎉 no goals
 #align set_smul_mem_nhds_zero_iff set_smul_mem_nhds_zero_iff
 
 end DistribMulAction

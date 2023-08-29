@@ -48,9 +48,11 @@ instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒᵖ :
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
   unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
+                                    -- 🎉 no goals
 
 instance addMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+                                 -- 🎉 no goals
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
   unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -58,17 +60,21 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoid α, MulOpposite.one α, MulOpposite.natCast _ with
     natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
+                                                 -- 🎉 no goals
     natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp }
+                                                                        -- 🎉 no goals
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoidWithOne α, MulOpposite.addCommMonoid α with }
 
 instance subNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
   unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+                                    -- 🎉 no goals
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance addGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+                                -- 🎉 no goals
   (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
@@ -79,8 +85,10 @@ instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
     intCast := fun n => op n,
     intCast_ofNat := fun n => show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_ofNat],
+                                                                    -- 🎉 no goals
     intCast_negSucc := fun n =>
       show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp }
+                                                       -- 🎉 no goals
 
 instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ :=
   { MulOpposite.addGroupWithOne α, MulOpposite.addCommGroup α with }
@@ -156,7 +164,9 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
     zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
     zpow_succ' := fun n x => unop_injective <| by
       simp only [Int.ofNat_eq_coe]
+      -- ⊢ unop (op (unop x ^ ↑(Nat.succ n))) = unop (x * op (unop x ^ ↑n))
       rw [unop_op, zpow_ofNat, pow_succ', unop_mul, unop_op, zpow_ofNat],
+      -- 🎉 no goals
     zpow_neg' := fun z x => unop_injective <| DivInvMonoid.zpow_neg' z x.unop }
 
 @[to_additive AddOpposite.subtractionMonoid]
@@ -211,12 +221,14 @@ theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)
 
 @[to_additive (attr := simp)]
 theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]
+                                                                               -- 🎉 no goals
 #align mul_opposite.op_div MulOpposite.op_div
 #align add_opposite.op_sub AddOpposite.op_sub
 
 @[to_additive (attr := simp)]
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
   by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
+     -- 🎉 no goals
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 #align add_opposite.semiconj_by_op AddOpposite.semiconjBy_op
 
@@ -224,6 +236,7 @@ theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) �
 theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
   conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
+  -- 🎉 no goals
 #align mul_opposite.semiconj_by_unop MulOpposite.semiconjBy_unop
 #align add_opposite.semiconj_by_unop AddOpposite.semiconjBy_unop
 
@@ -304,6 +317,7 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
 
 instance mulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
   unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
+                                   -- 🎉 no goals
 
 instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
@@ -319,27 +333,34 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
 
 instance monoid [Monoid α] : Monoid αᵃᵒᵖ :=
   unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+                              -- 🎉 no goals
 
 instance commMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
   unop_injective.commMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+                                  -- 🎉 no goals
 
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
   unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+                                    -- 🎉 no goals
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance group [Group α] : Group αᵃᵒᵖ :=
   unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+                             -- 🎉 no goals
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance commGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+                                 -- 🎉 no goals
     (fun _ _ => rfl) fun _ _ => rfl
 
 -- NOTE: `addMonoidWithOne α → addMonoidWithOne αᵃᵒᵖ` does not hold
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵃᵒᵖ :=
   { AddOpposite.addCommMonoid α, AddOpposite.one, AddOpposite.natCast α with
     natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
+                                                 -- 🎉 no goals
     natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm] }
+                                                                        -- 🎉 no goals
 
 instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ :=
   { AddOpposite.addCommMonoidWithOne α, AddOpposite.addCommGroup α, AddOpposite.intCast α with
@@ -385,6 +406,7 @@ def MulHom.toOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
     (hf : ∀ x y, Commute (f x) (f y)) : M →ₙ* Nᵐᵒᵖ where
   toFun := op ∘ f
   map_mul' x y := by simp [(hf x y).eq]
+                     -- 🎉 no goals
 #align mul_hom.to_opposite MulHom.toOpposite
 #align add_hom.to_opposite AddHom.toOpposite
 #align mul_hom.to_opposite_apply MulHom.toOpposite_apply
@@ -414,6 +436,7 @@ def MonoidHom.toOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M �
   toFun := op ∘ f
   map_one' := congrArg op f.map_one
   map_mul' x y := by simp [(hf x y).eq]
+                     -- 🎉 no goals
 #align monoid_hom.to_opposite MonoidHom.toOpposite
 #align add_monoid_hom.to_opposite AddMonoidHom.toOpposite
 #align monoid_hom.to_opposite_apply MonoidHom.toOpposite_apply
@@ -443,7 +466,9 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
   map_mul' x y := unop_injective <| Units.ext <| rfl
   left_inv x := Units.ext <| by simp
+                                -- 🎉 no goals
   right_inv x := unop_injective <| Units.ext <| by rfl
+                                                   -- 🎉 no goals
 #align units.op_equiv Units.opEquiv
 #align add_units.op_equiv AddUnits.opEquiv
 
@@ -635,7 +660,9 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
   invFun f :=
     { toFun := unop ∘ f ∘ MulOpposite.op, invFun := unop ∘ f.symm ∘ MulOpposite.op,
       left_inv := fun x => by simp,
+                              -- 🎉 no goals
       right_inv := fun x => by simp,
+                               -- 🎉 no goals
       map_mul' := fun x y => congr_arg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv _ := rfl
   right_inv _ := rfl

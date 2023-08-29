@@ -102,10 +102,12 @@ theorem coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i in
 
 theorem finset_sum_apply (I : Finset ι) (κ : ι → kernel α β) (a : α) :
     (∑ i in I, κ i) a = ∑ i in I, κ i a := by rw [coe_finset_sum, Finset.sum_apply]
+                                              -- 🎉 no goals
 #align probability_theory.kernel.finset_sum_apply ProbabilityTheory.kernel.finset_sum_apply
 
 theorem finset_sum_apply' (I : Finset ι) (κ : ι → kernel α β) (a : α) (s : Set β) :
     (∑ i in I, κ i) a s = ∑ i in I, κ i a s := by rw [finset_sum_apply, Measure.finset_sum_apply]
+                                                  -- 🎉 no goals
 #align probability_theory.kernel.finset_sum_apply' ProbabilityTheory.kernel.finset_sum_apply'
 
 end kernel
@@ -148,6 +150,7 @@ instance isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : M
     IsFiniteKernel (0 : kernel α β) :=
   ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
       simp only [kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩
+      -- 🎉 no goals
 #align probability_theory.is_finite_kernel_zero ProbabilityTheory.isFiniteKernel_zero
 
 instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
@@ -156,6 +159,7 @@ instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFinite
     ENNReal.add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
     fun a => ?_⟩⟩
   exact add_le_add (kernel.measure_le_bound _ _ _) (kernel.measure_le_bound _ _ _)
+  -- 🎉 no goals
 #align probability_theory.is_finite_kernel.add ProbabilityTheory.IsFiniteKernel.add
 
 variable {κ : kernel α β}
@@ -186,19 +190,25 @@ theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := FunLike.
 theorem ext_iff' {η : kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by
   simp_rw [ext_iff, Measure.ext_iff]
+  -- 🎉 no goals
 #align probability_theory.kernel.ext_iff' ProbabilityTheory.kernel.ext_iff'
 
 theorem ext_fun {η : kernel α β} (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a) :
     κ = η := by
   ext a s hs
+  -- ⊢ ↑↑(↑κ a) s = ↑↑(↑η a) s
   specialize h a (s.indicator fun _ => 1) (Measurable.indicator measurable_const hs)
+  -- ⊢ ↑↑(↑κ a) s = ↑↑(↑η a) s
   simp_rw [lintegral_indicator_const hs, one_mul] at h
+  -- ⊢ ↑↑(↑κ a) s = ↑↑(↑η a) s
   rw [h]
+  -- 🎉 no goals
 #align probability_theory.kernel.ext_fun ProbabilityTheory.kernel.ext_fun
 
 theorem ext_fun_iff {η : kernel α β} :
     κ = η ↔ ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a :=
   ⟨fun h a f _ => by rw [h], ext_fun⟩
+                     -- 🎉 no goals
 #align probability_theory.kernel.ext_fun_iff ProbabilityTheory.kernel.ext_fun_iff
 
 protected theorem measurable (κ : kernel α β) : Measurable κ :=
@@ -219,6 +229,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
     ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]
   exact kernel.measure_le_bound _ _ _
+  -- 🎉 no goals
 
 lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
@@ -232,8 +243,11 @@ protected noncomputable def sum [Countable ι] (κ : ι → kernel α β) : kern
   val a := Measure.sum fun n => κ n a
   property := by
     refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+    -- ⊢ Measurable fun b => ↑↑(Measure.sum fun n => ↑(κ n) b) s
     simp_rw [Measure.sum_apply _ hs]
+    -- ⊢ Measurable fun b => ∑' (i : ι), ↑↑(↑(κ i) b) s
     exact Measurable.ennreal_tsum fun n => kernel.measurable_coe (κ n) hs
+    -- 🎉 no goals
 #align probability_theory.kernel.sum ProbabilityTheory.kernel.sum
 
 theorem sum_apply [Countable ι] (κ : ι → kernel α β) (a : α) :
@@ -243,29 +257,39 @@ theorem sum_apply [Countable ι] (κ : ι → kernel α β) (a : α) :
 
 theorem sum_apply' [Countable ι] (κ : ι → kernel α β) (a : α) {s : Set β} (hs : MeasurableSet s) :
     kernel.sum κ a s = ∑' n, κ n a s := by rw [sum_apply κ a, Measure.sum_apply _ hs]
+                                           -- 🎉 no goals
 #align probability_theory.kernel.sum_apply' ProbabilityTheory.kernel.sum_apply'
 
 @[simp]
 theorem sum_zero [Countable ι] : (kernel.sum fun _ : ι => (0 : kernel α β)) = 0 := by
   ext a s hs
+  -- ⊢ ↑↑(↑(kernel.sum fun x => 0) a) s = ↑↑(↑0 a) s
   rw [sum_apply' _ a hs]
+  -- ⊢ ∑' (n : ι), ↑↑(↑0 a) s = ↑↑(↑0 a) s
   simp only [zero_apply, Measure.coe_zero, Pi.zero_apply, tsum_zero]
+  -- 🎉 no goals
 #align probability_theory.kernel.sum_zero ProbabilityTheory.kernel.sum_zero
 
 theorem sum_comm [Countable ι] (κ : ι → ι → kernel α β) :
     (kernel.sum fun n => kernel.sum (κ n)) = kernel.sum fun m => kernel.sum fun n => κ n m := by
   ext a s; simp_rw [sum_apply]; rw [Measure.sum_comm]
+  -- ⊢ ↑↑(↑(kernel.sum fun n => kernel.sum (κ n)) a) s = ↑↑(↑(kernel.sum fun m => k …
+           -- ⊢ ↑↑(Measure.sum fun n => Measure.sum fun n_1 => ↑(κ n n_1) a) s = ↑↑(Measure. …
+                                -- 🎉 no goals
 #align probability_theory.kernel.sum_comm ProbabilityTheory.kernel.sum_comm
 
 @[simp]
 theorem sum_fintype [Fintype ι] (κ : ι → kernel α β) : kernel.sum κ = ∑ i, κ i := by
   ext a s hs
+  -- ⊢ ↑↑(↑(kernel.sum κ) a) s = ↑↑(↑(∑ i : ι, κ i) a) s
   simp only [sum_apply' κ a hs, finset_sum_apply' _ κ a s, tsum_fintype]
+  -- 🎉 no goals
 #align probability_theory.kernel.sum_fintype ProbabilityTheory.kernel.sum_fintype
 
 theorem sum_add [Countable ι] (κ η : ι → kernel α β) :
     (kernel.sum fun n => κ n + η n) = kernel.sum κ + kernel.sum η := by
   ext a s hs
+  -- ⊢ ↑↑(↑(kernel.sum fun n => κ n + η n) a) s = ↑↑(↑(kernel.sum κ + kernel.sum η) …
   simp only [coeFn_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
     Measure.coe_add, tsum_add ENNReal.summable ENNReal.summable]
 #align probability_theory.kernel.sum_add ProbabilityTheory.kernel.sum_add
@@ -282,11 +306,18 @@ class _root_.ProbabilityTheory.IsSFiniteKernel (κ : kernel α β) : Prop where
 instance (priority := 100) IsFiniteKernel.isSFiniteKernel [h : IsFiniteKernel κ] :
     IsSFiniteKernel κ :=
   ⟨⟨fun n => if n = 0 then κ else 0, fun n => by simp only; split_ifs; exact h; infer_instance, by
+                                                 -- ⊢ IsFiniteKernel (if n = 0 then κ else 0)
+                                                            -- ⊢ IsFiniteKernel κ
+                                                                       -- ⊢ IsFiniteKernel 0
+                                                                                -- 🎉 no goals
       ext a s hs
+      -- ⊢ ↑↑(↑κ a) s = ↑↑(↑(kernel.sum fun n => if n = 0 then κ else 0) a) s
       rw [kernel.sum_apply' _ _ hs]
+      -- ⊢ ↑↑(↑κ a) s = ∑' (n : ℕ), ↑↑(↑(if n = 0 then κ else 0) a) s
       have : (fun i => ((ite (i = 0) κ 0) a) s) = fun i => ite (i = 0) (κ a s) 0 := by
         ext1 i; split_ifs <;> rfl
       rw [this, tsum_ite_eq]⟩⟩
+      -- 🎉 no goals
 #align probability_theory.kernel.is_finite_kernel.is_s_finite_kernel ProbabilityTheory.kernel.IsFiniteKernel.isSFiniteKernel
 
 /-- A sequence of finite kernels such that `κ = ProbabilityTheory.kernel.sum (seq κ)`. See
@@ -301,6 +332,7 @@ theorem kernel_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] : kernel.sum
 
 theorem measure_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (a : α) :
     (Measure.sum fun n => seq κ n a) = κ a := by rw [← kernel.sum_apply, kernel_sum_seq κ]
+                                                 -- 🎉 no goals
 #align probability_theory.kernel.measure_sum_seq ProbabilityTheory.kernel.measure_sum_seq
 
 instance isFiniteKernel_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (n : ℕ) :
@@ -311,7 +343,9 @@ instance isFiniteKernel_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (n : �
 instance IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (κ + η) := by
   refine' ⟨⟨fun n => seq κ n + seq η n, fun n => inferInstance, _⟩⟩
+  -- ⊢ κ + η = kernel.sum fun n => seq κ n + seq η n
   rw [sum_add, kernel_sum_seq κ, kernel_sum_seq η]
+  -- 🎉 no goals
 #align probability_theory.kernel.is_s_finite_kernel.add ProbabilityTheory.kernel.IsSFiniteKernel.add
 
 theorem IsSFiniteKernel.finset_sum {κs : ι → kernel α β} (I : Finset ι)
@@ -329,13 +363,19 @@ theorem IsSFiniteKernel.finset_sum {κs : ι → kernel α β} (I : Finset ι)
 theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → kernel α β}
     (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (kernel.sum κs) := by
   let e : ℕ ≃ ι × ℕ := (Denumerable.eqv (ι × ℕ)).symm
+  -- ⊢ IsSFiniteKernel (kernel.sum κs)
   refine' ⟨⟨fun n => seq (κs (e n).1) (e n).2, inferInstance, _⟩⟩
+  -- ⊢ kernel.sum κs = kernel.sum fun n => seq (κs (↑e n).fst) (↑e n).snd
   have hκ_eq : kernel.sum κs = kernel.sum fun n => kernel.sum (seq (κs n)) := by
     simp_rw [kernel_sum_seq]
   ext a s hs
+  -- ⊢ ↑↑(↑(kernel.sum κs) a) s = ↑↑(↑(kernel.sum fun n => seq (κs (↑e n).fst) (↑e  …
   rw [hκ_eq]
+  -- ⊢ ↑↑(↑(kernel.sum fun n => kernel.sum (seq (κs n))) a) s = ↑↑(↑(kernel.sum fun …
   simp_rw [kernel.sum_apply' _ _ hs]
+  -- ⊢ ∑' (n : ι) (n_1 : ℕ), ↑↑(↑(seq (κs n) n_1) a) s = ∑' (n : ℕ), ↑↑(↑(seq (κs ( …
   change (∑' i, ∑' m, seq (κs i) m a s) = ∑' n, (fun im : ι × ℕ => seq (κs im.fst) im.snd a s) (e n)
+  -- ⊢ ∑' (i : ι) (m : ℕ), ↑↑(↑(seq (κs i) m) a) s = ∑' (n : ℕ), (fun im => ↑↑(↑(se …
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
     tsum_prod' ENNReal.summable fun _ => ENNReal.summable]
 #align probability_theory.kernel.is_s_finite_kernel_sum_of_denumerable ProbabilityTheory.kernel.isSFiniteKernel_sum_of_denumerable
@@ -343,10 +383,15 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → kernel
 theorem isSFiniteKernel_sum [Countable ι] {κs : ι → kernel α β}
     (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (kernel.sum κs) := by
   cases fintypeOrInfinite ι
+  -- ⊢ IsSFiniteKernel (kernel.sum κs)
   · rw [sum_fintype]
+    -- ⊢ IsSFiniteKernel (∑ i : ι, κs i)
     exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i
+    -- 🎉 no goals
   cases nonempty_denumerable ι
+  -- ⊢ IsSFiniteKernel (kernel.sum κs)
   exact isSFiniteKernel_sum_of_denumerable hκs
+  -- 🎉 no goals
 #align probability_theory.kernel.is_s_finite_kernel_sum ProbabilityTheory.kernel.isSFiniteKernel_sum
 
 end SFinite
@@ -358,8 +403,11 @@ noncomputable def deterministic (f : α → β) (hf : Measurable f) : kernel α 
   val a := Measure.dirac (f a)
   property := by
     refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+    -- ⊢ Measurable fun b => ↑↑(Measure.dirac (f b)) s
     simp_rw [Measure.dirac_apply' _ hs]
+    -- ⊢ Measurable fun b => Set.indicator s 1 (f b)
     exact measurable_one.indicator (hf hs)
+    -- 🎉 no goals
 #align probability_theory.kernel.deterministic ProbabilityTheory.kernel.deterministic
 
 theorem deterministic_apply {f : α → β} (hf : Measurable f) (a : α) :
@@ -370,30 +418,38 @@ theorem deterministic_apply {f : α → β} (hf : Measurable f) (a : α) :
 theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : Set β}
     (hs : MeasurableSet s) : deterministic f hf a s = s.indicator (fun _ => 1) (f a) := by
   rw [deterministic]
+  -- ⊢ ↑↑(↑{ val := fun a => Measure.dirac (f a), property := (_ : Measurable fun a …
   change Measure.dirac (f a) s = s.indicator 1 (f a)
+  -- ⊢ ↑↑(Measure.dirac (f a)) s = Set.indicator s 1 (f a)
   simp_rw [Measure.dirac_apply' _ hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.deterministic_apply' ProbabilityTheory.kernel.deterministic_apply'
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
   ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
+               -- ⊢ IsProbabilityMeasure (Measure.dirac (f a))
+                                            -- 🎉 no goals
 #align probability_theory.kernel.is_markov_kernel_deterministic ProbabilityTheory.kernel.isMarkovKernel_deterministic
 
 theorem lintegral_deterministic' {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     (hf : Measurable f) : ∫⁻ x, f x ∂kernel.deterministic g hg a = f (g a) := by
   rw [kernel.deterministic_apply, lintegral_dirac' _ hf]
+  -- 🎉 no goals
 #align probability_theory.kernel.lintegral_deterministic' ProbabilityTheory.kernel.lintegral_deterministic'
 
 @[simp]
 theorem lintegral_deterministic {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     [MeasurableSingletonClass β] : ∫⁻ x, f x ∂kernel.deterministic g hg a = f (g a) := by
   rw [kernel.deterministic_apply, lintegral_dirac (g a) f]
+  -- 🎉 no goals
 #align probability_theory.kernel.lintegral_deterministic ProbabilityTheory.kernel.lintegral_deterministic
 
 theorem set_lintegral_deterministic' {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) [Decidable (g a ∈ s)] :
     ∫⁻ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, set_lintegral_dirac' hf hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.set_lintegral_deterministic' ProbabilityTheory.kernel.set_lintegral_deterministic'
 
 @[simp]
@@ -401,12 +457,14 @@ theorem set_lintegral_deterministic {f : β → ℝ≥0∞} {g : α → β} {a :
     [MeasurableSingletonClass β] (s : Set β) [Decidable (g a ∈ s)] :
     ∫⁻ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, set_lintegral_dirac f s]
+  -- 🎉 no goals
 #align probability_theory.kernel.set_lintegral_deterministic ProbabilityTheory.kernel.set_lintegral_deterministic
 
 theorem integral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] {f : β → E} {g : α → β} {a : α} (hg : Measurable g)
     (hf : StronglyMeasurable f) : ∫ x, f x ∂kernel.deterministic g hg a = f (g a) := by
   rw [kernel.deterministic_apply, integral_dirac' _ _ hf]
+  -- 🎉 no goals
 #align probability_theory.kernel.integral_deterministic' ProbabilityTheory.kernel.integral_deterministic'
 
 @[simp]
@@ -414,6 +472,7 @@ theorem integral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     [CompleteSpace E] {f : β → E} {g : α → β} {a : α} (hg : Measurable g)
     [MeasurableSingletonClass β] : ∫ x, f x ∂kernel.deterministic g hg a = f (g a) := by
   rw [kernel.deterministic_apply, integral_dirac _ (g a)]
+  -- 🎉 no goals
 #align probability_theory.kernel.integral_deterministic ProbabilityTheory.kernel.integral_deterministic
 
 theorem set_integral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -421,6 +480,7 @@ theorem set_integral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSp
     (hf : StronglyMeasurable f) {s : Set β} (hs : MeasurableSet s) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, set_integral_dirac' hf _ hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.set_integral_deterministic' ProbabilityTheory.kernel.set_integral_deterministic'
 
 @[simp]
@@ -429,6 +489,7 @@ theorem set_integral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpa
     [MeasurableSingletonClass β] (s : Set β) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, set_integral_dirac f _ s]
+  -- 🎉 no goals
 #align probability_theory.kernel.set_integral_deterministic ProbabilityTheory.kernel.set_integral_deterministic
 
 end Deterministic
@@ -459,23 +520,27 @@ instance isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure 
 @[simp]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
     ∫⁻ x, f x ∂kernel.const α μ a = ∫⁻ x, f x ∂μ := by rw [kernel.const_apply]
+                                                       -- 🎉 no goals
 #align probability_theory.kernel.lintegral_const ProbabilityTheory.kernel.lintegral_const
 
 @[simp]
 theorem set_lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂kernel.const α μ a = ∫⁻ x in s, f x ∂μ := by rw [kernel.const_apply]
+                                                                 -- 🎉 no goals
 #align probability_theory.kernel.set_lintegral_const ProbabilityTheory.kernel.set_lintegral_const
 
 @[simp]
 theorem integral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {μ : Measure β} {a : α} : ∫ x, f x ∂kernel.const α μ a = ∫ x, f x ∂μ := by
   rw [kernel.const_apply]
+  -- 🎉 no goals
 #align probability_theory.kernel.integral_const ProbabilityTheory.kernel.integral_const
 
 @[simp]
 theorem set_integral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {μ : Measure β} {a : α} {s : Set β} :
     ∫ x in s, f x ∂kernel.const α μ a = ∫ x in s, f x ∂μ := by rw [kernel.const_apply]
+                                                               -- 🎉 no goals
 #align probability_theory.kernel.set_integral_const ProbabilityTheory.kernel.set_integral_const
 
 end Const
@@ -497,8 +562,11 @@ protected noncomputable def restrict (κ : kernel α β) (hs : MeasurableSet s) 
   val a := (κ a).restrict s
   property := by
     refine' Measure.measurable_of_measurable_coe _ fun t ht => _
+    -- ⊢ Measurable fun b => ↑↑(Measure.restrict (↑κ b) s) t
     simp_rw [Measure.restrict_apply ht]
+    -- ⊢ Measurable fun b => ↑↑(↑κ b) (t ∩ s)
     exact kernel.measurable_coe κ (ht.inter hs)
+    -- 🎉 no goals
 #align probability_theory.kernel.restrict ProbabilityTheory.kernel.restrict
 
 theorem restrict_apply (κ : kernel α β) (hs : MeasurableSet s) (a : α) :
@@ -509,23 +577,28 @@ theorem restrict_apply (κ : kernel α β) (hs : MeasurableSet s) (a : α) :
 theorem restrict_apply' (κ : kernel α β) (hs : MeasurableSet s) (a : α) (ht : MeasurableSet t) :
     kernel.restrict κ hs a t = (κ a) (t ∩ s) := by
   rw [restrict_apply κ hs a, Measure.restrict_apply ht]
+  -- 🎉 no goals
 #align probability_theory.kernel.restrict_apply' ProbabilityTheory.kernel.restrict_apply'
 
 @[simp]
 theorem restrict_univ : kernel.restrict κ MeasurableSet.univ = κ := by
   ext1 a
+  -- ⊢ ↑(kernel.restrict κ (_ : MeasurableSet Set.univ)) a = ↑κ a
   rw [kernel.restrict_apply, Measure.restrict_univ]
+  -- 🎉 no goals
 #align probability_theory.kernel.restrict_univ ProbabilityTheory.kernel.restrict_univ
 
 @[simp]
 theorem lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞) :
     ∫⁻ b, f b ∂kernel.restrict κ hs a = ∫⁻ b in s, f b ∂κ a := by rw [restrict_apply]
+                                                                  -- 🎉 no goals
 #align probability_theory.kernel.lintegral_restrict ProbabilityTheory.kernel.lintegral_restrict
 
 @[simp]
 theorem set_lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞)
     (t : Set β) : ∫⁻ b in t, f b ∂kernel.restrict κ hs a = ∫⁻ b in t ∩ s, f b ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.set_lintegral_restrict ProbabilityTheory.kernel.set_lintegral_restrict
 
 @[simp]
@@ -533,20 +606,27 @@ theorem set_integral_restrict {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     {f : β → E} {a : α} (hs : MeasurableSet s) (t : Set β) :
     ∫ x in t, f x ∂kernel.restrict κ hs a = ∫ x in t ∩ s, f x ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
+  -- 🎉 no goals
 #align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.set_integral_restrict
 
 instance IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (kernel.restrict κ hs) := by
   refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  -- ⊢ ↑↑(↑(kernel.restrict κ hs) a) Set.univ ≤ IsFiniteKernel.bound κ
   rw [restrict_apply' κ hs a MeasurableSet.univ]
+  -- ⊢ ↑↑(↑κ a) (Set.univ ∩ s) ≤ IsFiniteKernel.bound κ
   exact measure_le_bound κ a _
+  -- 🎉 no goals
 #align probability_theory.kernel.is_finite_kernel.restrict ProbabilityTheory.kernel.IsFiniteKernel.restrict
 
 instance IsSFiniteKernel.restrict (κ : kernel α β) [IsSFiniteKernel κ] (hs : MeasurableSet s) :
     IsSFiniteKernel (kernel.restrict κ hs) := by
   refine' ⟨⟨fun n => kernel.restrict (seq κ n) hs, inferInstance, _⟩⟩
+  -- ⊢ kernel.restrict κ hs = kernel.sum fun n => kernel.restrict (seq κ n) hs
   ext1 a
+  -- ⊢ ↑(kernel.restrict κ hs) a = ↑(kernel.sum fun n => kernel.restrict (seq κ n)  …
   simp_rw [sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← sum_apply, kernel_sum_seq]
+  -- 🎉 no goals
 #align probability_theory.kernel.is_s_finite_kernel.restrict ProbabilityTheory.kernel.IsSFiniteKernel.restrict
 
 end Restrict
@@ -561,12 +641,15 @@ noncomputable def comapRight (κ : kernel α β) (hf : MeasurableEmbedding f) : 
   val a := (κ a).comap f
   property := by
     refine' Measure.measurable_measure.mpr fun t ht => _
+    -- ⊢ Measurable fun b => ↑↑(Measure.comap f (↑κ b)) t
     have : (fun a => Measure.comap f (κ a) t) = fun a => κ a (f '' t) := by
       ext1 a
       rw [Measure.comap_apply _ hf.injective _ _ ht]
       exact fun s' hs' ↦ hf.measurableSet_image.mpr hs'
     rw [this]
+    -- ⊢ Measurable fun a => ↑↑(↑κ a) (f '' t)
     exact kernel.measurable_coe _ (hf.measurableSet_image.mpr ht)
+    -- 🎉 no goals
 #align probability_theory.kernel.comap_right ProbabilityTheory.kernel.comapRight
 
 theorem comapRight_apply (κ : kernel α β) (hf : MeasurableEmbedding f) (a : α) :
@@ -583,24 +666,35 @@ theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : 
 theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
   refine' ⟨fun a => ⟨_⟩⟩
+  -- ⊢ ↑↑(↑(kernel.comapRight κ hf) a) Set.univ = 1
   rw [comapRight_apply' κ hf a MeasurableSet.univ]
+  -- ⊢ ↑↑(↑κ a) (f '' Set.univ) = 1
   simp only [Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  -- ⊢ ↑↑(↑κ a) (Set.range f) = 1
   exact hκ a
+  -- 🎉 no goals
 #align probability_theory.kernel.is_markov_kernel.comap_right ProbabilityTheory.kernel.IsMarkovKernel.comapRight
 
 instance IsFiniteKernel.comapRight (κ : kernel α β) [IsFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsFiniteKernel (comapRight κ hf) := by
   refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  -- ⊢ ↑↑(↑(kernel.comapRight κ hf) a) Set.univ ≤ IsFiniteKernel.bound κ
   rw [comapRight_apply' κ hf a .univ]
+  -- ⊢ ↑↑(↑κ a) (f '' Set.univ) ≤ IsFiniteKernel.bound κ
   exact measure_le_bound κ a _
+  -- 🎉 no goals
 #align probability_theory.kernel.is_finite_kernel.comap_right ProbabilityTheory.kernel.IsFiniteKernel.comapRight
 
 protected instance IsSFiniteKernel.comapRight (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsSFiniteKernel (comapRight κ hf) := by
   refine' ⟨⟨fun n => comapRight (seq κ n) hf, inferInstance, _⟩⟩
+  -- ⊢ comapRight κ hf = kernel.sum fun n => comapRight (seq κ n) hf
   ext1 a
+  -- ⊢ ↑(comapRight κ hf) a = ↑(kernel.sum fun n => comapRight (seq κ n) hf) a
   rw [sum_apply]
+  -- ⊢ ↑(comapRight κ hf) a = Measure.sum fun n => ↑(comapRight (seq κ n) hf) a
   simp_rw [comapRight_apply _ hf]
+  -- ⊢ Measure.comap f (↑κ a) = Measure.sum fun n => Measure.comap f (↑(seq κ n) a)
   have :
     (Measure.sum fun n => Measure.comap f (seq κ n a)) =
       Measure.comap f (Measure.sum fun n => seq κ n a) := by
@@ -610,6 +704,7 @@ protected instance IsSFiniteKernel.comapRight (κ : kernel α β) [IsSFiniteKern
     congr with n : 1
     rw [Measure.comap_apply _ hf.injective (fun s' => hf.measurableSet_image.mpr) _ ht]
   rw [this, measure_sum_seq]
+  -- 🎉 no goals
 #align probability_theory.kernel.is_s_finite_kernel.comap_right ProbabilityTheory.kernel.IsSFiniteKernel.comapRight
 
 end ComapRight
@@ -632,45 +727,73 @@ theorem piecewise_apply (a : α) : piecewise hs κ η a = if a ∈ s then κ a e
 theorem piecewise_apply' (a : α) (t : Set β) :
     piecewise hs κ η a t = if a ∈ s then κ a t else η a t := by
   rw [piecewise_apply]; split_ifs <;> rfl
+  -- ⊢ ↑↑(if a ∈ s then ↑κ a else ↑η a) t = if a ∈ s then ↑↑(↑κ a) t else ↑↑(↑η a) t
+                        -- ⊢ ↑↑(↑κ a) t = ↑↑(↑κ a) t
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
 #align probability_theory.kernel.piecewise_apply' ProbabilityTheory.kernel.piecewise_apply'
 
 instance IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
     IsMarkovKernel (piecewise hs κ η) := by
   refine' ⟨fun a => ⟨_⟩⟩
+  -- ⊢ ↑↑(↑(kernel.piecewise hs κ η) a) Set.univ = 1
   rw [piecewise_apply', measure_univ, measure_univ, ite_self]
+  -- 🎉 no goals
 #align probability_theory.kernel.is_markov_kernel.piecewise ProbabilityTheory.kernel.IsMarkovKernel.piecewise
 
 instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (piecewise hs κ η) := by
   refine' ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), _, fun a => _⟩⟩
+  -- ⊢ max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η) < ⊤
   · exact max_lt (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η)
+    -- 🎉 no goals
   rw [piecewise_apply']
+  -- ⊢ (if a ∈ s then ↑↑(↑κ a) Set.univ else ↑↑(↑η a) Set.univ) ≤ max (IsFiniteKern …
   exact (ite_le_sup _ _ _).trans (sup_le_sup (measure_le_bound _ _ _) (measure_le_bound _ _ _))
+  -- 🎉 no goals
 #align probability_theory.kernel.is_finite_kernel.piecewise ProbabilityTheory.kernel.IsFiniteKernel.piecewise
 
 protected instance IsSFiniteKernel.piecewise [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (piecewise hs κ η) := by
   refine' ⟨⟨fun n => piecewise hs (seq κ n) (seq η n), inferInstance, _⟩⟩
+  -- ⊢ piecewise hs κ η = kernel.sum fun n => piecewise hs (seq κ n) (seq η n)
   ext1 a
+  -- ⊢ ↑(piecewise hs κ η) a = ↑(kernel.sum fun n => piecewise hs (seq κ n) (seq η  …
   simp_rw [sum_apply, kernel.piecewise_apply]
+  -- ⊢ (if a ∈ s then ↑κ a else ↑η a) = Measure.sum fun n => if a ∈ s then ↑(seq κ  …
   split_ifs <;> exact (measure_sum_seq _ a).symm
+  -- ⊢ ↑κ a = Measure.sum fun n => ↑(seq κ n) a
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align probability_theory.kernel.is_s_finite_kernel.piecewise ProbabilityTheory.kernel.IsSFiniteKernel.piecewise
 
 theorem lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂piecewise hs κ η a = if a ∈ s then ∫⁻ b, g b ∂κ a else ∫⁻ b, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
+  -- ⊢ (∫⁻ (b : β), g b ∂if a ∈ s then ↑κ a else ↑η a) = if a ∈ s then ∫⁻ (b : β),  …
+                             -- ⊢ ∫⁻ (b : β), g b ∂↑κ a = ∫⁻ (b : β), g b ∂↑κ a
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align probability_theory.kernel.lintegral_piecewise ProbabilityTheory.kernel.lintegral_piecewise
 
 theorem set_lintegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
     ∫⁻ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
+     -- ⊢ (∫⁻ (b : β) in t, g b ∂if a ∈ s then ↑κ a else ↑η a) = if a ∈ s then ∫⁻ (b : …
+                                -- ⊢ ∫⁻ (b : β) in t, g b ∂↑κ a = ∫⁻ (b : β) in t, g b ∂↑κ a
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align probability_theory.kernel.set_lintegral_piecewise ProbabilityTheory.kernel.set_lintegral_piecewise
 
 theorem integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (a : α) (g : β → E) :
     ∫ b, g b ∂piecewise hs κ η a = if a ∈ s then ∫ b, g b ∂κ a else ∫ b, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
+  -- ⊢ (∫ (b : β), g b ∂if a ∈ s then ↑κ a else ↑η a) = if a ∈ s then ∫ (b : β), g  …
+                             -- ⊢ ∫ (b : β), g b ∂↑κ a = ∫ (b : β), g b ∂↑κ a
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align probability_theory.kernel.integral_piecewise ProbabilityTheory.kernel.integral_piecewise
 
 theorem set_integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -678,6 +801,10 @@ theorem set_integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     ∫ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
+     -- ⊢ (∫ (b : β) in t, g b ∂if a ∈ s then ↑κ a else ↑η a) = if a ∈ s then ∫ (b : β …
+                                -- ⊢ ∫ (b : β) in t, g b ∂↑κ a = ∫ (b : β) in t, g b ∂↑κ a
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.set_integral_piecewise
 
 end Piecewise

@@ -41,18 +41,28 @@ theorem gcd_ne_zero_of_right (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =
 
 theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
+  -- ⊢ p / GCDMonoid.gcd p q ≠ 0
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hp)
+  -- ⊢ p / GCDMonoid.gcd p q ≠ 0
   nth_rw 1 [hr]
+  -- ⊢ GCDMonoid.gcd p q * r / GCDMonoid.gcd p q ≠ 0
   rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
+  -- ⊢ r ≠ 0
   exact r0
+  -- 🎉 no goals
 #align left_div_gcd_ne_zero left_div_gcd_ne_zero
 
 theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_right p q
+  -- ⊢ q / GCDMonoid.gcd p q ≠ 0
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hq)
+  -- ⊢ q / GCDMonoid.gcd p q ≠ 0
   nth_rw 1 [hr]
+  -- ⊢ GCDMonoid.gcd p q * r / GCDMonoid.gcd p q ≠ 0
   rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
+  -- ⊢ r ≠ 0
   exact r0
+  -- 🎉 no goals
 #align right_div_gcd_ne_zero right_div_gcd_ne_zero
 
 theorem isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
@@ -77,6 +87,7 @@ def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   gcd_dvd_right := gcd_dvd_right
   dvd_gcd := dvd_gcd
   gcd_mul_lcm a b := by rw [EuclideanDomain.gcd_mul_lcm]
+                        -- 🎉 no goals
   lcm_zero_left := lcm_zero_left
   lcm_zero_right := lcm_zero_right
 #align euclidean_domain.gcd_monoid EuclideanDomain.gcdMonoid

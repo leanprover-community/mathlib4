@@ -51,6 +51,7 @@ instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : M
     haveI : IsSplitMono c.inl :=
       IsSplitMono.mk' (SplitMono.mk (hc.desc (BinaryCofan.mk (𝟙 A) 0)) (IsColimit.fac _ _ _))
     infer_instance⟩
+    -- 🎉 no goals
 #align category_theory.limits.mono_coprod_of_has_zero_morphisms CategoryTheory.Limits.monoCoprodOfHasZeroMorphisms
 
 namespace MonoCoprod
@@ -62,6 +63,7 @@ theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsC
       (by aesop_cat) (by aesop_cat)
       (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by aesop_cat) (by aesop_cat))
   exact binaryCofan_inl _ hc'
+  -- 🎉 no goals
 #align category_theory.limits.mono_coprod.binary_cofan_inr CategoryTheory.Limits.MonoCoprod.binaryCofan_inr
 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : A ⟶ A ⨿ B) :=
@@ -77,7 +79,9 @@ theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit 
       Mono c₂.inl
     by exact ⟨fun h₁ => this _ _ hc₁ hc₂ h₁, fun h₂ => this _ _ hc₂ hc₁ h₂⟩
   intro c₁ c₂ hc₁ hc₂
+  -- ⊢ Mono (BinaryCofan.inl c₁) → Mono (BinaryCofan.inl c₂)
   intro
+  -- ⊢ Mono (BinaryCofan.inl c₂)
   simpa only [IsColimit.comp_coconePointUniqueUpToIso_hom] using
     mono_comp c₁.inl (hc₁.coconePointUniqueUpToIso hc₂).hom
 #align category_theory.limits.mono_coprod.mono_inl_iff CategoryTheory.Limits.MonoCoprod.mono_inl_iff
@@ -85,12 +89,15 @@ theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit 
 theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono c.inl) : MonoCoprod C :=
   ⟨fun A B c' hc' => by
     obtain ⟨c, hc₁, hc₂⟩ := h A B
+    -- ⊢ Mono (BinaryCofan.inl c')
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
+    -- 🎉 no goals
 #align category_theory.limits.mono_coprod.mk' CategoryTheory.Limits.MonoCoprod.mk'
 
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
     refine' ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, _, _⟩
+    -- ⊢ IsColimit (BinaryCofan.mk Sum.inl Sum.inr)
     · exact BinaryCofan.IsColimit.mk _
         (fun f₁ f₂ x => by
           rcases x with x | x
@@ -103,8 +110,11 @@ instance monoCoprodType : MonoCoprod (Type u) :=
           · exact congr_fun h₁ x
           · exact congr_fun h₂ x)
     · rw [mono_iff_injective]
+      -- ⊢ Function.Injective (BinaryCofan.inl (BinaryCofan.mk Sum.inl Sum.inr))
       intro a₁ a₂ h
+      -- ⊢ a₁ = a₂
       simpa using h
+      -- 🎉 no goals
 #align category_theory.limits.mono_coprod.mono_coprod_type CategoryTheory.Limits.MonoCoprod.monoCoprodType
 
 end MonoCoprod

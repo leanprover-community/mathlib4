@@ -235,14 +235,20 @@ instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
   refine' ⟨ENNReal.measurable_of_measurable_nnreal_prod _ _⟩
+  -- ⊢ Measurable fun p => (↑p.fst, p.snd).fst ^ (↑p.fst, p.snd).snd
   · simp_rw [ENNReal.coe_rpow_def]
+    -- ⊢ Measurable fun p => if p.fst = 0 ∧ p.snd < 0 then ⊤ else ↑(p.fst ^ p.snd)
     refine' Measurable.ite _ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
+    -- ⊢ MeasurableSet {a | a.fst = 0 ∧ a.snd < 0}
     exact
       MeasurableSet.inter (measurable_fst (measurableSet_singleton 0))
         (measurable_snd measurableSet_Iio)
   · simp_rw [ENNReal.top_rpow_def]
+    -- ⊢ Measurable fun x => if 0 < x then ⊤ else if x = 0 then 1 else 0
     refine' Measurable.ite measurableSet_Ioi measurable_const _
+    -- ⊢ Measurable fun x => if x = 0 then 1 else 0
     exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const
+    -- 🎉 no goals
 #align ennreal.has_measurable_pow ENNReal.hasMeasurablePow
 
 end PowInstances

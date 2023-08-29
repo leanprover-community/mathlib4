@@ -136,21 +136,29 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
     map_zero' := toDirectSum_zero
     map_add' := toDirectSum_add }
   show to_hom (f * g) = to_hom f * to_hom g
+  -- ⊢ ↑to_hom (f * g) = ↑to_hom f * ↑to_hom g
   let _ : NonUnitalNonAssocSemiring (ι →₀ M) := AddMonoidAlgebra.nonUnitalNonAssocSemiring
+  -- ⊢ ↑to_hom (f * g) = ↑to_hom f * ↑to_hom g
   revert f g
+  -- ⊢ ∀ (f g : AddMonoidAlgebra M ι), ↑to_hom (f * g) = ↑to_hom f * ↑to_hom g
   rw [AddMonoidHom.map_mul_iff]
+  -- ⊢ AddMonoidHom.compr₂ AddMonoidHom.mul to_hom = AddMonoidHom.compl₂ (AddMonoid …
   -- porting note: does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
   refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => ?_
+  -- ⊢ ↑(AddMonoidHom.comp (AddMonoidHom.compr₂ AddMonoidHom.mul to_hom) (Finsupp.s …
   refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
+  -- ⊢ ↑(AddMonoidHom.comp (↑(AddMonoidHom.comp (AddMonoidHom.compr₂ AddMonoidHom.m …
   dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
     AddMonoidHom.mul_apply, Finsupp.singleAddHom_apply]
   simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, toDirectSum_single]
+  -- ⊢ toDirectSum (Finsupp.single xi xv * Finsupp.single yi yv) = ↑(DirectSum.of ( …
   erw [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
     AddMonoidAlgebra.toDirectSum_single]
   simp only [AddMonoidHom.coe_comp, AddMonoidHom.coe_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
     Function.comp_apply, toDirectSum_single, AddMonoidHom.id_apply, Finsupp.singleAddHom_apply,
     AddMonoidHom.coe_mulLeft]
   erw [DirectSum.of_mul_of, Mul.gMul_mul]
+  -- 🎉 no goals
 #align add_monoid_algebra.to_direct_sum_mul AddMonoidAlgebra.toDirectSum_mul
 
 end AddMonoidAlgebra
@@ -176,9 +184,13 @@ theorem toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M]
   [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
       (f * g).toAddMonoidAlgebra = toAddMonoidAlgebra f * toAddMonoidAlgebra g := by
   apply_fun AddMonoidAlgebra.toDirectSum
+  -- ⊢ AddMonoidAlgebra.toDirectSum (toAddMonoidAlgebra (f * g)) = AddMonoidAlgebra …
   · simp
+    -- 🎉 no goals
   · apply Function.LeftInverse.injective
+    -- ⊢ Function.LeftInverse ?inj.g AddMonoidAlgebra.toDirectSum
     apply AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra
+    -- 🎉 no goals
 #align direct_sum.to_add_monoid_algebra_mul DirectSum.toAddMonoidAlgebra_mul
 
 end DirectSum

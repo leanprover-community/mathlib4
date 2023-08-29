@@ -45,7 +45,9 @@ theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : �
 theorem PiToModule.fromMatrix_apply_single_one [DecidableEq ι] (A : Matrix ι ι R) (j : ι) :
     PiToModule.fromMatrix R b A (Pi.single j 1) = ∑ i : ι, A i j • b i := by
   rw [PiToModule.fromMatrix_apply, Fintype.total_apply, Matrix.mulVec_single]
+  -- ⊢ ∑ i : ι, (fun i => A i j * 1) i • b i = ∑ i : ι, A i j • b i
   simp_rw [mul_one]
+  -- 🎉 no goals
 #align pi_to_module.from_matrix_apply_single_one PiToModule.fromMatrix_apply_single_one
 
 /-- The endomorphisms of `M` acts on `(ι → R) →ₗ[R] M`, and takes the projection
@@ -62,19 +64,26 @@ theorem PiToModule.fromEnd_apply (f : Module.End R M) (w : ι → R) :
 theorem PiToModule.fromEnd_apply_single_one [DecidableEq ι] (f : Module.End R M) (i : ι) :
     PiToModule.fromEnd R b f (Pi.single i 1) = f (b i) := by
   rw [PiToModule.fromEnd_apply]
+  -- ⊢ ↑f (↑(↑(Fintype.total R R) b) (Pi.single i 1)) = ↑f (b i)
   congr
+  -- ⊢ ↑(↑(Fintype.total R R) b) (Pi.single i 1) = b i
   convert Fintype.total_apply_single (S := R) R b i (1 : R)
+  -- ⊢ b i = 1 • b i
   rw [one_smul]
+  -- 🎉 no goals
 #align pi_to_module.from_End_apply_single_one PiToModule.fromEnd_apply_single_one
 
 theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤) :
     Function.Injective (PiToModule.fromEnd R b) := by
   intro x y e
+  -- ⊢ x = y
   ext m
+  -- ⊢ ↑x m = ↑y m
   obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.total R R b) := by
     rw [(Fintype.range_total R b).trans hb]
     exact Submodule.mem_top
   exact (LinearMap.congr_fun e m : _)
+  -- 🎉 no goals
 #align pi_to_module.from_End_injective PiToModule.fromEnd_injective
 
 section
@@ -102,48 +111,71 @@ theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
     A.Represents b f ↔ ∀ j, ∑ i : ι, A i j • b i = f (b j) := by
   constructor
+  -- ⊢ Represents b A f → ∀ (j : ι), ∑ i : ι, A i j • b i = ↑f (b j)
   · intro h i
+    -- ⊢ ∑ i_1 : ι, A i_1 i • b i_1 = ↑f (b i)
     have := LinearMap.congr_fun h (Pi.single i 1)
+    -- ⊢ ∑ i_1 : ι, A i_1 i • b i_1 = ↑f (b i)
     rwa [PiToModule.fromEnd_apply_single_one, PiToModule.fromMatrix_apply_single_one] at this
+    -- 🎉 no goals
   · intro h
+    -- ⊢ Represents b A f
     -- Porting note: was `ext`
     refine LinearMap.pi_ext' (fun i => LinearMap.ext_ring ?_)
+    -- ⊢ ↑(LinearMap.comp (↑(PiToModule.fromMatrix R b) A) (LinearMap.single i)) 1 =  …
     simp_rw [LinearMap.comp_apply, LinearMap.coe_single, PiToModule.fromEnd_apply_single_one,
       PiToModule.fromMatrix_apply_single_one]
     apply h
+    -- 🎉 no goals
 #align matrix.represents_iff' Matrix.represents_iff'
 
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
+  -- ⊢ ↑(LinearMap.comp (↑(LinearMap.llcomp R (ι → R) (ι → R) M) (↑(Fintype.total R …
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_mul]
+  -- ⊢ ↑(↑(LinearMap.llcomp R (ι → R) (ι → R) M) (↑(Fintype.total R R) b)) (↑(AlgEq …
   ext
+  -- ⊢ ↑(LinearMap.comp (↑(↑(LinearMap.llcomp R (ι → R) (ι → R) M) (↑(Fintype.total …
   dsimp [PiToModule.fromEnd]
+  -- ⊢ ↑(↑(Fintype.total R R) b) (↑(↑(AlgEquiv.symm algEquivMatrix') A) (↑(↑(AlgEqu …
   rw [← h'.congr_fun, ← h.congr_fun]
+  -- ⊢ ↑(↑(Fintype.total R R) b) (↑(↑(AlgEquiv.symm algEquivMatrix') A) (↑(↑(AlgEqu …
   rfl
+  -- 🎉 no goals
 #align matrix.represents.mul Matrix.Represents.mul
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
+  -- ⊢ ↑(LinearMap.comp (↑(LinearMap.llcomp R (ι → R) (ι → R) M) (↑(Fintype.total R …
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_one]
+  -- ⊢ ↑(↑(LinearMap.llcomp R (ι → R) (ι → R) M) (↑(Fintype.total R R) b)) 1 = ↑(Pi …
   ext
+  -- ⊢ ↑(LinearMap.comp (↑(↑(LinearMap.llcomp R (ι → R) (ι → R) M) (↑(Fintype.total …
   rfl
+  -- 🎉 no goals
 #align matrix.represents.one Matrix.Represents.one
 
 theorem Matrix.Represents.add {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A + A').Represents b (f + f') := by
   delta Matrix.Represents at h h' ⊢; rw [map_add, map_add, h, h']
+  -- ⊢ ↑(PiToModule.fromMatrix R b) (A + A') = ↑(PiToModule.fromEnd R b) (f + f')
+                                     -- 🎉 no goals
 #align matrix.represents.add Matrix.Represents.add
 
 theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
   delta Matrix.Represents
+  -- ⊢ ↑(PiToModule.fromMatrix R b) 0 = ↑(PiToModule.fromEnd R b) 0
   rw [map_zero, map_zero]
+  -- 🎉 no goals
 #align matrix.represents.zero Matrix.Represents.zero
 
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
+  -- ⊢ ↑(PiToModule.fromMatrix R b) (r • A) = ↑(PiToModule.fromEnd R b) (r • f)
   rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
+  -- 🎉 no goals
 #align matrix.represents.smul Matrix.Represents.smul
 
 theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
@@ -194,7 +226,9 @@ theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I :
     rw [Ideal.range_finsuppTotal, hb]
     exact fun x => hI (LinearMap.mem_range_self f x)
   choose bM' hbM' using this
+  -- ⊢ ∃ M_1, ↑(toEnd R b hb) M_1 = f ∧ ∀ (i j : ι), ↑M_1 i j ∈ I
   let A : Matrix ι ι R := fun i j => bM' (b j) i
+  -- ⊢ ∃ M_1, ↑(toEnd R b hb) M_1 = f ∧ ∀ (i j : ι), ↑M_1 i j ∈ I
   have : A.Represents b f := by
     rw [Matrix.represents_iff']
     dsimp
@@ -209,8 +243,11 @@ theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I :
 theorem Matrix.isRepresentation.toEnd_surjective :
     Function.Surjective (Matrix.isRepresentation.toEnd R b hb) := by
   intro f
+  -- ⊢ ∃ a, ↑(toEnd R b hb) a = f
   obtain ⟨M, e, -⟩ := Matrix.isRepresentation.toEnd_exists_mem_ideal R b hb f ⊤ (by simp)
+  -- ⊢ ∃ a, ↑(toEnd R b hb) a = f
   exact ⟨M, e⟩
+  -- 🎉 no goals
 #align matrix.is_representation.to_End_surjective Matrix.isRepresentation.toEnd_surjective
 
 end
@@ -248,5 +285,6 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
 theorem LinearMap.exists_monic_and_aeval_eq_zero [Module.Finite R M] (f : Module.End R M) :
     ∃ p : R[X], p.Monic ∧ Polynomial.aeval f p = 0 :=
   (LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_smul R f ⊤ (by simp)).imp
+                                                                                         -- 🎉 no goals
     fun p h => h.imp_right And.right
 #align linear_map.exists_monic_and_aeval_eq_zero LinearMap.exists_monic_and_aeval_eq_zero

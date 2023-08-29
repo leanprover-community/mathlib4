@@ -57,6 +57,7 @@ open Nat
 /-- The first element of a vector with length at least `1`. -/
 def head : Vector α (Nat.succ n) → α
   | ⟨[], h⟩ => by contradiction
+                  -- 🎉 no goals
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
@@ -80,6 +81,7 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 @[simp]
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
+                  -- 🎉 no goals
   | ⟨a :: v, h⟩ => rfl
 #align vector.cons_head_tail Vector.cons_head_tail
 
@@ -92,11 +94,14 @@ def toList (v : Vector α n) : List α :=
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
+                                 -- ⊢ ↑i < n
+                                         -- 🎉 no goals
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
+                                        -- 🎉 no goals
 #align vector.append Vector.append
 
 /- warning: vector.elim -> Vector.elim is a dubious translation:
@@ -127,6 +132,7 @@ def elim {α} {C : ∀ {n}, Vector α n → Sort u}
 /-- Map a vector under a function. -/
 def map (f : α → β) : Vector α n → Vector β n
   | ⟨l, h⟩ => ⟨List.map f l, by simp [*]⟩
+                                -- 🎉 no goals
 #align vector.map Vector.map
 
 /-- A `nil` vector maps to a `nil` vector. -/
@@ -144,6 +150,7 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
 /-- Mapping two vectors under a curried function of two variables. -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
   | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
+                                              -- 🎉 no goals
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
@@ -154,16 +161,22 @@ def replicate (n : ℕ) (a : α) : Vector α n :=
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
   | ⟨l, p⟩ => ⟨List.drop i l, by simp [*]⟩
+                                 -- 🎉 no goals
 #align vector.drop Vector.drop
 
 /-- Take `i` elements from a vector of length `n`; we can have `i > n`. -/
 def take (i : ℕ) : Vector α n → Vector α (min i n)
   | ⟨l, p⟩ => ⟨List.take i l, by simp [*]⟩
+                                 -- 🎉 no goals
 #align vector.take Vector.take
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
   | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
+                                        -- ⊢ List.length l - 1 = n - 1
+                                                                    -- 🎉 no goals
+                                                                    -- ⊢ ↑i < n
+                                                                            -- 🎉 no goals
 #align vector.remove_nth Vector.removeNth
 
 /-- Vector of length `n` from a function on `Fin n`. -/
@@ -190,6 +203,7 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
     ⟨res.1, res.2, by simp [*]⟩
+                      -- 🎉 no goals
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
@@ -200,6 +214,7 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
     ⟨res.1, res.2, by simp [*]⟩
+                      -- 🎉 no goals
 #align vector.map_accumr₂ Vector.mapAccumr₂
 
 end Accum
@@ -211,6 +226,7 @@ section Shift
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by simp) <|
+                   -- 🎉 no goals
     append (drop i v) (replicate (min n i) fill)
 
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
@@ -218,11 +234,17 @@ def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by
         by_cases h : i ≤ n
+        -- ⊢ min n i + min (n - i) n = n
         · have h₁ := Nat.sub_le n i
+          -- ⊢ min n i + min (n - i) n = n
           rw [min_eq_right h]
+          -- ⊢ i + min (n - i) n = n
           rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
+          -- 🎉 no goals
         · have h₁ := le_of_not_ge h
+          -- ⊢ min n i + min (n - i) n = n
           rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
+          -- 🎉 no goals
     append (replicate (min n i) fill) (take (n - i) v)
 
 end Shift
@@ -263,6 +285,8 @@ the `cons` of the list obtained by `toList` and the element -/
 @[simp]
 theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
   cases v; rfl
+  -- ⊢ toList (cons a { val := val✝, property := property✝ }) = a :: toList { val : …
+           -- 🎉 no goals
 #align vector.to_list_cons Vector.toList_cons
 
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
@@ -270,22 +294,29 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
    toList (append v w) = toList v ++ toList w := by
   cases v
+  -- ⊢ toList (append { val := val✝, property := property✝ } w) = toList { val := v …
   cases w
+  -- ⊢ toList (append { val := val✝¹, property := property✝¹ } { val := val✝, prope …
   rfl
+  -- 🎉 no goals
 #align vector.to_list_append Vector.toList_append
 
 /-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
 @[simp]
 theorem toList_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
   cases v
+  -- ⊢ toList (drop n { val := val✝, property := property✝ }) = List.drop n (toList …
   rfl
+  -- 🎉 no goals
 #align vector.to_list_drop Vector.toList_drop
 
 /-- `take` of vectors corresponds under `toList` to `take` of lists. -/
 @[simp]
 theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
   cases v
+  -- ⊢ toList (take n { val := val✝, property := property✝ }) = List.take n (toList …
   rfl
+  -- 🎉 no goals
 #align vector.to_list_take Vector.toList_take
 
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where

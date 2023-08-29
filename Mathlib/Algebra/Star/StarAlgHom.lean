@@ -114,6 +114,8 @@ instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
     where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
+                       -- ⊢ { toNonUnitalAlgHom := { toDistribMulActionHom := { toMulActionHom := { toFu …
+                                                                             -- 🎉 no goals
   map_smul f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
@@ -187,7 +189,9 @@ theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
   (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
   ext
+  -- ⊢ ↑{ toNonUnitalAlgHom := { toDistribMulActionHom := { toMulActionHom := { toF …
   rfl
+  -- 🎉 no goals
 #align non_unital_star_alg_hom.mk_coe NonUnitalStarAlgHom.mk_coeₓ
 
 section
@@ -270,6 +274,7 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
 instance : Zero (A →⋆ₙₐ[R] B) :=
   ⟨{ (0 : NonUnitalAlgHom R A B) with map_star' := by simp }⟩
+                                                      -- 🎉 no goals
 
 instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
@@ -365,6 +370,8 @@ instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B
     where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
+                       -- ⊢ { toAlgHom := { toRingHom := { toMonoidHom := { toOneHom := { toFun := f, ma …
+                                                                                       -- 🎉 no goals
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_add f := f.map_add'
@@ -433,7 +440,9 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) :
 theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
   ext
+  -- ⊢ ↑{ toAlgHom := { toRingHom := { toMonoidHom := { toOneHom := { toFun := ↑f,  …
   rfl
+  -- 🎉 no goals
 #align star_alg_hom.mk_coe StarAlgHom.mk_coeₓ
 
 section
@@ -542,6 +551,7 @@ variable {R A B C}
 def prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : A →⋆ₙₐ[R] B × C :=
   { f.toNonUnitalAlgHom.prod g.toNonUnitalAlgHom with
     map_star' := fun x => by simp [map_star, Prod.star_def] }
+                             -- 🎉 no goals
 #align non_unital_star_alg_hom.prod NonUnitalStarAlgHom.prod
 
 theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
@@ -551,11 +561,15 @@ theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.pro
 @[simp]
 theorem fst_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : (fst R B C).comp (prod f g) = f := by
   ext; rfl
+  -- ⊢ ↑(comp (fst R B C) (prod f g)) x✝ = ↑f x✝
+       -- 🎉 no goals
 #align non_unital_star_alg_hom.fst_prod NonUnitalStarAlgHom.fst_prod
 
 @[simp]
 theorem snd_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : (snd R B C).comp (prod f g) = g := by
   ext; rfl
+  -- ⊢ ↑(comp (snd R B C) (prod f g)) x✝ = ↑g x✝
+       -- 🎉 no goals
 #align non_unital_star_alg_hom.snd_prod NonUnitalStarAlgHom.snd_prod
 
 @[simp]
@@ -571,7 +585,13 @@ def prodEquiv : (A →⋆ₙₐ[R] B) × (A →⋆ₙₐ[R] C) ≃ (A →⋆ₙ�
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
+                   -- ⊢ ↑((fun f => (comp (fst R B C) f, comp (snd R B C) f)) ((fun f => prod f.fst  …
+                           -- 🎉 no goals
+                           -- 🎉 no goals
   right_inv f := by ext <;> rfl
+                    -- ⊢ (↑((fun f => prod f.fst f.snd) ((fun f => (comp (fst R B C) f, comp (snd R B …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align non_unital_star_alg_hom.prod_equiv NonUnitalStarAlgHom.prodEquiv
 
 end Prod
@@ -639,6 +659,7 @@ variable {R A B C}
 @[simps!]
 def prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : A →⋆ₐ[R] B × C :=
   { f.toAlgHom.prod g.toAlgHom with map_star' := fun x => by simp [Prod.star_def, map_star] }
+                                                             -- 🎉 no goals
 #align star_alg_hom.prod StarAlgHom.prod
 
 theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
@@ -648,11 +669,15 @@ theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) =
 @[simp]
 theorem fst_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : (fst R B C).comp (prod f g) = f := by
   ext; rfl
+  -- ⊢ ↑(comp (fst R B C) (prod f g)) x✝ = ↑f x✝
+       -- 🎉 no goals
 #align star_alg_hom.fst_prod StarAlgHom.fst_prod
 
 @[simp]
 theorem snd_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : (snd R B C).comp (prod f g) = g := by
   ext; rfl
+  -- ⊢ ↑(comp (snd R B C) (prod f g)) x✝ = ↑g x✝
+       -- 🎉 no goals
 #align star_alg_hom.snd_prod StarAlgHom.snd_prod
 
 @[simp]
@@ -668,7 +693,13 @@ def prodEquiv : (A →⋆ₐ[R] B) × (A →⋆ₐ[R] C) ≃ (A →⋆ₐ[R] B �
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
+                   -- ⊢ ↑((fun f => (comp (fst R B C) f, comp (snd R B C) f)) ((fun f => prod f.fst  …
+                           -- 🎉 no goals
+                           -- 🎉 no goals
   right_inv f := by ext <;> rfl
+                    -- ⊢ (↑((fun f => prod f.fst f.snd) ((fun f => (comp (fst R B C) f, comp (snd R B …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align star_alg_hom.prod_equiv StarAlgHom.prodEquiv
 
 end StarAlgHom
@@ -761,6 +792,7 @@ instance (priority := 100) instStarAlgHomClass (F R A B : Type*) [CommSemiring R
     map_one := map_one
     map_zero := map_zero
     commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+                              -- 🎉 no goals
 
 -- See note [lower instance priority]
 instance (priority := 100) toAlgEquivClass {F R A B : Type*} [CommSemiring R]
@@ -788,8 +820,11 @@ instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
     rcases f with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
+    -- ⊢ { toRingEquiv := { toEquiv := { toFun := toFun✝, invFun := invFun✝, left_inv …
     rcases g with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
+    -- ⊢ { toRingEquiv := { toEquiv := { toFun := toFun✝¹, invFun := invFun✝¹, left_i …
     congr
+    -- 🎉 no goals
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_star := map_star'
@@ -863,7 +898,9 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
 @[simp]
 theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := by
   ext
+  -- ⊢ ↑(symm (symm e)) a✝ = ↑e a✝
   rfl
+  -- 🎉 no goals
 #align star_alg_equiv.symm_symm StarAlgEquiv.symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
@@ -910,8 +947,10 @@ def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C
     map_smul' := fun r a =>
       show e₂.toFun (e₁.toFun (r • a)) = r • e₂.toFun (e₁.toFun a) by
         rw [e₁.map_smul', e₂.map_smul']
+        -- 🎉 no goals
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
+        -- 🎉 no goals
         rw [e₁.map_star', e₂.map_star'] }
 #align star_alg_equiv.trans StarAlgEquiv.trans
 

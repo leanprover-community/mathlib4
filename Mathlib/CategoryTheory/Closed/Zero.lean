@@ -51,8 +51,13 @@ open scoped ZeroObject
 /-- If a cartesian closed category has a zero object, each homset has exactly one element. -/
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : HasInitial C := HasZeroObject.hasInitial
+  -- ⊢ Unique (X ⟶ Y)
   apply uniqueHomsetOfInitialIsoTerminal _ X Y
+  -- ⊢ ⊥_ C ≅ ⊤_ C
   refine' ⟨default, (default : ⊤_ C ⟶ 0) ≫ default, _, _⟩ <;> simp
+  -- ⊢ default ≫ default ≫ default = 𝟙 (⊥_ C)
+                                                              -- 🎉 no goals
+                                                              -- 🎉 no goals
 #align category_theory.unique_homset_of_zero CategoryTheory.uniqueHomsetOfZero
 
 attribute [local instance] uniqueHomsetOfZero

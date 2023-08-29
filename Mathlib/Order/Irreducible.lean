@@ -72,18 +72,26 @@ theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
 @[simp]
 theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a := by
   rw [SupIrred, not_and_or]
+  -- ⊢ (¬¬IsMin a ∨ ¬∀ ⦃b c : α⦄, b ⊔ c = a → b = a ∨ c = a) ↔ IsMin a ∨ ∃ b c, b ⊔ …
   push_neg
+  -- ⊢ (IsMin a ∨ Exists fun ⦃b⦄ => Exists fun ⦃c⦄ => b ⊔ c = a ∧ b ≠ a ∧ c ≠ a) ↔  …
   rw [exists₂_congr]
+  -- ⊢ ∀ (a_1 b : α), a_1 ⊔ b = a ∧ a_1 ≠ a ∧ b ≠ a ↔ a_1 ⊔ b = a ∧ a_1 < a ∧ b < a
   simp (config := { contextual := true }) [@eq_comm _ _ a]
+  -- 🎉 no goals
 #align not_sup_irred not_supIrred
 
 @[simp]
 theorem not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
   rw [SupPrime, not_and_or]; push_neg; rfl
+  -- ⊢ (¬¬IsMin a ∨ ¬∀ ⦃b c : α⦄, a ≤ b ⊔ c → a ≤ b ∨ a ≤ c) ↔ IsMin a ∨ ∃ b c, a ≤ …
+                             -- ⊢ (IsMin a ∨ Exists fun ⦃b⦄ => Exists fun ⦃c⦄ => a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c)  …
+                                       -- 🎉 no goals
 #align not_sup_prime not_supPrime
 
 protected theorem SupPrime.supIrred : SupPrime a → SupIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.ge
+                                   -- 🎉 no goals
 #align sup_prime.sup_irred SupPrime.supIrred
 
 theorem SupPrime.le_sup (ha : SupPrime a) : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
@@ -103,9 +111,13 @@ theorem not_supPrime_bot : ¬SupPrime (⊥ : α) :=
 #align not_sup_prime_bot not_supPrime_bot
 
 theorem SupIrred.ne_bot (ha : SupIrred a) : a ≠ ⊥ := by rintro rfl; exact not_supIrred_bot ha
+                                                        -- ⊢ False
+                                                                    -- 🎉 no goals
 #align sup_irred.ne_bot SupIrred.ne_bot
 
 theorem SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact not_supPrime_bot ha
+                                                        -- ⊢ False
+                                                                    -- 🎉 no goals
 #align sup_prime.ne_bot SupPrime.ne_bot
 
 theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
@@ -181,6 +193,7 @@ theorem not_infPrime : ¬InfPrime a ↔ IsMax a ∨ ∃ b c, b ⊓ c ≤ a ∧ �
 
 protected theorem InfPrime.infIrred : InfPrime a → InfIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.le
+                                   -- 🎉 no goals
 #align inf_prime.inf_irred InfPrime.infIrred
 
 theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
@@ -200,9 +213,13 @@ theorem not_infPrime_top : ¬InfPrime (⊤ : α) :=
 #align not_inf_prime_top not_infPrime_top
 
 theorem InfIrred.ne_top (ha : InfIrred a) : a ≠ ⊤ := by rintro rfl; exact not_infIrred_top ha
+                                                        -- ⊢ False
+                                                                    -- 🎉 no goals
 #align inf_irred.ne_top InfIrred.ne_top
 
 theorem InfPrime.ne_top (ha : InfPrime a) : a ≠ ⊤ := by rintro rfl; exact not_infPrime_top ha
+                                                        -- ⊢ False
+                                                                    -- 🎉 no goals
 #align inf_prime.ne_top InfPrime.ne_top
 
 theorem InfIrred.finset_inf_eq : InfIrred a → s.inf f = a → ∃ i ∈ s, f i = a :=
@@ -308,12 +325,16 @@ variable [DistribLattice α] {a b c : α}
 theorem supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=
   ⟨SupPrime.supIrred,
     And.imp_right fun h b c => by simp_rw [← inf_eq_left, inf_sup_left]; exact @h _ _⟩
+                                  -- ⊢ a ⊓ b ⊔ a ⊓ c = a → a ⊓ b = a ∨ a ⊓ c = a
+                                                                         -- 🎉 no goals
 #align sup_prime_iff_sup_irred supPrime_iff_supIrred
 
 @[simp]
 theorem infPrime_iff_infIrred : InfPrime a ↔ InfIrred a :=
   ⟨InfPrime.infIrred,
     And.imp_right fun h b c => by simp_rw [← sup_eq_left, sup_inf_left]; exact @h _ _⟩
+                                  -- ⊢ (a ⊔ b) ⊓ (a ⊔ c) = a → a ⊔ b = a ∨ a ⊔ c = a
+                                                                         -- 🎉 no goals
 #align inf_prime_iff_inf_irred infPrime_iff_infIrred
 
 alias ⟨_, SupIrred.supPrime⟩ := supPrime_iff_supIrred
@@ -333,21 +354,25 @@ variable [LinearOrder α] {a : α}
 -- @[simp] Porting note: simp can prove this
 theorem supPrime_iff_not_isMin : SupPrime a ↔ ¬IsMin a :=
   and_iff_left <| by simp
+                     -- 🎉 no goals
 #align sup_prime_iff_not_is_min supPrime_iff_not_isMin
 
 -- @[simp] Porting note: simp can prove this
 theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
   and_iff_left <| by simp
+                     -- 🎉 no goals
 #align inf_prime_iff_not_is_max infPrime_iff_not_isMax
 
 @[simp]
 theorem supIrred_iff_not_isMin : SupIrred a ↔ ¬IsMin a :=
   and_iff_left fun _ _ => by simpa only [sup_eq_max, max_eq_iff] using Or.imp And.left And.left
+                             -- 🎉 no goals
 #align sup_irred_iff_not_is_min supIrred_iff_not_isMin
 
 @[simp]
 theorem infIrred_iff_not_isMax : InfIrred a ↔ ¬IsMax a :=
   and_iff_left fun _ _ => by simpa only [inf_eq_min, min_eq_iff] using Or.imp And.left And.left
+                             -- 🎉 no goals
 #align inf_irred_iff_not_is_max infIrred_iff_not_isMax
 
 end LinearOrder

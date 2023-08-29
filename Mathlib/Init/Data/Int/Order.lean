@@ -52,8 +52,11 @@ instance instLinearOrderInt : LinearOrder ℤ where
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
   decidableEq := by infer_instance
+                    -- 🎉 no goals
+                    -- 🎉 no goals
   decidableLE := by infer_instance
   decidableLT := by infer_instance
+                    -- 🎉 no goals
 
 #align int.eq_nat_abs_of_zero_le Int.eq_natAbs_of_zero_le
 #align int.le_nat_abs Int.le_natAbs
@@ -78,23 +81,35 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) 
     match lt_trichotomy 0 b with
     | Or.inl hlt₂ => by
       have : 0 < a * b := Int.mul_pos hlt₁ hlt₂
+      -- ⊢ a = 0 ∨ b = 0
       rw [h] at this
+      -- ⊢ a = 0 ∨ b = 0
       exact absurd this (lt_irrefl _)
+      -- 🎉 no goals
     | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
     | Or.inr (Or.inr hgt₂) => by
       have : 0 > a * b := Int.mul_neg_of_pos_of_neg hlt₁ hgt₂
+      -- ⊢ a = 0 ∨ b = 0
       rw [h] at this
+      -- ⊢ a = 0 ∨ b = 0
       exact absurd this (lt_irrefl _)
+      -- 🎉 no goals
   | Or.inr (Or.inl heq₁) => Or.inl heq₁.symm
   | Or.inr (Or.inr hgt₁) =>
     match lt_trichotomy 0 b with
     | Or.inl hlt₂ => by
       have : 0 > a * b := Int.mul_neg_of_neg_of_pos hgt₁ hlt₂
+      -- ⊢ a = 0 ∨ b = 0
       rw [h] at this
+      -- ⊢ a = 0 ∨ b = 0
       exact absurd this (lt_irrefl _)
+      -- 🎉 no goals
     | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
     | Or.inr (Or.inr hgt₂) => by
       have : 0 < a * b := Int.mul_pos_of_neg_of_neg hgt₁ hgt₂
+      -- ⊢ a = 0 ∨ b = 0
       rw [h] at this
+      -- ⊢ a = 0 ∨ b = 0
       exact absurd this (lt_irrefl _)
+      -- 🎉 no goals
 #align int.eq_zero_or_eq_zero_of_mul_eq_zero Int.eq_zero_or_eq_zero_of_mul_eq_zero

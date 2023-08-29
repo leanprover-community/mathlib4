@@ -78,39 +78,67 @@ theorem anisotropic_of_prod {R} [OrderedRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h : (Q₁.prod Q₂).Anisotropic) :
     Q₁.Anisotropic ∧ Q₂.Anisotropic := by
   simp_rw [Anisotropic, prod_apply, Prod.forall, Prod.mk_eq_zero] at h
+  -- ⊢ Anisotropic Q₁ ∧ Anisotropic Q₂
   constructor
+  -- ⊢ Anisotropic Q₁
   · intro x hx
+    -- ⊢ x = 0
     refine' (h x 0 _).1
+    -- ⊢ ↑Q₁ x + ↑Q₂ 0 = 0
     rw [hx, zero_add, map_zero]
+    -- 🎉 no goals
   · intro x hx
+    -- ⊢ x = 0
     refine' (h 0 x _).2
+    -- ⊢ ↑Q₁ 0 + ↑Q₂ x = 0
     rw [hx, add_zero, map_zero]
+    -- 🎉 no goals
 #align quadratic_form.anisotropic_of_prod QuadraticForm.anisotropic_of_prod
 
 theorem nonneg_prod_iff {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q₁ : QuadraticForm R M₁}
     {Q₂ : QuadraticForm R M₂} : (∀ x, 0 ≤ (Q₁.prod Q₂) x) ↔ (∀ x, 0 ≤ Q₁ x) ∧ ∀ x, 0 ≤ Q₂ x := by
   simp_rw [Prod.forall, prod_apply]
+  -- ⊢ (∀ (a : M₁) (b : M₂), 0 ≤ ↑Q₁ a + ↑Q₂ b) ↔ (∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ ∀ (x :  …
   constructor
+  -- ⊢ (∀ (a : M₁) (b : M₂), 0 ≤ ↑Q₁ a + ↑Q₂ b) → (∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ ∀ (x :  …
   · intro h
+    -- ⊢ (∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ ∀ (x : M₂), 0 ≤ ↑Q₂ x
     constructor
+    -- ⊢ ∀ (x : M₁), 0 ≤ ↑Q₁ x
     · intro x; simpa only [add_zero, map_zero] using h x 0
+      -- ⊢ 0 ≤ ↑Q₁ x
+               -- 🎉 no goals
     · intro x; simpa only [zero_add, map_zero] using h 0 x
+      -- ⊢ 0 ≤ ↑Q₂ x
+               -- 🎉 no goals
   · rintro ⟨h₁, h₂⟩ x₁ x₂
+    -- ⊢ 0 ≤ ↑Q₁ x₁ + ↑Q₂ x₂
     exact add_nonneg (h₁ x₁) (h₂ x₂)
+    -- 🎉 no goals
 #align quadratic_form.nonneg_prod_iff QuadraticForm.nonneg_prod_iff
 
 theorem posDef_prod_iff {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q₁ : QuadraticForm R M₁}
     {Q₂ : QuadraticForm R M₂} : (Q₁.prod Q₂).PosDef ↔ Q₁.PosDef ∧ Q₂.PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_prod_iff]
+  -- ⊢ ((∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ ∀ (x : M₂), 0 ≤ ↑Q₂ x) ∧ Anisotropic (prod Q₁ Q₂) …
   constructor
+  -- ⊢ ((∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ ∀ (x : M₂), 0 ≤ ↑Q₂ x) ∧ Anisotropic (prod Q₁ Q₂) …
   · rintro ⟨⟨hle₁, hle₂⟩, ha⟩
+    -- ⊢ ((∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ Anisotropic Q₁) ∧ (∀ (x : M₂), 0 ≤ ↑Q₂ x) ∧ Aniso …
     obtain ⟨ha₁, ha₂⟩ := anisotropic_of_prod ha
+    -- ⊢ ((∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ Anisotropic Q₁) ∧ (∀ (x : M₂), 0 ≤ ↑Q₂ x) ∧ Aniso …
     refine' ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
+    -- 🎉 no goals
   · rintro ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
+    -- ⊢ ((∀ (x : M₁), 0 ≤ ↑Q₁ x) ∧ ∀ (x : M₂), 0 ≤ ↑Q₂ x) ∧ Anisotropic (prod Q₁ Q₂)
     refine' ⟨⟨hle₁, hle₂⟩, _⟩
+    -- ⊢ Anisotropic (prod Q₁ Q₂)
     rintro ⟨x₁, x₂⟩ (hx : Q₁ x₁ + Q₂ x₂ = 0)
+    -- ⊢ (x₁, x₂) = 0
     rw [add_eq_zero_iff' (hle₁ x₁) (hle₂ x₂), ha₁.eq_zero_iff, ha₂.eq_zero_iff] at hx
+    -- ⊢ (x₁, x₂) = 0
     rwa [Prod.mk_eq_zero]
+    -- 🎉 no goals
 #align quadratic_form.pos_def_prod_iff QuadraticForm.posDef_prod_iff
 
 theorem PosDef.prod {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q₁ : QuadraticForm R M₁}
@@ -153,7 +181,9 @@ theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
 theorem anisotropic_of_pi [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} (h : (pi Q).Anisotropic) : ∀ i, (Q i).Anisotropic := by
   simp_rw [Anisotropic, pi_apply, Function.funext_iff, Pi.zero_apply] at h
+  -- ⊢ ∀ (i : ι), Anisotropic (Q i)
   intro i x hx
+  -- ⊢ x = 0
   classical
   have := h (Pi.single i x) ?_ i
   · rw [Pi.single_eq_same] at this
@@ -168,29 +198,44 @@ theorem anisotropic_of_pi [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (M�
 theorem nonneg_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
+  -- ⊢ (∀ (x : (i : ι) → Mᵢ i), 0 ≤ ∑ x_1 : ι, ↑(Q x_1) (x x_1)) ↔ ∀ (i : ι) (x : M …
   constructor
+  -- ⊢ (∀ (x : (i : ι) → Mᵢ i), 0 ≤ ∑ x_1 : ι, ↑(Q x_1) (x x_1)) → ∀ (i : ι) (x : M …
   -- TODO: does this generalize to a useful lemma independent of `QuadraticForm`?
   · intro h i x
+    -- ⊢ 0 ≤ ↑(Q i) x
     classical
     convert h (Pi.single i x) using 1
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hji => ?_, Pi.single_eq_same]
     rw [Pi.single_eq_of_ne hji, map_zero]
   · rintro h x
+    -- ⊢ 0 ≤ ∑ x_1 : ι, ↑(Q x_1) (x x_1)
     exact Finset.sum_nonneg fun i _ => h i (x i)
+    -- 🎉 no goals
 #align quadratic_form.nonneg_pi_iff QuadraticForm.nonneg_pi_iff
 
 theorem posDef_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (pi Q).PosDef ↔ ∀ i, (Q i).PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_pi_iff]
+  -- ⊢ (∀ (i : ι) (x : Mᵢ i), 0 ≤ ↑(Q i) x) ∧ Anisotropic (pi Q) ↔ ∀ (i : ι), (∀ (x …
   constructor
+  -- ⊢ (∀ (i : ι) (x : Mᵢ i), 0 ≤ ↑(Q i) x) ∧ Anisotropic (pi Q) → ∀ (i : ι), (∀ (x …
   · rintro ⟨hle, ha⟩
+    -- ⊢ ∀ (i : ι), (∀ (x : Mᵢ i), 0 ≤ ↑(Q i) x) ∧ Anisotropic (Q i)
     intro i
+    -- ⊢ (∀ (x : Mᵢ i), 0 ≤ ↑(Q i) x) ∧ Anisotropic (Q i)
     exact ⟨hle i, anisotropic_of_pi ha i⟩
+    -- 🎉 no goals
   · intro h
+    -- ⊢ (∀ (i : ι) (x : Mᵢ i), 0 ≤ ↑(Q i) x) ∧ Anisotropic (pi Q)
     refine' ⟨fun i => (h i).1, fun x hx => funext fun i => (h i).2 _ _⟩
+    -- ⊢ ↑(Q i) (x i) = 0
     rw [pi_apply, Finset.sum_eq_zero_iff_of_nonneg fun j _ => ?_] at hx
+    -- ⊢ ↑(Q i) (x i) = 0
     · exact hx _ (Finset.mem_univ _)
+      -- 🎉 no goals
     exact (h j).1 _
+    -- 🎉 no goals
 #align quadratic_form.pos_def_pi_iff QuadraticForm.posDef_pi_iff
 
 end QuadraticForm

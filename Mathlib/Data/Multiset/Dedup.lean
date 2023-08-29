@@ -87,7 +87,9 @@ alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
   Quot.induction_on m fun _ => by
     simp only [quot_mk_to_coe'', coe_dedup, mem_coe, List.mem_dedup, coe_nodup, coe_count]
+    -- ⊢ List.count a (List.dedup x✝) = if a ∈ x✝ then 1 else 0
     apply List.count_dedup _ _
+    -- 🎉 no goals
 #align multiset.count_dedup Multiset.count_dedup
 
 @[simp]
@@ -99,10 +101,14 @@ theorem dedup_idempotent {m : Multiset α} : m.dedup.dedup = m.dedup :=
 theorem dedup_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
     (m.dedup.bind f).dedup = (m.bind f).dedup := by
   ext x
+  -- ⊢ count x (dedup (bind (dedup m) f)) = count x (dedup (bind m f))
   -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
   simp_rw [count_dedup]
+  -- ⊢ (if x ∈ bind (dedup m) f then 1 else 0) = if x ∈ bind m f then 1 else 0
   refine if_congr ?_ rfl rfl
+  -- ⊢ x ∈ bind (dedup m) f ↔ x ∈ bind m f
   simp
+  -- 🎉 no goals
 #align multiset.dedup_bind_dedup Multiset.dedup_bind_dedup
 
 theorem dedup_eq_zero {s : Multiset α} : dedup s = 0 ↔ s = 0 :=
@@ -121,25 +127,33 @@ theorem le_dedup {s t : Multiset α} : s ≤ dedup t ↔ s ≤ t ∧ Nodup s :=
 
 theorem le_dedup_self {s : Multiset α} : s ≤ dedup s ↔ Nodup s := by
   rw [le_dedup, and_iff_right le_rfl]
+  -- 🎉 no goals
 #align multiset.le_dedup_self Multiset.le_dedup_self
 
 theorem dedup_ext {s t : Multiset α} : dedup s = dedup t ↔ ∀ a, a ∈ s ↔ a ∈ t := by
   simp [Nodup.ext]
+  -- 🎉 no goals
 #align multiset.dedup_ext Multiset.dedup_ext
 
 theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
     dedup (map f (dedup s)) = dedup (map f s) := by
   simp [dedup_ext]
+  -- 🎉 no goals
 #align multiset.dedup_map_dedup_eq Multiset.dedup_map_dedup_eq
 
 @[simp]
 theorem dedup_nsmul {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : (n • s).dedup = s.dedup := by
   ext a
+  -- ⊢ count a (dedup (n • s)) = count a (dedup s)
   by_cases h : a ∈ s <;> simp [h, h0]
+  -- ⊢ count a (dedup (n • s)) = count a (dedup s)
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align multiset.dedup_nsmul Multiset.dedup_nsmul
 
 theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedup ↔ s ≤ t := by
   simp [le_dedup, hno]
+  -- 🎉 no goals
 #align multiset.nodup.le_dedup_iff_le Multiset.Nodup.le_dedup_iff_le
 
 end Multiset

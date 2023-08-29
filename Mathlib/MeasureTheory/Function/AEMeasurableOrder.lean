@@ -38,6 +38,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
   haveI : Encodable s := s_count.toEncodable
+  -- ⊢ AEMeasurable f
   have h' : ∀ p q, ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ (p ∈ s → q ∈ s → p < q → μ (u ∩ v) = 0) := by
     intro p q
@@ -50,15 +51,19 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       simp only [not_and] at H
       exact (H ps qs pq).elim
   choose! u v huv using h'
+  -- ⊢ AEMeasurable f
   let u' : β → Set α := fun p => ⋂ q ∈ s ∩ Ioi p, u p q
+  -- ⊢ AEMeasurable f
   have u'_meas : ∀ i, MeasurableSet (u' i) := by
     intro i
     exact MeasurableSet.biInter (s_count.mono (inter_subset_left _ _)) fun b _ => (huv i b).1
   let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
+  -- ⊢ AEMeasurable f
   have f'_meas : Measurable f' := by
     apply measurable_iInf
     exact fun i => Measurable.piecewise (u'_meas i) measurable_const measurable_const
   let t := ⋃ (p : s) (q : ↥(s ∩ Ioi p)), u' p ∩ v p q
+  -- ⊢ AEMeasurable f
   have μt : μ t ≤ 0 :=
     calc
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
@@ -105,6 +110,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩
+  -- 🎉 no goals
 #align measure_theory.ae_measurable_of_exist_almost_disjoint_supersets MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
@@ -120,9 +126,15 @@ theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*} {m 
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s :=
     ENNReal.exists_countable_dense_no_zero_top
   have I : ∀ x ∈ s, x ≠ ∞ := fun x xs hx => s_top (hx ▸ xs)
+  -- ⊢ AEMeasurable f
   apply MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets μ s s_count s_dense _
+  -- ⊢ ∀ (p : ℝ≥0∞), p ∈ s → ∀ (q : ℝ≥0∞), q ∈ s → p < q → ∃ u v, MeasurableSet u ∧ …
   rintro p hp q hq hpq
+  -- ⊢ ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧ {x | f x < p} ⊆ u ∧ {x | q < f x} …
   lift p to ℝ≥0 using I p hp
+  -- ⊢ ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧ {x | f x < ↑p} ⊆ u ∧ {x | q < f x …
   lift q to ℝ≥0 using I q hq
+  -- ⊢ ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧ {x | f x < ↑p} ⊆ u ∧ {x | ↑q < f  …
   exact h p q (ENNReal.coe_lt_coe.1 hpq)
+  -- 🎉 no goals
 #align ennreal.ae_measurable_of_exist_almost_disjoint_supersets ENNReal.aemeasurable_of_exist_almost_disjoint_supersets

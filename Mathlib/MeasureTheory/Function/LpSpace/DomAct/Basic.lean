@@ -69,6 +69,8 @@ instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 
 @[to_additive]
 theorem smul_Lp_add (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f + g) = c • f + c • g := by
   rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
+  -- ⊢ c • ({ val := Quot.mk Setoid.r a✝¹, property := property✝¹ } + { val := Quot …
+                          -- 🎉 no goals
 attribute [simp] DomAddAct.vadd_Lp_add
 
 @[to_additive (attr := simp 1001)]
@@ -77,14 +79,20 @@ theorem smul_Lp_zero (c : Mᵈᵐᵃ) : c • (0 : Lp E p μ) = 0 := rfl
 @[to_additive]
 theorem smul_Lp_neg (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • (-f) = -(c • f) := by
   rcases f with ⟨⟨_⟩, _⟩; rfl
+  -- ⊢ c • -{ val := Quot.mk Setoid.r a✝, property := property✝ } = -(c • { val :=  …
+                          -- 🎉 no goals
 
 @[to_additive]
 theorem smul_Lp_sub (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f - g) = c • f - c • g := by
   rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
+  -- ⊢ c • ({ val := Quot.mk Setoid.r a✝¹, property := property✝¹ } - { val := Quot …
+                          -- 🎉 no goals
 
 instance : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
   smul_zero _ := rfl
   smul_add := by rintro _ ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
+                 -- ⊢ a✝² • ({ val := Quot.mk Setoid.r a✝¹, property := property✝¹ } + { val := Qu …
+                                           -- 🎉 no goals
 
 -- The next few lemmas follow from the `IsometricSMul` instance if `1 ≤ p`
 @[to_additive (attr := simp)]
@@ -98,10 +106,12 @@ theorem nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖
 @[to_additive (attr := simp)]
 theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
   simp only [dist, ← smul_Lp_sub, norm_smul_Lp]
+  -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by
   simp only [Lp.edist_dist, dist_smul_Lp]
+  -- 🎉 no goals
 
 variable [Fact (1 ≤ p)]
 

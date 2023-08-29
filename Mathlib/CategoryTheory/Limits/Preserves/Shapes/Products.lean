@@ -42,7 +42,9 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
+  -- ⊢ (Discrete.functor fun b => f b) ⋙ G ≅ Discrete.functor fun j => G.obj (f j)
   refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  -- ⊢ (Cones.postcompose (Discrete.natIso fun j => Iso.refl (G.obj (f j.as))).hom) …
   refine' Cones.ext (Iso.refl _) fun j =>
       by dsimp; cases j; simp
 #align category_theory.limits.is_limit_map_cone_fan_mk_equiv CategoryTheory.Limits.isLimitMapConeFanMkEquiv
@@ -80,10 +82,13 @@ variable [HasProduct fun j : J => G.obj (f j)]
 def PreservesProduct.ofIsoComparison [i : IsIso (piComparison G f)] :
     PreservesLimit (Discrete.functor f) G := by
   apply preservesLimitOfPreservesLimitCone (productIsProduct f)
+  -- ⊢ IsLimit (G.mapCone (Fan.mk (∏ f) (Pi.π f)))
   apply (isLimitMapConeFanMkEquiv _ _ _).symm _
+  -- ⊢ IsLimit (Fan.mk (G.obj (∏ f)) fun j => G.map (Pi.π f j))
   refine @IsLimit.ofPointIso _ _ _ _ _ _ _
     (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) ?_
   apply i
+  -- 🎉 no goals
 #align category_theory.limits.preserves_product.of_iso_comparison CategoryTheory.Limits.PreservesProduct.ofIsoComparison
 
 variable [PreservesLimit (Discrete.functor f) G]
@@ -103,7 +108,9 @@ theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).hom = piComparison
 
 instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
+  -- ⊢ IsIso (PreservesProduct.iso G f).hom
   infer_instance
+  -- 🎉 no goals
 
 end
 
@@ -114,8 +121,11 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
     IsColimit (Functor.mapCocone G (Cofan.mk P g)) ≃
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
+  -- ⊢ (Discrete.functor fun j => G.obj (f j)) ≅ (Discrete.functor fun b => f b) ⋙ G
   refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  -- ⊢ (Cocones.precompose (Discrete.natIso fun j => Iso.refl (G.obj (f j.as))).hom …
   refine' Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
+  -- 🎉 no goals
 #align category_theory.limits.is_colimit_map_cocone_cofan_mk_equiv CategoryTheory.Limits.isColimitMapCoconeCofanMkEquiv
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/
@@ -151,10 +161,13 @@ variable [HasCoproduct fun j : J => G.obj (f j)]
 def PreservesCoproduct.ofIsoComparison [i : IsIso (sigmaComparison G f)] :
     PreservesColimit (Discrete.functor f) G := by
   apply preservesColimitOfPreservesColimitCocone (coproductIsCoproduct f)
+  -- ⊢ IsColimit (G.mapCocone (Cofan.mk (∐ f) (Sigma.ι f)))
   apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
+  -- ⊢ IsColimit (Cofan.mk (G.obj (∐ f)) fun j => G.map (Sigma.ι f j))
   refine @IsColimit.ofPointIso _ _ _ _ _ _ _
     (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) ?_
   apply i
+  -- 🎉 no goals
 #align category_theory.limits.preserves_coproduct.of_iso_comparison CategoryTheory.Limits.PreservesCoproduct.ofIsoComparison
 
 variable [PreservesColimit (Discrete.functor f) G]
@@ -173,7 +186,9 @@ theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaCom
 
 instance : IsIso (sigmaComparison G f) := by
   rw [← PreservesCoproduct.inv_hom]
+  -- ⊢ IsIso (PreservesCoproduct.iso G f).inv
   infer_instance
+  -- 🎉 no goals
 
 end
 

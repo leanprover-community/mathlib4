@@ -88,24 +88,39 @@ theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
 theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) :
     m = 1 ∨ m = p := by
   obtain ⟨n, hn⟩ := hm
+  -- ⊢ m = 1 ∨ m = p
   have := pp.isUnit_or_isUnit hn
+  -- ⊢ m = 1 ∨ m = p
   rw [Nat.isUnit_iff, Nat.isUnit_iff] at this
+  -- ⊢ m = 1 ∨ m = p
   apply Or.imp_right _ this
+  -- ⊢ n = 1 → m = p
   rintro rfl
+  -- ⊢ m = p
   rw [hn, mul_one]
+  -- 🎉 no goals
 #align nat.prime.eq_one_or_self_of_dvd Nat.Prime.eq_one_or_self_of_dvd
 
 theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ (m) (_ : m ∣ p), m = 1 ∨ m = p := by
   refine' ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => _⟩
+  -- ⊢ Prime p
   -- Porting note: needed to make ℕ explicit
   have h1 := (@one_lt_two ℕ ..).trans_le h.1
+  -- ⊢ Prime p
   refine' ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => _⟩
+  -- ⊢ IsUnit a ∨ IsUnit b
   simp only [Nat.isUnit_iff]
+  -- ⊢ a = 1 ∨ b = 1
   apply Or.imp_right _ (h.2 a _)
+  -- ⊢ a = p → b = 1
   · rintro rfl
+    -- ⊢ b = 1
     rw [← mul_right_inj' (pos_of_gt h1).ne', ← hab, mul_one]
+    -- 🎉 no goals
   · rw [hab]
+    -- ⊢ a ∣ a * b
     exact dvd_mul_right _ _
+    -- 🎉 no goals
 #align nat.prime_def_lt'' Nat.prime_def_lt''
 
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
@@ -121,12 +136,18 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
     and_congr_right fun p2 =>
       forall_congr' fun m =>
         ⟨fun h m2 l d => not_lt_of_ge m2 ((h l d).symm ▸ by decide), fun h l d => by
+                                                            -- 🎉 no goals
           rcases m with (_ | _ | m)
           · rw [eq_zero_of_zero_dvd d] at p2
+            -- ⊢ zero = 1
             revert p2
+            -- ⊢ 2 ≤ 0 → zero = 1
             decide
+            -- 🎉 no goals
           · rfl
+            -- 🎉 no goals
           · exact (h le_add_self l).elim d⟩
+            -- 🎉 no goals
 #align nat.prime_def_lt' Nat.prime_def_lt'
 
 theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m ≤ sqrt p → ¬m ∣ p :=
@@ -137,19 +158,26 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
           a m m1 (le_sqrt.2 (e.symm ▸ Nat.mul_le_mul_left m mk)) ⟨k, e⟩
         fun m m2 l ⟨k, e⟩ => by
         cases' le_total m k with mk km
+        -- ⊢ False
         · exact this mk m2 e
+          -- 🎉 no goals
         · rw [mul_comm] at e
+          -- ⊢ False
           refine' this km (lt_of_mul_lt_mul_right _ (zero_le m)) e
+          -- ⊢ 1 * m < k * m
           rwa [one_mul, ← e]⟩
+          -- 🎉 no goals
 #align nat.prime_def_le_sqrt Nat.prime_def_le_sqrt
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.coprime m) : Prime n := by
   refine' prime_def_lt.mpr ⟨h1, fun m mlt mdvd => _⟩
+  -- ⊢ m = 1
   have hm : m ≠ 0 := by
     rintro rfl
     rw [zero_dvd_iff] at mdvd
     exact mlt.ne' mdvd
   exact (h m mlt hm).symm.eq_one_of_dvd mdvd
+  -- 🎉 no goals
 #align nat.prime_of_coprime Nat.prime_of_coprime
 
 section
@@ -167,15 +195,19 @@ def decidablePrime1 (p : ℕ) : Decidable (Prime p) :=
 #align nat.decidable_prime_1 Nat.decidablePrime1
 
 theorem prime_two : Prime 2 := by decide
+                                  -- 🎉 no goals
 #align nat.prime_two Nat.prime_two
 
 theorem prime_three : Prime 3 := by decide
+                                    -- 🎉 no goals
 #align nat.prime_three Nat.prime_three
 
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra' h
+  -- ⊢ False
   revert h_two h_three hp
+  -- ⊢ Prime p → p ≠ 2 → p ≠ 3 → False
   -- Porting note: was `decide!`
   match p with
   | 0 => decide
@@ -216,15 +248,19 @@ theorem Prime.not_dvd_one {p : ℕ} (pp : Prime p) : ¬p ∣ 1 :=
 theorem not_prime_mul {a b : ℕ} (a1 : 1 < a) (b1 : 1 < b) : ¬Prime (a * b) := fun h =>
   ne_of_lt (Nat.mul_lt_mul_of_pos_left b1 (lt_of_succ_lt a1)) <| by
     simpa using (dvd_prime_two_le h a1).1 (dvd_mul_right _ _)
+    -- 🎉 no goals
 #align nat.not_prime_mul Nat.not_prime_mul
 
 theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : 1 < a) (h₂ : 1 < b) : ¬Prime n := by
   rw [← h]
+  -- ⊢ ¬Prime (a * b)
   exact not_prime_mul h₁ h₂
+  -- 🎉 no goals
 #align nat.not_prime_mul' Nat.not_prime_mul'
 
 theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ b.Prime ∧ a = 1 := by
   simp only [iff_self_iff, irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
+  -- 🎉 no goals
 #align nat.prime_mul_iff Nat.prime_mul_iff
 
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
@@ -233,15 +269,20 @@ theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔
       rintro rfl
       rfl⟩
   rintro ⟨j, rfl⟩
+  -- ⊢ a * j = a
   rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
+  -- ⊢ a * 1 = a
   · exact mul_one _
+    -- 🎉 no goals
   · exact (a1 rfl).elim
+    -- 🎉 no goals
 #align nat.prime.dvd_iff_eq Nat.Prime.dvd_iff_eq
 
 section MinFac
 
 theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k :=
   (tsub_lt_tsub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
+                                                                                           -- 🎉 no goals
 #align nat.min_fac_lemma Nat.minFac_lemma
 
 /-- If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
@@ -283,48 +324,75 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
+    -- ⊢ Nat.minFacProp n
     by_cases h : n < k * k <;> simp [h]
+                               -- ⊢ Nat.minFacProp n n
+                               -- ⊢ Nat.minFacProp n (if x✝ ∣ n then x✝ else minFacAux n (x✝ + 2))
     · have pp : Prime n :=
         prime_def_le_sqrt.2
           ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
       exact ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+      -- 🎉 no goals
     have k2 : 2 ≤ k := by
       subst e
       apply Nat.le_add_left
     by_cases dk : k ∣ n <;> simp [dk]
+    -- ⊢ Nat.minFacProp n (if x✝ ∣ n then x✝ else minFacAux n (x✝ + 2))
+                            -- ⊢ Nat.minFacProp n x✝
+                            -- ⊢ Nat.minFacProp n (minFacAux n (x✝ + 2))
     · exact ⟨k2, dk, a⟩
+      -- 🎉 no goals
     · refine'
         have := minFac_lemma n k h
         minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
       cases' Nat.eq_or_lt_of_le (a m m2 d) with me ml
+      -- ⊢ k + 2 ≤ m
       · subst me
+        -- ⊢ k + 2 ≤ x✝
         contradiction
+        -- 🎉 no goals
       apply (Nat.eq_or_lt_of_le ml).resolve_left
+      -- ⊢ ¬succ x✝ = m
       intro me
+      -- ⊢ False
       rw [← me, e] at d
+      -- ⊢ False
       have d' : 2 * (i + 2) ∣ n := d
+      -- ⊢ False
       have := a _ le_rfl (dvd_of_mul_right_dvd d')
+      -- ⊢ False
       rw [e] at this
+      -- ⊢ False
       exact absurd this (by contradiction)
+      -- 🎉 no goals
   termination_by _ n _ k => sqrt n + 2 - k
 #align nat.min_fac_aux_has_prop Nat.minFacAux_has_prop
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
+  -- ⊢ Nat.minFacProp n (minFac n)
   · simp [n0, minFacProp, GE.ge]
+    -- 🎉 no goals
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
   simp [minFac_eq]
+  -- ⊢ Nat.minFacProp n (if 2 ∣ n then 2 else minFacAux n 3)
   by_cases d2 : 2 ∣ n <;> simp [d2]
+  -- ⊢ Nat.minFacProp n (if 2 ∣ n then 2 else minFacAux n 3)
+                          -- ⊢ Nat.minFacProp n 2
+                          -- ⊢ Nat.minFacProp n (minFacAux n 3)
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
+    -- 🎉 no goals
   · refine'
       minFacAux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt _ d2)
     exact fun e => e.symm ▸ d
+    -- 🎉 no goals
 #align nat.min_fac_has_prop Nat.minFac_has_prop
 
 theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
   if n1 : n = 1 then by simp [n1] else (minFac_has_prop n1).2.1
+                        -- 🎉 no goals
 #align nat.min_fac_dvd Nat.minFac_dvd
 
 theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
@@ -339,6 +407,7 @@ theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minF
 
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
   by_cases n1 : n = 1 <;> [exact n1.symm ▸ (by decide); exact (minFac_prime n1).pos]
+  -- 🎉 no goals
 #align nat.min_fac_pos Nat.minFac_pos
 
 theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
@@ -348,6 +417,8 @@ theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
 theorem le_minFac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p → p ∣ n → m ≤ p :=
   ⟨fun h p pp d =>
     h.elim (by rintro rfl; cases pp.not_dvd_one d) fun h =>
+               -- ⊢ m ≤ p
+                           -- 🎉 no goals
       le_trans h <| minFac_le_of_dvd pp.two_le d,
     fun H => or_iff_not_imp_left.2 fun n1 => H _ (minFac_prime n1) (minFac_dvd _)⟩
 #align nat.le_min_fac Nat.le_minFac
@@ -355,6 +426,8 @@ theorem le_minFac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p → 
 theorem le_minFac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p → p ∣ n → m ≤ p :=
   ⟨fun h p (pp : 1 < p) d =>
     h.elim (by rintro rfl; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
+               -- ⊢ m ≤ p
+                           -- 🎉 no goals
       le_trans h <| minFac_le_of_dvd pp d,
     fun H => le_minFac.2 fun p pp d => H p pp.two_le d⟩
 #align nat.le_min_fac' Nat.le_minFac'
@@ -391,17 +464,23 @@ theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac 
 theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n / minFac n :=
   match minFac_dvd n with
   | ⟨0, h0⟩ => absurd pos <| by rw [h0, mul_zero]; exact by decide
+                                -- ⊢ ¬0 < 0
+                                                   -- 🎉 no goals
   | ⟨1, h1⟩ => by
     rw [mul_one] at h1
+    -- ⊢ minFac n ≤ n / minFac n
     rw [prime_def_minFac, not_and_or, ← h1, eq_self_iff_true, _root_.not_true, or_false_iff,
       not_le] at np
     rw [le_antisymm (le_of_lt_succ np) (succ_le_of_lt pos), minFac_one, Nat.div_one]
+    -- 🎉 no goals
   | ⟨x + 2, hx⟩ => by
     conv_rhs =>
       congr
       rw [hx]
     rw [Nat.mul_div_cancel_left _ (minFac_pos _)]
+    -- ⊢ minFac n ≤ x + 2
     exact minFac_le_of_dvd (le_add_left 2 x) ⟨minFac n, by rwa [mul_comm]⟩
+    -- 🎉 no goals
 #align nat.min_fac_le_div Nat.minFac_le_div
 
 /-- The square of the smallest prime factor of a composite number `n` is at most `n`.
@@ -417,29 +496,49 @@ theorem minFac_sq_le_self {n : ℕ} (w : 0 < n) (h : ¬Prime n) : minFac n ^ 2 �
 @[simp]
 theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
   constructor
+  -- ⊢ minFac n = 1 → n = 1
   · intro h
+    -- ⊢ n = 1
     by_contra hn
+    -- ⊢ False
     have := minFac_prime hn
+    -- ⊢ False
     rw [h] at this
+    -- ⊢ False
     exact not_prime_one this
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ minFac 1 = 1
     rfl
+    -- 🎉 no goals
 #align nat.min_fac_eq_one_iff Nat.minFac_eq_one_iff
 
 @[simp]
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   constructor
+  -- ⊢ minFac n = 2 → 2 ∣ n
   · intro h
+    -- ⊢ 2 ∣ n
     rw [←h]
+    -- ⊢ minFac n ∣ n
     exact minFac_dvd n
+    -- 🎉 no goals
   · intro h
+    -- ⊢ minFac n = 2
     have ub := minFac_le_of_dvd (le_refl 2) h
+    -- ⊢ minFac n = 2
     have lb := minFac_pos n
+    -- ⊢ minFac n = 2
     refine ub.eq_or_lt.resolve_right fun h' => ?_
+    -- ⊢ False
     have := le_antisymm (Nat.succ_le_of_lt lb) (lt_succ_iff.mp h')
+    -- ⊢ False
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
+    -- ⊢ False
     subst this
+    -- ⊢ False
     exact not_lt_of_le (le_of_dvd zero_lt_one h) one_lt_two
+    -- 🎉 no goals
 #align nat.min_fac_eq_two_iff Nat.minFac_eq_two_iff
 
 end MinFac
@@ -462,9 +561,13 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣
 theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ a → p * a ∣ b) : a ∣ b := by
   obtain rfl | ha := eq_or_ne a 1
+  -- ⊢ 1 ∣ b
   · apply one_dvd
+    -- 🎉 no goals
   obtain ⟨p, hp⟩ := exists_prime_and_dvd ha
+  -- ⊢ a ∣ b
   exact _root_.trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)
+  -- 🎉 no goals
 #align nat.dvd_of_forall_prime_mul_dvd Nat.dvd_of_forall_prime_mul_dvd
 
 /-- Euclid's theorem on the **infinitude of primes**.
@@ -484,14 +587,19 @@ theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
 /-- A version of `Nat.exists_infinite_primes` using the `BddAbove` predicate. -/
 theorem not_bddAbove_setOf_prime : ¬BddAbove { p | Prime p } := by
   rw [not_bddAbove_iff]
+  -- ⊢ ∀ (x : ℕ), ∃ y, y ∈ {p | Prime p} ∧ x < y
   intro n
+  -- ⊢ ∃ y, y ∈ {p | Prime p} ∧ n < y
   obtain ⟨p, hi, hp⟩ := exists_infinite_primes n.succ
+  -- ⊢ ∃ y, y ∈ {p | Prime p} ∧ n < y
   exact ⟨p, hp, hi⟩
+  -- 🎉 no goals
 #align nat.not_bdd_above_set_of_prime Nat.not_bddAbove_setOf_prime
 
 theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
   p.mod_two_eq_zero_or_one.imp_left fun h =>
     ((hp.eq_one_or_self_of_dvd 2 (dvd_of_mod_eq_zero h)).resolve_left (by decide)).symm
+                                                                          -- 🎉 no goals
 #align nat.prime.eq_two_or_odd Nat.Prime.eq_two_or_odd
 
 theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
@@ -500,6 +608,7 @@ theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
 
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
+  -- 🎉 no goals
 #align nat.prime.even_iff Nat.Prime.even_iff
 
 theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :=
@@ -508,22 +617,34 @@ theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :
 
 theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1) :=
   let ⟨n, hn⟩ := hp.odd_of_ne_two h2; ⟨n, by rw [hn, Nat.add_sub_cancel, two_mul]⟩
+                                             -- 🎉 no goals
 #align nat.prime.even_sub_one Nat.Prime.even_sub_one
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
   refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
+  -- ⊢ False
   rw [hf] at h
+  -- ⊢ False
   simp at h
+  -- 🎉 no goals
 #align nat.prime.mod_two_eq_one_iff_ne_two Nat.Prime.mod_two_eq_one_iff_ne_two
 
 theorem coprime_of_dvd {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → ¬k ∣ n) : coprime m n := by
   rw [coprime_iff_gcd_eq_one]
+  -- ⊢ gcd m n = 1
   by_contra g2
+  -- ⊢ False
   obtain ⟨p, hp, hpdvd⟩ := exists_prime_and_dvd g2
+  -- ⊢ False
   apply H p hp <;> apply dvd_trans hpdvd
+  -- ⊢ p ∣ m
+                   -- ⊢ gcd m n ∣ m
+                   -- ⊢ gcd m n ∣ n
   · exact gcd_dvd_left _ _
+    -- 🎉 no goals
   · exact gcd_dvd_right _ _
+    -- 🎉 no goals
 #align nat.coprime_of_dvd Nat.coprime_of_dvd
 
 theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n → k ∣ 1) : coprime m n :=
@@ -533,13 +654,17 @@ theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt
+      -- ⊢ 1 < k + 2
       apply Nat.succ_lt_succ
+      -- ⊢ 0 < k + 1
       apply Nat.zero_lt_succ
+      -- 🎉 no goals
       )).one_lt
 #align nat.factors_lemma Nat.factors_lemma
 
 theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : coprime p n ↔ ¬p ∣ n :=
   ⟨fun co d => pp.not_dvd_one <| co.dvd_of_dvd_mul_left (by simp [d]), fun nd =>
+                                                            -- 🎉 no goals
     coprime_of_dvd fun m m2 mp => ((prime_dvd_prime_iff_eq m2 pp).1 mp).symm ▸ nd⟩
 #align nat.prime.coprime_iff_not_dvd Nat.Prime.coprime_iff_not_dvd
 
@@ -549,13 +674,18 @@ theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬cop
 
 theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬coprime m n ↔ ∃ p, Prime p ∧ p ∣ m ∧ p ∣ n := by
   apply Iff.intro
+  -- ⊢ ¬coprime m n → ∃ p, Prime p ∧ p ∣ m ∧ p ∣ n
   · intro h
+    -- ⊢ ∃ p, Prime p ∧ p ∣ m ∧ p ∣ n
     exact
       ⟨minFac (gcd m n), minFac_prime h, (minFac_dvd (gcd m n)).trans (gcd_dvd_left m n),
         (minFac_dvd (gcd m n)).trans (gcd_dvd_right m n)⟩
   · intro h
+    -- ⊢ ¬coprime m n
     cases' h with p hp
+    -- ⊢ ¬coprime m n
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
+    -- 🎉 no goals
 #align nat.prime.not_coprime_iff_dvd Nat.Prime.not_coprime_iff_dvd
 
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
@@ -565,6 +695,7 @@ theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨
 
 theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬p ∣ n) : ¬p ∣ m * n :=
   mt pp.dvd_mul.1 <| by simp [Hm, Hn]
+                        -- 🎉 no goals
 #align nat.prime.not_dvd_mul Nat.Prime.not_dvd_mul
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
@@ -583,9 +714,13 @@ theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
 
 theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p ∣ m := by
   induction' n with n IH
+  -- ⊢ p ∣ m
   · exact pp.not_dvd_one.elim h
+    -- 🎉 no goals
   · rw [pow_succ] at h
+    -- ⊢ p ∣ m
     exact (pp.dvd_mul.1 h).elim IH id
+    -- 🎉 no goals
 #align nat.prime.dvd_of_dvd_pow Nat.Prime.dvd_of_dvd_pow
 
 theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime := fun hp =>
@@ -610,15 +745,22 @@ theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
   refine' ⟨fun h => _, fun h => by rw [h.1, h.2, pow_one]⟩
+  -- ⊢ a = p ∧ k = 1
   rw [← h] at hp
+  -- ⊢ a = p ∧ k = 1
   rw [← h, hp.eq_one_of_pow, eq_self_iff_true, and_true_iff, pow_one]
+  -- 🎉 no goals
 #align nat.prime.pow_eq_iff Nat.Prime.pow_eq_iff
 
 theorem pow_minFac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
   rcases eq_or_ne n 1 with (rfl | hn)
+  -- ⊢ minFac (1 ^ k) = minFac 1
   · simp
+    -- 🎉 no goals
   have hnk : n ^ k ≠ 1 := fun hk' => hn ((pow_eq_one_iff hk).1 hk')
+  -- ⊢ minFac (n ^ k) = minFac n
   apply (minFac_le_of_dvd (minFac_prime hn).two_le ((minFac_dvd n).pow hk)).antisymm
+  -- ⊢ minFac n ≤ minFac (n ^ k)
   apply
     minFac_le_of_dvd (minFac_prime hnk).two_le
       ((minFac_prime hnk).dvd_of_dvd_pow (minFac_dvd _))
@@ -626,12 +768,15 @@ theorem pow_minFac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
 
 theorem Prime.pow_minFac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).minFac = p := by
   rw [Nat.pow_minFac hk, hp.minFac_eq]
+  -- 🎉 no goals
 #align nat.prime.pow_min_fac Nat.Prime.pow_minFac
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
     x * y = p ^ 2 ↔ x = p ∧ y = p := by
     refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
+    -- ⊢ x = p ∧ y = p
     have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
+    -- ⊢ x = p ∧ y = p
     -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
     suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
       obtain hx | hy := hp.dvd_mul.1 pdvdxy <;>
@@ -640,25 +785,40 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
         apply this <;>
         assumption
     rintro x y hx hy h ⟨a, ha⟩
+    -- ⊢ x = p ∧ y = p
     have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
+    -- ⊢ x = p ∧ y = p
     obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
+    -- ⊢ x = p ∧ y = p
     · subst ha1
+      -- ⊢ x = p ∧ y = p
       rw [mul_one] at ha
+      -- ⊢ x = p ∧ y = p
       subst ha
+      -- ⊢ x = x ∧ y = x
       simp only [sq, mul_right_inj' hp.ne_zero] at h
+      -- ⊢ x = x ∧ y = x
       subst h
+      -- ⊢ y = y ∧ y = y
       exact ⟨rfl, rfl⟩
+      -- 🎉 no goals
     · refine' (hy ?_).elim
+      -- ⊢ y = 1
       subst hap
+      -- ⊢ y = 1
       subst ha
+      -- ⊢ y = 1
       rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
+      -- ⊢ y = 1
       exact h
+      -- 🎉 no goals
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
 
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n
   | 0, p, hp => iff_of_false hp.not_dvd_one (not_le_of_lt hp.pos)
   | n + 1, p, hp => by
     rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]
+    -- ⊢ p ∣ n + 1 ∨ p ≤ n ↔ p ≤ n + 1
     exact
       ⟨fun h => h.elim (le_of_dvd (succ_pos _)) le_succ_of_le, fun h =>
         (_root_.lt_or_eq_of_le h).elim (Or.inr ∘ le_of_lt_succ) fun h => Or.inl <| by rw [h]⟩
@@ -679,6 +839,8 @@ theorem coprime_pow_primes {p q : ℕ} (n m : ℕ) (pp : Prime p) (pq : Prime q)
 
 theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : coprime p i ∨ p ∣ i := by
   rw [pp.dvd_iff_not_coprime]; apply em
+  -- ⊢ coprime p i ∨ ¬coprime p i
+                               -- 🎉 no goals
 #align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : coprime p n :=
@@ -692,6 +854,7 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
 
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
+  -- 🎉 no goals
 #align nat.dvd_prime_pow Nat.dvd_prime_pow
 
 theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
@@ -706,22 +869,32 @@ then `a = p^(k+1)`.
 theorem eq_prime_pow_of_dvd_least_prime_pow {a p k : ℕ} (pp : Prime p) (h₁ : ¬a ∣ p ^ k)
     (h₂ : a ∣ p ^ (k + 1)) : a = p ^ (k + 1) := by
   obtain ⟨l, ⟨h, rfl⟩⟩ := (dvd_prime_pow pp).1 h₂
+  -- ⊢ p ^ l = p ^ (k + 1)
   congr
+  -- ⊢ l = k + 1
   exact le_antisymm h (not_le.1 ((not_congr (pow_dvd_pow_iff_le_right (Prime.one_lt pp))).1 h₁))
+  -- 🎉 no goals
 #align nat.eq_prime_pow_of_dvd_least_prime_pow Nat.eq_prime_pow_of_dvd_least_prime_pow
 
 theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime ∧ p ∣ n
   | 0 => by simpa using Exists.intro 2 Nat.prime_two
+            -- 🎉 no goals
   | 1 => by simp [Nat.not_prime_one]
+            -- 🎉 no goals
   | n + 2 => by
     let a := n + 2
+    -- ⊢ n + 2 ≠ 1 ↔ ∃ p, Prime p ∧ p ∣ n + 2
     let ha : a ≠ 1 := Nat.succ_succ_ne_one n
+    -- ⊢ n + 2 ≠ 1 ↔ ∃ p, Prime p ∧ p ∣ n + 2
     simp only [true_iff_iff, Ne.def, not_false_iff, ha]
+    -- ⊢ ∃ p, Prime p ∧ p ∣ n + 2
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
+    -- 🎉 no goals
 #align nat.ne_one_iff_exists_prime_dvd Nat.ne_one_iff_exists_prime_dvd
 
 theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Prime → ¬p ∣ n := by
   simpa using not_iff_not.mpr ne_one_iff_exists_prime_dvd
+  -- 🎉 no goals
 #align nat.eq_one_iff_not_exists_prime_dvd Nat.eq_one_iff_not_exists_prime_dvd
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {m n k l : ℕ}
@@ -731,11 +904,15 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
       let hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
       rwa [pow_succ'] at hpmn'
   have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd
+  -- ⊢ p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n
   have hpd3 : p ∣ m * n / (p ^ k * p ^ l) := by simpa [pow_add] using hpd2
+  -- ⊢ p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3
+  -- ⊢ p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
   suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ', _root_.pow_succ']
+  -- ⊢ p ^ k * p ∣ m ∨ p ^ l * p ∣ n
   exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
     fun h : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn h
 #align nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul
@@ -744,12 +921,16 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
   ⟨fun hp =>
     ⟨Int.coe_nat_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
       rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h
+      -- ⊢ ↑p ∣ a ∨ ↑p ∣ b
       rwa [← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]⟩,
+      -- 🎉 no goals
     fun hp =>
     Nat.prime_iff.2
       ⟨Int.coe_nat_ne_zero.1 hp.1,
         (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
+                                          -- 🎉 no goals
         simpa only [Int.coe_nat_dvd, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
+        -- 🎉 no goals
 #align nat.prime_iff_prime_int Nat.prime_iff_prime_int
 
 /-- The type of prime numbers -/

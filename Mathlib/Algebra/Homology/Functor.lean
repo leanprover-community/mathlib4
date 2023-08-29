@@ -40,9 +40,15 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
       d := fun i j => (C.d i j).app t
       d_comp_d' := fun i j k _ _ => by
         have := C.d_comp_d i j k
+        -- ⊢ (fun i j => NatTrans.app (d C i j) t) i j ≫ (fun i j => NatTrans.app (d C i  …
         rw [NatTrans.ext_iff, Function.funext_iff] at this
+        -- ⊢ (fun i j => NatTrans.app (d C i j) t) i j ≫ (fun i j => NatTrans.app (d C i  …
         exact this t
+        -- ⊢ (fun i j => NatTrans.app (d C i j) t) i j = 0
+        -- 🎉 no goals
+        -- ⊢ (fun i j => NatTrans.app (d C i j) t) i j = 0
       shape := fun i j h => by
+        -- 🎉 no goals
         have := C.shape _ _ h
         rw [NatTrans.ext_iff, Function.funext_iff] at this
         exact this t }
@@ -51,12 +57,18 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
       comm' := fun i j _ => NatTrans.naturality _ _ }
   map_id t := by
     ext i
+    -- ⊢ Hom.f ({ obj := fun t => mk (fun i => (X C i).obj t) fun i j => NatTrans.app …
     dsimp
+    -- ⊢ (X C i).map (𝟙 t) = 𝟙 ((X C i).obj t)
     rw [(C.X i).map_id]
+    -- 🎉 no goals
   map_comp h₁ h₂ := by
     ext i
+    -- ⊢ Hom.f ({ obj := fun t => mk (fun i => (X C i).obj t) fun i j => NatTrans.app …
     dsimp
+    -- ⊢ (X C i).map (h₁ ≫ h₂) = (X C i).map h₁ ≫ (X C i).map h₂
     rw [Functor.map_comp]
+    -- 🎉 no goals
 #align homological_complex.as_functor HomologicalComplex.asFunctor
 
 -- TODO in fact, this is an equivalence of categories.
@@ -71,7 +83,9 @@ def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
           comm' := fun i j _ => NatTrans.congr_app (f.comm i j) t }
       naturality := fun t t' g => by
         ext i
+        -- ⊢ Hom.f (((fun C => asFunctor C) X✝).map g ≫ (fun t => Hom.mk fun i => NatTran …
         exact (f.f i).naturality g }
+        -- 🎉 no goals
 #align homological_complex.complex_of_functors_to_functor_to_complex HomologicalComplex.complexOfFunctorsToFunctorToComplex
 
 end HomologicalComplex

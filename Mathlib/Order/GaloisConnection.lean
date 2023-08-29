@@ -113,6 +113,7 @@ theorem monotone_l : Monotone l :=
 
 theorem upperBounds_l_image (s : Set α) : upperBounds (l '' s) = u ⁻¹' upperBounds s :=
   Set.ext fun b => by simp [upperBounds, gc _ _]
+                      -- 🎉 no goals
 #align galois_connection.upper_bounds_l_image GaloisConnection.upperBounds_l_image
 
 theorem lowerBounds_u_image (s : Set β) : lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
@@ -121,6 +122,7 @@ theorem lowerBounds_u_image (s : Set β) : lowerBounds (u '' s) = l ⁻¹' lower
 
 theorem bddAbove_l_image {s : Set α} : BddAbove (l '' s) ↔ BddAbove s :=
   ⟨fun ⟨x, hx⟩ => ⟨u x, by rwa [gc.upperBounds_l_image] at hx⟩, gc.monotone_l.map_bddAbove⟩
+                           -- 🎉 no goals
 #align galois_connection.bdd_above_l_image GaloisConnection.bddAbove_l_image
 
 theorem bddBelow_u_image {s : Set β} : BddBelow (u '' s) ↔ BddBelow s :=
@@ -130,6 +132,7 @@ theorem bddBelow_u_image {s : Set β} : BddBelow (u '' s) ↔ BddBelow s :=
 theorem isLUB_l_image {s : Set α} {a : α} (h : IsLUB s a) : IsLUB (l '' s) (l a) :=
   ⟨gc.monotone_l.mem_upperBounds_image h.left, fun b hb =>
     gc.l_le <| h.right <| by rwa [gc.upperBounds_l_image] at hb⟩
+                             -- 🎉 no goals
 #align galois_connection.is_lub_l_image GaloisConnection.isLUB_l_image
 
 theorem isGLB_u_image {s : Set β} {b : β} (h : IsGLB s b) : IsGLB (u '' s) (u b) :=
@@ -190,10 +193,15 @@ theorem exists_eq_u (a : α) : (∃ b : β, a = u b) ↔ a = u (l a) :=
 
 theorem u_eq {z : α} {y : β} : u y = z ↔ ∀ x, x ≤ z ↔ l x ≤ y := by
   constructor
+  -- ⊢ u y = z → ∀ (x : α), x ≤ z ↔ l x ≤ y
   · rintro rfl x
+    -- ⊢ x ≤ u y ↔ l x ≤ y
     exact (gc x y).symm
+    -- 🎉 no goals
   · intro H
+    -- ⊢ u y = z
     exact ((H <| u y).mpr (gc.l_u_le y)).antisymm ((gc _ _).mp <| (H z).mp le_rfl)
+    -- 🎉 no goals
 #align galois_connection.u_eq GaloisConnection.u_eq
 
 end PartialOrder
@@ -222,10 +230,15 @@ theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) :=
 
 theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y := by
   constructor
+  -- ⊢ l x = z → ∀ (y : β), z ≤ y ↔ x ≤ u y
   · rintro rfl y
+    -- ⊢ l x ≤ y ↔ x ≤ u y
     exact gc x y
+    -- 🎉 no goals
   · intro H
+    -- ⊢ l x = z
     exact ((gc _ _).mpr <| (H z).mp le_rfl).antisymm ((H <| l x).mpr (gc.le_u_l x))
+    -- 🎉 no goals
 #align galois_connection.l_eq GaloisConnection.l_eq
 
 end PartialOrder
@@ -264,6 +277,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α}
 
 theorem l_sup : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
   (gc.isLUB_l_image isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
+                                             -- 🎉 no goals
 #align galois_connection.l_sup GaloisConnection.l_sup
 
 end SemilatticeSup
@@ -287,10 +301,13 @@ theorem l_iSup {f : ι → α} : l (iSup f) = ⨆ i, l (f i) :=
     IsLUB.iSup_eq <|
       show IsLUB (range (l ∘ f)) (l (iSup f)) by
         rw [range_comp, ← sSup_range]; exact gc.isLUB_l_image (isLUB_sSup _)
+        -- ⊢ IsLUB (l '' range f) (l (sSup (range f)))
+                                       -- 🎉 no goals
 #align galois_connection.l_supr GaloisConnection.l_iSup
 
 theorem l_iSup₂ {f : ∀ i, κ i → α} : l (⨆ (i) (j), f i j) = ⨆ (i) (j), l (f i j) := by
   simp_rw [gc.l_iSup]
+  -- 🎉 no goals
 #align galois_connection.l_supr₂ GaloisConnection.l_iSup₂
 
 theorem u_iInf {f : ι → β} : u (iInf f) = ⨅ i, u (f i) :=
@@ -302,6 +319,7 @@ theorem u_iInf₂ {f : ∀ i, κ i → β} : u (⨅ (i) (j), f i j) = ⨅ (i) (j
 #align galois_connection.u_infi₂ GaloisConnection.u_iInf₂
 
 theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by simp only [sSup_eq_iSup, gc.l_iSup]
+                                                             -- 🎉 no goals
 #align galois_connection.l_Sup GaloisConnection.l_sSup
 
 theorem u_sInf {s : Set β} : u (sInf s) = ⨅ a ∈ s, u a :=
@@ -330,6 +348,9 @@ protected theorem id [pα : Preorder α] : @GaloisConnection α α pα pα id id
 protected theorem compose [Preorder α] [Preorder β] [Preorder γ] {l1 : α → β} {u1 : β → α}
     {l2 : β → γ} {u2 : γ → β} (gc1 : GaloisConnection l1 u1) (gc2 : GaloisConnection l2 u2) :
     GaloisConnection (l2 ∘ l1) (u1 ∘ u2) := by intro a b; dsimp; rw [gc2, gc1]
+                                               -- ⊢ (l2 ∘ l1) a ≤ b ↔ a ≤ (u1 ∘ u2) b
+                                                          -- ⊢ l2 (l1 a) ≤ b ↔ a ≤ u1 (u2 b)
+                                                                 -- 🎉 no goals
 #align galois_connection.compose GaloisConnection.compose
 
 protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [∀ i, Preorder (α i)]
@@ -343,8 +364,11 @@ protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} 
     (gc : GaloisConnection l u) :
     GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := by
   intro a b
+  -- ⊢ (compl ∘ u ∘ compl) a ≤ b ↔ a ≤ (compl ∘ l ∘ compl) b
   dsimp
+  -- ⊢ (u aᶜ)ᶜ ≤ b ↔ a ≤ (l bᶜ)ᶜ
   rw [le_compl_iff_le_compl, gc, compl_le_iff_compl_le]
+  -- 🎉 no goals
 
 end Constructions
 
@@ -385,6 +409,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {f : α 
 theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
   simp_rw [sSup_image2, ← (h₂ _).l_sSup, ← (h₁ _).l_sSup]
+  -- 🎉 no goals
 #align Sup_image2_eq_Sup_Sup sSup_image2_eq_sSup_sSup
 
 theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
@@ -407,6 +432,7 @@ theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ o
 theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sInf s) (sInf t) := by
   simp_rw [sInf_image2, ← (h₂ _).u_sInf, ← (h₁ _).u_sInf]
+  -- 🎉 no goals
 #align Inf_image2_eq_Inf_Inf sInf_image2_eq_sInf_sInf
 
 theorem sInf_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
@@ -445,11 +471,13 @@ theorem bddBelow_image (e : α ≃o β) {s : Set α} : BddBelow (e '' s) ↔ Bdd
 @[simp]
 theorem bddAbove_preimage (e : α ≃o β) {s : Set β} : BddAbove (e ⁻¹' s) ↔ BddAbove s := by
   rw [← e.bddAbove_image, e.image_preimage]
+  -- 🎉 no goals
 #align order_iso.bdd_above_preimage OrderIso.bddAbove_preimage
 
 @[simp]
 theorem bddBelow_preimage (e : α ≃o β) {s : Set β} : BddBelow (e ⁻¹' s) ↔ BddBelow s := by
   rw [← e.bddBelow_image, e.image_preimage]
+  -- 🎉 no goals
 #align order_iso.bdd_below_preimage OrderIso.bddBelow_preimage
 
 end OrderIso
@@ -543,6 +571,7 @@ theorem l_sup_u [SemilatticeSup α] [SemilatticeSup β] (gi : GaloisInsertion l 
   calc
     l (u a ⊔ u b) = l (u a) ⊔ l (u b) := gi.gc.l_sup
     _ = a ⊔ b := by simp only [gi.l_u_eq]
+                    -- 🎉 no goals
 #align galois_insertion.l_sup_u GaloisInsertion.l_sup_u
 
 theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -555,10 +584,12 @@ theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
 theorem l_biSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
     {p : ι → Prop} (f : ∀ (i) (_ : p i), β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
   simp only [iSup_subtype', gi.l_iSup_u]
+  -- 🎉 no goals
 #align galois_insertion.l_bsupr_u GaloisInsertion.l_biSup_u
 
 theorem l_sSup_u_image [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u)
     (s : Set β) : l (sSup (u '' s)) = sSup s := by rw [sSup_image, gi.l_biSup_u, sSup_eq_iSup]
+                                                   -- 🎉 no goals
 #align galois_insertion.l_Sup_u_image GaloisInsertion.l_sSup_u_image
 
 theorem l_inf_u [SemilatticeInf α] [SemilatticeInf β] (gi : GaloisInsertion l u) (a b : β) :
@@ -566,6 +597,7 @@ theorem l_inf_u [SemilatticeInf α] [SemilatticeInf β] (gi : GaloisInsertion l 
   calc
     l (u a ⊓ u b) = l (u (a ⊓ b)) := congr_arg l gi.gc.u_inf.symm
     _ = a ⊓ b := by simp only [gi.l_u_eq]
+                    -- 🎉 no goals
 #align galois_insertion.l_inf_u GaloisInsertion.l_inf_u
 
 theorem l_iInf_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
@@ -578,16 +610,19 @@ theorem l_iInf_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
 theorem l_biInf_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
     {p : ι → Prop} (f : ∀ (i) (_ : p i), β) : l (⨅ (i) (hi), u (f i hi)) = ⨅ (i) (hi), f i hi := by
   simp only [iInf_subtype', gi.l_iInf_u]
+  -- 🎉 no goals
 #align galois_insertion.l_binfi_u GaloisInsertion.l_biInf_u
 
 theorem l_sInf_u_image [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u)
     (s : Set β) : l (sInf (u '' s)) = sInf s := by rw [sInf_image, gi.l_biInf_u, sInf_eq_iInf]
+                                                   -- 🎉 no goals
 #align galois_insertion.l_Inf_u_image GaloisInsertion.l_sInf_u_image
 
 theorem l_iInf_of_ul_eq_self [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u)
     {ι : Sort x} (f : ι → α) (hf : ∀ i, u (l (f i)) = f i) : l (⨅ i, f i) = ⨅ i, l (f i) :=
   calc
     l (⨅ i, f i) = l (⨅ i : ι, u (l (f i))) := by simp [hf]
+                                                  -- 🎉 no goals
     _ = ⨅ i, l (f i) := gi.l_iInf_u _
 #align galois_insertion.l_infi_of_ul_eq_self GaloisInsertion.l_iInf_of_ul_eq_self
 
@@ -595,7 +630,9 @@ theorem l_biInf_of_ul_eq_self [CompleteLattice α] [CompleteLattice β] (gi : Ga
     {ι : Sort x} {p : ι → Prop} (f : ∀ (i) (_ : p i), α) (hf : ∀ i hi, u (l (f i hi)) = f i hi) :
     l (⨅ (i) (hi), f i hi) = ⨅ (i) (hi), l (f i hi) := by
   rw [iInf_subtype', iInf_subtype']
+  -- ⊢ l (⨅ (x : { i // p i }), f ↑x (_ : p ↑x)) = ⨅ (x : { i // p i }), l (f ↑x (_ …
   exact gi.l_iInf_of_ul_eq_self _ fun _ => hf _ _
+  -- 🎉 no goals
 #align galois_insertion.l_binfi_of_ul_eq_self GaloisInsertion.l_biInf_of_ul_eq_self
 
 theorem u_le_u_iff [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {a b} : u a ≤ u b ↔ a ≤ b :=
@@ -644,9 +681,14 @@ def liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : Semilatt
         le_inf (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_left)
           (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_right)
     inf_le_left := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_left
+                      -- ⊢ ∀ (a b : β), l (u a ⊓ u b) ≤ a
+                                                -- 🎉 no goals
     inf_le_right := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_right
+                       -- ⊢ ∀ (a b : β), l (u a ⊓ u b) ≤ b
+                                                 -- 🎉 no goals
     le_inf := by
       simp only [gi.choice_eq]
+      -- ⊢ ∀ (a b c : β), a ≤ b → a ≤ c → a ≤ l (u b ⊓ u c)
       exact fun a b c hac hbc =>
         (gi.le_l_u a).trans <|
           gi.gc.monotone_l <| le_inf (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
@@ -667,6 +709,8 @@ def liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
   top := gi.choice ⊤ <| le_top
   le_top := by
     simp only [gi.choice_eq]; exact fun b => (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
+    -- ⊢ ∀ (a : β), a ≤ l ⊤
+                              -- 🎉 no goals
 #align galois_insertion.lift_order_top GaloisInsertion.liftOrderTop
 
 -- See note [reducible non instances]
@@ -689,7 +733,13 @@ def liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Comple
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
     sInf_le := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
+                           -- ⊢ ∀ (a : β), a ∈ s → choice gi (sInf (u '' s)) (_ : u (l (sInf (u '' s))) ≤ sI …
+                                  -- ⊢ ∀ (a : β), a ∈ s → l (sInf (u '' s)) ≤ a
+                                                     -- 🎉 no goals
     le_sInf := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+                           -- ⊢ ∀ (a : β), (∀ (b : β), b ∈ s → a ≤ b) → a ≤ choice gi (sInf (u '' s)) (_ : u …
+                                  -- ⊢ ∀ (a : β), (∀ (b : β), b ∈ s → a ≤ b) → a ≤ l (sInf (u '' s))
+                                                     -- 🎉 no goals
 #align galois_insertion.lift_complete_lattice GaloisInsertion.liftCompleteLattice
 
 end lift
@@ -879,10 +929,13 @@ def liftSemilatticeInf [SemilatticeInf β] (gi : GaloisCoinsertion l u) : Semila
   { ‹PartialOrder α› with
     inf_le_left := fun a b => by
       exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
+      -- 🎉 no goals
     inf_le_right := fun a b => by
       exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
+      -- 🎉 no goals
     le_inf := fun a b c => by
       exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
+      -- 🎉 no goals
     inf := fun a b => u (l a ⊓ l b) }
 #align galois_coinsertion.lift_semilattice_inf GaloisCoinsertion.liftSemilatticeInf
 
@@ -897,10 +950,13 @@ def liftSemilatticeSup [SemilatticeSup β] (gi : GaloisCoinsertion l u) : Semila
           (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_right)
     le_sup_left := fun a b => by
       exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
+      -- 🎉 no goals
     le_sup_right := fun a b => by
       exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
+      -- 🎉 no goals
     sup_le := fun a b c => by
       exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
+      -- 🎉 no goals
 #align galois_coinsertion.lift_semilattice_sup GaloisCoinsertion.liftSemilatticeSup
 
 -- See note [reducible non instances]

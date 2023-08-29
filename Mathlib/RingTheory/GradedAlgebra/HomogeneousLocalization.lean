@@ -107,10 +107,15 @@ variable {𝒜}
 theorem ext {c1 c2 : NumDenSameDeg 𝒜 x} (hdeg : c1.deg = c2.deg) (hnum : (c1.num : A) = c2.num)
     (hden : (c1.den : A) = c2.den) : c1 = c2 := by
   rcases c1 with ⟨i1, ⟨n1, hn1⟩, ⟨d1, hd1⟩, h1⟩
+  -- ⊢ { deg := i1, num := { val := n1, property := hn1 }, den := { val := d1, prop …
   rcases c2 with ⟨i2, ⟨n2, hn2⟩, ⟨d2, hd2⟩, h2⟩
+  -- ⊢ { deg := i1, num := { val := n1, property := hn1 }, den := { val := d1, prop …
   dsimp only [Subtype.coe_mk] at *
+  -- ⊢ { deg := i1, num := { val := n1, property := hn1 }, den := { val := d1, prop …
   subst hdeg hnum hden
+  -- ⊢ { deg := i1, num := { val := n1, property := hn1 }, den := { val := d1, prop …
   congr
+  -- 🎉 no goals
 #align homogeneous_localization.num_denom_same_deg.ext HomogeneousLocalization.NumDenSameDeg.ext
 
 instance : One (NumDenSameDeg 𝒜 x) where
@@ -233,8 +238,11 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
+        -- ⊢ ↑(GradedMonoid.GMonoid.gnpow Nat.zero c.den) ∈ x
         · simpa only [Nat.zero_eq, coe_gnpow, pow_zero] using Submonoid.one_mem _
+          -- 🎉 no goals
         · simpa only [pow_succ', coe_gnpow] using x.mul_mem ih c.den_mem⟩
+          -- 🎉 no goals
 
 @[simp]
 theorem deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
@@ -326,8 +334,15 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
   pow z n :=
     (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
           change Localization.mk _ _ = Localization.mk _ _
+          -- ⊢ Localization.mk ↑((fun x_1 => x_1 ^ n) c1).num { val := ↑((fun x_1 => x_1 ^  …
           simp only [num_pow, den_pow]
+          -- ⊢ Localization.mk (↑c1.num ^ n) { val := ↑c1.den ^ n, property := (_ : (fun x_ …
           convert congr_arg (fun z : at x => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
+          -- ⊢ Localization.mk (↑c1.num ^ n) { val := ↑c1.den ^ n, property := (_ : (fun x_ …
+                                                          -- ⊢ Localization.mk (↑c1.num ^ n) { val := ↑c1.den ^ n, property := (_ : (fun x_ …
+                                                          -- ⊢ Localization.mk (↑c2.num ^ n) { val := ↑c2.den ^ n, property := (_ : (fun x_ …
+                                                                                        -- 🎉 no goals
+                                                                                        -- 🎉 no goals
         HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
       z
 #align homogeneous_localization.has_pow HomogeneousLocalization.hasPow
@@ -341,16 +356,28 @@ variable [IsScalarTower α A A]
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
   smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
+    -- ⊢ Localization.mk ↑((fun x_1 => m • x_1) c1).num { val := ↑((fun x_1 => m • x_ …
     simp only [num_smul, den_smul]
+    -- ⊢ Localization.mk ↑(m • c1.num) { val := ↑c1.den, property := (_ : (fun x_1 => …
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
+    -- ⊢ Localization.mk ↑(m • c1.num) { val := ↑c1.den, property := (_ : (fun x_1 => …
+                                                    -- ⊢ Localization.mk ↑(m • c1.num) { val := ↑c1.den, property := (_ : (fun x_1 => …
+                                                    -- ⊢ Localization.mk ↑(m • c2.num) { val := ↑c2.den, property := (_ : (fun x_1 => …
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
 
 @[simp]
 theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
+  -- ⊢ val (n • Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝) = n • val (Quotient.mk …
   change Localization.mk _ _ = n • Localization.mk _ _
+  -- ⊢ Localization.mk ↑((fun x_1 => n • x_1) a✝).num { val := ↑((fun x_1 => n • x_ …
   dsimp only
+  -- ⊢ Localization.mk ↑(n • a✝).num { val := ↑(n • a✝).den, property := (_ : ↑(n • …
   rw [Localization.smul_mk]
+  -- ⊢ Localization.mk ↑(n • a✝).num { val := ↑(n • a✝).den, property := (_ : ↑(n • …
   congr 1
+  -- 🎉 no goals
 #align homogeneous_localization.smul_val HomogeneousLocalization.smul_val
 
 end SMul
@@ -358,8 +385,11 @@ end SMul
 instance : Neg (HomogeneousLocalization 𝒜 x) where
   neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
+    -- ⊢ Localization.mk ↑(-c1).num { val := ↑(-c1).den, property := (_ : ↑(-c1).den  …
     simp only [num_neg, den_neg, ← Localization.neg_mk]
+    -- ⊢ -Localization.mk ↑c1.num { val := ↑c1.den, property := (_ : (fun x_1 => x_1  …
     exact congr_arg Neg.neg h
+    -- 🎉 no goals
 
 instance : Add (HomogeneousLocalization 𝒜 x) where
   add :=
@@ -367,8 +397,15 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
+      -- ⊢ Localization.mk ↑((fun x_1 x_2 => x_1 + x_2) c1 c3).num { val := ↑((fun x_1  …
       simp only [num_add, den_add, ← Localization.add_mk]
+      -- ⊢ Localization.mk (↑c1.den * ↑c3.num + ↑c3.den * ↑c1.num) { val := ↑c1.den * ↑ …
       convert congr_arg₂ (· + ·) h h' <;> erw [Localization.add_mk] <;> rfl
+      -- ⊢ Localization.mk (↑c1.den * ↑c3.num + ↑c3.den * ↑c1.num) { val := ↑c1.den * ↑ …
+                                          -- ⊢ Localization.mk (↑c1.den * ↑c3.num + ↑c3.den * ↑c1.num) { val := ↑c1.den * ↑ …
+                                          -- ⊢ Localization.mk (↑c2.den * ↑c4.num + ↑c4.den * ↑c2.num) { val := ↑c2.den * ↑ …
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 
 instance : Sub (HomogeneousLocalization 𝒜 x) where sub z1 z2 := z1 + -z2
 
@@ -378,8 +415,15 @@ instance : Mul (HomogeneousLocalization 𝒜 x) where
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
+      -- ⊢ Localization.mk ↑((fun x_1 x_2 => x_1 * x_2) c1 c3).num { val := ↑((fun x_1  …
       simp only [num_mul, den_mul]
+      -- ⊢ Localization.mk (↑c1.num * ↑c3.num) { val := ↑c1.den * ↑c3.den, property :=  …
       convert congr_arg₂ (· * ·) h h' <;> erw [Localization.mk_mul] <;> rfl
+      -- ⊢ Localization.mk (↑c1.num * ↑c3.num) { val := ↑c1.den * ↑c3.den, property :=  …
+                                          -- ⊢ Localization.mk (↑c1.num * ↑c3.num) { val := ↑c1.den * ↑c3.den, property :=  …
+                                          -- ⊢ Localization.mk (↑c2.num * ↑c4.num) { val := ↑c2.den * ↑c4.den, property :=  …
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 
 instance : One (HomogeneousLocalization 𝒜 x) where one := Quotient.mk'' 1
 
@@ -406,44 +450,68 @@ theorem one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 @[simp]
 theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.val + y2.val := by
   induction y1 using Quotient.inductionOn
+  -- ⊢ val (Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝ + y2) = val (Quotient.mk (S …
   induction y2 using Quotient.inductionOn
+  -- ⊢ val (Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝¹ + Quotient.mk (Setoid.ker  …
   change Localization.mk _ _ = Localization.mk _ _ + Localization.mk _ _
+  -- ⊢ Localization.mk ↑((fun x_1 x_2 => x_1 + x_2) a✝¹ a✝).num { val := ↑((fun x_1 …
   dsimp only
+  -- ⊢ Localization.mk ↑(a✝¹ + a✝).num { val := ↑(a✝¹ + a✝).den, property := (_ : ↑ …
   rw [Localization.add_mk]
+  -- ⊢ Localization.mk ↑(a✝¹ + a✝).num { val := ↑(a✝¹ + a✝).den, property := (_ : ↑ …
   rfl
+  -- 🎉 no goals
 #align homogeneous_localization.add_val HomogeneousLocalization.add_val
 
 @[simp]
 theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.val * y2.val := by
   induction y1 using Quotient.inductionOn
+  -- ⊢ val (Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝ * y2) = val (Quotient.mk (S …
   induction y2 using Quotient.inductionOn
+  -- ⊢ val (Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝¹ * Quotient.mk (Setoid.ker  …
   change Localization.mk _ _ = Localization.mk _ _ * Localization.mk _ _
+  -- ⊢ Localization.mk ↑((fun x_1 x_2 => x_1 * x_2) a✝¹ a✝).num { val := ↑((fun x_1 …
   dsimp only
+  -- ⊢ Localization.mk ↑(a✝¹ * a✝).num { val := ↑(a✝¹ * a✝).den, property := (_ : ↑ …
   rw [Localization.mk_mul]
+  -- ⊢ Localization.mk ↑(a✝¹ * a✝).num { val := ↑(a✝¹ * a✝).den, property := (_ : ↑ …
   rfl
+  -- 🎉 no goals
 #align homogeneous_localization.mul_val HomogeneousLocalization.mul_val
 
 @[simp]
 theorem neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
   induction y using Quotient.inductionOn
+  -- ⊢ val (-Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝) = -val (Quotient.mk (Seto …
   change Localization.mk _ _ = -Localization.mk _ _
+  -- ⊢ Localization.mk ↑(-a✝).num { val := ↑(-a✝).den, property := (_ : ↑(-a✝).den  …
   dsimp only
+  -- ⊢ Localization.mk ↑(-a✝).num { val := ↑(-a✝).den, property := (_ : ↑(-a✝).den  …
   rw [Localization.neg_mk]
+  -- ⊢ Localization.mk ↑(-a✝).num { val := ↑(-a✝).den, property := (_ : ↑(-a✝).den  …
   rfl
+  -- 🎉 no goals
 #align homogeneous_localization.neg_val HomogeneousLocalization.neg_val
 
 @[simp]
 theorem sub_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.val - y2.val := by
   rw [show y1 - y2 = y1 + -y2 from rfl, add_val, neg_val]; rfl
+  -- ⊢ val y1 + -val y2 = val y1 - val y2
+                                                           -- 🎉 no goals
 #align homogeneous_localization.sub_val HomogeneousLocalization.sub_val
 
 @[simp]
 theorem pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y.val ^ n := by
   induction y using Quotient.inductionOn
+  -- ⊢ val (Quotient.mk (Setoid.ker (embedding 𝒜 x)) a✝ ^ n) = val (Quotient.mk (Se …
   change Localization.mk _ _ = Localization.mk _ _ ^ n
+  -- ⊢ Localization.mk ↑((fun x_1 => x_1 ^ n) a✝).num { val := ↑((fun x_1 => x_1 ^  …
   rw [Localization.mk_pow]
+  -- ⊢ Localization.mk ↑((fun x_1 => x_1 ^ n) a✝).num { val := ↑((fun x_1 => x_1 ^  …
   dsimp only
+  -- ⊢ Localization.mk ↑(a✝ ^ n).num { val := ↑(a✝ ^ n).den, property := (_ : ↑(a✝  …
   congr 1
+  -- 🎉 no goals
 #align homogeneous_localization.pow_val HomogeneousLocalization.pow_val
 
 instance : NatCast (HomogeneousLocalization 𝒜 x) :=
@@ -455,11 +523,17 @@ instance : IntCast (HomogeneousLocalization 𝒜 x) :=
 @[simp]
 theorem natCast_val (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Nat.unaryCast n) = _ by induction n <;> simp [Nat.unaryCast, zero_val, one_val, *]
+                                    -- ⊢ val (Nat.unaryCast Nat.zero) = ↑Nat.zero
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
 #align homogeneous_localization.nat_cast_val HomogeneousLocalization.natCast_val
 
 @[simp]
 theorem intCast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Int.castDef n) = _ by cases n <;> simp [Int.castDef, zero_val, one_val, *]
+                                  -- ⊢ val (Int.castDef (Int.ofNat a✝)) = ↑(Int.ofNat a✝)
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align homogeneous_localization.int_cast_val HomogeneousLocalization.intCast_val
 
 instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
@@ -518,18 +592,26 @@ theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg 
 theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ := by
   have := Quotient.out_eq' f
+  -- ⊢ val f = Localization.mk (num f) { val := den f, property := (_ : den f ∈ x) }
   apply_fun HomogeneousLocalization.val at this
+  -- ⊢ val f = Localization.mk (num f) { val := den f, property := (_ : den f ∈ x) }
   rw [← this]
+  -- ⊢ val (Quotient.mk'' (Quotient.out' f)) = Localization.mk (num f) { val := den …
   rfl
+  -- 🎉 no goals
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
 
 theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g.val :=
   { mp := fun h => h ▸ rfl
     mpr := fun h => by
       induction f using Quotient.inductionOn'
+      -- ⊢ Quotient.mk'' a✝ = g
       induction g using Quotient.inductionOn'
+      -- ⊢ Quotient.mk'' a✝¹ = Quotient.mk'' a✝
       rw [Quotient.eq'']
+      -- ⊢ Setoid.r a✝¹ a✝
       simpa only [Quotient.liftOn'_mk] using h }
+      -- 🎉 no goals
 #align homogeneous_localization.ext_iff_val HomogeneousLocalization.ext_iff_val
 
 section
@@ -544,11 +626,17 @@ abbrev AtPrime :=
 theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : IsUnit f.val ↔ IsUnit f :=
   ⟨fun h1 => by
     rcases h1 with ⟨⟨a, b, eq0, eq1⟩, eq2 : a = f.val⟩
+    -- ⊢ IsUnit f
     rw [eq2] at eq0 eq1
+    -- ⊢ IsUnit f
     clear a eq2
+    -- ⊢ IsUnit f
     induction' b using Localization.induction_on with data
+    -- ⊢ IsUnit f
     rcases data with ⟨a, ⟨b, hb⟩⟩
+    -- ⊢ IsUnit f
     dsimp only at eq0 eq1
+    -- ⊢ IsUnit f
     have b_f_den_not_mem : b * f.den ∈ 𝔭.primeCompl :=
       fun r => Or.elim (Ideal.IsPrime.mem_or_mem inferInstance r) (hb ·) (f.den_mem ·)
     rw [f.eq_num_div_den, Localization.mk_mul,
@@ -556,8 +644,11 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
       show (1 : Localization.AtPrime 𝔭) = Localization.mk 1 1 by erw [Localization.mk_self 1],
       Localization.mk_eq_mk', IsLocalization.eq] at eq1
     rcases eq1 with ⟨⟨c, hc⟩, eq1⟩
+    -- ⊢ IsUnit f
     change c * (1 * (a * f.num)) = _ at eq1
+    -- ⊢ IsUnit f
     simp only [one_mul, mul_one] at eq1
+    -- ⊢ IsUnit f
     have mem1 : c * (a * f.num) ∈ 𝔭.primeCompl :=
       eq1.symm ▸ fun r => Or.elim (Ideal.IsPrime.mem_or_mem inferInstance r) (by tauto) (by tauto)
     have mem2 : f.num ∉ 𝔭 := by
@@ -567,38 +658,66 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
     refine' ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _, _⟩,
         rfl⟩
       <;> simp only [ext_iff_val, mul_val, val_mk'', f.eq_num_div_den, Localization.mk_mul, one_val]
+          -- ⊢ Localization.mk (num f * den f) ({ val := den f, property := (_ : den f ∈ Id …
+          -- ⊢ Localization.mk (den f * num f) ({ val := num f, property := (_ : ↑{ deg :=  …
       <;> convert Localization.mk_self (M := A) _
+          -- ⊢ num f * den f = ↑({ val := den f, property := (_ : den f ∈ Ideal.primeCompl  …
+          -- ⊢ den f * num f = ↑({ val := num f, property := (_ : ↑{ deg := deg f, num := { …
       <;> rw [mul_comm]
+          -- ⊢ den f * num f = ↑({ val := den f, property := (_ : den f ∈ Ideal.primeCompl  …
+          -- ⊢ num f * den f = ↑({ val := num f, property := (_ : ↑{ deg := deg f, num := { …
       <;> rfl ,
+          -- 🎉 no goals
+          -- 🎉 no goals
     fun ⟨⟨_, b, eq1, eq2⟩, rfl⟩ => by
     simp only [ext_iff_val, mul_val, one_val] at eq1 eq2
+    -- ⊢ IsUnit (val f)
     exact ⟨⟨f.val, b.val, eq1, eq2⟩, rfl⟩⟩
+    -- 🎉 no goals
 #align homogeneous_localization.is_unit_iff_is_unit_val HomogeneousLocalization.isUnit_iff_isUnit_val
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, zero_val, one_val, zero_ne_one] at r⟩⟩
+                      -- 🎉 no goals
 
 instance localRing : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
     simp only [← isUnit_iff_isUnit_val, sub_val, one_val]
+    -- ⊢ IsUnit (val a) ∨ IsUnit (1 - val a)
     induction' a using Quotient.inductionOn' with a
+    -- ⊢ IsUnit (val (Quotient.mk'' a)) ∨ IsUnit (1 - val (Quotient.mk'' a))
     simp only [HomogeneousLocalization.val_mk'']
+    -- ⊢ IsUnit (Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den ∈ Id …
     by_cases mem1 : a.num.1 ∈ 𝔭
+    -- ⊢ IsUnit (Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den ∈ Id …
     · right
+      -- ⊢ IsUnit (1 - Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den  …
       have : a.den.1 - a.num.1 ∈ 𝔭.primeCompl := fun h =>
         a.den_mem (sub_add_cancel a.den.val a.num.val ▸ Ideal.add_mem _ h mem1 : a.den.1 ∈ 𝔭)
       apply isUnit_of_mul_eq_one _ (Localization.mk a.den.1 ⟨a.den.1 - a.num.1, this⟩)
+      -- ⊢ (1 - Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den ∈ Ideal …
       simp only [sub_mul, Localization.mk_mul, one_mul, Localization.sub_mk, Submonoid.coe_mul]
+      -- ⊢ Localization.mk (↑a.den * (↑a.den - ↑a.num) * ↑a.den - (↑a.den * (↑a.num * ↑ …
       convert Localization.mk_self (M := A) _
+      -- ⊢ ↑a.den * (↑a.den - ↑a.num) * ↑a.den - (↑a.den * (↑a.num * ↑a.den) - ↑a.num * …
       simp only [Submonoid.coe_mul]
+      -- ⊢ ↑a.den * (↑a.den - ↑a.num) * ↑a.den - (↑a.den * (↑a.num * ↑a.den) - ↑a.num * …
       ring
+      -- 🎉 no goals
     · left
+      -- ⊢ IsUnit (Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den ∈ Id …
       change _ ∈ 𝔭.primeCompl at mem1
+      -- ⊢ IsUnit (Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den ∈ Id …
       apply isUnit_of_mul_eq_one _ (Localization.mk a.den.1 ⟨a.num.1, mem1⟩)
+      -- ⊢ Localization.mk ↑a.num { val := ↑a.den, property := (_ : ↑a.den ∈ Ideal.prim …
       rw [Localization.mk_mul]
+      -- ⊢ Localization.mk (↑a.num * ↑a.den) ({ val := ↑a.den, property := (_ : ↑a.den  …
       convert Localization.mk_self (M := A) _
+      -- ⊢ ↑a.num * ↑a.den = ↑({ val := ↑a.den, property := (_ : ↑a.den ∈ Ideal.primeCo …
       rw [mul_comm]
+      -- ⊢ ↑a.den * ↑a.num = ↑({ val := ↑a.den, property := (_ : ↑a.den ∈ Ideal.primeCo …
       rfl
+      -- 🎉 no goals
 
 end
 

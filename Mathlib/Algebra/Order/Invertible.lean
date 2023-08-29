@@ -20,21 +20,25 @@ variable [LinearOrderedSemiring α] {a : α}
 @[simp]
 theorem invOf_pos [Invertible a] : 0 < ⅟ a ↔ 0 < a :=
   haveI : 0 < a * ⅟ a := by simp only [mul_invOf_self, zero_lt_one]
+                            -- 🎉 no goals
   ⟨fun h => pos_of_mul_pos_left this h.le, fun h => pos_of_mul_pos_right this h.le⟩
 #align inv_of_pos invOf_pos
 
 @[simp]
 theorem invOf_nonpos [Invertible a] : ⅟ a ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, invOf_pos]
+                                                            -- 🎉 no goals
 #align inv_of_nonpos invOf_nonpos
 
 @[simp]
 theorem invOf_nonneg [Invertible a] : 0 ≤ ⅟ a ↔ 0 ≤ a :=
   haveI : 0 < a * ⅟ a := by simp only [mul_invOf_self, zero_lt_one]
+                            -- 🎉 no goals
   ⟨fun h => (pos_of_mul_pos_left this h).le, fun h => (pos_of_mul_pos_right this h).le⟩
 #align inv_of_nonneg invOf_nonneg
 
 @[simp]
 theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← not_le, invOf_nonneg]
+                                                             -- 🎉 no goals
 #align inv_of_lt_zero invOf_lt_zero
 
 @[simp]

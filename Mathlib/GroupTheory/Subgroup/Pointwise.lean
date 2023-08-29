@@ -46,7 +46,9 @@ namespace Subgroup
 @[to_additive (attr := simp)]
 theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
+  -- ⊢ s⁻¹ ∈ closure S
   exact subset_closure (mem_inv.mp hs)
+  -- 🎉 no goals
 #align subgroup.inv_subset_closure Subgroup.inv_subset_closure
 #align add_subgroup.neg_subset_closure AddSubgroup.neg_subset_closure
 
@@ -54,12 +56,15 @@ theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
 theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
   refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
+  -- ⊢ x ∈ Submonoid.closure (S ∪ S⁻¹)
   · refine'
       closure_induction hx
         (fun x hx => Submonoid.closure_mono (subset_union_left S S⁻¹) (Submonoid.subset_closure hx))
         (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => _
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
+    -- 🎉 no goals
   · simp only [true_and_iff, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
+    -- 🎉 no goals
 #align subgroup.closure_to_submonoid Subgroup.closure_toSubmonoid
 #align add_subgroup.closure_to_add_submonoid AddSubgroup.closure_toAddSubmonoid
 
@@ -88,6 +93,7 @@ theorem closure_induction_right {p : G → Prop} {x : G} (h : x ∈ closure s) (
 @[to_additive (attr := simp)]
 theorem closure_inv (s : Set G) : closure s⁻¹ = closure s := by
   simp only [← toSubmonoid_eq, closure_toSubmonoid, inv_inv, union_comm]
+  -- 🎉 no goals
 #align subgroup.closure_inv Subgroup.closure_inv
 #align add_subgroup.closure_neg AddSubgroup.closure_neg
 
@@ -113,11 +119,17 @@ then it holds for all elements of the supremum of `S`. "]
 theorem iSup_induction {ι : Sort*} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
     (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
+  -- ⊢ C x
   refine' closure_induction'' hx (fun x hx => _) (fun x hx => _) h1 hmul
+  -- ⊢ C x
   · obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+    -- ⊢ C x
     exact hp _ _ hi
+    -- 🎉 no goals
   · obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+    -- ⊢ C x⁻¹
     exact hp _ _ (inv_mem hi)
+    -- 🎉 no goals
 #align subgroup.supr_induction Subgroup.iSup_induction
 #align add_subgroup.supr_induction AddSubgroup.iSup_induction
 
@@ -128,11 +140,17 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   suffices : ∃ h, C x h; exact this.snd
+  -- ⊢ C x hx
+                         -- ⊢ ∃ h, C x h
   refine' iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, hp i _ hx⟩
+    -- 🎉 no goals
   · exact ⟨_, h1⟩
+    -- 🎉 no goals
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
+    -- ⊢ ∃ h, C (x * y) h
     refine' ⟨_, hmul _ _ _ _ Cx Cy⟩
+    -- 🎉 no goals
 #align subgroup.supr_induction' Subgroup.iSup_induction'
 #align add_subgroup.supr_induction' AddSubgroup.iSup_induction'
 
@@ -150,6 +168,7 @@ theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K 
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
+                                      -- 🎉 no goals
 #align subgroup.sup_eq_closure Subgroup.sup_eq_closure
 #align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure
 
@@ -157,7 +176,9 @@ theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K 
 theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
     s * (N : Set G) = (N : Set G) * s := by
   ext x
+  -- ⊢ x ∈ s * ↑N ↔ x ∈ ↑N * s
   refine (exists_congr fun y => ?_).trans exists_swap
+  -- ⊢ (∃ b, y ∈ s ∧ b ∈ ↑N ∧ (fun x x_1 => x * x_1) y b = x) ↔ ∃ y_1, y_1 ∈ ↑N ∧ y …
   simp only [exists_and_left, @and_left_comm _ (y ∈ s), ← eq_inv_mul_iff_mul_eq (b := y),
     ← eq_mul_inv_iff_mul_eq (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
 
@@ -166,18 +187,28 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
 when `N` is normal."]
 theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure]
+  -- ⊢ ↑(closure (↑H * ↑N)) = ↑H * ↑N
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
+  -- ⊢ x ∈ ↑H * ↑N
   refine closure_induction'' (p := fun x => x ∈ (H : Set G) * (N : Set G)) hx ?_ ?_ ?_ ?_
   · rintro _ ⟨x, y, hx, hy, rfl⟩
+    -- ⊢ (fun x x_1 => x * x_1) x y ∈ ↑H * ↑N
     exact mul_mem_mul hx hy
+    -- 🎉 no goals
   · rintro _ ⟨x, y, hx, hy, rfl⟩
+    -- ⊢ ((fun x x_1 => x * x_1) x y)⁻¹ ∈ ↑H * ↑N
     simpa only [mul_inv_rev, mul_assoc, inv_inv, inv_mul_cancel_left]
       using mul_mem_mul (inv_mem hx) (hN.conj_mem _ (inv_mem hy) x)
   · exact ⟨1, 1, one_mem _, one_mem _, mul_one 1⟩
+    -- 🎉 no goals
   · rintro _ _ ⟨x, y, hx, hy, rfl⟩ ⟨x', y', hx', hy', rfl⟩
+    -- ⊢ (fun x x_1 => x * x_1) x y * (fun x x_1 => x * x_1) x' y' ∈ ↑H * ↑N
     refine ⟨x * x', x'⁻¹ * y * x' * y', mul_mem hx hx', mul_mem ?_ hy', ?_⟩
+    -- ⊢ x'⁻¹ * y * x' ∈ N
     · simpa using hN.conj_mem _ hy x'⁻¹
+      -- 🎉 no goals
     · simp only [mul_assoc, mul_inv_cancel_left]
+      -- 🎉 no goals
 #align subgroup.mul_normal Subgroup.mul_normal
 #align add_subgroup.add_normal AddSubgroup.add_normal
 
@@ -186,6 +217,7 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
 when `N` is normal."]
 theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H := by
   rw [← set_mul_normal_comm, sup_comm, mul_normal]
+  -- 🎉 no goals
 #align subgroup.normal_mul Subgroup.normal_mul
 #align add_subgroup.normal_add AddSubgroup.normal_add
 
@@ -194,15 +226,25 @@ theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * 
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
     (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ⊓ C := by
   ext
+  -- ⊢ x✝ ∈ ↑A * ↑(B ⊓ C) ↔ x✝ ∈ ↑A * ↑B ⊓ ↑C
   simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
+  -- ⊢ (∃ x y, x ∈ ↑A ∧ (y ∈ ↑B ∧ y ∈ ↑C) ∧ x * y = x✝) ↔ (∃ x y, x ∈ ↑A ∧ y ∈ ↑B ∧ …
   constructor
+  -- ⊢ (∃ x y, x ∈ ↑A ∧ (y ∈ ↑B ∧ y ∈ ↑C) ∧ x * y = x✝) → (∃ x y, x ∈ ↑A ∧ y ∈ ↑B ∧ …
   · rintro ⟨y, z, hy, ⟨hzB, hzC⟩, rfl⟩
+    -- ⊢ (∃ x y_1, x ∈ ↑A ∧ y_1 ∈ ↑B ∧ x * y_1 = y * z) ∧ y * z ∈ ↑C
     refine' ⟨_, mul_mem (h hy) hzC⟩
+    -- ⊢ ∃ x y_1, x ∈ ↑A ∧ y_1 ∈ ↑B ∧ x * y_1 = y * z
     exact ⟨y, z, hy, hzB, rfl⟩
+    -- 🎉 no goals
   rintro ⟨⟨y, z, hy, hz, rfl⟩, hyz⟩
+  -- ⊢ ∃ x y_1, x ∈ ↑A ∧ (y_1 ∈ ↑B ∧ y_1 ∈ ↑C) ∧ x * y_1 = y * z
   refine' ⟨y, z, hy, ⟨hz, _⟩, rfl⟩
+  -- ⊢ z ∈ ↑C
   suffices y⁻¹ * (y * z) ∈ C by simpa
+  -- ⊢ y⁻¹ * (y * z) ∈ C
   exact mul_mem (inv_mem (h hy)) hyz
+  -- 🎉 no goals
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
 #align add_subgroup.add_inf_assoc AddSubgroup.add_inf_assoc
 
@@ -211,15 +253,25 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
 theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
     ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ⊓ ↑B * ↑C := by
   ext
+  -- ⊢ x✝ ∈ ↑(A ⊓ B) * ↑C ↔ x✝ ∈ ↑A ⊓ ↑B * ↑C
   simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
+  -- ⊢ (∃ x y, (x ∈ ↑A ∧ x ∈ ↑B) ∧ y ∈ ↑C ∧ x * y = x✝) ↔ x✝ ∈ ↑A ∧ ∃ x y, x ∈ ↑B ∧ …
   constructor
+  -- ⊢ (∃ x y, (x ∈ ↑A ∧ x ∈ ↑B) ∧ y ∈ ↑C ∧ x * y = x✝) → x✝ ∈ ↑A ∧ ∃ x y, x ∈ ↑B ∧ …
   · rintro ⟨y, z, ⟨hyA, hyB⟩, hz, rfl⟩
+    -- ⊢ y * z ∈ ↑A ∧ ∃ x y_1, x ∈ ↑B ∧ y_1 ∈ ↑C ∧ x * y_1 = y * z
     refine' ⟨A.mul_mem hyA (h hz), _⟩
+    -- ⊢ ∃ x y_1, x ∈ ↑B ∧ y_1 ∈ ↑C ∧ x * y_1 = y * z
     exact ⟨y, z, hyB, hz, rfl⟩
+    -- 🎉 no goals
   rintro ⟨hyz, y, z, hy, hz, rfl⟩
+  -- ⊢ ∃ x y_1, (x ∈ ↑A ∧ x ∈ ↑B) ∧ y_1 ∈ ↑C ∧ x * y_1 = y * z
   refine' ⟨y, z, ⟨_, hy⟩, hz, rfl⟩
+  -- ⊢ y ∈ ↑A
   suffices y * z * z⁻¹ ∈ A by simpa
+  -- ⊢ y * z * z⁻¹ ∈ A
   exact mul_mem hyz (inv_mem (h hz))
+  -- 🎉 no goals
 #align subgroup.inf_mul_assoc Subgroup.inf_mul_assoc
 #align add_subgroup.inf_add_assoc AddSubgroup.inf_add_assoc
 
@@ -227,9 +279,13 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
 instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
   conj_mem n hmem g := by
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢
+    -- ⊢ g * n * g⁻¹ ∈ ↑H * ↑K
     rcases hmem with ⟨h, k, hh, hk, rfl⟩
+    -- ⊢ g * (fun x x_1 => x * x_1) h k * g⁻¹ ∈ ↑H * ↑K
     refine ⟨g * h * g⁻¹, g * k * g⁻¹, hH.conj_mem h hh g, hK.conj_mem k hk g, ?_⟩
+    -- ⊢ (fun x x_1 => x * x_1) (g * h * g⁻¹) (g * k * g⁻¹) = g * (fun x x_1 => x * x …
     simp only [mul_assoc, inv_mul_cancel_left]
+    -- 🎉 no goals
 #align subgroup.sup_normal Subgroup.sup_normal
 
 -- porting note: new lemma
@@ -237,6 +293,7 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
+  -- 🎉 no goals
 
 -- porting note: deprecate?
 @[to_additive]
@@ -260,7 +317,9 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S
+    -- ⊢ map (↑(MulDistribMulAction.toMonoidEnd α G) 1) S = S
     simpa only [map_one] using S.map_id
+    -- 🎉 no goals
   mul_smul a₁ a₂ S :=
     (congr_arg (fun f : Monoid.End G => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
@@ -314,16 +373,23 @@ instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentra
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
   rintro - ⟨g, hg, rfl⟩
+  -- ⊢ ↑(↑(MulDistribMulAction.toMonoidEnd ((fun x => MulAut G) ↑h) G) (↑MulAut.con …
   exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
+  -- 🎉 no goals
 #align subgroup.conj_smul_le_of_le Subgroup.conj_smul_le_of_le
 
 theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
   refine' le_antisymm _ _
+  -- ⊢ ↑MulAut.conj h • subgroupOf P H ≤ subgroupOf (↑MulAut.conj ↑h • P) H
   · rintro - ⟨g, hg, rfl⟩
+    -- ⊢ ↑(↑(MulDistribMulAction.toMonoidEnd ((fun x => MulAut { x // x ∈ H }) h) { x …
     exact ⟨g, hg, rfl⟩
+    -- 🎉 no goals
   · rintro p ⟨g, hg, hp⟩
+    -- ⊢ p ∈ ↑MulAut.conj h • subgroupOf P H
     exact ⟨⟨g, hP hg⟩, hg, Subtype.ext hp⟩
+    -- 🎉 no goals
 #align subgroup.conj_smul_subgroup_of Subgroup.conj_smul_subgroupOf
 
 end Monoid
@@ -362,6 +428,7 @@ theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T �
 @[simp]
 theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by
   simp [SetLike.ext_iff, mem_pointwise_smul_iff_inv_smul_mem]
+  -- 🎉 no goals
 #align subgroup.smul_inf Subgroup.smul_inf
 
 /-- Applying a `MulDistribMulAction` results in an isomorphic subgroup -/
@@ -372,11 +439,13 @@ def equivSMul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
 
 theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Set G) * {h} = H :=
   suffices { x : G | x ∈ H } = ↑H by simpa [preimage, mul_mem_cancel_right (inv_mem hh)]
+                                     -- 🎉 no goals
   rfl
 #align subgroup.subgroup_mul_singleton Subgroup.subgroup_mul_singleton
 
 theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (H : Set G) = H :=
   suffices { x : G | x ∈ H } = ↑H by simpa [preimage, mul_mem_cancel_left (inv_mem hh)]
+                                     -- 🎉 no goals
   rfl
 #align subgroup.singleton_mul_subgroup Subgroup.singleton_mul_subgroup
 
@@ -445,7 +514,9 @@ protected def pointwiseMulAction : MulAction α (AddSubgroup A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S
+    -- ⊢ map (↑(DistribMulAction.toAddMonoidEnd α A) 1) S = S
     simpa only [map_one] using S.map_id
+    -- 🎉 no goals
   mul_smul _ _ S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm

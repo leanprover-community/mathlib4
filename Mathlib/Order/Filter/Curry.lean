@@ -54,6 +54,7 @@ in adding quantifiers to the middle of `Tendsto`s. See
 def curry (f : Filter α) (g : Filter β) : Filter (α × β) where
   sets := { s | ∀ᶠ a : α in f, ∀ᶠ b : β in g, (a, b) ∈ s }
   univ_sets := by simp only [Set.mem_setOf_eq, Set.mem_univ, eventually_true]
+                  -- 🎉 no goals
   sets_of_superset := fun hx hxy =>
     hx.mono fun a ha => ha.mono fun b hb => Set.mem_of_subset_of_mem hxy hb
   inter_sets := fun hx hy =>

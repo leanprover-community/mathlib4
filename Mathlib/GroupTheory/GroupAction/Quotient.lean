@@ -61,6 +61,7 @@ attribute [to_additive] MulAction.QuotientAction
 @[to_additive]
 instance left_quotientAction : QuotientAction α H :=
   ⟨fun _ _ _ _ => by rwa [smul_eq_mul, smul_eq_mul, mul_inv_rev, mul_assoc, inv_mul_cancel_left]⟩
+                     -- 🎉 no goals
 #align mul_action.left_quotient_action MulAction.left_quotientAction
 #align add_action.left_quotient_action AddAction.left_quotientAction
 
@@ -109,6 +110,7 @@ theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
 @[to_additive (attr := simp)]
 theorem Quotient.mk_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out') = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
+                                                -- 🎉 no goals
 #align mul_action.quotient.mk_smul_out' MulAction.Quotient.mk_smul_out'
 #align add_action.quotient.mk_vadd_out' AddAction.Quotient.mk_vadd_out'
 
@@ -156,6 +158,7 @@ def ofQuotientStabilizer (g : α ⧸ MulAction.stabilizer α x) : β :=
     calc
       g1 • x = g1 • (g1⁻¹ * g2) • x := congr_arg _ (leftRel_apply.mp H).symm
       _ = g2 • x := by rw [smul_smul, mul_inv_cancel_left]
+                       -- 🎉 no goals
 #align mul_action.of_quotient_stabilizer MulAction.ofQuotientStabilizer
 #align add_action.of_quotient_stabilizer AddAction.ofQuotientStabilizer
 
@@ -184,8 +187,11 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
   Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
+      -- ⊢ g₁⁻¹ * g₂ ∈ stabilizer α x
       show (g₁⁻¹ * g₂) • x = x
+      -- ⊢ (g₁⁻¹ * g₂) • x = x
       rw [mul_smul, ← H, inv_smul_smul]
+      -- 🎉 no goals
 #align mul_action.injective_of_quotient_stabilizer MulAction.injective_ofQuotientStabilizer
 #align add_action.injective_of_quotient_stabilizer AddAction.injective_ofQuotientStabilizer
 
@@ -195,6 +201,7 @@ noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ 
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
       ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
+                                                             -- 🎉 no goals
         fun ⟨b, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
 #align mul_action.orbit_equiv_quotient_stabilizer MulAction.orbitEquivQuotientStabilizer
 #align add_action.orbit_equiv_quotient_stabilizer AddAction.orbitEquivQuotientStabilizer
@@ -213,6 +220,7 @@ theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fint
     [Fintype <| stabilizer α b] :
     Fintype.card (orbit α b) * Fintype.card (stabilizer α b) = Fintype.card α := by
   rw [← Fintype.card_prod, Fintype.card_congr (orbitProdStabilizerEquivGroup α b)]
+  -- 🎉 no goals
 #align mul_action.card_orbit_mul_card_stabilizer_eq_card_group MulAction.card_orbit_mul_card_stabilizer_eq_card_group
 #align add_action.card_orbit_add_card_stabilizer_eq_card_add_group AddAction.card_orbit_add_card_stabilizer_eq_card_addGroup
 
@@ -227,7 +235,9 @@ theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
 theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
     MulAction.stabilizer G ((1 : G) : G ⧸ H) = H := by
   ext
+  -- ⊢ x✝ ∈ stabilizer G ↑1 ↔ x✝ ∈ H
   simp [QuotientGroup.eq]
+  -- 🎉 no goals
 #align mul_action.stabilizer_quotient MulAction.stabilizer_quotient
 #align add_action.stabilizer_quotient AddAction.stabilizer_quotient
 
@@ -367,15 +377,25 @@ variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
+  -- ⊢ normalCore H ≤ MonoidHom.ker (MulAction.toPermHom G (G ⧸ H))
   · intro g hg
+    -- ⊢ g ∈ MonoidHom.ker (MulAction.toPermHom G (G ⧸ H))
     apply Equiv.Perm.ext
+    -- ⊢ ∀ (x : G ⧸ H), ↑(↑(MulAction.toPermHom G (G ⧸ H)) g) x = ↑1 x
     refine' fun q ↦ QuotientGroup.induction_on q _
+    -- ⊢ ∀ (z : G), ↑(↑(MulAction.toPermHom G (G ⧸ H)) g) ↑z = ↑1 ↑z
     refine' fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr _)
+    -- ⊢ (g • g')⁻¹ * g' ∈ H
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
+    -- ⊢ g'⁻¹ * g⁻¹ * g'⁻¹⁻¹ ∈ H
     exact H.normalCore.inv_mem hg g'⁻¹
+    -- 🎉 no goals
   · refine' (Subgroup.normal_le_normalCore.mpr fun g hg => _)
+    -- ⊢ g ∈ H
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
+    -- ⊢ ↑(g * 1) = ↑1
     exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
+    -- 🎉 no goals
 #align subgroup.normal_core_eq_ker Subgroup.normalCore_eq_ker
 
 open QuotientGroup

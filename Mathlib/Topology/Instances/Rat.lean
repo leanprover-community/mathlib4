@@ -58,27 +58,35 @@ end Rat
 @[norm_cast, simp]
 theorem Nat.dist_cast_rat (x y : ℕ) : dist (x : ℚ) y = dist x y := by
   rw [← Nat.dist_cast_real, ← Rat.dist_cast]; congr
+  -- ⊢ dist ↑↑x ↑↑y = dist ↑x ↑y
+                                              -- 🎉 no goals
 #align nat.dist_cast_rat Nat.dist_cast_rat
 
 theorem Nat.uniformEmbedding_coe_rat : UniformEmbedding ((↑) : ℕ → ℚ) :=
   uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
+                                                             -- 🎉 no goals
 #align nat.uniform_embedding_coe_rat Nat.uniformEmbedding_coe_rat
 
 theorem Nat.closedEmbedding_coe_rat : ClosedEmbedding ((↑) : ℕ → ℚ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
+                                                        -- 🎉 no goals
 #align nat.closed_embedding_coe_rat Nat.closedEmbedding_coe_rat
 
 @[norm_cast, simp]
 theorem Int.dist_cast_rat (x y : ℤ) : dist (x : ℚ) y = dist x y := by
   rw [← Int.dist_cast_real, ← Rat.dist_cast]; congr
+  -- ⊢ dist ↑↑x ↑↑y = dist ↑x ↑y
+                                              -- 🎉 no goals
 #align int.dist_cast_rat Int.dist_cast_rat
 
 theorem Int.uniformEmbedding_coe_rat : UniformEmbedding ((↑) : ℤ → ℚ) :=
   uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
+                                                             -- 🎉 no goals
 #align int.uniform_embedding_coe_rat Int.uniformEmbedding_coe_rat
 
 theorem Int.closedEmbedding_coe_rat : ClosedEmbedding ((↑) : ℤ → ℚ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
+                                                        -- 🎉 no goals
 #align int.closed_embedding_coe_rat Int.closedEmbedding_coe_rat
 
 namespace Rat
@@ -88,6 +96,7 @@ instance : NoncompactSpace ℚ := Int.closedEmbedding_coe_rat.noncompactSpace
 theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.2 :=
   Rat.uniformEmbedding_coe_real.toUniformInducing.uniformContinuous_iff.2 <| by
     simp only [(· ∘ ·), Rat.cast_add]
+    -- ⊢ UniformContinuous fun x => ↑x.fst + ↑x.snd
     exact Real.uniformContinuous_add.comp
       (Rat.uniformContinuous_coe_real.prod_map Rat.uniformContinuous_coe_real)
 #align rat.uniform_continuous_add Rat.uniformContinuous_add
@@ -95,6 +104,8 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [dist_eq, cast_neg, neg_sub_neg] using h⟩
+                        -- ⊢ dist (-a✝) (-b✝) < ε
+                                             -- 🎉 no goals
 #align rat.uniform_continuous_neg Rat.uniformContinuous_neg
 
 instance : UniformAddGroup ℚ :=
@@ -108,6 +119,7 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨ε, ε0, fun h =>
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
+                         -- 🎉 no goals
 #align rat.uniform_continuous_abs Rat.uniformContinuous_abs
 
 instance : TopologicalRing ℚ := inferInstance

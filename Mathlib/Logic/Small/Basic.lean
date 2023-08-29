@@ -55,6 +55,7 @@ noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
 theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
     (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
   simpa using w
+  -- 🎉 no goals
 
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/JLimperg/aesop/issues/59
@@ -120,8 +121,13 @@ theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] 
 
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
   rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
+  -- ⊢ Small.{w, v} α
+                                           -- ⊢ Small.{w, v} α
+                                           -- ⊢ Small.{w, v} α
   · apply small_map (Equiv.equivPEmpty α)
+    -- 🎉 no goals
   · apply small_map Equiv.punitOfNonemptyOfSubsingleton
+    -- 🎉 no goals
 #align small_subsingleton small_subsingleton
 
 /-!
@@ -134,12 +140,14 @@ instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β 
     Small.{w} (∀ a, β a) :=
   ⟨⟨∀ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.piCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
+                                                 -- 🎉 no goals
 #align small_Pi small_Pi
 
 instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
     Small.{w} (Σa, β a) :=
   ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
+                                                    -- 🎉 no goals
 #align small_sigma small_sigma
 
 instance small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) :=
@@ -168,8 +176,11 @@ theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
     @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e
+      -- ⊢ a = b
       injection e with h₁ h₂
+      -- ⊢ a = b
       simpa using h₂
+      -- 🎉 no goals
 #align not_small_type not_small_type
 
 end

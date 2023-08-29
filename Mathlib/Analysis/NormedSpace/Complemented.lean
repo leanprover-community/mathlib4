@@ -39,8 +39,11 @@ variable [CompleteSpace 𝕜]
 theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
     [FiniteDimensional 𝕜 (range f)] : (ker f).ClosedComplemented := by
   set f' : E →L[𝕜] range f := f.codRestrict _ (LinearMap.mem_range_self (f : E →ₗ[𝕜] F))
+  -- ⊢ Submodule.ClosedComplemented (ker f)
   rcases f'.exists_right_inverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
+  -- ⊢ Submodule.ClosedComplemented (ker f)
   simpa only [ker_codRestrict] using f'.closedComplemented_ker_of_rightInverse g (ext_iff.1 hg)
+  -- 🎉 no goals
 #align continuous_linear_map.ker_closed_complemented_of_finite_dimensional_range ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range
 
 end
@@ -86,8 +89,12 @@ isomorphic to `E`. -/
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
+  -- ⊢ ({ x // x ∈ p } × { x // x ∈ q }) ≃L[𝕜] E
+                                 -- ⊢ ({ x // x ∈ p } × { x // x ∈ q }) ≃L[𝕜] E
   refine' (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous _
+  -- ⊢ Continuous ↑(Submodule.prodEquivOfIsCompl p q h)
   exact (p.subtypeL.coprod q.subtypeL).continuous
+  -- 🎉 no goals
 #align subspace.prod_equiv_of_closed_compl Subspace.prodEquivOfClosedCompl
 
 /-- Projection to a closed submodule along a closed complement. -/
@@ -137,8 +144,11 @@ theorem closedComplemented_iff_has_closed_compl :
 theorem closedComplemented_of_quotient_finiteDimensional [CompleteSpace 𝕜]
     [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented := by
   obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
+  -- ⊢ Submodule.ClosedComplemented p
   haveI : FiniteDimensional 𝕜 q := (p.quotientEquivOfIsCompl q hq).finiteDimensional
+  -- ⊢ Submodule.ClosedComplemented p
   exact closedComplemented_of_closed_compl hq hp q.closed_of_finiteDimensional
+  -- 🎉 no goals
 #align subspace.closed_complemented_of_quotient_finite_dimensional Subspace.closedComplemented_of_quotient_finiteDimensional
 
 end Subspace

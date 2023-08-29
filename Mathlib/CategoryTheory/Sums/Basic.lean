@@ -111,7 +111,9 @@ def swap : Sum C D ⥤ Sum D C where
   map_comp := fun {X} {Y} {Z} _ _ =>
     match X, Y, Z with
     | inl X, inl Y, inl Z => by rfl
+                                -- 🎉 no goals
     | inr X, inr Y, inr Z => by rfl
+                                -- 🎉 no goals
 #align category_theory.sum.swap CategoryTheory.Sum.swap
 
 @[simp]
@@ -142,13 +144,26 @@ namespace Swap
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
+                                               -- ⊢ (𝟭 (C ⊕ D)).obj (inl val✝) = (swap C D ⋙ swap D C).obj (inl val✝)
+                                                           -- 🎉 no goals
+                                                           -- 🎉 no goals
       (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+          -- ⊢ ∀ {X Y : C ⊕ D} (f : X ⟶ Y),
+                                                   -- ⊢ f =
+                                                            -- 🎉 no goals
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
+                                               -- ⊢ (swap D C ⋙ swap C D).obj (inl val✝) = (𝟭 (D ⊕ C)).obj (inl val✝)
+                                                           -- 🎉 no goals
+                                                           -- 🎉 no goals
       (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+          -- ⊢ ∀ {X Y : D ⊕ C} (f : X ⟶ Y),
+                                                   -- ⊢ (match inl val, inr val_1,
+                                                            -- 🎉 no goals
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=
   (by infer_instance : IsEquivalence (equivalence C D).functor)
+      -- 🎉 no goals
 #align category_theory.sum.swap.is_equivalence CategoryTheory.Sum.Swap.isEquivalence
 
 /-- The double swap on `C ⊕ D` is naturally isomorphic to the identity functor. -/
@@ -177,16 +192,54 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
     | inl X, inl Y, f => F.map f
     | inr X, inr Y, f => G.map f
   map_id := @fun X => by cases X <;> aesop_cat_nonterminal; erw [F.map_id]; rfl; erw [G.map_id]; rfl
+                                     -- ⊢ F.map (𝟙 (inl val)) = 𝟙 (inl (F.obj val))
+                                     -- ⊢ G.map (𝟙 (inr val)) = 𝟙 (inr (G.obj val))
+                                                            -- ⊢ 𝟙 (F.obj val) = 𝟙 (inl (F.obj val))
+                                                                            -- ⊢ G.map (𝟙 (inr val)) = 𝟙 (inr (G.obj val))
+                                                                                 -- ⊢ 𝟙 (G.obj val) = 𝟙 (inr (G.obj val))
+                                                                                                 -- 🎉 no goals
   map_comp := @fun X Y Z f g =>
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => by
       aesop_cat_nonterminal <;>
       erw [F.map_comp] <;>
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
+      -- ⊢ F.map f ≫ F.map g = F.map f ≫ F.map g
       rfl
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
     | inr X, inr Y, inr Z, f, g => by
       aesop_cat_nonterminal <;>
       erw [G.map_comp] <;>
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
+      -- ⊢ G.map f ≫ G.map g = G.map f ≫ G.map g
       rfl
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align category_theory.functor.sum CategoryTheory.Functor.sum
 
 @[simp]
@@ -225,7 +278,23 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
   naturality X Y f :=
     match X, Y, f with
     | inl X, inl Y, f => by aesop_cat_nonterminal <;> erw [α.naturality] <;> rfl
+                                                      -- ⊢ app α X ≫ G.map f = app α X ≫ G.map f
+                                                      -- ⊢ app α X ≫ G.map f = app α X ≫ G.map f
+                                                      -- ⊢ app α X ≫ G.map f = app α X ≫ G.map f
+                                                      -- ⊢ app α X ≫ G.map f = app α X ≫ G.map f
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
     | inr X, inr Y, f => by aesop_cat_nonterminal <;> erw [β.naturality] <;> rfl
+                                                      -- ⊢ app β X ≫ I.map f = app β X ≫ I.map f
+                                                      -- ⊢ app β X ≫ I.map f = app β X ≫ I.map f
+                                                      -- ⊢ app β X ≫ I.map f = app β X ≫ I.map f
+                                                      -- ⊢ app β X ≫ I.map f = app β X ≫ I.map f
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
 #align category_theory.nat_trans.sum CategoryTheory.NatTrans.sum
 
 @[simp]

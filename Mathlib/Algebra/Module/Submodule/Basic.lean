@@ -57,6 +57,10 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+                             -- ⊢ { toAddSubmonoid := toAddSubmonoid✝, smul_mem' := smul_mem'✝ } = q
+                                      -- ⊢ { toAddSubmonoid := toAddSubmonoid✝¹, smul_mem' := smul_mem'✝¹ } = { toAddSu …
+                                               -- ⊢ toAddSubmonoid✝¹ = toAddSubmonoid✝
+                                                      -- 🎉 no goals
 #align submodule.set_like Submodule.setLike
 
 instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
@@ -110,8 +114,10 @@ equalities. -/
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
   zero_mem' := by simpa [hs] using p.zero_mem'
+                  -- 🎉 no goals
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
+                  -- 🎉 no goals
 #align submodule.copy Submodule.copy
 
 @[simp]
@@ -353,7 +359,15 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Mo
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul := (· • ·)
     smul_zero := fun a => by ext; simp
+                             -- ⊢ ↑(a • 0) = ↑0
+                                  -- 🎉 no goals
     zero_smul := fun a => by ext; simp
+                             -- ⊢ ↑(0 • a) = ↑0
+                                -- ⊢ ↑((a + b) • x) = ↑(a • x + b • x)
+                                -- ⊢ ↑(a • (x + y)) = ↑(a • x + a • y)
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
+                                  -- 🎉 no goals
     add_smul := fun a b x => by ext; simp [add_smul]
     smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
@@ -370,6 +384,9 @@ instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 protected def subtype : p →ₗ[R] M := by refine' { toFun := Subtype.val.. } <;> simp [coe_smul]
+                                        -- ⊢ ∀ (x y : { x // x ∈ p }), ↑(x + y) = ↑x + ↑y
+                                                                               -- 🎉 no goals
+                                                                               -- 🎉 no goals
 #align submodule.subtype Submodule.subtype
 
 theorem subtype_apply (x : p) : p.subtype x = x :=
@@ -471,6 +488,7 @@ theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
 /-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
 instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
   (by infer_instance : Module R p)
+      -- 🎉 no goals
 #align submodule.restrict_scalars.orig_module Submodule.restrictScalars.origModule
 
 instance restrictScalars.isScalarTower (p : Submodule R M) :
@@ -485,6 +503,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   toFun := restrictScalars S
   inj' := restrictScalars_injective S R M
   map_rel_iff' := by simp [SetLike.le_def]
+                     -- 🎉 no goals
 #align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
 #align submodule.restrict_scalars_embedding_apply Submodule.restrictScalarsEmbedding_apply
 
@@ -585,10 +604,12 @@ protected theorem coe_sub (x y : p) : (↑(x - y) : M) = ↑x - ↑y :=
 
 theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_left (p.neg_mem hy)]
+  -- 🎉 no goals
 #align submodule.sub_mem_iff_left Submodule.sub_mem_iff_left
 
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
+  -- 🎉 no goals
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
 instance addCommGroup : AddCommGroup p :=
@@ -609,7 +630,9 @@ variable [AddCommGroup M] [Module R M] {b : ι → M}
 theorem not_mem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
+  -- ⊢ False
   simpa using ortho (-1) x hx
+  -- 🎉 no goals
 #align submodule.not_mem_of_ortho Submodule.not_mem_of_ortho
 
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}

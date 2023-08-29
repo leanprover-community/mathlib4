@@ -35,24 +35,32 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
   (Abelian.exact_iff _ _).2 <|
     ⟨by simp, zero_of_epi_comp (π _) <| by rw [← Category.assoc, cokernel.condition]⟩
+        -- 🎉 no goals
+                                           -- 🎉 no goals
 #align category_theory.exact_d_f CategoryTheory.exact_d_f
 
 /-- The preadditive Co-Yoneda functor on `P` preserves colimits if `P` is projective. -/
 def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Projective P] :
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
   haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
+  -- ⊢ PreservesFiniteColimits (preadditiveCoyonedaObj (op P))
   -- porting note: this next instance wasn't necessary in Lean 3
   haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
+  -- ⊢ PreservesFiniteColimits (preadditiveCoyonedaObj (op P))
   apply Functor.preservesFiniteColimitsOfPreservesEpisAndKernels
+  -- 🎉 no goals
 #align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
     [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P := by
   rw [projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj']
+  -- ⊢ Functor.PreservesEpimorphisms (preadditiveCoyoneda.obj (op P))
   -- porting note: this next line wasn't necessary in Lean 3
   dsimp only [preadditiveCoyoneda]
+  -- ⊢ Functor.PreservesEpimorphisms (preadditiveCoyonedaObj (op P) ⋙ forget₂ (Modu …
   infer_instance
+  -- 🎉 no goals
 #align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 
 namespace ProjectiveResolution
@@ -116,6 +124,7 @@ theorem ofComplex_sq_10_comm (Z : C) :
     ComplexShape.down_Rel, not_true, ChainComplex.single₀_obj_X_d, comp_zero, ofComplex_d,
     eqToHom_refl, Category.id_comp, dite_eq_ite, ite_true]
   exact (exact_d_f (Projective.π Z)).w.symm
+  -- 🎉 no goals
 
 -- Porting note: the `exact` in `of` was very, very slow. To assist,
 -- the whole proof was broken out into a separate result
@@ -125,13 +134,17 @@ theorem exact_ofComplex (Z : C) (n : ℕ) :
   match n with
 -- Porting note: used to be simp; apply exact_d_f on both branches
     | 0 => by simp; apply exact_d_f
+              -- ⊢ Exact (ChainComplex.mkAux (over Z) (syzygies (Projective.π Z)) (syzygies (d  …
+                    -- 🎉 no goals
     | m+1 => by
       simp only [ofComplex_X, ComplexShape.down_Rel, ofComplex_d, eqToHom_refl,
         Category.id_comp, dite_eq_ite, not_true, ite_true]
       -- Porting note: this is probably required now due to
       -- https://github.com/leanprover/lean4/pull/2146
       erw [if_pos (c := m + 1 + 1 + 1 = m + 2 + 1) rfl]
+      -- ⊢ Exact (ChainComplex.mkAux (over Z) (syzygies (Projective.π Z)) (syzygies (d  …
       apply exact_d_f
+      -- 🎉 no goals
 
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
@@ -142,8 +155,14 @@ irreducible_def of (Z : C) : ProjectiveResolution Z :=
            (ofComplex_sq_10_comm Z) (fun n _ ↦ ⟨0, by
            -- Porting note: broken ext
             apply HasZeroObject.to_zero_ext ⟩)
+            -- 🎉 no goals
     projective := by rintro (_ | _ | _ | n) <;> apply Projective.projective_over
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
     exact₀ := by simpa using exact_d_f (Projective.π Z)
+                 -- 🎉 no goals
     exact := exact_ofComplex Z
     epi := Projective.π_epi Z }
 set_option linter.uppercaseLean3 false in
@@ -152,6 +171,7 @@ set_option linter.uppercaseLean3 false in
 instance (priority := 100) (Z : C) : HasProjectiveResolution Z where out := ⟨of Z⟩
 
 instance (priority := 100) : HasProjectiveResolutions C where out Z := by infer_instance
+                                                                          -- 🎉 no goals
 
 end ProjectiveResolution
 

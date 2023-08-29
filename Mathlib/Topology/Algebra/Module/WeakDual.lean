@@ -137,23 +137,31 @@ theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B}
     (hB : Function.Injective B) :
     Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i => B (f i) y) l (𝓝 (B x y)) := by
   rw [← tendsto_pi_nhds, Embedding.tendsto_nhds_iff (embedding hB)]
+  -- ⊢ Tendsto ((fun x y => ↑(↑B x) y) ∘ f) l (𝓝 fun y => ↑(↑B x) y) ↔ Tendsto (fun …
   rfl
+  -- 🎉 no goals
 #align weak_bilin.tendsto_iff_forall_eval_tendsto WeakBilin.tendsto_iff_forall_eval_tendsto
 
 /-- Addition in `WeakBilin B` is continuous. -/
 instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) := by
   refine' ⟨continuous_induced_rng.2 _⟩
+  -- ⊢ Continuous ((fun x y => ↑(↑B x) y) ∘ fun p => p.fst + p.snd)
   refine'
     cast (congr_arg _ _)
       (((coeFn_continuous B).comp continuous_fst).add ((coeFn_continuous B).comp continuous_snd))
   ext
+  -- ⊢ (((fun x y => ↑(↑B x) y) ∘ Prod.fst) x✝¹ + ((fun x y => ↑(↑B x) y) ∘ Prod.sn …
   simp only [Function.comp_apply, Pi.add_apply, map_add, LinearMap.add_apply]
+  -- 🎉 no goals
 
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
 instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
   refine' ⟨continuous_induced_rng.2 _⟩
+  -- ⊢ Continuous ((fun x y => ↑(↑B x) y) ∘ fun p => p.fst • p.snd)
   refine' cast (congr_arg _ _) (continuous_fst.smul ((coeFn_continuous B).comp continuous_snd))
+  -- ⊢ (fun x => x.fst • ((fun x y => ↑(↑B x) y) ∘ Prod.snd) x) = (fun x y => ↑(↑B  …
   ext
+  -- ⊢ (x✝¹.fst • ((fun x y => ↑(↑B x) y) ∘ Prod.snd) x✝¹) x✝ = ((fun x y => ↑(↑B x …
   simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.smul_apply]
 
@@ -174,15 +182,23 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 continuous. -/
 instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
+                        -- 🎉 no goals
   continuous_neg := by
     refine' continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => _)
+    -- ⊢ Continuous fun a => ((fun x y => ↑(↑B x) y) ∘ fun a => -a) a y
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
+    -- ⊢ (fun x => ↑(↑B x) (-y)) = fun a => ((fun x y => ↑(↑B x) y) ∘ fun a => -a) a y
     ext x
+    -- ⊢ ↑(↑B x) (-y) = ((fun x y => ↑(↑B x) y) ∘ fun a => -a) x y
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
+    -- ⊢ -↑(↑B x) y = ↑(↑B (-x)) y
     -- Porting note: mathlib3 proof was done here
     rw [← (B x).neg_apply]
+    -- ⊢ ↑(-↑B x) y = ↑(↑B (-x)) y
     congr
+    -- ⊢ -↑B x = ↑B (-x)
     exact (map_neg B x).symm
+    -- 🎉 no goals
 
 end Ring
 

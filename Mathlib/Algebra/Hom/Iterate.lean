@@ -35,8 +35,11 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by
     rw [pow_zero, h1]
+    -- ⊢ id = (c f)^[0]
     rfl
+    -- 🎉 no goals
   | n + 1 => by rw [pow_succ, iterate_succ', hmul, hom_coe_pow c h1 hmul f n]
+                -- 🎉 no goals
 #align hom_coe_pow hom_coe_pow
 
 @[to_additive (attr := simp)]
@@ -168,7 +171,9 @@ variable [Monoid G] (a : G) (n : ℕ)
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
+                    -- 🎉 no goals
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
+                   -- 🎉 no goals
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
 
@@ -186,6 +191,7 @@ theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
 
 @[to_additive]
 theorem mul_right_iterate_apply_one : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
+                                                                  -- 🎉 no goals
 #align mul_right_iterate_apply_one mul_right_iterate_apply_one
 #align add_right_iterate_apply_zero add_right_iterate_apply_zero
 
@@ -227,6 +233,8 @@ variable [Semigroup G] {a b c : G}
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
     Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
   dsimp only; rw [← mul_assoc, h.eq, mul_assoc]
+  -- ⊢ a * (b * j) = c * (a * j)
+              -- 🎉 no goals
 #align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
 #align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 
@@ -240,6 +248,7 @@ theorem Commute.function_commute_mul_left (h : Commute a b) :
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
     Function.Semiconj (· * a) (· * c) (· * b) := fun j => by simp_rw [mul_assoc, ← h.eq]
+                                                             -- 🎉 no goals
 #align semiconj_by.function_semiconj_mul_right_swap SemiconjBy.function_semiconj_mul_right_swap
 #align add_semiconj_by.function_semiconj_add_right_swap AddSemiconjBy.function_semiconj_add_right_swap
 

@@ -68,21 +68,29 @@ protected def linearIsometry : V →ₗᵢ[𝕜] V₂ :=
 @[simp]
 theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   ext
+  -- ⊢ ↑f.linear x✝ = ↑(AffineIsometry.linearIsometry f).toLinearMap x✝
   rfl
+  -- 🎉 no goals
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
 instance : FunLike (P →ᵃⁱ[𝕜] P₂) P fun _ => P₂ :=
   { coe := fun f => f.toFun,
     coe_injective' := fun f g => by cases f; cases g; simp }
+                                    -- ⊢ (fun f => f.toFun) { toAffineMap := toAffineMap✝, norm_map := norm_map✝ } =  …
+                                             -- ⊢ (fun f => f.toFun) { toAffineMap := toAffineMap✝¹, norm_map := norm_map✝¹ }  …
+                                                      -- 🎉 no goals
 
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
   rfl
+  -- 🎉 no goals
 #align affine_isometry.coe_to_affine_map AffineIsometry.coe_toAffineMap
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P →ᵃⁱ[𝕜] P₂) → P →ᵃ[𝕜] P₂) := by
   rintro ⟨f, _⟩ ⟨g, _⟩ rfl
+  -- ⊢ { toAffineMap := f, norm_map := norm_map✝¹ } = { toAffineMap := { toAffineMa …
   rfl
+  -- 🎉 no goals
 #align affine_isometry.to_affine_map_injective AffineIsometry.toAffineMap_injective
 
 theorem coeFn_injective : @Injective (P →ᵃⁱ[𝕜] P₂) (P → P₂) (↑) :=
@@ -113,7 +121,9 @@ theorem coe_toAffineIsometry : ⇑(f.toAffineIsometry : V →ᵃⁱ[𝕜] V₂) 
 @[simp]
 theorem toAffineIsometry_linearIsometry : f.toAffineIsometry.linearIsometry = f := by
   ext
+  -- ⊢ ↑(AffineIsometry.linearIsometry (toAffineIsometry f)) x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align linear_isometry.to_affine_isometry_linear_isometry LinearIsometry.toAffineIsometry_linearIsometry
 
 -- somewhat arbitrary choice of simp direction
@@ -141,16 +151,19 @@ theorem map_vsub (p1 p2 : P) : f.linearIsometry (p1 -ᵥ p2) = f p1 -ᵥ f p2 :=
 @[simp]
 theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
   rw [dist_eq_norm_vsub V₂, dist_eq_norm_vsub V, ← map_vsub, f.linearIsometry.norm_map]
+  -- 🎉 no goals
 #align affine_isometry.dist_map AffineIsometry.dist_map
 
 -- Porting note: added `(dist_map)` to simp
 @[simp]
 theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist, (dist_map)]
+                                                                     -- 🎉 no goals
 #align affine_isometry.nndist_map AffineIsometry.nndist_map
 
 -- Porting note: added `(dist_map)` to simp
 @[simp]
 theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist, (dist_map)]
+                                                                  -- 🎉 no goals
 #align affine_isometry.edist_map AffineIsometry.edist_map
 
 protected theorem isometry : Isometry f :=
@@ -327,7 +340,9 @@ protected def linearIsometryEquiv : V ≃ₗᵢ[𝕜] V₂ :=
 @[simp]
 theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEquiv := by
   ext
+  -- ⊢ ↑e.linear x✝ = ↑(AffineIsometryEquiv.linearIsometryEquiv e).toLinearEquiv x✝
   rfl
+  -- 🎉 no goals
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
 instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
@@ -337,9 +352,13 @@ instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
     right_inv := fun f => f.right_inv,
     coe_injective' := fun f g h _ => by
       cases f
+      -- ⊢ { toAffineEquiv := toAffineEquiv✝, norm_map := norm_map✝ } = g
       cases g
+      -- ⊢ { toAffineEquiv := toAffineEquiv✝¹, norm_map := norm_map✝¹ } = { toAffineEqu …
       congr
+      -- ⊢ toAffineEquiv✝¹ = toAffineEquiv✝
       simpa [FunLike.coe_injective.eq_iff] using h }
+      -- 🎉 no goals
 
 @[simp]
 theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖) : ⇑(mk e he) = e :=
@@ -388,7 +407,9 @@ theorem coe_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) : ⇑
 theorem linearIsometryEquiv_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) :
     (mk' e e' p h).linearIsometryEquiv = e' := by
   ext
+  -- ⊢ ↑(AffineIsometryEquiv.linearIsometryEquiv (mk' e e' p h)) x✝ = ↑e' x✝
   rfl
+  -- 🎉 no goals
 #align affine_isometry_equiv.linear_isometry_equiv_mk' AffineIsometryEquiv.linearIsometryEquiv_mk'
 
 end AffineIsometryEquiv
@@ -405,13 +426,16 @@ def toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂ :=
 @[simp]
 theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂) = e := by
   rfl
+  -- 🎉 no goals
 #align linear_isometry_equiv.coe_to_affine_isometry_equiv LinearIsometryEquiv.coe_toAffineIsometryEquiv
 
 @[simp]
 theorem toAffineIsometryEquiv_linearIsometryEquiv :
     e.toAffineIsometryEquiv.linearIsometryEquiv = e := by
   ext
+  -- ⊢ ↑(AffineIsometryEquiv.linearIsometryEquiv (toAffineIsometryEquiv e)) x✝ = ↑e …
   rfl
+  -- 🎉 no goals
 #align linear_isometry_equiv.to_affine_isometry_equiv_linear_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv_linearIsometryEquiv
 
 -- somewhat arbitrary choice of simp direction
@@ -450,7 +474,9 @@ theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
 
 theorem range_eq_univ (e : P ≃ᵃⁱ[𝕜] P₂) : Set.range e = Set.univ := by
   rw [← coe_toIsometryEquiv]
+  -- ⊢ range ↑(toIsometryEquiv e) = univ
   exact IsometryEquiv.range_eq_univ _
+  -- 🎉 no goals
 #align affine_isometry_equiv.range_eq_univ AffineIsometryEquiv.range_eq_univ
 
 /-- Reinterpret an `AffineIsometryEquiv` as a `Homeomorph`. -/
@@ -733,7 +759,9 @@ theorem symm_constVSub (p : P) :
     (constVSub 𝕜 p).symm =
       (LinearIsometryEquiv.neg 𝕜).toAffineIsometryEquiv.trans (vaddConst 𝕜 p) := by
   ext
+  -- ⊢ ↑(symm (constVSub 𝕜 p)) x✝ = ↑(trans (LinearIsometryEquiv.toAffineIsometryEq …
   rfl
+  -- 🎉 no goals
 #align affine_isometry_equiv.symm_const_vsub AffineIsometryEquiv.symm_constVSub
 
 variable (𝕜 P)
@@ -761,7 +789,9 @@ is an isometry if `f` is one. -/
 theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
     (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometry g := by
   convert (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
+  -- ⊢ g = ↑(symm (vaddConst 𝕜 (f p))) ∘ f ∘ ↑(vaddConst 𝕜 p)
   exact funext hg
+  -- 🎉 no goals
 #align affine_isometry_equiv.vadd_vsub AffineIsometryEquiv.vadd_vsub
 
 variable (𝕜)
@@ -800,17 +830,20 @@ theorem pointReflection_symm (x : P) : (pointReflection 𝕜 x).symm = pointRefl
 @[simp]
 theorem dist_pointReflection_fixed (x y : P) : dist (pointReflection 𝕜 x y) x = dist y x := by
   rw [← (pointReflection 𝕜 x).dist_map y x, pointReflection_self]
+  -- 🎉 no goals
 #align affine_isometry_equiv.dist_point_reflection_fixed AffineIsometryEquiv.dist_pointReflection_fixed
 
 set_option linter.deprecated false in
 theorem dist_pointReflection_self' (x y : P) : dist (pointReflection 𝕜 x y) y = ‖bit0 (x -ᵥ y)‖ :=
   by rw [pointReflection_apply, dist_eq_norm_vsub V, vadd_vsub_assoc, bit0]
+     -- 🎉 no goals
 #align affine_isometry_equiv.dist_point_reflection_self' AffineIsometryEquiv.dist_pointReflection_self'
 
 set_option linter.deprecated false in
 theorem dist_pointReflection_self (x y : P) :
     dist (pointReflection 𝕜 x y) y = ‖(2 : 𝕜)‖ * dist x y := by
   rw [dist_pointReflection_self', ← two_smul' 𝕜 (x -ᵥ y), norm_smul, ← dist_eq_norm_vsub V]
+  -- 🎉 no goals
 #align affine_isometry_equiv.dist_point_reflection_self AffineIsometryEquiv.dist_pointReflection_self
 
 theorem pointReflection_fixed_iff [Invertible (2 : 𝕜)] {x y : P} :
@@ -822,6 +855,7 @@ variable [NormedSpace ℝ V]
 
 theorem dist_pointReflection_self_real (x y : P) : dist (pointReflection ℝ x y) y = 2 * dist x y :=
   by rw [dist_pointReflection_self, Real.norm_two]
+     -- 🎉 no goals
 #align affine_isometry_equiv.dist_point_reflection_self_real AffineIsometryEquiv.dist_pointReflection_self_real
 
 @[simp]
@@ -841,6 +875,7 @@ end AffineIsometryEquiv
 /-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
 theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f.linear ↔ Continuous f := by
   inhabit P
+  -- ⊢ Continuous ↑f.linear ↔ Continuous ↑f
   have :
     (f.linear : V → V₂) =
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
@@ -851,12 +886,15 @@ theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f
       eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
       (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
   rw [this]
+  -- ⊢ Continuous (↑(Homeomorph.symm (AffineIsometryEquiv.toHomeomorph (AffineIsome …
   simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
+  -- 🎉 no goals
 #align affine_map.continuous_linear_iff AffineMap.continuous_linear_iff
 
 /-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
 theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.linear ↔ IsOpenMap f := by
   inhabit P
+  -- ⊢ IsOpenMap ↑f.linear ↔ IsOpenMap ↑f
   have :
     (f.linear : V → V₂) =
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
@@ -867,7 +905,9 @@ theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.l
       eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
       (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
   rw [this]
+  -- ⊢ IsOpenMap (↑(Homeomorph.symm (AffineIsometryEquiv.toHomeomorph (AffineIsomet …
   simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
+  -- 🎉 no goals
 #align affine_map.is_open_map_linear_iff AffineMap.isOpenMap_linear_iff
 
 attribute [local instance] AffineSubspace.nonempty_map -- Porting note: removed `fails_quickly`

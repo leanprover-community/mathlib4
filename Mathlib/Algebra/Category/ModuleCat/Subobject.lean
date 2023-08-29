@@ -42,20 +42,32 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
       toFun := fun N => Subobject.mk (↾N.subtype)
       right_inv := fun S => Eq.symm (by
         fapply eq_mk_of_comm
+        -- ⊢ underlying.obj S ≅ of R { x // x ∈ (fun S => LinearMap.range (arrow S)) S }
         · apply LinearEquiv.toModuleIso'Left
+          -- ⊢ ↑(underlying.obj S) ≃ₗ[R] { x // x ∈ (fun S => LinearMap.range (arrow S)) S }
           apply LinearEquiv.ofBijective (LinearMap.codRestrict (LinearMap.range S.arrow) S.arrow _)
+          -- ⊢ Function.Bijective ↑(LinearMap.codRestrict (LinearMap.range (arrow S)) (arro …
           constructor
           · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
+            -- ⊢ LinearMap.ker (arrow S) = ⊥
             rw [ker_eq_bot_of_mono]
+            -- 🎉 no goals
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict, Submodule.comap_subtype_self]
+            -- ⊢ ∀ (c : ↑(underlying.obj S)), ↑(arrow S) c ∈ LinearMap.range (arrow S)
             exact LinearMap.mem_range_self _
+            -- 🎉 no goals
         · apply LinearMap.ext
+          -- ⊢ ∀ (x : ↑(underlying.obj S)), ↑((LinearEquiv.toModuleIso'Left (LinearEquiv.of …
           intro x
+          -- ⊢ ↑((LinearEquiv.toModuleIso'Left (LinearEquiv.ofBijective (LinearMap.codRestr …
           rfl)
+          -- 🎉 no goals
       left_inv := fun N => by
         -- Porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
         -- choice here
+          -- 🎉 no goals
         convert congr_arg LinearMap.range
+          -- 🎉 no goals
             (underlyingIso_arrow (↾N.subtype : of R { x // x ∈ N } ⟶ M)) using 1
         · have :
             -- Porting note: added the `.toLinearEquiv.toLinearMap`
@@ -68,9 +80,13 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine' ⟨fun h => _, fun h => mk_le_mk_of_comm (↟(Submodule.ofLe h)) rfl⟩
+        -- ⊢ S ≤ T
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
+        -- ⊢ S = LinearMap.range (LinearMap.comp (↾(Submodule.subtype T)) (ofMkLEMk (↾(Su …
         · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
+          -- 🎉 no goals
         · exact (Submodule.range_subtype _).symm }
+          -- 🎉 no goals
 #align Module.subobject_Module ModuleCat.subobjectModule
 
 instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
@@ -92,8 +108,11 @@ theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
+  -- ⊢ ↑((kernelIsoKer f).inv ≫ (kernelSubobjectIso f).inv ≫ arrow (kernelSubobject …
   simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
+  -- ⊢ ↑(Submodule.subtype (LinearMap.ker f)) x = ↑x
   aesop_cat
+  -- 🎉 no goals
 #align Module.to_kernel_subobject_arrow ModuleCat.toKernelSubobject_arrow
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
@@ -111,12 +130,18 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
+  -- ⊢ ↑(cokernel.π g) (y + ↑g (↑(factorThruImageSubobject f) l)) = ↑(cokernel.π g) y
   -- Porting note: The proof from here used to just be `simp`.
   simp only [map_add, add_right_eq_self]
+  -- ⊢ ↑(cokernel.π g) (↑g (↑(factorThruImageSubobject f) l)) = 0
   change ((cokernel.π g) ∘ (g) ∘ (factorThruImageSubobject f)) l = 0
+  -- ⊢ (↑(cokernel.π g) ∘ ↑g ∘ ↑(factorThruImageSubobject f)) l = 0
   rw [← coe_comp, ← coe_comp, Category.assoc]
+  -- ⊢ ↑(factorThruImageSubobject f ≫ g ≫ cokernel.π g) l = 0
   simp only [cokernel.condition, comp_zero]
+  -- ⊢ ↑0 l = 0
   rfl
+  -- 🎉 no goals
 #align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
 
 end ModuleCat

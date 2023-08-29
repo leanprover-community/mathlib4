@@ -39,7 +39,9 @@ theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
 
 theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
+  -- ⊢ x✝ ∈ zpowers g ↔ x✝ ∈ closure {g}
   exact mem_closure_singleton.symm
+  -- 🎉 no goals
 #align subgroup.zpowers_eq_closure Subgroup.zpowers_eq_closure
 
 theorem range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g :=
@@ -137,11 +139,13 @@ variable {R : Type*} [Ring R] (r : R) (k : ℤ)
 @[simp]
 theorem int_cast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
   simpa only [← zsmul_eq_mul] using zsmul_mem_zmultiples r k
+  -- 🎉 no goals
 #align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.int_cast_mul_mem_zmultiples
 
 @[simp]
 theorem int_cast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
   mem_zmultiples_iff.mp ⟨k, by simp⟩
+                               -- 🎉 no goals
 #align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.int_cast_mem_zmultiples_one
 
 end Ring
@@ -151,38 +155,54 @@ end AddSubgroup
 @[simp] lemma Int.range_castAddHom {A : Type*} [AddGroupWithOne A] :
     (Int.castAddHom A).range = AddSubgroup.zmultiples 1 := by
   ext a
+  -- ⊢ a ∈ AddMonoidHom.range (castAddHom A) ↔ a ∈ AddSubgroup.zmultiples 1
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
+  -- 🎉 no goals
 
 @[to_additive (attr := simp) map_zmultiples]
 theorem MonoidHom.map_zpowers (f : G →* N) (x : G) :
     (Subgroup.zpowers x).map f = Subgroup.zpowers (f x) := by
   rw [Subgroup.zpowers_eq_closure, Subgroup.zpowers_eq_closure, f.map_closure, Set.image_singleton]
+  -- 🎉 no goals
 #align monoid_hom.map_zpowers MonoidHom.map_zpowers
 #align add_monoid_hom.map_zmultiples AddMonoidHom.map_zmultiples
 
 theorem Int.mem_zmultiples_iff {a b : ℤ} : b ∈ AddSubgroup.zmultiples a ↔ a ∣ b :=
   exists_congr fun k => by rw [mul_comm, eq_comm, ← smul_eq_mul]
+                           -- 🎉 no goals
 #align int.mem_zmultiples_iff Int.mem_zmultiples_iff
 
 theorem ofMul_image_zpowers_eq_zmultiples_ofMul {x : G} :
     Additive.ofMul '' (Subgroup.zpowers x : Set G) = AddSubgroup.zmultiples (Additive.ofMul x) := by
   ext y
+  -- ⊢ y ∈ ↑Additive.ofMul '' ↑(Subgroup.zpowers x) ↔ y ∈ ↑(AddSubgroup.zmultiples  …
   constructor
+  -- ⊢ y ∈ ↑Additive.ofMul '' ↑(Subgroup.zpowers x) → y ∈ ↑(AddSubgroup.zmultiples  …
   · rintro ⟨z, ⟨m, hm⟩, hz2⟩
+    -- ⊢ y ∈ ↑(AddSubgroup.zmultiples (↑Additive.ofMul x))
     use m
+    -- ⊢ (fun x_1 => x_1 • ↑Additive.ofMul x) m = y
     simp only at *
+    -- ⊢ m • ↑Additive.ofMul x = y
     rwa [← ofMul_zpow, hm]
+    -- 🎉 no goals
   · rintro ⟨n, hn⟩
+    -- ⊢ y ∈ ↑Additive.ofMul '' ↑(Subgroup.zpowers x)
     refine' ⟨x ^ n, ⟨n, rfl⟩, _⟩
+    -- ⊢ ↑Additive.ofMul (x ^ n) = y
     rwa [ofMul_zpow]
+    -- 🎉 no goals
 #align of_mul_image_zpowers_eq_zmultiples_of_mul ofMul_image_zpowers_eq_zmultiples_ofMul
 
 theorem ofAdd_image_zmultiples_eq_zpowers_ofAdd {x : A} :
     Multiplicative.ofAdd '' (AddSubgroup.zmultiples x : Set A) =
       Subgroup.zpowers (Multiplicative.ofAdd x) := by
   symm
+  -- ⊢ ↑(Subgroup.zpowers (↑Multiplicative.ofAdd x)) = ↑Multiplicative.ofAdd '' ↑(A …
   rw [Equiv.eq_image_iff_symm_image_eq]
+  -- ⊢ ↑Multiplicative.ofAdd.symm '' ↑(Subgroup.zpowers (↑Multiplicative.ofAdd x))  …
   exact ofMul_image_zpowers_eq_zmultiples_ofMul
+  -- 🎉 no goals
 #align of_add_image_zmultiples_eq_zpowers_of_add ofAdd_image_zmultiples_eq_zpowers_ofAdd
 
 namespace Subgroup
@@ -200,6 +220,7 @@ instance zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
 @[to_additive (attr := simp) zmultiples_le]
 theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
   rw [zpowers_eq_closure, closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
+  -- 🎉 no goals
 #align subgroup.zpowers_le Subgroup.zpowers_le
 #align add_subgroup.zmultiples_le AddSubgroup.zmultiples_le
 
@@ -213,6 +234,7 @@ attribute [to_additive existing zmultiples_le_of_mem] zpowers_le_of_mem
 
 @[to_additive (attr := simp) zmultiples_eq_bot]
 theorem zpowers_eq_bot {g : G} : zpowers g = ⊥ ↔ g = 1 := by rw [eq_bot_iff, zpowers_le, mem_bot]
+                                                             -- 🎉 no goals
 #align subgroup.zpowers_eq_bot Subgroup.zpowers_eq_bot
 #align add_subgroup.zmultiples_eq_bot AddSubgroup.zmultiples_eq_bot
 
@@ -243,6 +265,7 @@ theorem centralizer_closure (S : Set G) :
 theorem center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
     center G = ⨅ g ∈ S, centralizer (zpowers g) := by
   rw [← centralizer_univ, ← coe_top, ← hS, centralizer_closure]
+  -- 🎉 no goals
 #align subgroup.center_eq_infi Subgroup.center_eq_iInf
 #align add_subgroup.center_eq_infi AddSubgroup.center_eq_iInf
 
@@ -250,6 +273,7 @@ theorem center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
 theorem center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
     center G = ⨅ g : S, centralizer (zpowers (g : G)) :=
   by rw [center_eq_iInf S hS, ← iInf_subtype'']
+     -- 🎉 no goals
 #align subgroup.center_eq_infi' Subgroup.center_eq_infi'
 #align add_subgroup.center_eq_infi' AddSubgroup.center_eq_infi'
 

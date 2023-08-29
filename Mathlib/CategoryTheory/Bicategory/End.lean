@@ -47,7 +47,9 @@ instance (X : C) : MonoidalCategory (EndMonoidal X) where
   rightUnitor f := ρ_ f
   tensor_comp := by
     intros
+    -- ⊢ (fun {X₁ Y₁ X₂ Y₂} f g => f ▷ X₂ ≫ Y₁ ◁ g) (f₁✝ ≫ g₁✝) (f₂✝ ≫ g₂✝) = (fun {X …
     dsimp
+    -- ⊢ (f₁✝ ≫ g₁✝) ▷ X₂✝ ≫ Z₁✝ ◁ (f₂✝ ≫ g₂✝) = (f₁✝ ▷ X₂✝ ≫ Y₁✝ ◁ f₂✝) ≫ g₁✝ ▷ Y₂✝  …
     rw [Bicategory.whiskerLeft_comp, Bicategory.comp_whiskerRight, Category.assoc, Category.assoc,
       Bicategory.whisker_exchange_assoc]
 

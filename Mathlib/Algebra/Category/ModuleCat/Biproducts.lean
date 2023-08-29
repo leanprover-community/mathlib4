@@ -48,12 +48,20 @@ def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N)
             Discrete.casesOn j fun j =>
               WalkingPair.casesOn j (LinearMap.fst R M N) (LinearMap.snd R M N)
           naturality := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟨⟩⟩⟩ <;> rfl } }
+                           -- ⊢ ((Functor.const (Discrete WalkingPair)).obj (of R (↑M × ↑N))).map { down :=  …
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
   isLimit :=
     { lift := fun s => LinearMap.prod (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩)
       fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
+                -- ⊢ (fun s => LinearMap.prod (NatTrans.app s.π { as := WalkingPair.left }) (NatT …
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
       uniq := fun s m w => by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
+        -- ⊢ m = LinearMap.prod (m ≫ LinearMap.fst R ↑M ↑N) (m ≫ LinearMap.snd R ↑M ↑N)
         rfl }
+        -- 🎉 no goals
 #align Module.binary_product_limit_cone ModuleCat.binaryProductLimitCone
 
 @[simp]
@@ -101,10 +109,14 @@ def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) where
   toFun x j := s.π.app ⟨j⟩ x
   map_add' x y := by
     simp only [Functor.const_obj_obj, map_add]
+    -- ⊢ (fun j => ↑(NatTrans.app s.π { as := j }) x + ↑(NatTrans.app s.π { as := j } …
     rfl
+    -- 🎉 no goals
   map_smul' r x := by
     simp only [Functor.const_obj_obj, map_smul]
+    -- ⊢ (fun j => r • ↑(NatTrans.app s.π { as := j }) x) = ↑(RingHom.id R) r • fun j …
     rfl
+    -- 🎉 no goals
 #align Module.has_limit.lift ModuleCat.HasLimit.lift
 
 /-- Construct limit data for a product in `ModuleCat R`, using `ModuleCat.of R (∀ j, F.obj j)`.
@@ -119,8 +131,11 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       fac := fun s j => rfl
       uniq := fun s m w => by
         ext x
+        -- ⊢ ↑m x = ↑(lift f s) x
         funext j
+        -- ⊢ ↑m x j = ↑(lift f s) x j
         exact congr_arg (fun g : s.pt ⟶ f j => (g : s.pt → f j) x) (w ⟨j⟩) }
+        -- 🎉 no goals
 #align Module.has_limit.product_limit_cone ModuleCat.HasLimit.productLimitCone
 
 end HasLimit

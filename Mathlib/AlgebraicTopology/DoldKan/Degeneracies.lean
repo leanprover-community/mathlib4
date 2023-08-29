@@ -43,13 +43,18 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
       (φ ≫
         X.σ ⟨b, by
           simp only [hnbq, Nat.lt_add_one_iff, le_add_iff_nonneg_right, zero_le]⟩) :=
+          -- 🎉 no goals
   fun j hj => by
   rw [assoc, SimplicialObject.δ_comp_σ_of_gt', Fin.pred_succ, v.comp_δ_eq_zero_assoc _ _ hj,
     zero_comp]
   · dsimp
+    -- ⊢ { val := b + 1, isLt := (_ : Nat.succ b < Nat.succ (n + 2)) } < Fin.succ j
     rw [Fin.lt_iff_val_lt_val, Fin.val_succ]
+    -- ⊢ ↑{ val := b + 1, isLt := (_ : Nat.succ b < Nat.succ (n + 2)) } < ↑j + 1
     linarith
+    -- 🎉 no goals
   · intro hj'
+    -- ⊢ False
     simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
       nonpos_iff_eq_zero, add_eq_zero, false_and] at hj
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_σ AlgebraicTopology.DoldKan.HigherFacesVanish.comp_σ
@@ -57,23 +62,37 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   revert i hi
+  -- ⊢ ∀ (i : Fin (n + 1)), n + 1 ≤ ↑i + q → SimplicialObject.σ X i ≫ HomologicalCo …
   induction' q with q hq
+  -- ⊢ ∀ (i : Fin (n + 1)), n + 1 ≤ ↑i + Nat.zero → SimplicialObject.σ X i ≫ Homolo …
   · intro i (hi : n + 1 ≤ i)
+    -- ⊢ SimplicialObject.σ X i ≫ HomologicalComplex.Hom.f (P Nat.zero) (n + 1) = 0
     exfalso
+    -- ⊢ False
     linarith [Fin.is_lt i]
+    -- 🎉 no goals
   · intro i (hi : n + 1 ≤ i + q + 1)
+    -- ⊢ SimplicialObject.σ X i ≫ HomologicalComplex.Hom.f (P (Nat.succ q)) (n + 1) = 0
     by_cases n + 1 ≤ (i : ℕ) + q
+    -- ⊢ SimplicialObject.σ X i ≫ HomologicalComplex.Hom.f (P (Nat.succ q)) (n + 1) = 0
+    -- ⊢ SimplicialObject.σ X i ≫ HomologicalComplex.Hom.f (P (Nat.succ q)) (n + 1) = 0
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
+      -- 🎉 no goals
     · replace hi : n = i + q := by
         obtain ⟨j, hj⟩ := le_iff_exists_add.mp hi
         rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, hj, not_lt, add_le_iff_nonpos_right,
           nonpos_iff_eq_zero] at h
         rw [← add_left_inj 1, hj, self_eq_add_right, h]
       rcases n with _|n
+      -- ⊢ SimplicialObject.σ X i ≫ HomologicalComplex.Hom.f (P (Nat.succ q)) (Nat.zero …
       · fin_cases i
+        -- ⊢ SimplicialObject.σ X { val := 0, isLt := (_ : 0 < Nat.zero + 1) } ≫ Homologi …
         dsimp at h hi
+        -- ⊢ SimplicialObject.σ X { val := 0, isLt := (_ : 0 < Nat.zero + 1) } ≫ Homologi …
         rw [show q = 0 by linarith]
+        -- ⊢ SimplicialObject.σ X { val := 0, isLt := (_ : 0 < Nat.zero + 1) } ≫ Homologi …
         change X.σ 0 ≫ (P 1).f 1 = 0
+        -- ⊢ SimplicialObject.σ X 0 ≫ HomologicalComplex.Hom.f (P 1) 1 = 0
         simp only [P_succ, HomologicalComplex.add_f_apply, comp_add,
           HomologicalComplex.id_f, AlternatingFaceMapComplex.obj_d_eq, Hσ,
           HomologicalComplex.comp_f, Homotopy.nullHomotopicMap'_f (c_mk 2 1 rfl) (c_mk 1 0 rfl),
@@ -90,6 +109,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
             (show (0 : Fin 2) ≤ Fin.castSucc 0 by rw [Fin.castSucc_zero]),
           SimplicialObject.δ_comp_σ_self_assoc, SimplicialObject.δ_comp_σ_succ_assoc]
         simp only [add_right_neg, add_zero, zero_add]
+        -- 🎉 no goals
       · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp,
           P_succ]
         have v : HigherFacesVanish q ((P q).f n.succ ≫ X.σ i) :=
@@ -98,10 +118,15 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           comp_id, v.comp_Hσ_eq hi, assoc, SimplicialObject.δ_comp_σ_succ_assoc, Fin.eta,
           decomposition_Q n q, sum_comp, sum_comp, Finset.sum_eq_zero, add_zero, add_neg_eq_zero]
         intro j hj
+        -- ⊢ ((HomologicalComplex.Hom.f (P ↑j) (n + 1) ≫ SimplicialObject.δ X (Fin.succ ( …
         simp only [true_and_iff, Finset.mem_univ, Finset.mem_filter] at hj
+        -- ⊢ ((HomologicalComplex.Hom.f (P ↑j) (n + 1) ≫ SimplicialObject.δ X (Fin.succ ( …
         simp only [Nat.succ_eq_add_one] at hi
+        -- ⊢ ((HomologicalComplex.Hom.f (P ↑j) (n + 1) ≫ SimplicialObject.δ X (Fin.succ ( …
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
+        -- ⊢ ((HomologicalComplex.Hom.f (P ↑j) (n + 1) ≫ SimplicialObject.δ X (Fin.succ ( …
         rw [add_comm] at hk
+        -- ⊢ ((HomologicalComplex.Hom.f (P ↑j) (n + 1) ≫ SimplicialObject.δ X (Fin.succ ( …
         have hi' : i = Fin.castSucc ⟨i, by linarith⟩ := by
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
@@ -112,7 +137,9 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
         simp only [Fin.revPerm_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
+        -- ⊢ ↑i ≤ k
         linarith
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.σ_comp_P_eq_zero AlgebraicTopology.DoldKan.σ_comp_P_eq_zero
 
@@ -120,7 +147,9 @@ set_option linter.uppercaseLean3 false in
 theorem σ_comp_PInfty (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
     X.σ i ≫ PInfty.f (n + 1) = 0 := by
   rw [PInfty_f, σ_comp_P_eq_zero X i]
+  -- ⊢ n + 1 ≤ ↑i + (n + 1)
   simp only [le_add_iff_nonneg_left, zero_le]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.σ_comp_P_infty AlgebraicTopology.DoldKan.σ_comp_PInfty
 
@@ -128,14 +157,23 @@ set_option linter.uppercaseLean3 false in
 theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : SimplexCategory}
     (θ : ([n] : SimplexCategory) ⟶ Δ') (hθ : ¬Mono θ) : X.map θ.op ≫ PInfty.f n = 0 := by
   rw [SimplexCategory.mono_iff_injective] at hθ
+  -- ⊢ X.map θ.op ≫ HomologicalComplex.Hom.f PInfty n = 0
   cases n
+  -- ⊢ X.map θ.op ≫ HomologicalComplex.Hom.f PInfty Nat.zero = 0
   · exfalso
+    -- ⊢ False
     apply hθ
+    -- ⊢ Function.Injective ↑(SimplexCategory.Hom.toOrderHom θ)
     intro x y h
+    -- ⊢ x = y
     fin_cases x
+    -- ⊢ { val := 0, isLt := (_ : 0 < SimplexCategory.len [Nat.zero] + 1) } = y
     fin_cases y
+    -- ⊢ { val := 0, isLt := (_ : 0 < SimplexCategory.len [Nat.zero] + 1) } = { val : …
     rfl
+    -- 🎉 no goals
   · obtain ⟨i, α, h⟩ := SimplexCategory.eq_σ_comp_of_not_injective θ hθ
+    -- ⊢ X.map θ.op ≫ HomologicalComplex.Hom.f PInfty (Nat.succ n✝) = 0
     rw [h, op_comp, X.map_comp, assoc, show X.map (SimplexCategory.σ i).op = X.σ i by rfl,
       σ_comp_PInfty, comp_zero]
 set_option linter.uppercaseLean3 false in

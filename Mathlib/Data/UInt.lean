@@ -16,12 +16,16 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Na
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
 
 instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
+                                                 -- 🎉 no goals
 
 instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
+                                                   -- 🎉 no goals
 
 instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
+                                                   -- 🎉 no goals
 
 instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
+                                                   -- 🎉 no goals
 
 instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
 
@@ -120,8 +124,11 @@ def isAlphanum (c : UInt8) : Bool :=
 
 theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
   rw [UInt32.val_eq_of_lt]
+  -- ⊢ Nat.isValidChar n
   exact Or.inl $ Nat.lt_trans h $ by decide
+  -- ⊢ n < UInt32.size
   exact Nat.lt_trans h $ by decide
+  -- 🎉 no goals
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩

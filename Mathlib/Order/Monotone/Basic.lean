@@ -240,29 +240,37 @@ theorem strictAntiOn_toDual_comp_iff : StrictAntiOn (toDual ∘ f : α → βᵒ
 
 theorem monotone_dual_iff : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Monotone f := by
   rw [monotone_toDual_comp_iff, antitone_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem antitone_dual_iff : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Antitone f := by
   rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem monotone_on_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
   rw [monotoneOn_toDual_comp_iff, antitoneOn_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem antitone_on_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
   rw [antitoneOn_toDual_comp_iff, monotoneOn_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem strict_mono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictMono f := by
   rw [strictMono_toDual_comp_iff, strictAnti_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem strict_anti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
   rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem strict_mono_on_dual_iff :
     StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictMonoOn f s := by
   rw [strictMonoOn_toDual_comp_iff, strictAntiOn_comp_ofDual_iff]
+  -- 🎉 no goals
 
 theorem strict_anti_on_dual_iff :
     StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
   rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]
+  -- 🎉 no goals
 
 alias ⟨_, Monotone.dual_left⟩ := antitone_comp_ofDual_iff
 #align monotone.dual_left Monotone.dual_left
@@ -585,10 +593,14 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
 theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
   intro x y hf
+  -- ⊢ x = y
   rcases lt_trichotomy x y with (hxy | rfl | hxy)
   · exact absurd hf <| h _ _ hxy
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
   · exact absurd hf.symm <| h _ _ hxy
+    -- 🎉 no goals
 #align injective_of_lt_imp_ne injective_of_lt_imp_ne
 
 theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
@@ -629,12 +641,19 @@ protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : �
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
     StrictMono fun x ↦ if p x then f x else g x := by
   intro x y h
+  -- ⊢ (fun x => if p x then f x else g x) x < (fun x => if p x then f x else g x) y
   by_cases hy:p y
+  -- ⊢ (fun x => if p x then f x else g x) x < (fun x => if p x then f x else g x) y
   · have hx : p x := hp h hy
+    -- ⊢ (fun x => if p x then f x else g x) x < (fun x => if p x then f x else g x) y
     simpa [hx, hy] using hf h
+    -- 🎉 no goals
   by_cases hx:p x
+  -- ⊢ (fun x => if p x then f x else g x) x < (fun x => if p x then f x else g x) y
   · simpa [hx, hy] using hfg hx hy h
+    -- 🎉 no goals
   · simpa [hx, hy] using hg h
+    -- 🎉 no goals
 #align strict_mono.ite' StrictMono.ite'
 
 protected theorem StrictMono.ite (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
@@ -818,7 +837,9 @@ theorem StrictMonoOn.eq_iff_eq (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
     f a = f b ↔ a = b :=
   ⟨fun h ↦ le_antisymm ((hf.le_iff_le ha hb).mp h.le) ((hf.le_iff_le hb ha).mp h.ge), by
     rintro rfl
+    -- ⊢ f a = f a
     rfl⟩
+    -- 🎉 no goals
 #align strict_mono_on.eq_iff_eq StrictMonoOn.eq_iff_eq
 
 theorem StrictAntiOn.eq_iff_eq (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
@@ -829,6 +850,7 @@ theorem StrictAntiOn.eq_iff_eq (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s)
 theorem StrictMonoOn.lt_iff_lt (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ a < b := by
   rw [lt_iff_le_not_le, lt_iff_le_not_le, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
+  -- 🎉 no goals
 #align strict_mono_on.lt_iff_lt StrictMonoOn.lt_iff_lt
 
 theorem StrictAntiOn.lt_iff_lt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
@@ -927,15 +949,20 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
   ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [Monotone, Antitone, not_forall, not_le]
+  -- ⊢ ((∃ x x_1 h, f x_1 < f x) ∧ ∃ x x_1 h, f x < f x_1) ↔ ∃ a b c, a ≤ b ∧ b ≤ c …
   refine' Iff.symm ⟨_, _⟩
+  -- ⊢ (∃ a b c, a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c)) → …
   { rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
     exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩] }
   rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
+  -- ⊢ ∃ a b c, a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c)
   obtain hda | had := le_total d a
+  -- ⊢ ∃ a b c, a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c)
   { obtain hfad | hfda := le_total (f a) (f d)
     { exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩ }
     { exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩ } }
   obtain hac | hca := le_total a c
+  -- ⊢ ∃ a b c, a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c)
   { obtain hfdb | hfbd := le_or_lt (f d) (f b)
     { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans $ hfdb.trans_lt hfba, hfcd⟩⟩ }
     obtain hfca | hfac := lt_or_le (f c) (f a)
@@ -958,9 +985,14 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
   ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
+  -- ⊢ (∃ a b c, (a ≤ b ∧ b ≤ c) ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c)) …
   refine' exists₃_congr (fun a b c ↦ and_congr_left $
     fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
   (rintro rfl; simp at h)
+   -- ⊢ False
+               -- 🎉 no goals
+   -- ⊢ False
+               -- 🎉 no goals
 #align not_monotone_not_antitone_iff_exists_lt_lt not_monotone_not_antitone_iff_exists_lt_lt
 
 /-!
@@ -1001,7 +1033,9 @@ theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans
     (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b < c) :
     r (f b) (f c) := by
   induction' hbc with k b_lt_k r_b_k
+  -- ⊢ r (f b) (f (succ b))
   exacts [h _ hab, _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)]
+  -- 🎉 no goals
 #align nat.rel_of_forall_rel_succ_of_le_of_lt Nat.rel_of_forall_rel_succ_of_le_of_lt
 
 theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
@@ -1042,7 +1076,9 @@ namespace Nat
 `ℕ → α` with any prescribed value of `f 0`. -/
 theorem exists_strictMono' [NoMaxOrder α] (a : α) : ∃ f : ℕ → α, StrictMono f ∧ f 0 = a := by
   choose g hg using fun x : α ↦ exists_gt x
+  -- ⊢ ∃ f, StrictMono f ∧ f 0 = a
   exact ⟨fun n ↦ Nat.recOn n a fun _ ↦ g, strictMono_nat_of_lt_succ fun n ↦ hg _, rfl⟩
+  -- 🎉 no goals
 #align nat.exists_strict_mono' Nat.exists_strictMono'
 
 /-- If `α` is a preorder with no maximal elements, then there exists a strictly antitone function
@@ -1072,12 +1108,19 @@ end Nat
 theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a < b) : r (f a) (f b) := by
   rcases lt.dest hab with ⟨n, rfl⟩
+  -- ⊢ r (f a) (f (a + ↑(Nat.succ n)))
   clear hab
+  -- ⊢ r (f a) (f (a + ↑(Nat.succ n)))
   induction' n with n ihn
+  -- ⊢ r (f a) (f (a + ↑(Nat.succ Nat.zero)))
   · rw [Int.ofNat_one]
+    -- ⊢ r (f a) (f (a + 1))
     apply h
+    -- 🎉 no goals
   · rw [Int.ofNat_succ, ← Int.add_assoc]
+    -- ⊢ r (f a) (f (a + ↑(n + 1) + 1))
     exact _root_.trans ihn (h _)
+    -- 🎉 no goals
 #align int.rel_of_forall_rel_succ_of_lt Int.rel_of_forall_rel_succ_of_lt
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
@@ -1109,15 +1152,24 @@ variable (α) [Preorder α] [Nonempty α] [NoMinOrder α] [NoMaxOrder α]
 monotone function `f : ℤ → α`. -/
 theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   inhabit α
+  -- ⊢ ∃ f, StrictMono f
   rcases Nat.exists_strictMono' (default : α) with ⟨f, hf, hf₀⟩
+  -- ⊢ ∃ f, StrictMono f
   rcases Nat.exists_strictAnti' (default : α) with ⟨g, hg, hg₀⟩
+  -- ⊢ ∃ f, StrictMono f
   refine' ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ _⟩
+  -- ⊢ ∀ (n : ℤ), (Int.casesOn n f fun n => g (n + 1)) < Int.casesOn (n + 1) f fun  …
   rintro (n | _ | n)
   · exact hf n.lt_succ_self
+    -- 🎉 no goals
   · show g 1 < f 0
+    -- ⊢ g 1 < f 0
     rw [hf₀, ← hg₀]
+    -- ⊢ g 1 < g 0
     exact hg Nat.zero_lt_one
+    -- 🎉 no goals
   · exact hg (Nat.lt_succ_self _)
+    -- 🎉 no goals
 #align int.exists_strict_mono Int.exists_strictMono
 
 /-- If `α` is a nonempty preorder with no minimal or maximal elements, then there exists a strictly
@@ -1134,7 +1186,9 @@ end Int
 theorem Monotone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Monotone f) (n : ℕ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℕ) : f a ≠ x := by
   rintro rfl
+  -- ⊢ False
   exact (hf.reflect_lt h1).not_le (Nat.le_of_lt_succ <| hf.reflect_lt h2)
+  -- 🎉 no goals
 #align monotone.ne_of_lt_of_lt_nat Monotone.ne_of_lt_of_lt_nat
 
 /-- If `f` is an antitone function from `ℕ` to a preorder such that `x` lies between `f (n + 1)` and
@@ -1142,7 +1196,9 @@ theorem Monotone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Monotone f) (n : ℕ)
 theorem Antitone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Antitone f) (n : ℕ) {x : α}
     (h1 : f (n + 1) < x) (h2 : x < f n) (a : ℕ) : f a ≠ x := by
   rintro rfl
+  -- ⊢ False
   exact (hf.reflect_lt h2).not_le (Nat.le_of_lt_succ <| hf.reflect_lt h1)
+  -- 🎉 no goals
 #align antitone.ne_of_lt_of_lt_nat Antitone.ne_of_lt_of_lt_nat
 
 /-- If `f` is a monotone function from `ℤ` to a preorder and `x` lies between `f n` and
@@ -1150,7 +1206,9 @@ theorem Antitone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Antitone f) (n : ℕ)
 theorem Monotone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Monotone f) (n : ℤ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℤ) : f a ≠ x := by
   rintro rfl
+  -- ⊢ False
   exact (hf.reflect_lt h1).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h2)
+  -- 🎉 no goals
 #align monotone.ne_of_lt_of_lt_int Monotone.ne_of_lt_of_lt_int
 
 /-- If `f` is an antitone function from `ℤ` to a preorder and `x` lies between `f (n + 1)` and
@@ -1158,7 +1216,9 @@ theorem Monotone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Monotone f) (n : ℤ)
 theorem Antitone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Antitone f) (n : ℤ) {x : α}
     (h1 : f (n + 1) < x) (h2 : x < f n) (a : ℤ) : f a ≠ x := by
   rintro rfl
+  -- ⊢ False
   exact (hf.reflect_lt h2).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h1)
+  -- 🎉 no goals
 #align antitone.ne_of_lt_of_lt_int Antitone.ne_of_lt_of_lt_int
 
 theorem StrictMono.id_le {φ : ℕ → ℕ} (h : StrictMono φ) : ∀ n, n ≤ φ n := fun n ↦
@@ -1203,13 +1263,17 @@ variable [PartialOrder α] [PartialOrder β] [Preorder γ] [Preorder δ] {f : α
 theorem StrictMono.prod_map (hf : StrictMono f) (hg : StrictMono g) : StrictMono (Prod.map f g) :=
   fun a b ↦ by
   simp only [Prod.lt_iff]
+  -- ⊢ a.fst < b.fst ∧ a.snd ≤ b.snd ∨ a.fst ≤ b.fst ∧ a.snd < b.snd → (Prod.map f  …
   exact Or.imp (And.imp hf.imp hg.monotone.imp) (And.imp hf.monotone.imp hg.imp)
+  -- 🎉 no goals
 #align strict_mono.prod_map StrictMono.prod_map
 
 theorem StrictAnti.prod_map (hf : StrictAnti f) (hg : StrictAnti g) : StrictAnti (Prod.map f g) :=
   fun a b ↦ by
   simp only [Prod.lt_iff]
+  -- ⊢ a.fst < b.fst ∧ a.snd ≤ b.snd ∨ a.fst ≤ b.fst ∧ a.snd < b.snd → (Prod.map f  …
   exact Or.imp (And.imp hf.imp hg.antitone.imp) (And.imp hf.antitone.imp hg.imp)
+  -- 🎉 no goals
 #align strict_anti.prod_map StrictAnti.prod_map
 
 end PartialOrder

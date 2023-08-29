@@ -42,16 +42,27 @@ set_option maxHeartbeats 250000 in
 theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
     (toMatrix b b f).charpoly = f.charpoly := by
   let A := toMatrix b b f
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let b' := chooseBasis R M
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let ι' := ChooseBasisIndex R M
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let A' := toMatrix b' b' f
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let e := Basis.indexEquiv b b'
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let φ := reindexLinearEquiv R R e e
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let φ₁ := reindexLinearEquiv R R e (Equiv.refl ι')
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let φ₂ := reindexLinearEquiv R R (Equiv.refl ι') (Equiv.refl ι')
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let φ₃ := reindexLinearEquiv R R (Equiv.refl ι') e
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let P := b.toMatrix b'
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   let Q := b'.toMatrix b
+  -- ⊢ Matrix.charpoly (↑(toMatrix b b) f) = charpoly f
   have hPQ : C.mapMatrix (φ₁ P) * C.mapMatrix (φ₃ Q) = 1 := by
     rw [RingHom.mapMatrix_apply, RingHom.mapMatrix_apply, ← Matrix.map_mul,
       reindexLinearEquiv_mul R R, Basis.toMatrix_mul_toMatrix_flip,

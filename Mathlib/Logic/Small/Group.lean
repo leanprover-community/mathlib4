@@ -39,25 +39,33 @@ instance [Mul α] [Small α] : Mul (Shrink α) := (equivShrink _).symm.mul
 lemma equivShrink_symm_add [Add α] [Small α] (x y : Shrink α) :
     (equivShrink α).symm (x + y) = (equivShrink α).symm x + (equivShrink α).symm y := by
   rw [Equiv.add_def]
+  -- ⊢ ↑(equivShrink α).symm (↑(equivShrink α).symm.symm (↑(equivShrink α).symm x + …
   simp
+  -- 🎉 no goals
 
 @[simp]
 lemma equivShrink_add [Add α] [Small α] (x y : α) :
     equivShrink α (x + y) = equivShrink α x + equivShrink α y := by
   rw [Equiv.add_def]
+  -- ⊢ ↑(equivShrink α) (x + y) = ↑(equivShrink α).symm.symm (↑(equivShrink α).symm …
   simp
+  -- 🎉 no goals
 
 @[to_additive existing (attr := simp)]
 lemma equivShrink_symm_mul [Mul α] [Small α] (x y : Shrink α) :
     (equivShrink α).symm (x * y) = (equivShrink α).symm x * (equivShrink α).symm y := by
   rw [Equiv.mul_def]
+  -- ⊢ ↑(equivShrink α).symm (↑(equivShrink α).symm.symm (↑(equivShrink α).symm x * …
   simp
+  -- 🎉 no goals
 
 @[to_additive existing (attr := simp)]
 lemma equivShrink_mul [Mul α] [Small α] (x y : α) :
     equivShrink α (x * y) = equivShrink α x * equivShrink α y := by
   rw [Equiv.mul_def]
+  -- ⊢ ↑(equivShrink α) (x * y) = ↑(equivShrink α).symm.symm (↑(equivShrink α).symm …
   simp
+  -- 🎉 no goals
 
 instance [Sub α] [Small α] : Sub (Shrink α) := (equivShrink _).symm.sub
 
@@ -68,25 +76,33 @@ instance [Div α] [Small α] : Div (Shrink α) := (equivShrink _).symm.div
 lemma equivShrink_symm_sub [Sub α] [Small α] (x y : Shrink α) :
     (equivShrink α).symm (x - y) = (equivShrink α).symm x - (equivShrink α).symm y := by
   rw [Equiv.sub_def]
+  -- ⊢ ↑(equivShrink α).symm (↑(equivShrink α).symm.symm (↑(equivShrink α).symm x - …
   simp
+  -- 🎉 no goals
 
 @[simp]
 lemma equivShrink_sub [Sub α] [Small α] (x y : α) :
     equivShrink α (x - y) = equivShrink α x - equivShrink α y := by
   rw [Equiv.sub_def]
+  -- ⊢ ↑(equivShrink α) (x - y) = ↑(equivShrink α).symm.symm (↑(equivShrink α).symm …
   simp
+  -- 🎉 no goals
 
 @[to_additive existing (attr := simp)]
 lemma equivShrink_symm_div [Div α] [Small α] (x y : Shrink α) :
     (equivShrink α).symm (x / y) = (equivShrink α).symm x / (equivShrink α).symm y := by
   rw [Equiv.div_def]
+  -- ⊢ ↑(equivShrink α).symm (↑(equivShrink α).symm.symm (↑(equivShrink α).symm x / …
   simp
+  -- 🎉 no goals
 
 @[to_additive existing (attr := simp)]
 lemma equivShrink_div [Div α] [Small α] (x y : α) :
     equivShrink α (x / y) = equivShrink α x / equivShrink α y := by
   rw [Equiv.div_def]
+  -- ⊢ ↑(equivShrink α) (x / y) = ↑(equivShrink α).symm.symm (↑(equivShrink α).symm …
   simp
+  -- 🎉 no goals
 
 instance [Neg α] [Small α] : Neg (Shrink α) := (equivShrink _).symm.Neg
 
@@ -97,25 +113,33 @@ instance [Inv α] [Small α] : Inv (Shrink α) := (equivShrink _).symm.Inv
 lemma equivShrink_symm_neg [Neg α] [Small α] (x : Shrink α) :
     (equivShrink α).symm (-x) = -(equivShrink α).symm x := by
   rw [Equiv.neg_def]
+  -- ⊢ ↑(equivShrink α).symm (↑(equivShrink α).symm.symm (-↑(equivShrink α).symm x) …
   simp
+  -- 🎉 no goals
 
 @[simp]
 lemma equivShrink_neg [Neg α] [Small α] (x : α) :
     equivShrink α (-x) = -equivShrink α x := by
   rw [Equiv.neg_def]
+  -- ⊢ ↑(equivShrink α) (-x) = ↑(equivShrink α).symm.symm (-↑(equivShrink α).symm ( …
   simp
+  -- 🎉 no goals
 
 @[to_additive existing (attr := simp)]
 lemma equivShrink_symm_inv [Inv α] [Small α] (x : Shrink α) :
     (equivShrink α).symm x⁻¹ = ((equivShrink α).symm x)⁻¹ := by
   rw [Equiv.inv_def]
+  -- ⊢ ↑(equivShrink α).symm (↑(equivShrink α).symm.symm (↑(equivShrink α).symm x)⁻ …
   simp
+  -- 🎉 no goals
 
 @[to_additive existing (attr := simp)]
 lemma equivShrink_inv [Inv α] [Small α] (x : α) :
     equivShrink α x⁻¹ = (equivShrink α x)⁻¹ := by
   rw [Equiv.inv_def]
+  -- ⊢ ↑(equivShrink α) x⁻¹ = ↑(equivShrink α).symm.symm (↑(equivShrink α).symm (↑( …
   simp
+  -- 🎉 no goals
 
 instance [AddSemigroup α] [Small α] : AddSemigroup (Shrink α) := (equivShrink _).symm.addSemigroup
 

@@ -123,9 +123,11 @@ instance [Inhabited α] : Inhabited (Multiplicative α) :=
 
 instance [Finite α] : Finite (Additive α) :=
   Finite.of_equiv α (by rfl)
+                        -- 🎉 no goals
 
 instance [Finite α] : Finite (Multiplicative α) :=
   Finite.of_equiv α (by rfl)
+                        -- 🎉 no goals
 
 instance [h: Infinite α] : Infinite (Additive α) := h
 

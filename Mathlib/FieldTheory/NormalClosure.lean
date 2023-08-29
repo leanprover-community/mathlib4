@@ -56,12 +56,17 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
 
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   let ϕ := algebraMap K L
+  -- ⊢ Normal F { x // x ∈ normalClosure F K L }
   rw [← IntermediateField.restrictScalars_normal, restrictScalars_eq_iSup_adjoin]
+  -- ⊢ Normal F { x // x ∈ ⨆ (x : K), adjoin F (rootSet (minpoly F x) L) }
   -- Porting note: use the `(_)` trick to obtain an instance by unification.
   apply IntermediateField.normal_iSup (h := _)
+  -- ⊢ ∀ (i : K), Normal F { x // x ∈ adjoin F (rootSet (minpoly F i) L) }
   intro x
+  -- ⊢ Normal F { x_1 // x_1 ∈ adjoin F (rootSet (minpoly F x) L) }
   -- Porting note: use the `(_)` trick to obtain an instance by unification.
   apply Normal.of_isSplittingField (p := minpoly F x) (hFEp := _)
+  -- ⊢ IsSplittingField F { x_1 // x_1 ∈ adjoin F (rootSet (minpoly F x) L) } (minp …
   exact adjoin_rootSet_isSplittingField ((minpoly.eq_of_algebraMap_eq ϕ.injective
     ((isIntegral_algebraMap_iff ϕ.injective).mp (h.isIntegral (ϕ x))) rfl).symm ▸ h.splits _)
 #align normal_closure.normal normalClosure.normal
@@ -71,6 +76,7 @@ instance is_finiteDimensional [FiniteDimensional F K] :
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f =>
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
+  -- 🎉 no goals
 #align normal_closure.is_finite_dimensional normalClosure.is_finiteDimensional
 
 instance isScalarTower : IsScalarTower F (normalClosure F K L) L :=

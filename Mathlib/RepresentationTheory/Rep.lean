@@ -40,6 +40,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep Rep
 
 instance (k G : Type u) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
+                                                                           -- 🎉 no goals
 
 namespace Rep
 
@@ -54,10 +55,14 @@ instance : CoeSort (Rep k G) (Type u) :=
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
+  -- ⊢ AddCommGroup ↑((forget₂ (Rep k G) (ModuleCat k)).obj V)
+                                                                 -- 🎉 no goals
 
 instance (V : Rep k G) : Module k V := by
   change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
+  -- ⊢ Module k ↑((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
+  -- 🎉 no goals
 
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
@@ -103,6 +108,7 @@ set_option linter.uppercaseLean3 false in
 theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
   show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_self, map_one, LinearMap.one_apply]
+                                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ_inv_self_apply Rep.ρ_inv_self_apply
 
@@ -110,6 +116,7 @@ set_option linter.uppercaseLean3 false in
 theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
   show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_self, map_one, LinearMap.one_apply]
+                                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ_self_inv_apply Rep.ρ_self_inv_apply
 
@@ -182,6 +189,7 @@ theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
     ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
       = Finsupp.single (X.ρ g x) (1 : k) := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of Rep.linearization_of
 
@@ -189,6 +197,7 @@ set_option linter.uppercaseLean3 false in
 theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r :=
   by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+     -- 🎉 no goals
 
 variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
 
@@ -219,8 +228,11 @@ theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
   rw [← Action.forget_map, Functor.map_inv]
+  -- ⊢ inv ((Action.forget (ModuleCat k) (MonCat.of G)).map (LaxMonoidalFunctor.μ ( …
   apply IsIso.inv_eq_of_hom_inv_id
+  -- ⊢ (Action.forget (ModuleCat k) (MonCat.of G)).map (LaxMonoidalFunctor.μ (linea …
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_μ_inv_hom Rep.linearization_μ_inv_hom
 
@@ -285,14 +297,19 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
     refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
+    -- ⊢ ↑(LinearMap.comp (↑(ofMulAction k G G).ρ g ≫ ↑(Finsupp.lift ((fun x => CoeSo …
 /- Porting note: rest of broken proof was
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
       zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
     simp only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply]
+    -- ⊢ ↑(↑(Finsupp.lift (CoeSort.coe A) k G) fun g => ↑(↑(ρ A) g) x) (↑(↑(ofMulActi …
     erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
+    -- ⊢ (Finsupp.sum (Finsupp.single (g • y) 1) fun x_1 r => r • ↑(↑(ρ A) x_1) x) =  …
     simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
+    -- ⊢ ↑(↑(ρ A) g * ↑(ρ A) y) x = ↑(↑A.ρ g) (↑(↑(ρ A) y) x)
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom Rep.leftRegularHom
 
@@ -301,6 +318,7 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
   rw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
   · rw [zero_smul]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
@@ -314,6 +332,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
   invFun x := leftRegularHom A x
   left_inv f := by
     refine' Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring _)
+    -- ⊢ ↑(LinearMap.comp ((fun x => leftRegularHom A x) (AddHom.toFun { toAddHom :=  …
     have :
       f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
@@ -323,11 +342,17 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
       Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
+    -- ⊢ ↑(↑(Finsupp.lift (CoeSort.coe A) k G) fun g => ↑(↑(ρ A) g) (↑f.hom (Finsupp. …
     erw [Finsupp.lift_apply]
+    -- ⊢ (Finsupp.sum (Finsupp.single x 1) fun x r => r • ↑(↑(ρ A) x) (↑f.hom (Finsup …
     rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
+    -- ⊢ 1 • ↑f.hom (↑(↑(Representation.ofMulAction k G G) x) (Finsupp.single 1 1)) = …
     erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
+    -- ⊢ 1 • ↑f.hom (Finsupp.single (x • 1) 1) = ↑f.hom (Finsupp.single x 1)
     simp only [one_smul, smul_eq_mul, mul_one]
+    -- ⊢ 0 • ↑(↑(ρ A) x) (↑f.hom (Finsupp.single 1 1)) = 0
     · rw [zero_smul]
+      -- 🎉 no goals
   right_inv x := leftRegularHom_apply x
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv Rep.leftRegularHomEquiv
@@ -337,6 +362,7 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
   rw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
   · rw [zero_smul]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv_symm_single Rep.leftRegularHomEquiv_symm_single
 
@@ -359,9 +385,16 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
     { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom)
       comm := fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
         show f.hom (X.ρ g _) = _
+        -- ⊢ ↑f.hom (↑(↑(ρ X) g) (↑(LinearMap.comp x (↑(ρ A) g⁻¹)) y)) = ↑(↑(ModuleCat.of …
         simp only [hom_comm_apply]; rfl }
+        -- ⊢ ↑(↑(ρ Y) g) (↑f.hom (↑(LinearMap.comp x (↑(ρ A) g⁻¹)) y)) = ↑(↑(ModuleCat.of …
+                                    -- 🎉 no goals
   map_id := fun _ => by ext; rfl
+                        -- ⊢ ↑({ obj := fun B => of (Representation.linHom (ρ A) (ρ B)), map := fun {X Y} …
+                             -- 🎉 no goals
   map_comp := fun _ _ => by ext; rfl
+                            -- ⊢ ↑({ obj := fun B => of (Representation.linHom (ρ A) (ρ B)), map := fun {X Y} …
+                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom Rep.ihom
 
@@ -379,11 +412,17 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
         refine' LinearMap.ext fun x => LinearMap.ext fun y => _
+        -- ⊢ ↑(↑(↑B.ρ g ≫ LinearMap.flip (TensorProduct.curry f.hom)) x) y = ↑(↑(LinearMa …
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
+        -- ⊢ ↑f.hom (y ⊗ₜ[k] ↑(↑B.ρ g) x) = ↑(↑(ρ C) g) (↑f.hom (↑(↑(ρ A) g⁻¹) y ⊗ₜ[k] x))
         rw [←hom_comm_apply]
+        -- ⊢ ↑f.hom (y ⊗ₜ[k] ↑(↑B.ρ g) x) = ↑f.hom (↑(↑(ρ (A ⊗ B)) g) (↑(↑(ρ A) g⁻¹) y ⊗ₜ …
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
+        -- ⊢ ↑f.hom (y ⊗ₜ[k] ↑(↑B.ρ g) x) = ↑f.hom (↑(↑(ρ A) g * ↑(ρ A) g⁻¹) y ⊗ₜ[k] ↑((( …
         simp only [←map_mul, mul_inv_self, map_one]
+        -- ⊢ ↑f.hom (y ⊗ₜ[k] ↑(↑B.ρ g) x) = ↑f.hom (↑1 y ⊗ₜ[k] ↑(((CategoryTheory.Equival …
         rfl }
+        -- 🎉 no goals
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
       comm := fun g => TensorProduct.ext' fun x y => by
@@ -397,8 +436,11 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
         rw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply, Rep.ihom_obj_ρ_apply,
           LinearMap.comp_apply, LinearMap.comp_apply, ρ_inv_self_apply]
         rfl}
+        -- 🎉 no goals
   left_inv f := Action.Hom.ext _ _ (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
+                    -- ⊢ ↑((fun f => Hom.mk (LinearMap.flip (TensorProduct.curry f.hom))) ((fun f =>  …
+                         -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv Rep.homEquiv
 
@@ -446,6 +488,8 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.ev A).app B)
       = TensorProduct.uncurry k A (A →ₗ[k] B) B LinearMap.id.flip := by
   ext; rfl
+  -- ⊢ ↑(NatTrans.app (ihom.ev A) B).hom x✝ = ↑(↑(TensorProduct.uncurry k (CoeSort. …
+       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_ev_app_hom Rep.ihom_ev_app_hom
 
@@ -544,10 +588,13 @@ variable {k G : Type u} [CommRing k] [Monoid G]
 
 -- Verify that the symmetric monoidal structure is available.
 example : SymmetricCategory (Rep k G) := by infer_instance
+                                            -- 🎉 no goals
 
 example : MonoidalPreadditive (Rep k G) := by infer_instance
+                                              -- 🎉 no goals
 
 example : MonoidalLinear k (Rep k G) := by infer_instance
+                                           -- 🎉 no goals
 
 noncomputable section
 
@@ -560,11 +607,18 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
       (((MonoidAlgebra.lift k G (W →ₗ[k] W)) σ) r) (f x) := by
   apply MonoidAlgebra.induction_on r
   · intro g
+    -- ⊢ ↑f (↑(↑(↑(MonoidAlgebra.lift k G (V →ₗ[k] V)) ρ) (↑(MonoidAlgebra.of k G) g) …
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
+    -- ⊢ ↑f (↑(↑ρ g) x) = ↑(↑σ g) (↑f x)
     exact LinearMap.congr_fun (w g) x
+    -- 🎉 no goals
   · intro g h gw hw; simp only [map_add, add_left_inj, LinearMap.add_apply, hw, gw]
+    -- ⊢ ↑f (↑(↑(↑(MonoidAlgebra.lift k G (V →ₗ[k] V)) ρ) (g + h)) x) = ↑(↑(↑(MonoidA …
+                     -- 🎉 no goals
   · intro r g w
+    -- ⊢ ↑f (↑(↑(↑(MonoidAlgebra.lift k G (V →ₗ[k] V)) ρ) (r • g)) x) = ↑(↑(↑(MonoidA …
     simp only [AlgHom.map_smul, w, RingHom.id_apply, LinearMap.smul_apply, LinearMap.map_smulₛₗ]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.to_Module_monoid_algebra_map_aux Rep.to_Module_monoidAlgebra_map_aux
 
@@ -589,6 +643,8 @@ def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
   map f :=
     { hom := { f with map_smul' := fun r x => f.map_smul (algebraMap k _ r) x }
       comm := fun g => by ext; apply f.map_smul }
+                          -- ⊢ ↑(↑((fun M => of (Representation.ofModule ↑M)) X✝).ρ g ≫ { toAddHom := f.toA …
+                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.of_Module_monoid_algebra Rep.ofModuleMonoidAlgebra
 
@@ -608,6 +664,7 @@ set_option linter.uppercaseLean3 false in
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+  -- ⊢ ↑(ModuleCat.of (MonoidAlgebra k G) (Representation.asModule (Representation. …
   refine' (Representation.ofModule M).asModuleEquiv.trans
     (RestrictScalars.addEquiv k (MonoidAlgebra k G) _)
 set_option linter.uppercaseLean3 false in
@@ -616,8 +673,11 @@ set_option linter.uppercaseLean3 false in
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+  -- ⊢ CoeSort.coe V ≃+ RestrictScalars k (MonoidAlgebra k G) ↑(ModuleCat.of (Monoi …
   refine' V.ρ.asModuleEquiv.symm.trans _
+  -- ⊢ Representation.asModule (ρ V) ≃+ RestrictScalars k (MonoidAlgebra k G) ↑(Mod …
   exact (RestrictScalars.addEquiv _ _ _).symm
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv
 
@@ -628,10 +688,14 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
+        -- ⊢ ↑↑(AddEquiv.trans (Representation.asModuleEquiv (Representation.ofModule ↑M) …
 /- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
+        -- ⊢ ↑(RestrictScalars.addEquiv k (MonoidAlgebra k G) ↑M) (↑(Representation.asMod …
         erw [Representation.ofModule_asAlgebraHom_apply_apply]
+        -- ⊢ ↑(AddEquiv.symm (RestrictScalars.addEquiv k (MonoidAlgebra k G) ((fun x => ↑ …
         exact AddEquiv.symm_apply_apply _ _}
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso Rep.counitIso
 
@@ -639,11 +703,14 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
       (toModuleMonoidAlgebra.obj V)).ρ g).toFun (unitIsoAddEquiv x) := by
   dsimp [unitIsoAddEquiv, ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+  -- ⊢ ↑(AddEquiv.trans (AddEquiv.symm (Representation.asModuleEquiv (ρ V))) (AddEq …
 /- Porting note: rest of broken proof was
   simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
     Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
   erw [Representation.asModuleEquiv_symm_map_rho]
+  -- ⊢ ↑(MonoidAlgebra.of k G) g • ↑(AddEquiv.symm (Representation.asModuleEquiv (ρ …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_comm Rep.unit_iso_comm
 
@@ -654,6 +721,7 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
       { unitIsoAddEquiv with
         map_smul' := fun r x => by
           dsimp [unitIsoAddEquiv]
+          -- ⊢ ↑↑(AddEquiv.trans (AddEquiv.symm (Representation.asModuleEquiv (ρ V))) (AddE …
 /- Porting note: rest of broken proof was
           simp only [Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
@@ -661,7 +729,10 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
             Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul]
           rfl })
+          -- 🎉 no goals
     fun g => by ext; apply unit_iso_comm
+                -- ⊢ ↑(↑V.ρ g ≫
+                     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso Rep.unitIso
 
@@ -670,7 +741,9 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k 
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
   unitIso := NatIso.ofComponents (fun V => unitIso V) (by aesop_cat)
+                                                          -- 🎉 no goals
   counitIso := NatIso.ofComponents (fun M => counitIso M) (by aesop_cat)
+                                                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Rep.equivalence_Module_monoid_algebra Rep.equivalenceModuleMonoidAlgebra
 

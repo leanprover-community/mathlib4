@@ -91,7 +91,15 @@ instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
 instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
   (bind_pure_comp := by
     intros; simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
+    -- ⊢ (do
+                -- ⊢ id <$> x✝ = x✝
+                        -- 🎉 no goals
+            -- 🎉 no goals
+                   -- ⊢ pure x✝ >>= f✝ = f✝ x✝
+                           -- 🎉 no goals
   (id_map := by intros; simp [Functor.map, WriterT.mk])
+                    -- ⊢ x✝ >>= f✝ >>= g✝ = x✝ >>= fun x => f✝ x >>= g✝
+                            -- 🎉 no goals
   (pure_bind := by intros; simp [Bind.bind, Pure.pure, WriterT.mk])
   (bind_assoc := by intros; simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
 

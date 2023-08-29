@@ -145,7 +145,9 @@ def Nat.shrink (n : Nat) : List Nat :=
     let m := n/2
     have : m < n := by
       apply Nat.div_lt_self h
+      -- ⊢ 1 < 2
       decide
+      -- 🎉 no goals
     m :: shrink m
   else
     []
@@ -197,7 +199,9 @@ instance Nat.sampleableExt : SampleableExt Nat :=
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
     simp [Fin.ofNat, LE.le]
+    -- ⊢ 0 ≤ __do_lift✝ % (n + 1)
     exact Nat.zero_le _
+    -- 🎉 no goals
   ))
 
 instance Int.sampleableExt : SampleableExt Int :=
@@ -223,6 +227,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
 
 instance Char.sampleableDefault : SampleableExt Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
+                                                    -- 🎉 no goals
 
 instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
     SampleableExt (α × β) where

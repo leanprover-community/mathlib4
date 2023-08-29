@@ -53,7 +53,11 @@ instance finBicone [Fintype J] : Fintype (Bicone J)
   elems := [Bicone.left, Bicone.right].toFinset ∪ Finset.image Bicone.diagram Fintype.elems
   complete j := by
     cases j <;> simp
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- ⊢ val✝ ∈ Fintype.elems
     apply Fintype.complete
+    -- 🎉 no goals
 #align category_theory.fin_bicone CategoryTheory.finBicone
 
 variable [Category.{v₁} J]
@@ -72,6 +76,21 @@ instance : Inhabited (BiconeHom J Bicone.left Bicone.left) :=
 
 instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g => by
   cases f <;> cases g <;> simp <;> infer_instance
+              -- ⊢ Decidable (left_id = left_id)
+              -- ⊢ Decidable (right_id = right_id)
+              -- ⊢ Decidable (left j✝ = left j✝)
+              -- ⊢ Decidable (right j✝ = right j✝)
+              -- ⊢ Decidable (diagram f✝¹ = diagram f✝)
+                          -- ⊢ Decidable True
+                          -- ⊢ Decidable True
+                          -- ⊢ Decidable True
+                          -- ⊢ Decidable True
+                          -- ⊢ Decidable (f✝¹ = f✝)
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align category_theory.bicone_hom.decidable_eq CategoryTheory.BiconeHom.decidableEq
 
 @[simps]
@@ -82,20 +101,59 @@ instance biconeCategoryStruct : CategoryStruct (Bicone J)
   comp f g := by
     rcases f with (_ | _ | _ | _ | f)
     · exact g
+      -- 🎉 no goals
     · exact g
+      -- 🎉 no goals
     · cases g
+      -- ⊢ Bicone.left ⟶ Bicone.diagram k✝
       apply BiconeHom.left
+      -- 🎉 no goals
     · cases g
+      -- ⊢ Bicone.right ⟶ Bicone.diagram k✝
       apply BiconeHom.right
+      -- 🎉 no goals
     · rcases g with (_|_|_|_|g)
+      -- ⊢ Bicone.diagram j✝ ⟶ Bicone.diagram k✝
       exact BiconeHom.diagram (f ≫ g)
+      -- 🎉 no goals
 #align category_theory.bicone_category_struct CategoryTheory.biconeCategoryStruct
 
 instance biconeCategory : Category (Bicone J)
     where
   id_comp f := by cases f <;> simp
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
   comp_id f := by cases f <;> simp
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
   assoc f g h := by cases f <;> cases g <;> cases h <;> simp
+                                -- ⊢ (BiconeHom.left_id ≫ BiconeHom.left_id) ≫ h = BiconeHom.left_id ≫ BiconeHom. …
+                                -- ⊢ (BiconeHom.right_id ≫ BiconeHom.right_id) ≫ h = BiconeHom.right_id ≫ BiconeH …
+                                -- ⊢ (BiconeHom.left j✝ ≫ BiconeHom.diagram f✝) ≫ h = BiconeHom.left j✝ ≫ BiconeH …
+                                -- ⊢ (BiconeHom.right j✝ ≫ BiconeHom.diagram f✝) ≫ h = BiconeHom.right j✝ ≫ Bicon …
+                                -- ⊢ (BiconeHom.diagram f✝¹ ≫ BiconeHom.diagram f✝) ≫ h = BiconeHom.diagram f✝¹ ≫ …
+                                            -- ⊢ (BiconeHom.left_id ≫ BiconeHom.left_id) ≫ BiconeHom.left_id = BiconeHom.left …
+                                            -- ⊢ (BiconeHom.left_id ≫ BiconeHom.left j✝) ≫ BiconeHom.diagram f✝ = BiconeHom.l …
+                                            -- ⊢ (BiconeHom.right_id ≫ BiconeHom.right_id) ≫ BiconeHom.right_id = BiconeHom.r …
+                                            -- ⊢ (BiconeHom.right_id ≫ BiconeHom.right j✝) ≫ BiconeHom.diagram f✝ = BiconeHom …
+                                            -- ⊢ (BiconeHom.left j✝ ≫ BiconeHom.diagram f✝¹) ≫ BiconeHom.diagram f✝ = BiconeH …
+                                            -- ⊢ (BiconeHom.right j✝ ≫ BiconeHom.diagram f✝¹) ≫ BiconeHom.diagram f✝ = Bicone …
+                                            -- ⊢ (BiconeHom.diagram f✝² ≫ BiconeHom.diagram f✝¹) ≫ BiconeHom.diagram f✝ = Bic …
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
 #align category_theory.bicone_category CategoryTheory.biconeCategory
 
 end Bicone
@@ -113,21 +171,37 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
   map f := by
     rcases f with (_|_|_|_|f)
     · exact 𝟙 _
+      -- 🎉 no goals
     · exact 𝟙 _
+      -- 🎉 no goals
     · exact c₁.π.app _
+      -- 🎉 no goals
     · exact c₂.π.app _
+      -- 🎉 no goals
     · exact F.map f
+      -- 🎉 no goals
   map_id X := by cases X <;> simp
+                             -- 🎉 no goals
+                             -- 🎉 no goals
+                             -- 🎉 no goals
   map_comp f g := by
     rcases f with (_|_|_|_|_)
     · exact (Category.id_comp _).symm
+      -- 🎉 no goals
     · exact (Category.id_comp _).symm
+      -- 🎉 no goals
     · cases g
+      -- ⊢ { obj := fun X => Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j, map := fun  …
       exact (Category.id_comp _).symm.trans (c₁.π.naturality _)
+      -- 🎉 no goals
     · cases g
+      -- ⊢ { obj := fun X => Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j, map := fun  …
       exact (Category.id_comp _).symm.trans (c₂.π.naturality _)
+      -- 🎉 no goals
     · cases g
+      -- ⊢ { obj := fun X => Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j, map := fun  …
       apply F.map_comp
+      -- 🎉 no goals
 #align category_theory.bicone_mk CategoryTheory.biconeMk
 
 instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by

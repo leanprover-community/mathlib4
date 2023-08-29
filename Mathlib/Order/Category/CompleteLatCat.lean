@@ -56,6 +56,8 @@ deriving instance LargeCategory for CompleteLatCat
 
 instance : ConcreteCategory CompleteLatCat :=
   by dsimp [CompleteLatCat]; infer_instance
+     -- ⊢ ConcreteCategory (Bundled CompleteLattice)
+                             -- 🎉 no goals
 
 instance hasForgetToBddLat : HasForget₂ CompleteLatCat BddLatCat where
   forget₂ :=
@@ -70,7 +72,11 @@ def Iso.mk {α β : CompleteLatCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : CompleteLatticeHom _ _) -- Porting note: TODO, wrong?
   inv := (e.symm : CompleteLatticeHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑({ tosInfHom := { toFun := ↑e, map_sInf' := (_ : ∀ (s : Set ↑α), ↑e (sInf s …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑({ tosInfHom := { toFun := ↑(OrderIso.symm e), map_sInf' := (_ : ∀ (s : Set …
+                        -- 🎉 no goals
 #align CompleteLat.iso.mk CompleteLatCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/

@@ -291,6 +291,14 @@ instance instLinearOrderTropical : LinearOrder (Tropical R) :=
     decidableLE := Tropical.decidableLE
     max := fun a b => trop (max (untrop a) (untrop b))
     max_def := fun a b => untrop_injective (by simp [max_def]; split_ifs <;> simp)
+                                               -- ⊢ (if a ≤ b then untrop b else untrop a) = untrop (if a ≤ b then b else a)
+                                                               -- ⊢ untrop b = untrop b
+                                               -- ⊢ (if a ≤ b then untrop a else untrop b) = untrop (if a ≤ b then a else b)
+                                                               -- ⊢ untrop a = untrop a
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
     min := (· + ·)
     min_def := fun a b => untrop_injective (by simp [min_def]; split_ifs <;> simp) }
 
@@ -325,19 +333,23 @@ theorem trop_sup_def (x y : Tropical R) : x ⊔ y = trop (untrop x ⊔ untrop y)
 @[simp]
 theorem add_eq_left ⦃x y : Tropical R⦄ (h : x ≤ y) : x + y = x :=
   untrop_injective (by simpa using h)
+                       -- 🎉 no goals
 #align tropical.add_eq_left Tropical.add_eq_left
 
 @[simp]
 theorem add_eq_right ⦃x y : Tropical R⦄ (h : y ≤ x) : x + y = y :=
   untrop_injective (by simpa using h)
+                       -- 🎉 no goals
 #align tropical.add_eq_right Tropical.add_eq_right
 
 theorem add_eq_left_iff {x y : Tropical R} : x + y = x ↔ x ≤ y := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_left_iff]
+  -- 🎉 no goals
 #align tropical.add_eq_left_iff Tropical.add_eq_left_iff
 
 theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
+  -- 🎉 no goals
 #align tropical.add_eq_right_iff Tropical.add_eq_right_iff
 
 --Porting note: removing `simp`. `simp` can prove it
@@ -353,18 +365,27 @@ theorem bit0 (x : Tropical R) : bit0 x = x :=
 
 theorem add_eq_iff {x y z : Tropical R} : x + y = z ↔ x = z ∧ x ≤ y ∨ y = z ∧ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop]
+  -- ⊢ min (untrop x) (untrop y) = untrop z ↔ x = z ∧ x ≤ y ∨ y = z ∧ y ≤ x
   simp [min_eq_iff]
+  -- 🎉 no goals
 #align tropical.add_eq_iff Tropical.add_eq_iff
 
 @[simp]
 theorem add_eq_zero_iff {a b : Tropical (WithTop R)} : a + b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_iff]
+  -- ⊢ a = 0 ∧ a ≤ b ∨ b = 0 ∧ b ≤ a ↔ a = 0 ∧ b = 0
   constructor
+  -- ⊢ a = 0 ∧ a ≤ b ∨ b = 0 ∧ b ≤ a → a = 0 ∧ b = 0
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩)
+    -- ⊢ 0 = 0 ∧ b = 0
     · exact ⟨rfl, le_antisymm (le_zero _) h⟩
+      -- 🎉 no goals
     · exact ⟨le_antisymm (le_zero _) h, rfl⟩
+      -- 🎉 no goals
   · rintro ⟨rfl, rfl⟩
+    -- ⊢ 0 = 0 ∧ 0 ≤ 0 ∨ 0 = 0 ∧ 0 ≤ 0
     simp
+    -- 🎉 no goals
 #align tropical.add_eq_zero_iff Tropical.add_eq_zero_iff
 
 instance instAddCommMonoidTropical [OrderTop R] : AddCommMonoid (Tropical R) :=
@@ -413,6 +434,9 @@ instance instAddMonoidWithOneTropical [LinearOrder R] [OrderTop R] [Zero R] :
     natCast := fun n => if n = 0 then 0 else 1
     natCast_zero := rfl
     natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
+                                                        -- ⊢ untrop (NatCast.natCast (Nat.zero + 1)) = untrop (NatCast.natCast Nat.zero + …
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
 
 instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩
@@ -463,6 +487,7 @@ instance instMonoidTropical [AddMonoid R] : Monoid (Tropical R) :=
   { instMulOneClassTropical, instSemigroupTropical with
     npow := fun n x => x ^ n
     npow_zero := fun _ => untrop_injective <| by simp
+                                                 -- 🎉 no goals
     npow_succ := fun _ _ => untrop_injective <| succ_nsmul _ _ }
 
 @[simp]
@@ -477,6 +502,7 @@ instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
     inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
+                                                        -- 🎉 no goals
     mul_left_inv := fun _ => untrop_injective <| add_left_neg _
     zpow := fun n x => trop <| n • untrop x
     zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
@@ -513,11 +539,17 @@ instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (�
 instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
     cases' le_total x y with hx hy
+    -- ⊢ x + y ≤ x + z
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
+      -- 🎉 no goals
     · rw [add_eq_right hy]
+      -- ⊢ y ≤ x + z
       cases' le_total x z with hx hx
+      -- ⊢ y ≤ x + z
       · rwa [add_eq_left hx]
+        -- 🎉 no goals
       · rwa [add_eq_right hx]⟩
+        -- 🎉 no goals
 #align tropical.covariant_add Tropical.covariant_add
 
 instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R (· + ·) (· < ·)] :
@@ -544,8 +576,11 @@ theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (· + ·) (· 
     [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
   cases' le_total x y with h h
+  -- ⊢ (x + y) ^ n = x ^ n + y ^ n
   · rw [add_eq_left h, add_eq_left (pow_le_pow_of_le_left' h _)]
+    -- 🎉 no goals
   · rw [add_eq_right h, add_eq_right (pow_le_pow_of_le_left' h _)]
+    -- 🎉 no goals
 #align tropical.add_pow Tropical.add_pow
 
 end Distrib
@@ -560,13 +595,18 @@ instance : CommSemiring (Tropical R) :=
     instAddCommMonoidTropical,
     instCommMonoidTropical with
     zero_mul := fun _ => untrop_injective (by simp [top_add])
+                                              -- 🎉 no goals
     mul_zero := fun _ => untrop_injective (by simp [add_top]) }
+                                              -- 🎉 no goals
 
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
   induction' n with n IH
+  -- ⊢ (Nat.zero + 1) • x = x
   · simp
+    -- 🎉 no goals
   · rw [add_nsmul, IH, one_nsmul, add_self]
+    -- 🎉 no goals
 #align tropical.succ_nsmul Tropical.succ_nsmul
 
 -- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)
@@ -576,6 +616,7 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 --Porting note: removing @[simp], `simp` can prove it
 theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
+                                    -- 🎉 no goals
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff
 
 instance {R : Type*} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=

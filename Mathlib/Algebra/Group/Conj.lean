@@ -52,11 +52,15 @@ theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
 theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
+    -- ⊢ a = b
     exact hc, fun h => by rw [h]⟩
+    -- 🎉 no goals
+                          -- 🎉 no goals
 #align is_conj_iff_eq isConj_iff_eq
 
 protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
+                                  -- 🎉 no goals
 #align monoid_hom.map_is_conj MonoidHom.map_isConj
 
 end Monoid
@@ -72,6 +76,7 @@ variable [CancelMonoid α]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 :=
   ⟨fun ⟨c, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
     rw [h]⟩
+    -- 🎉 no goals
 #align is_conj_one_right isConj_one_right
 
 @[simp]
@@ -107,17 +112,25 @@ theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) 
 @[simp]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   induction' i with i hi
+  -- ⊢ (a * b * a⁻¹) ^ Nat.zero = a * b ^ Nat.zero * a⁻¹
   · simp
+    -- 🎉 no goals
   · simp [pow_succ, hi]
+    -- 🎉 no goals
 #align conj_pow conj_pow
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   induction' i
+  -- ⊢ (a * b * a⁻¹) ^ Int.ofNat a✝ = a * b ^ Int.ofNat a✝ * a⁻¹
   · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
+    -- ⊢ (a * b * a⁻¹) ^ Int.ofNat a✝ = a * b ^ Int.ofNat a✝ * a⁻¹
     simp [zpow_ofNat]
+    -- 🎉 no goals
   · simp [zpow_negSucc, conj_pow]
+    -- ⊢ a * ((b ^ (a✝ + 1))⁻¹ * a⁻¹) = a * (b ^ (a✝ + 1))⁻¹ * a⁻¹
     rw [mul_assoc]
+    -- 🎉 no goals
 -- Porting note: Added `change`, `zpow_ofNat`, and `rw`.
 #align conj_zpow conj_zpow
 
@@ -132,11 +145,15 @@ theorem isConj_iff₀ [GroupWithZero α] {a b : α} : IsConj a b ↔ ∃ c : α,
   ⟨fun ⟨c, hc⟩ =>
     ⟨c, by
       rw [← Units.val_inv_eq_inv_val, Units.mul_inv_eq_iff_eq_mul]
+      -- ⊢ ↑c ≠ 0 ∧ ↑c * a = b * ↑c
       exact ⟨c.ne_zero, hc⟩⟩,
+      -- 🎉 no goals
     fun ⟨c, c0, hc⟩ =>
     ⟨Units.mk0 c c0, by
       rw [SemiconjBy, ← Units.mul_inv_eq_iff_eq_mul, Units.val_inv_eq_inv_val, Units.val_mk0]
+      -- ⊢ c * a * c⁻¹ = b
       exact hc⟩⟩
+      -- 🎉 no goals
 #align is_conj_iff₀ isConj_iff₀
 
 namespace IsConj
@@ -209,9 +226,13 @@ def map (f : α →* β) : ConjClasses α → ConjClasses β :=
 theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
     Function.Surjective (ConjClasses.map f) := by
   intro b
+  -- ⊢ ∃ a, map f a = b
   obtain ⟨b, rfl⟩ := ConjClasses.mk_surjective b
+  -- ⊢ ∃ a, map f a = ConjClasses.mk b
   obtain ⟨a, rfl⟩ := hf b
+  -- ⊢ ∃ a_1, map f a_1 = ConjClasses.mk (↑f a)
   exact ⟨ConjClasses.mk a, rfl⟩
+  -- 🎉 no goals
 #align conj_classes.map_surjective ConjClasses.map_surjective
 
 -- Porting note: This has not been adapted to mathlib4, is it still accurate?
@@ -266,8 +287,11 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
 def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
+    -- ⊢ ∀ (a : α), ConjClasses.mk (Quotient.lift id (_ : ∀ (a b : α), IsConj a b → a …
     intro x
+    -- ⊢ ConjClasses.mk (Quotient.lift id (_ : ∀ (a b : α), IsConj a b → a = b) (Conj …
     rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id.def]⟩
+    -- 🎉 no goals
 #align conj_classes.mk_equiv ConjClasses.mkEquiv
 
 end CommMonoid
@@ -294,7 +318,9 @@ theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = c
 theorem isConj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
   ⟨IsConj.conjugatesOf_eq, fun h => by
     have ha := @mem_conjugatesOf_self _ _ b -- Porting note: added `@`.
+    -- ⊢ IsConj a b
     rwa [← h] at ha⟩
+    -- 🎉 no goals
 #align is_conj_iff_conjugates_of_eq isConj_iff_conjugatesOf_eq
 
 end Monoid
@@ -317,10 +343,15 @@ theorem mem_carrier_mk {a : α} : a ∈ carrier (ConjClasses.mk a) :=
 theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
     a ∈ carrier b ↔ ConjClasses.mk a = b := by
   revert b
+  -- ⊢ ∀ {b : ConjClasses α}, a ∈ carrier b ↔ ConjClasses.mk a = b
   rw [forall_isConj]
+  -- ⊢ ∀ (a_1 : α), a ∈ carrier (ConjClasses.mk a_1) ↔ ConjClasses.mk a = ConjClass …
   intro b
+  -- ⊢ a ∈ carrier (ConjClasses.mk b) ↔ ConjClasses.mk a = ConjClasses.mk b
   rw [carrier, eq_comm, mk_eq_mk_iff_isConj, ← quotient_mk_eq_mk, Quotient.lift_mk]
+  -- ⊢ a ∈ conjugatesOf b ↔ IsConj b a
   rfl
+  -- 🎉 no goals
 #align conj_classes.mem_carrier_iff_mk_eq ConjClasses.mem_carrier_iff_mk_eq
 
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=

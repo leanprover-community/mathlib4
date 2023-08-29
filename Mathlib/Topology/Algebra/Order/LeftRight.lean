@@ -34,6 +34,7 @@ variable {α β : Type*} [TopologicalSpace α] [PartialOrder α] [TopologicalSpa
 theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
     ContinuousWithinAt f (Ioi a) a ↔ ContinuousWithinAt f (Ici a) a := by
   simp only [← Ici_diff_left, continuousWithinAt_diff_self]
+  -- 🎉 no goals
 #align continuous_within_at_Ioi_iff_Ici continuousWithinAt_Ioi_iff_Ici
 
 theorem continuousWithinAt_Iio_iff_Iic {a : α} {f : α → β} :
@@ -57,23 +58,28 @@ variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpac
 
 theorem nhds_left_sup_nhds_right (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]
+  -- 🎉 no goals
 #align nhds_left_sup_nhds_right nhds_left_sup_nhds_right
 
 theorem nhds_left'_sup_nhds_right (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iio_union_Ici, nhdsWithin_univ]
+  -- 🎉 no goals
 #align nhds_left'_sup_nhds_right nhds_left'_sup_nhds_right
 
 theorem nhds_left_sup_nhds_right' (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ioi, nhdsWithin_univ]
+  -- 🎉 no goals
 #align nhds_left_sup_nhds_right' nhds_left_sup_nhds_right'
 
 theorem nhds_left'_sup_nhds_right' (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsWithin_union, Iio_union_Ioi]
+  -- 🎉 no goals
 #align nhds_left'_sup_nhds_right' nhds_left'_sup_nhds_right'
 
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by
   simp only [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhds_left_sup_nhds_right]
+  -- 🎉 no goals
 #align continuous_at_iff_continuous_left_right continuousAt_iff_continuous_left_right
 
 theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :

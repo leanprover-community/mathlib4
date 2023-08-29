@@ -60,7 +60,9 @@ of real numbers) agrees with the one coming directly from (abs : ℚ → ℚ). -
 theorem Rat.uniformSpace_eq :
     (AbsoluteValue.abs : AbsoluteValue ℚ ℚ).uniformSpace = PseudoMetricSpace.toUniformSpace := by
   ext s
+  -- ⊢ s ∈ uniformity ℚ ↔ s ∈ uniformity ℚ
   rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, Metric.uniformity_basis_dist_rat.mem_iff]
+  -- ⊢ (∃ i, 0 < i ∧ {p | ↑AbsoluteValue.abs (p.snd - p.fst) < i} ⊆ s) ↔ ∃ i, 0 < i …
   simp only [Rat.dist_eq, AbsoluteValue.abs_apply, ← Rat.cast_sub, ← Rat.cast_abs, Rat.cast_lt,
     abs_sub_comm]
 #align rat.uniform_space_eq Rat.uniformSpace_eq
@@ -71,11 +73,16 @@ def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).un
     (space := ℝ)
     (coe := ((↑) : ℚ → ℝ))
     (uniformStruct := by infer_instance)
+                         -- 🎉 no goals
     (complete := by infer_instance)
+                    -- 🎉 no goals
     (separation := by infer_instance)
+                      -- 🎉 no goals
     (uniformInducing := by
       rw [Rat.uniformSpace_eq]
+      -- ⊢ UniformInducing Rat.cast
       exact Rat.uniformEmbedding_coe_real.toUniformInducing)
+      -- 🎉 no goals
     (dense := Rat.denseEmbedding_coe_real.dense)
 #align rational_cau_seq_pkg rationalCauSeqPkg
 

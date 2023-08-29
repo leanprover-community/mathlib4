@@ -111,10 +111,14 @@ def Iso.mk {α β : NonemptyFinLinOrdCat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : OrderHom _ _)
   hom_inv_id := by
     ext x
+    -- ⊢ ↑(↑e ≫ ↑(OrderIso.symm e)) x = ↑(𝟙 α) x
     exact e.symm_apply_apply x
+    -- 🎉 no goals
   inv_hom_id := by
     ext x
+    -- ⊢ ↑(↑(OrderIso.symm e) ≫ ↑e) x = ↑(𝟙 β) x
     exact e.apply_symm_apply x
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.iso.mk NonemptyFinLinOrdCat.Iso.mk
 
@@ -141,23 +145,34 @@ instance {A B : NonemptyFinLinOrdCat.{u}} : OrderHomClass (A ⟶ B) A B where
   coe f := ⇑(show OrderHom A B from f)
   coe_injective' _ _ h := by
     ext x
+    -- ⊢ ↑x✝¹ x = ↑x✝ x
     exact congr_fun h x
+    -- 🎉 no goals
   map_rel f _ _ h := f.monotone h
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine' ⟨_, ConcreteCategory.mono_of_injective f⟩
+  -- ⊢ Mono f → Function.Injective ↑f
   intro
+  -- ⊢ Function.Injective ↑f
   intro a₁ a₂ h
+  -- ⊢ a₁ = a₂
   let X := NonemptyFinLinOrdCat.of (ULift (Fin 1))
+  -- ⊢ a₁ = a₂
   let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
+  -- ⊢ a₁ = a₂
   let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
+  -- ⊢ a₁ = a₂
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
+  -- ⊢ ↑g₁ { down := 0 } = ↑g₂ { down := 0 }
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext
     exact h
   rw [cancel_mono] at eq
+  -- ⊢ ↑g₁ { down := 0 } = ↑g₂ { down := 0 }
   rw [eq]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.mono_iff_injective NonemptyFinLinOrdCat.mono_iff_injective
 
@@ -168,11 +183,17 @@ lemma forget_map_apply {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) (a : A) :
 theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by
   constructor
+  -- ⊢ Epi f → Function.Surjective ↑f
   · intro
+    -- ⊢ Function.Surjective ↑f
     dsimp only [Function.Surjective]
+    -- ⊢ ∀ (b : ↑B), ∃ a, ↑f a = b
     by_contra' hf'
+    -- ⊢ False
     rcases hf' with ⟨m, hm⟩
+    -- ⊢ False
     let Y := NonemptyFinLinOrdCat.of (ULift (Fin 2))
+    -- ⊢ False
     let p₁ : B ⟶ Y :=
       ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
@@ -202,8 +223,11 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
     simp [FunLike.coe] at h
+    -- 🎉 no goals
   · intro h
+    -- ⊢ Epi f
     exact ConcreteCategory.epi_of_surjective f h
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.epi_iff_surjective NonemptyFinLinOrdCat.epi_iff_surjective
 
@@ -214,36 +238,55 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
       intro y
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
     let φ : Y → X := fun y => (H y).some.1
+    -- ⊢ IsSplitEpi f
     have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
+    -- ⊢ IsSplitEpi f
     refine' IsSplitEpi.mk' ⟨⟨φ, _⟩, _⟩
+    -- ⊢ Monotone φ
     swap
+    -- ⊢ { toFun := φ, monotone' := ?refine'_1 } ≫ f = 𝟙 Y
     · ext b
+      -- ⊢ ↑({ toFun := φ, monotone' := ?refine'_1 } ≫ f) b = ↑(𝟙 Y) b
       apply hφ
+      -- 🎉 no goals
     · intro a b
+      -- ⊢ a ≤ b → φ a ≤ φ b
       contrapose
+      -- ⊢ ¬φ a ≤ φ b → ¬a ≤ b
       intro h
+      -- ⊢ ¬a ≤ b
       simp only [not_le] at h ⊢
+      -- ⊢ b < a
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl
         exfalso
         simp at h
       have H : f (φ b) ≤ f (φ a) := f.monotone (le_of_lt h)
+      -- ⊢ b ≤ a
       simpa only [hφ] using H⟩
+      -- 🎉 no goals
 
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrdCat.{u} :=
   ⟨fun {X Y} f => by
     letI : NonemptyFinLinOrd (Set.image f ⊤) := ⟨by infer_instance⟩
+    -- ⊢ Nonempty (StrongEpiMonoFactorisation f)
     let I := NonemptyFinLinOrdCat.of (Set.image f ⊤)
+    -- ⊢ Nonempty (StrongEpiMonoFactorisation f)
     let e : X ⟶ I := ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.monotone h⟩
+    -- ⊢ Nonempty (StrongEpiMonoFactorisation f)
     let m : I ⟶ Y := ⟨fun y => y.1, by tauto⟩
+    -- ⊢ Nonempty (StrongEpiMonoFactorisation f)
     haveI : Epi e := by
       rw [epi_iff_surjective]
       rintro ⟨_, y, h, rfl⟩
       exact ⟨y, rfl⟩
     haveI : StrongEpi e := strongEpi_of_epi e
+    -- ⊢ Nonempty (StrongEpiMonoFactorisation f)
     haveI : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h => Subtype.ext h)
+    -- ⊢ Nonempty (StrongEpiMonoFactorisation f)
     exact ⟨⟨I, m, e, rfl⟩⟩⟩
+    -- 🎉 no goals
 
 end NonemptyFinLinOrdCat
 

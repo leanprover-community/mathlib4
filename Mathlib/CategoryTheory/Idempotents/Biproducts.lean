@@ -51,20 +51,27 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
       p := biproduct.map fun j => (F j).p
       idem := by
         ext
+        -- ⊢ biproduct.ι (fun j => (F j).X) j✝ ≫ ((biproduct.map fun j => (F j).p) ≫ bipr …
         simp only [assoc, biproduct.map_π, biproduct.map_π_assoc, idem] }
+        -- 🎉 no goals
   π j :=
     { f := (biproduct.map fun j => (F j).p) ≫ Bicone.π _ j
       comm := by
         simp only [assoc, biproduct.bicone_π, biproduct.map_π, biproduct.map_π_assoc, (F j).idem] }
+        -- 🎉 no goals
   ι j :=
     { f := biproduct.ι (fun j => (F j).X) j ≫ biproduct.map fun j => (F j).p
       comm := by simp only [biproduct.ι_map, assoc, idem_assoc] }
+                 -- 🎉 no goals
   ι_π j j' := by
     split_ifs with h
+    -- ⊢ (fun j => Hom.mk (biproduct.ι (fun j => (F j).X) j ≫ biproduct.map fun j =>  …
     · subst h
+      -- ⊢ (fun j => Hom.mk (biproduct.ι (fun j => (F j).X) j ≫ biproduct.map fun j =>  …
       simp only [biproduct.ι_map, biproduct.bicone_π, biproduct.map_π, eqToHom_refl,
         id_eq, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
+      -- ⊢ Hom.mk (biproduct.ι (fun j => (F j).X) j ≫ biproduct.map fun j => (F j).p) ≫ …
       simp only [hom_ext_iff, biproduct.ι_map, biproduct.map_π, comp_f, assoc, ne_eq,
         biproduct.ι_π_ne_assoc _ h, comp_zero, zero_comp]
 #align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
@@ -75,17 +82,25 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
   { out := fun n =>
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
+          -- ⊢ (Finset.sum Finset.univ fun j => Bicone.π (Biproducts.bicone F) j ≫ Bicone.ι …
           simp only [hom_ext_iff]
+          -- ⊢ (Finset.sum Finset.univ fun j => Bicone.π (Biproducts.bicone F) j ≫ Bicone.ι …
           refine' biproduct.hom_ext' _ _ (fun j => _)
+          -- ⊢ biproduct.ι (fun j => (F j).X) j ≫ (Finset.sum Finset.univ fun j => Bicone.π …
           simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
             biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
             idem_assoc, id_eq, Biproducts.bicone_pt_p, comp_sum]
           rw [Finset.sum_eq_single j]
           · simp only [bicone_ι_π_self_assoc]
+            -- 🎉 no goals
           · intro b _ hb
+            -- ⊢ biproduct.ι (fun j => (F j).X) j ≫ biproduct.π (fun b => (F b).X) b ≫ (F b). …
             simp only [biproduct.ι_π_ne_assoc _ hb.symm, zero_comp]
+            -- 🎉 no goals
           · intro hj
+            -- ⊢ biproduct.ι (fun j => (F j).X) j ≫ biproduct.π (fun b => (F b).X) j ≫ (F j). …
             simp only [Finset.mem_univ, not_true] at hj } }
+            -- 🎉 no goals
 #align category_theory.idempotents.karoubi.karoubi_has_finite_biproducts CategoryTheory.Idempotents.Karoubi.karoubi_hasFiniteBiproducts
 
 attribute [instance] karoubi_hasFiniteBiproducts
@@ -129,16 +144,21 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
   inv := biprod.lift P.decompId_p P.complement.decompId_p
   hom_inv_id := by
     apply biprod.hom_ext'
+    -- ⊢ biprod.inl ≫ biprod.desc (decompId_i P) (decompId_i (complement P)) ≫ biprod …
     · rw [biprod.inl_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_right_eq_self, ← assoc]
       refine' (_ =≫ _).trans zero_comp
+      -- ⊢ decompId_i P ≫ decompId_p (complement P) = 0
       ext
+      -- ⊢ (decompId_i P ≫ decompId_p (complement P)).f = 0.f
       simp only [comp_f, toKaroubi_obj_X, decompId_i_f, decompId_p_f,
         complement_p, comp_sub, comp_id, idem, sub_self, instAddCommGroupHom_zero]
     · rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_left_eq_self, ← assoc]
       refine' (_ =≫ _).trans zero_comp
+      -- ⊢ decompId_i (complement P) ≫ decompId_p P = 0
       ext
+      -- ⊢ (decompId_i (complement P) ≫ decompId_p P).f = 0.f
       simp only [complement_X, comp_f, decompId_i_f, complement_p,
         decompId_p_f, sub_comp, id_comp, idem, sub_self, instAddCommGroupHom_zero]
   inv_hom_id := by

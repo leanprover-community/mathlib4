@@ -49,23 +49,38 @@ namespace CompHaus
 /-- `Projective` implies `ExtremallyDisconnected`. -/
 instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   apply CompactT2.Projective.extremallyDisconnected
+  -- ⊢ CompactT2.Projective ↑X.toTop
   intro A B _ _ _ _ _ _ f g hf hg hsurj
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   have : CompactSpace (TopCat.of A) := by assumption
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   have : T2Space (TopCat.of A) := by assumption
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   have : CompactSpace (TopCat.of B) := by assumption
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   have : T2Space (TopCat.of B) := by assumption
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   let A' : CompHaus := ⟨TopCat.of A⟩
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   let B' : CompHaus := ⟨TopCat.of B⟩
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   let f' : X ⟶ B' := ⟨f, hf⟩
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   let g' : A' ⟶ B' := ⟨g,hg⟩
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   have : Epi g' := by
     rw [CompHaus.epi_iff_surjective]
     assumption
   obtain ⟨h,hh⟩ := Projective.factors f' g'
+  -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
   refine ⟨h,h.2,?_⟩
+  -- ⊢ g ∘ ↑h = f
   ext t
+  -- ⊢ (g ∘ ↑h) t = f t
   apply_fun (fun e => e t) at hh
+  -- ⊢ (g ∘ ↑h) t = f t
   exact hh
+  -- 🎉 no goals
 
 /-- `Projective` implies `Stonean`. -/
 @[simps!]
@@ -161,19 +176,31 @@ def isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
   left_inv f := by ext; rfl
+                   -- ⊢ ↑(isoOfHomeo (homeoOfIso f)).hom x✝ = ↑f.hom x✝
+                        -- 🎉 no goals
   right_inv f := by ext; rfl
+                    -- ⊢ ↑(homeoOfIso (isoOfHomeo f)) x✝ = ↑f x✝
+                         -- 🎉 no goals
 
 /-- Every Stonean space is projective in `CompHaus` -/
 instance (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
+    -- ⊢ ∃ f', f' ≫ f = φ
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
+    -- ⊢ ∃ f', f' ≫ f = φ
     have hf : f.1.Surjective
+    -- ⊢ Function.Surjective f.toFun
     · rwa [CompHaus.epi_iff_surjective] at *
+      -- 🎉 no goals
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    -- ⊢ ∃ f', f' ≫ f = φ
     use ⟨f', h.left⟩
+    -- ⊢ ContinuousMap.mk f' ≫ f = φ
     ext
+    -- ⊢ ↑(ContinuousMap.mk f' ≫ f) x✝ = ↑φ x✝
     exact congr_fun h.right _
+    -- 🎉 no goals
 
 end Stonean
 
@@ -189,12 +216,19 @@ def presentation (X : CompHaus) : Stonean where
     refine' CompactT2.Projective.extremallyDisconnected
       (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => _)
     let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := ⟨g, hgcont⟩
+    -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
     let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := ⟨f, hfcont⟩
+    -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
     have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
+    -- ⊢ ∃ h, Continuous h ∧ g ∘ h = f
     refine' ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => _)⟩
+    -- ⊢ (g ∘ ↑(Projective.factorThru f₁ g₁)) x✝ = f x✝
     change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
+    -- ⊢ ↑(Projective.factorThru f₁ g₁ ≫ g₁) x✝ = f x✝
     rw [Projective.factorThru_comp]
+    -- ⊢ ↑f₁ x✝ = f x✝
     rfl
+    -- 🎉 no goals
 
 /-- The morphism from `presentation X` to `X`. -/
 noncomputable
@@ -227,16 +261,25 @@ def lift {X Y : CompHaus} {Z : Stonean} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Ep
 @[simp, reassoc]
 lemma lift_lifts {X Y : CompHaus} {Z : Stonean} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] :
     lift e f ≫ f = e := by simp [lift]
+                           -- 🎉 no goals
 
 lemma Gleason (X : CompHaus.{u}) :
     Projective X ↔ ExtremallyDisconnected X := by
   constructor
+  -- ⊢ Projective X → ExtremallyDisconnected ↑X.toTop
   · intro h
+    -- ⊢ ExtremallyDisconnected ↑X.toTop
     show ExtremallyDisconnected X.toStonean
+    -- ⊢ ExtremallyDisconnected (CoeSort.coe (toStonean X))
     infer_instance
+    -- 🎉 no goals
   · intro h
+    -- ⊢ Projective X
     let X' : Stonean := ⟨X⟩
+    -- ⊢ Projective X
     show Projective X'.compHaus
+    -- ⊢ Projective X'.compHaus
     apply Stonean.instProjectiveCompHausCategoryCompHaus
+    -- 🎉 no goals
 
 end CompHaus

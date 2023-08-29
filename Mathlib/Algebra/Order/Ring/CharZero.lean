@@ -21,5 +21,7 @@ instance (priority := 100) StrictOrderedSemiring.to_charZero [StrictOrderedSemir
   ⟨StrictMono.injective <|
       strictMono_nat_of_lt_succ fun n => by
         rw [Nat.cast_succ]
+        -- ⊢ ↑n < ↑n + 1
         apply lt_add_one⟩
+        -- 🎉 no goals
 #align strict_ordered_semiring.to_char_zero StrictOrderedSemiring.to_charZero

@@ -71,7 +71,9 @@ deriving instance LargeCategory, Category for FrmCat
 
 instance : ConcreteCategory FrmCat := by
   unfold FrmCat
+  -- ⊢ ConcreteCategory (Bundled Frame)
   infer_instance
+  -- 🎉 no goals
 
 instance hasForgetToLat : HasForget₂ FrmCat LatCat where
   forget₂ :=
@@ -86,10 +88,14 @@ def Iso.mk {α β : FrmCat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : FrameHom _ _)
   hom_inv_id := by
     ext
+    -- ⊢ ↑({ toInfTopHom := { toInfHom := { toFun := ↑e, map_inf' := (_ : ∀ (a b : ↑α …
     exact e.symm_apply_apply _
+    -- 🎉 no goals
   inv_hom_id := by
     ext
+    -- ⊢ ↑({ toInfTopHom := { toInfHom := { toFun := ↑(OrderIso.symm e), map_inf' :=  …
     exact e.apply_symm_apply _
+    -- 🎉 no goals
 #align Frm.iso.mk FrmCat.Iso.mk
 
 end FrmCat

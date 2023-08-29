@@ -57,6 +57,7 @@ theorem Submonoid.fg_iff (P : Submonoid M) :
     Submonoid.FG P ↔ ∃ S : Set M, Submonoid.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
+                                -- 🎉 no goals
 #align submonoid.fg_iff Submonoid.fg_iff
 #align add_submonoid.fg_iff AddSubmonoid.fg_iff
 
@@ -65,14 +66,17 @@ theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG
     let ⟨S, hS, hf⟩ := (Submonoid.fg_iff _).1 h
     (AddSubmonoid.fg_iff _).mpr
       ⟨Additive.toMul ⁻¹' S, by simp [← Submonoid.toAddSubmonoid_closure, hS], hf⟩,
+                                -- 🎉 no goals
     fun h =>
     let ⟨T, hT, hf⟩ := (AddSubmonoid.fg_iff _).1 h
     (Submonoid.fg_iff _).mpr
       ⟨Multiplicative.ofAdd ⁻¹' T, by simp [← AddSubmonoid.toSubmonoid'_closure, hT], hf⟩⟩
+                                      -- 🎉 no goals
 #align submonoid.fg_iff_add_fg Submonoid.fg_iff_add_fg
 
 theorem AddSubmonoid.fg_iff_mul_fg (P : AddSubmonoid N) : P.FG ↔ P.toSubmonoid.FG := by
   convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
+  -- 🎉 no goals
 #align add_submonoid.fg_iff_mul_fg AddSubmonoid.fg_iff_mul_fg
 
 end Submonoid
@@ -133,7 +137,9 @@ instance Monoid.fg_of_addMonoid_fg [AddMonoid.FG N] : Monoid.FG (Multiplicative 
 @[to_additive]
 instance (priority := 100) Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
   cases nonempty_fintype M
+  -- ⊢ FG M
   exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submonoid.closure_univ⟩⟩
+  -- 🎉 no goals
 #align monoid.fg_of_finite Monoid.fg_of_finite
 #align add_monoid.fg_of_finite AddMonoid.fg_of_finite
 
@@ -152,20 +158,28 @@ theorem Submonoid.FG.map {M' : Type*} [Monoid M'] {P : Submonoid M} (h : P.FG) (
 theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e : M →* M')
     (he : Function.Injective e) (h : (P.map e).FG) : P.FG := by
   obtain ⟨s, hs⟩ := h
+  -- ⊢ FG P
   use s.preimage e (he.injOn _)
+  -- ⊢ closure ↑(Finset.preimage s ↑e (_ : Set.InjOn (↑e) (↑e ⁻¹' ↑s))) = P
   apply Submonoid.map_injective_of_injective he
+  -- ⊢ Submonoid.map e (closure ↑(Finset.preimage s ↑e (_ : Set.InjOn (↑e) (↑e ⁻¹'  …
   rw [← hs, MonoidHom.map_mclosure e, Finset.coe_preimage]
+  -- ⊢ closure (↑e '' (↑e ⁻¹' ↑s)) = closure ↑s
   congr
+  -- ⊢ ↑e '' (↑e ⁻¹' ↑s) = ↑s
   rw [Set.image_preimage_eq_iff, ← MonoidHom.coe_mrange e, ← Submonoid.closure_le, hs,
       MonoidHom.mrange_eq_map e]
   exact Submonoid.monotone_map le_top
+  -- 🎉 no goals
 #align submonoid.fg.map_injective Submonoid.FG.map_injective
 #align add_submonoid.fg.map_injective AddSubmonoid.FG.map_injective
 
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
   conv_rhs => rw [← N.range_subtype, MonoidHom.mrange_eq_map]
+  -- ⊢ FG { x // x ∈ N } ↔ Submonoid.FG (Submonoid.map (Submonoid.subtype N) ⊤)
   exact ⟨fun h => h.out.map N.subtype, fun h => ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
+  -- 🎉 no goals
 #align monoid.fg_iff_submonoid_fg Monoid.fg_iff_submonoid_fg
 #align add_monoid.fg_iff_add_submonoid_fg AddMonoid.fg_iff_addSubmonoid_fg
 
@@ -202,7 +216,9 @@ instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
 @[to_additive]
 instance Monoid.closure_finset_fg (s : Finset M) : Monoid.FG (Submonoid.closure (s : Set M)) := by
   refine' ⟨⟨s.preimage Subtype.val (Subtype.coe_injective.injOn _), _⟩⟩
+  -- ⊢ Submonoid.closure ↑(Finset.preimage s Subtype.val (_ : Set.InjOn (fun a => ↑ …
   rw [Finset.coe_preimage, Submonoid.closure_closure_coe_preimage]
+  -- 🎉 no goals
 #align monoid.closure_finset_fg Monoid.closure_finset_fg
 #align add_monoid.closure_finset_fg AddMonoid.closure_finset_fg
 
@@ -238,6 +254,7 @@ theorem Subgroup.fg_iff (P : Subgroup G) :
     Subgroup.FG P ↔ ∃ S : Set G, Subgroup.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
+                                -- 🎉 no goals
 #align subgroup.fg_iff Subgroup.fg_iff
 #align add_subgroup.fg_iff AddSubgroup.fg_iff
 
@@ -246,27 +263,42 @@ theorem Subgroup.fg_iff (P : Subgroup G) :
 and only if it is finitely generated as an additive submonoid."]
 theorem Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.FG := by
   constructor
+  -- ⊢ FG P → Submonoid.FG P.toSubmonoid
   · rintro ⟨S, rfl⟩
+    -- ⊢ Submonoid.FG (closure ↑S).toSubmonoid
     rw [Submonoid.fg_iff]
+    -- ⊢ ∃ S_1, Submonoid.closure S_1 = (closure ↑S).toSubmonoid ∧ Set.Finite S_1
     refine' ⟨S ∪ S⁻¹, _, S.finite_toSet.union S.finite_toSet.inv⟩
+    -- ⊢ Submonoid.closure (↑S ∪ (↑S)⁻¹) = (closure ↑S).toSubmonoid
     exact (Subgroup.closure_toSubmonoid _).symm
+    -- 🎉 no goals
   · rintro ⟨S, hS⟩
+    -- ⊢ FG P
     refine' ⟨S, le_antisymm _ _⟩
+    -- ⊢ closure ↑S ≤ P
     · rw [Subgroup.closure_le, ← Subgroup.coe_toSubmonoid, ← hS]
+      -- ⊢ ↑S ⊆ ↑(Submonoid.closure ↑S)
       exact Submonoid.subset_closure
+      -- 🎉 no goals
     · rw [← Subgroup.toSubmonoid_le, ← hS, Submonoid.closure_le]
+      -- ⊢ ↑S ⊆ ↑(closure ↑S).toSubmonoid
       exact Subgroup.subset_closure
+      -- 🎉 no goals
 #align subgroup.fg_iff_submonoid_fg Subgroup.fg_iff_submonoid_fg
 #align add_subgroup.fg_iff_add_submonoid.fg AddSubgroup.fg_iff_addSubmonoid_fg
 
 theorem Subgroup.fg_iff_add_fg (P : Subgroup G) : P.FG ↔ P.toAddSubgroup.FG := by
   rw [Subgroup.fg_iff_submonoid_fg, AddSubgroup.fg_iff_addSubmonoid_fg]
+  -- ⊢ Submonoid.FG P.toSubmonoid ↔ AddSubmonoid.FG (↑toAddSubgroup P).toAddSubmonoid
   exact (Subgroup.toSubmonoid P).fg_iff_add_fg
+  -- 🎉 no goals
 #align subgroup.fg_iff_add_fg Subgroup.fg_iff_add_fg
 
 theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG := by
   rw [AddSubgroup.fg_iff_addSubmonoid_fg, Subgroup.fg_iff_submonoid_fg]
+  -- ⊢ AddSubmonoid.FG P.toAddSubmonoid ↔ Submonoid.FG (↑toSubgroup P).toSubmonoid
   exact AddSubmonoid.fg_iff_mul_fg (AddSubgroup.toAddSubmonoid P)
+  -- 🎉 no goals
 #align add_subgroup.fg_iff_mul_fg AddSubgroup.fg_iff_mul_fg
 
 end Subgroup
@@ -347,7 +379,9 @@ instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) 
 @[to_additive]
 instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
   cases nonempty_fintype G
+  -- ⊢ FG G
   exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Subgroup.closure_univ⟩⟩
+  -- 🎉 no goals
 #align group.fg_of_finite Group.fg_of_finite
 #align add_group.fg_of_finite AddGroup.fg_of_finite
 
@@ -368,7 +402,9 @@ instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : G
 @[to_additive]
 instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := by
   refine' ⟨⟨s.preimage Subtype.val (Subtype.coe_injective.injOn _), _⟩⟩
+  -- ⊢ Subgroup.closure ↑(Finset.preimage s Subtype.val (_ : Set.InjOn (fun a => ↑a …
   rw [Finset.coe_preimage, ← Subgroup.coeSubtype, Subgroup.closure_preimage_eq_top]
+  -- 🎉 no goals
 #align group.closure_finset_fg Group.closure_finset_fg
 #align add_group.closure_finset_fg AddGroup.closure_finset_fg
 
@@ -436,6 +472,8 @@ namespace Subgroup
 @[to_additive]
 theorem rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) :
     Group.rank H = Group.rank K := by subst h; rfl
+                                      -- ⊢ Group.rank { x // x ∈ H } = Group.rank { x // x ∈ H }
+                                               -- 🎉 no goals
 #align subgroup.rank_congr Subgroup.rank_congr
 #align add_subgroup.rank_congr AddSubgroup.rank_congr
 
@@ -458,8 +496,11 @@ theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Se
 theorem rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
     Group.rank (closure s) ≤ Nat.card s := by
   haveI := Fintype.ofFinite s
+  -- ⊢ Group.rank { x // x ∈ closure s } ≤ Nat.card ↑s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
+  -- ⊢ Group.rank { x // x ∈ closure ↑(Set.toFinset s) } ≤ Finset.card (Set.toFinse …
   exact rank_closure_finset_le_card s.toFinset
+  -- 🎉 no goals
 #align subgroup.rank_closure_finite_le_nat_card Subgroup.rank_closure_finite_le_nat_card
 #align add_subgroup.rank_closure_finite_le_nat_card AddSubgroup.rank_closure_finite_le_nat_card
 

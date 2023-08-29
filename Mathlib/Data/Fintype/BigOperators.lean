@@ -37,6 +37,7 @@ namespace Fintype
 
 @[to_additive]
 theorem prod_bool [CommMonoid α] (f : Bool → α) : ∏ b, f b = f true * f false := by simp
+                                                                                    -- 🎉 no goals
 #align fintype.prod_bool Fintype.prod_bool
 #align fintype.sum_bool Fintype.sum_bool
 
@@ -54,6 +55,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 theorem prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
     ∏ i, (if i ∈ s then f i else 1) = ∏ i in s, f i := by
   rw [← prod_filter, filter_mem_eq_inter, univ_inter]
+  -- 🎉 no goals
 #align fintype.prod_extend_by_one Fintype.prod_extend_by_one
 #align fintype.sum_extend_by_zero Fintype.sum_extend_by_zero
 
@@ -85,7 +87,10 @@ theorem prod_eq_single {f : α → M} (a : α) (h : ∀ (x) (_ : x ≠ a), f x =
 theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x ≠ a ∧ x ≠ b → f x = 1) :
     ∏ x, f x = f a * f b := by
   apply Finset.prod_eq_mul a b h₁ fun x _ hx => h₂ x hx <;>
+  -- ⊢ ¬a ∈ Finset.univ → f a = 1
     exact fun hc => (hc (Finset.mem_univ _)).elim
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align fintype.prod_eq_mul Fintype.prod_eq_mul
 #align fintype.sum_eq_add Fintype.sum_eq_add
 
@@ -134,6 +139,7 @@ theorem Finset.card_pi [DecidableEq α] {δ : α → Type*} (s : Finset α) (t :
 @[simp]
 theorem Fintype.card_piFinset [DecidableEq α] [Fintype α] {δ : α → Type*} (t : ∀ a, Finset (δ a)) :
     (Fintype.piFinset t).card = ∏ a, Finset.card (t a) := by simp [Fintype.piFinset, card_map]
+                                                             -- 🎉 no goals
 #align fintype.card_pi_finset Fintype.card_piFinset
 
 @[simp]
@@ -147,17 +153,22 @@ theorem Fintype.card_pi {β : α → Type*} [DecidableEq α] [Fintype α] [∀ a
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
   rw [Fintype.card_pi, Finset.prod_const]; rfl
+  -- ⊢ card β ^ Finset.card univ = card β ^ card α
+                                           -- 🎉 no goals
 #align fintype.card_fun Fintype.card_fun
 
 @[simp]
 theorem card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
+  -- ⊢ Fintype.card (Fin n → α) = Fintype.card α ^ n
+                             -- 🎉 no goals
 #align card_vector card_vector
 
 @[to_additive (attr := simp)]
 theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a ∈ @univ α _ } → β) :
     ∏ x in univ.attach, f x = ∏ x, f ⟨x, mem_univ _⟩ :=
   Fintype.prod_equiv (Equiv.subtypeUnivEquiv fun x => mem_univ _) _ _ fun x => by simp
+                                                                                  -- 🎉 no goals
 #align finset.prod_attach_univ Finset.prod_attach_univ
 #align finset.sum_attach_univ Finset.sum_attach_univ
 
@@ -177,8 +188,11 @@ theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : 
     ⟨fun a _ => x a, by simp_all⟩
   -- Porting note: old proof was `by simp`
   intro a ha
+  -- ⊢ (fun x x_1 a => x a (_ : a ∈ univ)) a ha ∈ Fintype.piFinset t
   simp only [Fintype.piFinset, mem_map, mem_pi, Function.Embedding.coeFn_mk]
+  -- ⊢ ∃ a_1, (∀ (a : α) (h : a ∈ univ), a_1 a h ∈ t a) ∧ (fun a => a_1 a (_ : a ∈  …
   exact ⟨a, by simpa using ha, by simp⟩
+  -- 🎉 no goals
 #align finset.prod_univ_pi Finset.prod_univ_pi
 #align finset.sum_univ_pi Finset.sum_univ_pi
 
@@ -189,6 +203,7 @@ theorem Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ
     [∀ a : α, DecidableEq (δ a)] {t : ∀ a : α, Finset (δ a)} {f : ∀ a : α, δ a → β} :
     (∏ a, ∑ b in t a, f a b) = ∑ p in Fintype.piFinset t, ∏ x, f x (p x) := by
   simp only [Finset.prod_attach_univ, prod_sum, Finset.sum_univ_pi]
+  -- 🎉 no goals
 #align finset.prod_univ_sum Finset.prod_univ_sum
 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a fintype of cardinality `n`
@@ -229,7 +244,10 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
   calc
     ∏ i : Fin n, f i = ∏ i : { x // x ∈ range n }, f i :=
       (Fin.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))).prod_comp' _ _ (by simp)
+                                                           -- 🎉 no goals
+                                                                                      -- 🎉 no goals
     _ = ∏ i in range n, f i := by rw [← attach_eq_univ, prod_attach]
+                                  -- 🎉 no goals
 #align fin.prod_univ_eq_prod_range Fin.prod_univ_eq_prod_range
 #align fin.sum_univ_eq_sum_range Fin.sum_univ_eq_sum_range
 
@@ -237,8 +255,11 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
 theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
     ∏ i, c i = ∏ i in Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
+  -- ⊢ ∀ (x : Fin n), x ∈ univ → c x = if h : ↑x < n then c { val := ↑x, isLt := h  …
   rintro ⟨i, hi⟩ _
+  -- ⊢ c { val := i, isLt := hi } = if h : ↑{ val := i, isLt := hi } < n then c { v …
   simp only [hi, dif_pos]
+  -- 🎉 no goals
 #align finset.prod_fin_eq_prod_range Finset.prod_fin_eq_prod_range
 #align finset.sum_fin_eq_sum_range Finset.sum_fin_eq_sum_range
 
@@ -246,7 +267,11 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
     [DecidablePred p] (f : α → M) : ∏ a in { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
+  -- ⊢ ∀ (x : α), x ∈ Set.toFinset {x | p x} ↔ p x
   simp_rw [Set.mem_toFinset]; intro; rfl
+  -- ⊢ ∀ (x : α), x ∈ {x | p x} ↔ p x
+                              -- ⊢ x✝ ∈ {x | p x} ↔ p x✝
+                                     -- 🎉 no goals
 #align finset.prod_to_finset_eq_subtype Finset.prod_toFinset_eq_subtype
 #align finset.sum_to_finset_eq_subtype Finset.sum_toFinset_eq_subtype
 
@@ -261,7 +286,9 @@ theorem Finset.prod_fiberwise [DecidableEq β] [Fintype β] [CommMonoid γ] (s :
 theorem Fintype.prod_fiberwise [Fintype α] [DecidableEq β] [Fintype β] [CommMonoid γ] (f : α → β)
     (g : α → γ) : (∏ b : β, ∏ a : { a // f a = b }, g (a : α)) = ∏ a, g a := by
   rw [← (Equiv.sigmaFiberEquiv f).prod_comp, ← univ_sigma_univ, prod_sigma]
+  -- ⊢ ∏ b : β, ∏ a : { a // f a = b }, g ↑a = ∏ a : β, ∏ s : { x // f x = a }, g ( …
   rfl
+  -- 🎉 no goals
 #align fintype.prod_fiberwise Fintype.prod_fiberwise
 #align fintype.sum_fiberwise Fintype.sum_fiberwise
 
@@ -270,9 +297,13 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
   simp only [prod_dite, attach_eq_univ]
+  -- ⊢ (∏ x : { x // x ∈ filter (fun x => p x) univ }, f ↑x (_ : p ↑x)) * ∏ x : { x …
   congr 1
+  -- ⊢ ∏ x : { x // x ∈ filter (fun x => p x) univ }, f ↑x (_ : p ↑x) = ∏ a : { a / …
   · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // p x } => f x x.2
+    -- 🎉 no goals
   · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // ¬p x } => g x x.2
+    -- 🎉 no goals
 #align fintype.prod_dite Fintype.prod_dite
 
 section

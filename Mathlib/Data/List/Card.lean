@@ -27,9 +27,11 @@ theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ b
 
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x ↦ by simp
+             -- 🎉 no goals
 
 theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as ∪ bs).equiv (as ++ bs) :=
   fun x ↦ by simp
+             -- 🎉 no goals
 
 section DecidableEq
 variable [DecidableEq α] [DecidableEq β]
@@ -64,13 +66,19 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
 
 theorem remove_eq_of_not_mem {a : α} : ∀ {as : List α}, (a ∉ as) → remove a as = as
   | [], _ => by simp [remove]
+                -- 🎉 no goals
   | a' :: as, h => by
     have h1 : a ≠ a' := fun h' ↦ h (by rw [h']; apply mem_cons_self)
+    -- ⊢ remove a (a' :: as) = a' :: as
     have h2 : a ∉ as := fun h' ↦ h (mem_cons_of_mem _ h')
+    -- ⊢ remove a (a' :: as) = a' :: as
     simp [remove, h1, remove_eq_of_not_mem h2]
+    -- 🎉 no goals
 
 theorem mem_of_mem_remove {a b : α} {as : List α} (h : b ∈ remove a as) : b ∈ as := by
   rw [mem_remove_iff] at h; exact h.1
+  -- ⊢ b ∈ as
+                            -- 🎉 no goals
 
 /- card -/
 
@@ -82,9 +90,11 @@ def card : List α → Nat
 
 @[simp] theorem card_cons_of_mem {a : α} {as : List α} (h : a ∈ as) :
     card (a :: as) = card as := by simp [card, h]
+                                   -- 🎉 no goals
 
 @[simp] theorem card_cons_of_not_mem {a : α} {as : List α} (h : a ∉ as) :
     card (a :: as) = card as + 1 := by simp [card, h]
+                                       -- 🎉 no goals
 
 theorem card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) := by
   cases Decidable.em (a ∈ as) with
@@ -93,9 +103,11 @@ theorem card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) :
 
 @[simp] theorem card_insert_of_mem {a : α} {as : List α} (h : a ∈ as) :
     card (as.insert a) = card as := by simp [h]
+                                       -- 🎉 no goals
 
 @[simp] theorem card_insert_of_not_mem {a : α} {as : List α} (h : a ∉ as) :
     card (as.insert a) = card as + 1 := by simp [h]
+                                           -- 🎉 no goals
 
 theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as = card (remove a as) + 1
   | [], h => False.elim (not_mem_nil _ h)
@@ -123,6 +135,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
 
 theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card bs
   | [], bs, _ => by simp
+                    -- 🎉 no goals
   | (a :: as), bs, hsub => by
     cases Decidable.em (a ∈ as) with
     | inl h' =>
@@ -177,8 +190,10 @@ theorem card_eq_of_equiv {as bs : List α} (h : as.equiv bs) : card as = card bs
 theorem card_append_disjoint : ∀ {as bs : List α},
     Disjoint as bs → card (as ++ bs) = card as + card bs
   | [], _, _ => by simp
+                   -- 🎉 no goals
   | a :: as, bs, disj => by
     have disj' : Disjoint as bs := fun _ h1 h2 ↦ disj (mem_cons_of_mem a h1) h2
+    -- ⊢ card (a :: as ++ bs) = card (a :: as) + card bs
     cases Decidable.em (a ∈ as) with
     | inl h =>
       simp [h, card_append_disjoint disj']
@@ -190,6 +205,7 @@ theorem card_append_disjoint : ∀ {as bs : List α},
 theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
     card (as ∪ bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
+  -- 🎉 no goals
 
 end DecidableEq
 

@@ -58,6 +58,9 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [Conti
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
   coe_injective' φ ψ h := by ext1; apply FunLike.ext; exact congr_fun h
+                             -- ⊢ ↑φ = ↑ψ
+                                   -- ⊢ ∀ (x : A), ↑↑φ x = ↑↑ψ x
+                                                      -- 🎉 no goals
   map_smulₛₗ φ := (φ : WeakDual 𝕜 A).map_smul
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
@@ -109,6 +112,7 @@ instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
       rw [show x = 0 from Subsingleton.elim x 0, map_zero, map_zero] ⟩
+      -- 🎉 no goals
 
 variable (𝕜 A)
 
@@ -116,8 +120,11 @@ theorem union_zero :
     characterSpace 𝕜 A ∪ {0} = {φ : WeakDual 𝕜 A | ∀ x y : A, φ (x * y) = φ x * φ y} :=
   le_antisymm (by
       rintro φ (hφ | rfl)
+      -- ⊢ φ ∈ {φ | ∀ (x y : A), ↑φ (x * y) = ↑φ x * ↑φ y}
       · exact hφ.2
+        -- 🎉 no goals
       · exact fun _ _ => by exact (zero_mul (0 : 𝕜)).symm)
+        -- 🎉 no goals
     fun φ hφ => Or.elim (em <| φ = 0) Or.inr fun h₀ => Or.inl ⟨h₀, hφ⟩
 #align weak_dual.character_space.union_zero WeakDual.CharacterSpace.union_zero
 
@@ -125,6 +132,7 @@ theorem union_zero :
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A ∪ {0}) := by
   simp only [union_zero, Set.setOf_forall]
+  -- ⊢ IsClosed (⋂ (i : A) (i_1 : A), {x | ↑x (i * i_1) = ↑x i * ↑x i_1})
   exact
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
@@ -142,15 +150,22 @@ variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [Continuo
 instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ => by
     have h₁ : φ 1 * (1 - φ 1) = 0 := by rw [mul_sub, sub_eq_zero, mul_one, ← map_mul φ, one_mul]
+    -- ⊢ ↑φ 1 = 1
     rcases mul_eq_zero.mp h₁ with (h₂ | h₂)
+    -- ⊢ ↑φ 1 = 1
     · have : ∀ a, φ (a * 1) = 0 := fun a => by simp only [map_mul φ, h₂, mul_zero]
+      -- ⊢ ↑φ 1 = 1
       exact False.elim (φ.prop.1 <| ContinuousLinearMap.ext <| by simpa only [mul_one] using this)
+      -- 🎉 no goals
     · exact (sub_eq_zero.mp h₂).symm
+      -- 🎉 no goals
   { CharacterSpace.instNonUnitalAlgHomClass with
     map_one := map_one'
     commutes := fun φ r => by
       rw [Algebra.algebraMap_eq_smul_one, Algebra.id.map_eq_id, RingHom.id_apply]
+      -- ⊢ ↑φ (r • 1) = r
       rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
+      -- 🎉 no goals
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]
@@ -163,14 +178,23 @@ def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
 theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
     characterSpace 𝕜 A = {φ : WeakDual 𝕜 A | φ 1 = 1 ∧ ∀ x y : A, φ (x * y) = φ x * φ y} := by
   ext φ
+  -- ⊢ φ ∈ characterSpace 𝕜 A ↔ φ ∈ {φ | ↑φ 1 = 1 ∧ ∀ (x y : A), ↑φ (x * y) = ↑φ x  …
   refine' ⟨_, _⟩
+  -- ⊢ φ ∈ characterSpace 𝕜 A → φ ∈ {φ | ↑φ 1 = 1 ∧ ∀ (x y : A), ↑φ (x * y) = ↑φ x  …
   · rintro hφ
+    -- ⊢ φ ∈ {φ | ↑φ 1 = 1 ∧ ∀ (x y : A), ↑φ (x * y) = ↑φ x * ↑φ y}
     lift φ to characterSpace 𝕜 A using hφ
+    -- ⊢ ↑φ ∈ {φ | ↑φ 1 = 1 ∧ ∀ (x y : A), ↑φ (x * y) = ↑φ x * ↑φ y}
     exact ⟨map_one φ, map_mul φ⟩
+    -- 🎉 no goals
   · rintro ⟨hφ₁, hφ₂⟩
+    -- ⊢ φ ∈ characterSpace 𝕜 A
     refine' ⟨_, hφ₂⟩
+    -- ⊢ φ ≠ 0
     rintro rfl
+    -- ⊢ False
     exact zero_ne_one hφ₁
+    -- 🎉 no goals
 #align weak_dual.character_space.eq_set_map_one_map_mul WeakDual.CharacterSpace.eq_set_map_one_map_mul
 
 /-- under suitable mild assumptions on `𝕜`, the character space is a closed set in
@@ -178,8 +202,11 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
 protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A) := by
   rw [eq_set_map_one_map_mul, Set.setOf_and]
+  -- ⊢ IsClosed ({a | ↑a 1 = 1} ∩ {a | ∀ (x y : A), ↑a (x * y) = ↑a x * ↑a y})
   refine' IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) _
+  -- ⊢ IsClosed {a | ∀ (x y : A), ↑a (x * y) = ↑a x * ↑a y}
   simpa only [(union_zero 𝕜 A).symm] using union_zero_isClosed _ _
+  -- 🎉 no goals
 #align weak_dual.character_space.is_closed WeakDual.CharacterSpace.isClosed
 
 end Unital
@@ -195,9 +222,11 @@ theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A
 
 theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
   ext x
+  -- ⊢ ↑φ x = ↑ψ x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
     simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)
   rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
+  -- 🎉 no goals
 #align weak_dual.character_space.ext_ker WeakDual.CharacterSpace.ext_ker
 
 end Ring
@@ -214,6 +243,7 @@ variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
   RingHom.ker_isMaximal_of_surjective φ fun z =>
     ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply]⟩
+                          -- 🎉 no goals
 #align weak_dual.ker_is_maximal WeakDual.ker_isMaximal
 
 end Kernel
@@ -234,10 +264,20 @@ def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
     { toFun := fun φ => φ a
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
   map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
+                 -- ⊢ ↑((fun a => mk fun φ => ↑φ a) 1) a = ↑1 a
+                        -- 🎉 no goals
   map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]
+                     -- ⊢ ↑(OneHom.toFun { toFun := fun a => mk fun φ => ↑φ a, map_one' := (_ : (fun a …
+                          -- 🎉 no goals
   map_zero' := by ext; simp only [map_zero, coe_mk, coe_mul, coe_zero, Pi.zero_apply]
+                  -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun a => mk fun φ => ↑φ a, map_one …
+                       -- 🎉 no goals
   map_add' a b := by ext; simp only [map_add, coe_mk, coe_add, Pi.add_apply]
+                     -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun a => mk fun φ => ↑φ a, map_one …
+                          -- 🎉 no goals
   commutes' k := by ext; simp [AlgHomClass.commutes]
+                    -- ⊢ ↑(OneHom.toFun (↑↑{ toMonoidHom := { toOneHom := { toFun := fun a => mk fun  …
+                         -- 🎉 no goals
 #align weak_dual.gelfand_transform WeakDual.gelfandTransform
 
 end GelfandTransform

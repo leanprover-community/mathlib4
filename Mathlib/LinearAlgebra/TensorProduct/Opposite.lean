@@ -39,6 +39,12 @@ def opAlgEquiv : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ :=
     (AlgHom.opComm <| algHomOfLinearMapTensorProduct e₂.toLinearMap
       (fun a₁ a₂ b₁ b₂ => unop_injective rfl) (fun r => unop_injective rfl))
     (AlgHom.op.symm.injective <| by ext <;> rfl) (by ext <;> rfl)
+                                    -- ⊢ ↑(AlgHom.comp (↑AlgHom.op.symm (AlgHom.comp (algHomOfLinearMapTensorProduct  …
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
+                                                     -- ⊢ ↑(AlgHom.comp (AlgHom.comp (↑AlgHom.opComm (algHomOfLinearMapTensorProduct ↑ …
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
 
 theorem opAlgEquiv_apply (x : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ) :
     opAlgEquiv R S A B x =

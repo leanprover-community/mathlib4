@@ -21,10 +21,15 @@ namespace Int
 theorem eq_mul_div_of_mul_eq_mul_of_dvd_left {a b c d : ℤ} (hb : b ≠ 0) (hbc : b ∣ c)
     (h : b * a = c * d) : a = c / b * d := by
   cases' hbc with k hk
+  -- ⊢ a = c / b * d
   subst hk
+  -- ⊢ a = b * k / b * d
   rw [Int.mul_ediv_cancel_left _ hb]
+  -- ⊢ a = k * d
   rw [mul_assoc] at h
+  -- ⊢ a = k * d
   apply mul_left_cancel₀ hb h
+  -- 🎉 no goals
 #align int.eq_mul_div_of_mul_eq_mul_of_dvd_left Int.eq_mul_div_of_mul_eq_mul_of_dvd_left
 
 /-- If an integer with larger absolute value divides an integer, it is
@@ -32,8 +37,11 @@ zero. -/
 theorem eq_zero_of_dvd_of_natAbs_lt_natAbs {a b : ℤ} (w : a ∣ b) (h : natAbs b < natAbs a) :
     b = 0 := by
   rw [← natAbs_dvd, ← dvd_natAbs, coe_nat_dvd] at w
+  -- ⊢ b = 0
   rw [← natAbs_eq_zero]
+  -- ⊢ natAbs b = 0
   exact eq_zero_of_dvd_of_lt w h
+  -- 🎉 no goals
 #align int.eq_zero_of_dvd_of_nat_abs_lt_nat_abs Int.eq_zero_of_dvd_of_natAbs_lt_natAbs
 
 theorem eq_zero_of_dvd_of_nonneg_of_lt {a b : ℤ} (w₁ : 0 ≤ a) (w₂ : a < b) (h : b ∣ a) : a = 0 :=

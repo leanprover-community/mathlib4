@@ -46,7 +46,22 @@ instance : Bitraversable Prod where bitraverse := @Prod.bitraverse
 
 instance : LawfulBitraversable Prod := by
   constructor <;> intros <;> casesm _ × _ <;>
+                  -- ⊢ bitraverse pure pure x✝ = pure x✝
+                  -- ⊢ bitraverse (Functor.Comp.mk ∘ Functor.map f✝ ∘ g✝) (Functor.Comp.mk ∘ Functo …
+                  -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
+                             -- ⊢ bitraverse pure pure (fst✝, snd✝) = pure (fst✝, snd✝)
+                             -- ⊢ bitraverse (Functor.Comp.mk ∘ Functor.map f✝ ∘ g✝) (Functor.Comp.mk ∘ Functo …
+                             -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) (fst✝, snd✝) = pure (bimap f✝ f'✝ (fst✝, …
+                             -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ (fst✝, sn …
     simp [bitraverse, Prod.bitraverse, functor_norm, -ApplicativeTransformation.app_eq_coe] <;> rfl
+    -- ⊢ (Seq.seq (Prod.mk fst✝) fun x => snd✝) = (fst✝, snd✝)
+    -- ⊢ Functor.Comp.mk (Seq.seq (((fun x => x ∘ f'✝) ∘ (fun x x_1 => Seq.seq x fun  …
+    -- ⊢ (Seq.seq (Prod.mk (f✝ fst✝)) fun x => f'✝ snd✝) = bimap f✝ f'✝ (fst✝, snd✝)
+    -- 🎉 no goals
+                                                                                                -- 🎉 no goals
+                                                                                                -- 🎉 no goals
+                                                                                                -- 🎉 no goals
 
 open Functor
 
@@ -60,7 +75,27 @@ instance : Bitraversable Sum where bitraverse := @Sum.bitraverse
 
 instance : LawfulBitraversable Sum := by
   constructor <;> intros <;> casesm _ ⊕ _ <;>
+                  -- ⊢ bitraverse pure pure x✝ = pure x✝
+                  -- ⊢ bitraverse (Comp.mk ∘ map f✝ ∘ g✝) (Comp.mk ∘ map f'✝ ∘ g'✝) x✝ = Comp.mk (b …
+                  -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
+                             -- ⊢ bitraverse pure pure (Sum.inl val✝) = pure (Sum.inl val✝)
+                             -- ⊢ bitraverse (Comp.mk ∘ map f✝ ∘ g✝) (Comp.mk ∘ map f'✝ ∘ g'✝) (Sum.inl val✝)  …
+                             -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) (Sum.inl val✝) = pure (bimap f✝ f'✝ (Sum …
+                             -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ (Sum.inl  …
     simp [bitraverse, Sum.bitraverse, functor_norm, -ApplicativeTransformation.app_eq_coe] <;> rfl
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- ⊢ Comp.mk (((fun x => Sum.inl <$> x) ∘ f✝) <$> g✝ val✝) =
+    -- ⊢ Comp.mk (((fun x => Sum.inr <$> x) ∘ f'✝) <$> g'✝ val✝) =
+    -- ⊢ Sum.inl (f✝ val✝) = bimap f✝ f'✝ (Sum.inl val✝)
+    -- ⊢ Sum.inr (f'✝ val✝) = bimap f✝ f'✝ (Sum.inr val✝)
+    -- 🎉 no goals
+    -- 🎉 no goals
+                                                                                               -- 🎉 no goals
+                                                                                               -- 🎉 no goals
+                                                                                               -- 🎉 no goals
+                                                                                               -- 🎉 no goals
 
 
 set_option linter.unusedVariables false in
@@ -76,6 +111,16 @@ instance Bitraversable.const : Bitraversable Const where bitraverse := @Const.bi
 
 instance LawfulBitraversable.const : LawfulBitraversable Const := by
   constructor <;> intros <;> simp [bitraverse, Const.bitraverse, functor_norm] <;> rfl
+                  -- ⊢ bitraverse pure pure x✝ = pure x✝
+                  -- ⊢ bitraverse (Comp.mk ∘ map f✝ ∘ g✝) (Comp.mk ∘ map f'✝ ∘ g'✝) x✝ = Comp.mk (b …
+                  -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
+                             -- 🎉 no goals
+                             -- 🎉 no goals
+                             -- ⊢ f✝ x✝ = bimap f✝ f'✝ x✝
+                             -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (f✝ x✝) = (fun {α} => Applic …
+                                                                                   -- 🎉 no goals
+                                                                                   -- 🎉 no goals
 #align is_lawful_bitraversable.const LawfulBitraversable.const
 
 /-- The bitraverse function for `flip`. -/
@@ -91,6 +136,18 @@ open LawfulBitraversable
 
 instance LawfulBitraversable.flip [LawfulBitraversable t] : LawfulBitraversable (flip t) := by
   constructor <;> intros <;> casesm LawfulBitraversable t <;> apply_assumption only [*]
+                  -- ⊢ bitraverse pure pure x✝ = pure x✝
+                  -- ⊢ bitraverse (Comp.mk ∘ map f✝ ∘ g✝) (Comp.mk ∘ map f'✝ ∘ g'✝) x✝ = Comp.mk (b …
+                  -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
+                             -- ⊢ bitraverse pure pure x✝ = pure x✝
+                             -- ⊢ bitraverse (Comp.mk ∘ map f✝ ∘ g✝) (Comp.mk ∘ map f'✝ ∘ g'✝) x✝ = Comp.mk (b …
+                             -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                             -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
+                                                              -- 🎉 no goals
+                                                              -- 🎉 no goals
+                                                              -- 🎉 no goals
+                                                              -- 🎉 no goals
 #align is_lawful_bitraversable.flip LawfulBitraversable.flip
 
 open Bitraversable Functor
@@ -102,9 +159,20 @@ instance (priority := 10) Bitraversable.traversable {α} : Traversable (t α) wh
 instance (priority := 10) Bitraversable.isLawfulTraversable [LawfulBitraversable t] {α} :
     LawfulTraversable (t α) := by
   constructor <;> intros <;>
+                  -- ⊢ traverse pure x✝ = x✝
+                  -- ⊢ traverse (Comp.mk ∘ map f✝ ∘ g✝) x✝ = Comp.mk (traverse f✝ <$> traverse g✝ x✝)
+                  -- ⊢ traverse (pure ∘ f✝) x✝ = id.mk (f✝ <$> x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (traverse f✝ x✝) = traverse  …
     simp [traverse, comp_tsnd, functor_norm, -ApplicativeTransformation.app_eq_coe]
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- ⊢ tsnd (pure ∘ f✝) x✝ = id.mk (f✝ <$> x✝)
+    -- ⊢ ApplicativeTransformation.app η✝ (t α β✝) (tsnd f✝ x✝) = tsnd (ApplicativeTr …
   · simp [tsnd_eq_snd_id]; rfl
+    -- ⊢ Bifunctor.snd f✝ x✝ = id.mk (f✝ <$> x✝)
+                           -- 🎉 no goals
   · simp [tsnd, binaturality, Function.comp, functor_norm, -ApplicativeTransformation.app_eq_coe]
+    -- 🎉 no goals
 #align bitraversable.is_lawful_traversable Bitraversable.isLawfulTraversable
 
 end
@@ -128,11 +196,18 @@ instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse
 instance [LawfulTraversable F] [LawfulTraversable G] [LawfulBitraversable t] :
     LawfulBitraversable (bicompl t F G) := by
   constructor <;> intros <;>
+                  -- ⊢ bitraverse pure pure x✝ = pure x✝
+                  -- ⊢ bitraverse (Functor.Comp.mk ∘ Functor.map f✝ ∘ g✝) (Functor.Comp.mk ∘ Functo …
+                  -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
     simp [bitraverse, Bicompl.bitraverse, bimap, traverse_id, bitraverse_id_id, comp_bitraverse,
       functor_norm, -ApplicativeTransformation.app_eq_coe]
   · simp [traverse_eq_map_id', bitraverse_eq_bimap_id]
+    -- 🎉 no goals
   · dsimp only [bicompl]
+    -- ⊢ ApplicativeTransformation.app η✝ (t (F β✝) (G β'✝)) (bitraverse (traverse f✝ …
     simp [binaturality, naturality_pf]
+    -- 🎉 no goals
 
 end Bicompl
 
@@ -150,10 +225,18 @@ instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t
 
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := by
   constructor <;> intros <;>
+                  -- ⊢ bitraverse pure pure x✝ = pure x✝
+                  -- ⊢ bitraverse (Functor.Comp.mk ∘ Functor.map f✝ ∘ g✝) (Functor.Comp.mk ∘ Functo …
+                  -- ⊢ bitraverse (pure ∘ f✝) (pure ∘ f'✝) x✝ = pure (bimap f✝ f'✝ x✝)
+                  -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (bitraverse f✝ f'✝ x✝) = bit …
     simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm,
       -ApplicativeTransformation.app_eq_coe]
   · simp [bitraverse_eq_bimap_id', traverse_eq_map_id']; rfl
+    -- ⊢ bimap f✝ f'✝ <$> x✝ = bimap f✝ f'✝ x✝
+                                                         -- 🎉 no goals
   · dsimp only [bicompr]
+    -- ⊢ ApplicativeTransformation.app η✝ (F (t β✝ β'✝)) (traverse (bitraverse f✝ f'✝ …
     simp [naturality, binaturality']
+    -- 🎉 no goals
 
 end Bicompr

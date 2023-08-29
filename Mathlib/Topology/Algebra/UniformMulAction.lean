@@ -107,8 +107,11 @@ instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [Is
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
   ⟨MulOpposite.rec' fun c => by
     dsimp only
+    -- ⊢ UniformContinuous fun x => MulOpposite.op c • x
     simp_rw [op_smul_eq_smul]
+    -- ⊢ UniformContinuous fun x => c • x
     exact uniformContinuous_const_smul c⟩
+    -- 🎉 no goals
 #align has_uniform_continuous_const_smul.op UniformContinuousConstSMul.op
 #align has_uniform_continuous_const_vadd.op UniformContinuousConstVAdd.op
 
@@ -158,7 +161,9 @@ instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
     refine' Eq.trans _ (congr_fun this.symm x)
+    -- ⊢ (m • n) • x = Completion.map ((fun x x_1 => x • x_1) m ∘ (fun x x_1 => x • x …
     exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
+    -- 🎉 no goals
 #align uniform_space.completion.is_scalar_tower UniformSpace.Completion.instIsScalarTower
 #align uniform_space.completion.vadd_assoc_class UniformSpace.Completion.instVAddAssocClass
 
@@ -167,10 +172,13 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] : SMulCommClass M N (Completion X) :=
   ⟨fun m n x => by
     have hmn : m • n • x = (Completion.map (SMul.smul m) ∘ Completion.map (SMul.smul n)) x := rfl
+    -- ⊢ m • n • x = n • m • x
     have hnm : n • m • x = (Completion.map (SMul.smul n) ∘ Completion.map (SMul.smul m)) x := rfl
+    -- ⊢ m • n • x = n • m • x
     rw [hmn, hnm, map_comp, map_comp]
     exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
     repeat' exact uniformContinuous_const_smul _⟩
+    -- 🎉 no goals
 
 @[to_additive]
 instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) :=
@@ -192,9 +200,11 @@ noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M 
     MulAction M (Completion X) where
   smul := (· • ·)
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
+                                                                       -- 🎉 no goals
   mul_smul x y :=
     ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by
       simp only [← coe_smul, mul_smul]
+      -- 🎉 no goals
 
 end Completion
 

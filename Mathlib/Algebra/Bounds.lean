@@ -153,6 +153,7 @@ theorem ciSup_mul (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) * a = ⨆
 @[to_additive]
 theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
   simp only [div_eq_mul_inv, ciSup_mul hf]
+  -- 🎉 no goals
 #align csupr_div ciSup_div
 #align csupr_sub ciSup_sub
 

@@ -44,14 +44,23 @@ variable {M : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTow
 theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
   rw [linearIndependent_iff'] at hli ⊢
+  -- ⊢ ∀ (s : Finset ι) (g : ι → Rₛ), ∑ i in s, g i • b i = 0 → ∀ (i : ι), i ∈ s →  …
   intro s g hg i hi
+  -- ⊢ g i = 0
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
+  -- ⊢ g i = 0
   specialize hli s g' _ i hi
+  -- ⊢ ∑ i in s, g' i • b i = 0
   · rw [← @smul_zero _ M _ _ (a : R), ← hg, Finset.smul_sum]
+    -- ⊢ ∑ i in s, g' i • b i = ∑ x in s, ↑a • g x • b x
     refine' Finset.sum_congr rfl fun i hi => _
+    -- ⊢ g' i • b i = ↑a • g i • b i
     rw [← IsScalarTower.algebraMap_smul Rₛ, hg' i hi, smul_assoc]
+    -- 🎉 no goals
   refine' (IsLocalization.map_units Rₛ a).mul_right_eq_zero.mp _
+  -- ⊢ ↑(algebraMap R Rₛ) ↑a * g i = 0
   rw [← Algebra.smul_def, ← map_zero (algebraMap R Rₛ), ← hli, hg' i hi]
+  -- 🎉 no goals
 #align linear_independent.localization LinearIndependent.localization
 
 end AddCommMonoid
@@ -73,8 +82,11 @@ open Submodule
 theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
+  -- ⊢ ∀ (s : Finset ι) (g : ι → Rₛ), ∑ i in s, g i • (↑(algebraMap A Aₛ) ∘ v) i =  …
   intro s g hg i hi
+  -- ⊢ g i = 0
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
+  -- ⊢ g i = 0
   have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 := by
     apply_fun (· • ·) (a : R) at hg
     rw [smul_zero, Finset.smul_sum] at hg
@@ -85,24 +97,36 @@ theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
   obtain ⟨⟨_, r, hrS, rfl⟩, hr : algebraMap R A r * _ = 0⟩ :=
     (IsLocalization.map_eq_zero_iff (Algebra.algebraMapSubmonoid A S) _ _).1 h0
   simp_rw [Finset.mul_sum, ← Algebra.smul_def, smul_smul] at hr
+  -- ⊢ g i = 0
   specialize hv s _ hr i hi
+  -- ⊢ g i = 0
   rw [← (IsLocalization.map_units Rₛ a).mul_right_eq_zero, ← Algebra.smul_def, ← hg' i hi]
+  -- ⊢ ↑(algebraMap R Rₛ) (g' i) = 0
   exact (IsLocalization.map_eq_zero_iff S _ _).2 ⟨⟨r, hrS⟩, hv⟩
+  -- 🎉 no goals
 #align linear_independent.localization_localization LinearIndependent.localization_localization
 
 theorem SpanEqTop.localization_localization {v : Set A} (hv : span R v = ⊤) :
     span Rₛ (algebraMap A Aₛ '' v) = ⊤ := by
   rw [eq_top_iff]
+  -- ⊢ ⊤ ≤ span Rₛ (↑(algebraMap A Aₛ) '' v)
   rintro a' -
+  -- ⊢ a' ∈ span Rₛ (↑(algebraMap A Aₛ) '' v)
   obtain ⟨a, ⟨_, s, hs, rfl⟩, rfl⟩ :=
     IsLocalization.mk'_surjective (Algebra.algebraMapSubmonoid A S) a'
   rw [IsLocalization.mk'_eq_mul_mk'_one, mul_comm, ← map_one (algebraMap R A)]
+  -- ⊢ IsLocalization.mk' Aₛ (↑(algebraMap R A) 1) { val := ↑(algebraMap R A) s, pr …
   erw [← IsLocalization.algebraMap_mk' A Rₛ Aₛ (1 : R) ⟨s, hs⟩]
+  -- ⊢ ↑(algebraMap Rₛ Aₛ) (IsLocalization.mk' Rₛ 1 { val := s, property := hs }) * …
   -- `erw` needed to unify `⟨s, hs⟩`
   rw [← Algebra.smul_def]
+  -- ⊢ IsLocalization.mk' Rₛ 1 { val := s, property := hs } • ↑(algebraMap A Aₛ) a  …
   refine' smul_mem _ _ (span_subset_span R Rₛ _ _)
+  -- ⊢ ↑(algebraMap A Aₛ) a ∈ ↑(span R (↑(algebraMap A Aₛ) '' v))
   rw [← Algebra.coe_linearMap, ← LinearMap.coe_restrictScalars R, ← LinearMap.map_span]
+  -- ⊢ ↑(↑R (Algebra.linearMap A Aₛ)) a ∈ ↑(map (↑R (Algebra.linearMap A Aₛ)) (span …
   exact mem_map_of_mem (hv.symm ▸ mem_top)
+  -- 🎉 no goals
 #align span_eq_top.localization_localization SpanEqTop.localization_localization
 
 /-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
@@ -112,6 +136,7 @@ A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   Basis.mk (b.linearIndependent.localization_localization _ S _)
     (by rw [Set.range_comp, SpanEqTop.localization_localization Rₛ S Aₛ b.span_eq])
+        -- 🎉 no goals
 #align basis.localization_localization Basis.localizationLocalization
 
 @[simp]
@@ -136,8 +161,11 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis �
         Basis.repr_self, Finsupp.sum_apply, Finsupp.smul_apply]
     _ = _ :=
       (Finset.sum_eq_single i (fun j _ hj => by simp [hj]) fun hi => by
+                                                -- 🎉 no goals
         simp [Finsupp.not_mem_support_iff.mp hi])
+        -- 🎉 no goals
     _ = algebraMap R Rₛ (b.repr x i) := by simp [Algebra.smul_def]
+                                           -- 🎉 no goals
 #align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
 theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
@@ -145,8 +173,13 @@ theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
       LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) :=
   calc span R (Set.range ↑(localizationLocalization Rₛ S Aₛ b))
     _ = span R (↑(IsScalarTower.toAlgHom R A Aₛ) '' Set.range ↑b) := by congr; ext; simp
+                                                                        -- ⊢ Set.range ↑(localizationLocalization Rₛ S Aₛ b) = ↑(IsScalarTower.toAlgHom R …
+                                                                               -- ⊢ x✝ ∈ Set.range ↑(localizationLocalization Rₛ S Aₛ b) ↔ x✝ ∈ ↑(IsScalarTower. …
+                                                                                    -- 🎉 no goals
     _ = map (IsScalarTower.toAlgHom R A Aₛ) (span R (Set.range b)) := by rw [Submodule.map_span]
+                                                                         -- 🎉 no goals
     _ = LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := by rw [b.span_eq, Submodule.map_top]
+                                                              -- 🎉 no goals
 
 end LocalizationLocalization
 
@@ -182,8 +215,11 @@ def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N 
   map_add' := f.map_add
   map_smul' := by
     intro r m
+    -- ⊢ AddHom.toFun { toFun := ↑f, map_add' := (_ : ∀ (x y : M), ↑f (x + y) = ↑f x  …
     simp only [RingHom.id_apply]
+    -- ⊢ ↑f (r • m) = r • ↑f m
     rcases mk'_surjective S r with ⟨r, s, rfl⟩
+    -- ⊢ ↑f (mk' A r s • m) = mk' A r s • ↑f m
     calc f (mk' A r s • m)
         = ((s : R) • mk' A 1 s) • f (mk' A r s • m) := by simp
       _ = (mk' A 1 s) • (s : R) • f (mk' A r s • m) := by rw [smul_comm, smul_assoc]

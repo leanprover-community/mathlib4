@@ -56,8 +56,11 @@ instance : SetLike (Subspace K V) (ℙ K V) where
   coe := carrier
   coe_injective' A B := by
     cases A
+    -- ⊢ { carrier := carrier✝, mem_add' := mem_add'✝ }.carrier = B.carrier → { carri …
     cases B
+    -- ⊢ { carrier := carrier✝¹, mem_add' := mem_add'✝¹ }.carrier = { carrier := carr …
     simp
+    -- 🎉 no goals
 
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
@@ -97,11 +100,16 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
+      -- ⊢ x ∈ B
       induction' hx with y hy
+      -- ⊢ y ∈ B
       · apply h
+        -- ⊢ y ∈ A
         assumption
+        -- 🎉 no goals
       · apply B.mem_add
         assumption'⟩
+        -- 🎉 no goals
   le_l_u S := subset_span _
   choice_eq _ _ := rfl
 #align projectivization.subspace.gi Projectivization.Subspace.gi
@@ -126,7 +134,9 @@ instance instInfSet : InfSet (Subspace K V) :=
   ⟨fun A =>
     ⟨sInf (SetLike.coe '' A), fun v w hv hw hvw h1 h2 t => by
       rintro ⟨s, hs, rfl⟩
+      -- ⊢ Projectivization.mk K (v + w) hvw ∈ ↑s
       exact s.mem_add v w hv hw _ (h1 s ⟨s, hs, rfl⟩) (h2 s ⟨s, hs, rfl⟩)⟩⟩
+      -- 🎉 no goals
 #align projectivization.subspace.has_Inf Projectivization.Subspace.instInfSet
 
 /-- The subspaces of a projective space form a complete lattice. -/
@@ -135,8 +145,11 @@ instance : CompleteLattice (Subspace K V) :=
     completeLatticeOfInf (Subspace K V)
       (by
         refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
+        -- ⊢ E ∈ SetLike.coe '' s → x ∈ E
         rintro ⟨E, hE, rfl⟩
+        -- ⊢ x ∈ ↑E
         exact ha hE hx) with
+        -- 🎉 no goals
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
     inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
     le_inf := fun A B _ h1 h2 _ hx => (le_inf h1 h2) hx }
@@ -153,8 +166,11 @@ theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
   rw [eq_top_iff, SetLike.le_def]
+  -- ⊢ ∀ ⦃x : ℙ K V⦄, x ∈ ⊤ → x ∈ span Set.univ
   intro x _hx
+  -- ⊢ x ∈ span Set.univ
   exact subset_span _ (Set.mem_univ x)
+  -- 🎉 no goals
 #align projectivization.subspace.span_univ Projectivization.Subspace.span_univ
 
 /-- The span of a set of points is contained in a subspace if and only if the set of points is
@@ -190,10 +206,12 @@ theorem span_iUnion {ι} (s : ι → Set (ℙ K V)) : span (⋃ i, s i) = ⨆ i,
 the subspace and the set of points. -/
 theorem sup_span {S : Set (ℙ K V)} {W : Subspace K V} : W ⊔ span S = span (W ∪ S) := by
   rw [span_union, span_coe]
+  -- 🎉 no goals
 #align projectivization.subspace.sup_span Projectivization.Subspace.sup_span
 
 theorem span_sup {S : Set (ℙ K V)} {W : Subspace K V} : span S ⊔ W = span (S ∪ W) := by
   rw [span_union, span_coe]
+  -- 🎉 no goals
 #align projectivization.subspace.span_sup Projectivization.Subspace.span_sup
 
 /-- A point in a projective space is contained in the span of a set of points if and only if the
@@ -201,18 +219,26 @@ point is contained in all subspaces of the projective space which contain the se
 theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) :
     u ∈ span S ↔ ∀ W : Subspace K V, S ⊆ W → u ∈ W := by
   simp_rw [← span_le_subspace_iff]
+  -- ⊢ u ∈ span S ↔ ∀ (W : Subspace K V), span S ≤ W → u ∈ W
   exact ⟨fun hu W hW => hW hu, fun W => W (span S) (le_refl _)⟩
+  -- 🎉 no goals
 #align projectivization.subspace.mem_span Projectivization.Subspace.mem_span
 
 /-- The span of a set of points in a projective space is equal to the infimum of the collection of
 subspaces which contain the set. -/
 theorem span_eq_sInf {S : Set (ℙ K V)} : span S = sInf { W : Subspace K V| S ⊆ W } := by
   ext x
+  -- ⊢ x ∈ (span S).carrier ↔ x ∈ (sInf {W | S ⊆ ↑W}).carrier
   simp_rw [mem_carrier_iff, mem_span x]
+  -- ⊢ (∀ (W : Subspace K V), S ⊆ ↑W → x ∈ W) ↔ x ∈ sInf {W | S ⊆ ↑W}
   refine ⟨fun hx => ?_, fun hx W hW => ?_⟩
+  -- ⊢ x ∈ sInf {W | S ⊆ ↑W}
   · rintro W ⟨T, hT, rfl⟩
+    -- ⊢ x ∈ ↑T
     exact hx T hT
+    -- 🎉 no goals
   · exact (@sInf_le _ _ { W : Subspace K V | S ⊆ ↑W } W hW) hx
+    -- 🎉 no goals
 #align projectivization.subspace.span_eq_Inf Projectivization.Subspace.span_eq_sInf
 
 /-- If a set of points in projective space is contained in a subspace, and that subspace is

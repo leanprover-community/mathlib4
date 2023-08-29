@@ -134,10 +134,14 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
     rw [pow_zero]
+    -- ⊢ 1 ∈ S
     exact OneMemClass.one_mem S
+    -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ]
+    -- ⊢ x * x ^ n ∈ S
     exact mul_mem hx (pow_mem hx n)
+    -- 🎉 no goals
 #align pow_mem pow_mem
 #align nsmul_mem nsmul_mem
 
@@ -147,6 +151,10 @@ namespace Submonoid
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+                             -- ⊢ { toSubsemigroup := toSubsemigroup✝, one_mem' := one_mem'✝ } = q
+                                      -- ⊢ { toSubsemigroup := toSubsemigroup✝¹, one_mem' := one_mem'✝¹ } = { toSubsemi …
+                                               -- ⊢ toSubsemigroup✝¹ = toSubsemigroup✝
+                                                      -- 🎉 no goals
 
 @[to_additive]
 instance : SubmonoidClass (Submonoid M) M where
@@ -249,7 +257,9 @@ instance : Bot (Submonoid M) :=
       one_mem' := Set.mem_singleton 1
       mul_mem' := fun ha hb => by
         simp only [Set.mem_singleton_iff] at *
+        -- ⊢ a✝ * b✝ = 1
         rw [ha, hb, mul_one] }⟩
+        -- 🎉 no goals
 
 @[to_additive]
 instance : Inhabited (Submonoid M) :=
@@ -307,6 +317,8 @@ instance : InfSet (Submonoid M) :=
       mul_mem' := fun hx hy =>
         Set.mem_biInter fun i h =>
           i.mul_mem (by apply Set.mem_iInter₂.1 hx i h) (by apply Set.mem_iInter₂.1 hy i h) }⟩
+                        -- 🎉 no goals
+                                                            -- 🎉 no goals
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
@@ -323,12 +335,14 @@ theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S,
 @[to_additive]
 theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_range_iff]
+  -- 🎉 no goals
 #align submonoid.mem_infi Submonoid.mem_iInf
 #align add_submonoid.mem_infi AddSubmonoid.mem_iInf
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
+  -- 🎉 no goals
 #align submonoid.coe_infi Submonoid.coe_iInf
 #align add_submonoid.coe_infi AddSubmonoid.coe_iInf
 
@@ -360,6 +374,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
       (this x).trans (this y).symm⟩,
     fun h =>
     ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
+                                                                  -- 🎉 no goals
 #align submonoid.subsingleton_iff Submonoid.subsingleton_iff
 #align add_submonoid.subsingleton_iff AddSubmonoid.subsingleton_iff
 
@@ -453,6 +468,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ closure s) (hc : p x hx) => hc
+  -- ⊢ ∃ x_1, p x x_1
   exact
     closure_induction hx (fun x hx => ⟨_, Hs x hx⟩) ⟨_, H1⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, Hmul _ _ _ _ hx hy⟩
@@ -483,7 +499,9 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤) (Hs : ∀ x ∈ s, p x)
     (H1 : p 1) (Hmul : ∀ x y, p x → p y → p (x * y)) : p x := by
   have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx Hs H1 Hmul
+  -- ⊢ p x
   simpa [hs] using this x
+  -- 🎉 no goals
 #align submonoid.dense_induction Submonoid.dense_induction
 #align add_submonoid.dense_induction AddSubmonoid.dense_induction
 
@@ -536,6 +554,7 @@ theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, c
 @[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]
+  -- 🎉 no goals
 #align submonoid.closure_singleton_le_iff_mem Submonoid.closure_singleton_le_iff_mem
 #align add_submonoid.closure_singleton_le_iff_mem AddSubmonoid.closure_singleton_le_iff_mem
 
@@ -543,7 +562,9 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤
 theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_iSup_iff]
+  -- ⊢ (∀ (b : Submonoid M), (∀ (i : ι), p i ≤ b) → closure {m} ≤ b) ↔ ∀ (N : Submo …
   simp only [closure_singleton_le_iff_mem]
+  -- 🎉 no goals
 #align submonoid.mem_supr Submonoid.mem_iSup
 #align add_submonoid.mem_supr AddSubmonoid.mem_iSup
 
@@ -551,12 +572,14 @@ theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
 theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
     ⨆ i, p i = Submonoid.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Submonoid.closure_iUnion, Submonoid.closure_eq]
+  -- 🎉 no goals
 #align submonoid.supr_eq_closure Submonoid.iSup_eq_closure
 #align add_submonoid.supr_eq_closure AddSubmonoid.iSup_eq_closure
 
 @[to_additive]
 theorem disjoint_def {p₁ p₂ : Submonoid M} : Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 :=
   by simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+     -- 🎉 no goals
 #align submonoid.disjoint_def Submonoid.disjoint_def
 #align add_submonoid.disjoint_def AddSubmonoid.disjoint_def
 
@@ -580,6 +603,8 @@ open Submonoid
 def eqLocusM (f g : M →* N) : Submonoid M where
   carrier := { x | f x = g x }
   one_mem' := by rw [Set.mem_setOf_eq, f.map_one, g.map_one]
+                 -- 🎉 no goals
+                                           -- 🎉 no goals
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 #align monoid_hom.eq_mlocus MonoidHom.eqLocusM
 #align add_monoid_hom.eq_mlocus AddMonoidHom.eqLocusM
@@ -627,9 +652,13 @@ section IsUnit
 def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
   carrier := setOf IsUnit
   one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
+                 -- 🎉 no goals
   mul_mem' := by
+    -- ⊢ a * b ∈ setOf IsUnit
     intro a b ha hb
+    -- ⊢ IsUnit (a * b)
     rw [Set.mem_setOf_eq] at *
+    -- 🎉 no goals
     exact IsUnit.mul ha hb
 #align is_unit.submonoid IsUnit.submonoid
 #align is_add_unit.add_submonoid IsAddUnit.addSubmonoid
@@ -638,7 +667,9 @@ def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
 theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
     a ∈ IsUnit.submonoid M ↔ IsUnit a := by
   change a ∈ setOf IsUnit ↔ IsUnit a
+  -- ⊢ a ∈ setOf IsUnit ↔ IsUnit a
   rw [Set.mem_setOf_eq]
+  -- 🎉 no goals
 #align is_unit.mem_submonoid_iff IsUnit.mem_submonoid_iff
 #align is_add_unit.mem_add_submonoid_iff IsAddUnit.mem_addSubmonoid_iff
 
@@ -662,7 +693,9 @@ def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (h
   map_one' := h1
   map_mul' x :=
     (dense_induction (p := _) x hs hmul fun y => by rw [one_mul, h1, one_mul]) fun a b ha hb y => by
+                                                    -- 🎉 no goals
       rw [mul_assoc, ha, ha, hb, mul_assoc]
+      -- 🎉 no goals
 #align monoid_hom.of_mclosure_eq_top_left MonoidHom.ofClosureMEqTopLeft
 #align add_monoid_hom.of_mclosure_eq_top_left AddMonoidHom.ofClosureMEqTopLeft
 
@@ -687,8 +720,10 @@ def ofClosureMEqTopRight {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (
   map_one' := h1
   map_mul' x y :=
     dense_induction y hs (fun y hy x => hmul x y hy) (by simp [h1])
+                                                         -- 🎉 no goals
       (fun y₁ y₂ (h₁ : ∀ x, f _ = f _ * f _) (h₂ : ∀ x, f _ = f _ * f _) x => by
         simp [← mul_assoc, h₁, h₂]) x
+        -- 🎉 no goals
 #align monoid_hom.of_mclosure_eq_top_right MonoidHom.ofClosureMEqTopRight
 #align add_monoid_hom.of_mclosure_eq_top_right AddMonoidHom.ofClosureMEqTopRight
 

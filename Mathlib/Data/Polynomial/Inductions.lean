@@ -43,32 +43,43 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
+  -- ⊢ coeff (divX p) n = coeff p (1 + n)
+                 -- ⊢ coeff (divX { toFinsupp := toFinsupp✝ }) n = coeff { toFinsupp := toFinsupp✝ …
+                          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.coeff_div_X Polynomial.coeff_divX
 
 theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+            -- ⊢ coeff (divX p * X + ↑C (coeff p 0)) Nat.zero = coeff p Nat.zero
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_mul_X_add Polynomial.divX_mul_X_add
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
+                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_C Polynomial.divX_C
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
+               -- 🎉 no goals
+                                                                      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_eq_zero_iff Polynomial.divX_eq_zero_iff
 
 theorem divX_add : divX (p + q) = divX p + divX q :=
   ext <| by simp
+            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_add Polynomial.divX_add
 
 theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
   haveI := Nontrivial.of_polynomial_ne hp0
+  -- ⊢ degree (divX p) < degree p
   calc
     degree (divX p) < (divX p * X + C (p.coeff 0)).degree :=
       if h : degree p ≤ 0 then by
@@ -103,7 +114,9 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
   if hp : p = 0 then hp ▸ M0
   else by
     have wf : degree (divX p) < degree p := degree_divX_lt hp
+    -- ⊢ M p
     rw [← divX_mul_X_add p] at *
+    -- ⊢ M (divX p * X + ↑C (coeff p 0))
     exact
       if hcp0 : coeff p 0 = 0 then by
         rw [hcp0, C_0, add_zero]
@@ -130,16 +143,21 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
     (hadd : ∀ {p} {a}, 0 < degree p → P p → P (p + C a)) : P p :=
   recOnHorner p (fun h => by rw [degree_zero] at h; exact absurd h (by decide))
+                             -- ⊢ P 0
+                                                    -- 🎉 no goals
     (fun p a _ _ ih h0 =>
       have : 0 < degree p :=
         lt_of_not_ge fun h =>
           not_lt_of_ge degree_C_le <| by rwa [eq_C_of_degree_le_zero h, ← C_add] at h0
+                                         -- 🎉 no goals
       hadd this (ih this))
     (fun p _ ih h0' =>
       if h0 : 0 < degree p then hX h0 (ih h0)
       else by
         rw [eq_C_of_degree_le_zero (le_of_not_gt h0)] at h0' ⊢
+        -- ⊢ P (↑C (coeff p 0) * X)
         exact hC fun h : coeff p 0 = 0 => by simp [h, Nat.not_lt_zero] at h0')
+        -- 🎉 no goals
     h0
 #align polynomial.degree_pos_induction_on Polynomial.degree_pos_induction_on
 
@@ -158,24 +176,41 @@ theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.na
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))
     (h_monomial : ∀ {n : ℕ} {a : R}, a ≠ 0 → n ≠ 0 → M (monomial n a)) : M f := by
   suffices f.natDegree = 0 ∨ M f from Or.recOn this (fun h => (f0 h).elim) id
+  -- ⊢ natDegree f = 0 ∨ M f
   refine Polynomial.induction_on f ?_ ?_ ?_
   · exact fun a => Or.inl (natDegree_C _)
+    -- 🎉 no goals
   · rintro p q (hp | hp) (hq | hq)
     · refine' Or.inl _
+      -- ⊢ natDegree (p + q) = 0
       rw [eq_C_of_natDegree_eq_zero hp, eq_C_of_natDegree_eq_zero hq, ← C_add, natDegree_C]
+      -- 🎉 no goals
     · refine' Or.inr _
+      -- ⊢ M (p + q)
       rw [eq_C_of_natDegree_eq_zero hp]
+      -- ⊢ M (↑C (coeff p 0) + q)
       exact h_C_add hq
+      -- 🎉 no goals
     · refine' Or.inr _
+      -- ⊢ M (p + q)
       rw [eq_C_of_natDegree_eq_zero hq, add_comm]
+      -- ⊢ M (↑C (coeff q 0) + p)
       exact h_C_add hp
+      -- 🎉 no goals
     · exact Or.inr (h_add hp hq)
+      -- 🎉 no goals
   · intro n a _
+    -- ⊢ natDegree (↑C a * X ^ (n + 1)) = 0 ∨ M (↑C a * X ^ (n + 1))
     by_cases a0 : a = 0
+    -- ⊢ natDegree (↑C a * X ^ (n + 1)) = 0 ∨ M (↑C a * X ^ (n + 1))
     · exact Or.inl (by rw [a0, C_0, zero_mul, natDegree_zero])
+      -- 🎉 no goals
     · refine' Or.inr _
+      -- ⊢ M (↑C a * X ^ (n + 1))
       rw [C_mul_X_pow_eq_monomial]
+      -- ⊢ M (↑(monomial (n + 1)) a)
       exact h_monomial a0 n.succ_ne_zero
+      -- 🎉 no goals
 #align polynomial.nat_degree_ne_zero_induction_on Polynomial.natDegree_ne_zero_induction_on
 
 end Semiring

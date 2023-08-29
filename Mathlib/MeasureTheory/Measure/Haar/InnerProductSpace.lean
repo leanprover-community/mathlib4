@@ -54,6 +54,7 @@ theorem Orientation.measure_eq_volume (o : Orientation ℝ F (Fin n)) :
   rw [addHaarMeasure_unique o.volumeForm.measure
     (stdOrthonormalBasis ℝ F).toBasis.parallelepiped, A, one_smul]
   simp only [volume, Basis.addHaar]
+  -- 🎉 no goals
 #align orientation.measure_eq_volume Orientation.measure_eq_volume
 
 end
@@ -63,7 +64,11 @@ parallelepiped spanned by any orthonormal basis. -/
 theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
     volume (parallelepiped b) = 1 := by
   haveI : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
+  -- ⊢ ↑↑volume (parallelepiped ↑b) = 1
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation
+  -- ⊢ ↑↑volume (parallelepiped ↑b) = 1
   rw [← o.measure_eq_volume]
+  -- ⊢ ↑↑(AlternatingMap.measure (Orientation.volumeForm o)) (parallelepiped ↑b) = 1
   exact o.measure_orthonormalBasis b
+  -- 🎉 no goals
 #align orthonormal_basis.volume_parallelepiped OrthonormalBasis.volume_parallelepiped

@@ -114,8 +114,11 @@ noncomputable section
 theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
+  -- ⊢ f n = g n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
+  -- ⊢ ↑(MvPolynomial.map (Int.castRingHom ℚ)) (f n) = ↑(MvPolynomial.map (Int.cast …
   rw [← Function.funext_iff] at h
+  -- ⊢ ↑(MvPolynomial.map (Int.castRingHom ℚ)) (f n) = ↑(MvPolynomial.map (Int.cast …
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
@@ -125,8 +128,11 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
 theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
+  -- ⊢ f n = g n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
+  -- ⊢ ↑(MvPolynomial.map (Int.castRingHom ℚ)) (f n) = ↑(MvPolynomial.map (Int.cast …
   rw [← Function.funext_iff] at h
+  -- ⊢ ↑(MvPolynomial.map (Int.castRingHom ℚ)) (f n) = ↑(MvPolynomial.map (Int.cast …
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
@@ -156,6 +162,8 @@ class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop wh
 /-- The identity function on Witt vectors is a polynomial function. -/
 instance idIsPoly : IsPoly p fun _ _ => id :=
   ⟨⟨X, by intros; simp only [aeval_X, id]⟩⟩
+          -- ⊢ (id x✝).coeff = fun n => ↑(aeval x✝.coeff) (X n)
+                  -- 🎉 no goals
 #align witt_vector.id_is_poly WittVector.idIsPoly
 
 instance idIsPolyI' : IsPoly p fun _ _ a => a :=
@@ -174,19 +182,33 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
         ghostComponent n (f x) = ghostComponent n (g x)) :
     ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x := by
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x
   obtain ⟨ψ, hg⟩ := hg
+  -- ⊢ ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x
   intros
+  -- ⊢ f x✝ = g x✝
   ext n
+  -- ⊢ coeff (f x✝) n = coeff (g x✝) n
   rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq p φ ψ]
+  -- ⊢ ∀ (n : ℕ), ↑(bind₁ φ) (wittPolynomial p ℤ n) = ↑(bind₁ ψ) (wittPolynomial p  …
   intro k
+  -- ⊢ ↑(bind₁ φ) (wittPolynomial p ℤ k) = ↑(bind₁ ψ) (wittPolynomial p ℤ k)
   apply MvPolynomial.funext
+  -- ⊢ ∀ (x : ℕ → ℤ), ↑(MvPolynomial.eval x) (↑(bind₁ φ) (wittPolynomial p ℤ k)) =  …
   intro x
+  -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ φ) (wittPolynomial p ℤ k)) = ↑(MvPolynomial. …
   simp only [hom_bind₁]
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
   specialize h (ULift ℤ) (mk p fun i => ⟨x i⟩) k
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
+  -- ⊢ ↑(RingEquiv.symm ULift.ringEquiv) (↑(eval₂Hom (RingHom.comp (MvPolynomial.ev …
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (↑(RingEquiv.symm ULift.ringEquiv)) (RingHom.comp ( …
   convert h using 1
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (↑(RingEquiv.symm ULift.ringEquiv)) (RingHom.comp ( …
   all_goals
     --  porting note: this proof started with `funext i`
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
@@ -201,10 +223,15 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ IsPoly p fun R _Rcr => g ∘ f
   obtain ⟨ψ, hg⟩ := hg
+  -- ⊢ IsPoly p fun R _Rcr => g ∘ f
   use fun n => bind₁ φ (ψ n)
+  -- ⊢ ∀ ⦃R : Type ?u.543620⦄ [inst : CommRing R] (x : 𝕎 R), ((g ∘ f) x).coeff = fu …
   intros
+  -- ⊢ ((g ∘ f) x✝).coeff = fun n => ↑(aeval x✝.coeff) (↑(bind₁ φ) (ψ n))
   simp only [aeval_bind₁, Function.comp, hg, hf]
+  -- 🎉 no goals
 #align witt_vector.is_poly.comp WittVector.IsPoly.comp
 
 end IsPoly
@@ -233,17 +260,26 @@ variable {p}
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
     IsPoly₂ p fun R _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ IsPoly₂ p fun R _Rcr x y => h (f x) (g y)
   obtain ⟨ψ, hg⟩ := hg
+  -- ⊢ IsPoly₂ p fun R _Rcr x y => h (f x) (g y)
   obtain ⟨χ, hh⟩ := hh
+  -- ⊢ IsPoly₂ p fun R _Rcr x y => h (f x) (g y)
   refine' ⟨⟨fun n ↦ bind₁ (uncurry <|
     ![fun k ↦ rename (Prod.mk (0 : Fin 2)) (φ k),
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), _⟩⟩
   intros
+  -- ⊢ (h (f x✝) (g y✝)).coeff = fun n => peval ((fun n => ↑(bind₁ (uncurry ![fun k …
   funext n
+  -- ⊢ coeff (h (f x✝) (g y✝)) n = peval ((fun n => ↑(bind₁ (uncurry ![fun k => ↑(r …
   simp only [peval, aeval_bind₁, Function.comp, hh, hf, hg, uncurry]
+  -- ⊢ ↑(aeval fun a => Matrix.vecCons (fun n => ↑(aeval x✝.coeff) (φ n)) ![fun n = …
   apply eval₂Hom_congr rfl _ rfl
+  -- ⊢ (fun a => Matrix.vecCons (fun n => ↑(aeval x✝.coeff) (φ n)) ![fun n => ↑(aev …
   ext ⟨i, n⟩
+  -- ⊢ Matrix.vecCons (fun n => ↑(aeval x✝.coeff) (φ n)) ![fun n => ↑(aeval y✝.coef …
   fin_cases i <;>
+  -- ⊢ Matrix.vecCons (fun n => ↑(aeval x✝.coeff) (φ n)) ![fun n => ↑(aeval y✝.coef …
     simp only [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp, Matrix.cons_val_zero,
       Matrix.head_cons, Matrix.cons_val_one]
     -- porting note: added the rest of the proof.
@@ -259,23 +295,38 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun R _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ IsPoly₂ p fun R _Rcr x y => g (f x y)
   obtain ⟨ψ, hg⟩ := hg
+  -- ⊢ IsPoly₂ p fun R _Rcr x y => g (f x y)
   use fun n => bind₁ φ (ψ n)
+  -- ⊢ ∀ ⦃R : Type ?u.617923⦄ [inst : CommRing R] (x y : 𝕎 R), (g (f x y)).coeff =  …
   intros
+  -- ⊢ (g (f x✝ y✝)).coeff = fun n => peval (↑(bind₁ φ) (ψ n)) ![x✝.coeff, y✝.coeff]
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
+  -- 🎉 no goals
 #align witt_vector.is_poly.comp₂ WittVector.IsPoly.comp₂
 
 /-- The diagonal `λ x, f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note: made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ IsPoly p fun R _Rcr x => f x x
   refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
+  -- ⊢ ∀ ⦃R : Type ?u.635107⦄ [inst : CommRing R] (x : 𝕎 R), (f x x).coeff = fun n  …
   intros; funext n
+  -- ⊢ (f x✝ x✝).coeff = fun n => ↑(aeval x✝.coeff) ((fun n => ↑(bind₁ (uncurry ![X …
+          -- ⊢ coeff (f x✝ x✝) n = ↑(aeval x✝.coeff) ((fun n => ↑(bind₁ (uncurry ![X, X]))  …
   simp only [hf, peval, uncurry, aeval_bind₁]
+  -- ⊢ ↑(aeval fun a => Matrix.vecCons x✝.coeff ![x✝.coeff] a.fst a.snd) (φ n) = ↑( …
   apply eval₂Hom_congr rfl _ rfl
+  -- ⊢ (fun a => Matrix.vecCons x✝.coeff ![x✝.coeff] a.fst a.snd) = fun i => ↑(aeva …
   ext ⟨i, k⟩;
+  -- ⊢ Matrix.vecCons x✝.coeff ![x✝.coeff] (i, k).fst (i, k).snd = ↑(aeval x✝.coeff …
   fin_cases i <;>
+  -- ⊢ Matrix.vecCons x✝.coeff ![x✝.coeff] ({ val := 0, isLt := (_ : 0 < 2) }, k).f …
     simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one] <;>
+    -- ⊢ Matrix.vecCons x✝.coeff ![x✝.coeff] { val := 0, isLt := (_ : 0 < 2) } k = ↑( …
+    -- ⊢ Matrix.vecCons x✝.coeff ![x✝.coeff] { val := 1, isLt := (_ : (fun a => a < 2 …
     --  porting note: the end of the proof was added in the port.
     open Matrix in
     simp only [Fin.mk_zero, Fin.mk_one, cons_val', empty_val', cons_val_fin_one, cons_val_zero,
@@ -291,9 +342,16 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x 
 instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
+      -- ⊢ (-x✝).coeff = fun n => ↑(aeval x✝.coeff) ((fun n => ↑(rename Prod.snd) (witt …
+              -- ⊢ coeff (-x✝) n = ↑(aeval x✝.coeff) ((fun n => ↑(rename Prod.snd) (wittNeg p n …
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
+      -- ⊢ peval (wittNeg p n) ![x✝.coeff] = ↑(eval₂Hom (algebraMap ℤ R✝) (x✝.coeff ∘ P …
       apply eval₂Hom_congr rfl _ rfl
+      -- ⊢ uncurry ![x✝.coeff] = x✝.coeff ∘ Prod.snd
       ext ⟨i, k⟩; fin_cases i; rfl⟩⟩
+      -- ⊢ uncurry ![x✝.coeff] (i, k) = (x✝.coeff ∘ Prod.snd) (i, k)
+                  -- ⊢ uncurry ![x✝.coeff] ({ val := 0, isLt := (_ : 0 < 1) }, k) = (x✝.coeff ∘ Pro …
+                               -- 🎉 no goals
 #align witt_vector.neg_is_poly WittVector.negIsPoly
 
 section ZeroOne
@@ -303,12 +361,16 @@ we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
 instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, AlgHom.map_zero, zero_coeff]⟩⟩
+          -- ⊢ 0.coeff = fun n => ↑(aeval x✝.coeff) (OfNat.ofNat 0 n)
+                  -- ⊢ coeff 0 n = ↑(aeval x✝.coeff) (OfNat.ofNat 0 n)
+                            -- 🎉 no goals
 #align witt_vector.zero_is_poly WittVector.zeroIsPoly
 
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
+  -- 🎉 no goals
 #align witt_vector.bind₁_zero_witt_polynomial WittVector.bind₁_zero_wittPolynomial
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
@@ -320,13 +382,16 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   ext  -- porting note: `ext` was not in the mathport output.
+  -- ⊢ MvPolynomial.coeff m✝ (↑(bind₁ onePoly) (wittPolynomial p ℤ n)) = MvPolynomi …
   rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
+    -- ⊢ ↑(bind₁ onePoly) (↑C (↑p ^ i) * X i ^ p ^ (n - i)) = 0
     simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
+    -- ⊢ ¬0 < n + 1 → ↑(bind₁ onePoly) (↑C (↑p ^ 0) * X 0 ^ p ^ (n - 0)) = 0
     -- porting note: was `decide`
     simp only [add_pos_iff, or_true, not_true, pow_zero, map_one, ge_iff_le, nonpos_iff_eq_zero,
       tsub_zero, one_mul, gt_iff_lt, IsEmpty.forall_iff]
@@ -336,8 +401,12 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
+      -- ⊢ 1.coeff = fun n => ↑(aeval x✝.coeff) (onePoly n)
+              -- ⊢ coeff 1 n = ↑(aeval x✝.coeff) (onePoly n)
+                        -- ⊢ coeff 1 Nat.zero = ↑(aeval x✝.coeff) (onePoly Nat.zero)
       · -- porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+        -- 🎉 no goals
       · -- porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
@@ -352,6 +421,9 @@ instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
   --  porting note: the proof was
   --  `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
+                  -- ⊢ (x✝ + y✝).coeff = fun n => peval (wittAdd p n) ![x✝.coeff, y✝.coeff]
+                          -- ⊢ coeff (x✝¹ + y✝) x✝ = peval (wittAdd p x✝) ![x✝¹.coeff, y✝.coeff]
+                               -- 🎉 no goals
 #align witt_vector.add_is_poly₂ WittVector.addIsPoly₂
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
@@ -360,6 +432,9 @@ instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
   --  porting note: the proof was
   -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
+                  -- ⊢ (x✝ * y✝).coeff = fun n => peval (wittMul p n) ![x✝.coeff, y✝.coeff]
+                          -- ⊢ coeff (x✝¹ * y✝) x✝ = peval (wittMul p x✝) ![x✝¹.coeff, y✝.coeff]
+                               -- 🎉 no goals
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
@@ -369,11 +444,17 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   -- so that applications do not have to worry about the universe issue
   -- see `IsPoly₂.map` for a slightly more general proof strategy
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ ↑(WittVector.map g) (f x) = f (↑(WittVector.map g) x)
   ext n
+  -- ⊢ coeff (↑(WittVector.map g) (f x)) n = coeff (f (↑(WittVector.map g) x)) n
   simp only [map_coeff, hf, map_aeval]
+  -- ⊢ ↑(eval₂Hom (RingHom.comp g (algebraMap ℤ R)) fun i => ↑g (coeff x i)) (φ n)  …
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
+  -- ⊢ (fun i => ↑g (coeff x i)) = (↑(WittVector.map g) x).coeff
   ext  -- porting note: this `ext` was not present in the mathport output
+  -- ⊢ ↑g (coeff x x✝) = coeff (↑(WittVector.map g) x) x✝
   simp only [map_coeff]
+  -- 🎉 no goals
 #align witt_vector.is_poly.map WittVector.IsPoly.map
 
 namespace IsPoly₂
@@ -403,20 +484,34 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
         ghostComponent n (f x y) = ghostComponent n (g x y)) :
     ∀ (R) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y := by
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y
   obtain ⟨ψ, hg⟩ := hg
+  -- ⊢ ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y
   intros
+  -- ⊢ f x✝ y✝ = g x✝ y✝
   ext n
+  -- ⊢ coeff (f x✝ y✝) n = coeff (g x✝ y✝) n
   rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
+  -- ⊢ ∀ (n : ℕ), ↑(bind₁ φ) (wittPolynomial p ℤ n) = ↑(bind₁ ψ) (wittPolynomial p  …
   --  porting note: `clear x y` does not work, since `x, y` are now hygienic
   intro k
+  -- ⊢ ↑(bind₁ φ) (wittPolynomial p ℤ k) = ↑(bind₁ ψ) (wittPolynomial p ℤ k)
   apply MvPolynomial.funext
+  -- ⊢ ∀ (x : Fin 2 × ℕ → ℤ), ↑(MvPolynomial.eval x) (↑(bind₁ φ) (wittPolynomial p  …
   intro x
+  -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ φ) (wittPolynomial p ℤ k)) = ↑(MvPolynomial. …
   simp only [hom_bind₁]
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
   specialize h (ULift ℤ) (mk p fun i => ⟨x (0, i)⟩) (mk p fun i => ⟨x (1, i)⟩) k
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
+  -- ⊢ ↑(RingEquiv.symm ULift.ringEquiv) (↑(eval₂Hom (RingHom.comp (MvPolynomial.ev …
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (↑(RingEquiv.symm ULift.ringEquiv)) (RingHom.comp ( …
   convert h using 1
+  -- ⊢ ↑(eval₂Hom (RingHom.comp (↑(RingEquiv.symm ULift.ringEquiv)) (RingHom.comp ( …
   all_goals
     --  porting note: this proof started with `funext i`
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
@@ -433,11 +528,17 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
+  -- ⊢ ↑(WittVector.map g) (f x y) = f (↑(WittVector.map g) x) (↑(WittVector.map g) …
   ext n
+  -- ⊢ coeff (↑(WittVector.map g) (f x y)) n = coeff (f (↑(WittVector.map g) x) (↑( …
   simp only [map_coeff, hf, map_aeval, peval, uncurry]
+  -- ⊢ ↑(eval₂Hom (RingHom.comp g (algebraMap ℤ R)) fun i => ↑g (Matrix.vecCons x.c …
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
+  -- ⊢ (fun i => ↑g (Matrix.vecCons x.coeff ![y.coeff] i.fst i.snd)) = fun a => Mat …
   try ext ⟨i, k⟩; fin_cases i
+  -- ⊢ ↑g (Matrix.vecCons x.coeff ![y.coeff] ({ val := 0, isLt := (_ : 0 < 2) }, k) …
   all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
+  -- ⊢ ↑g (Matrix.vecCons x.coeff ![y.coeff] { val := 0, isLt := (_ : 0 < 2) } k) = …
   -- porting note: added the rest of the proof
   all_goals
     simp only [Fin.mk_zero, Fin.mk_one, Matrix.cons_val', Matrix.empty_val', Matrix.cons_val_one,

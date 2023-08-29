@@ -29,8 +29,11 @@ section nonZeroDivisors
 def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
   carrier := { x | ∀ z, z * x = 0 → z = 0 }
   one_mem' _ hz := by rwa [mul_one] at hz
+                      -- 🎉 no goals
   mul_mem' hx₁ hx₂ _ hz := by
+    -- ⊢ x✝ = 0
     rw [← mul_assoc] at hz
+    -- 🎉 no goals
     exact hx₁ _ (hx₂ _ hz)
 #align non_zero_divisors nonZeroDivisors
 
@@ -47,6 +50,7 @@ theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x 
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp (config := { contextual := true })⟩
+            -- 🎉 no goals
 #align mul_right_mem_non_zero_divisors_eq_zero_iff mul_right_mem_nonZeroDivisors_eq_zero_iff
 @[simp]
 theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0 ↔ x = 0 :=
@@ -55,6 +59,7 @@ theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0
 
 theorem mul_left_mem_nonZeroDivisors_eq_zero_iff {r x : M₁} (hr : r ∈ M₁⁰) : r * x = 0 ↔ x = 0 := by
   rw [mul_comm, mul_right_mem_nonZeroDivisors_eq_zero_iff hr]
+  -- 🎉 no goals
 #align mul_left_mem_non_zero_divisors_eq_zero_iff mul_left_mem_nonZeroDivisors_eq_zero_iff
 
 @[simp]
@@ -64,7 +69,9 @@ theorem mul_left_coe_nonZeroDivisors_eq_zero_iff {c : M₁⁰} {x : M₁} : (c :
 
 theorem mul_cancel_right_mem_nonZeroDivisors {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y := by
   refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
+  -- ⊢ x = y
   rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
+  -- 🎉 no goals
 #align mul_cancel_right_mem_non_zero_divisor mul_cancel_right_mem_nonZeroDivisors
 
 theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * c ↔ x = y :=
@@ -74,6 +81,7 @@ theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * 
 @[simp]
 theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x = r * y ↔ x = y :=
   by simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
+     -- 🎉 no goals
 #align mul_cancel_left_mem_non_zero_divisor mul_cancel_left_mem_nonZeroDivisors
 
 theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=
@@ -90,14 +98,27 @@ theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=
 
 theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁⁰ ∧ b ∈ M₁⁰ := by
   constructor
+  -- ⊢ a * b ∈ M₁⁰ → a ∈ M₁⁰ ∧ b ∈ M₁⁰
   · intro h
+    -- ⊢ a ∈ M₁⁰ ∧ b ∈ M₁⁰
     constructor <;> intro x h' <;> apply h
+    -- ⊢ a ∈ M₁⁰
+                    -- ⊢ x = 0
+                    -- ⊢ x = 0
+                                   -- ⊢ x * (a * b) = 0
+                                   -- ⊢ x * (a * b) = 0
     · rw [← mul_assoc, h', zero_mul]
+      -- 🎉 no goals
     · rw [mul_comm a b, ← mul_assoc, h', zero_mul]
+      -- 🎉 no goals
   · rintro ⟨ha, hb⟩ x hx
+    -- ⊢ x = 0
     apply ha
+    -- ⊢ x * a = 0
     apply hb
+    -- ⊢ x * a * b = 0
     rw [mul_assoc, hx]
+    -- 🎉 no goals
 #align mul_mem_non_zero_divisors mul_mem_nonZeroDivisors
 
 theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
@@ -148,7 +169,9 @@ theorem powers_le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {a : M} (
 theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroHomClass F M M']
     (f : F) (hf : Function.Injective f) {S : Submonoid M} (hS : S ≤ M⁰) : S.map f ≤ M'⁰ := by
   cases subsingleton_or_nontrivial M
+  -- ⊢ Submonoid.map f S ≤ M'⁰
   · simp [Subsingleton.elim S ⊥]
+    -- 🎉 no goals
   · exact le_nonZeroDivisors_of_noZeroDivisors fun h ↦
       let ⟨x, hx, hx0⟩ := h
       zero_ne_one (hS (hf (hx0.trans (map_zero f).symm) ▸ hx : 0 ∈ S) 1 (mul_zero 1)).symm
@@ -162,19 +185,34 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
 theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
     s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by
   constructor; swap
+  -- ⊢ Multiset.prod s = 0 → ∃ r x, r = 0
+               -- ⊢ (∃ r x, r = 0) → Multiset.prod s = 0
   · rintro ⟨r, hrs, rfl⟩
+    -- ⊢ Multiset.prod s = 0
     exact Multiset.prod_eq_zero hrs
+    -- 🎉 no goals
   induction' s using Multiset.induction_on with a s ih
+  -- ⊢ Multiset.prod 0 = 0 → ∃ r x, r = 0
   · intro habs
+    -- ⊢ ∃ r x, r = 0
     simp at habs
+    -- 🎉 no goals
   · rw [Multiset.prod_cons]
+    -- ⊢ a * Multiset.prod s = 0 → ∃ r x, r = 0
     intro hprod
+    -- ⊢ ∃ r x, r = 0
     replace hprod := eq_zero_or_eq_zero_of_mul_eq_zero hprod
+    -- ⊢ ∃ r x, r = 0
     cases' hprod with ha hb
+    -- ⊢ ∃ r x, r = 0
     · exact ⟨a, Multiset.mem_cons_self a s, ha⟩
+      -- 🎉 no goals
     · apply (ih hb).imp _
+      -- ⊢ ∀ (a_1 : M₁), (∃ x, a_1 = 0) → ∃ x, a_1 = 0
       rintro b ⟨hb₁, hb₂⟩
+      -- ⊢ ∃ x, b = 0
       exact ⟨Multiset.mem_cons_of_mem hb₁, hb₂⟩
+      -- 🎉 no goals
 #align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
 
 end nonZeroDivisors

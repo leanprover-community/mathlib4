@@ -135,8 +135,12 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
     rw [← hBC]
     simp
   unfold Matrix.IsSymm
+  -- ⊢ (Matrix.fromBlocks A B C D)ᵀ = Matrix.fromBlocks A B C D
   rw [fromBlocks_transpose]
+  -- ⊢ Matrix.fromBlocks Aᵀ Cᵀ Bᵀ Dᵀ = Matrix.fromBlocks A B C D
   congr; rw [hA, hCB, hBC, hD]
+  -- ⊢ Matrix.fromBlocks Aᵀ Cᵀ Bᵀ Dᵀ = Matrix.fromBlocks A B C D
+         -- 🎉 no goals
 #align matrix.is_symm.from_blocks Matrix.IsSymm.fromBlocks
 
 /-- This is the `iff` version of `Matrix.isSymm.fromBlocks`. -/

@@ -111,7 +111,9 @@ set_option linter.uppercaseLean3 false in
 
 instance : Inhabited (ColimitType F) := by
   dsimp [ColimitType]
+  -- ⊢ Inhabited (Quotient (colimitSetoid F))
   infer_instance
+  -- 🎉 no goals
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
@@ -141,6 +143,7 @@ set_option linter.uppercaseLean3 false in
 /-- The bundled monoid giving the colimit of a diagram. -/
 def colimit : MonCat :=
   ⟨ColimitType F, by infer_instance⟩
+                     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit MonCat.Colimits.colimit
 
@@ -162,8 +165,11 @@ set_option linter.uppercaseLean3 false in
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
+  -- ⊢ ↑(F.map f ≫ coconeMorphism F j') x✝ = ↑(coconeMorphism F j) x✝
   apply Quot.sound
+  -- ⊢ Setoid.r (Prequotient.of j' (↑(F.map f) x✝)) (Prequotient.of j x✝)
   apply Relation.map
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.cocone_naturality MonCat.Colimits.cocone_naturality
 
@@ -171,7 +177,9 @@ set_option linter.uppercaseLean3 false in
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
+  -- ⊢ ↑(coconeMorphism F j') (↑(F.map f) x) = ↑(F.map f ≫ coconeMorphism F j') x
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.cocone_naturality_components MonCat.Colimits.cocone_naturality_components
 
@@ -194,21 +202,41 @@ set_option linter.uppercaseLean3 false in
 /-- The function from the colimit monoid to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
+  -- ⊢ Prequotient F → ↑s.pt
   · exact descFunLift F s
+    -- 🎉 no goals
   · intro x y r
+    -- ⊢ descFunLift F s x = descFunLift F s y
     induction' r with _ _ _ _ h _ _ _ _ _ h₁ h₂ _ _ f x _ _ _ _ _ _ _ _ h _ _ _ _ h <;> try simp
+                                                                                        -- 🎉 no goals
+                                                                                        -- ⊢ descFunLift F s y✝ = descFunLift F s x✝¹
+                                                                                        -- ⊢ descFunLift F s x✝² = descFunLift F s z✝
+                                                                                        -- ⊢ ↑(NatTrans.app s.ι j'✝) (↑(F.map f) x) = ↑(NatTrans.app s.ι j✝) x
+                                                                                        -- 🎉 no goals
+                                                                                        -- 🎉 no goals
+                                                                                        -- ⊢ descFunLift F s x✝¹ * descFunLift F s y✝ = descFunLift F s x'✝ * descFunLift …
+                                                                                        -- ⊢ descFunLift F s x✝¹ * descFunLift F s y✝ = descFunLift F s x✝¹ * descFunLift …
+                                                                                        -- ⊢ descFunLift F s x✝ * descFunLift F s y✝ * descFunLift F s z✝ = descFunLift F …
+                                                                                        -- 🎉 no goals
+                                                                                        -- 🎉 no goals
     -- symm
     · exact h.symm
+      -- 🎉 no goals
     -- trans
     · exact h₁.trans h₂
+      -- 🎉 no goals
     -- map
     · exact s.w_apply f x
+      -- 🎉 no goals
     -- mul_1
     · rw [h]
+      -- 🎉 no goals
     -- mul_2
     · rw [h]
+      -- 🎉 no goals
     -- mul_assoc
     · rw [mul_assoc]
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
@@ -218,10 +246,15 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_one' := rfl
   map_mul' x y := by
     induction x using Quot.inductionOn
+    -- ⊢ OneHom.toFun { toFun := descFun F s, map_one' := (_ : descFun F s 1 = descFu …
     induction y using Quot.inductionOn
+    -- ⊢ OneHom.toFun { toFun := descFun F s, map_one' := (_ : descFun F s 1 = descFu …
     dsimp [descFun]
+    -- ⊢ Quot.lift (descFunLift F s) (_ : ∀ (x y : Prequotient F), Setoid.r x y → des …
     rw [← quot_mul]
+    -- ⊢ Quot.lift (descFunLift F s) (_ : ∀ (x y : Prequotient F), Setoid.r x y → des …
     simp only [descFunLift]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.desc_morphism MonCat.Colimits.descMorphism
 
@@ -230,16 +263,26 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
+    -- ⊢ ↑m x = ↑((fun s => descMorphism F s) s) x
     induction' x using Quot.inductionOn with x
+    -- ⊢ ↑m (Quot.mk Setoid.r x) = ↑((fun s => descMorphism F s) s) (Quot.mk Setoid.r …
     induction' x with j x x y hx hy
     · change _ = s.ι.app j _
+      -- ⊢ ↑m (Quot.mk Setoid.r (Prequotient.of j x)) = ↑(NatTrans.app s.ι j) x
       rw [← w j]
+      -- ⊢ ↑m (Quot.mk Setoid.r (Prequotient.of j x)) = ↑(NatTrans.app (colimitCocone F …
       rfl
+      -- 🎉 no goals
     · rw [quot_one, map_one]
+      -- ⊢ 1 = ↑((fun s => descMorphism F s) s) 1
       rfl
+      -- 🎉 no goals
     · rw [quot_mul, map_mul, hx, hy]
+      -- ⊢ ↑((fun s => descMorphism F s) s) (Quot.mk Setoid.r x) * ↑((fun s => descMorp …
       dsimp [descMorphism, FunLike.coe, descFun]
+      -- ⊢ descFunLift F s x * descFunLift F s y = Quot.lift (descFunLift F s) (_ : ∀ ( …
       simp only [← quot_mul, descFunLift]
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit
 

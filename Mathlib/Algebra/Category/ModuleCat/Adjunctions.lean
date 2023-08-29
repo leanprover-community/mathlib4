@@ -43,7 +43,11 @@ def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {X Y} f := Finsupp.lmapDomain _ _ f
   map_id := by intros; exact Finsupp.lmapDomain_id _ _
+               -- ⊢ { obj := fun X => of R (X →₀ R), map := fun {X Y} f => Finsupp.lmapDomain R  …
+                       -- 🎉 no goals
   map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
+                 -- ⊢ { obj := fun X => of R (X →₀ R), map := fun {X Y} f => Finsupp.lmapDomain R  …
+                         -- 🎉 no goals
 #align Module.free ModuleCat.free
 
 /-- The free-forgetful adjunction for R-modules.
@@ -88,16 +92,26 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
   intros
+  -- ⊢ ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free  …
   -- Porting note: broken ext
   apply TensorProduct.ext
+  -- ⊢ LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑((free R).obj X')) ( …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : X), LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).o …
   intro x
+  -- ⊢ LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑((fr …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑(( …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : X'), LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduc …
   intro x'
+  -- ⊢ LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((fr …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑(( …
   apply Finsupp.ext
+  -- ⊢ ∀ (a : Y ⊗ Y'), ↑(↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (Tens …
   intro ⟨y, y'⟩
+  -- ⊢ ↑(↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑ …
   -- Porting note: used to be dsimp [μ]
   change (finsuppTensorFinsupp' R Y Y')
     (Finsupp.mapDomain f (Finsupp.single x 1) ⊗ₜ[R] Finsupp.mapDomain g (Finsupp.single x' 1)) _
@@ -111,16 +125,25 @@ theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).hom =
       (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
   intros
+  -- ⊢ (λ_ ((free R).obj X)).hom = (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u))  …
   -- Porting note: broken ext
   apply TensorProduct.ext
+  -- ⊢ LinearMap.compr₂ (TensorProduct.mk R ↑tensorUnit' ↑((free R).obj X)) (λ_ ((f …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.compr₂ (TensorProduct.mk R ↑tensorUnit' ↑((free R).obj X)) (λ_ ( …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : X), LinearMap.comp (↑(LinearMap.compr₂ (TensorProduct.mk R ↑tensorUni …
   intro x
+  -- ⊢ LinearMap.comp (↑(LinearMap.compr₂ (TensorProduct.mk R ↑tensorUnit' ↑((free  …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (↑(LinearMap.compr₂ (TensorProduct.mk R ↑tensorUnit' ↑((fre …
   apply Finsupp.ext
+  -- ⊢ ∀ (a : X), ↑(↑(LinearMap.comp (↑(LinearMap.compr₂ (TensorProduct.mk R ↑tenso …
   intro x'
+  -- ⊢ ↑(↑(LinearMap.comp (↑(LinearMap.compr₂ (TensorProduct.mk R ↑tensorUnit' ↑((f …
   -- Porting note: used to be dsimp [ε, μ]
   let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
+  -- ⊢ ↑(↑(LinearMap.comp (↑(LinearMap.compr₂ (TensorProduct.mk R ↑tensorUnit' ↑((f …
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
@@ -132,16 +155,25 @@ theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).hom =
       (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
   intros
+  -- ⊢ (ρ_ ((free R).obj X)).hom = (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u) …
   -- Porting note: broken ext
   apply TensorProduct.ext
+  -- ⊢ LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑tensorUnit') (ρ_ ((f …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : X), LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).o …
   intro x
+  -- ⊢ LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑tens …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑te …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑ …
   apply Finsupp.ext
+  -- ⊢ ∀ (a : X), ↑(↑(↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((fre …
   intro x'
+  -- ⊢ ↑(↑(↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) …
   -- Porting note: used to be dsimp [ε, μ]
   let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
+  -- ⊢ ↑(↑(↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) …
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
@@ -154,20 +186,34 @@ theorem associativity (X Y Z : Type u) :
       (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
         (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
   intros
+  -- ⊢ ((μ R X Y).hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μ R (X ⊗ Y) Z).hom ≫ map (free R).to …
   -- Porting note: broken ext
   apply TensorProduct.ext
+  -- ⊢ LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X ⊗ (free R).obj Y) ↑((f …
   apply TensorProduct.ext
+  -- ⊢ LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑((free R).obj Y)) (L …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : X), LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).o …
   intro x
+  -- ⊢ LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑((fr …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((free R).obj X) ↑(( …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : Y), LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct …
   intro y
+  -- ⊢ LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑((fr …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (TensorProduct.mk R ↑(( …
   apply Finsupp.lhom_ext'
+  -- ⊢ ∀ (a : Z), LinearMap.comp (↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.com …
   intro z
+  -- ⊢ LinearMap.comp (↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (Tensor …
   apply LinearMap.ext_ring
+  -- ⊢ ↑(LinearMap.comp (↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (Tens …
   apply Finsupp.ext
+  -- ⊢ ∀ (a : X ⊗ Y ⊗ Z), ↑(↑(LinearMap.comp (↑(LinearMap.comp (↑(LinearMap.comp (L …
   intro a
+  -- ⊢ ↑(↑(LinearMap.comp (↑(LinearMap.comp (↑(LinearMap.comp (LinearMap.compr₂ (Te …
   -- Porting note: used to be dsimp [μ]
   change Finsupp.mapDomain (α_ X Y Z).hom (finsuppTensorFinsupp' R (X ⊗ Y) Z
     (finsuppTensorFinsupp' R X Y
@@ -194,20 +240,29 @@ instance : LaxMonoidal.{u} (free R).obj where
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
+  -- ⊢ LaxMonoidal.ε ≫ Finsupp.lapply PUnit.unit = 𝟙 (𝟙_ (ModuleCat R))
   · -- Porting note: broken ext
     apply LinearMap.ext_ring
+    -- ⊢ ↑(LaxMonoidal.ε ≫ Finsupp.lapply PUnit.unit) 1 = ↑(𝟙 (𝟙_ (ModuleCat R))) 1
     -- Porting note: simp used to be able to close this goal
     dsimp
+    -- ⊢ ↑(ε R ≫ Finsupp.lapply PUnit.unit) 1 = ↑(𝟙 (𝟙_ (ModuleCat R))) 1
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same, id_apply]
   · -- Porting note: broken ext
     apply Finsupp.lhom_ext'
+    -- ⊢ ∀ (a : 𝟙_ (Type u)), LinearMap.comp (Finsupp.lapply PUnit.unit ≫ LaxMonoidal …
     intro ⟨⟩
+    -- ⊢ LinearMap.comp (Finsupp.lapply PUnit.unit ≫ LaxMonoidal.ε) (Finsupp.lsingle  …
     apply LinearMap.ext_ring
+    -- ⊢ ↑(LinearMap.comp (Finsupp.lapply PUnit.unit ≫ LaxMonoidal.ε) (Finsupp.lsingl …
     apply Finsupp.ext
+    -- ⊢ ∀ (a : 𝟙_ (Type u)), ↑(↑(LinearMap.comp (Finsupp.lapply PUnit.unit ≫ LaxMono …
     intro ⟨⟩
+    -- ⊢ ↑(↑(LinearMap.comp (Finsupp.lapply PUnit.unit ≫ LaxMonoidal.ε) (Finsupp.lsin …
     -- Porting note: simp used to be able to close this goal
     dsimp
+    -- ⊢ ↑(↑(Finsupp.lapply PUnit.unit ≫ ε R) (Finsupp.single PUnit.unit 1)) PUnit.un …
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same]
 
@@ -222,7 +277,10 @@ def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
   { LaxMonoidalFunctor.of (free R).obj with
     -- Porting note: used to be dsimp
     ε_isIso := (by infer_instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _))
+                   -- 🎉 no goals
     μ_isIso := fun X Y => by dsimp; infer_instance }
+                             -- ⊢ IsIso (Free.μ R X Y).hom
+                                    -- 🎉 no goals
 #align Module.monoidal_free ModuleCat.monoidalFree
 
 example (X Y : Type u) : (free R).obj (X × Y) ≅ (free R).obj X ⊗ (free R).obj Y :=
@@ -267,6 +325,7 @@ instance categoryFree : Category (Free R C) where
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
     dsimp
+    -- ⊢ (sum (sum f fun f' s => sum g fun g' t => single (f' ≫ g') (s * t)) fun f' s …
     -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add, eq_self_iff_true,
       forall_true_iff, forall₃_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
@@ -284,27 +343,51 @@ instance : Preadditive (Free R C) where
   homGroup X Y := Finsupp.addCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
+    -- ⊢ (sum (f + f') fun f' s => sum g fun g' t => single (f' ≫ g') (s * t)) = (sum …
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]
+    -- ⊢ ∀ (a : X ⟶ Y), (sum g fun g' t => single (a ≫ g') (0 * t)) = 0
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
   comp_add X Y Z f g g' := by
     dsimp [CategoryTheory.categoryFree]
+    -- ⊢ (sum f fun f' s => sum (g + g') fun g' t => single (f' ≫ g') (s * t)) = (sum …
     rw [← Finsupp.sum_add]
+    -- ⊢ (sum f fun f' s => sum (g + g') fun g' t => single (f' ≫ g') (s * t)) = sum  …
     congr; ext r h
+    -- ⊢ (fun f' s => sum (g + g') fun g' t => single (f' ≫ g') (s * t)) = fun a b => …
+           -- ⊢ ↑(sum (g + g') fun g' t => single (r ≫ g') (h * t)) a✝ = ↑((sum g fun g' t = …
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
+    -- ⊢ ∀ (a : Y ⟶ Z), single (r ≫ a) (h * 0) = 0
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
 
 instance : Linear R (Free R C) where
   homModule X Y := Finsupp.module _ R
   smul_comp X Y Z r f g := by
     dsimp [CategoryTheory.categoryFree]
+    -- ⊢ (sum (r • f) fun f' s => sum g fun g' t => single (f' ≫ g') (s * t)) = r • s …
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_assoc]
+    -- ⊢ (sum f fun i a => sum g fun g' t => single (i ≫ g') (r * a * t)) = r • sum f …
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
   comp_smul X Y Z f r g := by
     dsimp [CategoryTheory.categoryFree]
+    -- ⊢ (sum f fun f' s => sum (r • g) fun g' t => single (f' ≫ g') (s * t)) = r • s …
     simp_rw [Finsupp.smul_sum]
+    -- ⊢ (sum f fun f' s => sum (r • g) fun g' t => single (f' ≫ g') (s * t)) = sum f …
     congr; ext h s
+    -- ⊢ (fun f' s => sum (r • g) fun g' t => single (f' ≫ g') (s * t)) = fun a b =>  …
+           -- ⊢ ↑(sum (r • g) fun g' t => single (h ≫ g') (s * t)) a✝ = ↑(sum g fun a b => r …
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_left_comm]
+    -- ⊢ ↑(sum g fun i a => single (h ≫ i) (s * (r * a))) a✝ = ↑(sum g fun a b => r • …
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 
 theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
     (single f r ≫ single g s : Free.of R X ⟶ Free.of R Z) = single (f ≫ g) (r * s) := by
   dsimp [CategoryTheory.categoryFree]; simp
+  -- ⊢ (sum (single f r) fun f' s_1 => sum (single g s) fun g' t => single (f' ≫ g' …
+                                       -- 🎉 no goals
 #align category_theory.Free.single_comp_single CategoryTheory.Free.single_comp_single
 
 end
@@ -321,7 +404,9 @@ def embedding : C ⥤ Free R C where
   map_comp {X Y Z} f g := by
     -- Porting note: simp used to be able to close this goal
     dsimp only []
+    -- ⊢ single (f ≫ g) 1 = single f 1 ≫ single g 1
     rw [single_comp_single, one_mul]
+    -- 🎉 no goals
 #align category_theory.Free.embedding CategoryTheory.Free.embedding
 
 variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
@@ -335,53 +420,96 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   obj X := F.obj X
   map {X Y} f := f.sum fun f' r => r • F.map f'
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
+               -- ⊢ ∀ (X : Free R C), (sum (single (𝟙 X) 1) fun f' r => r • F.map f') = 𝟙 (F.obj …
+                                                    -- 🎉 no goals
   map_comp {X Y Z} f g := by
     apply Finsupp.induction_linear f
     · -- Porting note: simp used to be able to close this goal
       dsimp
+      -- ⊢ (sum (0 ≫ g) fun f' r => r • F.map f') = 0 ≫ sum g fun f' r => r • F.map f'
       rw [Limits.zero_comp, sum_zero_index, Limits.zero_comp]
+      -- 🎉 no goals
     · intro f₁ f₂ w₁ w₂
+      -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
       rw [add_comp]
+      -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
       dsimp at *
+      -- ⊢ (sum (f₁ ≫ g + f₂ ≫ g) fun f' r => r • F.map f') = (sum (f₁ + f₂) fun f' r = …
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
       · simp only [w₁, w₂, add_comp]
+        -- 🎉 no goals
       · intros; rw [zero_smul]
+        -- ⊢ 0 • F.map a✝ = 0
+                -- 🎉 no goals
       · intros; simp only [add_smul]
+        -- ⊢ (b₁✝ + b₂✝) • F.map a✝ = b₁✝ • F.map a✝ + b₂✝ • F.map a✝
+                -- 🎉 no goals
       · intros; rw [zero_smul]
+        -- ⊢ 0 • F.map a✝ = 0
+                -- 🎉 no goals
       · intros; simp only [add_smul]
+        -- ⊢ (b₁✝ + b₂✝) • F.map a✝ = b₁✝ • F.map a✝ + b₂✝ • F.map a✝
+                -- 🎉 no goals
     · intro f' r
+      -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
       apply Finsupp.induction_linear g
       · -- Porting note: simp used to be able to close this goal
         dsimp
+        -- ⊢ (sum (single f' r ≫ 0) fun f' r => r • F.map f') = (sum (single f' r) fun f' …
         rw [Limits.comp_zero, sum_zero_index, Limits.comp_zero]
+        -- 🎉 no goals
       · intro f₁ f₂ w₁ w₂
+        -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
         rw [comp_add]
+        -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
         dsimp at *
+        -- ⊢ (sum (single f' r ≫ f₁ + single f' r ≫ f₂) fun f' r => r • F.map f') = (sum  …
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
         · simp only [w₁, w₂, comp_add]
+          -- 🎉 no goals
         · intros; rw [zero_smul]
+          -- ⊢ 0 • F.map a✝ = 0
+                  -- 🎉 no goals
         · intros; simp only [add_smul]
+          -- ⊢ (b₁✝ + b₂✝) • F.map a✝ = b₁✝ • F.map a✝ + b₂✝ • F.map a✝
+                  -- 🎉 no goals
         · intros; rw [zero_smul]
+          -- ⊢ 0 • F.map a✝ = 0
+                  -- 🎉 no goals
         · intros; simp only [add_smul]
+          -- ⊢ (b₁✝ + b₂✝) • F.map a✝ = b₁✝ • F.map a✝ + b₂✝ • F.map a✝
+                  -- 🎉 no goals
       · intro g' s
+        -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
         rw [single_comp_single _ _ f' g' r s]
+        -- ⊢ { obj := fun X => F.obj X, map := fun {X Y} f => sum f fun f' r => r • F.map …
         simp [mul_comm r s, mul_smul]
+        -- 🎉 no goals
 #align category_theory.Free.lift CategoryTheory.Free.lift
 
 theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
+                                                    -- 🎉 no goals
 #align category_theory.Free.lift_map_single CategoryTheory.Free.lift_map_single
 
 instance lift_additive (F : C ⥤ D) : (lift R F).Additive where
   map_add {X Y} f g := by
     dsimp
+    -- ⊢ (sum (f + g) fun f' r => r • F.map f') = (sum f fun f' r => r • F.map f') +  …
     rw [Finsupp.sum_add_index'] <;> simp [add_smul]
+    -- ⊢ ∀ (a : X ⟶ Y), 0 • F.map a = 0
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 #align category_theory.Free.lift_additive CategoryTheory.Free.lift_additive
 
 instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
   map_smul {X Y} f r := by
     dsimp
+    -- ⊢ (sum (r • f) fun f' r => r • F.map f') = r • sum f fun f' r => r • F.map f'
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_smul]
+    -- ⊢ (sum f fun i a => (r * a) • F.map i) = r • sum f fun f' r => r • F.map f'
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 #align category_theory.Free.lift_linear CategoryTheory.Free.lift_linear
 
 /-- The embedding into the `R`-linear completion, followed by the lift,
@@ -400,17 +528,24 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
   NatIso.ofComponents (fun X => α.app X)
     (by
       intro X Y f
+      -- ⊢ F.map f ≫ ((fun X => α.app X) Y).hom = ((fun X => α.app X) X).hom ≫ G.map f
       apply Finsupp.induction_linear f
       · -- Porting note: simp used to be able to close this goal
         rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
+        -- 🎉 no goals
       · intro f₁ f₂ w₁ w₂
+        -- ⊢ F.map (f₁ + f₂) ≫ ((fun X => α.app X) Y).hom = ((fun X => α.app X) X).hom ≫  …
         -- Porting note: Using rw instead of simp
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]
+        -- 🎉 no goals
       · intro f' r
+        -- ⊢ F.map (single f' r) ≫ ((fun X => α.app X) Y).hom = ((fun X => α.app X) X).ho …
         rw [Iso.app_hom, Iso.app_hom, ← smul_single_one, F.map_smul, G.map_smul, smul_comp,
           comp_smul]
         change r • (embedding R C ⋙ F).map f' ≫ _ = r • _ ≫ (embedding R C ⋙ G).map f'
+        -- ⊢ r • (embedding R C ⋙ F).map f' ≫ NatTrans.app α.hom Y = r • NatTrans.app α.h …
         rw [α.hom.naturality f'])
+        -- 🎉 no goals
 #align category_theory.Free.ext CategoryTheory.Free.ext
 
 /-- `Free.lift` is unique amongst `R`-linear functors `Free R C ⥤ D`

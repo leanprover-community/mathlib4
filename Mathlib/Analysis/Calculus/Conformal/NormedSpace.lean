@@ -76,13 +76,21 @@ theorem Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : Confor
 theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
     ConformalAt f x ↔ IsConformalMap (fderiv ℝ f x) := by
   constructor
+  -- ⊢ ConformalAt f x → IsConformalMap (fderiv ℝ f x)
   · rintro ⟨f', hf, hf'⟩
+    -- ⊢ IsConformalMap (fderiv ℝ f x)
     rwa [hf.fderiv]
+    -- 🎉 no goals
   · intro H
+    -- ⊢ ConformalAt f x
     by_cases h : DifferentiableAt ℝ f x
+    -- ⊢ ConformalAt f x
     · exact ⟨fderiv ℝ f x, h.hasFDerivAt, H⟩
+      -- 🎉 no goals
     · nontriviality X
+      -- ⊢ ConformalAt f x
       exact absurd (fderiv_zero_of_not_differentiableAt h) H.ne_zero
+      -- 🎉 no goals
 #align conformal_at_iff_is_conformal_map_fderiv conformalAt_iff_isConformalMap_fderiv
 
 namespace ConformalAt
@@ -101,8 +109,11 @@ theorem congr {f g : X → Y} {x : X} {u : Set X} (hx : x ∈ u) (hu : IsOpen u)
 theorem comp {f : X → Y} {g : Y → Z} (x : X) (hg : ConformalAt g (f x)) (hf : ConformalAt f x) :
     ConformalAt (g ∘ f) x := by
   rcases hf with ⟨f', hf₁, cf⟩
+  -- ⊢ ConformalAt (g ∘ f) x
   rcases hg with ⟨g', hg₁, cg⟩
+  -- ⊢ ConformalAt (g ∘ f) x
   exact ⟨g'.comp f', hg₁.comp x hf₁, cg.comp cf⟩
+  -- 🎉 no goals
 #align conformal_at.comp ConformalAt.comp
 
 theorem const_smul {f : X → Y} {x : X} {c : ℝ} (hc : c ≠ 0) (hf : ConformalAt f x) :

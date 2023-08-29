@@ -50,6 +50,7 @@ instance isScalarTower' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
 instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
     IsScalarTower R M (ULift N) :=
   ⟨fun x y z => show up ((x • y) • z.down) = ⟨x • y • z.down⟩ by rw [smul_assoc]⟩
+                                                                 -- 🎉 no goals
 #align ulift.is_scalar_tower'' ULift.isScalarTower''
 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
@@ -78,6 +79,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
   smul_zero c := by { ext; simp [smul_zero] }
+                    -- 🎉 no goals
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
 instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
@@ -87,7 +89,9 @@ instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) 
 instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
+    -- ⊢ (c • (f + g)).down = (c • f + c • g).down
     simp [smul_add]
+    -- 🎉 no goals
 #align ulift.distrib_smul' ULift.distribSmul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
@@ -111,8 +115,12 @@ instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
   { ULift.mulAction' with
     smul_one := fun _ => by
       ext
+      -- ⊢ (x✝ • 1).down = 1.down
       simp [smul_one]
+      -- 🎉 no goals
+      -- ⊢ (x✝² • (x✝¹ * x✝)).down = (x✝² • x✝¹ * x✝² • x✝).down
     smul_mul := fun _ _ _ => by
+      -- 🎉 no goals
       ext
       simp [smul_mul'] }
 #align ulift.mul_distrib_mul_action' ULift.mulDistribMulAction'

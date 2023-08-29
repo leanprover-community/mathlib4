@@ -111,41 +111,61 @@ lemma lt_of_le_of_ne' [PartialOrder A] :
 lemma pos_of_isNat [StrictOrderedSemiring A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
+  -- ⊢ 0 < ↑n
   apply Nat.cast_pos.2
+  -- ⊢ 0 < n
   simpa using w
+  -- 🎉 no goals
 
 lemma nonneg_of_isNat [OrderedSemiring A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
+  -- ⊢ 0 ≤ ↑n
   exact Nat.cast_nonneg n
+  -- 🎉 no goals
 
 lemma nz_of_isNegNat [StrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
+  -- ⊢ -↑n ≠ 0
   simp only [ne_eq, neg_eq_zero]
+  -- ⊢ ¬↑n = 0
   apply ne_of_gt
+  -- ⊢ 0 < ↑n
   simpa using w
+  -- 🎉 no goals
 
 lemma pos_of_isRat [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    -- ⊢ 0 < e
     have pos_n : (0 < (n : A)) := Int.cast_pos (n := n) |>.2 (of_decide_eq_true h)
+    -- ⊢ 0 < e
     rw [eq]
+    -- ⊢ 0 < ↑n * ⅟↑d
     exact mul_pos pos_n pos_invOf_d
+    -- 🎉 no goals
 
 lemma nonneg_of_isRat [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
+                       -- ⊢ 0 ≤ ↑0 * ⅟↑d
+                                                     -- 🎉 no goals
 
 lemma nz_of_isRat [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    -- ⊢ e ≠ 0
     have neg_n : ((n : A) < 0) := Int.cast_lt_zero (n := n) |>.2 (of_decide_eq_true h)
+    -- ⊢ e ≠ 0
     have neg := mul_neg_of_neg_of_pos neg_n pos_invOf_d
+    -- ⊢ e ≠ 0
     rw [eq]
+    -- ⊢ ↑n * ⅟↑d ≠ 0
     exact ne_iff_lt_or_gt.2 (Or.inl neg)
+    -- 🎉 no goals
 
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail

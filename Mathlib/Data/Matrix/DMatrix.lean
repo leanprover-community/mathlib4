@@ -36,6 +36,7 @@ variable {M N : DMatrix m n α}
 
 theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
   ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
+                                                       -- 🎉 no goals
 #align dmatrix.ext_iff DMatrix.ext_iff
 
 @[ext]
@@ -59,6 +60,8 @@ theorem map_apply {M : DMatrix m n α} {β : m → n → Type w} {f : ∀ ⦃i j
 theorem map_map {M : DMatrix m n α} {β : m → n → Type w} {γ : m → n → Type z}
     {f : ∀ ⦃i j⦄, α i j → β i j} {g : ∀ ⦃i j⦄, β i j → γ i j} :
     (M.map f).map g = M.map fun i j x => g (f x) := by ext; simp
+                                                       -- ⊢ map (map M f) g i✝ j✝ = map M (fun i j x => g (f x)) i✝ j✝
+                                                            -- 🎉 no goals
 #align dmatrix.map_map DMatrix.map_map
 
 /-- The transpose of a dmatrix. -/
@@ -119,6 +122,8 @@ instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
 -- Port note: old proof is Pi.Subsingleton
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
   by constructor; simp only [DMatrix, eq_iff_true_of_subsingleton, implies_true]
+     -- ⊢ ∀ (a b : DMatrix m n α), a = b
+                  -- 🎉 no goals
 
 @[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl
@@ -142,28 +147,38 @@ theorem sub_apply [∀ i j, Sub (α i j)] (M N : DMatrix m n α) (i j) : (M - N)
 theorem map_zero [∀ i j, Zero (α i j)] {β : m → n → Type w} [∀ i j, Zero (β i j)]
     {f : ∀ ⦃i j⦄, α i j → β i j} (h : ∀ i j, f (0 : α i j) = 0) : (0 : DMatrix m n α).map f = 0 :=
   by ext; simp [h]
+     -- ⊢ map 0 f i✝ j✝ = OfNat.ofNat 0 i✝ j✝
+          -- 🎉 no goals
 #align dmatrix.map_zero DMatrix.map_zero
 
 theorem map_add [∀ i j, AddMonoid (α i j)] {β : m → n → Type w} [∀ i j, AddMonoid (β i j)]
     (f : ∀ ⦃i j⦄, α i j →+ β i j) (M N : DMatrix m n α) :
     ((M + N).map fun i j => @f i j) = (M.map fun i j => @f i j) + N.map fun i j => @f i j := by
   ext; simp
+  -- ⊢ map (M + N) (fun i j => ↑f) i✝ j✝ = ((map M fun i j => ↑f) + map N fun i j = …
+       -- 🎉 no goals
 #align dmatrix.map_add DMatrix.map_add
 
 theorem map_sub [∀ i j, AddGroup (α i j)] {β : m → n → Type w} [∀ i j, AddGroup (β i j)]
     (f : ∀ ⦃i j⦄, α i j →+ β i j) (M N : DMatrix m n α) :
     ((M - N).map fun i j => @f i j) = (M.map fun i j => @f i j) - N.map fun i j => @f i j := by
   ext; simp
+  -- ⊢ map (M - N) (fun i j => ↑f) i✝ j✝ = ((map M fun i j => ↑f) - map N fun i j = …
+       -- 🎉 no goals
 #align dmatrix.map_sub DMatrix.map_sub
 
 instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (DMatrix m n α) :=
   ⟨fun M N => by
     ext i
+    -- ⊢ M i j✝ = N i j✝
     exact isEmptyElim i⟩
+    -- 🎉 no goals
 #align dmatrix.subsingleton_of_empty_left DMatrix.subsingleton_of_empty_left
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (DMatrix m n α) :=
   ⟨fun M N => by ext i j; exact isEmptyElim j⟩
+                 -- ⊢ M i j = N i j
+                          -- 🎉 no goals
 #align dmatrix.subsingleton_of_empty_right DMatrix.subsingleton_of_empty_right
 
 end DMatrix
@@ -175,6 +190,7 @@ def AddMonoidHom.mapDMatrix [∀ i j, AddMonoid (α i j)] {β : m → n → Type
     where
   toFun M := M.map fun i j => @f i j
   map_zero' := by simp
+                  -- 🎉 no goals
   map_add' := DMatrix.map_add f
 #align add_monoid_hom.map_dmatrix AddMonoidHom.mapDMatrix
 

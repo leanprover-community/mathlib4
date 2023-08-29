@@ -65,6 +65,8 @@ def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
 
 theorem pderiv_def [DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.single i 1) := by
   unfold pderiv; congr!
+  -- ⊢ mkDerivation R (Pi.single i 1) = mkDerivation R (Pi.single i 1)
+                 -- 🎉 no goals
 #align mv_polynomial.pderiv_def MvPolynomial.pderiv_def
 
 @[simp]
@@ -91,17 +93,20 @@ theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
     pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun j => _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X MvPolynomial.pderiv_X
 
 @[simp]
 theorem pderiv_X_self (i : σ) : pderiv i (X i : MvPolynomial σ R) = 1 := by classical simp
+                                                                            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X_self MvPolynomial.pderiv_X_self
 
 @[simp]
 theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j : MvPolynomial σ R) = 0 := by
   classical simp [h]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X_of_ne MvPolynomial.pderiv_X_of_ne
 
@@ -112,16 +117,19 @@ theorem pderiv_eq_zero_of_not_mem_vars {i : σ} {f : MvPolynomial σ R} (h : i �
 
 theorem pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i n) a) =
     monomial (single i (n - 1)) (a * n) := by simp
+                                              -- 🎉 no goals
 #align mv_polynomial.pderiv_monomial_single MvPolynomial.pderiv_monomial_single
 
 theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
     pderiv i (f * g) = pderiv i f * g + f * pderiv i g := by
   simp only [(pderiv i).leibniz f g, smul_eq_mul, mul_comm, add_comm]
+  -- 🎉 no goals
 #align mv_polynomial.pderiv_mul MvPolynomial.pderiv_mul
 
 -- @[simp] -- Porting note: simp can prove this
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C_mul MvPolynomial.pderiv_C_mul
 

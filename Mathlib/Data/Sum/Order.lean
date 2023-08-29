@@ -49,6 +49,9 @@ instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (LiftRel r s) :=
 
 instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (LiftRel r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
+      -- ⊢ False
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 
 @[trans]
 theorem LiftRel.trans [IsTrans α r] [IsTrans β s] :
@@ -62,6 +65,9 @@ instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (LiftRel r s) :=
 
 instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (LiftRel r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
+      -- ⊢ inl a✝ = inl c✝
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 
 end LiftRel
 
@@ -72,18 +78,27 @@ variable (r : α → α → Prop) (s : β → β → Prop)
 instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (Lex r s) :=
   ⟨by
     rintro (a | a)
+    -- ⊢ Lex r s (inl a) (inl a)
     exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
+    -- 🎉 no goals
 
 instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
+      -- ⊢ False
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 
 instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
     exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
+    -- 🎉 no goals
 
 instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
+      -- ⊢ inl a₁✝ = inl a₂✝
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 
 instance [IsTotal α r] [IsTotal β s] : IsTotal (Sum α β) (Lex r s) :=
   ⟨fun a b =>
@@ -175,12 +190,19 @@ instance instPreorderSum : Preorder (Sum α β) :=
     le_trans := fun _ _ _ => LiftRel.trans _ _,
     lt_iff_le_not_le := fun a b => by
       refine' ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, _⟩, _⟩
+      -- ⊢ ¬b ≤ a
       · rintro (⟨hba⟩ | ⟨hba⟩)
+        -- ⊢ False
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
+          -- 🎉 no goals
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+          -- 🎉 no goals
       · rintro ⟨⟨hab⟩ | ⟨hab⟩, hba⟩
+        -- ⊢ inl a✝ < inl c✝
         · exact LiftRel.inl (hab.lt_of_not_le fun h => hba <| LiftRel.inl h)
+          -- 🎉 no goals
         · exact LiftRel.inr (hab.lt_of_not_le fun h => hba <| LiftRel.inr h) }
+          -- 🎉 no goals
 
 theorem inl_mono : Monotone (inl : α → Sum α β) := fun _ _ => LiftRel.inl
 #align sum.inl_mono Sum.inl_mono
@@ -227,12 +249,18 @@ theorem noMinOrder_iff [LT α] [LT β] : NoMinOrder (Sum α β) ↔ NoMinOrder �
   ⟨fun _ =>
     ⟨⟨fun a => by
         obtain ⟨b | b, h⟩ := exists_lt (inl a : Sum α β)
+        -- ⊢ ∃ b, b < a
         · exact ⟨b, inl_lt_inl_iff.1 h⟩
+          -- 🎉 no goals
         · exact (not_inr_lt_inl h).elim⟩,
+          -- 🎉 no goals
       ⟨fun a => by
         obtain ⟨b | b, h⟩ := exists_lt (inr a : Sum α β)
+        -- ⊢ ∃ b, b < a
         · exact (not_inl_lt_inr h).elim
+          -- 🎉 no goals
         · exact ⟨b, inr_lt_inr_iff.1 h⟩⟩⟩,
+          -- 🎉 no goals
     fun h => @Sum.noMinOrder _ _ _ _ h.1 h.2⟩
 #align sum.no_min_order_iff Sum.noMinOrder_iff
 
@@ -241,12 +269,18 @@ theorem noMaxOrder_iff [LT α] [LT β] : NoMaxOrder (Sum α β) ↔ NoMaxOrder �
   ⟨fun _ =>
     ⟨⟨fun a => by
         obtain ⟨b | b, h⟩ := exists_gt (inl a : Sum α β)
+        -- ⊢ ∃ b, a < b
         · exact ⟨b, inl_lt_inl_iff.1 h⟩
+          -- 🎉 no goals
         · exact (not_inl_lt_inr h).elim⟩,
+          -- 🎉 no goals
       ⟨fun a => by
         obtain ⟨b | b, h⟩ := exists_gt (inr a : Sum α β)
+        -- ⊢ ∃ b, a < b
         · exact (not_inr_lt_inl h).elim
+          -- 🎉 no goals
         · exact ⟨b, inr_lt_inr_iff.1 h⟩⟩⟩,
+          -- 🎉 no goals
     fun h => @Sum.noMaxOrder _ _ _ _ h.1 h.2⟩
 #align sum.no_max_order_iff Sum.noMaxOrder_iff
 
@@ -268,12 +302,18 @@ theorem denselyOrdered_iff [LT α] [LT β] :
   ⟨fun _ =>
     ⟨⟨fun a b h => by
         obtain ⟨c | c, ha, hb⟩ := @exists_between (Sum α β) _ _ _ _ (inl_lt_inl_iff.2 h)
+        -- ⊢ ∃ a_1, a < a_1 ∧ a_1 < b
         · exact ⟨c, inl_lt_inl_iff.1 ha, inl_lt_inl_iff.1 hb⟩
+          -- 🎉 no goals
         · exact (not_inl_lt_inr ha).elim⟩,
+          -- 🎉 no goals
       ⟨fun a b h => by
         obtain ⟨c | c, ha, hb⟩ := @exists_between (Sum α β) _ _ _ _ (inr_lt_inr_iff.2 h)
+        -- ⊢ ∃ a_1, a < a_1 ∧ a_1 < b
         · exact (not_inl_lt_inr hb).elim
+          -- 🎉 no goals
         · exact ⟨c, inr_lt_inr_iff.1 ha, inr_lt_inr_iff.1 hb⟩⟩⟩,
+          -- 🎉 no goals
     fun h => @Sum.denselyOrdered _ _ _ _ h.1 h.2⟩
 #align sum.densely_ordered_iff Sum.denselyOrdered_iff
 
@@ -383,14 +423,21 @@ instance preorder : Preorder (α ⊕ₗ β) :=
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
     lt_iff_le_not_le := fun a b => by
       refine' ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, _⟩, _⟩
+      -- ⊢ ¬b ≤ a
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
+          -- 🎉 no goals
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+          -- 🎉 no goals
         · exact not_inr_lt_inl hab
+          -- 🎉 no goals
       · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
         · exact Lex.inl (hab.lt_of_not_le fun h => hba <| Lex.inl h)
+          -- 🎉 no goals
         · exact Lex.inr (hab.lt_of_not_le fun h => hba <| Lex.inr h)
+          -- 🎉 no goals
         · exact Lex.sep _ _ }
+          -- 🎉 no goals
 #align sum.lex.preorder Sum.Lex.preorder
 
 theorem toLex_mono : Monotone (@toLex (Sum α β)) := fun _ _ h => h.lex
@@ -434,8 +481,11 @@ instance orderBot [LE α] [OrderBot α] [LE β] :
   bot := inl ⊥
   bot_le := by
     rintro (a | b)
+    -- ⊢ ⊥ ≤ inl a
     · exact Lex.inl bot_le
+      -- 🎉 no goals
     · exact Lex.sep _ _
+      -- 🎉 no goals
 #align sum.lex.order_bot Sum.Lex.orderBot
 
 @[simp]
@@ -449,8 +499,11 @@ instance orderTop [LE α] [LE β] [OrderTop β] :
   top := inr ⊤
   le_top := by
     rintro (a | b)
+    -- ⊢ inl a ≤ ⊤
     · exact Lex.sep _ _
+      -- 🎉 no goals
     · exact Lex.inr le_top
+      -- 🎉 no goals
 #align sum.lex.order_top Sum.Lex.orderTop
 
 @[simp]
@@ -564,6 +617,15 @@ def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : Sum (Sum α β) γ ≃
     map_rel_iff' := @fun a b => by
       rcases a with ((_ | _) | _) <;> rcases b with ((_ | _) | _) <;>
       simp [Equiv.sumAssoc] }
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align order_iso.sum_assoc OrderIso.sumAssoc
 
 @[simp]
@@ -602,11 +664,17 @@ def sumDualDistrib (α β : Type*) [LE α] [LE β] : (Sum α β)ᵒᵈ ≃o Sum 
     map_rel_iff' := by
       rintro (a | a) (b | b)
       · change inl (toDual a) ≤ inl (toDual b) ↔ toDual (inl a) ≤ toDual (inl b)
+        -- ⊢ inl (↑toDual a) ≤ inl (↑toDual b) ↔ ↑toDual (inl a) ≤ ↑toDual (inl b)
         simp [toDual_le_toDual, inl_le_inl_iff]
+        -- 🎉 no goals
       · exact iff_of_false (@not_inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _) not_inr_le_inl
+        -- 🎉 no goals
       · exact iff_of_false (@not_inr_le_inl (OrderDual α) (OrderDual β) _ _ _ _) not_inl_le_inr
+        -- 🎉 no goals
       · change inr (toDual a) ≤ inr (toDual b) ↔ toDual (inr a) ≤ toDual (inr b)
+        -- ⊢ inr (↑toDual a) ≤ inr (↑toDual b) ↔ ↑toDual (inr a) ≤ ↑toDual (inr b)
         simp [toDual_le_toDual, inr_le_inr_iff] }
+        -- 🎉 no goals
 #align order_iso.sum_dual_distrib OrderIso.sumDualDistrib
 
 @[simp]
@@ -689,10 +757,14 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := @fun a b => by
       rcases a with (a | a) <;> rcases b with (b | b); simp
+      -- ⊢ ↑{ toFun := src✝.toFun, invFun := src✝.invFun, left_inv := (_ : Function.Lef …
+                                -- ⊢ ↑{ toFun := src✝.toFun, invFun := src✝.invFun, left_inv := (_ : Function.Lef …
+                                -- ⊢ ↑{ toFun := src✝.toFun, invFun := src✝.invFun, left_inv := (_ : Function.Lef …
       · change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff]
+        -- 🎉 no goals
       · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
           Lex.not_inr_le_inl
       · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
@@ -701,6 +773,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
           toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
             toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
         simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff] }
+        -- 🎉 no goals
 #align order_iso.sum_lex_dual_antidistrib OrderIso.sumLexDualAntidistrib
 
 @[simp]
@@ -738,8 +811,16 @@ namespace WithBot
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
     rcases a with (a | _) <;> rcases b with (b | _) <;>
+    -- ⊢ ↑((Equiv.optionEquivSumPUnit α).trans ((Equiv.sumComm α PUnit).trans toLex)) …
+                              -- ⊢ ↑((Equiv.optionEquivSumPUnit α).trans ((Equiv.sumComm α PUnit).trans toLex)) …
+                              -- ⊢ ↑((Equiv.optionEquivSumPUnit α).trans ((Equiv.sumComm α PUnit).trans toLex)) …
     simp [swap, Equiv.optionEquivSumPUnit]
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- ⊢ ¬Option.some val✝ ≤ none
+    -- 🎉 no goals
     exact not_coe_le_bot _⟩
+    -- 🎉 no goals
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
 @[simp]
@@ -772,8 +853,16 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     rcases a with (a | _) <;> rcases b with (b | _) <;>
+    -- ⊢ ↑((Equiv.optionEquivSumPUnit α).trans toLex) none ≤ ↑((Equiv.optionEquivSumP …
+                              -- ⊢ ↑((Equiv.optionEquivSumPUnit α).trans toLex) none ≤ ↑((Equiv.optionEquivSumP …
+                              -- ⊢ ↑((Equiv.optionEquivSumPUnit α).trans toLex) (Option.some val✝) ≤ ↑((Equiv.o …
     simp [swap, Equiv.optionEquivSumPUnit]
+    -- 🎉 no goals
+    -- ⊢ ¬none ≤ Option.some val✝
+    -- 🎉 no goals
+    -- 🎉 no goals
     exact not_top_le_coe _⟩
+    -- 🎉 no goals
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 
 @[simp]

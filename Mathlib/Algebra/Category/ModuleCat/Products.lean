@@ -37,11 +37,16 @@ def productConeIsLimit : IsLimit (productCone Z) where
   lift s := (LinearMap.pi fun j => s.π.app ⟨j⟩ : s.pt →ₗ[R] ∀ i : ι, Z i)
   fac s j := by
     cases j
+    -- ⊢ (fun s => LinearMap.pi fun j => NatTrans.app s.π { as := j }) s ≫ NatTrans.a …
     aesop
+    -- 🎉 no goals
   uniq s m w := by
     ext x
+    -- ⊢ ↑m x = ↑((fun s => LinearMap.pi fun j => NatTrans.app s.π { as := j }) s) x
     funext i
+    -- ⊢ ↑m x i = ↑((fun s => LinearMap.pi fun j => NatTrans.app s.π { as := j }) s)  …
     exact LinearMap.congr_fun (w ⟨i⟩) x
+    -- 🎉 no goals
 #align Module.product_cone_is_limit ModuleCat.productConeIsLimit
 
 -- While we could use this to construct a `HasProducts (ModuleCat R)` instance,

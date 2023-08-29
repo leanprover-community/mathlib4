@@ -28,8 +28,11 @@ theorem ext {α : Sort*} : ∀ {s t : Setoid α},
     (∀ a b, @Setoid.r α s a b ↔ @Setoid.r α t a b) → s = t
   | ⟨r, _⟩, ⟨p, _⟩, Eq =>
   by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
+     -- ⊢ { r := r, iseqv := iseqv✝¹ } = { r := p, iseqv := iseqv✝ }
      subst this
+     -- ⊢ { r := r, iseqv := iseqv✝¹ } = { r := r, iseqv := iseqv✝ }
      rfl
+     -- 🎉 no goals
 #align setoid.ext Setoid.ext
 
 end Setoid
@@ -65,8 +68,10 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
       Quot.induction_on qb fun b ↦
         have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) :=
           by simp [heq_self_iff_true]
+             -- 🎉 no goals
         have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) :=
           by simp [heq_self_iff_true]
+             -- 🎉 no goals
         (h₁.trans (ca pa)).trans h₂
 #align quot.hrec_on₂ Quot.hrecOn₂
 
@@ -382,18 +387,23 @@ theorem Quotient.mk_out [Setoid α] (a : α) : ⟦a⟧.out ≈ a :=
 theorem Quotient.mk_eq_iff_out [s : Setoid α] {x : α} {y : Quotient s} :
     ⟦x⟧ = y ↔ x ≈ Quotient.out y := by
   refine' Iff.trans _ Quotient.eq
+  -- ⊢ Quotient.mk s x = y ↔ Quotient.mk s x = Quotient.mk s (out y)
   rw [Quotient.out_eq y]
+  -- 🎉 no goals
 #align quotient.mk_eq_iff_out Quotient.mk_eq_iff_out
 
 theorem Quotient.eq_mk_iff_out [s : Setoid α] {x : Quotient s} {y : α} :
     x = ⟦y⟧ ↔ Quotient.out x ≈ y := by
   refine' Iff.trans _ Quotient.eq
+  -- ⊢ x = Quotient.mk s y ↔ Quotient.mk s (out x) = Quotient.mk s y
   rw [Quotient.out_eq x]
+  -- 🎉 no goals
 #align quotient.eq_mk_iff_out Quotient.eq_mk_iff_out
 
 @[simp]
 theorem Quotient.out_equiv_out {s : Setoid α} {x y : Quotient s} : x.out ≈ y.out ↔ x = y := by
   rw [← Quotient.eq_mk_iff_out, Quotient.out_eq]
+  -- 🎉 no goals
 #align quotient.out_equiv_out Quotient.out_equiv_out
 
 theorem Quotient.out_injective {s : Setoid α} : Function.Injective (@Quotient.out α s) :=
@@ -418,6 +428,7 @@ each `i` to an element of the class `f i`. -/
 noncomputable def Quotient.choice {ι : Type*} {α : ι → Type*} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) (by infer_instance) :=
+                             -- 🎉 no goals
   ⟦fun i ↦ (f i).out⟧
 #align quotient.choice Quotient.choice
 
@@ -432,7 +443,9 @@ theorem Quotient.induction_on_pi {ι : Type*} {α : ι → Sort*} [s : ∀ i, Se
     {p : (∀ i, Quotient (s i)) → Prop} (f : ∀ i, Quotient (s i))
     (h : ∀ a : ∀ i, α i, p fun i ↦ ⟦a i⟧) : p f := by
   rw [← (funext fun i ↦ Quotient.out_eq (f i) : (fun i ↦ ⟦(f i).out⟧) = f)]
+  -- ⊢ p fun i => Quotient.mk (s i) (out (f i))
   apply h
+  -- 🎉 no goals
 #align quotient.induction_on_pi Quotient.induction_on_pi
 
 end Pi

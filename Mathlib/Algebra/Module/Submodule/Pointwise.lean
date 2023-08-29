@@ -104,10 +104,15 @@ def negOrderIso : Submodule R M ≃o Submodule R M
 
 theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm
+  -- ⊢ span R (-s) ≤ -span R s
   · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
+    -- ⊢ s ⊆ ↑(span R s)
     exact subset_span
+    -- 🎉 no goals
   · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
+    -- ⊢ -s ⊆ ↑(span R (-s))
     exact subset_span
+    -- 🎉 no goals
 #align submodule.closure_neg Submodule.closure_neg
 
 @[simp]
@@ -256,7 +261,9 @@ instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass 
 theorem smul_le_self_of_tower {α : Type*} [Semiring α] [Module α R] [Module α M]
     [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
+  -- ⊢ ↑(DistribMulAction.toLinearMap R M a) x ∈ S
   exact smul_of_tower_mem _ a hx
+  -- 🎉 no goals
 #align submodule.smul_le_self_of_tower Submodule.smul_le_self_of_tower
 
 end

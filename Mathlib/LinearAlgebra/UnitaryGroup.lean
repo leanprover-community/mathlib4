@@ -65,19 +65,26 @@ variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
 
 theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
+  -- ⊢ star A * A = 1
   simpa only [mul_eq_one_comm] using hA
+  -- 🎉 no goals
 #align matrix.mem_unitary_group_iff Matrix.mem_unitaryGroup_iff
 
 theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
+  -- ⊢ A * star A = 1
   rwa [mul_eq_one_comm] at hA
+  -- 🎉 no goals
 #align matrix.mem_unitary_group_iff' Matrix.mem_unitaryGroup_iff'
 
 theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
     A.det ∈ unitary α := by
   constructor
+  -- ⊢ star (det A) * det A = 1
   · simpa [star, det_transpose] using congr_arg det hA.1
+    -- 🎉 no goals
   · simpa [star, det_transpose] using congr_arg det hA.2
+    -- 🎉 no goals
 #align matrix.det_of_mem_unitary Matrix.det_of_mem_unitary
 
 namespace UnitaryGroup
@@ -158,11 +165,15 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
     left_inv := fun x =>
       calc
         (toLin' A⁻¹).comp (toLin' A) x = (toLin' (A⁻¹ * A)) x := by rw [← toLin'_mul]
+                                                                    -- 🎉 no goals
         _ = x := by rw [mul_left_inv, toLin'_one, id_apply]
+                    -- 🎉 no goals
     right_inv := fun x =>
       calc
         (toLin' A).comp (toLin' A⁻¹) x = toLin' (A * A⁻¹) x := by rw [← toLin'_mul]
+                                                                  -- 🎉 no goals
         _ = x := by rw [mul_right_inv, toLin'_one, id_apply] }
+                    -- 🎉 no goals
 #align matrix.unitary_group.to_linear_equiv Matrix.UnitaryGroup.toLinearEquiv
 
 /-- `Matrix.unitaryGroup.toGL` is the map from the unitary group to the general linear group -/
@@ -178,14 +189,18 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by
   simp only [coe_toGL, toLin'_one]
+  -- ⊢ LinearMap.id = ↑1
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.to_GL_one Matrix.UnitaryGroup.toGL_one
 
 @[simp]
 theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := Units.ext <| by
   simp only [coe_toGL, toLin'_mul]
+  -- ⊢ comp (toLin' A) (toLin' B) = ↑(toGL A * toGL B)
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.to_GL_mul Matrix.UnitaryGroup.toGL_mul
 
@@ -215,13 +230,17 @@ abbrev orthogonalGroup := unitaryGroup n β
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
+  -- ⊢ star A * A = 1
   simpa only [mul_eq_one_comm] using hA
+  -- 🎉 no goals
 #align matrix.mem_orthogonal_group_iff Matrix.mem_orthogonalGroup_iff
 
 theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
+  -- ⊢ A * star A = 1
   rwa [mul_eq_one_comm] at hA
+  -- 🎉 no goals
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
 end OrthogonalGroup

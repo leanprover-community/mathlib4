@@ -48,6 +48,7 @@ theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
     toMatrix (bM.tensorProduct bN) (bM'.tensorProduct bN') (TensorProduct.map f g) =
       toMatrix bM bM' f ⊗ₖ toMatrix bN bN' g := by
   ext ⟨i, j⟩ ⟨i', j'⟩
+  -- ⊢ ↑(toMatrix (Basis.tensorProduct bM bN) (Basis.tensorProduct bM' bN')) (map f …
   simp_rw [Matrix.kroneckerMap_apply, toMatrix_apply, Basis.tensorProduct_apply,
     TensorProduct.map_tmul, Basis.tensorProduct_repr_tmul_apply]
 #align tensor_product.to_matrix_map TensorProduct.toMatrix_map
@@ -66,10 +67,15 @@ theorem TensorProduct.toMatrix_comm :
     toMatrix (bM.tensorProduct bN) (bN.tensorProduct bM) (TensorProduct.comm R M N) =
       (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext ⟨i, j⟩ ⟨i', j'⟩
+  -- ⊢ ↑(toMatrix (Basis.tensorProduct bM bN) (Basis.tensorProduct bN bM)) ↑(Tensor …
   simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
     Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Prod.swap_prod_mk, id.def,
     Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and, @eq_comm _ i', @eq_comm _ j']
   split_ifs <;> simp
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align tensor_product.to_matrix_comm TensorProduct.toMatrix_comm
 
 /-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
@@ -78,9 +84,18 @@ theorem TensorProduct.toMatrix_assoc :
         (TensorProduct.assoc R M N P) =
       (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix _root_.id (Equiv.prodAssoc _ _ _) := by
   ext ⟨i, j, k⟩ ⟨⟨i', j'⟩, k'⟩
+  -- ⊢ ↑(toMatrix (Basis.tensorProduct (Basis.tensorProduct bM bN) bP) (Basis.tenso …
   simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
     TensorProduct.assoc_tmul, Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply,
     Equiv.prodAssoc_apply, id.def, Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and,
     @eq_comm _ i', @eq_comm _ j', @eq_comm _ k']
   split_ifs <;> simp
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align tensor_product.to_matrix_assoc TensorProduct.toMatrix_assoc

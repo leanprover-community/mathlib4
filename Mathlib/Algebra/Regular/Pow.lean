@@ -30,12 +30,15 @@ variable [Monoid R]
 /-- Any power of a left-regular element is left-regular. -/
 theorem IsLeftRegular.pow (n : ℕ) (rla : IsLeftRegular a) : IsLeftRegular (a ^ n) := by
   simp only [IsLeftRegular, ← mul_left_iterate, rla.iterate n]
+  -- 🎉 no goals
 #align is_left_regular.pow IsLeftRegular.pow
 
 /-- Any power of a right-regular element is right-regular. -/
 theorem IsRightRegular.pow (n : ℕ) (rra : IsRightRegular a) : IsRightRegular (a ^ n) := by
   rw [IsRightRegular, ← mul_right_iterate]
+  -- ⊢ Function.Injective (fun x => x * a)^[n]
   exact rra.iterate n
+  -- 🎉 no goals
 #align is_right_regular.pow IsRightRegular.pow
 
 /-- Any power of a regular element is regular. -/
@@ -46,16 +49,22 @@ theorem IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
 /-- An element `a` is left-regular if and only if a positive power of `a` is left-regular. -/
 theorem IsLeftRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔ IsLeftRegular a := by
   refine' ⟨_, IsLeftRegular.pow n⟩
+  -- ⊢ IsLeftRegular (a ^ n) → IsLeftRegular a
   rw [← Nat.succ_pred_eq_of_pos n0, pow_succ']
+  -- ⊢ IsLeftRegular (a ^ Nat.pred n * a) → IsLeftRegular a
   exact IsLeftRegular.of_mul
+  -- 🎉 no goals
 #align is_left_regular.pow_iff IsLeftRegular.pow_iff
 
 /-- An element `a` is right-regular if and only if a positive power of `a` is right-regular. -/
 theorem IsRightRegular.pow_iff {n : ℕ} (n0 : 0 < n) :
     IsRightRegular (a ^ n) ↔ IsRightRegular a := by
   refine' ⟨_, IsRightRegular.pow n⟩
+  -- ⊢ IsRightRegular (a ^ n) → IsRightRegular a
   rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]
+  -- ⊢ IsRightRegular (a * a ^ Nat.pred n) → IsRightRegular a
   exact IsRightRegular.of_mul
+  -- 🎉 no goals
 #align is_right_regular.pow_iff IsRightRegular.pow_iff
 
 /-- An element `a` is regular if and only if a positive power of `a` is regular. -/

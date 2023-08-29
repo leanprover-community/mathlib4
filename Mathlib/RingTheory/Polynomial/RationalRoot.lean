@@ -40,9 +40,12 @@ open Finsupp IsFractionRing IsLocalization Polynomial
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
   convert scaleRoots_eval₂_eq_zero (algebraMap A S) hr
+  -- ⊢ ↑(aeval (↑(algebraMap A S) r)) = eval₂ (algebraMap A S) (↑(algebraMap A S) ↑ …
   -- Porting note: added
   funext
+  -- ⊢ ↑(aeval (↑(algebraMap A S) r)) x✝ = eval₂ (algebraMap A S) (↑(algebraMap A S …
   rw [aeval_def, mk'_spec' _ r s]
+  -- 🎉 no goals
 #align scale_roots_aeval_eq_zero_of_aeval_mk'_eq_zero scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero
 
 variable [IsDomain A]
@@ -50,9 +53,13 @@ variable [IsDomain A]
 theorem num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
     (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (num A x) := by
   apply isRoot_of_eval₂_map_eq_zero (IsFractionRing.injective A K)
+  -- ⊢ eval₂ (algebraMap A K) (↑(algebraMap A K) (num A x)) (scaleRoots p ↑(den A x …
   refine' scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero _
+  -- ⊢ ↑(aeval (mk' K (num A x) (den A x))) p = 0
   rw [mk'_num_den]
+  -- ⊢ ↑(aeval x) p = 0
   exact hr
+  -- 🎉 no goals
 #align num_is_root_scale_roots_of_aeval_eq_zero num_isRoot_scaleRoots_of_aeval_eq_zero
 
 end ScaleRoots
@@ -81,11 +88,17 @@ theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣
       apply hq.not_unit
       exact num_den_reduced A r dvd_num (hq.dvd_of_dvd_pow dvd_denom_pow)
   convert dvd_term_of_isRoot_of_dvd_terms 0 (num_isRoot_scaleRoots_of_aeval_eq_zero hr) _
+  -- ⊢ coeff (scaleRoots p ↑(den A r)) 0 = coeff (scaleRoots p ↑(den A r)) 0 * num  …
   · rw [pow_zero, mul_one]
+    -- 🎉 no goals
   intro j hj
+  -- ⊢ num A r ∣ coeff (scaleRoots p ↑(den A r)) j * num A r ^ j
   apply dvd_mul_of_dvd_right
+  -- ⊢ num A r ∣ num A r ^ j
   convert pow_dvd_pow (num A r) (Nat.succ_le_of_lt (bot_lt_iff_ne_bot.mpr hj))
+  -- ⊢ num A r = num A r ^ Nat.succ ⊥
   exact (pow_one _).symm
+  -- 🎉 no goals
 #align num_dvd_of_is_root num_dvd_of_is_root
 
 /-- Rational root theorem part 2:
@@ -101,18 +114,28 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     apply hq.not_unit
     exact num_den_reduced A r (hq.dvd_of_dvd_pow dvd_num_pow) dvd_den
   rw [← coeff_scaleRoots_natDegree]
+  -- ⊢ ↑(den A r) ∣ coeff (scaleRoots p ?s) (natDegree p) * num A r ^ natDegree p
   apply dvd_term_of_isRoot_of_dvd_terms _ (num_isRoot_scaleRoots_of_aeval_eq_zero hr)
+  -- ⊢ ∀ (j : ℕ), j ≠ natDegree p → ↑(den A r) ∣ coeff (scaleRoots p ↑(den A r)) j  …
   intro j hj
+  -- ⊢ ↑(den A r) ∣ coeff (scaleRoots p ↑(den A r)) j * num A r ^ j
   by_cases h : j < p.natDegree
+  -- ⊢ ↑(den A r) ∣ coeff (scaleRoots p ↑(den A r)) j * num A r ^ j
   · rw [coeff_scaleRoots]
+    -- ⊢ ↑(den A r) ∣ coeff p j * ↑(den A r) ^ (natDegree p - j) * num A r ^ j
     refine' (dvd_mul_of_dvd_right _ _).mul_right _
+    -- ⊢ ↑(den A r) ∣ ↑(den A r) ^ (natDegree p - j)
     convert pow_dvd_pow (den A r : A) (Nat.succ_le_iff.mpr (lt_tsub_iff_left.mpr _))
     · exact (pow_one _).symm
+      -- 🎉 no goals
     simpa using h
+    -- 🎉 no goals
   rw [← natDegree_scaleRoots p (den A r)] at *
+  -- ⊢ ↑(den A r) ∣ coeff (scaleRoots p ↑(den A r)) j * num A r ^ j
   rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt h) hj.symm),
     zero_mul]
   exact dvd_zero _
+  -- 🎉 no goals
 #align denom_dvd_of_is_root den_dvd_of_is_root
 
 /-- Integral root theorem:

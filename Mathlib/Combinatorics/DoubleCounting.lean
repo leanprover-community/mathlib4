@@ -80,7 +80,9 @@ theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a in s, (t.bipartiteAbove r a).card) = ∑ b in t, (s.bipartiteBelow r b).card := by
   simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
+  -- ⊢ (∑ x in s, ∑ a in t, if r x a then 1 else 0) = ∑ x in t, ∑ a in s, if r a x  …
   exact sum_comm
+  -- 🎉 no goals
 #align finset.sum_card_bipartite_above_eq_sum_card_bipartite_below Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
 
 /-- Double counting argument. Considering `r` as a bipartite graph, the LHS is a lower bound on the
@@ -139,11 +141,13 @@ variable [Fintype α] [Fintype β] {r : α → β → Prop}
 theorem card_le_card_of_leftTotal_unique (h₁ : LeftTotal r) (h₂ : LeftUnique r) :
     Fintype.card α ≤ Fintype.card β :=
   card_le_card_of_forall_subsingleton r (by simpa using h₁) fun b _ a₁ ha₁ a₂ ha₂ ↦ h₂ ha₁.2 ha₂.2
+                                            -- 🎉 no goals
 #align fintype.card_le_card_of_left_total_unique Fintype.card_le_card_of_leftTotal_unique
 
 theorem card_le_card_of_rightTotal_unique (h₁ : RightTotal r) (h₂ : RightUnique r) :
     Fintype.card β ≤ Fintype.card α :=
   card_le_card_of_forall_subsingleton' r (by simpa using h₁) fun b _ a₁ ha₁ a₂ ha₂ ↦ h₂ ha₁.2 ha₂.2
+                                             -- 🎉 no goals
 #align fintype.card_le_card_of_right_total_unique Fintype.card_le_card_of_rightTotal_unique
 
 end Fintype

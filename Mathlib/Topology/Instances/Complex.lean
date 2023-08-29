@@ -39,10 +39,15 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     rintro _ ⟨_, rfl⟩
     simp only [Function.comp_apply, ofReal_rat_cast, SetLike.mem_coe, SubfieldClass.coe_rat_mem]
   nth_rw 1 [range_comp]
+  -- ⊢ range ofReal' ⊆ closure (ofReal' '' range Rat.cast)
   refine' subset_trans _ (image_closure_subset_closure_image continuous_ofReal)
+  -- ⊢ range ofReal' ⊆ ofReal' '' closure (range Rat.cast)
   rw [DenseRange.closure_range Rat.denseEmbedding_coe_real.dense]
+  -- ⊢ range ofReal' ⊆ ofReal' '' univ
   simp only [image_univ]
+  -- ⊢ range ofReal' ⊆ range ofReal'
   rfl
+  -- 🎉 no goals
 #align complex.subfield_eq_of_closed Complex.subfield_eq_of_closed
 
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
@@ -51,37 +56,55 @@ complex conjugation. -/
 theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
   letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
+  -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
   letI : TopologicalRing K.topologicalClosure :=
     Subring.instTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
+  -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
   have ui : UniformInducing ι :=
     ⟨by
       erw [uniformity_subtype, uniformity_subtype, Filter.comap_comap]
       congr ⟩
   let di := ui.denseInducing (?_ : DenseRange ι)
+  -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
   · -- extψ : closure(K) →+* ℂ is the extension of ψ : K →+* ℂ
     let extψ := DenseInducing.extendRingHom ui di.dense hc
+    -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
     haveI hψ := (uniformContinuous_uniformly_extend ui di.dense hc).continuous
+    -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
     cases' Complex.subfield_eq_of_closed (Subfield.isClosed_topologicalClosure K) with h h
+    -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
     · left
+      -- ⊢ ψ.toFun = ↑(Subfield.subtype K)
       let j := RingEquiv.subfieldCongr h
+      -- ⊢ ψ.toFun = ↑(Subfield.subtype K)
       -- ψ₁ is the continuous ring hom `ℝ →+* ℂ` constructed from `j : closure (K) ≃+* ℝ`
       -- and `extψ : closure (K) →+* ℂ`
       let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofReal.rangeRestrict)
+      -- ⊢ ψ.toFun = ↑(Subfield.subtype K)
       -- porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp ((continuous_algebraMap ℝ ℂ).subtype_mk _)
       ext1 x
+      -- ⊢ OneHom.toFun (↑↑ψ) x = ↑(Subfield.subtype K) x
       rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofReal.rangeRestrict r = j (ι x)
+      -- ⊢ OneHom.toFun (↑↑ψ) x = ↑(Subfield.subtype K) x
       · have :=
           RingHom.congr_fun (ringHom_eq_ofReal_of_continuous hψ₁) r
         rw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
+        -- ⊢ OneHom.toFun (↑↑ψ) x = ↑(Subfield.subtype K) x
         convert this using 1
+        -- ⊢ OneHom.toFun (↑↑ψ) x = ↑extψ (↑↑(RingEquiv.symm j) (↑j (ι x)))
         · exact (DenseInducing.extend_eq di hc.continuous _).symm
+          -- 🎉 no goals
         · rw [← ofReal.coe_rangeRestrict, hr]
+          -- ⊢ ↑(Subfield.subtype K) x = ↑(↑j (ι x))
           rfl
+          -- 🎉 no goals
       obtain ⟨r, hr⟩ := SetLike.coe_mem (j (ι x))
+      -- ⊢ ∃ r, ↑(RingHom.rangeRestrict ofReal) r = ↑j (ι x)
       exact ⟨r, Subtype.ext hr⟩
+      -- 🎉 no goals
     · -- ψ₁ is the continuous ring hom `ℂ →+* ℂ` constructed from `closure (K) ≃+* ℂ`
       -- and `extψ : closure (K) →+* ℂ`
       let ψ₁ :=
@@ -92,14 +115,23 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp (continuous_id.subtype_mk _)
       cases' ringHom_eq_id_or_conj_of_continuous hψ₁ with h h
+      -- ⊢ ψ.toFun = ↑(Subfield.subtype K) ∨ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.su …
       · left
+        -- ⊢ ψ.toFun = ↑(Subfield.subtype K)
         ext1 z
+        -- ⊢ OneHom.toFun (↑↑ψ) z = ↑(Subfield.subtype K) z
         convert RingHom.congr_fun h z using 1
+        -- ⊢ OneHom.toFun (↑↑ψ) z = ↑ψ₁ ↑z
         exact (DenseInducing.extend_eq di hc.continuous z).symm
+        -- 🎉 no goals
       · right
+        -- ⊢ ψ.toFun = ↑(starRingEnd ℂ) ∘ ↑(Subfield.subtype K)
         ext1 z
+        -- ⊢ OneHom.toFun (↑↑ψ) z = (↑(starRingEnd ℂ) ∘ ↑(Subfield.subtype K)) z
         convert RingHom.congr_fun h z using 1
+        -- ⊢ OneHom.toFun (↑↑ψ) z = ↑ψ₁ ↑z
         exact (DenseInducing.extend_eq di hc.continuous z).symm
+        -- 🎉 no goals
   · let j : { x // x ∈ closure (id '' { x | (K : Set ℂ) x }) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
@@ -109,6 +141,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     convert DenseRange.comp (Function.Surjective.denseRange _)
         (DenseEmbedding.subtype denseEmbedding_id (K : Set ℂ)).dense (by continuity : Continuous j)
     rintro ⟨y, hy⟩
+    -- ⊢ ∃ a, j a = { val := y, property := hy }
     use
       ⟨y, by
         convert hy

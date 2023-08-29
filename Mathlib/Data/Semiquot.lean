@@ -46,8 +46,13 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine' ⟨congr_arg _, fun h => _⟩
+  -- ⊢ q₁ = q₂
   cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
+  -- ⊢ { s := s✝, val := v₁ } = q₂
+                       -- ⊢ { s := s✝¹, val := v₁ } = { s := s✝, val := v₂ }
+                                            -- ⊢ HEq v₁ v₂
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
+  -- 🎉 no goals
 #align semiquot.ext_s Semiquot.ext_s
 
 theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
@@ -89,6 +94,9 @@ def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
 
 theorem blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q = blur' q h := by
   unfold blur; congr; exact Set.union_eq_self_of_subset_right h
+  -- ⊢ blur' q (_ : q.s ⊆ s ∪ q.s) = blur' q h
+               -- ⊢ s ∪ q.s = s
+                      -- 🎉 no goals
 #align semiquot.blur_eq_blur' Semiquot.blur_eq_blur'
 
 @[simp]
@@ -119,6 +127,10 @@ warning: expanding binder collection (a b «expr ∈ » q) -/
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
   by revert h; rw [eq_mk_of_mem aq]; intro; rfl
+     -- ⊢ ∀ (h : ∀ (a : α), a ∈ q → ∀ (b : α), b ∈ q → f a = f b), liftOn q f h = f a
+               -- ⊢ ∀ (h : ∀ (a_1 : α), a_1 ∈ mk aq → ∀ (b : α), b ∈ mk aq → f a_1 = f b), liftO …
+                                     -- ⊢ liftOn (mk aq) f h✝ = f a
+                                            -- 🎉 no goals
 #align semiquot.lift_on_of_mem Semiquot.liftOn_ofMem
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
@@ -139,6 +151,8 @@ def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
   by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
+     -- ⊢ b ∈ bind q f ↔ ∃ a _h, b ∈ f a
+                              -- 🎉 no goals
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where
@@ -172,13 +186,17 @@ theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
 
 instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (pure_bind := fun {α β} x f => ext.2 <| by simp)
+                                             -- 🎉 no goals
   (bind_assoc := fun {α β} γ s f g =>
     ext.2 <| by
     simp only [bind_def, mem_bind]
+    -- ⊢ ∀ (a : γ), (∃ a_1, (∃ a, a ∈ s ∧ a_1 ∈ f a) ∧ a ∈ g a_1) ↔ ∃ a_1, a_1 ∈ s ∧  …
     exact fun c => ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩,
+                                      -- 🎉 no goals
       fun ⟨a, as, b, bf, cg⟩ => ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
   (id_map := fun {α} q => ext.2 <| by simp)
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
+                                                  -- 🎉 no goals
 
 instance : LE (Semiquot α) :=
   ⟨fun s t => s.s ⊆ t.s⟩
@@ -215,18 +233,26 @@ def get (q : Semiquot α) (h : q.IsPure) : α :=
 
 theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   let ⟨a, h⟩ := exists_mem q
+  -- ⊢ get q p ∈ q
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
+  -- ⊢ liftOn q id p ∈ q
+              -- ⊢ id a ∈ q
+                                           -- 🎉 no goals
 #align semiquot.get_mem Semiquot.get_mem
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
   ext.2 fun a => by simp; exact ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+                    -- ⊢ a ∈ q ↔ a = get q p
+                          -- 🎉 no goals
 #align semiquot.eq_pure Semiquot.eq_pure
 
 @[simp]
 theorem pure_isPure (a : α) : IsPure (pure a)
   | b, ab, c, ac => by
     rw [mem_pure] at ab ac
+    -- ⊢ b = c
     rwa [←ac] at ab
+    -- 🎉 no goals
 #align semiquot.pure_is_pure Semiquot.pure_isPure
 
 theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
@@ -241,6 +267,9 @@ theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by
       rw [eq_pure h, eq_pure (h.mono st)]; simp; exact h _ (get_mem _) _ (st <| get_mem _),
+      -- ⊢ pure (get t h) ≤ pure (get s (_ : IsPure s))
+                                           -- ⊢ get t h = get s (_ : IsPure s)
+                                                 -- 🎉 no goals
     le_of_eq⟩
 #align semiquot.is_pure.min Semiquot.IsPure.min
 

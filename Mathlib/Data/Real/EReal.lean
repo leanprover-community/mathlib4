@@ -182,18 +182,22 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
   | ⊥, (y : ℝ) => by
     rcases lt_trichotomy y 0 with (hy | rfl | hy)
     exacts [bot_neg y hy, bot_zero, bot_pos y hy]
+    -- 🎉 no goals
   | ⊥, ⊤ => bot_top
   | (x : ℝ), ⊥ => by
     rcases lt_trichotomy x 0 with (hx | rfl | hx)
     exacts [neg_bot x hx, zero_bot, pos_bot x hx]
+    -- 🎉 no goals
   | (x : ℝ), (y : ℝ) => coe_coe _ _
   | (x : ℝ), ⊤ => by
     rcases lt_trichotomy x 0 with (hx | rfl | hx)
     exacts [neg_top x hx, zero_top, pos_top x hx]
+    -- 🎉 no goals
   | ⊤, ⊥ => top_bot
   | ⊤, (y : ℝ) => by
     rcases lt_trichotomy y 0 with (hy | rfl | hy)
     exacts [top_neg y hy, top_zero, top_pos y hy]
+    -- 🎉 no goals
   | ⊤, ⊤ => top_top
 #align ereal.induction₂ EReal.induction₂
 
@@ -218,7 +222,17 @@ record more basic properties of multiplication.
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
   induction' x using EReal.rec with x <;> induction' y using EReal.rec with y <;>
     try { rfl }
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- ⊢ ↑x * ↑y = ↑y * ↑x
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
   rw [← coe_mul, ← coe_mul, mul_comm]
+  -- 🎉 no goals
 #align ereal.mul_comm EReal.mul_comm
 
 protected theorem one_mul : ∀ x : EReal, 1 * x = x
@@ -234,8 +248,10 @@ protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
   mul_one := fun x => by rw [EReal.mul_comm, EReal.one_mul]
+                         -- 🎉 no goals
   zero_mul := EReal.zero_mul
   mul_zero := fun x => by rw [EReal.mul_comm, EReal.zero_mul]
+                          -- 🎉 no goals
 
 /-! ### Real coercion -/
 
@@ -243,8 +259,11 @@ instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ wher
   prf x hx := by
     induction x using EReal.rec
     · simp at hx
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
     · simp at hx
+      -- 🎉 no goals
 #align ereal.can_lift EReal.canLift
 
 /-- The map from extended reals to reals sending infinities to zero. -/
@@ -341,11 +360,19 @@ theorem top_ne_zero : (⊤ : EReal) ≠ 0 :=
 
 theorem range_coe : range Real.toEReal = {⊥, ⊤}ᶜ := by
   ext x
+  -- ⊢ x ∈ range Real.toEReal ↔ x ∈ {⊥, ⊤}ᶜ
   induction x using EReal.rec <;> simp
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 
 theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
   ext x
+  -- ⊢ x ∈ range Real.toEReal ↔ x ∈ Ioo ⊥ ⊤
   induction x using EReal.rec <;> simp
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
@@ -403,43 +430,66 @@ protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
   lift x to ℝ using ⟨ne_top_of_le_ne_top hy h, hx⟩
+  -- ⊢ toReal ↑x ≤ toReal y
   lift y to ℝ using ⟨hy, ne_bot_of_le_ne_bot hx h⟩
+  -- ⊢ toReal ↑x ≤ toReal ↑y
   simpa using h
+  -- 🎉 no goals
 #align ereal.to_real_le_to_real EReal.toReal_le_toReal
 
 theorem coe_toReal {x : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) : (x.toReal : EReal) = x := by
   lift x to ℝ using ⟨hx, h'x⟩
+  -- ⊢ ↑(toReal ↑x) = ↑x
   rfl
+  -- 🎉 no goals
 #align ereal.coe_to_real EReal.coe_toReal
 
 theorem le_coe_toReal {x : EReal} (h : x ≠ ⊤) : x ≤ x.toReal := by
   by_cases h' : x = ⊥
+  -- ⊢ x ≤ ↑(toReal x)
   · simp only [h', bot_le]
+    -- 🎉 no goals
   · simp only [le_refl, coe_toReal h h']
+    -- 🎉 no goals
 #align ereal.le_coe_to_real EReal.le_coe_toReal
 
 theorem coe_toReal_le {x : EReal} (h : x ≠ ⊥) : ↑x.toReal ≤ x := by
   by_cases h' : x = ⊤
+  -- ⊢ ↑(toReal x) ≤ x
   · simp only [h', le_top]
+    -- 🎉 no goals
   · simp only [le_refl, coe_toReal h' h]
+    -- 🎉 no goals
 #align ereal.coe_to_real_le EReal.coe_toReal_le
 
 theorem eq_top_iff_forall_lt (x : EReal) : x = ⊤ ↔ ∀ y : ℝ, (y : EReal) < x := by
   constructor
+  -- ⊢ x = ⊤ → ∀ (y : ℝ), ↑y < x
   · rintro rfl
+    -- ⊢ ∀ (y : ℝ), ↑y < ⊤
     exact EReal.coe_lt_top
+    -- 🎉 no goals
   · contrapose!
+    -- ⊢ x ≠ ⊤ → ∃ y, x ≤ ↑y
     intro h
+    -- ⊢ ∃ y, x ≤ ↑y
     exact ⟨x.toReal, le_coe_toReal h⟩
+    -- 🎉 no goals
 #align ereal.eq_top_iff_forall_lt EReal.eq_top_iff_forall_lt
 
 theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : EReal) := by
   constructor
+  -- ⊢ x = ⊥ → ∀ (y : ℝ), x < ↑y
   · rintro rfl
+    -- ⊢ ∀ (y : ℝ), ⊥ < ↑y
     exact bot_lt_coe
+    -- 🎉 no goals
   · contrapose!
+    -- ⊢ x ≠ ⊥ → ∃ y, ↑y ≤ x
     intro h
+    -- ⊢ ∃ y, ↑y ≤ x
     exact ⟨x.toReal, coe_toReal_le h⟩
+    -- 🎉 no goals
 #align ereal.eq_bot_iff_forall_lt EReal.eq_bot_iff_forall_lt
 
 /-! ### ennreal coercion -/
@@ -516,11 +566,13 @@ theorem coe_ennreal_ne_coe_ennreal_iff {x y : ℝ≥0∞} : (x : EReal) ≠ (y :
 @[simp, norm_cast]
 theorem coe_ennreal_eq_zero {x : ℝ≥0∞} : (x : EReal) = 0 ↔ x = 0 := by
   rw [← coe_ennreal_eq_coe_ennreal_iff, coe_ennreal_zero]
+  -- 🎉 no goals
 #align ereal.coe_ennreal_eq_zero EReal.coe_ennreal_eq_zero
 
 @[simp, norm_cast]
 theorem coe_ennreal_eq_one {x : ℝ≥0∞} : (x : EReal) = 1 ↔ x = 1 := by
   rw [← coe_ennreal_eq_coe_ennreal_iff, coe_ennreal_one]
+  -- 🎉 no goals
 #align ereal.coe_ennreal_eq_one EReal.coe_ennreal_eq_one
 
 @[norm_cast]
@@ -548,6 +600,7 @@ instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge�
 @[simp, norm_cast]
 theorem coe_ennreal_pos {x : ℝ≥0∞} : (0 : EReal) < x ↔ 0 < x := by
   rw [← coe_ennreal_zero, coe_ennreal_lt_coe_ennreal_iff]
+  -- 🎉 no goals
 #align ereal.coe_ennreal_pos EReal.coe_ennreal_pos
 
 @[simp]
@@ -563,13 +616,24 @@ theorem coe_ennreal_ne_bot (x : ℝ≥0∞) : (x : EReal) ≠ ⊥ :=
 @[simp, norm_cast]
 theorem coe_ennreal_add (x y : ENNReal) : ((x + y : ℝ≥0∞) : EReal) = x + y := by
   cases x <;> cases y <;> rfl
+  -- ⊢ ↑(none + y) = ↑none + ↑y
+              -- ⊢ ↑(none + none) = ↑none + ↑none
+              -- ⊢ ↑(Option.some val✝ + none) = ↑(Option.some val✝) + ↑none
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align ereal.coe_ennreal_add EReal.coe_ennreal_add
 
 private theorem coe_ennreal_top_mul (x : ℝ≥0) : ((⊤ * x : ℝ≥0∞) : EReal) = ⊤ * x := by
   rcases eq_or_ne x 0 with (rfl | h0)
+  -- ⊢ ↑(⊤ * ↑0) = ⊤ * ↑↑0
   · simp
+    -- 🎉 no goals
   · rw [ENNReal.top_mul (ENNReal.coe_ne_zero.2 h0)]
+    -- ⊢ ↑⊤ = ⊤ * ↑↑x
     exact Eq.symm <| if_pos <| NNReal.coe_pos.2 h0.bot_lt
+    -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) = (x : EReal) * y
@@ -577,8 +641,10 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
   | ⊤, (y : ℝ≥0) => coe_ennreal_top_mul y
   | (x : ℝ≥0), ⊤ => by
     rw [mul_comm, coe_ennreal_top_mul, EReal.mul_comm, coe_ennreal_top]
+    -- 🎉 no goals
   | (x : ℝ≥0), (y : ℝ≥0) => by
     simp only [← ENNReal.coe_mul, coe_nnreal_eq_coe_real, NNReal.coe_mul, EReal.coe_mul]
+    -- 🎉 no goals
 #align ereal.coe_ennreal_mul EReal.coe_ennreal_mul
 
 @[norm_cast]
@@ -596,13 +662,16 @@ theorem exists_rat_btwn_of_lt :
   | ⊤, b, h => (not_top_lt h).elim
   | (a : ℝ), ⊥, h => (lt_irrefl _ ((bot_lt_coe a).trans h)).elim
   | (a : ℝ), (b : ℝ), h => by simp [exists_rat_btwn (EReal.coe_lt_coe_iff.1 h)]
+                              -- 🎉 no goals
   | (a : ℝ), ⊤, _ =>
     let ⟨b, hab⟩ := exists_rat_gt a
     ⟨b, by simpa using hab, coe_lt_top _⟩
+           -- 🎉 no goals
   | ⊥, ⊥, h => (lt_irrefl _ h).elim
   | ⊥, (a : ℝ), _ =>
     let ⟨b, hab⟩ := exists_rat_lt a
     ⟨b, bot_lt_coe _, by simpa using hab⟩
+                         -- 🎉 no goals
   | ⊥, ⊤, _ => ⟨0, bot_lt_coe _, coe_lt_top _⟩
 #align ereal.exists_rat_btwn_of_lt EReal.exists_rat_btwn_of_lt
 
@@ -622,11 +691,16 @@ theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧
 def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
   toFun x := EReal.toReal x
   invFun x := ⟨x, by simp⟩
+                     -- 🎉 no goals
   left_inv := fun ⟨x, hx⟩ => by
     lift x to ℝ
+    -- ⊢ x ≠ ⊤ ∧ x ≠ ⊥
     · simpa [not_or, and_comm] using hx
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   right_inv x := by simp
+                    -- 🎉 no goals
 #align ereal.ne_top_bot_equiv_real EReal.neTopBotEquivReal
 
 /-! ### Addition -/
@@ -649,6 +723,7 @@ theorem add_eq_bot_iff {x y : EReal} : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ :=
 @[simp]
 theorem bot_lt_add_iff {x y : EReal} : ⊥ < x + y ↔ ⊥ < x ∧ ⊥ < y := by
   simp [bot_lt_iff_ne_bot, not_or]
+  -- 🎉 no goals
 #align ereal.bot_lt_add_iff EReal.bot_lt_add_iff
 
 @[simp]
@@ -669,17 +744,23 @@ theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
 theorem toReal_add {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ ⊤) (h'y : y ≠ ⊥) :
     toReal (x + y) = toReal x + toReal y := by
   lift x to ℝ using ⟨hx, h'x⟩
+  -- ⊢ toReal (↑x + y) = toReal ↑x + toReal y
   lift y to ℝ using ⟨hy, h'y⟩
+  -- ⊢ toReal (↑x + ↑y) = toReal ↑x + toReal ↑y
   rfl
+  -- 🎉 no goals
 #align ereal.to_real_add EReal.toReal_add
 
 theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | _, ⊤, _ => le_top
   | ⊥, _, _ => bot_le
   | ⊤, (z : ℝ), h => by simp only [coe_add_top, ← coe_add, top_le_iff, coe_ne_top] at h
+                        -- 🎉 no goals
   | _, ⊥, h => by simpa using h
+                  -- 🎉 no goals
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
+    -- 🎉 no goals
 
 -- porting note: todo: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
@@ -688,12 +769,16 @@ theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z
 
 theorem add_lt_add_left_coe {x y : EReal} (h : x < y) (z : ℝ) : (z : EReal) + x < z + y := by
   simpa [add_comm] using add_lt_add_right_coe h z
+  -- 🎉 no goals
 #align ereal.add_lt_add_left_coe EReal.add_lt_add_left_coe
 
 theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t := by
   rcases eq_or_ne x ⊥ with (rfl | hx)
+  -- ⊢ ⊥ + z < y + t
   · simp [h1, bot_le.trans_lt h2]
+    -- 🎉 no goals
   · lift x to ℝ using ⟨h1.ne_top, hx⟩
+    -- ⊢ ↑x + z < y + t
     calc (x : EReal) + z < x + t := add_lt_add_left_coe h2 _
     _ ≤ y + t := add_le_add_right h1.le _
 #align ereal.add_lt_add EReal.add_lt_add
@@ -701,12 +786,19 @@ theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t :
 theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hbot : t ≠ ⊥)
     (htop : t = ⊤ → z = ⊤ → x = ⊥) : x + z < y + t := by
   rcases h'.eq_or_lt with (rfl | hlt)
+  -- ⊢ x + z < y + z
   · rcases eq_or_ne z ⊤ with (rfl | hz)
+    -- ⊢ x + ⊤ < y + ⊤
     · obtain rfl := htop rfl rfl
+      -- ⊢ ⊥ + ⊤ < y + ⊤
       simpa
+      -- 🎉 no goals
     lift z to ℝ using ⟨hz, hbot⟩
+    -- ⊢ x + ↑z < y + ↑z
     exact add_lt_add_right_coe h z
+    -- 🎉 no goals
   · exact add_lt_add h hlt
+    -- 🎉 no goals
 
 /-- See also `EReal.add_lt_add_of_lt_of_le'` for a version with weaker but less convenient
 assumptions. -/
@@ -717,7 +809,9 @@ theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz 
 
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ := by
   rw [← EReal.top_add_top]
+  -- ⊢ x + y < ⊤ + ⊤
   exact EReal.add_lt_add hx.lt_top hy.lt_top
+  -- 🎉 no goals
 #align ereal.add_lt_top EReal.add_lt_top
 
 /-! ### Negation -/
@@ -766,7 +860,9 @@ instance : InvolutiveNeg EReal where
 @[simp]
 theorem toReal_neg : ∀ {a : EReal}, toReal (-a) = -toReal a
   | ⊤ => by simp
+            -- 🎉 no goals
   | ⊥ => by simp
+            -- 🎉 no goals
   | (x : ℝ) => rfl
 #align ereal.to_real_neg EReal.toReal_neg
 
@@ -799,6 +895,7 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 /-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
  rw [← neg_le_neg_iff, neg_neg]
+ -- 🎉 no goals
 #align ereal.neg_le EReal.neg_le
 
 /-- if `-a ≤ b` then `-b ≤ a` on `EReal`. -/
@@ -808,6 +905,7 @@ protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := ER
 /-- `a ≤ -b → b ≤ -a` on ereal -/
 theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := by
   rwa [← neg_neg b, EReal.neg_le, neg_neg]
+  -- 🎉 no goals
 #align ereal.le_neg_of_le_neg EReal.le_neg_of_le_neg
 
 /-- Negation as an order reversing isomorphism on `EReal`. -/
@@ -820,6 +918,7 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
 
 theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a := by
   rw [← neg_lt_neg_iff, neg_neg]
+  -- 🎉 no goals
 #align ereal.neg_lt_iff_neg_lt EReal.neg_lt_iff_neg_lt
 
 theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_lt.1 h
@@ -865,25 +964,34 @@ theorem sub_le_sub {x y z t : EReal} (h : x ≤ y) (h' : t ≤ z) : x - z ≤ y 
 theorem sub_lt_sub_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz : z ≠ ⊥)
     (ht : t ≠ ⊤) : x - t < y - z :=
   add_lt_add_of_lt_of_le h (neg_le_neg_iff.2 h') (by simp [ht]) (by simp [hz])
+                                                     -- 🎉 no goals
+                                                                    -- 🎉 no goals
 #align ereal.sub_lt_sub_of_lt_of_le EReal.sub_lt_sub_of_lt_of_le
 
 theorem coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal (x : ℝ) :
     (x : EReal) = Real.toNNReal x - Real.toNNReal (-x) := by
   rcases le_total 0 x with (h | h)
+  -- ⊢ ↑x = ↑↑(Real.toNNReal x) - ↑↑(Real.toNNReal (-x))
   · lift x to ℝ≥0 using h
+    -- ⊢ ↑↑x = ↑↑(Real.toNNReal ↑x) - ↑↑(Real.toNNReal (-↑x))
     rw [Real.toNNReal_of_nonpos (neg_nonpos.mpr x.coe_nonneg), Real.toNNReal_coe, ENNReal.coe_zero,
       coe_ennreal_zero, sub_zero]
     rfl
+    -- 🎉 no goals
   · rw [Real.toNNReal_of_nonpos h, ENNReal.coe_zero, coe_ennreal_zero, coe_nnreal_eq_coe_real,
       Real.coe_toNNReal, zero_sub, coe_neg, neg_neg]
     exact neg_nonneg.2 h
+    -- 🎉 no goals
 #align ereal.coe_real_ereal_eq_coe_to_nnreal_sub_coe_to_nnreal EReal.coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal
 
 theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ ⊤) (h'y : y ≠ ⊥) :
     toReal (x - y) = toReal x - toReal y := by
   lift x to ℝ using ⟨hx, h'x⟩
+  -- ⊢ toReal (↑x - y) = toReal ↑x - toReal y
   lift y to ℝ using ⟨hy, h'y⟩
+  -- ⊢ toReal (↑x - ↑y) = toReal ↑x - toReal ↑y
   rfl
+  -- 🎉 no goals
 #align ereal.to_real_sub EReal.toReal_sub
 
 /-! ### Multiplication -/
@@ -930,12 +1038,16 @@ theorem mul_top_of_neg : ∀ {x : EReal}, x < 0 → x * ⊤ = ⊥
 
 theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
   rw [EReal.mul_comm]
+  -- ⊢ x * ⊤ = ⊤
   exact mul_top_of_pos h
+  -- 🎉 no goals
 #align ereal.top_mul_of_pos EReal.top_mul_of_pos
 
 theorem top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
   rw [EReal.mul_comm]
+  -- ⊢ x * ⊤ = ⊥
   exact mul_top_of_neg h
+  -- 🎉 no goals
 #align ereal.top_mul_of_neg EReal.top_mul_of_neg
 
 theorem coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
@@ -968,12 +1080,16 @@ theorem mul_bot_of_neg : ∀ {x : EReal}, x < 0 → x * ⊥ = ⊤
 
 theorem bot_mul_of_pos {x : EReal} (h : 0 < x) : ⊥ * x = ⊥ := by
   rw [EReal.mul_comm]
+  -- ⊢ x * ⊥ = ⊥
   exact mul_bot_of_pos h
+  -- 🎉 no goals
 #align ereal.bot_mul_of_pos EReal.bot_mul_of_pos
 
 theorem bot_mul_of_neg {x : EReal} (h : x < 0) : ⊥ * x = ⊤ := by
   rw [EReal.mul_comm]
+  -- ⊢ x * ⊥ = ⊤
   exact mul_bot_of_neg h
+  -- 🎉 no goals
 #align ereal.bot_mul_of_neg EReal.bot_mul_of_neg
 
 theorem toReal_mul {x y : EReal} : toReal (x * y) = toReal x * toReal y := by
@@ -1037,7 +1153,9 @@ instance : HasDistribNeg EReal where
   neg_mul := EReal.neg_mul
   mul_neg := fun x y => by
     rw [x.mul_comm, x.mul_comm]
+    -- ⊢ -y * x = -(y * x)
     exact y.neg_mul x
+    -- 🎉 no goals
 
 /-! ### Absolute value -/
 
@@ -1067,17 +1185,23 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
   induction x using EReal.rec
   · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
+    -- 🎉 no goals
   · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
+    -- 🎉 no goals
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
+    -- 🎉 no goals
 #align ereal.abs_eq_zero_iff EReal.abs_eq_zero_iff
 
 @[simp]
 theorem abs_zero : (0 : EReal).abs = 0 := by rw [abs_eq_zero_iff]
+                                             -- 🎉 no goals
 #align ereal.abs_zero EReal.abs_zero
 
 @[simp]
 theorem coe_abs (x : ℝ) : ((x : EReal).abs : EReal) = (|x| : ℝ) := by
   rw [abs_def, ← Real.coe_nnabs, ENNReal.ofReal_coe_nnreal]; rfl
+  -- ⊢ ↑↑(↑Real.nnabs x) = ↑↑(↑Real.nnabs x)
+                                                             -- 🎉 no goals
 #align ereal.coe_abs EReal.coe_abs
 
 @[simp]
@@ -1085,6 +1209,7 @@ protected theorem abs_neg : ∀ x : EReal, (-x).abs = x.abs
   | ⊤ => rfl
   | ⊥ => rfl
   | (x : ℝ) => by rw [abs_def, ← coe_neg, abs_def, abs_neg]
+                  -- 🎉 no goals
 
 @[simp]
 theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
@@ -1113,15 +1238,20 @@ theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
   simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
+  -- 🎉 no goals
 #align ereal.sign_coe EReal.sign_coe
 
 @[simp, norm_cast]
 theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> rfl
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
 
 @[simp] theorem sign_neg : ∀ x : EReal, sign (-x) = -sign x
   | ⊤ => rfl
   | ⊥ => rfl
   | (x : ℝ) => by rw [← coe_neg, sign_coe, sign_coe, Left.sign_neg]
+                  -- 🎉 no goals
 
 @[simp]
 theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
@@ -1137,20 +1267,29 @@ theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
 
 @[simp] protected theorem sign_mul_abs : ∀ x : EReal, (sign x * x.abs : EReal) = x
   | ⊥ => by simp
+            -- 🎉 no goals
   | ⊤ => by simp
+            -- 🎉 no goals
   | (x : ℝ) => by rw [sign_coe, coe_abs, ← coe_coe_sign, ← coe_mul, sign_mul_abs]
+                  -- 🎉 no goals
 #align ereal.sign_mul_abs EReal.sign_mul_abs
 
 @[simp] protected theorem abs_mul_sign (x : EReal) : (x.abs * sign x : EReal) = x := by
   rw [EReal.mul_comm, EReal.sign_mul_abs]
+  -- 🎉 no goals
 
 theorem sign_eq_and_abs_eq_iff_eq {x y : EReal} :
     x.abs = y.abs ∧ sign x = sign y ↔ x = y := by
   constructor
+  -- ⊢ EReal.abs x = EReal.abs y ∧ ↑sign x = ↑sign y → x = y
   · rintro ⟨habs, hsign⟩
+    -- ⊢ x = y
     rw [← x.sign_mul_abs, ← y.sign_mul_abs, habs, hsign]
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ EReal.abs x = EReal.abs x ∧ ↑sign x = ↑sign x
     exact ⟨rfl, rfl⟩
+    -- 🎉 no goals
 #align ereal.sign_eq_and_abs_eq_iff_eq EReal.sign_eq_and_abs_eq_iff_eq
 
 theorem le_iff_sign {x y : EReal} :
@@ -1159,28 +1298,47 @@ theorem le_iff_sign {x y : EReal} :
         sign x = SignType.zero ∧ sign y = SignType.zero ∨
           sign x = SignType.pos ∧ sign y = SignType.pos ∧ x.abs ≤ y.abs := by
   constructor
+  -- ⊢ x ≤ y → ↑sign x < ↑sign y ∨ ↑sign x = SignType.neg ∧ ↑sign y = SignType.neg  …
   · intro h
+    -- ⊢ ↑sign x < ↑sign y ∨ ↑sign x = SignType.neg ∧ ↑sign y = SignType.neg ∧ EReal. …
     refine (sign.monotone h).lt_or_eq.imp_right (fun hs => ?_)
+    -- ⊢ ↑sign x = SignType.neg ∧ ↑sign y = SignType.neg ∧ EReal.abs y ≤ EReal.abs x  …
     rw [← x.sign_mul_abs, ← y.sign_mul_abs] at h
+    -- ⊢ ↑sign x = SignType.neg ∧ ↑sign y = SignType.neg ∧ EReal.abs y ≤ EReal.abs x  …
     cases hy : sign y <;> rw [hs, hy] at h ⊢
+                          -- ⊢ SignType.zero = SignType.neg ∧ SignType.zero = SignType.neg ∧ EReal.abs y ≤  …
+                          -- ⊢ SignType.neg = SignType.neg ∧ SignType.neg = SignType.neg ∧ EReal.abs y ≤ ER …
+                          -- ⊢ SignType.pos = SignType.neg ∧ SignType.pos = SignType.neg ∧ EReal.abs y ≤ ER …
     · simp
+      -- 🎉 no goals
     · left; simpa using h
+      -- ⊢ SignType.neg = SignType.neg ∧ SignType.neg = SignType.neg ∧ EReal.abs y ≤ ER …
+            -- 🎉 no goals
     · right; right; simpa using h
+      -- ⊢ SignType.pos = SignType.zero ∧ SignType.pos = SignType.zero ∨ SignType.pos = …
+             -- ⊢ SignType.pos = SignType.pos ∧ SignType.pos = SignType.pos ∧ EReal.abs x ≤ ER …
+                    -- 🎉 no goals
   · rintro (h | h | h | h)
     · exact (sign.monotone.reflect_lt h).le
+      -- 🎉 no goals
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
+    -- 🎉 no goals
 #align ereal.le_iff_sign EReal.le_iff_sign
 
 instance : CommMonoidWithZero EReal :=
   { inferInstanceAs (MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
+      -- ⊢ EReal.abs (x * y * z) = EReal.abs (x * (y * z)) ∧ ↑sign (x * y * z) = ↑sign  …
       simp only [mul_assoc, abs_mul, eq_self_iff_true, sign_mul, and_self_iff]
+      -- 🎉 no goals
     mul_comm := EReal.mul_comm }
 
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
   rintro ⟨x, x0⟩ a b h
+  -- ⊢ (fun x y => ↑x * y) { val := x, property := x0 } a ≤ (fun x y => ↑x * y) { v …
   simp only [le_iff_sign, EReal.sign_mul, sign_pos x0, one_mul, EReal.abs_mul] at h ⊢
+  -- ⊢ ↑sign a < ↑sign b ∨ ↑sign a = SignType.neg ∧ ↑sign b = SignType.neg ∧ EReal. …
   exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_left' · _)) <|
     Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_left' · _)
 

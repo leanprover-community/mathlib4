@@ -47,6 +47,7 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 bounded by `‖fr‖` if `fr` is continuous. -/
 noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 := by
   let fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
+  -- ⊢ F →ₗ[𝕜] 𝕜
   have add : ∀ x y : F, fc (x + y) = fc x + fc y := by
     intro x y
     simp only [smul_add, LinearMap.map_add, ofReal_add]
@@ -95,8 +96,10 @@ theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
   calc
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
       rw [IsROrC.conj_mul, normSq_eq_def', ofReal_re]
+      -- 🎉 no goals
     _ = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := by
       rw [← smul_eq_mul, ← map_smul, extendTo𝕜'_apply_re]
+      -- 🎉 no goals
 #align linear_map.norm_extend_to_𝕜'_apply_sq LinearMap.norm_extendTo𝕜'_apply_sq
 
 end LinearMap
@@ -109,10 +112,17 @@ variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
     ‖(fr.toLinearMap.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
   set lm : F →ₗ[𝕜] 𝕜 := fr.toLinearMap.extendTo𝕜'
+  -- ⊢ ‖↑lm x‖ ≤ ‖fr‖ * ‖x‖
   by_cases h : lm x = 0
+  -- ⊢ ‖↑lm x‖ ≤ ‖fr‖ * ‖x‖
   · rw [h, norm_zero]
+    -- ⊢ 0 ≤ ‖fr‖ * ‖x‖
     apply mul_nonneg <;> exact norm_nonneg _
+    -- ⊢ 0 ≤ ‖fr‖
+                         -- 🎉 no goals
+                         -- 🎉 no goals
   rw [← mul_le_mul_left (norm_pos_iff.2 h), ← sq]
+  -- ⊢ ‖↑lm x‖ ^ 2 ≤ ‖↑lm x‖ * (‖fr‖ * ‖x‖)
   calc
     ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
     _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := (le_abs_self _)
@@ -144,7 +154,9 @@ end ContinuousLinearMap
 -- Porting note: Added a new instance. This instance is needed for the rest of the file.
 instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
   unfold RestrictScalars
+  -- ⊢ NormedSpace 𝕜 F
   infer_instance
+  -- 🎉 no goals
 
 /-- Extend `fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜`. -/
 noncomputable def LinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=

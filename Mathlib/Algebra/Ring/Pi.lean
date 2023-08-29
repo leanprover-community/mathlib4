@@ -34,7 +34,13 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
   { add := (· + ·)
     mul := (· * ·)
     left_distrib := by intros; ext; exact mul_add _ _ _
+                       -- ⊢ a✝ * (b✝ + c✝) = a✝ * b✝ + a✝ * c✝
+                               -- ⊢ (a✝ * (b✝ + c✝)) x✝ = (a✝ * b✝ + a✝ * c✝) x✝
+                                    -- 🎉 no goals
     right_distrib := by intros; ext; exact add_mul _ _ _}
+                        -- ⊢ (a✝ + b✝) * c✝ = a✝ * c✝ + b✝ * c✝
+                                -- ⊢ ((a✝ + b✝) * c✝) x✝ = (a✝ * c✝ + b✝ * c✝) x✝
+                                     -- 🎉 no goals
 #align pi.distrib Pi.distrib
 
 instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where

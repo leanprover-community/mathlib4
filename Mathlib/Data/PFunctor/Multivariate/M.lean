@@ -85,6 +85,9 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
         intros; simp [PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        -- ⊢ PFunctor.M.dest x = { fst := a, snd := f }
+                -- ⊢ PFunctor.M.dest x = { fst := PFunctor.M.head x, snd := PFunctor.M.children x }
+                                                                   -- 🎉 no goals
       _ default⟩
 
 set_option linter.uppercaseLean3 false in
@@ -109,6 +112,8 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M MvPFunctor.M
 
 instance mvfunctorM : MvFunctor P.M := by delta M; infer_instance
+                                          -- ⊢ MvFunctor fun α => Obj (mp P) α
+                                                   -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.mvfunctor_M MvPFunctor.mvfunctorM
@@ -154,18 +159,27 @@ def M.corecContents {α : TypeVec.{u} n}
   | _, M.Path.root x a f h' i c =>
     have : a = g₀ b := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
+      -- ⊢ a = g₀ b
       cases h'
+      -- ⊢ g₀ b = g₀ b
       rfl
+      -- 🎉 no goals
     g₁ b i (P.castDropB this i c)
   | _, M.Path.child x a f h' j i c =>
     have h₀ : a = g₀ b := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
+      -- ⊢ a = g₀ b
       cases h'
+      -- ⊢ g₀ b = g₀ b
       rfl
+      -- 🎉 no goals
     have h₁ : f j = M.corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j)) := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
+      -- ⊢ f j = corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j))
       cases h'
+      -- ⊢ ((PFunctor.M.corec fun b => { fst := g₀ b, snd := g₂ b }) ∘ g₂ b) j = corecS …
       rfl
+      -- 🎉 no goals
     M.corecContents g₀ g₁ g₂ (f j) (g₂ b (P.castLastB h₀ j)) h₁ i c
 
 set_option linter.uppercaseLean3 false in
@@ -228,6 +242,8 @@ theorem M.dest'_eq_dest' {α : TypeVec n} {x : P.last.M} {a₁ : P.A}
     {f₁ : P.last.B a₁ → P.last.M} (h₁ : PFunctor.M.dest x = ⟨a₁, f₁⟩) {a₂ : P.A}
     {f₂ : P.last.B a₂ → P.last.M} (h₂ : PFunctor.M.dest x = ⟨a₂, f₂⟩) (f' : M.Path P x ⟹ α) :
     M.dest' P h₁ f' = M.dest' P h₂ f' := by cases h₁.symm.trans h₂; rfl
+                                            -- ⊢ dest' P h₁ f' = dest' P h₂ f'
+                                                                    -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.dest'_eq_dest' MvPFunctor.M.dest'_eq_dest'
@@ -252,8 +268,13 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P.Obj (α.append
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
   apply M.dest_corec'
+  -- ⊢ { fst := (g x).fst, snd := splitFun (dropFun (g x).snd) ((corec' P (fun b => …
   cases' g x with a f; dsimp
+  -- ⊢ { fst := { fst := a, snd := f }.fst, snd := splitFun (dropFun { fst := a, sn …
+                       -- ⊢ { fst := a, snd := splitFun (dropFun f) ((corec' P (fun b => (g b).fst) (fun …
   rw [MvPFunctor.map_eq]; congr
+  -- ⊢ { fst := a, snd := splitFun (dropFun f) ((corec' P (fun b => (g b).fst) (fun …
+                          -- ⊢ splitFun (dropFun f) ((corec' P (fun b => (g b).fst) (fun b => dropFun (g b) …
   conv =>
     rhs
     rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
@@ -268,10 +289,16 @@ theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ �
       f' = M.pathDestLeft P e₁' f₁ ∧
         f₁' = fun x : (last P).B a' => ⟨g₁' x, M.pathDestRight P e₁' f₁ x⟩ := by
   generalize ef : @splitFun n _ (append1 α (M P α)) f' f₁' = ff at e₁
+  -- ⊢ ∃ g₁' e₁', f' = pathDestLeft P e₁' f₁ ∧ f₁' = fun x => { fst := g₁' x, snd : …
   let he₁' := PFunctor.M.dest a₁;
+  -- ⊢ ∃ g₁' e₁', f' = pathDestLeft P e₁' f₁ ∧ f₁' = fun x => { fst := g₁' x, snd : …
   rcases e₁' : he₁' with ⟨a₁', g₁'⟩;
+  -- ⊢ ∃ g₁' e₁', f' = pathDestLeft P e₁' f₁ ∧ f₁' = fun x => { fst := g₁' x, snd : …
   rw [M.dest_eq_dest' _ e₁'] at e₁
+  -- ⊢ ∃ g₁' e₁', f' = pathDestLeft P e₁' f₁ ∧ f₁' = fun x => { fst := g₁' x, snd : …
   cases e₁; exact ⟨_, e₁', splitFun_inj ef⟩
+  -- ⊢ ∃ g₁' e₁', f' = pathDestLeft P e₁' f₁ ∧ f₁' = fun x => { fst := g₁' x, snd : …
+            -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim_lemma MvPFunctor.M.bisim_lemma
@@ -285,8 +312,11 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
               M.dest P y = ⟨a, splitFun f f₂⟩ ∧ ∀ i, R (f₁ i) (f₂ i))
     (x y) (r : R x y) : x = y := by
   cases' x with a₁ f₁
+  -- ⊢ { fst := a₁, snd := f₁ } = y
   cases' y with a₂ f₂
+  -- ⊢ { fst := a₁, snd := f₁ } = { fst := a₂, snd := f₂ }
   dsimp [mp] at *
+  -- ⊢ { fst := a₁, snd := f₁ } = { fst := a₂, snd := f₂ }
   have : a₁ = a₂ := by
     refine'
       PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) _ _ _
@@ -298,8 +328,11 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     rw [e₁', e₂']
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
+  -- ⊢ { fst := a₁, snd := f₁ } = { fst := a₁, snd := f₂ }
   congr with (i p)
+  -- ⊢ f₁ i p = f₂ i p
   induction' p with x a f h' i c x a f h' i c p IH <;>
+  -- ⊢ f₁ i (Path.root x a f h' i c) = f₂ i (Path.root x a f h' i c)
     try
       rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h''⟩
       rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
@@ -307,7 +340,9 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
       cases h'.symm.trans e₁'
       cases h'.symm.trans e₂'
   · exact (congr_fun (congr_fun e₃ i) c : _)
+    -- 🎉 no goals
   · exact IH _ _ (h'' _)
+    -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim MvPFunctor.M.bisim
@@ -316,32 +351,54 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
   apply M.bisim P R _ _ _ r
+  -- ⊢ ∀ (x y : M P α), R x y → ∃ a f f₁ f₂, dest P x = { fst := a, snd := splitFun …
   clear r x y
+  -- ⊢ ∀ (x y : M P α), R x y → ∃ a f f₁ f₂, dest P x = { fst := a, snd := splitFun …
   introv Hr
+  -- ⊢ ∃ a f f₁ f₂, dest P x = { fst := a, snd := splitFun f f₁ } ∧ dest P y = { fs …
   specialize h _ _ Hr
+  -- ⊢ ∃ a f f₁ f₂, dest P x = { fst := a, snd := splitFun f f₁ } ∧ dest P y = { fs …
   clear Hr
+  -- ⊢ ∃ a f f₁ f₂, dest P x = { fst := a, snd := splitFun f f₁ } ∧ dest P y = { fs …
 
   revert h
+  -- ⊢ (TypeVec.id ::: Quot.mk R) <$$> dest P x = (TypeVec.id ::: Quot.mk R) <$$> d …
   rcases M.dest P x with ⟨ax, fx⟩
+  -- ⊢ (TypeVec.id ::: Quot.mk R) <$$> { fst := ax, snd := fx } = (TypeVec.id ::: Q …
   rcases M.dest P y with ⟨ay, fy⟩
+  -- ⊢ (TypeVec.id ::: Quot.mk R) <$$> { fst := ax, snd := fx } = (TypeVec.id ::: Q …
   intro h
+  -- ⊢ ∃ a f f₁ f₂, { fst := ax, snd := fx } = { fst := a, snd := splitFun f f₁ } ∧ …
 
   rw [map_eq, map_eq] at h
+  -- ⊢ ∃ a f f₁ f₂, { fst := ax, snd := fx } = { fst := a, snd := splitFun f f₁ } ∧ …
   injection h with h₀ h₁
+  -- ⊢ ∃ a f f₁ f₂, { fst := ax, snd := fx } = { fst := a, snd := splitFun f f₁ } ∧ …
   subst ay
+  -- ⊢ ∃ a f f₁ f₂, { fst := ax, snd := fx } = { fst := a, snd := splitFun f f₁ } ∧ …
   simp at h₁
+  -- ⊢ ∃ a f f₁ f₂, { fst := ax, snd := fx } = { fst := a, snd := splitFun f f₁ } ∧ …
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy
+  -- ⊢ { fst := ax, snd := fx } = { fst := ax, snd := splitFun (dropFun fx) (lastFu …
   rw [split_dropFun_lastFun, Hdrop, split_dropFun_lastFun]
+  -- ⊢ { fst := ax, snd := fx } = { fst := ax, snd := fx } ∧ { fst := ax, snd := fy …
   simp
+  -- ⊢ ∀ (i : TypeVec.last (B P ax)), R (lastFun fx i) (lastFun fy i)
   intro i
+  -- ⊢ R (lastFun fx i) (lastFun fy i)
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
+  -- ⊢ R (lastFun fx i) (lastFun fy i)
   simp [(· ⊚ ·), appendFun, splitFun] at h₁
+  -- ⊢ R (lastFun fx i) (lastFun fy i)
   replace h₁ := Quot.exact _ h₁
+  -- ⊢ R (lastFun fx i) (lastFun fy i)
   rw [h₀.eqvGen_iff] at h₁
+  -- ⊢ R (lastFun fx i) (lastFun fy i)
   exact h₁
+  -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim₀ MvPFunctor.M.bisim₀
@@ -351,15 +408,23 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (x y) (r : R x y) : x = y := by
   have := M.bisim₀ P (EqvGen R) ?_ ?_
   · solve_by_elim [EqvGen.rel]
+    -- 🎉 no goals
   · apply EqvGen.is_equivalence
+    -- 🎉 no goals
   · clear r x y
+    -- ⊢ ∀ (x y : M P α), EqvGen R x y → (TypeVec.id ::: Quot.mk (EqvGen R)) <$$> des …
     introv Hr
+    -- ⊢ (TypeVec.id ::: Quot.mk (EqvGen R)) <$$> dest P x = (TypeVec.id ::: Quot.mk  …
     have : ∀ x y, R x y → EqvGen R x y := @EqvGen.rel _ R
+    -- ⊢ (TypeVec.id ::: Quot.mk (EqvGen R)) <$$> dest P x = (TypeVec.id ::: Quot.mk  …
     induction Hr
     · rw [← Quot.factor_mk_eq R (EqvGen R) this]
+      -- ⊢ (TypeVec.id ::: Quot.factor R (EqvGen R) this ∘ Quot.mk R) <$$> dest P x✝ =  …
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
+      -- 🎉 no goals
     -- porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
     all_goals aesop
+    -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
@@ -367,7 +432,9 @@ set_option linter.uppercaseLean3 false in
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
   cases' x with a f
+  -- ⊢ dest P (g <$$> { fst := a, snd := f }) = (g ::: fun x => g <$$> x) <$$> dest …
   rw [map_eq]
+  -- ⊢ dest P { fst := a, snd := g ⊚ f } = (g ::: fun x => g <$$> x) <$$> dest P {  …
   conv =>
     rhs
     rw [M.dest, M.dest', map_eq, appendFun_comp_splitFun]
@@ -379,8 +446,15 @@ theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β))
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
     g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by
   rw [M.dest_map]; congr
+  -- ⊢ g <$$> dest P x = (dropFun g ::: fun x => dropFun g <$$> x) <$$> dest P x
+                   -- ⊢ g = (dropFun g ::: fun x => dropFun g <$$> x)
   apply eq_of_drop_last_eq <;> simp
+  -- ⊢ dropFun g = dropFun (dropFun g ::: fun x => dropFun g <$$> x)
+                               -- 🎉 no goals
+                               -- ⊢ lastFun g = fun x => dropFun g <$$> x
   ext1; apply h
+  -- ⊢ lastFun g x✝ = dropFun g <$$> x✝
+        -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.map_dest MvPFunctor.M.map_dest

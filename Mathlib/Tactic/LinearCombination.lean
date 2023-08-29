@@ -124,6 +124,8 @@ theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' :
 
 theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
+  -- ⊢ a' - b' = 0
+                             -- 🎉 no goals
 
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination

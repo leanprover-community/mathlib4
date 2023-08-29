@@ -47,18 +47,25 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   rw [TensorPower.gMul_eq_coe_linearMap, ← LinearMap.compr₂_apply, ← @LinearMap.mul_apply' R, ←
     LinearMap.compl₂_apply, ← LinearMap.comp_apply]
   refine' LinearMap.congr_fun (LinearMap.congr_fun _ a) b
+  -- ⊢ LinearMap.compr₂ (LinearMap.compr₂ (TensorProduct.mk R ((⨂[R]^i) M) ((⨂[R]^j …
   clear! a b
+  -- ⊢ LinearMap.compr₂ (LinearMap.compr₂ (TensorProduct.mk R ((⨂[R]^i) M) ((⨂[R]^j …
   ext (a b)
+  -- ⊢ ↑(LinearMap.compMultilinearMap (↑(LinearMap.compMultilinearMap (LinearMap.co …
   -- Porting note: pulled the next two lines out of the long `simp only` below.
   simp only [LinearMap.compMultilinearMap_apply]
+  -- ⊢ ↑(↑(LinearMap.compr₂ (LinearMap.compr₂ (TensorProduct.mk R ((⨂[R]^i) M) ((⨂[ …
   rw [LinearMap.compr₂_apply, ← gMul_eq_coe_linearMap]
+  -- ⊢ ↑toTensorAlgebra (GradedMonoid.GMul.mul (↑(PiTensorProduct.tprod R) a) (↑(Pi …
   simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', LinearMap.compl₂_apply,
     LinearMap.comp_apply, LinearMap.compMultilinearMap_apply, PiTensorProduct.lift.tprod,
     TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
     gMul_eq_coe_linearMap]
   refine' Eq.trans _ List.prod_append
+  -- ⊢ List.prod (List.ofFn fun i_1 => ↑(TensorAlgebra.ι R) (Fin.append a b i_1)) = …
   -- Porting note: was `congr`
   apply congr_arg
+  -- ⊢ (List.ofFn fun i_1 => ↑(TensorAlgebra.ι R) (Fin.append a b i_1)) = (List.ofF …
   -- Porting note: `erw` for `Function.comp`
   erw [← List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_ofFn _ (TensorAlgebra.ι R), ←
     List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
@@ -107,7 +114,9 @@ theorem toDirectSum_ι (x : M) :
 theorem ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by
   ext
+  -- ⊢ ↑(LinearMap.comp (AlgHom.toLinearMap (AlgHom.comp ofDirectSum toDirectSum))  …
   simp [DirectSum.lof_eq_of, tprod_apply]
+  -- 🎉 no goals
 #align tensor_algebra.of_direct_sum_comp_to_direct_sum TensorAlgebra.ofDirectSum_comp_toDirectSum
 
 @[simp]
@@ -129,6 +138,7 @@ theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R M (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x :=
   by rw [Fin.castIso_to_equiv, mk_reindex_cast h]
+     -- 🎉 no goals
 #align tensor_algebra.mk_reindex_fin_cast TensorAlgebra.mk_reindex_fin_cast
 
 /-- The product of tensor products made of a single vector is the same as a single product of
@@ -139,33 +149,55 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
             GradedMonoid fun n => (⨂[R]^n) M)).prod =
       GradedMonoid.mk n (PiTensorProduct.tprod R x) := by
   refine' Fin.consInduction _ _ x <;> clear x
+  -- ⊢ List.prod (List.map (fun a => GradedMonoid.mk 1 (⨂ₜ[R] (x : Fin 1), Fin.elim …
+                                      -- ⊢ List.prod (List.map (fun a => GradedMonoid.mk 1 (⨂ₜ[R] (x : Fin 1), Fin.elim …
+                                      -- ⊢ ∀ {n : ℕ} (x₀ : M) (x : Fin n → M), List.prod (List.map (fun a => GradedMono …
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
+    -- ⊢ 1 = GradedMonoid.mk 0 (↑(PiTensorProduct.tprod R) Fin.elim0)
     rfl
+    -- 🎉 no goals
   · intro n x₀ x ih
+    -- ⊢ List.prod (List.map (fun a => GradedMonoid.mk 1 (⨂ₜ[R] (x_1 : Fin 1), Fin.co …
     rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map]
+    -- ⊢ GradedMonoid.mk 1 (⨂ₜ[R] (x_1 : Fin 1), Fin.cons x₀ x 0) * List.prod (List.m …
     simp_rw [Function.comp, Fin.cons_zero, Fin.cons_succ]
+    -- ⊢ GradedMonoid.mk 1 (⨂ₜ[R] (x : Fin 1), x₀) * List.prod (List.map (fun x_1 =>  …
     rw [ih, GradedMonoid.mk_mul_mk, TensorPower.tprod_mul_tprod]
+    -- ⊢ GradedMonoid.mk (1 + n) (↑(PiTensorProduct.tprod R) (Fin.append (fun x => x₀ …
     refine' TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) _
+    -- ⊢ ↑(TensorPower.cast R M (_ : 1 + n = n + 1)) (GradedMonoid.mk (1 + n) (↑(PiTe …
     dsimp only [GradedMonoid.mk]
+    -- ⊢ ↑(TensorPower.cast R M (_ : 1 + n = n + 1)) (↑(PiTensorProduct.tprod R) (Fin …
     rw [TensorPower.cast_tprod]
+    -- ⊢ ↑(PiTensorProduct.tprod R) (Fin.append (fun x => x₀) x ∘ ↑(Fin.castIso (_ :  …
     simp_rw [Fin.append_left_eq_cons, Function.comp]
+    -- ⊢ (⨂ₜ[R] (x_1 : Fin (n + 1)), Fin.cons x₀ x (↑(Fin.castIso (_ : 1 + n = n + 1) …
     congr 1 with i
+    -- 🎉 no goals
 #align tensor_power.list_prod_graded_monoid_mk_single TensorPower.list_prod_gradedMonoid_mk_single
 
 theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
   rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
+  -- ⊢ List.prod (List.ofFn (↑toDirectSum ∘ fun i => ↑(ι R) (x i))) = ↑(DirectSum.o …
   simp_rw [Function.comp, toDirectSum_ι]
+  -- ⊢ List.prod (List.ofFn fun x_1 => ↑(DirectSum.of (fun n => (⨂[R]^n) M) 1) (⨂ₜ[ …
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
+  -- ⊢ ↑(DirectSum.of (fun n => (⨂[R]^n) M) (List.dProdIndex (List.finRange n) fun  …
   apply DirectSum.of_eq_of_gradedMonoid_eq
+  -- ⊢ GradedMonoid.mk (List.dProdIndex (List.finRange n) fun x => 1) (List.dProd ( …
   rw [GradedMonoid.mk_list_dProd]
+  -- ⊢ List.prod (List.map (fun a => GradedMonoid.mk 1 (⨂ₜ[R] (x_1 : Fin 1), x a))  …
   rw [TensorPower.list_prod_gradedMonoid_mk_single]
+  -- 🎉 no goals
 #align tensor_algebra.to_direct_sum_tensor_power_tprod TensorAlgebra.toDirectSum_tensorPower_tprod
 
 theorem toDirectSum_comp_ofDirectSum :
     toDirectSum.comp ofDirectSum = AlgHom.id R (⨁ n, (⨂[R]^n) M) := by
   ext
+  -- ⊢ ↑(LinearMap.compMultilinearMap (LinearMap.comp (AlgHom.toLinearMap (AlgHom.c …
   simp [DirectSum.lof_eq_of, -tprod_apply, toDirectSum_tensorPower_tprod]
+  -- 🎉 no goals
 #align tensor_algebra.to_direct_sum_comp_of_direct_sum TensorAlgebra.toDirectSum_comp_ofDirectSum
 
 @[simp]

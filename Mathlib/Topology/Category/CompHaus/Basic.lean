@@ -118,16 +118,22 @@ set_option linter.uppercaseLean3 false in
 theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
     IsIso f := by
   let E := Equiv.ofBijective _ bij
+  -- ⊢ IsIso f
   have hE : Continuous E.symm := by
     rw [continuous_iff_isClosed]
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
   refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
+  -- ⊢ f ≫ ContinuousMap.mk ↑E.symm = 𝟙 X
   · ext x
+    -- ⊢ ↑(f ≫ ContinuousMap.mk ↑E.symm) x = ↑(𝟙 X) x
     apply E.symm_apply_apply
+    -- 🎉 no goals
   · ext x
+    -- ⊢ ↑(ContinuousMap.mk ↑E.symm ≫ f) x = ↑(𝟙 Y) x
     apply E.apply_symm_apply
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CompHaus.is_iso_of_bijective CompHaus.isIso_of_bijective
 
@@ -146,10 +152,14 @@ def isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y where
   inv := ⟨f.symm, f.symm.continuous⟩
   hom_inv_id := by
     ext x
+    -- ⊢ ↑(ContinuousMap.mk ↑f ≫ ContinuousMap.mk ↑(Homeomorph.symm f)) x = ↑(𝟙 X) x
     exact f.symm_apply_apply x
+    -- 🎉 no goals
   inv_hom_id := by
     ext x
+    -- ⊢ ↑(ContinuousMap.mk ↑(Homeomorph.symm f) ≫ ContinuousMap.mk ↑f) x = ↑(𝟙 Y) x
     exact f.apply_symm_apply x
+    -- 🎉 no goals
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps]
@@ -157,7 +167,9 @@ def homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
   left_inv x := by simp
+                   -- 🎉 no goals
   right_inv x := by simp
+                    -- 🎉 no goals
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
 
@@ -169,10 +181,14 @@ def isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   invFun := isoOfHomeo
   left_inv f := by
     ext
+    -- ⊢ ↑(isoOfHomeo (homeoOfIso f)).hom x✝ = ↑f.hom x✝
     rfl
+    -- 🎉 no goals
   right_inv f := by
     ext
+    -- ⊢ ↑(homeoOfIso (isoOfHomeo f)) x✝ = ↑f x✝
     rfl
+    -- 🎉 no goals
 
 end CompHaus
 
@@ -200,6 +216,8 @@ instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
 
 instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
   ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+      -- ⊢ IsIso f
+                      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
@@ -225,20 +243,32 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       continuous_toFun := continuous_stoneCechExtend f.2 }
   left_inv := by
     rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
+    -- ⊢ (fun f => ContinuousMap.mk (stoneCechExtend (_ : Continuous f.toFun))) ((fun …
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
+    -- ⊢ ∀ (a : ↑(stoneCechObj X).toTop), ↑((fun f => ContinuousMap.mk (stoneCechExte …
     intro (x : StoneCech X)
+    -- ⊢ ↑((fun f => ContinuousMap.mk (stoneCechExtend (_ : Continuous f.toFun))) ((f …
     refine' congr_fun _ x
+    -- ⊢ ↑((fun f => ContinuousMap.mk (stoneCechExtend (_ : Continuous f.toFun))) ((f …
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
+    -- ⊢ Set.EqOn (stoneCechExtend ?m.48961) f (Set.range stoneCechUnit)
     rintro _ ⟨y, rfl⟩
+    -- ⊢ stoneCechExtend ?m.48961 (stoneCechUnit y) = f (stoneCechUnit y)
     apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+    -- ⊢ Continuous fun x => stoneCechUnit x
     apply continuous_stoneCechUnit
+    -- 🎉 no goals
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
+    -- ⊢ (fun f => ContinuousMap.mk (↑f ∘ stoneCechUnit)) ((fun f => ContinuousMap.mk …
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
+    -- ⊢ ∀ (a : ↑X), ↑((fun f => ContinuousMap.mk (↑f ∘ stoneCechUnit)) ((fun f => Co …
     intro
+    -- ⊢ ↑((fun f => ContinuousMap.mk (↑f ∘ stoneCechUnit)) ((fun f => ContinuousMap. …
     exact congr_fun (stoneCechExtend_extends hf) _
+    -- 🎉 no goals
 #align stone_cech_equivalence stoneCechEquivalence
 
 /-- The Stone-Cech compactification functor from topological spaces to compact Hausdorff spaces,
@@ -287,23 +317,36 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
       toTop := (TopCat.limitCone FF).pt
       is_compact := by
         show CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
+        -- ⊢ CompactSpace ↑{u | ∀ {i j : J} (f : i ⟶ j), ↑(F.map f) (u i) = u j}
         rw [← isCompact_iff_compactSpace]
+        -- ⊢ IsCompact {u | ∀ {i j : J} (f : i ⟶ j), ↑(F.map f) (u i) = u j}
         apply IsClosed.isCompact
+        -- ⊢ IsClosed {u | ∀ {i j : J} (f : i ⟶ j), ↑(F.map f) (u i) = u j}
         have :
           { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j } =
             ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } := by
           ext1
           simp only [Set.mem_iInter, Set.mem_setOf_eq]
         rw [this]
+        -- ⊢ IsClosed (⋂ (i : J) (j : J) (f : i ⟶ j), {u | ↑(F.map f) (u i) = u j})
         apply isClosed_iInter
+        -- ⊢ ∀ (i : J), IsClosed (⋂ (j : J) (f : i ⟶ j), {u | ↑(F.map f) (u i) = u j})
         intro i
+        -- ⊢ IsClosed (⋂ (j : J) (f : i ⟶ j), {u | ↑(F.map f) (u i) = u j})
         apply isClosed_iInter
+        -- ⊢ ∀ (i_1 : J), IsClosed (⋂ (f : i ⟶ i_1), {u | ↑(F.map f) (u i) = u i_1})
         intro j
+        -- ⊢ IsClosed (⋂ (f : i ⟶ j), {u | ↑(F.map f) (u i) = u j})
         apply isClosed_iInter
+        -- ⊢ ∀ (i_1 : i ⟶ j), IsClosed {u | ↑(F.map i_1) (u i) = u j}
         intro f
+        -- ⊢ IsClosed {u | ↑(F.map f) (u i) = u j}
         apply isClosed_eq
+        -- ⊢ Continuous fun x => ↑(F.map f) (x i)
         · exact (ContinuousMap.continuous (F.map f)).comp (continuous_apply i)
+          -- 🎉 no goals
         · exact continuous_apply j
+          -- 🎉 no goals
       is_hausdorff :=
         show T2Space { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
           inferInstance }
@@ -311,9 +354,13 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
       app := fun j => (TopCat.limitCone FF).π.app j
       naturality := by
         intro _ _ f
+        -- ⊢ ((Functor.const J).obj (mk (TopCat.limitCone FF).pt)).map f ≫ (fun j => NatT …
         ext ⟨x, hx⟩
+        -- ⊢ ↑(((Functor.const J).obj (mk (TopCat.limitCone FF).pt)).map f ≫ (fun j => Na …
         simp only [comp_apply, Functor.const_obj_map, id_apply]
+        -- ⊢ ↑(NatTrans.app (TopCat.limitCone (F ⋙ compHausToTop)).π Y✝) (↑(𝟙 (mk (TopCat …
         exact (hx f).symm } }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CompHaus.limit_cone CompHaus.limitCone
 
@@ -329,27 +376,41 @@ set_option linter.uppercaseLean3 false in
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
+  -- ⊢ Epi f → Function.Surjective ↑f
   · dsimp [Function.Surjective]
+    -- ⊢ Epi f → ∀ (b : (forget CompHaus).obj Y), ∃ a, ↑f a = b
     contrapose!
+    -- ⊢ (∃ b, ∀ (a : (forget CompHaus).obj X), ↑f a ≠ b) → ¬Epi f
     rintro ⟨y, hy⟩ hf
+    -- ⊢ False
     let C := Set.range f
+    -- ⊢ False
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    -- ⊢ False
     let D := ({y} : Set Y)
+    -- ⊢ False
     have hD : IsClosed D := isClosed_singleton
+    -- ⊢ False
     have hCD : Disjoint C D := by
       rw [Set.disjoint_singleton_right]
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     --haveI : NormalSpace Y.toTop := normalOfCompactT2
     haveI : NormalSpace ((forget CompHaus).obj Y) := normalOfCompactT2
+    -- ⊢ False
     obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_closed hC hD hCD
+    -- ⊢ False
     haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
+    -- ⊢ False
     haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
+    -- ⊢ False
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
+    -- ⊢ False
     let g : Y ⟶ Z :=
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
         continuous_uLift_up.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
     let h : Y ⟶ Z := ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
+    -- ⊢ False
     have H : h = g := by
       rw [← cancel_epi f]
       ext x
@@ -365,28 +426,44 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
     apply_fun fun e => (e y).down.1 at H
+    -- ⊢ False
     dsimp at H
+    -- ⊢ False
     change 0 = φ y at H
+    -- ⊢ False
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
+    -- ⊢ False
     exact zero_ne_one H
+    -- 🎉 no goals
   · rw [← CategoryTheory.epi_iff_surjective]
+    -- ⊢ Epi ↑f → Epi f
     apply (forget CompHaus).epi_of_epi_map
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
 theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
+  -- ⊢ Mono f → Function.Injective ↑f
   · intro hf x₁ x₂ h
+    -- ⊢ x₁ = x₂
     let g₁ : of PUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩
+    -- ⊢ x₁ = x₂
     let g₂ : of PUnit ⟶ X := ⟨fun _ => x₂, continuous_const⟩
+    -- ⊢ x₁ = x₂
     have : g₁ ≫ f = g₂ ≫ f := by
       ext
       exact h
     rw [cancel_mono] at this
+    -- ⊢ x₁ = x₂
     apply_fun fun e => e PUnit.unit at this
+    -- ⊢ x₁ = x₂
     exact this
+    -- 🎉 no goals
   · rw [← CategoryTheory.mono_iff_injective]
+    -- ⊢ Mono ↑f → Mono f
     apply (forget CompHaus).mono_of_mono_map
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 

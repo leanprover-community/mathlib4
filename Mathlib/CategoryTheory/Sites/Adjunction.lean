@@ -67,16 +67,26 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
     invFun := fun γ => ⟨J.sheafifyLift ((A.homEquiv _ _).symm ((sheafToPresheaf _ _).map γ)) Y.2⟩
     left_inv := by
       intro η
+      -- ⊢ (fun γ => { val := sheafifyLift J (↑(Adjunction.homEquiv A ((sheafToPresheaf …
       ext1
+      -- ⊢ ((fun γ => { val := sheafifyLift J (↑(Adjunction.homEquiv A ((sheafToPreshea …
       dsimp
+      -- ⊢ sheafifyLift J (↑(Adjunction.homEquiv (Adjunction.whiskerRight Cᵒᵖ adj) X.va …
       symm
+      -- ⊢ η.val = sheafifyLift J (↑(Adjunction.homEquiv (Adjunction.whiskerRight Cᵒᵖ a …
       apply J.sheafifyLift_unique
+      -- ⊢ toSheafify J (X.val ⋙ G) ≫ η.val = ↑(Adjunction.homEquiv (Adjunction.whisker …
       rw [Equiv.symm_apply_apply]
+      -- 🎉 no goals
     right_inv := by
       intro γ
+      -- ⊢ (fun η => { val := ↑(Adjunction.homEquiv A ((sheafToPresheaf J E).obj X) Y.v …
       ext1
+      -- ⊢ ((fun η => { val := ↑(Adjunction.homEquiv A ((sheafToPresheaf J E).obj X) Y. …
       dsimp
+      -- ⊢ ↑(Adjunction.homEquiv (Adjunction.whiskerRight Cᵒᵖ adj) X.val Y.val) (toShea …
       rw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
 
@@ -89,17 +99,28 @@ def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
     { homEquiv := composeEquiv J adj
       homEquiv_naturality_left_symm := fun f g => by
         ext1
+        -- ⊢ (↑(composeEquiv J adj X'✝ Y✝).symm (f ≫ g)).val = ((composeAndSheafify J G). …
         dsimp [composeEquiv]
+        -- ⊢ sheafifyLift J (↑(Adjunction.homEquiv (Adjunction.whiskerRight Cᵒᵖ adj) X'✝. …
         rw [sheafifyMap_sheafifyLift]
+        -- ⊢ sheafifyLift J (↑(Adjunction.homEquiv (Adjunction.whiskerRight Cᵒᵖ adj) X'✝. …
         erw [Adjunction.homEquiv_naturality_left_symm]
+        -- ⊢ sheafifyLift J (((whiskeringRight Cᵒᵖ E D).obj G).map f.val ≫ ↑(Adjunction.h …
         rw [whiskeringRight_obj_map]
+        -- ⊢ sheafifyLift J (whiskerRight f.val G ≫ ↑(Adjunction.homEquiv (Adjunction.whi …
         rfl
+        -- 🎉 no goals
       homEquiv_naturality_right := fun f g => by
         ext
+        -- ⊢ NatTrans.app (↑(composeEquiv J adj X✝ Y'✝) (f ≫ g)).val x✝ = NatTrans.app (↑ …
         dsimp [composeEquiv]
+        -- ⊢ NatTrans.app (↑(Adjunction.homEquiv (Adjunction.whiskerRight Cᵒᵖ adj) X✝.val …
         erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
+        -- ⊢ NatTrans.app (NatTrans.app (Adjunction.whiskerRight Cᵒᵖ adj).unit X✝.val ≫ ( …
         dsimp
+        -- ⊢ NatTrans.app (NatTrans.app (Adjunction.whiskerRight Cᵒᵖ adj).unit X✝.val) x✝ …
         simp }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction CategoryTheory.Sheaf.adjunction
 
@@ -129,8 +150,11 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
         whiskerRight (J.toSheafify _) (forget D) := by
   dsimp [adjunctionToTypes, Adjunction.comp]
+  -- ⊢ (NatTrans.app (Equivalence.toAdjunction (Equivalence.symm (sheafEquivSheafOf …
   simp
+  -- ⊢ (NatTrans.app (Equivalence.toAdjunction (Equivalence.symm (sheafEquivSheafOf …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
 
@@ -140,14 +164,19 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ f
     ((adjunctionToTypes J adj).counit.app X).val =
       J.sheafifyLift ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
   apply J.sheafifyLift_unique
+  -- ⊢ toSheafify J (((whiskeringRight Cᵒᵖ (Type (max u v)) D).obj G).obj ((sheafTo …
   dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
     instCategorySheaf_comp_val, instCategorySheaf_id_val]
   rw [adjunction_counit_app_val]
+  -- ⊢ toSheafify J (((whiskeringRight Cᵒᵖ (Type (max u v)) D).obj G).obj ((sheafTo …
   erw [Category.id_comp, J.sheafifyMap_sheafifyLift, J.toSheafify_sheafifyLift]
+  -- ⊢ ((whiskeringRight Cᵒᵖ (Type (max u v)) D).obj G).map ((sheafToPresheaf J (Ty …
   ext
+  -- ⊢ ↑(NatTrans.app (((whiskeringRight Cᵒᵖ (Type (max u v)) D).obj G).map ((sheaf …
   dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
   simp
+  -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_counit_app_val CategoryTheory.Sheaf.adjunctionToTypes_counit_app_val

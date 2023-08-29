@@ -188,6 +188,7 @@ end Mul
   `MeasurableSub`. This can be nice to avoid unnecessary type-class assumptions. "]
 theorem measurable_div_const' {G : Type*} [DivInvMonoid G] [MeasurableSpace G] [MeasurableMul G]
     (g : G) : Measurable fun h => h / g := by simp_rw [div_eq_mul_inv, measurable_mul_const]
+                                              -- 🎉 no goals
 #align measurable_div_const' measurable_div_const'
 #align measurable_sub_const' measurable_sub_const'
 
@@ -203,9 +204,13 @@ instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [Measur
     MeasurablePow M ℕ :=
   ⟨measurable_from_prod_countable fun n => by
       induction' n with n ih
+      -- ⊢ Measurable fun x => (x, Nat.zero).fst ^ (x, Nat.zero).snd
       · simp only [Nat.zero_eq, pow_zero, ← Pi.one_def, measurable_one]
+        -- 🎉 no goals
       · simp only [pow_succ]
+        -- ⊢ Measurable fun x => x * x ^ n
         exact measurable_id.mul ih⟩
+        -- 🎉 no goals
 #align monoid.has_measurable_pow Monoid.measurablePow
 
 section Pow
@@ -378,19 +383,28 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [A
     [MeasurableSingletonClass E] [MeasurableSub₂ E] {f g : α → E} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
   suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) }
+  -- ⊢ MeasurableSet {x | f x = g x}
   · rw [h_set_eq]
+    -- ⊢ MeasurableSet {x | (f - g) x = 0}
     exact (hf.sub hg) measurableSet_eq
+    -- 🎉 no goals
   ext
+  -- ⊢ x✝ ∈ {x | f x = g x} ↔ x✝ ∈ {x | (f - g) x = 0}
   simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
+  -- 🎉 no goals
 #align measurable_set_eq_fun measurableSet_eq_fun
 
 theorem nullMeasurableSet_eq_fun {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E]
     [MeasurableSub₂ E] {f g : α → E} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { x | f x = g x } μ := by
   apply (measurableSet_eq_fun hf.measurable_mk hg.measurable_mk).nullMeasurableSet.congr
+  -- ⊢ {x | AEMeasurable.mk f hf x = AEMeasurable.mk g hg x} =ᵐ[μ] {x | f x = g x}
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk]with x hfx hgx
+  -- ⊢ setOf (fun x => AEMeasurable.mk f hf x = AEMeasurable.mk g hg x) x = setOf ( …
   change (hf.mk f x = hg.mk g x) = (f x = g x)
+  -- ⊢ (AEMeasurable.mk f hf x = AEMeasurable.mk g hg x) = (f x = g x)
   simp only [hfx, hgx]
+  -- 🎉 no goals
 #align null_measurable_set_eq_fun nullMeasurableSet_eq_fun
 
 theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [MeasurableSpace E]
@@ -400,9 +414,13 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
   rw [this]
+  -- ⊢ MeasurableSet (⋃ (j : E), {x | f x = j} ∩ {x | g x = j})
   refine' MeasurableSet.iUnion fun j => MeasurableSet.inter _ _
+  -- ⊢ MeasurableSet {x | f x = j}
   · exact hf (measurableSet_singleton j)
+    -- 🎉 no goals
   · exact hg (measurableSet_singleton j)
+    -- 🎉 no goals
 #align measurable_set_eq_fun_of_countable measurableSet_eq_fun_of_countable
 
 theorem ae_eq_trim_of_measurable {α E} {m m0 : MeasurableSpace α} {μ : Measure α}
@@ -410,7 +428,9 @@ theorem ae_eq_trim_of_measurable {α E} {m m0 : MeasurableSpace α} {μ : Measur
     (hm : m ≤ m0) {f g : α → E} (hf : Measurable[m] f) (hg : Measurable[m] g) (hfg : f =ᵐ[μ] g) :
     f =ᶠ[@Measure.ae α m (μ.trim hm)] g := by
   rwa [Filter.EventuallyEq, @ae_iff _ m, trim_measurableSet_eq hm _]
+  -- ⊢ MeasurableSet {a | ¬f a = g a}
   exact @MeasurableSet.compl α _ m (@measurableSet_eq_fun α m E _ _ _ _ _ _ hf hg)
+  -- 🎉 no goals
 #align ae_eq_trim_of_measurable ae_eq_trim_of_measurable
 
 end Div
@@ -437,12 +457,18 @@ instance (priority := 100) measurableDiv_of_mul_inv (G : Type*) [MeasurableSpace
     [DivInvMonoid G] [MeasurableMul G] [MeasurableInv G] : MeasurableDiv G where
   measurable_const_div c := by
     convert measurable_inv.const_mul c using 1
+    -- ⊢ (fun x => c / x) = fun x => c * x⁻¹
     ext1
+    -- ⊢ c / x✝ = c * x✝⁻¹
     apply div_eq_mul_inv
+    -- 🎉 no goals
   measurable_div_const c := by
     convert measurable_id.mul_const c⁻¹ using 1
+    -- ⊢ (fun x => x / c) = fun x => id x * c⁻¹
     ext1
+    -- ⊢ x✝ / c = id x✝ * c⁻¹
     apply div_eq_mul_inv
+    -- 🎉 no goals
 #align has_measurable_div_of_mul_inv measurableDiv_of_mul_inv
 #align has_measurable_sub_of_add_neg measurableSub_of_add_neg
 
@@ -467,6 +493,7 @@ theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)
 theorem measurable_inv_iff {G : Type*} [Group G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+               -- 🎉 no goals
 #align measurable_inv_iff measurable_inv_iff
 #align measurable_neg_iff measurable_neg_iff
 
@@ -474,6 +501,7 @@ theorem measurable_inv_iff {G : Type*} [Group G] [MeasurableSpace G] [Measurable
 theorem aemeasurable_inv_iff {G : Type*} [Group G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+               -- 🎉 no goals
 #align ae_measurable_inv_iff aemeasurable_inv_iff
 #align ae_measurable_neg_iff aemeasurable_neg_iff
 
@@ -481,12 +509,14 @@ theorem aemeasurable_inv_iff {G : Type*} [Group G] [MeasurableSpace G] [Measurab
 theorem measurable_inv_iff₀ {G₀ : Type*} [GroupWithZero G₀] [MeasurableSpace G₀]
     [MeasurableInv G₀] {f : α → G₀} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+               -- 🎉 no goals
 #align measurable_inv_iff₀ measurable_inv_iff₀
 
 @[simp]
 theorem aemeasurable_inv_iff₀ {G₀ : Type*} [GroupWithZero G₀] [MeasurableSpace G₀]
     [MeasurableInv G₀] {f : α → G₀} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+               -- 🎉 no goals
 #align ae_measurable_inv_iff₀ aemeasurable_inv_iff₀
 
 @[to_additive]
@@ -509,10 +539,15 @@ instance DivInvMonoid.measurableZpow (G : Type u) [DivInvMonoid G] [MeasurableSp
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
       cases' n with n n
+      -- ⊢ Measurable fun x => (x, Int.ofNat n).fst ^ (x, Int.ofNat n).snd
       · simp_rw [Int.ofNat_eq_coe, zpow_ofNat]
+        -- ⊢ Measurable fun x => x ^ n
         exact measurable_id.pow_const _
+        -- 🎉 no goals
       · simp_rw [zpow_negSucc]
+        -- ⊢ Measurable fun x => (x ^ (n + 1))⁻¹
         exact (measurable_id.pow_const (n + 1)).inv⟩
+        -- 🎉 no goals
 #align div_inv_monoid.has_measurable_zpow DivInvMonoid.measurableZpow
 
 @[to_additive]
@@ -520,7 +555,9 @@ instance (priority := 100) measurableDiv₂_of_mul_inv (G : Type*) [MeasurableSp
     [DivInvMonoid G] [MeasurableMul₂ G] [MeasurableInv G] : MeasurableDiv₂ G :=
   ⟨by
     simp only [div_eq_mul_inv]
+    -- ⊢ Measurable fun p => p.fst * p.snd⁻¹
     exact measurable_fst.mul measurable_snd.inv⟩
+    -- 🎉 no goals
 #align has_measurable_div₂_of_mul_inv measurableDiv₂_of_mul_inv
 #align has_measurable_div₂_of_add_neg measurableDiv₂_of_add_neg
 
@@ -588,6 +625,7 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
 instance Submonoid.measurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
     [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α :=
   ⟨fun c => by simpa only using measurable_const_smul (c : M), fun x =>
+               -- 🎉 no goals
     (measurable_smul_const x : Measurable fun c : M => c • x).comp measurable_subtype_coe⟩
 #align submonoid.has_measurable_smul Submonoid.measurableSMul
 #align add_submonoid.has_measurable_vadd AddSubmonoid.measurableVAdd
@@ -679,11 +717,17 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     [MeasurableAdd₂ M] : MeasurableSMul₂ ℕ M :=
   ⟨by
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
+    -- ⊢ Measurable fun p => p.snd • p.fst
     refine' measurable_from_prod_countable fun n => _
+    -- ⊢ Measurable fun x => (x, n).snd • (x, n).fst
     induction' n with n ih
+    -- ⊢ Measurable fun x => (x, Nat.zero).snd • (x, Nat.zero).fst
     · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
+      -- 🎉 no goals
     · simp only [succ_nsmul]
+      -- ⊢ Measurable fun x => x + n • x
       exact measurable_id.add ih⟩
+      -- 🎉 no goals
 #align add_monoid.has_measurable_smul_nat₂ AddMonoid.measurableSMul_nat₂
 
 /-- `SubNegMonoid.SMulInt` is measurable. -/
@@ -691,12 +735,19 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     [MeasurableAdd₂ M] [MeasurableNeg M] : MeasurableSMul₂ ℤ M :=
   ⟨by
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
+    -- ⊢ Measurable fun p => p.snd • p.fst
     refine' measurable_from_prod_countable fun n => _
+    -- ⊢ Measurable fun x => (x, n).snd • (x, n).fst
     induction' n with n n ih
+    -- ⊢ Measurable fun x => (x, Int.ofNat n).snd • (x, Int.ofNat n).fst
     · simp only [Int.ofNat_eq_coe, ofNat_zsmul]
+      -- ⊢ Measurable fun x => n • x
       exact measurable_const_smul _
+      -- 🎉 no goals
     · simp only [negSucc_zsmul]
+      -- ⊢ Measurable fun x => -((n + 1) • x)
       exact (measurable_const_smul _).neg⟩
+      -- 🎉 no goals
 #align sub_neg_monoid.has_measurable_smul_int₂ SubNegMonoid.measurableSMul_int₂
 
 end SMul
@@ -711,6 +762,7 @@ variable {G : Type*} [Group G] [MeasurableSpace G] [MulAction G β] [MeasurableS
 @[to_additive]
 theorem measurable_const_smul_iff (c : G) : (Measurable fun x => c • f x) ↔ Measurable f :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
+               -- 🎉 no goals
 #align measurable_const_smul_iff measurable_const_smul_iff
 #align measurable_const_vadd_iff measurable_const_vadd_iff
 
@@ -718,6 +770,7 @@ theorem measurable_const_smul_iff (c : G) : (Measurable fun x => c • f x) ↔ 
 theorem aemeasurable_const_smul_iff (c : G) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
+               -- 🎉 no goals
 #align ae_measurable_const_smul_iff aemeasurable_const_smul_iff
 #align ae_measurable_const_vadd_iff aemeasurable_const_vadd_iff
 
@@ -815,9 +868,11 @@ nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α
   ⟨MulOpposite.rec' fun c =>
       show Measurable fun x => op c • x by
         simpa only [op_smul_eq_smul] using measurable_const_smul c,
+        -- 🎉 no goals
     fun x =>
     show Measurable fun c => op (unop c) • x by
       simpa only [op_smul_eq_smul] using (measurable_smul_const x).comp measurable_mul_unop⟩
+      -- 🎉 no goals
 #align has_measurable_smul.op MeasurableSMul.op
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
@@ -825,7 +880,9 @@ nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul₂ M α] : MeasurableSMul₂ Mᵐᵒᵖ α :=
   ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2 by
       simp_rw [op_smul_eq_smul]
+      -- ⊢ Measurable fun x => unop x.fst • x.snd
       refine' (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
+      -- 🎉 no goals
 #align has_measurable_smul₂.op MeasurableSMul₂.op
 
 @[to_additive]
@@ -858,9 +915,14 @@ variable {M α : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] {m :
 theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable l.prod := by
   induction' l with f l ihl; · exact measurable_one
+  -- ⊢ Measurable (prod [])
+                               -- 🎉 no goals
   rw [List.forall_mem_cons] at hl
+  -- ⊢ Measurable (prod (f :: l))
   rw [List.prod_cons]
+  -- ⊢ Measurable (f * prod l)
   exact hl.1.mul (ihl hl.2)
+  -- 🎉 no goals
 #align list.measurable_prod' List.measurable_prod'
 #align list.measurable_sum' List.measurable_sum'
 
@@ -868,9 +930,14 @@ theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurabl
 theorem List.aemeasurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   induction' l with f l ihl; · exact aemeasurable_one
+  -- ⊢ AEMeasurable (prod [])
+                               -- 🎉 no goals
   rw [List.forall_mem_cons] at hl
+  -- ⊢ AEMeasurable (prod (f :: l))
   rw [List.prod_cons]
+  -- ⊢ AEMeasurable (f * prod l)
   exact hl.1.mul (ihl hl.2)
+  -- 🎉 no goals
 #align list.ae_measurable_prod' List.aemeasurable_prod'
 #align list.ae_measurable_sum' List.aemeasurable_sum'
 
@@ -878,6 +945,7 @@ theorem List.aemeasurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasu
 theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable fun x => (l.map fun f : α → M => f x).prod := by
   simpa only [← Pi.list_prod_apply] using l.measurable_prod' hl
+  -- 🎉 no goals
 #align list.measurable_prod List.measurable_prod
 #align list.measurable_sum List.measurable_sum
 
@@ -885,6 +953,7 @@ theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable
 theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.list_prod_apply] using l.aemeasurable_prod' hl
+  -- 🎉 no goals
 #align list.ae_measurable_prod List.aemeasurable_prod
 #align list.ae_measurable_sum List.aemeasurable_sum
 
@@ -899,7 +968,9 @@ variable {M ι α : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ 
 theorem Multiset.measurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable l.prod := by
   rcases l with ⟨l⟩
+  -- ⊢ Measurable (prod (Quot.mk Setoid.r l))
   simpa using l.measurable_prod' (by simpa using hl)
+  -- 🎉 no goals
 #align multiset.measurable_prod' Multiset.measurable_prod'
 #align multiset.measurable_sum' Multiset.measurable_sum'
 
@@ -907,7 +978,9 @@ theorem Multiset.measurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, M
 theorem Multiset.aemeasurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   rcases l with ⟨l⟩
+  -- ⊢ AEMeasurable (prod (Quot.mk Setoid.r l))
   simpa using l.aemeasurable_prod' (by simpa using hl)
+  -- 🎉 no goals
 #align multiset.ae_measurable_prod' Multiset.aemeasurable_prod'
 #align multiset.ae_measurable_sum' Multiset.aemeasurable_sum'
 
@@ -915,6 +988,7 @@ theorem Multiset.aemeasurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l,
 theorem Multiset.measurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Measurable f) :
     Measurable fun x => (s.map fun f : α → M => f x).prod := by
   simpa only [← Pi.multiset_prod_apply] using s.measurable_prod' hs
+  -- 🎉 no goals
 #align multiset.measurable_prod Multiset.measurable_prod
 #align multiset.measurable_sum Multiset.measurable_sum
 
@@ -922,6 +996,7 @@ theorem Multiset.measurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Me
 theorem Multiset.aemeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
     AEMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod' hs
+  -- 🎉 no goals
 #align multiset.ae_measurable_prod Multiset.aemeasurable_prod
 #align multiset.ae_measurable_sum Multiset.aemeasurable_sum
 
@@ -936,6 +1011,7 @@ theorem Finset.measurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f
 theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun a => ∏ i in s, f i a := by
   simpa only [← Finset.prod_apply] using s.measurable_prod' hf
+  -- 🎉 no goals
 #align finset.measurable_prod Finset.measurable_prod
 #align finset.measurable_sum Finset.measurable_sum
 
@@ -952,6 +1028,7 @@ theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurabl
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i in s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
+  -- 🎉 no goals
 #align finset.ae_measurable_prod Finset.aemeasurable_prod
 #align finset.ae_measurable_sum Finset.aemeasurable_sum
 

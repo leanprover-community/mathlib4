@@ -27,7 +27,9 @@ variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 theorem IsConformalMap.preserves_angle {f' : E →L[ℝ] F} (h : IsConformalMap f') (u v : E) :
     angle (f' u) (f' v) = angle u v := by
   obtain ⟨c, hc, li, rfl⟩ := h
+  -- ⊢ angle (↑(c • LinearIsometry.toContinuousLinearMap li) u) (↑(c • LinearIsomet …
   exact (angle_smul_smul hc _ _).trans (li.angle_map _ _)
+  -- 🎉 no goals
 #align inner_product_geometry.is_conformal_map.preserves_angle InnerProductGeometry.IsConformalMap.preserves_angle
 
 /-- If a real differentiable map `f` is conformal at a point `x`,

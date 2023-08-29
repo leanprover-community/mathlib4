@@ -85,13 +85,21 @@ theorem spectrum_star_mul_self_of_isStarNormal :
   -- goose chase when trying to apply `spectrum.gelfandTransform_eq`.
   --letI := elementalStarAlgebra.Complex.normedAlgebra a
   rcases subsingleton_or_nontrivial A with ⟨⟩
+  -- ⊢ spectrum ℂ (star a * a) ⊆ Set.Icc 0 ↑‖star a * a‖
   · simp only [spectrum.of_subsingleton, Set.empty_subset]
+    -- 🎉 no goals
   · set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
+    -- ⊢ spectrum ℂ (star a * a) ⊆ Set.Icc 0 ↑‖star a * a‖
     refine' (spectrum.subset_starSubalgebra (star a' * a')).trans _
+    -- ⊢ spectrum ℂ (star a' * a') ⊆ Set.Icc 0 ↑‖star a * a‖
     rw [← spectrum.gelfandTransform_eq (star a' * a'), ContinuousMap.spectrum_eq_range]
+    -- ⊢ Set.range ↑(↑(gelfandTransform ℂ { x // x ∈ elementalStarAlgebra ℂ a }) (sta …
     rintro - ⟨φ, rfl⟩
+    -- ⊢ ↑(↑(gelfandTransform ℂ { x // x ∈ elementalStarAlgebra ℂ a }) (star a' * a') …
     rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
+    -- ⊢ star (↑φ a') * ↑φ a' ∈ Set.Icc 0 ↑‖star a * a‖
     rw [Complex.eq_coe_norm_of_nonneg (star_mul_self_nonneg _), ← map_star, ← map_mul]
+    -- ⊢ ↑‖↑φ (star a' * a')‖ ∈ Set.Icc 0 ↑‖star a * a‖
     exact
       ⟨Complex.zero_le_real.2 (norm_nonneg _),
         Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
@@ -125,16 +133,23 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
     commutative (because `a` is normal) ring `elementalStarAlgebra ℂ a`. Indeed, by commutativity,
     if `star a * a` is invertible, then so is `a`. -/
   nontriviality A
+  -- ⊢ IsUnit { val := a, property := (_ : a ∈ elementalStarAlgebra ℂ a) }
   set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
+  -- ⊢ IsUnit a'
   suffices : IsUnit (star a' * a'); exact (IsUnit.mul_iff.1 this).2
+  -- ⊢ IsUnit a'
+                                    -- ⊢ IsUnit (star a' * a')
   replace h := (show Commute (star a) a from star_comm_self' a).isUnit_mul_iff.2 ⟨h.star, h⟩
+  -- ⊢ IsUnit (star a' * a')
   /- Since `a` is invertible, `‖star a * a‖ ≠ 0`, so `‖star a * a‖ • 1` is invertible in
     `elementalStarAlgebra ℂ a`, and so it suffices to show that the distance between this unit and
     `star a * a` is less than `‖star a * a‖`. -/
   have h₁ : (‖star a * a‖ : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr h.ne_zero)
+  -- ⊢ IsUnit (star a' * a')
   set u : Units (elementalStarAlgebra ℂ a) :=
     Units.map (algebraMap ℂ (elementalStarAlgebra ℂ a)).toMonoidHom (Units.mk0 _ h₁)
   refine' ⟨u.ofNearby _ _, rfl⟩
+  -- ⊢ ‖star a' * a' - ↑u‖ < ‖↑u⁻¹‖⁻¹
   simp only [Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
     Units.coe_map_inv, MonoidHom.coe_coe, norm_algebraMap', norm_inv, Complex.norm_eq_abs,
     Complex.abs_ofReal, abs_norm, inv_inv]
@@ -182,16 +197,25 @@ containing `x`. -/
 theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A))
     {x : A} (h : IsUnit x) (hxS : x ∈ S) : ↑h.unit⁻¹ ∈ S := by
   have hx := h.star.mul h
+  -- ⊢ ↑(IsUnit.unit h)⁻¹ ∈ S
   suffices this : (↑hx.unit⁻¹ : A) ∈ S
+  -- ⊢ ↑(IsUnit.unit h)⁻¹ ∈ S
   · rw [← one_mul (↑h.unit⁻¹ : A), ← hx.unit.inv_mul, mul_assoc, IsUnit.unit_spec, mul_assoc,
       h.mul_val_inv, mul_one]
     exact mul_mem this (star_mem hxS)
+    -- 🎉 no goals
   refine' le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) _
+  -- ⊢ ↑(IsUnit.unit hx)⁻¹ ∈ elementalStarAlgebra ℂ (star x * x)
   haveI := (IsSelfAdjoint.star_mul_self x).isStarNormal
+  -- ⊢ ↑(IsUnit.unit hx)⁻¹ ∈ elementalStarAlgebra ℂ (star x * x)
   have hx' := elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal hx
+  -- ⊢ ↑(IsUnit.unit hx)⁻¹ ∈ elementalStarAlgebra ℂ (star x * x)
   convert (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).prop using 1
+  -- ⊢ ↑(IsUnit.unit hx)⁻¹ = ↑↑(IsUnit.unit hx')⁻¹
   refine left_inv_eq_right_inv hx.unit.inv_mul ?_
+  -- ⊢ ↑(IsUnit.unit hx) * ↑↑(IsUnit.unit hx')⁻¹ = 1
   exact (congr_arg ((↑) : _ → A) hx'.unit.mul_inv)
+  -- 🎉 no goals
 #align star_subalgebra.is_unit_coe_inv_mem StarSubalgebra.isUnit_coe_inv_mem
 
 /-- For a unital C⋆-subalgebra `S` of `A` and `x : S`, if `↑x : A` is invertible in `A`, then
@@ -202,6 +226,7 @@ theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S :
     ⟨fun hx => ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, _, _⟩, rfl⟩,
       fun hx => hx.map S.subtype⟩
   exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
+  -- 🎉 no goals
 #align star_subalgebra.coe_is_unit StarSubalgebra.coe_isUnit
 
 theorem StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S}
@@ -242,15 +267,21 @@ theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
     Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
   refine' ⟨fun φ ψ h => starAlgHomClass_ext ℂ _ _ _, _⟩
   · exact (map_continuous φ)
+    -- 🎉 no goals
   · exact (map_continuous ψ)
+    -- 🎉 no goals
   · simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,
       ContinuousMap.coe_mk] using h
   · rintro ⟨z, hz⟩
+    -- ⊢ ∃ a_1, characterSpaceToSpectrum a a_1 = { val := z, property := hz }
     have hz' := (StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a)
       ⟨a, self_mem ℂ a⟩).symm.subst hz
     rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
+    -- ⊢ ∃ a_1, characterSpaceToSpectrum a a_1 = { val := z, property := hz }
     obtain ⟨φ, rfl⟩ := hz'
+    -- ⊢ ∃ a_1, characterSpaceToSpectrum a a_1 = { val := ↑φ { val := a, property :=  …
     exact ⟨φ, rfl⟩
+    -- 🎉 no goals
 #align elemental_star_algebra.bijective_character_space_to_spectrum elementalStarAlgebra.bijective_characterSpaceToSpectrum
 
 -- porting note: it would be good to understand why and where Lean is having trouble here

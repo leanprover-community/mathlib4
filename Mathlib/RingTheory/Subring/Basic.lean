@@ -87,6 +87,7 @@ instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
 theorem coe_int_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
+                                                -- 🎉 no goals
 #align coe_int_mem coe_int_mem
 
 namespace SubringClass
@@ -198,6 +199,10 @@ namespace Subring
 instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+                             -- ⊢ { toSubsemiring := toSubsemiring✝, neg_mem' := neg_mem'✝ } = q
+                                      -- ⊢ { toSubsemiring := toSubsemiring✝¹, neg_mem' := neg_mem'✝¹ } = { toSubsemiri …
+                                               -- ⊢ toSubsemiring✝¹ = toSubsemiring✝
+                                                      -- 🎉 no goals
 
 instance : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
@@ -328,7 +333,9 @@ def Subsemiring.toSubring (s : Subsemiring R) (hneg : (-1 : R) ∈ s) : Subring 
   toSubsemiring := s
   neg_mem' h := by
     rw [← neg_one_mul]
+    -- ⊢ -1 * x✝ ∈ s.carrier
     exact mul_mem hneg h
+    -- 🎉 no goals
 #align subsemiring.to_subring Subsemiring.toSubring
 
 namespace Subring
@@ -599,6 +606,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 @[simp]
 theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
   Set.mem_image_iff_bex.trans $ by simp
+                                   -- 🎉 no goals
 #align subring.mem_map Subring.mem_map
 
 @[simp]
@@ -658,7 +666,9 @@ theorem mem_range {f : R →+* S} {y : S} : y ∈ f.range ↔ ∃ x, f x = y :=
 
 theorem range_eq_map (f : R →+* S) : f.range = Subring.map f ⊤ := by
   ext
+  -- ⊢ x✝ ∈ range f ↔ x✝ ∈ Subring.map f ⊤
   simp
+  -- 🎉 no goals
 #align ring_hom.range_eq_map RingHom.range_eq_map
 
 theorem mem_range_self (f : R →+* S) (x : R) : f x ∈ f.range :=
@@ -667,6 +677,7 @@ theorem mem_range_self (f : R →+* S) (x : R) : f x ∈ f.range :=
 
 theorem map_range : f.range.map g = (g.comp f).range := by
   simpa only [range_eq_map] using (⊤ : Subring R).map_map g f
+  -- 🎉 no goals
 #align ring_hom.map_range RingHom.map_range
 
 /-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
@@ -719,6 +730,8 @@ instance : InfSet (Subring R) :=
   ⟨fun s =>
     Subring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, t.toSubmonoid) (⨅ t ∈ s, Subring.toAddSubgroup t)
       (by simp) (by simp)⟩
+          -- 🎉 no goals
+                    -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subring R)) : ((sInf S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
@@ -732,10 +745,12 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
+  -- 🎉 no goals
 #align subring.coe_infi Subring.coe_iInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_range_iff]
+  -- 🎉 no goals
 #align subring.mem_infi Subring.mem_iInf
 
 @[simp]
@@ -945,8 +960,11 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     closure_induction hb _ (H0_right _) (H1_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
   refine' closure_induction ha Hs (fun x _ => H0_left x) (fun x _ => H1_left x) _ _ _
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
+    -- 🎉 no goals
   · exact fun x hx z zs => Hneg_left x z (hx z zs)
+    -- 🎉 no goals
   · exact fun x y H₁ H₂ z zs => Hmul_left x y z (H₁ z zs) (H₂ z zs)
+    -- 🎉 no goals
 #align subring.closure_induction₂ Subring.closure_induction₂
 
 theorem mem_closure_iff {s : Set R} {x} :
@@ -962,15 +980,29 @@ theorem mem_closure_iff {s : Set R} {x} :
           AddSubgroup.closure_induction hx
             (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
             (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
+                -- ⊢ 0 ∈ AddSubgroup.closure ↑(Submonoid.closure s)
+                                 -- 🎉 no goals
             (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
+                                       -- ⊢ p₁ * q + p₂ * q ∈ AddSubgroup.closure ↑(Submonoid.closure s)
+                                                             -- 🎉 no goals
             fun x hx => by
             have f : -x * q = -(x * q) := by simp
+            -- ⊢ -x * q ∈ AddSubgroup.closure ↑(Submonoid.closure s)
             rw [f]; apply AddSubgroup.neg_mem _ hx)
+            -- ⊢ -(x * q) ∈ AddSubgroup.closure ↑(Submonoid.closure s)
+                    -- 🎉 no goals
         (by rw [mul_zero x]; apply AddSubgroup.zero_mem _)
+            -- ⊢ 0 ∈ AddSubgroup.closure ↑(Submonoid.closure s)
+                             -- 🎉 no goals
         (fun q₁ q₂ ihq₁ ihq₂ => by rw [mul_add x q₁ q₂]; apply AddSubgroup.add_mem _ ihq₁ ihq₂)
+                                   -- ⊢ x * q₁ + x * q₂ ∈ AddSubgroup.closure ↑(Submonoid.closure s)
+                                                         -- 🎉 no goals
         fun z hz => by
         have f : x * -z = -(x * z) := by simp
+        -- ⊢ x * -z ∈ AddSubgroup.closure ↑(Submonoid.closure s)
         rw [f]; apply AddSubgroup.neg_mem _ hz,
+        -- ⊢ -(x * z) ∈ AddSubgroup.closure ↑(Submonoid.closure s)
+                -- 🎉 no goals
     fun h =>
     AddSubgroup.closure_induction (p := (· ∈ closure s)) h
       (fun x hx =>
@@ -985,7 +1017,9 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
   { (closure s).toRing with
     mul_comm := fun x y => by
       ext
+      -- ⊢ ↑(x * y) = ↑(y * x)
       simp only [Subring.coe_mul]
+      -- ⊢ ↑x * ↑y = ↑y * ↑x
       refine'
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul]) (fun x => by simp only [mul_one, one_mul])
@@ -1006,15 +1040,22 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
     (fun x hx =>
       let ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
       ⟨[l], by simp [h]; clear_aux_decl; tauto⟩)
+               -- ⊢ ∀ (y : R), y ∈ l → y ∈ s ∨ y = -1
+                         -- ⊢ ∀ (y : R), y ∈ l → y ∈ s ∨ y = -1
+                                         -- 🎉 no goals
     ⟨[], by simp⟩
+            -- 🎉 no goals
     (fun x y ⟨l, hl1, hl2⟩ ⟨m, hm1, hm2⟩ =>
       ⟨l ++ m, fun t ht => (List.mem_append.1 ht).elim (hl1 t) (hm1 t), by simp [hl2, hm2]⟩)
+                                                                           -- 🎉 no goals
     fun x ⟨L, hL⟩ =>
     ⟨L.map (List.cons (-1)),
       List.forall_mem_map_iff.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
       hL.2 ▸
         List.recOn L (by simp)
+                         -- 🎉 no goals
           (by simp (config := { contextual := true }) [List.map_cons, add_comm])⟩
+              -- 🎉 no goals
 #align subring.exists_list_of_mem_closure Subring.exists_list_of_mem_closure
 
 variable (R)
@@ -1116,10 +1157,12 @@ theorem prod_mono_left (t : Subring S) : Monotone fun s : Subring R => s.prod t 
 
 theorem prod_top (s : Subring R) : s.prod (⊤ : Subring S) = s.comap (RingHom.fst R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+                  -- 🎉 no goals
 #align subring.prod_top Subring.prod_top
 
 theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.snd R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+                  -- 🎉 no goals
 #align subring.top_prod Subring.top_prod
 
 @[simp]
@@ -1140,22 +1183,27 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  -- ⊢ x ∈ ⨆ (i : ι), S i → ∃ i, x ∈ S i
   let U : Subring R :=
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
   suffices ⨆ i, S i ≤ U by intro h; simpa using (this h)
+  -- ⊢ ⨆ (i : ι), S i ≤ U
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
+  -- 🎉 no goals
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Subring R) : Set R) = ⋃ i, ↑(S i) :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
+                      -- 🎉 no goals
 #align subring.coe_supr_of_directed Subring.coe_iSup_of_directed
 
 theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
+  -- ⊢ x ∈ sSup S ↔ ∃ s, s ∈ S ∧ x ∈ s
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
     exists_prop]
 #align subring.mem_Sup_of_directed_on Subring.mem_sSup_of_directedOn
@@ -1163,6 +1211,7 @@ theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : Di
 theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+                      -- 🎉 no goals
 #align subring.coe_Sup_of_directed_on Subring.coe_sSup_of_directedOn
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
@@ -1209,6 +1258,7 @@ theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeRe
 theorem range_top_iff_surjective {f : R →+* S} :
     f.range = (⊤ : Subring S) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
+                                          -- 🎉 no goals
 #align ring_hom.range_top_iff_surjective RingHom.range_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
@@ -1317,6 +1367,7 @@ def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) :
       Subtype.ext <|
         let ⟨x', hx'⟩ := RingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
+                            -- 🎉 no goals
 #align ring_equiv.of_left_inverse RingEquiv.ofLeftInverse
 
 @[simp]
@@ -1353,46 +1404,76 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
   have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
+  -- ⊢ C x
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
+  -- ⊢ C (List.sum (List.map List.prod L))
   clear hx
+  -- ⊢ C (List.sum (List.map List.prod L))
   induction' L with hd tl ih
+  -- ⊢ C (List.sum (List.map List.prod []))
   · exact h0
+    -- 🎉 no goals
   rw [List.forall_mem_cons] at HL
+  -- ⊢ C (List.sum (List.map List.prod (hd :: tl)))
   suffices C (List.prod hd) by
     rw [List.map_cons, List.sum_cons]
     exact ha this (ih HL.2)
   replace HL := HL.1
+  -- ⊢ C (List.prod hd)
   clear ih tl
+  -- ⊢ C (List.prod hd)
   -- Porting note: was `rsuffices` instead of `obtain` + `rotate_left`
   obtain ⟨L, HL', HP | HP⟩ :
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
   rotate_left
   · rw [HP]
+    -- ⊢ C (List.prod L)
     clear HP HL hd
+    -- ⊢ C (List.prod L)
     induction' L with hd tl ih
+    -- ⊢ C (List.prod [])
     · exact h1
+      -- 🎉 no goals
     rw [List.forall_mem_cons] at HL'
+    -- ⊢ C (List.prod (hd :: tl))
     rw [List.prod_cons]
+    -- ⊢ C (hd * List.prod tl)
     exact hs _ HL'.1 _ (ih HL'.2)
+    -- 🎉 no goals
   · rw [HP]
+    -- ⊢ C (-List.prod L)
     clear HP HL hd
+    -- ⊢ C (-List.prod L)
     induction' L with hd tl ih
+    -- ⊢ C (-List.prod [])
     · exact hneg1
+      -- 🎉 no goals
     rw [List.prod_cons, neg_mul_eq_mul_neg]
+    -- ⊢ C (hd * -List.prod tl)
     rw [List.forall_mem_cons] at HL'
+    -- ⊢ C (hd * -List.prod tl)
     exact hs _ HL'.1 _ (ih HL'.2)
+    -- 🎉 no goals
   induction' hd with hd tl ih
+  -- ⊢ ∃ L, (∀ (x : R), x ∈ L → x ∈ s) ∧ (List.prod [] = List.prod L ∨ List.prod [] …
   · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
+    -- 🎉 no goals
   rw [List.forall_mem_cons] at HL
+  -- ⊢ ∃ L, (∀ (x : R), x ∈ L → x ∈ s) ∧ (List.prod (hd :: tl) = List.prod L ∨ List …
   rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> cases' HL.1 with hhd hhd
+  -- ⊢ ∃ L, (∀ (x : R), x ∈ L → x ∈ s) ∧ (List.prod (hd :: tl) = List.prod L ∨ List …
+                                            -- ⊢ ∃ L, (∀ (x : R), x ∈ L → x ∈ s) ∧ (List.prod (hd :: tl) = List.prod L ∨ List …
+                                            -- ⊢ ∃ L, (∀ (x : R), x ∈ L → x ∈ s) ∧ (List.prod (hd :: tl) = List.prod L ∨ List …
   · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inl <| by rw [List.prod_cons, List.prod_cons, HP]⟩
   · exact ⟨L, HL', Or.inr <| by rw [List.prod_cons, hhd, neg_one_mul, HP]⟩
+    -- 🎉 no goals
   · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inr <| by rw [List.prod_cons, List.prod_cons, HP, neg_mul_eq_mul_neg]⟩
   · exact ⟨L, HL', Or.inl <| by rw [List.prod_cons, hhd, HP, neg_one_mul, neg_neg]⟩
+    -- 🎉 no goals
 #align subring.in_closure.rec_on Subring.InClosure.recOn
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
@@ -1404,7 +1485,9 @@ end Subring
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
   convert AddSubgroup.zsmul_mem G h k using 1
+  -- ⊢ ↑k * g = k • g
   simp
+  -- 🎉 no goals
 #align add_subgroup.int_mul_mem AddSubgroup.int_mul_mem
 
 /-! ## Actions by `Subring`s

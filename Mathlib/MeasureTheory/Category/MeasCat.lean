@@ -72,7 +72,9 @@ deriving instance LargeCategory for MeasCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory MeasCat := by
   unfold MeasCat
+  -- ⊢ ConcreteCategory (Bundled MeasurableSpace)
   infer_instance
+  -- 🎉 no goals
 
 instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
@@ -117,6 +119,9 @@ def Integral : Giry.Algebra where
     show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>
         apply_rules [measurable_id, Measure.measurable_lintegral]
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
 #align Meas.Integral MeasCat.Integral
 
 end MeasCat

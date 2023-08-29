@@ -107,9 +107,13 @@ attribute [local instance] ConcreteCategory.funLike
 @[ext low] -- Porting note: lowered priority
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y
+  -- ⊢ (forget C).map f = (forget C).map g
   dsimp [forget]
+  -- ⊢ ConcreteCategory.forget.map f = ConcreteCategory.forget.map g
   funext x
+  -- ⊢ ConcreteCategory.forget.map f x = ConcreteCategory.forget.map g x
   exact w x
+  -- 🎉 no goals
 #align category_theory.concrete_category.hom_ext CategoryTheory.ConcreteCategory.hom_ext
 
 theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
@@ -184,7 +188,9 @@ theorem ConcreteCategory.epi_iff_surjective_of_preservesPushout {X Y : C} (f : X
 theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     Function.Bijective ((forget C).map f) := by
   rw [← isIso_iff_bijective]
+  -- ⊢ IsIso ((forget C).map f)
   infer_instance
+  -- 🎉 no goals
 #align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
 
 @[simp]
@@ -223,7 +229,9 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
     (forget₂ C D).PreservesMonomorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
     simp only [HasForget₂.forget_comp]
+    -- ⊢ Functor.PreservesMonomorphisms (forget C)
     infer_instance
+    -- 🎉 no goals
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
 #align category_theory.forget₂_preserves_monomorphisms CategoryTheory.forget₂_preservesMonomorphisms
 
@@ -233,7 +241,9 @@ instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
     (forget₂ C D).PreservesEpimorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
     simp only [HasForget₂.forget_comp]
+    -- ⊢ Functor.PreservesEpimorphisms (forget C)
     infer_instance
+    -- 🎉 no goals
   Functor.preservesEpimorphisms_of_preserves_of_reflects _ (forget D)
 #align category_theory.forget₂_preserves_epimorphisms CategoryTheory.forget₂_preservesEpimorphisms
 
@@ -271,6 +281,7 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
     where
   forget₂ := Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Faithful.div_comp
+                    -- 🎉 no goals
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as

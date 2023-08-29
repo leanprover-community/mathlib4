@@ -98,6 +98,7 @@ theorem comp_differentiableWithinAt_iff {f : G → E} {s : Set G} {x : G} :
   have : DifferentiableWithinAt 𝕜 (iso.symm ∘ iso ∘ f) s x :=
     iso.symm.differentiable.differentiableAt.comp_differentiableWithinAt x H
   rwa [← Function.comp.assoc iso.symm iso f, iso.symm_comp_self] at this
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_differentiable_within_at_iff ContinuousLinearEquiv.comp_differentiableWithinAt_iff
 
 theorem comp_differentiableAt_iff {f : G → E} {x : G} :
@@ -109,36 +110,50 @@ theorem comp_differentiableAt_iff {f : G → E} {x : G} :
 theorem comp_differentiableOn_iff {f : G → E} {s : Set G} :
     DifferentiableOn 𝕜 (iso ∘ f) s ↔ DifferentiableOn 𝕜 f s := by
   rw [DifferentiableOn, DifferentiableOn]
+  -- ⊢ (∀ (x : G), x ∈ s → DifferentiableWithinAt 𝕜 (↑iso ∘ f) s x) ↔ ∀ (x : G), x  …
   simp only [iso.comp_differentiableWithinAt_iff]
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_differentiable_on_iff ContinuousLinearEquiv.comp_differentiableOn_iff
 
 theorem comp_differentiable_iff {f : G → E} : Differentiable 𝕜 (iso ∘ f) ↔ Differentiable 𝕜 f := by
   rw [← differentiableOn_univ, ← differentiableOn_univ]
+  -- ⊢ DifferentiableOn 𝕜 (↑iso ∘ f) univ ↔ DifferentiableOn 𝕜 f univ
   exact iso.comp_differentiableOn_iff
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_differentiable_iff ContinuousLinearEquiv.comp_differentiable_iff
 
 theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →L[𝕜] E} :
     HasFDerivWithinAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') s x ↔ HasFDerivWithinAt f f' s x := by
   refine' ⟨fun H => _, fun H => iso.hasFDerivAt.comp_hasFDerivWithinAt x H⟩
+  -- ⊢ HasFDerivWithinAt f f' s x
   have A : f = iso.symm ∘ iso ∘ f := by
     rw [← Function.comp.assoc, iso.symm_comp_self]
     rfl
   have B : f' = (iso.symm : F →L[𝕜] E).comp ((iso : E →L[𝕜] F).comp f') := by
     rw [← ContinuousLinearMap.comp_assoc, iso.coe_symm_comp_coe, ContinuousLinearMap.id_comp]
   rw [A, B]
+  -- ⊢ HasFDerivWithinAt (↑(ContinuousLinearEquiv.symm iso) ∘ ↑iso ∘ f) (comp (↑(Co …
   exact iso.symm.hasFDerivAt.comp_hasFDerivWithinAt x H
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_has_fderiv_within_at_iff ContinuousLinearEquiv.comp_hasFDerivWithinAt_iff
 
 theorem comp_hasStrictFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
     HasStrictFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasStrictFDerivAt f f' x := by
   refine' ⟨fun H => _, fun H => iso.hasStrictFDerivAt.comp x H⟩
+  -- ⊢ HasStrictFDerivAt f f' x
   convert iso.symm.hasStrictFDerivAt.comp x H using 1 <;>
+  -- ⊢ f = fun x => ↑(ContinuousLinearEquiv.symm iso) ((↑iso ∘ f) x)
     ext z <;> apply (iso.symm_apply_apply _).symm
+    -- ⊢ f z = ↑(ContinuousLinearEquiv.symm iso) ((↑iso ∘ f) z)
+    -- ⊢ ↑f' z = ↑(comp (↑(ContinuousLinearEquiv.symm iso)) (comp (↑iso) f')) z
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align continuous_linear_equiv.comp_has_strict_fderiv_at_iff ContinuousLinearEquiv.comp_hasStrictFDerivAt_iff
 
 theorem comp_hasFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
     HasFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasFDerivAt f f' x := by
   simp_rw [← hasFDerivWithinAt_univ, iso.comp_hasFDerivWithinAt_iff]
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_has_fderiv_at_iff ContinuousLinearEquiv.comp_hasFDerivAt_iff
 
 theorem comp_hasFDerivWithinAt_iff' {f : G → E} {s : Set G} {x : G} {f' : G →L[𝕜] F} :
@@ -151,13 +166,17 @@ theorem comp_hasFDerivWithinAt_iff' {f : G → E} {s : Set G} {x : G} {f' : G �
 theorem comp_hasFDerivAt_iff' {f : G → E} {x : G} {f' : G →L[𝕜] F} :
     HasFDerivAt (iso ∘ f) f' x ↔ HasFDerivAt f ((iso.symm : F →L[𝕜] E).comp f') x := by
   simp_rw [← hasFDerivWithinAt_univ, iso.comp_hasFDerivWithinAt_iff']
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_has_fderiv_at_iff' ContinuousLinearEquiv.comp_hasFDerivAt_iff'
 
 theorem comp_fderivWithin {f : G → E} {s : Set G} {x : G} (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (iso ∘ f) s x = (iso : E →L[𝕜] F).comp (fderivWithin 𝕜 f s x) := by
   by_cases h : DifferentiableWithinAt 𝕜 f s x
+  -- ⊢ fderivWithin 𝕜 (↑iso ∘ f) s x = comp (↑iso) (fderivWithin 𝕜 f s x)
   · rw [fderiv.comp_fderivWithin x iso.differentiableAt h hxs, iso.fderiv]
+    -- 🎉 no goals
   · have : ¬DifferentiableWithinAt 𝕜 (iso ∘ f) s x := mt iso.comp_differentiableWithinAt_iff.1 h
+    -- ⊢ fderivWithin 𝕜 (↑iso ∘ f) s x = comp (↑iso) (fderivWithin 𝕜 f s x)
     rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this, ContinuousLinearMap.comp_zero]
 #align continuous_linear_equiv.comp_fderiv_within ContinuousLinearEquiv.comp_fderivWithin
@@ -165,18 +184,22 @@ theorem comp_fderivWithin {f : G → E} {s : Set G} {x : G} (hxs : UniqueDiffWit
 theorem comp_fderiv {f : G → E} {x : G} :
     fderiv 𝕜 (iso ∘ f) x = (iso : E →L[𝕜] F).comp (fderiv 𝕜 f x) := by
   rw [← fderivWithin_univ, ← fderivWithin_univ]
+  -- ⊢ fderivWithin 𝕜 (↑iso ∘ f) univ x = comp (↑iso) (fderivWithin 𝕜 f univ x)
   exact iso.comp_fderivWithin uniqueDiffWithinAt_univ
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_fderiv ContinuousLinearEquiv.comp_fderiv
 
 theorem comp_right_differentiableWithinAt_iff {f : F → G} {s : Set F} {x : E} :
     DifferentiableWithinAt 𝕜 (f ∘ iso) (iso ⁻¹' s) x ↔ DifferentiableWithinAt 𝕜 f s (iso x) := by
   refine' ⟨fun H => _, fun H => H.comp x iso.differentiableWithinAt (mapsTo_preimage _ s)⟩
+  -- ⊢ DifferentiableWithinAt 𝕜 f s (↑iso x)
   have : DifferentiableWithinAt 𝕜 ((f ∘ iso) ∘ iso.symm) s (iso x) := by
     rw [← iso.symm_apply_apply x] at H
     apply H.comp (iso x) iso.symm.differentiableWithinAt
     intro y hy
     simpa only [mem_preimage, apply_symm_apply] using hy
   rwa [Function.comp.assoc, iso.self_comp_symm] at this
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_differentiable_within_at_iff ContinuousLinearEquiv.comp_right_differentiableWithinAt_iff
 
 theorem comp_right_differentiableAt_iff {f : F → G} {x : E} :
@@ -188,35 +211,47 @@ theorem comp_right_differentiableAt_iff {f : F → G} {x : E} :
 theorem comp_right_differentiableOn_iff {f : F → G} {s : Set F} :
     DifferentiableOn 𝕜 (f ∘ iso) (iso ⁻¹' s) ↔ DifferentiableOn 𝕜 f s := by
   refine' ⟨fun H y hy => _, fun H y hy => iso.comp_right_differentiableWithinAt_iff.2 (H _ hy)⟩
+  -- ⊢ DifferentiableWithinAt 𝕜 f s y
   rw [← iso.apply_symm_apply y, ← comp_right_differentiableWithinAt_iff]
+  -- ⊢ DifferentiableWithinAt 𝕜 (f ∘ ↑iso) (↑iso ⁻¹' s) (↑(ContinuousLinearEquiv.sy …
   apply H
+  -- ⊢ ↑(ContinuousLinearEquiv.symm iso) y ∈ ↑iso ⁻¹' s
   simpa only [mem_preimage, apply_symm_apply] using hy
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_differentiable_on_iff ContinuousLinearEquiv.comp_right_differentiableOn_iff
 
 theorem comp_right_differentiable_iff {f : F → G} :
     Differentiable 𝕜 (f ∘ iso) ↔ Differentiable 𝕜 f := by
   simp only [← differentiableOn_univ, ← iso.comp_right_differentiableOn_iff, preimage_univ]
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_differentiable_iff ContinuousLinearEquiv.comp_right_differentiable_iff
 
 theorem comp_right_hasFDerivWithinAt_iff {f : F → G} {s : Set F} {x : E} {f' : F →L[𝕜] G} :
     HasFDerivWithinAt (f ∘ iso) (f'.comp (iso : E →L[𝕜] F)) (iso ⁻¹' s) x ↔
       HasFDerivWithinAt f f' s (iso x) := by
   refine' ⟨fun H => _, fun H => H.comp x iso.hasFDerivWithinAt (mapsTo_preimage _ s)⟩
+  -- ⊢ HasFDerivWithinAt f f' s (↑iso x)
   rw [← iso.symm_apply_apply x] at H
+  -- ⊢ HasFDerivWithinAt f f' s (↑iso x)
   have A : f = (f ∘ iso) ∘ iso.symm := by
     rw [Function.comp.assoc, iso.self_comp_symm]
     rfl
   have B : f' = (f'.comp (iso : E →L[𝕜] F)).comp (iso.symm : F →L[𝕜] E) := by
     rw [ContinuousLinearMap.comp_assoc, iso.coe_comp_coe_symm, ContinuousLinearMap.comp_id]
   rw [A, B]
+  -- ⊢ HasFDerivWithinAt ((f ∘ ↑iso) ∘ ↑(ContinuousLinearEquiv.symm iso)) (comp (co …
   apply H.comp (iso x) iso.symm.hasFDerivWithinAt
+  -- ⊢ MapsTo (↑(ContinuousLinearEquiv.symm iso)) s (↑iso ⁻¹' s)
   intro y hy
+  -- ⊢ ↑(ContinuousLinearEquiv.symm iso) y ∈ ↑iso ⁻¹' s
   simpa only [mem_preimage, apply_symm_apply] using hy
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_has_fderiv_within_at_iff ContinuousLinearEquiv.comp_right_hasFDerivWithinAt_iff
 
 theorem comp_right_hasFDerivAt_iff {f : F → G} {x : E} {f' : F →L[𝕜] G} :
     HasFDerivAt (f ∘ iso) (f'.comp (iso : E →L[𝕜] F)) x ↔ HasFDerivAt f f' (iso x) := by
   simp only [← hasFDerivWithinAt_univ, ← comp_right_hasFDerivWithinAt_iff, preimage_univ]
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_has_fderiv_at_iff ContinuousLinearEquiv.comp_right_hasFDerivAt_iff
 
 theorem comp_right_hasFDerivWithinAt_iff' {f : F → G} {s : Set F} {x : E} {f' : E →L[𝕜] G} :
@@ -229,6 +264,7 @@ theorem comp_right_hasFDerivWithinAt_iff' {f : F → G} {s : Set F} {x : E} {f' 
 theorem comp_right_hasFDerivAt_iff' {f : F → G} {x : E} {f' : E →L[𝕜] G} :
     HasFDerivAt (f ∘ iso) f' x ↔ HasFDerivAt f (f'.comp (iso.symm : F →L[𝕜] E)) (iso x) := by
   simp only [← hasFDerivWithinAt_univ, ← iso.comp_right_hasFDerivWithinAt_iff', preimage_univ]
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_has_fderiv_at_iff' ContinuousLinearEquiv.comp_right_hasFDerivAt_iff'
 
 theorem comp_right_fderivWithin {f : F → G} {s : Set F} {x : E}
@@ -236,7 +272,9 @@ theorem comp_right_fderivWithin {f : F → G} {s : Set F} {x : E}
     fderivWithin 𝕜 (f ∘ iso) (iso ⁻¹' s) x =
       (fderivWithin 𝕜 f s (iso x)).comp (iso : E →L[𝕜] F) := by
   by_cases h : DifferentiableWithinAt 𝕜 f s (iso x)
+  -- ⊢ fderivWithin 𝕜 (f ∘ ↑iso) (↑iso ⁻¹' s) x = comp (fderivWithin 𝕜 f s (↑iso x) …
   · exact (iso.comp_right_hasFDerivWithinAt_iff.2 h.hasFDerivWithinAt).fderivWithin hxs
+    -- 🎉 no goals
   · have : ¬DifferentiableWithinAt 𝕜 (f ∘ iso) (iso ⁻¹' s) x := by
       intro h'
       exact h (iso.comp_right_differentiableWithinAt_iff.1 h')
@@ -247,7 +285,9 @@ theorem comp_right_fderivWithin {f : F → G} {s : Set F} {x : E}
 theorem comp_right_fderiv {f : F → G} {x : E} :
     fderiv 𝕜 (f ∘ iso) x = (fderiv 𝕜 f (iso x)).comp (iso : E →L[𝕜] F) := by
   rw [← fderivWithin_univ, ← fderivWithin_univ, ← iso.comp_right_fderivWithin, preimage_univ]
+  -- ⊢ UniqueDiffWithinAt 𝕜 (↑iso ⁻¹' univ) x
   exact uniqueDiffWithinAt_univ
+  -- 🎉 no goals
 #align continuous_linear_equiv.comp_right_fderiv ContinuousLinearEquiv.comp_right_fderiv
 
 end ContinuousLinearEquiv
@@ -360,23 +400,31 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
     (hg : ContinuousAt g a) (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) (g a))
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) a := by
   replace hg := hg.prod_map' hg
+  -- ⊢ HasStrictFDerivAt g (↑(ContinuousLinearEquiv.symm f')) a
   replace hfg := hfg.prod_mk_nhds hfg
+  -- ⊢ HasStrictFDerivAt g (↑(ContinuousLinearEquiv.symm f')) a
   have :
     (fun p : F × F => g p.1 - g p.2 - f'.symm (p.1 - p.2)) =O[𝓝 (a, a)] fun p : F × F =>
       f' (g p.1 - g p.2) - (p.1 - p.2) := by
     refine' ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => _) fun _ => rfl
     simp
   refine' this.trans_isLittleO _
+  -- ⊢ (fun p => ↑f' (g p.fst - g p.snd) - (p.fst - p.snd)) =o[𝓝 (a, a)] fun p => p …
   clear this
+  -- ⊢ (fun p => ↑f' (g p.fst - g p.snd) - (p.fst - p.snd)) =o[𝓝 (a, a)] fun p => p …
   refine'
     ((hf.comp_tendsto hg).symm.congr' (hfg.mono _) (eventually_of_forall fun _ => rfl)).trans_isBigO
       _
   · rintro p ⟨hp1, hp2⟩
+    -- ⊢ (fun x => ↑↑f' (((fun p => (g p.fst, g p.snd)) x).fst - ((fun p => (g p.fst, …
     simp [hp1, hp2]
+    -- 🎉 no goals
   · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (eventually_of_forall fun _ => rfl)
       (hfg.mono ?_)
     rintro p ⟨hp1, hp2⟩
+    -- ⊢ ((fun p => f p.fst - f p.snd) ∘ fun p => (g p.fst, g p.snd)) p = (fun p => p …
     simp only [(· ∘ ·), hp1, hp2]
+    -- 🎉 no goals
 #align has_strict_fderiv_at.of_local_left_inverse HasStrictFDerivAt.of_local_left_inverse
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
@@ -392,16 +440,22 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
     refine' ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => _) fun _ => rfl
     simp
   refine' this.trans_isLittleO _
+  -- ⊢ (fun x => ↑f' (g x - g a) - (x - a)) =o[𝓝 a] fun x' => x' - a
   clear this
+  -- ⊢ (fun x => ↑f' (g x - g a) - (x - a)) =o[𝓝 a] fun x' => x' - a
   refine'
     ((hf.comp_tendsto hg).symm.congr' (hfg.mono _) (eventually_of_forall fun _ => rfl)).trans_isBigO
       _
   · rintro p hp
+    -- ⊢ (fun x => ↑↑f' (g x - g a) - (f (g x) - f (g a))) p = ↑f' (g p - g a) - (p - …
     simp [hp, hfg.self_of_nhds]
+    -- 🎉 no goals
   · refine' ((hf.isBigO_sub_rev f'.antilipschitz).comp_tendsto hg).congr'
       (eventually_of_forall fun _ => rfl) (hfg.mono _)
     rintro p hp
+    -- ⊢ ((fun x' => f x' - f (g a)) ∘ g) p = (fun x' => x' - a) p
     simp only [(· ∘ ·), hp, hfg.self_of_nhds]
+    -- 🎉 no goals
 #align has_fderiv_at.of_local_left_inverse HasFDerivAt.of_local_left_inverse
 
 /-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
@@ -430,15 +484,19 @@ theorem LocalHomeomorph.hasFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by
   rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
+  -- ⊢ ∀ᶠ (x_1 : E) in 𝓝 x ⊓ 𝓟 s, x_1 ∈ {x}ᶜ → f x_1 ≠ f x
   have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
     isBigO_iff.2 <| hf'.imp fun C hC => eventually_of_forall fun z => hC _
   have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.trans_isBigO A
+  -- ⊢ ∀ᶠ (x_1 : E) in 𝓝 x ⊓ 𝓟 s, x_1 ∈ {x}ᶜ → f x_1 ≠ f x
   simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
+  -- 🎉 no goals
 #align has_fderiv_within_at.eventually_ne HasFDerivWithinAt.eventually_ne
 
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ f x := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
+  -- 🎉 no goals
 #align has_fderiv_at.eventually_ne HasFDerivAt.eventually_ne
 
 end
@@ -460,16 +518,23 @@ theorem has_fderiv_at_filter_real_equiv {L : Filter E} :
     Tendsto (fun x' : E => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) L (𝓝 0) ↔
       Tendsto (fun x' : E => ‖x' - x‖⁻¹ • (f x' - f x - f' (x' - x))) L (𝓝 0) := by
   symm
+  -- ⊢ Tendsto (fun x' => ‖x' - x‖⁻¹ • (f x' - f x - ↑f' (x' - x))) L (𝓝 0) ↔ Tends …
   rw [tendsto_iff_norm_tendsto_zero]
+  -- ⊢ Tendsto (fun e => ‖‖e - x‖⁻¹ • (f e - f x - ↑f' (e - x)) - 0‖) L (𝓝 0) ↔ Ten …
   refine' tendsto_congr fun x' => _
+  -- ⊢ ‖‖x' - x‖⁻¹ • (f x' - f x - ↑f' (x' - x)) - 0‖ = ‖x' - x‖⁻¹ * ‖f x' - f x -  …
   simp [norm_smul]
+  -- 🎉 no goals
 #align has_fderiv_at_filter_real_equiv has_fderiv_at_filter_real_equiv
 
 theorem HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
     Tendsto (fun c : ℝ => c • (f (x + c⁻¹ • v) - f x)) atTop (𝓝 (f' v)) := by
   apply hf.lim v
+  -- ⊢ Tendsto (fun n => ‖n‖) atTop atTop
   rw [tendsto_atTop_atTop]
+  -- ⊢ ∀ (b : ℝ), ∃ i, ∀ (a : ℝ), i ≤ a → b ≤ ‖a‖
   exact fun b => ⟨b, fun a ha => le_trans ha (le_abs_self _)⟩
+  -- 🎉 no goals
 #align has_fderiv_at.lim_real HasFDerivAt.lim_real
 
 end
@@ -485,9 +550,11 @@ the image. -/
 theorem HasFDerivWithinAt.mapsTo_tangent_cone {x : E} (h : HasFDerivWithinAt f f' s x) :
     MapsTo f' (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 (f '' s) (f x)) := by
   rintro v ⟨c, d, dtop, clim, cdlim⟩
+  -- ⊢ ↑f' v ∈ tangentConeAt 𝕜 (f '' s) (f x)
   refine'
     ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop _, clim, h.lim atTop dtop clim cdlim⟩
   simp (config := { contextual := true }) [-mem_image, mem_image_of_mem]
+  -- 🎉 no goals
 #align has_fderiv_within_at.maps_to_tangent_cone HasFDerivWithinAt.mapsTo_tangent_cone
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set
@@ -496,11 +563,14 @@ under a map with onto derivative has also the unique differentiability property 
 theorem HasFDerivWithinAt.uniqueDiffWithinAt {x : E} (h : HasFDerivWithinAt f f' s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) (h' : DenseRange f') : UniqueDiffWithinAt 𝕜 (f '' s) (f x) := by
   refine' ⟨h'.dense_of_mapsTo f'.continuous hs.1 _, h.continuousWithinAt.mem_closure_image hs.2⟩
+  -- ⊢ MapsTo ↑f' ↑(Submodule.span 𝕜 (tangentConeAt 𝕜 s x)) ↑(Submodule.span 𝕜 (tan …
   show
     Submodule.span 𝕜 (tangentConeAt 𝕜 s x) ≤
       (Submodule.span 𝕜 (tangentConeAt 𝕜 (f '' s) (f x))).comap f'
   rw [Submodule.span_le]
+  -- ⊢ tangentConeAt 𝕜 s x ⊆ ↑(Submodule.comap f' (Submodule.span 𝕜 (tangentConeAt  …
   exact h.mapsTo_tangent_cone.mono Subset.rfl Submodule.subset_span
+  -- 🎉 no goals
 #align has_fderiv_within_at.unique_diff_within_at HasFDerivWithinAt.uniqueDiffWithinAt
 
 theorem UniqueDiffOn.image {f' : E → E →L[𝕜] F} (hs : UniqueDiffOn 𝕜 s)
@@ -530,6 +600,7 @@ theorem ContinuousLinearEquiv.uniqueDiffOn_image_iff (e : E ≃L[𝕜] F) :
 theorem ContinuousLinearEquiv.uniqueDiffOn_preimage_iff (e : F ≃L[𝕜] E) :
     UniqueDiffOn 𝕜 (e ⁻¹' s) ↔ UniqueDiffOn 𝕜 s := by
   rw [← e.image_symm_eq_preimage, e.symm.uniqueDiffOn_image_iff]
+  -- 🎉 no goals
 #align continuous_linear_equiv.unique_diff_on_preimage_iff ContinuousLinearEquiv.uniqueDiffOn_preimage_iff
 
 end TangentCone

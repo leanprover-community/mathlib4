@@ -53,6 +53,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
       Set.mem_compl_singleton_iff, Finset.card_erase_of_mem (Finset.mem_univ a),
       add_tsub_cancel_right]
   have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp only [card_fin, card_option]
+  -- ⊢ card ↑(derangements (Fin (n + 2))) = (n + 1) * card ↑(derangements (Fin n))  …
   -- rewrite the LHS and substitute in our fintype-level equivalence
   simp only [card_derangements_invariant h2,
     card_congr
@@ -88,18 +89,27 @@ theorem numDerangements_add_two (n : ℕ) :
 theorem numDerangements_succ (n : ℕ) :
     (numDerangements (n + 1) : ℤ) = (n + 1) * (numDerangements n : ℤ) - (-1) ^ n := by
   induction' n with n hn
+  -- ⊢ ↑(numDerangements (Nat.zero + 1)) = (↑Nat.zero + 1) * ↑(numDerangements Nat. …
   · rfl
+    -- 🎉 no goals
   · simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add, Int.ofNat_succ]
+    -- ⊢ (↑n + 1) * (↑(numDerangements n) + ((↑n + 1) * ↑(numDerangements n) - (-1) ^ …
     ring
+    -- 🎉 no goals
 #align num_derangements_succ numDerangements_succ
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
+  -- ⊢ card ↑(derangements (Fin n)) = numDerangements n
   rcases n with _ | _ | n
   -- porting note: the two `convert_to` weren't necessary before.
   · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x } = _ using 2; rfl
+    -- ⊢ card ↑{f | ∀ (x : Fin 0), ↑f x ≠ x} = numDerangements Nat.zero
+                                                                                -- 🎉 no goals
   · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x } = _ using 2; rfl
+    -- ⊢ card ↑{f | ∀ (x : Fin 1), ↑f x ≠ x} = numDerangements (Nat.succ Nat.zero)
+                                                                                -- 🎉 no goals
   -- knock out cases 0 and 1
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
@@ -110,19 +120,25 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
 theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
+  -- ⊢ card ↑(derangements (Fin (card α))) = numDerangements (card α)
   exact card_derangements_fin_eq_numDerangements
+  -- 🎉 no goals
 #align card_derangements_eq_num_derangements card_derangements_eq_numDerangements
 
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
       ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial k (n - k) := by
   induction' n with n hn; · rfl
+  -- ⊢ ↑(numDerangements Nat.zero) = ∑ k in Finset.range (Nat.zero + 1), (-1) ^ k * …
+                            -- 🎉 no goals
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
     Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ, neg_one_mul, sub_eq_add_neg,
     add_left_inj, Finset.sum_congr rfl]
   -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
   intro x hx
+  -- ⊢ (↑n + 1) * ((-1) ^ x * ↑(Nat.ascFactorial x (n - x))) = (-1) ^ x * ↑(Nat.asc …
   have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
+  -- ⊢ (↑n + 1) * ((-1) ^ x * ↑(Nat.ascFactorial x (n - x))) = (-1) ^ x * ↑(Nat.asc …
   rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_tsub_cancel_of_le h_le, Int.ofNat_mul,
     Int.ofNat_succ, mul_left_comm]
 #align num_derangements_sum numDerangements_sum

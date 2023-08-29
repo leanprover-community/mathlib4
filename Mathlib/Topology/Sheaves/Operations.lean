@@ -54,13 +54,19 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
   map {U V} i := CommRingCat.ofHom <| IsLocalization.map _ (F.map i) (G.map i)
   map_id U := by
     simp_rw [F.map_id]
+    -- ⊢ CommRingCat.ofHom (IsLocalization.map (Localization (obj G U)) (𝟙 (F.obj U)) …
     ext x
+    -- ⊢ ↑(CommRingCat.ofHom (IsLocalization.map (Localization (obj G U)) (𝟙 (F.obj U …
     -- Porting note : `M` and `S` needs to be specified manually
     exact IsLocalization.map_id (M := G.obj U) (S := Localization (G.obj U)) x
+    -- 🎉 no goals
   map_comp {U V W} i j := by
     delta CommRingCat.ofHom CommRingCat.of Bundled.of
+    -- ⊢ { obj := fun U => Bundled.mk (Localization (obj G U)), map := fun {U V} i => …
     simp_rw [F.map_comp, CommRingCat.comp_eq_ring_hom_comp]
+    -- ⊢ IsLocalization.map (Localization (obj G W)) (RingHom.comp (F.map j) (F.map i …
     rw [IsLocalization.map_comp_map]
+    -- 🎉 no goals
 #align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
 -- Porting note : this instance can't be synthesized
@@ -91,11 +97,17 @@ noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)
   obj U := ⨅ x : U.unop, Submonoid.comap (F.germ x) (S x)
   map {U V} i := by
     intro s hs
+    -- ⊢ s ∈ Submonoid.comap (F.map i) ((fun U => ⨅ (x : { x // x ∈ U.unop }), Submon …
     simp only [Submonoid.mem_comap, Submonoid.mem_iInf] at hs ⊢
+    -- ⊢ ∀ (i_1 : { x // x ∈ V.unop }), ↑(germ F i_1) (↑(F.map i) s) ∈ S ↑i_1
     intro x
+    -- ⊢ ↑(germ F x) (↑(F.map i) s) ∈ S ↑x
     change (F.map i.unop.op ≫ F.germ x) s ∈ _
+    -- ⊢ ↑(F.map i.unop.op ≫ germ F x) s ∈ S ↑x
     rw [F.germ_res]
+    -- ⊢ ↑(germ F ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U.unop) }) x)) s ∈ S …
     exact hs _
+    -- 🎉 no goals
 #align Top.presheaf.submonoid_presheaf_of_stalk TopCat.Presheaf.submonoidPresheafOfStalk
 
 noncomputable instance : Inhabited F.SubmonoidPresheaf :=
@@ -118,25 +130,42 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   -- Porting note : was an `apply (config := { instances := false })`
   -- See https://github.com/leanprover/lean4/issues/2273
   suffices : ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U)
+  -- ⊢ Mono (toTotalQuotientPresheaf (Sheaf.presheaf F))
   · apply NatTrans.mono_of_mono_app
+    -- 🎉 no goals
   intro U
+  -- ⊢ Mono (NatTrans.app (toTotalQuotientPresheaf (Sheaf.presheaf F)) U)
   apply ConcreteCategory.mono_of_injective
+  -- ⊢ Function.Injective ↑(NatTrans.app (toTotalQuotientPresheaf (Sheaf.presheaf F …
   dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
+  -- ⊢ Function.Injective ↑(algebraMap (↑((Sheaf.presheaf F).obj U)) (Localization  …
   -- Porting note : this is a hack to make the `refine` below works
   set m := _
+  -- ⊢ Function.Injective ↑(algebraMap (↑((Sheaf.presheaf F).obj U)) (Localization  …
   change Function.Injective (algebraMap _ (Localization m))
+  -- ⊢ Function.Injective ↑(algebraMap ((forget CommRingCat).obj ((Sheaf.presheaf F …
   change Function.Injective (algebraMap (F.presheaf.obj U) _)
+  -- ⊢ Function.Injective ↑(algebraMap (↑((Sheaf.presheaf F).obj U)) (Localization  …
   haveI : IsLocalization _ (Localization m) := Localization.isLocalization
+  -- ⊢ Function.Injective ↑(algebraMap (↑((Sheaf.presheaf F).obj U)) (Localization  …
   -- Porting note : `M` and `S` need to be specified manually, so used a hack to save some typing
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  -- ⊢ m ≤ ((forget CommRingCat).obj ((Sheaf.presheaf F).obj U))⁰
   intro s hs t e
+  -- ⊢ t = 0
   apply section_ext F (unop U)
+  -- ⊢ ∀ (x : { x // x ∈ U.unop }), ↑(germ (Sheaf.presheaf F) x) t = ↑(germ (Sheaf. …
   intro x
+  -- ⊢ ↑(germ (Sheaf.presheaf F) x) t = ↑(germ (Sheaf.presheaf F) x) 0
   rw [map_zero]
+  -- ⊢ ↑(germ (Sheaf.presheaf F) x) t = 0
   apply Submonoid.mem_iInf.mp hs x
+  -- ⊢ ↑(germ (Sheaf.presheaf F) x) t * ↑(germ (Sheaf.presheaf F) x) s = 0
   -- Porting note : added `dsimp` to make `rw ←map_mul` work
   dsimp
+  -- ⊢ ↑(germ (Sheaf.presheaf F) x) t * ↑(germ (Sheaf.presheaf F) x) s = 0
   rw [←map_mul, e, map_zero]
+  -- 🎉 no goals
 
 end Presheaf
 

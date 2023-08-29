@@ -24,7 +24,9 @@ variable {α : Type*} {s t : Set α}
 @[to_additive]
 theorem IsPwo.mul [OrderedCancelCommMonoid α] (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s * t) := by
   rw [← image_mul_prod]
+  -- ⊢ IsPwo ((fun x => x.fst * x.snd) '' s ×ˢ t)
   exact (hs.prod ht).image_of_monotone (monotone_fst.mul' monotone_snd)
+  -- 🎉 no goals
 #align set.is_pwo.mul Set.IsPwo.mul
 #align set.is_pwo.add Set.IsPwo.add
 
@@ -40,9 +42,13 @@ theorem IsWf.mul (hs : s.IsWf) (ht : t.IsWf) : IsWf (s * t) :=
 theorem IsWf.min_mul (hs : s.IsWf) (ht : t.IsWf) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn := by
   refine' le_antisymm (IsWf.min_le _ _ (mem_mul.2 ⟨_, _, hs.min_mem _, ht.min_mem _, rfl⟩)) _
+  -- ⊢ min hs hsn * min ht htn ≤ min (_ : IsWf (s * t)) (_ : Set.Nonempty (s * t))
   rw [IsWf.le_min_iff]
+  -- ⊢ ∀ (b : α), b ∈ s * t → min hs hsn * min ht htn ≤ b
   rintro _ ⟨x, y, hx, hy, rfl⟩
+  -- ⊢ min hs hsn * min ht htn ≤ (fun x x_1 => x * x_1) x y
   exact mul_le_mul' (hs.min_le _ hx) (ht.min_le _ hy)
+  -- 🎉 no goals
 #align set.is_wf.min_mul Set.IsWf.min_mul
 #align set.is_wf.min_add Set.IsWf.min_add
 
@@ -72,6 +78,7 @@ variable {hs ht a} {u : Set α} {hu : u.IsPwo} {x : α × α}
 @[to_additive (attr := simp)]
 theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
   simp only [mulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
+  -- 🎉 no goals
 #align finset.mem_mul_antidiagonal Finset.mem_mulAntidiagonal
 #align finset.mem_add_antidiagonal Finset.mem_addAntidiagonal
 
@@ -101,7 +108,9 @@ theorem swap_mem_mulAntidiagonal :
 theorem support_mulAntidiagonal_subset_mul : { a | (mulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
   fun a ⟨b, hb⟩ => by
   rw [mem_mulAntidiagonal] at hb
+  -- ⊢ a ∈ s * t
   exact ⟨b.1, b.2, hb⟩
+  -- 🎉 no goals
 #align finset.support_mul_antidiagonal_subset_mul Finset.support_mulAntidiagonal_subset_mul
 #align finset.support_add_antidiagonal_subset_add Finset.support_addAntidiagonal_subset_add
 
@@ -116,15 +125,22 @@ theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t
     (hs : s.IsWf) (ht : t.IsWf) (hns : s.Nonempty) (hnt : t.Nonempty) :
     mulAntidiagonal hs.isPwo ht.isPwo (hs.min hns * ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
+  -- ⊢ (a, b) ∈ mulAntidiagonal (_ : Set.IsPwo s) (_ : Set.IsPwo t) (Set.IsWf.min h …
   simp only [mem_mulAntidiagonal, mem_singleton, Prod.ext_iff]
+  -- ⊢ a ∈ s ∧ b ∈ t ∧ a * b = Set.IsWf.min hs hns * Set.IsWf.min ht hnt ↔ a = Set. …
   constructor
+  -- ⊢ a ∈ s ∧ b ∈ t ∧ a * b = Set.IsWf.min hs hns * Set.IsWf.min ht hnt → a = Set. …
   · rintro ⟨has, hat, hst⟩
+    -- ⊢ a = Set.IsWf.min hs hns ∧ b = Set.IsWf.min ht hnt
     obtain rfl :=
       (hs.min_le hns has).eq_of_not_lt fun hlt =>
         (mul_lt_mul_of_lt_of_le hlt <| ht.min_le hnt hat).ne' hst
     exact ⟨rfl, mul_left_cancel hst⟩
+    -- 🎉 no goals
   · rintro ⟨rfl, rfl⟩
+    -- ⊢ Set.IsWf.min hs hns ∈ s ∧ Set.IsWf.min ht hnt ∈ t ∧ Set.IsWf.min hs hns * Se …
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
+    -- 🎉 no goals
 #align finset.mul_antidiagonal_min_mul_min Finset.mulAntidiagonal_min_mul_min
 #align finset.add_antidiagonal_min_add_min Finset.addAntidiagonal_min_add_min
 

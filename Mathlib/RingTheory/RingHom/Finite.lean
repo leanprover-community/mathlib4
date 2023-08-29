@@ -22,17 +22,23 @@ open TensorProduct Algebra.TensorProduct
 
 theorem finite_stableUnderComposition : StableUnderComposition @Finite := by
   introv R hf hg
+  -- ⊢ Finite (comp g f)
   exact hg.comp hf
+  -- 🎉 no goals
 #align ring_hom.finite_stable_under_composition RingHom.finite_stableUnderComposition
 
 theorem finite_respectsIso : RespectsIso @Finite := by
   apply finite_stableUnderComposition.respectsIso
+  -- ⊢ ∀ {R S : Type u_1} [inst : CommRing R] [inst_1 : CommRing S] (e : R ≃+* S),  …
   intros
+  -- ⊢ Finite (RingEquiv.toRingHom e✝)
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
+  -- 🎉 no goals
 #align ring_hom.finite_respects_iso RingHom.finite_respectsIso
 
 theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
   refine StableUnderBaseChange.mk _ finite_respectsIso ?_
+  -- ⊢ ∀ ⦃R S T : Type u_1⦄ [inst : CommRing R] [inst_1 : CommRing S] [inst_2 : Com …
   classical
   introv h
   replace h : Module.Finite R T := by

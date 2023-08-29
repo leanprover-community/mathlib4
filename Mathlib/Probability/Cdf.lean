@@ -71,21 +71,26 @@ lemma tendsto_cdf_atTop : Tendsto (cdf μ) atTop (𝓝 1) := tendsto_condCdf_atT
 
 lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x) = μ (Iic x) := by
   have h := lintegral_condCdf ((Measure.dirac Unit.unit).prod μ) x
+  -- ⊢ ENNReal.ofReal (↑(cdf μ) x) = ↑↑μ (Iic x)
   simpa only [MeasureTheory.Measure.fst_prod, Measure.prod_prod, measure_univ, one_mul,
     lintegral_dirac] using h
 
 lemma cdf_eq_toReal [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = (μ (Iic x)).toReal := by
   rw [← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
+  -- 🎉 no goals
 
 instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := by
   constructor
+  -- ⊢ ↑↑(StieltjesFunction.measure (cdf μ)) univ = 1
   simp only [StieltjesFunction.measure_univ _ (tendsto_cdf_atBot μ) (tendsto_cdf_atTop μ), sub_zero,
     ENNReal.ofReal_one]
 
 /-- The measure associated to the cdf of a probability measure is the same probability measure. -/
 lemma measure_cdf [IsProbabilityMeasure μ] : (cdf μ).measure = μ := by
   refine Measure.ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
+  -- ⊢ ↑↑(StieltjesFunction.measure (cdf μ)) (Iic a) = ↑↑μ (Iic a)
   rw [StieltjesFunction.measure_Iic _ (tendsto_cdf_atBot μ), sub_zero, ofReal_cdf]
+  -- 🎉 no goals
 
 end ExplicitMeasureArg
 
@@ -93,9 +98,11 @@ lemma cdf_measure_stieltjesFunction (f : StieltjesFunction) (hf0 : Tendsto f atB
     (hf1 : Tendsto f atTop (𝓝 1)) :
     cdf f.measure = f := by
   refine (cdf f.measure).eq_of_measure_of_tendsto_atBot f ?_ (tendsto_cdf_atBot _) hf0
+  -- ⊢ StieltjesFunction.measure (cdf (StieltjesFunction.measure f)) = StieltjesFun …
   have h_prob : IsProbabilityMeasure f.measure :=
     ⟨by rw [f.measure_univ hf0 hf1, sub_zero, ENNReal.ofReal_one]⟩
   exact measure_cdf f.measure
+  -- 🎉 no goals
 
 end ProbabilityTheory
 
@@ -105,8 +112,10 @@ open ProbabilityTheory
 lemma MeasureTheory.Measure.eq_of_cdf (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] (h : cdf μ = cdf ν) : μ = ν := by
   rw [← measure_cdf μ, ← measure_cdf ν, h]
+  -- 🎉 no goals
 
 @[simp] lemma MeasureTheory.Measure.cdf_eq_iff (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] :
     cdf μ = cdf ν ↔ μ = ν :=
 ⟨MeasureTheory.Measure.eq_of_cdf μ ν, fun h ↦ by rw [h]⟩
+                                                 -- 🎉 no goals

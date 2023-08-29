@@ -71,7 +71,9 @@ instance : Faithful (Component.ι (j : ConnectedComponents J)) :=
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty (Component j) := by
   induction j using Quotient.inductionOn'
+  -- ⊢ Nonempty (Component (Quotient.mk'' a✝))
   exact ⟨⟨_, rfl⟩⟩
+  -- 🎉 no goals
 
 instance (j : ConnectedComponents J) : Inhabited (Component j) :=
   Classical.inhabited_of_nonempty'
@@ -80,13 +82,18 @@ instance (j : ConnectedComponents J) : Inhabited (Component j) :=
 instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Show it's connected by constructing a zigzag (in `Component j`) between any two objects
   apply isConnected_of_zigzag
+  -- ⊢ ∀ (j₁ j₂ : Component j), ∃ l, List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) ( …
   rintro ⟨j₁, hj₁⟩ ⟨j₂, rfl⟩
+  -- ⊢ ∃ l, List.Chain Zag { obj := j₁, property := hj₁ } l ∧ List.getLast ({ obj : …
   -- We know that the underlying objects j₁ j₂ have some zigzag between them in `J`
   have h₁₂ : Zigzag j₁ j₂ := Quotient.exact' hj₁
+  -- ⊢ ∃ l, List.Chain Zag { obj := j₁, property := hj₁ } l ∧ List.getLast ({ obj : …
   -- Get an explicit zigzag as a list
   rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
+  -- ⊢ ∃ l, List.Chain Zag { obj := j₁, property := hj₁ } l ∧ List.getLast ({ obj : …
   -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
   let f : ∀ x, Zigzag x j₂ → Component (Quotient.mk'' j₂) := fun x h => ⟨x, Quotient.sound' h⟩
+  -- ⊢ ∃ l, List.Chain Zag { obj := j₁, property := hj₁ } l ∧ List.getLast ({ obj : …
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
@@ -96,10 +103,15 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `component j`.
   refine' ⟨l.pmap f hf, _, _⟩
+  -- ⊢ List.Chain Zag { obj := j₁, property := hj₁ } (List.pmap f l hf)
   · refine' @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => _) _ _ hl₁ h₁₂ _
+    -- ⊢ Zag (f x x✝¹) (f y x✝)
     exact zag_of_zag_obj (Component.ι _) h
+    -- 🎉 no goals
   · erw [List.getLast_pmap _ f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
+    -- ⊢ f (List.getLast (j₁ :: l) (_ : j₁ :: l ≠ [])) (_ : Zigzag (List.getLast (j₁  …
     exact FullSubcategory.ext _ _ hl₂
+    -- 🎉 no goals
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
 category structure.
@@ -135,24 +147,36 @@ instance : Full (decomposedTo J)
     where
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
+    -- ⊢ { fst := j', snd := { obj := X, property := hX } } ⟶ { fst := k', snd := { o …
     dsimp at f
+    -- ⊢ { fst := j', snd := { obj := X, property := hX } } ⟶ { fst := k', snd := { o …
     have : j' = k'
+    -- ⊢ j' = k'
     rw [← hX, ← hY, Quotient.eq'']
+    -- ⊢ Setoid.r X Y
     exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
+    -- ⊢ { fst := j', snd := { obj := X, property := hX } } ⟶ { fst := k', snd := { o …
     subst this
+    -- ⊢ { fst := j', snd := { obj := X, property := hX } } ⟶ { fst := j', snd := { o …
     exact Sigma.SigmaHom.mk f
+    -- 🎉 no goals
   witness := by
     rintro ⟨j', X, hX⟩ ⟨_, Y, rfl⟩ f
+    -- ⊢ (decomposedTo J).map (Sigma.casesOn (motive := fun x => {Y : Decomposed J} → …
     have : Quotient.mk'' Y = j' := by
       rw [← hX, Quotient.eq'']
       exact Relation.ReflTransGen.single (Or.inr ⟨f⟩)
     subst this
+    -- ⊢ (decomposedTo J).map (Sigma.casesOn (motive := fun x => {Y : Decomposed J} → …
     rfl
+    -- 🎉 no goals
 
 instance : Faithful (decomposedTo J) where
   map_injective := by
     rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
+    -- ⊢ Sigma.SigmaHom.mk f = Sigma.SigmaHom.mk ((decomposedTo J).map (Sigma.SigmaHo …
     rfl
+    -- 🎉 no goals
 
 instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 

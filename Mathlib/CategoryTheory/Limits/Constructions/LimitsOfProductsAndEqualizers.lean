@@ -63,7 +63,9 @@ def buildLimit : Cone F where
     { app := fun j => i.ι ≫ c₁.π.app ⟨_⟩
       naturality := fun j₁ j₂ f => by
         dsimp
+        -- ⊢ 𝟙 i.pt ≫ Fork.ι i ≫ NatTrans.app c₁.π { as := j₂ } = (Fork.ι i ≫ NatTrans.ap …
         rw [Category.id_comp, Category.assoc, ← hs ⟨⟨_, _⟩, f⟩, i.condition_assoc, ht] }
+        -- 🎉 no goals
 #align category_theory.limits.has_limit_of_has_products_of_has_equalizers.build_limit CategoryTheory.Limits.HasLimitOfHasProductsOfHasEqualizers.buildLimit
 
 variable {i}
@@ -76,17 +78,26 @@ def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     IsLimit (buildLimit s t hs ht i) where
   lift q := by
     refine' hi.lift (Fork.ofι _ _)
+    -- ⊢ q.1 ⟶ c₁.pt
     · refine' t₁.lift (Fan.mk _ fun j => _)
+      -- ⊢ q.1 ⟶ F.obj j
       apply q.π.app j
+      -- 🎉 no goals
     · apply t₂.hom_ext
+      -- ⊢ ∀ (j : Discrete ((p : J × J) × (p.fst ⟶ p.snd))), (IsLimit.lift t₁ (Fan.mk q …
       intro ⟨j⟩
+      -- ⊢ (IsLimit.lift t₁ (Fan.mk q.1 fun j => NatTrans.app q.π j) ≫ s) ≫ NatTrans.ap …
       simp [hs, ht]
+      -- 🎉 no goals
   uniq q m w :=
     hi.hom_ext
       (i.equalizer_ext
         (t₁.hom_ext fun j => by
           cases' j with j
+          -- ⊢ (m ≫ Fork.ι i) ≫ NatTrans.app c₁.π { as := j } = ((fun q => IsLimit.lift hi  …
           simpa using w j))
+                -- 🎉 no goals
+          -- 🎉 no goals
   fac s j := by simp
 #align category_theory.limits.has_limit_of_has_products_of_has_equalizers.build_is_limit CategoryTheory.Limits.HasLimitOfHasProductsOfHasEqualizers.buildIsLimit
 
@@ -105,6 +116,8 @@ noncomputable def limitConeOfEqualizerAndProduct (F : J ⥤ C) [HasLimit (Discre
   isLimit :=
     buildIsLimit (Pi.lift fun f => limit.π (Discrete.functor F.obj) ⟨_⟩ ≫ F.map f.2)
       (Pi.lift fun f => limit.π (Discrete.functor F.obj) ⟨f.1.2⟩) (by simp) (by simp)
+                                                                      -- 🎉 no goals
+                                                                                -- 🎉 no goals
       (limit.isLimit _) (limit.isLimit _) (limit.isLimit _)
 #align category_theory.limits.limit_cone_of_equalizer_and_product CategoryTheory.Limits.limitConeOfEqualizerAndProduct
 
@@ -168,39 +181,70 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
 noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimitsOfShape J G where
   preservesLimit {K} := by
     let P := ∏ K.obj
+    -- ⊢ PreservesLimit K G
     let Q := ∏ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
+    -- ⊢ PreservesLimit K G
     let s : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨_⟩ ≫ K.map f.2
+    -- ⊢ PreservesLimit K G
     let t : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨f.1.2⟩
+    -- ⊢ PreservesLimit K G
     let I := equalizer s t
+    -- ⊢ PreservesLimit K G
     let i : I ⟶ P := equalizer.ι s t
+    -- ⊢ PreservesLimit K G
     apply
       preservesLimitOfPreservesLimitCone
         (buildIsLimit s t (by simp) (by simp) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
     refine' IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
+      -- 🎉 no goals
     · exact Fan.mk (G.obj Q) fun f => G.map (Pi.π _ f)
+      -- 🎉 no goals
     · apply G.map s
+      -- 🎉 no goals
     · apply G.map t
+      -- 🎉 no goals
     · intro f
+      -- ⊢ G.map s ≫ NatTrans.app (Fan.mk (G.obj Q) fun f => G.map (Pi.π (fun f => K.ob …
       dsimp [Fan.mk]
+      -- ⊢ G.map (Pi.lift fun f => limit.π (Discrete.functor K.obj) { as := f.fst.1 } ≫ …
       simp only [← G.map_comp, limit.lift_π]
+      -- ⊢ G.map (NatTrans.app (Fan.mk (∏ K.obj) fun f => limit.π (Discrete.functor K.o …
       congr
+      -- 🎉 no goals
     · intro f
+      -- ⊢ G.map t ≫ NatTrans.app (Fan.mk (G.obj Q) fun f => G.map (Pi.π (fun f => K.ob …
       dsimp [Fan.mk]
+      -- ⊢ G.map (Pi.lift fun f => limit.π (Discrete.functor K.obj) { as := f.fst.snd } …
       simp only [← G.map_comp, limit.lift_π]
+      -- ⊢ G.map (NatTrans.app (Fan.mk (∏ K.obj) fun f => limit.π (Discrete.functor K.o …
       apply congrArg G.map
+      -- ⊢ NatTrans.app (Fan.mk (∏ K.obj) fun f => limit.π (Discrete.functor K.obj) { a …
       dsimp
+      -- 🎉 no goals
     · apply Fork.ofι (G.map i)
+      -- ⊢ G.map i ≫ G.map s = G.map i ≫ G.map t
       rw [← G.map_comp, ← G.map_comp]
+      -- ⊢ G.map (i ≫ s) = G.map (i ≫ t)
       apply congrArg G.map
+      -- ⊢ i ≫ s = i ≫ t
       exact equalizer.condition s t
+      -- 🎉 no goals
     · apply isLimitOfHasProductOfPreservesLimit
+      -- 🎉 no goals
     · apply isLimitOfHasProductOfPreservesLimit
+      -- 🎉 no goals
     · apply isLimitForkMapOfIsLimit
+      -- ⊢ IsLimit (Fork.ofι i ?refine'_10.w)
       apply equalizerIsEqualizer
+      -- 🎉 no goals
     · refine Cones.ext (Iso.refl _) ?_
+      -- ⊢ ∀ (j : J), NatTrans.app (buildLimit (G.map s) (G.map t) (_ : ∀ (f : (p : J × …
       intro j; dsimp; simp
+      -- ⊢ NatTrans.app (buildLimit (G.map s) (G.map t) (_ : ∀ (f : (p : J × J) × (p.fs …
+               -- ⊢ G.map (equalizer.ι (Pi.lift fun f => limit.π (Discrete.functor K.obj) { as : …
+                      -- 🎉 no goals
 -- See note [dsimp, simp].
 #align category_theory.limits.preserves_limit_of_preserves_equalizers_and_product CategoryTheory.Limits.preservesLimitOfPreservesEqualizersAndProduct
 
@@ -217,13 +261,20 @@ noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [H
     [PreservesFiniteProducts G] : PreservesFiniteLimits G where
   preservesFiniteLimits := by
     intro J sJ fJ
+    -- ⊢ PreservesLimitsOfShape J G
     haveI : Fintype J := inferInstance
+    -- ⊢ PreservesLimitsOfShape J G
     haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
+    -- ⊢ PreservesLimitsOfShape J G
     apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasLimitsOfShape_discrete _ _
+      -- 🎉 no goals
     · apply hasLimitsOfShape_discrete _
+      -- 🎉 no goals
     · apply PreservesFiniteProducts.preserves _
+      -- 🎉 no goals
     · apply PreservesFiniteProducts.preserves _
+      -- 🎉 no goals
 #align category_theory.limits.preserves_finite_limits_of_preserves_equalizers_and_finite_products CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts
 
 /-- If G preserves equalizers and products, it preserves all limits. -/
@@ -247,6 +298,7 @@ noncomputable def preservesFiniteLimitsOfPreservesTerminalAndPullbacks [HasTermi
     [HasPullbacks C] (G : C ⥤ D) [PreservesLimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesLimitsOfShape WalkingCospan G] : PreservesFiniteLimits G := by
   haveI : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+  -- ⊢ PreservesFiniteLimits G
   haveI : PreservesLimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryProductsOfPreservesTerminalAndPullbacks G
   haveI : PreservesLimitsOfShape WalkingParallelPair G :=
@@ -254,7 +306,9 @@ noncomputable def preservesFiniteLimitsOfPreservesTerminalAndPullbacks [HasTermi
   apply
     @preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts _ _ _ _ _ _ G _ ?_
   apply PreservesFiniteProducts.mk
+  -- ⊢ (J : Type) → [inst : Fintype J] → PreservesLimitsOfShape (Discrete J) G
   apply preservesFiniteProductsOfPreservesBinaryAndTerminal G
+  -- 🎉 no goals
 #align category_theory.limits.preserves_finite_limits_of_preserves_terminal_and_pullbacks CategoryTheory.Limits.preservesFiniteLimitsOfPreservesTerminalAndPullbacks
 
 /-!
@@ -280,10 +334,12 @@ def buildColimit : Cocone F where
     { app := fun j => c₂.ι.app ⟨_⟩ ≫ i.π
       naturality := fun j₁ j₂ f => by
         dsimp
+        -- ⊢ F.map f ≫ NatTrans.app c₂.ι { as := j₂ } ≫ Cofork.π i = (NatTrans.app c₂.ι { …
         have reassoced (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} {h : _ ⟶ W} :
           c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
             simp only [← Category.assoc, eq_whisker (hs f)]
         rw [Category.comp_id, ← reassoced ⟨⟨_, _⟩, f⟩, i.condition, ← Category.assoc, ht] }
+        -- 🎉 no goals
 #align category_theory.limits.has_colimit_of_has_coproducts_of_has_coequalizers.build_colimit CategoryTheory.Limits.HasColimitOfHasCoproductsOfHasCoequalizers.buildColimit
 
 variable {i}
@@ -295,11 +351,17 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
     IsColimit (buildColimit s t hs ht i) where
   desc q := by
     refine' hi.desc (Cofork.ofπ _ _)
+    -- ⊢ c₂.pt ⟶ q.1
     · refine' t₂.desc (Cofan.mk _ fun j => _)
+      -- ⊢ F.obj j ⟶ q.1
       apply q.ι.app j
+      -- 🎉 no goals
     · apply t₁.hom_ext
+      -- ⊢ ∀ (j : Discrete ((p : J × J) × (p.fst ⟶ p.snd))), NatTrans.app c₁.ι j ≫ s ≫  …
       intro j
+      -- ⊢ NatTrans.app c₁.ι j ≫ s ≫ IsColimit.desc t₂ (Cofan.mk q.1 fun j => NatTrans. …
       cases' j with j
+      -- ⊢ NatTrans.app c₁.ι { as := j } ≫ s ≫ IsColimit.desc t₂ (Cofan.mk q.1 fun j => …
       have reassoced_s (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
           simp only [← Category.assoc]
@@ -309,12 +371,16 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
           simp only [← Category.assoc]
           apply eq_whisker (ht f)
       simp [reassoced_s, reassoced_t]
+      -- 🎉 no goals
   uniq q m w :=
     hi.hom_ext
       (i.coequalizer_ext
         (t₂.hom_ext fun j => by
           cases' j with j
+          -- ⊢ NatTrans.app c₂.ι { as := j } ≫ Cofork.π i ≫ m = NatTrans.app c₂.ι { as := j …
           simpa using w j))
+                -- 🎉 no goals
+          -- 🎉 no goals
   fac s j := by simp
 #align category_theory.limits.has_colimit_of_has_coproducts_of_has_coequalizers.build_is_colimit CategoryTheory.Limits.HasColimitOfHasCoproductsOfHasCoequalizers.buildIsColimit
 
@@ -334,6 +400,8 @@ noncomputable def colimitCoconeOfCoequalizerAndCoproduct (F : J ⥤ C)
   isColimit :=
     buildIsColimit (Sigma.desc fun f => F.map f.2 ≫ colimit.ι (Discrete.functor F.obj) ⟨f.1.2⟩)
       (Sigma.desc fun f => colimit.ι (Discrete.functor F.obj) ⟨f.1.1⟩) (by simp) (by simp)
+                                                                           -- 🎉 no goals
+                                                                                     -- 🎉 no goals
       (colimit.isColimit _) (colimit.isColimit _) (colimit.isColimit _)
 #align category_theory.limits.colimit_cocone_of_coequalizer_and_coproduct CategoryTheory.Limits.colimitCoconeOfCoequalizerAndCoproduct
 
@@ -393,42 +461,73 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     PreservesColimitsOfShape J G where
   preservesColimit {K} := by
     let P := ∐ K.obj
+    -- ⊢ PreservesColimit K G
     let Q := ∐ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.1
+    -- ⊢ PreservesColimit K G
     let s : Q ⟶ P := Sigma.desc fun f => K.map f.2 ≫ colimit.ι (Discrete.functor K.obj) ⟨_⟩
+    -- ⊢ PreservesColimit K G
     let t : Q ⟶ P := Sigma.desc fun f => colimit.ι (Discrete.functor K.obj) ⟨f.1.1⟩
+    -- ⊢ PreservesColimit K G
     let I := coequalizer s t
+    -- ⊢ PreservesColimit K G
     let i : P ⟶ I := coequalizer.π s t
+    -- ⊢ PreservesColimit K G
     apply
       preservesColimitOfPreservesColimitCocone
         (buildIsColimit s t (by simp) (by simp) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
     refine' IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
+      -- ⊢ K.obj j.fst.fst ⟶ Q
       apply Sigma.ι _ j
+      -- 🎉 no goals
     -- fun j => G.map (Sigma.ι _ j)
     · exact Cofan.mk _ fun f => G.map (Sigma.ι _ f)
+      -- 🎉 no goals
     · apply G.map s
+      -- 🎉 no goals
     · apply G.map t
+      -- 🎉 no goals
     · intro f
+      -- ⊢ NatTrans.app (Cofan.mk (G.obj Q) fun j => G.map (Sigma.ι (fun j => K.obj j.f …
       dsimp [Cofan.mk]
+      -- ⊢ G.map (Sigma.ι (fun j => K.obj j.fst.fst) f) ≫ G.map (Sigma.desc fun f => K. …
       simp only [← G.map_comp, colimit.ι_desc]
+      -- ⊢ G.map (NatTrans.app (Cofan.mk (∐ K.obj) fun f => K.map f.snd ≫ colimit.ι (Di …
       congr
+      -- 🎉 no goals
     · intro f
+      -- ⊢ NatTrans.app (Cofan.mk (G.obj Q) fun j => G.map (Sigma.ι (fun j => K.obj j.f …
       dsimp [Cofan.mk]
+      -- ⊢ G.map (Sigma.ι (fun j => K.obj j.fst.fst) f) ≫ G.map (Sigma.desc fun f => co …
       simp only [← G.map_comp, colimit.ι_desc]
+      -- ⊢ G.map (NatTrans.app (Cofan.mk (∐ K.obj) fun f => colimit.ι (Discrete.functor …
       dsimp
+      -- 🎉 no goals
     · refine Cofork.ofπ (G.map i) ?_
+      -- ⊢ G.map s ≫ G.map i = G.map t ≫ G.map i
       rw [← G.map_comp, ← G.map_comp]
+      -- ⊢ G.map (s ≫ i) = G.map (t ≫ i)
       apply congrArg G.map
+      -- ⊢ s ≫ i = t ≫ i
       apply coequalizer.condition
+      -- 🎉 no goals
     · apply isColimitOfHasCoproductOfPreservesColimit
+      -- 🎉 no goals
     · apply isColimitOfHasCoproductOfPreservesColimit
+      -- 🎉 no goals
     · apply isColimitCoforkMapOfIsColimit
+      -- ⊢ IsColimit (Cofork.ofπ i ?refine'_10.w)
       apply coequalizerIsCoequalizer
+      -- 🎉 no goals
     refine' Cocones.ext (Iso.refl _) _
+    -- ⊢ ∀ (j : J), NatTrans.app (buildColimit (G.map s) (G.map t) (_ : ∀ (f : (p : J …
     intro j
+    -- ⊢ NatTrans.app (buildColimit (G.map s) (G.map t) (_ : ∀ (f : (p : J × J) × (p. …
     dsimp
+    -- ⊢ (G.map (Sigma.ι K.obj j) ≫ G.map (coequalizer.π (Sigma.desc fun f => K.map f …
     simp
+    -- 🎉 no goals
 -- See note [dsimp, simp].
 #align category_theory.limits.preserves_colimit_of_preserves_coequalizers_and_coproduct CategoryTheory.Limits.preservesColimitOfPreservesCoequalizersAndCoproduct
 
@@ -446,13 +545,20 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
     [PreservesFiniteCoproducts G] : PreservesFiniteColimits G where
   preservesFiniteColimits := by
     intro J sJ fJ
+    -- ⊢ PreservesColimitsOfShape J G
     haveI : Fintype J := inferInstance
+    -- ⊢ PreservesColimitsOfShape J G
     haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
+    -- ⊢ PreservesColimitsOfShape J G
     apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasColimitsOfShape_discrete _ _
+      -- 🎉 no goals
     · apply hasColimitsOfShape_discrete _
+      -- 🎉 no goals
     · apply PreservesFiniteCoproducts.preserves _
+      -- 🎉 no goals
     · apply PreservesFiniteCoproducts.preserves _
+      -- 🎉 no goals
 #align category_theory.limits.preserves_finite_colimits_of_preserves_coequalizers_and_finite_coproducts CategoryTheory.Limits.preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts
 
 /-- If G preserves coequalizers and coproducts, it preserves all colimits. -/
@@ -476,6 +582,7 @@ noncomputable def preservesFiniteColimitsOfPreservesInitialAndPushouts [HasIniti
     [HasPushouts C] (G : C ⥤ D) [PreservesColimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesFiniteColimits G := by
   haveI : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
+  -- ⊢ PreservesFiniteColimits G
   haveI : PreservesColimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryCoproductsOfPreservesInitialAndPushouts G
   haveI : PreservesColimitsOfShape (WalkingParallelPair) G :=
@@ -483,7 +590,9 @@ noncomputable def preservesFiniteColimitsOfPreservesInitialAndPushouts [HasIniti
   refine
     @preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts _ _ _ _ _ _ G _ ?_
   apply PreservesFiniteCoproducts.mk
+  -- ⊢ (J : Type) → [inst : Fintype J] → PreservesColimitsOfShape (Discrete J) G
   apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
+  -- 🎉 no goals
 #align category_theory.limits.preserves_finite_colimits_of_preserves_initial_and_pushouts CategoryTheory.Limits.preservesFiniteColimitsOfPreservesInitialAndPushouts
 
 end CategoryTheory.Limits

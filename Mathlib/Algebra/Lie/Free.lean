@@ -91,24 +91,31 @@ variable {R X}
 
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
+  -- ⊢ Rel R X (b + a) (c + a)
+                                   -- 🎉 no goals
 #align free_lie_algebra.rel.add_left FreeLieAlgebra.Rel.addLeft
 
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
+  -- 🎉 no goals
 #align free_lie_algebra.rel.neg FreeLieAlgebra.Rel.neg
 
 theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a - b) (a - c) := by
   simpa only [sub_eq_add_neg] using h.neg.addLeft a
+  -- 🎉 no goals
 #align free_lie_algebra.rel.sub_left FreeLieAlgebra.Rel.subLeft
 
 theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
+  -- 🎉 no goals
 #align free_lie_algebra.rel.sub_right FreeLieAlgebra.Rel.subRight
 
 theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
+  -- ⊢ Rel R X ((t • 1) • a) ((t • 1) • b)
   exact h.smul _
+  -- 🎉 no goals
 #align free_lie_algebra.rel.smul_of_tower FreeLieAlgebra.Rel.smulOfTower
 
 end FreeLieAlgebra
@@ -119,6 +126,8 @@ def FreeLieAlgebra :=
 #align free_lie_algebra FreeLieAlgebra
 
 instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_instance
+                                                -- ⊢ Inhabited (Quot (FreeLieAlgebra.Rel R X))
+                                                                     -- 🎉 no goals
 
 namespace FreeLieAlgebra
 
@@ -160,15 +169,28 @@ on `lib R X` into a `Bracket` on `FreeLieAlgebra`. -/
 instance : LieRing (FreeLieAlgebra R X) where
   bracket := Quot.map₂ (· * ·) (fun _ _ _ => Rel.mul_left _) fun _ _ _ => Rel.mul_right _
   add_lie := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; change Quot.mk _ _ = Quot.mk _ _; simp_rw [add_mul]
+                -- ⊢ ⁅Quot.mk (Rel R X) a + Quot.mk (Rel R X) b, Quot.mk (Rel R X) c⁆ = ⁅Quot.mk  …
+                                    -- ⊢ Quot.mk (Rel R X) ((fun x x_1 => x * x_1) ((fun x x_1 => x + x_1) a b) c) =  …
+                                                                      -- 🎉 no goals
   lie_add := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; change Quot.mk _ _ = Quot.mk _ _; simp_rw [mul_add]
+                -- ⊢ ⁅Quot.mk (Rel R X) a, Quot.mk (Rel R X) b + Quot.mk (Rel R X) c⁆ = ⁅Quot.mk  …
+                                    -- ⊢ Quot.mk (Rel R X) ((fun x x_1 => x * x_1) a ((fun x x_1 => x + x_1) b c)) =  …
+                                                                      -- 🎉 no goals
   lie_self := by rintro ⟨a⟩; exact Quot.sound (Rel.lie_self a)
+                 -- ⊢ ⁅Quot.mk (Rel R X) a, Quot.mk (Rel R X) a⁆ = 0
+                             -- 🎉 no goals
   leibniz_lie := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact Quot.sound (Rel.leibniz_lie a b c)
+                    -- ⊢ ⁅Quot.mk (Rel R X) a, ⁅Quot.mk (Rel R X) b, Quot.mk (Rel R X) c⁆⁆ = ⁅⁅Quot.m …
+                                        -- 🎉 no goals
 
 instance : LieAlgebra R (FreeLieAlgebra R X) where
   lie_smul := by
     rintro t ⟨a⟩ ⟨c⟩
+    -- ⊢ ⁅Quot.mk (Rel R X) a, t • Quot.mk (Rel R X) c⁆ = t • ⁅Quot.mk (Rel R X) a, Q …
     change Quot.mk _ (a • t • c) = Quot.mk _ (t • a • c)
+    -- ⊢ Quot.mk (Rel R X) (a • t • c) = Quot.mk (Rel R X) (t • a • c)
     rw [← smul_comm]
+    -- 🎉 no goals
 
 variable {X}
 
@@ -203,12 +225,20 @@ theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a
     liftAux R f a = liftAux R f b := by
   induction h
   case lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
+  -- 🎉 no goals
   case leibniz_lie a' b' c' =>
     simp only [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
   case smul t a' b' _ h₂ => simp only [liftAux_map_smul, h₂]
+  -- 🎉 no goals
   case add_right a' b' c' _ h₂ => simp only [liftAux_map_add, h₂]
+  -- ⊢ ↑(liftAux R f) (a✝¹ * b✝) = ↑(liftAux R f) (a✝¹ * c✝)
+  -- 🎉 no goals
   case mul_left a' b' c' _ h₂ => simp only [liftAux_map_mul, h₂]
+  -- ⊢ ↑(liftAux R f) (a✝¹ * c✝) = ↑(liftAux R f) (b✝ * c✝)
+  -- 🎉 no goals
   case mul_right a' b' c' _ h₂ => simp only [liftAux_map_mul, h₂]
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align free_lie_algebra.lift_aux_spec FreeLieAlgebra.liftAux_spec
 
 /-- The quotient map as a `NonUnitalAlgHom`. -/
@@ -226,16 +256,30 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   toFun f :=
     { toFun := fun c => Quot.liftOn c (liftAux R f) (liftAux_spec R f)
       map_add' := by rintro ⟨a⟩ ⟨b⟩; rw [← liftAux_map_add]; rfl
+                     -- ⊢ (fun c => Quot.liftOn c ↑(liftAux R f) (_ : ∀ (a b : lib R X), Rel R X a b → …
+                                     -- ⊢ (fun c => Quot.liftOn c ↑(liftAux R f) (_ : ∀ (a b : lib R X), Rel R X a b → …
+                                                             -- 🎉 no goals
       map_smul' := by rintro t ⟨a⟩; rw [← liftAux_map_smul]; rfl
+                      -- ⊢ AddHom.toFun { toFun := fun c => Quot.liftOn c ↑(liftAux R f) (_ : ∀ (a b :  …
+                                    -- ⊢ AddHom.toFun { toFun := fun c => Quot.liftOn c ↑(liftAux R f) (_ : ∀ (a b :  …
+                                                             -- 🎉 no goals
       map_lie' := by rintro ⟨a⟩ ⟨b⟩; rw [← liftAux_map_mul]; rfl }
+                     -- ⊢ AddHom.toFun { toAddHom := { toFun := fun c => Quot.liftOn c ↑(liftAux R f)  …
+                                     -- ⊢ AddHom.toFun { toAddHom := { toFun := fun c => Quot.liftOn c ↑(liftAux R f)  …
+                                                             -- 🎉 no goals
   invFun F := F ∘ of R
   left_inv f := by
     ext x;
+    -- ⊢ (fun F => ↑F ∘ of R) ((fun f => { toLinearMap := { toAddHom := { toFun := fu …
     simp only [liftAux, of, Quot.liftOn_mk, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
+    -- 🎉 no goals
   right_inv F := by
     ext ⟨a⟩
+    -- ⊢ ↑((fun f => { toLinearMap := { toAddHom := { toFun := fun c => Quot.liftOn c …
     let F' := F.toNonUnitalAlgHom.comp (mk R)
+    -- ⊢ ↑((fun f => { toLinearMap := { toAddHom := { toFun := fun c => Quot.liftOn c …
     exact NonUnitalAlgHom.congr_fun (lib.lift_comp_of R F') a
+    -- 🎉 no goals
 #align free_lie_algebra.lift FreeLieAlgebra.lift
 
 @[simp]
@@ -256,17 +300,22 @@ theorem lift_unique (f : X → L) (g : FreeLieAlgebra R X →ₗ⁅R⁆ L) : g �
 @[simp]
 theorem lift_of_apply (f : X → L) (x) : lift R f (of R x) = f x := by
   rw [← @Function.comp_apply _ _ _ (lift R f) (of R) x, of_comp_lift]
+  -- 🎉 no goals
 #align free_lie_algebra.lift_of_apply FreeLieAlgebra.lift_of_apply
 
 @[simp]
 theorem lift_comp_of (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : lift R (F ∘ of R) = F := by
   rw [← lift_symm_apply]; exact (lift R).apply_symm_apply F
+  -- ⊢ ↑(lift R) (↑(lift R).symm F) = F
+                          -- 🎉 no goals
 #align free_lie_algebra.lift_comp_of FreeLieAlgebra.lift_comp_of
 
 @[ext]
 theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F₁ (of R x) = F₂ (of R x)) :
     F₁ = F₂ :=
   have h' : (lift R).symm F₁ = (lift R).symm F₂ := by ext; simp [h]
+                                                      -- ⊢ ↑(lift R).symm F₁ x✝ = ↑(lift R).symm F₂ x✝
+                                                           -- 🎉 no goals
   (lift R).symm.injective h'
 #align free_lie_algebra.hom_ext FreeLieAlgebra.hom_ext
 
@@ -279,7 +328,11 @@ def universalEnvelopingEquivFreeAlgebra :
     UniversalEnvelopingAlgebra R (FreeLieAlgebra R X) ≃ₐ[R] FreeAlgebra R X :=
   AlgEquiv.ofAlgHom (UniversalEnvelopingAlgebra.lift R <| FreeLieAlgebra.lift R <| FreeAlgebra.ι R)
     (FreeAlgebra.lift R <| UniversalEnvelopingAlgebra.ι R ∘ FreeLieAlgebra.of R) (by ext; simp)
+                                                                                     -- ⊢ (↑(AlgHom.comp (↑(UniversalEnvelopingAlgebra.lift R) (↑(lift R) (FreeAlgebra …
+                                                                                          -- 🎉 no goals
     (by ext; simp)
+        -- ⊢ ↑(LieHom.comp (AlgHom.toLieHom (AlgHom.comp (↑(FreeAlgebra.lift R) (↑(Univer …
+             -- 🎉 no goals
 #align free_lie_algebra.universal_enveloping_equiv_free_algebra FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra
 
 end FreeLieAlgebra

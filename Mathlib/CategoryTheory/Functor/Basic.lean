@@ -66,6 +66,7 @@ lemma Functor.map_comp_assoc {C : Type u₁} [Category C] {D : Type u₂}
   {W : D} (h : F.obj Z ⟶ W) :
     (F.map (f ≫ g)) ≫ h = F.map f ≫ F.map g ≫ h := by
   rw [F.map_comp, Category.assoc]
+  -- 🎉 no goals
 #align category_theory.functor.map_comp_assoc CategoryTheory.Functor.map_comp_assoc
 
 namespace Functor
@@ -113,6 +114,9 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
   map_comp := by intros; dsimp; rw [F.map_comp, G.map_comp]
+                 -- ⊢ { obj := fun X => G.obj (F.obj X), map := fun {X Y} f => G.map (F.map f) }.m …
+                         -- ⊢ G.map (F.map (f✝ ≫ g✝)) = G.map (F.map f✝) ≫ G.map (F.map g✝)
+                                -- 🎉 no goals
 #align category_theory.functor.comp CategoryTheory.Functor.comp
 #align category_theory.functor.comp_obj CategoryTheory.Functor.comp_obj
 
@@ -128,9 +132,13 @@ theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
 -- is not necessarily a good idea.
 -- Natural isomorphisms are also provided in `Whiskering.lean`.
 protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
+                                                          -- ⊢ mk toPrefunctor✝ ⋙ 𝟭 D = mk toPrefunctor✝
+                                                                   -- 🎉 no goals
 #align category_theory.functor.comp_id CategoryTheory.Functor.comp_id
 
 protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
+                                                          -- ⊢ 𝟭 C ⋙ mk toPrefunctor✝ = mk toPrefunctor✝
+                                                                   -- 🎉 no goals
 #align category_theory.functor.id_comp CategoryTheory.Functor.id_comp
 
 @[simp]
@@ -138,6 +146,7 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     (f : P → (X ⟶ Y)) (g : ¬P → (X ⟶ Y)) :
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by
   aesop_cat
+  -- 🎉 no goals
 #align category_theory.functor.map_dite CategoryTheory.Functor.map_dite
 
 -- Porting note: `to_prefunctor_obj` and `to_prefunctor_map` are now tautologies,

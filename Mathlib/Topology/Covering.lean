@@ -57,6 +57,7 @@ theorem toTrivialization_apply {x : E} {I : Type*} [TopologicalSpace I]
   Subtype.ext
     ((e.toLocalEquiv.eq_symm_apply (e.mem_source.mpr h)
             (by rwa [he, e.mem_target, e.coe_fst (e.mem_source.mpr h)])).mpr
+                -- 🎉 no goals
         he.symm).symm
 #align is_evenly_covered.to_trivialization_apply IsEvenlyCovered.toTrivialization_apply
 
@@ -104,9 +105,13 @@ protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f �
 protected theorem isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
     IsLocallyHomeomorphOn f (f ⁻¹' s) := by
   refine' IsLocallyHomeomorphOn.mk f (f ⁻¹' s) fun x hx => _
+  -- ⊢ ∃ e, x ∈ e.source ∧ ∀ (y : E), y ∈ e.source → f y = ↑e y
   let e := (hf (f x) hx).toTrivialization
+  -- ⊢ ∃ e, x ∈ e.source ∧ ∀ (y : E), y ∈ e.source → f y = ↑e y
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
+  -- ⊢ ∃ e, x ∈ e.source ∧ ∀ (y : E), y ∈ e.source → f y = ↑e y
   let he := e.mem_source.2 h
+  -- ⊢ ∃ e, x ∈ e.source ∧ ∀ (y : E), y ∈ e.source → f y = ↑e y
   refine'
     ⟨e.toLocalHomeomorph.trans
         { toFun := fun p => p.1
@@ -139,6 +144,7 @@ variable {f}
 
 theorem isCoveringMap_iff_isCoveringMapOn_univ : IsCoveringMap f ↔ IsCoveringMapOn f Set.univ := by
   simp only [IsCoveringMap, IsCoveringMapOn, Set.mem_univ, forall_true_left]
+  -- 🎉 no goals
 #align is_covering_map_iff_is_covering_map_on_univ isCoveringMap_iff_isCoveringMapOn_univ
 
 protected theorem IsCoveringMap.isCoveringMapOn (hf : IsCoveringMap f) :

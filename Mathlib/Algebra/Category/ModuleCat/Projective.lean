@@ -33,14 +33,21 @@ open scoped Module
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ Projective (of R P)
   · letI : Module.Projective R (ModuleCat.of R P) := h
+    -- ⊢ Projective (of R P)
     exact ⟨fun E X epi => Module.projective_lifting_property _ _
       ((ModuleCat.epi_iff_surjective _).mp epi)⟩
   · refine' Module.Projective.of_lifting_property.{u,v} _
+    -- ⊢ ∀ {M : Type (max v u)} {N : Type (max u v)} [inst : AddCommGroup M] [inst_1  …
     intro E X mE mX sE sX f g s
+    -- ⊢ ∃ h, comp f h = g
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
+    -- ⊢ ∃ h, comp f h = g
     letI : Projective (ModuleCat.of R P) := h
+    -- ⊢ ∃ h, comp f h = g
     exact ⟨Projective.factorThru (↟g) (↟f), Projective.factorThru_comp (↟g) (↟f)⟩
+    -- 🎉 no goals
 #align is_projective.iff_projective IsProjective.iff_projective
 
 namespace ModuleCat
@@ -68,9 +75,13 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
               -- Porting note: simp [Finsupp.total_single] fails but rw succeeds
               dsimp [Basis.constr]
+              -- ⊢ ↑(comp (Finsupp.total (↑M) (↑M) R _root_.id) (comp (Finsupp.lmapDomain R R _ …
               simp only [Finsupp.lmapDomain_id, comp_id]
+              -- ⊢ ↑(Finsupp.total (↑M) (↑M) R _root_.id) (Finsupp.single m 1) = m
               rw [Finsupp.total_single, one_smul]
+              -- ⊢ _root_.id m = m
               rfl ⟩) }⟩
+              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 

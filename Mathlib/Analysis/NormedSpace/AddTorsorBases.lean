@@ -65,15 +65,19 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
     [NormedSpace ℝ E] (b : AffineBasis ι ℝ E) :
     interior (convexHull ℝ (range b)) = {x | ∀ i, 0 < b.coord i x} := by
   cases subsingleton_or_nontrivial ι
+  -- ⊢ interior (↑(convexHull ℝ) (range ↑b)) = {x | ∀ (i : ι), 0 < ↑(coord b i) x}
   · -- The zero-dimensional case.
     have : range b = univ :=
       AffineSubspace.eq_univ_of_subsingleton_span_eq_top (subsingleton_range _) b.tot
     simp [this]
+    -- 🎉 no goals
   · -- The positive-dimensional case.
     haveI : FiniteDimensional ℝ E := b.finiteDimensional
+    -- ⊢ interior (↑(convexHull ℝ) (range ↑b)) = {x | ∀ (i : ι), 0 < ↑(coord b i) x}
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
       rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
     ext
+    -- ⊢ x✝ ∈ interior (↑(convexHull ℝ) (range ↑b)) ↔ x✝ ∈ {x | ∀ (i : ι), 0 < ↑(coor …
     simp only [this, interior_iInter, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
@@ -91,9 +95,13 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
     (hsu : s ⊆ u) (hne : s.Nonempty) (h : AffineIndependent ℝ ((↑) : s → P)) :
     ∃ t : Set P, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ ((↑) : t → P) ∧ affineSpan ℝ t = ⊤ := by
   obtain ⟨q, hq⟩ := hne
+  -- ⊢ ∃ t, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ Subtype.val ∧ affineSpan ℝ t = ⊤
   obtain ⟨ε, ε0, hεu⟩ := Metric.nhds_basis_closedBall.mem_iff.1 (hu.mem_nhds <| hsu hq)
+  -- ⊢ ∃ t, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ Subtype.val ∧ affineSpan ℝ t = ⊤
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := exists_subset_affineIndependent_affineSpan_eq_top h
+  -- ⊢ ∃ t, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ Subtype.val ∧ affineSpan ℝ t = ⊤
   let f : P → P := fun y => lineMap q y (ε / dist y q)
+  -- ⊢ ∃ t, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ Subtype.val ∧ affineSpan ℝ t = ⊤
   have hf : ∀ y, f y ∈ u := by
     refine' fun y => hεu _
     simp only
@@ -119,9 +127,11 @@ theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsO
     (hne : u.Nonempty) :
     ∃ (s : _) (_ : s ⊆ u), AffineIndependent ℝ ((↑) : s → P) ∧ affineSpan ℝ s = ⊤ := by
   rcases hne with ⟨x, hx⟩
+  -- ⊢ ∃ s x, AffineIndependent ℝ Subtype.val ∧ affineSpan ℝ s = ⊤
   rcases hu.exists_between_affineIndependent_span_eq_top (singleton_subset_iff.mpr hx)
     (singleton_nonempty _) (affineIndependent_of_subsingleton _ _) with ⟨s, -, hsu, hs⟩
   exact ⟨s, hsu, hs⟩
+  -- 🎉 no goals
 #align is_open.exists_subset_affine_independent_span_eq_top IsOpen.exists_subset_affineIndependent_span_eq_top
 
 /-- The affine span of a nonempty open set is `⊤`. -/
@@ -140,6 +150,7 @@ theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
     Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
   haveI := b.nonempty
+  -- ⊢ Finset.centroid ℝ Finset.univ ↑b ∈ interior (↑(convexHull ℝ) (range ↑b))
   simp only [b.interior_convexHull, mem_setOf_eq, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
 #align affine_basis.centroid_mem_interior_convex_hull AffineBasis.centroid_mem_interior_convexHull
@@ -147,16 +158,21 @@ theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : Affi
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
     (interior (convexHull ℝ s)).Nonempty ↔ affineSpan ℝ s = ⊤ := by
   refine' ⟨affineSpan_eq_top_of_nonempty_interior, fun h => _⟩
+  -- ⊢ Set.Nonempty (interior (↑(convexHull ℝ) s))
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
+  -- ⊢ Set.Nonempty (interior (↑(convexHull ℝ) s))
   suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, setOf_mem_eq] at this
     refine' this.mono _
     mono*
   lift t to Finset V using b.finite_set
+  -- ⊢ Set.Nonempty (interior (↑(convexHull ℝ) (range ↑b)))
   exact ⟨_, b.centroid_mem_interior_convexHull⟩
+  -- 🎉 no goals
 #align interior_convex_hull_nonempty_iff_affine_span_eq_top interior_convexHull_nonempty_iff_affineSpan_eq_top
 
 theorem Convex.interior_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V}
     (hs : Convex ℝ s) : (interior s).Nonempty ↔ affineSpan ℝ s = ⊤ := by
   rw [← interior_convexHull_nonempty_iff_affineSpan_eq_top, hs.convexHull_eq]
+  -- 🎉 no goals
 #align convex.interior_nonempty_iff_affine_span_eq_top Convex.interior_nonempty_iff_affineSpan_eq_top

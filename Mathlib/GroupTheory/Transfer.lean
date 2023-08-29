@@ -61,6 +61,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
       (ϕ.map_mul _ _).symm.trans
         (congr_arg ϕ
           (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
+              -- 🎉 no goals
 #align subgroup.left_transversals.diff_mul_diff Subgroup.leftTransversals.diff_mul_diff
 #align add_subgroup.left_transversals.diff_add_diff AddSubgroup.leftTransversals.diff_add_diff
 
@@ -106,7 +107,11 @@ noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
     map_one' := by simp only; rw [one_smul, diff_self] -- porting note: added `simp only`
+                   -- ⊢ diff ϕ default (1 • default) = 1
+                              -- 🎉 no goals
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+                              -- ⊢ diff ϕ default ((g * h) • default) = diff ϕ default (g • default) * diff ϕ d …
+                                         -- 🎉 no goals
 #align monoid_hom.transfer MonoidHom.transfer
 #align add_monoid_hom.transfer AddMonoidHom.transfer
 
@@ -115,6 +120,8 @@ variable (T : leftTransversals (H : Set G))
 @[to_additive]
 theorem transfer_def [FiniteIndex H] (g : G) : transfer ϕ g = diff ϕ T (g • T) := by
   rw [transfer, ← diff_mul_diff, ← smul_diff_smul, mul_comm, diff_mul_diff] <;> rfl
+  -- ⊢ ↑(let T := default;
+                                                                                -- 🎉 no goals
 #align monoid_hom.transfer_def MonoidHom.transfer_def
 #align add_monoid_hom.transfer_def AddMonoidHom.transfer_def
 
@@ -148,9 +155,13 @@ theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     g ^ H.index ∈ H := by
   by_cases hH : H.index = 0
+  -- ⊢ g ^ index H ∈ H
   · rw [hH, pow_zero]
+    -- ⊢ 1 ∈ H
     exact H.one_mem
+    -- 🎉 no goals
   letI := fintypeOfIndexNeZero hH
+  -- ⊢ g ^ index H ∈ H
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
       (_root_.congr_arg (· ∈ H) (key k g₀ hk)).mp hk
@@ -188,6 +199,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, hk, mul_inv_cancel_right]
+                                                     -- 🎉 no goals
 #align monoid_hom.transfer_center_eq_pow MonoidHom.transfer_center_eq_pow
 
 variable (G)
@@ -197,6 +209,7 @@ noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G w
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
+                     -- 🎉 no goals
 #align monoid_hom.transfer_center_pow MonoidHom.transferCenterPow
 
 variable {G}
@@ -227,8 +240,11 @@ theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
   haveI : (P : Subgroup G).IsCommutative :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
+  -- ⊢ g₀⁻¹ * g ^ k * g₀ = g ^ k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
+  -- ⊢ g₀⁻¹ * g ^ k * g₀ = g ^ k
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
+  -- 🎉 no goals
 #align monoid_hom.transfer_sylow_eq_pow_aux MonoidHom.transferSylow_eq_pow_aux
 
 variable [FiniteIndex (P : Subgroup G)]
@@ -254,12 +270,14 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
           (not_dvd_index_sylow P
             (mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite))).bijective
   rw [Function.Bijective, ← range_top_iff_surjective, restrict_range] at hf
+  -- ⊢ IsComplement' (ker (transferSylow P hP)) ↑P
   have := range_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
     ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
+  -- 🎉 no goals
 #align monoid_hom.ker_transfer_sylow_is_complement' MonoidHom.ker_transferSylow_isComplement'
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=

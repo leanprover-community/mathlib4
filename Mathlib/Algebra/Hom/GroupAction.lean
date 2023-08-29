@@ -94,6 +94,9 @@ attribute [simp] map_smul
 instance : SMulHomClass (X →[M'] Y) M' X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, map_smul' := map_smul'✝ } = g
+                                      -- ⊢ { toFun := toFun✝¹, map_smul' := map_smul'✝¹ } = { toFun := toFun✝, map_smul …
+                                               -- 🎉 no goals
   map_smul := MulActionHom.map_smul'
 
 initialize_simps_projections MulActionHom (toFun → apply)
@@ -153,6 +156,7 @@ def comp (g : Y →[M'] Z) (f : X →[M'] Y) : X →[M'] Z :=
   ⟨g ∘ f, fun m x =>
     calc
       g (f (m • x)) = g (m • f x) := by rw [f.map_smul]
+                                        -- 🎉 no goals
       _ = m • g (f x) := g.map_smul _ _⟩
 #align mul_action_hom.comp MulActionHom.comp
 
@@ -164,11 +168,13 @@ theorem comp_apply (g : Y →[M'] Z) (f : X →[M'] Y) (x : X) : g.comp f x = g 
 @[simp]
 theorem id_comp (f : X →[M'] Y) : (MulActionHom.id M').comp f = f :=
   ext fun x => by rw [comp_apply, id_apply]
+                  -- 🎉 no goals
 #align mul_action_hom.id_comp MulActionHom.id_comp
 
 @[simp]
 theorem comp_id (f : X →[M'] Y) : f.comp (MulActionHom.id M') = f :=
   ext fun x => by rw [comp_apply, id_apply]
+                  -- 🎉 no goals
 #align mul_action_hom.comp_id MulActionHom.comp_id
 
 variable {A B}
@@ -181,8 +187,11 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
+                                        -- 🎉 no goals
       _ = g (f (m • g x)) := by rw [f.map_smul]
+                                -- 🎉 no goals
       _ = m • g x := by rw [h₁]
+                        -- 🎉 no goals
 #align mul_action_hom.inverse_to_fun MulActionHom.inverse_apply
 #align mul_action_hom.inverse MulActionHom.inverse
 
@@ -248,7 +257,12 @@ instance : DistribMulActionHomClass (A →+[M] B) M A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
+    -- ⊢ { toMulActionHom := tF, map_zero' := map_zero'✝, map_add' := map_add'✝ } = g
+                              -- ⊢ { toMulActionHom := tF, map_zero' := map_zero'✝¹, map_add' := map_add'✝¹ } = …
     cases tF; cases tG; congr
+    -- ⊢ { toMulActionHom := { toFun := toFun✝, map_smul' := map_smul'✝ }, map_zero'  …
+              -- ⊢ { toMulActionHom := { toFun := toFun✝¹, map_smul' := map_smul'✝¹ }, map_zero …
+                        -- 🎉 no goals
   map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
@@ -300,12 +314,16 @@ protected theorem congr_fun {f g : A →+[M] B} (h : f = g) (x : A) : f x = g x 
 theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
     f = g := by
   ext a
+  -- ⊢ ↑f a = ↑g a
   exact MulActionHom.congr_fun h a
+  -- 🎉 no goals
 #align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
 theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
+  -- ⊢ ↑f a = ↑g a
   exact FunLike.congr_fun h a
+  -- 🎉 no goals
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
 protected theorem map_zero (f : A →+[M] B) : f 0 = 0 :=
@@ -337,6 +355,7 @@ protected def id : A →+[M] A :=
 @[simp]
 theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
   rfl
+  -- 🎉 no goals
 #align distrib_mul_action_hom.id_apply DistribMulActionHom.id_apply
 
 variable {M C}
@@ -344,6 +363,8 @@ variable {M C}
 -- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →+[M] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = m • (0 : B); rw [smul_zero]}⟩
+                                                  -- ⊢ 0 = m • 0
+                                                                                -- 🎉 no goals
 
 instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
@@ -383,11 +404,13 @@ theorem comp_apply (g : B →+[M] C) (f : A →+[M] B) (x : A) : g.comp f x = g 
 @[simp]
 theorem id_comp (f : A →+[M] B) : (DistribMulActionHom.id M).comp f = f :=
   ext fun x => by rw [comp_apply, id_apply]
+                  -- 🎉 no goals
 #align distrib_mul_action_hom.id_comp DistribMulActionHom.id_comp
 
 @[simp]
 theorem comp_id (f : A →+[M] B) : f.comp (DistribMulActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
+                  -- 🎉 no goals
 #align distrib_mul_action_hom.comp_id DistribMulActionHom.comp_id
 
 /-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
@@ -405,7 +428,9 @@ variable [AddMonoid M'] [DistribMulAction R M']
 @[ext]
 theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g := by
   ext x
+  -- ⊢ ↑f x = ↑g x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smul, g.map_smul, h]
+  -- 🎉 no goals
 #align distrib_mul_action_hom.ext_ring DistribMulActionHom.ext_ring
 
 theorem ext_ring_iff {f g : R →+[R] M'} : f = g ↔ f 1 = g 1 :=
@@ -480,7 +505,12 @@ instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
+    -- ⊢ { toDistribMulActionHom := { toMulActionHom := tF, map_zero' := map_zero'✝,  …
+                                      -- ⊢ { toDistribMulActionHom := { toMulActionHom := tF, map_zero' := map_zero'✝¹, …
     cases tF; cases tG; congr
+    -- ⊢ { toDistribMulActionHom := { toMulActionHom := { toFun := toFun✝, map_smul'  …
+              -- ⊢ { toDistribMulActionHom := { toMulActionHom := { toFun := toFun✝¹, map_smul' …
+                        -- 🎉 no goals
   map_smul m := m.map_smul'
   map_zero m := m.map_zero'
   map_add m := m.map_add'
@@ -581,11 +611,13 @@ theorem comp_apply (g : S →+*[M] T) (f : R →+*[M] S) (x : R) : g.comp f x = 
 @[simp]
 theorem id_comp (f : R →+*[M] S) : (MulSemiringActionHom.id M).comp f = f :=
   ext fun x => by rw [comp_apply, id_apply]
+                  -- 🎉 no goals
 #align mul_semiring_action_hom.id_comp MulSemiringActionHom.id_comp
 
 @[simp]
 theorem comp_id (f : R →+*[M] S) : f.comp (MulSemiringActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
+                  -- 🎉 no goals
 #align mul_semiring_action_hom.comp_id MulSemiringActionHom.comp_id
 
 end MulSemiringActionHom

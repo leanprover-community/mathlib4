@@ -31,6 +31,7 @@ open RealInnerProductSpace
 theorem conformalAt_iff' {f : E → F} {x : E} :
     ConformalAt f x ↔ ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪fderiv ℝ f x u, fderiv ℝ f x v⟫ = c * ⟪u, v⟫ :=
   by rw [conformalAt_iff_isConformalMap_fderiv, isConformalMap_iff]
+     -- 🎉 no goals
 #align conformal_at_iff' conformalAt_iff'
 
 /-- A real differentiable map `f` is conformal at point `x` if and only if its
@@ -38,6 +39,7 @@ theorem conformalAt_iff' {f : E → F} {x : E} :
 theorem conformalAt_iff {f : E → F} {x : E} {f' : E →L[ℝ] F} (h : HasFDerivAt f f' x) :
     ConformalAt f x ↔ ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪f' u, f' v⟫ = c * ⟪u, v⟫ := by
   simp only [conformalAt_iff', h.fderiv]
+  -- 🎉 no goals
 #align conformal_at_iff conformalAt_iff
 
 /-- The conformal factor of a conformal map at some point `x`. Some authors refer to this function

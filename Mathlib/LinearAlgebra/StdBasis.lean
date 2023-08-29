@@ -56,7 +56,10 @@ theorem stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a 
 @[simp]
 theorem stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 := by
   rw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
+  -- ⊢ (if i' = i then 1 else 0) = if i = i' then 1 else 0
   congr 1; rw [eq_iff_iff, eq_comm]
+  -- ⊢ (i' = i) = (i = i')
+           -- 🎉 no goals
 #align linear_map.std_basis_apply' LinearMap.stdBasis_apply'
 
 theorem coe_stdBasis (i : ι) : ⇑(stdBasis R φ i) = Pi.single i :=
@@ -74,9 +77,12 @@ theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 
 
 theorem stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) := by
   ext x j
+  -- ⊢ ↑(stdBasis R φ i) x j = ↑(pi (diag i)) x j
   -- Porting note: made types explicit
   convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
+  -- ⊢ x = ↑id x
   rfl
+  -- 🎉 no goals
 #align linear_map.std_basis_eq_pi_diag LinearMap.stdBasis_eq_pi_diag
 
 theorem ker_stdBasis (i : ι) : ker (stdBasis R φ i) = ⊥ :=
@@ -85,6 +91,7 @@ theorem ker_stdBasis (i : ι) : ker (stdBasis R φ i) = ⊥ :=
 
 theorem proj_comp_stdBasis (i j : ι) : (proj i).comp (stdBasis R φ j) = diag j i := by
   rw [stdBasis_eq_pi_diag, proj_pi]
+  -- 🎉 no goals
 #align linear_map.proj_comp_std_basis LinearMap.proj_comp_stdBasis
 
 theorem proj_stdBasis_same (i : ι) : (proj i).comp (stdBasis R φ i) = id :=
@@ -98,11 +105,17 @@ theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
+  -- ⊢ comap (stdBasis R φ i) (⨅ (i : ι) (_ : i ∈ J), ker (proj i)) = ⊤
   simp only [←ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
+  -- ⊢ ∀ ⦃x : φ i⦄, x ∈ ⊤ → ∀ (i_1 : ι), i_1 ∈ J → ↑(comp (proj i_1) (stdBasis R φ  …
   rintro b - j hj
+  -- ⊢ ↑(comp (proj j) (stdBasis R φ i)) b = 0
   rw [proj_stdBasis_ne R φ j i, zero_apply]
+  -- ⊢ j ≠ i
   rintro rfl
+  -- ⊢ False
   exact h.le_bot ⟨hi, hj⟩
+  -- 🎉 no goals
 #align linear_map.supr_range_std_basis_le_infi_ker_proj LinearMap.iSup_range_stdBasis_le_iInf_ker_proj
 
 theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
@@ -110,7 +123,9 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
   SetLike.le_def.2
     (by
       intro b hb
+      -- ⊢ b ∈ ⨆ (i : ι) (_ : i ∈ I), range (stdBasis R φ i)
       simp only [mem_iInf, mem_ker, proj_apply] at hb
+      -- ⊢ b ∈ ⨆ (i : ι) (_ : i ∈ I), range (stdBasis R φ i)
       rw [←
         show (∑ i in I, stdBasis R φ i (b i)) = b by
           ext i
@@ -120,23 +135,32 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
           rw [stdBasis_same]
           exact hb _ ((hu trivial).resolve_left hiI)]
       exact sum_mem_biSup fun i _ => mem_range_self (stdBasis R φ i) (b i))
+      -- 🎉 no goals
 #align linear_map.infi_ker_proj_le_supr_range_std_basis LinearMap.iInf_ker_proj_le_iSup_range_stdBasis
 
 theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
     ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' le_antisymm (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ hd) _
+  -- ⊢ ⨅ (i : ι) (_ : i ∈ J), ker (proj i) ≤ ⨆ (i : ι) (_ : i ∈ I), range (stdBasis …
   have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
+  -- ⊢ ⨅ (i : ι) (_ : i ∈ J), ker (proj i) ≤ ⨆ (i : ι) (_ : i ∈ I), range (stdBasis …
   refine' le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => _)
+  -- ⊢ ⨆ (_ : i ∈ Set.Finite.toFinset hI), range (stdBasis R φ i) ≤ ⨆ (_ : i ∈ I),  …
   rw [Set.Finite.mem_toFinset]
+  -- 🎉 no goals
 #align linear_map.supr_range_std_basis_eq_infi_ker_proj LinearMap.iSup_range_stdBasis_eq_iInf_ker_proj
 
 theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ := by
   cases nonempty_fintype ι
+  -- ⊢ ⨆ (i : ι), range (stdBasis R φ i) = ⊤
   convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_stdBasis R φ _)
   · rename_i i
+    -- ⊢ range (stdBasis R φ i) = ⨆ (_ : i ∈ ?intro.convert_1), range (stdBasis R φ i)
     exact ((@iSup_pos _ _ _ fun _ => range <| stdBasis R φ i) <| Finset.mem_univ i).symm
+    -- 🎉 no goals
   · rw [Finset.coe_univ, Set.union_empty]
+    -- 🎉 no goals
 #align linear_map.supr_range_std_basis LinearMap.iSup_range_stdBasis
 
 theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
@@ -147,6 +171,7 @@ theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
   simp only [disjoint_iff_inf_le, SetLike.le_def, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
     funext_iff]
   rintro b ⟨hI, hJ⟩ i
+  -- ⊢ b i = OfNat.ofNat 0 i
   classical
     by_cases hiI : i ∈ I
     · by_cases hiJ : i ∈ J
@@ -181,8 +206,11 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     intro j
     exact (hs j).map' _ (ker_stdBasis _ _ _)
   apply linearIndependent_iUnion_finite hs'
+  -- ⊢ ∀ (i : η) (t : Set η), Set.Finite t → ¬i ∈ t → Disjoint (span R (Set.range f …
   · intro j J _ hiJ
+    -- ⊢ Disjoint (span R (Set.range fun i => ↑(stdBasis R Ms j) (v j i))) (⨆ (i : η) …
     simp only
+    -- ⊢ Disjoint (span R (Set.range fun i => ↑(stdBasis R Ms j) (v j i))) (⨆ (i : η) …
     have h₀ :
       ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
         LinearMap.range (stdBasis R Ms j) := by
@@ -201,6 +229,7 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
       convert Set.disjoint_singleton_left.2 hiJ using 0
     exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
+    -- 🎉 no goals
 #align pi.linear_independent_std_basis Pi.linearIndependent_stdBasis
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
@@ -233,13 +262,17 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
 theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
     (Pi.basis s).repr (stdBasis R _ j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
   ext ⟨j', i'⟩
+  -- ⊢ ↑(↑(Pi.basis s).repr (↑(stdBasis R Ms j) (↑(s j) i))) { fst := j', snd := i' …
   by_cases hj : j = j'
+  -- ⊢ ↑(↑(Pi.basis s).repr (↑(stdBasis R Ms j) (↑(s j) i))) { fst := j', snd := i' …
   · subst hj
+    -- ⊢ ↑(↑(Pi.basis s).repr (↑(stdBasis R Ms j) (↑(s j) i))) { fst := j, snd := i'  …
     -- Porting note: needed to add more lemmas
     simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, stdBasis_same,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
       Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
     symm
+    -- ⊢ ↑(Finsupp.single { fst := j, snd := i } 1) { fst := j, snd := i' } = ↑(Finsu …
     -- Porting note: `Sigma.mk.inj` not found in the following, replaced by `Sigma.mk.inj_iff.mp`
     exact
       Finsupp.single_apply_left
@@ -247,16 +280,20 @@ theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j))
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
     LinearEquiv.piCongrRight]
   dsimp
+  -- ⊢ ↑(↑(s j').repr (↑(stdBasis R Ms j) (↑(s j) i) j')) i' = ↑(Finsupp.single { f …
   rw [stdBasis_ne _ _ _ _ (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]
   rintro ⟨⟩
+  -- ⊢ False
   contradiction
+  -- 🎉 no goals
 #align pi.basis_repr_std_basis Pi.basis_repr_stdBasis
 
 @[simp]
 theorem basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :
     Pi.basis s ji = stdBasis R _ ji.1 (s ji.1 ji.2) :=
   Basis.apply_eq_iff.mpr (by simp)
+                             -- 🎉 no goals
 #align pi.basis_apply Pi.basis_apply
 
 @[simp]
@@ -284,6 +321,7 @@ theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun 
 
 @[simp]
 theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]
+                                                                                   -- 🎉 no goals
 #align pi.basis_fun_repr Pi.basisFun_repr
 
 @[simp]
@@ -312,23 +350,35 @@ theorem stdBasis_eq_stdBasisMatrix (i : n) (j : m) [DecidableEq n] [DecidableEq 
     stdBasis R n m (i, j) = stdBasisMatrix i j (1 : R) := by
   -- Porting note: `simp` fails to apply `Pi.basis_apply`
   ext a b
+  -- ⊢ ↑(stdBasis R n m) (i, j) a b = stdBasisMatrix i j 1 a b
   by_cases hi : i = a <;> by_cases hj : j = b
+  -- ⊢ ↑(stdBasis R n m) (i, j) a b = stdBasisMatrix i j 1 a b
+                          -- ⊢ ↑(stdBasis R n m) (i, j) a b = stdBasisMatrix i j 1 a b
+                          -- ⊢ ↑(stdBasis R n m) (i, j) a b = stdBasisMatrix i j 1 a b
   · simp [stdBasis, hi, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       StdBasisMatrix.apply_same]
     erw [Pi.basis_apply]
+    -- ⊢ ↑(LinearMap.stdBasis R (fun a => m → R) { fst := a, snd := b }.fst) (↑(Pi.ba …
     simp
+    -- 🎉 no goals
   · simp only [stdBasis, hi, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hj, and_false, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
+    -- ⊢ ↑(LinearMap.stdBasis R (fun a => m → R) { fst := a, snd := j }.fst) (↑(Pi.ba …
     simp [hj]
+    -- 🎉 no goals
   · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hi, and_true, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
+    -- ⊢ ↑(LinearMap.stdBasis R (fun a => m → R) { fst := i, snd := b }.fst) (↑(Pi.ba …
     simp [hi, hj, Ne.symm hi, LinearMap.stdBasis_ne]
+    -- 🎉 no goals
   · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
       hi, hj, and_self, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
+    -- ⊢ ↑(LinearMap.stdBasis R (fun a => m → R) { fst := i, snd := j }.fst) (↑(Pi.ba …
     simp [hi, hj, Ne.symm hj, Ne.symm hi, LinearMap.stdBasis_ne]
+    -- 🎉 no goals
 #align matrix.std_basis_eq_std_basis_matrix Matrix.stdBasis_eq_stdBasisMatrix
 
 end Matrix

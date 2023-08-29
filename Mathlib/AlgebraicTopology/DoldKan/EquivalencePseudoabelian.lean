@@ -101,9 +101,13 @@ theorem hη :
       Compatibility.τ₁ (eqToIso hN₁) (eqToIso hΓ₀)
         (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubiEquivalence (ChainComplex C ℕ)).functor) := by
   ext K : 3
+  -- ⊢ NatTrans.app Compatibility.τ₀.hom K = NatTrans.app (Compatibility.τ₁ (eqToIs …
   simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app, eqToIso.hom]
+  -- ⊢ NatTrans.app Preadditive.DoldKan.equivalence.counitIso.hom ((toKaroubiEquiva …
   refine' (N₂Γ₂_compatible_with_N₁Γ₀ K).trans _
+  -- ⊢ NatTrans.app N₂Γ₂ToKaroubiIso.hom K ≫ NatTrans.app N₁Γ₀.hom K = Preadditive. …
   simp only [N₂Γ₂ToKaroubiIso_hom, eqToHom_map, eqToHom_app, eqToHom_trans_assoc]
+  -- 🎉 no goals
 #align category_theory.idempotents.dold_kan.hη CategoryTheory.Idempotents.DoldKan.hη
 
 /-- The counit isomorphism induced by `N₁Γ₀` -/
@@ -123,14 +127,23 @@ theorem hε :
       (Γ₂N₁ : (toKaroubiEquivalence _).functor ≅
           (N₁ : SimplicialObject C ⥤ _) ⋙ Preadditive.DoldKan.equivalence.inverse) := by
   ext1
+  -- ⊢ (Compatibility.υ (eqToIso (_ : (toKaroubiEquivalence (SimplicialObject C)).f …
   rw [← cancel_epi Γ₂N₁.inv, Iso.inv_hom_id]
+  -- ⊢ Γ₂N₁.inv ≫ (Compatibility.υ (eqToIso (_ : (toKaroubiEquivalence (SimplicialO …
   ext X : 2
+  -- ⊢ NatTrans.app (Γ₂N₁.inv ≫ (Compatibility.υ (eqToIso (_ : (toKaroubiEquivalenc …
   rw [NatTrans.comp_app]
+  -- ⊢ NatTrans.app Γ₂N₁.inv X ≫ NatTrans.app (Compatibility.υ (eqToIso (_ : (toKar …
   erw [compatibility_Γ₂N₁_Γ₂N₂_natTrans X]
+  -- ⊢ ((compatibility_Γ₂N₁_Γ₂N₂.app X).inv ≫ NatTrans.app Γ₂N₂.natTrans ((toKaroub …
   rw [Compatibility.υ_hom_app, Preadditive.DoldKan.equivalence_unitIso, Iso.app_inv, assoc]
+  -- ⊢ NatTrans.app compatibility_Γ₂N₁_Γ₂N₂.inv X ≫ NatTrans.app Γ₂N₂.natTrans ((to …
   erw [← NatTrans.comp_app_assoc, IsIso.hom_inv_id]
+  -- ⊢ NatTrans.app compatibility_Γ₂N₁_Γ₂N₂.inv X ≫ NatTrans.app (𝟙 (N₂ ⋙ Γ₂)) ((to …
   rw [NatTrans.id_app, id_comp, NatTrans.id_app, eqToIso.hom, eqToHom_app, eqToHom_map]
+  -- ⊢ NatTrans.app compatibility_Γ₂N₁_Γ₂N₂.inv X ≫ eqToHom (_ : Preadditive.DoldKa …
   rw [compatibility_Γ₂N₁_Γ₂N₂_inv_app, eqToHom_trans, eqToHom_refl]
+  -- 🎉 no goals
 #align category_theory.idempotents.dold_kan.hε CategoryTheory.Idempotents.DoldKan.hε
 
 /-- The unit isomorphism induced by `Γ₂N₁`. -/

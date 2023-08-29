@@ -52,6 +52,7 @@ theorem eq {p : M} (h : IsIdempotentElem p) : p * p = p :=
 theorem mul_of_commute {p q : S} (h : Commute p q) (h₁ : IsIdempotentElem p)
     (h₂ : IsIdempotentElem q) : IsIdempotentElem (p * q) := by
   rw [IsIdempotentElem, mul_assoc, ← mul_assoc q, ← h.eq, mul_assoc p, h₂.eq, ← mul_assoc, h₁.eq]
+  -- 🎉 no goals
 #align is_idempotent_elem.mul_of_commute IsIdempotentElem.mul_of_commute
 
 theorem zero : IsIdempotentElem (0 : M₀) :=
@@ -64,6 +65,7 @@ theorem one : IsIdempotentElem (1 : M₁) :=
 
 theorem one_sub {p : R} (h : IsIdempotentElem p) : IsIdempotentElem (1 - p) := by
   rw [IsIdempotentElem, mul_sub, mul_one, sub_mul, one_mul, h.eq, sub_self, sub_zero]
+  -- 🎉 no goals
 #align is_idempotent_elem.one_sub IsIdempotentElem.one_sub
 
 @[simp]
@@ -75,11 +77,14 @@ theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n
   Nat.recOn n ((pow_zero p).symm ▸ one) fun n _ =>
     show p ^ n.succ * p ^ n.succ = p ^ n.succ by
       conv_rhs => rw [← h.eq] --Porting note: was `nth_rw 3 [← h.eq]`
+      -- ⊢ p ^ Nat.succ n * p ^ Nat.succ n = (p * p) ^ Nat.succ n
       rw [← sq, ← sq, ← pow_mul, ← pow_mul']
+      -- 🎉 no goals
 #align is_idempotent_elem.pow IsIdempotentElem.pow
 
 theorem pow_succ_eq {p : N} (n : ℕ) (h : IsIdempotentElem p) : p ^ (n + 1) = p :=
   Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one p) fun n ih => by rw [pow_succ, ih, h.eq]
+                                                                 -- 🎉 no goals
 #align is_idempotent_elem.pow_succ_eq IsIdempotentElem.pow_succ_eq
 
 @[simp]
@@ -94,6 +99,7 @@ theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 :
     Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => _) fun h =>
       h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
+  -- 🎉 no goals
 #align is_idempotent_elem.iff_eq_zero_or_one IsIdempotentElem.iff_eq_zero_or_one
 
 /-! ### Instances on `Subtype IsIdempotentElem` -/

@@ -42,19 +42,25 @@ theorem tan_add' {x y : ℝ}
 
 theorem tan_two_mul {x : ℝ} : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   have := @Complex.tan_two_mul x
+  -- ⊢ tan (2 * x) = ↑2 * tan x / (↑1 - tan x ^ 2)
   norm_cast at *
+  -- 🎉 no goals
 #align real.tan_two_mul Real.tan_two_mul
 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π / 2 := by
   rw [← Complex.ofReal_ne_zero, Complex.ofReal_tan, Complex.tan_ne_zero_iff]; norm_cast
+  -- ⊢ (∀ (k : ℤ), ↑θ ≠ ↑k * ↑π / 2) ↔ ∀ (k : ℤ), θ ≠ ↑k * π / 2
+                                                                              -- 🎉 no goals
 #align real.tan_ne_zero_iff Real.tan_ne_zero_iff
 
 theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
   rw [← not_iff_not, not_exists, ← Ne, tan_ne_zero_iff]
+  -- 🎉 no goals
 #align real.tan_eq_zero_iff Real.tan_eq_zero_iff
 
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
+                          -- 🎉 no goals
 #align real.tan_int_mul_pi_div_two Real.tan_int_mul_pi_div_two
 
 theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
@@ -62,6 +68,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
     have h_eq : (fun x => sin x / cos x) = tan := by ext1 x; rw [tan_eq_sin_div_cos]
     rwa [h_eq] at this
   exact continuousOn_sin.div continuousOn_cos fun x => id
+  -- 🎉 no goals
 #align real.continuous_on_tan Real.continuousOn_tan
 
 @[continuity]
@@ -71,29 +78,50 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine' ContinuousOn.mono continuousOn_tan fun x => _
+  -- ⊢ x ∈ Ioo (-(π / 2)) (π / 2) → x ∈ {x | cos x ≠ 0}
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne.def]
+  -- ⊢ -(π / 2) < x → x < π / 2 → ¬cos x = 0
   rw [cos_eq_zero_iff]
+  -- ⊢ -(π / 2) < x → x < π / 2 → ¬∃ k, x = (2 * ↑k + 1) * π / 2
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
+  -- ⊢ False
   cases' le_or_lt 0 r with h h
+  -- ⊢ False
   · rw [lt_iff_not_ge] at hx_lt
+    -- ⊢ False
     refine' hx_lt _
+    -- ⊢ x ≥ π / 2
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]
+    -- ⊢ 1 ≤ 2 * ↑r + 1
     simp [h]
+    -- 🎉 no goals
   · rw [lt_iff_not_ge] at hx_gt
+    -- ⊢ False
     refine' hx_gt _
+    -- ⊢ -(π / 2) ≥ x
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, neg_mul_eq_neg_mul,
       mul_le_mul_right (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
+    -- ⊢ 2 * ↑r + 1 ≤ -1
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff]
+    -- ⊢ ↑r ≤ (-1 - 1) / 2
     · norm_num; rw [← Int.cast_one, ← Int.cast_neg]; norm_cast
+      -- ⊢ ↑r ≤ -1
+                -- ⊢ ↑r ≤ ↑(-1)
+                                                     -- 🎉 no goals
     · exact zero_lt_two
+      -- 🎉 no goals
 #align real.continuous_on_tan_Ioo Real.continuousOn_tan_Ioo
 
 theorem surjOn_tan : SurjOn tan (Ioo (-(π / 2)) (π / 2)) univ :=
   have := neg_lt_self pi_div_two_pos
   continuousOn_tan_Ioo.surjOn_of_tendsto (nonempty_Ioo.2 this)
     (by rw [tendsto_comp_coe_Ioo_atBot this]; exact tendsto_tan_neg_pi_div_two)
+        -- ⊢ Tendsto tan (𝓝[Ioi (-(π / 2))] (-(π / 2))) atBot
+                                              -- 🎉 no goals
     (by rw [tendsto_comp_coe_Ioo_atTop this]; exact tendsto_tan_pi_div_two)
+        -- ⊢ Tendsto tan (𝓝[Iio (π / 2)] (π / 2)) atTop
+                                              -- 🎉 no goals
 #align real.surj_on_tan Real.surjOn_tan
 
 theorem tan_surjective : Function.Surjective tan := fun _ => surjOn_tan.subset_range trivial
@@ -140,14 +168,17 @@ theorem cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
 
 theorem cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
   rw_mod_cast [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+  -- 🎉 no goals
 #align real.cos_sq_arctan Real.cos_sq_arctan
 
 theorem sin_arctan (x : ℝ) : sin (arctan x) = x / sqrt (1 + x ^ 2) := by
   rw_mod_cast [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  -- 🎉 no goals
 #align real.sin_arctan Real.sin_arctan
 
 theorem cos_arctan (x : ℝ) : cos (arctan x) = 1 / sqrt (1 + x ^ 2) := by
   rw_mod_cast [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  -- 🎉 no goals
 #align real.cos_arctan Real.cos_arctan
 
 theorem arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
@@ -166,40 +197,63 @@ theorem arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
     arcsin x = arctan (x / sqrt (1 - x ^ 2)) := by
   rw_mod_cast [arctan_eq_arcsin, div_pow, sq_sqrt, one_add_div, div_div, ← sqrt_mul,
     mul_div_cancel', sub_add_cancel, sqrt_one, div_one] <;> simp at h <;> nlinarith [h.1, h.2]
+                                                            -- ⊢ 1 - x ^ 2 ≠ 0
+                                                            -- ⊢ 0 ≤ 1 - x ^ 2
+                                                            -- ⊢ 1 - x ^ 2 ≠ 0
+                                                            -- ⊢ 0 ≤ 1 - x ^ 2
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align real.arcsin_eq_arctan Real.arcsin_eq_arctan
 
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
+                                         -- 🎉 no goals
 #align real.arctan_zero Real.arctan_zero
 
 theorem arctan_eq_of_tan_eq {x y : ℝ} (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
   injOn_tan (arctan_mem_Ioo _) hx (by rw [tan_arctan, h])
+                                      -- 🎉 no goals
 #align real.arctan_eq_of_tan_eq Real.arctan_eq_of_tan_eq
 
 @[simp]
 theorem arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
+                                            -- ⊢ -(π / 2) < π / 4
+                                                            -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align real.arctan_one Real.arctan_one
 
 @[simp]
 theorem arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arcsin, neg_div]
+                                                           -- 🎉 no goals
 #align real.arctan_neg Real.arctan_neg
 
 theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + x ^ 2))⁻¹ := by
   rw [arctan_eq_arcsin, arccos_eq_arcsin]; swap; · exact inv_nonneg.2 (sqrt_nonneg _)
+  -- ⊢ arcsin (x / sqrt (↑1 + x ^ 2)) = arcsin (sqrt (1 - (sqrt (↑1 + x ^ 2))⁻¹ ^ 2))
+                                           -- ⊢ 0 ≤ (sqrt (↑1 + x ^ 2))⁻¹
+                                                   -- 🎉 no goals
   congr 1
+  -- ⊢ x / sqrt (↑1 + x ^ 2) = sqrt (1 - (sqrt (↑1 + x ^ 2))⁻¹ ^ 2)
   rw_mod_cast [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel', sqrt_div, sqrt_sq h]
   all_goals positivity
+  -- 🎉 no goals
 #align real.arctan_eq_arccos Real.arctan_eq_arccos
 
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (sqrt (1 - x ^ 2) / x) := by
   rw [arccos, eq_comm]
+  -- ⊢ arctan (sqrt (↑1 - x ^ 2) / x) = π / 2 - arcsin x
   refine' arctan_eq_of_tan_eq _ ⟨_, _⟩
   · rw_mod_cast [tan_pi_div_two_sub, tan_arcsin, inv_div]
+    -- 🎉 no goals
   · linarith only [arcsin_le_pi_div_two x, pi_pos]
+    -- 🎉 no goals
   · linarith only [arcsin_pos.2 h]
+    -- 🎉 no goals
 #align real.arccos_eq_arctan Real.arccos_eq_arctan
 
 @[continuity]

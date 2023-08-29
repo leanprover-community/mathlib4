@@ -43,9 +43,13 @@ variable [OrderedSMul R A]
 
 theorem algebraMap_monotone : Monotone (algebraMap R A) := fun a b h => by
   rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, ← sub_nonneg, ← sub_smul]
+  -- ⊢ 0 ≤ (b - a) • 1
   trans (b - a) • (0 : A)
+  -- ⊢ 0 ≤ (b - a) • 0
   · simp
+    -- 🎉 no goals
   · exact smul_le_smul_of_nonneg zero_le_one (sub_nonneg.mpr h)
+    -- 🎉 no goals
 #align algebra_map_monotone algebraMap_monotone
 
 end OrderedAlgebra

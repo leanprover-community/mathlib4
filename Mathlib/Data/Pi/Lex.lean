@@ -68,22 +68,30 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : Pi.Lex r (@fun i => (· < ·)) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
+  -- ⊢ ∃ i, (∀ (j : ι), r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i
   exact lex_lt_of_lt_of_preorder hwf hlt
+  -- 🎉 no goals
 #align pi.lex_lt_of_lt Pi.lex_lt_of_lt
 
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
       cases' eq_or_ne a b with hab hab
+      -- ⊢ Pi.Lex r s a b ∨ a = b ∨ Pi.Lex r s b a
       · exact Or.inr (Or.inl hab)
+        -- 🎉 no goals
       · rw [Function.ne_iff] at hab
+        -- ⊢ Pi.Lex r s a b ∨ a = b ∨ Pi.Lex r s b a
         let i := wf.min _ hab
+        -- ⊢ Pi.Lex r s a b ∨ a = b ∨ Pi.Lex r s b a
         have hri : ∀ j, r j i → a j = b j := by
           intro j
           rw [← not_imp_not]
           exact fun h' => wf.not_lt_min _ _ h'
         have hne : a i ≠ b i := wf.min_mem _ hab
+        -- ⊢ Pi.Lex r s a b ∨ a = b ∨ Pi.Lex r s b a
         cases' trichotomous_of s (a i) (b i) with hi hi
+        -- ⊢ Pi.Lex r s a b ∨ a = b ∨ Pi.Lex r s b a
         exacts [Or.inl ⟨i, hri, hi⟩,
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 #align pi.is_trichotomous_lex Pi.isTrichotomous_lex
@@ -96,6 +104,7 @@ instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
   irrefl := fun a ⟨k, _, hk₂⟩ => lt_irrefl (a k) hk₂
   trans := by
     rintro a b c ⟨N₁, lt_N₁, a_lt_b⟩ ⟨N₂, lt_N₂, b_lt_c⟩
+    -- ⊢ a < c
     rcases lt_trichotomy N₁ N₂ with (H | rfl | H)
     exacts [⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ <| hj.trans H), lt_N₂ _ H ▸ a_lt_b⟩,
       ⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ hj), a_lt_b.trans b_lt_c⟩,
@@ -124,7 +133,9 @@ theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
       (Function.ne_iff.1 hne)
     ⟨i, fun j hj => by
       contrapose! hl
+      -- ⊢ ∃ x, x ∈ {i | a i ≠ b i} ∧ x < i
       exact ⟨j, hl, hj⟩, (h i).lt_of_ne hi⟩
+      -- 🎉 no goals
 #align pi.to_lex_monotone Pi.toLex_monotone
 
 theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
@@ -132,41 +143,53 @@ theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
     (Function.ne_iff.1 h.ne)
   ⟨i, fun j hj => by
     contrapose! hl
+    -- ⊢ ∃ x, x ∈ {i | a i ≠ b i} ∧ x < i
     exact ⟨j, hl, hj⟩, (h.le i).lt_of_ne hi⟩
+    -- 🎉 no goals
 #align pi.to_lex_strict_mono Pi.toLex_strictMono
 
 @[simp]
 theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a := by
   refine' ⟨_, fun h => toLex_strictMono <| lt_update_self_iff.2 h⟩
+  -- ⊢ ↑toLex x < ↑toLex (update x i a) → x i < a
   rintro ⟨j, hj, h⟩
+  -- ⊢ x i < a
   dsimp at h
+  -- ⊢ x i < a
   obtain rfl : j = i := by
     by_contra H
     rw [update_noteq H] at h
     exact h.false
   rwa [update_same] at h
+  -- 🎉 no goals
 #align pi.lt_to_lex_update_self_iff Pi.lt_toLex_update_self_iff
 
 @[simp]
 theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i := by
   refine' ⟨_, fun h => toLex_strictMono <| update_lt_self_iff.2 h⟩
+  -- ⊢ ↑toLex (update x i a) < ↑toLex x → a < x i
   rintro ⟨j, hj, h⟩
+  -- ⊢ a < x i
   dsimp at h
+  -- ⊢ a < x i
   obtain rfl : j = i := by
     by_contra H
     rw [update_noteq H] at h
     exact h.false
   rwa [update_same] at h
+  -- 🎉 no goals
 #align pi.to_lex_update_lt_self_iff Pi.toLex_update_lt_self_iff
 
 @[simp]
 theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
   simp_rw [le_iff_lt_or_eq, lt_toLex_update_self_iff, toLex_inj, eq_update_self_iff]
+  -- 🎉 no goals
 #align pi.le_to_lex_update_self_iff Pi.le_toLex_update_self_iff
 
 @[simp]
 theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x i := by
   simp_rw [le_iff_lt_or_eq, toLex_update_lt_self_iff, toLex_inj, update_eq_self_iff]
+  -- 🎉 no goals
 #align pi.to_lex_update_le_self_iff Pi.toLex_update_le_self_iff
 
 end PartialOrder
@@ -189,7 +212,9 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     DenselyOrdered (Lex (∀ i, β i)) :=
   ⟨by
     rintro _ a₂ ⟨i, h, hi⟩
+    -- ⊢ ∃ a, a₁✝ < a ∧ a < a₂
     obtain ⟨a, ha₁, ha₂⟩ := exists_between hi
+    -- ⊢ ∃ a, a₁✝ < a ∧ a < a₂
     classical
       refine' ⟨Function.update a₂ _ a, ⟨i, fun j hj => _, _⟩, i, fun j hj => _, _⟩
       rw [h j hj]
@@ -203,6 +228,7 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
     NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a => by
     let ⟨b, hb⟩ := exists_gt (a i)
+    -- ⊢ ∃ b, a < b
     classical
     exact ⟨Function.update a i b, i, fun j hj =>
       (Function.update_noteq hj.ne b a).symm, by rwa [Function.update_same i b]⟩⟩
@@ -263,6 +289,7 @@ theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → �
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
   ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
+    -- 🎉 no goals
 #align pi.lex_desc Pi.lex_descₓ
 
 end Pi

@@ -78,8 +78,11 @@ instance : CocompactMapClass (CocompactMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
+    -- ⊢ { toContinuousMap := ContinuousMap.mk toFun✝, cocompact_tendsto' := cocompac …
     obtain ⟨⟨_, _⟩, _⟩ := g
+    -- ⊢ { toContinuousMap := ContinuousMap.mk toFun✝¹, cocompact_tendsto' := cocompa …
     congr
+    -- 🎉 no goals
   map_continuous f := f.continuous_toFun
   cocompact_tendsto f := f.cocompact_tendsto'
 
@@ -105,10 +108,14 @@ protected def copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : Coco
   toFun := f'
   continuous_toFun := by
     rw [h]
+    -- ⊢ Continuous ↑f
     exact f.continuous_toFun
+    -- 🎉 no goals
   cocompact_tendsto' := by
     simp_rw [h]
+    -- ⊢ Tendsto (↑f) (cocompact α) (cocompact β)
     exact f.cocompact_tendsto'
+    -- 🎉 no goals
 #align cocompact_map.copy CocompactMap.copy
 
 @[simp]
@@ -181,6 +188,7 @@ theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → I
   match mem_cocompact.mp hs with
   | ⟨t, ht, hts⟩ =>
     mem_map.mpr (mem_cocompact.mpr ⟨f ⁻¹' t, h t ht, by simpa using preimage_mono hts⟩)
+                                                        -- 🎉 no goals
 #align cocompact_map.tendsto_of_forall_preimage CocompactMap.tendsto_of_forall_preimage
 
 /-- If the codomain is Hausdorff, preimages of compact sets are compact under a cocompact
@@ -210,6 +218,9 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
     refine' CocompactMap.tendsto_of_forall_preimage fun K hK => _
+    -- ⊢ IsCompact ((ContinuousMap.mk ↑f).toFun ⁻¹' K)
     erw [K.preimage_equiv_eq_image_symm]
+    -- ⊢ IsCompact (↑f.symm '' K)
     exact hK.image f.symm.continuous
+    -- 🎉 no goals
 #align homeomorph.to_cocompact_map Homeomorph.toCocompactMap

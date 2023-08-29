@@ -20,5 +20,7 @@ universe w v
 
 instance (priority := 100) small_of_fintype (α : Type v) [Fintype α] : Small.{w} α := by
   rw [small_congr (Fintype.equivFin α)]
+  -- ⊢ Small.{w, 0} (Fin (Fintype.card α))
   infer_instance
+  -- 🎉 no goals
 #align small_of_fintype small_of_fintype

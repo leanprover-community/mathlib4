@@ -37,9 +37,13 @@ then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type*} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
+  -- ⊢ (gcd s fun b => f b / gcd s f) = 1
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
+  -- ⊢ f a / gcd s f = g a
   rw [he a ha, Nat.mul_div_cancel_left]
+  -- ⊢ 0 < gcd s f
   exact Nat.pos_of_ne_zero (mt Finset.gcd_eq_zero_iff.1 fun h => hfz <| h x hx)
+  -- 🎉 no goals
 #align finset.nat.gcd_div_eq_one Finset.Nat.gcd_div_eq_one
 
 theorem gcd_div_id_eq_one {s : Finset ℕ} {x : ℕ} (hx : x ∈ s) (hnz : x ≠ 0) :
@@ -56,9 +60,13 @@ then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type*} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
+  -- ⊢ (gcd s fun b => f b / gcd s f) = 1
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
+  -- ⊢ f a / gcd s f = g a
   rw [he a ha, Int.mul_ediv_cancel_left]
+  -- ⊢ gcd s f ≠ 0
   exact mt Finset.gcd_eq_zero_iff.1 fun h => hfz <| h x hx
+  -- 🎉 no goals
 #align finset.int.gcd_div_eq_one Finset.Int.gcd_div_eq_one
 
 theorem gcd_div_id_eq_one {s : Finset ℤ} {x : ℤ} (hx : x ∈ s) (hnz : x ≠ 0) :
@@ -81,9 +89,13 @@ then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type*} {f : β → Polynomial K} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
+  -- ⊢ (gcd s fun b => f b / gcd s f) = 1
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
+  -- ⊢ f a / gcd s f = g a
   rw [he a ha, EuclideanDomain.mul_div_cancel_left]
+  -- ⊢ gcd s f ≠ 0
   exact mt Finset.gcd_eq_zero_iff.1 fun h => hfz <| h x hx
+  -- 🎉 no goals
 #align finset.polynomial.gcd_div_eq_one Finset.Polynomial.gcd_div_eq_one
 
 theorem gcd_div_id_eq_one {s : Finset (Polynomial K)} {x : Polynomial K}

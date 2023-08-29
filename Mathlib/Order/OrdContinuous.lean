@@ -54,6 +54,7 @@ variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α 
 
 protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
   simpa only [image_id] using h
+  -- 🎉 no goals
 #align left_ord_continuous.id LeftOrdContinuous.id
 
 variable {α}
@@ -70,11 +71,13 @@ theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsG
 
 theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
   have : IsGreatest {a₁, a₂} a₂ := ⟨Or.inr rfl, by simp [*]⟩
+                                                   -- 🎉 no goals
   (hf.map_isGreatest this).2 <| mem_image_of_mem _ (Or.inl rfl)
 #align left_ord_continuous.mono LeftOrdContinuous.mono
 
 theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) :=
   fun s x h => by simpa only [image_image] using hg (hf h)
+                  -- 🎉 no goals
 #align left_ord_continuous.comp LeftOrdContinuous.comp
 
 -- PORTING NOTE: how to do this in non-tactic mode?
@@ -93,14 +96,17 @@ variable [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
 
 theorem map_sup (hf : LeftOrdContinuous f) (x y : α) : f (x ⊔ y) = f x ⊔ f y :=
   (hf isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
+                               -- 🎉 no goals
 #align left_ord_continuous.map_sup LeftOrdContinuous.map_sup
 
 theorem le_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y := by
   simp only [← sup_eq_right, ← hf.map_sup, h.eq_iff]
+  -- 🎉 no goals
 #align left_ord_continuous.le_iff LeftOrdContinuous.le_iff
 
 theorem lt_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y := by
   simp only [lt_iff_le_not_le, hf.le_iff h]
+  -- 🎉 no goals
 #align left_ord_continuous.lt_iff LeftOrdContinuous.lt_iff
 
 variable (f)
@@ -130,11 +136,14 @@ theorem map_sSup' (hf : LeftOrdContinuous f) (s : Set α) : f (sSup s) = sSup (f
 
 theorem map_sSup (hf : LeftOrdContinuous f) (s : Set α) : f (sSup s) = ⨆ x ∈ s, f x := by
   rw [hf.map_sSup', sSup_image]
+  -- 🎉 no goals
 #align left_ord_continuous.map_Sup LeftOrdContinuous.map_sSup
 
 theorem map_iSup (hf : LeftOrdContinuous f) (g : ι → α) : f (⨆ i, g i) = ⨆ i, f (g i) := by
   simp only [iSup, hf.map_sSup', ← range_comp]
+  -- ⊢ sSup (range (f ∘ fun i => g i)) = sSup (range fun i => f (g i))
   rfl
+  -- 🎉 no goals
 #align left_ord_continuous.map_supr LeftOrdContinuous.map_iSup
 
 end CompleteLattice
@@ -151,7 +160,9 @@ theorem map_csSup (hf : LeftOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sb
 theorem map_ciSup (hf : LeftOrdContinuous f) {g : ι → α} (hg : BddAbove (range g)) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   simp only [iSup, hf.map_csSup (range_nonempty _) hg, ← range_comp]
+  -- ⊢ sSup (range (f ∘ g)) = sSup (range fun i => f (g i))
   rfl
+  -- 🎉 no goals
 #align left_ord_continuous.map_csupr LeftOrdContinuous.map_ciSup
 
 end ConditionallyCompleteLattice
@@ -166,6 +177,7 @@ variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α 
 
 protected theorem id : RightOrdContinuous (id : α → α) := fun s x h => by
   simpa only [image_id] using h
+  -- 🎉 no goals
 #align right_ord_continuous.id RightOrdContinuous.id
 
 variable {α}

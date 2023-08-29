@@ -37,17 +37,24 @@ hyperplane. -/
 theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (hy : y ≠ c) :
     inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c := by
   rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
+  -- ⊢ R ^ 2 / dist x c = R ^ 2 / (dist x c * dist y c) * dist x y ↔ dist x y = dis …
   have hx' := dist_ne_zero.2 hx
+  -- ⊢ R ^ 2 / dist x c = R ^ 2 / (dist x c * dist y c) * dist x y ↔ dist x y = dis …
   have hy' := dist_ne_zero.2 hy
+  -- ⊢ R ^ 2 / dist x c = R ^ 2 / (dist x c * dist y c) * dist x y ↔ dist x y = dis …
   field_simp [mul_assoc, mul_comm, hx, hx.symm, eq_comm]
+  -- 🎉 no goals
 
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
 hyperplane. -/
 theorem inversion_mem_perpBisector_inversion_iff' (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c ∧ x ≠ c := by
   rcases eq_or_ne x c with rfl | hx
+  -- ⊢ inversion x R x ∈ perpBisector x (inversion x R y) ↔ dist x y = dist y x ∧ x …
   · simp [*]
+    -- 🎉 no goals
   · simp [inversion_mem_perpBisector_inversion_iff hR hx hy, hx]
+    -- 🎉 no goals
 
 theorem preimage_inversion_perpBisector_inversion (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' perpBisector c (inversion c R y) = sphere y (dist y c) \ {c} :=
@@ -57,6 +64,8 @@ theorem preimage_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
   rw [← dist_inversion_center, ← preimage_inversion_perpBisector_inversion hR,
     inversion_inversion] <;> simp [*]
+                             -- 🎉 no goals
+                             -- 🎉 no goals
 
 theorem image_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R '' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
@@ -67,8 +76,14 @@ theorem preimage_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' sphere y (dist y c) =
       insert c (perpBisector c (inversion c R y) : Set P) := by
   ext x
+  -- ⊢ x ∈ inversion c R ⁻¹' sphere y (dist y c) ↔ x ∈ insert c ↑(perpBisector c (i …
   rcases eq_or_ne x c with rfl | hx; · simp [dist_comm]
+  -- ⊢ x ∈ inversion x R ⁻¹' sphere y (dist y x) ↔ x ∈ insert x ↑(perpBisector x (i …
+                                       -- 🎉 no goals
   rw [mem_preimage, mem_sphere, ← inversion_mem_perpBisector_inversion_iff hR] <;> simp [*]
+                                                                                   -- 🎉 no goals
+                                                                                   -- 🎉 no goals
+                                                                                   -- 🎉 no goals
 
 theorem image_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R '' sphere y (dist y c) = insert c (perpBisector c (inversion c R y) : Set P) := by

@@ -336,6 +336,7 @@ variable [Preorder α]
 /-- Assumes left covariance. -/
 theorem Left.mul_pos [PosMulStrictMono α] (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
   simpa only [mul_zero] using mul_lt_mul_of_pos_left hb ha
+  -- 🎉 no goals
 #align left.mul_pos Left.mul_pos
 
 alias mul_pos := Left.mul_pos
@@ -343,34 +344,42 @@ alias mul_pos := Left.mul_pos
 
 theorem mul_neg_of_pos_of_neg [PosMulStrictMono α] (ha : 0 < a) (hb : b < 0) : a * b < 0 := by
   simpa only [mul_zero] using mul_lt_mul_of_pos_left hb ha
+  -- 🎉 no goals
 #align mul_neg_of_pos_of_neg mul_neg_of_pos_of_neg
 
 @[simp]
 theorem zero_lt_mul_left [PosMulStrictMono α] [PosMulReflectLT α] (h : 0 < c) :
     0 < c * b ↔ 0 < b := by
   rw [←mul_zero c, mul_lt_mul_left h]
+  -- ⊢ 0 < b ↔ c * 0 < b
   simp
+  -- 🎉 no goals
 #align zero_lt_mul_left zero_lt_mul_left
 
 /-- Assumes right covariance. -/
 theorem Right.mul_pos [MulPosStrictMono α] (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
   simpa only [zero_mul] using mul_lt_mul_of_pos_right ha hb
+  -- 🎉 no goals
 #align right.mul_pos Right.mul_pos
 
 theorem mul_neg_of_neg_of_pos [MulPosStrictMono α] (ha : a < 0) (hb : 0 < b) : a * b < 0 := by
   simpa only [zero_mul] using mul_lt_mul_of_pos_right ha hb
+  -- 🎉 no goals
 #align mul_neg_of_neg_of_pos mul_neg_of_neg_of_pos
 
 @[simp]
 theorem zero_lt_mul_right [MulPosStrictMono α] [MulPosReflectLT α] (h : 0 < c) :
     0 < b * c ↔ 0 < b := by
   rw [←zero_mul c, mul_lt_mul_right h]
+  -- ⊢ 0 < b ↔ 0 * c < b
   simp
+  -- 🎉 no goals
 #align zero_lt_mul_right zero_lt_mul_right
 
 /-- Assumes left covariance. -/
 theorem Left.mul_nonneg [PosMulMono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
   simpa only [mul_zero] using mul_le_mul_of_nonneg_left hb ha
+  -- 🎉 no goals
 #align left.mul_nonneg Left.mul_nonneg
 
 alias mul_nonneg := Left.mul_nonneg
@@ -378,15 +387,18 @@ alias mul_nonneg := Left.mul_nonneg
 
 theorem mul_nonpos_of_nonneg_of_nonpos [PosMulMono α] (ha : 0 ≤ a) (hb : b ≤ 0) : a * b ≤ 0 := by
   simpa only [mul_zero] using mul_le_mul_of_nonneg_left hb ha
+  -- 🎉 no goals
 #align mul_nonpos_of_nonneg_of_nonpos mul_nonpos_of_nonneg_of_nonpos
 
 /-- Assumes right covariance. -/
 theorem Right.mul_nonneg [MulPosMono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
   simpa only [zero_mul] using mul_le_mul_of_nonneg_right ha hb
+  -- 🎉 no goals
 #align right.mul_nonneg Right.mul_nonneg
 
 theorem mul_nonpos_of_nonpos_of_nonneg [MulPosMono α] (ha : a ≤ 0) (hb : 0 ≤ b) : a * b ≤ 0 := by
   simpa only [zero_mul] using mul_le_mul_of_nonneg_right ha hb
+  -- 🎉 no goals
 #align mul_nonpos_of_nonpos_of_nonneg mul_nonpos_of_nonpos_of_nonneg
 
 theorem pos_of_mul_pos_right [PosMulReflectLT α] (h : 0 < a * b) (ha : 0 ≤ a) : 0 < b :=
@@ -448,8 +460,11 @@ theorem posMulMono_iff_covariant_pos :
   ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
+      -- ⊢ ↑a * b ≤ ↑a * c
       · simp [←ha]
+        -- 🎉 no goals
       · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
+        -- 🎉 no goals
 #align pos_mul_mono_iff_covariant_pos posMulMono_iff_covariant_pos
 
 theorem mulPosMono_iff_covariant_pos :
@@ -457,8 +472,11 @@ theorem mulPosMono_iff_covariant_pos :
   ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
+      -- ⊢ b * ↑a ≤ c * ↑a
       · simp [←ha]
+        -- 🎉 no goals
       · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
+        -- 🎉 no goals
 #align mul_pos_mono_iff_covariant_pos mulPosMono_iff_covariant_pos
 
 theorem posMulReflectLT_iff_contravariant_pos :
@@ -466,8 +484,11 @@ theorem posMulReflectLT_iff_contravariant_pos :
   ⟨@PosMulReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
+      -- ⊢ b < c
       · simp [←ha] at h
+        -- 🎉 no goals
       · exact @ContravariantClass.elim α>0 α (fun x y => x * y) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
+        -- 🎉 no goals
 #align pos_mul_reflect_lt_iff_contravariant_pos posMulReflectLT_iff_contravariant_pos
 
 theorem mulPosReflectLT_iff_contravariant_pos :
@@ -475,8 +496,11 @@ theorem mulPosReflectLT_iff_contravariant_pos :
   ⟨@MulPosReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
+      -- ⊢ b < c
       · simp [←ha] at h
+        -- 🎉 no goals
       · exact @ContravariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
+        -- 🎉 no goals
 #align mul_pos_reflect_lt_iff_contravariant_pos mulPosReflectLT_iff_contravariant_pos
 
 -- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
@@ -502,7 +526,9 @@ instance (priority := 100) PosMulMonoRev.toPosMulReflectLT [PosMulMonoRev α] :
     ⟨fun a b c h =>
       (le_of_mul_le_mul_of_pos_left h.le a.2).lt_of_ne <| by
         rintro rfl
+        -- ⊢ False
         simp at h⟩
+        -- 🎉 no goals
 #align pos_mul_mono_rev.to_pos_mul_reflect_lt PosMulMonoRev.toPosMulReflectLT
 
 -- see Note [lower instance priority]
@@ -512,7 +538,9 @@ instance (priority := 100) MulPosMonoRev.toMulPosReflectLT [MulPosMonoRev α] :
     ⟨fun a b c h =>
       (le_of_mul_le_mul_of_pos_right h.le a.2).lt_of_ne <| by
         rintro rfl
+        -- ⊢ False
         simp at h⟩
+        -- 🎉 no goals
 #align mul_pos_mono_rev.to_mul_pos_reflect_lt MulPosMonoRev.toMulPosReflectLT
 
 theorem mul_left_cancel_iff_of_pos [PosMulMonoRev α] (a0 : 0 < a) : a * b = a * c ↔ b = c :=
@@ -529,22 +557,34 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono 
     [MulPosMonoRev α] (hac : a ≤ b) (hbd : c ≤ d) (a0 : 0 < a) (d0 : 0 < d) :
     a * c = b * d ↔ a = b ∧ c = d := by
   refine' ⟨fun h => _, fun h => congr_arg₂ (· * ·) h.1 h.2⟩
+  -- ⊢ a = b ∧ c = d
   rcases hac.eq_or_lt with (rfl | hac)
+  -- ⊢ a = a ∧ c = d
   · exact ⟨rfl, (mul_left_cancel_iff_of_pos a0).mp h⟩
+    -- 🎉 no goals
   rcases eq_or_lt_of_le hbd with (rfl | hbd)
+  -- ⊢ a = b ∧ c = c
   · exact ⟨(mul_right_cancel_iff_of_pos d0).mp h, rfl⟩
+    -- 🎉 no goals
   exact ((mul_lt_mul_of_pos_of_pos hac hbd a0 d0).ne h).elim
+  -- 🎉 no goals
 #align mul_eq_mul_iff_eq_and_eq_of_pos mul_eq_mul_iff_eq_and_eq_of_pos
 
 theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono α] [PosMulMonoRev α]
     [MulPosMonoRev α] (hac : a ≤ b) (hbd : c ≤ d) (b0 : 0 < b) (c0 : 0 < c) :
     a * c = b * d ↔ a = b ∧ c = d := by
   refine' ⟨fun h => _, fun h => congr_arg₂ (· * ·) h.1 h.2⟩
+  -- ⊢ a = b ∧ c = d
   rcases hac.eq_or_lt with (rfl | hac)
+  -- ⊢ a = a ∧ c = d
   · exact ⟨rfl, (mul_left_cancel_iff_of_pos b0).mp h⟩
+    -- 🎉 no goals
   rcases eq_or_lt_of_le hbd with (rfl | hbd)
+  -- ⊢ a = b ∧ c = c
   · exact ⟨(mul_right_cancel_iff_of_pos c0).mp h, rfl⟩
+    -- 🎉 no goals
   exact ((mul_lt_mul_of_lt_of_lt' hac hbd b0 c0).ne h).elim
+  -- 🎉 no goals
 #align mul_eq_mul_iff_eq_and_eq_of_pos' mul_eq_mul_iff_eq_and_eq_of_pos'
 
 end PartialOrder
@@ -557,11 +597,17 @@ theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (h
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   rcases lt_trichotomy a 0 with (ha | rfl | ha)
   · refine' Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => _) hab⟩
+    -- ⊢ a * b ≤ 0
     exact mul_nonpos_of_nonpos_of_nonneg ha.le hb
+    -- 🎉 no goals
   · rw [zero_mul] at hab
+    -- ⊢ 0 < 0 ∧ 0 < b ∨ 0 < 0 ∧ b < 0
     exact hab.false.elim
+    -- 🎉 no goals
   · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => _) hab⟩
+    -- ⊢ a * b ≤ 0
     exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
+    -- 🎉 no goals
 #align pos_and_pos_or_neg_and_neg_of_mul_pos pos_and_pos_or_neg_and_neg_of_mul_pos
 
 
@@ -612,23 +658,27 @@ which assume left covariance. -/
 @[simp]
 theorem le_mul_iff_one_le_right [PosMulMono α] [PosMulMonoRev α] (a0 : 0 < a) : a ≤ a * b ↔ 1 ≤ b :=
   Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
+                -- 🎉 no goals
 #align le_mul_iff_one_le_right le_mul_iff_one_le_right
 
 @[simp]
 theorem lt_mul_iff_one_lt_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
     a < a * b ↔ 1 < b :=
   Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
+                -- 🎉 no goals
 #align lt_mul_iff_one_lt_right lt_mul_iff_one_lt_right
 
 @[simp]
 theorem mul_le_iff_le_one_right [PosMulMono α] [PosMulMonoRev α] (a0 : 0 < a) : a * b ≤ a ↔ b ≤ 1 :=
   Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
+                -- 🎉 no goals
 #align mul_le_iff_le_one_right mul_le_iff_le_one_right
 
 @[simp]
 theorem mul_lt_iff_lt_one_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
     a * b < a ↔ b < 1 :=
   Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
+                -- 🎉 no goals
 #align mul_lt_iff_lt_one_right mul_lt_iff_lt_one_right
 
 /-! Lemmas of the form `a ≤ b * a ↔ 1 ≤ b` and `a * b ≤ b ↔ a ≤ 1`,
@@ -638,23 +688,27 @@ which assume right covariance. -/
 @[simp]
 theorem le_mul_iff_one_le_left [MulPosMono α] [MulPosMonoRev α] (a0 : 0 < a) : a ≤ b * a ↔ 1 ≤ b :=
   Iff.trans (by rw [one_mul]) (mul_le_mul_right a0)
+                -- 🎉 no goals
 #align le_mul_iff_one_le_left le_mul_iff_one_le_left
 
 @[simp]
 theorem lt_mul_iff_one_lt_left [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a) :
     a < b * a ↔ 1 < b :=
   Iff.trans (by rw [one_mul]) (mul_lt_mul_right a0)
+                -- 🎉 no goals
 #align lt_mul_iff_one_lt_left lt_mul_iff_one_lt_left
 
 @[simp]
 theorem mul_le_iff_le_one_left [MulPosMono α] [MulPosMonoRev α] (b0 : 0 < b) : a * b ≤ b ↔ a ≤ 1 :=
   Iff.trans (by rw [one_mul]) (mul_le_mul_right b0)
+                -- 🎉 no goals
 #align mul_le_iff_le_one_left mul_le_iff_le_one_left
 
 @[simp]
 theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 0 < b) :
     a * b < b ↔ a < 1 :=
   Iff.trans (by rw [one_mul]) (mul_lt_mul_right b0)
+                -- 🎉 no goals
 #align mul_lt_iff_lt_one_left mul_lt_iff_lt_one_left
 
 /-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
@@ -665,34 +719,42 @@ Variants with `< 0` and `≤ 0` instead of `0 <` and `0 ≤` appear in `Mathlib/
 
 theorem mul_le_of_le_one_left [MulPosMono α] (hb : 0 ≤ b) (h : a ≤ 1) : a * b ≤ b := by
   simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
+  -- 🎉 no goals
 #align mul_le_of_le_one_left mul_le_of_le_one_left
 
 theorem le_mul_of_one_le_left [MulPosMono α] (hb : 0 ≤ b) (h : 1 ≤ a) : b ≤ a * b := by
   simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
+  -- 🎉 no goals
 #align le_mul_of_one_le_left le_mul_of_one_le_left
 
 theorem mul_le_of_le_one_right [PosMulMono α] (ha : 0 ≤ a) (h : b ≤ 1) : a * b ≤ a := by
   simpa only [mul_one] using mul_le_mul_of_nonneg_left h ha
+  -- 🎉 no goals
 #align mul_le_of_le_one_right mul_le_of_le_one_right
 
 theorem le_mul_of_one_le_right [PosMulMono α] (ha : 0 ≤ a) (h : 1 ≤ b) : a ≤ a * b := by
   simpa only [mul_one] using mul_le_mul_of_nonneg_left h ha
+  -- 🎉 no goals
 #align le_mul_of_one_le_right le_mul_of_one_le_right
 
 theorem mul_lt_of_lt_one_left [MulPosStrictMono α] (hb : 0 < b) (h : a < 1) : a * b < b := by
   simpa only [one_mul] using mul_lt_mul_of_pos_right h hb
+  -- 🎉 no goals
 #align mul_lt_of_lt_one_left mul_lt_of_lt_one_left
 
 theorem lt_mul_of_one_lt_left [MulPosStrictMono α] (hb : 0 < b) (h : 1 < a) : b < a * b := by
   simpa only [one_mul] using mul_lt_mul_of_pos_right h hb
+  -- 🎉 no goals
 #align lt_mul_of_one_lt_left lt_mul_of_one_lt_left
 
 theorem mul_lt_of_lt_one_right [PosMulStrictMono α] (ha : 0 < a) (h : b < 1) : a * b < a := by
   simpa only [mul_one] using mul_lt_mul_of_pos_left h ha
+  -- 🎉 no goals
 #align mul_lt_of_lt_one_right mul_lt_of_lt_one_right
 
 theorem lt_mul_of_one_lt_right [PosMulStrictMono α] (ha : 0 < a) (h : 1 < b) : a < a * b := by
   simpa only [mul_one] using mul_lt_mul_of_pos_left h ha
+  -- 🎉 no goals
 #align lt_mul_of_one_lt_right lt_mul_of_one_lt_right
 
 /-! Lemmas of the form `b ≤ c → a ≤ 1 → b * a ≤ c`. -/
@@ -963,8 +1025,11 @@ variable [LinearOrder α]
 -- proven with `a0 : 0 ≤ a` as `exists_square_le`
 theorem exists_square_le' [PosMulStrictMono α] (a0 : 0 < a) : ∃ b : α, b * b ≤ a := by
   obtain ha | ha := lt_or_le a 1
+  -- ⊢ ∃ b, b * b ≤ a
   · exact ⟨a, (mul_lt_of_lt_one_right a0 ha).le⟩
+    -- 🎉 no goals
   · exact ⟨1, by rwa [mul_one]⟩
+    -- 🎉 no goals
 #align exists_square_le' exists_square_le'
 
 end LinearOrder
@@ -1026,18 +1091,22 @@ variable [CommSemigroup α] [Zero α] [Preorder α]
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
   simp only [PosMulStrictMono, MulPosStrictMono, mul_comm]
+  -- 🎉 no goals
 #align pos_mul_strict_mono_iff_mul_pos_strict_mono posMulStrictMono_iff_mulPosStrictMono
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
   simp only [PosMulReflectLT, MulPosReflectLT, mul_comm]
+  -- 🎉 no goals
 #align pos_mul_reflect_lt_iff_mul_pos_reflect_lt posMulReflectLT_iff_mulPosReflectLT
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
   simp only [PosMulMono, MulPosMono, mul_comm]
+  -- 🎉 no goals
 #align pos_mul_mono_iff_mul_pos_mono posMulMono_iff_mulPosMono
 
 theorem posMulMonoRev_iff_mulPosMonoRev : PosMulMonoRev α ↔ MulPosMonoRev α := by
   simp only [PosMulMonoRev, MulPosMonoRev, mul_comm]
+  -- 🎉 no goals
 #align pos_mul_mono_rev_iff_mul_pos_mono_rev posMulMonoRev_iff_mulPosMonoRev
 
 end CommSemigroupHasZero

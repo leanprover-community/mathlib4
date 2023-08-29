@@ -148,7 +148,9 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
+  -- ⊢ kernel.lift (cokernel.π f) f (_ : f ≫ cokernel.π f = 0) = cokernel.π (kernel …
   ext
+  -- ⊢ kernel.lift (cokernel.π f) f (_ : f ≫ cokernel.π f = 0) ≫ equalizer.ι (coker …
   simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
     cokernel.π_desc_assoc]
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_mono_factorisation_e' CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageMonoFactorisation_e'
@@ -162,20 +164,29 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
     { lift := fun F => inv (Abelian.coimageImageComparison f) ≫ cokernel.desc _ F.e F.kernel_ι_comp
       lift_fac := fun F => by
         rw [imageMonoFactorisation_m]
+        -- ⊢ (fun F => inv (coimageImageComparison f) ≫ cokernel.desc (kernel.ι f) F.e (_ …
         simp only [Category.assoc]
+        -- ⊢ inv (coimageImageComparison f) ≫ cokernel.desc (kernel.ι f) F.e (_ : kernel. …
         rw [IsIso.inv_comp_eq]
+        -- ⊢ cokernel.desc (kernel.ι f) F.e (_ : kernel.ι f ≫ F.e = 0) ≫ F.m = coimageIma …
         ext
+        -- ⊢ coequalizer.π (kernel.ι f) 0 ≫ cokernel.desc (kernel.ι f) F.e (_ : kernel.ι  …
         simp }
+        -- 🎉 no goals
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_factorisation CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageFactorisation
 
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
     [IsIso (Abelian.coimageImageComparison f)] : IsIso (imageMonoFactorisation f).e := by
   rw [imageMonoFactorisation_e']
+  -- ⊢ IsIso (cokernel.π (kernel.ι f) ≫ coimageImageComparison f)
   exact IsIso.comp_isIso
+  -- 🎉 no goals
 
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := by
   dsimp
+  -- ⊢ IsIso (kernel.ι (cokernel.π f))
   infer_instance
+  -- 🎉 no goals
 
 variable [∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f)]
 
@@ -196,22 +207,35 @@ def normalMonoCategory : NormalMonoCategory C where
     { Z := _
       g := cokernel.π f
       w := by simp
+              -- 🎉 no goals
       isLimit := by
         haveI : Limits.HasImages C := hasImages
+        -- ⊢ IsLimit (KernelFork.ofι f (_ : f ≫ cokernel.π f = 0))
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
+        -- ⊢ IsLimit (KernelFork.ofι f (_ : f ≫ cokernel.π f = 0))
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
+        -- ⊢ IsLimit (KernelFork.ofι f (_ : f ≫ cokernel.π f = 0))
         have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
           ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
             = Fork.ι s := ?_
         refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
+        -- ⊢ ∀ (s : KernelFork (cokernel.π f)) (m_1 : s.pt ⟶ (KernelFork.ofι f (_ : f ≫ c …
         · intro A g hg
+          -- ⊢ g = (fun A => limit.lift (parallelPair (cokernel.π f) 0) A ≫ inv (imageMonoF …
           rw [KernelFork.ι_ofι] at hg
+          -- ⊢ g = (fun A => limit.lift (parallelPair (cokernel.π f) 0) A ≫ inv (imageMonoF …
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
+          -- 🎉 no goals
         · intro A
+          -- ⊢ (limit.lift (parallelPair (cokernel.π f) 0) A ≫ inv (imageMonoFactorisation  …
           simp only [KernelFork.ι_ofι, Category.assoc]
+          -- ⊢ limit.lift (parallelPair (cokernel.π f) 0) A ≫ inv (imageMonoFactorisation f …
           convert limit.lift_π A WalkingParallelPair.zero using 2
+          -- ⊢ inv (imageMonoFactorisation f).e ≫ f = limit.π (parallelPair (cokernel.π f)  …
           rw [IsIso.inv_comp_eq, eq_comm]
+          -- ⊢ (imageMonoFactorisation f).e ≫ limit.π (parallelPair (cokernel.π f) 0) Walki …
           exact (imageMonoFactorisation f).fac }
+          -- 🎉 no goals
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.normal_mono_category CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.normalMonoCategory
 
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
@@ -224,21 +248,32 @@ def normalEpiCategory : NormalEpiCategory C where
       w := kernel.condition _
       isColimit := by
         haveI : Limits.HasImages C := hasImages
+        -- ⊢ IsColimit (CokernelCofork.ofπ f (_ : kernel.ι f ≫ f = 0))
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
+        -- ⊢ IsColimit (CokernelCofork.ofπ f (_ : kernel.ι f ≫ f = 0))
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
+        -- ⊢ IsColimit (CokernelCofork.ofπ f (_ : kernel.ι f ≫ f = 0))
         have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
           inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
           colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
         refine' isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
                 inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux _
         · intro A g hg
+          -- ⊢ g = (fun A => inv (imageMonoFactorisation f).m ≫ inv (coimageImageComparison …
           rw [CokernelCofork.π_ofπ] at hg
+          -- ⊢ g = (fun A => inv (imageMonoFactorisation f).m ≫ inv (coimageImageComparison …
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
+          -- 🎉 no goals
         · intro A
+          -- ⊢ Cofork.π (CokernelCofork.ofπ f (_ : kernel.ι f ≫ f = 0)) ≫ inv (imageMonoFac …
           simp only [CokernelCofork.π_ofπ, ← Category.assoc]
+          -- ⊢ ((f ≫ inv (imageMonoFactorisation f).m) ≫ inv (coimageImageComparison f)) ≫  …
           convert colimit.ι_desc A WalkingParallelPair.one using 2
+          -- ⊢ (f ≫ inv (imageMonoFactorisation f).m) ≫ inv (coimageImageComparison f) = co …
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
+          -- ⊢ (imageMonoFactorisation f).e ≫ (imageMonoFactorisation f).m = f
           exact (imageMonoFactorisation f).fac }
+          -- 🎉 no goals
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.normal_epi_category CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.normalEpiCategory
 
 end OfCoimageImageComparisonIsIso
@@ -306,14 +341,18 @@ variable {P Q : C} (f : P ⟶ Q)
 
 /-- The map `p : P ⟶ image f` is an epimorphism -/
 instance : Epi (Abelian.factorThruImage f) := by infer_instance
+                                                 -- 🎉 no goals
 
 instance isIso_factorThruImage [Mono f] : IsIso (Abelian.factorThruImage f) := by infer_instance
+                                                                                  -- 🎉 no goals
 #align category_theory.abelian.is_iso_factor_thru_image CategoryTheory.Abelian.isIso_factorThruImage
 
 /-- The canonical morphism `i : coimage f ⟶ Q` is a monomorphism -/
 instance : Mono (Abelian.factorThruCoimage f) := by infer_instance
+                                                    -- 🎉 no goals
 
 instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) := by infer_instance
+                                                                                     -- 🎉 no goals
 #align category_theory.abelian.is_iso_factor_thru_coimage CategoryTheory.Abelian.isIso_factorThruCoimage
 
 end
@@ -332,8 +371,11 @@ theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
 
 theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
   apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
+  -- ⊢ IsColimit (CokernelCofork.ofπ 0 (_ : f ≫ 0 = 0))
   simp_rw [← h]
+  -- ⊢ IsColimit (CokernelCofork.ofπ (cokernel.π f) (_ : f ≫ cokernel.π f = 0))
   exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
+  -- 🎉 no goals
 #align category_theory.abelian.epi_of_cokernel_π_eq_zero CategoryTheory.Abelian.epi_of_cokernel_π_eq_zero
 
 end
@@ -344,10 +386,12 @@ variable {f}
 
 theorem image_ι_comp_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : Abelian.image.ι f ≫ g = 0 :=
   zero_of_epi_comp (Abelian.factorThruImage f) <| by simp [h]
+                                                     -- 🎉 no goals
 #align category_theory.abelian.image_ι_comp_eq_zero CategoryTheory.Abelian.image_ι_comp_eq_zero
 
 theorem comp_coimage_π_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : f ≫ Abelian.coimage.π g = 0 :=
   zero_of_comp_mono (Abelian.factorThruCoimage g) <| by simp [h]
+                                                        -- 🎉 no goals
 #align category_theory.abelian.comp_coimage_π_eq_zero CategoryTheory.Abelian.comp_coimage_π_eq_zero
 
 end
@@ -358,6 +402,7 @@ def imageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   I := Abelian.image f
   m := image.ι f
   m_mono := by infer_instance
+               -- 🎉 no goals
   e := Abelian.factorThruImage f
   e_strong_epi := strongEpi_of_epi _
 #align category_theory.abelian.image_strong_epi_mono_factorisation CategoryTheory.Abelian.imageStrongEpiMonoFactorisation
@@ -368,6 +413,7 @@ def coimageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   I := Abelian.coimage f
   m := Abelian.factorThruCoimage f
   m_mono := by infer_instance
+               -- 🎉 no goals
   e := coimage.π f
   e_strong_epi := strongEpi_of_epi _
 #align category_theory.abelian.coimage_strong_epi_mono_factorisation CategoryTheory.Abelian.coimageStrongEpiMonoFactorisation
@@ -382,8 +428,10 @@ instance (priority := 100) : HasStrongEpiMonoFactorisations C :=
 
 -- In particular, this means that it has well-behaved images.
 example : HasImages C := by infer_instance
+                            -- 🎉 no goals
 
 example : HasImageMaps C := by infer_instance
+                               -- 🎉 no goals
 
 end HasStrongEpiMonoFactorisations
 
@@ -400,8 +448,11 @@ instance : IsIso (coimageImageComparison f) := by
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
   ext
+  -- ⊢ (coequalizer.π (kernel.ι f) 0 ≫ coimageImageComparison f) ≫ equalizer.ι (cok …
   change _ = _ ≫ (imageStrongEpiMonoFactorisation f).m
+  -- ⊢ (coequalizer.π (kernel.ι f) 0 ≫ coimageImageComparison f) ≫ equalizer.ι (cok …
   simp [-imageStrongEpiMonoFactorisation_m]
+  -- 🎉 no goals
 
 /-- There is a canonical isomorphism between the abelian coimage and the abelian image of a
     morphism. -/
@@ -418,7 +469,9 @@ abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
 theorem coimageIsoImage'_hom :
     (coimageIsoImage' f).hom =
       cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (Limits.image.ι f)]) := by
+                                              -- 🎉 no goals
   ext
+  -- ⊢ coequalizer.π (kernel.ι f) 0 ≫ (coimageIsoImage' f).hom = coequalizer.π (ker …
   simp only [← cancel_mono (Limits.image.ι f), IsImage.isoExt_hom, cokernel.π_desc,
     Category.assoc, IsImage.lift_ι, coimageStrongEpiMonoFactorisation_m,
     Limits.image.fac]
@@ -438,12 +491,15 @@ abbrev imageIsoImage : Abelian.image f ≅ image f :=
 
 theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image.ι _ = kernel.ι _ := by
   simp only [IsImage.isoExt_hom, IsImage.lift_ι, imageStrongEpiMonoFactorisation_m]
+  -- 🎉 no goals
 #align category_theory.abelian.image_iso_image_hom_comp_image_ι CategoryTheory.Abelian.imageIsoImage_hom_comp_image_ι
 
 theorem imageIsoImage_inv :
     (imageIsoImage f).inv =
       kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factorThruImage f)]) := by
+                                           -- 🎉 no goals
   ext
+  -- ⊢ (factorThruImage f ≫ (imageIsoImage f).inv) ≫ equalizer.ι (cokernel.π f) 0 = …
   rw [IsImage.isoExt_inv, image.isImage_lift, Limits.image.fac_lift,
     imageStrongEpiMonoFactorisation_e, Category.assoc, kernel.lift_ι, equalizer_as_kernel,
     kernel.lift_ι, Limits.image.fac]
@@ -556,6 +612,7 @@ abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
 abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
     rw [biprod.lift_desc, comp_neg, pullback.condition, add_right_neg]
+    -- 🎉 no goals
 #align category_theory.abelian.pullback_to_biproduct_is_kernel.pullback_to_biproduct_fork CategoryTheory.Abelian.PullbackToBiproductIsKernel.pullbackToBiproductFork
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
@@ -569,9 +626,17 @@ def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
             biprod.desc_eq, KernelFork.condition s])
     (fun s => by
       apply biprod.hom_ext <;> rw [Fork.ι_ofι, Category.assoc]
+      -- ⊢ ((fun s => pullback.lift (Fork.ι s ≫ biprod.fst) (Fork.ι s ≫ biprod.snd) (_  …
+                               -- ⊢ (fun s => pullback.lift (Fork.ι s ≫ biprod.fst) (Fork.ι s ≫ biprod.snd) (_ : …
+                               -- ⊢ (fun s => pullback.lift (Fork.ι s ≫ biprod.fst) (Fork.ι s ≫ biprod.snd) (_ : …
       · rw [biprod.lift_fst, pullback.lift_fst]
+        -- 🎉 no goals
       · rw [biprod.lift_snd, pullback.lift_snd])
+        -- 🎉 no goals
     fun s m h => by apply pullback.hom_ext <;> simp [← h]
+                    -- ⊢ m ≫ pullback.fst = (fun s => pullback.lift (Fork.ι s ≫ biprod.fst) (Fork.ι s …
+                                               -- 🎉 no goals
+                                               -- 🎉 no goals
 #align category_theory.abelian.pullback_to_biproduct_is_kernel.is_limit_pullback_to_biproduct CategoryTheory.Abelian.PullbackToBiproductIsKernel.isLimitPullbackToBiproduct
 
 end PullbackToBiproductIsKernel
@@ -590,6 +655,7 @@ abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
 abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
     rw [biprod.lift_desc, neg_comp, pushout.condition, add_right_neg]
+    -- 🎉 no goals
 #align category_theory.abelian.biproduct_to_pushout_is_cokernel.biproduct_to_pushout_cofork CategoryTheory.Abelian.BiproductToPushoutIsCokernel.biproductToPushoutCofork
 
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
@@ -602,7 +668,13 @@ def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
           rw [← Category.assoc, ← Category.assoc, ← sub_comp, sub_eq_add_neg, ← neg_comp, ←
             biprod.lift_eq, Cofork.condition s, zero_comp])
     (fun s => by apply biprod.hom_ext' <;> simp)
+                 -- ⊢ biprod.inl ≫ Cofork.π (biproductToPushoutCofork f g) ≫ (fun s => pushout.des …
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
     fun s m h => by apply pushout.hom_ext <;> simp [← h]
+                    -- ⊢ pushout.inl ≫ m = pushout.inl ≫ (fun s => pushout.desc (biprod.inl ≫ Cofork. …
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align category_theory.abelian.biproduct_to_pushout_is_cokernel.is_colimit_biproduct_to_pushout CategoryTheory.Abelian.BiproductToPushoutIsCokernel.isColimitBiproductToPushout
 
 end BiproductToPushoutIsCokernel
@@ -619,8 +691,10 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
     epi_of_cancel_zero _ fun {R} e h => by
     -- Consider the morphism u := (0, e) : X ⊞ Y⟶ R.
     let u := biprod.desc (0 : X ⟶ R) e
+    -- ⊢ e = 0
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
     have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa
+    -- ⊢ e = 0
     -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
     -- cokernel of pullback_to_biproduct f g
     have :=
@@ -628,15 +702,20 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
     -- We use this fact to obtain a factorization of u through (f, -g) via some d : Z ⟶ R.
     obtain ⟨d, hd⟩ := CokernelCofork.IsColimit.desc' this u hu
+    -- ⊢ e = 0
     dsimp at d; dsimp at hd
+    -- ⊢ e = 0
+                -- ⊢ e = 0
     -- But then f ≫ d = 0:
     have : f ≫ d = 0;
+    -- ⊢ f ≫ d = 0
     calc
       f ≫ d = (biprod.inl ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inl_desc]
       _ = biprod.inl ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inl_desc _ _
     -- But f is an epimorphism, so d = 0...
     have : d = 0 := (cancel_epi f).1 (by simpa)
+    -- ⊢ e = 0
     -- ...or, in other words, e = 0.
     calc
       e = biprod.inr ≫ biprod.desc (0 : X ⟶ R) e := by rw [biprod.inr_desc]
@@ -653,8 +732,10 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
   epi_of_cancel_zero _ fun {R} e h => by
     -- Consider the morphism u := (e, 0) : X ⊞ Y ⟶ R.
     let u := biprod.desc e (0 : Y ⟶ R)
+    -- ⊢ e = 0
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
     have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa
+    -- ⊢ e = 0
     -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
     -- cokernel of pullback_to_biproduct f g
     have :=
@@ -662,15 +743,20 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
     -- We use this fact to obtain a factorization of u through (f, -g) via some d : Z ⟶ R.
     obtain ⟨d, hd⟩ := CokernelCofork.IsColimit.desc' this u hu
+    -- ⊢ e = 0
     dsimp at d; dsimp at hd
+    -- ⊢ e = 0
+                -- ⊢ e = 0
     -- But then (-g) ≫ d = 0:
     have : (-g) ≫ d = 0;
+    -- ⊢ (-g) ≫ d = 0
     calc
       (-g) ≫ d = (biprod.inr ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inr_desc]
       _ = biprod.inr ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inr_desc _ _
     -- But g is an epimorphism, thus so is -g, so d = 0...
     have : d = 0 := (cancel_epi (-g)).1 (by simpa)
+    -- ⊢ e = 0
     -- ...or, in other words, e = 0.
     calc
       e = biprod.inl ≫ biprod.desc e (0 : Y ⟶ R) := by rw [biprod.inl_desc]
@@ -684,12 +770,14 @@ theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi
   haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
     Abelian.epi_pullback_of_epi_f f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
+  -- 🎉 no goals
 #align category_theory.abelian.epi_snd_of_is_limit CategoryTheory.Abelian.epi_snd_of_isLimit
 
 theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
   haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
     Abelian.epi_pullback_of_epi_g f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
+  -- 🎉 no goals
 #align category_theory.abelian.epi_fst_of_is_limit CategoryTheory.Abelian.epi_fst_of_isLimit
 
 /-- Suppose `f` and `g` are two morphisms with a common codomain and suppose we have written `g` as
@@ -699,6 +787,7 @@ theorem epi_fst_of_factor_thru_epi_mono_factorization (g₁ : Y ⟶ W) [Epi g₁
     (hg : g₁ ≫ g₂ = g) (f' : X ⟶ W) (hf : f' ≫ g₂ = f) (t : PullbackCone f g) (ht : IsLimit t) :
     Epi t.fst := by
   apply epi_fst_of_isLimit _ _ (PullbackCone.isLimitOfFactors f g g₂ f' g₁ hf hg t ht)
+  -- 🎉 no goals
 #align category_theory.abelian.epi_fst_of_factor_thru_epi_mono_factorization CategoryTheory.Abelian.epi_fst_of_factor_thru_epi_mono_factorization
 
 end EpiPullback
@@ -710,19 +799,26 @@ variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
+    -- ⊢ e = 0
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa
+    -- ⊢ e = 0
     have :=
       monoIsKernelOfCokernel _
         (BiproductToPushoutIsCokernel.isColimitBiproductToPushout f g)
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
+    -- ⊢ e = 0
     dsimp at d
+    -- ⊢ e = 0
     dsimp at hd
+    -- ⊢ e = 0
     have : d ≫ f = 0;
+    -- ⊢ d ≫ f = 0
     calc
       d ≫ f = d ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = u ≫ biprod.fst := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_fst _ _
     have : d = 0 := (cancel_mono f).1 (by simpa)
+    -- ⊢ e = 0
     calc
       e = biprod.lift (0 : R ⟶ Y) e ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = (d ≫ biprod.lift f (-g)) ≫ biprod.snd := by rw [← hd]
@@ -734,19 +830,26 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
+    -- ⊢ e = 0
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa
+    -- ⊢ e = 0
     have :=
       monoIsKernelOfCokernel _
         (BiproductToPushoutIsCokernel.isColimitBiproductToPushout f g)
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
+    -- ⊢ e = 0
     dsimp at d
+    -- ⊢ e = 0
     dsimp at hd
+    -- ⊢ e = 0
     have : d ≫ (-g) = 0;
+    -- ⊢ d ≫ (-g) = 0
     calc
       d ≫ (-g) = d ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = biprod.lift e (0 : R ⟶ Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_snd _ _
     have : d = 0 := (cancel_mono (-g)).1 (by simpa)
+    -- ⊢ e = 0
     calc
       e = biprod.lift e (0 : R ⟶ Z) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = (d ≫ biprod.lift f (-g)) ≫ biprod.fst := by rw [← hd]
@@ -776,6 +879,7 @@ theorem mono_inl_of_factor_thru_epi_mono_factorization (f : X ⟶ Y) (g : X ⟶ 
     (g₂ : W ⟶ Z) [Mono g₂] (hg : g₁ ≫ g₂ = g) (f' : W ⟶ Y) (hf : g₁ ≫ f' = f)
     (t : PushoutCocone f g) (ht : IsColimit t) : Mono t.inl := by
   apply mono_inl_of_isColimit _ _ (PushoutCocone.isColimitOfFactors _ _ _ _ _ hf hg t ht)
+  -- 🎉 no goals
 #align category_theory.abelian.mono_inl_of_factor_thru_epi_mono_factorization CategoryTheory.Abelian.mono_inl_of_factor_thru_epi_mono_factorization
 
 end MonoPushout
@@ -798,11 +902,18 @@ def abelian : Abelian C :=
        the goal it creates for the two instances of `HasZeroMorphisms`, and the proof is complete.-/
     NonPreadditiveAbelian.preadditive with
     has_finite_products := by infer_instance
+                              -- 🎉 no goals
     has_kernels := by convert (by infer_instance : Limits.HasKernels C)
+                      -- 🎉 no goals
     has_cokernels := by convert (by infer_instance : Limits.HasCokernels C)
+      -- ⊢ NormalMono f
+                        -- 🎉 no goals
+      -- 🎉 no goals
     normalMonoOfMono := by
       intro _ _ f _
+      -- ⊢ NormalEpi f
       convert normalMonoOfMono f
+      -- 🎉 no goals
     normalEpiOfEpi := by
       intro _ _ f _
       convert normalEpiOfEpi f }

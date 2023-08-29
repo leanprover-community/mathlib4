@@ -35,14 +35,23 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
     (e : ∀ i, Basis (ι₁ i) R (M i))
     (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g := by
   induction' n with m hm
+  -- ⊢ f = g
   · ext x
+    -- ⊢ ↑f x = ↑g x
     convert h finZeroElim
+    -- 🎉 no goals
   · apply Function.LeftInverse.injective uncurry_curryLeft
+    -- ⊢ (fun x => curryLeft x) f = (fun x => curryLeft x) g
     refine' Basis.ext (e 0) _
+    -- ⊢ ∀ (i : ι₁ 0), ↑((fun x => curryLeft x) f) (↑(e 0) i) = ↑((fun x => curryLeft …
     intro i
+    -- ⊢ ↑((fun x => curryLeft x) f) (↑(e 0) i) = ↑((fun x => curryLeft x) g) (↑(e 0) …
     apply hm (Fin.tail e)
+    -- ⊢ ∀ (v : (i : Fin m) → ι₁ (Fin.succ i)), (↑(↑((fun x => curryLeft x) f) (↑(e 0 …
     intro j
+    -- ⊢ (↑(↑((fun x => curryLeft x) f) (↑(e 0) i)) fun i => ↑(Fin.tail e i) (j i)) = …
     convert h (Fin.cons i j)
+    -- ⊢ (↑(↑((fun x => curryLeft x) f) (↑(e 0) i)) fun i => ↑(Fin.tail e i) (j i)) = …
     iterate 2
       rw [curryLeft_apply]
       congr 1 with x
@@ -58,6 +67,7 @@ version of `dom_dom_congr`. -/
 theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R (fun _ : ι => M₂) M₃} {ι₁ : Type*}
     (e : Basis ι₁ R M₂) (h : ∀ v : ι → ι₁, (f fun i => e (v i)) = g fun i => e (v i)) : f = g := by
   cases nonempty_fintype ι
+  -- ⊢ f = g
   exact
     (domDomCongr_eq_iff (Fintype.equivFin ι) f g).mp
       (Basis.ext_multilinear_fin (fun _ => e) fun i => h (i ∘ _))

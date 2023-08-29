@@ -88,10 +88,15 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
 
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
+  -- ⊢ NatTrans.app (equivalence₁ hF).counitIso.hom Y = NatTrans.app (equivalence₁C …
   dsimp [equivalence₁]
+  -- ⊢ NatTrans.app (Functor.asEquivalence F).counitIso.hom Y = NatTrans.app (equiv …
   unfold Functor.asEquivalence
+  -- ⊢ NatTrans.app (Equivalence.mk' F (IsEquivalence.inverse F) IsEquivalence.unit …
   dsimp [equivalence₀, IsEquivalence.inverse, IsEquivalence.ofEquivalence]
+  -- ⊢ NatTrans.app IsEquivalence.counitIso.hom Y = NatTrans.app (equivalence₁Couni …
   simp
+  -- 🎉 no goals
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₁` between `A` and `B'`. -/
@@ -108,10 +113,15 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
 
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
+  -- ⊢ NatTrans.app (equivalence₁ hF).unitIso.hom X = NatTrans.app (equivalence₁Uni …
   dsimp [equivalence₁]
+  -- ⊢ NatTrans.app (Functor.asEquivalence F).unitIso.hom X = NatTrans.app (equival …
   unfold Functor.asEquivalence
+  -- ⊢ NatTrans.app (Equivalence.mk' F (IsEquivalence.inverse F) IsEquivalence.unit …
   dsimp [NatIso.hcomp, IsEquivalence.ofEquivalence]
+  -- ⊢ NatTrans.app IsEquivalence.unitIso.hom X = NatTrans.app (equivalence₁UnitIso …
   simp
+  -- 🎉 no goals
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso_eq
 
 /-- An intermediate equivalence `A ≅ B` obtained as the composition of `equivalence₁` and
@@ -142,7 +152,9 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
 theorem equivalence₂CounitIso_eq :
     (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
   ext Y'
+  -- ⊢ NatTrans.app (equivalence₂ eB hF).counitIso.hom Y' = NatTrans.app (equivalen …
   dsimp [equivalence₂, Iso.refl]
+  -- ⊢ eB.inverse.map (NatTrans.app (equivalence₁ hF).counitIso.hom (eB.functor.obj …
   simp only [equivalence₁CounitIso_eq, equivalence₂CounitIso_hom_app,
     equivalence₁CounitIso_hom_app, Functor.map_comp, assoc]
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso_eq
@@ -160,10 +172,13 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
 
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
+  -- ⊢ NatTrans.app (equivalence₂ eB hF).unitIso.hom X = NatTrans.app (equivalence₂ …
   dsimp [equivalence₂]
+  -- ⊢ NatTrans.app (equivalence₁ hF).unitIso.hom X ≫ (equivalence₁ hF).inverse.map …
   simp only [equivalence₂UnitIso_hom_app, equivalence₁UnitIso_eq, equivalence₁UnitIso_hom_app,
       assoc, NatIso.cancel_natIso_hom_left]
   rfl
+  -- 🎉 no goals
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso_eq
 
 variable {eB}
@@ -174,6 +189,7 @@ whose inverse is `G : B ≅ A`. -/
 def equivalence : A ≌ B :=
   letI : IsEquivalence G := by
     refine' IsEquivalence.ofIso _ (IsEquivalence.ofEquivalence (equivalence₂ eB hF).symm)
+    -- ⊢ (CategoryTheory.Equivalence.symm (equivalence₂ eB hF)).functor ≅ G
     calc
       eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := Iso.refl _
       _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := isoWhiskerRight hG _
@@ -206,6 +222,7 @@ def τ₁ (η : G ⋙ F ≅ eB.functor) : eB.functor ⋙ e'.inverse ⋙ e'.funct
         Iso.refl _
     _ ≅ (G ⋙ eA.functor) ⋙ e'.functor := isoWhiskerRight hG _
     _ ≅ G ⋙ eA.functor ⋙ e'.functor := by rfl
+                                          -- 🎉 no goals
     _ ≅ G ⋙ F := isoWhiskerLeft _ hF
     _ ≅ eB.functor := η
 #align algebraic_topology.dold_kan.compatibility.τ₁ AlgebraicTopology.DoldKan.Compatibility.τ₁
@@ -225,19 +242,30 @@ variable {η hF hG}
 
 theorem equivalenceCounitIso_eq : (equivalence hF hG).counitIso = equivalenceCounitIso η := by
   ext1; apply NatTrans.ext; ext Y
+  -- ⊢ (equivalence hF hG).counitIso.hom = (equivalenceCounitIso η).hom
+        -- ⊢ (equivalence hF hG).counitIso.hom.app = (equivalenceCounitIso η).hom.app
+                            -- ⊢ NatTrans.app (equivalence hF hG).counitIso.hom Y = NatTrans.app (equivalence …
   dsimp [equivalence, Functor.asEquivalence, IsEquivalence.ofEquivalence]
+  -- ⊢ NatTrans.app IsEquivalence.unitIso.inv Y = NatTrans.app (equivalenceCounitIs …
   rw [equivalenceCounitIso_hom_app, IsEquivalence.ofIso_unitIso_inv_app]
+  -- ⊢ (IsEquivalence.inverse (equivalence₂ eB hF).inverse).map (NatTrans.app (((Is …
   dsimp
+  -- ⊢ eB.inverse.map (F.map (𝟙 (G.obj Y) ≫ NatTrans.app eA.unitIso.hom (G.obj Y) ≫ …
   simp only [comp_id, id_comp, F.map_comp, assoc,
     equivalence₂CounitIso_eq, equivalence₂CounitIso_hom_app,
     ← eB.inverse.map_comp_assoc, ← τ₀_hom_app, hη, τ₁_hom_app]
   erw [hF.inv.naturality_assoc, hF.inv.naturality_assoc]
+  -- ⊢ eB.inverse.map (NatTrans.app hF.inv (G.obj Y) ≫ (eA.functor ⋙ e'.functor).ma …
   dsimp
+  -- ⊢ eB.inverse.map (NatTrans.app hF.inv (G.obj Y) ≫ e'.functor.map (eA.functor.m …
   congr 2
+  -- ⊢ NatTrans.app hF.inv (G.obj Y) ≫ e'.functor.map (eA.functor.map (NatTrans.app …
   simp only [assoc, ← e'.functor.map_comp_assoc, Equivalence.fun_inv_map,
     Iso.inv_hom_id_app_assoc, hG.inv_hom_id_app]
   dsimp
+  -- ⊢ NatTrans.app hF.inv (G.obj Y) ≫ e'.functor.map (eA.functor.map (NatTrans.app …
   rw [comp_id, eA.functor_unitIso_comp, e'.functor.map_id, id_comp, hF.inv_hom_id_app_assoc]
+  -- 🎉 no goals
 #align algebraic_topology.dold_kan.compatibility.equivalence_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalenceCounitIso_eq
 
 variable (hF)
@@ -276,10 +304,17 @@ variable {ε hF hG}
 
 theorem equivalenceUnitIso_eq : (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X
+  -- ⊢ (equivalence hF hG).unitIso.hom = (equivalenceUnitIso hG ε).hom
+        -- ⊢ (equivalence hF hG).unitIso.hom.app = (equivalenceUnitIso hG ε).hom.app
+                            -- ⊢ NatTrans.app (equivalence hF hG).unitIso.hom X = NatTrans.app (equivalenceUn …
   dsimp [equivalence, Functor.asEquivalence, IsEquivalence.ofEquivalence, IsEquivalence.inverse]
+  -- ⊢ NatTrans.app IsEquivalence.counitIso.inv X = NatTrans.app (equivalenceUnitIs …
   rw [IsEquivalence.ofIso_counitIso_inv_app]
+  -- ⊢ NatTrans.app IsEquivalence.counitIso.inv X ≫ NatTrans.app (((Iso.refl (eB.fu …
   dsimp
+  -- ⊢ NatTrans.app (equivalence₂ eB hF).unitIso.hom X ≫ ((𝟙 (eA.inverse.obj (e'.in …
   erw [id_comp, comp_id]
+  -- ⊢ NatTrans.app (equivalence₂ eB hF).unitIso.hom X ≫ eA.inverse.map (NatTrans.a …
   simp only [equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,
     assoc, equivalenceUnitIso_hom_app, ← eA.inverse.map_comp_assoc, ← hε, υ_hom_app]
 #align algebraic_topology.dold_kan.compatibility.equivalence_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalenceUnitIso_eq

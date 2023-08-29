@@ -63,22 +63,33 @@ point of a set `B ⊆ closure A`, then `extendFrom A f` is continuous on `B`. -/
 theorem continuousOn_extendFrom [RegularSpace Y] {f : X → Y} {A B : Set X} (hB : B ⊆ closure A)
     (hf : ∀ x ∈ B, ∃ y, Tendsto f (𝓝[A] x) (𝓝 y)) : ContinuousOn (extendFrom A f) B := by
   set φ := extendFrom A f
+  -- ⊢ ContinuousOn φ B
   intro x x_in
+  -- ⊢ ContinuousWithinAt φ B x
   suffices ∀ V' ∈ 𝓝 (φ x), IsClosed V' → φ ⁻¹' V' ∈ 𝓝[B] x by
     simpa [ContinuousWithinAt, (closed_nhds_basis (φ x)).tendsto_right_iff]
   intro V' V'_in V'_closed
+  -- ⊢ φ ⁻¹' V' ∈ 𝓝[B] x
   obtain ⟨V, V_in, V_op, hV⟩ : ∃ V ∈ 𝓝 x, IsOpen V ∧ V ∩ A ⊆ f ⁻¹' V' := by
     have := tendsto_extendFrom (hf x x_in)
     rcases (nhdsWithin_basis_open x A).tendsto_left_iff.mp this V' V'_in with ⟨V, ⟨hxV, V_op⟩, hV⟩
     exact ⟨V, IsOpen.mem_nhds V_op hxV, V_op, hV⟩
   suffices : ∀ y ∈ V ∩ B, φ y ∈ V'
+  -- ⊢ φ ⁻¹' V' ∈ 𝓝[B] x
   exact mem_of_superset (inter_mem_inf V_in <| mem_principal_self B) this
+  -- ⊢ ∀ (y : X), y ∈ V ∩ B → φ y ∈ V'
   rintro y ⟨hyV, hyB⟩
+  -- ⊢ φ y ∈ V'
   haveI := mem_closure_iff_nhdsWithin_neBot.mp (hB hyB)
+  -- ⊢ φ y ∈ V'
   have limy : Tendsto f (𝓝[A] y) (𝓝 <| φ y) := tendsto_extendFrom (hf y hyB)
+  -- ⊢ φ y ∈ V'
   have hVy : V ∈ 𝓝 y := IsOpen.mem_nhds V_op hyV
+  -- ⊢ φ y ∈ V'
   have : V ∩ A ∈ 𝓝[A] y := by simpa only [inter_comm] using inter_mem_nhdsWithin A hVy
+  -- ⊢ φ y ∈ V'
   exact V'_closed.mem_of_tendsto limy (mem_of_superset this hV)
+  -- 🎉 no goals
 #align continuous_on_extend_from continuousOn_extendFrom
 
 /-- If a function `f` to a T₃ space `Y` has a limit within a
@@ -86,5 +97,7 @@ dense set `A` for any `x`, then `extendFrom A f` is continuous. -/
 theorem continuous_extendFrom [RegularSpace Y] {f : X → Y} {A : Set X} (hA : Dense A)
     (hf : ∀ x, ∃ y, Tendsto f (𝓝[A] x) (𝓝 y)) : Continuous (extendFrom A f) := by
   rw [continuous_iff_continuousOn_univ]
+  -- ⊢ ContinuousOn (extendFrom A f) univ
   exact continuousOn_extendFrom (fun x _ ↦ hA x) (by simpa using hf)
+  -- 🎉 no goals
 #align continuous_extend_from continuous_extendFrom

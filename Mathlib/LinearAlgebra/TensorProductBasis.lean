@@ -39,10 +39,12 @@ def Basis.tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
 @[simp]
 theorem Basis.tensorProduct_apply (b : Basis ι R M) (c : Basis κ R N) (i : ι) (j : κ) :
     Basis.tensorProduct b c (i, j) = b i ⊗ₜ c j := by simp [Basis.tensorProduct]
+                                                      -- 🎉 no goals
 #align basis.tensor_product_apply Basis.tensorProduct_apply
 
 theorem Basis.tensorProduct_apply' (b : Basis ι R M) (c : Basis κ R N) (i : ι × κ) :
     Basis.tensorProduct b c i = b i.1 ⊗ₜ c i.2 := by simp [Basis.tensorProduct]
+                                                     -- 🎉 no goals
 #align basis.tensor_product_apply' Basis.tensorProduct_apply'
 
 @[simp]
@@ -50,6 +52,7 @@ theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι R M) (c : Basis κ R N
     (i : ι) (j : κ) :
     (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = b.repr m i * c.repr n j := by
   simp [Basis.tensorProduct]
+  -- 🎉 no goals
 #align basis.tensor_product_repr_tmul_apply Basis.tensorProduct_repr_tmul_apply
 
 end CommRing

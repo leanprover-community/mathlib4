@@ -33,13 +33,18 @@ variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I ≠ ⊥) :
     (S ⧸ I) ≃ₗ[R] ∀ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
   haveI := Fintype.ofFinite ι
+  -- ⊢ (S ⧸ I) ≃ₗ[R] (i : ι) → R ⧸ span {smithCoeffs b I hI i}
   -- Choose `e : S ≃ₗ I` and a basis `b'` for `S` that turns the map
   -- `f := ((Submodule.subtype I).restrictScalars R).comp e` into a diagonal matrix:
   -- there is an `a : ι → ℤ` such that `f (b' i) = a i • b' i`.
   let a := I.smithCoeffs b hI
+  -- ⊢ (S ⧸ I) ≃ₗ[R] (i : ι) → R ⧸ span {smithCoeffs b I hI i}
   let b' := I.ringBasis b hI
+  -- ⊢ (S ⧸ I) ≃ₗ[R] (i : ι) → R ⧸ span {smithCoeffs b I hI i}
   let ab := I.selfBasis b hI
+  -- ⊢ (S ⧸ I) ≃ₗ[R] (i : ι) → R ⧸ span {smithCoeffs b I hI i}
   have ab_eq := I.selfBasis_def b hI
+  -- ⊢ (S ⧸ I) ≃ₗ[R] (i : ι) → R ⧸ span {smithCoeffs b I hI i}
   have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
     intro x
     -- Porting note: these lines used to be `simp_rw [ab.mem_ideal_iff', ab_eq]`
@@ -57,6 +62,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
   -- Now we map everything through the linear equiv `S ≃ₗ (ι → R)`,
   -- which maps `I` to `I' := Π i, a i ℤ`.
   let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => span ({a i} : Set R)
+  -- ⊢ (S ⧸ I) ≃ₗ[R] (i : ι) → R ⧸ span {smithCoeffs b I hI i}
   have : Submodule.map (b'.equivFun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
     ext x
     simp only [Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
@@ -71,11 +77,15 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
   refine' ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
     (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
   · infer_instance
+    -- 🎉 no goals
   · infer_instance
+    -- 🎉 no goals
   refine' (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
     (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
   · infer_instance
+    -- 🎉 no goals
   · infer_instance
+    -- 🎉 no goals
   classical
     let this :=
       Submodule.quotientPi (show ∀ _, Submodule R R from fun i => span ({a i} : Set R))
@@ -101,11 +111,15 @@ because the choice of `Fintype` instance is non-canonical.
 noncomputable def fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
     (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) := by
   let b := Module.Free.chooseBasis ℤ S
+  -- ⊢ Fintype (S ⧸ I)
   let a := I.smithCoeffs b hI
+  -- ⊢ Fintype (S ⧸ I)
   let e := I.quotientEquivPiZMod b hI
+  -- ⊢ Fintype (S ⧸ I)
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr (smithCoeffs_ne_zero b I hI i)⟩
   classical exact Fintype.ofEquiv (∀ i, ZMod (a i).natAbs) e.symm
+  -- 🎉 no goals
 #align ideal.fintype_quotient_of_free_of_ne_bot Ideal.fintypeQuotientOfFreeOfNeBot
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
@@ -116,6 +130,7 @@ variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R
 noncomputable def quotientEquivDirectSum :
     (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
   haveI := Fintype.ofFinite ι
+  -- ⊢ (S ⧸ I) ≃ₗ[F] ⨁ (i : ι), R ⧸ span {smithCoeffs b I hI i}
   -- porting note: manual construction of `CompatibleSmul` typeclass no longer needed
   exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
@@ -128,6 +143,7 @@ theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial
       ∑ i, FiniteDimensional.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
   -- slow, and dot notation doesn't work
   rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, FiniteDimensional.finrank_directSum]
+  -- 🎉 no goals
 #align ideal.finrank_quotient_eq_sum Ideal.finrank_quotient_eq_sum
 
 end Ideal

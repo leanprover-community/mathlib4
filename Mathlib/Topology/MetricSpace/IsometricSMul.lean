@@ -64,6 +64,7 @@ instance (priority := 100) IsometricSMul.to_continuousConstSMul [PseudoEMetricSp
 instance (priority := 100) IsometricSMul.opposite_of_comm [PseudoEMetricSpace X] [SMul M X]
     [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] [IsometricSMul M X] : IsometricSMul Mᵐᵒᵖ X :=
   ⟨fun c x y => by simpa only [← op_smul_eq_smul] using isometry_smul X c.unop x y⟩
+                   -- 🎉 no goals
 #align has_isometric_smul.opposite_of_comm IsometricSMul.opposite_of_comm
 #align has_isometric_vadd.opposite_of_comm IsometricVAdd.opposite_of_comm
 
@@ -119,6 +120,7 @@ theorem edist_mul_right [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ
 theorem edist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : edist (a / c) (b / c) = edist a b := by
   simp only [div_eq_mul_inv, edist_mul_right]
+  -- 🎉 no goals
 #align edist_div_right edist_div_right
 #align edist_sub_right edist_sub_right
 
@@ -140,6 +142,7 @@ theorem isometry_inv [PseudoEMetricSpace G] [IsometricSMul G G] [IsometricSMul G
 @[to_additive]
 theorem edist_inv [PseudoEMetricSpace G] [IsometricSMul G G] [IsometricSMul Gᵐᵒᵖ G]
     (x y : G) : edist x⁻¹ y = edist x y⁻¹ := by rw [← edist_inv_inv, inv_inv]
+                                                -- 🎉 no goals
 #align edist_inv edist_inv
 #align edist_neg edist_neg
 
@@ -147,6 +150,7 @@ theorem edist_inv [PseudoEMetricSpace G] [IsometricSMul G G] [IsometricSMul Gᵐ
 theorem edist_div_left [PseudoEMetricSpace G] [IsometricSMul G G] [IsometricSMul Gᵐᵒᵖ G]
     (a b c : G) : edist (a / b) (a / c) = edist b c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, edist_mul_left, edist_inv_inv]
+  -- 🎉 no goals
 #align edist_div_left edist_div_left
 #align edist_sub_left edist_sub_left
 
@@ -278,6 +282,7 @@ theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c �
 @[to_additive (attr := simp)]
 theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r :=
   by rw [preimage_smul, smul_ball]
+     -- 🎉 no goals
 #align emetric.preimage_smul_ball EMetric.preimage_smul_ball
 #align emetric.preimage_vadd_ball EMetric.preimage_vadd_ball
 
@@ -291,6 +296,7 @@ theorem smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) : c • closedBall x r 
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) :
     (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
   rw [preimage_smul, smul_closedBall]
+  -- 🎉 no goals
 #align emetric.preimage_smul_closed_ball EMetric.preimage_smul_closedBall
 #align emetric.preimage_vadd_closed_ball EMetric.preimage_vadd_closedBall
 
@@ -307,7 +313,9 @@ theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
 theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
     (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
+  -- ⊢ (fun x => x * a) ⁻¹' ball b r = ball (b * a⁻¹) r
   exact preimage_smul_ball (MulOpposite.op a) b r
+  -- 🎉 no goals
 #align emetric.preimage_mul_right_ball EMetric.preimage_mul_right_ball
 #align emetric.preimage_add_right_ball EMetric.preimage_add_right_ball
 
@@ -322,7 +330,9 @@ theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ≥0�
 theorem preimage_mul_right_closedBall [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
     (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
+  -- ⊢ (fun x => x * a) ⁻¹' closedBall b r = closedBall (b * a⁻¹) r
   exact preimage_smul_closedBall (MulOpposite.op a) b r
+  -- 🎉 no goals
 #align emetric.preimage_mul_right_closed_ball EMetric.preimage_mul_right_closedBall
 #align emetric.preimage_add_right_closed_ball EMetric.preimage_add_right_closedBall
 
@@ -382,6 +392,7 @@ theorem nndist_mul_right [PseudoMetricSpace M] [Mul M] [IsometricSMul Mᵐᵒᵖ
 @[to_additive (attr := simp)]
 theorem dist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : dist (a / c) (b / c) = dist a b := by simp only [div_eq_mul_inv, dist_mul_right]
+                                                        -- 🎉 no goals
 #align dist_div_right dist_div_right
 #align dist_sub_right dist_sub_right
 
@@ -389,6 +400,7 @@ theorem dist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsometricSMul M�
 theorem nndist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : nndist (a / c) (b / c) = nndist a b := by
   simp only [div_eq_mul_inv, nndist_mul_right]
+  -- 🎉 no goals
 #align nndist_div_right nndist_div_right
 #align nndist_sub_right nndist_sub_right
 
@@ -410,6 +422,7 @@ theorem nndist_inv_inv [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 theorem dist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
     [IsometricSMul Gᵐᵒᵖ G] (a b c : G) : dist (a / b) (a / c) = dist b c := by
   simp [div_eq_mul_inv]
+  -- 🎉 no goals
 #align dist_div_left dist_div_left
 #align dist_sub_left dist_sub_left
 
@@ -417,6 +430,7 @@ theorem dist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
     [IsometricSMul Gᵐᵒᵖ G] (a b c : G) : nndist (a / b) (a / c) = nndist b c := by
   simp [div_eq_mul_inv]
+  -- 🎉 no goals
 #align nndist_div_left nndist_div_left
 #align nndist_sub_left nndist_sub_left
 
@@ -442,6 +456,7 @@ theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r 
 @[to_additive (attr := simp)]
 theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
   rw [preimage_smul, smul_ball]
+  -- 🎉 no goals
 #align metric.preimage_smul_ball Metric.preimage_smul_ball
 #align metric.preimage_vadd_ball Metric.preimage_vadd_ball
 
@@ -454,6 +469,7 @@ theorem smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = close
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
     (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
+                                                                -- 🎉 no goals
 #align metric.preimage_smul_closed_ball Metric.preimage_smul_closedBall
 #align metric.preimage_vadd_closed_ball Metric.preimage_vadd_closedBall
 
@@ -466,6 +482,7 @@ theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c •
 @[to_additive (attr := simp)]
 theorem preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
     (· • ·) c ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
+                                                        -- 🎉 no goals
 #align metric.preimage_smul_sphere Metric.preimage_smul_sphere
 #align metric.preimage_vadd_sphere Metric.preimage_vadd_sphere
 
@@ -482,7 +499,9 @@ theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ) :
 theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
     (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
+  -- ⊢ (fun x => x * a) ⁻¹' ball b r = ball (b * a⁻¹) r
   exact preimage_smul_ball (MulOpposite.op a) b r
+  -- 🎉 no goals
 #align metric.preimage_mul_right_ball Metric.preimage_mul_right_ball
 #align metric.preimage_add_right_ball Metric.preimage_add_right_ball
 
@@ -497,7 +516,9 @@ theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ) :
 theorem preimage_mul_right_closedBall [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
     (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
+  -- ⊢ (fun x => x * a) ⁻¹' closedBall b r = closedBall (b * a⁻¹) r
   exact preimage_smul_closedBall (MulOpposite.op a) b r
+  -- 🎉 no goals
 #align metric.preimage_mul_right_closed_ball Metric.preimage_mul_right_closedBall
 #align metric.preimage_add_right_closed_ball Metric.preimage_add_right_closedBall
 
@@ -536,16 +557,19 @@ instance Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X :=
 @[to_additive]
 instance : IsometricSMul M Xᵐᵒᵖ :=
   ⟨fun c x y => by simpa only using edist_smul_left c x.unop y.unop⟩
+                   -- 🎉 no goals
 
 @[to_additive]
 instance ULift.isometricSMul : IsometricSMul (ULift M) X :=
   ⟨fun c => by simpa only using isometry_smul X c.down⟩
+               -- 🎉 no goals
 #align ulift.has_isometric_smul ULift.isometricSMul
 #align ulift.has_isometric_vadd ULift.isometricVAdd
 
 @[to_additive]
 instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
   ⟨fun c x y => by simpa only using edist_smul_left c x.1 y.1⟩
+                   -- 🎉 no goals
 #align ulift.has_isometric_smul' ULift.isometricSMul'
 #align ulift.has_isometric_vadd' ULift.isometricVAdd'
 

@@ -50,40 +50,54 @@ def generateMeasurableRec (s : Set (Set α)) : (ω₁ : Type u) → Set (Set α)
     s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).1
   termination_by generateMeasurableRec s i => i
   decreasing_by exact j.2
+                -- 🎉 no goals
 #align measurable_space.generate_measurable_rec MeasurableSpace.generateMeasurableRec
 
 theorem self_subset_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
     s ⊆ generateMeasurableRec s i := by
   unfold generateMeasurableRec
+  -- ⊢ s ⊆
   apply_rules [subset_union_of_subset_left]
+  -- ⊢ s ⊆ s
   exact subset_rfl
+  -- 🎉 no goals
 #align measurable_space.self_subset_generate_measurable_rec MeasurableSpace.self_subset_generateMeasurableRec
 
 theorem empty_mem_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
     ∅ ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
+  -- ⊢ ∅ ∈
   exact mem_union_left _ (mem_union_left _ (mem_union_right _ (mem_singleton ∅)))
+  -- 🎉 no goals
 #align measurable_space.empty_mem_generate_measurable_rec MeasurableSpace.empty_mem_generateMeasurableRec
 
 theorem compl_mem_generateMeasurableRec {s : Set (Set α)} {i j : ω₁} (h : j < i) {t : Set α}
     (ht : t ∈ generateMeasurableRec s j) : tᶜ ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
+  -- ⊢ tᶜ ∈
   exact mem_union_left _ (mem_union_right _ ⟨t, mem_iUnion.2 ⟨⟨j, h⟩, ht⟩, rfl⟩)
+  -- 🎉 no goals
 #align measurable_space.compl_mem_generate_measurable_rec MeasurableSpace.compl_mem_generateMeasurableRec
 
 theorem iUnion_mem_generateMeasurableRec {s : Set (Set α)} {i : ω₁} {f : ℕ → Set α}
     (hf : ∀ n, ∃ j < i, f n ∈ generateMeasurableRec s j) :
     (⋃ n, f n) ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
+  -- ⊢ ⋃ (n : ℕ), f n ∈
   exact mem_union_right _ ⟨fun n => ⟨f n, let ⟨j, hj, hf⟩ := hf n; mem_iUnion.2 ⟨⟨j, hj⟩, hf⟩⟩, rfl⟩
+  -- 🎉 no goals
 #align measurable_space.Union_mem_generate_measurable_rec MeasurableSpace.iUnion_mem_generateMeasurableRec
 
 theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : ω₁} (h : i ≤ j) :
     generateMeasurableRec s i ⊆ generateMeasurableRec s j := fun x hx => by
   rcases eq_or_lt_of_le h with (rfl | h)
+  -- ⊢ x ∈ generateMeasurableRec s i
   · exact hx
+    -- 🎉 no goals
   · convert iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
+    -- ⊢ x = ⋃ (n : ℕ), x
     exact (iUnion_const x).symm
+    -- 🎉 no goals
 #align measurable_space.generate_measurable_rec_subset MeasurableSpace.generateMeasurableRec_subset
 
 /-- At each step of the inductive construction, the cardinality bound `≤ (max #s 2) ^ ℵ₀` holds.
@@ -91,11 +105,15 @@ theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : ω₁} (h : i ≤
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
     #(generateMeasurableRec s i) ≤ max #s 2 ^ aleph0.{u} := by
   apply (aleph 1).ord.out.wo.wf.induction i
+  -- ⊢ ∀ (x : (Quotient.out (ord (aleph 1))).α), (∀ (y : (Quotient.out (ord (aleph  …
   intro i IH
+  -- ⊢ #↑(generateMeasurableRec s i) ≤ max (#↑s) 2 ^ ℵ₀
   have A := aleph0_le_aleph 1
+  -- ⊢ #↑(generateMeasurableRec s i) ≤ max (#↑s) 2 ^ ℵ₀
   have B : aleph 1 ≤ max #s 2 ^ aleph0.{u} :=
     aleph_one_le_continuum.trans (power_le_power_right (le_max_right _ _))
   have C : ℵ₀ ≤ max #s 2 ^ aleph0.{u} := A.trans B
+  -- ⊢ #↑(generateMeasurableRec s i) ≤ max (#↑s) 2 ^ ℵ₀
   have J : #(⋃ j : Iio i, generateMeasurableRec s j.1) ≤ max #s 2 ^ aleph0.{u} := by
     refine (mk_iUnion_le _).trans ?_
     have D : ⨆ j : Iio i, #(generateMeasurableRec s j) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
@@ -103,14 +121,22 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
     rw [mul_eq_max A C]
     exact max_le B le_rfl
   rw [generateMeasurableRec]
+  -- ⊢ #↑((s ∪ {∅} ∪ compl '' ⋃ (j : ↑(Iio i)), generateMeasurableRec s ↑j) ∪ range …
   apply_rules [(mk_union_le _ _).trans, add_le_of_le C, mk_image_le.trans]
   · exact (le_max_left _ _).trans (self_le_power _ one_lt_aleph0.le)
+    -- 🎉 no goals
   · rw [mk_singleton]
+    -- ⊢ 1 ≤ max (#↑s) 2 ^ ℵ₀
     exact one_lt_aleph0.le.trans C
+    -- 🎉 no goals
   · apply mk_range_le.trans
+    -- ⊢ #(ℕ → ↑(⋃ (j : ↑(Iio i)), generateMeasurableRec s ↑j)) ≤ max (#↑s) 2 ^ ℵ₀
     simp only [mk_pi, prod_const, lift_uzero, mk_denumerable, lift_aleph0]
+    -- ⊢ #↑(⋃ (j : ↑(Iio i)), generateMeasurableRec s ↑j) ^ ℵ₀ ≤ max (#↑s) 2 ^ ℵ₀
     have := @power_le_power_right _ _ ℵ₀ J
+    -- ⊢ #↑(⋃ (j : ↑(Iio i)), generateMeasurableRec s ↑j) ^ ℵ₀ ≤ max (#↑s) 2 ^ ℵ₀
     rwa [← power_mul, aleph0_mul_aleph0] at this
+    -- 🎉 no goals
 #align measurable_space.cardinal_generate_measurable_rec_le MeasurableSpace.cardinal_generateMeasurableRec_le
 
 /-- `generateMeasurableRec s` generates precisely the smallest sigma-algebra containing `s`. -/
@@ -118,37 +144,65 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } =
         ⋃ (i : (Quotient.out (aleph 1).ord).α), generateMeasurableRec s i := by
   ext t; refine' ⟨fun ht => _, fun ht => _⟩
+  -- ⊢ t ∈ {t | GenerateMeasurable s t} ↔ t ∈ ⋃ (i : (Quotient.out (ord (aleph 1))) …
+         -- ⊢ t ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurableRec s i
   · inhabit ω₁
+    -- ⊢ t ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurableRec s i
     induction' ht with u hu u _ IH f _ IH
     · exact mem_iUnion.2 ⟨default, self_subset_generateMeasurableRec s _ hu⟩
+      -- 🎉 no goals
     · exact mem_iUnion.2 ⟨default, empty_mem_generateMeasurableRec s _⟩
+      -- 🎉 no goals
     · rcases mem_iUnion.1 IH with ⟨i, hi⟩
+      -- ⊢ uᶜ ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurableRec s i
       obtain ⟨j, hj⟩ := exists_gt i
+      -- ⊢ uᶜ ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurableRec s i
       exact mem_iUnion.2 ⟨j, compl_mem_generateMeasurableRec hj hi⟩
+      -- 🎉 no goals
     · have : ∀ n, ∃ i, f n ∈ generateMeasurableRec s i := fun n => by simpa using IH n
+      -- ⊢ ⋃ (i : ℕ), f i ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurabl …
       choose I hI using this
+      -- ⊢ ⋃ (i : ℕ), f i ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurabl …
       have : IsWellOrder (ω₁ : Type u) (· < ·) := isWellOrder_out_lt _
+      -- ⊢ ⋃ (i : ℕ), f i ∈ ⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurabl …
       refine' mem_iUnion.2
         ⟨Ordinal.enum (· < ·) (Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n)) _,
           iUnion_mem_generateMeasurableRec fun n => ⟨I n, _, hI n⟩⟩
       · rw [Ordinal.type_lt]
+        -- ⊢ (Ordinal.lsub fun n => Ordinal.typein (fun x x_1 => x < x_1) (I n)) < ord (a …
         refine' Ordinal.lsub_lt_ord_lift _ fun i => Ordinal.typein_lt_self _
+        -- ⊢ lift.{u, 0} #ℕ < Ordinal.cof (ord (aleph 1))
         rw [mk_denumerable, lift_aleph0, isRegular_aleph_one.cof_eq]
+        -- ⊢ ℵ₀ < aleph 1
         exact aleph0_lt_aleph_one
+        -- 🎉 no goals
       · rw [← Ordinal.typein_lt_typein (· < ·), Ordinal.typein_enum]
+        -- ⊢ Ordinal.typein (fun x x_1 => x < x_1) (I n) < Ordinal.lsub fun n => Ordinal. …
         apply Ordinal.lt_lsub fun n : ℕ => _
+        -- 🎉 no goals
   · rcases ht with ⟨t, ⟨i, rfl⟩, hx⟩
+    -- ⊢ t ∈ {t | GenerateMeasurable s t}
     revert t
+    -- ⊢ ∀ (t : Set α), t ∈ (fun i => generateMeasurableRec s i) i → t ∈ {t | Generat …
     apply (aleph 1).ord.out.wo.wf.induction i
+    -- ⊢ ∀ (x : (Quotient.out (ord (aleph 1))).α), (∀ (y : (Quotient.out (ord (aleph  …
     intro j H t ht
+    -- ⊢ t ∈ {t | GenerateMeasurable s t}
     unfold generateMeasurableRec at ht
+    -- ⊢ t ∈ {t | GenerateMeasurable s t}
     rcases ht with (((h | (rfl : t = ∅)) | ⟨u, ⟨-, ⟨⟨k, hk⟩, rfl⟩, hu⟩, rfl⟩) | ⟨f, rfl⟩)
     · exact .basic t h
+      -- 🎉 no goals
     · exact .empty
+      -- 🎉 no goals
     · exact .compl u (H k hk u hu)
+      -- 🎉 no goals
     · refine .iUnion _ @fun n => ?_
+      -- ⊢ GenerateMeasurable s ↑(f n)
       obtain ⟨-, ⟨⟨k, hk⟩, rfl⟩, hf⟩ := (f n).prop
+      -- ⊢ GenerateMeasurable s ↑(f n)
       exact H k hk _ hf
+      -- 🎉 no goals
 #align measurable_space.generate_measurable_eq_rec MeasurableSpace.generateMeasurable_eq_rec
 
 /-- If a sigma-algebra is generated by a set of sets `s`, then the sigma-algebra has cardinality at
@@ -156,12 +210,17 @@ most `(max #s 2) ^ ℵ₀`. -/
 theorem cardinal_generateMeasurable_le (s : Set (Set α)) :
     #{ t | GenerateMeasurable s t } ≤ max #s 2 ^ aleph0.{u} := by
   rw [generateMeasurable_eq_rec]
+  -- ⊢ #↑(⋃ (i : (Quotient.out (ord (aleph 1))).α), generateMeasurableRec s i) ≤ ma …
   apply (mk_iUnion_le _).trans
+  -- ⊢ #(Quotient.out (ord (aleph 1))).α * ⨆ (i : (Quotient.out (ord (aleph 1))).α) …
   rw [(aleph 1).mk_ord_out]
+  -- ⊢ aleph 1 * ⨆ (i : (Quotient.out (ord (aleph 1))).α), #↑(generateMeasurableRec …
   refine le_trans (mul_le_mul' aleph_one_le_continuum
       (ciSup_le' fun i => cardinal_generateMeasurableRec_le s i)) ?_
   refine (mul_le_max_of_aleph0_le_left aleph0_le_continuum).trans (max_le ?_ le_rfl)
+  -- ⊢ 𝔠 ≤ max (#↑s) 2 ^ ℵ₀
   exact power_le_power_right (le_max_right _ _)
+  -- 🎉 no goals
 #align measurable_space.cardinal_generate_measurable_le MeasurableSpace.cardinal_generateMeasurable_le
 
 /-- If a sigma-algebra is generated by a set of sets `s`, then the sigma
@@ -178,7 +237,9 @@ theorem cardinal_generateMeasurable_le_continuum {s : Set (Set α)} (hs : #s ≤
   (cardinal_generateMeasurable_le s).trans
     (by
       rw [← continuum_power_aleph0]
+      -- ⊢ max (#↑s) 2 ^ ℵ₀ ≤ 𝔠 ^ ℵ₀
       exact_mod_cast power_le_power_right (max_le hs (nat_lt_continuum 2).le))
+      -- 🎉 no goals
 #align measurable_space.cardinal_generate_measurable_le_continuum MeasurableSpace.cardinal_generateMeasurable_le_continuum
 
 /-- If a sigma-algebra is generated by a set of sets `s` with cardinality at most the continuum,

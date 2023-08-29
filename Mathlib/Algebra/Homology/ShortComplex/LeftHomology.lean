@@ -110,9 +110,13 @@ def f' : S.X₁ ⟶ h.K := h.liftK S.f S.zero
 @[reassoc]
 lemma liftK_π_eq_zero_of_boundary (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
     h.liftK k (by rw [hx, assoc, S.zero, comp_zero]) ≫ h.π = 0 := by
+                  -- 🎉 no goals
   rw [show 0 = (x ≫ h.f') ≫ h.π by simp]
+  -- ⊢ liftK h k (_ : k ≫ S.g = 0) ≫ h.π = (x ≫ f' h) ≫ h.π
   congr 1
+  -- ⊢ liftK h k (_ : k ≫ S.g = 0) = x ≫ f' h
   simp only [← cancel_mono h.i, hx, liftK_i, assoc, f'_i]
+  -- 🎉 no goals
 
 /-- For `h : S.LeftHomologyData`, this is a restatement of `h.hπ`, saying that
 `π : h.K ⟶ h.H` is a cokernel of `h.f' : S.X₁ ⟶ h.K`. -/
@@ -128,13 +132,17 @@ lemma π_descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) : h.π ≫ h.descH k hk = k
 
 lemma isIso_i (hg : S.g = 0) : IsIso h.i :=
   ⟨h.liftK (𝟙 S.X₂) (by rw [hg, id_comp]),
+                        -- 🎉 no goals
     by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩
+       -- 🎉 no goals
 
 lemma isIso_π (hf : S.f = 0) : IsIso h.π := by
   have ⟨φ, hφ⟩ := CokernelCofork.IsColimit.desc' h.hπ' (𝟙 _)
     (by rw [← cancel_mono h.i, comp_id, f'_i, zero_comp, hf])
   dsimp at hφ
+  -- ⊢ IsIso h.π
   exact ⟨φ, hφ, by rw [← cancel_epi h.π, reassoc_of% hφ, comp_id]⟩
+  -- 🎉 no goals
 
 variable (S)
 
@@ -148,6 +156,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   i := 𝟙 _
   π := c.π
   wi := by rw [id_comp, hg]
+           -- 🎉 no goals
   hi := KernelFork.IsLimit.ofId _ hg
   wπ := CokernelCofork.condition _
   hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _))
@@ -157,7 +166,9 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   rw [← cancel_mono (ofIsColimitCokernelCofork S hg c hc).i, f'_i,
     ofIsColimitCokernelCofork_i]
   dsimp
+  -- ⊢ S.f = S.f ≫ 𝟙 S.X₂
   rw [comp_id]
+  -- 🎉 no goals
 
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given by
 the chosen `cokernel S.f` -/
@@ -178,14 +189,19 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _))
   wπ := Fork.IsLimit.hom_ext hc (by
     dsimp
+    -- ⊢ ((IsLimit.lift hc (KernelFork.ofι S.f (_ : S.f ≫ S.g = 0)) ≫ 𝟙 c.pt) ≫ 𝟙 c.p …
     simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf])
+    -- 🎉 no goals
   hπ := CokernelCofork.IsColimit.ofId _ (Fork.IsLimit.hom_ext hc (by
     dsimp
+    -- ⊢ (IsLimit.lift hc (KernelFork.ofι S.f (_ : S.f ≫ S.g = 0)) ≫ 𝟙 c.pt) ≫ Fork.ι …
     simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf]))
+    -- 🎉 no goals
 
 @[simp] lemma ofIsLimitKernelFork_f' (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
     (ofIsLimitKernelFork S hf c hc).f' = 0 := by
   rw [← cancel_mono (ofIsLimitKernelFork S hf c hc).i, f'_i, hf, zero_comp]
+  -- 🎉 no goals
 
 /-- When the first map `S.f` is zero, this is the left homology data on `S` given
 by the chosen `kernel S.g` -/
@@ -201,15 +217,19 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
   i := 𝟙 _
   π := 𝟙 _
   wi := by rw [id_comp, hg]
+           -- 🎉 no goals
   hi := KernelFork.IsLimit.ofId _ hg
   wπ := by
     change S.f ≫ 𝟙 _ = 0
+    -- ⊢ S.f ≫ 𝟙 S.X₂ = 0
     simp only [hf, zero_comp]
+    -- 🎉 no goals
   hπ := CokernelCofork.IsColimit.ofId _ hf
 
 @[simp] lemma ofZeros_f' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
+  -- 🎉 no goals
 
 end LeftHomologyData
 
@@ -294,10 +314,15 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃}
 instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
   ⟨fun ψ₁ ψ₂ => by
     have hK : ψ₁.φK = ψ₂.φK := by rw [← cancel_mono h₂.i, commi, commi]
+    -- ⊢ ψ₁ = ψ₂
     have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_epi h₁.π, commπ, commπ, hK]
+    -- ⊢ ψ₁ = ψ₂
     cases ψ₁
+    -- ⊢ mk φK✝ φH✝ = ψ₂
     cases ψ₂
+    -- ⊢ mk φK✝¹ φH✝¹ = mk φK✝ φH✝
     congr⟩
+    -- 🎉 no goals
 
 instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
   let φK : h₁.K ⟶ h₂.K := h₂.liftK (h₁.i ≫ φ.τ₂)
@@ -308,13 +333,16 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
   let φH : h₁.H ⟶ h₂.H := h₁.descH (φK ≫ h₂.π)
     (by rw [reassoc_of% commf', h₂.f'_π, comp_zero])
   exact ⟨φK, φH, by simp, commf', by simp⟩⟩
+  -- 🎉 no goals
 
 instance : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
 
 variable {φ h₁ h₂}
 
 lemma congr_φH {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φH = γ₂.φH := by rw [eq]
+                                                                                          -- 🎉 no goals
 lemma congr_φK {γ₁ γ₂ : LeftHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φK = γ₂.φK := by rw [eq]
+                                                                                          -- 🎉 no goals
 
 /-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on left homology of a
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
@@ -340,6 +368,7 @@ def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
   φH := f
   commπ := comm.symm
   commf' := by simp only [LeftHomologyData.ofIsColimitCokernelCofork_f', φ.comm₁₂]
+               -- 🎉 no goals
 
 /-- When `S₁.f` and `S₂.f` are zero and we have chosen limit kernel forks `c₁` and `c₂`
 for `S₁.g` and `S₂.g` respectively, the action on left homology of a morphism `φ : S₁ ⟶ S₂` of
@@ -414,28 +443,36 @@ lemma toCycles_i : S.toCycles ≫ S.iCycles = S.f := S.leftHomologyData.f'_i
 
 instance : Mono S.iCycles := by
   dsimp only [iCycles]
+  -- ⊢ Mono (leftHomologyData S).i
   infer_instance
+  -- 🎉 no goals
 
 instance : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
+  -- ⊢ Epi (leftHomologyData S).π
   infer_instance
+  -- 🎉 no goals
 
 lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
   rw [cancel_epi]
+  -- 🎉 no goals
 
 @[ext]
 lemma leftHomology_ext (f₁ f₂ : S.leftHomology ⟶ A)
     (h : S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂) : f₁ = f₂ := by
   simpa only [leftHomology_ext_iff] using h
+  -- 🎉 no goals
 
 lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
     f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
   rw [cancel_mono]
+  -- 🎉 no goals
 
 @[ext]
 lemma cycles_ext (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
   simpa only [cycles_ext_iff] using h
+  -- 🎉 no goals
 
 lemma isIso_iCycles (hg : S.g = 0) : IsIso S.iCycles :=
   LeftHomologyData.isIso_i _ hg
@@ -444,7 +481,9 @@ lemma isIso_iCycles (hg : S.g = 0) : IsIso S.iCycles :=
 @[simps! hom]
 noncomputable def cyclesIsoX₂ (hg : S.g = 0) : S.cycles ≅ S.X₂ := by
   have := S.isIso_iCycles hg
+  -- ⊢ cycles S ≅ S.X₂
   exact asIso S.iCycles
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma cyclesIsoX₂_hom_inv_id (hg : S.g = 0) :
@@ -462,7 +501,9 @@ by `S.leftHomologyπ`. -/
 @[simps! hom]
 noncomputable def cyclesIsoLeftHomology (hf : S.f = 0) : S.cycles ≅ S.leftHomology := by
   have := S.isIso_leftHomologyπ hf
+  -- ⊢ cycles S ≅ leftHomology S
   exact asIso S.leftHomologyπ
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma cyclesIsoLeftHomology_hom_inv_id (hf : S.f = 0) :
@@ -600,7 +641,9 @@ lemma leftHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     leftHomologyMap' (φ₁ ≫ φ₂) h₁ h₃ = leftHomologyMap' φ₁ h₁ h₂ ≫
       leftHomologyMap' φ₂ h₂ h₃ := by
   let γ₁ := leftHomologyMapData φ₁ h₁ h₂
+  -- ⊢ leftHomologyMap' (φ₁ ≫ φ₂) h₁ h₃ = leftHomologyMap' φ₁ h₁ h₂ ≫ leftHomologyM …
   let γ₂ := leftHomologyMapData φ₂ h₂ h₃
+  -- ⊢ leftHomologyMap' (φ₁ ≫ φ₂) h₁ h₃ = leftHomologyMap' φ₁ h₁ h₂ ≫ leftHomologyM …
   rw [γ₁.leftHomologyMap'_eq, γ₂.leftHomologyMap'_eq, (γ₁.comp γ₂).leftHomologyMap'_eq,
     LeftHomologyMapData.comp_φH]
 
@@ -609,7 +652,9 @@ lemma cyclesMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) (h₃ : S₃.LeftHomologyData) :
     cyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesMap' φ₁ h₁ h₂ ≫ cyclesMap' φ₂ h₂ h₃ := by
   let γ₁ := leftHomologyMapData φ₁ h₁ h₂
+  -- ⊢ cyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesMap' φ₁ h₁ h₂ ≫ cyclesMap' φ₂ h₂ h₃
   let γ₂ := leftHomologyMapData φ₂ h₂ h₃
+  -- ⊢ cyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesMap' φ₁ h₁ h₂ ≫ cyclesMap' φ₂ h₂ h₃
   rw [γ₁.cyclesMap'_eq, γ₂.cyclesMap'_eq, (γ₁.comp γ₂).cyclesMap'_eq,
     LeftHomologyMapData.comp_φK]
 
@@ -635,7 +680,9 @@ def leftHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
   hom := leftHomologyMap' e.hom h₁ h₂
   inv := leftHomologyMap' e.inv h₂ h₁
   hom_inv_id := by rw [← leftHomologyMap'_comp, e.hom_inv_id, leftHomologyMap'_id]
+                   -- 🎉 no goals
   inv_hom_id := by rw [← leftHomologyMap'_comp, e.inv_hom_id, leftHomologyMap'_id]
+                   -- 🎉 no goals
 
 instance isIso_leftHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -650,7 +697,9 @@ def cyclesMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
   hom := cyclesMap' e.hom h₁ h₂
   inv := cyclesMap' e.inv h₂ h₁
   hom_inv_id := by rw [← cyclesMap'_comp, e.hom_inv_id, cyclesMap'_id]
+                   -- 🎉 no goals
   inv_hom_id := by rw [← cyclesMap'_comp, e.inv_hom_id, cyclesMap'_id]
+                   -- 🎉 no goals
 
 instance isIso_cyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -665,7 +714,9 @@ noncomputable def leftHomologyMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
   hom := leftHomologyMap e.hom
   inv := leftHomologyMap e.inv
   hom_inv_id := by rw [← leftHomologyMap_comp, e.hom_inv_id, leftHomologyMap_id]
+                   -- 🎉 no goals
   inv_hom_id := by rw [← leftHomologyMap_comp, e.inv_hom_id, leftHomologyMap_id]
+                   -- 🎉 no goals
 
 instance isIso_leftHomologyMap_of_iso (φ : S₁ ⟶ S₂)
     [IsIso φ] [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
@@ -680,7 +731,9 @@ noncomputable def cyclesMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
   hom := cyclesMap e.hom
   inv := cyclesMap e.inv
   hom_inv_id := by rw [← cyclesMap_comp, e.hom_inv_id, cyclesMap_id]
+                   -- 🎉 no goals
   inv_hom_id := by rw [← cyclesMap_comp, e.inv_hom_id, cyclesMap_id]
+                   -- 🎉 no goals
 
 instance isIso_cyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
     [S₂.HasLeftHomology] : IsIso (cyclesMap φ) :=
@@ -705,11 +758,14 @@ noncomputable def cyclesIso : S.cycles ≅ h.K :=
 @[reassoc (attr := simp)]
 lemma cyclesIso_hom_comp_i : h.cyclesIso.hom ≫ h.i = S.iCycles := by
   dsimp [iCycles, LeftHomologyData.cyclesIso]
+  -- ⊢ cyclesMap' (𝟙 S) (leftHomologyData S) h ≫ h.i = (leftHomologyData S).i
   simp only [cyclesMap'_i, id_τ₂, comp_id]
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma cyclesIso_inv_comp_iCycles : h.cyclesIso.inv ≫ S.iCycles = h.i := by
   simp only [← h.cyclesIso_hom_comp_i, Iso.inv_hom_id_assoc]
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma leftHomologyπ_comp_leftHomologyIso_hom :
@@ -717,6 +773,7 @@ lemma leftHomologyπ_comp_leftHomologyIso_hom :
   dsimp only [leftHomologyπ, leftHomologyIso, cyclesIso, leftHomologyMapIso',
     cyclesMapIso', Iso.refl]
   rw [← leftHomologyπ_naturality']
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma π_comp_leftHomologyIso_inv :
@@ -735,23 +792,30 @@ variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHo
 lemma leftHomologyMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     leftHomologyMap φ = h₁.leftHomologyIso.hom ≫ γ.φH ≫ h₂.leftHomologyIso.inv := by
   dsimp [LeftHomologyData.leftHomologyIso, leftHomologyMapIso']
+  -- ⊢ leftHomologyMap φ = leftHomologyMap' (𝟙 S₁) (leftHomologyData S₁) h₁ ≫ γ.φH  …
   rw [← γ.leftHomologyMap'_eq, ← leftHomologyMap'_comp,
     ← leftHomologyMap'_comp, id_comp, comp_id]
   rfl
+  -- 🎉 no goals
 
 lemma cyclesMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     cyclesMap φ = h₁.cyclesIso.hom ≫ γ.φK ≫ h₂.cyclesIso.inv := by
   dsimp [LeftHomologyData.cyclesIso, cyclesMapIso']
+  -- ⊢ cyclesMap φ = cyclesMap' (𝟙 S₁) (leftHomologyData S₁) h₁ ≫ γ.φK ≫ cyclesMap' …
   rw [← γ.cyclesMap'_eq, ← cyclesMap'_comp, ← cyclesMap'_comp, id_comp, comp_id]
+  -- ⊢ cyclesMap φ = cyclesMap' φ (leftHomologyData S₁) (leftHomologyData S₂)
   rfl
+  -- 🎉 no goals
 
 lemma leftHomologyMap_comm [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     leftHomologyMap φ ≫ h₂.leftHomologyIso.hom = h₁.leftHomologyIso.hom ≫ γ.φH := by
   simp only [γ.leftHomologyMap_eq, assoc, Iso.inv_hom_id, comp_id]
+  -- 🎉 no goals
 
 lemma cyclesMap_comm [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     cyclesMap φ ≫ h₂.cyclesIso.hom = h₁.cyclesIso.hom ≫ γ.φK := by
   simp only [γ.cyclesMap_eq, assoc, Iso.inv_hom_id, comp_id]
+  -- 🎉 no goals
 
 end LeftHomologyMapData
 
@@ -804,7 +868,9 @@ the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono'`. 
 noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
+  -- ⊢ LeftHomologyData S₂
   have wi : i ≫ S₂.g = 0 := by simp only [assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
+  -- ⊢ LeftHomologyData S₂
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
       assoc, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, hx, zero_comp]))
@@ -813,6 +879,7 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
       rw [← cancel_mono h.i, ← cancel_mono φ.τ₂, assoc, assoc, liftK_i_assoc,
         assoc, IsIso.inv_hom_id, comp_id, hb])
   let f' := hi.lift (KernelFork.ofι S₂.f S₂.zero)
+  -- ⊢ LeftHomologyData S₂
   have hf' : φ.τ₁ ≫ f' = h.f' := by
     have eq := @Fork.IsLimit.lift_ι _ _ _ _ _ _ _ ((KernelFork.ofι S₂.f S₂.zero)) hi
     simp only [Fork.ι_ofι] at eq
@@ -823,6 +890,7 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
     (fun x hx => h.descH x (by rw [← hf', assoc, hx, comp_zero]))
     (fun x hx => by simp) (fun x hx b hb => by rw [← cancel_epi h.π, π_descH, hb])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
+  -- 🎉 no goals
 
 @[simp]
 lemma τ₁_ofEpiOfIsIsoOfMono_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
@@ -837,6 +905,7 @@ the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono`. -
 noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₁ := by
   let i : h.K ⟶ S₁.X₂ := h.i ≫ inv φ.τ₂
+  -- ⊢ LeftHomologyData S₁
   have wi : i ≫ S₁.g = 0 := by
     rw [assoc, ← cancel_mono φ.τ₃, zero_comp, assoc, assoc, ← φ.comm₂₃,
       IsIso.inv_hom_id_assoc, h.wi]
@@ -847,16 +916,20 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
     (fun x hx b hb => by rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc,
       hb, liftK_i_assoc, assoc, IsIso.hom_inv_id, comp_id])
   let f' := hi.lift (KernelFork.ofι S₁.f S₁.zero)
+  -- ⊢ LeftHomologyData S₁
   have hf' : f' ≫ i = S₁.f := Fork.IsLimit.lift_ι _
+  -- ⊢ LeftHomologyData S₁
   have hf'' : f' = φ.τ₁ ≫ h.f' := by
     rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc, assoc, hf', f'_i_assoc,
       φ.comm₁₂_assoc, IsIso.hom_inv_id, comp_id]
   have wπ : f' ≫ h.π = 0 := by simp only [hf'', assoc, f'_π, comp_zero]
+  -- ⊢ LeftHomologyData S₁
   have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => h.descH x (by rw [← cancel_epi φ.τ₁, ← reassoc_of% hf'', hx, comp_zero]))
     (fun x hx => π_descH _ _ _)
     (fun x hx b hx => by rw [← cancel_epi h.π, π_descH, hx])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
+  -- 🎉 no goals
 
 @[simp]
 lemma ofEpiOfIsIsoOfMono'_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
@@ -909,14 +982,19 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHo
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap' φ h₁ h₂) := by
   let h₂' := LeftHomologyData.ofEpiOfIsIsoOfMono φ h₁
+  -- ⊢ IsIso (leftHomologyMap' φ h₁ h₂)
   have : IsIso (leftHomologyMap' φ h₁ h₂') := by
     rw [(LeftHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).leftHomologyMap'_eq]
     dsimp
     infer_instance
   have eq := leftHomologyMap'_comp φ (𝟙 S₂) h₁ h₂' h₂
+  -- ⊢ IsIso (leftHomologyMap' φ h₁ h₂)
   rw [comp_id] at eq
+  -- ⊢ IsIso (leftHomologyMap' φ h₁ h₂)
   rw [eq]
+  -- ⊢ IsIso (leftHomologyMap' φ h₁ h₂' ≫ leftHomologyMap' (𝟙 S₂) h₂' h₂)
   infer_instance
+  -- 🎉 no goals
 
 /-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
 and `φ.τ₃` is mono, then the induced morphism on left homology is an isomorphism. -/
@@ -924,7 +1002,9 @@ instance (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap φ) := by
   dsimp only [leftHomologyMap]
+  -- ⊢ IsIso (leftHomologyMap' φ (leftHomologyData S₁) (leftHomologyData S₂))
   infer_instance
+  -- 🎉 no goals
 
 section
 
@@ -942,6 +1022,8 @@ lemma liftCycles_i : S.liftCycles k hk ≫ S.iCycles = k :=
 @[reassoc]
 lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
     α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by aesop_cat
+                                                     -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 
 /-- Via `S.iCycles : S.cycles ⟶ S.X₂`, the object `S.cycles` identifies to the
 kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
@@ -952,7 +1034,9 @@ noncomputable def cyclesIsKernel : IsLimit (KernelFork.ofι S.iCycles S.iCycles_
 @[simps]
 noncomputable def cyclesIsoKernel [HasKernel S.g] : S.cycles ≅ kernel S.g where
   hom := kernel.lift S.g S.iCycles (by simp)
+                                       -- 🎉 no goals
   inv := S.liftCycles (kernel.ι S.g) (by simp)
+                                         -- 🎉 no goals
 
 /-- The morphism `A ⟶ S.leftHomology` obtained from a morphism `k : A ⟶ S.X₂`
 such that `k ≫ S.g = 0.` -/
@@ -963,11 +1047,13 @@ noncomputable def liftLeftHomology : A ⟶ S.leftHomology :=
 @[reassoc]
 lemma liftCycles_leftHomologyπ_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
     S.liftCycles k (by rw [hx, assoc, S.zero, comp_zero]) ≫ S.leftHomologyπ = 0 :=
+                       -- 🎉 no goals
   LeftHomologyData.liftK_π_eq_zero_of_boundary _ k x hx
 
 @[reassoc (attr := simp)]
 lemma toCycles_comp_leftHomologyπ : S.toCycles ≫ S.leftHomologyπ = 0 :=
   S.liftCycles_leftHomologyπ_eq_zero_of_boundary S.f (𝟙 _) (by rw [id_comp])
+                                                               -- 🎉 no goals
 
 /-- Via `S.leftHomologyπ : S.cycles ⟶ S.leftHomology`, the object `S.leftHomology` identifies
 to the cokernel of `S.toCycles : S.X₁ ⟶ S.cycles`. -/
@@ -979,7 +1065,9 @@ noncomputable def leftHomologyIsCokernel :
 lemma liftCycles_comp_cyclesMap (φ : S ⟶ S₁) [S₁.HasLeftHomology] :
     S.liftCycles k hk ≫ cyclesMap φ =
       S₁.liftCycles (k ≫ φ.τ₂) (by rw [assoc, φ.comm₂₃, reassoc_of% hk, zero_comp]) := by
+                                   -- 🎉 no goals
   aesop_cat
+  -- 🎉 no goals
 
 variable {S}
 
@@ -993,6 +1081,7 @@ lemma LeftHomologyData.liftCycles_comp_cyclesIso_hom :
 lemma LeftHomologyData.lift_K_comp_cyclesIso_inv :
     h.liftK k hk ≫ h.cyclesIso.inv = S.liftCycles k hk := by
   rw [← h.liftCycles_comp_cyclesIso_hom, assoc, Iso.hom_inv_id, comp_id]
+  -- 🎉 no goals
 
 end
 
@@ -1006,11 +1095,14 @@ lemma hasKernel [S.HasLeftHomology] : HasKernel S.g :=
 lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
     HasCokernel (kernel.lift S.g S.f S.zero) := by
   let h := S.leftHomologyData
+  -- ⊢ HasCokernel (kernel.lift S.g S.f (_ : S.f ≫ S.g = 0))
   haveI : HasColimit (parallelPair h.f' 0) := ⟨⟨⟨_, h.hπ'⟩⟩⟩
+  -- ⊢ HasCokernel (kernel.lift S.g S.f (_ : S.f ≫ S.g = 0))
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
       (by aesop_cat) (by aesop_cat)
   exact hasColimitOfIso e
+  -- 🎉 no goals
 
 end HasLeftHomology
 
@@ -1029,6 +1121,7 @@ lemma isIso_cyclesMap'_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ
     IsIso (cyclesMap' φ h₁ h₂) := by
   refine' ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) _, _, _⟩
   · simp only [assoc, ← cancel_mono φ.τ₃, zero_comp, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, h₂.wi]
+    -- 🎉 no goals
   · simp only [← cancel_mono h₁.i, assoc, h₁.liftK_i, cyclesMap'_i_assoc,
       IsIso.hom_inv_id, comp_id, id_comp]
   · simp only [← cancel_mono h₂.i, assoc, cyclesMap'_i, h₁.liftK_i_assoc,

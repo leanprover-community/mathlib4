@@ -170,6 +170,7 @@ variable [One β]
 @[to_additive] -- porting note: removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
+  -- 🎉 no goals
 #align filter.map_one Filter.map_one
 #align filter.map_zero Filter.map_zero
 
@@ -236,6 +237,7 @@ variable [InvolutiveInv α] {f g : Filter α} {s : Set α}
 
 @[to_additive]
 theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
+                                                   -- 🎉 no goals
 #align filter.inv_mem_inv Filter.inv_mem_inv
 #align filter.neg_mem_neg Filter.neg_mem_neg
 
@@ -244,6 +246,7 @@ theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_p
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
   { Filter.instInv with
     inv_inv := fun f => map_map.trans <| by rw [inv_involutive.comp_self, map_id] }
+                                            -- 🎉 no goals
 #align filter.has_involutive_inv Filter.instInvolutiveInv
 #align filter.has_involutive_neg Filter.instInvolutiveNeg
 
@@ -257,6 +260,7 @@ protected theorem inv_le_inv_iff : f⁻¹ ≤ g⁻¹ ↔ f ≤ g :=
 
 @[to_additive]
 theorem inv_le_iff_le_inv : f⁻¹ ≤ g ↔ f ≤ g⁻¹ := by rw [← Filter.inv_le_inv_iff, inv_inv]
+                                                    -- 🎉 no goals
 #align filter.inv_le_iff_le_inv Filter.inv_le_iff_le_inv
 #align filter.neg_le_iff_le_neg Filter.neg_le_iff_le_neg
 
@@ -671,34 +675,47 @@ scoped[Pointwise] attribute [instance] Filter.monoid Filter.addMonoid
 theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
   | 0 => by
     rw [pow_zero]
+    -- ⊢ 1 ∈ f ^ 0
     exact one_mem_one
+    -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ]
+    -- ⊢ s * s ^ n ∈ f ^ (n + 1)
     exact mul_mem_mul hs (pow_mem_pow hs n)
+    -- 🎉 no goals
 #align filter.pow_mem_pow Filter.pow_mem_pow
 #align filter.nsmul_mem_nsmul Filter.nsmul_mem_nsmul
 
 @[to_additive (attr := simp) nsmul_bot]
 theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, bot_mul]
+  -- 🎉 no goals
 #align filter.bot_pow Filter.bot_pow
 #align filter.nsmul_bot Filter.nsmul_bot
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
   refine' top_le_iff.1 fun s => _
+  -- ⊢ s ∈ f * ⊤ → s ∈ ⊤
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
+  -- ⊢ (∃ t₁, t₁ ∈ f ∧ t₁ * univ ⊆ s) → s = univ
   rintro ⟨t, ht, hs⟩
+  -- ⊢ s = univ
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
+  -- 🎉 no goals
 #align filter.mul_top_of_one_le Filter.mul_top_of_one_le
 #align filter.add_top_of_nonneg Filter.add_top_of_nonneg
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
   refine' top_le_iff.1 fun s => _
+  -- ⊢ s ∈ ⊤ * f → s ∈ ⊤
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
+  -- ⊢ (∃ x, x ∈ f ∧ univ * x ⊆ s) → s = univ
   rintro ⟨t, ht, hs⟩
+  -- ⊢ s = univ
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
+  -- 🎉 no goals
 #align filter.top_mul_of_one_le Filter.top_mul_of_one_le
 #align filter.top_add_of_nonneg Filter.top_add_of_nonneg
 
@@ -713,6 +730,7 @@ theorem top_pow : ∀ {n : ℕ}, n ≠ 0 → (⊤ : Filter α) ^ n = ⊤
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
   | n + 2 => fun _ => by rw [pow_succ, top_pow n.succ_ne_zero, top_mul_top]
+                         -- 🎉 no goals
 #align filter.top_pow Filter.top_pow
 #align filter.nsmul_top Filter.nsmul_top
 
@@ -740,15 +758,25 @@ variable [DivisionMonoid α] {f g : Filter α}
 @[to_additive]
 protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
   refine' ⟨fun hfg => _, _⟩
+  -- ⊢ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1
   · obtain ⟨t₁, t₂, h₁, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
+    -- ⊢ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
+    -- ⊢ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
+    -- ⊢ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1
     obtain ⟨a, b, rfl, rfl, h⟩ := h
+    -- ⊢ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1
     refine' ⟨a, b, _, _, h⟩
+    -- ⊢ f = pure a
     · rwa [← hfg.of_mul_left.le_pure_iff, le_pure_iff]
+      -- 🎉 no goals
     · rwa [← hfg.of_mul_right.le_pure_iff, le_pure_iff]
+      -- 🎉 no goals
   · rintro ⟨a, b, rfl, rfl, h⟩
+    -- ⊢ pure a * pure b = 1
     rw [pure_mul_pure, h, pure_one]
+    -- 🎉 no goals
 #align filter.mul_eq_one_iff Filter.mul_eq_one_iff
 #align filter.add_eq_zero_iff Filter.add_eq_zero_iff
 
@@ -761,7 +789,9 @@ protected def divisionMonoid : DivisionMonoid (Filter α) :=
     mul_inv_rev := fun s t => map_map₂_antidistrib mul_inv_rev
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Filter.mul_eq_one_iff.1 h
+      -- ⊢ (pure a)⁻¹ = pure b
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab]
+      -- 🎉 no goals
     div_eq_mul_inv := fun f g => map_map₂_distrib_right div_eq_mul_inv }
 #align filter.division_monoid Filter.divisionMonoid
 #align filter.subtraction_monoid Filter.subtractionMonoid
@@ -769,13 +799,21 @@ protected def divisionMonoid : DivisionMonoid (Filter α) :=
 @[to_additive]
 theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
   constructor
+  -- ⊢ IsUnit f → ∃ a, f = pure a ∧ IsUnit a
   · rintro ⟨u, rfl⟩
+    -- ⊢ ∃ a, ↑u = pure a ∧ IsUnit a
     obtain ⟨a, b, ha, hb, h⟩ := Filter.mul_eq_one_iff.1 u.mul_inv
+    -- ⊢ ∃ a, ↑u = pure a ∧ IsUnit a
     refine' ⟨a, ha, ⟨a, b, h, pure_injective _⟩, rfl⟩
+    -- ⊢ pure (b * a) = pure 1
     rw [← pure_mul_pure, ← ha, ← hb]
+    -- ⊢ ↑u⁻¹ * ↑u = pure 1
     exact u.inv_mul
+    -- 🎉 no goals
   · rintro ⟨a, rfl, ha⟩
+    -- ⊢ IsUnit (pure a)
     exact ha.filter
+    -- 🎉 no goals
 #align filter.is_unit_iff Filter.isUnit_iff
 #align filter.is_add_unit_iff Filter.isAddUnit_iff
 
@@ -851,10 +889,15 @@ variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {f g f�
 @[to_additive (attr := simp 1100)]
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
   refine' ⟨fun h hfg => _, _⟩
+  -- ⊢ False
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
+    -- ⊢ False
     exact Set.one_mem_div_iff.1 (h <| div_mem_div hs ht) (disjoint_iff.2 hst.symm)
+    -- 🎉 no goals
   · rintro h s ⟨t₁, t₂, h₁, h₂, hs⟩
+    -- ⊢ s ∈ 1
     exact hs (Set.one_mem_div_iff.2 fun ht => h <| disjoint_of_disjoint_of_mem ht h₁ h₂)
+    -- 🎉 no goals
 #align filter.one_le_div_iff Filter.one_le_div_iff
 #align filter.nonneg_sub_iff Filter.nonneg_sub_iff
 
@@ -867,9 +910,13 @@ theorem not_one_le_div_iff : ¬1 ≤ f / g ↔ Disjoint f g :=
 @[to_additive]
 theorem NeBot.one_le_div (h : f.NeBot) : 1 ≤ f / f := by
   rintro s ⟨t₁, t₂, h₁, h₂, hs⟩
+  -- ⊢ s ∈ 1
   obtain ⟨a, ha₁, ha₂⟩ := Set.not_disjoint_iff.1 (h.not_disjoint h₁ h₂)
+  -- ⊢ s ∈ 1
   rw [mem_one, ← div_self' a]
+  -- ⊢ a / a ∈ s
   exact hs (Set.div_mem_div ha₁ ha₂)
+  -- 🎉 no goals
 #align filter.ne_bot.one_le_div Filter.NeBot.one_le_div
 #align filter.ne_bot.nonneg_sub Filter.NeBot.nonneg_sub
 
@@ -882,6 +929,7 @@ theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
 @[simp]
 theorem isUnit_iff_singleton : IsUnit f ↔ ∃ a, f = pure a := by
   simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  -- 🎉 no goals
 #align filter.is_unit_iff_singleton Filter.isUnit_iff_singleton
 
 @[to_additive]
@@ -1268,6 +1316,8 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Filter γ) :=
   ⟨fun a b f => by simp only [← map_smul, map_map, smul_assoc]; rfl⟩
+                   -- ⊢ map (fun b_1 => a • b • b_1) f = map ((fun b => a • b) ∘ fun b_1 => b • b_1) f
+                                                                -- 🎉 no goals
 #align filter.is_scalar_tower Filter.isScalarTower
 #align filter.vadd_assoc_class Filter.vaddAssocClass
 
@@ -1276,7 +1326,9 @@ instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
     refine' (map_map₂_distrib_left fun _ _ => _).symm
+    -- ⊢ (fun x x_1 => x • x_1) a (x✝¹ • x✝) = (fun x x_1 => x • x_1) a x✝¹ • x✝
     exact (smul_assoc a _ _).symm⟩
+    -- 🎉 no goals
 #align filter.is_scalar_tower' Filter.isScalarTower'
 #align filter.vadd_assoc_class' Filter.vaddAssocClass'
 
@@ -1300,6 +1352,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
  of `Filter α` on `Filter β`"]
 protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
+                                           -- 🎉 no goals
   mul_smul f g h := map₂_assoc mul_smul
 #align filter.mul_action Filter.mulAction
 #align filter.add_action Filter.addAction
@@ -1310,6 +1363,8 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
   mul_smul a b f := by simp only [← map_smul, map_map, Function.comp, ← mul_smul]
+                       -- 🎉 no goals
+                   -- 🎉 no goals
   one_smul f := by simp only [← map_smul, one_smul, map_id']
 #align filter.mul_action_filter Filter.mulActionFilter
 #align filter.add_action_filter Filter.addActionFilter
@@ -1323,6 +1378,8 @@ protected def distribMulActionFilter [Monoid α] [AddMonoid β] [DistribMulActio
     DistribMulAction α (Filter β) where
   smul_add _ _ _ := map_map₂_distrib <| smul_add _
   smul_zero _ := (map_pure _ _).trans <| by dsimp only; rw [smul_zero, pure_zero]
+                                            -- ⊢ pure (x✝ • 0) = 0
+                                                        -- 🎉 no goals
 #align filter.distrib_mul_action_filter Filter.distribMulActionFilter
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -1330,6 +1387,7 @@ protected def mulDistribMulActionFilter [Monoid α] [Monoid β] [MulDistribMulAc
     MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
   smul_one _ := image_singleton.trans <| by rw [smul_one, singleton_one]
+                                            -- 🎉 no goals
 #align filter.mul_distrib_mul_action_filter Filter.mulDistribMulActionFilter
 
 scoped[Pointwise]
@@ -1359,17 +1417,24 @@ theorem NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
 
 theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
   refine' fun s hs => mem_smul_filter.2 _
+  -- ⊢ (fun x x_1 => x • x_1) 0 ⁻¹' s ∈ g
   convert @univ_mem _ g
+  -- ⊢ (fun x x_1 => x • x_1) 0 ⁻¹' s = univ
   refine' eq_univ_iff_forall.2 fun a => _
+  -- ⊢ a ∈ (fun x x_1 => x • x_1) 0 ⁻¹' s
   dsimp only
+  -- ⊢ a ∈ (fun x => 0 • x) ⁻¹' s
   rwa [mem_preimage, zero_smul]
+  -- 🎉 no goals
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 
 theorem zero_smul_filter (hg : g.NeBot) : (0 : α) • g = 0 :=
   zero_smul_filter_nonpos.antisymm <|
     le_map_iff.2 fun s hs => by
       simp_rw [zero_smul, (hg.nonempty_of_mem hs).image_const]
+      -- ⊢ {0} ∈ 0
       exact zero_mem_zero
+      -- 🎉 no goals
 #align filter.zero_smul_filter Filter.zero_smul_filter
 
 end SMulWithZero

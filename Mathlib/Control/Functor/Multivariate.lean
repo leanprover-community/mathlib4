@@ -126,17 +126,26 @@ theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
                                   (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
       (∃ u : F α, P u) ↔ ∃ u : F β, q u := by
   constructor <;> rintro ⟨u, h₂⟩
+  -- ⊢ (∃ u, P u) → ∃ u, q u
+                  -- ⊢ ∃ u, q u
+                  -- ⊢ ∃ u, P u
   · refine ⟨f <$$> u, ?_⟩
+    -- ⊢ q (f <$$> u)
     apply (h₁ u).mp h₂
+    -- 🎉 no goals
   · refine ⟨g <$$> u, ?_⟩
+    -- ⊢ P (g <$$> u)
     apply (h₁ _).mpr _
+    -- ⊢ q (f <$$> g <$$> u)
     simp only [MvFunctor.map_map, h₀, LawfulMvFunctor.id_map, h₂]
+    -- 🎉 no goals
 #align mvfunctor.exists_iff_exists_of_mono MvFunctor.exists_iff_exists_of_mono
 
 variable {F}
 
 theorem LiftP_def (x : F α) : LiftP' P x ↔ ∃ u : F (Subtype_ P), subtypeVal P <$$> u = x :=
   exists_iff_exists_of_mono F _ _ (toSubtype_of_subtype P) (by simp [MvFunctor.map_map])
+                                                               -- 🎉 no goals
 #align mvfunctor.liftp_def MvFunctor.LiftP_def
 
 theorem LiftR_def (x y : F α) :
@@ -146,6 +155,8 @@ theorem LiftR_def (x y : F α) :
           (TypeVec.prod.snd ⊚ subtypeVal R) <$$> u = y :=
   exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R)
     (by simp only [map_map, comp_assoc, subtypeVal_toSubtype']; simp [comp])
+        -- ⊢ ∀ (u : F fun i => { p // (fun i x y => ofRepeat (R i (prod.mk i x y))) i p.f …
+                                                                -- 🎉 no goals
 #align mvfunctor.liftr_def MvFunctor.LiftR_def
 
 end LiftP'
@@ -174,6 +185,8 @@ private def f :
         { p_1 : (α ::: β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
+                     -- ⊢ ofRepeat (PredLast' α pp (Fin2.fs i) ↑x) = True
+                                           -- 🎉 no goals
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g :
@@ -182,21 +195,36 @@ private def g :
         { p_1 // ofRepeat (PredLast' α pp i p_1) }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
+                     -- ⊢ True = ofRepeat (PredLast' α pp (Fin2.fs i) ↑x)
+                                           -- 🎉 no goals
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x := by
   dsimp only [LiftP, LiftP']
+  -- ⊢ (∃ u, (fun i => Subtype.val) <$$> u = x) ↔ ∃ u, (fun i => Subtype.val) <$$>  …
   apply exists_iff_exists_of_mono F (f _ n α) (g _ n α)
+  -- ⊢ MvFunctor.f P n α ⊚ MvFunctor.g P n α = TypeVec.id
   · ext i ⟨x, _⟩
+    -- ⊢ ↑((MvFunctor.f P n α ⊚ MvFunctor.g P n α) i { val := x, property := property …
     cases i <;> rfl
+    -- ⊢ ↑((MvFunctor.f P n α ⊚ MvFunctor.g P n α) Fin2.fz { val := x, property := pr …
+                -- 🎉 no goals
+                -- 🎉 no goals
   · intros
+    -- ⊢ (fun i => Subtype.val) <$$> u✝ = x ↔ (fun i => Subtype.val) <$$> MvFunctor.f …
     rw [MvFunctor.map_map]
+    -- ⊢ (fun i => Subtype.val) <$$> u✝ = x ↔ ((fun i => Subtype.val) ⊚ MvFunctor.f P …
     dsimp [(· ⊚ ·)]
+    -- ⊢ (fun i => Subtype.val) <$$> u✝ = x ↔ (fun i x => ↑(MvFunctor.f P n α i x)) < …
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
       by rw[this];
     ext i ⟨x, _⟩
+    -- ⊢ ↑{ val := x, property := property✝ } = ↑(MvFunctor.f P n α i { val := x, pro …
     cases i <;> rfl
+    -- ⊢ ↑{ val := x, property := property✝ } = ↑(MvFunctor.f P n α Fin2.fz { val :=  …
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align mvfunctor.liftp_last_pred_iff MvFunctor.LiftP_PredLast_iff
 
 open Function
@@ -210,6 +238,8 @@ private def f' :
         fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
+                     -- ⊢ ofRepeat (RelLast' α rr (Fin2.fs i) (prod.mk (Fin2.fs i) (↑x).fst (↑x).snd)) …
+                                          -- 🎉 no goals
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g' :
@@ -219,16 +249,26 @@ private def g' :
         { p_1 : _ × _ // ofRepeat (RelLast' α rr i (TypeVec.prod.mk _ p_1.1 p_1.2)) }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
+                     -- ⊢ ((↑x).fst = (↑x).snd) = ofRepeat (RelLast' α rr (Fin2.fs i) (prod.mk (Fin2.f …
+                                          -- 🎉 no goals
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y := by
   dsimp only [LiftR, LiftR']
+  -- ⊢ (∃ u, (fun i t => (↑t).fst) <$$> u = x ∧ (fun i t => (↑t).snd) <$$> u = y) ↔ …
   apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)
+  -- ⊢ MvFunctor.f' rr n α ⊚ MvFunctor.g' rr n α = TypeVec.id
   · ext i ⟨x, _⟩ : 2
+    -- ⊢ (MvFunctor.f' rr n α ⊚ MvFunctor.g' rr n α) i { val := x, property := proper …
     cases i <;> rfl
+    -- ⊢ (MvFunctor.f' rr n α ⊚ MvFunctor.g' rr n α) Fin2.fz { val := x, property :=  …
+                -- 🎉 no goals
+                -- 🎉 no goals
   · intros
+    -- ⊢ (fun i t => (↑t).fst) <$$> u✝ = x ∧ (fun i t => (↑t).snd) <$$> u✝ = y ↔ (fun …
     simp [MvFunctor.map_map, (· ⊚ ·)]
+    -- ⊢ (fun i t => (↑t).fst) <$$> u✝ = x ∧ (fun i t => (↑t).snd) <$$> u✝ = y ↔ (fun …
     -- porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
@@ -237,6 +277,15 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     by  rcases this with ⟨left, right⟩
         rw[left, right];
     constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
+    -- ⊢ (fun i t => (↑t).fst) = fun i x => (↑(MvFunctor.f' rr n α i x)).fst
+                    -- ⊢ (↑{ val := x, property := property✝ }).fst = (↑(MvFunctor.f' rr n α i { val  …
+                    -- ⊢ (↑{ val := x, property := property✝ }).snd = (↑(MvFunctor.f' rr n α i { val  …
+                                     -- ⊢ (↑{ val := x, property := property✝ }).fst = (↑(MvFunctor.f' rr n α Fin2.fz  …
+                                     -- ⊢ (↑{ val := x, property := property✝ }).snd = (↑(MvFunctor.f' rr n α Fin2.fz  …
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
 #align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_RelLast_iff
 
 end LiftPLastPredIff

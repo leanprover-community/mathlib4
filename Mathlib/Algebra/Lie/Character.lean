@@ -43,11 +43,13 @@ variable {R L}
 -- @[simp] -- Porting note: simp normal form is the LHS of `lieCharacter_apply_lie'`
 theorem lieCharacter_apply_lie (χ : LieCharacter R L) (x y : L) : χ ⁅x, y⁆ = 0 := by
   rw [LieHom.map_lie, LieRing.of_associative_ring_bracket, mul_comm, sub_self]
+  -- 🎉 no goals
 #align lie_algebra.lie_character_apply_lie LieAlgebra.lieCharacter_apply_lie
 
 @[simp]
 theorem lieCharacter_apply_lie' (χ : LieCharacter R L) (x y : L) : ⁅χ x, χ y⁆ = 0 := by
   rw [LieRing.of_associative_ring_bracket, mul_comm, sub_self]
+  -- 🎉 no goals
 
 theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
@@ -55,9 +57,16 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
   refine' Submodule.span_induction h _ _ _ _
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
+    -- ⊢ ↑χ ⁅↑{ val := z, property := hz }, ↑{ val := w, property := hw }⁆ = 0
+                                        -- 🎉 no goals
   · exact χ.map_zero
+    -- 🎉 no goals
   · intro y z hy hz; rw [LieHom.map_add, hy, hz, add_zero]
+    -- ⊢ ↑χ (y + z) = 0
+                     -- 🎉 no goals
   · intro t y hy; rw [LieHom.map_smul, hy, smul_zero]
+    -- ⊢ ↑χ (t • y) = 0
+                  -- 🎉 no goals
 #align lie_algebra.lie_character_apply_of_mem_derived LieAlgebra.lieCharacter_apply_of_mem_derived
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/
@@ -70,7 +79,11 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
           LinearMap.toFun_eq_coe, LinearMap.map_zero] }
   left_inv χ := by ext; rfl
+                   -- ⊢ ↑((fun ψ => { toLinearMap := { toAddHom := ψ.toAddHom, map_smul' := (_ : ∀ ( …
+                        -- 🎉 no goals
   right_inv ψ := by ext; rfl
+                    -- ⊢ ↑((fun χ => ↑χ) ((fun ψ => { toLinearMap := { toAddHom := ψ.toAddHom, map_sm …
+                         -- 🎉 no goals
 #align lie_algebra.lie_character_equiv_linear_dual LieAlgebra.lieCharacterEquivLinearDual
 
 end LieAlgebra

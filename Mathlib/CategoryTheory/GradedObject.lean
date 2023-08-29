@@ -69,7 +69,9 @@ instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObjec
 @[ext]
 lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
+  -- ⊢ f x✝ = g x✝
   apply h
+  -- 🎉 no goals
 
 /-- The projection of a graded object to its `i`-th component. -/
 @[simps]
@@ -92,7 +94,9 @@ abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C
 theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
   subst h
+  -- ⊢ eqToHom (_ : x = x) i = eqToHom (_ : x i = x i)
   rfl
+  -- 🎉 no goals
 
 /-- The natural isomorphism comparing between
 pulling back along two propositionally equal functions.
@@ -100,22 +104,31 @@ pulling back along two propositionally equal functions.
 @[simps]
 def comapEq {β γ : Type w} {f g : β → γ} (h : f = g) : comap C f ≅ comap C g where
   hom := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
+                                         -- ⊢ X (f b) = X (g b)
+                                                -- 🎉 no goals
   inv := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
+                                         -- ⊢ X (g b) = X (f b)
+                                                -- 🎉 no goals
 #align category_theory.graded_object.comap_eq CategoryTheory.GradedObject.comapEq
 
 theorem comapEq_symm {β γ : Type w} {f g : β → γ} (h : f = g) :
     comapEq C h.symm = (comapEq C h).symm := by aesop_cat
+                                                -- 🎉 no goals
 #align category_theory.graded_object.comap_eq_symm CategoryTheory.GradedObject.comapEq_symm
 
 theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = h) :
     comapEq C (k.trans l) = comapEq C k ≪≫ comapEq C l := by aesop_cat
+                                                             -- 🎉 no goals
 #align category_theory.graded_object.comap_eq_trans CategoryTheory.GradedObject.comapEq_trans
 
 @[simp]
 theorem eqToHom_apply {β : Type w} {X Y : ∀ _ : β, C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
+                                        -- 🎉 no goals
   subst h
+  -- ⊢ eqToHom (_ : X = X) b = eqToHom (_ : X b = X b)
   rfl
+  -- 🎉 no goals
 #align category_theory.graded_object.eq_to_hom_apply CategoryTheory.GradedObject.eqToHom_apply
 
 /-- The equivalence between β-graded objects and γ-graded objects,
@@ -127,6 +140,10 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
   inverse := comap C (e : β → γ)
   counitIso :=
     (Pi.comapComp (fun _ => C) _ _).trans (comapEq C (by ext; simp))
+                                                         -- ⊢ (↑e ∘ ↑e.symm) x✝ = x✝
+                                                              -- 🎉 no goals
+                   -- ⊢ x✝ = (↑e.symm ∘ ↑e) x✝
+                        -- 🎉 no goals
   unitIso :=
     (comapEq C (by ext; simp)).trans (Pi.comapComp _ _ _).symm
 #align category_theory.graded_object.comap_equiv CategoryTheory.GradedObject.comapEquiv
@@ -138,7 +155,11 @@ instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObje
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
+                            -- 🎉 no goals
       add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
+                                      -- ⊢ x✝ + (m + n) • s = ((fun b => b + m • s) ∘ fun b => b + n • s) x✝
+                                           -- ⊢ x✝ + (m + n) • s = x✝ + n • s + m • s
+                                                  -- 🎉 no goals
           (Pi.comapComp _ _ _).symm }
 #align category_theory.graded_object.has_shift CategoryTheory.GradedObject.hasShift
 
@@ -176,6 +197,8 @@ instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
   refine' ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩, fun X =>
     ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩⟩⟩ <;> aesop_cat
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 #align category_theory.graded_object.has_zero_object CategoryTheory.GradedObject.hasZeroObject
 
 end
@@ -214,10 +237,15 @@ which follows from the fact we have zero morphisms and decidable equality for th
 instance : Faithful (total β C) where
   map_injective {X Y} f g w := by
     ext i
+    -- ⊢ f i = g i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
+    -- ⊢ f i = g i
     erw [colimit.ι_map, colimit.ι_map] at w
+    -- ⊢ f i = g i
     simp at *
+    -- ⊢ f i = g i
     exact Mono.right_cancellation _ _ w
+    -- 🎉 no goals
 
 end GradedObject
 

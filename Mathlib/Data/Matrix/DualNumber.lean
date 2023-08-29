@@ -29,16 +29,24 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
   right_inv d := TrivSqZeroExt.ext (Matrix.ext fun i j => rfl) (Matrix.ext fun i j => rfl)
   map_mul' A B := by
     ext
+    -- ⊢ fst (Equiv.toFun { toFun := fun A => (↑of fun i j => fst (A i j), ↑of fun i  …
     · dsimp [mul_apply]
+      -- ⊢ fst (Finset.sum Finset.univ fun j => A i✝ j * B j x✝) = Finset.sum Finset.un …
       simp_rw [fst_sum]
+      -- ⊢ (Finset.sum Finset.univ fun i => fst (A i✝ i * B i x✝)) = Finset.sum Finset. …
       rfl
+      -- 🎉 no goals
     · simp_rw [snd_mul, smul_eq_mul, op_smul_eq_mul]
+      -- ⊢ snd (↑of fun i j => fst ((A * B) i j), ↑of fun i j => snd ((A * B) i j)) i✝  …
       simp [mul_apply, snd_sum, snd_mul]
+      -- ⊢ (Finset.sum Finset.univ fun x => fst (A i✝ x) * snd (B x x✝) + snd (A i✝ x)  …
       rw [← Finset.sum_add_distrib]
+      -- 🎉 no goals
   map_add' A B := TrivSqZeroExt.ext rfl rfl
   commutes' r := by
     simp_rw [algebraMap_eq_inl', algebraMap_eq_diagonal, Pi.algebraMap_def,
       Algebra.id.map_eq_self, algebraMap_eq_inl, ← diagonal_map (inl_zero R), map_apply, fst_inl,
       snd_inl]
     rfl
+    -- 🎉 no goals
 #align matrix.dual_number_equiv Matrix.dualNumberEquiv

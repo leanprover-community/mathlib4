@@ -31,9 +31,13 @@ def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
   mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, _root_.map_mul, mul_le_one' hx hy]
+                             -- 🎉 no goals
   zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le']
+                  -- 🎉 no goals
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx :=by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
+                       -- ⊢ -x ∈ { toSubmonoid := { toSubsemigroup := { carrier := {x | ↑v x ≤ 1}, mul_m …
+                                                           -- 🎉 no goals
 #align valuation.integer Valuation.integer
 
 end Ring
@@ -75,6 +79,7 @@ theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
     exact mul_le_mul_left' (hv.2 (u⁻¹ : Units O)) _
+    -- 🎉 no goals
 #align valuation.integers.one_of_is_unit Valuation.Integers.one_of_isUnit
 
 theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebraMap O R x) = 1) :
@@ -83,17 +88,23 @@ theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebra
   have h1 : v u ≤ 1 := hu.symm ▸ hv.2 x
   have h2 : v (u⁻¹ : Rˣ) ≤ 1 := by
     rw [← one_mul (v _), ← hvx, ← v.map_mul, ← hu, u.mul_inv, hu, hvx, v.map_one]
+    -- 🎉 no goals
   let ⟨r1, hr1⟩ := hv.3 h1
   let ⟨r2, hr2⟩ := hv.3 h2
   ⟨⟨r1, r2, hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.mul_inv],
+                       -- 🎉 no goals
       hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.inv_mul]⟩,
+                 -- 🎉 no goals
     hv.1 <| hr1.trans hu⟩
 #align valuation.integers.is_unit_of_one Valuation.Integers.isUnit_of_one
 
 theorem le_of_dvd {x y : O} (h : x ∣ y) : v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   let ⟨z, hz⟩ := h
+  -- ⊢ ↑v (↑(algebraMap O R) y) ≤ ↑v (↑(algebraMap O R) x)
   rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
+  -- ⊢ ↑v (↑(algebraMap O R) x) * ↑v (↑(algebraMap O R) z) ≤ ↑v (↑(algebraMap O R)  …
   exact mul_le_mul_left' (hv.2 z) _
+  -- 🎉 no goals
 #align valuation.integers.le_of_dvd Valuation.Integers.le_of_dvd
 
 end Integers
@@ -118,7 +129,9 @@ theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) 
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel hy, v.map_mul, v.map_mul]
+      -- ⊢ ↑v (↑(algebraMap O F) y)⁻¹ * ↑v (↑(algebraMap O F) x) ≤ ↑v (↑(algebraMap O F …
       exact mul_le_mul_left' h _
+      -- 🎉 no goals
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 #align valuation.integers.dvd_of_le Valuation.Integers.dvd_of_le

@@ -114,22 +114,33 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
   of := fun (e : { e // _}) => ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
+    -- ⊢ ∃! F, ∀ (a b : Generators (ActionCategory G A)) (g : a ⟶ b), F.map ((fun {a  …
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
       ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
+    -- ⊢ ∃! F, ∀ (a b : Generators (ActionCategory G A)) (g : a ⟶ b), F.map ((fun {a  …
     refine' ⟨uncurry F' _, _, _⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
         -- Porting note: `MonoidHom.ext_iff` has been deprecated.
         exact FunLike.ext_iff.mp this
       ext
+      -- ⊢ ↑(MonoidHom.comp SemidirectProduct.rightHom F') (IsFreeGroup.of a✝) = ↑(Mono …
       rw [MonoidHom.comp_apply, hF']
+      -- ⊢ ↑SemidirectProduct.rightHom (f' a✝) = ↑(MonoidHom.id G) (IsFreeGroup.of a✝)
       rfl
+      -- 🎉 no goals
     · rintro ⟨⟨⟩, a : A⟩ ⟨⟨⟩, b⟩ ⟨e, h : IsFreeGroup.of e • a = b⟩
+      -- ⊢ (ActionCategory.uncurry F' (_ : ∀ (x : G), ↑(MonoidHom.comp SemidirectProduc …
       change (F' (IsFreeGroup.of _)).left _ = _
+      -- ⊢ SemidirectProduct.left (↑F' (IsFreeGroup.of ↑{ val := e, property := h })) ( …
       rw [hF']
+      -- ⊢ SemidirectProduct.left (f' ↑{ val := e, property := h }) (ActionCategory.bac …
       cases inv_smul_eq_iff.mpr h.symm
+      -- ⊢ SemidirectProduct.left (f' ↑{ val := e, property := h }) (ActionCategory.bac …
       rfl
+      -- 🎉 no goals
     · intro E hE
+      -- ⊢ E = ActionCategory.uncurry F' (_ : ∀ (x : G), ↑(MonoidHom.comp SemidirectPro …
       have : curry E = F' := by
         apply uF'
         intro e
@@ -138,12 +149,19 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
           rfl
         · rfl
       apply Functor.hext
+      -- ⊢ ∀ (X_1 : ActionCategory G A), E.obj X_1 = (ActionCategory.uncurry F' (_ : ∀  …
       · intro
+        -- ⊢ E.obj X✝ = (ActionCategory.uncurry F' (_ : ∀ (x : G), ↑(MonoidHom.comp Semid …
         apply Unit.ext
+        -- 🎉 no goals
       · refine' ActionCategory.cases _
+        -- ⊢ ∀ (t : A) (g : G), HEq (E.map (homOfPair t g)) ((ActionCategory.uncurry F' ( …
         intros
+        -- ⊢ HEq (E.map (homOfPair t✝ g✝)) ((ActionCategory.uncurry F' (_ : ∀ (x : G), ↑( …
         simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair.val]
+        -- ⊢ HEq (E.map (homOfPair t✝ g✝)) (E.map (homOfPair t✝ g✝))
         rfl
+        -- 🎉 no goals
 #align is_free_groupoid.action_groupoid_is_free IsFreeGroupoid.actionGroupoidIsFree
 
 namespace SpanningTree
@@ -177,6 +195,7 @@ def treeHom (a : G) : root' T ⟶ a :=
 /-- Any path to `a` gives `treeHom T a`, since paths in the tree are unique. -/
 theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p := by
   rw [treeHom, Unique.default_eq]
+  -- 🎉 no goals
 #align is_free_groupoid.spanning_tree.tree_hom_eq IsFreeGroupoid.SpanningTree.treeHom_eq
 
 @[simp]
@@ -195,11 +214,16 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
+  -- ⊢ treeHom T
   cases' H with H H
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
+    -- ⊢ treeHom T
     rfl
+    -- 🎉 no goals
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
+    -- ⊢ (homOfPath T default ≫ Sum.recOn (↑{ val := Sum.inr e, property := H }) (fun …
     simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
+    -- 🎉 no goals
 #align is_free_groupoid.spanning_tree.loop_of_hom_eq_id IsFreeGroupoid.SpanningTree.loopOfHom_eq_id
 
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
@@ -211,12 +235,18 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ Categor
   map p := f (loopOfHom T p)
   map_id := by
     intro a
+    -- ⊢ { obj := fun x => (), map := fun {X_1 Y} p => ↑f (loopOfHom T p) }.map (𝟙 a) …
     dsimp only [loopOfHom]
+    -- ⊢ ↑f (treeHom T a ≫ 𝟙 a ≫ inv (treeHom T a)) = 𝟙 ()
     rw [Category.id_comp, IsIso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
+    -- 🎉 no goals
   map_comp := by
     intros
+    -- ⊢ { obj := fun x => (), map := fun {X_1 Y} p => ↑f (loopOfHom T p) }.map (f✝ ≫ …
     rw [comp_as_mul, ← f.map_mul]
+    -- ⊢ { obj := fun x => (), map := fun {X_1 Y} p => ↑f (loopOfHom T p) }.map (f✝ ≫ …
     simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
+    -- 🎉 no goals
 #align is_free_groupoid.spanning_tree.functor_of_monoid_hom IsFreeGroupoid.SpanningTree.functorOfMonoidHom
 
 /-- Given a free groupoid and an arborescence of its generating quiver, the vertex
@@ -227,39 +257,61 @@ def endIsFree : IsFreeGroup (End (root' T)) :=
     (fun e => loopOfHom T (of e.val.hom))
     (by
       intro X _ f
+      -- ⊢ ∃! F, ∀ (a : ↑(↑wideSubquiverEquivSetTotal (wideSubquiverSymmetrify T))ᶜ), ↑ …
       let f' : Labelling (Generators G) X := fun a b e =>
         if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
+      -- ⊢ ∃! F, ∀ (a : ↑(↑wideSubquiverEquivSetTotal (wideSubquiverSymmetrify T))ᶜ), ↑ …
       refine' ⟨F'.mapEnd _, _, _⟩
+      -- ⊢ (fun F => ∀ (a : ↑(↑wideSubquiverEquivSetTotal (wideSubquiverSymmetrify T))ᶜ …
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
           erw [Functor.mapEnd_apply, this, hF']
           exact dif_neg h
         intros x y q
+        -- ⊢ F'.map (loopOfHom T q) = F'.map q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
             one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
+        -- ⊢ F'.map (homOfPath T p) = 1
         induction' p with b c p e ih
+        -- ⊢ F'.map (homOfPath T Path.nil) = 1
         · rw [homOfPath, F'.map_id, id_as_one]
+          -- 🎉 no goals
         rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
+        -- ⊢ F'.map (Sum.recOn (↑e) (fun e => of e) fun e => inv (of e)) = 1
         rcases e with ⟨e | e, eT⟩
+        -- ⊢ F'.map (Sum.recOn (↑{ val := Sum.inl e, property := eT }) (fun e => of e) fu …
         · rw [hF']
+          -- ⊢ f' e = 1
           exact dif_pos (Or.inl eT)
+          -- 🎉 no goals
         · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
+          -- ⊢ f' e = 1
           exact dif_pos (Or.inr eT)
+          -- 🎉 no goals
       · intro E hE
+        -- ⊢ E = Functor.mapEnd (IsFreeGroupoid.SpanningTree.root' T) F'
         ext x
+        -- ⊢ ↑E x = ↑(Functor.mapEnd (IsFreeGroupoid.SpanningTree.root' T) F') x
         suffices (functorOfMonoidHom T E).map x = F'.map x by
           simpa only [loopOfHom, functorOfMonoidHom, IsIso.inv_id, treeHom_root,
             Category.id_comp, Category.comp_id] using this
         congr
+        -- ⊢ functorOfMonoidHom T E = F'
         apply uF'
+        -- ⊢ ∀ (a b : Generators G) (g : a ⟶ b), (functorOfMonoidHom T E).map (of g) = f' g
         intro a b e
+        -- ⊢ (functorOfMonoidHom T E).map (of e) = f' e
         change E (loopOfHom T _) = dite _ _ _
+        -- ⊢ ↑E (loopOfHom T (of e)) = if h : e ∈ wideSubquiverSymmetrify T a b then 1 el …
         split_ifs with h
+        -- ⊢ ↑E (loopOfHom T (of e)) = 1
         · rw [loopOfHom_eq_id T e h, ← End.one_def, E.map_one]
+          -- 🎉 no goals
         · exact hE ⟨⟨a, b, e⟩, h⟩)
+          -- 🎉 no goals
 #align is_free_groupoid.spanning_tree.End_is_free IsFreeGroupoid.SpanningTree.endIsFree
 
 end SpanningTree
@@ -275,17 +327,28 @@ from `a` to `b` in the generating quiver. -/
 theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
     Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) := by
   rintro ⟨p⟩
+  -- ⊢ Nonempty (Path (IsFreeGroupoid.symgen a) (IsFreeGroupoid.symgen b))
   rw [← @WeaklyConnectedComponent.eq (Generators G), eq_comm, ← FreeGroup.of_injective.eq_iff, ←
     mul_inv_eq_one]
   let X := FreeGroup (WeaklyConnectedComponent <| Generators G)
+  -- ⊢ FreeGroup.of (WeaklyConnectedComponent.mk (IsFreeGroupoid.symgen b)) * (Free …
   let f : G → X := fun g => FreeGroup.of (WeaklyConnectedComponent.mk g)
+  -- ⊢ FreeGroup.of (WeaklyConnectedComponent.mk (IsFreeGroupoid.symgen b)) * (Free …
   let F : G ⥤ CategoryTheory.SingleObj.{u} (X : Type u) := SingleObj.differenceFunctor f
+  -- ⊢ FreeGroup.of (WeaklyConnectedComponent.mk (IsFreeGroupoid.symgen b)) * (Free …
   change (F.map p) = ((@CategoryTheory.Functor.const G _ _ (SingleObj.category X)).obj ()).map p
+  -- ⊢ F.map p = ((Functor.const G).obj ()).map p
   congr; ext
+  -- ⊢ F = (Functor.const G).obj ()
+         -- ⊢ F.map (of e✝) = ((Functor.const G).obj ()).map (of e✝)
   rw [Functor.const_obj_map, id_as_one, differenceFunctor_map, @mul_inv_eq_one _ _ (f _)]
+  -- ⊢ f b✝ =
   apply congr_arg FreeGroup.of
+  -- ⊢ WeaklyConnectedComponent.mk b✝ =
   apply (WeaklyConnectedComponent.eq _ _).mpr
+  -- ⊢ Nonempty
   exact ⟨Hom.toPath (Sum.inr (by assumption))⟩
+  -- 🎉 no goals
 #align is_free_groupoid.path_nonempty_of_hom IsFreeGroupoid.path_nonempty_of_hom
 
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/

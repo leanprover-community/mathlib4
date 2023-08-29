@@ -59,9 +59,11 @@ theorem fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).ra
 protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesOnBall f (f.fpowerSeries x) x ∞ :=
   { r_le := by simp
+               -- 🎉 no goals
     r_pos := ENNReal.coe_lt_top
     hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
       simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries] }
+      -- 🎉 no goals
 #align continuous_linear_map.has_fpower_series_on_ball ContinuousLinearMap.hasFPowerSeriesOnBall
 
 protected theorem hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
@@ -130,12 +132,14 @@ theorem fpowerSeriesBilinear_radius (f : E →L[𝕜] F →L[𝕜] G) (x : E × 
 protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     HasFPowerSeriesOnBall (fun x : E × F => f x.1 x.2) (f.fpowerSeriesBilinear x) x ∞ :=
   { r_le := by simp
+               -- 🎉 no goals
     r_pos := ENNReal.coe_lt_top
     hasSum := fun _ =>
       (hasSum_nat_add_iff' 3).1 <| by
         simp only [Finset.sum_range_succ, Finset.sum_range_one, Prod.fst_add, Prod.snd_add,
           f.map_add_add]
         simp [fpowerSeriesBilinear, hasSum_zero] }
+        -- 🎉 no goals
 #align continuous_linear_map.has_fpower_series_on_ball_bilinear ContinuousLinearMap.hasFPowerSeriesOnBall_bilinear
 
 protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :

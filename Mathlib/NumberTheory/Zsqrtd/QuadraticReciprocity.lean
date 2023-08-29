@@ -38,8 +38,11 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       absurd hpi
         (mt irreducible_iff_prime.2 fun ⟨_, h⟩ => by
           have := h ⟨1, 1⟩ ⟨1, -1⟩ (hp2.symm ▸ rfl)
+          -- ⊢ False
           rw [← norm_eq_one_iff, ← norm_eq_one_iff] at this
+          -- ⊢ False
           exact absurd this (by decide)))
+          -- 🎉 no goals
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
       have hp41 : p % 4 = 1 := by
@@ -49,12 +52,14 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
         generalize p % 4 = m
         intros; interval_cases m <;> simp_all -- Porting note: was `decide!`
       let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 <| by rw [hp41]; exact by decide
+      -- ⊢ False
       obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
         refine' ⟨k.val, k.val_lt, ZMod.nat_cast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
         rw [pow_two, ← CharP.cast_eq_zero_iff (ZMod p) p, Nat.cast_add, Nat.cast_mul, Nat.cast_one,
           ← hk, add_left_neg]
       have hkmul : (k ^ 2 + 1 : ℤ[i]) = ⟨k, 1⟩ * ⟨k, -1⟩ := by simp [sq, Zsqrtd.ext]
+      -- ⊢ False
       have hkltp : 1 + k * k < p * p :=
         calc
           1 + k * k ≤ k + k * k := by
@@ -79,9 +84,13 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
               norm_le_norm_mul_left _ fun hx0 =>
                 show (1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using congr_arg Zsqrtd.im hx
       obtain ⟨y, hy⟩ := hpk
+      -- ⊢ False
       have := hpi.2.2 ⟨k, 1⟩ ⟨k, -1⟩ ⟨y, by rw [← hkmul, ← Nat.cast_mul p, ← hy]; simp⟩
+      -- ⊢ False
       clear_aux_decl
+      -- ⊢ False
       tauto
+      -- 🎉 no goals
 #align gaussian_int.mod_four_eq_three_of_nat_prime_of_prime GaussianInt.mod_four_eq_three_of_nat_prime_of_prime
 
 theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
@@ -91,7 +100,10 @@ theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (h
       let ⟨a, b, hab⟩ := sq_add_sq_of_nat_prime_of_not_irreducible p hpi
       have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ p := by
         erw [← ZMod.nat_cast_mod p 4, hp3]; exact by decide
+        -- ⊢ ∀ (a b : ZMod 4), a ^ 2 + b ^ 2 ≠ ↑3
+                                            -- 🎉 no goals
       this a b (hab ▸ by simp)
+                         -- 🎉 no goals
 #align gaussian_int.prime_of_nat_prime_of_mod_four_eq_three GaussianInt.prime_of_nat_prime_of_mod_four_eq_three
 
 /-- A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4` -/

@@ -60,16 +60,27 @@ variable [NormedSpace ℝ E]
 theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ 1 → ∀ ⦃y⦄, ‖y‖ ≤ 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ := by
   have hε' : 0 < ε / 3 := div_pos hε zero_lt_three
+  -- ⊢ ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ 1 → ∀ ⦃y : E⦄, ‖y‖ ≤ 1 → ε ≤ ‖x - y‖ → ‖x + y‖ …
   obtain ⟨δ, hδ, h⟩ := exists_forall_sphere_dist_add_le_two_sub E hε'
+  -- ⊢ ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ 1 → ∀ ⦃y : E⦄, ‖y‖ ≤ 1 → ε ≤ ‖x - y‖ → ‖x + y‖ …
   set δ' := min (1 / 2) (min (ε / 3) <| δ / 3)
+  -- ⊢ ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ 1 → ∀ ⦃y : E⦄, ‖y‖ ≤ 1 → ε ≤ ‖x - y‖ → ‖x + y‖ …
   refine' ⟨δ', lt_min one_half_pos <| lt_min hε' (div_pos hδ zero_lt_three), fun x hx y hy hxy => _⟩
+  -- ⊢ ‖x + y‖ ≤ 2 - δ'
   obtain hx' | hx' := le_or_lt ‖x‖ (1 - δ')
+  -- ⊢ ‖x + y‖ ≤ 2 - δ'
   · rw [← one_add_one_eq_two]
+    -- ⊢ ‖x + y‖ ≤ 1 + 1 - δ'
     exact (norm_add_le_of_le hx' hy).trans (sub_add_eq_add_sub _ _ _).le
+    -- 🎉 no goals
   obtain hy' | hy' := le_or_lt ‖y‖ (1 - δ')
+  -- ⊢ ‖x + y‖ ≤ 2 - δ'
   · rw [← one_add_one_eq_two]
+    -- ⊢ ‖x + y‖ ≤ 1 + 1 - δ'
     exact (norm_add_le_of_le hx hy').trans (add_sub_assoc _ _ _).ge
+    -- 🎉 no goals
   have hδ' : 0 < 1 - δ' := sub_pos_of_lt (min_lt_of_left_lt one_half_lt_one)
+  -- ⊢ ‖x + y‖ ≤ 2 - δ'
   have h₁ : ∀ z : E, 1 - δ' < ‖z‖ → ‖‖z‖⁻¹ • z‖ = 1 := by
     rintro z hz
     rw [norm_smul_of_nonneg (inv_nonneg.2 <| norm_nonneg _), inv_mul_cancel (hδ'.trans hz).ne']
@@ -79,7 +90,9 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
     rwa [← sub_smul, norm_smul_of_nonneg (sub_nonneg_of_le <| one_le_inv (hδ'.trans_le hδz) hz),
       sub_mul, inv_mul_cancel (hδ'.trans_le hδz).ne', one_mul, sub_le_comm]
   set x' := ‖x‖⁻¹ • x
+  -- ⊢ ‖x + y‖ ≤ 2 - δ'
   set y' := ‖y‖⁻¹ • y
+  -- ⊢ ‖x + y‖ ≤ 2 - δ'
   have hxy' : ε / 3 ≤ ‖x' - y'‖ :=
     calc
       ε / 3 = ε - (ε / 3 + ε / 3) := by ring
@@ -113,16 +126,23 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ r → ∀ ⦃y⦄, ‖y‖ ≤ r → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 * r - δ := by
   obtain hr | hr := le_or_lt r 0
+  -- ⊢ ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ r → ∀ ⦃y : E⦄, ‖y‖ ≤ r → ε ≤ ‖x - y‖ → ‖x + y‖ …
   · exact ⟨1, one_pos, fun x hx y hy h => (hε.not_le <|
       h.trans <| (norm_sub_le _ _).trans <| add_nonpos (hx.trans hr) (hy.trans hr)).elim⟩
   obtain ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε hr)
+  -- ⊢ ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ r → ∀ ⦃y : E⦄, ‖y‖ ≤ r → ε ≤ ‖x - y‖ → ‖x + y‖ …
   refine' ⟨δ * r, mul_pos hδ hr, fun x hx y hy hxy => _⟩
+  -- ⊢ ‖x + y‖ ≤ 2 * r - δ * r
   rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
+  -- ⊢ ‖x + y‖ ≤ 2 * r - δ * r
   try infer_instance
+  -- ⊢ ‖x + y‖ ≤ 2 * r - δ * r
   have := h hx hy
+  -- ⊢ ‖x + y‖ ≤ 2 * r - δ * r
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
     div_le_div_right hr, div_le_iff hr, sub_mul] at this
   exact this hxy
+  -- 🎉 no goals
 #align exists_forall_closed_ball_dist_add_le_two_mul_sub exists_forall_closed_ball_dist_add_le_two_mul_sub
 
 end SeminormedAddCommGroup

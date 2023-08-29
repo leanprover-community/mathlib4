@@ -52,10 +52,12 @@ section Add
 nonrec theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' x L)
     (hg : HasDerivAtFilter g g' x L) : HasDerivAtFilter (fun y => f y + g y) (f' + g') x L := by
   simpa using (hf.add hg).hasDerivAtFilter
+  -- 🎉 no goals
 #align has_deriv_at_filter.add HasDerivAtFilter.add
 
 nonrec theorem HasStrictDerivAt.add (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
     HasStrictDerivAt (fun y => f y + g y) (f' + g') x := by simpa using (hf.add hg).hasStrictDerivAt
+                                                            -- 🎉 no goals
 #align has_strict_deriv_at.add HasStrictDerivAt.add
 
 nonrec theorem HasDerivWithinAt.add (hf : HasDerivWithinAt f f' s x)
@@ -103,10 +105,12 @@ nonrec theorem HasDerivAt.add_const (hf : HasDerivAt f f' x) (c : F) :
 theorem derivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     derivWithin (fun y => f y + c) s x = derivWithin f s x := by
   simp only [derivWithin, fderivWithin_add_const hxs]
+  -- 🎉 no goals
 #align deriv_within_add_const derivWithin_add_const
 
 theorem deriv_add_const (c : F) : deriv (fun y => f y + c) x = deriv f x := by
   simp only [deriv, fderiv_add_const]
+  -- 🎉 no goals
 #align deriv_add_const deriv_add_const
 
 @[simp]
@@ -137,10 +141,12 @@ nonrec theorem HasDerivAt.const_add (c : F) (hf : HasDerivAt f f' x) :
 theorem derivWithin_const_add (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     derivWithin (fun y => c + f y) s x = derivWithin f s x := by
   simp only [derivWithin, fderivWithin_const_add hxs]
+  -- 🎉 no goals
 #align deriv_within_const_add derivWithin_const_add
 
 theorem deriv_const_add (c : F) : deriv (fun y => c + f y) x = deriv f x := by
   simp only [deriv, fderiv_const_add]
+  -- 🎉 no goals
 #align deriv_const_add deriv_const_add
 
 @[simp]
@@ -162,11 +168,13 @@ variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) x L) :
     HasDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
   simpa [ContinuousLinearMap.sum_apply] using (HasFDerivAtFilter.sum h).hasDerivAtFilter
+  -- 🎉 no goals
 #align has_deriv_at_filter.sum HasDerivAtFilter.sum
 
 theorem HasStrictDerivAt.sum (h : ∀ i ∈ u, HasStrictDerivAt (A i) (A' i) x) :
     HasStrictDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
   simpa [ContinuousLinearMap.sum_apply] using (HasStrictFDerivAt.sum h).hasStrictDerivAt
+  -- 🎉 no goals
 #align has_strict_deriv_at.sum HasStrictDerivAt.sum
 
 theorem HasDerivWithinAt.sum (h : ∀ i ∈ u, HasDerivWithinAt (A i) (A' i) s x) :
@@ -199,6 +207,7 @@ section Neg
 
 nonrec theorem HasDerivAtFilter.neg (h : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun x => -f x) (-f') x L := by simpa using h.neg.hasDerivAtFilter
+                                                     -- 🎉 no goals
 #align has_deriv_at_filter.neg HasDerivAtFilter.neg
 
 nonrec theorem HasDerivWithinAt.neg (h : HasDerivWithinAt f f' s x) :
@@ -212,15 +221,18 @@ nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (fun x => -f 
 
 nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => -f x) (-f') x := by simpa using h.neg.hasStrictDerivAt
+                                                   -- 🎉 no goals
 #align has_strict_deriv_at.neg HasStrictDerivAt.neg
 
 theorem derivWithin.neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun y => -f y) s x = -derivWithin f s x := by
   simp only [derivWithin, fderivWithin_neg hxs, ContinuousLinearMap.neg_apply]
+  -- 🎉 no goals
 #align deriv_within.neg derivWithin.neg
 
 theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
   simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
+  -- 🎉 no goals
 #align deriv.neg deriv.neg
 
 @[simp]
@@ -291,6 +303,7 @@ section Sub
 theorem HasDerivAtFilter.sub (hf : HasDerivAtFilter f f' x L) (hg : HasDerivAtFilter g g' x L) :
     HasDerivAtFilter (fun x => f x - g x) (f' - g') x L := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+  -- 🎉 no goals
 #align has_deriv_at_filter.sub HasDerivAtFilter.sub
 
 nonrec theorem HasDerivWithinAt.sub (hf : HasDerivWithinAt f f' s x)
@@ -306,6 +319,7 @@ nonrec theorem HasDerivAt.sub (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) 
 theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
     HasStrictDerivAt (fun x => f x - g x) (f' - g') x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+  -- 🎉 no goals
 #align has_strict_deriv_at.sub HasStrictDerivAt.sub
 
 theorem derivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
@@ -323,6 +337,7 @@ theorem deriv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g
 theorem HasDerivAtFilter.sub_const (hf : HasDerivAtFilter f f' x L) (c : F) :
     HasDerivAtFilter (fun x => f x - c) f' x L := by
   simpa only [sub_eq_add_neg] using hf.add_const (-c)
+  -- 🎉 no goals
 #align has_deriv_at_filter.sub_const HasDerivAtFilter.sub_const
 
 nonrec theorem HasDerivWithinAt.sub_const (hf : HasDerivWithinAt f f' s x) (c : F) :
@@ -338,15 +353,18 @@ nonrec theorem HasDerivAt.sub_const (hf : HasDerivAt f f' x) (c : F) :
 theorem derivWithin_sub_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     derivWithin (fun y => f y - c) s x = derivWithin f s x := by
   simp only [derivWithin, fderivWithin_sub_const hxs]
+  -- 🎉 no goals
 #align deriv_within_sub_const derivWithin_sub_const
 
 theorem deriv_sub_const (c : F) : deriv (fun y => f y - c) x = deriv f x := by
   simp only [deriv, fderiv_sub_const]
+  -- 🎉 no goals
 #align deriv_sub_const deriv_sub_const
 
 theorem HasDerivAtFilter.const_sub (c : F) (hf : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun x => c - f x) (-f') x L := by
   simpa only [sub_eq_add_neg] using hf.neg.const_add c
+  -- 🎉 no goals
 #align has_deriv_at_filter.const_sub HasDerivAtFilter.const_sub
 
 nonrec theorem HasDerivWithinAt.const_sub (c : F) (hf : HasDerivWithinAt f f' s x) :
@@ -357,6 +375,7 @@ nonrec theorem HasDerivWithinAt.const_sub (c : F) (hf : HasDerivWithinAt f f' s 
 theorem HasStrictDerivAt.const_sub (c : F) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => c - f x) (-f') x := by
   simpa only [sub_eq_add_neg] using hf.neg.const_add c
+  -- 🎉 no goals
 #align has_strict_deriv_at.const_sub HasStrictDerivAt.const_sub
 
 nonrec theorem HasDerivAt.const_sub (c : F) (hf : HasDerivAt f f' x) :
@@ -367,6 +386,7 @@ nonrec theorem HasDerivAt.const_sub (c : F) (hf : HasDerivAt f f' x) :
 theorem derivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     derivWithin (fun y => c - f y) s x = -derivWithin f s x := by
   simp [derivWithin, fderivWithin_const_sub hxs]
+  -- 🎉 no goals
 #align deriv_within_const_sub derivWithin_const_sub
 
 theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by

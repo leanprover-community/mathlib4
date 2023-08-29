@@ -118,16 +118,25 @@ instance lieQuotientLieModule : LieModule R L (M ⧸ N) :=
 instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
   ⟨by
     intro x y
+    -- ⊢ L ⧸ I
     apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
+    -- ⊢ ∀ (a₁ a₂ b₁ b₂ : L), Setoid.r a₁ b₁ → Setoid.r a₂ b₂ → mk ⁅a₁, a₂⁆ = mk ⁅b₁, …
     intro x₁ x₂ y₁ y₂ h₁ h₂
+    -- ⊢ mk ⁅x₁, x₂⁆ = mk ⁅y₁, y₂⁆
     apply (Submodule.Quotient.eq I.toSubmodule).2
+    -- ⊢ ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ ∈ ↑I
     rw [Submodule.quotientRel_r_def] at h₁ h₂
+    -- ⊢ ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ ∈ ↑I
     have h : ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ = ⁅x₁, x₂ - y₂⁆ + ⁅x₁ - y₁, y₂⁆ := by
       simp [-lie_skew, sub_eq_add_neg, add_assoc]
     rw [h]
+    -- ⊢ ⁅x₁, x₂ - y₂⁆ + ⁅x₁ - y₁, y₂⁆ ∈ ↑I
     apply Submodule.add_mem
+    -- ⊢ ⁅x₁, x₂ - y₂⁆ ∈ ↑I
     · apply lie_mem_right R L I x₁ (x₂ - y₂) h₂
+      -- 🎉 no goals
     · apply lie_mem_left R L I (x₁ - y₁) y₂ h₁⟩
+      -- 🎉 no goals
 #align lie_submodule.quotient.lie_quotient_has_bracket LieSubmodule.Quotient.lieQuotientHasBracket
 
 @[simp]
@@ -138,43 +147,69 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
     intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    -- ⊢ ⁅x' + y', z'⁆ = ⁅x', z'⁆ + ⁅y', z'⁆
+                    -- ⊢ ∀ (a₁ a₂ a₃ : L), ⁅Quotient.mk'' a₁ + Quotient.mk'' a₂, Quotient.mk'' a₃⁆ =  …
+                                                               -- ⊢ ⁅Quotient.mk'' x + Quotient.mk'' y, Quotient.mk'' z⁆ = ⁅Quotient.mk'' x, Quo …
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
+    -- ⊢ ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
+                     -- 🎉 no goals
   lie_add := by
     intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    -- ⊢ ⁅x', y' + z'⁆ = ⁅x', y'⁆ + ⁅x', z'⁆
+                    -- ⊢ ∀ (a₁ a₂ a₃ : L), ⁅Quotient.mk'' a₁, Quotient.mk'' a₂ + Quotient.mk'' a₃⁆ =  …
+                                                               -- ⊢ ⁅Quotient.mk'' x, Quotient.mk'' y + Quotient.mk'' z⁆ = ⁅Quotient.mk'' x, Quo …
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
+    -- ⊢ ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
+                     -- 🎉 no goals
   lie_self := by
     intro x'; refine Quotient.inductionOn' x' ?_; intro x
+    -- ⊢ ⁅x', x'⁆ = 0
+              -- ⊢ ∀ (a : L), ⁅Quotient.mk'' a, Quotient.mk'' a⁆ = 0
+                                                  -- ⊢ ⁅Quotient.mk'' x, Quotient.mk'' x⁆ = 0
     rw [is_quotient_mk, ← mk_bracket]
+    -- ⊢ mk ⁅x, x⁆ = 0
     apply congr_arg; apply lie_self
+    -- ⊢ ⁅x, x⁆ = 0
+                     -- 🎉 no goals
   leibniz_lie := by
     intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    -- ⊢ ⁅x', ⁅y', z'⁆⁆ = ⁅⁅x', y'⁆, z'⁆ + ⁅y', ⁅x', z'⁆⁆
+                    -- ⊢ ∀ (a₁ a₂ a₃ : L), ⁅Quotient.mk'' a₁, ⁅Quotient.mk'' a₂, Quotient.mk'' a₃⁆⁆ = …
+                                                               -- ⊢ ⁅Quotient.mk'' x, ⁅Quotient.mk'' y, Quotient.mk'' z⁆⁆ = ⁅⁅Quotient.mk'' x, Q …
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply leibniz_lie
+    -- ⊢ ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
+                     -- 🎉 no goals
 #align lie_submodule.quotient.lie_quotient_lie_ring LieSubmodule.Quotient.lieQuotientLieRing
 
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
   lie_smul := by
     intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
+    -- ⊢ ⁅x', t • y'⁆ = t • ⁅x', y'⁆
+                   -- ⊢ ∀ (a₁ a₂ : L), ⁅Quotient.mk'' a₁, t • Quotient.mk'' a₂⁆ = t • ⁅Quotient.mk'' …
+                                                           -- ⊢ ⁅Quotient.mk'' x, t • Quotient.mk'' y⁆ = t • ⁅Quotient.mk'' x, Quotient.mk'' …
     repeat'
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
       | rw [← Submodule.Quotient.mk_smul (R := R) (M := L)]
     apply congr_arg; apply lie_smul
+    -- ⊢ ⁅x, t • y⁆ = t • ⁅x, y⁆
+                     -- 🎉 no goals
 #align lie_submodule.quotient.lie_quotient_lie_algebra LieSubmodule.Quotient.lieQuotientLieAlgebra
 
 /-- `LieSubmodule.Quotient.mk` as a `LieModuleHom`. -/
@@ -197,11 +232,14 @@ theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
 
 @[simp]
 theorem mk'_ker : (mk' N).ker = N := by ext; simp
+                                        -- ⊢ m✝ ∈ LieModuleHom.ker (mk' N) ↔ m✝ ∈ N
+                                             -- 🎉 no goals
 #align lie_submodule.quotient.mk'_ker LieSubmodule.Quotient.mk'_ker
 
 @[simp]
 theorem map_mk'_eq_bot_le : map (mk' N) N' = ⊥ ↔ N' ≤ N := by
   rw [← LieModuleHom.le_ker_iff_map, mk'_ker]
+  -- 🎉 no goals
 #align lie_submodule.quotient.map_mk'_eq_bot_le LieSubmodule.Quotient.map_mk'_eq_bot_le
 
 /-- Two `LieModuleHom`s from a quotient lie module are equal if their compositions with
@@ -232,7 +270,9 @@ noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
       rintro ⟨x⟩ ⟨y⟩
+      -- ⊢ AddHom.toFun { toAddHom := { toFun := ↑(LinearMap.quotKerEquivRange ↑f), map …
       rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket]
+      -- ⊢ ↑(AddHom.toFun { toAddHom := { toFun := ↑(LinearMap.quotKerEquivRange ↑f), m …
       simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
         LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
 #align lie_hom.quot_ker_equiv_range LieHom.quotKerEquivRange

@@ -54,8 +54,11 @@ theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) �
 theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :
     (⋂ i, ⋂ hi : i ∈ S, s i ‹_›) ∈ l ↔ ∀ i, ∀ hi : i ∈ S, s i ‹_› ∈ l := by
   rw [biInter_eq_iInter]
+  -- ⊢ ⋂ (x : ↑S), s ↑x (_ : ↑x ∈ S) ∈ l ↔ ∀ (i : ι) (hi : i ∈ S), s i hi ∈ l
   haveI := hS.toEncodable
+  -- ⊢ ⋂ (x : ↑S), s ↑x (_ : ↑x ∈ S) ∈ l ↔ ∀ (i : ι) (hi : i ∈ S), s i hi ∈ l
   exact countable_iInter_mem.trans Subtype.forall
+  -- 🎉 no goals
 #align countable_bInter_mem countable_bInter_mem
 
 theorem eventually_countable_forall [Countable ι] {p : α → ι → Prop} :
@@ -86,8 +89,11 @@ theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countabl
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
+  -- ⊢ ⋃ (x : ↑S), s ↑x (_ : ↑x ∈ S) ≤ᶠ[l] ⋃ (x : ↑S), t ↑x (_ : ↑x ∈ S)
   haveI := hS.toEncodable
+  -- ⊢ ⋃ (x : ↑S), s ↑x (_ : ↑x ∈ S) ≤ᶠ[l] ⋃ (x : ↑S), t ↑x (_ : ↑x ∈ S)
   exact EventuallyLE.countable_iUnion fun i => h i i.2
+  -- 🎉 no goals
 #align eventually_le.countable_bUnion EventuallyLE.countable_bUnion
 
 theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
@@ -113,8 +119,11 @@ theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
+  -- ⊢ ⋂ (x : ↑S), s ↑x (_ : ↑x ∈ S) ≤ᶠ[l] ⋂ (x : ↑S), t ↑x (_ : ↑x ∈ S)
   haveI := hS.toEncodable
+  -- ⊢ ⋂ (x : ↑S), s ↑x (_ : ↑x ∈ S) ≤ᶠ[l] ⋂ (x : ↑S), t ↑x (_ : ↑x ∈ S)
   exact EventuallyLE.countable_iInter fun i => h i i.2
+  -- 🎉 no goals
 #align eventually_le.countable_bInter EventuallyLE.countable_bInter
 
 theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
@@ -156,45 +165,70 @@ instance countableInterFilter_principal (s : Set α) : CountableInterFilter (�
 
 instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := by
   rw [← principal_empty]
+  -- ⊢ CountableInterFilter (𝓟 ∅)
   apply countableInterFilter_principal
+  -- 🎉 no goals
 #align countable_Inter_filter_bot countableInterFilter_bot
 
 instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
   rw [← principal_univ]
+  -- ⊢ CountableInterFilter (𝓟 univ)
   apply countableInterFilter_principal
+  -- 🎉 no goals
 #align countable_Inter_filter_top countableInterFilter_top
 
 instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
     CountableInterFilter (comap f l) := by
   refine' ⟨fun S hSc hS => _⟩
+  -- ⊢ ⋂₀ S ∈ comap f l
   choose! t htl ht using hS
+  -- ⊢ ⋂₀ S ∈ comap f l
   have : (⋂ s ∈ S, t s) ∈ l := (countable_bInter_mem hSc).2 htl
+  -- ⊢ ⋂₀ S ∈ comap f l
   refine' ⟨_, this, _⟩
+  -- ⊢ f ⁻¹' ⋂ (s : Set α) (_ : s ∈ S), t s ⊆ ⋂₀ S
   simpa [preimage_iInter] using iInter₂_mono ht
+  -- 🎉 no goals
 
 instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
   refine' ⟨fun S hSc hS => _⟩
+  -- ⊢ ⋂₀ S ∈ map f l
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
+  -- ⊢ ⋂ (i : Set β) (_ : i ∈ S), f ⁻¹' i ∈ l
   exact (countable_bInter_mem hSc).2 hS
+  -- 🎉 no goals
 
 /-- Infimum of two `CountableInterFilter`s is a `CountableInterFilter`. This is useful, e.g.,
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
   refine' ⟨fun S hSc hS => _⟩
+  -- ⊢ ⋂₀ S ∈ l₁ ⊓ l₂
   choose s hs t ht hst using hS
+  -- ⊢ ⋂₀ S ∈ l₁ ⊓ l₂
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (countable_bInter_mem hSc).2 hs
+  -- ⊢ ⋂₀ S ∈ l₁ ⊓ l₂
   replace ht : (⋂ i ∈ S, t i ‹_›) ∈ l₂ := (countable_bInter_mem hSc).2 ht
+  -- ⊢ ⋂₀ S ∈ l₁ ⊓ l₂
   refine' mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => _)
+  -- ⊢ (⋂ (i : Set α) (h : i ∈ S), s i h) ∩ ⋂ (i : Set α) (h : i ∈ S), t i h ⊆ i
   rw [hst i hi]
+  -- ⊢ (⋂ (i : Set α) (h : i ∈ S), s i h) ∩ ⋂ (i : Set α) (h : i ∈ S), t i h ⊆ s i  …
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
+  -- ⊢ ⋂ (i : Set α) (h : i ∈ S), s i h ⊆ s i hi
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 #align countable_Inter_filter_inf countableInterFilter_inf
 
 /-- Supremum of two `CountableInterFilter`s is a `CountableInterFilter`. -/
 instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) := by
   refine' ⟨fun S hSc hS => ⟨_, _⟩⟩ <;> refine' (countable_sInter_mem hSc).2 fun s hs => _
+  -- ⊢ ⋂₀ S ∈ l₁.sets
+                                       -- ⊢ s ∈ l₁
+                                       -- ⊢ s ∈ l₂
   exacts [(hS s hs).1, (hS s hs).2]
+  -- 🎉 no goals
 #align countable_Inter_filter_sup countableInterFilter_sup
 
 namespace Filter
@@ -221,6 +255,8 @@ def countableGenerate : Filter α :=
 --Porting note: could not de derived
 instance : CountableInterFilter (countableGenerate g) := by
   delta countableGenerate; infer_instance
+  -- ⊢ CountableInterFilter (ofCountableInter (CountableGenerateSets g) (_ : ∀ (x : …
+                           -- 🎉 no goals
 
 variable {g}
 
@@ -229,32 +265,57 @@ it contains a countable intersection of elements of `g`. -/
 theorem mem_countableGenerate_iff {s : Set α} :
     s ∈ countableGenerate g ↔ ∃ S : Set (Set α), S ⊆ g ∧ S.Countable ∧ ⋂₀ S ⊆ s := by
   constructor <;> intro h
+  -- ⊢ s ∈ countableGenerate g → ∃ S, S ⊆ g ∧ Set.Countable S ∧ ⋂₀ S ⊆ s
+                  -- ⊢ ∃ S, S ⊆ g ∧ Set.Countable S ∧ ⋂₀ S ⊆ s
+                  -- ⊢ s ∈ countableGenerate g
   · induction' h with s hs s t _ st ih S Sct _ ih
     · exact ⟨{s}, by simp [hs, subset_refl]⟩
+      -- 🎉 no goals
     · exact ⟨∅, by simp⟩
+      -- 🎉 no goals
     · refine' Exists.imp (fun S => _) ih
+      -- ⊢ S ⊆ g ∧ Set.Countable S ∧ ⋂₀ S ⊆ s → S ⊆ g ∧ Set.Countable S ∧ ⋂₀ S ⊆ t
       tauto
+      -- 🎉 no goals
     choose T Tg Tct hT using ih
+    -- ⊢ ∃ S_1, S_1 ⊆ g ∧ Set.Countable S_1 ∧ ⋂₀ S_1 ⊆ ⋂₀ S
     refine' ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, _⟩
+    -- ⊢ ⋂₀ ⋃ (s : Set α) (H : s ∈ S), T s H ⊆ ⋂₀ S
     apply subset_sInter
+    -- ⊢ ∀ (t' : Set α), t' ∈ S → ⋂₀ ⋃ (s : Set α) (H : s ∈ S), T s H ⊆ t'
     intro s H
+    -- ⊢ ⋂₀ ⋃ (s : Set α) (H : s ∈ S), T s H ⊆ s
     refine' subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
+    -- 🎉 no goals
   rcases h with ⟨S, Sg, Sct, hS⟩
+  -- ⊢ s ∈ countableGenerate g
   refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
+  -- ⊢ ∀ (s : Set α), s ∈ S → s ∈ countableGenerate g
   intro s H
+  -- ⊢ s ∈ countableGenerate g
   exact CountableGenerateSets.basic (Sg H)
+  -- 🎉 no goals
 #align filter.mem_countable_generate_iff Filter.mem_countableGenerate_iff
 
 theorem le_countableGenerate_iff_of_countableInterFilter {f : Filter α} [CountableInterFilter f] :
     f ≤ countableGenerate g ↔ g ⊆ f.sets := by
   constructor <;> intro h
+  -- ⊢ f ≤ countableGenerate g → g ⊆ f.sets
+                  -- ⊢ g ⊆ f.sets
+                  -- ⊢ f ≤ countableGenerate g
   · exact subset_trans (fun s => CountableGenerateSets.basic) h
+    -- 🎉 no goals
   intro s hs
+  -- ⊢ s ∈ f
   induction' hs with s hs s t _ st ih S Sct _ ih
   · exact h hs
+    -- 🎉 no goals
   · exact univ_mem
+    -- 🎉 no goals
   · exact mem_of_superset ih st
+    -- 🎉 no goals
   exact (countable_sInter_mem Sct).mpr ih
+  -- 🎉 no goals
 #align filter.le_countable_generate_iff_of_countable_Inter_filter Filter.le_countableGenerate_iff_of_countableInterFilter
 
 variable (g)
@@ -263,8 +324,11 @@ variable (g)
 theorem countableGenerate_isGreatest :
     IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
   refine' ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, _⟩
+  -- ⊢ countableGenerate g ∈ upperBounds {f | CountableInterFilter f ∧ g ⊆ f.sets}
   rintro f ⟨fct, hf⟩
+  -- ⊢ f ≤ countableGenerate g
   rwa [@le_countableGenerate_iff_of_countableInterFilter _ _ _ fct]
+  -- 🎉 no goals
 #align filter.countable_generate_is_greatest Filter.countableGenerate_isGreatest
 
 end Filter

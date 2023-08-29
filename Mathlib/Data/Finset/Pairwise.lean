@@ -27,7 +27,9 @@ instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset 
 theorem Finset.pairwiseDisjoint_range_singleton :
     (Set.range (singleton : α → Finset α)).PairwiseDisjoint id := by
   rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
+  -- ⊢ (Disjoint on id) {a} {b}
   exact disjoint_singleton.2 (ne_of_apply_ne _ h)
+  -- 🎉 no goals
 #align finset.pairwise_disjoint_range_singleton Finset.pairwiseDisjoint_range_singleton
 
 namespace Set
@@ -45,7 +47,9 @@ theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f 
     (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι} (hf : ∀ a, f (g a) ≤ f a) :
     (s.image g : Set ι).PairwiseDisjoint f := by
   rw [coe_image]
+  -- ⊢ PairwiseDisjoint (g '' ↑s) f
   exact hs.image_of_le hf
+  -- 🎉 no goals
 #align set.pairwise_disjoint.image_finset_of_le Set.PairwiseDisjoint.image_finset_of_le
 
 theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
@@ -63,12 +67,19 @@ theorem PairwiseDisjoint.biUnion_finset {s : Set ι'} {g : ι' → Finset ι} {f
     (hs : s.PairwiseDisjoint fun i' : ι' => (g i').sup f)
     (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f := by
   rintro a ha b hb hab
+  -- ⊢ (Disjoint on f) a b
   simp_rw [Set.mem_iUnion] at ha hb
+  -- ⊢ (Disjoint on f) a b
   obtain ⟨c, hc, ha⟩ := ha
+  -- ⊢ (Disjoint on f) a b
   obtain ⟨d, hd, hb⟩ := hb
+  -- ⊢ (Disjoint on f) a b
   obtain hcd | hcd := eq_or_ne (g c) (g d)
+  -- ⊢ (Disjoint on f) a b
   · exact hg d hd (by rwa [hcd] at ha) hb hab
+    -- 🎉 no goals
   · exact (hs hc hd (ne_of_apply_ne _ hcd)).mono (Finset.le_sup ha) (Finset.le_sup hb)
+    -- 🎉 no goals
 #align set.pairwise_disjoint.bUnion_finset Set.PairwiseDisjoint.biUnion_finset
 
 end Set
@@ -80,13 +91,17 @@ variable {β : Type*} [DecidableEq α] {r : α → α → Prop} {l : List α}
 theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by
   rw [coe_toFinset] at hl
+  -- ⊢ Pairwise r l
   exact hn.pairwise_of_set_pairwise hl
+  -- 🎉 no goals
 #align list.pairwise_of_coe_to_finset_pairwise List.pairwise_of_coe_toFinset_pairwise
 
 theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
     (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
   letI : IsSymm α r := ⟨hs⟩
+  -- ⊢ Set.Pairwise (↑(toFinset l)) r ↔ Pairwise r l
   rw [coe_toFinset, hn.pairwise_coe]
+  -- 🎉 no goals
 #align list.pairwise_iff_coe_to_finset_pairwise List.pairwise_iff_coe_toFinset_pairwise
 
 theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [SemilatticeInf α] [OrderBot α]

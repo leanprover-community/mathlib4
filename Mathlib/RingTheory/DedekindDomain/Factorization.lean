@@ -44,12 +44,17 @@ def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
   rw [← Set.finite_coe_iff, Set.coe_setOf]
+  -- ⊢ Finite { x // x.asIdeal ∣ I }
   haveI h_fin := fintypeSubtypeDvd I hI
+  -- ⊢ Finite { x // x.asIdeal ∣ I }
   refine'
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) _
   intro v w hvw
+  -- ⊢ v = w
   simp at hvw
+  -- ⊢ v = w
   exact Subtype.coe_injective ((HeightOneSpectrum.ext_iff (R := R) ↑v ↑w).mpr hvw)
+  -- 🎉 no goals
 #align ideal.finite_factors Ideal.finite_factors
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
@@ -63,7 +68,9 @@ theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     simp_rw [Int.coe_nat_eq_zero]
     exact Associates.count_ne_zero_iff_dvd hI v.irreducible
   rw [Filter.eventually_cofinite, h_supp]
+  -- ⊢ Set.Finite {v | v.asIdeal ∣ I}
   exact Ideal.finite_factors hI
+  -- 🎉 no goals
 #align associates.finite_factors Associates.finite_factors
 
 namespace Ideal
@@ -76,10 +83,12 @@ theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
       {v : HeightOneSpectrum R |
         ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
     intro v hv h_zero
+    -- ⊢ False
     have hv' : v.maxPowDividing I = 1 := by
       rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, Int.coe_nat_eq_zero.mp h_zero,
         pow_zero _]
     exact hv hv'
+    -- 🎉 no goals
   Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
 #align ideal.finite_mul_support Ideal.finite_mulSupport
 
@@ -89,8 +98,11 @@ theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
   rw [mulSupport]
+  -- ⊢ Set.Finite {x | ↑x.asIdeal ^ ↑(Associates.count (Associates.mk x.asIdeal) (A …
   simp_rw [Ne.def, zpow_ofNat, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
+  -- ⊢ Set.Finite {x | ¬x.asIdeal ^ Associates.count (Associates.mk x.asIdeal) (Ass …
   exact finite_mulSupport hI
+  -- 🎉 no goals
 #align ideal.finite_mul_support_coe Ideal.finite_mulSupport_coe
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
@@ -99,8 +111,11 @@ theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ))).Finite := by
   rw [mulSupport]
+  -- ⊢ Set.Finite {x | ↑x.asIdeal ^ (-↑(Associates.count (Associates.mk x.asIdeal)  …
   simp_rw [zpow_neg, Ne.def, inv_eq_one]
+  -- ⊢ Set.Finite {x | ¬↑x.asIdeal ^ ↑(Associates.count (Associates.mk x.asIdeal) ( …
   exact finite_mulSupport_coe hI
+  -- 🎉 no goals
 #align ideal.finite_mul_support_inv Ideal.finite_mulSupport_inv
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
@@ -108,16 +123,25 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
     ¬v.asIdeal ^ ((Associates.mk v.asIdeal).count (Associates.mk I).factors + 1) ∣
         ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I := by
   have hf := finite_mulSupport hI
+  -- ⊢ ¬v.asIdeal ^ (Associates.count (Associates.mk v.asIdeal) (Associates.factors …
   have h_ne_zero : v.maxPowDividing I ≠ 0 := pow_ne_zero _ v.ne_bot
+  -- ⊢ ¬v.asIdeal ^ (Associates.count (Associates.mk v.asIdeal) (Associates.factors …
   rw [← mul_finprod_cond_ne v hf, pow_add, pow_one, finprod_cond_ne _ _ hf]
+  -- ⊢ ¬v.asIdeal ^ Associates.count (Associates.mk v.asIdeal) (Associates.factors  …
   intro h_contr
+  -- ⊢ False
   have hv_prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
+  -- ⊢ False
   obtain ⟨w, hw, hvw'⟩ :=
     Prime.exists_mem_finset_dvd hv_prime ((mul_dvd_mul_iff_left h_ne_zero).mp h_contr)
   have hw_prime : Prime w.asIdeal := Ideal.prime_of_isPrime w.ne_bot w.isPrime
+  -- ⊢ False
   have hvw := Prime.dvd_of_dvd_pow hv_prime hvw'
+  -- ⊢ False
   rw [Prime.dvd_prime_iff_associated hv_prime hw_prime, associated_iff_eq] at hvw
+  -- ⊢ False
   exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext w v (Eq.symm hvw))
+  -- 🎉 no goals
 #align ideal.finprod_not_dvd Ideal.finprod_not_dvd
 
 end Ideal
@@ -125,11 +149,17 @@ end Ideal
 theorem Associates.finprod_ne_zero (I : Ideal R) :
     Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) ≠ 0 := by
   rw [Associates.mk_ne_zero, finprod_def]
+  -- ⊢ (if h : Set.Finite (mulSupport fun v => maxPowDividing v I) then ∏ i in Fini …
   split_ifs
+  -- ⊢ ∏ v in Finite.toFinset h✝, maxPowDividing v I ≠ 0
   · rw [Finset.prod_ne_zero_iff]
+    -- ⊢ ∀ (a : HeightOneSpectrum R), a ∈ Finite.toFinset h✝ → maxPowDividing a I ≠ 0
     intro v _
+    -- ⊢ maxPowDividing v I ≠ 0
     apply pow_ne_zero _ v.ne_bot
+    -- 🎉 no goals
   · exact one_ne_zero
+    -- 🎉 no goals
 #align associates.finprod_ne_zero Associates.finprod_ne_zero
 
 namespace Ideal
@@ -139,28 +169,45 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
     (Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I)).factors =
     (Associates.mk v.asIdeal).count (Associates.mk I).factors := by
   have h_ne_zero := Associates.finprod_ne_zero I
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   have hv : Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   have h_dvd := finprod_mem_dvd v (Ideal.finite_mulSupport hI)
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   have h_not_dvd := Ideal.finprod_not_dvd v I hI
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   simp only [IsDedekindDomain.HeightOneSpectrum.maxPowDividing] at h_dvd h_ne_zero h_not_dvd
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   rw [← Associates.mk_dvd_mk] at h_dvd h_not_dvd
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   simp only [Associates.dvd_eq_le] at h_dvd h_not_dvd
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le h_ne_zero hv] at h_dvd h_not_dvd
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   rw [not_le] at h_not_dvd
+  -- ⊢ Associates.count (Associates.mk v.asIdeal) (Associates.factors (Associates.m …
   apply Nat.eq_of_le_of_lt_succ h_dvd h_not_dvd
+  -- 🎉 no goals
 #align ideal.finprod_count Ideal.finprod_count
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
+  -- ⊢ Associates.mk (∏ᶠ (v : HeightOneSpectrum R), maxPowDividing v I) = Associate …
   apply Associates.eq_of_eq_counts
   · apply Associates.finprod_ne_zero I
+    -- 🎉 no goals
   · apply Associates.mk_ne_zero.mpr hI
+    -- 🎉 no goals
   intro v hv
+  -- ⊢ Associates.count v (Associates.factors (Associates.mk (∏ᶠ (v : HeightOneSpec …
   obtain ⟨J, hJv⟩ := Associates.exists_rep v
+  -- ⊢ Associates.count v (Associates.factors (Associates.mk (∏ᶠ (v : HeightOneSpec …
   rw [← hJv, Associates.irreducible_mk] at hv
+  -- ⊢ Associates.count v (Associates.factors (Associates.mk (∏ᶠ (v : HeightOneSpec …
   rw [← hJv]
+  -- ⊢ Associates.count (Associates.mk J) (Associates.factors (Associates.mk (∏ᶠ (v …
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
 #align ideal.finprod_height_one_spectrum_factorization Ideal.finprod_heightOneSpectrum_factorization
@@ -171,7 +218,9 @@ theorem finprod_heightOneSpectrum_factorization_coe (I : Ideal R) (hI : I ≠ 0)
     (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) = I := by
   conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization I hI]
+  -- ⊢ ∏ᶠ (v : HeightOneSpectrum R), ↑v.asIdeal ^ ↑(Associates.count (Associates.mk …
   rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
+  -- ⊢ ∏ᶠ (v : HeightOneSpectrum R), ↑v.asIdeal ^ ↑(Associates.count (Associates.mk …
   simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
     zpow_ofNat]
 #align ideal.finprod_height_one_spectrum_factorization_coe Ideal.finprod_heightOneSpectrum_factorization_coe

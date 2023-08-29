@@ -72,7 +72,9 @@ theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : Nonarchim
   { is_nonarchimedean := fun U hU =>
       have h₁ : f ⁻¹' U ∈ nhds (1 : G) := by
         apply emb.continuous.tendsto
+        -- ⊢ U ∈ nhds (↑f 1)
         rwa [f.map_one]
+        -- 🎉 no goals
       let ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
       ⟨{ Subgroup.map f V with isOpen' := emb.isOpenMap _ V.isOpen }, Set.image_subset_iff.2 hV⟩ }
 #align nonarchimedean_group.nonarchimedean_of_emb NonarchimedeanGroup.nonarchimedean_of_emb
@@ -86,13 +88,22 @@ an open neighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
     ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
+  -- ⊢ ∃ V W, ↑V ×ˢ ↑W ⊆ U
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
+  -- ⊢ ∃ V W, ↑V ×ˢ ↑W ⊆ U
   cases' is_nonarchimedean _ hU₁ with V hV
+  -- ⊢ ∃ V W, ↑V ×ˢ ↑W ⊆ U
   cases' is_nonarchimedean _ hU₂ with W hW
+  -- ⊢ ∃ V W, ↑V ×ˢ ↑W ⊆ U
   use V; use W
+  -- ⊢ ∃ W, ↑V ×ˢ ↑W ⊆ U
+         -- ⊢ ↑V ×ˢ ↑W ⊆ U
   rw [Set.prod_subset_iff]
+  -- ⊢ ∀ (x : G), x ∈ ↑V → ∀ (y : K), y ∈ ↑W → (x, y) ∈ U
   intro x hX y hY
+  -- ⊢ (x, y) ∈ U
   exact Set.Subset.trans (Set.prod_mono hV hW) h (Set.mem_sep hX hY)
+  -- 🎉 no goals
 #align nonarchimedean_group.prod_subset NonarchimedeanGroup.prod_subset
 #align nonarchimedean_add_group.prod_subset NonarchimedeanAddGroup.prod_subset
 
@@ -105,6 +116,9 @@ theorem prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
   let ⟨V, W, h⟩ := prod_subset hU
   ⟨V ⊓ W, by refine' Set.Subset.trans (Set.prod_mono _ _) ‹_› <;> simp⟩
+             -- ⊢ ↑(V ⊓ W) ⊆ ↑V
+                                                                  -- 🎉 no goals
+                                                                  -- 🎉 no goals
 #align nonarchimedean_group.prod_self_subset NonarchimedeanGroup.prod_self_subset
 #align nonarchimedean_add_group.prod_self_subset NonarchimedeanAddGroup.prod_self_subset
 
@@ -148,11 +162,17 @@ theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set
         (by simpa only [Set.mem_preimage, SetLike.mem_coe, Prod.snd_zero,
             mul_zero] using U.zero_mem))
   use V
+  -- ⊢ ↑V * ↑V ⊆ ↑U
   rintro v ⟨a, b, ha, hb, hv⟩
+  -- ⊢ v ∈ ↑U
   have hy := H (Set.mk_mem_prod ha hb)
+  -- ⊢ v ∈ ↑U
   simp only [Set.mem_preimage, SetLike.mem_coe, hv] at hy
+  -- ⊢ v ∈ ↑U
   rw [SetLike.mem_coe]
+  -- ⊢ v ∈ U
   exact hy
+  -- 🎉 no goals
 #align nonarchimedean_ring.mul_subset NonarchimedeanRing.mul_subset
 
 end NonarchimedeanRing

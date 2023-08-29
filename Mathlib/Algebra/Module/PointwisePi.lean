@@ -29,7 +29,9 @@ variable {K ι : Type*} {R : ι → Type*}
 theorem smul_pi_subset [∀ i, SMul K (R i)] (r : K) (s : Set ι) (t : ∀ i, Set (R i)) :
     r • pi s t ⊆ pi s (r • t) := by
   rintro x ⟨y, h, rfl⟩ i hi
+  -- ⊢ (fun x => r • x) y i ∈ (r • t) i
   exact smul_mem_smul_set (h i hi)
+  -- 🎉 no goals
 #align smul_pi_subset smul_pi_subset
 #align vadd_pi_subset vadd_pi_subset
 
@@ -39,8 +41,11 @@ theorem smul_univ_pi [∀ i, SMul K (R i)] (r : K) (t : ∀ i, Set (R i)) :
     r • pi (univ : Set ι) t = pi (univ : Set ι) (r • t) :=
   (Subset.antisymm (smul_pi_subset _ _ _)) fun x h ↦ by
     refine' ⟨fun i ↦ Classical.choose (h i <| Set.mem_univ _), fun i _ ↦ _, funext fun i ↦ _⟩
+    -- ⊢ (fun i => Classical.choose (_ : x i ∈ (r • t) i)) i ∈ t i
     · exact (Classical.choose_spec (h i <| Set.mem_univ i)).left
+      -- 🎉 no goals
     · exact (Classical.choose_spec (h i <| Set.mem_univ i)).right
+      -- 🎉 no goals
 #align smul_univ_pi smul_univ_pi
 #align vadd_univ_pi vadd_univ_pi
 

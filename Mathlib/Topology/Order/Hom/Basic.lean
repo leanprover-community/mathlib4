@@ -102,8 +102,11 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
+    -- ⊢ { toOrderHom := { toFun := toFun✝, monotone' := monotone'✝ }, continuous_toF …
     obtain ⟨⟨_, _⟩, _⟩ := g
+    -- ⊢ { toOrderHom := { toFun := toFun✝¹, monotone' := monotone'✝¹ }, continuous_t …
     congr
+    -- 🎉 no goals
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
@@ -194,6 +197,7 @@ theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjectiv
 theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align continuous_order_hom.cancel_left ContinuousOrderHom.cancel_left
 
 instance : Preorder (α →Co β) :=

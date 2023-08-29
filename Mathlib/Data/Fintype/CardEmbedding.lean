@@ -37,12 +37,23 @@ theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fi
 theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
   rw [Subsingleton.elim emb Embedding.fintype]
+  -- ⊢ ‖α ↪ β‖ = descFactorial ‖β‖ ‖α‖
   refine' Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)
         (fun α₁ α₂ h₂ e ih ↦ ?_) (?_) (fun γ h ih ↦ ?_) α <;> dsimp only <;> clear! α
+                                                              -- ⊢ ‖α₂ ↪ β‖ = descFactorial ‖β‖ ‖α₂‖
+                                                              -- ⊢ ‖PEmpty ↪ β‖ = descFactorial ‖β‖ ‖PEmpty‖
+                                                              -- ⊢ ‖Option γ ↪ β‖ = descFactorial ‖β‖ ‖Option γ‖
+                                                                             -- ⊢ ‖α₂ ↪ β‖ = descFactorial ‖β‖ ‖α₂‖
+                                                                             -- ⊢ ‖PEmpty ↪ β‖ = descFactorial ‖β‖ ‖PEmpty‖
+                                                                             -- ⊢ ‖Option γ ↪ β‖ = descFactorial ‖β‖ ‖Option γ‖
   · letI := Fintype.ofEquiv _ e.symm
+    -- ⊢ ‖α₂ ↪ β‖ = descFactorial ‖β‖ ‖α₂‖
     rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
+    -- 🎉 no goals
   · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
+    -- ⊢ ∃ x, ∀ (y : PEmpty ↪ β), y = x
     exact ⟨Embedding.ofIsEmpty, fun x ↦ FunLike.ext _ _ isEmptyElim⟩
+    -- 🎉 no goals
   · classical
     dsimp only at ih
     rw [card_option, Nat.descFactorial_succ, card_congr (Embedding.optionEmbeddingEquiv γ β),

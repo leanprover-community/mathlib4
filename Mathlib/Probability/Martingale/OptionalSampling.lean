@@ -59,9 +59,11 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const
     (hτ : IsStoppingTime ℱ τ) [SigmaFinite (μ.trim hτ.measurableSpace_le)] (hin : i ≤ n) :
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
   refine' Filter.EventuallyEq.trans _ (ae_restrict_of_ae (h.condexp_ae_eq hin))
+  -- ⊢ μ[f n|IsStoppingTime.measurableSpace hτ] =ᵐ[Measure.restrict μ {x | τ x = i} …
   refine' condexp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le (ℱ.le i)
     (hτ.measurableSet_eq' i) fun t => _
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
+  -- 🎉 no goals
 #align measure_theory.martingale.condexp_stopping_time_ae_eq_restrict_eq_const MeasureTheory.Martingale.condexp_stopping_time_ae_eq_restrict_eq_const
 
 theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingale f ℱ μ)
@@ -69,15 +71,23 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
     [SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le))] (i : ι) :
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
   by_cases hin : i ≤ n
+  -- ⊢ μ[f n|IsStoppingTime.measurableSpace hτ] =ᵐ[Measure.restrict μ {x | τ x = i} …
   · refine' Filter.EventuallyEq.trans _ (ae_restrict_of_ae (h.condexp_ae_eq hin))
+    -- ⊢ μ[f n|IsStoppingTime.measurableSpace hτ] =ᵐ[Measure.restrict μ {x | τ x = i} …
     refine' condexp_ae_eq_restrict_of_measurableSpace_eq_on (hτ.measurableSpace_le_of_le hτ_le)
       (ℱ.le i) (hτ.measurableSet_eq' i) fun t => _
     rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
+    -- 🎉 no goals
   · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
+    -- ⊢ {x | τ x = i} = ∅
     ext1 x
+    -- ⊢ x ∈ {x | τ x = i} ↔ x ∈ ∅
     simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+    -- ⊢ ¬τ x = i
     rintro rfl
+    -- ⊢ False
     exact hin (hτ_le x)
+    -- 🎉 no goals
 #align measure_theory.martingale.condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const MeasureTheory.Martingale.condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const
 
 theorem stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppingTime ℱ τ)
@@ -86,9 +96,13 @@ theorem stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppi
   refine' Filter.EventuallyEq.trans _
     (condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const h hτ hτ_le i).symm
   rw [Filter.EventuallyEq, ae_restrict_iff' (ℱ.le _ _ (hτ.measurableSet_eq i))]
+  -- ⊢ ∀ᵐ (x : Ω) ∂μ, x ∈ {ω | τ ω = i} → stoppedValue f τ x = f i x
   refine' Filter.eventually_of_forall fun x hx => _
+  -- ⊢ stoppedValue f τ x = f i x
   rw [Set.mem_setOf_eq] at hx
+  -- ⊢ stoppedValue f τ x = f i x
   simp_rw [stoppedValue, hx]
+  -- 🎉 no goals
 #align measure_theory.martingale.stopped_value_ae_eq_restrict_eq MeasureTheory.Martingale.stoppedValue_ae_eq_restrict_eq
 
 /-- The value of a martingale `f` at a stopping time `τ` bounded by `n` is the conditional
@@ -102,8 +116,11 @@ theorem stoppedValue_ae_eq_condexp_of_le_const_of_countable_range (h : Martingal
     simp only [Set.mem_univ, Set.mem_range, true_and_iff, Set.iUnion_exists, Set.iUnion_iUnion_eq',
       Set.mem_iUnion, Set.mem_setOf_eq, exists_apply_eq_apply']
   nth_rw 1 [← @Measure.restrict_univ Ω _ μ]
+  -- ⊢ stoppedValue f τ =ᵐ[Measure.restrict μ Set.univ] μ[f n|IsStoppingTime.measur …
   rw [this, ae_eq_restrict_biUnion_iff _ h_countable_range]
+  -- ⊢ ∀ (i : ι), i ∈ Set.range τ → stoppedValue f τ =ᵐ[Measure.restrict μ {x | τ x …
   exact fun i _ => stoppedValue_ae_eq_restrict_eq h _ hτ_le i
+  -- 🎉 no goals
 #align measure_theory.martingale.stopped_value_ae_eq_condexp_of_le_const_of_countable_range MeasureTheory.Martingale.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range
 
 /-- The value of a martingale `f` at a stopping time `τ` bounded by `n` is the conditional
@@ -133,6 +150,7 @@ theorem stoppedValue_ae_eq_condexp_of_le_of_countable_range (h : Martingale f �
   · exact h.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range hσ
       (fun x => (hσ_le_τ x).trans (hτ_le x)) hσ_countable_range
   · exact hσ.measurableSpace_mono hτ hσ_le_τ
+    -- 🎉 no goals
 #align measure_theory.martingale.stopped_value_ae_eq_condexp_of_le_of_countable_range MeasureTheory.Martingale.stoppedValue_ae_eq_condexp_of_le_of_countable_range
 
 /-- If `τ` and `σ` are two stopping times with `σ ≤ τ` and `τ` is bounded, then the value of a
@@ -187,6 +205,7 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
     · intro x hx
       simp only [hx, Set.indicator_of_not_mem, not_false_iff]
   exact condexp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
+  -- 🎉 no goals
 #align measure_theory.martingale.condexp_stopped_value_stopping_time_ae_eq_restrict_le MeasureTheory.Martingale.condexp_stoppedValue_stopping_time_ae_eq_restrict_le
 
 /-- **Optional Sampling theorem**. If `τ` is a bounded stopping time and `σ` is another stopping
@@ -200,7 +219,9 @@ theorem stoppedValue_min_ae_eq_condexp [SigmaFiniteFiltration μ ℱ] (h : Marti
   refine'
     (h.stoppedValue_ae_eq_condexp_of_le hτ (hσ.min hτ) (fun x => min_le_right _ _) hτ_le).trans _
   refine' ae_of_ae_restrict_of_ae_restrict_compl {x | σ x ≤ τ x} _ _
+  -- ⊢ ∀ᵐ (x : Ω) ∂Measure.restrict μ {x | σ x ≤ τ x}, (μ[stoppedValue f τ|IsStoppi …
   · exact condexp_min_stopping_time_ae_eq_restrict_le hσ hτ
+    -- 🎉 no goals
   · suffices μ[stoppedValue f τ|(hσ.min hτ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}]
         μ[stoppedValue f τ|hσ.measurableSpace] by
       rw [ae_restrict_iff' (hσ.measurableSpace_le _ (hσ.measurableSet_le_stopping_time hτ).compl)]
@@ -211,14 +232,18 @@ theorem stoppedValue_min_ae_eq_condexp [SigmaFiniteFiltration μ ℱ] (h : Marti
       exact hx hx_mem.le
     apply Filter.EventuallyEq.trans _ ((condexp_min_stopping_time_ae_eq_restrict_le hτ hσ).trans _)
     · exact stoppedValue f τ
+      -- 🎉 no goals
     · rw [IsStoppingTime.measurableSpace_min hσ, IsStoppingTime.measurableSpace_min hτ, inf_comm]
+      -- 🎉 no goals
     · have h1 : μ[stoppedValue f τ|hτ.measurableSpace] = stoppedValue f τ := by
         refine' condexp_of_stronglyMeasurable hτ.measurableSpace_le _ _
         · refine' Measurable.stronglyMeasurable _
           exact measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
         · exact integrable_stoppedValue ι hτ h.integrable hτ_le
       rw [h1]
+      -- ⊢ stoppedValue f τ =ᵐ[Measure.restrict μ {x | τ x ≤ σ x}] μ[stoppedValue f τ|I …
       exact (condexp_stoppedValue_stopping_time_ae_eq_restrict_le h hτ hσ hτ_le).symm
+      -- 🎉 no goals
 #align measure_theory.martingale.stopped_value_min_ae_eq_condexp MeasureTheory.Martingale.stoppedValue_min_ae_eq_condexp
 
 end SubsetOfNat

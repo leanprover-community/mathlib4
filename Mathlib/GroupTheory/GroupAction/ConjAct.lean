@@ -169,17 +169,23 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
     mul_one, forall_const]
   mul_smul := by
     simp only [units_smul_def]
+    -- ⊢ ∀ (x y : ConjAct Mˣ) (b : M), ↑(↑ofConjAct (x * y)) * b * ↑(↑ofConjAct (x *  …
     simp only [map_mul, Units.val_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
+    -- 🎉 no goals
   smul_mul := by
     simp only [units_smul_def]
+    -- ⊢ ∀ (r : ConjAct Mˣ) (x y : M), ↑(↑ofConjAct r) * (x * y) * ↑(↑ofConjAct r)⁻¹  …
     simp only [mul_assoc, Units.inv_mul_cancel_left, forall_const, «forall»]
+    -- 🎉 no goals
   smul_one := by simp [units_smul_def, mul_one, Units.mul_inv, «forall», forall_const]
+                 -- 🎉 no goals
 #align conj_act.units_mul_distrib_mul_action ConjAct.unitsMulDistribMulAction
 
 
 instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
     SMulCommClass α (ConjAct Mˣ) M
     where smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
+                                 -- 🎉 no goals
 #align conj_act.units_smul_comm_class ConjAct.unitsSMulCommClass
 
 instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
@@ -200,9 +206,12 @@ instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
     smul_zero := by
       simp only [units_smul_def, mul_zero, zero_mul, «forall», forall_const]
+      -- 🎉 no goals
     smul_add := by
       simp only [units_smul_def]
+      -- ⊢ ∀ (a : ConjAct Rˣ) (x y : R), ↑(↑ofConjAct a) * (x + y) * ↑(↑ofConjAct a)⁻¹  …
       simp only [mul_add, add_mul, forall_const, «forall»] }
+      -- 🎉 no goals
 #align conj_act.units_mul_semiring_action ConjAct.unitsMulSemiringAction
 
 end Semiring
@@ -228,15 +237,20 @@ theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
 instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
   one_smul := by
     simp only [smul_def]
+    -- ⊢ ∀ (b : G₀), ↑ofConjAct 1 * b * (↑ofConjAct 1)⁻¹ = b
     simp only [map_one, one_mul, inv_one, mul_one, forall_const]
+    -- 🎉 no goals
   mul_smul := by
     simp only [smul_def]
+    -- ⊢ ∀ (x y : ConjAct G₀) (b : G₀), ↑ofConjAct (x * y) * b * (↑ofConjAct (x * y)) …
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
+    -- 🎉 no goals
 #align conj_act.mul_action₀ ConjAct.mulAction₀
 
 instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
     SMulCommClass α (ConjAct G₀) G₀
     where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+                                 -- 🎉 no goals
 #align conj_act.smul_comm_class₀ ConjAct.smulCommClass₀
 
 instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
@@ -257,10 +271,14 @@ instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
   { ConjAct.mulAction₀ with
     smul_zero := by
       simp only [smul_def]
+      -- ⊢ ∀ (a : ConjAct K), ↑ofConjAct a * 0 * (↑ofConjAct a)⁻¹ = 0
       simp only [mul_zero, zero_mul, «forall», forall_const]
+      -- 🎉 no goals
     smul_add := by
       simp only [smul_def]
+      -- ⊢ ∀ (a : ConjAct K) (x y : K), ↑ofConjAct a * (x + y) * (↑ofConjAct a)⁻¹ = ↑of …
       simp only [mul_add, add_mul, forall_const, «forall»] }
+      -- 🎉 no goals
 #align conj_act.distrib_mul_action₀ ConjAct.distribMulAction₀
 
 end DivisionRing
@@ -274,9 +292,15 @@ variable [Group G]
 instance : MulDistribMulAction (ConjAct G) G where
   smul_mul := by
     simp only [smul_def]
+    -- ⊢ ∀ (r : ConjAct G) (x y : G), ↑ofConjAct r * (x * y) * (↑ofConjAct r)⁻¹ = ↑of …
     simp only [mul_assoc, inv_mul_cancel_left, forall_const, «forall»]
+    -- 🎉 no goals
+                 -- 🎉 no goals
   smul_one := by simp only [smul_def, mul_one, mul_right_inv, «forall», forall_const]
+                 -- 🎉 no goals
+    -- ⊢ ∀ (x y : ConjAct G) (b : G), ↑ofConjAct (x * y) * b * (↑ofConjAct (x * y))⁻¹ …
   one_smul := by simp only [smul_def, ofConjAct_one, one_mul, inv_one, mul_one, forall_const]
+    -- 🎉 no goals
   mul_smul := by
     simp only [smul_def]
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
@@ -284,6 +308,7 @@ instance : MulDistribMulAction (ConjAct G) G where
 instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
     SMulCommClass α (ConjAct G) G
     where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+                                 -- 🎉 no goals
 #align conj_act.smul_comm_class ConjAct.smulCommClass
 
 instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
@@ -299,22 +324,29 @@ theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofC
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
 theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   ext x
+  -- ⊢ x ∈ fixedPoints (ConjAct G) G ↔ x ∈ ↑(center G)
   simp [mem_center_iff, smul_def, mul_inv_eq_iff_eq_mul]
+  -- 🎉 no goals
 #align conj_act.fixed_points_eq_center ConjAct.fixedPoints_eq_center
 
 @[simp]
 theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
   rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
+  -- ⊢ (∃ x, x • h = g) ↔ ∃ c, c * h * c⁻¹ = g
+                                               -- 🎉 no goals
 #align conj_act.mem_orbit_conj_act ConjAct.mem_orbit_conjAct
 
 theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
+                        -- 🎉 no goals
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
 theorem orbit_eq_carrier_conjClasses [Group G] (g : G) :
     orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
   ext h
+  -- ⊢ h ∈ orbit (ConjAct G) g ↔ h ∈ ConjClasses.carrier (ConjClasses.mk g)
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
+  -- 🎉 no goals
 
 theorem stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
@@ -353,8 +385,11 @@ theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : 
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
   change _ * _⁻¹⁻¹ = _
+  -- ⊢ ↑ofConjAct (↑(MulEquiv.toMonoidHom toConjAct) g)⁻¹ * ↑h * (↑(MulEquiv.toMono …
   rw [inv_inv]
+  -- ⊢ ↑ofConjAct (↑(MulEquiv.toMonoidHom toConjAct) g)⁻¹ * ↑h * ↑(MulEquiv.toMonoi …
   rfl
+  -- 🎉 no goals
 #align mul_aut.conj_normal_symm_apply MulAut.conjNormal_symm_apply
 
 @[simp]
@@ -372,6 +407,7 @@ instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K 
     [h : K.Characteristic] : (K.map H.subtype).Normal :=
   ⟨fun a ha b => by
     obtain ⟨a, ha, rfl⟩ := ha
+    -- ⊢ b * ↑(Subgroup.subtype H) a * b⁻¹ ∈ map (Subgroup.subtype H) K
     exact K.apply_coe_mem_map H.subtype
       ⟨_, (SetLike.ext_iff.mp (h.fixed (MulAut.conjNormal b)) a).mpr ha⟩⟩
 #align conj_act.normal_of_characteristic_of_normal ConjAct.normal_of_characteristic_of_normal
@@ -391,17 +427,27 @@ def unitsCentralizerEquiv (x : Mˣ) :
   { toFun := MonoidHom.toHomUnits <|
       { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
           rintro x ⟨rfl⟩
+          -- ⊢ ↑x * ↑(↑ConjAct.ofConjAct ↑u) = ↑(↑ConjAct.ofConjAct ↑u) * ↑x
           have : (u : ConjAct Mˣ) • x = x := u.2
+          -- ⊢ ↑x * ↑(↑ConjAct.ofConjAct ↑u) = ↑(↑ConjAct.ofConjAct ↑u) * ↑x
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
+          -- 🎉 no goals
         map_one' := rfl,
         map_mul' := fun a b ↦ rfl }
     invFun := fun u ↦
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
+      -- ⊢ ↑ConjAct.toConjAct (↑(Units.map (Submonoid.subtype (Submonoid.centralizer {↑ …
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
+      -- ⊢ ↑(Units.map (Submonoid.subtype (Submonoid.centralizer {↑x}))) u * x = x * ↑( …
       exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+      -- 🎉 no goals
     left_inv := fun _ ↦ by ext; rfl
+                           -- ⊢ ↑((fun u => { val := ↑ConjAct.toConjAct (↑(Units.map (Submonoid.subtype (Sub …
+                                -- 🎉 no goals
     right_inv := fun _ ↦ by ext; rfl
+                            -- ⊢ ↑↑(↑(MonoidHom.toHomUnits { toOneHom := { toFun := fun u => { val := ↑(↑Conj …
+                                 -- 🎉 no goals
     map_mul' := map_mul _ }
 
 end Units

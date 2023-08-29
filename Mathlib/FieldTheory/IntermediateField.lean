@@ -61,10 +61,14 @@ namespace IntermediateField
 instance : SetLike (IntermediateField K L) L :=
   ⟨fun S => S.toSubalgebra.carrier, by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    -- ⊢ (fun S => S.carrier) { toSubalgebra := { toSubsemiring := toSubsemiring✝¹, a …
     simp ⟩
+    -- 🎉 no goals
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   show -x ∈S.toSubalgebra; simpa
+  -- ⊢ -x ∈ S.toSubalgebra
+                           -- 🎉 no goals
 #align intermediate_field.neg_mem IntermediateField.neg_mem
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
@@ -271,6 +275,7 @@ protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n
 end InheritedLemmas
 
 theorem coe_nat_mem (n : ℕ) : (n : L) ∈ S := by simpa using coe_int_mem S n
+                                                -- 🎉 no goals
 #align intermediate_field.coe_nat_mem IntermediateField.coe_nat_mem
 
 end IntermediateField
@@ -286,40 +291,55 @@ def Subalgebra.toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, 
 theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
     (S.toIntermediateField inv_mem).toSubalgebra = S := by
   ext
+  -- ⊢ x✝ ∈ (Subalgebra.toIntermediateField S inv_mem).toSubalgebra ↔ x✝ ∈ S
   rfl
+  -- 🎉 no goals
 #align to_subalgebra_to_intermediate_field toSubalgebra_toIntermediateField
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
     (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S := by
   ext
+  -- ⊢ x✝ ∈ Subalgebra.toIntermediateField S.toSubalgebra (_ : ∀ (x : L), x ∈ S → x …
   rfl
+  -- 🎉 no goals
 #align to_intermediate_field_to_subalgebra toIntermediateField_toSubalgebra
 
 /-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
   S.toIntermediateField fun x hx => by
     by_cases hx0 : x = 0
+    -- ⊢ x⁻¹ ∈ S
     · rw [hx0, inv_zero]
+      -- ⊢ 0 ∈ S
       exact S.zero_mem
+      -- 🎉 no goals
     letI hS' := hS.toField
+    -- ⊢ x⁻¹ ∈ S
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.ne_of_val_ne hx0)
+    -- ⊢ x⁻¹ ∈ S
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
+    -- ⊢ x⁻¹ ∈ S
     exact hy.symm ▸ y.2
+    -- 🎉 no goals
 #align subalgebra.to_intermediate_field' Subalgebra.toIntermediateField'
 
 @[simp]
 theorem toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) :
     (S.toIntermediateField' hS).toSubalgebra = S := by
   ext
+  -- ⊢ x✝ ∈ (Subalgebra.toIntermediateField' S hS).toSubalgebra ↔ x✝ ∈ S
   rfl
+  -- 🎉 no goals
 #align to_subalgebra_to_intermediate_field' toSubalgebra_toIntermediateField'
 
 @[simp]
 theorem toIntermediateField'_toSubalgebra (S : IntermediateField K L) :
     S.toSubalgebra.toIntermediateField' (Field.toIsField S) = S := by
   ext
+  -- ⊢ x✝ ∈ Subalgebra.toIntermediateField' S.toSubalgebra (_ : IsField { x // x ∈  …
   rfl
+  -- 🎉 no goals
 #align to_intermediate_field'_to_subalgebra toIntermediateField'_toSubalgebra
 
 /-- Turn a subfield of `L` containing the image of `K` into an intermediate field -/
@@ -409,7 +429,9 @@ def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L
       f with
     inv_mem' := by
       rintro _ ⟨x, hx, rfl⟩
+      -- ⊢ (↑↑f x)⁻¹ ∈ { toSubsemiring := src✝.toSubsemiring, algebraMap_mem' := (_ : ∀ …
       exact ⟨x⁻¹, S.inv_mem hx, map_inv₀ f x⟩ }
+      -- 🎉 no goals
 #align intermediate_field.map IntermediateField.map
 
 @[simp]
@@ -508,26 +530,39 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
   refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
+  -- ⊢ ↑(aeval ↑x) (f + g) = ↑(↑(aeval x) (f + g))
   · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
+    -- 🎉 no goals
   · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
+    -- ⊢ ↑(algebraMap R L) r = ↑(↑(algebraMap R { x // x ∈ S }) r) ∨ ↑x ^ n = 0
     left
+    -- ⊢ ↑(algebraMap R L) r = ↑(↑(algebraMap R { x // x ∈ S }) r)
     rfl
+    -- 🎉 no goals
 #align intermediate_field.aeval_coe IntermediateField.aeval_coe
 
 theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
     [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ IsIntegral R x
   · obtain ⟨P, hPmo, hProot⟩ := h
+    -- ⊢ IsIntegral R x
     refine' ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ _⟩
+    -- ⊢ ↑(algebraMap { x // x ∈ S } L) (eval₂ (algebraMap R { x // x ∈ S }) x P) = 0
     letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
+    -- ⊢ ↑(algebraMap { x // x ∈ S } L) (eval₂ (algebraMap R { x // x ∈ S }) x P) = 0
     rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
       --Porting note: very strange that I have to `rw` twice with `eval₂_eq_eval_map`.
       -- The first `rw` does nothing
       IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map, ← eval₂_eq_eval_map]
     exact hProot
+    -- 🎉 no goals
   · obtain ⟨P, hPmo, hProot⟩ := h
+    -- ⊢ IsIntegral R ↑x
     refine' ⟨P, hPmo, _⟩
+    -- ⊢ eval₂ (algebraMap R L) (↑x) P = 0
     rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
+    -- 🎉 no goals
 #align intermediate_field.coe_is_integral_iff IntermediateField.coe_isIntegral_iff
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
@@ -564,7 +599,9 @@ variable {S}
 theorem toSubalgebra_injective {S S' : IntermediateField K L}
     (h : S.toSubalgebra = S'.toSubalgebra) : S = S' := by
   ext
+  -- ⊢ x✝ ∈ S ↔ x✝ ∈ S'
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
+  -- 🎉 no goals
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
 variable (S)
@@ -575,6 +612,7 @@ theorem set_range_subset : Set.range (algebraMap K L) ⊆ S :=
 
 theorem fieldRange_le : (algebraMap K L).fieldRange ≤ S.toSubfield := fun x hx =>
   S.toSubalgebra.range_subset (by rwa [Set.mem_range, ← RingHom.mem_fieldRange])
+                                  -- 🎉 no goals
 #align intermediate_field.field_range_le IntermediateField.fieldRange_le
 
 @[simp]
@@ -643,12 +681,14 @@ theorem mem_restrictScalars {E : IntermediateField L' L} {x : L} :
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
   fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
+                               -- 🎉 no goals
 #align intermediate_field.restrict_scalars_injective IntermediateField.restrictScalars_injective
 
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
 example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E := by infer_instance
+                                                                                    -- 🎉 no goals
 
 end Tower
 
@@ -683,7 +723,9 @@ variable {F} {E}
 @[simp]
 theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
   rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
+  -- ⊢ (∀ (x : L), x ∈ F.toSubalgebra ↔ x ∈ E.toSubalgebra) ↔ ∀ (x : L), x ∈ ↑F ↔ x …
   rfl
+  -- 🎉 no goals
 #align intermediate_field.to_subalgebra_eq_iff IntermediateField.toSubalgebra_eq_iff
 
 nonrec theorem eq_of_le_of_finrank_le [FiniteDimensional K L] (h_le : F ≤ E)
@@ -700,10 +742,15 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K L] (h_le : F ≤ E)
 theorem eq_of_le_of_finrank_le' [FiniteDimensional K L] (h_le : F ≤ E)
     (h_finrank : finrank F L ≤ finrank E L) : F = E := by
   apply eq_of_le_of_finrank_le h_le
+  -- ⊢ finrank K { x // x ∈ E } ≤ finrank K { x // x ∈ F }
   have h1 := finrank_mul_finrank K F L
+  -- ⊢ finrank K { x // x ∈ E } ≤ finrank K { x // x ∈ F }
   have h2 := finrank_mul_finrank K E L
+  -- ⊢ finrank K { x // x ∈ E } ≤ finrank K { x // x ∈ F }
   have h3 : 0 < finrank E L := finrank_pos
+  -- ⊢ finrank K { x // x ∈ E } ≤ finrank K { x // x ∈ F }
   nlinarith
+  -- 🎉 no goals
 #align intermediate_field.eq_of_le_of_finrank_le' IntermediateField.eq_of_le_of_finrank_le'
 
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional K L] (h_le : F ≤ E)
@@ -719,12 +766,16 @@ theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
 
 theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
+  -- 🎉 no goals
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
 theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
   by_cases hx : IsIntegral K x
+  -- ⊢ minpoly K x = minpoly K ↑x
   · exact minpoly.eq_of_algebraMap_eq (algebraMap S L).injective hx rfl
+    -- 🎉 no goals
   · exact (minpoly.eq_zero hx).trans (minpoly.eq_zero (mt isIntegral_iff.mpr hx)).symm
+    -- 🎉 no goals
 #align intermediate_field.minpoly_eq IntermediateField.minpoly_eq
 
 end IntermediateField

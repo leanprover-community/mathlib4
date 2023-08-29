@@ -72,6 +72,7 @@ theorem prod_mk [CommMonoid β] (s : Multiset α) (hs : s.Nodup) (f : α → β)
 @[to_additive (attr := simp)]
 theorem prod_val [CommMonoid α] (s : Finset α) : s.1.prod = s.prod id := by
   rw [Finset.prod, Multiset.map_id]
+  -- 🎉 no goals
 #align finset.prod_val Finset.prod_val
 #align finset.sum_val Finset.sum_val
 
@@ -196,6 +197,7 @@ theorem prod_eq_fold [CommMonoid β] (s : Finset α) (f : α → β) :
 @[simp]
 theorem sum_multiset_singleton (s : Finset α) : (s.sum fun x => {x}) = s.val := by
   simp only [sum_eq_multiset_sum, Multiset.sum_map_singleton]
+  -- 🎉 no goals
 #align finset.sum_multiset_singleton Finset.sum_multiset_singleton
 
 end Finset
@@ -204,6 +206,8 @@ end Finset
 theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [MonoidHomClass G β γ] (g : G)
     (f : α → β) (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
+  -- ⊢ Multiset.prod (Multiset.map ((fun x => ↑g x) ∘ fun x => f x) s.val) = Multis …
+                                                                                 -- 🎉 no goals
 #align map_prod map_prod
 #align map_sum map_sum
 
@@ -303,6 +307,7 @@ theorem prod_empty : ∏ x in ∅, f x = 1 :=
 @[to_additive]
 theorem prod_of_empty [IsEmpty α] (s : Finset α) : ∏ i in s, f i = 1 := by
   rw [eq_empty_of_isEmpty s, prod_empty]
+  -- 🎉 no goals
 #align finset.prod_of_empty Finset.prod_of_empty
 #align finset.sum_of_empty Finset.sum_of_empty
 
@@ -325,8 +330,11 @@ the sum over `s`, as long as `a` is in `s` or `f a = 0`."]
 theorem prod_insert_of_eq_one_if_not_mem [DecidableEq α] (h : a ∉ s → f a = 1) :
     ∏ x in insert a s, f x = ∏ x in s, f x := by
   by_cases hm : a ∈ s
+  -- ⊢ ∏ x in insert a s, f x = ∏ x in s, f x
   · simp_rw [insert_eq_of_mem hm]
+    -- 🎉 no goals
   · rw [prod_insert hm, h hm, one_mul]
+    -- 🎉 no goals
 #align finset.prod_insert_of_eq_one_if_not_mem Finset.prod_insert_of_eq_one_if_not_mem
 #align finset.sum_insert_of_eq_zero_if_not_mem Finset.sum_insert_of_eq_zero_if_not_mem
 
@@ -349,12 +357,14 @@ theorem prod_singleton : ∏ x in singleton a, f x = f a :=
 theorem prod_pair [DecidableEq α] {a b : α} (h : a ≠ b) :
     (∏ x in ({a, b} : Finset α), f x) = f a * f b := by
   rw [prod_insert (not_mem_singleton.2 h), prod_singleton]
+  -- 🎉 no goals
 #align finset.prod_pair Finset.prod_pair
 #align finset.sum_pair Finset.sum_pair
 
 @[to_additive (attr := simp)]
 theorem prod_const_one : (∏ _x in s, (1 : β)) = 1 := by
   simp only [Finset.prod, Multiset.map_const', Multiset.prod_replicate, one_pow]
+  -- 🎉 no goals
 #align finset.prod_const_one Finset.prod_const_one
 #align finset.sum_const_zero Finset.sum_const_zero
 
@@ -369,12 +379,16 @@ theorem prod_image [DecidableEq α] {s : Finset γ} {g : γ → α} :
 theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
     ∏ x in s.map e, f x = ∏ x in s, f (e x) := by
   rw [Finset.prod, Finset.map_val, Multiset.map_map]; rfl
+  -- ⊢ Multiset.prod (Multiset.map ((fun x => f x) ∘ ↑e) s.val) = ∏ x in s, f (↑e x)
+                                                      -- 🎉 no goals
 #align finset.prod_map Finset.prod_map
 #align finset.sum_map Finset.sum_map
 
 @[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
+  -- ⊢ (∀ (x : α), x ∈ s₂ → f x = g x) → Finset.prod s₂ f = Finset.prod s₂ g
+          -- 🎉 no goals
 #align finset.prod_congr Finset.prod_congr
 #align finset.sum_congr Finset.sum_congr
 
@@ -382,8 +396,11 @@ theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod
 theorem prod_disjUnion (h) :
     ∏ x in s₁.disjUnion s₂ h, f x = (∏ x in s₁, f x) * ∏ x in s₂, f x := by
   refine' Eq.trans _ (fold_disjUnion h)
+  -- ⊢ ∏ x in disjUnion s₁ s₂ h, f x = fold (fun x x_1 => x * x_1) (1 * 1) (fun x = …
   rw [one_mul]
+  -- ⊢ ∏ x in disjUnion s₁ s₂ h, f x = fold (fun x x_1 => x * x_1) 1 (fun x => f x) …
   rfl
+  -- 🎉 no goals
 #align finset.prod_disj_union Finset.prod_disjUnion
 #align finset.sum_disj_union Finset.sum_disjUnion
 
@@ -391,9 +408,13 @@ theorem prod_disjUnion (h) :
 theorem prod_disjiUnion (s : Finset ι) (t : ι → Finset α) (h) :
     ∏ x in s.disjiUnion t h, f x = ∏ i in s, ∏ x in t i, f x := by
   refine' Eq.trans _ (fold_disjiUnion h)
+  -- ⊢ ∏ x in disjiUnion s t h, f x = fold (fun x x_1 => x * x_1) (fold (fun x x_1  …
   dsimp [Finset.prod, Multiset.prod, Multiset.fold, Finset.disjUnion, Finset.fold]
+  -- ⊢ Multiset.foldr (fun x x_1 => x * x_1) (_ : ∀ (x y z : β), x * (y * z) = y *  …
   congr
+  -- ⊢ 1 = Multiset.foldr (fun x x_1 => x * x_1) (_ : LeftCommutative fun x x_1 =>  …
   exact prod_const_one.symm
+  -- 🎉 no goals
 #align finset.prod_disj_Union Finset.prod_disjiUnion
 #align finset.sum_disj_Union Finset.sum_disjiUnion
 
@@ -408,6 +429,8 @@ theorem prod_union_inter [DecidableEq α] :
 theorem prod_union [DecidableEq α] (h : Disjoint s₁ s₂) :
     ∏ x in s₁ ∪ s₂, f x = (∏ x in s₁, f x) * ∏ x in s₂, f x := by
   rw [← prod_union_inter, disjoint_iff_inter_eq_empty.mp h]; exact (mul_one _).symm
+  -- ⊢ ∏ x in s₁ ∪ s₂, f x = (∏ x in s₁ ∪ s₂, f x) * ∏ x in ∅, f x
+                                                             -- 🎉 no goals
 #align finset.prod_union Finset.prod_union
 #align finset.sum_union Finset.sum_union
 
@@ -416,7 +439,9 @@ theorem prod_filter_mul_prod_filter_not
     (s : Finset α) (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : α → β) :
     (∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, f x = ∏ x in s, f x := by
   have := Classical.decEq α
+  -- ⊢ (∏ x in filter p s, f x) * ∏ x in filter (fun x => ¬p x) s, f x = ∏ x in s,  …
   rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
+  -- 🎉 no goals
 #align finset.prod_filter_mul_prod_filter_not Finset.prod_filter_mul_prod_filter_not
 #align finset.sum_filter_add_sum_filter_not Finset.sum_filter_add_sum_filter_not
 
@@ -425,6 +450,7 @@ section ToList
 @[to_additive (attr := simp)]
 theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.coe_prod, ← Multiset.coe_map, Finset.coe_toList]
+  -- 🎉 no goals
 #align finset.prod_to_list Finset.prod_to_list
 #align finset.sum_to_list Finset.sum_to_list
 
@@ -434,7 +460,9 @@ end ToList
 theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x)) = ∏ x in s, f x := by
   convert (prod_map s σ.toEmbedding f).symm
+  -- ⊢ s = map (Equiv.toEmbedding σ) s
   exact (map_perm hs).symm
+  -- 🎉 no goals
 #align equiv.perm.prod_comp Equiv.Perm.prod_comp
 #align equiv.perm.sum_comp Equiv.Perm.sum_comp
 
@@ -442,7 +470,9 @@ theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α
 theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm α) (s : Finset α) (f : α → α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x) x) = ∏ x in s, f x (σ.symm x) := by
   convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
+  -- ⊢ x✝ = ↑σ.symm (↑σ x✝)
   rw [Equiv.symm_apply_apply]
+  -- 🎉 no goals
 #align equiv.perm.prod_comp' Equiv.Perm.prod_comp'
 #align equiv.perm.sum_comp' Equiv.Perm.sum_comp'
 
@@ -461,6 +491,7 @@ theorem IsCompl.prod_mul_prod {s t : Finset α} (h : IsCompl s t) (f : α → β
     (∏ i in s, f i) * ∏ i in t, f i = ∏ i, f i :=
   (Finset.prod_disjUnion h.disjoint).symm.trans <| by
     classical rw [Finset.disjUnion_eq_union, ← Finset.sup_eq_union, h.sup_eq_top]; rfl
+    -- 🎉 no goals
 #align is_compl.prod_mul_prod IsCompl.prod_mul_prod
 #align is_compl.sum_add_sum IsCompl.sum_add_sum
 
@@ -493,6 +524,7 @@ theorem prod_compl_mul_prod [Fintype α] [DecidableEq α] (s : Finset α) (f : �
 theorem prod_sdiff [DecidableEq α] (h : s₁ ⊆ s₂) :
     (∏ x in s₂ \ s₁, f x) * ∏ x in s₁, f x = ∏ x in s₂, f x := by
   rw [← prod_union sdiff_disjoint, sdiff_union_of_subset h]
+  -- 🎉 no goals
 #align finset.prod_sdiff Finset.prod_sdiff
 #align finset.sum_sdiff Finset.sum_sdiff
 
@@ -500,13 +532,16 @@ theorem prod_sdiff [DecidableEq α] (h : s₁ ⊆ s₂) :
 theorem prod_disj_sum (s : Finset α) (t : Finset γ) (f : Sum α γ → β) :
     ∏ x in s.disjSum t, f x = (∏ x in s, f (Sum.inl x)) * ∏ x in t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
+  -- ⊢ (∏ x in s, f (↑Function.Embedding.inl x)) * ∏ x in t, f (↑Function.Embedding …
   rfl
+  -- 🎉 no goals
 #align finset.prod_disj_sum Finset.prod_disj_sum
 #align finset.sum_disj_sum Finset.sum_disj_sum
 
 @[to_additive]
 theorem prod_sum_elim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ → β) :
     ∏ x in s.disjSum t, Sum.elim f g x = (∏ x in s, f x) * ∏ x in t, g x := by simp
+                                                                               -- 🎉 no goals
 #align finset.prod_sum_elim Finset.prod_sum_elim
 #align finset.sum_sum_elim Finset.sum_sum_elim
 
@@ -514,6 +549,7 @@ theorem prod_sum_elim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ �
 theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x in s.biUnion t, f x = ∏ x in s, ∏ i in t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
+  -- 🎉 no goals
 #align finset.prod_bUnion Finset.prod_biUnion
 #align finset.sum_bUnion Finset.sum_biUnion
 
@@ -524,6 +560,7 @@ in the reverse direction, use `Finset.sum_sigma'`"]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x in s.sigma t, f x = ∏ a in s, ∏ s in t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]
+  -- 🎉 no goals
 #align finset.prod_sigma Finset.prod_sigma
 #align finset.sum_sigma Finset.sum_sigma
 
@@ -565,13 +602,21 @@ theorem prod_bij' {s : Finset α} {t : Finset γ} {f : α → β} {g : γ → β
     (hj : ∀ a ha, j a ha ∈ s) (left_inv : ∀ a ha, j (i a ha) (hi a ha) = a)
     (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) : ∏ x in s, f x = ∏ x in t, g x := by
   refine' prod_bij i hi h _ _
+  -- ⊢ ∀ (a₁ a₂ : α) (ha₁ : a₁ ∈ s) (ha₂ : a₂ ∈ s), i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂
   · intro a1 a2 h1 h2 eq
+    -- ⊢ a1 = a2
     rw [← left_inv a1 h1, ← left_inv a2 h2]
+    -- ⊢ j (i a1 h1) (_ : i a1 h1 ∈ t) = j (i a2 h2) (_ : i a2 h2 ∈ t)
     simp only [eq]
+    -- 🎉 no goals
   · intro b hb
+    -- ⊢ ∃ a ha, b = i a ha
     use j b hb
+    -- ⊢ ∃ ha, b = i (j b hb) ha
     use hj b hb
+    -- ⊢ b = i (j b hb) (_ : j b hb ∈ s)
     exact (right_inv b hb).symm
+    -- 🎉 no goals
 #align finset.prod_bij' Finset.prod_bij'
 #align finset.sum_bij' Finset.sum_bij'
 
@@ -582,13 +627,17 @@ See `Equiv.sum_comp` for the version where `s` and `s'` are `univ`. "]
 theorem Equiv.prod_comp_finset {ι'} [DecidableEq ι] (e : ι ≃ ι') (f : ι' → β) {s' : Finset ι'}
     {s : Finset ι} (h : s = s'.image e.symm) : ∏ i' in s', f i' = ∏ i in s, f (e i) := by
   rw [h]
+  -- ⊢ ∏ i' in s', f i' = ∏ i in image (↑e.symm) s', f (↑e i)
   refine'
     Finset.prod_bij' (fun i' _hi' => e.symm i') (fun a ha => Finset.mem_image_of_mem _ ha)
       (fun a _ha => by simp_rw [e.apply_symm_apply]) (fun i _hi => e i) (fun a ha => _)
       (fun a _ha => e.apply_symm_apply a) fun a _ha => e.symm_apply_apply a
   rcases Finset.mem_image.mp ha with ⟨i', hi', rfl⟩
+  -- ⊢ (fun i _hi => ↑e i) (↑e.symm i') ha ∈ s'
   dsimp only
+  -- ⊢ ↑e (↑e.symm i') ∈ s'
   rwa [e.apply_symm_apply]
+  -- 🎉 no goals
 #align finset.equiv.prod_comp_finset Finset.Equiv.prod_comp_finset
 #align finset.equiv.sum_comp_finset Finset.Equiv.sum_comp_finset
 
@@ -597,6 +646,7 @@ theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → 
     (h : ∀ p : γ × α, p ∈ r ↔ p.1 ∈ s ∧ p.2 ∈ t p.1) {f : γ × α → β} :
     ∏ p in r, f p = ∏ c in s, ∏ a in t c, f (c, a) := by
   refine' Eq.trans _ (prod_sigma s t fun p => f (p.1, p.2))
+  -- ⊢ ∏ p in r, f p = ∏ x in Finset.sigma s t, f (x.fst, x.snd)
   exact
     prod_bij' (fun p _hp => ⟨p.1, p.2⟩) (fun p => mem_sigma.mpr ∘ (h p).mp)
       (fun p hp => congr_arg f Prod.mk.eta.symm) (fun p _hp => (p.1, p.2))
@@ -617,6 +667,7 @@ theorem prod_finset_product_right (r : Finset (α × γ)) (s : Finset γ) (t : �
     (h : ∀ p : α × γ, p ∈ r ↔ p.2 ∈ s ∧ p.1 ∈ t p.2) {f : α × γ → β} :
     ∏ p in r, f p = ∏ c in s, ∏ a in t c, f (a, c) := by
   refine' Eq.trans _ (prod_sigma s t fun p => f (p.2, p.1))
+  -- ⊢ ∏ p in r, f p = ∏ x in Finset.sigma s t, f (x.snd, x.fst)
   exact
     prod_bij' (fun p _hp => ⟨p.2, p.1⟩) (fun p => mem_sigma.mpr ∘ (h p).mp)
       (fun p hp => congr_arg f Prod.mk.eta.symm) (fun p _hp => (p.2, p.1))
@@ -637,6 +688,7 @@ theorem prod_fiberwise_of_maps_to [DecidableEq γ] {s : Finset α} {t : Finset �
     (h : ∀ x ∈ s, g x ∈ t) (f : α → β) :
     (∏ y in t, ∏ x in s.filter fun x => g x = y, f x) = ∏ x in s, f x := by
   rw [← prod_disjiUnion, disjiUnion_filter_eq_of_maps_to h]
+  -- 🎉 no goals
 #align finset.prod_fiberwise_of_maps_to Finset.prod_fiberwise_of_maps_to
 #align finset.sum_fiberwise_of_maps_to Finset.sum_fiberwise_of_maps_to
 
@@ -656,6 +708,8 @@ theorem prod_image' [DecidableEq α] {s : Finset γ} {g : γ → α} (h : γ →
 @[to_additive]
 theorem prod_mul_distrib : ∏ x in s, f x * g x = (∏ x in s, f x) * ∏ x in s, g x :=
   Eq.trans (by rw [one_mul]; rfl) fold_op_distrib
+               -- ⊢ ∏ x in s, f x * g x = fold (fun x x_1 => x * x_1) 1 (fun x => f x * g x) s
+                             -- 🎉 no goals
 #align finset.prod_mul_distrib Finset.prod_mul_distrib
 #align finset.sum_add_distrib Finset.sum_add_distrib
 
@@ -720,7 +774,11 @@ theorem prod_hom_rel [CommMonoid γ] {r : β → γ → Prop} {f : α → β} {g
     (h₁ : r 1 1) (h₂ : ∀ a b c, r b c → r (f a * b) (g a * c)) :
     r (∏ x in s, f x) (∏ x in s, g x) := by
   delta Finset.prod
+  -- ⊢ r (Multiset.prod (Multiset.map (fun x => f x) s.val)) (Multiset.prod (Multis …
   apply Multiset.prod_hom_rel <;> assumption
+  -- ⊢ r 1 1
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align finset.prod_hom_rel Finset.prod_hom_rel
 #align finset.sum_hom_rel Finset.sum_hom_rel
 
@@ -736,7 +794,9 @@ theorem prod_eq_one {f : α → β} {s : Finset α} (h : ∀ x ∈ s, f x = 1) :
 theorem prod_subset_one_on_sdiff [DecidableEq α] (h : s₁ ⊆ s₂) (hg : ∀ x ∈ s₂ \ s₁, g x = 1)
     (hfg : ∀ x ∈ s₁, f x = g x) : ∏ i in s₁, f i = ∏ i in s₂, g i := by
   rw [← prod_sdiff h, prod_eq_one hg, one_mul]
+  -- ⊢ ∏ i in s₁, f i = ∏ x in s₁, g x
   exact prod_congr rfl hfg
+  -- 🎉 no goals
 #align finset.prod_subset_one_on_sdiff Finset.prod_subset_one_on_sdiff
 #align finset.sum_subset_zero_on_sdiff Finset.sum_subset_zero_on_sdiff
 
@@ -745,6 +805,7 @@ theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x
     ∏ x in s₁, f x = ∏ x in s₂, f x :=
   haveI := Classical.decEq α
   prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
+                                 -- 🎉 no goals
 #align finset.prod_subset Finset.prod_subset
 #align finset.sum_subset Finset.sum_subset
 
@@ -773,6 +834,8 @@ theorem prod_filter (p : α → Prop) [DecidablePred p] (f : α → β) :
   calc
     ∏ a in s.filter p, f a = ∏ a in s.filter p, if p a then f a else 1 :=
       prod_congr rfl fun a h => by rw [if_pos]; simpa using (mem_filter.1 h).2
+                                   -- ⊢ p a
+                                                -- 🎉 no goals
     _ = ∏ a in s, if p a then f a else 1 := by
       { refine' prod_subset (filter_subset _ s) fun x hs h => _
         rw [mem_filter, not_and] at h
@@ -784,6 +847,7 @@ theorem prod_filter (p : α → Prop) [DecidablePred p] (f : α → β) :
 theorem prod_eq_single_of_mem {s : Finset α} {f : α → β} (a : α) (h : a ∈ s)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) : ∏ x in s, f x = f a := by
   haveI := Classical.decEq α
+  -- ⊢ ∏ x in s, f x = f a
   calc
     ∏ x in s, f x = ∏ x in {a}, f x := by
       { refine' (prod_subset _ _).symm
@@ -800,6 +864,8 @@ theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b �
   haveI := Classical.decEq α
   by_cases (prod_eq_single_of_mem a · h₀) fun this =>
     (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
+                                              -- ⊢ False
+                                                          -- 🎉 no goals
       prod_const_one.trans (h₁ this).symm
 #align finset.prod_eq_single Finset.prod_eq_single
 #align finset.sum_eq_single Finset.sum_eq_single
@@ -808,6 +874,8 @@ theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b �
 theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x in s, f x = f a * f b := by
   haveI := Classical.decEq α; let s' := ({a, b} : Finset α)
+  -- ⊢ ∏ x in s, f x = f a * f b
+                              -- ⊢ ∏ x in s, f x = f a * f b
   have hu : s' ⊆ s := by
     refine' insert_subset_iff.mpr _
     apply And.intro ha
@@ -822,7 +890,9 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     rw [mem_singleton]
     exact hab
   rw [← prod_subset hu hf]
+  -- ⊢ ∏ x in s', f x = f a * f b
   exact Finset.prod_pair hn
+  -- 🎉 no goals
 #align finset.prod_eq_mul_of_mem Finset.prod_eq_mul_of_mem
 #align finset.sum_eq_add_of_mem Finset.sum_eq_add_of_mem
 
@@ -831,14 +901,26 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
     (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) (ha : a ∉ s → f a = 1) (hb : b ∉ s → f b = 1) :
     ∏ x in s, f x = f a * f b := by
   haveI := Classical.decEq α; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
+  -- ⊢ ∏ x in s, f x = f a * f b
+                              -- ⊢ ∏ x in s, f x = f a * f b
+                                                      -- ⊢ ∏ x in s, f x = f a * f b
+                                                      -- ⊢ ∏ x in s, f x = f a * f b
   · exact prod_eq_mul_of_mem a b h₁ h₂ hn h₀
+    -- 🎉 no goals
   · rw [hb h₂, mul_one]
+    -- ⊢ ∏ x in s, f x = f a
     apply prod_eq_single_of_mem a h₁
+    -- ⊢ ∀ (b : α), b ∈ s → b ≠ a → f b = 1
     exact fun c hc hca => h₀ c hc ⟨hca, ne_of_mem_of_not_mem hc h₂⟩
+    -- 🎉 no goals
   · rw [ha h₁, one_mul]
+    -- ⊢ ∏ x in s, f x = f b
     apply prod_eq_single_of_mem b h₂
+    -- ⊢ ∀ (b_1 : α), b_1 ∈ s → b_1 ≠ b → f b_1 = 1
     exact fun c hc hcb => h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, hcb⟩
+    -- 🎉 no goals
   · rw [ha h₁, hb h₂, mul_one]
+    -- ⊢ ∏ x in s, f x = 1
     exact
       _root_.trans
         (prod_congr rfl fun c hc =>
@@ -853,7 +935,9 @@ theorem prod_attach {f : α → β} : ∏ x in s.attach, f x = ∏ x in s, f x :
   calc
     ∏ x in s.attach, f x.val = ∏ x in s.attach.image Subtype.val, f x := by
       { rw [prod_image]; exact fun x _ y _ => Subtype.eq }
+      -- 🎉 no goals
     _ = _ := by rw [attach_image_val]
+                -- 🎉 no goals
 #align finset.prod_attach Finset.prod_attach
 #align finset.sum_attach Finset.sum_attach
 
@@ -864,7 +948,9 @@ theorem prod_attach {f : α → β} : ∏ x in s.attach, f x = ∏ x in s, f x :
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x in s.subtype p, f x = ∏ x in s.filter p, f x := by
   conv_lhs => erw [← prod_map (s.subtype p) (Function.Embedding.subtype _) f]
+  -- ⊢ ∏ x in map (Function.Embedding.subtype p) (Finset.subtype p s), f x = ∏ x in …
   exact prod_congr (subtype_map _) fun x _hx => rfl
+  -- 🎉 no goals
 #align finset.prod_subtype_eq_prod_filter Finset.prod_subtype_eq_prod_filter
 #align finset.sum_subtype_eq_sum_filter Finset.sum_subtype_eq_sum_filter
 
@@ -875,7 +961,9 @@ over `s.subtype p` equals that sum over `s`."]
 theorem prod_subtype_of_mem (f : α → β) {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) :
     ∏ x in s.subtype p, f x = ∏ x in s, f x := by
   rw [prod_subtype_eq_prod_filter, filter_true_of_mem]
+  -- ⊢ ∀ (x : α), x ∈ s → p x
   simpa using h
+  -- 🎉 no goals
 #align finset.prod_subtype_of_mem Finset.prod_subtype_of_mem
 #align finset.sum_subtype_of_mem Finset.sum_subtype_of_mem
 
@@ -889,7 +977,9 @@ theorem prod_subtype_map_embedding {p : α → Prop} {s : Finset { x // p x }} {
     {g : α → β} (h : ∀ x : { x // p x }, x ∈ s → g x = f x) :
     (∏ x in s.map (Function.Embedding.subtype _), g x) = ∏ x in s, f x := by
   rw [Finset.prod_map]
+  -- ⊢ ∏ x in s, g (↑(Function.Embedding.subtype fun x => p x) x) = ∏ x in s, f x
   exact Finset.prod_congr rfl h
+  -- 🎉 no goals
 #align finset.prod_subtype_map_embedding Finset.prod_subtype_map_embedding
 #align finset.sum_subtype_map_embedding Finset.sum_subtype_map_embedding
 
@@ -919,9 +1009,13 @@ variable {f s}
 theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α) (h : ∀ x, x ∈ s ↔ p x)
     (f : α → β) : ∏ a in s, f a = ∏ a : Subtype p, f a := by
   have : (· ∈ s) = p := Set.ext h
+  -- ⊢ ∏ a in s, f a = ∏ a : Subtype p, f ↑a
   subst p
+  -- ⊢ ∏ a in s, f a = ∏ a : { x // x ∈ s }, f ↑a
   rw [← prod_coe_sort]
+  -- ⊢ ∏ i : { x // x ∈ s }, f ↑i = ∏ a : { x // x ∈ s }, f ↑a
   congr!
+  -- 🎉 no goals
 #align finset.prod_subtype Finset.prod_subtype
 #align finset.sum_subtype Finset.sum_subtype
 
@@ -939,12 +1033,18 @@ theorem prod_congr_set {α : Type*} [CommMonoid α] {β : Type*} [Fintype β] (s
     [DecidablePred (· ∈ s)] (f : β → α) (g : s → α) (w : ∀ (x : β) (h : x ∈ s), f x = g ⟨x, h⟩)
     (w' : ∀ x : β, x ∉ s → f x = 1) : Finset.univ.prod f = Finset.univ.prod g := by
   rw [← @Finset.prod_subset _ _ s.toFinset Finset.univ f _ (by simp)]
+  -- ⊢ ∏ x in Set.toFinset s, f x = Finset.prod univ g
   · rw [Finset.prod_subtype]
     · apply Finset.prod_congr rfl
+      -- ⊢ ∀ (x : { x // x ∈ s }), x ∈ univ → f ↑x = g x
       exact fun ⟨x, h⟩ _ => w x h
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   · rintro x _ h
+    -- ⊢ f x = 1
     exact w' x (by simpa using h)
+    -- 🎉 no goals
 #align finset.prod_congr_set Finset.prod_congr_set
 #align finset.sum_congr_set Finset.sum_congr_set
 
@@ -953,7 +1053,9 @@ theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
     [DecidablePred fun x => ¬p x] (f : ∀ x : α, p x → γ) (g : ∀ x : α, ¬p x → γ) (h : γ → β) :
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
       (∏ x in (s.filter p).attach, h (f x.1 $ by simpa using (mem_filter.mp x.2).2)) *
+                                                 -- 🎉 no goals
         ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 $ by simpa using (mem_filter.mp x.2).2) :=
+                                                              -- 🎉 no goals
   calc
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
         (∏ x in s.filter p, h (if hx : p x then f x hx else g x hx)) *
@@ -963,10 +1065,14 @@ theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
           ∏ x in (s.filter fun x => ¬p x).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx) :=
       congr_arg₂ _ prod_attach.symm prod_attach.symm
     _ = (∏ x in (s.filter p).attach, h (f x.1 $ by simpa using (mem_filter.mp x.2).2)) *
+                                                   -- 🎉 no goals
           ∏ x in (s.filter fun x ↦ ¬p x).attach, h (g x.1 $ by simpa using (mem_filter.mp x.2).2) :=
+                                                               -- 🎉 no goals
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
         congr_arg h (dif_pos $ by simpa using (mem_filter.mp x.2).2))
+                                  -- 🎉 no goals
         (prod_congr rfl fun x _hx => congr_arg h (dif_neg $ by simpa using (mem_filter.mp x.2).2))
+                                                               -- 🎉 no goals
 #align finset.prod_apply_dite Finset.prod_apply_dite
 #align finset.sum_apply_dite Finset.sum_apply_dite
 
@@ -985,8 +1091,11 @@ theorem prod_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} (f : 
     (g : ∀ x : α, ¬p x → β) :
     ∏ x in s, (if hx : p x then f x hx else g x hx) =
       (∏ x in (s.filter p).attach, f x.1 (by simpa using (mem_filter.mp x.2).2)) *
+                                             -- 🎉 no goals
         ∏ x in (s.filter fun x => ¬p x).attach, g x.1 (by simpa using (mem_filter.mp x.2).2) := by
+                                                          -- 🎉 no goals
   simp [prod_apply_dite _ _ fun x => x]
+  -- 🎉 no goals
 #align finset.prod_dite Finset.prod_dite
 #align finset.sum_dite Finset.sum_dite
 
@@ -995,6 +1104,7 @@ theorem prod_ite {s : Finset α} {p : α → Prop} {hp : DecidablePred p} (f g :
     ∏ x in s, (if p x then f x else g x) =
       (∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, g x := by
   simp [prod_apply_ite _ _ fun x => x]
+  -- 🎉 no goals
 #align finset.prod_ite Finset.prod_ite
 #align finset.sum_ite Finset.sum_ite
 
@@ -1003,7 +1113,9 @@ theorem prod_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : α →
     ∏ x in s, (if p x then f x else g x) = ∏ x in s, g x := by
   rw [prod_ite, filter_false_of_mem, filter_true_of_mem]
   · simp only [prod_empty, one_mul]
+    -- 🎉 no goals
   all_goals intros; apply h; assumption
+  -- 🎉 no goals
 #align finset.prod_ite_of_false Finset.prod_ite_of_false
 #align finset.sum_ite_of_false Finset.sum_ite_of_false
 
@@ -1011,8 +1123,11 @@ theorem prod_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : α →
 theorem prod_ite_of_true {p : α → Prop} {hp : DecidablePred p} (f g : α → β) (h : ∀ x ∈ s, p x) :
     ∏ x in s, (if p x then f x else g x) = ∏ x in s, f x := by
   simp_rw [← ite_not (p _)]
+  -- ⊢ (∏ x in s, if ¬p x then g x else f x) = ∏ x in s, f x
   apply prod_ite_of_false
+  -- ⊢ ∀ (x : α), x ∈ s → ¬¬p x
   simpa
+  -- 🎉 no goals
 #align finset.prod_ite_of_true Finset.prod_ite_of_true
 #align finset.sum_ite_of_true Finset.sum_ite_of_true
 
@@ -1020,7 +1135,9 @@ theorem prod_ite_of_true {p : α → Prop} {hp : DecidablePred p} (f g : α → 
 theorem prod_apply_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : α → γ) (k : γ → β)
     (h : ∀ x ∈ s, ¬p x) : (∏ x in s, k (if p x then f x else g x)) = ∏ x in s, k (g x) := by
   simp_rw [apply_ite k]
+  -- ⊢ (∏ x in s, if p x then k (f x) else k (g x)) = ∏ x in s, k (g x)
   exact prod_ite_of_false _ _ h
+  -- 🎉 no goals
 #align finset.prod_apply_ite_of_false Finset.prod_apply_ite_of_false
 #align finset.sum_apply_ite_of_false Finset.sum_apply_ite_of_false
 
@@ -1028,7 +1145,9 @@ theorem prod_apply_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : 
 theorem prod_apply_ite_of_true {p : α → Prop} {hp : DecidablePred p} (f g : α → γ) (k : γ → β)
     (h : ∀ x ∈ s, p x) : (∏ x in s, k (if p x then f x else g x)) = ∏ x in s, k (f x) := by
   simp_rw [apply_ite k]
+  -- ⊢ (∏ x in s, if p x then k (f x) else k (g x)) = ∏ x in s, k (f x)
   exact prod_ite_of_true _ _ h
+  -- 🎉 no goals
 #align finset.prod_apply_ite_of_true Finset.prod_apply_ite_of_true
 #align finset.sum_apply_ite_of_true Finset.sum_apply_ite_of_true
 
@@ -1043,6 +1162,7 @@ theorem prod_extend_by_one [DecidableEq α] (s : Finset α) (f : α → β) :
 theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
     ∏ i in s, (if i ∈ t then f i else 1) = ∏ i in s ∩ t, f i := by
   rw [← Finset.prod_filter, Finset.filter_mem_eq_inter]
+  -- 🎉 no goals
 #align finset.prod_ite_mem Finset.prod_ite_mem
 #align finset.sum_ite_mem Finset.sum_ite_mem
 
@@ -1050,16 +1170,27 @@ theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
 theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, a = x → β) :
     ∏ x in s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
+  -- ⊢ (∏ x in s, if h : a = x then b x h else 1) = b a (_ : a = a)
   · rw [Finset.prod_eq_single a, dif_pos rfl]
+    -- ⊢ ∀ (b_1 : α), b_1 ∈ s → b_1 ≠ a → (if h : a = b_1 then b b_1 h else 1) = 1
     · intros _ _ h
+      -- ⊢ (if h : a = b✝ then b b✝ h else 1) = 1
       rw [dif_neg]
+      -- ⊢ ¬a = b✝
       exact h.symm
+      -- 🎉 no goals
     · simp [h]
+      -- 🎉 no goals
   · rw [Finset.prod_eq_one]
+    -- ⊢ ∀ (x : α), x ∈ s → (if h : a = x then b x h else 1) = 1
     intros
+    -- ⊢ (if h : a = x✝ then b x✝ h else 1) = 1
     rw [dif_neg]
+    -- ⊢ ¬a = x✝
     rintro rfl
+    -- ⊢ False
     contradiction
+    -- 🎉 no goals
 #align finset.prod_dite_eq Finset.prod_dite_eq
 #align finset.sum_dite_eq Finset.sum_dite_eq
 
@@ -1067,16 +1198,27 @@ theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, 
 theorem prod_dite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, x = a → β) :
     ∏ x in s, (if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
+  -- ⊢ (∏ x in s, if h : x = a then b x h else 1) = b a (_ : a = a)
   · rw [Finset.prod_eq_single a, dif_pos rfl]
+    -- ⊢ ∀ (b_1 : α), b_1 ∈ s → b_1 ≠ a → (if h : b_1 = a then b b_1 h else 1) = 1
     · intros _ _ h
+      -- ⊢ (if h : b✝ = a then b b✝ h else 1) = 1
       rw [dif_neg]
+      -- ⊢ ¬b✝ = a
       exact h
+      -- 🎉 no goals
     · simp [h]
+      -- 🎉 no goals
   · rw [Finset.prod_eq_one]
+    -- ⊢ ∀ (x : α), x ∈ s → (if h : x = a then b x h else 1) = 1
     intros
+    -- ⊢ (if h : x✝ = a then b x✝ h else 1) = 1
     rw [dif_neg]
+    -- ⊢ ¬x✝ = a
     rintro rfl
+    -- ⊢ False
     contradiction
+    -- 🎉 no goals
 #align finset.prod_dite_eq' Finset.prod_dite_eq'
 #align finset.sum_dite_eq' Finset.sum_dite_eq'
 
@@ -1112,6 +1254,9 @@ theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β
 theorem prod_ite_irrel (p : Prop) [Decidable p] (s : Finset α) (f g : α → β) :
     ∏ x in s, (if p then f x else g x) = if p then ∏ x in s, f x else ∏ x in s, g x := by
   split_ifs with h <;> rfl
+  -- ⊢ ∏ x in s, f x = ∏ x in s, f x
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align finset.prod_ite_irrel Finset.prod_ite_irrel
 #align finset.sum_ite_irrel Finset.sum_ite_irrel
 
@@ -1120,6 +1265,9 @@ theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset α) (f : p → α �
     ∏ x in s, (if h : p then f h x else g h x) =
       if h : p then ∏ x in s, f h x else ∏ x in s, g h x := by
   split_ifs with h <;> rfl
+  -- ⊢ ∏ x in s, f h x = ∏ x in s, f h x
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align finset.prod_dite_irrel Finset.prod_dite_irrel
 #align finset.sum_dite_irrel Finset.sum_dite_irrel
 
@@ -1174,10 +1322,14 @@ theorem prod_dite_of_false {p : α → Prop} {hp : DecidablePred p} (h : ∀ x �
     (f : ∀ x : α, p x → β) (g : ∀ x : α, ¬p x → β) :
     ∏ x in s, (if hx : p x then f x hx else g x hx) = ∏ x : s, g x.val (h x.val x.property) :=
   prod_bij (fun x hx => ⟨x, hx⟩) (fun x hx => by simp)
+                                                 -- 🎉 no goals
     (fun a ha => by
       dsimp
+      -- ⊢ (if hx : p a then f a hx else g a hx) = g a (_ : ¬p a)
       rw [dif_neg])
+      -- 🎉 no goals
     (fun a₁ a₂ h₁ h₂ hh => congr_arg Subtype.val hh) fun b _hb => ⟨b.1, b.2, by simp⟩
+                                                                                -- 🎉 no goals
 #align finset.prod_dite_of_false Finset.prod_dite_of_false
 #align finset.sum_dite_of_false Finset.sum_dite_of_false
 
@@ -1186,10 +1338,14 @@ theorem prod_dite_of_true {p : α → Prop} {hp : DecidablePred p} (h : ∀ x �
     (f : ∀ x : α, p x → β) (g : ∀ x : α, ¬p x → β) :
     ∏ x in s, (if hx : p x then f x hx else g x hx) = ∏ x : s, f x.val (h x.val x.property) :=
   prod_bij (fun x hx => ⟨x, hx⟩) (fun x hx => by simp)
+                                                 -- 🎉 no goals
     (fun a ha => by
       dsimp
+      -- ⊢ (if hx : p a then f a hx else g a hx) = f a (_ : p a)
       rw [dif_pos])
+      -- 🎉 no goals
     (fun a₁ a₂ h₁ h₂ hh => congr_arg Subtype.val hh) fun b _hb => ⟨b.1, b.2, by simp⟩
+                                                                                -- 🎉 no goals
 #align finset.prod_dite_of_true Finset.prod_dite_of_true
 #align finset.sum_dite_of_true Finset.sum_dite_of_true
 
@@ -1212,6 +1368,7 @@ theorem exists_ne_one_of_prod_ne_one (h : ∏ x in s, f x ≠ 1) : ∃ a ∈ s, 
 theorem prod_range_succ_comm (f : ℕ → β) (n : ℕ) :
     (∏ x in range (n + 1), f x) = f n * ∏ x in range n, f x := by
   rw [range_succ, prod_insert not_mem_range_self]
+  -- 🎉 no goals
 #align finset.prod_range_succ_comm Finset.prod_range_succ_comm
 #align finset.sum_range_succ_comm Finset.sum_range_succ_comm
 
@@ -1219,6 +1376,7 @@ theorem prod_range_succ_comm (f : ℕ → β) (n : ℕ) :
 theorem prod_range_succ (f : ℕ → β) (n : ℕ) :
     (∏ x in range (n + 1), f x) = (∏ x in range n, f x) * f n := by
   simp only [mul_comm, prod_range_succ_comm]
+  -- 🎉 no goals
 #align finset.prod_range_succ Finset.prod_range_succ
 #align finset.sum_range_succ Finset.sum_range_succ
 
@@ -1227,6 +1385,7 @@ theorem prod_range_succ' (f : ℕ → β) :
     ∀ n : ℕ, (∏ k in range (n + 1), f k) = (∏ k in range n, f (k + 1)) * f 0
   | 0 => prod_range_succ _ _
   | n + 1 => by rw [prod_range_succ _ n, mul_right_comm, ← prod_range_succ' _ n, prod_range_succ]
+                -- 🎉 no goals
 #align finset.prod_range_succ' Finset.prod_range_succ'
 #align finset.sum_range_succ' Finset.sum_range_succ'
 
@@ -1234,11 +1393,17 @@ theorem prod_range_succ' (f : ℕ → β) :
 theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u n = 1) {n : ℕ} (hn : N ≤ n) :
     (∏ k in range (n + 1), u k) = ∏ k in range (N + 1), u k := by
   obtain ⟨m, rfl : n = N + m⟩ := le_iff_exists_add.mp hn
+  -- ⊢ ∏ k in range (N + m + 1), u k = ∏ k in range (N + 1), u k
   clear hn
+  -- ⊢ ∏ k in range (N + m + 1), u k = ∏ k in range (N + 1), u k
   induction' m with m hm
+  -- ⊢ ∏ k in range (N + Nat.zero + 1), u k = ∏ k in range (N + 1), u k
   · simp
+    -- 🎉 no goals
   erw [prod_range_succ, hm]
+  -- ⊢ (∏ k in range (N + 1), u k) * u (N + Nat.succ m) = ∏ k in range (N + 1), u k
   simp [hu, @zero_le' ℕ]
+  -- 🎉 no goals
 #align finset.eventually_constant_prod Finset.eventually_constant_prod
 #align finset.eventually_constant_sum Finset.eventually_constant_sum
 
@@ -1246,8 +1411,11 @@ theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u
 theorem prod_range_add (f : ℕ → β) (n m : ℕ) :
     (∏ x in range (n + m), f x) = (∏ x in range n, f x) * ∏ x in range m, f (n + x) := by
   induction' m with m hm
+  -- ⊢ ∏ x in range (n + Nat.zero), f x = (∏ x in range n, f x) * ∏ x in range Nat. …
   · simp
+    -- 🎉 no goals
   · erw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]
+    -- 🎉 no goals
 #align finset.prod_range_add Finset.prod_range_add
 #align finset.sum_range_add Finset.sum_range_add
 
@@ -1260,13 +1428,16 @@ theorem prod_range_add_div_prod_range {α : Type*} [CommGroup α] (f : ℕ → �
 
 @[to_additive]
 theorem prod_range_zero (f : ℕ → β) : ∏ k in range 0, f k = 1 := by rw [range_zero, prod_empty]
+                                                                    -- 🎉 no goals
 #align finset.prod_range_zero Finset.prod_range_zero
 #align finset.sum_range_zero Finset.sum_range_zero
 
 @[to_additive sum_range_one]
 theorem prod_range_one (f : ℕ → β) : ∏ k in range 1, f k = f 0 := by
   rw [range_one]
+  -- ⊢ ∏ k in {0}, f k = f 0
   apply @prod_singleton β ℕ 0 f
+  -- 🎉 no goals
 #align finset.prod_range_one Finset.prod_range_one
 #align finset.sum_range_one Finset.sum_range_one
 
@@ -1276,25 +1447,39 @@ open List
 theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type*} [CommMonoid M] (f : α → M) :
     (l.map f).prod = ∏ m in l.toFinset, f m ^ l.count m := by
   induction' l with a s IH; · simp only [map_nil, prod_nil, count_nil, pow_zero, prod_const_one]
+  -- ⊢ prod (List.map f []) = ∏ m in toFinset [], f m ^ count m []
+                              -- 🎉 no goals
   simp only [List.map, List.prod_cons, toFinset_cons, IH]
+  -- ⊢ f a * ∏ m in toFinset s, f m ^ count m s = ∏ x in insert a (toFinset s), f x …
   by_cases has : a ∈ s.toFinset
+  -- ⊢ f a * ∏ m in toFinset s, f m ^ count m s = ∏ x in insert a (toFinset s), f x …
   · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
       prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ]
     congr 1
+    -- ⊢ ∏ x in erase (toFinset s) a, f x ^ count x s = ∏ x in erase (toFinset s) a,  …
     refine' prod_congr rfl fun x hx => _
+    -- ⊢ f x ^ count x s = f x ^ count x (a :: s)
     rw [count_cons_of_ne (ne_of_mem_erase hx)]
+    -- 🎉 no goals
   rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
+  -- ⊢ f a * ∏ m in toFinset s, f m ^ count m s = f a * ∏ x in toFinset s, f x ^ co …
   congr 1
+  -- ⊢ ∏ m in toFinset s, f m ^ count m s = ∏ x in toFinset s, f x ^ count x (a :: s)
   refine' prod_congr rfl fun x hx => _
+  -- ⊢ f x ^ count x s = f x ^ count x (a :: s)
   rw [count_cons_of_ne]
+  -- ⊢ x ≠ a
   rintro rfl
+  -- ⊢ False
   exact has hx
+  -- 🎉 no goals
 #align finset.prod_list_map_count Finset.prod_list_map_count
 #align finset.sum_list_map_count Finset.sum_list_map_count
 
 @[to_additive]
 theorem prod_list_count [DecidableEq α] [CommMonoid α] (s : List α) :
     s.prod = ∏ m in s.toFinset, m ^ s.count m := by simpa using prod_list_map_count s id
+                                                    -- 🎉 no goals
 #align finset.prod_list_count Finset.prod_list_count
 #align finset.sum_list_count Finset.sum_list_count
 
@@ -1302,15 +1487,20 @@ theorem prod_list_count [DecidableEq α] [CommMonoid α] (s : List α) :
 theorem prod_list_count_of_subset [DecidableEq α] [CommMonoid α] (m : List α) (s : Finset α)
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i in s, i ^ m.count i := by
   rw [prod_list_count]
+  -- ⊢ ∏ m_1 in toFinset m, m_1 ^ count m_1 m = ∏ i in s, i ^ count i m
   refine' prod_subset hs fun x _ hx => _
+  -- ⊢ x ^ count x m = 1
   rw [mem_toFinset] at hx
+  -- ⊢ x ^ count x m = 1
   rw [count_eq_zero_of_not_mem hx, pow_zero]
+  -- 🎉 no goals
 #align finset.prod_list_count_of_subset Finset.prod_list_count_of_subset
 #align finset.sum_list_count_of_subset Finset.sum_list_count_of_subset
 
 theorem sum_filter_count_eq_countP [DecidableEq α] (p : α → Prop) [DecidablePred p] (l : List α) :
     ∑ x in l.toFinset.filter p, l.count x = l.countP p := by
   simp [Finset.sum, sum_map_count_dedup_filter_eq_countP p l]
+  -- 🎉 no goals
 #align finset.sum_filter_count_eq_countp Finset.sum_filter_count_eq_countP
 
 open Multiset
@@ -1319,7 +1509,9 @@ open Multiset
 theorem prod_multiset_map_count [DecidableEq α] (s : Multiset α) {M : Type*} [CommMonoid M]
     (f : α → M) : (s.map f).prod = ∏ m in s.toFinset, f m ^ s.count m := by
   refine' Quot.induction_on s fun l => _
+  -- ⊢ Multiset.prod (Multiset.map f (Quot.mk Setoid.r l)) = ∏ m in Multiset.toFins …
   simp [prod_list_map_count l f]
+  -- 🎉 no goals
 #align finset.prod_multiset_map_count Finset.prod_multiset_map_count
 #align finset.sum_multiset_map_count Finset.sum_multiset_map_count
 
@@ -1327,7 +1519,9 @@ theorem prod_multiset_map_count [DecidableEq α] (s : Multiset α) {M : Type*} [
 theorem prod_multiset_count [DecidableEq α] [CommMonoid α] (s : Multiset α) :
     s.prod = ∏ m in s.toFinset, m ^ s.count m := by
   convert prod_multiset_map_count s id
+  -- ⊢ s = Multiset.map id s
   rw [Multiset.map_id]
+  -- 🎉 no goals
 #align finset.prod_multiset_count Finset.prod_multiset_count
 #align finset.sum_multiset_count Finset.sum_multiset_count
 
@@ -1335,9 +1529,13 @@ theorem prod_multiset_count [DecidableEq α] [CommMonoid α] (s : Multiset α) :
 theorem prod_multiset_count_of_subset [DecidableEq α] [CommMonoid α] (m : Multiset α) (s : Finset α)
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i in s, i ^ m.count i := by
   revert hs
+  -- ⊢ Multiset.toFinset m ⊆ s → Multiset.prod m = ∏ i in s, i ^ Multiset.count i m
   refine' Quot.induction_on m fun l => _
+  -- ⊢ Multiset.toFinset (Quot.mk Setoid.r l) ⊆ s → Multiset.prod (Quot.mk Setoid.r …
   simp only [quot_mk_to_coe'', coe_prod, coe_count]
+  -- ⊢ Multiset.toFinset ↑l ⊆ s → List.prod l = ∏ x in s, x ^ List.count x l
   apply prod_list_count_of_subset l s
+  -- 🎉 no goals
 #align finset.prod_multiset_count_of_subset Finset.prod_multiset_count_of_subset
 #align finset.sum_multiset_count_of_subset Finset.sum_multiset_count_of_subset
 
@@ -1347,7 +1545,9 @@ theorem prod_mem_multiset [DecidableEq α] (m : Multiset α) (f : { x // x ∈ m
   prod_bij (fun x _ => x.1) (fun x _ => Multiset.mem_toFinset.mpr x.2) (fun _ _ => hfg _)
     (fun _ _ _ _ h => by
       ext
+      -- ⊢ ↑x✝³ = ↑x✝²
       assumption)
+      -- 🎉 no goals
     fun y hy => ⟨⟨y, Multiset.mem_toFinset.mp hy⟩, Finset.mem_univ _, rfl⟩
 #align finset.prod_mem_multiset Finset.prod_mem_multiset
 #align finset.sum_mem_multiset Finset.sum_mem_multiset
@@ -1371,6 +1571,7 @@ theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : α → M) (p : M
     (hom : ∀ a b, p a → p b → p (a * b)) (nonempty : s.Nonempty) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x in s, f x :=
   Multiset.prod_induction_nonempty p hom (by simp [nonempty_iff_ne_empty.mp nonempty])
+                                             -- 🎉 no goals
     (Multiset.forall_mem_map_iff.mpr base)
 #align finset.prod_induction_nonempty Finset.prod_induction_nonempty
 #align finset.sum_induction_nonempty Finset.sum_induction_nonempty
@@ -1387,8 +1588,11 @@ theorem prod_range_induction (f s : ℕ → β) (base : s 0 = 1)
     (step : ∀ n, s (n + 1) = s n * f n) (n : ℕ) :
     ∏ k in Finset.range n, f k = s n := by
   induction' n with k hk
+  -- ⊢ ∏ k in range Nat.zero, f k = s Nat.zero
   · rw [Finset.prod_range_zero, base]
+    -- 🎉 no goals
   · simp only [hk, Finset.prod_range_succ, step, mul_comm]
+    -- 🎉 no goals
 #align finset.prod_range_induction Finset.prod_range_induction
 #align finset.sum_range_induction Finset.sum_range_induction
 
@@ -1398,18 +1602,25 @@ the ratio of the last and first factors. -/
 function reduces to the difference of the last and first terms."]
 theorem prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
     (∏ i in range n, f (i + 1) / f i) = f n / f 0 := by apply prod_range_induction <;> simp
+                                                        -- ⊢ f 0 / f 0 = 1
+                                                                                       -- 🎉 no goals
+                                                                                       -- 🎉 no goals
 #align finset.prod_range_div Finset.prod_range_div
 #align finset.sum_range_sub Finset.sum_range_sub
 
 @[to_additive]
 theorem prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
     (∏ i in range n, f i / f (i + 1)) = f 0 / f n := by apply prod_range_induction <;> simp
+                                                        -- ⊢ f 0 / f 0 = 1
+                                                                                       -- 🎉 no goals
+                                                                                       -- 🎉 no goals
 #align finset.prod_range_div' Finset.prod_range_div'
 #align finset.sum_range_sub' Finset.sum_range_sub'
 
 @[to_additive]
 theorem eq_prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
     f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel'_right]
+                                                      -- 🎉 no goals
 #align finset.eq_prod_range_div Finset.eq_prod_range_div
 #align finset.eq_sum_range_sub Finset.eq_sum_range_sub
 
@@ -1417,7 +1628,9 @@ theorem eq_prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 theorem eq_prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
     f n = ∏ i in range (n + 1), if i = 0 then f 0 else f i / f (i - 1) := by
   conv_lhs => rw [Finset.eq_prod_range_div f]
+  -- ⊢ f 0 * ∏ i in range n, f (i + 1) / f i = ∏ i in range (n + 1), if i = 0 then  …
   simp [Finset.prod_range_succ', mul_comm]
+  -- 🎉 no goals
 #align finset.eq_prod_range_div' Finset.eq_prod_range_div'
 #align finset.eq_sum_range_sub' Finset.eq_sum_range_sub'
 
@@ -1429,7 +1642,10 @@ theorem sum_range_tsub [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
     ∑ i in range n, (f (i + 1) - f i) = f n - f 0 := by
   apply sum_range_induction
+  -- ⊢ f 0 - f 0 = 0
   case base => apply tsub_self
+  -- ⊢ ∀ (n : ℕ), f (n + 1) - f 0 = f n - f 0 + (f (n + 1) - f n)
+  -- 🎉 no goals
   case step =>
     intro n
     have h₁ : f n ≤ f (n + 1) := h (Nat.le_succ _)
@@ -1451,6 +1667,7 @@ theorem prod_eq_pow_card {b : β} (hf : ∀ a ∈ s, f a = b) : ∏ a in s, f a 
 
 @[to_additive]
 theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
+                                                                          -- 🎉 no goals
 #align finset.pow_eq_prod_const Finset.pow_eq_prod_const
 #align finset.nsmul_eq_sum_const Finset.nsmul_eq_sum_const
 
@@ -1464,9 +1681,13 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x in s, f x ^ n
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
     (∏ r in range (n + 1), f (n - r)) = ∏ k in range (n + 1), f k := by
   induction' n with n ih
+  -- ⊢ ∏ r in range (Nat.zero + 1), f (Nat.zero - r) = ∏ k in range (Nat.zero + 1), …
   · rw [prod_range_one, prod_range_one]
+    -- 🎉 no goals
   · rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
+    -- ⊢ (∏ k in range (n + 1), f (Nat.succ n - (k + 1))) * f (Nat.succ n - 0) = (∏ x …
     simp [← ih]
+    -- 🎉 no goals
 #align finset.prod_flip Finset.prod_flip
 #align finset.sum_flip Finset.sum_flip
 
@@ -1476,6 +1697,8 @@ theorem prod_involution {s : Finset α} {f : α → β} :
       (g_mem : ∀ a ha, g a ha ∈ s) (_ : ∀ a ha, g (g a ha) (g_mem a ha) = a),
       ∏ x in s, f x = 1 := by
   haveI := Classical.decEq α; haveI := Classical.decEq β
+  -- ⊢ ∀ (g : (a : α) → a ∈ s → α), (∀ (a : α) (ha : a ∈ s), f a * f (g a ha) = 1)  …
+                              -- ⊢ ∀ (g : (a : α) → a ∈ s → α), (∀ (a : α) (ha : a ∈ s), f a * f (g a ha) = 1)  …
   exact
     Finset.strongInductionOn s fun s ih g h g_ne g_mem g_inv =>
       s.eq_empty_or_nonempty.elim (fun hs => hs.symm ▸ rfl) fun ⟨x, hx⟩ =>
@@ -1522,13 +1745,20 @@ theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
     (∏ a in s, f (g a)) =
         ∏ x in (s.image g).sigma fun b : γ => s.filter fun a => g a = b, f (g x.2) :=
       prod_bij (fun a _ha => ⟨g a, a⟩) (by simp; tauto) (fun _ _ => rfl) (by simp)
+                                           -- ⊢ ∀ (a : α), a ∈ s → (∃ a_1, a_1 ∈ s ∧ g a_1 = g a) ∧ a ∈ s
+                                                 -- 🎉 no goals
+                                                                             -- 🎉 no goals
         (by -- `(by finish)` closes this
           rintro ⟨b_fst, b_snd⟩ H
+          -- ⊢ ∃ a ha, { fst := b_fst, snd := b_snd } = (fun a _ha => { fst := g a, snd :=  …
           simp only [mem_image, exists_prop, mem_filter, mem_sigma, decide_eq_true_eq] at H
+          -- ⊢ ∃ a ha, { fst := b_fst, snd := b_snd } = (fun a _ha => { fst := g a, snd :=  …
           tauto)
+          -- 🎉 no goals
     _ = ∏ b in s.image g, ∏ a in s.filter fun a => g a = b, f (g a) := prod_sigma _ _ _
     _ = ∏ b in s.image g, ∏ _a in s.filter fun a => g a = b, f b :=
       prod_congr rfl fun b _hb => prod_congr rfl (by simp (config := { contextual := true }))
+                                                     -- 🎉 no goals
     _ = ∏ b in s.image g, f b ^ (s.filter fun a => g a = b).card :=
       prod_congr rfl fun _ _ => prod_const _
 #align finset.prod_comp Finset.prod_comp
@@ -1538,6 +1768,7 @@ theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
 theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
     (∏ x in s, (t.piecewise f g) x) = (∏ x in s ∩ t, f x) * ∏ x in s \ t, g x := by
   erw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
+  -- 🎉 no goals
 #align finset.prod_piecewise Finset.prod_piecewise
 #align finset.sum_piecewise Finset.sum_piecewise
 
@@ -1545,7 +1776,9 @@ theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :
     (∏ x in s ∩ t, f x) * ∏ x in s \ t, f x = ∏ x in s, f x := by
   convert (s.prod_piecewise t f f).symm
+  -- ⊢ f = piecewise t f f
   simp [Finset.piecewise]
+  -- 🎉 no goals
 #align finset.prod_inter_mul_prod_diff Finset.prod_inter_mul_prod_diff
 #align finset.sum_inter_add_sum_diff Finset.sum_inter_add_sum_diff
 
@@ -1553,7 +1786,9 @@ theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → 
 theorem prod_eq_mul_prod_diff_singleton [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s)
     (f : α → β) : ∏ x in s, f x = f i * ∏ x in s \ {i}, f x := by
   convert (s.prod_inter_mul_prod_diff {i} f).symm
+  -- ⊢ f i = ∏ x in s ∩ {i}, f x
   simp [h]
+  -- 🎉 no goals
 #align finset.prod_eq_mul_prod_diff_singleton Finset.prod_eq_mul_prod_diff_singleton
 #align finset.sum_eq_add_sum_diff_singleton Finset.sum_eq_add_sum_diff_singleton
 
@@ -1561,6 +1796,7 @@ theorem prod_eq_mul_prod_diff_singleton [DecidableEq α] {s : Finset α} {i : α
 theorem prod_eq_prod_diff_singleton_mul [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s)
     (f : α → β) : ∏ x in s, f x = (∏ x in s \ {i}, f x) * f i := by
   rw [prod_eq_mul_prod_diff_singleton h, mul_comm]
+  -- 🎉 no goals
 #align finset.prod_eq_prod_diff_singleton_mul Finset.prod_eq_prod_diff_singleton_mul
 #align finset.sum_eq_sum_diff_singleton_add Finset.sum_eq_sum_diff_singleton_add
 
@@ -1589,7 +1825,9 @@ theorem dvd_prod_of_mem (f : α → β) {a : α} {s : Finset α} (ha : a ∈ s) 
 theorem prod_partition (R : Setoid α) [DecidableRel R.r] :
     ∏ x in s, f x = ∏ xbar in s.image Quotient.mk'', ∏ y in s.filter (⟦·⟧ = xbar), f y := by
   refine' (Finset.prod_image' f fun x _hx => _).symm
+  -- ⊢ ∏ y in filter (fun x_1 => Quotient.mk R x_1 = Quotient.mk'' x) s, f y = ∏ x  …
   rfl
+  -- 🎉 no goals
 #align finset.prod_partition Finset.prod_partition
 #align finset.sum_partition Finset.sum_partition
 
@@ -1598,10 +1836,15 @@ theorem prod_partition (R : Setoid α) [DecidableRel R.r] :
 theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R.r]
     (h : ∀ x ∈ s, ∏ a in s.filter fun y => y ≈ x, f a = 1) : ∏ x in s, f x = 1 := by
   rw [prod_partition R, ← Finset.prod_eq_one]
+  -- ⊢ ∀ (x : Quotient R), x ∈ image Quotient.mk'' s → ∏ y in filter (fun x_1 => Qu …
   intro xbar xbar_in_s
+  -- ⊢ ∏ y in filter (fun x => Quotient.mk R x = xbar) s, f y = 1
   obtain ⟨x, x_in_s, rfl⟩ := mem_image.mp xbar_in_s
+  -- ⊢ ∏ y in filter (fun x_1 => Quotient.mk R x_1 = Quotient.mk'' x) s, f y = 1
   simp only [← Quotient.eq] at h
+  -- ⊢ ∏ y in filter (fun x_1 => Quotient.mk R x_1 = Quotient.mk'' x) s, f y = 1
   exact h x x_in_s
+  -- 🎉 no goals
 #align finset.prod_cancels_of_partition_cancels Finset.prod_cancels_of_partition_cancels
 #align finset.sum_cancels_of_partition_cancels Finset.sum_cancels_of_partition_cancels
 
@@ -1609,11 +1852,14 @@ theorem prod_cancels_of_partition_cancels (R : Setoid α) [DecidableRel R.r]
 theorem prod_update_of_not_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∉ s) (f : α → β)
     (b : β) : ∏ x in s, Function.update f i b x = ∏ x in s, f x := by
   apply prod_congr rfl
+  -- ⊢ ∀ (x : α), x ∈ s → Function.update f i b x = f x
   intros j hj
+  -- ⊢ Function.update f i b j = f j
   have : j ≠ i := by
     rintro rfl
     exact h hj
   simp [this]
+  -- 🎉 no goals
 #align finset.prod_update_of_not_mem Finset.prod_update_of_not_mem
 #align finset.sum_update_of_not_mem Finset.sum_update_of_not_mem
 
@@ -1621,7 +1867,9 @@ theorem prod_update_of_not_mem [DecidableEq α] {s : Finset α} {i : α} (h : i 
 theorem prod_update_of_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s) (f : α → β) (b : β) :
     ∏ x in s, Function.update f i b x = b * ∏ x in s \ singleton i, f x := by
   rw [update_eq_piecewise, prod_piecewise]
+  -- ⊢ (∏ x in s ∩ {i}, b) * ∏ x in s \ {i}, f x = b * ∏ x in s \ {i}, f x
   simp [h]
+  -- 🎉 no goals
 #align finset.prod_update_of_mem Finset.prod_update_of_mem
 #align finset.sum_update_of_mem Finset.sum_update_of_mem
 
@@ -1632,16 +1880,27 @@ value, so do the terms in that sum."]
 theorem eq_of_card_le_one_of_prod_eq {s : Finset α} (hc : s.card ≤ 1) {f : α → β} {b : β}
     (h : ∏ x in s, f x = b) : ∀ x ∈ s, f x = b := by
   intro x hx
+  -- ⊢ f x = b
   by_cases hc0 : s.card = 0
+  -- ⊢ f x = b
   · exact False.elim (card_ne_zero_of_mem hx hc0)
+    -- 🎉 no goals
   · have h1 : s.card = 1 := le_antisymm hc (Nat.one_le_of_lt (Nat.pos_of_ne_zero hc0))
+    -- ⊢ f x = b
     rw [card_eq_one] at h1
+    -- ⊢ f x = b
     cases' h1 with x2 hx2
+    -- ⊢ f x = b
     rw [hx2, mem_singleton] at hx
+    -- ⊢ f x = b
     simp_rw [hx2] at h
+    -- ⊢ f x = b
     rw [hx]
+    -- ⊢ f x2 = b
     rw [prod_singleton] at h
+    -- ⊢ f x2 = b
     exact h
+    -- 🎉 no goals
 #align finset.eq_of_card_le_one_of_prod_eq Finset.eq_of_card_le_one_of_prod_eq
 #align finset.eq_of_card_le_one_of_sum_eq Finset.eq_of_card_le_one_of_sum_eq
 
@@ -1656,6 +1915,7 @@ See `Multiset.sum_map_erase` for the `Multiset` version."]
 theorem mul_prod_erase [DecidableEq α] (s : Finset α) (f : α → β) {a : α} (h : a ∈ s) :
     (f a * ∏ x in s.erase a, f x) = ∏ x in s, f x := by
   rw [← prod_insert (not_mem_erase a s), insert_erase h]
+  -- 🎉 no goals
 #align finset.mul_prod_erase Finset.mul_prod_erase
 #align finset.add_sum_erase Finset.add_sum_erase
 
@@ -1663,6 +1923,7 @@ theorem mul_prod_erase [DecidableEq α] (s : Finset α) (f : α → β) {a : α}
 @[to_additive "A variant of `Finset.add_sum_erase` with the addition swapped."]
 theorem prod_erase_mul [DecidableEq α] (s : Finset α) (f : α → β) {a : α} (h : a ∈ s) :
     (∏ x in s.erase a, f x) * f a = ∏ x in s, f x := by rw [mul_comm, mul_prod_erase s f h]
+                                                        -- 🎉 no goals
 #align finset.prod_erase_mul Finset.prod_erase_mul
 #align finset.sum_erase_add Finset.sum_erase_add
 
@@ -1673,9 +1934,13 @@ removing that point, if present, from a `Finset`."]
 theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h : f a = 1) :
     ∏ x in s.erase a, f x = ∏ x in s, f x := by
   rw [← sdiff_singleton_eq_erase]
+  -- ⊢ ∏ x in s \ {a}, f x = ∏ x in s, f x
   refine' prod_subset (sdiff_subset _ _) fun x hx hnx => _
+  -- ⊢ f x = 1
   rw [sdiff_singleton_eq_erase] at hnx
+  -- ⊢ f x = 1
   rwa [eq_of_mem_of_not_mem_erase hx hnx]
+  -- 🎉 no goals
 #align finset.prod_erase Finset.prod_erase
 #align finset.sum_erase Finset.sum_erase
 
@@ -1684,12 +1949,19 @@ theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h 
 theorem prod_ite_one {f : α → Prop} [DecidablePred f] (hf : (s : Set α).PairwiseDisjoint f)
     (a : β) : (∏ i in s, ite (f i) a 1) = ite (∃ i ∈ s, f i) a 1 := by
   split_ifs with h
+  -- ⊢ (∏ i in s, if f i then a else 1) = a
   · obtain ⟨i, hi, hfi⟩ := h
+    -- ⊢ (∏ i in s, if f i then a else 1) = a
     rw [prod_eq_single_of_mem _ hi, if_pos hfi]
+    -- ⊢ ∀ (b : α), b ∈ s → b ≠ i → (if f b then a else 1) = 1
     exact fun j hj h => if_neg fun hfj => (hf hj hi h).le_bot ⟨hfj, hfi⟩
+    -- 🎉 no goals
   · push_neg at h
+    -- ⊢ (∏ i in s, if f i then a else 1) = 1
     rw [prod_eq_one]
+    -- ⊢ ∀ (x : α), x ∈ s → (if f x then a else 1) = 1
     exact fun i hi => if_neg (h i hi)
+    -- 🎉 no goals
 #align finset.prod_ite_one Finset.prod_ite_one
 #align finset.sum_ite_zero Finset.sum_ite_zero
 
@@ -1698,8 +1970,11 @@ theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [OrderedCommMonoid
     [CovariantClass γ γ (· * ·) (· < ·)] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
     (hdf : 1 < f d) : ∏ m : α in s.erase d, f m < ∏ m : α in s, f m := by
   conv in ∏ m in s, f m => rw [← Finset.insert_erase hd]
+  -- ⊢ ∏ m in erase s d, f m < ∏ m in insert d (erase s d), f m
   rw [Finset.prod_insert (Finset.not_mem_erase d s)]
+  -- ⊢ ∏ m in erase s d, f m < f d * ∏ x in erase s d, f x
   exact lt_mul_of_one_lt_left' _ hdf
+  -- 🎉 no goals
 #align finset.prod_erase_lt_of_one_lt Finset.prod_erase_lt_of_one_lt
 #align finset.sum_erase_lt_of_pos Finset.sum_erase_lt_of_pos
 
@@ -1710,6 +1985,7 @@ point, it is 0 everywhere on the `Finset`."]
 theorem eq_one_of_prod_eq_one {s : Finset α} {f : α → β} {a : α} (hp : ∏ x in s, f x = 1)
     (h1 : ∀ x ∈ s, x ≠ a → f x = 1) : ∀ x ∈ s, f x = 1 := by
   intro x hx
+  -- ⊢ f x = 1
   classical
     by_cases h : x = a
     · rw [h]
@@ -1724,6 +2000,7 @@ theorem eq_one_of_prod_eq_one {s : Finset α} {f : α → β} {a : α} (hp : ∏
 @[to_additive sum_boole_nsmul]
 theorem prod_pow_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α) :
     (∏ x in s, f x ^ ite (a = x) 1 0) = ite (a ∈ s) (f a) 1 := by simp
+                                                                  -- 🎉 no goals
 #align finset.prod_pow_boole Finset.prod_pow_boole
 
 theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ S, g1 a ∣ g2 a) :
@@ -1738,6 +2015,7 @@ theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ 
 theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)
     (h : s ⊆ t) : (∏ i in s, f i) ∣ ∏ i in t, f i :=
   Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| by simpa
+                                                            -- 🎉 no goals
 #align finset.prod_dvd_prod_of_subset Finset.prod_dvd_prod_of_subset
 
 end CommMonoid
@@ -1754,12 +2032,15 @@ theorem prod_add_prod_eq [CommSemiring β] {s : Finset α} {i : α} {f g h : α 
 
 theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ x in s, 1 := by
   rw [sum_const, smul_eq_mul, mul_one]
+  -- 🎉 no goals
 #align finset.card_eq_sum_ones Finset.card_eq_sum_ones
 
 theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
     ∑ x in s, f x = card s * m := by
   rw [← Nat.nsmul_eq_mul, ← sum_const]
+  -- ⊢ ∑ x in s, f x = ∑ _x in s, m
   apply sum_congr rfl h₁
+  -- 🎉 no goals
 #align finset.sum_const_nat Finset.sum_const_nat
 
 @[simp]
@@ -1773,7 +2054,9 @@ theorem _root_.Commute.sum_right [NonUnitalNonAssocSemiring β] (s : Finset α) 
     (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i in s, f i) :=
   (Commute.multiset_sum_right _ _) fun b hb => by
     obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hb
+    -- ⊢ Commute b (f i)
     exact h _ hi
+    -- 🎉 no goals
 #align commute.sum_right Commute.sum_right
 
 theorem _root_.Commute.sum_left [NonUnitalNonAssocSemiring β] (s : Finset α) (f : α → β) (b : β)
@@ -1832,6 +2115,7 @@ variable [CommGroup β] [DecidableEq α]
 theorem prod_sdiff_eq_div (h : s₁ ⊆ s₂) :
     ∏ x in s₂ \ s₁, f x = (∏ x in s₂, f x) / ∏ x in s₁, f x := by
   rw [eq_div_iff_mul_eq', prod_sdiff h]
+  -- 🎉 no goals
 #align finset.prod_sdiff_eq_div Finset.prod_sdiff_eq_div
 #align finset.sum_sdiff_eq_sub Finset.sum_sdiff_eq_sub
 
@@ -1839,6 +2123,7 @@ theorem prod_sdiff_eq_div (h : s₁ ⊆ s₂) :
 theorem prod_sdiff_div_prod_sdiff :
     (∏ x in s₂ \ s₁, f x) / ∏ x in s₁ \ s₂, f x = (∏ x in s₂, f x) / ∏ x in s₁, f x := by
   simp [← Finset.prod_sdiff (@inf_le_left _ _ s₁ s₂), ← Finset.prod_sdiff (@inf_le_right _ _ s₁ s₂)]
+  -- 🎉 no goals
 #align finset.prod_sdiff_div_prod_sdiff Finset.prod_sdiff_div_prod_sdiff
 #align finset.sum_sdiff_sub_sum_sdiff Finset.sum_sdiff_sub_sum_sdiff
 
@@ -1846,6 +2131,7 @@ theorem prod_sdiff_div_prod_sdiff :
 theorem prod_erase_eq_div {a : α} (h : a ∈ s) :
     ∏ x in s.erase a, f x = (∏ x in s, f x) / f a := by
   rw [eq_div_iff_mul_eq', prod_erase_mul _ _ h]
+  -- 🎉 no goals
 #align finset.prod_erase_eq_div Finset.prod_erase_eq_div
 #align finset.sum_erase_eq_sub Finset.sum_erase_eq_sub
 
@@ -1870,21 +2156,27 @@ theorem card_biUnion [DecidableEq β] {s : Finset α} {t : α → Finset β}
     (s.biUnion t).card = ∑ i in s.biUnion t, 1 := card_eq_sum_ones _
     _ = ∑ a in s, ∑ _i in t a, 1 := Finset.sum_biUnion h
     _ = ∑ u in s, card (t u) := by simp_rw [card_eq_sum_ones]
+                                   -- 🎉 no goals
 #align finset.card_bUnion Finset.card_biUnion
 
 theorem card_biUnion_le [DecidableEq β] {s : Finset α} {t : α → Finset β} :
     (s.biUnion t).card ≤ ∑ a in s, (t a).card :=
   haveI := Classical.decEq α
   Finset.induction_on s (by simp) fun a s has ih =>
+                            -- 🎉 no goals
     calc
       ((insert a s).biUnion t).card ≤ (t a).card + (s.biUnion t).card := by
         { rw [biUnion_insert]; exact Finset.card_union_le _ _ }
+        -- 🎉 no goals
       _ ≤ ∑ a in insert a s, card (t a) := by rw [sum_insert has]; exact add_le_add_left ih _
+                                              -- ⊢ card (t a) + card (Finset.biUnion s t) ≤ card (t a) + ∑ x in s, card (t x)
+                                                                   -- 🎉 no goals
 #align finset.card_bUnion_le Finset.card_biUnion_le
 
 theorem card_eq_sum_card_fiberwise [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
     (H : ∀ x ∈ s, f x ∈ t) : s.card = ∑ a in t, (s.filter fun x => f x = a).card := by
   simp only [card_eq_sum_ones, sum_fiberwise_of_maps_to H]
+  -- 🎉 no goals
 #align finset.card_eq_sum_card_fiberwise Finset.card_eq_sum_card_fiberwise
 
 theorem card_eq_sum_card_image [DecidableEq β] (f : α → β) (s : Finset α) :
@@ -1906,19 +2198,29 @@ variable [CommMonoidWithZero β]
 
 theorem prod_eq_zero (ha : a ∈ s) (h : f a = 0) : ∏ x in s, f x = 0 := by
   haveI := Classical.decEq α
+  -- ⊢ ∏ x in s, f x = 0
   rw [← prod_erase_mul _ _ ha, h, mul_zero]
+  -- 🎉 no goals
 #align finset.prod_eq_zero Finset.prod_eq_zero
 
 theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
     (∏ i in s, ite (p i) (1 : β) (0 : β)) = ite (∀ i ∈ s, p i) 1 0 := by
   split_ifs with h
+  -- ⊢ (∏ i in s, if p i then 1 else 0) = 1
   · apply prod_eq_one
+    -- ⊢ ∀ (x : α), x ∈ s → (if p x then 1 else 0) = 1
     intro i hi
+    -- ⊢ (if p i then 1 else 0) = 1
     rw [if_pos (h i hi)]
+    -- 🎉 no goals
   · push_neg at h
+    -- ⊢ (∏ i in s, if p i then 1 else 0) = 0
     rcases h with ⟨i, hi, hq⟩
+    -- ⊢ (∏ i in s, if p i then 1 else 0) = 0
     apply prod_eq_zero hi
+    -- ⊢ (if p i then 1 else 0) = 0
     rw [if_neg hq]
+    -- 🎉 no goals
 #align finset.prod_boole Finset.prod_boole
 
 variable [Nontrivial β] [NoZeroDivisors β]
@@ -1932,7 +2234,10 @@ theorem prod_eq_zero_iff : ∏ x in s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
 
 theorem prod_ne_zero_iff : ∏ x in s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
   rw [Ne, prod_eq_zero_iff]
+  -- ⊢ (¬∃ a, a ∈ s ∧ f a = 0) ↔ ∀ (a : α), a ∈ s → f a ≠ 0
   push_neg; rfl
+  -- ⊢ (∀ (a : α), a ∈ s → f a ≠ 0) ↔ ∀ (a : α), a ∈ s → f a ≠ 0
+            -- 🎉 no goals
 #align finset.prod_ne_zero_iff Finset.prod_ne_zero_iff
 
 end ProdEqZero
@@ -1941,27 +2246,36 @@ end ProdEqZero
 theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Finset α) (f : α → β)
     (h : s.Nonempty) : ∏ x in s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
+  -- 🎉 no goals
 #align finset.prod_unique_nonempty Finset.prod_unique_nonempty
 #align finset.sum_unique_nonempty Finset.sum_unique_nonempty
 
 theorem sum_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
     (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
   (Multiset.sum_nat_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]; rfl
+                                         -- ⊢ Multiset.sum (Multiset.map ((fun x => x % n) ∘ fun i => f i) s.val) % n = Mu …
+                                                                            -- 🎉 no goals
 #align finset.sum_nat_mod Finset.sum_nat_mod
 
 theorem prod_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
     (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
   (Multiset.prod_nat_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
+                                          -- ⊢ Multiset.prod (Multiset.map ((fun x => x % n) ∘ fun i => f i) s.val) % n = M …
+                                                                              -- 🎉 no goals
 #align finset.prod_nat_mod Finset.prod_nat_mod
 
 theorem sum_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
     (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
   (Multiset.sum_int_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]; rfl
+                                         -- ⊢ Multiset.sum (Multiset.map ((fun x => x % n) ∘ fun i => f i) s.val) % n = Mu …
+                                                                            -- 🎉 no goals
 #align finset.sum_int_mod Finset.sum_int_mod
 
 theorem prod_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
     (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
   (Multiset.prod_int_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
+                                          -- ⊢ Multiset.prod (Multiset.map ((fun x => x % n) ∘ fun i => f i) s.val) % n = M …
+                                                                              -- 🎉 no goals
 #align finset.prod_int_mod Finset.prod_int_mod
 
 end Finset
@@ -2004,6 +2318,7 @@ theorem prod_equiv {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M] (e
 @[to_additive]
 theorem prod_unique {α β : Type*} [CommMonoid β] [Unique α] [Fintype α] (f : α → β) :
     ∏ x : α, f x = f default := by rw [univ_unique, prod_singleton]
+                                   -- 🎉 no goals
 #align fintype.prod_unique Fintype.prod_unique
 #align fintype.sum_unique Fintype.sum_unique
 
@@ -2018,7 +2333,9 @@ theorem prod_empty {α β : Type*} [CommMonoid β] [IsEmpty α] [Fintype α] (f 
 theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fintype α] (f : α → β)
     (a : α) : ∏ x : α, f x = f a := by
   haveI : Unique α := uniqueOfSubsingleton a
+  -- ⊢ ∏ x : α, f x = f a
   rw [prod_unique f, Subsingleton.elim default a]
+  -- 🎉 no goals
 #align fintype.prod_subsingleton Fintype.prod_subsingleton
 #align fintype.sum_subsingleton Fintype.sum_subsingleton
 
@@ -2043,9 +2360,12 @@ namespace List
 theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M) :
     ∀ {l : List α} (_hl : l.Nodup), l.toFinset.prod f = (l.map f).prod
   | [], _ => by simp
+                -- 🎉 no goals
   | a :: l, hl => by
     let ⟨not_mem, hl⟩ := List.nodup_cons.mp hl
+    -- ⊢ Finset.prod (toFinset (a :: l)) f = prod (map f (a :: l))
     simp [Finset.prod_insert (mt List.mem_toFinset.mp not_mem), prod_toFinset _ hl]
+    -- 🎉 no goals
 #align list.prod_to_finset List.prod_toFinset
 #align list.sum_to_finset List.sum_toFinset
 
@@ -2056,37 +2376,48 @@ namespace Multiset
 theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint l.sum a ↔ ∀ b ∈ l, Multiset.Disjoint b a := by
   induction' l with b bs ih
+  -- ⊢ Disjoint (List.sum []) a ↔ ∀ (b : Multiset α), b ∈ [] → Disjoint b a
   · simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
+    -- 🎉 no goals
   · simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
+    -- ⊢ Disjoint b a ∧ Disjoint (List.sum bs) a ↔ Disjoint b a ∧ ∀ (a_1 : Multiset α …
     simp [and_congr_left_iff, iff_self_iff, ih]
+    -- 🎉 no goals
 #align multiset.disjoint_list_sum_left Multiset.disjoint_list_sum_left
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint a l.sum ↔ ∀ b ∈ l, Multiset.Disjoint a b := by
   simpa only [@disjoint_comm _ a] using disjoint_list_sum_left
+  -- 🎉 no goals
 #align multiset.disjoint_list_sum_right Multiset.disjoint_list_sum_right
 
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
     Multiset.Disjoint i.sum a ↔ ∀ b ∈ i, Multiset.Disjoint b a :=
   Quotient.inductionOn i fun l => by
     rw [quot_mk_to_coe, Multiset.coe_sum]
+    -- ⊢ Disjoint (List.sum l) a ↔ ∀ (b : Multiset α), b ∈ ↑l → Disjoint b a
     exact disjoint_list_sum_left
+    -- 🎉 no goals
 #align multiset.disjoint_sum_left Multiset.disjoint_sum_left
 
 theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
     Multiset.Disjoint a i.sum ↔ ∀ b ∈ i, Multiset.Disjoint a b := by
   simpa only [@disjoint_comm _ a] using disjoint_sum_left
+  -- 🎉 no goals
 #align multiset.disjoint_sum_right Multiset.disjoint_sum_right
 
 theorem disjoint_finset_sum_left {β : Type*} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
     Multiset.Disjoint (i.sum f) a ↔ ∀ b ∈ i, Multiset.Disjoint (f b) a := by
   convert @disjoint_sum_left _ a (map f i.val)
+  -- ⊢ (∀ (b : β), b ∈ i → Disjoint (f b) a) ↔ ∀ (b : Multiset α), b ∈ map f i.val  …
   simp [and_congr_left_iff, iff_self_iff]
+  -- 🎉 no goals
 #align multiset.disjoint_finset_sum_left Multiset.disjoint_finset_sum_left
 
 theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multiset α}
     {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by
   simpa only [disjoint_comm] using disjoint_finset_sum_left
+  -- 🎉 no goals
 #align multiset.disjoint_finset_sum_right Multiset.disjoint_finset_sum_right
 
 variable [DecidableEq α]
@@ -2094,41 +2425,57 @@ variable [DecidableEq α]
 theorem add_eq_union_left_of_le {x y z : Multiset α} (h : y ≤ x) :
     z + x = z ∪ y ↔ z.Disjoint x ∧ x = y := by
   rw [← add_eq_union_iff_disjoint]
+  -- ⊢ z + x = z ∪ y ↔ z + x = z ∪ x ∧ x = y
   constructor
+  -- ⊢ z + x = z ∪ y → z + x = z ∪ x ∧ x = y
   · intro h0
+    -- ⊢ z + x = z ∪ x ∧ x = y
     rw [and_iff_right_of_imp]
+    -- ⊢ x = y
     · exact (le_of_add_le_add_left <| h0.trans_le <| union_le_add z y).antisymm h
+      -- 🎉 no goals
     · rintro rfl
+      -- ⊢ z + x = z ∪ x
       exact h0
+      -- 🎉 no goals
   · rintro ⟨h0, rfl⟩
+    -- ⊢ z + x = z ∪ x
     exact h0
+    -- 🎉 no goals
 #align multiset.add_eq_union_left_of_le Multiset.add_eq_union_left_of_le
 
 theorem add_eq_union_right_of_le {x y z : Multiset α} (h : z ≤ y) :
     x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
   simpa only [and_comm] using add_eq_union_left_of_le h
+  -- 🎉 no goals
 #align multiset.add_eq_union_right_of_le Multiset.add_eq_union_right_of_le
 
 theorem finset_sum_eq_sup_iff_disjoint {β : Type*} {i : Finset β} {f : β → Multiset α} :
     i.sum f = i.sup f ↔
       ∀ (x) (_ : x ∈ i) (y) (_ : y ∈ i), x ≠ y → Multiset.Disjoint (f x) (f y) := by
   induction' i using Finset.cons_induction_on with z i hz hr
+  -- ⊢ Finset.sum ∅ f = Finset.sup ∅ f ↔ ∀ (x : β), x ∈ ∅ → ∀ (y : β), y ∈ ∅ → x ≠  …
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne.def, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
+    -- ⊢ f z + ∑ x in i, f x = f z ∪ Finset.sup i f ↔ (∀ (a : β), a ∈ i → ¬a = z → Di …
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]
+    -- ⊢ f z + ∑ x in i, f x = f z ∪ Finset.sup i f ↔ (∀ (a : β), a ∈ i → Disjoint (f …
     simp_rw [← disjoint_finset_sum_left, ← disjoint_finset_sum_right, disjoint_comm, ← and_assoc,
       and_self_iff]
     exact add_eq_union_left_of_le (Finset.sup_le fun x hx => le_sum_of_mem (mem_map_of_mem f hx))
+    -- 🎉 no goals
 #align multiset.finset_sum_eq_sup_iff_disjoint Multiset.finset_sum_eq_sup_iff_disjoint
 
 theorem sup_powerset_len {α : Type*} [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetLen k) = x.powerset := by
   convert bind_powerset_len x using 1
+  -- ⊢ (Finset.sup (Finset.range (↑card x + 1)) fun k => powersetLen k x) = bind (r …
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
+  -- ⊢ (Finset.sup (Finset.range (↑card x + 1)) fun k => powersetLen k x) = ∑ x_1 i …
   exact
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetLen x h)
 #align multiset.sup_powerset_len Multiset.sup_powerset_len
@@ -2138,25 +2485,31 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a
   calc
     ∑ a in s.toFinset, s.count a = ∑ a in s.toFinset, s.count a • 1 := by
       { simp only [smul_eq_mul, mul_one] }
+      -- 🎉 no goals
     _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
     _ = card s := by simp
+                     -- 🎉 no goals
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x in s, f x) = ∑ x in s, count a (f x) := by
   dsimp only [Finset.sum]
+  -- ⊢ count a (sum (map (fun x => f x) s.val)) = sum (map (fun x => count a (f x)) …
   rw [count_sum]
+  -- 🎉 no goals
 #align multiset.count_sum' Multiset.count_sum'
 
 @[simp]
 theorem toFinset_sum_count_nsmul_eq (s : Multiset α) :
     ∑ a in s.toFinset, s.count a • {a} = s := by
   rw [← Finset.sum_multiset_map_count, Multiset.sum_map_singleton]
+  -- 🎉 no goals
 #align multiset.to_finset_sum_count_nsmul_eq Multiset.toFinset_sum_count_nsmul_eq
 
 theorem exists_smul_of_dvd_count (s : Multiset α) {k : ℕ}
     (h : ∀ a : α, a ∈ s → k ∣ Multiset.count a s) : ∃ u : Multiset α, s = k • u := by
   use ∑ a in s.toFinset, (s.count a / k) • {a}
+  -- ⊢ s = k • ∑ a in toFinset s, (count a s / k) • {a}
   have h₂ :
     (∑ x : α in s.toFinset, k • (count x s / k) • ({x} : Multiset α)) =
       ∑ x : α in s.toFinset, count x s • {x} := by
@@ -2164,12 +2517,16 @@ theorem exists_smul_of_dvd_count (s : Multiset α) {k : ℕ}
     intro x hx
     rw [← mul_nsmul', Nat.mul_div_cancel' (h x (mem_toFinset.mp hx))]
   rw [← Finset.sum_nsmul, h₂, toFinset_sum_count_nsmul_eq]
+  -- 🎉 no goals
 #align multiset.exists_smul_of_dvd_count Multiset.exists_smul_of_dvd_count
 
 theorem toFinset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.prod id ∣ S.prod := by
   rw [Finset.prod_eq_multiset_prod]
+  -- ⊢ prod (map (fun x => id x) (toFinset S).val) ∣ prod S
   refine' Multiset.prod_dvd_prod_of_le _
+  -- ⊢ map (fun x => id x) (toFinset S).val ≤ S
   simp [Multiset.dedup_le S]
+  -- 🎉 no goals
 #align multiset.to_finset_prod_dvd_prod Multiset.toFinset_prod_dvd_prod
 
 @[to_additive]
@@ -2269,6 +2626,7 @@ theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h
     Units.mk0 (∏ b in s, f b) h =
       ∏ b in s.attach, Units.mk0 (f b) fun hh => h (Finset.prod_eq_zero b.2 hh) := by
   classical induction s using Finset.induction_on <;> simp [*]
+  -- 🎉 no goals
 #align units.mk0_prod Units.mk0_prod
 
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
@@ -2291,11 +2649,15 @@ variable [Monoid α]
 
 @[simp]
 theorem ofMul_list_prod (s : List α) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
+                                                                              -- ⊢ List.prod s = List.sum s
+                                                                                            -- 🎉 no goals
 #align of_mul_list_prod ofMul_list_prod
 
 @[simp]
 theorem toMul_list_sum (s : List (Additive α)) : toMul s.sum = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
+  -- ⊢ List.sum s = List.prod s
+                       -- 🎉 no goals
 #align to_mul_list_sum toMul_list_sum
 
 end Monoid
@@ -2306,11 +2668,15 @@ variable [AddMonoid α]
 
 @[simp]
 theorem ofAdd_list_prod (s : List α) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
+                                                                              -- ⊢ List.sum s = List.prod s
+                                                                                            -- 🎉 no goals
 #align of_add_list_prod ofAdd_list_prod
 
 @[simp]
 theorem toAdd_list_sum (s : List (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
+  -- ⊢ List.prod s = List.sum s
+                       -- 🎉 no goals
 #align to_add_list_sum toAdd_list_sum
 
 end AddMonoid
@@ -2322,11 +2688,15 @@ variable [CommMonoid α]
 @[simp]
 theorem ofMul_multiset_prod (s : Multiset α) : ofMul s.prod = (s.map ofMul).sum := by
   simp [ofMul]; rfl
+  -- ⊢ Multiset.prod s = Multiset.sum s
+                -- 🎉 no goals
 #align of_mul_multiset_prod ofMul_multiset_prod
 
 @[simp]
 theorem toMul_multiset_sum (s : Multiset (Additive α)) : toMul s.sum = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
+  -- ⊢ Multiset.sum s = Multiset.prod s
+                       -- 🎉 no goals
 #align to_mul_multiset_sum toMul_multiset_sum
 
 @[simp]
@@ -2349,12 +2719,16 @@ variable [AddCommMonoid α]
 @[simp]
 theorem ofAdd_multiset_prod (s : Multiset α) : ofAdd s.sum = (s.map ofAdd).prod := by
   simp [ofAdd]; rfl
+  -- ⊢ Multiset.sum s = Multiset.prod s
+                -- 🎉 no goals
 #align of_add_multiset_prod ofAdd_multiset_prod
 
 @[simp]
 theorem toAdd_multiset_sum (s : Multiset (Multiplicative α)) :
     toAdd s.prod = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
+  -- ⊢ Multiset.prod s = Multiset.sum s
+                       -- 🎉 no goals
 #align to_add_multiset_sum toAdd_multiset_sum
 
 @[simp]

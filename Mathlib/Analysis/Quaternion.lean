@@ -55,24 +55,30 @@ noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_symm := fun x y => by simp [inner_def, mul_comm]
+                                 -- 🎉 no goals
       nonneg_re := fun x => normSq_nonneg
       definite := fun x => normSq_eq_zero.1
       add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
+                                  -- 🎉 no goals
       smul_left := fun x y r => by simp [inner_def] }
+                                   -- 🎉 no goals
 
 noncomputable instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
   rw [← inner_self, real_inner_self_eq_norm_mul_norm]
+  -- 🎉 no goals
 #align quaternion.norm_sq_eq_norm_sq Quaternion.normSq_eq_norm_mul_self
 
 instance : NormOneClass ℍ :=
   ⟨by rw [norm_eq_sqrt_real_inner, inner_self, normSq.map_one, Real.sqrt_one]⟩
+      -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
+  -- 🎉 no goals
 #align quaternion.norm_coe Quaternion.norm_coe
 
 @[simp, norm_cast]
@@ -83,6 +89,7 @@ theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
+  -- 🎉 no goals
 #align quaternion.norm_star Quaternion.norm_star
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
@@ -94,7 +101,9 @@ noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
   norm_mul' a b := by
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
+    -- ⊢ Real.sqrt (↑normSq a * ↑normSq b) = Real.sqrt (↑normSq a) * Real.sqrt (↑norm …
     exact Real.sqrt_mul normSq_nonneg _
+    -- 🎉 no goals
 
 -- porting note: added `noncomputable`
 noncomputable instance : NormedAlgebra ℝ ℍ where
@@ -131,10 +140,18 @@ theorem coeComplex_imK (z : ℂ) : (z : ℍ).imK = 0 :=
 
 @[simp, norm_cast]
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align quaternion.coe_complex_add Quaternion.coeComplex_add
 
 @[simp, norm_cast]
 theorem coeComplex_mul (z w : ℂ) : ↑(z * w) = (z * w : ℍ) := by ext <;> simp
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align quaternion.coe_complex_mul Quaternion.coeComplex_mul
 
 @[simp, norm_cast]
@@ -149,6 +166,10 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
 
 @[simp, norm_cast, nolint simpNF] -- Porting note: simp cannot prove this
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
+                                                                                   -- 🎉 no goals
+                                                                                   -- 🎉 no goals
+                                                                                   -- 🎉 no goals
+                                                                                   -- 🎉 no goals
 #align quaternion.coe_real_complex_mul Quaternion.coe_real_complex_mul
 
 @[simp, norm_cast]
@@ -176,7 +197,9 @@ theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
   simp_rw [IsROrC.inner_apply, starRingEnd_apply, star_trivial, ← sq]
+  -- ⊢ Real.sqrt (↑(PiLp.equiv 2 fun x => ℝ).symm (↑(equivTuple ℝ) x) 0 ^ 2 + ↑(PiL …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align quaternion.norm_pi_Lp_equiv_symm_equiv_tuple Quaternion.norm_piLp_equiv_symm_equivTuple
 
@@ -224,12 +247,14 @@ theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
+  -- 🎉 no goals
 #align quaternion.continuous_im Quaternion.continuous_im
 
 instance : CompleteSpace ℍ :=
   haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
     linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
   (completeSpace_congr this).1 (by infer_instance)
+                                   -- 🎉 no goals
 
 section infinite_sum
 
@@ -238,7 +263,9 @@ variable {α : Type*}
 @[simp, norm_cast]
 theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
   ⟨fun h => by simpa only using h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _) continuous_re,
+               -- 🎉 no goals
     fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
+                -- 🎉 no goals
 #align quaternion.has_sum_coe Quaternion.hasSum_coe
 
 @[simp, norm_cast]
@@ -251,8 +278,11 @@ theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summ
 @[norm_cast]
 theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
   by_cases hf : Summable f
+  -- ⊢ ∑' (a : α), ↑(f a) = ↑(∑' (a : α), f a)
   · exact (hasSum_coe.mpr hf.hasSum).tsum_eq
+    -- 🎉 no goals
   · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]
+    -- 🎉 no goals
 #align quaternion.tsum_coe Quaternion.tsum_coe
 
 end infinite_sum

@@ -107,6 +107,7 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
   -- If we had a Gröbner basis algorithm, this would be trivial.
   -- Without one, it is somewhat tedious!
   rw [← sub_eq_zero]
+  -- ⊢ (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) * (2 - A₀ * B₀ - A₀ * B₁ - A₁ *  …
   repeat'
     ring_nf
     simp only [A₁_inv, B₁_inv, sub_eq_add_neg, add_mul, mul_add, sub_mul, mul_sub, add_assoc,
@@ -125,6 +126,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
     [OrderedSMul ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2 := by
   let P := 2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁
+  -- ⊢ A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2
   have i₁ : 0 ≤ P := by
     have idem : P * P = 4 * P := CHSH_id T.A₀_inv T.A₁_inv T.B₀_inv T.B₁_inv
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
@@ -144,7 +146,9 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
     · simp
     · norm_num
   apply le_of_sub_nonneg
+  -- ⊢ 0 ≤ 2 - (A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁)
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CHSH_inequality_of_comm CHSH_inequality_of_comm
 
@@ -169,14 +173,23 @@ we prepare some easy lemmas about √2.
 -- defeated me. Thanks for the rescue from Shing Tak Lam!
 theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * √2⁻¹ + 4 * (√2⁻¹ * 2⁻¹)) := by
   ring_nf
+  -- ⊢ Real.sqrt 2 ^ 4 = Real.sqrt 2 * (Real.sqrt 2)⁻¹ * 4
   rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
+  -- ⊢ Real.sqrt 2 ^ 4 = 1 * 4
   convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
+  -- ⊢ Real.sqrt 2 ^ 4 = (Real.sqrt 2 ^ 2) ^ 2
     (try simp only [← pow_mul]) <;> norm_num
+     -- ⊢ Real.sqrt 2 ^ 4 = Real.sqrt 2 ^ (2 * 2)
+     -- ⊢ 1 * 4 = 2 ^ 2
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 #align tsirelson_inequality.tsirelson_inequality_aux TsirelsonInequality.tsirelson_inequality_aux
 
 theorem sqrt_two_inv_mul_self : √2⁻¹ * √2⁻¹ = (2⁻¹ : ℝ) := by
   rw [← mul_inv]
+  -- ⊢ (Real.sqrt 2 * Real.sqrt 2)⁻¹ = 2⁻¹
   norm_num
+  -- 🎉 no goals
 #align tsirelson_inequality.sqrt_two_inv_mul_self TsirelsonInequality.sqrt_two_inv_mul_self
 
 end TsirelsonInequality
@@ -199,7 +212,9 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
     rw [zsmul_eq_smul_cast ℝ, ← mul_smul]
   let P := √2⁻¹ • (A₁ + A₀) - B₀
+  -- ⊢ A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ Real.sqrt 2 ^ 3 • 1
   let Q := √2⁻¹ • (A₁ - A₀) + B₁
+  -- ⊢ A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ Real.sqrt 2 ^ 3 • 1
   have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = √2⁻¹ • (P ^ 2 + Q ^ 2) := by
     dsimp
     -- distribute out all the powers and products appearing on the RHS
@@ -246,5 +261,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
     -- `norm_num` can't directly show `0 ≤ √2⁻¹`
     simp
   apply le_of_sub_nonneg
+  -- ⊢ 0 ≤ Real.sqrt 2 ^ 3 • 1 - (A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁)
   simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos
+  -- 🎉 no goals
 #align tsirelson_inequality tsirelson_inequality

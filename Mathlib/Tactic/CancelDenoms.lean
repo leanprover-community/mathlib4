@@ -45,54 +45,74 @@ theorem mul_subst {α} [CommRing α] {n1 n2 k e1 e2 t1 t2 : α}
 theorem div_subst {α} [Field α] {n1 n2 k e1 e2 t1 : α}
     (h1 : n1 * e1 = t1) (h2 : n2 / e2 = 1) (h3 : n1 * n2 = k) : k * (e1 / e2) = t1 := by
   rw [← h3, mul_assoc, mul_div_left_comm, h2, ← mul_assoc, h1, mul_comm, one_mul]
+  -- 🎉 no goals
 #align cancel_factors.div_subst CancelDenoms.div_subst
 
 theorem cancel_factors_eq_div {α} [Field α] {n e e' : α}
     (h : n * e = e') (h2 : n ≠ 0) : e = e' / n :=
   eq_div_of_mul_eq h2 <| by rwa [mul_comm] at h
+                            -- 🎉 no goals
 #align cancel_factors.cancel_factors_eq_div CancelDenoms.cancel_factors_eq_div
 
 theorem add_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n * e2 = t2) :
     n * (e1 + e2) = t1 + t2 := by simp [left_distrib, *]
+                                  -- 🎉 no goals
 #align cancel_factors.add_subst CancelDenoms.add_subst
 
 theorem sub_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n * e2 = t2) :
     n * (e1 - e2) = t1 - t2 := by simp [left_distrib, *, sub_eq_add_neg]
+                                  -- 🎉 no goals
 #align cancel_factors.sub_subst CancelDenoms.sub_subst
 
 theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := by simp [*]
+                                                                                -- 🎉 no goals
 #align cancel_factors.neg_subst CancelDenoms.neg_subst
 
 theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
+  -- ⊢ 0 < ad * bd
   · exact mul_pos had hbd
+    -- 🎉 no goals
   · exact one_div_pos.2 hgcd
+    -- 🎉 no goals
 #align cancel_factors.cancel_factors_lt CancelDenoms.cancel_factors_lt
 
 theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
+  -- ⊢ 0 < ad * bd
   · exact mul_pos had hbd
+    -- 🎉 no goals
   · exact one_div_pos.2 hgcd
+    -- 🎉 no goals
 #align cancel_factors.cancel_factors_le CancelDenoms.cancel_factors_le
 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
     (a = b) = (1 / gcd * (bd * a') = 1 / gcd * (ad * b')) := by
   rw [← ha, ← hb, ← mul_assoc bd, ← mul_assoc ad, mul_comm bd]
+  -- ⊢ (a = b) = (1 / gcd * (ad * bd * a) = 1 / gcd * (ad * bd * b))
   ext; constructor
+  -- ⊢ a = b ↔ 1 / gcd * (ad * bd * a) = 1 / gcd * (ad * bd * b)
+       -- ⊢ a = b → 1 / gcd * (ad * bd * a) = 1 / gcd * (ad * bd * b)
   · rintro rfl
+    -- ⊢ 1 / gcd * (ad * bd * a) = 1 / gcd * (ad * bd * a)
     rfl
+    -- 🎉 no goals
   · intro h
+    -- ⊢ a = b
     simp only [← mul_assoc] at h
+    -- ⊢ a = b
     refine' mul_left_cancel₀ (mul_ne_zero _ _) h
+    -- ⊢ 1 / gcd * ad ≠ 0
     apply mul_ne_zero
     apply div_ne_zero
     exact one_ne_zero
     all_goals assumption
+    -- 🎉 no goals
 #align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')

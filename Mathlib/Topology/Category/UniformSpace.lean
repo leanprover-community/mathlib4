@@ -142,6 +142,7 @@ theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X
 
 instance : Inhabited CpltSepUniformSpace :=
   haveI : SeparatedSpace Empty := separated_iff_t2.mpr (by infer_instance)
+                                                           -- 🎉 no goals
   ⟨CpltSepUniformSpace.of Empty⟩
 
 /-- The category instance on `CpltSepUniformSpace`. -/
@@ -209,8 +210,11 @@ theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace (CpltSepUniformSpace.of (Completion X)) ⟶ toUniformSpace Y) :
     extensionHom (completionHom X ≫ f) = f := by
   apply Subtype.eq
+  -- ⊢ ↑(extensionHom (completionHom X ≫ f)) = ↑f
   funext x
+  -- ⊢ ↑(extensionHom (completionHom X ≫ f)) x = ↑f x
   exact congr_fun (Completion.extension_comp_coe f.property) x
+  -- 🎉 no goals
 #align UniformSpace.extension_comp_coe UniformSpaceCat.extension_comp_coe
 
 /-- The completion functor is left adjoint to the forgetful functor. -/
@@ -220,18 +224,31 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         { toFun := fun f => completionHom X ≫ f
           invFun := fun f => extensionHom f
           left_inv := fun f => by dsimp; erw [extension_comp_coe]
+                                  -- ⊢ extensionHom (completionHom X ≫ f) = f
+                                         -- 🎉 no goals
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
+            -- ⊢ ↑((fun f => completionHom X ≫ f) ((fun f => extensionHom f) f)) = ↑f
+                              -- ⊢ ↑((fun f => completionHom X ≫ f) ((fun f => extensionHom f) f)) x = ↑f x
+                                        -- ⊢ ↑((fun f => completionHom X ≫ f) ((fun f => extensionHom f) { val := val✝, p …
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.separatedSpace _)
               ‹_› _ }
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply hom_ext; funext x; dsimp
+        -- ⊢ (forget UniformSpaceCat).map (↑((fun X Y => { toFun := fun f => completionHo …
+                       -- ⊢ (forget UniformSpaceCat).map (↑((fun X Y => { toFun := fun f => completionHo …
+                                 -- ⊢ (forget UniformSpaceCat).map (extensionHom (f ≫ g)) x = (forget UniformSpace …
         erw [coe_comp]
+        -- ⊢ (forget UniformSpaceCat).map (extensionHom (f ≫ g)) x = ((forget UniformSpac …
         -- Porting note : used to be `erw [← Completion.extension_map]`
         have := (Completion.extension_map (γ := Y) (f := g) g.2 f.2)
+        -- ⊢ (forget UniformSpaceCat).map (extensionHom (f ≫ g)) x = ((forget UniformSpac …
         simp only [forget_map_eq_coe] at this ⊢
+        -- ⊢ ↑(extensionHom (f ≫ g)) x = (↑(extensionHom g) ∘ ↑(completionFunctor.map f)) x
         erw [this]
+        -- ⊢ ↑(extensionHom (f ≫ g)) x = Completion.extension (↑g ∘ ↑f) x
         rfl }
+        -- 🎉 no goals
 #align UniformSpace.adj UniformSpaceCat.adj
 
 noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=

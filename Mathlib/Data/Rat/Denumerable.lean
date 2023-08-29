@@ -31,14 +31,20 @@ private def denumerable_aux : ℚ ≃ { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs
 /-- **Denumerability of the Rational Numbers** -/
 instance : Denumerable ℚ := by
   let T := { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs.coprime x.2 }
+  -- ⊢ Denumerable ℚ
   letI : Infinite T := Infinite.of_injective _ denumerable_aux.injective
+  -- ⊢ Denumerable ℚ
   letI : Encodable T := Subtype.encodable
+  -- ⊢ Denumerable ℚ
   letI : Denumerable T := ofEncodableOfInfinite T
+  -- ⊢ Denumerable ℚ
   exact Denumerable.ofEquiv T denumerable_aux
+  -- 🎉 no goals
 
 end Rat
 
 open Cardinal
 
 theorem Cardinal.mkRat : #ℚ = ℵ₀ := by simp only [mk_eq_aleph0]
+                                       -- 🎉 no goals
 #align cardinal.mk_rat Cardinal.mkRat

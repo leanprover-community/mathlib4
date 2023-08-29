@@ -67,7 +67,9 @@ theorem fourier_integrand_integrable (w : V) :
   have hL : Continuous fun p : V × V => BilinForm.toLin bilinFormOfRealInner p.1 p.2 :=
     continuous_inner
   rw [VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar hL w]
+  -- ⊢ (Integrable fun v => ↑(↑e (↑Multiplicative.ofAdd (-↑(↑(↑BilinForm.toLin bili …
   simp only [BilinForm.toLin_apply, bilinFormOfRealInner_apply]
+  -- 🎉 no goals
 #align fourier_integrand_integrable fourier_integrand_integrable
 
 variable [CompleteSpace E]
@@ -92,6 +94,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
     have : 2 * π * -(1 / 2) = -π := by field_simp; ring
     rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_neg]
   rw [this]
+  -- ⊢ ∫ (v : V), (fun x => -↑(↑e (↑Multiplicative.ofAdd (-inner x w))) • f x) (v + …
   -- Porting note:
   -- The next three lines had just been
   -- rw [integral_add_right_eq_self (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
@@ -100,7 +103,9 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
   have := @integral_add_right_eq_self _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
     ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
   erw [this] -- Porting note, we can avoid `erw` by first calling `dsimp at this ⊢`.
+  -- ⊢ ∫ (x : V), -↑(↑e (↑Multiplicative.ofAdd (-inner x w))) • f x = -∫ (v : V), ↑ …
   simp only [neg_smul, integral_neg]
+  -- 🎉 no goals
 #align fourier_integral_half_period_translate fourier_integral_half_period_translate
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
@@ -108,9 +113,11 @@ theorem fourier_integral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0
     (hf : Integrable f) :
     ∫ v : V, e[-⟪v, w⟫] • f v = (1 / (2 : ℂ)) • ∫ v : V, e[-⟪v, w⟫] • (f v - f (v + i w)) := by
   simp_rw [smul_sub]
+  -- ⊢ ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v = (1 / 2) • ∫ (v …
   rw [integral_sub, fourier_integral_half_period_translate hw, sub_eq_add_neg, neg_neg, ←
     two_smul ℂ _, ← @smul_assoc _ _ _ _ _ _ (IsScalarTower.left ℂ), smul_eq_mul]
   norm_num
+  -- ⊢ Integrable fun v => ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v
   exacts [(fourier_integrand_integrable w).mp hf,
     (fourier_integrand_integrable w).mp (hf.comp_add_right _)]
 #align fourier_integral_eq_half_sub_half_period_translate fourier_integral_eq_half_sub_half_period_translate
@@ -123,6 +130,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     (hf2 : HasCompactSupport f) :
     Tendsto (fun w : V => ∫ v : V, e[-⟪v, w⟫] • f v) (cocompact V) (𝓝 0) := by
   refine' NormedAddCommGroup.tendsto_nhds_zero.mpr fun ε hε => _
+  -- ⊢ ∀ᶠ (x : V) in cocompact V, ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v …
   suffices ∃ T : ℝ, ∀ w : V, T ≤ ‖w‖ → ‖∫ v : V, e[-⟪v, w⟫] • f v‖ < ε by
     simp_rw [← comap_dist_left_atTop_eq_cocompact (0 : V), eventually_comap, eventually_atTop,
       dist_eq_norm', sub_zero]
@@ -130,8 +138,11 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
       let ⟨T, hT⟩ := this
       ⟨T, fun b hb v hv => hT v (hv.symm ▸ hb)⟩
   obtain ⟨R, -, hR_bd⟩ : ∃ R : ℝ, 0 < R ∧ ∀ x : V, R ≤ ‖x‖ → f x = 0
+  -- ⊢ ∃ R, 0 < R ∧ ∀ (x : V), R ≤ ‖x‖ → f x = 0
   exact hf2.exists_pos_le_norm
+  -- ⊢ ∃ T, ∀ (w : V), T ≤ ‖w‖ → ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v  …
   let A := {v : V | ‖v‖ ≤ R + 1}
+  -- ⊢ ∃ T, ∀ (w : V), T ≤ ‖w‖ → ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v  …
   have mA : MeasurableSet A := by
     suffices A = Metric.closedBall (0 : V) (R + 1) by
       rw [this]
@@ -150,6 +161,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     Metric.uniformContinuous_iff.mp (hf2.uniformContinuous_of_continuous hf1) (ε / B)
       (div_pos hε hB_pos)
   refine' ⟨1 / 2 + 1 / (2 * δ), fun w hw_bd => _⟩
+  -- ⊢ ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v‖ < ε
   have hw_ne : w ≠ 0 := by
     contrapose! hw_bd; rw [hw_bd, norm_zero]
     exact add_pos one_half_pos (one_div_pos.mpr <| mul_pos two_pos hδ1)
@@ -161,13 +173,18 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   -- rw [norm_eq_abs, ← Complex.ofReal_one, ← ofReal_bit0, ← of_real_div,
   --   Complex.abs_of_nonneg one_half_pos.le]
   have : ‖(1 / 2 : ℂ)‖ = 1 / 2 := by norm_num
+  -- ⊢ ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v‖ < ε
   rw [fourier_integral_eq_half_sub_half_period_translate hw_ne
       (hf1.integrable_of_hasCompactSupport hf2),
     norm_smul, this]
   have : ε = 1 / 2 * (2 * ε) := by field_simp; rw [mul_comm]
+  -- ⊢ 1 / 2 * ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • (f v - f (v …
   rw [this, mul_lt_mul_left (one_half_pos : (0 : ℝ) < 1 / 2)]
+  -- ⊢ ‖∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • (f v - f (v + (fun  …
   refine' lt_of_le_of_lt (norm_integral_le_integral_norm _) _
+  -- ⊢ ∫ (a : V), ‖↑(↑e (↑Multiplicative.ofAdd (-inner a w))) • (f a - f (a + (fun  …
   simp_rw [norm_smul, norm_eq_abs, abs_coe_circle, one_mul]
+  -- ⊢ ∫ (a : V), ‖f a - f (a + (1 / (2 * ‖w‖ ^ 2)) • w)‖ < 2 * ε
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine' (set_integral_eq_integral_of_forall_compl_eq_zero fun v hv => _).symm
@@ -184,6 +201,8 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
       exact (mul_pos (zero_lt_two' ℝ) hδ1).le
     · exact ((le_add_iff_nonneg_right _).mpr zero_le_one).trans hv.le
   rw [int_A]; clear int_A
+  -- ⊢ ∫ (v : V) in A, ‖f v - f (v + (fun w => (1 / (2 * ‖w‖ ^ 2)) • w) w)‖ < 2 * ε
+              -- ⊢ ∫ (v : V) in A, ‖f v - f (v + (fun w => (1 / (2 * ‖w‖ ^ 2)) • w) w)‖ < 2 * ε
   --* Bound integral using fact that `‖f v - f (v + w')‖` is small.
   have bdA : ∀ v : V, v ∈ A → ‖‖f v - f (v + i w)‖‖ ≤ ε / B := by
     simp_rw [norm_norm]
@@ -194,22 +213,31 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     refine' (lt_add_of_pos_left _ _).trans_le hw_bd
     exact one_half_pos
   have bdA2 := norm_set_integral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
+  -- ⊢ ∫ (v : V) in A, ‖f v - f (v + (fun w => (1 / (2 * ‖w‖ ^ 2)) • w) w)‖ < 2 * ε
   swap;
+  -- ⊢ AEStronglyMeasurable (fun x => ‖f x - f (x + (fun w => (1 / (2 * ‖w‖ ^ 2)) • …
   · apply Continuous.aestronglyMeasurable
+    -- ⊢ Continuous fun x => ‖f x - f (x + (fun w => (1 / (2 * ‖w‖ ^ 2)) • w) w)‖
     exact
       continuous_norm.comp <|
         Continuous.sub hf1 <| Continuous.comp hf1 <| continuous_id'.add continuous_const
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
     Real.norm_of_nonneg (set_integral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2
+  -- ⊢ ∫ (v : V) in A, ‖f v - f (v + (fun w => (1 / (2 * ‖w‖ ^ 2)) • w) w)‖ < 2 * ε
   refine' bdA2.trans_lt _
+  -- ⊢ ε / ↑B * ENNReal.toReal (↑↑volume A) < 2 * ε
   rw [div_mul_eq_mul_div, div_lt_iff (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
     mul_lt_mul_left hε]
   rw [← ENNReal.toReal_le_toReal] at hB_vol
   · refine' hB_vol.trans_lt _
+    -- ⊢ ENNReal.toReal ↑B < 2 * ↑B
     rw [(by rfl : (↑B : ENNReal).toReal = ↑B), two_mul]
+    -- ⊢ ↑B < ↑B + ↑B
     exact lt_add_of_pos_left _ hB_pos
+    -- 🎉 no goals
   exacts [(hB_vol.trans_lt ENNReal.coe_lt_top).ne, ENNReal.coe_lt_top.ne]
+  -- 🎉 no goals
 #align tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support
 
 variable (f)
@@ -219,10 +247,16 @@ variable (f)
 theorem tendsto_integral_exp_inner_smul_cocompact :
     Tendsto (fun w : V => ∫ v, e[-⟪v, w⟫] • f v) (cocompact V) (𝓝 0) := by
   by_cases hfi : Integrable f; swap
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f  …
+                               -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f  …
   · convert tendsto_const_nhds (a := (0 : E)) with w
+    -- ⊢ ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v = 0
     apply integral_undef
+    -- ⊢ ¬Integrable fun a => ↑(↑e (↑Multiplicative.ofAdd (-inner a w))) • f a
     rwa [← fourier_integrand_integrable w]
+    -- 🎉 no goals
   refine' Metric.tendsto_nhds.mpr fun ε hε => _
+  -- ⊢ ∀ᶠ (x : V) in cocompact V, dist (∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-in …
   obtain ⟨g, hg_supp, hfg, hg_cont, -⟩ :=
     hfi.exists_hasCompactSupport_integral_sub_le (div_pos hε two_pos)
   refine'
@@ -232,6 +266,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
           _ (div_pos hε two_pos)).mp
       (eventually_of_forall fun w hI => _)
   rw [dist_eq_norm] at hI ⊢
+  -- ⊢ ‖(∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v) - 0‖ < ε
   have : ‖(∫ v, e[-⟪v, w⟫] • f v) - ∫ v, e[-⟪v, w⟫] • g v‖ ≤ ε / 2 := by
     refine' le_trans _ hfg
     simp_rw [←
@@ -242,9 +277,13 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
       VectorFourier.norm_fourierIntegral_le_integral_norm e volume
         (BilinForm.toLin bilinFormOfRealInner) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
+  -- ⊢ ‖(∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v) - 0‖ < ε
   rw [add_halves] at this
+  -- ⊢ ‖(∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v) - 0‖ < ε
   refine' ((le_of_eq _).trans (norm_add_le _ _)).trans_lt this
+  -- ⊢ ‖(∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f v) - 0‖ = ‖((∫ ( …
   simp only [sub_zero, sub_add_cancel]
+  -- 🎉 no goals
 #align tendsto_integral_exp_inner_smul_cocompact tendsto_integral_exp_inner_smul_cocompact
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`. -/
@@ -264,17 +303,24 @@ via dual space. **Do not use** -- it is only a stepping stone to
 theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [μ.IsAddHaarMeasure] :
     Tendsto (fun w : V →L[ℝ] ℝ => ∫ v, e[-w v] • f v ∂μ) (cocompact (V →L[ℝ] ℝ)) (𝓝 0) := by
   obtain ⟨C, _, _, hC⟩ := μ.isAddHaarMeasure_eq_smul_isAddHaarMeasure volume
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ) …
   rw [hC]
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂C  …
   simp_rw [integral_smul_measure]
+  -- ⊢ Tendsto (fun w => ENNReal.toReal C • ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd  …
   rw [← (smul_zero _ : C.toReal • (0 : E) = 0)]
+  -- ⊢ Tendsto (fun w => ENNReal.toReal C • ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd  …
   apply Tendsto.const_smul
+  -- ⊢ Tendsto (fun x => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑x v))) • f v) (c …
   let A := (InnerProductSpace.toDual ℝ V).symm
+  -- ⊢ Tendsto (fun x => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑x v))) • f v) (c …
   have : (fun w : V →L[ℝ] ℝ => ∫ v, e[-w v] • f v) = (fun w : V => ∫ v, e[-⟪v, w⟫] • f v) ∘ A := by
     ext1 w
     congr 1 with v : 1
     rw [← inner_conj_symm, IsROrC.conj_to_real, InnerProductSpace.toDual_symm_apply,
       Real.fourierChar_apply]
   rw [this]
+  -- ⊢ Tendsto ((fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-inner v w))) • f …
   exact
     (tendsto_integral_exp_inner_smul_cocompact f).comp
       A.toHomeomorph.toCocompactMap.cocompact_tendsto'
@@ -296,10 +342,14 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   -- refer to the inner product. So we choose an arbitrary inner-product space isomorphic to V
   -- and port the result over from there.
   let V' := EuclideanSpace ℝ (Fin (finrank ℝ V))
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ) …
   have A : V ≃L[ℝ] V' := toEuclidean
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ) …
   borelize V'
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ) …
   -- various equivs derived from A
   let Aₘ : MeasurableEquiv V V' := A.toHomeomorph.toMeasurableEquiv
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ) …
   -- isomorphism between duals derived from A -- need to do continuity as a separate step in order
   -- to apply `LinearMap.continuous_of_finiteDimensional`.
   let Adualₗ : (V →L[ℝ] ℝ) ≃ₗ[ℝ] V' →L[ℝ] ℝ :=
@@ -332,16 +382,23 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
       continuous_toFun := Adualₗ.toLinearMap.continuous_of_finiteDimensional
       continuous_invFun := Adualₗ.symm.toLinearMap.continuous_of_finiteDimensional }
   have : (μ.map Aₘ).IsAddHaarMeasure := Measure.MapContinuousLinearEquiv.isAddHaarMeasure _ A
+  -- ⊢ Tendsto (fun w => ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ) …
   convert
     (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
       Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
   rw [Function.comp_apply, integral_map_equiv]
+  -- ⊢ ∫ (v : V), ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v ∂μ = ∫ (x : V), ↑(↑e  …
   congr 1 with v : 1
+  -- ⊢ ↑(↑e (↑Multiplicative.ofAdd (-↑w v))) • f v = ↑(↑e (↑Multiplicative.ofAdd (- …
   congr
+  -- ⊢ ↑w v = ↑(ContinuousMap.toFun (Homeomorph.toCocompactMap (ContinuousLinearEqu …
   · -- Porting note: added `congr_arg`
     apply congr_arg w
+    -- ⊢ v = ↑↑↑(ContinuousLinearEquiv.symm A) (↑Aₘ v)
     exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
+    -- 🎉 no goals
   · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
+    -- 🎉 no goals
 #align tendsto_integral_exp_smul_cocompact tendsto_integral_exp_smul_cocompact
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the

@@ -44,9 +44,13 @@ variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
 theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
   change Finset.map _ (Finset.univ : Finset Bool) = _
+  -- ⊢ Finset.map { toFun := ↑IsSimpleOrder.equivBool.symm, inj' := (_ : Function.I …
   rw [Fintype.univ_bool]
+  -- ⊢ Finset.map { toFun := ↑IsSimpleOrder.equivBool.symm, inj' := (_ : Function.I …
   simp only [Finset.map_insert, Function.Embedding.coeFn_mk, Finset.map_singleton]
+  -- ⊢ {↑IsSimpleOrder.equivBool.symm true, ↑IsSimpleOrder.equivBool.symm false} =  …
   rfl
+  -- 🎉 no goals
 #align fintype.is_simple_order.univ Fintype.IsSimpleOrder.univ
 
 theorem card : Fintype.card α = 2 :=
@@ -64,6 +68,7 @@ instance : IsSimpleOrder Bool :=
     rw [← Finset.mem_singleton, Or.comm, ← Finset.mem_insert, top_eq_true, bot_eq_false, ←
       Fintype.univ_bool]
     apply Finset.mem_univ⟩
+    -- 🎉 no goals
 
 end Bool
 
@@ -75,12 +80,17 @@ open Finset
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
     IsCoatomic α := by
   refine' IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => _
+  -- ⊢ ∃ a, IsCoatom a ∧ b ≤ a
   obtain ⟨c, hc, hmax⟩ :=
     Set.Finite.exists_maximal_wrt id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
   refine' ⟨c, ⟨hc.2, fun y hcy => _⟩, hc.1⟩
+  -- ⊢ y = ⊤
   by_contra hyt
+  -- ⊢ False
   obtain rfl : c = y := hmax y ⟨hc.1.trans hcy.le, hyt⟩ hcy.le
+  -- ⊢ False
   exact (lt_self_iff_false _).mp hcy
+  -- 🎉 no goals
 #align finite.to_is_coatomic Finite.to_isCoatomic
 
 -- see Note [lower instance priority]

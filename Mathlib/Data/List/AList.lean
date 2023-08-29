@@ -63,6 +63,7 @@ namespace AList
 @[ext]
 theorem ext : ∀ {s t : AList β}, s.entries = t.entries → s = t
   | ⟨l₁, h₁⟩, ⟨l₂, _⟩, H => by congr
+                               -- 🎉 no goals
 #align alist.ext AList.ext
 
 theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
@@ -71,6 +72,8 @@ theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
 
 instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
   rw [ext_iff]; infer_instance
+  -- ⊢ Decidable (xs.entries = ys.entries)
+                -- 🎉 no goals
 
 /-! ### keys -/
 
@@ -183,11 +186,17 @@ instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
 theorem keys_subset_keys_of_entries_subset_entries
     {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
   intro k hk
+  -- ⊢ k ∈ keys s₂
   letI : DecidableEq α := Classical.decEq α
+  -- ⊢ k ∈ keys s₂
   have := h (mem_lookup_iff.1 (Option.get_mem (lookup_isSome.2 hk)))
+  -- ⊢ k ∈ keys s₂
   rw [← mem_lookup_iff, Option.mem_def] at this
+  -- ⊢ k ∈ keys s₂
   rw [← mem_keys, ← lookup_isSome, this]
+  -- ⊢ Option.isSome (some (Option.get (lookup k s₁) (_ : Option.isSome (lookup k s …
   exact Option.isSome_some
+  -- 🎉 no goals
 
 /-! ### replace -/
 
@@ -206,6 +215,7 @@ theorem keys_replace (a : α) (b : β a) (s : AList β) : (replace a b s).keys =
 @[simp]
 theorem mem_replace {a a' : α} {b : β a} {s : AList β} : a' ∈ replace a b s ↔ a' ∈ s := by
   rw [mem_keys, keys_replace, ← mem_keys]
+  -- 🎉 no goals
 #align alist.mem_replace AList.mem_replace
 
 theorem perm_replace {a : α} {b : β a} {s₁ s₂ : AList β} :
@@ -240,6 +250,7 @@ theorem keys_erase (a : α) (s : AList β) : (erase a s).keys = s.keys.erase a :
 @[simp]
 theorem mem_erase {a a' : α} {s : AList β} : a' ∈ erase a s ↔ a' ≠ a ∧ a' ∈ s := by
   rw [mem_keys, keys_erase, s.keys_nodup.mem_erase_iff, ← mem_keys]
+  -- 🎉 no goals
 #align alist.mem_erase AList.mem_erase
 
 theorem perm_erase {a : α} {s₁ s₂ : AList β} :
@@ -278,6 +289,7 @@ theorem insert_entries {a} {b : β a} {s : AList β} :
 
 theorem insert_entries_of_neg {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [insert_entries, kerase_of_not_mem_keys h]
+                                                       -- 🎉 no goals
 #align alist.insert_entries_of_neg AList.insert_entries_of_neg
 
 -- Todo: rename to `insert_of_not_mem`.
@@ -299,16 +311,20 @@ theorem mem_insert {a a'} {b' : β a'} (s : AList β) : a ∈ insert a' b' s ↔
 @[simp]
 theorem keys_insert {a} {b : β a} (s : AList β) : (insert a b s).keys = a :: s.keys.erase a := by
   simp [insert, keys, keys_kerase]
+  -- 🎉 no goals
 #align alist.keys_insert AList.keys_insert
 
 theorem perm_insert {a} {b : β a} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) :
     (insert a b s₁).entries ~ (insert a b s₂).entries := by
   simp only [insert_entries]; exact p.kinsert s₁.nodupKeys
+  -- ⊢ { fst := a, snd := b } :: kerase a s₁.entries ~ { fst := a, snd := b } :: ke …
+                              -- 🎉 no goals
 #align alist.perm_insert AList.perm_insert
 
 @[simp]
 theorem lookup_insert {a} {b : β a} (s : AList β) : lookup a (insert a b s) = some b := by
   simp only [lookup, insert, dlookup_kinsert]
+  -- 🎉 no goals
 #align alist.lookup_insert AList.lookup_insert
 
 @[simp]
@@ -320,17 +336,21 @@ theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
 @[simp]
 theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlookup a := by
   rw [List.toAList, lookup, dlookup_dedupKeys]
+  -- 🎉 no goals
 #align alist.lookup_to_alist AList.lookup_to_alist
 
 @[simp]
 theorem insert_insert {a} {b b' : β a} (s : AList β) :
     (s.insert a b).insert a b' = s.insert a b' := by
   ext : 1; simp only [AList.insert_entries, List.kerase_cons_eq]
+  -- ⊢ (insert a b' (insert a b s)).entries = (insert a b' s).entries
+           -- 🎉 no goals
 #align alist.insert_insert AList.insert_insert
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a ≠ a') :
     ((s.insert a b).insert a' b').entries ~ ((s.insert a' b').insert a b).entries := by
   simp only [insert_entries]; rw [kerase_cons_ne, kerase_cons_ne, kerase_comm] <;>
+  -- ⊢ { fst := a', snd := b' } :: kerase a' ({ fst := a, snd := b } :: kerase a s. …
     [apply Perm.swap; exact h; exact h.symm]
 #align alist.insert_insert_of_ne AList.insert_insert_of_ne
 
@@ -354,6 +374,7 @@ theorem toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).NodupKeys) :
     (⟨c :: l, h⟩ : AList β) = insert c.1 c.2 ⟨l, nodupKeys_of_nodupKeys_cons h⟩ := by
   simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
+  -- 🎉 no goals
 #align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
 
 /-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
@@ -364,19 +385,27 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
   | ⟨[], _⟩ => H0
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
+    -- ⊢ C (insert c.fst c.snd { entries := l, nodupKeys := (_ : NodupKeys l) })
     refine' IH _ _ _ _ (insertRec H0 IH _)
+    -- ⊢ ¬c.fst ∈ { entries := l, nodupKeys := (_ : NodupKeys l) }
     exact not_mem_keys_of_nodupKeys_cons h
+    -- 🎉 no goals
 #align alist.insert_rec AList.insertRec
 
 -- Test that the `induction` tactic works on `insert_rec`.
 example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
+                                   -- ⊢ True
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
 
 @[simp]
 theorem insertRec_empty {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     @insertRec α β _ C H0 IH ∅ = H0 := by
   change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
+  -- ⊢ insertRec H0 IH { entries := [], nodupKeys := (_ : NodupKeys []) } = H0
   rw [insertRec]
+  -- 🎉 no goals
 #align alist.insert_rec_empty AList.insertRec_empty
 
 theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
@@ -384,13 +413,16 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
   cases' l with l hl
+  -- ⊢ insertRec H0 IH (insert c.fst c.snd { entries := l, nodupKeys := hl }) = IH  …
   suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
       (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
     cases c
     apply eq_of_heq
     convert this <;> rw [insert_of_neg h]
   rw [insertRec]
+  -- ⊢ HEq (Eq.mpr (_ : C { entries := c :: l, nodupKeys := (_ : NodupKeys (c :: l) …
   apply cast_heq
+  -- 🎉 no goals
 #align alist.insert_rec_insert AList.insertRec_insert
 
 theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
@@ -407,6 +439,8 @@ theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
 def extract (a : α) (s : AList β) : Option (β a) × AList β :=
   have : (kextract a s.entries).2.NodupKeys := by
     rw [kextract_eq_dlookup_kerase]; exact s.nodupKeys.kerase _
+    -- ⊢ NodupKeys (dlookup a s.entries, kerase a s.entries).snd
+                                     -- 🎉 no goals
   match kextract a s.entries, this with
   | (b, l), h => (b, ⟨l, h⟩)
 #align alist.extract AList.extract
@@ -414,6 +448,10 @@ def extract (a : α) (s : AList β) : Option (β a) × AList β :=
 @[simp]
 theorem extract_eq_lookup_erase (a : α) (s : AList β) : extract a s = (lookup a s, erase a s) := by
   simp [extract]; constructor <;> rfl
+  -- ⊢ dlookup a s.entries = lookup a s ∧ { entries := kerase a s.entries, nodupKey …
+                  -- ⊢ dlookup a s.entries = lookup a s
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align alist.extract_eq_lookup_erase AList.extract_eq_lookup_erase
 
 /-! ### union -/
@@ -442,6 +480,7 @@ theorem empty_union {s : AList β} : (∅ : AList β) ∪ s = s :=
 @[simp]
 theorem union_empty {s : AList β} : s ∪ (∅ : AList β) = s :=
   ext <| by simp
+            -- 🎉 no goals
 #align alist.union_empty AList.union_empty
 
 @[simp]
@@ -452,6 +491,7 @@ theorem mem_union {a} {s₁ s₂ : AList β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 theorem perm_union {s₁ s₂ s₃ s₄ : AList β} (p₁₂ : s₁.entries ~ s₂.entries)
     (p₃₄ : s₃.entries ~ s₄.entries) : (s₁ ∪ s₃).entries ~ (s₂ ∪ s₄).entries := by
   simp [p₁₂.kunion s₃.nodupKeys p₃₄]
+  -- 🎉 no goals
 #align alist.perm_union AList.perm_union
 
 theorem union_erase (a : α) (s₁ s₂ : AList β) : erase a (s₁ ∪ s₂) = erase a s₁ ∪ erase a s₂ :=
@@ -487,11 +527,14 @@ theorem mem_lookup_union_middle {a} {b : β a} {s₁ s₂ s₃ : AList β} :
 
 theorem insert_union {a} {b : β a} {s₁ s₂ : AList β} : insert a b (s₁ ∪ s₂) = insert a b s₁ ∪ s₂ :=
   by ext; simp
+     -- ⊢ a✝ ∈ get? (insert a b (s₁ ∪ s₂)).entries n✝ ↔ a✝ ∈ get? (insert a b s₁ ∪ s₂) …
+          -- 🎉 no goals
 #align alist.insert_union AList.insert_union
 
 theorem union_assoc {s₁ s₂ s₃ : AList β} : (s₁ ∪ s₂ ∪ s₃).entries ~ (s₁ ∪ (s₂ ∪ s₃)).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by simp [not_or, or_assoc, and_or_left, and_assoc])
+        -- 🎉 no goals
 #align alist.union_assoc AList.union_assoc
 
 end
@@ -511,24 +554,46 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
       intros; simp
+      -- ⊢ y✝ ∈ dlookup x✝ (s₁ ∪ s₂).entries ↔ y✝ ∈ dlookup x✝ (s₂ ∪ s₁).entries
+              -- ⊢ dlookup x✝ s₁.entries = some y✝ ∨ ¬x✝ ∈ List.keys s₁.entries ∧ dlookup x✝ s₂ …
       constructor <;> intro h'
+      -- ⊢ dlookup x✝ s₁.entries = some y✝ ∨ ¬x✝ ∈ List.keys s₁.entries ∧ dlookup x✝ s₂ …
+                      -- ⊢ dlookup x✝ s₂.entries = some y✝ ∨ ¬x✝ ∈ List.keys s₂.entries ∧ dlookup x✝ s₁ …
+                      -- ⊢ dlookup x✝ s₁.entries = some y✝ ∨ ¬x✝ ∈ List.keys s₁.entries ∧ dlookup x✝ s₂ …
       · cases' h' with h' h'
+        -- ⊢ dlookup x✝ s₂.entries = some y✝ ∨ ¬x✝ ∈ List.keys s₂.entries ∧ dlookup x✝ s₁ …
         · right
+          -- ⊢ ¬x✝ ∈ List.keys s₂.entries ∧ dlookup x✝ s₁.entries = some y✝
           refine' ⟨_, h'⟩
+          -- ⊢ ¬x✝ ∈ List.keys s₂.entries
           apply h
+          -- ⊢ x✝ ∈ keys s₁
           rw [keys, ← List.dlookup_isSome, h']
+          -- ⊢ Option.isSome (some y✝) = true
           exact rfl
+          -- 🎉 no goals
         · left
+          -- ⊢ dlookup x✝ s₂.entries = some y✝
           rw [h'.2]
+          -- 🎉 no goals
       · cases' h' with h' h'
+        -- ⊢ dlookup x✝ s₁.entries = some y✝ ∨ ¬x✝ ∈ List.keys s₁.entries ∧ dlookup x✝ s₂ …
         · right
+          -- ⊢ ¬x✝ ∈ List.keys s₁.entries ∧ dlookup x✝ s₂.entries = some y✝
           refine' ⟨_, h'⟩
+          -- ⊢ ¬x✝ ∈ List.keys s₁.entries
           intro h''
+          -- ⊢ False
           apply h _ h''
+          -- ⊢ x✝ ∈ keys s₂
           rw [keys, ← List.dlookup_isSome, h']
+          -- ⊢ Option.isSome (some y✝) = true
           exact rfl
+          -- 🎉 no goals
         · left
+          -- ⊢ dlookup x✝ s₁.entries = some y✝
           rw [h'.2])
+          -- 🎉 no goals
 #align alist.union_comm_of_disjoint AList.union_comm_of_disjoint
 
 end AList

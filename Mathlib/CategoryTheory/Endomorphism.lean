@@ -114,6 +114,8 @@ theorem isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
     IsUnit (f : End X) ↔ IsIso f :=
   ⟨fun h => { out := ⟨h.unit.inv, ⟨h.unit.inv_val, h.unit.val_inv⟩⟩ }, fun h =>
     ⟨⟨f, inv f, by simp, by simp⟩, rfl⟩⟩
+                   -- 🎉 no goals
+                            -- 🎉 no goals
 #align category_theory.is_unit_iff_is_iso CategoryTheory.isUnit_iff_isIso
 
 variable {C : Type u} [Category.{v} C] (X : C)
@@ -164,6 +166,9 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   left_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
   right_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
   map_mul' f g := by cases f; cases g; rfl
+                     -- ⊢ Equiv.toFun { toFun := fun f => Iso.mk (↑f) f.inv, invFun := fun f => { val  …
+                              -- ⊢ Equiv.toFun { toFun := fun f => Iso.mk (↑f) f.inv, invFun := fun f => { val  …
+                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.units_End_equiv_Aut CategoryTheory.Aut.unitsEndEquivAut
 
@@ -172,8 +177,11 @@ def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := ⟨h.inv ≫ x.hom ≫ h.hom, h.inv ≫ x.inv ≫ h.hom, _, _⟩
   invFun y := ⟨h.hom ≫ y.hom ≫ h.inv, h.hom ≫ y.inv ≫ h.inv, _, _⟩
   left_inv _ := by aesop_cat
+                   -- 🎉 no goals
   right_inv _ := by aesop_cat
+                    -- 🎉 no goals
   map_mul' := by simp [Aut_mul_def]
+                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.Aut_mul_equiv_of_iso CategoryTheory.Aut.autMulEquivOfIso
 

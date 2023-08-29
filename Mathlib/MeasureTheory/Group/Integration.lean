@@ -43,7 +43,9 @@ theorem Integrable.comp_inv [IsInvInvariant μ] {f : G → F} (hf : Integrable f
 theorem integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] :
     ∫ x, f x⁻¹ ∂μ = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : G => x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
+  -- ⊢ ∫ (x : G), f x⁻¹ ∂μ = ∫ (x : G), f x ∂μ
   rw [← h.integral_map, map_inv_eq_self]
+  -- 🎉 no goals
 #align measure_theory.integral_inv_eq_self MeasureTheory.integral_inv_eq_self
 #align measure_theory.integral_neg_eq_self MeasureTheory.integral_neg_eq_self
 
@@ -61,7 +63,9 @@ with respect to a left-invariant measure. -/
 theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (g * x) ∂μ) = ∫⁻ x, f x ∂μ := by
   convert (lintegral_map_equiv f <| MeasurableEquiv.mulLeft g).symm
+  -- ⊢ μ = map (↑(MeasurableEquiv.mulLeft g)) μ
   simp [map_mul_left_eq_self μ g]
+  -- 🎉 no goals
 #align measure_theory.lintegral_mul_left_eq_self MeasureTheory.lintegral_mul_left_eq_self
 #align measure_theory.lintegral_add_left_eq_self MeasureTheory.lintegral_add_left_eq_self
 
@@ -73,7 +77,9 @@ with respect to a right-invariant measure. -/
 theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by
   convert (lintegral_map_equiv f <| MeasurableEquiv.mulRight g).symm using 1
+  -- ⊢ ∫⁻ (x : G), f x ∂μ = ∫⁻ (a : G), f a ∂map (↑(MeasurableEquiv.mulRight g)) μ
   simp [map_mul_right_eq_self μ g]
+  -- 🎉 no goals
 #align measure_theory.lintegral_mul_right_eq_self MeasureTheory.lintegral_mul_right_eq_self
 #align measure_theory.lintegral_add_right_eq_self MeasureTheory.lintegral_add_right_eq_self
 
@@ -81,8 +87,10 @@ theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
 theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv]
+  -- ⊢ ∫⁻ (x : G), f (x * g⁻¹) ∂μ = ∫⁻ (x : G), f x ∂μ
   -- Porting note: was `simp_rw`
   rw [lintegral_mul_right_eq_self f g⁻¹]
+  -- 🎉 no goals
 #align measure_theory.lintegral_div_right_eq_self MeasureTheory.lintegral_div_right_eq_self
 #align measure_theory.lintegral_sub_right_eq_self MeasureTheory.lintegral_sub_right_eq_self
 
@@ -94,7 +102,9 @@ left-invariant measure. -/
 theorem integral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (g * x) ∂μ) = ∫ x, f x ∂μ := by
   have h_mul : MeasurableEmbedding fun x => g * x := (MeasurableEquiv.mulLeft g).measurableEmbedding
+  -- ⊢ ∫ (x : G), f (g * x) ∂μ = ∫ (x : G), f x ∂μ
   rw [← h_mul.integral_map, map_mul_left_eq_self]
+  -- 🎉 no goals
 #align measure_theory.integral_mul_left_eq_self MeasureTheory.integral_mul_left_eq_self
 #align measure_theory.integral_add_left_eq_self MeasureTheory.integral_add_left_eq_self
 
@@ -108,6 +118,7 @@ theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G
   have h_mul : MeasurableEmbedding fun x => x * g :=
     (MeasurableEquiv.mulRight g).measurableEmbedding
   rw [← h_mul.integral_map, map_mul_right_eq_self]
+  -- 🎉 no goals
 #align measure_theory.integral_mul_right_eq_self MeasureTheory.integral_mul_right_eq_self
 #align measure_theory.integral_add_right_eq_self MeasureTheory.integral_add_right_eq_self
 
@@ -115,8 +126,10 @@ theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G
 theorem integral_div_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x / g) ∂μ) = ∫ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv]
+  -- ⊢ ∫ (x : G), f (x * g⁻¹) ∂μ = ∫ (x : G), f x ∂μ
   -- Porting note: was `simp_rw`
   rw [integral_mul_right_eq_self f g⁻¹]
+  -- 🎉 no goals
 #align measure_theory.integral_div_right_eq_self MeasureTheory.integral_div_right_eq_self
 #align measure_theory.integral_sub_right_eq_self MeasureTheory.integral_sub_right_eq_self
 
@@ -128,6 +141,7 @@ to a left-invariant measure is 0. -/
 theorem integral_eq_zero_of_mul_left_eq_neg [IsMulLeftInvariant μ] (hf' : ∀ x, f (g * x) = -f x) :
     ∫ x, f x ∂μ = 0 := by
   simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_left_eq_self]
+  -- 🎉 no goals
 #align measure_theory.integral_eq_zero_of_mul_left_eq_neg MeasureTheory.integral_eq_zero_of_mul_left_eq_neg
 #align measure_theory.integral_eq_zero_of_add_left_eq_neg MeasureTheory.integral_eq_zero_of_add_left_eq_neg
 
@@ -139,6 +153,7 @@ to a right-invariant measure is 0. -/
 theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀ x, f (x * g) = -f x) :
     ∫ x, f x ∂μ = 0 := by
   simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_right_eq_self]
+  -- 🎉 no goals
 #align measure_theory.integral_eq_zero_of_mul_right_eq_neg MeasureTheory.integral_eq_zero_of_mul_right_eq_neg
 #align measure_theory.integral_eq_zero_of_add_right_eq_neg MeasureTheory.integral_eq_zero_of_add_right_eq_neg
 
@@ -160,7 +175,9 @@ theorem Integrable.comp_mul_right {f : G → F} [IsMulRightInvariant μ] (hf : I
 theorem Integrable.comp_div_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
     (g : G) : Integrable (fun t => f (t / g)) μ := by
   simp_rw [div_eq_mul_inv]
+  -- ⊢ Integrable fun t => f (t * g⁻¹)
   exact hf.comp_mul_right g⁻¹
+  -- 🎉 no goals
 #align measure_theory.integrable.comp_div_right MeasureTheory.Integrable.comp_div_right
 #align measure_theory.integrable.comp_sub_right MeasureTheory.Integrable.comp_sub_right
 
@@ -177,8 +194,11 @@ theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInv
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
     Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
   refine' ⟨fun h => _, fun h => h.comp_div_left g⟩
+  -- ⊢ Integrable f
   convert h.comp_inv.comp_mul_left g⁻¹
+  -- ⊢ x✝ = g / (g⁻¹ * x✝)⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]
+  -- 🎉 no goals
 #align measure_theory.integrable_comp_div_left MeasureTheory.integrable_comp_div_left
 #align measure_theory.integrable_comp_sub_left MeasureTheory.integrable_comp_sub_left
 
@@ -186,8 +206,10 @@ theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInv
 theorem integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
     [IsMulLeftInvariant μ] (x' : G) : (∫ x, f (x' / x) ∂μ) = ∫ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv]
+  -- ⊢ ∫ (x : G), f (x' * x⁻¹) ∂μ = ∫ (x : G), f x ∂μ
   -- Porting note: was `simp_rw`
   rw [integral_inv_eq_self (fun x => f (x' * x)) μ, integral_mul_left_eq_self f x']
+  -- 🎉 no goals
 #align measure_theory.integral_div_left_eq_self MeasureTheory.integral_div_left_eq_self
 #align measure_theory.integral_sub_left_eq_self MeasureTheory.integral_sub_left_eq_self
 
@@ -201,7 +223,9 @@ variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :
     (∫ x, f (g • x) ∂μ) = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : α => g • x := (MeasurableEquiv.smul g).measurableEmbedding
+  -- ⊢ ∫ (x : α), f (g • x) ∂μ = ∫ (x : α), f x ∂μ
   rw [← h.integral_map, map_smul]
+  -- 🎉 no goals
 #align measure_theory.integral_smul_eq_self MeasureTheory.integral_smul_eq_self
 #align measure_theory.integral_vadd_eq_self MeasureTheory.integral_vadd_eq_self
 
@@ -219,7 +243,9 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [BorelSpace G] [IsM
 theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {f : G → ℝ≥0∞}
     (hf : Continuous f) : ∫⁻ x, f x ∂μ = 0 ↔ f = 0 := by
   haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular hμ
+  -- ⊢ ∫⁻ (x : G), f x ∂μ = 0 ↔ f = 0
   rw [lintegral_eq_zero_iff hf.measurable, hf.ae_eq_iff_eq μ continuous_zero]
+  -- 🎉 no goals
 #align measure_theory.lintegral_eq_zero_of_is_mul_left_invariant MeasureTheory.lintegral_eq_zero_of_isMulLeftInvariant
 #align measure_theory.lintegral_eq_zero_of_is_add_left_invariant MeasureTheory.lintegral_eq_zero_of_isAddLeftInvariant
 

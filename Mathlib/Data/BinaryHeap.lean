@@ -21,6 +21,8 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   let right := left + 1
   have left_le : i ≤ left := Nat.le_trans
     (by rw [Nat.succ_mul, Nat.one_mul]; exact Nat.le_add_left i i)
+        -- ⊢ ↑i ≤ ↑i + ↑i
+                                        -- 🎉 no goals
     (Nat.le_add_right ..)
   have right_le : i ≤ right := Nat.le_trans left_le (Nat.le_add_right ..)
   have i_le : i ≤ i := Nat.le_refl _
@@ -31,12 +33,17 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   if h : i.1 = j then ⟨a, rfl⟩ else
     let a' := a.swap i j
     let j' := ⟨j, by rw [a.size_swap i j]; exact j.1.2⟩
+                     -- ⊢ ↑↑j < Array.size a
+                                           -- 🎉 no goals
     have : a'.size - j < a.size - i := by
       rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_of_ne j.2 h
+      -- ⊢ Array.size a - ↑↑j < Array.size a - ↑i
+                            -- 🎉 no goals
     let ⟨a₂, h₂⟩ := heapifyDown lt a' j'
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
 termination_by _ => a.size - i
 decreasing_by assumption
+              -- 🎉 no goals
 
 @[simp] theorem size_heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyDown lt a i).1.size = a.size := (heapifyDown lt a i).2
@@ -67,10 +74,13 @@ if i0 : i.1 = 0 then ⟨a, rfl⟩ else
   if lt (a.get j) (a.get i) then
     let a' := a.swap i j
     let ⟨a₂, h₂⟩ := heapifyUp lt a' ⟨j.1, by rw [a.size_swap i j]; exact j.2⟩
+                                             -- ⊢ ↑j < Array.size a
+                                                                   -- 🎉 no goals
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
   else ⟨a, rfl⟩
 termination_by _ => i.1
 decreasing_by assumption
+              -- 🎉 no goals
 
 @[simp] theorem size_heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyUp lt a i).1.size = a.size := (heapifyUp lt a i).2
@@ -94,10 +104,13 @@ def get {lt} (self : BinaryHeap α lt) (i : Fin self.size) : α := self.1.get i
 def insert {lt} (self : BinaryHeap α lt) (x : α) : BinaryHeap α lt where
   arr := let n := self.size;
     heapifyUp lt (self.1.push x) ⟨n, by rw [Array.size_push]; apply Nat.lt_succ_self⟩
+                                        -- ⊢ n < Array.size self.arr + 1
+                                                              -- 🎉 no goals
 
 @[simp] theorem size_insert {lt} (self : BinaryHeap α lt) (x : α) :
   (self.insert x).size = self.size + 1 := by
   simp [insert, size, size_heapifyUp]
+  -- 🎉 no goals
 
 /-- `O(1)`. Get the maximum element in a `BinaryHeap`. -/
 def max {lt} (self : BinaryHeap α lt) : Option α := self.1.get? 0
@@ -106,15 +119,23 @@ def max {lt} (self : BinaryHeap α lt) : Option α := self.1.get? 0
 def popMaxAux {lt} (self : BinaryHeap α lt) : {a' : BinaryHeap α lt // a'.size = self.size - 1} :=
   match e: self.1.size with
   | 0 => ⟨self, by simp [size, e]⟩
+                   -- 🎉 no goals
   | n+1 =>
     have h0 := by rw [e]; apply Nat.succ_pos
+                  -- ⊢ 0 < Nat.succ n
+                          -- 🎉 no goals
     have hn := by rw [e]; apply Nat.lt_succ_self
+                  -- ⊢ n < Nat.succ n
+                          -- 🎉 no goals
     if hn0 : 0 < n then
       let a := self.1.swap ⟨0, h0⟩ ⟨n, hn⟩ |>.pop
       ⟨⟨heapifyDown lt a ⟨0, by rwa [Array.size_pop, Array.size_swap, e]⟩⟩,
+                                -- 🎉 no goals
         by simp [size]⟩
+           -- 🎉 no goals
     else
       ⟨⟨self.1.pop⟩, by simp [size]⟩
+                        -- 🎉 no goals
 
 /-- `O(log n)`. Remove the maximum element from a `BinaryHeap`.
 Call `max` first to actually retrieve the maximum element. -/
@@ -129,6 +150,7 @@ def extractMax {lt} (self : BinaryHeap α lt) : Option α × BinaryHeap α lt :=
 
 theorem size_pos_of_max {lt} {self : BinaryHeap α lt} (e : self.max = some x) : 0 < self.size :=
   Decidable.of_not_not fun h: ¬ 0 < self.1.size ↦ by simp [BinaryHeap.max, Array.get?, h] at e
+                                                     -- 🎉 no goals
 
 /-- `O(log n)`. Equivalent to `extractMax (self.insert x)`, except that extraction cannot fail. -/
 def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap α lt :=
@@ -138,6 +160,8 @@ def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap 
     if lt x m then
       let a := self.1.set ⟨0, size_pos_of_max e⟩ x
       (m, ⟨heapifyDown lt a ⟨0, by simp; exact size_pos_of_max e⟩⟩)
+                                   -- ⊢ 0 < Array.size self.arr
+                                         -- 🎉 no goals
     else (x, self)
 
 /-- `O(log n)`. Equivalent to `(self.max, self.popMax.insert x)`. -/
@@ -147,14 +171,20 @@ def replaceMax {lt} (self : BinaryHeap α lt) (x : α) : Option α × BinaryHeap
   | some m =>
     let a := self.1.set ⟨0, size_pos_of_max e⟩ x
     (some m, ⟨heapifyDown lt a ⟨0, by simp; exact size_pos_of_max e⟩⟩)
+                                      -- ⊢ 0 < Array.size self.arr
+                                            -- 🎉 no goals
 
 /-- `O(log n)`. Replace the value at index `i` by `x`. Assumes that `x ≤ self.get i`. -/
 def decreaseKey {lt} (self : BinaryHeap α lt) (i : Fin self.size) (x : α) : BinaryHeap α lt where
   arr := heapifyDown lt (self.1.set i x) ⟨i, by rw [self.1.size_set]; exact i.2⟩
+                                                -- ⊢ ↑i < Array.size self.arr
+                                                                      -- 🎉 no goals
 
 /-- `O(log n)`. Replace the value at index `i` by `x`. Assumes that `self.get i ≤ x`. -/
 def increaseKey {lt} (self : BinaryHeap α lt) (i : Fin self.size) (x : α) : BinaryHeap α lt where
   arr := heapifyUp lt (self.1.set i x) ⟨i, by rw [self.1.size_set]; exact i.2⟩
+                                              -- ⊢ ↑i < Array.size self.arr
+                                                                    -- 🎉 no goals
 
 end BinaryHeap
 
@@ -171,7 +201,10 @@ def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α 
     | some x =>
       have : a.popMax.size < a.size := by
         simp; exact Nat.sub_lt (BinaryHeap.size_pos_of_max e) Nat.zero_lt_one
+        -- ⊢ BinaryHeap.size a - 1 < BinaryHeap.size a
+              -- 🎉 no goals
       loop a.popMax (out.push x)
   loop (a.toBinaryHeap gt) #[]
 termination_by _ => a.size
 decreasing_by assumption
+              -- 🎉 no goals

@@ -59,5 +59,7 @@ def topToLocale : TopCat ⥤ Locale :=
 instance CompHausToLocale.faithful : Faithful (compHausToTop ⋙ topToLocale.{u}) :=
   ⟨fun h => by
     dsimp at h
+    -- ⊢ a₁✝ = a₂✝
     exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩
+    -- 🎉 no goals
 #align CompHaus_to_Locale.faithful CompHausToLocale.faithful

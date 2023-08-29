@@ -80,12 +80,24 @@ instance mulOneClass : MulOneClass (SubMulAction R M)
   one := 1
   mul_one a := by
     ext x
+    -- ⊢ x ∈ a * 1 ↔ x ∈ a
     simp only [mem_mul, mem_one, mul_smul_comm, exists_and_left, exists_exists_eq_and, mul_one]
+    -- ⊢ (∃ y, y ∈ a ∧ ∃ a, a • y = x) ↔ x ∈ a
     constructor
+    -- ⊢ (∃ y, y ∈ a ∧ ∃ a, a • y = x) → x ∈ a
     · rintro ⟨y, hy, r, rfl⟩
+      -- ⊢ r • y ∈ a
       exact smul_mem _ _ hy
+    -- ⊢ x ∈ 1 * a ↔ x ∈ a
+      -- 🎉 no goals
+    -- ⊢ (∃ a_1 x_1, x_1 ∈ a ∧ a_1 • x_1 = x) ↔ x ∈ a
     · intro hx
+    -- ⊢ (∃ a_1 x_1, x_1 ∈ a ∧ a_1 • x_1 = x) → x ∈ a
+      -- ⊢ ∃ y, y ∈ a ∧ ∃ a, a • y = x
+    -- ⊢ r • y ∈ a
       exact ⟨x, hx, 1, one_smul _ _⟩
+    -- 🎉 no goals
+      -- 🎉 no goals
   one_mul a := by
     ext x
     simp only [mem_mul, mem_one, smul_mul_assoc, exists_and_left, exists_exists_eq_and, one_mul]
@@ -120,15 +132,20 @@ instance : Monoid (SubMulAction R M) :=
 theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), (p ^ n : Set M) = ((p : Set M) ^ n)
   | 0, hn => (hn rfl).elim
   | 1, _ => by rw [pow_one, pow_one]
+               -- 🎉 no goals
   | n + 2, _ => by
     rw [pow_succ _ (n + 1), pow_succ _ (n + 1), coe_mul, coe_pow _ n.succ_ne_zero]
+    -- 🎉 no goals
 #align sub_mul_action.coe_pow SubMulAction.coe_pow
 
 theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, ((p : Set M) ^ n) ⊆ (p ^ n : Set M)
   | 0 => by
     rw [pow_zero, pow_zero]
+    -- ⊢ 1 ⊆ ↑1
     exact subset_coe_one
+    -- 🎉 no goals
   | n + 1 => by rw [← Nat.succ_eq_add_one, coe_pow _ n.succ_ne_zero]
+                -- 🎉 no goals
 #align sub_mul_action.subset_coe_pow SubMulAction.subset_coe_pow
 
 end Monoid

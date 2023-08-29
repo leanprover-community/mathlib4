@@ -50,6 +50,8 @@ instance : BundledHom @ContinuousHom where
 -- Porting note: `deriving instance ConcreteCategory` didn't work.
 deriving instance LargeCategory for ωCPO
 instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
+                                       -- ⊢ ConcreteCategory (Bundled OmegaCompletePartialOrder)
+                                                    -- 🎉 no goals
 
 instance : CoeSort ωCPO (Type*) :=
   Bundled.coeSort
@@ -89,9 +91,14 @@ def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
       fun x => funext fun j => (s.π.app ⟨j⟩).continuous x⟩
   uniq s m w := by
     ext t; funext j -- Porting note: Originally `ext t j`
+    -- ⊢ ↑m t = ↑((fun s => { toOrderHom := { toFun := fun t j => OrderHom.toFun (Nat …
+           -- ⊢ ↑m t j = ↑((fun s => { toOrderHom := { toFun := fun t j => OrderHom.toFun (N …
     change m.toFun t j = (s.π.app ⟨j⟩).toFun t
+    -- ⊢ OrderHom.toFun m.toOrderHom t j = OrderHom.toFun (NatTrans.app s.π { as := j …
     rw [← w ⟨j⟩]
+    -- ⊢ OrderHom.toFun m.toOrderHom t j = OrderHom.toFun (m ≫ NatTrans.app (product  …
     rfl
+    -- 🎉 no goals
   fac s j := rfl
 #align ωCPO.has_products.is_product ωCPO.HasProducts.isProduct
 
@@ -105,9 +112,14 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
     OmegaCompletePartialOrder { a : α // f a = g a } :=
   OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
+    -- ⊢ ωSup (Chain.map c ↑f) = ωSup (Chain.map c ↑g)
     congr 1
+    -- ⊢ Chain.map c ↑f = Chain.map c ↑g
     apply OrderHom.ext; funext x -- Porting note: Originally `ext`
+    -- ⊢ ↑(Chain.map c ↑f) = ↑(Chain.map c ↑g)
+                        -- ⊢ ↑(Chain.map c ↑f) x = ↑(Chain.map c ↑g) x
     apply hc _ ⟨_, rfl⟩
+    -- 🎉 no goals
 #align ωCPO.omega_complete_partial_order_equalizer ωCPO.omegaCompletePartialOrderEqualizer
 
 namespace HasEqualizers
@@ -130,10 +142,15 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
   Fork.IsLimit.mk' _ fun s =>
     -- Porting note: Changed `s.ι x` to `s.ι.toFun x`
     ⟨{  toFun := fun x => ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
+                                           -- 🎉 no goals
         monotone' := fun x y h => s.ι.monotone h
         cont := fun x => Subtype.ext (s.ι.continuous x) }, by ext; rfl, fun hm => by
+                                                              -- ⊢ ↑({ toOrderHom := { toFun := fun x => { val := OrderHom.toFun (Fork.ι s).toO …
+                                                                   -- 🎉 no goals
       apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note: Originally `ext`
+      -- ⊢ ↑(↑m✝ x) = ↑(↑{ toOrderHom := { toFun := fun x => { val := OrderHom.toFun (F …
       apply ContinuousHom.congr_fun hm⟩
+      -- 🎉 no goals
 #align ωCPO.has_equalizers.is_equalizer ωCPO.HasEqualizers.isEqualizer
 
 end HasEqualizers

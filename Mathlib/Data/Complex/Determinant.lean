@@ -23,7 +23,9 @@ namespace Complex
 @[simp]
 theorem det_conjAe : LinearMap.det conjAe.toLinearMap = -1 := by
   rw [← LinearMap.det_toMatrix basisOneI, toMatrix_conjAe, Matrix.det_fin_two_of]
+  -- ⊢ 1 * -1 - 0 * 0 = -1
   simp
+  -- 🎉 no goals
 #align complex.det_conj_ae Complex.det_conjAe
 
 /-- The determinant of `conjAe`, as a linear equiv. -/

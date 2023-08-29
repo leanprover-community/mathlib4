@@ -77,7 +77,9 @@ theorem zero_divOf (g : G) : (0 : AddMonoidAlgebra k G) /ᵒᶠ g = 0 :=
 @[simp]
 theorem divOf_zero (x : AddMonoidAlgebra k G) : x /ᵒᶠ 0 = x := by
   refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
+  -- ⊢ ↑(x /ᵒᶠ 0) x✝ = ↑x x✝
   simp only [AddMonoidAlgebra.divOf_apply, zero_add]
+  -- 🎉 no goals
 #align add_monoid_algebra.div_of_zero AddMonoidAlgebra.divOf_zero
 
 theorem add_divOf (x y : AddMonoidAlgebra k G) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g :=
@@ -86,7 +88,9 @@ theorem add_divOf (x y : AddMonoidAlgebra k G) (g : G) : (x + y) /ᵒᶠ g = x /
 
 theorem divOf_add (x : AddMonoidAlgebra k G) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
   refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
+  -- ⊢ ↑(x /ᵒᶠ (a + b)) x✝ = ↑(x /ᵒᶠ a /ᵒᶠ b) x✝
   simp only [AddMonoidAlgebra.divOf_apply, add_assoc]
+  -- 🎉 no goals
 #align add_monoid_algebra.div_of_add AddMonoidAlgebra.divOf_add
 
 /-- A bundled version of `AddMonoidAlgebra.divOf`. -/
@@ -105,21 +109,31 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End (AddMonoidAlgeb
 
 theorem of'_mul_divOf (a : G) (x : AddMonoidAlgebra k G) : of' k G a * x /ᵒᶠ a = x := by
   refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
+  -- ⊢ ↑(of' k G a * x /ᵒᶠ a) x✝ = ↑x x✝
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, single_mul_apply_aux, one_mul]
+  -- ⊢ ∀ (a_1 : G), a + a_1 = a + x✝ ↔ a_1 = x✝
   intro c
+  -- ⊢ a + c = a + x✝ ↔ c = x✝
   exact add_right_inj _
+  -- 🎉 no goals
 #align add_monoid_algebra.of'_mul_div_of AddMonoidAlgebra.of'_mul_divOf
 
 theorem mul_of'_divOf (x : AddMonoidAlgebra k G) (a : G) : x * of' k G a /ᵒᶠ a = x := by
   refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
+  -- ⊢ ↑(x * of' k G a /ᵒᶠ a) x✝ = ↑x x✝
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, mul_single_apply_aux, mul_one]
+  -- ⊢ ∀ (a_1 : G), a_1 + a = a + x✝ ↔ a_1 = x✝
   intro c
+  -- ⊢ c + a = a + x✝ ↔ c = x✝
   rw [add_comm]
+  -- ⊢ a + c = a + x✝ ↔ c = x✝
   exact add_right_inj _
+  -- 🎉 no goals
 #align add_monoid_algebra.mul_of'_div_of AddMonoidAlgebra.mul_of'_divOf
 
 theorem of'_divOf (a : G) : of' k G a /ᵒᶠ a = 1 := by
   simpa only [one_mul] using mul_of'_divOf (1 : AddMonoidAlgebra k G) a
+  -- 🎉 no goals
 #align add_monoid_algebra.of'_div_of AddMonoidAlgebra.of'_divOf
 
 /-- The remainder upon division by `of' k G g`. -/
@@ -139,6 +153,7 @@ theorem modOf_apply_of_not_exists_add (x : AddMonoidAlgebra k G) (g : G) (g' : G
 theorem modOf_apply_of_exists_add (x : AddMonoidAlgebra k G) (g : G) (g' : G)
     (h : ∃ d, g' = g + d) : (x %ᵒᶠ g) g' = 0 :=
   Finsupp.filter_apply_neg _ _ <| by rwa [Classical.not_not]
+                                     -- 🎉 no goals
 #align add_monoid_algebra.mod_of_apply_of_exists_add AddMonoidAlgebra.modOf_apply_of_exists_add
 
 @[simp]
@@ -153,51 +168,78 @@ theorem modOf_apply_self_add (x : AddMonoidAlgebra k G) (g : G) (d : G) : (x %�
 
 theorem of'_mul_modOf (g : G) (x : AddMonoidAlgebra k G) : of' k G g * x %ᵒᶠ g = 0 := by
   refine Finsupp.ext fun g' => ?_  -- porting note: `ext g'` doesn't work
+  -- ⊢ ↑(of' k G g * x %ᵒᶠ g) g' = ↑0 g'
   rw [Finsupp.zero_apply]
+  -- ⊢ ↑(of' k G g * x %ᵒᶠ g) g' = 0
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
+  -- ⊢ ↑(of' k G g * x %ᵒᶠ g) (g + d) = 0
   · rw [modOf_apply_self_add]
+    -- 🎉 no goals
   · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h]
+    -- 🎉 no goals
 #align add_monoid_algebra.of'_mul_mod_of AddMonoidAlgebra.of'_mul_modOf
 
 theorem mul_of'_modOf (x : AddMonoidAlgebra k G) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
   refine Finsupp.ext fun g' => ?_  -- porting note: `ext g'` doesn't work
+  -- ⊢ ↑(x * of' k G g %ᵒᶠ g) g' = ↑0 g'
   rw [Finsupp.zero_apply]
+  -- ⊢ ↑(x * of' k G g %ᵒᶠ g) g' = 0
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
+  -- ⊢ ↑(x * of' k G g %ᵒᶠ g) (g + d) = 0
   · rw [modOf_apply_self_add]
+    -- 🎉 no goals
   · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, mul_single_apply_of_not_exists_add]
+    -- ⊢ ¬∃ d, g' = d + g
     simpa only [add_comm] using h
+    -- 🎉 no goals
 #align add_monoid_algebra.mul_of'_mod_of AddMonoidAlgebra.mul_of'_modOf
 
 theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
   simpa only [one_mul] using mul_of'_modOf (1 : AddMonoidAlgebra k G) g
+  -- 🎉 no goals
 #align add_monoid_algebra.of'_mod_of AddMonoidAlgebra.of'_modOf
 
 theorem divOf_add_modOf (x : AddMonoidAlgebra k G) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   refine Finsupp.ext fun g' => ?_  -- porting note: `ext` doesn't work
+  -- ⊢ ↑(of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g) g' = ↑x g'
   rw [Finsupp.add_apply] -- porting note: changed from `simp_rw` which can't see through the type
+  -- ⊢ ↑(of' k G g * (x /ᵒᶠ g)) g' + ↑(x %ᵒᶠ g) g' = ↑x g'
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
+  -- ⊢ ↑(of' k G g * (x /ᵒᶠ g)) (g + d) + ↑(x %ᵒᶠ g) (g + d) = ↑x (g + d)
   swap
+  -- ⊢ ↑(of' k G g * (x /ᵒᶠ g)) g' + ↑(x %ᵒᶠ g) g' = ↑x g'
   · rw [modOf_apply_of_not_exists_add x _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,
       zero_add]
   · rw [modOf_apply_self_add, add_zero]
+    -- ⊢ ↑(of' k G g * (x /ᵒᶠ g)) (g + d) = ↑x (g + d)
     rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, divOf_apply]
+    -- ⊢ ∀ (a : G), g + a = g + d ↔ a = d
     intro a
+    -- ⊢ g + a = g + d ↔ a = d
     exact add_right_inj _
+    -- 🎉 no goals
 #align add_monoid_algebra.div_of_add_mod_of AddMonoidAlgebra.divOf_add_modOf
 
 theorem modOf_add_divOf (x : AddMonoidAlgebra k G) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x :=
   by rw [add_comm, divOf_add_modOf]
+     -- 🎉 no goals
 #align add_monoid_algebra.mod_of_add_div_of AddMonoidAlgebra.modOf_add_divOf
 
 theorem of'_dvd_iff_modOf_eq_zero {x : AddMonoidAlgebra k G} {g : G} :
     of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
   constructor
+  -- ⊢ of' k G g ∣ x → x %ᵒᶠ g = 0
   · rintro ⟨x, rfl⟩
+    -- ⊢ of' k G g * x %ᵒᶠ g = 0
     rw [of'_mul_modOf]
+    -- 🎉 no goals
   · intro h
+    -- ⊢ of' k G g ∣ x
     rw [← divOf_add_modOf x g, h, add_zero]
+    -- ⊢ of' k G g ∣ of' k G g * (x /ᵒᶠ g)
     exact dvd_mul_right _ _
+    -- 🎉 no goals
 #align add_monoid_algebra.of'_dvd_iff_mod_of_eq_zero AddMonoidAlgebra.of'_dvd_iff_modOf_eq_zero
 
 end

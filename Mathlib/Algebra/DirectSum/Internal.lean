@@ -47,34 +47,48 @@ variable {ι : Type*} {σ S R : Type*}
 
 instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
     (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance
+                                                          -- 🎉 no goals
 #align add_comm_monoid.of_submonoid_on_semiring AddCommMonoid.ofSubmonoidOnSemiring
 
 instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
     ∀ i, AddCommGroup (A i) := fun i => by infer_instance
+                                           -- 🎉 no goals
 #align add_comm_group.of_subgroup_on_ring AddCommGroup.ofSubgroupOnRing
 
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]
+  -- ⊢ s • 1 ∈ A 0
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
+  -- 🎉 no goals
 #align set_like.algebra_map_mem_graded SetLike.algebraMap_mem_graded
 
 theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
   induction' n with _ n_ih
+  -- ⊢ ↑Nat.zero ∈ A 0
   · rw [Nat.cast_zero]
+    -- ⊢ 0 ∈ A 0
     exact zero_mem (A 0)
+    -- 🎉 no goals
   · rw [Nat.cast_succ]
+    -- ⊢ ↑n✝ + 1 ∈ A 0
     exact add_mem n_ih (SetLike.one_mem_graded _)
+    -- 🎉 no goals
 #align set_like.nat_cast_mem_graded SetLike.nat_cast_mem_graded
 
 theorem SetLike.int_cast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
+  -- ⊢ ↑(Int.ofNat a✝) ∈ A 0
   · rw [Int.ofNat_eq_coe, Int.cast_ofNat]
+    -- ⊢ ↑a✝ ∈ A 0
     exact SetLike.nat_cast_mem_graded _ _
+    -- 🎉 no goals
   · rw [Int.cast_negSucc]
+    -- ⊢ -↑(a✝ + 1) ∈ A 0
     exact neg_mem (SetLike.nat_cast_mem_graded _ _)
+    -- 🎉 no goals
 #align set_like.int_cast_mem_graded SetLike.int_cast_mem_graded
 
 section DirectSum
@@ -158,7 +172,9 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
       ∑ ij in (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
         (r ij.1 * r' ij.2 : R) := by
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+  -- ⊢ ∑ i in DFinsupp.support r ×ˢ DFinsupp.support r', ↑(↑(↑(of (fun i => (fun i  …
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
+  -- 🎉 no goals
 #align direct_sum.coe_mul_apply DirectSum.coe_mul_apply
 
 theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
@@ -166,14 +182,23 @@ theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
       else 0 := by
   rw [mul_eq_dfinsupp_sum]
+  -- ⊢ ↑(↑(DFinsupp.sum r fun i ai => DFinsupp.sum r' fun j aj => ↑(of (fun i => {  …
   iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]; congr; ext
+  -- ⊢ ↑(↑(↑(of (fun i => { x // x ∈ A i }) (x✝¹ + x✝)) (GradedMonoid.GMul.mul (↑r  …
   dsimp only
+  -- ⊢ ↑(↑(↑(of (fun i => { x // x ∈ A i }) (x✝¹ + x✝)) (GradedMonoid.GMul.mul (↑r  …
   split_ifs with h
+  -- ⊢ ↑(↑(↑(of (fun i => { x // x ∈ A i }) (x✝¹ + x✝)) (GradedMonoid.GMul.mul (↑r  …
   · subst h
+    -- ⊢ ↑(↑(↑(of (fun i => { x // x ∈ A i }) (x✝¹ + x✝)) (GradedMonoid.GMul.mul (↑r  …
     rw [of_eq_same]
+    -- ⊢ ↑(GradedMonoid.GMul.mul (↑r x✝¹) (↑r' x✝)) = ↑(↑r x✝¹) * ↑(↑r' x✝)
     rfl
+    -- 🎉 no goals
   · rw [of_eq_of_ne _ _ _ _ h]
+    -- ⊢ ↑0 = 0
     rfl
+    -- 🎉 no goals
 #align direct_sum.coe_mul_apply_eq_dfinsupp_sum DirectSum.coe_mul_apply_eq_dfinsupp_sum
 
 theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r : A i)
@@ -260,18 +285,23 @@ theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h 
 theorem coe_of_mul_apply_of_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = r * r' (n - i) :=
   coe_of_mul_apply_aux _ _ _ fun x => by rw [eq_tsub_iff_add_eq_of_le h, add_comm]
+                                         -- 🎉 no goals
 #align direct_sum.coe_of_mul_apply_of_le DirectSum.coe_of_mul_apply_of_le
 
 theorem coe_mul_of_apply (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) [Decidable (i ≤ n)] :
     ((r * of (fun i => A i) i r') n : R) = if i ≤ n then (r (n - i) : R) * r' else 0 := by
   split_ifs with h
+  -- ⊢ ↑(↑(r * ↑(of (fun i => { x // x ∈ A i }) i) r') n) = ↑(↑r (n - i)) * ↑r'
   exacts [coe_mul_of_apply_of_le _ _ _ n h, coe_mul_of_apply_of_not_le _ _ _ n h]
+  -- 🎉 no goals
 #align direct_sum.coe_mul_of_apply DirectSum.coe_mul_of_apply
 
 theorem coe_of_mul_apply {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) [Decidable (i ≤ n)] :
     ((of (fun i => A i) i r * r') n : R) = if i ≤ n then (r * r' (n - i) : R) else 0 := by
   split_ifs with h
+  -- ⊢ ↑(↑(↑(of (fun i => { x // x ∈ A i }) i) r * r') n) = ↑r * ↑(↑r' (n - i))
   exacts [coe_of_mul_apply_of_le _ _ _ n h, coe_of_mul_apply_of_not_le _ _ _ n h]
+  -- 🎉 no goals
 #align direct_sum.coe_of_mul_apply DirectSum.coe_of_mul_apply
 
 end CanonicallyOrderedAddMonoid
@@ -307,9 +337,12 @@ instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p :
     SetLike.GradedMonoid fun i : ℕ => p ^ i where
   one_mem := by
     rw [← one_le, pow_zero]
+    -- 🎉 no goals
   mul_mem i j p q hp hq := by
     rw [pow_add]
+    -- ⊢ p * q ∈ p✝ ^ i * p✝ ^ j
     exact Submodule.mul_mem_mul hp hq
+    -- 🎉 no goals
 #align submodule.nat_power_graded_monoid Submodule.nat_power_gradedMonoid
 
 end Submodule
@@ -333,6 +366,8 @@ theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Alg
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ (by rfl) (fun _ _ => (by rfl)) _ _
+                                -- 🎉 no goals
+                                                     -- 🎉 no goals
 #align direct_sum.coe_alg_hom_of DirectSum.coeAlgHom_of
 
 end DirectSum

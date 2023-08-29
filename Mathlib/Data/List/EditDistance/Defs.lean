@@ -78,7 +78,9 @@ def impl
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
     (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
+                                                                   -- 🎉 no goals
     (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
+                                                                                        -- 🎉 no goals
       ⟨min (C.delete x + r[0]) (min (C.insert y + d₀) (C.substitute x y + d₁)) :: r, by simp⟩)
 
 variable {C}
@@ -90,6 +92,7 @@ theorem impl_cons (w' : 0 < List.length ds) :
     impl C (x :: xs) y ⟨d :: ds, w⟩ =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       ⟨min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :: r, by simp⟩ :=
+                                                                                          -- 🎉 no goals
   match ds, w' with | _ :: _, _ => rfl
 
 -- Note this lemma has two unspecified proofs: `h` appears on the left-hand-side
@@ -103,6 +106,7 @@ theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
 theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
     (impl C xs y d).1.length = xs.length + 1 := by
   induction xs generalizing d
+  -- ⊢ List.length ↑(impl C [] y d) = List.length [] + 1
   · case nil =>
     rfl
   · case cons x xs ih =>
@@ -137,12 +141,15 @@ def suffixLevenshtein (xs : List α) (ys : List β) : {r : List δ // 0 < r.leng
   ys.foldr
     (impl C xs)
     (xs.foldr (init := ⟨[0], by simp⟩) (fun a ⟨r, w⟩ => ⟨(C.delete a + r[0]) :: r, by simp⟩))
+                                                                                      -- 🎉 no goals
+                                -- 🎉 no goals
 
 variable {C}
 
 theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
     (suffixLevenshtein C xs ys).1.length = xs.length + 1 := by
   induction ys
+  -- ⊢ List.length ↑(suffixLevenshtein C xs []) = List.length xs + 1
   · case nil =>
     dsimp [suffixLevenshtein]
     induction xs
@@ -158,6 +165,7 @@ theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
 theorem suffixLevenshtein_eq (xs : List α) (y ys) :
     impl C xs y (suffixLevenshtein C xs ys) = suffixLevenshtein C xs (y :: ys) := by
   rfl
+  -- 🎉 no goals
 
 variable (C)
 
@@ -181,6 +189,7 @@ variable {C}
 
 theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
   rfl
+  -- 🎉 no goals
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
 theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :
@@ -207,7 +216,9 @@ theorem suffixLevenshtein_cons₁
     suffixLevenshtein C (x :: xs) ys =
       ⟨levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
+                                          -- 🎉 no goals
   induction ys
+  -- ⊢ suffixLevenshtein C (x :: xs) [] = { val := levenshtein C (x :: xs) [] :: ↑( …
   · case nil =>
     dsimp [levenshtein, suffixLevenshtein]
   · case cons y ys ih =>
@@ -222,6 +233,7 @@ theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
       levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1 := by
   simp [suffixLevenshtein_cons₁]
+  -- 🎉 no goals
 
 theorem suffixLevenshtein_cons_cons_fst_get_zero
     (x : α) (xs y ys) (w) :
@@ -238,12 +250,16 @@ theorem suffixLevenshtein_cons_cons_fst_get_zero
     lhs
     dsimp only [suffixLevenshtein_cons₂]
   simp only [suffixLevenshtein_cons₁]
+  -- ⊢ (↑(impl C (x :: xs) y { val := levenshtein C (x :: xs) ys :: ↑(suffixLevensh …
   rw [impl_cons_fst_zero]
+  -- ⊢ (match impl C xs y { val := ↑(suffixLevenshtein C xs ys), property := ?w' }  …
   rfl
+  -- 🎉 no goals
 
 theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
   induction xs
+  -- ⊢ ↑(suffixLevenshtein C [] ys) = List.map (fun xs' => levenshtein C xs' ys) (L …
   · case nil =>
     simp only [List.map, suffixLevenshtein_nil']
   · case cons x xs ih =>
@@ -252,15 +268,21 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
   simp [levenshtein]
+  -- 🎉 no goals
 
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
   dsimp [levenshtein]
+  -- ⊢ Cost.insert C y + List.getLast ↑(List.foldr (impl C []) { val := [0], proper …
   congr
+  -- ⊢ List.getLast ↑(List.foldr (impl C []) { val := [0], property := suffixLevens …
   rw [List.getLast_eq_get]
+  -- ⊢ List.get ↑(List.foldr (impl C []) { val := [0], property := suffixLevenshtei …
   congr
+  -- ⊢ List.length ↑(List.foldr (impl C []) { val := [0], property := suffixLevensh …
   rw [show (List.length _) = 1 from _]
+  -- ⊢ List.length ↑(List.foldr (impl C []) { val := [0], property := suffixLevensh …
   induction ys with
   | nil => simp
   | cons y ys ih =>

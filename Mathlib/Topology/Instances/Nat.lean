@@ -34,6 +34,7 @@ theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 
 theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun m n hne =>
   Int.pairwise_one_le_dist <| by exact_mod_cast hne
+                                 -- 🎉 no goals
 #align nat.pairwise_one_le_dist Nat.pairwise_one_le_dist
 
 theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℕ → ℝ) :=
@@ -54,9 +55,13 @@ theorem preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : �
 
 theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
   rcases le_or_lt 0 r with (hr | hr)
+  -- ⊢ closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊
   · rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
+    -- ⊢ 0 ≤ ↑x + r
     exact add_nonneg (cast_nonneg x) hr
+    -- 🎉 no goals
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]
+    -- ⊢ ⌊↑x + r⌋₊ < ⌈↑x - r⌉₊
     calc ⌊(x : ℝ) + r⌋₊ ≤ ⌊(x : ℝ)⌋₊ := floor_mono <| by linarith
     _ < ⌈↑x - r⌉₊ := by
       rw [floor_coe, Nat.lt_ceil]
@@ -66,10 +71,13 @@ theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
 instance : ProperSpace ℕ :=
   ⟨fun x r => by
     rw [closedBall_eq_Icc]
+    -- ⊢ IsCompact (Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊)
     exact (Set.finite_Icc _ _).isCompact⟩
+    -- 🎉 no goals
 
 instance : NoncompactSpace ℕ :=
   noncompactSpace_of_neBot <| by simp [Filter.atTop_neBot]
+                                 -- 🎉 no goals
 
 end Nat
 

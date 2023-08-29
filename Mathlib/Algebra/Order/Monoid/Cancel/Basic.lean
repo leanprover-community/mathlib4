@@ -35,6 +35,7 @@ def Function.Injective.orderedCancelCommMonoid {β : Type*} [One β] [Mul β] [P
   { hf.orderedCommMonoid f one mul npow with
     le_of_mul_le_mul_left := fun a b c (bc : f (a * b) ≤ f (a * c)) ↦
       (mul_le_mul_iff_left (f a)).mp (by rwa [← mul, ← mul]) }
+                                         -- 🎉 no goals
 #align function.injective.ordered_cancel_comm_monoid Function.Injective.orderedCancelCommMonoid
 #align function.injective.ordered_cancel_add_comm_monoid Function.Injective.orderedCancelAddCommMonoid
 

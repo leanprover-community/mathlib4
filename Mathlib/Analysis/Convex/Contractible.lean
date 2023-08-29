@@ -27,15 +27,20 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
       ⟨⟨x, h.mem hne⟩,
         ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • (p.2 : E), _⟩, _⟩, fun x => _, fun x => _⟩⟩⟩
   · exact h p.2.2 p.1.2.1 (sub_nonneg.2 p.1.2.2) (add_sub_cancel'_right _ _)
+    -- 🎉 no goals
   · exact
       ((continuous_subtype_val.fst'.smul continuous_const).add
             ((continuous_const.sub continuous_subtype_val.fst').smul
               continuous_subtype_val.snd')).subtype_mk
         _
   · ext1
+    -- ⊢ ↑(ContinuousMap.toFun (ContinuousMap.mk fun p => { val := ↑p.fst • x✝ + (1 - …
     simp
+    -- 🎉 no goals
   · ext1
+    -- ⊢ ↑(ContinuousMap.toFun (ContinuousMap.mk fun p => { val := ↑p.fst • x✝ + (1 - …
     simp
+    -- 🎉 no goals
 #align star_convex.contractible_space StarConvex.contractibleSpace
 
 /-- A non-empty convex set is a contractible space. -/

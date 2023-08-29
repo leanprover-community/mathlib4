@@ -65,8 +65,11 @@ theorem isInteger_mul {a b : S} (ha : IsInteger R a) (hb : IsInteger R b) : IsIn
 
 theorem isInteger_smul {a : R} {b : S} (hb : IsInteger R b) : IsInteger R (a • b) := by
   rcases hb with ⟨b', hb⟩
+  -- ⊢ IsInteger R (a • b)
   use a * b'
+  -- ⊢ ↑(algebraMap R S) (a * b') = a • b
   rw [← hb, (algebraMap R S).map_mul, Algebra.smul_def]
+  -- 🎉 no goals
 #align is_localization.is_integer_smul IsLocalization.isInteger_smul
 
 variable (M)
@@ -87,31 +90,43 @@ This version multiplies `a` on the left, matching the argument order in the `SMu
 -/
 theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a) := by
   simp_rw [Algebra.smul_def, mul_comm _ a]
+  -- ⊢ ∃ b, IsInteger R (a * ↑(algebraMap R S) ↑b)
   apply exists_integer_multiple'
+  -- 🎉 no goals
 #align is_localization.exists_integer_multiple IsLocalization.exists_integer_multiple
 
 /-- We can clear the denominators of a `Finset`-indexed family of fractions. -/
 theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
   haveI := Classical.propDecidable
+  -- ⊢ ∃ b, ∀ (i : ι), i ∈ s → IsInteger R (↑b • f i)
   refine' ⟨∏ i in s, (sec M (f i)).2, fun i hi => ⟨_, _⟩⟩
+  -- ⊢ R
   · exact (∏ j in s.erase i, (sec M (f j)).2) * (sec M (f i)).1
+    -- 🎉 no goals
   rw [RingHom.map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
+  -- ⊢ (↑(∏ j in Finset.erase s i, (sec M (f j)).snd) * ↑(sec M (f i)).snd) • f i = …
   congr 2
+  -- ⊢ ↑(∏ j in Finset.erase s i, (sec M (f j)).snd) * ↑(sec M (f i)).snd = ↑(∏ i i …
   refine' _root_.trans _ ((Submonoid.subtype M).map_prod _ _).symm
+  -- ⊢ ↑(∏ j in Finset.erase s i, (sec M (f j)).snd) * ↑(sec M (f i)).snd = ∏ x in  …
   rw [mul_comm,Submonoid.coe_finset_prod,
     -- Porting note: explicitly supplied `f`
     ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.not_mem_erase i),
     Finset.insert_erase hi]
   rfl
+  -- 🎉 no goals
 #align is_localization.exist_integer_multiples IsLocalization.exist_integer_multiples
 
 /-- We can clear the denominators of a finite indexed family of fractions. -/
 theorem exist_integer_multiples_of_finite {ι : Type*} [Finite ι] (f : ι → S) :
     ∃ b : M, ∀ i, IsLocalization.IsInteger R ((b : R) • f i) := by
   cases nonempty_fintype ι
+  -- ⊢ ∃ b, ∀ (i : ι), IsInteger R (↑b • f i)
   obtain ⟨b, hb⟩ := exist_integer_multiples M Finset.univ f
+  -- ⊢ ∃ b, ∀ (i : ι), IsInteger R (↑b • f i)
   exact ⟨b, fun i => hb i (Finset.mem_univ _)⟩
+  -- 🎉 no goals
 #align is_localization.exist_integer_multiples_of_finite IsLocalization.exist_integer_multiples_of_finite
 
 /-- We can clear the denominators of a finite set of fractions. -/
@@ -152,14 +167,23 @@ open Pointwise
 theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
     algebraMap R S '' finsetIntegerMultiple M s = commonDenomOfFinset M s • (s : Set S) := by
   delta finsetIntegerMultiple commonDenom
+  -- ⊢ ↑(algebraMap R S) '' ↑(Finset.image (fun t => integerMultiple M s id t) (Fin …
   rw [Finset.coe_image]
+  -- ⊢ ↑(algebraMap R S) '' ((fun t => integerMultiple M s id t) '' ↑(Finset.attach …
   ext
+  -- ⊢ x✝ ∈ ↑(algebraMap R S) '' ((fun t => integerMultiple M s id t) '' ↑(Finset.a …
   constructor
+  -- ⊢ x✝ ∈ ↑(algebraMap R S) '' ((fun t => integerMultiple M s id t) '' ↑(Finset.a …
   · rintro ⟨_, ⟨x, -, rfl⟩, rfl⟩
+    -- ⊢ ↑(algebraMap R S) ((fun t => integerMultiple M s id t) x) ∈ commonDenomOfFin …
     rw [map_integerMultiple]
+    -- ⊢ commonDenom M s id • id ↑x ∈ commonDenomOfFinset M s • ↑s
     exact Set.mem_image_of_mem _ x.prop
+    -- 🎉 no goals
   · rintro ⟨x, hx, rfl⟩
+    -- ⊢ (fun x => ↑(Submonoid.subtype M) (commonDenomOfFinset M s) • x) x ∈ ↑(algebr …
     exact ⟨_, ⟨⟨x, hx⟩, s.mem_attach _, rfl⟩, map_integerMultiple M s id _⟩
+    -- 🎉 no goals
 #align is_localization.finset_integer_multiple_image IsLocalization.finsetIntegerMultiple_image
 
 end IsLocalization

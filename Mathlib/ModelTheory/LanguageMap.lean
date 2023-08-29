@@ -114,9 +114,13 @@ variable {L L'} {L'' : Language}
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
     (h_rel : F.onRelation = G.onRelation) : F = G := by
   cases' F with Ff Fr
+  -- ⊢ { onFunction := Ff, onRelation := Fr } = G
   cases' G with Gf Gr
+  -- ⊢ { onFunction := Ff, onRelation := Fr } = { onFunction := Gf, onRelation := G …
   simp only [mk.injEq]
+  -- ⊢ Ff = Gf ∧ Fr = Gr
   exact And.intro h_fun h_rel
+  -- 🎉 no goals
 #align first_order.language.Lhom.funext FirstOrder.Language.LHom.funext
 
 instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
@@ -153,13 +157,17 @@ local infixl:60 " ∘ᴸ " => LHom.comp
 @[simp]
 theorem id_comp (F : L →ᴸ L') : LHom.id L' ∘ᴸ F = F := by
   cases F
+  -- ⊢ LHom.id L' ∘ᴸ { onFunction := onFunction✝, onRelation := onRelation✝ } = { o …
   rfl
+  -- 🎉 no goals
 #align first_order.language.Lhom.id_comp FirstOrder.Language.LHom.id_comp
 
 @[simp]
 theorem comp_id (F : L →ᴸ L') : F ∘ᴸ LHom.id L = F := by
   cases F
+  -- ⊢ { onFunction := onFunction✝, onRelation := onRelation✝ } ∘ᴸ LHom.id L = { on …
   rfl
+  -- 🎉 no goals
 #align first_order.language.Lhom.comp_id FirstOrder.Language.LHom.comp_id
 
 theorem comp_assoc {L3 : Language} (F : L'' →ᴸ L3) (G : L' →ᴸ L'') (H : L →ᴸ L') :
@@ -274,12 +282,20 @@ instance sumElim_isExpansionOn {L'' : Language} (ψ : L'' →ᴸ L') (M : Type*)
     [L'.Structure M] [L''.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
     (ϕ.sumElim ψ).IsExpansionOn M :=
   ⟨fun f _ => Sum.casesOn f (by simp) (by simp), fun R _ => Sum.casesOn R (by simp) (by simp)⟩
+                                -- 🎉 no goals
+                                          -- 🎉 no goals
+                                                                              -- 🎉 no goals
+                                                                                        -- 🎉 no goals
 #align first_order.language.Lhom.sum_elim_is_expansion_on FirstOrder.Language.LHom.sumElim_isExpansionOn
 
 instance sumMap_isExpansionOn {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂) (M : Type*) [L.Structure M]
     [L'.Structure M] [L₁.Structure M] [L₂.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
     (ϕ.sumMap ψ).IsExpansionOn M :=
   ⟨fun f _ => Sum.casesOn f (by simp) (by simp), fun R _ => Sum.casesOn R (by simp) (by simp)⟩
+                                -- 🎉 no goals
+                                          -- 🎉 no goals
+                                                                              -- 🎉 no goals
+                                                                                        -- 🎉 no goals
 #align first_order.language.Lhom.sum_map_is_expansion_on FirstOrder.Language.LHom.sumMap_isExpansionOn
 
 instance sumInl_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
@@ -324,13 +340,21 @@ theorem Injective.isExpansionOn_default {ϕ : L →ᴸ L'}
     (h : ϕ.Injective) (M : Type*) [Inhabited M] [L.Structure M] :
     @IsExpansionOn L L' ϕ M _ (ϕ.defaultExpansion M) := by
   letI := ϕ.defaultExpansion M
+  -- ⊢ IsExpansionOn ϕ M
   refine' ⟨fun {n} f xs => _, fun {n} r xs => _⟩
+  -- ⊢ funMap (LHom.onFunction ϕ f) xs = funMap f xs
   · have hf : ϕ.onFunction f ∈ Set.range fun f : L.Functions n => ϕ.onFunction f := ⟨f, rfl⟩
+    -- ⊢ funMap (LHom.onFunction ϕ f) xs = funMap f xs
     refine' (dif_pos hf).trans _
+    -- ⊢ funMap (Exists.choose hf) xs = funMap f xs
     rw [h.onFunction hf.choose_spec]
+    -- 🎉 no goals
   · have hr : ϕ.onRelation r ∈ Set.range fun r : L.Relations n => ϕ.onRelation r := ⟨r, rfl⟩
+    -- ⊢ RelMap (LHom.onRelation ϕ r) xs = RelMap r xs
     refine' (dif_pos hr).trans _
+    -- ⊢ RelMap (Exists.choose hr) xs = RelMap r xs
     rw [h.onRelation hr.choose_spec]
+    -- 🎉 no goals
 #align first_order.language.Lhom.injective.is_expansion_on_default FirstOrder.Language.LHom.Injective.isExpansionOn_default
 
 end LHom
@@ -375,7 +399,9 @@ protected def symm : L' ≃ᴸ L :=
 protected def trans (e : L ≃ᴸ L') (e' : L' ≃ᴸ L'') : L ≃ᴸ L'' :=
   ⟨e'.toLHom.comp e.toLHom, e.invLHom.comp e'.invLHom, by
     rw [LHom.comp_assoc, ← LHom.comp_assoc e'.invLHom, e'.left_inv, LHom.id_comp, e.left_inv], by
+    -- 🎉 no goals
     rw [LHom.comp_assoc, ← LHom.comp_assoc e.toLHom, e.right_inv, LHom.id_comp, e'.right_inv]⟩
+    -- 🎉 no goals
 #align first_order.lanugage.Lequiv.trans FirstOrder.Language.LEquiv.trans
 
 end LEquiv
@@ -411,6 +437,7 @@ instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α
 #align first_order.language.is_empty_functions_constants_on_succ FirstOrder.Language.isEmpty_functions_constantsOn_succ
 
 theorem card_constantsOn : (constantsOn α).card = #α := by simp
+                                                           -- 🎉 no goals
 #align first_order.language.card_constants_on FirstOrder.Language.card_constantsOn
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
@@ -429,7 +456,9 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
     @LHom.IsExpansionOn _ _ (LHom.constantsOnMap f) M (constantsOn.structure fα)
       (constantsOn.structure fβ) := by
   letI := constantsOn.structure fα
+  -- ⊢ LHom.IsExpansionOn (LHom.constantsOnMap f) M
   letI := constantsOn.structure fβ
+  -- ⊢ LHom.IsExpansionOn (LHom.constantsOnMap f) M
   exact
     ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
@@ -458,6 +487,7 @@ scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
 theorem card_withConstants :
     L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
+  -- 🎉 no goals
 #align first_order.language.card_with_constants FirstOrder.Language.card_withConstants
 
 /-- The language map adding constants.  -/
@@ -496,9 +526,12 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
   toLHom := lhomWithConstants L α
   invLHom := LHom.sumElim (LHom.id L) (LHom.ofIsEmpty (constantsOn α) L)
   left_inv := by rw [lhomWithConstants, LHom.sumElim_comp_inl]
+                 -- 🎉 no goals
   right_inv := by
     simp only [LHom.comp_sumElim, lhomWithConstants, LHom.comp_id]
+    -- ⊢ LHom.sumElim LHom.sumInl (LHom.comp LHom.sumInl (LHom.ofIsEmpty (constantsOn …
     exact _root_.trans (congr rfl (Subsingleton.elim _ _)) LHom.sumElim_inl_inr
+    -- 🎉 no goals
 #align first_order.lanugage.Lequiv.add_empty_constants FirstOrder.Language.LEquiv.addEmptyConstants
 
 variable {α} {β : Type*}
@@ -523,6 +556,9 @@ def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
 @[simp]
 theorem LHom.map_constants_comp_sumInl {f : α → β} :
     (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext <;> rfl
+                                                                              -- ⊢ onFunction (comp (lhomWithConstantsMap L f) LHom.sumInl) x✝ = onFunction (lh …
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 #align first_order.language.Lhom.map_constants_comp_sum_inl FirstOrder.Language.LHom.map_constants_comp_sumInl
 
 end
@@ -570,7 +606,9 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
 theorem withConstants_funMap_sum_inr {a : α} {x : Fin 0 → M} :
     @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
+  -- ⊢ funMap (Sum.inr a) default = ↑(Language.con L a)
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
+  -- 🎉 no goals
 #align first_order.language.with_constants_fun_map_sum_inr FirstOrder.Language.withConstants_funMap_sum_inr
 
 variable {α} (A : Set M)

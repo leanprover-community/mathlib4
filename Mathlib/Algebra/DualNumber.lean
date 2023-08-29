@@ -106,8 +106,11 @@ def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
     (show { e : A // e * e = 0 } ≃ { f : R →ₗ[R] A // ∀ x y, f x * f y = 0 } from
       (LinearMap.ringLmapEquivSelf R ℕ A).symm.toEquiv.subtypeEquiv fun a => by
         dsimp
+        -- ⊢ a * a = 0 ↔ ∀ (x y : R), x • a * y • a = 0
         simp_rw [smul_mul_smul]
+        -- ⊢ a * a = 0 ↔ ∀ (x y : R), (x * y) • (a * a) = 0
         refine' ⟨fun h x y => h.symm ▸ smul_zero _, fun h => by simpa using h 1 1⟩)
+        -- 🎉 no goals
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
 
@@ -115,6 +118,7 @@ def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
 -- @[simp] -- Porting note: simp can prove this
 theorem lift_apply_eps (e : { e : A // e * e = 0 }) : @lift R _ _ _ _ e (ε : R[ε]) = e := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, one_smul, zero_add]
+  -- 🎉 no goals
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
 -- Lifting `DualNumber.eps` itself gives the identity.

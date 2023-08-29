@@ -162,18 +162,22 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     map_zero := fun f ↦
       show f 0 = 0 by
         rw [← zero_smul R (0 : M), map_smulₛₗ]
+        -- ⊢ ↑σ 0 • ↑f 0 = 0
         simp }
+        -- 🎉 no goals
 
 instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
     coe := fun f ↦ (f : M → M₂)
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
+                               -- 🎉 no goals
 
 variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
 
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp
+                                 -- 🎉 no goals
 #align semilinear_map_class.map_smul_inv SemilinearMapClass.map_smul_inv
 
 end SemilinearMapClass
@@ -198,10 +202,15 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toAddHom := toAddHom✝, map_smul' := map_smul'✝ } = g
     cases g
+    -- ⊢ { toAddHom := toAddHom✝¹, map_smul' := map_smul'✝¹ } = { toAddHom := toAddHo …
     congr
+    -- ⊢ toAddHom✝¹ = toAddHom✝
     apply FunLike.coe_injective'
+    -- ⊢ ↑toAddHom✝¹ = ↑toAddHom✝
     exact h
+    -- 🎉 no goals
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
@@ -283,8 +292,11 @@ def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
   map_add' x y := rfl
   map_smul' r x := by
     have := (RingHomId.eq_id : σ = _)
+    -- ⊢ AddHom.toFun { toFun := fun x => x, map_add' := (_ : ∀ (x y : M), (fun x =>  …
     subst this
+    -- ⊢ AddHom.toFun { toFun := fun x => x, map_add' := (_ : ∀ (x y : M), (fun x =>  …
     rfl
+    -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem id'_coe {σ : R →+* R} [RingHomId σ] : ((id' : M →ₛₗ[σ] M) : M → M) = _root_.id :=
@@ -355,6 +367,7 @@ protected theorem map_smul (c : R) (x : M) : fₗ (c • x) = c • fₗ x :=
 
 protected theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp
+                                 -- 🎉 no goals
 #align linear_map.map_smul_inv LinearMap.map_smul_inv
 
 @[simp]
@@ -372,23 +385,34 @@ variable (M M₃ σ) {F : Type*} (h : F)
 theorem _root_.image_smul_setₛₗ [SemilinearMapClass F σ M M₃] (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
   apply Set.Subset.antisymm
+  -- ⊢ ↑h '' (c • s) ⊆ ↑σ c • ↑h '' s
   · rintro x ⟨y, ⟨z, zs, rfl⟩, rfl⟩
+    -- ⊢ ↑h ((fun x => c • x) z) ∈ ↑σ c • ↑h '' s
     exact ⟨h z, Set.mem_image_of_mem _ zs, (map_smulₛₗ _ _ _).symm⟩
+    -- 🎉 no goals
   · rintro x ⟨y, ⟨z, hz, rfl⟩, rfl⟩
+    -- ⊢ (fun x => ↑σ c • x) (↑h z) ∈ ↑h '' (c • s)
     exact (Set.mem_image _ _ _).2 ⟨c • z, Set.smul_mem_smul_set hz, map_smulₛₗ _ _ _⟩
+    -- 🎉 no goals
 #align image_smul_setₛₗ image_smul_setₛₗ
 
 theorem _root_.preimage_smul_setₛₗ [SemilinearMapClass F σ M M₃] {c : R} (hc : IsUnit c)
     (s : Set M₃) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
   apply Set.Subset.antisymm
+  -- ⊢ ↑h ⁻¹' (↑σ c • s) ⊆ c • ↑h ⁻¹' s
   · rintro x ⟨y, ys, hy⟩
+    -- ⊢ x ∈ c • ↑h ⁻¹' s
     refine' ⟨(hc.unit.inv : R) • x, _, _⟩
+    -- ⊢ (IsUnit.unit hc).inv • x ∈ ↑h ⁻¹' s
     · simp only [← hy, smul_smul, Set.mem_preimage, Units.inv_eq_val_inv, map_smulₛₗ h, ← map_mul,
         IsUnit.val_inv_mul, one_smul, map_one, ys]
     · simp only [smul_smul, IsUnit.mul_val_inv, one_smul, Units.inv_eq_val_inv]
+      -- 🎉 no goals
   · rintro x ⟨y, hy, rfl⟩
+    -- ⊢ (fun x => c • x) y ∈ ↑h ⁻¹' (↑σ c • s)
     refine' ⟨h y, hy, by simp only [RingHom.id_apply, map_smulₛₗ h]⟩
+    -- 🎉 no goals
 #align preimage_smul_setₛₗ preimage_smul_setₛₗ
 
 variable (R M₂)
@@ -424,6 +448,7 @@ instance (priority := 100) IsScalarTower.compatibleSMul {R S : Type*} [Semiring 
     [SMul R M] [Module S M] [IsScalarTower R S M] [SMul R M₂] [Module S M₂] [IsScalarTower R S M₂] :
     CompatibleSMul M M₂ R S :=
   ⟨fun fₗ c x ↦ by rw [← smul_one_smul S c x, ← smul_one_smul S c (fₗ x), map_smul]⟩
+                   -- 🎉 no goals
 #align linear_map.is_scalar_tower.compatible_smul LinearMap.IsScalarTower.compatibleSMul
 
 @[simp]
@@ -497,6 +522,7 @@ theorem toAddMonoidHom_injective :
 @[ext high]
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
+                 -- 🎉 no goals
 #align linear_map.ext_ring LinearMap.ext_ring
 
 theorem ext_ring_iff {σ : R →+* R} {f g : R →ₛₗ[σ] M} : f = g ↔ f 1 = g 1 :=
@@ -510,9 +536,13 @@ theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : 
     -- Porting note: replaced the oneliner `rw` proof with a partially term-mode proof
     -- because `rw` was giving "motive is type incorrect" errors
     rw [← one_mul x, ← op_smul_eq_mul]
+    -- ⊢ ↑f (MulOpposite.op x • 1) = ↑g (MulOpposite.op x • 1)
     refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans ?_
+    -- ⊢ ↑σ (MulOpposite.op x) • ↑f 1 = ↑g (MulOpposite.op x • 1)
     rw [h]
+    -- ⊢ ↑σ (MulOpposite.op x) • ↑g 1 = ↑g (MulOpposite.op x • 1)
     exact (g.map_smulₛₗ (MulOpposite.op x) 1).symm
+    -- 🎉 no goals
 #align linear_map.ext_ring_op LinearMap.ext_ring_op
 
 end
@@ -539,7 +569,9 @@ variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
+                 -- 🎉 no goals
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
+                      -- 🎉 no goals
 #align linear_map.comp LinearMap.comp
 
 set_option quotPrecheck false in -- Porting note: error message suggested to do this
@@ -576,6 +608,7 @@ theorem cancel_right (hg : Function.Surjective g) : f.comp g = f'.comp g ↔ f =
 
 theorem cancel_left (hf : Function.Injective f) : f.comp g = f.comp g' ↔ g = g' :=
   ⟨fun h ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+                                -- 🎉 no goals
 #align linear_map.cancel_left LinearMap.cancel_left
 
 end
@@ -587,6 +620,7 @@ def inverse [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [Rin
     (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) :
     M₂ →ₛₗ[σ'] M := by
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
+  -- ⊢ M₂ →ₛₗ[σ'] M
   exact
     { toFun := g
       map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
@@ -619,8 +653,14 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
   ⟨fun fₗ c x ↦ by
     induction c using Int.induction_on
     case hz => simp
+    -- ⊢ ↑fₗ ((↑i✝ + 1) • x) = (↑i✝ + 1) • ↑fₗ x
+    -- 🎉 no goals
     case hp n ih => simp [add_smul, ih]
+    -- ⊢ ↑fₗ ((-↑i✝ - 1) • x) = (-↑i✝ - 1) • ↑fₗ x
+    -- 🎉 no goals
     case hn n ih => simp [sub_smul, ih]⟩
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align linear_map.compatible_smul.int_module LinearMap.CompatibleSMul.intModule
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
@@ -673,7 +713,9 @@ theorem coe_toLinearMap (f : M →+[R] M₂) : ((f : M →ₗ[R] M₂) : M → M
 theorem toLinearMap_injective {f g : M →+[R] M₂} (h : (f : M →ₗ[R] M₂) = (g : M →ₗ[R] M₂)) :
     f = g := by
   ext m
+  -- ⊢ ↑f m = ↑g m
   exact LinearMap.congr_fun h m
+  -- 🎉 no goals
 #align distrib_mul_action_hom.to_linear_map_injective DistribMulActionHom.toLinearMap_injective
 
 end DistribMulActionHom
@@ -700,8 +742,11 @@ theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
     IsLinearMap R fun z : M ↦ c • z := by
   refine' IsLinearMap.mk (smul_add c) _
+  -- ⊢ ∀ (c_1 : R) (x : M), c • c_1 • x = c_1 • c • x
   intro _ _
+  -- ⊢ c • c✝ • x✝ = c✝ • c • x✝
   simp only [smul_smul, mul_comm]
+  -- 🎉 no goals
 #align is_linear_map.is_linear_map_smul IsLinearMap.isLinearMap_smul
 
 theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (a : M) :
@@ -757,8 +802,11 @@ def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M �
 theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M₂] :
     Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) := by
   intro f g h
+  -- ⊢ f = g
   ext x
+  -- ⊢ ↑f x = ↑g x
   exact LinearMap.congr_fun h x
+  -- 🎉 no goals
 #align add_monoid_hom.to_nat_linear_map_injective AddMonoidHom.toNatLinearMap_injective
 
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
@@ -772,8 +820,11 @@ def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+
 theorem AddMonoidHom.toIntLinearMap_injective [AddCommGroup M] [AddCommGroup M₂] :
     Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) := by
   intro f g h
+  -- ⊢ f = g
   ext x
+  -- ⊢ ↑f x = ↑g x
   exact LinearMap.congr_fun h x
+  -- 🎉 no goals
 #align add_monoid_hom.to_int_linear_map_injective AddMonoidHom.toIntLinearMap_injective
 
 @[simp]
@@ -791,8 +842,11 @@ def AddMonoidHom.toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M�
 theorem AddMonoidHom.toRatLinearMap_injective [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂]
     [Module ℚ M₂] : Function.Injective (@AddMonoidHom.toRatLinearMap M M₂ _ _ _ _) := by
   intro f g h
+  -- ⊢ f = g
   ext x
+  -- ⊢ ↑f x = ↑g x
   exact LinearMap.congr_fun h x
+  -- 🎉 no goals
 #align add_monoid_hom.to_rat_linear_map_injective AddMonoidHom.toRatLinearMap_injective
 
 @[simp]
@@ -817,7 +871,9 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
     { toFun := a • (f : M → M₂)
       map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
+                               -- 🎉 no goals
       map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
+                                -- 🎉 no goals
 
 @[simp]
 theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
@@ -858,7 +914,9 @@ variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R
 instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
   ⟨{  toFun := 0
       map_add' := by simp
+                     -- 🎉 no goals
       map_smul' := by simp }⟩
+                      -- 🎉 no goals
 
 @[simp]
 theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
@@ -868,6 +926,7 @@ theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
 @[simp]
 theorem comp_zero (g : M₂ →ₛₗ[σ₂₃] M₃) : (g.comp (0 : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = 0 :=
   ext fun c ↦ by rw [comp_apply, zero_apply, zero_apply, g.map_zero]
+                 -- 🎉 no goals
 #align linear_map.comp_zero LinearMap.comp_zero
 
 @[simp]
@@ -888,7 +947,9 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun f g ↦
     { toFun := f + g
       map_add' := by simp [add_comm, add_left_comm]
+                     -- 🎉 no goals
       map_smul' := by simp [smul_add] }⟩
+                      -- 🎉 no goals
 
 @[simp]
 theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
@@ -914,7 +975,9 @@ instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f ↦
     { toFun := -f
       map_add' := by simp [add_comm]
+                     -- 🎉 no goals
       map_smul' := by simp }⟩
+                      -- 🎉 no goals
 
 @[simp]
 theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
@@ -936,7 +999,9 @@ instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
+                               -- 🎉 no goals
       map_smul' := fun r x ↦ by simp [Pi.sub_apply, map_smul, smul_sub] }⟩
+                                -- 🎉 no goals
 
 @[simp]
 theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
@@ -1121,12 +1186,14 @@ theorem _root_.Module.End_isUnit_apply_inv_apply_of_isUnit
     {f : Module.End R M} (h : IsUnit f) (x : M) :
     f (h.unit.inv x) = x :=
   show (f * h.unit.inv) x = x by simp
+                                 -- 🎉 no goals
 #align module.End_is_unit_apply_inv_apply_of_is_unit Module.End_isUnit_apply_inv_apply_of_isUnit
 
 theorem _root_.Module.End_isUnit_inv_apply_apply_of_isUnit
     {f : Module.End R M} (h : IsUnit f) (x : M) :
     h.unit.inv (f x) = x :=
   (by simp : (h.unit.inv * f) x = x)
+      -- 🎉 no goals
 #align module.End_is_unit_inv_apply_apply_of_is_unit Module.End_isUnit_inv_apply_apply_of_isUnit
 
 end

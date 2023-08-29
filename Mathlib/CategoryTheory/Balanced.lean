@@ -51,7 +51,9 @@ attribute [local instance] isIso_of_mono_of_epi
 theorem balanced_opposite [Balanced C] : Balanced Cᵒᵖ :=
   { isIso_of_mono_of_epi := fun f fmono fepi => by
       rw [← Quiver.Hom.op_unop f]
+      -- ⊢ IsIso f.unop.op
       exact isIso_of_op _ }
+      -- 🎉 no goals
 #align category_theory.balanced_opposite CategoryTheory.balanced_opposite
 
 end

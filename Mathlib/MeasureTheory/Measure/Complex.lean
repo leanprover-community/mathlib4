@@ -64,7 +64,13 @@ def _root_.MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α)
     ComplexMeasure α where
   measureOf' i := ⟨s i, t i⟩
   empty' := by dsimp only; rw [s.empty, t.empty]; rfl
+               -- ⊢ { re := ↑s ∅, im := ↑t ∅ } = 0
+                           -- ⊢ { re := 0, im := 0 } = 0
+                                                  -- 🎉 no goals
   not_measurable' i hi := by dsimp only; rw [s.not_measurable hi, t.not_measurable hi]; rfl
+                             -- ⊢ { re := ↑s i, im := ↑t i } = 0
+                                         -- ⊢ { re := 0, im := 0 } = 0
+                                                                                        -- 🎉 no goals
   m_iUnion' f hf hfdisj := (Complex.hasSum_iff _ _).2 ⟨s.m_iUnion hf hfdisj, t.m_iUnion hf hfdisj⟩
 #align measure_theory.signed_measure.to_complex_measure MeasureTheory.SignedMeasure.toComplexMeasure
 
@@ -104,12 +110,18 @@ variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
   { equivSignedMeasure with
     map_add' := fun c d => by rfl
+                              -- 🎉 no goals
     map_smul' := by
       intro r c
+      -- ⊢ AddHom.toFun { toFun := src✝.toFun, map_add' := (_ : ∀ (c d : ComplexMeasure …
       dsimp
+      -- ⊢ (mapRange (r • c) (LinearMap.toAddMonoidHom Complex.reLm) Complex.continuous …
       ext
+      -- ⊢ ↑(mapRange (r • c) (LinearMap.toAddMonoidHom Complex.reLm) Complex.continuou …
       · simp [Complex.smul_re]
+        -- 🎉 no goals
       · simp [Complex.smul_im] }
+        -- 🎉 no goals
 #align measure_theory.complex_measure.equiv_signed_measureₗ MeasureTheory.ComplexMeasure.equivSignedMeasureₗ
 
 end
@@ -117,10 +129,20 @@ end
 theorem absolutelyContinuous_ennreal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     c ≪ᵥ μ ↔ ComplexMeasure.re c ≪ᵥ μ ∧ ComplexMeasure.im c ≪ᵥ μ := by
   constructor <;> intro h
+  -- ⊢ c ≪ᵥ μ → ↑re c ≪ᵥ μ ∧ ↑im c ≪ᵥ μ
+                  -- ⊢ ↑re c ≪ᵥ μ ∧ ↑im c ≪ᵥ μ
+                  -- ⊢ c ≪ᵥ μ
   · constructor <;> · intro i hi; simp [h hi]
+    -- ⊢ ↑re c ≪ᵥ μ
+                      -- ⊢ ↑(↑re c) i = 0
+                                  -- 🎉 no goals
+                      -- ⊢ ↑(↑im c) i = 0
+                                  -- 🎉 no goals
   · intro i hi
+    -- ⊢ ↑c i = 0
     rw [← Complex.re_add_im (c i), (_ : (c i).re = 0), (_ : (c i).im = 0)]
     exacts [by simp, h.2 hi, h.1 hi]
+    -- 🎉 no goals
 #align measure_theory.complex_measure.absolutely_continuous_ennreal_iff MeasureTheory.ComplexMeasure.absolutelyContinuous_ennreal_iff
 
 end ComplexMeasure

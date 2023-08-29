@@ -70,11 +70,15 @@ variable (G : D ⥤ C)
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/
 theorem solutionSetCondition_of_isRightAdjoint [IsRightAdjoint G] : SolutionSetCondition G := by
   intro A
+  -- ⊢ ∃ ι B f, ∀ (X : D) (h : A ⟶ G.obj X), ∃ i g, f i ≫ G.map g = h
   refine'
     ⟨PUnit, fun _ => (leftAdjoint G).obj A, fun _ => (Adjunction.ofRightAdjoint G).unit.app A, _⟩
   intro B h
+  -- ⊢ ∃ i g, (fun x => NatTrans.app (Adjunction.ofRightAdjoint G).unit A) i ≫ G.ma …
   refine' ⟨PUnit.unit, ((Adjunction.ofRightAdjoint G).homEquiv _ _).symm h, _⟩
+  -- ⊢ (fun x => NatTrans.app (Adjunction.ofRightAdjoint G).unit A) PUnit.unit ≫ G. …
   rw [← Adjunction.homEquiv_unit, Equiv.apply_symm_apply]
+  -- 🎉 no goals
 #align category_theory.solution_set_condition_of_is_right_adjoint CategoryTheory.solutionSetCondition_of_isRightAdjoint
 
 /-- The general adjoint functor theorem says that if `G : D ⥤ C` preserves limits and `D` has them,
@@ -83,16 +87,23 @@ if `G` satisfies the solution set condition then `G` is a right adjoint.
 noncomputable def isRightAdjointOfPreservesLimitsOfSolutionSetCondition [HasLimits D]
     [PreservesLimits G] (hG : SolutionSetCondition G) : IsRightAdjoint G := by
   refine' @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
+  -- ⊢ ∀ (A : C), HasInitial (StructuredArrow A G)
   intro A
+  -- ⊢ HasInitial (StructuredArrow A G)
   specialize hG A
+  -- ⊢ HasInitial (StructuredArrow A G)
   choose ι B f g using hG
+  -- ⊢ HasInitial (StructuredArrow A G)
   let B' : ι → StructuredArrow A G := fun i => StructuredArrow.mk (f i)
+  -- ⊢ HasInitial (StructuredArrow A G)
   have hB' : ∀ A' : StructuredArrow A G, ∃ i, Nonempty (B' i ⟶ A') := by
     intro A'
     obtain ⟨i, _, t⟩ := g _ A'.hom
     exact ⟨i, ⟨StructuredArrow.homMk _ t⟩⟩
   obtain ⟨T, hT⟩ := has_weakly_initial_of_weakly_initial_set_and_hasProducts hB'
+  -- ⊢ HasInitial (StructuredArrow A G)
   apply hasInitial_of_weakly_initial_and_hasWideEqualizers hT
+  -- 🎉 no goals
 #align category_theory.is_right_adjoint_of_preserves_limits_of_solution_set_condition CategoryTheory.isRightAdjointOfPreservesLimitsOfSolutionSetCondition
 
 end GeneralAdjointFunctorTheorem

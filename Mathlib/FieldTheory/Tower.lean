@@ -56,7 +56,9 @@ theorem lift_rank_mul_lift_rank :
   -- porting note: `Module.Free.exists_basis` now has implicit arguments, but this is annoying
   -- to fix as it is a projection.
   obtain ⟨_, b⟩ := Module.Free.exists_basis (R := F) (M := K)
+  -- ⊢ lift.{w, v} (Module.rank F K) * lift.{v, w} (Module.rank K A) = lift.{v, w}  …
   obtain ⟨_, c⟩ := Module.Free.exists_basis (R := K) (M := A)
+  -- ⊢ lift.{w, v} (Module.rank F K) * lift.{v, w} (Module.rank K A) = lift.{v, w}  …
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank, ←
     lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
     lift_lift, lift_umax.{v, w}]
@@ -71,6 +73,9 @@ theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddComm
     [StrongRankCondition K] [Module.Free F K] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
 #align rank_mul_rank rank_mul_rank
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
@@ -78,8 +83,11 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 theorem FiniteDimensional.finrank_mul_finrank' [Module.Finite F K]
     [Module.Finite K A] : finrank F K * finrank K A = finrank F A := by
   letI := nontrivial_of_invariantBasisNumber F
+  -- ⊢ finrank F K * finrank K A = finrank F A
   let b := Module.Free.chooseBasis F K
+  -- ⊢ finrank F K * finrank K A = finrank F A
   let c := Module.Free.chooseBasis K A
+  -- ⊢ finrank F K * finrank K A = finrank F A
   rw [finrank_eq_card_basis b, finrank_eq_card_basis c, finrank_eq_card_basis (b.smul c),
     Fintype.card_prod]
 #align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank'
@@ -115,7 +123,9 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
     rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
+    -- ⊢ ↑b ⊆ ↑(restrictScalars F (span K ↑b))
     exact Submodule.subset_span⟩⟩
+    -- 🎉 no goals
 #align finite_dimensional.right FiniteDimensional.right
 
 /-- Tower law: if `A` is a `K`-vector space and `K` is a field extension of `F` then
@@ -124,10 +134,15 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 This is `FiniteDimensional.finrank_mul_finrank'` with one fewer finiteness assumption. -/
 theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = finrank F A := by
   by_cases hA : FiniteDimensional K A
+  -- ⊢ finrank F K * finrank K A = finrank F A
   · replace hA : FiniteDimensional K A := hA -- porting note: broken instance cache
+    -- ⊢ finrank F K * finrank K A = finrank F A
     rw [finrank_mul_finrank']
+    -- 🎉 no goals
   · rw [finrank_of_infinite_dimensional hA, mul_zero, finrank_of_infinite_dimensional]
+    -- ⊢ ¬FiniteDimensional F A
     exact mt (@right F K A _ _ _ _ _ _ _) hA
+    -- 🎉 no goals
 #align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
 
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Algebra F A]
@@ -137,9 +152,13 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Alg
           Nat.not_prime_one ((Subalgebra.bot_eq_top_iff_finrank_eq_one.1 he).subst hp)⟩⟩
     eq_bot_or_eq_top := fun K => by
       haveI : FiniteDimensional _ _ := finiteDimensional_of_finrank hp.pos
+      -- ⊢ K = ⊥ ∨ K = ⊤
       letI := divisionRingOfFiniteDimensional F K
+      -- ⊢ K = ⊥ ∨ K = ⊤
       refine' (hp.eq_one_or_self_of_dvd _ ⟨_, (finrank_mul_finrank F K A).symm⟩).imp _ fun h => _
+      -- ⊢ finrank F { x // x ∈ K } = 1 → K = ⊥
       · exact Subalgebra.eq_bot_of_finrank_one
+        -- 🎉 no goals
       · exact
           Algebra.toSubmodule_eq_top.1 (eq_top_of_finrank_eq <| K.finrank_toSubmodule.trans h) }
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime

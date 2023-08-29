@@ -80,15 +80,25 @@ after `m` iterations of `f`. -/
 theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : MeasurableSet s)
     (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
   by_contra H
+  -- ⊢ False
   simp only [not_frequently, eventually_atTop, Ne.def, Classical.not_not] at H
+  -- ⊢ False
   rcases H with ⟨N, hN⟩
+  -- ⊢ False
   induction' N with N ihN
+  -- ⊢ False
   · apply h0
+    -- ⊢ ↑↑μ s = 0
     simpa using hN 0 le_rfl
+    -- 🎉 no goals
   rw [imp_false] at ihN
+  -- ⊢ False
   push_neg at ihN
+  -- ⊢ False
   rcases ihN with ⟨n, hn, hμn⟩
+  -- ⊢ False
   set T := s ∩ ⋃ n ≥ N + 1, f^[n] ⁻¹' s
+  -- ⊢ False
   have hT : MeasurableSet T :=
     hs.inter (MeasurableSet.biUnion (to_countable _) fun _ _ => hf.measurable.iterate _ hs)
   have hμT : μ T = 0 := by
@@ -96,11 +106,15 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
     rw [← inter_iUnion₂]
     rfl
   have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null hμT]
+  -- ⊢ False
   rcases hf.exists_mem_image_mem ((hs.inter (hf.measurable.iterate n hs)).diff hT) this with
     ⟨x, ⟨⟨hxs, _⟩, hxT⟩, m, hm0, ⟨_, hxm⟩, _⟩
   refine' hxT ⟨hxs, mem_iUnion₂.2 ⟨n + m, _, _⟩⟩
+  -- ⊢ n + m ≥ N + 1
   · exact add_le_add hn (Nat.one_le_of_lt <| pos_iff_ne_zero.2 hm0)
+    -- 🎉 no goals
   · rwa [Set.mem_preimage, ← iterate_add_apply] at hxm
+    -- 🎉 no goals
 #align measure_theory.conservative.frequently_measure_inter_ne_zero MeasureTheory.Conservative.frequently_measure_inter_ne_zero
 
 /-- If `f` is a conservative map and `s` is a measurable set of nonzero measure, then
@@ -118,13 +132,17 @@ of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iteration
 theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ) (hs : MeasurableSet s)
     (n : ℕ) : μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
   by_contra H
+  -- ⊢ False
   have : MeasurableSet (s ∩ { x | ∀ m ≥ n, f^[m] x ∉ s }) := by
     simp only [setOf_forall, ← compl_setOf]
     exact
       hs.inter (MeasurableSet.biInter (to_countable _) fun m _ => hf.measurable.iterate m hs.compl)
   rcases(hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
+  -- ⊢ False
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
+  -- ⊢ False
   exact hxn m hmn.lt.le hxm
+  -- 🎉 no goals
 #align measure_theory.conservative.measure_mem_forall_ge_image_not_mem_eq_zero MeasureTheory.Conservative.measure_mem_forall_ge_image_not_mem_eq_zero
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
@@ -132,9 +150,13 @@ almost every point `x ∈ s` returns back to `s` infinitely many times. -/
 theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : MeasurableSet s) :
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
+  -- ⊢ ∀ (i : ℕ), ∀ᵐ (a : α) ∂μ, a ∈ s → ∃ b, b ≥ i ∧ f^[b] a ∈ s
   intro n
+  -- ⊢ ∀ᵐ (a : α) ∂μ, a ∈ s → ∃ b, b ≥ n ∧ f^[b] a ∈ s
   filter_upwards [measure_zero_iff_ae_nmem.1 (hf.measure_mem_forall_ge_image_not_mem_eq_zero hs n)]
+  -- ⊢ ∀ (a : α), ¬(a ∈ s ∧ ∀ (m : ℕ), m ≥ n → ¬f^[m] a ∈ s) → a ∈ s → ∃ b, b ≥ n ∧ …
   simp
+  -- 🎉 no goals
 #align measure_theory.conservative.ae_mem_imp_frequently_image_mem MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : MeasurableSet s) :
@@ -153,10 +175,15 @@ infinitely many times.  -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
     (hs : MeasurableSet s) : ∀ᵐ x ∂μ, ∀ k, f^[k] x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   refine' ae_all_iff.2 fun k => _
+  -- ⊢ ∀ᵐ (a : α) ∂μ, f^[k] a ∈ s → ∃ᶠ (n : ℕ) in atTop, f^[n] a ∈ s
   refine' (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => _
+  -- ⊢ ∃ᶠ (n : ℕ) in atTop, f^[n] x ∈ s
   rw [← map_add_atTop_eq_nat k, frequently_map]
+  -- ⊢ ∃ᶠ (a : ℕ) in atTop, f^[a + k] x ∈ s
   refine' (hx hk).mono fun n hn => _
+  -- ⊢ f^[n + k] x ∈ s
   rwa [add_comm, iterate_add_apply]
+  -- 🎉 no goals
 #align measure_theory.conservative.ae_forall_image_mem_imp_frequently_image_mem MeasureTheory.Conservative.ae_forall_image_mem_imp_frequently_image_mem
 
 /-- If `f` is a conservative self-map and `s` is a measurable set of positive measure, then
@@ -176,32 +203,48 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
   have : ∀ s ∈ countableBasis α, ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := fun s hs =>
     h.ae_mem_imp_frequently_image_mem (isOpen_of_mem_countableBasis hs).measurableSet
   refine' ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => _
+  -- ⊢ ∃ᶠ (n : ℕ) in atTop, f^[n] x ∈ s
   rcases (isBasis_countableBasis α).mem_nhds_iff.1 hs with ⟨o, hoS, hxo, hos⟩
+  -- ⊢ ∃ᶠ (n : ℕ) in atTop, f^[n] x ∈ s
   exact (hx o hoS hxo).mono fun n hn => hos hn
+  -- 🎉 no goals
 #align measure_theory.conservative.ae_frequently_mem_of_mem_nhds MeasureTheory.Conservative.ae_frequently_mem_of_mem_nhds
 
 /-- Iteration of a conservative system is a conservative system. -/
 protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n] μ := by
   cases' n with n
+  -- ⊢ Conservative f^[Nat.zero] μ
   · exact Conservative.id μ
+    -- 🎉 no goals
   -- Discharge the trivial case `n = 0`
   refine' ⟨hf.1.iterate _, fun s hs hs0 => _⟩
+  -- ⊢ ∃ x, x ∈ s ∧ ∃ m x_1, f^[Nat.succ n]^[m] x ∈ s
   rcases(hf.frequently_ae_mem_and_frequently_image_mem hs hs0).exists with ⟨x, _, hx⟩
+  -- ⊢ ∃ x, x ∈ s ∧ ∃ m x_1, f^[Nat.succ n]^[m] x ∈ s
   /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,
     then we choose two of these values `k < l` such that `k ≡ l [MOD (n + 1)]`.
     Then `f^[k] x ∈ s` and `f^[n + 1]^[(l - k) / (n + 1)] (f^[k] x) = f^[l] x ∈ s`. -/
   rw [Nat.frequently_atTop_iff_infinite] at hx
+  -- ⊢ ∃ x, x ∈ s ∧ ∃ m x_1, f^[Nat.succ n]^[m] x ∈ s
   rcases Nat.exists_lt_modEq_of_infinite hx n.succ_pos with ⟨k, hk, l, hl, hkl, hn⟩
+  -- ⊢ ∃ x, x ∈ s ∧ ∃ m x_1, f^[Nat.succ n]^[m] x ∈ s
   set m := (l - k) / (n + 1)
+  -- ⊢ ∃ x, x ∈ s ∧ ∃ m x_1, f^[Nat.succ n]^[m] x ∈ s
   have : (n + 1) * m = l - k := by
     apply Nat.mul_div_cancel'
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
   refine' ⟨f^[k] x, hk, m, _, _⟩
+  -- ⊢ m ≠ 0
   · intro hm
+    -- ⊢ False
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
+    -- ⊢ False
     exact this.not_lt hkl
+    -- 🎉 no goals
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
+    -- ⊢ k ≤ l
     exact hkl.le
+    -- 🎉 no goals
 #align measure_theory.conservative.iterate MeasureTheory.Conservative.iterate
 
 end Conservative

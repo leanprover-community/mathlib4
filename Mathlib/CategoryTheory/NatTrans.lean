@@ -62,6 +62,7 @@ attribute [reassoc (attr := simp)] NatTrans.naturality
 
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   aesop_cat
+  -- 🎉 no goals
 #align category_theory.congr_app CategoryTheory.congr_app
 
 namespace NatTrans
@@ -110,6 +111,7 @@ commutes.
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :
     α.app X ≫ G.map f ≫ G.map g ≫ G.map h = F.map f ≫ F.map g ≫ F.map h ≫ α.app V := by
   simp
+  -- 🎉 no goals
 
 end NatTrans
 

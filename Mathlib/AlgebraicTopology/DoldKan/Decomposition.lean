@@ -54,31 +54,54 @@ theorem decomposition_Q (n q : ℕ) :
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
         (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫ X.σ (Fin.revPerm i) := by
   induction' q with q hq
+  -- ⊢ HomologicalComplex.Hom.f (Q Nat.zero) (n + 1) = ∑ i in Finset.filter (fun i  …
   · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_False, Finset.sum_empty]
   · by_cases hqn : q + 1 ≤ n + 1
+    -- ⊢ HomologicalComplex.Hom.f (Q (Nat.succ q)) (n + 1) = ∑ i in Finset.filter (fu …
     swap
+    -- ⊢ HomologicalComplex.Hom.f (Q (Nat.succ q)) (n + 1) = ∑ i in Finset.filter (fu …
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by linarith), hq]
+      -- ⊢ ∑ i in Finset.filter (fun i => ↑i < q) Finset.univ, HomologicalComplex.Hom.f …
       congr 1
+      -- ⊢ Finset.filter (fun i => ↑i < q) Finset.univ = Finset.filter (fun i => ↑i < N …
       ext ⟨x, hx⟩
+      -- ⊢ { val := x, isLt := hx } ∈ Finset.filter (fun i => ↑i < q) Finset.univ ↔ { v …
       simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
+      -- ⊢ x < q ↔ x < q + 1
       constructor <;> intro <;> linarith
+      -- ⊢ x < q → x < q + 1
+                      -- ⊢ x < q + 1
+                      -- ⊢ x < q
+                                -- 🎉 no goals
+                                -- 🎉 no goals
     · cases' Nat.le.dest (Nat.succ_le_succ_iff.mp hqn) with a ha
+      -- ⊢ HomologicalComplex.Hom.f (Q (Nat.succ q)) (n + 1) = ∑ i in Finset.filter (fu …
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
+      -- ⊢ ∑ i in Finset.filter (fun i => ↑i < q) Finset.univ, HomologicalComplex.Hom.f …
       symm
+      -- ⊢ ∑ i in Finset.filter (fun i => ↑i < Nat.succ q) Finset.univ, HomologicalComp …
       conv_rhs => rw [sub_eq_add_neg, add_comm]
+      -- ⊢ ∑ i in Finset.filter (fun i => ↑i < Nat.succ q) Finset.univ, HomologicalComp …
       let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
+      -- ⊢ ∑ i in Finset.filter (fun i => ↑i < Nat.succ q) Finset.univ, HomologicalComp …
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp)]
+      -- ⊢ HomologicalComplex.Hom.f (P ↑q') (n + 1) ≫ SimplicialObject.δ X (Fin.succ (↑ …
       congr
+      -- ⊢ HomologicalComplex.Hom.f (P ↑q') (n + 1) ≫ SimplicialObject.δ X (Fin.succ (↑ …
       · have hnaq' : n = a + q := by linarith
+        -- ⊢ HomologicalComplex.Hom.f (P ↑q') (n + 1) ≫ SimplicialObject.δ X (Fin.succ (↑ …
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
           q'.revPerm_eq hnaq', neg_neg]
         rfl
+        -- 🎉 no goals
       · ext ⟨i, hi⟩
+        -- ⊢ { val := i, isLt := hi } ∈ Finset.erase (Finset.filter (fun i => ↑i < Nat.su …
         simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
           forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Q
 
@@ -119,9 +142,13 @@ def id : MorphComponents X n (X _[n + 1]) where
 @[simp]
 theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
+  -- ⊢ HomologicalComplex.Hom.f PInfty (n + 1) ≫ (id X n).a + ∑ x : Fin (n + 1), Ho …
   congr 1
+  -- ⊢ HomologicalComplex.Hom.f PInfty (n + 1) ≫ (id X n).a = HomologicalComplex.Ho …
   · simp only [id, PInfty_f, P_f_idem]
+    -- 🎉 no goals
   · exact Eq.trans (by congr; simp) (decomposition_Q n (n + 1)).symm
+    -- 🎉 no goals
 #align algebraic_topology.dold_kan.morph_components.id_φ AlgebraicTopology.DoldKan.MorphComponents.id_φ
 
 variable {X n}
@@ -136,7 +163,9 @@ def postComp : MorphComponents X n Z' where
 @[simp]
 theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
+  -- ⊢ HomologicalComplex.Hom.f PInfty (n + 1) ≫ { a := f.a ≫ h, b := fun i => b f  …
   simp only [add_comp, sum_comp, assoc]
+  -- 🎉 no goals
 #align algebraic_topology.dold_kan.morph_components.post_comp_φ AlgebraicTopology.DoldKan.MorphComponents.postComp_φ
 
 /-- A `MorphComponents` can be precomposed with a morphism of simplicial objects. -/
@@ -149,10 +178,15 @@ def preComp : MorphComponents X' n Z where
 @[simp]
 theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
   unfold φ preComp
+  -- ⊢ HomologicalComplex.Hom.f PInfty (n + 1) ≫ { a := NatTrans.app g (op [n + 1]) …
   simp only [PInfty_f, comp_add]
+  -- ⊢ HomologicalComplex.Hom.f (P (n + 1)) (n + 1) ≫ NatTrans.app g (op [n + 1]) ≫ …
   congr 1
+  -- ⊢ HomologicalComplex.Hom.f (P (n + 1)) (n + 1) ≫ NatTrans.app g (op [n + 1]) ≫ …
   · simp only [P_f_naturality_assoc]
+    -- 🎉 no goals
   · simp only [comp_sum, P_f_naturality_assoc, SimplicialObject.δ_naturality_assoc]
+    -- 🎉 no goals
 #align algebraic_topology.dold_kan.morph_components.pre_comp_φ AlgebraicTopology.DoldKan.MorphComponents.preComp_φ
 
 end MorphComponents

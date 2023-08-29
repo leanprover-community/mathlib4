@@ -31,14 +31,20 @@ variable [PartialOrder α] [DecidableRel ((· < ·) : α → α → Prop)] [Orde
 
 theorem continuousAt_sign_of_pos {a : α} (h : 0 < a) : ContinuousAt SignType.sign a := by
   refine' (continuousAt_const : ContinuousAt (fun _ => (1 : SignType)) a).congr _
+  -- ⊢ (fun x => 1) =ᶠ[nhds a] ↑SignType.sign
   rw [Filter.EventuallyEq, eventually_nhds_iff]
+  -- ⊢ ∃ t, (∀ (x : α), x ∈ t → 1 = ↑SignType.sign x) ∧ IsOpen t ∧ a ∈ t
   exact ⟨{ x | 0 < x }, fun x hx => (sign_pos hx).symm, isOpen_lt' 0, h⟩
+  -- 🎉 no goals
 #align continuous_at_sign_of_pos continuousAt_sign_of_pos
 
 theorem continuousAt_sign_of_neg {a : α} (h : a < 0) : ContinuousAt SignType.sign a := by
   refine' (continuousAt_const : ContinuousAt (fun x => (-1 : SignType)) a).congr _
+  -- ⊢ (fun x => -1) =ᶠ[nhds a] ↑SignType.sign
   rw [Filter.EventuallyEq, eventually_nhds_iff]
+  -- ⊢ ∃ t, (∀ (x : α), x ∈ t → -1 = ↑SignType.sign x) ∧ IsOpen t ∧ a ∈ t
   exact ⟨{ x | x < 0 }, fun x hx => (sign_neg hx).symm, isOpen_gt' 0, h⟩
+  -- 🎉 no goals
 #align continuous_at_sign_of_neg continuousAt_sign_of_neg
 
 end PartialOrder
@@ -49,8 +55,11 @@ variable [LinearOrder α] [OrderTopology α]
 
 theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignType.sign a := by
   rcases h.lt_or_lt with (h_neg | h_pos)
+  -- ⊢ ContinuousAt (↑SignType.sign) a
   · exact continuousAt_sign_of_neg h_neg
+    -- 🎉 no goals
   · exact continuousAt_sign_of_pos h_pos
+    -- 🎉 no goals
 #align continuous_at_sign_of_ne_zero continuousAt_sign_of_ne_zero
 
 end LinearOrder

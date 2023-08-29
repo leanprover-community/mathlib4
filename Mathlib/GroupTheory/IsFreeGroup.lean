@@ -91,10 +91,14 @@ def lift : (Generators G → H) ≃ (G →* H) :=
       invFun := fun f => f.comp (MulEquiv G).toMonoidHom
       left_inv := fun f => by
         ext
+        -- ⊢ ↑((fun f => MonoidHom.comp f (MulEquiv.toMonoidHom (MulEquiv G))) ((fun f => …
         simp
+        -- 🎉 no goals
       right_inv := fun f => by
         ext
+        -- ⊢ ↑((fun f => MonoidHom.comp f (MulEquiv.toMonoidHom (MulEquiv.symm (MulEquiv  …
         simp }
+        -- 🎉 no goals
 #align is_free_group.lift IsFreeGroup.lift
 
 @[simp]
@@ -125,6 +129,7 @@ Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property.  -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
   simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
+  -- 🎉 no goals
 #align is_free_group.unique_lift IsFreeGroup.unique_lift
 
 /-- If a group satisfies the universal property of a free group, then it is a free group, where
@@ -138,12 +143,16 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     MonoidHom.toMulEquiv (FreeGroup.lift of) (lift FreeGroup.of)
       (by
         apply FreeGroup.ext_hom; intro x
+        -- ⊢ ∀ (a : X), ↑(MonoidHom.comp (↑lift FreeGroup.of) (↑FreeGroup.lift of)) (Free …
+                                 -- ⊢ ↑(MonoidHom.comp (↑lift FreeGroup.of) (↑FreeGroup.lift of)) (FreeGroup.of x) …
         simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
           lift_of])
       (by
         let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
           by intro H _ f a; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
+        -- ⊢ ↑lift.symm (MonoidHom.comp (↑FreeGroup.lift of) (↑lift FreeGroup.of)) = ↑lif …
+                                   -- ⊢ ↑lift.symm (MonoidHom.comp (↑FreeGroup.lift of) (↑lift FreeGroup.of)) x = ↑l …
         simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
           lift_of, lift_symm_of])
 #align is_free_group.of_lift IsFreeGroup.ofLift

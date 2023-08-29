@@ -70,7 +70,16 @@ instance category : Category (Bundled c) := by
             comp_id := _
             id_comp := _
             assoc := _ } <;> intros <;> apply 𝒞.hom_ext <;>
+                             -- ⊢ 𝟙 X✝ ≫ f✝ = f✝
+                             -- ⊢ f✝ ≫ 𝟙 Y✝ = f✝
+                             -- ⊢ (f✝ ≫ g✝) ≫ h✝ = f✝ ≫ g✝ ≫ h✝
+                                        -- ⊢ toFun 𝒞 X✝.str Y✝.str (𝟙 X✝ ≫ f✝) = toFun 𝒞 X✝.str Y✝.str f✝
+                                        -- ⊢ toFun 𝒞 X✝.str Y✝.str (f✝ ≫ 𝟙 Y✝) = toFun 𝒞 X✝.str Y✝.str f✝
+                                        -- ⊢ toFun 𝒞 W✝.str Z✝.str ((f✝ ≫ g✝) ≫ h✝) = toFun 𝒞 W✝.str Z✝.str (f✝ ≫ g✝ ≫ h✝)
     aesop_cat
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
 /-- A category given by `BundledHom` is a concrete category. -/
@@ -81,7 +90,12 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
       map := @fun X Y f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
       map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
+                                -- ⊢ toFun 𝒞 X✝.str Z✝.str (f ≫ g) = toFun 𝒞 X✝.str Y✝.str f ≫ toFun 𝒞 Y✝.str Z✝. …
+                                       -- ⊢ toFun 𝒞 Y✝.str Z✝.str g ∘ toFun 𝒞 X✝.str Y✝.str f = toFun 𝒞 X✝.str Y✝.str f  …
+                                                          -- 🎉 no goals
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
+                                            -- ⊢ Function.Injective (Functor.mk { obj := fun X => ↑X, map := fun X Y f => toF …
+                                                    -- 🎉 no goals
 #align category_theory.bundled_hom.concrete_category CategoryTheory.BundledHom.concreteCategory
 
 variable {hom}
@@ -96,7 +110,9 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f
+    -- ⊢ HEq ((forget (Bundled d)).map ((fun {X Y} => map) f)) ((forget (Bundled c)). …
     rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
+    -- 🎉 no goals
 #align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}

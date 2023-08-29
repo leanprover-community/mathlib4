@@ -193,7 +193,9 @@ theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op �
 @[simp]
 theorem map_id : map id = (id : Germ l β → Germ l β) := by
   ext ⟨f⟩
+  -- ⊢ map id (Quot.mk Setoid.r f) = id (Quot.mk Setoid.r f)
   rfl
+  -- 🎉 no goals
 #align filter.germ.map_id Filter.Germ.map_id
 
 theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
@@ -205,6 +207,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
   Quotient.map₂' (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
     Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
+                                       -- 🎉 no goals
 #align filter.germ.map₂ Filter.Germ.map₂
 
 @[simp]
@@ -645,23 +648,33 @@ instance mulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
   one_smul f :=
     inductionOn f fun f => by
       norm_cast
+      -- ⊢ 1 • f =ᶠ[l] f
       simp only [one_smul]
+      -- ⊢ f =ᶠ[l] f
       rfl
+      -- 🎉 no goals
   mul_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
+      -- ⊢ (c₁ * c₂) • f =ᶠ[l] c₁ • c₂ • f
       simp only [mul_smul]
+      -- ⊢ c₁ • c₂ • f =ᶠ[l] c₁ • c₂ • f
       rfl
+      -- 🎉 no goals
 
 @[to_additive]
 instance mulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
   -- Porting note: `rfl` required.
   one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
+                                          -- 🎉 no goals
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
+      -- ⊢ (c₁ * c₂) • f =ᶠ[l] c₁ • c₂ • f
       simp only [mul_smul]
+      -- ⊢ c₁ • c₂ • f =ᶠ[l] c₁ • c₂ • f
       rfl
+      -- 🎉 no goals
 #align filter.germ.mul_action' Filter.Germ.mulAction'
 #align filter.germ.add_action' Filter.Germ.addAction'
 
@@ -671,8 +684,12 @@ instance distribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
   smul_add c f g :=
     inductionOn₂ f g fun f g => by
       norm_cast
+      -- ⊢ c • (f + g) =ᶠ[l] c • f + c • g
       simp only [smul_add]
+      -- ⊢ c • f + c • g =ᶠ[l] c • f + c • g
+                    -- 🎉 no goals
       rfl
+      -- 🎉 no goals
   smul_zero c := by simp only [← coe_zero, ← coe_smul, smul_zero]
 
 instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
@@ -681,8 +698,12 @@ instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
   smul_add c f g :=
     inductionOn₃ c f g fun c f g => by
       norm_cast
+      -- ⊢ c • (f + g) =ᶠ[l] c • f + c • g
       simp only [smul_add]
+      -- ⊢ c • f + c • g =ᶠ[l] c • f + c • g
+                                           -- 🎉 no goals
       rfl
+      -- 🎉 no goals
   smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
 #align filter.germ.distrib_mul_action' Filter.Germ.distribMulAction'
 
@@ -691,22 +712,32 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M
   add_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
+      -- ⊢ (c₁ + c₂) • f =ᶠ[l] c₁ • f + c₂ • f
       simp only [add_smul]
+      -- ⊢ c₁ • f + c₂ • f =ᶠ[l] c₁ • f + c₂ • f
       rfl
+      -- 🎉 no goals
   zero_smul f :=
     inductionOn f fun f => by
       norm_cast
+      -- ⊢ 0 • f =ᶠ[l] 0
       simp only [zero_smul, coe_zero]
+      -- ⊢ 0 =ᶠ[l] 0
       rfl
+      -- 🎉 no goals
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module (Germ l R) (Germ l M) where
   -- Porting note: `rfl` required.
   add_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
+      -- ⊢ (c₁ + c₂) • f =ᶠ[l] c₁ • f + c₂ • f
       simp only [add_smul]
+      -- ⊢ c₁ • f + c₂ • f =ᶠ[l] c₁ • f + c₂ • f
       rfl
+      -- 🎉 no goals
   zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
+                                           -- 🎉 no goals
 #align filter.germ.module' Filter.Germ.module'
 
 end Module

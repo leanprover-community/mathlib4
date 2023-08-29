@@ -32,16 +32,19 @@ variable [∀ i, Preorder (α i)] (x y : ∀ i, α i)
 @[simp]
 theorem pi_univ_Ici : (pi univ fun i ↦ Ici (x i)) = Ici x :=
   ext fun y ↦ by simp [Pi.le_def]
+                 -- 🎉 no goals
 #align set.pi_univ_Ici Set.pi_univ_Ici
 
 @[simp]
 theorem pi_univ_Iic : (pi univ fun i ↦ Iic (x i)) = Iic x :=
   ext fun y ↦ by simp [Pi.le_def]
+                 -- 🎉 no goals
 #align set.pi_univ_Iic Set.pi_univ_Iic
 
 @[simp]
 theorem pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
   ext fun y ↦ by simp [Pi.le_def, forall_and]
+                 -- 🎉 no goals
 #align set.pi_univ_Icc Set.pi_univ_Icc
 
 theorem piecewise_mem_Icc {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
@@ -96,6 +99,7 @@ theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (h
   simp_rw [univ_pi_update i₀ _ _ fun i z ↦ Ioc z (y i), ← pi_inter_compl ({i₀} : Set ι),
     singleton_pi', ← inter_assoc, this]
   rfl
+  -- 🎉 no goals
 #align set.pi_univ_Ioc_update_left Set.pi_univ_Ioc_update_left
 
 theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : m ≤ y i₀) :
@@ -107,15 +111,20 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
   simp_rw [univ_pi_update i₀ y m fun i z ↦ Ioc (x i) z, ← pi_inter_compl ({i₀} : Set ι),
     singleton_pi', ← inter_assoc, this]
   rfl
+  -- 🎉 no goals
 #align set.pi_univ_Ioc_update_right Set.pi_univ_Ioc_update_right
 
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
+  -- ⊢ ∀ ⦃a : (i : ι) → α i⦄, (a ∈ pi univ fun i => Ioc (x i) (update y i₀ m i)) →  …
   rintro z h₁ h₂
+  -- ⊢ False
   refine' (h₁ i₀ (mem_univ _)).2.not_lt _
+  -- ⊢ update y i₀ m i₀ < z i₀
   simpa only [Function.update_same] using (h₂ i₀ (mem_univ _)).1
+  -- 🎉 no goals
 #align set.disjoint_pi_univ_Ioc_update_left_right Set.disjoint_pi_univ_Ioc_update_left_right
 
 end PiPreorder
@@ -128,15 +137,24 @@ variable [DecidableEq ι] [∀ i, PartialOrder (α i)]
 theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x
+  -- ⊢ x ∈ update f i '' Icc a b ↔ x ∈ Icc (update f i a) (update f i b)
   rw [← Set.pi_univ_Icc]
+  -- ⊢ x ∈ update f i '' Icc a b ↔ x ∈ pi univ fun i_1 => Icc (update f i a i_1) (u …
   refine' ⟨_, fun h => ⟨x i, _, _⟩⟩
   · rintro ⟨c, hc, rfl⟩
+    -- ⊢ update f i c ∈ pi univ fun i_1 => Icc (update f i a i_1) (update f i b i_1)
     simpa [update_le_update_iff]
+    -- 🎉 no goals
   · simpa only [Function.update_same] using h i (mem_univ i)
+    -- 🎉 no goals
   · ext j
+    -- ⊢ update f i (x i) j = x j
     obtain rfl | hij := eq_or_ne i j
+    -- ⊢ update f i (x i) i = x i
     · exact Function.update_same _ _ _
+      -- 🎉 no goals
     · simpa only [Function.update_noteq hij.symm, le_antisymm_iff] using h j (mem_univ j)
+      -- 🎉 no goals
 #align set.image_update_Icc Set.image_update_Icc
 
 theorem image_update_Ico (f : ∀ i, α i) (i : ι) (a b : α i) :
@@ -159,34 +177,42 @@ theorem image_update_Ioo (f : ∀ i, α i) (i : ι) (a b : α i) :
 
 theorem image_update_Icc_left (f : ∀ i, α i) (i : ι) (a : α i) :
     update f i '' Icc a (f i) = Icc (update f i a) f := by simpa using image_update_Icc f i a (f i)
+                                                           -- 🎉 no goals
 #align set.image_update_Icc_left Set.image_update_Icc_left
 
 theorem image_update_Ico_left (f : ∀ i, α i) (i : ι) (a : α i) :
     update f i '' Ico a (f i) = Ico (update f i a) f := by simpa using image_update_Ico f i a (f i)
+                                                           -- 🎉 no goals
 #align set.image_update_Ico_left Set.image_update_Ico_left
 
 theorem image_update_Ioc_left (f : ∀ i, α i) (i : ι) (a : α i) :
     update f i '' Ioc a (f i) = Ioc (update f i a) f := by simpa using image_update_Ioc f i a (f i)
+                                                           -- 🎉 no goals
 #align set.image_update_Ioc_left Set.image_update_Ioc_left
 
 theorem image_update_Ioo_left (f : ∀ i, α i) (i : ι) (a : α i) :
     update f i '' Ioo a (f i) = Ioo (update f i a) f := by simpa using image_update_Ioo f i a (f i)
+                                                           -- 🎉 no goals
 #align set.image_update_Ioo_left Set.image_update_Ioo_left
 
 theorem image_update_Icc_right (f : ∀ i, α i) (i : ι) (b : α i) :
     update f i '' Icc (f i) b = Icc f (update f i b) := by simpa using image_update_Icc f i (f i) b
+                                                           -- 🎉 no goals
 #align set.image_update_Icc_right Set.image_update_Icc_right
 
 theorem image_update_Ico_right (f : ∀ i, α i) (i : ι) (b : α i) :
     update f i '' Ico (f i) b = Ico f (update f i b) := by simpa using image_update_Ico f i (f i) b
+                                                           -- 🎉 no goals
 #align set.image_update_Ico_right Set.image_update_Ico_right
 
 theorem image_update_Ioc_right (f : ∀ i, α i) (i : ι) (b : α i) :
     update f i '' Ioc (f i) b = Ioc f (update f i b) := by simpa using image_update_Ioc f i (f i) b
+                                                           -- 🎉 no goals
 #align set.image_update_Ioc_right Set.image_update_Ioc_right
 
 theorem image_update_Ioo_right (f : ∀ i, α i) (i : ι) (b : α i) :
     update f i '' Ioo (f i) b = Ioo f (update f i b) := by simpa using image_update_Ioo f i (f i) b
+                                                           -- 🎉 no goals
 #align set.image_update_Ioo_right Set.image_update_Ioo_right
 
 variable [∀ i, One (α i)]
@@ -291,16 +317,19 @@ variable [DecidableEq ι]
 theorem image_update_uIcc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' uIcc a b = uIcc (update f i a) (update f i b) :=
   (image_update_Icc _ _ _ _).trans <| by simp_rw [uIcc, update_sup, update_inf]
+                                         -- 🎉 no goals
 #align set.image_update_uIcc Set.image_update_uIcc
 
 theorem image_update_uIcc_left (f : ∀ i, α i) (i : ι) (a : α i) :
     update f i '' uIcc a (f i) = uIcc (update f i a) f := by
   simpa using image_update_uIcc f i a (f i)
+  -- 🎉 no goals
 #align set.image_update_uIcc_left Set.image_update_uIcc_left
 
 theorem image_update_uIcc_right (f : ∀ i, α i) (i : ι) (b : α i) :
     update f i '' uIcc (f i) b = uIcc f (update f i b) := by
   simpa using image_update_uIcc f i (f i) b
+  -- 🎉 no goals
 #align set.image_update_uIcc_right Set.image_update_uIcc_right
 
 variable [∀ i, One (α i)]
@@ -352,11 +381,19 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
+  -- ⊢ a ∈ (⋃ (i : ι), Icc x (update y i (x' i))) ∪ ⋃ (i : ι), Icc (update x i (y'  …
   simp at ha'
+  -- ⊢ a ∈ (⋃ (i : ι), Icc x (update y i (x' i))) ∪ ⋃ (i : ι), Icc (update x i (y'  …
   simp [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]
+  -- ⊢ ∃ x, a x ≤ x' x ∨ y' x ≤ a x
   rcases ha' with ⟨w, hw⟩
+  -- ⊢ ∃ x, a x ≤ x' x ∨ y' x ≤ a x
   apply Exists.intro w
+  -- ⊢ a w ≤ x' w ∨ y' w ≤ a w
   cases lt_or_le (x' w) (a w) <;> simp_all
+  -- ⊢ a w ≤ x' w ∨ y' w ≤ a w
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align set.Icc_diff_pi_univ_Ioo_subset Set.Icc_diff_pi_univ_Ioo_subset
 
 /-- If `x`, `y`, `z` are functions `Π i : ι, α i`, then
@@ -369,7 +406,9 @@ of the faces of `[x, y]` adjacent to `x`. -/
 theorem Icc_diff_pi_univ_Ioc_subset (x y z : ∀ i, α i) :
     (Icc x z \ pi univ fun i ↦ Ioc (y i) (z i)) ⊆ ⋃ i : ι, Icc x (update z i (y i)) := by
   rintro a ⟨⟨hax, haz⟩, hay⟩
+  -- ⊢ a ∈ ⋃ (i : ι), Icc x (update z i (y i))
   simpa [not_and_or, hax, le_update_iff, haz _] using hay
+  -- 🎉 no goals
 #align set.Icc_diff_pi_univ_Ioc_subset Set.Icc_diff_pi_univ_Ioc_subset
 
 end Set

@@ -25,12 +25,14 @@ variable [Monoid α] {a b : α} {u : αˣ}
     divide any element of the monoid. -/
 theorem coe_dvd : ↑u ∣ a :=
   ⟨↑u⁻¹ * a, by simp⟩
+                -- 🎉 no goals
 #align units.coe_dvd Units.coe_dvd
 
 /-- In a monoid, an element `a` divides an element `b` iff `a` divides all
     associates of `b`. -/
 theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b :=
   Iff.intro (fun ⟨c, Eq⟩ ↦ ⟨c * ↑u⁻¹, by rw [← mul_assoc, ← Eq, Units.mul_inv_cancel_right]⟩)
+                                         -- 🎉 no goals
     fun ⟨c, Eq⟩ ↦ Eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
 #align units.dvd_mul_right Units.dvd_mul_right
 
@@ -38,6 +40,7 @@ theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b :=
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b :=
   Iff.intro (fun ⟨c, Eq⟩ => ⟨↑u * c, Eq.trans (mul_assoc _ _ _)⟩) fun h =>
     dvd_trans (Dvd.intro (↑u⁻¹) (by rw [mul_assoc, u.mul_inv, mul_one])) h
+                                    -- 🎉 no goals
 #align units.mul_right_dvd Units.mul_right_dvd
 
 end Monoid
@@ -50,14 +53,18 @@ variable [CommMonoid α] {a b : α} {u : αˣ}
     associates of `b`. -/
 theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
   rw [mul_comm]
+  -- ⊢ a ∣ b * ↑u ↔ a ∣ b
   apply dvd_mul_right
+  -- 🎉 no goals
 #align units.dvd_mul_left Units.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
   left associates of `a` divide `b`.-/
 theorem mul_left_dvd : ↑u * a ∣ b ↔ a ∣ b := by
   rw [mul_comm]
+  -- ⊢ a * ↑u ∣ b ↔ a ∣ b
   apply mul_right_dvd
+  -- 🎉 no goals
 #align units.mul_left_dvd Units.mul_left_dvd
 
 end CommMonoid
@@ -74,20 +81,26 @@ variable [Monoid α] {a b u : α} (hu : IsUnit u)
 @[simp]
 theorem dvd : u ∣ a := by
   rcases hu with ⟨u, rfl⟩
+  -- ⊢ ↑u ∣ a
   apply Units.coe_dvd
+  -- 🎉 no goals
 #align is_unit.dvd IsUnit.dvd
 
 @[simp]
 theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
+  -- ⊢ a ∣ b * ↑u ↔ a ∣ b
   apply Units.dvd_mul_right
+  -- 🎉 no goals
 #align is_unit.dvd_mul_right IsUnit.dvd_mul_right
 
 /-- In a monoid, an element a divides an element b iff all associates of `a` divide `b`.-/
 @[simp]
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
+  -- ⊢ a * ↑u ∣ b ↔ a ∣ b
   apply Units.mul_right_dvd
+  -- 🎉 no goals
 #align is_unit.mul_right_dvd IsUnit.mul_right_dvd
 
 end Monoid
@@ -101,7 +114,9 @@ variable [CommMonoid α] (a b u : α) (hu : IsUnit u)
 @[simp]
 theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
+  -- ⊢ a ∣ ↑u * b ↔ a ∣ b
   apply Units.dvd_mul_left
+  -- 🎉 no goals
 #align is_unit.dvd_mul_left IsUnit.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
@@ -109,7 +124,9 @@ theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
 @[simp]
 theorem mul_left_dvd : u * a ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
+  -- ⊢ ↑u * a ∣ b ↔ a ∣ b
   apply Units.mul_left_dvd
+  -- 🎉 no goals
 #align is_unit.mul_left_dvd IsUnit.mul_left_dvd
 
 end CommMonoid
@@ -122,6 +139,7 @@ variable [CommMonoid α]
 
 theorem isUnit_iff_dvd_one {x : α} : IsUnit x ↔ x ∣ 1 :=
   ⟨IsUnit.dvd, fun ⟨y, h⟩ => ⟨⟨x, y, h.symm, by rw [h, mul_comm]⟩, rfl⟩⟩
+                                                -- 🎉 no goals
 #align is_unit_iff_dvd_one isUnit_iff_dvd_one
 
 theorem isUnit_iff_forall_dvd {x : α} : IsUnit x ↔ ∀ y, x ∣ y :=

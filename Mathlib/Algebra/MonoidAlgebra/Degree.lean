@@ -104,17 +104,25 @@ theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤
     (f g : AddMonoidAlgebra R A) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   refine' (Finset.sup_mono <| support_mul _ _).trans _
+  -- ⊢ Finset.sup (Finset.biUnion f.support fun a₁ => Finset.biUnion g.support fun  …
   simp_rw [Finset.sup_biUnion, Finset.sup_singleton]
+  -- ⊢ (Finset.sup f.support fun x => Finset.sup g.support fun x_1 => degb (x + x_1 …
   refine' Finset.sup_le fun fd fds => Finset.sup_le fun gd gds => degbm.trans <| add_le_add _ _ <;>
+  -- ⊢ degb fd ≤ Finset.sup f.support degb
     exact Finset.le_sup ‹_›
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align add_monoid_algebra.sup_support_mul_le AddMonoidAlgebra.sup_support_mul_le
 
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
     (f g : AddMonoidAlgebra R A) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt := by
     refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_mul_le (_) f g
+    -- ⊢ ∀ {a b : A}, degt (a + b) ≤ degt a + degt b
     intros a b
+    -- ⊢ degt (a + b) ≤ degt a + degt b
     exact OrderDual.ofDual_le_ofDual.mp degtm
+    -- 🎉 no goals
 #align add_monoid_algebra.le_inf_support_mul AddMonoidAlgebra.le_inf_support_mul
 
 end AddOnly
@@ -132,9 +140,12 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
       l.prod.support.sup degb ≤ (l.map fun f : AddMonoidAlgebra R A => f.support.sup degb).sum
   | [] => by
     rw [List.map_nil, Finset.sup_le_iff, List.prod_nil, List.sum_nil]
+    -- ⊢ ∀ (b : A), b ∈ 1.support → degb b ≤ 0
     exact fun a ha => by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
+    -- 🎉 no goals
   | f::fs => by
     rw [List.prod_cons, List.map_cons, List.sum_cons]
+    -- ⊢ Finset.sup (f * List.prod fs).support degb ≤ Finset.sup f.support degb + Lis …
     exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
         (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
 #align add_monoid_algebra.sup_support_list_prod_le AddMonoidAlgebra.sup_support_list_prod_le
@@ -143,18 +154,27 @@ theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List (AddMonoidAlgebra R A)) :
     (l.map fun f : AddMonoidAlgebra R A => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr _
+  -- ⊢ Quot.lift (fun l => List.foldr (fun x x_1 => x ⊓ x_1) ⊤ l) (_ : ∀ (_l₁ _l₂ : …
   refine' sup_support_list_prod_le _ _ l
+  -- ⊢ degt 0 ≤ 0
   · refine' (OrderDual.ofDual_le_ofDual.mp _)
+    -- ⊢ ↑OrderDual.ofDual 0 ≤ ↑OrderDual.ofDual (degt 0)
     exact degt0
+    -- 🎉 no goals
   · refine' (fun a b => OrderDual.ofDual_le_ofDual.mp _)
+    -- ⊢ ↑OrderDual.ofDual (degt a + degt b) ≤ ↑OrderDual.ofDual (degt (a + b))
     exact degtm a b
+    -- 🎉 no goals
 #align add_monoid_algebra.le_inf_support_list_prod AddMonoidAlgebra.le_inf_support_list_prod
 
 theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (n : ℕ) (f : AddMonoidAlgebra R A) : (f ^ n).support.sup degb ≤ n • f.support.sup degb := by
   rw [← List.prod_replicate, ← List.sum_replicate]
+  -- ⊢ Finset.sup (List.prod (List.replicate n f)).support degb ≤ List.sum (List.re …
   refine' (sup_support_list_prod_le degb0 degbm _).trans_eq _
+  -- ⊢ List.sum (List.map (fun f => Finset.sup f.support degb) (List.replicate n f) …
   rw [List.map_replicate]
+  -- 🎉 no goals
 #align add_monoid_algebra.sup_support_pow_le AddMonoidAlgebra.sup_support_pow_le
 
 theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
@@ -162,7 +182,9 @@ theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + deg
   refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp _) n f
   exact degt0
+  -- ⊢ ↑OrderDual.ofDual (degt (a + b)) ≤ ↑OrderDual.ofDual (degt a + degt b)
   exact degtm _ _
+  -- 🎉 no goals
 #align add_monoid_algebra.le_inf_support_pow AddMonoidAlgebra.le_inf_support_pow
 
 end AddMonoids
@@ -180,8 +202,11 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset (AddMonoidAlgebra R A)) :
     m.prod.support.sup degb ≤ (m.map fun f : AddMonoidAlgebra R A => f.support.sup degb).sum := by
   induction m using Quot.inductionOn
+  -- ⊢ Finset.sup (Multiset.prod (Quot.mk Setoid.r a✝)).support degb ≤ Multiset.sum …
   rw [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_sum, Multiset.coe_prod]
+  -- ⊢ Finset.sup (List.prod a✝).support degb ≤ List.sum (List.map (fun f => Finset …
   exact sup_support_list_prod_le degb0 degbm _
+  -- 🎉 no goals
 #align add_monoid_algebra.sup_support_multiset_prod_le AddMonoidAlgebra.sup_support_multiset_prod_le
 
 theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
@@ -191,7 +216,9 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp (_)) m
   exact degt0
+  -- ⊢ ↑OrderDual.ofDual (degt (a + b)) ≤ ↑OrderDual.ofDual (degt a + degt b)
   exact degtm _ _
+  -- 🎉 no goals
 #align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
 
 theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
@@ -204,6 +231,8 @@ theorem le_inf_support_finset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → AddMonoidAlgebra R A) :
     (∑ i in s, (f i).support.inf degt) ≤ (∏ i in s, f i).support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_multiset_prod degt0 degtm _)
+                     -- ⊢ ∑ i in s, Finset.inf (f i).support degt = Multiset.sum (Multiset.map ((fun f …
+                                            -- 🎉 no goals
 #align add_monoid_algebra.le_inf_support_finset_prod AddMonoidAlgebra.le_inf_support_finset_prod
 
 end CommutativeLemmas

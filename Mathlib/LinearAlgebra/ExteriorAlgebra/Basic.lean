@@ -79,6 +79,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 -- @[simp] -- Porting note: simp can prove this
 theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
   rw [← AlgHom.map_mul, ι_sq_zero, AlgHom.map_zero]
+  -- 🎉 no goals
 #align exterior_algebra.comp_ι_sq_zero ExteriorAlgebra.comp_ι_sq_zero
 
 variable (R)
@@ -90,6 +91,7 @@ from `ExteriorAlgebra R M` to `A`.
 @[simps! symm_apply]
 def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = 0 } ≃ (ExteriorAlgebra R M →ₐ[R] A) :=
   Equiv.trans (Equiv.subtypeEquiv (Equiv.refl _) <| by simp) <| CliffordAlgebra.lift _
+                                                       -- 🎉 no goals
 #align exterior_algebra.lift ExteriorAlgebra.lift
 
 @[simp]
@@ -139,6 +141,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
   ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
+                                                       -- 🎉 no goals
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
 
 variable (M)
@@ -146,6 +149,7 @@ variable (M)
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x => by
   simp [algebraMapInv]
+  -- 🎉 no goals
 #align exterior_algebra.algebra_map_left_inverse ExteriorAlgebra.algebraMap_leftInverse
 
 @[simp]
@@ -196,16 +200,22 @@ As an implementation detail, we implement this using `TrivSqZeroExt` which has a
 algebra structure. -/
 def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  -- ⊢ ExteriorAlgebra R M →ₗ[R] M
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  -- ⊢ ExteriorAlgebra R M →ₗ[R] M
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
+  -- 🎉 no goals
 #align exterior_algebra.ι_inv ExteriorAlgebra.ιInv
 
 -- Porting note: In the type, changed `ιInv` to `ιInv.1`
 theorem ι_leftInverse : Function.LeftInverse ιInv.1 (ι R : M → ExteriorAlgebra R M) := fun x => by
   -- Porting note: Original proof didn't have `letI` and `haveI`
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  -- ⊢ ↑ιInv.toAddHom (↑(ι R) x) = x
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  -- ⊢ ↑ιInv.toAddHom (↑(ι R) x) = x
   simp [ιInv]
+  -- 🎉 no goals
 #align exterior_algebra.ι_left_inverse ExteriorAlgebra.ι_leftInverse
 
 variable (R)
@@ -219,25 +229,37 @@ variable {R}
 
 @[simp]
 theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+                                                        -- 🎉 no goals
 #align exterior_algebra.ι_eq_zero_iff ExteriorAlgebra.ι_eq_zero_iff
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
+  -- ⊢ x = 0 ∧ r = 0
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+    -- ⊢ x = 0 ∧ r = 0
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+    -- ⊢ x = 0 ∧ r = 0
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := toTrivSqZeroExt_ι _
+    -- ⊢ x = 0 ∧ r = 0
     rw [h, AlgHom.commutes] at hf0
+    -- ⊢ x = 0 ∧ r = 0
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
+    -- ⊢ x = 0 ∧ r = 0
     exact this.symm.imp_left Eq.symm
+    -- 🎉 no goals
   · rintro ⟨rfl, rfl⟩
+    -- ⊢ ↑(ι R) 0 = ↑(algebraMap R (ExteriorAlgebra R M)) 0
     rw [LinearMap.map_zero, RingHom.map_zero]
+    -- 🎉 no goals
 #align exterior_algebra.ι_eq_algebra_map_iff ExteriorAlgebra.ι_eq_algebraMap_iff
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
   rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  -- ⊢ ¬(x = 0 ∧ 1 = 0)
   exact one_ne_zero ∘ And.right
+  -- 🎉 no goals
 #align exterior_algebra.ι_ne_one ExteriorAlgebra.ι_ne_one
 
 /-- The generators of the exterior algebra are disjoint from its scalars. -/
@@ -245,32 +267,46 @@ theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
       (1 : Submodule R (ExteriorAlgebra R M)) := by
   rw [Submodule.disjoint_def]
+  -- ⊢ ∀ (x : ExteriorAlgebra R M), x ∈ LinearMap.range (ι R) → x ∈ 1 → x = 0
   rintro _ ⟨x, hx⟩ ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩
+  -- ⊢ ↑(algebraMap R (ExteriorAlgebra R M)) r = 0
   rw [ι_eq_algebraMap_iff x] at hx
+  -- ⊢ ↑(algebraMap R (ExteriorAlgebra R M)) r = 0
   rw [hx.2, RingHom.map_zero]
+  -- 🎉 no goals
 #align exterior_algebra.ι_range_disjoint_one ExteriorAlgebra.ι_range_disjoint_one
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
   calc
     _ = ι R (y + x) * ι R (y + x) := by simp [mul_add, add_mul]
+                                        -- 🎉 no goals
     _ = _ := ι_sq_zero _
 #align exterior_algebra.ι_add_mul_swap ExteriorAlgebra.ι_add_mul_swap
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
   induction' n with n hn
+  -- ⊢ ↑(ι R) (f i) * List.prod (List.ofFn fun i => ↑(ι R) (f i)) = 0
   · exact i.elim0
+    -- 🎉 no goals
   · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
+    -- ⊢ ↑(ι R) (f i) * ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.s …
     by_cases h : i = 0
+    -- ⊢ ↑(ι R) (f i) * ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.s …
     · rw [h, ι_sq_zero, zero_mul]
+      -- 🎉 no goals
     · replace hn :=
         congr_arg
           ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred h))
       simp only at hn
+      -- ⊢ ↑(ι R) (f i) * ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.s …
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
+      -- ⊢ ↑(ι R) (f i) * ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.s …
       refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
+      -- ⊢ ↑(ι R) (f 0) * ↑(ι R) (f i) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.s …
       rw [← add_mul, ι_add_mul_swap, zero_mul]
+      -- 🎉 no goals
 #align exterior_algebra.ι_mul_prod_list ExteriorAlgebra.ι_mul_prod_list
 
 variable (R)
@@ -284,27 +320,42 @@ def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
       dsimp
+      -- ⊢ List.prod (List.ofFn fun i => ↑(ι R) (f i)) = 0
       clear F
+      -- ⊢ List.prod (List.ofFn fun i => ↑(ι R) (f i)) = 0
       wlog h : x < y
+      -- ⊢ List.prod (List.ofFn fun i => ↑(ι R) (f i)) = 0
       · exact this R (A := A) n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
+        -- 🎉 no goals
       clear hxy
+      -- ⊢ List.prod (List.ofFn fun i => ↑(ι R) (f i)) = 0
       induction' n with n hn
+      -- ⊢ List.prod (List.ofFn fun i => ↑(ι R) (f i)) = 0
       · exact x.elim0
+        -- 🎉 no goals
       · rw [List.ofFn_succ, List.prod_cons]
+        -- ⊢ ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.succ i))) = 0
         by_cases hx : x = 0
+        -- ⊢ ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.succ i))) = 0
         -- one of the repeated terms is on the left
         · rw [hx] at hfxy h
+          -- ⊢ ↑(ι R) (f 0) * List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.succ i))) = 0
           rw [hfxy, ← Fin.succ_pred y (ne_of_lt h).symm]
+          -- ⊢ ↑(ι R) (f (Fin.succ (Fin.pred y (_ : y ≠ 0)))) * List.prod (List.ofFn fun i  …
           exact ι_mul_prod_list (f ∘ Fin.succ) _
+          -- 🎉 no goals
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert mul_zero (ι R (f 0))
+          -- ⊢ List.prod (List.ofFn fun i => ↑(ι R) (f (Fin.succ i))) = 0
           refine'
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
               (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
               (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
+          -- ⊢ f x = f y
           exact hfxy
+          -- 🎉 no goals
     toFun := F }
 #align exterior_algebra.ι_multi ExteriorAlgebra.ιMulti
 
@@ -330,7 +381,9 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
   AlternatingMap.ext fun v =>
     (ιMulti_succ_apply _).trans <| by
       simp_rw [Matrix.tail_cons]
+      -- ⊢ ↑(ι R) (Matrix.vecCons m v 0) * ↑(ιMulti R n) v = ↑(↑(LinearMap.compAlternat …
       rfl
+      -- 🎉 no goals
 #align exterior_algebra.ι_multi_succ_curry_left ExteriorAlgebra.ιMulti_succ_curryLeft
 
 end ExteriorAlgebra
@@ -349,6 +402,7 @@ def toExterior : TensorAlgebra R M →ₐ[R] ExteriorAlgebra R M :=
 theorem toExterior_ι (m : M) :
     TensorAlgebra.toExterior (TensorAlgebra.ι R m) = ExteriorAlgebra.ι R m := by
   simp [toExterior]
+  -- 🎉 no goals
 #align tensor_algebra.to_exterior_ι TensorAlgebra.toExterior_ι
 
 end TensorAlgebra

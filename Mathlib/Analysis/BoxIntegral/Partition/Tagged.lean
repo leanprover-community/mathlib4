@@ -78,7 +78,9 @@ theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
+  -- ⊢ x✝ ∈ π ∧ x ∈ x✝ ↔ ∃ j, x ∈ ↑x✝
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
+  -- 🎉 no goals
 #align box_integral.tagged_prepartition.mem_Union BoxIntegral.TaggedPrepartition.mem_iUnion
 
 theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
@@ -140,7 +142,9 @@ theorem mem_biUnionTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition
 theorem tag_biUnionTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition J} (hJ : J ∈ π) {J'}
     (hJ' : J' ∈ πi J) : (π.biUnionTagged πi).tag J' = (πi J).tag J' := by
   rw [← π.biUnionIndex_of_mem (πi := fun J => (πi J).toPrepartition) hJ hJ']
+  -- ⊢ TaggedPrepartition.tag (biUnionTagged π πi) J' = TaggedPrepartition.tag (πi  …
   rfl
+  -- 🎉 no goals
 #align box_integral.prepartition.tag_bUnion_tagged BoxIntegral.Prepartition.tag_biUnionTagged
 
 @[simp]
@@ -154,11 +158,17 @@ theorem forall_biUnionTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prepar
     (∀ J ∈ π.biUnionTagged πi, p ((π.biUnionTagged πi).tag J) J) ↔
       ∀ J ∈ π, ∀ J' ∈ πi J, p ((πi J).tag J') J' := by
   simp only [mem_biUnionTagged]
+  -- ⊢ (∀ (J : Box ι), (∃ J', J' ∈ π ∧ J ∈ πi J') → p (TaggedPrepartition.tag (biUn …
   refine' ⟨fun H J hJ J' hJ' => _, fun H J' ⟨J, hJ, hJ'⟩ => _⟩
+  -- ⊢ p (TaggedPrepartition.tag (πi J) J') J'
   · rw [← π.tag_biUnionTagged hJ hJ']
+    -- ⊢ p (TaggedPrepartition.tag (biUnionTagged π πi) J') J'
     exact H J' ⟨J, hJ, hJ'⟩
+    -- 🎉 no goals
   · rw [π.tag_biUnionTagged hJ hJ']
+    -- ⊢ p (TaggedPrepartition.tag (πi J) J') J'
     exact H J hJ J' hJ'
+    -- 🎉 no goals
 #align box_integral.prepartition.forall_bUnion_tagged BoxIntegral.Prepartition.forall_biUnionTagged
 
 theorem IsPartition.biUnionTagged {π : Prepartition I} (h : IsPartition π)
@@ -208,6 +218,7 @@ theorem infPrepartition_toPrepartition (π : TaggedPrepartition I) (π' : Prepar
 theorem mem_infPrepartition_comm :
     J ∈ π₁.infPrepartition π₂.toPrepartition ↔ J ∈ π₂.infPrepartition π₁.toPrepartition := by
   simp only [← mem_toPrepartition, infPrepartition_toPrepartition, inf_comm]
+  -- 🎉 no goals
 #align box_integral.tagged_prepartition.mem_inf_prepartition_comm BoxIntegral.TaggedPrepartition.mem_infPrepartition_comm
 
 theorem IsPartition.infPrepartition (h₁ : π₁.IsPartition) {π₂ : Prepartition I}
@@ -238,8 +249,12 @@ theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : �
     (π.boxes.filter fun J => π.tag J = x).card ≤
         (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card := by
       refine' Finset.card_le_of_subset fun J hJ => _
+      -- ⊢ J ∈ Finset.filter (fun J => x ∈ ↑Box.Icc J) π.boxes
       rw [Finset.mem_filter] at hJ ⊢; rcases hJ with ⟨hJ, rfl⟩
+      -- ⊢ J ∈ π.boxes ∧ x ∈ ↑Box.Icc J
+                                      -- ⊢ J ∈ π.boxes ∧ tag π J ∈ ↑Box.Icc J
       exact ⟨hJ, h J hJ⟩
+      -- 🎉 no goals
     _ ≤ 2 ^ Fintype.card ι := π.toPrepartition.card_filter_mem_Icc_le x
 set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock.card_filter_tag_eq_le BoxIntegral.TaggedPrepartition.IsHenstock.card_filter_tag_eq_le
@@ -313,6 +328,7 @@ theorem isPartition_single (h : x ∈ Box.Icc I) : (single I I le_rfl x h).IsPar
 
 theorem forall_mem_single (p : (ι → ℝ) → Box ι → Prop) (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     (∀ J' ∈ single I J hJ x h, p ((single I J hJ x h).tag J') J') ↔ p x J := by simp
+                                                                                -- 🎉 no goals
 #align box_integral.tagged_prepartition.forall_mem_single BoxIntegral.TaggedPrepartition.forall_mem_single
 
 @[simp]
@@ -346,8 +362,11 @@ def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π
   tag := π₁.boxes.piecewise π₁.tag π₂.tag
   tag_mem_Icc J := by
     dsimp only [Finset.piecewise]
+    -- ⊢ (if J ∈ π₁.boxes then tag π₁ J else tag π₂ J) ∈ ↑Box.Icc I
     split_ifs
+    -- ⊢ tag π₁ J ∈ ↑Box.Icc I
     exacts [π₁.tag_mem_Icc J, π₂.tag_mem_Icc J]
+    -- 🎉 no goals
 #align box_integral.tagged_prepartition.disj_union BoxIntegral.TaggedPrepartition.disjUnion
 
 @[simp]
@@ -380,19 +399,29 @@ theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ 
 theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by
   refine' fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => _) fun hJ => _
+  -- ⊢ ↑Box.Icc J ⊆ closedBall (tag (TaggedPrepartition.disjUnion π₁ π₂ h) J) ↑(r ( …
   · rw [disjUnion_tag_of_mem_left _ hJ]
+    -- ⊢ ↑Box.Icc J ⊆ closedBall (tag π₁ J) ↑(r (tag π₁ J))
     exact h₁ _ hJ
+    -- 🎉 no goals
   · rw [disjUnion_tag_of_mem_right _ hJ]
+    -- ⊢ ↑Box.Icc J ⊆ closedBall (tag π₂ J) ↑(r (tag π₂ J))
     exact h₂ _ hJ
+    -- 🎉 no goals
 #align box_integral.tagged_prepartition.is_subordinate.disj_union BoxIntegral.TaggedPrepartition.IsSubordinate.disjUnion
 
 theorem IsHenstock.disjUnion (h₁ : IsHenstock π₁) (h₂ : IsHenstock π₂)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsHenstock (π₁.disjUnion π₂ h) := by
   refine' fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => _) fun hJ => _
+  -- ⊢ tag (TaggedPrepartition.disjUnion π₁ π₂ h) J ∈ ↑Box.Icc J
   · rw [disjUnion_tag_of_mem_left _ hJ]
+    -- ⊢ tag π₁ J ∈ ↑Box.Icc J
     exact h₁ _ hJ
+    -- 🎉 no goals
   · rw [disjUnion_tag_of_mem_right _ hJ]
+    -- ⊢ tag π₂ J ∈ ↑Box.Icc J
     exact h₂ _ hJ
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock.disj_union BoxIntegral.TaggedPrepartition.IsHenstock.disjUnion
 
@@ -404,7 +433,9 @@ def embedBox (I J : Box ι) (h : I ≤ J) : TaggedPrepartition I ↪ TaggedPrepa
       tag_mem_Icc := fun J => Box.le_iff_Icc.1 h (π.tag_mem_Icc J) }
   inj' := by
     rintro ⟨⟨b₁, h₁le, h₁d⟩, t₁, ht₁⟩ ⟨⟨b₂, h₂le, h₂d⟩, t₂, ht₂⟩ H
+    -- ⊢ { toPrepartition := { boxes := b₁, le_of_mem' := h₁le, pairwiseDisjoint := h …
     simpa using H
+    -- 🎉 no goals
 #align box_integral.tagged_prepartition.embed_box BoxIntegral.TaggedPrepartition.embedBox
 
 section Distortion

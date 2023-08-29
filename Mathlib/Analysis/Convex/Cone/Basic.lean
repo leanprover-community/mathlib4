@@ -97,6 +97,9 @@ variable [SMul 𝕜 E] (S T : ConvexCone 𝕜 E)
 instance : SetLike (ConvexCone 𝕜 E) E where
   coe := carrier
   coe_injective' S T h := by cases S; cases T; congr
+                             -- ⊢ { carrier := carrier✝, smul_mem' := smul_mem'✝, add_mem' := add_mem'✝ } = T
+                                      -- ⊢ { carrier := carrier✝¹, smul_mem' := smul_mem'✝¹, add_mem' := add_mem'✝¹ } = …
+                                               -- 🎉 no goals
 
 @[simp]
 theorem coe_mk {s : Set E} {h₁ h₂} : ↑(@mk 𝕜 _ _ _ _ s h₁ h₂) = s :=
@@ -156,10 +159,12 @@ theorem mem_sInf {x : E} {S : Set (ConvexCone 𝕜 E)} : x ∈ sInf S ↔ ∀ s 
 @[simp]
 theorem coe_iInf {ι : Sort*} (f : ι → ConvexCone 𝕜 E) : ↑(iInf f) = ⋂ i, (f i : Set E) := by
   simp [iInf]
+  -- 🎉 no goals
 #align convex_cone.coe_infi ConvexCone.coe_iInf
 
 theorem mem_iInf {ι : Sort*} {x : E} {f : ι → ConvexCone 𝕜 E} : x ∈ iInf f ↔ ∀ i, x ∈ f i :=
   mem_iInter₂.trans <| by simp
+                          -- 🎉 no goals
 #align convex_cone.mem_infi ConvexCone.mem_iInf
 
 variable (𝕜)
@@ -279,10 +284,14 @@ def comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : ConvexCone 𝕜 E whe
   carrier := f ⁻¹' S
   smul_mem' c hc x hx := by
     rw [mem_preimage, f.map_smul c]
+    -- ⊢ c • ↑f x ∈ ↑S
     exact S.smul_mem hc hx
+    -- 🎉 no goals
   add_mem' x hx y hy := by
     rw [mem_preimage, f.map_add]
+    -- ⊢ ↑f x + ↑f y ∈ ↑S
     exact S.add_mem hx hy
+    -- 🎉 no goals
 #align convex_cone.comap ConvexCone.comap
 
 @[simp]
@@ -320,8 +329,11 @@ theorem to_orderedSMul (S : ConvexCone 𝕜 E) (h : ∀ x y : E, x ≤ y ↔ y -
   OrderedSMul.mk'
     (by
       intro x y z xy hz
+      -- ⊢ z • x ≤ z • y
       rw [h (z • x) (z • y), ← smul_sub z y x]
+      -- ⊢ z • (y - x) ∈ S
       exact smul_mem S hz ((h x y).mp xy.le))
+      -- 🎉 no goals
 #align convex_cone.to_ordered_smul ConvexCone.to_orderedSMul
 
 end OrderedAddCommGroup
@@ -355,6 +367,7 @@ theorem pointed_iff_not_blunt (S : ConvexCone 𝕜 E) : S.Pointed ↔ ¬S.Blunt 
 
 theorem blunt_iff_not_pointed (S : ConvexCone 𝕜 E) : S.Blunt ↔ ¬S.Pointed := by
   rw [pointed_iff_not_blunt, Classical.not_not]
+  -- 🎉 no goals
 #align convex_cone.blunt_iff_not_pointed ConvexCone.blunt_iff_not_pointed
 
 theorem Pointed.mono {S T : ConvexCone 𝕜 E} (h : S ≤ T) : S.Pointed → T.Pointed :=
@@ -383,6 +396,7 @@ def Salient : Prop :=
 
 theorem salient_iff_not_flat (S : ConvexCone 𝕜 E) : S.Salient ↔ ¬S.Flat := by
   simp [Salient, Flat]
+  -- 🎉 no goals
 #align convex_cone.salient_iff_not_flat ConvexCone.salient_iff_not_flat
 
 theorem Flat.mono {S T : ConvexCone 𝕜 E} (h : S ≤ T) : S.Flat → T.Flat
@@ -396,21 +410,30 @@ theorem Salient.anti {S T : ConvexCone 𝕜 E} (h : T ≤ S) : S.Salient → T.S
 /-- A flat cone is always pointed (contains `0`). -/
 theorem Flat.pointed {S : ConvexCone 𝕜 E} (hS : S.Flat) : S.Pointed := by
   obtain ⟨x, hx, _, hxneg⟩ := hS
+  -- ⊢ Pointed S
   rw [Pointed, ← add_neg_self x]
+  -- ⊢ x + -x ∈ S
   exact add_mem S hx hxneg
+  -- 🎉 no goals
 #align convex_cone.flat.pointed ConvexCone.Flat.pointed
 
 /-- A blunt cone (one not containing `0`) is always salient. -/
 theorem Blunt.salient {S : ConvexCone 𝕜 E} : S.Blunt → S.Salient := by
   rw [salient_iff_not_flat, blunt_iff_not_pointed]
+  -- ⊢ ¬Pointed S → ¬Flat S
   exact mt Flat.pointed
+  -- 🎉 no goals
 #align convex_cone.blunt.salient ConvexCone.Blunt.salient
 
 /-- A pointed convex cone defines a preorder. -/
 def toPreorder (h₁ : S.Pointed) : Preorder E where
   le x y := y - x ∈ S
   le_refl x := by change x - x ∈ S; rw [sub_self x]; exact h₁
+                  -- ⊢ x - x ∈ S
+                                    -- ⊢ 0 ∈ S
+                                                     -- 🎉 no goals
   le_trans x y z xy zy := by simpa using add_mem S zy xy
+                             -- 🎉 no goals
 #align convex_cone.to_preorder ConvexCone.toPreorder
 
 /-- A pointed and salient cone defines a partial order. -/
@@ -418,21 +441,32 @@ def toPartialOrder (h₁ : S.Pointed) (h₂ : S.Salient) : PartialOrder E :=
   { toPreorder S h₁ with
     le_antisymm := by
       intro a b ab ba
+      -- ⊢ a = b
       by_contra h
+      -- ⊢ False
       have h' : b - a ≠ 0 := fun h'' => h (eq_of_sub_eq_zero h'').symm
+      -- ⊢ False
       have H := h₂ (b - a) ab h'
+      -- ⊢ False
       rw [neg_sub b a] at H
+      -- ⊢ False
       exact H ba }
+      -- 🎉 no goals
 #align convex_cone.to_partial_order ConvexCone.toPartialOrder
 
 /-- A pointed and salient cone defines an `OrderedAddCommGroup`. -/
 def toOrderedAddCommGroup (h₁ : S.Pointed) (h₂ : S.Salient) : OrderedAddCommGroup E :=
   { toPartialOrder S h₁ h₂, show AddCommGroup E by infer_instance with
+                                                   -- 🎉 no goals
     add_le_add_left := by
       intro a b hab c
+      -- ⊢ c + a ≤ c + b
       change c + b - (c + a) ∈ S
+      -- ⊢ c + b - (c + a) ∈ S
       rw [add_sub_add_left_eq_sub]
+      -- ⊢ b - a ∈ S
       exact hab }
+      -- 🎉 no goals
 #align convex_cone.to_ordered_add_comm_group ConvexCone.toOrderedAddCommGroup
 
 end AddCommGroup
@@ -443,6 +477,8 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 
 instance : Zero (ConvexCone 𝕜 E) :=
   ⟨⟨0, fun _ _ => by simp, fun _ => by simp⟩⟩
+                     -- 🎉 no goals
+                                       -- 🎉 no goals
 
 @[simp]
 theorem mem_zero (x : E) : x ∈ (0 : ConvexCone 𝕜 E) ↔ x = 0 :=
@@ -455,6 +491,7 @@ theorem coe_zero : ((0 : ConvexCone 𝕜 E) : Set E) = 0 :=
 #align convex_cone.coe_zero ConvexCone.coe_zero
 
 theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_zero]
+                                                          -- 🎉 no goals
 #align convex_cone.pointed_zero ConvexCone.pointed_zero
 
 instance instAdd : Add (ConvexCone 𝕜 E) :=
@@ -462,12 +499,19 @@ instance instAdd : Add (ConvexCone 𝕜 E) :=
     { carrier := { z | ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z }
       smul_mem' := by
         rintro c hc _ ⟨x, y, hx, hy, rfl⟩
+        -- ⊢ c • (x + y) ∈ {z | ∃ x y, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z}
         rw [smul_add]
+        -- ⊢ c • x + c • y ∈ {z | ∃ x y, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z}
         use c • x, c • y, K₁.smul_mem hc hx, K₂.smul_mem hc hy
+        -- 🎉 no goals
       add_mem' := by
         rintro _ ⟨x₁, x₂, hx₁, hx₂, rfl⟩ y ⟨y₁, y₂, hy₁, hy₂, rfl⟩
+        -- ⊢ x₁ + x₂ + (y₁ + y₂) ∈ {z | ∃ x y, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z}
         use x₁ + y₁, x₂ + y₂, K₁.add_mem hx₁ hy₁, K₂.add_mem hx₂ hy₂
+        -- ⊢ x₁ + y₁ + (x₂ + y₂) = x₁ + x₂ + (y₁ + y₂)
         abel }⟩
+        -- 🎉 no goals
+        -- 🎉 no goals
 
 @[simp]
 theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
@@ -477,7 +521,11 @@ theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
 
 instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
   zero_add _ := by ext; simp
+                   -- ⊢ x✝ ∈ 0 + x✝¹ ↔ x✝ ∈ x✝¹
+                        -- 🎉 no goals
   add_zero _ := by ext; simp
+                   -- ⊢ x✝ ∈ x✝¹ + 0 ↔ x✝ ∈ x✝¹
+                        -- 🎉 no goals
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
@@ -644,37 +692,56 @@ namespace Convex
 /-- The set of vectors proportional to those in a convex set forms a convex cone. -/
 def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
   apply ConvexCone.mk (⋃ (c : 𝕜) (_ : 0 < c), c • s) <;> simp only [mem_iUnion, mem_smul_set]
+  -- ⊢ ∀ ⦃c : 𝕜⦄, 0 < c → ∀ ⦃x : E⦄, x ∈ ⋃ (c : 𝕜) (_ : 0 < c), c • s → c • x ∈ ⋃ ( …
+                                                         -- ⊢ ∀ ⦃c : 𝕜⦄, 0 < c → ∀ ⦃x : E⦄, (∃ i h y, y ∈ s ∧ i • y = x) → ∃ i h y, y ∈ s  …
+                                                         -- ⊢ ∀ ⦃x : E⦄, (∃ i h y, y ∈ s ∧ i • y = x) → ∀ ⦃y : E⦄, (∃ i h y_1, y_1 ∈ s ∧ i …
   · rintro c c_pos _ ⟨c', c'_pos, x, hx, rfl⟩
+    -- ⊢ ∃ i h y, y ∈ s ∧ i • y = c • c' • x
     exact ⟨c * c', mul_pos c_pos c'_pos, x, hx, (smul_smul _ _ _).symm⟩
+    -- 🎉 no goals
   · rintro _ ⟨cx, cx_pos, x, hx, rfl⟩ _ ⟨cy, cy_pos, y, hy, rfl⟩
+    -- ⊢ ∃ i h y_1, y_1 ∈ s ∧ i • y_1 = cx • x + cy • y
     have : 0 < cx + cy := add_pos cx_pos cy_pos
+    -- ⊢ ∃ i h y_1, y_1 ∈ s ∧ i • y_1 = cx • x + cy • y
     refine' ⟨_, this, _, convex_iff_div.1 hs hx hy cx_pos.le cy_pos.le this, _⟩
+    -- ⊢ (cx + cy) • ((cx / (cx + cy)) • x + (cy / (cx + cy)) • y) = cx • x + cy • y
     simp only [smul_add, smul_smul, mul_div_assoc', mul_div_cancel_left _ this.ne']
+    -- 🎉 no goals
 #align convex.to_cone Convex.toCone
 
 variable {s : Set E} (hs : Convex 𝕜 s) {x : E}
 
 theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, c • y = x := by
   simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
+  -- 🎉 no goals
 #align convex.mem_to_cone Convex.mem_toCone
 
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine' hs.mem_toCone.trans ⟨_, _⟩
+  -- ⊢ (∃ c, 0 < c ∧ ∃ y, y ∈ s ∧ c • y = x) → ∃ c, 0 < c ∧ c • x ∈ s
   · rintro ⟨c, hc, y, hy, rfl⟩
+    -- ⊢ ∃ c_1, 0 < c_1 ∧ c_1 • c • y ∈ s
     exact ⟨c⁻¹, inv_pos.2 hc, by rwa [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
+    -- 🎉 no goals
   · rintro ⟨c, hc, hcx⟩
+    -- ⊢ ∃ c, 0 < c ∧ ∃ y, y ∈ s ∧ c • y = x
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
+    -- 🎉 no goals
 #align convex.mem_to_cone' Convex.mem_toCone'
 
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
+                                       -- 🎉 no goals
 #align convex.subset_to_cone Convex.subset_toCone
 
 /-- `hs.toCone s` is the least cone that includes `s`. -/
 theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } (hs.toCone s) := by
   refine' ⟨hs.subset_toCone, fun t ht x hx => _⟩
+  -- ⊢ x ∈ t
   rcases hs.mem_toCone.1 hx with ⟨c, hc, y, hy, rfl⟩
+  -- ⊢ c • y ∈ t
   exact t.smul_mem hc (ht hy)
+  -- 🎉 no goals
 #align convex.to_cone_is_least Convex.toCone_isLeast
 
 theorem toCone_eq_sInf : hs.toCone s = sInf { t : ConvexCone 𝕜 E | s ⊆ t } :=
@@ -686,8 +753,11 @@ end Convex
 theorem convexHull_toCone_isLeast (s : Set E) :
     IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
   convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
+  -- ⊢ {t | s ⊆ ↑t} = {t | ↑(convexHull 𝕜) s ⊆ ↑t}
   ext t
+  -- ⊢ t ∈ {t | s ⊆ ↑t} ↔ t ∈ {t | ↑(convexHull 𝕜) s ⊆ ↑t}
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
+  -- 🎉 no goals
 #align convex_hull_to_cone_is_least convexHull_toCone_isLeast
 
 theorem convexHull_toCone_eq_sInf (s : Set E) :
@@ -750,31 +820,47 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     rwa [f.map_sub, sub_nonneg] at this
   -- Porting note: removed an unused `have`
   refine' ⟨f.supSpanSingleton y (-c) hy, _, _⟩
+  -- ⊢ f < LinearPMap.supSpanSingleton f y (-c) hy
   · refine' lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => _⟩
+    -- ⊢ False
     replace H := LinearPMap.domain_mono.monotone H
+    -- ⊢ False
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
+    -- ⊢ False
     exact hy H.2
+    -- 🎉 no goals
   · rintro ⟨z, hz⟩ hzs
+    -- ⊢ 0 ≤ ↑(LinearPMap.supSpanSingleton f y (-c) hy) { val := z, property := hz }
     rcases mem_sup.1 hz with ⟨x, hx, y', hy', rfl⟩
+    -- ⊢ 0 ≤ ↑(LinearPMap.supSpanSingleton f y (-c) hy) { val := x + y', property :=  …
     rcases mem_span_singleton.1 hy' with ⟨r, rfl⟩
+    -- ⊢ 0 ≤ ↑(LinearPMap.supSpanSingleton f y (-c) hy) { val := x + r • y, property  …
     simp only [Subtype.coe_mk] at hzs
+    -- ⊢ 0 ≤ ↑(LinearPMap.supSpanSingleton f y (-c) hy) { val := x + r • y, property  …
     erw [LinearPMap.supSpanSingleton_apply_mk _ _ _ _ _ hx, smul_neg, ← sub_eq_add_neg, sub_nonneg]
+    -- ⊢ r • c ≤ ↑f { val := x, property := hx }
     rcases lt_trichotomy r 0 with (hr | hr | hr)
     · have : -(r⁻¹ • x) - y ∈ s := by
         rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
           mul_inv_cancel hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
       -- Porting note: added type annotation and `by exact`
       replace : f (r⁻¹ • ⟨x, hx⟩) ≤ c := le_c (r⁻¹ • ⟨x, hx⟩) (by exact this)
+      -- ⊢ r • c ≤ ↑f { val := x, property := hx }
       rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
         smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
     · subst r
+      -- ⊢ 0 • c ≤ ↑f { val := x, property := hx }
       simp only [zero_smul, add_zero] at hzs ⊢
+      -- ⊢ 0 ≤ ↑f { val := x, property := hx }
       apply nonneg
+      -- ⊢ ↑{ val := x, property := hx } ∈ s
       exact hzs
+      -- 🎉 no goals
     · have : r⁻¹ • x + y ∈ s := by
         rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel hr.ne', one_smul]
       -- Porting note: added type annotation and `by exact`
       replace : c ≤ f (r⁻¹ • ⟨x, hx⟩) := c_le (r⁻¹ • ⟨x, hx⟩) (by exact this)
+      -- ⊢ r • c ≤ ↑f { val := x, property := hx }
       rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
         one_mul] at this
 #align riesz_extension.step RieszExtension.step
@@ -783,27 +869,44 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
     ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
   set S := { p : E →ₗ.[ℝ] ℝ | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x }
+  -- ⊢ ∃ q, q ≥ p ∧ q.domain = ⊤ ∧ ∀ (x : { x // x ∈ q.domain }), ↑x ∈ s → 0 ≤ ↑q x
   have hSc : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub
+  -- ⊢ ∀ (c : Set (E →ₗ.[ℝ] ℝ)), c ⊆ S → IsChain (fun x x_1 => x ≤ x_1) c → ∀ (y :  …
   · intro c hcs c_chain y hy
+    -- ⊢ ∃ ub, ub ∈ S ∧ ∀ (z : E →ₗ.[ℝ] ℝ), z ∈ c → z ≤ ub
     clear hp_nonneg hp_dense p
+    -- ⊢ ∃ ub, ub ∈ S ∧ ∀ (z : E →ₗ.[ℝ] ℝ), z ∈ c → z ≤ ub
     have cne : c.Nonempty := ⟨y, hy⟩
+    -- ⊢ ∃ ub, ub ∈ S ∧ ∀ (z : E →ₗ.[ℝ] ℝ), z ∈ c → z ≤ ub
     have hcd : DirectedOn (· ≤ ·) c := c_chain.directedOn
+    -- ⊢ ∃ ub, ub ∈ S ∧ ∀ (z : E →ₗ.[ℝ] ℝ), z ∈ c → z ≤ ub
     refine' ⟨LinearPMap.sSup c hcd, _, fun _ ↦ LinearPMap.le_sSup hcd⟩
+    -- ⊢ LinearPMap.sSup c hcd ∈ S
     rintro ⟨x, hx⟩ hxs
+    -- ⊢ 0 ≤ ↑(LinearPMap.sSup c hcd) { val := x, property := hx }
     have hdir : DirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
       directedOn_image.2 (hcd.mono fun h ↦ LinearPMap.domain_mono.monotone h)
     rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
+    -- ⊢ 0 ≤ ↑(LinearPMap.sSup c hcd) { val := x, property := hx }
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
+    -- ⊢ 0 ≤ ↑(LinearPMap.sSup c hcd) { val := x, property := hx }
     convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
+    -- ⊢ ↑f { val := x, property := hfx } = ↑(LinearPMap.sSup c hcd) { val := x, prop …
     exact this.2 rfl
+    -- 🎉 no goals
   obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ S hSc p hp_nonneg
+  -- ⊢ ∃ q, q ≥ p ∧ q.domain = ⊤ ∧ ∀ (x : { x // x ∈ q.domain }), ↑x ∈ s → 0 ≤ ↑q x
   · refine' ⟨q, hpq, _, hqs⟩
+    -- ⊢ q.domain = ⊤
     contrapose! hq
+    -- ⊢ ∃ z, z ∈ {p | ∀ (x : { x // x ∈ p.domain }), ↑x ∈ s → 0 ≤ ↑p x} ∧ q ≤ z ∧ z  …
     have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
       let ⟨x, hx⟩ := hp_dense y
       ⟨ofLe hpq.left x, hx⟩
     rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
+    -- ⊢ ∃ z, z ∈ {p | ∀ (x : { x // x ∈ p.domain }), ↑x ∈ s → 0 ≤ ↑p x} ∧ q ≤ z ∧ z  …
     exact ⟨r, hr, hqr.le, hqr.ne'⟩
+    -- 🎉 no goals
 #align riesz_extension.exists_top RieszExtension.exists_top
 
 end RieszExtension
@@ -819,8 +922,11 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
   rcases RieszExtension.exists_top s f nonneg dense
     with ⟨⟨g_dom, g⟩, ⟨-, hfg⟩, rfl : g_dom = ⊤, hgs⟩
   refine' ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), _, _⟩
+  -- ⊢ ∀ (x : { x // x ∈ f.domain }), ↑(comp g (LinearMap.codRestrict ⊤ LinearMap.i …
   · exact fun x => (hfg rfl).symm
+    -- 🎉 no goals
   · exact fun x hx => hgs ⟨x, _⟩ hx
+    -- 🎉 no goals
 #align riesz_extension riesz_extension
 
 /-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
@@ -839,18 +945,25 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
           _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
       add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ f.domain }), ↑g ↑x = ↑f x) ∧ ∀ (x : E), ↑g x ≤ N x
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
     simpa using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
   have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s
+  -- ⊢ ∀ (y : E × ℝ), ∃ x, ↑x + y ∈ s
   · rintro ⟨x, y⟩
+    -- ⊢ ∃ x_1, ↑x_1 + (x, y) ∈ s
     refine' ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, _⟩
+    -- ⊢ ↑{ val := (0, N x - y), property := (_ : (0, N x - y).fst ∈ ↑(-f).domain ∧ ( …
     simp only [ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
       sub_add_cancel, le_rfl]
   obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ f.domain }), ↑g ↑x = ↑f x) ∧ ∀ (x : E), ↑g x ≤ N x
   replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x := fun x y ↦
     (g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm
   refine ⟨-g.comp (inl ℝ E ℝ), fun x ↦ ?_, fun x ↦ ?_⟩
+  -- ⊢ ↑(-comp g (inl ℝ E ℝ)) ↑x = ↑f x
   · simp [g_eq x 0]
+    -- 🎉 no goals
   · calc -g (x, 0) = g (0, N x) - g (x, N x) := by simp [← map_sub, ← map_neg]
       _ = N x - g (x, N x) := by simpa using g_eq 0 (N x)
       _ ≤ N x := by simpa using g_nonneg ⟨x, N x⟩ (le_refl (N x))

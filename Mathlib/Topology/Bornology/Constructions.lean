@@ -83,13 +83,21 @@ theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
 
 theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
+  -- ⊢ IsBounded (∅ ×ˢ t) ↔ ∅ = ∅ ∨ t = ∅ ∨ IsBounded ∅ ∧ IsBounded t
+                                                   -- 🎉 no goals
   rcases t.eq_empty_or_nonempty with (rfl | ht); · simp
+  -- ⊢ IsBounded (s ×ˢ ∅) ↔ s = ∅ ∨ ∅ = ∅ ∨ IsBounded s ∧ IsBounded ∅
+                                                   -- 🎉 no goals
   simp only [hs.ne_empty, ht.ne_empty, isBounded_prod_of_nonempty (hs.prod ht), false_or_iff]
+  -- 🎉 no goals
 #align bornology.is_bounded_prod Bornology.isBounded_prod
 
 theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
+  -- ⊢ IsBounded (∅ ×ˢ ∅) ↔ IsBounded ∅
+                                                   -- 🎉 no goals
   exact (isBounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
+  -- 🎉 no goals
 #align bornology.is_bounded_prod_self Bornology.isBounded_prod_self
 
 /-!
@@ -117,10 +125,15 @@ theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
 
 theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) := by
   by_cases hne : ∃ i, S i = ∅
+  -- ⊢ IsBounded (Set.pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ (i : ι), IsBounded (S i)
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
+    -- 🎉 no goals
   · simp only [hne, false_or_iff]
+    -- ⊢ IsBounded (Set.pi univ S) ↔ ∀ (i : ι), IsBounded (S i)
     simp only [not_exists, ← Ne.def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
+    -- ⊢ IsBounded (Set.pi univ S) ↔ ∀ (i : ι), IsBounded (S i)
     exact isBounded_pi_of_nonempty hne
+    -- 🎉 no goals
 #align bornology.is_bounded_pi Bornology.isBounded_pi
 
 /-!
@@ -149,19 +162,23 @@ open Bornology
 
 instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
   simp [← cobounded_eq_bot_iff, cobounded_prod]
+  -- 🎉 no goals
 
 instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
   simp [← cobounded_eq_bot_iff, cobounded_pi]
+  -- 🎉 no goals
 
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
   rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
+  -- 🎉 no goals
 -- porting note: had to explicitly provided the bornology to `isBounded_univ`.
 #align bounded_space_induced_iff boundedSpace_induced_iff
 
 theorem boundedSpace_subtype_iff {p : α → Prop} :
     BoundedSpace (Subtype p) ↔ IsBounded { x | p x } := by
   rw [boundedSpace_induced_iff, Subtype.range_coe_subtype]
+  -- 🎉 no goals
 #align bounded_space_subtype_iff boundedSpace_subtype_iff
 
 theorem boundedSpace_val_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :=

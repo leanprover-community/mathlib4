@@ -41,7 +41,9 @@ instance (α : Type u) : Ring (FreeRing α) :=
 
 instance (α : Type u) : Inhabited (FreeRing α) := by
   dsimp only [FreeRing]
+  -- ⊢ Inhabited (FreeAbelianGroup (FreeMonoid α))
   infer_instance
+  -- 🎉 no goals
 
 namespace FreeRing
 
@@ -66,8 +68,11 @@ protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1
     (fun m => List.recOn m h1 fun a m ih => by
       -- porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
       convert hm _ _ (hb a) ih
+      -- ⊢ FreeAbelianGroup.of (a :: m) = of a * FreeAbelianGroup.of m
       rw [of, ← FreeAbelianGroup.of_mul]
+      -- ⊢ FreeAbelianGroup.of (a :: m) = FreeAbelianGroup.of (FreeMonoid.of a * m)
       rfl)
+      -- 🎉 no goals
     (fun m ih => hn _ ih) ha
 #align free_ring.induction_on FreeRing.induction_on
 

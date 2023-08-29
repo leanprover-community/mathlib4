@@ -68,14 +68,19 @@ theorem right_mono [Preorder α] [Preorder β] {f : α → β} {g : β → α} (
 theorem orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : β ≃o γ) : IsOrderRightAdjoint (e ∘ f) (g ∘ e.symm) :=
   fun y => by simpa [e.le_symm_apply] using h (e.symm y)
+              -- 🎉 no goals
 #align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.orderIso_comp
 
 theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) := by
   intro y
+  -- ⊢ IsLUB {x | (f ∘ ↑e) x ≤ y} ((↑(OrderIso.symm e) ∘ g) y)
   change IsLUB (e ⁻¹' { x | f x ≤ y }) (e.symm (g y))
+  -- ⊢ IsLUB (↑e ⁻¹' {x | f x ≤ y}) (↑(OrderIso.symm e) (g y))
   rw [e.isLUB_preimage, e.apply_symm_apply]
+  -- ⊢ IsLUB {x | f x ≤ y} (g y)
   exact h y
+  -- 🎉 no goals
 #align is_order_right_adjoint.comp_order_iso IsOrderRightAdjoint.comp_orderIso
 
 end IsOrderRightAdjoint
@@ -92,8 +97,11 @@ theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} 
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
     Function.Semiconj g' fb fa := by
   refine' fun y => (hg' _).unique _
+  -- ⊢ IsLUB {x | g x ≤ ↑fb y} (↑fa (g' y))
   rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
+  -- ⊢ IsLUB (↑fa '' {a | g (↑fa a) ≤ ↑fb y}) (↑fa (g' y))
   simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
+  -- 🎉 no goals
 #align function.semiconj.symm_adjoint Function.Semiconj.symm_adjoint
 
 variable {G : Type*}
@@ -102,9 +110,13 @@ theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
     Function.Semiconj h (f₂ g) (f₁ g) := by
   refine' fun y => (H _).unique _
+  -- ⊢ IsLUB (range fun g' => ↑(↑f₁ g')⁻¹ (↑(↑f₂ g') (↑(↑f₂ g) y))) (↑(↑f₁ g) (h y))
   have := (f₁ g).leftOrdContinuous (H y)
+  -- ⊢ IsLUB (range fun g' => ↑(↑f₁ g')⁻¹ (↑(↑f₂ g') (↑(↑f₂ g) y))) (↑(↑f₁ g) (h y))
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
+  -- ⊢ IsLUB (range fun g' => ↑(↑f₁ g')⁻¹ (↑(↑f₂ g') (↑(↑f₂ g) y))) (↑(↑f₁ g) (h y))
   simpa [(· ∘ ·)] using this
+  -- 🎉 no goals
 #align function.semiconj_of_is_lub Function.semiconj_of_isLUB
 
 /-- Consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order

@@ -30,9 +30,11 @@ open scoped Manifold
 
 -- the following two instances prevent poorly understood type class inference timeout problems
 instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
+                                                               -- 🎉 no goals
 #align smooth_functions_algebra smoothFunctionsAlgebra
 
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
+                                                                                  -- 🎉 no goals
 #align smooth_functions_tower smooth_functions_tower
 
 /-- Type synonym, introduced to put a different `SMul` action on `C^n⟮I, M; 𝕜⟯`
@@ -88,6 +90,7 @@ theorem smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k
 instance (x : M) : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 where
   smul_assoc k f h := by
     rw [smul_def, smul_def, SmoothMap.coe_smul, Pi.smul_apply, smul_eq_mul, smul_eq_mul, mul_assoc]
+    -- 🎉 no goals
 
 end PointedSmoothMap
 
@@ -140,14 +143,20 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
     Derivation.mk'
       { toFun := fun g => v (g.comp f)
         map_add' := fun g g' => by dsimp; rw [SmoothMap.add_comp, Derivation.map_add]
+                                   -- ⊢ ↑v (ContMDiffMap.comp (g + g') f) = ↑v (ContMDiffMap.comp g f) + ↑v (ContMDi …
+                                          -- 🎉 no goals
         map_smul' := fun k g => by
           dsimp; rw [SmoothMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
+          -- ⊢ ↑v (ContMDiffMap.comp (k • g) f) = k * ↑v (ContMDiffMap.comp g f)
+                 -- 🎉 no goals
       fun g g' => by
         dsimp
+        -- ⊢ ↑v (ContMDiffMap.comp (g * g') f) = g • ↑v (ContMDiffMap.comp g' f) + g' • ↑ …
         rw [SmoothMap.mul_comp, Derivation.leibniz,
           PointedSmoothMap.smul_def, ContMDiffMap.comp_apply,
           PointedSmoothMap.smul_def, ContMDiffMap.comp_apply, h]
         norm_cast
+        -- 🎉 no goals
   map_smul' k v := rfl
   map_add' v w := rfl
 #align hfdifferential hfdifferential

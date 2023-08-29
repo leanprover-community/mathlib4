@@ -54,6 +54,7 @@ def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize
       ι :=
         Discrete.natTrans fun j =>
           @Sigma.ι _ _ _ (fun x : ({j} : Finset (Discrete α)) => F.obj x) _ ⟨j, by simp⟩ ≫
+                                                                                   -- 🎉 no goals
             colimit.ι (liftToFinset F) {j} }
   isColimit :=
     { desc := fun s =>
@@ -62,14 +63,23 @@ def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize
             ι := { app := fun t => Sigma.desc fun x => s.ι.app x } }
       uniq := fun s m h => by
         apply colimit.hom_ext
+        -- ⊢ ∀ (j : Finset (Discrete α)), colimit.ι (liftToFinset F) j ≫ m = colimit.ι (l …
         rintro t
+        -- ⊢ colimit.ι (liftToFinset F) t ≫ m = colimit.ι (liftToFinset F) t ≫ (fun s =>  …
         dsimp [liftToFinset]
+        -- ⊢ colimit.ι (Functor.mk { obj := fun s => ∐ fun x => F.obj ↑x, map := fun {x Y …
         apply colimit.hom_ext
+        -- ⊢ ∀ (j : Discrete { x // x ∈ t }), colimit.ι (Discrete.functor fun x => F.obj  …
         rintro ⟨⟨j, hj⟩⟩
+        -- ⊢ colimit.ι (Discrete.functor fun x => F.obj ↑x) { as := { val := j, property  …
         convert h j using 1
+        -- ⊢ colimit.ι (Discrete.functor fun x => F.obj ↑x) { as := { val := j, property  …
         · simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
+          -- ⊢ colimit.ι (Discrete.functor fun x => F.obj ↑x) { as := { val := j, property  …
           rfl
+          -- 🎉 no goals
         · aesop_cat }
+          -- 🎉 no goals
 #align category_theory.limits.coproducts_from_finite_filtered.lift_to_finset_colimit_cocone CategoryTheory.Limits.CoproductsFromFiniteFiltered.liftToFinsetColimitCocone
 
 end CoproductsFromFiniteFiltered
@@ -79,6 +89,7 @@ open CoproductsFromFiniteFiltered
 theorem hasCoproducts_of_finite_and_filtered [HasFiniteCoproducts C]
     [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := fun α => by
   classical exact ⟨fun F => HasColimit.mk (liftToFinsetColimitCocone F)⟩
+  -- 🎉 no goals
 #align category_theory.limits.has_coproducts_of_finite_and_filtered CategoryTheory.Limits.hasCoproducts_of_finite_and_filtered
 
 theorem has_colimits_of_finite_and_filtered [HasFiniteColimits C]

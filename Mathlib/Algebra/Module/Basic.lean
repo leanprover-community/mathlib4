@@ -94,12 +94,14 @@ theorem add_smul : (r + s) • x = r • x + s • x :=
 
 theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x = x := by
   rw [← add_smul, h, one_smul]
+  -- 🎉 no goals
 #align convex.combo_self Convex.combo_self
 
 variable (R)
 
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
+                                             -- 🎉 no goals
 #align two_smul two_smul
 
 set_option linter.deprecated false in
@@ -120,7 +122,9 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
     add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
+                                        -- 🎉 no goals
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
+                                   -- 🎉 no goals
 #align function.injective.module Function.Injective.module
 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
@@ -129,10 +133,14 @@ protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f :
   { toDistribMulAction := hf.distribMulAction f smul
     add_smul := fun c₁ c₂ x => by
       rcases hf x with ⟨x, rfl⟩
+      -- ⊢ (c₁ + c₂) • ↑f x = c₁ • ↑f x + c₂ • ↑f x
       simp only [add_smul, ← smul, ← f.map_add]
+      -- 🎉 no goals
     zero_smul := fun x => by
       rcases hf x with ⟨x, rfl⟩
+      -- ⊢ 0 • ↑f x = 0
       rw [← f.map_zero, ← smul, zero_smul] }
+      -- 🎉 no goals
 #align function.surjective.module Function.Surjective.module
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
@@ -145,6 +153,8 @@ def Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
     zero_smul := fun x => by rw [← f.map_zero, hsmul, zero_smul]
+                             -- 🎉 no goals
+                                               -- 🎉 no goals
     add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 #align function.surjective.module_left Function.Surjective.moduleLeft
 
@@ -162,6 +172,7 @@ def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
+                                                                       -- 🎉 no goals
 #align module.comp_hom Module.compHom
 
 variable (R)
@@ -177,8 +188,10 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
     map_zero' := AddMonoidHom.ext fun r => show (0:R) • r = 0 by simp
+                                                                 -- 🎉 no goals
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
+                                                                    -- 🎉 no goals
 #align module.to_add_monoid_End Module.toAddMonoidEnd
 #align module.to_add_monoid_End_apply_apply Module.toAddMonoidEnd_apply_apply
 
@@ -197,11 +210,13 @@ theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
 
 theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
   rw [← one_smul R x, ← zero_eq_one, zero_smul]
+  -- 🎉 no goals
 #align module.eq_zero_of_zero_eq_one Module.eq_zero_of_zero_eq_one
 
 @[simp]
 theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
     r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel'_right, one_smul]
+                                  -- 🎉 no goals
 #align smul_add_one_sub_smul smul_add_one_sub_smul
 
 end AddCommMonoid
@@ -257,7 +272,10 @@ theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b
     a • x + b • y = b • (y - x) + x :=
   calc
     a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
     _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
+                              -- 🎉 no goals
 #align convex.combo_eq_smul_sub_add Convex.combo_eq_smul_sub_add
 
 end AddCommGroup
@@ -268,7 +286,9 @@ theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] (P Q 
     (w : ∀ (r : R) (m : M), (haveI := P; r • m) = (haveI := Q; r • m)) :
     P = Q := by
   ext
+  -- ⊢ SMul.smul x✝¹ x✝ = SMul.smul x✝¹ x✝
   exact w _ _
+  -- 🎉 no goals
 #align module.ext' Module.ext'
 
 section Module
@@ -278,27 +298,32 @@ variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
 @[simp]
 theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
+                                   -- 🎉 no goals
 #align neg_smul neg_smul
 
 -- Porting note: simp can prove this
 --@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
+                                             -- 🎉 no goals
 #align neg_smul_neg neg_smul_neg
 
 @[simp]
 theorem Units.neg_smul (u : Rˣ) (x : M) : -u • x = -(u • x) := by
   rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
+  -- 🎉 no goals
 #align units.neg_smul Units.neg_smul
 
 variable (R)
 
 theorem neg_one_smul (x : M) : (-1 : R) • x = -x := by simp
+                                                       -- 🎉 no goals
 #align neg_one_smul neg_one_smul
 
 variable {R}
 
 theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
   simp [add_smul, sub_eq_add_neg]
+  -- 🎉 no goals
 #align sub_smul sub_smul
 
 end Module
@@ -315,9 +340,14 @@ def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] :
     add_left_neg := fun a =>
       show (-1 : R) • a + a = 0 by
         nth_rw 2 [← one_smul R a]
+        -- ⊢ -1 • a + 1 • a = 0
         rw [← add_smul, add_left_neg, zero_smul]
+        -- 🎉 no goals
+                               -- 🎉 no goals
     zsmul := fun z a => (z : R) • a
+                                 -- 🎉 no goals
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
+                                -- 🎉 no goals
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
     zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
 #align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
@@ -390,8 +420,11 @@ variable (R)
 /-- `nsmul` is equal to any other module structure via a cast. -/
 theorem nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := by
   induction' n with n ih
+  -- ⊢ Nat.zero • b = ↑Nat.zero • b
   · rw [Nat.zero_eq, Nat.cast_zero, zero_smul, zero_smul]
+    -- 🎉 no goals
   · rw [Nat.succ_eq_add_one, Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
+    -- 🎉 no goals
 #align nsmul_eq_smul_cast nsmul_eq_smul_cast
 
 end
@@ -401,19 +434,25 @@ mathlib all `AddCommMonoid`s should normally have exactly one `ℕ`-module struc
 -/
 theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) :
     @SMul.smul ℕ M h.toSMul n x = n • x := by rw [nsmul_eq_smul_cast ℕ n x, Nat.cast_id]; rfl
+                                              -- ⊢ SMul.smul n x = n • x
+                                                                                          -- 🎉 no goals
 #align nat_smul_eq_nsmul nat_smul_eq_nsmul
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
 def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
   default := by infer_instance
+                -- 🎉 no goals
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
+                                          -- 🎉 no goals
 #align add_comm_monoid.nat_module.unique AddCommMonoid.natModule.unique
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y :=
     Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
+                    -- 🎉 no goals
     fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
+                   -- 🎉 no goals
 #align add_comm_monoid.nat_is_scalar_tower AddCommMonoid.nat_isScalarTower
 
 end AddCommMonoid
@@ -430,7 +469,9 @@ variable (R)
 theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
+    -- ⊢ ↑(↑(AddMonoidHom.flip (smulAddHom ℤ M)) b) 1 = ↑(AddMonoidHom.comp (↑(AddMon …
     simp
+    -- 🎉 no goals
   FunLike.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
 
@@ -440,13 +481,17 @@ end
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) :
     @SMul.smul ℤ M h.toSMul n x = n • x := by rw [zsmul_eq_smul_cast ℤ n x, Int.cast_id]; rfl
+                                              -- ⊢ SMul.smul n x = n • x
+                                                                                          -- 🎉 no goals
 #align int_smul_eq_zsmul int_smul_eq_zsmul
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
 def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
   default := by infer_instance
+                -- 🎉 no goals
   uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
+                                          -- 🎉 no goals
 #align add_comm_group.int_module.unique AddCommGroup.intModule.unique
 
 end AddCommGroup
@@ -454,12 +499,14 @@ end AddCommGroup
 theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
     (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂] (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [← zsmul_eq_smul_cast, map_zsmul]
+                                          -- 🎉 no goals
 #align map_int_cast_smul map_int_cast_smul
 
 theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_nsmul]
+  -- 🎉 no goals
 #align map_nat_cast_smul map_nat_cast_smul
 
 theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
@@ -467,24 +514,40 @@ theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
   by_cases hR : (n : R) = 0 <;> by_cases hS : (n : S) = 0
+  -- ⊢ ↑f ((↑n)⁻¹ • x) = (↑n)⁻¹ • ↑f x
+                                -- ⊢ ↑f ((↑n)⁻¹ • x) = (↑n)⁻¹ • ↑f x
+                                -- ⊢ ↑f ((↑n)⁻¹ • x) = (↑n)⁻¹ • ↑f x
   · simp [hR, hS, map_zero f]
+    -- 🎉 no goals
   · suffices ∀ y, f y = 0 by rw [this, this, smul_zero]
+    -- ⊢ ∀ (y : M), ↑f y = 0
     clear x
+    -- ⊢ ∀ (y : M), ↑f y = 0
     intro x
+    -- ⊢ ↑f x = 0
     rw [← inv_smul_smul₀ hS (f x), ← map_nat_cast_smul f R S]
+    -- ⊢ (↑n)⁻¹ • ↑f (↑n • x) = 0
     simp [hR, map_zero f]
+    -- 🎉 no goals
   · suffices ∀ y, f y = 0 by simp [this]
+    -- ⊢ ∀ (y : M), ↑f y = 0
     clear x
+    -- ⊢ ∀ (y : M), ↑f y = 0
     intro x
+    -- ⊢ ↑f x = 0
     rw [← smul_inv_smul₀ hR x, map_nat_cast_smul f R S, hS, zero_smul]
+    -- 🎉 no goals
   · rw [← inv_smul_smul₀ hS (f _), ← map_nat_cast_smul f R S, smul_inv_smul₀ hR]
+    -- 🎉 no goals
 #align map_inv_nat_cast_smul map_inv_nat_cast_smul
 
 theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
+  -- ⊢ ↑f ((↑↑n)⁻¹ • x) = (↑↑n)⁻¹ • ↑f x
   · rw [Int.cast_Nat_cast, Int.cast_Nat_cast, map_inv_nat_cast_smul _ R S]
+    -- 🎉 no goals
   · simp_rw [Int.cast_neg, Int.cast_Nat_cast, inv_neg, neg_smul, map_neg,
       map_inv_nat_cast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_int_cast_smul
@@ -594,6 +657,7 @@ theorem Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] 
     (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h =>
     Or.imp_right (@hf _ _) <| h0.symm ▸ eq_zero_or_eq_zero_of_smul_eq_zero (by rw [← hs, h, h0])⟩
+                                                                               -- 🎉 no goals
 #align function.injective.no_zero_smul_divisors Function.Injective.noZeroSMulDivisors
 
 -- See note [lower instance priority]
@@ -618,6 +682,7 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
 #align smul_eq_zero smul_eq_zero
 
 theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
+                                                           -- 🎉 no goals
 #align smul_ne_zero_iff smul_ne_zero_iff
 
 end SMulWithZero
@@ -636,15 +701,20 @@ variable (R) (M)
 theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
+    -- ⊢ c • x = 0 → c = 0 ∨ x = 0
     rw [nsmul_eq_smul_cast R, smul_eq_zero]
+    -- ⊢ ↑c = 0 ∨ x = 0 → c = 0 ∨ x = 0
     simp⟩
+    -- 🎉 no goals
 #align nat.no_zero_smul_divisors Nat.noZeroSMulDivisors
 
 -- Porting note: left-hand side never simplifies when using simp on itself
 --@[simp]
 theorem two_nsmul_eq_zero {v : M} : 2 • v = 0 ↔ v = 0 := by
   haveI := Nat.noZeroSMulDivisors R M
+  -- ⊢ 2 • v = 0 ↔ v = 0
   simp [smul_eq_zero]
+  -- 🎉 no goals
 #align two_nsmul_eq_zero two_nsmul_eq_zero
 
 end Nat
@@ -655,7 +725,9 @@ variable (R M)
 zero as well. Usually `M` is an `R`-algebra. -/
 theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
   refine' ⟨fun m n h => @Nat.cast_injective M _ _ _ _ _⟩
+  -- ⊢ ↑m = ↑n
   rw [← nsmul_one, ← nsmul_one, nsmul_eq_smul_cast R m (1 : M), nsmul_eq_smul_cast R n (1 : M), h]
+  -- 🎉 no goals
 #align char_zero.of_module CharZero.of_module
 
 end Module
@@ -691,9 +763,11 @@ variable (R M)
 
 theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
+  -- 🎉 no goals
 #align self_eq_neg self_eq_neg
 
 theorem neg_eq_self {v : M} : -v = v ↔ v = 0 := by rw [eq_comm, self_eq_neg R M]
+                                                   -- 🎉 no goals
 #align neg_eq_self neg_eq_self
 
 theorem self_ne_neg {v : M} : v ≠ -v ↔ v ≠ 0 :=
@@ -748,6 +822,7 @@ instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {k} {x : M} h => by
     simpa only [zsmul_eq_smul_cast ℚ k x, smul_eq_zero, Rat.zero_iff_num_zero] using h⟩
+    -- 🎉 no goals
   -- Porting note: old proof was:
   --⟨fun {k x} h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩
 #align rat_module.no_zero_smul_divisors RatModule.noZeroSMulDivisors
@@ -758,12 +833,14 @@ end NoZeroSMulDivisors
 --@[simp]
 theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
+  -- 🎉 no goals
 #align nat.smul_one_eq_coe Nat.smul_one_eq_coe
 
 -- Porting note: simp can prove this
 --@[simp]
 theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
+  -- 🎉 no goals
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
 assert_not_exists Multiset

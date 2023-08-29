@@ -113,6 +113,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
   (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
+                                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
 
@@ -124,6 +125,9 @@ theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ 
     (ih : ∀ (U : Opens X) (hxU : x ∈ U), F.germ ⟨x, hxU⟩ ≫ f₁ = F.germ ⟨x, hxU⟩ ≫ f₂) : f₁ = f₂ :=
   colimit.hom_ext fun U => by
     induction' U using Opposite.rec with U; cases' U with U hxU; exact ih U hxU
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inc …
+                                            -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inc …
+                                                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_hom_ext TopCat.Presheaf.stalk_hom_ext
 
@@ -143,7 +147,9 @@ def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
   refine' ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
+  -- ⊢ stalk (f _* F) (↑f x) ⟶ colimit ((OpenNhds.map f x).op ⋙ ((whiskeringLeft (O …
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward TopCat.Presheaf.stalkPushforward
 
@@ -152,8 +158,11 @@ theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
     (x : (Opens.map f).obj U) :
       (f _* F).germ ⟨(f : X → Y) (x : X), x.2⟩ ≫ F.stalkPushforward C f x = F.germ x := by
   rw [stalkPushforward, germ, colimit.ι_map_assoc, colimit.ι_pre, whiskerRight_app]
+  -- ⊢ F.map (NatTrans.app (NatTrans.op (OpenNhds.inclusionMapIso f ↑x).inv) (op {  …
   erw [CategoryTheory.Functor.map_id, Category.id_comp]
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds ↑x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.in …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward_germ TopCat.Presheaf.stalkPushforward_germ
 
@@ -178,11 +187,17 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
     ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).hom := by
   -- Porting note: We need to this to help ext tactic.
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+  -- ⊢ stalkPushforward C (𝟙 X) ℱ x = (stalkFunctor C x).map (Pushforward.id ℱ).hom
   ext1 j
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(𝟙 X) x))ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (Ope …
   induction' j with j
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(𝟙 X) x))ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (Ope …
   rcases j with ⟨⟨_, _⟩, _⟩
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(𝟙 X) x))ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (Ope …
   erw [colimit.ι_map_assoc]
+  -- ⊢ NatTrans.app (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso (𝟙 X) x).i …
   simp [stalkFunctor, stalkPushforward]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 
@@ -193,38 +208,63 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+  -- ⊢ stalkPushforward C (f ≫ g) ℱ x = stalkPushforward C g (f _* ℱ) (↑f x) ≫ stal …
   ext U
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(f ≫ g) x))ᵒᵖ (Opens ↑Z)ᵒᵖ C).obj (O …
   rcases U with ⟨⟨_, _⟩, _⟩
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(f ≫ g) x))ᵒᵖ (Opens ↑Z)ᵒᵖ C).obj (O …
   simp only [colimit.ι_map_assoc, colimit.ι_pre_assoc, whiskerRight_app, Category.assoc]
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(f ≫ g) x))ᵒᵖ (Opens ↑Z)ᵒᵖ C).obj (O …
   simp [stalkFunctor, stalkPushforward]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
 theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
     (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
+  -- ⊢ IsIso (stalkPushforward C f F x)
   convert IsIso.of_iso
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
               ((OpenNhds.inclusion (f x)).op ⋙ f _* F) :
             _).symm ≪≫
         colim.mapIso _)
   swap
+  -- ⊢ (IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).op ⋙ (OpenNhds.inclusion (↑f x) …
   · fapply NatIso.ofComponents
+    -- ⊢ (X_1 : (OpenNhds x)ᵒᵖ) → ((IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).op ⋙  …
     · intro U
+      -- ⊢ ((IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).op ⋙ (OpenNhds.inclusion (↑f x …
       refine' F.mapIso (eqToIso _)
+      -- ⊢ (Opens.map f).op.obj ((OpenNhds.inclusion (↑f x)).op.obj ((IsOpenMap.functor …
       dsimp only [Functor.op]
+      -- ⊢ op ((Opens.map f).obj (op ((OpenNhds.inclusion (↑f x)).obj (op ((IsOpenMap.f …
       exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
+      -- 🎉 no goals
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
+      -- ⊢ ((IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).op ⋙ (OpenNhds.inclusion (↑f x …
+                   -- ⊢ F.map ((Opens.map f).op.map ((OpenNhds.inclusion (↑f x)).op.map ((IsOpenMap. …
+                                                     -- 🎉 no goals
   · change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+    -- ⊢ stalkPushforward C f F x = ((Functor.Final.colimitIso (IsOpenMap.functorNhds …
     ext U
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhd …
     rw [← Iso.comp_inv_eq]
+    -- ⊢ (colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNh …
     erw [colimit.ι_map_assoc]
+    -- ⊢ (NatTrans.app (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) …
     rw [colimit.ι_pre, Category.assoc]
+    -- ⊢ NatTrans.app (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv)  …
     erw [colimit.ι_map_assoc, colimit.ι_pre, ← F.map_comp_assoc]
+    -- ⊢ F.map (NatTrans.app (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) U ≫ (eq …
     apply colimit.w ((OpenNhds.inclusion (f x)).op ⋙ f _* F) _
+    -- ⊢ U ⟶ (IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).op.obj ((OpenNhds.map f x). …
     dsimp only [Functor.op]
+    -- ⊢ U ⟶ op ((IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).obj (op ((OpenNhds.map  …
     refine' ((homOfLE _).op : op (unop U) ⟶ _)
+    -- ⊢ (IsOpenMap.functorNhds (_ : IsOpenMap ↑f) x).obj (op ((OpenNhds.map f x).obj …
     exact Set.image_preimage_subset _ _
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.stalk_pushforward_iso_of_open_embedding TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding
 
@@ -248,6 +288,8 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
       ι :=
         { app := fun V => F.germ ⟨((f : X → Y) (x : X)), V.hom.unop.le x.2⟩
           naturality := fun _ _ i => by erw [Category.comp_id]; exact F.germ_res i.left.unop _ } }
+                                        -- ⊢ (Lan.diagram (Opens.map f).op F (op U)).map i ≫ (fun V => germ F { val := ↑f …
+                                                                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_to_pullback_stalk TopCat.Presheaf.germToPullbackStalk
 
@@ -259,6 +301,8 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
       ι :=
         { app := fun U => F.germToPullbackStalk _ f (unop U).1 ⟨x, (unop U).2⟩
           naturality := fun _ _ _ => by erw [colimit.pre_desc, Category.comp_id]; congr } }
+                                        -- ⊢ colimit.desc (CostructuredArrow.map ((OpenNhds.inclusion x).op.map x✝) ⋙ Lan …
+                                                                                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_inv TopCat.Presheaf.stalkPullbackInv
 
@@ -272,20 +316,31 @@ def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
       stalkPullbackHom stalkPullbackInv stalkFunctor Presheaf.pullback stalkPushforward
       germToPullbackStalk germ
     change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+    -- ⊢ (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhds.inclusio …
     ext j
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhd …
     induction' j with j
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhd …
     cases j
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhd …
     simp only [TopologicalSpace.OpenNhds.inclusionMapIso_inv, whiskerRight_app, whiskerLeft_app,
       whiskeringLeft_obj_map, Functor.comp_map, colimit.ι_map_assoc, NatTrans.op_id, lan_obj_map,
       pushforwardPullbackAdjunction_unit_app_app, Category.assoc, colimit.ι_pre_assoc]
     erw [colimit.ι_desc, colimit.pre_desc, colimit.ι_desc, Category.comp_id]
+    -- ⊢ NatTrans.app (Cocone.whisker (CostructuredArrow.map (NatTrans.app (𝟙 (OpenNh …
     simp
+    -- 🎉 no goals
   inv_hom_id := by
     delta stalkPullbackHom stalkPullbackInv stalkFunctor Presheaf.pullback stalkPushforward
+    -- ⊢ colimit.desc ((OpenNhds.inclusion x).op ⋙ pullbackObj f F) { pt := stalk F ( …
     change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+    -- ⊢ colimit.desc ((OpenNhds.inclusion x).op ⋙ pullbackObj f F) { pt := stalk F ( …
     ext ⟨U_obj, U_property⟩
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inc …
     change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+    -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inc …
     ext ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
+    -- ⊢ colimit.ι (Lan.diagram (Opens.map f).op F ((OpenNhds.inclusion x).op.obj { u …
     erw [colimit.map_desc, colimit.map_desc, colimit.ι_desc_assoc, colimit.ι_desc_assoc,
       colimit.ι_desc, Category.comp_id]
     simp only [Cocone.whisker_ι, colimit.cocone_ι, OpenNhds.inclusionMapIso_inv,
@@ -297,8 +352,11 @@ def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
         (@homOfLE (OpenNhds x) _ ⟨_, U_property⟩
             ⟨(Opens.map f).obj (unop j_left), j_hom.unop.le U_property⟩ j_hom.unop.le).op]
     erw [colimit.ι_pre_assoc (Lan.diagram _ F _) (CostructuredArrow.map _)]
+    -- ⊢ colimit.ι (Lan.diagram (Opens.map f).op F (op ((Opens.map f).obj ((OpenNhds. …
     erw [colimit.ι_pre_assoc (Lan.diagram _ F (op U_obj)) (CostructuredArrow.map _)]
+    -- ⊢ colimit.ι (Lan.diagram (Opens.map f).op F (op U_obj)) ((CostructuredArrow.ma …
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_iso TopCat.Presheaf.stalkPullbackIso
 
@@ -312,15 +370,22 @@ variable {C}
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
   refine' colimit.desc _ ⟨_, fun U => _, _⟩
+  -- ⊢ (((whiskeringLeft (OpenNhds y)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inclusion y). …
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
         (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩)
   · intro U V i
+    -- ⊢ (((whiskeringLeft (OpenNhds y)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inclusion y). …
     dsimp
+    -- ⊢ F.map ((OpenNhds.inclusion y).map i.unop).op ≫ colimit.ι ((OpenNhds.inclusio …
     rw [Category.comp_id]
+    -- ⊢ F.map ((OpenNhds.inclusion y).map i.unop).op ≫ colimit.ι ((OpenNhds.inclusio …
     let U' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩
+    -- ⊢ F.map ((OpenNhds.inclusion y).map i.unop).op ≫ colimit.ι ((OpenNhds.inclusio …
     let V' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.2 (unop V).2 : _)⟩
+    -- ⊢ F.map ((OpenNhds.inclusion y).map i.unop).op ≫ colimit.ι ((OpenNhds.inclusio …
     exact colimit.w ((OpenNhds.inclusion x).op ⋙ F) (show V' ⟶ U' from i.unop).op
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes TopCat.Presheaf.stalkSpecializes
 
@@ -342,7 +407,9 @@ set_option linter.uppercaseLean3 false in
 theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
+  -- ⊢ germ F { val := x, property := hxU✝ } ≫ stalkSpecializes F (_ : x ⤳ x) = ger …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_refl TopCat.Presheaf.stalkSpecializes_refl
 
@@ -351,7 +418,9 @@ theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X
     (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
+  -- ⊢ germ F { val := z, property := hxU✝ } ≫ stalkSpecializes F h' ≫ stalkSpecial …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_comp TopCat.Presheaf.stalkSpecializes_comp
 
@@ -360,7 +429,11 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
     F.stalkSpecializes h ≫ (stalkFunctor C x).map f =
       (stalkFunctor C y).map f ≫ G.stalkSpecializes h := by
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+  -- ⊢ stalkSpecializes F h ≫ (stalkFunctor C x).map f = (stalkFunctor C y).map f ≫ …
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds y)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inc …
+       -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds y)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inc …
+                           -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_stalk_functor_map TopCat.Presheaf.stalkSpecializes_stalkFunctor_map
 
@@ -369,10 +442,14 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
     (f _* F).stalkSpecializes (f.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
+  -- ⊢ stalkSpecializes (f _* F) (_ : ↑f x ⤳ ↑f y) ≫ stalkPushforward C f F x = sta …
   ext; delta stalkPushforward
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f y))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhd …
+       -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f y))ᵒᵖ (Opens ↑Y)ᵒᵖ C).obj (OpenNhd …
   simp only [stalkSpecializes, colimit.ι_desc_assoc, colimit.ι_map_assoc, colimit.ι_pre,
     Category.assoc, colimit.pre_desc, colimit.ι_desc]
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_stalk_pushforward TopCat.Presheaf.stalkSpecializes_stalkPushforward
 
@@ -381,6 +458,8 @@ set_option linter.uppercaseLean3 false in
 def stalkCongr {X : TopCat} {C : Type*} [Category C] [HasColimits C] (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
+                                                        -- 🎉 no goals
+                                                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_congr TopCat.Presheaf.stalkCongr
 
@@ -403,6 +482,7 @@ theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV
     (ih : F.map iWU.op sU = F.map iWV.op sV) :
       F.germ ⟨x, hxU⟩ sU = F.germ ⟨x, hxV⟩ sV := by
   erw [← F.germ_res iWU ⟨x, hxW⟩, ← F.germ_res iWV ⟨x, hxW⟩, comp_apply, comp_apply, ih]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_ext TopCat.Presheaf.germ_ext
 
@@ -417,10 +497,16 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) 
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
+  -- ⊢ ∀ (s : (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inclus …
   induction U with | h U => ?_
+  -- ⊢ ∀ (s : (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inclus …
+  -- ⊢ ∀ (s : (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inclus …
   cases' U with V m
+  -- ⊢ ∀ (s : (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ C).obj (OpenNhds.inclus …
   intro s e
+  -- ⊢ ∃ U m s, ↑(germ F { val := x, property := m }) s = t
   exact ⟨V, m, s, e⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_exist TopCat.Presheaf.germ_exist
 
@@ -431,6 +517,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
     (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
           (isColimitOfPreserves _ (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_eq TopCat.Presheaf.germ_eq
 
@@ -438,14 +525,23 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
   rcases germ_exist F x s with ⟨U₁, hxU₁, s, rfl⟩
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = t
   rcases germ_exist F x t with ⟨U₂, hxU₂, t, rfl⟩
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   erw [stalkFunctor_map_germ_apply _ ⟨x, _⟩] at hst
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   erw [stalkFunctor_map_germ_apply _ ⟨x, _⟩] at hst
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   obtain ⟨W, hxW, iWU₁, iWU₂, heq⟩ := G.germ_eq x hxU₁ hxU₂ _ _ hst
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   rw [← comp_apply, ← comp_apply, ← f.naturality, ← f.naturality, comp_apply, comp_apply] at heq
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   replace heq := h W heq
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   convert congr_arg (F.germ ⟨x, hxW⟩) heq using 1
+  -- ⊢ ↑(germ F { val := x, property := hxU₁ }) s = ↑(germ F { val := x, property : …
   exacts [(F.germ_res_apply iWU₁ ⟨x, hxW⟩ s).symm, (F.germ_res_apply iWU₂ ⟨x, hxW⟩ t).symm]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_map_injective_of_app_injective TopCat.Presheaf.stalkFunctor_map_injective_of_app_injective
 
@@ -459,14 +555,21 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.
   choose V m i₁ i₂ heq using fun x : U => F.presheaf.germ_eq x.1 x.2 x.2 s t (h x)
+  -- ⊢ s = t
   -- Since `F` is a sheaf, we can prove the equality locally, if we can show that these
   -- neighborhoods form a cover of `U`.
   apply F.eq_of_locally_eq' V U i₁
+  -- ⊢ U ≤ iSup V
   · intro x hxU
+    -- ⊢ x ∈ ↑(iSup V)
     erw [Opens.mem_iSup]
+    -- ⊢ ∃ i, x ∈ V i
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
+    -- 🎉 no goals
   · intro x
+    -- ⊢ ↑(F.val.map (i₁ x).op) s = ↑(F.val.map (i₁ x).op) t
     rw [heq, Subsingleton.elim (i₁ x) (i₂ x)]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.section_ext TopCat.Presheaf.section_ext
 
@@ -480,6 +583,7 @@ theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshea
     Function.Injective (f.app (op U)) := fun s t hst =>
   section_ext F _ _ _ fun x =>
     h x <| by erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, hst]
+              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_injective_of_stalk_functor_map_injective TopCat.Presheaf.app_injective_of_stalkFunctor_map_injective
 
@@ -538,9 +642,11 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
           f.1.app (op V) s = G.1.map iVU.op t) :
     Function.Surjective (f.1.app (op U)) := by
   intro t
+  -- ⊢ ∃ a, ↑(NatTrans.app f.val (op U)) a = t
   -- We use the axiom of choice to pick around each point `x` an open neighborhood `V` and a
   -- preimage under `f` on `V`.
   choose V mV iVU sf heq using hsurj t
+  -- ⊢ ∃ a, ↑(NatTrans.app f.val (op U)) a = t
   -- These neighborhoods clearly cover all of `U`.
   have V_cover : U ≤ iSup V := by
     intro x hxU
@@ -554,16 +660,24 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
       intro x
       rw [← comp_apply, ← f.1.naturality, comp_apply, s_spec, heq]
   intro x y
+  -- ⊢ ↑(F.val.map (Opens.infLELeft (V x) (V y)).op) (sf x) = ↑(F.val.map (Opens.in …
   -- What's left to show here is that the sections `sf` are compatible, i.e. they agree on
   -- the intersections `V x ⊓ V y`. We prove this by showing that all germs are equal.
   apply section_ext
+  -- ⊢ ∀ (x_1 : { x_1 // x_1 ∈ V x ⊓ V y }), ↑(germ (Sheaf.presheaf F) x_1) (↑(F.va …
   intro z
+  -- ⊢ ↑(germ (Sheaf.presheaf F) z) (↑(F.val.map (Opens.infLELeft (V x) (V y)).op)  …
   -- Here, we need to use injectivity of the stalk maps.
   apply hinj ⟨z, (iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) z.2)⟩
+  -- ⊢ ↑((stalkFunctor C ↑{ val := ↑z, property := (_ : ↑z ∈ ↑U) }).map f.val) (↑(g …
   dsimp only
+  -- ⊢ ↑((stalkFunctor C ↑z).map f.val) (↑(germ (Sheaf.presheaf F) z) (↑(F.val.map  …
   erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
+  -- ⊢ ↑(colimit.ι ((OpenNhds.inclusion ↑z).op ⋙ G.val) (op { obj := V x ⊓ V y, pro …
   simp_rw [← comp_apply, f.1.naturality, comp_apply, heq, ← comp_apply, ← G.1.map_comp]
+  -- ⊢ ↑(colimit.ι ((OpenNhds.inclusion ↑z).op ⋙ G.val) (op { obj := V x ⊓ V y, pro …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_surjective_of_injective_of_locally_surjective TopCat.Presheaf.app_surjective_of_injective_of_locally_surjective
 
@@ -571,19 +685,28 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Surjective (f.1.app (op U)) := by
   refine' app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
+  -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x).2 (G.presheaf.germ x t)
+  -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
   -- ... and this preimage must come from some section `s₁` defined on some open neighborhood `V₁`
   obtain ⟨V₁, hxV₁, s₁, hs₁⟩ := F.presheaf.germ_exist x.1 s₀
+  -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
   subst hs₁; rename' hs₀ => hs₁
+  -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
+             -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
   erw [stalkFunctor_map_germ_apply V₁ ⟨x.1, hxV₁⟩ f.1 s₁] at hs₁
+  -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
   -- Now, the germ of `f.app (op V₁) s₁` equals the germ of `t`, hence they must coincide on
   -- some open neighborhood `V₂`.
   obtain ⟨V₂, hxV₂, iV₂V₁, iV₂U, heq⟩ := G.presheaf.germ_eq x.1 hxV₁ x.2 _ _ hs₁
+  -- ⊢ ∃ V x iVU s, ↑(NatTrans.app f.val (op V)) s = ↑(G.val.map iVU.op) t
   -- The restriction of `s₁` to that neighborhood is our desired local preimage.
   use V₂, hxV₂, iV₂U, F.1.map iV₂V₁.op s₁
+  -- ⊢ ↑(NatTrans.app f.val (op V₂)) (↑(F.val.map iV₂V₁.op) s₁) = ↑(G.val.map iV₂U. …
   rw [← comp_apply, f.1.naturality, comp_apply, heq]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_surjective_of_stalk_functor_map_bijective TopCat.Presheaf.app_surjective_of_stalkFunctor_map_bijective
 
@@ -602,10 +725,15 @@ theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : O
   suffices IsIso ((forget C).map (f.1.app (op U))) by
     exact isIso_of_reflects_iso (f.1.app (op U)) (forget C)
   rw [isIso_iff_bijective]
+  -- ⊢ Function.Bijective ((forget C).map (NatTrans.app f.val (op U)))
   apply app_bijective_of_stalkFunctor_map_bijective
+  -- ⊢ ∀ (x : { x // x ∈ U }), Function.Bijective ↑((stalkFunctor C ↑x).map f.val)
   intro x
+  -- ⊢ Function.Bijective ↑((stalkFunctor C ↑x).map f.val)
   apply (isIso_iff_bijective _).mp
+  -- ⊢ IsIso ↑((stalkFunctor C ↑x).map f.val)
   exact Functor.map_isIso (forget C) ((stalkFunctor C x.1).map f.1)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_is_iso_of_stalk_functor_map_iso TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
 
@@ -619,11 +747,15 @@ theorem isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G)
   -- Since the inclusion functor from sheaves to presheaves is fully faithful, it suffices to
   -- show that `f`, as a morphism between _presheaves_, is an isomorphism.
   suffices IsIso ((Sheaf.forget C X).map f) by exact isIso_of_fully_faithful (Sheaf.forget C X) f
+  -- ⊢ IsIso ((Sheaf.forget C X).map f)
   -- We show that all components of `f` are isomorphisms.
   suffices ∀ U : (Opens X)ᵒᵖ, IsIso (f.1.app U) by
     exact @NatIso.isIso_of_isIso_app _ _ _ _ F.1 G.1 f.1 this
   intro U; induction U
+  -- ⊢ IsIso (NatTrans.app f.val U)
+           -- ⊢ IsIso (NatTrans.app f.val (op X✝))
   apply app_isIso_of_stalkFunctor_map_iso
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_iso_of_stalk_functor_map_iso TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
 

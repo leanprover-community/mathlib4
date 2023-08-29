@@ -65,7 +65,9 @@ open BigOperators Polynomial LocalRing Polynomial Function List
 theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) := by
   constructor
+  -- ⊢ ∀ (a : R), IsUnit (↑(Ideal.Quotient.mk I) a) → IsUnit a
   intro a h
+  -- ⊢ IsUnit a
   have : IsUnit (Ideal.Quotient.mk (Ideal.jacobson ⊥) a) := by
     rw [isUnit_iff_exists_inv] at *
     obtain ⟨b, hb⟩ := h
@@ -74,12 +76,17 @@ theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     rw [← (Ideal.Quotient.mk _).map_one, ← (Ideal.Quotient.mk _).map_mul, Ideal.Quotient.eq] at hb ⊢
     exact h hb
   obtain ⟨⟨x, y, h1, h2⟩, rfl : x = _⟩ := this
+  -- ⊢ IsUnit a
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
+  -- ⊢ IsUnit a
   rw [← (Ideal.Quotient.mk _).map_mul, ← (Ideal.Quotient.mk _).map_one, Ideal.Quotient.eq,
     Ideal.mem_jacobson_bot] at h1 h2
   specialize h1 1
+  -- ⊢ IsUnit a
   simp at h1
+  -- ⊢ IsUnit a
   exact h1.1
+  -- 🎉 no goals
 #align is_local_ring_hom_of_le_jacobson_bot isLocalRingHom_of_le_jacobson_bot
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
@@ -115,7 +122,9 @@ class HenselianLocalRing (R : Type*) [CommRing R] extends LocalRing R : Prop whe
 instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLocalRing K where
   is_henselian f _ a₀ h₁ _ := by
     simp only [(maximalIdeal K).eq_bot_of_prime, Ideal.mem_bot] at h₁ ⊢
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ = 0
     exact ⟨a₀, h₁, sub_self _⟩
+    -- 🎉 no goals
 #align field.henselian Field.henselian
 
 theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
@@ -128,47 +137,77 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
             (_ : f.eval₂ φ a₀ = 0) (_ : f.derivative.eval₂ φ a₀ ≠ 0),
             ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
   tfae_have _3_2 : 3 → 2;
+  -- ⊢ (∀ {K : Type u} [inst : Field K] (φ : R →+* K), Surjective ↑φ → ∀ (f : R[X]) …
   · intro H
+    -- ⊢ ∀ (f : R[X]), Monic f → ∀ (a₀ : ResidueField R), ↑(aeval a₀) f = 0 → ↑(aeval …
     exact H (residue R) Ideal.Quotient.mk_surjective
+    -- 🎉 no goals
   tfae_have _2_1 : 2 → 1
+  -- ⊢ (∀ (f : R[X]), Monic f → ∀ (a₀ : ResidueField R), ↑(aeval a₀) f = 0 → ↑(aeva …
   · intro H
+    -- ⊢ HenselianLocalRing R
     constructor
+    -- ⊢ ∀ (f : R[X]), Monic f → ∀ (a₀ : R), Polynomial.eval a₀ f ∈ maximalIdeal R →  …
     intro f hf a₀ h₁ h₂
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ ∈ maximalIdeal R
     specialize H f hf (residue R a₀)
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ ∈ maximalIdeal R
     have aux := flip mem_nonunits_iff.mp h₂
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ ∈ maximalIdeal R
     simp only [aeval_def, ResidueField.algebraMap_eq, eval₂_at_apply, ←
       Ideal.Quotient.eq_zero_iff_mem, ← LocalRing.mem_maximalIdeal] at H h₁ aux
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ ∈ maximalIdeal R
     refine' ⟨a, ha₁, _⟩
+    -- ⊢ a - a₀ ∈ maximalIdeal R
     rw [← Ideal.Quotient.eq_zero_iff_mem]
+    -- ⊢ ↑(Ideal.Quotient.mk (maximalIdeal R)) (a - a₀) = 0
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
+    -- 🎉 no goals
   tfae_have _1_3 : 1 → 3
+  -- ⊢ HenselianLocalRing R → ∀ {K : Type u} [inst : Field K] (φ : R →+* K), Surjec …
   · intro hR K _K φ hφ f hf a₀ h₁ h₂
+    -- ⊢ ∃ a, IsRoot f a ∧ ↑φ a = a₀
     obtain ⟨a₀, rfl⟩ := hφ a₀
+    -- ⊢ ∃ a, IsRoot f a ∧ ↑φ a = ↑φ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀
+    -- ⊢ ∃ a, IsRoot f a ∧ ↑φ a = ↑φ a₀
     simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker φ] at H h₁ h₂
+    -- ⊢ ∃ a, IsRoot f a ∧ ↑φ a = ↑φ a₀
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
       contrapose! h₂
       rwa [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← LocalRing.ker_eq_maximalIdeal φ hφ,
         RingHom.mem_ker] at h₂)
     refine' ⟨a, ha₁, _⟩
+    -- ⊢ ↑φ a = ↑φ a₀
     rwa [φ.map_sub, sub_eq_zero] at ha₂
+    -- 🎉 no goals
   tfae_finish
+  -- 🎉 no goals
 #align henselian_local_ring.tfae HenselianLocalRing.TFAE
 
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] : HenselianRing R (maximalIdeal R)
     where
   jac := by
     rw [Ideal.jacobson, le_sInf_iff]
+    -- ⊢ ∀ (b : Ideal R), b ∈ {J | ⊥ ≤ J ∧ Ideal.IsMaximal J} → maximalIdeal R ≤ b
     rintro I ⟨-, hI⟩
+    -- ⊢ maximalIdeal R ≤ I
     exact (eq_maximalIdeal hI).ge
+    -- 🎉 no goals
   is_henselian := by
     intro f hf a₀ h₁ h₂
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ ∈ maximalIdeal R
     refine' HenselianLocalRing.is_henselian f hf a₀ h₁ _
+    -- ⊢ IsUnit (Polynomial.eval a₀ (↑derivative f))
     contrapose! h₂
+    -- ⊢ ¬IsUnit (↑(Ideal.Quotient.mk (maximalIdeal R)) (Polynomial.eval a₀ (↑derivat …
     rw [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
+    -- ⊢ ¬IsUnit (↑(Ideal.Quotient.mk (maximalIdeal R)) (Polynomial.eval a₀ (↑derivat …
     rw [h₂]
+    -- ⊢ ¬IsUnit 0
     exact not_isUnit_zero
+    -- 🎉 no goals
 
 -- see Note [lower instance priority]
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
@@ -177,6 +216,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
   jac := IsAdicComplete.le_jacobson_bot _
   is_henselian := by
     intro f _ a₀ h₁ h₂
+    -- ⊢ ∃ a, IsRoot f a ∧ a - a₀ ∈ I
     classical
       let f' := derivative f
       -- we define a sequence `c n` by starting at `a₀` and then continually

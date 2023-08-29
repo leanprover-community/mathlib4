@@ -31,17 +31,29 @@ This is just a matter of unravelling definitions and using the Bernstein approxi
 -/
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
   apply eq_top_iff.mpr
+  -- ⊢ ⊤ ≤ Subalgebra.topologicalClosure (polynomialFunctions I)
   rintro f -
+  -- ⊢ f ∈ Subalgebra.topologicalClosure (polynomialFunctions I)
   refine' Filter.Frequently.mem_closure _
+  -- ⊢ ∃ᶠ (x : C(↑I, ℝ)) in nhds f, x ∈ ↑(polynomialFunctions I)
   refine' Filter.Tendsto.frequently (bernsteinApproximation_uniform f) _
+  -- ⊢ ∃ᶠ (x : ℕ) in atTop, bernsteinApproximation x f ∈ ↑(polynomialFunctions I)
   apply frequently_of_forall
+  -- ⊢ ∀ (x : ℕ), bernsteinApproximation x f ∈ ↑(polynomialFunctions I)
   intro n
+  -- ⊢ bernsteinApproximation n f ∈ ↑(polynomialFunctions I)
   simp only [SetLike.mem_coe]
+  -- ⊢ bernsteinApproximation n f ∈ polynomialFunctions I
   apply Subalgebra.sum_mem
+  -- ⊢ ∀ (x : Fin (n + 1)), x ∈ Finset.univ → ↑f (bernstein.z x) • bernstein n ↑x ∈ …
   rintro n -
+  -- ⊢ ↑f (bernstein.z n) • bernstein n✝ ↑n ∈ polynomialFunctions I
   apply Subalgebra.smul_mem
+  -- ⊢ bernstein n✝ ↑n ∈ polynomialFunctions I
   dsimp [bernstein, polynomialFunctions]
+  -- ⊢ Polynomial.toContinuousMapOn (bernsteinPolynomial ℝ n✝ ↑n) I ∈ Subalgebra.ma …
   simp
+  -- 🎉 no goals
 #align polynomial_functions_closure_eq_top' polynomialFunctions_closure_eq_top'
 
 /-- The **Weierstrass Approximation Theorem**:
@@ -54,6 +66,7 @@ so we may as well get this done first.)
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
   cases' lt_or_le a b with h h
+  -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
@@ -62,21 +75,31 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- This operation is itself a homeomorphism
     -- (with respect to the norm topologies on continuous functions).
     let W' : C(Set.Icc a b, ℝ) ≃ₜ C(I, ℝ) := compRightHomeomorph ℝ (iccHomeoI a b h).symm
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     have w : (W : C(Set.Icc a b, ℝ) → C(I, ℝ)) = W' := rfl
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     -- Thus we take the statement of the Weierstrass approximation theorem for `[0,1]`,
     have p := polynomialFunctions_closure_eq_top'
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     -- and pullback both sides, obtaining an equation between subalgebras of `C([a,b], ℝ)`.
     apply_fun fun s => s.comap W at p
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     simp only [Algebra.comap_top] at p
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     -- Since the pullback operation is continuous, it commutes with taking `topologicalClosure`,
     rw [Subalgebra.topologicalClosure_comap_homeomorph _ W W' w] at p
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     -- and precomposing with an affine map takes polynomial functions to polynomial functions.
     rw [polynomialFunctions.comap_compRightAlgHom_iccHomeoI] at p
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     -- 🎉
     exact p
+    -- 🎉 no goals
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
     have : Subsingleton (Set.Icc a b) := (Set.subsingleton_coe _).mpr $ Set.subsingleton_Icc_of_ge h
+    -- ⊢ Subalgebra.topologicalClosure (polynomialFunctions (Set.Icc a b)) = ⊤
     apply Subsingleton.elim
+    -- 🎉 no goals
 #align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 
 /-- An alternative statement of Weierstrass' theorem.
@@ -86,7 +109,9 @@ Every real-valued continuous function on `[a,b]` is a uniform limit of polynomia
 theorem continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc a b, ℝ)) :
     f ∈ (polynomialFunctions (Set.Icc a b)).topologicalClosure := by
   rw [polynomialFunctions_closure_eq_top _ _]
+  -- ⊢ f ∈ ⊤
   simp
+  -- 🎉 no goals
 #align continuous_map_mem_polynomial_functions_closure continuousMap_mem_polynomialFunctions_closure
 
 open scoped Polynomial
@@ -99,10 +124,15 @@ Every real-valued continuous function on `[a,b]` is within any `ε > 0` of some 
 theorem exists_polynomial_near_continuousMap (a b : ℝ) (f : C(Set.Icc a b, ℝ)) (ε : ℝ)
     (pos : 0 < ε) : ∃ p : ℝ[X], ‖p.toContinuousMapOn _ - f‖ < ε := by
   have w := mem_closure_iff_frequently.mp (continuousMap_mem_polynomialFunctions_closure _ _ f)
+  -- ⊢ ∃ p, ‖Polynomial.toContinuousMapOn p (Set.Icc a b) - f‖ < ε
   rw [Metric.nhds_basis_ball.frequently_iff] at w
+  -- ⊢ ∃ p, ‖Polynomial.toContinuousMapOn p (Set.Icc a b) - f‖ < ε
   obtain ⟨-, H, ⟨m, ⟨-, rfl⟩⟩⟩ := w ε pos
+  -- ⊢ ∃ p, ‖Polynomial.toContinuousMapOn p (Set.Icc a b) - f‖ < ε
   rw [Metric.mem_ball, dist_eq_norm] at H
+  -- ⊢ ∃ p, ‖Polynomial.toContinuousMapOn p (Set.Icc a b) - f‖ < ε
   exact ⟨m, H⟩
+  -- 🎉 no goals
 #align exists_polynomial_near_continuous_map exists_polynomial_near_continuousMap
 
 /-- Another alternative statement of Weierstrass's theorem,
@@ -115,9 +145,15 @@ theorem exists_polynomial_near_of_continuousOn (a b : ℝ) (f : ℝ → ℝ)
     (c : ContinuousOn f (Set.Icc a b)) (ε : ℝ) (pos : 0 < ε) :
     ∃ p : ℝ[X], ∀ x ∈ Set.Icc a b, |p.eval x - f x| < ε := by
   let f' : C(Set.Icc a b, ℝ) := ⟨fun x => f x, continuousOn_iff_continuous_restrict.mp c⟩
+  -- ⊢ ∃ p, ∀ (x : ℝ), x ∈ Set.Icc a b → |Polynomial.eval x p - f x| < ε
   obtain ⟨p, b⟩ := exists_polynomial_near_continuousMap a b f' ε pos
+  -- ⊢ ∃ p, ∀ (x : ℝ), x ∈ Set.Icc a b✝ → |Polynomial.eval x p - f x| < ε
   use p
+  -- ⊢ ∀ (x : ℝ), x ∈ Set.Icc a b✝ → |Polynomial.eval x p - f x| < ε
   rw [norm_lt_iff _ pos] at b
+  -- ⊢ ∀ (x : ℝ), x ∈ Set.Icc a b✝ → |Polynomial.eval x p - f x| < ε
   intro x m
+  -- ⊢ |Polynomial.eval x p - f x| < ε
   exact b ⟨x, m⟩
+  -- 🎉 no goals
 #align exists_polynomial_near_of_continuous_on exists_polynomial_near_of_continuousOn

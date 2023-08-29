@@ -39,9 +39,13 @@ theorem norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)�
 instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
+    -- ⊢ IsClosed {x | dist x.fst x.snd = ‖x.fst - x.snd‖}
     · refine' isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous _
+      -- ⊢ Continuous fun x => ‖x.fst - x.snd‖
       exact Continuous.comp Completion.continuous_extension continuous_sub
+      -- 🎉 no goals
     · rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
+      -- 🎉 no goals
 
 end Completion
 

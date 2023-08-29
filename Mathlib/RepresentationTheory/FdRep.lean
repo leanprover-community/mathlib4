@@ -59,18 +59,25 @@ instance : Preadditive (FdRep k G) := inferInstance
 instance : HasFiniteLimits (FdRep k G) := inferInstance
 
 instance : Linear k (FdRep k G) := by infer_instance
+                                      -- 🎉 no goals
 
 instance : CoeSort (FdRep k G) (Type u) :=
   ConcreteCategory.hasCoeToSort _
 
 instance (V : FdRep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj; infer_instance
+  -- ⊢ AddCommGroup ↑((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj
+                                                                         -- 🎉 no goals
 
 instance (V : FdRep k G) : Module k V := by
   change Module k ((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj; infer_instance
+  -- ⊢ Module k ↑((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj
+                                                                     -- 🎉 no goals
 
 instance (V : FdRep k G) : FiniteDimensional k V := by
   change FiniteDimensional k ((forget₂ (FdRep k G) (FGModuleCat k)).obj V); infer_instance
+  -- ⊢ FiniteDimensional k ↑((forget₂ (FdRep k G) (FGModuleCat k)).obj V)
+                                                                            -- 🎉 no goals
 
 /-- All hom spaces are finite dimensional. -/
 instance (V W : FdRep k G) : FiniteDimensional k (V ⟶ W) :=
@@ -91,8 +98,11 @@ theorem Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FdRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
   erw [FdRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
+  -- ⊢ ↑(ρ W) g = ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i).inv ≫ ↑( …
   rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
+  -- ⊢ ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i).hom ≫ ↑(ρ W) g = ↑( …
   exact (i.hom.comm g).symm
+  -- 🎉 no goals
 #align fdRep.iso.conj_ρ FdRep.Iso.conj_ρ
 
 /-- Lift an unbundled representation to `FdRep`. -/
@@ -107,14 +117,19 @@ instance : HasForget₂ (FdRep k G) (Rep k G)
 
 theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl
+  -- ⊢ ↑(↑(Rep.ρ ((forget₂ (FdRep k G) (Rep k G)).obj V)) g) v = ↑(↑(ρ V) g) v
+           -- 🎉 no goals
 #align fdRep.forget₂_ρ FdRep.forget₂_ρ
 
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FdRep k G) := by infer_instance
+                                             -- 🎉 no goals
 
 example : MonoidalPreadditive (FdRep k G) := by infer_instance
+                                                -- 🎉 no goals
 
 example : MonoidalLinear k (FdRep k G) := by infer_instance
+                                             -- 🎉 no goals
 
 open FiniteDimensional
 
@@ -123,6 +138,7 @@ open scoped Classical
 -- We need to provide this instance explicitely as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FdRep k G) := by infer_instance
+                                        -- 🎉 no goals
 
 -- Verify that Schur's lemma applies out of the box.
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [Simple W] :
@@ -139,7 +155,11 @@ def forget₂HomLinearEquiv (X Y : FdRep k G) :
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom, f.comm⟩
   left_inv _ := by ext; rfl
+                   -- ⊢ ↑((fun f => Action.Hom.mk ((forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom …
+                        -- 🎉 no goals
   right_inv _ := by ext; rfl
+                    -- ⊢ ↑(AddHom.toFun { toAddHom := { toFun := fun f => Action.Hom.mk f.hom, map_ad …
+                         -- 🎉 no goals
 #align fdRep.forget₂_hom_linear_equiv FdRep.forget₂HomLinearEquiv
 
 end FdRep
@@ -151,6 +171,8 @@ variable {k G : Type u} [Field k] [Group G]
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FdRep k G) := by
   change RightRigidCategory (Action (FGModuleCat k) (GroupCat.of G)); infer_instance
+  -- ⊢ RightRigidCategory (Action (FGModuleCat k) ((forget₂ GroupCat MonCat).obj (G …
+                                                                      -- 🎉 no goals
 
 end FdRep
 
@@ -182,7 +204,9 @@ noncomputable def dualTensorIsoLinHomAux :
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) := by
   refine Action.mkIso (dualTensorIsoLinHomAux ρV W) ?_
+  -- ⊢ ∀ (g : ↑(MonCat.of G)), ↑(of (dual ρV) ⊗ W).ρ g ≫ (dualTensorIsoLinHomAux ρV …
   convert dualTensorHom_comm ρV W.ρ
+  -- 🎉 no goals
 #align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
 
 @[simp]

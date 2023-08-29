@@ -49,11 +49,13 @@ instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| ∀ b : M, b * a = 
 
 @[to_additive (attr := simp) zero_mem_addCenter]
 theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [mem_center_iff]
+                                                                      -- 🎉 no goals
 #align set.one_mem_center Set.one_mem_center
 #align set.zero_mem_add_center Set.zero_mem_addCenter
 
 @[simp]
 theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [mem_center_iff]
+                                                                        -- 🎉 no goals
 #align set.zero_mem_center Set.zero_mem_center
 
 variable {M}
@@ -61,6 +63,7 @@ variable {M}
 @[to_additive (attr := simp) add_mem_addCenter]
 theorem mul_mem_center [Semigroup M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a * b ∈ Set.center M := fun g => by rw [mul_assoc, ← hb g, ← mul_assoc, ha g, mul_assoc]
+                                        -- 🎉 no goals
 #align set.mul_mem_center Set.mul_mem_center
 #align set.add_mem_add_center Set.add_mem_addCenter
 
@@ -68,18 +71,21 @@ theorem mul_mem_center [Semigroup M] {a b : M} (ha : a ∈ Set.center M) (hb : b
 theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) :
     a⁻¹ ∈ Set.center M := fun g => by
   rw [← inv_inj, mul_inv_rev, inv_inv, ← ha, mul_inv_rev, inv_inv]
+  -- 🎉 no goals
 #align set.inv_mem_center Set.inv_mem_center
 #align set.neg_mem_add_center Set.neg_mem_addCenter
 
 @[simp]
 theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a + b ∈ Set.center M := fun c => by rw [add_mul, mul_add, ha c, hb c]
+                                        -- 🎉 no goals
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
 theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
     -a ∈ Set.center M := fun c => by
   rw [← neg_mul_comm, ha (-c), neg_mul_comm]
+  -- 🎉 no goals
 #align set.neg_mem_center Set.neg_mem_centerₓ
 
 @[to_additive subset_addCenter_add_units]
@@ -91,8 +97,11 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
 theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
   fun a ha b => by
   obtain rfl | hb := eq_or_ne b 0
+  -- ⊢ 0 * ↑a = ↑a * 0
   · rw [zero_mul, mul_zero]
+    -- 🎉 no goals
   · exact Units.ext_iff.mp (ha (Units.mk0 _ hb))
+    -- 🎉 no goals
 #align set.center_units_subset Set.center_units_subset
 
 /-- In a group with zero, the center of the units is the preimage of the center. -/
@@ -103,18 +112,26 @@ theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M)
 @[simp]
 theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
   obtain rfl | ha0 := eq_or_ne a 0
+  -- ⊢ 0⁻¹ ∈ center M
   · rw [inv_zero]
+    -- ⊢ 0 ∈ center M
     exact zero_mem_center M
+    -- 🎉 no goals
   rcases IsUnit.mk0 _ ha0 with ⟨a, rfl⟩
+  -- ⊢ (↑a)⁻¹ ∈ center M
   rw [← Units.val_inv_eq_inv_val]
+  -- ⊢ ↑a⁻¹ ∈ center M
   exact center_units_subset (inv_mem_center (subset_center_units ha))
+  -- 🎉 no goals
 #align set.inv_mem_center₀ Set.inv_mem_center₀
 
 @[to_additive (attr := simp) sub_mem_addCenter]
 theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
+  -- ⊢ a * b⁻¹ ∈ center M
   exact mul_mem_center ha (inv_mem_center hb)
+  -- 🎉 no goals
 #align set.div_mem_center Set.div_mem_center
 #align set.sub_mem_add_center Set.sub_mem_addCenter
 
@@ -122,7 +139,9 @@ theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈
 theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
     (hb : b ∈ Set.center M) : a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
+  -- ⊢ a * b⁻¹ ∈ center M
   exact mul_mem_center ha (inv_mem_center₀ hb)
+  -- 🎉 no goals
 #align set.div_mem_center₀ Set.div_mem_center₀
 
 variable (M)

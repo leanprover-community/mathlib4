@@ -199,27 +199,43 @@ side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
   -- porting notes: removed `clean`
   cases' id r with rs
+  -- ⊢ Ordnode α
   · cases' id l with ls ll lx lr
+    -- ⊢ Ordnode α
     · exact ι x
+      -- 🎉 no goals
     · cases' id ll with lls
+      -- ⊢ Ordnode α
       · cases' lr with _ _ lrx
+        -- ⊢ Ordnode α
         · exact node 2 l x nil
+          -- 🎉 no goals
         · exact node 3 (ι lx) lrx ι x
+          -- 🎉 no goals
       · cases' id lr with lrs lrl lrx lrr
+        -- ⊢ Ordnode α
         · exact node 3 ll lx ι x
+          -- 🎉 no goals
         · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
                 (node (size lrr + 1) lrr x nil)
   · cases' id l with ls ll lx lr
+    -- ⊢ Ordnode α
     · exact node (rs + 1) nil x r
+      -- 🎉 no goals
     · refine' if ls > delta * rs then _ else node (ls + rs + 1) l x r
+      -- ⊢ Ordnode α
       cases' id ll with lls
+      -- ⊢ Ordnode α
       · exact nil
+        -- 🎉 no goals
       --should not happen
       cases' id lr with lrs lrl lrx lrr
+      -- ⊢ Ordnode α
       · exact nil
+        -- 🎉 no goals
       --should not happen
       exact
         if lrs < ratio * lls then node (ls + rs + 1) ll lx (node (rs + lrs + 1) lr x r)
@@ -235,27 +251,43 @@ side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
   -- porting notes: removed `clean`
   cases' id l with ls
+  -- ⊢ Ordnode α
   · cases' id r with rs rl rx rr
+    -- ⊢ Ordnode α
     · exact ι x
+      -- 🎉 no goals
     · cases' id rr with rrs
+      -- ⊢ Ordnode α
       · cases' rl with _ _ rlx
+        -- ⊢ Ordnode α
         · exact node 2 nil x r
+          -- 🎉 no goals
         · exact node 3 (ι x) rlx ι rx
+          -- 🎉 no goals
       · cases' id rl with rls rll rlx rlr
+        -- ⊢ Ordnode α
         · exact node 3 (ι x) rx rr
+          -- 🎉 no goals
         · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
   · cases' id r with rs rl rx rr
+    -- ⊢ Ordnode α
     · exact node (ls + 1) l x nil
+      -- 🎉 no goals
     · refine' if rs > delta * ls then _ else node (ls + rs + 1) l x r
+      -- ⊢ Ordnode α
       cases' id rr with rrs
+      -- ⊢ Ordnode α
       · exact nil
+        -- 🎉 no goals
       --should not happen
       cases' id rl with rls rll rlx rlr
+      -- ⊢ Ordnode α
       · exact nil
+        -- 🎉 no goals
       --should not happen
       exact
         if rls < ratio * rrs then node (ls + rs + 1) (node (ls + rls + 1) l x rl) rx rr
@@ -271,26 +303,42 @@ by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
   -- porting notes: removed `clean`
   cases' id l with ls ll lx lr
+  -- ⊢ Ordnode α
   · cases' id r with rs rl rx rr
+    -- ⊢ Ordnode α
     · exact ι x
+      -- 🎉 no goals
     · cases' id rl with rls rll rlx rlr
+      -- ⊢ Ordnode α
       · cases id rr
+        -- ⊢ Ordnode α
         · exact node 2 nil x r
+          -- 🎉 no goals
         · exact node 3 (ι x) rx rr
+          -- 🎉 no goals
       · cases' id rr with rrs
+        -- ⊢ Ordnode α
         · exact node 3 (ι x) rlx ι rx
+          -- 🎉 no goals
         · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
   · cases' id r with rs rl rx rr
+    -- ⊢ Ordnode α
     · cases' id ll with lls
+      -- ⊢ Ordnode α
       · cases' lr with _ _ lrx
+        -- ⊢ Ordnode α
         · exact node 2 l x nil
+          -- 🎉 no goals
         · exact node 3 (ι lx) lrx ι x
+          -- 🎉 no goals
       · cases' id lr with lrs lrl lrx lrr
+        -- ⊢ Ordnode α
         · exact node 3 ll lx ι x
+          -- 🎉 no goals
         · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
@@ -299,10 +347,14 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
     · refine'
         if delta * ls < rs then _ else if delta * rs < ls then _ else node (ls + rs + 1) l x r
       · cases' id rl with rls rll rlx rlr
+        -- ⊢ Ordnode α
         · exact nil
+          -- 🎉 no goals
         --should not happen
         cases' id rr with rrs
+        -- ⊢ Ordnode α
         · exact nil
+          -- 🎉 no goals
         --should not happen
         exact
           if rls < ratio * rrs then node (ls + rs + 1) (node (ls + rls + 1) l x rl) rx rr
@@ -310,10 +362,14 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
             node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
               (node (size rlr + rrs + 1) rlr rx rr)
       · cases' id ll with lls
+        -- ⊢ Ordnode α
         · exact nil
+          -- 🎉 no goals
         --should not happen
         cases' id lr with lrs lrl lrx lrr
+        -- ⊢ Ordnode α
         · exact nil
+          -- 🎉 no goals
         --should not happen
         exact
           if lrs < ratio * lls then node (ls + rs + 1) ll lx (node (lrs + rs + 1) lr x r)
@@ -368,6 +424,8 @@ def Emem (x : α) : Ordnode α → Prop :=
 
 instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
   dsimp [Emem]; infer_instance
+  -- ⊢ (t : Ordnode α) → Decidable (Any (Eq x) t)
+                -- 🎉 no goals
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
 /-- O(n). Approximate membership in the set, that is, whether some element in the
@@ -394,6 +452,8 @@ def Amem [LE α] (x : α) : Ordnode α → Prop :=
 instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
     ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
+  -- ⊢ (t : Ordnode α) → Decidable (Any (fun y => x ≤ y ∧ y ≤ x) t)
+                -- 🎉 no goals
 #align ordnode.amem.decidable Ordnode.Amem.decidable
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.

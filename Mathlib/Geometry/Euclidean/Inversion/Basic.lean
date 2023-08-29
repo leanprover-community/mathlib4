@@ -62,10 +62,12 @@ theorem inversion_vsub_center (c : P) (R : ℝ) (x : P) :
 
 @[simp]
 theorem inversion_self (c : P) (R : ℝ) : inversion c R c = c := by simp [inversion]
+                                                                   -- 🎉 no goals
 #align euclidean_geometry.inversion_self EuclideanGeometry.inversion_self
 
 @[simp]
 theorem inversion_zero_radius (c x : P) : inversion c 0 x = c := by simp [inversion]
+                                                                    -- 🎉 no goals
 
 theorem inversion_mul (c : P) (a R : ℝ) (x : P) :
     inversion c (a * R) x = homothety c (a ^ 2) (inversion c R x) := by
@@ -75,14 +77,19 @@ theorem inversion_mul (c : P) (a R : ℝ) (x : P) :
 @[simp]
 theorem inversion_dist_center (c x : P) : inversion c (dist x c) x = x := by
   rcases eq_or_ne x c with (rfl | hne)
+  -- ⊢ inversion x (dist x x) x = x
   · apply inversion_self
+    -- 🎉 no goals
   · rw [inversion, div_self, one_pow, one_smul, vsub_vadd]
+    -- ⊢ dist x c ≠ 0
     rwa [dist_ne_zero]
+    -- 🎉 no goals
 #align euclidean_geometry.inversion_dist_center EuclideanGeometry.inversion_dist_center
 
 @[simp]
 theorem inversion_dist_center' (c x : P) : inversion c (dist c x) x = x := by
   rw [dist_comm, inversion_dist_center]
+  -- 🎉 no goals
 
 theorem inversion_of_mem_sphere (h : x ∈ Metric.sphere c R) : inversion c R x = x :=
   h.out ▸ inversion_dist_center c x
@@ -92,26 +99,34 @@ theorem inversion_of_mem_sphere (h : x ∈ Metric.sphere c R) : inversion c R x 
 works for `x = c`. -/
 theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R ^ 2 / dist x c := by
   rcases eq_or_ne x c with (rfl | hx)
+  -- ⊢ dist (inversion x R x) x = R ^ 2 / dist x x
   · simp
+    -- 🎉 no goals
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
+  -- ⊢ dist (inversion c R x) c = R ^ 2 / dist x c
   field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]
+  -- 🎉 no goals
 #align euclidean_geometry.dist_inversion_center EuclideanGeometry.dist_inversion_center
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
 theorem dist_center_inversion (c x : P) (R : ℝ) : dist c (inversion c R x) = R ^ 2 / dist c x := by
   rw [dist_comm c, dist_comm c, dist_inversion_center]
+  -- 🎉 no goals
 #align euclidean_geometry.dist_center_inversion EuclideanGeometry.dist_center_inversion
 
 @[simp]
 theorem inversion_inversion (c : P) {R : ℝ} (hR : R ≠ 0) (x : P) :
     inversion c R (inversion c R x) = x := by
   rcases eq_or_ne x c with (rfl | hne)
+  -- ⊢ inversion x R (inversion x R x) = x
   · rw [inversion_self, inversion_self]
+    -- 🎉 no goals
   · rw [inversion, dist_inversion_center, inversion_vsub_center, smul_smul, ← mul_pow,
       div_mul_div_comm, div_mul_cancel _ (dist_ne_zero.2 hne), ← sq, div_self, one_pow, one_smul,
       vsub_vadd]
     exact pow_ne_zero _ hR
+    -- 🎉 no goals
 #align euclidean_geometry.inversion_inversion EuclideanGeometry.inversion_inversion
 
 theorem inversion_involutive (c : P) {R : ℝ} (hR : R ≠ 0) : Involutive (inversion c R) :=
@@ -136,6 +151,9 @@ theorem inversion_eq_center (hR : R ≠ 0) : inversion c R x = c ↔ x = c :=
 @[simp]
 theorem inversion_eq_center' : inversion c R x = c ↔ x = c ∨ R = 0 := by
   by_cases hR : R = 0 <;> simp [inversion_eq_center, hR]
+  -- ⊢ inversion c R x = c ↔ x = c ∨ R = 0
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 theorem center_eq_inversion (hR : R ≠ 0) : c = inversion c R x ↔ x = c :=
   eq_comm.trans (inversion_eq_center hR)
@@ -157,7 +175,9 @@ of the lengths of their sides.
 theorem dist_inversion_inversion (hx : x ≠ c) (hy : y ≠ c) (R : ℝ) :
     dist (inversion c R x) (inversion c R y) = R ^ 2 / (dist x c * dist y c) * dist x y := by
   dsimp only [inversion]
+  -- ⊢ dist ((R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c) ((R / dist y c) ^ 2 • (y -ᵥ c) +ᵥ  …
   simp_rw [dist_vadd_cancel_right, dist_eq_norm_vsub V _ c]
+  -- ⊢ dist ((R / ‖x -ᵥ c‖) ^ 2 • (x -ᵥ c)) ((R / ‖y -ᵥ c‖) ^ 2 • (y -ᵥ c)) = R ^ 2 …
   simpa only [dist_vsub_cancel_right] using
     dist_div_norm_sq_smul (vsub_ne_zero.2 hx) (vsub_ne_zero.2 hy) R
 #align euclidean_geometry.dist_inversion_inversion EuclideanGeometry.dist_inversion_inversion
@@ -165,11 +185,19 @@ theorem dist_inversion_inversion (hx : x ≠ c) (hy : y ≠ c) (R : ℝ) :
 theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
     dist (inversion c R x) y * dist x c = dist x (inversion c R y) * dist y c := by
   rcases eq_or_ne R 0 with rfl | hR; · simp [dist_comm, mul_comm]
+  -- ⊢ dist (inversion c 0 x) y * dist x c = dist x (inversion c 0 y) * dist y c
+                                       -- 🎉 no goals
   have hy' : inversion c R y ≠ c := by simp [*]
+  -- ⊢ dist (inversion c R x) y * dist x c = dist x (inversion c R y) * dist y c
   conv in dist _ y => rw [← inversion_inversion c hR y]
+  -- ⊢ dist (inversion c R x) (inversion c R (inversion c R y)) * dist x c = dist x …
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
+  -- ⊢ R ^ 2 / (dist x c * (R ^ 2 / dist y c)) * dist x (inversion c R y) * dist x  …
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
+  -- ⊢ R ^ 2 / (dist x c * (R ^ 2 / dist y c)) * dist x (inversion c R y) * dist x  …
   field_simp; ring
+  -- ⊢ R ^ 2 * dist y c * dist x (inversion c R y) * dist x c = dist x (inversion c …
+              -- 🎉 no goals
 
 /-!
 ### Ptolemy's inequality
@@ -182,20 +210,35 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d := by
   -- If one of the points `b`, `c`, `d` is equal to `a`, then the inequality is trivial.
   rcases eq_or_ne b a with (rfl | hb)
+  -- ⊢ dist b c * dist b d ≤ dist b b * dist c d + dist b c * dist b d
   · rw [dist_self, zero_mul, zero_add]
+    -- 🎉 no goals
   rcases eq_or_ne c a with (rfl | hc)
+  -- ⊢ dist c c * dist b d ≤ dist c b * dist c d + dist b c * dist c d
   · rw [dist_self, zero_mul]
+    -- ⊢ 0 ≤ dist c b * dist c d + dist b c * dist c d
     apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
+    -- 🎉 no goals
   rcases eq_or_ne d a with (rfl | hd)
+  -- ⊢ dist d c * dist b d ≤ dist d b * dist c d + dist b c * dist d d
   · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
+    -- 🎉 no goals
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
     `EuclideanGeometry.inversion a 1 c`, and `EuclideanGeometry.inversion a 1 d`. -/
   have H := dist_triangle (inversion a 1 b) (inversion a 1 c) (inversion a 1 d)
+  -- ⊢ dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d
   rw [dist_inversion_inversion hb hd, dist_inversion_inversion hb hc,
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
+  -- ⊢ dist a c * dist b d ≤ dist a b * dist c d + dist b c * dist a d
   rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
+  -- ⊢ dist a c * dist b d / (dist b a * (dist c a * dist d a)) ≤ (dist a b * dist  …
   convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
+  -- ⊢ dist a c * dist b d / (dist b a * (dist c a * dist d a)) = 1 / (dist b a * d …
+                         -- ⊢ dist c a * dist b d * (dist b a * dist d a) = dist b d * (dist b a * (dist c …
+                                                                           -- 🎉 no goals
+                         -- ⊢ (dist b a * dist c d + dist b c * dist d a) * (dist b a * dist c a * (dist c …
+                                                                           -- 🎉 no goals
 #align euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist
 
 end EuclideanGeometry

@@ -36,21 +36,30 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     that its limit points in `U` still belong to it, from which the inclusion `U ⊆ u` will follow
     by connectedness. -/
   let u := {x | f =ᶠ[𝓝 x] 0}
+  -- ⊢ EqOn f 0 U
   suffices main : closure u ∩ U ⊆ u
+  -- ⊢ EqOn f 0 U
   · have Uu : U ⊆ u :=
       hU.subset_of_closure_inter_subset isOpen_setOf_eventually_nhds ⟨z₀, h₀, hfz₀⟩ main
     intro z hz
+    -- ⊢ f z = OfNat.ofNat 0 z
     simpa using mem_of_mem_nhds (Uu hz)
+    -- 🎉 no goals
   /- Take a limit point `x`, then a ball `B (x, r)` on which it has a power series expansion, and
     then `y ∈ B (x, r/2) ∩ u`. Then `f` has a power series expansion on `B (y, r/2)` as it is
     contained in `B (x, r)`. All the coefficients in this series expansion vanish, as `f` is zero
     on a neighborhood of `y`. Therefore, `f` is zero on `B (y, r/2)`. As this ball contains `x`,
     it follows that `f` vanishes on a neighborhood of `x`, proving the claim. -/
   rintro x ⟨xu, xU⟩
+  -- ⊢ x ∈ u
   rcases hf x xU with ⟨p, r, hp⟩
+  -- ⊢ x ∈ u
   obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, edist x y < r / 2
+  -- ⊢ ∃ y, y ∈ u ∧ edist x y < r / 2
   exact EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
+  -- ⊢ x ∈ u
   let q := p.changeOrigin (y - x)
+  -- ⊢ x ∈ u
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
     have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy
     have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
@@ -60,14 +69,18 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     apply (add_le_add A.le (le_refl (r / 2))).trans (le_of_eq _)
     exact ENNReal.add_halves _
   have M : EMetric.ball y (r / 2) ∈ 𝓝 x := EMetric.isOpen_ball.mem_nhds hxy
+  -- ⊢ x ∈ u
   filter_upwards [M] with z hz
+  -- ⊢ f z = OfNat.ofNat 0 z
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
+  -- ⊢ f z = OfNat.ofNat 0 z
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
     convert hasSum_zero (α := F) using 2
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B
+  -- 🎉 no goals
 #align analytic_on.eq_on_zero_of_preconnected_of_eventually_eq_zero_aux AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux
 
 /-- The *identity principle* for analytic functions: If an analytic function vanishes in a whole
@@ -78,15 +91,21 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   let F' := UniformSpace.Completion F
+  -- ⊢ EqOn f 0 U
   set e : F →L[𝕜] F' := UniformSpace.Completion.toComplL
+  -- ⊢ EqOn f 0 U
   have : AnalyticOn 𝕜 (e ∘ f) U := fun x hx => (e.analyticAt _).comp (hf x hx)
+  -- ⊢ EqOn f 0 U
   have A : EqOn (e ∘ f) 0 U := by
     apply eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux this hU h₀
     filter_upwards [hfz₀] with x hx
     simp only [hx, Function.comp_apply, Pi.zero_apply, map_zero]
   intro z hz
+  -- ⊢ f z = OfNat.ofNat 0 z
   have : e (f z) = e 0 := by simpa only using A hz
+  -- ⊢ f z = OfNat.ofNat 0 z
   exact UniformSpace.Completion.coe_injective F this
+  -- 🎉 no goals
 #align analytic_on.eq_on_zero_of_preconnected_of_eventually_eq_zero AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero
 
 /-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
@@ -97,6 +116,7 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
     (hg : AnalyticOn 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
   have hfg' : f - g =ᶠ[𝓝 z₀] 0 := hfg.mono fun z h => by simp [h]
+  -- ⊢ EqOn f g U
   simpa [sub_eq_zero] using fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀ hfg' hz
 #align analytic_on.eq_on_of_preconnected_of_eventually_eq AnalyticOn.eqOn_of_preconnected_of_eventuallyEq

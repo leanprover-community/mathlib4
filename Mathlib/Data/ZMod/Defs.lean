@@ -50,6 +50,7 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
         calc
           a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
           _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
+                                        -- 🎉 no goals
           _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
     mul_comm := Fin.mul_comm }
 #align fin.comm_semigroup Fin.instCommSemigroup
@@ -60,6 +61,7 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
     calc
       a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
+                                      -- 🎉 no goals
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
 /-- Commutative ring structure on `Fin n`. -/
@@ -68,6 +70,7 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
+      -- 🎉 no goals
 #align fin.distrib Fin.instDistrib
 
 /-- Commutative ring structure on `Fin n`. -/
@@ -103,7 +106,11 @@ instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
   | 0 => by dsimp [ZMod]; infer_instance
+            -- ⊢ Repr ℤ
+                          -- 🎉 no goals
   | n + 1 => by dsimp [ZMod]; infer_instance
+                -- ⊢ Repr (Fin (n + 1))
+                              -- 🎉 no goals
 #align zmod.has_repr ZMod.repr
 
 namespace ZMod

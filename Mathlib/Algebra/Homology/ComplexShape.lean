@@ -99,7 +99,9 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 @[simp]
 theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
   ext
+  -- ⊢ Rel (symm (symm c)) x✝¹ x✝ ↔ Rel c x✝¹ x✝
   simp
+  -- 🎉 no goals
 #align complex_shape.symm_symm ComplexShape.symm_symm
 
 /-- The "composition" of two `ComplexShape`s.
@@ -111,27 +113,43 @@ def trans (c₁ c₂ : ComplexShape ι) : ComplexShape ι where
   Rel := Relation.Comp c₁.Rel c₂.Rel
   next_eq w w' := by
     obtain ⟨k, w₁, w₂⟩ := w
+    -- ⊢ j✝ = j'✝
     obtain ⟨k', w₁', w₂'⟩ := w'
+    -- ⊢ j✝ = j'✝
     rw [c₁.next_eq w₁ w₁'] at w₂
+    -- ⊢ j✝ = j'✝
     exact c₂.next_eq w₂ w₂'
+    -- 🎉 no goals
   prev_eq w w' := by
     obtain ⟨k, w₁, w₂⟩ := w
+    -- ⊢ i✝ = i'✝
     obtain ⟨k', w₁', w₂'⟩ := w'
+    -- ⊢ i✝ = i'✝
     rw [c₂.prev_eq w₂ w₂'] at w₁
+    -- ⊢ i✝ = i'✝
     exact c₁.prev_eq w₁ w₁'
+    -- 🎉 no goals
 #align complex_shape.trans ComplexShape.trans
 
 instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } := by
   constructor
+  -- ⊢ ∀ (a b : { j // Rel c i j }), a = b
   rintro ⟨j, rij⟩ ⟨k, rik⟩
+  -- ⊢ { val := j, property := rij } = { val := k, property := rik }
   congr
+  -- ⊢ j = k
   exact c.next_eq rij rik
+  -- 🎉 no goals
 
 instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // c.Rel i j } := by
   constructor
+  -- ⊢ ∀ (a b : { i // Rel c i j }), a = b
   rintro ⟨i, rik⟩ ⟨j, rjk⟩
+  -- ⊢ { val := i, property := rik } = { val := j, property := rjk }
   congr
+  -- ⊢ i = j
   exact c.prev_eq rik rjk
+  -- 🎉 no goals
 
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
@@ -149,15 +167,22 @@ def prev (c : ComplexShape ι) (j : ι) : ι :=
 
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
   apply c.next_eq _ h
+  -- ⊢ Rel c i (next c i)
   rw [next]
+  -- ⊢ Rel c i (if h : ∃ j, Rel c i j then Exists.choose h else i)
   rw [dif_pos]
+  -- ⊢ Rel c i (Exists.choose ?hc)
   exact Exists.choose_spec ⟨j, h⟩
+  -- 🎉 no goals
 #align complex_shape.next_eq' ComplexShape.next_eq'
 
 theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i := by
   apply c.prev_eq _ h
+  -- ⊢ Rel c (prev c j) j
   rw [prev, dif_pos]
+  -- ⊢ Rel c (Exists.choose ?hc) j
   exact Exists.choose_spec (⟨i, h⟩ : ∃ k, c.Rel k j)
+  -- 🎉 no goals
 #align complex_shape.prev_eq' ComplexShape.prev_eq'
 
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.

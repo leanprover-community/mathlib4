@@ -81,6 +81,7 @@ instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
   { WithOne.inv with
     inv_inv := fun a =>
       (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
+                                         -- 🎉 no goals
 
 @[to_additive]
 instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
@@ -299,9 +300,11 @@ instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
   { WithZero.inv with
     inv_inv := fun a =>
       (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
+                                         -- 🎉 no goals
 
 instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
+                                                                                    -- 🎉 no goals
 
 instance div [Div α] : Div (WithZero α) :=
   ⟨Option.map₂ (· / ·)⟩
@@ -360,7 +363,9 @@ instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
       match a, b with
       | none, none => fun _ ↦ rfl
       | none, some b => fun _ ↦ by contradiction
+                                   -- 🎉 no goals
       | some a, none => fun _ ↦ by contradiction
+                                   -- 🎉 no goals
       | some a, some b => fun h ↦
         congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
 
@@ -377,8 +382,11 @@ instance groupWithZero : GroupWithZero (WithZero α) :=
     inv_zero := inv_zero,
     mul_inv_cancel := fun a ha ↦ by
       lift a to α using ha
+      -- ⊢ ↑a * (↑a)⁻¹ = 1
       norm_cast
+      -- ⊢ a * a⁻¹ = 1
       apply mul_right_inv }
+      -- 🎉 no goals
 
 end Group
 
@@ -402,13 +410,34 @@ instance semiring [Semiring α] : Semiring (WithZero α) :=
     WithZero.monoidWithZero with
     left_distrib := fun a b c => by
       cases' a with a; · rfl
+      -- ⊢ none * (b + c) = none * b + none * c
+                         -- 🎉 no goals
       cases' b with b <;> cases' c with c <;> try rfl
+      -- ⊢ some a * (none + c) = some a * none + some a * c
+                          -- ⊢ some a * (none + none) = some a * none + some a * none
+                          -- ⊢ some a * (some b + none) = some a * some b + some a * none
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- ⊢ some a * (some b + some c) = some a * some b + some a * some c
       exact congr_arg some (left_distrib _ _ _),
+      -- 🎉 no goals
     right_distrib := fun a b c => by
       cases' c with c
+      -- ⊢ (a + b) * none = a * none + b * none
       · change (a + b) * 0 = a * 0 + b * 0
+        -- ⊢ (a + b) * 0 = a * 0 + b * 0
         simp
+        -- 🎉 no goals
       cases' a with a <;> cases' b with b <;> try rfl
+      -- ⊢ (none + b) * some c = none * some c + b * some c
+                          -- ⊢ (none + none) * some c = none * some c + none * some c
+                          -- ⊢ (some a + none) * some c = some a * some c + none * some c
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- ⊢ (some a + some b) * some c = some a * some c + some b * some c
       exact congr_arg some (right_distrib _ _ _) }
+      -- 🎉 no goals
 
 end WithZero

@@ -261,6 +261,12 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
   termination_by _ ts is => (length ts + length is, length ts)
   decreasing_by simp_wf; simp [Nat.succ_add]; decreasing_tactic
+                -- ⊢ Prod.Lex (fun a₁ a₂ => a₁ < a₂) (fun a₁ a₂ => a₁ < a₂) (length ts + succ (le …
+                         -- ⊢ Prod.Lex (fun a₁ a₂ => a₁ < a₂) (fun a₁ a₂ => a₁ < a₂) (length ts + succ (le …
+                                              -- 🎉 no goals
+                -- ⊢ Prod.Lex (fun a₁ a₂ => a₁ < a₂) (fun a₁ a₂ => a₁ < a₂) (length is, length is …
+                         -- ⊢ Prod.Lex (fun a₁ a₂ => a₁ < a₂) (fun a₁ a₂ => a₁ < a₂) (length is, length is …
+                                              -- 🎉 no goals
 #align list.permutations_aux.rec List.permutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
@@ -356,6 +362,11 @@ instance decidableChain [DecidableRel R] (a : α) (l : List α) :
 
 instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
+  -- ⊢ Decidable (Chain' R [])
+              -- ⊢ Decidable True
+              -- ⊢ Decidable (Chain R head✝ tail✝)
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align list.decidable_chain' List.decidableChain'
 
 end Chain

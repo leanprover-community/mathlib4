@@ -84,11 +84,14 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
   have h4f : ContinuousAt (fun x => f x (g x)) x₀ :=
     ContinuousAt.comp_of_eq hf.continuousAt (continuousAt_id.prod hg.continuousAt) rfl
   have h4f := h4f.preimage_mem_nhds (extChartAt_source_mem_nhds I' (f x₀ (g x₀)))
+  -- ⊢ ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' g (fun x => f x  …
   have h3f := contMDiffAt_iff_contMDiffAt_nhds.mp (hf.of_le <| (self_le_add_left 1 m).trans hmn)
+  -- ⊢ ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' g (fun x => f x  …
   have h2f : ∀ᶠ x₂ in 𝓝 x₀, ContMDiffAt I I' 1 (f x₂) (g x₂) := by
     refine' ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => _
     exact hx.comp (g x) (contMDiffAt_const.prod_mk contMDiffAt_id)
   have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I (g x₀))
+  -- ⊢ ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' g (fun x => f x  …
   have :
     ContDiffWithinAt 𝕜 m
       (fun x =>
@@ -175,11 +178,16 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
         (extChartAt I (g x₂)).left_inv (mem_extChartAt_source I (g x₂))]
     · simp_rw [Function.comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
   refine' this.congr_of_eventuallyEq _
+  -- ⊢ inTangentCoordinates I I' g (fun x => f x (g x)) (fun x => mfderiv I I' (f x …
   filter_upwards [h2g, h4f] with x hx h2x
+  -- ⊢ inTangentCoordinates I I' g (fun x => f x (g x)) (fun x => mfderiv I I' (f x …
   rw [inTangentCoordinates_eq]
   · rfl
+    -- 🎉 no goals
   · rwa [extChartAt_source] at hx
+    -- 🎉 no goals
   · rwa [extChartAt_source] at h2x
+    -- 🎉 no goals
 #align cont_mdiff_at.mfderiv ContMDiffAt.mfderiv
 
 /-- The derivative `D_yf(y)` is `C^m` at `x₀`, where the derivative is taken as a continuous
@@ -234,7 +242,9 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
           (fderivWithin 𝕜 (writtenInExtChartAt I I' p.fst f) (I.symm ⁻¹' s ∩ range I)
                 ((extChartAt I p.fst) p.fst) : E →L[𝕜] E') p.snd)) (Prod.fst ⁻¹' s)
   · have A := (tangentBundleModelSpaceHomeomorph H I).continuous
+    -- ⊢ ContinuousOn (tangentMapWithin I I' f s) (TotalSpace.proj ⁻¹' s)
     rw [continuous_iff_continuousOn_univ] at A
+    -- ⊢ ContinuousOn (tangentMapWithin I I' f s) (TotalSpace.proj ⁻¹' s)
     have B :=
       ((tangentBundleModelSpaceHomeomorph H' I').symm.continuous.comp_continuousOn h).comp' A
     have :
@@ -242,24 +252,39 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
         π E (TangentSpace I) ⁻¹' s :=
       by ext ⟨x, v⟩; simp only [mfld_simps]
     rw [this] at B
+    -- ⊢ ContinuousOn (tangentMapWithin I I' f s) (TotalSpace.proj ⁻¹' s)
     apply B.congr
+    -- ⊢ EqOn (tangentMapWithin I I' f s) ((↑(Homeomorph.symm (tangentBundleModelSpac …
     rintro ⟨x, v⟩ hx
+    -- ⊢ tangentMapWithin I I' f s { proj := x, snd := v } = ((↑(Homeomorph.symm (tan …
     dsimp [tangentMapWithin]
+    -- ⊢ { proj := f x, snd := ↑(mfderivWithin I I' f s x) v } = ↑(TotalSpace.toProd  …
     ext; · rfl
+    -- ⊢ { proj := f x, snd := ↑(mfderivWithin I I' f s x) v }.proj = (↑(TotalSpace.t …
+           -- 🎉 no goals
     simp only [mfld_simps]
+    -- ⊢ ↑(mfderivWithin I I' f s x) v = ↑(fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorne …
     apply congr_fun
+    -- ⊢ ↑(mfderivWithin I I' f s x) = fun v => ↑(fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWi …
     apply congr_arg
+    -- ⊢ mfderivWithin I I' f s x = fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm …
     rw [MDifferentiableWithinAt.mfderivWithin (hf.mdifferentiableOn hn x hx)]
+    -- ⊢ fderivWithin 𝕜 (writtenInExtChartAt I I' x f) (↑(LocalEquiv.symm (extChartAt …
     rfl
+    -- 🎉 no goals
   suffices h :
     ContinuousOn
       (fun p : H × E =>
         (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I p.fst) : E →L[𝕜] E') p.snd)
       (Prod.fst ⁻¹' s)
   · dsimp [writtenInExtChartAt, extChartAt]
+    -- ⊢ ContinuousOn (fun p => (f p.fst, ↑(fderivWithin 𝕜 ((↑I' ∘ ↑(chartAt H' (f p. …
     exact (ContinuousOn.comp hf.continuousOn continuous_fst.continuousOn Subset.rfl).prod h
+    -- 🎉 no goals
   suffices h : ContinuousOn (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)) (I '' s)
+  -- ⊢ ContinuousOn (fun p => ↑(fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I …
   · have C := ContinuousOn.comp h I.continuous_toFun.continuousOn Subset.rfl
+    -- ⊢ ContinuousOn (fun p => ↑(fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I …
     have A : Continuous fun q : (E →L[𝕜] E') × E => q.1 q.2 :=
       isBoundedBilinearMapApply.continuous
     have B :
@@ -270,14 +295,23 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       refine C.comp continuousOn_fst ?_
       exact preimage_mono (subset_preimage_image _ _)
     exact A.comp_continuousOn B
+    -- 🎉 no goals
   rw [contMDiffOn_iff] at hf
+  -- ⊢ ContinuousOn (fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I)) (↑(Model …
   let x : H := I.symm (0 : E)
+  -- ⊢ ContinuousOn (fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I)) (↑(Model …
   let y : H' := I'.symm (0 : E')
+  -- ⊢ ContinuousOn (fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I)) (↑(Model …
   have A := hf.2 x y
+  -- ⊢ ContinuousOn (fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I)) (↑(Model …
   simp only [I.image_eq, inter_comm, mfld_simps] at A ⊢
+  -- ⊢ ContinuousOn (fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I)) (↑(Model …
   apply A.continuousOn_fderivWithin _ hn
+  -- ⊢ UniqueDiffOn 𝕜 (↑(ModelWithCorners.symm I) ⁻¹' s ∩ range ↑I)
   convert hs.uniqueDiffOn_target_inter x using 1
+  -- ⊢ ↑(ModelWithCorners.symm I) ⁻¹' s ∩ range ↑I = (extChartAt I x).target ∩ ↑(Lo …
   simp only [inter_comm, mfld_simps]
+  -- 🎉 no goals
 #align cont_mdiff_on.continuous_on_tangent_map_within_aux ContMDiffOn.continuousOn_tangentMapWithin_aux
 
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative is
@@ -289,12 +323,16 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s)
       (π E (TangentSpace I) ⁻¹' s) := by
   have m_le_n : m ≤ n := (le_add_right le_rfl).trans hmn
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   have U' : UniqueDiffOn 𝕜 (range I ∩ I.symm ⁻¹' s) := fun y hy ↦ by
     simpa only [UniqueMDiffOn, UniqueMDiffWithinAt, hy.1, inter_comm, mfld_simps]
       using hs (I.symm y) hy.2
   rw [contMDiffOn_iff]
+  -- ⊢ ContinuousOn (tangentMapWithin I I' f s) (TotalSpace.proj ⁻¹' s) ∧ ∀ (x : Ta …
   refine' ⟨hf.continuousOn_tangentMapWithin_aux one_le_n hs, fun p q => _⟩
+  -- ⊢ ContDiffOn 𝕜 m (↑(extChartAt (ModelWithCorners.tangent I') q) ∘ tangentMapWi …
   suffices h :
     ContDiffOn 𝕜 m
       (((fun p : H' × E' => (I' p.fst, p.snd)) ∘ TotalSpace.toProd H' E') ∘
@@ -303,11 +341,18 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       ((range I ∩ I.symm ⁻¹' s) ×ˢ univ)
   · -- Porting note: was `simpa [(· ∘ ·)] using h`
     convert h using 1
+    -- ⊢ ↑(extChartAt (ModelWithCorners.tangent I') q) ∘ tangentMapWithin I I' f s ∘  …
     · ext1 ⟨x, y⟩
+      -- ⊢ (↑(extChartAt (ModelWithCorners.tangent I') q) ∘ tangentMapWithin I I' f s ∘ …
       simp only [mfld_simps]; rfl
+      -- ⊢ (↑I' (↑(TotalSpace.toProd H' E') (tangentMapWithin I I' f s (↑(TotalSpace.to …
+                              -- 🎉 no goals
     · simp only [mfld_simps]
+      -- ⊢ range ↑I ×ˢ univ ∩ ↑(TotalSpace.toProd H E).symm ∘ ↑(LocalEquiv.symm (LocalE …
       rw [inter_prod, prod_univ, prod_univ]
+      -- ⊢ Prod.fst ⁻¹' range ↑I ∩ ↑(TotalSpace.toProd H E).symm ∘ ↑(LocalEquiv.symm (L …
       rfl
+      -- 🎉 no goals
   change
     ContDiffOn 𝕜 m
       (fun p : E × E =>
@@ -315,6 +360,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       ((range I ∩ I.symm ⁻¹' s) ×ˢ univ)
   -- check that all bits in this formula are `C^n`
   have hf' := contMDiffOn_iff.1 hf
+  -- ⊢ ContDiffOn 𝕜 m (fun p => (↑I' (f (↑(ModelWithCorners.symm I) p.fst)), ↑(mfde …
   have A : ContDiffOn 𝕜 m (I' ∘ f ∘ I.symm) (range I ∩ I.symm ⁻¹' s) := by
     simpa only [mfld_simps] using (hf'.2 (I.symm 0) (I'.symm 0)).of_le m_le_n
   have B : ContDiffOn 𝕜 m
@@ -325,9 +371,13 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       (fun p : E × E => (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) p.1 : _) p.2)
       ((range I ∩ I.symm ⁻¹' s) ×ˢ (univ : Set E))
   · refine ContDiffOn.prod B ?_
+    -- ⊢ ContDiffOn 𝕜 m (fun p => ↑(mfderivWithin I I' f s (↑(ModelWithCorners.symm I …
     refine C.congr fun p hp => ?_
+    -- ⊢ ↑(mfderivWithin I I' f s (↑(ModelWithCorners.symm I) p.fst)) p.snd = ↑(fderi …
     simp only [mfld_simps] at hp
+    -- ⊢ ↑(mfderivWithin I I' f s (↑(ModelWithCorners.symm I) p.fst)) p.snd = ↑(fderi …
     simp only [mfderivWithin, hf.mdifferentiableOn one_le_n _ hp.2, hp.1, if_pos, mfld_simps]
+    -- 🎉 no goals
   have D :
     ContDiffOn 𝕜 m (fun x => fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) x)
       (range I ∩ I.symm ⁻¹' s) := by
@@ -335,7 +385,9 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       simpa only [mfld_simps] using hf'.2 (I.symm 0) (I'.symm 0)
     simpa only [inter_comm] using this.fderivWithin U' hmn
   refine ContDiffOn.clm_apply ?_ contDiffOn_snd
+  -- ⊢ ContDiffOn 𝕜 m (fun p => fderivWithin 𝕜 (↑I' ∘ f ∘ ↑(ModelWithCorners.symm I …
   exact D.comp contDiff_fst.contDiffOn (prod_subset_preimage_fst _ _)
+  -- 🎉 no goals
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within_aux ContMDiffOn.contMDiffOn_tangentMapWithin_aux
 
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
@@ -362,34 +414,58 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     as a composition of smooth maps.
     -/
   have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   -- First step: local reduction on the space, to a set `s'` which is contained in chart domains.
   refine' contMDiffOn_of_locally_contMDiffOn fun p hp => _
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   have hf' := contMDiffOn_iff.1 hf
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   simp only [mfld_simps] at hp
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let l := chartAt H p.proj
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   set Dl := chartAt (ModelProd H E) p with hDl
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let r := chartAt H' (f p.proj)
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let Dr := chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let il := chartAt (ModelProd H E) (tangentMap I I l p)
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let ir := chartAt (ModelProd H' E') (tangentMap I I' (r ∘ f) p)
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let s' := f ⁻¹' r.source ∩ s ∩ l.source
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let s'_lift := π E (TangentSpace I) ⁻¹' s'
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let s'l := l.target ∩ l.symm ⁻¹' s'
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   let s'l_lift := π E (TangentSpace I) ⁻¹' s'l
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   rcases continuousOn_iff'.1 hf'.1 r.source r.open_source with ⟨o, o_open, ho⟩
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   suffices h : ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s) s'_lift
+  -- ⊢ ∃ u, IsOpen u ∧ p ∈ u ∧ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithC …
   · refine' ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), _, _, _⟩
     show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source));
     exact (IsOpen.inter o_open l.open_source).preimage (FiberBundle.continuous_proj E _)
+    -- ⊢ p ∈ TotalSpace.proj ⁻¹' (o ∩ l.source)
     show p ∈ π E (TangentSpace I) ⁻¹' (o ∩ l.source)
+    -- ⊢ p ∈ TotalSpace.proj ⁻¹' (o ∩ l.source)
     · simp
+      -- ⊢ p.proj ∈ o
       have : p.proj ∈ f ⁻¹' r.source ∩ s := by simp [hp]
+      -- ⊢ p.proj ∈ o
       rw [ho] at this
+      -- ⊢ p.proj ∈ o
       exact this.1
+      -- 🎉 no goals
     · have : π E (TangentSpace I) ⁻¹' s ∩ π E (TangentSpace I) ⁻¹' (o ∩ l.source) = s'_lift := by
         dsimp only; rw [ho]; mfld_set_tac
       rw [this]
+      -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
       exact h
+      -- 🎉 no goals
   /- Second step: check that all functions are smooth, and use the chain rule to write the bundled
     derivative as a composition of a function between model spaces and of charts.
     Convention: statements about the differentiability of `a ∘ b ∘ c` are named `diff_abc`.
@@ -399,8 +475,11 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     rw [ho, inter_comm]
     exact hs.inter o_open
   have U'l : UniqueMDiffOn I s'l := U'.uniqueMDiffOn_preimage (mdifferentiable_chart _ _)
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   have diff_f : ContMDiffOn I I' n f s' := hf.mono (by mfld_set_tac)
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   have diff_r : ContMDiffOn I' I' n r r.source := contMDiffOn_chart
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   have diff_rf : ContMDiffOn I I' n (r ∘ f) s' := by
     refine ContMDiffOn.comp diff_r diff_f fun x hx => ?_
     simp only [mfld_simps] at hx; simp only [hx, mfld_simps]
@@ -509,6 +588,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     dsimp only [(· ∘ ·)] at A B C D E ⊢
     simp only [A, B, C, D, ← E]
   exact diff_DrirrflilDl.congr eq_comp
+  -- 🎉 no goals
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within ContMDiffOn.contMDiffOn_tangentMapWithin
 
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
@@ -526,17 +606,24 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) 
 theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 ≤ n) :
     ContMDiff I.tangent I'.tangent m (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf ⊢
+  -- ⊢ ContMDiffOn (ModelWithCorners.tangent I) (ModelWithCorners.tangent I') m (ta …
   convert hf.contMDiffOn_tangentMapWithin hmn uniqueMDiffOn_univ
+  -- ⊢ tangentMap I I' f = tangentMapWithin I I' f univ
   rw [tangentMapWithin_univ]
+  -- 🎉 no goals
 #align cont_mdiff.cont_mdiff_tangent_map ContMDiff.contMDiff_tangentMap
 
 /-- If a function is `C^n`, with `1 ≤ n`, then its bundled derivative is continuous. -/
 theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
     Continuous (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf
+  -- ⊢ Continuous (tangentMap I I' f)
   rw [continuous_iff_continuousOn_univ]
+  -- ⊢ ContinuousOn (tangentMap I I' f) univ
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
+  -- ⊢ tangentMap I I' f = tangentMapWithin I I' f univ
   rw [tangentMapWithin_univ]
+  -- 🎉 no goals
 #align cont_mdiff.continuous_tangent_map ContMDiff.continuous_tangentMap
 
 end tangentMap
@@ -564,6 +651,7 @@ TODO define splittings of vector bundles; state this result invariantly. -/
 theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     tangentMap I I.tangent (zeroSection E (TangentSpace I)) p = ⟨⟨p.proj, 0⟩, ⟨p.2, 0⟩⟩ := by
   rcases p with ⟨x, v⟩
+  -- ⊢ tangentMap I (ModelWithCorners.tangent I) (zeroSection E (TangentSpace I)) { …
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by
     apply IsOpen.mem_nhds
     apply (LocalHomeomorph.open_target _).preimage I.continuous_invFun
@@ -576,20 +664,32 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v = (v, 0)
   · rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
     · simp
+      -- 🎉 no goals
     · exact differentiableAt_id'
+      -- 🎉 no goals
     · exact differentiableAt_const _
+      -- 🎉 no goals
     · exact ModelWithCorners.unique_diff_at_image I
+      -- 🎉 no goals
     · exact differentiableAt_id'.prod (differentiableAt_const _)
+      -- 🎉 no goals
   simp only [Bundle.zeroSection, tangentMap, mfderiv, A, if_pos, chartAt,
     FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply, tangentBundleCore,
     Function.comp, ContinuousLinearMap.map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
+  -- ⊢ ↑(fderivWithin 𝕜 (fun x_1 => (↑I (↑(ChartedSpace.chartAt x) (↑(LocalHomeomor …
   rw [← fderivWithin_inter N, ← B]
+  -- ⊢ ↑(fderivWithin 𝕜 (fun x_1 => (↑I (↑(ChartedSpace.chartAt x) (↑(LocalHomeomor …
   congr 1
+  -- ⊢ fderivWithin 𝕜 (fun x_1 => (↑I (↑(ChartedSpace.chartAt x) (↑(LocalHomeomorph …
   refine' fderivWithin_congr (fun y hy => _) _
+  -- ⊢ (↑I (↑(ChartedSpace.chartAt x) (↑(LocalHomeomorph.symm (ChartedSpace.chartAt …
   · simp only [mfld_simps] at hy
+    -- ⊢ (↑I (↑(ChartedSpace.chartAt x) (↑(LocalHomeomorph.symm (ChartedSpace.chartAt …
     simp only [hy, Prod.mk.inj_iff, mfld_simps]
+    -- 🎉 no goals
   · simp only [Prod.mk.inj_iff, mfld_simps]
+    -- 🎉 no goals
 #align tangent_bundle.tangent_map_tangent_bundle_pure TangentBundle.tangentMap_tangentBundle_pure
 
 end TangentBundle

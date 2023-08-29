@@ -66,8 +66,11 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
   map p := Path.Homotopic.pi p
   map_id x := by
     change (Path.Homotopic.pi fun i => 𝟙 (x i)) = _
+    -- ⊢ (Path.Homotopic.pi fun i => 𝟙 (x i)) = 𝟙 ({ obj := fun g => g, map := fun {X …
     simp only [FundamentalGroupoid.id_eq_path_refl, Path.Homotopic.pi_lift]
+    -- ⊢ Quotient.mk (Path.Homotopic.setoid (fun i => x i) fun i => x i) (Path.pi fun …
     rfl
+    -- 🎉 no goals
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
 #align fundamental_groupoid_functor.pi_to_pi_Top FundamentalGroupoidFunctor.piToPiTop
 
@@ -80,17 +83,32 @@ def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of
   inv := CategoryTheory.Functor.pi' (proj X)
   hom_inv_id := by
     change piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X) = 𝟭 _
+    -- ⊢ piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X) = 𝟭 ((i : I) → ↑(π.obj (X  …
     apply CategoryTheory.Functor.ext ?_ ?_
+    -- ⊢ ∀ (X_1 : (i : I) → ↑(π.obj (X i))), (piToPiTop X ⋙ CategoryTheory.Functor.pi …
     · intros; rfl
+      -- ⊢ (piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X)).obj X✝ = (𝟭 ((i : I) → ↑ …
+              -- 🎉 no goals
     · intros; ext; simp
+      -- ⊢ (piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X)).map f✝ = CategoryTheory. …
+              -- ⊢ (piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X)).map f✝ i✝ = (CategoryThe …
+                   -- 🎉 no goals
   inv_hom_id := by
     change CategoryTheory.Functor.pi' (proj X) ⋙ piToPiTop X = 𝟭 _
+    -- ⊢ CategoryTheory.Functor.pi' (proj X) ⋙ piToPiTop X = 𝟭 ↑(π.obj (TopCat.of ((i …
     apply CategoryTheory.Functor.ext
+    -- ⊢ autoParam (∀ (X_1 Y : ↑(π.obj (TopCat.of ((i : I) → ↑(X i))))) (f : X_1 ⟶ Y) …
     · intro _ _ f
+      -- ⊢ (CategoryTheory.Functor.pi' (proj X) ⋙ piToPiTop X).map f = CategoryTheory.e …
       suffices Path.Homotopic.pi ((CategoryTheory.Functor.pi' (proj X)).map f) = f by simpa
+      -- ⊢ Path.Homotopic.pi ((CategoryTheory.Functor.pi' (proj X)).map f) = f
       change Path.Homotopic.pi (fun i => (CategoryTheory.Functor.pi' (proj X)).map f i) = _
+      -- ⊢ (Path.Homotopic.pi fun i => (CategoryTheory.Functor.pi' (proj X)).map f i) = f
       simp
+      -- 🎉 no goals
     · intros; rfl
+      -- ⊢ (CategoryTheory.Functor.pi' (proj X) ⋙ piToPiTop X).obj X✝ = (𝟭 ↑(π.obj (Top …
+              -- 🎉 no goals
 #align fundamental_groupoid_functor.pi_iso FundamentalGroupoidFunctor.piIso
 
 section Preserves
@@ -124,10 +142,15 @@ instance : IsIso (piTopToPiCone X) :=
 def preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
   -- Porting note: check universe parameters here
   apply Limits.preservesLimitOfPreservesLimitCone (TopCat.piFanIsLimit.{u,u} X)
+  -- ⊢ Limits.IsLimit (π.mapCone (TopCat.piFan X))
   apply (Limits.IsLimit.ofConeEquiv (coneDiscreteComp X)).toFun
+  -- ⊢ Limits.IsLimit ((coneDiscreteComp X).functor.obj (π.mapCone (TopCat.piFan X)))
   simp only [coneDiscreteComp_obj_mapCone]
+  -- ⊢ Limits.IsLimit (Limits.Fan.mk (π.obj (TopCat.of ((i : I) → ↑(X i)))) (proj X))
   apply Limits.IsLimit.ofIsoLimit _ (asIso (piTopToPiCone X)).symm
+  -- ⊢ Limits.IsLimit (Grpd.piLimitFan fun i => π.obj (X i))
   exact Grpd.piLimitFanIsLimit _
+  -- 🎉 no goals
 #align fundamental_groupoid_functor.preserves_product FundamentalGroupoidFunctor.preservesProduct
 
 end Preserves
@@ -172,8 +195,11 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
     | (x₀, x₁), (y₀, y₁), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
   map_id := by
     rintro ⟨x₀, x₁⟩
+    -- ⊢ { obj := fun g => g,
     simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
+    -- ⊢ Path.Homotopic.prod (𝟙 x₀) (𝟙 x₁) = 𝟙 (x₀, x₁)
     rfl
+    -- 🎉 no goals
   map_comp {x y z} f g :=
     match x, y, z, f, g with
     | (x₀, x₁), (y₀, y₁), (z₀, z₁), (f₀, f₁), (g₀, g₁) =>
@@ -195,22 +221,43 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
   inv := (projLeft A B).prod' (projRight A B)
   hom_inv_id := by
     change prodToProdTop A B ⋙ (projLeft A B).prod' (projRight A B) = 𝟭 _
+    -- ⊢ prodToProdTop A B ⋙ CategoryTheory.Functor.prod' (projLeft A B) (projRight A …
     apply CategoryTheory.Functor.hext; · intros; ext <;> simp <;> rfl
+    -- ⊢ ∀ (X : ↑(π.obj A) × ↑(π.obj B)), (prodToProdTop A B ⋙ CategoryTheory.Functor …
+                                         -- ⊢ (prodToProdTop A B ⋙ CategoryTheory.Functor.prod' (projLeft A B) (projRight  …
+                                                 -- ⊢ ((prodToProdTop A B ⋙ CategoryTheory.Functor.prod' (projLeft A B) (projRight …
+                                                         -- ⊢ (projLeft A B).obj X✝ = X✝.fst
+                                                         -- ⊢ (projRight A B).obj X✝ = X✝.snd
+                                                                  -- 🎉 no goals
+                                                                  -- 🎉 no goals
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ ⟨f₀, f₁⟩
+    -- ⊢ HEq ((prodToProdTop A B ⋙ CategoryTheory.Functor.prod' (projLeft A B) (projR …
     have : Path.Homotopic.projLeft ((prodToProdTop A B).map (f₀, f₁)) = f₀ ∧
       Path.Homotopic.projRight ((prodToProdTop A B).map (f₀, f₁)) = f₁ :=
         And.intro (Path.Homotopic.projLeft_prod f₀ f₁) (Path.Homotopic.projRight_prod f₀ f₁)
     simpa
+    -- 🎉 no goals
   inv_hom_id := by
     change (projLeft A B).prod' (projRight A B) ⋙ prodToProdTop A B = 𝟭 _
+    -- ⊢ CategoryTheory.Functor.prod' (projLeft A B) (projRight A B) ⋙ prodToProdTop  …
     apply CategoryTheory.Functor.hext
+    -- ⊢ ∀ (X : ↑(π.obj (TopCat.of (↑A × ↑B)))), (CategoryTheory.Functor.prod' (projL …
     · intros; apply Prod.ext <;> simp <;> rfl
+      -- ⊢ (CategoryTheory.Functor.prod' (projLeft A B) (projRight A B) ⋙ prodToProdTop …
+              -- ⊢ ((CategoryTheory.Functor.prod' (projLeft A B) (projRight A B) ⋙ prodToProdTo …
+                                 -- ⊢ (projLeft A B).obj X✝ = X✝.fst
+                                 -- ⊢ (projRight A B).obj X✝ = X✝.snd
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
+    -- ⊢ HEq ((CategoryTheory.Functor.prod' (projLeft A B) (projRight A B) ⋙ prodToPr …
     have := Path.Homotopic.prod_projLeft_projRight f
+    -- ⊢ HEq ((CategoryTheory.Functor.prod' (projLeft A B) (projRight A B) ⋙ prodToPr …
     -- Porting note: was simpa but TopSpace instances might be getting in the way
     simp only [CategoryTheory.Functor.comp_obj, CategoryTheory.Functor.prod'_obj, prodToProdTop_obj,
       CategoryTheory.Functor.comp_map, CategoryTheory.Functor.prod'_map, projLeft_map,
       projRight_map, CategoryTheory.Functor.id_obj, CategoryTheory.Functor.id_map, heq_eq_eq]
     apply this
+    -- 🎉 no goals
 
 end Prod

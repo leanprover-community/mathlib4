@@ -63,12 +63,16 @@ theorem vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
 
 theorem pointwise_vadd_bot (v : V) : v +ᵥ (⊥ : AffineSubspace k P) = ⊥ := by
   ext; simp [pointwise_vadd_eq_map, map_bot]
+  -- ⊢ x✝ ∈ v +ᵥ ⊥ ↔ x✝ ∈ ⊥
+       -- 🎉 no goals
 #align affine_subspace.pointwise_vadd_bot AffineSubspace.pointwise_vadd_bot
 
 theorem pointwise_vadd_direction (v : V) (s : AffineSubspace k P) :
     (v +ᵥ s).direction = s.direction := by
   rw [pointwise_vadd_eq_map, map_direction]
+  -- ⊢ Submodule.map (↑(AffineEquiv.constVAdd k P v)).linear (direction s) = direct …
   exact Submodule.map_id _
+  -- 🎉 no goals
 #align affine_subspace.pointwise_vadd_direction AffineSubspace.pointwise_vadd_direction
 
 theorem pointwise_vadd_span (v : V) (s : Set P) : v +ᵥ affineSpan k s = affineSpan k (v +ᵥ s) :=
@@ -78,9 +82,13 @@ theorem pointwise_vadd_span (v : V) (s : Set P) : v +ᵥ affineSpan k s = affine
 theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubspace k P₁) :
     (v +ᵥ s).map f = f.linear v +ᵥ s.map f := by
   erw [pointwise_vadd_eq_map, pointwise_vadd_eq_map, map_map, map_map]
+  -- ⊢ map (AffineMap.comp f ↑(AffineEquiv.constVAdd k P₁ v)) s = map (AffineMap.co …
   congr 1
+  -- ⊢ AffineMap.comp f ↑(AffineEquiv.constVAdd k P₁ v) = AffineMap.comp (↑(AffineE …
   ext
+  -- ⊢ ↑(AffineMap.comp f ↑(AffineEquiv.constVAdd k P₁ v)) p✝ = ↑(AffineMap.comp (↑ …
   exact f.map_vadd _ _
+  -- 🎉 no goals
 #align affine_subspace.map_pointwise_vadd AffineSubspace.map_pointwise_vadd
 
 end AffineSubspace

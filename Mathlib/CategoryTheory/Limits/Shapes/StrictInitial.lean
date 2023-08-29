@@ -73,8 +73,11 @@ theorem IsInitial.isIso_to (hI : IsInitial I) {A : C} (f : A ⟶ I) : IsIso f :=
 
 theorem IsInitial.strict_hom_ext (hI : IsInitial I) {A : C} (f g : A ⟶ I) : f = g := by
   haveI := hI.isIso_to f
+  -- ⊢ f = g
   haveI := hI.isIso_to g
+  -- ⊢ f = g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
+  -- 🎉 no goals
 #align category_theory.limits.is_initial.strict_hom_ext CategoryTheory.Limits.IsInitial.strict_hom_ext
 
 theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A ⟶ I) :=
@@ -89,7 +92,9 @@ instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoC
 @[simps! hom]
 noncomputable def mulIsInitial (X : C) [HasBinaryProduct X I] (hI : IsInitial I) : X ⨯ I ≅ I := by
   have := hI.isIso_to (prod.snd : X ⨯ I ⟶ I)
+  -- ⊢ X ⨯ I ≅ I
   exact asIso prod.snd
+  -- 🎉 no goals
 #align category_theory.limits.mul_is_initial CategoryTheory.Limits.mulIsInitial
 
 @[simp]
@@ -102,7 +107,9 @@ theorem mulIsInitial_inv (X : C) [HasBinaryProduct X I] (hI : IsInitial I) :
 @[simps! hom]
 noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I := by
    have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
+   -- ⊢ I ⨯ X ≅ I
    exact asIso prod.fst
+   -- 🎉 no goals
 #align category_theory.limits.is_initial_mul CategoryTheory.Limits.isInitialMul
 
 @[simp]
@@ -163,6 +170,7 @@ theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
   { out := fun {I A} f hI =>
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
+                                             -- 🎉 no goals
 #align category_theory.limits.has_strict_initial_objects_of_initial_is_strict CategoryTheory.Limits.hasStrictInitialObjects_of_initial_is_strict
 
 end StrictInitial
@@ -191,8 +199,11 @@ theorem IsTerminal.isIso_from (hI : IsTerminal I) {A : C} (f : I ⟶ A) : IsIso 
 
 theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : f = g := by
   haveI := hI.isIso_from f
+  -- ⊢ f = g
   haveI := hI.isIso_from g
+  -- ⊢ f = g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
+  -- 🎉 no goals
 #align category_theory.limits.is_terminal.strict_hom_ext CategoryTheory.Limits.IsTerminal.strict_hom_ext
 
 theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I ⟶ A) :=
@@ -261,6 +272,7 @@ theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f :
   { out := fun {I' A} f hI' =>
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
+                                                               -- 🎉 no goals
 #align category_theory.limits.has_strict_terminal_objects_of_terminal_is_strict CategoryTheory.Limits.hasStrictTerminalObjects_of_terminal_is_strict
 
 end StrictTerminal

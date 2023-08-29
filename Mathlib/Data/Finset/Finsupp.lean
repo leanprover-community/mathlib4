@@ -47,13 +47,21 @@ protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀
 theorem mem_finsupp_iff {t : ι → Finset α} :
     f ∈ s.finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
+  -- ⊢ (∃ a, a ∈ pi s t ∧ ↑{ toFun := indicator s, inj' := (_ : Function.Injective  …
   · rintro ⟨f, hf, rfl⟩
+    -- ⊢ (↑{ toFun := indicator s, inj' := (_ : Function.Injective fun f => indicator …
     refine' ⟨support_indicator_subset _ _, fun i hi => _⟩
+    -- ⊢ ↑(↑{ toFun := indicator s, inj' := (_ : Function.Injective fun f => indicato …
     convert mem_pi.1 hf i hi
+    -- ⊢ ↑(↑{ toFun := indicator s, inj' := (_ : Function.Injective fun f => indicato …
     exact indicator_of_mem hi _
+    -- 🎉 no goals
   · refine' fun h => ⟨fun i _ => f i, mem_pi.2 h.2, _⟩
+    -- ⊢ (↑{ toFun := indicator s, inj' := (_ : Function.Injective fun f => indicator …
     ext i
+    -- ⊢ ↑(↑{ toFun := indicator s, inj' := (_ : Function.Injective fun f => indicato …
     exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
+    -- 🎉 no goals
 #align finset.mem_finsupp_iff Finset.mem_finsupp_iff
 
 /-- When `t` is supported on `s`, `f ∈ s.finsupp t` precisely means that `f` is pointwise in `t`. -/
@@ -67,10 +75,15 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
           ⟨fun h => _, fun h =>
             ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
+    -- ⊢ ↑f i ∈ ↑t i
     · exact h.2 hi
+      -- 🎉 no goals
     · rw [not_mem_support_iff.1 (mt h.1 hi), not_mem_support_iff.1 fun H => hi <| ht H]
+      -- ⊢ 0 ∈ 0
       exact zero_mem_zero
+      -- 🎉 no goals
   · rwa [H, mem_zero] at h
+    -- 🎉 no goals
 #align finset.mem_finsupp_iff_of_support_subset Finset.mem_finsupp_iff_of_support_subset
 
 @[simp]
@@ -99,7 +112,9 @@ theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀
 @[simp]
 theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_finsupp]
+  -- ⊢ ∏ i in f.support, card (↑f i) = prod f fun i => ↑(card (↑f i))
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
+  -- 🎉 no goals
 #align finsupp.card_pi Finsupp.card_pi
 
 end Finsupp

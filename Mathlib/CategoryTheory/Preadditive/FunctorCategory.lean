@@ -33,36 +33,60 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
       sub := fun α β => { app := fun X => α.app X - β.app X }
       add_assoc := by
         intros
+        -- ⊢ a✝ + b✝ + c✝ = a✝ + (b✝ + c✝)
         ext
+        -- ⊢ NatTrans.app (a✝ + b✝ + c✝) x✝ = NatTrans.app (a✝ + (b✝ + c✝)) x✝
         apply add_assoc
+        -- 🎉 no goals
       zero_add := by
         intros
+        -- ⊢ 0 + a✝ = a✝
         ext
+        -- ⊢ NatTrans.app (0 + a✝) x✝ = NatTrans.app a✝ x✝
         apply zero_add
+        -- 🎉 no goals
       add_zero := by
         intros
+        -- ⊢ a✝ + 0 = a✝
         ext
+        -- ⊢ NatTrans.app (a✝ + 0) x✝ = NatTrans.app a✝ x✝
         apply add_zero
+        -- 🎉 no goals
       add_comm := by
         intros
+        -- ⊢ a✝ + b✝ = b✝ + a✝
         ext
+        -- ⊢ NatTrans.app (a✝ + b✝) x✝ = NatTrans.app (b✝ + a✝) x✝
         apply add_comm
+        -- ⊢ a✝ - b✝ = a✝ + -b✝
+        -- 🎉 no goals
+        -- ⊢ NatTrans.app (a✝ - b✝) x✝ = NatTrans.app (a✝ + -b✝) x✝
       sub_eq_add_neg := by
+        -- 🎉 no goals
         intros
         ext
+        -- ⊢ -a✝ + a✝ = 0
         apply sub_eq_add_neg
+        -- ⊢ NatTrans.app (-a✝ + a✝) x✝ = NatTrans.app 0 x✝
       add_left_neg := by
+        -- 🎉 no goals
         intros
         ext
         apply add_left_neg }
   add_comp := by
     intros
+    -- ⊢ (f✝ + f'✝) ≫ g✝ = f✝ ≫ g✝ + f'✝ ≫ g✝
     ext
+    -- ⊢ NatTrans.app ((f✝ + f'✝) ≫ g✝) x✝ = NatTrans.app (f✝ ≫ g✝ + f'✝ ≫ g✝) x✝
     apply add_comp
+    -- 🎉 no goals
   comp_add := by
     intros
+    -- ⊢ f✝ ≫ (g✝ + g'✝) = f✝ ≫ g✝ + f✝ ≫ g'✝
     ext
+    -- ⊢ NatTrans.app (f✝ ≫ (g✝ + g'✝)) x✝ = NatTrans.app (f✝ ≫ g✝ + f✝ ≫ g'✝) x✝
     apply comp_add
+    -- 🎉 no goals
 #align category_theory.functor_category_preadditive CategoryTheory.functorCategoryPreadditive
 
 namespace NatTrans
@@ -113,6 +137,7 @@ theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α
 theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
     (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
   simp only [← appHom_apply, map_sum]
+  -- 🎉 no goals
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum
 
 end NatTrans

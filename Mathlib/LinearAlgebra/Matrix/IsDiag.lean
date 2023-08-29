@@ -47,8 +47,11 @@ theorem IsDiag.diagonal_diag [Zero α] [DecidableEq n] {A : Matrix n n α} (h : 
     diagonal (diag A) = A :=
   ext fun i j => by
     obtain rfl | hij := Decidable.eq_or_ne i j
+    -- ⊢ diagonal (diag A) i i = A i i
     · rw [diagonal_apply_eq, diag]
+      -- 🎉 no goals
     · rw [diagonal_apply_ne _ hij, h hij]
+      -- 🎉 no goals
 #align matrix.is_diag.diagonal_diag Matrix.IsDiag.diagonal_diag
 
 /-- `Matrix.IsDiag.diagonal_diag` as an iff. -/
@@ -76,12 +79,16 @@ theorem isDiag_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α).IsDi
 theorem IsDiag.map [Zero α] [Zero β] {A : Matrix n n α} (ha : A.IsDiag) {f : α → β} (hf : f 0 = 0) :
     (A.map f).IsDiag := by
   intro i j h
+  -- ⊢ Matrix.map A f i j = 0
   simp [ha h, hf]
+  -- 🎉 no goals
 #align matrix.is_diag.map Matrix.IsDiag.map
 
 theorem IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
   intro i j h
+  -- ⊢ (-A) i j = 0
   simp [ha h]
+  -- 🎉 no goals
 #align matrix.is_diag.neg Matrix.IsDiag.neg
 
 @[simp]
@@ -92,19 +99,25 @@ theorem isDiag_neg_iff [AddGroup α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsD
 theorem IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
     (A + B).IsDiag := by
   intro i j h
+  -- ⊢ (A + B) i j = 0
   simp [ha h, hb h]
+  -- 🎉 no goals
 #align matrix.is_diag.add Matrix.IsDiag.add
 
 theorem IsDiag.sub [AddGroup α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
     (A - B).IsDiag := by
   intro i j h
+  -- ⊢ (A - B) i j = 0
   simp [ha h, hb h]
+  -- 🎉 no goals
 #align matrix.is_diag.sub Matrix.IsDiag.sub
 
 theorem IsDiag.smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (k : R) {A : Matrix n n α}
     (ha : A.IsDiag) : (k • A).IsDiag := by
   intro i j h
+  -- ⊢ (k • A) i j = 0
   simp [ha h]
+  -- 🎉 no goals
 #align matrix.is_diag.smul Matrix.IsDiag.smul
 
 @[simp]
@@ -132,7 +145,9 @@ theorem isDiag_conjTranspose_iff [Semiring α] [StarRing α] {A : Matrix n n α}
     Aᴴ.IsDiag ↔ A.IsDiag :=
   ⟨fun ha => by
     convert ha.conjTranspose
+    -- ⊢ A = Aᴴᴴ
     simp, IsDiag.conjTranspose⟩
+    -- 🎉 no goals
 #align matrix.is_diag_conj_transpose_iff Matrix.isDiag_conjTranspose_iff
 
 theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m → n}
@@ -143,16 +158,25 @@ theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m �
 theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n α} (hA : A.IsDiag)
     (hB : B.IsDiag) : (A ⊗ₖ B).IsDiag := by
   rintro ⟨a, b⟩ ⟨c, d⟩ h
+  -- ⊢ kroneckerMap (fun x x_1 => x * x_1) A B (a, b) (c, d) = 0
   simp only [Prod.mk.inj_iff, Ne.def, not_and_or] at h
+  -- ⊢ kroneckerMap (fun x x_1 => x * x_1) A B (a, b) (c, d) = 0
   cases' h with hac hbd
+  -- ⊢ kroneckerMap (fun x x_1 => x * x_1) A B (a, b) (c, d) = 0
   · simp [hA hac]
+    -- 🎉 no goals
   · simp [hB hbd]
+    -- 🎉 no goals
 #align matrix.is_diag.kronecker Matrix.IsDiag.kronecker
 
 theorem IsDiag.isSymm [Zero α] {A : Matrix n n α} (h : A.IsDiag) : A.IsSymm := by
   ext i j
+  -- ⊢ Aᵀ i j = A i j
   by_cases g : i = j; · rw [g, transpose_apply]
+  -- ⊢ Aᵀ i j = A i j
+                        -- 🎉 no goals
   simp [h g, h (Ne.symm g)]
+  -- 🎉 no goals
 #align matrix.is_diag.is_symm Matrix.IsDiag.isSymm
 
 /-- The block matrix `A.fromBlocks 0 0 D` is diagonal if `A` and `D` are diagonal. -/
@@ -160,23 +184,35 @@ theorem IsDiag.fromBlocks [Zero α] {A : Matrix m m α} {D : Matrix n n α} (ha 
     (hd : D.IsDiag) : (A.fromBlocks 0 0 D).IsDiag := by
   rintro (i | i) (j | j) hij
   · exact ha (ne_of_apply_ne _ hij)
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
   · exact hd (ne_of_apply_ne _ hij)
+    -- 🎉 no goals
 #align matrix.is_diag.from_blocks Matrix.IsDiag.fromBlocks
 
 /-- This is the `iff` version of `Matrix.IsDiag.fromBlocks`. -/
 theorem isDiag_fromBlocks_iff [Zero α] {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} : (A.fromBlocks B C D).IsDiag ↔ A.IsDiag ∧ B = 0 ∧ C = 0 ∧ D.IsDiag := by
   constructor
+  -- ⊢ IsDiag (fromBlocks A B C D) → IsDiag A ∧ B = 0 ∧ C = 0 ∧ IsDiag D
   · intro h
+    -- ⊢ IsDiag A ∧ B = 0 ∧ C = 0 ∧ IsDiag D
     refine' ⟨fun i j hij => _, ext fun i j => _, ext fun i j => _, fun i j hij => _⟩
     · exact h (Sum.inl_injective.ne hij)
+      -- 🎉 no goals
     · exact h Sum.inl_ne_inr
+      -- 🎉 no goals
     · exact h Sum.inr_ne_inl
+      -- 🎉 no goals
     · exact h (Sum.inr_injective.ne hij)
+      -- 🎉 no goals
   · rintro ⟨ha, hb, hc, hd⟩
+    -- ⊢ IsDiag (fromBlocks A B C D)
     convert IsDiag.fromBlocks ha hd
+    -- 🎉 no goals
 #align matrix.is_diag_from_blocks_iff Matrix.isDiag_fromBlocks_iff
 
 /-- A symmetric block matrix `A.fromBlocks B C D` is diagonal
@@ -185,7 +221,9 @@ theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n 
     {D : Matrix n n α} (h : (A.fromBlocks 0 C D).IsSymm) (ha : A.IsDiag) (hd : D.IsDiag) :
     (A.fromBlocks 0 C D).IsDiag := by
   rw [← (isSymm_fromBlocks_iff.1 h).2.1]
+  -- ⊢ IsDiag (Matrix.fromBlocks A 0 0ᵀ D)
   exact ha.fromBlocks hd
+  -- 🎉 no goals
 #align matrix.is_diag.from_blocks_of_is_symm Matrix.IsDiag.fromBlocks_of_isSymm
 
 theorem mul_transpose_self_isDiag_iff_hasOrthogonalRows [Fintype n] [Mul α] [AddCommMonoid α]

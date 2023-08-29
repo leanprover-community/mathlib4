@@ -57,6 +57,7 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
     (x : (Opens.map α.base).obj U) :
     Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ stalkMap α ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
   rw [stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map_germ AlgebraicGeometry.PresheafedSpace.stalkMap_germ
 
@@ -95,6 +96,7 @@ theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
         (restrictStalkIso X h x).inv =
       (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
   by rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso_inv_eq_germ AlgebraicGeometry.PresheafedSpace.restrictStalkIso_inv_eq_germ
 
@@ -103,15 +105,22 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
     (X.restrictStalkIso h x).inv = stalkMap (X.ofRestrict h) x := by
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun V => ?_
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑↑X)ᵒᵖ C).obj (OpenNh …
   induction V with | h V => ?_
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑↑X)ᵒᵖ C).obj (OpenNh …
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑↑X)ᵒᵖ C).obj (OpenNh …
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
   erw [Iso.comp_inv_eq, colimit.ι_map_assoc, colimit.ι_map_assoc, colimit.ι_pre]
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑↑X)ᵒᵖ C).obj (OpenNh …
   simp_rw [Category.assoc]
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑↑X)ᵒᵖ C).obj (OpenNh …
   erw [colimit.ι_pre ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf)
       (h.isOpenMap.functorNhds x).op]
   erw [← X.presheaf.map_comp_assoc]
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f x))ᵒᵖ (Opens ↑↑X)ᵒᵖ C).obj (OpenNh …
   exact (colimit.w ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) i.op).symm
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso_inv_eq_of_restrict AlgebraicGeometry.PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict
 
@@ -119,6 +128,8 @@ instance ofRestrict_stalkMap_isIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
     IsIso (stalkMap (X.ofRestrict h) x) := by
   rw [← restrictStalkIso_inv_eq_ofRestrict]; infer_instance
+  -- ⊢ IsIso (restrictStalkIso X h x).inv
+                                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.of_restrict_stalk_map_is_iso AlgebraicGeometry.PresheafedSpace.ofRestrict_stalkMap_isIso
 
@@ -130,12 +141,19 @@ namespace stalkMap
 theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     stalkMap (𝟙 X) x = 𝟙 (X.stalk x) := by
   dsimp [stalkMap]
+  -- ⊢ (stalkFunctor C (↑(𝟙 ↑X) x)).map (𝟙 X).c ≫ stalkPushforward C (𝟙 ↑X) X.presh …
   simp only [stalkPushforward.id]
+  -- ⊢ (stalkFunctor C (↑(𝟙 ↑X) x)).map (𝟙 X).c ≫ (stalkFunctor C x).map (Pushforwa …
   erw [← map_comp]
+  -- ⊢ (stalkFunctor C (↑(𝟙 ↑X) x)).map ((𝟙 X).c ≫ (Pushforward.id X.presheaf).hom) …
   convert (stalkFunctor C x).map_id X.presheaf
+  -- ⊢ (𝟙 X).c ≫ (Pushforward.id X.presheaf).hom = 𝟙 X.presheaf
   ext
+  -- ⊢ NatTrans.app ((𝟙 X).c ≫ (Pushforward.id X.presheaf).hom) (op U✝) = NatTrans. …
   simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
+  -- ⊢ 𝟙 (X.presheaf.obj (op ((Opens.map (𝟙 ↑X)).obj (op U✝).unop))) = NatTrans.app …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.id AlgebraicGeometry.PresheafedSpace.stalkMap.id
 
@@ -145,10 +163,15 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
       (stalkMap β (α.base x) : Z.stalk (β.base (α.base x)) ⟶ Y.stalk (α.base x)) ≫
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalkMap, stalkFunctor, stalkPushforward]
+  -- ⊢ colimMap (whiskerLeft (OpenNhds.inclusion (↑(α.base ≫ β.base) x)).op (α ≫ β) …
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun U => ?_
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(α.base ≫ β.base) x))ᵒᵖ (Opens ↑↑Z)ᵒ …
   induction U with | h U => ?_
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(α.base ≫ β.base) x))ᵒᵖ (Opens ↑↑Z)ᵒ …
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(α.base ≫ β.base) x))ᵒᵖ (Opens ↑↑Z)ᵒ …
   cases U
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑(α.base ≫ β.base) x))ᵒᵖ (Opens ↑↑Z)ᵒ …
   simp only [whiskeringLeft_obj_obj, comp_obj, op_obj, unop_op, OpenNhds.inclusion_obj,
     ι_colimMap_assoc, pushforwardObj_obj, Opens.map_comp_obj, whiskerLeft_app, comp_c_app,
     OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,
@@ -164,25 +187,35 @@ either side of the equality.
 theorem congr {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y)
     (h₁ : α = β) (x x' : X) (h₂ : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h₂]) =
+                                                           -- 🎉 no goals
       eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x') by rw [h₁, h₂]) ≫ stalkMap β x' := by
+                                                                -- 🎉 no goals
   ext
+  -- ⊢ germ Y.presheaf { val := ↑α.base x, property := hxU✝ } ≫ stalkMap α x ≫ eqTo …
   substs h₁ h₂
+  -- ⊢ germ Y.presheaf { val := ↑α.base x, property := hxU✝ } ≫ stalkMap α x ≫ eqTo …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr AlgebraicGeometry.PresheafedSpace.stalkMap.congr
 
 theorem congr_hom {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y) (h : α = β) (x : X) :
     stalkMap α x =
       eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x) by rw [h]) ≫ stalkMap β x :=
+                                                               -- 🎉 no goals
   by rw [← stalkMap.congr α β h x x rfl, eqToHom_refl, Category.comp_id]
+     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_hom AlgebraicGeometry.PresheafedSpace.stalkMap.congr_hom
 
 theorem congr_point {X Y : PresheafedSpace.{_, _, v} C}
     (α : X ⟶ Y) (x x' : X) (h : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h]) =
+                                                           -- 🎉 no goals
       eqToHom (show Y.stalk (α.base x) = Y.stalk (α.base x') by rw [h]) ≫ stalkMap α x' :=
+                                                                -- 🎉 no goals
   by rw [stalkMap.congr α α rfl x x' h]
+     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_point AlgebraicGeometry.PresheafedSpace.stalkMap.congr_point
 
@@ -190,7 +223,9 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     IsIso (stalkMap α x) where
   out := by
     let β : Y ⟶ X := CategoryTheory.inv α
+    -- ⊢ ∃ inv, stalkMap α x ≫ inv = 𝟙 (stalk Y (↑α.base x)) ∧ inv ≫ stalkMap α x = 𝟙 …
     have h_eq : (α ≫ β).base x = x := by rw [IsIso.hom_inv_id α, id_base, TopCat.id_app]
+    -- ⊢ ∃ inv, stalkMap α x ≫ inv = 𝟙 (stalk Y (↑α.base x)) ∧ inv ≫ stalkMap α x = 𝟙 …
     -- Intuitively, the inverse of the stalk map of `α` at `x` should just be the stalk map of `β`
     -- at `α x`. Unfortunately, we have a problem with dependent type theory here: Because `x`
     -- is not *definitionally* equal to `β (α x)`, the map `stalk_map β (α x)` has not the correct
@@ -202,7 +237,9 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
           (stalkMap β (α.base x) : _),
         _, _⟩
     · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
+      -- ⊢ eqToHom (_ : stalk Y (↑α.base x) = stalk Y (↑α.base (↑(α ≫ β).base x))) ≫ st …
       erw [← stalkMap.comp β α (α.base x)]
+      -- ⊢ eqToHom (_ : stalk Y (↑α.base x) = stalk Y (↑α.base (↑(α ≫ β).base x))) ≫ st …
       rw [congr_hom _ _ (IsIso.inv_hom_id α), stalkMap.id, eqToHom_trans_assoc, eqToHom_refl,
         Category.id_comp]
     · rw [Category.assoc, ← stalkMap.comp, congr_hom _ _ (IsIso.hom_inv_id α), stalkMap.id,
@@ -226,17 +263,26 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- Porting note : the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
+  -- ⊢ colimit.desc ((OpenNhds.inclusion (↑f.base y)).op ⋙ Y.presheaf) { pt := coli …
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun j => ?_
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f.base y))ᵒᵖ (Opens ↑↑Y)ᵒᵖ C).obj (O …
   induction j with | h j => ?_
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f.base y))ᵒᵖ (Opens ↑↑Y)ᵒᵖ C).obj (O …
+  -- ⊢ colimit.ι (((whiskeringLeft (OpenNhds (↑f.base y))ᵒᵖ (Opens ↑↑Y)ᵒᵖ C).obj (O …
   dsimp
+  -- ⊢ colimit.ι ((OpenNhds.inclusion (↑f.base y)).op ⋙ Y.presheaf) (op j) ≫ colimi …
   simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, colimit.map_desc,
     OpenNhds.inclusion_obj, pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app,
     NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc, colimit.pre_desc]
   erw [colimit.ι_desc]
+  -- ⊢ NatTrans.app f.c (op j.obj) ≫ colimit.ι ((OpenNhds.inclusion x).op ⋙ X.presh …
   dsimp
+  -- ⊢ NatTrans.app f.c (op j.obj) ≫ colimit.ι ((OpenNhds.inclusion x).op ⋙ X.presh …
   erw [X.presheaf.map_id, id_comp]
+  -- ⊢ NatTrans.app f.c (op j.obj) ≫ colimit.ι ((OpenNhds.inclusion x).op ⋙ X.presh …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.stalk_specializes_stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap.stalkSpecializes_stalkMap
 

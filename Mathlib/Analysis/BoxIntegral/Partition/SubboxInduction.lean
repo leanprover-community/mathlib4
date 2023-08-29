@@ -45,18 +45,24 @@ namespace Prepartition
 def splitCenter (I : Box ι) : Prepartition I where
   boxes := Finset.univ.map (Box.splitCenterBoxEmb I)
   le_of_mem' := by simp [I.splitCenterBox_le]
+                   -- 🎉 no goals
   pairwiseDisjoint := by
     rw [Finset.coe_map, Finset.coe_univ, image_univ]
+    -- ⊢ Set.Pairwise (range ↑(Box.splitCenterBoxEmb I)) (Disjoint on Box.toSet)
     rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ Hne
+    -- ⊢ (Disjoint on Box.toSet) (↑(Box.splitCenterBoxEmb I) s) (↑(Box.splitCenterBox …
     exact I.disjoint_splitCenterBox (mt (congr_arg _) Hne)
+    -- 🎉 no goals
 #align box_integral.prepartition.split_center BoxIntegral.Prepartition.splitCenter
 
 @[simp]
 theorem mem_splitCenter : J ∈ splitCenter I ↔ ∃ s, I.splitCenterBox s = J := by simp [splitCenter]
+                                                                                -- 🎉 no goals
 #align box_integral.prepartition.mem_split_center BoxIntegral.Prepartition.mem_splitCenter
 
 theorem isPartition_splitCenter (I : Box ι) : IsPartition (splitCenter I) := fun x hx => by
   simp [hx]
+  -- 🎉 no goals
 #align box_integral.prepartition.is_partition_split_center BoxIntegral.Prepartition.isPartition_splitCenter
 
 theorem upper_sub_lower_of_mem_splitCenter (h : J ∈ splitCenter I) (i : ι) :
@@ -90,8 +96,11 @@ theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
         (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :
     p I := by
   refine' subbox_induction_on' I (fun J hle hs => H_ind J hle fun J' h' => _) H_nhds
+  -- ⊢ p J'
   rcases mem_splitCenter.1 h' with ⟨s, rfl⟩
+  -- ⊢ p (splitCenterBox J s)
   exact hs s
+  -- 🎉 no goals
 #align box_integral.box.subbox_induction_on BoxIntegral.Box.subbox_induction_on
 
 /-- Given a box `I` in `ℝⁿ` and a function `r : ℝⁿ → (0, ∞)`, there exists a tagged partition `π` of
@@ -109,8 +118,11 @@ theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
       (∀ J ∈ π, ∃ m : ℕ, ∀ i, (J : _).upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) ∧
         π.distortion = I.distortion := by
   refine' subbox_induction_on I (fun J _ hJ => _) fun z _ => _
+  -- ⊢ ∃ π, TaggedPrepartition.IsPartition π ∧ IsHenstock π ∧ IsSubordinate π r ∧ ( …
   · choose! πi hP hHen hr Hn _ using hJ
+    -- ⊢ ∃ π, TaggedPrepartition.IsPartition π ∧ IsHenstock π ∧ IsSubordinate π r ∧ ( …
     choose! n hn using Hn
+    -- ⊢ ∃ π, TaggedPrepartition.IsPartition π ∧ IsHenstock π ∧ IsSubordinate π r ∧ ( …
     have hP : ((splitCenter J).biUnionTagged πi).IsPartition :=
       (isPartition_splitCenter _).biUnionTagged hP
     have hsub : ∀ J' ∈ (splitCenter J).biUnionTagged πi, ∃ n : ℕ, ∀ i,
@@ -120,18 +132,27 @@ theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
       refine' ⟨n J₁ J' + 1, fun i => _⟩
       simp only [hn J₁ h₁ J' h₂, upper_sub_lower_of_mem_splitCenter h₁, pow_succ, div_div]
     refine' ⟨_, hP, isHenstock_biUnionTagged.2 hHen, isSubordinate_biUnionTagged.2 hr, hsub, _⟩
+    -- ⊢ TaggedPrepartition.distortion (biUnionTagged (splitCenter J) πi) = distortio …
     refine' TaggedPrepartition.distortion_of_const _ hP.nonempty_boxes fun J' h' => _
+    -- ⊢ distortion J' = distortion J
     rcases hsub J' h' with ⟨n, hn⟩
+    -- ⊢ distortion J' = distortion J
     exact Box.distortion_eq_of_sub_eq_div hn
+    -- 🎉 no goals
   · refine' ⟨Box.Icc I ∩ closedBall z (r z),
       inter_mem_nhdsWithin _ (closedBall_mem_nhds _ (r z).coe_prop), _⟩
     intro J _ n Hmem HIcc Hsub
+    -- ⊢ ∃ π, TaggedPrepartition.IsPartition π ∧ IsHenstock π ∧ IsSubordinate π r ∧ ( …
     rw [Set.subset_inter_iff] at HIcc
+    -- ⊢ ∃ π, TaggedPrepartition.IsPartition π ∧ IsHenstock π ∧ IsSubordinate π r ∧ ( …
     refine' ⟨single _ _ le_rfl _ Hmem, isPartition_single _, isHenstock_single _,
       (isSubordinate_single _ _).2 HIcc.2, _, distortion_single _ _⟩
     simp only [TaggedPrepartition.mem_single, forall_eq]
+    -- ⊢ ∃ m, ∀ (i : ι), upper J i - lower J i = (upper J i - lower J i) / 2 ^ m
     refine' ⟨0, fun i => _⟩
+    -- ⊢ upper J i - lower J i = (upper J i - lower J i) / 2 ^ 0
     simp
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align box_integral.box.exists_tagged_partition_is_Henstock_is_subordinate_homothetic BoxIntegral.Box.exists_taggedPartition_isHenstock_isSubordinate_homothetic
 
@@ -155,11 +176,15 @@ theorem exists_tagged_le_isHenstock_isSubordinate_iUnion_eq {I : Box ι} (r : (�
     ∃ π' : TaggedPrepartition I, π'.toPrepartition ≤ π ∧ π'.IsHenstock ∧ π'.IsSubordinate r ∧
       π'.distortion = π.distortion ∧ π'.iUnion = π.iUnion := by
   have := fun J => Box.exists_taggedPartition_isHenstock_isSubordinate_homothetic J r
+  -- ⊢ ∃ π', π'.toPrepartition ≤ π ∧ IsHenstock π' ∧ IsSubordinate π' r ∧ TaggedPre …
   choose! πi πip πiH πir _ πid using this
+  -- ⊢ ∃ π', π'.toPrepartition ≤ π ∧ IsHenstock π' ∧ IsSubordinate π' r ∧ TaggedPre …
   refine' ⟨π.biUnionTagged πi, biUnion_le _ _, isHenstock_biUnionTagged.2 fun J _ => πiH J,
     isSubordinate_biUnionTagged.2 fun J _ => πir J, _, π.iUnion_biUnion_partition fun J _ => πip J⟩
   rw [distortion_biUnionTagged]
+  -- ⊢ (sup π.boxes fun J => TaggedPrepartition.distortion (πi J)) = distortion π
   exact sup_congr rfl fun J _ => πid J
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align box_integral.prepartition.exists_tagged_le_is_Henstock_is_subordinate_Union_eq BoxIntegral.Prepartition.exists_tagged_le_isHenstock_isSubordinate_iUnion_eq
 
@@ -249,6 +274,7 @@ theorem distortion_unionComplToSubordinate (π₁ : TaggedPrepartition I) (π₂
     (hU : π₂.iUnion = ↑I \ π₁.iUnion) (r : (ι → ℝ) → Ioi (0 : ℝ)) :
     (π₁.unionComplToSubordinate π₂ hU r).distortion = max π₁.distortion π₂.distortion := by
   simp [unionComplToSubordinate]
+  -- 🎉 no goals
 #align box_integral.tagged_prepartition.distortion_union_compl_to_subordinate BoxIntegral.TaggedPrepartition.distortion_unionComplToSubordinate
 
 end TaggedPrepartition

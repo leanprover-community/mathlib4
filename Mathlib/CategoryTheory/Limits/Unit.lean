@@ -39,12 +39,14 @@ def punitCocone : Cocone F :=
 -/
 def punitConeIsLimit {c : Cone F} : IsLimit c where
   lift := fun s => eqToHom (by simp)
+                               -- 🎉 no goals
 #align category_theory.limits.punit_cone_is_limit CategoryTheory.Limits.punitConeIsLimit
 
 /-- Any cocone over a functor into `PUnit` is a colimit cocone.
 -/
 def punitCoconeIsColimit {c : Cocone F} : IsColimit c where
   desc := fun s => eqToHom (by simp)
+                               -- 🎉 no goals
 #align category_theory.limits.punit_cocone_is_colimit CategoryTheory.Limits.punitCoconeIsColimit
 
 instance : HasLimitsOfSize.{v', v} (Discrete PUnit) :=

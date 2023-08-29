@@ -53,9 +53,13 @@ def factor (f : K[X]) : K[X] :=
 
 theorem irreducible_factor (f : K[X]) : Irreducible (factor f) := by
   rw [factor]
+  -- ⊢ Irreducible (if H : ∃ g, Irreducible g ∧ g ∣ f then Classical.choose H else X)
   split_ifs with H
+  -- ⊢ Irreducible (Classical.choose H)
   · exact (Classical.choose_spec H).1
+    -- 🎉 no goals
   · exact irreducible_X
+    -- 🎉 no goals
 #align polynomial.irreducible_factor Polynomial.irreducible_factor
 
 /-- See note [fact non-instances]. -/
@@ -67,8 +71,13 @@ attribute [local instance] fact_irreducible_factor
 
 theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
   by_cases hf2 : f = 0; · rw [hf2]; exact dvd_zero _
+  -- ⊢ factor f ∣ f
+                          -- ⊢ factor 0 ∣ 0
+                                    -- 🎉 no goals
   rw [factor, dif_pos (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
+  -- ⊢ Classical.choose (_ : ∃ i, Irreducible i ∧ i ∣ f) ∣ f
   exact (Classical.choose_spec <| WfDvdMonoid.exists_irreducible_factor hf1 hf2).2
+  -- 🎉 no goals
 #align polynomial.factor_dvd_of_not_is_unit Polynomial.factor_dvd_of_not_isUnit
 
 theorem factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f ∣ f :=
@@ -87,9 +96,11 @@ def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
 theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
     (X - C (AdjoinRoot.root f.factor)) * f.removeFactor = map (AdjoinRoot.of f.factor) f := by
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
+  -- ⊢ (X - ↑C (AdjoinRoot.root (factor f))) * removeFactor f = map (AdjoinRoot.of  …
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
   rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -101,6 +112,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
   f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
+                                     -- 🎉 no goals
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
@@ -185,6 +197,7 @@ protected theorem splits (n : ℕ) :
     rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
       ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
+    -- 🎉 no goals
 #align polynomial.splitting_field_aux.splits Polynomial.SplittingFieldAux.splits
 
 theorem adjoin_rootSet (n : ℕ) :
@@ -200,9 +213,13 @@ theorem adjoin_rootSet (n : ℕ) :
     n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
+    -- ⊢ Algebra.adjoin K ↑(Multiset.toFinset (roots (map (algebraMap K (SplittingFie …
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
+    -- ⊢ Algebra.adjoin K ↑(Multiset.toFinset (roots (map (algebraMap K (SplittingFie …
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
+    -- ⊢ Algebra.adjoin K ↑(Multiset.toFinset (roots (map (algebraMap K (SplittingFie …
     rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
+    -- ⊢ Algebra.adjoin K ↑(Multiset.toFinset (roots (map (algebraMap (AdjoinRoot (fa …
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
@@ -216,7 +233,9 @@ theorem adjoin_rootSet (n : ℕ) :
           SplittingFieldAux n f.removeFactor).roots.toFinset :
               Set (SplittingFieldAux n f.removeFactor))
     refine this.trans ?_
+    -- ⊢ Subalgebra.restrictScalars K (Algebra.adjoin (AdjoinRoot (factor f)) ↑(Multi …
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
+    -- 🎉 no goals
 #align polynomial.splitting_field_aux.adjoin_root_set Polynomial.SplittingFieldAux.adjoin_rootSet
 
 instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
@@ -266,6 +285,7 @@ instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
   Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
+                                                                       -- 🎉 no goals
 #align polynomial.splitting_field.alg_equiv_splitting_field_aux Polynomial.SplittingField.algEquivSplittingFieldAux
 
 instance : Field (SplittingField f) :=
@@ -277,19 +297,29 @@ instance : Field (SplittingField f) :=
     qsmul_eq_mul' := fun a x =>
       Quotient.inductionOn x (fun p => congr_arg Quotient.mk''
         (by ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
+            -- ⊢ MvPolynomial.coeff m✝ ((fun x x_1 => x • x_1) a p) = MvPolynomial.coeff m✝ ( …
+                 -- 🎉 no goals
+      -- ⊢ ↑e ↑(Rat.mk' a b) = ↑e (↑a * (↑b)⁻¹)
     ratCast_mk := fun a b h1 h2 => by
+      -- ⊢ ↑e (↑(algebraMap K (SplittingField f)) ↑(Rat.mk' a b)) = ↑e (↑a * (↑b)⁻¹)
       apply_fun e
       change e (algebraMap K _ _) = _
       simp only [map_ratCast, map_natCast, map_mul, map_intCast, AlgEquiv.commutes,
+      -- 🎉 no goals
         AlgEquiv.apply_symm_apply]
+      -- ⊢ ↑e (a * a⁻¹) = ↑e 1
       apply Field.ratCast_mk
     exists_pair_ne := ⟨e.symm 0, e.symm 1, fun w => zero_ne_one ((e.symm).injective w)⟩
     mul_inv_cancel := fun a w => by
       -- This could surely be golfed.
       apply_fun e
+      -- ⊢ ↑(algEquivSplittingFieldAux f) a * (↑(algEquivSplittingFieldAux f) a)⁻¹ = 1
       have : e a ≠ 0 := fun w' => by
+      -- ⊢ ↑(algEquivSplittingFieldAux f) a ≠ 0
         apply w
+      -- 🎉 no goals
         simp at w'
+                   -- 🎉 no goals
         exact w'
       simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
       rw [mul_inv_cancel]
@@ -366,7 +396,9 @@ def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f 
     AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
       ⟨RingHom.injective (lift L f <| splits (SplittingField f) f).toRingHom, _⟩
   haveI := finiteDimensional (SplittingField f) f
+  -- ⊢ Function.Surjective ↑(lift L f (_ : Splits (algebraMap K (SplittingField f)) …
   haveI := finiteDimensional L f
+  -- ⊢ Function.Surjective ↑(lift L f (_ : Splits (algebraMap K (SplittingField f)) …
   have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (SplittingField f) :=
     le_antisymm
       (LinearMap.finrank_le_finrank_of_injective
@@ -376,8 +408,11 @@ def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f 
         (show Function.Injective (lift (SplittingField f) f <| splits L f).toLinearMap from
           RingHom.injective (lift (SplittingField f) f <| splits L f : f.SplittingField →+* L)))
   change Function.Surjective (lift L f <| splits (SplittingField f) f).toLinearMap
+  -- ⊢ Function.Surjective ↑(AlgHom.toLinearMap (lift L f (_ : Splits (algebraMap K …
   refine' (LinearMap.injective_iff_surjective_of_finrank_eq_finrank this).1 _
+  -- ⊢ Function.Injective ↑(AlgHom.toLinearMap (lift L f (_ : Splits (algebraMap K  …
   exact RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)
+  -- 🎉 no goals
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField

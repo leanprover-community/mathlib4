@@ -90,7 +90,9 @@ def restrictScalars (U : Subalgebra S A) : Subalgebra R A :=
   { U with
     algebraMap_mem' := fun x ↦ by
       rw [algebraMap_apply R S A]
+      -- ⊢ ↑(algebraMap S A) (↑(algebraMap R S) x) ∈ U.carrier
       exact U.algebraMap_mem _ }
+      -- 🎉 no goals
 #align subalgebra.restrict_scalars Subalgebra.restrictScalars
 
 @[simp]
@@ -101,6 +103,7 @@ theorem coe_restrictScalars {U : Subalgebra S A} : (restrictScalars R U : Set A)
 @[simp]
 theorem restrictScalars_top : restrictScalars R (⊤ : Subalgebra S A) = ⊤ :=
   SetLike.coe_injective $ by dsimp -- porting note: why does `rfl` not work instead of `by dsimp`?
+                             -- 🎉 no goals
 #align subalgebra.restrict_scalars_top Subalgebra.restrictScalars_top
 
 @[simp]
@@ -117,6 +120,7 @@ theorem mem_restrictScalars {U : Subalgebra S A} {x : A} : x ∈ restrictScalars
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : Subalgebra S A → Subalgebra R A) := fun U V H ↦
   ext fun x ↦ by rw [← mem_restrictScalars R, H, mem_restrictScalars]
+                 -- 🎉 no goals
 #align subalgebra.restrict_scalars_injective Subalgebra.restrictScalars_injective
 
 /-- Produces an `R`-algebra map from `U.restrictScalars R` given an `S`-algebra map from `U`.
@@ -136,9 +140,11 @@ lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
     LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
   ext
+  -- ⊢ x✝ ∈ LinearMap.range (toAlgHom R { x // x ∈ S } A) ↔ x✝ ∈ ↑toSubmodule S
   simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
     IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
   rfl
+  -- 🎉 no goals
 
 end CommSemiring
 
@@ -161,7 +167,9 @@ theorem adjoin_range_toAlgHom (t : Set A) :
       suffices Set.range (algebraMap (toAlgHom R S A).range A) = Set.range (algebraMap S A) by
         rw [this]
       ext z
+      -- ⊢ z ∈ Set.range ↑(algebraMap { x // x ∈ AlgHom.range (toAlgHom R S A) } A) ↔ z …
       exact ⟨fun ⟨⟨_, y, h1⟩, h2⟩ ↦ ⟨y, h2 ▸ h1⟩, fun ⟨y, hy⟩ ↦ ⟨⟨z, y, hy⟩, rfl⟩⟩
+      -- 🎉 no goals
 #align is_scalar_tower.adjoin_range_to_alg_hom IsScalarTower.adjoin_range_toAlgHom
 
 end IsScalarTower

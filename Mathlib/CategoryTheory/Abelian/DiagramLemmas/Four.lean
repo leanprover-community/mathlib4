@@ -98,13 +98,17 @@ theorem mono_of_epi_of_mono_of_mono (hα : Epi α) (hβ : Mono β) (hδ : Mono �
       suffices δ (h c) = 0 from zero_of_map_zero _ (pseudo_injective_of_mono _) _ this
       calc
         δ (h c) = h' (γ c) := by rw [← Pseudoelement.comp_apply, ← comm₃, Pseudoelement.comp_apply]
+                                 -- 🎉 no goals
         _ = h' 0 := by rw [hc]
+                       -- 🎉 no goals
         _ = 0 := apply_zero _
     Exists.elim ((pseudo_exact_of_exact hgh).2 _ this) fun b hb =>
       have : g' (β b) = 0 :=
         calc
           g' (β b) = γ (g b) := by rw [← Pseudoelement.comp_apply, comm₂, Pseudoelement.comp_apply]
+                                   -- 🎉 no goals
           _ = γ c := by rw [hb]
+                        -- 🎉 no goals
           _ = 0 := hc
       Exists.elim ((pseudo_exact_of_exact hf'g').2 _ this) fun a' ha' =>
         Exists.elim (pseudo_surjective_of_epi α a') fun a ha =>
@@ -113,11 +117,14 @@ theorem mono_of_epi_of_mono_of_mono (hα : Epi α) (hβ : Mono β) (hδ : Mono �
             calc
               β (f a) = f' (α a) := by
                 rw [← Pseudoelement.comp_apply, ← comm₁, Pseudoelement.comp_apply]
+                -- 🎉 no goals
               _ = f' a' := by rw [ha]
+                              -- 🎉 no goals
               _ = β b := ha'
           calc
             c = g b := hb.symm
             _ = g (f a) := by rw [this]
+                              -- 🎉 no goals
             _ = 0 := (pseudo_exact_of_exact hfg).1 _
 #align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono
 
@@ -148,9 +155,12 @@ theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) 
           _ = f ≫ 0 := by rw [hβr]
           _ = 0 := HasZeroMorphisms.comp_zero _ _
     let y : R ⟶ pushout r g' := pushout.inl
+    -- ⊢ r = 0
     let z : C' ⟶ pushout r g' := pushout.inr
+    -- ⊢ r = 0
     -- Porting note: Added instance for `Mono (cokernel.desc f' g' hf'g'.w)`
     have : Mono (cokernel.desc f' g' hf'g'.w) := mono_cokernel_desc_of_exact _ _ hf'g'
+    -- ⊢ r = 0
     have : Mono y :=
       mono_inl_of_factor_thru_epi_mono_factorization r g' (cokernel.π f')
         (cokernel.desc f' g' hf'g'.w) (by simp) (cokernel.desc f' r hf'r) (by simp) _
@@ -162,9 +172,12 @@ theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) 
         _ = 0 ≫ y := by rw [reassoc_of% hβr]
         _ = 0 := HasZeroMorphisms.zero_comp _ _
     let v : pushout r g' ⟶ pushout (γ ≫ z) (h ≫ δ) := pushout.inl
+    -- ⊢ r = 0
     let w : D' ⟶ pushout (γ ≫ z) (h ≫ δ) := pushout.inr
+    -- ⊢ r = 0
     -- Porting note: Added instance for `Mono (cokernel.desc g h hgh.w)`
     have : Mono (cokernel.desc g h hgh.w) := mono_cokernel_desc_of_exact _ _ hgh
+    -- ⊢ r = 0
     have : Mono v :=
       mono_inl_of_factor_thru_epi_mono_factorization _ _ (cokernel.π g)
         (cokernel.desc g h hgh.w ≫ δ) (by simp) (cokernel.desc _ _ hz) (by simp) _
@@ -175,6 +188,7 @@ theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) 
           γ ≫ z ≫ v = h ≫ δ ≫ w := by rw [← Category.assoc, pushout.condition, Category.assoc]
           _ = γ ≫ h' ≫ w := by rw [reassoc_of% comm₃]
     suffices (r ≫ y) ≫ v = 0 from zero_of_comp_mono _ (zero_of_comp_mono _ this)
+    -- ⊢ (r ≫ y) ≫ v = 0
     calc
       (r ≫ y) ≫ v = g' ≫ z ≫ v := by rw [pushout.condition, Category.assoc]
       _ = g' ≫ h' ≫ w := by rw [hzv]
@@ -208,8 +222,14 @@ A' --f'-> B' --g'-> C' --h'-> D' --i'-> E'
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono : IsIso γ :=
   have : Mono γ := by
     apply mono_of_epi_of_mono_of_mono comm₁ comm₂ comm₃ hfg hgh hf'g' <;> infer_instance
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
   have : Epi γ := by
     apply epi_of_epi_of_epi_of_mono comm₂ comm₃ comm₄ hhi hg'h' hh'i' <;> infer_instance
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
   isIso_of_mono_of_epi _
 #align category_theory.abelian.is_iso_of_is_iso_of_is_iso_of_is_iso_of_is_iso CategoryTheory.Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
 

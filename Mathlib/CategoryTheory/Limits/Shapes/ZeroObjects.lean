@@ -120,9 +120,13 @@ theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
   refine' ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => _⟩⟩,
     fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => _⟩⟩⟩
   · rw [← cancel_epi e.inv]
+    -- ⊢ e.inv ≫ f = e.inv ≫ default
     apply hY.eq_of_src
+    -- 🎉 no goals
   · rw [← cancel_mono e.hom]
+    -- ⊢ f ≫ e.hom = default ≫ e.hom
     apply hY.eq_of_tgt
+    -- 🎉 no goals
 #align category_theory.limits.is_zero.of_iso CategoryTheory.Limits.IsZero.of_iso
 
 theorem op (h : IsZero X) : IsZero (Opposite.op X) :=
@@ -147,22 +151,37 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
 
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
+  -- ⊢ ∀ (Y : C ⥤ D), Nonempty (Unique (F ⟶ Y))
+                  -- ⊢ Nonempty (Unique (F ⟶ G))
+                  -- ⊢ Nonempty (Unique (G ⟶ F))
+                              -- ⊢ F ⟶ G
+                              -- ⊢ G ⟶ F
   · refine'
       { app := fun X => (hF _).to_ _
         naturality := _ }
     intros
+    -- ⊢ F.map f✝ ≫ (fun X => IsZero.to_ (_ : IsZero (F.obj X)) (G.obj X)) Y✝ = (fun  …
     exact (hF _).eq_of_src _ _
+    -- 🎉 no goals
   · intro f
+    -- ⊢ f = default
     ext
+    -- ⊢ NatTrans.app f x✝ = NatTrans.app default x✝
     apply (hF _).eq_of_src _ _
+    -- 🎉 no goals
   · refine'
       { app := fun X => (hF _).from_ _
         naturality := _ }
     intros
+    -- ⊢ G.map f✝ ≫ (fun X => IsZero.from_ (_ : IsZero (F.obj X)) (G.obj X)) Y✝ = (fu …
     exact (hF _).eq_of_tgt _ _
+    -- 🎉 no goals
   · intro f
+    -- ⊢ f = default
     ext
+    -- ⊢ NatTrans.app f x✝ = NatTrans.app default x✝
     apply (hF _).eq_of_tgt _ _
+    -- 🎉 no goals
 #align category_theory.functor.is_zero CategoryTheory.Functor.isZero
 
 namespace Limits
@@ -228,9 +247,13 @@ def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
 
 theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZero (F.obj X) := by
   let G : C ⥤ D := (CategoryTheory.Functor.const C).obj 0
+  -- ⊢ IsZero (F.obj X)
   have hG : IsZero G := Functor.isZero _ fun _ => isZero_zero _
+  -- ⊢ IsZero (F.obj X)
   let e : F ≅ G := hF.iso hG
+  -- ⊢ IsZero (F.obj X)
   exact (isZero_zero _).of_iso (e.app X)
+  -- 🎉 no goals
 #align category_theory.limits.is_zero.obj CategoryTheory.Limits.IsZero.obj
 
 namespace HasZeroObject
@@ -262,13 +285,17 @@ theorem from_zero_ext {X : C} (f g : 0 ⟶ X) : f = g :=
 #align category_theory.limits.has_zero_object.from_zero_ext CategoryTheory.Limits.HasZeroObject.from_zero_ext
 
 instance (X : C) : Subsingleton (X ≅ 0) := ⟨fun f g => by ext⟩
+                                                          -- 🎉 no goals
 
 instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
+                                                                           -- 🎉 no goals
 
 instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
+                                                                         -- 🎉 no goals
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
   convert show IsIso (𝟙 (0 : C)) by infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_zero_object.zero_to_zero_is_iso CategoryTheory.Limits.HasZeroObject.zero_to_zero_isIso
 
 /-- A zero object is in particular initial. -/
@@ -313,6 +340,7 @@ def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
 
 instance (priority := 100) initialMonoClass : InitialMonoClass C :=
   InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
+                                                          -- 🎉 no goals
 #align category_theory.limits.has_zero_object.has_strict_initial CategoryTheory.Limits.HasZeroObject.initialMonoClass
 
 end HasZeroObject

@@ -33,15 +33,33 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
     CommMonoid (M →* N) where
   mul := (· * ·)
   mul_assoc := by intros; ext; apply mul_assoc
+                  -- ⊢ a✝ * b✝ * c✝ = a✝ * (b✝ * c✝)
+                          -- ⊢ ↑(a✝ * b✝ * c✝) x✝ = ↑(a✝ * (b✝ * c✝)) x✝
+                               -- 🎉 no goals
   one := 1
   one_mul := by intros; ext; apply one_mul
+                -- ⊢ 1 * a✝ = a✝
+                        -- ⊢ ↑(1 * a✝) x✝ = ↑a✝ x✝
+                             -- 🎉 no goals
   mul_one := by intros; ext; apply mul_one
+                -- ⊢ a✝ * 1 = a✝
+                        -- ⊢ ↑(a✝ * 1) x✝ = ↑a✝ x✝
+                             -- 🎉 no goals
   mul_comm := by intros; ext; apply mul_comm
+                 -- ⊢ a✝ * b✝ = b✝ * a✝
+                         -- ⊢ ↑(a✝ * b✝) x✝ = ↑(b✝ * a✝) x✝
+                                                -- 🎉 no goals
+                                                                                -- 🎉 no goals
+                              -- 🎉 no goals
   npow n f :=
+    -- ⊢ ↑((fun n f => { toOneHom := { toFun := fun x => ↑f x ^ n, map_one' := (_ : ↑ …
     { toFun := fun x => f x ^ n, map_one' := by simp, map_mul' := fun x y => by simp [mul_pow] }
+    -- 🎉 no goals
   npow_zero f := by
     ext x
+    -- ⊢ ↑((fun n f => { toOneHom := { toFun := fun x => ↑f x ^ n, map_one' := (_ : ↑ …
     simp
+    -- 🎉 no goals
   npow_succ n f := by
     ext x
     simp [pow_succ]
@@ -55,19 +73,33 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
     div := Div.div,
     div_eq_mul_inv := by
       intros
+      -- ⊢ a✝ / b✝ = a✝ * b✝⁻¹
       ext
+      -- ⊢ ↑(a✝ / b✝) x✝ = ↑(a✝ * b✝⁻¹) x✝
       apply div_eq_mul_inv,
+      -- 🎉 no goals
     mul_left_inv := by intros; ext; apply mul_left_inv,
+                       -- ⊢ a✝⁻¹ * a✝ = 1
+                               -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
+                                    -- 🎉 no goals
+                       -- 🎉 no goals
     zpow := fun n f =>
+                                  -- 🎉 no goals
       { toFun := fun x => f x ^ n,
         map_one' := by simp,
+      -- ⊢ ↑((fun n f => { toOneHom := { toFun := fun x => ↑f x ^ n, map_one' := (_ : ↑ …
         map_mul' := fun x y => by simp [mul_zpow] },
+      -- 🎉 no goals
     zpow_zero' := fun f => by
       ext x
+      -- ⊢ ↑((fun n f => { toOneHom := { toFun := fun x => ↑f x ^ n, map_one' := (_ : ↑ …
       simp,
+      -- 🎉 no goals
     zpow_succ' := fun n f => by
       ext x
+      -- ⊢ ↑((fun n f => { toOneHom := { toFun := fun x => ↑f x ^ n, map_one' := (_ : ↑ …
       simp [zpow_ofNat, pow_succ],
+      -- 🎉 no goals
     zpow_neg' := fun n f => by
       ext x
       simp [Nat.succ_eq_add_one, zpow_ofNat] }
@@ -132,7 +164,9 @@ def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M �
   toFun y :=
     { toFun := fun x => f x y,
       map_one' := by simp [f.map_one, one_apply],
+                     -- 🎉 no goals
       map_mul' := fun x₁ x₂ => by simp [f.map_mul, mul_apply] }
+                                  -- 🎉 no goals
   map_one' := ext fun x => (f x).map_one
   map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
 #align monoid_hom.flip MonoidHom.flip
@@ -214,10 +248,14 @@ def compHom [MulOneClass M] [CommMonoid N] [CommMonoid P] :
   toFun g := { toFun := g.comp, map_one' := comp_one g, map_mul' := comp_mul g }
   map_one' := by
     ext1 f
+    -- ⊢ ↑((fun g => { toOneHom := { toFun := comp g, map_one' := (_ : comp g 1 = 1)  …
     exact one_comp f
+    -- 🎉 no goals
   map_mul' g₁ g₂ := by
     ext1 f
+    -- ⊢ ↑(OneHom.toFun { toFun := fun g => { toOneHom := { toFun := comp g, map_one' …
     exact mul_comp g₁ g₂ f
+    -- 🎉 no goals
 #align monoid_hom.comp_hom MonoidHom.compHom
 #align add_monoid_hom.comp_hom AddMonoidHom.compHom
 #align monoid_hom.comp_hom_apply_apply MonoidHom.compHom_apply_apply

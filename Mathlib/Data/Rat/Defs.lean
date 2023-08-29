@@ -70,6 +70,7 @@ theorem mkRat_eq (n d) : mkRat n d = n /. d :=
 
 @[simp]
 theorem zero_mk (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
+                                                            -- 🎉 no goals
 
 #noalign rat.zero_mk_pnat
 
@@ -79,10 +80,15 @@ theorem zero_mk (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
 @[simp]
 lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
   induction q
+  -- ⊢ (mk' num✝ den✝).num = 0 ↔ mk' num✝ den✝ = 0
   constructor
+  -- ⊢ (mk' num✝ den✝).num = 0 → mk' num✝ den✝ = 0
   · rintro rfl
+    -- ⊢ mk' 0 den✝ = 0
     exact zero_mk _ _ _
+    -- 🎉 no goals
   · exact congr_arg num
+    -- 🎉 no goals
 
 private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a :=
   Int.dvd_natAbs.1 <| Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left (Int.natAbs a) b
@@ -91,6 +97,7 @@ private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
+  -- 🎉 no goals
 #align rat.mk_eq_zero Rat.divInt_eq_zero
 
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
@@ -123,6 +130,8 @@ numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
 def numDenCasesOn.{u} {C : ℚ → Sort u} :
     ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).coprime d → C (n /. d)), C a
   | ⟨n, d, h, c⟩, H => by rw [num_den']; exact H n d (Nat.pos_of_ne_zero h) c
+                          -- ⊢ C (n /. ↑d)
+                                         -- 🎉 no goals
 #align rat.num_denom_cases_on Rat.numDenCasesOn
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
@@ -148,10 +157,19 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
         f₁ n₁ d₁ n₂ d₂ * f₂ a b c d = f₁ a b c d * f₂ n₁ d₁ n₂ d₂) :
     f (a /. b) (c /. d) = f₁ a b c d /. f₂ a b c d := by
   generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [num_den'] at ha
+  -- ⊢ f x (c /. d) = f₁ a b c d /. f₂ a b c d
+                              -- ⊢ f (mk' n₁ d₁) (c /. d) = f₁ a b c d /. f₂ a b c d
+                                                         -- ⊢ f (mk' n₁ d₁) (c /. d) = f₁ a b c d /. f₂ a b c d
   generalize hc : c /. d = x; cases' x with n₂ d₂ h₂ c₂; rw [num_den'] at hc
+  -- ⊢ f (mk' n₁ d₁) x = f₁ a b c d /. f₂ a b c d
+                              -- ⊢ f (mk' n₁ d₁) (mk' n₂ d₂) = f₁ a b c d /. f₂ a b c d
+                                                         -- ⊢ f (mk' n₁ d₁) (mk' n₂ d₂) = f₁ a b c d /. f₂ a b c d
   rw [fv]
+  -- ⊢ f₁ n₁ (↑d₁) n₂ ↑d₂ /. f₂ n₁ (↑d₁) n₂ ↑d₂ = f₁ a b c d /. f₂ a b c d
   have d₁0 := ne_of_gt (Int.ofNat_lt.2 $ Nat.pos_of_ne_zero h₁)
+  -- ⊢ f₁ n₁ (↑d₁) n₂ ↑d₂ /. f₂ n₁ (↑d₁) n₂ ↑d₂ = f₁ a b c d /. f₂ a b c d
   have d₂0 := ne_of_gt (Int.ofNat_lt.2 $ Nat.pos_of_ne_zero h₂)
+  -- ⊢ f₁ n₁ (↑d₁) n₂ ↑d₂ /. f₂ n₁ (↑d₁) n₂ ↑d₂ = f₁ a b c d /. f₂ a b c d
   exact (divInt_eq_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
     (H ((divInt_eq_iff b0 d₁0).1 ha) ((divInt_eq_iff d0 d₂0).1 hc))
 #align rat.lift_binop_eq Rat.lift_binop_eq
@@ -206,16 +224,23 @@ attribute [-simp] divInt_ofNat
 protected theorem add_zero : a + 0 = a :=
   numDenCasesOn' a fun n d h => by
     rw [← zero_divInt d, add_def'', zero_mul, add_zero, divInt_mul_right] <;> simp [h]
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
 #align rat.add_zero Rat.add_zero
 
 protected theorem zero_add : 0 + a = a :=
   numDenCasesOn' a fun n d h => by
     rw [← zero_divInt d, add_def'', zero_mul, zero_add, divInt_mul_right] <;> simp [h]
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
+                                                                              -- 🎉 no goals
 #align rat.zero_add Rat.zero_add
 
 protected theorem add_comm : a + b = b + a :=
   numDenCasesOn' a fun n₁ d₁ h₁ => numDenCasesOn' b fun n₂ d₂ h₂ => by
     simp [h₁, h₂, add_comm, mul_comm]
+    -- 🎉 no goals
 #align rat.add_comm Rat.add_comm
 
 protected theorem add_assoc : a + b + c = a + (b + c) :=
@@ -223,43 +248,58 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp [h₁, h₂, h₃]
+        -- ⊢ ((n₁ * ↑d₂ + n₂ * ↑d₁) * ↑d₃ + n₃ * (↑d₁ * ↑d₂)) /. (↑d₁ * ↑d₂ * ↑d₃) = (n₁  …
         rw [mul_assoc, add_mul, add_mul, mul_assoc, add_assoc]
+        -- ⊢ (n₁ * (↑d₂ * ↑d₃) + (n₂ * ↑d₁ * ↑d₃ + n₃ * (↑d₁ * ↑d₂))) /. (↑d₁ * (↑d₂ * ↑d …
         congr 2
+        -- ⊢ n₂ * ↑d₁ * ↑d₃ + n₃ * (↑d₁ * ↑d₂) = n₂ * ↑d₃ * ↑d₁ + n₃ * ↑d₂ * ↑d₁
         ac_rfl
+        -- 🎉 no goals
 #align rat.add_assoc Rat.add_assoc
 
 protected theorem add_left_neg : -a + a = 0 :=
   numDenCasesOn' a fun n d h => by simp [h, mkRat_add_mkRat]
+                                   -- 🎉 no goals
 #align rat.add_left_neg Rat.add_left_neg
 
 theorem divInt_zero_one : 0 /. 1 = 0 :=
   show divInt _ _ = _ by
     rw [divInt]
+    -- ⊢ (match 0, 1 with
     simp
+    -- 🎉 no goals
 #align rat.mk_zero_one Rat.divInt_zero_one
 
 @[simp]
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
+    -- ⊢ (match 1, 1 with
     simp
+    -- 🎉 no goals
 #align rat.mk_one_one Rat.divInt_one_one
 
 @[simp]
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
+    -- ⊢ (match -1, 1 with
     simp
+    -- 🎉 no goals
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
 theorem divInt_one (n : ℤ) : n /. 1 = n :=
   show divInt _ _ = _ by
     rw [divInt]
+    -- ⊢ (match n, 1 with
     simp [mkRat, normalize]
+    -- ⊢ mk' n 1 = ↑n
     rfl
+    -- 🎉 no goals
 
 theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
   simp [Rat.mkRat_eq, Rat.divInt_one]
+  -- 🎉 no goals
 
 #align rat.mul_one Rat.mul_one
 #align rat.one_mul Rat.one_mul
@@ -270,6 +310,7 @@ protected theorem mul_assoc : a * b * c = a * (b * c) :=
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp [h₁, h₂, h₃, mul_ne_zero, mul_comm, mul_assoc, mul_left_comm]
+        -- 🎉 no goals
 #align rat.mul_assoc Rat.mul_assoc
 
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
@@ -277,23 +318,31 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp [h₁, h₂, h₃, mul_ne_zero]
+        -- ⊢ (n₁ * ↑d₂ + n₂ * ↑d₁) * n₃ /. (↑d₁ * ↑d₂ * ↑d₃) = (n₁ * n₃ * (↑d₂ * ↑d₃) + n …
         rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        -- ⊢ (n₁ * ↑d₂ * n₃ * ↑d₃ + n₂ * ↑d₁ * n₃ * ↑d₃) /. (↑d₁ * ↑d₂ * ↑d₃ * ↑d₃) = (n₁ …
         ac_rfl
+        -- 🎉 no goals
 #align rat.add_mul Rat.add_mul
 
 protected theorem mul_add : a * (b + c) = a * b + a * c := by
   rw [Rat.mul_comm, Rat.add_mul, Rat.mul_comm, Rat.mul_comm c a]
+  -- 🎉 no goals
 #align rat.mul_add Rat.mul_add
 
 protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
   rw [ne_comm, ← divInt_one_one, divInt_ne_zero one_ne_zero]
+  -- ⊢ 1 ≠ 0
   exact one_ne_zero
+  -- 🎉 no goals
 #align rat.zero_ne_one Rat.zero_ne_one
 
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d h a0 => by
     have n0 : n ≠ 0 := mt (by rintro rfl; simp) a0
+    -- ⊢ n /. ↑d * (n /. ↑d)⁻¹ = 1
     simpa [h, n0, mul_comm] using @divInt_mul_right 1 1 (n * d) (by simp [h, n0])
+    -- 🎉 no goals
 #align rat.mul_inv_cancel Rat.mul_inv_cancel
 
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
@@ -338,8 +387,11 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
   { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := by
       change Rat.inv 0 = 0
+      -- ⊢ Rat.inv 0 = 0
       rw [Rat.inv_def]
+      -- ⊢ ↑0.den /. 0.num = 0
       rfl
+      -- 🎉 no goals
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
     zero_mul := zero_mul }
@@ -350,34 +402,49 @@ instance isDomain : IsDomain ℚ :=
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
 instance nontrivial : Nontrivial ℚ := by infer_instance
+                                         -- 🎉 no goals
 
 instance commSemiring : CommSemiring ℚ := by infer_instance
+                                             -- 🎉 no goals
 
 instance semiring : Semiring ℚ := by infer_instance
+                                     -- 🎉 no goals
 
 instance addCommGroup : AddCommGroup ℚ := by infer_instance
+                                             -- 🎉 no goals
 
 instance addGroup : AddGroup ℚ := by infer_instance
+                                     -- 🎉 no goals
 
 instance addCommMonoid : AddCommMonoid ℚ := by infer_instance
+                                               -- 🎉 no goals
 
 instance addMonoid : AddMonoid ℚ := by infer_instance
+                                       -- 🎉 no goals
 
 instance addLeftCancelSemigroup : AddLeftCancelSemigroup ℚ := by infer_instance
+                                                                 -- 🎉 no goals
 
 instance addRightCancelSemigroup : AddRightCancelSemigroup ℚ := by infer_instance
+                                                                   -- 🎉 no goals
 
 instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
+                                                     -- 🎉 no goals
 
 instance addSemigroup : AddSemigroup ℚ := by infer_instance
+                                             -- 🎉 no goals
 
 instance commMonoid : CommMonoid ℚ := by infer_instance
+                                         -- 🎉 no goals
 
 instance monoid : Monoid ℚ := by infer_instance
+                                 -- 🎉 no goals
 
 instance commSemigroup : CommSemigroup ℚ := by infer_instance
+                                               -- 🎉 no goals
 
 instance semigroup : Semigroup ℚ := by infer_instance
+                                       -- 🎉 no goals
 
 #align rat.denom_ne_zero Rat.den_nz
 
@@ -386,8 +453,13 @@ theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den 
     lhs
     rw [← @num_den p, ← @num_den q]
   apply Rat.divInt_eq_iff <;>
+  -- ⊢ ↑p.den ≠ 0
     · rw [← Nat.cast_zero, Ne, Int.ofNat_inj]
+      -- ⊢ ¬p.den = 0
+      -- ⊢ ¬q.den = 0
+      -- 🎉 no goals
       apply den_nz
+      -- 🎉 no goals
 #align rat.eq_iff_mul_eq_mul Rat.eq_iff_mul_eq_mul
 
 @[simp]
@@ -412,11 +484,14 @@ theorem den_zero : Rat.den 0 = 1 :=
 
 theorem zero_of_num_zero {q : ℚ} (hq : q.num = 0) : q = 0 := by
   have : q = q.num /. q.den := num_den.symm
+  -- ⊢ q = 0
   simpa [hq] using this
+  -- 🎉 no goals
 #align rat.zero_of_num_zero Rat.zero_of_num_zero
 
 theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
   ⟨fun _ => by simp [*], zero_of_num_zero⟩
+               -- 🎉 no goals
 #align rat.zero_iff_num_zero Rat.zero_iff_num_zero
 
 theorem num_ne_zero_of_ne_zero {q : ℚ} (h : q ≠ 0) : q.num ≠ 0 := fun hq0 : q.num = 0 =>
@@ -435,10 +510,12 @@ theorem den_one : (1 : ℚ).den = 1 :=
 
 theorem mk_num_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd : q = n /. d) : n ≠ 0 :=
   fun this => hq <| by simpa [this] using hqnd
+                       -- 🎉 no goals
 #align rat.mk_num_ne_zero_of_ne_zero Rat.mk_num_ne_zero_of_ne_zero
 
 theorem mk_denom_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd : q = n /. d) : d ≠ 0 :=
   fun this => hq <| by simpa [this] using hqnd
+                       -- 🎉 no goals
 #align rat.mk_denom_ne_zero_of_ne_zero Rat.mk_denom_ne_zero_of_ne_zero
 
 theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /. d ≠ 0 :=
@@ -447,71 +524,98 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
 
 theorem mul_num_den (q r : ℚ) : q * r = q.num * r.num /. ↑(q.den * r.den) := by
   have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_nz q; simpa
+  -- ⊢ q * r = q.num * r.num /. ↑(q.den * r.den)
   have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_nz r; simpa
+  -- ⊢ q * r = q.num * r.num /. ↑(q.den * r.den)
   suffices q.num /. ↑q.den * (r.num /. ↑r.den) = q.num * r.num /. ↑(q.den * r.den) by
     simpa [num_den] using this
   simp [mul_def' hq' hr']
+  -- 🎉 no goals
 #align rat.mul_num_denom Rat.mul_num_den
 
 theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
   if hr : r.num = 0 then by
     have hr' : r = 0 := zero_of_num_zero hr
+    -- ⊢ q / r = q.num * ↑r.den /. (↑q.den * r.num)
     simp [*]
+    -- 🎉 no goals
   else
     calc
       q / r = q * r⁻¹ := div_eq_mul_inv q r
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
+                                                    -- 🎉 no goals
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
+                                                  -- 🎉 no goals
       _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
+                                                           -- 🎉 no goals
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
 
 protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
   if h : c = 0 then by simp [h]
+                       -- 🎉 no goals
   else by
     rw [add_def'' h h, divInt_eq_iff h (mul_ne_zero h h)]
+    -- ⊢ (a + b) * (c * c) = (a * c + b * c) * c
     simp [add_mul, mul_assoc]
+    -- 🎉 no goals
 #align rat.add_mk Rat.add_divInt
 
 theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by
   by_cases d0 : d = 0
+  -- ⊢ n /. d = ↑n / ↑d
   · simp [d0, div_zero]
+    -- 🎉 no goals
   simp [division_def, coe_int_eq_divInt, mul_def' one_ne_zero d0]
+  -- 🎉 no goals
 #align rat.mk_eq_div Rat.divInt_eq_div
 
 theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (x /. d) = n /. d := by
   by_cases hd : d = 0
+  -- ⊢ n /. x * (x /. d) = n /. d
   · rw [hd]
+    -- ⊢ n /. x * (x /. 0) = n /. 0
     simp
+    -- 🎉 no goals
   rw [mul_def' hx hd, mul_comm x, divInt_mul_right hx]
+  -- 🎉 no goals
 #align rat.mk_mul_mk_cancel Rat.divInt_mul_divInt_cancel
 
 theorem divInt_div_divInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     n /. x / (d /. x) = n /. d := by
   rw [div_eq_mul_inv, inv_def', divInt_mul_divInt_cancel hx]
+  -- 🎉 no goals
 #align rat.mk_div_mk_cancel_left Rat.divInt_div_divInt_cancel_left
 
 theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     x /. n / (x /. d) = d /. n := by
   rw [div_eq_mul_inv, inv_def', mul_comm, divInt_mul_divInt_cancel hx]
+  -- 🎉 no goals
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
 theorem coe_int_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
   repeat' rw [coe_int_eq_divInt]
+  -- ⊢ n /. 1 / (d /. 1) = n /. d
   exact divInt_div_divInt_cancel_left one_ne_zero n d
+  -- 🎉 no goals
 #align rat.coe_int_div_eq_mk Rat.coe_int_div_eq_divInt
 
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_ofNat]
+  -- ⊢ ↑r.num / ↑↑r.den = r
   erw [← divInt_eq_div, num_den]
+  -- 🎉 no goals
 #align rat.num_div_denom Rat.num_div_den
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← @num_den q, hq]
+  -- ⊢ ↑q.num = q.num /. ↑1
   rw [coe_int_eq_divInt]
+  -- ⊢ q.num /. 1 = q.num /. ↑1
   rfl
+  -- 🎉 no goals
 #align rat.coe_int_num_of_denom_eq_one Rat.coe_int_num_of_den_eq_one
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
@@ -524,16 +628,19 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [← Int.cast_ofNat, coe_int_eq_divInt]
+  -- 🎉 no goals
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast]
 theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
   rw [← Int.cast_ofNat, coe_int_num]
+  -- 🎉 no goals
 #align rat.coe_nat_num Rat.coe_nat_num
 
 @[simp, norm_cast]
 theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
   rw [← Int.cast_ofNat, coe_int_den]
+  -- 🎉 no goals
 #align rat.coe_nat_denom Rat.coe_nat_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
@@ -546,12 +653,20 @@ end Casts
 
 theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   simp [mkRat]
+  -- ⊢ (if h : d = 0 then 0 else normalize n d) = ↑n / ↑d
   by_cases d = 0
+  -- ⊢ (if h : d = 0 then 0 else normalize n d) = ↑n / ↑d
+  -- ⊢ (if h : d = 0 then 0 else normalize n d) = ↑n / ↑d
   · simp [h]
+    -- 🎉 no goals
   · simp [h, HDiv.hDiv, Rat.div, Div.div]
+    -- ⊢ normalize n d = ↑n * Rat.inv ↑d
     unfold Rat.inv
+    -- ⊢ normalize n d = ↑n * if h : (↑d).num < 0 then mk' (-↑(↑d).den) (Int.natAbs ( …
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
+    -- ⊢ normalize n d = ↑n * if h : (↑d).num < 0 then mk' (-↑(↑d).den) (Int.natAbs ( …
     have h₂ : ¬ (d : ℤ) < 0 := by simp
+    -- ⊢ normalize n d = ↑n * if h : (↑d).num < 0 then mk' (-↑(↑d).den) (Int.natAbs ( …
     simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
       Rat.mkRat_mul_mkRat]
 

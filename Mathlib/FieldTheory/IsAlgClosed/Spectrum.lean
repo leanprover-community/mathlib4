@@ -59,11 +59,15 @@ theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by
   rw [← Multiset.prod_toList, AlgHom.map_list_prod] at h
+  -- ⊢ ∃ k, k ∈ σ a ∧ eval k p = 0
   replace h := mt List.prod_isUnit h
+  -- ⊢ ∃ k, k ∈ σ a ∧ eval k p = 0
   simp only [not_forall, exists_prop, aeval_C, Multiset.mem_toList, List.mem_map, aeval_X,
     exists_exists_and_eq_and, Multiset.mem_map, AlgHom.map_sub] at h
   rcases h with ⟨r, r_mem, r_nu⟩
+  -- ⊢ ∃ k, k ∈ σ a ∧ eval k p = 0
   exact ⟨r, by rwa [mem_iff, ← IsUnit.sub_iff], (mem_roots'.1 r_mem).2⟩
+  -- 🎉 no goals
 #align spectrum.exists_mem_of_not_is_unit_aeval_prod spectrum.exists_mem_of_not_isUnit_aeval_prodₓ
 
 end ScalarRing
@@ -84,15 +88,23 @@ because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degre
 `spectrum.map_polynomial_aeval_of_nonempty` need the field to be algebraically closed. -/
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
+  -- ⊢ (fun x => eval x p) k ∈ σ (↑(aeval a) p)
   let q := C (eval k p) - p
+  -- ⊢ (fun x => eval x p) k ∈ σ (↑(aeval a) p)
   have hroot : IsRoot q k := by simp only [eval_C, eval_sub, sub_self, IsRoot.def]
+  -- ⊢ (fun x => eval x p) k ∈ σ (↑(aeval a) p)
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
+  -- ⊢ (fun x => eval x p) k ∈ σ (↑(aeval a) p)
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
     simp only [aeval_C, AlgHom.map_sub, sub_left_inj]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
+  -- ⊢ ¬IsUnit (↑(aeval a) (↑C k - X) * ↑(aeval a) (-(q / (X - ↑C k))))
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
+  -- ⊢ ¬IsUnit (↑(aeval a) (↑C k - X) * ↑(aeval a) (-(q / (X - ↑C k))))
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
+  -- ⊢ ¬IsUnit (↑(aeval a) (↑C k - X))
   simpa only [aeval_X, aeval_C, AlgHom.map_sub] using hk
+  -- 🎉 no goals
 #align spectrum.subset_polynomial_aeval spectrum.subset_polynomial_aeval
 
 /-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
@@ -102,12 +114,16 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
     (hdeg : 0 < degree p) : σ (aeval a p) = (eval · p) '' σ a := by
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
   refine' Set.eq_of_subset_of_subset (fun k hk => _) (subset_polynomial_aeval a p)
+  -- ⊢ k ∈ (fun x => eval x p) '' σ a
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
   have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
+  -- ⊢ k ∈ (fun x => eval x p) '' σ a
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
     rwa [degree_sub_eq_right_of_degree_lt (lt_of_le_of_lt degree_C_le hdeg)]
   have lead_ne := leadingCoeff_ne_zero.mpr h_ne
+  -- ⊢ k ∈ (fun x => eval x p) '' σ a
   have lead_unit := (Units.map ↑ₐ.toMonoidHom (Units.mk0 _ lead_ne)).isUnit
+  -- ⊢ k ∈ (fun x => eval x p) '' σ a
   /- leading coefficient is a unit so product of linear factors is not a unit;
     apply `exists_mem_of_not_is_unit_aeval_prod`. -/
   have p_a_eq : aeval a (C k - p) = ↑ₐ k - aeval a p := by
@@ -115,8 +131,11 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
   rw [mem_iff, ← p_a_eq, hprod, aeval_mul,
     ((Commute.all _ _).map (aeval a : 𝕜[X] →ₐ[𝕜] A)).isUnit_mul_iff, aeval_C] at hk
   replace hk := exists_mem_of_not_isUnit_aeval_prod (not_and.mp hk lead_unit)
+  -- ⊢ k ∈ (fun x => eval x p) '' σ a
   rcases hk with ⟨r, r_mem, r_ev⟩
+  -- ⊢ k ∈ (fun x => eval x p) '' σ a
   exact ⟨r, r_mem, symm (by simpa [eval_sub, eval_C, sub_eq_zero] using r_ev)⟩
+  -- 🎉 no goals
 #align spectrum.map_polynomial_aeval_of_degree_pos spectrum.map_polynomial_aeval_of_degree_pos
 
 /-- In this version of the spectral mapping theorem, we assume the spectrum
@@ -124,14 +143,19 @@ is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
   nontriviality A
+  -- ⊢ σ (↑(aeval a) p) = (fun k => eval k p) '' σ a
   refine' Or.elim (le_or_gt (degree p) 0) (fun h => _) (map_polynomial_aeval_of_degree_pos a p)
+  -- ⊢ σ (↑(aeval a) p) = (fun k => eval k p) '' σ a
   · rw [eq_C_of_degree_le_zero h]
+    -- ⊢ σ (↑(aeval a) (↑C (coeff p 0))) = (fun k => eval k (↑C (coeff p 0))) '' σ a
     simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
+    -- 🎉 no goals
 #align spectrum.map_polynomial_aeval_of_nonempty spectrum.map_polynomial_aeval_of_nonempty
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
 theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
   simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
+  -- 🎉 no goals
 #align spectrum.pow_image_subset spectrum.pow_image_subset
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
@@ -147,6 +171,7 @@ convenience. -/
 theorem map_pow_of_nonempty [IsAlgClosed 𝕜] {a : A} (ha : (σ a).Nonempty) (n : ℕ) :
     σ (a ^ n) = (· ^ n) '' σ a := by
   simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval_of_nonempty a (X ^ n) ha
+  -- 🎉 no goals
 #align spectrum.map_pow_of_nonempty spectrum.map_pow_of_nonempty
 
 variable (𝕜)
@@ -157,10 +182,15 @@ over an algebraically closed field `𝕜` has non-empty spectrum. -/
 theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontrivial A]
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
+  -- ⊢ Set.Nonempty (σ a)
   have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
+  -- ⊢ Set.Nonempty (σ a)
   rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu
+  -- ⊢ Set.Nonempty (σ a)
   obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
+  -- ⊢ Set.Nonempty (σ a)
   exact ⟨k, hk⟩
+  -- 🎉 no goals
 #align spectrum.nonempty_of_is_alg_closed_of_finite_dimensional spectrum.nonempty_of_isAlgClosed_of_finiteDimensional
 
 end ScalarField

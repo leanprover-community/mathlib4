@@ -117,6 +117,7 @@ theorem GradedRing.proj_apply (i : ι) (r : A) :
 theorem GradedRing.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
     GradedRing.proj 𝒜 i ((decompose 𝒜).symm a) = (decompose 𝒜).symm (DirectSum.of _ i (a i)) := by
   rw [GradedRing.proj_apply, decompose_symm_of, Equiv.apply_symm_apply]
+  -- 🎉 no goals
 #align graded_ring.proj_recompose GradedRing.proj_recompose
 
 theorem GradedRing.mem_support_iff [∀ (i) (x : 𝒜 i), Decidable (x ≠ 0)] (r : A) (i : ι) :
@@ -139,13 +140,17 @@ namespace DirectSum
 theorem coe_decompose_mul_add_of_left_mem [AddLeftCancelMonoid ι] [GradedRing 𝒜] {a b : A}
     (a_mem : a ∈ 𝒜 i) : (decompose 𝒜 (a * b) (i + j) : A) = a * decompose 𝒜 b j := by
   lift a to 𝒜 i using a_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (↑a * b)) (i + j)) = ↑a * ↑(↑(↑(decompose 𝒜) b) j)
   rw [decompose_mul, decompose_coe, coe_of_mul_apply_add]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_add_of_left_mem DirectSum.coe_decompose_mul_add_of_left_mem
 
 theorem coe_decompose_mul_add_of_right_mem [AddRightCancelMonoid ι] [GradedRing 𝒜] {a b : A}
     (b_mem : b ∈ 𝒜 j) : (decompose 𝒜 (a * b) (i + j) : A) = decompose 𝒜 a i * b := by
   lift b to 𝒜 j using b_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (a * ↑b)) (i + j)) = ↑(↑(↑(decompose 𝒜) a) i) * ↑b
   rw [decompose_mul, decompose_coe, coe_mul_of_apply_add]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_add_of_right_mem DirectSum.coe_decompose_mul_add_of_right_mem
 
 theorem decompose_mul_add_left [AddLeftCancelMonoid ι] [GradedRing 𝒜] (a : 𝒜 i) {b : A} :
@@ -191,10 +196,14 @@ def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] 
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
+    -- ⊢ AlgHom.comp decompose (coeAlgHom 𝒜) = AlgHom.id R (⨁ (i : ι), { x // x ∈ 𝒜 i …
     -- Porting note: was ext i x : 2
     refine DirectSum.algHom_ext' _ _ fun i => ?_
+    -- ⊢ LinearMap.comp (AlgHom.toLinearMap (AlgHom.comp decompose (coeAlgHom 𝒜))) (l …
     ext x
+    -- ⊢ ↑(LinearMap.comp (AlgHom.toLinearMap (AlgHom.comp decompose (coeAlgHom 𝒜)))  …
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
+    -- 🎉 no goals
 #align graded_algebra.of_alg_hom GradedAlgebra.ofAlgHom
 
 variable [GradedAlgebra 𝒜]
@@ -230,6 +239,7 @@ theorem GradedAlgebra.proj_apply (i : ι) (r : A) :
 theorem GradedAlgebra.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
     GradedAlgebra.proj 𝒜 i ((decompose 𝒜).symm a) = (decompose 𝒜).symm (of _ i (a i)) := by
   rw [GradedAlgebra.proj_apply, decompose_symm_of, Equiv.apply_symm_apply]
+  -- 🎉 no goals
 #align graded_algebra.proj_recompose GradedAlgebra.proj_recompose
 
 theorem GradedAlgebra.mem_support_iff [DecidableEq A] (r : A) (i : ι) :
@@ -260,29 +270,51 @@ def GradedRing.projZeroRingHom : A →+* A where
     decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
   map_zero' := by
     simp only -- Porting note: added
+    -- ⊢ ↑(↑(↑(decompose 𝒜) 0) 0) = 0
     rw [decompose_zero]
+    -- ⊢ ↑(↑0 0) = 0
     rfl
+    -- 🎉 no goals
   map_add' _ _ := by
     simp only -- Porting note: added
+    -- ⊢ ↑(↑(↑(decompose 𝒜) (x✝¹ + x✝)) 0) = ↑(↑(↑(decompose 𝒜) x✝¹) 0) + ↑(↑(↑(decom …
     rw [decompose_add]
+      -- 🎉 no goals
+    -- ⊢ ↑(↑(↑(decompose 𝒜) x✝¹ + ↑(decompose 𝒜) x✝) 0) = ↑(↑(↑(decompose 𝒜) x✝¹) 0)  …
+      -- ⊢ ∀ (y : A), OneHom.toFun { toFun := fun a => ↑(↑(↑(decompose 𝒜) a) 0), map_on …
     rfl
+    -- 🎉 no goals
+        -- 🎉 no goals
   map_mul' := by
+        -- ⊢ OneHom.toFun { toFun := fun a => ↑(↑(↑(decompose 𝒜) a) 0), map_one' := (_ :  …
     refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+          -- ⊢ ↑(↑(↑(decompose 𝒜) (c * c')) 0) = ↑(↑(↑(decompose 𝒜) c) 0) * ↑(↑(↑(decompose …
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+          -- ⊢ ↑(↑(↑(decompose 𝒜) (c * c')) 0) = ↑(↑(↑(decompose 𝒜) c) 0) * ↑(↑(↑(decompose …
     · rintro i ⟨c, hc⟩
       refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         · simp only [Subtype.coe_mk]
+            -- ⊢ 0 = ↑(↑(↑(decompose 𝒜) c) 0) * ↑(↑(↑(decompose 𝒜) c') 0)
           by_cases h : i + j = 0
+            -- ⊢ 0 = ↑(↑(↑(decompose 𝒜) c) 0) * ↑(↑(↑(decompose 𝒜) c') 0)
           · rw [decompose_of_mem_same 𝒜
+              -- 🎉 no goals
                 (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
+              -- 🎉 no goals
               decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero_iff.mp h).1 ▸ hc),
+        -- ⊢ OneHom.toFun { toFun := fun a => ↑(↑(↑(decompose 𝒜) a) 0), map_one' := (_ :  …
               decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
+        -- ⊢ OneHom.toFun { toFun := fun a => ↑(↑(↑(decompose 𝒜) a) 0), map_one' := (_ :  …
           · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
+        -- 🎉 no goals
             cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
+      -- ⊢ OneHom.toFun { toFun := fun a => ↑(↑(↑(decompose 𝒜) a) 0), map_one' := (_ :  …
             · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
+      -- ⊢ OneHom.toFun { toFun := fun a => ↑(↑(↑(decompose 𝒜) a) 0), map_one' := (_ :  …
             · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
+      -- 🎉 no goals
       · intro _ _ hd he
         simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
@@ -298,13 +330,17 @@ namespace DirectSum
 theorem coe_decompose_mul_of_left_mem_of_not_le (a_mem : a ∈ 𝒜 i) (h : ¬i ≤ n) :
     (decompose 𝒜 (a * b) n : A) = 0 := by
   lift a to 𝒜 i using a_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (↑a * b)) n) = 0
   rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_not_le]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_of_left_mem_of_not_le DirectSum.coe_decompose_mul_of_left_mem_of_not_le
 
 theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i ≤ n) :
     (decompose 𝒜 (a * b) n : A) = 0 := by
   lift b to 𝒜 i using b_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (a * ↑b)) n) = 0
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_of_right_mem_of_not_le DirectSum.coe_decompose_mul_of_right_mem_of_not_le
 
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
@@ -312,25 +348,33 @@ variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·
 theorem coe_decompose_mul_of_left_mem_of_le (a_mem : a ∈ 𝒜 i) (h : i ≤ n) :
     (decompose 𝒜 (a * b) n : A) = a * decompose 𝒜 b (n - i) := by
   lift a to 𝒜 i using a_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (↑a * b)) n) = ↑a * ↑(↑(↑(decompose 𝒜) b) (n - i))
   rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_le]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_of_left_mem_of_le DirectSum.coe_decompose_mul_of_left_mem_of_le
 
 theorem coe_decompose_mul_of_right_mem_of_le (b_mem : b ∈ 𝒜 i) (h : i ≤ n) :
     (decompose 𝒜 (a * b) n : A) = decompose 𝒜 a (n - i) * b := by
   lift b to 𝒜 i using b_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (a * ↑b)) n) = ↑(↑(↑(decompose 𝒜) a) (n - i)) * ↑b
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_le]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_of_right_mem_of_le DirectSum.coe_decompose_mul_of_right_mem_of_le
 
 theorem coe_decompose_mul_of_left_mem (n) [Decidable (i ≤ n)] (a_mem : a ∈ 𝒜 i) :
     (decompose 𝒜 (a * b) n : A) = if i ≤ n then a * decompose 𝒜 b (n - i) else 0 := by
   lift a to 𝒜 i using a_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (↑a * b)) n) = if i ≤ n then ↑a * ↑(↑(↑(decompose 𝒜) b) ( …
   rw [decompose_mul, decompose_coe, coe_of_mul_apply]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_of_left_mem DirectSum.coe_decompose_mul_of_left_mem
 
 theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 𝒜 i) :
     (decompose 𝒜 (a * b) n : A) = if i ≤ n then decompose 𝒜 a (n - i) * b else 0 := by
   lift b to 𝒜 i using b_mem
+  -- ⊢ ↑(↑(↑(decompose 𝒜) (a * ↑b)) n) = if i ≤ n then ↑(↑(↑(decompose 𝒜) a) (n - i …
   rw [decompose_mul, decompose_coe, coe_mul_of_apply]
+  -- 🎉 no goals
 #align direct_sum.coe_decompose_mul_of_right_mem DirectSum.coe_decompose_mul_of_right_mem
 
 end DirectSum

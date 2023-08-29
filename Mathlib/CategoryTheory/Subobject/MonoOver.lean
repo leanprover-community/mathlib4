@@ -114,8 +114,11 @@ which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
     intro h₁ h₂
+    -- ⊢ h₁ = h₂
     apply Over.OverMorphism.ext
+    -- ⊢ h₁.left = h₂.left
     erw [← cancel_mono g.arrow, Over.w h₁, Over.w h₂]⟩
+    -- 🎉 no goals
 #align category_theory.mono_over.is_thin CategoryTheory.MonoOver.isThin
 
 @[reassoc]
@@ -135,6 +138,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
     (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
+                         -- 🎉 no goals
 #align category_theory.mono_over.iso_mk CategoryTheory.MonoOver.isoMk
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
@@ -214,7 +218,9 @@ by pulling back a monomorphism along `f`. -/
 def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
   MonoOver.lift (Over.pullback f) (fun g => by
     haveI : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
+    -- ⊢ Mono ((Over.pullback f).obj ((forget Y).obj g)).hom
     apply pullback.snd_of_mono)
+    -- 🎉 no goals
 #align category_theory.mono_over.pullback CategoryTheory.MonoOver.pullback
 
 /-- pullback commutes with composition (up to a natural isomorphism) -/
@@ -250,6 +256,7 @@ by post-composition with a monomorphism `f : X ⟶ Y`.
 -/
 def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
   lift (Over.map f) fun g => by apply mono_comp g.arrow f
+                                -- 🎉 no goals
 #align category_theory.mono_over.map CategoryTheory.MonoOver.map
 
 /-- `MonoOver.map` commutes with composition (up to a natural isomorphism). -/
@@ -275,8 +282,11 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
 instance fullMap (f : X ⟶ Y) [Mono f] : Full (map f) where
   preimage {g h} e := by
     refine' homMk e.left _
+    -- ⊢ e.left ≫ arrow h = arrow g
     rw [← cancel_mono f, assoc]
+    -- ⊢ e.left ≫ arrow h ≫ f = arrow g ≫ f
     apply w e
+    -- 🎉 no goals
 #align category_theory.mono_over.full_map CategoryTheory.MonoOver.fullMap
 
 instance faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
@@ -289,7 +299,9 @@ def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
   functor := map e.hom
   inverse := map e.inv
   unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId).symm
+                                                -- 🎉 no goals
   counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId
+                                                 -- 🎉 no goals
 #align category_theory.mono_over.map_iso CategoryTheory.MonoOver.mapIso
 
 section
@@ -303,11 +315,15 @@ def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
     lift (Over.post e.functor) fun f => by
       dsimp
+      -- ⊢ Mono (e.functor.map (arrow f))
       infer_instance
+      -- 🎉 no goals
   inverse :=
     (lift (Over.post e.inverse) fun f => by
         dsimp
+        -- ⊢ Mono (e.inverse.map (arrow f))
         infer_instance) ⋙
+        -- 🎉 no goals
       (mapIso (e.unitIso.symm.app X)).functor
   unitIso := NatIso.ofComponents fun Y => isoMk (e.unitIso.app Y)
   counitIso := NatIso.ofComponents fun Y => isoMk (e.counitIso.app Y)
@@ -362,13 +378,16 @@ def image : Over X ⥤ MonoOver X where
   obj f := imageMonoOver f.hom
   map {f g} k := by
     apply (forget X).preimage _
+    -- ⊢ (forget X).obj ((fun f => imageMonoOver f.hom) f) ⟶ (forget X).obj ((fun f = …
     apply Over.homMk _ _
+    -- ⊢ ((forget X).obj ((fun f => imageMonoOver f.hom) f)).left ⟶ ((forget X).obj ( …
     refine'
       image.lift
         { I := Limits.image _
           m := image.ι g.hom
           e := k.left ≫ factorThruImage g.hom }
     apply image.lift_fac
+    -- 🎉 no goals
 #align category_theory.mono_over.image CategoryTheory.MonoOver.image
 
 /-- `MonoOver.image : Over X ⥤ MonoOver X` is left adjoint to
@@ -379,11 +398,16 @@ def imageForgetAdj : image ⊣ forget X :=
     { homEquiv := fun f g =>
         { toFun := fun k => by
             apply Over.homMk (factorThruImage f.hom ≫ k.left) _
+            -- ⊢ (factorThruImage f.hom ≫ k.left) ≫ g.obj.hom = f.hom
             change (factorThruImage f.hom ≫ k.left) ≫ _ = f.hom
+            -- ⊢ (factorThruImage f.hom ≫ k.left) ≫ g.obj.hom = f.hom
             rw [assoc, Over.w k]
+            -- ⊢ factorThruImage f.hom ≫ (image.obj f).obj.hom = f.hom
             apply image.fac
+            -- 🎉 no goals
           invFun := fun k => by
             refine' Over.homMk _ _
+            -- ⊢ (image.obj f).obj.left ⟶ g.obj.left
             refine'
               image.lift
                 { I := g.obj.left
@@ -391,12 +415,17 @@ def imageForgetAdj : image ⊣ forget X :=
                   e := k.left
                   fac := Over.w k }
             apply image.lift_fac
+            -- 🎉 no goals
           left_inv := fun k => Subsingleton.elim _ _
           right_inv := fun k => by
             ext1
+            -- ⊢ ((fun k => Over.homMk (factorThruImage f.hom ≫ k.left)) ((fun k => Over.homM …
             change factorThruImage _ ≫ image.lift _ = _
+            -- ⊢ factorThruImage f.hom ≫ image.lift (MonoFactorisation.mk g.obj.left (arrow g …
             rw [← cancel_mono g.arrow, assoc, image.lift_fac, image.fac f.hom]
+            -- ⊢ f.hom = k.left ≫ arrow g
             exact (Over.w k).symm } }
+            -- 🎉 no goals
 #align category_theory.mono_over.image_forget_adj CategoryTheory.MonoOver.imageForgetAdj
 
 instance : IsRightAdjoint (forget X) where
@@ -434,11 +463,17 @@ instance faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
 def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
   NatIso.ofComponents (by
     intro Z
+    -- ⊢ (exists f).obj Z ≅ (map f).obj Z
     suffices : (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z)
+    -- ⊢ (exists f).obj Z ≅ (map f).obj Z
     apply (forget _).preimageIso this
+    -- ⊢ (forget Y).obj ((exists f).obj Z) ≅ (forget Y).obj ((map f).obj Z)
     apply Over.isoMk _ _
+    -- ⊢ ((forget Y).obj ((exists f).obj Z)).left ≅ ((forget Y).obj ((map f).obj Z)). …
     apply imageMonoIsoSource (Z.arrow ≫ f)
+    -- ⊢ (imageMonoIsoSource (arrow Z ≫ f)).hom ≫ ((forget Y).obj ((map f).obj Z)).ho …
     apply imageMonoIsoSource_hom_self)
+    -- 🎉 no goals
 #align category_theory.mono_over.exists_iso_map CategoryTheory.MonoOver.existsIsoMap
 
 /-- `exists` is adjoint to `pullback` when images exist -/

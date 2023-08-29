@@ -62,6 +62,7 @@ theorem stirlingSeq_zero : stirlingSeq 0 = 0 := by
 @[simp]
 theorem stirlingSeq_one : stirlingSeq 1 = exp 1 / Real.sqrt 2 := by
   rw [stirlingSeq, pow_one, factorial_one, cast_one, mul_one, mul_one_div, one_div_div]
+  -- 🎉 no goals
 #align stirling.stirling_seq_one Stirling.stirlingSeq_one
 
 /-- We have the expression
@@ -70,6 +71,11 @@ theorem stirlingSeq_one : stirlingSeq 1 = exp 1 / Real.sqrt 2 := by
 theorem log_stirlingSeq_formula (n : ℕ) : log (stirlingSeq n.succ) =
     Real.log n.succ ! - 1 / 2 * Real.log (2 * n.succ) - n.succ * log (n.succ / exp 1) := by
   rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub] <;> positivity
+                                                                                          -- 🎉 no goals
+                                                                                          -- 🎉 no goals
+                                                                                          -- 🎉 no goals
+                                                                                          -- 🎉 no goals
+                                                                                          -- 🎉 no goals
 #align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formula
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
@@ -85,22 +91,29 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
   convert (hasSum_log_one_add_inv <|
     cast_pos.mpr (succ_pos m)).mul_left ((m.succ : ℝ) + 1 / 2) using 1
   · ext k
+    -- ⊢ 1 / (2 * ↑k + 1) * ((1 / (2 * ↑(succ m) + 1)) ^ 2) ^ k = (↑(succ m) + 1 / 2) …
     rw [← pow_mul, pow_add]
+    -- ⊢ 1 / (2 * ↑k + 1) * (1 / (2 * ↑(succ m) + 1)) ^ (2 * k) = (↑(succ m) + 1 / 2) …
     push_cast
+    -- ⊢ 1 / (2 * ↑k + 1) * (1 / (2 * (↑m + 1) + 1)) ^ (2 * k) = (↑m + 1 + 1 / 2) * ( …
     field_simp
+    -- ⊢ (2 * ↑k + 1) * ((2 * (↑m + 1) + 1) ^ (2 * k) * (2 * (↑m + 1) + 1)) = ((↑m +  …
     ring
+    -- 🎉 no goals
   · have h : ∀ (x : ℝ) (_ : x ≠ 0), 1 + x⁻¹ = (x + 1) / x := by
       intro x hx; rw [_root_.add_div, div_self hx, inv_eq_one_div]
     simp (disch := norm_cast <;> apply_rules [mul_ne_zero, succ_ne_zero, factorial_ne_zero,
       exp_ne_zero]) only [log_stirlingSeq_formula, log_div, log_mul, log_exp, factorial_succ,
       cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
     ring
+    -- 🎉 no goals
 #align stirling.log_stirling_seq_diff_has_sum Stirling.log_stirlingSeq_diff_hasSum
 
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
 theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ) :=
   antitone_nat_of_succ_le fun n =>
     sub_nonneg.mp <| (log_stirlingSeq_diff_hasSum n).nonneg fun m => by positivity
+                                                                        -- 🎉 no goals
 #align stirling.log_stirling_seq'_antitone Stirling.log_stirlingSeq'_antitone
 
 /-- We have a bound for successive elements in the sequence `log (stirlingSeq k)`.
@@ -109,6 +122,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     log (stirlingSeq n.succ) - log (stirlingSeq n.succ.succ) ≤
       ((1:ℝ) / (2 * n.succ + 1)) ^ 2 / (↑1 - ((1:ℝ) / (2 * n.succ + 1)) ^ 2) := by
   have h_nonneg : ↑0 ≤ ((1:ℝ) / (2 * n.succ + 1)) ^ 2 := sq_nonneg _
+  -- ⊢ Real.log (stirlingSeq (succ n)) - Real.log (stirlingSeq (succ (succ n))) ≤ ( …
   have g : HasSum (fun k : ℕ => (((1:ℝ) / (2 * n.succ + 1)) ^ 2) ^ k.succ)
       (((1:ℝ) / (2 * n.succ + 1)) ^ 2 / (↑1 - ((1:ℝ) / (2 * n.succ + 1)) ^ 2)) := by
     have := (hasSum_geometric_of_lt_1 h_nonneg ?_).mul_left (((1:ℝ) / (2 * n.succ + 1)) ^ 2)
@@ -122,6 +136,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     rw [one_div]
     exact inv_le_one (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
+  -- 🎉 no goals
 #align stirling.log_stirling_seq_diff_le_geo_sum Stirling.log_stirlingSeq_diff_le_geo_sum
 
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
@@ -129,28 +144,42 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     log (stirlingSeq n.succ) - log (stirlingSeq n.succ.succ) ≤ ↑1 / (↑4 * (n.succ:ℝ) ^ 2) := by
   have h₁ : ↑0 < ↑4 * ((n:ℝ) + 1) ^ 2 := by positivity
+  -- ⊢ Real.log (stirlingSeq (succ n)) - Real.log (stirlingSeq (succ (succ n))) ≤ 1 …
   have h₃ : ↑0 < (2 * ((n:ℝ) + 1) + 1) ^ 2 := by positivity
+  -- ⊢ Real.log (stirlingSeq (succ n)) - Real.log (stirlingSeq (succ (succ n))) ≤ 1 …
   have h₂ : ↑0 < ↑1 - (1 / (2 * ((n:ℝ) + 1) + 1)) ^ 2 := by
     rw [← mul_lt_mul_right h₃]
     have H : ↑0 < (2 * ((n:ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
     convert H using 1 <;> field_simp [h₃.ne']
   refine' (log_stirlingSeq_diff_le_geo_sum n).trans _
+  -- ⊢ (1 / (2 * ↑(succ n) + 1)) ^ 2 / (1 - (1 / (2 * ↑(succ n) + 1)) ^ 2) ≤ 1 / (4 …
   push_cast
+  -- ⊢ (1 / (2 * (↑n + 1) + 1)) ^ 2 / (1 - (1 / (2 * (↑n + 1) + 1)) ^ 2) ≤ 1 / (4 * …
   rw [div_le_div_iff h₂ h₁]
+  -- ⊢ (1 / (2 * (↑n + 1) + 1)) ^ 2 * (4 * (↑n + 1) ^ 2) ≤ 1 * (1 - (1 / (2 * (↑n + …
   field_simp [h₃.ne']
+  -- ⊢ 4 * (↑n + 1) ^ 2 / (2 * (↑n + 1) + 1) ^ 2 ≤ ((2 * (↑n + 1) + 1) ^ 2 - 1) / ( …
   rw [div_le_div_right h₃]
+  -- ⊢ 4 * (↑n + 1) ^ 2 ≤ (2 * (↑n + 1) + 1) ^ 2 - 1
   ring_nf
+  -- ⊢ 4 + ↑n * 8 + ↑n ^ 2 * 4 ≤ 8 + ↑n * 12 + ↑n ^ 2 * 4
   norm_cast
+  -- ⊢ 4 + n * 8 + n ^ 2 * 4 ≤ 8 + n * 12 + n ^ 2 * 4
   linarith
+  -- 🎉 no goals
 #align stirling.log_stirling_seq_sub_log_stirling_seq_succ Stirling.log_stirlingSeq_sub_log_stirlingSeq_succ
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2`  -/
 theorem log_stirlingSeq_bounded_aux :
     ∃ c : ℝ, ∀ n : ℕ, log (stirlingSeq 1) - log (stirlingSeq n.succ) ≤ c := by
   let d := ∑' k : ℕ, ↑1 / (k.succ:ℝ) ^ 2
+  -- ⊢ ∃ c, ∀ (n : ℕ), Real.log (stirlingSeq 1) - Real.log (stirlingSeq (succ n)) ≤ c
   use (1 / 4 * d : ℝ)
+  -- ⊢ ∀ (n : ℕ), Real.log (stirlingSeq 1) - Real.log (stirlingSeq (succ n)) ≤ 1 /  …
   let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq k.succ)
+  -- ⊢ ∀ (n : ℕ), Real.log (stirlingSeq 1) - Real.log (stirlingSeq (succ n)) ≤ 1 /  …
   intro n
+  -- ⊢ Real.log (stirlingSeq 1) - Real.log (stirlingSeq (succ n)) ≤ 1 / 4 * d
   have h₁ : ∀ k, log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤
       ↑1 / ↑4 * (↑1 / (k.succ:ℝ) ^ 2) := by
     intro k; convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
@@ -171,20 +200,28 @@ theorem log_stirlingSeq_bounded_aux :
 /-- The sequence `log_stirlingSeq` is bounded below for `n ≥ 1`. -/
 theorem log_stirlingSeq_bounded_by_constant : ∃ c, ∀ n : ℕ, c ≤ log (stirlingSeq n.succ) := by
   obtain ⟨d, h⟩ := log_stirlingSeq_bounded_aux
+  -- ⊢ ∃ c, ∀ (n : ℕ), c ≤ Real.log (stirlingSeq (succ n))
   exact ⟨log (stirlingSeq 1) - d, fun n => sub_le_comm.mp (h n)⟩
+  -- 🎉 no goals
 #align stirling.log_stirling_seq_bounded_by_constant Stirling.log_stirlingSeq_bounded_by_constant
 
 /-- The sequence `stirlingSeq` is positive for `n > 0`  -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq n.succ := by unfold stirlingSeq; positivity
+                                                                -- ⊢ 0 < ↑(succ n)! / (Real.sqrt (2 * ↑(succ n)) * (↑(succ n) / exp 1) ^ succ n)
+                                                                                    -- 🎉 no goals
 #align stirling.stirling_seq'_pos Stirling.stirlingSeq'_pos
 
 /-- The sequence `stirlingSeq` has a positive lower bound.
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq n.succ := by
   cases' log_stirlingSeq_bounded_by_constant with c h
+  -- ⊢ ∃ a, 0 < a ∧ ∀ (n : ℕ), a ≤ stirlingSeq (succ n)
   refine' ⟨exp c, exp_pos _, fun n => _⟩
+  -- ⊢ exp c ≤ stirlingSeq (succ n)
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
+  -- ⊢ c ≤ Real.log (stirlingSeq (succ n))
   exact h n
+  -- 🎉 no goals
 #align stirling.stirling_seq'_bounded_by_pos_constant Stirling.stirlingSeq'_bounded_by_pos_constant
 
 /-- The sequence `stirlingSeq ∘ succ` is monotone decreasing -/
@@ -195,10 +232,15 @@ theorem stirlingSeq'_antitone : Antitone (stirlingSeq ∘ succ) := fun n m h =>
 /-- The limit `a` of the sequence `stirlingSeq` satisfies `0 < a` -/
 theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq atTop (𝓝 a) := by
   obtain ⟨x, x_pos, hx⟩ := stirlingSeq'_bounded_by_pos_constant
+  -- ⊢ ∃ a, 0 < a ∧ Tendsto stirlingSeq atTop (𝓝 a)
   have hx' : x ∈ lowerBounds (Set.range (stirlingSeq ∘ succ)) := by simpa [lowerBounds] using hx
+  -- ⊢ ∃ a, 0 < a ∧ Tendsto stirlingSeq atTop (𝓝 a)
   refine' ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), _⟩
+  -- ⊢ Tendsto stirlingSeq atTop (𝓝 (sInf (Set.range (stirlingSeq ∘ succ))))
   rw [← Filter.tendsto_add_atTop_iff_nat 1]
+  -- ⊢ Tendsto (fun n => stirlingSeq (n + 1)) atTop (𝓝 (sInf (Set.range (stirlingSe …
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
+  -- 🎉 no goals
 #align stirling.stirling_seq_has_pos_limit_a Stirling.stirlingSeq_has_pos_limit_a
 
 /-!
@@ -218,6 +260,7 @@ theorem tendsto_self_div_two_mul_self_add_one :
   refine' (((tendsto_const_div_atTop_nhds_0_nat 1).const_add (2 : ℝ)).inv₀
     ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => _⟩)
   rw [add_div' (1 : ℝ) 2 n (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn)), inv_div]
+  -- 🎉 no goals
 #align stirling.tendsto_self_div_two_mul_self_add_one Stirling.tendsto_self_div_two_mul_self_add_one
 
 /-- For any `n ≠ 0`, we have the identity
@@ -226,11 +269,17 @@ theorem tendsto_self_div_two_mul_self_add_one :
 theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0) :
     stirlingSeq n ^ 4 / stirlingSeq (2 * n) ^ 2 * (n / (2 * n + 1)) = Wallis.W n := by
   have : 4 = 2 * 2 := by rfl
+  -- ⊢ stirlingSeq n ^ 4 / stirlingSeq (2 * n) ^ 2 * (↑n / (2 * ↑n + 1)) = Wallis.W n
   rw [stirlingSeq, this, pow_mul, stirlingSeq, Wallis.W_eq_factorial_ratio]
+  -- ⊢ ((↑n ! / (Real.sqrt (2 * ↑n) * (↑n / exp 1) ^ n)) ^ 2) ^ 2 / (↑(2 * n)! / (R …
   simp_rw [div_pow, mul_pow]
+  -- ⊢ (↑n ! ^ 2) ^ 2 / ((Real.sqrt (2 * ↑n) ^ 2) ^ 2 * ((↑n ^ n / exp 1 ^ n) ^ 2)  …
   rw [sq_sqrt, sq_sqrt]
   any_goals positivity
+  -- ⊢ (↑n ! ^ 2) ^ 2 / ((2 * ↑n) ^ 2 * ((↑n ^ n / exp 1 ^ n) ^ 2) ^ 2) / (↑(2 * n) …
   field_simp; ring
+  -- ⊢ (↑n ! ^ 2) ^ 2 * ((exp 1 ^ n) ^ 2) ^ 2 * (2 * (2 * ↑n) * ((2 * ↑n) ^ (2 * n) …
+              -- 🎉 no goals
 #align stirling.stirling_seq_pow_four_div_stirling_seq_pow_two_eq Stirling.stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq
 
 /-- Suppose the sequence `stirlingSeq` (defined above) has the limit `a ≠ 0`.
@@ -244,6 +293,7 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
     norm_num
   rw [h]
+  -- ⊢ Tendsto (fun n => stirlingSeq n ^ 4 / stirlingSeq (2 * n) ^ 2 * (↑n / (2 * ↑ …
   exact ((ha.pow 4).div ((ha.comp (tendsto_id.const_mul_atTop' two_pos)).pow 2)
     (pow_ne_zero 2 hane)).mul tendsto_self_div_two_mul_self_add_one
 #align stirling.second_wallis_limit Stirling.second_wallis_limit
@@ -251,9 +301,11 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
 /-- **Stirling's Formula** -/
 theorem tendsto_stirlingSeq_sqrt_pi : Tendsto (fun n : ℕ => stirlingSeq n) atTop (𝓝 (sqrt π)) := by
   obtain ⟨a, hapos, halimit⟩ := stirlingSeq_has_pos_limit_a
+  -- ⊢ Tendsto (fun n => stirlingSeq n) atTop (𝓝 (Real.sqrt π))
   have hπ : π / 2 = a ^ 2 / 2 :=
     tendsto_nhds_unique Wallis.tendsto_W_nhds_pi_div_two (second_wallis_limit a hapos.ne' halimit)
   rwa [(div_left_inj' (two_ne_zero' ℝ)).mp hπ, sqrt_sq hapos.le]
+  -- 🎉 no goals
 #align stirling.tendsto_stirling_seq_sqrt_pi Stirling.tendsto_stirlingSeq_sqrt_pi
 
 end Stirling

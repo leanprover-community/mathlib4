@@ -56,6 +56,7 @@ In fact, the two operations are the same, and give a commutative monoid structur
 see `eckmann_hilton.CommMonoid`. -/
 theorem one : e₁ = e₂ := by
   simpa only [h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id] using distrib e₂ e₁ e₁ e₂
+  -- 🎉 no goals
 #align eckmann_hilton.one EckmannHilton.one
 
 /-- If a type carries two unital binary operations that distribute over each other,
@@ -64,6 +65,7 @@ then these operations are equal.
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul : m₁ = m₂ := by
   funext a b
+  -- ⊢ m₁ a b = m₂ a b
   calc
     m₁ a b = m₁ (m₂ a e₁) (m₂ e₁ b) := by
       { simp only [one h₁ h₂ distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id] }
@@ -76,6 +78,7 @@ then these operations are commutative.
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul_comm : IsCommutative _ m₂ :=
   ⟨fun a b => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib e₂ a b e₂⟩
+                 -- 🎉 no goals
 #align eckmann_hilton.mul_comm EckmannHilton.mul_comm
 
 /-- If a type carries two unital binary operations that distribute over each other,
@@ -84,6 +87,7 @@ then these operations are associative.
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul_assoc : IsAssociative _ m₂ :=
   ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
+                   -- 🎉 no goals
 #align eckmann_hilton.mul_assoc EckmannHilton.mul_assoc
 
 /-- If a type carries a unital magma structure that distributes over a unital binary

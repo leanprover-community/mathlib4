@@ -41,7 +41,9 @@ variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     ∃ c : K, f.HasEigenvalue c := by
   simp_rw [hasEigenvalue_iff_mem_spectrum]
+  -- ⊢ ∃ c, c ∈ spectrum K f
   exact spectrum.nonempty_of_isAlgClosed_of_finiteDimensional K f
+  -- 🎉 no goals
 #align module.End.exists_eigenvalue Module.End.exists_eigenvalue
 
 noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
@@ -53,23 +55,32 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
     ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
   induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
+  -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
   cases' n with n
+  -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
+    -- ⊢ ⊤ ≤ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k
     simp only [finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
+    -- 🎉 no goals
   -- Otherwise the vector space is nontrivial.
   · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- Hence, `f` has an eigenvalue `μ₀`.
     obtain ⟨μ₀, hμ₀⟩ : ∃ μ₀, f.HasEigenvalue μ₀ := exists_eigenvalue f
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- We define `ES` to be the generalized eigenspace
     let ES := f.generalizedEigenspace μ₀ (finrank K V)
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- and `ER` to be the generalized eigenrange.
     let ER := f.generalizedEigenrange μ₀ (finrank K V)
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- `f` maps `ER` into itself.
     have h_f_ER : ∀ x : V, x ∈ ER → f x ∈ ER := fun x hx =>
       map_generalizedEigenrange_le (Submodule.mem_map_of_mem hx)
     -- Therefore, we can define the restriction `f'` of `f` to `ER`.
     let f' : End K ER := f.restrict h_f_ER
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- The dimension of `ES` is positive
     have h_dim_ES_pos : 0 < finrank K ES := by
       dsimp only
@@ -80,6 +91,7 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
     have h_dim_ER : finrank K ER < n.succ := by linarith
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- This allows us to apply the induction hypothesis on `ER`:
     have ih_ER : ⨆ (μ : K) (k : ℕ), f'.generalizedEigenspace μ k = ⊤ :=
       ih (finrank K ER) h_dim_ER f' rfl
@@ -104,11 +116,15 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
         (le_iSup (fun μ : K => ⨆ k : ℕ, f.generalizedEigenspace μ k) μ₀)
     -- Moreover, we know that `ER` and `ES` are disjoint.
     have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
     -- span of all generalized eigenvectors is all of `V`.
     show ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤
+    -- ⊢ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k = ⊤
     · rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
+      -- ⊢ ER ⊔ ES ≤ ⨆ (μ : K) (k : ℕ), ↑(generalizedEigenspace f μ) k
       apply sup_le hER hES
+      -- 🎉 no goals
 #align module.End.supr_generalized_eigenspace_eq_top Module.End.iSup_generalizedEigenspace_eq_top
 
 end End

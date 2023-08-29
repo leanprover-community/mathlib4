@@ -48,6 +48,7 @@ theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommRing R] [AddComm
     finsuppTensorFinsupp R M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
       Finsupp.single (i, k) (m ⊗ₜ n) :=
   by classical simp [finsuppTensorFinsupp]
+     -- 🎉 no goals
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
@@ -56,21 +57,37 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommG
     finsuppTensorFinsupp R M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k := by
   apply Finsupp.induction_linear f
   · simp
+    -- 🎉 no goals
   · intro f₁ f₂ hf₁ hf₂
+    -- ⊢ ↑(↑(finsuppTensorFinsupp R M N ι κ) ((f₁ + f₂) ⊗ₜ[R] g)) (i, k) = ↑(f₁ + f₂) …
     simp [add_tmul, hf₁, hf₂]
+    -- 🎉 no goals
   · intro i' m
+    -- ⊢ ↑(↑(finsuppTensorFinsupp R M N ι κ) (Finsupp.single i' m ⊗ₜ[R] g)) (i, k) =  …
     apply Finsupp.induction_linear g
     · simp
+      -- 🎉 no goals
     · intro g₁ g₂ hg₁ hg₂
+      -- ⊢ ↑(↑(finsuppTensorFinsupp R M N ι κ) (Finsupp.single i' m ⊗ₜ[R] (g₁ + g₂))) ( …
       simp [tmul_add, hg₁, hg₂]
+      -- 🎉 no goals
     · intro k' n
+      -- ⊢ ↑(↑(finsuppTensorFinsupp R M N ι κ) (Finsupp.single i' m ⊗ₜ[R] Finsupp.singl …
       simp only [finsuppTensorFinsupp_single]
+      -- ⊢ ↑(Finsupp.single (i', k') (m ⊗ₜ[R] n)) (i, k) = ↑(Finsupp.single i' m) i ⊗ₜ[ …
       -- split_ifs; finish can close the goal from here
       by_cases h1 : (i', k') = (i, k)
+      -- ⊢ ↑(Finsupp.single (i', k') (m ⊗ₜ[R] n)) (i, k) = ↑(Finsupp.single i' m) i ⊗ₜ[ …
       · simp only [Prod.mk.inj_iff] at h1
+        -- ⊢ ↑(Finsupp.single (i', k') (m ⊗ₜ[R] n)) (i, k) = ↑(Finsupp.single i' m) i ⊗ₜ[ …
         simp [h1]
+        -- 🎉 no goals
       · simp only [Prod.mk.inj_iff, not_and_or] at h1
+        -- ⊢ ↑(Finsupp.single (i', k') (m ⊗ₜ[R] n)) (i, k) = ↑(Finsupp.single i' m) i ⊗ₜ[ …
         cases' h1 with h1 h1 <;> simp [h1]
+        -- ⊢ ↑(Finsupp.single (i', k') (m ⊗ₜ[R] n)) (i, k) = ↑(Finsupp.single i' m) i ⊗ₜ[ …
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
 @[simp]
@@ -92,6 +109,7 @@ def finsuppTensorFinsupp' : (α →₀ S) ⊗[S] (β →₀ S) ≃ₗ[S] α × �
 @[simp]
 theorem finsuppTensorFinsupp'_apply_apply (f : α →₀ S) (g : β →₀ S) (a : α) (b : β) :
     finsuppTensorFinsupp' S α β (f ⊗ₜ[S] g) (a, b) = f a * g b := by simp [finsuppTensorFinsupp']
+                                                                     -- 🎉 no goals
 #align finsupp_tensor_finsupp'_apply_apply finsuppTensorFinsupp'_apply_apply
 
 @[simp]
@@ -99,6 +117,7 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : 
     finsuppTensorFinsupp' S α β (Finsupp.single a r₁ ⊗ₜ[S] Finsupp.single b r₂) =
       Finsupp.single (a, b) (r₁ * r₂) := by
   ext ⟨a', b'⟩
+  -- ⊢ ↑(↑(finsuppTensorFinsupp' S α β) (Finsupp.single a r₁ ⊗ₜ[S] Finsupp.single b …
   classical
   aesop (add norm [Finsupp.single_apply])
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single

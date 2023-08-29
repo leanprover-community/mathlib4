@@ -46,10 +46,15 @@ theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v =
   | n + 1, f, v =>
     funext fun i => by
       simp_rw [seq, seq_eq]
+      -- ⊢ Matrix.vecCons (f 0 (v 0)) (fun i => Matrix.vecTail f i (Matrix.vecTail v i) …
       refine' i.cases _ fun i => _
+      -- ⊢ Matrix.vecCons (f 0 (v 0)) (fun i => Matrix.vecTail f i (Matrix.vecTail v i) …
       · rfl
+        -- 🎉 no goals
       · rw [Matrix.cons_val_succ]
+        -- ⊢ Matrix.vecTail f i (Matrix.vecTail v i) = f (Fin.succ i) (v (Fin.succ i))
         rfl
+        -- 🎉 no goals
 #align fin_vec.seq_eq FinVec.seq_eq
 
 example {f₁ f₂ : α → β} (a₁ a₂ : α) : seq ![f₁, f₂] ![a₁, a₂] = ![f₁ a₁, f₂ a₂] := rfl
@@ -108,8 +113,11 @@ example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀
 theorem forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, P x
   | 0, P => by
     simp only [Forall, Fin.forall_fin_zero_pi]
+    -- ⊢ P ![] ↔ P finZeroElim
     rfl
+    -- 🎉 no goals
   | .succ n, P => by simp only [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons]
+                     -- 🎉 no goals
 #align fin_vec.forall_iff FinVec.forall_iff
 
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
@@ -130,8 +138,11 @@ example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀
 theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, P x
   | 0, P => by
     simp only [Exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
+    -- ⊢ P Fin.elim0' ↔ P finZeroElim
     rfl
+    -- 🎉 no goals
   | .succ n, P => by simp only [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons]
+                     -- 🎉 no goals
 #align fin_vec.exists_iff FinVec.exists_iff
 
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
@@ -158,6 +169,7 @@ theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a
   | 0, a => rfl
   | 1, a => (Fintype.sum_unique a).symm
   | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]
+                   -- 🎉 no goals
 #align fin_vec.sum_eq FinVec.sum_eq
 
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=

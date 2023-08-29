@@ -56,27 +56,49 @@ variable {m n : ℕ}
 theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
     FrobeniusNumber (m * n - m - n) {m, n} := by
   simp_rw [FrobeniusNumber, AddSubmonoid.mem_closure_pair]
+  -- ⊢ IsGreatest {k | ¬∃ m_1 n_1, m_1 • m + n_1 • n = k} (m * n - m - n)
   have hmn : m + n ≤ m * n := add_le_mul hm hn
+  -- ⊢ IsGreatest {k | ¬∃ m_1 n_1, m_1 • m + n_1 • n = k} (m * n - m - n)
   constructor
+  -- ⊢ m * n - m - n ∈ {k | ¬∃ m_1 n_1, m_1 • m + n_1 • n = k}
   · push_neg
+    -- ⊢ m * n - m - n ∈ {k | ∀ (m_1 n_1 : ℕ), m_1 • m + n_1 • n ≠ k}
     intro a b h
+    -- ⊢ False
     apply cop.mul_add_mul_ne_mul (add_one_ne_zero a) (add_one_ne_zero b)
+    -- ⊢ (a + 1) * m + (b + 1) * n = m * n
     simp only [Nat.sub_sub, smul_eq_mul] at h
+    -- ⊢ (a + 1) * m + (b + 1) * n = m * n
     zify [hmn] at h ⊢
+    -- ⊢ (↑a + 1) * ↑m + (↑b + 1) * ↑n = ↑m * ↑n
     rw [← sub_eq_zero] at h ⊢
+    -- ⊢ (↑a + 1) * ↑m + (↑b + 1) * ↑n - ↑m * ↑n = 0
     rw [← h]
+    -- ⊢ (↑a + 1) * ↑m + (↑b + 1) * ↑n - ↑m * ↑n = ↑a * ↑m + ↑b * ↑n - (↑m * ↑n - (↑m …
     ring
+    -- 🎉 no goals
   · intro k hk
+    -- ⊢ k ≤ m * n - m - n
     dsimp at hk
+    -- ⊢ k ≤ m * n - m - n
     contrapose! hk
+    -- ⊢ ∃ m_1 n_1, m_1 * m + n_1 * n = k
     let x := chineseRemainder cop 0 k
+    -- ⊢ ∃ m_1 n_1, m_1 * m + n_1 * n = k
     have hx : x.val < m * n := chineseRemainder_lt_mul cop 0 k (ne_bot_of_gt hm) (ne_bot_of_gt hn)
+    -- ⊢ ∃ m_1 n_1, m_1 * m + n_1 * n = k
     suffices key : x.1 ≤ k
+    -- ⊢ ∃ m_1 n_1, m_1 * m + n_1 * n = k
     · obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
+      -- ⊢ ∃ m_1 n_1, m_1 * m + n_1 * n = k
       obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
+      -- ⊢ ∃ m_1 n_1, m_1 * m + n_1 * n = k
       exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
+      -- 🎉 no goals
     refine' ModEq.le_of_lt_add x.2.2 (lt_of_le_of_lt _ (add_lt_add_right hk n))
+    -- ⊢ ↑x ≤ m * n - m - n + n
     rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
+    -- ⊢ ↑x ≤ m * n - m
     exact
       ModEq.le_of_lt_add
         (x.2.1.trans (modEq_zero_iff_dvd.mpr (Nat.dvd_sub' (dvd_mul_right m n) dvd_rfl)).symm)

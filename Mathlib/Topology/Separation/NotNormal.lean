@@ -27,11 +27,15 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
     [DiscreteTopology s] : #s < 𝔠 := by
   -- Proof by contradiction: assume `𝔠 ≤ #s`
   by_contra' h
+  -- ⊢ False
   -- Choose a countable dense set `t : Set X`
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
+  -- ⊢ False
   haveI := htc.to_subtype
+  -- ⊢ False
   -- To obtain a contradiction, we will prove `2 ^ 𝔠 ≤ 𝔠`.
   refine (Cardinal.cantor 𝔠).not_le ?_
+  -- ⊢ 2 ^ 𝔠 ≤ 𝔠
   calc
     -- Any function `s → ℝ` is continuous, hence `2 ^ 𝔠 ≤ #C(s, ℝ)`
     2 ^ 𝔠 ≤ #C(s, ℝ) := by

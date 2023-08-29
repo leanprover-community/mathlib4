@@ -48,11 +48,13 @@ protected theorem eq (h : Semiconj f ga gb) (x : α) : f (ga x) = gb (f x) :=
 theorem comp_right (h : Semiconj f ga gb) (h' : Semiconj f ga' gb') :
     Semiconj f (ga ∘ ga') (gb ∘ gb') :=
   fun x ↦ by simp only [comp_apply, h.eq, h'.eq]
+             -- 🎉 no goals
 #align function.semiconj.comp_right Function.Semiconj.comp_right
 
 theorem comp_left (hab : Semiconj fab ga gb) (hbc : Semiconj fbc gb gc) :
     Semiconj (fbc ∘ fab) ga gc :=
   fun x ↦ by simp only [comp_apply, hab.eq, hbc.eq]
+             -- 🎉 no goals
 #align function.semiconj.comp_left Function.Semiconj.comp_left
 
 theorem id_right : Semiconj f id id :=
@@ -66,6 +68,7 @@ theorem id_left : Semiconj id ga ga :=
 theorem inverses_right (h : Semiconj f ga gb) (ha : RightInverse ga' ga) (hb : LeftInverse gb' gb) :
     Semiconj f ga' gb' :=
   fun x ↦ by rw [← hb (f (ga' x)), ← h.eq, ha x]
+             -- 🎉 no goals
 #align function.semiconj.inverses_right Function.Semiconj.inverses_right
 
 theorem option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) :
@@ -158,26 +161,31 @@ theorem id_left (op : α → α → α) : Semiconj₂ id op op := fun _ _ ↦ rf
 
 theorem comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb gc) (hf : Semiconj₂ f ga gb) :
     Semiconj₂ (f' ∘ f) ga gc := fun x y ↦ by simp only [hf'.eq, hf.eq, comp_apply]
+                                             -- 🎉 no goals
 #align function.semiconj₂.comp Function.Semiconj₂.comp
 
 theorem isAssociative_right [IsAssociative α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     IsAssociative β gb :=
   ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp only [← h.eq, @IsAssociative.assoc _ ga]⟩
+                                      -- 🎉 no goals
 #align function.semiconj₂.is_associative_right Function.Semiconj₂.isAssociative_right
 
 theorem isAssociative_left [IsAssociative β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     IsAssociative α ga :=
   ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp only [h.eq, @IsAssociative.assoc _ gb]⟩
+                              -- 🎉 no goals
 #align function.semiconj₂.is_associative_left Function.Semiconj₂.isAssociative_left
 
 theorem isIdempotent_right [IsIdempotent α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     IsIdempotent β gb :=
   ⟨h_surj.forall.2 fun x ↦ by simp only [← h.eq, @IsIdempotent.idempotent _ ga]⟩
+                              -- 🎉 no goals
 #align function.semiconj₂.is_idempotent_right Function.Semiconj₂.isIdempotent_right
 
 theorem isIdempotent_left [IsIdempotent β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     IsIdempotent α ga :=
   ⟨fun x ↦ h_inj <| by rw [h.eq, @IsIdempotent.idempotent _ gb]⟩
+                       -- 🎉 no goals
 #align function.semiconj₂.is_idempotent_left Function.Semiconj₂.isIdempotent_left
 
 end Semiconj₂

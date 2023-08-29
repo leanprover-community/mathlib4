@@ -98,9 +98,13 @@ def IsSplitCoequalizer.map {Z : C} {π : Y ⟶ Z} (q : IsSplitCoequalizer f g π
   rightSection := F.map q.rightSection
   leftSection := F.map q.leftSection
   condition := by rw [← F.map_comp, q.condition, F.map_comp]
+                  -- 🎉 no goals
   rightSection_π := by rw [← F.map_comp, q.rightSection_π, F.map_id]
+                       -- 🎉 no goals
   leftSection_bottom := by rw [← F.map_comp, q.leftSection_bottom, F.map_id]
+                           -- 🎉 no goals
   leftSection_top := by rw [← F.map_comp, q.leftSection_top, F.map_comp]
+                        -- 🎉 no goals
 #align category_theory.is_split_coequalizer.map CategoryTheory.IsSplitCoequalizer.map
 
 section
@@ -127,8 +131,11 @@ def IsSplitCoequalizer.isCoequalizer {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequaliz
   Cofork.IsColimit.mk' _ fun s =>
     ⟨t.rightSection ≫ s.π, by
       dsimp
+      -- ⊢ h ≫ t.rightSection ≫ Cofork.π s = Cofork.π s
       rw [← t.leftSection_top_assoc, s.condition, t.leftSection_bottom_assoc], fun hm => by
+      -- 🎉 no goals
       simp [← hm]⟩
+      -- 🎉 no goals
 #align category_theory.is_split_coequalizer.is_coequalizer CategoryTheory.IsSplitCoequalizer.isCoequalizer
 
 end

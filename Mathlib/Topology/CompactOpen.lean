@@ -88,10 +88,13 @@ instance compactOpen : TopologicalSpace C(α, β) :=
 theorem compactOpen_eq : @compactOpen α β _ _ =
     .generateFrom (Set.image2 CompactOpen.gen {s | IsCompact s} {t | IsOpen t}) :=
   congr_arg TopologicalSpace.generateFrom <| Set.ext fun _ ↦ by simp [eq_comm]
+                                                                -- 🎉 no goals
 
 protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : IsOpen u) :
     IsOpen (CompactOpen.gen s u) :=
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
+                                            -- ⊢ ∃ s_1 x u_1 x, CompactOpen.gen s u = CompactOpen.gen s_1 u_1
+                                                                  -- 🎉 no goals
 #align continuous_map.is_open_gen ContinuousMap.isOpen_gen
 
 section Functorial
@@ -101,13 +104,18 @@ variable (g : C(β, γ))
 private theorem preimage_gen {s : Set α} {u : Set γ} :
     ContinuousMap.comp g ⁻¹' CompactOpen.gen s u = CompactOpen.gen s (g ⁻¹' u) := by
   ext ⟨f, _⟩
+  -- ⊢ mk f ∈ comp g ⁻¹' CompactOpen.gen s u ↔ mk f ∈ CompactOpen.gen s (↑g ⁻¹' u)
   change g ∘ f '' s ⊆ u ↔ f '' s ⊆ g ⁻¹' u
+  -- ⊢ ↑g ∘ f '' s ⊆ u ↔ f '' s ⊆ ↑g ⁻¹' u
   rw [image_comp, image_subset_iff]
+  -- 🎉 no goals
 
 /-- C(α, -) is a functor. -/
 theorem continuous_comp : Continuous (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
   continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
     rw [hm, preimage_gen g]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
+    -- ⊢ IsOpen (CompactOpen.gen s (↑g ⁻¹' u))
+                             -- 🎉 no goals
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
 
 /-- If `g : C(β, γ)` is a topology inducing map, then the composition
@@ -127,14 +135,19 @@ variable (f : C(α, β))
 private theorem image_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpen u) :
     (fun g : C(β, γ) => g.comp f) ⁻¹' CompactOpen.gen s u = CompactOpen.gen (f '' s) u := by
   ext ⟨g, _⟩
+  -- ⊢ mk g ∈ (fun g => comp g f) ⁻¹' CompactOpen.gen s u ↔ mk g ∈ CompactOpen.gen  …
   change g ∘ f '' s ⊆ u ↔ g '' (f '' s) ⊆ u
+  -- ⊢ g ∘ ↑f '' s ⊆ u ↔ g '' (↑f '' s) ⊆ u
   rw [Set.image_comp]
+  -- 🎉 no goals
 
 /-- C(-, γ) is a functor. -/
 theorem continuous_comp_left : Continuous (fun g => g.comp f : C(β, γ) → C(α, γ)) :=
   continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
     rw [hm, image_gen f hs hu]
+    -- ⊢ IsOpen (CompactOpen.gen (↑f '' s) u)
     exact ContinuousMap.isOpen_gen (hs.image f.2) hu
+    -- 🎉 no goals
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
 /-- Composition is a continuous map from `C(α, β) × C(β, γ)` to `C(α, γ)`, provided that `β` is
@@ -144,6 +157,7 @@ theorem continuous_comp' [LocallyCompactSpace β] :
   continuous_generateFrom
     (by
       rintro M ⟨K, hK, U, hU, rfl⟩
+      -- ⊢ IsOpen ((fun x => comp x.snd x.fst) ⁻¹' CompactOpen.gen K U)
       conv =>
         congr
         rw [CompactOpen.gen, preimage_setOf_eq]
@@ -151,14 +165,20 @@ theorem continuous_comp' [LocallyCompactSpace β] :
         ext; dsimp [setOf]
         rw [image_comp, image_subset_iff]
       rw [isOpen_iff_forall_mem_open]
+      -- ⊢ ∀ (x : C(α, β) × C(β, γ)), (x ∈ fun x => ↑x.fst '' K ⊆ ↑x.snd ⁻¹' U) → ∃ t,  …
       rintro ⟨φ₀, ψ₀⟩ H
+      -- ⊢ ∃ t, (t ⊆ fun x => ↑x.fst '' K ⊆ ↑x.snd ⁻¹' U) ∧ IsOpen t ∧ (φ₀, ψ₀) ∈ t
       obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between (hK.image φ₀.2) (hU.preimage ψ₀.2) H
+      -- ⊢ ∃ t, (t ⊆ fun x => ↑x.fst '' K ⊆ ↑x.snd ⁻¹' U) ∧ IsOpen t ∧ (φ₀, ψ₀) ∈ t
       use { φ : C(α, β) | φ '' K ⊆ interior L } ×ˢ { ψ : C(β, γ) | ψ '' L ⊆ U }
+      -- ⊢ ({φ | ↑φ '' K ⊆ interior L} ×ˢ {ψ | ↑ψ '' L ⊆ U} ⊆ fun x => ↑x.fst '' K ⊆ ↑x …
       -- porting note: typing hint `: φ '' K ⊆ interior L` wasn't previously required
       use fun ⟨φ, ψ⟩ ⟨(hφ : φ '' K ⊆ interior L), hψ⟩ =>
         subset_trans hφ (interior_subset.trans <| image_subset_iff.mp hψ)
       use (ContinuousMap.isOpen_gen hK isOpen_interior).prod (ContinuousMap.isOpen_gen hL hU)
+      -- ⊢ (φ₀, ψ₀) ∈ {φ | ↑φ '' K ⊆ interior L} ×ˢ {ψ | ↑ψ '' L ⊆ U}
       exact mem_prod.mpr ⟨hKL, image_subset_iff.mpr hLU⟩)
+      -- 🎉 no goals
 #align continuous_map.continuous_comp' ContinuousMap.continuous_comp'
 
 theorem continuous.comp' {X : Type*} [TopologicalSpace X] [LocallyCompactSpace β] {f : X → C(α, β)}
@@ -194,6 +214,9 @@ theorem continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β)
       have : IsOpen w := (ContinuousMap.isOpen_gen sc vo).prod uo
       have : (f, x) ∈ w := ⟨image_subset_iff.mpr sv, xu⟩
       mem_nhds_iff.mpr ⟨w, by assumption, by assumption, by assumption⟩
+                              -- 🎉 no goals
+                                             -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align continuous_map.continuous_eval' ContinuousMap.continuous_eval'
 
 /-- Evaluation of a continuous map `f` at a point `a` is continuous in `f`.
@@ -204,8 +227,12 @@ assumptions. -/
 theorem continuous_eval_const (a : α) :
     Continuous fun f : C(α, β) => f a := by
   refine continuous_def.2 fun U hU ↦ ?_
+  -- ⊢ IsOpen ((fun f => ↑f a) ⁻¹' U)
   convert ContinuousMap.isOpen_gen (isCompact_singleton (a := a)) hU using 1
+  -- ⊢ (fun f => ↑f a) ⁻¹' U = CompactOpen.gen {a} U
   ext; simp [CompactOpen.gen]
+  -- ⊢ x✝ ∈ (fun f => ↑f a) ⁻¹' U ↔ x✝ ∈ CompactOpen.gen {a} U
+       -- 🎉 no goals
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
 #align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
 
@@ -235,12 +262,19 @@ theorem compactOpen_le_induced (s : Set α) :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) ≤
       TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   simp only [induced_generateFrom_eq, ContinuousMap.compactOpen]
+  -- ⊢ TopologicalSpace.generateFrom {m | ∃ s x u x, m = CompactOpen.gen s u} ≤ Top …
   apply TopologicalSpace.generateFrom_anti
+  -- ⊢ preimage (restrict s) '' {m | ∃ s_1 x u x, m = CompactOpen.gen s_1 u} ⊆ {m | …
   rintro b ⟨a, ⟨c, hc, u, hu, rfl⟩, rfl⟩
+  -- ⊢ restrict s ⁻¹' CompactOpen.gen c u ∈ {m | ∃ s x u x, m = CompactOpen.gen s u}
   refine' ⟨(↑) '' c, hc.image continuous_subtype_val, u, hu, _⟩
+  -- ⊢ restrict s ⁻¹' CompactOpen.gen c u = CompactOpen.gen (Subtype.val '' c) u
   ext f
+  -- ⊢ f ∈ restrict s ⁻¹' CompactOpen.gen c u ↔ f ∈ CompactOpen.gen (Subtype.val '' …
   simp only [CompactOpen.gen, mem_setOf_eq, mem_preimage, ContinuousMap.coe_restrict]
+  -- ⊢ (fun a => (↑f ∘ Subtype.val) a) '' c ⊆ u ↔ (fun a => ↑f a) '' (Subtype.val ' …
   rw [image_comp f ((↑) : s → α)]
+  -- 🎉 no goals
 #align continuous_map.compact_open_le_induced ContinuousMap.compactOpen_le_induced
 
 /-- The compact-open topology on `C(α, β)` is equal to the infimum of the compact-open topologies
@@ -251,30 +285,46 @@ theorem compactOpen_eq_sInf_induced :
       ⨅ (s : Set α) (_ : IsCompact s),
         TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   refine' le_antisymm _ _
+  -- ⊢ compactOpen ≤ ⨅ (s : Set α) (_ : IsCompact s), TopologicalSpace.induced (res …
   · refine' le_iInf₂ _
+    -- ⊢ ∀ (i : Set α), IsCompact i → compactOpen ≤ TopologicalSpace.induced (restric …
     exact fun s _ => compactOpen_le_induced s
+    -- 🎉 no goals
   simp only [← generateFrom_iUnion, induced_generateFrom_eq, ContinuousMap.compactOpen]
+  -- ⊢ TopologicalSpace.generateFrom (⋃ (i : Set α) (_ : IsCompact i), preimage (re …
   apply TopologicalSpace.generateFrom_anti
+  -- ⊢ {m | ∃ s x u x, m = CompactOpen.gen s u} ⊆ ⋃ (i : Set α) (_ : IsCompact i),  …
   rintro _ ⟨s, hs, u, hu, rfl⟩
+  -- ⊢ CompactOpen.gen s u ∈ ⋃ (i : Set α) (_ : IsCompact i), preimage (restrict i) …
   rw [mem_iUnion₂]
+  -- ⊢ ∃ i j, CompactOpen.gen s u ∈ preimage (restrict i) '' {m | ∃ s x u x, m = Co …
   refine' ⟨s, hs, _, ⟨univ, isCompact_iff_isCompact_univ.mp hs, u, hu, rfl⟩, _⟩
+  -- ⊢ restrict s ⁻¹' CompactOpen.gen univ u = CompactOpen.gen s u
   ext f
+  -- ⊢ f ∈ restrict s ⁻¹' CompactOpen.gen univ u ↔ f ∈ CompactOpen.gen s u
   simp only [CompactOpen.gen, mem_setOf_eq, mem_preimage, ContinuousMap.coe_restrict]
+  -- ⊢ (fun a => (↑f ∘ Subtype.val) a) '' univ ⊆ u ↔ (fun a => ↑f a) '' s ⊆ u
   rw [image_comp f ((↑) : s → α)]
+  -- ⊢ ↑f '' (Subtype.val '' univ) ⊆ u ↔ (fun a => ↑f a) '' s ⊆ u
   simp
+  -- 🎉 no goals
 #align continuous_map.compact_open_eq_Inf_induced ContinuousMap.compactOpen_eq_sInf_induced
 
 /-- For any subset `s` of `α`, the restriction of continuous functions to `s` is continuous as a
 function from `C(α, β)` to `C(s, β)` with their respective compact-open topologies. -/
 theorem continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.restrict s := by
   rw [continuous_iff_le_induced]
+  -- ⊢ compactOpen ≤ TopologicalSpace.induced (fun F => restrict s F) compactOpen
   exact compactOpen_le_induced s
+  -- 🎉 no goals
 #align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
 
 theorem nhds_compactOpen_eq_sInf_nhds_induced (f : C(α, β)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_sInf_induced]
+  -- ⊢ 𝓝 f = ⨅ (s : Set α) (_ : IsCompact s), Filter.comap (restrict s) (𝓝 (restric …
   simp [nhds_iInf, nhds_induced]
+  -- 🎉 no goals
 #align continuous_map.nhds_compact_open_eq_Inf_nhds_induced ContinuousMap.nhds_compactOpen_eq_sInf_nhds_induced
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(α, β)} {f : C(α, β)}
@@ -287,7 +337,9 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
     Filter.Tendsto F l (𝓝 f) ↔
     ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) := by
     rw [compactOpen_eq_sInf_induced]
+    -- ⊢ Filter.Tendsto F l (𝓝 f) ↔ ∀ (s : Set α), IsCompact s → Filter.Tendsto (fun  …
     simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
+    -- 🎉 no goals
 #align continuous_map.tendsto_compact_open_iff_forall ContinuousMap.tendsto_compactOpen_iff_forall
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if
@@ -297,10 +349,15 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
     ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
   constructor
+  -- ⊢ (∃ f, Filter.Tendsto F l (𝓝 f)) → ∀ (s : Set α), IsCompact s → ∃ f, Filter.T …
   · rintro ⟨f, hf⟩ s _
+    -- ⊢ ∃ f, Filter.Tendsto (fun i => restrict s (F i)) l (𝓝 f)
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
+    -- 🎉 no goals
   · intro h
+    -- ⊢ ∃ f, Filter.Tendsto F l (𝓝 f)
     choose f hf using h
+    -- ⊢ ∃ f, Filter.Tendsto F l (𝓝 f)
     -- By uniqueness of limits in a `T2Space`, since `fun i ↦ F i x` tends to both `f s₁ hs₁ x` and
     -- `f s₂ hs₂ x`, we have `f s₁ hs₁ x = f s₂ hs₂ x`
     have h :
@@ -315,10 +372,15 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
     refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
+    -- ⊢ Filter.Tendsto F l (𝓝 (liftCover' (fun s => ∀ ⦃f : Filter α⦄ [inst : Filter. …
     rw [tendsto_compactOpen_iff_forall]
+    -- ⊢ ∀ (s : Set α), IsCompact s → Filter.Tendsto (fun i => restrict s (F i)) l (𝓝 …
     intro s hs
+    -- ⊢ Filter.Tendsto (fun i => restrict s (F i)) l (𝓝 (restrict s (liftCover' (fun …
     rw [liftCover_restrict']
+    -- ⊢ Filter.Tendsto (fun i => restrict s (F i)) l (𝓝 (f s ?m.52786))
     exact hf s hs
+    -- 🎉 no goals
 #align continuous_map.exists_tendsto_compact_open_iff_forall ContinuousMap.exists_tendsto_compactOpen_iff_forall
 
 end InfInduced
@@ -337,24 +399,36 @@ variable {α β}
 
 theorem image_coev {y : β} (s : Set α) : coev α β y '' s = ({y} : Set β) ×ˢ s := by
   aesop
+  -- 🎉 no goals
 #align continuous_map.image_coev ContinuousMap.image_coev
 
 -- The coevaluation map β → C(α, β × α) is continuous (always).
 theorem continuous_coev : Continuous (coev α β) :=
   continuous_generateFrom <| by
     rintro _ ⟨s, sc, u, uo, rfl⟩
+    -- ⊢ IsOpen (coev α β ⁻¹' CompactOpen.gen s u)
     rw [isOpen_iff_forall_mem_open]
+    -- ⊢ ∀ (x : β), x ∈ coev α β ⁻¹' CompactOpen.gen s u → ∃ t, t ⊆ coev α β ⁻¹' Comp …
     intro y hy
+    -- ⊢ ∃ t, t ⊆ coev α β ⁻¹' CompactOpen.gen s u ∧ IsOpen t ∧ y ∈ t
     have hy' : (↑(coev α β y) '' s ⊆ u) := hy
+    -- ⊢ ∃ t, t ⊆ coev α β ⁻¹' CompactOpen.gen s u ∧ IsOpen t ∧ y ∈ t
     -- porting notes: was below
     --change coev α β y '' s ⊆ u at hy
     rw [image_coev s] at hy'
+    -- ⊢ ∃ t, t ⊆ coev α β ⁻¹' CompactOpen.gen s u ∧ IsOpen t ∧ y ∈ t
     rcases generalized_tube_lemma isCompact_singleton sc uo hy' with ⟨v, w, vo, _, yv, sw, vwu⟩
+    -- ⊢ ∃ t, t ⊆ coev α β ⁻¹' CompactOpen.gen s u ∧ IsOpen t ∧ y ∈ t
     refine' ⟨v, _, vo, singleton_subset_iff.mp yv⟩
+    -- ⊢ v ⊆ coev α β ⁻¹' CompactOpen.gen s u
     intro y' hy'
+    -- ⊢ y' ∈ coev α β ⁻¹' CompactOpen.gen s u
     change coev α β y' '' s ⊆ u
+    -- ⊢ ↑(coev α β y') '' s ⊆ u
     rw [image_coev s]
+    -- ⊢ {y'} ×ˢ s ⊆ u
     exact (prod_mono (singleton_subset_iff.mpr hy') sw).trans vwu
+    -- 🎉 no goals
 #align continuous_map.continuous_coev ContinuousMap.continuous_coev
 
 end Coev
@@ -370,6 +444,8 @@ def curry' (f : C(α × β, γ)) (a : α) : C(β, γ) :=
 /-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
 theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
   have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ := by ext; rfl
+                                                             -- ⊢ ↑(curry' f x✝) a✝ = ↑((comp f ∘ coev β α) x✝) a✝
+                                                                  -- 🎉 no goals
   hf ▸ Continuous.comp (continuous_comp f) continuous_coev
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 
@@ -396,9 +472,13 @@ theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a
 theorem continuous_curry [LocallyCompactSpace (α × β)] :
     Continuous (curry : C(α × β, γ) → C(α, C(β, γ))) := by
   apply continuous_of_continuous_uncurry
+  -- ⊢ Continuous (Function.uncurry fun x y => ↑(curry x) y)
   apply continuous_of_continuous_uncurry
+  -- ⊢ Continuous (Function.uncurry fun x y => ↑(Function.uncurry (fun x y => ↑(cur …
   rw [← (Homeomorph.prodAssoc _ _ _).symm.comp_continuous_iff']
+  -- ⊢ Continuous ((Function.uncurry fun x y => ↑(Function.uncurry (fun x y => ↑(cu …
   exact continuous_eval'
+  -- 🎉 no goals
 #align continuous_map.continuous_curry ContinuousMap.continuous_curry
 
 /-- The uncurried form of a continuous map `α → C(β, γ)` is a continuous map `α × β → γ`. -/
@@ -419,8 +499,11 @@ def uncurry [LocallyCompactSpace β] (f : C(α, C(β, γ))) : C(α × β, γ) :=
 theorem continuous_uncurry [LocallyCompactSpace α] [LocallyCompactSpace β] :
     Continuous (uncurry : C(α, C(β, γ)) → C(α × β, γ)) := by
   apply continuous_of_continuous_uncurry
+  -- ⊢ Continuous (Function.uncurry fun x y => ↑(uncurry x) y)
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
+  -- ⊢ Continuous ((Function.uncurry fun x y => ↑(uncurry x) y) ∘ ↑(Homeomorph.prod …
   apply continuous_eval'.comp (continuous_eval'.prod_map continuous_id)
+  -- 🎉 no goals
 #align continuous_map.continuous_uncurry ContinuousMap.continuous_uncurry
 
 /-- The family of constant maps: `β → C(α, β)` as a continuous map. -/
@@ -454,6 +537,12 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 /-- Currying as a homeomorphism between the function spaces `C(α × β, γ)` and `C(α, C(β, γ))`. -/
 def curry [LocallyCompactSpace α] [LocallyCompactSpace β] : C(α × β, γ) ≃ₜ C(α, C(β, γ)) :=
   ⟨⟨ContinuousMap.curry, uncurry, by intro; ext; rfl, by intro; ext; rfl⟩,
+                                     -- ⊢ uncurry (ContinuousMap.curry x✝) = x✝
+                                            -- ⊢ ↑(uncurry (ContinuousMap.curry x✝)) a✝ = ↑x✝ a✝
+                                                 -- 🎉 no goals
+                                                         -- ⊢ ContinuousMap.curry (uncurry x✝) = x✝
+                                                                -- ⊢ ↑(↑(ContinuousMap.curry (uncurry x✝)) a✝¹) a✝ = ↑(↑x✝ a✝¹) a✝
+                                                                     -- 🎉 no goals
     continuous_curry, continuous_uncurry⟩
 #align homeomorph.curry Homeomorph.curry
 
@@ -464,8 +553,11 @@ def continuousMapOfUnique [Unique α] : β ≃ₜ C(α, β) where
   left_inv a := rfl
   right_inv f := by
     ext a
+    -- ⊢ ↑(const α ((fun f => ↑f default) f)) a = ↑f a
     rw [Unique.eq_default a]
+    -- ⊢ ↑(const α ((fun f => ↑f default) f)) default = ↑f default
     rfl
+    -- 🎉 no goals
   continuous_toFun := continuous_const'
   continuous_invFun := continuous_eval_const _
 #align homeomorph.continuous_map_of_unique Homeomorph.continuousMapOfUnique
@@ -491,15 +583,18 @@ variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [Topo
 theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
+  -- ⊢ Continuous g
   have h : ∀ x : X, Continuous fun y => g (x, y) := by
     intro x
     obtain ⟨x₀, rfl⟩ := hf.surjective x
     exact (Gf x₀).continuous
   let G : X → C(Y, Z) := fun x => ⟨_, h x⟩
+  -- ⊢ Continuous g
   have : Continuous G := by
     rw [hf.continuous_iff]
     exact Gf.continuous
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
+  -- 🎉 no goals
 #align quotient_map.continuous_lift_prod_left QuotientMap.continuous_lift_prod_left
 
 theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
@@ -507,7 +602,9 @@ theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X 
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
+  -- ⊢ Continuous g
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
+  -- 🎉 no goals
 #align quotient_map.continuous_lift_prod_right QuotientMap.continuous_lift_prod_right
 
 end QuotientMap

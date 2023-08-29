@@ -60,6 +60,7 @@ theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 #align set.mem_star Set.mem_star
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
+                                                                 -- 🎉 no goals
 #align set.star_mem_star Set.star_mem_star
 
 @[simp]
@@ -69,7 +70,13 @@ theorem star_preimage [Star α] : Star.star ⁻¹' s = s⋆ := rfl
 @[simp]
 theorem image_star [InvolutiveStar α] : Star.star '' s = s⋆ := by
   simp only [← star_preimage]
+  -- ⊢ star '' s = star ⁻¹' s
   rw [image_eq_preimage_of_inverse] <;> intro <;> simp only [star_star]
+  -- ⊢ Function.LeftInverse star star
+                                        -- ⊢ x✝⋆⋆ = x✝
+                                        -- ⊢ x✝⋆⋆ = x✝
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
 #align set.image_star Set.image_star
 
 @[simp]
@@ -98,6 +105,7 @@ theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 instance [InvolutiveStar α] : InvolutiveStar (Set α) where
   star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
+                          -- 🎉 no goals
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
@@ -106,6 +114,7 @@ theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ 
 
 theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t⋆ := by
   rw [← star_subset_star, star_star]
+  -- 🎉 no goals
 #align set.star_subset Set.star_subset
 
 theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Finite :=
@@ -114,7 +123,9 @@ theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Fini
 
 theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
   ext1 y
+  -- ⊢ y ∈ {x}⋆ ↔ y ∈ {x⋆}
   rw [mem_star, mem_singleton_iff, mem_singleton_iff, star_eq_iff_star_eq, eq_comm]
+  -- 🎉 no goals
 #align set.star_singleton Set.star_singleton
 
 protected theorem star_mul [Monoid α] [StarSemigroup α] (s t : Set α) : (s * t)⋆ = t⋆ * s⋆ := by
@@ -131,17 +142,24 @@ protected theorem star_add [AddMonoid α] [StarAddMonoid α] (s t : Set α) : (s
 instance [Star α] [TrivialStar α] : TrivialStar (Set α) where
   star_trivial s := by
     rw [← star_preimage]
+    -- ⊢ star ⁻¹' s = s
     ext1
+    -- ⊢ x✝ ∈ star ⁻¹' s ↔ x✝ ∈ s
     simp [star_trivial]
+    -- 🎉 no goals
 
 protected theorem star_inv [Group α] [StarSemigroup α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
+  -- ⊢ x✝ ∈ s⁻¹⋆ ↔ x✝ ∈ s⋆⁻¹
   simp only [mem_star, mem_inv, star_inv]
+  -- 🎉 no goals
 #align set.star_inv Set.star_inv
 
 protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
+  -- ⊢ x✝ ∈ s⁻¹⋆ ↔ x✝ ∈ s⋆⁻¹
   simp only [mem_star, mem_inv, star_inv']
+  -- 🎉 no goals
 #align set.star_inv' Set.star_inv'
 
 end Set
@@ -150,5 +168,8 @@ end Set
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
   ext x
+  -- ⊢ x ∈ star ↑s ↔ x ∈ ↑s
   simp only [Set.mem_star, SetLike.mem_coe]
+  -- ⊢ star x ∈ s ↔ x ∈ s
   exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩
+  -- 🎉 no goals

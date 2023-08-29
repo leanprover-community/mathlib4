@@ -105,20 +105,32 @@ lemma toColumns₂_fromColumns  (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R
 lemma fromColumns_toColumns (A : Matrix m (n₁ ⊕ n₂) R) :
     fromColumns A.toColumns₁ A.toColumns₂ = A := by
   ext i (j | j) <;> simp
+  -- ⊢ fromColumns (toColumns₁ A) (toColumns₂ A) i (Sum.inl j) = A i (Sum.inl j)
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 @[simp]
 lemma fromRows_toRows (A : Matrix (m₁ ⊕ m₂) n R) : fromRows A.toRows₁ A.toRows₂ = A := by
   ext (i | i) j <;> simp
+  -- ⊢ fromRows (toRows₁ A) (toRows₂ A) (Sum.inl i) j = A (Sum.inl i) j
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
   intros x1 x2 y1 y2
+  -- ⊢ fromRows x1 y1 = fromRows x2 y2 → x1 = x2 ∧ y1 = y2
   simp only [Function.funext_iff, ← Matrix.ext_iff]
+  -- ⊢ (∀ (i : m₁ ⊕ m₂) (j : n), fromRows x1 y1 i j = fromRows x2 y2 i j) → (∀ (i : …
   aesop
+  -- 🎉 no goals
 
 lemma fromColumns_inj : Function.Injective2 (@fromColumns R m n₁ n₂) := by
   intros x1 x2 y1 y2
+  -- ⊢ fromColumns x1 y1 = fromColumns x2 y2 → x1 = x2 ∧ y1 = y2
   simp only [Function.funext_iff, ← Matrix.ext_iff]
+  -- ⊢ (∀ (i : m) (j : n₁ ⊕ n₂), fromColumns x1 y1 i j = fromColumns x2 y2 i j) → ( …
   aesop
+  -- 🎉 no goals
 
 lemma fromColumns_ext_iff (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (B₁ : Matrix m n₁ R)
     (B₂ : Matrix m n₂ R) :
@@ -133,12 +145,18 @@ initial matrix tranposed to become rows. -/
 lemma transpose_fromColumns (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
     transpose (fromColumns A₁ A₂) = fromRows (transpose A₁) (transpose A₂) := by
   ext (i | i) j <;> simp
+  -- ⊢ (fromColumns A₁ A₂)ᵀ (Sum.inl i) j = fromRows A₁ᵀ A₂ᵀ (Sum.inl i) j
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 /- A row partioned matrix when transposed gives a column partioned matrix with rows of the initial
 matrix tranposed to become columns. -/
 lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     transpose (fromRows A₁ A₂) = fromColumns (transpose A₁) (transpose A₂) := by
   ext i (j | j) <;> simp
+  -- ⊢ (fromRows A₁ A₂)ᵀ i (Sum.inl j) = fromColumns A₁ᵀ A₂ᵀ i (Sum.inl j)
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 section Semiring
 
@@ -148,31 +166,51 @@ variable [Semiring R]
 lemma fromRows_mul (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
     (fromRows A₁ A₂) * B = fromRows (A₁ * B) (A₂ * B) := by
   ext (_ | _) _ <;> simp [mul_apply]
+  -- ⊢ (fromRows A₁ A₂ * B) (Sum.inl val✝) x✝ = fromRows (A₁ * B) (A₂ * B) (Sum.inl …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 @[simp]
 lemma mul_fromColumns (A : Matrix m n R) (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
     A * (fromColumns B₁ B₂) = fromColumns (A * B₁) (A * B₂) := by
   ext _ (_ | _) <;> simp [mul_apply]
+  -- ⊢ (A * fromColumns B₁ B₂) i✝ (Sum.inl val✝) = fromColumns (A * B₁) (A * B₂) i✝ …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 @[simp]
 lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 := by
   ext (_ | _) _ <;> simp
+  -- ⊢ fromRows 0 0 (Sum.inl val✝) x✝ = OfNat.ofNat 0 (Sum.inl val✝) x✝
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 @[simp]
 lemma fromColumns_zero : fromColumns (0 : Matrix m n₁ R) (0 : Matrix m n₂ R) = 0 := by
   ext _ (_ | _) <;> simp
+  -- ⊢ fromColumns 0 0 i✝ (Sum.inl val✝) = OfNat.ofNat 0 i✝ (Sum.inl val✝)
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 @[simp]
 lemma fromColumns_fromRows_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R)
     (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromColumns (fromRows B₁₁ B₂₁) (fromRows B₁₂ B₂₂) = fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ := by
   ext (_ | _) (_ | _) <;> simp
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 @[simp]
 lemma fromRows_fromColumn_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R)
     (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromRows (fromColumns B₁₁ B₁₂) (fromColumns B₂₁ B₂₂) = fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ := by
   ext (_ | _) (_ | _) <;> simp
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 /-- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
 lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
@@ -180,6 +218,10 @@ lemma fromRows_mul_fromColumns (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
     (fromRows A₁ A₂) * (fromColumns B₁ B₂) =
       fromBlocks (A₁ * B₁) (A₁ * B₂) (A₂ * B₁) (A₂ * B₂) := by
   ext (_ | _) (_ | _) <;> simp
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 /-- A column partitioned matrix mulitplied by a row partitioned matrix gives the sum of the "outer"
 products of the block matrices -/
@@ -187,7 +229,9 @@ lemma fromColumns_mul_fromRows (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R)
     (B₁ : Matrix n₁ n R) (B₂ : Matrix n₂ n R) :
     fromColumns A₁ A₂ * fromRows B₁ B₂ = (A₁ * B₁ + A₂ * B₂) := by
   ext
+  -- ⊢ (fromColumns A₁ A₂ * fromRows B₁ B₂) i✝ x✝ = (A₁ * B₁ + A₂ * B₂) i✝ x✝
   simp [mul_apply]
+  -- 🎉 no goals
 
 /-- A column partitioned matrix multipiled by a block matrix results in a column partioned matrix -/
 lemma fromColumns_mul_fromBlocks (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ R)
@@ -195,6 +239,9 @@ lemma fromColumns_mul_fromBlocks (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ 
     (fromColumns A₁ A₂) * fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ =
       fromColumns (A₁ * B₁₁ + A₂ * B₂₁) (A₁ * B₁₂ + A₂ * B₂₂) := by
   ext _ (_ | _) <;> simp [mul_apply]
+  -- ⊢ (fromColumns A₁ A₂ * fromBlocks B₁₁ B₁₂ B₂₁ B₂₂) i✝ (Sum.inl val✝) = fromCol …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 /-- A block matrix mulitplied by a row partitioned matrix gives a row partitioned matrix -/
 lemma fromBlocks_mul_fromRows (A₁ : Matrix n₁ n R) (A₂ : Matrix n₂ n R)
@@ -202,6 +249,9 @@ lemma fromBlocks_mul_fromRows (A₁ : Matrix n₁ n R) (A₂ : Matrix n₂ n R)
     fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ * (fromRows A₁ A₂) =
       fromRows (B₁₁ * A₁ + B₁₂ * A₂) (B₂₁ * A₁ + B₂₂ * A₂) := by
   ext (_ | _) _ <;> simp [mul_apply]
+  -- ⊢ (fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ * fromRows A₁ A₂) (Sum.inl val✝) x✝ = fromRows ( …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 end Semiring
 
@@ -247,6 +297,9 @@ lemma conjTranspose_fromColumns_eq_fromRows_conjTranspose (A₁ : Matrix m n₁ 
     (A₂ : Matrix m n₂ R) :
     conjTranspose (fromColumns A₁ A₂) = fromRows (conjTranspose A₁) (conjTranspose A₂) := by
   ext (_ | _) _ <;> simp
+  -- ⊢ (fromColumns A₁ A₂)ᴴ (Sum.inl val✝) x✝ = fromRows A₁ᴴ A₂ᴴ (Sum.inl val✝) x✝
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 /- A row partioned matrix in a Star ring when conjugate transposed gives a column partitioned matrix
 with the rows of the initial matrix conjugate transposed to become columns. -/
@@ -254,6 +307,9 @@ lemma conjTranspose_fromRows_eq_fromColumns_conjTranspose (A₁ : Matrix m₁ n 
     (A₂ : Matrix m₂ n R) : conjTranspose (fromRows A₁ A₂) =
       fromColumns (conjTranspose A₁) (conjTranspose A₂) := by
   ext _ (_ | _) <;> simp
+  -- ⊢ (fromRows A₁ A₂)ᴴ i✝ (Sum.inl val✝) = fromColumns A₁ᴴ A₂ᴴ i✝ (Sum.inl val✝)
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 
 end Star
 

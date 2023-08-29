@@ -65,7 +65,9 @@ variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
+  -- ⊢ x✝¹ = a0 ∧ x✝ = b0
   exact h ha hb k
+  -- 🎉 no goals
 #align unique_mul.mt UniqueMul.mt
 
 @[to_additive]
@@ -84,8 +86,11 @@ theorem set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) 
   rintro ⟨x1, y1⟩ (hx : x1 ∈ A ∧ y1 ∈ B ∧ x1 * y1 = a0 * b0) ⟨x2, y2⟩
     (hy : x2 ∈ A ∧ y2 ∈ B ∧ x2 * y2 = a0 * b0)
   rcases h hx.1 hx.2.1 hx.2.2 with ⟨rfl, rfl⟩
+  -- ⊢ (x1, y1) = (x2, y2)
   rcases h hy.1 hy.2.1 hy.2.2 with ⟨rfl, rfl⟩
+  -- ⊢ (x2, y2) = (x2, y2)
   rfl
+  -- 🎉 no goals
 #align unique_mul.set_subsingleton UniqueMul.set_subsingleton
 #align unique_add.set_subsingleton UniqueAdd.set_subsingleton
 
@@ -95,11 +100,16 @@ theorem set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) 
 theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! (ab : _) (_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = a0 * b0 :=
   ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mem_product.mpr ⟨aA, bB⟩, rfl, by simp⟩, by simpa⟩,
+                                                                -- 🎉 no goals
+                                                                          -- 🎉 no goals
     fun h ↦ h.elim₂
       (by
         rintro ⟨x1, x2⟩ _ _ J x y hx hy l
+        -- ⊢ x = a0 ∧ y = b0
         rcases Prod.mk.inj_iff.mp (J (a0, b0) (Finset.mk_mem_product aA bB) rfl) with ⟨rfl, rfl⟩
+        -- ⊢ x = a0 ∧ y = b0
         exact Prod.mk.inj_iff.mp (J (x, y) (Finset.mk_mem_product hx hy) l))⟩
+        -- 🎉 no goals
 #align unique_mul.iff_exists_unique UniqueMul.iff_existsUnique
 #align unique_add.iff_exists_unique UniqueAdd.iff_existsUnique
 
@@ -111,9 +121,13 @@ theorem exists_iff_exists_existsUnique :
       ∃ g : G, ∃! (ab : _) (_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = g :=
   ⟨fun ⟨a0, b0, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
+    -- ⊢ ∃ a0 b0, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
+    -- ⊢ ∃ a0 b0, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0
     cases' Finset.mem_product.mp hab with ha hb
+    -- ⊢ ∃ a0 b0, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
+    -- 🎉 no goals
 #align unique_mul.exists_iff_exists_exists_unique UniqueMul.exists_iff_exists_existsUnique
 #align unique_add.exists_iff_exists_exists_unique UniqueAdd.exists_iff_exists_existsUnique
 
@@ -124,8 +138,11 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
     UniqueMul (A.preimage f (Set.injOn_of_injective hf _))
       (B.preimage f (Set.injOn_of_injective hf _)) a0 b0 := by
   intro a b ha hb ab
+  -- ⊢ a = a0 ∧ b = b0
   simp only [← hf.eq_iff, map_mul] at ab ⊢
+  -- ⊢ ↑f a = ↑f a0 ∧ ↑f b = ↑f b0
   exact u (Finset.mem_preimage.mp ha) (Finset.mem_preimage.mp hb) ab
+  -- 🎉 no goals
 #align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
 #align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
 
@@ -139,13 +156,21 @@ See `UniqueAdd.addHom_map_iff` for a version with swapped bundling."]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   simp_rw [UniqueMul, Finset.mem_image]
+  -- ⊢ (∀ ⦃a b : H⦄, (∃ a_1, a_1 ∈ A ∧ ↑f a_1 = a) → (∃ a, a ∈ B ∧ ↑f a = b) → a *  …
   refine' ⟨fun h a b ha hb ab ↦ _, fun h ↦ _⟩
+  -- ⊢ a = a0 ∧ b = b0
   · rw [← hf.eq_iff, map_mul, map_mul] at ab
+    -- ⊢ a = a0 ∧ b = b0
     have := h ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ab
+    -- ⊢ a = a0 ∧ b = b0
     exact ⟨hf this.1, hf this.2⟩
+    -- 🎉 no goals
   · rintro _ _ ⟨a, aA, rfl⟩ ⟨b, bB, rfl⟩ ab
+    -- ⊢ ↑f a = ↑f a0 ∧ ↑f b = ↑f b0
     simp only [← map_mul, hf.eq_iff] at ab ⊢
+    -- ⊢ a = a0 ∧ b = b0
     exact h aA bB ab
+    -- 🎉 no goals
 #align unique_mul.mul_hom_image_iff UniqueMul.mulHom_image_iff
 #align unique_add.add_hom_image_iff UniqueAdd.addHom_image_iff
 

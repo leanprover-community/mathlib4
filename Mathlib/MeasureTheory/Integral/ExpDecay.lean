@@ -32,7 +32,9 @@ theorem exp_neg_integrableOn_Ioi (a : ℝ) {b : ℝ} (h : 0 < b) :
     refine' Tendsto.div_const (Tendsto.neg _) _
     exact tendsto_exp_atBot.comp (tendsto_id.neg_const_mul_atTop (Right.neg_neg_iff.2 h))
   refine' integrableOn_Ioi_deriv_of_nonneg' (fun x _ => _) (fun x _ => (exp_pos _).le) this
+  -- ⊢ HasDerivAt (fun x => -exp (-b * x) / b) (exp (-b * x)) x
   simpa [h.ne'] using ((hasDerivAt_id x).const_mul b).neg.exp.neg.div_const b
+  -- 🎉 no goals
 #align exp_neg_integrable_on_Ioi exp_neg_integrableOn_Ioi
 
 /-- If `f` is continuous on `[a, ∞)`, and is `O (exp (-b * x))` at `∞` for some `b > 0`, then
@@ -41,9 +43,13 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     (h1 : ContinuousOn f (Ici a)) (h2 : f =O[atTop] fun x => exp (-b * x)) :
     IntegrableOn f (Ioi a) := by
   cases' h2.isBigOWith with c h3
+  -- ⊢ IntegrableOn f (Ioi a)
   rw [Asymptotics.isBigOWith_iff, eventually_atTop] at h3
+  -- ⊢ IntegrableOn f (Ioi a)
   cases' h3 with r bdr
+  -- ⊢ IntegrableOn f (Ioi a)
   let v := max a r
+  -- ⊢ IntegrableOn f (Ioi a)
   -- show integrable on `(a, v]` from continuity
   have int_left : IntegrableOn f (Ioc a v) := by
     rw [← intervalIntegrable_iff_integrable_Ioc_of_le (le_max_left a r)]
@@ -54,15 +60,24 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     simpa only [Ioc_union_Ioi_eq_Ioi, le_max_iff, le_refl, true_or_iff] using t
   -- now show integrable on `(v, ∞)` from asymptotic
   constructor
+  -- ⊢ AEStronglyMeasurable f (Measure.restrict volume (Ioi v))
   · exact (h1.mono <| Ioi_subset_Ici <| le_max_left a r).aestronglyMeasurable measurableSet_Ioi
+    -- 🎉 no goals
   have : HasFiniteIntegral (fun x : ℝ => c * exp (-b * x)) (volume.restrict (Ioi v)) :=
     (exp_neg_integrableOn_Ioi v h0).hasFiniteIntegral.const_mul c
   apply this.mono
+  -- ⊢ ∀ᵐ (a : ℝ) ∂Measure.restrict volume (Ioi v), ‖f a‖ ≤ ‖c * exp (-b * a)‖
   refine' (ae_restrict_iff' measurableSet_Ioi).mpr _
+  -- ⊢ ∀ᵐ (x : ℝ), x ∈ Ioi v → ‖f x‖ ≤ ‖c * exp (-b * x)‖
   refine' ae_of_all _ fun x h1x => _
+  -- ⊢ ‖f x‖ ≤ ‖c * exp (-b * x)‖
   rw [norm_mul, norm_eq_abs]
+  -- ⊢ |f x| ≤ ‖c‖ * ‖exp (-b * x)‖
   rw [mem_Ioi] at h1x
+  -- ⊢ |f x| ≤ ‖c‖ * ‖exp (-b * x)‖
   specialize bdr x ((le_max_right a r).trans h1x.le)
+  -- ⊢ |f x| ≤ ‖c‖ * ‖exp (-b * x)‖
   exact bdr.trans (mul_le_mul_of_nonneg_right (le_abs_self c) (norm_nonneg _))
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align integrable_of_is_O_exp_neg integrable_of_isBigO_exp_neg

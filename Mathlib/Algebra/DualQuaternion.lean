@@ -42,15 +42,31 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
   right_inv := fun ⟨⟨r, i, j, k⟩, ⟨rε, iε, jε, kε⟩⟩ => rfl
   map_mul' := by
     rintro ⟨⟨xr, xrε⟩, ⟨xi, xiε⟩, ⟨xj, xjε⟩, ⟨xk, xkε⟩⟩
+    -- ⊢ ∀ (y : ℍ[DualNumber R]), Equiv.toFun { toFun := fun q => ({ re := TrivSqZero …
     rintro ⟨⟨yr, yrε⟩, ⟨yi, yiε⟩, ⟨yj, yjε⟩, ⟨yk, ykε⟩⟩
+    -- ⊢ Equiv.toFun { toFun := fun q => ({ re := TrivSqZeroExt.fst q.re, imI := Triv …
     ext : 1
+    -- ⊢ TrivSqZeroExt.fst (Equiv.toFun { toFun := fun q => ({ re := TrivSqZeroExt.fs …
     · rfl
+      -- 🎉 no goals
     · dsimp
+      -- ⊢ { re := TrivSqZeroExt.snd ({ re := (xr, xrε), imI := (xi, xiε), imJ := (xj,  …
       congr 1 <;> simp <;> ring
+                  -- ⊢ xr * yrε + xrε * yr - (xi * yiε + xiε * yi) - (xj * yjε + xjε * yj) - (xk *  …
+                  -- ⊢ xr * yiε + xrε * yi + (xi * yrε + xiε * yr) + (xj * ykε + xjε * yk) - (xk *  …
+                  -- ⊢ xr * yjε + xrε * yj - (xi * ykε + xiε * yk) + (xj * yrε + xjε * yr) + (xk *  …
+                  -- ⊢ xr * ykε + xrε * yk + (xi * yjε + xiε * yj) - (xj * yiε + xjε * yi) + (xk *  …
+                           -- 🎉 no goals
+                           -- 🎉 no goals
+                           -- 🎉 no goals
+                           -- 🎉 no goals
   map_add' := by
     rintro ⟨⟨xr, xrε⟩, ⟨xi, xiε⟩, ⟨xj, xjε⟩, ⟨xk, xkε⟩⟩
+    -- ⊢ ∀ (y : ℍ[DualNumber R]), Equiv.toFun { toFun := fun q => ({ re := TrivSqZero …
     rintro ⟨⟨yr, yrε⟩, ⟨yi, yiε⟩, ⟨yj, yjε⟩, ⟨yk, ykε⟩⟩
+    -- ⊢ Equiv.toFun { toFun := fun q => ({ re := TrivSqZeroExt.fst q.re, imI := Triv …
     rfl
+    -- 🎉 no goals
   commutes' r := rfl
 #align quaternion.dual_number_equiv Quaternion.dualNumberEquiv
 

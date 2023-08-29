@@ -37,6 +37,7 @@ variable [StarModule 𝕜 F]
 protected nonrec theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun x => star (f x)) (star f') x L := by
   simpa using h.star.hasDerivAtFilter
+  -- 🎉 no goals
 #align has_deriv_at_filter.star HasDerivAtFilter.star
 
 protected nonrec theorem HasDerivWithinAt.star (h : HasDerivWithinAt f f' s x) :
@@ -51,6 +52,7 @@ protected nonrec theorem HasDerivAt.star (h : HasDerivAt f f' x) :
 
 protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => star (f x)) (star f') x := by simpa using h.star.hasStrictDerivAt
+                                                             -- 🎉 no goals
 #align has_strict_deriv_at.star HasStrictDerivAt.star
 
 protected theorem derivWithin.star (hxs : UniqueDiffWithinAt 𝕜 s x) :

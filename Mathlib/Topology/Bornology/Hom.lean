@@ -80,8 +80,11 @@ instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toFun := toFun✝, comap_cobounded_le' := comap_cobounded_le'✝ } = g
     cases g
+    -- ⊢ { toFun := toFun✝¹, comap_cobounded_le' := comap_cobounded_le'✝¹ } = { toFun …
     congr
+    -- 🎉 no goals
   comap_cobounded_le f := f.comap_cobounded_le'
 
 /- omitting helper instance because it is not needed in Lean 4.
@@ -197,6 +200,7 @@ theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMa
 theorem cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align locally_bounded_map.cancel_left LocallyBoundedMap.cancel_left
 
 end LocallyBoundedMap

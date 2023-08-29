@@ -126,7 +126,13 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
     C^∞⟮I, N; I', G'⟯ →* C^∞⟮I, N; I'', G''⟯ where
   toFun f := ⟨φ ∘ f, fun x => (hφ.smooth _).comp x (f.contMDiff x)⟩
   map_one' := by ext; show φ 1 = 1; simp
+                 -- ⊢ ↑((fun f => { val := ↑φ ∘ ↑f, property := (_ : ∀ (x : N), ContMDiffAt I I''  …
+                      -- ⊢ ↑φ 1 = 1
+                                    -- 🎉 no goals
   map_mul' f g := by ext x; show φ (f x * g x) = φ (f x) * φ (g x); simp
+                     -- ⊢ ↑(OneHom.toFun { toFun := fun f => { val := ↑φ ∘ ↑f, property := (_ : ∀ (x : …
+                            -- ⊢ ↑φ (↑f x * ↑g x) = ↑φ (↑f x) * ↑φ (↑g x)
+                                                                    -- 🎉 no goals
 #align smooth_map.comp_left_monoid_hom SmoothMap.compLeftMonoidHom
 #align smooth_map.comp_left_add_monoid_hom SmoothMap.compLeftAddMonoidHom
 
@@ -160,6 +166,10 @@ instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [L
   { SmoothMap.monoid with
     inv := fun f => ⟨fun x => (f x)⁻¹, f.smooth.inv⟩
     mul_left_inv := fun a => by ext; exact mul_left_inv _
+                                -- ⊢ ↑(a⁻¹ * a) x✝ = ↑1 x✝
+                                     -- 🎉 no goals
+                                    -- ⊢ ↑(f / g) x✝ = ↑(f * g⁻¹) x✝
+                                         -- 🎉 no goals
     div := fun f g => ⟨f / g, f.smooth.div g.smooth⟩
     div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
 #align smooth_map.group SmoothMap.group
@@ -203,9 +213,17 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
   { SmoothMap.addCommMonoid,
     SmoothMap.monoid with
     left_distrib := fun a b c => by ext; exact left_distrib _ _ _
+                                    -- ⊢ ↑(a * (b + c)) x✝ = ↑(a * b + a * c) x✝
+                                         -- 🎉 no goals
     right_distrib := fun a b c => by ext; exact right_distrib _ _ _
+                                     -- ⊢ ↑((a + b) * c) x✝ = ↑(a * c + b * c) x✝
+                                          -- 🎉 no goals
     zero_mul := fun a => by ext; exact zero_mul _
+                            -- ⊢ ↑(0 * a) x✝ = ↑0 x✝
+                                 -- 🎉 no goals
     mul_zero := fun a => by ext; exact mul_zero _ }
+                            -- ⊢ ↑(a * 0) x✝ = ↑0 x✝
+                                 -- 🎉 no goals
 #align smooth_map.semiring SmoothMap.semiring
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :
@@ -318,9 +336,17 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [SmoothRing 𝓘(𝕜
 def C : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
   toFun := fun c : 𝕜 => ⟨fun _ => (algebraMap 𝕜 A) c, smooth_const⟩
   map_one' := by ext; exact (algebraMap 𝕜 A).map_one
+                 -- ⊢ ↑((fun c => { val := fun x => ↑(algebraMap 𝕜 A) c, property := (_ : Smooth I …
+                      -- 🎉 no goals
   map_mul' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_mul _ _
+                       -- ⊢ ↑(OneHom.toFun { toFun := fun c => { val := fun x => ↑(algebraMap 𝕜 A) c, pr …
+                            -- 🎉 no goals
   map_zero' := by ext; exact (algebraMap 𝕜 A).map_zero
+                  -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun c => { val := fun x => ↑(algeb …
+                       -- 🎉 no goals
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
+                       -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun c => { val := fun x => ↑(algeb …
+                            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align smooth_map.C SmoothMap.C
 
@@ -329,7 +355,11 @@ instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ :=
     smul := fun r f => ⟨r • f, smooth_const.smul f.smooth⟩
     toRingHom := SmoothMap.C
     commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
+                               -- ⊢ ↑(↑C c * f) x = ↑(f * ↑C c) x
+                                      -- 🎉 no goals
     smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _ }
+                               -- ⊢ ↑(c • f) x = ↑(↑C c * f) x
+                                      -- 🎉 no goals
 #align smooth_map.algebra SmoothMap.algebra
 
 /-- Coercion to a function as an `AlgHom`. -/
@@ -371,10 +401,22 @@ instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module C^∞⟮I, N; 𝓘(𝕜), 𝕜⟯ C^∞⟮I, N; 𝓘(𝕜, V), V⟯ where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
+                       -- ⊢ ↑(c • (f + g)) x = ↑(c • f + c • g) x
+                              -- 🎉 no goals
+                         -- ⊢ ↑((c₁ * c₂) • f) x = ↑(c₁ • c₂ • f) x
+                   -- ⊢ ↑(1 • f) x = ↑f x
+                          -- 🎉 no goals
+                                -- 🎉 no goals
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
+                         -- ⊢ ↑((c₁ + c₂) • f) x = ↑(c₁ • f + c₂ • f) x
+                                -- 🎉 no goals
+                    -- ⊢ ↑(r • 0) x = ↑0 x
+                           -- 🎉 no goals
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)
   one_smul f := by ext x; exact one_smul 𝕜 (f x)
   zero_smul f := by ext x; exact zero_smul _ _
+                    -- ⊢ ↑(0 • f) x = ↑0 x
+                           -- 🎉 no goals
   smul_zero r := by ext x; exact smul_zero _
 #align smooth_map.module' SmoothMap.module'
 

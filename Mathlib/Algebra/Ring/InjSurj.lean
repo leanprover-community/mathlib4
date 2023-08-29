@@ -35,7 +35,9 @@ protected def Function.Injective.distrib {S} [Mul R] [Add R] [Distrib S] (f : R 
   mul := (· * ·)
   add := (· + ·)
   left_distrib x y z := hf <| by simp only [*, left_distrib]
+                                 -- 🎉 no goals
   right_distrib x y z := hf <| by simp only [*, right_distrib]
+                                  -- 🎉 no goals
 #align function.injective.distrib Function.Injective.distrib
 
 /-- Pushforward a `Distrib` instance along a surjective function.
@@ -47,7 +49,9 @@ protected def Function.Surjective.distrib {S} [Distrib R] [Add S] [Mul S] (f : R
   mul := (· * ·)
   add := (· + ·)
   left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
+                                               -- 🎉 no goals
   right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
+                                                -- 🎉 no goals
 #align function.surjective.distrib Function.Surjective.distrib
 
 section InjectiveSurjectiveMaps
@@ -222,7 +226,9 @@ protected def Function.Injective.hasDistribNeg [Neg β] [Mul β] (f : β → α)
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
   { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := fun x y => hf <| by erw [neg, mul, neg, neg_mul, mul],
+                                   -- 🎉 no goals
     mul_neg := fun x y => hf <| by erw [neg, mul, neg, mul_neg, mul] }
+                                   -- 🎉 no goals
 #align function.injective.has_distrib_neg Function.Injective.hasDistribNeg
 
 -- See note [reducible non-instances]
@@ -233,7 +239,9 @@ protected def Function.Surjective.hasDistribNeg [Neg β] [Mul β] (f : α → β
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
   { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := hf.forall₂.2 fun x y => by erw [← neg, ← mul, neg_mul, neg, mul]
+                                          -- 🎉 no goals
     mul_neg := hf.forall₂.2 fun x y => by erw [← neg, ← mul, mul_neg, neg, mul] }
+                                          -- 🎉 no goals
 #align function.surjective.has_distrib_neg Function.Surjective.hasDistribNeg
 
 namespace AddOpposite

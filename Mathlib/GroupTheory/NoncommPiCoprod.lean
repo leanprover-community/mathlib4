@@ -112,7 +112,9 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
   toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun i _ j _ h => hcomm h _ _
   map_one' := by
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
+    -- ⊢ ∀ (x : ι), x ∈ Finset.univ → ↑(ϕ x) (OfNat.ofNat 1 x) = 1
     simp
+    -- 🎉 no goals
   map_mul' f g := by
     classical
     simp only
@@ -131,14 +133,22 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
   change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
   simp (config := { singlePass := true }) only [← Finset.insert_erase (Finset.mem_univ i)]
+  -- ⊢ Finset.noncommProd (insert i (Finset.erase Finset.univ i)) (fun x => ↑(ϕ x)  …
   rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ (Finset.not_mem_erase i _)]
+  -- ⊢ ↑(ϕ i) (Pi.mulSingle i y i) * Finset.noncommProd (Finset.erase Finset.univ i …
   rw [Pi.mulSingle_eq_same]
+  -- ⊢ ↑(ϕ i) y * Finset.noncommProd (Finset.erase Finset.univ i) (fun x => ↑(ϕ x)  …
   rw [Finset.noncommProd_eq_pow_card]
   · rw [one_pow]
+    -- ⊢ ↑(ϕ i) y * 1 = ↑(ϕ i) y
     exact mul_one _
+    -- 🎉 no goals
   · intro j hj
+    -- ⊢ ↑(ϕ j) (Pi.mulSingle i y j) = 1
     simp only [Finset.mem_erase] at hj
+    -- ⊢ ↑(ϕ j) (Pi.mulSingle i y j) = 1
     simp [hj]
+    -- 🎉 no goals
 #align monoid_hom.noncomm_pi_coprod_mul_single MonoidHom.noncommPiCoprod_mulSingle
 #align add_monoid_hom.noncomm_pi_coprod_single AddMonoidHom.noncommPiCoprod_single
 
@@ -153,8 +163,11 @@ def noncommPiCoprodEquiv :
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
+    -- ⊢ ↑(↑((fun f => { val := fun i => comp f (single N i), property := (_ : ∀ (i j …
     simp
+    -- 🎉 no goals
   right_inv f := pi_ext fun i x => by simp
+                                      -- 🎉 no goals
 #align monoid_hom.noncomm_pi_coprod_equiv MonoidHom.noncommPiCoprodEquiv
 #align add_monoid_hom.noncomm_pi_coprod_equiv AddMonoidHom.noncommPiCoprodEquiv
 
@@ -236,6 +249,7 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : ∀ i j, i ≠ j → Nat.coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     CompleteLattice.Independent fun i => (ϕ i).range := by
   cases nonempty_fintype ι
+  -- ⊢ CompleteLattice.Independent fun i => range (ϕ i)
   classical
     rintro i
     rw [disjoint_iff_inf_le]
@@ -292,7 +306,9 @@ variable (hcomm : ∀ i j : ι, i ≠ j → ∀ x y : G, x ∈ H i → y ∈ H j
 theorem commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
     ∀ (x : H i) (y : H j), Commute ((H i).subtype x) ((H j).subtype y) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩
+  -- ⊢ Commute (↑(Subgroup.subtype (H i)) { val := x, property := hx }) (↑(Subgroup …
   exact hcomm i j hne x y hx hy
+  -- 🎉 no goals
 #align subgroup.commute_subtype_of_commute Subgroup.commute_subtype_of_commute
 #align add_subgroup.commute_subtype_of_commute AddSubgroup.commute_subtype_of_commute
 
@@ -310,12 +326,14 @@ variable {hcomm}
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle (i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
+                                                       -- 🎉 no goals
 #align subgroup.noncomm_pi_coprod_mul_single Subgroup.noncommPiCoprod_mulSingle
 #align add_subgroup.noncomm_pi_coprod_single AddSubgroup.noncommPiCoprod_single
 
 @[to_additive]
 theorem noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i := by
   simp [noncommPiCoprod, MonoidHom.noncommPiCoprod_range]
+  -- 🎉 no goals
 #align subgroup.noncomm_pi_coprod_range Subgroup.noncommPiCoprod_range
 #align add_subgroup.noncomm_pi_coprod_range AddSubgroup.noncommPiCoprod_range
 
@@ -323,9 +341,13 @@ theorem noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i 
 theorem injective_noncommPiCoprod_of_independent (hind : CompleteLattice.Independent H) :
     Function.Injective (noncommPiCoprod hcomm) := by
   apply MonoidHom.injective_noncommPiCoprod_of_independent
+  -- ⊢ CompleteLattice.Independent fun i => MonoidHom.range (Subgroup.subtype ((fun …
   · simpa using hind
+    -- 🎉 no goals
   · intro i
+    -- ⊢ Function.Injective ↑(Subgroup.subtype ((fun i => H i) i))
     exact Subtype.coe_injective
+    -- 🎉 no goals
 #align subgroup.injective_noncomm_pi_coprod_of_independent Subgroup.injective_noncommPiCoprod_of_independent
 #align add_subgroup.injective_noncomm_pi_coprod_of_independent AddSubgroup.injective_noncommPiCoprod_of_independent
 

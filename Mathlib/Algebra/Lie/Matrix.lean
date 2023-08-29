@@ -44,9 +44,13 @@ def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
   { LinearMap.toMatrix' with
     map_lie' := fun {T S} => by
       let f := @LinearMap.toMatrix' R _ n n _ _
+      -- ⊢ AddHom.toFun src✝.toAddHom ⁅T, S⁆ = ⁅AddHom.toFun src✝.toAddHom T, AddHom.to …
       change f (T.comp S - S.comp T) = f T * f S - f S * f T
+      -- ⊢ ↑f (LinearMap.comp T S - LinearMap.comp S T) = ↑f T * ↑f S - ↑f S * ↑f T
       have h : ∀ T S : Module.End R _, f (T.comp S) = f T * f S := LinearMap.toMatrix'_comp
+      -- ⊢ ↑f (LinearMap.comp T S - LinearMap.comp S T) = ↑f T * ↑f S - ↑f S * ↑f T
       rw [LinearEquiv.map_sub, h, h] }
+      -- 🎉 no goals
 #align lie_equiv_matrix' lieEquivMatrix'
 
 @[simp]

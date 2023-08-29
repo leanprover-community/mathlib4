@@ -85,6 +85,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 @[simps! repr_apply_support_val repr_apply_toFun]
 noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
+                                                        -- 🎉 no goals
 #align basis.algebra_map_coeffs Basis.algebraMapCoeffs
 #noalign Basis.algebraMapCoeffs_repr_symm_apply -- failed simpNF linter
 
@@ -117,16 +118,24 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
+  -- ⊢ LinearIndependent R fun p => b p.fst • c p.snd
+                                        -- ⊢ ∀ (s : Finset (ι × ι')) (g : ι × ι' → R), (∀ (i : ι × ι'), ¬i ∈ s → g i = 0) …
+                                                                      -- ⊢ g (i, k) = 0
   by_cases hik : (i, k) ∈ s
+  -- ⊢ g (i, k) = 0
   · have h1 : ∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>
             show g p • b p.1 • c p.2 = 0 by rw [hg p hp, zero_smul]).symm
     rw [Finset.sum_product_right] at h1
+    -- ⊢ g (i, k) = 0
     simp_rw [← smul_assoc, ← Finset.sum_smul] at h1
+    -- ⊢ g (i, k) = 0
     exact hb _ _ (hc _ _ h1 k (Finset.mem_image_of_mem _ hik)) i (Finset.mem_image_of_mem _ hik)
+    -- 🎉 no goals
   exact hg _ hik
+  -- 🎉 no goals
 #align linear_independent_smul linearIndependent_smul
 
 /-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
@@ -143,6 +152,7 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]
+                                                             -- 🎉 no goals
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
@@ -154,14 +164,21 @@ theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S)
 theorem Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (ij) :
     (b.smul c) ij = b ij.1 • c ij.2 := by
   obtain ⟨i, j⟩ := ij
+  -- ⊢ ↑(smul b c) (i, j) = ↑b (i, j).fst • ↑c (i, j).snd
   rw [Basis.apply_eq_iff]
+  -- ⊢ ↑(smul b c).repr (↑b (i, j).fst • ↑c (i, j).snd) = single (i, j) 1
   ext ⟨i', j'⟩
+  -- ⊢ ↑(↑(smul b c).repr (↑b (i, j).fst • ↑c (i, j).snd)) (i', j') = ↑(single (i,  …
   rw [Basis.smul_repr, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_apply,
     Finsupp.single_apply]
   dsimp only
+  -- ⊢ ↑(↑b.repr (↑b i • if j = j' then 1 else 0)) i' = ↑(single (i, j) 1) (i', j')
   split_ifs with hi
+  -- ⊢ ↑(↑b.repr (↑b i • 1)) i' = ↑(single (i, j) 1) (i', j')
   · simp [hi, Finsupp.single_apply]
+    -- 🎉 no goals
   · simp [hi]
+    -- 🎉 no goals
 #align basis.smul_apply Basis.smul_apply
 
 end Semiring
@@ -224,14 +241,19 @@ def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ 
     fg.2.restrictScalars A
   left_inv f := by
     dsimp only
+    -- ⊢ AlgHom.restrictScalars A (AlgHom.extendScalars B f) = f
     ext
+    -- ⊢ ↑(AlgHom.restrictScalars A (AlgHom.extendScalars B f)) x✝ = ↑f x✝
     rfl
+    -- 🎉 no goals
   right_inv := by
     rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
+    -- ⊢ (fun f => { fst := AlgHom.restrictDomain B f, snd := AlgHom.extendScalars B  …
     obtain rfl : f = fun x => g (algebraMap B C x) := by
       ext x
       exact (hg x).symm
     rfl
+    -- 🎉 no goals
 #align alg_hom_equiv_sigma algHomEquivSigma
 
 end AlgHomTower

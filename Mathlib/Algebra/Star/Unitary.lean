@@ -29,7 +29,9 @@ unitary
 def unitary (R : Type*) [Monoid R] [StarSemigroup R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
   one_mem' := by simp only [mul_one, and_self_iff, Set.mem_setOf_eq, star_one]
+                 -- 🎉 no goals
   mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
+    -- ⊢ star (U * B) * (U * B) = 1
     refine' ⟨_, _⟩
     · calc
         star (U * B) * (U * B) = star B * star U * U * B := by simp only [mul_assoc, star_mul]
@@ -65,6 +67,8 @@ theorem mul_star_self_of_mem {U : R} (hU : U ∈ unitary R) : U * star U = 1 :=
 
 theorem star_mem {U : R} (hU : U ∈ unitary R) : star U ∈ unitary R :=
   ⟨by rw [star_star, mul_star_self_of_mem hU], by rw [star_star, star_mul_self_of_mem hU]⟩
+      -- 🎉 no goals
+                                                  -- 🎉 no goals
 #align unitary.star_mem unitary.star_mem
 
 @[simp]
@@ -106,14 +110,20 @@ instance : Group (unitary R) :=
 instance : InvolutiveStar (unitary R) :=
   ⟨by
     intro x
+    -- ⊢ star (star x) = x
     ext
+    -- ⊢ ↑(star (star x)) = ↑x
     rw [coe_star, coe_star, star_star]⟩
+    -- 🎉 no goals
 
 instance : StarSemigroup (unitary R) :=
   ⟨by
     intro x y
+    -- ⊢ star (x * y) = star y * star x
     ext
+    -- ⊢ ↑(star (x * y)) = ↑(star y * star x)
     rw [coe_star, Submonoid.coe_mul, Submonoid.coe_mul, coe_star, coe_star, star_mul]⟩
+    -- 🎉 no goals
 
 instance : Inhabited (unitary R) :=
   ⟨1⟩
@@ -170,13 +180,17 @@ theorem coe_inv (U : unitary R) : ↑U⁻¹ = (U⁻¹ : R) :=
 @[norm_cast]
 theorem coe_div (U₁ U₂ : unitary R) : ↑(U₁ / U₂) = (U₁ / U₂ : R) := by
   simp only [div_eq_mul_inv, coe_inv, Submonoid.coe_mul]
+  -- 🎉 no goals
 #align unitary.coe_div unitary.coe_div
 
 @[norm_cast]
 theorem coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z := by
   induction z
+  -- ⊢ ↑(U ^ Int.ofNat a✝) = ↑U ^ Int.ofNat a✝
   · simp [SubmonoidClass.coe_pow]
+    -- 🎉 no goals
   · simp [coe_inv]
+    -- 🎉 no goals
 #align unitary.coe_zpow unitary.coe_zpow
 
 end GroupWithZero
@@ -188,6 +202,7 @@ variable [Ring R] [StarRing R]
 instance : Neg (unitary R)
     where neg U :=
     ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
+            -- 🎉 no goals
 
 @[norm_cast]
 theorem coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=

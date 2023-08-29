@@ -56,9 +56,13 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
+    -- ⊢ x ∈ I ∨ y ∈ I
     by_contra rid
+    -- ⊢ False
     push_neg at rid
+    -- ⊢ False
     obtain ⟨rid₁, rid₂⟩ := rid
+    -- ⊢ False
     classical
       /-
         The idea of the proof is the following :
@@ -155,30 +159,47 @@ theorem Ideal.IsHomogeneous.isPrime_iff {I : Ideal A} (h : I.IsHomogeneous 𝒜)
 theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
     (I.homogeneousCore 𝒜).toIdeal.IsPrime := by
   apply (Ideal.homogeneousCore 𝒜 I).is_homogeneous'.isPrime_of_homogeneous_mem_or_mem
+  -- ⊢ (Ideal.homogeneousCore 𝒜 I).toSubmodule ≠ ⊤
   · exact ne_top_of_le_ne_top h.ne_top (Ideal.toIdeal_homogeneousCore_le 𝒜 I)
+    -- 🎉 no goals
   rintro x y hx hy hxy
+  -- ⊢ x ∈ (Ideal.homogeneousCore 𝒜 I).toSubmodule ∨ y ∈ (Ideal.homogeneousCore 𝒜 I …
   have H := h.mem_or_mem (Ideal.toIdeal_homogeneousCore_le 𝒜 I hxy)
+  -- ⊢ x ∈ (Ideal.homogeneousCore 𝒜 I).toSubmodule ∨ y ∈ (Ideal.homogeneousCore 𝒜 I …
   refine' H.imp _ _
+  -- ⊢ x ∈ I → x ∈ (Ideal.homogeneousCore 𝒜 I).toSubmodule
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hx
+    -- 🎉 no goals
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hy
+    -- 🎉 no goals
 #align ideal.is_prime.homogeneous_core Ideal.IsPrime.homogeneousCore
 
 theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.IsHomogeneous 𝒜) :
     I.radical = InfSet.sInf { J | Ideal.IsHomogeneous 𝒜 J ∧ I ≤ J ∧ J.IsPrime } := by
   rw [Ideal.radical_eq_sInf]
+  -- ⊢ InfSet.sInf {J | I ≤ J ∧ IsPrime J} = InfSet.sInf {J | IsHomogeneous 𝒜 J ∧ I …
   apply le_antisymm
+  -- ⊢ InfSet.sInf {J | I ≤ J ∧ IsPrime J} ≤ InfSet.sInf {J | IsHomogeneous 𝒜 J ∧ I …
   · exact sInf_le_sInf fun J => And.right
+    -- 🎉 no goals
   · refine sInf_le_sInf_of_forall_exists_le ?_
+    -- ⊢ ∀ (x : Ideal A), x ∈ {J | I ≤ J ∧ IsPrime J} → ∃ y, y ∈ {J | IsHomogeneous 𝒜 …
     rintro J ⟨HJ₁, HJ₂⟩
+    -- ⊢ ∃ y, y ∈ {J | IsHomogeneous 𝒜 J ∧ I ≤ J ∧ IsPrime J} ∧ y ≤ J
     refine ⟨(J.homogeneousCore 𝒜).toIdeal, ?_, J.toIdeal_homogeneousCore_le _⟩
+    -- ⊢ HomogeneousIdeal.toIdeal (homogeneousCore 𝒜 J) ∈ {J | IsHomogeneous 𝒜 J ∧ I  …
     refine ⟨HomogeneousIdeal.isHomogeneous _, ?_, HJ₂.homogeneousCore⟩
+    -- ⊢ I ≤ HomogeneousIdeal.toIdeal (homogeneousCore 𝒜 J)
     exact hI.toIdeal_homogeneousCore_eq_self.symm.trans_le (Ideal.homogeneousCore_mono _ HJ₁)
+    -- 🎉 no goals
 #align ideal.is_homogeneous.radical_eq Ideal.IsHomogeneous.radical_eq
 
 theorem Ideal.IsHomogeneous.radical {I : Ideal A} (h : I.IsHomogeneous 𝒜) :
     I.radical.IsHomogeneous 𝒜 := by
   rw [h.radical_eq]
+  -- ⊢ IsHomogeneous 𝒜 (InfSet.sInf {J | IsHomogeneous 𝒜 J ∧ I ≤ J ∧ IsPrime J})
   exact Ideal.IsHomogeneous.sInf fun _ => And.left
+  -- 🎉 no goals
 #align ideal.is_homogeneous.radical Ideal.IsHomogeneous.radical
 
 /-- The radical of a homogenous ideal, as another homogenous ideal. -/

@@ -53,11 +53,14 @@ theorem sup_singleton {a : α} : ({a} : Multiset α).sup = a :=
 @[simp]
 theorem sup_add (s₁ s₂ : Multiset α) : (s₁ + s₂).sup = s₁.sup ⊔ s₂.sup :=
   Eq.trans (by simp [sup]) (fold_add _ _ _ _ _)
+               -- 🎉 no goals
 #align multiset.sup_add Multiset.sup_add
 
 theorem sup_le {s : Multiset α} {a : α} : s.sup ≤ a ↔ ∀ b ∈ s, b ≤ a :=
   Multiset.induction_on s (by simp)
+                              -- 🎉 no goals
     (by simp (config := { contextual := true }) [or_imp, forall_and])
+        -- 🎉 no goals
 #align multiset.sup_le Multiset.sup_le
 
 theorem le_sup {s : Multiset α} {a : α} (h : a ∈ s) : a ≤ s.sup :=
@@ -78,16 +81,22 @@ theorem sup_dedup (s : Multiset α) : (dedup s).sup = s.sup :=
 @[simp]
 theorem sup_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).sup = s₁.sup ⊔ s₂.sup := by
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add]; simp
+  -- ⊢ ∀ (a : α), a ∈ ndunion s₁ s₂ ↔ a ∈ s₁ + s₂
+                                                     -- 🎉 no goals
 #align multiset.sup_ndunion Multiset.sup_ndunion
 
 @[simp]
 theorem sup_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).sup = s₁.sup ⊔ s₂.sup := by
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add]; simp
+  -- ⊢ ∀ (a : α), a ∈ s₁ ∪ s₂ ↔ a ∈ s₁ + s₂
+                                                     -- 🎉 no goals
 #align multiset.sup_union Multiset.sup_union
 
 @[simp]
 theorem sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.sup := by
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_cons]; simp
+  -- ⊢ ∀ (a_1 : α), a_1 ∈ ndinsert a s ↔ a_1 ∈ a ::ₘ s
+                                                      -- 🎉 no goals
 #align multiset.sup_ndinsert Multiset.sup_ndinsert
 
 theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)} :
@@ -95,8 +104,11 @@ theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)}
   -- Porting note: this was originally `apply m.induction_on`, which failed due to
   -- `failed to elaborate eliminator, expected type is not available`
   induction' m using Multiset.induction_on with _ _ h
+  -- ⊢ Nodup (sup 0) ↔ ∀ (a : Multiset α), a ∈ 0 → Nodup a
   · simp
+    -- 🎉 no goals
   · simp [h]
+    -- 🎉 no goals
 #align multiset.nodup_sup_iff Multiset.nodup_sup_iff
 
 end Sup
@@ -137,11 +149,14 @@ theorem inf_singleton {a : α} : ({a} : Multiset α).inf = a :=
 @[simp]
 theorem inf_add (s₁ s₂ : Multiset α) : (s₁ + s₂).inf = s₁.inf ⊓ s₂.inf :=
   Eq.trans (by simp [inf]) (fold_add _ _ _ _ _)
+               -- 🎉 no goals
 #align multiset.inf_add Multiset.inf_add
 
 theorem le_inf {s : Multiset α} {a : α} : a ≤ s.inf ↔ ∀ b ∈ s, a ≤ b :=
   Multiset.induction_on s (by simp)
+                              -- 🎉 no goals
     (by simp (config := { contextual := true }) [or_imp, forall_and])
+        -- 🎉 no goals
 #align multiset.le_inf Multiset.le_inf
 
 theorem inf_le {s : Multiset α} {a : α} (h : a ∈ s) : s.inf ≤ a :=
@@ -162,16 +177,22 @@ theorem inf_dedup (s : Multiset α) : (dedup s).inf = s.inf :=
 @[simp]
 theorem inf_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).inf = s₁.inf ⊓ s₂.inf := by
   rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add]; simp
+  -- ⊢ ∀ (a : α), a ∈ ndunion s₁ s₂ ↔ a ∈ s₁ + s₂
+                                                     -- 🎉 no goals
 #align multiset.inf_ndunion Multiset.inf_ndunion
 
 @[simp]
 theorem inf_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).inf = s₁.inf ⊓ s₂.inf := by
   rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add]; simp
+  -- ⊢ ∀ (a : α), a ∈ s₁ ∪ s₂ ↔ a ∈ s₁ + s₂
+                                                     -- 🎉 no goals
 #align multiset.inf_union Multiset.inf_union
 
 @[simp]
 theorem inf_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).inf = a ⊓ s.inf := by
   rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_cons]; simp
+  -- ⊢ ∀ (a_1 : α), a_1 ∈ ndinsert a s ↔ a_1 ∈ a ::ₘ s
+                                                      -- 🎉 no goals
 #align multiset.inf_ndinsert Multiset.inf_ndinsert
 
 end Inf

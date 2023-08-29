@@ -314,7 +314,9 @@ theorem btw_rfl_right {a b : α} : btw a b b :=
 
 theorem sbtw_iff_not_btw {a b c : α} : sbtw a b c ↔ ¬btw c b a := by
   rw [sbtw_iff_btw_not_btw]
+  -- ⊢ btw a b c ∧ ¬btw c b a ↔ ¬btw c b a
   exact and_iff_right_of_imp (btw_total _ _ _).resolve_left
+  -- 🎉 no goals
 #align sbtw_iff_not_btw sbtw_iff_not_btw
 
 theorem btw_iff_not_sbtw {a b c : α} : btw a b c ↔ ¬sbtw c b a :=
@@ -368,12 +370,16 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
 
 theorem compl_cIcc {a b : α} : (cIcc a b)ᶜ = cIoo b a := by
   ext
+  -- ⊢ x✝ ∈ (cIcc a b)ᶜ ↔ x✝ ∈ cIoo b a
   rw [Set.mem_cIoo, sbtw_iff_not_btw, cIcc, mem_compl_iff, mem_setOf]
+  -- 🎉 no goals
 #align set.compl_cIcc Set.compl_cIcc
 
 theorem compl_cIoo {a b : α} : (cIoo a b)ᶜ = cIcc b a := by
   ext
+  -- ⊢ x✝ ∈ (cIoo a b)ᶜ ↔ x✝ ∈ cIcc b a
   rw [Set.mem_cIcc, btw_iff_not_sbtw, cIoo, mem_compl_iff, mem_setOf]
+  -- 🎉 no goals
 #align set.compl_cIoo Set.compl_cIoo
 
 end CircularOrder
@@ -406,22 +412,137 @@ def Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α
   btw_refl a := Or.inl ⟨le_rfl, le_rfl⟩
   btw_cyclic_left {a b c} h := by
     dsimp
+    -- ⊢ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b ∨ a ≤ b ∧ b ≤ c
     rwa [← or_assoc, or_comm]
+    -- 🎉 no goals
   sbtw_trans_left {a b c d} := by
     rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩)
     · exact Or.inl ⟨hab.trans hbd, hdc⟩
+      -- 🎉 no goals
     · exact (hbc.not_lt hcb).elim
+      -- 🎉 no goals
     · exact (hbc.not_lt hcb).elim
+      -- 🎉 no goals
     · exact Or.inr (Or.inl ⟨hdc, hca⟩)
+      -- 🎉 no goals
     · exact Or.inr (Or.inl ⟨hdc, hca⟩)
+      -- 🎉 no goals
     · exact (hbc.not_lt hcb).elim
+    -- ⊢ (a ≤ b ∧ ¬b ≤ a) ∧ b ≤ c ∧ ¬c ≤ b ∨ (b ≤ c ∧ ¬c ≤ b) ∧ c ≤ a ∧ ¬a ≤ c ∨ (c ≤ …
+      -- 🎉 no goals
+    -- ⊢ (a ≤ b ∧ ¬b ≤ a) ∧ b ≤ c ∧ ¬c ≤ b ∨ (b ≤ c ∧ ¬c ≤ b) ∧ c ≤ a ∧ ¬a ≤ c ∨ (c ≤ …
     · exact Or.inr (Or.inl ⟨hdc, hca⟩)
+    -- ⊢ (a ≤ b ∧ ¬b ≤ a) ∧ b ≤ c ∧ ¬c ≤ b ∨ (b ≤ c ∧ ¬c ≤ b) ∧ c ≤ a ∧ ¬a ≤ c ∨ (c ≤ …
+      -- 🎉 no goals
+    -- ⊢ (a ≤ b ∧ ¬b ≤ a) ∧ b ≤ c ∧ ¬c ≤ b ∨ (b ≤ c ∧ ¬c ≤ b) ∧ c ≤ a ∧ ¬a ≤ c ∨ (c ≤ …
     · exact Or.inr (Or.inl ⟨hdc, hca⟩)
+      -- 🎉 no goals
+    -- ⊢ (a ≤ b → b ≤ c → a ≤ c) → (b ≤ c → c ≤ a → b ≤ a) → (c ≤ a → a ≤ b → c ≤ b)  …
     · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
+    -- ⊢ (p1 → b ≤ c → a ≤ c) → (b ≤ c → c ≤ a → b ≤ a) → (c ≤ a → p1 → c ≤ b) → ((p1 …
+      -- 🎉 no goals
+    -- ⊢ (p1 → b ≤ c → a ≤ c) → (b ≤ c → c ≤ a → p2) → (c ≤ a → p1 → c ≤ b) → ((p1 ∧  …
   sbtw_iff_btw_not_btw {a b c} := by
+    -- ⊢ (p1 → b ≤ c → p3) → (b ≤ c → c ≤ a → p2) → (c ≤ a → p1 → c ≤ b) → ((p1 ∧ ¬p2 …
     simp_rw [lt_iff_le_not_le]
+    -- ⊢ (p1 → b ≤ c → p3) → (b ≤ c → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ b  …
     have h1 := le_trans a b c
+    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
     have h2 := le_trans b c a
+    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                    -- ⊢ (p1 → p5 → p3) → (p5 → p4 → p2) → (p4 → p1 → c ≤ b) → ((p1 ∧ ¬p2) ∧ p5 ∧ ¬c  …
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
     have h3 := le_trans c a b
     -- Porting note: was `tauto`, but this is a much faster tactic proof
     revert h1 h2 h3
@@ -441,14 +562,23 @@ def PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : Circula
     btw_antisymm := fun {a b c} => by
       rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hcb, hba⟩ | ⟨hba, hac⟩ | ⟨hac, hcb⟩)
       · exact Or.inl (hab.antisymm hba)
+        -- 🎉 no goals
       · exact Or.inl (hab.antisymm hba)
+        -- 🎉 no goals
       · exact Or.inr (Or.inl <| hbc.antisymm hcb)
+        -- 🎉 no goals
       · exact Or.inr (Or.inl <| hbc.antisymm hcb)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr <| hca.antisymm hac)
+        -- 🎉 no goals
       · exact Or.inr (Or.inl <| hbc.antisymm hcb)
+        -- 🎉 no goals
       · exact Or.inl (hab.antisymm hba)
+        -- 🎉 no goals
       · exact Or.inl (hab.antisymm hba)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr <| hca.antisymm hac) }
+        -- 🎉 no goals
 #align partial_order.to_circular_partial_order PartialOrder.toCircularPartialOrder
 
 /-- The circular order obtained from "looping around" a linear order.
@@ -458,15 +588,30 @@ def LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α
   { PartialOrder.toCircularPartialOrder α with
     btw_total := fun a b c => by
       cases' le_total a b with hab hba <;> cases' le_total b c with hbc hcb <;>
+      -- ⊢ btw a b c ∨ btw c b a
+                                           -- ⊢ btw a b c ∨ btw c b a
+                                           -- ⊢ btw a b c ∨ btw c b a
         cases' le_total c a with hca hac
+        -- ⊢ btw a b c ∨ btw c b a
+        -- ⊢ btw a b c ∨ btw c b a
+        -- ⊢ btw a b c ∨ btw c b a
+        -- ⊢ btw a b c ∨ btw c b a
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
+        -- 🎉 no goals
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
+        -- 🎉 no goals
       · exact Or.inl (Or.inr <| Or.inr ⟨hca, hab⟩)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr <| Or.inr ⟨hac, hcb⟩)
+        -- 🎉 no goals
       · exact Or.inl (Or.inr <| Or.inl ⟨hbc, hca⟩)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr <| Or.inl ⟨hba, hac⟩)
+        -- 🎉 no goals
       · exact Or.inr (Or.inl ⟨hcb, hba⟩)
+        -- 🎉 no goals
       · exact Or.inr (Or.inr <| Or.inl ⟨hba, hac⟩) }
+        -- 🎉 no goals
 #align linear_order.to_circular_order LinearOrder.toCircularOrder
 
 /-! ### Dual constructions -/

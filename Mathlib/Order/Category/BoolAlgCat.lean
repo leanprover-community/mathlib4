@@ -89,7 +89,11 @@ def Iso.mk {α β : BoolAlgCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑α), ↑e …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ :  …
+                        -- 🎉 no goals
 #align BoolAlg.iso.mk BoolAlgCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/

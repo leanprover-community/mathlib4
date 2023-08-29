@@ -84,6 +84,7 @@ theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ →
 theorem isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image [T2Space M₂] (f : M₁ → M₂) :
     IsCompactOperator f ↔ ∃ V ∈ (𝓝 0 : Filter M₁), IsCompact (closure <| f '' V) := by
   rw [isCompactOperator_iff_exists_mem_nhds_image_subset_compact]
+  -- ⊢ (∃ V, V ∈ 𝓝 0 ∧ ∃ K, IsCompact K ∧ f '' V ⊆ K) ↔ ∃ V, V ∈ 𝓝 0 ∧ IsCompact (c …
   exact
     ⟨fun ⟨V, hV, K, hK, hKV⟩ => ⟨V, hV, isCompact_closure_of_subset_compact hK hKV⟩,
       fun ⟨V, hV, hVc⟩ => ⟨V, hV, closure (f '' V), hVc, subset_closure⟩⟩
@@ -106,6 +107,8 @@ theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛ
   let this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   ⟨σ₁₂ c • K, hK.image <| continuous_id.const_smul (σ₁₂ c), by
     rw [image_subset_iff, preimage_smul_setₛₗ _ _ _ f this.isUnit]; exact hrS c hc.le⟩
+    -- ⊢ S ⊆ c • ↑f ⁻¹' K
+                                                                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align is_compact_operator.image_subset_compact_of_vonN_bounded IsCompactOperator.image_subset_compact_of_isVonNBounded
 
@@ -130,6 +133,7 @@ theorem IsCompactOperator.image_subset_compact_of_bounded [ContinuousConstSMul �
     ∃ K : Set M₂, IsCompact K ∧ f '' S ⊆ K :=
   hf.image_subset_compact_of_isVonNBounded
     (by rwa [NormedSpace.isVonNBounded_iff, ← Metric.bounded_iff_isBounded])
+        -- 🎉 no goals
 #align is_compact_operator.image_subset_compact_of_bounded IsCompactOperator.image_subset_compact_of_bounded
 
 theorem IsCompactOperator.isCompact_closure_image_of_bounded [ContinuousConstSMul 𝕜₂ M₂]
@@ -137,6 +141,7 @@ theorem IsCompactOperator.isCompact_closure_image_of_bounded [ContinuousConstSMu
     (hS : Metric.Bounded S) : IsCompact (closure <| f '' S) :=
   hf.isCompact_closure_image_of_isVonNBounded
     (by rwa [NormedSpace.isVonNBounded_iff, ← Metric.bounded_iff_isBounded])
+        -- 🎉 no goals
 #align is_compact_operator.is_compact_closure_image_of_bounded IsCompactOperator.isCompact_closure_image_of_bounded
 
 theorem IsCompactOperator.image_ball_subset_compact [ContinuousConstSMul 𝕜₂ M₂] {f : M₁ →ₛₗ[σ₁₂] M₂}
@@ -230,6 +235,8 @@ theorem IsCompactOperator.neg [ContinuousNeg M₄] {f : M₁ → M₄} (hf : IsC
 theorem IsCompactOperator.sub [TopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f - g) := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
+  -- ⊢ IsCompactOperator (f + -g)
+                       -- 🎉 no goals
 #align is_compact_operator.sub IsCompactOperator.sub
 
 variable (σ₁₄ M₁ M₄)
@@ -254,17 +261,25 @@ variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃
 theorem IsCompactOperator.comp_clm [AddCommMonoid M₂] [Module R₂ M₂] {f : M₂ → M₃}
     (hf : IsCompactOperator f) (g : M₁ →SL[σ₁₂] M₂) : IsCompactOperator (f ∘ g) := by
   have := g.continuous.tendsto 0
+  -- ⊢ IsCompactOperator (f ∘ ↑g)
   rw [map_zero] at this
+  -- ⊢ IsCompactOperator (f ∘ ↑g)
   rcases hf with ⟨K, hK, hKf⟩
+  -- ⊢ IsCompactOperator (f ∘ ↑g)
   exact ⟨K, hK, this hKf⟩
+  -- 🎉 no goals
 #align is_compact_operator.comp_clm IsCompactOperator.comp_clm
 
 theorem IsCompactOperator.continuous_comp {f : M₁ → M₂} (hf : IsCompactOperator f) {g : M₂ → M₃}
     (hg : Continuous g) : IsCompactOperator (g ∘ f) := by
   rcases hf with ⟨K, hK, hKf⟩
+  -- ⊢ IsCompactOperator (g ∘ f)
   refine' ⟨g '' K, hK.image hg, mem_of_superset hKf _⟩
+  -- ⊢ f ⁻¹' K ⊆ g ∘ f ⁻¹' (g '' K)
   rw [preimage_comp]
+  -- ⊢ f ⁻¹' K ⊆ f ⁻¹' (g ⁻¹' (g '' K))
   exact preimage_mono (subset_preimage_image _ _)
+  -- 🎉 no goals
 #align is_compact_operator.continuous_comp IsCompactOperator.continuous_comp
 
 theorem IsCompactOperator.clm_comp [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M₃]
@@ -338,20 +353,28 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
   letI : UniformSpace M₂ := TopologicalAddGroup.toUniformSpace _
+  -- ⊢ Continuous ↑f
   haveI : UniformAddGroup M₂ := comm_topologicalAddGroup_is_uniform
+  -- ⊢ Continuous ↑f
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
   refine' continuous_of_continuousAt_zero f fun U hU => _
+  -- ⊢ U ∈ map (↑f) (𝓝 0)
   rw [map_zero] at hU
+  -- ⊢ U ∈ map (↑f) (𝓝 0)
   -- The compactness of `f` gives us a compact set `K : Set M₂` such that `f ⁻¹' K` is a
   -- neighborhood of `0` in `M₁`.
   rcases hf with ⟨K, hK, hKf⟩
+  -- ⊢ U ∈ map (↑f) (𝓝 0)
   -- But any compact set is totally bounded, hence Von-Neumann bounded. Thus, `K` absorbs `U`.
   -- This gives `r > 0` such that `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
   rcases hK.totallyBounded.isVonNBounded 𝕜₂ hU with ⟨r, hr, hrU⟩
+  -- ⊢ U ∈ map (↑f) (𝓝 0)
   -- Choose `c : 𝕜₂` with `r < ‖c‖`.
   rcases NormedField.exists_lt_norm 𝕜₁ r with ⟨c, hc⟩
+  -- ⊢ U ∈ map (↑f) (𝓝 0)
   have hcnz : c ≠ 0 := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
+  -- ⊢ U ∈ map (↑f) (𝓝 0)
   -- We have `f ⁻¹' ((σ₁₂ c⁻¹) • K) = c⁻¹ • f ⁻¹' K ∈ 𝓝 0`. Thus, showing that
   -- `(σ₁₂ c⁻¹) • K ⊆ U` is enough to deduce that `f ⁻¹' U ∈ 𝓝 0`.
   suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
@@ -360,11 +383,15 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
     rwa [mem_map, preimage_smul_setₛₗ _ _ _ f this, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
   -- Since `σ₁₂ c⁻¹` = `(σ₁₂ c)⁻¹`, we have to prove that `K ⊆ σ₁₂ c • U`.
   rw [map_inv₀, ← subset_set_smul_iff₀ ((map_ne_zero σ₁₂).mpr hcnz)]
+  -- ⊢ K ⊆ ↑σ₁₂ c • U
   -- But `σ₁₂` is isometric, so `‖σ₁₂ c‖ = ‖c‖ > r`, which concludes the argument since
   -- `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
   refine' hrU (σ₁₂ c) _
+  -- ⊢ r ≤ ‖↑σ₁₂ c‖
   rw [RingHomIsometric.is_iso]
+  -- ⊢ r ≤ ‖c‖
   exact hc.le
+  -- 🎉 no goals
 #align is_compact_operator.continuous IsCompactOperator.continuous
 
 /-- Upgrade a compact `LinearMap` to a `ContinuousLinearMap`. -/
@@ -402,16 +429,23 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     IsClosed { f : M₁ →SL[σ₁₂] M₂ | IsCompactOperator f } := by
   refine' isClosed_of_closure_subset _
+  -- ⊢ closure {f | IsCompactOperator ↑f} ⊆ {f | IsCompactOperator ↑f}
   rintro u hu
+  -- ⊢ u ∈ {f | IsCompactOperator ↑f}
   rw [mem_closure_iff_nhds_zero] at hu
+  -- ⊢ u ∈ {f | IsCompactOperator ↑f}
   suffices TotallyBounded (u '' Metric.closedBall 0 1) by
     change IsCompactOperator (u : M₁ →ₛₗ[σ₁₂] M₂)
     rw [isCompactOperator_iff_isCompact_closure_image_closedBall (u : M₁ →ₛₗ[σ₁₂] M₂) zero_lt_one]
     exact isCompact_of_totallyBounded_isClosed this.closure isClosed_closure
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
+  -- ⊢ ∀ (U : Set M₂), U ∈ 𝓝 0 → ∃ t, Set.Finite t ∧ ↑u '' closedBall 0 1 ⊆ ⋃ (y :  …
   intro U hU
+  -- ⊢ ∃ t, Set.Finite t ∧ ↑u '' closedBall 0 1 ⊆ ⋃ (y : M₂) (_ : y ∈ t), y +ᵥ U
   rcases exists_nhds_zero_half hU with ⟨V, hV, hVU⟩
+  -- ⊢ ∃ t, Set.Finite t ∧ ↑u '' closedBall 0 1 ⊆ ⋃ (y : M₂) (_ : y ∈ t), y +ᵥ U
   let SV : Set M₁ × Set M₂ := ⟨closedBall 0 1, -V⟩
+  -- ⊢ ∃ t, Set.Finite t ∧ ↑u '' closedBall 0 1 ⊆ ⋃ (y : M₂) (_ : y ∈ t), y +ᵥ U
   rcases hu { f | ∀ x ∈ SV.1, f x ∈ SV.2 }
       (ContinuousLinearMap.hasBasis_nhds_zero.mem_of_mem
         ⟨NormedSpace.isVonNBounded_closedBall _ _ _, neg_mem_nhds_zero M₂ hV⟩) with
@@ -420,17 +454,30 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
       (hv.isCompact_closure_image_closedBall 1).totallyBounded V hV with
     ⟨T, hT, hTv⟩
   have hTv : v '' closedBall 0 1 ⊆ _ := subset_closure.trans hTv
+  -- ⊢ ∃ t, Set.Finite t ∧ ↑u '' closedBall 0 1 ⊆ ⋃ (y : M₂) (_ : y ∈ t), y +ᵥ U
   refine' ⟨T, hT, _⟩
+  -- ⊢ ↑u '' closedBall 0 1 ⊆ ⋃ (y : M₂) (_ : y ∈ T), y +ᵥ U
   rw [image_subset_iff, preimage_iUnion₂] at hTv ⊢
+  -- ⊢ closedBall 0 1 ⊆ ⋃ (i : M₂) (_ : i ∈ T), ↑u ⁻¹' (i +ᵥ U)
   intro x hx
+  -- ⊢ x ∈ ⋃ (i : M₂) (_ : i ∈ T), ↑u ⁻¹' (i +ᵥ U)
   specialize hTv hx
+  -- ⊢ x ∈ ⋃ (i : M₂) (_ : i ∈ T), ↑u ⁻¹' (i +ᵥ U)
   rw [mem_iUnion₂] at hTv ⊢
+  -- ⊢ ∃ i j, x ∈ ↑u ⁻¹' (i +ᵥ U)
   rcases hTv with ⟨t, ht, htx⟩
+  -- ⊢ ∃ i j, x ∈ ↑u ⁻¹' (i +ᵥ U)
   refine' ⟨t, ht, _⟩
+  -- ⊢ x ∈ ↑u ⁻¹' (t +ᵥ U)
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx ⊢
+  -- ⊢ ↑u x - t ∈ U
   convert hVU _ htx _ (huv x hx) using 1
+  -- ⊢ ↑u x - t = ↑v x - t + -↑(v - u) x
   rw [ContinuousLinearMap.sub_apply]
+  -- ⊢ ↑u x - t = ↑v x - t + -(↑v x - ↑u x)
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align is_closed_set_of_is_compact_operator isClosed_setOf_isCompactOperator
 
 theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]

@@ -69,10 +69,14 @@ def Iso.mk {α β : PreordCat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : OrderHom β α)
   hom_inv_id := by
     ext x
+    -- ⊢ ↑(↑e ≫ ↑(OrderIso.symm e)) x = ↑(𝟙 α) x
     exact e.symm_apply_apply x
+    -- 🎉 no goals
   inv_hom_id := by
     ext x
+    -- ⊢ ↑(↑(OrderIso.symm e) ≫ ↑e) x = ↑(𝟙 β) x
     exact e.apply_symm_apply x
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Preord.iso.mk PreordCat.Iso.mk
 
@@ -107,6 +111,8 @@ set_option linter.uppercaseLean3 false in
 
 instance : Faithful preordCatToCat.{u}
     where map_injective h := by ext x; exact Functor.congr_obj h x
+                                -- ⊢ ↑a₁✝ x = ↑a₂✝ x
+                                       -- 🎉 no goals
 
 instance : Full preordCatToCat.{u} where
   preimage {X Y} f := ⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩

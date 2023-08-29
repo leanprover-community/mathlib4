@@ -111,19 +111,33 @@ then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
   rw [← lt_top_iff_ne_top, upcrossings_lt_top_iff] at hω
+  -- ⊢ ¬((∃ᶠ (n : ℕ) in atTop, f n ω < a) ∧ ∃ᶠ (n : ℕ) in atTop, b < f n ω)
   replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k
+  -- ⊢ ∃ k, ∀ (N : ℕ), upcrossingsBefore a b f N ω < k
   · obtain ⟨k, hk⟩ := hω
+    -- ⊢ ∃ k, ∀ (N : ℕ), upcrossingsBefore a b f N ω < k
     exact ⟨k + 1, fun N => lt_of_le_of_lt (hk N) k.lt_succ_self⟩
+    -- 🎉 no goals
   rintro ⟨h₁, h₂⟩
+  -- ⊢ False
   rw [frequently_atTop] at h₁ h₂
+  -- ⊢ False
   refine' Classical.not_not.2 hω _
+  -- ⊢ ¬∃ k, ∀ (N : ℕ), upcrossingsBefore a b f N ω < k
   push_neg
+  -- ⊢ ∀ (k : ℕ), ∃ N, k ≤ upcrossingsBefore a b f N ω
   intro k
+  -- ⊢ ∃ N, k ≤ upcrossingsBefore a b f N ω
   induction' k with k ih
+  -- ⊢ ∃ N, Nat.zero ≤ upcrossingsBefore a b f N ω
   · simp only [Nat.zero_eq, zero_le, exists_const]
+    -- 🎉 no goals
   · obtain ⟨N, hN⟩ := ih
+    -- ⊢ ∃ N, Nat.succ k ≤ upcrossingsBefore a b f N ω
     obtain ⟨N₁, hN₁, hN₁'⟩ := h₁ N
+    -- ⊢ ∃ N, Nat.succ k ≤ upcrossingsBefore a b f N ω
     obtain ⟨N₂, hN₂, hN₂'⟩ := h₂ N₁
+    -- ⊢ ∃ N, Nat.succ k ≤ upcrossingsBefore a b f N ω
     exact ⟨N₂ + 1, Nat.succ_le_of_lt <|
       lt_of_le_of_lt hN (upcrossingsBefore_lt_of_exists_upcrossing hab hN₁ hN₁' hN₂ hN₂')⟩
 #align measure_theory.not_frequently_of_upcrossings_lt_top MeasureTheory.not_frequently_of_upcrossings_lt_top
@@ -143,12 +157,19 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
     (hf₂ : ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞) :
     ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   by_cases h : IsBoundedUnder (· ≤ ·) atTop fun n => |f n ω|
+  -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
   · rw [isBoundedUnder_le_abs] at h
+    -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
     refine' tendsto_of_no_upcrossings Rat.denseRange_cast _ h.1 h.2
+    -- ⊢ ∀ (a : ℝ), a ∈ Set.range Rat.cast → ∀ (b : ℝ), b ∈ Set.range Rat.cast → a <  …
     · intro a ha b hb hab
+      -- ⊢ ¬((∃ᶠ (n : ℕ) in atTop, f n ω < a) ∧ ∃ᶠ (n : ℕ) in atTop, b < f n ω)
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := ha, hb
+      -- ⊢ ¬((∃ᶠ (n : ℕ) in atTop, f n ω < ↑a) ∧ ∃ᶠ (n : ℕ) in atTop, ↑b < f n ω)
       exact not_frequently_of_upcrossings_lt_top hab (hf₂ a b (Rat.cast_lt.1 hab)).ne
+      -- 🎉 no goals
   · obtain ⟨a, b, hab, h₁, h₂⟩ := ENNReal.exists_upcrossings_of_not_bounded_under hf₁.ne h
+    -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
     exact
       False.elim ((hf₂ a b hab).ne (upcrossings_eq_top_of_frequently_lt (Rat.cast_lt.2 hab) h₁ h₂))
 #align measure_theory.tendsto_of_uncrossing_lt_top MeasureTheory.tendsto_of_uncrossing_lt_top
@@ -157,9 +178,12 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
 theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) (hab : a < b) : ∀ᵐ ω ∂μ, upcrossings a b f ω < ∞ := by
   refine' ae_lt_top (hf.adapted.measurable_upcrossings hab) _
+  -- ⊢ ∫⁻ (x : Ω), upcrossings a b f x ∂μ ≠ ⊤
   have := hf.mul_lintegral_upcrossings_le_lintegral_pos_part a b
+  -- ⊢ ∫⁻ (x : Ω), upcrossings a b f x ∂μ ≠ ⊤
   rw [mul_comm, ← ENNReal.le_div_iff_mul_le] at this
   · refine' (lt_of_le_of_lt this (ENNReal.div_lt_top _ _)).ne
+    -- ⊢ ⨆ (N : ℕ), ∫⁻ (ω : Ω), ENNReal.ofReal (f N ω - a)⁺ ∂μ ≠ ⊤
     · have hR' : ∀ n, ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ R + ‖a‖₊ * μ Set.univ := by
         simp_rw [snorm_one_eq_lintegral_nnnorm] at hbdd
         intro n
@@ -173,23 +197,34 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top.ne (measure_ne_top _ _)⟩,
         fun n => le_trans _ (hR' n)⟩)
       refine' lintegral_mono fun ω => _
+      -- ⊢ ENNReal.ofReal (f n ω - a)⁺ ≤ ↑‖f n ω - a‖₊
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
+      -- ⊢ (f n ω - a)⁺ ≤ ‖f n ω - a‖
       by_cases hnonneg : 0 ≤ f n ω - a
       · rw [LatticeOrderedGroup.pos_of_nonneg _ hnonneg, Real.norm_eq_abs,
           abs_of_nonneg hnonneg]
       · rw [LatticeOrderedGroup.pos_of_nonpos _ (not_le.1 hnonneg).le]
+        -- ⊢ 0 ≤ ‖f n ω - a‖
         exact norm_nonneg _
+        -- 🎉 no goals
       · simp only [Ne.def, ENNReal.coe_ne_top, not_false_iff]
+        -- 🎉 no goals
     · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+      -- 🎉 no goals
   · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
+    -- 🎉 no goals
   · simp only [Ne.def, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+    -- 🎉 no goals
 #align measure_theory.submartingale.upcrossings_ae_lt_top' MeasureTheory.Submartingale.upcrossings_ae_lt_top'
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞ := by
   simp only [ae_all_iff, eventually_imp_distrib_left]
+  -- ⊢ ∀ (i i_1 : ℚ), i < i_1 → ∀ᵐ (x : Ω) ∂μ, upcrossings (↑i) (↑i_1) f x < ⊤
   rintro a b hab
+  -- ⊢ ∀ᵐ (x : Ω) ∂μ, upcrossings (↑a) (↑b) f x < ⊤
   exact hf.upcrossings_ae_lt_top' hbdd (Rat.cast_lt.2 hab)
+  -- 🎉 no goals
 #align measure_theory.submartingale.upcrossings_ae_lt_top MeasureTheory.Submartingale.upcrossings_ae_lt_top
 
 /-- An L¹-bounded submartingale converges almost everywhere. -/
@@ -198,6 +233,7 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
   filter_upwards [hf.upcrossings_ae_lt_top hbdd, ae_bdd_liminf_atTop_of_snorm_bdd one_ne_zero
     (fun n => (hf.stronglyMeasurable n).measurable.mono (ℱ.le n) le_rfl) hbdd] with ω h₁ h₂
   exact tendsto_of_uncrossing_lt_top h₂ h₁
+  -- 🎉 no goals
 #align measure_theory.submartingale.exists_ae_tendsto_of_bdd MeasureTheory.Submartingale.exists_ae_tendsto_of_bdd
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -205,7 +241,9 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
     ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   rw [@ae_iff _ (⨆ n, ℱ n) _ _, trim_measurableSet_eq]
+  -- ⊢ ↑↑μ {a | ¬∃ c, Tendsto (fun n => f n a) atTop (𝓝 c)} = 0
   · exact hf.exists_ae_tendsto_of_bdd hbdd
+    -- 🎉 no goals
   · exact MeasurableSet.compl (@measurableSet_exists_tendsto _ _ _ _ _ _ (⨆ n, ℱ n) _ _ _ _ _
       fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl)
 #align measure_theory.submartingale.exists_ae_trim_tendsto_of_bdd MeasureTheory.Submartingale.exists_ae_trim_tendsto_of_bdd
@@ -321,6 +359,7 @@ theorem Submartingale.tendsto_snorm_one_limitProcess (hf : Submartingale f ℱ �
     (hunif : UniformIntegrable f 1 μ) :
     Tendsto (fun n => snorm (f n - ℱ.limitProcess f μ) 1 μ) atTop (𝓝 0) := by
   obtain ⟨R, hR⟩ := hunif.2.2
+  -- ⊢ Tendsto (fun n => snorm (f n - limitProcess f ℱ μ) 1 μ) atTop (𝓝 0)
   have hmeas : ∀ n, AEStronglyMeasurable (f n) μ := fun n =>
     ((hf.stronglyMeasurable n).mono (ℱ.le _)).aestronglyMeasurable
   exact tendsto_Lp_of_tendstoInMeasure _ le_rfl ENNReal.one_ne_top hmeas
@@ -351,6 +390,7 @@ theorem Martingale.eq_condexp_of_tendsto_snorm {μ : Measure Ω} (hf : Martingal
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
+  -- 🎉 no goals
 #align measure_theory.martingale.eq_condexp_of_tendsto_snorm MeasureTheory.Martingale.eq_condexp_of_tendsto_snorm
 
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
@@ -373,9 +413,11 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g|ℱ n]) x) atTop (𝓝 (g x)) := by
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  -- ⊢ ∀ᵐ (x : Ω) ∂μ, Tendsto (fun n => (μ[g|↑ℱ n]) x) atTop (𝓝 (g x))
   have hunif : UniformIntegrable (fun n => μ[g|ℱ n]) 1 μ :=
     hg.uniformIntegrable_condexp_filtration
   obtain ⟨R, hR⟩ := hunif.2.2
+  -- ⊢ ∀ᵐ (x : Ω) ∂μ, Tendsto (fun n => (μ[g|↑ℱ n]) x) atTop (𝓝 (g x))
   have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g|ℱ n]) μ) μ :=
     (memℒp_limitProcess_of_snorm_bdd hunif.1 hR).integrable le_rfl
   suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g|ℱ n]) x) μ by
@@ -395,18 +437,27 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   apply @MeasurableSpace.induction_on_inter _ _ _ (⨆ n, ℱ n)
     (MeasurableSpace.measurableSpace_iSup_eq ℱ) _ _ _ _ _ _ hs
   · rintro s ⟨n, hs⟩ t ⟨m, ht⟩ -
+    -- ⊢ s ∩ t ∈ {s | ∃ n, MeasurableSet s}
     by_cases hnm : n ≤ m
+    -- ⊢ s ∩ t ∈ {s | ∃ n, MeasurableSet s}
     · exact ⟨m, (ℱ.mono hnm _ hs).inter ht⟩
+      -- 🎉 no goals
     · exact ⟨n, hs.inter (ℱ.mono (not_le.1 hnm).le _ ht)⟩
+      -- 🎉 no goals
   · simp only [measure_empty, WithTop.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
       forall_true_left]
   · rintro t ⟨n, ht⟩ -
+    -- ⊢ ∫ (x : Ω) in t, g x ∂μ = ∫ (x : Ω) in t, limitProcess (fun n x => (μ[g|↑ℱ n] …
     exact this n _ ht
+    -- 🎉 no goals
   · rintro t htmeas ht -
+    -- ⊢ ∫ (x : Ω) in tᶜ, g x ∂μ = ∫ (x : Ω) in tᶜ, limitProcess (fun n x => (μ[g|↑ℱ  …
     have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
+    -- ⊢ ∫ (x : Ω) in tᶜ, g x ∂μ = ∫ (x : Ω) in tᶜ, limitProcess (fun n x => (μ[g|↑ℱ  …
     have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
+    -- ⊢ ∫ (x : Ω) in tᶜ, g x ∂μ = ∫ (x : Ω) in tᶜ, limitProcess (fun n x => (μ[g|↑ℱ  …
     rw [set_integral_trim hle hgmeas htmeas.compl,
       set_integral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
       set_integral_trim hle hgmeas htmeas, ←
@@ -414,9 +465,11 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
       integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
       this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
   · rintro f hf hfmeas heq -
+    -- ⊢ ∫ (x : Ω) in ⋃ (i : ℕ), f i, g x ∂μ = ∫ (x : Ω) in ⋃ (i : ℕ), f i, limitProc …
     rw [integral_iUnion (fun n => hle _ (hfmeas n)) hf hg.integrableOn,
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
+    -- 🎉 no goals
 #align measure_theory.integrable.tendsto_ae_condexp MeasureTheory.Integrable.tendsto_ae_condexp
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
@@ -445,8 +498,11 @@ theorem tendsto_ae_condexp (g : Ω → ℝ) :
   have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g|⨆ n, ℱ n]|ℱ n]) x = (μ[g|ℱ n]) x := fun n =>
     condexp_condexp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
   rw [← ae_all_iff] at heq
+  -- ⊢ ∀ᵐ (x : Ω) ∂μ, Tendsto (fun n => (μ[g|↑ℱ n]) x) atTop (𝓝 ((μ[g|⨆ (n : ℕ), ↑ℱ …
   filter_upwards [heq, ht] with x hxeq hxt
+  -- ⊢ Tendsto (fun n => (μ[g|↑ℱ n]) x) atTop (𝓝 ((μ[g|⨆ (n : ℕ), ↑ℱ n]) x))
   exact hxt.congr hxeq
+  -- 🎉 no goals
 #align measure_theory.tendsto_ae_condexp MeasureTheory.tendsto_ae_condexp
 
 /-- **Lévy's upward theorem**, L¹ version: given a function `g` and a filtration `ℱ`, the
@@ -458,8 +514,11 @@ theorem tendsto_snorm_condexp (g : Ω → ℝ) :
   have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g|⨆ n, ℱ n]|ℱ n]) x = (μ[g|ℱ n]) x := fun n =>
     condexp_condexp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
   refine' ht.congr fun n => snorm_congr_ae _
+  -- ⊢ μ[μ[g|⨆ (n : ℕ), ↑ℱ n]|↑ℱ n] - μ[g|⨆ (n : ℕ), ↑ℱ n] =ᵐ[μ] μ[g|↑ℱ n] - μ[g|⨆  …
   filter_upwards [heq n] with x hxeq
+  -- ⊢ (μ[μ[g|⨆ (n : ℕ), ↑ℱ n]|↑ℱ n] - μ[g|⨆ (n : ℕ), ↑ℱ n]) x = (μ[g|↑ℱ n] - μ[g|⨆ …
   simp only [hxeq, Pi.sub_apply]
+  -- 🎉 no goals
 #align measure_theory.tendsto_snorm_condexp MeasureTheory.tendsto_snorm_condexp
 
 end L1Convergence

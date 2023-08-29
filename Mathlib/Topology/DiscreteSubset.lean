@@ -33,24 +33,33 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
   rw [hasBasis_cocompact.tendsto_right_iff]
+  -- ⊢ (∀ (i : Set Y), IsCompact i → ∀ᶠ (x : X) in cofinite, f x ∈ iᶜ) ↔ ∀ (K : Set …
   refine' forall₂_congr (fun K _ ↦ _)
+  -- ⊢ (∀ᶠ (x : X) in cofinite, f x ∈ Kᶜ) ↔ Set.Finite (f ⁻¹' K)
   simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
+  -- 🎉 no goals
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [LocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
     DiscreteTopology X := by
   refine' singletons_open_iff_discrete.mp (fun x ↦ _)
+  -- ⊢ IsOpen {x}
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
+  -- ⊢ IsOpen {x}
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
+  -- ⊢ IsOpen {x}
   have hU₄ : Set.Finite (f⁻¹' U) :=
     Finite.subset (tendsto_cofinite_cocompact_iff.mp hf K hK) (preimage_mono hU₁)
   exact isOpen_singleton_of_finite_mem_nhds _ ((hU₂.preimage hf').mem_nhds hU₃) hU₄
+  -- 🎉 no goals
 
 lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
     (hf : Tendsto f (cocompact _) (cocompact _)) :
     Tendsto f cofinite (cocompact _) := by
   convert hf
+  -- ⊢ cofinite = cocompact X
   rw [cocompact_eq_cofinite X]
+  -- 🎉 no goals
 
 lemma IsClosed.tendsto_coe_cofinite_of_discreteTopology
     {s : Set X} (hs : IsClosed s) (_hs' : DiscreteTopology s) :

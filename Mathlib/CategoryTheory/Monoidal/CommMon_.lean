@@ -35,6 +35,8 @@ namespace CommMon_
 @[simps!]
 def trivial : CommMon_ C :=
   { Mon_.trivial C with mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal] }
+                                       -- ⊢ (β_ (𝟙_ C) (𝟙_ C)).hom ≫ (λ_ (𝟙_ C)).hom = (λ_ (𝟙_ C)).hom
+                                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommMon_.trivial CommMon_.trivial
 
@@ -135,9 +137,13 @@ def mapCommMon (F : LaxBraidedFunctor C D) : CommMon_ C ⥤ CommMon_ D where
     { F.toLaxMonoidalFunctor.mapMon.obj A.toMon_ with
       mul_comm := by
         dsimp
+        -- ⊢ (β_ (F.obj A.X) (F.obj A.X)).hom ≫ LaxMonoidalFunctor.μ F.toLaxMonoidalFunct …
         have := F.braided
+        -- ⊢ (β_ (F.obj A.X) (F.obj A.X)).hom ≫ LaxMonoidalFunctor.μ F.toLaxMonoidalFunct …
         slice_lhs 1 2 => rw [← this]
+        -- ⊢ (LaxMonoidalFunctor.μ F.toLaxMonoidalFunctor A.X A.X ≫ F.map (β_ A.X A.X).ho …
         slice_lhs 2 3 => rw [← CategoryTheory.Functor.map_comp, A.mul_comm] }
+        -- 🎉 no goals
   map f := F.toLaxMonoidalFunctor.mapMon.map f
 set_option linter.uppercaseLean3 false in
 #align category_theory.lax_braided_functor.map_CommMon CategoryTheory.LaxBraidedFunctor.mapCommMon
@@ -152,6 +158,9 @@ def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D wher
   map α :=
     { app := fun A => { hom := α.app A.X }
       naturality := by intros; ext; simp }
+                       -- ⊢ (mapCommMon X✝¹).map f✝ ≫ (fun A => Mon_.Hom.mk (NatTrans.app α.toNatTrans A …
+                               -- ⊢ ((mapCommMon X✝¹).map f✝ ≫ (fun A => Mon_.Hom.mk (NatTrans.app α.toNatTrans  …
+                                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.lax_braided_functor.map_CommMon_functor CategoryTheory.LaxBraidedFunctor.mapCommMonFunctor
 
@@ -184,6 +193,8 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]
+                                    -- ⊢ 𝟙 X✝.X ≫ f.hom = f.hom ≫ 𝟙 Y✝.X
+                                           -- 🎉 no goals
       unit := Mon_.Hom.one_hom f
       tensor := fun _ _ => Mon_.Hom.mul_hom f }
 set_option linter.uppercaseLean3 false in
@@ -199,7 +210,12 @@ def unitIso :
       LaxBraidedFunctor.mkIso
         (MonoidalNatIso.ofComponents
           (fun _ => F.toLaxMonoidalFunctor.toFunctor.mapIso (eqToIso (by ext)))
+                                                                         -- 🎉 no goals
           (by rintro ⟨⟩ ⟨⟩ f; aesop_cat) (by aesop_cat) (by aesop_cat)))
+              -- ⊢ ((𝟭 (LaxBraidedFunctor (Discrete PUnit) C)).obj F).map f ≫ ((fun x => F.mapI …
+                              -- 🎉 no goals
+                                             -- 🎉 no goals
+                                                            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPunit.unitIso
 

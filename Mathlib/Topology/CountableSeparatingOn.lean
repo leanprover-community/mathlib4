@@ -23,9 +23,11 @@ of `s`. -/
 instance [TopologicalSpace X] {s : Set X} [T0Space s] [SecondCountableTopology s] :
     HasCountableSeparatingOn X IsOpen s := by
   suffices HasCountableSeparatingOn s IsOpen univ from .of_subtype fun _ ↦ isOpen_induced_iff.1
+  -- ⊢ HasCountableSeparatingOn (↑s) IsOpen univ
   refine ⟨⟨countableBasis s, countable_countableBasis _, fun _ ↦ isOpen_of_mem_countableBasis,
     fun x _ y _ h ↦ ?_⟩⟩
   exact ((isBasis_countableBasis _).inseparable_iff.2 h).eq
+  -- 🎉 no goals
 
 /-- If there exists a countable family of open sets separating points of `s`, then there exists
 a countable family of closed sets separating points of `s`. -/

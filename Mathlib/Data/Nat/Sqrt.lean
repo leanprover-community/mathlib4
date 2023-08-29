@@ -79,6 +79,8 @@ theorem lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
 
 theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
   rw [← succ_mul]; exact le_of_lt_succ (lt_succ_sqrt n)
+  -- ⊢ n ≤ succ (sqrt n) * sqrt n + sqrt n
+                   -- 🎉 no goals
 #align nat.sqrt_le_add Nat.sqrt_le_add
 
 theorem le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
@@ -87,6 +89,7 @@ theorem le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
 #align nat.le_sqrt Nat.le_sqrt
 
 theorem le_sqrt' {m n : ℕ} : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [pow_two] using le_sqrt
+                                                          -- 🎉 no goals
 #align nat.le_sqrt' Nat.le_sqrt'
 
 theorem sqrt_lt {m n : ℕ} : sqrt m < n ↔ m < n * n :=
@@ -112,7 +115,11 @@ theorem sqrt_zero : sqrt 0 = 0 := rfl
 theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
   ⟨fun h =>
       Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
+                                                                        -- ⊢ 0 < 1
+                                                                                -- 🎉 no goals
     by rintro rfl; simp⟩
+       -- ⊢ sqrt 0 = 0
+                   -- 🎉 no goals
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
@@ -122,14 +129,19 @@ theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
 
 theorem eq_sqrt' {n q} : q = sqrt n ↔ q ^ 2 ≤ n ∧ n < (q + 1) ^ 2 := by
   simpa only [pow_two] using eq_sqrt
+  -- 🎉 no goals
 #align nat.eq_sqrt' Nat.eq_sqrt'
 
 theorem le_three_of_sqrt_eq_one {n : ℕ} (h : sqrt n = 1) : n ≤ 3 :=
   le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h]; decide
+                                          -- ⊢ 1 < 2
+                                                  -- 🎉 no goals
 #align nat.le_three_of_sqrt_eq_one Nat.le_three_of_sqrt_eq_one
 
 theorem sqrt_lt_self {n : ℕ} (h : 1 < n) : sqrt n < n :=
   sqrt_lt.2 <| by have := Nat.mul_lt_mul_of_pos_left h (lt_of_succ_lt h); rwa [mul_one] at this
+                  -- ⊢ n < n * n
+                                                                          -- 🎉 no goals
 #align nat.sqrt_lt_self Nat.sqrt_lt_self
 
 theorem sqrt_pos {n : ℕ} : 0 < sqrt n ↔ 0 < n :=
@@ -141,7 +153,9 @@ theorem sqrt_add_eq (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n * n + a) = n
     (le_of_lt_succ <|
       sqrt_lt.2 <| by
         rw [succ_mul, mul_succ, add_succ, add_assoc];
+        -- ⊢ n * n + a < succ (n * n + (n + n))
           exact lt_succ_of_le (Nat.add_le_add_left h _))
+          -- 🎉 no goals
     (le_sqrt.2 <| Nat.le_add_right _ _)
 #align nat.sqrt_add_eq Nat.sqrt_add_eq
 
@@ -166,14 +180,19 @@ theorem sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
   succ_le_succ <| le_trans (sqrt_le_add n) <| add_le_add_right
     (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
+        -- ⊢ sqrt n ≤ succ (succ (sqrt n))
+                                                            -- 🎉 no goals
+                                                            -- 🎉 no goals
 #align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
 theorem exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
   ⟨fun ⟨n, hn⟩ => by rw [← hn, sqrt_eq], fun h => ⟨sqrt x, h⟩⟩
+                     -- 🎉 no goals
 #align nat.exists_mul_self Nat.exists_mul_self
 
 theorem exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
   simpa only [pow_two] using exists_mul_self x
+  -- 🎉 no goals
 #align nat.exists_mul_self' Nat.exists_mul_self'
 
 theorem sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
@@ -196,9 +215,13 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
     ¬∃ t, t * t = n := by
   rintro ⟨t, rfl⟩
+  -- ⊢ False
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
+  -- ⊢ False
   have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.mpr hr
+  -- ⊢ False
   exact (not_lt_of_ge <| le_of_lt_succ h2) h1
+  -- 🎉 no goals
 #align nat.not_exists_sq Nat.not_exists_sq
 
 theorem not_exists_sq' {n m : ℕ} (hl : m ^ 2 < n) (hr : n < (m + 1) ^ 2) : ¬∃ t, t ^ 2 = n := by

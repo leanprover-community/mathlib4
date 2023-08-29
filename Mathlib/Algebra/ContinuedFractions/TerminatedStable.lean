@@ -31,22 +31,32 @@ variable [DivisionRing K]
 theorem continuantsAux_stable_step_of_terminated (terminated_at_n : g.TerminatedAt n) :
     g.continuantsAux (n + 2) = g.continuantsAux (n + 1) := by
   rw [terminatedAt_iff_s_none] at terminated_at_n
+  -- ⊢ continuantsAux g (n + 2) = continuantsAux g (n + 1)
   simp only [continuantsAux, Nat.add_eq, add_zero, terminated_at_n]
+  -- 🎉 no goals
 #align generalized_continued_fraction.continuants_aux_stable_step_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_step_of_terminated
 
 theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : g.TerminatedAt n) :
     g.continuantsAux m = g.continuantsAux (n + 1) := by
   refine' Nat.le_induction rfl (fun k hnk hk => _) _ n_lt_m
+  -- ⊢ continuantsAux g (k + 1) = continuantsAux g (n + 1)
   rcases Nat.exists_eq_add_of_lt hnk with ⟨k, rfl⟩
+  -- ⊢ continuantsAux g (n + k + 1 + 1) = continuantsAux g (n + 1)
   refine' (continuantsAux_stable_step_of_terminated _).trans hk
+  -- ⊢ TerminatedAt g (n + k)
   exact terminated_stable (Nat.le_add_right _ _) terminated_at_n
+  -- 🎉 no goals
 #align generalized_continued_fraction.continuants_aux_stable_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_of_terminated
 
 theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s (n + 1) = convergents'Aux s n := by
   change s.get? n = none at terminated_at_n
+  -- ⊢ convergents'Aux s (n + 1) = convergents'Aux s n
   induction' n with n IH generalizing s
+  -- ⊢ convergents'Aux s (Nat.zero + 1) = convergents'Aux s Nat.zero
   case zero => simp only [convergents'Aux, terminated_at_n, Stream'.Seq.head]
+  -- ⊢ convergents'Aux s (Nat.succ n + 1) = convergents'Aux s (Nat.succ n)
+  -- 🎉 no goals
   case succ =>
     cases' s_head_eq : s.head with gp_head
     case none => simp only [convergents'Aux, s_head_eq]
@@ -61,9 +71,13 @@ theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
 theorem convergents'Aux_stable_of_terminated {s : Stream'.Seq <| Pair K} (n_le_m : n ≤ m)
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s m = convergents'Aux s n := by
   induction' n_le_m with m n_le_m IH
+  -- ⊢ convergents'Aux s n = convergents'Aux s n
   · rfl
+    -- 🎉 no goals
   · refine' (convergents'Aux_stable_step_of_terminated _).trans IH
+    -- ⊢ Stream'.Seq.TerminatedAt s m
     exact s.terminated_stable n_le_m terminated_at_n
+    -- 🎉 no goals
 #align generalized_continued_fraction.convergents'_aux_stable_of_terminated GeneralizedContinuedFraction.convergents'Aux_stable_of_terminated
 
 theorem continuants_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
@@ -75,11 +89,13 @@ theorem continuants_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g
 theorem numerators_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
     g.numerators m = g.numerators n := by
   simp only [num_eq_conts_a, continuants_stable_of_terminated n_le_m terminated_at_n]
+  -- 🎉 no goals
 #align generalized_continued_fraction.numerators_stable_of_terminated GeneralizedContinuedFraction.numerators_stable_of_terminated
 
 theorem denominators_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
     g.denominators m = g.denominators n := by
   simp only [denom_eq_conts_b, continuants_stable_of_terminated n_le_m terminated_at_n]
+  -- 🎉 no goals
 #align generalized_continued_fraction.denominators_stable_of_terminated GeneralizedContinuedFraction.denominators_stable_of_terminated
 
 theorem convergents_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
@@ -91,6 +107,7 @@ theorem convergents_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g
 theorem convergents'_stable_of_terminated (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
     g.convergents' m = g.convergents' n := by
   simp only [convergents', convergents'Aux_stable_of_terminated n_le_m terminated_at_n]
+  -- 🎉 no goals
 #align generalized_continued_fraction.convergents'_stable_of_terminated GeneralizedContinuedFraction.convergents'_stable_of_terminated
 
 end GeneralizedContinuedFraction

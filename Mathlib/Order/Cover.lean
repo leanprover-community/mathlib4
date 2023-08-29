@@ -96,6 +96,7 @@ theorem wcovby_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_wcovby_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [Wcovby, h, true_and_iff, not_forall, exists_prop, not_not]
+  -- 🎉 no goals
 #align not_wcovby_iff not_wcovby_iff
 
 instance Wcovby.isRefl : IsRefl α (· ⩿ ·) :=
@@ -108,6 +109,7 @@ theorem Wcovby.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
 
 theorem wcovby_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
   and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+                         -- 🎉 no goals
 #align wcovby_iff_Ioo_eq wcovby_iff_Ioo_eq
 
 lemma Wcovby.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
@@ -122,9 +124,13 @@ theorem Wcovby.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
 
 theorem Wcovby.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnected) : f a ⩿ f b := by
   refine' ⟨f.monotone hab.le, fun c ha hb => _⟩
+  -- ⊢ False
   obtain ⟨c, rfl⟩ := h.out (mem_range_self _) (mem_range_self _) ⟨ha.le, hb.le⟩
+  -- ⊢ False
   rw [f.lt_iff_lt] at ha hb
+  -- ⊢ False
   exact hab.2 ha hb
+  -- 🎉 no goals
 #align wcovby.image Wcovby.image
 
 theorem Set.OrdConnected.apply_wcovby_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
@@ -161,8 +167,13 @@ variable [PartialOrder α] {a b c : α}
 
 theorem Wcovby.eq_or_eq (h : a ⩿ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c = b := by
   rcases h2.eq_or_lt with (h2 | h2); · exact Or.inl h2.symm
+  -- ⊢ c = a ∨ c = b
+                                       -- 🎉 no goals
   rcases h3.eq_or_lt with (h3 | h3); · exact Or.inr h3
+  -- ⊢ c = a ∨ c = b
+                                       -- 🎉 no goals
   exact (h.2 h2 h3).elim
+  -- 🎉 no goals
 #align wcovby.eq_or_eq Wcovby.eq_or_eq
 
 /-- An `iff` version of `Wcovby.eq_or_eq` and `wcovby_of_eq_or_eq`. -/
@@ -172,20 +183,27 @@ theorem wcovby_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → 
 
 theorem Wcovby.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
   refine' ⟨fun h2 => h.eq_or_eq h2.1 h2.2, _⟩; rintro (rfl | rfl);
+  -- ⊢ c = a ∨ c = b → a ≤ c ∧ c ≤ b
+                                               -- ⊢ c ≤ c ∧ c ≤ b
   exacts [⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
+  -- 🎉 no goals
 #align wcovby.le_and_le_iff Wcovby.le_and_le_iff
 
 theorem Wcovby.Icc_eq (h : a ⩿ b) : Icc a b = {a, b} := by
   ext c
+  -- ⊢ c ∈ Icc a b ↔ c ∈ {a, b}
   exact h.le_and_le_iff
+  -- 🎉 no goals
 #align wcovby.Icc_eq Wcovby.Icc_eq
 
 theorem Wcovby.Ico_subset (h : a ⩿ b) : Ico a b ⊆ {a} := by
   rw [← Icc_diff_right, h.Icc_eq, diff_singleton_subset_iff, pair_comm]
+  -- 🎉 no goals
 #align wcovby.Ico_subset Wcovby.Ico_subset
 
 theorem Wcovby.Ioc_subset (h : a ⩿ b) : Ioc a b ⊆ {b} := by
   rw [← Icc_diff_left, h.Icc_eq, diff_singleton_subset_iff]
+  -- 🎉 no goals
 #align wcovby.Ioc_subset Wcovby.Ioc_subset
 
 end PartialOrder
@@ -232,6 +250,7 @@ theorem Covby.lt (h : a ⋖ b) : a < b :=
 /-- If `a < b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_covby_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [Covby, h, true_and_iff, not_forall, exists_prop, not_not]
+  -- 🎉 no goals
 #align not_covby_iff not_covby_iff
 
 alias ⟨exists_lt_lt_of_not_covby, _⟩ := not_covby_iff
@@ -349,6 +368,7 @@ theorem Covby.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
 
 theorem covby_iff_Ioo_eq : a ⋖ b ↔ a < b ∧ Ioo a b = ∅ :=
   and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+                         -- 🎉 no goals
 #align covby_iff_Ioo_eq covby_iff_Ioo_eq
 
 theorem Covby.of_image (f : α ↪o β) (h : f a ⋖ f b) : a ⋖ b :=
@@ -389,6 +409,7 @@ theorem covby_iff_wcovby_and_ne : a ⋖ b ↔ a ⩿ b ∧ a ≠ b :=
 
 theorem wcovby_iff_covby_or_eq : a ⩿ b ↔ a ⋖ b ∨ a = b := by
   rw [le_antisymm_iff, wcovby_iff_covby_or_le_and_le]
+  -- 🎉 no goals
 #align wcovby_iff_covby_or_eq wcovby_iff_covby_or_eq
 
 theorem wcovby_iff_eq_or_covby : a ⩿ b ↔ a = b ∨ a ⋖ b :=
@@ -412,10 +433,12 @@ theorem covby_iff_lt_and_eq_or_eq : a ⋖ b ↔ a < b ∧ ∀ c, a ≤ c → c �
 
 theorem Covby.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
   rw [← Ioo_union_left h.lt, h.Ioo_eq, empty_union]
+  -- 🎉 no goals
 #align covby.Ico_eq Covby.Ico_eq
 
 theorem Covby.Ioc_eq (h : a ⋖ b) : Ioc a b = {b} := by
   rw [← Ioo_union_right h.lt, h.Ioo_eq, empty_union]
+  -- 🎉 no goals
 #align covby.Ioc_eq Covby.Ioc_eq
 
 theorem Covby.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
@@ -430,10 +453,12 @@ variable [LinearOrder α] {a b c : α}
 
 theorem Covby.Ioi_eq (h : a ⋖ b) : Ioi a = Ici b := by
   rw [← Ioo_union_Ici_eq_Ioi h.lt, h.Ioo_eq, empty_union]
+  -- 🎉 no goals
 #align covby.Ioi_eq Covby.Ioi_eq
 
 theorem Covby.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
   rw [← Iic_union_Ioo_eq_Iio h.lt, h.Ioo_eq, union_empty]
+  -- 🎉 no goals
 #align covby.Iio_eq Covby.Iio_eq
 
 theorem Wcovby.le_of_lt (hab : a ⩿ b) (hcb : c < b) : c ≤ a :=
@@ -471,9 +496,13 @@ of `Set.Ioi b'`. -/
 lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
   by_cases h' : a ⋖ b
+  -- ⊢ ∃ a', a' > a ∧ ∃ b', b' < b ∧ ∀ (x : α), x < a' → ∀ (y : α), y > b' → x < y
   · exact ⟨b, h, a, h, fun x hx y hy => hx.trans_le <| h'.ge_of_gt hy⟩
+    -- 🎉 no goals
   · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
+    -- ⊢ ∃ a', a' > a ∧ ∃ b', b' < b ∧ ∀ (x : α), x < a' → ∀ (y : α), y > b' → x < y
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
+    -- 🎉 no goals
 
 end LinearOrder
 
@@ -481,10 +510,15 @@ namespace Set
 
 theorem wcovby_insert (x : α) (s : Set α) : s ⩿ insert x s := by
   refine' wcovby_of_eq_or_eq (subset_insert x s) fun t hst h2t => _
+  -- ⊢ t = s ∨ t = insert x s
   by_cases h : x ∈ t
+  -- ⊢ t = s ∨ t = insert x s
   · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
+    -- 🎉 no goals
   · refine' Or.inl (subset_antisymm _ hst)
+    -- ⊢ t ⊆ s
     rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
+    -- 🎉 no goals
 #align set.wcovby_insert Set.wcovby_insert
 
 theorem covby_insert {x : α} {s : Set α} (hx : x ∉ s) : s ⋖ insert x s :=
@@ -499,14 +533,18 @@ open Relation
 
 lemma wcovby_eq_reflGen_covby [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
   ext x y; simp_rw [wcovby_iff_eq_or_covby, @eq_comm _ x, reflGen_iff]
+  -- ⊢ x ⩿ y ↔ ReflGen (fun x x_1 => x ⋖ x_1) x y
+           -- 🎉 no goals
 
 lemma transGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
     TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
   rw [wcovby_eq_reflGen_covby, transGen_reflGen]
+  -- 🎉 no goals
 
 lemma reflTransGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
     ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
   rw [wcovby_eq_reflGen_covby, reflTransGen_reflGen]
+  -- 🎉 no goals
 
 end Relation
 
@@ -526,7 +564,9 @@ theorem swap_covby_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
 
 theorem fst_eq_or_snd_eq_of_wcovby : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
   refine' fun h => of_not_not fun hab => _
+  -- ⊢ False
   push_neg at hab
+  -- ⊢ False
   exact
     h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)
       (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)
@@ -542,9 +582,13 @@ theorem _root_.Wcovby.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
 
 theorem mk_wcovby_mk_iff_left : (a₁, b) ⩿ (a₂, b) ↔ a₁ ⩿ a₂ := by
   refine' ⟨Wcovby.fst, (And.imp mk_le_mk_iff_left.2) fun h c h₁ h₂ => _⟩
+  -- ⊢ False
   have : c.2 = b := h₂.le.2.antisymm h₁.le.2
+  -- ⊢ False
   rw [← @Prod.mk.eta _ _ c, this, mk_lt_mk_iff_left] at h₁ h₂
+  -- ⊢ False
   exact h h₁ h₂
+  -- 🎉 no goals
 #align prod.mk_wcovby_mk_iff_left Prod.mk_wcovby_mk_iff_left
 
 theorem mk_wcovby_mk_iff_right : (a, b₁) ⩿ (a, b₂) ↔ b₁ ⩿ b₂ :=
@@ -553,42 +597,64 @@ theorem mk_wcovby_mk_iff_right : (a, b₁) ⩿ (a, b₂) ↔ b₁ ⩿ b₂ :=
 
 theorem mk_covby_mk_iff_left : (a₁, b) ⋖ (a₂, b) ↔ a₁ ⋖ a₂ := by
   simp_rw [covby_iff_wcovby_and_lt, mk_wcovby_mk_iff_left, mk_lt_mk_iff_left]
+  -- 🎉 no goals
 #align prod.mk_covby_mk_iff_left Prod.mk_covby_mk_iff_left
 
 theorem mk_covby_mk_iff_right : (a, b₁) ⋖ (a, b₂) ↔ b₁ ⋖ b₂ := by
   simp_rw [covby_iff_wcovby_and_lt, mk_wcovby_mk_iff_right, mk_lt_mk_iff_right]
+  -- 🎉 no goals
 #align prod.mk_covby_mk_iff_right Prod.mk_covby_mk_iff_right
 
 theorem mk_wcovby_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b₁ = b₂ ∨ b₁ ⩿ b₂ ∧ a₁ = a₂ := by
   refine' ⟨fun h => _, _⟩
+  -- ⊢ a₁ ⩿ a₂ ∧ b₁ = b₂ ∨ b₁ ⩿ b₂ ∧ a₁ = a₂
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovby h
+    -- ⊢ a₁ ⩿ a₁ ∧ b₁ = b₂ ∨ b₁ ⩿ b₂ ∧ a₁ = a₁
     · exact Or.inr ⟨mk_wcovby_mk_iff_right.1 h, rfl⟩
+      -- 🎉 no goals
     · exact Or.inl ⟨mk_wcovby_mk_iff_left.1 h, rfl⟩
+      -- 🎉 no goals
   · rintro (⟨h, rfl⟩ | ⟨h, rfl⟩)
+    -- ⊢ (a₁, b₁) ⩿ (a₂, b₁)
     · exact mk_wcovby_mk_iff_left.2 h
+      -- 🎉 no goals
     · exact mk_wcovby_mk_iff_right.2 h
+      -- 🎉 no goals
 #align prod.mk_wcovby_mk_iff Prod.mk_wcovby_mk_iff
 
 theorem mk_covby_mk_iff : (a₁, b₁) ⋖ (a₂, b₂) ↔ a₁ ⋖ a₂ ∧ b₁ = b₂ ∨ b₁ ⋖ b₂ ∧ a₁ = a₂ := by
   refine' ⟨fun h => _, _⟩
+  -- ⊢ a₁ ⋖ a₂ ∧ b₁ = b₂ ∨ b₁ ⋖ b₂ ∧ a₁ = a₂
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovby h.wcovby
+    -- ⊢ a₁ ⋖ a₁ ∧ b₁ = b₂ ∨ b₁ ⋖ b₂ ∧ a₁ = a₁
     · exact Or.inr ⟨mk_covby_mk_iff_right.1 h, rfl⟩
+      -- 🎉 no goals
     · exact Or.inl ⟨mk_covby_mk_iff_left.1 h, rfl⟩
+      -- 🎉 no goals
   · rintro (⟨h, rfl⟩ | ⟨h, rfl⟩)
+    -- ⊢ (a₁, b₁) ⋖ (a₂, b₁)
     · exact mk_covby_mk_iff_left.2 h
+      -- 🎉 no goals
     · exact mk_covby_mk_iff_right.2 h
+      -- 🎉 no goals
 #align prod.mk_covby_mk_iff Prod.mk_covby_mk_iff
 
 theorem wcovby_iff : x ⩿ y ↔ x.1 ⩿ y.1 ∧ x.2 = y.2 ∨ x.2 ⩿ y.2 ∧ x.1 = y.1 := by
   cases x
+  -- ⊢ (fst✝, snd✝) ⩿ y ↔ (fst✝, snd✝).fst ⩿ y.fst ∧ (fst✝, snd✝).snd = y.snd ∨ (fs …
   cases y
+  -- ⊢ (fst✝¹, snd✝¹) ⩿ (fst✝, snd✝) ↔ (fst✝¹, snd✝¹).fst ⩿ (fst✝, snd✝).fst ∧ (fst …
   exact mk_wcovby_mk_iff
+  -- 🎉 no goals
 #align prod.wcovby_iff Prod.wcovby_iff
 
 theorem covby_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.1 = y.1 := by
   cases x
+  -- ⊢ (fst✝, snd✝) ⋖ y ↔ (fst✝, snd✝).fst ⋖ y.fst ∧ (fst✝, snd✝).snd = y.snd ∨ (fs …
   cases y
+  -- ⊢ (fst✝¹, snd✝¹) ⋖ (fst✝, snd✝) ↔ (fst✝¹, snd✝¹).fst ⋖ (fst✝, snd✝).fst ∧ (fst …
   exact mk_covby_mk_iff
+  -- 🎉 no goals
 #align prod.covby_iff Prod.covby_iff
 
 end Prod

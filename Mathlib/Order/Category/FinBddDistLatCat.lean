@@ -84,7 +84,11 @@ def Iso.mk {α β : FinBddDistLatCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑α.toBd …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ :  …
+                        -- 🎉 no goals
 #align FinBddDistLat.iso.mk FinBddDistLatCat.Iso.mk
 
 example {X Y : FinBddDistLatCat} : (X ⟶ Y) = BoundedLatticeHom X Y :=

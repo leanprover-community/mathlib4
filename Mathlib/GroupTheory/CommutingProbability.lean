@@ -48,6 +48,7 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
     ←Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
+  -- ⊢ Nat.card { p // (p.fst * p.snd).fst = (p.snd * p.fst).fst ∧ (p.fst * p.snd). …
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
@@ -56,12 +57,14 @@ theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
     ←Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
   congr 2
+  -- ⊢ Nat.card { p // ∀ (a : α), (p.fst * p.snd) a = (p.snd * p.fst) a } = Nat.car …
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
 theorem commProb_function [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by
   rw [commProb_pi, Finset.prod_const, Finset.card_univ]
+  -- 🎉 no goals
 
 @[simp]
 theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
@@ -77,8 +80,11 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
 
 theorem commProb_le_one : commProb M ≤ 1 := by
   refine' div_le_one_of_le _ (sq_nonneg (Nat.card M : ℚ))
+  -- ⊢ ↑(Nat.card { p // Commute p.fst p.snd }) ≤ ↑(Nat.card M) ^ 2
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
+  -- ⊢ Nat.card { p // Commute p.fst p.snd } ≤ Nat.card (M × M)
   apply Finite.card_subtype_le
+  -- 🎉 no goals
 #align comm_prob_le_one commProb_le_one
 
 variable {M}
@@ -86,20 +92,28 @@ variable {M}
 theorem commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) := by
   haveI := Fintype.ofFinite M
+  -- ⊢ commProb M = 1 ↔ Commutative fun x x_1 => x * x_1
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
+  -- ⊢ ↑(card ↑{x | Commute x.fst x.snd}) / ↑(card M) ^ 2 = 1 ↔ Commutative fun x x …
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
   · exact ⟨fun h x y ↦ h (x, y), fun h x ↦ h x.1 x.2⟩
+    -- 🎉 no goals
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
+    -- 🎉 no goals
 #align comm_prob_eq_one_iff commProb_eq_one_iff
 
 variable (G : Type*) [Group G]
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
+  -- ⊢ ↑(Nat.card (ConjClasses G)) * ↑(Nat.card G) / (↑(Nat.card G) * ↑(Nat.card G) …
   by_cases h : (Nat.card G : ℚ) = 0
+  -- ⊢ ↑(Nat.card (ConjClasses G)) * ↑(Nat.card G) / (↑(Nat.card G) * ↑(Nat.card G) …
   · rw [h, zero_mul, div_zero, div_zero]
+    -- 🎉 no goals
   · exact mul_div_mul_right _ _ h
+    -- 🎉 no goals
 #align comm_prob_def' commProb_def'
 
 variable {G}
@@ -111,9 +125,13 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel, Nat.cast_le]
   · refine' Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
+    -- ⊢ Function.Injective fun p => { val := (↑(↑p).fst, ↑(↑p).snd), property := (_  …
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
+    -- 🎉 no goals
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
+    -- 🎉 no goals
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
+    -- 🎉 no goals
 #align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le
 
 theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
@@ -122,10 +140,15 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
   rw [commProb_def', commProb_def', div_le_iff, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel, Nat.cast_le]
   · apply Finite.card_le_of_surjective
+    -- ⊢ Function.Surjective ?f
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
+    -- ⊢ Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.surjective_Quotient_mk''
+    -- 🎉 no goals
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
+    -- 🎉 no goals
   · exact Nat.cast_pos.mpr Finite.card_pos
+    -- 🎉 no goals
 #align subgroup.comm_prob_quotient_le Subgroup.commProb_quotient_le
 
 variable (G)

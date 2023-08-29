@@ -61,7 +61,9 @@ def coneOfConeCompEval (c : ∀ i, Cone (F ⋙ Pi.eval C i)) : Cone F where
     { app := fun j i => (c i).π.app j
       naturality := fun j j' f => by
         funext i
+        -- ⊢ (((Functor.const J).obj fun i => (c i).pt).map f ≫ (fun j i => NatTrans.app  …
         exact (c i).π.naturality f }
+        -- 🎉 no goals
 #align category_theory.pi.cone_of_cone_comp_eval CategoryTheory.pi.coneOfConeCompEval
 
 /-- Given a family of cocones over the `F ⋙ Pi.eval C i`,
@@ -73,7 +75,9 @@ def coconeOfCoconeCompEval (c : ∀ i, Cocone (F ⋙ Pi.eval C i)) : Cocone F wh
     { app := fun j i => (c i).ι.app j
       naturality := fun j j' f => by
         funext i
+        -- ⊢ (F.map f ≫ (fun j i => NatTrans.app (c i).ι j) j') i = ((fun j i => NatTrans …
         exact (c i).ι.naturality f }
+        -- 🎉 no goals
 #align category_theory.pi.cocone_of_cocone_comp_eval CategoryTheory.pi.coconeOfCoconeCompEval
 
 /-- Given a family of limit cones over the `F ⋙ Pi.eval C i`,
@@ -84,10 +88,14 @@ def coneOfConeEvalIsLimit {c : ∀ i, Cone (F ⋙ Pi.eval C i)} (P : ∀ i, IsLi
   lift s i := (P i).lift (coneCompEval s i)
   fac s j := by
     funext i
+    -- ⊢ ((fun s i => IsLimit.lift (P i) (coneCompEval s i)) s ≫ NatTrans.app (coneOf …
     exact (P i).fac (coneCompEval s i) j
+    -- 🎉 no goals
   uniq s m w := by
     funext i
+    -- ⊢ m i = (fun s i => IsLimit.lift (P i) (coneCompEval s i)) s i
     exact (P i).uniq (coneCompEval s i) (m i) fun j => congr_fun (w j) i
+    -- 🎉 no goals
 #align category_theory.pi.cone_of_cone_eval_is_limit CategoryTheory.pi.coneOfConeEvalIsLimit
 
 /-- Given a family of colimit cocones over the `F ⋙ Pi.eval C i`,
@@ -98,10 +106,14 @@ def coconeOfCoconeEvalIsColimit {c : ∀ i, Cocone (F ⋙ Pi.eval C i)} (P : ∀
   desc s i := (P i).desc (coconeCompEval s i)
   fac s j := by
     funext i
+    -- ⊢ (NatTrans.app (coconeOfCoconeCompEval c).ι j ≫ (fun s i => IsColimit.desc (P …
     exact (P i).fac (coconeCompEval s i) j
+    -- 🎉 no goals
   uniq s m w := by
     funext i
+    -- ⊢ m i = (fun s i => IsColimit.desc (P i) (coconeCompEval s i)) s i
     exact (P i).uniq (coconeCompEval s i) (m i) fun j => congr_fun (w j) i
+    -- 🎉 no goals
 #align category_theory.pi.cocone_of_cocone_eval_is_colimit CategoryTheory.pi.coconeOfCoconeEvalIsColimit
 
 section

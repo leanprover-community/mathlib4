@@ -279,8 +279,11 @@ def coconesIsoComponentHom {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
   app j := (adj.homEquiv (K.obj j) Y) (t.app j)
   naturality j j' f := by
     erw [← adj.homEquiv_naturality_left, t.naturality]
+    -- ⊢ ↑(homEquiv adj ((op (op K).unop).unop.obj j) Y) (NatTrans.app t j ≫ ((const  …
     dsimp
+    -- ⊢ ↑(homEquiv adj (K.obj j) Y) (NatTrans.app t j ≫ 𝟙 Y) = ↑(homEquiv adj (K.obj …
     simp
+    -- 🎉 no goals
 #align category_theory.adjunction.cocones_iso_component_hom CategoryTheory.Adjunction.coconesIsoComponentHom
 
 /-- auxiliary construction for `coconesIso` -/
@@ -290,7 +293,10 @@ def coconesIsoComponentInv {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
   app j := (adj.homEquiv (K.obj j) Y).symm (t.app j)
   naturality j j' f := by
     erw [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm, t.naturality]
+    -- ⊢ ↑(homEquiv adj (K.obj j) (((const J).obj Y).obj j')).symm (NatTrans.app t j  …
     dsimp; simp
+    -- ⊢ ↑(homEquiv adj (K.obj j) Y).symm (NatTrans.app t j ≫ 𝟙 (G.obj Y)) = ↑(homEqu …
+           -- 🎉 no goals
 #align category_theory.adjunction.cocones_iso_component_inv CategoryTheory.Adjunction.coconesIsoComponentInv
 
 /-- auxiliary construction for `conesIso` -/
@@ -300,7 +306,9 @@ def conesIsoComponentHom {J : Type u} [Category.{v} J] {K : J ⥤ D} (X : Cᵒ�
   app j := (adj.homEquiv (unop X) (K.obj j)) (t.app j)
   naturality j j' f := by
     erw [← adj.homEquiv_naturality_right, ← t.naturality, Category.id_comp, Category.id_comp]
+    -- ⊢ (fun j => ↑(homEquiv adj X.unop (K.obj j)) (NatTrans.app t j)) j' = ↑(homEqu …
     rfl
+    -- 🎉 no goals
 #align category_theory.adjunction.cones_iso_component_hom CategoryTheory.Adjunction.conesIsoComponentHom
 
 /-- auxiliary construction for `conesIso` -/
@@ -310,6 +318,7 @@ def conesIsoComponentInv {J : Type u} [Category.{v} J] {K : J ⥤ D} (X : Cᵒ�
   app j := (adj.homEquiv (unop X) (K.obj j)).symm (t.app j)
   naturality j j' f := by
     erw [← adj.homEquiv_naturality_right_symm, ← t.naturality, Category.id_comp, Category.id_comp]
+    -- 🎉 no goals
 #align category_theory.adjunction.cones_iso_component_inv CategoryTheory.Adjunction.conesIsoComponentInv
 
 end ArbitraryUniverse

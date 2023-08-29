@@ -149,8 +149,14 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] : Enr
   id X _ := 𝟙 X
   comp X Y Z p := p.1 ≫ p.2
   id_comp X Y := by ext; simp
+                    -- ⊢ ((λ_ (X ⟶ Y)).inv ≫ ((fun X x => 𝟙 X) X ⊗ 𝟙 (X ⟶ Y)) ≫ (fun X Y Z p => p.fst …
+                         -- 🎉 no goals
   comp_id X Y := by ext; simp
+                    -- ⊢ ((ρ_ (X ⟶ Y)).inv ≫ (𝟙 (X ⟶ Y) ⊗ (fun X x => 𝟙 X) Y) ≫ (fun X Y Z p => p.fst …
+                         -- 🎉 no goals
   assoc W X Y Z := by ext ⟨f, g, h⟩; simp
+                      -- ⊢ ((α_ (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).inv ≫ ((fun X Y Z p => p.fst ≫ p.snd) W X Y ⊗  …
+                                     -- 🎉 no goals
 #align category_theory.enriched_category_Type_of_category CategoryTheory.enrichedCategoryTypeOfCategory
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
@@ -218,6 +224,7 @@ instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
   let I : EnrichedCategory (Type v) (TransportEnrichment (coyonedaTensorUnit W) C) :=
     inferInstance
   exact enrichedCategoryTypeEquivCategory C I
+  -- 🎉 no goals
 #align category_theory.category_forget_enrichment CategoryTheory.categoryForgetEnrichment
 
 /-- We verify that the morphism types in `ForgetEnrichment W C` are `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -327,11 +334,17 @@ def EnrichedFunctor.forget {C : Type u₁} {D : Type u₂} [EnrichedCategory W C
       (ForgetEnrichment.homTo W f ≫ F.map (ForgetEnrichment.to W _) (ForgetEnrichment.to W _))
   map_comp f g := by
     dsimp
+    -- ⊢ ForgetEnrichment.homOf W ((((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗  …
     apply_fun ForgetEnrichment.homTo W
+    -- ⊢ ForgetEnrichment.homTo W (ForgetEnrichment.homOf W ((((λ_ (𝟙_ W)).inv ≫ (For …
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
         ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, forgetEnrichment_comp]
       rfl
+      -- 🎉 no goals
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
+      -- ⊢ f = g
+                   -- ⊢ f = g
+                                                            -- 🎉 no goals
 #align category_theory.enriched_functor.forget CategoryTheory.EnrichedFunctor.forget
 
 end
@@ -414,7 +427,9 @@ def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max 
     { app := fun X => f.unop ≫ σ.app X
       naturality := fun X Y => by
         have p := σ.naturality X Y
+        -- ⊢ (HalfBraiding.β ((Center.ofBraided V).toLaxMonoidalFunctor.toFunctor.obj Y✝. …
         dsimp at p ⊢
+        -- ⊢ (β_ Y✝.unop (EnrichedCategory.Hom X Y)).hom ≫ (EnrichedFunctor.map F X Y ⊗ f …
         rw [← id_tensor_comp_tensor_id (f.unop ≫ σ.app Y) _, id_tensor_comp, Category.assoc,
           Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p, ←
           tensor_comp_assoc, Category.id_comp] }
@@ -443,7 +458,11 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
     { obj := fun X => F.obj X
       map := fun X Y f => F.map f
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
+                            -- ⊢ (eId (Type v) X ≫ (fun X Y f => F.map f) X X) PUnit.unit = eId (Type v) ((fu …
+                                    -- 🎉 no goals
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
+                                  -- ⊢ (eComp (Type v) X Y Z ≫ (fun X Y f => F.map f) X Z) (f, g) = (((fun X Y f => …
+                                              -- 🎉 no goals
   left_inv _ := rfl
   right_inv _ := rfl
 #align category_theory.enriched_functor_Type_equiv_functor CategoryTheory.enrichedFunctorTypeEquivFunctor
@@ -464,7 +483,10 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
         inv := fun σ =>
           { app := fun X x => (σ x).app X
             naturality := fun X Y => by ext ⟨x, f⟩; exact (σ x).naturality f } })
+                                        -- ⊢ ((HalfBraiding.β ((Center.ofBraided (Type v)).toLaxMonoidalFunctor.toFunctor …
+                                                    -- 🎉 no goals
     (by aesop_cat)
+        -- 🎉 no goals
 #align category_theory.enriched_nat_trans_yoneda_Type_iso_yoneda_nat_trans CategoryTheory.enrichedNatTransYonedaTypeIsoYonedaNatTrans
 
 end

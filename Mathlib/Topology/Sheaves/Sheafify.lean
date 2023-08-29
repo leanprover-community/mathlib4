@@ -75,9 +75,13 @@ def toSheafify : F ⟶ F.sheafify.1 where
   app U f := ⟨fun x => F.germ x f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
+    -- ⊢ (F.map f ≫ (fun U f => { val := fun x => germ F x f, property := (_ : Preloc …
     apply Subtype.ext -- Porting note: Added `apply`
+    -- ⊢ ↑((F.map f ≫ (fun U f => { val := fun x => germ F x f, property := (_ : Prel …
     ext ⟨u, m⟩
+    -- ⊢ ↑((F.map f ≫ (fun U f => { val := fun x => germ F x f, property := (_ : Prel …
     exact germ_res_apply F f.unop ⟨u, m⟩ x
+    -- 🎉 no goals
 #align Top.presheaf.to_sheafify TopCat.Presheaf.toSheafify
 
 /-- The natural morphism from the stalk of the sheafification to the original stalk.
@@ -89,34 +93,63 @@ def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
 
 theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
+  -- ⊢ ∀ (t : stalk F x), ∃ U f x_1, f { val := x, property := (_ : x ∈ U.obj) } = t
   intro t
+  -- ⊢ ∃ U f x_1, f { val := x, property := (_ : x ∈ U.obj) } = t
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
+  -- ⊢ ∃ U_1 f x_1, f { val := x, property := (_ : x ∈ U_1.obj) } = ↑(germ F { val  …
   · use ⟨U, m⟩
+    -- ⊢ ∃ f x_1, f { val := x, property := (_ : x ∈ { obj := U, property := m }.obj) …
     fconstructor
+    -- ⊢ (y : { x_1 // x_1 ∈ { obj := U, property := m }.obj }) → stalk F ↑y
     · exact fun y => F.germ y s
+      -- 🎉 no goals
     · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
+      -- 🎉 no goals
 #align Top.presheaf.stalk_to_fiber_surjective TopCat.Presheaf.stalkToFiber_surjective
 
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_injective
+  -- ⊢ ∀ (U V : OpenNhds x) (fU : (y : { x_1 // x_1 ∈ U.obj }) → stalk F ↑y), Prelo …
   intro U V fU hU fV hV e
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   rcases hV ⟨x, V.2⟩ with ⟨V', mV, iV, gV, wV⟩
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   have wUx := wU ⟨x, mU⟩
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   dsimp at wUx; erw [wUx] at e; clear wUx
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
+                -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
+                                -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   have wVx := wV ⟨x, mV⟩
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   dsimp at wVx; erw [wVx] at e; clear wVx
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
+                -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
+                                -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', (e' : F.map iU'.op gU = F.map iV'.op gV)⟩
+  -- ⊢ ∃ W iU iV, ∀ (w : { x_1 // x_1 ∈ W.obj }), fU ((fun x_1 => { val := ↑x_1, pr …
   use ⟨W ⊓ (U' ⊓ V'), ⟨mW, mU, mV⟩⟩
+  -- ⊢ ∃ iU iV, ∀ (w : { x_1 // x_1 ∈ { obj := W ⊓ (U' ⊓ V'), property := (_ : x ∈  …
   refine' ⟨_, _, _⟩
   · change W ⊓ (U' ⊓ V') ⟶ U.obj
+    -- ⊢ W ⊓ (U' ⊓ V') ⟶ U.obj
     exact Opens.infLERight _ _ ≫ Opens.infLELeft _ _ ≫ iU
+    -- 🎉 no goals
   · change W ⊓ (U' ⊓ V') ⟶ V.obj
+    -- ⊢ W ⊓ (U' ⊓ V') ⟶ V.obj
     exact Opens.infLERight _ _ ≫ Opens.infLERight _ _ ≫ iV
+    -- 🎉 no goals
   · intro w
+    -- ⊢ fU ((fun x_1 => { val := ↑x_1, property := (_ : ↑x_1 ∈ ↑U.obj) }) w) = fV (( …
     specialize wU ⟨w.1, w.2.2.1⟩
+    -- ⊢ fU ((fun x_1 => { val := ↑x_1, property := (_ : ↑x_1 ∈ ↑U.obj) }) w) = fV (( …
     specialize wV ⟨w.1, w.2.2.2⟩
+    -- ⊢ fU ((fun x_1 => { val := ↑x_1, property := (_ : ↑x_1 ∈ ↑U.obj) }) w) = fV (( …
     dsimp at wU wV ⊢
+    -- ⊢ fU { val := ↑w, property := (_ : ↑w ∈ ↑U.obj) } = fV { val := ↑w, property : …
     erw [wU, ← F.germ_res iU' ⟨w, w.2.1⟩, wV, ← F.germ_res iV' ⟨w, w.2.1⟩,
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 #align Top.presheaf.stalk_to_fiber_injective TopCat.Presheaf.stalkToFiber_injective

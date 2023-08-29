@@ -37,6 +37,7 @@ theorem mem_op {s : Set α} {a : αᵒᵖ} : a ∈ s.op ↔ unop a ∈ s :=
 
 @[simp 1100]
 theorem op_mem_op {s : Set α} {a : α} : op a ∈ s.op ↔ a ∈ s := by rfl
+                                                                  -- 🎉 no goals
 #align set.op_mem_op Set.op_mem_op
 
 @[simp]
@@ -46,6 +47,7 @@ theorem mem_unop {s : Set αᵒᵖ} {a : α} : a ∈ s.unop ↔ op a ∈ s :=
 
 @[simp 1100]
 theorem unop_mem_unop {s : Set αᵒᵖ} {a : αᵒᵖ} : unop a ∈ s.unop ↔ a ∈ s := by rfl
+                                                                              -- 🎉 no goals
 #align set.unop_mem_unop Set.unop_mem_unop
 
 @[simp]
@@ -75,33 +77,49 @@ def opEquiv : Set α ≃ Set αᵒᵖ :=
 @[simp]
 theorem singleton_op (x : α) : ({x} : Set α).op = {op x} := by
   ext
+  -- ⊢ x✝ ∈ Set.op {x} ↔ x✝ ∈ {op x}
   constructor
+  -- ⊢ x✝ ∈ Set.op {x} → x✝ ∈ {op x}
   · apply unop_injective
+    -- 🎉 no goals
   · apply op_injective
+    -- 🎉 no goals
 #align set.singleton_op Set.singleton_op
 
 @[simp]
 theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := by
   ext
+  -- ⊢ x✝ ∈ Set.unop {x} ↔ x✝ ∈ {x.unop}
   constructor
+  -- ⊢ x✝ ∈ Set.unop {x} → x✝ ∈ {x.unop}
   · apply op_injective
+    -- 🎉 no goals
   · apply unop_injective
+    -- 🎉 no goals
 #align set.singleton_unop Set.singleton_unop
 
 @[simp 1100]
 theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
   ext
+  -- ⊢ x✝ ∈ Set.unop {op x} ↔ x✝ ∈ {x}
   constructor
+  -- ⊢ x✝ ∈ Set.unop {op x} → x✝ ∈ {x}
   · apply op_injective
+    -- 🎉 no goals
   · apply unop_injective
+    -- 🎉 no goals
 #align set.singleton_op_unop Set.singleton_op_unop
 
 @[simp 1100]
 theorem singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := by
   ext
+  -- ⊢ x✝ ∈ Set.op {x.unop} ↔ x✝ ∈ {x}
   constructor
+  -- ⊢ x✝ ∈ Set.op {x.unop} → x✝ ∈ {x}
   · apply unop_injective
+    -- 🎉 no goals
   · apply op_injective
+    -- 🎉 no goals
 #align set.singleton_unop_op Set.singleton_unop_op
 
 end Set

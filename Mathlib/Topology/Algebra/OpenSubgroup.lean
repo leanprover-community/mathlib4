@@ -167,13 +167,20 @@ instance : Inhabited (OpenSubgroup G) :=
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
   apply isOpen_compl_iff.1
+  -- ⊢ IsOpen (↑U)ᶜ
   refine' isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, _, _, _⟩
   · refine' fun u hux hu => hx _
+    -- ⊢ x ∈ ↑U
     simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
+    -- ⊢ x ∈ U
     convert U.mul_mem (U.inv_mem hux) hu
+    -- ⊢ x ∈ U ↔ (u * x⁻¹)⁻¹ * u ∈ ↑U
     simp
+    -- 🎉 no goals
   · exact U.isOpen.preimage (continuous_mul_right _)
+    -- 🎉 no goals
   · simp [one_mem]
+    -- 🎉 no goals
 #align open_subgroup.is_closed OpenSubgroup.isClosed
 #align open_add_subgroup.is_closed OpenAddSubgroup.isClosed
 
@@ -308,7 +315,9 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgr
 @[to_additive]
 theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
   refine' isOpen_iff_mem_nhds.2 fun x hx => _
+  -- ⊢ ↑H ∈ 𝓝 x
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
+  -- ⊢ ↑H ∈ 𝓝 x
   have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
     (continuous_id.mul continuous_const).tendsto' _ _ (mul_inv_cancel_left _ _)
   simpa only [SetLike.mem_coe, Filter.mem_map',

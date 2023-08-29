@@ -31,11 +31,15 @@ namespace AffineMap
 
 theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := by
   rw [f.decomp]
+  -- ⊢ HasStrictDerivAt (↑f.linear + fun x => ↑f 0) (↑f.linear 1) x
   exact f.linear.hasStrictDerivAt.add_const (f 0)
+  -- 🎉 no goals
 
 theorem hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) x L := by
   rw [f.decomp]
+  -- ⊢ HasDerivAtFilter (↑f.linear + fun x => ↑f 0) (↑f.linear 1) x L
   exact f.linear.hasDerivAtFilter.add_const (f 0)
+  -- 🎉 no goals
 
 theorem hasDerivWithinAt : HasDerivWithinAt f (f.linear 1) s x := f.hasDerivAtFilter
 theorem hasDerivAt : HasDerivAt f (f.linear 1) x := f.hasDerivAtFilter
@@ -63,6 +67,7 @@ deduce higher dimensional lemmas from one-dimensional versions.
 
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
   simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
+  -- 🎉 no goals
 
 theorem hasDerivAt_lineMap :  HasDerivAt (lineMap a b) (b - a) x :=
   hasStrictDerivAt_lineMap.hasDerivAt

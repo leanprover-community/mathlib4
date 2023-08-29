@@ -57,8 +57,11 @@ def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
     Over.homMk f.f
       (by
         rw [Over.mk_hom, ← f.h_assoc]
+        -- ⊢ X✝.a ≫ (prodComonad X).toFunctor.map f.f ≫ prod.fst = ((fun A => Over.mk (A. …
         dsimp
+        -- ⊢ X✝.a ≫ prod.map (𝟙 X) f.f ≫ prod.fst = X✝.a ≫ prod.fst
         simp)
+        -- 🎉 no goals
 #align category_theory.coalgebra_to_over CategoryTheory.coalgebraToOver
 
 /-- The backward direction of the equivalence from coalgebras for the product comonad to the over
@@ -79,6 +82,8 @@ def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   inverse := overToCoalgebra X
   unitIso := NatIso.ofComponents fun A =>
     Coalgebra.isoMk (Iso.refl _) (prod.hom_ext (by simp) (by simpa using A.counit))
+                                                   -- 🎉 no goals
+                                                             -- 🎉 no goals
   counitIso := NatIso.ofComponents fun f => Over.isoMk (Iso.refl _)
 #align category_theory.coalgebra_equiv_over CategoryTheory.coalgebraEquivOver
 
@@ -108,8 +113,11 @@ def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
     Under.homMk f.f
       (by
         rw [Under.mk_hom, Category.assoc, ← f.h]
+        -- ⊢ coprod.inl ≫ (coprodMonad X).toFunctor.map f.f ≫ Y✝.a = ((fun A => Under.mk  …
         dsimp
+        -- ⊢ coprod.inl ≫ coprod.map (𝟙 X) f.f ≫ Y✝.a = coprod.inl ≫ Y✝.a
         simp)
+        -- 🎉 no goals
 #align category_theory.algebra_to_under CategoryTheory.algebraToUnder
 
 /-- The backward direction of the equivalence from algebras for the coproduct monad to the under
@@ -131,6 +139,8 @@ def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
   inverse := underToAlgebra X
   unitIso := NatIso.ofComponents fun A =>
     Monad.Algebra.isoMk (Iso.refl _) (coprod.hom_ext (by simp) (by simpa using A.unit.symm))
+                                                         -- 🎉 no goals
+                                                                   -- 🎉 no goals
   counitIso :=
     NatIso.ofComponents fun f => Under.isoMk (Iso.refl _)
 #align category_theory.algebra_equiv_under CategoryTheory.algebraEquivUnder

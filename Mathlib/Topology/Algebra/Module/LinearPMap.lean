@@ -81,19 +81,25 @@ theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosabl
 theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg : g ≤ f) :
     g.IsClosable := by
   cases' hf with f' hf
+  -- ⊢ IsClosable g
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
   use g.graph.topologicalClosure.toLinearPMap
+  -- ⊢ Submodule.topologicalClosure (graph g) = graph (Submodule.toLinearPMap (Subm …
   rw [Submodule.toLinearPMap_graph_eq]
+  -- ⊢ ∀ (x : E × F), x ∈ Submodule.topologicalClosure (graph g) → x.fst = 0 → x.sn …
   exact fun _ hx hx' => f'.graph_fst_eq_zero_snd (this hx) hx'
+  -- 🎉 no goals
 #align linear_pmap.is_closable.le_is_closable LinearPMap.IsClosable.leIsClosable
 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
   refine' exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph _
+  -- ⊢ graph x✝¹ = graph x✝
   rw [← hy₁, ← hy₂]
+  -- 🎉 no goals
 #align linear_pmap.is_closable.exists_unique LinearPMap.IsClosable.existsUnique
 
 open Classical
@@ -106,9 +112,11 @@ noncomputable def closure (f : E →ₗ.[R] F) : E →ₗ.[R] F :=
 
 theorem closure_def {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure = hf.choose := by
   simp [closure, hf]
+  -- 🎉 no goals
 #align linear_pmap.closure_def LinearPMap.closure_def
 
 theorem closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f := by simp [closure, hf]
+                                                                                 -- 🎉 no goals
 #align linear_pmap.closure_def' LinearPMap.closure_def'
 
 /-- The closure (as a submodule) of the graph is equal to the graph of the closure
@@ -116,30 +124,43 @@ theorem closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f 
 theorem IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     f.graph.topologicalClosure = f.closure.graph := by
   rw [closure_def hf]
+  -- ⊢ Submodule.topologicalClosure (graph f) = graph (Exists.choose hf)
   exact hf.choose_spec
+  -- 🎉 no goals
 #align linear_pmap.is_closable.graph_closure_eq_closure_graph LinearPMap.IsClosable.graph_closure_eq_closure_graph
 
 /-- A `LinearPMap` is contained in its closure. -/
 theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
   by_cases hf : f.IsClosable
+  -- ⊢ f ≤ closure f
   · refine' le_of_le_graph _
+    -- ⊢ graph f ≤ graph (closure f)
     rw [← hf.graph_closure_eq_closure_graph]
+    -- ⊢ graph f ≤ Submodule.topologicalClosure (graph f)
     exact (graph f).le_topologicalClosure
+    -- 🎉 no goals
   rw [closure_def' hf]
+  -- 🎉 no goals
 #align linear_pmap.le_closure LinearPMap.le_closure
 
 theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
     f.closure ≤ g.closure := by
   refine' le_of_le_graph _
+  -- ⊢ graph (closure f) ≤ graph (closure g)
   rw [← (hg.leIsClosable h).graph_closure_eq_closure_graph]
+  -- ⊢ Submodule.topologicalClosure (graph f) ≤ graph (closure g)
   rw [← hg.graph_closure_eq_closure_graph]
+  -- ⊢ Submodule.topologicalClosure (graph f) ≤ Submodule.topologicalClosure (graph …
   exact Submodule.topologicalClosure_mono (le_graph_of_le h)
+  -- 🎉 no goals
 #align linear_pmap.is_closable.closure_mono LinearPMap.IsClosable.closure_mono
 
 /-- If `f` is closable, then the closure is closed. -/
 theorem IsClosable.closure_isClosed {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure.IsClosed := by
   rw [IsClosed, ← hf.graph_closure_eq_closure_graph]
+  -- ⊢ _root_.IsClosed ↑(Submodule.topologicalClosure (graph f))
   exact f.graph.isClosed_topologicalClosure
+  -- 🎉 no goals
 #align linear_pmap.is_closable.closure_is_closed LinearPMap.IsClosable.closure_isClosed
 
 /-- If `f` is closable, then the closure is closable. -/
@@ -172,15 +193,25 @@ theorem hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
 Note that we don't require that `f` is closable, due to the definition of the closure. -/
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine' ⟨f.le_closure.1, _⟩
+  -- ⊢ closure (domRestrict (closure f) f.domain) = closure f
   congr
+  -- ⊢ domRestrict (closure f) f.domain = f
   ext x y hxy
+  -- ⊢ x ∈ (domRestrict (closure f) f.domain).domain ↔ x ∈ f.domain
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
+    -- ⊢ x ∈ f.domain → x ∈ (closure f).domain
     intro hx
+    -- ⊢ x ∈ (closure f).domain
     exact f.le_closure.1 hx
+    -- 🎉 no goals
   let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
+  -- ⊢ ↑(domRestrict (closure f) f.domain) x = ↑f y
   have hyz : (y : E) = z := by simp
+  -- ⊢ ↑(domRestrict (closure f) f.domain) x = ↑f y
   rw [f.le_closure.2 hyz]
+  -- ⊢ ↑(domRestrict (closure f) f.domain) x = ↑(closure f) z
   exact domRestrict_apply (hxy.trans hyz)
+  -- 🎉 no goals
 #align linear_pmap.closure_has_core LinearPMap.closureHasCore
 
 /-! ### Topological properties of the inverse -/
@@ -195,44 +226,67 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
     (hcf : LinearMap.ker f.closure.toFun = ⊥) :
     f.closure.inverse.graph = f.inverse.graph.topologicalClosure := by
   rw [inverse_graph hf, inverse_graph hcf, ← hf'.graph_closure_eq_closure_graph]
+  -- ⊢ Submodule.map (LinearEquiv.prodComm R E F) (Submodule.topologicalClosure (gr …
   apply SetLike.ext'
+  -- ⊢ ↑(Submodule.map (LinearEquiv.prodComm R E F) (Submodule.topologicalClosure ( …
   simp only [Submodule.topologicalClosure_coe, Submodule.map_coe, LinearEquiv.prodComm_apply]
+  -- ⊢ (fun a => Prod.swap a) '' _root_.closure ↑(graph f) = _root_.closure ((fun a …
   apply (image_closure_subset_closure_image continuous_swap).antisymm
+  -- ⊢ _root_.closure (Prod.swap '' ↑(graph f)) ⊆ Prod.swap '' _root_.closure ↑(gra …
   have h1 := Set.image_equiv_eq_preimage_symm f.graph (LinearEquiv.prodComm R E F).toEquiv
+  -- ⊢ _root_.closure (Prod.swap '' ↑(graph f)) ⊆ Prod.swap '' _root_.closure ↑(gra …
   have h2 := Set.image_equiv_eq_preimage_symm (_root_.closure f.graph)
     (LinearEquiv.prodComm R E F).toEquiv
   simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply,
     LinearEquiv.coe_toEquiv_symm] at h1 h2
   rw [h1, h2]
+  -- ⊢ _root_.closure (↑↑(LinearEquiv.symm (LinearEquiv.prodComm R E F)) ⁻¹' ↑(grap …
   apply continuous_swap.closure_preimage_subset
+  -- 🎉 no goals
 
 /-- Assuming that `f` is invertible and closable, then the closure is invertible if and only
 if the inverse of `f` is closable. -/
 theorem inverse_isClosable_iff (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable) :
     f.inverse.IsClosable ↔ LinearMap.ker f.closure.toFun = ⊥ := by
   constructor
+  -- ⊢ IsClosable (inverse f) → LinearMap.ker (closure f).toFun = ⊥
   · intro ⟨f', h⟩
+    -- ⊢ LinearMap.ker (closure f).toFun = ⊥
     rw [LinearMap.ker_eq_bot']
+    -- ⊢ ∀ (m : { x // x ∈ (closure f).domain }), ↑(closure f).toFun m = 0 → m = 0
     intro ⟨x, hx⟩ hx'
+    -- ⊢ { val := x, property := hx } = 0
     simp only [Submodule.mk_eq_zero]
+    -- ⊢ x = 0
     rw [toFun_eq_coe, eq_comm, image_iff] at hx'
+    -- ⊢ x = 0
     have : (0, x) ∈ graph f'
+    -- ⊢ (0, x) ∈ graph f'
     · rw [← h, inverse_graph hf]
+      -- ⊢ (0, x) ∈ Submodule.topologicalClosure (Submodule.map (LinearEquiv.prodComm R …
       rw [← hf'.graph_closure_eq_closure_graph, ← SetLike.mem_coe,
         Submodule.topologicalClosure_coe] at hx'
       apply image_closure_subset_closure_image continuous_swap
+      -- ⊢ (0, x) ∈ Prod.swap '' _root_.closure ↑(graph f)
       simp only [Set.mem_image, Prod.exists, Prod.swap_prod_mk, Prod.mk.injEq]
+      -- ⊢ ∃ a b, (a, b) ∈ _root_.closure ↑(graph f) ∧ b = 0 ∧ a = x
       exact ⟨x, 0, hx', rfl, rfl⟩
+      -- 🎉 no goals
     exact graph_fst_eq_zero_snd f' this rfl
+    -- 🎉 no goals
   · intro h
+    -- ⊢ IsClosable (inverse f)
     use f.closure.inverse
+    -- ⊢ Submodule.topologicalClosure (graph (inverse f)) = graph (inverse (closure f))
     exact (closure_inverse_graph hf hf' h).symm
+    -- 🎉 no goals
 
 /-- If `f` is invertible and closable, then taking the closure and the inverse commute. -/
 theorem inverse_closure (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
     (hcf : LinearMap.ker f.closure.toFun = ⊥) :
     f.inverse.closure = f.closure.inverse := by
   apply eq_of_eq_graph
+  -- ⊢ graph (closure (inverse f)) = graph (inverse (closure f))
   rw [closure_inverse_graph hf hf' hcf,
     ((inverse_isClosable_iff hf hf').mpr hcf).graph_closure_eq_closure_graph]
 

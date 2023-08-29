@@ -45,7 +45,9 @@ protected def lim (_h : Subadditive u) :=
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
+  -- ⊢ sInf ((fun n => u n / ↑n) '' Ici 1) ≤ u n / ↑n
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
+  -- 🎉 no goals
 #align subadditive.lim_le_div Subadditive.lim_le_div
 
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
@@ -63,6 +65,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
     ∀ᶠ p in atTop, u p / p < L := by
   /- It suffices to prove the statement for each arithmetic progression `(n * · + r)`. -/
   refine .atTop_of_arithmetic hn fun r _ => ?_
+  -- ⊢ ∀ᶠ (a : ℕ) in atTop, u (n * a + r) / ↑(n * a + r) < L
   /- `(k * u n + u r) / (k * n + r)` tends to `u n / n < L`, hence
   `(k * u n + u r) / (k * n + r) < L` for sufficiently large `k`. -/
   have A : Tendsto (fun x : ℝ => (u n + u r / x) / (n + r / x)) atTop (𝓝 ((u n + 0) / (n + 0))) :=
@@ -73,18 +76,24 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
     refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
     simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right _ hx, mul_comm]
   refine ((B.comp tendsto_nat_cast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk => ?_
+  -- ⊢ u (n * k + r) / ↑(n * k + r) < L
   /- Finally, we use an upper estimate on `u (k * n + r)` to get an estimate on
   `u (k * n + r) / (k * n + r)`. -/
   rw [mul_comm]
+  -- ⊢ u (k * n + r) / ↑(k * n + r) < L
   refine lt_of_le_of_lt ?_ hk
+  -- ⊢ u (k * n + r) / ↑(k * n + r) ≤ ((fun x => (x * u n + u r) / (x * ↑n + ↑r)) ∘ …
   simp only [(· ∘ ·), ← Nat.cast_add, ← Nat.cast_mul]
+  -- ⊢ u (k * n + r) / ↑(k * n + r) ≤ (↑k * u n + u r) / ↑(k * n + r)
   exact div_le_div_of_le (Nat.cast_nonneg _) (h.apply_mul_add_le _ _ _)
+  -- 🎉 no goals
 #align subadditive.eventually_div_lt_of_div_lt Subadditive.eventually_div_lt_of_div_lt
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/
 theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
     Tendsto (fun n => u n / n) atTop (𝓝 h.lim) := by
   refine' tendsto_order.2 ⟨fun l hl => _, fun L hL => _⟩
+  -- ⊢ ∀ᶠ (b : ℕ) in atTop, l < u b / ↑b
   · refine' eventually_atTop.2
       ⟨1, fun n hn => hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩
   · obtain ⟨n, npos, hn⟩ : ∃ n : ℕ, 0 < n ∧ u n / n < L := by
@@ -93,6 +102,7 @@ theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
       rcases (mem_image _ _ _).1 hx with ⟨n, hn, rfl⟩
       exact ⟨n, zero_lt_one.trans_le hn, xL⟩
     exact h.eventually_div_lt_of_div_lt npos.ne' hn
+    -- 🎉 no goals
 #align subadditive.tendsto_lim Subadditive.tendsto_lim
 
 end Subadditive

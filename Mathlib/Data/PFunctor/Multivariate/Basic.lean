@@ -100,18 +100,24 @@ def const.get (x : (const n A).Obj α) : A :=
 @[simp]
 theorem const.get_map (f : α ⟹ β) (x : (const n A).Obj α) : const.get (f <$$> x) = const.get x := by
   cases x
+  -- ⊢ get (f <$$> { fst := fst✝, snd := snd✝ }) = get { fst := fst✝, snd := snd✝ }
   rfl
+  -- 🎉 no goals
 #align mvpfunctor.const.get_map MvPFunctor.const.get_map
 
 @[simp]
 theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := by rfl
+                                                                                      -- 🎉 no goals
 #align mvpfunctor.const.get_mk MvPFunctor.const.get_mk
 
 @[simp]
 theorem const.mk_get (x : (const n A).Obj α) : const.mk n (const.get x) = x := by
   cases x
+  -- ⊢ mk n (get { fst := fst✝, snd := snd✝ }) = { fst := fst✝, snd := snd✝ }
   dsimp [const.get, const.mk]
+  -- ⊢ { fst := fst✝, snd := fun x a => PEmpty.elim a } = { fst := fst✝, snd := snd …
   congr with (_⟨⟩)
+  -- 🎉 no goals
 #align mvpfunctor.const.mk_get MvPFunctor.const.mk_get
 
 end Const
@@ -138,16 +144,19 @@ def comp.get (x : (comp P Q).Obj α) : P.Obj fun i => (Q i).Obj α :=
 theorem comp.get_map (f : α ⟹ β) (x : (comp P Q).Obj α) :
     comp.get (f <$$> x) = (fun i (x : (Q i).Obj α) => f <$$> x) <$$> comp.get x := by
   rfl
+  -- 🎉 no goals
 #align mvpfunctor.comp.get_map MvPFunctor.comp.get_map
 
 @[simp]
 theorem comp.get_mk (x : P.Obj fun i => (Q i).Obj α) : comp.get (comp.mk x) = x := by
   rfl
+  -- 🎉 no goals
 #align mvpfunctor.comp.get_mk MvPFunctor.comp.get_mk
 
 @[simp]
 theorem comp.mk_get (x : (comp P Q).Obj α) : comp.mk (comp.get x) = x := by
   rfl
+  -- 🎉 no goals
 #align mvpfunctor.comp.mk_get MvPFunctor.comp.mk_get
 
 /-
@@ -156,45 +165,81 @@ lifting predicates and relations
 theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P.Obj α) :
     LiftP p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i j, p (f i j) := by
   constructor
+  -- ⊢ LiftP p x → ∃ a f, x = { fst := a, snd := f } ∧ ∀ (i : Fin2 n) (j : B P a i) …
   · rintro ⟨y, hy⟩
+    -- ⊢ ∃ a f, x = { fst := a, snd := f } ∧ ∀ (i : Fin2 n) (j : B P a i), p (f i j)
     cases' h : y with a f
+    -- ⊢ ∃ a f, x = { fst := a, snd := f } ∧ ∀ (i : Fin2 n) (j : B P a i), p (f i j)
     refine' ⟨a, fun i j => (f i j).val, _, fun i j => (f i j).property⟩
+    -- ⊢ x = { fst := a, snd := fun i j => ↑(f i j) }
     rw [← hy, h, map_eq]
+    -- ⊢ { fst := a, snd := (fun i => Subtype.val) ⊚ f } = { fst := a, snd := fun i j …
     rfl
+    -- 🎉 no goals
   rintro ⟨a, f, xeq, pf⟩
+  -- ⊢ LiftP p x
   use ⟨a, fun i j => ⟨f i j, pf i j⟩⟩
+  -- ⊢ (fun i => Subtype.val) <$$> { fst := a, snd := fun i j => { val := f i j, pr …
   rw [xeq]; rfl
+  -- ⊢ (fun i => Subtype.val) <$$> { fst := a, snd := fun i j => { val := f i j, pr …
+            -- 🎉 no goals
 #align mvpfunctor.liftp_iff MvPFunctor.liftP_iff
 
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
   simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
+  -- ⊢ (∃ a_1 f_1, { fst := a, snd := f } = { fst := a_1, snd := f_1 } ∧ ∀ (i : Fin …
+                                           -- ⊢ (∃ a_1 f_1, { fst := a, snd := f } = { fst := a_1, snd := f_1 } ∧ ∀ (i : Fin …
   · rintro ⟨_, _, ⟨⟩, _⟩
+    -- ⊢ ∀ (i : Fin2 n) (x : B P a i), p (f i x)
     assumption
+    -- 🎉 no goals
   · intro
+    -- ⊢ ∃ a_1 f_1, { fst := a, snd := f } = { fst := a_1, snd := f_1 } ∧ ∀ (i : Fin2 …
     repeat' first |constructor|assumption
+    -- 🎉 no goals
 #align mvpfunctor.liftp_iff' MvPFunctor.liftP_iff'
 
 theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : P.Obj α) :
     LiftR @r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
+  -- ⊢ LiftR r x y → ∃ a f₀ f₁, x = { fst := a, snd := f₀ } ∧ y = { fst := a, snd : …
   · rintro ⟨u, xeq, yeq⟩
+    -- ⊢ ∃ a f₀ f₁, x = { fst := a, snd := f₀ } ∧ y = { fst := a, snd := f₁ } ∧ ∀ (i  …
     cases' h : u with a f
+    -- ⊢ ∃ a f₀ f₁, x = { fst := a, snd := f₀ } ∧ y = { fst := a, snd := f₁ } ∧ ∀ (i  …
     use a, fun i j => (f i j).val.fst, fun i j => (f i j).val.snd
+    -- ⊢ x = { fst := a, snd := fun i j => (↑(f i j)).fst } ∧ y = { fst := a, snd :=  …
     constructor
+    -- ⊢ x = { fst := a, snd := fun i j => (↑(f i j)).fst }
     · rw [← xeq, h]
+      -- ⊢ (fun i t => (↑t).fst) <$$> { fst := a, snd := f } = { fst := a, snd := fun i …
       rfl
+      -- 🎉 no goals
     constructor
+    -- ⊢ y = { fst := a, snd := fun i j => (↑(f i j)).snd }
     · rw [← yeq, h]
+      -- ⊢ (fun i t => (↑t).snd) <$$> { fst := a, snd := f } = { fst := a, snd := fun i …
       rfl
+      -- 🎉 no goals
     intro i j
+    -- ⊢ r (↑(f i j)).fst (↑(f i j)).snd
     exact (f i j).property
+    -- 🎉 no goals
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
+  -- ⊢ LiftR r x y
   use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
+  -- ⊢ (fun i t => (↑t).fst) <$$> { fst := a, snd := fun i j => { val := (f₀ i j, f …
   dsimp; constructor
+  -- ⊢ (fun i t => (↑t).fst) <$$> { fst := a, snd := fun i j => { val := (f₀ i j, f …
+         -- ⊢ (fun i t => (↑t).fst) <$$> { fst := a, snd := fun i j => { val := (f₀ i j, f …
   · rw [xeq]
+    -- ⊢ (fun i t => (↑t).fst) <$$> { fst := a, snd := fun i j => { val := (f₀ i j, f …
     rfl
+    -- 🎉 no goals
   rw [yeq]; rfl
+  -- ⊢ (fun i t => (↑t).snd) <$$> { fst := a, snd := fun i j => { val := (f₀ i j, f …
+            -- 🎉 no goals
 #align mvpfunctor.liftr_iff MvPFunctor.liftR_iff
 
 open Set MvFunctor
@@ -202,15 +247,28 @@ open Set MvFunctor
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P.Obj α) i = f i '' univ := by
   ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  -- ⊢ x ∈ supp { fst := a, snd := f } i ↔ x ∈ f i '' univ
+         -- ⊢ (∀ ⦃P_1 : (i : Fin2 n) → α i → Prop⦄, LiftP P_1 { fst := a, snd := f } → P_1 …
   constructor <;> intro h
+  -- ⊢ (∀ ⦃P_1 : (i : Fin2 n) → α i → Prop⦄, LiftP P_1 { fst := a, snd := f } → P_1 …
+                  -- ⊢ ∃ y, f i y = x
+                  -- ⊢ ∀ ⦃P_1 : (i : Fin2 n) → α i → Prop⦄, LiftP P_1 { fst := a, snd := f } → P_1  …
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
+    -- ⊢ LiftP (fun i x => ∃ y, f i y = x) { fst := a, snd := f }
     rw [liftP_iff']
+    -- ⊢ ∀ (i : Fin2 n) (x : B P a i), ∃ y, f i y = f i x
     intros
+    -- ⊢ ∃ y, f i✝ y = f i✝ x✝
     refine' ⟨_, rfl⟩
+    -- 🎉 no goals
   · simp only [liftP_iff']
+    -- ⊢ ∀ ⦃P_1 : (i : Fin2 n) → α i → Prop⦄, (∀ (i : Fin2 n) (x : B P a i), P_1 i (f …
     cases h
+    -- ⊢ ∀ ⦃P_1 : (i : Fin2 n) → α i → Prop⦄, (∀ (i : Fin2 n) (x : B P a i), P_1 i (f …
     subst x
+    -- ⊢ ∀ ⦃P_1 : (i : Fin2 n) → α i → Prop⦄, (∀ (i : Fin2 n) (x : B P a i), P_1 i (f …
     tauto
+    -- 🎉 no goals
 #align mvpfunctor.supp_eq MvPFunctor.supp_eq
 
 end MvPFunctor

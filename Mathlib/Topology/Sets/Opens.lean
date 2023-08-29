@@ -74,6 +74,7 @@ namespace Opens
 instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
+                                              -- 🎉 no goals
 
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
@@ -227,6 +228,7 @@ instance [Nonempty α] : Nontrivial (Opens α) where
 @[simp, norm_cast]
 theorem coe_iSup {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set α) = ⋃ i, s i := by
   simp [iSup]
+  -- 🎉 no goals
 #align topological_space.opens.coe_supr TopologicalSpace.Opens.coe_iSup
 
 theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
@@ -242,12 +244,15 @@ theorem iSup_mk {ι} (s : ι → Set α) (h : ∀ i, IsOpen (s i)) :
 @[simp]
 theorem mem_iSup {ι} {x : α} {s : ι → Opens α} : x ∈ iSup s ↔ ∃ i, x ∈ s i := by
   rw [← SetLike.mem_coe]
+  -- ⊢ x ∈ ↑(iSup s) ↔ ∃ i, x ∈ s i
   simp
+  -- 🎉 no goals
 #align topological_space.opens.mem_supr TopologicalSpace.Opens.mem_iSup
 
 @[simp]
 theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us, x ∈ u := by
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
+  -- 🎉 no goals
 #align topological_space.opens.mem_Sup TopologicalSpace.Opens.mem_sSup
 
 instance : Frame (Opens α) :=
@@ -255,28 +260,37 @@ instance : Frame (Opens α) :=
     sSup := sSup
     inf_sSup_le_iSup_inf := fun a s =>
       (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
+                 -- 🎉 no goals
 
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     OpenEmbedding (Set.inclusion $ SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
     open_range := by
       rw [Set.range_inclusion i]
+      -- ⊢ IsOpen {x | ↑x ∈ ↑U}
       exact U.isOpen.preimage continuous_subtype_val }
+      -- 🎉 no goals
 #align topological_space.opens.open_embedding_of_le TopologicalSpace.Opens.openEmbedding_of_le
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
+  -- 🎉 no goals
 #align topological_space.opens.not_nonempty_iff_eq_bot TopologicalSpace.Opens.not_nonempty_iff_eq_bot
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
   rw [Ne.def, ← not_nonempty_iff_eq_bot, not_not]
+  -- 🎉 no goals
 #align topological_space.opens.ne_bot_iff_nonempty TopologicalSpace.Opens.ne_bot_iff_nonempty
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
 theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ := by
   subst h; letI : TopologicalSpace α := ⊤
+  -- ⊢ U = ⊥ ∨ U = ⊤
+           -- ⊢ U = ⊥ ∨ U = ⊤
   rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
+  -- ⊢ IsOpen ↑U
   exact U.2
+  -- 🎉 no goals
 #align topological_space.opens.eq_bot_or_top TopologicalSpace.Opens.eq_bot_or_top
 
 -- porting note: new instance
@@ -291,35 +305,63 @@ def IsBasis (B : Set (Opens α)) : Prop :=
 theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     IsBasis B ↔ ∀ {U : Opens α} {x}, x ∈ U → ∃ U' ∈ B, x ∈ U' ∧ U' ≤ U := by
   constructor <;> intro h
+  -- ⊢ IsBasis B → ∀ {U : Opens α} {x : α}, x ∈ U → ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ U
+                  -- ⊢ ∀ {U : Opens α} {x : α}, x ∈ U → ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ U
+                  -- ⊢ IsBasis B
   · rintro ⟨sU, hU⟩ x hx
+    -- ⊢ ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ { carrier := sU, is_open' := hU }
     rcases h.mem_nhds_iff.mp (IsOpen.mem_nhds hU hx) with ⟨sV, ⟨⟨V, H₁, H₂⟩, hsV⟩⟩
+    -- ⊢ ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ { carrier := sU, is_open' := hU }
     refine' ⟨V, H₁, _⟩
+    -- ⊢ x ∈ V ∧ V ≤ { carrier := sU, is_open' := hU }
     cases V
+    -- ⊢ x ∈ { carrier := carrier✝, is_open' := is_open'✝ } ∧ { carrier := carrier✝,  …
     dsimp at H₂
+    -- ⊢ x ∈ { carrier := carrier✝, is_open' := is_open'✝ } ∧ { carrier := carrier✝,  …
     subst H₂
+    -- ⊢ x ∈ { carrier := carrier✝, is_open' := is_open'✝ } ∧ { carrier := carrier✝,  …
     exact hsV
+    -- 🎉 no goals
   · refine' isTopologicalBasis_of_open_of_nhds _ _
+    -- ⊢ ∀ (u : Set α), u ∈ SetLike.coe '' B → IsOpen u
     · rintro sU ⟨U, -, rfl⟩
+      -- ⊢ IsOpen ↑U
       exact U.2
+      -- 🎉 no goals
     · intro x sU hx hsU
+      -- ⊢ ∃ v, v ∈ SetLike.coe '' B ∧ x ∈ v ∧ v ⊆ sU
       rcases @h ⟨sU, hsU⟩ x hx with ⟨V, hV, H⟩
+      -- ⊢ ∃ v, v ∈ SetLike.coe '' B ∧ x ∈ v ∧ v ⊆ sU
       exact ⟨V, ⟨V, hV, rfl⟩, H⟩
+      -- 🎉 no goals
 #align topological_space.opens.is_basis_iff_nbhd TopologicalSpace.Opens.isBasis_iff_nbhd
 
 theorem isBasis_iff_cover {B : Set (Opens α)} :
     IsBasis B ↔ ∀ U : Opens α, ∃ Us, Us ⊆ B ∧ U = sSup Us := by
   constructor
+  -- ⊢ IsBasis B → ∀ (U : Opens α), ∃ Us, Us ⊆ B ∧ U = sSup Us
   · intro hB U
+    -- ⊢ ∃ Us, Us ⊆ B ∧ U = sSup Us
     refine ⟨{ V : Opens α | V ∈ B ∧ V ≤ U }, fun U hU => hU.left, ext ?_⟩
+    -- ⊢ ↑U = ↑(sSup {V | V ∈ B ∧ V ≤ U})
     rw [coe_sSup, hB.open_eq_sUnion' U.isOpen]
+    -- ⊢ ⋃₀ {s | s ∈ SetLike.coe '' B ∧ s ⊆ ↑U} = ⋃ (i : Opens α) (_ : i ∈ {V | V ∈ B …
     simp_rw [sUnion_eq_biUnion, iUnion, mem_setOf_eq, iSup_and, iSup_image]
+    -- ⊢ ⨆ (b : Opens α) (_ : b ∈ B) (_ : ↑b ⊆ ↑U), ↑b = ⨆ (i : Opens α) (_ : i ∈ B)  …
     rfl
+    -- 🎉 no goals
   · intro h
+    -- ⊢ IsBasis B
     rw [isBasis_iff_nbhd]
+    -- ⊢ ∀ {U : Opens α} {x : α}, x ∈ U → ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ U
     intro U x hx
+    -- ⊢ ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ U
     rcases h U with ⟨Us, hUs, rfl⟩
+    -- ⊢ ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ sSup Us
     rcases mem_sSup.1 hx with ⟨U, Us, xU⟩
+    -- ⊢ ∃ U', U' ∈ B ∧ x ∈ U' ∧ U' ≤ sSup Us✝
     exact ⟨U, hUs Us, xU, le_sSup Us⟩
+    -- 🎉 no goals
 #align topological_space.opens.is_basis_iff_cover TopologicalSpace.Opens.isBasis_iff_cover
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
@@ -328,34 +370,51 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
+  -- ⊢ IsTopologicalBasis (range fun i => (b i).carrier)
   · convert (config := {transparency := .default}) hb
+    -- ⊢ (range fun i => (b i).carrier) = SetLike.coe '' range b
     ext
+    -- ⊢ (x✝ ∈ range fun i => (b i).carrier) ↔ x✝ ∈ SetLike.coe '' range b
     simp
+    -- 🎉 no goals
   · exact hb'
+    -- 🎉 no goals
 #align topological_space.opens.is_basis.is_compact_open_iff_eq_finite_Union TopologicalSpace.Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
   rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
+  -- ⊢ (∀ (ι : Type u_2) (s_1 : ι → Opens α), s ≤ iSup s_1 → ∃ t, s ≤ Finset.sup t  …
   refine' ⟨_, fun H ι U hU => _⟩
+  -- ⊢ (∀ (ι : Type u_2) (s_1 : ι → Opens α), s ≤ iSup s_1 → ∃ t, s ≤ Finset.sup t  …
   · introv H hU hU'
+    -- ⊢ ∃ t, ↑s ⊆ ⋃ (i : ι) (_ : i ∈ t), U i
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
+    -- ⊢ ∃ t, ↑s ⊆ ⋃ (i : ι) (_ : i ∈ t), U i
     refine' ⟨t, Set.Subset.trans ht _⟩
+    -- ⊢ ↑(Finset.sup t fun i => { carrier := U i, is_open' := (_ : IsOpen (U i)) })  …
     rw [coe_finset_sup, Finset.sup_eq_iSup]
+    -- ⊢ ⨆ (a : ι) (_ : a ∈ t), (SetLike.coe ∘ fun i => { carrier := U i, is_open' := …
     rfl
+    -- 🎉 no goals
   · obtain ⟨t, ht⟩ :=
       H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
     refine' ⟨t, Set.Subset.trans ht _⟩
+    -- ⊢ ⋃ (i : ι) (_ : i ∈ t), ↑(U i) ⊆ ↑(Finset.sup t U)
     simp only [Set.iUnion_subset_iff]
+    -- ⊢ ∀ (i : ι), i ∈ t → ↑(U i) ⊆ ↑(Finset.sup t U)
     show ∀ i ∈ t, U i ≤ t.sup U
+    -- ⊢ ∀ (i : ι), i ∈ t → U i ≤ Finset.sup t U
     exact fun i => Finset.le_sup
+    -- 🎉 no goals
 #align topological_space.opens.is_compact_element_iff TopologicalSpace.Opens.isCompactElement_iff
 
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
   toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
   map_sSup' s := ext <| by simp only [coe_sSup, preimage_iUnion, biUnion_image, coe_mk]
+                           -- 🎉 no goals
   map_inf' a b := rfl
   map_top' := rfl
 #align topological_space.opens.comap TopologicalSpace.Opens.comap
@@ -402,6 +461,8 @@ def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β whe
   right_inv := fun U => ext <| f.toEquiv.symm_preimage_preimage _
   map_rel_iff' := by
     simp only [← SetLike.coe_subset_coe]; exact f.symm.surjective.preimage_subset_preimage_iff
+    -- ⊢ ∀ {a b : Opens α}, ↑(↑{ toFun := ↑(comap (Homeomorph.toContinuousMap (Homeom …
+                                          -- 🎉 no goals
 #align homeomorph.opens_congr Homeomorph.opensCongr
 
 @[simp]

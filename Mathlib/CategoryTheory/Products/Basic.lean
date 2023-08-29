@@ -64,15 +64,25 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
+  -- ⊢ IsIso f → IsIso f.fst ∧ IsIso f.snd
   · rintro ⟨g, hfg, hgf⟩
+    -- ⊢ IsIso f.fst ∧ IsIso f.snd
     simp at hfg hgf
+    -- ⊢ IsIso f.fst ∧ IsIso f.snd
     rcases hfg with ⟨hfg₁, hfg₂⟩
+    -- ⊢ IsIso f.fst ∧ IsIso f.snd
     rcases hgf with ⟨hgf₁, hgf₂⟩
+    -- ⊢ IsIso f.fst ∧ IsIso f.snd
     exact ⟨⟨⟨g.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.2, hfg₂, hgf₂⟩⟩⟩
+    -- 🎉 no goals
   · rintro ⟨⟨g₁, hfg₁, hgf₁⟩, ⟨g₂, hfg₂, hgf₂⟩⟩
+    -- ⊢ IsIso f
     dsimp at hfg₁ hgf₁ hfg₂ hgf₂
+    -- ⊢ IsIso f
     refine' ⟨⟨(g₁, g₂), _, _⟩⟩
+    -- ⊢ f ≫ (g₁, g₂) = 𝟙 (P, S)
     repeat { simp; constructor; assumption; assumption }
+    -- 🎉 no goals
 #align category_theory.is_iso_prod_iff CategoryTheory.isIso_prod_iff
 
 section
@@ -171,11 +181,14 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D)
 def braiding : C × D ≌ D × C :=
   Equivalence.mk (swap C D) (swap D C)
     (NatIso.ofComponents fun X => eqToIso (by simp))
+                                              -- 🎉 no goals
     (NatIso.ofComponents fun X => eqToIso (by simp))
+                                              -- 🎉 no goals
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
 instance swapIsEquivalence : IsEquivalence (swap C D) :=
   (by infer_instance : IsEquivalence (braiding C D).functor)
+      -- 🎉 no goals
 #align category_theory.prod.swap_is_equivalence CategoryTheory.Prod.swapIsEquivalence
 
 end Prod
@@ -207,7 +220,13 @@ def evaluationUncurried : C × (C ⥤ D) ⥤ D where
   map := fun {x} {y} f => x.2.map f.1 ≫ f.2.app y.1
   map_comp := fun {X} {Y} {Z} f g => by
     cases g; cases f; cases Z; cases Y; cases X
+    -- ⊢ { obj := fun p => p.snd.obj p.fst, map := fun {x y} f => x.snd.map f.fst ≫ N …
+             -- ⊢ { obj := fun p => p.snd.obj p.fst, map := fun {x y} f => x.snd.map f.fst ≫ N …
+                      -- ⊢ { obj := fun p => p.snd.obj p.fst, map := fun {x y} f => x.snd.map f.fst ≫ N …
+                               -- ⊢ { obj := fun p => p.snd.obj p.fst, map := fun {x y} f => x.snd.map f.fst ≫ N …
+                                        -- ⊢ { obj := fun p => p.snd.obj p.fst, map := fun {x y} f => x.snd.map f.fst ≫ N …
     simp only [prod_comp, NatTrans.comp_app, Functor.map_comp, Category.assoc]
+    -- ⊢ snd✝¹.map fst✝ ≫ snd✝¹.map fst✝² ≫ NatTrans.app snd✝ fst✝⁴ ≫ NatTrans.app sn …
     rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app, Category.assoc,
       NatTrans.naturality]
 #align category_theory.evaluation_uncurried CategoryTheory.evaluationUncurried
@@ -287,10 +306,16 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
   app X := (α.app X.1, β.app X.2)
   naturality {X} {Y} f := by
     cases X; cases Y
+    -- ⊢ (Functor.prod F H).map f ≫ (fun X => (app α X.fst, app β X.snd)) Y = (fun X  …
+             -- ⊢ (Functor.prod F H).map f ≫ (fun X => (app α X.fst, app β X.snd)) (fst✝, snd✝ …
     simp only [Functor.prod_map, prod_comp]
+    -- ⊢ (F.map f.fst ≫ app α fst✝, H.map f.snd ≫ app β snd✝) = (app α fst✝¹ ≫ G.map  …
     rw [Prod.mk.inj_iff]
+    -- ⊢ F.map f.fst ≫ app α fst✝ = app α fst✝¹ ≫ G.map f.fst ∧ H.map f.snd ≫ app β s …
     constructor
+    -- ⊢ F.map f.fst ≫ app α fst✝ = app α fst✝¹ ≫ G.map f.fst
     repeat {rw [naturality]}
+    -- 🎉 no goals
 #align category_theory.nat_trans.prod CategoryTheory.NatTrans.prod
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
@@ -322,9 +347,11 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
     ⟨{  app := fun X => (α.app X).1
         naturality := fun X Y f => by
           simp only [Functor.comp_map, Prod.fst_map, ← prod_comp_fst, α.naturality] },
+          -- 🎉 no goals
       { app := fun X => (α.app X).2
         naturality := fun X Y f => by
           simp only [Functor.comp_map, Prod.snd_map, ← prod_comp_snd, α.naturality] }⟩
+          -- 🎉 no goals
 #align category_theory.functor_prod_to_prod_functor CategoryTheory.functorProdToProdFunctor
 
 /-- The unit isomorphism for `functorProdFunctorEquiv` -/

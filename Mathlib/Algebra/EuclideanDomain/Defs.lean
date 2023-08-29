@@ -131,18 +131,23 @@ theorem mod_add_div (a b : R) : a % b + b * (a / b) = a :=
 
 theorem mod_add_div' (m k : R) : m % k + m / k * k = m := by
   rw [mul_comm]
+  -- ⊢ m % k + k * (m / k) = m
   exact mod_add_div _ _
+  -- 🎉 no goals
 #align euclidean_domain.mod_add_div' EuclideanDomain.mod_add_div'
 
 theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
   rw [mul_comm]
+  -- ⊢ k * (m / k) + m % k = m
   exact div_add_mod _ _
+  -- 🎉 no goals
 #align euclidean_domain.div_add_mod' EuclideanDomain.div_add_mod'
 
 theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
   calc
     a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel' _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
+                              -- 🎉 no goals
 #align euclidean_domain.mod_eq_sub_mul_div EuclideanDomain.mod_eq_sub_mul_div
 
 theorem mod_lt : ∀ (a) {b : R}, b ≠ 0 → a % b ≺ b :=
@@ -151,20 +156,26 @@ theorem mod_lt : ∀ (a) {b : R}, b ≠ 0 → a % b ≺ b :=
 
 theorem mul_right_not_lt {a : R} (b) (h : a ≠ 0) : ¬a * b ≺ b := by
   rw [mul_comm]
+  -- ⊢ ¬b * a ≺ b
   exact mul_left_not_lt b h
+  -- 🎉 no goals
 #align euclidean_domain.mul_right_not_lt EuclideanDomain.mul_right_not_lt
 
 @[simp]
 theorem mod_zero (a : R) : a % 0 = a := by simpa only [zero_mul, zero_add] using div_add_mod a 0
+                                           -- 🎉 no goals
 #align euclidean_domain.mod_zero EuclideanDomain.mod_zero
 
 theorem lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
   haveI := Classical.dec
   not_imp_not.1 fun h => by simpa only [one_mul] using mul_left_not_lt 1 h
+                            -- 🎉 no goals
 #align euclidean_domain.lt_one EuclideanDomain.lt_one
 
 theorem val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
   | _, b, ⟨d, rfl⟩, ha => mul_left_not_lt b (mt (by rintro rfl; exact mul_zero _) ha)
+                                                    -- ⊢ b * 0 = 0
+                                                                -- 🎉 no goals
 #align euclidean_domain.val_dvd_le EuclideanDomain.val_dvd_le
 
 @[simp]
@@ -183,7 +194,9 @@ theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
     -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
     -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unnecessarily.20tombstoned.20argument/near/314573315
     change P a b
+    -- ⊢ P a b
     exact a0.symm ▸ H0 b
+    -- 🎉 no goals
   else
     have _ := mod_lt b a0
     H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
@@ -209,7 +222,9 @@ termination_by _ => a
 @[simp]
 theorem gcd_zero_left (a : R) : gcd 0 a = a := by
   rw [gcd]
+  -- ⊢ (if a0 : 0 = 0 then a
   exact if_pos rfl
+  -- 🎉 no goals
 #align euclidean_domain.gcd_zero_left EuclideanDomain.gcd_zero_left
 
 /-- An implementation of the extended GCD algorithm.
@@ -233,7 +248,9 @@ termination_by _ => r
 @[simp]
 theorem xgcd_zero_left {s t r' s' t' : R} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
   unfold xgcdAux
+  -- ⊢ (if _hr : 0 = 0 then (r', s', t')
   exact if_pos rfl
+  -- 🎉 no goals
 #align euclidean_domain.xgcd_zero_left EuclideanDomain.xgcd_zero_left
 
 theorem xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
@@ -242,6 +259,7 @@ theorem xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
     lhs
     rw [xgcdAux]
   exact if_neg h
+  -- 🎉 no goals
 #align euclidean_domain.xgcd_aux_rec EuclideanDomain.xgcdAux_rec
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
@@ -263,13 +281,17 @@ def gcdB (x y : R) : R :=
 @[simp]
 theorem gcdA_zero_left {s : R} : gcdA 0 s = 0 := by
   unfold gcdA
+  -- ⊢ (xgcd 0 s).fst = 0
   rw [xgcd, xgcd_zero_left]
+  -- 🎉 no goals
 #align euclidean_domain.gcd_a_zero_left EuclideanDomain.gcdA_zero_left
 
 @[simp]
 theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
   unfold gcdB
+  -- ⊢ (xgcd 0 s).snd = 1
   rw [xgcd, xgcd_zero_left]
+  -- 🎉 no goals
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
 theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=

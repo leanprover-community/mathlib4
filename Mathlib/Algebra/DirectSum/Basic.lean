@@ -167,8 +167,11 @@ protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H
     (H_basic : ∀ (i : ι) (x : β i), C (of β i x))
     (H_plus : ∀ x y, C x → C y → C (x + y)) : C x := by
   apply DFinsupp.induction x H_zero
+  -- ⊢ ∀ (i : ι) (b : (fun i => β i) i) (f : Π₀ (i : ι), (fun i => β i) i), ↑f i =  …
   intro i b f h1 h2 ih
+  -- ⊢ C (DFinsupp.single i b + f)
   solve_by_elim
+  -- 🎉 no goals
 #align direct_sum.induction_on DirectSum.induction_on
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
@@ -210,9 +213,12 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
+  -- ⊢ ψ = toAddMonoid fun i => AddMonoidHom.comp ψ (of β i)
   -- Porting note: ext applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
+  -- ⊢ ∀ (x : ι), AddMonoidHom.comp ψ (DFinsupp.singleAddHom (fun i => (fun i => β  …
   simp [toAddMonoid, of]
+  -- 🎉 no goals
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
 
 end ToAddMonoid
@@ -230,12 +236,15 @@ def fromAddMonoid : (⨁ i, γ →+ β i) →+ γ →+ ⨁ i, β i :=
 @[simp]
 theorem fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
   rw [fromAddMonoid, toAddMonoid_of]
+  -- ⊢ ↑(↑AddMonoidHom.compHom (of β i)) f = AddMonoidHom.comp (of β i) f
   rfl
+  -- 🎉 no goals
 #align direct_sum.from_add_monoid_of DirectSum.fromAddMonoid_of
 
 theorem fromAddMonoid_of_apply (i : ι) (f : γ →+ β i) (x : γ) :
     fromAddMonoid (of _ i f) x = of _ i (f x) := by
       rw [fromAddMonoid_of, AddMonoidHom.coe_comp, Function.comp]
+      -- 🎉 no goals
 #align direct_sum.from_add_monoid_of_apply DirectSum.fromAddMonoid_of_apply
 
 end FromAddMonoid
@@ -274,8 +283,12 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
     invFun := of (fun _ => M) default
     left_inv := fun x =>
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
+                                   -- 🎉 no goals
         (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
+                       -- ⊢ ↑(of (fun x => M) p) (↑(AddMonoidHom.id M) x) = ↑(of (fun i => M) p) x
+                                                                 -- 🎉 no goals
         rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
+        -- 🎉 no goals
     right_inv := fun x => toAddMonoid_of _ _ _ }
 #align direct_sum.id DirectSum.id
 
@@ -292,6 +305,7 @@ def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
     equivCongrLeft h f k = f (h.symm k) := by
   exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
+  -- 🎉 no goals
 #align direct_sum.equiv_congr_left_apply DirectSum.equivCongrLeft_apply
 
 end CongrLeft
@@ -373,8 +387,11 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
     [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne i j
+  -- ⊢ ↑(↑(↑(of (fun i => { x // x ∈ A i }) i) x) i) = ↑(if i = i then x else 0)
   · rw [DirectSum.of_eq_same, if_pos rfl]
+    -- 🎉 no goals
   · rw [DirectSum.of_eq_of_ne _ _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
+    -- 🎉 no goals
 #align direct_sum.coe_of_apply DirectSum.coe_of_apply
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
@@ -391,7 +408,9 @@ def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
+  -- ⊢ Function.Surjective ↑(DFinsupp.sumAddHom fun i => AddSubmonoid.subtype (A i))
   exact Function.Bijective.surjective h
+  -- 🎉 no goals
 #align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_iSup_eq_top
 
 end DirectSum

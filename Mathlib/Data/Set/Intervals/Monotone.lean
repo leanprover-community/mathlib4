@@ -203,19 +203,30 @@ variable {α β : Type*} [PartialOrder α]
 theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α} {φ : α → α}
     (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by
   revert hφ
+  -- ⊢ StrictMonoOn φ (Iic n) → ∀ (m : α), m ≤ n → m ≤ φ m
   refine'
     Succ.rec_bot (fun n => StrictMonoOn φ (Set.Iic n) → ∀ m ≤ n, m ≤ φ m)
       (fun _ _ hm => hm.trans bot_le) _ _
   rintro k ih hφ m hm
+  -- ⊢ m ≤ φ m
   by_cases hk : IsMax k
+  -- ⊢ m ≤ φ m
   · rw [succ_eq_iff_isMax.2 hk] at hm
+    -- ⊢ m ≤ φ m
     exact ih (hφ.mono <| Iic_subset_Iic.2 (le_succ _)) _ hm
+    -- 🎉 no goals
   obtain rfl | h := le_succ_iff_eq_or_le.1 hm
+  -- ⊢ succ k ≤ φ (succ k)
   · specialize ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) k le_rfl
+    -- ⊢ succ k ≤ φ (succ k)
     refine' le_trans (succ_mono ih) (succ_le_of_lt (hφ (le_succ _) le_rfl _))
+    -- ⊢ k < succ k
     rw [lt_succ_iff_eq_or_lt_of_not_isMax hk]
+    -- ⊢ k = k ∨ k < k
     exact Or.inl rfl
+    -- 🎉 no goals
   · exact ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) _ h
+    -- 🎉 no goals
 #align strict_mono_on.Iic_id_le StrictMonoOn.Iic_id_le
 
 theorem StrictMonoOn.Ici_le_id [PredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α} {φ : α → α}
@@ -230,27 +241,44 @@ variable [Preorder β] {ψ : α → β}
 theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : α}
     (hψ : ∀ m, m < n → ψ m < ψ (succ m)) : StrictMonoOn ψ (Set.Iic n) := by
   intro x hx y hy hxy
+  -- ⊢ ψ x < ψ y
   obtain ⟨i, rfl⟩ := hxy.le.exists_succ_iterate
+  -- ⊢ ψ x < ψ (succ^[i] x)
   induction' i with k ih
+  -- ⊢ ψ x < ψ (succ^[Nat.zero] x)
   · simp at hxy
+    -- 🎉 no goals
   cases' k with k
+  -- ⊢ ψ x < ψ (succ^[Nat.succ Nat.zero] x)
   · exact hψ _ (lt_of_lt_of_le hxy hy)
+    -- 🎉 no goals
   rw [Set.mem_Iic] at *
+  -- ⊢ ψ x < ψ (succ^[Nat.succ (Nat.succ k)] x)
   simp only [Function.iterate_succ', Function.comp_apply] at ih hxy hy ⊢
+  -- ⊢ ψ x < ψ (succ (succ (succ^[k] x)))
   by_cases hmax : IsMax (succ^[k] x)
+  -- ⊢ ψ x < ψ (succ (succ (succ^[k] x)))
   · rw [succ_eq_iff_isMax.2 hmax] at hxy ⊢
+    -- ⊢ ψ x < ψ (succ (succ^[k] x))
     exact ih (le_trans (le_succ _) hy) hxy
+    -- 🎉 no goals
   by_cases hmax' : IsMax (succ (succ^[k] x))
+  -- ⊢ ψ x < ψ (succ (succ (succ^[k] x)))
   · rw [succ_eq_iff_isMax.2 hmax'] at hxy ⊢
+    -- ⊢ ψ x < ψ (succ (succ^[k] x))
     exact ih (le_trans (le_succ _) hy) hxy
+    -- 🎉 no goals
   refine'
     lt_trans
       (ih (le_trans (le_succ _) hy)
         (lt_of_le_of_lt (le_succ_iterate k _) (lt_succ_iff_not_isMax.2 hmax)))
       _
   rw [← Function.comp_apply (f := succ), ← Function.iterate_succ']
+  -- ⊢ ψ (succ^[Nat.succ k] x) < ψ (succ (succ^[Nat.succ k] x))
   refine' hψ _ (lt_of_lt_of_le _ hy)
+  -- ⊢ succ^[Nat.succ k] x < succ (succ (succ^[k] x))
   rwa [Function.iterate_succ', Function.comp_apply, lt_succ_iff_not_isMax]
+  -- 🎉 no goals
 #align strict_mono_on_Iic_of_lt_succ strictMonoOn_Iic_of_lt_succ
 
 theorem strictAntiOn_Iic_of_succ_lt [SuccOrder α] [IsSuccArchimedean α] {n : α}

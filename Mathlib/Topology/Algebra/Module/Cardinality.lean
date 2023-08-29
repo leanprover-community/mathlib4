@@ -31,17 +31,27 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
     rcases this with ⟨f, -, -, f_inj⟩
     simpa using lift_mk_le_lift_mk_of_injective f_inj
   apply Perfect.exists_nat_bool_injection _ univ_nonempty
+  -- ⊢ Perfect Set.univ
   refine ⟨isClosed_univ, preperfect_iff_nhds.2 (fun x _ U hU ↦ ?_)⟩
+  -- ⊢ ∃ y, y ∈ U ∩ Set.univ ∧ y ≠ x
   rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, c_pos, hc⟩
+  -- ⊢ ∃ y, y ∈ U ∩ Set.univ ∧ y ≠ x
   have A : Tendsto (fun n ↦ x + c^n) atTop (𝓝 (x + 0)) :=
     tendsto_const_nhds.add (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hc)
   rw [add_zero] at A
+  -- ⊢ ∃ y, y ∈ U ∩ Set.univ ∧ y ≠ x
   have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
+  -- ⊢ ∃ y, y ∈ U ∩ Set.univ ∧ y ≠ x
   rcases B.exists with ⟨n, hn⟩
+  -- ⊢ ∃ y, y ∈ U ∩ Set.univ ∧ y ≠ x
   refine ⟨x + c^n, by simpa using hn, ?_⟩
+  -- ⊢ x + c ^ n ≠ x
   simp only [ne_eq, add_right_eq_self]
+  -- ⊢ ¬c ^ n = 0
   apply pow_ne_zero
+  -- ⊢ c ≠ 0
   simpa using c_pos
+  -- 🎉 no goals
 
 /-- A nontrivial module over a complete nontrivially normed field has cardinality at least
 continuum. -/
@@ -51,6 +61,7 @@ theorem continuum_le_cardinal_of_module
   have A : lift.{v} (𝔠 : Cardinal.{u}) ≤ lift.{v} (#𝕜) := by
     simpa using continuum_le_cardinal_of_nontriviallyNormedField 𝕜
   simpa using A.trans (Cardinal.mk_le_of_module 𝕜 E)
+  -- 🎉 no goals
 
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of zero has
 the same cardinality as the whole space.
@@ -63,6 +74,7 @@ lemma cardinal_eq_of_mem_nhds_zero
   where `c` is any element of `𝕜` with norm `> 1`. All these sets are in bijection and have
   therefore the same cardinality. The conclusion follows. -/
   obtain ⟨c, hc⟩ : ∃ x : 𝕜 , 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
+  -- ⊢ #↑s = #E
   have cn_ne : ∀ n, c^n ≠ 0 := by
     intro n
     apply pow_ne_zero
@@ -90,6 +102,7 @@ lemma cardinal_eq_of_mem_nhds_zero
       right_inv := fun x ↦ by simp [smul_smul, inv_mul_cancel (cn_ne n)] }
     exact Cardinal.mk_congr this
   apply (Cardinal.mk_of_countable_eventually_mem A B).symm
+  -- 🎉 no goals
 
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of a point has
 the same cardinality as the whole space. -/
@@ -98,11 +111,17 @@ theorem cardinal_eq_of_mem_nhds
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
+  -- ⊢ #↑s = #E
   let t := g ⁻¹' s
+  -- ⊢ #↑s = #E
   have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa using hs)
+  -- ⊢ #↑s = #E
   have A : #t = #E := cardinal_eq_of_mem_nhds_zero 𝕜 this
+  -- ⊢ #↑s = #E
   have B : #t = #s := Cardinal.mk_subtype_of_equiv s g.toEquiv
+  -- ⊢ #↑s = #E
   rwa [B] at A
+  -- 🎉 no goals
 
 /-- In a topological vector space over a nontrivially normed field, any nonempty open set has
 the same cardinality as the whole space. -/
@@ -111,7 +130,9 @@ theorem cardinal_eq_of_is_open
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E] {s : Set E}
     (hs : IsOpen s) (h's : s.Nonempty) : #s = #E := by
   rcases h's with ⟨x, hx⟩
+  -- ⊢ #↑s = #E
   exact cardinal_eq_of_mem_nhds 𝕜 (hs.mem_nhds hx)
+  -- 🎉 no goals
 
 /-- In a nontrivial topological vector space over a complete nontrivially normed field, any nonempty
 open set has cardinality at least continuum. -/
@@ -120,6 +141,7 @@ theorem continuum_le_cardinal_of_is_open
     [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} (hs : IsOpen s) (h's : s.Nonempty) : 𝔠 ≤ #s := by
   simpa [cardinal_eq_of_is_open 𝕜 hs h's] using continuum_le_cardinal_of_module 𝕜 E
+  -- 🎉 no goals
 
 /-- In a nontrivial topological vector space over a complete nontrivially normed field, any
 countable set has dense complement. -/
@@ -128,8 +150,11 @@ theorem Set.Countable.dense_compl
     [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} (hs : s.Countable) : Dense sᶜ := by
   rw [← interior_eq_empty_iff_dense_compl]
+  -- ⊢ interior s = ∅
   by_contra H
+  -- ⊢ False
   apply lt_irrefl (ℵ₀ : Cardinal.{u})
+  -- ⊢ ℵ₀ < ℵ₀
   calc
     (ℵ₀ : Cardinal.{u}) < 𝔠 := aleph0_lt_continuum
     _ ≤ #(interior s) :=

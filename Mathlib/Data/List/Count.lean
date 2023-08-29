@@ -47,6 +47,7 @@ variable (p q : α → Bool)
 theorem countP_join : ∀ l : List (List α), countP p l.join = (l.map (countP p)).sum
   | [] => rfl
   | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join l]
+                 -- 🎉 no goals
 #align list.countp_join List.countP_join
 
 #align list.countp_pos List.countP_pos
@@ -146,12 +147,14 @@ theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (coun
 
 theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = sum (map (count x ∘ f) l) := by rw [List.bind, count_join, map_map]
+                                                         -- 🎉 no goals
 #align list.count_bind List.count_bind
 
 @[simp]
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countP_map, (· ∘ ·), hf.beq_eq]
+  -- 🎉 no goals
 #align list.count_map_of_injective List.count_map_of_injective
 
 #align list.count_le_count_map List.count_le_count_map
@@ -166,12 +169,19 @@ theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : Li
 theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
     (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
   induction' l with a' as h generalizing a
+  -- ⊢ prod (map f []) = f a ^ count a []
   · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
+    -- 🎉 no goals
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
+    -- ⊢ prod (map f (a' :: as)) = f a ^ count a (a' :: as)
     rw [List.map_cons, List.prod_cons, count_cons, h]
+    -- ⊢ f a' * f a ^ count a as = f a ^ (count a as + if a = a' then 1 else 0)
     split_ifs with ha'
+    -- ⊢ f a' * f a ^ count a as = f a ^ (count a as + 1)
     · rw [ha', _root_.pow_succ]
+      -- 🎉 no goals
     · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul, add_zero]
+      -- 🎉 no goals
 #align list.prod_map_eq_pow_single List.prod_map_eq_pow_single
 #align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
 
@@ -179,6 +189,7 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
 theorem prod_eq_pow_single [Monoid α] (a : α)
     (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) : l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
+                   -- 🎉 no goals
 #align list.prod_eq_pow_single List.prod_eq_pow_single
 #align list.sum_eq_nsmul_single List.sum_eq_nsmul_single
 

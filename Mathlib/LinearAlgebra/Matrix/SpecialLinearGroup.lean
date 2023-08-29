@@ -108,10 +108,12 @@ theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j
 
 instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
+                            -- 🎉 no goals
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
   ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+                             -- 🎉 no goals
 #align matrix.special_linear_group.has_mul Matrix.SpecialLinearGroup.hasMul
 
 instance hasOne : One (SpecialLinearGroup n R) :=
@@ -160,11 +162,14 @@ theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
 
 theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
+  -- ⊢ 1 ≠ 0
   norm_num
+  -- 🎉 no goals
 #align matrix.special_linear_group.det_ne_zero Matrix.SpecialLinearGroup.det_ne_zero
 
 theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘg i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
+                                                      -- 🎉 no goals
 #align matrix.special_linear_group.row_ne_zero Matrix.SpecialLinearGroup.row_ne_zero
 
 end CoeLemmas
@@ -176,14 +181,18 @@ instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
     mul_left_inv := fun A => by
       ext1
+      -- ⊢ ↑(A⁻¹ * A) i✝ j✝ = ↑1 i✝ j✝
       simp [adjugate_mul] }
+      -- 🎉 no goals
 
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
     LinearEquiv.ofLinear (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
       (by rw [← toLin'_mul, ← coe_mul, mul_right_inv, coe_one, toLin'_one])
+          -- 🎉 no goals
       (by rw [← toLin'_mul, ← coe_mul, mul_left_inv, coe_one, toLin'_one])
+          -- 🎉 no goals
   map_one' := LinearEquiv.toLinearMap_injective Matrix.toLin'_one
   map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.toLin'_mul ↑ₘA ↑ₘB
 #align matrix.special_linear_group.to_lin' Matrix.SpecialLinearGroup.toLin'
@@ -234,7 +243,9 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   toFun g :=
     ⟨f.mapMatrix ↑ₘg, by
       rw [← f.map_det]
+      -- ⊢ ↑f (det ↑g) = 1
       simp [g.prop]⟩
+      -- 🎉 no goals
   map_one' := Subtype.ext <| f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 #align matrix.special_linear_group.map Matrix.SpecialLinearGroup.map
@@ -262,6 +273,7 @@ each element. -/
 instance : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    -- 🎉 no goals
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -285,38 +297,64 @@ open scoped MatrixGroups
 theorem SL2_inv_expl_det (A : SL(2, R)) :
     det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 := by
   rw [Matrix.det_fin_two, mul_comm]
+  -- ⊢ vecCons ![↑A 1 1, -↑A 0 1] ![![-↑A 1 0, ↑A 0 0]] 1 1 * vecCons ![↑A 1 1, -↑A …
   simp only [cons_val_zero, cons_val_one, head_cons, mul_neg, neg_mul, neg_neg]
+  -- ⊢ ↑A 0 0 * ↑A 1 1 - ↑A 0 1 * ↑A 1 0 = 1
   have := A.2
+  -- ⊢ ↑A 0 0 * ↑A 1 1 - ↑A 0 1 * ↑A 1 0 = 1
   rw [Matrix.det_fin_two] at this
+  -- ⊢ ↑A 0 0 * ↑A 1 1 - ↑A 0 1 * ↑A 1 0 = 1
   convert this
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.SL2_inv_expl_det Matrix.SpecialLinearGroup.SL2_inv_expl_det
 
 theorem SL2_inv_expl (A : SL(2, R)) :
     A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ := by
   ext
+  -- ⊢ ↑A⁻¹ i✝ j✝ = ↑{ val := ![![↑A 1 1, -↑A 0 1], ![-↑A 1 0, ↑A 0 0]], property : …
   have := Matrix.adjugate_fin_two A.1
+  -- ⊢ ↑A⁻¹ i✝ j✝ = ↑{ val := ![![↑A 1 1, -↑A 0 1], ![-↑A 1 0, ↑A 0 0]], property : …
   rw [coe_inv, this]
+  -- ⊢ ↑of ![![↑A 1 1, -↑A 0 1], ![-↑A 1 0, ↑A 0 0]] i✝ j✝ = ↑{ val := ![![↑A 1 1,  …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.SL2_inv_expl Matrix.SpecialLinearGroup.SL2_inv_expl
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
+                                                                           -- 🎉 no goals
     (g : SL(2, R)) : P g := by
   obtain ⟨m, hm⟩ := g
+  -- ⊢ P { val := m, property := hm }
   convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
+  -- ⊢ m = ↑of ![![m 0 0, m 0 1], ![m 1 0, m 1 1]]
   ext i j; fin_cases i <;> fin_cases j <;> rfl
+  -- ⊢ m i j = ↑of ![![m 0 0, m 0 1], ![m 1 0, m 1 1]] i j
+           -- ⊢ m { val := 0, isLt := (_ : 0 < 2) } j = ↑of ![![m 0 0, m 0 1], ![m 1 0, m 1  …
+                           -- ⊢ m { val := 0, isLt := (_ : 0 < 2) } { val := 0, isLt := (_ : 0 < 2) } = ↑of  …
+                           -- ⊢ m { val := 1, isLt := (_ : (fun a => a < 2) 1) } { val := 0, isLt := (_ : 0  …
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align matrix.special_linear_group.fin_two_induction Matrix.SpecialLinearGroup.fin_two_induction
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
+                                                        -- 🎉 no goals
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
+  -- ⊢ ∃ a_1 b_1 h, { val := ↑of ![![a, b], ![c, d]], property := (_ : det (↑of ![! …
   replace hg : c = 0 := by simpa using hg
+  -- ⊢ ∃ a_1 b_1 h, { val := ↑of ![![a, b], ![c, d]], property := (_ : det (↑of ![! …
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
+  -- ⊢ ∃ a_1 b_1 h, { val := ↑of ![![a, b], ![c, d]], property := (_ : det (↑of ![! …
   refine' ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
+  -- ⊢ { val := ↑of ![![a, b], ![c, d]], property := (_ : det (↑of ![![a, b], ![c,  …
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
+  -- 🎉 no goals
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
 end SpecialCases
@@ -343,11 +381,13 @@ This element also acts naturally on the hyperbolic plane as rotation about `i` b
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
   ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of] ⟩
+                       -- 🎉 no goals
 #align modular_group.S ModularGroup.S
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
 def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
+                      -- 🎉 no goals
 #align modular_group.T ModularGroup.T
 
 theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
@@ -359,32 +399,45 @@ theorem coe_T : ↑ₘT = !![1, 1; 0, 1] :=
 #align modular_group.coe_T ModularGroup.coe_T
 
 theorem coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+                                                  -- 🎉 no goals
 #align modular_group.coe_T_inv ModularGroup.coe_T_inv
 
 theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
+    -- 🎉 no goals
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
+    -- ⊢ ↑of ![![1 * 1 + ↑n * 0, 1 * 1 + ↑n * 1], ![0 * 1 + 1 * 0, 0 * 1 + 1 * 1]] =  …
     congrm !![_, ?_; _, _]
+    -- ⊢ 1 * 1 + ↑n * 1 = ↑n + 1
     rw [mul_one, mul_one, add_comm]
+    -- 🎉 no goals
   · simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
+    -- ⊢ ↑of ![![1 * 1 + -↑n * 0, 1 * -1 + -↑n * 1], ![0 * 1 + 1 * 0, 0 * -1 + 1 * 1] …
     congrm !![?_, ?_; _, _] <;> ring
+    -- ⊢ 1 * 1 + -↑n * 0 = 1
+                                -- 🎉 no goals
+                                -- 🎉 no goals
 #align modular_group.coe_T_zpow ModularGroup.coe_T_zpow
 
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
   ext j
+  -- ⊢ ↑(T ^ n * g) 1 j = ↑g 1 j
   simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
+  -- 🎉 no goals
 #align modular_group.T_pow_mul_apply_one ModularGroup.T_pow_mul_apply_one
 
 @[simp]
 theorem T_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one 1 g
+  -- 🎉 no goals
 #align modular_group.T_mul_apply_one ModularGroup.T_mul_apply_one
 
 @[simp]
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one (-1) g
+  -- 🎉 no goals
 #align modular_group.T_inv_mul_apply_one ModularGroup.T_inv_mul_apply_one
 
 end ModularGroup

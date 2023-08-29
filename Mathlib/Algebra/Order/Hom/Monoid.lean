@@ -217,12 +217,16 @@ variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [OrderAddMonoidHomC
 
 theorem map_nonneg (ha : 0 ≤ a) : 0 ≤ f a := by
   rw [← map_zero f]
+  -- ⊢ ↑f 0 ≤ ↑f a
   exact OrderHomClass.mono _ ha
+  -- 🎉 no goals
 #align map_nonneg map_nonneg
 
 theorem map_nonpos (ha : a ≤ 0) : f a ≤ 0 := by
   rw [← map_zero f]
+  -- ⊢ ↑f a ≤ ↑f 0
   exact OrderHomClass.mono _ ha
+  -- 🎉 no goals
 #align map_nonpos map_nonpos
 
 end OrderedAddCommMonoid
@@ -234,9 +238,13 @@ variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [AddMonoidHomClass F
 theorem monotone_iff_map_nonneg : Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
   ⟨fun h a => by
     rw [← map_zero f]
+    -- ⊢ 0 ≤ a → ↑f 0 ≤ ↑f a
     apply h, fun h a b hl => by
+    -- 🎉 no goals
     rw [← sub_add_cancel b a, map_add f]
+    -- ⊢ ↑f a ≤ ↑f (b - a) + ↑f a
     exact le_add_of_nonneg_left (h _ <| sub_nonneg.2 hl)⟩
+    -- 🎉 no goals
 #align monotone_iff_map_nonneg monotone_iff_map_nonneg
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
@@ -255,10 +263,15 @@ variable [CovariantClass β β (· + ·) (· < ·)]
 
 theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
   refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
+  -- ⊢ 0 < a → 0 < ↑f a
   · rw [← map_zero f]
+    -- ⊢ 0 < a → ↑f 0 < ↑f a
     apply h
+    -- 🎉 no goals
   · rw [← sub_add_cancel b a, map_add f]
+    -- ⊢ ↑f a < ↑f (b - a) + ↑f a
     exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
+    -- 🎉 no goals
 #align strict_mono_iff_map_pos strictMono_iff_map_pos
 
 theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
@@ -287,8 +300,11 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
+    -- ⊢ { toMonoidHom := { toOneHom := { toFun := toFun✝, map_one' := map_one'✝ }, m …
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
+    -- ⊢ { toMonoidHom := { toOneHom := { toFun := toFun✝¹, map_one' := map_one'✝¹ }, …
     congr
+    -- 🎉 no goals
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   monotone f := f.monotone'
@@ -324,7 +340,9 @@ theorem coe_mk (f : α →* β) (h) : (OrderMonoidHom.mk f h : α → β) = f :=
 @[to_additive (attr := simp)]
 theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f := by
   ext
+  -- ⊢ ↑{ toMonoidHom := ↑f, monotone' := h } a✝ = ↑f a✝
   rfl
+  -- 🎉 no goals
 #align order_monoid_hom.mk_coe OrderMonoidHom.mk_coe
 #align order_add_monoid_hom.mk_coe OrderAddMonoidHom.mk_coe
 
@@ -350,12 +368,14 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
   ext <| by convert FunLike.ext_iff.1 h using 0
+            -- 🎉 no goals
 #align order_monoid_hom.to_monoid_hom_injective OrderMonoidHom.toMonoidHom_injective
 #align order_add_monoid_hom.to_add_monoid_hom_injective OrderAddMonoidHom.toAddMonoidHom_injective
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
   ext <| by convert FunLike.ext_iff.1 h using 0
+            -- 🎉 no goals
 #align order_monoid_hom.to_order_hom_injective OrderMonoidHom.toOrderHom_injective
 #align order_add_monoid_hom.to_order_hom_injective OrderAddMonoidHom.toOrderHom_injective
 
@@ -457,6 +477,7 @@ theorem id_comp (f : α →*o β) : (OrderMonoidHom.id β).comp f = f :=
 theorem cancel_right {g₁ g₂ : β →*o γ} {f : α →*o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun _ => by congr⟩
+                                                                   -- 🎉 no goals
 #align order_monoid_hom.cancel_right OrderMonoidHom.cancel_right
 #align order_add_monoid_hom.cancel_right OrderAddMonoidHom.cancel_right
 
@@ -464,6 +485,7 @@ theorem cancel_right {g₁ g₂ : β →*o γ} {f : α →*o β} (hf : Function.
 theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align order_monoid_hom.cancel_left OrderMonoidHom.cancel_left
 #align order_add_monoid_hom.cancel_left OrderAddMonoidHom.cancel_left
 
@@ -581,8 +603,11 @@ instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
+    -- ⊢ { toMonoidWithZeroHom := { toZeroHom := { toFun := toFun✝, map_zero' := map_ …
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
+    -- ⊢ { toMonoidWithZeroHom := { toZeroHom := { toFun := toFun✝¹, map_zero' := map …
     congr
+    -- 🎉 no goals
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_zero f := f.map_zero'
@@ -631,10 +656,12 @@ theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
 
 theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
   ext <| by convert FunLike.ext_iff.1 h using 0
+            -- 🎉 no goals
 #align order_monoid_with_zero_hom.to_order_monoid_hom_injective OrderMonoidWithZeroHom.toOrderMonoidHom_injective
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
   fun f g h => ext <| by convert FunLike.ext_iff.1 h using 0
+                         -- 🎉 no goals
 #align order_monoid_with_zero_hom.to_monoid_with_zero_hom_injective OrderMonoidWithZeroHom.toMonoidWithZeroHom_injective
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
@@ -711,11 +738,13 @@ theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f
 theorem cancel_right {g₁ g₂ : β →*₀o γ} {f : α →*₀o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun _ => by congr⟩
+                                                                   -- 🎉 no goals
 #align order_monoid_with_zero_hom.cancel_right OrderMonoidWithZeroHom.cancel_right
 
 theorem cancel_left {g : β →*₀o γ} {f₁ f₂ : α →*₀o β} (hg : Function.Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align order_monoid_with_zero_hom.cancel_left OrderMonoidWithZeroHom.cancel_left
 
 end Preorder
@@ -757,6 +786,7 @@ variable {hα : Preorder α} {hα' : MulZeroOneClass α} {hβ : Preorder β} {h�
 @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom = f := by
   rfl
+  -- 🎉 no goals
 #align order_monoid_with_zero_hom.to_monoid_with_zero_hom_eq_coe OrderMonoidWithZeroHom.toMonoidWithZeroHom_eq_coe
 
 @[simp]

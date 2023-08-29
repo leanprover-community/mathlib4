@@ -39,22 +39,33 @@ takes either its maximum or its minimum value at a point in the interior of the 
 theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, IsExtrOn f (Icc a b) c := by
   have ne : (Icc a b).Nonempty := nonempty_Icc.2 (le_of_lt hab)
+  -- ⊢ ∃ c, c ∈ Ioo a b ∧ IsExtrOn f (Icc a b) c
   -- Consider absolute min and max points
   obtain ⟨c, cmem, cle⟩ : ∃ c ∈ Icc a b, ∀ x ∈ Icc a b, f c ≤ f x :=
     isCompact_Icc.exists_forall_le ne hfc
   obtain ⟨C, Cmem, Cge⟩ : ∃ C ∈ Icc a b, ∀ x ∈ Icc a b, f x ≤ f C :=
     isCompact_Icc.exists_forall_ge ne hfc
   by_cases hc : f c = f a
+  -- ⊢ ∃ c, c ∈ Ioo a b ∧ IsExtrOn f (Icc a b) c
   · by_cases hC : f C = f a
+    -- ⊢ ∃ c, c ∈ Ioo a b ∧ IsExtrOn f (Icc a b) c
     · have : ∀ x ∈ Icc a b, f x = f a := fun x hx => le_antisymm (hC ▸ Cge x hx) (hc ▸ cle x hx)
+      -- ⊢ ∃ c, c ∈ Ioo a b ∧ IsExtrOn f (Icc a b) c
       -- `f` is a constant, so we can take any point in `Ioo a b`
       rcases nonempty_Ioo.2 hab with ⟨c', hc'⟩
+      -- ⊢ ∃ c, c ∈ Ioo a b ∧ IsExtrOn f (Icc a b) c
       refine ⟨c', hc', Or.inl fun x hx ↦ ?_⟩
+      -- ⊢ x ∈ {x | (fun x => f c' ≤ f x) x}
       simp only [mem_setOf_eq, this x hx, this c' (Ioo_subset_Icc_self hc'), le_rfl]
+      -- 🎉 no goals
     · refine' ⟨C, ⟨lt_of_le_of_ne Cmem.1 <| mt _ hC, lt_of_le_of_ne Cmem.2 <| mt _ hC⟩, Or.inr Cge⟩
+      -- ⊢ a = C → f C = f a
       exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
+      -- 🎉 no goals
   · refine' ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt _ hc, lt_of_le_of_ne cmem.2 <| mt _ hc⟩, Or.inl cle⟩
+    -- ⊢ a = c → f c = f a
     exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
+    -- 🎉 no goals
 #align exists_Ioo_extr_on_Icc exists_Ioo_extr_on_Icc
 
 /-- A continuous function on a closed interval with `f a = f b`
@@ -71,10 +82,12 @@ lemma exists_isExtrOn_Ioo_of_tendsto (hab : a < b) (hfc : ContinuousOn f (Ioo a 
     (ha : Tendsto f (𝓝[>] a) (𝓝 l)) (hb : Tendsto f (𝓝[<] b) (𝓝 l)) :
     ∃ c ∈ Ioo a b, IsExtrOn f (Ioo a b) c := by
   have h : EqOn (extendFrom (Ioo a b) f) f (Ioo a b) := extendFrom_extends hfc
+  -- ⊢ ∃ c, c ∈ Ioo a b ∧ IsExtrOn f (Ioo a b) c
   obtain ⟨c, hc, hfc⟩ : ∃ c ∈ Ioo a b, IsExtrOn (extendFrom (Ioo a b) f) (Icc a b) c :=
     exists_Ioo_extr_on_Icc hab (continuousOn_Icc_extendFrom_Ioo hab.ne hfc ha hb)
       ((eq_lim_at_left_extendFrom_Ioo hab ha).trans (eq_lim_at_right_extendFrom_Ioo hab hb).symm)
   exact ⟨c, hc, (hfc.on_subset Ioo_subset_Icc_self).congr h (h hc)⟩
+  -- 🎉 no goals
 
 /-- If a function `f` is continuous on an open interval
 and tends to the same value at its endpoints,

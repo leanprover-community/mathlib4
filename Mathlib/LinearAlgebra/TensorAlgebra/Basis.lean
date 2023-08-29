@@ -43,12 +43,16 @@ noncomputable def equivFreeAlgebra (b : Basis κ R M) :
     (TensorAlgebra.lift _ (Finsupp.total _ _ _ (FreeAlgebra.ι _) ∘ₗ b.repr.toLinearMap))
     (FreeAlgebra.lift _ (ι R ∘ b))
     (by ext; simp)
+        -- ⊢ (↑(AlgHom.comp (↑(lift R) (LinearMap.comp (Finsupp.total κ (FreeAlgebra R κ) …
+             -- 🎉 no goals
     (hom_ext <| b.ext <| fun i => by simp)
+                                     -- 🎉 no goals
 
 @[simp]
 lemma equivFreeAlgebra_ι_apply (b : Basis κ R M) (i : κ) :
     equivFreeAlgebra b (ι R (b i)) = FreeAlgebra.ι R i :=
   (TensorAlgebra.lift_ι_apply _ _).trans <| by simp
+                                               -- 🎉 no goals
 
 @[simp]
 lemma equivFreeAlgebra_symm_ι (b : Basis κ R M) (i : κ) :
@@ -79,6 +83,7 @@ open Cardinal in
 lemma rank_eq [Nontrivial R] [Module.Free R M] :
     Module.rank R (TensorAlgebra R M) = Cardinal.lift.{uR} (sum fun n ↦ Module.rank R M ^ℕ n) := by
   let ⟨⟨κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
+  -- ⊢ Module.rank R (TensorAlgebra R M) = Cardinal.lift.{uR, uM} (sum fun n => Mod …
   rw [(equivFreeAlgebra b).toLinearEquiv.rank_eq, FreeAlgebra.rank_eq, mk_list_eq_sum_pow,
     Basis.mk_eq_rank'' b]
 

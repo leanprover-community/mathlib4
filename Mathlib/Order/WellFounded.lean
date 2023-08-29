@@ -82,11 +82,17 @@ theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h 
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
+  -- ⊢ Acc r x
   by_contra hx
+  -- ⊢ False
   obtain ⟨m, hm, hm'⟩ := h {x | ¬Acc r x} ⟨x, hx⟩
+  -- ⊢ False
   refine' hm ⟨_, fun y hy => _⟩
+  -- ⊢ Acc r y
   by_contra hy'
+  -- ⊢ False
   exact hm' y hy' hy
+  -- 🎉 no goals
 #align well_founded.well_founded_iff_has_min WellFounded.wellFounded_iff_has_min
 
 open Set
@@ -115,7 +121,9 @@ protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
+  -- ⊢ r x (min wf {y | r x y} h)
   apply min_mem
+  -- 🎉 no goals
 #align well_founded.lt_succ WellFounded.lt_succ
 
 end
@@ -123,7 +131,9 @@ end
 protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
+  -- ⊢ r y (WellFounded.succ (_ : WellFounded r) x) → r y x ∨ y = x
   · intro h'
+    -- ⊢ r y x ∨ y = x
     have : ¬r x y := by
       intro hy
       rw [WellFounded.succ, dif_pos] at h'
@@ -131,11 +141,19 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     rcases trichotomous_of r x y with (hy | hy | hy)
     exfalso
     exact this hy
+    -- ⊢ r y x ∨ y = x
     right
+    -- ⊢ y = x
     exact hy.symm
+    -- ⊢ r y x ∨ y = x
     left
+    -- ⊢ r y x
     exact hy
+    -- 🎉 no goals
   rintro (hy | rfl); exact _root_.trans hy (wo.wf.lt_succ h); exact wo.wf.lt_succ h
+  -- ⊢ r y (WellFounded.succ (_ : WellFounded r) x)
+                     -- ⊢ r y (WellFounded.succ (_ : WellFounded r) y)
+                                                              -- 🎉 no goals
 #align well_founded.lt_succ_iff WellFounded.lt_succ_iff
 
 section LinearOrder
@@ -153,17 +171,25 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
     rw [hfg]
     exact Set.mem_range_self b
   cases' lt_or_le c b with hcb hbc
+  -- ⊢ f b ≤ g b
   · rw [H c hcb] at hc
+    -- ⊢ f b ≤ g b
     rw [hg.injective hc] at hcb
+    -- ⊢ f b ≤ g b
     exact hcb.false.elim
+    -- 🎉 no goals
   · rw [← hc]
+    -- ⊢ f b ≤ f c
     exact hf.monotone hbc
+    -- 🎉 no goals
 
 theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   ⟨fun hfg => by
     funext a
+    -- ⊢ f a = g a
     apply h.induction a
+    -- ⊢ ∀ (x : β), (∀ (y : β), y < x → f y = g y) → f x = g x
     exact fun b H =>
       le_antisymm (eq_strictMono_iff_eq_range_aux hf hg hfg H)
         (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
@@ -172,8 +198,11 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
 
 theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra' h₁
+  -- ⊢ False
   have h₂ := h.min_mem _ h₁
+  -- ⊢ False
   exact h.not_lt_min _ h₁ (hf h₂) h₂
+  -- 🎉 no goals
 #align well_founded.self_le_of_strict_mono WellFounded.self_le_of_strictMono
 
 end LinearOrder

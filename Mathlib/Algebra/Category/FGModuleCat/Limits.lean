@@ -43,8 +43,11 @@ variable {k : Type v} [Field k]
 instance {J : Type} [Fintype J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
     FiniteDimensional k (∏ fun j => Z j : ModuleCat.{v} k) :=
   haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
+                                                                -- ⊢ FiniteDimensional k ↑(ModuleCat.mk ((j : J) → ↑(Z j)))
+                                                                                     -- 🎉 no goals
   FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom
     ((ModuleCat.mono_iff_injective _).1 (by infer_instance))
+                                            -- 🎉 no goals
 
 /-- Finite limits of finite dimensional vectors spaces are finite dimensional,
 because we can realise them as subobjects of a finite product. -/
@@ -52,6 +55,9 @@ instance (F : J ⥤ FGModuleCat k) :
     FiniteDimensional k (limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
   haveI : ∀ j, FiniteDimensional k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
     intro j; change FiniteDimensional k (F.obj j); infer_instance
+    -- ⊢ FiniteDimensional k ↑((F ⋙ forget₂ (FGModuleCat k) (ModuleCat k)).obj j)
+             -- ⊢ FiniteDimensional k ↑(F.obj j)
+                                                   -- 🎉 no goals
   FiniteDimensional.of_injective
     (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)))
     ((ModuleCat.mono_iff_injective _).1 inferInstance)

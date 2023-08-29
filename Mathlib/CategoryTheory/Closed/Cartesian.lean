@@ -228,10 +228,13 @@ theorem curry_eq (g : A ⨯ Y ⟶ X) : curry g = (exp.coev A).app Y ≫ (exp A).
 
 theorem uncurry_id_eq_ev (A X : C) [Exponentiable A] : uncurry (𝟙 (A ⟹ X)) = (exp.ev A).app X := by
   rw [uncurry_eq, prod.map_id_id, id_comp]
+  -- 🎉 no goals
 #align category_theory.cartesian_closed.uncurry_id_eq_ev CategoryTheory.CartesianClosed.uncurry_id_eq_ev
 
 theorem curry_id_eq_coev (A X : C) [Exponentiable A] : curry (𝟙 _) = (exp.coev A).app X := by
   rw [curry_eq, (exp A).map_id (A ⨯ _)]; apply comp_id
+  -- ⊢ NatTrans.app (exp.coev A) ((𝟭 C).obj X) ≫ 𝟙 (A ⟹ A ⨯ (𝟭 C).obj X) = NatTrans …
+                                         -- 🎉 no goals
 #align category_theory.cartesian_closed.curry_id_eq_coev CategoryTheory.CartesianClosed.curry_id_eq_coev
 
 theorem curry_injective : Function.Injective (curry : (A ⨯ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
@@ -256,11 +259,15 @@ def expTerminalIsoSelf [Exponentiable (⊤_ C)] : (⊤_ C) ⟹ X ≅ X :=
     (fun {Y} f => CartesianClosed.curry ((prod.leftUnitor Y).hom ≫ f))
     (fun g => by
       rw [curry_eq_iff, Iso.hom_inv_id_assoc])
+      -- 🎉 no goals
     (fun g => by simp)
+                 -- 🎉 no goals
     (fun f g => by
       -- Porting note: `rw` is a bit brittle here, requiring the `dsimp` rule cancellation.
       dsimp [-prod.leftUnitor_inv]
+      -- ⊢ (prod.leftUnitor Z'✝).inv ≫ CartesianClosed.uncurry (f ≫ g) = f ≫ (prod.left …
       rw [uncurry_natural_left, prod.leftUnitor_inv_naturality_assoc f])
+      -- 🎉 no goals
 #align category_theory.exp_terminal_iso_self CategoryTheory.expTerminalIsoSelf
 
 /-- The internal element which points at the given morphism. -/
@@ -286,6 +293,7 @@ theorem prod_map_pre_app_comp_ev (f : B ⟶ A) [Exponentiable B] (X : C) :
 theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
     CartesianClosed.uncurry ((pre f).app X) = Limits.prod.map f (𝟙 _) ≫ (exp.ev A).app X := by
   rw [uncurry_eq, prod_map_pre_app_comp_ev]
+  -- 🎉 no goals
 #align category_theory.uncurry_pre CategoryTheory.uncurry_pre
 
 theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
@@ -296,12 +304,14 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
 
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by simp [pre]
+                                                                 -- 🎉 no goals
 #align category_theory.pre_id CategoryTheory.pre_id
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
     (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) : pre (f ≫ g) = pre g ≫ pre f := by
   rw [pre, pre, pre, transferNatTransSelf_comp, prod.functor.map_comp]
+  -- 🎉 no goals
 #align category_theory.pre_map CategoryTheory.pre_map
 
 end Pre
@@ -319,10 +329,15 @@ def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I where
   inv := t.to _
   hom_inv_id := by
     have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _)
+    -- ⊢ prod.snd = CartesianClosed.uncurry (IsInitial.to t (A ⟹ I))
     rw [← curry_eq_iff]
+    -- ⊢ CartesianClosed.curry prod.snd = IsInitial.to t (A ⟹ I)
     apply t.hom_ext
+    -- ⊢ prod.snd ≫ IsInitial.to t (A ⨯ I) = 𝟙 (A ⨯ I)
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
+    -- ⊢ IsInitial.to t (A ⟹ I) ≫ (exp A).map (IsInitial.to t (A ⨯ I)) = CartesianClo …
     apply t.hom_ext
+    -- 🎉 no goals
   inv_hom_id := t.hom_ext _ _
 #align category_theory.zero_mul CategoryTheory.zeroMul
 
@@ -338,7 +353,9 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
   hom_inv_id := by
     -- Porting note: mathport thought that the `mulZero` here was `mul_zero`!
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
+    -- ⊢ (mulZero t).inv ≫ prod.map (𝟙 I) default ≫ (mulZero t).hom ≫ IsInitial.to t  …
     apply t.hom_ext
+    -- 🎉 no goals
 #align category_theory.pow_zero CategoryTheory.powZero
 
 -- TODO: Generalise the below to its commutated variants.
@@ -352,11 +369,16 @@ def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
       (coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod.inr))
   hom_inv_id := by
     ext
+    -- ⊢ coprod.inl ≫ coprod.desc (prod.map (𝟙 Z) coprod.inl) (prod.map (𝟙 Z) coprod. …
     rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
+    -- ⊢ coprod.inr ≫ coprod.desc (prod.map (𝟙 Z) coprod.inl) (prod.map (𝟙 Z) coprod. …
     rw [coprod.inr_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inr_desc, uncurry_curry]
+    -- 🎉 no goals
   inv_hom_id := by
     rw [← uncurry_natural_right, ← eq_curry_iff]
+    -- ⊢ coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod …
     ext
+    -- ⊢ coprod.inl ≫ coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed …
     rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
       comp_id]
     rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,
@@ -370,9 +392,13 @@ exponentiable object is an isomorphism.
 -/
 theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
   haveI : Mono (prod.lift (𝟙 A) f ≫ (zeroMul t).hom) := mono_comp _ _
+  -- ⊢ IsIso f
   rw [zeroMul_hom, prod.lift_snd] at this
+  -- ⊢ IsIso f
   haveI : IsSplitEpi f := IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
+  -- ⊢ IsIso f
   apply isIso_of_mono_of_isSplitEpi
+  -- 🎉 no goals
 #align category_theory.strict_initial CategoryTheory.strict_initial
 
 instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
@@ -383,8 +409,11 @@ instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
 theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mono (t.to B) :=
   ⟨fun g h _ => by
     haveI := strict_initial t g
+    -- ⊢ g = h
     haveI := strict_initial t h
+    -- ⊢ g = h
     exact eq_of_inv_eq_inv (t.hom_ext _ _)⟩
+    -- 🎉 no goals
 #align category_theory.initial_mono CategoryTheory.initial_mono
 
 instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
@@ -406,15 +435,24 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
   closed X :=
     { isAdj := by
         haveI q : Exponentiable (e.inverse.obj X) := inferInstance
+        -- ⊢ IsLeftAdjoint (MonoidalCategory.tensorLeft X)
         have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
+        -- ⊢ IsLeftAdjoint (MonoidalCategory.tensorLeft X)
         have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
+        -- ⊢ e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj …
         apply NatIso.ofComponents _ _
         · intro Y
+          -- ⊢ (e.functor ⋙ prod.functor.obj X ⋙ e.inverse).obj Y ≅ (prod.functor.obj (e.in …
           apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
+          -- ⊢ e.inverse.obj X ⨯ e.inverse.obj (e.functor.obj Y) ≅ (prod.functor.obj (e.inv …
           apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
+          -- 🎉 no goals
         · intro Y Z g
+          -- ⊢ (e.functor ⋙ prod.functor.obj X ⋙ e.inverse).map g ≫ (asIso (prodComparison  …
           dsimp
+          -- ⊢ e.inverse.map (prod.map (𝟙 X) (e.functor.map g)) ≫ prodComparison e.inverse  …
           simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
+          -- 🎉 no goals
           -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
         · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfNatIso this.symm
@@ -427,7 +465,9 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
             apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
           skip
+          -- ⊢ IsLeftAdjoint (MonoidalCategory.tensorLeft X)
           apply Adjunction.leftAdjointOfNatIso this }
+          -- 🎉 no goals
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 
 end Functor

@@ -46,10 +46,15 @@ lemma equivalence_counitIso_app (X : C₂) :
     (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).counitIso.app (L₂.obj X) =
       (Lifting.iso L₂ W₂ (F ⋙ G') (F' ⋙ G')).app X ≪≫ β.app X := by
   ext
+  -- ⊢ ((equivalence L₁ W₁ L₂ W₂ G G' F F' α β).counitIso.app (L₂.obj X)).hom = ((L …
   dsimp [equivalence, Equivalence.mk]
+  -- ⊢ NatTrans.app (liftNatTrans L₂ W₂ (F ⋙ G') L₂ (F' ⋙ G') (𝟭 D₂) β.hom) (L₂.obj …
   rw [liftNatTrans_app]
+  -- ⊢ NatTrans.app (Lifting.iso L₂ W₂ (F ⋙ G') (F' ⋙ G')).hom X ≫ NatTrans.app β.h …
   dsimp [Lifting.iso]
+  -- ⊢ G'.map (NatTrans.app (Lifting.iso' W₂).hom X) ≫ NatTrans.app β.hom X ≫ 𝟙 (L₂ …
   rw [comp_id]
+  -- 🎉 no goals
 
 /-- Basic constructor of an equivalence between localized categories -/
 noncomputable def isEquivalence : IsEquivalence G' :=
@@ -104,6 +109,7 @@ lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L�
   haveI : (E.functor ⋙ L₂).IsLocalization W₁ :=
     of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)
   exact of_equivalence_source (E.functor ⋙ L₂) W₁ L₂ W₂ E hW₁ hW₂ (Iso.refl _)
+  -- 🎉 no goals
 
 end IsLocalization
 

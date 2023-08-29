@@ -23,22 +23,28 @@ open scoped Pointwise
 
 theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType := by
   introv R hf hg
+  -- ⊢ FiniteType (comp g f)
   exact hg.comp hf
+  -- 🎉 no goals
 #align ring_hom.finite_type_stable_under_composition RingHom.finiteType_stableUnderComposition
 
 theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteType := by
   introv R _
+  -- ⊢ FiniteType (algebraMap R S)
   suffices Algebra.FiniteType R S by
     rw [RingHom.FiniteType]
     convert this; ext;
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
+  -- 🎉 no goals
 #align ring_hom.finite_type_holds_for_localization_away RingHom.finiteType_holdsForLocalizationAway
 
 theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType := by
   -- Setup algebra intances.
   rw [ofLocalizationSpanTarget_iff_finite]
+  -- ⊢ OfLocalizationFiniteSpanTarget @FiniteType
   introv R hs H
+  -- ⊢ FiniteType f
   classical
   letI := f.toAlgebra
   replace H : ∀ r : s, Algebra.FiniteType R (Localization.Away (r : S))

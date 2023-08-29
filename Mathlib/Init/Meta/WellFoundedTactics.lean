@@ -13,13 +13,17 @@ import Mathlib.Init.Data.Nat.Lemmas
 theorem Nat.lt_add_of_zero_lt_left (a b : Nat) (h : 0 < b) : a < a + b :=
   show a + 0 < a + b by
     apply Nat.add_lt_add_left
+    -- ⊢ 0 < b
     assumption
+    -- 🎉 no goals
 #align nat.lt_add_of_zero_lt_left Nat.lt_add_of_zero_lt_left
 
 theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
   suffices 0 < a + 1 by
     simp [Nat.add_comm]
+    -- ⊢ 0 < a + 1
     assumption
+    -- 🎉 no goals
   Nat.zero_lt_succ _
 #align nat.zero_lt_one_add Nat.zero_lt_one_add
 

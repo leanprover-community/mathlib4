@@ -96,11 +96,14 @@ section Degrees
 
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
+  -- ⊢ (Finset.sup (support p) fun s => ↑toMultiset s) = degrees p
+                             -- 🎉 no goals
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
 theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
   simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
+  -- 🎉 no goals
 #align mv_polynomial.degrees_sub MvPolynomial.degrees_sub
 
 end Degrees
@@ -109,17 +112,25 @@ section Vars
 
 @[simp]
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
+                                            -- 🎉 no goals
 #align mv_polynomial.vars_neg MvPolynomial.vars_neg
 
 theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
   convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
+  -- ⊢ p - q = p + -q
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
 #align mv_polynomial.vars_sub_subset MvPolynomial.vars_sub_subset
 
 @[simp]
 theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
     (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
+  -- ⊢ vars (p - q) = vars p ∪ vars q
   convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
+  -- ⊢ p - q = p + -q
+                                               -- 🎉 no goals
+                                               -- 🎉 no goals
 #align mv_polynomial.vars_sub_of_disjoint MvPolynomial.vars_sub_of_disjoint
 
 end Vars
@@ -176,6 +187,7 @@ def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   invFun f := eval₂Hom (Int.castRingHom S) f
   left_inv f := RingHom.ext <| eval₂Hom_X _ _
   right_inv f := funext fun x => by simp only [coe_eval₂Hom, Function.comp_apply, eval₂_X]
+                                    -- 🎉 no goals
 #align mv_polynomial.hom_equiv MvPolynomial.homEquiv
 
 end Eval
@@ -204,14 +216,17 @@ section TotalDegree
 @[simp]
 theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := by
   simp only [totalDegree, support_neg]
+  -- 🎉 no goals
 #align mv_polynomial.total_degree_neg MvPolynomial.totalDegree_neg
 
 theorem totalDegree_sub (a b : MvPolynomial σ R) :
     (a - b).totalDegree ≤ max a.totalDegree b.totalDegree :=
   calc
     (a - b).totalDegree = (a + -b).totalDegree := by rw [sub_eq_add_neg]
+                                                     -- 🎉 no goals
     _ ≤ max a.totalDegree (-b).totalDegree := (totalDegree_add a (-b))
     _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
+                                              -- 🎉 no goals
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
 
 end TotalDegree

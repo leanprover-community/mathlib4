@@ -95,6 +95,7 @@ class IsCommJordan [Mul A] : Prop where
 /-- A (commutative) Jordan multiplication is also a Jordan multipication -/
 instance (priority := 100) IsCommJordan.toIsJordan [Mul A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [IsCommJordan.mul_comm, IsCommJordan.mul_comm a b]
+                           -- 🎉 no goals
   lmul_lmul_comm_lmul a b := by
     rw [IsCommJordan.mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul,
       IsCommJordan.mul_comm b (a * a)]
@@ -104,16 +105,22 @@ instance (priority := 100) IsCommJordan.toIsJordan [Mul A] [IsCommJordan A] : Is
       IsCommJordan.lmul_comm_rmul_rmul, IsCommJordan.mul_comm, IsCommJordan.mul_comm b (a * a)]
   rmul_comm_rmul_rmul a b := by
     rw [IsCommJordan.mul_comm b a, IsCommJordan.lmul_comm_rmul_rmul, IsCommJordan.mul_comm]
+    -- 🎉 no goals
 #align is_comm_jordan.to_is_jordan IsCommJordan.toIsJordan
 
 -- see Note [lower instance priority]
 /-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms-/
 instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_assoc]
+                           -- 🎉 no goals
   lmul_lmul_comm_lmul a b := by rw [mul_assoc, mul_assoc]
+                                -- 🎉 no goals
   lmul_comm_rmul_rmul a b := by rw [mul_assoc]
+                                -- 🎉 no goals
+                                -- 🎉 no goals
   lmul_lmul_comm_rmul a b := by rw [← mul_assoc]
   rmul_comm_rmul_rmul a b := by rw [← mul_assoc, ← mul_assoc]
+                                -- 🎉 no goals
 #align semigroup.is_jordan Semigroup.isJordan
 
 -- see Note [lower instance priority]
@@ -175,9 +182,12 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
   convert (commute_lmul_lmul_sq (a + b)).lie_eq using 1
+  -- ⊢ 2 • ⁅↑L a, ↑L (a * b)⁆ + 2 • ⁅↑L b, ↑L (b * a)⁆ + ⁅↑L b, ↑L (a * a)⁆ + ⁅↑L a …
   simp only [add_mul, mul_add, map_add, lie_add, add_lie, IsCommJordan.mul_comm b a,
     (commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq, zero_add, add_zero, two_smul]
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add
 
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
@@ -187,12 +197,20 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆ := by
   rw [add_mul, add_mul]
+  -- ⊢ ⁅↑L (a + b + c), ↑L (a * (a + b + c) + b * (a + b + c) + c * (a + b + c))⁆ = …
   iterate 6 rw [mul_add]
+  -- ⊢ ⁅↑L (a + b + c), ↑L (a * a + a * b + a * c + (b * a + b * b + b * c) + (c *  …
   iterate 10 rw [map_add]
+  -- ⊢ ⁅↑L a + ↑L b + ↑L c, ↑L (a * a) + ↑L (a * b) + ↑L (a * c) + (↑L (b * a) + ↑L …
   rw [IsCommJordan.mul_comm b a, IsCommJordan.mul_comm c a, IsCommJordan.mul_comm c b]
+  -- ⊢ ⁅↑L a + ↑L b + ↑L c, ↑L (a * a) + ↑L (a * b) + ↑L (a * c) + (↑L (a * b) + ↑L …
   iterate 3 rw [two_smul]
+  -- ⊢ ⁅↑L a + ↑L b + ↑L c, ↑L (a * a) + ↑L (a * b) + ↑L (a * c) + (↑L (a * b) + ↑L …
   simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
+  -- ⊢ ⁅↑L a, ↑L (a * a)⁆ + ⁅↑L b, ↑L (a * a)⁆ + ⁅↑L c, ↑L (a * a)⁆ + (⁅↑L a, ↑L (a …
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 
 set_option maxHeartbeats 250000 in
 private theorem aux1 {a b c : A} :
@@ -206,7 +224,9 @@ private theorem aux1 {a b c : A} :
     (⁅L c, L (a * a)⁆ + ⁅L c, L (b * b)⁆ + ⁅L c, L (c * c)⁆ +
     ⁅L c, 2 • L (a * b)⁆ + ⁅L c, 2 • L (c * a)⁆ + ⁅L c, 2 • L (b * c)⁆) := by
   rw [add_lie, add_lie]
+  -- ⊢ ⁅↑L a, ↑L (a * a) + ↑L (b * b) + ↑L (c * c) + 2 • ↑L (a * b) + 2 • ↑L (c * a …
   iterate 15 rw [lie_add]
+  -- 🎉 no goals
 
 set_option maxHeartbeats 300000 in
 private theorem aux2 {a b c : A} :
@@ -224,7 +244,10 @@ private theorem aux2 {a b c : A} :
   rw [(commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq,
     (commute_lmul_lmul_sq c).lie_eq, zero_add, add_zero, add_zero]
   simp only [lie_nsmul]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L a, ↑L (c * c)⁆ + 2 • ⁅↑L a, ↑L (a * b)⁆ + 2 • ⁅↑L a …
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 
 private theorem aux3 {a b c : A} :
     ⁅L a, L (b * b)⁆ + ⁅L b, L (a * a)⁆ + 2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (a * b)⁆) +
@@ -234,17 +257,26 @@ private theorem aux3 {a b c : A} :
     =
     2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆ := by
   rw [add_left_eq_self]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L b, ↑L (a * a)⁆ + 2 • (⁅↑L a, ↑L (a * b)⁆ + ⁅↑L b, ↑ …
   -- Porting note: was `nth_rw` instead of `conv_lhs`
   conv_lhs => enter [1, 1, 2, 2, 2]; rw [IsCommJordan.mul_comm a b]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L b, ↑L (a * a)⁆ + 2 • (⁅↑L a, ↑L (a * b)⁆ + ⁅↑L b, ↑ …
   conv_lhs => enter [1, 2, 2, 2, 1]; rw [IsCommJordan.mul_comm c a]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L b, ↑L (a * a)⁆ + 2 • (⁅↑L a, ↑L (a * b)⁆ + ⁅↑L b, ↑ …
   conv_lhs => enter [   2, 2, 2, 2]; rw [IsCommJordan.mul_comm b c]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L b, ↑L (a * a)⁆ + 2 • (⁅↑L a, ↑L (a * b)⁆ + ⁅↑L b, ↑ …
   iterate 3 rw [two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L b, ↑L (a * a)⁆ + (⁅↑L (a * a), ↑L b⁆ + ⁅↑L (b * b), …
   iterate 2 rw [← lie_skew (L (a * a)), ← lie_skew (L (b * b)), ← lie_skew (L (c * c))]
+  -- ⊢ ⁅↑L a, ↑L (b * b)⁆ + ⁅↑L b, ↑L (a * a)⁆ + (-⁅↑L b, ↑L (a * a)⁆ + -⁅↑L a, ↑L  …
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 
 theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
     2 • (⁅L a, L (b * c)⁆ + ⁅L b, L (c * a)⁆ + ⁅L c, L (a * b)⁆) = 0 := by
   symm
+  -- ⊢ 0 = 2 • (⁅↑L a, ↑L (b * c)⁆ + ⁅↑L b, ↑L (c * a)⁆ + ⁅↑L c, ↑L (a * b)⁆)
   calc
     0 = ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ := by
       rw [(commute_lmul_lmul_sq (a + b + c)).lie_eq]

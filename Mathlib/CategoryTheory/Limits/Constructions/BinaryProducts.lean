@@ -44,8 +44,14 @@ def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : 
       PullbackCone.mk (m ≫ c.π.app ⟨WalkingPair.left⟩) (m ≫ c.π.app ⟨WalkingPair.right⟩ : _)
         (hX.hom_ext (_ ≫ f) (_ ≫ g))
     dsimp; rw [← J, ← J]
+    -- ⊢ m = IsLimit.lift hc (PullbackCone.mk (NatTrans.app s.π { as := WalkingPair.l …
+           -- ⊢ m = IsLimit.lift hc (PullbackCone.mk (m ≫ NatTrans.app c.π { as := WalkingPa …
     apply hc.hom_ext
+    -- ⊢ ∀ (j : WalkingCospan), m ≫ NatTrans.app (PullbackCone.mk (NatTrans.app c.π { …
     rintro (_ | (_ | _)) <;> simp only [PullbackCone.mk_π_app_one, PullbackCone.mk_π_app]
+                             -- ⊢ m ≫ NatTrans.app c.π { as := WalkingPair.left } ≫ f = IsLimit.lift hc (Pullb …
+                             -- ⊢ m ≫ NatTrans.app c.π { as := WalkingPair.left } = IsLimit.lift hc (PullbackC …
+                             -- ⊢ m ≫ NatTrans.app c.π { as := WalkingPair.right } = IsLimit.lift hc (Pullback …
     exacts [(Category.assoc _ _ _).symm.trans (hc.fac_assoc c' WalkingCospan.left f).symm,
       (hc.fac c' WalkingCospan.left).symm, (hc.fac c' WalkingCospan.right).symm]
 #align is_binary_product_of_is_terminal_is_pullback isBinaryProductOfIsTerminalIsPullback
@@ -57,6 +63,7 @@ def isProductOfIsTerminalIsPullback {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsLimit (BinaryFan.mk h k) := by
   apply isBinaryProductOfIsTerminalIsPullback _ _ H₁
   exact H₂
+  -- 🎉 no goals
 #align is_product_of_is_terminal_is_pullback isProductOfIsTerminalIsPullback
 
 /-- The product is the pullback over the terminal object. -/
@@ -64,15 +71,25 @@ def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     (H₁ : IsTerminal Z) (H₂ : IsLimit (BinaryFan.mk h k)) :
     IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PullbackCone.isLimitAux'
+  -- ⊢ (s : PullbackCone f g) → { l // l ≫ PullbackCone.fst (PullbackCone.mk h k (_ …
   intro s
+  -- ⊢ { l // l ≫ PullbackCone.fst (PullbackCone.mk h k (_ : h ≫ f = k ≫ g)) = Pull …
   use H₂.lift (BinaryFan.mk s.fst s.snd)
+  -- ⊢ IsLimit.lift H₂ (BinaryFan.mk (PullbackCone.fst s) (PullbackCone.snd s)) ≫ P …
   use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.left⟩
+  -- ⊢ IsLimit.lift H₂ (BinaryFan.mk (PullbackCone.fst s) (PullbackCone.snd s)) ≫ P …
   use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.right⟩
+  -- ⊢ ∀ {m : s.pt ⟶ (PullbackCone.mk h k (_ : h ≫ f = k ≫ g)).pt}, m ≫ PullbackCon …
   intro m h₁ h₂
+  -- ⊢ m = IsLimit.lift H₂ (BinaryFan.mk (PullbackCone.fst s) (PullbackCone.snd s))
   apply H₂.hom_ext
+  -- ⊢ ∀ (j : Discrete WalkingPair), m ≫ NatTrans.app (BinaryFan.mk h k).π j = IsLi …
   rintro ⟨⟨⟩⟩
+  -- ⊢ m ≫ NatTrans.app (BinaryFan.mk h k).π { as := WalkingPair.left } = IsLimit.l …
   · exact h₁.trans (H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.left⟩).symm
+    -- 🎉 no goals
   · exact h₂.trans (H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.right⟩).symm
+    -- 🎉 no goals
 #align is_pullback_of_is_terminal_is_product isPullbackOfIsTerminalIsProduct
 
 /-- Any category with pullbacks and a terminal object has a limit cone for each walking pair. -/
@@ -111,6 +128,7 @@ noncomputable def preservesBinaryProductsOfPreservesTerminalAndPullbacks [HasTer
         apply
           isBinaryProductOfIsTerminalIsPullback _ _ (isLimitOfHasTerminalOfPreservesLimit F)
         apply isLimitOfHasPullbackOfPreservesLimit)⟩
+        -- 🎉 no goals
 #align preserves_binary_products_of_preserves_terminal_and_pullbacks preservesBinaryProductsOfPreservesTerminalAndPullbacks
 
 /-- In a category with a terminal object and pullbacks,
@@ -140,9 +158,15 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
       PushoutCocone.mk (c.ι.app ⟨WalkingPair.left⟩ ≫ m) (c.ι.app ⟨WalkingPair.right⟩ ≫ m)
         (hX.hom_ext (f ≫ _) (g ≫ _))
     dsimp; rw [← J, ← J]
+    -- ⊢ m = IsColimit.desc hc (PushoutCocone.mk (NatTrans.app s.ι { as := WalkingPai …
+           -- ⊢ m = IsColimit.desc hc (PushoutCocone.mk (NatTrans.app c.ι { as := WalkingPai …
     apply hc.hom_ext
+    -- ⊢ ∀ (j : WalkingSpan), NatTrans.app (PushoutCocone.mk (NatTrans.app c.ι { as : …
     rintro (_ | (_ | _)) <;>
       simp only [PushoutCocone.mk_ι_app_zero, PushoutCocone.mk_ι_app, Category.assoc]
+      -- ⊢ f ≫ NatTrans.app c.ι { as := WalkingPair.left } ≫ m = f ≫ NatTrans.app c.ι { …
+      -- ⊢ NatTrans.app c.ι { as := WalkingPair.left } ≫ m = NatTrans.app c.ι { as := W …
+      -- ⊢ NatTrans.app c.ι { as := WalkingPair.right } ≫ m = NatTrans.app c.ι { as :=  …
     congr 1
     exacts [(hc.fac c' WalkingSpan.left).symm, (hc.fac c' WalkingSpan.left).symm,
       (hc.fac c' WalkingSpan.right).symm]
@@ -155,6 +179,7 @@ def isCoproductOfIsInitialIsPushout {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsColimit (BinaryCofan.mk f g) := by
   apply isBinaryCoproductOfIsInitialIsPushout _ _ H₁
   exact H₂
+  -- 🎉 no goals
 #align is_coproduct_of_is_initial_is_pushout isCoproductOfIsInitialIsPushout
 
 /-- The coproduct is the pushout under the initial object. -/
@@ -162,15 +187,25 @@ def isPushoutOfIsInitialIsCoproduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     (H₁ : IsInitial W) (H₂ : IsColimit (BinaryCofan.mk f g)) :
     IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PushoutCocone.isColimitAux'
+  -- ⊢ (s : PushoutCocone h k) → { l // PushoutCocone.inl (PushoutCocone.mk f g (_  …
   intro s
+  -- ⊢ { l // PushoutCocone.inl (PushoutCocone.mk f g (_ : h ≫ f = k ≫ g)) ≫ l = Pu …
   use H₂.desc (BinaryCofan.mk s.inl s.inr)
+  -- ⊢ PushoutCocone.inl (PushoutCocone.mk f g (_ : h ≫ f = k ≫ g)) ≫ IsColimit.des …
   use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.left⟩
+  -- ⊢ PushoutCocone.inr (PushoutCocone.mk f g (_ : h ≫ f = k ≫ g)) ≫ IsColimit.des …
   use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.right⟩
+  -- ⊢ ∀ {m : (PushoutCocone.mk f g (_ : h ≫ f = k ≫ g)).pt ⟶ s.pt}, PushoutCocone. …
   intro m h₁ h₂
+  -- ⊢ m = IsColimit.desc H₂ (BinaryCofan.mk (PushoutCocone.inl s) (PushoutCocone.i …
   apply H₂.hom_ext
+  -- ⊢ ∀ (j : Discrete WalkingPair), NatTrans.app (BinaryCofan.mk f g).ι j ≫ m = Na …
   rintro ⟨⟨⟩⟩
+  -- ⊢ NatTrans.app (BinaryCofan.mk f g).ι { as := WalkingPair.left } ≫ m = NatTran …
   · exact h₁.trans (H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.left⟩).symm
+    -- 🎉 no goals
   · exact h₂.trans (H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.right⟩).symm
+    -- 🎉 no goals
 #align is_pushout_of_is_initial_is_coproduct isPushoutOfIsInitialIsCoproduct
 
 /-- Any category with pushouts and an initial object has a colimit cocone for each walking pair. -/
@@ -205,6 +240,7 @@ noncomputable def preservesBinaryCoproductsOfPreservesInitialAndPushouts [HasIni
         isBinaryCoproductOfIsInitialIsPushout _ _
           (isColimitOfHasInitialOfPreservesColimit F)
       apply isColimitOfHasPushoutOfPreservesColimit)⟩
+      -- 🎉 no goals
 #align preserves_binary_coproducts_of_preserves_initial_and_pushouts preservesBinaryCoproductsOfPreservesInitialAndPushouts
 
 /-- In a category with an initial object and pushouts,

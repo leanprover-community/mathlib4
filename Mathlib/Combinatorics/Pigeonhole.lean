@@ -117,6 +117,7 @@ greater than `b`. -/
 theorem exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum (hf : ∀ a ∈ s, f a ∈ t)
     (hb : t.card • b < ∑ x in s, w x) : ∃ y ∈ t, b < ∑ x in s.filter fun x => f x = y, w x :=
   exists_lt_of_sum_lt <| by simpa only [sum_fiberwise_of_maps_to hf, sum_const]
+                            -- 🎉 no goals
 #align finset.exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum Finset.exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, strict inequality version:
@@ -139,6 +140,7 @@ theorem exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
   exists_lt_of_sum_lt <|
     calc
       ∑ _y in t, b < ∑ x in s, w x := by simpa
+                                         -- 🎉 no goals
       _ ≤ ∑ y in t, ∑ x in s.filter fun x => f x = y, w x :=
         sum_le_sum_fiberwise_of_sum_fiber_nonpos ht
 #align finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum Finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
@@ -166,6 +168,7 @@ in this pigeonhole is greater than or equal to `b`. -/
 theorem exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Nonempty)
     (hb : t.card • b ≤ ∑ x in s, w x) : ∃ y ∈ t, b ≤ ∑ x in s.filter fun x => f x = y, w x :=
   exists_le_of_sum_le ht <| by simpa only [sum_fiberwise_of_maps_to hf, sum_const]
+                               -- 🎉 no goals
 #align finset.exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum Finset.exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, non-strict inequality
@@ -188,6 +191,7 @@ theorem exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum
   exists_le_of_sum_le ht <|
     calc
       ∑ _y in t, b ≤ ∑ x in s, w x := by simpa
+                                         -- 🎉 no goals
       _ ≤ ∑ y in t, ∑ x in s.filter fun x => f x = y, w x :=
         sum_le_sum_fiberwise_of_sum_fiber_nonpos hf
 #align finset.exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum Finset.exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum
@@ -230,7 +234,9 @@ at least as many pigeons as the ceiling of the average number of pigeons across 
 theorem exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to (hf : ∀ a ∈ s, f a ∈ t)
     (ht : t.card • b < s.card) : ∃ y ∈ t, b < (s.filter fun x => f x = y).card := by
   simp_rw [cast_card] at ht ⊢
+  -- ⊢ ∃ y, y ∈ t ∧ b < ∑ a in filter (fun x => f x = y) s, 1
   exact exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum hf ht
+  -- 🎉 no goals
 #align finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to
 
 /-- The pigeonhole principle for finitely many pigeons counted by heads: there is a pigeonhole with
@@ -250,6 +256,7 @@ at most as many pigeons as the floor of the average number of pigeons across all
 theorem exists_card_fiber_lt_of_card_lt_nsmul (ht : ↑s.card < t.card • b) :
     ∃ y ∈ t, ↑(s.filter fun x => f x = y).card < b := by
   simp_rw [cast_card] at ht ⊢
+  -- ⊢ ∃ y, y ∈ t ∧ ∑ a in filter (fun x => f x = y) s, 1 < b
   exact
     exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul
       (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht
@@ -274,7 +281,9 @@ See also `Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to` for a stronge
 theorem exists_le_card_fiber_of_nsmul_le_card_of_maps_to (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Nonempty)
     (hb : t.card • b ≤ s.card) : ∃ y ∈ t, b ≤ (s.filter fun x => f x = y).card := by
   simp_rw [cast_card] at hb ⊢
+  -- ⊢ ∃ y, y ∈ t ∧ b ≤ ∑ a in filter (fun x => f x = y) s, 1
   exact exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum hf ht hb
+  -- 🎉 no goals
 #align finset.exists_le_card_fiber_of_nsmul_le_card_of_maps_to Finset.exists_le_card_fiber_of_nsmul_le_card_of_maps_to
 
 /-- The pigeonhole principle for finitely many pigeons counted by heads: given a function between
@@ -293,6 +302,7 @@ See also `Finset.exists_card_fiber_lt_of_card_lt_nsmul` for a stronger statement
 theorem exists_card_fiber_le_of_card_le_nsmul (ht : t.Nonempty) (hb : ↑s.card ≤ t.card • b) :
     ∃ y ∈ t, ↑(s.filter fun x => f x = y).card ≤ b := by
   simp_rw [cast_card] at hb ⊢
+  -- ⊢ ∃ y, y ∈ t ∧ ∑ a in filter (fun x => f x = y) s, 1 ≤ b
   refine'
     exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
       (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht hb

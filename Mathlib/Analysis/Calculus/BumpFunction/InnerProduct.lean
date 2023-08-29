@@ -32,11 +32,16 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
   toFun R x := smoothTransition ((R - ‖x‖) / (R - 1))
   mem_Icc _ _ := ⟨smoothTransition.nonneg _, smoothTransition.le_one _⟩
   symmetric _ _ := by simp only [norm_neg]
+                      -- 🎉 no goals
   smooth := by
     rintro ⟨R, x⟩ ⟨hR : 1 < R, -⟩
+    -- ⊢ ContDiffWithinAt ℝ ⊤ (uncurry fun R x => smoothTransition ((R - ‖x‖) / (R -  …
     apply ContDiffAt.contDiffWithinAt
+    -- ⊢ ContDiffAt ℝ ⊤ (uncurry fun R x => smoothTransition ((R - ‖x‖) / (R - 1))) ( …
     rw [← sub_pos] at hR
+    -- ⊢ ContDiffAt ℝ ⊤ (uncurry fun R x => smoothTransition ((R - ‖x‖) / (R - 1))) ( …
     rcases eq_or_ne x 0 with rfl | hx
+    -- ⊢ ContDiffAt ℝ ⊤ (uncurry fun R x => smoothTransition ((R - ‖x‖) / (R - 1))) ( …
     · have A : ContinuousAt (fun p : ℝ × E ↦ (p.1 - ‖p.2‖) / (p.1 - 1)) (R, 0) :=
         (continuousAt_fst.sub continuousAt_snd.norm).div
           (continuousAt_fst.sub continuousAt_const) hR.ne'
@@ -45,14 +50,20 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
       refine (contDiffAt_const (c := 1)).congr_of_eventuallyEq <| B.mono fun _ ↦
         smoothTransition.one_of_one_le
     · refine smoothTransition.contDiffAt.comp _ (ContDiffAt.div ?_ ?_ hR.ne')
+      -- ⊢ ContDiffAt ℝ ⊤ (fun a => a.fst - ‖a.snd‖) (R, x)
       · exact contDiffAt_fst.sub (contDiffAt_snd.norm ℝ hx)
+        -- 🎉 no goals
       · exact contDiffAt_fst.sub contDiffAt_const
+        -- 🎉 no goals
   eq_one R hR x hx := smoothTransition.one_of_one_le <| (one_le_div <| sub_pos.2 hR).2 <|
     sub_le_sub_left hx _
   support R hR := by
     ext x
+    -- ⊢ x ∈ Function.support ((fun R x => smoothTransition ((R - ‖x‖) / (R - 1))) R) …
     rw [mem_support, Ne.def, smoothTransition.zero_iff_nonpos, not_le, mem_ball_zero_iff]
+    -- ⊢ 0 < (R - ‖x‖) / (R - 1) ↔ ‖x‖ < R
     simp [div_pos_iff, sq_lt_sq, abs_of_pos (one_pos.trans hR), hR, hR.not_lt]
+    -- 🎉 no goals
 
 /-- Any inner product space has smooth bump functions. -/
 instance (priority := 100) hasContDiffBump_of_innerProductSpace : HasContDiffBump E :=

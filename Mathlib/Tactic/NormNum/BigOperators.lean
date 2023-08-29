@@ -99,10 +99,12 @@ def List.ProveNilOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(List $α)}
 
 lemma List.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     List.range n = [] := by rw [pn.out, Nat.cast_zero, List.range_zero]
+                            -- 🎉 no goals
 
 lemma List.range_succ_eq_map' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
     List.range n = 0 :: List.map Nat.succ (List.range n') := by
   rw [pn.out, Nat.cast_id, pn', List.range_succ_eq_map]
+  -- 🎉 no goals
 
 set_option linter.unusedVariables false in
 /-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
@@ -174,13 +176,17 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
 lemma Multiset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Multiset α) :
     insert a s = Multiset.cons a s := by
   ext; simp
+  -- ⊢ Multiset.count a✝ (insert a s) = Multiset.count a✝ (a ::ₘ s)
+       -- 🎉 no goals
 
 lemma Multiset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Multiset.range n = 0 := by rw [pn.out, Nat.cast_zero, Multiset.range_zero]
+                               -- 🎉 no goals
 
 lemma Multiset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
     Multiset.range n = n' ::ₘ Multiset.range n' := by
   rw [pn.out, Nat.cast_id, pn', Multiset.range_succ]
+  -- 🎉 no goals
 
 /-- Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
 
@@ -243,18 +249,24 @@ def Finset.ProveEmptyOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Finset $α)
 lemma Finset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
     insert a s = Finset.cons a s h := by
   ext; simp
+  -- ⊢ a✝ ∈ insert a s ↔ a✝ ∈ Finset.cons a s h
+       -- 🎉 no goals
 
 lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Finset.range n = {} := by rw [pn.out, Nat.cast_zero, Finset.range_zero]
+                              -- 🎉 no goals
 
 lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
     Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
   rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
+  -- 🎉 no goals
 
 lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :
     Finset.univ = elems := by
   ext x; simpa using complete x
+  -- ⊢ x ∈ Finset.univ ↔ x ∈ elems
+         -- 🎉 no goals
 
 /-- Either show the expression `s : Q(Finset α)` is empty, or remove one element from it.
 
@@ -322,10 +334,12 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
 protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=
   ⟨by simp⟩
+      -- 🎉 no goals
 
 protected lemma Finset.prod_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.prod ∅ f) 1 :=
   ⟨by simp⟩
+      -- 🎉 no goals
 
 /-- Evaluate a big operator applied to a finset by repeating `proveEmptyOrCons` until
 we exhaust all elements of the set. -/

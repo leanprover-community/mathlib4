@@ -58,7 +58,10 @@ def finiteCoproduct.desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) :
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
     apply continuous_sigma
+    -- ⊢ ∀ (i : α),
     intro a; exact (e a).continuous
+    -- ⊢ Continuous fun a_1 =>
+             -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
@@ -67,9 +70,13 @@ lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (
 lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a,x⟩
+  -- ⊢ ↑f { fst := a, snd := x } = ↑g { fst := a, snd := x }
   specialize h a
+  -- ⊢ ↑f { fst := a, snd := x } = ↑g { fst := a, snd := x }
   apply_fun (fun q => q x) at h
+  -- ⊢ ↑f { fst := a, snd := x } = ↑g { fst := a, snd := x }
   exact h
+  -- 🎉 no goals
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
 @[simps]
@@ -86,9 +93,13 @@ def finiteCoproduct.isColimit (F : Discrete α ⥤ Stonean) :
   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
     specialize hm a
+    -- ⊢ ι (fun a => F.obj a) a ≫ m = ι (fun a => F.obj a) a ≫ (fun s => desc (fun a  …
     ext t
+    -- ⊢ ↑(ι (fun a => F.obj a) a ≫ m) t = ↑(ι (fun a => F.obj a) a ≫ (fun s => desc  …
     apply_fun (fun q => q t) at hm
+    -- ⊢ ↑(ι (fun a => F.obj a) a ≫ m) t = ↑(ι (fun a => F.obj a) a ≫ (fun s => desc  …
     exact hm
+    -- 🎉 no goals
 
 /-- The category of extremally disconnected spaces has finite coproducts.
 -/
@@ -116,9 +127,13 @@ def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocon
   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
     specialize hm ⟨a⟩
+    -- ⊢ ι (fun a => X a) a ≫ m = ι (fun a => X a) a ≫ (fun s => desc (fun a => X a)  …
     ext t
+    -- ⊢ ↑(ι (fun a => X a) a ≫ m) t = ↑(ι (fun a => X a) a ≫ (fun s => desc (fun a = …
     apply_fun (fun q => q t) at hm
+    -- ⊢ ↑(ι (fun a => X a) a ≫ m) t = ↑(ι (fun a => X a) a ≫ (fun s => desc (fun a = …
     exact hm
+    -- 🎉 no goals
 
 /-- The isomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
@@ -135,9 +150,13 @@ lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Ston
 lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
   refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
+  -- ⊢ OpenEmbedding (↑(homeoOfIso (coproductIsoCoproduct Z).symm) ∘ ↑(Sigma.ι Z a))
   convert finiteCoproduct.openEmbedding_ι Z a
+  -- ⊢ ↑(homeoOfIso (coproductIsoCoproduct Z).symm) ∘ ↑(Sigma.ι Z a) = ↑(finiteCopr …
   ext x
+  -- ⊢ (↑(homeoOfIso (coproductIsoCoproduct Z).symm) ∘ ↑(Sigma.ι Z a)) x = ↑(finite …
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
+  -- ⊢ ↑(Sigma.ι Z a ≫ (coproductIsoCoproduct Z).inv) x = ↑(finiteCoproduct.ι Z a) x
   simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
     finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
 

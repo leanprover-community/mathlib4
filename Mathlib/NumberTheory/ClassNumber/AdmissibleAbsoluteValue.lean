@@ -63,10 +63,15 @@ theorem exists_partition {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b 
     (A : ι → R) (h : abv.IsAdmissible) : ∃ t : ι → Fin (h.card ε),
       ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
+  -- ⊢ ∃ t, ∀ (i₀ i₁ : ι), t i₀ = t i₁ → ↑(↑abv (A i₁ % b - A i₀ % b)) < ↑abv b • ε
   obtain ⟨t, ht⟩ := h.exists_partition' (Fintype.card ι) hε hb (A ∘ e.symm)
+  -- ⊢ ∃ t, ∀ (i₀ i₁ : ι), t i₀ = t i₁ → ↑(↑abv (A i₁ % b - A i₀ % b)) < ↑abv b • ε
   refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩
+  -- ⊢ ↑(↑abv (A i₁ % b - A i₀ % b)) < ↑abv b • ε
   convert (config := {transparency := .default})
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
+                           -- 🎉 no goals
+                           -- 🎉 no goals
 #align absolute_value.is_admissible.exists_partition AbsoluteValue.IsAdmissible.exists_partition
 
 /-- Any large enough family of vectors in `R^n` has a pair of elements
@@ -75,13 +80,21 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R
+  -- ⊢ ∀ {ε : ℝ}, 0 < ε → ∀ {b : R}, b ≠ 0 → ∀ (A : Fin (Nat.succ (IsAdmissible.car …
   induction' n with n ih
+  -- ⊢ ∀ {ε : ℝ}, 0 < ε → ∀ {b : R}, b ≠ 0 → ∀ (A : Fin (Nat.succ (IsAdmissible.car …
   · intro ε _hε b _hb A
+    -- ⊢ ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ (k : Fin Nat.zero), ↑(↑abv (A i₁ k % b - A i₀ k % b)) < …
     refine' ⟨0, 1, _, _⟩
+    -- ⊢ 0 ≠ 1
     · simp
+      -- 🎉 no goals
     rintro ⟨i, ⟨⟩⟩
+    -- 🎉 no goals
   intro ε hε b hb A
+  -- ⊢ ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ (k : Fin (Nat.succ n)), ↑(↑abv (A i₁ k % b - A i₀ k % b …
   let M := h.card ε
+  -- ⊢ ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ (k : Fin (Nat.succ n)), ↑(↑abv (A i₁ k % b - A i₀ k % b …
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
   -- of more than `M^n` remainders where the first components lie close together:
   obtain ⟨s, s_inj, hs⟩ :
@@ -115,9 +128,13 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   -- Since `s` is large enough, there are two elements of `A ∘ s`
   -- where the second components lie close together.
   obtain ⟨k₀, k₁, hk, h⟩ := ih hε hb fun x ↦ Fin.tail (A (s x))
+  -- ⊢ ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ (k : Fin (Nat.succ n)), ↑(↑abv (A i₁ k % b - A i₀ k % b …
   refine' ⟨s k₀, s k₁, fun h ↦ hk (s_inj h), fun i ↦ Fin.cases _ (fun i ↦ _) i⟩
+  -- ⊢ ↑(↑abv (A (s k₁) 0 % b - A (s k₀) 0 % b)) < ↑abv b • ε
   · exact hs k₀ k₁
+    -- 🎉 no goals
   · exact h i
+    -- 🎉 no goals
 #align absolute_value.is_admissible.exists_approx_aux AbsoluteValue.IsAdmissible.exists_approx_aux
 
 /-- Any large enough family of vectors in `R^ι` has a pair of elements
@@ -126,9 +143,15 @@ theorem exists_approx {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R
     (h : abv.IsAdmissible) (A : Fin (h.card ε ^ Fintype.card ι).succ → ι → R) :
     ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
+  -- ⊢ ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ (k : ι), ↑(↑abv (A i₁ k % b - A i₀ k % b)) < ↑abv b • ε
   obtain ⟨i₀, i₁, ne, h⟩ := h.exists_approx_aux (Fintype.card ι) hε hb fun x y ↦ A x (e.symm y)
+  -- ⊢ ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ (k : ι), ↑(↑abv (A i₁ k % b - A i₀ k % b)) < ↑abv b • ε
   refine' ⟨i₀, i₁, ne, fun k ↦ _⟩
+  -- ⊢ ↑(↑abv (A i₁ k % b - A i₀ k % b)) < ↑abv b • ε
   convert h (e k) <;> simp only [e.symm_apply_apply]
+  -- ⊢ k = ↑e.symm (↑e k)
+                      -- 🎉 no goals
+                      -- 🎉 no goals
 #align absolute_value.is_admissible.exists_approx AbsoluteValue.IsAdmissible.exists_approx
 
 end IsAdmissible

@@ -58,8 +58,11 @@ instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
   coe_injective' K L h := by
     cases K
+    -- ⊢ { carrier := carrier✝, convex' := convex'✝, isCompact' := isCompact'✝, nonem …
     cases L
+    -- ⊢ { carrier := carrier✝¹, convex' := convex'✝¹, isCompact' := isCompact'✝¹, no …
     congr
+    -- 🎉 no goals
 
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
@@ -179,6 +182,7 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist_comm _ _ := Metric.hausdorffDist_comm
   dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
+                       -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
@@ -188,7 +192,9 @@ theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
 @[simp, norm_cast]
 theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
   rw [edist_dist]
+  -- ⊢ EMetric.hausdorffEdist ↑K ↑L = ENNReal.ofReal (dist K L)
   exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
+  -- 🎉 no goals
 #align convex_body.Hausdorff_edist_coe ConvexBody.hausdorffEdist_coe
 
 end SeminormedAddCommGroup

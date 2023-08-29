@@ -41,14 +41,23 @@ protected theorem StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoO
       · exact ht.1
       exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
   intro x hx y hy hxy
+  -- ⊢ f x < f y
   rcases lt_or_le x c with (hxc | hcx)
+  -- ⊢ f x < f y
   · have xs : x ∈ s := A _ hx hxc.le
+    -- ⊢ f x < f y
     rcases lt_or_le y c with (hyc | hcy)
+    -- ⊢ f x < f y
     · exact h₁ xs (A _ hy hyc.le) hxy
+      -- 🎉 no goals
     · exact (h₁ xs hs.1 hxc).trans_le (h₂.monotoneOn ht.1 (B _ hy hcy) hcy)
+      -- 🎉 no goals
   · have xt : x ∈ t := B _ hx hcx
+    -- ⊢ f x < f y
     have yt : y ∈ t := B _ hy (hcx.trans hxy.le)
+    -- ⊢ f x < f y
     exact h₂ xt yt hxy
+    -- 🎉 no goals
 #align strict_mono_on.union StrictMonoOn.union
 
 /-- If `f` is strictly monotone both on `(-∞, a]` and `[a, ∞)`, then it is strictly monotone on the
@@ -56,7 +65,9 @@ whole line. -/
 protected theorem StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (Iic a))
     (h₂ : StrictMonoOn f (Ici a)) : StrictMono f := by
   rw [← strictMonoOn_univ, ← @Iic_union_Ici _ _ a]
+  -- ⊢ StrictMonoOn f (Iic a ∪ Ici a)
   exact StrictMonoOn.union h₁ h₂ isGreatest_Iic isLeast_Ici
+  -- 🎉 no goals
 #align strict_mono_on.Iic_union_Ici StrictMonoOn.Iic_union_Ici
 
 /-- If `f` is strictly antitone both on `s` and `t`, with `s` to the left of `t` and the center
@@ -93,21 +104,32 @@ protected theorem MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : Monoton
       · exact ht.1
       exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
   intro x hx y hy hxy
+  -- ⊢ f x ≤ f y
   rcases lt_or_le x c with (hxc | hcx)
+  -- ⊢ f x ≤ f y
   · have xs : x ∈ s := A _ hx hxc.le
+    -- ⊢ f x ≤ f y
     rcases lt_or_le y c with (hyc | hcy)
+    -- ⊢ f x ≤ f y
     · exact h₁ xs (A _ hy hyc.le) hxy
+      -- 🎉 no goals
     · exact (h₁ xs hs.1 hxc.le).trans (h₂ ht.1 (B _ hy hcy) hcy)
+      -- 🎉 no goals
   · have xt : x ∈ t := B _ hx hcx
+    -- ⊢ f x ≤ f y
     have yt : y ∈ t := B _ hy (hcx.trans hxy)
+    -- ⊢ f x ≤ f y
     exact h₂ xt yt hxy
+    -- 🎉 no goals
 #align monotone_on.union_right MonotoneOn.union_right
 
 /-- If `f` is monotone both on `(-∞, a]` and `[a, ∞)`, then it is monotone on the whole line. -/
 protected theorem MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (Iic a)) (h₂ : MonotoneOn f (Ici a)) :
     Monotone f := by
   rw [← monotoneOn_univ, ← @Iic_union_Ici _ _ a]
+  -- ⊢ MonotoneOn f (Iic a ∪ Ici a)
   exact MonotoneOn.union_right h₁ h₂ isGreatest_Iic isLeast_Ici
+  -- 🎉 no goals
 #align monotone_on.Iic_union_Ici MonotoneOn.Iic_union_Ici
 
 /-- If `f` is antitone both on `s` and `t`, with `s` to the left of `t` and the center

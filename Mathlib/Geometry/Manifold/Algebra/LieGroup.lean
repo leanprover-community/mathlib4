@@ -156,6 +156,8 @@ theorem ContMDiffWithinAt.div {f g : M → G} {s : Set M} {x₀ : M}
     (hf : ContMDiffWithinAt I' I n f s x₀) (hg : ContMDiffWithinAt I' I n g s x₀) :
     ContMDiffWithinAt I' I n (fun x => f x / g x) s x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
+  -- ⊢ ContMDiffWithinAt I' I n (fun x => f x * (g x)⁻¹) s x₀
+                            -- 🎉 no goals
 #align cont_mdiff_within_at.div ContMDiffWithinAt.div
 #align cont_mdiff_within_at.sub ContMDiffWithinAt.sub
 
@@ -163,6 +165,8 @@ theorem ContMDiffWithinAt.div {f g : M → G} {s : Set M} {x₀ : M}
 theorem ContMDiffAt.div {f g : M → G} {x₀ : M} (hf : ContMDiffAt I' I n f x₀)
     (hg : ContMDiffAt I' I n g x₀) : ContMDiffAt I' I n (fun x => f x / g x) x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
+  -- ⊢ ContMDiffAt I' I n (fun x => f x * (g x)⁻¹) x₀
+                            -- 🎉 no goals
 #align cont_mdiff_at.div ContMDiffAt.div
 #align cont_mdiff_at.sub ContMDiffAt.sub
 
@@ -170,12 +174,16 @@ theorem ContMDiffAt.div {f g : M → G} {x₀ : M} (hf : ContMDiffAt I' I n f x�
 theorem ContMDiffOn.div {f g : M → G} {s : Set M} (hf : ContMDiffOn I' I n f s)
     (hg : ContMDiffOn I' I n g s) : ContMDiffOn I' I n (fun x => f x / g x) s := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
+  -- ⊢ ContMDiffOn I' I n (fun x => f x * (g x)⁻¹) s
+                            -- 🎉 no goals
 #align cont_mdiff_on.div ContMDiffOn.div
 #align cont_mdiff_on.sub ContMDiffOn.sub
 
 @[to_additive]
 theorem ContMDiff.div {f g : M → G} (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
     ContMDiff I' I n fun x => f x / g x := by simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
+                                              -- ⊢ ContMDiff I' I n fun x => f x * (g x)⁻¹
+                                                                        -- 🎉 no goals
 #align cont_mdiff.div ContMDiff.div
 #align cont_mdiff.sub ContMDiff.sub
 
@@ -245,9 +253,13 @@ class SmoothInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 :=
   { smoothAt_inv₀ := by
       intro x hx
+      -- ⊢ SmoothAt 𝓘(𝕜, 𝕜) 𝓘(𝕜, 𝕜) (fun y => y⁻¹) x
       change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) ⊤ Inv.inv x
+      -- ⊢ ContMDiffAt 𝓘(𝕜, 𝕜) 𝓘(𝕜, 𝕜) ⊤ Inv.inv x
       rw [contMDiffAt_iff_contDiffAt]
+      -- ⊢ ContDiffAt 𝕜 ⊤ Inv.inv x
       exact contDiffAt_inv 𝕜 hx }
+      -- 🎉 no goals
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) {G : Type*}
@@ -316,17 +328,21 @@ theorem ContMDiffWithinAt.div₀
     (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :
     ContMDiffWithinAt I' I n (f / g) s a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  -- 🎉 no goals
 
 theorem ContMDiffOn.div₀ (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s)
     (h₀ : ∀ x ∈ s, g x ≠ 0) : ContMDiffOn I' I n (f / g) s := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  -- 🎉 no goals
 
 theorem ContMDiffAt.div₀ (hf : ContMDiffAt I' I n f a) (hg : ContMDiffAt I' I n g a)
     (h₀ : g a ≠ 0) : ContMDiffAt I' I n (f / g) a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  -- 🎉 no goals
 
 theorem ContMDiff.div₀ (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) (h₀ : ∀ x, g x ≠ 0) :
     ContMDiff I' I n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+                                   -- 🎉 no goals
 
 theorem SmoothWithinAt.div₀ (hf : SmoothWithinAt I' I f s a)
     (hg : SmoothWithinAt I' I g s a) (h₀ : g a ≠ 0) : SmoothWithinAt I' I (f / g) s a :=

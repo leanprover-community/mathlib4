@@ -44,12 +44,14 @@ variable [DivisionRing α]
 @[simp, norm_cast]
 theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
+                                                      -- 🎉 no goals
 #align rat.cast_coe_int Rat.cast_coe_int
 
 
 @[simp, norm_cast]
 theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
+  -- 🎉 no goals
 #align rat.cast_coe_nat Rat.cast_coe_nat
 
 
@@ -65,6 +67,7 @@ theorem cast_one : ((1 : ℚ) : α) = 1 :=
 
 theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
   simpa only [cast_def] using (r.1.cast_commute a).div_left (r.2.cast_commute a)
+  -- 🎉 no goals
 #align rat.cast_commute Rat.cast_commute
 
 theorem cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
@@ -81,6 +84,7 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
     refine' mt _ b0
     simp (config := { contextual := true })
   cases' e : a /. b with n d h c
+  -- ⊢ ↑(mk' n d) = ↑a / ↑b
   have d0 : (d : α) ≠ 0 := by
     intro d0
     have dd := den_dvd a b
@@ -89,11 +93,14 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
     rw [d0, zero_mul] at this
     contradiction
   rw [num_den'] at e
+  -- ⊢ ↑(mk' n d) = ↑a / ↑b
   have := congr_arg ((↑) : ℤ → α)
     ((divInt_eq_iff b0' <| ne_of_gt <| Int.coe_nat_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_ofNat] at this
+  -- ⊢ ↑(mk' n d) = ↑a / ↑b
   -- Porting note: was `symm`
   apply Eq.symm
+  -- ⊢ ↑a / ↑b = ↑(mk' n d)
   rw [cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq, ← mul_assoc,
     this, mul_assoc, mul_inv_cancel b0, mul_one]
 #align rat.cast_mk_of_ne_zero Rat.cast_mk_of_ne_zero
@@ -107,13 +114,16 @@ theorem cast_add_of_ne_zero :
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
+    -- ⊢ ↑((n₁ * ↑d₂ + n₂ * ↑d₁) /. (↑d₁ * ↑d₂)) = ↑(n₁ /. ↑d₁) + ↑(n₂ /. ↑d₂)
     suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
         = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹ by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
       · simpa [division_def, left_distrib, right_distrib, mul_inv_rev, d₁0, d₂0, mul_assoc]
       all_goals simp [d₁0, d₂0]
     rw [← mul_assoc (d₂ : α), mul_inv_cancel d₂0, one_mul, (Nat.cast_commute _ _).eq]
+    -- ⊢ ↑n₁ * (↑d₁)⁻¹ + ↑n₂ * ((↑d₂)⁻¹ * ↑d₁) * (↑d₁)⁻¹ = ↑n₁ * (↑d₁)⁻¹ + ↑n₂ * (↑d₂ …
     simp [d₁0, mul_assoc]
+    -- 🎉 no goals
 #align rat.cast_add_of_ne_zero Rat.cast_add_of_ne_zero
 
 @[simp, norm_cast]
@@ -128,7 +138,9 @@ theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
 theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
     ((m - n : ℚ) : α) = m - n := by
   have : ((-n).den : α) ≠ 0 := by cases n; exact n0
+  -- ⊢ ↑(m - n) = ↑m - ↑n
   simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
+  -- 🎉 no goals
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
 
 @[norm_cast]
@@ -140,18 +152,22 @@ theorem cast_mul_of_ne_zero :
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
+    -- ⊢ ↑(n₁ * n₂ /. (↑d₁ * ↑d₂)) = ↑(n₁ /. ↑d₁) * ↑(n₂ /. ↑d₂)
     suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹)) by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
       · simpa [division_def, mul_inv_rev, d₁0, d₂0, mul_assoc]
       all_goals simp [d₁0, d₂0]
     rw [(d₁.commute_cast (_ : α)).inv_right₀.eq]
+    -- 🎉 no goals
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
 
 -- Porting note: rewrote proof
 @[simp]
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n
+  -- ⊢ ↑(↑Nat.zero)⁻¹ = (↑Nat.zero)⁻¹
   · simp
+    -- 🎉 no goals
   rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
     Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
 #align rat.cast_inv_nat Rat.cast_inv_nat
@@ -160,8 +176,11 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n n
+  -- ⊢ ↑(↑(Int.ofNat n))⁻¹ = (↑(Int.ofNat n))⁻¹
   · simp [ofInt_eq_cast, cast_inv_nat]
+    -- 🎉 no goals
   · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
+    -- 🎉 no goals
 #align rat.cast_inv_int Rat.cast_inv_int
 
 @[norm_cast]
@@ -169,10 +188,15 @@ theorem cast_inv_of_ne_zero :
   ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) => by
     have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0; exact n0 Int.cast_zero
+    -- ⊢ ↑(mk' n d)⁻¹ = (↑(mk' n d))⁻¹
     have _ : (d : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0; exact d0 Nat.cast_zero
     rw [num_den', inv_def']
+    -- ⊢ ↑(↑d /. n) = (↑(n /. ↑d))⁻¹
     rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, inv_div] <;> simp [n0, d0]
+    -- ⊢ ↑↑d ≠ 0
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
 
 @[norm_cast]
@@ -185,16 +209,24 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
     let ⟨k, e⟩ := this
     have := congr_arg ((↑) : ℤ → α) e; rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
+  -- 🎉 no goals
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
 
 @[simp, norm_cast]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
     refine' ⟨fun h => _, congr_arg _⟩
+    -- ⊢ mk' n₁ d₁ = mk' n₂ d₂
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
+    -- ⊢ mk' n₁ d₁ = mk' n₂ d₂
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
+    -- ⊢ mk' n₁ d₁ = mk' n₂ d₂
     rw [num_den', num_den'] at h ⊢
+    -- ⊢ n₁ /. ↑d₁ = n₂ /. ↑d₂
     rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero] at h <;> simp [d₁0, d₂0] at h ⊢
+                                                         -- ⊢ mkRat n₁ d₁ = mkRat n₂ d₂
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
     rwa [eq_div_iff_mul_eq d₂a, division_def, mul_assoc, (d₁.cast_commute (d₂ : α)).inv_left₀.eq, ←
       mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_ofNat d₁, ←
       Int.cast_mul, ← Int.cast_ofNat d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0] at h
@@ -206,6 +238,7 @@ theorem cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)
 
 @[simp]
 theorem cast_eq_zero [CharZero α] {n : ℚ} : (n : α) = 0 ↔ n = 0 := by rw [← cast_zero, cast_inj]
+                                                                      -- 🎉 no goals
 #align rat.cast_eq_zero Rat.cast_eq_zero
 
 theorem cast_ne_zero [CharZero α] {n : ℚ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
@@ -239,6 +272,8 @@ theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α
 @[simp, norm_cast]
 theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
   rw [bit1, cast_add, cast_one, cast_bit0]; rfl
+  -- ⊢ bit0 ↑n + 1 = bit1 ↑n
+                                            -- 🎉 no goals
 #align rat.cast_bit1 Rat.cast_bit1
 
 end
@@ -280,6 +315,7 @@ theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
 @[norm_cast]
 theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_coe_int]
+  -- 🎉 no goals
 #align rat.cast_mk Rat.cast_mk
 
 @[simp, norm_cast]
@@ -295,12 +331,15 @@ variable {K : Type*} [LinearOrderedField K]
 
 theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
+  -- ⊢ 0 < ↑r.num / ↑r.den
   exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
+  -- 🎉 no goals
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
 @[mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun m n => by
   simpa only [sub_pos, cast_sub] using @cast_pos_of_pos K _ (n - m)
+  -- 🎉 no goals
 #align rat.cast_strict_mono Rat.cast_strictMono
 
 @[mono]
@@ -328,21 +367,25 @@ theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
 @[simp]
 theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
       norm_cast
+      -- 🎉 no goals
 #align rat.cast_nonneg Rat.cast_nonneg
 
 @[simp]
 theorem cast_nonpos {n : ℚ} : (n : K) ≤ 0 ↔ n ≤ 0 := by
       norm_cast
+      -- 🎉 no goals
 #align rat.cast_nonpos Rat.cast_nonpos
 
 @[simp]
 theorem cast_pos {n : ℚ} : (0 : K) < n ↔ 0 < n := by
       norm_cast
+      -- 🎉 no goals
 #align rat.cast_pos Rat.cast_pos
 
 @[simp]
 theorem cast_lt_zero {n : ℚ} : (n : K) < 0 ↔ n < 0 := by
       norm_cast
+      -- 🎉 no goals
 #align rat.cast_lt_zero Rat.cast_lt_zero
 
 @[simp, norm_cast]
@@ -358,6 +401,7 @@ theorem cast_max {a b : ℚ} : (↑(max a b) : K) = max (a : K) (b : K) :=
 
 @[simp, norm_cast]
 theorem cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_max_neg]
+                                                             -- 🎉 no goals
 #align rat.cast_abs Rat.cast_abs
 
 open Set
@@ -365,49 +409,65 @@ open Set
 @[simp]
 theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Icc ↑a ↑b ↔ x ∈ Icc a b
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Icc Rat.preimage_cast_Icc
 
 @[simp]
 theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Ico ↑a ↑b ↔ x ∈ Ico a b
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Ico Rat.preimage_cast_Ico
 
 @[simp]
 theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Ioc ↑a ↑b ↔ x ∈ Ioc a b
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Ioc Rat.preimage_cast_Ioc
 
 @[simp]
 theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Ioo ↑a ↑b ↔ x ∈ Ioo a b
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Ioo Rat.preimage_cast_Ioo
 
 @[simp]
 theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Ici ↑a ↔ x ∈ Ici a
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Ici Rat.preimage_cast_Ici
 
 @[simp]
 theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Iic ↑a ↔ x ∈ Iic a
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Iic Rat.preimage_cast_Iic
 
 @[simp]
 theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Ioi ↑a ↔ x ∈ Ioi a
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Ioi Rat.preimage_cast_Ioi
 
 @[simp]
 theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
   ext x
+  -- ⊢ x ∈ Rat.cast ⁻¹' Iio ↑a ↔ x ∈ Iio a
   simp
+  -- 🎉 no goals
 #align rat.preimage_cast_Iio Rat.preimage_cast_Iio
 
 end LinearOrderedField
@@ -434,11 +494,13 @@ open Rat
 @[simp]
 theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
+                  -- 🎉 no goals
 #align map_rat_cast map_ratCast
 
 @[simp]
 theorem eq_ratCast {k} [DivisionRing k] [RingHomClass F ℚ k] (f : F) (r : ℚ) : f r = r := by
   rw [← map_ratCast f, Rat.cast_id]
+  -- 🎉 no goals
 #align eq_rat_cast eq_ratCast
 
 namespace MonoidWithZeroHom
@@ -452,6 +514,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
       eq_on_inv₀ f g]
     apply h
+    -- 🎉 no goals
 #align monoid_with_zero_hom.ext_rat' MonoidWithZeroHom.ext_rat'
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`.
@@ -472,6 +535,8 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
         (f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) =
           (g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)
         from ext_int' (by simpa) (by simpa)
+                          -- 🎉 no goals
+                                     -- 🎉 no goals
 #align monoid_with_zero_hom.ext_rat_on_pnat MonoidWithZeroHom.ext_rat_on_pnat
 
 end MonoidWithZeroHom
@@ -497,11 +562,14 @@ variable {K : Type*} [DivisionRing K]
 instance (priority := 100) distribSMul : DistribSMul ℚ K where
   smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
+                    -- 🎉 no goals
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
+                       -- 🎉 no goals
 #align rat.distrib_smul Rat.distribSMul
 
 instance isScalarTower_right : IsScalarTower ℚ K K :=
   ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
+                   -- 🎉 no goals
 #align rat.is_scalar_tower_right Rat.isScalarTower_right
 
 end Rat

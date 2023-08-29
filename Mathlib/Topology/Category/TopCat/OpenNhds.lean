@@ -45,7 +45,11 @@ namespace OpenNhds
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
   le_refl _ := by dsimp [LE.le]; exact le_rfl
+                  -- ⊢ x✝.obj ≤ x✝.obj
+                                 -- 🎉 no goals
   le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
+                       -- ⊢ x✝².obj ≤ x✝¹.obj → x✝¹.obj ≤ x✝.obj → x✝².obj ≤ x✝.obj
+                                      -- 🎉 no goals
   le_antisymm _ _ i j := FullSubcategory.ext _ _ <| le_antisymm i j
 
 instance (x : X) : Lattice (OpenNhds x) :=
@@ -62,6 +66,8 @@ instance (x : X) : Lattice (OpenNhds x) :=
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
   le_top _ := by dsimp [LE.le]; exact le_top
+                 -- ⊢ x✝.obj ≤ ⊤
+                                -- 🎉 no goals
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
@@ -122,16 +128,21 @@ theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q�
 @[simp]
 theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
+  -- 🎉 no goals
 #align topological_space.open_nhds.map_id_obj_unop TopologicalSpace.OpenNhds.map_id_obj_unop
 
 @[simp]
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
+                                                                                      -- 🎉 no goals
 #align topological_space.open_nhds.op_map_id_obj TopologicalSpace.OpenNhds.op_map_id_obj
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `Opens X`. -/
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
   NatIso.ofComponents fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _
+                                                    -- ⊢ (inclusion (↑f x) ⋙ Opens.map f).obj U ⟶ (map f x ⋙ inclusion x).obj U
+                                                         -- ⊢ (map f x ⋙ inclusion x).obj U ⟶ (inclusion (↑f x) ⋙ Opens.map f).obj U
+                                                                    -- 🎉 no goals
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
 
 @[simp]

@@ -81,6 +81,8 @@ def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
     mul' := mul _
     inv' := inv _
     conj' := fun x U U_in ↦ ⟨U, U_in, by simp only [mul_inv_cancel_comm, preimage_id']; rfl⟩ }
+                                         -- ⊢ U ⊆ U
+                                                                                        -- 🎉 no goals
 #align group_filter_basis_of_comm groupFilterBasisOfComm
 #align add_group_filter_basis_of_comm addGroupFilterBasisOfComm
 
@@ -126,18 +128,31 @@ instance : Inhabited (GroupFilterBasis G) := ⟨by
       nonempty := singleton_nonempty _.. }
   all_goals simp only [exists_prop, mem_singleton_iff]
   · rintro - - rfl rfl
+    -- ⊢ ∃ z, z = {1} ∧ z ⊆ {1} ∩ {1}
     use {1}
+    -- ⊢ {1} = {1} ∧ {1} ⊆ {1} ∩ {1}
     simp
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · rintro - rfl
+    -- ⊢ ∃ V, V = {1} ∧ V * V ⊆ {1}
     use {1}
+    -- ⊢ {1} = {1} ∧ {1} * {1} ⊆ {1}
     simp
+    -- 🎉 no goals
   · rintro - rfl
+    -- ⊢ ∃ V, V = {1} ∧ V ⊆ (fun x => x⁻¹) ⁻¹' {1}
     use {1}
+    -- ⊢ {1} = {1} ∧ {1} ⊆ (fun x => x⁻¹) ⁻¹' {1}
     simp
+    -- 🎉 no goals
   · rintro x₀ - rfl
+    -- ⊢ ∃ V, V = {1} ∧ V ⊆ (fun x => x₀ * x * x₀⁻¹) ⁻¹' {1}
     use {1}
+    -- ⊢ {1} = {1} ∧ {1} ⊆ (fun x => x₀ * x * x₀⁻¹) ⁻¹' {1}
     simp⟩
+    -- 🎉 no goals
 
 @[to_additive]
 theorem prod_subset_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
@@ -157,6 +172,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive (attr := simp)]
 theorem N_one (B : GroupFilterBasis G) : B.N 1 = B.toFilterBasis.filter := by
   simp only [N, one_mul, map_id']
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align group_filter_basis.N_one GroupFilterBasis.N_one
 set_option linter.uppercaseLean3 false in
@@ -179,25 +195,45 @@ def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
 @[to_additive]
 theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = B.N x₀ := by
   rw [TopologicalSpace.nhds_mkOfNhds]
+  -- ⊢ pure ≤ N B
   · intro x U U_in
+    -- ⊢ U ∈ pure x
     rw [(B.hasBasis x).mem_iff] at U_in
+    -- ⊢ U ∈ pure x
     rcases U_in with ⟨V, V_in, H⟩
+    -- ⊢ U ∈ pure x
     simpa [mem_pure] using H (mem_image_of_mem _ (GroupFilterBasis.one V_in))
+    -- 🎉 no goals
   · intro x U U_in
+    -- ⊢ ∃ t, t ∈ N B x ∧ t ⊆ U ∧ ∀ (a' : G), a' ∈ t → U ∈ N B a'
     rw [(B.hasBasis x).mem_iff] at U_in
+    -- ⊢ ∃ t, t ∈ N B x ∧ t ⊆ U ∧ ∀ (a' : G), a' ∈ t → U ∈ N B a'
     rcases U_in with ⟨V, V_in, H⟩
+    -- ⊢ ∃ t, t ∈ N B x ∧ t ⊆ U ∧ ∀ (a' : G), a' ∈ t → U ∈ N B a'
     rcases GroupFilterBasis.mul V_in with ⟨W, W_in, hW⟩
+    -- ⊢ ∃ t, t ∈ N B x ∧ t ⊆ U ∧ ∀ (a' : G), a' ∈ t → U ∈ N B a'
     use (fun y ↦ x * y) '' W, image_mem_map (FilterBasis.mem_filter_of_mem _ W_in)
+    -- ⊢ (fun y => x * y) '' W ⊆ U ∧ ∀ (a' : G), a' ∈ (fun y => x * y) '' W → U ∈ N B …
     constructor
+    -- ⊢ (fun y => x * y) '' W ⊆ U
     · rw [image_subset_iff] at H ⊢
+      -- ⊢ W ⊆ (fun y => x * y) ⁻¹' U
       exact ((B.prod_subset_self W_in).trans hW).trans H
+      -- 🎉 no goals
     · rintro y ⟨t, tW, rfl⟩
+      -- ⊢ U ∈ N B ((fun y => x * y) t)
       rw [(B.hasBasis _).mem_iff]
+      -- ⊢ ∃ i, i ∈ B ∧ (fun y => (fun y => x * y) t * y) '' i ⊆ U
       use W, W_in
+      -- ⊢ (fun y => (fun y => x * y) t * y) '' W ⊆ U
       apply Subset.trans _ H
+      -- ⊢ (fun y => (fun y => x * y) t * y) '' W ⊆ (fun y => x * y) '' V
       clear H
+      -- ⊢ (fun y => (fun y => x * y) t * y) '' W ⊆ (fun y => x * y) '' V
       rintro z ⟨w, wW, rfl⟩
+      -- ⊢ (fun y => (fun y => x * y) t * y) w ∈ (fun y => x * y) '' V
       exact ⟨t * w, hW (mul_mem_mul tW wW), by simp [mul_assoc]⟩
+      -- 🎉 no goals
 #align group_filter_basis.nhds_eq GroupFilterBasis.nhds_eq
 #align add_group_filter_basis.nhds_eq AddGroupFilterBasis.nhds_eq
 
@@ -205,8 +241,11 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
 theorem nhds_one_eq (B : GroupFilterBasis G) :
     @nhds G B.topology (1 : G) = B.toFilterBasis.filter := by
   rw [B.nhds_eq]
+  -- ⊢ N B 1 = FilterBasis.filter toFilterBasis
   simp only [N, one_mul]
+  -- ⊢ map (fun y => y) (FilterBasis.filter toFilterBasis) = FilterBasis.filter toF …
   exact map_id
+  -- 🎉 no goals
 #align group_filter_basis.nhds_one_eq GroupFilterBasis.nhds_one_eq
 #align add_group_filter_basis.nhds_zero_eq AddGroupFilterBasis.nhds_zero_eq
 
@@ -214,7 +253,9 @@ theorem nhds_one_eq (B : GroupFilterBasis G) :
 theorem nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
     HasBasis (@nhds G B.topology x₀) (fun V : Set G ↦ V ∈ B) fun V ↦ (fun y ↦ x₀ * y) '' V := by
   rw [B.nhds_eq]
+  -- ⊢ HasBasis (N B x₀) (fun V => V ∈ B) fun V => (fun y => x₀ * y) '' V
   apply B.hasBasis
+  -- 🎉 no goals
 #align group_filter_basis.nhds_has_basis GroupFilterBasis.nhds_hasBasis
 #align add_group_filter_basis.nhds_has_basis AddGroupFilterBasis.nhds_hasBasis
 
@@ -222,7 +263,9 @@ theorem nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
 theorem nhds_one_hasBasis (B : GroupFilterBasis G) :
     HasBasis (@nhds G B.topology 1) (fun V : Set G ↦ V ∈ B) id := by
   rw [B.nhds_one_eq]
+  -- ⊢ HasBasis (FilterBasis.filter toFilterBasis) (fun V => V ∈ B) id
   exact B.toFilterBasis.hasBasis
+  -- 🎉 no goals
 #align group_filter_basis.nhds_one_has_basis GroupFilterBasis.nhds_one_hasBasis
 #align add_group_filter_basis.nhds_zero_has_basis AddGroupFilterBasis.nhds_zero_hasBasis
 
@@ -230,7 +273,9 @@ theorem nhds_one_hasBasis (B : GroupFilterBasis G) :
 theorem mem_nhds_one (B : GroupFilterBasis G) {U : Set G} (hU : U ∈ B) :
     U ∈ @nhds G B.topology 1 := by
   rw [B.nhds_one_hasBasis.mem_iff]
+  -- ⊢ ∃ i, i ∈ B ∧ id i ⊆ U
   exact ⟨U, hU, rfl.subset⟩
+  -- 🎉 no goals
 #align group_filter_basis.mem_nhds_one GroupFilterBasis.mem_nhds_one
 #align add_group_filter_basis.mem_nhds_zero AddGroupFilterBasis.mem_nhds_zero
 
@@ -242,26 +287,46 @@ then it's a topological group."]
 instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     @TopologicalGroup G B.topology _ := by
   letI := B.topology
+  -- ⊢ TopologicalGroup G
   have basis := B.nhds_one_hasBasis
+  -- ⊢ TopologicalGroup G
   have basis' := basis.prod basis
+  -- ⊢ TopologicalGroup G
   refine' TopologicalGroup.of_nhds_one _ _ _ _
   · rw [basis'.tendsto_iff basis]
+    -- ⊢ ∀ (ib : Set G), ib ∈ B → ∃ ia, (ia.fst ∈ B ∧ ia.snd ∈ B) ∧ ∀ (x : G × G), x  …
     suffices ∀ U ∈ B, ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
+    -- ⊢ ∀ (U : Set G), U ∈ B → ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ (a b : G), a ∈ V → b ∈ W → …
     intro U U_in
+    -- ⊢ ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ (a b : G), a ∈ V → b ∈ W → a * b ∈ U
     rcases mul U_in with ⟨V, V_in, hV⟩
+    -- ⊢ ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ (a b : G), a ∈ V → b ∈ W → a * b ∈ U
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
+    -- ⊢ ∀ (a b : G), a ∈ V → b ∈ V → a * b ∈ U
     intro a b a_in b_in
+    -- ⊢ a * b ∈ U
     exact hV ⟨a, b, a_in, b_in, rfl⟩
+    -- 🎉 no goals
   · rw [basis.tendsto_iff basis]
+    -- ⊢ ∀ (ib : Set G), ib ∈ B → ∃ ia, ia ∈ B ∧ ∀ (x : G), x ∈ id ia → x⁻¹ ∈ id ib
     intro U U_in
+    -- ⊢ ∃ ia, ia ∈ B ∧ ∀ (x : G), x ∈ id ia → x⁻¹ ∈ id U
     simpa using inv U_in
+    -- 🎉 no goals
   · intro x₀
+    -- ⊢ 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)
     rw [nhds_eq, nhds_one_eq]
+    -- ⊢ N B x₀ = map (fun x => x₀ * x) (FilterBasis.filter toFilterBasis)
     rfl
+    -- 🎉 no goals
   · intro x₀
+    -- ⊢ Tendsto (fun x => x₀ * x * x₀⁻¹) (𝓝 1) (𝓝 1)
     rw [basis.tendsto_iff basis]
+    -- ⊢ ∀ (ib : Set G), ib ∈ B → ∃ ia, ia ∈ B ∧ ∀ (x : G), x ∈ id ia → x₀ * x * x₀⁻¹ …
     intro U U_in
+    -- ⊢ ∃ ia, ia ∈ B ∧ ∀ (x : G), x ∈ id ia → x₀ * x * x₀⁻¹ ∈ id U
     exact conj x₀ U_in
+    -- 🎉 no goals
 #align group_filter_basis.is_topological_group GroupFilterBasis.isTopologicalGroup
 #align add_group_filter_basis.is_topological_add_group AddGroupFilterBasis.isTopologicalAddGroup
 
@@ -307,26 +372,46 @@ a ring filter basis then it's a topological ring. -/
 instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
     @TopologicalRing R B.topology _ := by
   let B' := B.toAddGroupFilterBasis
+  -- ⊢ TopologicalRing R
   letI := B'.topology
+  -- ⊢ TopologicalRing R
   have basis := B'.nhds_zero_hasBasis
+  -- ⊢ TopologicalRing R
   have basis' := basis.prod basis
+  -- ⊢ TopologicalRing R
   haveI := B'.isTopologicalAddGroup
+  -- ⊢ TopologicalRing R
   apply TopologicalRing.of_addGroup_of_nhds_zero
   · rw [basis'.tendsto_iff basis]
+    -- ⊢ ∀ (ib : Set R), ib ∈ B' → ∃ ia, (ia.fst ∈ B' ∧ ia.snd ∈ B') ∧ ∀ (x : R × R), …
     suffices ∀ U ∈ B', ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
+    -- ⊢ ∀ (U : Set R), U ∈ B' → ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ (a b : R), a ∈ V → b ∈  …
     intro U U_in
+    -- ⊢ ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ (a b : R), a ∈ V → b ∈ W → a * b ∈ U
     rcases B.mul U_in with ⟨V, V_in, hV⟩
+    -- ⊢ ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ (a b : R), a ∈ V → b ∈ W → a * b ∈ U
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
+    -- ⊢ ∀ (a b : R), a ∈ V → b ∈ V → a * b ∈ U
     intro a b a_in b_in
+    -- ⊢ a * b ∈ U
     exact hV ⟨a, b, a_in, b_in, rfl⟩
+    -- 🎉 no goals
   · intro x₀
+    -- ⊢ Tendsto (fun x => x₀ * x) (𝓝 0) (𝓝 0)
     rw [basis.tendsto_iff basis]
+    -- ⊢ ∀ (ib : Set R), ib ∈ B' → ∃ ia, ia ∈ B' ∧ ∀ (x : R), x ∈ id ia → x₀ * x ∈ id …
     intro U
+    -- ⊢ U ∈ B' → ∃ ia, ia ∈ B' ∧ ∀ (x : R), x ∈ id ia → x₀ * x ∈ id U
     simpa using B.mul_left x₀
+    -- 🎉 no goals
   · intro x₀
+    -- ⊢ Tendsto (fun x => x * x₀) (𝓝 0) (𝓝 0)
     rw [basis.tendsto_iff basis]
+    -- ⊢ ∀ (ib : Set R), ib ∈ B' → ∃ ia, ia ∈ B' ∧ ∀ (x : R), x ∈ id ia → x * x₀ ∈ id …
     intro U
+    -- ⊢ U ∈ B' → ∃ ia, ia ∈ B' ∧ ∀ (x : R), x ∈ id ia → x * x₀ ∈ id U
     simpa using B.mul_right x₀
+    -- 🎉 no goals
 #align ring_filter_basis.is_topological_ring RingFilterBasis.isTopologicalRing
 
 end RingFilterBasis
@@ -371,18 +456,29 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
         default with
       smul' := by
         rintro U (rfl : U ∈ {{(0 : M)}})
+        -- ⊢ ∃ V, V ∈ 𝓝 0 ∧ ∃ W, W ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V • W ⊆ {0}
         use univ, univ_mem, {0}, rfl
+        -- ⊢ univ • {0} ⊆ {0}
         rintro a ⟨x, m, -, rfl, rfl⟩
+        -- ⊢ (fun x x_1 => x • x_1) x 0 ∈ {0}
         simp only [smul_zero, mem_singleton_iff]
+        -- 🎉 no goals
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})
+        -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x₀ • x) ⁻¹' U
         rw [mem_singleton_iff] at h
+        -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x₀ • x) ⁻¹' U
         use {0}, rfl
+        -- ⊢ {0} ⊆ (fun x => x₀ • x) ⁻¹' U
         simp [h]
+        -- 🎉 no goals
       smul_right' := by
         rintro m₀ U (h : U ∈ (0 : Set (Set M)))
+        -- ⊢ ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ U
         rw [Set.mem_zero] at h
+        -- ⊢ ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ U
         simp [h, nhds_discrete] }⟩
+        -- 🎉 no goals
 
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. -/
@@ -414,20 +510,35 @@ theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [To
     (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
   apply ContinuousSMul.of_nhds_zero
   · rw [h.tendsto_right_iff]
+    -- ⊢ ∀ (i : ι), p i → ∀ᶠ (x : R × M) in 𝓝 0 ×ˢ 𝓝 0, x.fst • x.snd ∈ b i
     intro i hi
+    -- ⊢ ∀ᶠ (x : R × M) in 𝓝 0 ×ˢ 𝓝 0, x.fst • x.snd ∈ b i
     rcases hsmul hi with ⟨V, V_in, j, hj, hVj⟩
+    -- ⊢ ∀ᶠ (x : R × M) in 𝓝 0 ×ˢ 𝓝 0, x.fst • x.snd ∈ b i
     apply mem_of_superset (prod_mem_prod V_in <| h.mem_of_mem hj)
+    -- ⊢ V ×ˢ b j ⊆ {x | (fun x => x.fst • x.snd ∈ b i) x}
     rintro ⟨v, w⟩ ⟨v_in : v ∈ V, w_in : w ∈ b j⟩
+    -- ⊢ (v, w) ∈ {x | (fun x => x.fst • x.snd ∈ b i) x}
     exact hVj (Set.smul_mem_smul v_in w_in)
+    -- 🎉 no goals
   · intro m₀
+    -- ⊢ Tendsto (fun a => a • m₀) (𝓝 0) (𝓝 0)
     rw [h.tendsto_right_iff]
+    -- ⊢ ∀ (i : ι), p i → ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ b i
     intro i hi
+    -- ⊢ ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ b i
     exact hsmul_right m₀ hi
+    -- 🎉 no goals
   · intro x₀
+    -- ⊢ Tendsto (fun m => x₀ • m) (𝓝 0) (𝓝 0)
     rw [h.tendsto_right_iff]
+    -- ⊢ ∀ (i : ι), p i → ∀ᶠ (x : M) in 𝓝 0, x₀ • x ∈ b i
     intro i hi
+    -- ⊢ ∀ᶠ (x : M) in 𝓝 0, x₀ • x ∈ b i
     rcases hsmul_left x₀ hi with ⟨j, hj, hji⟩
+    -- ⊢ ∀ᶠ (x : M) in 𝓝 0, x₀ • x ∈ b i
     exact mem_of_superset (h.mem_of_mem hj) hji
+    -- 🎉 no goals
 #align has_continuous_smul.of_basis_zero ContinuousSMul.of_basis_zero
 
 /-- If a module is endowed with a topological structure coming from
@@ -435,8 +546,11 @@ a module filter basis then it's a topological module. -/
 instance (priority := 100) continuousSMul [TopologicalRing R] :
     @ContinuousSMul R M _ _ B.topology := by
   let B' := B.toAddGroupFilterBasis
+  -- ⊢ ContinuousSMul R M
   let _ := B'.topology
+  -- ⊢ ContinuousSMul R M
   have _ := B'.isTopologicalAddGroup
+  -- ⊢ ContinuousSMul R M
   exact ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis
       (fun {_} => by simpa using B.smul)
       (by simpa using B.smul_left) B.smul_right
@@ -452,13 +566,19 @@ def ofBases {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingF
   { BM with
     smul' := by
       intro U U_in
+      -- ⊢ ∃ V, V ∈ 𝓝 0 ∧ ∃ W, W ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V • W ⊆ U
       rcases smul U_in with ⟨V, V_in, W, W_in, H⟩
+      -- ⊢ ∃ V, V ∈ 𝓝 0 ∧ ∃ W, W ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V • W ⊆ U
       exact ⟨V, BR.toAddGroupFilterBasis.mem_nhds_zero V_in, W, W_in, H⟩
+      -- 🎉 no goals
     smul_left' := smul_left
     smul_right' := by
       intro m₀ U U_in
+      -- ⊢ ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ U
       rcases smul_right m₀ U_in with ⟨V, V_in, H⟩
+      -- ⊢ ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ U
       exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) H }
+      -- 🎉 no goals
 #align module_filter_basis.of_bases ModuleFilterBasis.ofBases
 
 end ModuleFilterBasis

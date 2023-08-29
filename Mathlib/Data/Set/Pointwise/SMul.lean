@@ -421,7 +421,9 @@ theorem op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t :=
 @[to_additive]
 theorem image_op_smul : (op '' s) • t = t * s := by
   rw [← image2_smul, ← image2_mul, image2_image_left, image2_swap]
+  -- ⊢ image2 (fun a b => SMul.smul (op b) a) t s = image2 (fun x x_1 => x * x_1) t s
   rfl
+  -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s = s * t :=
@@ -496,6 +498,7 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
   smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
+                         -- 🎉 no goals
 #align set.is_scalar_tower Set.isScalarTower
 #align set.vadd_assoc_class Set.vAddAssocClass
 
@@ -528,6 +531,7 @@ on `Set β`. -/
 protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
+                                                  -- 🎉 no goals
 #align set.mul_action Set.mulAction
 #align set.add_action Set.addAction
 
@@ -537,8 +541,12 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set 
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul := by
     intros
+    -- ⊢ (x✝ * y✝) • b✝ = x✝ • y✝ • b✝
     simp only [← image_smul, image_image, ← mul_smul]
+    -- 🎉 no goals
+    -- ⊢ 1 • b✝ = b✝
   one_smul := by
+    -- 🎉 no goals
     intros
     simp only [← image_smul, one_smul, image_id']
 #align set.mul_action_set Set.mulActionSet
@@ -552,6 +560,7 @@ protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction �
     DistribMulAction α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
   smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+                                             -- 🎉 no goals
 #align set.distrib_mul_action_set Set.distribMulActionSet
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -559,6 +568,7 @@ protected def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulActio
     MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
   smul_one _ := image_singleton.trans <| by rw [smul_one, singleton_one]
+                                            -- 🎉 no goals
 #align set.mul_distrib_mul_action_set Set.mulDistribMulActionSet
 
 scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMulActionSet
@@ -567,21 +577,31 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
   ⟨fun {s t} h ↦ by
     by_contra' H
+    -- ⊢ False
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
+    -- ⊢ False
     rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
       ← hst.of_smul_right.subset_zero_iff] at H
     simp only [not_subset, mem_zero] at H
+    -- ⊢ False
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
+    -- ⊢ False
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul hs ht).elim ha hb⟩
+    -- 🎉 no goals
 
 instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
   ⟨fun {a s} h ↦ by
     by_contra' H
+    -- ⊢ False
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
+    -- ⊢ False
     rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
+    -- ⊢ False
     obtain ⟨ha, b, ht, hb⟩ := H
+    -- ⊢ False
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
+    -- 🎉 no goals
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
 
 instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
@@ -778,7 +798,9 @@ variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
 theorem op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
     (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
   ext
+  -- ⊢ x✝ ∈ (op a • s) • t ↔ x✝ ∈ s • a • t
   simp [mem_smul, mem_smul_set, h]
+  -- 🎉 no goals
 #align set.op_smul_set_smul_eq_smul_smul_set Set.op_smul_set_smul_eq_smul_smul_set
 #align set.op_vadd_set_vadd_eq_vadd_vadd_set Set.op_vadd_set_vadd_eq_vadd_vadd_set
 
@@ -795,22 +817,27 @@ because `0 * ∅ ≠ 0`.
 
 
 theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
+                                                                 -- 🎉 no goals
 #align set.smul_zero_subset Set.smul_zero_subset
 
 theorem zero_smul_subset (t : Set β) : (0 : Set α) • t ⊆ 0 := by simp [subset_def, mem_smul]
+                                                                 -- 🎉 no goals
 #align set.zero_smul_subset Set.zero_smul_subset
 
 theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
   s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+                                    -- 🎉 no goals
 #align set.nonempty.smul_zero Set.Nonempty.smul_zero
 
 theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
   t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
+                                    -- 🎉 no goals
 #align set.nonempty.zero_smul Set.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
 theorem zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
   simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
+  -- 🎉 no goals
 #align set.zero_smul_set Set.zero_smul_set
 
 theorem zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
@@ -830,19 +857,30 @@ variable [NoZeroSMulDivisors α β] {a : α}
 theorem zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   constructor
+  -- ⊢ 0 ∈ s • t → 0 ∈ s ∧ Set.Nonempty t ∨ 0 ∈ t ∧ Set.Nonempty s
   · rintro ⟨a, b, ha, hb, h⟩
+    -- ⊢ 0 ∈ s ∧ Set.Nonempty t ∨ 0 ∈ t ∧ Set.Nonempty s
     obtain rfl | rfl := eq_zero_or_eq_zero_of_smul_eq_zero h
+    -- ⊢ 0 ∈ s ∧ Set.Nonempty t ∨ 0 ∈ t ∧ Set.Nonempty s
     · exact Or.inl ⟨ha, b, hb⟩
+      -- 🎉 no goals
     · exact Or.inr ⟨hb, a, ha⟩
+      -- 🎉 no goals
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)
+    -- ⊢ 0 ∈ s • t
     · exact ⟨0, b, hs, hb, zero_smul _ _⟩
+      -- 🎉 no goals
     · exact ⟨a, 0, ha, ht, smul_zero _⟩
+      -- 🎉 no goals
 #align set.zero_mem_smul_iff Set.zero_mem_smul_iff
 
 theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   refine' ⟨_, zero_mem_smul_set⟩
+  -- ⊢ 0 ∈ a • t → 0 ∈ t
   rintro ⟨b, hb, h⟩
+  -- ⊢ 0 ∈ t
   rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
+  -- 🎉 no goals
 #align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
 
 end SMulWithZero
@@ -892,6 +930,7 @@ theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
 @[to_additive]
 theorem mem_inv_smul_set_iff : x ∈ a⁻¹ • A ↔ a • x ∈ A := by
   simp only [← image_smul, mem_image, inv_smul_eq_iff, exists_eq_right]
+  -- 🎉 no goals
 #align set.mem_inv_smul_set_iff Set.mem_inv_smul_set_iff
 #align set.mem_neg_vadd_set_iff Set.mem_neg_vadd_set_iff
 
@@ -963,12 +1002,19 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
   rw [← nonempty_iff_ne_empty]
+  -- ⊢ Set.Nonempty (x • s ∩ t) ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x
   constructor
+  -- ⊢ Set.Nonempty (x • s ∩ t) → ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x
   · rintro ⟨a, h, ha⟩
+    -- ⊢ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
+    -- ⊢ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x
     exact ⟨x • b, b, ⟨ha, hb⟩, by simp⟩
+    -- 🎉 no goals
   · rintro ⟨a, b, ⟨ha, hb⟩, rfl⟩
+    -- ⊢ Set.Nonempty ((a * b⁻¹) • s ∩ t)
     exact ⟨a, mem_inter (mem_smul_set.mpr ⟨b, hb, by simp⟩) ha⟩
+    -- 🎉 no goals
 #align set.smul_inter_ne_empty_iff Set.smul_inter_ne_empty_iff
 #align set.vadd_inter_ne_empty_iff Set.vadd_inter_ne_empty_iff
 
@@ -976,6 +1022,7 @@ theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
 theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
   simp_rw [smul_inter_ne_empty_iff, div_eq_mul_inv]
+  -- 🎉 no goals
 #align set.smul_inter_ne_empty_iff' Set.smul_inter_ne_empty_iff'
 #align set.vadd_inter_ne_empty_iff' Set.vadd_inter_ne_empty_iff'
 
@@ -983,13 +1030,21 @@ theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
 theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
   rw [← nonempty_iff_ne_empty]
+  -- ⊢ Set.Nonempty (x • s ∩ t) ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = unop x
   constructor
+  -- ⊢ Set.Nonempty (x • s ∩ t) → ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = unop x
   · rintro ⟨a, h, ha⟩
+    -- ⊢ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = unop x
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
+    -- ⊢ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = unop x
     exact ⟨b, x • b, ⟨hb, ha⟩, by simp⟩
+    -- 🎉 no goals
   · rintro ⟨a, b, ⟨ha, hb⟩, H⟩
+    -- ⊢ Set.Nonempty (x • s ∩ t)
     have : MulOpposite.op (a⁻¹ * b) = x := congr_arg MulOpposite.op H
+    -- ⊢ Set.Nonempty (x • s ∩ t)
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
+    -- 🎉 no goals
 #align set.op_smul_inter_ne_empty_iff Set.op_smul_inter_ne_empty_iff
 #align set.op_vadd_inter_ne_empty_iff Set.op_vadd_inter_ne_empty_iff
 
@@ -1002,6 +1057,7 @@ theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
 @[to_additive]
 theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } :=
   by simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+     -- 🎉 no goals
 #align set.Union_smul_eq_set_of_exists Set.iUnion_smul_eq_setOf_exists
 #align set.Union_vadd_eq_set_of_exists Set.iUnion_vadd_eq_setOf_exists
 
@@ -1079,12 +1135,15 @@ variable [Monoid α] [AddGroup β] [DistribMulAction α β] (a : α) (s : Set α
 @[simp]
 theorem smul_set_neg : a • -t = -(a • t) := by
   simp_rw [← image_smul, ← image_neg, image_image, smul_neg]
+  -- 🎉 no goals
 #align set.smul_set_neg Set.smul_set_neg
 
 @[simp]
 protected theorem smul_neg : s • -t = -(s • t) := by
   simp_rw [← image_neg]
+  -- ⊢ s • Neg.neg '' t = Neg.neg '' (s • t)
   exact image_image2_right_comm smul_neg
+  -- 🎉 no goals
 #align set.smul_neg Set.smul_neg
 
 end Monoid
@@ -1096,7 +1155,9 @@ variable [Semiring α] [AddCommMonoid β] [Module α β]
 -- porting note: new lemma
 theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
+  -- ⊢ (fun x => (a + b) • x) x ∈ a • s + b • s
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
+  -- 🎉 no goals
 
 end Semiring
 
@@ -1107,12 +1168,15 @@ variable [Ring α] [AddCommGroup β] [Module α β] (a : α) (s : Set α) (t : S
 @[simp]
 theorem neg_smul_set : -a • t = -(a • t) := by
   simp_rw [← image_smul, ← image_neg, image_image, neg_smul]
+  -- 🎉 no goals
 #align set.neg_smul_set Set.neg_smul_set
 
 @[simp]
 protected theorem neg_smul : -s • t = -(s • t) := by
   simp_rw [← image_neg]
+  -- ⊢ Neg.neg '' s • t = Neg.neg '' (s • t)
   exact image2_image_left_comm neg_smul
+  -- 🎉 no goals
 #align set.neg_smul Set.neg_smul
 
 end Ring

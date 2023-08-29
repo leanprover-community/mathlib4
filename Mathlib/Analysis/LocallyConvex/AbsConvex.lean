@@ -58,9 +58,13 @@ theorem nhds_basis_abs_convex :
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => _) fun s hs =>
       ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
   refine' ⟨convexHull ℝ (balancedCore 𝕜 s), _, convexHull_min (balancedCore_subset s) hs.2⟩
+  -- ⊢ ↑(convexHull ℝ) (balancedCore 𝕜 s) ∈ 𝓝 0 ∧ Balanced 𝕜 (↑(convexHull ℝ) (bala …
   refine' ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), _⟩
+  -- ⊢ Balanced 𝕜 (↑(convexHull ℝ) (balancedCore 𝕜 s)) ∧ Convex ℝ (↑(convexHull ℝ)  …
   refine' ⟨balanced_convexHull_of_balanced (balancedCore_balanced s), _⟩
+  -- ⊢ Convex ℝ (↑(convexHull ℝ) (balancedCore 𝕜 s))
   exact convex_convexHull ℝ (balancedCore 𝕜 s)
+  -- 🎉 no goals
 #align nhds_basis_abs_convex nhds_basis_abs_convex
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
@@ -68,13 +72,18 @@ variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 theorem nhds_basis_abs_convex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine' (nhds_basis_abs_convex 𝕜 E).to_hasBasis _ _
+  -- ⊢ ∀ (i : Set E), i ∈ 𝓝 0 ∧ Balanced 𝕜 i ∧ Convex ℝ i → ∃ i', (0 ∈ i' ∧ IsOpen  …
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
+    -- ⊢ ∃ i', (0 ∈ i' ∧ IsOpen i' ∧ Balanced 𝕜 i' ∧ Convex ℝ i') ∧ id i' ⊆ id s
     refine' ⟨interior s, _, interior_subset⟩
+    -- ⊢ 0 ∈ interior s ∧ IsOpen (interior s) ∧ Balanced 𝕜 (interior s) ∧ Convex ℝ (i …
     exact
       ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
         hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
   rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
+  -- ⊢ ∃ i, (i ∈ 𝓝 0 ∧ Balanced 𝕜 i ∧ Convex ℝ i) ∧ id i ⊆ id s
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
+  -- 🎉 no goals
 #align nhds_basis_abs_convex_open nhds_basis_abs_convex_open
 
 end NontriviallyNormedField
@@ -124,9 +133,13 @@ end AbsConvexOpenSets
 
 instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) := by
   rw [← exists_true_iff_nonempty]
+  -- ⊢ ∃ x, True
   dsimp only [AbsConvexOpenSets]
+  -- ⊢ ∃ x, True
   rw [Subtype.exists]
+  -- ⊢ ∃ a b, True
   exact ⟨Set.univ, ⟨mem_univ 0, isOpen_univ, balanced_univ, convex_univ⟩, trivial⟩
+  -- 🎉 no goals
 
 end AbsolutelyConvexSets
 
@@ -150,9 +163,13 @@ variable {𝕜 E}
 theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
     (gaugeSeminormFamily 𝕜 E s).ball 0 1 = (s : Set E) := by
   dsimp only [gaugeSeminormFamily]
+  -- ⊢ Seminorm.ball (gaugeSeminorm (_ : Balanced 𝕜 ↑s) (_ : Convex ℝ ↑s) (_ : Abso …
   rw [Seminorm.ball_zero_eq]
+  -- ⊢ {y | ↑(gaugeSeminorm (_ : Balanced 𝕜 ↑s) (_ : Convex ℝ ↑s) (_ : Absorbent ℝ  …
   simp_rw [gaugeSeminorm_toFun]
+  -- ⊢ {y | gauge (↑s) y < 1} = ↑s
   exact gauge_lt_one_eq_self_of_open s.coe_convex s.coe_zero_mem s.coe_isOpen
+  -- 🎉 no goals
 #align gauge_seminorm_family_ball gaugeSeminormFamily_ball
 
 variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
@@ -162,14 +179,23 @@ variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine' SeminormFamily.withSeminorms_of_hasBasis _ _
+  -- ⊢ Filter.HasBasis (𝓝 0) (fun s => s ∈ SeminormFamily.basisSets (gaugeSeminormF …
   refine' (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => _) fun s hs => _
+  -- ⊢ ∃ i', i' ∈ SeminormFamily.basisSets (gaugeSeminormFamily 𝕜 E) ∧ id i' ⊆ id s
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
+    -- ⊢ s ∈ SeminormFamily.basisSets (gaugeSeminormFamily 𝕜 E)
     convert(gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    -- ⊢ s = Seminorm.ball (gaugeSeminormFamily 𝕜 E { val := s, property := hs }) 0 1
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
+    -- 🎉 no goals
   refine' ⟨s, ⟨_, rfl.subset⟩⟩
+  -- ⊢ 0 ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s
   rw [SeminormFamily.basisSets_iff] at hs
+  -- ⊢ 0 ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s
   rcases hs with ⟨t, r, hr, rfl⟩
+  -- ⊢ 0 ∈ Seminorm.ball (Finset.sup t (gaugeSeminormFamily 𝕜 E)) 0 r ∧ IsOpen (Sem …
   rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
+  -- ⊢ 0 ∈ ⋂ (i : AbsConvexOpenSets 𝕜 E) (_ : i ∈ t), Seminorm.ball (gaugeSeminormF …
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine'
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
@@ -178,7 +204,11 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
       convex_iInter₂ fun _ _ => Seminorm.convex_ball _ _ _⟩
   -- The only nontrivial part is to show that the ball is open
   have hr' : r = ‖(r : 𝕜)‖ * 1 := by simp [abs_of_pos hr]
+  -- ⊢ IsOpen (Seminorm.ball (gaugeSeminormFamily 𝕜 E S) 0 r)
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
+  -- ⊢ IsOpen (Seminorm.ball (gaugeSeminormFamily 𝕜 E S) 0 r)
   rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
+  -- ⊢ IsOpen (↑r • ↑S)
   exact S.coe_isOpen.smul₀ hr''
+  -- 🎉 no goals
 #align with_gauge_seminorm_family with_gaugeSeminormFamily

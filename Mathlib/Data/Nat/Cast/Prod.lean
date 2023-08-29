@@ -27,10 +27,16 @@ instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
 
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]
+                                                        -- ⊢ (↑Nat.zero).fst = ↑Nat.zero
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align prod.fst_nat_cast Prod.fst_natCast
 
 @[simp]
 theorem snd_natCast (n : ℕ) : (n : α × β).snd = n := by induction n <;> simp [*]
+                                                        -- ⊢ (↑Nat.zero).snd = ↑Nat.zero
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align prod.snd_nat_cast Prod.snd_natCast
 
 end Prod

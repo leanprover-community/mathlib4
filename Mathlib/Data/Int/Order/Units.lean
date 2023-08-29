@@ -18,14 +18,17 @@ namespace Int
 
 theorem isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by
   rw [isUnit_iff_natAbs_eq, abs_eq_natAbs, ← Int.ofNat_one, coe_nat_inj']
+  -- 🎉 no goals
 #align int.is_unit_iff_abs_eq Int.isUnit_iff_abs_eq
 
 theorem isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_self ha]
+                                                            -- 🎉 no goals
 #align int.is_unit_sq Int.isUnit_sq
 
 @[simp]
 theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := by
   rw [Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one, isUnit_sq u.isUnit]
+  -- 🎉 no goals
 #align int.units_sq Int.units_sq
 
 alias units_pow_two := units_sq
@@ -33,21 +36,25 @@ alias units_pow_two := units_sq
 
 @[simp]
 theorem units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
+                                                  -- 🎉 no goals
 #align int.units_mul_self Int.units_mul_self
 
 @[simp]
 theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
+                                                   -- 🎉 no goals
 #align int.units_inv_eq_self Int.units_inv_eq_self
 
 -- `Units.val_mul` is a "wrong turn" for the simplifier, this undoes it and simplifies further
 @[simp]
 theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
   rw [← Units.val_mul, units_mul_self, Units.val_one]
+  -- 🎉 no goals
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
 @[simp]
 theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
   pow_ne_zero _ (abs_pos.mp (by simp))
+                                -- 🎉 no goals
 #align int.neg_one_pow_ne_zero Int.neg_one_pow_ne_zero
 
 theorem sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 2 = 1 :=

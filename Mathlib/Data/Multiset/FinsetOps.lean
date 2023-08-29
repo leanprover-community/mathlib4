@@ -73,15 +73,20 @@ theorem mem_ndinsert_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ n
 @[simp]
 theorem length_ndinsert_of_mem {a : α} {s : Multiset α} (h : a ∈ s) :
     card (ndinsert a s) = card s := by simp [h]
+                                       -- 🎉 no goals
 #align multiset.length_ndinsert_of_mem Multiset.length_ndinsert_of_mem
 
 @[simp]
 theorem length_ndinsert_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) :
     card (ndinsert a s) = card s + 1 := by simp [h]
+                                           -- 🎉 no goals
 #align multiset.length_ndinsert_of_not_mem Multiset.length_ndinsert_of_not_mem
 
 theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (dedup s) := by
   by_cases h : a ∈ s <;> simp [h]
+  -- ⊢ dedup (a ::ₘ s) = ndinsert a (dedup s)
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align multiset.dedup_cons Multiset.dedup_cons
 
 theorem Nodup.ndinsert (a : α) : Nodup s → Nodup (ndinsert a s) :=
@@ -91,10 +96,12 @@ theorem Nodup.ndinsert (a : α) : Nodup s → Nodup (ndinsert a s) :=
 theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ t ∧ a ∈ t :=
   ⟨fun h => ⟨le_trans (le_ndinsert_self _ _) h, mem_of_le h (mem_ndinsert_self _ _)⟩, fun ⟨l, m⟩ =>
     if h : a ∈ s then by simp [h, l]
+                         -- 🎉 no goals
     else by
       rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,
           cons_erase m];
         exact l⟩
+        -- 🎉 no goals
 #align multiset.ndinsert_le Multiset.ndinsert_le
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
@@ -107,13 +114,21 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
       (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
+    -- ⊢ attach t = ndinsert { val := a, property := (_ : a ∈ t) } (map (fun p => { v …
     by_cases h : a ∈ s
+    -- ⊢ attach t = ndinsert { val := a, property := (_ : a ∈ t) } (map (fun p => { v …
     · rw [ndinsert_of_mem h] at ht
+      -- ⊢ attach t = ndinsert { val := a, property := (_ : a ∈ t) } (map (fun p => { v …
       subst ht
+      -- ⊢ attach s = ndinsert { val := a, property := (_ : a ∈ s) } (map (fun p => { v …
       rw [eq, map_id, ndinsert_of_mem (mem_attach _ _)]
+      -- 🎉 no goals
     · rw [ndinsert_of_not_mem h] at ht
+      -- ⊢ attach t = ndinsert { val := a, property := (_ : a ∈ t) } (map (fun p => { v …
       subst ht
+      -- ⊢ attach (a ::ₘ s) = ndinsert { val := a, property := (_ : a ∈ a ::ₘ s) } (map …
       simp [attach_cons, h]
+      -- 🎉 no goals
   this _ rfl
 #align multiset.attach_ndinsert Multiset.attach_ndinsert
 
@@ -121,12 +136,15 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
 theorem disjoint_ndinsert_left {a : α} {s t : Multiset α} :
     Disjoint (ndinsert a s) t ↔ a ∉ t ∧ Disjoint s t :=
   Iff.trans (by simp [Disjoint]) disjoint_cons_left
+                -- 🎉 no goals
 #align multiset.disjoint_ndinsert_left Multiset.disjoint_ndinsert_left
 
 @[simp]
 theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
     Disjoint s (ndinsert a t) ↔ a ∉ s ∧ Disjoint s t := by
   rw [disjoint_comm, disjoint_ndinsert_left]; tauto
+  -- ⊢ ¬a ∈ s ∧ Disjoint t s ↔ ¬a ∈ s ∧ Disjoint s t
+                                              -- 🎉 no goals
 #align multiset.disjoint_ndinsert_right Multiset.disjoint_ndinsert_right
 
 /-! ### finset union -/
@@ -175,6 +193,7 @@ theorem ndunion_le_add (s t : Multiset α) : ndunion s t ≤ s + t :=
 
 theorem ndunion_le {s t u : Multiset α} : ndunion s t ≤ u ↔ s ⊆ u ∧ t ≤ u :=
   Multiset.induction_on s (by simp [zero_ndunion])
+                              -- 🎉 no goals
     (fun _ _ h =>
       by simp only [cons_ndunion, mem_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
         and_assoc])
@@ -229,16 +248,19 @@ theorem zero_ndinter (s : Multiset α) : ndinter 0 s = 0 :=
 @[simp]
 theorem cons_ndinter_of_mem {a : α} (s : Multiset α) {t : Multiset α} (h : a ∈ t) :
     ndinter (a ::ₘ s) t = a ::ₘ ndinter s t := by simp [ndinter, h]
+                                                  -- 🎉 no goals
 #align multiset.cons_ndinter_of_mem Multiset.cons_ndinter_of_mem
 
 @[simp]
 theorem ndinter_cons_of_not_mem {a : α} (s : Multiset α) {t : Multiset α} (h : a ∉ t) :
     ndinter (a ::ₘ s) t = ndinter s t := by simp [ndinter, h]
+                                            -- 🎉 no goals
 #align multiset.ndinter_cons_of_not_mem Multiset.ndinter_cons_of_not_mem
 
 @[simp]
 theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by
   simp [ndinter, mem_filter]
+  -- 🎉 no goals
 #align multiset.mem_ndinter Multiset.mem_ndinter
 
 @[simp]
@@ -248,6 +270,7 @@ theorem Nodup.ndinter {s : Multiset α} (t : Multiset α) : Nodup s → Nodup (n
 
 theorem le_ndinter {s t u : Multiset α} : s ≤ ndinter t u ↔ s ≤ t ∧ s ⊆ u := by
   simp [ndinter, le_filter, subset_iff]
+  -- 🎉 no goals
 #align multiset.le_ndinter Multiset.le_ndinter
 
 theorem ndinter_le_left (s t : Multiset α) : ndinter s t ≤ s :=
@@ -277,6 +300,8 @@ theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩
 
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
   rw [← subset_zero]; simp [subset_iff, Disjoint]
+  -- ⊢ ndinter s t ⊆ 0 ↔ Disjoint s t
+                      -- 🎉 no goals
 #align multiset.ndinter_eq_zero_iff_disjoint Multiset.ndinter_eq_zero_iff_disjoint
 
 end Multiset

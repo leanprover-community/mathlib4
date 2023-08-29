@@ -79,15 +79,20 @@ theorem ContinuousLinearMap.toExposed.isExposed : IsExposed 𝕜 A (l.toExposed 
 
 theorem isExposed_empty : IsExposed 𝕜 A ∅ := fun ⟨_, hx⟩ => by
   exfalso
+  -- ⊢ False
   exact hx
+  -- 🎉 no goals
 #align is_exposed_empty isExposed_empty
 
 namespace IsExposed
 
 protected theorem subset (hAB : IsExposed 𝕜 A B) : B ⊆ A := by
   rintro x hx
+  -- ⊢ x ∈ A
   obtain ⟨_, rfl⟩ := hAB ⟨x, hx⟩
+  -- ⊢ x ∈ A
   exact hx.1
+  -- 🎉 no goals
 #align is_exposed.subset IsExposed.subset
 
 @[refl]
@@ -105,7 +110,9 @@ of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but 
 subset of the cube. -/
 protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B) : IsExposed 𝕜 B C := by
   rintro ⟨w, hw⟩
+  -- ⊢ ∃ l, C = {x | x ∈ B ∧ ∀ (y : E), y ∈ B → ↑l y ≤ ↑l x}
   obtain ⟨l, rfl⟩ := hC ⟨w, hw⟩
+  -- ⊢ ∃ l_1, {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} = {x | x ∈ B ∧ ∀ (y : E) …
   exact ⟨l, Subset.antisymm (fun x hx => ⟨hCB hx, fun y hy => hx.2 y (hBA hy)⟩) fun x hx =>
     ⟨hBA hx.1, fun y hy => (hw.2 y hy).trans (hx.2 w (hCB hw))⟩⟩
 #align is_exposed.mono IsExposed.mono
@@ -116,7 +123,9 @@ doesn't intersect `A`. -/
 theorem eq_inter_halfspace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Nonempty) :
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain ⟨l, rfl⟩ := hAB hB
+  -- ⊢ ∃ l_1 a, {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} = {x | x ∈ A ∧ a ≤ ↑l_ …
   obtain ⟨w, hw⟩ := hB
+  -- ⊢ ∃ l_1 a, {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} = {x | x ∈ A ∧ a ≤ ↑l_ …
   exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
 #align is_exposed.eq_inter_halfspace' IsExposed.eq_inter_halfspace'
@@ -127,25 +136,41 @@ halfspace doesn't intersect `A`. -/
 theorem eq_inter_halfspace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain rfl | hB := B.eq_empty_or_nonempty
+  -- ⊢ ∃ l a, ∅ = {x | x ∈ A ∧ a ≤ ↑l x}
   · refine' ⟨0, 1, _⟩
+    -- ⊢ ∅ = {x | x ∈ A ∧ 1 ≤ ↑0 x}
     rw [eq_comm, eq_empty_iff_forall_not_mem]
+    -- ⊢ ∀ (x : E), ¬x ∈ {x | x ∈ A ∧ 1 ≤ ↑0 x}
     rintro x ⟨-, h⟩
+    -- ⊢ False
     rw [ContinuousLinearMap.zero_apply] at h
+    -- ⊢ False
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_lt zero_lt_one
+    -- ⊢ False
     contradiction
+    -- 🎉 no goals
   exact hAB.eq_inter_halfspace' hB
+  -- 🎉 no goals
 #align is_exposed.eq_inter_halfspace IsExposed.eq_inter_halfspace
 
 protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
     (hC : IsExposed 𝕜 A C) : IsExposed 𝕜 A (B ∩ C) := by
   rintro ⟨w, hwB, hwC⟩
+  -- ⊢ ∃ l, B ∩ C = {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x}
   obtain ⟨l₁, rfl⟩ := hB ⟨w, hwB⟩
+  -- ⊢ ∃ l, {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l₁ y ≤ ↑l₁ x} ∩ C = {x | x ∈ A ∧ ∀ (y  …
   obtain ⟨l₂, rfl⟩ := hC ⟨w, hwC⟩
+  -- ⊢ ∃ l, {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l₁ y ≤ ↑l₁ x} ∩ {x | x ∈ A ∧ ∀ (y : E) …
   refine' ⟨l₁ + l₂, Subset.antisymm _ _⟩
+  -- ⊢ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l₁ y ≤ ↑l₁ x} ∩ {x | x ∈ A ∧ ∀ (y : E), y ∈ …
   · rintro x ⟨⟨hxA, hxB⟩, ⟨-, hxC⟩⟩
+    -- ⊢ x ∈ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑(l₁ + l₂) y ≤ ↑(l₁ + l₂) x}
     exact ⟨hxA, fun z hz => add_le_add (hxB z hz) (hxC z hz)⟩
+    -- 🎉 no goals
   rintro x ⟨hxA, hx⟩
+  -- ⊢ x ∈ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l₁ y ≤ ↑l₁ x} ∩ {x | x ∈ A ∧ ∀ (y : E), …
   refine' ⟨⟨hxA, fun y hy => _⟩, hxA, fun y hy => _⟩
+  -- ⊢ ↑l₁ y ≤ ↑l₁ x
   · exact
       (add_le_add_iff_right (l₂ x)).1 ((add_le_add (hwB.2 y hy) (hwC.2 x hxA)).trans (hx w hwB.1))
   · exact
@@ -167,22 +192,30 @@ theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
 
 theorem inter_left (hC : IsExposed 𝕜 A C) (hCB : C ⊆ B) : IsExposed 𝕜 (A ∩ B) C := by
   rintro ⟨w, hw⟩
+  -- ⊢ ∃ l, C = {x | x ∈ A ∩ B ∧ ∀ (y : E), y ∈ A ∩ B → ↑l y ≤ ↑l x}
   obtain ⟨l, rfl⟩ := hC ⟨w, hw⟩
+  -- ⊢ ∃ l_1, {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} = {x | x ∈ A ∩ B ∧ ∀ (y  …
   exact ⟨l, Subset.antisymm (fun x hx => ⟨⟨hx.1, hCB hx⟩, fun y hy => hx.2 y hy.1⟩)
     fun x ⟨⟨hxC, _⟩, hx⟩ => ⟨hxC, fun y hy => (hw.2 y hy).trans (hx w ⟨hC.subset hw, hCB hw⟩)⟩⟩
 #align is_exposed.inter_left IsExposed.inter_left
 
 theorem inter_right (hC : IsExposed 𝕜 B C) (hCA : C ⊆ A) : IsExposed 𝕜 (A ∩ B) C := by
   rw [inter_comm]
+  -- ⊢ IsExposed 𝕜 (B ∩ A) C
   exact hC.inter_left hCA
+  -- 🎉 no goals
 #align is_exposed.inter_right IsExposed.inter_right
 
 protected theorem isClosed [OrderClosedTopology 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B)
     (hA : IsClosed A) : IsClosed B := by
   obtain rfl | hB := B.eq_empty_or_nonempty
+  -- ⊢ IsClosed ∅
   · simp
+    -- 🎉 no goals
   obtain ⟨l, a, rfl⟩ := hAB.eq_inter_halfspace' hB
+  -- ⊢ IsClosed {x | x ∈ A ∧ a ≤ ↑l x}
   exact hA.isClosed_le continuousOn_const l.continuous.continuousOn
+  -- 🎉 no goals
 #align is_exposed.is_closed IsExposed.isClosed
 
 protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
@@ -223,8 +256,11 @@ theorem mem_exposedPoints_iff_exposed_singleton : x ∈ A.exposedPoints 𝕜 ↔
         eq_singleton_iff_unique_mem.2
           ⟨⟨hxA, fun y hy => (hl y hy).1⟩, fun z hz => (hl z hz.1).2 (hz.2 x hxA)⟩⟩
   rintro h
+  -- ⊢ x ∈ exposedPoints 𝕜 A
   obtain ⟨l, hl⟩ := h ⟨x, mem_singleton _⟩
+  -- ⊢ x ∈ exposedPoints 𝕜 A
   rw [eq_comm, eq_singleton_iff_unique_mem] at hl
+  -- ⊢ x ∈ exposedPoints 𝕜 A
   exact
     ⟨hl.1.1, l, fun y hy =>
       ⟨hl.1.2 y hy, fun hxy => hl.2 y ⟨hy, fun z hz => (hl.1.2 z hz).trans hxy⟩⟩⟩
@@ -241,8 +277,11 @@ namespace IsExposed
 
 protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Convex 𝕜 B := by
   obtain rfl | hB := B.eq_empty_or_nonempty
+  -- ⊢ Convex 𝕜 ∅
   · exact convex_empty
+    -- 🎉 no goals
   obtain ⟨l, rfl⟩ := hAB hB
+  -- ⊢ Convex 𝕜 {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x}
   exact fun x₁ hx₁ x₂ hx₂ a b ha hb hab =>
     ⟨hA hx₁.1 hx₂.1 ha hb hab, fun y hy =>
       ((l.toLinearMap.concaveOn convex_univ).convex_ge _ ⟨mem_univ _, hx₁.2 y hy⟩
@@ -251,15 +290,25 @@ protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Conve
 
 protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := by
   refine' ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => _⟩
+  -- ⊢ x₁ ∈ B ∧ x₂ ∈ B
   obtain ⟨l, rfl⟩ := hAB ⟨x, hxB⟩
+  -- ⊢ x₁ ∈ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} ∧ x₂ ∈ {x | x ∈ A ∧ ∀ (y : …
   have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
+  -- ⊢ x₁ ∈ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} ∧ x₂ ∈ {x | x ∈ A ∧ ∀ (y : …
   have hlx₁ := hxB.2 x₁ hx₁A
+  -- ⊢ x₁ ∈ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} ∧ x₂ ∈ {x | x ∈ A ∧ ∀ (y : …
   have hlx₂ := hxB.2 x₂ hx₂A
+  -- ⊢ x₁ ∈ {x | x ∈ A ∧ ∀ (y : E), y ∈ A → ↑l y ≤ ↑l x} ∧ x₂ ∈ {x | x ∈ A ∧ ∀ (y : …
   refine' ⟨⟨hx₁A, fun y hy => _⟩, ⟨hx₂A, fun y hy => _⟩⟩
+  -- ⊢ ↑l y ≤ ↑l x₁
   · rw [hlx₁.antisymm (hl.le_left_of_right_le (mem_univ _) (mem_univ _) hx hlx₂)]
+    -- ⊢ ↑l y ≤ ↑l x
     exact hxB.2 y hy
+    -- 🎉 no goals
   · rw [hlx₂.antisymm (hl.le_right_of_left_le (mem_univ _) (mem_univ _) hx hlx₁)]
+    -- ⊢ ↑l y ≤ ↑l x
     exact hxB.2 y hy
+    -- 🎉 no goals
 #align is_exposed.is_extreme IsExposed.isExtreme
 
 end IsExposed

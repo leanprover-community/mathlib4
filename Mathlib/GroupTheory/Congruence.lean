@@ -125,9 +125,14 @@ instance : FunLike (Con M) M (fun _ => M → Prop) :=
   { coe := fun c => fun x y => @Setoid.r _ c.toSetoid x y
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
+      -- ⊢ { toSetoid := { r := x, iseqv := iseqv✝ }, mul' := mul'✝ } = y
       rcases y with ⟨⟨y, _⟩, _⟩
+      -- ⊢ { toSetoid := { r := x, iseqv := iseqv✝¹ }, mul' := mul'✝¹ } = { toSetoid := …
       have : x = y := h
+      -- ⊢ { toSetoid := { r := x, iseqv := iseqv✝¹ }, mul' := mul'✝¹ } = { toSetoid := …
       subst x; rfl }
+      -- ⊢ { toSetoid := { r := y, iseqv := iseqv✝ }, mul' := mul'✝ } = { toSetoid := { …
+               -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem rel_eq_coe (c : Con M) : c.r = c :=
@@ -180,9 +185,13 @@ variable {c}
 is injective."]
 theorem ext' {c d : Con M} (H : c.r = d.r) : c = d := by
   rcases c with ⟨⟨⟩⟩
+  -- ⊢ { toSetoid := { r := r✝, iseqv := iseqv✝ }, mul' := mul'✝ } = d
   rcases d with ⟨⟨⟩⟩
+  -- ⊢ { toSetoid := { r := r✝¹, iseqv := iseqv✝¹ }, mul' := mul'✝¹ } = { toSetoid  …
   cases H
+  -- ⊢ { toSetoid := { r := r✝, iseqv := iseqv✝¹ }, mul' := mul'✝¹ } = { toSetoid : …
   congr
+  -- 🎉 no goals
 #align con.ext' Con.ext'
 #align add_con.ext' AddCon.ext'
 
@@ -190,6 +199,8 @@ theorem ext' {c d : Con M} (H : c.r = d.r) : c = d := by
 @[to_additive (attr := ext) "Extensionality rule for additive congruence relations."]
 theorem ext {c d : Con M} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
+             -- ⊢ r x✝¹ x✝ ↔ r x✝¹ x✝
+                  -- 🎉 no goals
 #align con.ext Con.ext
 #align add_con.ext AddCon.ext
 
@@ -223,7 +234,9 @@ def mulKer (f : M → P) (h : ∀ x y, f (x * y) = f x * f y) : Con M
   toSetoid := Setoid.ker f
   mul' h1 h2 := by
     dsimp [Setoid.ker, onFun] at *
+    -- ⊢ f (w✝ * y✝) = f (x✝ * z✝)
     rw [h, h1, h2, h]
+    -- 🎉 no goals
 #align con.mul_ker Con.mulKer
 #align add_con.add_ker AddCon.addKer
 
@@ -404,7 +417,11 @@ protected theorem liftOn_coe {β} (c : Con M) (f : M → β) (h : ∀ a b, c a b
 given that the relations are equal."]
 protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
   { Quotient.congr (Equiv.refl M) <| by apply ext_iff.2 h with
+                                        -- 🎉 no goals
     map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
+                              -- ⊢ Equiv.toFun { toFun := src✝.toFun, invFun := src✝.invFun, left_inv := (_ : L …
+                                                -- ⊢ Equiv.toFun { toFun := src✝.toFun, invFun := src✝.invFun, left_inv := (_ : L …
+                                                                  -- 🎉 no goals
 #align con.congr Con.congr
 #align add_con.congr AddCon.congr
 
@@ -440,6 +457,8 @@ the set's image under the map to the underlying equivalence relation."]
 theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
   Setoid.ext' fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
+                               -- ⊢ Rel c.toSetoid x y
+                                          -- 🎉 no goals
 #align con.Inf_to_setoid Con.sInf_toSetoid
 #align add_con.Inf_to_setoid AddCon.sInf_toSetoid
 
@@ -450,8 +469,11 @@ of the set's image under the map to the underlying binary relation."]
 theorem sInf_def (S : Set (Con M)) :
     ⇑(sInf S) = sInf (@Set.image (Con M) (M → M → Prop) (↑) S) := by
   ext
+  -- ⊢ ↑(sInf S) x✝¹ x✝ ↔ sInf (FunLike.coe '' S) x✝¹ x✝
   simp only [sInf_image, iInf_apply, iInf_Prop_eq]
+  -- ⊢ ↑(sInf S) x✝¹ x✝ ↔ ∀ (i : Con M), i ∈ S → ↑i x✝¹ x✝
   rfl
+  -- 🎉 no goals
 #align con.Inf_def Con.sInf_def
 #align add_con.Inf_def AddCon.sInf_def
 
@@ -478,6 +500,7 @@ instance : CompleteLattice (Con M) :=
     inf_le_right := fun _ _ _ _ h => h.2
     le_inf := fun _ _ _ hb hc _ _ h => ⟨hb h, hc h⟩
     top := { Setoid.completeLattice.top with mul' := by tauto }
+                                                        -- 🎉 no goals
     le_top := fun _ _ _ _ => trivial
     bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
     bot_le := fun c x y h => h ▸ c.refl x }
@@ -509,10 +532,15 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y
       show s.r x y by
         apply ConGen.Rel.recOn (motive := fun x y _ => s.r x y) hxy
         · exact fun x y h => hs x y h
+          -- 🎉 no goals
         · exact s.refl'
+          -- 🎉 no goals
         · exact fun _ => s.symm'
+          -- 🎉 no goals
         · exact fun _ _ => s.trans'
+          -- 🎉 no goals
         · exact fun _ _ => s.mul))
+          -- 🎉 no goals
     (sInf_le ConGen.Rel.of)
 #align con.con_gen_eq Con.conGen_eq
 #align add_con.add_con_gen_eq AddCon.addConGen_eq
@@ -523,6 +551,8 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y
 relation `r` is contained in any additive congruence relation containing `r`."]
 theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) :
     conGen r ≤ c := by rw [conGen_eq]; exact sInf_le h
+                       -- ⊢ sInf {s | ∀ (x y : M), r x y → ↑s x y} ≤ c
+                                       -- 🎉 no goals
 #align con.con_gen_le Con.conGen_le
 #align add_con.add_con_gen_le AddCon.addConGen_le
 
@@ -541,6 +571,8 @@ theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : co
 additive congruence relation in which they are contained."]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
+                  -- ⊢ sInf {s | ∀ (x y : M), ↑c x y → ↑s x y} ≤ c
+                                  -- 🎉 no goals
 #align con.con_gen_of_con Con.conGen_of_con
 #align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
 #align add_con.add_con_gen_of_add_con AddCon.addConGen_of_addCon
@@ -562,8 +594,11 @@ smallest additive congruence relation containing the binary relation '`x` is rel
 by `c` or `d`'."]
 theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
   rw [conGen_eq]
+  -- ⊢ c ⊔ d = sInf {s | ∀ (x y : M), ↑c x y ∨ ↑d x y → ↑s x y}
   apply congr_arg sInf
+  -- ⊢ {x | c ≤ x ∧ d ≤ x} = {s | ∀ (x y : M), ↑c x y ∨ ↑d x y → ↑s x y}
   simp only [le_def, or_imp, ← forall_and]
+  -- 🎉 no goals
 #align con.sup_eq_con_gen Con.sup_eq_conGen
 #align add_con.sup_eq_add_con_gen AddCon.sup_eq_addConGen
 
@@ -572,6 +607,8 @@ theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x 
 @[to_additive "The supremum of two additive congruence relations equals the smallest additive
 congruence relation containing the supremum of the underlying binary operations."]
 theorem sup_def {c d : Con M} : c ⊔ d = conGen (c.r ⊔ d.r) := by rw [sup_eq_conGen]; rfl
+                                                                 -- ⊢ (conGen fun x y => ↑c x y ∨ ↑d x y) = conGen (r ⊔ r)
+                                                                                     -- 🎉 no goals
 #align con.sup_def Con.sup_def
 #align add_con.sup_def AddCon.sup_def
 
@@ -584,9 +621,13 @@ such that `x` is related to `y` by `c`'."]
 theorem sSup_eq_conGen (S : Set (Con M)) :
     sSup S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y := by
   rw [conGen_eq]
+  -- ⊢ sSup S = sInf {s | ∀ (x y : M), (∃ c, c ∈ S ∧ ↑c x y) → ↑s x y}
   apply congr_arg sInf
+  -- ⊢ upperBounds S = {s | ∀ (x y : M), (∃ c, c ∈ S ∧ ↑c x y) → ↑s x y}
   ext
+  -- ⊢ x✝ ∈ upperBounds S ↔ x✝ ∈ {s | ∀ (x y : M), (∃ c, c ∈ S ∧ ↑c x y) → ↑s x y}
   exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
+  -- 🎉 no goals
 #align con.Sup_eq_con_gen Con.sSup_eq_conGen
 #align add_con.Sup_eq_add_con_gen AddCon.sSup_eq_addConGen
 
@@ -598,8 +639,11 @@ underlying binary relation."]
 theorem sSup_def {S : Set (Con M)} :
     sSup S = conGen (sSup (@Set.image (Con M) (M → M → Prop) ((⇑) : Con M → M → M → Prop) S)) := by
   rw [sSup_eq_conGen, sSup_image]
+  -- ⊢ (conGen fun x y => ∃ c, c ∈ S ∧ ↑c x y) = conGen (⨆ (a : Con M) (_ : a ∈ S), …
   congr with (x y)
+  -- ⊢ (∃ c, c ∈ S ∧ ↑c x y) ↔ iSup (fun a => ⨆ (_ : a ∈ S), ↑a) x y
   simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
+  -- 🎉 no goals
 #align con.Sup_def Con.sSup_def
 #align add_con.Sup_def AddCon.sSup_def
 
@@ -642,8 +686,11 @@ def mapOfSurjective (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (h : mulK
   { c.toSetoid.mapOfSurjective f h hf with
     mul' := fun h₁ h₂ => by
       rcases h₁ with ⟨a, b, rfl, rfl, h1⟩
+      -- ⊢ r (f a * y✝) (f b * z✝)
       rcases h₂ with ⟨p, q, rfl, rfl, h2⟩
+      -- ⊢ r (f a * f p) (f b * f q)
       exact ⟨a * p, b * q, by rw [H], by rw [H], c.mul h1 h2⟩ }
+      -- 🎉 no goals
 #align con.map_of_surjective Con.mapOfSurjective
 #align add_con.map_of_surjective AddCon.mapOfSurjective
 
@@ -654,6 +701,8 @@ an additive congruence relation `c` equals `c`'."]
 theorem mapOfSurjective_eq_mapGen {c : Con M} {f : M → N} (H : ∀ x y, f (x * y) = f x * f y)
     (h : mulKer f H ≤ c) (hf : Surjective f) : c.mapGen f = c.mapOfSurjective f H h hf := by
   rw [← conGen_of_con (c.mapOfSurjective f H h hf)]; rfl
+  -- ⊢ mapGen c f = conGen ↑(mapOfSurjective c f H h hf)
+                                                     -- 🎉 no goals
 #align con.map_of_surjective_eq_map_gen Con.mapOfSurjective_eq_mapGen
 #align add_con.map_of_surjective_eq_map_gen AddCon.mapOfSurjective_eq_mapGen
 
@@ -666,6 +715,8 @@ defined by '`x ≈ y` iff `f(x)` is related to `f(y)` by `c`.' "]
 def comap (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (c : Con N) : Con M :=
   { c.toSetoid.comap f with
     mul' := @fun w x y z h1 h2 => show c (f (w * y)) (f (x * z)) by rw [H, H]; exact c.mul h1 h2 }
+                                                                    -- ⊢ ↑c (f w * f y) (f x * f z)
+                                                                               -- 🎉 no goals
 #align con.comap Con.comap
 #align add_con.comap AddCon.comap
 
@@ -690,9 +741,13 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
     where
   toFun d :=
     d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <| @exists_rep _ c.toSetoid
+                                  -- ⊢ c ≤ ↑d
+                                                      -- 🎉 no goals
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
+                    -- ⊢ ↑d ↑y ↑y
+                                   -- 🎉 no goals
   left_inv d :=
     --Porting note: by exact needed for unknown reason
     by exact
@@ -712,12 +767,19 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
           Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
   map_rel_iff' := @fun s t => by
     constructor
+    -- ⊢ ↑{ toFun := fun d => mapOfSurjective (↑d) toQuotient (_ : ∀ (x x_1 : M), ↑(x …
     · intros h x y hs
+      -- ⊢ ↑↑t x y
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
+      -- ⊢ ↑↑t x y
       exact t.1.trans (t.1.symm <| t.2 <| eq_rel.1 hx) (t.1.trans ht (t.2 <| eq_rel.1 hy))
+      -- 🎉 no goals
     · intros h _ _ hs
+      -- ⊢ ↑(↑{ toFun := fun d => mapOfSurjective (↑d) toQuotient (_ : ∀ (x x_1 : M), ↑ …
       rcases hs with ⟨a, b, hx, hy, Hs⟩
+      -- ⊢ ↑(↑{ toFun := fun d => mapOfSurjective (↑d) toQuotient (_ : ∀ (x x_1 : M), ↑ …
       exact ⟨a, b, hx, hy, h Hs⟩
+      -- 🎉 no goals
 #align con.correspondence Con.correspondence
 #align add_con.correspondence AddCon.correspondence
 
@@ -892,6 +954,8 @@ theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 quotient homomorphism composed with `f`."]
 theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
   ext fun x y => show c _ _ ↔ c.mk' _ = c.mk' _ by rw [← c.eq]; rfl
+                                                   -- ⊢ ↑(↑f x) = ↑(↑f y) ↔ ↑(mk' c) (↑f x) = ↑(mk' c) (↑f y)
+                                                                -- 🎉 no goals
 #align con.comap_eq Con.comap_eq
 #align add_con.comap_eq AddCon.comap_eq
 
@@ -905,9 +969,13 @@ def lift (H : c ≤ ker f) : c.Quotient →* P
     where
   toFun x := (Con.liftOn x f) fun _ _ h => H h
   map_one' := by rw [← f.map_one]; rfl
+                 -- ⊢ (fun x => Con.liftOn x ↑f (_ : ∀ (x x_1 : M), ↑c x x_1 → ↑(ker f) x x_1)) 1  …
+                                   -- 🎉 no goals
   map_mul' x y := Con.induction_on₂ x y fun m n => by
     dsimp only [← coe_mul, Con.liftOn_coe]
+    -- ⊢ ↑f (m * n) = ↑f m * ↑f n
     rw [map_mul]
+    -- 🎉 no goals
 #align con.lift Con.lift
 #align add_con.lift AddCon.lift
 
@@ -933,6 +1001,8 @@ theorem lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
 @[to_additive (attr := simp) "The diagram describing the universal property for quotients of
 `AddMonoid`s commutes."]
 theorem lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext; rfl
+                                                                          -- ⊢ ↑(MonoidHom.comp (lift c f H) (mk' c)) x✝ = ↑f x✝
+                                                                               -- 🎉 no goals
 #align con.lift_comp_mk' Con.lift_comp_mk'
 #align add_con.lift_comp_mk' AddCon.lift_comp_mk'
 
@@ -944,7 +1014,11 @@ additive congruence relation, `f` equals the homomorphism on the quotient induce
 with the natural map from the `AddMonoid` to the quotient."]
 theorem lift_apply_mk' (f : c.Quotient →* P) :
     (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
+                                                            -- 🎉 no goals
   ext x; rcases x with ⟨⟩; rfl
+  -- ⊢ ↑(lift c (MonoidHom.comp f (mk' c)) (_ : ∀ (x y : M), ↑c x y → ↑f ↑x = ↑f ↑y …
+         -- ⊢ ↑(lift c (MonoidHom.comp f (mk' c)) (_ : ∀ (x y : M), ↑c x y → ↑f ↑x = ↑f ↑y …
+                           -- 🎉 no goals
 #align con.lift_apply_mk' Con.lift_apply_mk'
 #align add_con.lift_apply_mk' AddCon.lift_apply_mk'
 
@@ -954,8 +1028,11 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
 theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
+  -- ⊢ lift c (MonoidHom.comp f (mk' c)) (_ : ∀ (x y : M), ↑c x y → ↑f ↑x = ↑f ↑y)  …
   congr 1
+  -- ⊢ MonoidHom.comp f (mk' c) = MonoidHom.comp g (mk' c)
   exact FunLike.ext_iff.2 h
+  -- 🎉 no goals
 #align con.lift_funext Con.lift_funext
 #align add_con.lift_funext AddCon.lift_funext
 
@@ -965,7 +1042,9 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk'
     g = c.lift f H :=
   (lift_funext g (c.lift f H)) fun x => by
     subst f
+    -- ⊢ ↑g ↑x = ↑(lift c (MonoidHom.comp g (mk' c)) H) ↑x
     rfl
+    -- 🎉 no goals
 #align con.lift_unique Con.lift_unique
 #align add_con.lift_unique AddCon.lift_unique
 
@@ -977,6 +1056,8 @@ constant on `c`'s equivalence classes, `f` has the same image as the homomorphis
 on the quotient."]
 theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom.mrange f :=
   Submonoid.ext fun x => ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
+                             -- ⊢ x ∈ MonoidHom.mrange f
+                                               -- 🎉 no goals
 #align con.lift_range Con.lift_range
 #align add_con.lift_range AddCon.lift_range
 
@@ -1076,7 +1157,12 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
           MulEquiv.submonoidCongr kerLift_range_eq)).comp
         ⟨fun x y h =>
           kerLift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
+                                    -- ⊢ ↑(kerLift f) (Quot.mk r a✝) = ↑(kerLift f) y
+                                                      -- ⊢ ↑(kerLift f) (Quot.mk r a✝¹) = ↑(kerLift f) (Quot.mk r a✝)
+                                                                        -- 🎉 no goals
           fun ⟨w, z, hz⟩ => ⟨z, by rcases hz with ⟨⟩; rfl⟩⟩) with
+                                   -- ⊢ (fun x => ↑(MonoidHom.mrangeRestrict (kerLift f)) x) z = { val := ↑(kerLift  …
+                                                      -- 🎉 no goals
     map_mul' := MonoidHom.map_mul _ }
 #align con.quotient_ker_equiv_range Con.quotientKerEquivRange
 #align add_con.quotient_ker_equiv_range AddCon.quotientKerEquivRange
@@ -1091,7 +1177,9 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     toFun := kerLift f
     invFun := (↑) ∘ g
     left_inv := fun x => kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
+                                                 -- 🎉 no goals
     right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
+                             -- 🎉 no goals
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
 #align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symm_apply
@@ -1131,6 +1219,8 @@ def quotientQuotientEquivQuotient (c d : Con M) (h : c ≤ d) :
       Con.induction_on₂ x y fun w z =>
         Con.induction_on₂ w z fun a b =>
           show _ = d.mk' a * d.mk' b by rw [← d.mk'.map_mul]; rfl }
+                                        -- ⊢ Equiv.toFun { toFun := src✝.toFun, invFun := src✝.invFun, left_inv := (_ : L …
+                                                              -- 🎉 no goals
 #align con.quotient_quotient_equiv_quotient Con.quotientQuotientEquivQuotient
 #align add_con.quotient_quotient_equiv_quotient AddCon.quotientQuotientEquivQuotient
 
@@ -1143,7 +1233,9 @@ section Monoids
 protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
+                     -- 🎉 no goals
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul h (Con.pow c n h)
+                              -- 🎉 no goals
 #align con.pow Con.pow
 #align add_con.nsmul AddCon.nsmul
 
@@ -1160,6 +1252,7 @@ instance [MulOneClass M] (c : Con M) : One c.Quotient where
 theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
     {w x : M} (h : c w x) : c (a • w) (a • x) := by
   simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
+  -- 🎉 no goals
 #align con.smul Con.smul
 #align add_con.vadd AddCon.vadd
 
@@ -1214,6 +1307,7 @@ variable [Group M] [Group N] [Group P] (c : Con M)
 @[to_additive "Additive congruence relations preserve negation."]
 protected theorem inv : ∀ {w x}, c w x → c w⁻¹ x⁻¹ := @fun x y h => by
   simpa using c.symm (c.mul (c.mul (c.refl x⁻¹) h) (c.refl y⁻¹))
+  -- 🎉 no goals
 #align con.inv Con.inv
 #align add_con.neg AddCon.neg
 
@@ -1221,6 +1315,7 @@ protected theorem inv : ∀ {w x}, c w x → c w⁻¹ x⁻¹ := @fun x y h => by
 @[to_additive "Additive congruence relations preserve subtraction."]
 protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := @fun w x y z h1 h2 => by
   simpa only [div_eq_mul_inv] using c.mul h1 (c.inv h2)
+  -- 🎉 no goals
 #align con.div Con.div
 #align add_con.sub AddCon.sub
 
@@ -1228,7 +1323,9 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 @[to_additive "Additive congruence relations preserve integer scaling."]
 protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
   | Int.ofNat n, w, x, h => by simpa only [zpow_ofNat, Int.ofNat_eq_coe] using c.pow n h
+                               -- 🎉 no goals
   | Int.negSucc n, w, x, h => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
+                                 -- 🎉 no goals
 #align con.zpow Con.zpow
 #align add_con.zsmul AddCon.zsmul
 
@@ -1295,12 +1392,19 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
       (fun x y x' y' hx hy => _) u.3 u.4
   refine' Function.hfunext _ _
+  -- ⊢ (↑x * ↑y = 1) = (↑x' * ↑y' = 1)
   rw [c.eq.2 hx, c.eq.2 hy]
+  -- ⊢ ∀ (a : ↑x * ↑y = 1) (a' : ↑x' * ↑y' = 1), HEq a a' → HEq ((fun x y hxy hyx = …
   · rintro Hxy Hxy' -
+    -- ⊢ HEq ((fun x y hxy hyx => f x y (_ : ↑c (x * y) 1) (_ : ↑c (y * x) 1)) x y Hx …
     refine' Function.hfunext _ _
+    -- ⊢ (↑y * ↑x = 1) = (↑y' * ↑x' = 1)
     · rw [c.eq.2 hx, c.eq.2 hy]
+      -- 🎉 no goals
     · rintro Hyx Hyx' -
+      -- ⊢ HEq ((fun x y hxy hyx => f x y (_ : ↑c (x * y) 1) (_ : ↑c (y * x) 1)) x y Hx …
       exact heq_of_eq (Hf _ _ _ _ _ _ _ _ hx hy)
+      -- 🎉 no goals
 #align con.lift_on_units Con.liftOnUnits
 #align add_con.lift_on_add_units AddCon.liftOnAddUnits
 
@@ -1324,7 +1428,9 @@ theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient
     (H : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1), p ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
     p u := by
   rcases u with ⟨⟨x⟩, ⟨y⟩, h₁, h₂⟩
+  -- ⊢ p { val := Quot.mk r x, inv := Quot.mk r y, val_inv := h₁, inv_val := h₂ }
   exact H x y (c.eq.1 h₁) (c.eq.1 h₂)
+  -- 🎉 no goals
 #align con.induction_on_units Con.induction_on_units
 #align add_con.induction_on_add_units AddCon.induction_on_addUnits
 

@@ -67,8 +67,13 @@ variable (p : 𝕜[X]) (q : R[X])
 protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
   induction p using Polynomial.induction_on'
+  -- ⊢ HasStrictDerivAt (fun x => eval x (p✝ + q✝)) (eval x (↑derivative (p✝ + q✝)) …
   case h_add p q hp hq => simpa using hp.add hq
+  -- ⊢ HasStrictDerivAt (fun x => eval x (↑(monomial n✝) a✝)) (eval x (↑derivative  …
+  -- 🎉 no goals
   case h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align polynomial.has_strict_deriv_at Polynomial.hasStrictDerivAt
 
 protected theorem hasStrictDerivAt_aeval (x : 𝕜) :
@@ -142,7 +147,9 @@ protected theorem deriv_aeval : deriv (fun x => aeval x q) x = aeval x (derivati
 protected theorem derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun x => p.eval x) s x = p.derivative.eval x := by
   rw [DifferentiableAt.derivWithin p.differentiableAt hxs]
+  -- ⊢ deriv (fun x => eval x p) x = eval x (↑derivative p)
   exact p.deriv
+  -- 🎉 no goals
 #align polynomial.deriv_within Polynomial.derivWithin
 
 protected theorem derivWithin_aeval (hxs : UniqueDiffWithinAt 𝕜 s x) :

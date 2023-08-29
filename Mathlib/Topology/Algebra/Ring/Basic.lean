@@ -63,6 +63,7 @@ theorem TopologicalSemiring.continuousNeg_of_mul [TopologicalSpace α] [NonAssoc
     [ContinuousMul α] : ContinuousNeg α where
   continuous_neg := by
     simpa using (continuous_const.mul continuous_id : Continuous fun x : α => -1 * x)
+    -- 🎉 no goals
 #align topological_semiring.has_continuous_neg_of_mul TopologicalSemiring.continuousNeg_of_mul
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
@@ -205,6 +206,9 @@ theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
   continuous_mul := by
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.mul (R := R)) ?_ ?_ ?_ <;>
       simpa only [ContinuousAt, mul_zero, zero_mul, nhds_prod_eq, AddMonoidHom.mul_apply]
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align topological_ring.of_add_group_of_nhds_zero TopologicalRing.of_addGroup_of_nhds_zero
 
 theorem TopologicalRing.of_nhds_zero
@@ -303,6 +307,10 @@ instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
 theorem toTopologicalSpace_injective :
     Injective (toTopologicalSpace : RingTopology α → TopologicalSpace α) := by
   intro f g _; cases f; cases g; congr
+  -- ⊢ f = g
+               -- ⊢ { toTopologicalSpace := toTopologicalSpace✝, toTopologicalRing := toTopologi …
+                        -- ⊢ { toTopologicalSpace := toTopologicalSpace✝¹, toTopologicalRing := toTopolog …
+                                 -- 🎉 no goals
 
 @[ext]
 theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=

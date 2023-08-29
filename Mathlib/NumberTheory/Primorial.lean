@@ -45,8 +45,11 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
+  -- ⊢ filter Nat.Prime (range (n + 1 + 1)) = filter Nat.Prime (range (n + 1))
   rw [range_succ, filter_insert, if_neg fun h ↦ odd_iff_not_even.mp hn _]
+  -- ⊢ Nat.Prime (n + 1) → Even n
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
+  -- 🎉 no goals
 #align primorial_succ primorial_succ
 
 theorem primorial_add (m n : ℕ) :
@@ -63,6 +66,7 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
       mul_dvd_mul_left _ <|
         prod_primes_dvd _ (fun k hk ↦ (mem_filter.1 hk).2.prime) fun p hp ↦ by
           rw [mem_filter, mem_Ico] at hp
+          -- ⊢ p ∣ Nat.choose (m + n) m
           exact hp.2.dvd_choose_add hp.1.1 (h.trans_lt (m.lt_succ_self.trans_le hp.1.1))
               (Nat.lt_succ_iff.1 hp.1.2)
 #align primorial_add_dvd primorial_add_dvd
@@ -73,10 +77,16 @@ theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m
 
 theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
   induction' n using Nat.strong_induction_on with n ihn
+  -- ⊢ n# ≤ 4 ^ n
   cases' n with n; · rfl
+  -- ⊢ zero# ≤ 4 ^ zero
+                     -- 🎉 no goals
   rcases n.even_or_odd with (⟨m, rfl⟩ | ho)
+  -- ⊢ succ (m + m)# ≤ 4 ^ succ (m + m)
   · rcases m.eq_zero_or_pos with (rfl | hm)
+    -- ⊢ succ (0 + 0)# ≤ 4 ^ succ (0 + 0)
     · decide
+      -- 🎉 no goals
     calc
       (m + m + 1)# = (m + 1 + m)# := by rw [add_right_comm]
       _ ≤ (m + 1)# * choose (m + 1 + m) (m + 1) := primorial_add_le m.le_succ
@@ -85,7 +95,9 @@ theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
         mul_le_mul' (ihn _ <| succ_lt_succ <| (lt_add_iff_pos_left _).2 hm) (choose_middle_le_pow _)
       _ ≤ 4 ^ (m + m + 1) := by rw [← pow_add, add_right_comm]
   · rcases Decidable.eq_or_ne n 1 with (rfl | hn)
+    -- ⊢ succ 1# ≤ 4 ^ succ 1
     · decide
+      -- 🎉 no goals
     · calc
         (n + 1)# = n# := primorial_succ hn ho
         _ ≤ 4 ^ n := ihn n n.lt_succ_self

@@ -70,6 +70,8 @@ See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
     (p : k[X]) (h : p.Separable) : p.Splits f := by
   convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
+  -- ⊢ Splits f p ↔ Splits (RingHom.id K) (map f p)
+                                                                       -- 🎉 no goals
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
@@ -95,30 +97,45 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     rw [degree_X_pow_sub_C hn' x]
     exact (WithBot.coe_lt_coe.2 hn').ne'
   by_cases hx : x = 0
+  -- ⊢ ∃ z, z ^ n = x
   · exact ⟨0, by rw [hx, pow_eq_zero_iff hn']⟩
+    -- 🎉 no goals
   · obtain ⟨z, hz⟩ := exists_root _ this <| separable_X_pow_sub_C x hn.out hx
+    -- ⊢ ∃ z, z ^ n = x
     use z
+    -- ⊢ z ^ n = x
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
+    -- 🎉 no goals
 
 theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
+  -- ⊢ ∃ z_1, z ^ 2 = z_1 * z_1
   exact ⟨z, sq z⟩
+  -- 🎉 no goals
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  -- ⊢ p = ↑C (coeff p 0)
   cases' le_or_lt (degree p) 0 with hd hd
+  -- ⊢ p = ↑C (coeff p 0)
   · exact eq_C_of_degree_le_zero hd
+    -- 🎉 no goals
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
+    -- ⊢ p = ↑C (coeff p 0)
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
+    -- ⊢ p = ↑C (coeff p 0)
     simp at hz
+    -- 🎉 no goals
 
 theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
     (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective f.injective])
+                                           -- 🎉 no goals
     (Separable.map hsep)
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
+         -- 🎉 no goals
 
 variable (k)
 
@@ -129,8 +146,11 @@ theorem exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
   refine ⟨fun p hsep ↦ Or.inr ?_⟩
+  -- ⊢ ∀ {g : k[X]}, Irreducible g → g ∣ map (RingHom.id k) p → degree g = 1
   intro q hq hdvd
+  -- ⊢ degree q = 1
   simp only [map_id] at hdvd
+  -- ⊢ degree q = 1
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
   have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=
@@ -138,9 +158,13 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separabl
     (by simpa only [← isCoprime_mul_unit_right_right (isUnit_C.2 hlc) q 1, one_mul]
       using isCoprime_one_right (x := q))
   have hirr' := hq
+  -- ⊢ degree q = 1
   rw [← irreducible_mul_isUnit (isUnit_C.2 hlc)] at hirr'
+  -- ⊢ degree q = 1
   obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) hirr' hsep'
+  -- ⊢ degree q = 1
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root hirr' hx
+  -- 🎉 no goals
 
 theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
@@ -152,14 +176,19 @@ theorem algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [IsSeparable k K] :
     Function.Surjective (algebraMap k K) := by
   refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+  -- ⊢ ↑(algebraMap k K) (-coeff (minpoly k x) 0) = x
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (IsSeparable.isIntegral k x)
+  -- ⊢ ↑(algebraMap k K) (-coeff (minpoly k x) 0) = x
   have hsep : (minpoly k x).Separable := IsSeparable.separable k x
+  -- ⊢ ↑(algebraMap k K) (-coeff (minpoly k x) 0) = x
   have h : (minpoly k x).degree = 1 :=
     degree_eq_one_of_irreducible k (minpoly.irreducible (IsSeparable.isIntegral k x)) hsep
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
+  -- ⊢ ↑(algebraMap k K) (-coeff (minpoly k x) 0) = x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
+  -- 🎉 no goals
 
 end IsSepClosed
 
@@ -179,6 +208,10 @@ theorem isSepClosure_iff [Algebra k K] :
 instance (priority := 100) IsSepClosure.normal [Algebra k K]
     [IsSepClosure k K] : Normal k K :=
   ⟨fun x => by apply IsIntegral.isAlgebraic; exact IsSepClosure.separable.isIntegral' x,
+               -- ⊢ IsIntegral k x
+                                             -- 🎉 no goals
     fun x => @IsSepClosed.splits_codomain _ _ _ _ (IsSepClosure.sep_closed k) _ _ (by
       have : IsSeparable k K := IsSepClosure.separable
+      -- ⊢ Separable (minpoly k x)
       exact IsSeparable.separable k x)⟩
+      -- 🎉 no goals

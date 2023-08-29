@@ -113,6 +113,9 @@ instance : SpectralMapClass (SpectralMap α β) α β
     where
   coe := SpectralMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, spectral' := spectral'✝ } = g
+                                      -- ⊢ { toFun := toFun✝¹, spectral' := spectral'✝¹ } = { toFun := toFun✝, spectral …
+                                               -- 🎉 no goals
   map_spectral f := f.spectral'
 
 -- Porting note: These CoeFun instances are not desirable in Lean 4.
@@ -187,11 +190,13 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f ∘ g)= (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) := by
    rfl
+   -- 🎉 no goals
 
 -- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
   rfl
+  -- 🎉 no goals
 #align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]
@@ -219,6 +224,7 @@ theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align spectral_map.cancel_left SpectralMap.cancel_left
 
 end SpectralMap

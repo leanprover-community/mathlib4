@@ -52,6 +52,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L]
     (fund : IsAddFundamentalDomain L F μ) (hS : NullMeasurableSet s μ) (h : μ F < μ s) :
     ∃ x y : L, x ≠ y ∧ ¬Disjoint (x +ᵥ s) (y +ᵥ s) := by
   contrapose! h
+  -- ⊢ ↑↑μ s ≤ ↑↑μ F
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
     (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
@@ -75,12 +76,19 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
   obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
+  -- ⊢ ∃ x x_1, ↑x ∈ s
   refine' ⟨x - y, sub_ne_zero.2 hxy, _⟩
+  -- ⊢ ↑(x - y) ∈ s
   rw [Set.mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
+  -- ⊢ ↑(x - y) ∈ s
   simp_rw [AddSubgroup.vadd_def, vadd_eq_add, add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ←
     AddSubgroup.coe_sub] at hvw
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
+  -- ⊢ 2⁻¹ • 2 • w + 2⁻¹ • -(2 • v) ∈ s
   refine' h_conv hw (h_symm _ hv) _ _ _ <;> norm_num
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
 #align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
 
 end MeasureTheory

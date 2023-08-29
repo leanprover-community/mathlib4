@@ -76,13 +76,18 @@ namespace mapFun
 -- porting note: switched the proof to tactic mode. I think that `ext` was the issue.
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
   intros _ _ h
+  -- ⊢ a₁✝ = a₂✝
   ext p
+  -- ⊢ coeff a₁✝ p = coeff a₂✝ p
   exact hf (congr_arg (fun x => coeff x p) h : _)
+  -- 🎉 no goals
 #align witt_vector.map_fun.injective WittVector.mapFun.injective
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
+       -- ⊢ coeff (mapFun f (mk p fun n => Classical.choose (_ : ∃ a, f a = coeff x n))) …
+              -- 🎉 no goals
 #align witt_vector.map_fun.surjective WittVector.mapFun.surjective
 
 -- porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
@@ -104,40 +109,59 @@ macro "map_fun_tac" : tactic => `(tactic| (
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
 theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
+                                            -- 🎉 no goals
 #align witt_vector.map_fun.zero WittVector.mapFun.zero
 
 theorem one : mapFun f (1 : 𝕎 R) = 1 := by map_fun_tac
+                                           -- 🎉 no goals
 #align witt_vector.map_fun.one WittVector.mapFun.one
 
 theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
+                                                               -- 🎉 no goals
 #align witt_vector.map_fun.add WittVector.mapFun.add
 
 theorem sub : mapFun f (x - y) = mapFun f x - mapFun f y := by map_fun_tac
+                                                               -- 🎉 no goals
 #align witt_vector.map_fun.sub WittVector.mapFun.sub
 
 theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
+                                                               -- 🎉 no goals
 #align witt_vector.map_fun.mul WittVector.mapFun.mul
 
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
+                                                -- 🎉 no goals
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
 theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
+                                                                -- 🎉 no goals
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
 theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
+                                                                -- 🎉 no goals
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
 theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
+                                                              -- 🎉 no goals
 #align witt_vector.map_fun.pow WittVector.mapFun.pow
 
 theorem nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.unaryCast = (n : WittVector p S) by
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
+    -- ⊢ mapFun (↑f) (Nat.unaryCast Nat.zero) = ↑Nat.zero
+                    -- ⊢ 0 = ↑0
+                    -- ⊢ ↑n✝ + 1 = ↑(Nat.succ n✝)
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align witt_vector.map_fun.nat_cast WittVector.mapFun.nat_cast
 
 theorem int_cast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
     cases n <;> simp [*, Int.castDef, add, one, neg, zero, nat_cast] <;> rfl
+    -- ⊢ mapFun (↑f) (Int.castDef (Int.ofNat a✝)) = ↑(Int.ofNat a✝)
+                -- ⊢ ↑a✝ = ↑↑a✝
+                -- ⊢ -↑(a✝ + 1) = ↑(Int.negSucc a✝)
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
 #align witt_vector.map_fun.int_cast WittVector.mapFun.int_cast
 
 end mapFun
@@ -181,46 +205,62 @@ variable (x y : WittVector p R)
 theorem matrix_vecEmpty_coeff {R} (i j) :
     @coeff p R (Matrix.vecEmpty i) j = (Matrix.vecEmpty i : ℕ → R) j := by
   rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
+  -- 🎉 no goals
 #align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
 
 private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
   ghost_fun_tac 0, ![]
+  -- 🎉 no goals
 
 private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
   ghost_fun_tac 1, ![]
+  -- 🎉 no goals
 
 private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
   ghost_fun_tac X 0 + X 1, ![x.coeff, y.coeff]
+  -- 🎉 no goals
 
 private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.unaryCast = _ by
     induction i <;>
+    -- ⊢ WittVector.ghostFun (Nat.unaryCast Nat.zero) = ↑Nat.zero
       simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.coe_nat]
+      -- 🎉 no goals
+      -- 🎉 no goals
 
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
+  -- 🎉 no goals
 
 private theorem ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
   ghost_fun_tac X 0 * X 1, ![x.coeff, y.coeff]
+  -- 🎉 no goals
 
 private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
+                                                                 -- 🎉 no goals
 
 private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
     cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
+    -- ⊢ WittVector.ghostFun (Int.castDef (Int.ofNat a✝)) = ↑(Int.ofNat a✝)
+                -- 🎉 no goals
+                -- 🎉 no goals
 
 private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
+  -- 🎉 no goals
 
 private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
+  -- 🎉 no goals
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
   ghost_fun_tac X 0 ^ m, ![x.coeff]
+  -- 🎉 no goals
 
 end GhostFun
 
@@ -233,16 +273,26 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   invFun x := mk p fun n => aeval x (xInTermsOfW p R n)
   left_inv := by
     intro x
+    -- ⊢ (fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) (WittVector.ghostFun …
     ext n
+    -- ⊢ coeff ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) (WittVector.g …
     have := bind₁_wittPolynomial_xInTermsOfW p R n
+    -- ⊢ coeff ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) (WittVector.g …
     apply_fun aeval x.coeff at this
+    -- ⊢ coeff ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) (WittVector.g …
     simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
+    -- 🎉 no goals
   right_inv := by
     intro x
+    -- ⊢ WittVector.ghostFun ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) …
     ext n
+    -- ⊢ WittVector.ghostFun ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) …
     have := bind₁_xInTermsOfW_wittPolynomial p R n
+    -- ⊢ WittVector.ghostFun ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) …
     apply_fun aeval x at this
+    -- ⊢ WittVector.ghostFun ((fun x => mk p fun n => ↑(aeval x) (xInTermsOfW p R n)) …
     simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
+    -- 🎉 no goals
 
 @[local instance]
 private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
@@ -342,6 +392,8 @@ end Invertible
 noncomputable def constantCoeff : 𝕎 R →+* R where
   toFun x := x.coeff 0
   map_zero' := by simp
+                  -- 🎉 no goals
+                 -- 🎉 no goals
   map_one' := by simp
   map_add' := add_coeff_zero
   map_mul' := mul_coeff_zero

@@ -32,10 +32,16 @@ theorem IsMaxChain.range_fin_of_covby (h0 : f 0 = ⊥) (hlast : f (.last n) = �
     (hcovby : ∀ k : Fin n, f k.castSucc ⩿ f k.succ) :
     IsMaxChain (· ≤ ·) (range f) := by
   have hmono : Monotone f := Fin.monotone_iff_le_succ.2 fun k ↦ (hcovby k).1
+  -- ⊢ IsMaxChain (fun x x_1 => x ≤ x_1) (range f)
   refine ⟨hmono.isChain_range, fun t htc hbt ↦ hbt.antisymm fun x hx ↦ ?_⟩
+  -- ⊢ x ∈ range f
   rw [mem_range]; by_contra' h
+  -- ⊢ ∃ y, f y = x
+                  -- ⊢ False
   suffices ∀ k, f k < x by simpa [hlast] using this (.last _)
+  -- ⊢ ∀ (k : Fin (n + 1)), f k < x
   intro k
+  -- ⊢ f k < x
   induction k using Fin.induction with
   | zero => simpa [h0, bot_lt_iff_ne_bot] using (h 0).symm
   | succ k ihk =>

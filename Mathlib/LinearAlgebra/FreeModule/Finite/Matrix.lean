@@ -40,7 +40,9 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Free R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
+  -- ⊢ Free R (M →ₗ[R] N)
   · apply Module.Free.of_subsingleton'
+    -- 🎉 no goals
   classical exact
       Module.Free.of_equiv (LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)).symm
 #align module.free.linear_map Module.Free.linearMap
@@ -50,7 +52,9 @@ variable {R}
 instance Module.Finite.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Finite R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
+  -- ⊢ Finite R (M →ₗ[R] N)
   · infer_instance
+    -- 🎉 no goals
   classical
     have f := (LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)).symm
     exact Module.Finite.of_surjective f.toLinearMap (LinearEquiv.surjective f)
@@ -98,7 +102,11 @@ end CommRing
 theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [StrongRankCondition K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
   rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]
+  -- ⊢ LinearMap.rank (LinearMap.comp (↑toLin' (col w)) (↑toLin' (row v))) ≤ 1
   refine' le_trans (LinearMap.rank_comp_le_left _ _) _
+  -- ⊢ LinearMap.rank (↑toLin' (col w)) ≤ 1
   refine' (LinearMap.rank_le_domain _).trans_eq _
+  -- ⊢ Module.rank K (Unit → K) = 1
   rw [rank_fun', Fintype.card_unit, Nat.cast_one]
+  -- 🎉 no goals
 #align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec

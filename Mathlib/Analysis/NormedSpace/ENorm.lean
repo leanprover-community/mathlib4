@@ -60,8 +60,11 @@ instance : CoeFun (ENorm 𝕜 V) fun _ => V → ℝ≥0∞ :=
 
 theorem coeFn_injective : Function.Injective ((↑) : ENorm 𝕜 V → V → ℝ≥0∞) := fun e₁ e₂ h => by
   cases e₁
+  -- ⊢ { toFun := toFun✝, eq_zero' := eq_zero'✝, map_add_le' := map_add_le'✝, map_s …
   cases e₂
+  -- ⊢ { toFun := toFun✝¹, eq_zero' := eq_zero'✝¹, map_add_le' := map_add_le'✝¹, ma …
   congr
+  -- 🎉 no goals
 #align enorm.coe_fn_injective ENorm.coeFn_injective
 
 @[ext]
@@ -81,8 +84,11 @@ theorem coe_inj {e₁ e₂ : ENorm 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ �
 @[simp]
 theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   apply le_antisymm (e.map_smul_le' c x)
+  -- ⊢ ↑‖c‖₊ * ↑e x ≤ ↑e (c • x)
   by_cases hc : c = 0
+  -- ⊢ ↑‖c‖₊ * ↑e x ≤ ↑e (c • x)
   · simp [hc]
+    -- 🎉 no goals
   calc
     (‖c‖₊ : ℝ≥0∞) * e x = ‖c‖₊ * e (c⁻¹ • c • x) := by rw [inv_smul_smul₀ hc]
     _ ≤ ‖c‖₊ * (‖c⁻¹‖₊ * e (c • x)) := mul_le_mul_left' (e.map_smul_le' _ _) _
@@ -95,7 +101,9 @@ theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
 @[simp]
 theorem map_zero : e 0 = 0 := by
   rw [← zero_smul 𝕜 (0 : V), e.map_smul]
+  -- ⊢ ↑‖0‖₊ * ↑e 0 = 0
   norm_num
+  -- 🎉 no goals
 #align enorm.map_zero ENorm.map_zero
 
 @[simp]
@@ -107,10 +115,13 @@ theorem eq_zero_iff {x : V} : e x = 0 ↔ x = 0 :=
 theorem map_neg (x : V) : e (-x) = e x :=
   calc
     e (-x) = ‖(-1 : 𝕜)‖₊ * e x := by rw [← map_smul, neg_one_smul]
+                                     -- 🎉 no goals
     _ = e x := by simp
+                  -- 🎉 no goals
 #align enorm.map_neg ENorm.map_neg
 
 theorem map_sub_rev (x y : V) : e (x - y) = e (y - x) := by rw [← neg_sub, e.map_neg]
+                                                            -- 🎉 no goals
 #align enorm.map_sub_rev ENorm.map_sub_rev
 
 theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
@@ -120,8 +131,10 @@ theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
 theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
+                                 -- 🎉 no goals
     _ ≤ e x + e (-y) := (e.map_add_le x (-y))
     _ = e x + e y := by rw [e.map_neg]
+                        -- 🎉 no goals
 #align enorm.map_sub_le ENorm.map_sub_le
 
 instance partialOrder : PartialOrder (ENorm 𝕜 V) where
@@ -134,18 +147,42 @@ instance partialOrder : PartialOrder (ENorm 𝕜 V) where
 noncomputable instance : Top (ENorm 𝕜 V) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
       eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
+                              -- ⊢ (if x = 0 then 0 else ⊤) = 0 → x = 0
+                                         -- ⊢ 0 = 0 → x = 0
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
       map_add_le' := fun x y => by
         simp only
+        -- ⊢ (if x + y = 0 then 0 else ⊤) ≤ (if x = 0 then 0 else ⊤) + if y = 0 then 0 el …
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- ⊢ False
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
         simp [hx, hy] at hxy
+        -- 🎉 no goals
       map_smul_le' := fun c x => by
         simp only
+        -- ⊢ (if c • x = 0 then 0 else ⊤) ≤ ↑‖c‖₊ * if x = 0 then 0 else ⊤
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
+                                     -- ⊢ 0 ≤ ↑‖c‖₊ * 0
+                                     -- ⊢ 0 ≤ ↑‖c‖₊ * ⊤
+                                     -- ⊢ ⊤ ≤ ↑‖c‖₊ * 0
+                                     -- ⊢ ⊤ ≤ ↑‖c‖₊ * ⊤
         · simp only [mul_zero, le_refl]
+          -- 🎉 no goals
         · have : c = 0 := by tauto
+          -- ⊢ 0 ≤ ↑‖c‖₊ * ⊤
           simp [this]
+          -- 🎉 no goals
         · tauto
+          -- 🎉 no goals
         · simpa [mul_top'] using hcx.1 }⟩
+          -- 🎉 no goals
 
 noncomputable instance : Inhabited (ENorm 𝕜 V) :=
   ⟨⊤⟩
@@ -157,6 +194,8 @@ theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENorm 𝕜 V) x = ⊤ :=
 noncomputable instance : OrderTop (ENorm 𝕜 V) where
   top := ⊤
   le_top e x := if h : x = 0 then by simp [h] else by simp [top_map h]
+                                     -- 🎉 no goals
+                                                      -- 🎉 no goals
 
 noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
   { ENorm.partialOrder with
@@ -169,6 +208,7 @@ noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
           max_le (le_trans (e₁.map_add_le _ _) <| add_le_add (le_max_left _ _) (le_max_left _ _))
             (le_trans (e₂.map_add_le _ _) <| add_le_add (le_max_right _ _) (le_max_right _ _))
         map_smul_le' := fun c x => le_of_eq <| by simp only [map_smul, ENNReal.mul_max] }
+                                                  -- 🎉 no goals
     le_sup_left := fun e₁ e₂ x => le_max_left _ _
     le_sup_right := fun e₁ e₂ x => le_max_right _ _
     sup_le := fun e₁ e₂ e₃ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
@@ -188,10 +228,13 @@ theorem max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e�
 def emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
   edist_self x := by simp
+                     -- 🎉 no goals
   eq_of_edist_eq_zero {x y} := by simp [sub_eq_zero]
+                                  -- 🎉 no goals
   edist_comm := e.map_sub_rev
   edist_triangle x y z :=
     calc
+                                            -- 🎉 no goals
       e (x - z) = e (x - y + (y - z)) := by rw [sub_add_sub_cancel]
       _ ≤ e (x - y) + e (y - z) := e.map_add_le (x - y) (y - z)
 #align enorm.emetric_space ENorm.emetricSpace
@@ -200,6 +243,7 @@ def emetricSpace : EMetricSpace V where
 def finiteSubspace : Subspace 𝕜 V where
   carrier := { x | e x < ⊤ }
   zero_mem' := by simp
+                  -- 🎉 no goals
   add_mem' {x y} hx hy := lt_of_le_of_lt (e.map_add_le x y) (ENNReal.add_lt_top.2 ⟨hx, hy⟩)
   smul_mem' c x (hx : _ < _) :=
     calc
@@ -211,9 +255,13 @@ def finiteSubspace : Subspace 𝕜 V where
 to ensure that this definition agrees with `e.emetricSpace`. -/
 instance metricSpace : MetricSpace e.finiteSubspace := by
   letI := e.emetricSpace
+  -- ⊢ MetricSpace { x // x ∈ finiteSubspace e }
   refine' EMetricSpace.toMetricSpace fun x y => _
+  -- ⊢ edist x y ≠ ⊤
   change e (x - y) ≠ ⊤
+  -- ⊢ ↑e (↑x - ↑y) ≠ ⊤
   exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
+  -- 🎉 no goals
 
 theorem finite_dist_eq (x y : e.finiteSubspace) : dist x y = (e (x - y)).toReal :=
   rfl
@@ -237,5 +285,6 @@ theorem finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=
 /-- Normed space instance on `e.finiteSubspace`. -/
 instance normedSpace : NormedSpace 𝕜 e.finiteSubspace where
   norm_smul_le c x := le_of_eq <| by simp [finite_norm_eq, ENNReal.toReal_mul]
+                                     -- 🎉 no goals
 
 end ENorm

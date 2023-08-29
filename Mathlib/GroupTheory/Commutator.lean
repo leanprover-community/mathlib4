@@ -28,6 +28,7 @@ variable {G G' F : Type*} [Group G] [Group G'] [MonoidHomClass F G G'] (f : F) {
 
 theorem commutatorElement_eq_one_iff_mul_comm : ⁅g₁, g₂⁆ = 1 ↔ g₁ * g₂ = g₂ * g₁ := by
   rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul]
+  -- 🎉 no goals
 #align commutator_element_eq_one_iff_mul_comm commutatorElement_eq_one_iff_mul_comm
 
 theorem commutatorElement_eq_one_iff_commute : ⁅g₁, g₂⁆ = 1 ↔ Commute g₁ g₂ :=
@@ -58,10 +59,12 @@ theorem commutatorElement_self : ⁅g, g⁆ = 1 :=
 @[simp]
 theorem commutatorElement_inv : ⁅g₁, g₂⁆⁻¹ = ⁅g₂, g₁⁆ := by
   simp_rw [commutatorElement_def, mul_inv_rev, inv_inv, mul_assoc]
+  -- 🎉 no goals
 #align commutator_element_inv commutatorElement_inv
 
 theorem map_commutatorElement : (f ⁅g₁, g₂⁆ : G') = ⁅f g₁, f g₂⁆ := by
   simp_rw [commutatorElement_def, map_mul f, map_inv f]
+  -- 🎉 no goals
 #align map_commutator_element map_commutatorElement
 
 theorem conjugate_commutatorElement : g₃ * ⁅g₁, g₂⁆ * g₃⁻¹ = ⁅g₃ * g₁ * g₃⁻¹, g₃ * g₂ * g₃⁻¹⁆ :=
@@ -97,9 +100,11 @@ theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁,
 
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
+  -- ⊢ (∀ (g₁ : G), g₁ ∈ H₁ → ∀ (g₂ : G), g₂ ∈ H₂ → ⁅g₁, g₂⁆ ∈ ⊥) ↔ H₁ ≤ centralize …
   refine'
     forall_congr' fun p => forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => _
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
+  -- 🎉 no goals
 #align subgroup.commutator_eq_bot_iff_le_centralizer Subgroup.commutator_eq_bot_iff_le_centralizer
 
 /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/
@@ -108,10 +113,15 @@ theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁�
   simp_rw [commutator_eq_bot_iff_le_centralizer, commutator_le,
     mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2 ⊢
   intro x hx y hy z hz
+  -- ⊢ ⁅z, ⁅x, y⁆⁆ = 1
   trans x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹ * x⁻¹
+  -- ⊢ ⁅z, ⁅x, y⁆⁆ = x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹  …
   · group
+    -- 🎉 no goals
   · rw [h1 _ (H₂.inv_mem hy) _ hz _ (H₁.inv_mem hx), h2 _ (H₃.inv_mem hz) _ (H₁.inv_mem hx) _ hy]
+    -- ⊢ x * z * 1⁻¹ * z⁻¹ * y * 1⁻¹ * y⁻¹ * x⁻¹ = 1
     group
+    -- 🎉 no goals
 #align subgroup.commutator_commutator_eq_bot_of_rotate Subgroup.commutator_commutator_eq_bot_of_rotate
 
 variable (H₁ H₂)
@@ -129,14 +139,23 @@ section Normal
 
 instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ := by
   let base : Set G := { x | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = x }
+  -- ⊢ Normal ⁅H₁, H₂⁆
   change (closure base).Normal
+  -- ⊢ Normal (closure base)
   suffices h_base : base = Group.conjugatesOfSet base
+  -- ⊢ Normal (closure base)
   · rw [h_base]
+    -- ⊢ Normal (closure (Group.conjugatesOfSet base))
     exact Subgroup.normalClosure_normal
+    -- 🎉 no goals
   refine' Set.Subset.antisymm Group.subset_conjugatesOfSet fun a h => _
+  -- ⊢ a ∈ base
   simp_rw [Group.mem_conjugatesOfSet_iff, isConj_iff] at h
+  -- ⊢ a ∈ base
   rcases h with ⟨b, ⟨c, hc, e, he, rfl⟩, d, rfl⟩
+  -- ⊢ d * ⁅c, e⁆ * d⁻¹ ∈ base
   exact ⟨_, h₁.conj_mem c hc d, _, h₂.conj_mem e he d, (conjugate_commutatorElement c e d).symm⟩
+  -- 🎉 no goals
 #align subgroup.commutator_normal Subgroup.commutator_normal
 
 theorem commutator_def' [H₁.Normal] [H₂.Normal] :
@@ -170,12 +189,19 @@ end Normal
 
 theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by
   simp_rw [le_antisymm_iff, map_le_iff_le_comap, commutator_le, mem_comap, map_commutatorElement]
+  -- ⊢ (∀ (g₁ : G), g₁ ∈ H₁ → ∀ (g₂ : G), g₂ ∈ H₂ → ⁅↑f g₁, ↑f g₂⁆ ∈ ⁅map f H₁, map …
   constructor
+  -- ⊢ ∀ (g₁ : G), g₁ ∈ H₁ → ∀ (g₂ : G), g₂ ∈ H₂ → ⁅↑f g₁, ↑f g₂⁆ ∈ ⁅map f H₁, map  …
   · intro p hp q hq
+    -- ⊢ ⁅↑f p, ↑f q⁆ ∈ ⁅map f H₁, map f H₂⁆
     exact commutator_mem_commutator (mem_map_of_mem _ hp) (mem_map_of_mem _ hq)
+    -- 🎉 no goals
   · rintro _ ⟨p, hp, rfl⟩ _ ⟨q, hq, rfl⟩
+    -- ⊢ ⁅↑f p, ↑f q⁆ ∈ map f ⁅H₁, H₂⁆
     rw [← map_commutatorElement]
+    -- ⊢ ↑f ⁅p, q⁆ ∈ map f ⁅H₁, H₂⁆
     exact mem_map_of_mem _ (commutator_mem_commutator hp hq)
+    -- 🎉 no goals
 #align subgroup.map_commutator Subgroup.map_commutator
 
 variable {H₁ H₂}
@@ -197,13 +223,23 @@ instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characte
 theorem commutator_prod_prod (K₁ K₂ : Subgroup G') :
     ⁅H₁.prod K₁, H₂.prod K₂⁆ = ⁅H₁, H₂⁆.prod ⁅K₁, K₂⁆ := by
   apply le_antisymm
+  -- ⊢ ⁅prod H₁ K₁, prod H₂ K₂⁆ ≤ prod ⁅H₁, H₂⁆ ⁅K₁, K₂⁆
   · rw [commutator_le]
+    -- ⊢ ∀ (g₁ : G × G'), g₁ ∈ prod H₁ K₁ → ∀ (g₂ : G × G'), g₂ ∈ prod H₂ K₂ → ⁅g₁, g …
     rintro ⟨p₁, p₂⟩ ⟨hp₁, hp₂⟩ ⟨q₁, q₂⟩ ⟨hq₁, hq₂⟩
+    -- ⊢ ⁅(p₁, p₂), (q₁, q₂)⁆ ∈ prod ⁅H₁, H₂⁆ ⁅K₁, K₂⁆
     exact ⟨commutator_mem_commutator hp₁ hq₁, commutator_mem_commutator hp₂ hq₂⟩
+    -- 🎉 no goals
   · rw [prod_le_iff]
+    -- ⊢ map (MonoidHom.inl G G') ⁅H₁, H₂⁆ ≤ ⁅prod H₁ K₁, prod H₂ K₂⁆ ∧ map (MonoidHo …
     constructor <;>
+    -- ⊢ map (MonoidHom.inl G G') ⁅H₁, H₂⁆ ≤ ⁅prod H₁ K₁, prod H₂ K₂⁆
       · rw [map_commutator]
+        -- ⊢ ⁅map (MonoidHom.inl G G') H₁, map (MonoidHom.inl G G') H₂⁆ ≤ ⁅prod H₁ K₁, pr …
+        -- ⊢ ⁅map (MonoidHom.inr G G') K₁, map (MonoidHom.inr G G') K₂⁆ ≤ ⁅prod H₁ K₁, pr …
+        -- ⊢ map (MonoidHom.inl G G') H₁ ≤ prod H₁ K₁
         apply commutator_mono <;>
+        -- ⊢ map (MonoidHom.inr G G') K₁ ≤ prod H₁ K₁
           simp [le_prod_iff, map_map, MonoidHom.fst_comp_inl, MonoidHom.snd_comp_inl,
             MonoidHom.fst_comp_inr, MonoidHom.snd_comp_inr]
 #align subgroup.commutator_prod_prod Subgroup.commutator_prod_prod

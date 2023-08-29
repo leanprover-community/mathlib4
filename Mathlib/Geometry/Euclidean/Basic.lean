@@ -75,6 +75,7 @@ variable [NormedAddTorsor V P]
 theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
     dist p1 (midpoint ℝ p1 p2) = dist p2 (midpoint ℝ p1 p2) := by
   rw [dist_left_midpoint (𝕜 := ℝ) p1 p2, dist_right_midpoint (𝕜 := ℝ) p1 p2]
+  -- 🎉 no goals
 #align euclidean_geometry.dist_left_midpoint_eq_dist_right_midpoint EuclideanGeometry.dist_left_midpoint_eq_dist_right_midpoint
 
 /-- The inner product of two vectors given with `weightedVSub`, in
@@ -88,7 +89,11 @@ theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ �
   rw [Finset.weightedVSub_apply, Finset.weightedVSub_apply,
     inner_sum_smul_sum_smul_of_sum_eq_zero _ h₁ _ h₂]
   simp_rw [vsub_sub_vsub_cancel_right]
+  -- ⊢ (-∑ x in s₁, ∑ x_1 in s₂, w₁ x * w₂ x_1 * (‖p₁ x -ᵥ p₂ x_1‖ * ‖p₁ x -ᵥ p₂ x_ …
   rcongr (i₁ i₂) <;> rw [dist_eq_norm_vsub V (p₁ i₁) (p₂ i₂)]
+  -- ⊢ ‖p₁ i₁ -ᵥ p₂ i₂‖ = dist (p₁ i₁) (p₂ i₂)
+                     -- 🎉 no goals
+                     -- 🎉 no goals
 #align euclidean_geometry.inner_weighted_vsub EuclideanGeometry.inner_weightedVSub
 
 /-- The distance between two points given with `affineCombination`,
@@ -97,15 +102,19 @@ combination. -/
 theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
     (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
       have a₁ := s.affineCombination ℝ p w₁
+      -- ⊢ Sort ?u.15044
       have a₂ := s.affineCombination ℝ p w₂
+      -- ⊢ Sort ?u.15044
       exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ in s, ∑ i₂ in s,
         (w₁ - w₂) i₁ * (w₁ - w₂) i₂ * (dist (p i₁) (p i₂) * dist (p i₁) (p i₂))) / 2 := by
   dsimp only
+  -- ⊢ dist (↑(Finset.affineCombination ℝ s p) w₁) (↑(Finset.affineCombination ℝ s  …
   rw [dist_eq_norm_vsub V (s.affineCombination ℝ p w₁) (s.affineCombination ℝ p w₂), ←
     @inner_self_eq_norm_mul_norm ℝ, Finset.affineCombination_vsub]
   have h : (∑ i in s, (w₁ - w₂) i) = 0 := by
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, h₁, h₂, sub_self]
   exact inner_weightedVSub p h p h
+  -- 🎉 no goals
 #align euclidean_geometry.dist_affine_combination EuclideanGeometry.dist_affineCombination
 
 -- Porting note: `inner_vsub_vsub_of_dist_eq_of_dist_eq` moved to `PerpendicularBisector`
@@ -119,6 +128,7 @@ theorem dist_smul_vadd_sq (r : ℝ) (v : V) (p₁ p₂ : P) :
   rw [dist_eq_norm_vsub V _ p₂, ← real_inner_self_eq_norm_mul_norm, vadd_vsub_assoc,
     real_inner_add_add_self, real_inner_smul_left, real_inner_smul_left, real_inner_smul_right]
   ring
+  -- 🎉 no goals
 #align euclidean_geometry.dist_smul_vadd_sq EuclideanGeometry.dist_smul_vadd_sq
 
 /-- The condition for two points on a line to be equidistant from
@@ -129,6 +139,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
     rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, dist_smul_vadd_sq, ← sub_eq_zero,
       add_sub_assoc, dist_eq_norm_vsub V p₁ p₂, ← real_inner_self_eq_norm_mul_norm, sub_self]
   have hvi : ⟪v, v⟫ ≠ 0 := by simpa using hv
+  -- ⊢ inner v v * r * r + 2 * inner v (p₁ -ᵥ p₂) * r + 0 = 0 ↔ r = 0 ∨ r = -2 * in …
   have hd : discrim ⟪v, v⟫ (2 * ⟪v, p₁ -ᵥ p₂⟫) 0 = 2 * ⟪v, p₁ -ᵥ p₂⟫ * (2 * ⟪v, p₁ -ᵥ p₂⟫) := by
     rw [discrim]
     ring
@@ -136,6 +147,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
     mul_sub_right_distrib, sub_eq_add_neg, ← mul_two, mul_assoc, mul_div_assoc, mul_div_mul_left,
     mul_div_assoc]
   norm_num
+  -- 🎉 no goals
 #align euclidean_geometry.dist_smul_vadd_eq_dist EuclideanGeometry.dist_smul_vadd_eq_dist
 
 open AffineSubspace FiniteDimensional
@@ -154,6 +166,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   have hop : ⟪c₂ -ᵥ c₁, p -ᵥ p₁⟫ = 0 :=
     inner_vsub_vsub_of_dist_eq_of_dist_eq (hp₁c₁.trans hpc₁.symm) (hp₁c₂.trans hpc₂.symm)
   let b : Fin 2 → V := ![c₂ -ᵥ c₁, p₂ -ᵥ p₁]
+  -- ⊢ p = p₁ ∨ p = p₂
   have hb : LinearIndependent ℝ b := by
     refine' linearIndependent_of_ne_zero_of_inner_eq_zero _ _
     · intro i
@@ -183,16 +196,27 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     rcases hv' with ⟨t₂, rfl⟩
     exact ⟨t₁, t₂, hv⟩
   rcases hv (p -ᵥ p₁) (vsub_mem_direction hps hp₁s) with ⟨t₁, t₂, hpt⟩
+  -- ⊢ p = p₁ ∨ p = p₂
   simp only [hpt, inner_add_right, inner_smul_right, ho, mul_zero, add_zero,
     mul_eq_zero, inner_self_eq_zero, vsub_eq_zero_iff_eq, hc.symm, or_false_iff] at hop
   rw [hop, zero_smul, zero_add, ← eq_vadd_iff_vsub_eq] at hpt
+  -- ⊢ p = p₁ ∨ p = p₂
   subst hpt
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
   have hp' : (p₂ -ᵥ p₁ : V) ≠ 0 := by simp [hp.symm]
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
   have hp₂ : dist ((1 : ℝ) • (p₂ -ᵥ p₁) +ᵥ p₁) c₁ = r₁ := by simp [hp₂c₁]
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
   simp only [one_ne_zero, false_or_iff] at hp₂
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
   rw [hp₂.symm] at hpc₁
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
   cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
+  -- ⊢ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₁ ∨ t₂ • (p₂ -ᵥ p₁) +ᵥ p₁ = p₂
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 #align euclidean_geometry.eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two EuclideanGeometry.eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
@@ -204,7 +228,9 @@ theorem eq_of_dist_eq_of_dist_eq_of_finrank_eq_two [FiniteDimensional ℝ V] (hd
     (hp₂c₂ : dist p₂ c₂ = r₂) (hpc₂ : dist p c₂ = r₂) : p = p₁ ∨ p = p₂ :=
   haveI hd' : finrank ℝ (⊤ : AffineSubspace ℝ P).direction = 2 := by
     rw [direction_top, finrank_top]
+    -- ⊢ finrank ℝ V = 2
     exact hd
+    -- 🎉 no goals
   eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two hd' (mem_top ℝ V _) (mem_top ℝ V _)
     (mem_top ℝ V _) (mem_top ℝ V _) (mem_top ℝ V _) hc hp hp₁c₁ hp₂c₁ hpc₁ hp₁c₂ hp₂c₂ hpc₂
 #align euclidean_geometry.eq_of_dist_eq_of_dist_eq_of_finrank_eq_two EuclideanGeometry.eq_of_dist_eq_of_dist_eq_of_finrank_eq_two
@@ -221,7 +247,9 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
+        -- ⊢ IsCompl (direction s) (direction s)ᗮ
         exact Submodule.isCompl_orthogonal_of_completeSpace)
+        -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_fn EuclideanGeometry.orthogonalProjectionFn
 
 /-- The intersection of the subspace and the orthogonal subspace
@@ -237,7 +265,9 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
+        -- ⊢ IsCompl (direction s) (direction s)ᗮ
         exact Submodule.isCompl_orthogonal_of_completeSpace)
+        -- 🎉 no goals
 #align euclidean_geometry.inter_eq_singleton_orthogonal_projection_fn EuclideanGeometry.inter_eq_singleton_orthogonalProjectionFn
 
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
@@ -246,7 +276,9 @@ should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : orthogonalProjectionFn s p ∈ s := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
+  -- ⊢ ↑s ∩ ↑(mk' p (direction s)ᗮ) ⊆ ↑s
   exact Set.inter_subset_left _ _
+  -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_fn_mem EuclideanGeometry.orthogonalProjectionFn_mem
 
 /-- The `orthogonalProjectionFn` lies in the orthogonal
@@ -256,7 +288,9 @@ theorem orthogonalProjectionFn_mem_orthogonal {s : AffineSubspace ℝ P} [Nonemp
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjectionFn s p ∈ mk' p s.directionᗮ := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
+  -- ⊢ ↑s ∩ ↑(mk' p (direction s)ᗮ) ⊆ ↑(mk' p (direction s)ᗮ)
   exact Set.inter_subset_right _ _
+  -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_fn_mem_orthogonal EuclideanGeometry.orthogonalProjectionFn_mem_orthogonal
 
 /-- Subtracting `p` from its `orthogonalProjectionFn` produces a
@@ -301,8 +335,11 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
       rw [← inter_eq_singleton_orthogonalProjectionFn (v +ᵥ p)]
       exact Set.mem_inter hs ho
     rw [Set.mem_singleton_iff] at hm
+    -- ⊢ (fun p => { val := orthogonalProjectionFn s p, property := (_ : orthogonalPr …
     ext
+    -- ⊢ ↑((fun p => { val := orthogonalProjectionFn s p, property := (_ : orthogonal …
     exact hm.symm
+    -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection EuclideanGeometry.orthogonalProjection
 
 @[simp]
@@ -327,7 +364,9 @@ theorem inter_eq_singleton_orthogonalProjection {s : AffineSubspace ℝ P} [None
     [HasOrthogonalProjection s.direction] (p : P) :
     (s : Set P) ∩ mk' p s.directionᗮ = {↑(orthogonalProjection s p)} := by
   rw [← orthogonalProjectionFn_eq]
+  -- ⊢ ↑s ∩ ↑(mk' p (direction s)ᗮ) = {orthogonalProjectionFn s p}
   exact inter_eq_singleton_orthogonalProjectionFn p
+  -- 🎉 no goals
 #align euclidean_geometry.inter_eq_singleton_orthogonal_projection EuclideanGeometry.inter_eq_singleton_orthogonalProjection
 
 /-- The `orthogonalProjection` lies in the given subspace. -/
@@ -365,20 +404,30 @@ the subspace. -/
 theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {p : P} : ↑(orthogonalProjection s p) = p ↔ p ∈ s := by
   constructor
+  -- ⊢ ↑(↑(orthogonalProjection s) p) = p → p ∈ s
   · exact fun h => h ▸ orthogonalProjection_mem p
+    -- 🎉 no goals
   · intro h
+    -- ⊢ ↑(↑(orthogonalProjection s) p) = p
     have hp : p ∈ (s : Set P) ∩ mk' p s.directionᗮ := ⟨h, self_mem_mk' p _⟩
+    -- ⊢ ↑(↑(orthogonalProjection s) p) = p
     rw [inter_eq_singleton_orthogonalProjection p] at hp
+    -- ⊢ ↑(↑(orthogonalProjection s) p) = p
     symm
+    -- ⊢ p = ↑(↑(orthogonalProjection s) p)
     exact hp
+    -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_eq_self_iff EuclideanGeometry.orthogonalProjection_eq_self_iff
 
 @[simp]
 theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : s) : orthogonalProjection s p = p := by
   ext
+  -- ⊢ ↑(↑(orthogonalProjection s) ↑p) = ↑p
   rw [orthogonalProjection_eq_self_iff]
+  -- ⊢ ↑p ∈ s
   exact p.2
+  -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
 
 /-- Orthogonal projection is idempotent. -/
@@ -387,15 +436,20 @@ theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [No
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
   ext
+  -- ⊢ ↑(↑(orthogonalProjection s) ↑(↑(orthogonalProjection s) p)) = ↑(↑(orthogonal …
   rw [orthogonalProjection_eq_self_iff]
+  -- ⊢ ↑(↑(orthogonalProjection s) p) ∈ s
   exact orthogonalProjection_mem p
+  -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_orthogonal_projection EuclideanGeometry.orthogonalProjection_orthogonalProjection
 
 theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
     [Nonempty s'] [HasOrthogonalProjection s.direction] [HasOrthogonalProjection s'.direction]
     (h : s = s') (p : P) : (orthogonalProjection s p : P) = (orthogonalProjection s' p : P) := by
   subst h
+  -- ⊢ ↑(↑(orthogonalProjection s) p) = ↑(↑(orthogonalProjection s) p)
   rfl
+  -- 🎉 no goals
 #align euclidean_geometry.eq_orthogonal_projection_of_eq_subspace EuclideanGeometry.eq_orthogonalProjection_of_eq_subspace
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
@@ -403,6 +457,7 @@ theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonemp
     [HasOrthogonalProjection s.direction] {p : P} :
     dist p (orthogonalProjection s p) = 0 ↔ p ∈ s := by
   rw [dist_comm, dist_eq_zero, orthogonalProjection_eq_self_iff]
+  -- 🎉 no goals
 #align euclidean_geometry.dist_orthogonal_projection_eq_zero_iff EuclideanGeometry.dist_orthogonalProjection_eq_zero_iff
 
 /-- The distance between a point and its orthogonal projection is
@@ -435,7 +490,9 @@ theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P
     [HasOrthogonalProjection s.direction] (p : P) :
     _root_.orthogonalProjection s.direction (p -ᵥ orthogonalProjection s p) = 0 := by
   apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
+  -- ⊢ p -ᵥ ↑(↑(orthogonalProjection s) p) ∈ (direction s)ᗮ
   intro c hc
+  -- ⊢ inner c (p -ᵥ ↑(↑(orthogonalProjection s) p)) = 0
   rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
     orthogonalProjection_vsub_mem_direction_orthogonal s p c hc, neg_zero]
 #align euclidean_geometry.orthogonal_projection_vsub_orthogonal_projection EuclideanGeometry.orthogonalProjection_vsub_orthogonalProjection
@@ -447,11 +504,17 @@ theorem orthogonalProjection_vadd_eq_self {s : AffineSubspace ℝ P} [Nonempty s
     [HasOrthogonalProjection s.direction] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
     orthogonalProjection s (v +ᵥ p) = ⟨p, hp⟩ := by
   have h := vsub_orthogonalProjection_mem_direction_orthogonal s (v +ᵥ p)
+  -- ⊢ ↑(orthogonalProjection s) (v +ᵥ p) = { val := p, property := hp }
   rw [vadd_vsub_assoc, Submodule.add_mem_iff_right _ hv] at h
+  -- ⊢ ↑(orthogonalProjection s) (v +ᵥ p) = { val := p, property := hp }
   refine' (eq_of_vsub_eq_zero _).symm
+  -- ⊢ { val := p, property := hp } -ᵥ ↑(orthogonalProjection s) (v +ᵥ p) = 0
   ext
+  -- ⊢ ↑({ val := p, property := hp } -ᵥ ↑(orthogonalProjection s) (v +ᵥ p)) = ↑0
   refine' Submodule.disjoint_def.1 s.direction.orthogonal_disjoint _ _ h
+  -- ⊢ ↑({ val := p, property := hp } -ᵥ ↑(orthogonalProjection s) (v +ᵥ p)) ∈ dire …
   exact (_ : s.direction).2
+  -- 🎉 no goals
 #align euclidean_geometry.orthogonal_projection_vadd_eq_self EuclideanGeometry.orthogonalProjection_vadd_eq_self
 
 /-- Adding a vector to a point in the given subspace, then taking the
@@ -499,9 +562,12 @@ theorem dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace �
           (Submodule.smul_mem _ _ hv)))
     _ = ‖(p1 -ᵥ p2 : V)‖ * ‖(p1 -ᵥ p2 : V)‖ + |r1 - r2| * |r1 - r2| * ‖v‖ * ‖v‖ := by
       rw [norm_smul, Real.norm_eq_abs]
+      -- ⊢ ‖p1 -ᵥ p2‖ * ‖p1 -ᵥ p2‖ + |r1 - r2| * ‖v‖ * (|r1 - r2| * ‖v‖) = ‖p1 -ᵥ p2‖ * …
       ring
+      -- 🎉 no goals
     _ = dist p1 p2 * dist p1 p2 + (r1 - r2) * (r1 - r2) * (‖v‖ * ‖v‖) := by
       rw [dist_eq_norm_vsub V p1, abs_mul_abs_self, mul_assoc]
+      -- 🎉 no goals
 #align euclidean_geometry.dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd EuclideanGeometry.dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd
 
 /-- Reflection in an affine subspace, which is expected to be nonempty
@@ -517,14 +583,19 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
     (_root_.reflection s.direction) (↑(Classical.arbitrary s))
     (by
       intro p
+      -- ⊢ (fun p => ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) …
       let v := p -ᵥ ↑(Classical.arbitrary s)
+      -- ⊢ (fun p => ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) …
       let a : V := _root_.orthogonalProjection s.direction v
+      -- ⊢ (fun p => ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) …
       let b : P := ↑(Classical.arbitrary s)
+      -- ⊢ (fun p => ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) …
       have key : a +ᵥ b -ᵥ (v +ᵥ b) +ᵥ (a +ᵥ b) = a + a - v +ᵥ (b -ᵥ b +ᵥ b) := by
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
         congr 1
         abel
       dsimp only
+      -- ⊢ ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) p) = ↑(_r …
       rwa [reflection_apply, (vsub_vadd p b).symm, AffineMap.map_vadd, orthogonalProjection_linear,
         vadd_vsub, orthogonalProjection_mem_subspace_eq_self, two_smul])
 #align euclidean_geometry.reflection EuclideanGeometry.reflection
@@ -539,7 +610,9 @@ theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] 
     [HasOrthogonalProjection s.direction] [HasOrthogonalProjection s'.direction] (h : s = s')
     (p : P) : (reflection s p : P) = (reflection s' p : P) := by
   subst h
+  -- ⊢ ↑(reflection s) p = ↑(reflection s) p
   rfl
+  -- 🎉 no goals
 #align euclidean_geometry.eq_reflection_of_eq_subspace EuclideanGeometry.eq_reflection_of_eq_subspace
 
 /-- Reflecting twice in the same subspace. -/
@@ -551,7 +624,9 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
     intro _ _ h
     simp [reflection, h]
   rw [← vsub_vadd p (orthogonalProjection s p)]
+  -- ⊢ ↑(reflection s) (↑(reflection s) (p -ᵥ ↑(↑(orthogonalProjection s) p) +ᵥ ↑(↑ …
   exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
+  -- 🎉 no goals
 #align euclidean_geometry.reflection_reflection EuclideanGeometry.reflection_reflection
 
 /-- Reflection is its own inverse. -/
@@ -559,8 +634,11 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
 theorem reflection_symm (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] : (reflection s).symm = reflection s := by
   ext
+  -- ⊢ ↑(AffineIsometryEquiv.symm (reflection s)) x✝ = ↑(reflection s) x✝
   rw [← (reflection s).injective.eq_iff]
+  -- ⊢ ↑(reflection s) (↑(AffineIsometryEquiv.symm (reflection s)) x✝) = ↑(reflecti …
   simp
+  -- 🎉 no goals
 #align euclidean_geometry.reflection_symm EuclideanGeometry.reflection_symm
 
 /-- Reflection is involutive. -/
@@ -573,14 +651,21 @@ theorem reflection_involutive (s : AffineSubspace ℝ P) [Nonempty s]
 theorem reflection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : reflection s p = p ↔ p ∈ s := by
   rw [← orthogonalProjection_eq_self_iff, reflection_apply]
+  -- ⊢ ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) p) = p ↔  …
   constructor
+  -- ⊢ ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) p) = p →  …
   · intro h
+    -- ⊢ ↑(↑(orthogonalProjection s) p) = p
     rw [← @vsub_eq_zero_iff_eq V, vadd_vsub_assoc, ← two_smul ℝ (↑(orthogonalProjection s p) -ᵥ p),
       smul_eq_zero] at h
     norm_num at h
+    -- ⊢ ↑(↑(orthogonalProjection s) p) = p
     exact h
+    -- 🎉 no goals
   · intro h
+    -- ⊢ ↑(↑(orthogonalProjection s) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s) p) = p
     simp [h]
+    -- 🎉 no goals
 #align euclidean_geometry.reflection_eq_self_iff EuclideanGeometry.reflection_eq_self_iff
 
 /-- Reflecting a point in two subspaces produces the same result if
@@ -592,15 +677,22 @@ theorem reflection_eq_iff_orthogonalProjection_eq (s₁ s₂ : AffineSubspace �
     reflection s₁ p = reflection s₂ p ↔
       (orthogonalProjection s₁ p : P) = orthogonalProjection s₂ p := by
   rw [reflection_apply, reflection_apply]
+  -- ⊢ ↑(↑(orthogonalProjection s₁) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s₁) p) = ↑( …
   constructor
+  -- ⊢ ↑(↑(orthogonalProjection s₁) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s₁) p) = ↑( …
   · intro h
+    -- ⊢ ↑(↑(orthogonalProjection s₁) p) = ↑(↑(orthogonalProjection s₂) p)
     rw [← @vsub_eq_zero_iff_eq V, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc,
       vsub_sub_vsub_cancel_right, ←
       two_smul ℝ ((orthogonalProjection s₁ p : P) -ᵥ orthogonalProjection s₂ p), smul_eq_zero] at h
     norm_num at h
+    -- ⊢ ↑(↑(orthogonalProjection s₁) p) = ↑(↑(orthogonalProjection s₂) p)
     exact h
+    -- 🎉 no goals
   · intro h
+    -- ⊢ ↑(↑(orthogonalProjection s₁) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s₁) p) = ↑( …
     rw [h]
+    -- 🎉 no goals
 #align euclidean_geometry.reflection_eq_iff_orthogonal_projection_eq EuclideanGeometry.reflection_eq_iff_orthogonalProjection_eq
 
 /-- The distance between `p₁` and the reflection of `p₂` equals that
@@ -608,7 +700,9 @@ between the reflection of `p₁` and `p₂`. -/
 theorem dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
     (p₁ p₂ : P) : dist p₁ (reflection s p₂) = dist (reflection s p₁) p₂ := by
   conv_lhs => rw [← reflection_reflection s p₁]
+  -- ⊢ dist (↑(reflection s) (↑(reflection s) p₁)) (↑(reflection s) p₂) = dist (↑(r …
   exact (reflection s).dist_map _ _
+  -- 🎉 no goals
 #align euclidean_geometry.dist_reflection EuclideanGeometry.dist_reflection
 
 /-- A point in the subspace is equidistant from another point and its
@@ -617,8 +711,11 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
+  -- ⊢ dist p₁ (↑(reflection s) p₂) = dist p₁ p₂
   convert(reflection s).dist_map p₁ p₂
+  -- ⊢ p₁ = ↑(reflection s) p₁
   rw [hp₁]
+  -- 🎉 no goals
 #align euclidean_geometry.dist_reflection_eq_of_mem EuclideanGeometry.dist_reflection_eq_of_mem
 
 /-- The reflection of a point in a subspace is contained in any larger
@@ -627,8 +724,11 @@ theorem reflection_mem_of_le_of_mem {s₁ s₂ : AffineSubspace ℝ P} [Nonempty
     [HasOrthogonalProjection s₁.direction] (hle : s₁ ≤ s₂) {p : P} (hp : p ∈ s₂) :
     reflection s₁ p ∈ s₂ := by
   rw [reflection_apply]
+  -- ⊢ ↑(↑(orthogonalProjection s₁) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s₁) p) ∈ s₂
   have ho : ↑(orthogonalProjection s₁ p) ∈ s₂ := hle (orthogonalProjection_mem p)
+  -- ⊢ ↑(↑(orthogonalProjection s₁) p) -ᵥ p +ᵥ ↑(↑(orthogonalProjection s₁) p) ∈ s₂
   exact vadd_mem_of_mem_direction (vsub_mem_direction ho hp) ho
+  -- 🎉 no goals
 #align euclidean_geometry.reflection_mem_of_le_of_mem EuclideanGeometry.reflection_mem_of_le_of_mem
 
 /-- Reflecting an orthogonal vector plus a point in the subspace
@@ -637,7 +737,9 @@ theorem reflection_orthogonal_vadd {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
     reflection s (v +ᵥ p) = -v +ᵥ p := by
   rw [reflection_apply, orthogonalProjection_vadd_eq_self hp hv, vsub_vadd_eq_vsub_sub]
+  -- ⊢ ↑{ val := p, property := hp } -ᵥ p - v +ᵥ ↑{ val := p, property := hp } = -v …
   simp
+  -- 🎉 no goals
 #align euclidean_geometry.reflection_orthogonal_vadd EuclideanGeometry.reflection_orthogonal_vadd
 
 /-- Reflecting a vector plus a point in the subspace produces the

@@ -235,7 +235,9 @@ instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (upperSetTo
 
 instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
   letI := upperSetTopology' α
+  -- ⊢ UpperSetTopology α
   exact ⟨rfl⟩
+  -- 🎉 no goals
 
 /--
 The lower set topology is the topology where the open sets are the lower sets. In general the lower
@@ -250,7 +252,9 @@ instance [Preorder α] : @LowerSetTopology (WithLowerSetTopology α) (lowerSetTo
 
 instance [Preorder α] : @LowerSetTopology α (lowerSetTopology' α) _ := by
   letI := lowerSetTopology' α
+  -- ⊢ LowerSetTopology α
   exact ⟨rfl⟩
+  -- 🎉 no goals
 
 namespace UpperSetTopology
 
@@ -267,31 +271,45 @@ instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetT
     LowerSetTopology (αᵒᵈ) where
   topology_eq_lowerSetTopology := by
     ext
+    -- ⊢ IsOpen x✝ ↔ IsOpen x✝
     rw [(UpperSetTopology.topology_eq (α))]
+    -- 🎉 no goals
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSetTopology α`.
 -/
 def withUpperSetTopologyHomeomorph : WithUpperSetTopology α ≃ₜ α :=
   WithUpperSetTopology.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+                                                             -- ⊢ WithUpperSetTopology.instTopologicalSpaceWithUpperSetTopology = upperSetTopo …
+                                                                                              -- 🎉 no goals
 
 lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
+  -- ⊢ IsOpen s ↔ IsUpperSet s
   rfl
+  -- 🎉 no goals
 
 -- Alexandrov property, set formulation
 theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
   simp_rw [IsOpen_iff_IsUpperSet] at *
+  -- ⊢ IsUpperSet (⋂₀ S)
   apply isUpperSet_sInter
+  -- ⊢ ∀ (s : Set α), s ∈ S → IsUpperSet s
   intros s hs
+  -- ⊢ IsUpperSet s
   exact hf _ hs
+  -- 🎉 no goals
 
 -- Alexandrov property, index formulation
 theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
   simp_rw [IsOpen_iff_IsUpperSet] at *
+  -- ⊢ IsUpperSet (⋂ (i : ι), f i)
   apply isUpperSet_iInter
+  -- ⊢ ∀ (i : ι), IsUpperSet (f i)
   intros i
+  -- ⊢ IsUpperSet (f i)
   exact hf i
+  -- 🎉 no goals
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
@@ -303,11 +321,17 @@ lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
 
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]
+  -- ⊢ closure s ⊆ ↑(lowerClosure s) ∧ ↑(lowerClosure s) ⊆ closure s
   constructor
+  -- ⊢ closure s ⊆ ↑(lowerClosure s)
   · apply closure_minimal subset_lowerClosure _
+    -- ⊢ IsClosed ↑(lowerClosure s)
     rw [isClosed_iff_isLower]
+    -- ⊢ IsLowerSet ↑(lowerClosure s)
     exact LowerSet.lower (lowerClosure s)
+    -- 🎉 no goals
   · apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+    -- 🎉 no goals
 
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
@@ -315,7 +339,9 @@ interval (-∞,a].
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
   rw [closure_eq_lowerClosure, lowerClosure_singleton]
+  -- ⊢ ↑(LowerSet.Iic a) = Iic a
   rfl
+  -- 🎉 no goals
 
 end Preorder
 
@@ -329,29 +355,46 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology 
     [TopologicalSpace β] [UpperSetTopology β] {f : α → β} :
     Monotone f ↔ Continuous f := by
   constructor
+  -- ⊢ Monotone f → Continuous f
   · intro hf
+    -- ⊢ Continuous f
     simp_rw [continuous_def, IsOpen_iff_IsUpperSet]
+    -- ⊢ ∀ (s : Set β), IsUpperSet s → IsUpperSet (f ⁻¹' s)
     exact fun _ hs ↦ IsUpperSet.preimage hs hf
+    -- 🎉 no goals
   · intro hf a b hab
+    -- ⊢ f a ≤ f b
     rw [← mem_Iic, ← closure_singleton] at hab ⊢
+    -- ⊢ f a ∈ closure {f b}
     apply (Continuous.closure_preimage_subset hf {f b})
+    -- ⊢ a ∈ closure (f ⁻¹' {f b})
     apply mem_of_mem_of_subset hab
+    -- ⊢ closure {b} ⊆ closure (f ⁻¹' {f b})
     apply closure_mono
+    -- ⊢ {b} ⊆ f ⁻¹' {f b}
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
+    -- 🎉 no goals
 
 lemma Monotone_to_UpperTopology_Continuous [TopologicalSpace α]
     [UpperSetTopology α] [TopologicalSpace β] [UpperTopology β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
   rw [continuous_def]
+  -- ⊢ ∀ (s : Set β), IsOpen s → IsOpen (f ⁻¹' s)
   intro s hs
+  -- ⊢ IsOpen (f ⁻¹' s)
   rw [IsOpen_iff_IsUpperSet]
+  -- ⊢ IsUpperSet (f ⁻¹' s)
   apply IsUpperSet.preimage _ hf
+  -- ⊢ IsUpperSet s
   apply UpperTopology.isUpperSet_of_isOpen hs
+  -- 🎉 no goals
 
 lemma UpperSetLEUpper {t₁ : TopologicalSpace α} [@UpperSetTopology α t₁ _]
     {t₂ : TopologicalSpace α} [@UpperTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
   rw [@IsOpen_iff_IsUpperSet α _ t₁]
+  -- ⊢ IsUpperSet s
   exact UpperTopology.isUpperSet_of_isOpen hs
+  -- 🎉 no goals
 
 end maps
 
@@ -372,17 +415,23 @@ instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetT
     UpperSetTopology (αᵒᵈ) where
   topology_eq_upperSetTopology := by
     ext
+    -- ⊢ IsOpen x✝ ↔ IsOpen x✝
     rw [(LowerSetTopology.topology_eq (α))]
+    -- 🎉 no goals
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to
 `WithLowerSetTopology α`.
 -/
 def withLowerSetTopologyHomeomorph : WithLowerSetTopology α ≃ₜ α :=
   WithLowerSetTopology.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+                                                             -- ⊢ WithLowerSetTopology.instTopologicalSpaceWithLowerSetTopology = lowerSetTopo …
+                                                                                              -- 🎉 no goals
 
 lemma IsOpen_iff_IsLowerSet : IsOpen s ↔ IsLowerSet s := by
   rw [topology_eq α]
+  -- ⊢ IsOpen s ↔ IsLowerSet s
   rfl
+  -- 🎉 no goals
 
 -- Alexandrov property, set formulation
 theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
@@ -394,6 +443,7 @@ theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (�
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
   rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet, isUpperSet_compl.symm, compl_compl]
+  -- 🎉 no goals
 
 lemma isClosed_isUpper {s : Set α} : IsClosed s → IsUpperSet s := fun h =>
   (isClosed_iff_isUpper.mp h)
@@ -407,7 +457,9 @@ interval (-∞,a].
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Ici a := by
   rw [closure_eq_upperClosure, upperClosure_singleton]
+  -- ⊢ ↑(UpperSet.Ici a) = Ici a
   rfl
+  -- 🎉 no goals
 
 end Preorder
 
@@ -422,6 +474,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [LowerSetTopology 
     [TopologicalSpace β] [LowerSetTopology β] {f : α → β} :
     Monotone f ↔ Continuous f := by
   rw [← monotone_dual_iff]
+  -- ⊢ Monotone (↑toDual ∘ f ∘ ↑ofDual) ↔ Continuous f
   exact UpperSetTopology.monotone_iff_continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
 
@@ -431,11 +484,14 @@ lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
   apply UpperSetTopology.Monotone_to_UpperTopology_Continuous (α := αᵒᵈ) (β := βᵒᵈ)
     (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
   exact Monotone.dual hf
+  -- 🎉 no goals
 
 lemma LowerSetLELower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
     {t₂ : TopologicalSpace α} [@LowerTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
   rw [@IsOpen_iff_IsLowerSet α _ t₁]
+  -- ⊢ IsLowerSet s
   exact LowerTopology.isLowerSet_of_isOpen hs
+  -- 🎉 no goals
 
 end maps
 
@@ -444,11 +500,17 @@ end LowerSetTopology
 lemma UpperSetDual_iff_LowerSet [Preorder α] [TopologicalSpace α] :
     UpperSetTopology αᵒᵈ ↔ LowerSetTopology α := by
   constructor
+  -- ⊢ UpperSetTopology αᵒᵈ → LowerSetTopology α
   · apply UpperSetTopology.instLowerSetTopologyDual
+    -- 🎉 no goals
   · apply LowerSetTopology.instUpperSetTopologyDual
+    -- 🎉 no goals
 
 lemma LowerSetDual_iff_UpperSet [Preorder α] [TopologicalSpace α] :
     LowerSetTopology αᵒᵈ ↔ UpperSetTopology α := by
   constructor
+  -- ⊢ LowerSetTopology αᵒᵈ → UpperSetTopology α
   · apply LowerSetTopology.instUpperSetTopologyDual
+    -- 🎉 no goals
   · apply UpperSetTopology.instLowerSetTopologyDual
+    -- 🎉 no goals

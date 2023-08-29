@@ -82,14 +82,19 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     -- The differential is `Subobject.arrow _ ≫ X.δ (0 : Fin (n+3))`,
     -- factored through the intersection of the kernels.
     refine' factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) _
+    -- ⊢ Factors (objX X (n + 1)) (arrow (objX X (n + 1 + 1)) ≫ SimplicialObject.δ X 0)
     -- We now need to show that it factors!
     -- A morphism factors through an intersection of subobjects if it factors through each.
     refine' (finset_inf_factors _).mpr fun i _ => _
+    -- ⊢ Factors (kernelSubobject (SimplicialObject.δ X (Fin.succ i))) (arrow (objX X …
     -- A morphism `f` factors through the kernel of `g` exactly if `f ≫ g = 0`.
     apply kernelSubobject_factors
+    -- ⊢ (arrow (objX X (n + 1 + 1)) ≫ SimplicialObject.δ X 0) ≫ SimplicialObject.δ X …
     dsimp [objX]
+    -- ⊢ (arrow (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObject.δ  …
     -- Use a simplicial identity
     erw [Category.assoc, ← X.δ_comp_δ (Fin.zero_le i.succ)]
+    -- ⊢ arrow (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObject.δ X …
     -- We can rewrite the arrow out of the intersection of all the kernels as a composition
     -- of a morphism we don't care about with the arrow out of the kernel of `X.δ i.succ.succ`.
     rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i.succ (by simp)),
@@ -101,6 +106,9 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first erw the proofs are almost identical
   rcases n with _ | n <;> dsimp [objD]
+  -- ⊢ objD X (Nat.zero + 1) ≫ objD X Nat.zero = 0
+                          -- ⊢ factorThru (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObjec …
+                          -- ⊢ factorThru (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObjec …
   · erw [Subobject.factorThru_arrow_assoc, Category.assoc,
       ← X.δ_comp_δ_assoc (Fin.zero_le (0 : Fin 2)),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin 2) (by simp)),
@@ -131,13 +139,23 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _
     (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
       cases n <;> dsimp
+      -- ⊢ Factors (objX Y Nat.zero) (arrow (objX X Nat.zero) ≫ NatTrans.app f (op (Sim …
+                  -- ⊢ Factors ⊤ (arrow ⊤ ≫ NatTrans.app f (op (SimplexCategory.mk 0)))
+                  -- ⊢ Factors (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObject.δ …
       · apply top_factors
+        -- 🎉 no goals
       · refine' (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ _
+        -- ⊢ (arrow (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObject.δ  …
         erw [Category.assoc, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
     fun n => by
     cases n <;> dsimp [objD, objX] <;> aesop_cat
+    -- ⊢ (fun n => factorThru (objX Y n) (arrow (objX X n) ≫ NatTrans.app f (op (Simp …
+                -- ⊢ factorThru (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObjec …
+                -- ⊢ factorThru (Finset.inf Finset.univ fun k => kernelSubobject (SimplicialObjec …
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.map AlgebraicTopology.NormalizedMooreComplex.map
 
@@ -161,7 +179,19 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   map f := map f
   -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
   map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
+                 -- ⊢ HomologicalComplex.Hom.f ({ obj := obj, map := fun {X Y} f => map f }.map (𝟙 …
+                                 -- ⊢ Subobject.factorThru ⊤ (Subobject.arrow ⊤ ≫ 𝟙 (X.obj (op (SimplexCategory.mk …
+                                 -- ⊢ Subobject.factorThru (Finset.inf Finset.univ fun k => kernelSubobject (Simpl …
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
   map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
+                     -- ⊢ HomologicalComplex.Hom.f ({ obj := obj, map := fun {X Y} f => map f }.map (f …
+                                     -- ⊢ HomologicalComplex.Hom.f ({ obj := obj, map := fun {X Y} f => map f }.map (f …
+                                     -- ⊢ HomologicalComplex.Hom.f ({ obj := obj, map := fun {X Y} f => map f }.map (f …
+                                                                             -- ⊢ Subobject.factorThru ⊤ (Subobject.arrow ⊤ ≫ NatTrans.app f (op (SimplexCateg …
+                                                                             -- ⊢ Subobject.factorThru (Finset.inf Finset.univ fun k => kernelSubobject (Simpl …
+                                                                                       -- 🎉 no goals
+                                                                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex AlgebraicTopology.normalizedMooreComplex
 

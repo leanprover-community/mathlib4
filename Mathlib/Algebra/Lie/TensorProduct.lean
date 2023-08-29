@@ -58,23 +58,29 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, LieHom.map_add,
       LinearMap.add_apply]
     abel
+    -- 🎉 no goals
+    -- 🎉 no goals
   lie_add x := LinearMap.map_add _
   leibniz_lie x y t := by
     suffices (hasBracketAux x).comp (hasBracketAux y) =
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
       simp only [← LinearMap.add_apply]; rw [← LinearMap.comp_apply, this]; rfl
     ext m n
+    -- ⊢ ↑(↑(LinearMap.compr₂ (mk R M N) (LinearMap.comp (hasBracketAux x) (hasBracke …
     simp only [hasBracketAux, LieRing.of_associative_ring_bracket, LinearMap.mul_apply, mk_apply,
       LinearMap.lTensor_sub, LinearMap.compr₂_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieHom.map_lie, toEndomorphism_apply_apply, LinearMap.add_apply,
       LinearMap.map_add, LinearMap.rTensor_sub, LinearMap.sub_apply, LinearMap.lTensor_tmul]
     abel
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align tensor_product.lie_module.lie_ring_module TensorProduct.LieModule.lieRingModule
 
 /-- The tensor product of two Lie modules is a Lie module. -/
 instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
+    -- ⊢ ↑(hasBracketAux (c • x)) t = c • ↑(hasBracketAux x) t
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
       LinearMap.lTensor_smul, LieHom.map_smul, LinearMap.add_apply]
   lie_smul c x := LinearMap.map_smul _ c
@@ -95,9 +101,12 @@ def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv R M N P with
     map_lie' := fun {x f} => by
       ext m n
+      -- ⊢ ↑(↑(LinearMap.compr₂ (mk R M N) (AddHom.toFun src✝.toAddHom ⁅x, f⁆)) m) n =  …
       simp only [mk_apply, LinearMap.compr₂_apply, lie_tmul_right, LinearMap.sub_apply,
         lift.equiv_apply, LinearEquiv.toFun_eq_coe, LieHom.lie_apply, LinearMap.map_add]
       abel }
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align tensor_product.lie_module.lift TensorProduct.LieModule.lift
 
 @[simp]
@@ -120,6 +129,7 @@ theorem coe_liftLie_eq_lift_coe (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) :
   suffices (liftLie R L M N P f : M ⊗[R] N →ₗ[R] P) = lift R L M N P f by
     rw [← this, LieModuleHom.coe_toLinearMap]
   ext m n
+  -- ⊢ ↑(↑(LinearMap.compr₂ (mk R M N) ↑(↑(liftLie R L M N P) f)) m) n = ↑(↑(Linear …
   simp only [liftLie, LinearEquiv.trans_apply, LieModuleEquiv.coe_to_linearEquiv,
     coe_linearMap_maxTrivLinearMapEquivLieModuleHom, coe_maxTrivEquiv_apply,
     coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm]
@@ -128,6 +138,7 @@ theorem coe_liftLie_eq_lift_coe (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) :
 theorem liftLie_apply (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (m : M) (n : N) :
     liftLie R L M N P f (m ⊗ₜ n) = f m n := by
   simp only [coe_liftLie_eq_lift_coe, LieModuleHom.coe_toLinearMap, lift_apply]
+  -- 🎉 no goals
 #align tensor_product.lie_module.lift_lie_apply TensorProduct.LieModule.liftLie_apply
 
 variable {R L M N P Q}
@@ -138,12 +149,17 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
   { map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) with
     map_lie' := fun {x t} => by
       simp only [LinearMap.toFun_eq_coe]
+      -- ⊢ ↑(TensorProduct.map ↑f ↑g) ⁅x, t⁆ = ⁅x, ↑(TensorProduct.map ↑f ↑g) t⁆
       refine' t.induction_on _ _ _
       · simp only [LinearMap.map_zero, lie_zero]
+        -- 🎉 no goals
       · intro m n
+        -- ⊢ ↑(TensorProduct.map ↑f ↑g) ⁅x, m ⊗ₜ[R] n⁆ = ⁅x, ↑(TensorProduct.map ↑f ↑g) ( …
         simp only [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,
           LinearMap.map_add]
       · intro t₁ t₂ ht₁ ht₂; simp only [ht₁, ht₂, lie_add, LinearMap.map_add] }
+        -- ⊢ ↑(TensorProduct.map ↑f ↑g) ⁅x, t₁ + t₂⁆ = ⁅x, ↑(TensorProduct.map ↑f ↑g) (t₁ …
+                             -- 🎉 no goals
 #align tensor_product.lie_module.map TensorProduct.LieModule.map
 
 @[simp]
@@ -188,6 +204,8 @@ def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
   TensorProduct.LieModule.liftLie R L L M M
     { (toEndomorphism R L M : L →ₗ[R] M →ₗ[R] M) with
       map_lie' := fun {x m} => by ext n; simp [LieRing.of_associative_ring_bracket] }
+                                  -- ⊢ ↑(AddHom.toFun { toAddHom := src✝.toAddHom, map_smul' := (_ : ∀ (r : R) (x : …
+                                         -- 🎉 no goals
 #align lie_module.to_module_hom LieModule.toModuleHom
 
 @[simp]
@@ -223,10 +241,23 @@ theorem lieIdeal_oper_eq_tensor_map_range :
     LieModuleHom.coe_linearMap_comp, LinearMap.range_comp, mapIncl_def, coe_linearMap_map,
     TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
+  -- ⊢ {m | ∃ x n, ⁅↑x, ↑n⁆ = m} = ↑↑(toModuleHom R L M) '' {t | ∃ m n, ↑↑(incl I)  …
+         -- ⊢ m ∈ {m | ∃ x n, ⁅↑x, ↑n⁆ = m} ↔ m ∈ ↑↑(toModuleHom R L M) '' {t | ∃ m n, ↑↑( …
+                -- ⊢ m ∈ {m | ∃ x n, ⁅↑x, ↑n⁆ = m} → m ∈ ↑↑(toModuleHom R L M) '' {t | ∃ m n, ↑↑( …
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
+    -- ⊢ ⁅↑{ val := x, property := hx }, ↑{ val := n, property := hn }⁆ ∈ ↑↑(toModule …
+                                    -- ⊢ x ⊗ₜ[R] n ∈ {t | ∃ m n, ↑↑(incl I) m ⊗ₜ[R] ↑↑(incl N) n = t} ∧ ↑↑(toModuleHo …
+                                                -- ⊢ x ⊗ₜ[R] n ∈ {t | ∃ m n, ↑↑(incl I) m ⊗ₜ[R] ↑↑(incl N) n = t}
     · use ⟨x, hx⟩, ⟨n, hn⟩; simp
+      -- ⊢ ↑↑(incl I) { val := x, property := hx } ⊗ₜ[R] ↑↑(incl N) { val := n, propert …
+                            -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; simp
+    -- ⊢ m ∈ {m | ∃ x n, ⁅↑x, ↑n⁆ = m}
+                                            -- ⊢ ↑↑(toModuleHom R L M) (↑↑(incl I) { val := x, property := hx } ⊗ₜ[R] ↑↑(incl …
+                                                      -- ⊢ ⁅↑{ val := x, property := hx }, ↑{ val := n, property := hn }⁆ = ↑↑(toModule …
+                                                                            -- 🎉 no goals
 #align lie_submodule.lie_ideal_oper_eq_tensor_map_range LieSubmodule.lieIdeal_oper_eq_tensor_map_range
 
 end LieSubmodule

@@ -66,14 +66,23 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
   induction' H with S h T1 T2 _ _ h1 h2
   · cases h
+    -- ⊢ S ∈ S✝ ∨ ∃ Q, Q ∈ S✝ ∧ S = A ∩ Q
     · exact Or.inr ⟨Set.univ, cond.univ_mem, by simpa⟩
+      -- 🎉 no goals
     · exact Or.inl (by assumption)
+      -- 🎉 no goals
   · exact Or.inl cond.univ_mem
+    -- 🎉 no goals
   · rcases h1 with (h | ⟨Q, hQ, rfl⟩) <;> rcases h2 with (i | ⟨R, hR, rfl⟩)
+    -- ⊢ T1 ∩ T2 ∈ S ∨ ∃ Q, Q ∈ S ∧ T1 ∩ T2 = A ∩ Q
+                                          -- ⊢ T1 ∩ T2 ∈ S ∨ ∃ Q, Q ∈ S ∧ T1 ∩ T2 = A ∩ Q
+                                          -- ⊢ A ∩ Q ∩ T2 ∈ S ∨ ∃ Q_1, Q_1 ∈ S ∧ A ∩ Q ∩ T2 = A ∩ Q_1
     · exact Or.inl (cond.inter_mem h i)
+      -- 🎉 no goals
     · exact
         Or.inr ⟨T1 ∩ R, cond.inter_mem h hR, by simp only [← Set.inter_assoc, Set.inter_comm _ A]⟩
     · exact Or.inr ⟨Q ∩ T2, cond.inter_mem hQ i, by simp only [Set.inter_assoc]⟩
+      -- 🎉 no goals
     · exact
         Or.inr
           ⟨Q ∩ R, cond.inter_mem hQ hR, by

@@ -36,11 +36,17 @@ neighborhood of a point and is continuous at this point, then it is analytic at 
 theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ → E} {c : ℂ}
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z) (hc : ContinuousAt f c) : AnalyticAt ℂ f c := by
   rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 hd with ⟨R, hR0, hRs⟩
+  -- ⊢ AnalyticAt ℂ f c
   lift R to ℝ≥0 using hR0.le
+  -- ⊢ AnalyticAt ℂ f c
   replace hc : ContinuousOn f (closedBall c R)
+  -- ⊢ ContinuousOn f (closedBall c ↑R)
   · refine' fun z hz => ContinuousAt.continuousWithinAt _
+    -- ⊢ ContinuousAt f z
     rcases eq_or_ne z c with (rfl | hne)
+    -- ⊢ ContinuousAt f z
     exacts [hc, (hRs ⟨hz, hne⟩).continuousAt]
+    -- 🎉 no goals
   exact (hasFPowerSeriesOnBall_of_differentiable_off_countable (countable_singleton c) hc
     (fun z hz => hRs (diff_subset_diff_left ball_subset_closedBall hz)) hR0).analyticAt
 #align complex.analytic_at_of_differentiable_on_punctured_nhds_of_continuous_at Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
@@ -49,12 +55,17 @@ theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s
     (hs : s ∈ 𝓝 c) :
     DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔ DifferentiableOn ℂ f s := by
   refine' ⟨_, fun hd => ⟨hd.mono (diff_subset _ _), (hd.differentiableAt hs).continuousAt⟩⟩
+  -- ⊢ DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c → DifferentiableOn ℂ f s
   rintro ⟨hd, hc⟩ x hx
+  -- ⊢ DifferentiableWithinAt ℂ f s x
   rcases eq_or_ne x c with (rfl | hne)
+  -- ⊢ DifferentiableWithinAt ℂ f s x
   · refine' (analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
       _ hc).differentiableAt.differentiableWithinAt
     refine' eventually_nhdsWithin_iff.2 ((eventually_mem_nhds.2 hs).mono fun z hz hzx => _)
+    -- ⊢ DifferentiableAt ℂ f z
     exact hd.differentiableAt (inter_mem hz (isOpen_ne.mem_nhds hzx))
+    -- 🎉 no goals
   · simpa only [DifferentiableWithinAt, HasFDerivWithinAt, hne.nhdsWithin_diff_singleton] using
       hd x ⟨hx, hne⟩
 #align complex.differentiable_on_compl_singleton_and_continuous_at_iff Complex.differentiableOn_compl_singleton_and_continuousAt_iff
@@ -75,6 +86,7 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
     DifferentiableOn ℂ (update f c (limUnder (𝓝[≠] c) f)) s := by
   set F : ℂ → E := fun z => (z - c) • f z
+  -- ⊢ DifferentiableOn ℂ (update f c (limUnder (𝓝[{c}ᶜ] c) f)) s
   suffices DifferentiableOn ℂ F (s \ {c}) ∧ ContinuousAt F c by
     rw [differentiableOn_compl_singleton_and_continuousAt_iff hc, ← differentiableOn_dslope hc,
       dslope_sub_smul] at this
@@ -82,11 +94,15 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
       continuousAt_update_same.mp (this.continuousOn.continuousAt hc)
     rwa [hc.limUnder_eq]
   refine' ⟨(differentiableOn_id.sub_const _).smul hd, _⟩
+  -- ⊢ ContinuousAt F c
   rw [← continuousWithinAt_compl_self]
+  -- ⊢ ContinuousWithinAt F {c}ᶜ c
   have H := ho.tendsto_inv_smul_nhds_zero
+  -- ⊢ ContinuousWithinAt F {c}ᶜ c
   have H' : Tendsto (fun z => (z - c) • f c) (𝓝[≠] c) (𝓝 (F c)) :=
     (continuousWithinAt_id.tendsto.sub tendsto_const_nhds).smul tendsto_const_nhds
   simpa [← smul_add, ContinuousWithinAt] using H.add H'
+  -- 🎉 no goals
 #align complex.differentiable_on_update_lim_of_is_o Complex.differentiableOn_update_limUnder_of_isLittleO
 
 /-- **Removable singularity** theorem: if `s` is a punctured neighborhood of `c : ℂ`, a function
@@ -119,10 +135,13 @@ theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO {f : �
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
     Tendsto f (𝓝[≠] c) (𝓝 <| limUnder (𝓝[≠] c) f) := by
   rw [eventually_nhdsWithin_iff] at hd
+  -- ⊢ Tendsto f (𝓝[{c}ᶜ] c) (𝓝 (limUnder (𝓝[{c}ᶜ] c) f))
   have : DifferentiableOn ℂ f ({z | z ≠ c → DifferentiableAt ℂ f z} \ {c}) := fun z hz =>
     (hz.1 hz.2).differentiableWithinAt
   have H := differentiableOn_update_limUnder_of_isLittleO hd this ho
+  -- ⊢ Tendsto f (𝓝[{c}ᶜ] c) (𝓝 (limUnder (𝓝[{c}ᶜ] c) f))
   exact continuousAt_update_same.1 (H.differentiableAt hd).continuousAt
+  -- 🎉 no goals
 #align complex.tendsto_lim_of_differentiable_on_punctured_nhds_of_is_o Complex.tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO
 
 /-- **Removable singularity** theorem: if a function `f : ℂ → E` is complex differentiable and
@@ -143,9 +162,13 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
   have hf' : DifferentiableOn ℂ (dslope f w₀) U :=
     (differentiableOn_dslope (hU.mem_nhds ((ball_subset_closedBall.trans hc) hw₀))).mpr hf
   have h0 := (hf'.diffContOnCl_ball hc).two_pi_i_inv_smul_circleIntegral_sub_inv_smul hw₀
+  -- ⊢ ((2 * ↑π * I)⁻¹ • ∮ (z : ℂ) in C(c, R), ((z - w₀) ^ 2)⁻¹ • f z) = deriv f w₀
   rw [← dslope_same, ← h0]
+  -- ⊢ ((2 * ↑π * I)⁻¹ • ∮ (z : ℂ) in C(c, R), ((z - w₀) ^ 2)⁻¹ • f z) = (2 * ↑π *  …
   congr 1
+  -- ⊢ (∮ (z : ℂ) in C(c, R), ((z - w₀) ^ 2)⁻¹ • f z) = ∮ (z : ℂ) in C(c, R), (z -  …
   trans ∮ z in C(c, R), ((z - w₀) ^ 2)⁻¹ • (f z - f w₀)
+  -- ⊢ (∮ (z : ℂ) in C(c, R), ((z - w₀) ^ 2)⁻¹ • f z) = ∮ (z : ℂ) in C(c, R), ((z - …
   · have h1 : ContinuousOn (fun z : ℂ => ((z - w₀) ^ 2)⁻¹) (sphere c R) := by
       refine' ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => _
       exact sphere_disjoint_ball.ne_of_mem hw hw₀ (sub_eq_zero.mp (sq_eq_zero_iff.mp h))
@@ -159,6 +182,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
     simp only [smul_sub, circleIntegral.integral_sub h2 h3, h4, circleIntegral.integral_smul_const,
       zero_smul, sub_zero]
   · refine' circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => _
+    -- ⊢ ((z - w₀) ^ 2)⁻¹ • (f z - f w₀) = (z - w₀)⁻¹ • dslope f w₀ z
     simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
       mul_inv, Ne.def, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
 set_option linter.uppercaseLean3 false in

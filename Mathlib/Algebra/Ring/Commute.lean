@@ -71,11 +71,13 @@ end deprecated
 theorem mul_self_sub_mul_self_eq [NonUnitalNonAssocRing R] {a b : R} (h : Commute a b) :
     a * a - b * b = (a + b) * (a - b) := by
   rw [add_mul, mul_sub, mul_sub, h.eq, sub_add_sub_cancel]
+  -- 🎉 no goals
 #align commute.mul_self_sub_mul_self_eq Commute.mul_self_sub_mul_self_eq
 
 theorem mul_self_sub_mul_self_eq' [NonUnitalNonAssocRing R] {a b : R} (h : Commute a b) :
     a * a - b * b = (a - b) * (a + b) := by
   rw [mul_add, sub_mul, sub_mul, h.eq, sub_add_sub_cancel]
+  -- 🎉 no goals
 #align commute.mul_self_sub_mul_self_eq' Commute.mul_self_sub_mul_self_eq'
 
 theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocRing R] [NoZeroDivisors R] {a b : R}
@@ -151,6 +153,7 @@ theorem mul_self_sub_mul_self [CommRing R] (a b : R) : a * a - b * b = (a + b) *
 
 theorem mul_self_sub_one [NonAssocRing R] (a : R) : a * a - 1 = (a + 1) * (a - 1) := by
   rw [← (Commute.one_right a).mul_self_sub_mul_self_eq, mul_one]
+  -- 🎉 no goals
 #align mul_self_sub_one mul_self_sub_one
 
 theorem mul_self_eq_mul_self_iff [CommRing R] [NoZeroDivisors R] {a b : R} :
@@ -161,6 +164,7 @@ theorem mul_self_eq_mul_self_iff [CommRing R] [NoZeroDivisors R] {a b : R} :
 theorem mul_self_eq_one_iff [NonAssocRing R] [NoZeroDivisors R] {a : R} :
     a * a = 1 ↔ a = 1 ∨ a = -1 := by
   rw [← (Commute.one_right a).mul_self_eq_mul_self_iff, mul_one]
+  -- 🎉 no goals
 #align mul_self_eq_one_iff mul_self_eq_one_iff
 
 namespace Units
@@ -169,9 +173,13 @@ namespace Units
   one's additive inverse. -/
 theorem inv_eq_self_iff [Ring R] [NoZeroDivisors R] (u : Rˣ) : u⁻¹ = u ↔ u = 1 ∨ u = -1 := by
   rw [inv_eq_iff_mul_eq_one]
+  -- ⊢ u * u = 1 ↔ u = 1 ∨ u = -1
   simp only [ext_iff]
+  -- ⊢ ↑(u * u) = ↑1 ↔ ↑u = ↑1 ∨ ↑u = ↑(-1)
   push_cast
+  -- ⊢ ↑u * ↑u = 1 ↔ ↑u = 1 ∨ ↑u = -1
   exact mul_self_eq_one_iff
+  -- 🎉 no goals
 #align units.inv_eq_self_iff Units.inv_eq_self_iff
 
 end Units

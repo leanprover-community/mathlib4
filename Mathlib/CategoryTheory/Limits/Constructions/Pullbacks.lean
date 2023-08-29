@@ -34,15 +34,25 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
   HasLimit.mk
     { cone :=
         PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by rw [Category.assoc, equalizer.condition]; simp
+                                                -- ⊢ equalizer.ι (π₁ ≫ f) (π₂ ≫ g) ≫ π₂ ≫ g = (e ≫ π₂) ≫ g
+                                                                                          -- 🎉 no goals
       isLimit :=
         PullbackCone.IsLimit.mk _ (fun s => equalizer.lift
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
               rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π];
+              -- ⊢ NatTrans.app (BinaryFan.mk (NatTrans.app s.π WalkingCospan.left) (NatTrans.a …
                 exact PullbackCone.condition _)
+                -- 🎉 no goals
           (by simp) (by simp) fun s m h₁ h₂ => by
+              -- 🎉 no goals
+                        -- 🎉 no goals
           ext
+          -- ⊢ (m ≫ equalizer.ι (π₁ ≫ f) (π₂ ≫ g)) ≫ prod.fst = ((fun s => equalizer.lift ( …
           · dsimp; simpa using h₁
+            -- ⊢ (m ≫ equalizer.ι (prod.fst ≫ f) (prod.snd ≫ g)) ≫ prod.fst = (equalizer.lift …
+                   -- 🎉 no goals
           · simpa using h₂ }
+            -- 🎉 no goals
 #align category_theory.limits.has_limit_cospan_of_has_limit_pair_of_has_limit_parallel_pair CategoryTheory.Limits.hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
 
 section
@@ -71,16 +81,24 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
     { cocone :=
         PushoutCocone.mk (ι₁ ≫ c) (ι₂ ≫ c) <| by
           rw [← Category.assoc, ← Category.assoc, coequalizer.condition]
+          -- 🎉 no goals
       isColimit :=
         PushoutCocone.IsColimit.mk _
           (fun s => coequalizer.desc
               (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <| by
             rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc]
+            -- ⊢ f ≫ NatTrans.app (BinaryCofan.mk (NatTrans.app s.ι WalkingSpan.left) (NatTra …
             exact PushoutCocone.condition _)
+            -- 🎉 no goals
           (by simp) (by simp) fun s m h₁ h₂ => by
+              -- 🎉 no goals
+                        -- 🎉 no goals
           ext
+          -- ⊢ coprod.inl ≫ coequalizer.π (f ≫ ι₁) (g ≫ ι₂) ≫ m = coprod.inl ≫ coequalizer. …
           · simpa using h₁
+            -- 🎉 no goals
           · simpa using h₂ }
+            -- 🎉 no goals
 #align category_theory.limits.has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair CategoryTheory.Limits.hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair
 
 section

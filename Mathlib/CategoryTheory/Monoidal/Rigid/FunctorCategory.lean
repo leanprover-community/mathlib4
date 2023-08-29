@@ -30,17 +30,20 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
     { obj := fun X => (F.obj X)ᘁ
       map := fun f => (F.map (inv f))ᘁ
       map_comp := fun f g => by simp [comp_rightAdjointMate] }
+                                -- 🎉 no goals
   exact :=
     { evaluation' :=
         { app := fun X => ε_ _ _
           naturality := fun X Y f => by
             dsimp
+            -- ⊢ (F.map (inv f)ᘁ ⊗ F.map f) ≫ ε_ (F.obj Y) (F.obj Y)ᘁ = ε_ (F.obj X) (F.obj X …
             rw [Category.comp_id, Functor.map_inv, ← id_tensor_comp_tensor_id, Category.assoc,
               rightAdjointMate_comp_evaluation, ← Category.assoc, ← id_tensor_comp,
               IsIso.hom_inv_id, tensor_id, Category.id_comp] }
       coevaluation' :=
         { app := fun X => η_ _ _
           naturality := fun X Y f => by
+            -- ⊢ 𝟙 (𝟙_ D) ≫ η_ (F.obj Y) (F.obj Y)ᘁ = η_ (F.obj X) (F.obj X)ᘁ ≫ (F.map f ⊗ F. …
             dsimp
             rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id, ← Category.assoc,
               coevaluation_comp_rightAdjointMate, Category.assoc, ← comp_tensor_id,
@@ -55,17 +58,20 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
     { obj := fun X => ᘁ(F.obj X)
       map := fun f => ᘁ(F.map (inv f))
       map_comp := fun f g => by simp [comp_leftAdjointMate] }
+                                -- 🎉 no goals
   exact :=
     { evaluation' :=
         { app := fun X => ε_ _ _
           naturality := fun X Y f => by
             dsimp
+            -- ⊢ (F.map f ⊗ ᘁF.map (inv f)) ≫ ε_ (ᘁ(F.obj Y)) (F.obj Y) = ε_ (ᘁ(F.obj X)) (F. …
             rw [Category.comp_id, Functor.map_inv, ← tensor_id_comp_id_tensor, Category.assoc,
               leftAdjointMate_comp_evaluation, ← Category.assoc, ← comp_tensor_id,
               IsIso.hom_inv_id, tensor_id, Category.id_comp] }
       coevaluation' :=
         { app := fun X => η_ _ _
           naturality := fun X Y f => by
+            -- ⊢ 𝟙 (𝟙_ D) ≫ η_ (ᘁ(F.obj Y)) (F.obj Y) = η_ (ᘁ(F.obj X)) (F.obj X) ≫ ((ᘁF.map  …
             dsimp
             rw [Functor.map_inv, Category.id_comp, ← tensor_id_comp_id_tensor, ← Category.assoc,
               coevaluation_comp_leftAdjointMate, Category.assoc, ← id_tensor_comp,

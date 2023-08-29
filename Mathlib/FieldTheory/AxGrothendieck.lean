@@ -35,6 +35,7 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     (hinj : Injective fun v i => MvPolynomial.eval v (ps i)) :
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
   have is_int : ∀ x : R, IsIntegral K x := fun x => isAlgebraic_iff_isIntegral.1 (alg x)
+  -- ⊢ Surjective fun v i => ↑(MvPolynomial.eval v) (ps i)
   classical
     intro v
     cases nonempty_fintype ι

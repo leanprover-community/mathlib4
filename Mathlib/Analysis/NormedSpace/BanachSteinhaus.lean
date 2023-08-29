@@ -33,8 +33,11 @@ See also `WithSeminorms.banach_steinhaus` for the general statement in barrelled
 theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]
+  -- ⊢ UniformEquicontinuous (FunLike.coe ∘ g)
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
+  -- ⊢ BddAbove (range fun i => ↑(normSeminorm 𝕜₂ F) (↑(g i) x))
   simpa [bddAbove_def, forall_range_iff] using h x
+  -- 🎉 no goals
 #align banach_steinhaus banach_steinhaus
 
 open ENNReal
@@ -46,7 +49,9 @@ for convenience. -/
 theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ := by
   rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 8 2]
+  -- ⊢ UniformEquicontinuous (FunLike.coe ∘ g)
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
+  -- ⊢ BddAbove (range fun i => ↑(normSeminorm 𝕜₂ F) (↑(g i) x))
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using
     (WithTop.iSup_coe_lt_top (fun i ↦ ‖g i x‖₊)).mp (h x)
 #align banach_steinhaus_supr_nnnorm banach_steinhaus_iSup_nnnorm

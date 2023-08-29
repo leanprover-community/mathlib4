@@ -80,55 +80,81 @@ def moveRight (b : Board) (m : ℤ × ℤ) : Board :=
 theorem fst_pred_mem_erase_of_mem_right {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
     (m.1 - 1, m.2) ∈ b.erase m := by
   rw [mem_right] at h
+  -- ⊢ (m.fst - 1, m.snd) ∈ Finset.erase b m
   apply Finset.mem_erase_of_ne_of_mem _ h.2
+  -- ⊢ (m.fst - 1, m.snd) ≠ m
   exact ne_of_apply_ne Prod.fst (pred_ne_self m.1)
+  -- 🎉 no goals
 #align pgame.domineering.fst_pred_mem_erase_of_mem_right PGame.Domineering.fst_pred_mem_erase_of_mem_right
 
 theorem snd_pred_mem_erase_of_mem_left {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
     (m.1, m.2 - 1) ∈ b.erase m := by
   rw [mem_left] at h
+  -- ⊢ (m.fst, m.snd - 1) ∈ Finset.erase b m
   apply Finset.mem_erase_of_ne_of_mem _ h.2
+  -- ⊢ (m.fst, m.snd - 1) ≠ m
   exact ne_of_apply_ne Prod.snd (pred_ne_self m.2)
+  -- 🎉 no goals
 #align pgame.domineering.snd_pred_mem_erase_of_mem_left PGame.Domineering.snd_pred_mem_erase_of_mem_left
 
 theorem card_of_mem_left {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) : 2 ≤ Finset.card b := by
   have w₁ : m ∈ b := (Finset.mem_inter.1 h).1
+  -- ⊢ 2 ≤ Finset.card b
   have w₂ : (m.1, m.2 - 1) ∈ b.erase m := snd_pred_mem_erase_of_mem_left h
+  -- ⊢ 2 ≤ Finset.card b
   have i₁ := Finset.card_erase_lt_of_mem w₁
+  -- ⊢ 2 ≤ Finset.card b
   have i₂ := Nat.lt_of_le_of_lt (Nat.zero_le _) (Finset.card_erase_lt_of_mem w₂)
+  -- ⊢ 2 ≤ Finset.card b
   exact Nat.lt_of_le_of_lt i₂ i₁
+  -- 🎉 no goals
 #align pgame.domineering.card_of_mem_left PGame.Domineering.card_of_mem_left
 
 theorem card_of_mem_right {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) : 2 ≤ Finset.card b := by
   have w₁ : m ∈ b := (Finset.mem_inter.1 h).1
+  -- ⊢ 2 ≤ Finset.card b
   have w₂ := fst_pred_mem_erase_of_mem_right h
+  -- ⊢ 2 ≤ Finset.card b
   have i₁ := Finset.card_erase_lt_of_mem w₁
+  -- ⊢ 2 ≤ Finset.card b
   have i₂ := Nat.lt_of_le_of_lt (Nat.zero_le _) (Finset.card_erase_lt_of_mem w₂)
+  -- ⊢ 2 ≤ Finset.card b
   exact Nat.lt_of_le_of_lt i₂ i₁
+  -- 🎉 no goals
 #align pgame.domineering.card_of_mem_right PGame.Domineering.card_of_mem_right
 
 theorem moveLeft_card {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
     Finset.card (moveLeft b m) + 2 = Finset.card b := by
   dsimp [moveLeft]
+  -- ⊢ Finset.card (Finset.erase (Finset.erase b m) (m.fst, m.snd - 1)) + 2 = Finse …
   rw [Finset.card_erase_of_mem (snd_pred_mem_erase_of_mem_left h)]
+  -- ⊢ Finset.card (Finset.erase b m) - 1 + 2 = Finset.card b
   rw [Finset.card_erase_of_mem (Finset.mem_of_mem_inter_left h)]
+  -- ⊢ Finset.card b - 1 - 1 + 2 = Finset.card b
   exact tsub_add_cancel_of_le (card_of_mem_left h)
+  -- 🎉 no goals
 #align pgame.domineering.move_left_card PGame.Domineering.moveLeft_card
 
 theorem moveRight_card {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
     Finset.card (moveRight b m) + 2 = Finset.card b := by
   dsimp [moveRight]
+  -- ⊢ Finset.card (Finset.erase (Finset.erase b m) (m.fst - 1, m.snd)) + 2 = Finse …
   rw [Finset.card_erase_of_mem (fst_pred_mem_erase_of_mem_right h)]
+  -- ⊢ Finset.card (Finset.erase b m) - 1 + 2 = Finset.card b
   rw [Finset.card_erase_of_mem (Finset.mem_of_mem_inter_left h)]
+  -- ⊢ Finset.card b - 1 - 1 + 2 = Finset.card b
   exact tsub_add_cancel_of_le (card_of_mem_right h)
+  -- 🎉 no goals
 #align pgame.domineering.move_right_card PGame.Domineering.moveRight_card
 
 theorem moveLeft_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
     Finset.card (moveLeft b m) / 2 < Finset.card b / 2 := by simp [← moveLeft_card h, lt_add_one]
+                                                             -- 🎉 no goals
 #align pgame.domineering.move_left_smaller PGame.Domineering.moveLeft_smaller
 
 theorem moveRight_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
     Finset.card (moveRight b m) / 2 < Finset.card b / 2 := by simp [← moveRight_card h, lt_add_one]
+                                                              -- 🎉 no goals
 #align pgame.domineering.move_right_smaller PGame.Domineering.moveRight_smaller
 
 /-- The instance describing allowed moves on a Domineering board. -/
@@ -138,12 +164,18 @@ instance state : State Board where
   r s := (right s).image (moveRight s)
   left_bound m := by
     simp only [Finset.mem_image, Prod.exists] at m
+    -- ⊢ (fun s => Finset.card s / 2) t✝ < (fun s => Finset.card s / 2) s✝
     rcases m with ⟨_, _, ⟨h, rfl⟩⟩
+    -- ⊢ (fun s => Finset.card s / 2) (moveLeft s✝ (w✝¹, w✝)) < (fun s => Finset.card …
     exact moveLeft_smaller h
+    -- 🎉 no goals
   right_bound m := by
     simp only [Finset.mem_image, Prod.exists] at m
+    -- ⊢ (fun s => Finset.card s / 2) t✝ < (fun s => Finset.card s / 2) s✝
     rcases m with ⟨_, _, ⟨h, rfl⟩⟩
+    -- ⊢ (fun s => Finset.card s / 2) (moveRight s✝ (w✝¹, w✝)) < (fun s => Finset.car …
     exact moveRight_smaller h
+    -- 🎉 no goals
 #align pgame.domineering.state PGame.Domineering.state
 
 end Domineering
@@ -156,7 +188,9 @@ def domineering (b : Domineering.Board) : PGame :=
 /-- All games of Domineering are short, because each move removes two squares. -/
 instance shortDomineering (b : Domineering.Board) : Short (domineering b) := by
   dsimp [domineering]
+  -- ⊢ Short (ofState b)
   infer_instance
+  -- 🎉 no goals
 #align pgame.short_domineering PGame.shortDomineering
 
 /-- The Domineering board with two squares arranged vertically, in which Left has the only move. -/
@@ -171,9 +205,13 @@ set_option linter.uppercaseLean3 false in
 #align pgame.domineering.L PGame.domineering.L
 
 instance shortOne : Short domineering.one := by dsimp [domineering.one]; infer_instance
+                                                -- ⊢ Short (domineering (List.toFinset [(0, 0), (0, 1)]))
+                                                                         -- 🎉 no goals
 #align pgame.short_one PGame.shortOne
 
 instance shortL : Short domineering.L := by dsimp [domineering.L]; infer_instance
+                                            -- ⊢ Short (domineering (List.toFinset [(0, 2), (0, 1), (0, 0), (1, 0)]))
+                                                                   -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align pgame.short_L PGame.shortL
 

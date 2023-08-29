@@ -80,6 +80,7 @@ variable {D : Type u₂} [Category.{v} D]
 theorem wellPowered_of_equiv (e : C ≌ D) [WellPowered C] : WellPowered D :=
   wellPowered_of_essentiallySmall_monoOver fun X =>
     (essentiallySmall_congr (MonoOver.congr X e.symm)).2 <| by infer_instance
+                                                               -- 🎉 no goals
 #align category_theory.well_powered_of_equiv CategoryTheory.wellPowered_of_equiv
 
 /-- Being well-powered is preserved by equivalences, as long as the two categories involved have

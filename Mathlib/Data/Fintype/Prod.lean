@@ -31,18 +31,22 @@ variable {s t : Set α}
 theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
     (s ×ˢ t).toFinset = s.toFinset ×ˢ t.toFinset := by
   ext
+  -- ⊢ a✝ ∈ toFinset (s ×ˢ t) ↔ a✝ ∈ toFinset s ×ˢ toFinset t
   simp
+  -- 🎉 no goals
 #align set.to_finset_prod Set.toFinset_prod
 
 theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
+                   -- 🎉 no goals
 #align set.to_finset_off_diag Set.toFinset_off_diag
 
 end Set
 
 instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
+                                  -- 🎉 no goals
 
 @[simp]
 theorem Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
@@ -66,17 +70,28 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
     ⟨fun H => _, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
   rw [and_comm]; contrapose! H; intro H'
+  -- ⊢ Nonempty β ∧ Infinite α ∨ Nonempty α ∧ Infinite β
+                 -- ⊢ ¬Infinite (α × β)
+                                -- ⊢ False
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩
+  -- ⊢ False
   haveI := fintypeOfNotInfinite (H.1 ⟨b⟩); haveI := fintypeOfNotInfinite (H.2 ⟨a⟩)
+  -- ⊢ False
+                                           -- ⊢ False
   exact H'.false
+  -- 🎉 no goals
 #align infinite_prod infinite_prod
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
   choose m n hm using fun i => exists_pair_ne (π i)
+  -- ⊢ Infinite ((i : ι) → π i)
   refine' Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => _
+  -- ⊢ False
   simp_rw [update_eq_iff, update_noteq hne] at h
+  -- ⊢ False
   exact (hm x h.1.symm).elim
+  -- 🎉 no goals
 #align pi.infinite_of_left Pi.infinite_of_left
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/

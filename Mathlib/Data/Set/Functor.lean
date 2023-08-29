@@ -56,13 +56,16 @@ because of the lack of universe polymorphism. -/
 theorem image2_def {α β γ : Type _} (f : α → β → γ) (s : Set α) (t : Set β) :
     image2 f s t = f <$> s <*> t := by
   ext
+  -- ⊢ x✝ ∈ image2 f s t ↔ x✝ ∈ Seq.seq (f <$> s) fun x => t
   simp
+  -- 🎉 no goals
 #align set.image2_def Set.image2_def
 
 instance : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
   (pure_bind := biUnion_singleton)
   (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
+                                 -- 🎉 no goals
   (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
   (bind_map := fun _ _ => seq_def.symm)
 
@@ -83,9 +86,13 @@ theorem mem_coe_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : 
 
 theorem coe_subset : (γ : Set α) ⊆ β := by
   intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
+  -- ⊢ a✝ ∈ β
+                                                 -- 🎉 no goals
 
 theorem mem_of_mem_coe (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
   rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
+  -- ⊢ { val := a, property := (_ : a ∈ β) } ∈ γ
+                                                 -- 🎉 no goals
 
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha

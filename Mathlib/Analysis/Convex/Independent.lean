@@ -63,17 +63,24 @@ variable {𝕜}
 /-- A family with at most one point is convex independent. -/
 theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : ConvexIndependent 𝕜 p := by
   intro s x hx
+  -- ⊢ x ∈ s
   have : (convexHull 𝕜 (p '' s)).Nonempty := ⟨p x, hx⟩
+  -- ⊢ x ∈ s
   rw [convexHull_nonempty_iff, Set.nonempty_image_iff] at this
+  -- ⊢ x ∈ s
   rwa [Subsingleton.mem_iff_nonempty]
+  -- 🎉 no goals
 #align subsingleton.convex_independent Subsingleton.convexIndependent
 
 /-- A convex independent family is injective. -/
 protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     Function.Injective p := by
   refine' fun i j hij => hc {j} i _
+  -- ⊢ p i ∈ ↑(convexHull 𝕜) (p '' {j})
   rw [hij, Set.image_singleton, convexHull_singleton]
+  -- ⊢ p j ∈ {p j}
   exact Set.mem_singleton _
+  -- 🎉 no goals
 #align convex_independent.injective ConvexIndependent.injective
 
 /-- If a family is convex independent, so is any subfamily given by composition of an embedding into
@@ -81,8 +88,11 @@ index type with the original family. -/
 theorem ConvexIndependent.comp_embedding {ι' : Type*} (f : ι' ↪ ι) {p : ι → E}
     (hc : ConvexIndependent 𝕜 p) : ConvexIndependent 𝕜 (p ∘ f) := by
   intro s x hx
+  -- ⊢ x ∈ s
   rw [← f.injective.mem_set_image]
+  -- ⊢ ↑f x ∈ ↑f '' s
   exact hc _ _ (by rwa [Set.image_image])
+  -- 🎉 no goals
 #align convex_independent.comp_embedding ConvexIndependent.comp_embedding
 
 /-- If a family is convex independent, so is any subfamily indexed by a subtype of the index type.
@@ -96,11 +106,17 @@ protected theorem ConvexIndependent.subtype {p : ι → E} (hc : ConvexIndepende
 protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     ConvexIndependent 𝕜 ((↑) : Set.range p → E) := by
   let f : Set.range p → ι := fun x => x.property.choose
+  -- ⊢ ConvexIndependent 𝕜 Subtype.val
   have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
+  -- ⊢ ConvexIndependent 𝕜 Subtype.val
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
+  -- ⊢ ConvexIndependent 𝕜 Subtype.val
   convert hc.comp_embedding fe
+  -- ⊢ Subtype.val = p ∘ ↑fe
   ext
+  -- ⊢ ↑x✝ = (p ∘ ↑fe) x✝
   rw [Embedding.coeFn_mk, comp_apply, hf]
+  -- 🎉 no goals
 #align convex_independent.range ConvexIndependent.range
 
 /-- A subset of a convex independent set of points is convex independent as well. -/
@@ -132,24 +148,39 @@ points. See `convexIndependent_set_iff_not_mem_convexHull_diff` for the `Set` ve
 theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
   refine' ⟨fun hc i s h => _, fun h s i hi => _⟩
+  -- ⊢ False
   · rw [hc.mem_convexHull_iff] at h
+    -- ⊢ False
     exact h.2 (Set.mem_singleton _)
+    -- 🎉 no goals
   · by_contra H
+    -- ⊢ False
     refine' h i s _
+    -- ⊢ p i ∈ ↑(convexHull 𝕜) (p '' (s \ {i}))
     rw [Set.diff_singleton_eq_self H]
+    -- ⊢ p i ∈ ↑(convexHull 𝕜) (p '' s)
     exact hi
+    -- 🎉 no goals
 #align convex_independent_iff_not_mem_convex_hull_diff convexIndependent_iff_not_mem_convexHull_diff
 
 theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ t, t ⊆ s → s ∩ convexHull 𝕜 t ⊆ t := by
   constructor
+  -- ⊢ ConvexIndependent 𝕜 Subtype.val → ∀ (t : Set E), t ⊆ s → s ∩ ↑(convexHull 𝕜) …
   · rintro hc t h x ⟨hxs, hxt⟩
+    -- ⊢ x ∈ t
     refine' hc { x | ↑x ∈ t } ⟨x, hxs⟩ _
+    -- ⊢ ↑{ val := x, property := hxs } ∈ ↑(convexHull 𝕜) (Subtype.val '' {x | ↑x ∈ t})
     rw [Subtype.coe_image_of_subset h]
+    -- ⊢ ↑{ val := x, property := hxs } ∈ ↑(convexHull 𝕜) t
     exact hxt
+    -- 🎉 no goals
   · intro hc t x h
+    -- ⊢ x ∈ t
     rw [← Subtype.coe_injective.mem_set_image]
+    -- ⊢ ↑x ∈ (fun a => ↑a) '' t
     exact hc (t.image ((↑) : s → E)) (Subtype.coe_image_subset s t) ⟨x.prop, h⟩
+    -- 🎉 no goals
 #align convex_independent_set_iff_inter_convex_hull_subset convexIndependent_set_iff_inter_convexHull_subset
 
 /-- If a set is convex independent, a point in the set is not in the convex hull of the other
@@ -157,12 +188,19 @@ points. See `convexIndependent_iff_not_mem_convexHull_diff` for the indexed fami
 theorem convexIndependent_set_iff_not_mem_convexHull_diff {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ x ∈ s, x ∉ convexHull 𝕜 (s \ {x}) := by
   rw [convexIndependent_set_iff_inter_convexHull_subset]
+  -- ⊢ (∀ (t : Set E), t ⊆ s → s ∩ ↑(convexHull 𝕜) t ⊆ t) ↔ ∀ (x : E), x ∈ s → ¬x ∈ …
   constructor
+  -- ⊢ (∀ (t : Set E), t ⊆ s → s ∩ ↑(convexHull 𝕜) t ⊆ t) → ∀ (x : E), x ∈ s → ¬x ∈ …
   · rintro hs x hxs hx
+    -- ⊢ False
     exact (hs _ (Set.diff_subset _ _) ⟨hxs, hx⟩).2 (Set.mem_singleton _)
+    -- 🎉 no goals
   · rintro hs t ht x ⟨hxs, hxt⟩
+    -- ⊢ x ∈ t
     by_contra h
+    -- ⊢ False
     exact hs _ hxs (convexHull_mono (Set.subset_diff_singleton ht h) hxt)
+    -- 🎉 no goals
 #align convex_independent_set_iff_not_mem_convex_hull_diff convexIndependent_set_iff_not_mem_convexHull_diff
 
 end OrderedSemiring
@@ -176,7 +214,9 @@ theorem convexIndependent_iff_finset {p : ι → E} :
     ConvexIndependent 𝕜 p ↔
       ∀ (s : Finset ι) (x : ι), p x ∈ convexHull 𝕜 (s.image p : Set E) → x ∈ s := by
   refine' ⟨fun hc s x hx => hc s x _, fun h s x hx => _⟩
+  -- ⊢ p x ∈ ↑(convexHull 𝕜) (p '' ↑s)
   · rwa [Finset.coe_image] at hx
+    -- 🎉 no goals
   have hp : Injective p := by
     rintro a b hab
     rw [← mem_singleton]
@@ -184,14 +224,23 @@ theorem convexIndependent_iff_finset {p : ι → E} :
     rw [hab, image_singleton, coe_singleton, convexHull_singleton]
     exact Set.mem_singleton _
   rw [convexHull_eq_union_convexHull_finite_subsets] at hx
+  -- ⊢ x ∈ s
   simp_rw [Set.mem_iUnion] at hx
+  -- ⊢ x ∈ s
   obtain ⟨t, ht, hx⟩ := hx
+  -- ⊢ x ∈ s
   rw [← hp.mem_set_image]
+  -- ⊢ p x ∈ p '' s
   refine' ht _
+  -- ⊢ p x ∈ ↑t
   suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
+  -- ⊢ x ∈ preimage t p (_ : Set.InjOn p (p ⁻¹' ↑t))
   refine' h _ x _
+  -- ⊢ p x ∈ ↑(convexHull 𝕜) ↑(image p (preimage t p (_ : Set.InjOn p (p ⁻¹' ↑t))))
   rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]
+  -- ⊢ ∀ (x : E), x ∈ t → x ∈ Set.range p
   · exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
+    -- 🎉 no goals
 #align convex_independent_iff_finset convexIndependent_iff_finset
 
 /-! ### Extreme points -/

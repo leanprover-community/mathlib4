@@ -59,8 +59,11 @@ open NormedField
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
   simp only [HasStrictFDerivAt]
+  -- ⊢ (fun p_1 => b p_1.fst - b p_1.snd - ↑(deriv h p) (p_1.fst - p_1.snd)) =o[𝓝 ( …
   simp only [← map_add_left_nhds_zero (p, p), isLittleO_map]
+  -- ⊢ ((fun p_1 => b p_1.fst - b p_1.snd - ↑(deriv h p) (p_1.fst - p_1.snd)) ∘ fun …
   set T := (E × F) × E × F
+  -- ⊢ ((fun p_1 => b p_1.fst - b p_1.snd - ↑(deriv h p) (p_1.fst - p_1.snd)) ∘ fun …
   calc
     _ = fun x ↦ h.deriv (x.1 - x.2) (x.2.1, x.1.2) := by
       ext ⟨⟨x₁, y₁⟩, ⟨x₂, y₂⟩⟩
@@ -109,7 +112,9 @@ protected theorem IsBoundedBilinearMap.fderiv (h : IsBoundedBilinearMap 𝕜 b) 
 protected theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap 𝕜 b) (p : E × F)
     (hxs : UniqueDiffWithinAt 𝕜 u p) : fderivWithin 𝕜 b u p = h.deriv p := by
   rw [DifferentiableAt.fderivWithin (h.differentiableAt p) hxs]
+  -- ⊢ fderiv 𝕜 b p = deriv h p
   exact h.fderiv p
+  -- 🎉 no goals
 #align is_bounded_bilinear_map.fderiv_within IsBoundedBilinearMap.fderivWithin
 
 theorem IsBoundedBilinearMap.differentiable (h : IsBoundedBilinearMap 𝕜 b) : Differentiable 𝕜 b :=

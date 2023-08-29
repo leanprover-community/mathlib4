@@ -56,17 +56,25 @@ theorem out_proof {p : Prop} (a : Erased p) : p :=
 @[simp]
 theorem out_mk {α} (a : α) : (mk a).out = a := by
   let h := (mk a).2; show Classical.choose h = a
+  -- ⊢ out (mk a) = a
+                     -- ⊢ Classical.choose h = a
   have := Classical.choose_spec h
+  -- ⊢ Classical.choose h = a
   exact cast (congr_fun this a).symm rfl
+  -- 🎉 no goals
 #align erased.out_mk Erased.out_mk
 
 @[simp]
 theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
   | ⟨s, h⟩ => by simp [mk]; congr; exact Classical.choose_spec h
+                 -- ⊢ { fst := fun b => out { fst := s, snd := h } = b, snd := (_ : ∃ a, (fun b => …
+                            -- ⊢ (fun b => out { fst := s, snd := h } = b) = s
+                                   -- 🎉 no goals
 #align erased.mk_out Erased.mk_out
 
 @[ext]
 theorem out_inj {α} (a b : Erased α) (h : a.out = b.out) : a = b := by simpa using congr_arg mk h
+                                                                       -- 🎉 no goals
 #align erased.out_inj Erased.out_inj
 
 /-- Equivalence between `Erased α` and `α`. -/
@@ -130,6 +138,7 @@ def map {α β} (f : α → β) (a : Erased α) : Erased β :=
 
 @[simp]
 theorem map_out {α β} {f : α → β} (a : Erased α) : (a.map f).out = f a.out := by simp [map]
+                                                                                 -- 🎉 no goals
 #align erased.map_out Erased.map_out
 
 protected instance Monad : Monad Erased where
@@ -157,9 +166,36 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
 protected instance LawfulMonad : LawfulMonad Erased :=
   { Erased.Monad with
     id_map := by intros; ext; simp
+                 -- ⊢ id <$> x✝ = x✝
+                    -- ⊢ Functor.mapConst = Functor.map ∘ Function.const β✝
+                            -- ⊢ out (Functor.mapConst x✝¹ x✝) = out ((Functor.map ∘ Function.const β✝) x✝¹ x✝)
+                                 -- 🎉 no goals
+                         -- ⊢ out (id <$> x✝) = out x✝
+                              -- 🎉 no goals
     map_const := by intros; ext; simp [Functor.mapConst]
     pure_bind := by intros; ext; simp
+                    -- ⊢ pure x✝ >>= f✝ = f✝ x✝
+                            -- ⊢ out (pure x✝ >>= f✝) = out (f✝ x✝)
+                         -- ⊢ (do
+                                 -- ⊢ (out do
+                     -- ⊢ (SeqLeft.seqLeft x✝ fun x => y✝) = Seq.seq (Function.const β✝ <$> x✝) fun x  …
+                             -- ⊢ out (SeqLeft.seqLeft x✝ fun x => y✝) = out (Seq.seq (Function.const β✝ <$> x …
+                                  -- 🎉 no goals
+                                      -- 🎉 no goals
+                      -- ⊢ (SeqRight.seqRight x✝ fun x => y✝) = Seq.seq (Function.const α✝ id <$> x✝) f …
+                              -- ⊢ out (SeqRight.seqRight x✝ fun x => y✝) = out (Seq.seq (Function.const α✝ id  …
+                                   -- 🎉 no goals
+                                 -- 🎉 no goals
+                   -- ⊢ (Seq.seq (pure g✝) fun x => x✝) = g✝ <$> x✝
+                           -- ⊢ out (Seq.seq (pure g✝) fun x => x✝) = out (g✝ <$> x✝)
+                                -- 🎉 no goals
+                   -- ⊢ (do
+                           -- ⊢ (out do
+                                -- 🎉 no goals
     bind_assoc := by intros; ext; simp
+                     -- ⊢ x✝ >>= f✝ >>= g✝ = x✝ >>= fun x => f✝ x >>= g✝
+                             -- ⊢ out (x✝ >>= f✝ >>= g✝) = out (x✝ >>= fun x => f✝ x >>= g✝)
+                                  -- 🎉 no goals
     bind_pure_comp := by intros; ext; simp
     bind_map := by intros; ext; simp [Seq.seq]
     seqLeft_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqLeft.seqLeft]

@@ -80,9 +80,14 @@ instance : MvQPF (Comp F G) where
   repr {α} := MvPFunctor.comp.mk ∘ repr ∘
               (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
   abs_repr := by intros; simp only [(· ∘ ·), comp.get_mk, abs_repr, map_map,
+                 -- ⊢ (fun {α} => Comp.mk ∘ (MvFunctor.map fun i => abs) ∘ abs ∘ comp.get) ((fun { …
                                     TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
   abs_map := by intros; simp only [(· ∘ ·)]; rw [← abs_map]
+                -- ⊢ (fun {α} => Comp.mk ∘ (MvFunctor.map fun i => abs) ∘ abs ∘ comp.get) (f✝ <$$ …
+                        -- ⊢ Comp.mk ((fun i => abs) <$$> abs (comp.get (f✝ <$$> p✝))) = f✝ <$$> Comp.mk  …
+                                             -- ⊢ Comp.mk (abs ((fun i => abs) <$$> comp.get (f✝ <$$> p✝))) = f✝ <$$> Comp.mk  …
                 simp only [comp.get_map, map_map, TypeVec.comp, abs_map, map_mk]
+                -- 🎉 no goals
 
 end Comp
 

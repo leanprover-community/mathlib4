@@ -52,6 +52,12 @@ theorem exists_bounded_mem_Icc_of_closed_of_le {X : Type*} [TopologicalSpace X] 
     ∀ x, f x ∈ Icc a b :=
   let ⟨f, hfs, hft, hf01⟩ := exists_bounded_zero_one_of_closed hs ht hd
   ⟨BoundedContinuousFunction.const X a + (b - a) • f, fun x hx => by simp [hfs hx], fun x hx => by
+                                                                     -- 🎉 no goals
     simp [hft hx], fun x =>
+    -- 🎉 no goals
     ⟨by dsimp; nlinarith [(hf01 x).1], by dsimp; nlinarith [(hf01 x).2]⟩⟩
+        -- ⊢ a ≤ a + (b - a) * ↑f x
+               -- 🎉 no goals
+                                          -- ⊢ a + (b - a) * ↑f x ≤ b
+                                                 -- 🎉 no goals
 #align exists_bounded_mem_Icc_of_closed_of_le exists_bounded_mem_Icc_of_closed_of_le

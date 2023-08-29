@@ -75,26 +75,37 @@ instance oreSetBot : OreSet (⊥ : Submonoid R)
   ore_left_cancel _ _ s h :=
     ⟨s, by
       rcases s with ⟨s, hs⟩
+      -- ⊢ x✝¹ * ↑{ val := s, property := hs } = x✝ * ↑{ val := s, property := hs }
       rw [Submonoid.mem_bot] at hs
+      -- ⊢ x✝¹ * ↑{ val := s, property := hs✝ } = x✝ * ↑{ val := s, property := hs✝ }
       subst hs
+      -- ⊢ x✝¹ * ↑{ val := 1, property := hs } = x✝ * ↑{ val := 1, property := hs }
       rw [one_mul, one_mul] at h
+      -- ⊢ x✝¹ * ↑{ val := 1, property := hs } = x✝ * ↑{ val := 1, property := hs }
       subst h
+      -- ⊢ x✝ * ↑{ val := 1, property := hs } = x✝ * ↑{ val := 1, property := hs }
       rfl⟩
+      -- 🎉 no goals
   oreNum r _ := r
   oreDenom _ s := s
   ore_eq _ s := by
     rcases s with ⟨s, hs⟩
+    -- ⊢ x✝ * ↑((fun x s => s) x✝ { val := s, property := hs }) = ↑{ val := s, proper …
     rw [Submonoid.mem_bot] at hs
+    -- ⊢ x✝ * ↑((fun x s => s) x✝ { val := s, property := hs✝ }) = ↑{ val := s, prope …
     simp [hs]
+    -- 🎉 no goals
 #align ore_localization.ore_set_bot OreLocalization.oreSetBot
 
 /-- Every submonoid of a commutative monoid is an Ore set. -/
 instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S
     where
   ore_left_cancel m n s h := ⟨s, by rw [mul_comm n s, mul_comm m s, h]⟩
+                                    -- 🎉 no goals
   oreNum r _ := r
   oreDenom _ s := s
   ore_eq r s := by rw [mul_comm]
+                   -- 🎉 no goals
 #align ore_localization.ore_set_comm OreLocalization.oreSetComm
 
 end Monoid

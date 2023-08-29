@@ -35,16 +35,24 @@ instance : LocallyFiniteOrder (Finset α)
   finsetIoo s t := t.ssubsets.filter ((· ⊂ ·) s)
   finset_mem_Icc s t u := by
     rw [mem_filter, mem_powerset]
+    -- ⊢ u ⊆ t ∧ (fun x x_1 => x ⊆ x_1) s u ↔ s ≤ u ∧ u ≤ t
     exact and_comm
+    -- 🎉 no goals
   finset_mem_Ico s t u := by
     rw [mem_filter, mem_ssubsets]
+    -- ⊢ u ⊂ t ∧ (fun x x_1 => x ⊆ x_1) s u ↔ s ≤ u ∧ u < t
     exact and_comm
+    -- 🎉 no goals
   finset_mem_Ioc s t u := by
     rw [mem_filter, mem_powerset]
+    -- ⊢ u ⊆ t ∧ (fun x x_1 => x ⊂ x_1) s u ↔ s < u ∧ u ≤ t
     exact and_comm
+    -- 🎉 no goals
   finset_mem_Ioo s t u := by
     rw [mem_filter, mem_ssubsets]
+    -- ⊢ u ⊂ t ∧ (fun x x_1 => x ⊂ x_1) s u ↔ s < u ∧ u < t
     exact and_comm
+    -- 🎉 no goals
 
 theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter ((· ⊆ ·) s) :=
   rfl
@@ -74,29 +82,46 @@ variable {s t}
 
 theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
   ext u
+  -- ⊢ u ∈ Icc s t ↔ u ∈ image ((fun x x_1 => x ∪ x_1) s) (powerset (t \ s))
   simp_rw [mem_Icc, mem_image, mem_powerset]
+  -- ⊢ s ≤ u ∧ u ≤ t ↔ ∃ a, a ⊆ t \ s ∧ s ∪ a = u
   constructor
+  -- ⊢ s ≤ u ∧ u ≤ t → ∃ a, a ⊆ t \ s ∧ s ∪ a = u
   · rintro ⟨hs, ht⟩
+    -- ⊢ ∃ a, a ⊆ t \ s ∧ s ∪ a = u
     exact ⟨u \ s, sdiff_le_sdiff_right ht, sup_sdiff_cancel_right hs⟩
+    -- 🎉 no goals
   · rintro ⟨v, hv, rfl⟩
+    -- ⊢ s ≤ s ∪ v ∧ s ∪ v ≤ t
     exact ⟨le_sup_left, union_subset h <| hv.trans <| sdiff_subset _ _⟩
+    -- 🎉 no goals
 #align finset.Icc_eq_image_powerset Finset.Icc_eq_image_powerset
 
 theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
   ext u
+  -- ⊢ u ∈ Ico s t ↔ u ∈ image ((fun x x_1 => x ∪ x_1) s) (ssubsets (t \ s))
   simp_rw [mem_Ico, mem_image, mem_ssubsets]
+  -- ⊢ s ≤ u ∧ u < t ↔ ∃ a, a ⊂ t \ s ∧ s ∪ a = u
   constructor
+  -- ⊢ s ≤ u ∧ u < t → ∃ a, a ⊂ t \ s ∧ s ∪ a = u
   · rintro ⟨hs, ht⟩
+    -- ⊢ ∃ a, a ⊂ t \ s ∧ s ∪ a = u
     exact ⟨u \ s, sdiff_lt_sdiff_right ht hs, sup_sdiff_cancel_right hs⟩
+    -- 🎉 no goals
   · rintro ⟨v, hv, rfl⟩
+    -- ⊢ s ≤ s ∪ v ∧ s ∪ v < t
     exact ⟨le_sup_left, sup_lt_of_lt_sdiff_left hv h⟩
+    -- 🎉 no goals
 #align finset.Ico_eq_image_ssubsets Finset.Ico_eq_image_ssubsets
 
 /-- Cardinality of a non-empty `Icc` of finsets. -/
 theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
   rw [← card_sdiff h, ← card_powerset, Icc_eq_image_powerset h, Finset.card_image_iff]
+  -- ⊢ Set.InjOn ((fun x x_1 => x ∪ x_1) s) ↑(powerset (t \ s))
   rintro u hu v hv (huv : s ⊔ u = s ⊔ v)
+  -- ⊢ u = v
   rw [mem_coe, mem_powerset] at hu hv
+  -- ⊢ u = v
   rw [← (disjoint_sdiff.mono_right hu : Disjoint s u).sup_sdiff_cancel_left, ←
     (disjoint_sdiff.mono_right hv : Disjoint s v).sup_sdiff_cancel_left, huv]
 #align finset.card_Icc_finset Finset.card_Icc_finset
@@ -104,25 +129,30 @@ theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) :
 /-- Cardinality of an `Ico` of finsets. -/
 theorem card_Ico_finset (h : s ⊆ t) : (Ico s t).card = 2 ^ (t.card - s.card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc_finset h]
+  -- 🎉 no goals
 #align finset.card_Ico_finset Finset.card_Ico_finset
 
 /-- Cardinality of an `Ioc` of finsets. -/
 theorem card_Ioc_finset (h : s ⊆ t) : (Ioc s t).card = 2 ^ (t.card - s.card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc_finset h]
+  -- 🎉 no goals
 #align finset.card_Ioc_finset Finset.card_Ioc_finset
 
 /-- Cardinality of an `Ioo` of finsets. -/
 theorem card_Ioo_finset (h : s ⊆ t) : (Ioo s t).card = 2 ^ (t.card - s.card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc_finset h]
+  -- 🎉 no goals
 #align finset.card_Ioo_finset Finset.card_Ioo_finset
 
 /-- Cardinality of an `Iic` of finsets. -/
 theorem card_Iic_finset : (Iic s).card = 2 ^ s.card := by rw [Iic_eq_powerset, card_powerset]
+                                                          -- 🎉 no goals
 #align finset.card_Iic_finset Finset.card_Iic_finset
 
 /-- Cardinality of an `Iio` of finsets. -/
 theorem card_Iio_finset : (Iio s).card = 2 ^ s.card - 1 := by
   rw [Iio_eq_ssubsets, ssubsets, card_erase_of_mem (mem_powerset_self _), card_powerset]
+  -- 🎉 no goals
 #align finset.card_Iio_finset Finset.card_Iio_finset
 
 end Finset

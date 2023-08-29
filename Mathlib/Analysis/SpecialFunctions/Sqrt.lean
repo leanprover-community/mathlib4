@@ -46,14 +46,20 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by
   cases' hx.lt_or_lt with hx hx
+  -- ⊢ HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ (n : ℕ∞), ContDiffAt ℝ n sqrt x
   · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
+    -- ⊢ HasStrictDerivAt sqrt 0 x ∧ ∀ (n : ℕ∞), ContDiffAt ℝ n sqrt x
     have : sqrt =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
+    -- ⊢ HasStrictDerivAt sqrt 0 x ∧ ∀ (n : ℕ∞), ContDiffAt ℝ n sqrt x
     exact
       ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>
         contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * sqrt x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
+    -- ⊢ HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ (n : ℕ∞), ContDiffAt ℝ n sqrt x
     constructor
+    -- ⊢ HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x
     · simpa using sqLocalHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
+      -- 🎉 no goals
     · exact fun n => sqLocalHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
         (contDiffAt_id.pow 2)
 #align real.deriv_sqrt_aux Real.deriv_sqrt_aux
@@ -87,11 +93,13 @@ theorem HasDerivWithinAt.sqrt (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) 
 theorem HasDerivAt.sqrt (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
     HasDerivAt (fun y => sqrt (f y)) (f' / (2 * sqrt (f x))) x := by
   simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasDerivAt_sqrt hx).comp x hf
+  -- 🎉 no goals
 #align has_deriv_at.sqrt HasDerivAt.sqrt
 
 theorem HasStrictDerivAt.sqrt (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
     HasStrictDerivAt (fun t => sqrt (f t)) (f' / (2 * sqrt (f x))) x := by
   simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasStrictDerivAt_sqrt hx).comp x hf
+  -- 🎉 no goals
 #align has_strict_deriv_at.sqrt HasStrictDerivAt.sqrt
 
 theorem derivWithin_sqrt (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)

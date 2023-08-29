@@ -35,29 +35,43 @@ instance {B : C} [HasPullbacks C] : HasPullbacks (Over B) := by
   letI : HasLimitsOfShape (ULiftHom.{v} (ULift.{v} WalkingCospan)) C :=
     hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
   letI : Category (ULiftHom.{v} (ULift.{v} WalkingCospan)) := inferInstance
+  -- ⊢ HasPullbacks (Over B)
   exact hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v, v} _).symm
+  -- 🎉 no goals
 
 /-- Make sure we can derive equalizers in `Over B`. -/
 instance {B : C} [HasEqualizers C] : HasEqualizers (Over B) := by
   letI : HasLimitsOfShape (ULiftHom.{v} (ULift.{v} WalkingParallelPair)) C :=
     hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
   letI : Category (ULiftHom.{v} (ULift.{v} WalkingParallelPair)) := inferInstance
+  -- ⊢ HasEqualizers (Over B)
   exact hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v, v} _).symm
+  -- 🎉 no goals
 
 instance hasFiniteLimits {B : C} [HasFiniteWidePullbacks C] : HasFiniteLimits (Over B) := by
   apply @hasFiniteLimits_of_hasEqualizers_and_finite_products _ _ ?_ ?_
+  -- ⊢ HasFiniteProducts (Over B)
   · exact ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
+    -- 🎉 no goals
   · apply @hasEqualizers_of_hasPullbacks_and_binary_products _ _ ?_ _
+    -- ⊢ HasBinaryProducts (Over B)
     · haveI : HasPullbacks C := ⟨inferInstance⟩
+      -- ⊢ HasBinaryProducts (Over B)
       exact ConstructProducts.over_binaryProduct_of_pullback
+      -- 🎉 no goals
 #align category_theory.over.has_finite_limits CategoryTheory.Over.hasFiniteLimits
 
 instance hasLimits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w} (Over B) := by
   apply @has_limits_of_hasEqualizers_and_products _ _ ?_ ?_
+  -- ⊢ HasProducts (Over B)
   · exact ConstructProducts.over_products_of_widePullbacks
+    -- 🎉 no goals
   · apply @hasEqualizers_of_hasPullbacks_and_binary_products _ _ ?_ _
+    -- ⊢ HasBinaryProducts (Over B)
     · haveI : HasPullbacks C := ⟨inferInstance⟩
+      -- ⊢ HasBinaryProducts (Over B)
       exact ConstructProducts.over_binaryProduct_of_pullback
+      -- 🎉 no goals
 #align category_theory.over.has_limits CategoryTheory.Over.hasLimits
 
 end CategoryTheory.Over

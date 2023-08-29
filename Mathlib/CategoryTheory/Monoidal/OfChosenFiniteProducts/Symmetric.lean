@@ -36,8 +36,15 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     tensorHom ℬ f g ≫ (Limits.BinaryFan.braiding (ℬ Y Y').isLimit (ℬ Y' Y).isLimit).hom =
       (Limits.BinaryFan.braiding (ℬ X X').isLimit (ℬ X' X).isLimit).hom ≫ tensorHom ℬ g f := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
+  -- ⊢ IsLimit.lift (ℬ Y Y').isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X X').cone ≫ f …
   apply (ℬ _ _).isLimit.hom_ext
+  -- ⊢ ∀ (j : Discrete WalkingPair), (IsLimit.lift (ℬ Y Y').isLimit (BinaryFan.mk ( …
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
+  -- ⊢ (IsLimit.lift (ℬ Y Y').isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X X').cone ≫  …
+                    -- ⊢ (IsLimit.lift (ℬ Y Y').isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X X').cone ≫  …
+                                                                   -- 🎉 no goals
+                    -- ⊢ (IsLimit.lift (ℬ Y Y').isLimit (BinaryFan.mk (BinaryFan.fst (ℬ X X').cone ≫  …
+                                                                   -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.braiding_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.braiding_naturality
 
 theorem hexagon_forward (X Y Z : C) :
@@ -49,10 +56,21 @@ theorem hexagon_forward (X Y Z : C) :
         (BinaryFan.associatorOfLimitCone ℬ Y X Z).hom ≫
           tensorHom ℬ (𝟙 Y) (Limits.BinaryFan.braiding (ℬ X Z).isLimit (ℬ Z X).isLimit).hom := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
+  -- ⊢ (BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫ (IsLimit.conePointUniqueUpTo …
   apply (ℬ _ _).isLimit.hom_ext; rintro ⟨⟨⟩⟩
+  -- ⊢ ∀ (j : Discrete WalkingPair), ((BinaryFan.associatorOfLimitCone ℬ X Y Z).hom …
+                                 -- ⊢ ((BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫ (IsLimit.conePointUniqueUpT …
   · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
+    -- ⊢ ((BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫ IsLimit.lift (ℬ (tensorObj  …
+                                                   -- 🎉 no goals
   · apply (ℬ _ _).isLimit.hom_ext
+    -- ⊢ ∀ (j : Discrete WalkingPair), (((BinaryFan.associatorOfLimitCone ℬ X Y Z).ho …
     rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
+    -- ⊢ (((BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫ (IsLimit.conePointUniqueUp …
+                      -- ⊢ (((BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫ IsLimit.lift (ℬ (tensorObj …
+                                                                     -- 🎉 no goals
+                      -- ⊢ (((BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫ IsLimit.lift (ℬ (tensorObj …
+                                                                     -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.hexagon_forward CategoryTheory.MonoidalOfChosenFiniteProducts.hexagon_forward
 
 theorem hexagon_reverse (X Y Z : C) :
@@ -64,15 +82,23 @@ theorem hexagon_reverse (X Y Z : C) :
         (BinaryFan.associatorOfLimitCone ℬ X Z Y).inv ≫
           tensorHom ℬ (Limits.BinaryFan.braiding (ℬ X Z).isLimit (ℬ Z X).isLimit).hom (𝟙 Y) := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
+  -- ⊢ (BinaryFan.associatorOfLimitCone ℬ X Y Z).inv ≫ (IsLimit.conePointUniqueUpTo …
   apply (ℬ _ _).isLimit.hom_ext; rintro ⟨⟨⟩⟩
+  -- ⊢ ∀ (j : Discrete WalkingPair), ((BinaryFan.associatorOfLimitCone ℬ X Y Z).inv …
+                                 -- ⊢ ((BinaryFan.associatorOfLimitCone ℬ X Y Z).inv ≫ (IsLimit.conePointUniqueUpT …
   · apply (ℬ _ _).isLimit.hom_ext
+    -- ⊢ ∀ (j : Discrete WalkingPair), (((BinaryFan.associatorOfLimitCone ℬ X Y Z).in …
     rintro ⟨⟨⟩⟩ <;>
+    -- ⊢ (((BinaryFan.associatorOfLimitCone ℬ X Y Z).inv ≫ (IsLimit.conePointUniqueUp …
       · dsimp [BinaryFan.associatorOfLimitCone, BinaryFan.associator,
           Limits.IsLimit.conePointUniqueUpToIso]
         simp
+        -- 🎉 no goals
+        -- 🎉 no goals
   · dsimp [BinaryFan.associatorOfLimitCone, BinaryFan.associator,
       Limits.IsLimit.conePointUniqueUpToIso]
     simp
+    -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.hexagon_reverse CategoryTheory.MonoidalOfChosenFiniteProducts.hexagon_reverse
 
 theorem symmetry (X Y : C) :
@@ -80,8 +106,15 @@ theorem symmetry (X Y : C) :
         (Limits.BinaryFan.braiding (ℬ Y X).isLimit (ℬ X Y).isLimit).hom =
       𝟙 (tensorObj ℬ X Y) := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
+  -- ⊢ (IsLimit.conePointUniqueUpToIso (ℬ X Y).isLimit (IsLimit.swapBinaryFan (ℬ Y  …
   apply (ℬ _ _).isLimit.hom_ext;
+  -- ⊢ ∀ (j : Discrete WalkingPair), ((IsLimit.conePointUniqueUpToIso (ℬ X Y).isLim …
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
+  -- ⊢ ((IsLimit.conePointUniqueUpToIso (ℬ X Y).isLimit (IsLimit.swapBinaryFan (ℬ Y …
+                    -- ⊢ (IsLimit.lift (ℬ Y X).isLimit (BinaryFan.swap (ℬ X Y).cone) ≫ IsLimit.lift ( …
+                                                                   -- 🎉 no goals
+                    -- ⊢ (IsLimit.lift (ℬ Y X).isLimit (BinaryFan.swap (ℬ X Y).cone) ≫ IsLimit.lift ( …
+                                                                   -- 🎉 no goals
 #align category_theory.monoidal_of_chosen_finite_products.symmetry CategoryTheory.MonoidalOfChosenFiniteProducts.symmetry
 
 end MonoidalOfChosenFiniteProducts

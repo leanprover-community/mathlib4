@@ -42,13 +42,19 @@ protected theorem IsExtrOn.closure (h : IsExtrOn f s a) (hc : ContinuousOn f (cl
 protected theorem IsLocalMaxOn.closure (h : IsLocalMaxOn f s a) (hc : ContinuousOn f (closure s)) :
     IsLocalMaxOn f (closure s) a := by
   rcases mem_nhdsWithin.1 h with ⟨U, Uo, aU, hU⟩
+  -- ⊢ IsLocalMaxOn f (closure s) a
   refine' mem_nhdsWithin.2 ⟨U, Uo, aU, _⟩
+  -- ⊢ U ∩ closure s ⊆ {x | (fun x => f x ≤ f a) x}
   rintro x ⟨hxU, hxs⟩
+  -- ⊢ x ∈ {x | (fun x => f x ≤ f a) x}
   refine' ContinuousWithinAt.closure_le _ _ continuousWithinAt_const hU
+  -- ⊢ x ∈ closure (U ∩ s)
   · rwa [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_inter_of_mem, ←
       mem_closure_iff_nhdsWithin_neBot]
     exact nhdsWithin_le_nhds (Uo.mem_nhds hxU)
+    -- 🎉 no goals
   · exact (hc _ hxs).mono ((inter_subset_right _ _).trans subset_closure)
+    -- 🎉 no goals
 #align is_local_max_on.closure IsLocalMaxOn.closure
 
 protected theorem IsLocalMinOn.closure (h : IsLocalMinOn f s a) (hc : ContinuousOn f (closure s)) :

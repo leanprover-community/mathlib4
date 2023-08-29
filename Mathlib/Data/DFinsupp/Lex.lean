@@ -50,6 +50,7 @@ instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
   obtain ⟨hle, j, hlt⟩ := Pi.lt_def.1 hlt
+  -- ⊢ ∃ i, (∀ (j : ι), r j i → ↑x j ≤ ↑y j ∧ ↑y j ≤ ↑x j) ∧ ↑x i < ↑y i
   classical
   have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
   obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
@@ -60,7 +61,9 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι 
 theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : Pi.Lex r (· < ·) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
+  -- ⊢ ∃ i, (∀ (j : ι), r j i → ↑x j ≤ ↑y j ∧ ↑y j ≤ ↑x j) ∧ ↑x i < ↑y i
   exact lex_lt_of_lt_of_preorder r hlt
+  -- 🎉 no goals
 #align dfinsupp.lex_lt_of_lt DFinsupp.lex_lt_of_lt
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ i, PartialOrder (α i)] :
@@ -93,7 +96,11 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
   | ⊤, h => h_eq (neLocus_eq_empty.mp <| Finset.min_eq_top.mp h)
   | (wit : ι), h => by
     apply (mem_neLocus.mp <| Finset.mem_of_min h).lt_or_lt.by_cases <;> intro hwit
+    -- ⊢ ↑f wit < ↑g wit → P (↑toLex f) (↑toLex g)
+                                                                        -- ⊢ P (↑toLex f) (↑toLex g)
+                                                                        -- ⊢ P (↑toLex f) (↑toLex g)
     · exact h_lt ⟨wit, fun j hj ↦ not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj h), hwit⟩
+      -- 🎉 no goals
     · exact h_gt ⟨wit, fun j hj ↦
         not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
@@ -129,7 +136,9 @@ variable [∀ i, PartialOrder (α i)]
 
 theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
+  -- ⊢ ↑toLex a ≤ ↑toLex b
   refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
+  -- ⊢ ↑toLex a < ↑toLex b
   classical
   exact ⟨Finset.min' _ (nonempty_neLocus_iff.2 hne),
     fun j hj ↦ not_mem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_lt hj,

@@ -67,6 +67,7 @@ variable {𝕜 s} {t : Set E} {x y : E}
 
 theorem mem_convexHull_iff : x ∈ convexHull 𝕜 s ↔ ∀ t, s ⊆ t → Convex 𝕜 t → x ∈ t := by
   simp_rw [convexHull_eq_iInter, mem_iInter]
+  -- 🎉 no goals
 #align mem_convex_hull_iff mem_convexHull_iff
 
 theorem convexHull_min (hst : s ⊆ t) (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t :=
@@ -99,17 +100,25 @@ theorem convexHull_empty : convexHull 𝕜 (∅ : Set E) = ∅ :=
 @[simp]
 theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
+  -- ⊢ ↑(convexHull 𝕜) s = ∅ → s = ∅
   · intro h
+    -- ⊢ s = ∅
     rw [← Set.subset_empty_iff, ← h]
+    -- ⊢ s ⊆ ↑(convexHull 𝕜) s
     exact subset_convexHull 𝕜 _
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ ↑(convexHull 𝕜) ∅ = ∅
     exact convexHull_empty
+    -- 🎉 no goals
 #align convex_hull_empty_iff convexHull_empty_iff
 
 @[simp]
 theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, Ne.def]
+  -- ⊢ ¬↑(convexHull 𝕜) s = ∅ ↔ ¬s = ∅
   exact not_congr convexHull_empty_iff
+  -- 🎉 no goals
 #align convex_hull_nonempty_iff convexHull_nonempty_iff
 
 protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
@@ -134,7 +143,9 @@ theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y :=
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
   rw [insert_subset_iff, singleton_subset_iff]
+  -- ⊢ x ∈ segment 𝕜 x y ∧ y ∈ segment 𝕜 x y
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
+  -- 🎉 no goals
 #align convex_hull_pair convexHull_pair
 
 theorem convexHull_convexHull_union_left (s t : Set E) :
@@ -150,13 +161,21 @@ theorem convexHull_convexHull_union_right (s t : Set E) :
 theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
     Convex 𝕜 (s \ {x}) ↔ x ∉ convexHull 𝕜 (s \ {x}) := by
   constructor
+  -- ⊢ Convex 𝕜 (s \ {x}) → ¬x ∈ ↑(convexHull 𝕜) (s \ {x})
   · rintro hsx hx
+    -- ⊢ False
     rw [hsx.convexHull_eq] at hx
+    -- ⊢ False
     exact hx.2 (mem_singleton _)
+    -- 🎉 no goals
   rintro hx
+  -- ⊢ Convex 𝕜 (s \ {x})
   suffices h : s \ {x} = convexHull 𝕜 (s \ {x})
+  -- ⊢ Convex 𝕜 (s \ {x})
   · rw [h]
+    -- ⊢ Convex 𝕜 (↑(convexHull 𝕜) (s \ {x}))
     exact convex_convexHull 𝕜 _
+    -- 🎉 no goals
   exact
     Subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>
       ⟨convexHull_min (diff_subset _ _) hs hy, by
@@ -204,10 +223,15 @@ variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] (s : 
 theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by
   apply Set.Subset.antisymm
+  -- ⊢ ↑f '' ↑(convexHull 𝕜) s ⊆ ↑(convexHull 𝕜) (↑f '' s)
   · rw [Set.image_subset_iff]
+    -- ⊢ ↑(convexHull 𝕜) s ⊆ ↑f ⁻¹' ↑(convexHull 𝕜) (↑f '' s)
     refine' convexHull_min _ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
+    -- ⊢ s ⊆ ↑f ⁻¹' ↑(convexHull 𝕜) (↑f '' s)
     rw [← Set.image_subset_iff]
+    -- ⊢ ↑f '' s ⊆ ↑(convexHull 𝕜) (↑f '' s)
     exact subset_convexHull 𝕜 (f '' s)
+    -- 🎉 no goals
   · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
       ((convex_convexHull 𝕜 s).affine_image f)
 #align affine_map.image_convex_hull AffineMap.image_convexHull
@@ -219,13 +243,18 @@ theorem convexHull_subset_affineSpan : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s 
 @[simp]
 theorem affineSpan_convexHull : affineSpan 𝕜 (convexHull 𝕜 s) = affineSpan 𝕜 s := by
   refine' le_antisymm _ (affineSpan_mono 𝕜 (subset_convexHull 𝕜 s))
+  -- ⊢ affineSpan 𝕜 (↑(convexHull 𝕜) s) ≤ affineSpan 𝕜 s
   rw [affineSpan_le]
+  -- ⊢ ↑(convexHull 𝕜) s ⊆ ↑(affineSpan 𝕜 s)
   exact convexHull_subset_affineSpan s
+  -- 🎉 no goals
 #align affine_span_convex_hull affineSpan_convexHull
 
 theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
   simp_rw [← image_neg]
+  -- ⊢ ↑(convexHull 𝕜) (Neg.neg '' s) = Neg.neg '' ↑(convexHull 𝕜) s
   exact (AffineMap.image_convexHull _ <| -1).symm
+  -- 🎉 no goals
 #align convex_hull_neg convexHull_neg
 
 end AddCommGroup

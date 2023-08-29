@@ -42,6 +42,7 @@ theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
   HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
+                                 -- 🎉 no goals
 #align uniformity_dist_of_mem_uniformity uniformity_dist_of_mem_uniformity
 
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
@@ -96,24 +97,36 @@ attribute [simp] edist_self
 /-- Triangle inequality for the extended distance -/
 theorem edist_triangle_left (x y z : α) : edist x y ≤ edist z x + edist z y := by
   rw [edist_comm z]; apply edist_triangle
+  -- ⊢ edist x y ≤ edist x z + edist z y
+                     -- 🎉 no goals
 #align edist_triangle_left edist_triangle_left
 
 theorem edist_triangle_right (x y z : α) : edist x y ≤ edist x z + edist y z := by
   rw [edist_comm y]; apply edist_triangle
+  -- ⊢ edist x y ≤ edist x z + edist z y
+                     -- 🎉 no goals
 #align edist_triangle_right edist_triangle_right
 
 theorem edist_congr_right {x y z : α} (h : edist x y = 0) : edist x z = edist y z := by
   apply le_antisymm
+  -- ⊢ edist x z ≤ edist y z
   · rw [← zero_add (edist y z), ← h]
+    -- ⊢ edist x z ≤ edist x y + edist y z
     apply edist_triangle
+    -- 🎉 no goals
   · rw [edist_comm] at h
+    -- ⊢ edist y z ≤ edist x z
     rw [← zero_add (edist x z), ← h]
+    -- ⊢ edist y z ≤ edist y x + edist x z
     apply edist_triangle
+    -- 🎉 no goals
 #align edist_congr_right edist_congr_right
 
 theorem edist_congr_left {x y z : α} (h : edist x y = 0) : edist z x = edist z y := by
   rw [edist_comm z x, edist_comm z y]
+  -- ⊢ edist x z = edist y z
   apply edist_congr_right h
+  -- 🎉 no goals
 #align edist_congr_left edist_congr_left
 
 -- new theorem
@@ -131,7 +144,10 @@ theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + e
 theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
     edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, edist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction
+  -- ⊢ edist (f m) (f m) ≤ ∑ i in Finset.Ico m m, edist (f i) (f (i + 1))
   case base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
+  -- ⊢ edist (f m) (f (n✝ + 1)) ≤ ∑ i in Finset.Ico m (n✝ + 1), edist (f i) (f (i + …
+  -- 🎉 no goals
   case succ n hle ihn =>
     calc
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
@@ -194,11 +210,17 @@ protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f 
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
   refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  -- ⊢ (∃ i, 0 < i ∧ {p | edist p.fst p.snd < i} ⊆ s) ↔ ∃ i, p i ∧ {p | edist p.fst …
   constructor
+  -- ⊢ (∃ i, 0 < i ∧ {p | edist p.fst p.snd < i} ⊆ s) → ∃ i, p i ∧ {p | edist p.fst …
   · rintro ⟨ε, ε₀, hε⟩
+    -- ⊢ ∃ i, p i ∧ {p | edist p.fst p.snd < f i} ⊆ s
     rcases hf ε ε₀ with ⟨i, hi, H⟩
+    -- ⊢ ∃ i, p i ∧ {p | edist p.fst p.snd < f i} ⊆ s
     exact ⟨i, hi, fun x hx => hε <| lt_of_lt_of_le hx.out H⟩
+    -- 🎉 no goals
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, H⟩
+    -- 🎉 no goals
 #align emetric.mk_uniformity_basis EMetric.mk_uniformity_basis
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
@@ -209,12 +231,19 @@ protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} 
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
   refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  -- ⊢ (∃ i, 0 < i ∧ {p | edist p.fst p.snd < i} ⊆ s) ↔ ∃ i, p i ∧ {p | edist p.fst …
   constructor
+  -- ⊢ (∃ i, 0 < i ∧ {p | edist p.fst p.snd < i} ⊆ s) → ∃ i, p i ∧ {p | edist p.fst …
   · rintro ⟨ε, ε₀, hε⟩
+    -- ⊢ ∃ i, p i ∧ {p | edist p.fst p.snd ≤ f i} ⊆ s
     rcases exists_between ε₀ with ⟨ε', hε'⟩
+    -- ⊢ ∃ i, p i ∧ {p | edist p.fst p.snd ≤ f i} ⊆ s
     rcases hf ε' hε'.1 with ⟨i, hi, H⟩
+    -- ⊢ ∃ i, p i ∧ {p | edist p.fst p.snd ≤ f i} ⊆ s
     exact ⟨i, hi, fun x hx => hε <| lt_of_le_of_lt (le_trans hx.out H) hε'.2⟩
+    -- 🎉 no goals
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x hx => H (le_of_lt hx.out)⟩
+    -- 🎉 no goals
 #align emetric.mk_uniformity_basis_le EMetric.mk_uniformity_basis_le
 
 theorem uniformity_basis_edist_le :
@@ -296,6 +325,8 @@ theorem uniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
   uniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
+      -- ⊢ (∀ (i' : ℝ≥0∞), 0 < i' → ∃ i, 0 < i ∧ ∀ (a b : α), (a, b) ∈ Prod.map f f ⁻¹' …
+                                           -- 🎉 no goals
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
 nonrec theorem uniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
@@ -319,6 +350,8 @@ theorem controlled_of_uniformEmbedding [PseudoEMetricSpace β] {f : α → β} (
 protected theorem cauchy_iff {f : Filter α} :
     Cauchy f ↔ f ≠ ⊥ ∧ ∀ ε > 0, ∃ t ∈ f, ∀ x, x ∈ t → ∀ y, y ∈ t → edist x y < ε := by
   rw [← neBot_iff]; exact uniformity_basis_edist.cauchy_iff
+  -- ⊢ Cauchy f ↔ NeBot f ∧ ∀ (ε : ℝ≥0∞), ε > 0 → ∃ t, t ∈ f ∧ ∀ (x : α), x ∈ t → ∀ …
+                    -- 🎉 no goals
 #align emetric.cauchy_iff EMetric.cauchy_iff
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences
@@ -346,17 +379,24 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
   refine' ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu x hx => _⟩
+  -- ⊢ ∃ t, t ∈ 𝓝[s] x ∧ ∀ᶠ (n : ι) in p, ∀ (y : β), y ∈ t → (f y, F n y) ∈ u
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
+  -- ⊢ ∃ t, t ∈ 𝓝[s] x ∧ ∀ᶠ (n : ι) in p, ∀ (y : β), y ∈ t → (f y, F n y) ∈ u
   rcases H ε εpos x hx with ⟨t, ht, Ht⟩
+  -- ⊢ ∃ t, t ∈ 𝓝[s] x ∧ ∀ᶠ (n : ι) in p, ∀ (y : β), y ∈ t → (f y, F n y) ∈ u
   exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
+  -- 🎉 no goals
 #align emetric.tendsto_locally_uniformly_on_iff EMetric.tendstoLocallyUniformlyOn_iff
 
 /-- Expressing uniform convergence on a set using `edist`. -/
 theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, edist (f x) (F n x) < ε := by
   refine' ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => _⟩
+  -- ⊢ ∀ᶠ (n : ι) in p, ∀ (x : β), x ∈ s → (f x, F n x) ∈ u
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
+  -- ⊢ ∀ᶠ (n : ι) in p, ∀ (x : β), x ∈ s → (f x, F n x) ∈ u
   exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
+  -- 🎉 no goals
 #align emetric.tendsto_uniformly_on_iff EMetric.tendstoUniformlyOn_iff
 
 /-- Expressing locally uniform convergence using `edist`. -/
@@ -372,6 +412,7 @@ theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι �
 theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} :
     TendstoUniformly F f p ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x, edist (f x) (F n x) < ε := by
   simp only [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff, mem_univ, forall_const]
+  -- 🎉 no goals
 #align emetric.tendsto_uniformly_iff EMetric.tendstoUniformly_iff
 
 end EMetric
@@ -452,12 +493,15 @@ corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
+                     -- 🎉 no goals
   edist_comm x y := by simp [edist_comm]
+                       -- 🎉 no goals
   edist_triangle x y z :=
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by
     simp [PseudoEMetricSpace.uniformity_edist, ← iInf_inf_eq, setOf_and]
+    -- 🎉 no goals
   toUniformSpace := inferInstance
 #align prod.pseudo_emetric_space_max Prod.pseudoEMetricSpaceMax
 
@@ -489,6 +533,7 @@ theorem edist_le_pi_edist [∀ b, EDist (π b)] (f g : ∀ b, π b) (b : β) :
 theorem edist_pi_le_iff [∀ b, EDist (π b)] {f g : ∀ b, π b} {d : ℝ≥0∞} :
     edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
   Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
+                                -- 🎉 no goals
 #align edist_pi_le_iff edist_pi_le_iff
 
 theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
@@ -507,7 +552,9 @@ to the product topology. Hence, we only formalize it in the good situation of fi
 spaces. -/
 instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
   edist_self f := bot_unique <| Finset.sup_le <| by simp
+                                                    -- 🎉 no goals
   edist_comm f g := by simp [edist_pi_def, edist_comm]
+                       -- 🎉 no goals
   edist_triangle f g h := edist_pi_le_iff.2 <| fun b => le_trans (edist_triangle _ (g b) _)
     (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
   toUniformSpace := Pi.uniformSpace _
@@ -515,8 +562,15 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetric
     simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
       preimage_setOf_eq, comap_principal, edist_pi_def]
     rw [iInf_comm]; congr; funext ε
+    -- ⊢ ⨅ (j : ℝ≥0∞) (i : β) (_ : 0 < j), 𝓟 {a | edist (Prod.fst a i) (Prod.snd a i) …
+                    -- ⊢ (fun j => ⨅ (i : β) (_ : 0 < j), 𝓟 {a | edist (Prod.fst a i) (Prod.snd a i)  …
+                           -- ⊢ ⨅ (i : β) (_ : 0 < ε), 𝓟 {a | edist (Prod.fst a i) (Prod.snd a i) < ε} = ⨅ ( …
     rw [iInf_comm]; congr; funext εpos
+    -- ⊢ ⨅ (_ : 0 < ε) (i : β), 𝓟 {a | edist (Prod.fst a i) (Prod.snd a i) < ε} = ⨅ ( …
+                    -- ⊢ (fun j => ⨅ (i : β), 𝓟 {a | edist (Prod.fst a i) (Prod.snd a i) < ε}) = fun  …
+                           -- ⊢ ⨅ (i : β), 𝓟 {a | edist (Prod.fst a i) (Prod.snd a i) < ε} = 𝓟 {p | (sup Fin …
     simp [setOf_forall, εpos]
+    -- 🎉 no goals
 #align pseudo_emetric_space_pi pseudoEMetricSpacePi
 
 end Pi
@@ -534,6 +588,7 @@ def ball (x : α) (ε : ℝ≥0∞) : Set α :=
 #align emetric.mem_ball EMetric.mem_ball
 
 theorem mem_ball' : y ∈ ball x ε ↔ edist x y < ε := by rw [edist_comm, mem_ball]
+                                                       -- 🎉 no goals
 #align emetric.mem_ball' EMetric.mem_ball'
 
 /-- `EMetric.closedBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
@@ -545,6 +600,7 @@ def closedBall (x : α) (ε : ℝ≥0∞) :=
 #align emetric.mem_closed_ball EMetric.mem_closedBall
 
 theorem mem_closedBall' : y ∈ closedBall x ε ↔ edist x y ≤ ε := by rw [edist_comm, mem_closedBall]
+                                                                   -- 🎉 no goals
 #align emetric.mem_closed_ball' EMetric.mem_closedBall'
 
 @[simp]
@@ -561,17 +617,22 @@ theorem pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
 
 theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
   rwa [mem_ball, edist_self]
+  -- 🎉 no goals
 #align emetric.mem_ball_self EMetric.mem_ball_self
 
 theorem mem_closedBall_self : x ∈ closedBall x ε := by
   rw [mem_closedBall, edist_self]; apply zero_le
+  -- ⊢ 0 ≤ ε
+                                   -- 🎉 no goals
 #align emetric.mem_closed_ball_self EMetric.mem_closedBall_self
 
 theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
+                                                          -- 🎉 no goals
 #align emetric.mem_ball_comm EMetric.mem_ball_comm
 
 theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε := by
   rw [mem_closedBall', mem_closedBall]
+  -- 🎉 no goals
 #align emetric.mem_closed_ball_comm EMetric.mem_closedBall_comm
 
 theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y (yx : _ < ε₁) =>
@@ -598,8 +659,11 @@ theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) :
 
 theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε := by
   have : 0 < ε - edist y x := by simpa using h
+  -- ⊢ ∃ ε', ε' > 0 ∧ ball y ε' ⊆ ball x ε
   refine' ⟨ε - edist y x, this, ball_subset _ (ne_top_of_lt h)⟩
+  -- ⊢ edist y x + (ε - edist y x) ≤ ε
   exact (add_tsub_cancel_of_le (mem_ball.mp h).le).le
+  -- 🎉 no goals
 #align emetric.exists_ball_subset_ball EMetric.exists_ball_subset_ball
 
 theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
@@ -622,12 +686,16 @@ def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=
     ⟨fun x => by rw [edist_self]; exact ENNReal.coe_lt_top,
+                 -- ⊢ 0 < ⊤
+                                  -- 🎉 no goals
       fun h => by rwa [edist_comm], fun hxy hyz =>
+                  -- 🎉 no goals
         lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
 #align emetric.edist_lt_top_setoid EMetric.edistLtTopSetoid
 
 @[simp]
 theorem ball_zero : ball x 0 = ∅ := by rw [EMetric.ball_eq_empty_iff]
+                                       -- 🎉 no goals
 #align emetric.ball_zero EMetric.ball_zero
 
 theorem nhds_basis_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (ball x) :=
@@ -669,13 +737,17 @@ theorem tendsto_nhdsWithin_nhdsWithin {t : Set β} {a b} :
   (nhdsWithin_basis_eball.tendsto_iff nhdsWithin_basis_eball).trans <|
     forall₂_congr fun ε _ => exists_congr fun δ => and_congr_right fun _ =>
       forall_congr' fun x => by simp; tauto
+                                -- ⊢ edist x a < δ → x ∈ s → edist (f x) b < ε ∧ f x ∈ t ↔ x ∈ s → edist x a < δ  …
+                                      -- 🎉 no goals
 #align emetric.tendsto_nhds_within_nhds_within EMetric.tendsto_nhdsWithin_nhdsWithin
 
 theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → edist x a < δ → edist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
+  -- ⊢ (∀ (ε : ℝ≥0∞), ε > 0 → ∃ δ, δ > 0 ∧ ∀ ⦃x : α⦄, x ∈ s → edist x a < δ → f x ∈ …
   simp only [mem_univ, true_and_iff]
+  -- 🎉 no goals
 #align emetric.tendsto_nhds_within_nhds EMetric.tendsto_nhdsWithin_nhds
 
 theorem tendsto_nhds_nhds {a b} :
@@ -687,6 +759,7 @@ end
 
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
+  -- 🎉 no goals
 #align emetric.is_open_iff EMetric.isOpen_iff
 
 theorem isOpen_ball : IsOpen (ball x ε) :=
@@ -710,16 +783,19 @@ theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBa
 theorem ball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     ball x r ×ˢ ball y r = ball (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]
+                  -- 🎉 no goals
 #align emetric.ball_prod_same EMetric.ball_prod_same
 
 theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     closedBall x r ×ˢ closedBall y r = closedBall (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]
+                  -- 🎉 no goals
 #align emetric.closed_ball_prod_same EMetric.closedBall_prod_same
 
 /-- ε-characterization of the closure in pseudoemetric spaces -/
 theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=
   (mem_closure_iff_nhds_basis nhds_basis_eball).trans <| by simp only [mem_ball, edist_comm x]
+                                                            -- 🎉 no goals
 #align emetric.mem_closure_iff EMetric.mem_closure_iff
 
 theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
@@ -731,10 +807,12 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
     simp only [exists_prop, true_and_iff, mem_Ici, mem_ball]
+    -- 🎉 no goals
 #align emetric.tendsto_at_top EMetric.tendsto_atTop
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
   simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_lt_iff_le']
+  -- 🎉 no goals
 #align emetric.inseparable_iff EMetric.inseparable_iff
 
 -- see Note [nolint_ge]
@@ -783,8 +861,11 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨x₀, hx₀⟩)
+  -- ⊢ ∃ t, t ⊆ ∅ ∧ Set.Countable t ∧ ∅ ⊆ closure t
   · exact ⟨∅, empty_subset _, countable_empty, empty_subset _⟩
+    -- 🎉 no goals
   choose! T hTc hsT using fun n : ℕ => hs n⁻¹ (by simp)
+  -- ⊢ ∃ t, t ⊆ s ∧ Set.Countable t ∧ s ⊆ closure t
   have : ∀ r x, ∃ y ∈ s, closedBall x r ∩ s ⊆ closedBall y (r * 2) := fun r x => by
     rcases (closedBall x r ∩ s).eq_empty_or_nonempty with (he | ⟨y, hxy, hys⟩)
     · refine' ⟨x₀, hx₀, _⟩
@@ -796,13 +877,18 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
         _ ≤ r + r := (add_le_add hz.1 hxy)
         _ = r * 2 := (mul_two r).symm
   choose f hfs hf using this
+  -- ⊢ ∃ t, t ⊆ s ∧ Set.Countable t ∧ s ⊆ closure t
   refine'
     ⟨⋃ n : ℕ, f n⁻¹ '' T n, iUnion_subset fun n => image_subset_iff.2 fun z _ => hfs _ _,
       countable_iUnion fun n => (hTc n).image _, _⟩
   refine' fun x hx => mem_closure_iff.2 fun ε ε0 => _
+  -- ⊢ ∃ y, y ∈ ⋃ (n : ℕ), f (↑n)⁻¹ '' T n ∧ edist x y < ε
   rcases ENNReal.exists_inv_nat_lt (ENNReal.half_pos ε0.lt.ne').ne' with ⟨n, hn⟩
+  -- ⊢ ∃ y, y ∈ ⋃ (n : ℕ), f (↑n)⁻¹ '' T n ∧ edist x y < ε
   rcases mem_iUnion₂.1 (hsT n hx) with ⟨y, hyn, hyx⟩
+  -- ⊢ ∃ y, y ∈ ⋃ (n : ℕ), f (↑n)⁻¹ '' T n ∧ edist x y < ε
   refine' ⟨f n⁻¹ y, mem_iUnion.2 ⟨n, mem_image_of_mem _ hyn⟩, _⟩
+  -- ⊢ edist x (f (↑n)⁻¹ y) < ε
   calc
     edist x (f n⁻¹ y) ≤ (n : ℝ≥0∞)⁻¹ * 2 := hf _ _ ⟨hyx, hx⟩
     _ < ε := ENNReal.mul_lt_of_lt_div hn
@@ -820,9 +906,13 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
     rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
     exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
   rcases subset_countable_closure_of_almost_dense_set _ this with ⟨t, hts, htc, hst⟩
+  -- ⊢ SeparableSpace ↑s
   lift t to Set s using hts
+  -- ⊢ SeparableSpace ↑s
   refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
+  -- ⊢ Dense t
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+  -- 🎉 no goals
 #align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 
 -- porting note: todo: generalize to metrizable spaces
@@ -831,8 +921,11 @@ countable set.  -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   refine' subset_countable_closure_of_almost_dense_set s fun ε hε => _
+  -- ⊢ ∃ t, Set.Countable t ∧ s ⊆ ⋃ (x : α) (_ : x ∈ t), closedBall x ε
   rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
+  -- ⊢ ∃ t, Set.Countable t ∧ s ⊆ ⋃ (x : α) (_ : x ∈ t), closedBall x ε
   exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => ball_subset_closedBall⟩
+  -- 🎉 no goals
 #align emetric.subset_countable_closure_of_compact EMetric.subset_countable_closure_of_compact
 
 end Compact
@@ -847,11 +940,15 @@ variable (α)
 to avoid a loop with `sigmaCompactSpace_of_locally_compact_second_countable`.  -/
 theorem secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
+  -- ⊢ SeparableSpace α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
   refine' ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => _⟩⟩
+  -- ⊢ x ∈ closure (⋃ (n : ℕ), T n)
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
+  -- ⊢ x ∈ closure (⋃ (n : ℕ), T n)
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
+  -- 🎉 no goals
 #align emetric.second_countable_of_sigma_compact EMetric.secondCountable_of_sigmaCompact
 
 variable {α}
@@ -860,10 +957,15 @@ theorem secondCountable_of_almost_dense_set
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
+  -- ⊢ SeparableSpace α
   have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε
+  -- ⊢ ∀ (ε : ℝ≥0∞), ε > 0 → ∃ t, Set.Countable t ∧ univ ⊆ ⋃ (x : α) (_ : x ∈ t), c …
   · simpa only [univ_subset_iff] using hs
+    -- 🎉 no goals
   rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
+  -- ⊢ SeparableSpace α
   exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
+  -- 🎉 no goals
 #align emetric.second_countable_of_almost_dense_set EMetric.secondCountable_of_almost_dense_set
 
 end SecondCountable
@@ -879,11 +981,13 @@ theorem diam_eq_sSup (s : Set α) : diam s = sSup (image2 edist s s) := sSup_ima
 
 theorem diam_le_iff {d : ℝ≥0∞} : diam s ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d := by
   simp only [diam, iSup_le_iff]
+  -- 🎉 no goals
 #align emetric.diam_le_iff EMetric.diam_le_iff
 
 theorem diam_image_le_iff {d : ℝ≥0∞} {f : β → α} {s : Set β} :
     diam (f '' s) ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ d := by
   simp only [diam_le_iff, ball_image_iff]
+  -- 🎉 no goals
 #align emetric.diam_image_le_iff EMetric.diam_image_le_iff
 
 theorem edist_le_of_diam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : diam s ≤ d) : edist x y ≤ d :=
@@ -920,6 +1024,9 @@ theorem diam_singleton : diam ({x} : Set α) = 0 :=
 
 theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) :
     diam (⋃ i ∈ o, s i) = ⨆ i ∈ o, diam (s i) := by cases o <;> simp
+                                                    -- ⊢ diam (⋃ (i : ι) (_ : i ∈ none), s i) = ⨆ (i : ι) (_ : i ∈ none), diam (s i)
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align emetric.diam_Union_mem_option EMetric.diam_iUnion_mem_option
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
@@ -930,6 +1037,7 @@ theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) 
 
 theorem diam_pair : diam ({x, y} : Set α) = edist x y := by
   simp only [iSup_singleton, diam_insert, diam_singleton, ENNReal.max_zero_right]
+  -- 🎉 no goals
 #align emetric.diam_pair EMetric.diam_pair
 
 theorem diam_triple : diam ({x, y, z} : Set α) = max (max (edist x y) (edist x z)) (edist y z) := by
@@ -952,14 +1060,21 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
       _ ≤ diam s + edist x y + diam t :=
         add_le_add (add_le_add (edist_le_diam_of_mem ha xs) le_rfl) (edist_le_diam_of_mem yt hb)
   refine' diam_le fun a ha b hb => _
+  -- ⊢ edist a b ≤ diam s + edist x y + diam t
   cases' (mem_union _ _ _).1 ha with h'a h'a <;> cases' (mem_union _ _ _).1 hb with h'b h'b
+  -- ⊢ edist a b ≤ diam s + edist x y + diam t
+                                                 -- ⊢ edist a b ≤ diam s + edist x y + diam t
+                                                 -- ⊢ edist a b ≤ diam s + edist x y + diam t
   · calc
       edist a b ≤ diam s := edist_le_diam_of_mem h'a h'b
       _ ≤ diam s + (edist x y + diam t) := le_self_add
       _ = diam s + edist x y + diam t := (add_assoc _ _ _).symm
   · exact A a h'a b h'b
+    -- 🎉 no goals
   · have Z := A b h'b a h'a
+    -- ⊢ edist a b ≤ diam s + edist x y + diam t
     rwa [edist_comm] at Z
+    -- 🎉 no goals
   · calc
       edist a b ≤ diam t := edist_le_diam_of_mem h'a h'b
       _ ≤ diam s + edist x y + diam t := le_add_self
@@ -967,7 +1082,9 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
 
 theorem diam_union' {t : Set α} (h : (s ∩ t).Nonempty) : diam (s ∪ t) ≤ diam s + diam t := by
   let ⟨x, ⟨xs, xt⟩⟩ := h
+  -- ⊢ diam (s ∪ t) ≤ diam s + diam t
   simpa using diam_union xs xt
+  -- 🎉 no goals
 #align emetric.diam_union' EMetric.diam_union'
 
 theorem diam_closedBall {r : ℝ≥0∞} : diam (closedBall x r) ≤ 2 * r :=
@@ -985,8 +1102,11 @@ theorem diam_ball {r : ℝ≥0∞} : diam (ball x r) ≤ 2 * r :=
 theorem diam_pi_le_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
   refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
+  -- ⊢ ∀ (b : β), edist (x b) (y b) ≤ c
   rw [mem_univ_pi] at hx hy
+  -- ⊢ ∀ (b : β), edist (x b) (y b) ≤ c
   exact fun b => diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
+  -- 🎉 no goals
 #align emetric.diam_pi_le_of_le EMetric.diam_pi_le_of_le
 
 end Diam
@@ -1019,6 +1139,7 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 
 @[simp]
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
+                                                          -- 🎉 no goals
 #align edist_pos edist_pos
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
@@ -1040,6 +1161,7 @@ theorem EMetric.uniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by
   rw [uniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
+  -- 🎉 no goals
 #align emetric.uniform_embedding_iff' EMetric.uniformEmbedding_iff'
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
@@ -1121,7 +1243,9 @@ namespace EMetric
 theorem countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s = closure t := by
   rcases subset_countable_closure_of_compact hs with ⟨t, hts, htc, hsub⟩
+  -- ⊢ ∃ t, t ⊆ s ∧ Set.Countable t ∧ s = closure t
   exact ⟨t, hts, htc, hsub.antisymm (closure_minimal hts hs.isClosed)⟩
+  -- 🎉 no goals
 #align emetric.countable_closure_of_compact EMetric.countable_closure_of_compact
 
 section Diam
@@ -1134,9 +1258,11 @@ theorem diam_eq_zero_iff : diam s = 0 ↔ s.Subsingleton :=
 
 theorem diam_pos_iff : 0 < diam s ↔ s.Nontrivial := by
   simp only [pos_iff_ne_zero, Ne.def, diam_eq_zero_iff, Set.not_subsingleton_iff]
+  -- 🎉 no goals
 
 theorem diam_pos_iff' : 0 < diam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
   simp only [diam_pos_iff, Set.Nontrivial, exists_prop]
+  -- 🎉 no goals
 #align emetric.diam_pos_iff EMetric.diam_pos_iff'
 
 end Diam
@@ -1167,10 +1293,15 @@ instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient 
       uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr $ fun ε =>
         iInf_congr $ fun _ => congr_arg 𝓟 <| by
           ext ⟨⟨x⟩, ⟨y⟩⟩
+          -- ⊢ (Quot.mk Setoid.r x, Quot.mk Setoid.r y) ∈ (fun p => (Quotient.mk (UniformSp …
           refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
+          -- ⊢ (Quot.mk Setoid.r x, Quot.mk Setoid.r y) ∈ (fun p => (Quotient.mk (UniformSp …
           rintro ⟨⟨x', y'⟩, h', h⟩
+          -- ⊢ (Quot.mk Setoid.r x, Quot.mk Setoid.r y) ∈ {p | edist p.fst p.snd < ε}
           simp only [Prod.ext_iff] at h
+          -- ⊢ (Quot.mk Setoid.r x, Quot.mk Setoid.r y) ∈ {p | edist p.fst p.snd < ε}
           rwa [← h.1, ← h.2] } _
+          -- 🎉 no goals
 
 /-!
 ### `Additive`, `Multiplicative`

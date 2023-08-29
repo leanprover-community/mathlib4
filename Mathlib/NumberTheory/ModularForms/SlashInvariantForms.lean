@@ -54,6 +54,9 @@ instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
     SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
   coe := SlashInvariantForm.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, slash_action_eq' := slash_action_eq'✝ } = g
+                                      -- ⊢ { toFun := toFun✝¹, slash_action_eq' := slash_action_eq'✝¹ } = { toFun := to …
+                                               -- 🎉 no goals
   slash_action_eq := SlashInvariantForm.slash_action_eq'
 #align slash_invariant_form_class.slash_invariant_form SlashInvariantFormClass.slashInvariantForm
 
@@ -104,6 +107,7 @@ theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) : �
 theorem slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFormClass F Γ k] (f : F)
     (γ : Γ) (z : ℍ) : f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn]
+  -- 🎉 no goals
 #align slash_invariant_form.slash_action_eqn' SlashInvariantForm.slash_action_eqn'
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
@@ -122,6 +126,7 @@ instance instAdd : Add (SlashInvariantForm Γ k) :=
     { toFun := f + g
       slash_action_eq' := fun γ => by
         rw [SlashAction.add_slash, slash_action_eqn, slash_action_eqn] }⟩
+        -- 🎉 no goals
 #align slash_invariant_form.has_add SlashInvariantForm.instAdd
 
 @[simp]
@@ -152,6 +157,7 @@ instance instSMul : SMul α (SlashInvariantForm Γ k) :=
   ⟨fun c f =>
     { toFun := c • ↑f
       slash_action_eq' := fun γ => by rw [SlashAction.smul_slash_of_tower, slash_action_eqn] }⟩
+                                      -- 🎉 no goals
 #align slash_invariant_form.has_smul SlashInvariantForm.instSMul
 
 @[simp]
@@ -170,6 +176,7 @@ instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := -f
       slash_action_eq' := fun γ => by rw [SlashAction.neg_slash, slash_action_eqn] }⟩
+                                      -- 🎉 no goals
 #align slash_invariant_form.has_neg SlashInvariantForm.instNeg
 
 @[simp]
@@ -232,6 +239,7 @@ def mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ 
   toFun := f * g
   slash_action_eq' A := by
     simp_rw [ModularForm.mul_slash_subgroup, SlashInvariantFormClass.slash_action_eq]
+    -- 🎉 no goals
 
 @[simp]
 theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)

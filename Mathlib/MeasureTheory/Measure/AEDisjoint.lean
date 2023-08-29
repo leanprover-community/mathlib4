@@ -37,12 +37,19 @@ theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
   refine' ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
     measurableSet_toMeasurable _ _, fun i => _, _⟩
   · simp only [measure_toMeasurable, inter_iUnion]
+    -- ⊢ ↑↑μ (⋃ (i_1 : ι) (_ : i_1 ∈ {i}ᶜ), s i ∩ s i_1) = 0
     exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
+    -- 🎉 no goals
   · simp only [Pairwise, disjoint_left, onFun, mem_diff, not_and, and_imp, Classical.not_not]
+    -- ⊢ ∀ ⦃i j : ι⦄, i ≠ j → ∀ ⦃a : α⦄, a ∈ s i → ¬a ∈ toMeasurable μ (s i ∩ ⋃ (j :  …
     intro i j hne x hi hU hj
+    -- ⊢ x ∈ toMeasurable μ (s j ∩ ⋃ (j_1 : ι) (_ : j_1 ∈ {j}ᶜ), s j_1)
     replace hU : x ∉ s i ∩ iUnion λ j => iUnion λ _ => s j := λ h => hU (subset_toMeasurable _ _ h)
+    -- ⊢ x ∈ toMeasurable μ (s j ∩ ⋃ (j_1 : ι) (_ : j_1 ∈ {j}ᶜ), s j_1)
     simp only [mem_inter_iff, mem_iUnion, not_and, not_exists] at hU
+    -- ⊢ x ∈ toMeasurable μ (s j ∩ ⋃ (j_1 : ι) (_ : j_1 ∈ {j}ᶜ), s j_1)
     exact (hU hi j hne.symm hj).elim
+    -- 🎉 no goals
 #align measure_theory.exists_null_pairwise_disjoint_diff MeasureTheory.exists_null_pairwise_disjoint_diff
 
 namespace AEDisjoint
@@ -53,6 +60,7 @@ protected theorem eq (h : AEDisjoint μ s t) : μ (s ∩ t) = 0 :=
 
 @[symm]
 protected theorem symm (h : AEDisjoint μ s t) : AEDisjoint μ t s := by rwa [AEDisjoint, inter_comm]
+                                                                       -- 🎉 no goals
 #align measure_theory.ae_disjoint.symm MeasureTheory.AEDisjoint.symm
 
 protected theorem symmetric : Symmetric (AEDisjoint μ) := fun _ _ => AEDisjoint.symm
@@ -64,6 +72,7 @@ protected theorem comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
 
 protected theorem _root_.Disjoint.aedisjoint (h : Disjoint s t) : AEDisjoint μ s t := by
   rw [AEDisjoint, disjoint_iff_inter_eq_empty.1 h, measure_empty]
+  -- 🎉 no goals
 #align disjoint.ae_disjoint Disjoint.aedisjoint
 
 protected theorem _root_.Pairwise.aedisjoint {f : ι → Set α} (hf : Pairwise (Disjoint on f)) :
@@ -93,22 +102,26 @@ protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ
 theorem iUnion_left_iff [Countable ι] {s : ι → Set α} :
     AEDisjoint μ (⋃ i, s i) t ↔ ∀ i, AEDisjoint μ (s i) t := by
   simp only [AEDisjoint, iUnion_inter, measure_iUnion_null_iff]
+  -- 🎉 no goals
 #align measure_theory.ae_disjoint.Union_left_iff MeasureTheory.AEDisjoint.iUnion_left_iff
 
 @[simp]
 theorem iUnion_right_iff [Countable ι] {t : ι → Set α} :
     AEDisjoint μ s (⋃ i, t i) ↔ ∀ i, AEDisjoint μ s (t i) := by
   simp only [AEDisjoint, inter_iUnion, measure_iUnion_null_iff]
+  -- 🎉 no goals
 #align measure_theory.ae_disjoint.Union_right_iff MeasureTheory.AEDisjoint.iUnion_right_iff
 
 @[simp]
 theorem union_left_iff : AEDisjoint μ (s ∪ t) u ↔ AEDisjoint μ s u ∧ AEDisjoint μ t u := by
   simp [union_eq_iUnion, and_comm]
+  -- 🎉 no goals
 #align measure_theory.ae_disjoint.union_left_iff MeasureTheory.AEDisjoint.union_left_iff
 
 @[simp]
 theorem union_right_iff : AEDisjoint μ s (t ∪ u) ↔ AEDisjoint μ s t ∧ AEDisjoint μ s u := by
   simp [union_eq_iUnion, and_comm]
+  -- 🎉 no goals
 #align measure_theory.ae_disjoint.union_right_iff MeasureTheory.AEDisjoint.union_right_iff
 
 theorem union_left (hs : AEDisjoint μ s u) (ht : AEDisjoint μ t u) : AEDisjoint μ (s ∪ t) u :=
@@ -142,6 +155,8 @@ theorem exists_disjoint_diff (h : AEDisjoint μ s t) :
   ⟨toMeasurable μ (s ∩ t), measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans h,
     disjoint_sdiff_self_left.mono_left fun x hx => by
       simp; exact ⟨hx.1, fun hxt => hx.2 <| subset_toMeasurable _ _ ⟨hx.1, hxt⟩⟩⟩
+      -- ⊢ x ∈ ?m.9910 h ∧ ¬x ∈ t
+            -- 🎉 no goals
 #align measure_theory.ae_disjoint.exists_disjoint_diff MeasureTheory.AEDisjoint.exists_disjoint_diff
 
 theorem of_null_right (h : μ t = 0) : AEDisjoint μ s t :=

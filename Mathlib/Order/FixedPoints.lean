@@ -100,12 +100,19 @@ theorem isLeast_lfp : IsLeast (fixedPoints f) (lfp f) :=
 theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ lfp f → p (f a))
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (sSup s)) : p (lfp f) := by
   set s := { a | a ≤ lfp f ∧ p a }
+  -- ⊢ p (↑lfp f)
   specialize hSup s fun a => And.right
+  -- ⊢ p (↑lfp f)
   suffices : sSup s = lfp f
+  -- ⊢ p (↑lfp f)
   exact this ▸ hSup
+  -- ⊢ sSup s = ↑lfp f
   have h : sSup s ≤ lfp f := sSup_le fun b => And.left
+  -- ⊢ sSup s = ↑lfp f
   have hmem : f (sSup s) ∈ s := ⟨f.map_le_lfp h, step _ hSup h⟩
+  -- ⊢ sSup s = ↑lfp f
   exact h.antisymm (f.lfp_le <| le_sSup hmem)
+  -- 🎉 no goals
 #align order_hom.lfp_induction OrderHom.lfp_induction
 
 theorem le_gfp {a : α} (h : a ≤ f a) : a ≤ gfp f :=
@@ -165,9 +172,13 @@ theorem map_gfp_comp : f (gfp (g.comp f)) = gfp (f.comp g) :=
 -- Diagonal rule
 theorem lfp_lfp (h : α →o α →o α) : lfp (lfp.comp h) = lfp h.onDiag := by
   let a := lfp (lfp.comp h)
+  -- ⊢ ↑lfp (comp lfp h) = ↑lfp (onDiag h)
   refine' (lfp_le _ _).antisymm (lfp_le _ (Eq.le _))
+  -- ⊢ ↑(comp lfp h) (↑lfp (onDiag h)) ≤ ↑lfp (onDiag h)
   · exact lfp_le _ h.onDiag.map_lfp.le
+    -- 🎉 no goals
   have ha : (lfp ∘ h) a = a := (lfp.comp h).map_lfp
+  -- ⊢ ↑(onDiag h) (↑lfp (comp lfp h)) = ↑lfp (comp lfp h)
   calc
     h a a = h a (lfp (h a)) := congr_arg (h a) ha.symm
     _ = lfp (h a) := (h a).map_lfp

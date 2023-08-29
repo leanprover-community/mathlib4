@@ -45,14 +45,18 @@ theorem fold_empty : (∅ : Finset α).fold op b f = b :=
 @[simp]
 theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f := by
   dsimp only [fold]
+  -- ⊢ Multiset.fold op b (Multiset.map f (cons a s h).val) = op (f a) (Multiset.fo …
   rw [cons_val, Multiset.map_cons, fold_cons_left]
+  -- 🎉 no goals
 #align finset.fold_cons Finset.fold_cons
 
 @[simp]
 theorem fold_insert [DecidableEq α] (h : a ∉ s) :
     (insert a s).fold op b f = f a * s.fold op b f := by
   unfold fold
+  -- ⊢ Multiset.fold op b (Multiset.map f (insert a s).val) = op (f a) (Multiset.fo …
   rw [insert_val, ndinsert_of_not_mem h, Multiset.map_cons, fold_cons_left]
+  -- 🎉 no goals
 #align finset.fold_insert Finset.fold_insert
 
 @[simp]
@@ -63,22 +67,26 @@ theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
 @[simp]
 theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, map, Multiset.map_map]
+  -- 🎉 no goals
 #align finset.fold_map Finset.fold_map
 
 @[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
     (H : ∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
+  -- 🎉 no goals
 #align finset.fold_image Finset.fold_image
 
 @[congr]
 theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f = s.fold op b g := by
   rw [fold, fold, map_congr rfl H]
+  -- 🎉 no goals
 #align finset.fold_congr Finset.fold_congr
 
 theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :
     (s.fold op (b₁ * b₂) fun x => f x * g x) = s.fold op b₁ f * s.fold op b₂ g := by
   simp only [fold, fold_distrib]
+  -- 🎉 no goals
 #align finset.fold_op_distrib Finset.fold_op_distrib
 
 theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b c) :
@@ -96,7 +104,9 @@ theorem fold_hom {op' : γ → γ → γ} [IsCommutative γ op'] [IsAssociative 
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) :
     (s.fold op' (m b) fun x => m (f x)) = m (s.fold op b f) := by
   rw [fold, fold, ← Multiset.fold_hom op hm, Multiset.map_map]
+  -- ⊢ Multiset.fold op' (m b) (Multiset.map (fun x => m (f x)) s.val) = Multiset.f …
   simp only [Function.comp_apply]
+  -- 🎉 no goals
 #align finset.fold_hom Finset.fold_hom
 
 theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
@@ -112,6 +122,7 @@ theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b :
 theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : β} :
     ((s₁ ∪ s₂).fold op b₁ f * (s₁ ∩ s₂).fold op b₂ f) = s₁.fold op b₂ f * s₂.fold op b₁ f := by
   unfold fold
+  -- ⊢ op (Multiset.fold op b₁ (Multiset.map f (s₁ ∪ s₂).val)) (Multiset.fold op b₂ …
   rw [← fold_add op, ← Multiset.map_add, union_val, inter_val, union_add_inter, Multiset.map_add,
     hc.comm, fold_add]
 #align finset.fold_union_inter Finset.fold_union_inter
@@ -120,18 +131,27 @@ theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : �
 theorem fold_insert_idem [DecidableEq α] [hi : IsIdempotent β op] :
     (insert a s).fold op b f = f a * s.fold op b f := by
   by_cases h : a ∈ s
+  -- ⊢ fold op b f (insert a s) = op (f a) (fold op b f s)
   · rw [← insert_erase h]
+    -- ⊢ fold op b f (insert a (insert a (erase s a))) = op (f a) (fold op b f (inser …
     simp [← ha.assoc, hi.idempotent]
+    -- 🎉 no goals
   · apply fold_insert h
+    -- 🎉 no goals
 #align finset.fold_insert_idem Finset.fold_insert_idem
 
 theorem fold_image_idem [DecidableEq α] {g : γ → α} {s : Finset γ} [hi : IsIdempotent β op] :
     (image g s).fold op b f = s.fold op b (f ∘ g) := by
   induction' s using Finset.cons_induction with x xs hx ih
+  -- ⊢ fold op b f (image g ∅) = fold op b (f ∘ g) ∅
   · rw [fold_empty, image_empty, fold_empty]
+    -- 🎉 no goals
   · haveI := Classical.decEq γ
+    -- ⊢ fold op b f (image g (cons x xs hx)) = fold op b (f ∘ g) (cons x xs hx)
     rw [fold_cons, cons_eq_insert, image_insert, fold_insert_idem, ih]
+    -- ⊢ op (f (g x)) (fold op b (f ∘ g) xs) = op ((f ∘ g) x) (fold op b (f ∘ g) xs)
     simp only [Function.comp_apply]
+    -- 🎉 no goals
 #align finset.fold_image_idem Finset.fold_image_idem
 
 /-- A stronger version of `Finset.fold_ite`, but relies on
@@ -199,8 +219,11 @@ theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y
 theorem fold_union_empty_singleton [DecidableEq α] (s : Finset α) :
     Finset.fold (· ∪ ·) ∅ singleton s = s := by
   induction' s using Finset.induction_on with a s has ih
+  -- ⊢ fold (fun x x_1 => x ∪ x_1) ∅ singleton ∅ = ∅
   · simp only [fold_empty]
+    -- 🎉 no goals
   · rw [fold_insert has, ih, insert_eq]
+    -- 🎉 no goals
 #align finset.fold_union_empty_singleton Finset.fold_union_empty_singleton
 
 theorem fold_sup_bot_singleton [DecidableEq α] (s : Finset α) :
@@ -218,10 +241,15 @@ theorem le_fold_min : c ≤ s.fold min b f ↔ c ≤ b ∧ ∀ x ∈ s, c ≤ f 
 
 theorem fold_min_le : s.fold min b f ≤ c ↔ b ≤ c ∨ ∃ x ∈ s, f x ≤ c := by
   show _ ≥ _ ↔ _
+  -- ⊢ c ≥ fold min b f s ↔ b ≤ c ∨ ∃ x, x ∈ s ∧ f x ≤ c
   apply fold_op_rel_iff_or
+  -- ⊢ ∀ {x y z : β}, x ≥ min y z ↔ x ≥ y ∨ x ≥ z
   intro x y z
+  -- ⊢ x ≥ min y z ↔ x ≥ y ∨ x ≥ z
   show _ ≤ _ ↔ _
+  -- ⊢ min y z ≤ x ↔ x ≥ y ∨ x ≥ z
   exact min_le_iff
+  -- 🎉 no goals
 #align finset.fold_min_le Finset.fold_min_le
 
 theorem lt_fold_min : c < s.fold min b f ↔ c < b ∧ ∀ x ∈ s, c < f x :=
@@ -230,18 +258,28 @@ theorem lt_fold_min : c < s.fold min b f ↔ c < b ∧ ∀ x ∈ s, c < f x :=
 
 theorem fold_min_lt : s.fold min b f < c ↔ b < c ∨ ∃ x ∈ s, f x < c := by
   show _ > _ ↔ _
+  -- ⊢ c > fold min b f s ↔ b < c ∨ ∃ x, x ∈ s ∧ f x < c
   apply fold_op_rel_iff_or
+  -- ⊢ ∀ {x y z : β}, x > min y z ↔ x > y ∨ x > z
   intro x y z
+  -- ⊢ x > min y z ↔ x > y ∨ x > z
   show _ < _ ↔ _
+  -- ⊢ min y z < x ↔ x > y ∨ x > z
   exact min_lt_iff
+  -- 🎉 no goals
 #align finset.fold_min_lt Finset.fold_min_lt
 
 theorem fold_max_le : s.fold max b f ≤ c ↔ b ≤ c ∧ ∀ x ∈ s, f x ≤ c := by
   show _ ≥ _ ↔ _
+  -- ⊢ c ≥ fold max b f s ↔ b ≤ c ∧ ∀ (x : α), x ∈ s → f x ≤ c
   apply fold_op_rel_iff_and
+  -- ⊢ ∀ {x y z : β}, x ≥ max y z ↔ x ≥ y ∧ x ≥ z
   intro x y z
+  -- ⊢ x ≥ max y z ↔ x ≥ y ∧ x ≥ z
   show _ ≤ _ ↔ _
+  -- ⊢ max y z ≤ x ↔ x ≥ y ∧ x ≥ z
   exact max_le_iff
+  -- 🎉 no goals
 #align finset.fold_max_le Finset.fold_max_le
 
 theorem le_fold_max : c ≤ s.fold max b f ↔ c ≤ b ∨ ∃ x ∈ s, c ≤ f x :=
@@ -250,10 +288,15 @@ theorem le_fold_max : c ≤ s.fold max b f ↔ c ≤ b ∨ ∃ x ∈ s, c ≤ f 
 
 theorem fold_max_lt : s.fold max b f < c ↔ b < c ∧ ∀ x ∈ s, f x < c := by
   show _ > _ ↔ _
+  -- ⊢ c > fold max b f s ↔ b < c ∧ ∀ (x : α), x ∈ s → f x < c
   apply fold_op_rel_iff_and
+  -- ⊢ ∀ {x y z : β}, x > max y z ↔ x > y ∧ x > z
   intro x y z
+  -- ⊢ x > max y z ↔ x > y ∧ x > z
   show _ < _ ↔ _
+  -- ⊢ max y z < x ↔ x > y ∧ x > z
   exact max_lt_iff
+  -- 🎉 no goals
 #align finset.fold_max_lt Finset.fold_max_lt
 
 theorem lt_fold_max : c < s.fold max b f ↔ c < b ∨ ∃ x ∈ s, c < f x :=

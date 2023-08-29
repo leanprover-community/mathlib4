@@ -53,7 +53,9 @@ theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsInteg
   · exact
       (Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map (monic hs)).1 (irreducible hs)
   · rw [aeval_map_algebraMap, aeval_algebraMap_apply, aeval, map_zero]
+    -- 🎉 no goals
   · exact (monic hs).map _
+    -- 🎉 no goals
 #align minpoly.is_integrally_closed_eq_field_fractions minpoly.isIntegrallyClosed_eq_field_fractions
 
 /-- For integrally closed domains, the minimal polynomial over the ring is the same as the minimal
@@ -62,7 +64,9 @@ this version is useful if the element is in a ring that is already a `K`-algebra
 theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsScalarTower R K S]
     {s : S} (hs : IsIntegral R s) : minpoly K s = (minpoly R s).map (algebraMap R K) := by
   let L := FractionRing S
+  -- ⊢ minpoly K s = map (algebraMap R K) (minpoly R s)
   rw [← isIntegrallyClosed_eq_field_fractions K L hs]
+  -- ⊢ minpoly K s = minpoly K (↑(algebraMap S L) s)
   refine'
     minpoly.eq_of_algebraMap_eq (IsFractionRing.injective S L) (isIntegral_of_isScalarTower hs) rfl
 #align minpoly.is_integrally_closed_eq_field_fractions' minpoly.isIntegrallyClosed_eq_field_fractions'
@@ -79,7 +83,9 @@ variable [IsIntegrallyClosed R]
 theorem isIntegrallyClosed_dvd [Nontrivial R] {s : S} (hs : IsIntegral R s) {p : R[X]}
     (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p := by
   let K := FractionRing R
+  -- ⊢ minpoly R s ∣ p
   let L := FractionRing S
+  -- ⊢ minpoly R s ∣ p
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
     refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
@@ -91,7 +97,9 @@ theorem isIntegrallyClosed_dvd [Nontrivial R] {s : S} (hs : IsIntegral R s) {p :
   rw [isIntegrallyClosed_eq_field_fractions _ _ hs,
     map_dvd_map (algebraMap R K) (IsFractionRing.injective R K) (minpoly.monic hs)] at this
   rw [← dvd_iff_modByMonic_eq_zero (minpoly.monic hs)]
+  -- ⊢ p %ₘ minpoly R s = 0
   refine' Polynomial.eq_zero_of_dvd_of_degree_lt this (degree_modByMonic_lt p <| minpoly.monic hs)
+  -- 🎉 no goals
 #align minpoly.is_integrally_closed_dvd minpoly.isIntegrallyClosed_dvd
 
 theorem isIntegrallyClosed_dvd_iff [Nontrivial R] {s : S} (hs : IsIntegral R s) (p : R[X]) :
@@ -106,6 +114,7 @@ theorem ker_eval {s : S} (hs : IsIntegral R s) :
     RingHom.ker ((Polynomial.aeval s).toRingHom : R[X] →+* S) =
     Ideal.span ({minpoly R s} : Set R[X]) := by
   ext p
+  -- ⊢ p ∈ RingHom.ker ↑(Polynomial.aeval s) ↔ p ∈ Ideal.span {minpoly R s}
   simp_rw [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom,
     isIntegrallyClosed_dvd_iff hs, ← Ideal.mem_span_singleton]
 #align minpoly.ker_eval minpoly.ker_eval
@@ -116,8 +125,11 @@ assumptions on `S` in exchange for stronger assumptions on `R`. -/
 theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p : R[X]}
     (hp0 : p ≠ 0) (hp : Polynomial.aeval s p = 0) : degree (minpoly R s) ≤ degree p := by
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
+  -- ⊢ ↑(natDegree (minpoly R s)) ≤ ↑(natDegree p)
   norm_cast
+  -- ⊢ natDegree (minpoly R s) ≤ natDegree p
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
+  -- 🎉 no goals
 #align minpoly.is_integrally_closed.degree_le_of_ne_zero minpoly.IsIntegrallyClosed.degree_le_of_ne_zero
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
@@ -129,13 +141,22 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
     (Pmin : ∀ Q : R[X], Q.Monic → Polynomial.aeval s Q = 0 → degree P ≤ degree Q) :
     P = minpoly R s := by
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
+  -- ⊢ P = minpoly R s
   symm; apply eq_of_sub_eq_zero
+  -- ⊢ minpoly R s = P
+        -- ⊢ minpoly R s - P = 0
   by_contra hnz
+  -- ⊢ False
   have := IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP])
+  -- ⊢ False
   contrapose! this
+  -- ⊢ degree (minpoly R s - P) < degree (minpoly R s)
   refine' degree_sub_lt _ (ne_zero hs) _
+  -- ⊢ degree (minpoly R s) = degree P
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
+    -- 🎉 no goals
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
+    -- 🎉 no goals
 #align minpoly.is_integrally_closed.minpoly.unique IsIntegrallyClosed.minpoly.unique
 
 theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
@@ -144,8 +165,11 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
       ⟨fun h_contra => (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
         fun a b h => or_iff_not_imp_left.mpr fun h' => _⟩⟩
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
+  -- ⊢ ↑(Polynomial.aeval x) b = 0
   rw [aeval_mul] at h
+  -- ⊢ ↑(Polynomial.aeval x) b = 0
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
+  -- 🎉 no goals
 #align minpoly.prime_of_is_integrally_closed minpoly.prime_of_isIntegrallyClosed
 
 noncomputable section AdjoinRoot
@@ -156,13 +180,19 @@ variable {x : S}
 
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine' (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => _
+  -- ⊢ P₁ = 0
   obtain ⟨P, hP⟩ := mk_surjective (minpoly.monic hx) P₁
+  -- ⊢ P₁ = 0
   by_cases hPzero : P = 0
+  -- ⊢ P₁ = 0
   · simpa [hPzero] using hP.symm
+    -- 🎉 no goals
   rw [← hP, Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
     isIntegrallyClosed_dvd_iff hx] at hP₁
   obtain ⟨Q, hQ⟩ := hP₁
+  -- ⊢ P₁ = 0
   rw [← hP, hQ, RingHom.map_mul, mk_self, zero_mul]
+  -- 🎉 no goals
 #align minpoly.to_adjoin.injective minpoly.ToAdjoin.injective
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
@@ -210,6 +240,7 @@ theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsInt
     (hx : B.gen ∈ adjoin R ({x} : Set S)) :
     (B.ofGenMemAdjoin' hint hx).gen = x := by
   simp [PowerBasis.ofGenMemAdjoin']
+  -- 🎉 no goals
 #align power_basis.of_gen_mem_adjoin'_gen PowerBasis.ofGenMemAdjoin'_gen
 
 end AdjoinRoot

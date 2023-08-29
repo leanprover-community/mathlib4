@@ -26,8 +26,11 @@ open scoped Real
 
 theorem hasStrictDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x := by
   convert (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
+  -- ⊢ ↑1 / cos x ^ 2 = (cos x * cos x - sin x * -sin x) / cos x ^ 2
   rw_mod_cast [← sin_sq_add_cos_sq x]
+  -- ⊢ (sin x ^ 2 + cos x ^ 2) / cos x ^ 2 = (cos x * cos x - sin x * -sin x) / cos …
   ring
+  -- 🎉 no goals
 #align complex.has_strict_deriv_at_tan Complex.hasStrictDerivAt_tan
 
 theorem hasDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^ 2) x :=
@@ -39,7 +42,9 @@ open scoped Topology
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
   simp only [tan_eq_sin_div_cos, ← norm_eq_abs, norm_div]
+  -- ⊢ Tendsto (fun x => ‖sin x‖ / ‖cos x‖) (𝓝[{x}ᶜ] x) atTop
   have A : sin x ≠ 0 := fun h => by simpa [*, sq] using sin_sq_add_cos_sq x
+  -- ⊢ Tendsto (fun x => ‖sin x‖ / ‖cos x‖) (𝓝[{x}ᶜ] x) atTop
   have B : Tendsto cos (𝓝[≠] x) (𝓝[≠] 0) :=
     hx ▸ (hasDerivAt_cos x).tendsto_punctured_nhds (neg_ne_zero.2 A)
   exact continuous_sin.continuousWithinAt.norm.mul_atTop (norm_pos_iff.2 A)
@@ -54,6 +59,7 @@ theorem tendsto_abs_tan_atTop (k : ℤ) :
 @[simp]
 theorem continuousAt_tan {x : ℂ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
   refine' ⟨fun hc h₀ => _, fun h => (hasDerivAt_tan h).continuousAt⟩
+  -- ⊢ False
   exact not_tendsto_nhds_of_tendsto_atTop (tendsto_abs_tan_of_cos_eq_zero h₀) _
     (hc.norm.tendsto.mono_left inf_le_left)
 #align complex.continuous_at_tan Complex.continuousAt_tan
@@ -67,7 +73,9 @@ theorem differentiableAt_tan {x : ℂ} : DifferentiableAt ℂ tan x ↔ cos x �
 theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
   if h : cos x = 0 then by
     have : ¬DifferentiableAt ℂ tan x := mt differentiableAt_tan.1 (Classical.not_not.2 h)
+    -- ⊢ deriv tan x = ↑1 / cos x ^ 2
     simp [deriv_zero_of_not_differentiableAt this, h, sq]
+    -- 🎉 no goals
   else (hasDerivAt_tan h).deriv
 #align complex.deriv_tan Complex.deriv_tan
 

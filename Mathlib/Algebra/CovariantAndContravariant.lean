@@ -155,10 +155,15 @@ theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) 
 theorem Group.covariant_iff_contravariant [Group N] :
     Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
   refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
+  -- ⊢ r b c
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c]
+    -- ⊢ r (a⁻¹ * (a * b)) (a⁻¹ * (a * c))
     exact h a⁻¹ bc
+    -- 🎉 no goals
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c] at bc
+    -- ⊢ r ((fun x x_1 => x * x_1) a b) ((fun x x_1 => x * x_1) a c)
     exact h a⁻¹ bc
+    -- 🎉 no goals
 #align group.covariant_iff_contravariant Group.covariant_iff_contravariant
 #align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
@@ -171,10 +176,15 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
     Covariant N N (swap (· * ·)) r ↔ Contravariant N N (swap (· * ·)) r := by
   refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
+  -- ⊢ r b c
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a]
+    -- ⊢ r (b * a * a⁻¹) (c * a * a⁻¹)
     exact h a⁻¹ bc
+    -- 🎉 no goals
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
+    -- ⊢ r (swap (fun x x_1 => x * x_1) a b) (swap (fun x x_1 => x * x_1) a c)
     exact h a⁻¹ bc
+    -- 🎉 no goals
 #align group.covariant_swap_iff_contravariant_swap Group.covariant_swap_iff_contravariant_swap
 #align add_group.covariant_swap_iff_contravariant_swap AddGroup.covariant_swap_iff_contravariant_swap
 
@@ -283,15 +293,22 @@ end Monotone
 theorem covariant_le_of_covariant_lt [PartialOrder N] :
     Covariant M N μ (· < ·) → Covariant M N μ (· ≤ ·) := by
   intro h a b c bc
+  -- ⊢ μ a b ≤ μ a c
   rcases le_iff_eq_or_lt.mp bc with (rfl | bc)
+  -- ⊢ μ a b ≤ μ a b
   · exact rfl.le
+    -- 🎉 no goals
   · exact (h _ bc).le
+    -- 🎉 no goals
 #align covariant_le_of_covariant_lt covariant_le_of_covariant_lt
 
 theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) → Contravariant M N μ (· < ·) := by
   refine fun h a b c bc ↦ lt_iff_le_and_ne.mpr ⟨h a bc.le, ?_⟩
+  -- ⊢ b ≠ c
   rintro rfl; exact lt_irrefl _ bc
+  -- ⊢ False
+              -- 🎉 no goals
 #align contravariant_lt_of_contravariant_le contravariant_lt_of_contravariant_le
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
@@ -315,12 +332,14 @@ lemma flip_mul [CommSemigroup N] : (flip (· * ·) : N → N → N) = (· * ·) 
 @[to_additive]
 theorem covariant_flip_mul_iff [CommSemigroup N] :
     Covariant N N (flip (· * ·)) r ↔ Covariant N N (· * ·) r := by rw [flip_mul]
+                                                                   -- 🎉 no goals
 #align covariant_flip_mul_iff covariant_flip_mul_iff
 #align covariant_flip_add_iff covariant_flip_add_iff
 
 @[to_additive]
 theorem contravariant_flip_mul_iff [CommSemigroup N] :
     Contravariant N N (flip (· * ·)) r ↔ Contravariant N N (· * ·) r := by rw [flip_mul]
+                                                                           -- 🎉 no goals
 #align contravariant_flip_mul_iff contravariant_flip_mul_iff
 #align contravariant_flip_add_iff contravariant_flip_add_iff
 
@@ -360,7 +379,9 @@ instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSem
     CovariantClass N N (· * ·) (· < ·) where
   elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
+    -- ⊢ a * b < a * c
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_right a).mpr cb⟩
+    -- 🎉 no goals
 
 @[to_additive]
 instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
@@ -368,7 +389,9 @@ instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
     CovariantClass N N (swap (· * ·)) (· < ·) where
   elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
+    -- ⊢ swap (fun x x_1 => x * x_1) a b < swap (fun x x_1 => x * x_1) a c
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_left a).mpr cb⟩
+    -- 🎉 no goals
 
 @[to_additive]
 instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
@@ -376,8 +399,11 @@ instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftC
     ContravariantClass N N (· * ·) (· ≤ ·) where
   elim a b c bc := by
     cases' le_iff_eq_or_lt.mp bc with h h
+    -- ⊢ b ≤ c
     · exact ((mul_right_inj a).mp h).le
+      -- 🎉 no goals
     · exact (ContravariantClass.elim _ h).le
+      -- 🎉 no goals
 
 @[to_additive]
 instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
@@ -385,7 +411,10 @@ instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mu
     ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim a b c bc := by
     cases' le_iff_eq_or_lt.mp bc with h h
+    -- ⊢ b ≤ c
     · exact ((mul_left_inj a).mp h).le
+      -- 🎉 no goals
     · exact (ContravariantClass.elim _ h).le
+      -- 🎉 no goals
 
 end Variants

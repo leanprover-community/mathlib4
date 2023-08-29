@@ -55,14 +55,18 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ (�
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ) := by
   rw [nhds_eq_update, update_same]
+  -- 🎉 no goals
 #align with_zero_topology.nhds_zero WithZeroTopology.nhds_zero
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
 theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
   rw [nhds_zero]
+  -- ⊢ HasBasis (⨅ (γ : Γ₀) (_ : γ ≠ 0), 𝓟 (Iio γ)) (fun γ => γ ≠ 0) Iio
   refine' hasBasis_biInf_principal _ ⟨1, one_ne_zero⟩
+  -- ⊢ DirectedOn ((fun γ => Iio γ) ⁻¹'o fun x x_1 => x ≥ x_1) fun γ => γ = 0 → False
   exact directedOn_iff_directed.2 (directed_of_inf fun a b hab => Iio_subset_Iio hab)
+  -- 🎉 no goals
 #align with_zero_topology.has_basis_nhds_zero WithZeroTopology.hasBasis_nhds_zero
 
 theorem Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
@@ -77,6 +81,7 @@ theorem nhds_zero_of_units (γ : Γ₀ˣ) : Iio ↑γ ∈ 𝓝 (0 : Γ₀) :=
 
 theorem tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀ ≠ 0), ∀ᶠ x in l, f x < γ₀ := by
   simp [nhds_zero]
+  -- 🎉 no goals
 #align with_zero_topology.tendsto_zero WithZeroTopology.tendsto_zero
 
 /-!
@@ -88,6 +93,7 @@ element. -/
 @[simp]
 theorem nhds_of_ne_zero {γ : Γ₀} (h₀ : γ ≠ 0) : 𝓝 γ = pure γ := by
   rw [nhds_eq_update, update_noteq h₀]
+  -- 🎉 no goals
 #align with_zero_topology.nhds_of_ne_zero WithZeroTopology.nhds_of_ne_zero
 
 /-- The neighbourhood filter of an invertible element consists of all sets containing that
@@ -99,17 +105,21 @@ theorem nhds_coe_units (γ : Γ₀ˣ) : 𝓝 (γ : Γ₀) = pure (γ : Γ₀) :=
 /-- If `γ` is an invertible element of a linearly ordered group with zero element adjoined, then
 `{γ}` is a neighbourhood of `γ`. -/
 theorem singleton_mem_nhds_of_units (γ : Γ₀ˣ) : ({↑γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp
+                                                                                   -- 🎉 no goals
 #align with_zero_topology.singleton_mem_nhds_of_units WithZeroTopology.singleton_mem_nhds_of_units
 
 /-- If `γ` is a nonzero element of a linearly ordered group with zero element adjoined, then `{γ}`
 is a neighbourhood of `γ`. -/
 theorem singleton_mem_nhds_of_ne_zero (h : γ ≠ 0) : ({γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp [h]
+                                                                                      -- 🎉 no goals
 #align with_zero_topology.singleton_mem_nhds_of_ne_zero WithZeroTopology.singleton_mem_nhds_of_ne_zero
 
 theorem hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
     HasBasis (𝓝 x) (fun _ : Unit => True) fun _ => {x} := by
   rw [nhds_of_ne_zero h]
+  -- ⊢ HasBasis (pure x) (fun x => True) fun x_1 => {x}
   exact hasBasis_pure _
+  -- 🎉 no goals
 #align with_zero_topology.has_basis_nhds_of_ne_zero WithZeroTopology.hasBasis_nhds_of_ne_zero
 
 theorem hasBasis_nhds_units (γ : Γ₀ˣ) :
@@ -119,6 +129,7 @@ theorem hasBasis_nhds_units (γ : Γ₀ˣ) :
 
 theorem tendsto_of_ne_zero {γ : Γ₀} (h : γ ≠ 0) : Tendsto f l (𝓝 γ) ↔ ∀ᶠ x in l, f x = γ := by
   rw [nhds_of_ne_zero h, tendsto_pure]
+  -- 🎉 no goals
 #align with_zero_topology.tendsto_of_ne_zero WithZeroTopology.tendsto_of_ne_zero
 
 theorem tendsto_units {γ₀ : Γ₀ˣ} : Tendsto f l (𝓝 (γ₀ : Γ₀)) ↔ ∀ᶠ x in l, f x = γ₀ :=
@@ -127,6 +138,9 @@ theorem tendsto_units {γ₀ : Γ₀ˣ} : Tendsto f l (𝓝 (γ₀ : Γ₀)) ↔
 
 theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
   rcases eq_or_ne γ₁ 0 with (rfl | h₀) <;> simp [*, h.ne', Iio_mem_nhds_zero]
+  -- ⊢ Iio γ₂ ∈ 𝓝 0
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align with_zero_topology.Iio_mem_nhds WithZeroTopology.Iio_mem_nhds
 
 /-!
@@ -135,6 +149,7 @@ theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
 
 theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
   rw [isOpen_iff_mem_nhds, ← and_forall_ne (0 : Γ₀)]
+  -- ⊢ ((0 ∈ s → s ∈ 𝓝 0) ∧ ∀ (b : Γ₀), b ≠ 0 → b ∈ s → s ∈ 𝓝 b) ↔ ¬0 ∈ s ∨ ∃ γ, γ  …
   simp (config := { contextual := true }) [nhds_of_ne_zero, imp_iff_not_or,
     hasBasis_nhds_zero.mem_iff]
 #align with_zero_topology.is_open_iff WithZeroTopology.isOpen_iff
@@ -158,9 +173,13 @@ structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
 scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
     simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
+    -- ⊢ ∀ (a : Γ₀ × Γ₀), a ∈ {a | a.snd < a.fst} → {a | a.snd < a.fst} ∈ 𝓝 a
     rintro ⟨a, b⟩ (hab : b < a)
+    -- ⊢ {a | a.snd < a.fst} ∈ 𝓝 (a, b)
     rw [nhds_prod_eq, nhds_of_ne_zero (zero_le'.trans_lt hab).ne', pure_prod]
+    -- ⊢ {a | a.snd < a.fst} ∈ map (Prod.mk a) (𝓝 b)
     exact Iio_mem_nhds hab
+    -- 🎉 no goals
 #align with_zero_topology.order_closed_topology WithZeroTopology.orderClosedTopology
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
@@ -168,9 +187,13 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
 scoped instance (priority := 100) t5Space : T5Space Γ₀ where
   completely_normal := fun s t h₁ h₂ => by
     by_cases hs : 0 ∈ s
+    -- ⊢ Disjoint (𝓝ˢ s) (𝓝ˢ t)
     · have ht : 0 ∉ t := fun ht => disjoint_left.1 h₁ (subset_closure hs) ht
+      -- ⊢ Disjoint (𝓝ˢ s) (𝓝ˢ t)
       rwa [(isOpen_iff.2 (.inl ht)).nhdsSet_eq, disjoint_nhdsSet_principal]
+      -- 🎉 no goals
     · rwa [(isOpen_iff.2 (.inl hs)).nhdsSet_eq, disjoint_principal_nhdsSet]
+      -- 🎉 no goals
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₃. -/
 @[deprecated t5Space] lemma t3Space : T3Space Γ₀ := inferInstance
@@ -182,29 +205,45 @@ monoid. -/
 scoped instance (priority := 100) : ContinuousMul Γ₀ where
   continuous_mul := by
     simp only [continuous_iff_continuousAt, ContinuousAt]
+    -- ⊢ ∀ (x : Γ₀ × Γ₀), Tendsto (fun p => p.fst * p.snd) (𝓝 x) (𝓝 (x.fst * x.snd))
     rintro ⟨x, y⟩
+    -- ⊢ Tendsto (fun p => p.fst * p.snd) (𝓝 (x, y)) (𝓝 ((x, y).fst * (x, y).snd))
     wlog hle : x ≤ y generalizing x y
+    -- ⊢ Tendsto (fun p => p.fst * p.snd) (𝓝 (x, y)) (𝓝 ((x, y).fst * (x, y).snd))
     · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
+      -- ⊢ Tendsto (fun p => p.fst * p.snd) (𝓝 (x, y)) (𝓝 ((x, y).fst * (x, y).snd))
       simpa only [mul_comm, Function.comp, Prod.swap] using this
+      -- 🎉 no goals
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
+      -- ⊢ Tendsto (fun p => p.fst * p.snd) (𝓝 (0, 0)) (𝓝 0)
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
         fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
+      -- ⊢ (x, y).fst * (x, y).snd ∈ Iio γ
       exact (mul_lt_mul₀ hx hy).trans_eq (mul_one γ)
+      -- 🎉 no goals
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
+      -- ⊢ Tendsto ((fun p => p.fst * p.snd) ∘ fun a => (a, y)) (𝓝 0) (𝓝 0)
       refine' (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => _
+      -- ⊢ ∃ ia, ia ≠ 0 ∧ ∀ (x : Γ₀), x ∈ Iio ia → ((fun p => p.fst * p.snd) ∘ fun a => …
       refine' ⟨γ / y, div_ne_zero hγ hy, fun x hx => _⟩
+      -- ⊢ ((fun p => p.fst * p.snd) ∘ fun a => (a, y)) x ∈ Iio γ
       calc x * y < γ / y * y := mul_lt_right₀ _ hx hy
       _ = γ := div_mul_cancel _ hy
     · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'
+      -- ⊢ Tendsto (fun p => p.fst * p.snd) (𝓝 (x, y)) (𝓝 ((x, y).fst * (x, y).snd))
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
+      -- ⊢ Tendsto (fun p => p.fst * p.snd) (pure (x, y)) (𝓝 ((x, y).fst * (x, y).snd))
       exact pure_le_nhds (x * y)
+      -- 🎉 no goals
 
 @[nolint defLemma]
 scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
+    -- ⊢ Tendsto Inv.inv (pure γ) (𝓝 γ⁻¹)
     exact pure_le_nhds γ⁻¹⟩
+    -- 🎉 no goals
 
 end WithZeroTopology

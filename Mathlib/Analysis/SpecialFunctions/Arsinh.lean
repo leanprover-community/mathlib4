@@ -56,32 +56,44 @@ def arsinh (x : ℝ) :=
 
 theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + sqrt (1 + x ^ 2) := by
   apply exp_log
+  -- ⊢ 0 < x + sqrt (1 + x ^ 2)
   rw [← neg_lt_iff_pos_add']
+  -- ⊢ -x < sqrt (1 + x ^ 2)
   apply lt_sqrt_of_sq_lt
+  -- ⊢ (-x) ^ 2 < 1 + x ^ 2
   simp
+  -- 🎉 no goals
 #align real.exp_arsinh Real.exp_arsinh
 
 @[simp]
 theorem arsinh_zero : arsinh 0 = 0 := by simp [arsinh]
+                                         -- 🎉 no goals
 #align real.arsinh_zero Real.arsinh_zero
 
 @[simp]
 theorem arsinh_neg (x : ℝ) : arsinh (-x) = -arsinh x := by
   rw [← exp_eq_exp, exp_arsinh, exp_neg, exp_arsinh]
+  -- ⊢ -x + sqrt (1 + (-x) ^ 2) = (x + sqrt (1 + x ^ 2))⁻¹
   apply eq_inv_of_mul_eq_one_left
+  -- ⊢ (-x + sqrt (1 + (-x) ^ 2)) * (x + sqrt (1 + x ^ 2)) = 1
   rw [neg_sq, neg_add_eq_sub, add_comm x, mul_comm, ← sq_sub_sq, sq_sqrt, add_sub_cancel]
+  -- ⊢ 0 ≤ 1 + x ^ 2
   exact add_nonneg zero_le_one (sq_nonneg _)
+  -- 🎉 no goals
 #align real.arsinh_neg Real.arsinh_neg
 
 /-- `arsinh` is the right inverse of `sinh`. -/
 @[simp]
 theorem sinh_arsinh (x : ℝ) : sinh (arsinh x) = x := by
   rw [sinh_eq, ← arsinh_neg, exp_arsinh, exp_arsinh, neg_sq]; field_simp
+  -- ⊢ (x + sqrt (1 + x ^ 2) - (-x + sqrt (1 + x ^ 2))) / 2 = x
+                                                              -- 🎉 no goals
 #align real.sinh_arsinh Real.sinh_arsinh
 
 @[simp]
 theorem cosh_arsinh (x : ℝ) : cosh (arsinh x) = sqrt (1 + x ^ 2) := by
   rw [← sqrt_sq (cosh_pos _).le, cosh_sq', sinh_arsinh]
+  -- 🎉 no goals
 #align real.cosh_arsinh Real.cosh_arsinh
 
 /-- `sinh` is surjective, `∀ b, ∃ a, sinh a = b`. In this case, we use `a = arsinh b`. -/
@@ -160,10 +172,12 @@ theorem arsinh_eq_zero_iff : arsinh x = 0 ↔ x = 0 :=
 
 @[simp]
 theorem arsinh_nonneg_iff : 0 ≤ arsinh x ↔ 0 ≤ x := by rw [← sinh_le_sinh, sinh_zero, sinh_arsinh]
+                                                       -- 🎉 no goals
 #align real.arsinh_nonneg_iff Real.arsinh_nonneg_iff
 
 @[simp]
 theorem arsinh_nonpos_iff : arsinh x ≤ 0 ↔ x ≤ 0 := by rw [← sinh_le_sinh, sinh_zero, sinh_arsinh]
+                                                       -- 🎉 no goals
 #align real.arsinh_nonpos_iff Real.arsinh_nonpos_iff
 
 @[simp]
@@ -180,6 +194,7 @@ theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x
   convert sinhHomeomorph.toLocalHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
     (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
+  -- 🎉 no goals
 #align real.has_strict_deriv_at_arsinh Real.hasStrictDerivAt_arsinh
 
 theorem hasDerivAt_arsinh (x : ℝ) : HasDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x :=

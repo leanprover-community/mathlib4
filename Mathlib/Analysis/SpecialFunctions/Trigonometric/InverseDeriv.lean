@@ -30,21 +30,30 @@ section Arcsin
 theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasStrictDerivAt arcsin (1 / sqrt (1 - x ^ 2)) x ∧ ContDiffAt ℝ ⊤ arcsin x := by
   cases' h₁.lt_or_lt with h₁ h₁
+  -- ⊢ HasStrictDerivAt arcsin (1 / sqrt (1 - x ^ 2)) x ∧ ContDiffAt ℝ ⊤ arcsin x
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₁]
+    -- ⊢ HasStrictDerivAt arcsin (1 / sqrt (1 - x ^ 2)) x ∧ ContDiffAt ℝ ⊤ arcsin x
     rw [sqrt_eq_zero'.2 this.le, div_zero]
+    -- ⊢ HasStrictDerivAt arcsin 0 x ∧ ContDiffAt ℝ ⊤ arcsin x
     have : arcsin =ᶠ[𝓝 x] fun _ => -(π / 2) :=
       (gt_mem_nhds h₁).mono fun y hy => arcsin_of_le_neg_one hy.le
     exact ⟨(hasStrictDerivAt_const _ _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
   cases' h₂.lt_or_lt with h₂ h₂
+  -- ⊢ HasStrictDerivAt arcsin (1 / sqrt (1 - x ^ 2)) x ∧ ContDiffAt ℝ ⊤ arcsin x
   · have : 0 < sqrt (1 - x ^ 2) := sqrt_pos.2 (by nlinarith [h₁, h₂])
+    -- ⊢ HasStrictDerivAt arcsin (1 / sqrt (1 - x ^ 2)) x ∧ ContDiffAt ℝ ⊤ arcsin x
     simp only [← cos_arcsin, one_div] at this ⊢
+    -- ⊢ HasStrictDerivAt arcsin (cos (arcsin x))⁻¹ x ∧ ContDiffAt ℝ ⊤ arcsin x
     exact ⟨sinLocalHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),
       sinLocalHomeomorph.contDiffAt_symm_deriv this.ne' ⟨h₁, h₂⟩ (hasDerivAt_sin _)
         contDiff_sin.contDiffAt⟩
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₂]
+    -- ⊢ HasStrictDerivAt arcsin (1 / sqrt (1 - x ^ 2)) x ∧ ContDiffAt ℝ ⊤ arcsin x
     rw [sqrt_eq_zero'.2 this.le, div_zero]
+    -- ⊢ HasStrictDerivAt arcsin 0 x ∧ ContDiffAt ℝ ⊤ arcsin x
     have : arcsin =ᶠ[𝓝 x] fun _ => π / 2 := (lt_mem_nhds h₂).mono fun y hy => arcsin_of_one_le hy.le
+    -- ⊢ HasStrictDerivAt arcsin 0 x ∧ ContDiffAt ℝ ⊤ arcsin x
     exact ⟨(hasStrictDerivAt_const _ _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
 #align real.deriv_arcsin_aux Real.deriv_arcsin_aux
@@ -66,36 +75,54 @@ theorem contDiffAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : ℕ�
 theorem hasDerivWithinAt_arcsin_Ici {x : ℝ} (h : x ≠ -1) :
     HasDerivWithinAt arcsin (1 / sqrt (1 - x ^ 2)) (Ici x) x := by
   rcases eq_or_ne x 1 with (rfl | h')
+  -- ⊢ HasDerivWithinAt arcsin (1 / sqrt (1 - 1 ^ 2)) (Ici 1) 1
   · convert (hasDerivWithinAt_const (1 : ℝ) _ (π / 2)).congr _ _ <;>
       simp (config := { contextual := true }) [arcsin_of_one_le]
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
   · exact (hasDerivAt_arcsin h h').hasDerivWithinAt
+    -- 🎉 no goals
 #align real.has_deriv_within_at_arcsin_Ici Real.hasDerivWithinAt_arcsin_Ici
 
 theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
     HasDerivWithinAt arcsin (1 / sqrt (1 - x ^ 2)) (Iic x) x := by
   rcases em (x = -1) with (rfl | h')
+  -- ⊢ HasDerivWithinAt arcsin (1 / sqrt (1 - (-1) ^ 2)) (Iic (-1)) (-1)
   · convert (hasDerivWithinAt_const (-1 : ℝ) _ (-(π / 2))).congr _ _ <;>
       simp (config := { contextual := true }) [arcsin_of_le_neg_one]
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
   · exact (hasDerivAt_arcsin h' h).hasDerivWithinAt
+    -- 🎉 no goals
 #align real.has_deriv_within_at_arcsin_Iic Real.hasDerivWithinAt_arcsin_Iic
 
 theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Ici x) x ↔ x ≠ -1 := by
   refine' ⟨_, fun h => (hasDerivWithinAt_arcsin_Ici h).differentiableWithinAt⟩
+  -- ⊢ DifferentiableWithinAt ℝ arcsin (Ici x) x → x ≠ -1
   rintro h rfl
+  -- ⊢ False
   have : sin ∘ arcsin =ᶠ[𝓝[≥] (-1 : ℝ)] id := by
     filter_upwards [Icc_mem_nhdsWithin_Ici ⟨le_rfl, neg_lt_self (zero_lt_one' ℝ)⟩] with x using
       sin_arcsin'
   have := h.hasDerivWithinAt.sin.congr_of_eventuallyEq this.symm (by simp)
+  -- ⊢ False
   simpa using (uniqueDiffOn_Ici _ _ left_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
+  -- 🎉 no goals
 #align real.differentiable_within_at_arcsin_Ici Real.differentiableWithinAt_arcsin_Ici
 
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
   refine' ⟨fun h => _, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
+  -- ⊢ x ≠ 1
   rw [← neg_neg x, ← image_neg_Ici] at h
+  -- ⊢ x ≠ 1
   have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
+  -- ⊢ x ≠ 1
   simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
+  -- 🎉 no goals
 #align real.differentiable_within_at_arcsin_Iic Real.differentiableWithinAt_arcsin_Iic
 
 theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x ≠ -1 ∧ x ≠ 1 :=
@@ -107,11 +134,19 @@ theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x 
 @[simp]
 theorem deriv_arcsin : deriv arcsin = fun x => 1 / sqrt (1 - x ^ 2) := by
   funext x
+  -- ⊢ deriv arcsin x = 1 / sqrt (1 - x ^ 2)
   by_cases h : x ≠ -1 ∧ x ≠ 1
+  -- ⊢ deriv arcsin x = 1 / sqrt (1 - x ^ 2)
   · exact (hasDerivAt_arcsin h.1 h.2).deriv
+    -- 🎉 no goals
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_arcsin.1 h)]
+    -- ⊢ 0 = 1 / sqrt (1 - x ^ 2)
     simp only [not_and_or, Ne.def, Classical.not_not] at h
+    -- ⊢ 0 = 1 / sqrt (1 - x ^ 2)
     rcases h with (rfl | rfl) <;> simp
+    -- ⊢ 0 = 1 / sqrt (1 - (-1) ^ 2)
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align real.deriv_arcsin Real.deriv_arcsin
 
 theorem differentiableOn_arcsin : DifferentiableOn ℝ arcsin {-1, 1}ᶜ := fun _x hx =>
@@ -175,6 +210,7 @@ theorem differentiableAt_arccos {x : ℝ} : DifferentiableAt ℝ arccos x ↔ x 
 @[simp]
 theorem deriv_arccos : deriv arccos = fun x => -(1 / sqrt (1 - x ^ 2)) :=
   funext fun x => (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
+                                                  -- 🎉 no goals
 #align real.deriv_arccos Real.deriv_arccos
 
 theorem differentiableOn_arccos : DifferentiableOn ℝ arccos {-1, 1}ᶜ :=
@@ -188,7 +224,10 @@ theorem contDiffOn_arccos {n : ℕ∞} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
 theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
   refine' Iff.trans ⟨fun h => _, fun h => _⟩ contDiffAt_arcsin_iff <;>
+  -- ⊢ ContDiffAt ℝ n arcsin x
     simpa [arccos] using (@contDiffAt_const _ _ _ _ _ _ _ _ _ _ (π / 2)).sub h
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align real.cont_diff_at_arccos_iff Real.contDiffAt_arccos_iff
 
 end Arccos

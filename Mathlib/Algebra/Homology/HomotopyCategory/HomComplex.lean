@@ -62,7 +62,9 @@ def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
 
 instance : AddCommGroup (Cochain F G n) := by
   dsimp only [Cochain]
+  -- ⊢ AddCommGroup ((T : Triplet n) → HomologicalComplex.X F T.p ⟶ HomologicalComp …
   infer_instance
+  -- 🎉 no goals
 
 namespace Cochain
 
@@ -83,6 +85,8 @@ lemma mk_v (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) (p q : ℤ) (h
 
 lemma congr_v {z₁ z₂ : Cochain F G n} (h : z₁ = z₂) (p q : ℤ) (hpq : p + n = q) :
   z₁.v p q hpq = z₂.v p q hpq := by subst h; rfl
+                                    -- ⊢ z₁.v p q hpq = z₁.v p q hpq
+                                             -- 🎉 no goals
 
 @[ext]
 lemma ext (z₁ z₂ : Cochain F G n)
@@ -93,8 +97,11 @@ lemma ext (z₁ z₂ : Cochain F G n)
 lemma ext₀ (z₁ z₂ : Cochain F G 0)
     (h : ∀ (p : ℤ), z₁.v p p (add_zero p) = z₂.v p p (add_zero p)) : z₁ = z₂ := by
     ext ⟨p, q, hpq⟩
+    -- ⊢ z₁.v { p := p, q := q, hpq := hpq }.p { p := p, q := q, hpq := hpq }.q (_ :  …
     obtain rfl : q = p := by rw [← hpq, add_zero]
+    -- ⊢ z₁.v { p := q, q := q, hpq := hpq }.p { p := q, q := q, hpq := hpq }.q (_ :  …
     exact h q
+    -- 🎉 no goals
 
 @[simp]
 lemma zero_v {n : ℤ} (p q : ℤ) (hpq : p + n = q) :
@@ -120,28 +127,37 @@ lemma zsmul_v {n k : ℤ} (z : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
 of morphisms `F.X p ⟶ G.X p` for all `p : ℤ`. -/
 def ofHoms (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) : Cochain F G 0 :=
   Cochain.mk (fun p q hpq => ψ p ≫ eqToHom (by rw [← hpq, add_zero]))
+                                               -- 🎉 no goals
 
 @[simp]
 lemma ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p : ℤ) :
     (ofHoms ψ).v p p (add_zero p) = ψ p := by
   simp only [ofHoms, mk_v, eqToHom_refl, comp_id]
+  -- 🎉 no goals
 
 @[simp]
 lemma ofHoms_zero : ofHoms (fun p => (0 : F.X p ⟶ G.X p)) = 0 := by aesop_cat
+                                                                    -- 🎉 no goals
 
 @[simp]
 lemma ofHoms_v_comp_d (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p q q' : ℤ) (hpq : p + 0 = q) :
     (ofHoms ψ).v p q hpq ≫ G.d q q' = ψ p ≫ G.d p q' := by
   rw [add_zero] at hpq
+  -- ⊢ (ofHoms ψ).v p q hpq✝ ≫ HomologicalComplex.d G q q' = ψ p ≫ HomologicalCompl …
   subst hpq
+  -- ⊢ (ofHoms ψ).v p p hpq ≫ HomologicalComplex.d G p q' = ψ p ≫ HomologicalComple …
   rw [ofHoms_v]
+  -- 🎉 no goals
 
 @[simp]
 lemma d_comp_ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p' p q  : ℤ) (hpq : p + 0 = q) :
     F.d p' p ≫ (ofHoms ψ).v p q hpq = F.d p' q ≫ ψ q := by
   rw [add_zero] at hpq
+  -- ⊢ HomologicalComplex.d F p' p ≫ (ofHoms ψ).v p q hpq✝ = HomologicalComplex.d F …
   subst hpq
+  -- ⊢ HomologicalComplex.d F p' p ≫ (ofHoms ψ).v p p hpq = HomologicalComplex.d F  …
   rw [ofHoms_v]
+  -- 🎉 no goals
 
 /-- The `0`-cochain attached to a morphism of cochain complexes. -/
 def ofHom (φ : F ⟶ G) : Cochain F G 0 := ofHoms (fun p => φ.f p)
@@ -151,34 +167,41 @@ variable (F G)
 @[simp]
 lemma ofHom_zero : ofHom (0 : F ⟶ G) = 0 := by
   simp only [ofHom, HomologicalComplex.zero_f_apply, ofHoms_zero]
+  -- 🎉 no goals
 
 variable {F G}
 
 @[simp]
 lemma ofHom_v (φ : F ⟶ G) (p : ℤ) : (ofHom φ).v p p (add_zero p) = φ.f p := by
   simp only [ofHom, ofHoms_v]
+  -- 🎉 no goals
 
 @[simp]
 lemma ofHom_v_comp_d (φ : F ⟶ G) (p q q' : ℤ) (hpq : p + 0 = q) :
     (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' :=
 by simp only [ofHom, ofHoms_v_comp_d]
+   -- 🎉 no goals
 
 @[simp]
 lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q  : ℤ) (hpq : p + 0 = q) :
     F.d p' p ≫ (ofHom φ).v p q hpq = F.d p' q ≫ φ.f q := by
   simp only [ofHom, d_comp_ofHoms_v]
+  -- 🎉 no goals
 
 @[simp]
 lemma ofHom_add (φ₁ φ₂ : F ⟶ G) :
     Cochain.ofHom (φ₁ + φ₂) = Cochain.ofHom φ₁ + Cochain.ofHom φ₂ := by aesop_cat
+                                                                        -- 🎉 no goals
 
 @[simp]
 lemma ofHom_sub (φ₁ φ₂ : F ⟶ G) :
     Cochain.ofHom (φ₁ - φ₂) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by aesop_cat
+                                                                        -- 🎉 no goals
 
 @[simp]
 lemma ofHom_neg (φ : F ⟶ G) :
     Cochain.ofHom (-φ) = -Cochain.ofHom φ := by aesop_cat
+                                                -- 🎉 no goals
 
 /-- The cochain of degree `-1` given by an homotopy between two morphism of complexes. -/
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
@@ -187,30 +210,39 @@ def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G
 @[simp]
 lemma ofHomotopy_ofEq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
     ofHomotopy (Homotopy.ofEq h) = 0 := by rfl
+                                           -- 🎉 no goals
 
 @[simp]
 lemma ofHomotopy_refl (φ : F ⟶ G) :
     ofHomotopy (Homotopy.refl φ) = 0 := by rfl
+                                           -- 🎉 no goals
 
 @[reassoc]
 lemma v_comp_XIsoOfEq_hom
     (γ : Cochain F G n) (p q q' : ℤ) (hpq : p + n = q) (hq' : q = q') :
     γ.v p q hpq ≫ (HomologicalComplex.XIsoOfEq G hq').hom = γ.v p q' (by rw [← hq', hpq]) := by
+                                                                         -- 🎉 no goals
   subst hq'
+  -- ⊢ γ.v p q hpq ≫ (HomologicalComplex.XIsoOfEq G (_ : q = q)).hom = γ.v p q (_ : …
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_hom, comp_id]
+  -- 🎉 no goals
 
 @[reassoc]
 lemma v_comp_XIsoOfEq_inv
     (γ : Cochain F G n) (p q q' : ℤ) (hpq : p + n = q) (hq' : q' = q) :
     γ.v p q hpq ≫ (HomologicalComplex.XIsoOfEq G hq').inv = γ.v p q' (by rw [hq', hpq]) := by
+                                                                         -- 🎉 no goals
   subst hq'
+  -- ⊢ γ.v p q' hpq ≫ (HomologicalComplex.XIsoOfEq G (_ : q' = q')).inv = γ.v p q'  …
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_inv, comp_id]
+  -- 🎉 no goals
 
 /-- The composition of cochains. -/
 @[pp_dot]
 def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
     Cochain F K n₁₂ :=
   Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by linarith))
+                                                                       -- 🎉 no goals
 
 /-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and that
 we have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
@@ -228,8 +260,11 @@ to the two simplification lemmas `comp_zero_cochain_v` and `zero_cochain_comp_v`
 lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (p₁ p₂ p₃ : ℤ) (h₁ : p₁ + n₁ = p₂) (h₂ : p₂ + n₂ = p₃) :
     (z₁.comp z₂ h).v p₁ p₃ (by rw [← h₂, ← h₁, ← h, add_assoc]) =
+                               -- 🎉 no goals
       z₁.v p₁ p₂ h₁ ≫ z₂.v p₂ p₃ h₂ := by
   subst h₁; rfl
+  -- ⊢ (z₁.comp z₂ h).v p₁ p₃ (_ : p₁ + n₁₂ = p₃) = z₁.v p₁ (p₁ + n₁) (_ : p₁ + n₁  …
+            -- 🎉 no goals
 
 
 @[simp]
@@ -247,10 +282,15 @@ lemma comp_assoc {n₁ n₂ n₃ n₁₂ n₂₃ n₁₂₃ : ℤ}
     (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (z₃ : Cochain K L n₃)
     (h₁₂ : n₁ + n₂ = n₁₂) (h₂₃ : n₂ + n₃ = n₂₃) (h₁₂₃ : n₁ + n₂ + n₃ = n₁₂₃) :
     (z₁.comp z₂ h₁₂).comp z₃ (show n₁₂ + n₃ = n₁₂₃ by rw [← h₁₂, h₁₂₃]) =
+                                                      -- 🎉 no goals
       z₁.comp (z₂.comp z₃ h₂₃) (by rw [← h₂₃, ← h₁₂₃, add_assoc]) := by
+                                   -- 🎉 no goals
   substs h₁₂ h₂₃ h₁₂₃
+  -- ⊢ (z₁.comp z₂ (_ : n₁ + n₂ = n₁ + n₂)).comp z₃ (_ : n₁ + n₂ + n₃ = n₁ + n₂ + n …
   ext ⟨p, q, hpq⟩
+  -- ⊢ ((z₁.comp z₂ (_ : n₁ + n₂ = n₁ + n₂)).comp z₃ (_ : n₁ + n₂ + n₃ = n₁ + n₂ +  …
   dsimp
+  -- ⊢ ((z₁.comp z₂ (_ : n₁ + n₂ = n₁ + n₂)).comp z₃ (_ : n₁ + n₂ + n₃ = n₁ + n₂ +  …
   rw [comp_v _ _ rfl p (p + n₁ + n₂) q (by linarith) (by linarith),
     comp_v z₁ z₂ rfl p (p + n₁) (p + n₁ + n₂) (by linarith) (by linarith),
     comp_v z₁ (z₂.comp z₃ rfl) (add_assoc n₁ n₂ n₃).symm p (p + n₁) q (by linarith) (by linarith),

@@ -100,6 +100,7 @@ results, those group elements are equal. -/
 theorem vadd_right_cancel {g1 g2 : G} (p : P) (h : g1 +ᵥ p = g2 +ᵥ p) : g1 = g2 := by
 -- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
   rw [← vadd_vsub g1 p, h, vadd_vsub]
+  -- 🎉 no goals
 #align vadd_right_cancel vadd_right_cancel
 
 @[simp]
@@ -118,18 +119,22 @@ produces the same result as subtracting the points then adding the
 group element. -/
 theorem vadd_vsub_assoc (g : G) (p1 p2 : P) : g +ᵥ p1 -ᵥ p2 = g + (p1 -ᵥ p2) := by
   apply vadd_right_cancel p2
+  -- ⊢ g +ᵥ p1 -ᵥ p2 +ᵥ p2 = g + (p1 -ᵥ p2) +ᵥ p2
   rw [vsub_vadd, add_vadd, vsub_vadd]
+  -- 🎉 no goals
 #align vadd_vsub_assoc vadd_vsub_assoc
 
 /-- Subtracting a point from itself produces 0. -/
 @[simp]
 theorem vsub_self (p : P) : p -ᵥ p = (0 : G) := by
   rw [← zero_add (p -ᵥ p), ← vadd_vsub_assoc, vadd_vsub]
+  -- 🎉 no goals
 #align vsub_self vsub_self
 
 /-- If subtracting two points produces 0, they are equal. -/
 theorem eq_of_vsub_eq_zero {p1 p2 : P} (h : p1 -ᵥ p2 = (0 : G)) : p1 = p2 := by
   rw [← vsub_vadd p1 p2, h, zero_vadd]
+  -- 🎉 no goals
 #align eq_of_vsub_eq_zero eq_of_vsub_eq_zero
 
 /-- Subtracting two points produces 0 if and only if they are
@@ -147,7 +152,9 @@ theorem vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
 @[simp]
 theorem vsub_add_vsub_cancel (p1 p2 p3 : P) : p1 -ᵥ p2 + (p2 -ᵥ p3) = p1 -ᵥ p3 := by
   apply vadd_right_cancel p3
+  -- ⊢ p1 -ᵥ p2 + (p2 -ᵥ p3) +ᵥ p3 = p1 -ᵥ p3 +ᵥ p3
   rw [add_vadd, vsub_vadd, vsub_vadd, vsub_vadd]
+  -- 🎉 no goals
 #align vsub_add_vsub_cancel vsub_add_vsub_cancel
 
 /-- Subtracting two points in the reverse order produces the negation
@@ -155,11 +162,14 @@ of subtracting them. -/
 @[simp]
 theorem neg_vsub_eq_vsub_rev (p1 p2 : P) : -(p1 -ᵥ p2) = p2 -ᵥ p1 := by
   refine' neg_eq_of_add_eq_zero_right (vadd_right_cancel p1 _)
+  -- ⊢ p1 -ᵥ p2 + (p2 -ᵥ p1) +ᵥ p1 = 0 +ᵥ p1
   rw [vsub_add_vsub_cancel, vsub_self]
+  -- 🎉 no goals
 #align neg_vsub_eq_vsub_rev neg_vsub_eq_vsub_rev
 
 theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ p) := by
   rw [vadd_vsub_assoc, sub_eq_add_neg, neg_vsub_eq_vsub_rev]
+  -- 🎉 no goals
 #align vadd_vsub_eq_sub_vsub vadd_vsub_eq_sub_vsub
 
 /-- Subtracting the result of adding a group element produces the same result
@@ -173,6 +183,7 @@ theorem vsub_vadd_eq_vsub_sub (p1 p2 : P) (g : G) : p1 -ᵥ (g +ᵥ p2) = p1 -�
 @[simp]
 theorem vsub_sub_vsub_cancel_right (p1 p2 p3 : P) : p1 -ᵥ p3 - (p2 -ᵥ p3) = p1 -ᵥ p2 := by
   rw [← vsub_vadd_eq_vsub_sub, vsub_vadd]
+  -- 🎉 no goals
 #align vsub_sub_vsub_cancel_right vsub_sub_vsub_cancel_right
 
 /-- Convert between an equality with adding a group element to a point
@@ -185,6 +196,7 @@ theorem eq_vadd_iff_vsub_eq (p1 : P) (g : G) (p2 : P) : p1 = g +ᵥ p2 ↔ p1 -�
 theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ -v₁ + v₂ = p₁ -ᵥ p₂ := by
   rw [eq_vadd_iff_vsub_eq, vadd_vsub_assoc, ← add_right_inj (-v₁), neg_add_cancel_left, eq_comm]
+  -- 🎉 no goals
 #align vadd_eq_vadd_iff_neg_add_eq_vsub vadd_eq_vadd_iff_neg_add_eq_vsub
 
 namespace Set
@@ -195,6 +207,7 @@ open Pointwise
 --@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
+  -- 🎉 no goals
 #align set.singleton_vsub_self Set.singleton_vsub_self
 
 end Set
@@ -202,12 +215,14 @@ end Set
 @[simp]
 theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ +ᵥ p -ᵥ (v₂ +ᵥ p) = v₁ - v₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, vsub_self, add_zero]
+  -- 🎉 no goals
 #align vadd_vsub_vadd_cancel_right vadd_vsub_vadd_cancel_right
 
 /-- If the same point subtracted from two points produces equal
 results, those points are equal. -/
 theorem vsub_left_cancel {p1 p2 p : P} (h : p1 -ᵥ p = p2 -ᵥ p) : p1 = p2 := by
   rwa [← sub_eq_zero, vsub_sub_vsub_cancel_right, vsub_eq_zero_iff_eq] at h
+  -- 🎉 no goals
 #align vsub_left_cancel vsub_left_cancel
 
 /-- The same point subtracted from two points produces equal results
@@ -226,7 +241,9 @@ theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G)
 results, those points are equal. -/
 theorem vsub_right_cancel {p1 p2 p : P} (h : p -ᵥ p1 = p -ᵥ p2) : p1 = p2 := by
   refine' vadd_left_cancel (p -ᵥ p2) _
+  -- ⊢ p -ᵥ p2 +ᵥ p1 = p -ᵥ p2 +ᵥ p2
   rw [vsub_vadd, ← h, vsub_vadd]
+  -- 🎉 no goals
 #align vsub_right_cancel vsub_right_cancel
 
 /-- Subtracting two points from the same point produces equal results
@@ -255,25 +272,31 @@ variable {G : Type*} {P : Type*} [AddCommGroup G] [AddTorsor G P]
 @[simp]
 theorem vsub_sub_vsub_cancel_left (p1 p2 p3 : P) : p3 -ᵥ p2 - (p3 -ᵥ p1) = p1 -ᵥ p2 := by
   rw [sub_eq_add_neg, neg_vsub_eq_vsub_rev, add_comm, vsub_add_vsub_cancel]
+  -- 🎉 no goals
 #align vsub_sub_vsub_cancel_left vsub_sub_vsub_cancel_left
 
 @[simp]
 theorem vadd_vsub_vadd_cancel_left (v : G) (p1 p2 : P) : v +ᵥ p1 -ᵥ (v +ᵥ p2) = p1 -ᵥ p2 := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel']
+  -- 🎉 no goals
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
 theorem vsub_vadd_comm (p1 p2 p3 : P) : (p1 -ᵥ p2 : G) +ᵥ p3 = p3 -ᵥ p2 +ᵥ p1 := by
   rw [← @vsub_eq_zero_iff_eq G, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub]
+  -- ⊢ p1 -ᵥ p2 + (p3 -ᵥ p1 - (p3 -ᵥ p2)) = 0
   simp
+  -- 🎉 no goals
 #align vsub_vadd_comm vsub_vadd_comm
 
 theorem vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ v₂ - v₁ = p₁ -ᵥ p₂ := by
   rw [vadd_eq_vadd_iff_neg_add_eq_vsub, neg_add_eq_sub]
+  -- 🎉 no goals
 #align vadd_eq_vadd_iff_sub_eq_vsub vadd_eq_vadd_iff_sub_eq_vsub
 
 theorem vsub_sub_vsub_comm (p₁ p₂ p₃ p₄ : P) : p₁ -ᵥ p₂ - (p₃ -ᵥ p₄) = p₁ -ᵥ p₃ - (p₂ -ᵥ p₄) := by
   rw [← vsub_vadd_eq_vsub_sub, vsub_vadd_comm, vsub_vadd_eq_vsub_sub]
+  -- 🎉 no goals
 #align vsub_sub_vsub_comm vsub_sub_vsub_comm
 
 end comm
@@ -383,7 +406,9 @@ def constVSub (p : P) : P ≃ G where
   toFun := (· -ᵥ ·) p
   invFun v := -v +ᵥ p
   left_inv p' := by simp
+                    -- 🎉 no goals
   right_inv v := by simp [vsub_vadd_eq_vsub_sub]
+                    -- 🎉 no goals
 #align equiv.const_vsub Equiv.constVSub
 
 @[simp]
@@ -403,7 +428,9 @@ def constVAdd (v : G) : Equiv.Perm P where
   toFun := (· +ᵥ ·) v
   invFun := (· +ᵥ ·) (-v)
   left_inv p := by simp [vadd_vadd]
+                   -- 🎉 no goals
   right_inv p := by simp [vadd_vadd]
+                    -- 🎉 no goals
 #align equiv.const_vadd Equiv.constVAdd
 
 @[simp]
@@ -454,18 +481,22 @@ theorem pointReflection_vsub_left (x y : P) : pointReflection x y -ᵥ x = x -�
 @[simp]
 theorem left_vsub_pointReflection (x y : P) : x -ᵥ pointReflection x y = y -ᵥ x :=
   neg_injective <| by simp
+                      -- 🎉 no goals
 
 @[simp]
 theorem pointReflection_vsub_right (x y : P) : pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
   simp [pointReflection, two_nsmul, vadd_vsub_assoc]
+  -- 🎉 no goals
 
 @[simp]
 theorem right_vsub_pointReflection (x y : P) : y -ᵥ pointReflection x y = 2 • (y -ᵥ x) :=
   neg_injective <| by simp [← neg_nsmul]
+                      -- 🎉 no goals
 
 @[simp]
 theorem pointReflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
   ext <| by simp [pointReflection]
+            -- 🎉 no goals
 #align equiv.point_reflection_symm Equiv.pointReflection_symm
 
 @[simp]
@@ -475,6 +506,7 @@ theorem pointReflection_self (x : P) : pointReflection x x = x :=
 
 theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
   (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [pointReflection_symm]
+                                               -- 🎉 no goals
 #align equiv.point_reflection_involutive Equiv.pointReflection_involutive
 
 set_option linter.deprecated false
@@ -504,5 +536,7 @@ end Equiv
 theorem AddTorsor.subsingleton_iff (G P : Type*) [AddGroup G] [AddTorsor G P] :
     Subsingleton G ↔ Subsingleton P := by
   inhabit P
+  -- ⊢ Subsingleton G ↔ Subsingleton P
   exact (Equiv.vaddConst default).subsingleton_congr
+  -- 🎉 no goals
 #align add_torsor.subsingleton_iff AddTorsor.subsingleton_iff

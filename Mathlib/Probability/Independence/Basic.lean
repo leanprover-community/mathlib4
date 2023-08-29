@@ -150,52 +150,65 @@ lemma iIndepSets_iff [MeasurableSpace Ω] (π : ι → Set (Set Ω)) (μ : Measu
     iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
   simp only [iIndepSets, kernel.iIndepSets, ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
+  -- 🎉 no goals
 
 lemma IndepSets_iff [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by
   simp only [IndepSets, kernel.IndepSets, ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
+  -- 🎉 no goals
 
 lemma iIndep_iff_iIndepSets (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     iIndep m μ ↔ iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
   simp only [iIndep, iIndepSets, kernel.iIndep]
+  -- 🎉 no goals
 
 lemma iIndep_iff (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     iIndep m μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[m i] (f i)),
       μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
   simp only [iIndep_iff_iIndepSets, iIndepSets_iff]; rfl
+  -- ⊢ (∀ (s : Finset ι) {f : ι → Set Ω}, (∀ (i : ι), i ∈ s → f i ∈ {s | Measurable …
+                                                     -- 🎉 no goals
 
 lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
   simp only [Indep, IndepSets, kernel.Indep]
+  -- 🎉 no goals
 
 lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
     Indep m₁ m₂ μ
       ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
   rw [Indep_iff_IndepSets, IndepSets_iff]; rfl
+  -- ⊢ (∀ (t1 t2 : Set Ω), t1 ∈ {s | MeasurableSet s} → t2 ∈ {s | MeasurableSet s}  …
+                                           -- 🎉 no goals
 
 lemma iIndepSet_iff_iIndep [MeasurableSpace Ω] (s : ι → Set Ω) (μ : Measure Ω) :
     iIndepSet s μ ↔ iIndep (fun i ↦ generateFrom {s i}) μ := by
   simp only [iIndepSet, iIndep, kernel.iIndepSet]
+  -- 🎉 no goals
 
 lemma iIndepSet_iff [MeasurableSpace Ω] (s : ι → Set Ω) (μ : Measure Ω) :
     iIndepSet s μ ↔ ∀ (s' : Finset ι) {f : ι → Set Ω}
       (_H : ∀ i, i ∈ s' → MeasurableSet[generateFrom {s i}] (f i)),
       μ (⋂ i ∈ s', f i) = ∏ i in s', μ (f i) := by
   simp only [iIndepSet_iff_iIndep, iIndep_iff]
+  -- 🎉 no goals
 
 lemma IndepSet_iff_Indep [MeasurableSpace Ω] (s t : Set Ω) (μ : Measure Ω) :
     IndepSet s t μ ↔ Indep (generateFrom {s}) (generateFrom {t}) μ := by
   simp only [IndepSet, Indep, kernel.IndepSet]
+  -- 🎉 no goals
 
 lemma IndepSet_iff [MeasurableSpace Ω] (s t : Set Ω) (μ : Measure Ω) :
     IndepSet s t μ ↔ ∀ t1 t2, MeasurableSet[generateFrom {s}] t1
       → MeasurableSet[generateFrom {t}] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
   simp only [IndepSet_iff_Indep, Indep_iff]
+  -- 🎉 no goals
 
 lemma iIndepFun_iff_iIndep [MeasurableSpace Ω] {β : ι → Type*}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
     iIndepFun m f μ ↔ iIndep (fun x ↦ (m x).comap (f x)) μ := by
   simp only [iIndepFun, iIndep, kernel.iIndepFun]
+  -- 🎉 no goals
 
 lemma iIndepFun_iff [MeasurableSpace Ω] {β : ι → Type*}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
@@ -203,17 +216,20 @@ lemma iIndepFun_iff [MeasurableSpace Ω] {β : ι → Type*}
       (_H : ∀ i, i ∈ s → MeasurableSet[(m i).comap (f i)] (f' i)),
       μ (⋂ i ∈ s, f' i) = ∏ i in s, μ (f' i) := by
   simp only [iIndepFun_iff_iIndep, iIndep_iff]
+  -- 🎉 no goals
 
 lemma IndepFun_iff_Indep [MeasurableSpace Ω] [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
     IndepFun f g μ ↔ Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) μ := by
   simp only [IndepFun, Indep, kernel.IndepFun]
+  -- 🎉 no goals
 
 lemma IndepFun_iff {β γ} [MeasurableSpace Ω] [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
     IndepFun f g μ ↔ ∀ t1 t2, MeasurableSet[MeasurableSpace.comap f mβ] t1
       → MeasurableSet[MeasurableSpace.comap g mγ] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
   rw [IndepFun_iff_Indep, Indep_iff]
+  -- 🎉 no goals
 
 end Definition_lemmas
 
@@ -567,8 +583,12 @@ nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β} (hfg : I
 theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFun f g μ)
     (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
   refine kernel.IndepFun.ae_eq hfg ?_ ?_ <;>
+  -- ⊢ ∀ᵐ (a : Unit) ∂Measure.dirac (), f =ᵐ[↑(kernel.const Unit μ) a] f'
     simp only [ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
+    -- ⊢ f =ᵐ[μ] f'
+    -- ⊢ g =ᵐ[μ] g'
   exacts [hf, hg]
+  -- 🎉 no goals
 #align probability_theory.indep_fun.ae_eq ProbabilityTheory.IndepFun.ae_eq
 
 theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}

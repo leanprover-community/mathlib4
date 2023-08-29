@@ -32,6 +32,7 @@ def derivative' : Derivation R R[X] R[X] where
   map_smul' := derivative_smul
   map_one_eq_zero' := derivative_one
   leibniz' f g := by simp [mul_comm, add_comm, derivative_mul]
+                     -- 🎉 no goals
 
 variable [AddCommMonoid A] [Module R A] [Module (Polynomial R) A]
 
@@ -43,12 +44,15 @@ theorem derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
 theorem C_smul_derivation_apply (D : Derivation R R[X] A) (a : R) (f : R[X]) :
     C a • D f = a • D f := by
   have : C a • D f = D (C a * f) := by simp
+  -- ⊢ ↑C a • ↑D f = a • ↑D f
   rw [this, C_mul', D.map_smul]
+  -- 🎉 no goals
 
 @[ext]
 theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
   Derivation.ext fun f => Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) <| by
     simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
+    -- 🎉 no goals
 
 variable [IsScalarTower R (Polynomial R) A]
 
@@ -58,22 +62,32 @@ variable (R)
 def mkDerivation : A →ₗ[R] Derivation R R[X] A where
   toFun := fun a ↦ (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
   map_add' := fun a b ↦ by ext; simp
+                           -- ⊢ ↑((fun a => ↑(LinearMap.compDer (LinearMap.toSpanSingleton R[X] A a)) deriva …
+                                -- 🎉 no goals
   map_smul' := fun t a ↦ by ext; simp
+                            -- ⊢ ↑(AddHom.toFun { toFun := fun a => ↑(LinearMap.compDer (LinearMap.toSpanSing …
+                                 -- 🎉 no goals
 
 lemma mkDerivation_apply (a : A) (f : R[X]) :
     mkDerivation R a f = derivative f • a := by
   rfl
+  -- 🎉 no goals
 
 @[simp]
 theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation_apply]
+                                                              -- 🎉 no goals
 
 lemma mkDerivation_one_eq_derivative' : mkDerivation R (1 : R[X]) = derivative' := by
   ext : 1
+  -- ⊢ ↑(↑(mkDerivation R) 1) X = ↑derivative' X
   simp [derivative']
+  -- 🎉 no goals
 
 lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = derivative f := by
   rw [mkDerivation_one_eq_derivative']
+  -- ⊢ ↑derivative' f = ↑derivative f
   rfl
+  -- 🎉 no goals
 
 /-- `Polynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
@@ -88,6 +102,7 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
 @[simp] lemma mkDerivationEquiv_apply (a : A) :
     mkDerivationEquiv R a = mkDerivation R a := by
   rfl
+  -- 🎉 no goals
 
 @[simp] lemma mkDerivationEquiv_symm_apply (D : Derivation R R[X] A) :
     (mkDerivationEquiv R).symm D = D X := rfl

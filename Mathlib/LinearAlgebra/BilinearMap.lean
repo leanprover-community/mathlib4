@@ -130,7 +130,9 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
     (fun c n  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
+                       -- 🎉 no goals
     (fun c n  m  => by simp only [map_smulₛₗ, smul_apply])
+                       -- 🎉 no goals
 #align linear_map.flip LinearMap.flip
 
 end
@@ -150,6 +152,7 @@ open BigOperators
 
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
+                                                  -- 🎉 no goals
 #align linear_map.flip_inj LinearMap.flip_inj
 
 theorem map_zero₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (y) : f 0 y = 0 :=
@@ -186,8 +189,10 @@ def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Subm
     where
   toFun m := (f m).domRestrict q
   map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
+                                              -- 🎉 no goals
   map_smul' c m :=
     LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
+                              -- 🎉 no goals
 #align linear_map.dom_restrict₂ LinearMap.domRestrict₂
 
 theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
@@ -334,7 +339,9 @@ theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl�
 @[simp]
 theorem compl₂_id : f.compl₂ LinearMap.id = f := by
   ext
+  -- ⊢ ↑(↑(compl₂ f id) x✝¹) x✝ = ↑(↑f x✝¹) x✝
   rw [compl₂_apply, id_coe, id.def]
+  -- 🎉 no goals
 #align linear_map.compl₂_id LinearMap.compl₂_id
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
@@ -352,22 +359,35 @@ theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →
 @[simp]
 theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
   ext
+  -- ⊢ ↑(↑(compl₁₂ f id id) x✝¹) x✝ = ↑(↑f x✝¹) x✝
   simp_rw [compl₁₂_apply, id_coe, id.def]
+  -- 🎉 no goals
 #align linear_map.compl₁₂_id_id LinearMap.compl₁₂_id_id
 
 theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
     f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
+  -- ⊢ compl₁₂ f₁ g g' = compl₁₂ f₂ g g' → f₁ = f₂
+                  -- ⊢ f₁ = f₂
+                  -- ⊢ compl₁₂ f₁ g g' = compl₁₂ f₂ g g'
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
+    -- ⊢ ↑(↑f₁ x) y = ↑(↑f₂ x) y
     cases' hₗ x with x' hx
+    -- ⊢ ↑(↑f₁ x) y = ↑(↑f₂ x) y
     subst hx
+    -- ⊢ ↑(↑f₁ (↑g x')) y = ↑(↑f₂ (↑g x')) y
     cases' hᵣ y with y' hy
+    -- ⊢ ↑(↑f₁ (↑g x')) y = ↑(↑f₂ (↑g x')) y
     subst hy
+    -- ⊢ ↑(↑f₁ (↑g x')) (↑g' y') = ↑(↑f₂ (↑g x')) (↑g' y')
     convert LinearMap.congr_fun₂ h x' y' using 0
+    -- 🎉 no goals
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
+    -- ⊢ compl₁₂ f₁ g g' = compl₁₂ f₁ g g'
+             -- 🎉 no goals
 #align linear_map.compl₁₂_inj LinearMap.compl₁₂_inj
 
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
@@ -387,6 +407,7 @@ variable (R M)
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
   mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
     simp only [smul_smul, smul_eq_mul, mul_comm]
+    -- 🎉 no goals
 #align linear_map.lsmul LinearMap.lsmul
 
 variable {R M}

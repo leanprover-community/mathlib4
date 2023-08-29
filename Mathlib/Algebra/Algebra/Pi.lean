@@ -41,7 +41,11 @@ instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebr
     Algebra R (∀ i : I, f i) :=
   { (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i) with
     commutes' := fun a f => by ext; simp [Algebra.commutes]
+                               -- ⊢ (↑{ toMonoidHom := ↑src✝, map_zero' := (_ : OneHom.toFun (↑↑src✝) 0 = 0), ma …
+                                    -- 🎉 no goals
     smul_def' := fun a f => by ext; simp [Algebra.smul_def] }
+                               -- ⊢ (a • f) x✝ = (↑{ toMonoidHom := ↑src✝, map_zero' := (_ : OneHom.toFun (↑↑src …
+                                    -- 🎉 no goals
 #align pi.algebra Pi.algebra
 
 theorem algebraMap_def {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
@@ -117,7 +121,9 @@ protected def compLeft (f : A →ₐ[R] B) (I : Type*) : (I → A) →ₐ[R] I �
     toFun := fun h => f ∘ h
     commutes' := fun c => by
       ext
+      -- ⊢ OneHom.toFun (↑↑{ toMonoidHom := { toOneHom := { toFun := fun h => ↑f ∘ h, m …
       exact f.commutes' c }
+      -- 🎉 no goals
 #align alg_hom.comp_left AlgHom.compLeft
 
 end AlgHom
@@ -139,7 +145,9 @@ def piCongrRight {R ι : Type*} {A₁ A₂ : ι → Type*} [CommSemiring R] [∀
     invFun := fun x j => (e j).symm (x j)
     commutes' := fun r => by
       ext i
+      -- ⊢ Equiv.toFun { toFun := fun x j => ↑(e j) (x j), invFun := fun x j => ↑(symm  …
       simp }
+      -- 🎉 no goals
 #align alg_equiv.Pi_congr_right AlgEquiv.piCongrRight
 
 @[simp]

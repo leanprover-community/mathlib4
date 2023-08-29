@@ -32,7 +32,9 @@ def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invert
 
 theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
   rw [← ringChar.spec, ← Ne.def]
+  -- ⊢ ↑t ≠ 0
   exact nonzero_of_invertible (t : K)
+  -- 🎉 no goals
 #align not_ring_char_dvd_of_invertible not_ringChar_dvd_of_invertible
 
 /-- A natural number `t` is invertible in a field `K` of characteristic `p` if `p` does not divide
@@ -65,10 +67,12 @@ number when you need its inverse.
 
 instance invertibleTwo : Invertible (2 : K) :=
   invertibleOfNonzero (by exact_mod_cast (by decide : 2 ≠ 0))
+                          -- 🎉 no goals
 #align invertible_two invertibleTwo
 
 instance invertibleThree : Invertible (3 : K) :=
   invertibleOfNonzero (by exact_mod_cast (by decide : 3 ≠ 0))
+                          -- 🎉 no goals
 #align invertible_three invertibleThree
 
 end DivisionRing

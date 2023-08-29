@@ -55,9 +55,18 @@ instance : Group (RingAut R) :=
       @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
         ⟨RingEquiv.symm⟩
     mul_assoc := by intros; rfl
+                    -- ⊢ a✝ * b✝ * c✝ = a✝ * (b✝ * c✝)
+                            -- 🎉 no goals
     one_mul := by intros; rfl
+                  -- ⊢ 1 * a✝ = a✝
+                          -- 🎉 no goals
     mul_one := by intros; rfl
+                  -- ⊢ a✝ * 1 = a✝
+                          -- 🎉 no goals
     mul_left_inv := by intros; ext; apply Equiv.left_inv }
+                       -- ⊢ a✝⁻¹ * a✝ = 1
+                               -- ⊢ ↑(a✝⁻¹ * a✝) x✝ = ↑1 x✝
+                                    -- 🎉 no goals
 /- Porting note: was by
   refine_struct
     { mul := fun g h => RingEquiv.trans h g
@@ -82,6 +91,10 @@ def toAddAut : RingAut R →* AddAut R := by
   refine'
   { toFun := RingEquiv.toAddEquiv
     .. } <;> (intros; rfl)
+              -- ⊢ RingEquiv.toAddEquiv 1 = 1
+                      -- 🎉 no goals
+              -- ⊢ OneHom.toFun { toFun := RingEquiv.toAddEquiv, map_one' := (_ : RingEquiv.toA …
+                      -- 🎉 no goals
 #align ring_aut.to_add_aut RingAut.toAddAut
 
 /-- Monoid homomorphism from ring automorphisms to multiplicative automorphisms. -/
@@ -89,6 +102,10 @@ def toMulAut : RingAut R →* MulAut R := by
   refine'
   { toFun := RingEquiv.toMulEquiv
     .. } <;> (intros; rfl)
+              -- ⊢ RingEquiv.toMulEquiv 1 = 1
+                      -- 🎉 no goals
+              -- ⊢ OneHom.toFun { toFun := RingEquiv.toMulEquiv, map_one' := (_ : RingEquiv.toM …
+                      -- 🎉 no goals
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
@@ -96,6 +113,10 @@ def toPerm : RingAut R →* Equiv.Perm R :=by
   refine'
   { toFun := RingEquiv.toEquiv
     .. } <;> (intros; rfl)
+              -- ⊢ 1.toEquiv = 1
+                      -- 🎉 no goals
+              -- ⊢ OneHom.toFun { toFun := RingEquiv.toEquiv, map_one' := (_ : 1.toEquiv = 1.to …
+                      -- 🎉 no goals
 #align ring_aut.to_perm RingAut.toPerm
 
 end mul_add

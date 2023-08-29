@@ -58,13 +58,21 @@ to `R` really is _covering_, i.e. the union of all open sets equals `U`.
 theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendieckTopology X U) :
     iSup (coveringOfPresieve U R) = U := by
   apply le_antisymm
+  -- ⊢ iSup (coveringOfPresieve U R) ≤ U
   · refine' iSup_le _
+    -- ⊢ ∀ (i : (V : Opens ↑X) × { f // R f }), coveringOfPresieve U R i ≤ U
     intro f
+    -- ⊢ coveringOfPresieve U R f ≤ U
     exact f.2.1.le
+    -- 🎉 no goals
   intro x hxU
+  -- ⊢ x ∈ ↑(iSup (coveringOfPresieve U R))
   rw [Opens.coe_iSup, Set.mem_iUnion]
+  -- ⊢ ∃ i, x ∈ ↑(coveringOfPresieve U R i)
   obtain ⟨V, iVU, ⟨W, iVW, iWU, hiWU, -⟩, hxV⟩ := hR x hxU
+  -- ⊢ ∃ i, x ∈ ↑(coveringOfPresieve U R i)
   exact ⟨⟨W, ⟨iWU, hiWU⟩⟩, iVW.le hxV⟩
+  -- 🎉 no goals
 #align Top.presheaf.covering_of_presieve.supr_eq_of_mem_grothendieck TopCat.Presheaf.coveringOfPresieve.iSup_eq_of_mem_grothendieck
 
 end coveringOfPresieve
@@ -90,8 +98,11 @@ def presieveOfCovering {ι : Type v} (U : ι → Opens X) : Presieve (iSup U) :=
 theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
   funext Z
+  -- ⊢ presieveOfCoveringAux (coveringOfPresieve Y R) Y = R
   ext f
+  -- ⊢ f ∈ presieveOfCoveringAux (coveringOfPresieve Y R) Y ↔ f ∈ R
   exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h => ⟨⟨Z, f, h⟩, rfl⟩⟩
+  -- 🎉 no goals
 #align Top.presheaf.covering_presieve_eq_self TopCat.Presheaf.covering_presieve_eq_self
 
 namespace presieveOfCovering
@@ -103,8 +114,11 @@ variable {ι : Type v} (U : ι → Opens X)
 theorem mem_grothendieckTopology :
     Sieve.generate (presieveOfCovering U) ∈ Opens.grothendieckTopology X (iSup U) := by
   intro x hx
+  -- ⊢ ∃ U_1 f, (Sieve.generate (presieveOfCovering U)).arrows f ∧ x ∈ U_1
   obtain ⟨i, hxi⟩ := Opens.mem_iSup.mp hx
+  -- ⊢ ∃ U_1 f, (Sieve.generate (presieveOfCovering U)).arrows f ∧ x ∈ U_1
   exact ⟨U i, Opens.leSupr U i, ⟨U i, 𝟙 _, Opens.leSupr U i, ⟨i, rfl⟩, Category.id_comp _⟩, hxi⟩
+  -- 🎉 no goals
 #align Top.presheaf.presieve_of_covering.mem_grothendieck_topology TopCat.Presheaf.presieveOfCovering.mem_grothendieckTopology
 
 /-- An index `i : ι` can be turned into a dependent pair `(V, f)`, where `V` is an open set and
@@ -137,10 +151,20 @@ variable {X : TopCat} {ι : Type*}
 theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     CoverDense (Opens.grothendieckTopology X) B ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
+  -- ⊢ CoverDense (Opens.grothendieckTopology ↑X) B ↔ ∀ {U : Opens ↑X} {x : ↑X}, x  …
   constructor; intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
+  -- ⊢ CoverDense (Opens.grothendieckTopology ↑X) B → ∀ {U : Opens ↑X} {x : ↑X}, x  …
+               -- ⊢ ∃ U', U' ∈ Set.range B.obj ∧ x ∈ U' ∧ U' ≤ U
+                                -- ⊢ ∃ U', U' ∈ Set.range B.obj ∧ x ∈ U' ∧ U' ≤ U
   exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
+  -- ⊢ (∀ {U : Opens ↑X} {x : ↑X}, x ∈ U → ∃ U', U' ∈ Set.range B.obj ∧ x ∈ U' ∧ U' …
   intro hb; constructor; intro U x hx; rcases hb hx with ⟨_, ⟨i, rfl⟩, hx, hi⟩
+  -- ⊢ CoverDense (Opens.grothendieckTopology ↑X) B
+            -- ⊢ ∀ (U : Opens ↑X), Sieve.coverByImage B U ∈ GrothendieckTopology.sieves (Open …
+                         -- ⊢ ∃ U_1 f, (Sieve.coverByImage B U).arrows f ∧ x ∈ U_1
+                                       -- ⊢ ∃ U_1 f, (Sieve.coverByImage B U).arrows f ∧ x ∈ U_1
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
+  -- 🎉 no goals
 #align Top.opens.cover_dense_iff_is_basis TopCat.Opens.coverDense_iff_isBasis
 
 theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.range B)) :
@@ -161,19 +185,29 @@ variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
+  -- ⊢ CompatiblePreserving (Opens.grothendieckTopology ↑Y) (IsOpenMap.functor (_ : …
   apply compatiblePreservingOfDownwardsClosed
+  -- ⊢ {c : Opens ↑X} → {d : Opens ↑Y} → (d ⟶ (IsOpenMap.functor (_ : IsOpenMap ↑f) …
   intro U V i
+  -- ⊢ (c' : Opens ↑X) × ((IsOpenMap.functor (_ : IsOpenMap ↑f)).obj c' ≅ V)
   refine' ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ _⟩
+  -- ⊢ x ∈ Set.range fun x => ↑f x
   obtain ⟨_, _, rfl⟩ := i.le h
+  -- ⊢ ↑f w✝ ∈ Set.range fun x => ↑f x
   exact ⟨_, rfl⟩
+  -- 🎉 no goals
 #align open_embedding.compatible_preserving OpenEmbedding.compatiblePreserving
 
 theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
+  -- ⊢ ∀ {U : Opens ↑X} {S : Sieve U}, S ∈ GrothendieckTopology.sieves (Opens.groth …
   rintro U S hU _ ⟨x, hx, rfl⟩
+  -- ⊢ ∃ U_1 f_1, (Sieve.functorPushforward (functor hf) S).arrows f_1 ∧ ↑f x ∈ U_1
   obtain ⟨V, i, hV, hxV⟩ := hU x hx
+  -- ⊢ ∃ U_1 f_1, (Sieve.functorPushforward (functor hf) S).arrows f_1 ∧ ↑f x ∈ U_1
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
+  -- 🎉 no goals
 #align is_open_map.cover_preserving IsOpenMap.coverPreserving
 
 theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
@@ -202,6 +236,7 @@ def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
     Limits.IsTerminal (F.val.obj (op U)) := by
   convert F.isTerminalOfEmpty
+  -- 🎉 no goals
 #align Top.sheaf.is_terminal_of_eq_empty TopCat.Sheaf.isTerminalOfEqEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
@@ -216,13 +251,18 @@ def restrictHomEquivHom : ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op
 theorem extend_hom_app (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
     (restrictHomEquivHom F F' h α).app (op (B i)) = α.app (op i) := by
   nth_rw 2 [← (restrictHomEquivHom F F' h).left_inv α]
+  -- ⊢ NatTrans.app (↑(restrictHomEquivHom F F' h) α) (op (B i)) = NatTrans.app (Eq …
   rfl
+  -- 🎉 no goals
 #align Top.sheaf.extend_hom_app TopCat.Sheaf.extend_hom_app
 
 theorem hom_ext {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
   apply (restrictHomEquivHom F F' h).symm.injective
+  -- ⊢ ↑(restrictHomEquivHom F F' h).symm α = ↑(restrictHomEquivHom F F' h).symm β
   ext i
+  -- ⊢ NatTrans.app (↑(restrictHomEquivHom F F' h).symm α) i = NatTrans.app (↑(rest …
   exact he i.unop
+  -- 🎉 no goals
 #align Top.sheaf.hom_ext TopCat.Sheaf.hom_ext
 
 end TopCat.Sheaf

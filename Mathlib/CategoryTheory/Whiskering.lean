@@ -48,6 +48,7 @@ def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   app X := α.app (F.obj X)
   naturality X Y f := by rw [Functor.comp_map, Functor.comp_map, α.naturality]
+                         -- 🎉 no goals
 #align category_theory.whisker_left CategoryTheory.whiskerLeft
 #align category_theory.whisker_left_app CategoryTheory.whiskerLeft_app
 
@@ -60,6 +61,7 @@ def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
   app X := F.map (α.app X)
   naturality X Y f := by
     rw [Functor.comp_map, Functor.comp_map, ← F.map_comp, ← F.map_comp, α.naturality]
+    -- 🎉 no goals
 #align category_theory.whisker_right CategoryTheory.whiskerRight
 #align category_theory.whisker_right_app CategoryTheory.whiskerRight_app
 
@@ -79,7 +81,12 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
     { app := fun H =>
         { app := fun c => H.map (τ.app c)
           naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
+                                        -- ⊢ H.map (X✝.map f) ≫ H.map (NatTrans.app τ Y) = H.map (NatTrans.app τ X) ≫ H.m …
+                                               -- 🎉 no goals
       naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
+                                    -- ⊢ NatTrans.app (((fun F => Functor.mk { obj := fun G => F ⋙ G, map := fun {X Y …
+                                         -- ⊢ NatTrans.app f (X✝.obj x✝) ≫ Y.map (NatTrans.app τ x✝) = X.map (NatTrans.app …
+                                                -- 🎉 no goals
 #align category_theory.whiskering_left CategoryTheory.whiskeringLeft
 #align category_theory.whiskering_left_obj_map CategoryTheory.whiskeringLeft_obj_map
 #align category_theory.whiskering_left_obj_obj CategoryTheory.whiskeringLeft_obj_obj
@@ -99,7 +106,12 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
     { app := fun F =>
         { app := fun c => τ.app (F.obj c)
           naturality := fun X Y f => by dsimp; rw [τ.naturality] }
+                                        -- ⊢ X✝.map (F.map f) ≫ NatTrans.app τ (F.obj Y) = NatTrans.app τ (F.obj X) ≫ Y✝. …
+                                               -- 🎉 no goals
       naturality := fun X Y f => by ext; dsimp; rw [← NatTrans.naturality] }
+                                    -- ⊢ NatTrans.app (((fun H => Functor.mk { obj := fun F => F ⋙ H, map := fun {X Y …
+                                         -- ⊢ X✝.map (NatTrans.app f x✝) ≫ NatTrans.app τ (Y.obj x✝) = NatTrans.app τ (X.o …
+                                                -- 🎉 no goals
 #align category_theory.whiskering_right CategoryTheory.whiskeringRight
 #align category_theory.whiskering_right_map_app_app CategoryTheory.whiskeringRight_map_app_app
 #align category_theory.whiskering_right_obj_obj CategoryTheory.whiskeringRight_obj_obj
@@ -111,7 +123,9 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
     Faithful ((whiskeringRight C D E).obj F) where
   map_injective hαβ := by
     ext X
+    -- ⊢ NatTrans.app a₁✝ X = NatTrans.app a₂✝ X
     exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)
+    -- 🎉 no goals
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
 @[simp]
@@ -276,6 +290,7 @@ protected theorem assoc (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) : (F ⋙ G) �
 theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
     (associator F (𝟭 B) G).hom ≫ whiskerLeft F (leftUnitor G).hom =
       whiskerRight (rightUnitor F).hom G := by aesop_cat
+                                               -- 🎉 no goals
 #align category_theory.functor.triangle CategoryTheory.Functor.triangle
 
 -- See note [dsimp, simp].
@@ -287,6 +302,7 @@ theorem pentagon :
     whiskerRight (associator F G H).hom K ≫
         (associator F (G ⋙ H) K).hom ≫ whiskerLeft F (associator G H K).hom =
       (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by aesop_cat
+                                                                        -- 🎉 no goals
 #align category_theory.functor.pentagon CategoryTheory.Functor.pentagon
 
 end Functor

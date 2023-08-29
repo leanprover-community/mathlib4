@@ -52,6 +52,7 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ SemiRingCatMax.{v, u})
 instance semiringObj (j : J) :
     Semiring (((F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat) ⋙ forget MonCat).obj j) :=
   show Semiring (F.obj j) by infer_instance
+                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.semiring_obj SemiRingCat.FilteredColimits.semiringObj
 
@@ -71,28 +72,72 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
     mul_zero := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
+      -- ⊢ ∀ (a : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).obj j …
+                                    -- ⊢ ∀ (a : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).obj j …
+                                             -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
       cases' x with j x
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
       rw [CategoryTheory.Functor.map_id]
+      -- ⊢ ∀ (a : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).obj j …
+                                    -- ⊢ ∀ (a : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).obj j …
+                                             -- ⊢ 0 * Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget Mo …
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ 0 * Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget Mo …
       dsimp
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ ∀ (a b c : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).o …
+                                          -- ⊢ ∀ (a b c : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).o …
+                                                       -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
+                          -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
+                                              -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
       rw [mul_zero x]
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := j, …
+      -- ⊢ Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat …
       rfl
+      -- 🎉 no goals
+      -- 🎉 no goals
     zero_mul := fun x => by
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := Is …
       refine Quot.inductionOn x ?_; clear x; intro x
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := Is …
       cases' x with j x
+      -- 🎉 no goals
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
       rw [CategoryTheory.Functor.map_id]
+      -- ⊢ ∀ (a b c : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).o …
+                                          -- ⊢ ∀ (a b c : (j : J) × ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCat).o …
+                                                       -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
       dsimp
+      -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
+                          -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
+                                              -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
       rw [zero_mul x]
+      -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
       rfl
+      -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
     left_distrib := fun x y z => by
+      -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
       refine Quot.induction_on₃ x y z ?_; clear x y z; intro x y z
+      -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ SemiRingCatMax MonCat) ⋙ forget MonCa …
       cases' x with j₁ x; cases' y with j₂ y; cases' z with j₃ z
       let k := IsFiltered.max₃ j₁ j₂ j₃
       let f := IsFiltered.firstToMax₃ j₁ j₂ j₃
       let g := IsFiltered.secondToMax₃ j₁ j₂ j₃
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := Is …
       let h := IsFiltered.thirdToMax₃ j₁ j₂ j₃
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ SemiRingCatMax MonCat) { fst := Is …
       erw [colimit_add_mk_eq _ ⟨j₂, _⟩ ⟨j₃, _⟩ k g h, colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨k, _⟩ k f (𝟙 k),
+      -- 🎉 no goals
         colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₂, _⟩ k f g, colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₃, _⟩ k f h,
         colimit_add_mk_eq _ ⟨k, _⟩ ⟨k, _⟩ k (𝟙 k) (𝟙 k)]
       simp only [CategoryTheory.Functor.map_id, id_apply]

@@ -100,6 +100,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         simp [Function.comp, h, mem_map']
         exact le_rfl)
   exact h₁.trans_le h₂
+  -- 🎉 no goals
 
 private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
     compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyFilter α × CauchyFilter α)) :=
@@ -117,14 +118,20 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
     (((𝓤 α).lift' gen).lift' fun s => compRel s s) =
         (𝓤 α).lift' fun s => compRel (gen s) (gen s) := by
       rw [lift'_lift'_assoc]
+      -- ⊢ Monotone gen
       · exact monotone_gen
+        -- 🎉 no goals
       · exact monotone_id.compRel monotone_id
+        -- 🎉 no goals
     _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
       lift'_mono' fun s _hs => compRel_gen_gen_subset_gen_compRel
     _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen := by
       rw [lift'_lift'_assoc]
+      -- ⊢ Monotone fun s => s ○ s
       · exact monotone_id.compRel monotone_id
+        -- 🎉 no goals
       · exact monotone_gen
+        -- 🎉 no goals
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
 instance : UniformSpace (CauchyFilter α) :=
@@ -144,7 +151,9 @@ set_option linter.uppercaseLean3 false in
 theorem mem_uniformity' {s : Set (CauchyFilter α × CauchyFilter α)} :
     s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, ∀ f g : CauchyFilter α, t ∈ f.1 ×ˢ g.1 → (f, g) ∈ s := by
   refine mem_uniformity.trans (exists_congr (fun t => and_congr_right_iff.mpr (fun _h => ?_)))
+  -- ⊢ gen t ⊆ s ↔ ∀ (f g : CauchyFilter α), t ∈ ↑f ×ˢ ↑g → (f, g) ∈ s
   exact ⟨fun h _f _g ht => h ht, fun h _p hp => h _ _ hp⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.mem_uniformity' CauchyFilter.mem_uniformity'
 
@@ -158,11 +167,13 @@ theorem uniformInducing_pureCauchy : UniformInducing (pureCauchy : α → Cauchy
   ⟨have : (preimage fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ∘ gen = id :=
       funext fun s =>
         Set.ext fun ⟨a₁, a₂⟩ => by simp [preimage, gen, pureCauchy, prod_principal_principal]
+                                   -- 🎉 no goals
     calc
       comap (fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ((𝓤 α).lift' gen) =
           (𝓤 α).lift' ((preimage fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ∘ gen) :=
         comap_lift'_eq
       _ = 𝓤 α := by simp [this]
+                    -- 🎉 no goals
       ⟩
 set_option linter.uppercaseLean3 false in
 #align Cauchy.uniform_inducing_pure_cauchy CauchyFilter.uniformInducing_pureCauchy
@@ -189,13 +200,19 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
   refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
+  -- ⊢ Monotone fun t => range pureCauchy ∩ UniformSpace.ball f t
   · refine monotone_const.inter ?_
+    -- ⊢ Monotone fun t => UniformSpace.ball f t
     simp_rw [UniformSpace.ball]
+    -- ⊢ Monotone fun t => Prod.mk f ⁻¹' t
     exact monotone_preimage
+    -- 🎉 no goals
   · let ⟨y, hy⟩ := h_ex s hs
+    -- ⊢ Set.Nonempty (range pureCauchy ∩ UniformSpace.ball f s)
     have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyFilter α | (f, y) ∈ s } :=
       ⟨mem_range_self y, hy⟩
     exact ⟨_, this⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.dense_range_pure_cauchy CauchyFilter.denseRange_pureCauchy
 
@@ -211,10 +228,17 @@ set_option linter.uppercaseLean3 false in
 
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
+  -- ⊢ Nonempty (CauchyFilter α) → Nonempty α
+                  -- ⊢ Nonempty α
+                  -- ⊢ Nonempty (CauchyFilter α)
   · have := eq_univ_iff_forall.1 denseEmbedding_pureCauchy.toDenseInducing.closure_range c
+    -- ⊢ Nonempty α
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
+    -- ⊢ Nonempty α
     exact ⟨a⟩
+    -- 🎉 no goals
   · exact ⟨pureCauchy c⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.nonempty_Cauchy_iff CauchyFilter.nonempty_cauchyFilter_iff
 
@@ -234,6 +258,8 @@ instance : CompleteSpace (CauchyFilter α) :=
           (f ×ˢ pure x).sets_of_superset (prod_mem_prod ht' hx) h
         f.sets_of_superset ht' <| Subset.trans this (preimage_mono ht₂)
     ⟨f', by simp [nhds_eq_uniformity]; assumption⟩
+            -- ⊢ map pureCauchy f ≤ Filter.lift' (𝓤 (CauchyFilter α)) (UniformSpace.ball { va …
+                                       -- 🎉 no goals
 
 end
 
@@ -260,7 +286,9 @@ variable [SeparatedSpace β]
 theorem extend_pureCauchy {f : α → β} (hf : UniformContinuous f) (a : α) :
     extend f (pureCauchy a) = f a := by
   rw [extend, if_pos hf]
+  -- ⊢ DenseInducing.extend (_ : DenseInducing pureCauchy) f (pureCauchy a) = f a
   exact uniformly_extend_of_ind uniformInducing_pureCauchy denseRange_pureCauchy hf _
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.extend_pure_cauchy CauchyFilter.extend_pureCauchy
 
@@ -270,10 +298,15 @@ variable [CompleteSpace β]
 
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
+  -- ⊢ UniformContinuous (extend f)
   · rw [extend, if_pos hf]
+    -- ⊢ UniformContinuous (DenseInducing.extend (_ : DenseInducing pureCauchy) f)
     exact uniformContinuous_uniformly_extend uniformInducing_pureCauchy denseRange_pureCauchy hf
+    -- 🎉 no goals
   · rw [extend, if_neg hf]
+    -- ⊢ UniformContinuous fun x => f (Nonempty.some (_ : Nonempty α))
     exact uniformContinuous_of_const fun a _b => by congr
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.uniform_continuous_extend CauchyFilter.uniformContinuous_extend
 
@@ -285,31 +318,53 @@ theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteS
     [SeparatedSpace α] {f g : CauchyFilter α} :
     lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
   constructor
+  -- ⊢ lim ↑f = lim ↑g → (f, g) ∈ 𝓢 (CauchyFilter α)
   · intro e s hs
+    -- ⊢ (f, g) ∈ s
     rcases CauchyFilter.mem_uniformity'.1 hs with ⟨t, tu, ts⟩
+    -- ⊢ (f, g) ∈ s
     apply ts
+    -- ⊢ t ∈ ↑f ×ˢ ↑g
     rcases comp_mem_uniformity_sets tu with ⟨d, du, dt⟩
+    -- ⊢ t ∈ ↑f ×ˢ ↑g
     refine'
       mem_prod_iff.2
         ⟨_, f.2.le_nhds_lim (mem_nhds_right (lim f.1) du), _,
           g.2.le_nhds_lim (mem_nhds_left (lim g.1) du), fun x h => _⟩
     cases' x with a b
+    -- ⊢ (a, b) ∈ t
     cases' h with h₁ h₂
+    -- ⊢ (a, b) ∈ t
     rw [← e] at h₂
+    -- ⊢ (a, b) ∈ t
     exact dt ⟨_, h₁, h₂⟩
+    -- 🎉 no goals
   · intro H
+    -- ⊢ lim ↑f = lim ↑g
     refine' separated_def.1 (by infer_instance) _ _ fun t tu => _
+    -- ⊢ (lim ↑f, lim ↑g) ∈ t
     rcases mem_uniformity_isClosed tu with ⟨d, du, dc, dt⟩
+    -- ⊢ (lim ↑f, lim ↑g) ∈ t
     refine'
       H { p | (lim p.1.1, lim p.2.1) ∈ t } (CauchyFilter.mem_uniformity'.2 ⟨d, du, fun f g h => _⟩)
     rcases mem_prod_iff.1 h with ⟨x, xf, y, yg, h⟩
+    -- ⊢ (f, g) ∈ {p | (lim ↑p.fst, lim ↑p.snd) ∈ t}
     have limc : ∀ (f : CauchyFilter α), ∀ x ∈ f.1, lim f.1 ∈ closure x := by
       intro f x xf
       rw [closure_eq_cluster_pts]
       exact f.2.1.mono (le_inf f.2.le_nhds_lim (le_principal_iff.2 xf))
     have := dc.closure_subset_iff.2 h
+    -- ⊢ (f, g) ∈ {p | (lim ↑p.fst, lim ↑p.snd) ∈ t}
     rw [closure_prod_eq] at this
+    -- ⊢ (f, g) ∈ {p | (lim ↑p.fst, lim ↑p.snd) ∈ t}
     refine' dt (this ⟨_, _⟩) <;> dsimp <;> apply limc <;> assumption
+    -- ⊢ (lim ↑(f, g).fst, lim ↑(f, g).snd).fst ∈ closure x
+                                 -- ⊢ lim ↑f ∈ closure x
+                                 -- ⊢ lim ↑g ∈ closure y
+                                           -- ⊢ x ∈ ↑f
+                                           -- ⊢ y ∈ ↑g
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.Cauchy_eq CauchyFilter.cauchyFilter_eq
 
@@ -323,9 +378,13 @@ theorem separated_pureCauchy_injective {α : Type*} [UniformSpace α] [s : Separ
       fun a : α => ⟦pureCauchy a⟧
   | a, b, h => by
     refine separated_def.1 s _ _ (fun s hs => ?_)
+    -- ⊢ (a, b) ∈ s
     rw [← (@uniformEmbedding_pureCauchy α _).comap_uniformity, Filter.mem_comap] at hs
+    -- ⊢ (a, b) ∈ s
     obtain ⟨t, ht, hts⟩ := hs
+    -- ⊢ (a, b) ∈ s
     exact @hts (a, b) (Quotient.exact h t ht)
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Cauchy.separated_pure_cauchy_injective CauchyFilter.separated_pureCauchy_injective
 
@@ -348,10 +407,13 @@ variable {γ : Type*} [UniformSpace γ]
 instance completeSpace_separation [h : CompleteSpace α] :
     CompleteSpace (Quotient (separationSetoid α)) := by
   constructor
+  -- ⊢ ∀ {f : Filter (Quotient (separationSetoid α))}, Cauchy f → ∃ x, f ≤ 𝓝 x
   intro f hf
+  -- ⊢ ∃ x, f ≤ 𝓝 x
   have : Cauchy (f.comap fun x => ⟦x⟧) :=
     hf.comap' comap_quotient_le_uniformity <| hf.left.comap_of_surj (surjective_quotient_mk _)
   let ⟨x, (hx : (f.comap fun x => ⟦x⟧) ≤ 𝓝 x)⟩ := CompleteSpace.complete this
+  -- ⊢ ∃ x, f ≤ 𝓝 x
   exact ⟨⟦x⟧,
     (comap_le_comap_iff <| by simp).1
       (hx.trans <| map_le_iff_le_comap.1 continuous_quotient_mk'.continuousAt)⟩
@@ -401,8 +463,11 @@ theorem comap_coe_eq_uniformity :
         (pureCauchy x.1, pureCauchy x.2) :=
     by ext ⟨a, b⟩ <;> simp <;> rfl
   rw [this, ← Filter.comap_comap]
+  -- ⊢ Filter.comap (fun x => (pureCauchy x.fst, pureCauchy x.snd)) (Filter.comap ( …
   change Filter.comap _ (Filter.comap _ (𝓤 <| Quotient <| separationSetoid <| CauchyFilter α)) = 𝓤 α
+  -- ⊢ Filter.comap (fun x => (pureCauchy x.fst, pureCauchy x.snd)) (Filter.comap ( …
   rw [comap_quotient_eq_uniformity, uniformEmbedding_pureCauchy.comap_uniformity]
+  -- 🎉 no goals
 #align uniform_space.completion.comap_coe_eq_uniformity UniformSpace.Completion.comap_coe_eq_uniformity
 
 theorem uniformInducing_coe : UniformInducing ((↑) : α → Completion α) :=
@@ -422,8 +487,11 @@ def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)
   uniformStruct := by infer_instance
+                      -- 🎉 no goals
   complete := by infer_instance
+                 -- 🎉 no goals
   separation := by infer_instance
+                   -- 🎉 no goals
   uniformInducing := Completion.uniformInducing_coe α
   dense := Completion.denseRange_coe
 #align uniform_space.completion.cpkg UniformSpace.Completion.cPkg
@@ -611,6 +679,7 @@ theorem extension_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g 
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     intro a
+    -- ⊢ (Completion.extension f ∘ Completion.map g) (↑α a) = Completion.extension (f …
     -- porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
     -- but should be?
     rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
@@ -636,21 +705,29 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     ⟨Completion.extension (SeparationQuotient.lift ((↑) : α → Completion α)),
       Completion.map Quotient.mk', _, _⟩
   · intro a
+    -- ⊢ Completion.map Quotient.mk' (Completion.extension (SeparationQuotient.lift ↑ …
     refine' induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) _
+    -- ⊢ ∀ (a : SeparationQuotient α), Completion.map Quotient.mk' (Completion.extens …
     rintro ⟨a⟩
+    -- ⊢ Completion.map Quotient.mk' (Completion.extension (SeparationQuotient.lift ↑ …
     -- porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
     rw [← Quotient.mk,extension_coe (SeparationQuotient.uniformContinuous_lift _),
       SeparationQuotient.lift_mk (uniformContinuous_coe α), map_coe]
     · rfl
+      -- 🎉 no goals
     · exact uniformContinuous_quotient_mk
+      -- 🎉 no goals
   · intro a
+    -- ⊢ Completion.extension (SeparationQuotient.lift ↑α) (Completion.map Quotient.m …
     refine' Completion.induction_on a
         (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a => _
     rw [map_coe]
+    -- ⊢ Completion.extension (SeparationQuotient.lift ↑α) (↑(SeparationQuotient α) ( …
     -- porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
     · rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
         SeparationQuotient.lift_mk (uniformContinuous_coe α) _]
     · exact uniformContinuous_quotient_mk
+      -- 🎉 no goals
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv
 
 theorem uniformContinuous_completionSeparationQuotientEquiv :

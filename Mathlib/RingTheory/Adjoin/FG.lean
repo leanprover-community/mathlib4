@@ -40,44 +40,77 @@ variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A
 theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
     (adjoin R (s ∪ t)).toSubmodule.FG := by
   rcases fg_def.1 h1 with ⟨p, hp, hp'⟩
+  -- ⊢ FG (↑Subalgebra.toSubmodule (adjoin R (s ∪ t)))
   rcases fg_def.1 h2 with ⟨q, hq, hq'⟩
+  -- ⊢ FG (↑Subalgebra.toSubmodule (adjoin R (s ∪ t)))
   refine' fg_def.2 ⟨p * q, hp.mul hq, le_antisymm _ _⟩
+  -- ⊢ span R (p * q) ≤ ↑Subalgebra.toSubmodule (adjoin R (s ∪ t))
   · rw [span_le]
+    -- ⊢ p * q ⊆ ↑(↑Subalgebra.toSubmodule (adjoin R (s ∪ t)))
     rintro _ ⟨x, y, hx, hy, rfl⟩
+    -- ⊢ (fun x x_1 => x * x_1) x y ∈ ↑(↑Subalgebra.toSubmodule (adjoin R (s ∪ t)))
     change x * y ∈ adjoin R (s ∪ t)
+    -- ⊢ x * y ∈ adjoin R (s ∪ t)
     refine' Subalgebra.mul_mem _ _ _
+    -- ⊢ x ∈ adjoin R (s ∪ t)
     · have : x ∈ Subalgebra.toSubmodule (adjoin R s) := by
         rw [← hp']
         exact subset_span hx
       exact adjoin_mono (Set.subset_union_left _ _) this
+      -- 🎉 no goals
     have : y ∈ Subalgebra.toSubmodule (adjoin (adjoin R s) t) := by
       rw [← hq']
       exact subset_span hy
     change y ∈ adjoin R (s ∪ t)
+    -- ⊢ y ∈ adjoin R (s ∪ t)
     rwa [adjoin_union_eq_adjoin_adjoin]
+    -- 🎉 no goals
   · intro r hr
+    -- ⊢ r ∈ span R (p * q)
     change r ∈ adjoin R (s ∪ t) at hr
+    -- ⊢ r ∈ span R (p * q)
     rw [adjoin_union_eq_adjoin_adjoin] at hr
+    -- ⊢ r ∈ span R (p * q)
     change r ∈ Subalgebra.toSubmodule (adjoin (adjoin R s) t) at hr
+    -- ⊢ r ∈ span R (p * q)
     rw [← hq', ← Set.image_id q, Finsupp.mem_span_image_iff_total (adjoin R s)] at hr
+    -- ⊢ r ∈ span R (p * q)
     rcases hr with ⟨l, hlq, rfl⟩
+    -- ⊢ ↑(Finsupp.total A A { x // x ∈ adjoin R s } _root_.id) l ∈ span R (p * q)
     have := @Finsupp.total_apply A A (adjoin R s)
+    -- ⊢ ↑(Finsupp.total A A { x // x ∈ adjoin R s } _root_.id) l ∈ span R (p * q)
     rw [this, Finsupp.sum]
+    -- ⊢ (Finset.sum l.support fun a => ↑l a • _root_.id a) ∈ span R (p * q)
     refine' sum_mem _
+    -- ⊢ ∀ (c : A), c ∈ l.support → ↑l c • _root_.id c ∈ span R (p * q)
     intro z hz
+    -- ⊢ ↑l z • _root_.id z ∈ span R (p * q)
     change (l z).1 * _ ∈ _
+    -- ⊢ ↑(↑l z) * _root_.id z ∈ span R (p * q)
     have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
+    -- ⊢ ↑(↑l z) * _root_.id z ∈ span R (p * q)
     rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_total R] at this
+    -- ⊢ ↑(↑l z) * _root_.id z ∈ span R (p * q)
     rcases this with ⟨l2, hlp, hl⟩
+    -- ⊢ ↑(↑l z) * _root_.id z ∈ span R (p * q)
     have := @Finsupp.total_apply A A R
+    -- ⊢ ↑(↑l z) * _root_.id z ∈ span R (p * q)
     rw [this] at hl
+    -- ⊢ ↑(↑l z) * _root_.id z ∈ span R (p * q)
     rw [← hl, Finsupp.sum_mul]
+    -- ⊢ (Finsupp.sum l2 fun a c => c • _root_.id a * _root_.id z) ∈ span R (p * q)
     refine' sum_mem _
+    -- ⊢ ∀ (c : A), c ∈ l2.support → (fun a c => c • _root_.id a * _root_.id z) c (↑l …
     intro t ht
+    -- ⊢ (fun a c => c • _root_.id a * _root_.id z) t (↑l2 t) ∈ span R (p * q)
     change _ * _ ∈ _
+    -- ⊢ ↑l2 t • _root_.id t * _root_.id z ∈ span R (p * q)
     rw [smul_mul_assoc]
+    -- ⊢ ↑l2 t • (_root_.id t * _root_.id z) ∈ span R (p * q)
     refine' smul_mem _ _ _
+    -- ⊢ _root_.id t * _root_.id z ∈ span R (p * q)
     exact subset_span ⟨t, z, hlp ht, hlq hz, rfl⟩
+    -- 🎉 no goals
 #align algebra.fg_trans Algebra.fg_trans
 
 end Algebra
@@ -113,7 +146,9 @@ theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.FG → S.FG :=
       span_le.mpr (fun x hx ↦ Algebra.subset_adjoin hx)
         (show x ∈ span R ↑t by
           rw [ht]
+          -- ⊢ x ∈ ↑toSubmodule S
           exact hx)⟩
+          -- 🎉 no goals
 #align subalgebra.fg_of_fg_to_submodule Subalgebra.fg_of_fg_toSubmodule
 
 theorem fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.FG :=
@@ -124,14 +159,19 @@ theorem fg_of_submodule_fg (h : (⊤ : Submodule R A).FG) : (⊤ : Subalgebra R 
   let ⟨s, hs⟩ := h
   ⟨s, toSubmodule.injective <| by
     rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
+    -- ⊢ ↑s ⊆ ↑(↑toSubmodule (Algebra.adjoin R ↑s))
     exact Algebra.subset_adjoin⟩
+    -- 🎉 no goals
 #align subalgebra.fg_of_submodule_fg Subalgebra.fg_of_submodule_fg
 
 theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG) :
     (S.prod T).FG := by
   obtain ⟨s, hs⟩ := fg_def.1 hS
+  -- ⊢ FG (Subalgebra.prod S T)
   obtain ⟨t, ht⟩ := fg_def.1 hT
+  -- ⊢ FG (Subalgebra.prod S T)
   rw [← hs.2, ← ht.2]
+  -- ⊢ FG (Subalgebra.prod (Algebra.adjoin R s) (Algebra.adjoin R t))
   exact fg_def.2 ⟨LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1}),
     Set.Finite.union (Set.Finite.image _ (Set.Finite.union hs.1 (Set.finite_singleton _)))
       (Set.Finite.image _ (Set.Finite.union ht.1 (Set.finite_singleton _))),
@@ -145,6 +185,7 @@ open Classical
 theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
   let ⟨s, hs⟩ := hs
   ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
+                 -- 🎉 no goals
 #align subalgebra.fg.map Subalgebra.FG.map
 
 end
@@ -155,17 +196,24 @@ theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Inj
   ⟨s.preimage f fun _ _ _ _ h ↦ hf h,
     map_injective hf <| by
       rw [← Algebra.adjoin_image, Finset.coe_preimage, Set.image_preimage_eq_of_subset, hs]
+      -- ⊢ ↑s ⊆ Set.range ↑f
       rw [← AlgHom.coe_range, ← Algebra.adjoin_le_iff, hs, ← Algebra.map_top]
+      -- ⊢ map f S ≤ map f ⊤
       exact map_mono le_top⟩
+      -- 🎉 no goals
 #align subalgebra.fg_of_fg_map Subalgebra.fg_of_fg_map
 
 theorem fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).FG ↔ S.FG :=
   ⟨fun h ↦ by
     rw [← S.range_val, ← Algebra.map_top]
+    -- ⊢ FG (map (val S) ⊤)
     exact FG.map _ h, fun h ↦
+    -- 🎉 no goals
     fg_of_fg_map _ S.val Subtype.val_injective <| by
       rw [Algebra.map_top, range_val]
+      -- ⊢ FG S
       exact h⟩
+      -- 🎉 no goals
 #align subalgebra.fg_top Subalgebra.fg_top
 
 theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (base : P ⊥)

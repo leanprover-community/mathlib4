@@ -86,7 +86,9 @@ set_option linter.uppercaseLean3 false in
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
+  -- ⊢ f x✝ = g x✝
   apply h
+  -- 🎉 no goals
 
 -- See `equivEquivIso` in the root namespace for the analogue in `Type`.
 /-- Equivalences between finite types are the same as isomorphisms in `FintypeCat`. -/
@@ -101,7 +103,9 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       left_inv := congr_fun i.hom_inv_id
       right_inv := congr_fun i.inv_hom_id }
   left_inv := by aesop_cat
+                 -- 🎉 no goals
   right_inv := by aesop_cat
+                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Fintype.equiv_equiv_iso FintypeCat.equivEquivIso
 
@@ -155,18 +159,30 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
           invFun := fun x => (h.inv ⟨x⟩).down
           left_inv := by
             intro a
+            -- ⊢ (fun x => (h.inv { down := x }).down) ((fun x => (h.hom { down := x }).down) …
             change ULift.down _ = _
+            -- ⊢ (h.inv { down := (fun x => (h.hom { down := x }).down) a }).down = a
             rw [ULift.up_down]
+            -- ⊢ (h.inv (h.hom { down := a })).down = a
             change ((h.hom ≫ h.inv) _).down = _
+            -- ⊢ ((h.hom ≫ h.inv) { down := a }).down = a
             simp
+            -- ⊢ (𝟙 X { down := a }).down = a
             rfl
+            -- 🎉 no goals
           right_inv := by
             intro a
+            -- ⊢ (fun x => (h.hom { down := x }).down) ((fun x => (h.inv { down := x }).down) …
             change ULift.down _ = _
+            -- ⊢ (h.hom { down := (fun x => (h.inv { down := x }).down) a }).down = a
             rw [ULift.up_down]
+            -- ⊢ (h.hom (h.inv { down := a })).down = a
             change ((h.inv ≫ h.hom) _).down = _
+            -- ⊢ ((h.inv ≫ h.hom) { down := a }).down = a
             simp
+            -- ⊢ (𝟙 Y { down := a }).down = a
             rfl }
+            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.is_skeletal FintypeCat.Skeleton.is_skeletal
 
@@ -201,7 +217,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
   convert Finset.card_fin n
+  -- ⊢ Fintype.card ↑(incl.obj (mk n)) = Finset.card Finset.univ
   apply Fintype.ofEquiv_card
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl_mk_nat_card FintypeCat.Skeleton.incl_mk_nat_card
 
@@ -211,6 +229,7 @@ end Skeleton
 noncomputable def isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
+            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Fintype.is_skeleton FintypeCat.isSkeleton
 

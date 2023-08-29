@@ -169,16 +169,25 @@ theorem MemCarrier.clear_denominator' [DecidableEq (Away f)] {z : Localization.A
           (∑ i in c.support.attach,
             acd (c i) (Finset.mem_image.mpr ⟨i, ⟨i.2, rfl⟩⟩) * i.1.2.choose) := by
   rw [← submodule_span_eq, Finsupp.span_eq_range_total, LinearMap.mem_range] at hz
+  -- ⊢ ∃ c N acd, f ^ N • z = ↑(algebraMap A (Away f)) (∑ i in attach c.support, ac …
   rcases hz with ⟨c, eq1⟩
+  -- ⊢ ∃ c N acd, f ^ N • z = ↑(algebraMap A (Away f)) (∑ i in attach c.support, ac …
   rw [Finsupp.total_apply, Finsupp.sum] at eq1
+  -- ⊢ ∃ c N acd, f ^ N • z = ↑(algebraMap A (Away f)) (∑ i in attach c.support, ac …
   obtain ⟨⟨_, N, rfl⟩, hN⟩ :=
     IsLocalization.exist_integer_multiples_of_finset (Submonoid.powers f) (c.support.image c)
   choose acd hacd using hN
+  -- ⊢ ∃ c N acd, f ^ N • z = ↑(algebraMap A (Away f)) (∑ i in attach c.support, ac …
   refine' ⟨c, N, acd, _⟩
+  -- ⊢ f ^ N • z = ↑(algebraMap A (Away f)) (∑ i in attach c.support, acd (↑c ↑i) ( …
   rw [← eq1, smul_sum, map_sum, ← sum_attach]
+  -- ⊢ ∑ x_1 in attach c.support, f ^ N • ↑c ↑x_1 • ↑↑x_1 = ∑ x_1 in attach c.suppo …
   congr 1
+  -- ⊢ (fun x_1 => f ^ N • ↑c ↑x_1 • ↑↑x_1) = fun x_1 => ↑(algebraMap A (Away f)) ( …
   ext i
+  -- ⊢ f ^ N • ↑c ↑i • ↑↑i = ↑(algebraMap A (Away f)) (acd (↑c ↑i) (_ : ↑c ↑i ∈ ima …
   rw [_root_.map_mul, hacd, (Classical.choose_spec i.1.2).2, smul_eq_mul, smul_mul_assoc]
+  -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier.clear_denominator' AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.MemCarrier.clear_denominator'
 
 theorem MemCarrier.clear_denominator [DecidableEq (Away f)] {z : A⁰_ f} (hz : z ∈ carrier x) :
@@ -194,20 +203,32 @@ theorem MemCarrier.clear_denominator [DecidableEq (Away f)] {z : A⁰_ f} (hz : 
 theorem disjoint :
     Disjoint (x.1.asHomogeneousIdeal.toIdeal : Set A) (Submonoid.powers f : Set A) := by
   by_contra rid
+  -- ⊢ False
   rw [Set.not_disjoint_iff] at rid
+  -- ⊢ False
   choose g hg using rid
+  -- ⊢ False
   obtain ⟨hg1, ⟨k, rfl⟩⟩ := hg
+  -- ⊢ False
   by_cases k_ineq : 0 < k
+  -- ⊢ False
   · erw [x.1.isPrime.pow_mem_iff_mem _ k_ineq] at hg1
+    -- ⊢ False
     exact x.2 hg1
+    -- 🎉 no goals
   · dsimp at hg1
+    -- ⊢ False
     erw [show k = 0 by linarith, pow_zero, ← Ideal.eq_top_iff_one] at hg1
+    -- ⊢ False
     apply x.1.isPrime.1
+    -- ⊢ HomogeneousIdeal.toIdeal (↑x).asHomogeneousIdeal = ⊤
     exact hg1
+    -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.disjoint AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.disjoint
 
 theorem carrier_ne_top : carrier x ≠ ⊤ := by
   have eq_top := disjoint x
+  -- ⊢ carrier x ≠ ⊤
   classical
   contrapose! eq_top
   obtain ⟨c, N, acd, eq1⟩ := MemCarrier.clear_denominator x ((Ideal.eq_top_iff_one _).mp eq_top)
@@ -335,12 +356,23 @@ def toSpec {f : A} : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   toFun := ToSpec.toFun f
   continuous_toFun := by
     apply IsTopologicalBasis.continuous PrimeSpectrum.isTopologicalBasis_basic_opens
+    -- ⊢ ∀ (s : Set (PrimeSpectrum ↑(CommRingCat.of (A⁰_ f)))), (s ∈ Set.range fun r  …
     rintro _ ⟨⟨k, ⟨a, ha⟩, ⟨b, hb1⟩, ⟨k', hb2⟩⟩, rfl⟩; dsimp
+    -- ⊢ IsOpen (ToSpec.toFun f ⁻¹' (fun r => ↑(sbo r)) (Quot.mk Setoid.r { deg := k, …
+                                                       -- ⊢ IsOpen (ToSpec.toFun f ⁻¹' ↑(sbo Quot.mk Setoid.r { deg := k, num := { val : …
     erw [ToSpec.preimage_eq f a b k ha hb1 ⟨k', hb2⟩]
+    -- ⊢ IsOpen {x | ↑x ∈ (pbo f) ⊓ pbo a}
     refine' isOpen_induced_iff.mpr ⟨(pbo f).1 ⊓ (pbo a).1, IsOpen.inter (pbo f).2 (pbo a).2, _⟩
+    -- ⊢ Subtype.val ⁻¹' ((pbo f).carrier ⊓ (pbo a).carrier) = {x | ↑x ∈ (pbo f) ⊓ pb …
     ext z; constructor
+    -- ⊢ z ∈ Subtype.val ⁻¹' ((pbo f).carrier ⊓ (pbo a).carrier) ↔ z ∈ {x | ↑x ∈ (pbo …
+           -- ⊢ z ∈ Subtype.val ⁻¹' ((pbo f).carrier ⊓ (pbo a).carrier) → z ∈ {x | ↑x ∈ (pbo …
     · intro hz; simpa [Set.mem_preimage]
+      -- ⊢ z ∈ {x | ↑x ∈ (pbo f) ⊓ pbo a}
+                -- 🎉 no goals
     · intro hz; simpa only [Set.inf_eq_inter,Set.mem_inter_iff,Set.mem_preimage]
+      -- ⊢ z ∈ Subtype.val ⁻¹' ((pbo f).carrier ⊓ (pbo a).carrier)
+                -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec AlgebraicGeometry.ProjIsoSpecTopComponent.toSpec
 
 end
@@ -380,12 +412,18 @@ The set `{a | aᵢᵐ/fⁱ ∈ q}`
 -/
 def carrier (q : Spec.T A⁰_ f) : Set A :=
   {a | ∀ i, (Quotient.mk'' ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
+                                                       -- 🎉 no goals
               ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1}
+                         -- ⊢ f ^ i ∈ 𝒜 (i * m)
+                                        -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier
 
 theorem mem_carrier_iff (q : Spec.T A⁰_ f) (a : A) :
     a ∈ carrier f_deg q ↔ ∀ i, (Quotient.mk'' ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
+                                                                          -- 🎉 no goals
       ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1 :=
+                 -- ⊢ f ^ i ∈ 𝒜 (i * m)
+                                -- 🎉 no goals
   Iff.rfl
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff
 
@@ -396,19 +434,38 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
   (mem_carrier_iff f_deg q a).trans
     (by
       constructor <;> intro h i <;> specialize h i
+      -- ⊢ (∀ (i : ℕ), Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, …
+                      -- ⊢ Localization.mk (↑(proj 𝒜 i) a ^ m) { val := f ^ i, property := (_ : ∃ y, (f …
+                      -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property := …
+                                    -- ⊢ Localization.mk (↑(proj 𝒜 i) a ^ m) { val := f ^ i, property := (_ : ∃ y, (f …
+                                    -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property := …
       · rw [Set.mem_image]; refine' ⟨_, h, rfl⟩
+        -- ⊢ ∃ x, x ∈ {s | s ∈ q.asIdeal} ∧ ↑(algebraMap (A⁰_ f) (Away f)) x = Localizati …
+                            -- 🎉 no goals
       · rw [Set.mem_image] at h; rcases h with ⟨x, h, hx⟩
+        -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property := …
+                                 -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property := …
         change x ∈ q.asIdeal at h
+        -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property := …
         convert h
+        -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property := …
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'']
+        -- ⊢ Localization.mk ↑{ deg := m * i, num := { val := ↑(proj 𝒜 i) a ^ m, property …
         dsimp only [Subtype.coe_mk]; rw [← hx]; rfl)
+        -- ⊢ Localization.mk (↑(proj 𝒜 i) a ^ m) { val := f ^ i, property := (_ : ∃ y, f  …
+                                     -- ⊢ ↑(algebraMap (A⁰_ f) (Away f)) x = HomogeneousLocalization.val x
+                                                -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.mem_carrier_iff' AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff'
 
 theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
   refine' fun i => (q.2.mem_or_mem _).elim id id
+  -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) (a + b) ^ m, prope …
   change (Quotient.mk'' ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
+  -- ⊢ Quotient.mk'' { deg := { deg := m * i, num := { val := ↑(proj 𝒜 i) (a + b) ^ …
+                                                     -- ⊢ Quotient.mk'' { deg := m * i + m * i, num := { val := ↑(proj 𝒜 i) (a + b) ^  …
   simp_rw [← pow_add, map_add, add_pow, mul_comm, ← nsmul_eq_mul]
+  -- ⊢ Quotient.mk'' { deg := m * i + m * i, num := { val := ∑ x in range (m + m +  …
   let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
@@ -433,62 +490,116 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   · rw [(_ : m * i = _)]
     -- Porting note: it seems unification with mul_mem is more fiddly reducing value of mem_tac
     apply GradedMonoid.toGradedMul.mul_mem (i := j • i) (j := (m - j) • i) <;> mem_tac_aux
+    -- ⊢ ↑(proj 𝒜 i) a ^ j ∈ 𝒜 (j • i)
+                                                                               -- 🎉 no goals
+                                                                               -- 🎉 no goals
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
+    -- ⊢ m * i = m • i
+                                           -- 🎉 no goals
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
+    -- ⊢ ↑(proj 𝒜 i) a ^ (j - m) ∈ 𝒜 ((j - m) • i)
+                                                                                       -- 🎉 no goals
+                                                                                       -- 🎉 no goals
     rw [← add_smul]; congr; zify [le_of_not_lt h2, le_of_not_le h1]; abel
+    -- ⊢ m * i = (j - m + (m + m - j)) • i
+                     -- ⊢ m = j - m + (m + m - j)
+                            -- ⊢ ↑m = ↑j - ↑m + (↑m + ↑m - ↑j)
+                                                                     -- 🎉 no goals
+                                                                     -- 🎉 no goals
   convert_to ∑ i in range (m + m + 1), g i ∈ q.1; swap
+  -- ⊢ Quotient.mk'' { deg := m * i + m * i, num := { val := ∑ x in range (m + m +  …
+                                                  -- ⊢ ∑ i in range (m + m + 1), g i ∈ q.asIdeal
   · refine' q.1.sum_mem fun j _ => nsmul_mem _ _; split_ifs
+    -- ⊢ (if h2 : m + m < j then 0 else if h1 : j ≤ m then Quotient.mk'' { deg := m * …
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
+    -- 🎉 no goals
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'']
+  -- ⊢ Localization.mk ↑{ deg := m * i + m * i, num := { val := ∑ x in range (m + m …
   change _ = (algebraMap (HomogeneousLocalization.Away 𝒜 f) (Localization.Away f)) _
+  -- ⊢ Localization.mk ↑{ deg := m * i + m * i, num := { val := ∑ x in range (m + m …
   dsimp only [Subtype.coe_mk]; rw [map_sum, mk_sum]
+  -- ⊢ Localization.mk (∑ x in range (m + m + 1), Nat.choose (m + m) x • (↑(proj 𝒜  …
+                               -- ⊢ ∑ i_1 in range (m + m + 1), Localization.mk (Nat.choose (m + m) i_1 • (↑(pro …
   apply Finset.sum_congr rfl fun j hj => _
+  -- ⊢ ∀ (j : ℕ), j ∈ range (m + m + 1) → Localization.mk (Nat.choose (m + m) j • ( …
   intro j hj
+  -- ⊢ Localization.mk (Nat.choose (m + m) j • (↑(proj 𝒜 i) a ^ j * ↑(proj 𝒜 i) b ^ …
   change _ = HomogeneousLocalization.val _
+  -- ⊢ Localization.mk (Nat.choose (m + m) j • (↑(proj 𝒜 i) a ^ j * ↑(proj 𝒜 i) b ^ …
   rw [HomogeneousLocalization.smul_val]
+  -- ⊢ Localization.mk (Nat.choose (m + m) j • (↑(proj 𝒜 i) a ^ j * ↑(proj 𝒜 i) b ^ …
   split_ifs with h2 h1
   · exact ((Finset.mem_range.1 hj).not_le h2).elim
+    -- 🎉 no goals
   all_goals simp only [HomogeneousLocalization.mul_val, HomogeneousLocalization.zero_val,
     HomogeneousLocalization.val_mk'', Subtype.coe_mk, mk_mul, ← smul_mk]; congr 2
   · dsimp; rw [mul_assoc, ← pow_add, add_comm (m - j), Nat.add_sub_assoc h1]
+    -- ⊢ ↑(↑(↑(decompose 𝒜) a) i) ^ j * ↑(↑(↑(decompose 𝒜) b) i) ^ (m + m - j) = ↑(↑( …
+           -- 🎉 no goals
   · simp_rw [pow_add]; rfl
+    -- ⊢ { val := f ^ i * f ^ i, property := (_ : (fun x => x ∈ Submonoid.powers f) ( …
+                       -- 🎉 no goals
   · dsimp; rw [← mul_assoc, ← pow_add, Nat.add_sub_of_le (le_of_not_le h1)]
+    -- ⊢ ↑(↑(↑(decompose 𝒜) a) i) ^ j * ↑(↑(↑(decompose 𝒜) b) i) ^ (m + m - j) = ↑(↑( …
+           -- 🎉 no goals
   · simp_rw [pow_add]; rfl
+    -- ⊢ { val := f ^ i * f ^ i, property := (_ : (fun x => x ∈ Submonoid.powers f) ( …
+                       -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.add_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.add_mem
 
 variable (hm : 0 < m) (q : Spec.T A⁰_ f)
 
 theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
   convert Submodule.zero_mem q.1 using 1
+  -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) 0 ^ m, property := …
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
     HomogeneousLocalization.zero_val]; simp_rw [map_zero, zero_pow hm]
+                                       -- ⊢ Localization.mk 0 { val := f ^ i, property := (_ : ↑{ deg := m * i, num := { …
   convert Localization.mk_zero (S := Submonoid.powers f) _ using 1
+  -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.zero_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.zero_mem
 
 theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ carrier f_deg q := by
   revert c
+  -- ⊢ ∀ (c : A), c • x ∈ carrier f_deg q
   refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
   · rw [zero_smul]; exact carrier.zero_mem f_deg hm _
+    -- ⊢ 0 ∈ carrier f_deg q
+                    -- 🎉 no goals
   · rintro n ⟨a, ha⟩ i
+    -- ⊢ Quotient.mk'' { deg := m * i, num := { val := ↑(proj 𝒜 i) (↑{ val := a, prop …
     simp_rw [proj_apply, smul_eq_mul, coe_decompose_mul_of_left_mem 𝒜 i ha]
+    -- ⊢ Quotient.mk'' { deg := m * i, num := { val := (if n ≤ i then a * ↑(↑(↑(decom …
     -- Porting note: having trouble with Mul instance
     let product : A⁰_ f :=
       Mul.mul (Quotient.mk'' ⟨_, ⟨a ^ m, pow_mem_graded m ha⟩, ⟨_, ?_⟩, ⟨n, rfl⟩⟩ : A⁰_ f)
           (Quotient.mk'' ⟨_, ⟨proj 𝒜 (i - n) x ^ m, by mem_tac⟩, ⟨_, ?_⟩, ⟨i - n, rfl⟩⟩ : A⁰_ f)
     split_ifs with h
     · convert_to product ∈ q.1
+      -- ⊢ Quotient.mk'' { deg := m * i, num := { val := (a * ↑(↑(↑(decompose 𝒜) x) (i  …
       · dsimp
+        -- ⊢ Quotient.mk'' { deg := m * i, num := { val := (a * ↑(↑(↑(decompose 𝒜) x) (i  …
         erw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.val_mk'']
         simp_rw [mul_pow]; rw [Localization.mk_mul]
         congr; erw [← pow_add, Nat.add_sub_of_le h]
         · rw [(_ : m • n = _)]; mem_tac; simp only [smul_eq_mul, mul_comm]
+                                -- ⊢ m • n = n • m
+                                         -- 🎉 no goals
         · rw [(_ : m • (i - n) = _)]; mem_tac; simp only [smul_eq_mul, mul_comm]
+                                      -- ⊢ m • (i - n) = (i - n) • m
+                                               -- 🎉 no goals
       · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
+        -- 🎉 no goals
     · simp_rw [zero_pow hm]; convert carrier.zero_mem f_deg hm q i; rw [map_zero, zero_pow hm]
+      -- ⊢ Quotient.mk'' { deg := m * i, num := { val := 0, property := (_ : (fun x =>  …
+                             -- ⊢ 0 = ↑(proj 𝒜 i) 0 ^ m
+                                                                    -- 🎉 no goals
   · simp_rw [add_smul]; exact fun _ _ => carrier.add_mem f_deg q
+    -- ⊢ ∀ (m_1 m' : A), m_1 • x ∈ carrier f_deg q → m' • x ∈ carrier f_deg q → m_1 • …
+                        -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.smul_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.smul_mem
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as an ideal.
@@ -504,10 +615,13 @@ def carrier.asIdeal : Ideal A where
 theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 :=
   fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
+                                     -- 🎉 no goals
     fun h => by
     simp only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm]
     convert carrier.zero_mem f_deg hm q j; rw [map_zero, zero_pow hm]
+    -- ⊢ 0 = ↑(proj 𝒜 j) 0 ^ m
+                                           -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal.homogeneous AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.homogeneous
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as a homogeneous ideal.
@@ -521,11 +635,15 @@ theorem carrier.denom_not_mem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
     (Ideal.eq_top_iff_one _).mpr
       (by
         convert rid m
+        -- ⊢ 1 = Quotient.mk'' { deg := m * m, num := { val := ↑(proj 𝒜 m) f ^ m, propert …
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.one_val,
           HomogeneousLocalization.val_mk'']
         dsimp
+        -- ⊢ 1 = Localization.mk (↑(↑(↑(decompose 𝒜) f) m) ^ m) { val := f ^ m, property  …
         simp_rw [decompose_of_mem_same _ f_deg]
+        -- ⊢ 1 = Localization.mk (f ^ m) { val := f ^ m, property := (_ : ∃ y, (fun x x_1 …
         simp only [mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self])
+        -- 🎉 no goals
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.denom_not_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.denom_not_mem
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
@@ -542,13 +660,17 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
     show (∀ i, _ ∈ _) ∨ ∀ i, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
+        -- ⊢ Quotient.mk'' { deg := m * nx, num := { val := ↑(proj 𝒜 nx) x ^ m, property  …
+                              -- ⊢ Quotient.mk'' { deg := m * nx, num := { val := ↑(proj 𝒜 nx) x ^ m, property  …
         dsimp
+        -- ⊢ Quotient.mk'' { deg := m * nx, num := { val := ↑(↑(↑(decompose 𝒜) x) nx) ^ m …
         simp_rw [decompose_of_mem_same 𝒜 hnx, decompose_of_mem_same 𝒜 hny,
           decompose_of_mem_same 𝒜 (SetLike.GradedMonoid.toGradedMul.mul_mem hnx hny),
           mul_pow, pow_add]
         simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.mul_val, mk_mul]
         simp only [Submonoid.mk_mul_mk, mk_eq_monoidOf_mk']
+        -- 🎉 no goals
       all_goals
         intro n hn; convert q.1.zero_mem using 1
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',

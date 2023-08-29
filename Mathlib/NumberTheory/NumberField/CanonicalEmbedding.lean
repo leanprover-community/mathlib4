@@ -56,24 +56,37 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
   refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
   · rintro _ ⟨x, rfl⟩
+    -- ⊢ ↑(starRingEnd ℂ) (↑(canonicalEmbedding K) x φ) = ↑(canonicalEmbedding K) x ( …
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
+    -- 🎉 no goals
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
+    -- 🎉 no goals
   · rw [Pi.add_apply, Pi.add_apply, map_add, hx, hy]
+    -- 🎉 no goals
   · rw [Pi.smul_apply, Complex.real_smul, map_mul, Complex.conj_ofReal]
+    -- ⊢ ↑a * ↑(starRingEnd ℂ) (x✝ φ) = (a • x✝) (ComplexEmbedding.conjugate φ)
     exact congrArg ((a : ℂ) * ·) hx
+    -- 🎉 no goals
 
 theorem nnnorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
+  -- 🎉 no goals
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
+  -- ⊢ ‖↑(canonicalEmbedding K) x‖ ≤ r ↔ ∀ (φ : K →+* ℂ), ‖↑φ x‖ ≤ r
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
+    -- ⊢ ‖↑(canonicalEmbedding K) x‖ ≤ r ↔ ∀ (φ : K →+* ℂ), ‖↑φ x‖ ≤ r
     refine iff_of_false ?_ ?_
+    -- ⊢ ¬‖↑(canonicalEmbedding K) x‖ ≤ r
     exact (hr.trans_le (norm_nonneg _)).not_le
+    -- ⊢ ¬∀ (φ : K →+* ℂ), ‖↑φ x‖ ≤ r
     exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    -- 🎉 no goals
   · lift r to NNReal using hr
+    -- ⊢ ‖↑(canonicalEmbedding K) x‖ ≤ ↑r ↔ ∀ (φ : K →+* ℂ), ‖↑φ x‖ ≤ ↑r
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
 
@@ -86,16 +99,25 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | _ := lt_or_le r 0
+  -- ⊢ Set.Finite (↑(integerLattice K) ∩ Metric.closedBall 0 r)
   · simp [Metric.closedBall_eq_empty.2 hr]
+    -- 🎉 no goals
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
       intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
+    -- ⊢ ↑(integerLattice K) ∩ Metric.closedBall 0 r = ↑(canonicalEmbedding K) '' {x  …
     ext; constructor
+    -- ⊢ x✝ ∈ ↑(integerLattice K) ∩ Metric.closedBall 0 r ↔ x✝ ∈ ↑(canonicalEmbedding …
+         -- ⊢ x✝ ∈ ↑(integerLattice K) ∩ Metric.closedBall 0 r → x✝ ∈ ↑(canonicalEmbedding …
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
+      -- ⊢ ↑(canonicalEmbedding K) (↑(algebraMap { x // x ∈ 𝓞 K } K) x) ∈ ↑(canonicalEm …
       exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
+      -- 🎉 no goals
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
+      -- ⊢ ↑(canonicalEmbedding K) x ∈ ↑(integerLattice K) ∩ Metric.closedBall 0 r
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
+      -- 🎉 no goals
 
 open Module Fintype FiniteDimensional
 
@@ -140,8 +162,10 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  -- ⊢ x ∈ ↑(AlgHom.toLinearMap (RingHom.toIntAlgHom (canonicalEmbedding K))) '' ↑( …
   rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
     ext; exact mem_span_integralBasis K]
   rfl
+  -- 🎉 no goals
 
 end NumberField.canonicalEmbedding

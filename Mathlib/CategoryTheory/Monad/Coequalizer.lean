@@ -69,11 +69,17 @@ theorem FreeCoequalizer.condition :
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _
   apply (free T).map (T.η.app X.A)
+  -- ⊢ (free T).map (NatTrans.app (η T) X.A) ≫ FreeCoequalizer.topMap X = 𝟙 ((free  …
   · ext
+    -- ⊢ ((free T).map (NatTrans.app (η T) X.A) ≫ FreeCoequalizer.topMap X).f = (𝟙 (( …
     dsimp
+    -- ⊢ T.map (NatTrans.app (η T) X.A) ≫ T.map X.a = 𝟙 (T.obj X.A)
     rw [← Functor.map_comp, X.unit, Functor.map_id]
+    -- 🎉 no goals
   · ext
+    -- ⊢ ((free T).map (NatTrans.app (η T) X.A) ≫ FreeCoequalizer.bottomMap X).f = (𝟙 …
     apply Monad.right_unit
+    -- 🎉 no goals
 
 /-- Construct the Beck cofork in the category of algebras. This cofork is reflexive as well as a
 coequalizer.
@@ -91,17 +97,26 @@ def beckAlgebraCoequalizer : IsColimit (beckAlgebraCofork X) :=
     have h₁ : (T : C ⥤ C).map X.a ≫ s.π.f = T.μ.app X.A ≫ s.π.f :=
       congr_arg Monad.Algebra.Hom.f s.condition
     have h₂ : (T : C ⥤ C).map s.π.f ≫ s.pt.a = T.μ.app X.A ≫ s.π.f := s.π.h
+    -- ⊢ { l // Cofork.π (beckAlgebraCofork X) ≫ l = Cofork.π s ∧ ∀ {m : ((Functor.co …
     refine' ⟨⟨T.η.app _ ≫ s.π.f, _⟩, _, _⟩
     · dsimp
+      -- ⊢ T.map (NatTrans.app (η T) X.1 ≫ (Cofork.π s).f) ≫ s.pt.a = X.a ≫ NatTrans.ap …
       rw [Functor.map_comp, Category.assoc, h₂, Monad.right_unit_assoc,
         show X.a ≫ _ ≫ _ = _ from T.η.naturality_assoc _ _, h₁, Monad.left_unit_assoc]
     · ext
+      -- ⊢ (Cofork.π (beckAlgebraCofork X) ≫ Algebra.Hom.mk (NatTrans.app (η T) (beckAl …
       simpa [← T.η.naturality_assoc, T.left_unit_assoc] using T.η.app ((T : C ⥤ C).obj X.A) ≫= h₁
+      -- 🎉 no goals
     · intro m hm
+      -- ⊢ m = Algebra.Hom.mk (NatTrans.app (η T) (beckAlgebraCofork X).pt.1 ≫ (Cofork. …
       ext
+      -- ⊢ m.f = (Algebra.Hom.mk (NatTrans.app (η T) (beckAlgebraCofork X).pt.1 ≫ (Cofo …
       dsimp only
+      -- ⊢ m.f = NatTrans.app (η T) (beckAlgebraCofork X).pt.1 ≫ (Cofork.π s).f
       rw [← hm]
+      -- ⊢ m.f = NatTrans.app (η T) (beckAlgebraCofork X).pt.1 ≫ (Cofork.π (beckAlgebra …
       apply (X.unit_assoc _).symm
+      -- 🎉 no goals
 #align category_theory.monad.beck_algebra_coequalizer CategoryTheory.Monad.beckAlgebraCoequalizer
 
 /-- The Beck cofork is a split coequalizer. -/

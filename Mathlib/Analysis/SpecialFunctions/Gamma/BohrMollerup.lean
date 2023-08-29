@@ -55,11 +55,13 @@ variable {𝕜 E β : Type*} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜]
 theorem ConvexOn.congr [SMul 𝕜 β] (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
   ⟨hf.1, fun x hx y hy a b ha hb hab => by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
+    -- 🎉 no goals
 #align convex_on.congr ConvexOn.congr
 
 theorem ConcaveOn.congr [SMul 𝕜 β] (hf : ConcaveOn 𝕜 s f) (hfg : EqOn f g s) : ConcaveOn 𝕜 s g :=
   ⟨hf.1, fun x hx y hy a b ha hb hab => by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
+    -- 🎉 no goals
 #align concave_on.congr ConcaveOn.congr
 
 theorem StrictConvexOn.congr [SMul 𝕜 β] (hf : StrictConvexOn 𝕜 s f) (hfg : EqOn f g s) :
@@ -110,9 +112,13 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- We will apply Hölder's inequality, for the conjugate exponents `p = 1 / a`
   -- and `q = 1 / b`, to the functions `f a s` and `f b t`, where `f` is as follows:
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
+  -- ⊢ Gamma (a * s + b * t) ≤ Gamma s ^ a * Gamma t ^ b
   have e : IsConjugateExponent (1 / a) (1 / b) := Real.isConjugateExponent_one_div ha hb hab
+  -- ⊢ Gamma (a * s + b * t) ≤ Gamma s ^ a * Gamma t ^ b
   have hab' : b = 1 - a := by linarith
+  -- ⊢ Gamma (a * s + b * t) ≤ Gamma s ^ a * Gamma t ^ b
   have hst : 0 < a * s + b * t := add_pos (mul_pos ha hs) (mul_pos hb ht)
+  -- ⊢ Gamma (a * s + b * t) ≤ Gamma s ^ a * Gamma t ^ b
   -- some properties of f:
   have posf : ∀ c u x : ℝ, x ∈ Ioi (0 : ℝ) → 0 ≤ f c u x := fun c u x hx =>
     mul_nonneg (exp_pos _).le (rpow_pos_of_pos hx _).le
@@ -146,33 +152,47 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
       · exact continuousAt_rpow_const _ _ (Or.inl (mem_Ioi.mp hx).ne')
   -- now apply Hölder:
   rw [Gamma_eq_integral hs, Gamma_eq_integral ht, Gamma_eq_integral hst]
+  -- ⊢ ∫ (x : ℝ) in Ioi 0, rexp (-x) * x ^ (a * s + b * t - 1) ≤ (∫ (x : ℝ) in Ioi  …
   convert
     MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg e (posf' a s) (posf' b t) (f_mem_Lp ha hs)
       (f_mem_Lp hb ht) using
     1
   · refine' set_integral_congr measurableSet_Ioi fun x hx => _
+    -- ⊢ rexp (-x) * x ^ (a * s + b * t - 1) = f a s x * f b t x
     dsimp only
+    -- ⊢ rexp (-x) * x ^ (a * s + b * t - 1) = rexp (-a * x) * x ^ (a * (s - 1)) * (r …
     have A : exp (-x) = exp (-a * x) * exp (-b * x) := by
       rw [← exp_add, ← add_mul, ← neg_add, hab, neg_one_mul]
     have B : x ^ (a * s + b * t - 1) = x ^ (a * (s - 1)) * x ^ (b * (t - 1)) := by
       rw [← rpow_add hx, hab']; congr 1; ring
     rw [A, B]
+    -- ⊢ rexp (-a * x) * rexp (-b * x) * (x ^ (a * (s - 1)) * x ^ (b * (t - 1))) = re …
     ring
+    -- 🎉 no goals
   · rw [one_div_one_div, one_div_one_div]
+    -- ⊢ (∫ (x : ℝ) in Ioi 0, rexp (-x) * x ^ (s - 1)) ^ a * (∫ (x : ℝ) in Ioi 0, rex …
     congr 2 <;> exact set_integral_congr measurableSet_Ioi fun x hx => fpow (by assumption) _ hx
+    -- ⊢ ∫ (x : ℝ) in Ioi 0, rexp (-x) * x ^ (s - 1) = ∫ (a_1 : ℝ) in Ioi 0, f a s a_ …
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma Real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma
 
 theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   refine' convexOn_iff_forall_pos.mpr ⟨convex_Ioi _, fun x hx y hy a b ha hb hab => _⟩
+  -- ⊢ (log ∘ Gamma) (a • x + b • y) ≤ a • (log ∘ Gamma) x + b • (log ∘ Gamma) y
   have : b = 1 - a := by linarith
+  -- ⊢ (log ∘ Gamma) (a • x + b • y) ≤ a • (log ∘ Gamma) x + b • (log ∘ Gamma) y
   subst this
+  -- ⊢ (log ∘ Gamma) (a • x + (1 - a) • y) ≤ a • (log ∘ Gamma) x + (1 - a) • (log ∘ …
   simp_rw [Function.comp_apply, smul_eq_mul]
+  -- ⊢ log (Gamma (a * x + (1 - a) * y)) ≤ a * log (Gamma x) + (1 - a) * log (Gamma …
   rw [← log_rpow (Gamma_pos_of_pos hy), ← log_rpow (Gamma_pos_of_pos hx), ←
     log_mul (rpow_pos_of_pos (Gamma_pos_of_pos hx) _).ne'
       (rpow_pos_of_pos (Gamma_pos_of_pos hy) _).ne',
     log_le_log (Gamma_pos_of_pos (add_pos (mul_pos ha hx) (mul_pos hb hy)))
       (mul_pos (rpow_pos_of_pos (Gamma_pos_of_pos hx) _) (rpow_pos_of_pos (Gamma_pos_of_pos hy) _))]
   exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
+  -- 🎉 no goals
 #align real.convex_on_log_Gamma Real.convexOn_log_Gamma
 
 theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
@@ -181,9 +201,13 @@ theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
           (exp_monotone.monotoneOn _)).congr
       fun x hx => exp_log (Gamma_pos_of_pos hx)
   rw [convex_iff_isPreconnected]
+  -- ⊢ IsPreconnected (log ∘ Gamma '' Ioi 0)
   refine' isPreconnected_Ioi.image _ fun x hx => ContinuousAt.continuousWithinAt _
+  -- ⊢ ContinuousAt (log ∘ Gamma) x
   refine' (differentiableAt_Gamma fun m => _).continuousAt.log (Gamma_pos_of_pos hx).ne'
+  -- ⊢ x ≠ -↑m
   exact (neg_lt_iff_pos_add.mpr (add_pos_of_pos_of_nonneg (mem_Ioi.mp hx) (Nat.cast_nonneg m))).ne'
+  -- 🎉 no goals
 #align real.convex_on_Gamma Real.convexOn_Gamma
 
 end Convexity
@@ -203,24 +227,38 @@ variable {f : ℝ → ℝ} {x : ℝ} {n : ℕ}
 theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : n ≠ 0) :
     f n = f 1 + log (n - 1)! := by
   refine' Nat.le_induction (by simp) (fun m hm IH => _) n (Nat.one_le_iff_ne_zero.2 hn)
+  -- ⊢ f ↑(m + 1) = f 1 + log ↑(m + 1 - 1)!
   have A : 0 < (m : ℝ) := Nat.cast_pos.2 hm
+  -- ⊢ f ↑(m + 1) = f 1 + log ↑(m + 1 - 1)!
   simp only [hf_feq A, Nat.cast_add, Nat.cast_one, Nat.add_succ_sub_one, add_zero]
+  -- ⊢ f ↑m + log ↑m = f 1 + log ↑m !
   rw [IH, add_assoc, ← log_mul (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)) A.ne', ←
     Nat.cast_mul]
   conv_rhs => rw [← Nat.succ_pred_eq_of_pos hm, Nat.factorial_succ, mul_comm]
+  -- ⊢ f 1 + log ↑((m - 1)! * m) = f 1 + log ↑((Nat.pred m)! * (Nat.pred m + 1))
   congr
+  -- ⊢ m = Nat.pred m + 1
   exact (Nat.succ_pred_eq_of_pos hm).symm
+  -- 🎉 no goals
 #align real.bohr_mollerup.f_nat_eq Real.BohrMollerup.f_nat_eq
 
 theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
     f (x + n) = f x + ∑ m : ℕ in Finset.range n, log (x + m) := by
   induction' n with n hn
+  -- ⊢ f (x + ↑Nat.zero) = f x + ∑ m in Finset.range Nat.zero, log (x + ↑m)
   · simp
+    -- 🎉 no goals
   · have : x + n.succ = x + n + 1 := by push_cast; ring
+    -- ⊢ f (x + ↑(Nat.succ n)) = f x + ∑ m in Finset.range (Nat.succ n), log (x + ↑m)
     rw [this, hf_feq, hn]
+    -- ⊢ f x + ∑ m in Finset.range n, log (x + ↑m) + log (x + ↑n) = f x + ∑ m in Fins …
     rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
+    -- ⊢ f x + ∑ m in Finset.range n, log (x + ↑m) + log (x + ↑n) = f x + (log (x + ↑ …
     abel
+    -- ⊢ 0 < x + ↑n
+    -- ⊢ 0 < x + ↑n
     linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
+    -- 🎉 no goals
 #align real.bohr_mollerup.f_add_nat_eq Real.BohrMollerup.f_add_nat_eq
 
 /-- Linear upper bound for `f (x + n)` on unit interval -/
@@ -228,8 +266,11 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : n ≠ 0) (hx : 0 < x) (hx' : x ≤ 1) :
     f (n + x) ≤ f n + x * log n := by
   have hn' : 0 < (n : ℝ) := Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)
+  -- ⊢ f (↑n + x) ≤ f ↑n + x * log ↑n
   have : f n + x * log n = (1 - x) * f n + x * f (n + 1) := by rw [hf_feq hn']; ring
+  -- ⊢ f (↑n + x) ≤ f ↑n + x * log ↑n
   rw [this, (by ring : (n : ℝ) + x = (1 - x) * n + x * (n + 1))]
+  -- ⊢ f ((1 - x) * ↑n + x * (↑n + 1)) ≤ (1 - x) * f ↑n + x * f (↑n + 1)
   simpa only [smul_eq_mul] using
     hf_conv.2 hn' (by linarith : 0 < (n + 1 : ℝ)) (by linarith : 0 ≤ 1 - x) hx.le (by linarith)
 #align real.bohr_mollerup.f_add_nat_le Real.BohrMollerup.f_add_nat_le
@@ -239,25 +280,34 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :
     f n + x * log (n - 1) ≤ f (n + x) := by
   have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; linarith
+  -- ⊢ f ↑n + x * log (↑n - 1) ≤ f (↑n + x)
   have c :=
     (convexOn_iff_slope_mono_adjacent.mp <| hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
   rw [add_sub_cancel', sub_sub_cancel, div_one] at c
+  -- ⊢ f ↑n + x * log (↑n - 1) ≤ f (↑n + x)
   have : f (↑n - 1) = f n - log (↑n - 1) := by
     -- Porting note: was
     -- nth_rw_rhs 1 [(by ring : (n : ℝ) = ↑n - 1 + 1)]
     -- rw [hf_feq npos, add_sub_cancel]
     rw [eq_sub_iff_add_eq, ← hf_feq npos, sub_add_cancel]
   rwa [this, le_div_iff hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
+  -- 🎉 no goals
 #align real.bohr_mollerup.f_add_nat_ge Real.BohrMollerup.f_add_nat_ge
 
 theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     logGammaSeq (x + 1) n = logGammaSeq x (n + 1) + log x - (x + 1) * (log (n + 1) - log n) := by
   dsimp only [Nat.factorial_succ, logGammaSeq]
+  -- ⊢ (x + 1) * log ↑n + log ↑n ! - ∑ m in Finset.range (n + 1), log (x + 1 + ↑m)  …
   conv_rhs => rw [Finset.sum_range_succ', Nat.cast_zero, add_zero]
+  -- ⊢ (x + 1) * log ↑n + log ↑n ! - ∑ m in Finset.range (n + 1), log (x + 1 + ↑m)  …
   rw [Nat.cast_mul, log_mul]; rotate_left
   · rw [Nat.cast_ne_zero]; exact Nat.succ_ne_zero n
+    -- ⊢ n + 1 ≠ 0
+                           -- 🎉 no goals
   · rw [Nat.cast_ne_zero]; exact Nat.factorial_ne_zero n
+    -- ⊢ n ! ≠ 0
+                           -- 🎉 no goals
   have :
     ∑ m : ℕ in Finset.range (n + 1), log (x + 1 + ↑m) =
       ∑ k : ℕ in Finset.range (n + 1), log (x + ↑(k + 1)) := by
@@ -266,29 +316,43 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     push_cast
     abel
   rw [← this, Nat.cast_add_one n]
+  -- ⊢ (x + 1) * log ↑n + log ↑n ! - ∑ m in Finset.range (n + 1), log (x + 1 + ↑m)  …
   ring
+  -- 🎉 no goals
 #align real.bohr_mollerup.log_gamma_seq_add_one Real.BohrMollerup.logGammaSeq_add_one
 
 theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) (n : ℕ) :
     f x ≤ f 1 + x * log (n + 1) - x * log n + logGammaSeq x n := by
   rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq (@hf_feq) hx, add_comm x]
+  -- ⊢ f (↑(n + 1) + x) ≤ f 1 + x * log (↑n + 1) - x * log ↑n + (x * log ↑n + log ↑ …
   refine' (f_add_nat_le hf_conv (@hf_feq) (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq _)
+  -- ⊢ f ↑(n + 1) + x * log ↑(n + 1) = f 1 + x * log (↑n + 1) - x * log ↑n + (x * l …
   rw [f_nat_eq @hf_feq (by linarith : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
+  -- ⊢ f 1 + log ↑n ! + x * log (↑n + 1) = f 1 + x * log (↑n + 1) - x * log ↑n + (x …
   ring
+  -- 🎉 no goals
 #align real.bohr_mollerup.le_log_gamma_seq Real.BohrMollerup.le_logGammaSeq
 
 theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hn : n ≠ 0) :
     f 1 + logGammaSeq x n ≤ f x := by
   dsimp [logGammaSeq]
+  -- ⊢ f 1 + (x * log ↑n + log ↑n ! - ∑ m in Finset.range (n + 1), log (x + ↑m)) ≤  …
   rw [← add_sub_assoc, sub_le_iff_le_add, ← f_add_nat_eq (@hf_feq) hx, add_comm x _]
+  -- ⊢ f 1 + (x * log ↑n + log ↑n !) ≤ f (↑(n + 1) + x)
   refine' le_trans (le_of_eq _) (f_add_nat_ge hf_conv @hf_feq _ hx)
+  -- ⊢ f 1 + (x * log ↑n + log ↑n !) = f ↑(n + 1) + x * log (↑(n + 1) - 1)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel]
+    -- ⊢ f 1 + (x * log ↑n + log ↑n !) = f 1 + log ↑n ! + x * log ↑n
     · ring
+      -- 🎉 no goals
     · exact Nat.succ_ne_zero _
+      -- 🎉 no goals
   · apply Nat.succ_le_succ
+    -- ⊢ 1 ≤ n
     linarith [Nat.pos_of_ne_zero hn]
+    -- 🎉 no goals
 #align real.bohr_mollerup.ge_log_gamma_seq Real.BohrMollerup.ge_logGammaSeq
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -299,17 +363,27 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
   pick_goal 4
   show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
   · refine' Eventually.mp (eventually_ne_atTop 0) (eventually_of_forall fun n hn => _)
+    -- ⊢ logGammaSeq x n ≤ f x - f 1
     exact le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv (@hf_feq) hx hn)
+    -- 🎉 no goals
   -- Porting note: `show` no longer reorders goals
   pick_goal 3
   show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
+  -- ⊢ ∀ᶠ (n : ℕ) in atTop, f x - f 1 - x * (log (↑n + 1) - log ↑n) ≤ logGammaSeq x n
   · refine' eventually_of_forall fun n => _
+    -- ⊢ f x - f 1 - x * (log (↑n + 1) - log ↑n) ≤ logGammaSeq x n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
+    -- ⊢ f x ≤ f 1 + (x * (log (↑n + 1) - log ↑n) + logGammaSeq x n)
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
+    -- ⊢ f 1 + (x * (log (↑n + 1) - log ↑n) + logGammaSeq x n) = f 1 + x * log (↑n +  …
     ring
+    -- 🎉 no goals
   · have : f x - f 1 = f x - f 1 - x * 0 := by ring
+    -- ⊢ Tendsto (fun b => f x - f 1 - x * (log (↑b + 1) - log ↑b)) atTop (𝓝 (f x - f …
     nth_rw 2 [this]
+    -- ⊢ Tendsto (fun b => f x - f 1 - x * (log (↑b + 1) - log ↑b)) atTop (𝓝 (f x - f …
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
+    -- 🎉 no goals
 #align real.bohr_mollerup.tendsto_log_gamma_seq_of_le_one Real.BohrMollerup.tendsto_logGammaSeq_of_le_one
 
 theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -323,13 +397,21 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
         abel
     · rw [← sub_le_iff_le_add]; exact Nat.le_ceil _
   intro m
+  -- ⊢ ↑m < x → x ≤ ↑m + 1 → Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
   induction' m with m hm generalizing x
+  -- ⊢ ↑Nat.zero < x → x ≤ ↑Nat.zero + 1 → Tendsto (logGammaSeq x) atTop (𝓝 (f x -  …
   · rw [Nat.cast_zero, zero_add]
+    -- ⊢ 0 < x → x ≤ 1 → Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
     exact fun _ hx' => tendsto_logGammaSeq_of_le_one hf_conv (@hf_feq) hx hx'
+    -- 🎉 no goals
   · intro hy hy'
+    -- ⊢ Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
     rw [Nat.cast_succ, ← sub_le_iff_le_add] at hy'
+    -- ⊢ Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
     rw [Nat.cast_succ, ← lt_sub_iff_add_lt] at hy
+    -- ⊢ Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
     specialize hm ((Nat.cast_nonneg _).trans_lt hy) hy hy'
+    -- ⊢ Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
     -- now massage gauss_product n (x - 1) into gauss_product (n - 1) x
     have :
       ∀ᶠ n : ℕ in atTop,
@@ -355,12 +437,19 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       dsimp only [Function.comp_apply]
       rw [sub_add_cancel, Nat.add_sub_cancel]
     rw [this] at hm
+    -- ⊢ Tendsto (logGammaSeq x) atTop (𝓝 (f x - f 1))
     convert hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
+    -- ⊢ logGammaSeq x x✝ = logGammaSeq x x✝ + x * (log (↑x✝ + 1) - log ↑x✝) - x * (l …
     · ring
+      -- 🎉 no goals
     · have := hf_feq ((Nat.cast_nonneg m).trans_lt hy)
+      -- ⊢ f x - f 1 = f (x - 1) - f 1 + log (x - 1) - x * 0
       rw [sub_add_cancel] at this
+      -- ⊢ f x - f 1 = f (x - 1) - f 1 + log (x - 1) - x * 0
       rw [this]
+      -- ⊢ f (x - 1) + log (x - 1) - f 1 = f (x - 1) - f 1 + log (x - 1) - x * 0
       ring
+      -- 🎉 no goals
 #align real.bohr_mollerup.tendsto_log_gamma_seq Real.BohrMollerup.tendsto_logGammaSeq
 
 theorem tendsto_log_gamma {x : ℝ} (hx : 0 < x) :
@@ -368,7 +457,9 @@ theorem tendsto_log_gamma {x : ℝ} (hx : 0 < x) :
   have : log (Gamma x) = (log ∘ Gamma) x - (log ∘ Gamma) 1 := by
     simp_rw [Function.comp_apply, Gamma_one, log_one, sub_zero]
   rw [this]
+  -- ⊢ Tendsto (logGammaSeq x) atTop (𝓝 ((log ∘ Gamma) x - (log ∘ Gamma) 1))
   refine' BohrMollerup.tendsto_logGammaSeq convexOn_log_Gamma (fun {y} hy => _) hx
+  -- ⊢ (log ∘ Gamma) (y + 1) = (log ∘ Gamma) y + log y
   rw [Function.comp_apply, Gamma_add_one hy.ne', log_mul hy.ne' (Gamma_pos_of_pos hy).ne', add_comm,
     Function.comp_apply]
 #align real.bohr_mollerup.tendsto_log_Gamma Real.BohrMollerup.tendsto_log_gamma
@@ -382,14 +473,23 @@ theorem eq_Gamma_of_log_convex {f : ℝ → ℝ} (hf_conv : ConvexOn ℝ (Ioi 0)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = y * f y) (hf_pos : ∀ {y : ℝ}, 0 < y → 0 < f y)
     (hf_one : f 1 = 1) : EqOn f Gamma (Ioi (0 : ℝ)) := by
   suffices : EqOn (log ∘ f) (log ∘ Gamma) (Ioi (0 : ℝ))
+  -- ⊢ EqOn f Gamma (Ioi 0)
   exact fun x hx => log_injOn_pos (hf_pos hx) (Gamma_pos_of_pos hx) (this hx)
+  -- ⊢ EqOn (log ∘ f) (log ∘ Gamma) (Ioi 0)
   intro x hx
+  -- ⊢ (log ∘ f) x = (log ∘ Gamma) x
   have e1 := BohrMollerup.tendsto_logGammaSeq hf_conv ?_ hx
+  -- ⊢ (log ∘ f) x = (log ∘ Gamma) x
   · rw [Function.comp_apply (f := log) (g := f) (x := 1), hf_one, log_one, sub_zero] at e1
+    -- ⊢ (log ∘ f) x = (log ∘ Gamma) x
     exact tendsto_nhds_unique e1 (BohrMollerup.tendsto_log_gamma hx)
+    -- 🎉 no goals
   · intro y hy
+    -- ⊢ (log ∘ f) (y + 1) = (log ∘ f) y + log y
     rw [Function.comp_apply, Function.comp_apply, hf_feq hy, log_mul hy.ne' (hf_pos hy).ne']
+    -- ⊢ log y + log (f y) = log (f y) + log y
     ring
+    -- 🎉 no goals
 #align real.eq_Gamma_of_log_convex Real.eq_Gamma_of_log_convex
 
 end BohrMollerup
@@ -398,6 +498,7 @@ end BohrMollerup
 section StrictMono
 
 theorem Gamma_two : Gamma 2 = 1 := by simpa [one_add_one_eq_two] using Gamma_nat_eq_factorial 1
+                                      -- 🎉 no goals
 #align real.Gamma_two Real.Gamma_two
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
@@ -405,10 +506,12 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
   -- log-convexity to avoid unnecessary imports.
   have A : (0 : ℝ) < 3 / 2 := by norm_num
+  -- ⊢ Gamma (3 / 2) < 1
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
       (by norm_num : 1 / 2 ≤ (1 : ℝ))
   swap
+  -- ⊢ (log ∘ Gamma) (y + 1) = (log ∘ Gamma) y + log y
   · rw [Function.comp_apply, Gamma_add_one hy.ne', log_mul hy.ne' (Gamma_pos_of_pos hy).ne',
       add_comm, Function.comp_apply]
   rw [Function.comp_apply, Function.comp_apply, Nat.cast_two, Gamma_two, log_one, zero_add,
@@ -416,11 +519,16 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
     log_mul A.ne' (Gamma_pos_of_pos A).ne', ← le_sub_iff_add_le',
     log_le_iff_le_exp (Gamma_pos_of_pos A)] at this
   refine' this.trans_lt (exp_lt_one_iff.mpr _)
+  -- ⊢ 1 / 2 * log 2 - log (3 / 2) < 0
   rw [mul_comm, ← mul_div_assoc, div_sub' _ _ (2 : ℝ) two_ne_zero]
+  -- ⊢ (log 2 * 1 - 2 * log (3 / 2)) / 2 < 0
   refine' div_neg_of_neg_of_pos _ two_pos
+  -- ⊢ log 2 * 1 - 2 * log (3 / 2) < 0
   rw [sub_neg, mul_one, ← Nat.cast_two, ← log_pow, ← exp_lt_exp, Nat.cast_two, exp_log two_pos,
       exp_log] <;>
     norm_num
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align real.Gamma_three_div_two_lt_one Real.Gamma_three_div_two_lt_one
 
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
@@ -428,8 +536,11 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
     convexOn_Gamma.strict_mono_of_lt (by norm_num : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
+  -- ⊢ Ioi 0 ∩ Ici 2 = Ici 2
   rw [inter_eq_right_iff_subset]
+  -- ⊢ Ici 2 ⊆ Ioi 0
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
+  -- 🎉 no goals
 #align real.Gamma_strict_mono_on_Ici Real.Gamma_strictMonoOn_Ici
 
 end StrictMono
@@ -455,6 +566,7 @@ theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :
   rw [doublingGamma, doublingGamma, (by abel : s + 1 - 1 = s - 1 + 1), add_div, add_assoc,
     add_halves (1 : ℝ), Gamma_add_one (div_ne_zero hs two_ne_zero), rpow_add two_pos, rpow_one]
   ring
+  -- 🎉 no goals
 #align real.doubling_Gamma_add_one Real.doublingGamma_add_one
 
 theorem doublingGamma_one : doublingGamma 1 = 1 := by
@@ -467,14 +579,19 @@ theorem log_doublingGamma_eq :
       (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2 + 1 / 2)) + s * log 2 - log (2 * sqrt π))
       (Ioi 0) := by
   intro s hs
+  -- ⊢ (log ∘ doublingGamma) s = (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2  …
   have h1 : sqrt π ≠ 0 := sqrt_ne_zero'.mpr pi_pos
+  -- ⊢ (log ∘ doublingGamma) s = (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2  …
   have h2 : Gamma (s / 2) ≠ 0 := (Gamma_pos_of_pos <| div_pos hs two_pos).ne'
+  -- ⊢ (log ∘ doublingGamma) s = (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2  …
   have h3 : Gamma (s / 2 + 1 / 2) ≠ 0 :=
     (Gamma_pos_of_pos <| add_pos (div_pos hs two_pos) one_half_pos).ne'
   have h4 : (2 : ℝ) ^ (s - 1) ≠ 0 := (rpow_pos_of_pos two_pos _).ne'
+  -- ⊢ (log ∘ doublingGamma) s = (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2  …
   rw [Function.comp_apply, doublingGamma, log_div (mul_ne_zero (mul_ne_zero h2 h3) h4) h1,
     log_mul (mul_ne_zero h2 h3) h4, log_mul h2 h3, log_rpow two_pos, log_mul two_ne_zero h1]
   ring_nf
+  -- 🎉 no goals
 #align real.log_doubling_Gamma_eq Real.log_doublingGamma_eq
 
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
@@ -483,22 +600,31 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
       convexOn_log_Gamma.comp_affineMap (DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
     · simpa only [zero_div] using (preimage_const_mul_Ioi (0 : ℝ) one_half_pos).symm
+      -- 🎉 no goals
     · ext1 x
+      -- ⊢ log (Gamma (x / 2)) = ((log ∘ Gamma) ∘ ↑(LinearMap.toAffineMap (DistribMulAc …
       -- Porting note: was
       -- change log (Gamma (x / 2)) = log (Gamma ((1 / 2 : ℝ) • x))
       simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribMulAction.toLinearMap_apply]
+      -- ⊢ log (Gamma (x / 2)) = log (Gamma ((1 / 2) • x))
       rw [smul_eq_mul, mul_comm, mul_one_div]
+      -- 🎉 no goals
   · refine' ConvexOn.subset _ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)
+    -- ⊢ ConvexOn ℝ (Ioi (-1)) fun s => log (Gamma (s / 2 + 1 / 2))
     convert
       convexOn_log_Gamma.comp_affineMap
         ((DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
           AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using 1
     · change Ioi (-1 : ℝ) = ((fun x : ℝ => x + 1 / 2) ∘ fun x : ℝ => (1 / 2 : ℝ) * x) ⁻¹' Ioi 0
+      -- ⊢ Ioi (-1) = ((fun x => x + 1 / 2) ∘ fun x => 1 / 2 * x) ⁻¹' Ioi 0
       rw [preimage_comp, preimage_add_const_Ioi, zero_sub,
         preimage_const_mul_Ioi (_ : ℝ) one_half_pos, neg_div, div_self (@one_half_pos ℝ _).ne']
     · ext1 x
+      -- ⊢ log (Gamma (x / 2 + 1 / 2)) = ((log ∘ Gamma) ∘ ↑(LinearMap.toAffineMap (Dist …
       change log (Gamma (x / 2 + 1 / 2)) = log (Gamma ((1 / 2 : ℝ) • x + 1 / 2))
+      -- ⊢ log (Gamma (x / 2 + 1 / 2)) = log (Gamma ((1 / 2) • x + 1 / 2))
       rw [smul_eq_mul, mul_comm, mul_one_div]
+      -- 🎉 no goals
   · simpa only [mul_comm _ (log _)] using
       (convexOn_id (convex_Ioi (0 : ℝ))).smul (log_pos one_lt_two).le
 #align real.doubling_Gamma_log_convex_Ioi Real.doublingGamma_log_convex_Ioi
@@ -520,7 +646,9 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
     mul_div_cancel_left _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]
   field_simp [(sqrt_pos_of_pos pi_pos).ne', (rpow_pos_of_pos two_pos (2 * s - 1)).ne']
+  -- ⊢ Gamma s * Gamma ((s * 2 + 1) / 2) * (sqrt π * 2 ^ (2 * s - 1)) = Gamma s * G …
   ring
+  -- 🎉 no goals
 #align real.Gamma_mul_Gamma_add_half_of_pos Real.Gamma_mul_Gamma_add_half_of_pos
 
 end Doubling

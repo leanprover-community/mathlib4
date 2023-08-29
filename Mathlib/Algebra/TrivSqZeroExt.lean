@@ -465,6 +465,7 @@ theorem inl_one [One R] [Zero M] : (inl 1 : tsze R M) = 1 :=
 theorem inl_mul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (r₁ r₂ : R) : (inl (r₁ * r₂) : tsze R M) = inl r₁ * inl r₂ :=
   ext rfl <| show (0 : M) = r₁ • (0 : M) + op r₂ • (0 : M) by rw [smul_zero, zero_add, smul_zero]
+                                                              -- 🎉 no goals
 #align triv_sq_zero_ext.inl_mul TrivSqZeroExt.inl_mul
 
 theorem inl_mul_inl [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -483,6 +484,7 @@ theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
     (inr m₁ * inr m₂ : tsze R M) = 0 :=
   ext (mul_zero _) <|
     show (0 : R) • m₂ + (0 : Rᵐᵒᵖ) • m₁ = 0 by rw [zero_smul, zero_add, zero_smul]
+                                               -- 🎉 no goals
 #align triv_sq_zero_ext.inr_mul_inr TrivSqZeroExt.inr_mul_inr
 
 end
@@ -491,12 +493,14 @@ theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
     (inl r * inr m : tsze R M) = inr (r • m) :=
   ext (mul_zero r) <|
     show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
+                                                 -- 🎉 no goals
 #align triv_sq_zero_ext.inl_mul_inr TrivSqZeroExt.inl_mul_inr
 
 theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inr m * inl r : tsze R M) = inr (op r • m) :=
   ext (zero_mul r) <|
     show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
+                                                    -- 🎉 no goals
 #align triv_sq_zero_ext.inr_mul_inl TrivSqZeroExt.inr_mul_inl
 
 instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
@@ -505,15 +509,21 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
     one_mul := fun x =>
       ext (one_mul x.1) <|
         show (1 : R) • x.2 + op x.1 • (0 : M) = x.2 by rw [one_smul, smul_zero, add_zero]
+                                                       -- 🎉 no goals
     mul_one := fun x =>
       ext (mul_one x.1) <|
         show x.1 • (0 : M) + (1 : Rᵐᵒᵖ) • x.2 = x.2 by rw [smul_zero, zero_add, one_smul] }
+                                                       -- 🎉 no goals
 
 instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
     natCast := fun n => inl n
     natCast_zero := by simp [Nat.cast]
+                       -- 🎉 no goals
     natCast_succ := fun _ => by ext <;> simp [Nat.cast] }
+                                -- ⊢ fst (NatCast.natCast (x✝ + 1)) = fst (NatCast.natCast x✝ + 1)
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
 
 @[simp]
 theorem fst_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
@@ -557,19 +567,23 @@ instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module R�
     zero_mul := fun x =>
       ext (zero_mul x.1) <|
         show (0 : R) • x.2 + op x.1 • (0 : M) = 0 by rw [zero_smul, zero_add, smul_zero]
+                                                     -- 🎉 no goals
     mul_zero := fun x =>
       ext (mul_zero x.1) <|
         show x.1 • (0 : M) + (0 : Rᵐᵒᵖ) • x.2 = 0 by rw [smul_zero, zero_add, zero_smul]
+                                                     -- 🎉 no goals
     left_distrib := fun x₁ x₂ x₃ =>
       ext (mul_add x₁.1 x₂.1 x₃.1) <|
         show
           x₁.1 • (x₂.2 + x₃.2) + (op x₂.1 + op x₃.1) • x₁.2 =
+             -- 🎉 no goals
             x₁.1 • x₂.2 + op x₂.1 • x₁.2 + (x₁.1 • x₃.2 + op x₃.1 • x₁.2)
           by simp_rw [smul_add, add_smul, add_add_add_comm]
     right_distrib := fun x₁ x₂ x₃ =>
       ext (add_mul x₁.1 x₂.1 x₃.1) <|
         show
           (x₁.1 + x₂.1) • x₃.2 + op x₃.1 • (x₁.2 + x₂.2) =
+             -- 🎉 no goals
             x₁.1 • x₃.2 + op x₃.1 • x₁.2 + (x₂.1 • x₃.2 + op x₃.1 • x₂.2)
           by simp_rw [add_smul, smul_add, add_add_add_comm] }
 
@@ -613,6 +627,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     · rw [pow_succ', MulOpposite.op_mul, mul_smul, mul_smul, ← h,
         smul_comm (_ : R) (op x.fst) x.snd, ih]
   simp_rw [snd_pow_eq_sum, this, smul_smul, ← pow_add]
+  -- ⊢ List.sum (List.map (fun i => fst x ^ (Nat.pred n - i + i) • snd x) (List.ran …
   match n with
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
@@ -635,6 +650,7 @@ theorem snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulA
 theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] (r : R)
     (n : ℕ) : (inl r ^ n : tsze R M) = inl (r ^ n) :=
   ext rfl <| by simp [snd_pow_eq_sum]
+                -- 🎉 no goals
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
 
 instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -646,23 +662,34 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           (x.1 * y.1) • z.2 + op z.1 • (x.1 • y.2 + op y.1 • x.2) =
             x.1 • (y.1 • z.2 + op z.1 • y.2) + (op z.1 * op y.1) • x.2
           by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm]
+             -- 🎉 no goals
     npow := fun n x => x ^ n
     npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
+                                                   -- 🎉 no goals
     npow_succ := fun n x =>
       ext (pow_succ _ _)
         (by
           simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
+          -- ⊢ List.sum (List.map (fun i => fst x ^ (n - i) • op (fst x ^ i) • snd x) (List …
           cases n
+          -- ⊢ List.sum (List.map (fun i => fst x ^ (Nat.zero - i) • op (fst x ^ i) • snd x …
           · simp [List.range_succ]
+            -- 🎉 no goals
           simp_rw [Nat.pred_succ]
+          -- ⊢ List.sum (List.map (fun i => fst x ^ (Nat.succ n✝ - i) • op (fst x ^ i) • sn …
           rw [List.range_succ, List.map_append, List.sum_append, List.map_singleton,
             List.sum_singleton, Nat.sub_self, pow_zero, one_smul, List.smul_sum, List.map_map,
             fst_pow]  --porting note: `Function.comp` no longer works in `rw` so move to `simp_rw`
           simp_rw [Function.comp, smul_smul, ← pow_succ, Nat.succ_eq_add_one]
+          -- ⊢ List.sum (List.map (fun i => fst x ^ (n✝ + 1 - i) • op (fst x ^ i) • snd x)  …
           congr 2
+          -- ⊢ List.map (fun i => fst x ^ (n✝ + 1 - i) • op (fst x ^ i) • snd x) (List.rang …
           refine' List.map_congr fun i hi => _
+          -- ⊢ fst x ^ (n✝ + 1 - i) • op (fst x ^ i) • snd x = fst x ^ (n✝ - i + 1) • op (f …
           rw [List.mem_range, Nat.lt_succ_iff] at hi
+          -- ⊢ fst x ^ (n✝ + 1 - i) • op (fst x ^ i) • snd x = fst x ^ (n✝ - i + 1) • op (f …
           rw [Nat.sub_add_comm hi]) }
+          -- 🎉 no goals
 theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=
   map_list_prod ({ toFun := fst, map_one' := fst_one, map_mul' := fst_mul } : tsze R M →* R) _
@@ -680,12 +707,16 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
       (l.enum.map fun x : ℕ × tsze R M =>
           ((l.map fst).take x.1).prod • op ((l.map fst).drop x.1.succ).prod • x.snd.snd).sum := by
   induction' l with x xs ih
+  -- ⊢ snd (List.prod []) = List.sum (List.map (fun x => List.prod (List.take x.fst …
   · simp
+    -- 🎉 no goals
   · rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+    -- ⊢ snd (List.prod (x :: xs)) = List.sum (List.map (fun x_1 => List.prod (List.t …
     simp_rw [List.map_cons, List.map_map, Function.comp, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul, List.drop,
       mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map]
     exact add_comm _ _
+    -- 🎉 no goals
 #align triv_sq_zero_ext.snd_list_prod TrivSqZeroExt.snd_list_prod
 
 instance ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
@@ -699,6 +730,7 @@ instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
       ext (mul_comm x₁.1 x₂.1) <|
         show x₁.1 • x₂.2 + op x₂.1 • x₁.2 = x₂.1 • x₁.2 + op x₁.1 • x₂.2 by
           rw [op_smul_eq_smul, op_smul_eq_smul, add_comm] }
+          -- 🎉 no goals
 
 instance commSemiring [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [IsCentralScalar R M] : CommSemiring (tsze R M) :=
@@ -744,12 +776,14 @@ instance algebra' : Algebra S (tsze R M) :=
         show algebraMap S R s • x.snd + op x.fst • (0 : M)
             = x.fst • (0 : M) + op (algebraMap S R s) • x.snd by
           rw [smul_zero, smul_zero, add_zero, zero_add]
+          -- ⊢ ↑(algebraMap S R) s • snd x = op (↑(algebraMap S R) s) • snd x
           rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, MulOpposite.op_one, smul_assoc,
             one_smul, smul_assoc, one_smul]
     smul_def' := fun r x =>
       ext (Algebra.smul_def _ _) <|
         show r • x.2 = algebraMap S R r • x.2 + op x.1 • (0 : M) by
           rw [smul_zero, add_zero, algebraMap_smul] }
+          -- 🎉 no goals
 #align triv_sq_zero_ext.algebra' TrivSqZeroExt.algebra'
 
 -- shortcut instance for the common case
@@ -803,9 +837,11 @@ def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →�
   AlgHom.ofLinearMap
     ((Algebra.linearMap R' A).comp (fstHom R' R' M).toLinearMap + f.comp (sndHom R' M))
     (show algebraMap R' A 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
+                                               -- 🎉 no goals
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
+        -- ⊢ ↑(algebraMap R' A) ((r₁ + 0) * (r₂ + 0)) + ↑f ((r₁ + 0) • (0 + m₂) + (op r₂  …
         simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hf, smul_zero,
           op_smul_eq_smul]
         rw [← RingHom.map_mul, LinearMap.map_add, ← Algebra.commutes _ (f _), ← Algebra.smul_def, ←
@@ -816,6 +852,7 @@ def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →�
 theorem liftAux_apply_inr (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) (m : M) :
     liftAux f hf (inr m) = f m :=
   show algebraMap R' A 0 + f m = f m by rw [RingHom.map_zero, zero_add]
+                                        -- 🎉 no goals
 #align triv_sq_zero_ext.lift_aux_apply_inr TrivSqZeroExt.liftAux_apply_inr
 
 @[simp]

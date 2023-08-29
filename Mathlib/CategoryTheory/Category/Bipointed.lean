@@ -80,7 +80,9 @@ instance (X : Bipointed) : Inhabited (Bipointed.Hom X X) :=
 def comp {X Y Z : Bipointed.{u}} (f : Bipointed.Hom X Y) (g : Bipointed.Hom Y Z) :
     Bipointed.Hom X Z :=
   ⟨g.toFun ∘ f.toFun, by rw [Function.comp_apply, f.map_fst, g.map_fst], by
+                         -- 🎉 no goals
     rw [Function.comp_apply, f.map_snd, g.map_snd]⟩
+    -- 🎉 no goals
 #align Bipointed.hom.comp Bipointed.Hom.comp
 
 end Hom
@@ -222,15 +224,25 @@ def pointedToBipointedFstBipointedToPointedFstAdjunction :
           invFun := fun f => ⟨fun o => o.elim Y.toProd.2 f.toFun, f.map_point, rfl⟩
           left_inv := fun f => by
             apply Bipointed.Hom.ext
+            -- ⊢ ((fun f => { toFun := fun o => Option.elim o Y.toProd.snd f.toFun, map_fst : …
             funext x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toProd.sn …
             cases x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toProd.sn …
             · exact f.map_snd.symm
+              -- 🎉 no goals
             · rfl
+              -- 🎉 no goals
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
+        -- ⊢ (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘ some, map_point := ( …
         funext x
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
         cases x <;> rfl }
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 #align Pointed_to_Bipointed_fst_Bipointed_to_Pointed_fst_adjunction pointedToBipointedFstBipointedToPointedFstAdjunction
 
 /-- The free/forgetful adjunction between `PointedToBipointed_snd` and `BipointedToPointed_snd`.
@@ -243,13 +255,23 @@ def pointedToBipointedSndBipointedToPointedSndAdjunction :
           invFun := fun f => ⟨fun o => o.elim Y.toProd.1 f.toFun, rfl, f.map_point⟩
           left_inv := fun f => by
             apply Bipointed.Hom.ext
+            -- ⊢ ((fun f => { toFun := fun o => Option.elim o Y.toProd.fst f.toFun, map_fst : …
             funext x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toProd.fs …
             cases x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toProd.fs …
             · exact f.map_fst.symm
+              -- 🎉 no goals
             · rfl
+              -- 🎉 no goals
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
+        -- ⊢ (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘ some, map_point := ( …
         funext x
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
         cases x <;> rfl }
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 #align Pointed_to_Bipointed_snd_Bipointed_to_Pointed_snd_adjunction pointedToBipointedSndBipointedToPointedSndAdjunction

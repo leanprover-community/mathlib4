@@ -105,7 +105,9 @@ theorem toPNat'_coe : ∀ n : ℕ, (toPNat' n : ℕ) = ite (0 < n) n 1
   | 0 => rfl
   | m + 1 => by
     rw [if_pos (succ_pos m)]
+    -- ⊢ ↑(toPNat' (m + 1)) = m + 1
     rfl
+    -- 🎉 no goals
 #align nat.to_pnat'_coe Nat.toPNat'_coe
 
 end Nat
@@ -250,6 +252,7 @@ def div (m k : ℕ+) : ℕ :=
 theorem mod_coe (m k : ℕ+) :
   (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
   dsimp [mod, modDiv]
+  -- ⊢ ↑(modDivAux k (↑m % ↑k) (↑m / ↑k)).fst = if ↑m % ↑k = 0 then ↑k else ↑m % ↑k
   cases (m : ℕ) % (k : ℕ) with
   | zero =>
     rw [if_pos rfl]
@@ -262,6 +265,7 @@ theorem mod_coe (m k : ℕ+) :
 theorem div_coe (m k : ℕ+) :
   (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
   dsimp [div, modDiv]
+  -- ⊢ (modDivAux k (↑m % ↑k) (↑m / ↑k)).snd = if ↑m % ↑k = 0 then pred (↑m / ↑k) e …
   cases (m : ℕ) % (k : ℕ) with
   | zero =>
     rw [if_pos rfl]

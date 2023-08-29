@@ -74,6 +74,8 @@ theorem toMultilinearMap_injective :
       (ContinuousMultilinearMap.toMultilinearMap :
         ContinuousMultilinearMap R M₁ M₂ → MultilinearMap R M₁ M₂)
   | ⟨f, hf⟩, ⟨g, hg⟩, h => by subst h; rfl
+                              -- ⊢ { toMultilinearMap := f, cont := hf } = { toMultilinearMap := { toMultilinea …
+                                       -- 🎉 no goals
 #align continuous_multilinear_map.to_multilinear_map_injective ContinuousMultilinearMap.toMultilinearMap_injective
 
 instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
@@ -112,6 +114,8 @@ theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x
 
 theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
   rw [← toMultilinearMap_injective.eq_iff, MultilinearMap.ext_iff]; rfl
+  -- ⊢ (∀ (x : (i : ι) → M₁ i), ↑f.toMultilinearMap x = ↑f'.toMultilinearMap x) ↔ ∀ …
+                                                                    -- 🎉 no goals
 #align continuous_multilinear_map.ext_iff ContinuousMultilinearMap.ext_iff
 
 @[simp]
@@ -328,7 +332,9 @@ theorem _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ �
     (g.compContinuousMultilinearMap f : (∀ i, M₁ i) → M₃) =
       (g : M₂ → M₃) ∘ (f : (∀ i, M₁ i) → M₂) := by
   ext m
+  -- ⊢ ↑(ContinuousLinearMap.compContinuousMultilinearMap g f) m = (↑g ∘ ↑f) m
   rfl
+  -- 🎉 no goals
 #align continuous_linear_map.comp_continuous_multilinear_map_coe ContinuousLinearMap.compContinuousMultilinearMap_coe
 
 /-- `ContinuousMultilinearMap.pi` as an `Equiv`. -/
@@ -340,10 +346,14 @@ def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] M' i).compContinuousMultilinearMap f
   left_inv f := by
     ext
+    -- ⊢ ↑((fun f i => ContinuousLinearMap.compContinuousMultilinearMap (ContinuousLi …
     rfl
+    -- 🎉 no goals
   right_inv f := by
     ext
+    -- ⊢ ↑(pi ((fun f i => ContinuousLinearMap.compContinuousMultilinearMap (Continuo …
     rfl
+    -- 🎉 no goals
 #align continuous_multilinear_map.pi_equiv ContinuousMultilinearMap.piEquiv
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
@@ -368,7 +378,9 @@ def domDomCongrEquiv {ι' : Type*} (e : ι ≃ ι') :
   toFun := domDomCongr e
   invFun := domDomCongr e.symm
   left_inv _ := ext fun _ => by simp
+                                -- 🎉 no goals
   right_inv _ := ext fun _ => by simp
+                                 -- 🎉 no goals
 #align continuous_multilinear_map.dom_dom_congr_equiv ContinuousMultilinearMap.domDomCongrEquiv
 #align continuous_multilinear_map.dom_dom_congr_equiv_apply ContinuousMultilinearMap.domDomCongrEquiv_apply
 #align continuous_multilinear_map.dom_dom_congr_equiv_symm_apply ContinuousMultilinearMap.domDomCongrEquiv_symm_apply
@@ -594,8 +606,11 @@ See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
 protected def mkPiAlgebraFin : A[×n]→L[R] A where
   cont := by
     change Continuous fun m => (List.ofFn m).prod
+    -- ⊢ Continuous fun m => List.prod (List.ofFn m)
     simp_rw [List.ofFn_eq_map]
+    -- ⊢ Continuous fun m => List.prod (List.map m (List.finRange n))
     exact continuous_list_prod _ fun i _ => continuous_apply _
+    -- 🎉 no goals
   toMultilinearMap := MultilinearMap.mkPiAlgebraFin R n A
 #align continuous_multilinear_map.mk_pi_algebra_fin ContinuousMultilinearMap.mkPiAlgebraFin
 

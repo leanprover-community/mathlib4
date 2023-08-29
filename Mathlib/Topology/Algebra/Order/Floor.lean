@@ -33,6 +33,8 @@ variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>
     ⟨(b + 1 : ℤ), by rw [floor_intCast]; exact (lt_add_one _).le⟩
+                     -- ⊢ b ≤ b + 1
+                                         -- 🎉 no goals
 #align tendsto_floor_at_top tendsto_floor_atTop
 
 theorem tendsto_floor_atBot : Tendsto (floor : α → ℤ) atBot atBot :=
@@ -46,6 +48,8 @@ theorem tendsto_ceil_atTop : Tendsto (ceil : α → ℤ) atTop atTop :=
 theorem tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
   ceil_mono.tendsto_atBot_atBot fun b =>
     ⟨(b - 1 : ℤ), by rw [ceil_intCast]; exact (sub_one_lt _).le⟩
+                     -- ⊢ b - 1 ≤ b
+                                        -- 🎉 no goals
 #align tendsto_ceil_at_bot tendsto_ceil_atBot
 
 variable [TopologicalSpace α]
@@ -72,6 +76,7 @@ theorem tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (
 -- porting note: new theorem
 theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[≥] n) (pure n) := by
   simpa only [floor_intCast] using tendsto_floor_right_pure_floor (n : α)
+  -- 🎉 no goals
 
 -- porting note: new theorem
 theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
@@ -82,12 +87,17 @@ theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝
 -- porting note: new theorem
 theorem tendsto_ceil_left_pure (n : ℤ) : Tendsto (ceil : α → ℤ) (𝓝[≤] n) (pure n) := by
   simpa only [ceil_intCast] using tendsto_ceil_left_pure_ceil (n : α)
+  -- 🎉 no goals
 
 -- porting note: new theorem
 theorem tendsto_floor_left_pure_ceil_sub_one (x : α) :
     Tendsto (floor : α → ℤ) (𝓝[<] x) (pure (⌈x⌉ - 1)) :=
   have h₁ : ↑(⌈x⌉ - 1) < x := by rw [cast_sub, cast_one, sub_lt_iff_lt_add]; exact ceil_lt_add_one _
+                                 -- ⊢ ↑⌈x⌉ < x + 1
+                                                                             -- 🎉 no goals
   have h₂ : x ≤ ↑(⌈x⌉ - 1) + 1 := by rw [cast_sub, cast_one, sub_add_cancel]; exact le_ceil _
+                                     -- ⊢ x ≤ ↑⌈x⌉
+                                                                              -- 🎉 no goals
   tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Iio' h₁) <| fun _y hy =>
     floor_eq_on_Ico _ _ ⟨hy.1, hy.2.trans_le h₂⟩
 
@@ -95,11 +105,14 @@ theorem tendsto_floor_left_pure_ceil_sub_one (x : α) :
 theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
     Tendsto (floor : α → ℤ) (𝓝[<] n) (pure (n - 1)) := by
   simpa only [ceil_intCast] using tendsto_floor_left_pure_ceil_sub_one (n : α)
+  -- 🎉 no goals
 
 -- porting note: new theorem
 theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
     Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
   have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel]; exact floor_le _
+                                  -- ⊢ ↑⌊x⌋ ≤ x
+                                                                           -- 🎉 no goals
   tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsWithin_Ioi' <| lt_succ_floor _) <| fun _y hy =>
     ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
 
@@ -107,6 +120,7 @@ theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
 theorem tendsto_ceil_right_pure_add_one (n : ℤ) :
     Tendsto (ceil : α → ℤ) (𝓝[>] n) (pure (n + 1)) := by
   simpa only [floor_intCast] using tendsto_ceil_right_pure_floor_add_one (n : α)
+  -- 🎉 no goals
 
 theorem tendsto_floor_right (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
   ((tendsto_pure_pure _ _).comp (tendsto_floor_right_pure n)).mono_right <|
@@ -131,12 +145,16 @@ theorem tendsto_floor_left (n : ℤ) :
     Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝[≤] (n - 1)) :=
   ((tendsto_pure_pure _ _).comp (tendsto_floor_left_pure_sub_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_sub]; exact pure_le_nhdsWithin le_rfl
+    -- ⊢ pure (IntCast.intCast (n - 1)) ≤ 𝓝[Iic ↑(n - 1)] ↑(n - 1)
+                                    -- 🎉 no goals
 #align tendsto_floor_left tendsto_floor_left
 
 theorem tendsto_ceil_right (n : ℤ) :
     Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
   ((tendsto_pure_pure _ _).comp (tendsto_ceil_right_pure_add_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_add]; exact pure_le_nhdsWithin le_rfl
+    -- ⊢ pure (IntCast.intCast (n + 1)) ≤ 𝓝[Ici ↑(n + 1)] ↑(n + 1)
+                                    -- 🎉 no goals
 #align tendsto_ceil_right tendsto_ceil_right
 
 theorem tendsto_floor_left' (n : ℤ) :
@@ -164,8 +182,11 @@ theorem continuousAt_fract [OrderClosedTopology α] [TopologicalAddGroup α]
 theorem tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
   rw [← sub_sub_cancel (n : α) 1]
+  -- ⊢ Tendsto fract (𝓝[Iio ↑n] ↑n) (𝓝 (↑n - (↑n - 1)))
   refine (tendsto_id.mono_left nhdsWithin_le_nhds).sub ?_
+  -- ⊢ Tendsto (fun x => ↑⌊x⌋) (𝓝[Iio ↑n] ↑n) (𝓝 (↑n - 1))
   exact tendsto_floor_left' n
+  -- 🎉 no goals
 #align tendsto_fract_left' tendsto_fract_left'
 
 theorem tendsto_fract_left [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
@@ -193,22 +214,36 @@ variable [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncurry f) <| univ ×ˢ I)
     (hf : ∀ s, f s 0 = f s 1) : Continuous fun st : β × α => f st.1 (fract st.2) := by
   change Continuous (uncurry f ∘ Prod.map id fract)
+  -- ⊢ Continuous (uncurry f ∘ Prod.map id fract)
   rw [continuous_iff_continuousAt]
+  -- ⊢ ∀ (x : β × α), ContinuousAt (uncurry f ∘ Prod.map id fract) x
   rintro ⟨s, t⟩
+  -- ⊢ ContinuousAt (uncurry f ∘ Prod.map id fract) (s, t)
   rcases em (∃ n : ℤ, t = n) with (⟨n, rfl⟩ | ht)
+  -- ⊢ ContinuousAt (uncurry f ∘ Prod.map id fract) (s, ↑n)
   · rw [ContinuousAt, nhds_prod_eq, ← nhds_left'_sup_nhds_right (n : α), prod_sup, tendsto_sup]
+    -- ⊢ Tendsto (uncurry f ∘ Prod.map id fract) (𝓝 s ×ˢ 𝓝[Iio ↑n] ↑n) (𝓝 ((uncurry f …
     constructor
+    -- ⊢ Tendsto (uncurry f ∘ Prod.map id fract) (𝓝 s ×ˢ 𝓝[Iio ↑n] ↑n) (𝓝 ((uncurry f …
     · refine (((h (s, 1) ⟨trivial, zero_le_one, le_rfl⟩).tendsto.mono_left ?_).comp
         (tendsto_id.prod_map (tendsto_fract_left _))).mono_right (le_of_eq ?_)
       · rw [nhdsWithin_prod_eq, nhdsWithin_univ, ← nhdsWithin_Ico_eq_nhdsWithin_Iio one_pos]
+        -- ⊢ 𝓝 s ×ˢ 𝓝[Ico 0 1] 1 ≤ 𝓝 s ×ˢ 𝓝[Icc 0 1] 1
         exact Filter.prod_mono le_rfl (nhdsWithin_mono _ Ico_subset_Icc_self)
+        -- 🎉 no goals
       · simp [hf]
+        -- 🎉 no goals
     · refine (((h (s, 0) ⟨trivial, le_rfl, zero_le_one⟩).tendsto.mono_left <| le_of_eq ?_).comp
         (tendsto_id.prod_map (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
         simp [nhdsWithin_prod_eq, nhdsWithin_univ]
+        -- 🎉 no goals
+        -- 🎉 no goals
   · replace ht : t ≠ ⌊t⌋ := fun ht' => ht ⟨_, ht'⟩
+    -- ⊢ ContinuousAt (uncurry f ∘ Prod.map id fract) (s, t)
     refine (h.continuousAt ?_).comp (continuousAt_id.prod_map (continuousAt_fract ht))
+    -- ⊢ univ ×ˢ Icc 0 1 ∈ 𝓝 (Prod.map id fract (s, t))
     exact prod_mem_nhds univ_mem (Icc_mem_nhds (fract_pos.2 ht) (fract_lt_one _))
+    -- 🎉 no goals
 #align continuous_on.comp_fract' ContinuousOn.comp_fract'
 
 theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}

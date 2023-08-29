@@ -50,6 +50,9 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
+                 -- ⊢ p ≤ q ∨ q ≤ p
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 #align Prop.le_is_total Prop.le_isTotal
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by
@@ -92,6 +95,7 @@ theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
   simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
+  -- 🎉 no goals
 #align pi.is_compl_iff Pi.isCompl_iff
 
 end Pi
@@ -109,7 +113,18 @@ theorem Prop.codisjoint_iff {P Q : Prop} : Codisjoint P Q ↔ P ∨ Q :=
 @[simp]
 theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   rw [_root_.isCompl_iff, Prop.disjoint_iff, Prop.codisjoint_iff, not_iff]
+  -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
   by_cases P <;> by_cases Q <;> simp [*]
+  -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
+  -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
+                 -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
+                 -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
+                 -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
+                 -- ⊢ ¬(P ∧ Q) ∧ (P ∨ Q) ↔ (¬P ↔ Q)
+                                -- 🎉 no goals
+                                -- 🎉 no goals
+                                -- 🎉 no goals
+                                -- 🎉 no goals
 #align Prop.is_compl_iff Prop.isCompl_iff
 
 -- porting note: Lean 3 would unfold these for us, but we need to do it manually now

@@ -66,17 +66,24 @@ def toNat : WType Natβ → ℕ
 theorem leftInverse_nat : Function.LeftInverse ofNat toNat
   | WType.mk Natα.zero f => by
     rw [toNat, ofNat]
+    -- ⊢ mk Natα.zero Empty.elim = mk Natα.zero f
     congr
+    -- ⊢ Empty.elim = f
     ext x
+    -- ⊢ Empty.elim x = f x
     cases x
+    -- 🎉 no goals
   | WType.mk Natα.succ f => by
     simp only [toNat, ofNat, leftInverse_nat (f ()), mk.injEq, heq_eq_eq, true_and]
+    -- ⊢ (fun x => f ()) = f
     rfl
+    -- 🎉 no goals
 #align W_type.left_inv_nat WType.leftInverse_nat
 
 theorem rightInverse_nat : Function.RightInverse ofNat toNat
   | Nat.zero => rfl
   | Nat.succ n => by rw [ofNat, toNat, rightInverse_nat n]
+                     -- 🎉 no goals
 #align W_type.right_inv_nat WType.rightInverse_nat
 
 /-- The naturals are equivalent to their associated `WType` -/
@@ -163,16 +170,22 @@ def toList : WType (Listβ γ) → List γ
 theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
   | WType.mk Listα.nil f => by
     simp only [toList, ofList, mk.injEq, heq_eq_eq, true_and]
+    -- ⊢ PEmpty.elim = f
     ext x
+    -- ⊢ PEmpty.elim x = f x
     cases x
+    -- 🎉 no goals
   | WType.mk (Listα.cons x) f => by
     simp only [ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
+    -- ⊢ (fun x => f PUnit.unit) = f
     rfl
+    -- 🎉 no goals
 #align W_type.left_inv_list WType.leftInverse_list
 
 theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
   | List.nil => rfl
   | List.cons hd tl => by simp only [toList, rightInverse_list tl]
+                          -- 🎉 no goals
 #align W_type.right_inv_list WType.rightInverse_list
 
 /-- Lists are equivalent to their associated `WType` -/

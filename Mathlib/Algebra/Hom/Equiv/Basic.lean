@@ -41,6 +41,7 @@ def OneHom.inverse [One M] [One N]
   OneHom N M :=
   { toFun := g,
     map_one' := by rw [← f.map_one, h₁] }
+                   -- 🎉 no goals
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
 @[to_additive (attr := simps)
@@ -52,7 +53,9 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
   map_mul' x y :=
     calc
       g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
+                                              -- 🎉 no goals
       _ = g (f (g x * g y)) := by rw [f.map_mul]
+                                  -- 🎉 no goals
       _ = g x * g y := h₁ _
 #align mul_hom.inverse MulHom.inverse
 #align add_hom.inverse AddHom.inverse
@@ -143,6 +146,7 @@ instance (priority := 100) instMonoidHomClass
         _ = e 1 * e (MulEquivClass.toEquivLike.inv e (1 : N) : M) :=
           congr_arg _ (MulEquivClass.toEquivLike.right_inv e 1).symm
         _ = e (MulEquivClass.toEquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
+                                                              -- 🎉 no goals
         _ = 1 := MulEquivClass.toEquivLike.right_inv e 1 }
 
 -- See note [lower instance priority]
@@ -152,7 +156,9 @@ instance (priority := 100) toZeroHomClass
   map_zero := fun e =>
     calc
       e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
+                                              -- 🎉 no goals
         _ = 0 := by simp
+                    -- 🎉 no goals
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
@@ -202,9 +208,13 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
     cases f
+    -- ⊢ { toEquiv := toEquiv✝, map_mul' := map_mul'✝ } = g
     cases g
+    -- ⊢ { toEquiv := toEquiv✝¹, map_mul' := map_mul'✝¹ } = { toEquiv := toEquiv✝, ma …
     congr
+    -- ⊢ toEquiv✝¹ = toEquiv✝
     apply Equiv.coe_fn_injective h₁
+    -- 🎉 no goals
   map_mul := map_mul'
 
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
@@ -359,6 +369,7 @@ def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
     map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
       rw [h1.map_mul, h2.map_mul] }
+      -- 🎉 no goals
 #align mul_equiv.trans MulEquiv.trans
 #align add_equiv.trans AddEquiv.trans
 
@@ -626,8 +637,14 @@ def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   toFun h n := g (h (f.symm n))
   invFun k m := g.symm (k (f m))
   left_inv h := by ext; simp
+                   -- ⊢ (fun k m => ↑(symm g) (k (↑f m))) ((fun h n => ↑g (h (↑f.symm n))) h) x✝ = h …
+                        -- 🎉 no goals
   right_inv k := by ext; simp
+                    -- ⊢ (fun h n => ↑g (h (↑f.symm n))) ((fun k m => ↑(symm g) (k (↑f m))) k) x✝ = k …
+                         -- 🎉 no goals
   map_mul' h k := by ext; simp
+                     -- ⊢ Equiv.toFun { toFun := fun h n => ↑g (h (↑f.symm n)), invFun := fun k m => ↑ …
+                          -- 🎉 no goals
 #align mul_equiv.arrow_congr MulEquiv.arrowCongr
 #align add_equiv.arrow_congr AddEquiv.arrowCongr
 #align mul_equiv.arrow_congr_apply MulEquiv.arrowCongr_apply
@@ -647,8 +664,14 @@ def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [Com
   toFun h := g.toMonoidHom.comp (h.comp f.symm.toMonoidHom)
   invFun k := g.symm.toMonoidHom.comp (k.comp f.toMonoidHom)
   left_inv h := by ext; simp
+                   -- ⊢ ↑((fun k => MonoidHom.comp (toMonoidHom (symm g)) (MonoidHom.comp k (toMonoi …
+                        -- 🎉 no goals
   right_inv k := by ext; simp
+                    -- ⊢ ↑((fun h => MonoidHom.comp (toMonoidHom g) (MonoidHom.comp h (toMonoidHom (s …
+                         -- 🎉 no goals
   map_mul' h k := by ext; simp
+                     -- ⊢ ↑(Equiv.toFun { toFun := fun h => MonoidHom.comp (toMonoidHom g) (MonoidHom. …
+                          -- 🎉 no goals
 #align mul_equiv.monoid_hom_congr MulEquiv.monoidHomCongr
 #align add_equiv.add_monoid_hom_congr AddEquiv.addMonoidHomCongr
 #align mul_equiv.monoid_hom_congr_apply MulEquiv.monoidHomCongr_apply

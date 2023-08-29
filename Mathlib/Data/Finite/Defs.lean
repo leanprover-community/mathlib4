@@ -69,7 +69,9 @@ theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, None
 
 theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β := by
   cases' h with n e
+  -- ⊢ Finite β
   exact Finite.intro (f.symm.trans e)
+  -- 🎉 no goals
 #align finite.of_equiv Finite.of_equiv
 
 theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=

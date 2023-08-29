@@ -70,10 +70,15 @@ variable {V} {c : ComplexShape ι}
 @[reassoc (attr := simp)]
 theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k = 0 := by
   by_cases hij : c.Rel i j
+  -- ⊢ d C i j ≫ d C j k = 0
   · by_cases hjk : c.Rel j k
+    -- ⊢ d C i j ≫ d C j k = 0
     · exact C.d_comp_d' i j k hij hjk
+      -- 🎉 no goals
     · rw [C.shape j k hjk, comp_zero]
+      -- 🎉 no goals
   · rw [C.shape i j hij, zero_comp]
+    -- 🎉 no goals
 #align homological_complex.d_comp_d HomologicalComplex.d_comp_d
 
 theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
@@ -82,19 +87,29 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
         c.Rel i j → C₁.d i j ≫ eqToHom (congr_fun h_X j) = eqToHom (congr_fun h_X i) ≫ C₂.d i j) :
     C₁ = C₂ := by
   obtain ⟨X₁, d₁, s₁, h₁⟩ := C₁
+  -- ⊢ mk X₁ d₁ = C₂
   obtain ⟨X₂, d₂, s₂, h₂⟩ := C₂
+  -- ⊢ mk X₁ d₁ = mk X₂ d₂
   dsimp at h_X
+  -- ⊢ mk X₁ d₁ = mk X₂ d₂
   subst h_X
+  -- ⊢ mk X₁ d₁ = mk X₁ d₂
   simp only [mk.injEq, heq_eq_eq, true_and]
+  -- ⊢ d₁ = d₂
   ext i j
+  -- ⊢ d₁ i j = d₂ i j
   by_cases hij: c.Rel i j
+  -- ⊢ d₁ i j = d₂ i j
   · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
+    -- 🎉 no goals
   · rw [s₁ i j hij, s₂ i j hij]
+    -- 🎉 no goals
 #align homological_complex.ext HomologicalComplex.ext
 
 /-- The obvious isomorphism `K.X p ≅ K.X q` when `p = q`. -/
 def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
   K.X p ≅ K.X q := eqToIso (by rw [h])
+                               -- 🎉 no goals
 
 @[simp]
 lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
@@ -105,44 +120,60 @@ lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p�
     (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
     (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
   dsimp [XIsoOfEq]
+  -- ⊢ eqToHom (_ : X K p₁ = X K p₂) ≫ eqToHom (_ : X K p₂ = X K p₃) = eqToHom (_ : …
   simp only [eqToHom_trans]
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₁₂ : p₁ = p₂) (h₃₂ : p₃ = p₂) :
     (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₁₂.trans h₃₂.symm)).hom := by
   dsimp [XIsoOfEq]
+  -- ⊢ eqToHom (_ : X K p₁ = X K p₂) ≫ eqToHom (_ : X K p₂ = X K p₃) = eqToHom (_ : …
   simp only [eqToHom_trans]
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_inv_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₂₁ : p₂ = p₁) (h₂₃ : p₂ = p₃) :
     (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₂₁.symm.trans h₂₃)).hom := by
   dsimp [XIsoOfEq]
+  -- ⊢ eqToHom (_ : X K p₁ = X K p₂) ≫ eqToHom (_ : X K p₂ = X K p₃) = eqToHom (_ : …
   simp only [eqToHom_trans]
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_inv_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
     (h₂₁ : p₂ = p₁) (h₃₂ : p₃ = p₂) :
     (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₃₂.trans h₂₁).symm).hom := by
   dsimp [XIsoOfEq]
+  -- ⊢ eqToHom (_ : X K p₁ = X K p₂) ≫ eqToHom (_ : X K p₂ = X K p₃) = eqToHom (_ : …
   simp only [eqToHom_trans]
+  -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
     (K.XIsoOfEq h).hom ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
+                                                     -- ⊢ (XIsoOfEq K (_ : p₁ = p₁)).hom ≫ d K p₁ p₃ = d K p₁ p₃
+                                                              -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_inv_comp_d (K : HomologicalComplex V c) {p₂ p₁ : ι} (h : p₂ = p₁) (p₃ : ι) :
     (K.XIsoOfEq h).inv ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
+                                                     -- ⊢ (XIsoOfEq K (_ : p₂ = p₂)).inv ≫ d K p₂ p₃ = d K p₂ p₃
+                                                              -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma d_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₂ = p₃) (p₁ : ι) :
     K.d p₁ p₂ ≫ (K.XIsoOfEq h).hom = K.d p₁ p₃ := by subst h; simp
+                                                     -- ⊢ d K p₁ p₂ ≫ (XIsoOfEq K (_ : p₂ = p₂)).hom = d K p₁ p₂
+                                                              -- 🎉 no goals
 
 @[reassoc (attr := simp)]
 lemma d_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₃ = p₂) (p₁ : ι) :
     K.d p₁ p₂ ≫ (K.XIsoOfEq h).inv = K.d p₁ p₃ := by subst h; simp
+                                                     -- ⊢ d K p₁ p₃ ≫ (XIsoOfEq K (_ : p₃ = p₃)).inv = d K p₁ p₃
+                                                              -- 🎉 no goals
 
 end HomologicalComplex
 
@@ -236,8 +267,11 @@ structure Hom (A B : HomologicalComplex V c) where
 theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
     f.f i ≫ B.d i j = A.d i j ≫ f.f j := by
   by_cases hij : c.Rel i j
+  -- ⊢ HomologicalComplex.Hom.f f i ≫ d B i j = d A i j ≫ HomologicalComplex.Hom.f  …
   · exact f.comm' i j hij
+    -- 🎉 no goals
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
+    -- 🎉 no goals
 #align homological_complex.hom.comm HomologicalComplex.Hom.comm
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
@@ -268,8 +302,11 @@ end
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by
   apply Hom.ext
+  -- ⊢ f.f = g.f
   funext
+  -- ⊢ Hom.f f x✝ = Hom.f g x✝
   apply h
+  -- 🎉 no goals
 
 @[simp]
 theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.X i) :=
@@ -287,12 +324,15 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
     HomologicalComplex.Hom.f (eqToHom h) n =
       eqToHom (congr_fun (congr_arg HomologicalComplex.X h) n) := by
   subst h
+  -- ⊢ Hom.f (eqToHom (_ : C₁ = C₁)) n = eqToHom (_ : X C₁ n = X C₁ n)
   rfl
+  -- 🎉 no goals
 #align homological_complex.eq_to_hom_f HomologicalComplex.eqToHom_f
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
+                                                      -- 🎉 no goals
 #align homological_complex.hom_f_injective HomologicalComplex.hom_f_injective
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
@@ -315,6 +355,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  -- ⊢ f = default
   all_goals
     ext
     dsimp [zero]
@@ -368,7 +409,9 @@ and so the differentials only differ by an `eqToHom`.
 theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
     C.d i j' ≫ eqToHom (congr_arg C.X (c.next_eq rij' rij)) = C.d i j := by
   obtain rfl := c.next_eq rij rij'
+  -- ⊢ d C i j ≫ eqToHom (_ : X C j = X C j) = d C i j
   simp only [eqToHom_refl, comp_id]
+  -- 🎉 no goals
 #align homological_complex.d_comp_eq_to_hom HomologicalComplex.d_comp_eqToHom
 
 -- porting note: removed @[simp] as the linter complained
@@ -378,19 +421,25 @@ and so the differentials only differ by an `eqToHom`.
 theorem eqToHom_comp_d {i i' j : ι} (rij : c.Rel i j) (rij' : c.Rel i' j) :
     eqToHom (congr_arg C.X (c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
   obtain rfl := c.prev_eq rij rij'
+  -- ⊢ eqToHom (_ : X C i = X C i) ≫ d C i j = d C i j
   simp only [eqToHom_refl, id_comp]
+  -- 🎉 no goals
 #align homological_complex.eq_to_hom_comp_d HomologicalComplex.eqToHom_comp_d
 
 theorem kernel_eq_kernel [HasKernels V] {i j j' : ι} (r : c.Rel i j) (r' : c.Rel i j') :
     kernelSubobject (C.d i j) = kernelSubobject (C.d i j') := by
   rw [← d_comp_eqToHom C r r']
+  -- ⊢ kernelSubobject (d C i j' ≫ eqToHom (_ : X C j' = X C j)) = kernelSubobject  …
   apply kernelSubobject_comp_mono
+  -- 🎉 no goals
 #align homological_complex.kernel_eq_kernel HomologicalComplex.kernel_eq_kernel
 
 theorem image_eq_image [HasImages V] [HasEqualizers V] {i i' j : ι} (r : c.Rel i j)
     (r' : c.Rel i' j) : imageSubobject (C.d i j) = imageSubobject (C.d i' j) := by
   rw [← eqToHom_comp_d C r r']
+  -- ⊢ imageSubobject (eqToHom (_ : X C i = X C i') ≫ d C i' j) = imageSubobject (d …
   apply imageSubobject_iso_comp
+  -- 🎉 no goals
 #align homological_complex.image_eq_image HomologicalComplex.image_eq_image
 
 section
@@ -404,6 +453,7 @@ set_option linter.uppercaseLean3 false in
 /-- If `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X i`. -/
 def xPrevIso {i j : ι} (r : c.Rel i j) : C.xPrev j ≅ C.X i :=
   eqToIso <| by rw [← c.prev_eq' r]
+                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso HomologicalComplex.xPrevIso
 
@@ -413,10 +463,17 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
     congr_arg C.X
       (by
         dsimp [ComplexShape.prev]
+        -- ⊢ (if h : ∃ i, ComplexShape.Rel c i j then Exists.choose h else j) = j
         rw [dif_neg]
+        -- ⊢ ¬∃ i, ComplexShape.Rel c i j
         push_neg; intro i hi
+        -- ⊢ ∀ (i : ι), ¬ComplexShape.Rel c i j
+                  -- ⊢ False
         have : c.prev j = i := c.prev_eq' hi
+        -- ⊢ False
         rw [this] at h; contradiction)
+        -- ⊢ False
+                        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_self HomologicalComplex.xPrevIsoSelf
 
@@ -429,6 +486,7 @@ set_option linter.uppercaseLean3 false in
 /-- If `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X j`. -/
 def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
   eqToIso <| by rw [← c.next_eq' r]
+                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_next_iso HomologicalComplex.xNextIso
 
@@ -438,9 +496,15 @@ def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
     congr_arg C.X
       (by
         dsimp [ComplexShape.next]
+        -- ⊢ (if h : ∃ j, ComplexShape.Rel c i j then Exists.choose h else i) = i
         rw [dif_neg]; rintro ⟨j, hj⟩
+        -- ⊢ ¬∃ j, ComplexShape.Rel c i j
+                      -- ⊢ False
         have : c.next i = j := c.next_eq' hj
+        -- ⊢ False
         rw [this] at h; contradiction)
+        -- ⊢ False
+                        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_next_iso_self HomologicalComplex.xNextIsoSelf
 
@@ -458,7 +522,9 @@ abbrev dFrom (i : ι) : C.X i ⟶ C.xNext i :=
 
 theorem dTo_eq {i j : ι} (r : c.Rel i j) : C.dTo j = (C.xPrevIso r).hom ≫ C.d i j := by
   obtain rfl := c.prev_eq' r
+  -- ⊢ dTo C j = (xPrevIso C r).hom ≫ d C (ComplexShape.prev c j) j
   exact (Category.id_comp _).symm
+  -- 🎉 no goals
 #align homological_complex.d_to_eq HomologicalComplex.dTo_eq
 
 @[simp]
@@ -468,7 +534,9 @@ theorem dTo_eq_zero {j : ι} (h : ¬c.Rel (c.prev j) j) : C.dTo j = 0 :=
 
 theorem dFrom_eq {i j : ι} (r : c.Rel i j) : C.dFrom i = C.d i j ≫ (C.xNextIso r).inv := by
   obtain rfl := c.next_eq' r
+  -- ⊢ dFrom C i = d C i (ComplexShape.next c i) ≫ (xNextIso C r).inv
   exact (Category.comp_id _).symm
+  -- 🎉 no goals
 #align homological_complex.d_from_eq HomologicalComplex.dFrom_eq
 
 @[simp]
@@ -479,24 +547,28 @@ theorem dFrom_eq_zero {i : ι} (h : ¬c.Rel i (c.next i)) : C.dFrom i = 0 :=
 @[reassoc (attr := simp)]
 theorem xPrevIso_comp_dTo {i j : ι} (r : c.Rel i j) : (C.xPrevIso r).inv ≫ C.dTo j = C.d i j := by
   simp [C.dTo_eq r]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_comp_d_to HomologicalComplex.xPrevIso_comp_dTo
 
 @[reassoc (attr := simp)]
 theorem xPrevIsoSelf_comp_dTo {j : ι} (h : ¬c.Rel (c.prev j) j) :
     (C.xPrevIsoSelf h).inv ≫ C.dTo j = 0 := by simp [h]
+                                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_self_comp_d_to HomologicalComplex.xPrevIsoSelf_comp_dTo
 
 @[reassoc (attr := simp)]
 theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) : C.dFrom i ≫ (C.xNextIso r).hom = C.d i j :=
   by simp [C.dFrom_eq r]
+     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso HomologicalComplex.dFrom_comp_xNextIso
 
 @[reassoc (attr := simp)]
 theorem dFrom_comp_xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) :
     C.dFrom i ≫ (C.xNextIsoSelf h).hom = 0 := by simp [h]
+                                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso_self HomologicalComplex.dFrom_comp_xNextIsoSelf
 
@@ -508,13 +580,17 @@ theorem dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
 theorem kernel_from_eq_kernel [HasKernels V] {i j : ι} (r : c.Rel i j) :
     kernelSubobject (C.dFrom i) = kernelSubobject (C.d i j) := by
   rw [C.dFrom_eq r]
+  -- ⊢ kernelSubobject (d C i j ≫ (xNextIso C r).inv) = kernelSubobject (d C i j)
   apply kernelSubobject_comp_mono
+  -- 🎉 no goals
 #align homological_complex.kernel_from_eq_kernel HomologicalComplex.kernel_from_eq_kernel
 
 theorem image_to_eq_image [HasImages V] [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
     imageSubobject (C.dTo j) = imageSubobject (C.d i j) := by
   rw [C.dTo_eq r]
+  -- ⊢ imageSubobject ((xPrevIso C r).hom ≫ d C i j) = imageSubobject (d C i j)
   apply imageSubobject_iso_comp
+  -- 🎉 no goals
 #align homological_complex.image_to_eq_image HomologicalComplex.image_to_eq_image
 
 end
@@ -543,14 +619,21 @@ def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
       comm' := fun i j hij =>
         calc
           (f i).inv ≫ C₁.d i j = (f i).inv ≫ (C₁.d i j ≫ (f j).hom) ≫ (f j).inv := by simp
+                                                                                      -- 🎉 no goals
           _ = (f i).inv ≫ ((f i).hom ≫ C₂.d i j) ≫ (f j).inv := by rw [hf i j hij]
+                                                                   -- 🎉 no goals
           _ = C₂.d i j ≫ (f j).inv := by simp }
+                                         -- 🎉 no goals
   hom_inv_id := by
     ext i
+    -- ⊢ HomologicalComplex.Hom.f ((mk fun i => (f i).hom) ≫ mk fun i => (f i).inv) i …
     exact (f i).hom_inv_id
+    -- 🎉 no goals
   inv_hom_id := by
     ext i
+    -- ⊢ HomologicalComplex.Hom.f ((mk fun i => (f i).inv) ≫ mk fun i => (f i).hom) i …
     exact (f i).inv_hom_id
+    -- 🎉 no goals
 #align homological_complex.hom.iso_of_components HomologicalComplex.Hom.isoOfComponents
 
 @[simp]
@@ -558,7 +641,9 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom) (i : ι) :
     isoApp (isoOfComponents f hf) i = f i := by
   ext
+  -- ⊢ (isoApp (isoOfComponents f) i).hom = (f i).hom
   simp
+  -- 🎉 no goals
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
@@ -576,7 +661,9 @@ abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
 theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.prev j = (C₁.xPrevIso w).hom ≫ f.f i ≫ (C₂.xPrevIso w).inv := by
   obtain rfl := c.prev_eq' w
+  -- ⊢ prev f j = (xPrevIso C₁ w).hom ≫ HomologicalComplex.Hom.f f (ComplexShape.pr …
   simp only [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
+  -- 🎉 no goals
 #align homological_complex.hom.prev_eq HomologicalComplex.Hom.prev_eq
 
 /-- `f.next i` is `f.f j` if there is some `r i j`, and `f.f j` otherwise. -/
@@ -587,7 +674,9 @@ abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
 theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.next i = (C₁.xNextIso w).hom ≫ f.f j ≫ (C₂.xNextIso w).inv := by
   obtain rfl := c.next_eq' w
+  -- ⊢ next f i = (xNextIso C₁ w).hom ≫ HomologicalComplex.Hom.f f (ComplexShape.ne …
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
+  -- 🎉 no goals
 #align homological_complex.hom.next_eq HomologicalComplex.Hom.next_eq
 
 @[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
@@ -668,13 +757,19 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) : ChainComplex V α :=
   { X := X
     d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
+                                                      -- 🎉 no goals
     shape := fun i j w => by
       dsimp
+      -- ⊢ (if h : i = j + 1 then eqToHom (_ : X i = X (j + 1)) ≫ d j else 0) = 0
       rw [dif_neg (Ne.symm w)]
+      -- 🎉 no goals
     d_comp_d' := fun i j k hij hjk => by
       dsimp at hij hjk
+      -- ⊢ (fun i j => if h : i = j + 1 then eqToHom (_ : X i = X (j + 1)) ≫ d j else 0 …
       substs hij hjk
+      -- ⊢ (fun i j => if h : i = j + 1 then eqToHom (_ : X i = X (j + 1)) ≫ d j else 0 …
       simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
+      -- 🎉 no goals
 #align chain_complex.of ChainComplex.of
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
@@ -688,12 +783,16 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   dsimp [of]
+  -- ⊢ (if j + 1 = j + 1 then 𝟙 (X (j + 1)) ≫ d j else 0) = d j
   rw [if_pos rfl, Category.id_comp]
+  -- 🎉 no goals
 #align chain_complex.of_d ChainComplex.of_d
 
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
   dsimp [of]
+  -- ⊢ (if h : i = j + 1 then eqToHom (_ : X i = X (j + 1)) ≫ d j else 0) = 0
   rw [dif_neg h]
+  -- 🎉 no goals
 #align chain_complex.of_d_ne ChainComplex.of_d_ne
 
 end Of
@@ -714,10 +813,15 @@ def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f (i + 1) ≫ d_Y i 
   { f
     comm' := fun n m => by
       by_cases h : n = m + 1
+      -- ⊢ ComplexShape.Rel (ComplexShape.down α) n m → f n ≫ HomologicalComplex.d (of  …
       · subst h
+        -- ⊢ ComplexShape.Rel (ComplexShape.down α) (m + 1) m → f (m + 1) ≫ HomologicalCo …
         simpa using comm m
+        -- 🎉 no goals
       · rw [of_d_ne X _ _ h, of_d_ne Y _ _ h]
+        -- ⊢ ComplexShape.Rel (ComplexShape.down α) n m → f n ≫ 0 = 0 ≫ f m
         simp }
+        -- 🎉 no goals
 #align chain_complex.of_hom ChainComplex.ofHom
 
 end OfHom
@@ -791,13 +895,17 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
+  -- ⊢ (if 1 = 0 + 1 then 𝟙 X₁ ≫ d₀ else 0) = d₀
   rw [if_pos rfl, Category.id_comp]
+  -- 🎉 no goals
 #align chain_complex.mk_d_1_0 ChainComplex.mk_d_1_0
 
 @[simp]
 theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
+  -- ⊢ (if 2 = 1 + 1 then 𝟙 X₂ ≫ d₁ else 0) = d₁
   rw [if_pos rfl, Category.id_comp]
+  -- 🎉 no goals
 #align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_0
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
@@ -832,7 +940,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
+  -- ⊢ (if 1 = 0 + 1 then 𝟙 X₁ ≫ d₀ else 0) = d₀
   rw [if_pos rfl, Category.id_comp]
+  -- 🎉 no goals
 #align chain_complex.mk'_d_1_0 ChainComplex.mk'_d_1_0
 
 /- Porting note:
@@ -897,7 +1007,9 @@ def mkHom : P ⟶ Q where
   f n := (mkHomAux P Q zero one one_zero_comm succ n).1
   comm' n m := by
     rintro (rfl : m + 1 = n)
+    -- ⊢ (fun n => (mkHomAux P Q zero one one_zero_comm succ n).fst) (m + 1) ≫ Homolo …
     exact (mkHomAux P Q zero one one_zero_comm succ m).2.2
+    -- 🎉 no goals
 #align chain_complex.mk_hom ChainComplex.mkHom
 
 @[simp]
@@ -918,6 +1030,7 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm (n + 1) n⟩).1 := by
   dsimp [mkHom, mkHomAux]
+  -- 🎉 no goals
 #align chain_complex.mk_hom_f_succ_succ ChainComplex.mkHom_f_succ_succ
 
 end MkHom
@@ -936,16 +1049,24 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
     CochainComplex V α :=
   { X := X
     d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
+                                                            -- 🎉 no goals
     shape := fun i j w => by
       dsimp
+      -- ⊢ (if h : i + 1 = j then d i ≫ eqToHom (_ : X (i + 1) = X j) else 0) = 0
       rw [dif_neg]
+      -- ⊢ ¬i + 1 = j
       exact w
+      -- 🎉 no goals
     d_comp_d' := fun i j k => by
       dsimp
+      -- ⊢ i + 1 = j → j + 1 = k → ((if h : i + 1 = j then d i ≫ eqToHom (_ : X (i + 1) …
       split_ifs with h h' h'
       · substs h h'
+        -- ⊢ i + 1 = i + 1 → i + 1 + 1 = i + 1 + 1 → (d i ≫ eqToHom (_ : X (i + 1) = X (i …
         simp [sq]
+        -- 🎉 no goals
       all_goals simp }
+      -- 🎉 no goals
 #align cochain_complex.of CochainComplex.of
 
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
@@ -959,12 +1080,16 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
+  -- ⊢ (if j + 1 = j + 1 then d j ≫ 𝟙 (X (j + 1)) else 0) = d j
   rw [if_pos rfl, Category.comp_id]
+  -- 🎉 no goals
 #align cochain_complex.of_d CochainComplex.of_d
 
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
   dsimp [of]
+  -- ⊢ (if h : i + 1 = j then d i ≫ eqToHom (_ : X (i + 1) = X j) else 0) = 0
   rw [dif_neg h]
+  -- 🎉 no goals
 #align cochain_complex.of_d_ne CochainComplex.of_d_ne
 
 end Of
@@ -986,10 +1111,15 @@ def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f i ≫ d_Y i = d_X 
   { f
     comm' := fun n m => by
       by_cases h : n + 1 = m
+      -- ⊢ ComplexShape.Rel (ComplexShape.up α) n m → f n ≫ HomologicalComplex.d (of Y  …
       · subst h
+        -- ⊢ ComplexShape.Rel (ComplexShape.up α) n (n + 1) → f n ≫ HomologicalComplex.d  …
         simpa using comm n
+        -- 🎉 no goals
       · rw [of_d_ne X _ _ h, of_d_ne Y _ _ h]
+        -- ⊢ ComplexShape.Rel (ComplexShape.up α) n m → f n ≫ 0 = 0 ≫ f m
         simp }
+        -- 🎉 no goals
 #align cochain_complex.of_hom CochainComplex.ofHom
 
 end OfHom
@@ -1063,13 +1193,17 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
+  -- ⊢ (if 1 = 0 + 1 then d₀ ≫ 𝟙 X₁ else 0) = d₀
   rw [if_pos rfl, Category.comp_id]
+  -- 🎉 no goals
 #align cochain_complex.mk_d_1_0 CochainComplex.mk_d_1_0
 
 @[simp]
 theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
   change ite (2 = 1 + 1) (d₁ ≫ 𝟙 X₂) 0 = d₁
+  -- ⊢ (if 2 = 1 + 1 then d₁ ≫ 𝟙 X₂ else 0) = d₁
   rw [if_pos rfl, Category.comp_id]
+  -- 🎉 no goals
 #align cochain_complex.mk_d_2_0 CochainComplex.mk_d_2_0
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
@@ -1103,7 +1237,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
+  -- ⊢ (if 1 = 0 + 1 then d₀ ≫ 𝟙 X₁ else 0) = d₀
   rw [if_pos rfl, Category.comp_id]
+  -- 🎉 no goals
 #align cochain_complex.mk'_d_1_0 CochainComplex.mk'_d_1_0
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
@@ -1146,7 +1282,9 @@ def mkHom : P ⟶ Q where
   f n := (mkHomAux P Q zero one one_zero_comm succ n).1
   comm' n m := by
     rintro (rfl : n + 1 = m)
+    -- ⊢ (fun n => (mkHomAux P Q zero one one_zero_comm succ n).fst) n ≫ HomologicalC …
     exact (mkHomAux P Q zero one one_zero_comm succ n).2.2
+    -- 🎉 no goals
 #align cochain_complex.mk_hom CochainComplex.mkHom
 
 @[simp]
@@ -1167,6 +1305,7 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm n (n + 1)⟩).1 := by
   dsimp [mkHom, mkHomAux]
+  -- 🎉 no goals
 #align cochain_complex.mk_hom_f_succ_succ CochainComplex.mkHom_f_succ_succ
 
 end MkHom

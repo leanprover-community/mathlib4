@@ -28,7 +28,9 @@ def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsem
   carrier := ball (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_ball_zero_iff] at *
+    -- ⊢ ‖a✝ * b✝‖ < 1
     exact (norm_mul_le _ _).trans_lt (mul_lt_one_of_nonneg_of_lt_one_left (norm_nonneg _) hx hy.le)
+    -- 🎉 no goals
 #align subsemigroup.unit_ball Subsemigroup.unitBall
 
 instance Metric.unitBall.semigroup [NonUnitalSeminormedRing 𝕜] : Semigroup (ball (0 : 𝕜) 1) :=
@@ -57,7 +59,9 @@ def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : 
   carrier := closedBall 0 1
   mul_mem' hx hy := by
     rw [mem_closedBall_zero_iff] at *
+    -- ⊢ ‖a✝ * b✝‖ ≤ 1
     exact (norm_mul_le _ _).trans (mul_le_one hx (norm_nonneg _) hy)
+    -- 🎉 no goals
 #align subsemigroup.unit_closed_ball Subsemigroup.unitClosedBall
 
 instance Metric.unitClosedBall.semigroup [NonUnitalSeminormedRing 𝕜] :
@@ -111,7 +115,9 @@ def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid �
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_sphere_zero_iff_norm] at *
+    -- ⊢ ‖a✝ * b✝‖ = 1
     simp [*]
+    -- 🎉 no goals
   one_mem' := mem_sphere_zero_iff_norm.2 norm_one
 #align submonoid.unit_sphere Submonoid.unitSphere
 
@@ -120,6 +126,7 @@ instance Metric.unitSphere.inv [NormedDivisionRing 𝕜] : Inv (sphere (0 : 𝕜
     ⟨x⁻¹,
       mem_sphere_zero_iff_norm.2 <| by
         rw [norm_inv, mem_sphere_zero_iff_norm.1 x.coe_prop, inv_one]⟩⟩
+        -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_inv_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) : ↑x⁻¹ = (x⁻¹ : 𝕜) :=
@@ -143,6 +150,7 @@ instance Metric.unitSphere.pow [NormedDivisionRing 𝕜] : Pow (sphere (0 : 𝕜
   ⟨fun x n =>
     ⟨(x : 𝕜) ^ n, by
       rw [mem_sphere_zero_iff_norm, norm_zpow, mem_sphere_zero_iff_norm.1 x.coe_prop, one_zpow]⟩⟩
+      -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
@@ -185,6 +193,7 @@ theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : �
 theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
   Subtype.eq <| by convert congr_arg Units.val h
+                   -- 🎉 no goals
 #align unit_sphere_to_units_injective unitSphereToUnits_injective
 
 instance Metric.sphere.group [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=

@@ -73,7 +73,9 @@ theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
+      -- ⊢ b = a
       exact he b hb⟩⟩⟩
+      -- 🎉 no goals
 #align unique_subtype_iff_exists_unique unique_subtype_iff_exists_unique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
@@ -119,6 +121,8 @@ instance {n : ℕ} : Inhabited (Fin n.succ) :=
 
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
   ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
+          -- ⊢ 0 < n + 1
+                             -- 🎉 no goals
 
 @[simp]
 theorem Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
@@ -154,6 +158,7 @@ instance (priority := 100) instSubsingleton : Subsingleton α :=
 
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
   ⟨fun h ↦ h _, fun h x ↦ by rwa [Unique.eq_default x]⟩
+                             -- 🎉 no goals
 #align unique.forall_iff Unique.forall_iff
 
 theorem exists_iff {p : α → Prop} : Exists p ↔ p default :=
@@ -165,6 +170,8 @@ end
 @[ext]
 protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
   | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
+                             -- ⊢ x = y
+                                    -- 🎉 no goals
 #align unique.subsingleton_unique' Unique.subsingleton_unique'
 
 instance subsingleton_unique : Subsingleton (Unique α) :=
@@ -182,7 +189,12 @@ end Unique
 theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
+                -- ⊢ Subsingleton α
+                                -- 🎉 no goals
+                                -- 🎉 no goals
    fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
+                      -- ⊢ Unique α
+                                 -- 🎉 no goals
 #align unique_iff_subsingleton_and_nonempty unique_iff_subsingleton_and_nonempty
 
 @[simp]
@@ -206,13 +218,18 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
 
 theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
   ext x
+  -- ⊢ f x = Function.const α (f default) x
   rw [Subsingleton.elim x default]
+  -- ⊢ f default = Function.const α (f default) default
   rfl
+  -- 🎉 no goals
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
     HEq f (Function.const α (f default)) :=
   (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
+                                        -- ⊢ HEq (f default) (Function.const α (f default) x✝¹)
+                                                                          -- 🎉 no goals
 #align heq_const_of_unique heq_const_of_unique
 
 namespace Function
@@ -254,7 +271,13 @@ end Function
 attribute [simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
+  -- ⊢ ∃ g, Function.LeftInverse g f ∧ Function.RightInverse g f
   refine' ⟨default, _, _⟩ <;> intro x <;> simp
+  -- ⊢ Function.LeftInverse default f
+                              -- ⊢ default (f x) = x
+                              -- ⊢ f (default x) = x
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
 #align unique.bijective Unique.bijective
 
 namespace Option
@@ -277,9 +300,12 @@ variable {α : Sort u}
 instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by congr
+                           -- 🎉 no goals
 
 instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
+                           -- ⊢ { val := y, property := (_ : y = y) } = default
+                                     -- 🎉 no goals
 
 end Subtype

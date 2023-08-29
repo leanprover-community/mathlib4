@@ -31,7 +31,9 @@ theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] 
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
       (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
+                             -- 🎉 no goals
       (fun hxs => by simp only [mulIndicator_of_not_mem, hxs, mt hst.2 hxs])
+                     -- 🎉 no goals
 #align indicator_eventually_eq indicator_eventuallyEq
 
 end One
@@ -65,6 +67,7 @@ theorem Monotone.mulIndicator_eventuallyEq_iUnion {ι} [Preorder ι] [One β] (s
     (hs : Monotone s) (f : α → β) (a : α) :
     (fun i => mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋃ i, s i) f a := by
   classical exact hs.piecewise_eventually_eq_iUnion f 1 a
+  -- 🎉 no goals
 
 @[to_additive]
 theorem Monotone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Set α) (hs : Monotone s)
@@ -78,6 +81,7 @@ theorem Antitone.mulIndicator_eventuallyEq_iInter {ι} [Preorder ι] [One β] (s
     (hs : Antitone s) (f : α → β) (a : α) :
     (fun i => mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋂ i, s i) f a := by
   classical exact hs.piecewise_eventually_eq_iInter f 1 a
+  -- 🎉 no goals
 
 @[to_additive]
 theorem Antitone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Set α) (hs : Antitone s)
@@ -91,8 +95,11 @@ theorem mulIndicator_biUnion_finset_eventuallyEq {ι} [One β] (s : ι → Set �
     (fun n : Finset ι => mulIndicator (⋃ i ∈ n, s i) f a) =ᶠ[atTop]
       fun _ ↦ mulIndicator (iUnion s) f a := by
   rw [iUnion_eq_iUnion_finset s]
+  -- ⊢ (fun n => mulIndicator (⋃ (i : ι) (_ : i ∈ n), s i) f a) =ᶠ[atTop] fun x =>  …
   apply Monotone.mulIndicator_eventuallyEq_iUnion
+  -- ⊢ Monotone fun i => ⋃ (i_1 : ι) (_ : i_1 ∈ i), s i_1
   exact fun _ _ ↦ biUnion_subset_biUnion_left
+  -- 🎉 no goals
 
 @[to_additive]
 theorem tendsto_mulIndicator_biUnion_finset {ι} [One β] (s : ι → Set α) (f : α → β) (a : α) :
@@ -118,6 +125,7 @@ protected theorem Filter.EventuallyEq.mulIndicator [One β] {l : Filter α} {f g
 theorem Filter.EventuallyEq.mulIndicator_one [One β] {l : Filter α} {f : α → β} {s : Set α}
     (hf : f =ᶠ[l] 1) : s.mulIndicator f =ᶠ[l] 1 :=
   hf.mulIndicator.trans <| by rw [mulIndicator_one']
+                              -- 🎉 no goals
 #align filter.eventually_eq.indicator_zero Filter.EventuallyEq.indicator_zero
 
 @[to_additive]
@@ -128,6 +136,7 @@ theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α →
     rw [mulSupport_mulIndicator]
     exact (hf.mono fun x hx ↦ and_iff_left hx).set_eq
   exact this.symm.trans <| h.mulSupport.trans this
+  -- 🎉 no goals
 
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)

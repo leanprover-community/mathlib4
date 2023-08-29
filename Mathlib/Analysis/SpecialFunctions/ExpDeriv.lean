@@ -31,11 +31,17 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
+  -- ⊢ (fun h => exp (x + h) - exp x - h • exp x) =o[𝓝 0] fun h => h
   have : (1 : ℕ) < 2 := by norm_num
+  -- ⊢ (fun h => exp (x + h) - exp x - h • exp x) =o[𝓝 0] fun h => h
   refine' (IsBigO.of_bound ‖exp x‖ _).trans_isLittleO (isLittleO_pow_id this)
+  -- ⊢ ∀ᶠ (x_1 : ℂ) in 𝓝 0, ‖exp (x + x_1) - exp x - x_1 • exp x‖ ≤ ‖exp x‖ * ‖x_1  …
   filter_upwards [Metric.ball_mem_nhds (0 : ℂ) zero_lt_one]
+  -- ⊢ ∀ (a : ℂ), a ∈ Metric.ball 0 1 → ‖exp (x + a) - exp x - a • exp x‖ ≤ ‖exp x‖ …
   simp only [Metric.mem_ball, dist_zero_right, norm_pow]
+  -- ⊢ ∀ (a : ℂ), ‖a‖ < 1 → ‖exp (x + a) - exp x - a • exp x‖ ≤ ‖exp x‖ * ‖a‖ ^ 2
   exact fun z hz => exp_bound_sq x z hz.le
+  -- 🎉 no goals
 #align complex.has_deriv_at_exp Complex.hasDerivAt_exp
 
 theorem differentiable_exp : Differentiable 𝕜 exp := fun x =>
@@ -55,11 +61,13 @@ theorem deriv_exp : deriv exp = exp :=
 theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
+                -- 🎉 no goals
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
 theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
   -- porting note: added `@` due to `∀ {n}` weirdness above
   refine' @(contDiff_all_iff_nat.2 fun n => ?_)
+  -- ⊢ ContDiff 𝕜 (↑n) exp
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn
     · exact contDiff_zero.2 continuous_exp
@@ -67,6 +75,7 @@ theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
       use differentiable_exp
       rwa [deriv_exp]
   exact this.restrict_scalars 𝕜
+  -- 🎉 no goals
 #align complex.cont_diff_exp Complex.contDiff_exp
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
@@ -205,6 +214,7 @@ theorem deriv_exp : deriv exp = exp :=
 theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
+                -- 🎉 no goals
 #align real.iter_deriv_exp Real.iter_deriv_exp
 
 end Real

@@ -116,11 +116,16 @@ def height : Tree α → ℕ
 
 theorem numLeaves_eq_numNodes_succ (x : Tree α) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
+  -- ⊢ numLeaves nil = numNodes nil + 1
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align tree.num_leaves_eq_num_nodes_succ Tree.numLeaves_eq_numNodes_succ
 
 theorem numLeaves_pos (x : Tree α) : 0 < x.numLeaves := by
   rw [numLeaves_eq_numNodes_succ]
+  -- ⊢ 0 < numNodes x + 1
   exact x.numNodes.zero_lt_succ
+  -- 🎉 no goals
 #align tree.num_leaves_pos Tree.numLeaves_pos
 
 theorem height_le_numNodes : ∀ x : Tree α, x.height ≤ x.numNodes
@@ -161,6 +166,7 @@ def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
+                 -- 🎉 no goals
   | node a l r, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
 #align tree.left_node_right_eq_self Tree.left_node_right_eq_self
 

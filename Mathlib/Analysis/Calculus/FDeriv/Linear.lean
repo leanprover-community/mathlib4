@@ -61,10 +61,12 @@ predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
   (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
+                                              -- 🎉 no goals
 #align continuous_linear_map.has_strict_fderiv_at ContinuousLinearMap.hasStrictFDerivAt
 
 protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
   (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
+                                              -- 🎉 no goals
 #align continuous_linear_map.has_fderiv_at_filter ContinuousLinearMap.hasFDerivAtFilter
 
 protected theorem ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=
@@ -92,7 +94,9 @@ protected theorem ContinuousLinearMap.fderiv : fderiv 𝕜 e x = e :=
 protected theorem ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 e s x = e := by
   rw [DifferentiableAt.fderivWithin e.differentiableAt hxs]
+  -- ⊢ fderiv 𝕜 (↑e) x = e
   exact e.fderiv
+  -- 🎉 no goals
 #align continuous_linear_map.fderiv_within ContinuousLinearMap.fderivWithin
 
 @[simp]
@@ -136,7 +140,9 @@ theorem IsBoundedLinearMap.fderiv (h : IsBoundedLinearMap 𝕜 f) :
 theorem IsBoundedLinearMap.fderivWithin (h : IsBoundedLinearMap 𝕜 f)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = h.toContinuousLinearMap := by
   rw [DifferentiableAt.fderivWithin h.differentiableAt hxs]
+  -- ⊢ _root_.fderiv 𝕜 f x = toContinuousLinearMap h
   exact h.fderiv
+  -- 🎉 no goals
 #align is_bounded_linear_map.fderiv_within IsBoundedLinearMap.fderivWithin
 
 theorem IsBoundedLinearMap.differentiable (h : IsBoundedLinearMap 𝕜 f) : Differentiable 𝕜 f :=

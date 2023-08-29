@@ -53,6 +53,7 @@ section Initial
 @[simps]
 def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
   ⟨{  base := ⟨fun x => PEmpty.elim x, by continuity⟩
+                                          -- 🎉 no goals
       c := { app := fun U => CommRingCat.punitIsTerminal.from _ } }, fun x => PEmpty.elim x⟩
 #align algebraic_geometry.Scheme.empty_to AlgebraicGeometry.Scheme.emptyTo
 
@@ -61,7 +62,10 @@ theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
   -- Porting note : `ext` regression
   -- see https://github.com/leanprover-community/mathlib4/issues/5229
   LocallyRingedSpace.Hom.ext _ _ <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
+                                                                -- ⊢ ↑f.val.base a = ↑g.val.base a
+                                                                       -- 🎉 no goals
     NatTrans.ext _ _ <| funext fun a => by aesop_cat
+                                           -- 🎉 no goals
 #align algebraic_geometry.Scheme.empty_ext AlgebraicGeometry.Scheme.empty_ext
 
 theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
@@ -83,6 +87,7 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 
 instance : IsEmpty Scheme.empty.carrier :=
   show IsEmpty PEmpty by infer_instance
+                         -- 🎉 no goals
 
 instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
   ⟨PrimeSpectrum.punit⟩
@@ -91,21 +96,38 @@ instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUn
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X.carrier] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
+  -- ⊢ OpenEmbedding ↑f.val.base
   · apply openEmbedding_of_continuous_injective_open
     · continuity
+      -- 🎉 no goals
     · rintro (i : X.carrier); exact isEmptyElim i
+      -- ⊢ ∀ ⦃a₂ : (forget TopCat).obj ↑X.toPresheafedSpace⦄, ↑f.val.base i = ↑f.val.ba …
+                              -- 🎉 no goals
     · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
+      -- ⊢ IsOpen (↑f.val.base '' U)
+                 -- ⊢ ↑f.val.base '' U = ∅
+                                                -- ⊢ x✝ ∈ ↑f.val.base '' U ↔ x✝ ∈ ∅
+                                                     -- ⊢ ¬x✝ ∈ ↑f.val.base '' U
       exact fun x => isEmptyElim (show X.carrier from x.choose)
+      -- 🎉 no goals
   · rintro (i : X.carrier); exact isEmptyElim i
+    -- ⊢ IsIso (PresheafedSpace.stalkMap f.val i)
+                            -- 🎉 no goals
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by
   haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
+  -- ⊢ IsIso f
   have : Epi f.1.base
+  -- ⊢ Epi f.val.base
   · rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
+    -- ⊢ Function.Surjective ↑f.val.base
+                                    -- ⊢ ∃ a, ↑f.val.base a = x
     exact isEmptyElim x
+    -- 🎉 no goals
   apply IsOpenImmersion.to_iso
+  -- 🎉 no goals
 #align algebraic_geometry.is_iso_of_is_empty AlgebraicGeometry.isIso_of_isEmpty
 
 /-- A scheme is initial if its underlying space is empty . -/
@@ -134,15 +156,21 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
 
 theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
   convert rangeIsAffineOpenOfOpenImmersion (initial.to X)
+  -- ⊢ ⊥ = Scheme.Hom.opensRange (initial.to X)
   ext
+  -- ⊢ x✝ ∈ ↑⊥ ↔ x✝ ∈ ↑(Scheme.Hom.opensRange (initial.to X))
   -- Porting note : added this `erw` to turn LHS to `False`
   erw [Set.mem_empty_iff_false]
+  -- ⊢ False ↔ x✝ ∈ ↑(Scheme.Hom.opensRange (initial.to X))
   rw [false_iff_iff]
+  -- ⊢ ¬x✝ ∈ ↑(Scheme.Hom.opensRange (initial.to X))
   exact fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.choose)
+  -- 🎉 no goals
 #align algebraic_geometry.bot_is_affine_open AlgebraicGeometry.bot_isAffineOpen
 
 instance : HasStrictInitialObjects Scheme :=
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
+                                                             -- 🎉 no goals
 
 end Initial
 

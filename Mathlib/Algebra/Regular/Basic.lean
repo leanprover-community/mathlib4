@@ -118,6 +118,7 @@ element, then `b` is left-regular. -/
 an add-left-regular element, then `b` is add-left-regular."]
 theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
   Function.Injective.of_comp (by rwa [comp_mul_left a b])
+                                 -- 🎉 no goals
 #align is_left_regular.of_mul IsLeftRegular.of_mul
 #align is_add_left_regular.of_add IsAddLeftRegular.of_add
 
@@ -137,8 +138,11 @@ element, then `b` is right-regular. -/
 an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
+  -- ⊢ x * (b * a) = y * (b * a)
   rw [← mul_assoc, ← mul_assoc]
+  -- ⊢ x * b * a = y * b * a
   exact congr_fun (congr_arg (· * ·) xy) a
+  -- 🎉 no goals
 #align is_right_regular.of_mul IsRightRegular.of_mul
 #align is_add_right_regular.of_add IsAddRightRegular.of_add
 
@@ -160,11 +164,14 @@ are regular. -/
 theorem isRegular_mul_and_mul_iff :
     IsRegular (a * b) ∧ IsRegular (b * a) ↔ IsRegular a ∧ IsRegular b := by
   refine' ⟨_, _⟩
+  -- ⊢ IsRegular (a * b) ∧ IsRegular (b * a) → IsRegular a ∧ IsRegular b
   · rintro ⟨ab, ba⟩
+    -- ⊢ IsRegular a ∧ IsRegular b
     exact
       ⟨⟨IsLeftRegular.of_mul ba.left, IsRightRegular.of_mul ab.right⟩,
         ⟨IsLeftRegular.of_mul ab.left, IsRightRegular.of_mul ba.right⟩⟩
   · rintro ⟨ha, hb⟩
+    -- ⊢ IsRegular (a * b) ∧ IsRegular (b * a)
     exact
       ⟨⟨(mul_isLeftRegular_iff _ ha.left).mpr hb.left,
           (mul_isRightRegular_iff _ hb.right).mpr ha.right⟩,
@@ -211,8 +218,11 @@ theorem isLeftRegular_zero_iff_subsingleton : IsLeftRegular (0 : R) ↔ Subsingl
 /-- In a non-trivial `MulZeroClass`, the `0` element is not left-regular. -/
 theorem not_isLeftRegular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R := by
   rw [nontrivial_iff, not_iff_comm, isLeftRegular_zero_iff_subsingleton, subsingleton_iff]
+  -- ⊢ (¬∃ x y, x ≠ y) ↔ ∀ (x y : R), x = y
   push_neg
+  -- ⊢ (∀ (x y : R), x = y) ↔ ∀ (x y : R), x = y
   exact Iff.rfl
+  -- 🎉 no goals
 #align not_is_left_regular_zero_iff not_isLeftRegular_zero_iff
 
 /-- The element `0` is right-regular if and only if `R` is trivial. -/
@@ -223,8 +233,11 @@ theorem isRightRegular_zero_iff_subsingleton : IsRightRegular (0 : R) ↔ Subsin
 /-- In a non-trivial `MulZeroClass`, the `0` element is not right-regular. -/
 theorem not_isRightRegular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial R := by
   rw [nontrivial_iff, not_iff_comm, isRightRegular_zero_iff_subsingleton, subsingleton_iff]
+  -- ⊢ (¬∃ x y, x ≠ y) ↔ ∀ (x y : R), x = y
   push_neg
+  -- ⊢ (∀ (x y : R), x = y) ↔ ∀ (x y : R), x = y
   exact Iff.rfl
+  -- 🎉 no goals
 #align not_is_right_regular_zero_iff not_isRightRegular_zero_iff
 
 /-- The element `0` is regular if and only if `R` is trivial. -/
@@ -236,17 +249,25 @@ theorem isRegular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
 /-- A left-regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
 theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 := by
   rintro rfl
+  -- ⊢ False
   rcases exists_pair_ne R with ⟨x, y, xy⟩
+  -- ⊢ False
   refine' xy (la (_ : 0 * x = 0 * y)) -- Porting note: lean4 seems to need the type signature
+  -- ⊢ 0 * x = 0 * y
   rw [zero_mul, zero_mul]
+  -- 🎉 no goals
 #align is_left_regular.ne_zero IsLeftRegular.ne_zero
 
 /-- A right-regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
 theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 := by
   rintro rfl
+  -- ⊢ False
   rcases exists_pair_ne R with ⟨x, y, xy⟩
+  -- ⊢ False
   refine' xy (ra (_ : x * 0 = y * 0))
+  -- ⊢ x * 0 = y * 0
   rw [mul_zero, mul_zero]
+  -- 🎉 no goals
 #align is_right_regular.ne_zero IsRightRegular.ne_zero
 
 /-- A regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
@@ -270,11 +291,15 @@ theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRe
 
 @[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
   nth_rw 1 [← mul_zero b]
+  -- ⊢ b * a = b * 0 ↔ a = 0
   exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, mul_zero]⟩
+  -- 🎉 no goals
 
 @[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
   nth_rw 1 [← zero_mul b]
+  -- ⊢ a * b = 0 * b ↔ a = 0
   exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, zero_mul]⟩
+  -- 🎉 no goals
 
 end MulZeroClass
 
@@ -300,7 +325,9 @@ variable [CommSemigroup R] {a b : R}
 @[to_additive "A sum is add-regular if and only if the summands are."]
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
   refine' Iff.trans _ isRegular_mul_and_mul_iff
+  -- ⊢ IsRegular (a * b) ↔ IsRegular (a * b) ∧ IsRegular (b * a)
   refine' ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
+  -- 🎉 no goals
 #align is_regular_mul_iff isRegular_mul_iff
 #align is_add_regular_add_iff isAddRegular_add_iff
 
@@ -314,6 +341,8 @@ variable [Monoid R] {a b : R}
 @[to_additive "An element admitting a left additive opposite is add-left-regular."]
 theorem isLeftRegular_of_mul_eq_one (h : b * a = 1) : IsLeftRegular a :=
   @IsLeftRegular.of_mul R _ _ _ (by rw [h]; exact isRegular_one.left)
+                                    -- ⊢ IsLeftRegular 1
+                                            -- 🎉 no goals
 #align is_left_regular_of_mul_eq_one isLeftRegular_of_mul_eq_one
 #align is_add_left_regular_of_add_eq_zero isAddLeftRegular_of_add_eq_zero
 
@@ -321,6 +350,8 @@ theorem isLeftRegular_of_mul_eq_one (h : b * a = 1) : IsLeftRegular a :=
 @[to_additive "An element admitting a right additive opposite is add-right-regular."]
 theorem isRightRegular_of_mul_eq_one (h : a * b = 1) : IsRightRegular a :=
   IsRightRegular.of_mul (by rw [h]; exact isRegular_one.right)
+                            -- ⊢ IsRightRegular 1
+                                    -- 🎉 no goals
 #align is_right_regular_of_mul_eq_one isRightRegular_of_mul_eq_one
 #align is_add_right_regular_of_add_eq_zero isAddRightRegular_of_add_eq_zero
 
@@ -335,7 +366,9 @@ theorem Units.isRegular (a : Rˣ) : IsRegular (a : R) :=
 @[to_additive "An additive unit in an additive monoid is add-regular."]
 theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
   rcases ua with ⟨a, rfl⟩
+  -- ⊢ IsRegular ↑a
   exact Units.isRegular a
+  -- 🎉 no goals
 #align is_unit.is_regular IsUnit.isRegular
 #align is_add_unit.is_add_regular IsAddUnit.isAddRegular
 

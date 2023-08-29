@@ -37,14 +37,18 @@ variable {R}
 instance addCommGroupObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
     AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) := by
   change AddCommGroup (F.obj j)
+  -- ⊢ AddCommGroup ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false
 #align Module.add_comm_group_obj ModuleCat.addCommGroupObj
 
 instance moduleObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
     Module.{u, max v w} R ((F ⋙ forget (ModuleCat R)).obj j) := by
   change Module R (F.obj j)
+  -- ⊢ Module R ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 #align Module.module_obj ModuleCat.moduleObj
 
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
@@ -56,8 +60,11 @@ def sectionsSubmodule (F : J ⥤ ModuleCatMax.{v, w, u} R) : Submodule R (∀ j,
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
       simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
+      -- ⊢ r • ↑(F.map f) (s j) = r • s j'
       dsimp [Functor.sections] at sh
+      -- ⊢ r • ↑(F.map f) (s j) = r • s j'
       rw [sh f] }
+      -- 🎉 no goals
 #align Module.sections_submodule ModuleCat.sectionsSubmodule
 
 -- Adding the following instance speeds up `limitModule` noticeably,
@@ -65,16 +72,19 @@ def sectionsSubmodule (F : J ⥤ ModuleCatMax.{v, w, u} R) : Submodule R (∀ j,
 instance limitAddCommMonoid (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     AddCommMonoid (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{v, w, u} R))).pt :=
   show AddCommMonoid (sectionsSubmodule F) by infer_instance
+                                              -- 🎉 no goals
 #align Module.limit_add_comm_monoid ModuleCat.limitAddCommMonoid
 
 instance limitAddCommGroup (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     AddCommGroup (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{v, w, u} R))).pt :=
   show AddCommGroup (sectionsSubmodule F) by infer_instance
+                                             -- 🎉 no goals
 #align Module.limit_add_comm_group ModuleCat.limitAddCommGroup
 
 instance limitModule (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     Module R (Types.limitCone.{v, w} (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
   show Module R (sectionsSubmodule F) by infer_instance
+                                         -- 🎉 no goals
 #align Module.limit_module ModuleCat.limitModule
 
 /-- `limit.π (F ⋙ forget Ring) j` as a `RingHom`. -/
@@ -196,13 +206,20 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
   map hij := f _ _ hij.le
   map_id i := by
     apply LinearMap.ext
+    -- ⊢ ∀ (x : ↑({ obj := fun i => of R (G i), map := fun {X Y} hij => f X Y (_ : X  …
     intro x
+    -- ⊢ ↑({ obj := fun i => of R (G i), map := fun {X Y} hij => f X Y (_ : X ≤ Y) }. …
     apply Module.DirectedSystem.map_self
+    -- 🎉 no goals
   map_comp hij hjk := by
     apply LinearMap.ext
+    -- ⊢ ∀ (x : ↑({ obj := fun i => of R (G i), map := fun {X Y} hij => f X Y (_ : X  …
     intro x
+    -- ⊢ ↑({ obj := fun i => of R (G i), map := fun {X Y} hij => f X Y (_ : X ≤ Y) }. …
     symm
+    -- ⊢ ↑({ obj := fun i => of R (G i), map := fun {X Y} hij => f X Y (_ : X ≤ Y) }. …
     apply Module.DirectedSystem.map_map
+    -- 🎉 no goals
 #align Module.direct_limit_diagram ModuleCat.directLimitDiagram
 
 variable [DecidableEq ι]
@@ -218,8 +235,11 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
     { app := Module.DirectLimit.of R ι G f
       naturality := fun _ _ hij => by
         apply LinearMap.ext
+        -- ⊢ ∀ (x : ↑((directLimitDiagram G f).obj x✝¹)), ↑((directLimitDiagram G f).map  …
         intro x
+        -- ⊢ ↑((directLimitDiagram G f).map hij ≫ DirectLimit.of R ι G f x✝) x = ↑(Direct …
         exact DirectLimit.of_f }
+        -- 🎉 no goals
 #align Module.direct_limit_cocone ModuleCat.directLimitCocone
 
 /-- The unbundled `directLimit` of modules is a colimit
@@ -230,13 +250,20 @@ def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (
   desc s :=
     DirectLimit.lift R ι G f s.ι.app fun i j h x => by
       rw [← s.w (homOfLE h)]
+      -- ⊢ ↑(NatTrans.app s.ι j) (↑(f i j h) x) = ↑((directLimitDiagram G f).map (homOf …
       rfl
+      -- 🎉 no goals
   fac s i := by
     apply LinearMap.ext
+    -- ⊢ ∀ (x : ↑((directLimitDiagram G f).obj i)), ↑(NatTrans.app (directLimitCocone …
     intro x
+    -- ⊢ ↑(NatTrans.app (directLimitCocone G f).ι i ≫ (fun s => DirectLimit.lift R ι  …
     dsimp only [directLimitCocone, CategoryStruct.comp]
+    -- ⊢ ↑(LinearMap.comp (DirectLimit.lift R ι G f s.ι.app (_ : ∀ (i j : ι) (h : i ≤ …
     rw [LinearMap.comp_apply]
+    -- ⊢ ↑(DirectLimit.lift R ι G f s.ι.app (_ : ∀ (i j : ι) (h : i ≤ j) (x : G i), ↑ …
     apply DirectLimit.lift_of
+    -- 🎉 no goals
   uniq s m h := by
     have :
       s.ι.app = fun i =>
@@ -245,9 +272,13 @@ def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (
       rw [← h]
       rfl
     apply LinearMap.ext
+    -- ⊢ ∀ (x : ↑(directLimitCocone G f).pt), ↑m x = ↑((fun s => DirectLimit.lift R ι …
     intro x
+    -- ⊢ ↑m x = ↑((fun s => DirectLimit.lift R ι G f s.ι.app (_ : ∀ (i j : ι) (h : i  …
     simp only [this]
+    -- ⊢ ↑m x = ↑(DirectLimit.lift R ι G f (fun i => LinearMap.comp m (DirectLimit.of …
     apply Module.DirectLimit.lift_unique
+    -- 🎉 no goals
 #align Module.direct_limit_is_colimit ModuleCat.directLimitIsColimit
 
 end DirectLimit

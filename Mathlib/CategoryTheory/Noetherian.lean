@@ -82,9 +82,13 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 theorem exists_simple_subobject {X : C} [ArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
   haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
+  -- ⊢ ∃ Y, Simple (underlying.obj Y)
   haveI := isAtomic_of_orderBot_wellFounded_lt (ArtinianObject.subobject_lt_wellFounded X)
+  -- ⊢ ∃ Y, Simple (underlying.obj Y)
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
+  -- ⊢ ∃ Y, Simple (underlying.obj Y)
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
+  -- 🎉 no goals
 #align category_theory.exists_simple_subobject CategoryTheory.exists_simple_subobject
 
 /-- Choose an arbitrary simple subobject of a non-zero artinian object. -/
@@ -101,7 +105,9 @@ noncomputable def simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero 
 instance mono_simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero X) :
     Mono (simpleSubobjectArrow h) := by
   dsimp only [simpleSubobjectArrow]
+  -- ⊢ Mono (arrow (Exists.choose (_ : ∃ Y, Simple (underlying.obj Y))))
   infer_instance
+  -- 🎉 no goals
 
 instance {X : C} [ArtinianObject X] (h : ¬IsZero X) : Simple (simpleSubobject h) :=
   (exists_simple_subobject h).choose_spec

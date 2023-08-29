@@ -112,7 +112,10 @@ namespace ProjectiveResolution
 @[simp]
 theorem π_f_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : P.π.f (n + 1) = 0 := by
   apply zero_of_target_iso_zero
+  -- ⊢ HomologicalComplex.X ((ChainComplex.single₀ C).obj Z) (n + 1) ≅ 0
   dsimp; rfl
+  -- ⊢ 0 ≅ 0
+         -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
 
@@ -132,6 +135,11 @@ set_option linter.uppercaseLean3 false in
 
 instance {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : CategoryTheory.Epi (P.π.f n) := by
   cases n <;> dsimp <;> infer_instance
+  -- ⊢ Epi (HomologicalComplex.Hom.f P.π Nat.zero)
+              -- ⊢ Epi (HomologicalComplex.Hom.f P.π 0)
+              -- ⊢ Epi (HomologicalComplex.Hom.f P.π (Nat.succ n✝))
+                        -- 🎉 no goals
+                        -- 🎉 no goals
 
 /-- A projective object admits a trivial projective resolution: itself in degree 0. -/
 def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z where
@@ -139,19 +147,30 @@ def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z where
   π := 𝟙 ((ChainComplex.single₀ C).obj Z)
   projective n := by
     cases n
+    -- ⊢ Projective (HomologicalComplex.X ((ChainComplex.single₀ C).obj Z) Nat.zero)
     · dsimp
+      -- ⊢ Projective Z
       infer_instance
+      -- 🎉 no goals
     · dsimp
+      -- ⊢ Projective 0
       infer_instance
+      -- 🎉 no goals
   exact₀ := by
     dsimp
+    -- ⊢ Exact 0 (𝟙 Z)
     exact exact_zero_mono _
+    -- 🎉 no goals
   exact n := by
     dsimp
+    -- ⊢ Exact 0 0
     exact exact_of_zero _ _
+    -- 🎉 no goals
   epi := by
     dsimp
+    -- ⊢ Epi (𝟙 Z)
     infer_instance
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.self CategoryTheory.ProjectiveResolution.self
 
@@ -167,6 +186,7 @@ def liftOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : Projective
     P.complex.X 1 ⟶ Q.complex.X 1 :=
   Exact.lift (P.complex.d 1 0 ≫ liftZero f P Q) (Q.complex.d 1 0) (Q.π.f 0) Q.exact₀
     (by simp [liftZero, P.exact₀.w_assoc])
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_f_one CategoryTheory.ProjectiveResolution.liftOne
 
@@ -176,7 +196,9 @@ theorem liftOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) :
     liftOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftZero f P Q := by
   dsimp [liftZero, liftOne]
+  -- ⊢ Exact.lift (HomologicalComplex.d P.complex 1 0 ≫ factorThru (HomologicalComp …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_f_one_zero_comm CategoryTheory.ProjectiveResolution.liftOne_zero_comm
 
@@ -188,6 +210,8 @@ def liftSucc {Y Z : C} (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z)
       g'' ≫ Q.complex.d (n + 2) (n + 1) = P.complex.d (n + 2) (n + 1) ≫ g' :=
   ⟨Exact.lift (P.complex.d (n + 2) (n + 1) ≫ g') (Q.complex.d (n + 2) (n + 1))
       (Q.complex.d (n + 1) n) (Q.exact _) (by simp [w]), by simp⟩
+                                              -- 🎉 no goals
+                                                            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_f_succ CategoryTheory.ProjectiveResolution.liftSucc
 
@@ -204,6 +228,8 @@ set_option linter.uppercaseLean3 false in
 theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) : lift f P Q ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f := by
   ext; simp [lift, liftZero]
+  -- ⊢ HomologicalComplex.Hom.f (lift f P Q ≫ Q.π) 0 = HomologicalComplex.Hom.f (P. …
+       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_commutes CategoryTheory.ProjectiveResolution.lift_commutes
 
@@ -230,6 +256,7 @@ def liftHomotopyZeroOne {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveRe
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : P.complex.X 1 ⟶ Q.complex.X 2 :=
   Exact.lift (f.f 1 - P.complex.d 1 0 ≫ liftHomotopyZeroZero f comm) (Q.complex.d 2 1)
     (Q.complex.d 1 0) (Q.exact _) (by simp [liftHomotopyZeroZero])
+                                      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_homotopy_zero_one CategoryTheory.ProjectiveResolution.liftHomotopyZeroOne
 
@@ -241,6 +268,7 @@ def liftHomotopyZeroSucc {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveR
     P.complex.X (n + 2) ⟶ Q.complex.X (n + 3) :=
   Exact.lift (f.f (n + 2) - P.complex.d (n + 2) (n + 1) ≫ g') (Q.complex.d (n + 3) (n + 2))
     (Q.complex.d (n + 2) (n + 1)) (Q.exact _) (by simp [w])
+                                                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_homotopy_zero_succ CategoryTheory.ProjectiveResolution.liftHomotopyZeroSucc
 
@@ -248,8 +276,11 @@ set_option linter.uppercaseLean3 false in
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : Homotopy f 0 :=
   Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp [liftHomotopyZeroZero])
+                                                           -- 🎉 no goals
     (liftHomotopyZeroOne f comm) (by simp [liftHomotopyZeroOne]) fun n ⟨g, g', w⟩ =>
+                                     -- 🎉 no goals
     ⟨liftHomotopyZeroSucc f n g g' w, by simp [liftHomotopyZeroSucc, w]⟩
+                                         -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_homotopy_zero CategoryTheory.ProjectiveResolution.liftHomotopyZero
 
@@ -258,12 +289,16 @@ def liftHomotopy {Y Z : C} (f : Y ⟶ Z) {P : ProjectiveResolution Y} {Q : Proje
     (g h : P.complex ⟶ Q.complex) (g_comm : g ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f)
     (h_comm : h ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f) : Homotopy g h :=
   Homotopy.equivSubZero.invFun (liftHomotopyZero _ (by simp [g_comm, h_comm]))
+                                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_homotopy CategoryTheory.ProjectiveResolution.liftHomotopy
 
 /-- The lift of the identity morphism is homotopic to the identity chain map. -/
 def liftIdHomotopy (X : C) (P : ProjectiveResolution X) : Homotopy (lift (𝟙 X) P P) (𝟙 P.complex) :=
   by apply liftHomotopy (𝟙 X) <;> simp
+     -- ⊢ lift (𝟙 X) P P ≫ P.π = P.π ≫ (ChainComplex.single₀ C).map (𝟙 X)
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_id_homotopy CategoryTheory.ProjectiveResolution.liftIdHomotopy
 
@@ -272,6 +307,9 @@ def liftCompHomotopy {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (P : ProjectiveReso
     (Q : ProjectiveResolution Y) (R : ProjectiveResolution Z) :
     Homotopy (lift (f ≫ g) P R) (lift f P Q ≫ lift g Q R) := by
   apply liftHomotopy (f ≫ g) <;> simp
+  -- ⊢ lift (f ≫ g) P R ≫ R.π = P.π ≫ (ChainComplex.single₀ C).map (f ≫ g)
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_comp_homotopy CategoryTheory.ProjectiveResolution.liftCompHomotopy
 
@@ -282,24 +320,32 @@ def homotopyEquiv {X : C} (P Q : ProjectiveResolution X) : HomotopyEquiv P.compl
   inv := lift (𝟙 X) Q P
   homotopyHomInvId := by
     refine' (liftCompHomotopy (𝟙 X) (𝟙 X) P Q P).symm.trans _
+    -- ⊢ Homotopy (lift (𝟙 X ≫ 𝟙 X) P P) (𝟙 P.complex)
     simp only [Category.id_comp]
+    -- ⊢ Homotopy (lift (𝟙 X) P P) (𝟙 P.complex)
     apply liftIdHomotopy
+    -- 🎉 no goals
   homotopyInvHomId := by
     refine' (liftCompHomotopy (𝟙 X) (𝟙 X) Q P Q).symm.trans _
+    -- ⊢ Homotopy (lift (𝟙 X ≫ 𝟙 X) Q Q) (𝟙 Q.complex)
     simp only [Category.id_comp]
+    -- ⊢ Homotopy (lift (𝟙 X) Q Q) (𝟙 Q.complex)
     apply liftIdHomotopy
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.homotopy_equiv CategoryTheory.ProjectiveResolution.homotopyEquiv
 
 @[reassoc (attr := simp)]
 theorem homotopyEquiv_hom_π {X : C} (P Q : ProjectiveResolution X) :
     (homotopyEquiv P Q).hom ≫ Q.π = P.π := by simp [homotopyEquiv]
+                                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.homotopy_equiv_hom_π CategoryTheory.ProjectiveResolution.homotopyEquiv_hom_π
 
 @[reassoc (attr := simp)]
 theorem homotopyEquiv_inv_π {X : C} (P Q : ProjectiveResolution X) :
     (homotopyEquiv P Q).inv ≫ P.π = Q.π := by simp [homotopyEquiv]
+                                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.homotopy_equiv_inv_π CategoryTheory.ProjectiveResolution.homotopyEquiv_inv_π
 
@@ -351,12 +397,18 @@ def projectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.down ℕ) whe
   map f := (HomotopyCategory.quotient _ _).map (projectiveResolution.lift f)
   map_id X := by
     rw [← (HomotopyCategory.quotient _ _).map_id]
+    -- ⊢ { obj := fun X => (HomotopyCategory.quotient C (ComplexShape.down ℕ)).obj (p …
     apply HomotopyCategory.eq_of_homotopy
+    -- ⊢ Homotopy (projectiveResolution.lift (𝟙 X)) (𝟙 (projectiveResolution.complex  …
     apply ProjectiveResolution.liftIdHomotopy
+    -- 🎉 no goals
   map_comp f g := by
     rw [← (HomotopyCategory.quotient _ _).map_comp]
+    -- ⊢ { obj := fun X => (HomotopyCategory.quotient C (ComplexShape.down ℕ)).obj (p …
     apply HomotopyCategory.eq_of_homotopy
+    -- ⊢ Homotopy (projectiveResolution.lift (f ≫ g)) (projectiveResolution.lift f ≫  …
     apply ProjectiveResolution.liftCompHomotopy
+    -- 🎉 no goals
 #align category_theory.projective_resolutions CategoryTheory.projectiveResolutions
 
 end CategoryTheory

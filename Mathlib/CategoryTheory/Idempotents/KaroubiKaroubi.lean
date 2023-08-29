@@ -32,11 +32,13 @@ variable (C : Type*) [Category C]
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
+  -- 🎉 no goals
 
 @[reassoc]
 lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) :
   P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
   simpa only [hom_ext_iff, comp_f] using p_comm f
+  -- 🎉 no goals
 
 attribute [local simp] p_comm_f
 
@@ -44,7 +46,9 @@ attribute [local simp] p_comm_f
 @[simps]
 def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
   obj P := ⟨P.X.X, P.p.f, by simpa only [hom_ext_iff] using P.idem⟩
+                             -- 🎉 no goals
   map f := ⟨f.f.f, by simpa only [hom_ext_iff] using f.comm⟩
+                      -- 🎉 no goals
 #align category_theory.idempotents.karoubi_karoubi.inverse CategoryTheory.Idempotents.KaroubiKaroubi.inverse
 
 instance [Preadditive C] : Functor.Additive (inverse C) where
@@ -53,6 +57,8 @@ instance [Preadditive C] : Functor.Additive (inverse C) where
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
   eqToIso (Functor.ext (by aesop_cat) (by aesop_cat))
+                           -- 🎉 no goals
+                                          -- 🎉 no goals
 #align category_theory.idempotents.karoubi_karoubi.unit_iso CategoryTheory.Idempotents.KaroubiKaroubi.unitIso
 
 /-- The counit isomorphism of the equivalence -/
@@ -63,13 +69,17 @@ def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C
         { f :=
             { f := P.p.1
               comm := by simp }
+                         -- 🎉 no goals
           comm := by simp } }
+                     -- 🎉 no goals
   inv :=
     { app := fun P =>
         { f :=
             { f := P.p.1
               comm := by simp }
+                         -- 🎉 no goals
           comm := by simp } }
+                     -- 🎉 no goals
 #align category_theory.idempotents.karoubi_karoubi.counit_iso CategoryTheory.Idempotents.KaroubiKaroubi.counitIso
 
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/

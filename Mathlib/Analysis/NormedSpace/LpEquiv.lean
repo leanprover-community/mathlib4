@@ -50,8 +50,12 @@ variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : 
 theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
   rcases p.trichotomy with (rfl | rfl | _h)
   · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
+    -- 🎉 no goals
   · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α => ‖f i‖).toFinite)
+    -- 🎉 no goals
   · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
+    -- ⊢ Memℓp f p
+                              -- 🎉 no goals
 #align mem_ℓp.all Memℓp.all
 
 variable [Fintype α]
@@ -75,8 +79,13 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
 theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | h)
   · rw [PiLp.norm_eq_card, lp.norm_eq_card_dsupport]
+    -- 🎉 no goals
   · rw [PiLp.norm_eq_ciSup, lp.norm_eq_ciSup]; rfl
+    -- ⊢ ⨆ (i : α), ‖↑Equiv.lpPiLp f i‖ = ⨆ (i : α), ‖↑f i‖
+                                               -- 🎉 no goals
   · rw [PiLp.norm_eq_sum h, lp.norm_eq_tsum_rpow h, tsum_fintype]; rfl
+    -- ⊢ (Finset.sum Finset.univ fun i => ‖↑Equiv.lpPiLp f i‖ ^ ENNReal.toReal p) ^ ( …
+                                                                   -- 🎉 no goals
 #align equiv_lp_pi_Lp_norm equiv_lpPiLp_norm
 
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
@@ -169,6 +178,8 @@ noncomputable def lpBcfₗᵢ : lp (fun _ : α => E) ∞ ≃ₗᵢ[𝕜] α →�
   { AddEquiv.lpBcf with
     map_smul' := fun k f => rfl
     norm_map' := fun f => by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
+                             -- ⊢ ⨆ (x : α), ‖↑(↑{ toLinearMap := { toAddHom := { toFun := AddEquiv.lpBcf.toEq …
+                                                                              -- 🎉 no goals
 #align lp_bcfₗᵢ lpBcfₗᵢₓ
 -- porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
 

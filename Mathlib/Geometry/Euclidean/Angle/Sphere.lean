@@ -37,7 +37,9 @@ theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) 
     rw [norm_zero, norm_eq_zero] at hxy
     exact hxyne hxy
   have hx : x ≠ 0 := norm_ne_zero_iff.1 (hxy.symm ▸ norm_ne_zero_iff.2 hy)
+  -- ⊢ oangle o y z = 2 • oangle o (y - x) (z - x)
   have hz : z ≠ 0 := norm_ne_zero_iff.1 (hxz ▸ norm_ne_zero_iff.2 hx)
+  -- ⊢ oangle o y z = 2 • oangle o (y - x) (z - x)
   calc
     o.oangle y z = o.oangle x z - o.oangle x y := (o.oangle_sub_left hx hy hz).symm
     _ = π - (2 : ℤ) • o.oangle (x - z) x - (π - (2 : ℤ) • o.oangle (x - y) x) := by
@@ -84,8 +86,12 @@ theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (h
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃) :
     ∡ p₁ s.center p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃ := by
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃
+  -- ⊢ ∡ p₁ s.center p₃ = 2 • ∡ p₁ p₂ p₃
   rw [oangle, oangle, o.oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real _ _ hp₂ hp₁ hp₃] <;>
     simp [hp₂p₁, hp₂p₃]
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align euclidean_geometry.sphere.oangle_center_eq_two_zsmul_oangle EuclideanGeometry.Sphere.oangle_center_eq_two_zsmul_oangle
 
 /-- Oriented angle version of "angles in same segment are equal" and "opposite angles of a
@@ -95,10 +101,16 @@ theorem two_zsmul_oangle_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p�
     (hp₃ : p₃ ∈ s) (hp₄ : p₄ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄) (hp₃p₁ : p₃ ≠ p₁)
     (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃ hp₄
+  -- ⊢ 2 • ∡ p₁ p₂ p₄ = 2 • ∡ p₁ p₃ p₄
   rw [oangle, oangle, ← vsub_sub_vsub_cancel_right p₁ p₂ s.center, ←
       vsub_sub_vsub_cancel_right p₄ p₂ s.center,
       o.two_zsmul_oangle_sub_eq_two_zsmul_oangle_sub_of_norm_eq _ _ _ _ hp₂ hp₃ hp₁ hp₄] <;>
     simp [hp₂p₁, hp₂p₄, hp₃p₁, hp₃p₄]
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align euclidean_geometry.sphere.two_zsmul_oangle_eq EuclideanGeometry.Sphere.two_zsmul_oangle_eq
 
 end Sphere
@@ -110,8 +122,11 @@ theorem Cospherical.two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : Cospherical ({p₁, p₂, p₃, p₄} : Set P)) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄)
     (hp₃p₁ : p₃ ≠ p₁) (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   obtain ⟨s, hs⟩ := cospherical_iff_exists_sphere.1 h
+  -- ⊢ 2 • ∡ p₁ p₂ p₄ = 2 • ∡ p₁ p₃ p₄
   simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff, Sphere.mem_coe] at hs
+  -- ⊢ 2 • ∡ p₁ p₂ p₄ = 2 • ∡ p₁ p₃ p₄
   exact Sphere.two_zsmul_oangle_eq hs.1 hs.2.1 hs.2.2.1 hs.2.2.2 hp₂p₁ hp₂p₄ hp₃p₁ hp₃p₄
+  -- 🎉 no goals
 #align euclidean_geometry.cospherical.two_zsmul_oangle_eq EuclideanGeometry.Cospherical.two_zsmul_oangle_eq
 
 namespace Sphere
@@ -166,10 +181,13 @@ theorem tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere
   obtain ⟨r, hr⟩ := (dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint h).1
     (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
   rw [← hr, ← oangle_midpoint_rev_left, oangle, vadd_vsub_assoc]
+  -- ⊢ (Real.Angle.tan (Orientation.oangle o (midpoint ℝ p₁ p₂ -ᵥ p₁) (r • ↑(Orient …
   nth_rw 1 [show p₂ -ᵥ p₁ = (2 : ℝ) • (midpoint ℝ p₁ p₂ -ᵥ p₁) by simp]
+  -- ⊢ (Real.Angle.tan (Orientation.oangle o (midpoint ℝ p₁ p₂ -ᵥ p₁) (r • ↑(Orient …
   rw [map_smul, smul_smul, add_comm, o.tan_oangle_add_right_smul_rotation_pi_div_two,
     mul_div_cancel _ (two_ne_zero' ℝ)]
   simpa using h.symm
+  -- 🎉 no goals
 #align euclidean_geometry.sphere.tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center EuclideanGeometry.Sphere.tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center
 
 /-- Given three points on a circle, the center of that circle may be expressed explicitly as a
@@ -181,7 +199,9 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sp
     ((Real.Angle.tan (∡ p₁ p₂ p₃))⁻¹ / 2) • o.rotation (π / 2 : ℝ) (p₃ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₃ =
       s.center := by
   convert tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center hp₁ hp₃ hp₁p₃
+  -- ⊢ (Real.Angle.tan (∡ p₁ p₂ p₃))⁻¹ = Real.Angle.tan (∡ p₃ p₁ s.center)
   convert (Real.Angle.tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi _).symm
+  -- ⊢ 2 • ∡ p₁ p₂ p₃ + 2 • ∡ p₃ p₁ s.center = ↑π
   rw [add_comm,
     two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₂ hp₃ hp₁p₂.symm hp₂p₃ hp₁p₃]
 #align euclidean_geometry.sphere.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center EuclideanGeometry.Sphere.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center
@@ -201,6 +221,7 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
     vadd_vsub_assoc, add_comm, o.oangle_add_right_smul_rotation_pi_div_two, Real.Angle.cos_coe,
     Real.cos_arctan]
   norm_cast
+  -- ⊢ ‖midpoint ℝ p₁ p₂ -ᵥ p₁‖ / (1 / Real.sqrt (1 + Real.Angle.tan (∡ p₂ p₁ s.cen …
   rw [one_div, div_inv_eq_mul, ←
     mul_self_inj (mul_nonneg (norm_nonneg _) (Real.sqrt_nonneg _)) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real (o.inner_smul_rotation_pi_div_two_right _ _), ←
@@ -208,9 +229,12 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
     Real.mul_self_sqrt (add_nonneg zero_le_one (sq_nonneg _)), norm_smul,
     LinearIsometryEquiv.norm_map]
   swap; · simpa using h.symm
+  -- ⊢ midpoint ℝ p₁ p₂ -ᵥ p₁ ≠ 0
+          -- 🎉 no goals
   conv_rhs =>
     rw [← mul_assoc, mul_comm _ ‖Real.Angle.tan _‖, ← mul_assoc, Real.norm_eq_abs, abs_mul_abs_self]
   ring
+  -- 🎉 no goals
 #align euclidean_geometry.sphere.dist_div_cos_oangle_center_div_two_eq_radius EuclideanGeometry.Sphere.dist_div_cos_oangle_center_div_two_eq_radius
 
 /-- Given two points on a circle, twice the radius of that circle may be expressed explicitly as
@@ -220,6 +244,7 @@ theorem dist_div_cos_oangle_center_eq_two_mul_radius {s : Sphere P} {p₁ p₂ :
     (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) :
     dist p₁ p₂ / Real.Angle.cos (∡ p₂ p₁ s.center) = 2 * s.radius := by
   rw [← dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₂ h, mul_div_cancel' _ (two_ne_zero' ℝ)]
+  -- 🎉 no goals
 #align euclidean_geometry.sphere.dist_div_cos_oangle_center_eq_two_mul_radius EuclideanGeometry.Sphere.dist_div_cos_oangle_center_eq_two_mul_radius
 
 /-- Given three points on a circle, the radius of that circle may be expressed explicitly as half
@@ -229,10 +254,12 @@ theorem dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃) (hp₂p₃ : p₂ ≠ p₃) :
     dist p₁ p₃ / |Real.Angle.sin (∡ p₁ p₂ p₃)| / 2 = s.radius := by
   convert dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₃ hp₁p₃
+  -- ⊢ |Real.Angle.sin (∡ p₁ p₂ p₃)| = Real.Angle.cos (∡ p₃ p₁ s.center)
   rw [← Real.Angle.abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi
     (two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₂ hp₃ hp₁p₂.symm hp₂p₃ hp₁p₃),
     _root_.abs_of_nonneg (Real.Angle.cos_nonneg_iff_abs_toReal_le_pi_div_two.2 _)]
   exact (abs_oangle_center_right_toReal_lt_pi_div_two hp₁ hp₃).le
+  -- 🎉 no goals
 #align euclidean_geometry.sphere.dist_div_sin_oangle_div_two_eq_radius EuclideanGeometry.Sphere.dist_div_sin_oangle_div_two_eq_radius
 
 /-- Given three points on a circle, twice the radius of that circle may be expressed explicitly as
@@ -330,23 +357,32 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
     (h : (2 : ℤ) • ∡ (t.points i₁) p (t.points i₃) =
       (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃)) : p ∈ t.circumsphere := by
   let t'p : Fin 3 → P := Function.update t.points i₂ p
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h₁ : t'p i₁ = t.points i₁ := by simp [h₁₂]
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h₂ : t'p i₂ = p := by simp
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h₃ : t'p i₃ = t.points i₃ := by simp [h₂₃.symm]
+  -- ⊢ p ∈ Simplex.circumsphere t
   have ha : AffineIndependent ℝ t'p := by
     rw [affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃, h₁, h₂, h₃,
       collinear_iff_of_two_zsmul_oangle_eq h, ←
       affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃]
     exact t.Independent
   let t' : Triangle ℝ P := ⟨t'p, ha⟩
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h₁' : t'.points i₁ = t.points i₁ := h₁
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h₂' : t'.points i₂ = p := h₂
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h₃' : t'.points i₃ = t.points i₃ := h₃
+  -- ⊢ p ∈ Simplex.circumsphere t
   have h' : (2 : ℤ) • ∡ (t'.points i₁) (t'.points i₂) (t'.points i₃) =
       (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃) := by rwa [h₁', h₂', h₃']
   rw [← circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq h₁₂ h₁₃ h₂₃ h₁' h₃' h', ←
     h₂']
   exact Simplex.mem_circumsphere _ _
+  -- 🎉 no goals
 #align affine.triangle.mem_circumsphere_of_two_zsmul_oangle_eq Affine.Triangle.mem_circumsphere_of_two_zsmul_oangle_eq
 
 end Triangle
@@ -368,15 +404,22 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
   have hn' : ¬Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
     rwa [← collinear_iff_of_two_zsmul_oangle_eq h]
   let t₁ : Affine.Triangle ℝ P := ⟨![p₁, p₂, p₄], affineIndependent_iff_not_collinear_set.2 hn⟩
+  -- ⊢ Cospherical {p₁, p₂, p₃, p₄}
   let t₂ : Affine.Triangle ℝ P := ⟨![p₁, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hn'⟩
+  -- ⊢ Cospherical {p₁, p₂, p₃, p₄}
   rw [cospherical_iff_exists_sphere]
+  -- ⊢ ∃ s, {p₁, p₂, p₃, p₄} ⊆ Metric.sphere s.center s.radius
   refine' ⟨t₂.circumsphere, _⟩
+  -- ⊢ {p₁, p₂, p₃, p₄} ⊆ Metric.sphere (Affine.Simplex.circumsphere t₂).center (Af …
   simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
+  -- ⊢ p₁ ∈ Metric.sphere (Affine.Simplex.circumsphere { points := ![p₁, p₃, p₄], I …
   refine' ⟨t₂.mem_circumsphere 0, _, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
+  -- ⊢ p₂ ∈ Metric.sphere (Affine.Simplex.circumsphere { points := ![p₁, p₃, p₄], I …
   rw [Affine.Triangle.circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq
     (by decide : (0 : Fin 3) ≠ 1) (by decide : (0 : Fin 3) ≠ 2) (by decide)
     (show t₂.points 0 = t₁.points 0 from rfl) rfl h.symm]
   exact t₁.mem_circumsphere 1
+  -- 🎉 no goals
 #align euclidean_geometry.cospherical_of_two_zsmul_oangle_eq_of_not_collinear EuclideanGeometry.cospherical_of_two_zsmul_oangle_eq_of_not_collinear
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
@@ -393,23 +436,36 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) :
     Cospherical ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) := by
   by_cases hc : Collinear ℝ ({p₁, p₂, p₄} : Set P)
+  -- ⊢ Cospherical {p₁, p₂, p₃, p₄} ∨ Collinear ℝ {p₁, p₂, p₃, p₄}
   · by_cases he : p₁ = p₄
+    -- ⊢ Cospherical {p₁, p₂, p₃, p₄} ∨ Collinear ℝ {p₁, p₂, p₃, p₄}
     · rw [he, Set.insert_eq_self.2
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _)))]
       by_cases hl : Collinear ℝ ({p₂, p₃, p₄} : Set P); · exact Or.inr hl
+      -- ⊢ Cospherical {p₂, p₃, p₄} ∨ Collinear ℝ {p₂, p₃, p₄}
+                                                          -- 🎉 no goals
       rw [or_iff_left hl]
+      -- ⊢ Cospherical {p₂, p₃, p₄}
       let t : Affine.Triangle ℝ P := ⟨![p₂, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hl⟩
+      -- ⊢ Cospherical {p₂, p₃, p₄}
       rw [cospherical_iff_exists_sphere]
+      -- ⊢ ∃ s, {p₂, p₃, p₄} ⊆ Metric.sphere s.center s.radius
       refine' ⟨t.circumsphere, _⟩
+      -- ⊢ {p₂, p₃, p₄} ⊆ Metric.sphere (Affine.Simplex.circumsphere t).center (Affine. …
       simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
+      -- ⊢ p₂ ∈ Metric.sphere (Affine.Simplex.circumsphere { points := ![p₂, p₃, p₄], I …
       exact ⟨t.mem_circumsphere 0, t.mem_circumsphere 1, t.mem_circumsphere 2⟩
+      -- 🎉 no goals
     have hc' : Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
       rwa [← collinear_iff_of_two_zsmul_oangle_eq h]
     refine' Or.inr _
+    -- ⊢ Collinear ℝ {p₁, p₂, p₃, p₄}
     rw [Set.insert_comm p₁ p₂] at hc
+    -- ⊢ Collinear ℝ {p₁, p₂, p₃, p₄}
     rwa [Set.insert_comm p₁ p₂, hc'.collinear_insert_iff_of_ne (Set.mem_insert _ _)
       (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))) he]
   · exact Or.inl (cospherical_of_two_zsmul_oangle_eq_of_not_collinear h hc)
+    -- 🎉 no goals
 #align euclidean_geometry.cospherical_or_collinear_of_two_zsmul_oangle_eq EuclideanGeometry.cospherical_or_collinear_of_two_zsmul_oangle_eq
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
@@ -418,8 +474,11 @@ theorem concyclic_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) :
     Concyclic ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) := by
   rcases cospherical_or_collinear_of_two_zsmul_oangle_eq h with (hc | hc)
+  -- ⊢ Concyclic {p₁, p₂, p₃, p₄} ∨ Collinear ℝ {p₁, p₂, p₃, p₄}
   · exact Or.inl ⟨hc, coplanar_of_fact_finrank_eq_two _⟩
+    -- 🎉 no goals
   · exact Or.inr hc
+    -- 🎉 no goals
 #align euclidean_geometry.concyclic_or_collinear_of_two_zsmul_oangle_eq EuclideanGeometry.concyclic_or_collinear_of_two_zsmul_oangle_eq
 
 end EuclideanGeometry

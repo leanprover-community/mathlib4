@@ -85,10 +85,15 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget GroupCat) x y) :
     colimitInvAux.{v, u} F x = colimitInvAux F y := by
   apply G.mk_eq
+  -- ⊢ ∃ k f g, ↑(F.map f) { fst := x.fst, snd := x.snd⁻¹ }.snd = ↑(F.map g) { fst  …
   obtain ⟨k, f, g, hfg⟩ := h
+  -- ⊢ ∃ k f g, ↑(F.map f) { fst := x.fst, snd := x.snd⁻¹ }.snd = ↑(F.map g) { fst  …
   use k, f, g
+  -- ⊢ ↑(F.map f) { fst := x.fst, snd := x.snd⁻¹ }.snd = ↑(F.map g) { fst := y.fst, …
   rw [MonoidHom.map_inv, MonoidHom.map_inv, inv_inj]
+  -- ⊢ ↑(F.map f) x.snd = ↑(F.map g) y.snd
   exact hfg
+  -- 🎉 no goals
 #align Group.filtered_colimits.colimit_inv_aux_eq_of_rel GroupCat.FilteredColimits.colimitInvAux_eq_of_rel
 #align AddGroup.filtered_colimits.colimit_neg_aux_eq_of_rel AddGroupCat.FilteredColimits.colimitNegAux_eq_of_rel
 
@@ -97,10 +102,15 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
 instance colimitInv : Inv (G.{v, u} F) where
   inv x := by
     refine' Quot.lift (colimitInvAux.{v, u} F) _ x
+    -- ⊢ ∀ (a b : (j : J) × ↑(F.obj j)), Types.Quot.Rel ((F ⋙ forget₂ GroupCat MonCat …
     intro x y h
+    -- ⊢ colimitInvAux F x = colimitInvAux F y
     apply colimitInvAux_eq_of_rel
+    -- ⊢ Types.FilteredColimit.Rel (F ⋙ forget GroupCat) x y
     apply Types.FilteredColimit.rel_of_quot_rel
+    -- ⊢ Types.Quot.Rel (F ⋙ forget GroupCat) x y
     exact h
+    -- 🎉 no goals
 #align Group.filtered_colimits.colimit_has_inv GroupCat.FilteredColimits.colimitInv
 #align AddGroup.filtered_colimits.colimit_has_neg AddGroupCat.FilteredColimits.colimitNeg
 
@@ -115,12 +125,18 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
     mul_left_inv := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
+      -- ⊢ ∀ (a : (j : J) × ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat).obj j), (Qu …
+                                    -- ⊢ ∀ (a : (j : J) × ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat).obj j), (Qu …
+                                             -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat)) x) …
       cases' x with j x
+      -- ⊢ (Quot.mk (Types.Quot.Rel ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat)) {  …
       erw [colimit_inv_mk_eq,
         colimit_mul_mk_eq (F ⋙ forget₂ GroupCat MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),
         colimit_one_eq (F ⋙ forget₂ GroupCat MonCat.{max v u}) j]
       dsimp
+      -- ⊢ MonCat.FilteredColimits.M.mk (F ⋙ forget₂ GroupCat MonCat) { fst := j, snd : …
       erw [CategoryTheory.Functor.map_id, mul_left_inv] }
+      -- 🎉 no goals
 #align Group.filtered_colimits.colimit_group GroupCat.FilteredColimits.colimitGroup
 #align AddGroup.filtered_colimits.colimit_add_group AddGroupCat.FilteredColimits.colimitAddGroup
 

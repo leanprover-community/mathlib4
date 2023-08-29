@@ -83,7 +83,9 @@ def toHomotopyEquiv (h : X ≃ₜ Y) : X ≃ₕ Y where
   toFun := h
   invFun := h.symm
   left_inv := by rw [symm_comp_toContinuousMap]
+                 -- 🎉 no goals
   right_inv := by rw [toContinuousMap_comp_symm]
+                  -- 🎉 no goals
 #align homeomorph.to_homotopy_equiv Homeomorph.toHomotopyEquiv
 
 @[simp]
@@ -148,10 +150,14 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
   invFun := h₁.invFun.comp h₂.invFun
   left_inv := by
     refine Homotopic.trans ?_ h₁.left_inv
+    -- ⊢ Homotopic (comp (comp h₁.invFun h₂.invFun) (comp h₂.toFun h₁.toFun)) (comp h …
     exact ((Homotopic.refl _).hcomp h₂.left_inv).hcomp (Homotopic.refl _)
+    -- 🎉 no goals
   right_inv := by
     refine Homotopic.trans ?_ h₂.right_inv
+    -- ⊢ Homotopic (comp (comp h₂.toFun h₁.toFun) (comp h₁.invFun h₂.invFun)) (comp h …
     exact ((Homotopic.refl _).hcomp h₁.right_inv).hcomp (Homotopic.refl _)
+    -- 🎉 no goals
 #align continuous_map.homotopy_equiv.trans ContinuousMap.HomotopyEquiv.trans
 #align continuous_map.homotopy_equiv.trans_apply ContinuousMap.HomotopyEquiv.trans_apply
 #align continuous_map.homotopy_equiv.trans_symm_apply ContinuousMap.HomotopyEquiv.trans_symm_apply

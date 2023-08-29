@@ -128,7 +128,9 @@ instance (B : D) :
   IsReflexivePair.mk' (F.map (adj.unit.app (G.obj B)))
     (by
       rw [← F.map_comp, adj.right_triangle_components]
+      -- ⊢ F.map (𝟙 (G.obj B)) = 𝟙 (F.obj (G.obj ((𝟭 D).obj B)))
       apply F.map_id)
+      -- 🎉 no goals
     adj.left_triangle_components
 
 namespace Limits
@@ -152,23 +154,29 @@ attribute [instance 1] HasCoreflexiveEqualizers.has_eq
 theorem hasCoequalizer_of_common_section [HasReflexiveCoequalizers C] {A B : C} {f g : A ⟶ B}
     (r : B ⟶ A) (rf : r ≫ f = 𝟙 _) (rg : r ≫ g = 𝟙 _) : HasCoequalizer f g := by
   letI := IsReflexivePair.mk' r rf rg
+  -- ⊢ HasCoequalizer f g
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_coequalizer_of_common_section CategoryTheory.Limits.hasCoequalizer_of_common_section
 
 theorem hasEqualizer_of_common_retraction [HasCoreflexiveEqualizers C] {A B : C} {f g : A ⟶ B}
     (r : B ⟶ A) (fr : f ≫ r = 𝟙 _) (gr : g ≫ r = 𝟙 _) : HasEqualizer f g := by
   letI := IsCoreflexivePair.mk' r fr gr
+  -- ⊢ HasEqualizer f g
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_equalizer_of_common_retraction CategoryTheory.Limits.hasEqualizer_of_common_retraction
 
 /-- If `C` has coequalizers, then it has reflexive coequalizers. -/
 instance (priority := 100) hasReflexiveCoequalizers_of_hasCoequalizers [HasCoequalizers C] :
     HasReflexiveCoequalizers C where has_coeq A B f g _ := by infer_instance
+                                                              -- 🎉 no goals
 #align category_theory.limits.has_reflexive_coequalizers_of_has_coequalizers CategoryTheory.Limits.hasReflexiveCoequalizers_of_hasCoequalizers
 
 /-- If `C` has equalizers, then it has coreflexive equalizers. -/
 instance (priority := 100) hasCoreflexiveEqualizers_of_hasEqualizers [HasEqualizers C] :
     HasCoreflexiveEqualizers C where has_eq A B f g _ := by infer_instance
+                                                            -- 🎉 no goals
 #align category_theory.limits.has_coreflexive_equalizers_of_has_equalizers CategoryTheory.Limits.hasCoreflexiveEqualizers_of_hasEqualizers
 
 end Limits

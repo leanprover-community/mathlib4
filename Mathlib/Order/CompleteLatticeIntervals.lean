@@ -55,6 +55,7 @@ theorem subset_sSup_def [Inhabited s] :
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s} (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos h]
+                                                      -- 🎉 no goals
 #align subset_Sup_of_within subset_sSup_of_within
 
 end SupSet
@@ -86,6 +87,7 @@ theorem subset_sInf_def [Inhabited s] :
 
 theorem subset_sInf_of_within [Inhabited s] {t : Set s} (h : sInf ((↑) '' t : Set α) ∈ s) :
     sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos h]
+                                                      -- 🎉 no goals
 #align subset_Inf_of_within subset_sInf_of_within
 
 end InfSet
@@ -108,7 +110,9 @@ lemma sSup_subtype_eq_sSup_univ_of_not_bddAbove {s : Set α} [Inhabited s]
     apply le_csSup Hu
     exact ⟨⟨x, xs⟩, hx, rfl⟩
   by_cases Ht : BddAbove ((↑) '' t : Set α)
+  -- ⊢ sSup t = sSup univ
   · have I1 : sSup ((↑) '' t : Set α) ∉ s := A t ht Ht
+    -- ⊢ sSup t = sSup univ
     have I2 : sSup ((↑) '' (univ : Set s) : Set α) ∉ s := by
       apply A
       · contrapose! ht; exact ht.mono (subset_univ _)
@@ -122,6 +126,7 @@ lemma sSup_subtype_eq_sSup_univ_of_not_bddAbove {s : Set α} [Inhabited s]
         refine le_trans (le_of_lt hy) ?_
         exact le_csSup Ht ⟨⟨y, ys⟩, yt, rfl⟩
     simp only [sSup, I1, I2, dite_false]
+    -- 🎉 no goals
   · have I : ¬BddAbove ((↑) '' (univ : Set s) : Set α) := by
       contrapose! Ht; exact Ht.mono (image_subset Subtype.val (subset_univ _))
     have X : sSup ((↑) '' t : Set α) = sSup (univ : Set α) :=
@@ -129,6 +134,7 @@ lemma sSup_subtype_eq_sSup_univ_of_not_bddAbove {s : Set α} [Inhabited s]
     have Y : sSup ((↑) '' (univ : Set s) : Set α) = sSup (univ : Set α) :=
       ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove _ I
     simp only [sSup, X, Y]
+    -- 🎉 no goals
 
 /-- For a nonempty subset of a conditionally complete linear order to be a conditionally complete
 linear order, it suffices that it contain the `sSup` of all its nonempty bounded-above subsets, and
@@ -145,17 +151,29 @@ noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
     subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
     le_csSup := by
       rintro t c h_bdd hct
+      -- ⊢ c ≤ sSup t
       rw [← Subtype.coe_le_coe, ← subset_sSup_of_within s (h_Sup ⟨c, hct⟩ h_bdd)]
+      -- ⊢ ↑c ≤ sSup (Subtype.val '' t)
       exact (Subtype.mono_coe _).le_csSup_image hct h_bdd
+      -- 🎉 no goals
     csSup_le := by
       rintro t B ht hB
+      -- ⊢ sSup t ≤ B
       rw [← Subtype.coe_le_coe, ← subset_sSup_of_within s (h_Sup ht ⟨B, hB⟩)]
+      -- ⊢ sSup (Subtype.val '' t) ≤ ↑B
       exact (Subtype.mono_coe s).csSup_image_le ht hB
+      -- 🎉 no goals
     le_csInf := by
       intro t B ht hB
+      -- ⊢ B ≤ sInf t
       rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s (h_Inf ht ⟨B, hB⟩)]
+      -- ⊢ ↑B ≤ sInf (Subtype.val '' t)
       exact (Subtype.mono_coe s).le_csInf_image ht hB
+      -- ⊢ sInf t ≤ c
+      -- 🎉 no goals
+      -- ⊢ sInf (Subtype.val '' t) ≤ ↑c
     csInf_le := by
+      -- 🎉 no goals
       rintro t c h_bdd hct
       rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s (h_Inf ⟨c, hct⟩ h_bdd)]
       exact (Subtype.mono_coe s).csInf_image_le hct h_bdd
@@ -170,10 +188,15 @@ order takes values within `s`, for all nonempty bounded-above subsets of `s`. -/
 theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
     (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
+  -- ⊢ sSup (Subtype.val '' t) ∈ s
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
+  -- ⊢ sSup (Subtype.val '' t) ∈ s
   refine' hs.out c.2 B.2 ⟨_, _⟩
+  -- ⊢ ↑c ≤ sSup (Subtype.val '' t)
   · exact (Subtype.mono_coe s).le_csSup_image hct ⟨B, hB⟩
+    -- 🎉 no goals
   · exact (Subtype.mono_coe s).csSup_image_le ⟨c, hct⟩ hB
+    -- 🎉 no goals
 #align Sup_within_of_ord_connected sSup_within_of_ordConnected
 
 /-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
@@ -181,10 +204,15 @@ order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
 theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
     (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
+  -- ⊢ sInf (Subtype.val '' t) ∈ s
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
+  -- ⊢ sInf (Subtype.val '' t) ∈ s
   refine' hs.out B.2 c.2 ⟨_, _⟩
+  -- ⊢ ↑B ≤ sInf (Subtype.val '' t)
   · exact (Subtype.mono_coe s).le_csInf_image ⟨c, hct⟩ hB
+    -- 🎉 no goals
   · exact (Subtype.mono_coe s).csInf_image_le hct ⟨B, hB⟩
+    -- 🎉 no goals
 #align Inf_within_of_ord_connected sInf_within_of_ordConnected
 
 /-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a

@@ -77,7 +77,9 @@ theorem mk_one (h : (1 : α) ∈ Icc (0 : α) 1) : (⟨1, h⟩ : Icc (0 : α) 1)
 @[simp, norm_cast]
 theorem coe_eq_zero {x : Icc (0 : α) 1} : (x : α) = 0 ↔ x = 0 := by
   symm
+  -- ⊢ x = 0 ↔ ↑x = 0
   exact Subtype.ext_iff
+  -- 🎉 no goals
 #align set.Icc.coe_eq_zero Set.Icc.coe_eq_zero
 
 theorem coe_ne_zero {x : Icc (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
@@ -87,7 +89,9 @@ theorem coe_ne_zero {x : Icc (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
 @[simp, norm_cast]
 theorem coe_eq_one {x : Icc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
   symm
+  -- ⊢ x = 1 ↔ ↑x = 1
   exact Subtype.ext_iff
+  -- 🎉 no goals
 #align set.Icc.coe_eq_one Set.Icc.coe_eq_one
 
 theorem coe_ne_one {x : Icc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
@@ -163,7 +167,9 @@ variable {β : Type*} [OrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β) 1 := by
   rw [mem_Icc] at *
+  -- ⊢ 0 ≤ 1 - t ∧ 1 - t ≤ 1
   exact ⟨sub_nonneg.2 ht.2, (sub_le_self_iff _).2 ht.1⟩
+  -- 🎉 no goals
 #align set.Icc.one_sub_mem Set.Icc.one_sub_mem
 
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Icc (0 : β) 1 ↔ 1 - t ∈ Icc (0 : β) 1 :=
@@ -171,9 +177,11 @@ theorem mem_iff_one_sub_mem {t : β} : t ∈ Icc (0 : β) 1 ↔ 1 - t ∈ Icc (0
 #align set.Icc.mem_iff_one_sub_mem Set.Icc.mem_iff_one_sub_mem
 
 theorem one_sub_nonneg (x : Icc (0 : β) 1) : 0 ≤ 1 - (x : β) := by simpa using x.2.2
+                                                                   -- 🎉 no goals
 #align set.Icc.one_sub_nonneg Set.Icc.one_sub_nonneg
 
 theorem one_sub_le_one (x : Icc (0 : β) 1) : 1 - (x : β) ≤ 1 := by simpa using x.2.1
+                                                                   -- 🎉 no goals
 #align set.Icc.one_sub_le_one Set.Icc.one_sub_le_one
 
 end Set.Icc
@@ -199,7 +207,9 @@ theorem mk_zero [Nontrivial α] (h : (0 : α) ∈ Ico (0 : α) 1) : (⟨0, h⟩ 
 @[simp, norm_cast]
 theorem coe_eq_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) = 0 ↔ x = 0 := by
   symm
+  -- ⊢ x = 0 ↔ ↑x = 0
   exact Subtype.ext_iff
+  -- 🎉 no goals
 #align set.Ico.coe_eq_zero Set.Ico.coe_eq_zero
 
 theorem coe_ne_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
@@ -264,7 +274,9 @@ theorem mk_one [Nontrivial α] (h : (1 : α) ∈ Ioc (0 : α) 1) : (⟨1, h⟩ :
 @[simp, norm_cast]
 theorem coe_eq_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
   symm
+  -- ⊢ x = 1 ↔ ↑x = 1
   exact Subtype.ext_iff
+  -- 🎉 no goals
 #align set.Ioc.coe_eq_one Set.Ioc.coe_eq_one
 
 theorem coe_ne_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
@@ -370,8 +382,11 @@ variable {β : Type*} [OrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
   rw [mem_Ioo] at *
+  -- ⊢ 0 < 1 - t ∧ 1 - t < 1
   refine' ⟨sub_pos.2 ht.2, _⟩
+  -- ⊢ 1 - t < 1
   exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
+  -- 🎉 no goals
 #align set.Ioo.one_sub_mem Set.Ioo.one_sub_mem
 
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
@@ -379,9 +394,11 @@ theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0
 #align set.Ioo.mem_iff_one_sub_mem Set.Ioo.mem_iff_one_sub_mem
 
 theorem one_minus_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
+                                                                  -- 🎉 no goals
 #align set.Ioo.one_minus_pos Set.Ioo.one_minus_pos
 
 theorem one_minus_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
+                                                                     -- 🎉 no goals
 #align set.Ioo.one_minus_lt_one Set.Ioo.one_minus_lt_one
 
 end Set.Ioo

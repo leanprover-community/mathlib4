@@ -58,6 +58,8 @@ def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds
 
 theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
     (cast (congr_arg HolorIndex eq) ⟨is, h⟩).val = is := by subst eq; rfl
+                                                            -- ⊢ ↑(cast (_ : HolorIndex ds₁ = HolorIndex ds₁) { val := is, property := h }) = …
+                                                                      -- 🎉 no goals
 #align holor_index.cast_type HolorIndex.cast_type
 
 def assocRight : HolorIndex (ds₁ ++ ds₂ ++ ds₃) → HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) :=
@@ -72,14 +74,17 @@ theorem take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.t
   | ⟨is, h⟩ =>
     Subtype.eq <| by
       simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right, min_eq_left]
+      -- 🎉 no goals
 #align holor_index.take_take HolorIndex.take_take
 
 theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.take = t.take.drop
   | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, take, drop, cast_type, List.drop_take])
+                              -- 🎉 no goals
 #align holor_index.drop_take HolorIndex.drop_take
 
 theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
   | ⟨is, h⟩ => Subtype.eq (by simp [add_comm, assocRight, drop, cast_type, List.drop_drop])
+                              -- 🎉 no goals
 #align holor_index.drop_drop HolorIndex.drop_drop
 
 end HolorIndex
@@ -181,6 +186,8 @@ local infixl:70 " ⊗ " => mul
 theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
     cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by
   subst eq; rfl
+  -- ⊢ cast (_ : Holor α ds₁ = Holor α ds₁) a = fun t => a (cast (_ : HolorIndex ds …
+            -- 🎉 no goals
 #align holor.cast_type Holor.cast_type
 
 def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds₂ ++ ds₃)) :=
@@ -195,14 +202,20 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
     x ⊗ y ⊗ z = (x ⊗ (y ⊗ z)).assocLeft :=
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
     rw [assocLeft]
+    -- ⊢ (x ⊗ y ⊗ z) t = cast (_ : Holor α (ds₁ ++ (ds₂ ++ ds₃)) = Holor α (ds₁ ++ ds …
     unfold mul
+    -- ⊢ x (HolorIndex.take (HolorIndex.take t)) * y (HolorIndex.drop (HolorIndex.tak …
     rw [mul_assoc, ←HolorIndex.take_take, ←HolorIndex.drop_take, ←HolorIndex.drop_drop, cast_type]
+    -- ⊢ x (HolorIndex.take (HolorIndex.assocRight t)) * (y (HolorIndex.take (HolorIn …
     rfl
+    -- ⊢ ds₁ ++ (ds₂ ++ ds₃) = ds₁ ++ ds₂ ++ ds₃
     rw [append_assoc]
+    -- 🎉 no goals
 #align holor.mul_assoc0 Holor.mul_assoc0
 
 theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
     HEq (mul (mul x y) z) (mul x (mul y z)) := by simp [cast_heq, mul_assoc0, assocLeft]
+                                                  -- 🎉 no goals
 #align holor.mul_assoc Holor.mul_assoc
 
 theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
@@ -226,6 +239,7 @@ nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : 
 theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
       simp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop, HSMul.hSMul]
+      -- 🎉 no goals
 #align holor.mul_scalar_mul Holor.mul_scalar_mul
 
 -- holor slices
@@ -242,6 +256,8 @@ def unitVec [Monoid α] [AddMonoid α] (d : ℕ) (j : ℕ) : Holor α [d] := fun
 theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
     ∀ t : HolorIndex (d :: ds),
       (∀ i is, ∀ h : t.1 = i :: is, p ⟨i :: is, by rw [← h]; exact t.2⟩) → p t
+                                                   -- ⊢ Forall₂ (fun x x_1 => x < x_1) (↑t) (d :: ds)
+                                                             -- 🎉 no goals
   | ⟨[], hforall₂⟩, _ => absurd (forall₂_nil_left_iff.1 hforall₂) (cons_ne_nil d ds)
   | ⟨i :: is, _⟩, hp => hp i is rfl
 #align holor.holor_index_cons_decomp Holor.holor_index_cons_decomp
@@ -251,11 +267,14 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
   funext fun t : HolorIndex (d :: ds) =>
     holor_index_cons_decomp (fun t => x t = y t) t fun i is hiis =>
       have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.2
+                                                               -- ⊢ Forall₂ (fun x x_1 => x < x_1) (↑t) (d :: ds)
+                                                                            -- 🎉 no goals
       have hid : i < d := (forall₂_cons.1 hiisdds).1
       have hisds : Forall₂ (· < ·) is ds := (forall₂_cons.1 hiisdds).2
       calc
         x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr_arg (fun t => x t) (Subtype.eq rfl)
         _ = slice y i hid ⟨is, hisds⟩ := by rw [h]
+                                            -- 🎉 no goals
         _ = y ⟨i :: is, _⟩ := congr_arg (fun t => y t) (Subtype.eq rfl)
 #align holor.slice_eq Holor.slice_eq
 
@@ -263,12 +282,16 @@ theorem slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
   funext fun t : HolorIndex ds =>
     if h : i = j then by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]
+                         -- 🎉 no goals
     else by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]; rfl
+            -- ⊢ 0 = OfNat.ofNat 0 t
+                                                                             -- 🎉 no goals
 #align holor.slice_unit_vec_mul Holor.slice_unitVec_mul
 
 theorem slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) :
     slice x i hid + slice y i hid = slice (x + y) i hid :=
   funext fun t => by simp [slice, (· + ·), Add.add]
+                     -- 🎉 no goals
 #align holor.slice_add Holor.slice_add
 
 theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d :: ds)) i hid = 0 :=
@@ -278,10 +301,15 @@ theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d ::
 theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
     (f : β → Holor α (d :: ds)) : (∑ x in s, slice (f x) i hid) = slice (∑ x in s, f x) i hid := by
   letI := Classical.decEq β
+  -- ⊢ ∑ x in s, slice (f x) i hid = slice (∑ x in s, f x) i hid
   refine' Finset.induction_on s _ _
+  -- ⊢ ∑ x in ∅, slice (f x) i hid = slice (∑ x in ∅, f x) i hid
   · simp [slice_zero]
+    -- 🎉 no goals
   · intro _ _ h_not_in ih
+    -- ⊢ ∑ x in insert a✝ s✝, slice (f x) i hid = slice (∑ x in insert a✝ s✝, f x) i  …
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
+    -- 🎉 no goals
 #align holor.slice_sum Holor.slice_sum
 
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
@@ -292,17 +320,28 @@ theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
+  -- ⊢ slice (∑ i in Finset.attach (Finset.range d), unitVec d ↑i ⊗ slice x ↑i (_ : …
   ext i hid
+  -- ⊢ slice (∑ i in Finset.attach (Finset.range d), unitVec d ↑i ⊗ slice x ↑i (_ : …
   rw [← slice_sum]
+  -- ⊢ ∑ x_1 in Finset.attach (Finset.range d), slice (unitVec d ↑x_1 ⊗ slice x ↑x_ …
   simp only [slice_unitVec_mul hid]
+  -- ⊢ (∑ x_1 in Finset.attach (Finset.range d), if i = ↑x_1 then slice x ↑x_1 (_ : …
   rw [Finset.sum_eq_single (Subtype.mk i <| Finset.mem_range.2 hid)]
   · simp
+    -- 🎉 no goals
   · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach) (hbi : b ≠ ⟨i, _⟩)
+    -- ⊢ (if i = ↑b then slice x ↑b (_ : Nat.succ ↑b ≤ d) else 0) = 0
     have hbi' : i ≠ b := by simpa only [Ne.def, Subtype.ext_iff, Subtype.coe_mk] using hbi.symm
+    -- ⊢ (if i = ↑b then slice x ↑b (_ : Nat.succ ↑b ≤ d) else 0) = 0
     simp [hbi']
+    -- 🎉 no goals
   · intro (hid' : Subtype.mk i _ ∉ Finset.attach (Finset.range d))
+    -- ⊢ (if i = ↑{ val := i, property := (_ : i ∈ Finset.range d) } then slice x ↑{  …
     exfalso
+    -- ⊢ False
     exact absurd (Finset.mem_attach _ _) hid'
+    -- 🎉 no goals
 #align holor.sum_unit_vec_mul_slice Holor.sum_unitVec_mul_slice
 
 -- CP rank
@@ -323,13 +362,17 @@ inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → 
 
 theorem cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
   have h := CPRankMax.succ 0 x 0 (CPRankMax1.nil x) CPRankMax.zero
+  -- ⊢ CPRankMax 1 x
   rwa [add_zero x, zero_add] at h
+  -- 🎉 no goals
 #align holor.cprank_max_nil Holor.cprankMax_nil
 
 theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
   CPRankMax 1 x := by
   have h' := CPRankMax.succ 0 x 0 h CPRankMax.zero
+  -- ⊢ CPRankMax 1 x
   rwa [zero_add, add_zero] at h'
+  -- 🎉 no goals
 #align holor.cprank_max_1 Holor.cprankMax_1
 
 theorem cprankMax_add [Monoid α] [AddMonoid α] :
@@ -340,38 +383,55 @@ theorem cprankMax_add [Monoid α] [AddMonoid α] :
     | CPRankMax.zero => simp only [zero_add, hy]
   | m + 1, n, _, y, CPRankMax.succ _ x₁ x₂ hx₁ hx₂, hy => by
     simp only [add_comm, add_assoc]
+    -- ⊢ CPRankMax (n + (m + 1)) (x₁ + (x₂ + y))
     apply CPRankMax.succ
+    -- ⊢ CPRankMax1 x₁
     · assumption
+      -- 🎉 no goals
     · -- Porting note: Single line is added.
       simp only [Nat.add_eq, add_zero, add_comm n m]
+      -- ⊢ CPRankMax (m + n) (x₂ + y)
       exact cprankMax_add hx₂ hy
+      -- 🎉 no goals
 #align holor.cprank_max_add Holor.cprankMax_add
 
 theorem cprankMax_mul [Ring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]
+                                  -- 🎉 no goals
   | n + 1, x, _, CPRankMax.succ _ y₁ y₂ hy₁ hy₂ => by
     rw [mul_left_distrib]
+    -- ⊢ CPRankMax (n + 1) (x ⊗ y₁ + x ⊗ y₂)
     rw [Nat.add_comm]
+    -- ⊢ CPRankMax (1 + n) (x ⊗ y₁ + x ⊗ y₂)
     apply cprankMax_add
+    -- ⊢ CPRankMax 1 (x ⊗ y₁)
     · exact cprankMax_1 (CPRankMax1.cons _ _ hy₁)
+      -- 🎉 no goals
     · exact cprankMax_mul _ x y₂ hy₂
+      -- 🎉 no goals
 #align holor.cprank_max_mul Holor.cprankMax_mul
 
 theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
     (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x in s, f x) :=
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
+                            -- 🎉 no goals
     (by
       intro x s(h_x_notin_s : x ∉ s)ih h_cprank
+      -- ⊢ CPRankMax (Finset.card (insert x s) * n) (∑ x in insert x s, f x)
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
+      -- ⊢ CPRankMax ((Finset.card s + 1) * n) (f x + ∑ x in s, f x)
       rw [Nat.right_distrib]
+      -- ⊢ CPRankMax (Finset.card s * n + 1 * n) (f x + ∑ x in s, f x)
       simp only [Nat.one_mul, Nat.add_comm]
+      -- ⊢ CPRankMax (n + Finset.card s * n) (f x + ∑ x in s, f x)
       have ih' : CPRankMax (Finset.card s * n) (∑ x in s, f x) := by
         apply ih
         intro (x : β) (h_x_in_s : x ∈ s)
         simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
+      -- 🎉 no goals
 #align holor.cprank_max_sum Holor.cprankMax_sum
 
 theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankMax ds.prod x
@@ -393,8 +453,11 @@ theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankM
         (∑ i in Finset.attach (Finset.range d),
           unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) := by rwa [Finset.card_attach] at this
     rw [← sum_unitVec_mul_slice x]
+    -- ⊢ CPRankMax (prod (d :: ds)) (∑ i in Finset.attach (Finset.range d), unitVec d …
     rw [h_dds_prod]
+    -- ⊢ CPRankMax (Finset.card (Finset.range d) * prod ds) (∑ i in Finset.attach (Fi …
     exact h_cprankMax_sum
+    -- 🎉 no goals
 #align holor.cprank_max_upper_bound Holor.cprankMax_upper_bound
 
 /-- The CP rank of a holor `x`: the smallest N such that

@@ -151,6 +151,9 @@ instance smulZeroClass (α) {n : ∀ i, Zero <| f i} [∀ i, SMulZeroClass α <|
 instance smulZeroClass' {g : I → Type*} {n : ∀ i, Zero <| g i} [∀ i, SMulZeroClass (f i) (g i)] :
   @SMulZeroClass (∀ i, f i) (∀ i : I, g i) (@Pi.instZero I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
+                  -- ⊢ a✝ • 0 = 0
+                          -- ⊢ (a✝ • 0) x = OfNat.ofNat 0 x
+                                 -- 🎉 no goals
 #align pi.smul_zero_class' Pi.smulZeroClass'
 
 instance distribSMul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
@@ -163,7 +166,13 @@ instance distribSMul' {g : I → Type*} {n : ∀ i, AddZeroClass <| g i}
   [∀ i, DistribSMul (f i) (g i)] :
   @DistribSMul (∀ i, f i) (∀ i : I, g i) (@Pi.addZeroClass I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
+                  -- ⊢ a✝ • 0 = 0
+                          -- ⊢ (a✝ • 0) x = OfNat.ofNat 0 x
+                                 -- 🎉 no goals
   smul_add := by intros; ext x; exact smul_add _ _ _
+                 -- ⊢ a✝ • (x✝ + y✝) = a✝ • x✝ + a✝ • y✝
+                         -- ⊢ (a✝ • (x✝ + y✝)) x = (a✝ • x✝ + a✝ • y✝) x
+                                -- 🎉 no goals
 #align pi.distrib_smul' Pi.distribSMul'
 
 instance distribMulAction (α) {m : Monoid α} {n : ∀ i, AddMonoid <| f i}
@@ -209,12 +218,18 @@ instance mulDistribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : �
     @MulDistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.monoid I g n) where
   smul_mul := by
     intros
+    -- ⊢ r✝ • (x✝ * y✝) = r✝ • x✝ * r✝ • y✝
     ext x
+    -- ⊢ (r✝ • (x✝ * y✝)) x = (r✝ • x✝ * r✝ • y✝) x
     apply smul_mul'
+    -- 🎉 no goals
   smul_one := by
     intros
+    -- ⊢ r✝ • 1 = 1
     ext x
+    -- ⊢ (r✝ • 1) x = OfNat.ofNat 1 x
     apply smul_one
+    -- 🎉 no goals
 #align pi.mul_distrib_mul_action' Pi.mulDistribMulAction'
 
 end Pi
@@ -270,9 +285,14 @@ theorem Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α �
   funext fun x => by
   -- Porting note: Lean4 is unable to automatically call `Classical.propDecidable`
   haveI : Decidable (∃ a : α, f a = x) := Classical.propDecidable _
+  -- ⊢ extend f (r • g) (r • e) x = (r • extend f g e) x
   rw [extend_def, Pi.smul_apply, Pi.smul_apply, extend_def]
+  -- ⊢ (if h : ∃ a, f a = x then (r • g) (Classical.choose h) else r • e x) = r • i …
   split_ifs <;>
+  -- ⊢ (r • g) (Classical.choose h✝) = r • g (Classical.choose h✝)
   rfl
+  -- 🎉 no goals
+  -- 🎉 no goals
   -- convert (apply_dite (fun c : γ => r • c) _ _ _).symm
 #align function.extend_smul Function.extend_smul
 #align function.extend_vadd Function.extend_vadd

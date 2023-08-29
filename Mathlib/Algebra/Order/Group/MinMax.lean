@@ -20,6 +20,9 @@ variable {α : Type*} [Group α] [LinearOrder α] [CovariantClass α α (· * ·
 @[to_additive (attr := simp)]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by
   rcases le_total a 1 with (h | h) <;> simp [h]
+  -- ⊢ max a 1 / max a⁻¹ 1 = a
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 #align max_one_div_max_inv_one_eq_self max_one_div_max_inv_one_eq_self
 #align max_zero_sub_max_neg_zero_eq_self max_zero_sub_max_neg_zero_eq_self
 
@@ -51,24 +54,28 @@ theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ :=
 @[to_additive min_sub_sub_right]
 theorem min_div_div_right' (a b c : α) : min (a / c) (b / c) = min a b / c := by
   simpa only [div_eq_mul_inv] using min_mul_mul_right a b c⁻¹
+  -- 🎉 no goals
 #align min_div_div_right' min_div_div_right'
 #align min_sub_sub_right min_sub_sub_right
 
 @[to_additive max_sub_sub_right]
 theorem max_div_div_right' (a b c : α) : max (a / c) (b / c) = max a b / c := by
   simpa only [div_eq_mul_inv] using max_mul_mul_right a b c⁻¹
+  -- 🎉 no goals
 #align max_div_div_right' max_div_div_right'
 #align max_sub_sub_right max_sub_sub_right
 
 @[to_additive min_sub_sub_left]
 theorem min_div_div_left' (a b c : α) : min (a / b) (a / c) = a / max b c := by
   simp only [div_eq_mul_inv, min_mul_mul_left, min_inv_inv']
+  -- 🎉 no goals
 #align min_div_div_left' min_div_div_left'
 #align min_sub_sub_left min_sub_sub_left
 
 @[to_additive max_sub_sub_left]
 theorem max_div_div_left' (a b c : α) : max (a / b) (a / c) = a / min b c := by
   simp only [div_eq_mul_inv, max_mul_mul_left, max_inv_inv']
+  -- 🎉 no goals
 #align max_div_div_left' max_div_div_left'
 #align max_sub_sub_left max_sub_sub_left
 
@@ -80,6 +87,8 @@ variable {α : Type*} [LinearOrderedAddCommGroup α] {a b c : α}
 
 theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b - d) := by
   simp only [sub_le_iff_le_add, max_le_iff]; constructor
+  -- ⊢ a ≤ max (a - c) (b - d) + max c d ∧ b ≤ max (a - c) (b - d) + max c d
+                                             -- ⊢ a ≤ max (a - c) (b - d) + max c d
   calc
     a = a - c + c := (sub_add_cancel a c).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_left _ _) (le_max_left _ _)
@@ -90,9 +99,13 @@ theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b
 
 theorem abs_max_sub_max_le_max (a b c d : α) : |max a b - max c d| ≤ max |a - c| |b - d| := by
   refine' abs_sub_le_iff.2 ⟨_, _⟩
+  -- ⊢ max a b - max c d ≤ max |a - c| |b - d|
   · exact (max_sub_max_le_max _ _ _ _).trans (max_le_max (le_abs_self _) (le_abs_self _))
+    -- 🎉 no goals
   · rw [abs_sub_comm a c, abs_sub_comm b d]
+    -- ⊢ max c d - max a b ≤ max |c - a| |d - b|
     exact (max_sub_max_le_max _ _ _ _).trans (max_le_max (le_abs_self _) (le_abs_self _))
+    -- 🎉 no goals
 #align abs_max_sub_max_le_max abs_max_sub_max_le_max
 
 theorem abs_min_sub_min_le_max (a b c d : α) : |min a b - min c d| ≤ max |a - c| |b - d| := by

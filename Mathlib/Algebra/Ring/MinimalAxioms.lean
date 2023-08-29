@@ -40,6 +40,7 @@ def Ring.ofMinimalAxioms {R : Type u}
   letI := AddGroup.ofLeftAxioms add_assoc zero_add add_left_neg
   haveI add_comm : ∀ a b, a + b = b + a := by
     intro a b
+    -- ⊢ a + b = b + a
     have h₁ : (1 + 1 : R) * (a + b) = a + (a + b) + b := by
       rw [left_distrib]
       simp only [right_distrib, one_mul, add_assoc]
@@ -47,17 +48,21 @@ def Ring.ofMinimalAxioms {R : Type u}
       rw [right_distrib]
       simp only [left_distrib, one_mul, add_assoc]
     have := h₁.symm.trans h₂
+    -- ⊢ a + b = b + a
     rwa [add_left_inj, add_right_inj] at this
+    -- 🎉 no goals
   haveI zero_mul : ∀ a, (0 : R) * a = 0 := fun a => by
     have : 0 * a = 0 * a + 0 * a :=
       calc 0 * a = (0 + 0) * a := by rw [zero_add]
       _ = 0 * a + 0 * a := by rw [right_distrib]
     rwa [self_eq_add_right] at this
+    -- 🎉 no goals
   haveI mul_zero : ∀ a, a * (0 : R) = 0 := fun a => by
     have : a * 0 = a * 0 + a * 0 :=
       calc a * 0 = a * (0 + 0) := by rw [zero_add]
       _ = a * 0 + a * 0 := by rw [left_distrib]
     rwa [self_eq_add_right] at this
+    -- 🎉 no goals
   { add_comm := add_comm
     left_distrib := left_distrib
     right_distrib := right_distrib
@@ -83,8 +88,10 @@ def CommRing.ofMinimalAxioms {R : Type u}
     (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c) : CommRing R :=
   haveI mul_one : ∀ a : R, a * 1 = a := fun a => by
     rw [mul_comm, one_mul]
+    -- 🎉 no goals
   haveI right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c := fun a b c => by
     rw [mul_comm, left_distrib, mul_comm, mul_comm b c]
+    -- 🎉 no goals
   letI := Ring.ofMinimalAxioms add_assoc zero_add add_left_neg mul_assoc
     one_mul mul_one left_distrib right_distrib
   { mul_comm := mul_comm }

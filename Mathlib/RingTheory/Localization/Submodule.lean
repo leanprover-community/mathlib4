@@ -48,11 +48,13 @@ theorem coeSubmodule_mono {I J : Ideal R} (h : I ≤ J) : coeSubmodule S I ≤ c
 @[simp]
 theorem coeSubmodule_bot : coeSubmodule S (⊥ : Ideal R) = ⊥ := by
   rw [coeSubmodule, Submodule.map_bot]
+  -- 🎉 no goals
 #align is_localization.coe_submodule_bot IsLocalization.coeSubmodule_bot
 
 @[simp]
 theorem coeSubmodule_top : coeSubmodule S (⊤ : Ideal R) = 1 := by
   rw [coeSubmodule, Submodule.map_top, Submodule.one_eq_range]
+  -- 🎉 no goals
 #align is_localization.coe_submodule_top IsLocalization.coeSubmodule_top
 
 @[simp]
@@ -76,13 +78,16 @@ theorem coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R)
 theorem coeSubmodule_span (s : Set R) :
     coeSubmodule S (Ideal.span s) = Submodule.span R (algebraMap R S '' s) := by
   rw [IsLocalization.coeSubmodule, Ideal.span, Submodule.map_span]
+  -- ⊢ Submodule.span R (↑(Algebra.linearMap R S) '' s) = Submodule.span R (↑(algeb …
   rfl
+  -- 🎉 no goals
 #align is_localization.coe_submodule_span IsLocalization.coeSubmodule_span
 
 -- @[simp] -- Porting note: simp can prove this
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
+  -- 🎉 no goals
 #align is_localization.coe_submodule_span_singleton IsLocalization.coeSubmodule_span_singleton
 
 variable {g : R →+* P}
@@ -97,7 +102,9 @@ section
 
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
+  -- ⊢ WellFounded fun x x_1 => x > x_1
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
+  -- 🎉 no goals
 #align is_localization.is_noetherian_ring IsLocalization.isNoetherianRing
 
 end
@@ -127,12 +134,21 @@ theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
   constructor <;> rintro ⟨⟨x, hx⟩⟩
+  -- ⊢ Submodule.IsPrincipal (coeSubmodule S I) → Submodule.IsPrincipal I
+                  -- ⊢ Submodule.IsPrincipal I
+                  -- ⊢ Submodule.IsPrincipal (coeSubmodule S I)
   · have x_mem : x ∈ coeSubmodule S I := hx.symm ▸ Submodule.mem_span_singleton_self x
+    -- ⊢ Submodule.IsPrincipal I
     obtain ⟨x, _, rfl⟩ := (mem_coeSubmodule _ _).mp x_mem
+    -- ⊢ Submodule.IsPrincipal I
     refine' ⟨⟨x, coeSubmodule_injective S h _⟩⟩
+    -- ⊢ coeSubmodule S I = coeSubmodule S (Submodule.span R {x})
     rw [Ideal.submodule_span_eq, hx, coeSubmodule_span_singleton]
+    -- 🎉 no goals
   · refine' ⟨⟨algebraMap R S x, _⟩⟩
+    -- ⊢ coeSubmodule S I = Submodule.span R {↑(algebraMap R S) x}
     rw [hx, Ideal.submodule_span_eq, coeSubmodule_span_singleton]
+    -- 🎉 no goals
 #align is_localization.coe_submodule_is_principal IsLocalization.coeSubmodule_isPrincipal
 
 variable {S} (M)
@@ -141,39 +157,62 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
     {x : N} {a : Set N} :
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
   constructor; intro h
+  -- ⊢ x ∈ Submodule.span S a → ∃ y, y ∈ Submodule.span R a ∧ ∃ z, x = mk' S 1 z • y
+               -- ⊢ ∃ y, y ∈ Submodule.span R a ∧ ∃ z, x = mk' S 1 z • y
   · refine' Submodule.span_induction h _ _ _ _
     · rintro x hx
+      -- ⊢ ∃ y, y ∈ Submodule.span R a ∧ ∃ z, x = mk' S 1 z • y
       exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
+      -- 🎉 no goals
     · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
+      -- 🎉 no goals
     · rintro _ _ ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
+      -- ⊢ ∃ y_1, y_1 ∈ Submodule.span R a ∧ ∃ z_1, mk' S 1 z • y + mk' S 1 z' • y' = m …
       refine'
         ⟨(z' : R) • y + (z : R) • y',
           Submodule.add_mem _ (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hy'), z * z', _⟩
       rw [smul_add, ← IsScalarTower.algebraMap_smul S (z : R), ←
         IsScalarTower.algebraMap_smul S (z' : R), smul_smul, smul_smul]
       congr 1
+      -- ⊢ mk' S 1 z • y = (mk' S 1 (z * z') * ↑(algebraMap R S) ↑z') • y
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, _root_.map_one, mul_one, mul_one]
+        -- 🎉 no goals
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, _root_.map_one, mul_one, one_mul]
+        -- 🎉 no goals
     · rintro a _ ⟨y, hy, z, rfl⟩
+      -- ⊢ ∃ y_1, y_1 ∈ Submodule.span R a✝ ∧ ∃ z_1, a • mk' S 1 z • y = mk' S 1 z_1 •  …
       obtain ⟨y', z', rfl⟩ := mk'_surjective M a
+      -- ⊢ ∃ y_1, y_1 ∈ Submodule.span R a ∧ ∃ z_1, mk' S y' z' • mk' S 1 z • y = mk' S …
       refine' ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, _⟩
+      -- ⊢ mk' S y' z' • mk' S 1 z • y = mk' S 1 (z' * z) • y' • y
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
         mul_comm (mk' S _ _), mul_mk'_eq_mk'_of_mul]
   · rintro ⟨y, hy, z, rfl⟩
+    -- ⊢ mk' S 1 z • y ∈ Submodule.span S a
     exact Submodule.smul_mem _ _ (Submodule.span_subset_span R S _ hy)
+    -- 🎉 no goals
 #align is_localization.mem_span_iff IsLocalization.mem_span_iff
 
 theorem mem_span_map {x : S} {a : Set R} :
     x ∈ Ideal.span (algebraMap R S '' a) ↔ ∃ y ∈ Ideal.span a, ∃ z : M, x = mk' S y z := by
   refine' (mem_span_iff M).trans _
+  -- ⊢ (∃ y, y ∈ Submodule.span R (↑(algebraMap R S) '' a) ∧ ∃ z, x = mk' S 1 z • y …
   constructor
+  -- ⊢ (∃ y, y ∈ Submodule.span R (↑(algebraMap R S) '' a) ∧ ∃ z, x = mk' S 1 z • y …
   · rw [← coeSubmodule_span]
+    -- ⊢ (∃ y, y ∈ coeSubmodule S (Ideal.span a) ∧ ∃ z, x = mk' S 1 z • y) → ∃ y, y ∈ …
     rintro ⟨_, ⟨y, hy, rfl⟩, z, hz⟩
+    -- ⊢ ∃ y, y ∈ Ideal.span a ∧ ∃ z, x = mk' S y z
     refine' ⟨y, hy, z, _⟩
+    -- ⊢ x = mk' S y z
     rw [hz, Algebra.linearMap_apply, smul_eq_mul, mul_comm, mul_mk'_eq_mk'_of_mul, mul_one]
+    -- 🎉 no goals
   · rintro ⟨y, hy, z, hz⟩
+    -- ⊢ ∃ y, y ∈ Submodule.span R (↑(algebraMap R S) '' a) ∧ ∃ z, x = mk' S 1 z • y
     refine' ⟨algebraMap R S y, Submodule.map_mem_span_algebraMap_image _ _ hy, z, _⟩
+    -- ⊢ x = mk' S 1 z • ↑(algebraMap R S) y
     rw [hz, smul_eq_mul, mul_comm, mul_mk'_eq_mk'_of_mul, mul_one]
+    -- 🎉 no goals
 #align is_localization.mem_span_map IsLocalization.mem_span_map
 
 end IsLocalization

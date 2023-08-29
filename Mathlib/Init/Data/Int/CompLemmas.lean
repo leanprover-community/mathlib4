@@ -24,8 +24,11 @@ protected theorem ne_neg_of_ne {a b : ℤ} : a ≠ b → -a ≠ -b := fun h₁ h
 
 protected theorem neg_ne_zero_of_ne {a : ℤ} : a ≠ 0 → -a ≠ 0 := fun h₁ h₂ => by
   have : -a = -0 := by rwa [Int.neg_zero]
+  -- ⊢ False
   have : a = 0 := Int.neg_eq_neg this
+  -- ⊢ False
   contradiction
+  -- 🎉 no goals
 #align int.neg_ne_zero_of_ne Int.neg_ne_zero_of_ne
 
 protected theorem zero_ne_neg_of_ne {a : ℤ} (h : 0 ≠ a) : 0 ≠ -a :=
@@ -34,7 +37,9 @@ protected theorem zero_ne_neg_of_ne {a : ℤ} (h : 0 ≠ a) : 0 ≠ -a :=
 
 protected theorem neg_ne_of_pos {a b : ℤ} : 0 < a → 0 < b → -a ≠ b := fun h₁ h₂ h => by
   rw [← h] at h₂
+  -- ⊢ False
   exact absurd (le_of_lt h₁) (not_le_of_gt (Int.neg_of_neg_pos h₂))
+  -- 🎉 no goals
 #align int.neg_ne_of_pos Int.neg_ne_of_pos
 
 protected theorem ne_neg_of_pos {a b : ℤ} : 0 < a → 0 < b → a ≠ -b := fun h₁ h₂ =>
@@ -88,6 +93,7 @@ protected theorem nonneg_of_pos {a : ℤ} : 0 < a → 0 ≤ a :=
 
 theorem zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n :=
   @le.intro _ _ n (by rw [Int.zero_add, Int.coe_nat_eq])
+                      -- 🎉 no goals
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
 #align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
@@ -97,12 +103,15 @@ theorem ne_of_natAbs_ne_natAbs_of_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ 
   have : (natAbs a : ℤ) = natAbs b := by
     rwa [ofNat_natAbs_eq_of_nonneg _ ha, ofNat_natAbs_eq_of_nonneg _ hb]
   injection this
+  -- ⊢ False
   contradiction
+  -- 🎉 no goals
 #align int.ne_of_nat_abs_ne_nat_abs_of_nonneg Int.ne_of_natAbs_ne_natAbs_of_nonneg
 
 protected theorem ne_of_nat_ne_nonneg_case {a b : ℤ} {n m : Nat} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (e1 : natAbs a = n) (e2 : natAbs b = m) (h : n ≠ m) : a ≠ b :=
   have : natAbs a ≠ natAbs b := by rwa [e1, e2]
+                                   -- 🎉 no goals
   ne_of_natAbs_ne_natAbs_of_nonneg ha hb this
 #align int.ne_of_nat_ne_nonneg_case Int.ne_of_nat_ne_nonneg_case
 
@@ -123,6 +132,7 @@ protected theorem natAbs_add_nonneg :
     ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
   | ofNat n, ofNat m, _, _ => by
     simp [natAbs_ofNat_core]
+    -- 🎉 no goals
   | _, negSucc m, _, h₂ => absurd (negSucc_lt_zero m) (not_lt_of_ge h₂)
   | negSucc n, _, h₁, _ => absurd (negSucc_lt_zero n) (not_lt_of_ge h₁)
 #align int.nat_abs_add_nonneg Int.natAbs_add_nonneg
@@ -131,6 +141,7 @@ protected theorem natAbs_add_neg :
     ∀ {a b : Int}, a < 0 → b < 0 → natAbs (a + b) = natAbs a + natAbs b
   | negSucc n, negSucc m, _, _ => by
     simp [natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
+    -- 🎉 no goals
 #align int.nat_abs_add_neg Int.natAbs_add_neg
 
 set_option linter.deprecated false in
@@ -144,6 +155,8 @@ set_option linter.deprecated false in
 @[deprecated]
 protected theorem natAbs_bit0_step {a : Int} {n : Nat} (h : natAbs a = n) :
     natAbs (bit0 a) = bit0 n := by rw [← h]; apply Int.natAbs_bit0
+                                   -- ⊢ natAbs (bit0 a) = bit0 (natAbs a)
+                                             -- 🎉 no goals
 #align int.nat_abs_bit0_step Int.natAbs_bit0_step
 
 set_option linter.deprecated false in
@@ -151,12 +164,15 @@ set_option linter.deprecated false in
 protected theorem natAbs_bit1_nonneg {a : Int} (h : 0 ≤ a) : natAbs (bit1 a) = bit1 (natAbs a) :=
   show natAbs (bit0 a + 1) = bit0 (natAbs a) + natAbs 1 by
     rw [Int.natAbs_add_nonneg (Int.bit0_nonneg h) (le_of_lt Int.zero_lt_one), Int.natAbs_bit0]
+    -- 🎉 no goals
 #align int.nat_abs_bit1_nonneg Int.natAbs_bit1_nonneg
 
 set_option linter.deprecated false in
 @[deprecated]
 protected theorem natAbs_bit1_nonneg_step {a : Int} {n : Nat} (h₁ : 0 ≤ a) (h₂ : natAbs a = n) :
     natAbs (bit1 a) = bit1 n := by rw [← h₂]; apply Int.natAbs_bit1_nonneg h₁
+                                   -- ⊢ natAbs (bit1 a) = bit1 (natAbs a)
+                                              -- 🎉 no goals
 #align int.nat_abs_bit1_nonneg_step Int.natAbs_bit1_nonneg_step
 
 end Int

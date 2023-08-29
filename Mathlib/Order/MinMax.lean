@@ -164,10 +164,15 @@ theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
     Use cases on this lemma to automate linarith in inequalities -/
 theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
   by_cases h : a ≤ b
+  -- ⊢ min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a
   · left
+    -- ⊢ min a b = a ∧ a ≤ b
     exact ⟨min_eq_left h, h⟩
+    -- 🎉 no goals
   · right
+    -- ⊢ min a b = b ∧ b < a
     exact ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
+    -- 🎉 no goals
 #align min_cases min_cases
 
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
@@ -179,9 +184,17 @@ theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b
 
 theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
   constructor
+  -- ⊢ min a b = c → a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a
   · intro h
+    -- ⊢ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a
     refine' Or.imp (fun h' => _) (fun h' => _) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
+    -- ⊢ a = c ∧ a ≤ b
+                                                                  -- 🎉 no goals
+                                                                  -- 🎉 no goals
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
+    -- ⊢ min a b = a
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
 #align min_eq_iff min_eq_iff
 
 theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
@@ -190,11 +203,14 @@ theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
 
 theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
   simp_rw [lt_min_iff, min_lt_iff, or_iff_left (lt_irrefl _)]
+  -- ⊢ (a < b ∨ c < b) ∧ a < c ↔ a < b ∧ a < c
   exact and_congr_left fun h => or_iff_left_of_imp h.trans
+  -- 🎉 no goals
 #align min_lt_min_left_iff min_lt_min_left_iff
 
 theorem min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
   simp_rw [min_comm a, min_lt_min_left_iff]
+  -- 🎉 no goals
 #align min_lt_min_right_iff min_lt_min_right_iff
 
 theorem max_lt_max_left_iff : max a c < max b c ↔ a < b ∧ c < b :=
@@ -208,12 +224,14 @@ theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
 /-- An instance asserting that `max a a = a` -/
 instance max_idem : IsIdempotent α max where
   idempotent := by simp
+                   -- 🎉 no goals
 #align max_idem max_idem
 
 -- short-circuit type class inference
 /-- An instance asserting that `min a a = a` -/
 instance min_idem : IsIdempotent α min where
   idempotent := by simp
+                   -- 🎉 no goals
 #align min_idem min_idem
 
 -- short-circuit type class inference
@@ -245,7 +263,10 @@ theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
   cases' le_total a b with h h <;>
+  -- ⊢ f (max a b) = max (f a) (f b)
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align monotone_on.map_max MonotoneOn.map_max
 
 theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
@@ -262,6 +283,9 @@ theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
   cases' le_total a b with h h <;> simp [h, hf h]
+  -- ⊢ f (max a b) = max (f a) (f b)
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align monotone.map_max Monotone.map_max
 
 theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
@@ -270,6 +294,9 @@ theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
 
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
   cases' le_total a b with h h <;> simp [h, hf h]
+  -- ⊢ f (max a b) = min (f a) (f b)
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align antitone.map_max Antitone.map_max
 
 theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
@@ -277,6 +304,9 @@ theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
 #align antitone.map_min Antitone.map_min
 
 theorem min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]
+                                                               -- ⊢ min a b = a ∨ min a b = b
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 #align min_choice min_choice
 
 theorem max_choice (a b : α) : max a b = a ∨ max a b = b :=

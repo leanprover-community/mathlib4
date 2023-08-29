@@ -38,6 +38,7 @@ theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
 theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
   | [] => rfl
   | _ :: l => by simp [product_cons, product_nil]
+                 -- 🎉 no goals
 #align list.product_nil List.product_nil
 
 @[simp]
@@ -50,7 +51,9 @@ theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
   induction' l₁ with x l₁ IH
+  -- ⊢ length ([] ×ˢ l₂) = length [] * length l₂
   · exact (zero_mul _).symm
+    -- 🎉 no goals
   · simp only [length, product_cons, length_append, IH, right_distrib, one_mul, length_map,
       add_comm]
 #align list.length_product List.length_product
@@ -75,6 +78,7 @@ theorem sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
 theorem sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
   | [] => rfl
   | _ :: l => by simp [sigma_cons, sigma_nil]
+                 -- 🎉 no goals
 #align list.sigma_nil List.sigma_nil
 
 @[simp]
@@ -87,8 +91,11 @@ theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ 
 theorem length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = (l₁.map fun a => length (l₂ a)).sum := by
   induction' l₁ with x l₁ IH
+  -- ⊢ length (List.sigma [] l₂) = sum (map (fun a => length (l₂ a)) [])
   · rfl
+    -- 🎉 no goals
   · simp only [map, sigma_cons, length_append, length_map, IH, sum_cons]
+    -- 🎉 no goals
 #align list.length_sigma List.length_sigma
 
 end List

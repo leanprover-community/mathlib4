@@ -58,7 +58,9 @@ theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
 -- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
   funext x
+  -- ⊢ f x = g x
   exact h x
+  -- 🎉 no goals
 
 theorem types_id (X : Type u) : 𝟙 X = id :=
   rfl
@@ -106,8 +108,10 @@ example : α → γ :=
   ↾f ≫ ↾g
 
 example [IsIso (↾f)] : Mono (↾f) := by infer_instance
+                                       -- 🎉 no goals
 
 example [IsIso (↾f)] : ↾f ≫ inv (↾f) = 𝟙 α := by simp
+                                                 -- 🎉 no goals
 
 end
 
@@ -142,10 +146,12 @@ variable (σ : F ⟶ G) (τ : G ⟶ H)
 @[simp]
 theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
     (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp [types_comp]
+                                                      -- 🎉 no goals
 #align category_theory.functor_to_types.map_comp_apply CategoryTheory.FunctorToTypes.map_comp_apply
 
 @[simp]
 theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp [types_id]
+                                                               -- 🎉 no goals
 #align category_theory.functor_to_types.map_id_apply CategoryTheory.FunctorToTypes.map_id_apply
 
 theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map f) (σ.app X x) :=
@@ -233,6 +239,7 @@ def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
   ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
+                                       -- 🎉 no goals
 #align category_theory.hom_of_element_eq_iff CategoryTheory.homOfElement_eq_iff
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective.
@@ -241,11 +248,17 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 -/
 theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
+  -- ⊢ Mono f → Function.Injective f
   · intro H x x' h
+    -- ⊢ x = x'
     skip
+    -- ⊢ x = x'
     rw [← homOfElement_eq_iff] at h ⊢
+    -- ⊢ homOfElement x = homOfElement x'
     exact (cancel_mono f).mp h
+    -- 🎉 no goals
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩
+    -- 🎉 no goals
 #align category_theory.mono_iff_injective CategoryTheory.mono_iff_injective
 
 theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
@@ -258,13 +271,21 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 -/
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
+  -- ⊢ Epi f → Function.Surjective f
   · rintro ⟨H⟩
+    -- ⊢ Function.Surjective f
     refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
+    -- ⊢ g₁ = g₂
     rw [← Equiv.ulift.symm.injective.comp_left.eq_iff]
+    -- ⊢ (fun x x_1 => x ∘ x_1) (↑Equiv.ulift.symm) g₁ = (fun x x_1 => x ∘ x_1) (↑Equ …
     apply H
+    -- ⊢ f ≫ (fun x x_1 => x ∘ x_1) (↑Equiv.ulift.symm) g₁ = f ≫ (fun x x_1 => x ∘ x_ …
     change ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f
+    -- ⊢ ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f
     rw [hg]
+    -- 🎉 no goals
   · exact fun H => ⟨fun g g' h => H.injective_comp_right h⟩
+    -- 🎉 no goals
 #align category_theory.epi_iff_surjective CategoryTheory.epi_iff_surjective
 
 theorem surjective_of_epi {X Y : Type u} (f : X ⟶ Y) [hf : Epi f] : Function.Surjective f :=
@@ -280,6 +301,8 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
   obj := m
   map f := Functor.map f
   map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
+                        -- ⊢ { obj := m, map := fun {X Y} f => Functor.map f }.map (𝟙 α) X = 𝟙 ({ obj :=  …
+                                  -- 🎉 no goals
   `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its
   original proof -/
   map_comp f g := funext fun a => LawfulFunctor.comp_map f g _

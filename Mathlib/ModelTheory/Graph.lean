@@ -78,12 +78,15 @@ theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
       (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
         Symmetric fun x y : V => RelMap adj ![x, y] :=
   by simp [Theory.simpleGraph]
+     -- 🎉 no goals
 #align first_order.language.Theory.simple_graph_model_iff FirstOrder.Language.Theory.simpleGraph_model_iff
 
 instance simpleGraph_model (G : SimpleGraph V) :
     @Theory.Model _ V G.structure Theory.simpleGraph := by
   simp only [@Theory.simpleGraph_model_iff _ G.structure, relMap_apply₂]
+  -- ⊢ (Irreflexive fun x y => SimpleGraph.Adj G x y) ∧ Symmetric fun x y => Simple …
   exact ⟨G.loopless, G.symm⟩
+  -- 🎉 no goals
 #align first_order.language.simple_graph_model FirstOrder.Language.simpleGraph_model
 
 variable (V)
@@ -108,13 +111,16 @@ variable {V}
 theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
     @simpleGraphOfStructure V G.structure _ = G := by
   ext
+  -- ⊢ SimpleGraph.Adj (FirstOrder.Language.simpleGraphOfStructure V) x✝¹ x✝ ↔ Simp …
   rfl
+  -- 🎉 no goals
 #align simple_graph.simple_graph_of_structure SimpleGraph.simpleGraphOfStructure
 
 @[simp]
 theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
     (simpleGraphOfStructure V).structure = S := by
   ext
+  -- ⊢ funMap x✝¹ x✝ = funMap x✝¹ x✝
   case funMap n f xs =>
     exact (IsRelational.empty_functions n).elim f
   case RelMap n r xs =>

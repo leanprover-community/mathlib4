@@ -72,8 +72,11 @@ open SubmonoidClass
 @[to_additive "Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`."]
 theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ S) : l.prod ∈ S := by
   lift l to List S using hl
+  -- ⊢ List.prod (List.map Subtype.val l) ∈ S
   rw [← coe_list_prod]
+  -- ⊢ ↑(List.prod l) ∈ S
   exact l.prod.coe_prop
+  -- 🎉 no goals
 #align list_prod_mem list_prod_mem
 #align list_sum_mem list_sum_mem
 
@@ -84,8 +87,11 @@ theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ S) : l.prod ∈ S :=
 theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (m : Multiset M)
     (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
   lift m to Multiset S using hm
+  -- ⊢ Multiset.prod (Multiset.map Subtype.val m) ∈ S
   rw [← coe_multiset_prod]
+  -- ⊢ ↑(Multiset.prod m) ∈ S
   exact m.prod.coe_prop
+  -- 🎉 no goals
 #align multiset_prod_mem multiset_prod_mem
 #align multiset_sum_mem multiset_sum_mem
 
@@ -130,8 +136,11 @@ theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (
 @[to_additive "Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`."]
 theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ s) : l.prod ∈ s := by
   lift l to List s using hl
+  -- ⊢ List.prod (List.map Subtype.val l) ∈ s
   rw [← coe_list_prod]
+  -- ⊢ ↑(List.prod l) ∈ s
   exact l.prod.coe_prop
+  -- 🎉 no goals
 #align submonoid.list_prod_mem Submonoid.list_prod_mem
 #align add_submonoid.list_sum_mem AddSubmonoid.list_sum_mem
 
@@ -142,8 +151,11 @@ theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ s) : l.prod ∈ s :=
 theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
     (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
   lift m to Multiset S using hm
+  -- ⊢ Multiset.prod (Multiset.map Subtype.val m) ∈ S
   rw [← coe_multiset_prod]
+  -- ⊢ ↑(Multiset.prod m) ∈ S
   exact m.prod.coe_prop
+  -- 🎉 no goals
 #align submonoid.multiset_prod_mem Submonoid.multiset_prod_mem
 #align add_submonoid.multiset_sum_mem AddSubmonoid.multiset_sum_mem
 
@@ -151,8 +163,11 @@ theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
 theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : ∀ x ∈ m, x ∈ S) :
     m.noncommProd comm ∈ S := by
   induction' m using Quotient.inductionOn with l
+  -- ⊢ Multiset.noncommProd (Quotient.mk (List.isSetoid M) l) comm ∈ S
   simp only [Multiset.quot_mk_to_coe, Multiset.noncommProd_coe]
+  -- ⊢ List.prod l ∈ S
   exact Submonoid.list_prod_mem _ h
+  -- 🎉 no goals
 #align submonoid.multiset_noncomm_prod_mem Submonoid.multiset_noncommProd_mem
 #align add_submonoid.multiset_noncomm_sum_mem AddSubmonoid.multiset_noncommSum_mem
 
@@ -173,10 +188,15 @@ theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : 
 theorem noncommProd_mem (S : Submonoid M) {ι : Type*} (t : Finset ι) (f : ι → M) (comm)
     (h : ∀ c ∈ t, f c ∈ S) : t.noncommProd f comm ∈ S := by
   apply multiset_noncommProd_mem
+  -- ⊢ ∀ (x : M), x ∈ Multiset.map f t.val → x ∈ S
   intro y
+  -- ⊢ y ∈ Multiset.map f t.val → y ∈ S
   rw [Multiset.mem_map]
+  -- ⊢ (∃ a, a ∈ t.val ∧ f a = y) → y ∈ S
   rintro ⟨x, ⟨hx, rfl⟩⟩
+  -- ⊢ f x ∈ S
   exact h x hx
+  -- 🎉 no goals
 #align submonoid.noncomm_prod_mem Submonoid.noncommProd_mem
 #align add_submonoid.noncomm_sum_mem AddSubmonoid.noncommSum_mem
 
@@ -198,13 +218,19 @@ namespace Submonoid
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
     {x : M} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  -- ⊢ x ∈ ⨆ (i : ι), S i → ∃ i, x ∈ S i
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine' fun hx => closure_induction hx (fun _ => mem_iUnion.1) _ _
+  -- ⊢ ∃ i, 1 ∈ S i
   · exact hι.elim fun i => ⟨i, (S i).one_mem⟩
+    -- 🎉 no goals
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+    -- ⊢ ∃ i, x * y ∈ S i
     rcases hS i j with ⟨k, hki, hkj⟩
+    -- ⊢ ∃ i, x * y ∈ S i
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
+    -- 🎉 no goals
 #align submonoid.mem_supr_of_directed Submonoid.mem_iSup_of_directed
 #align add_submonoid.mem_supr_of_directed AddSubmonoid.mem_iSup_of_directed
 
@@ -212,6 +238,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, ↑(S i) :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
+                      -- 🎉 no goals
 #align submonoid.coe_supr_of_directed Submonoid.coe_iSup_of_directed
 #align add_submonoid.coe_supr_of_directed AddSubmonoid.coe_iSup_of_directed
 
@@ -219,7 +246,9 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : D
 theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
+  -- ⊢ x ∈ sSup S ↔ ∃ s, s ∈ S ∧ x ∈ s
   simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk]
+  -- 🎉 no goals
 #align submonoid.mem_Sup_of_directed_on Submonoid.mem_sSup_of_directedOn
 #align add_submonoid.mem_Sup_of_directed_on AddSubmonoid.mem_sSup_of_directedOn
 
@@ -227,20 +256,25 @@ theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
 theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+                      -- 🎉 no goals
 #align submonoid.coe_Sup_of_directed_on Submonoid.coe_sSup_of_directedOn
 #align add_submonoid.coe_Sup_of_directed_on AddSubmonoid.coe_sSup_of_directedOn
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
+  -- ⊢ S ≤ S ⊔ T
   exact le_sup_left
+  -- 🎉 no goals
 #align submonoid.mem_sup_left Submonoid.mem_sup_left
 #align add_submonoid.mem_sup_left AddSubmonoid.mem_sup_left
 
 @[to_additive]
 theorem mem_sup_right {S T : Submonoid M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
+  -- ⊢ T ≤ S ⊔ T
   exact le_sup_right
+  -- 🎉 no goals
 #align submonoid.mem_sup_right Submonoid.mem_sup_right
 #align add_submonoid.mem_sup_right AddSubmonoid.mem_sup_right
 
@@ -254,7 +288,9 @@ theorem mul_mem_sup {S T : Submonoid M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) 
 theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Submonoid M} (i : ι) :
     ∀ {x : M}, x ∈ S i → x ∈ iSup S := by
   rw [←SetLike.le_def]
+  -- ⊢ S i ≤ iSup S
   exact le_iSup _ _
+  -- 🎉 no goals
 #align submonoid.mem_supr_of_mem Submonoid.mem_iSup_of_mem
 #align add_submonoid.mem_supr_of_mem AddSubmonoid.mem_iSup_of_mem
 
@@ -262,7 +298,9 @@ theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Submonoid M} (i : ι) :
 theorem mem_sSup_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ S) :
     ∀ {x : M}, x ∈ s → x ∈ sSup S := by
   rw [←SetLike.le_def]
+  -- ⊢ s ≤ sSup S
   exact le_sSup hs
+  -- 🎉 no goals
 #align submonoid.mem_Sup_of_mem Submonoid.mem_sSup_of_mem
 #align add_submonoid.mem_Sup_of_mem AddSubmonoid.mem_sSup_of_mem
 
@@ -276,9 +314,13 @@ then it holds for all elements of the supremum of `S`. -/
 theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
     (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
+  -- ⊢ C x
   refine closure_induction hx (fun x hx => ?_) h1 hmul
+  -- ⊢ C x
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+  -- ⊢ C x
   exact hp _ _ hi
+  -- 🎉 no goals
 #align submonoid.supr_induction Submonoid.iSup_induction
 #align add_submonoid.supr_induction AddSubmonoid.iSup_induction
 
@@ -289,11 +331,16 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   refine' Exists.elim (_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
+  -- ⊢ ∃ Hx, C x Hx
   refine' @iSup_induction _ _ ι S (fun m => ∃ hm, C m hm) _ hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, hp _ _ hx⟩
+    -- 🎉 no goals
   · exact ⟨_, h1⟩
+    -- 🎉 no goals
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
+    -- ⊢ ∃ hm, C (x * y) hm
     refine' ⟨_, hmul _ _ _ _ Cx Cy⟩
+    -- 🎉 no goals
 #align submonoid.supr_induction' Submonoid.iSup_induction'
 #align add_submonoid.supr_induction' AddSubmonoid.iSup_induction'
 
@@ -332,6 +379,8 @@ theorem closure_singleton_eq (x : M) : closure ({x} : Set M) = mrange (powersHom
     the element. -/
 theorem mem_closure_singleton {x y : M} : y ∈ closure ({x} : Set M) ↔ ∃ n : ℕ, x ^ n = y := by
   rw [closure_singleton_eq, mem_mrange]; rfl
+  -- ⊢ (∃ x_1, ↑(↑(powersHom M) x) x_1 = y) ↔ ∃ n, x ^ n = y
+                                         -- 🎉 no goals
 #align submonoid.mem_closure_singleton Submonoid.mem_closure_singleton
 
 theorem mem_closure_singleton_self {y : M} : y ∈ closure ({y} : Set M) :=
@@ -340,6 +389,7 @@ theorem mem_closure_singleton_self {y : M} : y ∈ closure ({y} : Set M) :=
 
 theorem closure_singleton_one : closure ({1} : Set M) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
+  -- 🎉 no goals
 #align submonoid.closure_singleton_one Submonoid.closure_singleton_one
 
 @[to_additive]
@@ -353,6 +403,7 @@ theorem _root_.FreeMonoid.mrange_lift {α} (f : α → M) :
 @[to_additive]
 theorem closure_eq_mrange (s : Set M) : closure s = mrange (FreeMonoid.lift ((↑) : s → M)) := by
   rw [FreeMonoid.mrange_lift, Subtype.range_coe]
+  -- 🎉 no goals
 #align submonoid.closure_eq_mrange Submonoid.closure_eq_mrange
 #align add_submonoid.closure_eq_mrange AddSubmonoid.closure_eq_mrange
 
@@ -360,7 +411,9 @@ theorem closure_eq_mrange (s : Set M) : closure s = mrange (FreeMonoid.lift ((�
 theorem closure_eq_image_prod (s : Set M) :
     (closure s : Set M) = List.prod '' { l : List M | ∀ x ∈ l, x ∈ s } := by
   rw [closure_eq_mrange, coe_mrange, ← Set.range_list_map_coe, ← Set.range_comp]
+  -- ⊢ Set.range ↑(↑FreeMonoid.lift Subtype.val) = Set.range (List.prod ∘ List.map  …
   exact congrArg _ (funext <| FreeMonoid.lift_apply _)
+  -- 🎉 no goals
 #align submonoid.closure_eq_image_prod Submonoid.closure_eq_image_prod
 #align add_submonoid.closure_eq_image_sum AddSubmonoid.closure_eq_image_sum
 
@@ -368,6 +421,7 @@ theorem closure_eq_image_prod (s : Set M) :
 theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
     ∃ (l : List M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
   rwa [← SetLike.mem_coe, closure_eq_image_prod, Set.mem_image_iff_bex] at hx
+  -- 🎉 no goals
 #align submonoid.exists_list_of_mem_closure Submonoid.exists_list_of_mem_closure
 #align add_submonoid.exists_list_of_mem_closure AddSubmonoid.exists_list_of_mem_closure
 
@@ -375,7 +429,9 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
 theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
     (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
+  -- ⊢ ∃ l x_1, Multiset.prod l = x
   exact ⟨l, h1, (Multiset.coe_prod l).trans h2⟩
+  -- 🎉 no goals
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
 #align add_submonoid.exists_multiset_of_mem_closure AddSubmonoid.exists_multiset_of_mem_closure
 
@@ -383,10 +439,15 @@ theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x
 theorem closure_induction_left {s : Set M} {p : M → Prop} {x : M} (h : x ∈ closure s) (H1 : p 1)
     (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x := by
   rw [closure_eq_mrange] at h
+  -- ⊢ p x
   obtain ⟨l, rfl⟩ := h
+  -- ⊢ p (↑(↑FreeMonoid.lift Subtype.val) l)
   induction' l using FreeMonoid.recOn with x y ih
+  -- ⊢ p (↑(↑FreeMonoid.lift Subtype.val) 1)
   · exact H1
+    -- 🎉 no goals
   · simpa only [map_mul, FreeMonoid.lift_eval_of] using Hmul _ x.prop _ ih
+    -- 🎉 no goals
 #align submonoid.closure_induction_left Submonoid.closure_induction_left
 #align add_submonoid.closure_induction_left AddSubmonoid.closure_induction_left
 
@@ -396,7 +457,9 @@ theorem induction_of_closure_eq_top_left {s : Set M} {p : M → Prop} (hs : clos
   closure_induction_left
     (by
       rw [hs]
+      -- ⊢ x ∈ ⊤
       exact mem_top _)
+      -- 🎉 no goals
     H1 Hmul
 #align submonoid.induction_of_closure_eq_top_left Submonoid.induction_of_closure_eq_top_left
 #align add_submonoid.induction_of_closure_eq_top_left AddSubmonoid.induction_of_closure_eq_top_left
@@ -416,6 +479,8 @@ theorem induction_of_closure_eq_top_right {s : Set M} {p : M → Prop} (hs : clo
     (H1 : p 1) (Hmul : ∀ (x), ∀ y ∈ s, p x → p (x * y)) : p x :=
   closure_induction_right
     (by rw [hs]; exact mem_top _)
+        -- ⊢ x ∈ ⊤
+                 -- 🎉 no goals
     H1 Hmul
 #align submonoid.induction_of_closure_eq_top_right Submonoid.induction_of_closure_eq_top_right
 #align add_submonoid.induction_of_closure_eq_top_right AddSubmonoid.induction_of_closure_eq_top_right
@@ -424,6 +489,8 @@ theorem induction_of_closure_eq_top_right {s : Set M} {p : M → Prop} (hs : clo
 def powers (n : M) : Submonoid M :=
   Submonoid.copy (mrange (powersHom M n)) (Set.range ((· ^ ·) n : ℕ → M)) <|
     Set.ext fun n => exists_congr fun i => by simp; rfl
+                                              -- ⊢ n✝ ^ i = n ↔ n✝ ^ ↑Multiplicative.toAdd i = n
+                                                    -- 🎉 no goals
 #align submonoid.powers Submonoid.powers
 
 theorem mem_powers (n : M) : n ∈ powers n :=
@@ -440,7 +507,9 @@ theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
 
 theorem powers_eq_closure (n : M) : powers n = closure {n} := by
   ext
+  -- ⊢ x✝ ∈ powers n ↔ x✝ ∈ closure {n}
   exact mem_closure_singleton.symm
+  -- 🎉 no goals
 #align submonoid.powers_eq_closure Submonoid.powers_eq_closure
 
 theorem powers_subset {n : M} {P : Submonoid M} (h : n ∈ P) : powers n ≤ P := fun x hx =>
@@ -494,6 +563,7 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
   left_inv := log_pow_eq_self h
   right_inv := pow_log_eq_self
   map_mul' _ _ := by simp only [pow, map_mul, ofAdd_add, toAdd_mul]
+                     -- 🎉 no goals
 #align submonoid.pow_log_equiv Submonoid.powLogEquiv
 #align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symm_apply
 #align submonoid.pow_log_equiv_apply Submonoid.powLogEquiv_apply
@@ -511,6 +581,7 @@ theorem log_pow_int_eq_self {x : ℤ} (h : 1 < x.natAbs) (m : ℕ) : log (pow x 
 theorem map_powers {N : Type*} {F : Type*} [Monoid N] [MonoidHomClass F M N] (f : F) (m : M) :
     (powers m).map f = powers (f m) := by
   simp only [powers_eq_closure, map_mclosure f, Set.image_singleton]
+  -- 🎉 no goals
 #align submonoid.map_powers Submonoid.map_powers
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
@@ -522,7 +593,9 @@ def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ (a) (_ : a ∈ s) (b) (_ : 
   { (closure s).toMonoid with
     mul_comm := fun x y => by
       ext
+      -- ⊢ ↑(x * y) = ↑(y * x)
       simp only [Submonoid.coe_mul]
+      -- ⊢ ↑x * ↑y = ↑y * ↑x
       exact
         closure_induction₂ x.prop y.prop hcomm Commute.one_left Commute.one_right
           (fun x y z => Commute.mul_left) fun x y z => Commute.mul_right }
@@ -536,11 +609,17 @@ theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul
     {s : Set M} (htop : Submonoid.closure s = ⊤)
     (hs : ∀ x ∈ s, ∀ (y : N) (z : α), (x • y) • z = x • y • z) : IsScalarTower M N α := by
   refine' ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x _ _⟩
+  -- ⊢ ∀ (y : N) (z : α), (1 • y) • z = 1 • y • z
   · intro y z
+    -- ⊢ (1 • y) • z = 1 • y • z
     rw [one_smul, one_smul]
+    -- 🎉 no goals
   · clear x
+    -- ⊢ ∀ (x : M), x ∈ s → ∀ (y : M), (∀ (y_1 : N) (z : α), (y • y_1) • z = y • y_1  …
     intro x hx x' hx' y z
+    -- ⊢ ((x * x') • y) • z = (x * x') • y • z
     rw [mul_smul, mul_smul, hs x hx, hx']
+    -- 🎉 no goals
 #align is_scalar_tower.of_mclosure_eq_top IsScalarTower.of_mclosure_eq_top
 #align vadd_assoc_class.of_mclosure_eq_top VAddAssocClass.of_mclosure_eq_top
 
@@ -549,11 +628,17 @@ theorem SMulCommClass.of_mclosure_eq_top {N α} [Monoid M] [SMul N α] [MulActio
     (htop : Submonoid.closure s = ⊤) (hs : ∀ x ∈ s, ∀ (y : N) (z : α), x • y • z = y • x • z) :
     SMulCommClass M N α := by
   refine' ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x _ _⟩
+  -- ⊢ ∀ (n : N) (a : α), 1 • n • a = n • 1 • a
   · intro y z
+    -- ⊢ 1 • y • z = y • 1 • z
     rw [one_smul, one_smul]
+    -- 🎉 no goals
   · clear x
+    -- ⊢ ∀ (x : M), x ∈ s → ∀ (y : M), (∀ (n : N) (a : α), y • n • a = n • y • a) → ∀ …
     intro x hx x' hx' y z
+    -- ⊢ (x * x') • y • z = y • (x * x') • z
     rw [mul_smul, mul_smul, hx', hs x hx]
+    -- 🎉 no goals
 #align smul_comm_class.of_mclosure_eq_top SMulCommClass.of_mclosure_eq_top
 #align vadd_comm_class.of_mclosure_eq_top VAddCommClass.of_mclosure_eq_top
 
@@ -595,16 +680,20 @@ theorem closure_singleton_eq (x : A) :
 natural number multiples of the element. -/
 theorem mem_closure_singleton {x y : A} : y ∈ closure ({x} : Set A) ↔ ∃ n : ℕ, n • x = y := by
   rw [closure_singleton_eq, AddMonoidHom.mem_mrange]; rfl
+  -- ⊢ (∃ x_1, ↑(↑(multiplesHom A) x) x_1 = y) ↔ ∃ n, n • x = y
+                                                      -- 🎉 no goals
 #align add_submonoid.mem_closure_singleton AddSubmonoid.mem_closure_singleton
 
 theorem closure_singleton_zero : closure ({0} : Set A) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton, nsmul_zero]
+  -- 🎉 no goals
 #align add_submonoid.closure_singleton_zero AddSubmonoid.closure_singleton_zero
 
 /-- The additive submonoid generated by an element. -/
 def multiples (x : A) : AddSubmonoid A :=
   AddSubmonoid.copy (AddMonoidHom.mrange (multiplesHom A x)) (Set.range (fun i => i • x : ℕ → A)) <|
     Set.ext fun n => exists_congr fun i => by simp
+                                              -- 🎉 no goals
 #align add_submonoid.multiples AddSubmonoid.multiples
 
 attribute [to_additive existing multiples] Submonoid.powers
@@ -642,12 +731,20 @@ and an element of `M` is contained in the additive closure of `M`. -/
 theorem mul_right_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R)) (hb : b ∈ S) :
     a * b ∈ AddSubmonoid.closure (S : Set R) := by
   revert b
+  -- ⊢ ∀ {b : R}, b ∈ S → a * b ∈ AddSubmonoid.closure ↑S
   refine' @AddSubmonoid.closure_induction _ _ _
     (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closure S) _ ha _ _ _ <;> clear ha a
+                                                                                -- ⊢ ∀ (x : R), x ∈ ↑S → (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closur …
+                                                                                -- ⊢ (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closure ↑S) 0
+                                                                                -- ⊢ ∀ (x y : R), (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closure ↑S) x …
   · exact fun r hr b hb => AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
+    -- 🎉 no goals
   · exact fun b _ => by simp only [zero_mul, (AddSubmonoid.closure (S : Set R)).zero_mem]
+    -- 🎉 no goals
   · simp_rw [add_mul]
+    -- ⊢ ∀ (x y : R), (∀ (b : R), b ∈ S → x * b ∈ AddSubmonoid.closure ↑S) → (∀ (b :  …
     exact fun r s hr hs b hb => (AddSubmonoid.closure (S : Set R)).add_mem (hr _ hb) (hs _ hb)
+    -- 🎉 no goals
 #align mul_mem_class.mul_right_mem_add_closure MulMemClass.mul_right_mem_add_closure
 
 /-- The product of two elements of the additive closure of a submonoid `M` is an element of the
@@ -655,13 +752,21 @@ additive closure of `M`. -/
 theorem mul_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R))
     (hb : b ∈ AddSubmonoid.closure (S : Set R)) : a * b ∈ AddSubmonoid.closure (S : Set R) := by
   revert a
+  -- ⊢ ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * b ∈ AddSubmonoid.closure ↑S
   refine' @AddSubmonoid.closure_induction _ _ _
     (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddSubmonoid.closure ↑S)
       _ hb _ _ _ <;> clear hb b
+                     -- ⊢ ∀ (x : R), x ∈ ↑S → (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z …
+                     -- ⊢ (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddSubmonoid.clos …
+                     -- ⊢ ∀ (x y : R), (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddS …
   · exact fun r hr b hb => MulMemClass.mul_right_mem_add_closure hb hr
+    -- 🎉 no goals
   · exact fun _ => by simp only [mul_zero, (AddSubmonoid.closure (S : Set R)).zero_mem]
+    -- 🎉 no goals
   · simp_rw [mul_add]
+    -- ⊢ ∀ (x y : R), (∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * x ∈ AddSubmonoid. …
     exact fun r s hr hs b hb => (AddSubmonoid.closure (S : Set R)).add_mem (hr hb) (hs hb)
+    -- 🎉 no goals
 #align mul_mem_class.mul_mem_add_closure MulMemClass.mul_mem_add_closure
 
 /-- The product of an element of `S` and an element of the additive closure of a multiplicative
@@ -683,7 +788,9 @@ elements. -/
 theorem mem_closure_pair {A : Type*} [CommMonoid A] (a b c : A) :
     c ∈ Submonoid.closure ({a, b} : Set A) ↔ ∃ m n : ℕ, a ^ m * b ^ n = c := by
   rw [← Set.singleton_union, Submonoid.closure_union, mem_sup]
+  -- ⊢ (∃ y, y ∈ closure {a} ∧ ∃ z, z ∈ closure {b} ∧ y * z = c) ↔ ∃ m n, a ^ m * b …
   simp_rw [mem_closure_singleton, exists_exists_eq_and]
+  -- 🎉 no goals
 #align submonoid.mem_closure_pair Submonoid.mem_closure_pair
 #align add_submonoid.mem_closure_pair AddSubmonoid.mem_closure_pair
 
@@ -694,21 +801,32 @@ section mul_add
 theorem ofMul_image_powers_eq_multiples_ofMul [Monoid M] {x : M} :
     Additive.ofMul '' (Submonoid.powers x : Set M) = AddSubmonoid.multiples (Additive.ofMul x) := by
   ext
+  -- ⊢ x✝ ∈ ↑Additive.ofMul '' ↑(Submonoid.powers x) ↔ x✝ ∈ ↑(AddSubmonoid.multiple …
   constructor
+  -- ⊢ x✝ ∈ ↑Additive.ofMul '' ↑(Submonoid.powers x) → x✝ ∈ ↑(AddSubmonoid.multiple …
   · rintro ⟨y, ⟨n, hy1⟩, hy2⟩
+    -- ⊢ x✝ ∈ ↑(AddSubmonoid.multiples (↑Additive.ofMul x))
     use n
+    -- ⊢ (fun i => i • ↑Additive.ofMul x) n = x✝
     simpa [← ofMul_pow, hy1]
+    -- 🎉 no goals
   · rintro ⟨n, hn⟩
+    -- ⊢ x✝ ∈ ↑Additive.ofMul '' ↑(Submonoid.powers x)
     refine' ⟨x ^ n, ⟨n, rfl⟩, _⟩
+    -- ⊢ ↑Additive.ofMul (x ^ n) = x✝
     rwa [ofMul_pow]
+    -- 🎉 no goals
 #align of_mul_image_powers_eq_multiples_of_mul ofMul_image_powers_eq_multiples_ofMul
 
 theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
     Multiplicative.ofAdd '' (AddSubmonoid.multiples x : Set A) =
       Submonoid.powers (Multiplicative.ofAdd x) := by
   symm
+  -- ⊢ ↑(Submonoid.powers (↑Multiplicative.ofAdd x)) = ↑Multiplicative.ofAdd '' ↑(A …
   rw [Equiv.eq_image_iff_symm_image_eq]
+  -- ⊢ ↑Multiplicative.ofAdd.symm '' ↑(Submonoid.powers (↑Multiplicative.ofAdd x))  …
   exact ofMul_image_powers_eq_multiples_ofMul
+  -- 🎉 no goals
 #align of_add_image_multiples_eq_powers_of_add ofAdd_image_multiples_eq_powers_ofAdd
 
 end mul_add

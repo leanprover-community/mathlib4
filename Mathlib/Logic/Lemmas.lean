@@ -29,12 +29,20 @@ theorem dite_dite_distrib_left {a : p → α} {b : ¬p → q → α} {c : ¬p �
     (dite p a fun hp ↦ dite q (b hp) (c hp)) =
       dite q (fun hq ↦ (dite p a) fun hp ↦ b hp hq) fun hq ↦ (dite p a) fun hp ↦ c hp hq := by
   split_ifs <;> rfl
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align dite_dite_distrib_left dite_dite_distrib_left
 
 theorem dite_dite_distrib_right {a : p → q → α} {b : p → ¬q → α} {c : ¬p → α} :
     dite p (fun hp ↦ dite q (a hp) (b hp)) c =
       dite q (fun hq ↦ dite p (fun hp ↦ a hp hq) c) fun hq ↦ dite p (fun hp ↦ b hp hq) c := by
   split_ifs <;> rfl
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align dite_dite_distrib_right dite_dite_distrib_right
 
 theorem ite_dite_distrib_left {a : α} {b : q → α} {c : ¬q → α} :
@@ -67,9 +75,25 @@ theorem ite_ite_distrib_right : ite p (ite q a b) c = ite q (ite p a c) (ite p b
 
 lemma Prop.forall {f : Prop → Prop} : (∀ p, f p) ↔ f True ∧ f False :=
   ⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
+                          -- ⊢ f p
+                                             -- ⊢ f p
+                                                                 -- ⊢ f True
+                                                                 -- ⊢ f False
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
 #align Prop.forall Prop.forall
 
 lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
   ⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
+                   -- ⊢ p → f True
+                                              -- ⊢ f True
+                                              -- ⊢ f False
+                                                          -- ⊢ True ↔ p
+                                                          -- ⊢ False ↔ p
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
     by rintro (h | h) <;> exact ⟨_, h⟩⟩
+       -- ⊢ ∃ p, f p
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align Prop.exists Prop.exists

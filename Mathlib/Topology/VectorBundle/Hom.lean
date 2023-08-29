@@ -101,13 +101,21 @@ theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E
     ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂')
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
   have h₁ := (compSL F₁ F₂ F₂ σ (RingHom.id 𝕜₂)).continuous
+  -- ⊢ ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂') (e₁.baseSet ∩  …
   have h₂ := (ContinuousLinearMap.flip (compSL F₁ F₁ F₂ (RingHom.id 𝕜₁) σ)).continuous
+  -- ⊢ ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂') (e₁.baseSet ∩  …
   have h₃ := continuousOn_coordChange 𝕜₁ e₁' e₁
+  -- ⊢ ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂') (e₁.baseSet ∩  …
   have h₄ := continuousOn_coordChange 𝕜₂ e₂ e₂'
+  -- ⊢ ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂') (e₁.baseSet ∩  …
   refine' ((h₁.comp_continuousOn (h₄.mono _)).clm_comp (h₂.comp_continuousOn (h₃.mono _))).congr _
   · mfld_set_tac
+    -- 🎉 no goals
   · mfld_set_tac
+    -- 🎉 no goals
   · intro b _; ext L v
+    -- ⊢ continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂' b = (fun x => comp ((↑(compSL …
+               -- ⊢ ↑(↑(continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂' b) L) v = ↑(↑((fun x => c …
     -- Porting note: was
     -- simp only [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
     --   ContinuousLinearEquiv.arrowCongrₛₗ_apply, LinearEquiv.toFun_eq_coe, coe_comp',
@@ -115,7 +123,9 @@ theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E
     --   flip_apply, ContinuousLinearEquiv.symm_symm]
     -- Now `simp` fails to use `ContinuousLinearMap.comp_apply` in this case
     dsimp [continuousLinearMapCoordChange]
+    -- ⊢ ↑(Trivialization.coordChangeL 𝕜₂ e₂ e₂' b) (↑L (↑(ContinuousLinearEquiv.symm …
     rw [ContinuousLinearEquiv.symm_symm]
+    -- 🎉 no goals
 #align pretrivialization.continuous_on_continuous_linear_map_coord_change Pretrivialization.continuousOn_continuousLinearMapCoordChange
 
 variable (σ e₁ e₁' e₂ e₂')
@@ -136,16 +146,26 @@ def continuousLinearMap :
   map_target' := fun ⟨x, f⟩ h => h.1
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ => by
     simp only [TotalSpace.mk_inj]
+    -- ⊢ comp (Trivialization.symmL 𝕜₂ e₂ ((fun p => (p.proj, comp (Trivialization.co …
     ext (v : E₁ x)
+    -- ⊢ ↑(comp (Trivialization.symmL 𝕜₂ e₂ ((fun p => (p.proj, comp (Trivialization. …
     dsimp only [comp_apply]
+    -- ⊢ ↑(Trivialization.symmL 𝕜₂ e₂ x) (↑(Trivialization.continuousLinearMapAt 𝕜₂ e …
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
+    -- ⊢ x ∈ e₁.baseSet
     exacts [h₁, h₂]
+    -- 🎉 no goals
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ => by
     simp only [Prod.mk_inj_left]
+    -- ⊢ comp (Trivialization.continuousLinearMapAt 𝕜₂ e₂ ((fun p => { proj := p.fst, …
     ext v
+    -- ⊢ ↑(comp (Trivialization.continuousLinearMapAt 𝕜₂ e₂ ((fun p => { proj := p.fs …
     dsimp only [comp_apply]
+    -- ⊢ ↑(Trivialization.continuousLinearMapAt 𝕜₂ e₂ x) (↑(Trivialization.symmL 𝕜₂ e …
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
+    -- ⊢ x ∈ e₁.baseSet
     exacts [h₁, h₂]
+    -- 🎉 no goals
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
   baseSet := e₁.baseSet ∩ e₂.baseSet
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
@@ -161,11 +181,15 @@ instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, Co
     { map_add := fun L L' =>
         show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((L + L').comp (e₁.symmL 𝕜₁ x)) = _ by
           simp_rw [add_comp, comp_add]
+          -- ⊢ comp (Trivialization.continuousLinearMapAt 𝕜₂ e₂ x) (comp L (Trivialization. …
           rfl
+          -- 🎉 no goals
       map_smul := fun c L =>
         show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((c • L).comp (e₁.symmL 𝕜₁ x)) = _ by
           simp_rw [smul_comp, comp_smulₛₗ, RingHom.id_apply]
+          -- ⊢ c • comp (Trivialization.continuousLinearMapAt 𝕜₂ e₂ x) (comp L (Trivializat …
           rfl }
+          -- 🎉 no goals
 #align pretrivialization.continuous_linear_map.is_linear Pretrivialization.continuousLinearMap.isLinear
 
 theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x) :
@@ -185,6 +209,9 @@ theorem continuousLinearMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e�
     (continuousLinearMap σ e₁ e₂).symm b L =
       (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) := by
   rw [symm_apply]; rfl; exact hb
+  -- ⊢ cast (_ : Bundle.ContinuousLinearMap σ E₁ E₂ (↑(LocalEquiv.symm (continuousL …
+                   -- ⊢ b ∈ (continuousLinearMap σ e₁ e₂).baseSet
+                        -- 🎉 no goals
 #align pretrivialization.continuous_linear_map_symm_apply' Pretrivialization.continuousLinearMap_symm_apply'
 
 theorem continuousLinearMapCoordChange_apply (b : B)
@@ -192,6 +219,7 @@ theorem continuousLinearMapCoordChange_apply (b : B)
     continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂' b L =
       (continuousLinearMap σ e₁' e₂' ⟨b, (continuousLinearMap σ e₁ e₂).symm b L⟩).2 := by
   ext v
+  -- ⊢ ↑(↑(continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂' b) L) v = ↑(↑(continuousL …
   simp_rw [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.arrowCongrSL_apply, continuousLinearMap_apply,
     continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, comp_apply, ContinuousLinearEquiv.coe_coe,
@@ -200,6 +228,7 @@ theorem continuousLinearMapCoordChange_apply (b : B)
   rw [e₂.coordChangeL_apply e₂', e₁'.coordChangeL_apply e₁, e₁.coe_linearMapAt_of_mem hb.1.1,
     e₂'.coe_linearMapAt_of_mem hb.2.2]
   exacts [⟨hb.2.1, hb.1.1⟩, ⟨hb.1.2, hb.2.2⟩]
+  -- 🎉 no goals
 #align pretrivialization.continuous_linear_map_coord_change_apply Pretrivialization.continuousLinearMapCoordChange_apply
 
 end Pretrivialization
@@ -226,7 +255,9 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
         e = Pretrivialization.continuousLinearMap σ e₁ e₂}
   pretrivialization_linear' := by
     rintro _ ⟨e₁, he₁, e₂, he₂, rfl⟩
+    -- ⊢ Pretrivialization.IsLinear 𝕜₂ (continuousLinearMap σ e₁ he₁)
     infer_instance
+    -- 🎉 no goals
   pretrivializationAt x :=
     Pretrivialization.continuousLinearMap σ (trivializationAt F₁ E₁ x) (trivializationAt F₂ E₂ x)
   mem_base_pretrivializationAt x :=
@@ -235,11 +266,13 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     ⟨trivializationAt F₁ E₁ x, trivializationAt F₂ E₂ x, inferInstance, inferInstance, rfl⟩
   exists_coordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
+    -- ⊢ ∃ f, ContinuousOn f ((continuousLinearMap σ e₁ e₂).baseSet ∩ (continuousLine …
     exact ⟨continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂',
       continuousOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply σ e₁ e₁' e₂ e₂'⟩
   totalSpaceMk_inducing := by
     intro b
+    -- ⊢ Inducing (↑((fun x => continuousLinearMap σ (trivializationAt F₁ E₁ x) (triv …
     let L₁ : E₁ b ≃L[𝕜₁] F₁ :=
       (trivializationAt F₁ E₁ b).continuousLinearEquivAt 𝕜₁ b
         (mem_baseSet_trivializationAt _ _ _)
@@ -247,12 +280,19 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
       (trivializationAt F₂ E₂ b).continuousLinearEquivAt 𝕜₂ b
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
+    -- ⊢ Inducing (↑((fun x => continuousLinearMap σ (trivializationAt F₁ E₁ x) (triv …
     have : Inducing fun x => (b, φ x) := inducing_const_prod.mpr φ.toHomeomorph.inducing
+    -- ⊢ Inducing (↑((fun x => continuousLinearMap σ (trivializationAt F₁ E₁ x) (triv …
     convert this
+    -- ⊢ ((↑((fun x => continuousLinearMap σ (trivializationAt F₁ E₁ x) (trivializati …
     ext f
+    -- ⊢ ↑((↑((fun x => continuousLinearMap σ (trivializationAt F₁ E₁ x) (trivializat …
     dsimp [Pretrivialization.continuousLinearMap_apply]
+    -- ⊢ ↑(Trivialization.linearMapAt 𝕜₂ (trivializationAt F₂ E₂ b) b) (↑x✝ (Triviali …
     rw [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _)]
+    -- ⊢ ↑↑(Trivialization.linearEquivAt 𝕜₂ (trivializationAt F₂ E₂ b) b (_ : b ∈ (tr …
     rfl
+    -- 🎉 no goals
 #align bundle.continuous_linear_map.vector_prebundle Bundle.ContinuousLinearMap.vectorPrebundle
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
@@ -289,6 +329,8 @@ instance Bundle.ContinuousLinearMap.memTrivializationAtlas :
       (e₁.continuousLinearMap σ e₂ :
         Trivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)))
     where out := ⟨_, ⟨e₁, e₂, by infer_instance, by infer_instance, rfl⟩, rfl⟩
+                                 -- 🎉 no goals
+                                                    -- 🎉 no goals
 #align bundle.continuous_linear_map.mem_trivialization_atlas Bundle.ContinuousLinearMap.memTrivializationAtlas
 
 variable {e₁ e₂}

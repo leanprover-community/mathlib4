@@ -74,13 +74,17 @@ instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
     P.map (𝟙 X) = LinearMap.id' := by
   ext
+  -- ⊢ ↑(map P (𝟙 X)) x✝ = ↑id' x✝
   simp
+  -- 🎉 no goals
 
 @[simp]
 theorem map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     P.map (f ≫ g) = (P.map g).comp (P.map f) := by
   ext
+  -- ⊢ ↑(map P (f ≫ g)) x✝ = ↑(comp (map P g) (map P f)) x✝
   simp
+  -- 🎉 no goals
 
 /-- A morphism of presheaves of modules. -/
 structure Hom (P Q : PresheafOfModules R) where
@@ -98,6 +102,7 @@ def id (P : PresheafOfModules R) : Hom P P where
 def comp {P Q R : PresheafOfModules R} (f : Hom P Q) (g : Hom Q R) : Hom P R where
   hom := f.hom ≫ g.hom
   map_smul _ _ _ := by simp [Hom.map_smul]
+                       -- 🎉 no goals
 
 end Hom
 
@@ -118,9 +123,14 @@ def Hom.app (f : Hom P Q) (X : Cᵒᵖ) : P.obj X →ₗ[R.obj X] Q.obj X :=
 @[ext]
 theorem Hom.ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   cases f; cases g;
+  -- ⊢ { hom := hom✝, map_smul := map_smul✝ } = g
+           -- ⊢ { hom := hom✝¹, map_smul := map_smul✝¹ } = { hom := hom✝, map_smul := map_sm …
   congr
+  -- ⊢ hom✝¹ = hom✝
   ext X x
+  -- ⊢ ↑(NatTrans.app hom✝¹ X) x = ↑(NatTrans.app hom✝ X) x
   exact LinearMap.congr_fun (w X) x
+  -- 🎉 no goals
 
 /-- The functor from presheaves of modules over a specified presheaf of rings,
 to presheaves of abelian groups.

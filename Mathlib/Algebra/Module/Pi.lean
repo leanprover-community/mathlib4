@@ -89,13 +89,19 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     where
   add_smul := by
     intros
+    -- ⊢ (r✝ + s✝) • x✝ = r✝ • x✝ + s✝ • x✝
     ext1
+    -- ⊢ ((r✝ + s✝) • x✝¹) x✝ = (r✝ • x✝¹ + s✝ • x✝¹) x✝
     apply add_smul
+    -- 🎉 no goals
   zero_smul := by
     intros
+    -- ⊢ 0 • x✝ = 0
     ext1
+    -- ⊢ (0 • x✝¹) x✝ = OfNat.ofNat 0 x✝
     -- Porting note: not sure why `apply zero_smul` fails here.
     rw [zero_smul]
+    -- 🎉 no goals
 #align pi.module' Pi.module'
 
 instance noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]

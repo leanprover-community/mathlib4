@@ -47,8 +47,11 @@ def toFinsupp : ℕ →₀ M where
   support := (Finset.range l.length).filter fun i => getD l i 0 ≠ 0
   mem_support_toFun n := by
     simp only [Ne.def, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
+    -- ⊢ ¬getD l n 0 = 0 → n < length l
     contrapose!
+    -- ⊢ length l ≤ n → getD l n 0 = 0
     exact getD_eq_default _ _
+    -- 🎉 no goals
 #align list.to_finsupp List.toFinsupp
 
 @[norm_cast]
@@ -86,12 +89,17 @@ theorem toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
 theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
     toFinsupp ([] : List M) = 0 := by
   ext
+  -- ⊢ ↑(toFinsupp []) a✝ = ↑0 a✝
   simp
+  -- 🎉 no goals
 #align list.to_finsupp_nil List.toFinsupp_nil
 
 theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
   ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
+  -- ⊢ ↑(toFinsupp [x]) Nat.zero = ↑(Finsupp.single 0 x) Nat.zero
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align list.to_finsupp_singleton List.toFinsupp_singleton
 
 @[simp]
@@ -114,7 +122,9 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     toFinsupp (l₁ ++ l₂) =
       toFinsupp l₁ + (toFinsupp l₂).embDomain (addLeftEmbedding l₁.length) := by
   ext n
+  -- ⊢ ↑(toFinsupp (l₁ ++ l₂)) n = ↑(toFinsupp l₁ + Finsupp.embDomain (addLeftEmbed …
   simp only [toFinsupp_apply, Finsupp.add_apply]
+  -- ⊢ getD (l₁ ++ l₂) n 0 = getD l₁ n 0 + ↑(Finsupp.embDomain (addLeftEmbedding (l …
   cases lt_or_le n l₁.length with
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
@@ -150,6 +160,8 @@ theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
   /- porting note: todo: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
+  -- ⊢ ∀ (l : List R) [inst : DecidablePred fun x => getD l x 0 ≠ 0], toFinsupp l = …
+            -- ⊢ ∀ [inst : DecidablePred fun x => getD l x 0 ≠ 0], toFinsupp l = sum (map (fu …
   induction l using List.reverseRecOn with
   | H0 => exact toFinsupp_nil
   | H1 x xs ih =>

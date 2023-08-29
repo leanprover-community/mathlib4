@@ -45,17 +45,25 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
   isUpperSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by
       rw [closure_smul]
+      -- ⊢ y ∈ (y / x) • closure s
       exact ⟨x, hx, div_mul_cancel' _ _⟩
+      -- 🎉 no goals
   isLowerSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| div_le_one'.2 hxy) <| by
       rw [closure_smul]
+      -- ⊢ y ∈ (y / x) • closure s
       exact ⟨x, hx, div_mul_cancel' _ _⟩
+      -- 🎉 no goals
   isOpen_upperClosure s hs := by
     rw [← mul_one s, ← mul_upperClosure]
+    -- ⊢ IsOpen (s * ↑(upperClosure 1))
     exact hs.mul_right
+    -- 🎉 no goals
   isOpen_lowerClosure s hs := by
     rw [← mul_one s, ← mul_lowerClosure]
+    -- ⊢ IsOpen (s * ↑(lowerClosure 1))
     exact hs.mul_right
+    -- 🎉 no goals
 #align ordered_comm_group.to_has_upper_lower_closure OrderedCommGroup.to_hasUpperLowerClosure
 #align ordered_add_comm_group.to_has_upper_lower_closure OrderedAddCommGroup.to_hasUpperLowerClosure
 
@@ -100,7 +108,9 @@ oooooxx
 -/
 protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
   rw [← isLowerSet_compl, ← closure_compl]
+  -- ⊢ IsLowerSet (closure sᶜ)
   exact h.compl.closure
+  -- 🎉 no goals
 #align is_upper_set.interior IsUpperSet.interior
 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
@@ -109,6 +119,7 @@ protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior 
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
   rw [← h.upperClosure_inter_lowerClosure, interior_inter]
+  -- ⊢ OrdConnected (interior ↑(upperClosure s) ∩ interior ↑(lowerClosure s))
   exact
     (upperClosure s).upper.interior.ordConnected.inter (lowerClosure s).lower.interior.ordConnected
 #align set.ord_connected.interior Set.OrdConnected.interior

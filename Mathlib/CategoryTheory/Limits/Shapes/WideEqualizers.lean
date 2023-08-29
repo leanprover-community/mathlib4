@@ -103,6 +103,19 @@ instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J
   id := WalkingParallelFamily.Hom.id
   comp := WalkingParallelFamily.Hom.comp
   assoc f g h := by cases f <;> cases g <;> cases h <;> aesop_cat
+                    -- ⊢ (Hom.id W✝ ≫ g) ≫ h = Hom.id W✝ ≫ g ≫ h
+                  -- ⊢ Hom.id X✝ ≫ 𝟙 X✝ = Hom.id X✝
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                                -- ⊢ (Hom.id W✝ ≫ Hom.id W✝) ≫ h = Hom.id W✝ ≫ Hom.id W✝ ≫ h
+                                -- ⊢ (line x✝ ≫ Hom.id one) ≫ h = line x✝ ≫ Hom.id one ≫ h
+                                            -- ⊢ (Hom.id W✝ ≫ Hom.id W✝) ≫ Hom.id W✝ = Hom.id W✝ ≫ Hom.id W✝ ≫ Hom.id W✝
+                                            -- ⊢ (Hom.id zero ≫ line x✝) ≫ Hom.id one = Hom.id zero ≫ line x✝ ≫ Hom.id one
+                                            -- ⊢ (line x✝ ≫ Hom.id one) ≫ Hom.id one = line x✝ ≫ Hom.id one ≫ Hom.id one
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
+                                                        -- 🎉 no goals
   comp_id f := by cases f <;> aesop_cat
 #align
   category_theory.limits.walking_parallel_family.category
@@ -132,6 +145,9 @@ def parallelFamily : WalkingParallelFamily J ⥤ C where
   map_comp := by
     rintro _ _ _ ⟨⟩ ⟨⟩ <;>
       · aesop_cat
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
 #align category_theory.limits.parallel_family CategoryTheory.Limits.parallelFamily
 
 @[simp]
@@ -157,7 +173,13 @@ theorem parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j 
 def diagramIsoParallelFamily (F : WalkingParallelFamily J ⥤ C) :
     F ≅ parallelFamily fun j => F.map (line j) :=
   NatIso.ofComponents (fun j => eqToIso <| by cases j <;> aesop_cat) <| by
+                                              -- ⊢ F.obj zero = (parallelFamily fun j => F.map (line j)).obj zero
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
     rintro _ _ (_|_) <;> aesop_cat
+    -- ⊢ F.map (Hom.id X✝) ≫ ((fun j => eqToIso (_ : F.obj j = (parallelFamily fun j  …
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align
   category_theory.limits.diagram_iso_parallel_family
   CategoryTheory.Limits.diagramIsoParallelFamily
@@ -171,10 +193,25 @@ def walkingParallelFamilyEquivWalkingParallelPair :
     parallelFamily fun p => cond p.down WalkingParallelPairHom.left WalkingParallelPairHom.right
   inverse := parallelPair (line (ULift.up true)) (line (ULift.up false))
   unitIso := NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) (by
+                                                       -- ⊢ (𝟭 (WalkingParallelFamily (ULift Bool))).obj zero = ((parallelFamily fun p = …
+                                                                   -- 🎉 no goals
+                                                                   -- 🎉 no goals
     rintro _ _ (_|⟨_|_⟩) <;> aesop_cat)
+                             -- 🎉 no goals
+                             -- 🎉 no goals
+                             -- 🎉 no goals
   counitIso := NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) (by
+                                                         -- ⊢ (parallelPair (line { down := true }) (line { down := false }) ⋙ parallelFam …
+                                                                     -- 🎉 no goals
+                                                                     -- 🎉 no goals
     rintro _ _ (_|_|_) <;> aesop_cat)
+                           -- 🎉 no goals
+                           -- 🎉 no goals
+                           -- 🎉 no goals
   functor_unitIso_comp := by rintro (_|_) <;> aesop_cat
+                             -- ⊢ (parallelFamily fun p => bif p.down then WalkingParallelPairHom.left else Wa …
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align
   category_theory.limits.walking_parallel_family_equiv_walking_parallel_pair
   CategoryTheory.Limits.walkingParallelFamilyEquivWalkingParallelPair
@@ -218,11 +255,13 @@ theorem Cotrident.π_eq_app_one (t : Cotrident f) : t.π = t.ι.app one :=
 @[reassoc (attr := simp)]
 theorem Trident.app_zero (s : Trident f) (j : J) : s.π.app zero ≫ f j = s.π.app one := by
   rw [← s.w (line j), parallelFamily_map_left]
+  -- 🎉 no goals
 #align category_theory.limits.trident.app_zero CategoryTheory.Limits.Trident.app_zero
 
 @[reassoc (attr := simp)]
 theorem Cotrident.app_one (s : Cotrident f) (j : J) : f j ≫ s.ι.app one = s.ι.app zero := by
   rw [← s.w (line j), parallelFamily_map_left]
+  -- 🎉 no goals
 #align category_theory.limits.cotrident.app_one CategoryTheory.Limits.Cotrident.app_one
 
 /-- A trident on `f : J → (X ⟶ Y)` is determined by the morphism `ι : P ⟶ X` satisfying
@@ -236,9 +275,13 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
     { app := fun X => WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
       naturality := fun i j f => by
         dsimp
+        -- ⊢ 𝟙 P ≫ WalkingParallelFamily.rec ι (ι ≫ f✝ (Classical.arbitrary J)) j = Walki …
         cases' f with _ k
+        -- ⊢ 𝟙 P ≫ WalkingParallelFamily.rec ι (ι ≫ f (Classical.arbitrary J)) i = Walkin …
         · simp
+          -- 🎉 no goals
         · simp [w (Classical.arbitrary J) k] }
+          -- 🎉 no goals
 #align category_theory.limits.trident.of_ι CategoryTheory.Limits.Trident.ofι
 
 /-- A cotrident on `f : J → (X ⟶ Y)` is determined by the morphism `π : Y ⟶ P` satisfying
@@ -252,9 +295,13 @@ def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j�
     { app := fun X => WalkingParallelFamily.casesOn X (f (Classical.arbitrary J) ≫ π) π
       naturality := fun i j f => by
         dsimp
+        -- ⊢ (parallelFamily f✝).map f ≫ WalkingParallelFamily.rec (f✝ (Classical.arbitra …
         cases' f with _ k
+        -- ⊢ (parallelFamily f).map (Hom.id i) ≫ WalkingParallelFamily.rec (f (Classical. …
         · simp
+          -- 🎉 no goals
         · simp [w (Classical.arbitrary J) k] }
+          -- 🎉 no goals
 #align category_theory.limits.cotrident.of_π CategoryTheory.Limits.Cotrident.ofπ
 
 -- See note [dsimp, simp]
@@ -271,11 +318,13 @@ theorem Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂
 @[reassoc]
 theorem Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
   rw [t.app_zero, t.app_zero]
+  -- 🎉 no goals
 #align category_theory.limits.trident.condition CategoryTheory.Limits.Trident.condition
 
 @[reassoc]
 theorem Cotrident.condition (j₁ j₂ : J) (t : Cotrident f) : f j₁ ≫ t.π = f j₂ ≫ t.π := by
   rw [t.app_one, t.app_one]
+  -- 🎉 no goals
 #align category_theory.limits.cotrident.condition CategoryTheory.Limits.Cotrident.condition
 
 /-- To check whether two maps are equalized by both maps of a trident, it suffices to check it for
@@ -284,6 +333,7 @@ theorem Trident.equalizer_ext [Nonempty J] (s : Trident f) {W : C} {k l : W ⟶ 
     (h : k ≫ s.ι = l ≫ s.ι) : ∀ j : WalkingParallelFamily J, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
   | one => by rw [← s.app_zero (Classical.arbitrary J), reassoc_of% h]
+              -- 🎉 no goals
 #align category_theory.limits.trident.equalizer_ext CategoryTheory.Limits.Trident.equalizer_ext
 
 /-- To check whether two maps are coequalized by both maps of a cotrident, it suffices to check it
@@ -291,6 +341,7 @@ for the second map -/
 theorem Cotrident.coequalizer_ext [Nonempty J] (s : Cotrident f) {W : C} {k l : s.pt ⟶ W}
     (h : s.π ≫ k = s.π ≫ l) : ∀ j : WalkingParallelFamily J, s.ι.app j ≫ k = s.ι.app j ≫ l
   | zero => by rw [← s.app_one (Classical.arbitrary J), Category.assoc, Category.assoc, h]
+               -- 🎉 no goals
   | one => h
 #align
   category_theory.limits.cotrident.coequalizer_ext
@@ -338,6 +389,7 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
     fac := fun s j =>
       WalkingParallelFamily.casesOn j (fac s)
         (by rw [← t.w (line (Classical.arbitrary J)), reassoc_of% fac, s.w])
+            -- 🎉 no goals
     uniq := uniq }
 #align category_theory.limits.trident.is_limit.mk CategoryTheory.Limits.Trident.IsLimit.mk
 
@@ -362,6 +414,7 @@ def Cotrident.IsColimit.mk [Nonempty J] (t : Cotrident f) (desc : ∀ s : Cotrid
   { desc
     fac := fun s j =>
       WalkingParallelFamily.casesOn j (by rw [← t.w_assoc (line (Classical.arbitrary J)), fac, s.w])
+                                          -- 🎉 no goals
         (fac s)
     uniq := uniq }
 #align category_theory.limits.cotrident.is_colimit.mk CategoryTheory.Limits.Cotrident.IsColimit.mk
@@ -386,6 +439,7 @@ Further, this bijection is natural in `Z`: see `Trident.Limits.homIso_natural`.
 def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // ∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂ } where
   toFun k := ⟨k ≫ t.ι, by simp⟩
+                          -- 🎉 no goals
   invFun h := (Trident.IsLimit.lift' ht _ h.prop).1
   left_inv k := Trident.IsLimit.hom_ext ht (Trident.IsLimit.lift' _ _ _).prop
   right_inv h := Subtype.ext (Trident.IsLimit.lift' ht _ _).prop
@@ -410,6 +464,7 @@ point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
 def Cotrident.IsColimit.homIso [Nonempty J] {t : Cotrident f} (ht : IsColimit t) (Z : C) :
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // ∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp⟩
+                          -- 🎉 no goals
   invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).1
   left_inv k := Cotrident.IsColimit.hom_ext ht (Cotrident.IsColimit.desc' _ _ _).prop
   right_inv h := Subtype.ext (Cotrident.IsColimit.desc' ht _ _).prop
@@ -440,7 +495,13 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> aesop_cat)
+                                              -- ⊢ (parallelFamily fun j => F.map (line j)).obj zero = F.obj zero
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
       naturality := fun j j' g => by cases g <;> aesop_cat }
+                                     -- ⊢ ((Functor.const (WalkingParallelFamily J)).obj t.pt).map (Hom.id j) ≫ (fun X …
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
 #align category_theory.limits.cone.of_trident CategoryTheory.Limits.Cone.ofTrident
 
 /-- This is a helper construction that can be useful when verifying that a category has all
@@ -456,12 +517,23 @@ def Cocone.ofCotrident {F : WalkingParallelFamily J ⥤ C} (t : Cotrident fun j 
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by cases X <;> aesop_cat) ≫ t.ι.app X
+                                  -- ⊢ F.obj zero = (parallelFamily fun j => F.map (line j)).obj zero
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
       naturality := fun j j' g => by cases g <;> dsimp <;> simp [Cotrident.app_one t] }
+                                     -- ⊢ F.map (Hom.id j) ≫ (fun X => eqToHom (_ : F.obj X = (parallelFamily fun j => …
+                                                 -- ⊢ F.map (𝟙 j) ≫ eqToHom (_ : F.obj j = (parallelFamily fun j => F.map (line j) …
+                                                 -- ⊢ F.map (line x✝) ≫ 𝟙 (F.obj one) ≫ NatTrans.app t.ι one = (𝟙 (F.obj zero) ≫ N …
+                                                           -- 🎉 no goals
+                                                           -- 🎉 no goals
 #align category_theory.limits.cocone.of_cotrident CategoryTheory.Limits.Cocone.ofCotrident
 
 @[simp]
 theorem Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j))
     (j) : (Cone.ofTrident t).π.app j = t.π.app j ≫ eqToHom (by cases j <;> aesop_cat) :=
+                                                               -- ⊢ (parallelFamily fun j => F.map (line j)).obj zero = F.obj zero
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
   rfl
 #align category_theory.limits.cone.of_trident_π CategoryTheory.Limits.Cone.ofTrident_π
 
@@ -469,6 +541,9 @@ theorem Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j
 theorem Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
     (t : Cotrident fun j => F.map (line j)) (j) :
     (Cocone.ofCotrident t).ι.app j = eqToHom (by cases j <;> aesop_cat) ≫ t.ι.app j :=
+                                                 -- ⊢ F.obj zero = (parallelFamily fun j => F.map (line j)).obj zero
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
   rfl
 #align category_theory.limits.cocone.of_cotrident_ι CategoryTheory.Limits.Cocone.ofCotrident_ι
 
@@ -480,7 +555,13 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) : Trident fu
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> aesop_cat)
+                                              -- ⊢ F.obj zero = (parallelFamily fun j => F.map (line j)).obj zero
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
       naturality := by rintro _ _ (_|_) <;> aesop_cat }
+                       -- ⊢ ((Functor.const (WalkingParallelFamily J)).obj t.pt).map (Hom.id X✝) ≫ (fun  …
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
 #align category_theory.limits.trident.of_cone CategoryTheory.Limits.Trident.ofCone
 
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
@@ -491,18 +572,30 @@ def Cotrident.ofCocone {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by cases X <;> aesop_cat) ≫ t.ι.app X
+                                  -- ⊢ (parallelFamily fun j => F.map (line j)).obj zero = F.obj zero
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
       naturality := by rintro _ _ (_|_) <;> aesop_cat }
+                       -- ⊢ (parallelFamily fun j => F.map (line j)).map (Hom.id X✝) ≫ (fun X => eqToHom …
+                                            -- 🎉 no goals
+                                            -- 🎉 no goals
 #align category_theory.limits.cotrident.of_cocone CategoryTheory.Limits.Cotrident.ofCocone
 
 @[simp]
 theorem Trident.ofCone_π {F : WalkingParallelFamily J ⥤ C} (t : Cone F) (j) :
     (Trident.ofCone t).π.app j = t.π.app j ≫ eqToHom (by cases j <;> aesop_cat) :=
+                                                         -- ⊢ F.obj zero = (parallelFamily fun j => F.map (line j)).obj zero
+                                                                     -- 🎉 no goals
+                                                                     -- 🎉 no goals
   rfl
 #align category_theory.limits.trident.of_cone_π CategoryTheory.Limits.Trident.ofCone_π
 
 @[simp]
 theorem Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) (j) :
     (Cotrident.ofCocone t).ι.app j = eqToHom (by cases j <;> aesop_cat) ≫ t.ι.app j :=
+                                                 -- ⊢ (parallelFamily fun j => F.map (line j)).obj zero = F.obj zero
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
   rfl
 #align category_theory.limits.cotrident.of_cocone_ι CategoryTheory.Limits.Cotrident.ofCocone_ι
 
@@ -514,8 +607,11 @@ def Trident.mkHom [Nonempty J] {s t : Trident f} (k : s.pt ⟶ t.pt)
   Hom := k
   w := by
     rintro ⟨_ | _⟩
+    -- ⊢ k ≫ NatTrans.app t.π zero = NatTrans.app s.π zero
     · exact w
+      -- 🎉 no goals
     · simpa using w =≫ f (Classical.arbitrary J)
+      -- 🎉 no goals
 #align category_theory.limits.trident.mk_hom CategoryTheory.Limits.Trident.mkHom
 
 /-- To construct an isomorphism between tridents,
@@ -527,6 +623,7 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
     (w : i.hom ≫ t.ι = s.ι := by aesop_cat) : s ≅ t where
   hom := Trident.mkHom i.hom w
   inv := Trident.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
+                                 -- 🎉 no goals
 #align category_theory.limits.trident.ext CategoryTheory.Limits.Trident.ext
 
 /-- Helper function for constructing morphisms between coequalizer cotridents.
@@ -537,8 +634,11 @@ def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
   Hom := k
   w := by
     rintro ⟨_ | _⟩
+    -- ⊢ NatTrans.app s.ι zero ≫ k = NatTrans.app t.ι zero
     · simpa using f (Classical.arbitrary J) ≫= w
+      -- 🎉 no goals
     · exact w
+      -- 🎉 no goals
 #align category_theory.limits.cotrident.mk_hom CategoryTheory.Limits.Cotrident.mkHom
 
 /-- To construct an isomorphism between cotridents,
@@ -549,6 +649,7 @@ def Cotrident.ext [Nonempty J] {s t : Cotrident f} (i : s.pt ≅ t.pt)
    (w : s.π ≫ i.hom = t.π := by aesop_cat) : s ≅ t where
   hom := Cotrident.mkHom i.hom w
   inv := Cotrident.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
+                                   -- 🎉 no goals
 #align category_theory.limits.cotrident.ext CategoryTheory.Limits.Cotrident.ext
 
 variable (f)

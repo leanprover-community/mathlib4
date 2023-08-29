@@ -56,6 +56,7 @@ def TopologicalSpace.PositiveCompacts.Icc01 : PositiveCompacts ℝ where
   carrier := Icc 0 1
   isCompact' := isCompact_Icc
   interior_nonempty' := by simp_rw [interior_Icc, nonempty_Ioo, zero_lt_one]
+                           -- 🎉 no goals
 #align topological_space.positive_compacts.Icc01 TopologicalSpace.PositiveCompacts.Icc01
 
 universe u
@@ -75,8 +76,11 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     (Pi.basisFun ℝ ι).parallelepiped = TopologicalSpace.PositiveCompacts.piIcc01 ι :=
   SetLike.coe_injective <| by
     refine' Eq.trans _ ((uIcc_of_le _).trans (Set.pi_univ_Icc _ _).symm)
+    -- ⊢ ↑(parallelepiped (Pi.basisFun ℝ ι)) = uIcc (fun i => 0) fun i => 1
     · classical convert parallelepiped_single (ι := ι) 1
+      -- 🎉 no goals
     · exact zero_le_one
+      -- 🎉 no goals
 #align basis.parallelepiped_basis_fun Basis.parallelepiped_basisFun
 
 namespace MeasureTheory
@@ -90,12 +94,15 @@ open Measure TopologicalSpace.PositiveCompacts FiniteDimensional
 /-- The Haar measure equals the Lebesgue measure on `ℝ`. -/
 theorem addHaarMeasure_eq_volume : addHaarMeasure Icc01 = volume := by
   convert (addHaarMeasure_unique volume Icc01).symm; simp [Icc01]
+  -- ⊢ addHaarMeasure Icc01 = ↑↑volume ↑Icc01 • addHaarMeasure Icc01
+                                                     -- 🎉 no goals
 #align measure_theory.add_haar_measure_eq_volume MeasureTheory.addHaarMeasure_eq_volume
 
 /-- The Haar measure equals the Lebesgue measure on `ℝ^ι`. -/
 theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     addHaarMeasure (piIcc01 ι) = volume := by
   convert (addHaarMeasure_unique volume (piIcc01 ι)).symm
+  -- ⊢ addHaarMeasure (piIcc01 ι) = ↑↑volume ↑(piIcc01 ι) • addHaarMeasure (piIcc01 …
   simp only [piIcc01, volume_pi_pi fun _ => Icc (0 : ℝ) 1, PositiveCompacts.coe_mk,
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
@@ -120,7 +127,9 @@ theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [NormedAddCommGro
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (sb : Bounded s) (hu : Bounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   by_contra h
+  -- ⊢ False
   apply lt_irrefl ∞
+  -- ⊢ ⊤ < ⊤
   calc
     ∞ = ∑' _ : ℕ, μ s := (ENNReal.tsum_const_eq_top_of_ne_zero h).symm
     _ = ∑' n : ℕ, μ ({u n} + s) := by
@@ -138,17 +147,22 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : Bounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0
+  -- ⊢ ↑↑μ s = 0
   · apply le_antisymm _ (zero_le _)
+    -- ⊢ ↑↑μ s ≤ 0
     calc
       μ s ≤ ∑' n : ℕ, μ (s ∩ closedBall 0 n) := by
         conv_lhs => rw [← iUnion_inter_closedBall_nat s 0]
         exact measure_iUnion_le _
       _ = 0 := by simp only [H, tsum_zero]
   intro R
+  -- ⊢ ↑↑μ (s ∩ closedBall 0 R) = 0
   apply addHaar_eq_zero_of_disjoint_translates_aux μ u
     (bounded_closedBall.mono (inter_subset_right _ _)) hu _ (h's.inter measurableSet_closedBall)
   refine pairwise_disjoint_mono hs fun n => ?_
+  -- ⊢ {u n} + s ∩ closedBall 0 R ≤ {u n} + s
   exact add_subset_add Subset.rfl (inter_subset_left _ _)
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_eq_zero_of_disjoint_translates MeasureTheory.Measure.addHaar_eq_zero_of_disjoint_translates
 
 /-- A strict vector subspace has measure zero. -/
@@ -158,6 +172,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain ⟨x, hx⟩ : ∃ x, x ∉ s := by
     simpa only [Submodule.eq_top_iff', not_exists, Ne.def, not_forall] using hs
   obtain ⟨c, cpos, cone⟩ : ∃ c : ℝ, 0 < c ∧ c < 1 := ⟨1 / 2, by norm_num, by norm_num⟩
+  -- ⊢ ↑↑μ ↑s = 0
   have A : Bounded (range fun n : ℕ => c ^ n • x) :=
     haveI : Tendsto (fun n : ℕ => c ^ n • x) atTop (𝓝 ((0 : ℝ) • x)) :=
       (tendsto_pow_atTop_nhds_0_of_lt_1 cpos.le cone).smul_const x
@@ -165,9 +180,11 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   apply addHaar_eq_zero_of_disjoint_translates μ _ A _
     (Submodule.closed_of_finiteDimensional s).measurableSet
   intro m n hmn
+  -- ⊢ (Disjoint on fun n => {c ^ n • x} + ↑s) m n
   simp only [Function.onFun, image_add_left, singleton_add, disjoint_left, mem_preimage,
     SetLike.mem_coe]
   intro y hym hyn
+  -- ⊢ False
   have A : (c ^ n - c ^ m) • x ∈ s := by
     convert s.sub_mem hym hyn using 1
     simp only [sub_smul, neg_sub_neg, add_sub_add_right_eq_sub]
@@ -177,6 +194,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     convert s.smul_mem (c ^ n - c ^ m)⁻¹ A
     rw [smul_smul, inv_mul_cancel H, one_smul]
   exact hx this
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_submodule MeasureTheory.Measure.addHaar_submodule
 
 /-- A strict affine subspace has measure zero. -/
@@ -184,9 +202,13 @@ theorem addHaar_affineSubspace {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     (s : AffineSubspace ℝ E) (hs : s ≠ ⊤) : μ s = 0 := by
   rcases s.eq_bot_or_nonempty with (rfl | hne)
+  -- ⊢ ↑↑μ ↑⊥ = 0
   · rw [AffineSubspace.bot_coe, measure_empty]
+    -- 🎉 no goals
   rw [Ne.def, ← AffineSubspace.direction_eq_top_iff_of_nonempty hne] at hs
+  -- ⊢ ↑↑μ ↑s = 0
   rcases hne with ⟨x, hx : x ∈ s⟩
+  -- ⊢ ↑↑μ ↑s = 0
   simpa only [AffineSubspace.coe_direction_eq_vsub_set_right hx, vsub_eq_sub, sub_eq_add_neg,
     image_add_right, neg_neg, measure_preimage_add_right] using addHaar_submodule μ s.direction hs
 #align measure_theory.measure.add_haar_affine_subspace MeasureTheory.Measure.addHaar_affineSubspace
@@ -204,9 +226,11 @@ theorem map_linearMap_addHaar_pi_eq_smul_addHaar {ι : Type*} [Finite ι] {f : (
     (hf : LinearMap.det f ≠ 0) (μ : Measure (ι → ℝ)) [IsAddHaarMeasure μ] :
     Measure.map f μ = ENNReal.ofReal (abs (LinearMap.det f)⁻¹) • μ := by
   cases nonempty_fintype ι
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   /- We have already proved the result for the Lebesgue product measure, using matrices.
     We deduce it for any Haar measure by uniqueness (up to scalar multiplication). -/
   have := addHaarMeasure_unique μ (piIcc01 ι)
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   rw [this, addHaarMeasure_eq_volume_pi, Measure.map_smul,
     Real.map_linearMap_volume_pi_eq_smul_volume_pi hf, smul_comm]
 #align measure_theory.measure.map_linear_map_add_haar_pi_eq_smul_add_haar MeasureTheory.Measure.map_linearMap_addHaar_pi_eq_smul_addHaar
@@ -220,23 +244,36 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `map_linearMap_addHaar_pi_eq_smul_addHaar`.
   let ι := Fin (finrank ℝ E)
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   have e : E ≃ₗ[ℝ] ι → ℝ := LinearEquiv.ofFinrankEq E (ι → ℝ) this
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   -- next line is to avoid `g` getting reduced by `simp`.
   obtain ⟨g, hg⟩ : ∃ g, g = (e : E →ₗ[ℝ] ι → ℝ).comp (f.comp (e.symm : (ι → ℝ) →ₗ[ℝ] E)) := ⟨_, rfl⟩
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   have gdet : LinearMap.det g = LinearMap.det f := by rw [hg]; exact LinearMap.det_conj f e
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ
   rw [← gdet] at hf ⊢
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(↑LinearMap.det g)⁻¹| • μ
   have fg : f = (e.symm : (ι → ℝ) →ₗ[ℝ] E).comp (g.comp (e : E →ₗ[ℝ] ι → ℝ)) := by
     ext x
     simp only [LinearEquiv.coe_coe, Function.comp_apply, LinearMap.coe_comp,
       LinearEquiv.symm_apply_apply, hg]
   simp only [fg, LinearEquiv.coe_coe, LinearMap.coe_comp]
+  -- ⊢ map (↑(LinearEquiv.symm e) ∘ ↑g ∘ ↑e) μ = ENNReal.ofReal |(↑LinearMap.det g) …
   have Ce : Continuous e := (e : E →ₗ[ℝ] ι → ℝ).continuous_of_finiteDimensional
+  -- ⊢ map (↑(LinearEquiv.symm e) ∘ ↑g ∘ ↑e) μ = ENNReal.ofReal |(↑LinearMap.det g) …
   have Cg : Continuous g := LinearMap.continuous_of_finiteDimensional g
+  -- ⊢ map (↑(LinearEquiv.symm e) ∘ ↑g ∘ ↑e) μ = ENNReal.ofReal |(↑LinearMap.det g) …
   have Cesymm : Continuous e.symm := (e.symm : (ι → ℝ) →ₗ[ℝ] E).continuous_of_finiteDimensional
+  -- ⊢ map (↑(LinearEquiv.symm e) ∘ ↑g ∘ ↑e) μ = ENNReal.ofReal |(↑LinearMap.det g) …
   rw [← map_map Cesymm.measurable (Cg.comp Ce).measurable, ← map_map Cg.measurable Ce.measurable]
+  -- ⊢ map (↑(LinearEquiv.symm e)) (map (↑g) (map (↑e) μ)) = ENNReal.ofReal |(↑Line …
   haveI : IsAddHaarMeasure (map e μ) := (e : E ≃+ (ι → ℝ)).isAddHaarMeasure_map μ Ce Cesymm
+  -- ⊢ map (↑(LinearEquiv.symm e)) (map (↑g) (map (↑e) μ)) = ENNReal.ofReal |(↑Line …
   have ecomp : e.symm ∘ e = id := by
     ext x; simp only [id.def, Function.comp_apply, LinearEquiv.symm_apply_apply]
   rw [map_linearMap_addHaar_pi_eq_smul_addHaar hf (map e μ), Measure.map_smul,
@@ -254,6 +291,8 @@ theorem addHaar_preimage_linearMap {f : E →ₗ[ℝ] E} (hf : LinearMap.det f �
           s).symm
     _ = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s := by
       rw [map_linearMap_addHaar_eq_smul_addHaar μ hf]; rfl
+      -- ⊢ ↑↑(ENNReal.ofReal |(↑LinearMap.det f)⁻¹| • μ) s = ENNReal.ofReal |(↑LinearMa …
+                                                       -- 🎉 no goals
 #align measure_theory.measure.add_haar_preimage_linear_map MeasureTheory.Measure.addHaar_preimage_linearMap
 
 /-- The preimage of a set `s` under a continuous linear map `f` with nonzero determinant has measure
@@ -271,8 +310,11 @@ equal to `μ s` times the absolute value of the inverse of the determinant of `f
 theorem addHaar_preimage_linearEquiv (f : E ≃ₗ[ℝ] E) (s : Set E) :
     μ (f ⁻¹' s) = ENNReal.ofReal |LinearMap.det (f.symm : E →ₗ[ℝ] E)| * μ s := by
   have A : LinearMap.det (f : E →ₗ[ℝ] E) ≠ 0 := (LinearEquiv.isUnit_det' f).ne_zero
+  -- ⊢ ↑↑μ (↑f ⁻¹' s) = ENNReal.ofReal |↑LinearMap.det ↑(LinearEquiv.symm f)| * ↑↑μ s
   convert addHaar_preimage_linearMap μ A s
+  -- ⊢ ↑LinearMap.det ↑(LinearEquiv.symm f) = (↑LinearMap.det ↑f)⁻¹
   simp only [LinearEquiv.det_coe_symm]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_preimage_linear_equiv MeasureTheory.Measure.addHaar_preimage_linearEquiv
 
 /-- The preimage of a set `s` under a continuous linear equiv `f` has measure
@@ -289,14 +331,21 @@ equal to `μ s` times the absolute value of the determinant of `f`. -/
 theorem addHaar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
     μ (f '' s) = ENNReal.ofReal |LinearMap.det f| * μ s := by
   rcases ne_or_eq (LinearMap.det f) 0 with (hf | hf)
+  -- ⊢ ↑↑μ (↑f '' s) = ENNReal.ofReal |↑LinearMap.det f| * ↑↑μ s
   · let g := (f.equivOfDetNeZero hf).toContinuousLinearEquiv
+    -- ⊢ ↑↑μ (↑f '' s) = ENNReal.ofReal |↑LinearMap.det f| * ↑↑μ s
     change μ (g '' s) = _
+    -- ⊢ ↑↑μ (↑g '' s) = ENNReal.ofReal |↑LinearMap.det f| * ↑↑μ s
     rw [ContinuousLinearEquiv.image_eq_preimage g s, addHaar_preimage_continuousLinearEquiv]
+    -- ⊢ ENNReal.ofReal |↑LinearMap.det ↑↑(ContinuousLinearEquiv.symm (ContinuousLine …
     congr
+    -- 🎉 no goals
   · simp only [hf, zero_mul, ENNReal.ofReal_zero, abs_zero]
+    -- ⊢ ↑↑μ ((fun a => ↑f a) '' s) = 0
     have : μ (LinearMap.range f) = 0 :=
       addHaar_submodule μ _ (LinearMap.range_lt_top_of_det_eq_zero hf).ne
     exact le_antisymm (le_trans (measure_mono (image_subset_range _ _)) this.le) (zero_le _)
+    -- 🎉 no goals
 #align measure_theory.measure.add_haar_image_linear_map MeasureTheory.Measure.addHaar_image_linearMap
 
 /-- The image of a set `s` under a continuous linear map `f` has measure
@@ -323,12 +372,15 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
 theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
     Measure.map ((· • ·) r) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
+  -- ⊢ map ((fun x x_1 => x • x_1) r) μ = ENNReal.ofReal |(r ^ finrank ℝ E)⁻¹| • μ
   change Measure.map f μ = _
+  -- ⊢ map (↑f) μ = ENNReal.ofReal |(r ^ finrank ℝ E)⁻¹| • μ
   have hf : LinearMap.det f ≠ 0 := by
     simp only [mul_one, LinearMap.det_smul, Ne.def, MonoidHom.map_one]
     intro h
     exact hr (pow_eq_zero h)
   simp only [map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
+  -- 🎉 no goals
 #align measure_theory.measure.map_add_haar_smul MeasureTheory.Measure.map_addHaar_smul
 
 @[simp]
@@ -347,15 +399,23 @@ theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
 theorem addHaar_smul (r : ℝ) (s : Set E) :
     μ (r • s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)) * μ s := by
   rcases ne_or_eq r 0 with (h | rfl)
+  -- ⊢ ↑↑μ (r • s) = ENNReal.ofReal |r ^ finrank ℝ E| * ↑↑μ s
   · rw [← preimage_smul_inv₀ h, addHaar_preimage_smul μ (inv_ne_zero h), inv_pow, inv_inv]
+    -- 🎉 no goals
   rcases eq_empty_or_nonempty s with (rfl | hs)
+  -- ⊢ ↑↑μ (0 • ∅) = ENNReal.ofReal |0 ^ finrank ℝ E| * ↑↑μ ∅
   · simp only [measure_empty, mul_zero, smul_set_empty]
+    -- 🎉 no goals
   rw [zero_smul_set hs, ← singleton_zero]
+  -- ⊢ ↑↑μ {0} = ENNReal.ofReal |0 ^ finrank ℝ E| * ↑↑μ s
   by_cases h : finrank ℝ E = 0
+  -- ⊢ ↑↑μ {0} = ENNReal.ofReal |0 ^ finrank ℝ E| * ↑↑μ s
   · haveI : Subsingleton E := finrank_zero_iff.1 h
+    -- ⊢ ↑↑μ {0} = ENNReal.ofReal |0 ^ finrank ℝ E| * ↑↑μ s
     simp only [h, one_mul, ENNReal.ofReal_one, abs_one, Subsingleton.eq_univ_of_nonempty hs,
       pow_zero, Subsingleton.eq_univ_of_nonempty (singleton_nonempty (0 : E))]
   · haveI : Nontrivial E := nontrivial_of_finrank_pos (bot_lt_iff_ne_bot.2 h)
+    -- ⊢ ↑↑μ {0} = ENNReal.ofReal |0 ^ finrank ℝ E| * ↑↑μ s
     simp only [h, zero_mul, ENNReal.ofReal_zero, abs_zero, Ne.def, not_false_iff,
       zero_pow', measure_singleton]
 #align measure_theory.measure.add_haar_smul MeasureTheory.Measure.addHaar_smul
@@ -363,6 +423,7 @@ theorem addHaar_smul (r : ℝ) (s : Set E) :
 theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
     μ (r • s) = ENNReal.ofReal (r ^ finrank ℝ E) * μ s := by
   rw [addHaar_smul, abs_pow, abs_of_nonneg hr]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_smul_of_nonneg MeasureTheory.Measure.addHaar_smul_of_nonneg
 
 variable {μ} {s : Set E}
@@ -372,13 +433,21 @@ variable {μ} {s : Set E}
 theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
     NullMeasurableSet (r • s) μ := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
+  -- ⊢ NullMeasurableSet (r • ∅)
   · simp
+    -- 🎉 no goals
   obtain rfl | hr := eq_or_ne r 0
+  -- ⊢ NullMeasurableSet (0 • s)
   · simpa [zero_smul_set hs'] using nullMeasurableSet_singleton _
+    -- 🎉 no goals
   obtain ⟨t, ht, hst⟩ := hs
+  -- ⊢ NullMeasurableSet (r • s)
   refine' ⟨_, ht.const_smul_of_ne_zero hr, _⟩
+  -- ⊢ r • s =ᶠ[ae μ] r • t
   rw [← measure_symmDiff_eq_zero_iff] at hst ⊢
+  -- ⊢ ↑↑μ ((r • s) ∆ (r • t)) = 0
   rw [← smul_set_symmDiff₀ hr, addHaar_smul μ, hst, mul_zero]
+  -- 🎉 no goals
 #align measure_theory.measure.null_measurable_set.const_smul MeasureTheory.Measure.NullMeasurableSet.const_smul
 
 variable (μ)
@@ -389,8 +458,11 @@ theorem addHaar_image_homothety (x : E) (r : ℝ) (s : Set E) :
   calc
     μ (AffineMap.homothety x r '' s) = μ ((fun y => y + x) '' (r • (fun y => y + -x) '' s)) := by
       simp only [← image_smul, image_image, ← sub_eq_add_neg]; rfl
+      -- ⊢ ↑↑μ ((fun a => ↑(AffineMap.homothety x r) a) '' s) = ↑↑μ ((fun x_1 => r • (x …
+                                                               -- 🎉 no goals
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)) * μ s := by
       simp only [image_add_right, measure_preimage_add_right, addHaar_smul]
+      -- 🎉 no goals
 #align measure_theory.measure.add_haar_image_homothety MeasureTheory.Measure.addHaar_image_homothety
 
 /-! We don't need to state `map_addHaar_neg` here, because it has already been proved for
@@ -402,14 +474,18 @@ general Haar measures on general commutative groups. -/
 theorem addHaar_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) : μ (ball x r) = μ (ball (0 : E) r) := by
   have : ball (0 : E) r = (· + ·) x ⁻¹' ball x r := by simp [preimage_add_ball]
+  -- ⊢ ↑↑μ (ball x r) = ↑↑μ (ball 0 r)
   rw [this, measure_preimage_add]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_ball_center MeasureTheory.Measure.addHaar_ball_center
 
 theorem addHaar_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (closedBall (0 : E) r) := by
   have : closedBall (0 : E) r = (· + ·) x ⁻¹' closedBall x r := by simp [preimage_add_closedBall]
+  -- ⊢ ↑↑μ (closedBall x r) = ↑↑μ (closedBall 0 r)
   rw [this, measure_preimage_add]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_ball_center MeasureTheory.Measure.addHaar_closedBall_center
 
 theorem addHaar_ball_mul_of_pos (x : E) {r : ℝ} (hr : 0 < r) (s : ℝ) :
@@ -417,24 +493,29 @@ theorem addHaar_ball_mul_of_pos (x : E) {r : ℝ} (hr : 0 < r) (s : ℝ) :
   have : ball (0 : E) (r * s) = r • ball (0 : E) s := by
     simp only [_root_.smul_ball hr.ne' (0 : E) s, Real.norm_eq_abs, abs_of_nonneg hr.le, smul_zero]
   simp only [this, addHaar_smul, abs_of_nonneg hr.le, addHaar_ball_center, abs_pow]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_ball_mul_of_pos MeasureTheory.Measure.addHaar_ball_mul_of_pos
 
 theorem addHaar_ball_of_pos (x : E) {r : ℝ} (hr : 0 < r) :
     μ (ball x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
   rw [← addHaar_ball_mul_of_pos μ x hr, mul_one]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_ball_of_pos MeasureTheory.Measure.addHaar_ball_of_pos
 
 theorem addHaar_ball_mul [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
   rcases hr.eq_or_lt with (rfl | h)
+  -- ⊢ ↑↑μ (ball x (0 * s)) = ENNReal.ofReal (0 ^ finrank ℝ E) * ↑↑μ (ball 0 s)
   · simp only [zero_pow (finrank_pos (K := ℝ) (V := E)), measure_empty, zero_mul,
       ENNReal.ofReal_zero, ball_zero]
   · exact addHaar_ball_mul_of_pos μ x h s
+    -- 🎉 no goals
 #align measure_theory.measure.add_haar_ball_mul MeasureTheory.Measure.addHaar_ball_mul
 
 theorem addHaar_ball [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (ball x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
   rw [← addHaar_ball_mul μ x hr, mul_one]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_ball MeasureTheory.Measure.addHaar_ball
 
 theorem addHaar_closedBall_mul_of_pos (x : E) {r : ℝ} (hr : 0 < r) (s : ℝ) :
@@ -442,6 +523,7 @@ theorem addHaar_closedBall_mul_of_pos (x : E) {r : ℝ} (hr : 0 < r) (s : ℝ) :
   have : closedBall (0 : E) (r * s) = r • closedBall (0 : E) s := by
     simp [smul_closedBall' hr.ne' (0 : E), abs_of_nonneg hr.le]
   simp only [this, addHaar_smul, abs_of_nonneg hr.le, addHaar_closedBall_center, abs_pow]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_ball_mul_of_pos MeasureTheory.Measure.addHaar_closedBall_mul_of_pos
 
 theorem addHaar_closedBall_mul (x : E) {r : ℝ} (hr : 0 ≤ r) {s : ℝ} (hs : 0 ≤ s) :
@@ -449,6 +531,7 @@ theorem addHaar_closedBall_mul (x : E) {r : ℝ} (hr : 0 ≤ r) {s : ℝ} (hs : 
   have : closedBall (0 : E) (r * s) = r • closedBall (0 : E) s := by
     simp [smul_closedBall r (0 : E) hs, abs_of_nonneg hr]
   simp only [this, addHaar_smul, abs_of_nonneg hr, addHaar_closedBall_center, abs_pow]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_ball_mul MeasureTheory.Measure.addHaar_closedBall_mul
 
 /-- The measure of a closed ball can be expressed in terms of the measure of the closed unit ball.
@@ -457,40 +540,55 @@ form. -/
 theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall 0 1) := by
   rw [← addHaar_closedBall_mul μ x hr zero_le_one, mul_one]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_ball' MeasureTheory.Measure.addHaar_closedBall'
 
 theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
   apply le_antisymm _ (measure_mono ball_subset_closedBall)
+  -- ⊢ ↑↑μ (closedBall 0 1) ≤ ↑↑μ (ball 0 1)
   have A : Tendsto
       (fun r : ℝ => ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall (0 : E) 1)) (𝓝[<] 1)
         (𝓝 (ENNReal.ofReal ((1 : ℝ) ^ finrank ℝ E) * μ (closedBall (0 : E) 1))) := by
     refine' ENNReal.Tendsto.mul _ (by simp) tendsto_const_nhds (by simp)
     exact ENNReal.tendsto_ofReal ((tendsto_id'.2 nhdsWithin_le_nhds).pow _)
   simp only [one_pow, one_mul, ENNReal.ofReal_one] at A
+  -- ⊢ ↑↑μ (closedBall 0 1) ≤ ↑↑μ (ball 0 1)
   refine' le_of_tendsto A _
+  -- ⊢ ∀ᶠ (c : ℝ) in 𝓝[Iio 1] 1, ENNReal.ofReal (c ^ finrank ℝ E) * ↑↑μ (closedBall …
   refine' mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2 ⟨(0 : ℝ), by simp, fun r hr => _⟩
+  -- ⊢ r ∈ {x | (fun c => ENNReal.ofReal (c ^ finrank ℝ E) * ↑↑μ (closedBall 0 1) ≤ …
   dsimp
+  -- ⊢ ENNReal.ofReal (r ^ finrank ℝ E) * ↑↑μ (closedBall 0 1) ≤ ↑↑μ (ball 0 1)
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
+  -- ⊢ ↑↑μ (closedBall 0 r) ≤ ↑↑μ (ball 0 1)
   exact measure_mono (closedBall_subset_ball hr.2)
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_unit_ball_eq_add_haar_unit_ball MeasureTheory.Measure.addHaar_closed_unit_ball_eq_addHaar_unit_ball
 
 theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
   rw [addHaar_closedBall' μ x hr, addHaar_closed_unit_ball_eq_addHaar_unit_ball]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_ball MeasureTheory.Measure.addHaar_closedBall
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
   by_cases h : r < 0
+  -- ⊢ ↑↑μ (closedBall x r) = ↑↑μ (ball x r)
   · rw [Metric.closedBall_eq_empty.mpr h, Metric.ball_eq_empty.mpr h.le]
+    -- 🎉 no goals
   push_neg at h
+  -- ⊢ ↑↑μ (closedBall x r) = ↑↑μ (ball x r)
   rw [addHaar_closedBall μ x h, addHaar_ball μ x h]
+  -- 🎉 no goals
 #align measure_theory.measure.add_haar_closed_ball_eq_add_haar_ball MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball
 
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
   rcases hr.lt_or_lt with (h | h)
+  -- ⊢ ↑↑μ (sphere x r) = 0
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
+    -- 🎉 no goals
   · rw [← closedBall_diff_ball,
       measure_diff ball_subset_closedBall measurableSet_ball measure_ball_lt_top.ne,
       addHaar_ball_of_pos μ _ h, addHaar_closedBall μ _ h.le, tsub_self]
@@ -498,8 +596,11 @@ theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere 
 
 theorem addHaar_sphere [Nontrivial E] (x : E) (r : ℝ) : μ (sphere x r) = 0 := by
   rcases eq_or_ne r 0 with (rfl | h)
+  -- ⊢ ↑↑μ (sphere x 0) = 0
   · rw [sphere_zero, measure_singleton]
+    -- 🎉 no goals
   · exact addHaar_sphere_of_ne_zero μ x h
+    -- 🎉 no goals
 #align measure_theory.measure.add_haar_sphere MeasureTheory.Measure.addHaar_sphere
 
 theorem addHaar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 0) (x y : E)
@@ -513,21 +614,30 @@ theorem addHaar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 
           (μ s * (μ t)⁻¹) := by
       rw [ENNReal.mul_inv]
       · ring
+        -- 🎉 no goals
       · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne.def, true_or_iff]
+        -- 🎉 no goals
       · simp only [ENNReal.ofReal_ne_top, true_or_iff, Ne.def, not_false_iff]
+        -- 🎉 no goals
     _ = μ s / μ t := by
       rw [ENNReal.mul_inv_cancel, one_mul, div_eq_mul_inv]
+      -- ⊢ ENNReal.ofReal (|r| ^ finrank ℝ E) ≠ 0
       · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne.def]
+        -- 🎉 no goals
       · simp only [ENNReal.ofReal_ne_top, Ne.def, not_false_iff]
+        -- 🎉 no goals
 #align measure_theory.measure.add_haar_singleton_add_smul_div_singleton_add_smul MeasureTheory.Measure.addHaar_singleton_add_smul_div_singleton_add_smul
 
 instance (priority := 100) isUnifLocDoublingMeasureOfIsAddHaarMeasure :
     IsUnifLocDoublingMeasure μ := by
   refine' ⟨⟨(2 : ℝ≥0) ^ finrank ℝ E, _⟩⟩
+  -- ⊢ ∀ᶠ (ε : ℝ) in 𝓝[Ioi 0] 0, ∀ (x : E), ↑↑μ (closedBall x (2 * ε)) ≤ ↑(2 ^ finr …
   filter_upwards [self_mem_nhdsWithin] with r hr x
+  -- ⊢ ↑↑μ (closedBall x (2 * r)) ≤ ↑(2 ^ finrank ℝ E) * ↑↑μ (closedBall x r)
   rw [addHaar_closedBall_mul μ x zero_le_two (le_of_lt hr), addHaar_closedBall_center μ x,
     ENNReal.ofReal, Real.toNNReal_pow zero_le_two]
   simp only [Real.toNNReal_ofNat, le_refl]
+  -- 🎉 no goals
 #align measure_theory.measure.is_unif_loc_doubling_measure_of_is_add_haar_measure MeasureTheory.Measure.isUnifLocDoublingMeasureOfIsAddHaarMeasure
 
 section
@@ -542,6 +652,7 @@ variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup G] [No
 theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     b.addHaar (parallelepiped v) = ENNReal.ofReal |b.det v| := by
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
+  -- ⊢ ↑↑(Basis.addHaar b) (parallelepiped v) = ENNReal.ofReal |↑(Basis.det b) v|
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
     -- porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
@@ -564,6 +675,7 @@ noncomputable irreducible_def _root_.AlternatingMap.measure (ω : AlternatingMap
 theorem _root_.AlternatingMap.measure_parallelepiped (ω : AlternatingMap ℝ G ℝ (Fin n))
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
+  -- ⊢ ↑↑(AlternatingMap.measure ω) (parallelepiped v) = ENNReal.ofReal |↑(↑ω ↑(fin …
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
     AlternatingMap.smul_apply, Algebra.id.smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
     Real.ennnorm_eq_ofReal_abs]
@@ -571,9 +683,13 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : AlternatingMap ℝ G 
 
 instance (ω : AlternatingMap ℝ G ℝ (Fin n)) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
+  -- ⊢ IsAddLeftInvariant (‖↑ω ↑(finBasisOfFinrankEq ℝ G (_ : finrank ℝ G = n))‖₊ • …
+                               -- 🎉 no goals
 
 instance (ω : AlternatingMap ℝ G ℝ (Fin n)) : IsLocallyFiniteMeasure ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
+  -- ⊢ IsLocallyFiniteMeasure (‖↑ω ↑(finBasisOfFinrankEq ℝ G (_ : finrank ℝ G = n)) …
+                               -- 🎉 no goals
 
 end
 
@@ -640,9 +756,13 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
     -- Porting note: it used to be enough to pass `measure_closedBall_lt_top.ne` to `simp`
     -- and avoid the `intro; exact` dance.
   simp only [zero_mul] at C
+  -- ⊢ Tendsto (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • u)) (𝓝[Ioi 0] 0)  …
   apply C.congr' _
+  -- ⊢ (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ (closedBall x r) * (↑↑μ (closedBall  …
   filter_upwards [self_mem_nhdsWithin]
+  -- ⊢ ∀ (a : ℝ), a ∈ Ioi 0 → ↑↑μ (s ∩ ({x} + a • t)) / ↑↑μ (closedBall x a) * (↑↑μ …
   rintro r (rpos : 0 < r)
+  -- ⊢ ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ (closedBall x r) * (↑↑μ (closedBall x r) / ↑↑μ …
   calc
     μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)) =
         μ (closedBall x r) * (μ (closedBall x r))⁻¹ * (μ (s ∩ ({x} + r • t)) / μ ({x} + r • u)) :=
@@ -658,7 +778,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E)
     (u : Set E) (h'u : μ u ≠ 0) (R : ℝ) (Rpos : 0 < R) (t_bound : t ⊆ closedBall 0 R) :
     Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ ({x} + r • u)) (𝓝[>] 0) (𝓝 0) := by
   set t' := R⁻¹ • t with ht'
+  -- ⊢ Tendsto (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • u)) (𝓝[Ioi 0] 0)  …
   set u' := R⁻¹ • u with hu'
+  -- ⊢ Tendsto (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • u)) (𝓝[Ioi 0] 0)  …
   have A : Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t')) / μ ({x} + r • u')) (𝓝[>] 0) (𝓝 0) := by
     apply tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 μ s x h t' u'
     · simp only [h'u, (pow_pos Rpos _).ne', abs_nonpos_iff, addHaar_smul, not_false_iff,
@@ -674,15 +796,21 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E)
       rw [mul_zero]
       exact mul_pos Rpos rpos
   rw [mul_zero] at B
+  -- ⊢ Tendsto (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • u)) (𝓝[Ioi 0] 0)  …
   apply (A.comp B).congr' _
+  -- ⊢ ((fun r => ↑↑μ (s ∩ ({x} + r • t')) / ↑↑μ ({x} + r • u')) ∘ fun r => R * r)  …
   filter_upwards [self_mem_nhdsWithin]
+  -- ⊢ ∀ (a : ℝ), a ∈ Ioi 0 → ((fun r => ↑↑μ (s ∩ ({x} + r • R⁻¹ • t)) / ↑↑μ ({x} + …
   rintro r -
+  -- ⊢ ((fun r => ↑↑μ (s ∩ ({x} + r • R⁻¹ • t)) / ↑↑μ ({x} + r • R⁻¹ • u)) ∘ fun r  …
   have T : (R * r) • t' = r • t := by
     rw [mul_comm, ht', smul_smul, mul_assoc, mul_inv_cancel Rpos.ne', mul_one]
   have U : (R * r) • u' = r • u := by
     rw [mul_comm, hu', smul_smul, mul_assoc, mul_inv_cancel Rpos.ne', mul_one]
   dsimp
+  -- ⊢ ↑↑μ (s ∩ ({x} + (R * r) • R⁻¹ • t)) / ↑↑μ ({x} + (R * r) • R⁻¹ • u) = ↑↑μ (s …
   rw [T, U]
+  -- 🎉 no goals
 #align measure_theory.measure.tendsto_add_haar_inter_smul_zero_of_density_zero_aux2 MeasureTheory.Measure.tendsto_addHaar_inter_smul_zero_of_density_zero_aux2
 
 /-- Consider a point `x` at which a set `s` has density zero, with respect to closed balls. Then it
@@ -693,11 +821,18 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
     (ht : MeasurableSet t) (h''t : μ t ≠ ∞) :
     Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 0) := by
   refine' tendsto_order.2 ⟨fun a' ha' => (ENNReal.not_lt_zero ha').elim, fun ε (εpos : 0 < ε) => _⟩
+  -- ⊢ ∀ᶠ (b : ℝ) in 𝓝[Ioi 0] 0, ↑↑μ (s ∩ ({x} + b • t)) / ↑↑μ ({x} + b • t) < ε
   rcases eq_or_ne (μ t) 0 with (h't | h't)
+  -- ⊢ ∀ᶠ (b : ℝ) in 𝓝[Ioi 0] 0, ↑↑μ (s ∩ ({x} + b • t)) / ↑↑μ ({x} + b • t) < ε
   · apply eventually_of_forall fun r => ?_
+    -- ⊢ ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • t) < ε
     suffices H : μ (s ∩ ({x} + r • t)) = 0
+    -- ⊢ ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • t) < ε
     · rw [H]; simpa only [ENNReal.zero_div] using εpos
+      -- ⊢ 0 / ↑↑μ ({x} + r • t) < ε
+              -- 🎉 no goals
     apply le_antisymm _ (zero_le _)
+    -- ⊢ ↑↑μ (s ∩ ({x} + r • t)) ≤ 0
     calc
       μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono (inter_subset_right _ _)
       _ = 0 := by
@@ -723,7 +858,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
     tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 μ s x h _ t h't n (Nat.cast_pos.2 npos)
       (inter_subset_right _ _)
   filter_upwards [(tendsto_order.1 L).2 _ (ENNReal.half_pos εpos.ne'), self_mem_nhdsWithin]
+  -- ⊢ ∀ (a : ℝ), ↑↑μ (s ∩ ({x} + a • (t ∩ closedBall 0 ↑n))) / ↑↑μ ({x} + a • t) < …
   rintro r hr (rpos : 0 < r)
+  -- ⊢ ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • t) < ε
   have I :
     μ (s ∩ ({x} + r • t)) ≤
       μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n)) :=
@@ -787,11 +924,17 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
     rintro r (rpos : 0 < r)
     rw [addHaar_singleton_add_smul_div_singleton_add_smul μ rpos.ne', ENNReal.div_self h't h''t]
   have := ENNReal.Tendsto.sub L'' L' (Or.inl ENNReal.one_ne_top)
+  -- ⊢ Tendsto (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • t)) (𝓝[Ioi 0] 0)  …
   simp only [tsub_zero] at this
+  -- ⊢ Tendsto (fun r => ↑↑μ (s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • t)) (𝓝[Ioi 0] 0)  …
   apply this.congr' _
+  -- ⊢ (fun a => ↑↑μ ({x} + a • t) / ↑↑μ ({x} + a • t) - ↑↑μ (sᶜ ∩ ({x} + a • t)) / …
   filter_upwards [self_mem_nhdsWithin]
+  -- ⊢ ∀ (a : ℝ), a ∈ Ioi 0 → ↑↑μ ({x} + a • t) / ↑↑μ ({x} + a • t) - ↑↑μ (sᶜ ∩ ({x …
   rintro r (rpos : 0 < r)
+  -- ⊢ ↑↑μ ({x} + r • t) / ↑↑μ ({x} + r • t) - ↑↑μ (sᶜ ∩ ({x} + r • t)) / ↑↑μ ({x}  …
   refine' I ({x} + r • t) s _ _ hs
+  -- ⊢ ↑↑μ ({x} + r • t) ≠ 0
   · simp only [h't, abs_of_nonneg rpos.le, pow_pos rpos, addHaar_smul, image_add_left,
       ENNReal.ofReal_eq_zero, not_le, or_false_iff, Ne.def, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
@@ -822,10 +965,15 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       rw [one_mul]
       exact measure_mono (inter_subset_right _ _)
   refine this.congr fun r => ?_
+  -- ⊢ ↑↑μ (toMeasurable μ s ∩ ({x} + r • t)) / ↑↑μ ({x} + r • t) = ↑↑μ (s ∩ ({x} + …
   congr 1
+  -- ⊢ ↑↑μ (toMeasurable μ s ∩ ({x} + r • t)) = ↑↑μ (s ∩ ({x} + r • t))
   apply measure_toMeasurable_inter_of_sigmaFinite
+  -- ⊢ MeasurableSet ({x} + r • t)
   simp only [image_add_left, singleton_add]
+  -- ⊢ MeasurableSet ((fun x_1 => -x + x_1) ⁻¹' (r • t))
   apply (continuous_add_left (-x)).measurable (ht.const_smul₀ r)
+  -- 🎉 no goals
 #align measure_theory.measure.tendsto_add_haar_inter_smul_one_of_density_one MeasureTheory.Measure.tendsto_addHaar_inter_smul_one_of_density_one
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
@@ -841,11 +989,15 @@ theorem eventually_nonempty_inter_smul_of_density_one (s : Set E) (x : E)
           (tendsto_addHaar_inter_smul_one_of_density_one μ s x h t' t'_meas t'pos.ne' t'top.ne)).1
       0 zero_lt_one]
   intro r hr
+  -- ⊢ Set.Nonempty (s ∩ ({x} + r • t))
   have : μ (s ∩ ({x} + r • t')) ≠ 0 := fun h' => by
     simp only [ENNReal.not_lt_zero, ENNReal.zero_div, h'] at hr
   have : (s ∩ ({x} + r • t')).Nonempty := nonempty_of_measure_ne_zero this
+  -- ⊢ Set.Nonempty (s ∩ ({x} + r • t))
   apply this.mono (inter_subset_inter Subset.rfl _)
+  -- ⊢ {x} + r • t' ⊆ {x} + r • t
   exact add_subset_add Subset.rfl (smul_set_mono t't)
+  -- 🎉 no goals
 #align measure_theory.measure.eventually_nonempty_inter_smul_of_density_one MeasureTheory.Measure.eventually_nonempty_inter_smul_of_density_one
 
 end Measure

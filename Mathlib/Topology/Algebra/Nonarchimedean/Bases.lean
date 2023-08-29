@@ -61,9 +61,13 @@ theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     leftMul
     rightMul := by
       intro x i
+      -- ⊢ ∃ j, ↑(B j) ⊆ (fun x_1 => x_1 * x) ⁻¹' ↑(B i)
       cases' leftMul x i with j hj
+      -- ⊢ ∃ j, ↑(B j) ⊆ (fun x_1 => x_1 * x) ⁻¹' ↑(B i)
       use j
+      -- ⊢ ↑(B j) ⊆ (fun x_1 => x_1 * x) ⁻¹' ↑(B i)
       simpa [mul_comm] using hj }
+      -- 🎉 no goals
 #align ring_subgroups_basis.of_comm RingSubgroupsBasis.of_comm
 
 /-- Every subgroups basis on a ring leads to a ring filter basis. -/
@@ -72,58 +76,103 @@ def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgrou
   sets := { U | ∃ i, U = B i }
   nonempty := by
     inhabit ι
+    -- ⊢ Set.Nonempty {U | ∃ i, U = ↑(B i)}
     exact ⟨B default, default, rfl⟩
+    -- 🎉 no goals
   inter_sets := by
     rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
+    -- ⊢ ∃ z, z ∈ {U | ∃ i, U = ↑(B i)} ∧ z ⊆ ↑(B i) ∩ ↑(B j)
     cases' hB.inter i j with k hk
+    -- ⊢ ∃ z, z ∈ {U | ∃ i, U = ↑(B i)} ∧ z ⊆ ↑(B i) ∩ ↑(B j)
     use B k
+    -- ⊢ ↑(B k) ∈ {U | ∃ i, U = ↑(B i)} ∧ ↑(B k) ⊆ ↑(B i) ∩ ↑(B j)
     constructor
+    -- ⊢ ↑(B k) ∈ {U | ∃ i, U = ↑(B i)}
     · use k
+      -- 🎉 no goals
     · exact hk
+      -- 🎉 no goals
   zero' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ 0 ∈ ↑(B i)
     exact (B i).zero_mem
+    -- 🎉 no goals
   add' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     use B i
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     constructor
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     · use i
+      -- 🎉 no goals
     · rintro x ⟨y, z, y_in, z_in, rfl⟩
+      -- ⊢ (fun x x_1 => x + x_1) y z ∈ ↑(B i)
       exact (B i).add_mem y_in z_in
+      -- 🎉 no goals
   neg' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     use B i
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     constructor
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     · use i
+      -- 🎉 no goals
     · intro x x_in
+      -- ⊢ x ∈ (fun x => -x) ⁻¹' ↑(B i)
       exact (B i).neg_mem x_in
+      -- 🎉 no goals
   conj' := by
     rintro x₀ _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     use B i
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     constructor
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     · use i
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   mul' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V * V ⊆ ↑(B i)
     cases' hB.mul i with k hk
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V * V ⊆ ↑(B i)
     use B k
+    -- ⊢ ↑(B k) ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ ↑(B k) * ↑(B k) ⊆ ↑(B i)
     constructor
+    -- ⊢ ↑(B k) ∈ AddGroupFilterBasis.toFilterBasis.sets
     · use k
+      -- 🎉 no goals
     · exact hk
+      -- 🎉 no goals
   mul_left' := by
     rintro x₀ _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x₀ * x) ⁻¹'  …
     cases' hB.leftMul x₀ i with k hk
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x₀ * x) ⁻¹'  …
     use B k
+    -- ⊢ ↑(B k) ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ ↑(B k) ⊆ (fun x => x₀ * x) …
     constructor
+    -- ⊢ ↑(B k) ∈ AddGroupFilterBasis.toFilterBasis.sets
     · use k
+      -- 🎉 no goals
     · exact hk
+      -- 🎉 no goals
   mul_right' := by
     rintro x₀ _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x * x₀) ⁻¹'  …
     cases' hB.rightMul x₀ i with k hk
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x * x₀) ⁻¹'  …
     use B k
+    -- ⊢ ↑(B k) ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ ↑(B k) ⊆ (fun x => x * x₀) …
     constructor
+    -- ⊢ ↑(B k) ∈ AddGroupFilterBasis.toFilterBasis.sets
     · use k
+      -- 🎉 no goals
     · exact hk
+      -- 🎉 no goals
 #align ring_subgroups_basis.to_ring_filter_basis RingSubgroupsBasis.toRingFilterBasis
 
 variable [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B)
@@ -146,37 +195,64 @@ def topology : TopologicalSpace A :=
 theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
   ⟨by
     intro s
+    -- ⊢ s ∈ 𝓝 0 ↔ ∃ i, True ∧ ↑(B i) ⊆ s
     rw [hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff]
+    -- ⊢ (∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ id i ⊆ s) ↔ ∃ i, True ∧ ↑( …
     constructor
+    -- ⊢ (∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ id i ⊆ s) → ∃ i, True ∧ ↑( …
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
+      -- ⊢ ∃ i, True ∧ ↑(B i) ⊆ s
       exact ⟨i, trivial, hi⟩
+      -- 🎉 no goals
     · rintro ⟨i, -, hi⟩
+      -- ⊢ ∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ id i ⊆ s
       exact ⟨B i, ⟨i, rfl⟩, hi⟩⟩
+      -- 🎉 no goals
 #align ring_subgroups_basis.has_basis_nhds_zero RingSubgroupsBasis.hasBasis_nhds_zero
 
 theorem hasBasis_nhds (a : A) :
     HasBasis (@nhds A hB.topology a) (fun _ => True) fun i => { b | b - a ∈ B i } :=
   ⟨by
     intro s
+    -- ⊢ s ∈ 𝓝 a ↔ ∃ i, True ∧ {b | b - a ∈ B i} ⊆ s
     rw [(hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
+    -- ⊢ (∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ (fun y => a + y) '' i ⊆ s) …
     simp only [true_and]
+    -- ⊢ (∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ (fun y => a + y) '' i ⊆ s) …
     constructor
+    -- ⊢ (∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ (fun y => a + y) '' i ⊆ s) …
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
+      -- ⊢ ∃ i, {b | b - a ∈ B i} ⊆ s
       use i
+      -- ⊢ {b | b - a ∈ B i} ⊆ s
       suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i)
+      -- ⊢ {b | b - a ∈ B i} ⊆ s
       · rw [h]
+        -- ⊢ (fun y => a + y) '' ↑(B i) ⊆ s
         assumption
+        -- 🎉 no goals
       simp only [image_add_left, neg_add_eq_sub]
+      -- ⊢ {b | b - a ∈ B i} = (fun x => x - a) ⁻¹' ↑(B i)
       ext b
+      -- ⊢ b ∈ {b | b - a ∈ B i} ↔ b ∈ (fun x => x - a) ⁻¹' ↑(B i)
       simp
+      -- 🎉 no goals
     · rintro ⟨i, hi⟩
+      -- ⊢ ∃ i, i ∈ RingFilterBasis.toAddGroupFilterBasis ∧ (fun y => a + y) '' i ⊆ s
       use B i
+      -- ⊢ ↑(B i) ∈ RingFilterBasis.toAddGroupFilterBasis ∧ (fun y => a + y) '' ↑(B i)  …
       constructor
+      -- ⊢ ↑(B i) ∈ RingFilterBasis.toAddGroupFilterBasis
       · use i
+        -- 🎉 no goals
       · rw [image_subset_iff]
+        -- ⊢ ↑(B i) ⊆ (fun y => a + y) ⁻¹' s
         rintro b b_in
+        -- ⊢ b ∈ (fun y => a + y) ⁻¹' s
         apply hi
+        -- ⊢ (fun y => a + y) b ∈ {b | b - a ∈ B i}
         simpa using b_in⟩
+        -- 🎉 no goals
 #align ring_subgroups_basis.has_basis_nhds RingSubgroupsBasis.hasBasis_nhds
 
 /-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
@@ -187,20 +263,31 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
   { B i with
     isOpen' := by
       rw [isOpen_iff_mem_nhds]
+      -- ⊢ ∀ (a : A), a ∈ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ : ∀ { …
       intro a a_in
+      -- ⊢ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ : ∀ {x : A}, x ∈ src …
       rw [(hB.hasBasis_nhds a).mem_iff]
+      -- ⊢ ∃ i, True ∧ {b | b - a ∈ B i} ⊆ { toAddSubmonoid := src✝.toAddSubmonoid, neg …
       use i, trivial
+      -- ⊢ {b | b - a ∈ B i} ⊆ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_  …
       rintro b b_in
+      -- ⊢ b ∈ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ : ∀ {x : A}, x ∈ …
       simpa using (B i).add_mem a_in b_in }
+      -- 🎉 no goals
 #align ring_subgroups_basis.open_add_subgroup RingSubgroupsBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
 theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
   letI := hB.topology
+  -- ⊢ NonarchimedeanRing A
   constructor
+  -- ⊢ ∀ (U : Set A), U ∈ 𝓝 0 → ∃ V, ↑V ⊆ U
   intro U hU
+  -- ⊢ ∃ V, ↑V ⊆ U
   obtain ⟨i, -, hi : (B i : Set A) ⊆ U⟩ := hB.hasBasis_nhds_zero.mem_iff.mp hU
+  -- ⊢ ∃ V, ↑V ⊆ U
   exact ⟨hB.openAddSubgroup i, hi⟩
+  -- 🎉 no goals
 #align ring_subgroups_basis.nonarchimedean RingSubgroupsBasis.nonarchimedean
 
 end RingSubgroupsBasis
@@ -228,11 +315,17 @@ variable {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
 theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
     RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
   apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
+  -- ⊢ ∀ (x : A) (i : ι), ∃ j, ↑(Submodule.toAddSubgroup (B j)) ⊆ (fun y => x * y)  …
   intro a i
+  -- ⊢ ∃ j, ↑(Submodule.toAddSubgroup (B j)) ⊆ (fun y => a * y) ⁻¹' ↑(Submodule.toA …
   rcases hB.leftMul a i with ⟨j, hj⟩
+  -- ⊢ ∃ j, ↑(Submodule.toAddSubgroup (B j)) ⊆ (fun y => a * y) ⁻¹' ↑(Submodule.toA …
   use j
+  -- ⊢ ↑(Submodule.toAddSubgroup (B j)) ⊆ (fun y => a * y) ⁻¹' ↑(Submodule.toAddSub …
   rintro b (b_in : b ∈ B j)
+  -- ⊢ b ∈ (fun y => a * y) ⁻¹' ↑(Submodule.toAddSubgroup (B i))
   exact hj ⟨b, b_in, rfl⟩
+  -- 🎉 no goals
 #align submodules_ring_basis.to_ring_subgroups_basis SubmodulesRingBasis.toRing_subgroups_basis
 
 /-- The topology associated to a basis of submodules in an algebra. -/
@@ -264,57 +357,101 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
   sets := { U | ∃ i, U = B i }
   nonempty := by
     inhabit ι
+    -- ⊢ Set.Nonempty {U | ∃ i, U = ↑(B i)}
     exact ⟨B default, default, rfl⟩
+    -- 🎉 no goals
   inter_sets := by
     rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
+    -- ⊢ ∃ z, z ∈ {U | ∃ i, U = ↑(B i)} ∧ z ⊆ ↑(B i) ∩ ↑(B j)
     cases' hB.inter i j with k hk
+    -- ⊢ ∃ z, z ∈ {U | ∃ i, U = ↑(B i)} ∧ z ⊆ ↑(B i) ∩ ↑(B j)
     use B k
+    -- ⊢ ↑(B k) ∈ {U | ∃ i, U = ↑(B i)} ∧ ↑(B k) ⊆ ↑(B i) ∩ ↑(B j)
     constructor
+    -- ⊢ ↑(B k) ∈ {U | ∃ i, U = ↑(B i)}
     · use k
+      -- 🎉 no goals
     · exact hk
+      -- 🎉 no goals
   zero' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ 0 ∈ ↑(B i)
     exact (B i).zero_mem
+    -- 🎉 no goals
   add' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     use B i
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     constructor
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     · use i
+      -- 🎉 no goals
     · rintro x ⟨y, z, y_in, z_in, rfl⟩
+      -- ⊢ (fun x x_1 => x + x_1) y z ∈ ↑(B i)
       exact (B i).add_mem y_in z_in
+      -- 🎉 no goals
   neg' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     use B i
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     constructor
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     · use i
+      -- 🎉 no goals
     · intro x x_in
+      -- ⊢ x ∈ (fun x => -x) ⁻¹' ↑(B i)
       exact (B i).neg_mem x_in
+      -- 🎉 no goals
   conj' := by
     rintro x₀ _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     use B i
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     constructor
+    -- ⊢ ↑(B i) ∈ { sets := {U | ∃ i, U = ↑(B i)}, nonempty := (_ : ∃ x, x ∈ {U | ∃ i …
     · use i
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   smul' := by
     rintro _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ 𝓝 0 ∧ ∃ W, W ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V • W ⊆ ↑(B …
     use univ
+    -- ⊢ univ ∈ 𝓝 0 ∧ ∃ W, W ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ univ • W ⊆ ↑( …
     constructor
+    -- ⊢ univ ∈ 𝓝 0
     · exact univ_mem
+      -- 🎉 no goals
     · use B i
+      -- ⊢ ↑(B i) ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ univ • ↑(B i) ⊆ ↑(B i)
       constructor
+      -- ⊢ ↑(B i) ∈ AddGroupFilterBasis.toFilterBasis.sets
       · use i
+        -- 🎉 no goals
       · rintro _ ⟨a, m, -, hm, rfl⟩
+        -- ⊢ (fun x x_1 => x • x_1) a m ∈ ↑(B i)
         exact (B i).smul_mem _ hm
+        -- 🎉 no goals
   smul_left' := by
     rintro x₀ _ ⟨i, rfl⟩
+    -- ⊢ ∃ V, V ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ V ⊆ (fun x => x₀ • x) ⁻¹'  …
     use B i
+    -- ⊢ ↑(B i) ∈ AddGroupFilterBasis.toFilterBasis.sets ∧ ↑(B i) ⊆ (fun x => x₀ • x) …
     constructor
+    -- ⊢ ↑(B i) ∈ AddGroupFilterBasis.toFilterBasis.sets
     · use i
+      -- 🎉 no goals
     · intro m
+      -- ⊢ m ∈ ↑(B i) → m ∈ (fun x => x₀ • x) ⁻¹' ↑(B i)
       exact (B i).smul_mem _
+      -- 🎉 no goals
   smul_right' := by
     rintro m₀ _ ⟨i, rfl⟩
+    -- ⊢ ∀ᶠ (x : R) in 𝓝 0, x • m₀ ∈ ↑(B i)
     exact hB.smul m₀ i
+    -- 🎉 no goals
 #align submodules_basis.to_module_filter_basis SubmodulesBasis.toModuleFilterBasis
 
 /-- The topology associated to a basis of submodules in a module. -/
@@ -329,24 +466,37 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
   { (B i).toAddSubgroup with
     isOpen' := by
       letI := hB.topology
+      -- ⊢ IsOpen { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ : ∀ {x : M},  …
       rw [isOpen_iff_mem_nhds]
+      -- ⊢ ∀ (a : M), a ∈ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ : ∀ { …
       intro a a_in
+      -- ⊢ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ : ∀ {x : M}, x ∈ src …
       rw [(hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
+      -- ⊢ ∃ i, i ∈ (toModuleFilterBasis hB).toAddGroupFilterBasis ∧ (fun y => a + y) ' …
       use B i
+      -- ⊢ ↑(B i) ∈ (toModuleFilterBasis hB).toAddGroupFilterBasis ∧ (fun y => a + y) ' …
       constructor
+      -- ⊢ ↑(B i) ∈ (toModuleFilterBasis hB).toAddGroupFilterBasis
       · use i
+        -- 🎉 no goals
       · rintro - ⟨b, b_in, rfl⟩
+        -- ⊢ (fun y => a + y) b ∈ { toAddSubmonoid := src✝.toAddSubmonoid, neg_mem' := (_ …
         exact (B i).add_mem a_in b_in }
+        -- 🎉 no goals
 #align submodules_basis.open_add_subgroup SubmodulesBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
 theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
   letI := hB.topology
+  -- ⊢ NonarchimedeanAddGroup M
   constructor
+  -- ⊢ ∀ (U : Set M), U ∈ 𝓝 0 → ∃ V, ↑V ⊆ U
   intro U hU
+  -- ⊢ ∃ V, ↑V ⊆ U
   obtain ⟨-, ⟨i, rfl⟩, hi : (B i : Set M) ⊆ U⟩ :=
     hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
   exact ⟨hB.openAddSubgroup i, hi⟩
+  -- 🎉 no goals
 #align submodules_basis.nonarchimedean SubmodulesBasis.nonarchimedean
 
 library_note "nonarchimedean non instances"/--
@@ -397,9 +547,13 @@ theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι 
   { inter := hB.inter
     smul := by
       letI := BR.topology
+      -- ⊢ ∀ (m : M) (i : ι), ∀ᶠ (a : R) in 𝓝 0, a • m ∈ B i
       intro m i
+      -- ⊢ ∀ᶠ (a : R) in 𝓝 0, a • m ∈ B i
       rcases hB.smul m i with ⟨V, V_in, hV⟩
+      -- ⊢ ∀ᶠ (a : R) in 𝓝 0, a • m ∈ B i
       exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) hV }
+      -- 🎉 no goals
 #align ring_filter_basis.submodules_basis_is_basis RingFilterBasis.submodulesBasisIsBasis
 
 /-- The module filter basis associated to a ring filter basis and a compatible submodule basis.

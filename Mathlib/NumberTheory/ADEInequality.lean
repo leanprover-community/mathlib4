@@ -158,13 +158,22 @@ theorem admissible_E8 : Admissible E8 :=
 
 theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < sumInv pqr := by
   rw [Admissible]
+  -- ⊢ (∃ q r, A' q r = pqr) ∨ (∃ r, D' r = pqr) ∨ E' 3 = pqr ∨ E' 4 = pqr ∨ E' 5 = …
   rintro (⟨p', q', H⟩ | ⟨n, H⟩ | H | H | H)
   · rw [← H, A', sumInv_pqr, add_assoc]
+    -- ⊢ 1 < (↑↑1)⁻¹ + ((↑↑p')⁻¹ + (↑↑q')⁻¹)
     simp only [lt_add_iff_pos_right, PNat.one_coe, inv_one, Nat.cast_one]
+    -- ⊢ 0 < (↑↑p')⁻¹ + (↑↑q')⁻¹
     apply add_pos <;> simp only [PNat.pos, Nat.cast_pos, inv_pos]
+    -- ⊢ 0 < (↑↑p')⁻¹
+                      -- 🎉 no goals
+                      -- 🎉 no goals
   · rw [← H, D', sumInv_pqr]
+    -- ⊢ 1 < (↑↑2)⁻¹ + (↑↑2)⁻¹ + (↑↑n)⁻¹
     conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
+    -- ⊢ 1 < (↑(1 + 1))⁻¹ + (↑(1 + 1))⁻¹ + (↑↑n)⁻¹
     norm_num
+    -- 🎉 no goals
   all_goals
     rw [← H, E', sumInv_pqr]
     conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
@@ -172,10 +181,15 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
   have h3 : (0 : ℚ) < 3 := by norm_num
+  -- ⊢ p < 3
   contrapose! H
+  -- ⊢ sumInv {p, q, r} ≤ 1
   rw [sumInv_pqr]
+  -- ⊢ (↑↑p)⁻¹ + (↑↑q)⁻¹ + (↑↑r)⁻¹ ≤ 1
   have h3q := H.trans hpq
+  -- ⊢ (↑↑p)⁻¹ + (↑↑q)⁻¹ + (↑↑r)⁻¹ ≤ 1
   have h3r := h3q.trans hqr
+  -- ⊢ (↑↑p)⁻¹ + (↑↑q)⁻¹ + (↑↑r)⁻¹ ≤ 1
   have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
     assumption_mod_cast
@@ -195,9 +209,13 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
 
 theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 := by
   have h4 : (0 : ℚ) < 4 := by norm_num
+  -- ⊢ q < 4
   contrapose! H
+  -- ⊢ sumInv {2, q, r} ≤ 1
   rw [sumInv_pqr]
+  -- ⊢ (↑↑2)⁻¹ + (↑↑q)⁻¹ + (↑↑r)⁻¹ ≤ 1
   have h4r := H.trans hqr
+  -- ⊢ (↑↑2)⁻¹ + (↑↑q)⁻¹ + (↑↑r)⁻¹ ≤ 1
   have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
     assumption_mod_cast
@@ -213,8 +231,11 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
 
 theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have h6 : (0 : ℚ) < 6 := by norm_num
+  -- ⊢ r < 6
   contrapose! H
+  -- ⊢ sumInv {2, 3, r} ≤ 1
   rw [sumInv_pqr]
+  -- ⊢ (↑↑2)⁻¹ + (↑↑3)⁻¹ + (↑↑r)⁻¹ ≤ 1
   have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv _ h6]
     assumption_mod_cast
@@ -227,23 +248,41 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
 theorem admissible_of_one_lt_sumInv_aux' {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r)
     (H : 1 < sumInv {p, q, r}) : Admissible {p, q, r} := by
   have hp3 : p < 3 := lt_three hpq hqr H
+  -- ⊢ Admissible {p, q, r}
   -- Porting note: `interval_cases` doesn't support `ℕ+` yet.
   replace hp3 := Finset.mem_Iio.mpr hp3
+  -- ⊢ Admissible {p, q, r}
   conv at hp3 => change p ∈ ({1, 2} : Multiset ℕ+)
+  -- ⊢ Admissible {p, q, r}
   fin_cases hp3
+  -- ⊢ Admissible {1, q, r}
   · exact admissible_A' q r
+    -- 🎉 no goals
   have hq4 : q < 4 := lt_four hqr H
+  -- ⊢ Admissible {2, q, r}
   replace hq4 := Finset.mem_Ico.mpr ⟨hpq, hq4⟩; clear hpq
+  -- ⊢ Admissible {2, q, r}
+                                                -- ⊢ Admissible {2, q, r}
   conv at hq4 => change q ∈ ({2, 3} : Multiset ℕ+)
+  -- ⊢ Admissible {2, q, r}
   fin_cases hq4
+  -- ⊢ Admissible {2, 2, r}
   · exact admissible_D' r
+    -- 🎉 no goals
   have hr6 : r < 6 := lt_six H
+  -- ⊢ Admissible {2, 3, r}
   replace hr6 := Finset.mem_Ico.mpr ⟨hqr, hr6⟩; clear hqr
+  -- ⊢ Admissible {2, 3, r}
+                                                -- ⊢ Admissible {2, 3, r}
   conv at hr6 => change r ∈ ({3, 4, 5} : Multiset ℕ+)
+  -- ⊢ Admissible {2, 3, r}
   fin_cases hr6
   · exact admissible_E6
+    -- 🎉 no goals
   · exact admissible_E7
+    -- 🎉 no goals
   · exact admissible_E8
+    -- 🎉 no goals
 #align ADE_inequality.admissible_of_one_lt_sum_inv_aux' ADEInequality.admissible_of_one_lt_sumInv_aux'
 
 theorem admissible_of_one_lt_sumInv_aux :
@@ -251,20 +290,31 @@ theorem admissible_of_one_lt_sumInv_aux :
       Admissible pqr
   | [p, q, r], hs, _, H => by
     obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r
+    -- ⊢ (p ≤ q ∧ p ≤ r) ∧ q ≤ r
     simpa using hs
+    -- ⊢ Admissible ↑[p, q, r]
     exact admissible_of_one_lt_sumInv_aux' hpq hqr H
+    -- 🎉 no goals
 #align ADE_inequality.admissible_of_one_lt_sum_inv_aux ADEInequality.admissible_of_one_lt_sumInv_aux
 
 theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
     Admissible {p, q, r} := by
   simp only [Admissible]
+  -- ⊢ (∃ q_1 r_1, A' q_1 r_1 = {p, q, r}) ∨ (∃ r_1, D' r_1 = {p, q, r}) ∨ E' 3 = { …
   let S := sort ((· ≤ ·) : ℕ+ → ℕ+ → Prop) {p, q, r}
+  -- ⊢ (∃ q_1 r_1, A' q_1 r_1 = {p, q, r}) ∨ (∃ r_1, D' r_1 = {p, q, r}) ∨ E' 3 = { …
   have hS : S.Sorted (· ≤ ·) := sort_sorted _ _
+  -- ⊢ (∃ q_1 r_1, A' q_1 r_1 = {p, q, r}) ∨ (∃ r_1, D' r_1 = {p, q, r}) ∨ E' 3 = { …
   have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq LE.le {p, q, r}).symm
+  -- ⊢ (∃ q_1 r_1, A' q_1 r_1 = {p, q, r}) ∨ (∃ r_1, D' r_1 = {p, q, r}) ∨ E' 3 = { …
   rw [hpqr]
+  -- ⊢ (∃ q r, A' q r = ↑S) ∨ (∃ r, D' r = ↑S) ∨ E' 3 = ↑S ∨ E' 4 = ↑S ∨ E' 5 = ↑S
   rw [hpqr] at H
+  -- ⊢ (∃ q r, A' q r = ↑S) ∨ (∃ r, D' r = ↑S) ∨ E' 3 = ↑S ∨ E' 4 = ↑S ∨ E' 5 = ↑S
   apply admissible_of_one_lt_sumInv_aux hS _ H
+  -- ⊢ List.length S = 3
   simp only [ge_iff_le, insert_eq_cons, length_sort, card_cons, card_singleton]
+  -- 🎉 no goals
 #align ADE_inequality.admissible_of_one_lt_sum_inv ADEInequality.admissible_of_one_lt_sumInv
 
 /-- A multiset `{p,q,r}` of positive natural numbers

@@ -80,25 +80,37 @@ def posTangentConeAt (s : Set E) (x : E) : Set E :=
 
 theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
   rintro s t hst y ⟨c, d, hd, hc, hcd⟩
+  -- ⊢ y ∈ (fun s => posTangentConeAt s a) t
   exact ⟨c, d, mem_of_superset hd fun h hn => hst hn, hc, hcd⟩
+  -- 🎉 no goals
 #align pos_tangent_cone_at_mono posTangentConeAt_mono
 
 theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segment ℝ x y ⊆ s) :
     y - x ∈ posTangentConeAt s x := by
   let c := fun n : ℕ => (2 : ℝ) ^ n
+  -- ⊢ y - x ∈ posTangentConeAt s x
   let d := fun n : ℕ => (c n)⁻¹ • (y - x)
+  -- ⊢ y - x ∈ posTangentConeAt s x
   refine' ⟨c, d, Filter.univ_mem' fun n => h _, tendsto_pow_atTop_atTop_of_one_lt one_lt_two, _⟩
+  -- ⊢ x + d n ∈ segment ℝ x y
   show x + d n ∈ segment ℝ x y
+  -- ⊢ x + d n ∈ segment ℝ x y
   · rw [segment_eq_image']
+    -- ⊢ x + d n ∈ (fun θ => x + θ • (y - x)) '' Icc 0 1
     refine' ⟨(c n)⁻¹, ⟨_, _⟩, rfl⟩
+    -- ⊢ 0 ≤ (c n)⁻¹
     exacts [inv_nonneg.2 (pow_nonneg zero_le_two _), inv_le_one (one_le_pow_of_one_le one_le_two _)]
+    -- 🎉 no goals
   show Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
+  -- ⊢ Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
   · exact tendsto_const_nhds.congr fun n ↦ (smul_inv_smul₀ (pow_ne_zero _ two_ne_zero) _).symm
+    -- 🎉 no goals
 #align mem_pos_tangent_cone_at_of_segment_subset mem_posTangentConeAt_of_segment_subset
 
 theorem mem_posTangentConeAt_of_segment_subset' {s : Set E} {x y : E}
     (h : segment ℝ x (x + y) ⊆ s) : y ∈ posTangentConeAt s x := by
   simpa only [add_sub_cancel'] using mem_posTangentConeAt_of_segment_subset h
+  -- 🎉 no goals
 #align mem_pos_tangent_cone_at_of_segment_subset' mem_posTangentConeAt_of_segment_subset'
 
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
@@ -114,14 +126,23 @@ theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
 theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos {s : Set E} (h : IsLocalMaxOn f s a)
     (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
   rcases hy with ⟨c, d, hd, hc, hcd⟩
+  -- ⊢ ↑f' y ≤ 0
   have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
+  -- ⊢ ↑f' y ≤ 0
   suffices : ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0
+  -- ⊢ ↑f' y ≤ 0
   · exact le_of_tendsto (hf.lim atTop hd hc' hcd) this
+    -- 🎉 no goals
   replace hd : Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0))
+  -- ⊢ Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0))
   · exact tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add (tangentConeAt.lim_zero _ hc' hcd), hd⟩
+    -- 🎉 no goals
   rw [add_zero] at hd
+  -- ⊢ ∀ᶠ (n : ℕ) in atTop, c n • (f (a + d n) - f a) ≤ 0
   filter_upwards [hd.eventually h, hc.eventually_ge_atTop 0] with n hfn hcn
+  -- ⊢ c n • (f (a + d n) - f a) ≤ 0
   exact mul_nonpos_of_nonneg_of_nonpos hcn (sub_nonpos.2 hfn)
+  -- 🎉 no goals
 #align is_local_max_on.has_fderiv_within_at_nonpos IsLocalMaxOn.hasFDerivWithinAt_nonpos
 
 /-- If `f` has a local max on `s` at `a` and `y` belongs to the positive tangent cone
@@ -130,6 +151,8 @@ theorem IsLocalMaxOn.fderivWithin_nonpos {s : Set E} (h : IsLocalMaxOn f s a) {y
     (hy : y ∈ posTangentConeAt s a) : (fderivWithin ℝ f s a : E → ℝ) y ≤ 0 :=
   if hf : DifferentiableWithinAt ℝ f s a then h.hasFDerivWithinAt_nonpos hf.hasFDerivWithinAt hy
   else by rw [fderivWithin_zero_of_not_differentiableWithinAt hf]; rfl
+          -- ⊢ ↑0 y ≤ 0
+                                                                   -- 🎉 no goals
 #align is_local_max_on.fderiv_within_nonpos IsLocalMaxOn.fderivWithin_nonpos
 
 /-- If `f` has a local max on `s` at `a`, `f'` is a derivative of `f` at `a` within `s`, and
@@ -138,6 +161,7 @@ theorem IsLocalMaxOn.hasFDerivWithinAt_eq_zero {s : Set E} (h : IsLocalMaxOn f s
     (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a)
     (hy' : -y ∈ posTangentConeAt s a) : f' y = 0 :=
   le_antisymm (h.hasFDerivWithinAt_nonpos hf hy) <| by simpa using h.hasFDerivWithinAt_nonpos hf hy'
+                                                       -- 🎉 no goals
 #align is_local_max_on.has_fderiv_within_at_eq_zero IsLocalMaxOn.hasFDerivWithinAt_eq_zero
 
 /-- If `f` has a local max on `s` at `a` and both `y` and `-y` belong to the positive tangent cone
@@ -148,6 +172,8 @@ theorem IsLocalMaxOn.fderivWithin_eq_zero {s : Set E} (h : IsLocalMaxOn f s a) {
   if hf : DifferentiableWithinAt ℝ f s a then
     h.hasFDerivWithinAt_eq_zero hf.hasFDerivWithinAt hy hy'
   else by rw [fderivWithin_zero_of_not_differentiableWithinAt hf]; rfl
+          -- ⊢ ↑0 y = 0
+                                                                   -- 🎉 no goals
 #align is_local_max_on.fderiv_within_eq_zero IsLocalMaxOn.fderivWithin_eq_zero
 
 /-- If `f` has a local min on `s` at `a`, `f'` is the derivative of `f` at `a` within `s`, and
@@ -155,6 +181,7 @@ theorem IsLocalMaxOn.fderivWithin_eq_zero {s : Set E} (h : IsLocalMaxOn f s a) {
 theorem IsLocalMinOn.hasFDerivWithinAt_nonneg {s : Set E} (h : IsLocalMinOn f s a)
     (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a) : 0 ≤ f' y := by
   simpa using h.neg.hasFDerivWithinAt_nonpos hf.neg hy
+  -- 🎉 no goals
 #align is_local_min_on.has_fderiv_within_at_nonneg IsLocalMinOn.hasFDerivWithinAt_nonneg
 
 /-- If `f` has a local min on `s` at `a` and `y` belongs to the positive tangent cone
@@ -163,6 +190,8 @@ theorem IsLocalMinOn.fderivWithin_nonneg {s : Set E} (h : IsLocalMinOn f s a) {y
     (hy : y ∈ posTangentConeAt s a) : (0 : ℝ) ≤ (fderivWithin ℝ f s a : E → ℝ) y :=
   if hf : DifferentiableWithinAt ℝ f s a then h.hasFDerivWithinAt_nonneg hf.hasFDerivWithinAt hy
   else by rw [fderivWithin_zero_of_not_differentiableWithinAt hf]; rfl
+          -- ⊢ 0 ≤ ↑0 y
+                                                                   -- 🎉 no goals
 #align is_local_min_on.fderiv_within_nonneg IsLocalMinOn.fderivWithin_nonneg
 
 /-- If `f` has a local max on `s` at `a`, `f'` is a derivative of `f` at `a` within `s`, and
@@ -171,6 +200,7 @@ theorem IsLocalMinOn.hasFDerivWithinAt_eq_zero {s : Set E} (h : IsLocalMinOn f s
     (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a)
     (hy' : -y ∈ posTangentConeAt s a) : f' y = 0 := by
   simpa using h.neg.hasFDerivWithinAt_eq_zero hf.neg hy hy'
+  -- 🎉 no goals
 #align is_local_min_on.has_fderiv_within_at_eq_zero IsLocalMinOn.hasFDerivWithinAt_eq_zero
 
 /-- If `f` has a local min on `s` at `a` and both `y` and `-y` belong to the positive tangent cone
@@ -181,14 +211,22 @@ theorem IsLocalMinOn.fderivWithin_eq_zero {s : Set E} (h : IsLocalMinOn f s a) {
   if hf : DifferentiableWithinAt ℝ f s a then
     h.hasFDerivWithinAt_eq_zero hf.hasFDerivWithinAt hy hy'
   else by rw [fderivWithin_zero_of_not_differentiableWithinAt hf]; rfl
+          -- ⊢ ↑0 y = 0
+                                                                   -- 🎉 no goals
 #align is_local_min_on.fderiv_within_eq_zero IsLocalMinOn.fderivWithin_eq_zero
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasFDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasFDerivAt f f' a) : f' = 0 := by
   ext y
+  -- ⊢ ↑f' y = ↑0 y
   apply (h.on univ).hasFDerivWithinAt_eq_zero hf.hasFDerivWithinAt <;>
+  -- ⊢ y ∈ posTangentConeAt univ a
       rw [posTangentConeAt_univ] <;>
+      -- ⊢ y ∈ univ
+      -- ⊢ -y ∈ univ
     apply mem_univ
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align is_local_min.has_fderiv_at_eq_zero IsLocalMin.hasFDerivAt_eq_zero
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
@@ -231,6 +269,7 @@ variable {f : ℝ → ℝ} {f' : ℝ} {a b : ℝ}
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasDerivAt f f' a) : f' = 0 := by
   simpa using FunLike.congr_fun (h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1
+  -- 🎉 no goals
 #align is_local_min.has_deriv_at_eq_zero IsLocalMin.hasDerivAt_eq_zero
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/

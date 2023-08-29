@@ -61,14 +61,20 @@ def bernstein (n ν : ℕ) : C(I, ℝ) :=
 theorem bernstein_apply (n ν : ℕ) (x : I) :
     bernstein n ν x = (n.choose ν : ℝ) * (x : ℝ) ^ ν * (1 - (x : ℝ)) ^ (n - ν) := by
   dsimp [bernstein, Polynomial.toContinuousMapOn, Polynomial.toContinuousMap, bernsteinPolynomial]
+  -- ⊢ Polynomial.eval (↑x) (↑(Nat.choose n ν) * Polynomial.X ^ ν * (1 - Polynomial …
   simp
+  -- 🎉 no goals
 #align bernstein_apply bernstein_apply
 
 theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   simp only [bernstein_apply]
+  -- ⊢ 0 ≤ ↑(Nat.choose n ν) * ↑x ^ ν * (1 - ↑x) ^ (n - ν)
   have h₁ : (0:ℝ) ≤ x := by unit_interval
+  -- ⊢ 0 ≤ ↑(Nat.choose n ν) * ↑x ^ ν * (1 - ↑x) ^ (n - ν)
   have h₂ : (0:ℝ) ≤ 1 - x := by unit_interval
+  -- ⊢ 0 ≤ ↑(Nat.choose n ν) * ↑x ^ ν * (1 - ↑x) ^ (n - ν)
   positivity
+  -- 🎉 no goals
 #align bernstein_nonneg bernstein_nonneg
 
 namespace Mathlib.Meta.Positivity
@@ -95,41 +101,69 @@ namespace bernstein
 def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by
     cases' n with n
+    -- ⊢ ↑↑k / ↑Nat.zero ∈ I
     · norm_num
+      -- 🎉 no goals
     · have h₁ : 0 < (n.succ : ℝ) := by exact_mod_cast Nat.succ_pos _
+      -- ⊢ ↑↑k / ↑(Nat.succ n) ∈ I
       have h₂ : ↑k ≤ n.succ := by exact_mod_cast Fin.le_last k
+      -- ⊢ ↑↑k / ↑(Nat.succ n) ∈ I
       rw [Set.mem_Icc, le_div_iff h₁, div_le_iff h₁]
+      -- ⊢ 0 * ↑(Nat.succ n) ≤ ↑↑k ∧ ↑↑k ≤ 1 * ↑(Nat.succ n)
       norm_cast
+      -- ⊢ 0 * Nat.succ n ≤ ↑k ∧ ↑k ≤ 1 * Nat.succ n
       simp [h₂]⟩
+      -- 🎉 no goals
 #align bernstein.z bernstein.z
 
 local postfix:90 "/ₙ" => z
 
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
+  -- ⊢ ∑ k : Fin (n + 1), ↑(bernstein n ↑k) x = 1
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
+  -- ⊢ ∑ k : Fin (n + 1), ↑(bernstein n ↑k) x = 1
   simp [AlgHom.map_sum, Finset.sum_range] at this
+  -- ⊢ ∑ k : Fin (n + 1), ↑(bernstein n ↑k) x = 1
   exact this
+  -- 🎉 no goals
 #align bernstein.probability bernstein.probability
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   have h' : (n : ℝ) ≠ 0 := ne_of_gt h
+  -- ⊢ ∑ k : Fin (n + 1), (↑x - ↑(k/ₙ)) ^ 2 * ↑(bernstein n ↑k) x = ↑x * (1 - ↑x) / …
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
+  -- ⊢ (fun x => x * ↑n) (∑ k : Fin (n + 1), (↑x - ↑(k/ₙ)) ^ 2 * ↑(bernstein n ↑k)  …
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
+  -- ⊢ (fun x => x * ↑n) ((fun x => x * ↑n) (∑ k : Fin (n + 1), (↑x - ↑(k/ₙ)) ^ 2 * …
   dsimp
+  -- ⊢ (∑ k : Fin (n + 1), (↑x - ↑(k/ₙ)) ^ 2 * ↑(bernstein n ↑k) x) * ↑n * ↑n = ↑x  …
   conv_lhs => simp only [Finset.sum_mul, z]
+  -- ⊢ ∑ x_1 : Fin (n + 1), (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n …
   conv_rhs => rw [div_mul_cancel _ h']
+  -- ⊢ ∑ x_1 : Fin (n + 1), (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n …
   have := bernsteinPolynomial.variance ℝ n
+  -- ⊢ ∑ x_1 : Fin (n + 1), (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n …
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
+  -- ⊢ ∑ x_1 : Fin (n + 1), (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n …
   simp [AlgHom.map_sum, Finset.sum_range, ← Polynomial.nat_cast_mul] at this
+  -- ⊢ ∑ x_1 : Fin (n + 1), (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n …
   convert this using 1
+  -- ⊢ ∑ x_1 : Fin (n + 1), (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n …
   · congr 1; funext k
+    -- ⊢ (fun x_1 => (↑x - ↑↑x_1 / ↑n) ^ 2 * ↑(bernstein n ↑x_1) x * ↑n * ↑n) = fun x …
+             -- ⊢ (↑x - ↑↑k / ↑n) ^ 2 * ↑(bernstein n ↑k) x * ↑n * ↑n = (↑n * ↑x - ↑↑k) ^ 2 *  …
     rw [mul_comm _ (n : ℝ), mul_comm _ (n : ℝ), ← mul_assoc, ← mul_assoc]
+    -- ⊢ ↑n * ↑n * (↑x - ↑↑k / ↑n) ^ 2 * ↑(bernstein n ↑k) x = (↑n * ↑x - ↑↑k) ^ 2 *  …
     congr 1
+    -- ⊢ ↑n * ↑n * (↑x - ↑↑k / ↑n) ^ 2 = (↑n * ↑x - ↑↑k) ^ 2
     field_simp [h]
+    -- ⊢ ↑n * ↑n * (↑x * ↑n - ↑↑k) ^ 2 = (↑n * ↑x - ↑↑k) ^ 2 * ↑n ^ 2
     ring
+    -- 🎉 no goals
   · ring
+    -- 🎉 no goals
 #align bernstein.variance bernstein.variance
 
 end bernstein
@@ -166,6 +200,7 @@ namespace bernsteinApproximation
 theorem apply (n : ℕ) (f : C(I, ℝ)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), f k/ₙ * bernstein n k x := by
   simp [bernsteinApproximation]
+  -- 🎉 no goals
 #align bernstein_approximation.apply bernsteinApproximation.apply
 
 /-- The modulus of (uniform) continuity for `f`, chosen so `|f x - f y| < ε/2` when `|x - y| < δ`.
@@ -189,8 +224,10 @@ def S (f : C(I, ℝ)) (ε : ℝ) (h : 0 < ε) (n : ℕ) (x : I) : Finset (Fin (n
 theorem lt_of_mem_S {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
     (m : k ∈ S f ε h n x) : |f k/ₙ - f x| < ε / 2 := by
   apply f.dist_lt_of_dist_lt_modulus (ε / 2) (half_pos h)
+  -- ⊢ dist k/ₙ x < ContinuousMap.modulus f (ε / 2) (_ : 0 < ε / 2)
   -- Porting note: `simp` fails to apply `Set.mem_toFinset` on its own
   simpa [S, (Set.mem_toFinset)] using m
+  -- 🎉 no goals
 #align bernstein_approximation.lt_of_mem_S bernsteinApproximation.lt_of_mem_S
 
 /-- If `k ∉ S`, then as `δ ≤ |x - k/n|`, we have the inequality `1 ≤ δ^-2 * (x - k/n)^2`.
@@ -200,9 +237,11 @@ theorem le_of_mem_S_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x :
     (m : k ∈ (S f ε h n x)ᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 := by
   -- Porting note: added parentheses to help `simp`
   simp only [Finset.mem_compl, not_lt, (Set.mem_toFinset), Set.mem_setOf_eq, S] at m
+  -- ⊢ 1 ≤ δ f ε h ^ (-2) * (↑x - ↑k/ₙ) ^ 2
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
     abs_of_pos δ_pos]
   rwa [dist_comm] at m
+  -- 🎉 no goals
 #align bernstein_approximation.le_of_mem_S_compl bernsteinApproximation.le_of_mem_S_compl
 
 end bernsteinApproximation
@@ -227,19 +266,28 @@ and reproduced on wikipedia.
 theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
   simp only [Metric.nhds_basis_ball.tendsto_right_iff, Metric.mem_ball, dist_eq_norm]
+  -- ⊢ ∀ (i : ℝ), 0 < i → ∀ᶠ (x : ℕ) in atTop, ‖bernsteinApproximation x f - f‖ < i
   intro ε h
+  -- ⊢ ∀ᶠ (x : ℕ) in atTop, ‖bernsteinApproximation x f - f‖ < ε
   let δ := δ f ε h
+  -- ⊢ ∀ᶠ (x : ℕ) in atTop, ‖bernsteinApproximation x f - f‖ < ε
   have nhds_zero := tendsto_const_div_atTop_nhds_0_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
+  -- ⊢ ∀ᶠ (x : ℕ) in atTop, ‖bernsteinApproximation x f - f‖ < ε
   filter_upwards [nhds_zero.eventually (gt_mem_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
     npos'
   have npos : 0 < (n : ℝ) := by positivity
+  -- ⊢ ‖bernsteinApproximation n f - f‖ < ε
   have w₂ : 0 ≤ δ ^ (-2:ℤ) := zpow_neg_two_nonneg _ -- TODO: need a positivity extension for `zpow`
+  -- ⊢ ‖bernsteinApproximation n f - f‖ < ε
   -- As `[0,1]` is compact, it suffices to check the inequality pointwise.
   rw [ContinuousMap.norm_lt_iff _ h]
+  -- ⊢ ∀ (x : ↑I), ‖↑(bernsteinApproximation n f - f) x‖ < ε
   intro x
+  -- ⊢ ‖↑(bernsteinApproximation n f - f) x‖ < ε
   -- The idea is to split up the sum over `k` into two sets,
   -- `S`, where `x - k/n < δ`, and its complement.
   let S := S f ε h n x
+  -- ⊢ ‖↑(bernsteinApproximation n f - f) x‖ < ε
   calc
     |(bernsteinApproximation n f - f) x| = |bernsteinApproximation n f x - f x| := rfl
     _ = |bernsteinApproximation n f x - f x * 1| := by rw [mul_one]

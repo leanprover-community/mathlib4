@@ -41,13 +41,19 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
     TendstoUniformlyOn (fun t : Finset α => fun x => ∑ n in t, f n x) (fun x => ∑' n, f n x) atTop
       s := by
   refine' tendstoUniformlyOn_iff.2 fun ε εpos => _
+  -- ⊢ ∀ᶠ (n : Finset α) in atTop, ∀ (x : β), x ∈ s → dist (∑' (n : α), f n x) (∑ n …
   filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos]with t ht x hx
+  -- ⊢ dist (∑' (n : α), f n x) (∑ n in t, f n x) < ε
   have A : Summable fun n => ‖f n x‖ :=
     summable_of_nonneg_of_le (fun n => norm_nonneg _) (fun n => hfu n x hx) hu
   rw [dist_eq_norm, ← sum_add_tsum_subtype_compl (summable_of_summable_norm A) t, add_sub_cancel']
+  -- ⊢ ‖∑' (x_1 : { x // ¬x ∈ t }), f (↑x_1) x‖ < ε
   apply lt_of_le_of_lt _ ht
+  -- ⊢ ‖∑' (x_1 : { x // ¬x ∈ t }), f (↑x_1) x‖ ≤ ∑' (b : { x // ¬x ∈ t }), u ↑b
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
+  -- ⊢ ∑' (i : ↑fun x => x ∈ t → False), ‖f (↑i) x‖ ≤ ∑' (b : { x // ¬x ∈ t }), u ↑b
   exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
+  -- 🎉 no goals
 #align tendsto_uniformly_on_tsum tendstoUniformlyOn_tsum
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
@@ -64,6 +70,8 @@ Version with general index set. -/
 theorem tendstoUniformly_tsum {f : α → β → F} (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) :
     TendstoUniformly (fun t : Finset α => fun x => ∑ n in t, f n x) (fun x => ∑' n, f n x) atTop :=
   by rw [← tendstoUniformlyOn_univ]; exact tendstoUniformlyOn_tsum hu fun n x _ => hfu n x
+     -- ⊢ TendstoUniformlyOn (fun t x => ∑ n in t, f n x) (fun x => ∑' (n : α), f n x) …
+                                     -- 🎉 no goals
 #align tendsto_uniformly_tsum tendstoUniformly_tsum
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
@@ -91,7 +99,9 @@ function is. -/
 theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i, Continuous (f i))
     (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x := by
   simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
+  -- ⊢ ContinuousOn (fun x => ∑' (n : α), f n x) univ
   exact continuousOn_tsum hf hu fun n x _ => hfu n x
+  -- 🎉 no goals
 #align continuous_tsum continuous_tsum
 
 /-! ### Differentiability -/
@@ -108,12 +118,14 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable (f · x₀)) {x : E}
     (hx : x ∈ s) : Summable fun n => f n x := by
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
+  -- ⊢ CauchySeq fun s => ∑ b in s, f b x
   have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i in t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
   -- porting note: Lean 4 failed to find `f` by unification
   refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i in t, f i x)
     hs h's A (fun t y hy => ?_) hx₀ hx hf0
   exact HasFDerivAt.sum fun i _ => hf i y hy
+  -- 🎉 no goals
 #align summable_of_summable_has_fderiv_at_of_is_preconnected summable_of_summable_hasFDerivAt_of_isPreconnected
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
@@ -142,6 +154,7 @@ theorem summable_of_summable_hasFDerivAt (hu : Summable u)
     (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x) (hf' : ∀ n x, ‖f' n x‖ ≤ u n)
     (hf0 : Summable fun n => f n x₀) (x : E) : Summable fun n => f n x := by
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
+  -- ⊢ Summable fun n => f n x
   exact summable_of_summable_hasFDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
 #align summable_of_summable_has_fderiv_at summable_of_summable_hasFDerivAt
@@ -153,6 +166,8 @@ theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' 
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
   let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  -- ⊢ NormedSpace ℝ E
+                         -- ⊢ HasFDerivAt (fun y => ∑' (n : α), f n y) (∑' (n : α), f' n x) x
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
 #align has_fderiv_at_tsum hasFDerivAt_tsum
@@ -164,13 +179,21 @@ convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y => ∑' n, f n y := by
   by_cases h : ∃ x₀, Summable fun n => f n x₀
+  -- ⊢ Differentiable 𝕜 fun y => ∑' (n : α), f n y
   · rcases h with ⟨x₀, hf0⟩
+    -- ⊢ Differentiable 𝕜 fun y => ∑' (n : α), f n y
     intro x
+    -- ⊢ DifferentiableAt 𝕜 (fun y => ∑' (n : α), f n y) x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
+    -- 🎉 no goals
   · push_neg at h
+    -- ⊢ Differentiable 𝕜 fun y => ∑' (n : α), f n y
     have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
+    -- ⊢ Differentiable 𝕜 fun y => ∑' (n : α), f n y
     rw [this]
+    -- ⊢ Differentiable 𝕜 0
     exact differentiable_const 0
+    -- 🎉 no goals
 #align differentiable_tsum differentiable_tsum
 
 theorem fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
@@ -183,7 +206,9 @@ theorem fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) {x₀ : E} (hf0 : Summable fun n => f n x₀) :
     (fderiv 𝕜 fun y => ∑' n, f n y) = fun x => ∑' n, fderiv 𝕜 (f n) x := by
   ext1 x
+  -- ⊢ fderiv 𝕜 (fun y => ∑' (n : α), f n y) x = ∑' (n : α), fderiv 𝕜 (f n) x
   exact fderiv_tsum_apply hu hf hf' hf0 x
+  -- 🎉 no goals
 #align fderiv_tsum fderiv_tsum
 
 /-! ### Higher smoothness -/
@@ -196,18 +221,27 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hk : (k : ℕ∞) ≤ N) :
     (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x => ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   induction' k with k IH
+  -- ⊢ (iteratedFDeriv 𝕜 Nat.zero fun y => ∑' (n : α), f n y) = fun x => ∑' (n : α) …
   · ext1 x
+    -- ⊢ iteratedFDeriv 𝕜 Nat.zero (fun y => ∑' (n : α), f n y) x = ∑' (n : α), itera …
     simp_rw [iteratedFDeriv_zero_eq_comp]
+    -- ⊢ (↑(LinearIsometryEquiv.symm (continuousMultilinearCurryFin0 𝕜 E F)) ∘ fun y  …
     exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsum
+    -- 🎉 no goals
   · have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
+    -- ⊢ (iteratedFDeriv 𝕜 (Nat.succ k) fun y => ∑' (n : α), f n y) = fun x => ∑' (n  …
     have A : Summable fun n => iteratedFDeriv 𝕜 k (f n) 0 :=
       summable_of_norm_bounded (v k) (hv k h'k.le) fun n => h'f k n 0 h'k.le
     simp_rw [iteratedFDeriv_succ_eq_comp_left, IH h'k.le]
+    -- ⊢ (↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun x => E) F) ∘ fderiv 𝕜 fun x => …
     rw [fderiv_tsum (hv _ hk) (fun n => (hf n).differentiable_iteratedFDeriv h'k) _ A]
+    -- ⊢ (↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun x => E) F) ∘ fun x => ∑' (n :  …
     · ext1 x
+      -- ⊢ (↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun x => E) F) ∘ fun x => ∑' (n :  …
       exact (continuousMultilinearCurryLeftEquiv 𝕜
         (fun _ : Fin (k + 1) => E) F).toContinuousLinearEquiv.map_tsum
     · intro n x
+      -- ⊢ ‖fderiv 𝕜 (fun x => iteratedFDeriv 𝕜 k (f n) x) x‖ ≤ v (Nat.succ k) n
       simpa only [iteratedFDeriv_succ_eq_comp_left, LinearIsometryEquiv.norm_map, comp_apply]
         using h'f k.succ n x hk
 #align iterated_fderiv_tsum iteratedFDeriv_tsum
@@ -220,6 +254,7 @@ theorem iteratedFDeriv_tsum_apply (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hk : (k : ℕ∞) ≤ N) (x : E) :
     iteratedFDeriv 𝕜 k (fun y => ∑' n, f n y) x = ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   rw [iteratedFDeriv_tsum hf hv h'f hk]
+  -- 🎉 no goals
 #align iterated_fderiv_tsum_apply iteratedFDeriv_tsum_apply
 
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of
@@ -229,24 +264,38 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) :
     ContDiff 𝕜 N fun x => ∑' i, f i x := by
   rw [contDiff_iff_continuous_differentiable]
+  -- ⊢ (∀ (m : ℕ), ↑m ≤ N → Continuous fun x => iteratedFDeriv 𝕜 m (fun x => ∑' (i  …
   constructor
+  -- ⊢ ∀ (m : ℕ), ↑m ≤ N → Continuous fun x => iteratedFDeriv 𝕜 m (fun x => ∑' (i : …
   · intro m hm
+    -- ⊢ Continuous fun x => iteratedFDeriv 𝕜 m (fun x => ∑' (i : α), f i x) x
     rw [iteratedFDeriv_tsum hf hv h'f hm]
+    -- ⊢ Continuous fun x => (fun x => ∑' (n : α), iteratedFDeriv 𝕜 m (f n) x) x
     refine' continuous_tsum _ (hv m hm) _
+    -- ⊢ ∀ (i : α), Continuous fun x => iteratedFDeriv 𝕜 m (f i) x
     · intro i
+      -- ⊢ Continuous fun x => iteratedFDeriv 𝕜 m (f i) x
       exact ContDiff.continuous_iteratedFDeriv hm (hf i)
+      -- 🎉 no goals
     · intro n x
+      -- ⊢ ‖iteratedFDeriv 𝕜 m (f n) x‖ ≤ v m n
       exact h'f _ _ _ hm
+      -- 🎉 no goals
   · intro m hm
+    -- ⊢ Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m (fun x => ∑' (i : α), f i x) x
     have h'm : ((m + 1 : ℕ) : ℕ∞) ≤ N := by
       simpa only [ENat.coe_add, Nat.cast_withBot, ENat.coe_one] using ENat.add_one_le_of_lt hm
     rw [iteratedFDeriv_tsum hf hv h'f hm.le]
+    -- ⊢ Differentiable 𝕜 fun x => (fun x => ∑' (n : α), iteratedFDeriv 𝕜 m (f n) x) x
     have A :
       ∀ n x, HasFDerivAt (iteratedFDeriv 𝕜 m (f n)) (fderiv 𝕜 (iteratedFDeriv 𝕜 m (f n)) x) x :=
       fun n x => (ContDiff.differentiable_iteratedFDeriv hm (hf n)).differentiableAt.hasFDerivAt
     refine differentiable_tsum (hv _ h'm) A fun n x => ?_
+    -- ⊢ ‖fderiv 𝕜 (iteratedFDeriv 𝕜 m (f n)) x‖ ≤ v (m + 1) n
     rw [fderiv_iteratedFDeriv, comp_apply, LinearIsometryEquiv.norm_map]
+    -- ⊢ ‖iteratedFDeriv 𝕜 (m + 1) (f n) x‖ ≤ v (m + 1) n
     exact h'f _ _ _ h'm
+    -- 🎉 no goals
 #align cont_diff_tsum contDiff_tsum
 
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of

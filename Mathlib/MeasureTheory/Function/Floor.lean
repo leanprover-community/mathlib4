@@ -25,6 +25,7 @@ variable {α R : Type*} [MeasurableSpace α] [LinearOrderedRing R] [FloorRing R]
 theorem Int.measurable_floor [OpensMeasurableSpace R] : Measurable (Int.floor : R → ℤ) :=
   measurable_to_countable fun x => by
     simpa only [Int.preimage_floor_singleton] using measurableSet_Ico
+    -- 🎉 no goals
 #align int.measurable_floor Int.measurable_floor
 
 @[measurability]
@@ -36,6 +37,7 @@ theorem Measurable.floor [OpensMeasurableSpace R] {f : α → R} (hf : Measurabl
 theorem Int.measurable_ceil [OpensMeasurableSpace R] : Measurable (Int.ceil : R → ℤ) :=
   measurable_to_countable fun x => by
     simpa only [Int.preimage_ceil_singleton] using measurableSet_Ioc
+    -- 🎉 no goals
 #align int.measurable_ceil Int.measurable_ceil
 
 @[measurability]
@@ -46,8 +48,11 @@ theorem Measurable.ceil [OpensMeasurableSpace R] {f : α → R} (hf : Measurable
 
 theorem measurable_fract [BorelSpace R] : Measurable (Int.fract : R → R) := by
   intro s hs
+  -- ⊢ MeasurableSet (Int.fract ⁻¹' s)
   rw [Int.preimage_fract]
+  -- ⊢ MeasurableSet (⋃ (m : ℤ), (fun x => x - ↑m) ⁻¹' (s ∩ Ico 0 1))
   exact MeasurableSet.iUnion fun z => measurable_id.sub_const _ (hs.inter measurableSet_Ico)
+  -- 🎉 no goals
 #align measurable_fract measurable_fract
 
 @[measurability]
@@ -59,7 +64,9 @@ theorem Measurable.fract [BorelSpace R] {f : α → R} (hf : Measurable f) :
 theorem MeasurableSet.image_fract [BorelSpace R] {s : Set R} (hs : MeasurableSet s) :
     MeasurableSet (Int.fract '' s) := by
   simp only [Int.image_fract, sub_eq_add_neg, image_add_right']
+  -- ⊢ MeasurableSet (⋃ (m : ℤ), (fun x => x + ↑m) ⁻¹' s ∩ Ico 0 1)
   exact MeasurableSet.iUnion fun m => (measurable_add_const _ hs).inter measurableSet_Ico
+  -- 🎉 no goals
 #align measurable_set.image_fract MeasurableSet.image_fract
 
 end FloorRing
@@ -72,6 +79,9 @@ variable {α R : Type*} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSem
 theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
     cases' eq_or_ne ⌊n⌋₊ 0 with h h <;> simp_all [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
+    -- ⊢ MeasurableSet (floor ⁻¹' {⌊n⌋₊})
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
 #align nat.measurable_floor Nat.measurable_floor
 
 @[measurability]
@@ -82,6 +92,9 @@ theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋
 theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
   measurable_to_countable fun n => by
     cases' eq_or_ne ⌈n⌉₊ 0 with h h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
+    -- ⊢ MeasurableSet (ceil ⁻¹' {⌈n⌉₊})
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
 #align nat.measurable_ceil Nat.measurable_ceil
 
 @[measurability]

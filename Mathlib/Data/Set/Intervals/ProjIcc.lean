@@ -71,11 +71,13 @@ theorem projIic_of_le (hx : b ≤ x) : projIic b x = ⟨b, le_rfl⟩ := Subtype.
 
 theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, hx.trans h]
+  -- 🎉 no goals
 #align set.proj_Icc_of_le_left Set.projIcc_of_le_left
 
 
 theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, h]
+  -- 🎉 no goals
 #align set.proj_Icc_of_right_le Set.projIcc_of_right_le
 
 @[simp]
@@ -97,41 +99,54 @@ theorem projIcc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
 #align set.proj_Icc_right Set.projIcc_right
 
 theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [projIci, Subtype.ext_iff]
+                                                                  -- 🎉 no goals
 #align set.proj_Ici_eq_self Set.projIci_eq_self
 
 theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
+                                                                  -- 🎉 no goals
 #align set.proj_Iic_eq_self Set.projIic_eq_self
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
   simp [projIcc, Subtype.ext_iff, h.not_le]
+  -- 🎉 no goals
 #align set.proj_Icc_eq_left Set.projIcc_eq_left
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
   simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
+  -- 🎉 no goals
 #align set.proj_Icc_eq_right Set.projIcc_eq_right
 
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
+                                                                      -- 🎉 no goals
 #align set.proj_Ici_of_mem Set.projIci_of_mem
 
 theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [projIic]
+                                                                      -- 🎉 no goals
 #align set.proj_Iic_of_mem Set.projIic_of_mem
 
 theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
   simp [projIcc, hx.1, hx.2]
+  -- 🎉 no goals
 #align set.proj_Icc_of_mem Set.projIcc_of_mem
 
 @[simp]
 theorem projIci_coe (x : Ici a) : projIci a x = x := by cases x; apply projIci_of_mem
+                                                        -- ⊢ projIci a ↑{ val := val✝, property := property✝ } = { val := val✝, property  …
+                                                                 -- 🎉 no goals
 #align set.proj_Ici_coe Set.projIci_coe
 
 @[simp]
 theorem projIic_coe (x : Iic b) : projIic b x = x := by cases x; apply projIic_of_mem
+                                                        -- ⊢ projIic b ↑{ val := val✝, property := property✝ } = { val := val✝, property  …
+                                                                 -- 🎉 no goals
 #align set.proj_Iic_coe Set.projIic_coe
 
 @[simp]
 theorem projIcc_val (x : Icc a b) : projIcc a b h x = x := by
   cases x
+  -- ⊢ projIcc a b h ↑{ val := val✝, property := property✝ } = { val := val✝, prope …
   apply projIcc_of_mem
+  -- 🎉 no goals
 #align set.proj_Icc_coe Set.projIcc_val
 
 theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ => ⟨x, x.2, projIci_coe x⟩
@@ -178,14 +193,17 @@ theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
 
 theorem strictMonoOn_projIci : StrictMonoOn (projIci a) (Ici a) := fun x hx y hy hxy => by
   simpa only [projIci_of_mem, hx, hy]
+  -- 🎉 no goals
 #align set.strict_mono_on_proj_Ici Set.strictMonoOn_projIci
 
 theorem strictMonoOn_projIic : StrictMonoOn (projIic b) (Iic b) := fun x hx y hy hxy => by
   simpa only [projIic_of_mem, hx, hy]
+  -- 🎉 no goals
 #align set.strict_mono_on_proj_Iic Set.strictMonoOn_projIic
 
 theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy => by
   simpa only [projIcc_of_mem, hx, hy]
+  -- 🎉 no goals
 #align set.strict_mono_on_proj_Icc Set.strictMonoOn_projIcc
 
 /-- Extend a function `[a, ∞) → β` to a map `α → β`. -/
@@ -218,16 +236,19 @@ theorem iccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by
   simp only [IciExtend, range_comp f, range_projIci, range_id', image_univ]
+  -- 🎉 no goals
 #align set.range_Ici_extend Set.range_IciExtend
 
 @[simp]
 theorem range_IicExtend (f : Iic b → β) : range (IicExtend f) = range f := by
   simp only [IicExtend, range_comp f, range_projIic, range_id', image_univ]
+  -- 🎉 no goals
 #align set.range_Iic_extend Set.range_IicExtend
 
 @[simp]
 theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f := by
   simp only [IccExtend, range_comp f, range_projIcc, image_univ]
+  -- 🎉 no goals
 #align set.Icc_extend_range Set.IccExtend_range
 
 theorem IciExtend_of_le (f : Ici a → β) (hx : x ≤ a) : IciExtend f x = f ⟨a, le_rfl⟩ :=
@@ -300,12 +321,19 @@ function from $[a, b]$ to the whole line is equal to the original function. -/
 theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
     IccExtend h (f ∘ (↑)) = f := by
   ext x
+  -- ⊢ IccExtend h (f ∘ Subtype.val) x = f x
   cases' lt_or_le x a with hxa hax
+  -- ⊢ IccExtend h (f ∘ Subtype.val) x = f x
   · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
+    -- 🎉 no goals
   · cases' le_or_lt x b with hxb hbx
+    -- ⊢ IccExtend h (f ∘ Subtype.val) x = f x
     · lift x to Icc a b using ⟨hax, hxb⟩
+      -- ⊢ IccExtend h (f ∘ Subtype.val) ↑x = f ↑x
       rw [IccExtend_val, comp_apply]
+      -- 🎉 no goals
     · simp [IccExtend_of_right_le _ _ hbx.le, hb x hbx]
+      -- 🎉 no goals
 #align set.Icc_extend_eq_self Set.IccExtend_eq_self
 
 end Set

@@ -35,10 +35,15 @@ theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   { cast_eq_zero_iff' := fun x => by
       rw [← CharP.cast_eq_zero_iff R p x]
+      -- ⊢ ↑x = 0 ↔ ↑x = 0
       change algebraMap ℕ A x = 0 ↔ algebraMap ℕ R x = 0
+      -- ⊢ ↑(algebraMap ℕ A) x = 0 ↔ ↑(algebraMap ℕ R) x = 0
       rw [IsScalarTower.algebraMap_apply ℕ R A x]
+      -- ⊢ ↑(algebraMap R A) (↑(algebraMap ℕ R) x) = 0 ↔ ↑(algebraMap ℕ R) x = 0
       refine' Iff.trans _ h.eq_iff
+      -- ⊢ ↑(algebraMap R A) (↑(algebraMap ℕ R) x) = 0 ↔ ↑(algebraMap R A) (↑(algebraMa …
       rw [RingHom.map_zero] }
+      -- 🎉 no goals
 #align char_p_of_injective_algebra_map charP_of_injective_algebraMap
 
 theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
@@ -51,9 +56,13 @@ theorem charZero_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semirin
     (h : Function.Injective (algebraMap R A)) [CharZero R] : CharZero A :=
   { cast_injective := fun x y hxy => by
       change algebraMap ℕ A x = algebraMap ℕ A y at hxy
+      -- ⊢ x = y
       rw [IsScalarTower.algebraMap_apply ℕ R A x] at hxy
+      -- ⊢ x = y
       rw [IsScalarTower.algebraMap_apply ℕ R A y] at hxy
+      -- ⊢ x = y
       exact CharZero.cast_injective (h hxy) }
+      -- 🎉 no goals
 #align char_zero_of_injective_algebra_map charZero_of_injective_algebraMap
 
 /-!
@@ -104,7 +113,9 @@ theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
 
 theorem Algebra.ringChar_eq : ringChar K = ringChar L := by
   rw [ringChar.eq_iff, Algebra.charP_iff K L]
+  -- ⊢ CharP L (ringChar L)
   apply ringChar.charP
+  -- 🎉 no goals
 #align algebra.ring_char_eq Algebra.ringChar_eq
 
 end

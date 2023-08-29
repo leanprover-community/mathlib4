@@ -277,6 +277,7 @@ theorem symm_image_eq_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h.symm
 nonrec theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
     range (h ∘ f) = h.symm ⁻¹' range f := by
   rw [range_comp, image_eq_preimage]
+  -- 🎉 no goals
 #align diffeomorph.range_comp Diffeomorph.range_comp
 
 @[simp]
@@ -319,12 +320,17 @@ theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) 
     (hm : m ≤ n) :
     ContMDiffWithinAt I I' m (f ∘ h) s x ↔ ContMDiffWithinAt J I' m f (h.symm ⁻¹' s) (h x) := by
   constructor
+  -- ⊢ ContMDiffWithinAt I I' m (f ∘ ↑h) s x → ContMDiffWithinAt J I' m f (↑h.symm  …
   · intro Hfh
+    -- ⊢ ContMDiffWithinAt J I' m f (↑h.symm ⁻¹' s) (↑h x)
     rw [← h.symm_apply_apply x] at Hfh
+    -- ⊢ ContMDiffWithinAt J I' m f (↑h.symm ⁻¹' s) (↑h x)
     simpa only [(· ∘ ·), h.apply_symm_apply] using
       Hfh.comp (h x) (h.symm.contMDiffWithinAt.of_le hm) (mapsTo_preimage _ _)
   · rw [← h.image_eq_preimage]
+    -- ⊢ ContMDiffWithinAt J I' m f (↑h '' s) (↑h x) → ContMDiffWithinAt I I' m (f ∘  …
     exact fun hf => hf.comp x (h.contMDiffWithinAt.of_le hm) (mapsTo_image _ _)
+    -- 🎉 no goals
 #align diffeomorph.cont_mdiff_within_at_comp_diffeomorph_iff Diffeomorph.contMDiffWithinAt_comp_diffeomorph_iff
 
 @[simp]
@@ -443,7 +449,9 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toLocalHomeomorph_mdifferentiable hn)
+  -- ⊢ ↑h '' s = (Homeomorph.toLocalHomeomorph (toHomeomorph h)).toLocalEquiv.targe …
   simp [h.image_eq_preimage]
+  -- 🎉 no goals
 #align diffeomorph.unique_mdiff_on_image_aux Diffeomorph.uniqueMDiffOn_image_aux
 
 @[simp]
@@ -464,6 +472,7 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
+  -- 🎉 no goals
 #align diffeomorph.unique_diff_on_image Diffeomorph.uniqueDiffOn_image
 
 @[simp]
@@ -511,7 +520,9 @@ variable (I) (e : E ≃ₘ[𝕜] E')
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where
   toLocalEquiv := I.toLocalEquiv.trans e.toEquiv.toLocalEquiv
   source_eq := by simp
+                  -- 🎉 no goals
   unique_diff' := by simp [range_comp e, I.unique_diff]
+                     -- 🎉 no goals
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 #align model_with_corners.trans_diffeomorph ModelWithCorners.transDiffeomorph
@@ -543,6 +554,8 @@ theorem coe_extChartAt_transDiffeomorph_symm (x : M) :
 theorem extChartAt_transDiffeomorph_target (x : M) :
     (extChartAt (I.transDiffeomorph e) x).target = e.symm ⁻¹' (extChartAt I x).target := by
   simp only [e.range_comp, preimage_preimage, mfld_simps]; rfl
+  -- ⊢ ↑e.symm ⁻¹' range ↑I ∩ ↑(ModelWithCorners.symm I) ∘ ↑e.symm ⁻¹' (chartAt H x …
+                                                           -- 🎉 no goals
 #align model_with_corners.ext_chart_at_trans_diffeomorph_target ModelWithCorners.extChartAt_transDiffeomorph_target
 
 end ModelWithCorners
@@ -554,9 +567,11 @@ variable (e : E ≃ₘ[𝕜] F)
 instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I M] :
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
+  -- ⊢ ContDiffOn 𝕜 ⊤ (↑(ModelWithCorners.transDiffeomorph I e) ∘ ↑(LocalHomeomorph …
   refine' e.contDiff.comp_contDiffOn
       (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn _)
   mfld_set_tac
+  -- 🎉 no goals
 #align diffeomorph.smooth_manifold_with_corners_trans_diffeomorph Diffeomorph.smoothManifoldWithCorners_transDiffeomorph
 
 variable (I M)
@@ -567,16 +582,23 @@ def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
     refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
+    -- ⊢ ContDiffWithinAt 𝕜 ⊤ (↑(extChartAt (ModelWithCorners.transDiffeomorph I e) ( …
     refine' e.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
+    -- ⊢ (↑(extChartAt (ModelWithCorners.transDiffeomorph I e) (↑(Equiv.refl M) x)) ∘ …
     · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph]
+      -- ⊢ ↑e (↑(extChartAt I x) (↑(LocalEquiv.symm (extChartAt I x)) y)) = ↑e y
       -- porting note: `simp only` failed to used next lemma, converted to `rw`
       rw [(extChartAt I x).right_inv hy.1]
+      -- 🎉 no goals
     exact
       ⟨(extChartAt I x).map_source (mem_extChartAt_source I x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
+    -- ⊢ ContDiffWithinAt 𝕜 ⊤ (↑(extChartAt I (↑(Equiv.refl M).symm x)) ∘ ↑(Equiv.ref …
     refine' e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
+    -- ⊢ (↑(extChartAt I (↑(Equiv.refl M).symm x)) ∘ ↑(Equiv.refl M).symm ∘ ↑(LocalEq …
     · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy
+      -- ⊢ (↑(extChartAt I (↑(Equiv.refl M).symm x)) ∘ ↑(Equiv.refl M).symm ∘ ↑(LocalEq …
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
     exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source _ x), trivial, by

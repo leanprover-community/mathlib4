@@ -41,6 +41,7 @@ theorem neZero_iff {R : Type*} [Zero R] {n : R} : NeZero n ↔ n ≠ 0 :=
 #align ne_zero_iff neZero_iff
 
 theorem not_neZero {R : Type*} [Zero R] {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
+                                                                          -- 🎉 no goals
 #align not_ne_zero not_neZero
 
 theorem eq_zero_or_neZero {α} [Zero α] (a : α) : a = 0 ∨ NeZero a :=

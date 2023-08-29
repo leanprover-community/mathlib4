@@ -26,12 +26,20 @@ noncomputable def boolIndicator (x : α) :=
 
 theorem mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true := by
   unfold boolIndicator
+  -- ⊢ x ∈ s ↔ (if x ∈ s then true else false) = true
   split_ifs with h <;> simp [h]
+  -- ⊢ x ∈ s ↔ true = true
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align set.mem_iff_bool_indicator Set.mem_iff_boolIndicator
 
 theorem not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
   unfold boolIndicator
+  -- ⊢ ¬x ∈ s ↔ (if x ∈ s then true else false) = false
   split_ifs with h <;> simp [h]
+  -- ⊢ ¬x ∈ s ↔ False
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align set.not_mem_iff_bool_indicator Set.not_mem_iff_boolIndicator
 
 theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
@@ -47,15 +55,30 @@ open Classical
 theorem preimage_boolIndicator_eq_union (t : Set Bool) :
     s.boolIndicator ⁻¹' t = (if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅ := by
   ext x
+  -- ⊢ x ∈ boolIndicator s ⁻¹' t ↔ x ∈ (if true ∈ t then s else ∅) ∪ if false ∈ t t …
   simp only [boolIndicator, mem_preimage]
+  -- ⊢ (if x ∈ s then true else false) ∈ t ↔ x ∈ (if true ∈ t then s else ∅) ∪ if f …
   split_ifs <;> simp [*]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align set.preimage_bool_indicator_eq_union Set.preimage_boolIndicator_eq_union
 
 theorem preimage_boolIndicator (t : Set Bool) :
     s.boolIndicator ⁻¹' t = univ ∨
       s.boolIndicator ⁻¹' t = s ∨ s.boolIndicator ⁻¹' t = sᶜ ∨ s.boolIndicator ⁻¹' t = ∅ := by
   simp only [preimage_boolIndicator_eq_union]
+  -- ⊢ ((if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅) = univ ∨ ((if tr …
   split_ifs <;> simp [s.union_compl_self]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align set.preimage_bool_indicator Set.preimage_boolIndicator
 
 end Set

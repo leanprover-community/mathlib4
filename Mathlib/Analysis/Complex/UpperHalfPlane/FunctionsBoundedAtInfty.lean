@@ -36,6 +36,8 @@ theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im �
 
 theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S := by
   simp only [atImInfty_basis.mem_iff, true_and]; rfl
+  -- ⊢ (∃ i, im ⁻¹' Set.Ici i ⊆ S) ↔ ∃ A, ∀ (z : ℍ), A ≤ im z → z ∈ S
+                                                 -- 🎉 no goals
 #align upper_half_plane.at_im_infty_mem UpperHalfPlane.atImInfty_mem
 
 /-- A function ` f : ℍ → α` is bounded at infinity if it is bounded along `atImInfty`. -/
@@ -66,6 +68,7 @@ def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (�
 nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
   simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
+  -- 🎉 no goals
 #align upper_half_plane.is_bounded_at_im_infty.mul UpperHalfPlane.IsBoundedAtImInfty.mul
 
 theorem bounded_mem (f : ℍ → ℂ) :
@@ -78,6 +81,8 @@ theorem zero_at_im_infty (f : ℍ → ℂ) :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by
     simp only [true_and, mem_closedBall_zero_iff]; rfl
+    -- ⊢ (∀ (ib : ℝ), 0 < ib → ∃ ia, ∀ (x : ℍ), x ∈ im ⁻¹' Set.Ici ia → ‖f x‖ ≤ ib) ↔ …
+                                                   -- 🎉 no goals
 #align upper_half_plane.zero_at_im_infty UpperHalfPlane.zero_at_im_infty
 
 end UpperHalfPlane

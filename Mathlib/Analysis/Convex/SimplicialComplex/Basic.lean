@@ -86,7 +86,9 @@ theorem mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈
 -- Porting note: Original proof was `:= subset_biUnion_of_mem hs`
 theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 ↑s ⊆ K.space := by
   convert subset_biUnion_of_mem hs
+  -- ⊢ ↑(convexHull 𝕜) ↑s = ↑(convexHull 𝕜) ↑s
   rfl
+  -- 🎉 no goals
 #align geometry.simplicial_complex.convex_hull_subset_space Geometry.SimplicialComplex.convexHull_subset_space
 
 protected theorem subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
@@ -153,9 +155,13 @@ theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 
 theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
+  -- ⊢ x ∈ vertices K ↔ x ∈ ⋃ (k : Finset E) (_ : k ∈ K.faces), ↑k
   refine' ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => _⟩
+  -- ⊢ x ∈ vertices K
   obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
+  -- ⊢ x ∈ vertices K
   exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
+  -- 🎉 no goals
 #align geometry.simplicial_complex.vertices_eq Geometry.SimplicialComplex.vertices_eq
 
 theorem vertices_subset_space : K.vertices ⊆ K.space :=
@@ -165,6 +171,7 @@ theorem vertices_subset_space : K.vertices ⊆ K.space :=
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
   refine' ⟨fun h => _, fun h => subset_convexHull 𝕜 _ h⟩
+  -- ⊢ x ∈ s
   classical
   have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
   by_contra H
@@ -199,13 +206,21 @@ theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
   refine' ⟨fun hs' : ¬(_ ∧ _) => _, _⟩
+  -- ⊢ ∃ t, t ∈ K.faces ∧ s ⊂ t
   · push_neg at hs'
+    -- ⊢ ∃ t, t ∈ K.faces ∧ s ⊂ t
     obtain ⟨t, ht⟩ := hs' hs
+    -- ⊢ ∃ t, t ∈ K.faces ∧ s ⊂ t
     exact ⟨t, ht.1, ⟨ht.2.1, fun hts => ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩
+    -- 🎉 no goals
   · rintro ⟨t, ht⟩ ⟨hs, hs'⟩
+    -- ⊢ False
     have := hs' ht.1 ht.2.1
+    -- ⊢ False
     rw [this] at ht
+    -- ⊢ False
     exact ht.2.2 (Subset.refl t)
+    -- 🎉 no goals
 #align geometry.simplicial_complex.not_facet_iff_subface Geometry.SimplicialComplex.not_facet_iff_subface
 
 /-!

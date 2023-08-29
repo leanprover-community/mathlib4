@@ -55,6 +55,8 @@ theorem smul_aeeqFun_const (c : Mᵈᵐᵃ) (b : β) :
 
 instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass Mᵈᵐᵃ N (α →ₘ[μ] β) where
   smul_comm := by rintro _ _ ⟨_⟩; rfl
+                  -- ⊢ m✝ • n✝ • Quot.mk Setoid.r a✝ = n✝ • m✝ • Quot.mk Setoid.r a✝
+                                  -- 🎉 no goals
 
 instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass N Mᵈᵐᵃ (α →ₘ[μ] β) :=
   .symm _ _ _
@@ -71,6 +73,8 @@ instance [Zero β] : SMulZeroClass Mᵈᵐᵃ (α →ₘ[μ] β) where
 -- TODO: add `AEEqFun.addZeroClass`
 instance [AddMonoid β] [ContinuousAdd β] : DistribSMul Mᵈᵐᵃ (α →ₘ[μ] β) where
   smul_add := by rintro _ ⟨⟩ ⟨⟩; rfl
+                 -- ⊢ a✝² • (Quot.mk Setoid.r a✝¹ + Quot.mk Setoid.r a✝) = a✝² • Quot.mk Setoid.r  …
+                                 -- 🎉 no goals
 
 end SMul
 
@@ -88,6 +92,8 @@ instance : MulAction Mᵈᵐᵃ (α →ₘ[μ] β) where
 instance [Monoid β] [ContinuousMul β] : MulDistribMulAction Mᵈᵐᵃ (α →ₘ[μ] β) where
   smul_one _ := rfl
   smul_mul := by rintro _ ⟨⟩ ⟨⟩; rfl
+                 -- ⊢ r✝ • (Quot.mk Setoid.r a✝¹ * Quot.mk Setoid.r a✝) = r✝ • Quot.mk Setoid.r a✝ …
+                                 -- 🎉 no goals
 
 instance [AddMonoid β] [ContinuousAdd β] : DistribMulAction Mᵈᵐᵃ (α →ₘ[μ] β) where
   smul_zero := smul_zero

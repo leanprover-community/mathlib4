@@ -56,8 +56,11 @@ theorem integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : Measu
     (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ)
     (hcg : ContinuousWithinAt g s x₀) : ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ := by
   obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ x ∈ u ∩ s, g x ∈ ball (g x₀) 1
+  -- ⊢ ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ (x : α), x ∈ u ∩ s → g x ∈ ball (g x₀) 1
   exact mem_nhdsWithin.1 (hcg (ball_mem_nhds _ zero_lt_one))
+  -- ⊢ ∀ᶠ (i : ι) in l, IntegrableOn (fun x => φ i x • g x) s
   filter_upwards [tendstoUniformlyOn_iff.1 (hlφ u u_open x₀u) 1 zero_lt_one, hiφ] with i hi h'i
+  -- ⊢ IntegrableOn (fun x => φ i x • g x) s
   have A : IntegrableOn (fun x => φ i x • g x) (s \ u) μ := by
     refine' Integrable.smul_of_top_right (hmg.mono (diff_subset _ _) le_rfl) _
     apply
@@ -74,7 +77,9 @@ theorem integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : Measu
       rw [inter_comm] at hx
       exact (norm_lt_of_mem_ball (hu x hx)).le
   convert A.union B
+  -- ⊢ s = s \ u ∪ s ∩ u
   simp only [diff_union_inter]
+  -- 🎉 no goals
 #align integrable_on_peak_smul_of_integrable_on_of_continuous_within_at integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt
 
 variable [CompleteSpace E]
@@ -89,6 +94,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     (hcg : ContinuousWithinAt g s x₀) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) := by
   refine' Metric.tendsto_nhds.2 fun ε εpos => _
+  -- ⊢ ∀ᶠ (x : ι) in l, dist (∫ (x_1 : α) in s, φ x x_1 • g x_1 ∂μ) 0 < ε
   obtain ⟨δ, hδ, δpos⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + δ < ε ∧ 0 < δ := by
     have A :
       Tendsto (fun δ => (δ * ∫ x in s, ‖g x‖ ∂μ) + δ) (𝓝[>] 0)
@@ -102,7 +108,9 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     simp only [dist_zero_right]
     exact hi.trans_lt hδ
   obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ x ∈ u ∩ s, g x ∈ ball (g x₀) δ
+  -- ⊢ ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ (x : α), x ∈ u ∩ s → g x ∈ ball (g x₀) δ
   exact mem_nhdsWithin.1 (hcg (ball_mem_nhds _ δpos))
+  -- ⊢ ∀ᶠ (i : ι) in l, ‖∫ (x : α) in s, φ i x • g x ∂μ‖ ≤ δ * ∫ (x : α) in s, ‖g x …
   filter_upwards [tendstoUniformlyOn_iff.1 (hlφ u u_open x₀u) δ δpos, hiφ, hnφ,
     integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt hs hlφ hiφ hmg hcg] with i hi h'i
     hφpos h''i
@@ -164,6 +172,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt (hs
     (hcg : ContinuousWithinAt g s x₀) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 (g x₀)) := by
   let h := g - fun _ => g x₀
+  -- ⊢ Tendsto (fun i => ∫ (x : α) in s, φ i x • g x ∂μ) l (𝓝 (g x₀))
   have A :
     Tendsto (fun i : ι => (∫ x in s, φ i x • h x ∂μ) + (∫ x in s, φ i x ∂μ) • g x₀) l
       (𝓝 (0 + (1 : ℝ) • g x₀)) := by
@@ -175,12 +184,17 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt (hs
     · simp only [Pi.sub_apply, sub_self]
     · exact hcg.sub continuousWithinAt_const
   simp only [one_smul, zero_add] at A
+  -- ⊢ Tendsto (fun i => ∫ (x : α) in s, φ i x • g x ∂μ) l (𝓝 (g x₀))
   refine' Tendsto.congr' _ A
+  -- ⊢ (fun i => ∫ (x : α) in s, φ i x • (g - fun x => g x₀) x ∂μ + (∫ (x : α) in s …
   filter_upwards [integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt hs hlφ hiφ hmg hcg,
     hiφ] with i hi h'i
   simp only [Pi.sub_apply, smul_sub]
+  -- ⊢ ∫ (x : α) in s, φ i x • g x - φ i x • g x₀ ∂μ + (∫ (x : α) in s, φ i x ∂μ) • …
   rw [integral_sub hi, integral_smul_const, sub_add_cancel]
+  -- ⊢ Integrable fun x => φ i x • g x₀
   exact Integrable.smul_const (integrable_of_integral_eq_one h'i) _
+  -- 🎉 no goals
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
@@ -208,6 +222,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
     It follows that, on `s \ u`, then `φₙ x ≤ t ^ n / (t' ^ n μ v)`,
     which tends (exponentially fast) to zero with `n`. -/
   let φ : ℕ → α → ℝ := fun n x => (∫ x in s, c x ^ n ∂μ)⁻¹ * c x ^ n
+  -- ⊢ Tendsto (fun n => (∫ (x : α) in s, c x ^ n ∂μ)⁻¹ • ∫ (x : α) in s, c x ^ n • …
   have hnφ : ∀ n, ∀ x ∈ s, 0 ≤ φ n x := by
     intro n x hx
     apply mul_nonneg (inv_nonneg.2 _) (pow_nonneg (hnc x hx) _)
@@ -279,7 +294,9 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
     tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt hs.measurableSet
       hs.measure_lt_top.ne (eventually_of_forall hnφ) A (eventually_of_forall hiφ) hmg hcg
   convert this
+  -- ⊢ (∫ (x : α) in s, c x ^ x✝ ∂μ)⁻¹ • ∫ (x : α) in s, c x ^ x✝ • g x ∂μ = ∫ (x : …
   simp_rw [← smul_smul, integral_smul]
+  -- 🎉 no goals
 #align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_measure_nhds_within_pos tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
@@ -299,10 +316,12 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrab
     Tendsto (fun n : ℕ => (∫ x in s, c x ^ n ∂μ)⁻¹ • ∫ x in s, c x ^ n • g x ∂μ) atTop
       (𝓝 (g x₀)) := by
   have : x₀ ∈ s := by rw [← hs.isClosed.closure_eq]; exact closure_mono interior_subset h₀
+  -- ⊢ Tendsto (fun n => (∫ (x : α) in s, c x ^ n ∂μ)⁻¹ • ∫ (x : α) in s, c x ^ n • …
   apply
     tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos hs _ hc
       h'c hnc hnc₀ this hmg hcg
   intro u u_open x₀_u
+  -- ⊢ 0 < ↑↑μ (u ∩ s)
   calc
     0 < μ (u ∩ interior s) :=
       (u_open.inter isOpen_interior).measure_pos μ (_root_.mem_closure_iff.1 h₀ u u_open x₀_u)
@@ -320,6 +339,8 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuo
     (hmg : ContinuousOn g s) :
     Tendsto (fun n : ℕ => (∫ x in s, c x ^ n ∂μ)⁻¹ • ∫ x in s, c x ^ n • g x ∂μ) atTop (𝓝 (g x₀)) :=
   haveI : x₀ ∈ s := by rw [← hs.isClosed.closure_eq]; exact closure_mono interior_subset h₀
+                       -- ⊢ x₀ ∈ closure s
+                                                      -- 🎉 no goals
   tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn hs hc h'c hnc hnc₀ h₀
     (hmg.integrableOn_compact hs) (hmg x₀ this)
 #align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_continuous_on tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn

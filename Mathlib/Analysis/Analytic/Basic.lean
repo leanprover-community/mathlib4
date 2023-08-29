@@ -105,7 +105,9 @@ def partialSum (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (x : E) : F :=
 theorem partialSum_continuous (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
     Continuous (p.partialSum n) := by
   unfold partialSum -- Porting note: added
+  -- ⊢ Continuous fun x => ∑ k in Finset.range n, ↑(p k) fun x_1 => x
   continuity
+  -- 🎉 no goals
 #align formal_multilinear_series.partial_sum_continuous FormalMultilinearSeries.partialSum_continuous
 
 end FormalMultilinearSeries
@@ -137,6 +139,7 @@ theorem le_radius_of_bound (C : ℝ) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖ *
 theorem le_radius_of_bound_nnreal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
     (r : ℝ≥0∞) ≤ p.radius :=
   p.le_radius_of_bound C fun n => by exact_mod_cast h n
+                                     -- 🎉 no goals
 #align formal_multilinear_series.le_radius_of_bound_nnreal FormalMultilinearSeries.le_radius_of_bound_nnreal
 
 /-- If `‖pₙ‖ rⁿ = O(1)`, as `n → ∞`, then the radius of `p` is at least `r`. -/
@@ -150,6 +153,7 @@ set_option linter.uppercaseLean3 false in
 theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : ℝ) ^ n ≤ C) :
     ↑r ≤ p.radius :=
   p.le_radius_of_isBigO <| IsBigO.of_bound C <| h.mono fun n hn => by simpa
+                                                                      -- 🎉 no goals
 #align formal_multilinear_series.le_radius_of_eventually_le FormalMultilinearSeries.le_radius_of_eventually_le
 
 theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
@@ -159,7 +163,9 @@ theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnnorm <| by
     simp only [← coe_nnnorm] at h
+    -- ⊢ Summable fun n => ‖p n‖₊ * r ^ n
     exact_mod_cast h
+    -- 🎉 no goals
 #align formal_multilinear_series.le_radius_of_summable FormalMultilinearSeries.le_radius_of_summable
 
 theorem radius_eq_top_of_forall_nnreal_isBigO
@@ -171,6 +177,7 @@ set_option linter.uppercaseLean3 false in
 theorem radius_eq_top_of_eventually_eq_zero (h : ∀ᶠ n in atTop, p n = 0) : p.radius = ∞ :=
   p.radius_eq_top_of_forall_nnreal_isBigO fun r =>
     (isBigO_zero _ _).congr' (h.mono fun n hn => by simp [hn]) EventuallyEq.rfl
+                                                    -- 🎉 no goals
 #align formal_multilinear_series.radius_eq_top_of_eventually_eq_zero FormalMultilinearSeries.radius_eq_top_of_eventually_eq_zero
 
 theorem radius_eq_top_of_forall_image_add_eq_zero (n : ℕ) (hn : ∀ m, p (m + n) = 0) :
@@ -184,6 +191,7 @@ theorem constFormalMultilinearSeries_radius {v : F} :
     (constFormalMultilinearSeries 𝕜 E v).radius = ⊤ :=
   (constFormalMultilinearSeries 𝕜 E v).radius_eq_top_of_forall_image_add_eq_zero 1
     (by simp [constFormalMultilinearSeries])
+        -- 🎉 no goals
 #align formal_multilinear_series.const_formal_multilinear_series_radius FormalMultilinearSeries.constFormalMultilinearSeries_radius
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` tends to zero exponentially:
@@ -191,15 +199,23 @@ for some `0 < a < 1`, `‖p n‖ rⁿ = o(aⁿ)`. -/
 theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
     ∃ a ∈ Ioo (0 : ℝ) 1, (fun n => ‖p n‖ * (r : ℝ) ^ n) =o[atTop] (a ^ ·) := by
   have := (TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 1 4
+  -- ⊢ ∃ a, a ∈ Ioo 0 1 ∧ (fun n => ‖p n‖ * ↑r ^ n) =o[atTop] fun x => a ^ x
   rw [this]
+  -- ⊢ ∃ a, a < 1 ∧ ∃ C x, ∀ (n : ℕ), |‖p n‖ * ↑r ^ n| ≤ C * a ^ n
   -- Porting note: was
   -- rw [(TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 1 4]
   simp only [radius, lt_iSup_iff] at h
+  -- ⊢ ∃ a, a < 1 ∧ ∃ C x, ∀ (n : ℕ), |‖p n‖ * ↑r ^ n| ≤ C * a ^ n
   rcases h with ⟨t, C, hC, rt⟩
+  -- ⊢ ∃ a, a < 1 ∧ ∃ C x, ∀ (n : ℕ), |‖p n‖ * ↑r ^ n| ≤ C * a ^ n
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at rt
+  -- ⊢ ∃ a, a < 1 ∧ ∃ C x, ∀ (n : ℕ), |‖p n‖ * ↑r ^ n| ≤ C * a ^ n
   have : 0 < (t : ℝ) := r.coe_nonneg.trans_lt rt
+  -- ⊢ ∃ a, a < 1 ∧ ∃ C x, ∀ (n : ℕ), |‖p n‖ * ↑r ^ n| ≤ C * a ^ n
   rw [← div_lt_one this] at rt
+  -- ⊢ ∃ a, a < 1 ∧ ∃ C x, ∀ (n : ℕ), |‖p n‖ * ↑r ^ n| ≤ C * a ^ n
   refine' ⟨_, rt, C, Or.inr zero_lt_one, fun n => _⟩
+  -- ⊢ |‖p n‖ * ↑r ^ n| ≤ C * (↑r / ↑t) ^ n
   calc
     |‖p n‖ * (r : ℝ) ^ n| = ‖p n‖ * (t : ℝ) ^ n * (r / t : ℝ) ^ n := by
       field_simp [mul_right_comm, abs_mul]
@@ -221,7 +237,9 @@ theorem norm_mul_pow_le_mul_pow_of_lt_radius (h : ↑r < p.radius) :
   have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 1 5).mp
     (p.isLittleO_of_lt_radius h)
   rcases this with ⟨a, ha, C, hC, H⟩
+  -- ⊢ ∃ a, a ∈ Ioo 0 1 ∧ ∃ C, C > 0 ∧ ∀ (n : ℕ), ‖p n‖ * ↑r ^ n ≤ C * a ^ n
   exact ⟨a, ha, C, hC, fun n => (le_abs_self _).trans (H n)⟩
+  -- 🎉 no goals
 #align formal_multilinear_series.norm_mul_pow_le_mul_pow_of_lt_radius FormalMultilinearSeries.norm_mul_pow_le_mul_pow_of_lt_radius
 
 /-- If `r ≠ 0` and `‖pₙ‖ rⁿ = O(aⁿ)` for some `-1 < a < 1`, then `r < p.radius`. -/
@@ -229,16 +247,25 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
     (hp : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] (a ^ ·)) : ↑r < p.radius := by
   -- Porting note: moved out of `rcases`
   have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 2 5)
+  -- ⊢ ↑r < radius p
   rcases this.mp ⟨a, ha, hp⟩ with ⟨a, ha, C, hC, hp⟩
+  -- ⊢ ↑r < radius p
   rw [← pos_iff_ne_zero, ← NNReal.coe_pos] at h₀
+  -- ⊢ ↑r < radius p
   lift a to ℝ≥0 using ha.1.le
+  -- ⊢ ↑r < radius p
   have : (r : ℝ) < r / a := by
     simpa only [div_one] using (div_lt_div_left h₀ zero_lt_one ha.1).2 ha.2
   norm_cast at this
+  -- ⊢ ↑r < radius p
   rw [← ENNReal.coe_lt_coe] at this
+  -- ⊢ ↑r < radius p
   refine' this.trans_le (p.le_radius_of_bound C fun n => _)
+  -- ⊢ ‖p n‖ * ↑(r / a) ^ n ≤ C
   rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff (pow_pos ha.1 n)]
+  -- ⊢ ‖p n‖ * ↑r ^ n ≤ C * ↑a ^ n
   exact (le_abs_self _).trans (hp n)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align formal_multilinear_series.lt_radius_of_is_O FormalMultilinearSeries.lt_radius_of_isBigO
 
@@ -261,6 +288,7 @@ theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖₊ * r ^ n ≤ C :=
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
   ⟨⟨C, hC.lt.le⟩, hC, by exact_mod_cast hp⟩
+                         -- 🎉 no goals
 #align formal_multilinear_series.nnnorm_mul_pow_le_of_lt_radius FormalMultilinearSeries.nnnorm_mul_pow_le_of_lt_radius
 
 theorem le_radius_of_tendsto (p : FormalMultilinearSeries 𝕜 E F) {l : ℝ}
@@ -281,6 +309,7 @@ theorem not_summable_norm_of_radius_lt_nnnorm (p : FormalMultilinearSeries 𝕜 
 theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖ * (r : ℝ) ^ n := by
   obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
+  -- ⊢ Summable fun n => ‖p n‖ * ↑r ^ n
   exact summable_of_nonneg_of_le (fun n => mul_nonneg (norm_nonneg _) (pow_nonneg r.coe_nonneg _))
     hp ((summable_geometric_of_lt_1 ha.1.le ha.2).mul_left _)
 #align formal_multilinear_series.summable_norm_mul_pow FormalMultilinearSeries.summable_norm_mul_pow
@@ -288,16 +317,21 @@ theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥
 theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (hx : x ∈ EMetric.ball (0 : E) p.radius) : Summable fun n : ℕ => ‖p n fun _ => x‖ := by
   rw [mem_emetric_ball_zero_iff] at hx
+  -- ⊢ Summable fun n => ‖↑(p n) fun x_1 => x‖
   refine' summable_of_nonneg_of_le
     (fun _ => norm_nonneg _) (fun n => ((p n).le_op_norm _).trans_eq _) (p.summable_norm_mul_pow hx)
   simp
+  -- 🎉 no goals
 #align formal_multilinear_series.summable_norm_apply FormalMultilinearSeries.summable_norm_apply
 
 theorem summable_nnnorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖₊ * r ^ n := by
   rw [← NNReal.summable_coe]
+  -- ⊢ Summable fun a => ↑(‖p a‖₊ * r ^ a)
   push_cast
+  -- ⊢ Summable fun a => ‖p a‖ * ↑r ^ a
   exact p.summable_norm_mul_pow h
+  -- 🎉 no goals
 #align formal_multilinear_series.summable_nnnorm_mul_pow FormalMultilinearSeries.summable_nnnorm_mul_pow
 
 protected theorem summable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
@@ -313,42 +347,60 @@ theorem radius_eq_top_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
 theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
     p.radius = ∞ ↔ ∀ r : ℝ≥0, Summable fun n => ‖p n‖ * (r : ℝ) ^ n := by
   constructor
+  -- ⊢ radius p = ⊤ → ∀ (r : ℝ≥0), Summable fun n => ‖p n‖ * ↑r ^ n
   · intro h r
+    -- ⊢ Summable fun n => ‖p n‖ * ↑r ^ n
     obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius
       (show (r : ℝ≥0∞) < p.radius from h.symm ▸ ENNReal.coe_lt_top)
     refine' summable_of_norm_bounded
       (fun n => (C : ℝ) * a ^ n) ((summable_geometric_of_lt_1 ha.1.le ha.2).mul_left _) fun n => _
     specialize hp n
+    -- ⊢ ‖‖p n‖ * ↑r ^ n‖ ≤ (fun n => C * a ^ n) n
     rwa [Real.norm_of_nonneg (mul_nonneg (norm_nonneg _) (pow_nonneg r.coe_nonneg n))]
+    -- 🎉 no goals
   · exact p.radius_eq_top_of_summable_norm
+    -- 🎉 no goals
 #align formal_multilinear_series.radius_eq_top_iff_summable_norm FormalMultilinearSeries.radius_eq_top_iff_summable_norm
 
 /-- If the radius of `p` is positive, then `‖pₙ‖` grows at most geometrically. -/
 theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 < p.radius) :
     ∃ (C r : _) (hC : 0 < C) (hr : 0 < r), ∀ n, ‖p n‖ ≤ C * r ^ n := by
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨r, r0, rlt⟩
+  -- ⊢ ∃ C r hC hr, ∀ (n : ℕ), ‖p n‖ ≤ C * r ^ n
   have rpos : 0 < (r : ℝ) := by simp [ENNReal.coe_pos.1 r0]
+  -- ⊢ ∃ C r hC hr, ∀ (n : ℕ), ‖p n‖ ≤ C * r ^ n
   rcases norm_le_div_pow_of_pos_of_lt_radius p rpos rlt with ⟨C, Cpos, hCp⟩
+  -- ⊢ ∃ C r hC hr, ∀ (n : ℕ), ‖p n‖ ≤ C * r ^ n
   refine' ⟨C, r⁻¹, Cpos, by simp only [inv_pos, rpos], fun n => _⟩
+  -- ⊢ ‖p n‖ ≤ C * (↑r)⁻¹ ^ n
   -- Porting note: was `convert`
   rw [inv_pow, ← div_eq_mul_inv]
+  -- ⊢ ‖p n‖ ≤ C / ↑r ^ n
   exact hCp n
+  -- 🎉 no goals
 #align formal_multilinear_series.le_mul_pow_of_radius_pos FormalMultilinearSeries.le_mul_pow_of_radius_pos
 
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
     min p.radius q.radius ≤ (p + q).radius := by
   refine' ENNReal.le_of_forall_nnreal_lt fun r hr => _
+  -- ⊢ ↑r ≤ radius (p + q)
   rw [lt_min_iff] at hr
+  -- ⊢ ↑r ≤ radius (p + q)
   have := ((p.isLittleO_one_of_lt_radius hr.1).add (q.isLittleO_one_of_lt_radius hr.2)).isBigO
+  -- ⊢ ↑r ≤ radius (p + q)
   refine' (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n => _).trans this)
+  -- ⊢ ‖‖(p + q) n‖ * ↑r ^ n‖ ≤ ‖‖p n‖ * ↑r ^ n + ‖q n‖ * ↑r ^ n‖
   rw [← add_mul, norm_mul, norm_mul, norm_norm]
+  -- ⊢ ‖(p + q) n‖ * ‖↑r ^ n‖ ≤ ‖‖p n‖ + ‖q n‖‖ * ‖↑r ^ n‖
   exact mul_le_mul_of_nonneg_right ((norm_add_le _ _).trans (le_abs_self _)) (norm_nonneg _)
+  -- 🎉 no goals
 #align formal_multilinear_series.min_radius_le_radius_add FormalMultilinearSeries.min_radius_le_radius_add
 
 @[simp]
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
+  -- 🎉 no goals
 #align formal_multilinear_series.radius_neg FormalMultilinearSeries.radius_neg
 
 protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
@@ -359,11 +411,17 @@ protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F
 theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries 𝕜 E F)
     (f : F →L[𝕜] G) : p.radius ≤ (f.compFormalMultilinearSeries p).radius := by
   refine' ENNReal.le_of_forall_nnreal_lt fun r hr => _
+  -- ⊢ ↑r ≤ radius (ContinuousLinearMap.compFormalMultilinearSeries f p)
   apply le_radius_of_isBigO
+  -- ⊢ (fun n => ‖ContinuousLinearMap.compFormalMultilinearSeries f p n‖ * ↑r ^ n)  …
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
+  -- ⊢ (fun n => ‖ContinuousLinearMap.compFormalMultilinearSeries f p n‖ * ↑r ^ n)  …
   refine' IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ _) (isBigO_refl _ _)
+  -- ⊢ IsBigOWith ‖f‖ atTop (fun n => ‖ContinuousLinearMap.compFormalMultilinearSer …
   refine IsBigOWith.of_bound (eventually_of_forall fun n => ?_)
+  -- ⊢ ‖‖ContinuousLinearMap.compFormalMultilinearSeries f p n‖‖ ≤ ‖f‖ * ‖‖p n‖‖
   simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
+  -- 🎉 no goals
 #align formal_multilinear_series.radius_le_radius_continuous_linear_map_comp FormalMultilinearSeries.radius_le_radius_continuousLinearMap_comp
 
 end FormalMultilinearSeries
@@ -427,8 +485,11 @@ theorem HasFPowerSeriesOnBall.congr (hf : HasFPowerSeriesOnBall f p x r)
     r_pos := hf.r_pos
     hasSum := fun {y} hy => by
       convert hf.hasSum hy using 1
+      -- ⊢ g (x + y) = f (x + y)
       apply hg.symm
+      -- ⊢ x + y ∈ EMetric.ball x r
       simpa [edist_eq_coe_nnnorm_sub] using hy }
+      -- 🎉 no goals
 #align has_fpower_series_on_ball.congr HasFPowerSeriesOnBall.congr
 
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
@@ -439,13 +500,18 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
     r_pos := hf.r_pos
     hasSum := fun {z} hz => by
       convert hf.hasSum hz using 2
+      -- ⊢ x + y + z - y = x + z
       abel }
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align has_fpower_series_on_ball.comp_sub HasFPowerSeriesOnBall.comp_sub
 
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
   have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy
+  -- ⊢ HasSum (fun n => ↑(p n) fun x_1 => y - x) (f y)
   simpa only [add_sub_cancel'_right] using hf.hasSum this
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.has_sum_sub HasFPowerSeriesOnBall.hasSum_sub
 
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
@@ -465,7 +531,9 @@ theorem HasFPowerSeriesOnBall.mono (hf : HasFPowerSeriesOnBall f p x r) (r'_pos 
 theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝 x] g) :
     HasFPowerSeriesAt g p x := by
   rcases hf with ⟨r₁, h₁⟩
+  -- ⊢ HasFPowerSeriesAt g p x
   rcases EMetric.mem_nhds_iff.mp hg with ⟨r₂, h₂pos, h₂⟩
+  -- ⊢ HasFPowerSeriesAt g p x
   exact ⟨min r₁ r₂,
     (h₁.mono (lt_min h₁.r_pos h₂pos) inf_le_left).congr
       fun y hy => h₂ (EMetric.ball_subset_ball inf_le_right hy)⟩
@@ -481,6 +549,7 @@ protected theorem HasFPowerSeriesAt.eventually (hf : HasFPowerSeriesAt f p x) :
 theorem HasFPowerSeriesOnBall.eventually_hasSum (hf : HasFPowerSeriesOnBall f p x r) :
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y)) := by
   filter_upwards [EMetric.ball_mem_nhds (0 : E) hf.r_pos]using fun _ => hf.hasSum
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.eventually_has_sum HasFPowerSeriesOnBall.eventually_hasSum
 
 theorem HasFPowerSeriesAt.eventually_hasSum (hf : HasFPowerSeriesAt f p x) :
@@ -492,6 +561,7 @@ theorem HasFPowerSeriesAt.eventually_hasSum (hf : HasFPowerSeriesAt f p x) :
 theorem HasFPowerSeriesOnBall.eventually_hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) :
     ∀ᶠ y in 𝓝 x, HasSum (fun n : ℕ => p n fun _ : Fin n => y - x) (f y) := by
   filter_upwards [EMetric.ball_mem_nhds x hf.r_pos] with y using hf.hasSum_sub
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.eventually_has_sum_sub HasFPowerSeriesOnBall.eventually_hasSum_sub
 
 theorem HasFPowerSeriesAt.eventually_hasSum_sub (hf : HasFPowerSeriesAt f p x) :
@@ -504,6 +574,7 @@ theorem HasFPowerSeriesOnBall.eventually_eq_zero
     (hf : HasFPowerSeriesOnBall f (0 : FormalMultilinearSeries 𝕜 E F) x r) :
     ∀ᶠ z in 𝓝 x, f z = 0 := by
   filter_upwards [hf.eventually_hasSum_sub] with z hz using hz.unique hasSum_zero
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.eventually_eq_zero HasFPowerSeriesOnBall.eventually_eq_zero
 
 theorem HasFPowerSeriesAt.eventually_eq_zero
@@ -515,7 +586,9 @@ theorem HasFPowerSeriesAt.eventually_eq_zero
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine' ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => _⟩
+  -- ⊢ (↑(constFormalMultilinearSeries 𝕜 E c n) fun x => y✝) = 0
   simp [constFormalMultilinearSeries_apply hn]
+  -- 🎉 no goals
 #align has_fpower_series_on_ball_const hasFPowerSeriesOnBall_const
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
@@ -541,7 +614,9 @@ theorem HasFPowerSeriesOnBall.add (hf : HasFPowerSeriesOnBall f pf x r)
 theorem HasFPowerSeriesAt.add (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSeriesAt g pg x) :
     HasFPowerSeriesAt (f + g) (pf + pg) x := by
   rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
+  -- ⊢ HasFPowerSeriesAt (f + g) (pf + pg) x
   exact ⟨r, hr.1.add hr.2⟩
+  -- 🎉 no goals
 #align has_fpower_series_at.add HasFPowerSeriesAt.add
 
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
@@ -554,7 +629,9 @@ theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (-f) (-pf) x r :=
   { r_le := by
       rw [pf.radius_neg]
+      -- ⊢ r ≤ FormalMultilinearSeries.radius pf
       exact hf.r_le
+      -- 🎉 no goals
     r_pos := hf.r_pos
     hasSum := fun hy => (hf.hasSum hy).neg }
 #align has_fpower_series_on_ball.neg HasFPowerSeriesOnBall.neg
@@ -572,16 +649,19 @@ theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
 theorem HasFPowerSeriesOnBall.sub (hf : HasFPowerSeriesOnBall f pf x r)
     (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f - g) (pf - pg) x r := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.sub HasFPowerSeriesOnBall.sub
 
 theorem HasFPowerSeriesAt.sub (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSeriesAt g pg x) :
     HasFPowerSeriesAt (f - g) (pf - pg) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+  -- 🎉 no goals
 #align has_fpower_series_at.sub HasFPowerSeriesAt.sub
 
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+  -- 🎉 no goals
 #align analytic_at.sub AnalyticAt.sub
 
 theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
@@ -601,13 +681,17 @@ theorem AnalyticOn.sub {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn �
 theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r) (v : Fin 0 → E) :
     pf 0 v = f x := by
   have v_eq : v = fun i => 0 := Subsingleton.elim _ _
+  -- ⊢ ↑(pf 0) v = f x
   have zero_mem : (0 : E) ∈ EMetric.ball (0 : E) r := by simp [hf.r_pos]
+  -- ⊢ ↑(pf 0) v = f x
   have : ∀ i, i ≠ 0 → (pf i fun j => 0) = 0 := by
     intro i hi
     have : 0 < i := pos_iff_ne_zero.2 hi
     exact ContinuousMultilinearMap.map_coord_zero _ (⟨0, this⟩ : Fin i) rfl
   have A := (hf.hasSum zero_mem).unique (hasSum_single _ this)
+  -- ⊢ ↑(pf 0) v = f x
   simpa [v_eq] using A.symm
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.coeff_zero HasFPowerSeriesOnBall.coeff_zero
 
 theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 → E) :
@@ -634,8 +718,11 @@ on `s`. -/
 theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (g ∘ f) s := by
   rintro x hx
+  -- ⊢ AnalyticAt 𝕜 (↑g ∘ f) x
   rcases h x hx with ⟨p, r, hp⟩
+  -- ⊢ AnalyticAt 𝕜 (↑g ∘ f) x
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
+  -- 🎉 no goals
 #align continuous_linear_map.comp_analytic_on ContinuousLinearMap.comp_analyticOn
 
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
@@ -650,14 +737,17 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
   obtain ⟨a, ha, C, hC, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n :=
     p.norm_mul_pow_le_mul_pow_of_lt_radius (h.trans_le hf.r_le)
   refine' ⟨a, ha, C / (1 - a), div_pos hC (sub_pos.2 ha.2), fun y hy n => _⟩
+  -- ⊢ ‖f (x + y) - FormalMultilinearSeries.partialSum p n y‖ ≤ C / (1 - a) * (a *  …
   have yr' : ‖y‖ < r' := by
     rw [ball_zero_eq] at hy
     exact hy
   have hr'0 : 0 < (r' : ℝ) := (norm_nonneg _).trans_lt yr'
+  -- ⊢ ‖f (x + y) - FormalMultilinearSeries.partialSum p n y‖ ≤ C / (1 - a) * (a *  …
   have : y ∈ EMetric.ball (0 : E) r := by
     refine' mem_emetric_ball_zero_iff.2 (lt_trans _ h)
     exact_mod_cast yr'
   rw [norm_sub_rev, ← mul_div_right_comm]
+  -- ⊢ ‖FormalMultilinearSeries.partialSum p n y - f (x + y)‖ ≤ C * (a * (‖y‖ / ↑r' …
   have ya : a * (‖y‖ / ↑r') ≤ a :=
     mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
   suffices ‖p.partialSum n y - f (x + y)‖ ≤ C * (a * (‖y‖ / r')) ^ n / (1 - a * (‖y‖ / r')) by
@@ -666,7 +756,9 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     gcongr
     apply_rules [sub_pos.2, ha.2]
   apply norm_sub_le_of_geometric_bound_of_hasSum (ya.trans_lt ha.2) _ (hf.hasSum this)
+  -- ⊢ ∀ (n : ℕ), ‖↑(p n) fun x => y‖ ≤ C * (a * (‖y‖ / ↑r')) ^ n
   intro n
+  -- ⊢ ‖↑(p n) fun x => y‖ ≤ C * (a * (‖y‖ / ↑r')) ^ n
   calc
     ‖(p n) fun _ : Fin n => y‖
     _ ≤ ‖p n‖ * ∏ _i : Fin n, ‖y‖ := ContinuousMultilinearMap.le_op_norm _ _
@@ -685,8 +777,11 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
   refine' ⟨a, ha, C, hC, fun y hy n => (hp y hy n).trans _⟩
+  -- ⊢ C * (a * (‖y‖ / ↑r')) ^ n ≤ C * a ^ n
   have yr' : ‖y‖ < r' := by rwa [ball_zero_eq] at hy
+  -- ⊢ C * (a * (‖y‖ / ↑r')) ^ n ≤ C * a ^ n
   gcongr
+  -- ⊢ 0 ≤ a * (‖y‖ / ↑r')
   exacts [mul_nonneg ha.1.le (div_nonneg (norm_nonneg y) r'.coe_nonneg),
     mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)]
 #align has_fpower_series_on_ball.uniform_geometric_approx HasFPowerSeriesOnBall.uniform_geometric_approx
@@ -695,14 +790,21 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
 theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow (hf : HasFPowerSeriesAt f p x) (n : ℕ) :
     (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
+  -- ⊢ (fun y => f (x + y) - FormalMultilinearSeries.partialSum p n y) =O[𝓝 0] fun  …
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
+  -- ⊢ (fun y => f (x + y) - FormalMultilinearSeries.partialSum p n y) =O[𝓝 0] fun  …
   obtain ⟨a, -, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
   refine' isBigO_iff.2 ⟨C * (a / r') ^ n, _⟩
+  -- ⊢ ∀ᶠ (x_1 : E) in 𝓝 0, ‖f (x + x_1) - FormalMultilinearSeries.partialSum p n x …
   replace r'0 : 0 < (r' : ℝ); · exact_mod_cast r'0
+  -- ⊢ 0 < ↑r'
+                                -- 🎉 no goals
   filter_upwards [Metric.ball_mem_nhds (0 : E) r'0] with y hy
+  -- ⊢ ‖f (x + y) - FormalMultilinearSeries.partialSum p n y‖ ≤ C * (a / ↑r') ^ n * …
   simpa [mul_pow, mul_div_assoc, mul_assoc, div_mul_eq_mul_div] using hp y hy n
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align has_fpower_series_at.is_O_sub_partial_sum_pow HasFPowerSeriesAt.isBigO_sub_partialSum_pow
 
@@ -715,12 +817,17 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓟 (EMetric.ball (x, x) r')]
       fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   lift r' to ℝ≥0 using ne_top_of_lt hr
+  -- ⊢ (fun y => f y.fst - f y.snd - ↑(p 1) fun x => y.fst - y.snd) =O[𝓟 (EMetric.b …
   rcases (zero_le r').eq_or_lt with (rfl | hr'0)
+  -- ⊢ (fun y => f y.fst - f y.snd - ↑(p 1) fun x => y.fst - y.snd) =O[𝓟 (EMetric.b …
   · simp only [isBigO_bot, EMetric.ball_zero, principal_empty, ENNReal.coe_zero]
+    -- 🎉 no goals
   obtain ⟨a, ha, C, hC : 0 < C, hp⟩ :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n : ℕ, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n
   exact p.norm_mul_pow_le_mul_pow_of_lt_radius (hr.trans_le hf.r_le)
+  -- ⊢ (fun y => f y.fst - f y.snd - ↑(p 1) fun x => y.fst - y.snd) =O[𝓟 (EMetric.b …
   simp only [← le_div_iff (pow_pos (NNReal.coe_pos.2 hr'0) _)] at hp
+  -- ⊢ (fun y => f y.fst - f y.snd - ↑(p 1) fun x => y.fst - y.snd) =O[𝓟 (EMetric.b …
   set L : E × E → ℝ := fun y =>
     C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * (a / (1 - a) ^ 2 + 2 / (1 - a))
   have hL : ∀ y ∈ EMetric.ball (x, x) r', ‖f y.1 - f y.2 - p 1 fun _ => y.1 - y.2‖ ≤ L y := by
@@ -773,7 +880,9 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     rw [one_mul]
     exact (hL y hy).trans (le_abs_self _)
   simp_rw [mul_right_comm _ (_ * _)]  -- porting note: there was an `L` inside the `simp_rw`.
+  -- ⊢ (fun y => C * (a / ↑r') ^ 2 * (a / (1 - a) ^ 2 + 2 / (1 - a)) * (‖y - (x, x) …
   exact (isBigO_refl _ _).const_mul_left _
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align has_fpower_series_on_ball.is_O_image_sub_image_sub_deriv_principal HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
 
@@ -796,9 +905,13 @@ theorem HasFPowerSeriesAt.isBigO_image_sub_norm_mul_norm_sub (hf : HasFPowerSeri
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓝 (x, x)] fun y =>
       ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rcases hf with ⟨r, hf⟩
+  -- ⊢ (fun y => f y.fst - f y.snd - ↑(p 1) fun x => y.fst - y.snd) =O[𝓝 (x, x)] fu …
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
+  -- ⊢ (fun y => f y.fst - f y.snd - ↑(p 1) fun x => y.fst - y.snd) =O[𝓝 (x, x)] fu …
   refine' (hf.isBigO_image_sub_image_sub_deriv_principal h).mono _
+  -- ⊢ 𝓝 (x, x) ≤ 𝓟 (EMetric.ball (x, x) ↑r')
   exact le_principal_iff.2 (EMetric.ball_mem_nhds _ r'0)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align has_fpower_series_at.is_O_image_sub_norm_mul_norm_sub HasFPowerSeriesAt.isBigO_image_sub_norm_mul_norm_sub
 
@@ -812,13 +925,19 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFPowerS
   obtain ⟨a, ha, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
     ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n
   exact hf.uniform_geometric_approx h
+  -- ⊢ TendstoUniformlyOn (fun n y => FormalMultilinearSeries.partialSum p n y) (fu …
   refine' Metric.tendstoUniformlyOn_iff.2 fun ε εpos => _
+  -- ⊢ ∀ᶠ (n : ℕ) in atTop, ∀ (x_1 : E), x_1 ∈ Metric.ball 0 ↑r' → dist (f (x + x_1 …
   have L : Tendsto (fun n => (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
     tendsto_const_nhds.mul (tendsto_pow_atTop_nhds_0_of_lt_1 ha.1.le ha.2)
   rw [mul_zero] at L
+  -- ⊢ ∀ᶠ (n : ℕ) in atTop, ∀ (x_1 : E), x_1 ∈ Metric.ball 0 ↑r' → dist (f (x + x_1 …
   refine' (L.eventually (gt_mem_nhds εpos)).mono fun n hn y hy => _
+  -- ⊢ dist (f (x + y)) (FormalMultilinearSeries.partialSum p n y) < ε
   rw [dist_eq_norm]
+  -- ⊢ ‖f (x + y) - FormalMultilinearSeries.partialSum p n y‖ < ε
   exact (hp y hy n).trans_lt hn
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.tendsto_uniformly_on HasFPowerSeriesOnBall.tendstoUniformlyOn
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
@@ -828,10 +947,15 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFPowerSeriesOnB
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       (EMetric.ball (0 : E) r) := by
   intro u hu x hx
+  -- ⊢ ∃ t, t ∈ 𝓝[EMetric.ball 0 r] x ∧ ∀ᶠ (n : ℕ) in atTop, ∀ (y : E), y ∈ t → ((f …
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hx with ⟨r', xr', hr'⟩
+  -- ⊢ ∃ t, t ∈ 𝓝[EMetric.ball 0 r] x ∧ ∀ᶠ (n : ℕ) in atTop, ∀ (y : E), y ∈ t → ((f …
   have : EMetric.ball (0 : E) r' ∈ 𝓝 x := IsOpen.mem_nhds EMetric.isOpen_ball xr'
+  -- ⊢ ∃ t, t ∈ 𝓝[EMetric.ball 0 r] x ∧ ∀ᶠ (n : ℕ) in atTop, ∀ (y : E), y ∈ t → ((f …
   refine' ⟨EMetric.ball (0 : E) r', mem_nhdsWithin_of_mem_nhds this, _⟩
+  -- ⊢ ∀ᶠ (n : ℕ) in atTop, ∀ (y : E), y ∈ EMetric.ball 0 ↑r' → ((fun y => f (x✝ +  …
   simpa [Metric.emetric_ball_nnreal] using hf.tendstoUniformlyOn hr' u hu
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.tendsto_locally_uniformly_on HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn
 
 /-- If a function admits a power series expansion at `x`, then it is the uniform limit of the
@@ -841,9 +965,13 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn' {r' : ℝ≥0} (hf : HasFPower
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop (Metric.ball (x : E) r') := by
   convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
+  -- ⊢ f = (fun y => f (x + y)) ∘ fun y => y - x
   · simp [(· ∘ ·)]
+    -- 🎉 no goals
   · ext z
+    -- ⊢ z ∈ Metric.ball x ↑r' ↔ z ∈ (fun y => y - x) ⁻¹' Metric.ball 0 ↑r'
     simp [dist_eq_norm]
+    -- 🎉 no goals
 #align has_fpower_series_on_ball.tendsto_uniformly_on' HasFPowerSeriesOnBall.tendstoUniformlyOn'
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
@@ -855,10 +983,15 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOn
   have A : ContinuousOn (fun y : E => y - x) (EMetric.ball (x : E) r) :=
     (continuous_id.sub continuous_const).continuousOn
   convert hf.tendstoLocallyUniformlyOn.comp (fun y : E => y - x) _ A using 1
+  -- ⊢ f = (fun y => f (x + y)) ∘ fun y => y - x
   · ext z
+    -- ⊢ f z = ((fun y => f (x + y)) ∘ fun y => y - x) z
     simp
+    -- 🎉 no goals
   · intro z
+    -- ⊢ z ∈ EMetric.ball x r → (fun y => y - x) z ∈ EMetric.ball 0 r
     simp [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub]
+    -- 🎉 no goals
 #align has_fpower_series_on_ball.tendsto_locally_uniformly_on' HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn'
 
 /-- If a function admits a power series expansion on a disk, then it is continuous there. -/
@@ -893,7 +1026,9 @@ protected theorem FormalMultilinearSeries.hasFPowerSeriesOnBall [CompleteSpace F
     r_pos := h
     hasSum := fun hy => by
       rw [zero_add]
+      -- ⊢ HasSum (fun n => ↑(p n) fun x => y✝) (FormalMultilinearSeries.sum p y✝)
       exact p.hasSum hy }
+      -- 🎉 no goals
 #align formal_multilinear_series.has_fpower_series_on_ball FormalMultilinearSeries.hasFPowerSeriesOnBall
 
 theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
@@ -905,8 +1040,11 @@ theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
 protected theorem FormalMultilinearSeries.continuousOn [CompleteSpace F] :
     ContinuousOn p.sum (EMetric.ball 0 p.radius) := by
   cases' (zero_le p.radius).eq_or_lt with h h
+  -- ⊢ ContinuousOn (FormalMultilinearSeries.sum p) (EMetric.ball 0 (radius p))
   · simp [← h, continuousOn_empty]
+    -- 🎉 no goals
   · exact (p.hasFPowerSeriesOnBall h).continuousOn
+    -- 🎉 no goals
 #align formal_multilinear_series.continuous_on FormalMultilinearSeries.continuousOn
 
 end
@@ -930,10 +1068,15 @@ open ContinuousMultilinearMap
 theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E[×n]→L[𝕜] F}
     (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
   obtain ⟨c, c_pos, hc⟩ := h.exists_pos
+  -- ⊢ (↑p fun x => y) = 0
   obtain ⟨t, ht, t_open, z_mem⟩ := eventually_nhds_iff.mp (isBigOWith_iff.mp hc)
+  -- ⊢ (↑p fun x => y) = 0
   obtain ⟨δ, δ_pos, δε⟩ := (Metric.isOpen_iff.mp t_open) 0 z_mem
+  -- ⊢ (↑p fun x => y) = 0
   clear h hc z_mem
+  -- ⊢ (↑p fun x => y) = 0
   cases' n with n
+  -- ⊢ (↑p fun x => y) = 0
   · exact norm_eq_zero.mp (by
       -- porting note: the symmetric difference of the `simpa only` sets:
       -- added `Nat.zero_eq, zero_add, pow_one`
@@ -943,8 +1086,11 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   · refine' Or.elim (Classical.em (y = 0))
       (fun hy => by simpa only [hy] using p.map_zero) fun hy => _
     replace hy := norm_pos_iff.mpr hy
+    -- ⊢ (↑p fun x => y) = 0
     refine' norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε ε_pos => _) (norm_nonneg _))
+    -- ⊢ ‖↑p fun x => y‖ ≤ 0 + ε
     have h₀ := _root_.mul_pos c_pos (pow_pos hy (n.succ + 1))
+    -- ⊢ ‖↑p fun x => y‖ ≤ 0 + ε
     obtain ⟨k, k_pos, k_norm⟩ := NormedField.exists_norm_lt 𝕜
       (lt_min (mul_pos δ_pos (inv_pos.mpr hy)) (mul_pos ε_pos (inv_pos.mpr h₀)))
     have h₁ : ‖k • y‖ < δ := by
@@ -985,6 +1131,7 @@ terms `p n (fun i ↦ y)` appearing in the sum are zero for any `n : ℕ`, `y : 
 theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (h : HasFPowerSeriesAt 0 p x) (n : ℕ) : ∀ y : E, (p n fun _ => y) = 0 := by
   refine' Nat.strong_induction_on n fun k hk => _
+  -- ⊢ ∀ (y : E), (↑(p k) fun x => y) = 0
   have psum_eq : p.partialSum (k + 1) = fun y => p k fun _ => y := by
     funext z
     refine' Finset.sum_eq_single _ (fun b hb hnb => _) fun hn => _
@@ -992,8 +1139,11 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
       simp only [hk b (this.lt_of_ne hnb), Pi.zero_apply]
     · exact False.elim (hn (Finset.mem_range.mpr (lt_add_one k)))
   replace h := h.isBigO_sub_partialSum_pow k.succ
+  -- ⊢ ∀ (y : E), (↑(p k) fun x => y) = 0
   simp only [psum_eq, zero_sub, Pi.zero_apply, Asymptotics.isBigO_neg_left] at h
+  -- ⊢ ∀ (y : E), (↑(p k) fun x => y) = 0
   exact h.continuousMultilinearMap_apply_eq_zero
+  -- 🎉 no goals
 #align has_fpower_series_at.apply_eq_zero HasFPowerSeriesAt.apply_eq_zero
 
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
@@ -1001,17 +1151,23 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
   -- porting note: `funext; ext` was `ext (n x)`
   funext n
+  -- ⊢ p n = OfNat.ofNat 0 n
   ext x
+  -- ⊢ ↑(p n) x = ↑(OfNat.ofNat 0 n) x
   rw [← mkPiField_apply_one_eq_self (p n)]
+  -- ⊢ ↑(ContinuousMultilinearMap.mkPiField 𝕜 (Fin n) (↑(p n) fun x => 1)) x = ↑(Of …
   -- porting note: nasty hack, was `simp [h.apply_eq_zero n 1]`
   have := Or.intro_right ?_ (h.apply_eq_zero n 1)
+  -- ⊢ ↑(ContinuousMultilinearMap.mkPiField 𝕜 (Fin n) (↑(p n) fun x => 1)) x = ↑(Of …
   simpa using this
+  -- 🎉 no goals
 #align has_fpower_series_at.eq_zero HasFPowerSeriesAt.eq_zero
 
 /-- One-dimensional formal multilinear series representing the same function are equal. -/
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries {p₁ p₂ : FormalMultilinearSeries 𝕜 𝕜 E}
     {f : 𝕜 → E} {x : 𝕜} (h₁ : HasFPowerSeriesAt f p₁ x) (h₂ : HasFPowerSeriesAt f p₂ x) : p₁ = p₂ :=
   sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (by simpa only [sub_self] using h₁.sub h₂))
+                                                -- 🎉 no goals
 #align has_fpower_series_at.eq_formal_multilinear_series HasFPowerSeriesAt.eq_formalMultilinearSeries
 
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries_of_eventually
@@ -1097,6 +1253,7 @@ def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card =
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
   exact a (p (k + l))
+  -- 🎉 no goals
 #align formal_multilinear_series.change_origin_series_term FormalMultilinearSeries.changeOriginSeriesTerm
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
@@ -1110,12 +1267,14 @@ theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs 
 theorem norm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     ‖p.changeOriginSeriesTerm k l s hs‖ = ‖p (k + l)‖ := by
   simp only [changeOriginSeriesTerm, LinearIsometryEquiv.norm_map]
+  -- 🎉 no goals
 #align formal_multilinear_series.norm_change_origin_series_term FormalMultilinearSeries.norm_changeOriginSeriesTerm
 
 @[simp]
 theorem nnnorm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     ‖p.changeOriginSeriesTerm k l s hs‖₊ = ‖p (k + l)‖₊ := by
   simp only [changeOriginSeriesTerm, LinearIsometryEquiv.nnnorm_map]
+  -- 🎉 no goals
 #align formal_multilinear_series.nnnorm_change_origin_series_term FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm
 
 theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k + l)))
@@ -1123,8 +1282,11 @@ theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k +
     ‖p.changeOriginSeriesTerm k l s hs (fun _ => x) fun _ => y‖₊ ≤
       ‖p (k + l)‖₊ * ‖x‖₊ ^ l * ‖y‖₊ ^ k := by
   rw [← p.nnnorm_changeOriginSeriesTerm k l s hs, ← Fin.prod_const, ← Fin.prod_const]
+  -- ⊢ ‖↑(↑(changeOriginSeriesTerm p k l s hs) fun x_1 => x) fun x => y‖₊ ≤ (‖chang …
   apply ContinuousMultilinearMap.le_of_op_nnnorm_le
+  -- ⊢ ‖↑(changeOriginSeriesTerm p k l s hs) fun x_1 => x‖₊ ≤ ‖changeOriginSeriesTe …
   apply ContinuousMultilinearMap.le_op_nnnorm
+  -- 🎉 no goals
 #align formal_multilinear_series.nnnorm_change_origin_series_term_apply_le FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm_apply_le
 
 /-- The power series for `f.changeOrigin k`.
@@ -1142,13 +1304,16 @@ theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
   (nnnorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
     simp_rw [tsum_fintype, nnnorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
+    -- 🎉 no goals
 #align formal_multilinear_series.nnnorm_change_origin_series_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_le_tsum
 
 theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
+  -- ⊢ ‖↑(changeOriginSeries p k l) fun x_1 => x‖₊ ≤ (∑' (x : { s // Finset.card s  …
   exact (p.changeOriginSeries k l).le_of_op_nnnorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
+  -- 🎉 no goals
 #align formal_multilinear_series.nnnorm_change_origin_series_apply_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_apply_le_tsum
 
 /-- Changing the origin of a formal multilinear series `p`, so that
@@ -1177,7 +1342,9 @@ def changeOriginIndexEquiv :
         Finset.card_map _⟩⟩
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
+    -- ⊢ (fun s => { fst := s.fst - Finset.card s.snd, snd := { fst := Finset.card s. …
     dsimp only [Subtype.coe_mk]
+    -- ⊢ { fst := k + l - Finset.card s, snd := { fst := Finset.card s, snd := { val  …
     -- Lean can't automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
     -- formulate the generalized goal
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
@@ -1185,17 +1352,21 @@ def changeOriginIndexEquiv :
           Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
       apply this <;> simp only [hs, add_tsub_cancel_right]
     rintro _ _ rfl rfl hkl hs'
+    -- ⊢ { fst := k'✝, snd := { fst := l'✝, snd := { val := Finset.map (Equiv.toEmbed …
     simp only [Equiv.refl_toEmbedding, Fin.castIso_refl, Finset.map_refl, eq_self_iff_true,
       OrderIso.refl_toEquiv, and_self_iff, heq_iff_eq]
   right_inv := by
     rintro ⟨n, s⟩
+    -- ⊢ (fun s => { fst := s.fst + s.snd.fst, snd := ↑s.snd.snd }) ((fun s => { fst  …
     simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.castIso_to_equiv]
+    -- 🎉 no goals
 #align formal_multilinear_series.change_origin_index_equiv FormalMultilinearSeries.changeOriginIndexEquiv
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
     Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
   rw [← changeOriginIndexEquiv.symm.summable_iff]
+  -- ⊢ Summable ((fun s => ‖p (s.fst + s.snd.fst)‖₊ * r ^ s.snd.fst * r' ^ s.fst) ∘ …
   dsimp only [(· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
     changeOriginIndexEquiv_symm_apply_snd_fst]
   have : ∀ n : ℕ,
@@ -1209,14 +1380,18 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
     rw [← Fin.sum_pow_mul_eq_add_pow]
     exact (hasSum_fintype _).mul_left _
   refine' NNReal.summable_sigma.2 ⟨fun n => (this n).summable, _⟩
+  -- ⊢ Summable fun x => ∑' (y : Finset (Fin x)), ‖p ({ fst := x, snd := y }.fst -  …
   simp only [(this _).tsum_eq]
+  -- ⊢ Summable fun x => ‖p x‖₊ * (r + r') ^ x
   exact p.summable_nnnorm_mul_pow hr
+  -- 🎉 no goals
 #align formal_multilinear_series.change_origin_series_summable_aux₁ FormalMultilinearSeries.changeOriginSeries_summable_aux₁
 
 theorem changeOriginSeries_summable_aux₂ (hr : (r : ℝ≥0∞) < p.radius) (k : ℕ) :
     Summable fun s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (k + s.1)‖₊ * r ^ s.1 := by
   rcases ENNReal.lt_iff_exists_add_pos_lt.1 hr with ⟨r', h0, hr'⟩
+  -- ⊢ Summable fun s => ‖p (k + s.fst)‖₊ * r ^ s.fst
   simpa only [mul_inv_cancel_right₀ (pow_pos h0 _).ne'] using
     ((NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr')).1 k).mul_right (r' ^ k)⁻¹
 #align formal_multilinear_series.change_origin_series_summable_aux₂ FormalMultilinearSeries.changeOriginSeries_summable_aux₂
@@ -1226,7 +1401,9 @@ theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) 
   refine' NNReal.summable_of_le
     (fun n => _) (NNReal.summable_sigma.1 <| p.changeOriginSeries_summable_aux₂ hr k).2
   simp only [NNReal.tsum_mul_right]
+  -- ⊢ ‖changeOriginSeries p k n‖₊ * r ^ n ≤ (∑' (x : { s // Finset.card s = n }),  …
   exact mul_le_mul' (p.nnnorm_changeOriginSeries_le_tsum _ _) le_rfl
+  -- 🎉 no goals
 #align formal_multilinear_series.change_origin_series_summable_aux₃ FormalMultilinearSeries.changeOriginSeries_summable_aux₃
 
 theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
@@ -1238,9 +1415,13 @@ theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radi
     ‖p.changeOrigin x k‖₊ ≤
       ∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
   refine' tsum_of_nnnorm_bounded _ fun l => p.nnnorm_changeOriginSeries_apply_le_tsum k l x
+  -- ⊢ HasSum (fun l => ∑' (x_1 : { s // Finset.card s = l }), ‖p (k + l)‖₊ * ‖x‖₊  …
   have := p.changeOriginSeries_summable_aux₂ h k
+  -- ⊢ HasSum (fun l => ∑' (x_1 : { s // Finset.card s = l }), ‖p (k + l)‖₊ * ‖x‖₊  …
   refine' HasSum.sigma this.hasSum fun l => _
+  -- ⊢ HasSum (fun c => ‖p (k + { fst := l, snd := c }.fst)‖₊ * ‖x‖₊ ^ { fst := l,  …
   exact ((NNReal.summable_sigma.1 this).1 l).hasSum
+  -- 🎉 no goals
 #align formal_multilinear_series.nnnorm_change_origin_le FormalMultilinearSeries.nnnorm_changeOrigin_le
 
 /-- The radius of convergence of `p.changeOrigin x` is at least `p.radius - ‖x‖`. In other words,
@@ -1248,15 +1429,20 @@ theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radi
 convergence. -/
 theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radius := by
   refine' ENNReal.le_of_forall_pos_nnreal_lt fun r _h0 hr => _
+  -- ⊢ ↑r ≤ radius (changeOrigin p x)
   rw [lt_tsub_iff_right, add_comm] at hr
+  -- ⊢ ↑r ≤ radius (changeOrigin p x)
   have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
+  -- ⊢ ↑r ≤ radius (changeOrigin p x)
   apply le_radius_of_summable_nnnorm
+  -- ⊢ Summable fun n => ‖changeOrigin p x n‖₊ * r ^ n
   have : ∀ k : ℕ,
       ‖p.changeOrigin x k‖₊ * r ^ k ≤
         (∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
           r ^ k :=
     fun k => mul_le_mul_right' (p.nnnorm_changeOrigin_le k hr') (r ^ k)
   refine' NNReal.summable_of_le this _
+  -- ⊢ Summable fun b => (∑' (s : (l : ℕ) × { s // Finset.card s = l }), ‖p (b + s. …
   simpa only [← NNReal.tsum_mul_right] using
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
 #align formal_multilinear_series.change_origin_radius FormalMultilinearSeries.changeOrigin_radius
@@ -1277,6 +1463,7 @@ theorem hasFPowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
 theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius) :
     (p.changeOrigin x).sum y = p.sum (x + y) := by
   have radius_pos : 0 < p.radius := lt_of_le_of_lt (zero_le _) h
+  -- ⊢ FormalMultilinearSeries.sum (changeOrigin p x) y = FormalMultilinearSeries.s …
   have x_mem_ball : x ∈ EMetric.ball (0 : E) p.radius :=
     mem_emetric_ball_zero_iff.2 ((le_add_right le_rfl).trans_lt h)
   have y_mem_ball : y ∈ EMetric.ball (0 : E) (p.changeOrigin x).radius := by
@@ -1306,20 +1493,26 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
         refine' (ContinuousMultilinearMap.le_op_nnnorm _ _).trans_eq _
         simp
   refine' hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 _)
+  -- ⊢ HasSum (f ∘ ↑changeOriginIndexEquiv.symm) (FormalMultilinearSeries.sum p (x  …
   refine' HasSum.sigma_of_hasSum
     (p.hasSum x_add_y_mem_ball) (fun n => _) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
   erw [(p n).map_add_univ (fun _ => x) fun _ => y]
+  -- ⊢ HasSum (fun c => (f ∘ ↑changeOriginIndexEquiv.symm) { fst := n, snd := c })  …
   -- porting note: added explicit function
   convert hasSum_fintype (fun c : Finset (Fin n) => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
+  -- ⊢ ↑(p n) (Finset.piecewise x✝ (fun x_1 => x) fun x => y) = f (↑changeOriginInd …
   rename_i s _
+  -- ⊢ ↑(p n) (Finset.piecewise s (fun x_1 => x) fun x => y) = f (↑changeOriginInde …
   dsimp only [changeOriginSeriesTerm, (· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
     changeOriginIndexEquiv_symm_apply_snd_fst, changeOriginIndexEquiv_symm_apply_snd_snd_coe]
   rw [ContinuousMultilinearMap.curryFinFinset_apply_const]
+  -- ⊢ ↑(p n) (Finset.piecewise s (fun x_1 => x) fun x => y) = ↑(p (n - Finset.card …
   have : ∀ (m) (hm : n = m), p n (s.piecewise (fun _ => x) fun _ => y) =
       p m ((s.map (Fin.castIso hm).toEquiv.toEmbedding).piecewise (fun _ => x) fun _ => y) := by
     rintro m rfl
     simp [Finset.piecewise]
   apply this
+  -- 🎉 no goals
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
 
 end FormalMultilinearSeries
@@ -1335,8 +1528,11 @@ theorem HasFPowerSeriesOnBall.changeOrigin (hf : HasFPowerSeriesOnBall f p x r)
     (h : (‖y‖₊ : ℝ≥0∞) < r) : HasFPowerSeriesOnBall f (p.changeOrigin y) (x + y) (r - ‖y‖₊) :=
   { r_le := by
       apply le_trans _ p.changeOrigin_radius
+      -- ⊢ r - ↑‖y‖₊ ≤ FormalMultilinearSeries.radius p - ↑‖y‖₊
       exact tsub_le_tsub hf.r_le le_rfl
+      -- 🎉 no goals
     r_pos := by simp [h]
+                -- 🎉 no goals
     hasSum := fun {z} hz => by
       have : f (x + y + z) =
           FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
@@ -1345,9 +1541,13 @@ theorem HasFPowerSeriesOnBall.changeOrigin (hf : HasFPowerSeriesOnBall f p x r)
         refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ hz)
         exact_mod_cast nnnorm_add_le y z
       rw [this]
+      -- ⊢ HasSum (fun n => ↑(FormalMultilinearSeries.changeOrigin p y n) fun x => z) ( …
       apply (p.changeOrigin y).hasSum
+      -- ⊢ z ∈ EMetric.ball 0 (FormalMultilinearSeries.radius (FormalMultilinearSeries. …
       refine' EMetric.ball_subset_ball (le_trans _ p.changeOrigin_radius) hz
+      -- ⊢ r - ↑‖y‖₊ ≤ FormalMultilinearSeries.radius p - ↑‖y‖₊
       exact tsub_le_tsub hf.r_le le_rfl }
+      -- 🎉 no goals
 #align has_fpower_series_on_ball.change_origin HasFPowerSeriesOnBall.changeOrigin
 
 /-- If a function admits a power series expansion `p` on an open ball `B (x, r)`, then
@@ -1355,9 +1555,13 @@ it is analytic at every point of this ball. -/
 theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p x r)
     (h : y ∈ EMetric.ball x r) : AnalyticAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
+  -- ⊢ AnalyticAt 𝕜 f y
   have := hf.changeOrigin this
+  -- ⊢ AnalyticAt 𝕜 f y
   rw [add_sub_cancel'_right] at this
+  -- ⊢ AnalyticAt 𝕜 f y
   exact this.analyticAt
+  -- 🎉 no goals
 #align has_fpower_series_on_ball.analytic_at_of_mem HasFPowerSeriesOnBall.analyticAt_of_mem
 
 theorem HasFPowerSeriesOnBall.analyticOn (hf : HasFPowerSeriesOnBall f p x r) :
@@ -1371,8 +1575,11 @@ variable (𝕜 f)
 that `f` is analytic at `x` is open. -/
 theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
   rw [isOpen_iff_mem_nhds]
+  -- ⊢ ∀ (a : E), a ∈ {x | AnalyticAt 𝕜 f x} → {x | AnalyticAt 𝕜 f x} ∈ 𝓝 a
   rintro x ⟨p, r, hr⟩
+  -- ⊢ {x | AnalyticAt 𝕜 f x} ∈ 𝓝 x
   exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.analyticAt_of_mem hy
+  -- 🎉 no goals
 #align is_open_analytic_at isOpen_analyticAt
 
 variable {𝕜}
@@ -1401,10 +1608,15 @@ theorem hasFPowerSeriesAt_iff :
   refine' ⟨fun ⟨r, _, r_pos, h⟩ =>
     eventually_of_mem (EMetric.ball_mem_nhds 0 r_pos) fun _ => by simpa using h, _⟩
   simp only [Metric.eventually_nhds_iff]
+  -- ⊢ (∃ ε, ε > 0 ∧ ∀ ⦃y : 𝕜⦄, dist y 0 < ε → HasSum (fun n => y ^ n • coeff p n)  …
   rintro ⟨r, r_pos, h⟩
+  -- ⊢ HasFPowerSeriesAt f p z₀
   refine' ⟨p.radius ⊓ r.toNNReal, by simp, _, _⟩
+  -- ⊢ 0 < radius p ⊓ ↑(Real.toNNReal r)
   · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true_iff]
+    -- ⊢ 0 < radius p
     obtain ⟨z, z_pos, le_z⟩ := NormedField.exists_norm_lt 𝕜 r_pos.lt
+    -- ⊢ 0 < radius p
     have : (‖z‖₊ : ENNReal) ≤ p.radius := by
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
@@ -1412,18 +1624,25 @@ theorem hasFPowerSeriesAt_iff :
       funext
       simp [norm_smul, mul_comm]
     refine' lt_of_lt_of_le _ this
+    -- ⊢ 0 < ↑‖z‖₊
     simp only [ENNReal.coe_pos]
+    -- ⊢ 0 < ‖z‖₊
     exact zero_lt_iff.mpr (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
+    -- 🎉 no goals
   · simp only [EMetric.mem_ball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine' fun {y} _ hyr => h _
+    -- ⊢ ‖y‖ < r
     simpa [nndist_eq_nnnorm, Real.lt_toNNReal_iff_coe_lt] using hyr
+    -- 🎉 no goals
 #align has_fpower_series_at_iff hasFPowerSeriesAt_iff
 
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFPowerSeriesAt_iff]
+  -- ⊢ (∀ᶠ (z : 𝕜) in 𝓝 0, HasSum (fun n => z ^ n • coeff p n) (f (z₀ + z))) ↔ ∀ᶠ ( …
   simp_rw [add_sub_cancel']
+  -- 🎉 no goals
 #align has_fpower_series_at_iff' hasFPowerSeriesAt_iff'
 
 end

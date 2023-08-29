@@ -37,7 +37,9 @@ def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=
 
 theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
   rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
+  -- ⊢ IsOpen (⋃ (i : ℕ), {x | ¬coeff f i ∈ x.asIdeal})
   exact isOpen_iUnion fun i => isOpen_basicOpen
+  -- 🎉 no goals
 #align algebraic_geometry.polynomial.is_open_image_of_Df AlgebraicGeometry.Polynomial.isOpen_imageOfDf
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in
@@ -54,16 +56,26 @@ morphism `C⁺ : Spec R[x] → Spec R`. -/
 theorem imageOfDf_eq_comap_C_compl_zeroLocus :
     imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' (zeroLocus {f})ᶜ := by
   ext x
+  -- ⊢ x ∈ imageOfDf f ↔ x ∈ ↑(PrimeSpectrum.comap C) '' (zeroLocus {f})ᶜ
   refine' ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.IsPrime⟩, ⟨_, _⟩⟩, _⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
+    -- ⊢ ¬f ∈ ↑{ asIdeal := Ideal.map C x.asIdeal, IsPrime := (_ : Ideal.IsPrime (Ide …
     cases' hx with i hi
+    -- ⊢ ¬f ∈ ↑{ asIdeal := Ideal.map C x.asIdeal, IsPrime := (_ : Ideal.IsPrime (Ide …
     exact fun a => hi (mem_map_C_iff.mp a i)
+    -- 🎉 no goals
   · ext x
+    -- ⊢ x ∈ (↑(PrimeSpectrum.comap C) { asIdeal := Ideal.map C x✝.asIdeal, IsPrime : …
     refine' ⟨fun h => _, fun h => subset_span (mem_image_of_mem C.1 h)⟩
+    -- ⊢ x ∈ x✝.asIdeal
     rw [← @coeff_C_zero R x _]
+    -- ⊢ coeff (↑C x) 0 ∈ x✝.asIdeal
     exact mem_map_C_iff.mp h 0
+    -- 🎉 no goals
   · rintro ⟨xli, complement, rfl⟩
+    -- ⊢ ↑(PrimeSpectrum.comap C) xli ∈ imageOfDf f
     exact comap_C_mem_imageOfDf complement
+    -- 🎉 no goals
 #align algebraic_geometry.polynomial.image_of_Df_eq_comap_C_compl_zero_locus AlgebraicGeometry.Polynomial.imageOfDf_eq_comap_C_compl_zeroLocus
 
 /-- The morphism `C⁺ : Spec R[x] → Spec R` is open.
@@ -73,10 +85,13 @@ https://stacks.math.columbia.edu/tag/00FB
 -/
 theorem isOpenMap_comap_C : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) := by
   rintro U ⟨s, z⟩
+  -- ⊢ IsOpen (↑(PrimeSpectrum.comap C) '' U)
   rw [← compl_compl U, ← z, ← iUnion_of_singleton_coe s, zeroLocus_iUnion, compl_iInter,
     image_iUnion]
   simp_rw [← imageOfDf_eq_comap_C_compl_zeroLocus]
+  -- ⊢ IsOpen (⋃ (i : ↑s), imageOfDf ↑i)
   exact isOpen_iUnion fun f => isOpen_imageOfDf
+  -- 🎉 no goals
 #align algebraic_geometry.polynomial.is_open_map_comap_C AlgebraicGeometry.Polynomial.isOpenMap_comap_C
 
 end Polynomial

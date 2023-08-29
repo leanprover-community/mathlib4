@@ -72,10 +72,14 @@ protected theorem isAntisymm (h : IsAntichain r univ) : IsAntisymm α r :=
 
 protected theorem subsingleton [IsTrichotomous α r] (h : IsAntichain r s) : s.Subsingleton := by
   rintro a ha b hb
+  -- ⊢ a = b
   obtain hab | hab | hab := trichotomous_of r a b
   · exact h.eq ha hb hab
+    -- 🎉 no goals
   · exact hab
+    -- 🎉 no goals
   · exact h.eq' ha hb hab
+    -- 🎉 no goals
 #align is_antichain.subsingleton IsAntichain.subsingleton
 
 protected theorem flip (hs : IsAntichain r s) : IsAntichain (flip r) s := fun _ ha _ hb h =>
@@ -89,7 +93,9 @@ theorem swap (hs : IsAntichain r s) : IsAntichain (swap r) s :=
 theorem image (hs : IsAntichain r s) (f : α → β) (h : ∀ ⦃a b⦄, r' (f a) (f b) → r a b) :
     IsAntichain r' (f '' s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ hbc hr
+  -- ⊢ False
   exact hs hb hc (ne_of_apply_ne _ hbc) (h hr)
+  -- 🎉 no goals
 #align is_antichain.image IsAntichain.image
 
 theorem preimage (hs : IsAntichain r s) {f : β → α} (hf : Injective f)
@@ -119,9 +125,13 @@ theorem insert_of_symmetric (hs : IsAntichain r s) (hr : Symmetric r)
 
 theorem image_relEmbedding (hs : IsAntichain r s) (φ : r ↪r r') : IsAntichain r' (φ '' s) := by
   intro b hb b' hb' h₁ h₂
+  -- ⊢ False
   rw [Set.mem_image] at hb hb'
+  -- ⊢ False
   obtain ⟨⟨a, has, rfl⟩, ⟨a', has', rfl⟩⟩ := hb, hb'
+  -- ⊢ False
   exact hs has has' (fun haa' => h₁ (by rw [haa'])) (φ.map_rel_iff.mp h₂)
+  -- 🎉 no goals
 #align is_antichain.image_rel_embedding IsAntichain.image_relEmbedding
 
 theorem preimage_relEmbedding {t : Set β} (ht : IsAntichain r' t) (φ : r ↪r r') :
@@ -221,13 +231,17 @@ theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb :
 theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
+    -- ⊢ IsAntichain (fun x x_1 => x ≤ x_1) {a} ∧ IsLeast {a} a
     exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
+    -- 🎉 no goals
 #align is_antichain_and_least_iff isAntichain_and_least_iff
 
 theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
+    -- ⊢ IsAntichain (fun x x_1 => x ≤ x_1) {a} ∧ IsGreatest {a} a
     exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
+    -- 🎉 no goals
 #align is_antichain_and_greatest_iff isAntichain_and_greatest_iff
 
 theorem IsAntichain.least_iff (hs : IsAntichain (· ≤ ·) s) : IsLeast s a ↔ s = {a} :=
@@ -313,8 +327,11 @@ theorem swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swa
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
     (h : ∀ a b, r' (f a) (f b) → r a b) : IsStrongAntichain r' (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab c
+  -- ⊢ ¬r' (f a) c ∨ ¬r' (f b) c
   obtain ⟨c, rfl⟩ := hf c
+  -- ⊢ ¬r' (f a) (f c) ∨ ¬r' (f b) (f c)
   exact (hs ha hb (ne_of_apply_ne _ hab) _).imp (mt <| h _ _) (mt <| h _ _)
+  -- 🎉 no goals
 #align is_strong_antichain.image IsStrongAntichain.image
 
 theorem preimage (hs : IsStrongAntichain r s) {f : β → α} (hf : Injective f)

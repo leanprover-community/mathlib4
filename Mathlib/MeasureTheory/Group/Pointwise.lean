@@ -25,7 +25,9 @@ theorem MeasurableSet.const_smul {G α : Type*} [Group G] [MulAction G α] [Meas
     [MeasurableSpace α] [MeasurableSMul G α] {s : Set α} (hs : MeasurableSet s) (a : G) :
     MeasurableSet (a • s) := by
   rw [← preimage_smul_inv]
+  -- ⊢ MeasurableSet ((fun x => a⁻¹ • x) ⁻¹' s)
   exact measurable_const_smul _ hs
+  -- 🎉 no goals
 #align measurable_set.const_smul MeasurableSet.const_smul
 #align measurable_set.const_vadd MeasurableSet.const_vadd
 
@@ -33,7 +35,9 @@ theorem MeasurableSet.const_smul_of_ne_zero {G₀ α : Type*} [GroupWithZero G�
     [MeasurableSpace G₀] [MeasurableSpace α] [MeasurableSMul G₀ α] {s : Set α}
     (hs : MeasurableSet s) {a : G₀} (ha : a ≠ 0) : MeasurableSet (a • s) := by
   rw [← preimage_smul_inv₀ ha]
+  -- ⊢ MeasurableSet ((fun x => a⁻¹ • x) ⁻¹' s)
   exact measurable_const_smul _ hs
+  -- 🎉 no goals
 #align measurable_set.const_smul_of_ne_zero MeasurableSet.const_smul_of_ne_zero
 
 theorem MeasurableSet.const_smul₀ {G₀ α : Type*} [GroupWithZero G₀] [Zero α]
@@ -41,5 +45,7 @@ theorem MeasurableSet.const_smul₀ {G₀ α : Type*} [GroupWithZero G₀] [Zero
     [MeasurableSingletonClass α] {s : Set α} (hs : MeasurableSet s) (a : G₀) :
     MeasurableSet (a • s) := by
   rcases eq_or_ne a 0 with (rfl | ha)
+  -- ⊢ MeasurableSet (0 • s)
   exacts [(subsingleton_zero_smul_set s).measurableSet, hs.const_smul_of_ne_zero ha]
+  -- 🎉 no goals
 #align measurable_set.const_smul₀ MeasurableSet.const_smul₀

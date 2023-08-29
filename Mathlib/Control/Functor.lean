@@ -53,11 +53,17 @@ theorem Functor.ext {F} :
     F1 = F2
   | ⟨m, mc⟩, ⟨m', mc'⟩, H1, H2, H => by
     cases show @m = @m' by funext α β f x; apply H
+    -- ⊢ { map := m, mapConst := mc } = { map := m, mapConst := mc' }
     congr
+    -- ⊢ mc = mc'
     funext α β
+    -- ⊢ mc = mc'
     have E1 := @map_const _ ⟨@m, @mc⟩ H1
+    -- ⊢ mc = mc'
     have E2 := @map_const _ ⟨@m, @mc'⟩ H2
+    -- ⊢ mc = mc'
     exact E1.trans E2.symm
+    -- 🎉 no goals
 #align functor.ext Functor.ext
 
 end Functor
@@ -111,6 +117,12 @@ protected def map {γ α β} (_f : α → β) (x : Const γ β) : Const γ α :=
 instance functor {γ} : Functor (Const γ) where map := @Const.map γ
 
 instance lawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
+                                                                           -- ⊢ mapConst = map ∘ Function.const β✝
+                                                                           -- ⊢ id <$> x✝ = x✝
+                                                                           -- ⊢ (h✝ ∘ g✝) <$> x✝ = h✝ <$> g✝ <$> x✝
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 
 instance {α β} [Inhabited α] : Inhabited (Const α β) :=
   ⟨(default : α)⟩
@@ -204,12 +216,15 @@ variable {α β γ : Type v}
 
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   | Comp.mk x => by simp [Comp.map, Functor.map_id]; rfl
+                    -- ⊢ mk (mk x) = mk x
+                                                     -- 🎉 no goals
   -- porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
+                    -- 🎉 no goals
   -- porting note: `Comp.mk` wasn't needed in mathlib3
 #align functor.comp.comp_map Functor.Comp.comp_map
 

@@ -132,6 +132,7 @@ theorem one_dvd (a : α) : 1 ∣ a :=
 #align one_dvd one_dvd
 
 theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
+                                            -- 🎉 no goals
 #align dvd_of_eq dvd_of_eq
 
 alias Eq.dvd := dvd_of_eq
@@ -145,6 +146,8 @@ variable [CommSemigroup α] {a b c : α}
 
 theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
   Dvd.intro _ (by rw [mul_comm] at h; apply h)
+                  -- ⊢ a * ?m.8269 c h✝ = b
+                                      -- 🎉 no goals
 #align dvd.intro_left Dvd.intro_left
 
 alias dvd_of_mul_left_eq := Dvd.intro_left
@@ -157,7 +160,9 @@ theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
 theorem dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
   ⟨exists_eq_mul_left_of_dvd, by
     rintro ⟨c, rfl⟩
+    -- ⊢ a ∣ c * a
     exact ⟨c, mul_comm _ _⟩⟩
+    -- 🎉 no goals
 #align dvd_iff_exists_eq_mul_left dvd_iff_exists_eq_mul_left
 
 theorem Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P) : P :=
@@ -171,6 +176,8 @@ theorem dvd_mul_left (a b : α) : a ∣ b * a :=
 
 theorem dvd_mul_of_dvd_right (h : a ∣ b) (c : α) : a ∣ c * b := by
   rw [mul_comm]; exact h.mul_right _
+  -- ⊢ a ∣ b * c
+                 -- 🎉 no goals
 #align dvd_mul_of_dvd_right dvd_mul_of_dvd_right
 
 alias Dvd.dvd.mul_left := dvd_mul_of_dvd_right
@@ -179,10 +186,12 @@ attribute [local simp] mul_assoc mul_comm mul_left_comm
 
 theorem mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * d
   | a, _, c, _, ⟨e, rfl⟩, ⟨f, rfl⟩ => ⟨e * f, by simp⟩
+                                                 -- 🎉 no goals
 #align mul_dvd_mul mul_dvd_mul
 
 theorem dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
   Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
+                                                -- 🎉 no goals
 #align dvd_of_mul_left_dvd dvd_of_mul_left_dvd
 
 end CommSemigroup
@@ -201,9 +210,12 @@ theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
 
 theorem pow_dvd_pow_of_dvd {a b : α} (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
   | 0 => by rw [pow_zero, pow_zero]
+            -- 🎉 no goals
   | n + 1 => by
     rw [pow_succ, pow_succ]
+    -- ⊢ a * a ^ n ∣ b * b ^ n
     exact mul_dvd_mul h (pow_dvd_pow_of_dvd h n)
+    -- 🎉 no goals
 #align pow_dvd_pow_of_dvd pow_dvd_pow_of_dvd
 
 end CommMonoid

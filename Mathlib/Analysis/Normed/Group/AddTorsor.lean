@@ -48,6 +48,7 @@ instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P 
   ⟨fun c => Isometry.of_dist_eq fun x y => by
     -- Porting note: was `simp [NormedAddTorsor.dist_eq_norm']`
     rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
+    -- 🎉 no goals
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
@@ -103,6 +104,7 @@ theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y)
 @[simp]
 theorem dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v₂ +ᵥ x) = dist v₁ v₂ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm, vadd_vsub_vadd_cancel_right]
+  -- 🎉 no goals
 #align dist_vadd_cancel_right dist_vadd_cancel_right
 
 @[simp]
@@ -114,6 +116,7 @@ theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) 
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
   -- Porting note: was `simp [dist_eq_norm_vsub V _ x]`
   rw [dist_eq_norm_vsub V _ x, vadd_vsub]
+  -- 🎉 no goals
 #align dist_vadd_left dist_vadd_left
 
 @[simp]
@@ -123,6 +126,7 @@ theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
 
 @[simp]
 theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
+                                                                      -- 🎉 no goals
 #align dist_vadd_right dist_vadd_right
 
 @[simp]
@@ -141,6 +145,7 @@ def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
 @[simp]
 theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
+  -- 🎉 no goals
 #align dist_vsub_cancel_left dist_vsub_cancel_left
 
 -- porting note: new
@@ -170,6 +175,7 @@ theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
   -- porting note: added `()` and lemma name to help simp find a `@[simp]` lemma
   simpa [(dist_vadd_cancel_right)] using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
+  -- 🎉 no goals
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
 theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
@@ -180,27 +186,36 @@ theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
 theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     dist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ dist p₁ p₃ + dist p₂ p₄ := by
   rw [dist_eq_norm, vsub_sub_vsub_comm, dist_eq_norm_vsub V, dist_eq_norm_vsub V]
+  -- ⊢ ‖p₁ -ᵥ p₃ - (p₂ -ᵥ p₄)‖ ≤ ‖p₁ -ᵥ p₃‖ + ‖p₂ -ᵥ p₄‖
   exact norm_sub_le _ _
+  -- 🎉 no goals
 #align dist_vsub_vsub_le dist_vsub_vsub_le
 
 theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
   -- porting note: added `()` to help simp find a `@[simp]` lemma
   simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, (dist_vsub_vsub_le)]
+  -- 🎉 no goals
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
+  -- ⊢ ↑(nndist (v +ᵥ p) (v' +ᵥ p')) ≤ ↑(nndist v v') + ↑(nndist p p')
   norm_cast  -- porting note: was apply_mod_cast
+  -- ⊢ nndist (v +ᵥ p) (v' +ᵥ p') ≤ nndist v v' + nndist p p'
   apply dist_vadd_vadd_le
+  -- 🎉 no goals
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
+  -- ⊢ ↑(nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄)) ≤ ↑(nndist p₁ p₃) + ↑(nndist p₂ p₄)
   norm_cast  -- porting note: was apply_mod_cast
+  -- ⊢ nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄
   apply dist_vsub_vsub_le
+  -- 🎉 no goals
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
@@ -210,11 +225,17 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
   edist_dist _ _ := by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+                       -- 🎉 no goals
+                    -- 🎉 no goals
   dist_self x := by simp
+                      -- 🎉 no goals
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
+    -- ⊢ ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
+    -- ⊢ ‖x -ᵥ ?p2 + (?p2 -ᵥ z)‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     rw [← vsub_add_vsub_cancel]
+    -- 🎉 no goals
     apply norm_add_le
 #align pseudo_metric_space_of_normed_add_comm_group_of_add_torsor pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor
 
@@ -224,10 +245,18 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
+                       -- ⊢ ↑{ val := ‖x✝¹ -ᵥ x✝‖, property := (_ : 0 ≤ ‖x✝¹ -ᵥ x✝‖) } = ENNReal.ofReal  …
+                    -- 🎉 no goals
+                                  -- 🎉 no goals
   dist_self x := by simp
+                      -- 🎉 no goals
   eq_of_dist_eq_zero h := by simpa using h
+                             -- 🎉 no goals
+    -- ⊢ ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
+    -- ⊢ ‖x -ᵥ ?p2 + (?p2 -ᵥ z)‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
   dist_triangle x y z := by
+    -- 🎉 no goals
     change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le
@@ -328,11 +357,16 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.
   refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
+  -- ⊢ p ∈ s +ᵥ t
   choose! a v hav using husv
+  -- ⊢ p ∈ s +ᵥ t
   rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
+  -- ⊢ p ∈ s +ᵥ t
   refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
     (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
   convert (hav (φ n)).1 using 1
+  -- ⊢ (u ∘ φ -ᵥ (fun n => v n) ∘ φ) n = a (φ n)
   exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+  -- 🎉 no goals
 
 end Pointwise

@@ -59,10 +59,15 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
     simp only [norm_smul, inv_mul_eq_div, hw, norm_eq_abs, map_inv₀, Complex.abs_pow]
     exact div_le_div hM (hf w hw) (sq_pos_of_pos hr) le_rfl
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
+  -- ⊢ ‖cderiv r f z‖ ≤ M / r
   simp only [cderiv, norm_smul]
+  -- ⊢ ‖(2 * ↑π * I)⁻¹‖ * ‖∮ (w : ℂ) in C(z, r), ((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r
   refine' (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq _)
+  -- ⊢ ‖(2 * ↑π * I)⁻¹‖ * (2 * π * r * (M / r ^ 2)) = M / r
   field_simp [_root_.abs_of_nonneg Real.pi_pos.le]
+  -- ⊢ 2 * π * r * M * r = M * (2 * π * r ^ 2)
   ring
+  -- 🎉 no goals
 #align complex.norm_cderiv_le Complex.norm_cderiv_le
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
@@ -71,7 +76,9 @@ theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     refine' ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne _
     rwa [mem_sphere_iff_norm, sq_eq_zero_iff.mp h, norm_zero] at hw
   simp_rw [cderiv, ← smul_sub]
+  -- ⊢ ((2 * ↑π * I)⁻¹ • ∮ (w : ℂ) in C(z, r), ((w - z) ^ 2)⁻¹ • (f - g) w) = (2 *  …
   congr 1
+  -- ⊢ (∮ (w : ℂ) in C(z, r), ((w - z) ^ 2)⁻¹ • (f - g) w) = (∮ (w : ℂ) in C(z, r), …
   simpa only [Pi.sub_apply, smul_sub] using
     circleIntegral.integral_sub ((h1.smul hf).circleIntegrable hr.le)
       ((h1.smul hg).circleIntegrable hr.le)
@@ -85,6 +92,7 @@ theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
     obtain ⟨x, hx, hx'⟩ := (isCompact_sphere z r).exists_forall_ge e1 e2
     exact ⟨‖f x‖, hfM x hx, hx'⟩
   exact (norm_cderiv_le hr hL2).trans_lt ((div_lt_div_right hr).mpr hL1)
+  -- 🎉 no goals
 #align complex.norm_cderiv_lt Complex.norm_cderiv_lt
 
 theorem norm_cderiv_sub_lt (hr : 0 < r) (hfg : ∀ w ∈ sphere z r, ‖f w - g w‖ < M)
@@ -97,18 +105,27 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
     (hδ : 0 < δ) (hFn : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K)) :
     TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
   rcases φ.eq_or_neBot with rfl | hne
+  -- ⊢ TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) ⊥ K
   · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
+    -- 🎉 no goals
   have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn
+  -- ⊢ TendstoUniformlyOn (Complex.cderiv δ ∘ F) (Complex.cderiv δ f) φ K
   rw [tendstoUniformlyOn_iff] at hF ⊢
+  -- ⊢ ∀ (ε : ℝ), ε > 0 → ∀ᶠ (n : ι) in φ, ∀ (x : ℂ), x ∈ K → dist (Complex.cderiv  …
   rintro ε hε
+  -- ⊢ ∀ᶠ (n : ι) in φ, ∀ (x : ℂ), x ∈ K → dist (Complex.cderiv δ f x) ((Complex.cd …
   filter_upwards [hF (ε * δ) (mul_pos hε hδ), hFn] with n h h' z hz
+  -- ⊢ dist (Complex.cderiv δ f z) ((Complex.cderiv δ ∘ F) n z) < ε
   simp_rw [dist_eq_norm] at h ⊢
+  -- ⊢ ‖Complex.cderiv δ f z - (Complex.cderiv δ ∘ F) n z‖ < ε
   have e2 : ∀ w ∈ sphere z δ, ‖f w - F n w‖ < ε * δ := fun w hw1 =>
     h w (closedBall_subset_cthickening hz δ (sphere_subset_closedBall hw1))
   have e3 := sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ)
+  -- ⊢ ‖Complex.cderiv δ f z - (Complex.cderiv δ ∘ F) n z‖ < ε
   have hf : ContinuousOn f (sphere z δ) :=
     e1.mono (sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ))
   simpa only [mul_div_cancel _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
+  -- 🎉 no goals
 #align tendsto_uniformly_on.cderiv TendstoUniformlyOn.cderiv
 
 end Cderiv
@@ -126,15 +143,20 @@ theorem tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUnifo
   have h3 : TendstoUniformlyOn F f φ (cthickening δ K) :=
     (tendstoLocallyUniformlyOn_iff_forall_isCompact hU).mp hf (cthickening δ K) hKU h2
   apply (h3.cderiv hδ h1).congr
+  -- ⊢ ∀ᶠ (n : ι) in φ, EqOn ((cderiv δ ∘ F) n) ((deriv ∘ F) n) K
   filter_upwards [hF] with n h z hz
+  -- ⊢ (cderiv δ ∘ F) n z = (deriv ∘ F) n z
   exact cderiv_eq_deriv hU h hδ ((closedBall_subset_cthickening hz δ).trans hKU)
+  -- 🎉 no goals
 #align complex.tendsto_uniformly_on_deriv_of_cthickening_subset Complex.tendstoUniformlyOn_deriv_of_cthickening_subset
 
 theorem exists_cthickening_tendstoUniformlyOn (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
     ∃ δ > 0, cthickening δ K ⊆ U ∧ TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K := by
   obtain ⟨δ, hδ, hKδ⟩ := hK.exists_cthickening_subset_open hU hKU
+  -- ⊢ ∃ δ, δ > 0 ∧ cthickening δ K ⊆ U ∧ TendstoUniformlyOn (deriv ∘ F) (cderiv δ  …
   exact ⟨δ, hδ, hKδ, tendstoUniformlyOn_deriv_of_cthickening_subset hf hF hδ hK hU hKδ⟩
+  -- 🎉 no goals
 #align complex.exists_cthickening_tendsto_uniformly_on Complex.exists_cthickening_tendstoUniformlyOn
 
 /-- A locally uniform limit of holomorphic functions on an open domain of the complex plane is
@@ -144,12 +166,19 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
     (hf : TendstoLocallyUniformlyOn F f φ U) (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U)
     (hU : IsOpen U) : DifferentiableOn ℂ f U := by
   rintro x hx
+  -- ⊢ DifferentiableWithinAt ℂ f U x
   obtain ⟨K, ⟨hKx, hK⟩, hKU⟩ := (compact_basis_nhds x).mem_iff.mp (hU.mem_nhds hx)
+  -- ⊢ DifferentiableWithinAt ℂ f U x
   obtain ⟨δ, _, _, h1⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
+  -- ⊢ DifferentiableWithinAt ℂ f U x
   have h2 : interior K ⊆ U := interior_subset.trans hKU
+  -- ⊢ DifferentiableWithinAt ℂ f U x
   have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K)
+  -- ⊢ ∀ᶠ (n : ι) in φ, DifferentiableOn ℂ (F n) (interior K)
   filter_upwards [hF] with n h using h.mono h2
+  -- ⊢ DifferentiableWithinAt ℂ f U x
   have h4 : TendstoLocallyUniformlyOn F f φ (interior K) := hf.mono h2
+  -- ⊢ DifferentiableWithinAt ℂ f U x
   have h5 : TendstoLocallyUniformlyOn (deriv ∘ F) (cderiv δ f) φ (interior K) :=
     h1.tendstoLocallyUniformlyOn.mono interior_subset
   have h6 : ∀ x ∈ interior K, HasDerivAt f (cderiv δ f x) x := fun x h =>
@@ -157,18 +186,26 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
   have h7 : DifferentiableOn ℂ f (interior K) := fun x hx =>
     (h6 x hx).differentiableAt.differentiableWithinAt
   exact (h7.differentiableAt (interior_mem_nhds.mpr hKx)).differentiableWithinAt
+  -- 🎉 no goals
 #align tendsto_locally_uniformly_on.differentiable_on TendstoLocallyUniformlyOn.differentiableOn
 
 theorem _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hU : IsOpen U) :
     TendstoLocallyUniformlyOn (deriv ∘ F) (deriv f) φ U := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hU]
+  -- ⊢ ∀ (K : Set ℂ), K ⊆ U → IsCompact K → TendstoUniformlyOn (_root_.deriv ∘ F) ( …
   rcases φ.eq_or_neBot with rfl | hne
+  -- ⊢ ∀ (K : Set ℂ), K ⊆ U → IsCompact K → TendstoUniformlyOn (deriv ∘ F) (deriv f …
   · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
+    -- 🎉 no goals
   rintro K hKU hK
+  -- ⊢ TendstoUniformlyOn (_root_.deriv ∘ F) (_root_.deriv f) φ K
   obtain ⟨δ, hδ, hK4, h⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
+  -- ⊢ TendstoUniformlyOn (_root_.deriv ∘ F) (_root_.deriv f) φ K
   refine' h.congr_right fun z hz => cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ _
+  -- ⊢ closedBall z δ ⊆ U
   exact (closedBall_subset_cthickening hz δ).trans hK4
+  -- 🎉 no goals
 #align tendsto_locally_uniformly_on.deriv TendstoLocallyUniformlyOn.deriv
 
 end Weierstrass
@@ -195,11 +232,15 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) (hz : z ∈ U) :
     HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
   rw [HasSum]
+  -- ⊢ Tendsto (fun s => Finset.sum s fun b => deriv (F b) z) atTop (𝓝 (deriv (fun  …
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
+  -- ⊢ Tendsto (fun s => Finset.sum s fun b => deriv (F b) z) atTop (𝓝 (deriv (fun  …
   convert (hc.deriv (eventually_of_forall fun s =>
     DifferentiableOn.sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
+  -- ⊢ (Finset.sum s fun b => deriv (F b) z) = (deriv ∘ fun t x => Finset.sum t fun …
   exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
+  -- 🎉 no goals
 #align complex.has_sum_deriv_of_summable_norm Complex.hasSum_deriv_of_summable_norm
 
 end Tsums

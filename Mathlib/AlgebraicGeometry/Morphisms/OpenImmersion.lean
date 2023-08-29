@@ -34,42 +34,66 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
     OpenEmbedding f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
   constructor
+  -- ⊢ IsOpenImmersion f → OpenEmbedding ↑f.val.base ∧ ∀ (x : ↑↑X.toPresheafedSpace …
   · intro h; exact ⟨h.1, inferInstance⟩
+    -- ⊢ OpenEmbedding ↑f.val.base ∧ ∀ (x : ↑↑X.toPresheafedSpace), IsIso (Presheafed …
+             -- 🎉 no goals
   · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
+    -- ⊢ IsOpenImmersion f
+                     -- 🎉 no goals
 #align algebraic_geometry.is_open_immersion_iff_stalk AlgebraicGeometry.isOpenImmersion_iff_stalk
 
 theorem isOpenImmersion_stableUnderComposition :
     MorphismProperty.StableUnderComposition @IsOpenImmersion := by
   intro X Y Z f g h₁ h₂; exact LocallyRingedSpace.IsOpenImmersion.comp f g
+  -- ⊢ IsOpenImmersion (f ≫ g)
+                         -- 🎉 no goals
 #align algebraic_geometry.is_open_immersion_stable_under_composition AlgebraicGeometry.isOpenImmersion_stableUnderComposition
 
 theorem isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
   apply isOpenImmersion_stableUnderComposition.respectsIso
+  -- ⊢ ∀ {X Y : Scheme} (e : X ≅ Y), IsOpenImmersion e.hom
   intro _ _ _; infer_instance
+  -- ⊢ IsOpenImmersion e✝.hom
+               -- 🎉 no goals
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
 theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersion := by
   constructor
   · exact isOpenImmersion_respectsIso
+    -- 🎉 no goals
   · intros; infer_instance
+    -- ⊢ IsOpenImmersion (f✝ ∣_ U✝)
+            -- 🎉 no goals
   · intro X Y f 𝒰 H
+    -- ⊢ IsOpenImmersion f
     rw [isOpenImmersion_iff_stalk]
+    -- ⊢ OpenEmbedding ↑f.val.base ∧ ∀ (x : ↑↑X.toPresheafedSpace), IsIso (Presheafed …
     constructor
+    -- ⊢ OpenEmbedding ↑f.val.base
     · apply (openEmbedding_iff_openEmbedding_of_iSup_eq_top 𝒰.iSup_opensRange f.1.base.2).mpr
+      -- ⊢ ∀ (i : 𝒰.J), OpenEmbedding (Set.restrictPreimage (Scheme.Hom.opensRange (Sch …
       intro i
+      -- ⊢ OpenEmbedding (Set.restrictPreimage (Scheme.Hom.opensRange (Scheme.OpenCover …
       have := ((isOpenImmersion_respectsIso.arrow_iso_iff
         (morphismRestrictOpensRange f (𝒰.map i))).mpr (H i)).1
       erw [Arrow.mk_hom, morphismRestrict_val_base] at this
+      -- ⊢ OpenEmbedding (Set.restrictPreimage (Scheme.Hom.opensRange (Scheme.OpenCover …
       norm_cast
+      -- 🎉 no goals
     · intro x
+      -- ⊢ IsIso (PresheafedSpace.stalkMap f.val x)
       have := Arrow.iso_w (morphismRestrictStalkMap
         f (Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) ⟨x, 𝒰.Covers _⟩)
       dsimp only [Arrow.mk_hom] at this
+      -- ⊢ IsIso (PresheafedSpace.stalkMap f.val x)
       rw [this]
+      -- ⊢ IsIso ((morphismRestrictStalkMap f (Scheme.Hom.opensRange (Scheme.OpenCover. …
       haveI : IsOpenImmersion (f ∣_ Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) :=
         (isOpenImmersion_respectsIso.arrow_iso_iff
           (morphismRestrictOpensRange f (𝒰.map _))).mpr (H _)
       infer_instance
+      -- 🎉 no goals
 #align algebraic_geometry.is_open_immersion_is_local_at_target AlgebraicGeometry.isOpenImmersion_is_local_at_target
 
 theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.TFAE
@@ -96,6 +120,8 @@ theorem isOpenImmersion_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @IsOpenImmersion :=
   MorphismProperty.StableUnderBaseChange.mk isOpenImmersion_respectsIso <| by
     intro X Y Z f g H; infer_instance
+    -- ⊢ IsOpenImmersion pullback.fst
+                       -- 🎉 no goals
 #align algebraic_geometry.is_open_immersion_stable_under_base_change AlgebraicGeometry.isOpenImmersion_stableUnderBaseChange
 
 end AlgebraicGeometry

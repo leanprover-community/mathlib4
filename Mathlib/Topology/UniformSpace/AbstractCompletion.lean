@@ -135,18 +135,26 @@ theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.denseInducing
 
 theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a := by
   rw [pkg.extend_def hf]
+  -- ⊢ DenseInducing.extend (_ : DenseInducing pkg.coe) f (coe pkg a) = f a
   exact pkg.denseInducing.extend_eq hf.continuous a
+  -- 🎉 no goals
 #align abstract_completion.extend_coe AbstractCompletion.extend_coe
 
 variable [CompleteSpace β]
 
 theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
+  -- ⊢ UniformContinuous (AbstractCompletion.extend pkg f)
   · rw [pkg.extend_def hf]
+    -- ⊢ UniformContinuous (DenseInducing.extend (_ : DenseInducing pkg.coe) f)
     exact uniformContinuous_uniformly_extend pkg.uniformInducing pkg.dense hf
+    -- 🎉 no goals
   · change UniformContinuous (ite _ _ _)
+    -- ⊢ UniformContinuous (if UniformContinuous f then DenseInducing.extend (_ : Den …
     rw [if_neg hf]
+    -- ⊢ UniformContinuous fun x => f (DenseRange.some (_ : DenseRange pkg.coe) x)
     exact uniformContinuous_of_const fun a b => by congr 1
+    -- 🎉 no goals
 #align abstract_completion.uniform_continuous_extend AbstractCompletion.uniformContinuous_extend
 
 theorem continuous_extend : Continuous (pkg.extend f) :=
@@ -158,7 +166,9 @@ variable [SeparatedSpace β]
 theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
     (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g := by
   apply pkg.funext pkg.continuous_extend hg.continuous
+  -- ⊢ ∀ (a : α), AbstractCompletion.extend pkg f (coe pkg a) = g (coe pkg a)
   simpa only [pkg.extend_coe hf] using h
+  -- 🎉 no goals
 #align abstract_completion.extend_unique AbstractCompletion.extend_unique
 
 @[simp]
@@ -207,9 +217,13 @@ theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous
     (h : ∀ a, ι' (f a) = g (ι a)) : map f = g :=
   pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
+    -- ⊢ AbstractCompletion.map pkg pkg' f (coe pkg a) = g (coe pkg a)
     change pkg.extend (ι' ∘ f) _ = _
+    -- ⊢ AbstractCompletion.extend pkg (pkg'.coe ∘ f) (coe pkg a) = g (coe pkg a)
     simp only [(· ∘ ·), h, ←comp_apply (f := g)]
+    -- ⊢ AbstractCompletion.extend pkg (fun x => (g ∘ pkg.coe) x) (coe pkg a) = (g ∘  …
     rw [pkg.extend_coe (hg.comp pkg.uniformContinuous_coe)]
+    -- 🎉 no goals
 #align abstract_completion.map_unique AbstractCompletion.map_unique
 
 @[simp]
@@ -225,7 +239,9 @@ theorem extend_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g : �
   pkg.funext (pkg'.continuous_extend.comp (pkg.continuous_map pkg' _)) pkg.continuous_extend
     fun a => by
     rw [pkg.extend_coe (hf.comp hg), comp_apply, pkg.map_coe pkg' hg, pkg'.extend_coe hf]
+    -- ⊢ f (g a) = (f ∘ g) a
     rfl
+    -- 🎉 no goals
 #align abstract_completion.extend_map AbstractCompletion.extend_map
 
 variable (pkg'' : AbstractCompletion γ)
@@ -257,11 +273,17 @@ theorem compare_coe (a : α) : pkg.compare pkg' (pkg.coe a) = pkg'.coe a :=
 
 theorem inverse_compare : pkg.compare pkg' ∘ pkg'.compare pkg = id := by
   have uc := pkg.uniformContinuous_compare pkg'
+  -- ⊢ compare pkg pkg' ∘ compare pkg' pkg = id
   have uc' := pkg'.uniformContinuous_compare pkg
+  -- ⊢ compare pkg pkg' ∘ compare pkg' pkg = id
   apply pkg'.funext (uc.comp uc').continuous continuous_id
+  -- ⊢ ∀ (a : α), (compare pkg pkg' ∘ compare pkg' pkg) (coe pkg' a) = id (coe pkg' …
   intro a
+  -- ⊢ (compare pkg pkg' ∘ compare pkg' pkg) (coe pkg' a) = id (coe pkg' a)
   rw [comp_apply, pkg'.compare_coe pkg, pkg.compare_coe pkg']
+  -- ⊢ coe pkg' a = id (coe pkg' a)
   rfl
+  -- 🎉 no goals
 #align abstract_completion.inverse_compare AbstractCompletion.inverse_compare
 
 /-- The uniform bijection between two completions of the same uniform space. -/
@@ -342,7 +364,9 @@ variable [CompleteSpace γ] (f)
 
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by
   rw [uniformContinuous₂_def, AbstractCompletion.extend₂, uncurry_curry]
+  -- ⊢ UniformContinuous (AbstractCompletion.extend (AbstractCompletion.prod pkg pk …
   apply uniformContinuous_extend
+  -- 🎉 no goals
 #align abstract_completion.uniform_continuous_extension₂ AbstractCompletion.uniformContinuous_extension₂
 
 end Extension₂

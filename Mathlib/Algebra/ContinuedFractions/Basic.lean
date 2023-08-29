@@ -150,7 +150,9 @@ def TerminatedAt (g : GeneralizedContinuedFraction α) (n : ℕ) : Prop :=
 instance terminatedAtDecidable (g : GeneralizedContinuedFraction α) (n : ℕ) :
     Decidable (g.TerminatedAt n) := by
   unfold TerminatedAt
+  -- ⊢ Decidable (Stream'.Seq.TerminatedAt g.s n)
   infer_instance
+  -- 🎉 no goals
 #align generalized_continued_fraction.terminated_at_decidable GeneralizedContinuedFraction.terminatedAtDecidable
 
 /-- A gcf terminates if its sequence terminates. -/
@@ -230,6 +232,7 @@ variable [One α]
 /-- Constructs a simple continued fraction without fractional part. -/
 def ofInteger (a : α) : SimpleContinuedFraction α :=
   ⟨GeneralizedContinuedFraction.ofInteger a, fun n aₙ h ↦ by cases h⟩
+                                                             -- 🎉 no goals
 #align simple_continued_fraction.of_integer SimpleContinuedFraction.ofInteger
 
 instance : Inhabited (SimpleContinuedFraction α) :=
@@ -278,6 +281,7 @@ variable [One α] [Zero α] [LT α]
 /-- Constructs a continued fraction without fractional part. -/
 def ofInteger (a : α) : ContinuedFraction α :=
   ⟨SimpleContinuedFraction.ofInteger a, fun n bₙ h ↦ by cases h⟩
+                                                        -- 🎉 no goals
 #align continued_fraction.of_integer ContinuedFraction.ofInteger
 
 instance : Inhabited (ContinuedFraction α) :=

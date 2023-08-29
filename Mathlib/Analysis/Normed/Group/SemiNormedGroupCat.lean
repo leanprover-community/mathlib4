@@ -45,7 +45,9 @@ deriving instance LargeCategory for SemiNormedGroupCat
 -- deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
+  -- ⊢ ConcreteCategory (Bundled SeminormedAddCommGroup)
   infer_instance
+  -- 🎉 no goals
 
 instance : CoeSort SemiNormedGroupCat (Type*) where
   coe X := X.α
@@ -62,6 +64,9 @@ instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
 instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V ⟶ W) V W where
   coe := (forget SemiNormedGroupCat).map
   coe_injective' := fun f g h => by cases f; cases g; congr
+                                    -- ⊢ { toFun := toFun✝, map_add' := map_add'✝, bound' := bound'✝ } = g
+                                             -- ⊢ { toFun := toFun✝¹, map_add' := map_add'✝¹, bound' := bound'✝¹ } = { toFun : …
+                                                      -- 🎉 no goals
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
@@ -108,8 +113,14 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  -- ⊢ f = default
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
+    -- ⊢ ↑f x = ↑default x
+           -- ⊢ ↑f x = ↑default x
+                                                  -- 🎉 no goals
   · ext; apply Subsingleton.elim
+    -- ⊢ ↑f x✝ = ↑default x✝
+         -- 🎉 no goals
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroupCat.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
@@ -119,8 +130,11 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
 theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 : i.hom.NormNoninc)
     (h2 : i.inv.NormNoninc) : Isometry i.hom := by
   apply AddMonoidHomClass.isometry_of_norm
+  -- ⊢ ∀ (x : ↑V), ‖↑i.hom x‖ = ‖x‖
   intro v
+  -- ⊢ ‖↑i.hom v‖ = ‖v‖
   apply le_antisymm (h1 v)
+  -- ⊢ ‖v‖ ≤ ‖↑i.hom v‖
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
@@ -194,7 +208,11 @@ def mkIso {M N : SemiNormedGroupCat} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : 
   hom := mkHom f.hom i
   inv := mkHom f.inv i'
   hom_inv_id := by apply Subtype.eq; exact f.hom_inv_id
+                   -- ⊢ ↑(mkHom f.hom i ≫ mkHom f.inv i') = ↑(𝟙 (of ↑M))
+                                     -- 🎉 no goals
   inv_hom_id := by apply Subtype.eq; exact f.inv_hom_id
+                   -- ⊢ ↑(mkHom f.inv i' ≫ mkHom f.hom i) = ↑(𝟙 (of ↑N))
+                                     -- 🎉 no goals
 #align SemiNormedGroup₁.mk_iso SemiNormedGroupCat₁.mkIso
 
 instance : HasForget₂ SemiNormedGroupCat₁ SemiNormedGroupCat where
@@ -244,8 +262,14 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  -- ⊢ f = default
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
+    -- ⊢ ↑f x = ↑default x
+           -- ⊢ ↑f x = ↑default x
+                                                  -- 🎉 no goals
   · ext; apply Subsingleton.elim
+    -- ⊢ ↑f x✝ = ↑default x✝
+         -- 🎉 no goals
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroupCat₁.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
@@ -254,9 +278,13 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
   change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
+  -- ⊢ Isometry ↑{ toZeroHom := { toFun := ↑i.hom, map_zero' := (_ : ↑i.hom 0 = 0)  …
   refine' AddMonoidHomClass.isometry_of_norm _ _
+  -- ⊢ ∀ (x : ↑V), ‖↑{ toZeroHom := { toFun := ↑i.hom, map_zero' := (_ : ↑i.hom 0 = …
   intro v
+  -- ⊢ ‖↑{ toZeroHom := { toFun := ↑i.hom, map_zero' := (_ : ↑i.hom 0 = 0) }, map_a …
   apply le_antisymm (i.hom.2 v)
+  -- ⊢ ‖v‖ ≤ ‖↑↑i.hom v‖
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _

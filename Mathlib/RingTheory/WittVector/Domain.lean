@@ -69,20 +69,33 @@ variable [hp : Fact p.Prime] [CommRing R]
 theorem verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i = 0) :
     verschiebung (x.shift k.succ) = x.shift k := by
   ext ⟨j⟩
+  -- ⊢ coeff (↑verschiebung (shift x (Nat.succ k))) Nat.zero = coeff (shift x k) Na …
   · rw [verschiebung_coeff_zero, shift_coeff, h]
+    -- ⊢ k + Nat.zero < k + 1
     apply Nat.lt_succ_self
+    -- 🎉 no goals
   · simp only [verschiebung_coeff_succ, shift]
+    -- ⊢ coeff x (Nat.succ k + n✝) = coeff x (k + Nat.succ n✝)
     congr 1
+    -- ⊢ Nat.succ k + n✝ = k + Nat.succ n✝
     rw [Nat.add_succ, add_comm, Nat.add_succ, add_comm]
+    -- 🎉 no goals
 #align witt_vector.verschiebung_shift WittVector.verschiebung_shift
 
 theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i = 0) :
     x = verschiebung^[n] (x.shift n) := by
   induction' n with k ih
+  -- ⊢ x = (↑verschiebung)^[Nat.zero] (shift x Nat.zero)
   · cases x; simp [shift]
+    -- ⊢ { coeff := coeff✝ } = (↑verschiebung)^[Nat.zero] (shift { coeff := coeff✝ }  …
+             -- 🎉 no goals
   · dsimp; rw [verschiebung_shift]
+    -- ⊢ x = (↑verschiebung)^[k] (↑verschiebung (shift x (Nat.succ k)))
+           -- ⊢ x = (↑verschiebung)^[k] (shift x k)
     · exact ih fun i hi => h _ (hi.trans (Nat.lt_succ_self _))
+      -- 🎉 no goals
     · exact h
+      -- 🎉 no goals
 #align witt_vector.eq_iterate_verschiebung WittVector.eq_iterate_verschiebung
 
 theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
@@ -93,9 +106,13 @@ theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     ext i
     simp only [hall, zero_coeff]
   let n := Nat.find hex
+  -- ⊢ ∃ n x', coeff x' 0 ≠ 0 ∧ x = (↑verschiebung)^[n] x'
   use n, x.shift n
+  -- ⊢ coeff (shift x n) 0 ≠ 0 ∧ x = (↑verschiebung)^[n] (shift x n)
   refine' ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp _⟩
+  -- ⊢ ¬¬coeff x i = 0
   exact Nat.find_min hex hi
+  -- 🎉 no goals
 #align witt_vector.verschiebung_nonzero WittVector.verschiebung_nonzero
 
 /-!
@@ -110,13 +127,21 @@ This argument is adapted from
 instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
   ⟨fun {x y} => by
     contrapose!
+    -- ⊢ x ≠ 0 ∧ y ≠ 0 → x * y ≠ 0
     rintro ⟨ha, hb⟩
+    -- ⊢ x * y ≠ 0
     rcases verschiebung_nonzero ha with ⟨na, wa, hwa0, rfl⟩
+    -- ⊢ (↑verschiebung)^[na] wa * y ≠ 0
     rcases verschiebung_nonzero hb with ⟨nb, wb, hwb0, rfl⟩
+    -- ⊢ (↑verschiebung)^[na] wa * (↑verschiebung)^[nb] wb ≠ 0
     refine' ne_of_apply_ne (fun x => x.coeff (na + nb)) _
+    -- ⊢ (fun x => coeff x (na + nb)) ((↑verschiebung)^[na] wa * (↑verschiebung)^[nb] …
     dsimp only
+    -- ⊢ coeff ((↑verschiebung)^[na] wa * (↑verschiebung)^[nb] wb) (na + nb) ≠ coeff  …
     rw [iterate_verschiebung_mul_coeff, zero_coeff]
+    -- ⊢ coeff wa 0 ^ p ^ nb * coeff wb 0 ^ p ^ na ≠ 0
     exact mul_ne_zero (pow_ne_zero _ hwa0) (pow_ne_zero _ hwb0)⟩
+    -- 🎉 no goals
 
 instance instIsDomain [CharP R p] [IsDomain R] : IsDomain (𝕎 R) :=
   NoZeroDivisors.to_isDomain _

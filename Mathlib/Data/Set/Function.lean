@@ -74,6 +74,7 @@ theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) =
 theorem image_restrict (f : α → β) (s t : Set α) :
     s.restrict f '' (Subtype.val ⁻¹' t) = f '' (t ∩ s) := by
   rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
+  -- 🎉 no goals
 #align set.image_restrict Set.image_restrict
 
 @[simp]
@@ -139,8 +140,11 @@ theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
 theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β → γ) :
     range (extend f g g') = range g ∪ g' '' (range f)ᶜ := by
   refine' (range_extend_subset _ _ _).antisymm _
+  -- ⊢ range g ∪ g' '' (range f)ᶜ ⊆ range (extend f g g')
   rintro z (⟨x, rfl⟩ | ⟨y, hy, rfl⟩)
+  -- ⊢ g x ∈ range (extend f g g')
   exacts [⟨f x, hf.extend_apply _ _ _⟩, ⟨y, extend_apply' _ _ _ hy⟩]
+  -- 🎉 no goals
 #align set.range_extend Set.range_extend
 
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
@@ -164,6 +168,7 @@ theorem restrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α} (
 theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
     Injective (codRestrict f s h) ↔ Injective f := by
   simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
+  -- 🎉 no goals
 #align set.injective_cod_restrict Set.injective_codRestrict
 
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
@@ -188,6 +193,7 @@ theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => Fals
 @[simp]
 theorem eqOn_singleton : Set.EqOn f₁ f₂ {a} ↔ f₁ a = f₂ a := by
   simp [Set.EqOn]
+  -- 🎉 no goals
 #align set.eq_on_singleton Set.eqOn_singleton
 
 @[simp]
@@ -218,6 +224,7 @@ theorem EqOn.image_eq (heq : EqOn f₁ f₂ s) : f₁ '' s = f₂ '' s :=
 
 theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t :=
   ext fun x => and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]
+                                                  -- 🎉 no goals
 #align set.eq_on.inter_preimage_eq Set.EqOn.inter_preimage_eq
 
 theorem EqOn.mono (hs : s₁ ⊆ s₂) (hf : EqOn f₁ f₂ s₂) : EqOn f₁ f₂ s₁ := fun _ hx => hf (hs hx)
@@ -254,8 +261,11 @@ variable [Preorder α] [Preorder β]
 
 theorem _root_.MonotoneOn.congr (h₁ : MonotoneOn f₁ s) (h : s.EqOn f₁ f₂) : MonotoneOn f₂ s := by
   intro a ha b hb hab
+  -- ⊢ f₂ a ≤ f₂ b
   rw [← h ha, ← h hb]
+  -- ⊢ f₁ a ≤ f₁ b
   exact h₁ ha hb hab
+  -- 🎉 no goals
 #align monotone_on.congr MonotoneOn.congr
 
 theorem _root_.AntitoneOn.congr (h₁ : AntitoneOn f₁ s) (h : s.EqOn f₁ f₂) : AntitoneOn f₂ s :=
@@ -265,8 +275,11 @@ theorem _root_.AntitoneOn.congr (h₁ : AntitoneOn f₁ s) (h : s.EqOn f₁ f₂
 theorem _root_.StrictMonoOn.congr (h₁ : StrictMonoOn f₁ s) (h : s.EqOn f₁ f₂) :
     StrictMonoOn f₂ s := by
   intro a ha b hb hab
+  -- ⊢ f₂ a < f₂ b
   rw [← h ha, ← h hb]
+  -- ⊢ f₁ a < f₁ b
   exact h₁ ha hb hab
+  -- 🎉 no goals
 #align strict_mono_on.congr StrictMonoOn.congr
 
 theorem _root_.StrictAntiOn.congr (h₁ : StrictAntiOn f₁ s) (h : s.EqOn f₁ f₂) : StrictAntiOn f₂ s :=
@@ -385,7 +398,9 @@ theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : Map
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
   ⟨fun h => ⟨h.restrict f s t, fun _ => rfl⟩, fun ⟨g, hg⟩ x hx => by
     erw [hg ⟨x, hx⟩]
+    -- ⊢ ↑(g { val := x, property := hx }) ∈ t
     apply Subtype.coe_prop⟩
+    -- 🎉 no goals
 #align set.maps_to_iff_exists_map_subtype Set.mapsTo_iff_exists_map_subtype
 
 theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
@@ -441,10 +456,15 @@ theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
   funext x
+  -- ⊢ (restrict f s s h)^[n] x = restrict f^[n] s s (_ : MapsTo f^[n] s s) x
   rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
+  -- ⊢ ↑((restrict f s s h)^[n] x) = f^[n] ↑x
   induction' n with n ihn generalizing x
+  -- ⊢ ↑((restrict f s s h)^[Nat.zero] x) = f^[Nat.zero] ↑x
   · rfl
+    -- 🎉 no goals
   · simp [Nat.iterate, ihn]
+    -- 🎉 no goals
 #align set.maps_to.iterate_restrict Set.MapsTo.iterate_restrict
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
@@ -505,6 +525,7 @@ theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ =>
 #align set.maps_to_univ Set.mapsTo_univ
 
 theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := by rw [mapsTo']
+                                                                         -- 🎉 no goals
 #align set.maps_to_image Set.mapsTo_image
 
 theorem mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t :=
@@ -537,6 +558,7 @@ theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f
 @[simp]
 theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
     MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, maps_image_to]
+                                                       -- 🎉 no goals
 #align set.maps_range_to Set.maps_range_to
 
 theorem surjective_mapsTo_image_restrict (f : α → β) (s : Set α) :
@@ -564,6 +586,7 @@ def restrictPreimage : f ⁻¹' t → t :=
 
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
   delta Set.restrictPreimage
+  -- ⊢ range (MapsTo.restrict f (f ⁻¹' t) t (_ : MapsTo f (f ⁻¹' t) t)) = Subtype.v …
   rw [MapsTo.range_restrict, Set.image_preimage_eq_inter_range, Set.preimage_inter,
     Subtype.coe_preimage_self, Set.univ_inter]
 #align set.range_restrict_preimage Set.range_restrictPreimage
@@ -638,19 +661,28 @@ theorem InjOn.mono (h : s₁ ⊆ s₂) (ht : InjOn f s₂) : InjOn f s₁ := fun
 theorem injOn_union (h : Disjoint s₁ s₂) :
     InjOn f (s₁ ∪ s₂) ↔ InjOn f s₁ ∧ InjOn f s₂ ∧ ∀ x ∈ s₁, ∀ y ∈ s₂, f x ≠ f y := by
   refine' ⟨fun H => ⟨H.mono <| subset_union_left _ _, H.mono <| subset_union_right _ _, _⟩, _⟩
+  -- ⊢ ∀ (x : α), x ∈ s₁ → ∀ (y : α), y ∈ s₂ → f x ≠ f y
   · intro x hx y hy hxy
+    -- ⊢ False
     obtain rfl : x = y := H (Or.inl hx) (Or.inr hy) hxy
+    -- ⊢ False
     exact h.le_bot ⟨hx, hy⟩
+    -- 🎉 no goals
   · rintro ⟨h₁, h₂, h₁₂⟩
+    -- ⊢ InjOn f (s₁ ∪ s₂)
     rintro x (hx | hx) y (hy | hy) hxy
     exacts [h₁ hx hy hxy, (h₁₂ _ hx _ hy hxy).elim, (h₁₂ _ hy _ hx hxy.symm).elim, h₂ hx hy hxy]
+    -- 🎉 no goals
 #align set.inj_on_union Set.injOn_union
 
 theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
     Set.InjOn f (insert a s) ↔ Set.InjOn f s ∧ f a ∉ f '' s := by
   have : Disjoint s {a} := disjoint_iff_inf_le.mpr fun x ⟨hxs, (hxa : x = a)⟩ => has (hxa ▸ hxs)
+  -- ⊢ InjOn f (insert a s) ↔ InjOn f s ∧ ¬f a ∈ f '' s
   rw [← union_singleton, injOn_union this]
+  -- ⊢ (InjOn f s ∧ InjOn f {a} ∧ ∀ (x : α), x ∈ s → ∀ (y : α), y ∈ {a} → f x ≠ f y …
   simp
+  -- 🎉 no goals
 #align set.inj_on_insert Set.injOn_insert
 
 theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ :=
@@ -686,7 +718,9 @@ lemma injOn_of_subsingleton [Subsingleton α] (f : α → β) (s : Set α) : Inj
 
 theorem _root_.Function.Injective.injOn_range (h : Injective (g ∘ f)) : InjOn g (range f) := by
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ H
+  -- ⊢ f x = f y
   exact congr_arg f (h H)
+  -- 🎉 no goals
 #align function.injective.inj_on_range Function.Injective.injOn_range
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
@@ -699,6 +733,7 @@ alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective
 
 theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) ↔ InjOn f s := by
   rw [h.restrict_eq_codRestrict, injective_codRestrict, injOn_iff_injective]
+  -- 🎉 no goals
 #align set.maps_to.restrict_inj Set.MapsTo.restrict_inj
 
 theorem exists_injOn_iff_injective [Nonempty β] :
@@ -706,7 +741,9 @@ theorem exists_injOn_iff_injective [Nonempty β] :
   ⟨fun ⟨f, hf⟩ => ⟨_, hf.injective⟩,
    fun ⟨f, hf⟩ => by
     lift f to α → β using trivial
+    -- ⊢ ∃ f, InjOn f s
     exact ⟨f, injOn_iff_injective.2 hf⟩⟩
+    -- 🎉 no goals
 #align set.exists_inj_on_iff_injective Set.exists_injOn_iff_injective
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=
@@ -741,18 +778,24 @@ theorem InjOn.cancel_left (hg : t.InjOn g) (hf₁ : s.MapsTo f₁ t) (hf₂ : s.
 lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t ⊆ u) :
     f '' (s ∩ t) = f '' s ∩ f '' t := by
   apply Subset.antisymm (image_inter_subset _ _ _)
+  -- ⊢ f '' s ∩ f '' t ⊆ f '' (s ∩ t)
   intro x ⟨⟨y, ys, hy⟩, ⟨z, zt, hz⟩⟩
+  -- ⊢ x ∈ f '' (s ∩ t)
   have : y = z := by
     apply hf (hs ys) (ht zt)
     rwa [← hz] at hy
   rw [← this] at zt
+  -- ⊢ x ∈ f '' (s ∩ t)
   exact ⟨y, ⟨ys, zt⟩, hy⟩
+  -- 🎉 no goals
 #align set.inj_on.image_inter Set.InjOn.image_inter
 
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
   rw [disjoint_iff_inter_eq_empty] at h ⊢
+  -- ⊢ f '' s ∩ f '' t = ∅
   rw [← hf.image_inter hs ht, h, image_empty]
+  -- 🎉 no goals
 #align disjoint.image Disjoint.image
 
 /-! ### Surjectivity on a set -/
@@ -774,6 +817,7 @@ theorem surjOn_iff_exists_map_subtype :
     fun ⟨t', g, htt', hg, hfg⟩ y hy =>
     let ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
     ⟨x, x.2, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
+                -- 🎉 no goals
 #align set.surj_on_iff_exists_map_subtype Set.surjOn_iff_exists_map_subtype
 
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
@@ -793,6 +837,7 @@ theorem SurjOn.comap_nonempty (h : SurjOn f s t) (ht : t.Nonempty) : s.Nonempty 
 
 theorem SurjOn.congr (h : SurjOn f₁ s t) (H : EqOn f₁ f₂ s) : SurjOn f₂ s t := by
   rwa [SurjOn, ← H.image_eq]
+  -- 🎉 no goals
 #align set.surj_on.congr Set.SurjOn.congr
 
 theorem EqOn.surjOn_iff (h : EqOn f₁ f₂ s) : SurjOn f₁ s t ↔ SurjOn f₂ s t :=
@@ -816,10 +861,15 @@ theorem SurjOn.union_union (h₁ : SurjOn f s₁ t₁) (h₂ : SurjOn f s₂ t�
 theorem SurjOn.inter_inter (h₁ : SurjOn f s₁ t₁) (h₂ : SurjOn f s₂ t₂) (h : InjOn f (s₁ ∪ s₂)) :
     SurjOn f (s₁ ∩ s₂) (t₁ ∩ t₂) := by
   intro y hy
+  -- ⊢ y ∈ f '' (s₁ ∩ s₂)
   rcases h₁ hy.1 with ⟨x₁, hx₁, rfl⟩
+  -- ⊢ f x₁ ∈ f '' (s₁ ∩ s₂)
   rcases h₂ hy.2 with ⟨x₂, hx₂, heq⟩
+  -- ⊢ f x₁ ∈ f '' (s₁ ∩ s₂)
   obtain rfl : x₁ = x₂ := h (Or.inl hx₁) (Or.inr hx₂) heq.symm
+  -- ⊢ f x₁ ∈ f '' (s₁ ∩ s₂)
   exact mem_image_of_mem f ⟨hx₁, hx₂⟩
+  -- 🎉 no goals
 #align set.surj_on.inter_inter Set.SurjOn.inter_inter
 
 theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjOn f (s₁ ∪ s₂)) :
@@ -829,6 +879,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
 
 --porting note: Why does `simp` not call `refl` by itself?
 lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn, subset_rfl]
+                                                  -- 🎉 no goals
 #align set.surj_on_id Set.surjOn_id
 
 theorem SurjOn.comp (hg : SurjOn g t p) (hf : SurjOn f s t) : SurjOn (g ∘ f) s p :=
@@ -842,11 +893,14 @@ lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, Su
 
 lemma SurjOn.comp_left (hf : SurjOn f s t) (g : β → γ) : SurjOn (g ∘ f) s (g '' t) := by
   rw [SurjOn, image_comp g f]; exact image_subset _ hf
+  -- ⊢ g '' t ⊆ g '' (f '' s)
+                               -- 🎉 no goals
 #align set.surj_on.comp_left Set.SurjOn.comp_left
 
 lemma SurjOn.comp_right {s : Set β} {t : Set γ} (hf : Surjective f) (hg : SurjOn g s t) :
     SurjOn (g ∘ f) (f ⁻¹' s) t := by
   rwa [SurjOn, image_comp g f, image_preimage_eq _ hf]
+  -- 🎉 no goals
 #align set.surj_on.comp_right Set.SurjOn.comp_right
 
 lemma surjOn_of_subsingleton' [Subsingleton β] (f : α → β) (h : t.Nonempty → s.Nonempty) :
@@ -860,6 +914,7 @@ lemma surjOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Su
 
 theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := by
   simp [Surjective, SurjOn, subset_def]
+  -- 🎉 no goals
 #align set.surjective_iff_surj_on_univ Set.surjective_iff_surjOn_univ
 
 theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
@@ -877,8 +932,11 @@ theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : 
 
 theorem image_eq_iff_surjOn_mapsTo : f '' s = t ↔ s.SurjOn f t ∧ s.MapsTo f t := by
   refine' ⟨_, fun h => h.1.image_eq_of_mapsTo h.2⟩
+  -- ⊢ f '' s = t → SurjOn f s t ∧ MapsTo f s t
   rintro rfl
+  -- ⊢ SurjOn f s (f '' s) ∧ MapsTo f s (f '' s)
   exact ⟨s.surjOn_image f, s.mapsTo_image f⟩
+  -- 🎉 no goals
 #align set.image_eq_iff_surj_on_maps_to Set.image_eq_iff_surjOn_mapsTo
 
 theorem SurjOn.mapsTo_compl (h : SurjOn f s t) (h' : Injective f) : MapsTo f sᶜ tᶜ :=
@@ -893,8 +951,11 @@ theorem MapsTo.surjOn_compl (h : MapsTo f s t) (h' : Surjective f) : SurjOn f s�
 
 theorem EqOn.cancel_right (hf : s.EqOn (g₁ ∘ f) (g₂ ∘ f)) (hf' : s.SurjOn f t) : t.EqOn g₁ g₂ := by
   intro b hb
+  -- ⊢ g₁ b = g₂ b
   obtain ⟨a, ha, rfl⟩ := hf' hb
+  -- ⊢ g₁ (f a) = g₂ (f a)
   exact hf ha
+  -- 🎉 no goals
 #align set.eq_on.cancel_right Set.EqOn.cancel_right
 
 theorem SurjOn.cancel_right (hf : s.SurjOn f t) (hf' : s.MapsTo f t) :
@@ -935,6 +996,7 @@ theorem bijOn_empty (f : α → β) : BijOn f ∅ ∅ :=
 #align set.bij_on_empty Set.bijOn_empty
 
 @[simp] lemma bijOn_singleton : BijOn f {a} {b} ↔ f a = b := by simp [BijOn, eq_comm]
+                                                                -- 🎉 no goals
 #align set.bij_on_singleton Set.bijOn_singleton
 
 theorem BijOn.inter_mapsTo (h₁ : BijOn f s₁ t₁) (h₂ : MapsTo f s₂ t₂) (h₃ : s₁ ∩ f ⁻¹' t₂ ⊆ s₂) :
@@ -1062,7 +1124,9 @@ theorem LeftInvOn.surjOn (h : LeftInvOn f' f s) (hf : MapsTo f s t) : SurjOn f' 
 theorem LeftInvOn.mapsTo (h : LeftInvOn f' f s) (hf : SurjOn f s t) :
     MapsTo f' t s := fun y hy => by
   let ⟨x, hs, hx⟩ := hf hy
+  -- ⊢ f' y ∈ s
   rwa [← hx, h hs]
+  -- 🎉 no goals
 #align set.left_inv_on.maps_to Set.LeftInvOn.mapsTo
 
 lemma leftInvOn_id (s : Set α) : LeftInvOn id id s := fun _ _ ↦ rfl
@@ -1081,21 +1145,31 @@ theorem LeftInvOn.mono (hf : LeftInvOn f' f s) (ht : s₁ ⊆ s) : LeftInvOn f' 
 
 theorem LeftInvOn.image_inter' (hf : LeftInvOn f' f s) : f '' (s₁ ∩ s) = f' ⁻¹' s₁ ∩ f '' s := by
   apply Subset.antisymm
+  -- ⊢ f '' (s₁ ∩ s) ⊆ f' ⁻¹' s₁ ∩ f '' s
   · rintro _ ⟨x, ⟨h₁, h⟩, rfl⟩
+    -- ⊢ f x ∈ f' ⁻¹' s₁ ∩ f '' s
     exact ⟨by rwa [mem_preimage, hf h], mem_image_of_mem _ h⟩
+    -- 🎉 no goals
   · rintro _ ⟨h₁, ⟨x, h, rfl⟩⟩
+    -- ⊢ f x ∈ f '' (s₁ ∩ s)
     exact mem_image_of_mem _ ⟨by rwa [← hf h], h⟩
+    -- 🎉 no goals
 #align set.left_inv_on.image_inter' Set.LeftInvOn.image_inter'
 
 theorem LeftInvOn.image_inter (hf : LeftInvOn f' f s) :
     f '' (s₁ ∩ s) = f' ⁻¹' (s₁ ∩ s) ∩ f '' s := by
   rw [hf.image_inter']
+  -- ⊢ f' ⁻¹' s₁ ∩ f '' s = f' ⁻¹' (s₁ ∩ s) ∩ f '' s
   refine' Subset.antisymm _ (inter_subset_inter_left _ (preimage_mono <| inter_subset_left _ _))
+  -- ⊢ f' ⁻¹' s₁ ∩ f '' s ⊆ f' ⁻¹' (s₁ ∩ s) ∩ f '' s
   rintro _ ⟨h₁, x, hx, rfl⟩; exact ⟨⟨h₁, by rwa [hf hx]⟩, mem_image_of_mem _ hx⟩
+  -- ⊢ f x ∈ f' ⁻¹' (s₁ ∩ s) ∩ f '' s
+                             -- 🎉 no goals
 #align set.left_inv_on.image_inter Set.LeftInvOn.image_inter
 
 theorem LeftInvOn.image_image (hf : LeftInvOn f' f s) : f' '' (f '' s) = s := by
   rw [Set.image_image, image_congr hf, image_id']
+  -- 🎉 no goals
 #align set.left_inv_on.image_image Set.LeftInvOn.image_image
 
 theorem LeftInvOn.image_image' (hf : LeftInvOn f' f s) (hs : s₁ ⊆ s) : f' '' (f '' s₁) = s₁ :=
@@ -1168,7 +1242,9 @@ theorem eqOn_of_leftInvOn_of_rightInvOn (h₁ : LeftInvOn f₁' f s) (h₂ : Rig
 theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f' s) :
     LeftInvOn f f' t := fun y hy => by
   let ⟨x, hx, heq⟩ := hf hy
+  -- ⊢ f (f' y) = y
   rw [← heq, hf' hx]
+  -- 🎉 no goals
 #align set.surj_on.left_inv_on_of_right_inv_on Set.SurjOn.leftInvOn_of_rightInvOn
 
 /-! ### Two-side inverses -/
@@ -1223,7 +1299,9 @@ noncomputable def invFunOn (f : α → β) (s : Set α) (b : β) : α :=
 
 theorem invFunOn_pos (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s ∧ f (invFunOn f s b) = b := by
   rw [invFunOn, dif_pos h]
+  -- ⊢ Classical.choose h ∈ s ∧ f (Classical.choose h) = b
   exact Classical.choose_spec h
+  -- 🎉 no goals
 #align function.inv_fun_on_pos Function.invFunOn_pos
 
 theorem invFunOn_mem (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s :=
@@ -1236,6 +1314,7 @@ theorem invFunOn_eq (h : ∃ a ∈ s, f a = b) : f (invFunOn f s b) = b :=
 
 theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› :=
   by rw [invFunOn, dif_neg h]
+     -- 🎉 no goals
 #align function.inv_fun_on_neg Function.invFunOn_neg
 
 @[simp]
@@ -1268,7 +1347,9 @@ theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
     (h : s ⊆ (invFunOn f s) '' (f '' s)) : LeftInvOn (invFunOn f s) f s :=
   fun x hx ↦ by
     obtain ⟨-, ⟨x, hx', rfl⟩, rfl⟩ := h hx
+    -- ⊢ invFunOn f s (f (invFunOn f s (f x))) = invFunOn f s (f x)
     rw [invFunOn_apply_eq (f := f) hx']
+    -- 🎉 no goals
 
 theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
     InjOn f s ↔ (invFunOn f s) '' (f '' s) = s :=
@@ -1278,11 +1359,15 @@ theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨x', hx', rfl⟩ he
+  -- ⊢ f x = f x'
   rw [←invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
+  -- 🎉 no goals
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
     (invFunOn f s) '' (f '' s) ⊆ s := by
   rintro _ ⟨_, ⟨x,hx,rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
+  -- ⊢ invFunOn f s (f x) ∈ s
+                                 -- 🎉 no goals
 
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     RightInvOn (invFunOn f s) f t := fun _y hy => invFunOn_eq <| h hy
@@ -1295,8 +1380,11 @@ theorem BijOn.invOn_invFunOn [Nonempty α] (h : BijOn f s t) : InvOn (invFunOn f
 theorem SurjOn.invOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     InvOn (invFunOn f s) f (invFunOn f s '' t) t := by
   refine' ⟨_, h.rightInvOn_invFunOn⟩
+  -- ⊢ LeftInvOn (invFunOn f s) f (invFunOn f s '' t)
   rintro _ ⟨y, hy, rfl⟩
+  -- ⊢ invFunOn f s (f (invFunOn f s y)) = invFunOn f s y
   rw [h.rightInvOn_invFunOn hy]
+  -- 🎉 no goals
 #align set.surj_on.inv_on_inv_fun_on Set.SurjOn.invOn_invFunOn
 
 theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFunOn f s) t s :=
@@ -1305,37 +1393,56 @@ theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFun
 
 theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn f s '' t) t := by
   refine' h.invOn_invFunOn.bijOn _ (mapsTo_image _ _)
+  -- ⊢ MapsTo f (invFunOn f s '' t) t
   rintro _ ⟨y, hy, rfl⟩
+  -- ⊢ f (invFunOn f s y) ∈ t
   rwa [h.rightInvOn_invFunOn hy]
+  -- 🎉 no goals
 #align set.surj_on.bij_on_subset Set.SurjOn.bijOn_subset
 
 theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ (s' : _) (_ : s' ⊆ s), BijOn f s' t := by
   constructor
+  -- ⊢ SurjOn f s t → ∃ s' x, BijOn f s' t
   · rcases eq_empty_or_nonempty t with (rfl | ht)
+    -- ⊢ SurjOn f s ∅ → ∃ s' x, BijOn f s' ∅
     · exact fun _ => ⟨∅, empty_subset _, bijOn_empty f⟩
+      -- 🎉 no goals
     · intro h
+      -- ⊢ ∃ s' x, BijOn f s' t
       haveI : Nonempty α := ⟨Classical.choose (h.comap_nonempty ht)⟩
+      -- ⊢ ∃ s' x, BijOn f s' t
       exact ⟨_, h.mapsTo_invFunOn.image_subset, h.bijOn_subset⟩
+      -- 🎉 no goals
   · rintro ⟨s', hs', hfs'⟩
+    -- ⊢ SurjOn f s t
     exact hfs'.surjOn.mono hs' (Subset.refl _)
+    -- 🎉 no goals
 #align set.surj_on_iff_exists_bij_on_subset Set.surjOn_iff_exists_bijOn_subset
 
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ (range f)ᶜ := by
   ext x
+  -- ⊢ x ∈ Function.invFun f ⁻¹' s ↔ x ∈ f '' s ∪ (range f)ᶜ
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
+  -- ⊢ f a ∈ Function.invFun f ⁻¹' s ↔ f a ∈ f '' s ∪ (range f)ᶜ
   · simp only [mem_preimage, mem_union, mem_compl_iff, mem_range_self, not_true, or_false,
       leftInverse_invFun hf _, hf.mem_set_image]
   · simp only [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
+    -- 🎉 no goals
 #align set.preimage_inv_fun_of_mem Set.preimage_invFun_of_mem
 
 theorem preimage_invFun_of_not_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∉ s) : invFun f ⁻¹' s = f '' s := by
   ext x
+  -- ⊢ x ∈ Function.invFun f ⁻¹' s ↔ x ∈ f '' s
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
+  -- ⊢ f a ∈ Function.invFun f ⁻¹' s ↔ f a ∈ f '' s
   · rw [mem_preimage, leftInverse_invFun hf, hf.mem_set_image]
+    -- 🎉 no goals
   · have : x ∉ f '' s := fun h' => hx (image_subset_range _ _ h')
+    -- ⊢ x ∈ Function.invFun f ⁻¹' s ↔ x ∈ f '' s
     simp only [mem_preimage, invFun_neg hx, h, this]
+    -- 🎉 no goals
 #align set.preimage_inv_fun_of_not_mem Set.preimage_invFun_of_not_mem
 
 lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn g t s :=
@@ -1380,19 +1487,24 @@ variable {δ : α → Sort*} (s : Set α) (f g : ∀ i, δ i)
 @[simp]
 theorem piecewise_empty [∀ i : α, Decidable (i ∈ (∅ : Set α))] : piecewise ∅ f g = g := by
   ext i
+  -- ⊢ piecewise ∅ f g i = g i
   simp [piecewise]
+  -- 🎉 no goals
 #align set.piecewise_empty Set.piecewise_empty
 
 @[simp]
 theorem piecewise_univ [∀ i : α, Decidable (i ∈ (Set.univ : Set α))] :
     piecewise Set.univ f g = f := by
   ext i
+  -- ⊢ piecewise univ f g i = f i
   simp [piecewise]
+  -- 🎉 no goals
 #align set.piecewise_univ Set.piecewise_univ
 
 --@[simp] -- Porting note: simpNF linter complains
 theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
+                                             -- 🎉 no goals
 #align set.piecewise_insert_self Set.piecewise_insert_self
 
 variable [∀ j, Decidable (j ∈ s)]
@@ -1404,11 +1516,19 @@ instance Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
   simp [piecewise]
+  -- ⊢ (fun i => if i = j ∨ i ∈ s then f i else g i) = update (fun i => if i ∈ s th …
   ext i
+  -- ⊢ (if i = j ∨ i ∈ s then f i else g i) = update (fun i => if i ∈ s then f i el …
   by_cases h : i = j
+  -- ⊢ (if i = j ∨ i ∈ s then f i else g i) = update (fun i => if i ∈ s then f i el …
   · rw [h]
+    -- ⊢ (if j = j ∨ j ∈ s then f j else g j) = update (fun i => if i ∈ s then f i el …
     simp
+    -- 🎉 no goals
   · by_cases h' : i ∈ s <;> simp [h, h']
+    -- ⊢ (if i = j ∨ i ∈ s then f i else g i) = update (fun i => if i ∈ s then f i el …
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align set.piecewise_insert Set.piecewise_insert
 
 @[simp]
@@ -1424,10 +1544,15 @@ theorem piecewise_eq_of_not_mem {i : α} (hi : i ∉ s) : s.piecewise f g i = g 
 theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [DecidableEq α]
     (f g : α → β) : piecewise {x} f g = Function.update g x (f x) := by
   ext y
+  -- ⊢ piecewise {x} f g y = update g x (f x) y
   by_cases hy : y = x
+  -- ⊢ piecewise {x} f g y = update g x (f x) y
   · subst y
+    -- ⊢ piecewise {x} f g x = update g x (f x) x
     simp
+    -- 🎉 no goals
   · simp [hy]
+    -- 🎉 no goals
 #align set.piecewise_singleton Set.piecewise_singleton
 
 theorem piecewise_eqOn (f g : α → β) : EqOn (s.piecewise f g) f s := fun _ =>
@@ -1441,6 +1566,8 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ :
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g i) :
     s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
+                                                           -- 🎉 no goals
+                                                                            -- 🎉 no goals
 #align set.piecewise_le Set.piecewise_le
 
 theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
@@ -1453,16 +1580,24 @@ theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s :
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
     (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
+  -- ⊢ ∀ (i : α), i ∈ s → f₁ i ≤ piecewise s g₁ g₂ i
+                         -- ⊢ f₁ i✝ ≤ piecewise s g₁ g₂ i✝
+                         -- ⊢ f₂ i✝ ≤ piecewise s g₁ g₂ i✝
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 #align set.piecewise_le_piecewise Set.piecewise_le_piecewise
 
 @[simp]
 theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g i = s.piecewise f g i := by simp [piecewise, h]
+                                                           -- 🎉 no goals
 #align set.piecewise_insert_of_ne Set.piecewise_insert_of_ne
 
 @[simp]
 theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s.piecewise g f :=
   funext fun x => if hx : x ∈ s then by simp [hx] else by simp [hx]
+                                        -- 🎉 no goals
+                                                          -- 🎉 no goals
 #align set.piecewise_compl Set.piecewise_compl
 
 @[simp]
@@ -1476,6 +1611,7 @@ theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁
     (h₂ : MapsTo f₂ (s₂ ∩ sᶜ) (t₂ ∩ tᶜ)) :
     MapsTo (s.piecewise f₁ f₂) (s.ite s₁ s₂) (t.ite t₁ t₂) := by
   refine' (h₁.congr _).union_union (h₂.congr _)
+  -- ⊢ EqOn f₁ (piecewise s f₁ f₂) (s₁ ∩ s)
   exacts [(piecewise_eqOn s f₁ f₂).symm.mono (inter_subset_right _ _),
     (piecewise_eqOn_compl s f₁ f₂).symm.mono (inter_subset_right _ _)]
 #align set.maps_to.piecewise_ite Set.MapsTo.piecewise_ite
@@ -1483,12 +1619,19 @@ theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁
 theorem eqOn_piecewise {f f' g : α → β} {t} :
     EqOn (s.piecewise f f') g t ↔ EqOn f g (t ∩ s) ∧ EqOn f' g (t ∩ sᶜ) := by
   simp only [EqOn, ← forall_and]
+  -- ⊢ (∀ ⦃x : α⦄, x ∈ t → piecewise s f f' x = g x) ↔ ∀ (x : α), (x ∈ t ∩ s → f x  …
   refine' forall_congr' fun a => _; by_cases a ∈ s <;> simp [*]
+  -- ⊢ a ∈ t → piecewise s f f' a = g a ↔ (a ∈ t ∩ s → f a = g a) ∧ (a ∈ t ∩ sᶜ → f …
+                                    -- ⊢ a ∈ t → piecewise s f f' a = g a ↔ (a ∈ t ∩ s → f a = g a) ∧ (a ∈ t ∩ sᶜ → f …
+                                    -- ⊢ a ∈ t → piecewise s f f' a = g a ↔ (a ∈ t ∩ s → f a = g a) ∧ (a ∈ t ∩ sᶜ → f …
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
 #align set.eq_on_piecewise Set.eqOn_piecewise
 
 theorem EqOn.piecewise_ite' {f f' g : α → β} {t t'} (h : EqOn f g (t ∩ s))
     (h' : EqOn f' g (t' ∩ sᶜ)) : EqOn (s.piecewise f f') g (s.ite t t') := by
   simp [eqOn_piecewise, *]
+  -- 🎉 no goals
 #align set.eq_on.piecewise_ite' Set.EqOn.piecewise_ite'
 
 theorem EqOn.piecewise_ite {f f' g : α → β} {t t'} (h : EqOn f g t) (h' : EqOn f' g t') :
@@ -1498,11 +1641,18 @@ theorem EqOn.piecewise_ite {f f' g : α → β} {t t'} (h : EqOn f g t) (h' : Eq
 
 theorem piecewise_preimage (f g : α → β) (t) : s.piecewise f g ⁻¹' t = s.ite (f ⁻¹' t) (g ⁻¹' t) :=
   ext fun x => by by_cases x ∈ s <;> simp [*, Set.ite]
+                  -- ⊢ x ∈ piecewise s f g ⁻¹' t ↔ x ∈ Set.ite s (f ⁻¹' t) (g ⁻¹' t)
+                  -- ⊢ x ∈ piecewise s f g ⁻¹' t ↔ x ∈ Set.ite s (f ⁻¹' t) (g ⁻¹' t)
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
 #align set.piecewise_preimage Set.piecewise_preimage
 
 theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α} :
     h x (s.piecewise f g x) = s.piecewise (fun x => h x (f x)) (fun x => h x (g x)) x := by
   by_cases hx : x ∈ s <;> simp [hx]
+  -- ⊢ h x (piecewise s f g x) = piecewise s (fun x => h x (f x)) (fun x => h x (g  …
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align set.apply_piecewise Set.apply_piecewise
 
 theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
@@ -1510,6 +1660,9 @@ theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h :
     h x (s.piecewise f g x) (s.piecewise f' g' x) =
       s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x :=
   by by_cases hx : x ∈ s <;> simp [hx]
+     -- ⊢ h x (piecewise s f g x) (piecewise s f' g' x) = piecewise s (fun x => h x (f …
+                             -- 🎉 no goals
+                             -- 🎉 no goals
 #align set.apply_piecewise₂ Set.apply_piecewise₂
 
 theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :
@@ -1526,14 +1679,31 @@ theorem piecewise_op₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : �
 @[simp]
 theorem piecewise_same : s.piecewise f f = f := by
   ext x
+  -- ⊢ piecewise s f f x = f x
   by_cases hx : x ∈ s <;> simp [hx]
+  -- ⊢ piecewise s f f x = f x
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align set.piecewise_same Set.piecewise_same
 
 theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪ g '' sᶜ := by
   ext y; constructor
+  -- ⊢ y ∈ range (piecewise s f g) ↔ y ∈ f '' s ∪ g '' sᶜ
+         -- ⊢ y ∈ range (piecewise s f g) → y ∈ f '' s ∪ g '' sᶜ
   · rintro ⟨x, rfl⟩
+    -- ⊢ piecewise s f g x ∈ f '' s ∪ g '' sᶜ
     by_cases h : x ∈ s <;> [left; right] <;> use x <;> simp [h]
+    -- ⊢ piecewise s f g x ∈ f '' s
+                                             -- ⊢ x ∈ s ∧ f x = piecewise s f g x
+                                             -- ⊢ x ∈ sᶜ ∧ g x = piecewise s f g x
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
   · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;> use x <;> simp_all
+    -- ⊢ f x ∈ range (piecewise s f g)
+                                             -- ⊢ piecewise s f g x = f x
+                                             -- ⊢ piecewise s f g x = g x
+                                                       -- 🎉 no goals
+                                                       -- 🎉 no goals
 #align set.range_piecewise Set.range_piecewise
 
 
@@ -1543,13 +1713,19 @@ theorem injective_piecewise_iff {f g : α → β} :
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine' and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => _)
+  -- ⊢ piecewise s f g x ≠ piecewise s f g y ↔ f x ≠ g y
   rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_not_mem s f g hy]
+  -- 🎉 no goals
 #align set.injective_piecewise_iff Set.injective_piecewise_iff
 
 theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
     (hg : g ∈ pi t t') : s.piecewise f g ∈ pi t t' := by
   intro i ht
+  -- ⊢ piecewise s f g i ∈ t' i
   by_cases hs : i ∈ s <;> simp [hf i ht, hg i ht, hs]
+  -- ⊢ piecewise s f g i ∈ t' i
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align set.piecewise_mem_pi Set.piecewise_mem_pi
 
 @[simp]
@@ -1562,9 +1738,11 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]
+  -- 🎉 no goals
 
 theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
+                                                                                    -- 🎉 no goals
 #align set.univ_pi_piecewise Set.univ_pi_piecewise_univ
 
 end Set
@@ -1606,6 +1784,7 @@ theorem StrictAntiOn.comp_strictMonoOn [Preorder α] [Preorder β] [Preorder γ]
 @[simp]
 theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set α} :
     StrictMono (s.restrict f) ↔ StrictMonoOn f s := by simp [Set.restrict, StrictMono, StrictMonoOn]
+                                                       -- 🎉 no goals
 #align strict_mono_restrict strictMono_restrict
 
 alias ⟨_root_.StrictMono.of_restrict, _root_.StrictMonoOn.restrict⟩ := strictMono_restrict
@@ -1656,28 +1835,39 @@ theorem mapsTo_range (h : Semiconj f fa fb) : MapsTo fb (range f) (range f) := f
 
 theorem surjOn_image (h : Semiconj f fa fb) (ha : SurjOn fa s t) : SurjOn fb (f '' s) (f '' t) := by
   rintro y ⟨x, hxt, rfl⟩
+  -- ⊢ f x ∈ fb '' (f '' s)
   rcases ha hxt with ⟨x, hxs, rfl⟩
+  -- ⊢ f (fa x) ∈ fb '' (f '' s)
   rw [h x]
+  -- ⊢ fb (f x) ∈ fb '' (f '' s)
   exact mem_image_of_mem _ (mem_image_of_mem _ hxs)
+  -- 🎉 no goals
 #align function.semiconj.surj_on_image Function.Semiconj.surjOn_image
 
 theorem surjOn_range (h : Semiconj f fa fb) (ha : Surjective fa) :
     SurjOn fb (range f) (range f) := by
   rw [← image_univ]
+  -- ⊢ SurjOn fb (f '' univ) (f '' univ)
   exact h.surjOn_image (ha.surjOn univ)
+  -- 🎉 no goals
 #align function.semiconj.surj_on_range Function.Semiconj.surjOn_range
 
 theorem injOn_image (h : Semiconj f fa fb) (ha : InjOn fa s) (hf : InjOn f (fa '' s)) :
     InjOn fb (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ H
+  -- ⊢ f x = f y
   simp only [← h.eq] at H
+  -- ⊢ f x = f y
   exact congr_arg f (ha hx hy <| hf (mem_image_of_mem fa hx) (mem_image_of_mem fa hy) H)
+  -- 🎉 no goals
 #align function.semiconj.inj_on_image Function.Semiconj.injOn_image
 
 theorem injOn_range (h : Semiconj f fa fb) (ha : Injective fa) (hf : InjOn f (range fa)) :
     InjOn fb (range f) := by
   rw [← image_univ] at *
+  -- ⊢ InjOn fb (f '' univ)
   exact h.injOn_image (ha.injOn univ) hf
+  -- 🎉 no goals
 #align function.semiconj.inj_on_range Function.Semiconj.injOn_range
 
 theorem bijOn_image (h : Semiconj f fa fb) (ha : BijOn fa s t) (hf : InjOn f t) :
@@ -1689,19 +1879,26 @@ theorem bijOn_image (h : Semiconj f fa fb) (ha : BijOn fa s t) (hf : InjOn f t) 
 theorem bijOn_range (h : Semiconj f fa fb) (ha : Bijective fa) (hf : Injective f) :
     BijOn fb (range f) (range f) := by
   rw [← image_univ]
+  -- ⊢ BijOn fb (f '' univ) (f '' univ)
   exact h.bijOn_image (bijective_iff_bijOn_univ.1 ha) (hf.injOn univ)
+  -- 🎉 no goals
 #align function.semiconj.bij_on_range Function.Semiconj.bijOn_range
 
 theorem mapsTo_preimage (h : Semiconj f fa fb) {s t : Set β} (hb : MapsTo fb s t) :
     MapsTo fa (f ⁻¹' s) (f ⁻¹' t) := fun x hx => by simp only [mem_preimage, h x, hb hx]
+                                                    -- 🎉 no goals
 #align function.semiconj.maps_to_preimage Function.Semiconj.mapsTo_preimage
 
 theorem injOn_preimage (h : Semiconj f fa fb) {s : Set β} (hb : InjOn fb s)
     (hf : InjOn f (f ⁻¹' s)) : InjOn fa (f ⁻¹' s) := by
   intro x hx y hy H
+  -- ⊢ x = y
   have := congr_arg f H
+  -- ⊢ x = y
   rw [h.eq, h.eq] at this
+  -- ⊢ x = y
   exact hf hx hy (hb hx hy this)
+  -- 🎉 no goals
 #align function.semiconj.inj_on_preimage Function.Semiconj.injOn_preimage
 
 end Semiconj
@@ -1726,12 +1923,19 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [L
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
+  -- ⊢ ψ x ≤ ψ y
   rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  -- ⊢ ψ x ≤ ψ y
   · exact ψxy
+    -- 🎉 no goals
   · have := hφ (ψts ys) (ψts xs) ψyx
+    -- ⊢ ψ x ≤ ψ y
     rw [φψs.eq ys, φψs.eq xs] at this
+    -- ⊢ ψ x ≤ ψ y
     induction le_antisymm l this
+    -- ⊢ ψ x ≤ ψ x
     exact le_refl _
+    -- 🎉 no goals
 #align function.monotone_on_of_right_inv_on_of_maps_to Function.monotoneOn_of_rightInvOn_of_mapsTo
 
 theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
@@ -1750,13 +1954,18 @@ variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g g₁ g₂
 protected lemma MapsTo.extendDomain (h : MapsTo g s t) :
     MapsTo (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
   rintro _ ⟨a, ha, rfl⟩; exact ⟨_, h ha, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
+  -- ⊢ ↑(extendDomain g f) ((Subtype.val ∘ ↑f) a) ∈ Subtype.val ∘ ↑f '' t
+                         -- 🎉 no goals
 #align set.maps_to.extend_domain Set.MapsTo.extendDomain
 
 protected lemma SurjOn.extendDomain (h : SurjOn g s t) :
     SurjOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
   rintro _ ⟨a, ha, rfl⟩
+  -- ⊢ (Subtype.val ∘ ↑f) a ∈ ↑(extendDomain g f) '' (Subtype.val ∘ ↑f '' s)
   obtain ⟨b, hb, rfl⟩ := h ha
+  -- ⊢ (Subtype.val ∘ ↑f) (↑g b) ∈ ↑(extendDomain g f) '' (Subtype.val ∘ ↑f '' s)
   exact ⟨_, ⟨_, hb, rfl⟩, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
+  -- 🎉 no goals
 #align set.surj_on.extend_domain Set.SurjOn.extendDomain
 
 protected lemma BijOn.extendDomain (h : BijOn g s t) :
@@ -1767,11 +1976,15 @@ protected lemma BijOn.extendDomain (h : BijOn g s t) :
 protected lemma LeftInvOn.extendDomain (h : LeftInvOn g₁ g₂ s) :
     LeftInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) := by
   rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
+  -- ⊢ ↑(extendDomain g₁ f) (↑(extendDomain g₂ f) ((Subtype.val ∘ ↑f) a)) = (Subtyp …
+                         -- 🎉 no goals
 #align set.left_inv_on.extend_domain Set.LeftInvOn.extendDomain
 
 protected lemma RightInvOn.extendDomain (h : RightInvOn g₁ g₂ t) :
     RightInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' t) := by
   rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
+  -- ⊢ ↑(extendDomain g₂ f) (↑(extendDomain g₁ f) ((Subtype.val ∘ ↑f) a)) = (Subtyp …
+                         -- 🎉 no goals
 #align set.right_inv_on.extend_domain Set.RightInvOn.extendDomain
 
 protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
@@ -1790,6 +2003,7 @@ lemma bijOn' (h₁ : MapsTo e s t) (h₂ : MapsTo e.symm t s) : BijOn e s t :=
 
 protected lemma bijOn (h : ∀ a, e a ∈ t ↔ a ∈ s) : BijOn e s t :=
   e.bijOn' (fun a ↦ (h _).2) $ fun b hb ↦ (h _).1 $ by rwa [apply_symm_apply]
+                                                       -- 🎉 no goals
 #align equiv.bij_on Equiv.bijOn
 
 lemma invOn : InvOn e e.symm t s :=
@@ -1815,8 +2029,15 @@ variable [DecidableEq α] {a b : α}
 lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
   (swap a b).bijOn $ fun x ↦ by
     obtain rfl | hxa := eq_or_ne x a <;>
+    -- ⊢ ↑(swap x b) x ∈ s ↔ x ∈ s
     obtain rfl | hxb := eq_or_ne x b <;>
+    -- ⊢ ↑(swap x x) x ∈ s ↔ x ∈ s
+    -- ⊢ ↑(swap a x) x ∈ s ↔ x ∈ s
     simp [*, swap_apply_of_ne_of_ne]
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align equiv.bij_on_swap Equiv.bijOn_swap
 
 end Equiv

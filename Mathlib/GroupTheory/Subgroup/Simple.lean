@@ -67,9 +67,13 @@ theorem isSimpleGroup_of_surjective {H : Type*} [Group H] [IsSimpleGroup G] [Non
     (f : G →* H) (hf : Function.Surjective f) : IsSimpleGroup H :=
   ⟨fun H iH => by
     refine' (iH.comap f).eq_bot_or_eq_top.imp (fun h => _) fun h => _
+    -- ⊢ H = ⊥
     · rw [← map_bot f, ← h, map_comap_eq_self_of_surjective hf]
+      -- 🎉 no goals
     · rw [← comap_top f] at h
+      -- ⊢ H = ⊤
       exact comap_injective hf h⟩
+      -- 🎉 no goals
 #align is_simple_group.is_simple_group_of_surjective IsSimpleGroup.isSimpleGroup_of_surjective
 #align is_simple_add_group.is_simple_add_group_of_surjective IsSimpleAddGroup.isSimpleAddGroup_of_surjective
 

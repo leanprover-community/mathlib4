@@ -34,16 +34,23 @@ protected def orderedSemiring [OrderedSemiring α] [Zero β] [One β] [Add β] [
   { hf.orderedAddCommMonoid f zero add nsmul,
     hf.semiring f zero one add mul nsmul npow nat_cast with
     zero_le_one := show f 0 ≤ f 1 by simp only [zero, one, zero_le_one],
+                                     -- 🎉 no goals
     mul_le_mul_of_nonneg_left := fun a b c h hc =>
       show f (c * a) ≤ f (c * b) by
         rw [mul, mul]
+        -- ⊢ f c * f a ≤ f c * f b
         refine' mul_le_mul_of_nonneg_left h _
+        -- ⊢ 0 ≤ f c
         rwa [← zero],
+        -- 🎉 no goals
     mul_le_mul_of_nonneg_right := fun a b c h hc =>
       show f (a * c) ≤ f (b * c) by
         rw [mul, mul]
+        -- ⊢ f a * f c ≤ f b * f c
         refine' mul_le_mul_of_nonneg_right h _
+        -- ⊢ 0 ≤ f c
         rwa [← zero] }
+        -- 🎉 no goals
 #align function.injective.ordered_semiring Function.Injective.orderedSemiring
 
 -- See note [reducible non-instances]
@@ -73,7 +80,11 @@ protected def orderedRing [OrderedRing α] [Zero β] [One β] [Add β] [Mul β] 
     mul_nonneg := fun a b ha hb =>
       show f 0 ≤ f (a * b) by
         rw [zero, mul]
+        -- ⊢ 0 ≤ f a * f b
         apply mul_nonneg <;> rwa [← zero] }
+        -- ⊢ 0 ≤ f a
+                             -- 🎉 no goals
+                             -- 🎉 no goals
 #align function.injective.ordered_ring Function.Injective.orderedRing
 
 -- See note [reducible non-instances]
@@ -103,9 +114,11 @@ protected def strictOrderedSemiring [StrictOrderedSemiring α] [Zero β] [One β
     mul_lt_mul_of_pos_left := fun a b c h hc =>
       show f (c * a) < f (c * b) by
         simpa only [mul, zero] using mul_lt_mul_of_pos_left ‹f a < f b› (by rwa [← zero]),
+        -- 🎉 no goals
     mul_lt_mul_of_pos_right := fun a b c h hc =>
       show f (a * c) < f (b * c) by
         simpa only [mul, zero] using mul_lt_mul_of_pos_right ‹f a < f b› (by rwa [← zero]) }
+        -- 🎉 no goals
 #align function.injective.strict_ordered_semiring Function.Injective.strictOrderedSemiring
 
 -- See note [reducible non-instances]
@@ -135,7 +148,11 @@ protected def strictOrderedRing [StrictOrderedRing α] [Zero β] [One β] [Add �
     mul_pos := fun a b a0 b0 =>
       show f 0 < f (a * b) by
         rw [zero, mul]
+        -- ⊢ 0 < f a * f b
         apply mul_pos <;> rwa [← zero] }
+        -- ⊢ 0 < f a
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align function.injective.strict_ordered_ring Function.Injective.strictOrderedRing
 
 -- See note [reducible non-instances]

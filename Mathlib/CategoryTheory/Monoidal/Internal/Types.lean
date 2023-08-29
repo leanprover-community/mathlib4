@@ -29,7 +29,10 @@ instance monMonoid (A : Mon_ (Type u)) : Monoid A.X where
   one := A.one PUnit.unit
   mul x y := A.mul (x, y)
   one_mul x := by convert congr_fun A.one_mul (PUnit.unit, x)
+                  -- 🎉 no goals
   mul_one x := by convert congr_fun A.mul_one (x, PUnit.unit)
+                        -- 🎉 no goals
+                  -- 🎉 no goals
   mul_assoc x y z := by convert congr_fun A.mul_assoc ((x, y), z)
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon.Mon_monoid MonTypeEquivalenceMon.monMonoid
@@ -53,8 +56,16 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
       one := fun _ => 1
       mul := fun p => p.1 * p.2
       one_mul := by ext ⟨_, _⟩; dsimp; simp
+                    -- ⊢ (MonoidalCategory.tensorHom (fun x => 1) (𝟙 ↑A) ≫ fun p => p.fst * p.snd) (f …
+                                -- ⊢ 1 * snd✝ = snd✝
+                                       -- 🎉 no goals
       mul_one := by ext ⟨_, _⟩; dsimp; simp
+                    -- ⊢ ((MonoidalCategory.tensorHom (𝟙 ↑A) fun x => 1) ≫ fun p => p.fst * p.snd) (f …
+                                -- ⊢ fst✝ * 1 = fst✝
+                                       -- 🎉 no goals
       mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc] }
+                      -- ⊢ (MonoidalCategory.tensorHom (fun p => p.fst * p.snd) (𝟙 ↑A) ≫ fun p => p.fst …
+                                       -- 🎉 no goals
   map f := { hom := f }
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon.inverse MonTypeEquivalenceMon.inverse
@@ -75,6 +86,7 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
         { hom := { hom := 𝟙 _ }
           inv := { hom := 𝟙 _ } })
       (by aesop_cat)
+          -- 🎉 no goals
   counitIso :=
     NatIso.ofComponents
       (fun A =>
@@ -87,6 +99,7 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
               map_one' := rfl
               map_mul' := fun x y => rfl } })
       (by aesop_cat)
+          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon monTypeEquivalenceMon
 
@@ -96,6 +109,7 @@ is naturally compatible with the forgetful functors to `Type u`.
 noncomputable def monTypeEquivalenceMonForget :
     MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon_.forget (Type u) :=
   NatIso.ofComponents (fun A => Iso.refl _) (by aesop_cat)
+                                                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon_forget monTypeEquivalenceMonForget
 
@@ -109,6 +123,7 @@ namespace CommMonTypeEquivalenceCommMon
 instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
   { MonTypeEquivalenceMon.monMonoid A.toMon_ with
     mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
+                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon.CommMon_comm_monoid CommMonTypeEquivalenceCommMon.commMonCommMonoid
 
@@ -127,7 +142,9 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon_ (Type u) where
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ CommMonCat MonCat).obj A) with
       mul_comm := by
         ext ⟨x : A, y : A⟩
+        -- ⊢ ((β_ (Mon_.mk src✝.X src✝.one src✝.mul).X (Mon_.mk src✝.X src✝.one src✝.mul) …
         exact CommMonoid.mul_comm y x }
+        -- 🎉 no goals
   map f := MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f)
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon.inverse CommMonTypeEquivalenceCommMon.inverse
@@ -148,6 +165,7 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
         { hom := { hom := 𝟙 _ }
           inv := { hom := 𝟙 _ } })
       (by aesop_cat)
+          -- 🎉 no goals
   counitIso :=
     NatIso.ofComponents
       (fun A =>
@@ -160,6 +178,7 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
               map_one' := rfl
               map_mul' := fun x y => rfl } })
       (by aesop_cat)
+          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon commMonTypeEquivalenceCommMon
 
@@ -170,6 +189,7 @@ noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
       CommMon_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
   NatIso.ofComponents (fun A => Iso.refl _) (by aesop_cat)
+                                                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon_forget commMonTypeEquivalenceCommMonForget
 

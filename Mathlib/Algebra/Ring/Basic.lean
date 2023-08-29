@@ -112,6 +112,7 @@ variable [Group α] [HasDistribNeg α]
 @[simp]
 theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
   rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, mul_left_inv]
+  -- 🎉 no goals
 #align inv_neg' inv_neg'
 
 end Group
@@ -131,8 +132,11 @@ attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
     ∃ y : α, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c := by
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
+  -- ⊢ ∃ y, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c
   refine' ⟨b - x, _, by simp, by rw [this]⟩
+  -- ⊢ (b - x) * (b - x) - b * (b - x) + c = 0
   rw [this, sub_add, ← sub_mul, sub_self]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic
 
@@ -140,10 +144,12 @@ end NonUnitalCommRing
 
 theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
+                                        -- 🎉 no goals
 #align succ_ne_self succ_ne_self
 
 theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
   one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [←sub_eq_add_neg, h])))
+                                                       -- 🎉 no goals
 #align pred_ne_self pred_ne_self
 
 section NoZeroDivisors
@@ -154,6 +160,7 @@ lemma IsLeftCancelMulZero.to_noZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
     NoZeroDivisors α :=
 { eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
     by_cases hx : x = 0
+    -- ⊢ x = 0 ∨ y = 0
     { left
       exact hx }
     { right
@@ -166,6 +173,7 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [Ring α] [IsRightCancelMulZero α]
     NoZeroDivisors α :=
 { eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
     by_cases hy : y = 0
+    -- ⊢ x = 0 ∨ y = 0
     { right
       exact hy }
     { left
@@ -178,10 +186,14 @@ instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDi
     IsCancelMulZero α :=
 { mul_left_cancel_of_ne_zero := fun ha h ↦ by
     rw [← sub_eq_zero, ← mul_sub] at h
+    -- ⊢ b✝ = c✝
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
+    -- 🎉 no goals
   mul_right_cancel_of_ne_zero := fun hb h ↦ by
     rw [← sub_eq_zero, ← sub_mul] at h
+    -- ⊢ a✝ = c✝
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+    -- 🎉 no goals
 #align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_isCancelMulZero
 
 lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :

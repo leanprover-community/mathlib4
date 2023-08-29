@@ -42,20 +42,29 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     ∀ᵐ x ∂μ, f x = 0 := by
   -- record topological properties of `M`
   have := I.locallyCompactSpace
+  -- ⊢ ∀ᵐ (x : M) ∂μ, f x = 0
   have := ChartedSpace.locallyCompactSpace H M
+  -- ⊢ ∀ᵐ (x : M) ∂μ, f x = 0
   have := I.secondCountableTopology
+  -- ⊢ ∀ᵐ (x : M) ∂μ, f x = 0
   have := ChartedSpace.secondCountable_of_sigma_compact H M
+  -- ⊢ ∀ᵐ (x : M) ∂μ, f x = 0
   have := ManifoldWithCorners.metrizableSpace I M
+  -- ⊢ ∀ᵐ (x : M) ∂μ, f x = 0
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
+  -- ⊢ ∀ᵐ (x : M) ∂μ, f x = 0
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
+  -- ⊢ 0 = ∫ (x : M) in s, f x ∂μ
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ IsCompact (cthickening δ s) := hs.exists_isCompact_cthickening
+  -- ⊢ 0 = ∫ (x : M) in s, f x ∂μ
   -- choose a sequence of smooth functions `gₙ` equal to `1` on `s` and vanishing outside of the
   -- `uₙ`-neighborhood of `s`, where `uₙ` tends to zero. Then each integral `∫ gₙ f` vanishes,
   -- and by dominated convergence these integrals converge to `∫ x in s, f`.
   obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 δ)
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' δpos
   let v : ℕ → Set M := fun n ↦ thickening (u n) s
+  -- ⊢ 0 = ∫ (x : M) in s, f x ∂μ
   obtain ⟨K, K_compact, vK⟩ : ∃ K, IsCompact K ∧ ∀ n, v n ⊆ K :=
     ⟨_, hδ, fun n ↦ thickening_subset_cthickening_of_le (u_pos n).2.le _⟩
   have : ∀ n, ∃ (g : M → ℝ), support g = v n ∧ Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1
@@ -65,6 +74,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
       (self_subset_thickening (u_pos n).1 s) with ⟨g, g_smooth, g_range, g_supp, hg⟩
     exact ⟨g, g_supp, g_smooth, g_range, fun x hx ↦ (hg x).1 hx⟩
   choose g g_supp g_diff g_range hg using this
+  -- ⊢ 0 = ∫ (x : M) in s, f x ∂μ
   -- main fact: the integral of `∫ gₙ f` tends to `∫ x in s, f`.
   have L : Tendsto (fun n ↦ ∫ x, g n x • f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) := by
     rw [← integral_indicator hs.measurableSet]
@@ -109,6 +119,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     apply HasCompactSupport.of_support_subset_isCompact K_compact
     simpa [g_supp] using vK n
   simpa [this] using L
+  -- 🎉 no goals
 
 /-- If two locally integrable functions on a finite-dimensional real manifold have the same integral
 when multiplied by any smooth compactly supported function, then they coincide almost everywhere. -/
@@ -125,7 +136,9 @@ theorem ae_eq_of_integral_smooth_smul_eq
     · exact hf.integrable_smul_left_of_hasCompactSupport g_diff.continuous g_supp
     · exact hf'.integrable_smul_left_of_hasCompactSupport g_diff.continuous g_supp
   filter_upwards [this] with x hx
+  -- ⊢ f x = f' x
   simpa [sub_eq_zero] using hx
+  -- 🎉 no goals
 
 end Manifold
 

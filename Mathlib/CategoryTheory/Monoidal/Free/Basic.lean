@@ -140,17 +140,25 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
     Quotient.map₂ Hom.comp
       (by
         intro f f' hf g g' hg
+        -- ⊢ Hom.comp f g ≈ Hom.comp f' g'
         exact comp hf hg)
+        -- 🎉 no goals
       f g
   id_comp := by
     rintro X Y ⟨f⟩
+    -- ⊢ 𝟙 X ≫ Quot.mk Setoid.r f = Quot.mk Setoid.r f
     exact Quotient.sound (id_comp f)
+    -- 🎉 no goals
   comp_id := by
     rintro X Y ⟨f⟩
+    -- ⊢ Quot.mk Setoid.r f ≫ 𝟙 Y = Quot.mk Setoid.r f
     exact Quotient.sound (comp_id f)
+    -- 🎉 no goals
   assoc := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩ ⟨h⟩
+    -- ⊢ (Quot.mk Setoid.r f ≫ Quot.mk Setoid.r g) ≫ Quot.mk Setoid.r h = Quot.mk Set …
     exact Quotient.sound (assoc f g h)
+    -- 🎉 no goals
 #align category_theory.free_monoidal_category.category_free_monoidal_category CategoryTheory.FreeMonoidalCategory.categoryFreeMonoidalCategory
 
 instance : MonoidalCategory (F C) where
@@ -158,7 +166,9 @@ instance : MonoidalCategory (F C) where
   tensorHom := @fun X₁ Y₁ X₂ Y₂ =>
     Quotient.map₂ Hom.tensor <| by
       intro _ _ h _ _ h'
+      -- ⊢ Hom.tensor a✝¹ a✝ ≈ Hom.tensor b✝¹ b✝
       exact HomEquiv.tensor h h'
+      -- 🎉 no goals
   whiskerLeft := fun X _ _ f =>
     Quotient.map (fun f' => Hom.tensor (Hom.id X) f')
       (fun _ _ h => HomEquiv.tensor (HomEquiv.refl (Hom.id X)) h) f
@@ -167,7 +177,9 @@ instance : MonoidalCategory (F C) where
       (fun _ _ h => HomEquiv.tensor h (HomEquiv.refl (Hom.id Y))) f
   tensorHom_def := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩
+    -- ⊢ (fun X₁ Y₁ X₂ Y₂ => Quotient.map₂ Hom.tensor (_ : ∀ ⦃a b : X₁ ⟶ᵐ Y₁⦄, a ≈ b  …
     apply Quotient.sound
+    -- ⊢ Hom.tensor f g ≈ Hom.comp ((fun f' => Hom.tensor f' (Hom.id Y)) f) ((fun f'  …
     calc Hom.tensor f g
       _ ≈ Hom.tensor (Hom.comp f (Hom.id X)) (Hom.comp (Hom.id Y) g) := by
         apply HomEquiv.tensor (HomEquiv.comp_id f).symm (HomEquiv.id_comp g).symm
@@ -175,12 +187,20 @@ instance : MonoidalCategory (F C) where
         apply HomEquiv.tensor_comp
   whiskerLeft_id := by
     rintro X Y
+    -- ⊢ (fun X x x_1 f => Quotient.map (fun f' => Hom.tensor (Hom.id X) f') (_ : ∀ ( …
     apply Quotient.sound
+    -- ⊢ (fun f' => Hom.tensor (Hom.id X) f') (Hom.id Y) ≈ Hom.id ((fun X Y => tensor …
     apply HomEquiv.tensor_id
+    -- 🎉 no goals
   id_whiskerRight := by
     intro X Y
+    -- ⊢ (fun {X₁ X₂} f Y => Quotient.map (fun f' => Hom.tensor f' (Hom.id Y)) (_ : ∀ …
     apply Quotient.sound
+    -- ⊢ (fun X₁ Y₁ X₂ Y₂ => Quotient.map₂ Hom.tensor (_ : ∀ ⦃a b : X₁ ⟶ᵐ Y₁⦄, a ≈ b  …
+    -- ⊢ (fun f' => Hom.tensor f' (Hom.id Y)) (Hom.id X) ≈ Hom.id ((fun X Y => tensor …
+    -- 🎉 no goals
     apply HomEquiv.tensor_id
+    -- 🎉 no goals
   tensor_id X Y := Quotient.sound tensor_id
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
@@ -190,16 +210,22 @@ instance : MonoidalCategory (F C) where
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
   associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
+    -- ⊢ (fun X₁ Y₁ X₂ Y₂ => Quotient.map₂ Hom.tensor (_ : ∀ ⦃a b : X₁ ⟶ᵐ Y₁⦄, a ≈ b  …
     exact Quotient.sound (associator_naturality _ _ _)
+    -- 🎉 no goals
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
   leftUnitor_naturality := @fun X Y => by
     rintro ⟨f⟩
+    -- ⊢ (fun X₁ Y₁ X₂ Y₂ => Quotient.map₂ Hom.tensor (_ : ∀ ⦃a b : X₁ ⟶ᵐ Y₁⦄, a ≈ b  …
     exact Quotient.sound (l_naturality _)
+    -- 🎉 no goals
   rightUnitor X :=
     ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
   rightUnitor_naturality := @fun X Y => by
     rintro ⟨f⟩
+    -- ⊢ (fun X₁ Y₁ X₂ Y₂ => Quotient.map₂ Hom.tensor (_ : ∀ ⦃a b : X₁ ⟶ᵐ Y₁⦄, a ≈ b  …
     exact Quotient.sound (ρ_naturality _)
+    -- 🎉 no goals
   pentagon W X Y Z := Quotient.sound pentagon
   triangle X Y := Quotient.sound triangle
 
@@ -296,6 +322,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h
+    -- ⊢ projectMapAux f✝ f = projectMapAux f✝ g
     induction h with
     | refl => rfl
     | symm _ _ _ hfg' => exact hfg'.symm
@@ -339,16 +366,25 @@ def project : MonoidalFunctor (F C) D where
   -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
+                 -- ⊢ { obj := projectObj f, map := fun {X Y} => projectMap f X Y }.map (Quot.mk S …
+                                       -- 🎉 no goals
   ε := 𝟙 _
   μ X Y := 𝟙 _
   μ_natural := @fun _ _ _ _ f g => by
     induction' f using Quotient.recOn
+    -- ⊢ ((Functor.mk { obj := projectObj f, map := fun {X Y} => projectMap f X Y }). …
     · induction' g using Quotient.recOn
+      -- ⊢ ((Functor.mk { obj := projectObj f, map := fun {X Y} => projectMap f X Y }). …
       · dsimp
+        -- ⊢ (projectMap f x✝³ x✝² (Quotient.mk (setoidHom x✝³ x✝²) a✝¹) ⊗ projectMap f x …
         simp
+        -- ⊢ projectMap f x✝³ x✝² (Quotient.mk (setoidHom x✝³ x✝²) a✝¹) ⊗ projectMap f x✝ …
         rfl
+        -- 🎉 no goals
       · rfl
+        -- 🎉 no goals
     · rfl
+      -- 🎉 no goals
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 
 end Functor

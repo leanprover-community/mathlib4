@@ -38,9 +38,17 @@ vector bundle `f *ᵖ E` is a smooth vector bundle. -/
 instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB' where
   smoothOn_coordChangeL := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩; skip
+    -- ⊢ SmoothOn IB' 𝓘(𝕜, F →L[𝕜] F) (fun b => ↑(Trivialization.coordChangeL 𝕜 (Triv …
+                                            -- ⊢ SmoothOn IB' 𝓘(𝕜, F →L[𝕜] F) (fun b => ↑(Trivialization.coordChangeL 𝕜 (Triv …
     refine' ((smoothOn_coordChangeL _ e e').comp f.smooth.smoothOn fun b hb => hb).congr _
+    -- ⊢ ∀ (y : B'), y ∈ ↑f ⁻¹' (e.baseSet ∩ e'.baseSet) → ↑(Trivialization.coordChan …
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
+    -- ⊢ ↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullback e f) (Trivializatio …
+                                                  -- ⊢ ↑↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullback e f) (Trivializati …
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
+    -- ⊢ ↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullback e f) (Trivializatio …
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
+    -- ⊢ (↑(Trivialization.pullback e' f) (↑(LocalHomeomorph.symm (Trivialization.pul …
     exacts [rfl, hb]
+    -- 🎉 no goals
 #align smooth_vector_bundle.pullback SmoothVectorBundle.pullback

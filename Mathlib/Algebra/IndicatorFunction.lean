@@ -60,7 +60,9 @@ theorem piecewise_eq_mulIndicator [DecidablePred (· ∈ s)] : s.piecewise f 1 =
 theorem mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ s)] :
     mulIndicator s f a = if a ∈ s then f a else 1 := by
   unfold mulIndicator
+  -- ⊢ (if a ∈ s then f a else 1) = if a ∈ s then f a else 1
   congr
+  -- 🎉 no goals
 #align set.mul_indicator_apply Set.mulIndicator_apply
 #align set.indicator_apply Set.indicator_apply
 
@@ -80,8 +82,11 @@ theorem mulIndicator_of_not_mem (h : a ∉ s) (f : α → M) : mulIndicator s f 
 theorem mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
     mulIndicator s f a = 1 ∨ mulIndicator s f a = f a := by
   by_cases h : a ∈ s
+  -- ⊢ mulIndicator s f a = 1 ∨ mulIndicator s f a = f a
   · exact Or.inr (mulIndicator_of_mem h f)
+    -- 🎉 no goals
   · exact Or.inl (mulIndicator_of_not_mem h f)
+    -- 🎉 no goals
 #align set.mul_indicator_eq_one_or_self Set.mulIndicator_eq_one_or_self
 #align set.indicator_eq_zero_or_self Set.indicator_eq_zero_or_self
 
@@ -89,12 +94,14 @@ theorem mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
 theorem mulIndicator_apply_eq_self : s.mulIndicator f a = f a ↔ a ∉ s → f a = 1 :=
   letI := Classical.dec (a ∈ s)
   ite_eq_left_iff.trans (by rw [@eq_comm _ (f a)])
+                            -- 🎉 no goals
 #align set.mul_indicator_apply_eq_self Set.mulIndicator_apply_eq_self
 #align set.indicator_apply_eq_self Set.indicator_apply_eq_self
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_eq_self : s.mulIndicator f = f ↔ mulSupport f ⊆ s := by
   simp only [funext_iff, subset_def, mem_mulSupport, mulIndicator_apply_eq_self, not_imp_comm]
+  -- 🎉 no goals
 #align set.mul_indicator_eq_self Set.mulIndicator_eq_self
 #align set.indicator_eq_self Set.indicator_eq_self
 
@@ -102,7 +109,9 @@ theorem mulIndicator_eq_self : s.mulIndicator f = f ↔ mulSupport f ⊆ s := by
 theorem mulIndicator_eq_self_of_superset (h1 : s.mulIndicator f = f) (h2 : s ⊆ t) :
     t.mulIndicator f = f := by
   rw [mulIndicator_eq_self] at h1 ⊢
+  -- ⊢ mulSupport f ⊆ t
   exact Subset.trans h1 h2
+  -- 🎉 no goals
 #align set.mul_indicator_eq_self_of_superset Set.mulIndicator_eq_self_of_superset
 #align set.indicator_eq_self_of_superset Set.indicator_eq_self_of_superset
 
@@ -129,6 +138,7 @@ theorem mulIndicator_eq_one' : mulIndicator s f = 1 ↔ Disjoint (mulSupport f) 
 @[to_additive]
 theorem mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ s ∩ mulSupport f := by
   simp only [Ne.def, mulIndicator_apply_eq_one, not_imp, mem_inter_iff, mem_mulSupport]
+  -- 🎉 no goals
 #align set.mul_indicator_apply_ne_one Set.mulIndicator_apply_ne_one
 #align set.indicator_apply_ne_zero Set.indicator_apply_ne_zero
 
@@ -136,6 +146,7 @@ theorem mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ 
 theorem mulSupport_mulIndicator :
     Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f :=
   ext fun x => by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
+                  -- 🎉 no goals
 #align set.mul_support_mul_indicator Set.mulSupport_mulIndicator
 #align set.support_indicator Set.support_indicator
 
@@ -178,9 +189,13 @@ theorem mulIndicator_range_comp {ι : Sort*} (f : ι → α) (g : α → M) :
 theorem mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s g :=
   funext fun x => by
     simp only [mulIndicator]
+    -- ⊢ (if x ∈ s then f x else 1) = if x ∈ s then g x else 1
     split_ifs with h_1
+    -- ⊢ f x = g x
     · exact h h_1
+      -- 🎉 no goals
     rfl
+    -- 🎉 no goals
 #align set.mul_indicator_congr Set.mulIndicator_congr
 #align set.indicator_congr Set.indicator_congr
 
@@ -207,6 +222,7 @@ variable (M)
 @[to_additive (attr := simp)]
 theorem mulIndicator_one (s : Set α) : (mulIndicator s fun _ => (1 : M)) = fun _ => (1 : M) :=
   mulIndicator_eq_one.2 <| by simp only [mulSupport_one, empty_disjoint]
+                              -- 🎉 no goals
 #align set.mul_indicator_one Set.mulIndicator_one
 #align set.indicator_zero Set.indicator_zero
 
@@ -223,7 +239,14 @@ theorem mulIndicator_mulIndicator (s t : Set α) (f : α → M) :
     mulIndicator s (mulIndicator t f) = mulIndicator (s ∩ t) f :=
   funext fun x => by
     simp only [mulIndicator]
+    -- ⊢ (if x ∈ s then if x ∈ t then f x else 1 else 1) = if x ∈ s ∩ t then f x else 1
     split_ifs <;> simp_all (config := { contextual := true })
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align set.mul_indicator_mul_indicator Set.mulIndicator_mulIndicator
 #align set.indicator_indicator Set.indicator_indicator
 
@@ -231,6 +254,7 @@ theorem mulIndicator_mulIndicator (s t : Set α) (f : α → M) :
 theorem mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
     mulIndicator (s ∩ mulSupport f) f = mulIndicator s f := by
   rw [← mulIndicator_mulIndicator, mulIndicator_mulSupport]
+  -- 🎉 no goals
 #align set.mul_indicator_inter_mul_support Set.mulIndicator_inter_mulSupport
 #align set.indicator_inter_support Set.indicator_inter_support
 
@@ -238,7 +262,9 @@ theorem mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
 theorem comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [DecidablePred (· ∈ s)] :
     h (s.mulIndicator f x) = s.piecewise (h ∘ f) (const α (h 1)) x := by
   letI := Classical.decPred (· ∈ s)
+  -- ⊢ h (mulIndicator s f x) = piecewise s (h ∘ f) (const α (h 1)) x
   convert s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
+  -- 🎉 no goals
 #align set.comp_mul_indicator Set.comp_mulIndicator
 #align set.comp_indicator Set.comp_indicator
 
@@ -246,7 +272,12 @@ theorem comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [D
 theorem mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x : β} :
     mulIndicator (f ⁻¹' s) (g ∘ f) x = mulIndicator s g (f x) := by
   simp only [mulIndicator, Function.comp]
+  -- ⊢ (if x ∈ f ⁻¹' s then g (f x) else 1) = if f x ∈ s then g (f x) else 1
   split_ifs with h h' h'' <;> first | rfl | contradiction
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align set.mul_indicator_comp_right Set.mulIndicator_comp_right
 #align set.indicator_comp_right Set.indicator_comp_right
 
@@ -254,6 +285,7 @@ theorem mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x :
 theorem mulIndicator_image {s : Set α} {f : β → M} {g : α → β} (hg : Injective g) {x : α} :
     mulIndicator (g '' s) f (g x) = mulIndicator s (f ∘ g) x := by
   rw [← mulIndicator_comp_right, preimage_image_eq _ hg]
+  -- 🎉 no goals
 #align set.mul_indicator_image Set.mulIndicator_image
 #align set.indicator_image Set.indicator_image
 
@@ -261,8 +293,13 @@ theorem mulIndicator_image {s : Set α} {f : β → M} {g : α → β} (hg : Inj
 theorem mulIndicator_comp_of_one {g : M → N} (hg : g 1 = 1) :
     mulIndicator s (g ∘ f) = g ∘ mulIndicator s f := by
   funext
+  -- ⊢ mulIndicator s (g ∘ f) x✝ = (g ∘ mulIndicator s f) x✝
   simp only [mulIndicator]
+  -- ⊢ (if x✝ ∈ s then (g ∘ f) x✝ else 1) = (g ∘ mulIndicator s f) x✝
   split_ifs <;> simp [*]
+  -- ⊢ (g ∘ f) x✝ = (g ∘ mulIndicator s f) x✝
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align set.mul_indicator_comp_of_one Set.mulIndicator_comp_of_one
 #align set.indicator_comp_of_zero Set.indicator_comp_of_zero
 
@@ -295,7 +332,12 @@ theorem mulIndicator_const_preimage_eq_union (U : Set α) (s : Set M) (a : M) [D
     [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ => a) ⁻¹' s =
       (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
   rw [mulIndicator_preimage, preimage_one, preimage_const]
+  -- ⊢ Set.ite U (if a ∈ s then univ else ∅) (if 1 ∈ s then univ else ∅) = (if a ∈  …
   split_ifs <;> simp [← compl_eq_univ_diff]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align set.mul_indicator_const_preimage_eq_union Set.mulIndicator_const_preimage_eq_union
 #align set.indicator_const_preimage_eq_union Set.indicator_const_preimage_eq_union
 
@@ -317,6 +359,7 @@ theorem indicator_one_preimage [Zero M] (U : Set α) (s : Set M) :
 theorem mulIndicator_preimage_of_not_mem (s : Set α) (f : α → M) {t : Set M} (ht : (1 : M) ∉ t) :
     mulIndicator s f ⁻¹' t = f ⁻¹' t ∩ s := by
   simp [mulIndicator_preimage, Pi.one_def, Set.preimage_const_of_not_mem ht]
+  -- 🎉 no goals
 #align set.mul_indicator_preimage_of_not_mem Set.mulIndicator_preimage_of_not_mem
 #align set.indicator_preimage_of_not_mem Set.indicator_preimage_of_not_mem
 
@@ -327,14 +370,29 @@ theorem mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
   -- simp [mulIndicator, ite_eq_iff, exists_or, eq_univ_iff_forall, and_comm, or_comm,
   -- @eq_comm _ r 1]
   simp only [mem_range, mulIndicator, ne_eq, mem_image]
+  -- ⊢ (∃ y, (if y ∈ s then f y else 1) = r) ↔ r = 1 ∧ ¬s = univ ∨ ∃ x, x ∈ s ∧ f x …
   rw [eq_univ_iff_forall, not_forall]
+  -- ⊢ (∃ y, (if y ∈ s then f y else 1) = r) ↔ (r = 1 ∧ ∃ x, ¬x ∈ s) ∨ ∃ x, x ∈ s ∧ …
   refine ⟨?_, ?_⟩
+  -- ⊢ (∃ y, (if y ∈ s then f y else 1) = r) → (r = 1 ∧ ∃ x, ¬x ∈ s) ∨ ∃ x, x ∈ s ∧ …
   · rintro ⟨y, hy⟩
+    -- ⊢ (r = 1 ∧ ∃ x, ¬x ∈ s) ∨ ∃ x, x ∈ s ∧ f x = r
     split_ifs at hy with hys
+    -- ⊢ (r = 1 ∧ ∃ x, ¬x ∈ s) ∨ ∃ x, x ∈ s ∧ f x = r
     · tauto
+      -- 🎉 no goals
     · left
+      -- ⊢ r = 1 ∧ ∃ x, ¬x ∈ s
       tauto
+      -- 🎉 no goals
   · rintro (⟨hr, ⟨x, hx⟩⟩ | ⟨x, ⟨hx, hxs⟩⟩) <;> use x <;> split_ifs <;> tauto
+    -- ⊢ ∃ y, (if y ∈ s then f y else 1) = r
+                                                -- ⊢ (if x ∈ s then f x else 1) = r
+                                                -- ⊢ (if x ∈ s then f x else 1) = r
+                                                          -- ⊢ 1 = r
+                                                          -- ⊢ f x = r
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align set.mem_range_mul_indicator Set.mem_range_mulIndicator
 #align set.mem_range_indicator Set.mem_range_indicator
 
@@ -342,8 +400,11 @@ theorem mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
 theorem mulIndicator_rel_mulIndicator {r : M → M → Prop} (h1 : r 1 1) (ha : a ∈ s → r (f a) (g a)) :
     r (mulIndicator s f a) (mulIndicator s g a) := by
   simp only [mulIndicator]
+  -- ⊢ r (if a ∈ s then f a else 1) (if a ∈ s then g a else 1)
   split_ifs with has
+  -- ⊢ r (f a) (g a)
   exacts [ha has, h1]
+  -- 🎉 no goals
 #align set.mul_indicator_rel_mul_indicator Set.mulIndicator_rel_mulIndicator
 #align set.indicator_rel_indicator Set.indicator_rel_indicator
 
@@ -357,6 +418,13 @@ variable [MulOneClass M] {s t : Set α} {f g : α → M} {a : α}
 theorem mulIndicator_union_mul_inter_apply (f : α → M) (s t : Set α) (a : α) :
     mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a = mulIndicator s f a * mulIndicator t f a :=
   by by_cases hs : a ∈ s <;> by_cases ht : a ∈ t <;> simp [*]
+     -- ⊢ mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a = mulIndicator s f a * m …
+                             -- ⊢ mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a = mulIndicator s f a * m …
+                             -- ⊢ mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a = mulIndicator s f a * m …
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 #align set.mul_indicator_union_mul_inter_apply Set.mulIndicator_union_mul_inter_apply
 #align set.indicator_union_add_inter_apply Set.indicator_union_add_inter_apply
 
@@ -371,6 +439,7 @@ theorem mulIndicator_union_mul_inter (f : α → M) (s t : Set α) :
 theorem mulIndicator_union_of_not_mem_inter (h : a ∉ s ∩ t) (f : α → M) :
     mulIndicator (s ∪ t) f a = mulIndicator s f a * mulIndicator t f a := by
   rw [← mulIndicator_union_mul_inter_apply f s t, mulIndicator_of_not_mem h, mul_one]
+  -- 🎉 no goals
 #align set.mul_indicator_union_of_not_mem_inter Set.mulIndicator_union_of_not_mem_inter
 #align set.indicator_union_of_not_mem_inter Set.indicator_union_of_not_mem_inter
 
@@ -390,10 +459,15 @@ theorem mulIndicator_symmDiff (s t : Set α) (f : α → M) :
 theorem mulIndicator_mul (s : Set α) (f g : α → M) :
     (mulIndicator s fun a => f a * g a) = fun a => mulIndicator s f a * mulIndicator s g a := by
   funext
+  -- ⊢ mulIndicator s (fun a => f a * g a) x✝ = mulIndicator s f x✝ * mulIndicator  …
   simp only [mulIndicator]
+  -- ⊢ (if x✝ ∈ s then f x✝ * g x✝ else 1) = (if x✝ ∈ s then f x✝ else 1) * if x✝ ∈ …
   split_ifs
+  -- ⊢ f x✝ * g x✝ = f x✝ * g x✝
   · rfl
+    -- 🎉 no goals
   rw [mul_one]
+  -- 🎉 no goals
 #align set.mul_indicator_mul Set.mulIndicator_mul
 #align set.indicator_add Set.indicator_add
 
@@ -408,6 +482,8 @@ theorem mulIndicator_mul' (s : Set α) (f g : α → M) :
 theorem mulIndicator_compl_mul_self_apply (s : Set α) (f : α → M) (a : α) :
     mulIndicator sᶜ f a * mulIndicator s f a = f a :=
   by_cases (fun ha : a ∈ s => by simp [ha]) fun ha => by simp [ha]
+                                 -- 🎉 no goals
+                                                         -- 🎉 no goals
 #align set.mul_indicator_compl_mul_self_apply Set.mulIndicator_compl_mul_self_apply
 #align set.indicator_compl_add_self_apply Set.indicator_compl_add_self_apply
 
@@ -422,6 +498,8 @@ theorem mulIndicator_compl_mul_self (s : Set α) (f : α → M) :
 theorem mulIndicator_self_mul_compl_apply (s : Set α) (f : α → M) (a : α) :
     mulIndicator s f a * mulIndicator sᶜ f a = f a :=
   by_cases (fun ha : a ∈ s => by simp [ha]) fun ha => by simp [ha]
+                                 -- 🎉 no goals
+                                                         -- 🎉 no goals
 #align set.mul_indicator_self_mul_compl_apply Set.mulIndicator_self_mul_compl_apply
 #align set.indicator_self_add_compl_apply Set.indicator_self_add_compl_apply
 
@@ -436,8 +514,11 @@ theorem mulIndicator_self_mul_compl (s : Set α) (f : α → M) :
 theorem mulIndicator_mul_eq_left {f g : α → M} (h : Disjoint (mulSupport f) (mulSupport g)) :
     (mulSupport f).mulIndicator (f * g) = f := by
   refine' (mulIndicator_congr fun x hx => _).trans mulIndicator_mulSupport
+  -- ⊢ (f * g) x = f x
   have : g x = 1 := nmem_mulSupport.1 (disjoint_left.1 h hx)
+  -- ⊢ (f * g) x = f x
   rw [Pi.mul_apply, this, mul_one]
+  -- 🎉 no goals
 #align set.mul_indicator_mul_eq_left Set.mulIndicator_mul_eq_left
 #align set.indicator_add_eq_left Set.indicator_add_eq_left
 
@@ -445,8 +526,11 @@ theorem mulIndicator_mul_eq_left {f g : α → M} (h : Disjoint (mulSupport f) (
 theorem mulIndicator_mul_eq_right {f g : α → M} (h : Disjoint (mulSupport f) (mulSupport g)) :
     (mulSupport g).mulIndicator (f * g) = g := by
   refine' (mulIndicator_congr fun x hx => _).trans mulIndicator_mulSupport
+  -- ⊢ (f * g) x = g x
   have : f x = 1 := nmem_mulSupport.1 (disjoint_right.1 h hx)
+  -- ⊢ (f * g) x = g x
   rw [Pi.mul_apply, this, one_mul]
+  -- 🎉 no goals
 #align set.mul_indicator_mul_eq_right Set.mulIndicator_mul_eq_right
 #align set.indicator_add_eq_right Set.indicator_add_eq_right
 
@@ -454,7 +538,9 @@ theorem mulIndicator_mul_eq_right {f g : α → M} (h : Disjoint (mulSupport f) 
 theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α → M) :
     s.mulIndicator f * sᶜ.mulIndicator g = s.piecewise f g := by
   ext x
+  -- ⊢ (mulIndicator s f * mulIndicator sᶜ g) x = piecewise s f g x
   by_cases h : x ∈ s
+  -- ⊢ (mulIndicator s f * mulIndicator sᶜ g) x = piecewise s f g x
   · rw [piecewise_eq_of_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_mem h,
       Set.mulIndicator_of_not_mem (Set.not_mem_compl_iff.2 h), mul_one]
   · rw [piecewise_eq_of_not_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_not_mem h,
@@ -481,8 +567,11 @@ variable {A : Type*} [AddMonoid A] [Monoid M] [DistribMulAction M A]
 theorem indicator_smul_apply (s : Set α) (r : α → M) (f : α → A) (x : α) :
     indicator s (fun x => r x • f x) x = r x • indicator s f x := by
   dsimp only [indicator]
+  -- ⊢ (if x ∈ s then r x • f x else 0) = r x • if x ∈ s then f x else 0
   split_ifs
+  -- ⊢ r x • f x = r x • f x
   exacts [rfl, (smul_zero (r x)).symm]
+  -- 🎉 no goals
 #align set.indicator_smul_apply Set.indicator_smul_apply
 
 theorem indicator_smul (s : Set α) (r : α → M) (f : α → A) :
@@ -509,8 +598,11 @@ variable {A : Type*} [Zero A] [Zero M] [SMulWithZero M A]
 theorem indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → A) (x : α) :
     indicator s (fun x => r x • f x) x = indicator s r x • f x := by
   dsimp only [indicator]
+  -- ⊢ (if x ∈ s then r x • f x else 0) = (if x ∈ s then r x else 0) • f x
   split_ifs
+  -- ⊢ r x • f x = r x • f x
   exacts [rfl, (zero_smul _ (f x)).symm]
+  -- 🎉 no goals
 
 theorem indicator_smul_left (s : Set α) (r : α → M) (f : α → A) :
     (indicator s fun x : α => r x • f x) = fun x : α => indicator s r x • f x :=
@@ -567,6 +659,7 @@ theorem mulIndicator_compl (s : Set α) (f : α → G) :
 @[to_additive indicator_compl]
 theorem mulIndicator_compl' (s : Set α) (f : α → G) :
     mulIndicator sᶜ f = f / mulIndicator s f := by rw [div_eq_mul_inv, mulIndicator_compl]
+                                                   -- 🎉 no goals
 #align set.indicator_compl Set.indicator_compl
 
 @[to_additive indicator_diff']
@@ -576,6 +669,7 @@ theorem mulIndicator_diff (h : s ⊆ t) (f : α → G) :
     rw [Pi.mul_def, ← mulIndicator_union_of_disjoint, diff_union_self,
       union_eq_self_of_subset_right h]
     exact disjoint_sdiff_self_left
+    -- 🎉 no goals
 #align set.mul_indicator_diff Set.mulIndicator_diff
 #align set.indicator_diff' Set.indicator_diff'
 
@@ -583,6 +677,7 @@ theorem mulIndicator_diff (h : s ⊆ t) (f : α → G) :
 theorem mulIndicator_diff' (h : s ⊆ t) (f : α → G) :
     mulIndicator (t \ s) f = mulIndicator t f / mulIndicator s f := by
   rw [mulIndicator_diff h, div_eq_mul_inv]
+  -- 🎉 no goals
 #align set.indicator_diff Set.indicator_diff
 
 @[to_additive]
@@ -590,6 +685,13 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
     (s t : Set α) (f : α → G) (x : α):
     g (mulIndicator (s ∆ t) f x) = g (mulIndicator s f x / mulIndicator t f x) := by
   by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
+  -- ⊢ g (mulIndicator (s ∆ t) f x) = g (mulIndicator s f x / mulIndicator t f x)
+                          -- ⊢ g (mulIndicator (s ∆ t) f x) = g (mulIndicator s f x / mulIndicator t f x)
+                          -- ⊢ g (mulIndicator (s ∆ t) f x) = g (mulIndicator s f x / mulIndicator t f x)
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
+                                                  -- 🎉 no goals
 
 end Group
 
@@ -612,16 +714,25 @@ theorem prod_mulIndicator_subset_of_eq_one [One N] (f : α → N) (g : α → N 
     (h : s ⊆ t) (hg : ∀ a, g a 1 = 1) :
     (∏ i in s, g i (f i)) = ∏ i in t, g i (mulIndicator (↑s) f i) := by
   rw [← Finset.prod_subset h _]
+  -- ⊢ ∏ i in s, g i (f i) = ∏ x in s, g x (mulIndicator (↑s) f x)
   · apply Finset.prod_congr rfl
+    -- ⊢ ∀ (x : α), x ∈ s → g x (f x) = g x (mulIndicator (↑s) f x)
     intro i hi
+    -- ⊢ g i (f i) = g i (mulIndicator (↑s) f i)
     congr
+    -- ⊢ f i = mulIndicator (↑s) f i
     symm
+    -- ⊢ mulIndicator (↑s) f i = f i
     -- Porting note: This did not use to need the implicit argument
     exact mulIndicator_of_mem (α := α) hi f
+    -- 🎉 no goals
   · refine' fun i _ hn => _
+    -- ⊢ g i (mulIndicator (↑s) f i) = 1
     convert hg i
+    -- ⊢ mulIndicator (↑s) f i = 1
     -- Porting note: This did not use to need the implicit argument
     exact mulIndicator_of_not_mem (α := α) hn f
+    -- 🎉 no goals
 #align set.prod_mul_indicator_subset_of_eq_one Set.prod_mulIndicator_subset_of_eq_one
 #align set.sum_indicator_subset_of_eq_zero Set.sum_indicator_subset_of_eq_zero
 
@@ -650,7 +761,9 @@ theorem _root_.Finset.prod_mulIndicator_eq_prod_filter (s : Finset ι) (f : ι �
     (t : ι → Set α) (g : ι → α) [DecidablePred fun i => g i ∈ t i] :
     (∏ i in s, mulIndicator (t i) (f i) (g i)) = ∏ i in s.filter fun i => g i ∈ t i, f i (g i) := by
   refine' (Finset.prod_filter_mul_prod_filter_not s (fun i => g i ∈ t i) _).symm.trans _
+  -- ⊢ (∏ x in Finset.filter (fun i => g i ∈ t i) s, mulIndicator (t x) (f x) (g x) …
   refine' Eq.trans _ (mul_one _)
+  -- ⊢ (∏ x in Finset.filter (fun i => g i ∈ t i) s, mulIndicator (t x) (f x) (g x) …
   exact
     congr_arg₂ (· * ·)
       (Finset.prod_congr rfl fun x hx => mulIndicator_of_mem (Finset.mem_filter.1 hx).2 _)
@@ -693,6 +806,7 @@ theorem mulIndicator_finset_biUnion_apply (I : Finset ι) (s : ι → Set α) {f
     (h : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → Disjoint (s i) (s j)) (x : α) :
     mulIndicator (⋃ i ∈ I, s i) f x = ∏ i in I, mulIndicator (s i) f x := by
   rw [Set.mulIndicator_finset_biUnion I s h]
+  -- 🎉 no goals
 #align set.mul_indicator_finset_bUnion_apply Set.mulIndicator_finset_biUnion_apply
 #align set.indicator_finset_bUnion_apply Set.indicator_finset_biUnion_apply
 
@@ -705,33 +819,52 @@ variable [MulZeroClass M] {s t : Set α} {f g : α → M} {a : α}
 theorem indicator_mul (s : Set α) (f g : α → M) :
     (indicator s fun a => f a * g a) = fun a => indicator s f a * indicator s g a := by
   funext
+  -- ⊢ indicator s (fun a => f a * g a) x✝ = indicator s f x✝ * indicator s g x✝
   simp only [indicator]
+  -- ⊢ (if x✝ ∈ s then f x✝ * g x✝ else 0) = (if x✝ ∈ s then f x✝ else 0) * if x✝ ∈ …
   split_ifs
+  -- ⊢ f x✝ * g x✝ = f x✝ * g x✝
   · rfl
+    -- 🎉 no goals
   rw [mul_zero]
+  -- 🎉 no goals
 #align set.indicator_mul Set.indicator_mul
 
 theorem indicator_mul_left (s : Set α) (f g : α → M) :
     indicator s (fun a => f a * g a) a = indicator s f a * g a := by
   simp only [indicator]
+  -- ⊢ (if a ∈ s then f a * g a else 0) = (if a ∈ s then f a else 0) * g a
   split_ifs
+  -- ⊢ f a * g a = f a * g a
   · rfl
+    -- 🎉 no goals
   rw [zero_mul]
+  -- 🎉 no goals
 #align set.indicator_mul_left Set.indicator_mul_left
 
 theorem indicator_mul_right (s : Set α) (f g : α → M) :
     indicator s (fun a => f a * g a) a = f a * indicator s g a := by
   simp only [indicator]
+  -- ⊢ (if a ∈ s then f a * g a else 0) = f a * if a ∈ s then g a else 0
   split_ifs
+  -- ⊢ f a * g a = f a * g a
   · rfl
+    -- 🎉 no goals
   rw [mul_zero]
+  -- 🎉 no goals
 #align set.indicator_mul_right Set.indicator_mul_right
 
 theorem inter_indicator_mul {t1 t2 : Set α} (f g : α → M) (x : α) :
     (t1 ∩ t2).indicator (fun x => f x * g x) x = t1.indicator f x * t2.indicator g x := by
   rw [← Set.indicator_indicator]
+  -- ⊢ indicator t1 (indicator t2 fun x => f x * g x) x = indicator t1 f x * indica …
   simp_rw [indicator]
+  -- ⊢ (if x ∈ t1 then if x ∈ t2 then f x * g x else 0 else 0) = (if x ∈ t1 then f  …
   split_ifs <;> simp
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align set.inter_indicator_mul Set.inter_indicator_mul
 
 end MulZeroClass
@@ -744,7 +877,9 @@ theorem inter_indicator_one {s t : Set α} :
     (s ∩ t).indicator (1 : α → M) = s.indicator 1 * t.indicator 1 :=
   funext fun _ => by
     simp only [← inter_indicator_mul, Pi.mul_apply, Pi.one_apply, one_mul]
+    -- ⊢ indicator (s ∩ t) 1 x✝ = indicator (s ∩ t) (fun x => 1) x✝
     congr
+    -- 🎉 no goals
 #align set.inter_indicator_one Set.inter_indicator_one
 
 -- Porting note: Think the following note was due to writing (1 : _ → M) instead of (1 : α × β → M)
@@ -752,22 +887,39 @@ theorem inter_indicator_one {s t : Set α} :
 theorem indicator_prod_one {s : Set α} {t : Set β} {x : α} {y : β} :
     (s ×ˢ t).indicator (1 : α × β → M) (x, y) = s.indicator 1 x * t.indicator 1 y := by
   simp_rw [indicator, mem_prod_eq]
+  -- ⊢ (if x ∈ s ∧ y ∈ t then OfNat.ofNat 1 (x, y) else 0) = (if x ∈ s then OfNat.o …
   split_ifs with h₀ <;> simp only [Pi.one_apply, mul_one, mul_zero] <;> tauto
+                        -- 🎉 no goals
+                        -- ⊢ 1 = 0
+                        -- ⊢ 1 = 0
+                        -- ⊢ 1 = 0
+                        -- ⊢ 0 = 1
+                        -- 🎉 no goals
+                        -- 🎉 no goals
+                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align set.indicator_prod_one Set.indicator_prod_one
 
 variable (M) [Nontrivial M]
 
 theorem indicator_eq_zero_iff_not_mem {U : Set α} {x : α} : indicator U 1 x = (0 : M) ↔ x ∉ U := by
   classical simp [indicator_apply, imp_false]
+  -- 🎉 no goals
 #align set.indicator_eq_zero_iff_not_mem Set.indicator_eq_zero_iff_not_mem
 
 theorem indicator_eq_one_iff_mem {U : Set α} {x : α} : indicator U 1 x = (1 : M) ↔ x ∈ U := by
   classical simp [indicator_apply, imp_false]
+  -- 🎉 no goals
 #align set.indicator_eq_one_iff_mem Set.indicator_eq_one_iff_mem
 
 theorem indicator_one_inj {U V : Set α} (h : indicator U (1 : α → M) = indicator V 1) : U = V := by
   ext
+  -- ⊢ x✝ ∈ U ↔ x✝ ∈ V
   simp_rw [← indicator_eq_one_iff_mem M, h]
+  -- 🎉 no goals
 #align set.indicator_one_inj Set.indicator_one_inj
 
 end MulZeroOneClass
@@ -784,8 +936,11 @@ variable [LE M]
 theorem mulIndicator_apply_le' (hfg : a ∈ s → f a ≤ y) (hg : a ∉ s → 1 ≤ y) :
     mulIndicator s f a ≤ y := by
   by_cases ha : a ∈ s
+  -- ⊢ mulIndicator s f a ≤ y
   · simpa [ha] using hfg ha
+    -- 🎉 no goals
   · simpa [ha] using hg ha
+    -- 🎉 no goals
 #align set.mul_indicator_apply_le' Set.mulIndicator_apply_le'
 #align set.indicator_apply_le' Set.indicator_apply_le'
 
@@ -866,14 +1021,23 @@ theorem mulIndicator_iUnion_apply {ι : Sort*} {M : Type*} [CompleteLattice M] [
     (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
     mulIndicator (⋃ i, s i) f x = ⨆ i, mulIndicator (s i) f x := by
   by_cases hx : x ∈ ⋃ i, s i
+  -- ⊢ mulIndicator (⋃ (i : ι), s i) f x = ⨆ (i : ι), mulIndicator (s i) f x
   · rw [mulIndicator_of_mem hx]
+    -- ⊢ f x = ⨆ (i : ι), mulIndicator (s i) f x
     rw [mem_iUnion] at hx
+    -- ⊢ f x = ⨆ (i : ι), mulIndicator (s i) f x
     refine' le_antisymm _ (iSup_le fun i => mulIndicator_le_self' (fun x _ => h1 ▸ bot_le) x)
+    -- ⊢ f x ≤ ⨆ (i : ι), mulIndicator (s i) f x
     rcases hx with ⟨i, hi⟩
+    -- ⊢ f x ≤ ⨆ (i : ι), mulIndicator (s i) f x
     exact le_iSup_of_le i (ge_of_eq <| mulIndicator_of_mem hi _)
+    -- 🎉 no goals
   · rw [mulIndicator_of_not_mem hx]
+    -- ⊢ 1 = ⨆ (i : ι), mulIndicator (s i) f x
     simp only [mem_iUnion, not_exists] at hx
+    -- ⊢ 1 = ⨆ (i : ι), mulIndicator (s i) f x
     simp [hx, ← h1]
+    -- 🎉 no goals
 #align set.mul_indicator_Union_apply Set.mulIndicator_iUnion_apply
 #align set.indicator_Union_apply Set.indicator_iUnion_apply
 
@@ -881,15 +1045,25 @@ theorem mulIndicator_iUnion_apply {ι : Sort*} {M : Type*} [CompleteLattice M] [
     [CompleteLattice M] [One M] (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
     mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
   by_cases hx : x ∈ ⋂ i, s i
+  -- ⊢ mulIndicator (⋂ (i : ι), s i) f x = ⨅ (i : ι), mulIndicator (s i) f x
   · rw [mulIndicator_of_mem hx]
+    -- ⊢ f x = ⨅ (i : ι), mulIndicator (s i) f x
     rw [mem_iInter] at hx
+    -- ⊢ f x = ⨅ (i : ι), mulIndicator (s i) f x
     refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
+    -- ⊢ f x ≤ ⨅ (i : ι), mulIndicator (s i) f x
     exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+    -- 🎉 no goals
   · rw [mulIndicator_of_not_mem hx]
+    -- ⊢ 1 = ⨅ (i : ι), mulIndicator (s i) f x
     simp only [mem_iInter, not_exists, not_forall] at hx
+    -- ⊢ 1 = ⨅ (i : ι), mulIndicator (s i) f x
     rcases hx with ⟨j, hj⟩
+    -- ⊢ 1 = ⨅ (i : ι), mulIndicator (s i) f x
     refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
+    -- ⊢ ⨅ (i : ι), mulIndicator (s i) f x ≤ 1
     simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
+    -- 🎉 no goals
 
 end Order
 
@@ -922,6 +1096,7 @@ end CanonicallyOrderedMonoid
 theorem indicator_le_indicator_nonneg {β} [LinearOrder β] [Zero β] (s : Set α) (f : α → β) :
     s.indicator f ≤ { x | 0 ≤ f x }.indicator f := by
   intro x
+  -- ⊢ indicator s f x ≤ indicator {x | 0 ≤ f x} f x
   classical
     simp_rw [indicator_apply]
     split_ifs with h_1 h_2 h_3
@@ -942,5 +1117,6 @@ end Set
 theorem MonoidHom.map_mulIndicator {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
   simp [Set.mulIndicator_comp_of_one]
+  -- 🎉 no goals
 #align monoid_hom.map_mul_indicator MonoidHom.map_mulIndicator
 #align add_monoid_hom.map_indicator AddMonoidHom.map_indicator

@@ -94,21 +94,33 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
   rw [show v.valuation (x : K) = _ * _ by rfl]
+  -- ⊢ ↑(valuationOfNeZeroToFun v x) = ↑↑(intValuation v).toMonoidWithZeroHom (Subm …
   rw [Units.val_inv_eq_inv_val]
+  -- ⊢ ↑(valuationOfNeZeroToFun v x) = ↑↑(intValuation v).toMonoidWithZeroHom (Subm …
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
+  -- ⊢ ↑(valuationOfNeZeroToFun v x) = (if (Submonoid.LocalizationMap.sec (IsLocali …
   rw [IsLocalization.toLocalizationMap_sec]
+  -- ⊢ ↑(valuationOfNeZeroToFun v x) = (if (IsLocalization.sec R⁰ ↑x).fst = 0 then  …
   rw [if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero, if_neg ?_]
+  -- ⊢ ↑(valuationOfNeZeroToFun v x) = ↑(↑Multiplicative.ofAdd (-↑(Associates.count …
   rfl
+  -- ⊢ ¬↑(SubmonoidClass.subtype R⁰) (IsLocalization.sec R⁰ ↑x).snd = 0
   exact nonZeroDivisors.coe_ne_zero _
+  -- 🎉 no goals
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun_eq
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
   toFun := v.valuationOfNeZeroToFun
   map_one' := by rw [← WithZero.coe_inj, valuationOfNeZeroToFun_eq]; exact map_one _
+                 -- ⊢ ↑(valuation v) ↑1 = ↑1
+                                                                     -- 🎉 no goals
   map_mul' _ _ := by
     rw [← WithZero.coe_inj, WithZero.coe_mul]
+    -- ⊢ ↑(OneHom.toFun { toFun := valuationOfNeZeroToFun v, map_one' := (_ : valuati …
     simp only [valuationOfNeZeroToFun_eq]; exact map_mul _ _ _
+    -- ⊢ ↑(valuation v) ↑(x✝¹ * x✝) = ↑(valuation v) ↑x✝¹ * ↑(valuation v) ↑x✝
+                                           -- 🎉 no goals
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero IsDedekindDomain.HeightOneSpectrum.valuationOfNeZero
 
 @[simp]
@@ -120,15 +132,23 @@ theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v
 theorem valuation_of_unit_eq (x : Rˣ) :
     v.valuationOfNeZero (Units.map (algebraMap R K : R →* K) x) = 1 := by
   rw [← WithZero.coe_inj, valuationOfNeZero_eq, Units.coe_map, eq_iff_le_not_lt]
+  -- ⊢ ↑(valuation v) (↑↑(algebraMap R K) ↑x) ≤ ↑1 ∧ ¬↑(valuation v) (↑↑(algebraMap …
   constructor
+  -- ⊢ ↑(valuation v) (↑↑(algebraMap R K) ↑x) ≤ ↑1
   · exact v.valuation_le_one x
+    -- 🎉 no goals
   · cases' x with x _ hx _
+    -- ⊢ ¬↑(valuation v) (↑↑(algebraMap R K) ↑{ val := x, inv := inv✝, val_inv := hx, …
     change ¬v.valuation (algebraMap R K x) < 1
+    -- ⊢ ¬↑(valuation v) (↑(algebraMap R K) x) < 1
     apply_fun v.intValuation at hx
+    -- ⊢ ¬↑(valuation v) (↑(algebraMap R K) x) < 1
     rw [map_one, map_mul] at hx
+    -- ⊢ ¬↑(valuation v) (↑(algebraMap R K) x) < 1
     rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebraMap,
       mul_le_mul_left₀ <| left_ne_zero_of_mul_eq_one hx]
     exact v.int_valuation_le_one _
+    -- 🎉 no goals
 #align is_dedekind_domain.height_one_spectrum.valuation_of_unit_eq IsDedekindDomain.HeightOneSpectrum.valuation_of_unit_eq
 
 -- Porting note: invalid attribute 'semireducible', declaration is in an imported module
@@ -142,6 +162,7 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
       v.valuationOfNeZero
       (by
         rintro _ ⟨x, rfl⟩
+        -- ⊢ ↑(powMonoidHom n) x ∈ Subgroup.comap (valuationOfNeZero v) (↑AddSubgroup.toS …
         exact
           ⟨v.valuationOfNeZero x, by simp only [powMonoidHom_apply, map_pow, Int.toAdd_pow]; rfl⟩)
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_mod IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroMod
@@ -165,8 +186,11 @@ variable {S S' : Set <| HeightOneSpectrum R} {n : ℕ}
 def selmerGroup : Subgroup <| K/n where
   carrier := {x : K/n | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuationOfNeZeroMod n x = 1}
   one_mem' _ _ := by rw [map_one]
+                     -- 🎉 no goals
+                            -- 🎉 no goals
   mul_mem' hx hy v hv := by rw [map_mul, hx v hv, hy v hv, one_mul]
   inv_mem' hx v hv := by rw [map_inv, hx v hv, inv_one]
+                         -- 🎉 no goals
 #align is_dedekind_domain.selmer_group IsDedekindDomain.selmerGroup
 
 -- Porting note: was `scoped[SelmerGroup]` but that does not work even using `open SelmerGroup`
@@ -182,17 +206,26 @@ def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
   map_one' := funext fun v => map_one _
   map_mul' x y := by simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, map_mul]; rfl
+                     -- ⊢ (fun v => ↑(HeightOneSpectrum.valuationOfNeZeroMod (↑v) n) ↑x * ↑(HeightOneS …
+                                                                                       -- 🎉 no goals
 #align is_dedekind_domain.selmer_group.valuation IsDedekindDomain.selmerGroup.valuation
 
 theorem valuation_ker_eq :
     valuation.ker = K⟮(∅ : Set <| HeightOneSpectrum R),n⟯.subgroupOf (K⟮S,n⟯) := by
   ext ⟨_, hx⟩
+  -- ⊢ { val := val✝, property := hx } ∈ MonoidHom.ker valuation ↔ { val := val✝, p …
   constructor
+  -- ⊢ { val := val✝, property := hx } ∈ MonoidHom.ker valuation → { val := val✝, p …
   · intro hx' v _
+    -- ⊢ ↑(HeightOneSpectrum.valuationOfNeZeroMod v n) (↑(Subgroup.subtype selmerGrou …
     by_cases hv : v ∈ S
+    -- ⊢ ↑(HeightOneSpectrum.valuationOfNeZeroMod v n) (↑(Subgroup.subtype selmerGrou …
     · exact congr_fun hx' ⟨v, hv⟩
+      -- 🎉 no goals
     · exact hx v hv
+      -- 🎉 no goals
   · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
+    -- 🎉 no goals
 #align is_dedekind_domain.selmer_group.valuation_ker_eq IsDedekindDomain.selmerGroup.valuation_ker_eq
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
@@ -201,6 +234,7 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
   map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one_iff]
+                 -- 🎉 no goals
   map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, MonoidHom.mem_range,
     powMonoidHom_apply, QuotientGroup.mk_mul, Submonoid.mk_mul_mk]
 #align is_dedekind_domain.selmer_group.from_unit IsDedekindDomain.selmerGroup.fromUnit
@@ -208,13 +242,21 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
     (@fromUnit R _ _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
   ext ⟨_, _, _, _⟩
+  -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
   constructor
+  -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
   · intro hx
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rcases(QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := by exact congr_arg Units.val hx
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rw [Units.val_pow_eq_pow_val] at hv
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out
         (hv.symm ▸ isIntegral_algebraMap) with
       ⟨v', rfl⟩
@@ -222,13 +264,18 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
         (hi.symm ▸ isIntegral_algebraMap) with
       ⟨i', rfl⟩
     rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at iv
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rw [Units.val_mk, ← map_pow] at hv
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     exact ⟨⟨v', i', vi, iv⟩, by
       simpa only [Units.ext_iff, powMonoidHom_apply, Units.val_pow_eq_pow_val] using
          NoZeroSMulDivisors.algebraMap_injective R K hv⟩
   · rintro ⟨x, hx⟩
+    -- ⊢ { val := val✝, inv := inv✝, val_inv := val_inv✝, inv_val := inv_val✝ } ∈ Mon …
     rw [← hx]
+    -- ⊢ ↑(powMonoidHom n) x ∈ MonoidHom.ker fromUnit
     exact Subtype.mk_eq_mk.mpr <| (QuotientGroup.eq_one_iff _).mpr ⟨Units.map (algebraMap R K) x,
       by simp only [powMonoidHom_apply, RingHom.toMonoidHom_eq_coe, map_pow]⟩
 #align is_dedekind_domain.selmer_group.from_unit_ker IsDedekindDomain.selmerGroup.fromUnit_ker
@@ -242,7 +289,9 @@ def fromUnitLift [Fact <| 0 < n] : (R/n) →* K⟮(∅ : Set <| HeightOneSpectru
 theorem fromUnitLift_injective [Fact <| 0 < n] :
     Function.Injective <| @fromUnitLift R _ _ _ K _ _ _ n _ := by
   dsimp only [fromUnitLift, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom]
+  -- ⊢ Function.Injective (↑(QuotientGroup.kerLift fromUnit) ∘ ↑(MulEquiv.symm (Quo …
   exact Function.Injective.comp (QuotientGroup.kerLift_injective _) (MulEquiv.injective _)
+  -- 🎉 no goals
 #align is_dedekind_domain.selmer_group.from_unit_lift_injective IsDedekindDomain.selmerGroup.fromUnitLift_injective
 
 end selmerGroup

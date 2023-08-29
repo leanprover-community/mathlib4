@@ -159,7 +159,9 @@ def mop (f : X ≅ Y) : mop X ≅ mop Y where
   -- Porting note: it's a pity `attribute [aesop safe apply (rule_sets [CategoryTheory])] unmop_inj`
   -- doesn't automate these proofs.
   hom_inv_id := unmop_inj (by simp)
+                              -- 🎉 no goals
   inv_hom_id := unmop_inj (by simp)
+                              -- 🎉 no goals
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 end Iso
@@ -179,9 +181,16 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   leftUnitor X := (λ_ (unop X)).symm.op
   rightUnitor X := (ρ_ (unop X)).symm.op
   associator_naturality f g h := Quiver.Hom.unop_inj (by simp)
+                                                         -- 🎉 no goals
   leftUnitor_naturality f := Quiver.Hom.unop_inj (by simp)
+                                                     -- 🎉 no goals
   rightUnitor_naturality f := Quiver.Hom.unop_inj (by simp)
+                                                      -- 🎉 no goals
   triangle X Y := Quiver.Hom.unop_inj (by dsimp; coherence)
+                                          -- ⊢ (𝟙 X.unop ⊗ (λ_ Y.unop).inv) ≫ (α_ X.unop (𝟙_ C) Y.unop).inv = (ρ_ X.unop).i …
+                                              -- ⊢ ((𝟙 W.unop ⊗ (α_ X.unop Y.unop Z.unop).inv) ≫ (α_ W.unop (X.unop ⊗ Y.unop) Z …
+                                                     -- 🎉 no goals
+                                                 -- 🎉 no goals
   pentagon W X Y Z := Quiver.Hom.unop_inj (by dsimp; coherence)
 #align category_theory.monoidal_category_op CategoryTheory.monoidalCategoryOp
 
@@ -204,9 +213,15 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   leftUnitor X := (ρ_ (unmop X)).mop
   rightUnitor X := (λ_ (unmop X)).mop
   associator_naturality f g h := unmop_inj (by simp)
+                                               -- 🎉 no goals
   leftUnitor_naturality f := unmop_inj (by simp)
+                                           -- 🎉 no goals
   rightUnitor_naturality f := unmop_inj (by simp)
+                                            -- 🎉 no goals
   triangle X Y := unmop_inj (by simp) -- Porting note: Changed `by coherence` to `by simp`
+                                -- 🎉 no goals
+                                    -- ⊢ (𝟙 (unmop Z) ⊗ (α_ (unmop Y) (unmop X) (unmop W)).inv) ≫ (α_ (unmop Z) (unmo …
+                                           -- 🎉 no goals
   pentagon W X Y Z := unmop_inj (by dsimp; coherence)
 #align category_theory.monoidal_category_mop CategoryTheory.monoidalCategoryMop
 

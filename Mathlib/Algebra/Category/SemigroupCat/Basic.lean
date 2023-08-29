@@ -52,6 +52,10 @@ instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
     --Porting note : was `@MulHom.coe_inj` which is deprecated
     by intros; apply @FunLike.coe_injective, by aesop_cat, by aesop_cat⟩
+       -- ⊢ Function.Injective MulHom.toFun
+               -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                              -- 🎉 no goals
 #align Magma.bundled_hom MagmaCat.bundledHom
 #align AddMagma.bundled_hom AddMagmaCat.bundledHom
 
@@ -230,7 +234,9 @@ def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y wher
   inv := e.symm.toMulHom
   hom_inv_id := by
     ext
+    -- ⊢ ↑(toMulHom e ≫ toMulHom (symm e)) x✝ = ↑(𝟙 (MagmaCat.of X)) x✝
     simp_rw [comp_apply, toMulHom_eq_coe, MagmaCat.MulEquiv_coe_eq, symm_apply_apply, id_apply]
+    -- 🎉 no goals
 
 #align mul_equiv.to_Magma_iso MulEquiv.toMagmaCatIso
 #align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaCatIso
@@ -301,9 +307,13 @@ def mulEquivIsoSemigroupCatIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
 instance MagmaCat.forgetReflectsIsos : ReflectsIsomorphisms (forget MagmaCat.{u}) where
   reflects {X Y} f _ := by
     skip
+    -- ⊢ IsIso f
     let i := asIso ((forget MagmaCat).map f)
+    -- ⊢ IsIso f
     let e : X ≃* Y := { f, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toMagmaCatIso).1⟩
+    -- 🎉 no goals
 #align Magma.forget_reflects_isos MagmaCat.forgetReflectsIsos
 #align AddMagma.forget_reflects_isos AddMagmaCat.forgetReflectsIsos
 
@@ -311,9 +321,13 @@ instance MagmaCat.forgetReflectsIsos : ReflectsIsomorphisms (forget MagmaCat.{u}
 instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget SemigroupCat.{u}) where
   reflects {X Y} f _ := by
     skip
+    -- ⊢ IsIso f
     let i := asIso ((forget SemigroupCat).map f)
+    -- ⊢ IsIso f
     let e : X ≃* Y := { f, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toSemigroupCatIso).1⟩
+    -- 🎉 no goals
 #align Semigroup.forget_reflects_isos SemigroupCat.forgetReflectsIsos
 #align AddSemigroup.forget_reflects_isos AddSemigroupCat.forgetReflectsIsos
 

@@ -53,7 +53,10 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
       simp [Inv.inv, dif_neg ha]
+      -- ⊢ a * bijInv (_ : Bijective fun b => a * b) 1 = 1
       exact Fintype.rightInverse_bijInv _ _
+                   -- 🎉 no goals
+      -- 🎉 no goals
     inv_zero := by simp [Inv.inv, dif_pos rfl] }
 #align fintype.group_with_zero_of_cancel Fintype.groupWithZeroOfCancel
 
@@ -61,8 +64,11 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
     [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _) h
+  -- ⊢ GCDMonoid.gcd a b ∣ 1
   obtain ⟨x, y, hxy⟩ := cp
+  -- ⊢ GCDMonoid.gcd a b ∣ 1
   rw [← hxy]
+  -- ⊢ GCDMonoid.gcd a b ∣ x * a + y * b
   exact  -- porting note: added `GCDMonoid.` twice
     dvd_add (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_left _ _) _)
       (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_right _ _) _)
@@ -110,7 +116,9 @@ def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype
 
 theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by
   cases nonempty_fintype R
+  -- ⊢ IsField R
   exact @Field.toIsField R (@Fintype.fieldOfDomain R _ _ (Classical.decEq R) _)
+  -- 🎉 no goals
 #align finite.is_field_of_domain Finite.isField_of_domain
 
 end Ring
@@ -123,14 +131,23 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
   {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
+  -- ⊢ card (filter (fun g => g ^ n = g₀) univ) ≤ ↑Multiset.card (nthRoots n (↑f g₀))
   refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
+  -- ⊢ card (filter (fun g => g ^ n = g₀) univ) ≤ card (Multiset.toFinset (nthRoots …
   apply card_le_card_of_inj_on f
+  -- ⊢ ∀ (a : G), a ∈ filter (fun g => g ^ n = g₀) univ → ↑f a ∈ Multiset.toFinset  …
   · intro g hg
+    -- ⊢ ↑f g ∈ Multiset.toFinset (nthRoots n (↑f g₀))
     rw [mem_filter] at hg
+    -- ⊢ ↑f g ∈ Multiset.toFinset (nthRoots n (↑f g₀))
     rw [Multiset.mem_toFinset, mem_nthRoots hn, ← f.map_pow, hg.2]
+    -- 🎉 no goals
   · intros
+    -- ⊢ a₁✝ = a₂✝
     apply hf
+    -- ⊢ ↑f a₁✝ = ↑f a₂✝
     assumption
+    -- 🎉 no goals
 #align card_nth_roots_subgroup_units card_nthRoots_subgroup_units
 
 /-- A finite subgroup of the unit group of an integral domain is cyclic. -/
@@ -157,8 +174,11 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance subgroup_units_cyclic : IsCyclic S := by
   -- porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
+  -- ⊢ { x // x ∈ S } →* R
   · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
+    -- 🎉 no goals
   · exact Units.ext.comp Subtype.val_injective
+    -- 🎉 no goals
 #align subgroup_units_cyclic subgroup_units_cyclic
 
 end
@@ -176,13 +196,17 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
       (algebraMap R[X] K f) / (algebraMap R[X] K g) =
         algebraMap R[X] K q + (algebraMap R[X] K r) / (algebraMap R[X] K g) := by
   refine' ⟨f /ₘ g, f %ₘ g, _, _⟩
+  -- ⊢ degree (f %ₘ g) < degree g
   · exact degree_modByMonic_lt _ hg
+    -- 🎉 no goals
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       -- porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp [hg']
+    -- ⊢ ↑(algebraMap R[X] K) f = ↑(algebraMap R[X] K) (f /ₘ g) * ↑(algebraMap R[X] K …
     -- porting note: `norm_cast` was here, but does nothing.
     rw [add_comm, mul_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    -- 🎉 no goals
 
 #align polynomial.div_eq_quo_add_rem_div Polynomial.div_eq_quo_add_rem_div
 
@@ -197,20 +221,26 @@ theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G 
     -- porting note: the `filter` had an index `ₓ` that I removed.
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
+  -- ⊢ card (filter (fun g => ↑f g = ↑f x) univ) = card (filter (fun g => ↑f g = y) …
   rcases hy with ⟨y, rfl⟩
+  -- ⊢ card (filter (fun g => ↑f g = ↑f x) univ) = card (filter (fun g => ↑f g = ↑f …
   refine' card_congr (fun g _ => g * x⁻¹ * y) _ _ fun g hg => ⟨g * y⁻¹ * x, _⟩
   · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul,
       mem_univ, mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff,
       forall_true_iff]
     -- porting note: added the following `simp`
     simp only [true_and, map_inv, mul_right_inv, one_mul, and_self, implies_true, forall_const]
+    -- 🎉 no goals
   · simp only [mul_left_inj, imp_self, forall₂_true_iff]
+    -- 🎉 no goals
   · simp only [true_and_iff, mem_filter, mem_univ] at hg
+    -- ⊢ ∃ ha, (fun g x_1 => g * x⁻¹ * y) (g * y⁻¹ * x) ha = g
     simp only [hg, mem_filter, one_mul, MonoidHom.map_mul, mem_univ, mul_right_inv,
       eq_self_iff_true, exists_prop_of_true, MonoidHom.map_mul_inv, and_self_iff,
       mul_inv_cancel_right, inv_mul_cancel_right]
     -- porting note: added the next line.  It is weird!
     simp only [map_inv, mul_right_inv, one_mul, and_self, exists_prop]
+    -- 🎉 no goals
 #align card_fiber_eq_of_mem_range card_fiber_eq_of_mem_range
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
@@ -281,9 +311,13 @@ unless the homomorphism is trivial, in which case the sum is equal to the cardin
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
+  -- ⊢ ∑ g : G, ↑f g = ↑(Fintype.card G)
   · simp [h, card_univ]
+    -- 🎉 no goals
   · rw [cast_zero] -- porting note: added
+    -- ⊢ ∑ g : G, ↑f g = 0
     exact sum_hom_units_eq_zero f h
+    -- 🎉 no goals
 #align sum_hom_units sum_hom_units
 
 end

@@ -94,7 +94,9 @@ namespace InjectiveResolution
 @[simp]
 theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
   apply zero_of_source_iso_zero
+  -- ⊢ HomologicalComplex.X ((CochainComplex.single₀ C).obj Z) (n + 1) ≅ 0
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
@@ -114,8 +116,12 @@ set_option linter.uppercaseLean3 false in
 
 instance {Z : C} (I : InjectiveResolution Z) (n : ℕ) : CategoryTheory.Mono (I.ι.f n) := by
   cases n
+  -- ⊢ Mono (HomologicalComplex.Hom.f I.ι Nat.zero)
   · apply I.mono
+    -- 🎉 no goals
   · rw [ι_f_succ]; infer_instance
+    -- ⊢ Mono 0
+                   -- 🎉 no goals
 
 /-- An injective object admits a trivial injective resolution: itself in degree 0. -/
 def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z where
@@ -123,17 +129,28 @@ def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z where
   ι := 𝟙 ((CochainComplex.single₀ C).obj Z)
   injective n := by
     cases n <;>
+    -- ⊢ Injective (HomologicalComplex.X ((CochainComplex.single₀ C).obj Z) Nat.zero)
       · dsimp
+        -- ⊢ Injective Z
+        -- ⊢ Injective 0
+        -- 🎉 no goals
         infer_instance
+        -- 🎉 no goals
   exact₀ := by
     dsimp
+    -- ⊢ Exact (𝟙 Z) 0
     exact exact_epi_zero _
+    -- 🎉 no goals
   exact n := by
     dsimp
+    -- ⊢ Exact 0 0
     exact exact_of_zero _ _
+    -- 🎉 no goals
   mono := by
     dsimp
+    -- ⊢ Mono (𝟙 Z)
     infer_instance
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.self CategoryTheory.InjectiveResolution.self
 

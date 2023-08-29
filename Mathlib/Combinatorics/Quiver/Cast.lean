@@ -37,8 +37,11 @@ def Hom.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) : u' ⟶ 
 
 theorem Hom.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
     e.cast hu hv = _root_.cast (by {rw [hu, hv]}) e := by
+                                   -- 🎉 no goals
   subst_vars
+  -- ⊢ cast (_ : u' = u') (_ : v' = v') e = _root_.cast (_ : (u' ⟶ v') = (u' ⟶ v')) e
   rfl
+  -- 🎉 no goals
 #align quiver.hom.cast_eq_cast Quiver.Hom.cast_eq_cast
 
 @[simp]
@@ -51,25 +54,33 @@ theorem Hom.cast_cast {u v u' v' u'' v'' : U} (e : u ⟶ v) (hu : u = u') (hv : 
     (hu' : u' = u'') (hv' : v' = v'') :
     (e.cast hu hv).cast hu' hv' = e.cast (hu.trans hu') (hv.trans hv') := by
   subst_vars
+  -- ⊢ cast (_ : u'' = u'') (_ : v'' = v'') (cast (_ : u'' = u'') (_ : v'' = v'') e …
   rfl
+  -- 🎉 no goals
 #align quiver.hom.cast_cast Quiver.Hom.cast_cast
 
 theorem Hom.cast_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
     HEq (e.cast hu hv) e := by
   subst_vars
+  -- ⊢ HEq (cast (_ : u' = u') (_ : v' = v') e) e
   rfl
+  -- 🎉 no goals
 #align quiver.hom.cast_heq Quiver.Hom.cast_heq
 
 theorem Hom.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) (e' : u' ⟶ v') :
     e.cast hu hv = e' ↔ HEq e e' := by
   rw [Hom.cast_eq_cast]
+  -- ⊢ _root_.cast (_ : (u ⟶ v) = (u' ⟶ v')) e = e' ↔ HEq e e'
   exact _root_.cast_eq_iff_heq
+  -- 🎉 no goals
 #align quiver.hom.cast_eq_iff_heq Quiver.Hom.cast_eq_iff_heq
 
 theorem Hom.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) (e' : u' ⟶ v') :
     e' = e.cast hu hv ↔ HEq e' e := by
   rw [eq_comm, Hom.cast_eq_iff_heq]
+  -- ⊢ HEq e e' ↔ HEq e' e
   exact ⟨HEq.symm, HEq.symm⟩
+  -- 🎉 no goals
 #align quiver.hom.eq_cast_iff_heq Quiver.Hom.eq_cast_iff_heq
 
 /-!
@@ -86,8 +97,11 @@ def Path.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) : Path 
 
 theorem Path.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :
     p.cast hu hv = _root_.cast (by rw [hu, hv]) p := by
+                                   -- 🎉 no goals
   subst_vars
+  -- ⊢ cast (_ : u' = u') (_ : v' = v') p = _root_.cast (_ : Path u' v' = Path u' v …
   rfl
+  -- 🎉 no goals
 #align quiver.path.cast_eq_cast Quiver.Path.cast_eq_cast
 
 @[simp]
@@ -100,25 +114,33 @@ theorem Path.cast_cast {u v u' v' u'' v'' : U} (p : Path u v) (hu : u = u') (hv 
     (hu' : u' = u'') (hv' : v' = v'') :
     (p.cast hu hv).cast hu' hv' = p.cast (hu.trans hu') (hv.trans hv') := by
   subst_vars
+  -- ⊢ cast (_ : u'' = u'') (_ : v'' = v'') (cast (_ : u'' = u'') (_ : v'' = v'') p …
   rfl
+  -- 🎉 no goals
 #align quiver.path.cast_cast Quiver.Path.cast_cast
 
 @[simp]
 theorem Path.cast_nil {u u' : U} (hu : u = u') : (Path.nil : Path u u).cast hu hu = Path.nil := by
   subst_vars
+  -- ⊢ cast (_ : u' = u') (_ : u' = u') nil = nil
   rfl
+  -- 🎉 no goals
 #align quiver.path.cast_nil Quiver.Path.cast_nil
 
 theorem Path.cast_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :
     HEq (p.cast hu hv) p := by
   rw [Path.cast_eq_cast]
+  -- ⊢ HEq (_root_.cast (_ : Path u v = Path u' v') p) p
   exact _root_.cast_heq _ _
+  -- 🎉 no goals
 #align quiver.path.cast_heq Quiver.Path.cast_heq
 
 theorem Path.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
     (p' : Path u' v') : p.cast hu hv = p' ↔ HEq p p' := by
   rw [Path.cast_eq_cast]
+  -- ⊢ _root_.cast (_ : Path u v = Path u' v') p = p' ↔ HEq p p'
   exact _root_.cast_eq_iff_heq
+  -- 🎉 no goals
 #align quiver.path.cast_eq_iff_heq Quiver.Path.cast_eq_iff_heq
 
 theorem Path.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
@@ -130,26 +152,35 @@ theorem Path.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Pa
 theorem Path.cast_cons {u v w u' w' : U} (p : Path u v) (e : v ⟶ w) (hu : u = u') (hw : w = w') :
     (p.cons e).cast hu hw = (p.cast hu rfl).cons (e.cast rfl hw) := by
   subst_vars
+  -- ⊢ cast (_ : u' = u') (_ : w' = w') (cons p e) = cons (cast (_ : u' = u') (_ :  …
   rfl
+  -- 🎉 no goals
 #align quiver.path.cast_cons Quiver.Path.cast_cons
 
 theorem cast_eq_of_cons_eq_cons {u v v' w : U} {p : Path u v} {p' : Path u v'} {e : v ⟶ w}
     {e' : v' ⟶ w} (h : p.cons e = p'.cons e') : p.cast rfl (obj_eq_of_cons_eq_cons h) = p' := by
   rw [Path.cast_eq_iff_heq]
+  -- ⊢ HEq p p'
   exact heq_of_cons_eq_cons h
+  -- 🎉 no goals
 #align quiver.cast_eq_of_cons_eq_cons Quiver.cast_eq_of_cons_eq_cons
 
 theorem hom_cast_eq_of_cons_eq_cons {u v v' w : U} {p : Path u v} {p' : Path u v'} {e : v ⟶ w}
     {e' : v' ⟶ w} (h : p.cons e = p'.cons e') : e.cast (obj_eq_of_cons_eq_cons h) rfl = e' := by
   rw [Hom.cast_eq_iff_heq]
+  -- ⊢ HEq e e'
   exact hom_heq_of_cons_eq_cons h
+  -- 🎉 no goals
 #align quiver.hom_cast_eq_of_cons_eq_cons Quiver.hom_cast_eq_of_cons_eq_cons
 
 theorem eq_nil_of_length_zero {u v : U} (p : Path u v) (hzero : p.length = 0) :
     p.cast (eq_of_length_zero p hzero) rfl = Path.nil := by
   cases p
+  -- ⊢ Path.cast (_ : u = u) (_ : u = u) nil = nil
   · rfl
+    -- 🎉 no goals
   · simp only [Nat.succ_ne_zero, length_cons] at hzero
+    -- 🎉 no goals
 #align quiver.eq_nil_of_length_zero Quiver.eq_nil_of_length_zero
 
 end Quiver

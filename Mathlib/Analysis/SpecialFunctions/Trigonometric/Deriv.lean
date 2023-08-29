@@ -34,9 +34,11 @@ namespace Complex
 /-- The complex sine function is everywhere strictly differentiable, with the derivative `cos x`. -/
 theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
   simp only [cos, div_eq_mul_inv]
+  -- ⊢ HasStrictDerivAt sin ((exp (x * I) + exp (-x * I)) * 2⁻¹) x
   convert ((((hasStrictDerivAt_id x).neg.mul_const I).cexp.sub
     ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const I).mul_const (2 : ℂ)⁻¹ using 1
   simp only [Function.comp, id]
+  -- ⊢ (exp (x * I) + exp (-x * I)) * 2⁻¹ = (exp (-x * I) * (-1 * I) - exp (x * I)  …
   rw [sub_mul, mul_assoc, mul_assoc, I_mul_I, neg_one_mul, neg_neg, mul_one, one_mul, mul_assoc,
     I_mul_I, mul_neg_one, sub_neg_eq_add, add_comm]
 #align complex.has_strict_deriv_at_sin Complex.hasStrictDerivAt_sin
@@ -67,10 +69,13 @@ theorem deriv_sin : deriv sin = cos :=
 `-sin x`. -/
 theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
+  -- ⊢ HasStrictDerivAt cos (-(exp (-x * I) - exp (x * I)) * I * 2⁻¹) x
   convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
     ((hasStrictDerivAt_id x).neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
   simp only [Function.comp, id]
+  -- ⊢ -(exp (-x * I) - exp (x * I)) * I * 2⁻¹ = (exp (x * I) * (1 * I) + exp (-x * …
   ring
+  -- 🎉 no goals
 #align complex.has_strict_deriv_at_cos Complex.hasStrictDerivAt_cos
 
 /-- The complex cosine function is everywhere differentiable, with the derivative `-sin x`. -/
@@ -102,9 +107,11 @@ theorem deriv_cos' : deriv cos = fun x => -sin x :=
 `cosh x`. -/
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
+  -- ⊢ HasStrictDerivAt sinh ((exp x + exp (-x)) * 2⁻¹) x
   convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).neg.cexp).mul_const (2 : ℂ)⁻¹
     using 1
   rw [id, mul_neg_one, sub_eq_add_neg, neg_neg]
+  -- 🎉 no goals
 #align complex.has_strict_deriv_at_sinh Complex.hasStrictDerivAt_sinh
 
 /-- The complex hyperbolic sine function is everywhere differentiable, with the derivative
@@ -133,9 +140,11 @@ theorem deriv_sinh : deriv sinh = cosh :=
 derivative `sinh x`. -/
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
+  -- ⊢ HasStrictDerivAt cosh ((exp x - exp (-x)) * 2⁻¹) x
   convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).neg.cexp).mul_const (2 : ℂ)⁻¹
     using 1
   rw [id, mul_neg_one, sub_eq_add_neg]
+  -- 🎉 no goals
 #align complex.has_strict_deriv_at_cosh Complex.hasStrictDerivAt_cosh
 
 /-- The complex hyperbolic cosine function is everywhere differentiable, with the derivative
@@ -676,6 +685,8 @@ theorem deriv_cosh : deriv cosh = sinh :=
 /-- `sinh` is strictly monotone. -/
 theorem sinh_strictMono : StrictMono sinh :=
   strictMono_of_deriv_pos <| by rw [Real.deriv_sinh]; exact cosh_pos
+                                -- ⊢ ∀ (x : ℝ), 0 < cosh x
+                                                      -- 🎉 no goals
 #align real.sinh_strict_mono Real.sinh_strictMono
 
 /-- `sinh` is injective, `∀ a b, sinh a = sinh b → a = b`. -/
@@ -700,27 +711,36 @@ theorem sinh_lt_sinh : sinh x < sinh y ↔ x < y :=
 
 @[simp]
 theorem sinh_pos_iff : 0 < sinh x ↔ 0 < x := by simpa only [sinh_zero] using @sinh_lt_sinh 0 x
+                                                -- 🎉 no goals
 #align real.sinh_pos_iff Real.sinh_pos_iff
 
 @[simp]
 theorem sinh_nonpos_iff : sinh x ≤ 0 ↔ x ≤ 0 := by simpa only [sinh_zero] using @sinh_le_sinh x 0
+                                                   -- 🎉 no goals
 #align real.sinh_nonpos_iff Real.sinh_nonpos_iff
 
 @[simp]
 theorem sinh_neg_iff : sinh x < 0 ↔ x < 0 := by simpa only [sinh_zero] using @sinh_lt_sinh x 0
+                                                -- 🎉 no goals
 #align real.sinh_neg_iff Real.sinh_neg_iff
 
 @[simp]
 theorem sinh_nonneg_iff : 0 ≤ sinh x ↔ 0 ≤ x := by simpa only [sinh_zero] using @sinh_le_sinh 0 x
+                                                   -- 🎉 no goals
 #align real.sinh_nonneg_iff Real.sinh_nonneg_iff
 
 theorem abs_sinh (x : ℝ) : |sinh x| = sinh |x| := by
   cases le_total x 0 <;> simp [abs_of_nonneg, abs_of_nonpos, *]
+  -- ⊢ |sinh x| = sinh |x|
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align real.abs_sinh Real.abs_sinh
 
 theorem cosh_strictMonoOn : StrictMonoOn cosh (Ici 0) :=
   (convex_Ici _).strictMonoOn_of_deriv_pos continuous_cosh.continuousOn fun x hx => by
     rw [interior_Ici, mem_Ioi] at hx; rwa [deriv_cosh, sinh_pos_iff]
+    -- ⊢ 0 < deriv cosh x
+                                      -- 🎉 no goals
 #align real.cosh_strict_mono_on Real.cosh_strictMonoOn
 
 @[simp]
@@ -736,27 +756,35 @@ theorem cosh_lt_cosh : cosh x < cosh y ↔ |x| < |y| :=
 @[simp]
 theorem one_le_cosh (x : ℝ) : 1 ≤ cosh x :=
   cosh_zero ▸ cosh_le_cosh.2 (by simp only [_root_.abs_zero, _root_.abs_nonneg])
+                                 -- 🎉 no goals
 #align real.one_le_cosh Real.one_le_cosh
 
 @[simp]
 theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
   cosh_zero ▸ cosh_lt_cosh.trans (by simp only [_root_.abs_zero, abs_pos])
+                                     -- 🎉 no goals
 #align real.one_lt_cosh Real.one_lt_cosh
 
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   -- Porting note: `by simp; abel` was just `by simp` in mathlib3.
   refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
+  -- ⊢ StrictMonoOn (fun x => sinh x - x) (Ici 0)
   refine' (convex_Ici _).strictMonoOn_of_deriv_pos _ fun x hx => _
+  -- ⊢ ContinuousOn (fun x => sinh x - x) (Ici 0)
   · exact (continuous_sinh.sub continuous_id).continuousOn
+    -- 🎉 no goals
   · rw [interior_Ici, mem_Ioi] at hx
+    -- ⊢ 0 < deriv (fun x => sinh x - x) x
     rw [deriv_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]
     exacts [hx.ne', differentiableAt_sinh, differentiableAt_id]
+    -- 🎉 no goals
 #align real.sinh_sub_id_strict_mono Real.sinh_sub_id_strictMono
 
 @[simp]
 theorem self_le_sinh_iff : x ≤ sinh x ↔ 0 ≤ x :=
   calc
     x ≤ sinh x ↔ sinh 0 - 0 ≤ sinh x - x := by simp
+                                               -- 🎉 no goals
     _ ↔ 0 ≤ x := sinh_sub_id_strictMono.le_iff_le
 
 #align real.self_le_sinh_iff Real.self_le_sinh_iff
@@ -765,6 +793,7 @@ theorem self_le_sinh_iff : x ≤ sinh x ↔ 0 ≤ x :=
 theorem sinh_le_self_iff : sinh x ≤ x ↔ x ≤ 0 :=
   calc
     sinh x ≤ x ↔ sinh x - x ≤ sinh 0 - 0 := by simp
+                                               -- 🎉 no goals
     _ ↔ x ≤ 0 := sinh_sub_id_strictMono.le_iff_le
 
 #align real.sinh_le_self_iff Real.sinh_le_self_iff

@@ -62,6 +62,8 @@ variable {I} {I'} {n} {F} {V}
 instance : FunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
+                       -- ⊢ { toFun := toFun✝¹, contMDiff_toFun := contMDiff_toFun✝¹ } = { toFun := toFu …
+                                       -- 🎉 no goals
 
 variable {s t : Cₛ^n⟮I; F, V⟯}
 
@@ -111,15 +113,25 @@ theorem ext (h : ∀ x, s x = t x) : s = t := FunLike.ext _ _ h
 
 instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s + t, _⟩⟩
+  -- ⊢ ContMDiff I (ModelWithCorners.prod I 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x  …
   intro x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   have hs := s.contMDiff x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   have ht := t.contMDiff x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   rw [contMDiffAt_section] at hs ht ⊢
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑(trivializationAt F V x₀) { proj := x, s …
   set e := trivializationAt F V x₀
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑e { proj := x, snd := (↑s + ↑t) x }).snd …
   refine' (hs.add ht).congr_of_eventuallyEq _
+  -- ⊢ (fun x => (↑e { proj := x, snd := (↑s + ↑t) x }).snd) =ᶠ[nhds x₀] (fun x =>  …
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  -- ⊢ ∀ (x : M), x ∈ e.baseSet → (fun x => (↑e { proj := x, snd := (↑s + ↑t) x }). …
   intro x hx
+  -- ⊢ (fun x => (↑e { proj := x, snd := (↑s + ↑t) x }).snd) x = ((fun x => (↑e { p …
   apply (e.linear 𝕜 hx).1
+  -- 🎉 no goals
 #align cont_mdiff_section.has_add ContMDiffSection.instAdd
 
 @[simp]
@@ -129,15 +141,25 @@ theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = ⇑s + t :=
 
 instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s - t, _⟩⟩
+  -- ⊢ ContMDiff I (ModelWithCorners.prod I 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x  …
   intro x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   have hs := s.contMDiff x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   have ht := t.contMDiff x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   rw [contMDiffAt_section] at hs ht ⊢
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑(trivializationAt F V x₀) { proj := x, s …
   set e := trivializationAt F V x₀
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑e { proj := x, snd := (↑s - ↑t) x }).snd …
   refine' (hs.sub ht).congr_of_eventuallyEq _
+  -- ⊢ (fun x => (↑e { proj := x, snd := (↑s - ↑t) x }).snd) =ᶠ[nhds x₀] fun x => ( …
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  -- ⊢ ∀ (x : M), x ∈ e.baseSet → (fun x => (↑e { proj := x, snd := (↑s - ↑t) x }). …
   intro x hx
+  -- ⊢ (fun x => (↑e { proj := x, snd := (↑s - ↑t) x }).snd) x = (fun x => (↑e { pr …
   apply (e.linear 𝕜 hx).map_sub
+  -- 🎉 no goals
 #align cont_mdiff_section.has_sub ContMDiffSection.instSub
 
 @[simp]
@@ -160,15 +182,25 @@ theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
 
 instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun c s => ⟨c • ⇑s, _⟩⟩
+  -- ⊢ ContMDiff I (ModelWithCorners.prod I 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x  …
   intro x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   have hs := s.contMDiff x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   rw [contMDiffAt_section] at hs ⊢
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑(trivializationAt F V x₀) { proj := x, s …
   set e := trivializationAt F V x₀
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑e { proj := x, snd := (c • ↑s) x }).snd) …
   refine' (contMDiffAt_const.smul hs).congr_of_eventuallyEq _
+  -- ⊢ 𝕜
   · exact c
+    -- 🎉 no goals
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  -- ⊢ ∀ (x : M), x ∈ e.baseSet → (fun x => (↑e { proj := x, snd := (c • ↑s) x }).s …
   intro x hx
+  -- ⊢ (fun x => (↑e { proj := x, snd := (c • ↑s) x }).snd) x = (fun p => c • (↑e { …
   apply (e.linear 𝕜 hx).2
+  -- 🎉 no goals
 #align cont_mdiff_section.has_smul ContMDiffSection.instSMul
 
 @[simp]
@@ -178,14 +210,23 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
 
 instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s => ⟨-s, _⟩⟩
+  -- ⊢ ContMDiff I (ModelWithCorners.prod I 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x  …
   intro x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   have hs := s.contMDiff x₀
+  -- ⊢ ContMDiffAt I (ModelWithCorners.prod I 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F …
   rw [contMDiffAt_section] at hs ⊢
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑(trivializationAt F V x₀) { proj := x, s …
   set e := trivializationAt F V x₀
+  -- ⊢ ContMDiffAt I 𝓘(𝕜, F) n (fun x => (↑e { proj := x, snd := (-↑s) x }).snd) x₀
   refine' hs.neg.congr_of_eventuallyEq _
+  -- ⊢ (fun x => (↑e { proj := x, snd := (-↑s) x }).snd) =ᶠ[nhds x₀] fun x => -(↑e  …
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  -- ⊢ ∀ (x : M), x ∈ e.baseSet → (fun x => (↑e { proj := x, snd := (-↑s) x }).snd) …
   intro x hx
+  -- ⊢ (fun x => (↑e { proj := x, snd := (-↑s) x }).snd) x = (fun x => -(↑e { proj  …
   apply (e.linear 𝕜 hx).map_neg
+  -- 🎉 no goals
 #align cont_mdiff_section.has_neg ContMDiffSection.instNeg
 
 @[simp]
@@ -200,8 +241,13 @@ instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
   induction' k with k ih
+  -- ⊢ ↑(Nat.zero • s) = Nat.zero • ↑s
   · simp_rw [Nat.zero_eq, zero_smul]; rfl
+    -- ⊢ ↑(0 • s) = 0
+                                      -- 🎉 no goals
   simp_rw [succ_nsmul, ← ih]; rfl
+  -- ⊢ ↑(Nat.succ k • s) = ↑s + ↑(k • s)
+                              -- 🎉 no goals
 #align cont_mdiff_section.coe_nsmul ContMDiffSection.coe_nsmul
 
 instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
@@ -211,10 +257,15 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
+  -- ⊢ ↑(Int.ofNat n • s) = Int.ofNat n • ↑s
   refine' (coe_nsmul s n).trans _
+  -- ⊢ n • ↑s = Int.ofNat n • ↑s
   simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
+  -- ⊢ ↑(Int.negSucc n • s) = Int.negSucc n • ↑s
   refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
+  -- ⊢ -((n + 1) • ↑s) = Int.negSucc n • ↑s
   simp only [negSucc_zsmul, neg_inj]
+  -- 🎉 no goals
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=

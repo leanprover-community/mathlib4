@@ -70,7 +70,10 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl
   | succ n, m => by
     rw [succ_mul]; intro h
+    -- ⊢ n * m + m = 0 → succ n = 0 ∨ m = 0
+                   -- ⊢ succ n = 0 ∨ m = 0
     exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
+    -- 🎉 no goals
 #align nat.eq_zero_of_mul_eq_zero Nat.eq_zero_of_mul_eq_zero
 
 /-! properties of inequality -/
@@ -269,19 +272,27 @@ protected theorem bit0_ne_bit1 : ∀ n m : ℕ, bit0 n ≠ bit1 m := fun n m : N
 protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | 0, 0, _h => rfl
   | 0, m + 1, h => by contradiction
+                      -- 🎉 no goals
   | n + 1, 0, h => by contradiction
+                      -- 🎉 no goals
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
       unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
       have aux : n + n = m + m := h; rw [aux]
     have : n + n = m + m := by repeat injection this with this
+    -- ⊢ n + 1 = m + 1
     have : n = m := Nat.bit0_inj this
+    -- ⊢ n + 1 = m + 1
     rw [this]
+    -- 🎉 no goals
 #align nat.bit0_inj Nat.bit0_inj
 
 protected theorem bit1_inj : ∀ {n m : ℕ}, bit1 n = bit1 m → n = m := @fun n m h =>
   have : succ (bit0 n) = succ (bit0 m) := by simp [Nat.bit1_eq_succ_bit0] at h; rw [h]
+                                             -- ⊢ succ (bit0 n) = succ (bit0 m)
+                                                                                -- 🎉 no goals
   have : bit0 n = bit0 m := by injection this
+                               -- 🎉 no goals
   Nat.bit0_inj this
 #align nat.bit1_inj Nat.bit1_inj
 
@@ -309,18 +320,26 @@ protected theorem one_ne_bit1 {n : ℕ} : n ≠ 0 → 1 ≠ bit1 n := fun h => N
 
 protected theorem one_lt_bit1 : ∀ {n : Nat}, n ≠ 0 → 1 < bit1 n
   | 0, h => by contradiction
+               -- 🎉 no goals
   | succ n, _h => by
     rw [Nat.bit1_succ_eq]
+    -- ⊢ 1 < succ (succ (bit1 n))
     apply succ_lt_succ
+    -- ⊢ 0 < bit1 n + 1
     apply zero_lt_succ
+    -- 🎉 no goals
 #align nat.one_lt_bit1 Nat.one_lt_bit1
 
 protected theorem one_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 1 < bit0 n
   | 0, h => by contradiction
+               -- 🎉 no goals
   | succ n, _h => by
     rw [Nat.bit0_succ_eq]
+    -- ⊢ 1 < succ (succ (bit0 n))
     apply succ_lt_succ
+    -- ⊢ 0 < bit0 n + 1
     apply zero_lt_succ
+    -- 🎉 no goals
 #align nat.one_lt_bit0 Nat.one_lt_bit0
 
 protected theorem bit0_lt {n m : Nat} (h : n < m) : bit0 n < bit0 m :=
@@ -341,6 +360,8 @@ protected theorem bit1_lt_bit0 : ∀ {n m : Nat}, n < m → bit1 n < bit0 m
     have : n ≤ m := le_of_lt_succ h
     have : succ (n + n) ≤ succ (m + m) := succ_le_succ (Nat.add_le_add this this)
     have : succ (n + n) ≤ succ m + m := by rw [succ_add]; assumption
+                                           -- ⊢ succ (n + n) ≤ succ (m + m)
+                                                          -- 🎉 no goals
     show succ (n + n) < succ (succ m + m) from lt_succ_of_le this
 #align nat.bit1_lt_bit0 Nat.bit1_lt_bit0
 
@@ -371,8 +392,11 @@ end bit
 
 def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ m → B) : B := by
   induction' h : n
+  -- ⊢ B
   · exact H1 h
+    -- 🎉 no goals
   · exact H2 _ h
+    -- 🎉 no goals
 #align nat.discriminate Nat.discriminate
 
 theorem one_eq_succ_zero : 1 = succ 0 :=
@@ -415,6 +439,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔ x + k ≤ y := by
   rw [← Nat.add_sub_cancel x k, Nat.sub_le_sub_iff_right h, Nat.add_sub_cancel]
+  -- 🎉 no goals
 #align nat.le_sub_iff_right Nat.le_sub_iff_right
 
 #align nat.sub_lt_of_pos_le Nat.sub_lt_of_pos_le
@@ -447,6 +472,7 @@ protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔
 
 protected theorem sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
   rw [Nat.sub_sub, Nat.sub_sub, Nat.add_comm]
+  -- 🎉 no goals
 #align nat.sub.right_comm Nat.sub.right_comm
 
 #align nat.succ_sub Nat.succ_sub
@@ -558,8 +584,13 @@ protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 
 theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
     cond (@decide (x % 2 = 1) d) 1 0 = x % 2 := by
   by_cases h : x % 2 = 1
+  -- ⊢ (bif decide (x % 2 = 1) then 1 else 0) = x % 2
   · simp! [*]
+    -- 🎉 no goals
   · cases mod_two_eq_zero_or_one x <;> simp! [*, Nat.zero_ne_one]
+    -- ⊢ (bif decide (x % 2 = 1) then 1 else 0) = x % 2
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 #align nat.cond_to_bool_mod_two Nat.cond_decide_mod_two
 
 #align nat.sub_mul_mod Nat.sub_mul_mod
@@ -622,6 +653,7 @@ theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
 
 protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k) = n / k := by
   rw [← Nat.div_div_eq_div_mul, Nat.mul_div_cancel_left _ H]
+  -- 🎉 no goals
 #align nat.mul_div_mul Nat.mul_div_mul
 
 #align nat.div_lt_self Nat.div_lt_self
@@ -708,6 +740,8 @@ private def wf_lbp : WellFounded (@lbp p) :=
       ⟨_, fun y r =>
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
+                                   -- ⊢ n ≤ k + m + 1
+                                                            -- 🎉 no goals
 
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
@@ -716,6 +750,8 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
       else
         have : ∀ n ≤ m, ¬p n := fun n h =>
           Or.elim (Decidable.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
+                                                                  -- ⊢ ¬p m
+                                                                          -- 🎉 no goals
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun n h => absurd h (Nat.not_lt_zero _)
 #align nat.find_x Nat.findX
@@ -779,7 +815,9 @@ lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List C
 
 lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
+  -- ⊢ n < b ^ e * b → n / b < b ^ e
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
+  -- 🎉 no goals
 
 /-- The String representation produced by toDigitsCore has the proper length relative to
 the number of digits in `n < e` for some base `b`. Since this works with any base greater

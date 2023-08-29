@@ -58,6 +58,7 @@ instance (X : C) :
   refine' ⟨⟨0, 0, _, _, _, _, isomorphic_distinguished _ (contractible_distinguished (0 : C)) _
     (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl))⟩⟩
   all_goals apply Subsingleton.elim
+  -- 🎉 no goals
 
 namespace Octahedron
 
@@ -85,11 +86,15 @@ def triangleMorphism₁ : Triangle.mk u₁₂ v₁₂ w₁₂ ⟶ Triangle.mk u�
   hom₃ := h.m₁
   comm₁ := by
     dsimp
+    -- ⊢ u₁₂ ≫ u₂₃ = 𝟙 X₁ ≫ u₁₃
     rw [id_comp, comm]
+    -- 🎉 no goals
   comm₂ := h.comm₁
   comm₃ := by
     dsimp
+    -- ⊢ w₁₂ ≫ (shiftFunctor C 1).map (𝟙 X₁) = h.m₁ ≫ w₁₃
     simpa only [Functor.map_id, comp_id] using h.comm₂.symm
+    -- 🎉 no goals
 #align category_theory.triangulated.octahedron.triangle_morphism₁ CategoryTheory.Triangulated.Octahedron.triangleMorphism₁
 
 /-- The second morphism of triangles given an octahedron. -/
@@ -101,10 +106,14 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
   hom₃ := h.m₃
   comm₁ := by
     dsimp
+    -- ⊢ u₁₃ ≫ 𝟙 X₃ = u₁₂ ≫ u₂₃
     rw [comp_id, comm]
+    -- 🎉 no goals
   comm₂ := by
     dsimp
+    -- ⊢ v₁₃ ≫ h.m₃ = 𝟙 X₃ ≫ v₂₃
     rw [id_comp, h.comm₃]
+    -- 🎉 no goals
   comm₃ := h.comm₄
 #align category_theory.triangulated.octahedron.triangle_morphism₂ CategoryTheory.Triangulated.Octahedron.triangleMorphism₂
 

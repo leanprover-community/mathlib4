@@ -65,23 +65,39 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
   toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
   map_add' x y := by
     apply (mono_iff_injective F'.m).1; infer_instance
+    -- ⊢ Mono F'.m
+                                       -- ⊢ ↑F'.m ((fun x => ↑F'.e ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1  …
     rw [LinearMap.map_add]
+    -- ⊢ ↑F'.m ((fun x => ↑F'.e ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1  …
     change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
+    -- ⊢ ↑(F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑(x +  …
     simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
+    -- ⊢ ↑(x + y) = ↑x + ↑y
     rfl
+    -- 🎉 no goals
   map_smul' c x := by
     apply (mono_iff_injective F'.m).1; infer_instance
+    -- ⊢ Mono F'.m
+                                       -- ⊢ ↑F'.m (AddHom.toFun { toFun := fun x => ↑F'.e ↑(Classical.indefiniteDescript …
     rw [LinearMap.map_smul]
+    -- ⊢ ↑F'.m (AddHom.toFun { toFun := fun x => ↑F'.e ↑(Classical.indefiniteDescript …
     change (F'.e ≫ F'.m) _ = _ • (F'.e ≫ F'.m) _
+    -- ⊢ ↑(F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑(c •  …
     simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
+    -- ⊢ ↑(c • x) = ↑(RingHom.id R) c • ↑x
     rfl
+    -- 🎉 no goals
 #align Module.image.lift ModuleCat.image.lift
 
 theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
+  -- ⊢ ↑(lift F' ≫ F'.m) x = ↑(ι f) x
   change (F'.e ≫ F'.m) _ = _
+  -- ⊢ ↑(F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x_1 => ↑f x_1 = ↑x) (_ …
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
+  -- ⊢ ↑x = ↑(ι f) x
   rfl
+  -- 🎉 no goals
 #align Module.image.lift_fac ModuleCat.image.lift_fac
 
 end
@@ -116,6 +132,7 @@ theorem imageIsoRange_inv_image_ι {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 theorem imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     (imageIsoRange f).hom ≫ ModuleCat.ofHom f.range.subtype = Limits.image.ι f := by
   erw [← imageIsoRange_inv_image_ι f, Iso.hom_inv_id_assoc]
+  -- 🎉 no goals
 #align Module.image_iso_range_hom_subtype ModuleCat.imageIsoRange_hom_subtype
 
 end ModuleCat

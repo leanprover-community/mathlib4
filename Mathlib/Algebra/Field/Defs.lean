@@ -151,6 +151,7 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x :=
 @[simp]
 theorem smul_one_eq_coe (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
+  -- 🎉 no goals
 #align rat.smul_one_eq_coe Rat.smul_one_eq_coe
 
 end Rat
@@ -224,7 +225,9 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
     inv_zero := dif_pos rfl,
     mul_inv_cancel := fun a ha => by
       convert Classical.choose_spec (IsField.mul_inv_cancel h ha)
+      -- ⊢ a⁻¹ = choose (_ : ∃ b, a * b = 1)
       exact dif_neg ha }
+      -- 🎉 no goals
 #align is_field.to_semifield IsField.toSemifield
 
 /-- Transferring from `IsField` to `Field`. -/
@@ -239,9 +242,13 @@ a lemma that there is a unique inverse could be useful.
 theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
   intro x hx
+  -- ⊢ ∃! y, x * y = 1
   apply exists_unique_of_exists_of_unique
+  -- ⊢ ∃ x_1, x * x_1 = 1
   · exact hf.mul_inv_cancel hx
+    -- 🎉 no goals
   · intro y z hxy hxz
+    -- ⊢ y = z
     calc
       y = y * (x * z) := by rw [hxz, mul_one]
       _ = x * y * z := by rw [← mul_assoc, hf.mul_comm y x]

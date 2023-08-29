@@ -168,7 +168,9 @@ theorem coe_mk (f : E →ₛₗ[σ₁₂] E₂) (hf) : ⇑(mk f hf) = f :=
 
 theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) (fun f => f) := by
   rintro ⟨_⟩ ⟨_⟩
+  -- ⊢ (fun f => ↑f) { toLinearMap := toLinearMap✝¹, norm_map' := norm_map'✝¹ } = ( …
   simp
+  -- 🎉 no goals
 
 #align linear_isometry.coe_injective LinearIsometry.coe_injective
 
@@ -449,7 +451,9 @@ def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometry f
   { f with
     norm_map' := by
       simp_rw [← dist_zero_right]
+      -- ⊢ ∀ (x : E), dist (↑{ toAddHom := f.toAddHom, map_smul' := (_ : ∀ (r : R) (x : …
       simpa using (hf.dist_eq · 0) }
+      -- 🎉 no goals
 #align linear_map.to_linear_isometry LinearMap.toLinearIsometry
 
 namespace Submodule
@@ -548,11 +552,17 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
   inv e := e.invFun
   coe_injective' f g h₁ h₂ := by
     cases' f with f' _
+    -- ⊢ { toLinearEquiv := f', norm_map' := norm_map'✝ } = g
     cases' g with g' _
+    -- ⊢ { toLinearEquiv := f', norm_map' := norm_map'✝¹ } = { toLinearEquiv := g', n …
     cases f'
+    -- ⊢ { toLinearEquiv := { toLinearMap := toLinearMap✝, invFun := invFun✝, left_in …
     cases g'
+    -- ⊢ { toLinearEquiv := { toLinearMap := toLinearMap✝¹, invFun := invFun✝¹, left_ …
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, FunLike.coe_fn_eq] at h₁
+    -- ⊢ { toLinearEquiv := { toLinearMap := toLinearMap✝¹, invFun := invFun✝¹, left_ …
     congr
+    -- 🎉 no goals
   left_inv e := e.left_inv
   right_inv e := e.right_inv
   map_add f := map_add f.toLinearEquiv
@@ -597,6 +607,7 @@ protected theorem congr_fun {f g : E ≃ₛₗᵢ[σ₁₂] E₂} (h : f = g) (x
 def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x‖) (h₂ : ∀ y, ‖e.symm y‖ ≤ ‖y‖) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
+                                        -- 🎉 no goals
 #align linear_isometry_equiv.of_bounds LinearIsometryEquiv.ofBounds
 
 @[simp]
@@ -651,7 +662,9 @@ theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
 
 theorem range_eq_univ (e : E ≃ₛₗᵢ[σ₁₂] E₂) : Set.range e = Set.univ := by
   rw [← coe_toIsometryEquiv]
+  -- ⊢ range ↑(toIsometryEquiv e) = univ
   exact IsometryEquiv.range_eq_univ _
+  -- 🎉 no goals
 #align linear_isometry_equiv.range_eq_univ LinearIsometryEquiv.range_eq_univ
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `Homeomorph`. -/
@@ -1087,7 +1100,9 @@ noncomputable def ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Functi
 theorem coe_ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Surjective f) :
     ⇑(LinearIsometryEquiv.ofSurjective f hfr) = f := by
   ext
+  -- ⊢ ↑(ofSurjective f hfr) x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align linear_isometry_equiv.coe_of_surjective LinearIsometryEquiv.coe_ofSurjective
 
 /-- If a linear isometry has an inverse, it is a linear isometric equivalence. -/
@@ -1138,10 +1153,14 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
     map_add' := by simp
+                   -- 🎉 no goals
     map_smul' := by simp
+                    -- 🎉 no goals
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩
+      -- ⊢ ‖↑{ toLinearMap := { toAddHom := { toFun := ↑(Equiv.prodAssoc E E₂ E₃), map_ …
       simp only [LinearEquiv.coe_mk, Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }
+      -- 🎉 no goals
 #align linear_isometry_equiv.prod_assoc LinearIsometryEquiv.prodAssoc
 
 @[simp]
@@ -1186,6 +1205,8 @@ theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
 
 @[simp]
 theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := by funext; rfl
+                                                                      -- ⊢ ofEq p p (_ : p = p) = refl R' { x // x ∈ p }
+                                                                              -- 🎉 no goals
 #align linear_isometry_equiv.of_eq_rfl LinearIsometryEquiv.ofEq_rfl
 
 end LinearIsometryEquiv

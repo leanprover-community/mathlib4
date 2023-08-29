@@ -37,28 +37,40 @@ open MorphComponents
 instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)) :=
   ⟨fun {X Y} f => by
     intro
+    -- ⊢ IsIso f
     -- restating the result in a way that allows induction on the degree n
     suffices ∀ n : ℕ, IsIso (f.app (op [n])) by
       haveI : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ => this Δ.unop.len
       apply NatIso.isIso_of_isIso_app
     -- restating the assumption in a more practical form
     have h₁ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.hom_inv_id (N₁.map f)))
+    -- ⊢ ∀ (n : ℕ), IsIso (NatTrans.app f (op [n]))
     have h₂ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.inv_hom_id (N₁.map f)))
+    -- ⊢ ∀ (n : ℕ), IsIso (NatTrans.app f (op [n]))
     have h₃ := fun n =>
       Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op [n]))
     simp only [N₁_map_f, Karoubi.comp_f, HomologicalComplex.comp_f,
       AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_eq, assoc] at h₁ h₂ h₃
     -- we have to construct an inverse to f in degree n, by induction on n
     intro n
+    -- ⊢ IsIso (NatTrans.app f (op [n]))
     induction' n with n hn
+    -- ⊢ IsIso (NatTrans.app f (op [Nat.zero]))
     -- degree 0
     · use (inv (N₁.map f)).f.f 0
+      -- ⊢ NatTrans.app f (op [Nat.zero]) ≫ HomologicalComplex.Hom.f (inv (N₁.map f)).f …
       have h₁₀ := h₁ 0
+      -- ⊢ NatTrans.app f (op [Nat.zero]) ≫ HomologicalComplex.Hom.f (inv (N₁.map f)).f …
       have h₂₀ := h₂ 0
+      -- ⊢ NatTrans.app f (op [Nat.zero]) ≫ HomologicalComplex.Hom.f (inv (N₁.map f)).f …
       dsimp at h₁₀ h₂₀
+      -- ⊢ NatTrans.app f (op [Nat.zero]) ≫ HomologicalComplex.Hom.f (inv (N₁.map f)).f …
       simp only [id_comp, comp_id] at h₁₀ h₂₀
+      -- ⊢ NatTrans.app f (op [Nat.zero]) ≫ HomologicalComplex.Hom.f (inv (N₁.map f)).f …
       tauto
+      -- 🎉 no goals
     · haveI := hn
+      -- ⊢ IsIso (NatTrans.app f (op [Nat.succ n]))
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
               b := fun i => inv (f.app (op [n])) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
@@ -71,21 +83,32 @@ theorem compatibility_N₂_N₁_karoubi :
         N₁ ⋙ (karoubiChainComplexEquivalence (Karoubi C) ℕ).functor ⋙
             Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse _ := by
   refine' CategoryTheory.Functor.ext (fun P => _) fun P Q f => _
+  -- ⊢ (N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor).obj P = (karoubiFunctorC …
   · refine' HomologicalComplex.ext _ _
+    -- ⊢ ((N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor).obj P).X = ((karoubiFun …
     · ext n
+      -- ⊢ (HomologicalComplex.X ((N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor).o …
       · rfl
+        -- 🎉 no goals
       · dsimp
+        -- ⊢ (HomologicalComplex.Hom.f PInfty n ≫ NatTrans.app P.p (op [n])) ≫ 𝟙 (P.X.obj …
         simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
+        -- 🎉 no goals
     · rintro _ n (rfl : n + 1 = _)
+      -- ⊢ HomologicalComplex.d ((N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor).ob …
       ext
+      -- ⊢ (HomologicalComplex.d ((N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor).o …
       have h := (AlternatingFaceMapComplex.map P.p).comm (n + 1) n
+      -- ⊢ (HomologicalComplex.d ((N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor).o …
       dsimp [N₂, karoubiChainComplexEquivalence,
         KaroubiHomologicalComplexEquivalence.Functor.obj] at h ⊢
       simp only [assoc, Karoubi.eqToHom_f, eqToHom_refl, comp_id,
         karoubi_alternatingFaceMapComplex_d, karoubi_PInfty_f,
         ← HomologicalComplex.Hom.comm_assoc, ← h, app_idem_assoc]
   · ext n
+    -- ⊢ (HomologicalComplex.Hom.f ((N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functo …
     dsimp [KaroubiKaroubi.inverse, Functor.mapHomologicalComplex]
+    -- ⊢ HomologicalComplex.Hom.f PInfty n ≫ NatTrans.app f.f (op [n]) = (Homological …
     simp only [karoubi_PInfty_f, HomologicalComplex.eqToHom_f, Karoubi.eqToHom_f,
       assoc, comp_id, PInfty_f_naturality, app_p_comp,
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
@@ -99,20 +122,28 @@ reflects isomorphisms from the fact that
 instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)) :=
   ⟨fun f => by
     intro
+    -- ⊢ IsIso f
     -- The following functor `F` reflects isomorphism because it is
     -- a composition of four functors which reflects isomorphisms.
     -- Then, it suffices to show that `F.map f` is an isomorphism.
     let F₁ := karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C
+    -- ⊢ IsIso f
     let F₂ : SimplicialObject (Karoubi C) ⥤ _ := N₁
+    -- ⊢ IsIso f
     let F₃ := (karoubiChainComplexEquivalence (Karoubi C) ℕ).functor
+    -- ⊢ IsIso f
     let F₄ := Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
+    -- ⊢ IsIso f
     -- porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
     -- could this be fixed by setting better instance priorities?
     haveI : ReflectsIsomorphisms F₁ := reflectsIsomorphisms_of_full_and_faithful _
+    -- ⊢ IsIso f
     haveI : ReflectsIsomorphisms F₂ := by infer_instance
+    -- ⊢ IsIso f
     haveI : ReflectsIsomorphisms F₃ := reflectsIsomorphisms_of_full_and_faithful _
+    -- ⊢ IsIso f
     haveI : ReflectsIsomorphisms ((KaroubiKaroubi.equivalence C).inverse) :=
       reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
@@ -120,6 +151,7 @@ instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
       apply Functor.map_isIso
     exact isIso_of_reflects_iso f F⟩
+    -- 🎉 no goals
 
 end DoldKan
 

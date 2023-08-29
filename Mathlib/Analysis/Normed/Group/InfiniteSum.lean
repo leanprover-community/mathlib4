@@ -41,21 +41,29 @@ theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i in s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_vanishing, nhds_basis_ball.forall_iff]
+  -- ⊢ (∀ (i : ℝ), 0 < i → ∃ s, ∀ (t : Finset ι), Disjoint t s → ∑ b in t, f b ∈ ba …
   · simp only [ball_zero_eq, Set.mem_setOf_eq]
+    -- 🎉 no goals
   · rintro s t hst ⟨s', hs'⟩
+    -- ⊢ ∃ s, ∀ (t_1 : Finset ι), Disjoint t_1 s → ∑ b in t_1, f b ∈ t
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩
+    -- 🎉 no goals
 #align cauchy_seq_finset_iff_vanishing_norm cauchySeq_finset_iff_vanishing_norm
 
 theorem summable_iff_vanishing_norm [CompleteSpace E] {f : ι → E} :
     Summable f ↔ ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε := by
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_vanishing_norm]
+  -- 🎉 no goals
 #align summable_iff_vanishing_norm summable_iff_vanishing_norm
 
 theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i := by
   refine' cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => _
+  -- ⊢ ∃ s, ∀ (t : Finset ι), Disjoint t s → ‖∑ i in t, f i‖ < ε
   rcases summable_iff_vanishing_norm.1 hg ε hε with ⟨s, hs⟩
+  -- ⊢ ∃ s, ∀ (t : Finset ι), Disjoint t s → ‖∑ i in t, f i‖ < ε
   refine' ⟨s ∪ h.toFinset, fun t ht => _⟩
+  -- ⊢ ‖∑ i in t, f i‖ < ε
   have : ∀ i ∈ t, ‖f i‖ ≤ g i := by
     intro i hi
     simp only [disjoint_left, mem_union, not_or, h.mem_toFinset, Set.mem_compl_iff,
@@ -78,9 +86,13 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     (hg : CauchySeq fun n => ∑ i in range n, g i) (hf : ∀ i, ‖f i‖ ≤ g i) :
     CauchySeq fun n => ∑ i in range n, f i := by
   refine' Metric.cauchySeq_iff'.2 fun ε hε => _
+  -- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → dist (∑ i in range n, f i) (∑ i in range N, f i) < ε
   refine' (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => _
+  -- ⊢ dist (∑ i in range n, f i) (∑ i in range N, f i) < ε
   specialize hg n hn
+  -- ⊢ dist (∑ i in range n, f i) (∑ i in range N, f i) < ε
   rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg ⊢
+  -- ⊢ ‖∑ k in Ico N n, f k‖ < ε
   calc
     ‖∑ k in Ico N n, f k‖ ≤ ∑ k in _, ‖f k‖ := norm_sum_le _ _
     _ ≤ ∑ k in _, g k := (sum_le_sum fun x _ => hf x)
@@ -112,7 +124,9 @@ which is summable, then `f` is summable. -/
 theorem summable_of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → ℝ) (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
   rw [summable_iff_cauchySeq_finset]
+  -- ⊢ CauchySeq fun s => ∑ b in s, f b
   exact cauchySeq_finset_of_norm_bounded g hg h
+  -- 🎉 no goals
 #align summable_of_norm_bounded summable_of_norm_bounded
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
@@ -126,9 +140,13 @@ assume that `∑' i, f i` is summable, and it might not be the case if `α` is n
 theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖ ≤ g i) : ‖∑' i : ι, f i‖ ≤ a := by
   by_cases hf : Summable f
+  -- ⊢ ‖∑' (i : ι), f i‖ ≤ a
   · exact hf.hasSum.norm_le_of_bounded hg h
+    -- 🎉 no goals
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
+    -- ⊢ 0 ≤ a
     exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
+    -- 🎉 no goals
 #align tsum_of_norm_bounded tsum_of_norm_bounded
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
@@ -145,7 +163,9 @@ space. -/
 theorem tsum_of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : ‖∑' i : ι, f i‖₊ ≤ a := by
   simp only [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnnorm] at *
+  -- ⊢ ‖∑' (i : ι), f i‖ ≤ ↑a
   exact tsum_of_norm_bounded hg h
+  -- 🎉 no goals
 #align tsum_of_nnnorm_bounded tsum_of_nnnorm_bounded
 
 /-- If `∑' i, ‖f i‖₊` is summable, then `‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊`. Note that
@@ -168,6 +188,7 @@ theorem summable_of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Sum
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   summable_of_norm_bounded (fun i => (g i : ℝ)) (NNReal.summable_coe.2 hg) fun i => by
     exact_mod_cast h i
+    -- 🎉 no goals
 #align summable_of_nnnorm_bounded summable_of_nnnorm_bounded
 
 theorem summable_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=

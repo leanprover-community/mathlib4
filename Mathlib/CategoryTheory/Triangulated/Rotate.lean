@@ -95,7 +95,9 @@ def rotate : Triangle C ⥤ Triangle C
     hom₃ := f.hom₁⟦1⟧'
     comm₃ := by
       dsimp
+      -- ⊢ (-(shiftFunctor C 1).map X✝.mor₁) ≫ (shiftFunctor C 1).map f.hom₂ = (shiftFu …
       simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
+      -- 🎉 no goals
 #align category_theory.pretriangulated.rotate CategoryTheory.Pretriangulated.rotate
 
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
@@ -110,13 +112,20 @@ def invRotate : Triangle C ⥤ Triangle C
     hom₃ := f.hom₂
     comm₁ := by
       dsimp
+      -- ⊢ (-(shiftFunctor C (-1)).map X✝.mor₃ ≫ NatTrans.app (shiftFunctorCompIsoId C  …
       simp only [neg_comp, assoc, comp_neg, neg_inj, ← Functor.map_comp_assoc, ← f.comm₃]
+      -- ⊢ (shiftFunctor C (-1)).map X✝.mor₃ ≫ NatTrans.app (shiftFunctorCompIsoId C 1  …
       rw [Functor.map_comp, assoc]
+      -- ⊢ (shiftFunctor C (-1)).map X✝.mor₃ ≫ NatTrans.app (shiftFunctorCompIsoId C 1  …
       erw [← NatTrans.naturality]
+      -- ⊢ (shiftFunctor C (-1)).map X✝.mor₃ ≫ (shiftFunctor C 1 ⋙ shiftFunctor C (-1)) …
       rfl
+      -- 🎉 no goals
     comm₃ := by
       erw [← reassoc_of% f.comm₂, Category.assoc, ← NatTrans.naturality]
+      -- ⊢ X✝.mor₂ ≫ (𝟭 C).map f.hom₃ ≫ NatTrans.app (shiftEquiv C 1).counitIso.inv Y✝. …
       rfl }
+      -- 🎉 no goals
 #align category_theory.pretriangulated.inv_rotate CategoryTheory.Pretriangulated.invRotate
 
 variable {C}
@@ -156,10 +165,14 @@ variable {C}
 
 instance : IsEquivalence (rotate C) := by
   change IsEquivalence (triangleRotation C).functor
+  -- ⊢ IsEquivalence (triangleRotation C).functor
   infer_instance
+  -- 🎉 no goals
 
 instance : IsEquivalence (invRotate C) := by
   change IsEquivalence (triangleRotation C).inverse
+  -- ⊢ IsEquivalence (triangleRotation C).inverse
   infer_instance
+  -- 🎉 no goals
 
 end CategoryTheory.Pretriangulated

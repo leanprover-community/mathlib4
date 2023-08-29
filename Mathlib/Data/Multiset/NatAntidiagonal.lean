@@ -35,12 +35,14 @@ def antidiagonal (n : ℕ) : Multiset (ℕ × ℕ) :=
 @[simp]
 theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_coe, List.Nat.mem_antidiagonal]
+  -- 🎉 no goals
 #align multiset.nat.mem_antidiagonal Multiset.Nat.mem_antidiagonal
 
 /-- The cardinality of the antidiagonal of `n` is `n+1`. -/
 @[simp]
 theorem card_antidiagonal (n : ℕ) : card (antidiagonal n) = n + 1 := by
   rw [antidiagonal, coe_card, List.Nat.length_antidiagonal]
+  -- 🎉 no goals
 #align multiset.nat.card_antidiagonal Multiset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
@@ -59,6 +61,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) ::ₘ (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, List.Nat.antidiagonal_succ, coe_map, cons_coe]
+  -- 🎉 no goals
 #align multiset.nat.antidiagonal_succ Multiset.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' {n : ℕ} :
@@ -71,11 +74,14 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) ::ₘ (n + 2, 0) ::ₘ (antidiagonal n).map (Prod.map Nat.succ Nat.succ) := by
   rw [antidiagonal_succ, antidiagonal_succ', map_cons, map_map, Prod_map]
+  -- ⊢ (0, n + 1 + 1) ::ₘ (Nat.succ (n + 1, 0).fst, id (n + 1, 0).snd) ::ₘ map (Pro …
   rfl
+  -- 🎉 no goals
 #align multiset.nat.antidiagonal_succ_succ' Multiset.Nat.antidiagonal_succ_succ'
 
 theorem map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = antidiagonal n := by
   rw [antidiagonal, coe_map, List.Nat.map_swap_antidiagonal, coe_reverse]
+  -- 🎉 no goals
 #align multiset.nat.map_swap_antidiagonal Multiset.Nat.map_swap_antidiagonal
 
 end Nat

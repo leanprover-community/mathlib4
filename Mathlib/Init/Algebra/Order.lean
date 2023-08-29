@@ -396,6 +396,7 @@ instance : IsTotalPreorder α (· ≤ ·)
 -- TODO(Leo): decide whether we should keep this instance or not
 instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
   have : IsTotalPreorder α (· ≤ ·) := by infer_instance -- porting note: added
+                                         -- 🎉 no goals
   isStrictWeakOrder_of_isTotalPreorder lt_iff_not_ge
 #align is_strict_weak_order_of_linear_order isStrictWeakOrder_of_linearOrder
 
@@ -420,47 +421,92 @@ section Ord
 
 theorem compare_lt_iff_lt {a b : α} : (compare a b = .lt) ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  -- ⊢ (if a < b then Ordering.lt else if a = b then Ordering.eq else Ordering.gt)  …
   split_ifs <;> simp only [*, lt_irrefl]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 
 theorem compare_gt_iff_gt {a b : α} : (compare a b = .gt) ↔ a > b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  -- ⊢ (if a < b then Ordering.lt else if a = b then Ordering.eq else Ordering.gt)  …
   split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- ⊢ True ↔ a > b
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
     exact true_iff_iff.2 h
 
 theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  -- ⊢ (if a < b then Ordering.lt else if a = b then Ordering.eq else Ordering.gt)  …
   split_ifs <;> try simp only []
+                -- ⊢ False ↔ a = b
+                -- ⊢ True ↔ a = b
+                -- ⊢ False ↔ a = b
   case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
+  -- ⊢ True ↔ a = b
+  -- 🎉 no goals
   case _ _ h => exact true_iff_iff.2 h
+  -- ⊢ False ↔ a = b
+  -- 🎉 no goals
   case _ _ h => exact false_iff_iff.2 h
+  -- 🎉 no goals
+  -- 🎉 no goals
 
 theorem compare_le_iff_le {a b : α} : (compare a b ≠ .gt) ↔ a ≤ b := by
   cases h : compare a b <;> simp only []
+                            -- ⊢ True ↔ a ≤ b
+                            -- ⊢ True ↔ a ≤ b
+                            -- ⊢ False ↔ a ≤ b
   · exact true_iff_iff.2 <| le_of_lt <| compare_lt_iff_lt.1 h
+    -- 🎉 no goals
   · exact true_iff_iff.2 <| le_of_eq <| compare_eq_iff_eq.1 h
+    -- 🎉 no goals
   · exact false_iff_iff.2 <| not_le_of_gt <| compare_gt_iff_gt.1 h
+    -- 🎉 no goals
 
 theorem compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
   cases h : compare a b <;> simp only []
+                            -- ⊢ False ↔ a ≥ b
+                            -- ⊢ True ↔ a ≥ b
+                            -- ⊢ True ↔ a ≥ b
   · exact false_iff_iff.2 <| (lt_iff_not_ge a b).1 <| compare_lt_iff_lt.1 h
+    -- 🎉 no goals
   · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+    -- 🎉 no goals
   · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
+    -- 🎉 no goals
 
 theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
   cases o <;> simp only [Ordering.toRel]
+              -- ⊢ compare a b = Ordering.lt ↔ a < b
+              -- ⊢ compare a b = Ordering.eq ↔ a = b
+              -- ⊢ compare a b = Ordering.gt ↔ a > b
   · exact compare_lt_iff_lt
+    -- 🎉 no goals
   · exact compare_eq_iff_eq
+    -- 🎉 no goals
   · exact compare_gt_iff_gt
+    -- 🎉 no goals
 
 instance : Std.TransCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm
+    -- ⊢ Ordering.gt = compare b a
+    -- ⊢ Ordering.eq = compare b a
+    -- ⊢ Ordering.lt = compare b a
+                                  -- ⊢ compare b a = Ordering.gt
+                                  -- ⊢ compare b a = Ordering.eq
+                                  -- ⊢ compare b a = Ordering.lt
     · exact compare_gt_iff_gt.2 <| compare_lt_iff_lt.1 h
+      -- 🎉 no goals
     · exact compare_eq_iff_eq.2 <| compare_eq_iff_eq.1 h |>.symm
+      -- 🎉 no goals
     · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
+      -- 🎉 no goals
   le_trans := fun h₁ h₂ ↦
     compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
 

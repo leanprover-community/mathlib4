@@ -35,18 +35,27 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
     ∃ G : C, Injective G ∧ IsCoseparator G := by
   haveI : WellPowered C := wellPowered_of_isDetector G hG.isDetector
+  -- ⊢ ∃ G, Injective G ∧ IsCoseparator G
   haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
+  -- ⊢ ∃ G, Injective G ∧ IsCoseparator G
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
+  -- ⊢ ∃ G, Injective G ∧ IsCoseparator G
   refine' ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => _⟩
+  -- ⊢ f = 0
   refine' (Preadditive.isSeparator_iff _).1 hG _ fun h => _
+  -- ⊢ h ≫ f = 0
   suffices hh : factorThruImage (h ≫ f) = 0
+  -- ⊢ h ≫ f = 0
   · rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
+    -- 🎉 no goals
   let R := Subobject.mk (factorThruImage (h ≫ f)).op
+  -- ⊢ factorThruImage (h ≫ f) = 0
   let q₁ : image (h ≫ f) ⟶ unop R :=
     (Subobject.underlyingIso (factorThruImage (h ≫ f)).op).unop.hom
   let q₂ : unop (R : Cᵒᵖ) ⟶ piObj fun P : Subobject (op G) => unop P :=
     section_ (Pi.π (fun P : Subobject (op G) => (unop P : C)) R)
   let q : image (h ≫ f) ⟶ T := q₁ ≫ q₂ ≫ Injective.ι _
+  -- ⊢ factorThruImage (h ≫ f) = 0
   exact zero_of_comp_mono q
     (by rw [← Injective.comp_factorThru q (Limits.image.ι (h ≫ f)), Limits.image.fac_assoc,
       Category.assoc, hf, comp_zero])
@@ -55,7 +64,9 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
 theorem has_projective_separator [HasColimits C] [EnoughProjectives C] (G : C)
     (hG : IsCoseparator G) : ∃ G : C, Projective G ∧ IsSeparator G := by
   obtain ⟨T, hT₁, hT₂⟩ := has_injective_coseparator (op G) ((isSeparator_op_iff _).2 hG)
+  -- ⊢ ∃ G, Projective G ∧ IsSeparator G
   exact ⟨unop T, inferInstance, (isSeparator_unop_iff _).2 hT₂⟩
+  -- 🎉 no goals
 #align category_theory.abelian.has_projective_separator CategoryTheory.Abelian.has_projective_separator
 
 end CategoryTheory.Abelian

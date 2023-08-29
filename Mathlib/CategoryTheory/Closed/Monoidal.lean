@@ -53,8 +53,11 @@ we'll usually prove all objects are closed uniformly.
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
   isAdj := by
     haveI := hX.isAdj
+    -- ⊢ IsLeftAdjoint (tensorLeft (X ⊗ Y))
     haveI := hY.isAdj
+    -- ⊢ IsLeftAdjoint (tensorLeft (X ⊗ Y))
     exact Adjunction.leftAdjointOfNatIso (MonoidalCategory.tensorLeftTensor _ _).symm
+    -- 🎉 no goals
 #align category_theory.tensor_closed CategoryTheory.tensorClosed
 
 /-- The unit object is always closed.
@@ -70,10 +73,14 @@ def unitClosed : Closed (𝟙_ C) where
               { toFun := fun a => (leftUnitor X).inv ≫ a
                 invFun := fun a => (leftUnitor X).hom ≫ a
                 left_inv := by aesop_cat
+                               -- 🎉 no goals
                 right_inv := by aesop_cat }
+                                -- 🎉 no goals
             homEquiv_naturality_left_symm := fun f g => by
               dsimp
+              -- ⊢ (λ_ X'✝).hom ≫ f ≫ g = (𝟙 (𝟙_ C) ⊗ f) ≫ (λ_ X✝).hom ≫ g
               rw [leftUnitor_naturality_assoc] } }
+              -- 🎉 no goals
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
@@ -234,11 +241,14 @@ variable (A X)
 
 theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   rw [uncurry_eq, tensor_id, id_comp]
+  -- 🎉 no goals
 #align category_theory.monoidal_closed.uncurry_id_eq_ev CategoryTheory.MonoidalClosed.uncurry_id_eq_ev
 
 theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
+  -- ⊢ NatTrans.app (ihom.coev A) ((𝟭 C).obj X) ≫ 𝟙 ((ihom A).obj (A ⊗ (𝟭 C).obj X) …
   apply comp_id
+  -- 🎉 no goals
 #align category_theory.monoidal_closed.curry_id_eq_coev CategoryTheory.MonoidalClosed.curry_id_eq_coev
 
 section Pre
@@ -260,6 +270,7 @@ theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = (f ⊗ 𝟙 _) ≫ (ihom.ev A).app X := by
   rw [uncurry_eq, id_tensor_pre_app_comp_ev]
+  -- 🎉 no goals
 #align category_theory.monoidal_closed.uncurry_pre CategoryTheory.MonoidalClosed.uncurry_pre
 
 @[reassoc (attr := simp)]
@@ -271,18 +282,23 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) :
 @[simp]
 theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
+  -- ⊢ ↑(transferNatTransSelf (ihom.adjunction A) (ihom.adjunction A)) (𝟙 ((tensori …
   dsimp
+  -- ⊢ ↑(transferNatTransSelf (ihom.adjunction A) (ihom.adjunction A)) (𝟙 (tensorLe …
   simp
+  -- 🎉 no goals
 #align category_theory.monoidal_closed.pre_id CategoryTheory.MonoidalClosed.pre_id
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Closed A₁] [Closed A₂] [Closed A₃] (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
     pre (f ≫ g) = pre g ≫ pre f := by
   rw [pre, pre, pre, transferNatTransSelf_comp, (tensoringLeft C).map_comp]
+  -- 🎉 no goals
 #align category_theory.monoidal_closed.pre_map CategoryTheory.MonoidalClosed.pre_map
 
 theorem pre_comm_ihom_map {W X Y Z : C} [Closed W] [Closed X] (f : W ⟶ X) (g : Y ⟶ Z) :
     (pre f).app Y ≫ (ihom W).map g = (ihom X).map g ≫ (pre f).app Z := by simp
+                                                                          -- 🎉 no goals
 #align category_theory.monoidal_closed.pre_comm_ihom_map CategoryTheory.MonoidalClosed.pre_comm_ihom_map
 
 end Pre
@@ -305,9 +321,13 @@ noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
     where closed X :=
     { isAdj := by
         haveI q : Closed (F.obj X) := inferInstance
+        -- ⊢ IsLeftAdjoint (tensorLeft X)
         haveI : IsLeftAdjoint (tensorLeft (F.obj X)) := q.isAdj
+        -- ⊢ IsLeftAdjoint (tensorLeft X)
         have i := compInvIso (MonoidalFunctor.commTensorLeft F X)
+        -- ⊢ IsLeftAdjoint (tensorLeft X)
         exact Adjunction.leftAdjointOfNatIso i }
+        -- 🎉 no goals
 #align category_theory.monoidal_closed.of_equiv CategoryTheory.MonoidalClosed.ofEquiv
 
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the

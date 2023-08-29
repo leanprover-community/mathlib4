@@ -66,10 +66,15 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
     {ϕ : M →ₗ[R] R} (hϕ : ∀ ψ : M →ₗ[R] R, ¬N.map ϕ < N.map ψ) [(N.map ϕ).IsPrincipal]
     (hgen : generator (N.map ϕ) = (0 : R)) : N = ⊥ := by
   rw [Submodule.eq_bot_iff]
+  -- ⊢ ∀ (x : M), x ∈ N → x = 0
   intro x hx
+  -- ⊢ x = 0
   refine' b.ext_elem fun i ↦ _
+  -- ⊢ ↑(↑b.repr x) i = ↑(↑b.repr 0) i
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
+  -- ⊢ ↑(↑b.repr x) i = ↑(↑b.repr 0) i
   rw [LinearEquiv.map_zero, Finsupp.zero_apply]
+  -- ⊢ ↑(↑b.repr x) i = 0
   exact
     (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _
       ⟨x, hx, rfl⟩
@@ -79,12 +84,19 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
     (hNO : N ≤ O) {ϕ : O →ₗ[R] R} (hϕ : ∀ ψ : O →ₗ[R] R, ¬ϕ.submoduleImage N < ψ.submoduleImage N)
     [(ϕ.submoduleImage N).IsPrincipal] (hgen : generator (ϕ.submoduleImage N) = 0) : N = ⊥ := by
   rw [Submodule.eq_bot_iff]
+  -- ⊢ ∀ (x : M), x ∈ N → x = 0
   intro x hx
+  -- ⊢ x = 0
   refine (mk_eq_zero _ _).mp (show (⟨x, hNO hx⟩ : O) = 0 from b.ext_elem fun i ↦ ?_)
+  -- ⊢ ↑(↑b.repr { val := x, property := (_ : x ∈ O) }) i = ↑(↑b.repr 0) i
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
+  -- ⊢ ↑(↑b.repr { val := x, property := (_ : x ∈ O) }) i = ↑(↑b.repr 0) i
   rw [LinearEquiv.map_zero, Finsupp.zero_apply]
+  -- ⊢ ↑(↑b.repr { val := x, property := (_ : x ∈ O) }) i = 0
   refine (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _ ?_
+  -- ⊢ ↑(↑b.repr { val := x, property := (_ : x ∈ O) }) i ∈ LinearMap.submoduleImag …
   exact (LinearMap.mem_submoduleImage_of_le hNO).mpr ⟨x, hx, rfl⟩
+  -- 🎉 no goals
 #align eq_bot_of_generator_maximal_submodule_image_eq_zero eq_bot_of_generator_maximal_submoduleImage_eq_zero
 
 end Ring
@@ -100,9 +112,11 @@ open Submodule.IsPrincipal Set Submodule
 theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
     x ∣ generator I ↔ I = Ideal.span {x} := by
   conv_rhs => rw [← span_singleton_generator I]
+  -- ⊢ x ∣ generator I ↔ span R {generator I} = Ideal.span {x}
   rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
     ← mem_iff_generator_dvd]
   exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
+  -- 🎉 no goals
 #align dvd_generator_iff dvd_generator_iff
 
 end IsDomain
@@ -123,11 +137,15 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     (ϕy_eq : ϕ ⟨y, hNO yN⟩ = generator (ϕ.submoduleImage N)) (ψ : O →ₗ[R] R) :
     generator (ϕ.submoduleImage N) ∣ ψ ⟨y, hNO yN⟩ := by
   let a : R := generator (ϕ.submoduleImage N)
+  -- ⊢ generator (LinearMap.submoduleImage ϕ N) ∣ ↑ψ { val := y, property := (_ : y …
   let d : R := IsPrincipal.generator (Submodule.span R {a, ψ ⟨y, hNO yN⟩})
+  -- ⊢ generator (LinearMap.submoduleImage ϕ N) ∣ ↑ψ { val := y, property := (_ : y …
   have d_dvd_left : d ∣ a := (mem_iff_generator_dvd _).mp (subset_span (mem_insert _ _))
+  -- ⊢ generator (LinearMap.submoduleImage ϕ N) ∣ ↑ψ { val := y, property := (_ : y …
   have d_dvd_right : d ∣ ψ ⟨y, hNO yN⟩ :=
     (mem_iff_generator_dvd _).mp (subset_span (mem_insert_of_mem _ (mem_singleton _)))
   refine' dvd_trans _ d_dvd_right
+  -- ⊢ generator (LinearMap.submoduleImage ϕ N) ∣ d
   rw [dvd_generator_iff, Ideal.span, ←
     span_singleton_generator (Submodule.span R {a, ψ ⟨y, hNO yN⟩})]
   obtain ⟨r₁, r₂, d_eq⟩ : ∃ r₁ r₂ : R, d = r₁ * a + r₂ * ψ ⟨y, hNO yN⟩ := by
@@ -136,6 +154,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     obtain ⟨r₂, rfl⟩ := mem_span_singleton.mp hr₂'
     exact ⟨r₁, r₂, hr₁⟩
   let ψ' : O →ₗ[R] R := r₁ • ϕ + r₂ • ψ
+  -- ⊢ span R {generator (span R {a, ↑ψ { val := y, property := (_ : y ∈ O) }})} =  …
   have : span R {d} ≤ ψ'.submoduleImage N := by
     rw [span_le, singleton_subset_iff, SetLike.mem_coe, LinearMap.mem_submoduleImage_of_le hNO]
     refine' ⟨y, yN, _⟩
@@ -144,10 +163,15 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
   refine'
     le_antisymm (this.trans (le_of_eq _)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
   rw [span_singleton_generator]
+  -- ⊢ LinearMap.submoduleImage ψ' N = LinearMap.submoduleImage ϕ N
   apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
+  -- ⊢ LinearMap.submoduleImage ϕ N ≤ span R {d}
   rw [← span_singleton_generator (ϕ.submoduleImage N)]
+  -- ⊢ span R {generator (LinearMap.submoduleImage ϕ N)} ≤ span R {d}
   exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
+  -- ⊢ generator (LinearMap.submoduleImage ϕ N) ∈ span R {a, ↑ψ { val := y, propert …
   · exact subset_span (mem_insert _ _)
+    -- 🎉 no goals
 #align generator_maximal_submodule_image_dvd generator_maximal_submoduleImage_dvd
 
 /-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
@@ -188,25 +212,38 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     obtain ⟨ϕ, rfl⟩ := Set.mem_range.mp P_eq
     exact ⟨ϕ, fun ψ hψ ↦ P_max _ ⟨_, rfl⟩ hψ⟩
   let ϕ := this.choose
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   have ϕ_max := this.choose_spec
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   -- Since `ϕ(N)` is an `R`-submodule of the PID `R`,
   -- it is principal and generated by some `a`.
   let a := generator (ϕ.submoduleImage N)
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   have a_mem : a ∈ ϕ.submoduleImage N := generator_mem _
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   -- If `a` is zero, then the submodule is trivial. So let's assume `a ≠ 0`, `N ≠ ⊥`.
   by_cases a_zero : a = 0
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   · have := eq_bot_of_generator_maximal_submoduleImage_eq_zero b'M N_le_M ϕ_max a_zero
+    -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
     contradiction
+    -- 🎉 no goals
   -- We claim that `ϕ⁻¹ a = y` can be taken as basis element of `N`.
   obtain ⟨y, yN, ϕy_eq⟩ := (LinearMap.mem_submoduleImage_of_le N_le_M).mp a_mem
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   have _ϕy_ne_zero : ϕ ⟨y, N_le_M yN⟩ ≠ 0 := fun h ↦ a_zero (ϕy_eq.symm.trans h)
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   -- Write `y` as `a • y'` for some `y'`.
   have hdvd : ∀ i, a ∣ b'M.coord i ⟨y, N_le_M yN⟩ := fun i ↦
     generator_maximal_submoduleImage_dvd N_le_M ϕ_max y yN ϕy_eq (b'M.coord i)
   choose c hc using hdvd
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   cases nonempty_fintype ι
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   let y' : O := ∑ i, c i • b'M i
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   have y'M : y' ∈ M := M.sum_mem fun i _ ↦ M.smul_mem (c i) (b'M i).2
+  -- ⊢ ∃ y, y ∈ M ∧ ∃ a x M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_o …
   have mk_y' : (⟨y', y'M⟩ : M) = ∑ i, c i • b'M i :=
     Subtype.ext
       (show y' = M.subtype _ by
@@ -220,6 +257,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     rfl
   -- We found a `y` and an `a`!
   refine' ⟨y', y'M, a, a_smul_y'.symm ▸ yN, _⟩
+  -- ⊢ ∃ M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_ortho_N', ∀ (n' :  …
   have ϕy'_eq : ϕ ⟨y', y'M⟩ = 1 :=
     mul_left_cancel₀ a_zero
       (calc
@@ -229,18 +267,24 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
         _ = a * 1 := (mul_one a).symm
         )
   have ϕy'_ne_zero : ϕ ⟨y', y'M⟩ ≠ 0 := by simpa only [ϕy'_eq] using one_ne_zero
+  -- ⊢ ∃ M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_ortho_N', ∀ (n' :  …
   -- `M' := ker (ϕ : M → R)` is smaller than `M` and `N' := ker (ϕ : N → R)` is smaller than `N`.
   let M' : Submodule R O := ϕ.ker.map M.subtype
+  -- ⊢ ∃ M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_ortho_N', ∀ (n' :  …
   let N' : Submodule R O := (ϕ.comp (ofLe N_le_M)).ker.map N.subtype
+  -- ⊢ ∃ M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_ortho_N', ∀ (n' :  …
   have M'_le_M : M' ≤ M := M.map_subtype_le (LinearMap.ker ϕ)
+  -- ⊢ ∃ M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_ortho_N', ∀ (n' :  …
   have N'_le_M' : N' ≤ M' := by
     intro x hx
     simp only [mem_map, LinearMap.mem_ker] at hx ⊢
     obtain ⟨⟨x, xN⟩, hx, rfl⟩ := hx
     exact ⟨⟨x, N_le_M xN⟩, hx, rfl⟩
   have N'_le_N : N' ≤ N := N.map_subtype_le (LinearMap.ker (ϕ.comp (ofLe N_le_M)))
+  -- ⊢ ∃ M', M' ≤ M ∧ ∃ N', N' ≤ N ∧ ∃ _N'_le_M' _y_ortho_M' _ay_ortho_N', ∀ (n' :  …
   -- So fill in those results as well.
   refine' ⟨M', M'_le_M, N', N'_le_N, N'_le_M', _⟩
+  -- ⊢ ∃ _y_ortho_M' _ay_ortho_N', ∀ (n' : ℕ) (bN' : Basis (Fin n') R { x // x ∈ N' …
   -- Note that `y'` is orthogonal to `M'`.
   have y'_ortho_M' : ∀ (c : R), ∀ z ∈ M', c • y' + z = 0 → c = 0 := by
     intro c x xM' hc
@@ -256,35 +300,63 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     rw [mul_comm, mul_smul, hc]
   -- So we can extend a basis for `N'` with `y`
   refine' ⟨y'_ortho_M', ay'_ortho_N', fun n' bN' ↦ ⟨_, _⟩⟩
+  -- ⊢ Basis (Fin (n' + 1)) R { x // x ∈ N }
   · refine' Basis.mkFinConsOfLE y yN bN' N'_le_N _ _
+    -- ⊢ ∀ (c : R) (x : O), x ∈ N' → c • y + x = 0 → c = 0
     · intro c z zN' hc
+      -- ⊢ c = 0
       refine' ay'_ortho_N' c z zN' _
+      -- ⊢ c • a • y' + z = 0
       rwa [← a_smul_y'] at hc
+      -- 🎉 no goals
     · intro z zN
+      -- ⊢ ∃ c, z + c • y ∈ N'
       obtain ⟨b, hb⟩ : _ ∣ ϕ ⟨z, N_le_M zN⟩ := generator_submoduleImage_dvd_of_mem N_le_M ϕ zN
+      -- ⊢ ∃ c, z + c • y ∈ N'
       refine' ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, _, _⟩⟩
+      -- ⊢ { val := z - b • y, property := (_ : z - b • y ∈ N) } ∈ LinearMap.ker (Linea …
       · refine' LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from _)
+        -- ⊢ ↑ϕ ({ val := z, property := (_ : z ∈ M) } - b • { val := y, property := (_ : …
         rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
+        -- 🎉 no goals
       · simp only [sub_eq_add_neg, neg_smul, coeSubtype]
+        -- 🎉 no goals
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
+  -- ⊢ ∃ hnm bM, ∀ (as : Fin n' → R), (∀ (i : Fin n'), ↑(↑bN' i) = as i • ↑(↑bM' (F …
   refine' ⟨Nat.succ_le_succ hn'm', _, _⟩
+  -- ⊢ Basis (Fin (m' + 1)) R { x // x ∈ M }
   · refine' Basis.mkFinConsOfLE y' y'M bM' M'_le_M y'_ortho_M' _
+    -- ⊢ ∀ (z : O), z ∈ M → ∃ c, z + c • y' ∈ M'
     intro z zM
+    -- ⊢ ∃ c, z + c • y' ∈ M'
     refine' ⟨-ϕ ⟨z, zM⟩, ⟨⟨z, zM⟩ - ϕ ⟨z, zM⟩ • ⟨y', y'M⟩, LinearMap.mem_ker.mpr _, _⟩⟩
+    -- ⊢ ↑ϕ ({ val := z, property := zM } - ↑ϕ { val := z, property := zM } • { val : …
     · rw [LinearMap.map_sub, LinearMap.map_smul, ϕy'_eq, smul_eq_mul, mul_one, sub_self]
+      -- 🎉 no goals
     · rw [LinearMap.map_sub, LinearMap.map_smul, sub_eq_add_neg, neg_smul]
+      -- ⊢ ↑(Submodule.subtype M) { val := z, property := zM } + -(↑ϕ { val := z, prope …
       rfl
+      -- 🎉 no goals
   -- It remains to show the extended bases are compatible with each other.
   intro as h
+  -- ⊢ ∃ as', ∀ (i : Fin (n' + 1)), ↑(↑(Basis.mkFinConsOfLE y yN bN' N'_le_N (_ : ∀ …
   refine' ⟨Fin.cons a as, _⟩
+  -- ⊢ ∀ (i : Fin (n' + 1)), ↑(↑(Basis.mkFinConsOfLE y yN bN' N'_le_N (_ : ∀ (c : R …
   intro i
+  -- ⊢ ↑(↑(Basis.mkFinConsOfLE y yN bN' N'_le_N (_ : ∀ (c : R) (z : O), z ∈ N' → c  …
   rw [Basis.coe_mkFinConsOfLE, Basis.coe_mkFinConsOfLE]
+  -- ⊢ ↑(Fin.cons { val := y, property := yN } (↑(ofLe N'_le_N) ∘ ↑bN') i) = Fin.co …
   refine' Fin.cases _ (fun i ↦ _) i
+  -- ⊢ ↑(Fin.cons { val := y, property := yN } (↑(ofLe N'_le_N) ∘ ↑bN') 0) = Fin.co …
   · simp only [Fin.cons_zero, Fin.castLE_zero]
+    -- ⊢ y = generator (LinearMap.submoduleImage (Exists.choose this) N) • ∑ x : ι, ↑ …
     exact a_smul_y'.symm
+    -- 🎉 no goals
   · rw [Fin.castLE_succ]
+    -- ⊢ ↑(Fin.cons { val := y, property := yN } (↑(ofLe N'_le_N) ∘ ↑bN') (Fin.succ i …
     simp only [Fin.cons_succ, Function.comp_apply, coe_ofLe, map_coe, coeSubtype, h i]
+    -- 🎉 no goals
 #align submodule.basis_of_pid_aux Submodule.basis_of_pid_aux
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
@@ -298,19 +370,29 @@ See also the stronger version `Submodule.smithNormalForm`.
 theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
   haveI := Classical.decEq M
+  -- ⊢ ∃ n, Nonempty (Basis (Fin n) R { x // x ∈ N })
   cases nonempty_fintype ι
+  -- ⊢ ∃ n, Nonempty (Basis (Fin n) R { x // x ∈ N })
   induction' N using inductionOnRank with N ih
   · exact b
+    -- 🎉 no goals
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
+  -- ⊢ ∃ n, Nonempty (Basis (Fin n) R { x // x ∈ N })
   by_cases N_bot : N = ⊥
   · subst N_bot
+    -- ⊢ ∃ n, Nonempty (Basis (Fin n) R { x // x ∈ ⊥ })
     exact ⟨0, ⟨Basis.empty _⟩⟩
+    -- 🎉 no goals
   obtain ⟨y, -, a, hay, M', -, N', N'_le_N, -, -, ay_ortho, h'⟩ :=
     Submodule.basis_of_pid_aux ⊤ N b' N_bot le_top
   obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
+  -- ⊢ ∃ n, Nonempty (Basis (Fin n) R { x // x ∈ N })
   obtain ⟨bN, _hbN⟩ := h' n' bN'
+  -- ⊢ ∃ n, Nonempty (Basis (Fin n) R { x // x ∈ N })
   exact ⟨n' + 1, ⟨bN⟩⟩
+  -- ⊢ Fintype ι
   infer_instance
+  -- 🎉 no goals
 #align submodule.nonempty_basis_of_pid Submodule.nonempty_basis_of_pid
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
@@ -326,9 +408,13 @@ noncomputable def Submodule.basisOfPid {ι : Type*} [Finite ι] (b : Basis ι R 
 theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
     Submodule.basisOfPid b ⊥ = ⟨0, Basis.empty _⟩ := by
   obtain ⟨n, b'⟩ := Submodule.basisOfPid b ⊥
+  -- ⊢ { fst := n, snd := b' } = { fst := 0, snd := Basis.empty { x // x ∈ ⊥ } }
   let e : Fin n ≃ Fin 0 := b'.indexEquiv (Basis.empty _ : Basis (Fin 0) R (⊥ : Submodule R M))
+  -- ⊢ { fst := n, snd := b' } = { fst := 0, snd := Basis.empty { x // x ∈ ⊥ } }
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
+  -- ⊢ { fst := 0, snd := b' } = { fst := 0, snd := Basis.empty { x // x ∈ ⊥ } }
   exact Sigma.eq rfl (Basis.eq_of_apply_eq <| finZeroElim)
+  -- 🎉 no goals
 #align submodule.basis_of_pid_bot Submodule.basisOfPid_bot
 
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
@@ -404,8 +490,11 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
 theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Module.Free R M := by
   cases nonempty_fintype ι
+  -- ⊢ Free R M
   obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
+  -- ⊢ Free R M
   exact Module.Free.of_basis b
+  -- 🎉 no goals
 #align module.free_of_finite_type_torsion_free Module.free_of_finite_type_torsion_free
 
 /-- A finite type torsion free module over a PID admits a basis. -/
@@ -419,7 +508,9 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
 theorem Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
     Module.Free R M := by
   obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
+  -- ⊢ Free R M
   exact Module.Free.of_basis b
+  -- 🎉 no goals
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
 section SmithNormal
@@ -448,9 +539,13 @@ variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m :
 lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     snf.bM.repr m i = 0 := by
   obtain ⟨m, hm⟩ := m
+  -- ⊢ ↑(↑snf.bM.repr ↑{ val := m, property := hm }) i = 0
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
+  -- ⊢ ↑(↑snf.bM.repr ↑{ val := Finsupp.sum c fun i x => x • ↑(↑snf.bN i), property …
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
+  -- ⊢ ↑(↑snf.bM.repr ↑{ val := Finsupp.sum c fun i x => x • ↑(↑snf.bN i), property …
   simp [Finsupp.single_apply, hi, snf.snf]
+  -- 🎉 no goals
 
 lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
@@ -459,7 +554,9 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
   obtain ⟨m, hm⟩ := m
+  -- ⊢ ↑(↑snf.bM.repr ↑{ val := m, property := hm }) (↑snf.f i) = ↑(↑snf.bN.repr (a …
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
+  -- ⊢ ↑(↑snf.bM.repr ↑{ val := Finsupp.sum c fun i x => x • ↑(↑snf.bN i), property …
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
       Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by ext; change _ = N.subtype _; simp
   classical
@@ -473,12 +570,16 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
 @[simp] lemma repr_comp_embedding_eq_smul :
     snf.bM.repr m ∘ snf.f = snf.a • (snf.bN.repr m : Fin n → R) := by
   ext i
+  -- ⊢ (↑(↑snf.bM.repr ↑m) ∘ ↑snf.f) i = (snf.a • ↑(↑snf.bN.repr m)) i
   simp [Pi.smul_apply (snf.a i)]
+  -- 🎉 no goals
 
 @[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
     snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
   ext m
+  -- ⊢ ↑(LinearMap.comp (coord snf.bM (↑snf.f i)) (Submodule.subtype N)) m = ↑(a sn …
   simp [Pi.smul_apply (snf.a i)]
+  -- 🎉 no goals
 
 /-- Given a Smith-normal-form pair of bases for `N ⊆ M`, and a linear endomorphism `f` of `M`
 that preserves `N`, the diagonal of the matrix of the restriction `f` to `N` does not depend on
@@ -491,8 +592,11 @@ lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
   rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply,
     snf.repr_apply_embedding_eq_repr_smul ⟨_, (hf _)⟩]
   congr
+  -- ⊢ ↑(LinearMap.restrict f hf') (↑snf.bN i) = a snf i • { val := ↑f (↑snf.bM (↑s …
   ext
+  -- ⊢ ↑(↑(LinearMap.restrict f hf') (↑snf.bN i)) = ↑(a snf i • { val := ↑f (↑snf.b …
   simp [snf.snf]
+  -- 🎉 no goals
 
 end Basis.SmithNormalForm
 
@@ -510,24 +614,37 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
     ∃ (n o : ℕ) (hno : n ≤ o) (bO : Basis (Fin o) R O) (bN : Basis (Fin n) R N) (a : Fin n → R),
       ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i) := by
   cases nonempty_fintype ι
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   revert N
+  -- ⊢ ∀ (N : Submodule R M), N ≤ O → ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) =  …
   induction' O using inductionOnRank with M0 ih
   · exact b
+    -- 🎉 no goals
   intro N N_le_M0
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   obtain ⟨m, b'M⟩ := M0.basisOfPid b
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   by_cases N_bot : N = ⊥
   · subst N_bot
+    -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
     exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
+    -- 🎉 no goals
   obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
     Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
 
   obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   obtain ⟨bN, h'⟩ := h n' bN'
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   obtain ⟨as, has⟩ := h'' as' has'
+  -- ⊢ ∃ n o hno bO bN a, ∀ (i : Fin n), ↑(↑bN i) = ↑(a i • ↑bO (Fin.castLE hno i))
   exact ⟨_, _, hmn, bM, bN, as, has⟩
+  -- ⊢ Fintype ι
 -- Porting note: Lean generates a goal Fintype ι for some reason
   infer_instance
+  -- 🎉 no goals
 #align submodule.exists_smith_normal_form_of_le Submodule.exists_smith_normal_form_of_le
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
@@ -542,10 +659,12 @@ This is a strengthening of `Submodule.basisOfPidOfLe`.
 noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
     (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
+  -- ⊢ (o : ℕ) × (n : ℕ) × Basis.SmithNormalForm (comap (Submodule.subtype O) N) (F …
   refine'
     ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLEEmb hno).toEmbedding, a,
       fun i ↦ _⟩
   ext
+  -- ⊢ ↑↑(↑(Basis.map bN (LinearEquiv.symm (comapSubtypeEquivOfLe N_le_O))) i) = ↑( …
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower, RelEmbedding.coe_toEmbedding, Fin.castLEEmb_apply]
 #align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLE
@@ -589,6 +708,7 @@ noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ide
   let ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).smithNormalForm b
   have eq := Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
   let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
+                                                                    -- 🎉 no goals
   ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
     simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
       (· ∘ ·)]⟩
@@ -610,11 +730,14 @@ choices of values for this existential quantifier.
 theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
   cases nonempty_fintype ι
+  -- ⊢ ∃ b' a ab', ∀ (i : ι), ↑(↑ab' i) = a i • ↑b' i
   let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
+  -- ⊢ ∃ b' a ab', ∀ (i : ι), ↑(↑ab' i) = a i • ↑b' i
   let e : Fin (Fintype.card ι) ≃ ι :=
     Equiv.ofBijective f
       ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
   have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
+  -- ⊢ ∃ b' a ab', ∀ (i : ι), ↑(↑ab' i) = a i • ↑b' i
   exact
     ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
       fun i ↦ by
@@ -673,9 +796,13 @@ theorem Ideal.selfBasis_def (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
 theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) (i) :
     Ideal.smithCoeffs b I hI i ≠ 0 := by
   intro hi
+  -- ⊢ False
   apply Basis.ne_zero (Ideal.selfBasis b I hI) i
+  -- ⊢ ↑(selfBasis b I hI) i = 0
   refine' Subtype.coe_injective _
+  -- ⊢ (fun a => ↑a) (↑(selfBasis b I hI) i) = (fun a => ↑a) 0
   simp [hi]
+  -- 🎉 no goals
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
 
 -- porting note: can be inferred in Lean 4 so no longer necessary
@@ -694,4 +821,5 @@ theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemi
     (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
     LinearIndependent R v :=
   LinearIndependent.restrict_scalars (by rwa [Algebra.algebraMap_eq_smul_one'] at hinj) li
+                                         -- 🎉 no goals
 #align linear_independent.restrict_scalars_algebras LinearIndependent.restrict_scalars_algebras

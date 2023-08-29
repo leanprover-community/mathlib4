@@ -117,33 +117,41 @@ theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1
 @[simp]
 theorem invOf_mul_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
+  -- 🎉 no goals
 
 theorem invOf_mul_self_assoc [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
+  -- 🎉 no goals
 #align inv_of_mul_self_assoc invOf_mul_self_assoc
 
 @[simp]
 theorem mul_invOf_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
+  -- 🎉 no goals
 
 theorem mul_invOf_self_assoc [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
+  -- 🎉 no goals
 #align mul_inv_of_self_assoc mul_invOf_self_assoc
 
 @[simp]
 theorem mul_invOf_mul_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
   simp [mul_assoc]
+  -- 🎉 no goals
 
 theorem mul_invOf_mul_self_cancel [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a := by
   simp [mul_assoc]
+  -- 🎉 no goals
 #align mul_inv_of_mul_self_cancel mul_invOf_mul_self_cancel
 
 @[simp]
 theorem mul_mul_invOf_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
   simp [mul_assoc]
+  -- 🎉 no goals
 
 theorem mul_mul_invOf_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
   simp [mul_assoc]
+  -- 🎉 no goals
 #align mul_mul_inv_of_self_cancel mul_mul_invOf_self_cancel
 
 theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟ a = b :=
@@ -157,13 +165,17 @@ theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1
 theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
     (h : a = b) : ⅟ a = ⅟ b := by
   apply invOf_eq_right_inv
+  -- ⊢ a * ⅟b = 1
   rw [h, mul_invOf_self]
+  -- 🎉 no goals
 #align invertible_unique invertible_unique
 
 instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible a) :=
   ⟨fun ⟨b, hba, hab⟩ ⟨c, _, hac⟩ => by
     congr
+    -- ⊢ b = c
     exact left_inv_eq_right_inv hba hac⟩
+    -- 🎉 no goals
 #align invertible.subsingleton Invertible.subsingleton
 
 /-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
@@ -171,7 +183,9 @@ def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si 
     (hsi : si = ⅟ r) : Invertible s where
   invOf := si
   invOf_mul_self := by rw [hs, hsi, invOf_mul_self]
+                       -- 🎉 no goals
   mul_invOf_self := by rw [hs, hsi, mul_invOf_self]
+                       -- 🎉 no goals
 #align invertible.copy' Invertible.copy'
 
 /-- If `r` is invertible and `s = r`, then `s` is invertible. -/
@@ -185,6 +199,9 @@ def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs :
 @[congr]
 theorem Invertible.congr [Ring α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
   ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
+                -- ⊢ ⅟a = ⅟a
+                         -- ⊢ inst✝¹ = inst✝
+                                -- 🎉 no goals
 
 /-- An `Invertible` element is a unit. -/
 @[simps]
@@ -192,7 +209,9 @@ def unitOfInvertible [Monoid α] (a : α) [Invertible a] : αˣ where
   val := a
   inv := ⅟ a
   val_inv := by simp
+                -- 🎉 no goals
   inv_val := by simp
+                -- 🎉 no goals
 #align unit_of_invertible unitOfInvertible
 #align coe_unit_of_invertible val_unitOfInvertible
 #align coe_inv_unit_of_invertible val_inv_unitOfInvertible
@@ -257,23 +276,28 @@ theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 :=
 /-- `-⅟a` is the inverse of `-a` -/
 def invertibleNeg [Mul α] [One α] [HasDistribNeg α] (a : α) [Invertible a] : Invertible (-a) :=
   ⟨-⅟ a, by simp, by simp⟩
+            -- 🎉 no goals
+                     -- 🎉 no goals
 #align invertible_neg invertibleNeg
 
 @[simp]
 theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invertible (-a)] :
     ⅟ (-a) = -⅟ a :=
   invOf_eq_right_inv (by simp)
+                         -- 🎉 no goals
 #align inv_of_neg invOf_neg
 
 @[simp]
 theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
     rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel]
+    -- 🎉 no goals
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
 theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
     (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← two_mul, mul_invOf_self]
+                                    -- 🎉 no goals
 #align inv_of_two_add_inv_of_two invOf_two_add_invOf_two
 
 /-- `a` is the inverse of `⅟a`. -/
@@ -294,12 +318,15 @@ theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟ a =
 /-- `⅟b * ⅟a` is the inverse of `a * b` -/
 def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Invertible (a * b) :=
   ⟨⅟ b * ⅟ a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
+                 -- 🎉 no goals
+                                        -- 🎉 no goals
 #align invertible_mul invertibleMul
 
 @[simp]
 theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertible (a * b)] :
     ⅟ (a * b) = ⅟ b * ⅟ a :=
   invOf_eq_right_inv (by simp [← mul_assoc])
+                         -- 🎉 no goals
 #align inv_of_mul invOf_mul
 
 /-- A copy of `invertibleMul` for dot notation. -/
@@ -312,41 +339,53 @@ def Invertible.mul [Monoid α] {a b : α} (_ : Invertible a) (_ : Invertible b) 
 theorem mul_right_inj_of_invertible [Monoid α] (c : α) [Invertible c] :
     a * c = b * c ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (· * ⅟c) h, congr_arg (· * _)⟩
+               -- 🎉 no goals
 
 theorem mul_left_inj_of_invertible [Monoid α] (c : α) [Invertible c] :
     c * a = c * b ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (⅟c * ·) h, congr_arg (_ * ·)⟩
+               -- 🎉 no goals
 
 theorem invOf_mul_eq_iff_eq_mul_left [Monoid α] [Invertible (c : α)] :
     ⅟c * a = b ↔ a = c * b := by
   rw [← mul_left_inj_of_invertible (c := c), mul_invOf_self_assoc]
+  -- 🎉 no goals
 
 theorem mul_left_eq_iff_eq_invOf_mul [Monoid α] [Invertible (c : α)] :
     c * a = b ↔ a = ⅟c * b := by
   rw [← mul_left_inj_of_invertible (c := ⅟c), invOf_mul_self_assoc]
+  -- 🎉 no goals
 
 theorem mul_invOf_eq_iff_eq_mul_right [Monoid α] [Invertible (c : α)] :
     a * ⅟c = b ↔ a = b * c := by
   rw [← mul_right_inj_of_invertible (c := c), mul_invOf_mul_self_cancel]
+  -- 🎉 no goals
 
 theorem mul_right_eq_iff_eq_mul_invOf [Monoid α] [Invertible (c : α)] :
     a * c = b ↔ a = b * ⅟c := by
   rw [← mul_right_inj_of_invertible (c := ⅟c), mul_mul_invOf_self_cancel]
+  -- 🎉 no goals
 
 theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
     Commute a (⅟ b) :=
   calc
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
+                                        -- 🎉 no goals
     _ = ⅟ b * (a * b * ⅟ b) := by rw [h.eq]
+                                  -- 🎉 no goals
     _ = ⅟ b * a := by simp [mul_assoc]
+                      -- 🎉 no goals
 #align commute.inv_of_right Commute.invOf_right
 
 theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
     Commute (⅟ b) a :=
   calc
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
+                                        -- 🎉 no goals
     _ = ⅟ b * (b * a * ⅟ b) := by rw [h.eq]
+                                  -- 🎉 no goals
     _ = a * ⅟ b := by simp [mul_assoc]
+                      -- 🎉 no goals
 #align commute.inv_of_left Commute.invOf_left
 
 theorem commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
@@ -360,6 +399,7 @@ theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Inv
   zero_ne_one <|
     calc
       0 = ⅟ a * a := by simp [ha]
+                        -- 🎉 no goals
       _ = 1 := invOf_mul_self a
 #align nonzero_of_invertible nonzero_of_invertible
 
@@ -380,6 +420,7 @@ variable [Monoid α]
 def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
   invOf := ⅟ (a * b) * a
   invOf_mul_self := by rw [mul_assoc, invOf_mul_self]
+                       -- 🎉 no goals
   mul_invOf_self := by
     rw [← (isUnit_of_invertible a).mul_right_inj, ← mul_assoc, ← mul_assoc, mul_invOf_self, mul_one,
       one_mul]
@@ -393,6 +434,7 @@ def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : I
     rw [← (isUnit_of_invertible b).mul_left_inj, mul_assoc, mul_assoc, invOf_mul_self, mul_one,
       one_mul]
   mul_invOf_self := by rw [← mul_assoc, mul_invOf_self]
+                       -- 🎉 no goals
 #align invertible_of_mul_invertible invertibleOfMulInvertible
 
 /-- `invertibleOfInvertibleMul` and `invertibleMul` as an equivalence. -/
@@ -473,17 +515,22 @@ theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
 /-- `b / a` is the inverse of `a / b` -/
 def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) :=
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
+             -- 🎉 no goals
+                                        -- 🎉 no goals
 #align invertible_div invertibleDiv
 
 -- Porting note: removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
+                         -- 🎉 no goals
 #align inv_of_div invOf_div
 
 /-- `a` is the inverse of `a⁻¹` -/
 def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
   ⟨a, by simp, by simp⟩
+         -- 🎉 no goals
+                  -- 🎉 no goals
 #align invertible_inv invertibleInv
 
 end GroupWithZero
@@ -494,7 +541,9 @@ def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneCl
     Invertible (f r) where
   invOf := f (⅟ r)
   invOf_mul_self := by rw [← map_mul, invOf_mul_self, map_one]
+                       -- 🎉 no goals
   mul_invOf_self := by rw [← map_mul, mul_invOf_self, map_one]
+                       -- 🎉 no goals
 #align invertible.map Invertible.map
 
 /-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
@@ -504,6 +553,8 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
   by subst h; rfl
+     -- ⊢ ↑f ⅟r = ⅟(↑f r)
+              -- 🎉 no goals
 #align map_inv_of map_invOf
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,

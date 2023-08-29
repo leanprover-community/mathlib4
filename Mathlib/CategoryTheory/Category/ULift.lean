@@ -73,23 +73,35 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
         { app := fun X => 𝟙 _
           naturality := fun X Y f => by
             change f ≫ 𝟙 _ = 𝟙 _ ≫ f
+            -- ⊢ f ≫ 𝟙 Y = 𝟙 X ≫ f
             simp }
+            -- 🎉 no goals
       inv :=
         { app := fun X => 𝟙 _
           naturality := fun X Y f => by
             change f ≫ 𝟙 _ = 𝟙 _ ≫ f
+            -- ⊢ f ≫ 𝟙 Y = 𝟙 X ≫ f
             simp }
+            -- 🎉 no goals
       hom_inv_id := by
         ext
+        -- ⊢ NatTrans.app ((NatTrans.mk fun X => 𝟙 ((downFunctor ⋙ upFunctor).obj X)) ≫ N …
         change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
+        -- ⊢ 𝟙 ((downFunctor ⋙ upFunctor).obj x✝) ≫ 𝟙 ((downFunctor ⋙ upFunctor).obj x✝)  …
         simp
+        -- 🎉 no goals
       inv_hom_id := by
         ext
+        -- ⊢ NatTrans.app ((NatTrans.mk fun X => 𝟙 ((𝟭 (ULift C)).obj X)) ≫ NatTrans.mk f …
         change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
+        -- ⊢ 𝟙 ((𝟭 (ULift C)).obj x✝) ≫ 𝟙 ((𝟭 (ULift C)).obj x✝) = 𝟙 ((𝟭 (ULift C)).obj x✝)
         simp }
+        -- 🎉 no goals
   functor_unitIso_comp X := by
     change 𝟙 X ≫ 𝟙 X = 𝟙 X
+    -- ⊢ 𝟙 X ≫ 𝟙 X = 𝟙 X
     simp
+    -- 🎉 no goals
 #align category_theory.ulift.equivalence CategoryTheory.ULift.equivalence
 
 section ULiftHom

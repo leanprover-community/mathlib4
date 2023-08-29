@@ -127,6 +127,8 @@ variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 instance : FunLike (A →ₙₐ[R] B) A fun _ => B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+                       -- ⊢ { toDistribMulActionHom := { toMulActionHom := { toFun := f, map_smul' := ma …
+                                                                   -- 🎉 no goals
 
 @[simp]
 theorem toFun_eq_coe (f : A →ₙₐ[R] B) : f.toFun = ⇑f :=
@@ -147,6 +149,8 @@ protected theorem coe_coe {F : Type*} [NonUnitalAlgHomClass F R A B] (f : F) :
 
 theorem coe_injective : @Function.Injective (A →ₙₐ[R] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  -- ⊢ { toDistribMulActionHom := { toMulActionHom := { toFun := f, map_smul' := ma …
+                                              -- 🎉 no goals
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 
 instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
@@ -166,7 +170,9 @@ theorem ext {f g : A →ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
 theorem ext_iff {f g : A →ₙₐ[R] B} : f = g ↔ ∀ x, f x = g x :=
   ⟨by
     rintro rfl x
+    -- ⊢ ↑f x = ↑f x
     rfl, ext⟩
+    -- 🎉 no goals
 #align non_unital_alg_hom.ext_iff NonUnitalAlgHom.ext_iff
 
 theorem congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
@@ -181,6 +187,7 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 @[simp]
 theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f := by
   rfl
+  -- 🎉 no goals
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
 
 instance : CoeOut (A →ₙₐ[R] B) (A →+[R] B) :=
@@ -212,24 +219,30 @@ theorem coe_to_mulHom (f : A →ₙₐ[R] B) : ⇑(f : A →ₙ* B) = f :=
 theorem to_distribMulActionHom_injective {f g : A →ₙₐ[R] B}
     (h : (f : A →+[R] B) = (g : A →+[R] B)) : f = g := by
   ext a
+  -- ⊢ ↑f a = ↑g a
   exact DistribMulActionHom.congr_fun h a
+  -- 🎉 no goals
 #align non_unital_alg_hom.to_distrib_mul_action_hom_injective NonUnitalAlgHom.to_distribMulActionHom_injective
 
 theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
+  -- ⊢ ↑f a = ↑g a
   exact FunLike.congr_fun h a
+  -- 🎉 no goals
 #align non_unital_alg_hom.to_mul_hom_injective NonUnitalAlgHom.to_mulHom_injective
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) : A →+[R] B) = ⟨⟨f, h₁⟩, h₂, h₃⟩ := by
   rfl
+  -- 🎉 no goals
 #align non_unital_alg_hom.coe_distrib_mul_action_hom_mk NonUnitalAlgHom.coe_distribMulActionHom_mk
 
 @[norm_cast]
 theorem coe_mulHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) : A →ₙ* B) = ⟨f, h₄⟩ := by
   rfl
+  -- 🎉 no goals
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
 
 -- @[simp] -- Porting note: simp can prove this
@@ -265,6 +278,7 @@ theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
 
 instance : Zero (A →ₙₐ[R] B) :=
   ⟨{ (0 : A →+[R] B) with map_mul' := by simp }⟩
+                                         -- 🎉 no goals
 
 instance : One (A →ₙₐ[R] A) :=
   ⟨NonUnitalAlgHom.id R A⟩
@@ -354,8 +368,12 @@ def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C
     where
   toFun := Pi.prod f g
   map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
+                  -- 🎉 no goals
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
+                     -- 🎉 no goals
+                      -- 🎉 no goals
   map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
+                     -- 🎉 no goals
   map_smul' c x := by simp only [Pi.prod, Prod.smul_mk, map_smul, RingHom.id_apply]
 #align non_unital_alg_hom.prod NonUnitalAlgHom.prod
 
@@ -366,11 +384,13 @@ theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) =
 @[simp]
 theorem fst_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (fst R B C).comp (prod f g) = f := by
   rfl
+  -- 🎉 no goals
 #align non_unital_alg_hom.fst_prod NonUnitalAlgHom.fst_prod
 
 @[simp]
 theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).comp (prod f g) = g := by
   rfl
+  -- 🎉 no goals
 #align non_unital_alg_hom.snd_prod NonUnitalAlgHom.snd_prod
 
 @[simp]

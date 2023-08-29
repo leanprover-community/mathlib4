@@ -128,6 +128,7 @@ attribute [simp] map_nonneg
 theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b : α) : f a ≤ f b * f (a / b) := by
   simpa only [mul_comm, div_mul_cancel'] using map_mul_le_mul f (a / b) b
+  -- 🎉 no goals
 #align le_map_mul_map_div le_map_mul_map_div
 #align le_map_add_map_sub le_map_add_map_sub
 
@@ -135,6 +136,7 @@ theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [Submultiplicat
 theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β] (f : F)
     (a b : α) : f a ≤ f b + f (a / b) := by
   simpa only [add_comm, div_mul_cancel'] using map_mul_le_add f (a / b) b
+  -- 🎉 no goals
 #align le_map_add_map_div le_map_add_map_div
 -- #align le_map_add_map_sub le_map_add_map_sub -- Porting note: TODO: `to_additive` clashes
 
@@ -142,6 +144,7 @@ theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHom
 theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) * f (b / c) := by
   simpa only [div_mul_div_cancel'] using map_mul_le_mul f (a / b) (b / c)
+  -- 🎉 no goals
 #align le_map_div_mul_map_div le_map_div_mul_map_div
 #align le_map_sub_add_map_sub le_map_sub_add_map_sub
 
@@ -149,6 +152,7 @@ theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [Submultipl
 theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)
+    -- 🎉 no goals
 #align le_map_div_add_map_div le_map_div_add_map_div
 -- #align le_map_sub_add_map_sub le_map_sub_add_map_sub -- Porting note: TODO: `to_additive` clashes
 
@@ -242,18 +246,22 @@ variable [Group α] [OrderedAddCommMonoid β] [GroupSeminormClass F α β] (f : 
 @[to_additive]
 theorem map_div_le_add : f (x / y) ≤ f x + f y := by
   rw [div_eq_mul_inv, ← map_inv_eq_map f y]
+  -- ⊢ ↑f (x * y⁻¹) ≤ ↑f x + ↑f y⁻¹
   exact map_mul_le_add _ _ _
+  -- 🎉 no goals
 #align map_div_le_add map_div_le_add
 #align map_sub_le_add map_sub_le_add
 
 @[to_additive]
 theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_map]
+                                                  -- 🎉 no goals
 #align map_div_rev map_div_rev
 #align map_sub_rev map_sub_rev
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by
   simpa only [add_comm, map_div_rev, div_mul_cancel'] using map_mul_le_add f (x / y) y
+  -- 🎉 no goals
 #align le_map_add_map_div' le_map_add_map_div'
 #align le_map_add_map_sub' le_map_add_map_sub'
 
@@ -266,7 +274,9 @@ example [OrderedAddCommGroup β] : OrderedAddCommMonoid β :=
 theorem abs_sub_map_le_div [Group α] [LinearOrderedAddCommGroup β] [GroupSeminormClass F α β]
     (f : F) (x y : α) : |f x - f y| ≤ f (x / y) := by
   rw [abs_sub_le_iff, sub_le_iff_le_add', sub_le_iff_le_add']
+  -- ⊢ ↑f x ≤ ↑f y + ↑f (x / y) ∧ ↑f y ≤ ↑f x + ↑f (x / y)
   exact ⟨le_map_add_map_div _ _ _, le_map_add_map_div' _ _ _⟩
+  -- 🎉 no goals
 #align abs_sub_map_le_div abs_sub_map_le_div
 #align abs_sub_map_le_sub abs_sub_map_le_sub
 
@@ -278,7 +288,9 @@ instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
     map_nonneg := fun f a =>
       (nsmul_nonneg_iff two_ne_zero).1 <| by
         rw [two_nsmul, ← map_one_eq_zero f, ← div_self' a]
+        -- ⊢ ↑f (a / a) ≤ ↑f a + ↑f a
         exact map_div_le_add _ _ _ }
+        -- 🎉 no goals
 #align group_seminorm_class.to_nonneg_hom_class GroupSeminormClass.toNonnegHomClass
 #align add_group_seminorm_class.to_nonneg_hom_class AddGroupSeminormClass.toNonnegHomClass
 
@@ -290,7 +302,9 @@ variable [Group α] [OrderedAddCommMonoid β] [GroupNormClass F α β] (f : F) {
 theorem map_eq_zero_iff_eq_one : f x = 0 ↔ x = 1 :=
   ⟨eq_one_of_map_eq_zero _, by
     rintro rfl
+    -- ⊢ ↑f 1 = 0
     exact map_one_eq_zero _⟩
+    -- 🎉 no goals
 #align map_eq_zero_iff_eq_one map_eq_zero_iff_eq_one
 #align map_eq_zero_iff_eq_zero map_eq_zero_iff_eq_zero
 

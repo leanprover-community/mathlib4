@@ -102,6 +102,7 @@ set_option linter.uppercaseLean3 false in
 theorem piOpensIsoSectionsFamily_apply (sf : piOpens F U) (i : ι) :
     piOpensIsoSectionsFamily F U sf i = Pi.π (fun i => F.obj (op (U i))) i sf := by
   simp [piOpensIsoSectionsFamily]
+  -- 🎉 no goals
 
 /-- Under the isomorphism `piOpensIsoSectionsFamily`, compatibility of sections is the same
 as being equalized by the arrows `leftRes` and `rightRes` of the equalizer diagram.
@@ -110,18 +111,30 @@ theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
     IsCompatible F U (piOpensIsoSectionsFamily F U sf) ↔
     leftRes F U sf = rightRes F U sf := by
   constructor <;> intro h
+  -- ⊢ IsCompatible F U (↑(piOpensIsoSectionsFamily F U) sf) → leftRes F U sf = rig …
+                  -- ⊢ leftRes F U sf = rightRes F U sf
+                  -- ⊢ IsCompatible F U (↑(piOpensIsoSectionsFamily F U) sf)
   · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
     refine Types.limit_ext _ _ _ fun ⟨i, j⟩ => ?_
+    -- ⊢ limit.π (Discrete.functor fun p => F.obj (op (U p.fst ⊓ U p.snd))) { as := ( …
     rw [leftRes, Types.Limit.lift_π_apply, Fan.mk_π_app, rightRes, Types.Limit.lift_π_apply,
       Fan.mk_π_app]
     simpa using h i j
+    -- 🎉 no goals
   · intro i j
+    -- ⊢ ↑(F.map (infLELeft (U i) (U j)).op) (↑(piOpensIsoSectionsFamily F U) sf i) = …
     convert congr_arg (Limits.Pi.π (fun p : ι × ι => F.obj (op (U p.1 ⊓ U p.2))) (i, j)) h
+    -- ⊢ ↑(F.map (infLELeft (U i) (U j)).op) (↑(piOpensIsoSectionsFamily F U) sf i) = …
     · rw [leftRes, Types.pi_lift_π_apply, piOpensIsoSectionsFamily_apply]
+      -- ⊢ ↑(F.map (infLELeft (U i) (U j)).op) (Pi.π (fun i => F.obj (op (U i))) i sf)  …
       rfl
+      -- 🎉 no goals
     · rw [rightRes, Types.pi_lift_π_apply]
+      -- ⊢ ↑(F.map (infLERight (U i) (U j)).op) (↑(piOpensIsoSectionsFamily F U) sf j)  …
       simp only [piOpensIsoSectionsFamily_apply]
+      -- ⊢ ↑(F.map (infLERight (U i) (U j)).op) (Pi.π (fun i => F.obj (op (U i))) j sf) …
       rfl
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.compatible_iff_left_res_eq_right_res TopCat.Presheaf.compatible_iff_leftRes_eq_rightRes
 
@@ -133,15 +146,26 @@ equalizer diagram).
 theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
     IsGluing F U (piOpensIsoSectionsFamily F U sf) s ↔ res F U s = sf := by
   constructor <;> intro h
+  -- ⊢ IsGluing F U (↑(piOpensIsoSectionsFamily F U) sf) s → res F U s = sf
+                  -- ⊢ res F U s = sf
+                  -- ⊢ IsGluing F U (↑(piOpensIsoSectionsFamily F U) sf) s
   · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
     refine Types.limit_ext _ _ _ fun ⟨i⟩ => ?_
+    -- ⊢ limit.π (Discrete.functor fun i => F.obj (op (U i))) { as := i } (res F U s) …
     rw [res, Types.Limit.lift_π_apply, Fan.mk_π_app]
+    -- ⊢ F.map (leSupr U { as := i }.as).op s = limit.π (Discrete.functor fun i => F. …
     simpa using h i
+    -- 🎉 no goals
   · intro i
+    -- ⊢ ↑(F.map (leSupr U i).op) s = ↑(piOpensIsoSectionsFamily F U) sf i
     convert congr_arg (Limits.Pi.π (fun i : ι => F.obj (op (U i))) i) h
+    -- ⊢ ↑(F.map (leSupr U i).op) s = Pi.π (fun i => F.obj (op (U i))) i (res F U s)
     rw [res, Types.pi_lift_π_apply]
+    -- ⊢ ↑(F.map (leSupr U i).op) s = F.map (leSupr U i).op s
     · rfl
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_gluing_iff_eq_res TopCat.Presheaf.isGluing_iff_eq_res
 
@@ -150,9 +174,13 @@ in terms of unique gluings.
 -/
 theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.IsSheaf := by
   rw [isSheaf_iff_isSheafEqualizerProducts]
+  -- ⊢ IsSheafEqualizerProducts F
   intro ι U
+  -- ⊢ Nonempty (IsLimit (fork F U))
   refine' ⟨Fork.IsLimit.mk' _ _⟩
+  -- ⊢ (s : Fork (leftRes F U) (rightRes F U)) → { l // l ≫ Fork.ι (fork F U) = For …
   intro s
+  -- ⊢ { l // l ≫ Fork.ι (fork F U) = Fork.ι s ∧ ∀ {m : ((Functor.const WalkingPara …
   have h_compatible :
     ∀ x : s.pt, F.IsCompatible U (piOpensIsoSectionsFamily F U (s.ι x)) := by
     intro x
@@ -161,16 +189,25 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   choose m m_spec m_uniq using fun x : s.pt =>
     Fsh U (piOpensIsoSectionsFamily F U (s.ι x)) (h_compatible x)
   refine' ⟨m, _, _⟩
+  -- ⊢ m ≫ Fork.ι (fork F U) = Fork.ι s
   · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
     -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
+    -- ⊢ ((m ≫ Fork.ι (fork F U)) ≫ limit.π (Discrete.functor fun i => F.obj (op (U i …
     simp [res]
+    -- ⊢ F.map (leSupr U i).op (m x) = limit.π (Discrete.functor fun i => F.obj (op ( …
     simpa using m_spec x i
+    -- 🎉 no goals
   · intro l hl
+    -- ⊢ l = m
     ext x
+    -- ⊢ l x = m x
     apply m_uniq
+    -- ⊢ IsGluing F U (↑(piOpensIsoSectionsFamily F U) (Fork.ι s x)) (l x)
     rw [isGluing_iff_eq_res]
+    -- ⊢ res F U (l x) = Fork.ι s x
     exact congr_fun hl x
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_of_is_sheaf_unique_gluing_types TopCat.Presheaf.isSheaf_of_isSheafUniqueGluing_types
 
@@ -179,21 +216,35 @@ set_option linter.uppercaseLean3 false in
 -/
 theorem isSheafUniqueGluing_of_isSheaf_types (Fsh : F.IsSheaf) : F.IsSheafUniqueGluing := by
   rw [isSheaf_iff_isSheafEqualizerProducts] at Fsh
+  -- ⊢ IsSheafUniqueGluing F
   intro ι U sf hsf
+  -- ⊢ ∃! s, IsGluing F U sf s
   let sf' := (piOpensIsoSectionsFamily F U).symm sf
+  -- ⊢ ∃! s, IsGluing F U sf s
   have hsf' : leftRes F U sf' = rightRes F U sf' := by
     rwa [← compatible_iff_leftRes_eq_rightRes F U sf', Equiv.apply_symm_apply]
   choose s s_spec s_uniq using Types.unique_of_type_equalizer _ _ (Fsh U).some sf' hsf'
+  -- ⊢ ∃! s, IsGluing F U sf s
   use s
+  -- ⊢ (fun s => IsGluing F U sf s) s ∧ ∀ (y : (forget (Type u)).obj (F.obj (op (iS …
   dsimp
+  -- ⊢ IsGluing F U sf s ∧ ∀ (y : (forget (Type u)).obj (F.obj (op (iSup U)))), IsG …
   constructor
+  -- ⊢ IsGluing F U sf s
   · convert (isGluing_iff_eq_res F U sf' _).mpr s_spec
+    -- ⊢ sf = ↑(piOpensIsoSectionsFamily F U) sf'
     simp only [Equiv.apply_symm_apply]
+    -- 🎉 no goals
   · intro y hy
+    -- ⊢ y = s
     apply s_uniq
+    -- ⊢ res F U y = sf'
     rw [← isGluing_iff_eq_res F U]
+    -- ⊢ IsGluing F U (↑(piOpensIsoSectionsFamily F U) sf') y
     convert hy
+    -- ⊢ ↑(piOpensIsoSectionsFamily F U) sf' = sf
     simp only [Equiv.apply_symm_apply]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unique_gluing_of_is_sheaf_types TopCat.Presheaf.isSheafUniqueGluing_of_isSheaf_types
 
@@ -260,16 +311,28 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
     (sf : ∀ i : ι, F.1.obj (op (U i))) (h : IsCompatible F.1 U sf) :
     ∃! s : F.1.obj (op V), ∀ i : ι, F.1.map (iUV i).op s = sf i := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
+  -- ⊢ ∃! s, ∀ (i : ι), ↑(F.val.map (iUV i).op) s = sf i
   obtain ⟨gl, gl_spec, gl_uniq⟩ := F.existsUnique_gluing U sf h
+  -- ⊢ ∃! s, ∀ (i : ι), ↑(F.val.map (iUV i).op) s = sf i
   refine' ⟨F.1.map (eqToHom V_eq_supr_U).op gl, _, _⟩
+  -- ⊢ (fun s => ∀ (i : ι), ↑(F.val.map (iUV i).op) s = sf i) (↑(F.val.map (eqToHom …
   · intro i
+    -- ⊢ ↑(F.val.map (iUV i).op) (↑(F.val.map (eqToHom V_eq_supr_U).op) gl) = sf i
     rw [← comp_apply, ← F.1.map_comp]
+    -- ⊢ ↑(F.val.map ((eqToHom V_eq_supr_U).op ≫ (iUV i).op)) gl = sf i
     exact gl_spec i
+    -- 🎉 no goals
   · intro gl' gl'_spec
+    -- ⊢ gl' = ↑(F.val.map (eqToHom V_eq_supr_U).op) gl
     convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
+    -- ⊢ gl' = ↑(F.val.map (eqToHom V_eq_supr_U).op) (↑(F.val.map (eqToHom (_ : iSup  …
       rw [← comp_apply, ← F.1.map_comp]
+      -- ⊢ gl' = ↑(F.val.map ((eqToHom (_ : iSup U = V)).op ≫ (eqToHom V_eq_supr_U).op) …
+      -- ⊢ ↑(F.val.map ((eqToHom (_ : iSup U = V)).op ≫ (leSupr U i).op)) gl' = sf i
     · rw [eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl, F.1.map_id, id_apply]
+      -- 🎉 no goals
     · convert gl'_spec i
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.exists_unique_gluing' TopCat.Sheaf.existsUnique_gluing'
 
@@ -277,19 +340,29 @@ set_option linter.uppercaseLean3 false in
 theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
     (h : ∀ i, F.1.map (Opens.leSupr U i).op s = F.1.map (Opens.leSupr U i).op t) : s = t := by
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
+  -- ⊢ s = t
   have sf_compatible : IsCompatible _ U sf := by
     intro i j
     simp_rw [← comp_apply, ← F.1.map_comp]
     rfl
   obtain ⟨gl, -, gl_uniq⟩ := F.existsUnique_gluing U sf sf_compatible
+  -- ⊢ s = t
   trans gl
+  -- ⊢ s = gl
   · apply gl_uniq
+    -- ⊢ IsGluing F.val U sf s
     intro i
+    -- ⊢ ↑(F.val.map (leSupr U i).op) s = sf i
     rfl
+    -- 🎉 no goals
   · symm
+    -- ⊢ t = gl
     apply gl_uniq
+    -- ⊢ IsGluing F.val U sf t
     intro i
+    -- ⊢ ↑(F.val.map (leSupr U i).op) t = sf i
     rw [← h]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq TopCat.Sheaf.eq_of_locally_eq
 
@@ -299,14 +372,19 @@ which can be more convenient in practice.
 theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
     (s t : F.1.obj (op V)) (h : ∀ i, F.1.map (iUV i).op s = F.1.map (iUV i).op t) : s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
+  -- ⊢ s = t
   suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by
     convert congr_arg (F.1.map (eqToHom V_eq_supr_U).op) this <;>
     rw [← comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl,
       F.1.map_id, id_apply]
   apply eq_of_locally_eq
+  -- ⊢ ∀ (i : ι), ↑(F.val.map (leSupr U i).op) (↑(F.val.map (eqToHom (_ : iSup U =  …
   intro i
+  -- ⊢ ↑(F.val.map (leSupr U i).op) (↑(F.val.map (eqToHom (_ : iSup U = V)).op) s)  …
   rw [← comp_apply, ← comp_apply, ← F.1.map_comp]
+  -- ⊢ ↑(F.val.map ((eqToHom (_ : iSup U = V)).op ≫ (leSupr U i).op)) s = ↑(F.val.m …
   convert h i
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq' TopCat.Sheaf.eq_of_locally_eq'
 

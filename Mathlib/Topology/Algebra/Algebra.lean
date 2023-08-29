@@ -42,10 +42,15 @@ variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
 theorem continuous_algebraMap_iff_smul :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ Continuous fun p => p.fst • p.snd
   · simp only [Algebra.smul_def]
+    -- ⊢ Continuous fun p => ↑(algebraMap R A) p.fst * p.snd
     exact (h.comp continuous_fst).mul continuous_snd
+    -- 🎉 no goals
   · rw [algebraMap_eq_smul_one']
+    -- ⊢ Continuous fun r => r • 1
     exact h.comp (continuous_id.prod_mk continuous_const)
+    -- 🎉 no goals
 #align continuous_algebra_map_iff_smul continuous_algebraMap_iff_smul
 
 @[continuity]
@@ -116,6 +121,7 @@ theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologi
 
 theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
     IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A _ s
+                                                  -- 🎉 no goals
 #align subalgebra.is_closed_topological_closure Subalgebra.isClosed_topologicalClosure
 
 theorem Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgebra R A} (h : s ≤ t)
@@ -138,10 +144,15 @@ theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B :
     [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
+  -- ⊢ ↑(comap f (topologicalClosure s)) = ↑(topologicalClosure (comap f s))
   simp only [Subalgebra.topologicalClosure_coe]
+  -- ⊢ ↑(comap f (topologicalClosure s)) = closure ↑(comap f s)
   simp only [Subalgebra.coe_comap, Subsemiring.coe_comap, AlgHom.coe_toRingHom]
+  -- ⊢ ↑f ⁻¹' ↑(topologicalClosure s) = closure (↑f ⁻¹' ↑s)
   rw [w]
+  -- ⊢ ↑f' ⁻¹' ↑(topologicalClosure s) = closure (↑f' ⁻¹' ↑s)
   exact f'.preimage_closure _
+  -- 🎉 no goals
 #align subalgebra.topological_closure_comap_homeomorph Subalgebra.topologicalClosure_comap_homeomorph
 
 end TopologicalAlgebra
@@ -183,7 +194,9 @@ instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
     letI : CommRing (Algebra.adjoin R ({x} : Set A)) :=
       Algebra.adjoinCommRingOfComm R fun y hy z hz => by
         rw [mem_singleton_iff] at hy hz
+        -- ⊢ y * z = z * y
         rw [hy, hz]
+        -- 🎉 no goals
     fun _ _ => mul_comm _ _
 
 end Ring
@@ -194,6 +207,7 @@ section DivisionRing
 instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
     [ContinuousMul A] [CharZero A] : ContinuousConstSMul ℚ A :=
   ⟨fun r => by simpa only [Algebra.smul_def] using continuous_const.mul continuous_id⟩
+               -- 🎉 no goals
 #align division_ring.has_continuous_const_smul_rat DivisionRing.continuousConstSMul_rat
 
 end DivisionRing

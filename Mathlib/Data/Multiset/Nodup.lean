@@ -77,12 +77,15 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
     ⟨fun h a t s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
       let ⟨t, s_eq⟩ := le_iff_exists_add.mp le
       h a t (by rwa [cons_add, cons_add, zero_add] at s_eq)⟩
+                -- 🎉 no goals
 #align multiset.nodup_iff_ne_cons_cons Multiset.nodup_iff_ne_cons_cons
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
     simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    -- ⊢ List.Nodup _l ↔ ∀ (a : α), List.count a _l ≤ 1
     apply List.nodup_iff_count_le_one
+    -- 🎉 no goals
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
 
 @[simp]
@@ -94,8 +97,11 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nod
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) :
     count a s = if a ∈ s then 1 else 0 := by
   split_ifs with h
+  -- ⊢ count a s = 1
   · exact count_eq_one_of_mem d h
+    -- 🎉 no goals
   · exact count_eq_zero_of_not_mem h
+    -- 🎉 no goals
 #align multiset.count_eq_of_nodup Multiset.count_eq_of_nodup
 
 theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠ ·) s :=
@@ -122,6 +128,7 @@ theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint
 
 theorem Nodup.add_iff (d₁ : Nodup s) (d₂ : Nodup t) : Nodup (s + t) ↔ Disjoint s t := by
   simp [nodup_add, d₁, d₂]
+  -- 🎉 no goals
 #align multiset.nodup.add_iff Multiset.Nodup.add_iff
 
 theorem Nodup.of_map (f : α → β) : Nodup (map f s) → Nodup s :=
@@ -178,6 +185,7 @@ theorem Nodup.erase [DecidableEq α] (a : α) {l} : Nodup l → Nodup (l.erase a
 theorem Nodup.mem_erase_iff [DecidableEq α] {a b : α} {l} (d : Nodup l) :
     a ∈ l.erase b ↔ a ≠ b ∧ a ∈ l := by
   rw [d.erase_eq_filter b, mem_filter, and_comm]
+  -- 🎉 no goals
 #align multiset.nodup.mem_erase_iff Multiset.Nodup.mem_erase_iff
 
 theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
@@ -186,13 +194,16 @@ theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ 
 
 protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
+                                                  -- 🎉 no goals
 #align multiset.nodup.product Multiset.Nodup.product
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
   Quot.induction_on s fun l₁ => by
     choose f hf using fun a => Quotient.exists_rep (t a)
+    -- ⊢ Nodup (Quot.mk Setoid.r l₁) → (∀ (a : α), Nodup (t a)) → Nodup (Multiset.sig …
     simpa [←funext hf] using List.Nodup.sigma
+    -- 🎉 no goals
 #align multiset.nodup.sigma Multiset.Nodup.sigma
 
 protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
@@ -217,7 +228,9 @@ theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ N
   ⟨fun h => ⟨nodup_of_le (le_union_left _ _) h, nodup_of_le (le_union_right _ _) h⟩, fun ⟨h₁, h₂⟩ =>
     nodup_iff_count_le_one.2 fun a => by
       rw [count_union]
+      -- ⊢ max (count a s) (count a t) ≤ 1
       exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩
+      -- 🎉 no goals
 #align multiset.nodup_union Multiset.nodup_union
 
 @[simp]
@@ -228,6 +241,7 @@ theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
   have : t = fun a => ofList (t' a) := funext h'
   have hd : Symmetric fun a b => List.Disjoint (t' a) (t' b) := fun a b h => h.symm
   Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
+                            -- 🎉 no goals
 #align multiset.nodup_bind Multiset.nodup_bind
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
@@ -247,8 +261,11 @@ theorem mem_sub_of_nodup [DecidableEq α] {a : α} {s t : Multiset α} (d : Nodu
   ⟨fun h =>
     ⟨mem_of_le tsub_le_self h, fun h' => by
       refine' count_eq_zero.1 _ h
+      -- ⊢ count a (s - t) = 0
       rw [count_sub a s t, tsub_eq_zero_iff_le]
+      -- ⊢ count a s ≤ count a t
       exact le_trans (nodup_iff_count_le_one.1 d _) (count_pos.2 h')⟩,
+      -- 🎉 no goals
     fun ⟨h₁, h₂⟩ => Or.resolve_right (mem_add.1 <| mem_of_le le_tsub_add h₁) h₂⟩
 #align multiset.mem_sub_of_nodup Multiset.mem_sub_of_nodup
 
@@ -263,11 +280,17 @@ theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset
               Subtype.ext <| i_inj x y x.2 y.2 hxy).2
       fun x => by
         simp only [mem_map, true_and_iff, Subtype.exists, eq_comm, mem_attach]
+        -- ⊢ x ∈ t ↔ ∃ a h, x = i a (_ : ↑{ val := a, property := (_ : a ∈ s) } ∈ s)
         exact ⟨i_surj _, fun ⟨y, hy⟩ => hy.snd.symm ▸ hi _ _⟩
+        -- 🎉 no goals
   calc
     s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
+                                                        -- 🎉 no goals
     _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]
+                                          -- 🎉 no goals
     _ = t.map g := by rw [this, Multiset.map_map]; exact map_congr rfl fun x _ => h _ _
+                      -- ⊢ map (fun x => f ↑x) (attach s) = map (g ∘ fun x => i ↑x (_ : ↑x ∈ s)) (attac …
+                                                   -- 🎉 no goals
 #align multiset.map_eq_map_of_bij_of_nodup Multiset.map_eq_map_of_bij_of_nodup
 
 end Multiset

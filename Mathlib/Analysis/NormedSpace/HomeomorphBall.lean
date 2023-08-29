@@ -46,16 +46,19 @@ def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
   target := ball 0 1
   map_source' x _ := by
     have : 0 < 1 + ‖x‖ ^ 2 := by positivity
+    -- ⊢ (fun x => (Real.sqrt (1 + ‖x‖ ^ 2))⁻¹ • x) x ∈ ball 0 1
     rw [mem_ball_zero_iff, norm_smul, Real.norm_eq_abs, abs_inv, ← _root_.div_eq_inv_mul,
       div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
       abs_norm, Real.sq_sqrt this.le]
     exact lt_one_add _
+    -- 🎉 no goals
   map_target' _ _ := trivial
   left_inv' x _ := by
     field_simp [norm_smul, smul_smul, (zero_lt_one_add_norm_sq x).ne', sq_abs,
       Real.sq_sqrt (zero_lt_one_add_norm_sq x).le, ← Real.sqrt_div (zero_lt_one_add_norm_sq x).le]
   right_inv' y hy := by
     have : 0 < 1 - ‖y‖ ^ 2 := by nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
+    -- ⊢ (fun x => (Real.sqrt (1 + ‖x‖ ^ 2))⁻¹ • x) ((fun y => (Real.sqrt (1 - ‖y‖ ^  …
     field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le,
       ← Real.sqrt_div this.le]
   open_source := isOpen_univ
@@ -64,7 +67,9 @@ def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
     suffices Continuous fun (x:E) => (1 + ‖x‖ ^ 2).sqrt⁻¹
      from (this.smul continuous_id).continuousOn
     refine' Continuous.inv₀ _ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
+    -- ⊢ Continuous fun x => Real.sqrt (1 + ‖x‖ ^ 2)
     continuity
+    -- 🎉 no goals
   continuous_invFun := by
     have : ∀ y ∈ ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 := fun y hy ↦ by
       rw [Real.sqrt_ne_zero']
@@ -75,10 +80,12 @@ def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
 @[simp]
 theorem LocalHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_apply]
+  -- 🎉 no goals
 
 @[simp]
 theorem LocalHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_symm_apply]
+  -- 🎉 no goals
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -111,8 +118,11 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
       (IsometryEquiv.vaddConst c).toHomeomorph).toLocalHomeomorphOfImageEq
       (ball 0 1) isOpen_ball (ball c r) <| by
     change (IsometryEquiv.vaddConst c) ∘ (r • ·) '' ball (0 : E) 1 = ball c r
+    -- ⊢ (↑(IsometryEquiv.vaddConst c) ∘ fun x => r • x) '' ball 0 1 = ball c r
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
+    -- ⊢ ball (↑(IsometryEquiv.vaddConst c) 0) ‖r‖ = ball c r
     simp [abs_of_pos hr]
+    -- 🎉 no goals
 
 /-- If `r > 0`, then `LocalHomeomorph.univBall c r` is a smooth local homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
@@ -125,28 +135,45 @@ def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
 @[simp]
 theorem univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by
   unfold univBall; split_ifs <;> rfl
+  -- ⊢ (if h : 0 < r then LocalHomeomorph.trans' univUnitBall (unitBallBall c r h)  …
+                   -- ⊢ (LocalHomeomorph.trans' univUnitBall (unitBallBall c r h✝) (_ : univUnitBall …
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 
 theorem univBall_target (c : P) {r : ℝ} (hr : 0 < r) : (univBall c r).target = ball c r := by
   rw [univBall, dif_pos hr]; rfl
+  -- ⊢ (LocalHomeomorph.trans' univUnitBall (unitBallBall c r hr) (_ : univUnitBall …
+                             -- 🎉 no goals
 
 theorem ball_subset_univBall_target (c : P) (r : ℝ) : ball c r ⊆ (univBall c r).target := by
   by_cases hr : 0 < r
+  -- ⊢ ball c r ⊆ (univBall c r).toLocalEquiv.target
   · rw [univBall_target c hr]
+    -- 🎉 no goals
   · rw [univBall, dif_neg hr]
+    -- ⊢ ball c r ⊆ (Homeomorph.toLocalHomeomorph (IsometryEquiv.toHomeomorph (Isomet …
     exact subset_univ _
+    -- 🎉 no goals
 
 @[simp]
 theorem univBall_apply_zero (c : P) (r : ℝ) : univBall c r 0 = c := by
   unfold univBall; split_ifs <;> simp
+  -- ⊢ ↑(if h : 0 < r then LocalHomeomorph.trans' univUnitBall (unitBallBall c r h) …
+                   -- ⊢ ↑(LocalHomeomorph.trans' univUnitBall (unitBallBall c r h✝) (_ : univUnitBal …
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 
 @[simp]
 theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0 := by
   have : 0 ∈ (univBall c r).source := by simp
+  -- ⊢ ↑(LocalHomeomorph.symm (univBall c r)) c = 0
   simpa only [univBall_apply_zero] using (univBall c r).left_inv this
+  -- 🎉 no goals
 
 @[continuity]
 theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
   simpa [continuous_iff_continuousOn_univ] using (univBall c r).continuousOn
+  -- 🎉 no goals
 
 theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r

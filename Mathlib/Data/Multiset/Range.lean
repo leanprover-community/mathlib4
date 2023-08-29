@@ -34,6 +34,8 @@ theorem range_zero : range 0 = 0 :=
 @[simp]
 theorem range_succ (n : ℕ) : range (succ n) = n ::ₘ range n := by
   rw [range, List.range_succ, ← coe_add, add_comm]; rfl
+  -- ⊢ ↑[n] + ↑(List.range n) = n ::ₘ range n
+                                                    -- 🎉 no goals
 #align multiset.range_succ Multiset.range_succ
 
 @[simp]
@@ -66,14 +68,20 @@ theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·)
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
     (range a).Disjoint (m.map (a + ·)) := by
   intro x hxa hxb
+  -- ⊢ False
   rw [range, mem_coe, List.mem_range] at hxa
+  -- ⊢ False
   obtain ⟨c, _, rfl⟩ := mem_map.1 hxb
+  -- ⊢ False
   exact (self_le_add_right _ _).not_lt hxa
+  -- 🎉 no goals
 #align multiset.range_disjoint_map_add Multiset.range_disjoint_map_add
 
 theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).map (a + ·) := by
   rw [range_add, add_eq_union_iff_disjoint]
+  -- ⊢ Disjoint (range a) (map (fun x => a + x) (range b))
   apply range_disjoint_map_add
+  -- 🎉 no goals
 #align multiset.range_add_eq_union Multiset.range_add_eq_union
 
 end Multiset

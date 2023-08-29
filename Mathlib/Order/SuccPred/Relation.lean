@@ -26,13 +26,22 @@ variable {α : Type*} [PartialOrder α] [SuccOrder α] [IsSuccArchimedean α]
 theorem reflTransGen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico n m, r i (succ i))
     (hnm : n ≤ m) : ReflTransGen r n m := by
   revert h; refine' Succ.rec _ _ hnm
+  -- ⊢ (∀ (i : α), i ∈ Ico n m → r i (succ i)) → ReflTransGen r n m
+            -- ⊢ (∀ (i : α), i ∈ Ico n n → r i (succ i)) → ReflTransGen r n n
   · intro _
+    -- ⊢ ReflTransGen r n n
     exact ReflTransGen.refl
+    -- 🎉 no goals
   · intro m hnm ih h
+    -- ⊢ ReflTransGen r n (succ m)
     have : ReflTransGen r n m := ih fun i hi => h i ⟨hi.1, hi.2.trans_le <| le_succ m⟩
+    -- ⊢ ReflTransGen r n (succ m)
     cases' (le_succ m).eq_or_lt with hm hm
+    -- ⊢ ReflTransGen r n (succ m)
     · rwa [← hm]
+      -- 🎉 no goals
     exact this.tail (h m ⟨hnm, hm⟩)
+    -- 🎉 no goals
 #align refl_trans_gen_of_succ_of_le reflTransGen_of_succ_of_le
 
 /-- For `m ≤ n`, `(n, m)` is in the reflexive-transitive closure of `~` if `succ i ~ i`
@@ -40,7 +49,9 @@ theorem reflTransGen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : ∀ 
 theorem reflTransGen_of_succ_of_ge (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico m n, r (succ i) i)
     (hmn : m ≤ n) : ReflTransGen r n m := by
   rw [← reflTransGen_swap]
+  -- ⊢ ReflTransGen (swap r) m n
   exact reflTransGen_of_succ_of_le (swap r) h hmn
+  -- 🎉 no goals
 #align refl_trans_gen_of_succ_of_ge reflTransGen_of_succ_of_ge
 
 /-- For `n < m`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ succ i`
@@ -84,7 +95,10 @@ theorem transGen_of_succ_of_ne (r : α → α → Prop) {n m : α} (h1 : ∀ i �
 theorem transGen_of_succ_of_reflexive (r : α → α → Prop) {n m : α} (hr : Reflexive r)
     (h1 : ∀ i ∈ Ico n m, r i (succ i)) (h2 : ∀ i ∈ Ico m n, r (succ i) i) : TransGen r n m := by
   rcases eq_or_ne m n with (rfl | hmn); · exact TransGen.single (hr m)
+  -- ⊢ TransGen r m m
+                                          -- 🎉 no goals
   exact transGen_of_succ_of_ne r h1 h2 hmn.symm
+  -- 🎉 no goals
 #align trans_gen_of_succ_of_reflexive transGen_of_succ_of_reflexive
 
 end LinearSucc

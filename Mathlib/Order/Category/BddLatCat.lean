@@ -145,7 +145,11 @@ def Iso.mk {α β : BddLatCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom _ _)
   inv := (e.symm : BoundedLatticeHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑α.toLa …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ :  …
+                        -- 🎉 no goals
 #align BddLat.iso.mk BddLatCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/
@@ -205,7 +209,9 @@ def latToBddLatCatForgetAdjunction : latToBddLatCat.{u} ⊣ forget₂ BddLatCat 
         { toFun := fun f =>
             { toFun := f ∘ some ∘ some
               map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.map_sup' _ _)
+                                                        -- 🎉 no goals
               map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.map_inf' _ _) }
+                                                        -- 🎉 no goals
           invFun := fun f => LatticeHom.withTopWithBot' f
           left_inv := fun f =>
             BoundedLatticeHom.ext fun a =>

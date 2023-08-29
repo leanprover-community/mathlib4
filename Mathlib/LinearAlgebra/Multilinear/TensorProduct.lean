@@ -49,12 +49,22 @@ def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
   toFun v := (a fun i => v (Sum.inl i)) ⊗ₜ b fun i => v (Sum.inr i)
   map_add' _ i p q := by
     letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
+    -- ⊢ (fun v => (↑a fun i => v (Sum.inl i)) ⊗ₜ[R] ↑b fun i => v (Sum.inr i)) (Func …
     letI := (@Sum.inr_injective ι₁ ι₂).decidableEq
+    -- ⊢ (fun v => (↑a fun i => v (Sum.inl i)) ⊗ₜ[R] ↑b fun i => v (Sum.inr i)) (Func …
     cases i <;> simp [TensorProduct.add_tmul, TensorProduct.tmul_add]
+    -- ⊢ (fun v => (↑a fun i => v (Sum.inl i)) ⊗ₜ[R] ↑b fun i => v (Sum.inr i)) (Func …
+                -- 🎉 no goals
+                -- 🎉 no goals
   map_smul' _ i c p := by
     letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
+    -- ⊢ (fun v => (↑a fun i => v (Sum.inl i)) ⊗ₜ[R] ↑b fun i => v (Sum.inr i)) (Func …
     letI := (@Sum.inr_injective ι₁ ι₂).decidableEq
+    -- ⊢ (fun v => (↑a fun i => v (Sum.inl i)) ⊗ₜ[R] ↑b fun i => v (Sum.inr i)) (Func …
     cases i <;> simp [TensorProduct.smul_tmul', TensorProduct.tmul_smul]
+    -- ⊢ (fun v => (↑a fun i => v (Sum.inl i)) ⊗ₜ[R] ↑b fun i => v (Sum.inr i)) (Func …
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align multilinear_map.dom_coprod MultilinearMap.domCoprod
 
 /-- A more bundled version of `MultilinearMap.domCoprod` that maps
@@ -66,16 +76,24 @@ def domCoprod' :
     LinearMap.mk₂ R domCoprod
       (fun m₁ m₂ n => by
         ext
+        -- ⊢ ↑(domCoprod (m₁ + m₂) n) x✝ = ↑(domCoprod m₁ n + domCoprod m₂ n) x✝
         simp only [domCoprod_apply, TensorProduct.add_tmul, add_apply])
+        -- 🎉 no goals
       (fun c m n => by
         ext
+        -- ⊢ ↑(domCoprod (c • m) n) x✝ = ↑(c • domCoprod m n) x✝
         simp only [domCoprod_apply, TensorProduct.smul_tmul', smul_apply])
+        -- 🎉 no goals
       (fun m n₁ n₂ => by
         ext
+        -- ⊢ ↑(domCoprod m (n₁ + n₂)) x✝ = ↑(domCoprod m n₁ + domCoprod m n₂) x✝
         simp only [domCoprod_apply, TensorProduct.tmul_add, add_apply])
+        -- 🎉 no goals
       fun c m n => by
       ext
+      -- ⊢ ↑(domCoprod m (c • n)) x✝ = ↑(c • domCoprod m n) x✝
       simp only [domCoprod_apply, TensorProduct.tmul_smul, smul_apply]
+      -- 🎉 no goals
 #align multilinear_map.dom_coprod' MultilinearMap.domCoprod'
 
 @[simp]

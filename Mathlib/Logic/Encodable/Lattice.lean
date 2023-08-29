@@ -29,7 +29,9 @@ variable {α : Type*} {β : Type*} [Encodable β]
 theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
     ⨆ (i : ℕ) (b ∈ decode₂ β i), f b = (⨆ b, f b) := by
   rw [iSup_comm]
+  -- ⊢ ⨆ (j : β) (i : ℕ) (_ : j ∈ decode₂ β i), f j = ⨆ (b : β), f b
   simp only [mem_decode₂, iSup_iSup_eq_right]
+  -- 🎉 no goals
 #align encodable.supr_decode₂ Encodable.iSup_decode₂
 
 theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
@@ -43,19 +45,28 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
   match decode₂ β n with
   | none => by
     simp
+    -- ⊢ C ∅
     apply H0
+    -- 🎉 no goals
   | some b => by
     convert H1 b
+    -- ⊢ ⋃ (b_1 : β) (_ : b_1 ∈ some b), f b_1 = f b
     simp [ext_iff]
+    -- 🎉 no goals
 #align encodable.Union_decode₂_cases Encodable.iUnion_decode₂_cases
 
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij
+  -- ⊢ (Disjoint on fun i => ⋃ (b : β) (_ : b ∈ decode₂ β i), f b) i j
   refine' disjoint_left.mpr fun x => _
+  -- ⊢ x ∈ (fun i => ⋃ (b : β) (_ : b ∈ decode₂ β i), f b) i → ¬x ∈ (fun i => ⋃ (b  …
   suffices ∀ a, encode a = i → x ∈ f a → ∀ b, encode b = j → x ∉ f b by simpa [decode₂_eq_some]
+  -- ⊢ ∀ (a : β), encode a = i → x ∈ f a → ∀ (b : β), encode b = j → ¬x ∈ f b
   rintro a rfl ha b rfl hb
+  -- ⊢ False
   exact (hd (mt (congr_arg encode) ij)).le_bot ⟨ha, hb⟩
+  -- 🎉 no goals
 #align encodable.Union_decode₂_disjoint_on Encodable.iUnion_decode₂_disjoint_on
 
 end Encodable

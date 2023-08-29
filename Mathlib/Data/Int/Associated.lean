@@ -21,12 +21,21 @@ This file contains some results on equality up to units in the integers.
 
 theorem Int.natAbs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by
   refine' Int.natAbs_eq_natAbs_iff.trans _
+  -- ⊢ a = b ∨ a = -b ↔ Associated a b
   constructor
+  -- ⊢ a = b ∨ a = -b → Associated a b
   · rintro (rfl | rfl)
+    -- ⊢ Associated a a
     · rfl
+      -- 🎉 no goals
     · exact ⟨-1, by simp⟩
+      -- 🎉 no goals
   · rintro ⟨u, rfl⟩
+    -- ⊢ a = a * ↑u ∨ a = -(a * ↑u)
     obtain rfl | rfl := Int.units_eq_one_or u
+    -- ⊢ a = a * ↑1 ∨ a = -(a * ↑1)
     · exact Or.inl (by simp)
+      -- 🎉 no goals
     · exact Or.inr (by simp)
+      -- 🎉 no goals
 #align int.nat_abs_eq_iff_associated Int.natAbs_eq_iff_associated

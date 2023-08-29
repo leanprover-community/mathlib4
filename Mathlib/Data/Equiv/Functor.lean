@@ -31,7 +31,9 @@ def map_equiv (h : α ≃ β) : f α ≃ f β where
   toFun    := map h
   invFun   := map h.symm
   left_inv x := by simp [map_map]
+                   -- 🎉 no goals
   right_inv x := by simp [map_map]
+                    -- 🎉 no goals
 
 @[simp]
 lemma map_equiv_apply (h : α ≃ β) (x : f α) :

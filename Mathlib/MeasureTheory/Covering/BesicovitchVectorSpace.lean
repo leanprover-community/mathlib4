@@ -68,57 +68,96 @@ def centerAndRescale : SatelliteConfig E N τ where
   rpos i := mul_pos (inv_pos.2 (a.rpos _)) (a.rpos _)
   h i j hij := by
     rcases a.h i j hij with (H | H)
+    -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) i ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
     · left
+      -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) i ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
       constructor
+      -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) i ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
       · rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg (inv_nonneg.2 (a.rpos _).le)]
         refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+        -- ⊢ r a i ≤ ‖c a i - c a (last N) - (c a j - c a (last N))‖
         rw [dist_eq_norm] at H
+        -- ⊢ r a i ≤ ‖c a i - c a (last N) - (c a j - c a (last N))‖
         convert H.1 using 2
+        -- ⊢ c a i - c a (last N) - (c a j - c a (last N)) = c a i - c a j
         abel
+        -- 🎉 no goals
+        -- 🎉 no goals
       · rw [← mul_assoc, mul_comm τ, mul_assoc]
+        -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) j ≤ (r a (last N))⁻¹ * (τ * r a i)
         refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+        -- ⊢ r a j ≤ τ * r a i
         exact H.2
+        -- 🎉 no goals
     · right
+      -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) j ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
       constructor
+      -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) j ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
       · rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg (inv_nonneg.2 (a.rpos _).le)]
         refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+        -- ⊢ r a j ≤ ‖c a j - c a (last N) - (c a i - c a (last N))‖
         rw [dist_eq_norm] at H
+        -- ⊢ r a j ≤ ‖c a j - c a (last N) - (c a i - c a (last N))‖
         convert H.1 using 2
+        -- ⊢ c a j - c a (last N) - (c a i - c a (last N)) = c a j - c a i
         abel
+        -- 🎉 no goals
+        -- 🎉 no goals
       · rw [← mul_assoc, mul_comm τ, mul_assoc]
+        -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) i ≤ (r a (last N))⁻¹ * (τ * r a j)
         refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+        -- ⊢ r a i ≤ τ * r a j
         exact H.2
+        -- 🎉 no goals
   hlast i hi := by
     have H := a.hlast i hi
+    -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) i ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
     constructor
+    -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) i ≤ dist ((fun i => (r a (last N))⁻¹ • ( …
     · rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
         abs_of_nonneg (inv_nonneg.2 (a.rpos _).le)]
       refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+      -- ⊢ r a i ≤ ‖c a i - c a (last N) - (c a (last N) - c a (last N))‖
       rw [dist_eq_norm] at H
+      -- ⊢ r a i ≤ ‖c a i - c a (last N) - (c a (last N) - c a (last N))‖
       convert H.1 using 2
+      -- ⊢ c a i - c a (last N) - (c a (last N) - c a (last N)) = c a i - c a (last N)
       abel
+      -- 🎉 no goals
+      -- 🎉 no goals
     · rw [← mul_assoc, mul_comm τ, mul_assoc]
+      -- ⊢ (fun i => (r a (last N))⁻¹ * r a i) (last N) ≤ (r a (last N))⁻¹ * (τ * r a i)
       refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+      -- ⊢ r a (last N) ≤ τ * r a i
       exact H.2
+      -- 🎉 no goals
   inter i hi := by
     have H := a.inter i hi
+    -- ⊢ dist ((fun i => (r a (last N))⁻¹ • (c a i - c a (last N))) i) ((fun i => (r  …
     rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
       abs_of_nonneg (inv_nonneg.2 (a.rpos _).le), ← mul_add]
     refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
+    -- ⊢ ‖c a i - c a (last N) - (c a (last N) - c a (last N))‖ ≤ r a i + r a (last N)
     rw [dist_eq_norm] at H
+    -- ⊢ ‖c a i - c a (last N) - (c a (last N) - c a (last N))‖ ≤ r a i + r a (last N)
     convert H using 2
+    -- ⊢ c a i - c a (last N) - (c a (last N) - c a (last N)) = c a i - c a (last N)
     abel
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align besicovitch.satellite_config.center_and_rescale Besicovitch.SatelliteConfig.centerAndRescale
 
 theorem centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
   simp [SatelliteConfig.centerAndRescale]
+  -- 🎉 no goals
 #align besicovitch.satellite_config.center_and_rescale_center Besicovitch.SatelliteConfig.centerAndRescale_center
 
 theorem centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) :
     a.centerAndRescale.r (last N) = 1 := by
   simp [SatelliteConfig.centerAndRescale, inv_mul_cancel (a.rpos _).ne']
+  -- 🎉 no goals
 #align besicovitch.satellite_config.center_and_rescale_radius Besicovitch.SatelliteConfig.centerAndRescale_radius
 
 end SatelliteConfig
@@ -145,11 +184,17 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     contained in the ball of radius `5/2`. A volume argument gives `s.card * (1/2)^dim ≤ (5/2)^dim`,
     i.e., `s.card ≤ 5^dim`. -/
   borelize E
+  -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
   let μ : Measure E := Measure.addHaar
+  -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
   let δ : ℝ := (1 : ℝ) / 2
+  -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
   let ρ : ℝ := (5 : ℝ) / 2
+  -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
   have ρpos : 0 < ρ := by norm_num
+  -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
   set A := ⋃ c ∈ s, ball (c : E) δ with hA
+  -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
   have D : Set.Pairwise (s : Set E) (Disjoint on fun c => ball (c : E) δ) := by
     rintro c hc d hd hcd
     apply ball_disjoint_ball
@@ -181,23 +226,34 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     simp [ENNReal.toReal_mul] at this
     simpa [div_eq_mul_inv, zero_le_two] using this
   exact_mod_cast K
+  -- 🎉 no goals
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
   apply csSup_le
+  -- ⊢ Set.Nonempty {N | ∃ s, Finset.card s = N ∧ (∀ (c : E), c ∈ s → ‖c‖ ≤ 2) ∧ ∀  …
   · refine' ⟨0, ⟨∅, by simp⟩⟩
+    -- 🎉 no goals
   · rintro _ ⟨s, ⟨rfl, h⟩⟩
+    -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
     exact Besicovitch.card_le_of_separated s h.1 h.2
+    -- 🎉 no goals
 #align besicovitch.multiplicity_le Besicovitch.multiplicity_le
 
 theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖) : s.card ≤ multiplicity E := by
   apply le_csSup
+  -- ⊢ BddAbove {N | ∃ s, Finset.card s = N ∧ (∀ (c : E), c ∈ s → ‖c‖ ≤ 2) ∧ ∀ (c : …
   · refine' ⟨5 ^ finrank ℝ E, _⟩
+    -- ⊢ 5 ^ finrank ℝ E ∈ upperBounds {N | ∃ s, Finset.card s = N ∧ (∀ (c : E), c ∈  …
     rintro _ ⟨s, ⟨rfl, h⟩⟩
+    -- ⊢ Finset.card s ≤ 5 ^ finrank ℝ E
     exact Besicovitch.card_le_of_separated s h.1 h.2
+    -- 🎉 no goals
   · simp only [mem_setOf_eq, Ne.def]
+    -- ⊢ ∃ s_1, Finset.card s_1 = Finset.card s ∧ (∀ (c : E), c ∈ s_1 → ‖c‖ ≤ 2) ∧ ∀  …
     exact ⟨s, rfl, hs, h's⟩
+    -- 🎉 no goals
 #align besicovitch.card_le_multiplicity Besicovitch.card_le_multiplicity
 
 variable (E)
@@ -298,6 +354,8 @@ def goodτ : ℝ :=
 
 theorem one_lt_goodτ : 1 < goodτ E := by
   dsimp [goodτ, goodδ]; linarith [(exists_goodδ E).choose_spec.1]
+  -- ⊢ 1 < 1 + Exists.choose (_ : ∃ δ, 0 < δ ∧ δ < 1 ∧ ∀ (s : Finset E), (∀ (c : E) …
+                        -- 🎉 no goals
 #align besicovitch.one_lt_good_τ Besicovitch.one_lt_goodτ
 
 variable {E}
@@ -360,26 +418,39 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
     simpa only [dist_eq_norm] using a.h
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
+  -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
+  -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
   have τpos : 0 < τ := _root_.zero_lt_one.trans_le hτ
+  -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
   have I : (1 - δ / 4) * τ ≤ 1 :=
     calc
       (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := mul_le_mul_of_nonneg_left hδ1 D
       _ = (1 : ℝ) - δ ^ 2 / 16 := by ring
       _ ≤ 1 := by linarith only [sq_nonneg δ]
   have J : 1 - δ ≤ 1 - δ / 4 := by linarith only [δnonneg]
+  -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
   have K : 1 - δ / 4 ≤ τ⁻¹ := by rw [inv_eq_one_div, le_div_iff τpos]; exact I
+  -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
   suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖; · linarith only [J, K, L]
+  -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
+                                        -- 🎉 no goals
   have hτ' : ∀ k, τ⁻¹ ≤ a.r k := by
     intro k
     rw [inv_eq_one_div, div_le_iff τpos, ← lastr, mul_comm]
     exact a.hlast' k hτ
   rcases ah i j inej with (H | H)
+  -- ⊢ τ⁻¹ ≤ ‖c a i - c a j‖
   · apply le_trans _ H.1
+    -- ⊢ τ⁻¹ ≤ r a i
     exact hτ' i
+    -- 🎉 no goals
   · rw [norm_sub_rev]
+    -- ⊢ τ⁻¹ ≤ ‖c a j - c a i‖
     apply le_trans _ H.1
+    -- ⊢ τ⁻¹ ≤ r a j
     exact hτ' j
+    -- 🎉 no goals
 #align besicovitch.satellite_config.exists_normalized_aux1 Besicovitch.SatelliteConfig.exists_normalized_aux1
 
 variable [NormedSpace ℝ E]
@@ -393,9 +464,13 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
     simpa only [dist_eq_norm] using a.h
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
+  -- ⊢ 1 - δ ≤ ‖c a i - (2 / ‖c a j‖) • c a j‖
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
+  -- ⊢ 1 - δ ≤ ‖c a i - (2 / ‖c a j‖) • c a j‖
   have τpos : 0 < τ := _root_.zero_lt_one.trans_le hτ
+  -- ⊢ 1 - δ ≤ ‖c a i - (2 / ‖c a j‖) • c a j‖
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
+  -- ⊢ 1 - δ ≤ ‖c a i - (2 / ‖c a j‖) • c a j‖
   have I : a.r i ≤ 2 := by
     rcases lt_or_le i (last N) with (H | H)
     · apply (a.hlast i H).1.trans
@@ -426,6 +501,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; apply mul_le_mul_of_nonneg_right J (a.rpos _).le
       _ ≤ ‖a.c i - a.c j‖ := by rw [one_mul]; exact H.1
   set d := (2 / ‖a.c j‖) • a.c j with hd
+  -- ⊢ 1 - δ ≤ ‖c a i - d‖
   have : a.r j - δ ≤ ‖a.c i - d‖ + (a.r j - 1) :=
     calc
       a.r j - δ ≤ ‖a.c i - a.c j‖ := A
@@ -438,6 +514,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         field_simp [(zero_le_two.trans_lt hj).ne']
         linarith only [hcrj]
   linarith only [this]
+  -- 🎉 no goals
 #align besicovitch.satellite_config.exists_normalized_aux2 Besicovitch.SatelliteConfig.exists_normalized_aux2
 
 theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
@@ -449,7 +526,9 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
     simpa only [dist_eq_norm] using a.h
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
+  -- ⊢ 1 - δ ≤ ‖(2 / ‖c a i‖) • c a i - (2 / ‖c a j‖) • c a j‖
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
+  -- ⊢ 1 - δ ≤ ‖(2 / ‖c a i‖) • c a i - (2 / ‖c a j‖) • c a j‖
   have A : a.r i ≤ ‖a.c i‖ := by
     have : i < last N := by
       apply lt_top_iff_ne_top.2
@@ -460,9 +539,13 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     convert (a.hlast i this).1 using 1
     rw [dist_eq_norm, lastc, sub_zero]
   have hj : 2 < ‖a.c j‖ := hi.trans_le hij
+  -- ⊢ 1 - δ ≤ ‖(2 / ‖c a i‖) • c a i - (2 / ‖c a j‖) • c a j‖
   set s := ‖a.c i‖
+  -- ⊢ 1 - δ ≤ ‖(2 / s) • c a i - (2 / ‖c a j‖) • c a j‖
   have spos : 0 < s := zero_lt_two.trans hi
+  -- ⊢ 1 - δ ≤ ‖(2 / s) • c a i - (2 / ‖c a j‖) • c a j‖
   set d := (s / ‖a.c j‖) • a.c j with hd
+  -- ⊢ 1 - δ ≤ ‖(2 / s) • c a i - (2 / ‖c a j‖) • c a j‖
   have I : ‖a.c j - a.c i‖ ≤ ‖a.c j‖ - s + ‖d - a.c i‖ :=
     calc
       ‖a.c j - a.c i‖ ≤ ‖a.c j - d‖ + ‖d - a.c i‖ := by simp [← dist_eq_norm, dist_triangle]
@@ -486,6 +569,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       _ ≤ s * (δ / 2) := (mul_le_mul_of_nonneg_left (by linarith only [δnonneg, hδ1]) spos.le)
       _ = s / 2 * δ := by ring
   have invs_nonneg : 0 ≤ 2 / s := div_nonneg zero_le_two (zero_le_two.trans hi.le)
+  -- ⊢ 1 - δ ≤ ‖(2 / s) • c a i - (2 / ‖c a j‖) • c a j‖
   calc
     1 - δ = 2 / s * (s / 2 - s / 2 * δ) := by field_simp [spos.ne']; ring
     _ ≤ 2 / s * ‖d - a.c i‖ :=
@@ -501,29 +585,44 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1) :
     ∃ c' : Fin N.succ → E, (∀ n, ‖c' n‖ ≤ 2) ∧ ∀ i j, i ≠ j → 1 - δ ≤ ‖c' i - c' j‖ := by
   let c' : Fin N.succ → E := fun i => if ‖a.c i‖ ≤ 2 then a.c i else (2 / ‖a.c i‖) • a.c i
+  -- ⊢ ∃ c', (∀ (n : Fin (Nat.succ N)), ‖c' n‖ ≤ 2) ∧ ∀ (i j : Fin (Nat.succ N)), i …
   have norm_c'_le : ∀ i, ‖c' i‖ ≤ 2 := by
     intro i
     simp only
     split_ifs with h; · exact h
     by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]; norm_num
   refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
+  -- ⊢ 1 - δ ≤ ‖c' i - c' j‖
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
+  -- ⊢ 1 - δ ≤ ‖c' i - c' j‖
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
+    -- ⊢ 1 - δ ≤ ‖c' j - c' i‖
+                       -- 🎉 no goals
   rcases le_or_lt ‖a.c j‖ 2 with (Hj | Hj)
+  -- ⊢ 1 - δ ≤ ‖c' i - c' j‖
   -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
   · simp_rw [Hj, hij.trans Hj, if_true]
+    -- ⊢ 1 - δ ≤ ‖c a i - c a j‖
     exact exists_normalized_aux1 a lastr hτ δ hδ1 hδ2 i j inej
+    -- 🎉 no goals
   -- case `2 < ‖c j‖`
   · have H'j : ‖a.c j‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false_iff] using Hj
+    -- ⊢ 1 - δ ≤ ‖c' i - c' j‖
     rcases le_or_lt ‖a.c i‖ 2 with (Hi | Hi)
+    -- ⊢ 1 - δ ≤ ‖c' i - c' j‖
     · -- case `‖c i‖ ≤ 2`
       simp_rw [Hi, if_true, H'j, if_false]
+      -- ⊢ 1 - δ ≤ ‖c a i - (2 / ‖c a j‖) • c a j‖
       exact exists_normalized_aux2 a lastc lastr hτ δ hδ1 hδ2 i j inej Hi Hj
+      -- 🎉 no goals
     · -- case `2 < ‖c i‖`
       have H'i : ‖a.c i‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false_iff] using Hi
+      -- ⊢ 1 - δ ≤ ‖c' i - c' j‖
       simp_rw [H'i, if_false, H'j, if_false]
+      -- ⊢ 1 - δ ≤ ‖(2 / ‖c a i‖) • c a i - (2 / ‖c a j‖) • c a j‖
       exact exists_normalized_aux3 a lastc lastr hτ δ hδ1 i j inej Hi hij
+      -- 🎉 no goals
 #align besicovitch.satellite_config.exists_normalized Besicovitch.SatelliteConfig.exists_normalized
 
 end SatelliteConfig
@@ -539,7 +638,9 @@ theorem isEmpty_satelliteConfig_multiplicity :
     IsEmpty (SatelliteConfig E (multiplicity E) (goodτ E)) :=
   ⟨by
     intro a
+    -- ⊢ False
     let b := a.centerAndRescale
+    -- ⊢ False
     rcases b.exists_normalized a.centerAndRescale_center a.centerAndRescale_radius
         (one_lt_goodτ E).le (goodδ E) le_rfl (goodδ_lt_one E).le with
       ⟨c', c'_le_two, hc'⟩

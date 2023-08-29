@@ -53,15 +53,21 @@ namespace SSet
 
 instance largeCategory : LargeCategory SSet := by
   dsimp only [SSet]
+  -- ⊢ LargeCategory (SimplicialObject (Type ?u.23))
   infer_instance
+  -- 🎉 no goals
 
 instance hasLimits : HasLimits SSet := by
   dsimp only [SSet]
+  -- ⊢ HasLimits (SimplicialObject (Type ?u.489))
   infer_instance
+  -- 🎉 no goals
 
 instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
+  -- ⊢ HasColimits (SimplicialObject (Type ?u.577))
   infer_instance
+  -- 🎉 no goals
 
 -- Porting note: added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -101,8 +107,11 @@ def boundary (n : ℕ) : SSet where
   map {m₁ m₂} f α :=
     ⟨f.unop ≫ (α : Δ[n].obj m₁), by
       intro h
+      -- ⊢ False
       apply α.property
+      -- ⊢ Function.Surjective ↑(asOrderHom ↑α)
       exact Function.Surjective.of_comp h⟩
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align sSet.boundary SSet.boundary
 
@@ -123,10 +132,17 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
   map {m₁ m₂} f α :=
     ⟨f.unop ≫ (α : Δ[n].obj m₁), by
       intro h; apply α.property
+      -- ⊢ False
+               -- ⊢ Set.range ↑(asOrderHom ↑α) ∪ {i} = Set.univ
       rw [Set.eq_univ_iff_forall] at h ⊢; intro j
+      -- ⊢ ∀ (x : Fin (n + 1)), x ∈ Set.range ↑(asOrderHom ↑α) ∪ {i}
+                                          -- ⊢ j ∈ Set.range ↑(asOrderHom ↑α) ∪ {i}
       apply Or.imp _ id (h j)
+      -- ⊢ j ∈ Set.range ↑(asOrderHom (f.unop ≫ ↑α)) → j ∈ Set.range ↑(asOrderHom ↑α)
       intro hj
+      -- ⊢ j ∈ Set.range ↑(asOrderHom ↑α)
       exact Set.range_comp_subset_range _ _ hj⟩
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align sSet.horn SSet.horn
 
@@ -161,15 +177,21 @@ set_option linter.uppercaseLean3 false in
 
 instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
+  -- ⊢ LargeCategory (SimplicialObject.Truncated (Type ?u.74955) n)
   infer_instance
+  -- 🎉 no goals
 
 instance Truncated.hasLimits : HasLimits (Truncated n) := by
   dsimp only [Truncated]
+  -- ⊢ HasLimits (SimplicialObject.Truncated (Type ?u.75436) n)
   infer_instance
+  -- 🎉 no goals
 
 instance Truncated.hasColimits : HasColimits (Truncated n) := by
   dsimp only [Truncated]
+  -- ⊢ HasColimits (SimplicialObject.Truncated (Type ?u.75544) n)
   infer_instance
+  -- 🎉 no goals
 
 -- Porting note: added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229

@@ -160,15 +160,25 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
           invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.2 f.toFun, f.map_point, rfl⟩
           left_inv := fun f => by
             apply Bipointed.Hom.ext
+            -- ⊢ ((fun f => { toFun := fun o => Option.elim o Y.toTwoPointing.snd f.toFun, ma …
             funext x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toTwoPoin …
             cases x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toTwoPoin …
             exact f.map_snd.symm
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toTwoPoin …
             rfl
+            -- 🎉 no goals
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
+        -- ⊢ (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘ some, map_point := ( …
         funext x
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
         cases x <;> rfl }
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 #align Pointed_to_Twop_fst_forget_comp_Bipointed_to_Pointed_fst_adjunction pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction
 
 /-- Adding a first point is left adjoint to forgetting the first point. -/
@@ -180,13 +190,23 @@ noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
           invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.1 f.toFun, rfl, f.map_point⟩
           left_inv := fun f => by
             apply Bipointed.Hom.ext
+            -- ⊢ ((fun f => { toFun := fun o => Option.elim o Y.toTwoPointing.fst f.toFun, ma …
             funext x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toTwoPoin …
             cases x
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toTwoPoin …
             exact f.map_fst.symm
+            -- ⊢ Bipointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.toTwoPoin …
             rfl
+            -- 🎉 no goals
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
+        -- ⊢ (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘ some, map_point := ( …
         funext x
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
         cases x <;> rfl }
+        -- ⊢ Bipointed.Hom.toFun (↑((fun X Y => { toFun := fun f => { toFun := f.toFun ∘  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 #align Pointed_to_Twop_snd_forget_comp_Bipointed_to_Pointed_snd_adjunction pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction

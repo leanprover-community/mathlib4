@@ -23,12 +23,15 @@ theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [Topological
     (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
     Equicontinuous ((↑) ∘ F) := by
   rw [equicontinuous_iff_continuous]
+  -- ⊢ Continuous (↑UniformFun.ofFun ∘ swap (FunLike.coe ∘ F))
   rw [equicontinuousAt_iff_continuousAt] at hf
+  -- ⊢ Continuous (↑UniformFun.ofFun ∘ swap (FunLike.coe ∘ F))
   let φ : G →* (ι →ᵤ M) :=
     { toFun := swap ((↑) ∘ F)
       map_one' := by dsimp [UniformFun]; ext; exact map_one _
       map_mul' := fun a b => by dsimp [UniformFun]; ext; exact map_mul _ _ _ }
   exact continuous_of_continuousAt_one φ hf
+  -- 🎉 no goals
 #align equicontinuous_of_equicontinuous_at_one equicontinuous_of_equicontinuousAt_one
 #align equicontinuous_of_equicontinuous_at_zero equicontinuous_of_equicontinuousAt_zero
 
@@ -38,11 +41,14 @@ theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [Unif
     (F : ι → hom) (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
     UniformEquicontinuous ((↑) ∘ F) := by
   rw [uniformEquicontinuous_iff_uniformContinuous]
+  -- ⊢ UniformContinuous (↑UniformFun.ofFun ∘ swap (FunLike.coe ∘ F))
   rw [equicontinuousAt_iff_continuousAt] at hf
+  -- ⊢ UniformContinuous (↑UniformFun.ofFun ∘ swap (FunLike.coe ∘ F))
   let φ : G →* (ι →ᵤ M) :=
     { toFun := swap ((↑) ∘ F)
       map_one' := by dsimp [UniformFun]; ext; exact map_one _
       map_mul' := fun a b => by dsimp [UniformFun]; ext; exact map_mul _ _ _ }
   exact uniformContinuous_of_continuousAt_one φ hf
+  -- 🎉 no goals
 #align uniform_equicontinuous_of_equicontinuous_at_one uniformEquicontinuous_of_equicontinuousAt_one
 #align uniform_equicontinuous_of_equicontinuous_at_zero uniformEquicontinuous_of_equicontinuousAt_zero

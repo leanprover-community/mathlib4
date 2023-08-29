@@ -37,6 +37,7 @@ variable [Zero N] {r : α → α → Prop} {s : N → N → Prop} (hbot : ∀ �
 theorem Lex.acc (x : α →₀ N) (h : ∀ a ∈ x.support, Acc (rᶜ ⊓ (· ≠ ·)) a) :
     Acc (Finsupp.Lex r s) x := by
   rw [lex_eq_invImage_dfinsupp_lex]
+  -- ⊢ Acc (InvImage (DFinsupp.Lex r fun x => s) toDFinsupp) x
   classical
     refine' InvImage.accessible toDFinsupp (DFinsupp.Lex.acc (fun _ => hbot) (fun _ => hs) _ _)
     simpa only [toDFinsupp_support] using h

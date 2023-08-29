@@ -103,16 +103,27 @@ set_option linter.uppercaseLean3 false in
 
 theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
+  -- ⊢ IsOpen U ↔ ∀ (i : D.J), IsOpen (↑(Multicoequalizer.π (GlueData.diagram D.toG …
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
+  -- ⊢ IsOpen U ↔ ∀ (i : D.J), IsOpen (↑(Sigma.ι (GlueData.diagram D.toGlueData).ri …
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
+  -- ⊢ IsOpen (↑(homeoOfIso (Multicoequalizer.isoCoequalizer (GlueData.diagram D.to …
   rw [coequalizer_isOpen_iff]
+  -- ⊢ IsOpen (↑(colimit.ι (parallelPair (MultispanIndex.fstSigmaMap (GlueData.diag …
   dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
     parallelPair_obj_one]
   rw [colimit_isOpen_iff.{_,u}]  -- porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
+  -- ⊢ (∀ (j : Discrete D.J), IsOpen (↑(colimit.ι (Discrete.functor D.U) j) ⁻¹' (↑( …
                                  -- breaks down if this `rw` is merged with the `rw` above.
   constructor
+  -- ⊢ (∀ (j : Discrete D.J), IsOpen (↑(colimit.ι (Discrete.functor D.U) j) ⁻¹' (↑( …
   · intro h j; exact h ⟨j⟩
+    -- ⊢ IsOpen (↑(Sigma.ι D.U j ≫ Multicoequalizer.sigmaπ (GlueData.diagram D.toGlue …
+               -- 🎉 no goals
   · intro h j; cases j; apply h
+    -- ⊢ IsOpen (↑(colimit.ι (Discrete.functor D.U) j) ⁻¹' (↑(colimit.ι (parallelPair …
+               -- ⊢ IsOpen (↑(colimit.ι (Discrete.functor D.U) { as := as✝ }) ⁻¹' (↑(colimit.ι ( …
+                        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.is_open_iff TopCat.GlueData.isOpen_iff
 
@@ -132,17 +143,31 @@ set_option linter.uppercaseLean3 false in
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
+    -- ⊢ Rel D a a
     exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, by simp [e₁, e₂]⟩], by
+    -- 🎉 no goals
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩); exact id
+    -- ⊢ Rel D { fst := i, snd := a } { fst := k, snd := c } → Rel D { fst := i, snd  …
+                                                      -- ⊢ Rel D { fst := j, snd := b } { fst := k, snd := c } → Rel D { fst := i, snd  …
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩); exact Or.inr ⟨x, e₁, e₂⟩
+    -- ⊢ Rel D { fst := i, snd := a } { fst := j, snd := b }
+                                 -- ⊢ Rel D { fst := i, snd := a } { fst := k, snd := c }
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
+    -- ⊢ Rel D { fst := i, snd := a } { fst := k, snd := c }
     have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by simp
+    -- ⊢ Rel D { fst := i, snd := a } { fst := k, snd := c }
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
+    -- ⊢ Rel D { fst := i, snd := a } { fst := k, snd := c }
     clear_value z
+    -- ⊢ Rel D { fst := i, snd := a } { fst := k, snd := c }
     right
+    -- ⊢ ∃ x, ↑(GlueData.f D.toGlueData { fst := i, snd := a }.fst { fst := k, snd := …
     use (pullback.fst : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
+    -- ⊢ ↑(GlueData.f D.toGlueData { fst := i, snd := a }.fst { fst := k, snd := c }. …
     dsimp only at *
+    -- ⊢ ↑(GlueData.f D.toGlueData i k) (↑pullback.fst (↑(GlueData.t' D.toGlueData j  …
     substs eq₁ eq₂ e₁ e₃ e₄
+    -- ⊢ ↑(GlueData.f D.toGlueData i k) (↑pullback.fst (↑(GlueData.t' D.toGlueData j  …
     have h₁ : D.t' j i k ≫ pullback.fst ≫ D.f i k = pullback.fst ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
     have h₂ : D.t' j i k ≫ pullback.fst ≫ D.t i k ≫ D.f k i = pullback.snd ≫ D.t j k ≫ D.f k j := by
@@ -151,6 +176,7 @@ theorem rel_equiv : Equivalence D.Rel :=
       rw [𝖣.cocycle_assoc, 𝖣.t_fac_assoc, 𝖣.t_inv_assoc]
       exact pullback.condition.symm
     exact ⟨ContinuousMap.congr_fun h₁ z, ContinuousMap.congr_fun h₂ z⟩⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.rel_equiv TopCat.GlueData.rel_equiv
 
@@ -168,10 +194,12 @@ theorem eqvGen_of_π_eq
         𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
       x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
+  -- ⊢ EqvGen (Types.CoequalizerRel ↑(MultispanIndex.fstSigmaMap (GlueData.diagram  …
   -- Porting note: inlined `inferInstance` instead of leaving as a side goal.
   replace h := (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp
     inferInstance h
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
+  -- ⊢ EqvGen (Types.CoequalizerRel ↑(MultispanIndex.fstSigmaMap (GlueData.diagram  …
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
     rw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
@@ -192,51 +220,78 @@ theorem eqvGen_of_π_eq
     colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
     types_id_apply] at this
   exact Quot.eq.1 this
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.eqv_gen_of_π_eq TopCat.GlueData.eqvGen_of_π_eq
 
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   constructor
+  -- ⊢ ↑(GlueData.ι D.toGlueData i) x = ↑(GlueData.ι D.toGlueData j) y → Rel D { fs …
   · delta GlueData.ι
+    -- ⊢ ↑(Multicoequalizer.π (GlueData.diagram D.toGlueData) i) x = ↑(Multicoequaliz …
     simp_rw [← Multicoequalizer.ι_sigmaπ]
+    -- ⊢ ↑(Sigma.ι (GlueData.diagram D.toGlueData).right i ≫ Multicoequalizer.sigmaπ  …
     intro h
+    -- ⊢ Rel D { fst := i, snd := x } { fst := j, snd := y }
     rw [←
       show _ = Sigma.mk i x from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     rw [←
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
+    -- ⊢ InvImage (Rel D) (↑(sigmaIsoSigma D.U).hom) (↑(sigmaIsoSigma D.U).inv { fst  …
     simp only [TopCat.sigmaIsoSigma_inv_apply]
+    -- ⊢ InvImage (Rel D) (↑(sigmaIsoSigma D.U).hom) (↑(sigmaIsoSigma D.U).inv { fst  …
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
+    -- ⊢ EqvGen (InvImage (Rel D) ↑(sigmaIsoSigma D.U).hom) (↑(sigmaIsoSigma D.U).inv …
     refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
+    -- ⊢ ∀ (a b : (forget TopCat).obj (∐ D.U)), Types.CoequalizerRel (↑(MultispanInde …
     rintro _ _ ⟨x⟩
+    -- ⊢ InvImage (Rel D) (↑(sigmaIsoSigma D.U).hom) (↑(MultispanIndex.fstSigmaMap (G …
     rw [←show (sigmaIsoSigma.{u, u} _).inv _ = x from
         ConcreteCategory.congr_hom (sigmaIsoSigma.{u, u} _).hom_inv_id x]
     generalize (sigmaIsoSigma.{u, u} D.V).hom x = x'
+    -- ⊢ InvImage (Rel D) (↑(sigmaIsoSigma D.U).hom) (↑(MultispanIndex.fstSigmaMap (G …
     obtain ⟨⟨i, j⟩, y⟩ := x'
+    -- ⊢ InvImage (Rel D) (↑(sigmaIsoSigma D.U).hom) (↑(MultispanIndex.fstSigmaMap (G …
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
+    -- ⊢ Rel D (↑(sigmaIsoSigma D.U).hom (↑(Sigma.desc fun b => MultispanIndex.fst (G …
     simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
       Cofan.mk_ι_app]
     rw [←comp_apply, colimit.ι_desc, ←comp_apply, colimit.ι_desc]
+    -- ⊢ Rel D (↑(sigmaIsoSigma D.U).hom (↑(NatTrans.app (Cofan.mk (∐ (GlueData.diagr …
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
+    -- ⊢ Rel D { fst := MultispanIndex.fstFrom (GlueData.diagram D.toGlueData) { as : …
     exact Or.inr ⟨y, by dsimp [GlueData.diagram]; simp only [true_and]; rfl⟩
+    -- 🎉 no goals
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
+    -- ⊢ ↑(GlueData.ι D.toGlueData i) x = ↑(GlueData.ι D.toGlueData i) x
     rfl
+    -- ⊢ ↑(GlueData.ι D.toGlueData i) x = ↑(GlueData.ι D.toGlueData j) y
     dsimp only at *
+    -- ⊢ ↑(GlueData.ι D.toGlueData i) x = ↑(GlueData.ι D.toGlueData j) y
     -- porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
     rw [← e₁, ← e₂] at *
+    -- ⊢ ↑(GlueData.ι D.toGlueData i) (↑(GlueData.f D.toGlueData i j) z) = ↑(GlueData …
     simp
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_eq_iff_rel TopCat.GlueData.ι_eq_iff_rel
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
+  -- ⊢ x = y
   rcases(D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
+  -- ⊢ x = x
   · rfl
+    -- 🎉 no goals
   · dsimp only at *
+    -- ⊢ x = y
     -- porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
     rw [← e₁, ← e₂]
+    -- ⊢ ↑(GlueData.f D.toGlueData i i) w✝ = ↑(GlueData.f D.toGlueData i i) (↑(GlueDa …
     simp
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_injective TopCat.GlueData.ι_injective
 
@@ -248,9 +303,13 @@ set_option linter.uppercaseLean3 false in
 theorem image_inter (i j : D.J) :
     Set.range (𝖣.ι i) ∩ Set.range (𝖣.ι j) = Set.range (D.f i j ≫ 𝖣.ι _) := by
   ext x
+  -- ⊢ x ∈ Set.range ↑(GlueData.ι D.toGlueData i) ∩ Set.range ↑(GlueData.ι D.toGlue …
   constructor
+  -- ⊢ x ∈ Set.range ↑(GlueData.ι D.toGlueData i) ∩ Set.range ↑(GlueData.ι D.toGlue …
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
+    -- ⊢ x ∈ Set.range ↑(GlueData.f D.toGlueData i j ≫ GlueData.ι D.toGlueData i)
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
+    -- ⊢ x ∈ Set.range ↑(GlueData.f D.toGlueData i i ≫ GlueData.ι D.toGlueData i)
     · exact ⟨inv (D.f i i) x₁, by
         -- Porting note: was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
@@ -260,10 +319,15 @@ theorem image_inter (i j : D.J) :
     · -- Porting note: was
       -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
       dsimp only at *
+      -- ⊢ x ∈ Set.range ↑(GlueData.f D.toGlueData i j ≫ GlueData.ι D.toGlueData i)
       substs eq₁
+      -- ⊢ ↑(GlueData.ι D.toGlueData i) x₁ ∈ Set.range ↑(GlueData.f D.toGlueData i j ≫  …
       exact ⟨y, by simp [e₁]⟩
+      -- 🎉 no goals
   · rintro ⟨x, hx⟩
+    -- ⊢ x✝ ∈ Set.range ↑(GlueData.ι D.toGlueData i) ∩ Set.range ↑(GlueData.ι D.toGlu …
     exact ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), by simp [← hx]⟩⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.image_inter TopCat.GlueData.image_inter
 
@@ -282,27 +346,42 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
     generalize 𝖣.ι i '' U = U'
     simp
   rw [← this, Set.image_preimage_eq_inter_range]
+  -- ⊢ ↑(GlueData.ι D.toGlueData j) ⁻¹' (↑(GlueData.ι D.toGlueData i) '' U) = ↑(Glu …
   symm
+  -- ⊢ ↑(GlueData.ι D.toGlueData j) ⁻¹' (↑(GlueData.ι D.toGlueData i) '' U) ∩ Set.r …
   apply Set.inter_eq_self_of_subset_left
+  -- ⊢ ↑(GlueData.ι D.toGlueData j) ⁻¹' (↑(GlueData.ι D.toGlueData i) '' U) ⊆ Set.r …
   rw [← D.preimage_range i j]
+  -- ⊢ ↑(GlueData.ι D.toGlueData j) ⁻¹' (↑(GlueData.ι D.toGlueData i) '' U) ⊆ ↑(Glu …
   exact Set.preimage_mono (Set.image_subset_range _ _)
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image TopCat.GlueData.preimage_image_eq_image
 
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
   convert D.preimage_image_eq_image i j U using 1
+  -- ⊢ ↑(GlueData.t D.toGlueData i j ≫ GlueData.f D.toGlueData j i) '' (↑(GlueData. …
   rw [coe_comp, coe_comp]
+  -- ⊢ ↑(GlueData.f D.toGlueData j i) ∘ ↑(GlueData.t D.toGlueData i j) '' (↑(GlueDa …
   -- porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
   show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
+  -- ⊢ (fun x => (forget TopCat).map (GlueData.f D.toGlueData j i) ((forget TopCat) …
   rw [← Set.image_image]
+  -- ⊢ (forget TopCat).map (GlueData.f D.toGlueData j i) '' ((fun x => (forget TopC …
   -- porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
   refine congr_arg ?_ ?_
+  -- ⊢ (fun x => (forget TopCat).map (GlueData.t D.toGlueData i j) x) '' (↑(GlueDat …
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
+  -- ⊢ ↑(GlueData.f D.toGlueData i j) ⁻¹' U = (fun x => (↑(GlueData.f D.toGlueData  …
   change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
+  -- ⊢ ↑(GlueData.f D.toGlueData i j) ⁻¹' U = ↑(GlueData.t D.toGlueData i j ≫ GlueD …
   rw [𝖣.t_inv_assoc]
+  -- ⊢ Function.Bijective fun x => (forget TopCat).map (GlueData.t D.toGlueData i j …
   rw [← isIso_iff_bijective]
+  -- ⊢ IsIso fun x => (forget TopCat).map (GlueData.t D.toGlueData i j) x
   apply (forget TopCat).map_isIso
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image' TopCat.GlueData.preimage_image_eq_image'
 
@@ -310,11 +389,17 @@ set_option linter.uppercaseLean3 false in
 -- I had to manually add the explicit type ascription.
 theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
   rw [isOpen_iff]
+  -- ⊢ ∀ (i_1 : D.J), IsOpen (↑(GlueData.ι D.toGlueData i_1) ⁻¹' (↑(GlueData.ι D.to …
   intro j
+  -- ⊢ IsOpen (↑(GlueData.ι D.toGlueData j) ⁻¹' (↑(GlueData.ι D.toGlueData i) '' ↑U))
   rw [preimage_image_eq_image]
+  -- ⊢ IsOpen (↑(GlueData.f D.toGlueData j i) '' (↑(GlueData.t D.toGlueData j i ≫ G …
   apply (D.f_open _ _).isOpenMap
+  -- ⊢ IsOpen (↑(GlueData.t D.toGlueData j i ≫ GlueData.f D.toGlueData i j) ⁻¹' ↑U)
   apply (D.t j i ≫ D.f i j).continuous_toFun.isOpen_preimage
+  -- ⊢ IsOpen ↑U
   exact U.isOpen
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.open_image_open TopCat.GlueData.open_image_open
 
@@ -355,28 +440,43 @@ set_option linter.uppercaseLean3 false in
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
+  -- ⊢ ↑(t h i j) (↑(t h j i) x) = x
   rw [h.t_id] at this
   convert Subtype.eq this
   rw [h.V_id]
+  -- ⊢ ↑x ∈ ⊤
   trivial
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
 instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
   use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
+  -- ⊢ MkCore.t h i j ≫ MkCore.t h j i = 𝟙 ((Opens.toTopCat (MkCore.U h i)).obj (Mk …
+               -- ⊢ MkCore.t h i j ≫ MkCore.t h j i = 𝟙 ((Opens.toTopCat (MkCore.U h i)).obj (Mk …
+                               -- ⊢ ↑(MkCore.t h i j ≫ MkCore.t h j i) x✝ = ↑(𝟙 ((Opens.toTopCat (MkCore.U h i)) …
+                               -- ⊢ ↑(MkCore.t h j i ≫ MkCore.t h i j) x✝ = ↑(𝟙 ((Opens.toTopCat (MkCore.U h j)) …
+                                     -- 🎉 no goals
 
 /-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
   refine' (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
+  -- ⊢ ↑(of { p // ↑(Opens.inclusion (V h i j)) p.fst = ↑(Opens.inclusion (V h i k) …
   · intro x
+    -- ⊢ ↑(of { p // ↑(Opens.inclusion (V h j k)) p.fst = ↑(Opens.inclusion (V h j i) …
     refine' ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
+    -- ⊢ ↑(↑(t h i j) (↑x).fst) ∈ V h j k
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
+    -- ⊢ ↑(↑(t h i j) (↑{ val := ({ val := x, property := hx }, { val := x, property  …
     exact h.t_inter _ ⟨x, hx⟩ hx'
+    -- 🎉 no goals
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
   have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
+  -- ⊢ Continuous fun x => { val := ({ val := ↑(↑(t h i j) (↑x).fst), property := ( …
   exact ((Continuous.subtype_mk (by continuity) _).prod_mk (by continuity)).subtype_mk _
+  -- 🎉 no goals
 
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
@@ -392,29 +492,46 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   f_id i := by
     -- Porting note: added `dsimp only`
     dsimp only
+    -- ⊢ IsIso (Opens.inclusion (MkCore.V h i i))
     exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
+    -- 🎉 no goals
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl
+               -- ⊢ ↑(MkCore.t h i i) x✝ = ↑(𝟙 ((fun i => (Opens.toTopCat (MkCore.U h i.fst)).ob …
+                    -- ⊢ id x✝ = ↑(𝟙 ((fun i => (Opens.toTopCat (MkCore.U h i.fst)).obj (MkCore.V h i …
+                                 -- 🎉 no goals
   t' := h.t'
   t_fac i j k := by
     delta MkCore.t'
+    -- ⊢ ((pullbackIsoProdSubtype (Opens.inclusion (MkCore.V h i j)) (Opens.inclusion …
     rw [Category.assoc, Category.assoc, pullbackIsoProdSubtype_inv_snd, ← Iso.eq_inv_comp,
       pullbackIsoProdSubtype_inv_fst_assoc]
     ext ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
+    -- ⊢ ↑((ContinuousMap.mk fun x => { val := ({ val := ↑(↑(MkCore.t h i j) (↑x).fst …
     rfl
+    -- 🎉 no goals
   cocycle i j k := by
     delta MkCore.t'
+    -- ⊢ ((pullbackIsoProdSubtype (Opens.inclusion (MkCore.V h i j)) (Opens.inclusion …
     simp_rw [← Category.assoc]
+    -- ⊢ ((((((((pullbackIsoProdSubtype (Opens.inclusion (MkCore.V h i j)) (Opens.inc …
     rw [Iso.comp_inv_eq]
+    -- ⊢ ((((((((pullbackIsoProdSubtype (Opens.inclusion (MkCore.V h i j)) (Opens.inc …
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
+    -- ⊢ ((pullbackIsoProdSubtype (Opens.inclusion (MkCore.V h i j)) (Opens.inclusion …
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
+    -- ⊢ ((ContinuousMap.mk fun x => { val := ({ val := ↑(↑(MkCore.t h i j) (↑x).fst) …
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
+    -- ⊢ ↑((ContinuousMap.mk fun x => { val := ({ val := ↑(↑(MkCore.t h i j) (↑x).fst …
     rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
       Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
+    -- ⊢ (↑(↑(ContinuousMap.mk fun x => { val := ({ val := ↑(↑(MkCore.t h j k) (↑x).f …
     refine Subtype.ext ?_
+    -- ⊢ ↑(↑(↑(ContinuousMap.mk fun x => { val := ({ val := ↑(↑(MkCore.t h j k) (↑x). …
     exact h.cocycle i j k ⟨x, hx⟩ hx'
+    -- 🎉 no goals
   -- Porting note : was not necessary in mathlib3
   f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
 set_option linter.uppercaseLean3 false in
@@ -432,13 +549,20 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
+        -- ⊢ Continuous fun x => { val := ↑↑x, property := (_ : ↑x ∈ (fun i j => (Opens.m …
         refine Continuous.subtype_mk ?_ ?_
+        -- ⊢ Continuous fun x => ↑↑x
         continuity⟩
+        -- 🎉 no goals
       V_id := fun i => by
         ext
+        -- ⊢ x✝ ∈ ↑((fun i j => (Opens.map (Opens.inclusion (U i))).obj (U j)) i i) ↔ x✝  …
         -- porting note: no longer needed `cases U i`!
         simp
+        -- 🎉 no goals
       t_id := fun i => by ext; rfl
+                          -- ⊢ ↑((fun i j => ContinuousMap.mk fun x => { val := { val := ↑↑x, property := ( …
+                               -- 🎉 no goals
       t_inter := fun i j k x hx => hx
       cocycle := fun i j k x h => rfl }
 set_option linter.uppercaseLean3 false in
@@ -450,6 +574,9 @@ and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun x => Opens.inclusion _) (by rintro ⟨i, j⟩; ext x; rfl)
+                                                             -- ⊢ MultispanIndex.fst (GlueData.diagram (ofOpenSubsets U).toGlueData) (i, j) ≫  …
+                                                                            -- ⊢ ↑(MultispanIndex.fst (GlueData.diagram (ofOpenSubsets U).toGlueData) (i, j)  …
+                                                                                   -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue TopCat.GlueData.fromOpenSubsetsGlue
 
@@ -464,40 +591,66 @@ set_option linter.uppercaseLean3 false in
 
 theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue U) := by
   intro x y e
+  -- ⊢ x = y
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
+  -- ⊢ ↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val := x, property := hx } = y
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
+  -- ⊢ ↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val := x, property := hx } =  …
   -- porting note: now it is `erw`, it was `rw`
   -- see the porting note on `ι_fromOpenSubsetsGlue`
   erw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
+  -- ⊢ ↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val := x, property := hx } =  …
   change x = y at e
+  -- ⊢ ↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val := x, property := hx } =  …
   subst e
+  -- ⊢ ↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val := x, property := hx } =  …
   rw [(ofOpenSubsets U).ι_eq_iff_rel]
+  -- ⊢ Rel (ofOpenSubsets U) { fst := i, snd := { val := x, property := hx } } { fs …
   right
+  -- ⊢ ∃ x_1, ↑(GlueData.f (ofOpenSubsets U).toGlueData { fst := i, snd := { val := …
   exact ⟨⟨⟨x, hx⟩, hy⟩, rfl, rfl⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue_injective TopCat.GlueData.fromOpenSubsetsGlue_injective
 
 theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   intro s hs
+  -- ⊢ IsOpen (↑(fromOpenSubsetsGlue U) '' s)
   rw [(ofOpenSubsets U).isOpen_iff] at hs
+  -- ⊢ IsOpen (↑(fromOpenSubsetsGlue U) '' s)
   rw [isOpen_iff_forall_mem_open]
+  -- ⊢ ∀ (x : (forget TopCat).obj (of α)), x ∈ ↑(fromOpenSubsetsGlue U) '' s → ∃ t, …
   rintro _ ⟨x, hx, rfl⟩
+  -- ⊢ ∃ t, t ⊆ ↑(fromOpenSubsetsGlue U) '' s ∧ IsOpen t ∧ ↑(fromOpenSubsetsGlue U) …
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
+  -- ⊢ ∃ t, t ⊆ ↑(fromOpenSubsetsGlue U) '' s ∧ IsOpen t ∧ ↑(fromOpenSubsetsGlue U) …
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion (TopCat.of α) (U i))
+  -- ⊢ ↑(fromOpenSubsetsGlue U) '' s ∩ Set.range ↑(Opens.inclusion (U i)) ⊆ ↑(fromO …
   use Set.inter_subset_left _ _
+  -- ⊢ IsOpen (↑(fromOpenSubsetsGlue U) '' s ∩ Set.range ↑(Opens.inclusion (U i)))  …
   constructor
+  -- ⊢ IsOpen (↑(fromOpenSubsetsGlue U) '' s ∩ Set.range ↑(Opens.inclusion (U i)))
   · erw [← Set.image_preimage_eq_inter_range]
+    -- ⊢ IsOpen (↑(Opens.inclusion (U i)) '' (↑(Opens.inclusion (U i)) ⁻¹' (↑(fromOpe …
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
+    -- ⊢ IsOpen (↑(Opens.inclusion (U i)) ⁻¹' (↑(fromOpenSubsetsGlue U) '' s))
     convert hs i using 1
+    -- ⊢ ↑(Opens.inclusion (U i)) ⁻¹' (↑(fromOpenSubsetsGlue U) '' s) = ↑(GlueData.ι  …
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
+    -- ⊢ ↑(GlueData.ι (ofOpenSubsets U).toGlueData i) ⁻¹' (↑(fromOpenSubsetsGlue U) ⁻ …
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
+    -- ⊢ ↑(fromOpenSubsetsGlue U) ⁻¹' (↑(fromOpenSubsetsGlue U) '' s) = s
     refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
+    -- 🎉 no goals
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
+    -- ⊢ ↑(fromOpenSubsetsGlue U) (↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val …
     -- porting note: another `rw ↦ erw`
     -- See above.
     erw [ι_fromOpenSubsetsGlue_apply]
+    -- ⊢ ↑(Opens.inclusion (U i)) { val := x, property := hx' } ∈ Set.range ↑(Opens.i …
     exact Set.mem_range_self _
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue_is_open_map TopCat.GlueData.fromOpenSubsetsGlue_isOpenMap
 
@@ -509,16 +662,25 @@ set_option linter.uppercaseLean3 false in
 
 theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (U i : Set α) := by
   ext
+  -- ⊢ x✝ ∈ Set.range ↑(fromOpenSubsetsGlue U) ↔ x✝ ∈ ⋃ (i : J), ↑(U i)
   constructor
+  -- ⊢ x✝ ∈ Set.range ↑(fromOpenSubsetsGlue U) → x✝ ∈ ⋃ (i : J), ↑(U i)
   · rintro ⟨x, rfl⟩
+    -- ⊢ ↑(fromOpenSubsetsGlue U) x ∈ ⋃ (i : J), ↑(U i)
     obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
+    -- ⊢ ↑(fromOpenSubsetsGlue U) (↑(GlueData.ι (ofOpenSubsets U).toGlueData i) { val …
     -- porting note: another `rw ↦ erw`
     -- See above
     erw [ι_fromOpenSubsetsGlue_apply]
+    -- ⊢ ↑(Opens.inclusion (U i)) { val := x, property := hx' } ∈ ⋃ (i : J), ↑(U i)
     exact Set.subset_iUnion _ i hx'
+    -- 🎉 no goals
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
+    -- ⊢ x✝ ∈ Set.range ↑(fromOpenSubsetsGlue U)
     rename_i x
+    -- ⊢ x ∈ Set.range ↑(fromOpenSubsetsGlue U)
     refine' ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.range_from_open_subsets_glue TopCat.GlueData.range_fromOpenSubsetsGlue
 

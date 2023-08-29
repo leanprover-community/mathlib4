@@ -66,8 +66,11 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
     associated (R₁ := A) (Q₁.tmul Q₂)
       = (associated (R₁ := A) Q₁).tmul (associated (R₁ := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
+  -- ⊢ ↑associated
   dsimp
+  -- ⊢ ↑associated (↑(BilinForm.toQuadraticFormLinearMap A A (M₁ ⊗[R] M₂)) (↑(Bilin …
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
+  -- 🎉 no goals
 
 variable (A) in
 /-- The base change of a quadratic form. -/
@@ -83,7 +86,9 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
 theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
     associated (R₁ := A) (Q.baseChange A) = (associated (R₁ := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
+  -- ⊢ ↑associated (QuadraticForm.tmul sq Q) = BilinForm.tmul (↑LinearMap.toBilin ( …
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
+  -- 🎉 no goals
 
 end CommRing
 

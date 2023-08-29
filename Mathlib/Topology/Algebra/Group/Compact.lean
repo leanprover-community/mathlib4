@@ -38,17 +38,24 @@ is locally compact. -/
 theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group [T2Space G]
     (K : PositiveCompacts G) : LocallyCompactSpace G := by
   refine' locally_compact_of_compact_nhds fun x => _
+  -- ⊢ ∃ s, s ∈ 𝓝 x ∧ IsCompact s
   obtain ⟨y, hy⟩ := K.interior_nonempty
+  -- ⊢ ∃ s, s ∈ 𝓝 x ∧ IsCompact s
   let F := Homeomorph.mulLeft (x * y⁻¹)
+  -- ⊢ ∃ s, s ∈ 𝓝 x ∧ IsCompact s
   refine' ⟨F '' K, _, K.isCompact.image F.continuous⟩
+  -- ⊢ ↑F '' ↑K ∈ 𝓝 x
   suffices F.symm ⁻¹' K ∈ 𝓝 x by
     convert this using 1
     apply Equiv.image_eq_preimage
   apply ContinuousAt.preimage_mem_nhds F.symm.continuous.continuousAt
+  -- ⊢ ↑K ∈ 𝓝 (↑(Homeomorph.symm F) x)
   have : F.symm x = y := by simp only [Homeomorph.mulLeft_symm, mul_inv_rev,
       inv_inv, Homeomorph.coe_mulLeft, inv_mul_cancel_right]
   rw [this]
+  -- ⊢ ↑K ∈ 𝓝 y
   exact mem_interior_iff_mem_nhds.1 hy
+  -- 🎉 no goals
 #align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
 #align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_addGroup
 
@@ -63,11 +70,14 @@ instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G
     where
   continuous_smul := by
     let F : G × G ⧸ Γ → G ⧸ Γ := fun p => p.1 • p.2
+    -- ⊢ Continuous fun p => p.fst • p.snd
     change Continuous F
+    -- ⊢ Continuous F
     have H : Continuous (F ∘ fun p : G × G => (p.1, QuotientGroup.mk p.2)) := by
       change Continuous fun p : G × G => QuotientGroup.mk (p.1 * p.2)
       refine' continuous_coinduced_rng.comp continuous_mul
     exact QuotientMap.continuous_lift_prod_right quotientMap_quotient_mk' H
+    -- 🎉 no goals
 #align quotient_group.has_continuous_smul QuotientGroup.continuousSMul
 #align quotient_add_group.has_continuous_vadd QuotientAddGroup.continuousVAdd
 

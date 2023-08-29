@@ -88,6 +88,7 @@ instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 @[to_additive]
 instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (X →* Y) X (fun _ => Y) by infer_instance
+                                          -- 🎉 no goals
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -166,6 +167,7 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 
 @[to_additive]
 instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
+                                                           -- 🎉 no goals
 
 end MonCat
 
@@ -193,7 +195,9 @@ attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCatego
 @[to_additive]
 instance concreteCategory : ConcreteCategory CommMonCat := by
   dsimp only [CommMonCat]
+  -- ⊢ ConcreteCategory (Bundled CommMonoid)
   infer_instance
+  -- 🎉 no goals
 
 @[to_additive]
 instance : CoeSort CommMonCat (Type*) where
@@ -210,6 +214,7 @@ instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 @[to_additive]
 instance Hom_FunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (X →* Y) X (fun _ => Y) by infer_instance
+                                          -- 🎉 no goals
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -287,22 +292,30 @@ example {R S : MonCat} (f : R ⟶ S) : ↑R → ↑S := f
 
 -- Porting note: it's essential that simp lemmas for `→*` apply to morphisms.
 example {R S : MonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+                                                                       -- 🎉 no goals
 
 example {R S : CommMonCat} (f : R ⟶ S) : ↑R → ↑S := f
 
 example {R S : CommMonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+                                                                           -- 🎉 no goals
 
 -- We verify that when constructing a morphism in `CommMonCat`,
 -- when we construct the `toFun` field, the types are presented as `↑R`.
 example (R : CommMonCat.{u}) : R ⟶ R :=
   { toFun := fun x => by
       match_target (R : Type u)
+      -- ⊢ ↑R
       guard_hyp x : (R : Type u)
+      -- ⊢ ↑R
       exact x * x
+      -- 🎉 no goals
     map_one' := by simp
+                   -- 🎉 no goals
     map_mul' := fun x y => by
       dsimp
+      -- ⊢ x * y * (x * y) = x * x * (y * y)
       rw [mul_assoc x y (x * y), ← mul_assoc y x y, mul_comm y x, mul_assoc, mul_assoc] }
+      -- 🎉 no goals
 
 variable {X Y : Type u}
 
@@ -403,8 +416,11 @@ add_decl_doc addEquivIsoAddCommMonCatIso
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
+    -- ⊢ IsIso f
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (by aesop)
+    -- ⊢ IsIso f
     exact IsIso.of_iso e.toMonCatIso
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -414,10 +430,12 @@ set_option linter.uppercaseLean3 false in
 instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
+    -- ⊢ IsIso f
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
       -- Porting FIXME: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
       (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toCommMonCatIso
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in

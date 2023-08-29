@@ -52,11 +52,16 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
     carrier := _root_.closure (K : Set α)
     inv_mem' := fun x hx => by
       dsimp only at hx ⊢
+      -- ⊢ x⁻¹ ∈ _root_.closure ↑K
       rcases eq_or_ne x 0 with (rfl | h)
+      -- ⊢ 0⁻¹ ∈ _root_.closure ↑K
       · rwa [inv_zero]
+        -- 🎉 no goals
       · -- porting note: todo: Lean fails to find InvMemClass instance
         rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
+        -- ⊢ x⁻¹ ∈ _root_.closure (Inv.inv '' ↑K)
         exact mem_closure_image (continuousAt_inv₀ h) hx }
+        -- 🎉 no goals
 #align subfield.topological_closure Subfield.topologicalClosure
 
 theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
@@ -96,8 +101,11 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
   invFun y := (y - b) / a
   left_inv x := by
     simp only [add_sub_cancel]
+    -- ⊢ a * x / a = x
     exact mul_div_cancel_left x h
+    -- 🎉 no goals
   right_inv y := by simp [mul_div_cancel' _ h]
+                    -- 🎉 no goals
 #align affine_homeomorph affineHomeomorph
 
 end affineHomeomorph
@@ -111,6 +119,7 @@ open Topology
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
   filter_upwards [h1, h2]with z h3 h4 using(inv_le_inv h4 h2.self_of_nhds).mpr h3
+  -- 🎉 no goals
 #align is_local_min.inv IsLocalMin.inv
 
 end LocalExtr
@@ -130,9 +139,13 @@ theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
   have : DiscreteTopology ({1, -1} : Set 𝕜) := discrete_of_t1_of_finite
+  -- ⊢ EqOn f 1 S ∨ EqOn f (-1) S
   have hmaps : MapsTo f S {1, -1}
+  -- ⊢ MapsTo f S {1, -1}
   · simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
+    -- 🎉 no goals
   simpa using hS.eqOn_const_of_mapsTo hf hmaps
+  -- 🎉 no goals
 #align is_preconnected.eq_one_or_eq_neg_one_of_sq_eq IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
@@ -156,9 +169,16 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) {y : α} (hy : y ∈ S)
     (hy' : f y = g y) : EqOn f g S := fun x hx => by
   rcases hS.eq_or_eq_neg_of_sq_eq hf hg @hsq @hg_ne with (h | h)
+  -- ⊢ f x = g x
   · exact h hx
+    -- 🎉 no goals
   · rw [h _, Pi.neg_apply, neg_eq_iff_add_eq_zero, ← two_mul, mul_eq_zero,
       iff_false_iff.2 (hg_ne _)] at hy' ⊢ <;> assumption
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align is_preconnected.eq_of_sq_eq IsPreconnected.eq_of_sq_eq
 
 end Preconnected

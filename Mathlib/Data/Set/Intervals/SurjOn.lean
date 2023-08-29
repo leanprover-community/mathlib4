@@ -26,45 +26,67 @@ open OrderDual (toDual)
 theorem surjOn_Ioo_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ioo a b) (Ioo (f a) (f b)) := by
   intro p hp
+  -- ⊢ p ∈ f '' Ioo a b
   rcases h_surj p with ⟨x, rfl⟩
+  -- ⊢ f x ∈ f '' Ioo a b
   refine' ⟨x, mem_Ioo.2 _, rfl⟩
+  -- ⊢ a < x ∧ x < b
   contrapose! hp
+  -- ⊢ ¬f x ∈ Ioo (f a) (f b)
   exact fun h => h.2.not_le (h_mono <| hp <| h_mono.reflect_lt h.1)
+  -- 🎉 no goals
 #align surj_on_Ioo_of_monotone_surjective surjOn_Ioo_of_monotone_surjective
 
 theorem surjOn_Ico_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ico a b) (Ico (f a) (f b)) := by
   obtain hab | hab := lt_or_le a b
+  -- ⊢ SurjOn f (Ico a b) (Ico (f a) (f b))
   · intro p hp
+    -- ⊢ p ∈ f '' Ico a b
     rcases eq_left_or_mem_Ioo_of_mem_Ico hp with (rfl | hp')
+    -- ⊢ f a ∈ f '' Ico a b
     · exact mem_image_of_mem f (left_mem_Ico.mpr hab)
+      -- 🎉 no goals
     · have := surjOn_Ioo_of_monotone_surjective h_mono h_surj a b hp'
+      -- ⊢ p ∈ f '' Ico a b
       exact image_subset f Ioo_subset_Ico_self this
+      -- 🎉 no goals
   · rw [Ico_eq_empty (h_mono hab).not_lt]
+    -- ⊢ SurjOn f (Ico a b) ∅
     exact surjOn_empty f _
+    -- 🎉 no goals
 #align surj_on_Ico_of_monotone_surjective surjOn_Ico_of_monotone_surjective
 
 theorem surjOn_Ioc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ioc a b) (Ioc (f a) (f b)) := by
   simpa using surjOn_Ico_of_monotone_surjective h_mono.dual h_surj (toDual b) (toDual a)
+  -- 🎉 no goals
 #align surj_on_Ioc_of_monotone_surjective surjOn_Ioc_of_monotone_surjective
 
 -- to see that the hypothesis `a ≤ b` is necessary, consider a constant function
 theorem surjOn_Icc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     {a b : α} (hab : a ≤ b) : SurjOn f (Icc a b) (Icc (f a) (f b)) := by
   intro p hp
+  -- ⊢ p ∈ f '' Icc a b
   rcases eq_endpoints_or_mem_Ioo_of_mem_Icc hp with (rfl | rfl | hp')
   · exact ⟨a, left_mem_Icc.mpr hab, rfl⟩
+    -- 🎉 no goals
   · exact ⟨b, right_mem_Icc.mpr hab, rfl⟩
+    -- 🎉 no goals
   · have := surjOn_Ioo_of_monotone_surjective h_mono h_surj a b hp'
+    -- ⊢ p ∈ f '' Icc a b
     exact image_subset f Ioo_subset_Icc_self this
+    -- 🎉 no goals
 #align surj_on_Icc_of_monotone_surjective surjOn_Icc_of_monotone_surjective
 
 theorem surjOn_Ioi_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a : α) : SurjOn f (Ioi a) (Ioi (f a)) := by
   rw [← compl_Iic, ← compl_compl (Ioi (f a))]
+  -- ⊢ SurjOn f (Iic a)ᶜ (Ioi (f a))ᶜᶜ
   refine' MapsTo.surjOn_compl _ h_surj
+  -- ⊢ MapsTo f (Iic a) (Ioi (f a))ᶜ
   exact fun x hx => (h_mono hx).not_lt
+  -- 🎉 no goals
 #align surj_on_Ioi_of_monotone_surjective surjOn_Ioi_of_monotone_surjective
 
 theorem surjOn_Iio_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
@@ -75,6 +97,7 @@ theorem surjOn_Iio_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
 theorem surjOn_Ici_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a : α) : SurjOn f (Ici a) (Ici (f a)) := by
   rw [← Ioi_union_left, ← Ioi_union_left]
+  -- ⊢ SurjOn f (Ioi a ∪ {a}) (Ioi (f a) ∪ {f a})
   exact
     (surjOn_Ioi_of_monotone_surjective h_mono h_surj a).union_union
       (@image_singleton _ _ f a ▸ surjOn_image _ _)

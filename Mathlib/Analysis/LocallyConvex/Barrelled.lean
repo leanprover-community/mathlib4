@@ -95,11 +95,17 @@ theorem Seminorm.continuous_iSup {ι 𝕜 E : Type*} [NormedField 𝕜]  [AddCom
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
     Continuous (⨆ i, p i) := by
   rw [← Seminorm.coe_iSup_eq bdd]
+  -- ⊢ Continuous ↑(⨆ (i : ι), p i)
   refine Seminorm.continuous_of_lowerSemicontinuous _ ?_
+  -- ⊢ LowerSemicontinuous ↑(⨆ (i : ι), p i)
   rw [Seminorm.coe_iSup_eq bdd]
+  -- ⊢ LowerSemicontinuous (⨆ (i : ι), ↑(p i))
   rw [Seminorm.bddAbove_range_iff] at bdd
+  -- ⊢ LowerSemicontinuous (⨆ (i : ι), ↑(p i))
   convert lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
+  -- ⊢ iSup (fun i => ↑(p i)) x✝ = ⨆ (i : ι), ↑(p i) x✝
   exact iSup_apply
+  -- 🎉 no goals
 
 end defs
 
@@ -117,6 +123,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
   continuous_of_lowerSemicontinuous := by
     -- Let `p` be a lower-semicontinuous seminorm on `E`.
     intro p hp
+    -- ⊢ Continuous ↑p
     -- Consider the family of all `p`-closed-balls with integer radius.
     -- By lower semicontinuity, each of these closed balls is indeed closed...
     have h₁ : ∀ n : ℕ, IsClosed (p.closedBall (0 : E) n) := fun n ↦ by
@@ -127,17 +134,23 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     -- Hence, one of them has nonempty interior. Let `n : ℕ` be its radius, and fix `x` an
     -- interior point.
     rcases nonempty_interior_of_iUnion_of_closed h₁ h₂ with ⟨n, ⟨x, hxn⟩⟩
+    -- ⊢ Continuous ↑p
     -- To show that `p` is continuous, we will show that the `p`-closed-ball of
     -- radius `2*n` is a neighborhood of zero.
     refine Seminorm.continuous' (r := n + n) ?_
+    -- ⊢ Seminorm.closedBall p 0 (↑n + ↑n) ∈ 𝓝 0
     rw [p.closedBall_zero_eq] at hxn ⊢
+    -- ⊢ {y | ↑p y ≤ ↑n + ↑n} ∈ 𝓝 0
     have hxn' : p x ≤ n := by convert interior_subset hxn
+    -- ⊢ {y | ↑p y ≤ ↑n + ↑n} ∈ 𝓝 0
     -- By definition, we have `p x' ≤ n` for `x'` sufficiently close to `x`.
     -- In other words, `p (x + y) ≤ n` for `y` sufficiently close to `0`.
     rw [mem_interior_iff_mem_nhds, ← map_add_left_nhds_zero] at hxn
+    -- ⊢ {y | ↑p y ≤ ↑n + ↑n} ∈ 𝓝 0
     -- Hence, for `y` sufficiently close to `0`, we have
     -- `p y = p (x + y - x) ≤ p (x + y) + p x ≤ 2*n`
     filter_upwards [hxn] with y hy
+    -- ⊢ ↑p y ≤ ↑n + ↑n
     calc p y = p (x + y - x) := by rw [add_sub_cancel']
       _ ≤ p (x + y) + p x := map_sub_le_add _ _ _
       _ ≤ n + n := add_le_add hy hxn'
@@ -157,7 +170,9 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
   -- We just have to prove that `⊔ i, (q k) ∘ (𝓕 i)` is a (well-defined) continuous seminorm
   -- for all `k`.
   refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup ((toLinearMap) ∘ 𝓕)).mpr ?_
+  -- ⊢ ∀ (i : κ), BddAbove (range fun k => Seminorm.comp (q i) ((toLinearMap ∘ 𝓕) k …
   intro k
+  -- ⊢ BddAbove (range fun k_1 => Seminorm.comp (q k) ((toLinearMap ∘ 𝓕) k_1)) ∧ Co …
   -- By assumption the supremum `⊔ i, q k (𝓕 i x)` is well-defined for all `x`, hence the
   -- supremum `⊔ i, (q k) ∘ (𝓕 i)` is well defined in the lattice of seminorms.
   have : BddAbove (range fun i ↦ (q k).comp (𝓕 i).toLinearMap) := by
@@ -184,15 +199,20 @@ protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCoun
     -- `u : ℕ → α` that tends to `l`. By considering `g ∘ u` instead of `g`, we can thus assume
     -- that `α = ℕ` and `l = AtTop`
     rcases l.exists_seq_tendsto with ⟨u, hu⟩
+    -- ⊢ Continuous (linearMapOfTendsto f (fun a => ↑(g a)) h).toAddHom.toFun
     -- We claim that the limit is continuous because it's a limit of an equicontinuous family.
     -- By the Banach-Steinhaus theorem, this equicontinuity will follow from pointwise boundedness.
     refine (h.comp hu).continuous_of_equicontinuous_at (hq.banach_steinhaus ?_).equicontinuous
+    -- ⊢ ∀ (k : κ) (x : E), BddAbove (range fun i => ↑(q k) (↑(g (u i)) x))
     -- For `k` and `x` fixed, we need to show that `(i : ℕ) ↦ q k (g i x)` is bounded.
     intro k x
+    -- ⊢ BddAbove (range fun i => ↑(q k) (↑(g (u i)) x))
     -- This follows from the fact that this sequences converges (to `q k (f x)`) by hypothesis and
     -- continuity of `q k`.
     rw [tendsto_pi_nhds] at h
+    -- ⊢ BddAbove (range fun i => ↑(q k) (↑(g (u i)) x))
     exact (((hq.continuous_seminorm k).tendsto _).comp <| (h x).comp hu).bddAbove_range
+    -- 🎉 no goals
 end WithSeminorms
 
 end TVS_anyField

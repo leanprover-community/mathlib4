@@ -49,8 +49,11 @@ namespace MutuallySingular
 theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ t) :
     MutuallySingular μ ν := by
   use toMeasurable μ s, measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans hs
+  -- ⊢ ↑↑ν (toMeasurable μ s)ᶜ = 0
   refine' measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx _) ht
+  -- ⊢ x ∈ toMeasurable μ s
   exact subset_toMeasurable _ _ hxs
+  -- 🎉 no goals
 #align measure_theory.measure.mutually_singular.mk MeasureTheory.Measure.MutuallySingular.mk
 
 @[simp]
@@ -85,11 +88,17 @@ theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ �
 @[simp]
 theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ ⟂ₘ ν ↔ ∀ i, μ i ⟂ₘ ν := by
   refine' ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => _⟩
+  -- ⊢ sum μ ⟂ₘ ν
   choose s hsm hsμ hsν using H
+  -- ⊢ sum μ ⟂ₘ ν
   refine' ⟨⋂ i, s i, MeasurableSet.iInter hsm, _, _⟩
+  -- ⊢ ↑↑(sum μ) (⋂ (i : ι), s i) = 0
   · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
+    -- ⊢ ∀ (i : ι), ↑↑(μ i) (⋂ (b : ι), s b) = 0
     exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
+    -- 🎉 no goals
   · rwa [compl_iInter, measure_iUnion_null_iff]
+    -- 🎉 no goals
 #align measure_theory.measure.mutually_singular.sum_left MeasureTheory.Measure.MutuallySingular.sum_left
 
 @[simp]
@@ -100,6 +109,7 @@ theorem sum_right {ι : Type*} [Countable ι] {ν : ι → Measure α} : μ ⟂�
 @[simp]
 theorem add_left_iff : μ₁ + μ₂ ⟂ₘ ν ↔ μ₁ ⟂ₘ ν ∧ μ₂ ⟂ₘ ν := by
   rw [← sum_cond, sum_left, Bool.forall_bool, cond, cond, and_comm]
+  -- 🎉 no goals
 #align measure_theory.measure.mutually_singular.add_left_iff MeasureTheory.Measure.MutuallySingular.add_left_iff
 
 @[simp]

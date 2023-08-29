@@ -90,7 +90,9 @@ def mono (v : VitaliFamily μ) (ν : Measure α) (hν : ν ≪ μ) : VitaliFamil
   Nontrivial := v.Nontrivial
   covering s f h h' := by
     rcases v.covering s f h h' with ⟨t, ts, disj, mem_f, hμ⟩
+    -- ⊢ ∃ t, (∀ (p : α × Set α), p ∈ t → p.fst ∈ s) ∧ (PairwiseDisjoint t fun p => p …
     exact ⟨t, ts, disj, mem_f, hν hμ⟩
+    -- 🎉 no goals
 #align vitali_family.mono VitaliFamily.mono
 
 /-- Given a Vitali family `v` for a measure `μ`, a family `f` is a fine subfamily on a set `s` if
@@ -167,6 +169,7 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology α] {ρ
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
       measure_mono (by simp only [subset_union_left, diff_union_self])
+                       -- 🎉 no goals
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
@@ -187,17 +190,26 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
   setsAt x := v.setsAt x ∪ { a | MeasurableSet a ∧ (interior a).Nonempty ∧ ¬a ⊆ closedBall x δ }
   MeasurableSet' x a ha := by
     cases' ha with ha ha
+    -- ⊢ MeasurableSet a
     exacts [v.MeasurableSet' _ _ ha, ha.1]
+    -- 🎉 no goals
   nonempty_interior x a ha := by
     cases' ha with ha ha
+    -- ⊢ Set.Nonempty (interior a)
     exacts [v.nonempty_interior _ _ ha, ha.2.1]
+    -- 🎉 no goals
   Nontrivial := by
     intro x ε εpos
+    -- ⊢ ∃ y, y ∈ (fun x => setsAt v x ∪ {a | MeasurableSet a ∧ Set.Nonempty (interio …
     rcases v.Nontrivial x ε εpos with ⟨a, ha, h'a⟩
+    -- ⊢ ∃ y, y ∈ (fun x => setsAt v x ∪ {a | MeasurableSet a ∧ Set.Nonempty (interio …
     exact ⟨a, mem_union_left _ ha, h'a⟩
+    -- 🎉 no goals
   covering := by
     intro s f fset ffine
+    -- ⊢ ∃ t, (∀ (p : α × Set α), p ∈ t → p.fst ∈ s) ∧ (PairwiseDisjoint t fun p => p …
     let g : α → Set (Set α) := fun x => f x ∩ v.setsAt x
+    -- ⊢ ∃ t, (∀ (p : α × Set α), p ∈ t → p.fst ∈ s) ∧ (PairwiseDisjoint t fun p => p …
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α), a ∈ g x ∧ a ⊆ closedBall x ε := by
       intro x hx ε εpos
       obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ)
@@ -207,7 +219,9 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
       · refine' False.elim (h'a.2.2 _)
         exact ha.trans (closedBall_subset_closedBall (min_le_right _ _))
     rcases v.covering s g (fun x _ => inter_subset_right _ _) this with ⟨t, ts, tdisj, tg, μt⟩
+    -- ⊢ ∃ t, (∀ (p : α × Set α), p ∈ t → p.fst ∈ s) ∧ (PairwiseDisjoint t fun p => p …
     exact ⟨t, ts, tdisj, fun p hp => (tg p hp).1, μt⟩
+    -- 🎉 no goals
 #align vitali_family.enlarge VitaliFamily.enlarge
 
 variable (v : VitaliFamily μ)
@@ -222,23 +236,30 @@ def filterAt (x : α) : Filter (Set α) :=
 theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s := by
   simp only [filterAt, exists_prop, gt_iff_lt]
+  -- ⊢ s ∈ ⨅ (ε : ℝ) (_ : ε ∈ Ioi 0), 𝓟 {a | a ∈ setsAt v x ∧ a ⊆ closedBall x ε} ↔ …
   rw [mem_biInf_of_directed]
   · simp only [subset_def, and_imp, exists_prop, mem_sep_iff, mem_Ioi, mem_principal]
+    -- 🎉 no goals
   · simp only [DirectedOn, exists_prop, ge_iff_le, le_principal_iff, mem_Ioi, Order.Preimage,
       mem_principal]
     intro x hx y hy
+    -- ⊢ ∃ z, 0 < z ∧ {a | a ∈ setsAt v x✝ ∧ a ⊆ closedBall x✝ z} ⊆ {a | a ∈ setsAt v …
     refine' ⟨min x y, lt_min hx hy,
       fun a ha => ⟨ha.1, ha.2.trans (closedBall_subset_closedBall (min_le_left _ _))⟩,
       fun a ha => ⟨ha.1, ha.2.trans (closedBall_subset_closedBall (min_le_right _ _))⟩⟩
   · exact ⟨(1 : ℝ), mem_Ioi.2 zero_lt_one⟩
+    -- 🎉 no goals
 #align vitali_family.mem_filter_at_iff VitaliFamily.mem_filterAt_iff
 
 instance filterAt_neBot (x : α) : (v.filterAt x).NeBot := by
   simp only [neBot_iff, ← empty_mem_iff_bot, mem_filterAt_iff, not_exists, exists_prop,
     mem_empty_iff_false, and_true_iff, gt_iff_lt, not_and, Ne.def, not_false_iff, not_forall]
   intro ε εpos
+  -- ⊢ ∃ x_1, x_1 ∈ setsAt v x ∧ x_1 ⊆ closedBall x ε
   obtain ⟨w, w_sets, hw⟩ : ∃ w ∈ v.setsAt x, w ⊆ closedBall x ε := v.Nontrivial x ε εpos
+  -- ⊢ ∃ x_1, x_1 ∈ setsAt v x ∧ x_1 ⊆ closedBall x ε
   exact ⟨w, w_sets, hw⟩
+  -- 🎉 no goals
 #align vitali_family.filter_at_ne_bot VitaliFamily.filterAt_neBot
 
 theorem eventually_filterAt_iff {x : α} {P : Set α → Prop} :
@@ -250,12 +271,15 @@ theorem eventually_filterAt_mem_sets (x : α) : ∀ᶠ a in v.filterAt x, a ∈ 
   simp (config := { contextual := true }) only [eventually_filterAt_iff, exists_prop, and_true_iff,
     gt_iff_lt, imp_true_iff]
   exact ⟨1, zero_lt_one⟩
+  -- 🎉 no goals
 #align vitali_family.eventually_filter_at_mem_sets VitaliFamily.eventually_filterAt_mem_sets
 
 theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε) :
     ∀ᶠ a : Set α in v.filterAt x, a ⊆ closedBall x ε := by
   simp only [v.eventually_filterAt_iff]
+  -- ⊢ ∃ ε_1, ε_1 > 0 ∧ ∀ (a : Set α), a ∈ setsAt v x → a ⊆ closedBall x ε_1 → a ⊆  …
   exact ⟨ε, hε, fun a _ ha' => ha'⟩
+  -- 🎉 no goals
 #align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
 
 theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x : α} :
@@ -265,11 +289,14 @@ theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x
     fun ε hε => H.eventually <| v.eventually_filterAt_subset_closedBall x hε⟩,
     fun H s hs => (_ : ∀ᶠ i in l, f i ∈ s)⟩
   obtain ⟨ε, εpos, hε⟩ := v.mem_filterAt_iff.mp hs
+  -- ⊢ ∀ᶠ (i : ι) in l, f i ∈ s
   filter_upwards [H.1, H.2 ε εpos]with i hi hiε using hε _ hi hiε
+  -- 🎉 no goals
 #align vitali_family.tendsto_filter_at_iff VitaliFamily.tendsto_filterAt_iff
 
 theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, MeasurableSet a := by
   filter_upwards [v.eventually_filterAt_mem_sets x]with _ ha using v.MeasurableSet' _ _ ha
+  -- 🎉 no goals
 #align vitali_family.eventually_filter_at_measurable_set VitaliFamily.eventually_filterAt_measurableSet
 
 theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :
@@ -281,7 +308,9 @@ theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :
 theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ 𝓝 x) :
     ∀ᶠ a in v.filterAt x, a ⊆ o := by
   rw [eventually_filterAt_iff]
+  -- ⊢ ∃ ε, ε > 0 ∧ ∀ (a : Set α), a ∈ setsAt v x → a ⊆ closedBall x ε → a ⊆ o
   rcases Metric.mem_nhds_iff.1 hx with ⟨ε, εpos, hε⟩
+  -- ⊢ ∃ ε, ε > 0 ∧ ∀ (a : Set α), a ∈ setsAt v x → a ⊆ closedBall x ε → a ⊆ o
   exact ⟨ε / 2, half_pos εpos,
     fun a _ ha => ha.trans ((closedBall_subset_ball (half_lt_self εpos)).trans hε)⟩
 #align vitali_family.eventually_filter_at_subset_of_nhds VitaliFamily.eventually_filterAt_subset_of_nhds
@@ -289,9 +318,11 @@ theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ �
 theorem fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
     (h : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, a ∈ f x) : v.FineSubfamilyOn f s := by
   intro x hx ε εpos
+  -- ⊢ ∃ a, a ∈ setsAt v x ∩ f x ∧ a ⊆ closedBall x ε
   obtain ⟨a, av, ha, af⟩ : ∃ (a : Set α) , a ∈ v.setsAt x ∧ a ⊆ closedBall x ε ∧ a ∈ f x :=
     v.frequently_filterAt_iff.1 (h x hx) ε εpos
   exact ⟨a, ⟨av, af⟩, ha⟩
+  -- 🎉 no goals
 #align vitali_family.fine_subfamily_on_of_frequently VitaliFamily.fineSubfamilyOn_of_frequently
 
 end VitaliFamily

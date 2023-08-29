@@ -66,6 +66,7 @@ instance NormedField.to_boundedSMul : BoundedSMul α α :=
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
+                                    -- 🎉 no goals
 #align norm_zsmul norm_zsmul
 
 @[simp]
@@ -80,6 +81,7 @@ theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
 
 theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : β) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
+  -- 🎉 no goals
 #align norm_smul_of_nonneg norm_smul_of_nonneg
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
@@ -90,6 +92,7 @@ theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y => ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
     ((continuous_id.sub continuous_const).const_smul _).norm.tendsto' _ _ (by simp)
+                                                                              -- 🎉 no goals
   this.eventually (gt_mem_nhds h)
 #align eventually_nhds_norm_smul_sub_lt eventually_nhds_norm_smul_sub_lt
 
@@ -109,33 +112,51 @@ theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : ι → α} {g : ι → E} {
 theorem closure_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     closure (ball x r) = closedBall x r := by
   refine' Subset.antisymm closure_ball_subset_closedBall fun y hy => _
+  -- ⊢ y ∈ closure (ball x r)
   have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 :=
     ((continuous_id.smul continuous_const).add continuous_const).continuousWithinAt
   convert this.mem_closure _ _
   · rw [one_smul, sub_add_cancel]
+    -- 🎉 no goals
   · simp [closure_Ico zero_ne_one, zero_le_one]
+    -- 🎉 no goals
   · rintro c ⟨hc0, hc1⟩
+    -- ⊢ (fun c => c • (y - x) + x) c ∈ ball x r
     rw [mem_ball, dist_eq_norm, add_sub_cancel, norm_smul, Real.norm_eq_abs, abs_of_nonneg hc0,
       mul_comm, ← mul_one r]
     rw [mem_closedBall, dist_eq_norm] at hy
+    -- ⊢ ‖y - x‖ * c < r * 1
     replace hr : 0 < r := ((norm_nonneg _).trans hy).lt_of_ne hr.symm
+    -- ⊢ ‖y - x‖ * c < r * 1
     apply mul_lt_mul' <;> assumption
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align closure_ball closure_ball
 
 theorem frontier_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
   rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
+  -- 🎉 no goals
 #align frontier_ball frontier_ball
 
 theorem interior_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
   cases' hr.lt_or_lt with hr hr
+  -- ⊢ interior (closedBall x r) = ball x r
   · rw [closedBall_eq_empty.2 hr, ball_eq_empty.2 hr.le, interior_empty]
+    -- 🎉 no goals
   refine' Subset.antisymm _ ball_subset_interior_closedBall
+  -- ⊢ interior (closedBall x r) ⊆ ball x r
   intro y hy
+  -- ⊢ y ∈ ball x r
   rcases (mem_closedBall.1 <| interior_subset hy).lt_or_eq with (hr | rfl)
+  -- ⊢ y ∈ ball x r
   · exact hr
+    -- 🎉 no goals
   set f : ℝ → E := fun c : ℝ => c • (y - x) + x
+  -- ⊢ y ∈ ball x (dist y x)
   suffices f ⁻¹' closedBall x (dist y x) ⊆ Icc (-1) 1 by
     have hfc : Continuous f := (continuous_id.smul continuous_const).add continuous_const
     have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa
@@ -144,35 +165,48 @@ theorem interior_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0)
     contrapose h1
     simp
   intro c hc
+  -- ⊢ c ∈ Icc (-1) 1
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_right hr]
+  -- ⊢ ‖c‖ * dist y x ≤ 1 * dist y x
   simpa [dist_eq_norm, norm_smul] using hc
+  -- 🎉 no goals
 #align interior_closed_ball interior_closedBall
 
 theorem frontier_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
+  -- 🎉 no goals
 #align frontier_closed_ball frontier_closedBall
 
 theorem interior_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (sphere x r) = ∅ := by
   rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
+  -- 🎉 no goals
 #align interior_sphere interior_sphere
 
 theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
+  -- 🎉 no goals
 #align frontier_sphere frontier_sphere
 
 instance NormedSpace.discreteTopology_zmultiples
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
+  -- ⊢ DiscreteTopology { x // x ∈ AddSubgroup.zmultiples 0 }
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
+    -- ⊢ DiscreteTopology { x // x ∈ ⊥ }
     refine Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
+    -- 🎉 no goals
   · rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+    -- ⊢ ∃ t, IsOpen t ∧ Subtype.val ⁻¹' t = {0}
     refine' ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
+    -- ⊢ Subtype.val ⁻¹' ball 0 ‖e‖ = {0}
     ext ⟨x, hx⟩
+    -- ⊢ { val := x, property := hx } ∈ Subtype.val ⁻¹' ball 0 ‖e‖ ↔ { val := x, prop …
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
+    -- ⊢ { val := k • e, property := hx } ∈ Subtype.val ⁻¹' ball 0 ‖e‖ ↔ { val := k • …
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,
       AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast_rat,
       Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ←
@@ -199,6 +233,7 @@ instance Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCom
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
+    -- 🎉 no goals
 #align pi.normed_space Pi.normedSpace
 
 instance MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
@@ -225,10 +260,15 @@ def NormedSpace.induced {F : Type*} (α β γ : Type*) [NormedField α] [AddComm
   -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
   -- unfolding the induced semi-norm is fiddly
   refine @NormedSpace.mk (α := α) (β := β) _ ?_ ?_ ?_
+  -- ⊢ Module α β
   · infer_instance
+    -- 🎉 no goals
   · intro a b
+    -- ⊢ ‖a • b‖ ≤ ‖a‖ * ‖b‖
     change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
+    -- ⊢ ‖↑f (a • b)‖ ≤ ‖a‖ * ‖↑f b‖
     exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
+    -- 🎉 no goals
 #align normed_space.induced NormedSpace.induced
 
 section NormedAddCommGroup
@@ -267,9 +307,13 @@ variable [NormedSpace ℝ E] [Nontrivial E]
 
 theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
+  -- ⊢ ∃ x, ‖x‖ = c
   rw [← norm_ne_zero_iff] at hx
+  -- ⊢ ∃ x, ‖x‖ = c
   use c • ‖x‖⁻¹ • x
+  -- ⊢ ‖c • ‖x‖⁻¹ • x‖ = c
   simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel hx]
+  -- 🎉 no goals
 #align exists_norm_eq exists_norm_eq
 
 @[simp]
@@ -298,24 +342,30 @@ instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [Topologi
 theorem interior_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)
+  -- ⊢ interior (closedBall x 0) = ball x 0
   · rw [closedBall_zero, ball_zero, interior_singleton]
+    -- 🎉 no goals
   · exact interior_closedBall x hr
+    -- 🎉 no goals
 #align interior_closed_ball' interior_closedBall'
 
 theorem frontier_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
+  -- 🎉 no goals
 #align frontier_closed_ball' frontier_closedBall'
 
 @[simp]
 theorem interior_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     interior (sphere x r) = ∅ := by rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
+                                    -- 🎉 no goals
 #align interior_sphere' interior_sphere'
 
 @[simp]
 theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
+  -- 🎉 no goals
 #align frontier_sphere' frontier_sphere'
 
 end NormedAddCommGroup
@@ -329,10 +379,15 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] 
 for any `c : ℝ`, there exists a vector `x : E` with norm strictly greater than `c`. -/
 theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
+  -- ⊢ ∃ x, c < ‖x‖
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
+  -- ⊢ ∃ x, c < ‖x‖
   use r • x
+  -- ⊢ c < ‖r • x‖
   rwa [norm_smul, ← _root_.div_lt_iff]
+  -- ⊢ 0 < ‖x‖
   rwa [norm_pos_iff]
+  -- 🎉 no goals
 #align normed_space.exists_lt_norm NormedSpace.exists_lt_norm
 
 protected theorem NormedSpace.unbounded_univ : ¬Bounded (univ : Set E) := fun h =>
@@ -398,11 +453,14 @@ example
 See `NormedSpace.toModule'` for a similar situation. -/
 instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
     NormedSpace 𝕜 𝕜' := by infer_instance
+                           -- 🎉 no goals
 #align normed_algebra.to_normed_space' NormedAlgebra.toNormedSpace'
 
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
+  -- ⊢ ‖x • 1‖ = ‖x‖ * ‖1‖
   exact norm_smul _ _
+  -- 🎉 no goals
 #align norm_algebra_map norm_algebraMap
 
 theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
@@ -412,6 +470,7 @@ theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x�
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
+  -- 🎉 no goals
 #align norm_algebra_map' norm_algebraMap'
 
 @[simp]
@@ -440,7 +499,9 @@ variable (𝕜)
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine' Isometry.of_dist_eq fun x y => _
+  -- ⊢ dist (↑(algebraMap 𝕜 𝕜') x) (↑(algebraMap 𝕜 𝕜') y) = dist x y
   rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
+  -- 🎉 no goals
 #align algebra_map_isometry algebraMap_isometry
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
@@ -457,10 +518,12 @@ instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [Norm
     NormedAlgebra ℚ 𝕜 where
   norm_smul_le q x := by
     rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_coe, norm_smul, Rat.norm_cast_real]
+    -- 🎉 no goals
 #align normed_algebra_rat normedAlgebraRat
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
   norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
+                         -- 🎉 no goals
 #align punit.normed_algebra PUnit.normedAlgebra
 
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
@@ -499,10 +562,15 @@ def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring 
     @NormedAlgebra α β _ (SeminormedRing.induced β γ f) := by
   -- Porting note: trouble with SeminormedRing β, Algebra α β, and unfolding seminorm
   refine @NormedAlgebra.mk (𝕜 := α) (𝕜' := β) _ ?_ ?_ ?_
+  -- ⊢ Algebra α β
   · infer_instance
+    -- 🎉 no goals
   · intro a b
+    -- ⊢ ‖a • b‖ ≤ ‖a‖ * ‖b‖
     change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
+    -- ⊢ ‖↑f (a • b)‖ ≤ ‖a‖ * ‖↑f b‖
     exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
+    -- 🎉 no goals
 #align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
@@ -530,6 +598,7 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
   { RestrictScalars.module 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
       (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
+                                                                -- 🎉 no goals
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.

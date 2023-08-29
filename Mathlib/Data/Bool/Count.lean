@@ -25,13 +25,25 @@ theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b 
   -- Porting note: Proof re-written
   -- Old proof: simp only [length_eq_countP_add_countP (Eq (!b)), Bool.not_not_eq, count]
   simp only [length_eq_countP_add_countP (· == !b), count, add_right_inj]
+  -- ⊢ countP (fun x => x == b) l = countP (fun a => decide ¬(a == !b) = true) l
   suffices : (fun x => x == b) = (fun a => decide ¬(a == !b) = true); rw [this]
+  -- ⊢ countP (fun x => x == b) l = countP (fun a => decide ¬(a == !b) = true) l
+                                                                      -- ⊢ (fun x => x == b) = fun a => decide ¬(a == !b) = true
   ext x; cases x <;> cases b <;> rfl
+  -- ⊢ (x == b) = decide ¬(x == !b) = true
+         -- ⊢ (false == b) = decide ¬(false == !b) = true
+                     -- ⊢ (false == false) = decide ¬(false == !false) = true
+                     -- ⊢ (true == false) = decide ¬(true == !false) = true
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 #align list.count_bnot_add_count List.count_not_add_count
 
 @[simp]
 theorem count_add_count_not (l : List Bool) (b : Bool) : count b l + count (!b) l = length l := by
   rw [add_comm, count_not_add_count]
+  -- 🎉 no goals
 #align list.count_add_count_bnot List.count_add_count_not
 
 @[simp]
@@ -49,6 +61,7 @@ theorem Chain.count_not :
   | b, [], _h => rfl
   | b, x :: l, h => by
     obtain rfl : b = !x := Bool.eq_not_iff.2 (rel_of_chain_cons h)
+    -- ⊢ count (!!x) (x :: l) = count (!x) (x :: l) + length (x :: l) % 2
     rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self,
       Chain.count_not (chain_of_chain_cons h), length, add_assoc, Nat.mod_two_add_succ_mod_two]
 #align list.chain.count_bnot List.Chain.count_not
@@ -60,8 +73,11 @@ variable {l : List Bool}
 theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     count (!b) l = count b l := by
   cases' l with x l
+  -- ⊢ count (!b) [] = count b []
   · rfl
+    -- 🎉 no goals
   rw [length_cons, Nat.even_add_one, Nat.not_even_iff] at h2
+  -- ⊢ count (!b) (x :: l) = count b (x :: l)
   suffices count (!x) (x :: l) = count x (x :: l) by
     -- Porting note: old proof is
     -- cases b <;> cases x <;> try exact this;
@@ -69,6 +85,7 @@ theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b
     revert this <;> simp only [Bool.not_false, Bool.not_true] <;> intro this <;>
     (try exact this) <;> exact this.symm
   rw [count_cons_of_ne x.not_ne_self, hl.count_not, h2, count_cons_self]
+  -- 🎉 no goals
 #align list.chain'.count_bnot_eq_count List.Chain'.count_not_eq_count
 
 theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) :
@@ -79,12 +96,19 @@ theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length
 theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
   cases' l with x l
+  -- ⊢ count (!b) [] ≤ count b [] + 1
   · exact zero_le _
+    -- 🎉 no goals
   obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
+  -- ⊢ count (!b) (b :: l) ≤ count b (b :: l) + 1
   · rw [count_cons_of_ne b.not_ne_self, count_cons_self, hl.count_not, add_assoc]
+    -- ⊢ count b l + length l % 2 ≤ count b l + (1 + 1)
     exact add_le_add_left (Nat.mod_lt _ two_pos).le _
+    -- 🎉 no goals
   · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self, hl.count_not]
+    -- ⊢ count x l + 1 ≤ count x l + length l % 2 + 1
     exact add_le_add_right (le_add_right le_rfl) _
+    -- 🎉 no goals
 #align list.chain'.count_bnot_le_count_add_one List.Chain'.count_not_le_count_add_one
 
 theorem count_false_le_count_true_add_one (hl : Chain' (· ≠ ·) l) :
@@ -100,6 +124,7 @@ theorem count_true_le_count_false_add_one (hl : Chain' (· ≠ ·) l) :
 theorem two_mul_count_bool_of_even (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     2 * count b l = length l := by
   rw [← count_not_add_count l b, hl.count_not_eq_count h2, two_mul]
+  -- 🎉 no goals
 #align list.chain'.two_mul_count_bool_of_even List.Chain'.two_mul_count_bool_of_even
 
 theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
@@ -107,32 +132,89 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
       if Even (length l) then length l else
       if Option.some b == l.head? then length l + 1 else length l - 1 := by
   by_cases h2 : Even (length l)
+  -- ⊢ 2 * count b l = if Even (length l) then length l else if (some b == head? l) …
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
+    -- 🎉 no goals
   · cases' l with x l
+    -- ⊢ 2 * count b [] = if Even (length []) then length [] else if (some b == head? …
     · exact (h2 even_zero).elim
+      -- 🎉 no goals
     simp only [if_neg h2, count_cons, mul_add, head?, Option.mem_some_iff, @eq_comm _ x]
+    -- ⊢ (2 * count b l + 2 * if b = x then 1 else 0) = if (some b == some x) = true  …
     rw [length_cons, Nat.even_add_one, not_not] at h2
+    -- ⊢ (2 * count b l + 2 * if b = x then 1 else 0) = if (some b == some x) = true  …
     replace hl : l.Chain' (· ≠ ·) := hl.tail
+    -- ⊢ (2 * count b l + 2 * if b = x then 1 else 0) = if (some b == some x) = true  …
     rw [hl.two_mul_count_bool_of_even h2]
+    -- ⊢ (length l + 2 * if b = x then 1 else 0) = if (some b == some x) = true then  …
     cases b <;> cases x <;> split_ifs <;> simp <;> contradiction
+    -- ⊢ (length l + 2 * if false = x then 1 else 0) = if (some false == some x) = tr …
+                -- ⊢ (length l + 2 * if false = false then 1 else 0) = if (some false == some fal …
+                -- ⊢ (length l + 2 * if true = false then 1 else 0) = if (some true == some false …
+                                          -- 🎉 no goals
+                                          -- ⊢ False
+                                          -- ⊢ length l = Nat.succ (length l) + 1
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
+                                          -- ⊢ False
+                                          -- ⊢ length l = Nat.succ (length l) + 1
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
+                                          -- ⊢ False
+                                          -- ⊢ length l = Nat.succ (length l) + 1
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
+                                          -- ⊢ False
+                                          -- ⊢ length l = Nat.succ (length l) + 1
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
+                                          -- ⊢ False
+                                          -- ⊢ length l = Nat.succ (length l) + 1
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
+                                          -- ⊢ False
+                                          -- ⊢ length l = Nat.succ (length l) + 1
+                                          -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
 #align list.chain'.two_mul_count_bool_eq_ite List.Chain'.two_mul_count_bool_eq_ite
 
 theorem length_sub_one_le_two_mul_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
     length l - 1 ≤ 2 * count b l := by
   rw [hl.two_mul_count_bool_eq_ite]
+  -- ⊢ length l - 1 ≤ if Even (length l) then length l else if (some b == head? l)  …
   split_ifs <;> simp [le_tsub_add, Nat.le_succ_of_le]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align list.chain'.length_sub_one_le_two_mul_count_bool List.Chain'.length_sub_one_le_two_mul_count_bool
 
 theorem length_div_two_le_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
     length l / 2 ≤ count b l := by
   rw [Nat.div_le_iff_le_mul_add_pred two_pos, ← tsub_le_iff_right]
+  -- ⊢ length l - (2 - 1) ≤ 2 * count b l
   exact length_sub_one_le_two_mul_count_bool hl b
+  -- 🎉 no goals
 #align list.chain'.length_div_two_le_count_bool List.Chain'.length_div_two_le_count_bool
 
 theorem two_mul_count_bool_le_length_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
     2 * count b l ≤ length l + 1 := by
   rw [hl.two_mul_count_bool_eq_ite]
+  -- ⊢ (if Even (length l) then length l else if (some b == head? l) = true then le …
   split_ifs <;> simp [Nat.le_succ_of_le]
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align list.chain'.two_mul_count_bool_le_length_add_one List.Chain'.two_mul_count_bool_le_length_add_one
 
 end Chain'

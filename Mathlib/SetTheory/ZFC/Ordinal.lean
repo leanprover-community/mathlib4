@@ -59,41 +59,57 @@ alias ⟨IsTransitive.mem_trans, _⟩ := isTransitive_iff_mem_trans
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∩ y).IsTransitive := fun z hz w hw => by
   rw [mem_inter] at hz ⊢
+  -- ⊢ w ∈ x ∧ w ∈ y
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
+  -- 🎉 no goals
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
 
 protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
+  -- ⊢ z ∈ ⋃₀ x
   exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
+  -- 🎉 no goals
 #align Set.is_transitive.sUnion ZFSet.IsTransitive.sUnion
 
 theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
+  -- ⊢ z ∈ ⋃₀ x
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
+  -- 🎉 no goals
 #align Set.is_transitive.sUnion' ZFSet.IsTransitive.sUnion'
 
 protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
   rw [← sUnion_pair]
+  -- ⊢ IsTransitive (⋃₀ {x, y})
   apply IsTransitive.sUnion' fun z => _
+  -- ⊢ ∀ (z : ZFSet), z ∈ {x, y} → IsTransitive z
   intro
+  -- ⊢ z✝ ∈ {x, y} → IsTransitive z✝
   rw [mem_pair]
+  -- ⊢ z✝ = x ∨ z✝ = y → IsTransitive z✝
   rintro (rfl | rfl)
+  -- ⊢ IsTransitive z✝
   assumption'
+  -- 🎉 no goals
 #align Set.is_transitive.union ZFSet.IsTransitive.union
 
 protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
   fun y hy z hz => by
   rw [mem_powerset] at hy ⊢
+  -- ⊢ z ⊆ x
   exact h.subset_of_mem (hy hz)
+  -- 🎉 no goals
 #align Set.is_transitive.powerset ZFSet.IsTransitive.powerset
 
 theorem isTransitive_iff_sUnion_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) ⊆ x :=
   ⟨fun h y hy => by
     rcases mem_sUnion.1 hy with ⟨z, hz, hz'⟩
+    -- ⊢ y ∈ x
     exact h.mem_trans hz' hz, fun H y hy z hz => H <| mem_sUnion_of_mem hz hy⟩
+    -- 🎉 no goals
 #align Set.is_transitive_iff_sUnion_subset ZFSet.isTransitive_iff_sUnion_subset
 
 alias ⟨IsTransitive.sUnion_subset, _⟩ := isTransitive_iff_sUnion_subset

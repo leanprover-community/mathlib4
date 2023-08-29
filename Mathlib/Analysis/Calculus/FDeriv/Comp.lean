@@ -63,21 +63,27 @@ theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter 
     (hg : HasFDerivAtFilter g g' (f x) L') (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L') :
     HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf
+  -- ⊢ HasFDerivAtFilter (g ∘ f) (ContinuousLinearMap.comp g' f') x L
   let eq₂ := (hg.comp_tendsto hL).trans_isBigO hf.isBigO_sub
+  -- ⊢ HasFDerivAtFilter (g ∘ f) (ContinuousLinearMap.comp g' f') x L
   refine' eq₂.triangle (eq₁.congr_left fun x' => _)
+  -- ⊢ ↑g' (f x' - f x - ↑f' (x' - x)) = ↑g' (f x' - f x) - ↑(ContinuousLinearMap.c …
   simp
+  -- 🎉 no goals
 #align has_fderiv_at_filter.comp HasFDerivAtFilter.comp
 
 /- A readable version of the previous theorem, a general form of the chain rule. -/
 example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (L.map f))
     (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   unfold HasFDerivAtFilter at hg
+  -- ⊢ HasFDerivAtFilter (g ∘ f) (comp g' f') x L
   have :=
     calc
       (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
         hg.comp_tendsto le_rfl
       _ =O[L] fun x' => x' - x := hf.isBigO_sub
   refine' this.triangle _
+  -- ⊢ (fun x_1 => ↑g' (f x_1 - f x) - ↑(comp g' f') (x_1 - x)) =o[L] fun x' => x'  …
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
     _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
@@ -143,7 +149,9 @@ theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) (v : E) :
     fderivWithin 𝕜 g t y (fderivWithin 𝕜 f s x v) = fderivWithin 𝕜 (g ∘ f) s x v := by
   subst y
+  -- ⊢ ↑(fderivWithin 𝕜 g t (f x)) (↑(fderivWithin 𝕜 f s x) v) = ↑(fderivWithin 𝕜 ( …
   rw [fderivWithin.comp x hg hf h hxs, coe_comp', Function.comp_apply]
+  -- 🎉 no goals
 #align fderiv_within_fderiv_within fderivWithin_fderivWithin
 
 /-- Ternary version of `fderivWithin.comp`, with equality assumptions of basepoints added, in
@@ -155,6 +163,7 @@ theorem fderivWithin.comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
     fderivWithin 𝕜 (g' ∘ g ∘ f) s x =
       (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
   substs h3g h3f
+  -- ⊢ fderivWithin 𝕜 (g' ∘ g ∘ f) s x = ContinuousLinearMap.comp (fderivWithin 𝕜 g …
   exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
     h2g.comp h2f).fderivWithin hxs
 #align fderiv_within.comp₃ fderivWithin.comp₃
@@ -192,6 +201,7 @@ protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
   ((hg.comp_tendsto (hf.continuousAt.prod_map' hf.continuousAt)).trans_isBigO
       hf.isBigO_sub).triangle <| by
     simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf
+    -- 🎉 no goals
 #align has_strict_fderiv_at.comp HasStrictFDerivAt.comp
 
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :
@@ -210,37 +220,54 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
     HasFDerivAtFilter f^[n] (f' ^ n) x L := by
   induction' n with n ihn
+  -- ⊢ HasFDerivAtFilter f^[Nat.zero] (f' ^ Nat.zero) x L
   · exact hasFDerivAtFilter_id x L
+    -- 🎉 no goals
   · rw [Function.iterate_succ, pow_succ']
+    -- ⊢ HasFDerivAtFilter (f^[n] ∘ f) (f' ^ n * f') x L
     rw [← hx] at ihn
+    -- ⊢ HasFDerivAtFilter (f^[n] ∘ f) (f' ^ n * f') x L
     exact ihn.comp x hf hL
+    -- 🎉 no goals
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
 
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine' HasFDerivAtFilter.iterate hf _ hx n
+  -- ⊢ Tendsto f (𝓝 x) (𝓝 x)
   -- Porting note: was `convert hf.continuousAt`
   convert hf.continuousAt.tendsto
+  -- ⊢ x = f x
   exact hx.symm
+  -- 🎉 no goals
 #align has_fderiv_at.iterate HasFDerivAt.iterate
 
 protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt f^[n] (f' ^ n) s x := by
   refine' HasFDerivAtFilter.iterate hf _ hx n
+  -- ⊢ Tendsto f (𝓝[s] x) (𝓝[s] x)
   rw [_root_.nhdsWithin] -- Porting note: Added `rw` to get rid of an error
+  -- ⊢ Tendsto f (𝓝 x ⊓ 𝓟 s) (𝓝 x ⊓ 𝓟 s)
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
+  -- ⊢ x = f x
   exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
+  -- 🎉 no goals
 #align has_fderiv_within_at.iterate HasFDerivWithinAt.iterate
 
 protected theorem HasStrictFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasStrictFDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictFDerivAt f^[n] (f' ^ n) x := by
   induction' n with n ihn
+  -- ⊢ HasStrictFDerivAt f^[Nat.zero] (f' ^ Nat.zero) x
   · exact hasStrictFDerivAt_id x
+    -- 🎉 no goals
   · rw [Function.iterate_succ, pow_succ']
+    -- ⊢ HasStrictFDerivAt (f^[n] ∘ f) (f' ^ n * f') x
     rw [← hx] at ihn
+    -- ⊢ HasStrictFDerivAt (f^[n] ∘ f) (f' ^ n * f') x
     exact ihn.comp x hf
+    -- 🎉 no goals
 #align has_strict_fderiv_at.iterate HasStrictFDerivAt.iterate
 
 protected theorem DifferentiableAt.iterate {f : E → E} (hf : DifferentiableAt 𝕜 f x) (hx : f x = x)

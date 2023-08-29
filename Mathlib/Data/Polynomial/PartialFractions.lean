@@ -66,6 +66,7 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
       r₁.degree < g₁.degree ∧
         r₂.degree < g₂.degree ∧ (f : K) / (↑g₁ * ↑g₂) = ↑q + ↑r₁ / ↑g₁ + ↑r₂ / ↑g₂ := by
   rcases hcoprime with ⟨c, d, hcd⟩
+  -- ⊢ ∃ q r₁ r₂, degree r₁ < degree g₁ ∧ degree r₂ < degree g₂ ∧ ↑f / (↑g₁ * ↑g₂)  …
   refine'
     ⟨f * d /ₘ g₁ + f * c /ₘ g₂, f * d %ₘ g₁, f * c %ₘ g₂, degree_modByMonic_lt _ hg₁,
       degree_modByMonic_lt _ hg₂, _⟩
@@ -76,10 +77,15 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
     norm_cast
     exact hg₂.ne_zero_of_ne zero_ne_one
   have hfc := modByMonic_add_div (f * c) hg₂
+  -- ⊢ ↑f / (↑g₁ * ↑g₂) = ↑(f * d /ₘ g₁ + f * c /ₘ g₂) + ↑(f * d %ₘ g₁) / ↑g₁ + ↑(f …
   have hfd := modByMonic_add_div (f * d) hg₁
+  -- ⊢ ↑f / (↑g₁ * ↑g₂) = ↑(f * d /ₘ g₁ + f * c /ₘ g₂) + ↑(f * d %ₘ g₁) / ↑g₁ + ↑(f …
   field_simp
+  -- ⊢ ↑f = (↑(f * d /ₘ g₁ + f * c /ₘ g₂) * ↑g₁ + ↑(f * d %ₘ g₁)) * ↑g₂ + ↑(f * c % …
   norm_cast
+  -- ⊢ f = ((f * d /ₘ g₁ + f * c /ₘ g₂) * g₁ + f * d %ₘ g₁) * g₂ + f * c %ₘ g₂ * g₁
   linear_combination -1 * f * hcd + -1 * g₁ * hfc + -1 * g₂ * hfd
+  -- 🎉 no goals
 #align div_eq_quo_add_rem_div_add_rem_div div_eq_quo_add_rem_div_add_rem_div
 
 end TwoDenominators
@@ -101,8 +107,11 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
+  -- ⊢ ∃ q r, (∀ (i : ι), i ∈ ∅ → degree (r i) < degree (g i)) ∧ ↑f / ∏ i in ∅, ↑(g …
   · refine' ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
+    -- ⊢ i ∈ ∅ → degree ((fun x => 0) i) < degree (g i)
     rintro ⟨⟩
+    -- 🎉 no goals
   obtain ⟨q₀, r₁, r₂, hdeg₁, _, hf : (↑f : K) / _ = _⟩ :=
     div_eq_quo_add_rem_div_add_rem_div R K f
       (hg a (b.mem_insert_self a) : Monic (g a))
@@ -115,24 +124,43 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
       Hind _ (fun i hi => hg i (Finset.mem_insert_of_mem hi))
         (Set.Pairwise.mono (Finset.coe_subset.2 fun i hi => Finset.mem_insert_of_mem hi) hcop)
     refine ⟨q₀ + q, fun i => if i = a then r₁ else r i, ?_, ?_⟩
+    -- ⊢ ∀ (i : ι), i ∈ insert a b → degree ((fun i => if i = a then r₁ else r i) i)  …
     · intro i
+      -- ⊢ i ∈ insert a b → degree ((fun i => if i = a then r₁ else r i) i) < degree (g …
       dsimp only
+      -- ⊢ i ∈ insert a b → degree (if i = a then r₁ else r i) < degree (g i)
       split_ifs with h1
+      -- ⊢ i ∈ insert a b → degree r₁ < degree (g i)
       · cases h1
+        -- ⊢ a ∈ insert a b → degree r₁ < degree (g a)
         intro
+        -- ⊢ degree r₁ < degree (g a)
         exact hdeg₁
+        -- 🎉 no goals
       · intro hi
+        -- ⊢ degree (r i) < degree (g i)
         exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
+        -- 🎉 no goals
     norm_cast at hf IH ⊢
+    -- ⊢ ↑f / ↑(∏ i in insert a b, g i) = ↑(q₀ + q) + ∑ x in insert a b, ↑(if x = a t …
     rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
+    -- ⊢ ↑q₀ + ↑r₁ / ↑(g a) + (↑q + ∑ i in b, ↑(r i) / ↑(g i)) = ↑(q₀ + q) + (↑r₁ / ↑ …
     trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι in b, (r i : K) / (g i : K))
+    -- ⊢ ↑q₀ + ↑r₁ / ↑(g a) + (↑q + ∑ i in b, ↑(r i) / ↑(g i)) = ↑(q₀ + q) + (↑r₁ / ↑ …
     · push_cast
+      -- ⊢ ↑q₀ + ↑r₁ / ↑(g a) + (↑q + ∑ i in b, ↑(r i) / ↑(g i)) = ↑q₀ + ↑q + (↑r₁ / ↑( …
       ring
+      -- 🎉 no goals
     congr 2
+    -- ⊢ ∑ i in b, ↑(r i) / ↑(g i) = ∑ x in b, ↑(if x = a then r₁ else r x) / ↑(g x)
     refine' Finset.sum_congr rfl fun x hxb => _
+    -- ⊢ ↑(r x) / ↑(g x) = ↑(if x = a then r₁ else r x) / ↑(g x)
     rw [if_neg]
+    -- ⊢ ¬x = a
     rintro rfl
+    -- ⊢ False
     exact hab hxb
+    -- 🎉 no goals
 #align div_eq_quo_add_sum_rem_div div_eq_quo_add_sum_rem_div
 
 end NDenominators

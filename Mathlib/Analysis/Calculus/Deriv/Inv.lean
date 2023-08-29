@@ -63,8 +63,11 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
     field_simp [hx, hy, hz]
     ring
   refine' (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 _)
+  -- ⊢ Tendsto (fun p => (x * x)⁻¹ - (p.fst * p.snd)⁻¹) (𝓝 (x, x)) (𝓝 0)
   rw [← sub_self (x * x)⁻¹]
+  -- ⊢ Tendsto (fun p => (x * x)⁻¹ - (p.fst * p.snd)⁻¹) (𝓝 (x, x)) (𝓝 ((x * x)⁻¹ -  …
   exact tendsto_const_nhds.sub ((continuous_mul.tendsto (x, x)).inv₀ <| mul_ne_zero hx hx)
+  -- 🎉 no goals
 #align has_strict_deriv_at_inv hasStrictDerivAt_inv
 
 theorem hasDerivAt_inv (x_ne_zero : x ≠ 0) : HasDerivAt (fun y => y⁻¹) (-(x ^ 2)⁻¹) x :=
@@ -92,8 +95,11 @@ theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : 𝕜 => x⁻¹) { 
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
+  -- ⊢ deriv (fun x => x⁻¹) 0 = -(0 ^ 2)⁻¹
   · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv.1 (not_not.2 rfl))]
+    -- 🎉 no goals
   · exact (hasDerivAt_inv hne).deriv
+    -- 🎉 no goals
 #align deriv_inv deriv_inv
 
 @[simp]
@@ -104,7 +110,9 @@ theorem deriv_inv' : (deriv fun x : 𝕜 => x⁻¹) = fun x => -(x ^ 2)⁻¹ :=
 theorem derivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun x => x⁻¹) s x = -(x ^ 2)⁻¹ := by
   rw [DifferentiableAt.derivWithin (differentiableAt_inv.2 x_ne_zero) hxs]
+  -- ⊢ deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹
   exact deriv_inv
+  -- 🎉 no goals
 #align deriv_within_inv derivWithin_inv
 
 theorem hasFDerivAt_inv (x_ne_zero : x ≠ 0) :
@@ -119,12 +127,15 @@ theorem hasFDerivWithinAt_inv (x_ne_zero : x ≠ 0) :
 
 theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
   rw [← deriv_fderiv, deriv_inv]
+  -- 🎉 no goals
 #align fderiv_inv fderiv_inv
 
 theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv.2 x_ne_zero) hxs]
+  -- ⊢ fderiv 𝕜 (fun x => x⁻¹) x = smulRight 1 (-(x ^ 2)⁻¹)
   exact fderiv_inv
+  -- 🎉 no goals
 #align fderiv_within_inv fderivWithin_inv
 
 variable {c : 𝕜 → 𝕜} {h : E → 𝕜} {c' : 𝕜} {z : E} {S : Set E}
@@ -132,13 +143,17 @@ variable {c : 𝕜 → 𝕜} {h : E → 𝕜} {c' : 𝕜} {z : E} {S : Set E}
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
+  -- ⊢ -c' / c x ^ 2 = -(c x ^ 2)⁻¹ * c'
   field_simp
+  -- 🎉 no goals
 #align has_deriv_within_at.inv HasDerivWithinAt.inv
 
 theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
     HasDerivAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
+  -- ⊢ HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) univ x
   exact hc.inv hx
+  -- 🎉 no goals
 #align has_deriv_at.inv HasDerivAt.inv
 
 theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
@@ -185,23 +200,33 @@ theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWith
     (hx : d x ≠ 0) :
     HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
   convert hc.mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd) using 1
+  -- ⊢ (fun y => c y / d y) = fun y => c y * ((fun y => y⁻¹) ∘ d) y
   · simp only [div_eq_mul_inv, (· ∘ ·)]
+    -- 🎉 no goals
   · field_simp
+    -- ⊢ (c' * d x - c x * d') * (d x * d x ^ 2) = (c' * d x ^ 2 + -(c x * d' * d x)) …
     ring
+    -- 🎉 no goals
 #align has_deriv_within_at.div HasDerivWithinAt.div
 
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
     (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
+  -- ⊢ (fun y => c y / d y) = fun y => c y * (Inv.inv ∘ d) y
   · simp only [div_eq_mul_inv, (· ∘ ·)]
+    -- 🎉 no goals
   · field_simp
+    -- ⊢ (c' * d x - c x * d') * (d x * d x ^ 2) = (c' * d x ^ 2 + -(c x * d' * d x)) …
     ring
+    -- 🎉 no goals
 #align has_strict_deriv_at.div HasStrictDerivAt.div
 
 theorem HasDerivAt.div (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) (hx : d x ≠ 0) :
     HasDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
+  -- ⊢ HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) univ x
   exact hc.div hd hx
+  -- 🎉 no goals
 #align has_deriv_at.div HasDerivAt.div
 
 theorem DifferentiableWithinAt.div (hc : DifferentiableWithinAt 𝕜 c s x)

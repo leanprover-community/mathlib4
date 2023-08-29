@@ -85,17 +85,22 @@ variable (F : Type*) [Field F] [Algebra K F] [IsSeparable K F] [FiniteDimensiona
 theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimensional F L]
     [IsScalarTower K F L] (x : 𝓞 L) : norm K (norm F x) = norm K x := by
   rw [← Subtype.coe_inj, norm_apply_coe, norm_apply_coe, norm_apply_coe, Algebra.norm_norm]
+  -- 🎉 no goals
 #align ring_of_integers.norm_norm RingOfIntegers.norm_norm
 
 variable {F}
 
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
+  -- ⊢ IsUnit (↑(norm K) x) ↔ IsUnit x
   let L := normalClosure K F (AlgebraicClosure F)
+  -- ⊢ IsUnit (↑(norm K) x) ↔ IsUnit x
   haveI : FiniteDimensional F L := FiniteDimensional.right K F L
+  -- ⊢ IsUnit (↑(norm K) x) ↔ IsUnit x
   haveI : IsAlgClosure K (AlgebraicClosure F) :=
     IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F) (Algebra.isAlgebraic_of_finite K F)
   haveI : IsGalois F L := IsGalois.tower_top_of_isGalois K F L
+  -- ⊢ IsUnit (↑(norm K) x) ↔ IsUnit x
   calc
     IsUnit (norm K x) ↔ IsUnit ((norm K) x ^ finrank F L) :=
       (isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)).symm

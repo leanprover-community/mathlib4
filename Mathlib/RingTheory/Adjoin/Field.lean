@@ -35,14 +35,18 @@ variable (F : Type*) [Field F]
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
     Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) := by
   refine AlgEquiv.symm ?_
+  -- ⊢ AdjoinRoot (minpoly F x) ≃ₐ[F] { x_1 // x_1 ∈ Algebra.adjoin F {x} }
   refine AlgEquiv.ofBijective
       (AlgHom.codRestrict (AdjoinRoot.liftHom _ x <| minpoly.aeval F x) _ fun p => ?_) ⟨?_, ?_⟩
   · induction p using AdjoinRoot.induction_on with
     | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval F x).symm ▸
         (Polynomial.aeval _).mem_range.mpr ⟨p, rfl⟩
   · apply (AlgHom.injective_codRestrict _ _ _).2
+    -- ⊢ Function.Injective ↑(AdjoinRoot.liftHom (minpoly F x) x (_ : ↑(aeval x) (min …
     apply (injective_iff_map_eq_zero _).2
+    -- ⊢ ∀ (a : AdjoinRoot (minpoly F x)), ↑(AdjoinRoot.liftHom (minpoly F x) x (_ :  …
     intro p
+    -- ⊢ ↑(AdjoinRoot.liftHom (minpoly F x) x (_ : ↑(aeval x) (minpoly F x) = 0)) p = …
     induction p using AdjoinRoot.induction_on with
     | ih p =>
       intro hp
@@ -50,8 +54,11 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Alg
       apply Ideal.mem_span_singleton.2
       apply minpoly.dvd F x hp
   · intro y
+    -- ⊢ ∃ a, ↑(AlgHom.codRestrict (AdjoinRoot.liftHom (minpoly F x) x (_ : ↑(aeval x …
     let ⟨p, hp⟩ := (SetLike.ext_iff.1 (Algebra.adjoin_singleton_eq_range_aeval F x) (y : R)).1 y.2
+    -- ⊢ ∃ a, ↑(AlgHom.codRestrict (AdjoinRoot.liftHom (minpoly F x) x (_ : ↑(aeval x …
     exact ⟨AdjoinRoot.mk _ p, Subtype.eq hp⟩
+    -- 🎉 no goals
 #align alg_equiv.adjoin_singleton_equiv_adjoin_root_minpoly AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
 
 open Finset

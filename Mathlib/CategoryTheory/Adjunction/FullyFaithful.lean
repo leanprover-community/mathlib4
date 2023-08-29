@@ -53,14 +53,22 @@ instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunctio
       ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
           ⟨by
             ext x
+            -- ⊢ NatTrans.app (yoneda.map (NatTrans.app h.unit X) ≫ NatTrans.mk fun Y f => L. …
             apply L.map_injective
+            -- ⊢ L.map (NatTrans.app (yoneda.map (NatTrans.app h.unit X) ≫ NatTrans.mk fun Y  …
             aesop_cat,
+            -- 🎉 no goals
            by
             ext x
+            -- ⊢ NatTrans.app ((NatTrans.mk fun Y f => L.preimage (↑(Adjunction.homEquiv h Y. …
             dsimp
+            -- ⊢ L.preimage (↑(Adjunction.homEquiv h x.unop (L.obj X)).symm a✝) ≫ NatTrans.ap …
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
+            -- ⊢ a✝ ≫ L.preimage (NatTrans.app h.counit (L.obj X)) ≫ NatTrans.app h.unit X = a✝
             rw [← h.unit_naturality]
+            -- ⊢ a✝ ≫ NatTrans.app h.unit (R.obj (L.obj X)) ≫ R.map (L.map (L.preimage (NatTr …
             simp⟩⟩⟩
+            -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.unit_is_iso_of_L_fully_faithful CategoryTheory.unit_isIso_of_L_fully_faithful
 
@@ -75,14 +83,22 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
         ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f) },
             ⟨by
               ext x
+              -- ⊢ NatTrans.app (coyoneda.map (NatTrans.app h.counit X).op ≫ NatTrans.mk fun Y  …
               apply R.map_injective
+              -- ⊢ R.map (NatTrans.app (coyoneda.map (NatTrans.app h.counit X).op ≫ NatTrans.mk …
               simp,
+              -- 🎉 no goals
              by
               ext x
+              -- ⊢ NatTrans.app ((NatTrans.mk fun Y f => R.preimage (↑(Adjunction.homEquiv h (R …
               dsimp
+              -- ⊢ NatTrans.app h.counit X ≫ R.preimage (↑(Adjunction.homEquiv h (R.obj X) x) a …
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
+              -- ⊢ NatTrans.app h.counit X ≫ R.preimage (NatTrans.app h.unit (R.obj X)) ≫ a✝ = a✝
               rw [← h.counit_naturality]
+              -- ⊢ L.map (R.map (R.preimage (NatTrans.app h.unit (R.obj X)) ≫ a✝)) ≫ NatTrans.a …
               simp⟩⟩⟩
+              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.counit_is_iso_of_R_fully_faithful CategoryTheory.counit_isIso_of_R_fully_faithful
 
@@ -126,7 +142,9 @@ set_option linter.uppercaseLean3 false in
 theorem L_faithful_of_unit_isIso [IsIso h.unit] : Faithful L :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv X (L.obj Y)).apply_eq_iff_eq] at H
+    -- ⊢ f = g
     simpa using H =≫ inv (h.unit.app Y)⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
@@ -140,43 +158,61 @@ set_option linter.uppercaseLean3 false in
 theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
+    -- ⊢ f = g
     simpa using inv (h.counit.app X) ≫= H⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_faithful_of_counit_is_iso CategoryTheory.R_faithful_of_counit_isIso
 
 instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerLeft L h.counit) := by
   have := h.left_triangle
+  -- ⊢ IsIso (whiskerLeft L h.counit)
   rw [← IsIso.eq_inv_comp] at this
+  -- ⊢ IsIso (whiskerLeft L h.counit)
   rw [this]
+  -- ⊢ IsIso (inv (whiskerRight h.unit L) ≫ 𝟙 (𝟭 C ⋙ L))
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_counit_iso_of_L_fully_faithful CategoryTheory.whiskerLeft_counit_iso_of_L_fully_faithful
 
 instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
+  -- ⊢ IsIso (whiskerRight h.counit R)
   rw [← IsIso.eq_inv_comp] at this
+  -- ⊢ IsIso (whiskerRight h.counit R)
   rw [this]
+  -- ⊢ IsIso (inv (whiskerLeft R h.unit) ≫ 𝟙 (R ⋙ 𝟭 C))
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_right_counit_iso_of_L_fully_faithful CategoryTheory.whiskerRight_counit_iso_of_L_fully_faithful
 
 instance whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
+  -- ⊢ IsIso (whiskerLeft R h.unit)
   rw [← IsIso.eq_comp_inv] at this
+  -- ⊢ IsIso (whiskerLeft R h.unit)
   rw [this]
+  -- ⊢ IsIso (𝟙 (R ⋙ 𝟭 C) ≫ inv (whiskerRight h.counit R))
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_unit_iso_of_R_fully_faithful CategoryTheory.whiskerLeft_unit_iso_of_R_fully_faithful
 
 instance whiskerRight_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
+  -- ⊢ IsIso (whiskerRight h.unit L)
   rw [← IsIso.eq_comp_inv] at this
+  -- ⊢ IsIso (whiskerRight h.unit L)
   rw [this]
+  -- ⊢ IsIso (𝟙 (𝟭 C ⋙ L) ≫ inv (whiskerLeft L h.counit))
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_right_unit_iso_of_R_fully_faithful CategoryTheory.whiskerRight_unit_iso_of_R_fully_faithful
 
@@ -209,12 +245,18 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
 
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply iD.map_injective
+        -- ⊢ iD.map (↑((fun X Y => Trans.trans (Trans.trans (Trans.trans (Trans.trans (eq …
         simpa [Trans.trans] using (comm1.inv.naturality_assoc f _).symm
+        -- 🎉 no goals
       homEquiv_naturality_right := fun {X Y' Y} f g => by
         apply iC.map_injective
+        -- ⊢ iC.map (↑((fun X Y => Trans.trans (Trans.trans (Trans.trans (Trans.trans (eq …
         suffices : R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g)
+        -- ⊢ iC.map (↑((fun X Y => Trans.trans (Trans.trans (Trans.trans (Trans.trans (eq …
         · simp [Trans.trans, this]
+          -- 🎉 no goals
         · apply comm2.hom.naturality g }
+          -- 🎉 no goals
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory

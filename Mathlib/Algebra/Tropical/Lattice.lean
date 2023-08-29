@@ -75,17 +75,31 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
   { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
     csSup_of_not_bddAbove := by
       intro s hs
+      -- ⊢ sSup s = sSup Set.univ
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+      -- ⊢ sSup s = sSup Set.univ
       simp [sSup, this]
+      -- ⊢ sSup (untrop '' s) = sSup Set.univ
       apply csSup_of_not_bddAbove
+      -- ⊢ ¬BddAbove (untrop '' s)
       contrapose! hs
+      -- ⊢ BddAbove s
       change BddAbove (tropOrderIso.symm '' s) at hs
+      -- ⊢ BddAbove s
       exact tropOrderIso.symm.bddAbove_image.1 hs
+      -- 🎉 no goals
     csInf_of_not_bddBelow := by
       intro s hs
+      -- ⊢ sInf s = sInf Set.univ
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+      -- ⊢ sInf s = sInf Set.univ
       simp [sInf, this]
+      -- ⊢ sInf (untrop '' s) = sInf Set.univ
       apply csInf_of_not_bddBelow
+      -- ⊢ ¬BddBelow (untrop '' s)
       contrapose! hs
+      -- ⊢ BddBelow s
       change BddBelow (tropOrderIso.symm '' s) at hs
+      -- ⊢ BddBelow s
       exact tropOrderIso.symm.bddBelow_image.1 hs }
+      -- 🎉 no goals

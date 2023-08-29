@@ -78,8 +78,14 @@ differentiable at `c`. -/
 theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l))
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) : ∃ c ∈ Ioo a b, deriv f c = 0 := by
   by_cases h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
+  -- ⊢ ∃ c, c ∈ Ioo a b ∧ deriv f c = 0
   · exact exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt
+    -- 🎉 no goals
   · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x
+    -- ⊢ ∃ x, x ∈ Ioo a b ∧ ¬DifferentiableAt ℝ f x
     · push_neg at h; exact h
+      -- ⊢ ∃ x, x ∈ Ioo a b ∧ ¬DifferentiableAt ℝ f x
+                     -- 🎉 no goals
     exact ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩
+    -- 🎉 no goals
 #align exists_deriv_eq_zero' exists_deriv_eq_zero'

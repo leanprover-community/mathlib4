@@ -67,10 +67,20 @@ namespace LieRing
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
 instance (priority := 100) ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
+                      -- ⊢ x✝² * x✝ + x✝¹ * x✝ - (x✝ * x✝² + x✝ * x✝¹) = x✝² * x✝ - x✝ * x✝² + (x✝¹ * x …
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
+                      -- ⊢ x✝² * x✝¹ + x✝² * x✝ - (x✝¹ * x✝² + x✝ * x✝²) = x✝² * x✝¹ - x✝¹ * x✝² + (x✝² …
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
+                 -- 🎉 no goals
   leibniz_lie _ _ _ := by
     simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel
+    -- ⊢ x✝² * (x✝¹ * x✝) - x✝² * (x✝ * x✝¹) - (x✝¹ * (x✝ * x✝²) - x✝ * (x✝¹ * x✝²))  …
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 #align lie_ring.of_associative_ring LieRing.ofAssociativeRing
 
 theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
@@ -104,6 +114,7 @@ def LieRingModule.ofAssociativeModule : LieRingModule A M where
   add_lie := add_smul
   lie_add := smul_add
   leibniz_lie := by simp [LieRing.of_associative_ring_bracket, sub_smul, mul_smul, sub_add_cancel]
+                    -- 🎉 no goals
 #align lie_ring_module.of_associative_module LieRingModule.ofAssociativeModule
 
 attribute [local instance] LieRingModule.ofAssociativeModule
@@ -163,6 +174,7 @@ functorial. -/
 def toLieHom : A →ₗ⁅R⁆ B :=
   { f.toLinearMap with
     map_lie' := fun {_ _} => by simp [LieRing.of_associative_ring_bracket] }
+                                -- 🎉 no goals
 #align alg_hom.to_lie_hom AlgHom.toLieHom
 
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
@@ -196,6 +208,8 @@ theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C)
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
   ext a; exact LieHom.congr_fun h a
+  -- ⊢ ↑f a = ↑g a
+         -- 🎉 no goals
 #align alg_hom.to_lie_hom_injective AlgHom.toLieHom_injective
 
 end AlgHom
@@ -222,8 +236,14 @@ def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M where
       map_add' := lie_add x
       map_smul' := fun t => lie_smul t x }
   map_add' x y := by ext m; apply add_lie
+                     -- ⊢ ↑((fun x => { toAddHom := { toFun := fun m => ⁅x, m⁆, map_add' := (_ : ∀ (m  …
+                            -- 🎉 no goals
   map_smul' t x := by ext m; apply smul_lie
+                      -- ⊢ ↑(AddHom.toFun { toFun := fun x => { toAddHom := { toFun := fun m => ⁅x, m⁆, …
+                             -- 🎉 no goals
   map_lie' {x y} := by ext m; apply lie_lie
+                       -- ⊢ ↑(AddHom.toFun { toAddHom := { toFun := fun x => { toAddHom := { toFun := fu …
+                              -- 🎉 no goals
 #align lie_module.to_endomorphism LieModule.toEndomorphism
 
 /-- The adjoint action of a Lie algebra on itself. -/
@@ -239,6 +259,8 @@ theorem LieAlgebra.ad_apply (x y : L) : LieAlgebra.ad R L x y = ⁅x, y⁆ :=
 @[simp]
 theorem LieModule.toEndomorphism_module_end :
     LieModule.toEndomorphism R (Module.End R M) M = LieHom.id := by ext g m; simp [lie_eq_smul]
+                                                                    -- ⊢ ↑(↑(toEndomorphism R (Module.End R M) M) g) m = ↑(↑LieHom.id g) m
+                                                                             -- 🎉 no goals
 #align lie_module.to_endomorphism_module_End LieModule.toEndomorphism_module_end
 
 theorem LieSubalgebra.toEndomorphism_eq (K : LieSubalgebra R L) {x : K} :
@@ -263,7 +285,9 @@ variable {N : LieSubmodule R L M} {x : L}
 theorem coe_map_toEndomorphism_le :
     (N : Submodule R M).map (LieModule.toEndomorphism R L M x) ≤ N := by
   rintro n ⟨m, hm, rfl⟩
+  -- ⊢ ↑(↑(toEndomorphism R L M) x) m ∈ ↑N
   exact N.lie_mem hm
+  -- 🎉 no goals
 #align lie_submodule.coe_map_to_endomorphism_le LieSubmodule.coe_map_toEndomorphism_le
 
 variable (N x)
@@ -271,12 +295,15 @@ variable (N x)
 theorem toEndomorphism_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
     (toEndomorphism R L M x).comp (N : Submodule R M).subtype ⟨m, hm⟩ ∈ (N : Submodule R M) := by
   simpa using N.lie_mem hm
+  -- 🎉 no goals
 #align lie_submodule.to_endomorphism_comp_subtype_mem LieSubmodule.toEndomorphism_comp_subtype_mem
 
 @[simp]
 theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_subtype_mem x) :
     (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
   ext; simp [LinearMap.restrict_apply]
+  -- ⊢ ↑(↑(LinearMap.restrict (↑(toEndomorphism R L M) x) h) x✝) = ↑(↑(↑(toEndomorp …
+       -- 🎉 no goals
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
 
 end LieSubmodule
@@ -286,11 +313,14 @@ open LieAlgebra
 theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
+  -- ⊢ ↑(↑(ad R A) a) b = ↑((LinearMap.mulLeft R - LinearMap.mulRight R) a) b
+           -- 🎉 no goals
 #align lie_algebra.ad_eq_lmul_left_sub_lmul_right LieAlgebra.ad_eq_lmul_left_sub_lmul_right
 
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
     (ad R L ↑x).comp (K.incl : K →ₗ[R] L) = (K.incl : K →ₗ[R] L).comp (ad R K x) := by
   ext y
+  -- ⊢ ↑(LinearMap.comp (↑(ad R L) ↑x) ↑(incl K)) y = ↑(LinearMap.comp (↑(incl K))  …
   simp only [ad_apply, LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, LinearMap.coe_comp,
     LieSubalgebra.coe_bracket, Function.comp_apply]
 #align lie_subalgebra.ad_comp_incl_eq LieSubalgebra.ad_comp_incl_eq
@@ -303,10 +333,17 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
   { Subalgebra.toSubmodule A' with
     lie_mem' := fun {x y} hx hy => by
       change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx; change y ∈ A' at hy
+      -- ⊢ ⁅x, y⁆ ∈ A'
+                          -- ⊢ ⁅x, y⁆ ∈ A'
+                                               -- ⊢ ⁅x, y⁆ ∈ A'
       rw [LieRing.of_associative_ring_bracket]
+      -- ⊢ x * y - y * x ∈ A'
       have hxy := A'.mul_mem hx hy
+      -- ⊢ x * y - y * x ∈ A'
       have hyx := A'.mul_mem hy hx
+      -- ⊢ x * y - y * x ∈ A'
       exact Submodule.sub_mem (Subalgebra.toSubmodule A') hxy hyx }
+      -- 🎉 no goals
 #align lie_subalgebra_of_subalgebra lieSubalgebraOfSubalgebra
 
 namespace LinearEquiv
@@ -352,7 +389,9 @@ def toLieEquiv : A₁ ≃ₗ⁅R⁆ A₂ :=
     toFun := e.toFun
     map_lie' := fun {x y} => by
       have : e.toEquiv.toFun = e := rfl
+      -- ⊢ AddHom.toFun { toAddHom := { toFun := e.toFun, map_add' := (_ : ∀ (x y : A₁) …
       simp_rw [LieRing.of_associative_ring_bracket, this, map_sub, map_mul] }
+      -- 🎉 no goals
 #align alg_equiv.to_lie_equiv AlgEquiv.toLieEquiv
 
 @[simp]

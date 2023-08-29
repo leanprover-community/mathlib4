@@ -74,11 +74,17 @@ instance decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)
 instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
     DecidablePred (· ∈ s ^ n) := by
   induction' n with n ih
+  -- ⊢ DecidablePred fun x => x ∈ s ^ Nat.zero
   · simp only [Nat.zero_eq, pow_zero, mem_one]
+    -- ⊢ DecidablePred fun x => x = 1
     infer_instance
+    -- 🎉 no goals
   · letI := ih
+    -- ⊢ DecidablePred fun x => x ∈ s ^ Nat.succ n
     rw [pow_succ]
+    -- ⊢ DecidablePred fun x => x ∈ s * s ^ n
     infer_instance
+    -- 🎉 no goals
 #align set.decidable_mem_pow Set.decidableMemPow
 #align set.decidable_mem_nsmul Set.decidableMemNSMul
 
@@ -175,10 +181,15 @@ variable {G : Type*} [Group G] [Fintype G] (S : Set G)
 theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :
     ∀ k, Fintype.card G ≤ k → Fintype.card (↥(S ^ k)) = Fintype.card (↥(S ^ Fintype.card G)) := by
   have hG : 0 < Fintype.card G := Fintype.card_pos_iff.mpr ⟨1⟩
+  -- ⊢ ∀ (k : ℕ), Fintype.card G ≤ k → Fintype.card ↑(S ^ k) = Fintype.card ↑(S ^ F …
   by_cases hS : S = ∅
+  -- ⊢ ∀ (k : ℕ), Fintype.card G ≤ k → Fintype.card ↑(S ^ k) = Fintype.card ↑(S ^ F …
   · refine' fun k hk ↦ Fintype.card_congr _
+    -- ⊢ ↑(S ^ k) ≃ ↑(S ^ Fintype.card G)
     rw [hS, empty_pow (ne_of_gt (lt_of_lt_of_le hG hk)), empty_pow (ne_of_gt hG)]
+    -- 🎉 no goals
   obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 hS
+  -- ⊢ ∀ (k : ℕ), Fintype.card G ≤ k → Fintype.card ↑(S ^ k) = Fintype.card ↑(S ^ F …
   have key : ∀ (a) (s t : Set G) [Fintype s] [Fintype t],
       (∀ b : G, b ∈ s → a * b ∈ t) → Fintype.card s ≤ Fintype.card t := by
     refine' fun a s t _ _ h ↦ Fintype.card_le_of_injective (fun ⟨b, hb⟩ ↦ ⟨a * b, h b hb⟩) _
@@ -189,15 +200,22 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
   refine' card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
     fun n h ↦ le_antisymm (mono (n + 1).le_succ) (key a⁻¹ (S ^ (n + 2)) (S ^ (n + 1)) _)
   replace h₂ : {a} * S ^ n = S ^ (n + 1)
+  -- ⊢ {a} * S ^ n = S ^ (n + 1)
   · have : Fintype (Set.singleton a * S ^ n) := by
       classical!
       apply fintypeMul
     refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)
+    -- ⊢ {a} * S ^ n ⊆ S ^ (n + 1)
     · exact mul_subset_mul (Set.singleton_subset_iff.mpr ha) Set.Subset.rfl
+      -- 🎉 no goals
     · convert key a (S ^ n) ({a} * S ^ n) fun b hb ↦ Set.mul_mem_mul (Set.mem_singleton a) hb
+      -- 🎉 no goals
   rw [pow_succ', ← h₂, mul_assoc, ← pow_succ', h₂]
+  -- ⊢ ∀ (b : G), b ∈ {a} * S ^ (n + 1) → a⁻¹ * b ∈ S ^ (n + 1)
   rintro _ ⟨b, c, hb, hc, rfl⟩
+  -- ⊢ a⁻¹ * (fun x x_1 => x * x_1) b c ∈ S ^ (n + 1)
   rwa [Set.mem_singleton_iff.mp hb, inv_mul_cancel_left]
+  -- 🎉 no goals
 #align group.card_pow_eq_card_pow_card_univ Group.card_pow_eq_card_pow_card_univ
 #align add_group.card_nsmul_eq_card_nsmul_card_univ AddGroup.card_nsmul_eq_card_nsmul_card_univ
 

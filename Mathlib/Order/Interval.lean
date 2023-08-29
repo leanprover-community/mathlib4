@@ -49,6 +49,9 @@ variable [LE α] {s t : NonemptyInterval α}
 
 theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t h =>
   by cases s; cases t; congr
+     -- ⊢ { toProd := toProd✝, fst_le_snd := fst_le_snd✝ } = t
+              -- ⊢ { toProd := toProd✝¹, fst_le_snd := fst_le_snd✝¹ } = { toProd := toProd✝, fs …
+                       -- 🎉 no goals
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
@@ -169,6 +172,7 @@ instance [Inhabited α] : Inhabited (NonemptyInterval α) :=
 
 instance [Nonempty α] : Nonempty (NonemptyInterval α) :=
   Nonempty.map pure (by infer_instance)
+                        -- 🎉 no goals
 
 instance [Nontrivial α] : Nontrivial (NonemptyInterval α) :=
   pure_injective.nontrivial
@@ -269,6 +273,7 @@ theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
 @[simp]
 theorem mem_pure : b ∈ pure a ↔ b = a := by
   rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
+  -- 🎉 no goals
 #align nonempty_interval.mem_pure NonemptyInterval.mem_pure
 
 @[simp, norm_cast]
@@ -425,8 +430,11 @@ theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).
 @[simp]
 theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
   cases s
+  -- ⊢ ↑dual (map f none) = map (↑OrderHom.dual f) (↑dual none)
   · rfl
+    -- 🎉 no goals
   · exact WithBot.map_comm rfl _
+    -- 🎉 no goals
 #align interval.dual_map Interval.dual_map
 
 variable [BoundedOrder α]
@@ -506,11 +514,13 @@ theorem coe_dual (s : Interval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s :
 
 theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map f
   | ⊥ => by simp
+            -- 🎉 no goals
   | (s : NonemptyInterval α) => s.subset_coe_map _
 #align interval.subset_coe_map Interval.subset_coe_map
 
 @[simp]
 theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
+                                            -- 🎉 no goals
 #align interval.mem_pure Interval.mem_pure
 
 theorem mem_pure_self (a : α) : a ∈ pure a :=
@@ -549,9 +559,13 @@ instance lattice : Lattice (Interval α) :=
       | some s, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
+        -- ⊢ (if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then some { toProd := (s.fst ⊔ t.fst,  …
         split_ifs
+        -- ⊢ some { toProd := (s.fst ⊔ t.fst, s.snd ⊓ t.snd), fst_le_snd := (_ : s.fst ⊔  …
         · exact WithBot.some_le_some.2 ⟨le_sup_left, inf_le_left⟩
+          -- 🎉 no goals
         · exact bot_le
+          -- 🎉 no goals
     inf_le_right := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
@@ -559,32 +573,49 @@ instance lattice : Lattice (Interval α) :=
       | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
+        -- ⊢ (if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then some { toProd := (s.fst ⊔ t.fst,  …
         split_ifs
+        -- ⊢ some { toProd := (s.fst ⊔ t.fst, s.snd ⊓ t.snd), fst_le_snd := (_ : s.fst ⊔  …
         · exact WithBot.some_le_some.2 ⟨le_sup_right, inf_le_right⟩
+          -- 🎉 no goals
         · exact bot_le
+          -- 🎉 no goals
     le_inf := fun s t c =>
       match s, t, c with
       | ⊥, t, c => fun _ _ => bot_le
       | some s, t, c => fun hb hc => by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
+        -- ⊢ some s ≤ ↑t ⊓ c
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
+        -- ⊢ some s ≤ ↑t ⊓ ↑c
         change _ ≤ dite _ _ _
+        -- ⊢ some s ≤ if h : t.fst ≤ c.snd ∧ c.fst ≤ t.snd then some { toProd := (t.fst ⊔ …
         -- Porting note: was `simp only` but that fails to use the second lemma.
         rw [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc
+        -- ⊢ some s ≤ if h : t.fst ≤ c.snd ∧ c.fst ≤ t.snd then some { toProd := (t.fst ⊔ …
         simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] -- at hb hc ⊢
+        -- ⊢ ↑s ≤ if h : t.fst ≤ c.snd ∧ c.fst ≤ t.snd then ↑{ toProd := (t.fst ⊔ c.fst,  …
         rw [dif_pos, WithBot.coe_le_coe]
         exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         -- Porting note: had to add the next 6 lines including the changes because
         -- it seems that lean cannot automatically turn `NonemptyInterval.toDualProd s`
         -- into `s.toProd` anymore.
         rcases hb with ⟨hb₁, hb₂⟩
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         rcases hc with ⟨hc₁, hc₂⟩
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         change t.toProd.fst ≤ s.toProd.fst at hb₁
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         change s.toProd.snd ≤ t.toProd.snd at hb₂
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         change c.toProd.fst ≤ s.toProd.fst at hc₁
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         change s.toProd.snd ≤ c.toProd.snd at hc₂
+        -- ⊢ t.fst ≤ c.snd ∧ c.fst ≤ t.snd
         -- Porting note: originally it just had `hb.1` etc. in this next line
         exact ⟨hb₁.trans <| s.fst_le_snd.trans hc₂, hc₁.trans <| s.fst_le_snd.trans hb₂⟩ }
+        -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
@@ -636,6 +667,7 @@ theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
 @[simp, norm_cast]
 theorem coe_eq_pure : (s : Interval α) = Interval.pure a ↔ s = pure a := by
   rw [← Interval.coe_inj, coe_pure_interval]
+  -- 🎉 no goals
 #align nonempty_interval.coe_eq_pure NonemptyInterval.coe_eq_pure
 
 @[simp, norm_cast]
@@ -772,12 +804,14 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
 @[simp, norm_cast]
 theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
+                                           -- 🎉 no goals
 #align interval.coe_infi Interval.coe_iInf
 
 -- @[simp] -- Porting note: not in simpNF
 @[norm_cast]
 theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
+                                                           -- 🎉 no goals
 #align interval.coe_infi₂ Interval.coe_iInf₂
 
 end CompleteLattice

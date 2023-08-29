@@ -51,24 +51,30 @@ theorem succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n
   | 0 => (add_zero a).symm
   | n + 1 => by
     rw [Function.iterate_succ', Int.ofNat_succ, ← add_assoc]
+    -- ⊢ (succ ∘ succ^[n]) a = a + ↑n + 1
     exact congr_arg _ (succ_iterate a n)
+    -- 🎉 no goals
 #align int.succ_iterate Int.succ_iterate
 
 theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
   | 0 => (sub_zero a).symm
   | n + 1 => by
     rw [Function.iterate_succ', Int.ofNat_succ, ← sub_sub]
+    -- ⊢ (pred ∘ pred^[n]) a = a - ↑n - 1
     exact congr_arg _ (pred_iterate a n)
+    -- 🎉 no goals
 #align int.pred_iterate Int.pred_iterate
 
 instance : IsSuccArchimedean ℤ :=
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by
       rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
+      -- 🎉 no goals
 
 instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by rw [pred_eq_pred, pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
+                       -- 🎉 no goals
 
 /-! ### Covering relation -/
 
@@ -79,6 +85,7 @@ protected theorem covby_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
 
 @[simp]
 theorem sub_one_covby (z : ℤ) : z - 1 ⋖ z := by rw [Int.covby_iff_succ_eq, sub_add_cancel]
+                                                -- 🎉 no goals
 #align int.sub_one_covby Int.sub_one_covby
 
 @[simp]
@@ -91,7 +98,9 @@ end Int
 @[simp, norm_cast]
 theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   rw [Nat.covby_iff_succ_eq, Int.covby_iff_succ_eq]
+  -- ⊢ ↑a + 1 = ↑b ↔ a + 1 = b
   exact Int.coe_nat_inj'
+  -- 🎉 no goals
 #align nat.cast_int_covby_iff Nat.cast_int_covby_iff
 
 alias ⟨_, Covby.cast_int⟩ := Nat.cast_int_covby_iff

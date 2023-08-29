@@ -44,7 +44,9 @@ instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
 
 theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
   cases x
+  -- ⊢ nhds (fst✝, snd✝) = Filter.prod (nhds (fst (fst✝, snd✝))) (nhds (snd (fst✝,  …
   exact nhds_prod_eq
+  -- 🎉 no goals
 #align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 
 theorem nhds_inl [Zero M] (x : R) : nhds (inl x : tsze R M) = (nhds x).prod (nhds 0) :=

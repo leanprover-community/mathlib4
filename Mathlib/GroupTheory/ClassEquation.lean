@@ -35,8 +35,11 @@ theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
     [∀ x : ConjClasses G, Fintype x.carrier] :
     ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
   suffices : (Σ x : ConjClasses G, x.carrier) ≃ G
+  -- ⊢ ∑ x : ConjClasses G, Finset.card (Set.toFinset (carrier x)) = Fintype.card G
   · simpa using (Fintype.card_congr this)
+    -- 🎉 no goals
   simpa [carrier_eq_preimage_mk] using Equiv.sigmaFiberEquiv ConjClasses.mk
+  -- 🎉 no goals
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem Group.sum_card_conj_classes_eq_card [Finite G] :
@@ -79,6 +82,10 @@ theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
   ∑ x in (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
   convert Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
   · simp
+    -- 🎉 no goals
   · rw [←finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype, ←Finset.sum_set_coe]
+    -- ⊢ ∑ i : ↑(noncenter G), Finset.card (Set.toFinset (carrier ↑i)) = ∑ i : ↑(nonc …
     simp
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals

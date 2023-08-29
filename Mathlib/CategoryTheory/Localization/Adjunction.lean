@@ -56,6 +56,7 @@ noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
   letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso'.symm
   exact liftNatTrans L₂ W₂ ((F ⋙ G) ⋙ L₂) L₂ (F' ⋙ G') (𝟭 D₂) (whiskerRight adj.counit L₂)
+  -- 🎉 no goals
 
 lemma η_app (X₂ : C₂) :
     (η adj L₁ L₂ W₂ G' F').app (L₂.obj X₂) =
@@ -81,9 +82,13 @@ noncomputable def localization : G' ⊣ F' :=
       counit := Localization.η adj L₁ L₂ W₂ G' F'
       left_triangle := by
         apply natTrans_ext L₁ W₁
+        -- ⊢ ∀ (X : C₁), NatTrans.app (whiskerRight (Localization.ε adj L₁ W₁ L₂ G' F') G …
         intro X₁
+        -- ⊢ NatTrans.app (whiskerRight (Localization.ε adj L₁ W₁ L₂ G' F') G' ≫ (Functor …
         have eq := congr_app adj.left_triangle X₁
+        -- ⊢ NatTrans.app (whiskerRight (Localization.ε adj L₁ W₁ L₂ G' F') G' ≫ (Functor …
         dsimp at eq
+        -- ⊢ NatTrans.app (whiskerRight (Localization.ε adj L₁ W₁ L₂ G' F') G' ≫ (Functor …
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerRight_app, Localization.ε_app,
           Functor.associator_hom_app, id_comp, whiskerLeft_app, G'.map_comp, G'.map_comp,
           assoc, assoc]
@@ -92,11 +97,16 @@ noncomputable def localization : G' ⊣ F' :=
           comp_id, (CatCommSq.iso G L₁ L₂ G').inv.naturality_assoc, ← L₂.map_comp_assoc, eq,
           L₂.map_id, id_comp, Iso.inv_hom_id_app]
         rfl
+        -- 🎉 no goals
       right_triangle := by
         apply natTrans_ext L₂ W₂
+        -- ⊢ ∀ (X : C₂), NatTrans.app (whiskerLeft F' (Localization.ε adj L₁ W₁ L₂ G' F') …
         intro X₂
+        -- ⊢ NatTrans.app (whiskerLeft F' (Localization.ε adj L₁ W₁ L₂ G' F') ≫ (Functor. …
         have eq := congr_app adj.right_triangle X₂
+        -- ⊢ NatTrans.app (whiskerLeft F' (Localization.ε adj L₁ W₁ L₂ G' F') ≫ (Functor. …
         dsimp at eq
+        -- ⊢ NatTrans.app (whiskerLeft F' (Localization.ε adj L₁ W₁ L₂ G' F') ≫ (Functor. …
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app,
           Localization.η_app, Functor.associator_inv_app, id_comp, F'.map_comp, F'.map_comp]
         erw [← (Localization.ε _ _ _ _ _ _).naturality_assoc, Localization.ε_app,
@@ -104,6 +114,7 @@ noncomputable def localization : G' ⊣ F' :=
           ← NatTrans.naturality, ← L₁.map_comp_assoc, eq, L₁.map_id, id_comp,
           Iso.inv_hom_id_app]
         rfl }
+        -- 🎉 no goals
 
 @[simp]
 lemma localization_unit_app (X₁ : C₁) :
@@ -111,6 +122,7 @@ lemma localization_unit_app (X₁ : C₁) :
     L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
       F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   apply Localization.ε_app
+  -- 🎉 no goals
 
 @[simp]
 lemma localization_counit_app (X₂ : C₂) :
@@ -119,6 +131,7 @@ lemma localization_counit_app (X₂ : C₂) :
       (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
       L₂.map (adj.counit.app X₂) := by
   apply Localization.η_app
+  -- 🎉 no goals
 
 end Adjunction
 

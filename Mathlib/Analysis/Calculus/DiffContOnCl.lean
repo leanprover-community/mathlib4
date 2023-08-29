@@ -63,10 +63,15 @@ theorem comp {g : G → E} {t : Set G} (hf : DiffContOnCl 𝕜 f s) (hg : DiffCo
 theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnCl 𝕜 f (ball x r)) :
     ContinuousOn f (closedBall x r) := by
   rcases eq_or_ne r 0 with (rfl | hr)
+  -- ⊢ ContinuousOn f (closedBall x 0)
   · rw [closedBall_zero]
+    -- ⊢ ContinuousOn f {x}
     exact continuousOn_singleton f x
+    -- 🎉 no goals
   · rw [← closure_ball x hr]
+    -- ⊢ ContinuousOn f (closure (ball x r))
     exact h.continuousOn
+    -- 🎉 no goals
 #align diff_cont_on_cl.continuous_on_ball DiffContOnCl.continuousOn_ball
 
 theorem mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))

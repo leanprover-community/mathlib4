@@ -44,12 +44,23 @@ set_option linter.deprecated false in
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
   induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
+  -- ⊢ ↑(minFacAux n Nat.zero k) = Nat.minFacAux ↑n ↑(bit1 k)
+                                                  -- ⊢ ↑n =
+                                                  -- ⊢ ↑(if n < bit1 k * bit1 k then n else if bit1 k ∣ n then bit1 k else minFacAu …
   · rw [Nat.zero_add, Nat.sqrt_lt] at h
+    -- ⊢ ↑n =
     simp only [h, dite_true]
+    -- 🎉 no goals
   simp_rw [← mul_to_nat]
+  -- ⊢ ↑(if n < bit1 k * bit1 k then n else if bit1 k ∣ n then bit1 k else minFacAu …
   simp only [cast_lt, dvd_to_nat]
+  -- ⊢ ↑(if n < bit1 k * bit1 k then n else if bit1 k ∣ n then bit1 k else minFacAu …
   split_ifs <;> try rfl
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- ⊢ ↑(minFacAux n fuel (succ k)) = Nat.minFacAux (↑n) (↑(bit1 k) + 2)
   rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
+  -- ⊢ ↑(bit1 (succ k)) = ↑(bit1 k) + 2
     simp only [_root_.bit1, _root_.bit0, cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
       add_left_comm, ← one_add_one_eq_two]
 #align pos_num.min_fac_aux_to_nat PosNum.minFacAux_to_nat
@@ -65,21 +76,32 @@ def minFac : PosNum → PosNum
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   cases' n with n
   · rfl
+    -- 🎉 no goals
   · rw [minFac, Nat.minFac_eq, if_neg]
+    -- ⊢ ↑(match bit1 n with
     swap
     · simp
+      -- 🎉 no goals
     rw [minFacAux_to_nat]
+    -- ⊢ Nat.minFacAux ↑(bit1 n) ↑(bit1 1) = Nat.minFacAux (↑(bit1 n)) 3
     · rfl
+      -- 🎉 no goals
     simp only [cast_one, cast_bit1]
+    -- ⊢ Nat.sqrt (_root_.bit1 ↑n) < ↑n + _root_.bit1 1
     unfold _root_.bit1 _root_.bit0
+    -- ⊢ Nat.sqrt (↑n + ↑n + 1) < ↑n + (1 + 1 + 1)
     rw [Nat.sqrt_lt]
+    -- ⊢ ↑n + ↑n + 1 < (↑n + (1 + 1 + 1)) * (↑n + (1 + 1 + 1))
     calc
       (n : ℕ) + (n : ℕ) + 1 ≤ (n : ℕ) + (n : ℕ) + (n : ℕ) := by simp
       _ = (n : ℕ) * (1 + 1 + 1) := by simp only [mul_add, mul_one]
       _ < _ := by simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, if_pos]
+    -- ⊢ ↑(match bit0 a✝ with
     · rfl
+      -- 🎉 no goals
     simp
+    -- 🎉 no goals
 #align pos_num.min_fac_to_nat PosNum.minFac_to_nat
 
 /-- Primality predicate for a `PosNum`. -/
@@ -94,15 +116,23 @@ instance decidablePrime : DecidablePred PosNum.Prime
     decidable_of_iff' (n = 1)
       (by
         refine' Nat.prime_def_minFac.trans ((and_iff_right _).trans <| eq_comm.trans _)
+        -- ⊢ 2 ≤ ↑(bit0 n)
         · exact bit0_le_bit0.2 (Nat.succ_le_of_lt (to_nat_pos _))
+          -- 🎉 no goals
         rw [← minFac_to_nat, to_nat_inj]
+        -- ⊢ bit0 n = minFac (bit0 n) ↔ n = 1
         exact ⟨bit0.inj, congr_arg _⟩)
+        -- 🎉 no goals
   | bit1 n =>
     decidable_of_iff' (minFacAux (bit1 n) n 1 = bit1 n)
       (by
         refine' Nat.prime_def_minFac.trans ((and_iff_right _).trans _)
+        -- ⊢ 2 ≤ ↑(bit1 n)
         · exact Nat.bit0_le_bit1_iff.2 (to_nat_pos _)
+          -- 🎉 no goals
         rw [← minFac_to_nat, to_nat_inj]; rfl)
+        -- ⊢ minFac (bit1 n) = bit1 n ↔ minFacAux (bit1 n) (↑n) 1 = bit1 n
+                                          -- 🎉 no goals
 #align pos_num.decidable_prime PosNum.decidablePrime
 
 end PosNum

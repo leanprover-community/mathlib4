@@ -50,31 +50,43 @@ variable [ExistsAddOfLE α]
 /-- Binary **rearrangement inequality**. -/
 theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
+  -- ⊢ a * d + (a + b) * c ≤ a * c + (a + b) * d
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
+  -- ⊢ a * (c + d) + (a + b) * c ≤ a * c + (a + b) * (c + d)
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
+  -- ⊢ a * c + (a + b) * c + a * d ≤ a * c + (a + b) * c + (a + b) * d
   exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right _).1 hcd) _
+  -- 🎉 no goals
 #align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
 theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) :
     a • d + b • c ≤ a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
+  -- ⊢ b • c + a • d ≤ b • d + a • c
   exact mul_add_mul_le_mul_add_mul hba hdc
+  -- 🎉 no goals
 #align mul_add_mul_le_mul_add_mul' mul_add_mul_le_mul_add_mul'
 
 /-- Binary strict **rearrangement inequality**. -/
 theorem mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
+  -- ⊢ a * d + (a + b) * c < a * c + (a + b) * d
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
+  -- ⊢ a * (c + d) + (a + b) * c < a * c + (a + b) * (c + d)
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
+  -- ⊢ a * c + (a + b) * c + a * d < a * c + (a + b) * c + (a + b) * d
   exact add_lt_add_left (mul_lt_mul_of_pos_right hab <| (lt_add_iff_pos_right _).1 hcd) _
+  -- 🎉 no goals
 #align mul_add_mul_lt_mul_add_mul mul_add_mul_lt_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
 theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) :
     a • d + b • c < a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
+  -- ⊢ b • c + a • d < b • d + a • c
   exact mul_add_mul_lt_mul_add_mul hba hdc
+  -- 🎉 no goals
 #align mul_add_mul_lt_mul_add_mul' mul_add_mul_lt_mul_add_mul'
 
 end ExistsAddOfLE
@@ -93,9 +105,13 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
 -- see Note [lower instance priority]
 instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c h => _⟩
+  -- ⊢ a * b ≤ a * c
   rcases exists_add_of_le h with ⟨c, rfl⟩
+  -- ⊢ a * b ≤ a * (b + c)
   rw [mul_add]
+  -- ⊢ a * b ≤ a * b + a * c
   apply self_le_add_right
+  -- 🎉 no goals
 #align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toCovariantClassMulLE
 
 -- see Note [lower instance priority]
@@ -114,6 +130,7 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 @[simp]
 theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
+  -- 🎉 no goals
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
 
 end CanonicallyOrderedCommSemiring
@@ -130,14 +147,20 @@ namespace AddLECancellable
 
 protected theorem mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
   cases' total_of (· ≤ ·) b c with hbc hcb
+  -- ⊢ a * (b - c) = a * b - a * c
   · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
+    -- 🎉 no goals
   · apply h.eq_tsub_of_add_eq
+    -- ⊢ a * (b - c) + a * c = a * b
     rw [← mul_add, tsub_add_cancel_of_le hcb]
+    -- 🎉 no goals
 #align add_le_cancellable.mul_tsub AddLECancellable.mul_tsub
 
 protected theorem tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   simp only [mul_comm _ c] at *
+  -- ⊢ c * (a - b) = c * a - c * b
   exact h.mul_tsub
+  -- 🎉 no goals
 #align add_le_cancellable.tsub_mul AddLECancellable.tsub_mul
 
 end AddLECancellable

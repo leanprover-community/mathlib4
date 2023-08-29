@@ -38,12 +38,19 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
       MeasurableSet s ∧
         (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧ ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
   let d : Set α → ℝ := fun s => ((μ s).toNNReal : ℝ) - (ν s).toNNReal
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   let c : Set ℝ := d '' { s | MeasurableSet s }
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   let γ : ℝ := sSup c
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have hμ : ∀ s, μ s ≠ ∞ := measure_ne_top μ
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have hν : ∀ s, ν s ≠ ∞ := measure_ne_top ν
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have to_nnreal_μ : ∀ s, ((μ s).toNNReal : ℝ≥0∞) = μ s := fun s => ENNReal.coe_toNNReal <| hμ _
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have d_split : ∀ s t, MeasurableSet s → MeasurableSet t → d s = d (s \ t) + d (s ∩ t) := by
     intro s t _hs ht
     dsimp only
@@ -76,17 +83,24 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     rw [NNReal.coe_le_coe, ← ENNReal.coe_le_coe, to_nnreal_μ, to_nnreal_μ]
     exact measure_mono (subset_univ _)
   have c_nonempty : c.Nonempty := Nonempty.image _ ⟨_, MeasurableSet.empty⟩
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have d_le_γ : ∀ s, MeasurableSet s → d s ≤ γ := fun s hs => le_csSup bdd_c ⟨s, hs, rfl⟩
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have : ∀ n : ℕ, ∃ s : Set α, MeasurableSet s ∧ γ - (1 / 2) ^ n < d s := by
     intro n
     have : γ - (1 / 2) ^ n < γ := sub_lt_self γ (pow_pos (half_pos zero_lt_one) n)
     rcases exists_lt_of_lt_csSup c_nonempty this with ⟨r, ⟨s, hs, rfl⟩, hlt⟩
     exact ⟨s, hs, hlt⟩
   rcases Classical.axiom_of_choice this with ⟨e, he⟩
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   change ℕ → Set α at e
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have he₁ : ∀ n, MeasurableSet (e n) := fun n => (he n).1
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have he₂ : ∀ n, γ - (1 / 2) ^ n < d (e n) := fun n => (he n).2
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   let f : ℕ → ℕ → Set α := fun n m => (Finset.Ico n (m + 1)).inf e
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have hf : ∀ n m, MeasurableSet (f n m) := by
     intro n m
     simp only [Finset.inf_eq_iInf]
@@ -128,6 +142,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
 
       exact (add_le_add_iff_left γ).1 this
   let s := ⋃ m, ⋂ n, f m n
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by
       suffices Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 (γ - 2 * 0)) by
@@ -153,8 +168,11 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     refine' le_trans _ (le_d_f _ _ hmn)
     exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos <| zero_lt_one) _)
   have hs : MeasurableSet s := MeasurableSet.iUnion fun n => MeasurableSet.iInter fun m => hf _ _
+  -- ⊢ ∃ s, MeasurableSet s ∧ (∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ …
   refine' ⟨s, hs, _, _⟩
+  -- ⊢ ∀ (t : Set α), MeasurableSet t → t ⊆ s → ↑↑ν t ≤ ↑↑μ t
   · intro t ht hts
+    -- ⊢ ↑↑ν t ≤ ↑↑μ t
     have : 0 ≤ d t :=
       (add_le_add_iff_left γ).1 <|
         calc
@@ -163,8 +181,11 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
           _ ≤ γ + d t := add_le_add (d_le_γ _ (hs.diff ht)) le_rfl
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
+    -- ⊢ ↑(ENNReal.toNNReal (↑↑ν t)) ≤ ↑(ENNReal.toNNReal (↑↑μ t))
     simpa only [le_sub_iff_add_le, zero_add] using this
+    -- 🎉 no goals
   · intro t ht hts
+    -- ⊢ ↑↑μ t ≤ ↑↑ν t
     have : d t ≤ 0 :=
       (add_le_add_iff_left γ).1 <|
         calc
@@ -175,7 +196,9 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
+    -- ⊢ ↑(ENNReal.toNNReal (↑↑μ t)) ≤ ↑(ENNReal.toNNReal (↑↑ν t))
     simpa only [sub_le_iff_le_add, zero_add] using this
+    -- 🎉 no goals
 #align measure_theory.hahn_decomposition MeasureTheory.hahn_decomposition
 
 end MeasureTheory

@@ -51,11 +51,14 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     norm_cast
   -- Since U is unitary, the diagonal entries of U * Uᴴ are all 1
   have mul_eq_one : U * Uᴴ = 1 := unitary.mul_star_self_of_mem hU
+  -- ⊢ ‖U i j‖ ≤ 1
   have diag_eq_one : IsROrC.re ((U * Uᴴ) i i) = 1 := by
     simp only [mul_eq_one, eq_self_iff_true, Matrix.one_apply_eq, IsROrC.one_re]
   -- Putting it all together
   rw [← sq_le_one_iff (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
+  -- ⊢ ‖U i j‖ ^ 2 ≤ ∑ x : n, ‖U i x‖ ^ 2
   exact norm_sum
+  -- 🎉 no goals
 #align entry_norm_bound_of_unitary entry_norm_bound_of_unitary
 
 attribute [local instance] Matrix.normedAddCommGroup
@@ -68,7 +71,9 @@ theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Ma
     intro
     rw [pi_norm_le_iff_of_nonneg zero_le_one]
   intros
+  -- ⊢ ‖U i✝¹ i✝‖ ≤ 1
   exact entry_norm_bound_of_unitary hU _ _
+  -- 🎉 no goals
 #align entrywise_sup_norm_bound_of_unitary entrywise_sup_norm_bound_of_unitary
 
 end EntrywiseSupNorm

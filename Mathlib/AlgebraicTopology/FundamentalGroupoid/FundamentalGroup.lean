@@ -37,11 +37,15 @@ def FundamentalGroup (X : Type u) [TopologicalSpace X] (x : X) :=
 
 instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := by
   dsimp only [FundamentalGroup]
+  -- ⊢ Group (Aut x)
   infer_instance
+  -- 🎉 no goals
 
 instance (X : Type u) [TopologicalSpace X] (x : X) : Inhabited (FundamentalGroup X x) := by
   dsimp only [FundamentalGroup]
+  -- ⊢ Inhabited (Aut x)
   infer_instance
+  -- 🎉 no goals
 
 namespace FundamentalGroup
 

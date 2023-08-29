@@ -37,8 +37,11 @@ instance instStarRing : StarRing (CliffordAlgebra Q) where
   star x := reverse (involute x)
   star_involutive x := by
     simp only [reverse_involute_commute.eq, reverse_reverse, involute_involute]
+    -- 🎉 no goals
   star_mul x y := by simp only [map_mul, reverse.map_mul]
+                     -- 🎉 no goals
   star_add x y := by simp only [map_add]
+                     -- 🎉 no goals
 
 theorem star_def (x : CliffordAlgebra Q) : star x = reverse (involute x) :=
   rfl
@@ -50,6 +53,7 @@ theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse x) :=
 
 @[simp]
 theorem star_ι (m : M) : star (ι Q m) = -ι Q m := by rw [star_def, involute_ι, map_neg, reverse_ι]
+                                                     -- 🎉 no goals
 #align clifford_algebra.star_ι CliffordAlgebra.star_ι
 
 /-- Note that this not match the `star_smul` implied by `StarModule`; it certainly could if we
@@ -58,12 +62,14 @@ doing this. -/
 @[simp]
 theorem star_smul (r : R) (x : CliffordAlgebra Q) : star (r • x) = r • star x := by
   rw [star_def, star_def, map_smul, map_smul]
+  -- 🎉 no goals
 #align clifford_algebra.star_smul CliffordAlgebra.star_smul
 
 @[simp]
 theorem star_algebraMap (r : R) :
     star (algebraMap R (CliffordAlgebra Q) r) = algebraMap R (CliffordAlgebra Q) r := by
   rw [star_def, involute.commutes, reverse.commutes]
+  -- 🎉 no goals
 #align clifford_algebra.star_algebra_map CliffordAlgebra.star_algebraMap
 
 end CliffordAlgebra

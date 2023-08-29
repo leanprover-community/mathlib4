@@ -51,7 +51,9 @@ theorem not_mem_neLocus {f g : α →₀ N} {a : α} : a ∉ f.neLocus g ↔ f a
 @[simp]
 theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
   ext
+  -- ⊢ x✝ ∈ ↑(neLocus f g) ↔ x✝ ∈ {x | ↑f x ≠ ↑g x}
   exact mem_neLocus
+  -- 🎉 no goals
 #align finsupp.coe_ne_locus Finsupp.coe_neLocus
 
 @[simp]
@@ -59,6 +61,7 @@ theorem neLocus_eq_empty {f g : α →₀ N} : f.neLocus g = ∅ ↔ f = g :=
   ⟨fun h =>
     ext fun a => not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_not_mem.mp h a)),
     fun h => h ▸ by simp only [neLocus, Ne.def, eq_self_iff_true, not_true, Finset.filter_False]⟩
+                    -- 🎉 no goals
 #align finsupp.ne_locus_eq_empty Finsupp.neLocus_eq_empty
 
 @[simp]
@@ -68,12 +71,15 @@ theorem nonempty_neLocus_iff {f g : α →₀ N} : (f.neLocus g).Nonempty ↔ f 
 
 theorem neLocus_comm : f.neLocus g = g.neLocus f := by
   simp_rw [neLocus, Finset.union_comm, ne_comm]
+  -- 🎉 no goals
 #align finsupp.ne_locus_comm Finsupp.neLocus_comm
 
 @[simp]
 theorem neLocus_zero_right : f.neLocus 0 = f.support := by
   ext
+  -- ⊢ a✝ ∈ neLocus f 0 ↔ a✝ ∈ f.support
   rw [mem_neLocus, mem_support_iff, coe_zero, Pi.zero_apply]
+  -- 🎉 no goals
 #align finsupp.ne_locus_zero_right Finsupp.neLocus_zero_right
 
 @[simp]
@@ -88,6 +94,7 @@ section NeLocusAndMaps
 theorem subset_mapRange_neLocus [DecidableEq N] [Zero N] [DecidableEq M] [Zero M] (f g : α →₀ N)
     {F : N → M} (F0 : F 0 = 0) : (f.mapRange F F0).neLocus (g.mapRange F F0) ⊆ f.neLocus g :=
   fun x => by simpa only [mem_neLocus, mapRange_apply, not_imp_not] using congr_arg F
+              -- 🎉 no goals
 #align finsupp.subset_map_range_ne_locus Finsupp.subset_mapRange_neLocus
 
 theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P] [Zero N]
@@ -95,7 +102,9 @@ theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P
     (hF : ∀ f, Function.Injective fun g => F f g) :
     (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext
+  -- ⊢ a✝ ∈ neLocus (zipWith F F0 f g₁) (zipWith F F0 f g₂) ↔ a✝ ∈ neLocus g₁ g₂
   simpa only [mem_neLocus] using (hF _).ne_iff
+  -- 🎉 no goals
 #align finsupp.zip_with_ne_locus_eq_left Finsupp.zipWith_neLocus_eq_left
 
 theorem zipWith_neLocus_eq_right [DecidableEq M] [Zero M] [DecidableEq P] [Zero P] [Zero N]
@@ -103,14 +112,18 @@ theorem zipWith_neLocus_eq_right [DecidableEq M] [Zero M] [DecidableEq P] [Zero 
     (hF : ∀ g, Function.Injective fun f => F f g) :
     (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext
+  -- ⊢ a✝ ∈ neLocus (zipWith F F0 f₁ g) (zipWith F F0 f₂ g) ↔ a✝ ∈ neLocus f₁ f₂
   simpa only [mem_neLocus] using (hF _).ne_iff
+  -- 🎉 no goals
 #align finsupp.zip_with_ne_locus_eq_right Finsupp.zipWith_neLocus_eq_right
 
 theorem mapRange_neLocus_eq [DecidableEq N] [DecidableEq M] [Zero M] [Zero N] (f g : α →₀ N)
     {F : N → M} (F0 : F 0 = 0) (hF : Function.Injective F) :
     (f.mapRange F F0).neLocus (g.mapRange F F0) = f.neLocus g := by
   ext
+  -- ⊢ a✝ ∈ neLocus (mapRange F F0 f) (mapRange F F0 g) ↔ a✝ ∈ neLocus f g
   simpa only [mem_neLocus] using hF.ne_iff
+  -- 🎉 no goals
 #align finsupp.map_range_ne_locus_eq Finsupp.mapRange_neLocus_eq
 
 end NeLocusAndMaps
@@ -139,40 +152,48 @@ theorem neLocus_neg_neg : neLocus (-f) (-g) = f.neLocus g :=
 #align finsupp.ne_locus_neg_neg Finsupp.neLocus_neg_neg
 
 theorem neLocus_neg : neLocus (-f) g = f.neLocus (-g) := by rw [← neLocus_neg_neg, neg_neg]
+                                                            -- 🎉 no goals
 #align finsupp.ne_locus_neg Finsupp.neLocus_neg
 
 theorem neLocus_eq_support_sub : f.neLocus g = (f - g).support := by
   rw [← neLocus_add_right _ _ (-g), add_right_neg, neLocus_zero_right, sub_eq_add_neg]
+  -- 🎉 no goals
 #align finsupp.ne_locus_eq_support_sub Finsupp.neLocus_eq_support_sub
 
 @[simp]
 theorem neLocus_sub_left : neLocus (f - g₁) (f - g₂) = neLocus g₁ g₂ := by
   simp only [sub_eq_add_neg, neLocus_add_left, neLocus_neg_neg]
+  -- 🎉 no goals
 #align finsupp.ne_locus_sub_left Finsupp.neLocus_sub_left
 
 @[simp]
 theorem neLocus_sub_right : neLocus (f₁ - g) (f₂ - g) = neLocus f₁ f₂ := by
   simpa only [sub_eq_add_neg] using neLocus_add_right _ _ _
+  -- 🎉 no goals
 #align finsupp.ne_locus_sub_right Finsupp.neLocus_sub_right
 
 @[simp]
 theorem neLocus_self_add_right : neLocus f (f + g) = g.support := by
   rw [← neLocus_zero_left, ← neLocus_add_left f 0 g, add_zero]
+  -- 🎉 no goals
 #align finsupp.ne_locus_self_add_right Finsupp.neLocus_self_add_right
 
 @[simp]
 theorem neLocus_self_add_left : neLocus (f + g) f = g.support := by
   rw [neLocus_comm, neLocus_self_add_right]
+  -- 🎉 no goals
 #align finsupp.ne_locus_self_add_left Finsupp.neLocus_self_add_left
 
 @[simp]
 theorem neLocus_self_sub_right : neLocus f (f - g) = g.support := by
   rw [sub_eq_add_neg, neLocus_self_add_right, support_neg]
+  -- 🎉 no goals
 #align finsupp.ne_locus_self_sub_right Finsupp.neLocus_self_sub_right
 
 @[simp]
 theorem neLocus_self_sub_left : neLocus (f - g) f = g.support := by
   rw [neLocus_comm, neLocus_self_sub_right]
+  -- 🎉 no goals
 #align finsupp.ne_locus_self_sub_left Finsupp.neLocus_self_sub_left
 
 end AddGroup

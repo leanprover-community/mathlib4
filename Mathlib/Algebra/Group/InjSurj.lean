@@ -45,6 +45,7 @@ injective map that preserves `+` to an additive semigroup."]
 protected def semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₁ :=
   { ‹Mul M₁› with mul_assoc := fun x y z => hf <| by erw [mul, mul, mul, mul, mul_assoc] }
+                                                     -- 🎉 no goals
 #align function.injective.semigroup Function.Injective.semigroup
 #align function.injective.add_semigroup Function.Injective.addSemigroup
 
@@ -56,6 +57,7 @@ an injective map that preserves `+` to an additive commutative semigroup."]
 protected def commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ :=
   { hf.semigroup f mul with mul_comm := fun x y => hf <| by erw [mul, mul, mul_comm] }
+                                                            -- 🎉 no goals
 #align function.injective.comm_semigroup Function.Injective.commSemigroup
 #align function.injective.add_comm_semigroup Function.Injective.addCommSemigroup
 
@@ -68,6 +70,7 @@ protected def leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂)
   { hf.semigroup f mul with
     mul := (· * ·),
     mul_left_cancel := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by erw [← mul, ← mul, H] }
+                                                                          -- 🎉 no goals
 #align function.injective.left_cancel_semigroup Function.Injective.leftCancelSemigroup
 #align function.injective.add_left_cancel_semigroup Function.Injective.addLeftCancelSemigroup
 
@@ -81,6 +84,7 @@ protected def rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M�
   { hf.semigroup f mul with
     mul := (· * ·),
     mul_right_cancel := fun x y z H => hf <| (mul_left_inj (f y)).1 <| by erw [← mul, ← mul, H] }
+                                                                          -- 🎉 no goals
 #align function.injective.right_cancel_semigroup Function.Injective.rightCancelSemigroup
 #align function.injective.add_right_cancel_semigroup Function.Injective.addRightCancelSemigroup
 
@@ -95,7 +99,9 @@ protected def mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Injective
     (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₁ :=
   { ‹One M₁›, ‹Mul M₁› with
     one_mul := fun x => hf <| by erw [mul, one, one_mul],
+                                 -- 🎉 no goals
     mul_one := fun x => hf <| by erw [mul, one, mul_one] }
+                                 -- 🎉 no goals
 #align function.injective.mul_one_class Function.Injective.mulOneClass
 #align function.injective.add_zero_class Function.Injective.addZeroClass
 
@@ -112,7 +118,9 @@ protected def monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (one :
   { hf.mulOneClass f one mul, hf.semigroup f mul with
     npow := fun n x => x ^ n,
     npow_zero := fun x => hf <| by erw [npow, one, pow_zero],
+                                   -- 🎉 no goals
     npow_succ := fun n x => hf <| by erw [npow, pow_succ, mul, npow] }
+                                     -- 🎉 no goals
 #align function.injective.monoid Function.Injective.monoid
 #align function.injective.add_monoid Function.Injective.addMonoid
 
@@ -127,7 +135,9 @@ protected def addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul �
   { hf.addMonoid f zero add nsmul with
     natCast := Nat.cast,
     natCast_zero := hf (by erw [nat_cast, Nat.cast_zero, zero]),
+                           -- 🎉 no goals
     natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]), one := 1 }
+                                    -- 🎉 no goals
 #align function.injective.add_monoid_with_one Function.Injective.addMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a left cancel monoid, if it admits an injective map that
@@ -210,6 +220,7 @@ protected def involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : 
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
   inv := Inv.inv
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
+                        -- 🎉 no goals
 #align function.injective.has_involutive_inv Function.Injective.involutiveInv
 #align function.injective.has_involutive_neg Function.Injective.involutiveNeg
 
@@ -224,6 +235,7 @@ protected def invOneClass [InvOneClass M₂] (f : M₁ → M₂) (hf : Injective
     (inv : ∀ x, f (x⁻¹) = (f x)⁻¹) : InvOneClass M₁ :=
   { ‹One M₁›, ‹Inv M₁› with
     inv_one := hf <| by erw [inv, one, inv_one] }
+                        -- 🎉 no goals
 
 variable [Div M₁] [Pow M₁ ℤ]
 
@@ -241,8 +253,12 @@ protected def divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injecti
   { hf.monoid f one mul npow, ‹Inv M₁›, ‹Div M₁› with
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by erw [zpow, zpow_zero, one],
+                                    -- 🎉 no goals
     zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_ofNat, pow_succ, zpow, zpow_ofNat],
+                                      -- 🎉 no goals
+                                          -- 🎉 no goals
     zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_ofNat],
+                                     -- 🎉 no goals
     div_eq_mul_inv := fun x y => hf <| by erw [div, mul, inv, div_eq_mul_inv] }
 #align function.injective.div_inv_monoid Function.Injective.divInvMonoid
 #align function.injective.sub_neg_monoid Function.Injective.subNegMonoid
@@ -274,8 +290,10 @@ protected def divisionMonoid [DivisionMonoid M₂] (f : M₁ → M₂) (hf : Inj
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionMonoid M₁ :=
   { hf.divInvMonoid f one mul inv div npow zpow, hf.involutiveInv f inv with
     mul_inv_rev := fun x y => hf <| by erw [inv, mul, mul_inv_rev, mul, inv, inv],
+                                       -- 🎉 no goals
     inv_eq_of_mul := fun x y h => hf <| by
       erw [inv, inv_eq_of_mul_eq_one_right (by erw [← mul, h, one])] }
+      -- 🎉 no goals
 #align function.injective.division_monoid Function.Injective.divisionMonoid
 #align function.injective.subtraction_monoid Function.Injective.subtractionMonoid
 
@@ -306,6 +324,7 @@ protected def group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one : f
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₁ :=
   { hf.divInvMonoid f one mul inv div npow zpow with
     mul_left_inv := fun x => hf <| by erw [mul, inv, mul_left_inv, one] }
+                                      -- 🎉 no goals
 #align function.injective.group Function.Injective.group
 #align function.injective.add_group Function.Injective.addGroup
 
@@ -323,7 +342,9 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
+                                     -- 🎉 no goals
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
+                                       -- 🎉 no goals
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a commutative group, if it admits an injective map that
@@ -372,6 +393,7 @@ surjective map that preserves `+` from an additive semigroup."]
 protected def semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₂ :=
   { ‹Mul M₂› with mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc] }
+                                                            -- 🎉 no goals
 #align function.surjective.semigroup Function.Surjective.semigroup
 #align function.surjective.add_semigroup Function.Surjective.addSemigroup
 
@@ -384,6 +406,7 @@ protected def commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surje
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ :=
   { hf.semigroup f mul with
     mul_comm := hf.forall₂.2 fun x y => by erw [← mul, ← mul, mul_comm] }
+                                           -- 🎉 no goals
 #align function.surjective.comm_semigroup Function.Surjective.commSemigroup
 #align function.surjective.add_comm_semigroup Function.Surjective.addCommSemigroup
 
@@ -398,7 +421,9 @@ protected def mulOneClass [MulOneClass M₁] (f : M₁ → M₂) (hf : Surjectiv
     (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₂ :=
   { ‹One M₂›, ‹Mul M₂› with
     one_mul := hf.forall.2 fun x => by erw [← one, ← mul, one_mul],
+                                       -- 🎉 no goals
     mul_one := hf.forall.2 fun x => by erw [← one, ← mul, mul_one] }
+                                       -- 🎉 no goals
 #align function.surjective.mul_one_class Function.Surjective.mulOneClass
 #align function.surjective.add_zero_class Function.Surjective.addZeroClass
 
@@ -415,7 +440,11 @@ protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one 
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
     npow_zero := hf.forall.2 fun x => by dsimp only; erw [←npow, pow_zero, ←one],
+                                         -- ⊢ f x ^ 0 = 1
+                                                     -- 🎉 no goals
     npow_succ := fun n => hf.forall.2 fun x => by dsimp only; erw [←npow, pow_succ, ←npow, ←mul] }
+                                                  -- ⊢ f x ^ (n + 1) = f x * f x ^ n
+                                                              -- 🎉 no goals
 #align function.surjective.monoid Function.Surjective.monoid
 #align function.surjective.add_monoid Function.Surjective.addMonoid
 
@@ -430,7 +459,9 @@ protected def addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul �
   { hf.addMonoid f zero add nsmul with
     natCast := Nat.cast,
     natCast_zero := by rw [← Nat.cast, ← nat_cast, Nat.cast_zero, zero]
+                       -- 🎉 no goals
     natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast]
+                                -- 🎉 no goals
     one := 1 }
 #align function.surjective.add_monoid_with_one Function.Surjective.addMonoidWithOne
 
@@ -466,6 +497,7 @@ protected def involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : 
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
   inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by erw [← inv, ← inv, inv_inv]
+                                     -- 🎉 no goals
 #align function.surjective.has_involutive_inv Function.Surjective.involutiveInv
 #align function.surjective.has_involutive_neg Function.Surjective.involutiveNeg
 
@@ -484,12 +516,19 @@ protected def divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surject
   { hf.monoid f one mul npow, ‹Div M₂›, ‹Inv M₂› with
     zpow := fun n x => x ^ n,
     zpow_zero' := hf.forall.2 fun x => by dsimp only; erw [← zpow, zpow_zero, ← one],
+                                          -- ⊢ f x ^ 0 = 1
+                                                      -- 🎉 no goals
     zpow_succ' := fun n => hf.forall.2 fun x => by
       dsimp only
+      -- ⊢ f x ^ Int.ofNat (Nat.succ n) = f x * f x ^ Int.ofNat n
       erw [← zpow, ← zpow, zpow_ofNat, zpow_ofNat, pow_succ, ← mul],
+      -- 🎉 no goals
+                                                 -- 🎉 no goals
     zpow_neg' := fun n => hf.forall.2 fun x => by
       dsimp only
+      -- ⊢ f x ^ Int.negSucc n = (f x ^ ↑(Nat.succ n))⁻¹
       erw [← zpow, ← zpow, zpow_negSucc, zpow_ofNat, inv],
+      -- 🎉 no goals
     div_eq_mul_inv := hf.forall₂.2 fun x y => by erw [← inv, ← mul, ← div, div_eq_mul_inv] }
 #align function.surjective.div_inv_monoid Function.Surjective.divInvMonoid
 #align function.surjective.sub_neg_monoid Function.Surjective.subNegMonoid
@@ -505,6 +544,7 @@ protected def group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one : 
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₂ :=
   { hf.divInvMonoid f one mul inv div npow zpow with
     mul_left_inv := hf.forall.2 fun x => by erw [← inv, ← mul, mul_left_inv, one] }
+                                            -- 🎉 no goals
 #align function.surjective.group Function.Surjective.group
 #align function.surjective.add_group Function.Surjective.addGroup
 
@@ -522,8 +562,10 @@ protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂
     hf.addGroup f zero add neg sub nsmul zsmul with
     intCast := Int.cast,
     intCast_ofNat := fun n => by rw [← Int.cast, ← int_cast, Int.cast_ofNat, nat_cast],
+                                 -- 🎉 no goals
     intCast_negSucc := fun n => by
       rw [← Int.cast, ← int_cast, Int.cast_negSucc, neg, nat_cast] }
+      -- 🎉 no goals
 #align function.surjective.add_group_with_one Function.Surjective.addGroupWithOne
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective

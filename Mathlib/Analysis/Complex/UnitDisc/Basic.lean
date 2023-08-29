@@ -35,7 +35,11 @@ open UnitDisc
 namespace UnitDisc
 
 instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
+                                                          -- ⊢ CommSemigroup ↑(ball 0 1)
+                                                                           -- 🎉 no goals
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
+                                                          -- ⊢ HasDistribNeg ↑(ball 0 1)
+                                                                           -- 🎉 no goals
 instance instCoe : Coe UnitDisc ℂ := ⟨Subtype.val⟩
 
 theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
@@ -52,7 +56,9 @@ theorem abs_ne_one (z : 𝔻) : abs (z : ℂ) ≠ 1 :=
 
 theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
   convert (Real.sqrt_lt' one_pos).1 z.abs_lt_one
+  -- ⊢ 1 = 1 ^ 2
   exact (one_pow 2).symm
+  -- 🎉 no goals
 #align complex.unit_disc.norm_sq_lt_one Complex.UnitDisc.normSq_lt_one
 
 theorem coe_ne_one (z : 𝔻) : (z : ℂ) ≠ 1 :=
@@ -62,7 +68,9 @@ theorem coe_ne_one (z : 𝔻) : (z : ℂ) ≠ 1 :=
 theorem coe_ne_neg_one (z : 𝔻) : (z : ℂ) ≠ -1 :=
   ne_of_apply_ne abs <| by
     rw [abs.map_neg, map_one]
+    -- ⊢ ↑abs ↑z ≠ 1
     exact z.abs_ne_one
+    -- 🎉 no goals
 #align complex.unit_disc.coe_ne_neg_one Complex.UnitDisc.coe_ne_neg_one
 
 theorem one_add_coe_ne_zero (z : 𝔻) : (1 + z : ℂ) ≠ 0 :=

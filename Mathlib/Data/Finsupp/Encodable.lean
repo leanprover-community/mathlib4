@@ -19,3 +19,4 @@ instance [Encodable α] [Encodable β] [Zero β] [∀ x : β, Decidable (x ≠ 0
 
 instance [Countable α] [Countable β] [Zero β] : Countable (α →₀ β) := by
   classical exact .of_equiv _ finsuppEquivDFinsupp.symm
+  -- 🎉 no goals

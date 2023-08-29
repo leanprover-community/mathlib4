@@ -37,10 +37,16 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
     · rw [inv_zpow, hg, inv_one]
     simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg
   rw [(IsFixedPt.preimage_iterate hs j : (zpowGroupHom n)^[j] ⁻¹' s = s).symm]
+  -- ⊢ ∀ {g' : G}, g' ^ n ^ j = 1 → g' • (fun x => x ^ n)^[j] ⁻¹' s ⊆ (fun x => x ^ …
   rintro g' hg' - ⟨y, hy, rfl⟩
+  -- ⊢ (fun x => g' • x) y ∈ (fun x => x ^ n)^[j] ⁻¹' s
   change (zpowGroupHom n)^[j] (g' * y) ∈ s
+  -- ⊢ (↑(zpowGroupHom n))^[j] (g' * y) ∈ s
   replace hg' : (zpowGroupHom n)^[j] g' = 1
+  -- ⊢ (↑(zpowGroupHom n))^[j] g' = 1
   · simpa [zpowGroupHom]
+    -- 🎉 no goals
   rwa [iterate_map_mul, hg', one_mul]
+  -- 🎉 no goals
 #align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self
 #align vadd_eq_self_of_preimage_zsmul_eq_self vadd_eq_self_of_preimage_zsmul_eq_self

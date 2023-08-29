@@ -55,21 +55,30 @@ variable {α : Type u} {β : Type v} {π : α → Type w}
 
 instance [Countable α] [Countable β] : Countable (Sum α β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
+  -- ⊢ Countable (α ⊕ β)
   rcases exists_injective_nat β with ⟨g, hg⟩
+  -- ⊢ Countable (α ⊕ β)
   exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
+  -- 🎉 no goals
 
 instance [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
+  -- ⊢ Countable (α × β)
   rcases exists_injective_nat β with ⟨g, hg⟩
+  -- ⊢ Countable (α × β)
   exact (Nat.pairEquiv.injective.comp <| hf.Prod_map hg).countable
+  -- 🎉 no goals
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
+  -- ⊢ Countable (Sigma π)
   choose g hg using fun a => exists_injective_nat (π a)
+  -- ⊢ Countable (Sigma π)
   exact ((Equiv.sigmaEquivProd ℕ ℕ).injective.comp <| hf.sigma_map hg).countable
+  -- 🎉 no goals
 
 end type
 
@@ -102,7 +111,10 @@ instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
     · haveI := ihn
       exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Equiv.piFinSucc _ _).symm
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+  -- ⊢ Countable ((a : α) → π a)
   have f := fun a => (nonempty_embedding_nat (π a)).some
+  -- ⊢ Countable ((a : α) → π a)
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable
+  -- 🎉 no goals
 
 end sort

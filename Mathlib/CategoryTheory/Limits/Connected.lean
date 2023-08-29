@@ -34,18 +34,26 @@ section Examples
 
 instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullbackShape J) := by
   apply IsConnected.of_induct
+  -- ⊢ ∀ (p : Set (WidePullbackShape J)), ?j₀ ∈ p → (∀ {j₁ j₂ : WidePullbackShape J …
   introv hp t
+  -- ⊢ j ∈ p
   cases j
   · exact hp
+    -- 🎉 no goals
   · rwa [t (WidePullbackShape.Hom.term _)]
+    -- 🎉 no goals
 #align category_theory.wide_pullback_shape_connected CategoryTheory.widePullbackShape_connected
 
 instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutShape J) := by
   apply IsConnected.of_induct
+  -- ⊢ ∀ (p : Set (WidePushoutShape J)), ?j₀ ∈ p → (∀ {j₁ j₂ : WidePushoutShape J}, …
   introv hp t
+  -- ⊢ j ∈ p
   cases j
   · exact hp
+    -- 🎉 no goals
   · rwa [← t (WidePushoutShape.Hom.init _)]
+    -- 🎉 no goals
 #align category_theory.wide_pushout_shape_connected CategoryTheory.widePushoutShape_connected
 
 instance parallelPairInhabited : Inhabited WalkingParallelPair :=
@@ -54,10 +62,14 @@ instance parallelPairInhabited : Inhabited WalkingParallelPair :=
 
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply IsConnected.of_induct
+  -- ⊢ ∀ (p : Set WalkingParallelPair), ?j₀ ∈ p → (∀ {j₁ j₂ : WalkingParallelPair}, …
   introv _ t
+  -- ⊢ j ∈ p
   cases j
   · rwa [t WalkingParallelPairHom.left]
+    -- 🎉 no goals
   · assumption
+    -- 🎉 no goals
 #align category_theory.parallel_pair_connected CategoryTheory.parallel_pair_connected
 
 end Examples
@@ -108,17 +120,28 @@ noncomputable def prodPreservesConnectedLimits [IsConnected J] (X : C) :
             prod.lift (s.π.app (Classical.arbitrary _) ≫ Limits.prod.fst) (l.lift (forgetCone s))
           fac := fun s j => by
             apply prod.hom_ext
+            -- ⊢ ((fun s => prod.lift (NatTrans.app s.π (Classical.arbitrary J) ≫ prod.fst) ( …
             · erw [assoc, limMap_π, comp_id, limit.lift_π]
+              -- ⊢ NatTrans.app (BinaryFan.mk (NatTrans.app s.π (Classical.arbitrary J) ≫ prod. …
               exact (nat_trans_from_is_connected (s.π ≫ γ₁ X) j (Classical.arbitrary _)).symm
+              -- 🎉 no goals
             · simp [← l.fac (forgetCone s) j]
+              -- 🎉 no goals
           uniq := fun s m L => by
             apply prod.hom_ext
+            -- ⊢ m ≫ prod.fst = (fun s => prod.lift (NatTrans.app s.π (Classical.arbitrary J) …
             · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]
+              -- ⊢ m ≫ prod.fst = NatTrans.app (BinaryFan.mk (m ≫ limit.π (pair X c.pt) { as := …
               rfl
+              -- 🎉 no goals
             · rw [limit.lift_π]
+              -- ⊢ m ≫ prod.snd = NatTrans.app (BinaryFan.mk (NatTrans.app s.π (Classical.arbit …
               apply l.uniq (forgetCone s)
+              -- ⊢ ∀ (j : J), (m ≫ prod.snd) ≫ NatTrans.app c.π j = NatTrans.app (forgetCone s) …
               intro j
+              -- ⊢ (m ≫ prod.snd) ≫ NatTrans.app c.π j = NatTrans.app (forgetCone s).π j
               simp [← L j] } }
+              -- 🎉 no goals
 #align category_theory.prod_preserves_connected_limits CategoryTheory.prodPreservesConnectedLimits
 
 end CategoryTheory

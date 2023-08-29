@@ -58,6 +58,9 @@ attribute [coe] toDerivation
 theorem toDerivation_injective :
     Function.Injective (toDerivation : LeftInvariantDerivation I G → _) :=
   fun X Y h => by cases X; cases Y; congr
+                  -- ⊢ { toDerivation := toDerivation✝, left_invariant'' := left_invariant''✝ } = Y
+                           -- ⊢ { toDerivation := toDerivation✝¹, left_invariant'' := left_invariant''✝¹ } = …
+                                    -- 🎉 no goals
 #align left_invariant_derivation.coe_derivation_injective LeftInvariantDerivation.toDerivation_injective
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
@@ -130,6 +133,7 @@ theorem leibniz : X (f * f') = f • X f' + f' • X f :=
 
 instance : Zero (LeftInvariantDerivation I G) :=
   ⟨⟨0, fun g => by simp only [_root_.map_zero]⟩⟩
+                   -- 🎉 no goals
 
 instance : Inhabited (LeftInvariantDerivation I G) :=
   ⟨0⟩
@@ -138,6 +142,7 @@ instance : Add (LeftInvariantDerivation I G) where
   add X Y :=
     ⟨X + Y, fun g => by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
+      -- 🎉 no goals
 
 set_option maxHeartbeats 400000 in
 instance : Neg (LeftInvariantDerivation I G) where
@@ -188,10 +193,12 @@ theorem lift_zero :
 
 instance hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+                                    -- 🎉 no goals
 #align left_invariant_derivation.has_nat_scalar LeftInvariantDerivation.hasNatScalar
 
 instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+                                    -- 🎉 no goals
 #align left_invariant_derivation.has_int_scalar LeftInvariantDerivation.hasIntScalar
 
 instance : AddCommGroup (LeftInvariantDerivation I G) :=
@@ -199,6 +206,7 @@ instance : AddCommGroup (LeftInvariantDerivation I G) :=
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul, left_invariant']⟩
+                                    -- 🎉 no goals
 
 variable (r)
 
@@ -248,15 +256,19 @@ theorem left_invariant : 𝒅ₕ (smoothLeftMul_one I g) (evalAt (1 : G) X) = ev
 
 theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := by
   ext f
+  -- ⊢ ↑(↑(evalAt (g * h)) X) f = ↑(↑(𝒅ₕ (_ : ↑(𝑳 I g) h = g * h)) (↑(evalAt h) X)) f
   rw [← left_invariant, apply_hfdifferential, apply_hfdifferential, L_mul, fdifferential_comp,
     apply_fdifferential]
   -- Porting note: more agressive here
   erw [LinearMap.comp_apply]
+  -- ⊢ ↑(↑(𝒅 (𝑳 I g) (↑(𝑳 I h) 1)) (↑(𝒅 (𝑳 I h) 1) (↑(evalAt 1) X))) f = ↑(↑(evalAt …
   rw [apply_fdifferential, ← apply_hfdifferential, left_invariant]
+  -- 🎉 no goals
 #align left_invariant_derivation.eval_at_mul LeftInvariantDerivation.evalAt_mul
 
 theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   ext h
+  -- ⊢ ↑(ContMDiffMap.comp (↑X f) (𝑳 I g)) h = ↑(↑X (ContMDiffMap.comp f (𝑳 I g))) h
   rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, apply_hfdifferential,
     apply_fdifferential, evalAt_apply]
 set_option linter.uppercaseLean3 false in
@@ -267,14 +279,23 @@ instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) w
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
+      -- ⊢ ↑(↑(𝒅ₕ (_ : ↑(𝑳 I g) 1 = g)) (↑(Derivation.evalAt 1) ⁅↑X, ↑Y⁆)) f = ↑(↑(Deri …
       have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
+      -- ⊢ ↑(↑(𝒅ₕ (_ : ↑(𝑳 I g) 1 = g)) (↑(Derivation.evalAt 1) ⁅↑X, ↑Y⁆)) f = ↑(↑(Deri …
       have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
+      -- ⊢ ↑(↑(𝒅ₕ (_ : ↑(𝑳 I g) 1 = g)) (↑(Derivation.evalAt 1) ⁅↑X, ↑Y⁆)) f = ↑(↑(Deri …
       rw [apply_hfdifferential, apply_fdifferential, Derivation.evalAt_apply] at hX hY ⊢
+      -- ⊢ ↑(↑⁅↑X, ↑Y⁆ (ContMDiffMap.comp f (𝑳 I g))) 1 = ↑(↑(Derivation.evalAt g) ⁅↑X, …
       rw [comp_L] at hX hY
+      -- ⊢ ↑(↑⁅↑X, ↑Y⁆ (ContMDiffMap.comp f (𝑳 I g))) 1 = ↑(↑(Derivation.evalAt g) ⁅↑X, …
       rw [Derivation.commutator_apply, SmoothMap.coe_sub, Pi.sub_apply, coe_derivation]
+      -- ⊢ ↑(↑X (↑↑Y (ContMDiffMap.comp f (𝑳 I g)))) 1 - ↑(↑↑Y (↑X (ContMDiffMap.comp f …
       rw [coe_derivation] at hX hY ⊢
+      -- ⊢ ↑(↑X (↑Y (ContMDiffMap.comp f (𝑳 I g)))) 1 - ↑(↑Y (↑X (ContMDiffMap.comp f ( …
       rw [hX, hY]
+      -- ⊢ ↑(↑(Derivation.evalAt g) ↑X) (↑Y f) - ↑(↑(Derivation.evalAt g) ↑Y) (↑X f) =  …
       rfl⟩
+      -- 🎉 no goals
 
 @[simp]
 theorem commutator_coe_derivation :
@@ -291,21 +312,35 @@ theorem commutator_apply : ⁅X, Y⁆ f = X (Y f) - Y (X f) :=
 instance : LieRing (LeftInvariantDerivation I G) where
   add_lie X Y Z := by
     ext1
+    -- ⊢ ↑⁅X + Y, Z⁆ f✝ = ↑(⁅X, Z⁆ + ⁅Y, Z⁆) f✝
     simp only [commutator_apply, coe_add, Pi.add_apply, map_add]
+    -- ⊢ ↑X (↑Z f✝) + ↑Y (↑Z f✝) - (↑Z (↑X f✝) + ↑Z (↑Y f✝)) = ↑X (↑Z f✝) - ↑Z (↑X f✝ …
     ring
+    -- 🎉 no goals
   lie_add X Y Z := by
     ext1
+    -- ⊢ ↑⁅X, Y + Z⁆ f✝ = ↑(⁅X, Y⁆ + ⁅X, Z⁆) f✝
     simp only [commutator_apply, coe_add, Pi.add_apply, map_add]
+    -- ⊢ ↑X (↑Y f✝) + ↑X (↑Z f✝) - (↑Y (↑X f✝) + ↑Z (↑X f✝)) = ↑X (↑Y f✝) - ↑Y (↑X f✝ …
     ring
+    -- 🎉 no goals
   lie_self X := by ext1; simp only [commutator_apply, sub_self]; rfl
+                   -- ⊢ ↑⁅X, X⁆ f✝ = ↑0 f✝
+                         -- ⊢ 0 = ↑0 f✝
+                                                                 -- 🎉 no goals
   leibniz_lie X Y Z := by
     ext1
+    -- ⊢ ↑⁅X, ⁅Y, Z⁆⁆ f✝ = ↑(⁅⁅X, Y⁆, Z⁆ + ⁅Y, ⁅X, Z⁆⁆) f✝
     simp only [commutator_apply, coe_add, coe_sub, map_sub, Pi.add_apply]
+    -- ⊢ ↑X (↑Y (↑Z f✝)) - ↑X (↑Z (↑Y f✝)) - (↑Y (↑Z (↑X f✝)) - ↑Z (↑Y (↑X f✝))) = ↑X …
     ring
+    -- 🎉 no goals
 
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
   lie_smul r Y Z := by
     ext1
+    -- ⊢ ↑⁅Y, r • Z⁆ f✝ = ↑(r • ⁅Y, Z⁆) f✝
     simp only [commutator_apply, map_smul, smul_sub, coe_smul, Pi.smul_apply]
+    -- 🎉 no goals
 
 end LeftInvariantDerivation

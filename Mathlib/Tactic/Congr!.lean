@@ -663,8 +663,11 @@ This is a non-dependent version of `pi_congr` that allows the domains to be diff
 private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
+  -- ⊢ (α → β) = (α → β')
   show (∀ (x : α), (fun _ => β) x) = _
+  -- ⊢ ((x : α) → (fun x => β) x) = (α → β')
   rw [funext h']
+  -- 🎉 no goals
 
 /-- A version of `Lean.MVarId.congrImplies?` that uses `implies_congr'`
 instead of `implies_congr`. -/
@@ -729,12 +732,16 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
 private theorem heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
     (he : HEq x y) : p he := by
   cases he
+  -- ⊢ p (_ : HEq x x)
   exact h rfl
+  -- 🎉 no goals
 
 private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
     (he : x = y) : p he := by
   cases he
+  -- ⊢ p (_ : x = x)
   exact h Iff.rfl
+  -- 🎉 no goals
 
 /--
 Does `Lean.MVarId.intros` but then cleans up the introduced hypotheses, removing anything

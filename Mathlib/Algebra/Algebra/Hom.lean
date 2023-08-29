@@ -69,6 +69,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
+      -- 🎉 no goals
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
 -- Porting note: A new definition underlying a coercion `↑`.
@@ -104,8 +105,11 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    -- ⊢ { toRingHom := { toMonoidHom := { toOneHom := { toFun := toFun✝, map_one' := …
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    -- ⊢ { toRingHom := { toMonoidHom := { toOneHom := { toFun := toFun✝¹, map_one' : …
     congr
+    -- 🎉 no goals
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -291,6 +295,7 @@ def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →�
   { f with
     toFun := f
     commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+                             -- 🎉 no goals
 #align alg_hom.mk' AlgHom.mk'
 
 @[simp]
@@ -327,6 +332,8 @@ theorem id_apply (p : A) : AlgHom.id R A p = p :=
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
     commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
+                                 -- ⊢ OneHom.toFun (↑↑{ toMonoidHom := ↑src✝, map_zero' := (_ : OneHom.toFun (↑↑sr …
+                                                                    -- 🎉 no goals
 #align alg_hom.comp AlgHom.comp
 
 @[simp]
@@ -395,20 +402,25 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     map_one' := map_one
     map_mul' := map_mul
     commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+                             -- 🎉 no goals
 #align alg_hom.of_linear_map AlgHom.ofLinearMap
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
     ofLinearMap φ.toLinearMap map_one map_mul = φ := by
   ext
+  -- ⊢ ↑(ofLinearMap (toLinearMap φ) map_one map_mul) x✝ = ↑φ x✝
   rfl
+  -- 🎉 no goals
 #align alg_hom.of_linear_map_to_linear_map AlgHom.ofLinearMap_toLinearMap
 
 @[simp]
 theorem toLinearMap_ofLinearMap (f : A →ₗ[R] B) (map_one) (map_mul) :
     toLinearMap (ofLinearMap f map_one map_mul) = f := by
   ext
+  -- ⊢ ↑(toLinearMap (ofLinearMap f map_one map_mul)) x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align alg_hom.to_linear_map_of_linear_map AlgHom.toLinearMap_ofLinearMap
 
 @[simp]
@@ -501,11 +513,13 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
     commutes' := fun n => by simp }
+                             -- 🎉 no goals
 #align ring_hom.to_nat_alg_hom RingHom.toNatAlgHom
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
+                                    -- 🎉 no goals
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,

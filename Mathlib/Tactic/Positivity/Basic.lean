@@ -28,9 +28,17 @@ variable [Zero α] (p : Prop) [Decidable p] {a b : α}
 
 private lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b :=
 by by_cases p <;> simp [*]
+   -- ⊢ 0 < if p then a else b
+   -- ⊢ 0 < if p then a else b
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 
 private lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
 by by_cases p <;> simp [*]
+   -- ⊢ 0 ≤ if p then a else b
+   -- ⊢ 0 ≤ if p then a else b
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 
 private lemma ite_nonneg_of_pos_of_nonneg [Preorder α] (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
 ite_nonneg _ ha.le hb
@@ -39,6 +47,10 @@ private lemma ite_nonneg_of_nonneg_of_pos [Preorder α] (ha : 0 ≤ a) (hb : 0 <
 ite_nonneg _ ha hb.le
 
 private lemma ite_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by by_cases p <;> simp [*]
+                                                                          -- ⊢ (if p then a else b) ≠ 0
+                                                                          -- ⊢ (if p then a else b) ≠ 0
+                                                                                         -- 🎉 no goals
+                                                                                         -- 🎉 no goals
 
 private lemma ite_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) :
   ite p a b ≠ 0 :=
@@ -90,12 +102,20 @@ private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := 
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
 private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c :=
 by rw [min_def]; split_ifs <;> assumption
+   -- ⊢ (if a ≤ b then a else b) ≠ c
+                 -- ⊢ a ≠ c
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 
 private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
 private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
 
 private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c :=
 by rw [max_def]; split_ifs <;> assumption
+   -- ⊢ (if a ≤ b then b else a) ≠ c
+                 -- ⊢ b ≠ c
+                               -- 🎉 no goals
+                               -- 🎉 no goals
 
 end LinearOrder
 
@@ -217,6 +237,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 
 private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a :=
 by { rw [Int.ediv_self ha.ne']; exact zero_lt_one }
+   -- 🎉 no goals
 
 private lemma int_div_nonneg_of_pos_of_nonneg {a b : ℤ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
 Int.ediv_nonneg ha.le hb
@@ -346,17 +367,20 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
     pure (by exact .nonnegative q(pow_bit0_nonneg $a $m))
+             -- 🎉 no goals
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (by exact .nonnegative (q(pow_nonneg $pa $b)))
+               -- 🎉 no goals
     let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       let _a ← synthInstanceQ q(NoZeroDivisors $α)
       pure (.nonzero (by exact q(pow_ne_zero $b $pa)))
+                         -- 🎉 no goals
     match ra with
     | .positive pa =>
       try
@@ -364,6 +388,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
         pure (by exact .positive (q(pow_pos $pa $b)))
+                 -- 🎉 no goals
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(OrderedSemiring $α)

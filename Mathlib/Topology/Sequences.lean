@@ -131,7 +131,9 @@ of a sequence taking values in this set. -/
 theorem mem_closure_iff_seq_limit [FrechetUrysohnSpace X] {s : Set X} {a : X} :
     a ∈ closure s ↔ ∃ x : ℕ → X, (∀ n : ℕ, x n ∈ s) ∧ Tendsto x atTop (𝓝 a) := by
   rw [← seqClosure_eq_closure]
+  -- ⊢ a ∈ seqClosure s ↔ ∃ x, (∀ (n : ℕ), x n ∈ s) ∧ Tendsto x atTop (𝓝 a)
   rfl
+  -- 🎉 no goals
 #align mem_closure_iff_seq_limit mem_closure_iff_seq_limit
 
 /-- If the domain of a function `f : α → β` is a Fréchet-Urysohn space, then convergence
@@ -146,10 +148,15 @@ theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : 
     ⟨fun hf u hu => hf.comp hu, fun h =>
       ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 _⟩
   rintro s ⟨hbs, hsc⟩
+  -- ⊢ ∃ ia, (¬a ∈ ia ∧ IsClosed ia) ∧ ∀ (x : X), x ∈ iaᶜ → f x ∈ sᶜ
   refine' ⟨closure (f ⁻¹' s), ⟨mt _ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
+  -- ⊢ a ∈ closure (f ⁻¹' s) → b ∈ s
   rw [← seqClosure_eq_closure]
+  -- ⊢ a ∈ seqClosure (f ⁻¹' s) → b ∈ s
   rintro ⟨u, hus, hu⟩
+  -- ⊢ b ∈ s
   exact hsc.mem_of_tendsto (h u hu) (eventually_of_forall hus)
+  -- 🎉 no goals
 #align tendsto_nhds_iff_seq_tendsto tendsto_nhds_iff_seq_tendsto
 
 /-- An alternative construction for `FrechetUrysohnSpace`: if sequential convergence implies
@@ -159,13 +166,19 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
       (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by
   refine ⟨fun s x hcx => ?_⟩
+  -- ⊢ x ∈ seqClosure s
   by_cases hx : x ∈ s;
+  -- ⊢ x ∈ seqClosure s
   · exact subset_seqClosure hx
+    -- 🎉 no goals
   · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
+    -- ⊢ ∃ u, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ (x : ℕ) in atTop, u x ∈ s
     · simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
         ← mem_closure_iff_frequently, hcx, imp_false, not_forall, not_not] using h (· ∉ s) x
     rcases extraction_of_frequently_atTop hus with ⟨φ, φ_mono, hφ⟩
+    -- ⊢ x ∈ seqClosure s
     exact ⟨u ∘ φ, hφ, hux.comp φ_mono.tendsto_atTop⟩
+    -- 🎉 no goals
 #align frechet_urysohn_space.of_seq_tendsto_imp_tendsto FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
 
 -- see Note [lower instance priority]
@@ -186,6 +199,7 @@ class SequentialSpace (X : Type*) [TopologicalSpace X] : Prop where
 instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysohnSpace X] :
     SequentialSpace X :=
   ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seqClosure_eq]⟩
+                  -- 🎉 no goals
 #align frechet_urysohn_space.to_sequential_space FrechetUrysohnSpace.to_sequentialSpace
 
 /-- In a sequential space, a sequentially closed set is closed. -/
@@ -336,15 +350,22 @@ theorem IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : 
 /-- A sequentially compact set in a uniform space is totally bounded. -/
 protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBounded s := by
   intro V V_in
+  -- ⊢ ∃ t, Set.Finite t ∧ s ⊆ ⋃ (y : X) (_ : y ∈ t), {x | (x, y) ∈ V}
   unfold IsSeqCompact at h
+  -- ⊢ ∃ t, Set.Finite t ∧ s ⊆ ⋃ (y : X) (_ : y ∈ t), {x | (x, y) ∈ V}
   contrapose! h
+  -- ⊢ Exists fun ⦃x⦄ => (∀ (n : ℕ), x n ∈ s) ∧ ∀ (a : X), a ∈ s → ∀ (φ : ℕ → ℕ), S …
   obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
     simpa only [forall_and, ball_image_iff, not_and] using seq_of_forall_finite_exists h
   refine' ⟨u, u_in, fun x _ φ hφ huφ => _⟩
+  -- ⊢ False
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V
+  -- ⊢ ∃ N, ∀ (p q : ℕ), p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V
   exact huφ.cauchySeq.mem_entourage V_in
+  -- ⊢ False
   exact hu (φ <| N + 1) (φ N) (hφ <| lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
+  -- 🎉 no goals
 #align is_seq_compact.totally_bounded IsSeqCompact.totallyBounded
 
 variable [IsCountablyGenerated (𝓤 X)]
@@ -353,8 +374,11 @@ variable [IsCountablyGenerated (𝓤 X)]
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1
+  -- ⊢ ∃ x, x ∈ s ∧ l ≤ 𝓝 x
   rcases exists_antitone_basis (𝓤 X) with ⟨V, hV⟩
+  -- ⊢ ∃ x, x ∈ s ∧ l ≤ 𝓝 x
   choose W hW hWV using fun n => comp_mem_uniformity_sets (hV.mem n)
+  -- ⊢ ∃ x, x ∈ s ∧ l ≤ 𝓝 x
   have hWV' : ∀ n, W n ⊆ V n := fun n ⟨x, y⟩ hx =>
     @hWV n (x, y) ⟨x, refl_mem_uniformity <| hW _, hx⟩
   obtain ⟨t, ht_anti, htl, htW, hts⟩ :
@@ -371,14 +395,21 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
       (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
   choose u hu using fun n => Filter.nonempty_of_mem (htl n)
+  -- ⊢ ∃ x, x ∈ s ∧ l ≤ 𝓝 x
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩
   rcases hs.exists_tendsto (fun n => hts n (hu n)) huc with ⟨x, hxs, hx⟩
+  -- ⊢ ∃ x, x ∈ s ∧ l ≤ 𝓝 x
   refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
+  -- ⊢ ball x (V N) ∈ l
   obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N)
+  -- ⊢ ∃ n, N ≤ n ∧ u n ∈ ball x (W N)
   · exact ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists
+    -- 🎉 no goals
   refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
+  -- ⊢ (u n, (x, y).snd) ∈ t N ×ˢ t N
   exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
+  -- 🎉 no goals
 #align is_seq_compact.is_complete IsSeqCompact.isComplete
 
 /-- If `𝓤 β` is countably generated, then any sequentially compact set is compact. -/
@@ -394,6 +425,7 @@ protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSe
 
 theorem UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, UniformSpace.isCompact_iff_isSeqCompact]
+  -- 🎉 no goals
 #align uniform_space.compact_space_iff_seq_compact_space UniformSpace.compactSpace_iff_seqCompactSpace
 
 end UniformSpaceSeqCompact

@@ -62,6 +62,8 @@ variable {V}
 
 @[simp 1100]
 theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
+                                                                      -- ⊢ 1 = 𝟙 A.V
+                                                                                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.ρ_one Action.ρ_one
 
@@ -72,7 +74,9 @@ def ρAut {G : GroupCat.{u}} (A : Action V (MonCat.of G)) : G ⟶ GroupCat.of (A
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
       hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_self, ρ_one])
+                                                             -- 🎉 no goals
       inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_self, ρ_one]) }
+                                                             -- 🎉 no goals
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 set_option linter.uppercaseLean3 false in
@@ -170,6 +174,9 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
   inv :=
     { hom := f.inv
       comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
+                          -- ⊢ ↑N.ρ g ≫ f.inv = f.inv ≫ ↑M.ρ g
+                                                     -- ⊢ ↑N.ρ g ≫ f.inv = f.inv ≫ ↑M.ρ g
+                                                                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
@@ -332,6 +339,8 @@ end Forget
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) :=
       by rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
+         -- ⊢ ((forget V G).mapIso f).hom ≫ ↑N.ρ g = ↑M.ρ g ≫ ((forget V G).mapIso f).hom
+                                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.iso.conj_ρ Action.Iso.conj_ρ
 
@@ -342,6 +351,7 @@ variable [HasZeroMorphisms V]
 -- porting note: in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `zero_hom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
+                                                     -- 🎉 no goals
 
 @[simp]
 theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
@@ -374,14 +384,37 @@ variable [Preadditive V]
 instance : Preadditive (Action V G) where
   homGroup X Y :=
     { add := fun f g => ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
+                                           -- 🎉 no goals
       neg := fun f => ⟨-f.hom, by simp [f.comm]⟩
+                                  -- 🎉 no goals
+                     -- ⊢ 0 + a✝ = a✝
+                             -- ⊢ (0 + a✝).hom = a✝.hom
+                      -- ⊢ a✝ + b✝ + c✝ = a✝ + (b✝ + c✝)
+                              -- ⊢ (a✝ + b✝ + c✝).hom = (a✝ + (b✝ + c✝)).hom
+                                   -- 🎉 no goals
+                                  -- 🎉 no goals
       zero_add := by intros; ext; exact zero_add _
+                     -- ⊢ a✝ + 0 = a✝
+                             -- ⊢ (a✝ + 0).hom = a✝.hom
+                                  -- 🎉 no goals
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
       add_left_neg := by intros; ext; exact add_left_neg _
+                         -- ⊢ -a✝ + a✝ = 0
+                                 -- ⊢ (-a✝ + a✝).hom = 0.hom
+                                      -- 🎉 no goals
       add_comm := by intros; ext; exact add_comm _ _ }
+                     -- ⊢ a✝ + b✝ = b✝ + a✝
+                             -- ⊢ (a✝ + b✝).hom = (b✝ + a✝).hom
+                                  -- 🎉 no goals
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
+                 -- ⊢ (f✝ + f'✝) ≫ g✝ = f✝ ≫ g✝ + f'✝ ≫ g✝
+                         -- ⊢ ((f✝ + f'✝) ≫ g✝).hom = (f✝ ≫ g✝ + f'✝ ≫ g✝).hom
+                              -- 🎉 no goals
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
+                 -- ⊢ f✝ ≫ (g✝ + g'✝) = f✝ ≫ g✝ + f✝ ≫ g'✝
+                         -- ⊢ (f✝ ≫ (g✝ + g'✝)).hom = (f✝ ≫ g✝ + f✝ ≫ g'✝).hom
+                              -- 🎉 no goals
 
 instance forget_additive : Functor.Additive (forget V G) where
 set_option linter.uppercaseLean3 false in
@@ -424,14 +457,39 @@ variable [Preadditive V] {R : Type*} [Semiring R] [Linear R V]
 instance : Linear R (Action V G) where
   homModule X Y :=
     { smul := fun r f => ⟨r • f.hom, by simp [f.comm]⟩
+                                        -- 🎉 no goals
       one_smul := by intros; ext; exact one_smul _ _
+                     -- ⊢ 1 • b✝ = b✝
+                             -- ⊢ (1 • b✝).hom = b✝.hom
+                                  -- 🎉 no goals
       smul_zero := by intros; ext; exact smul_zero _
+                      -- ⊢ a✝ • 0 = 0
+                              -- ⊢ (a✝ • 0).hom = 0.hom
+                                   -- 🎉 no goals
       zero_smul := by intros; ext; exact zero_smul _ _
+                     -- ⊢ (x✝ * y✝) • b✝ = x✝ • y✝ • b✝
+                             -- ⊢ ((x✝ * y✝) • b✝).hom = (x✝ • y✝ • b✝).hom
+                                  -- 🎉 no goals
+                      -- ⊢ 0 • x✝ = 0
+                     -- ⊢ (r✝ + s✝) • x✝ = r✝ • x✝ + s✝ • x✝
+                     -- ⊢ a✝ • (x✝ + y✝) = a✝ • x✝ + a✝ • y✝
+                             -- ⊢ (a✝ • (x✝ + y✝)).hom = (a✝ • x✝ + a✝ • y✝).hom
+                                  -- 🎉 no goals
+                             -- ⊢ ((r✝ + s✝) • x✝).hom = (r✝ • x✝ + s✝ • x✝).hom
+                                  -- 🎉 no goals
+                              -- ⊢ (0 • x✝).hom = 0.hom
+                                   -- 🎉 no goals
       add_smul := by intros; ext; exact add_smul _ _ _
       smul_add := by intros; ext; exact smul_add _ _ _
       mul_smul := by intros; ext; exact mul_smul _ _ _ }
   smul_comp := by intros; ext; exact Linear.smul_comp _ _ _ _ _ _
+                  -- ⊢ (r✝ • f✝) ≫ g✝ = r✝ • f✝ ≫ g✝
+                          -- ⊢ ((r✝ • f✝) ≫ g✝).hom = (r✝ • f✝ ≫ g✝).hom
+                               -- 🎉 no goals
   comp_smul := by intros; ext; exact Linear.comp_smul _ _ _ _ _ _
+                  -- ⊢ f✝ ≫ (r✝ • g✝) = r✝ • f✝ ≫ g✝
+                          -- ⊢ (f✝ ≫ (r✝ • g✝)).hom = (r✝ • f✝ ≫ g✝).hom
+                               -- 🎉 no goals
 
 instance forget_linear : Functor.Linear R (forget V G) where
 set_option linter.uppercaseLean3 false in
@@ -510,7 +568,9 @@ set_option linter.uppercaseLean3 false in
 theorem associator_hom_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
   dsimp [Monoidal.transport_associator]
+  -- ⊢ (𝟙 (X.V ⊗ Y.V) ⊗ 𝟙 Z.V) ≫ (α_ X.V Y.V Z.V).hom ≫ (𝟙 X.V ⊗ 𝟙 (Y.V ⊗ Z.V)) = ( …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.associator_hom_hom Action.associator_hom_hom
 
@@ -518,35 +578,45 @@ set_option linter.uppercaseLean3 false in
 theorem associator_inv_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
   dsimp [Monoidal.transport_associator]
+  -- ⊢ ((𝟙 X.V ⊗ 𝟙 (Y.V ⊗ Z.V)) ≫ (α_ X.V Y.V Z.V).inv) ≫ (𝟙 (X.V ⊗ Y.V) ⊗ 𝟙 Z.V) = …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.associator_inv_hom Action.associator_inv_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
   dsimp [Monoidal.transport_leftUnitor]
+  -- ⊢ ((𝟙 (𝟙_ V) ⊗ 𝟙 X.V) ≫ (λ_ X.V).hom) ≫ 𝟙 X.V = (λ_ X.V).hom
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_hom_hom Action.leftUnitor_hom_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
   dsimp [Monoidal.transport_leftUnitor]
+  -- ⊢ 𝟙 X.V ≫ (λ_ X.V).inv ≫ (𝟙 (𝟙_ V) ⊗ 𝟙 X.V) = (λ_ X.V).inv
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_inv_hom Action.leftUnitor_inv_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
   dsimp [Monoidal.transport_rightUnitor]
+  -- ⊢ ((𝟙 X.V ⊗ 𝟙 (𝟙_ V)) ≫ (ρ_ X.V).hom) ≫ 𝟙 X.V = (ρ_ X.V).hom
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_hom_hom Action.rightUnitor_hom_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
   dsimp [Monoidal.transport_rightUnitor]
+  -- ⊢ 𝟙 X.V ≫ (ρ_ X.V).inv ≫ (𝟙 X.V ⊗ 𝟙 (𝟙_ V)) = (ρ_ X.V).inv
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_inv_hom Action.rightUnitor_inv_hom
 
@@ -572,6 +642,8 @@ set_option linter.uppercaseLean3 false in
 
 instance forgetMonoidal_faithful : Faithful (forgetMonoidal V G).toFunctor := by
   change Faithful (forget V G); infer_instance
+  -- ⊢ Faithful (forget V G)
+                                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.forget_monoidal_faithful Action.forgetMonoidal_faithful
 
@@ -582,6 +654,8 @@ variable [BraidedCategory V]
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (forgetMonoidal V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
+                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 @[simps!]
@@ -592,6 +666,8 @@ set_option linter.uppercaseLean3 false in
 
 instance forgetBraided_faithful : Faithful (forgetBraided V G).toFunctor := by
   change Faithful (forget V G); infer_instance
+  -- ⊢ Faithful (forget V G)
+                                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.forget_braided_faithful Action.forgetBraided_faithful
 
@@ -624,22 +700,31 @@ set_option linter.uppercaseLean3 false in
 
 instance : IsEquivalence (functorCategoryMonoidalEquivalence V G).toFunctor := by
   change IsEquivalence (Action.functorCategoryEquivalence _ _).functor; infer_instance
+  -- ⊢ IsEquivalence (functorCategoryEquivalence V G).functor
+                                                                        -- 🎉 no goals
 
 @[simp]
 theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μ A B).app PUnit.unit = 𝟙 _ := by
   dsimp only [functorCategoryMonoidalEquivalence]
+  -- ⊢ NatTrans.app (LaxMonoidalFunctor.μ (Monoidal.fromTransported (CategoryTheory …
   simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_μ, NatTrans.comp_app]
+  -- ⊢ NatTrans.app (NatTrans.app (Equivalence.unit (CategoryTheory.Equivalence.sym …
   -- porting note: Lean3 was able to see through some defeq, as the mathlib3 proof was
   --   show (𝟙 A.V ⊗ 𝟙 B.V) ≫ 𝟙 (A.V ⊗ B.V) ≫ (𝟙 A.V ⊗ 𝟙 B.V) = 𝟙 (A.V ⊗ B.V)
   --   simp only [monoidal_category.tensor_id, category.comp_id]
   dsimp [Equivalence.unit]
+  -- ⊢ 𝟙 (((Functor.asEquivalence FunctorCategoryEquivalence.inverse).inverse.obj A …
   erw [Category.id_comp]
+  -- ⊢ NatTrans.app (inv ((Functor.asEquivalence FunctorCategoryEquivalence.inverse …
   rw [NatIso.isIso_inv_app, IsIso.inv_comp_eq]
+  -- ⊢ NatTrans.app ((Functor.asEquivalence FunctorCategoryEquivalence.inverse).inv …
   erw [MonoidalCategory.tensor_id]
+  -- ⊢ NatTrans.app ((Functor.asEquivalence FunctorCategoryEquivalence.inverse).inv …
   erw [(functorCategoryEquivalence V G).inverse.map_id,
     (functorCategoryEquivalence V G).functor.map_id, Category.id_comp]
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app
 
@@ -647,7 +732,9 @@ set_option linter.uppercaseLean3 false in
 theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
+  -- ⊢ inv ((MonoidalFunctor.μIso (functorCategoryMonoidalEquivalence V G) A B).app …
   refine' IsIso.inv_eq_of_hom_inv_id _
+  -- ⊢ ((MonoidalFunctor.μIso (functorCategoryMonoidalEquivalence V G) A B).app PUn …
   rw [Category.comp_id, NatIso.app_hom, MonoidalFunctor.μIso_hom,
     functorCategoryMonoidalEquivalence.μ_app]
 set_option linter.uppercaseLean3 false in
@@ -657,8 +744,11 @@ set_option linter.uppercaseLean3 false in
 theorem functorCategoryMonoidalEquivalence.ε_app :
     (functorCategoryMonoidalEquivalence V G).ε.app PUnit.unit = 𝟙 _ := by
   dsimp only [functorCategoryMonoidalEquivalence]
+  -- ⊢ NatTrans.app (Monoidal.fromTransported (CategoryTheory.Equivalence.symm (fun …
   simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_ε]
+  -- ⊢ NatTrans.app (NatTrans.app (Equivalence.unit (CategoryTheory.Equivalence.sym …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.ε_app Action.functorCategoryMonoidalEquivalence.ε_app
 
@@ -708,6 +798,8 @@ variable (H : GroupCat.{u})
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change RightRigidCategory (SingleObj H ⥤ V); infer_instance
+  -- ⊢ RightRigidCategory (SingleObj ↑H ⥤ V)
+                                               -- 🎉 no goals
 
 /-- If `V` is right rigid, so is `Action V G`. -/
 instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
@@ -715,6 +807,8 @@ instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
 
 instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change LeftRigidCategory (SingleObj H ⥤ V); infer_instance
+  -- ⊢ LeftRigidCategory (SingleObj ↑H ⥤ V)
+                                              -- 🎉 no goals
 
 /-- If `V` is left rigid, so is `Action V G`. -/
 instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
@@ -722,6 +816,8 @@ instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
 
 instance [RigidCategory V] : RigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change RigidCategory (SingleObj H ⥤ V); infer_instance
+  -- ⊢ RigidCategory (SingleObj ↑H ⥤ V)
+                                          -- 🎉 no goals
 
 /-- If `V` is rigid, so is `Action V G`. -/
 instance [RigidCategory V] : RigidCategory (Action V H) :=
@@ -745,12 +841,14 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
+                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.right_dual_ρ Action.rightDual_ρ
 
 @[simp]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
+                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.left_dual_ρ Action.leftDual_ρ
 
@@ -764,11 +862,13 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
   inverse :=
     { obj := fun X => ⟨X, 1⟩
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
+                                       -- 🎉 no goals
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
       simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
+      -- 🎉 no goals
   counitIso := NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align Action.Action_punit_equivalence Action.actionPunitEquivalence
@@ -827,6 +927,7 @@ set_option linter.uppercaseLean3 false in
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
+                                     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.of_mul_action Action.ofMulAction
 
@@ -850,15 +951,23 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
         { hom := fun x i => (s.π.app ⟨i⟩).hom x
           comm := fun g => by
             ext x
+            -- ⊢ (↑s.pt.ρ g ≫ fun x i => Hom.hom (NatTrans.app s.π { as := i }) x) x = ((fun  …
             funext j
+            -- ⊢ (↑s.pt.ρ g ≫ fun x i => Hom.hom (NatTrans.app s.π { as := i }) x) x j = ((fu …
             exact congr_fun ((s.π.app ⟨j⟩).comm g) x }
+            -- 🎉 no goals
       fac := fun s j => rfl
       uniq := fun s f h => by
         ext x
+        -- ⊢ Hom.hom f x = Hom.hom ((fun s => Hom.mk fun x i => Hom.hom (NatTrans.app s.π …
         funext j
+        -- ⊢ Hom.hom f x j = Hom.hom ((fun s => Hom.mk fun x i => Hom.hom (NatTrans.app s …
         dsimp at *
+        -- ⊢ Hom.hom f x j = Hom.hom (NatTrans.app s.π { as := j }) x
         rw [← h ⟨j⟩]
+        -- ⊢ Hom.hom f x j = Hom.hom (f ≫ Hom.mk fun x => x { as := j }.as) x
         rfl }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.of_mul_action_limit_cone Action.ofMulActionLimitCone
 
@@ -895,31 +1004,52 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
     { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
+        -- ⊢ (↑(leftRegular G ⊗ X).ρ g ≫ fun g => (g.fst, ↑X.ρ g.fst⁻¹ g.snd)) (x₁, x₂) = …
         refine' Prod.ext rfl _
+        -- ⊢ ((↑(leftRegular G ⊗ X).ρ g ≫ fun g => (g.fst, ↑X.ρ g.fst⁻¹ g.snd)) (x₁, x₂)) …
         change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
+        -- ⊢ (↑X.ρ (g * x₁)⁻¹ * ↑X.ρ g) x₂ = ↑X.ρ (x₁, x₂).fst⁻¹ (x₁, x₂).snd
         rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
+        -- 🎉 no goals
   inv :=
     { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
+        -- ⊢ (↑(leftRegular G ⊗ { V := X.V, ρ := 1 }).ρ g ≫ fun g => (g.fst, ↑X.ρ g.fst g …
         refine' Prod.ext rfl _
+        -- ⊢ ((↑(leftRegular G ⊗ { V := X.V, ρ := 1 }).ρ g ≫ fun g => (g.fst, ↑X.ρ g.fst  …
         erw [tensor_rho, tensor_rho]
+        -- ⊢ (((↑(leftRegular G).ρ g ⊗ ↑{ V := X.V, ρ := 1 }.ρ g) ≫ fun g => (g.fst, ↑X.ρ …
         dsimp
+        -- ⊢ ↑X.ρ (↑(leftRegular G).ρ g x₁) x₂ = ↑X.ρ g (↑X.ρ x₁ x₂)
         rw [leftRegular_ρ_apply]
+        -- ⊢ ↑X.ρ (g • x₁) x₂ = ↑X.ρ g (↑X.ρ x₁ x₂)
         erw [map_mul]
+        -- ⊢ (↑X.ρ g * ↑X.ρ x₁) x₂ = ↑X.ρ g (↑X.ρ x₁ x₂)
         rfl }
+        -- 🎉 no goals
   hom_inv_id := by
     apply Hom.ext
+    -- ⊢ ((Hom.mk fun g => (g.fst, ↑X.ρ g.fst⁻¹ g.snd)) ≫ Hom.mk fun g => (g.fst, ↑X. …
     funext x
+    -- ⊢ Hom.hom ((Hom.mk fun g => (g.fst, ↑X.ρ g.fst⁻¹ g.snd)) ≫ Hom.mk fun g => (g. …
     refine' Prod.ext rfl _
+    -- ⊢ (Hom.hom ((Hom.mk fun g => (g.fst, ↑X.ρ g.fst⁻¹ g.snd)) ≫ Hom.mk fun g => (g …
     change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
+    -- ⊢ (↑X.ρ x.fst * ↑X.ρ x.fst⁻¹) x.snd = x.snd
     rw [← X.ρ.map_mul, mul_inv_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    -- 🎉 no goals
   inv_hom_id := by
     apply Hom.ext
+    -- ⊢ ((Hom.mk fun g => (g.fst, ↑X.ρ g.fst g.snd)) ≫ Hom.mk fun g => (g.fst, ↑X.ρ  …
     funext x
+    -- ⊢ Hom.hom ((Hom.mk fun g => (g.fst, ↑X.ρ g.fst g.snd)) ≫ Hom.mk fun g => (g.fs …
     refine' Prod.ext rfl _
+    -- ⊢ (Hom.hom ((Hom.mk fun g => (g.fst, ↑X.ρ g.fst g.snd)) ≫ Hom.mk fun g => (g.f …
     change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
+    -- ⊢ (↑X.ρ x.fst⁻¹ * ↑X.ρ x.fst) x.snd = x.snd
     rw [← X.ρ.map_mul, inv_mul_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Action.left_regular_tensor_iso Action.leftRegularTensorIso
 
@@ -947,14 +1077,23 @@ def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
       ρ :=
         { toFun := fun g => F.map (M.ρ g)
           map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id, MonCat.one_of]
+                         -- 🎉 no goals
           map_mul' := fun g h => by
             dsimp
+            -- ⊢ F.map (↑M.ρ (g * h)) = F.map (↑M.ρ g) * F.map (↑M.ρ h)
             rw [map_mul, MonCat.mul_of, End.mul_def, End.mul_def, F.map_comp] } }
+            -- 🎉 no goals
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
+                          -- ⊢ F.map (↑X✝.ρ g) ≫ F.map f.hom = F.map f.hom ≫ F.map (↑Y✝.ρ g)
+                                 -- 🎉 no goals
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
+                 -- ⊢ ({ obj := fun M => { V := F.obj M.V, ρ := { toOneHom := { toFun := fun g =>  …
+                      -- 🎉 no goals
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
+                     -- ⊢ ({ obj := fun M => { V := F.obj M.V, ρ := { toOneHom := { toFun := fun g =>  …
+                          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Action CategoryTheory.Functor.mapAction
 
@@ -989,21 +1128,38 @@ def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
       { hom := F.ε
         comm := fun g => by
           dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
+          -- ⊢ 𝟙 (MonoidalCategory.tensorUnit W) ≫ F.ε = F.ε ≫ F.map (𝟙 (MonoidalCategory.t …
           rw [Category.id_comp, F.map_id, Category.comp_id] }
+          -- 🎉 no goals
     μ := fun X Y =>
       { hom := F.μ X.V Y.V
         comm := fun g => F.toLaxMonoidalFunctor.μ_natural (X.ρ g) (Y.ρ g) }
     ε_isIso := by infer_instance
+                  -- 🎉 no goals
     μ_isIso := by infer_instance
+                    -- ⊢ MonoidalCategory.tensorHom ((Functor.mk src✝.toPrefunctor).map f✝) ((Functor …
+                            -- ⊢ (MonoidalCategory.tensorHom ((Functor.mk src✝.toPrefunctor).map f✝) ((Functo …
+                                 -- 🎉 no goals
+                  -- 🎉 no goals
+                        -- ⊢ MonoidalCategory.tensorHom ((fun X Y => Hom.mk (LaxMonoidalFunctor.μ F.toLax …
+                                -- ⊢ (MonoidalCategory.tensorHom ((fun X Y => Hom.mk (LaxMonoidalFunctor.μ F.toLa …
+                                     -- 🎉 no goals
     μ_natural := by intros; ext; simp
+                         -- ⊢ (MonoidalCategory.leftUnitor ((Functor.mk src✝.toPrefunctor).obj X✝)).hom =  …
+                                 -- ⊢ (MonoidalCategory.leftUnitor ((Functor.mk src✝.toPrefunctor).obj X✝)).hom.ho …
+                                      -- 🎉 no goals
     associativity := by intros; ext; simp
     left_unitality := by intros; ext; simp
+      -- ⊢ (MonoidalCategory.rightUnitor ((Functor.mk src✝.toPrefunctor).obj X✝)).hom = …
     right_unitality := by
+      -- ⊢ (MonoidalCategory.rightUnitor ((Functor.mk src✝.toPrefunctor).obj X✝)).hom.h …
       intros
+      -- ⊢ (MonoidalCategory.tensorHom (𝟙 (F.obj X✝.V)) (𝟙 (MonoidalCategory.tensorUnit …
       ext
       dsimp
       simp only [MonoidalCategory.rightUnitor_conjugation,
         LaxMonoidalFunctor.right_unitality, Category.id_comp, Category.assoc,
+      -- 🎉 no goals
         LaxMonoidalFunctor.right_unitality_inv_assoc, Category.comp_id, Iso.hom_inv_id]
       rw [← F.map_comp, Iso.inv_hom_id, F.map_id, Category.comp_id] }
 set_option linter.uppercaseLean3 false in

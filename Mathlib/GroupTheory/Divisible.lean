@@ -122,10 +122,14 @@ noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
   root_zero _ := by classical exact dif_pos rfl
+                    -- 🎉 no goals
   root_cancel a hn := by
     dsimp only
+    -- ⊢ (if x : n✝ = 0 then 1 else Exists.choose (_ : ∃ a_1, (fun a => a ^ n✝) a_1 = …
     rw [dif_neg hn]
+    -- ⊢ Exists.choose (_ : ∃ a_1, (fun a => a ^ n✝) a_1 = a) ^ n✝ = a
     exact (H hn a).choose_spec
+    -- 🎉 no goals
 #align rootable_by_of_pow_left_surj rootableByOfPowLeftSurj
 #align divisible_by_of_smul_right_surj divisibleByOfSMulRightSurj
 
@@ -178,11 +182,16 @@ noncomputable def divisibleByIntOfSmulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
+                                                                   -- ⊢ a ∈ ⊤
+                                                                              -- 🎉 no goals
   div_zero a := dif_pos rfl
   div_cancel a hn := by
     simp_rw [dif_neg hn]
+    -- ⊢ n✝ • Exists.choose (_ : a ∈ n✝ • ⊤) = a
     generalize_proofs h1
+    -- ⊢ n✝ • Exists.choose h1 = a
     exact h1.choose_spec.2
+    -- 🎉 no goals
 #align add_comm_group.divisible_by_int_of_smul_top_eq_top AddCommGroup.divisibleByIntOfSmulTopEqTop
 
 end AddCommGroup
@@ -191,8 +200,10 @@ instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [
     DivisibleBy 𝕜 ℤ where
   div q n := q / n
   div_zero q := by norm_num
+                   -- 🎉 no goals
   div_cancel {n} q hn := by
     rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel q (Int.cast_ne_zero.mpr hn)]
+    -- 🎉 no goals
 #align divisible_by_int_of_char_zero divisibleByIntOfCharZero
 
 namespace Group
@@ -212,14 +223,23 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root_cancel {n} a hn := by
     induction n
     · change RootableBy.root a _ ^ _ = a
+      -- ⊢ RootableBy.root a a✝ ^ ofNat a✝ = a
       norm_num
+      -- ⊢ RootableBy.root a a✝ ^ a✝ = a
       rw [RootableBy.root_cancel]
+      -- ⊢ a✝ ≠ 0
       rw [Int.ofNat_eq_coe] at hn
+      -- ⊢ a✝ ≠ 0
       exact_mod_cast hn
+      -- 🎉 no goals
     · change (RootableBy.root a _)⁻¹ ^ _ = a
+      -- ⊢ (RootableBy.root a (a✝ + 1))⁻¹ ^ -[a✝+1] = a
       norm_num
+      -- ⊢ RootableBy.root a (a✝ + 1) ^ (a✝ + 1) = a
       rw [RootableBy.root_cancel]
+      -- ⊢ a✝ + 1 ≠ 0
       norm_num
+      -- 🎉 no goals
 #align group.rootable_by_int_of_rootable_by_nat Group.rootableByIntOfRootableByNat
 #align add_group.divisible_by_int_of_divisible_by_nat AddGroup.divisibleByIntOfDivisibleByNat
 
@@ -232,6 +252,7 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root_cancel {n} a hn := by
     -- Porting note: replaced `norm_num`
     simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 by exact_mod_cast hn)
+    -- 🎉 no goals
 #align group.rootable_by_nat_of_rootable_by_int Group.rootableByNatOfRootableByInt
 #align add_group.divisible_by_nat_of_divisible_by_int AddGroup.divisibleByNatOfDivisibleByInt
 
@@ -258,6 +279,7 @@ noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     let ⟨y, hy⟩ := hf x
     ⟨f <| RootableBy.root y n,
       (by rw [← hpow (RootableBy.root y n) n, RootableBy.root_cancel _ hn, hy] : _ ^ n = x)⟩
+          -- 🎉 no goals
 #align function.surjective.rootable_by Function.Surjective.rootableByₓ
 #align function.surjective.divisible_by Function.Surjective.divisibleByₓ
 

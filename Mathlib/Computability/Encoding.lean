@@ -41,7 +41,9 @@ structure Encoding (α : Type u) where
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
   refine' fun _ _ h => Option.some_injective _ _
+  -- ⊢ some x✝¹ = some x✝
   rw [← e.decode_encode, ← e.decode_encode, h]
+  -- 🎉 no goals
 #align computability.encoding.encode_injective Computability.Encoding.encode_injective
 
 /-- An encoding plus a guarantee of finiteness of the alphabet. -/
@@ -66,7 +68,15 @@ inductive Γ'
 -- Porting note: A handler for `Fintype` had not been implemented yet.
 instance Γ'.fintype : Fintype Γ' :=
   ⟨⟨{.blank, .bit true, .bit false, .bra, .ket, .comma}, by decide⟩,
+                                                            -- 🎉 no goals
     by intro; cases_type* Γ' Bool <;> decide⟩
+       -- ⊢ x✝ ∈ { val := {blank, bit true, bit false, bra, ket, comma}, nodup := (_ : M …
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
 #align computability.Γ'.fintype Computability.Γ'.fintype
 
 instance inhabitedΓ' : Inhabited Γ' :=
@@ -132,26 +142,45 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
 
 theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
   intro n
+  -- ⊢ decodePosNum (encodePosNum n) = n
   induction' n with m hm m hm <;> unfold encodePosNum decodePosNum
+                                  -- ⊢ (if [] = [] then PosNum.one else PosNum.bit1 (decodePosNum [])) = PosNum.one
+                                  -- ⊢ (if encodePosNum m = [] then PosNum.one else PosNum.bit1 (decodePosNum (enco …
+                                  -- ⊢ PosNum.bit0 (decodePosNum (encodePosNum m)) = PosNum.bit0 m
   · rfl
+    -- 🎉 no goals
   · rw [hm]
+    -- ⊢ (if encodePosNum m = [] then PosNum.one else PosNum.bit1 m) = PosNum.bit1 m
     exact if_neg (encodePosNum_nonempty m)
+    -- 🎉 no goals
   · exact congr_arg PosNum.bit0 hm
+    -- 🎉 no goals
 #align computability.decode_encode_pos_num Computability.decode_encodePosNum
 
 theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n
+  -- ⊢ decodeNum (encodeNum n) = n
   cases' n with n <;> unfold encodeNum decodeNum
+  -- ⊢ decodeNum (encodeNum Num.zero) = Num.zero
+                      -- ⊢ (if
+                      -- ⊢ (if
   · rfl
+    -- 🎉 no goals
   rw [decode_encodePosNum n]
+  -- ⊢ (if
   rw [PosNum.cast_to_num]
+  -- ⊢ (if
   exact if_neg (encodePosNum_nonempty n)
+  -- 🎉 no goals
 #align computability.decode_encode_num Computability.decode_encodeNum
 
 theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
   intro n
+  -- ⊢ decodeNat (encodeNat n) = n
   conv_rhs => rw [← Num.to_of_nat n]
+  -- ⊢ decodeNat (encodeNat n) = ↑↑n
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
+  -- 🎉 no goals
 #align computability.decode_encode_nat Computability.decode_encodeNat
 
 /-- A binary encoding of ℕ in bool. -/
@@ -177,6 +206,7 @@ def encodingNatΓ' : Encoding ℕ where
       -- Porting note: `rw` can't unify `g ∘ f` with `fun x => g (f x)`, used `LeftInverse.id`
       -- instead.
       rw [List.map_map, leftInverse_section_inclusion.id, List.map_id, decode_encodeNat]
+      -- 🎉 no goals
 #align computability.encoding_nat_Γ' Computability.encodingNatΓ'
 
 /-- A binary fin_encoding of ℕ in Γ'. -/
@@ -247,10 +277,15 @@ theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
 theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Encodable e.Γ] :
     #α ≤ ℵ₀ := by
   refine' Cardinal.lift_le.1 (e.card_le_card_list.trans _)
+  -- ⊢ lift.{u, v} #(List e.Γ) ≤ lift.{v, u} ℵ₀
   simp only [Cardinal.lift_aleph0, Cardinal.lift_le_aleph0]
+  -- ⊢ #(List e.Γ) ≤ ℵ₀
   cases' isEmpty_or_nonempty e.Γ with h h
+  -- ⊢ #(List e.Γ) ≤ ℵ₀
   · simp only [Cardinal.mk_le_aleph0]
+    -- 🎉 no goals
   · rw [Cardinal.mk_list_eq_aleph0]
+    -- 🎉 no goals
 #align computability.encoding.card_le_aleph_0 Computability.Encoding.card_le_aleph0
 
 theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=

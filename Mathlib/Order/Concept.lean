@@ -187,18 +187,28 @@ attribute [simp] closure_fst closure_snd
 @[ext]
 theorem ext (h : c.fst = d.fst) : c = d := by
   obtain ⟨⟨s₁, t₁⟩, h₁, _⟩ := c
+  -- ⊢ { toProd := (s₁, t₁), closure_fst := h₁, closure_snd := closure_snd✝ } = d
   obtain ⟨⟨s₂, t₂⟩, h₂, _⟩ := d
+  -- ⊢ { toProd := (s₁, t₁), closure_fst := h₁, closure_snd := closure_snd✝¹ } = {  …
   dsimp at h₁ h₂ h
+  -- ⊢ { toProd := (s₁, t₁), closure_fst := h₁, closure_snd := closure_snd✝¹ } = {  …
   substs h h₁ h₂
+  -- ⊢ { toProd := (s₁, intentClosure r s₁), closure_fst := (_ : intentClosure r s₁ …
   rfl
+  -- 🎉 no goals
 #align concept.ext Concept.ext
 
 theorem ext' (h : c.snd = d.snd) : c = d := by
   obtain ⟨⟨s₁, t₁⟩, _, h₁⟩ := c
+  -- ⊢ { toProd := (s₁, t₁), closure_fst := closure_fst✝, closure_snd := h₁ } = d
   obtain ⟨⟨s₂, t₂⟩, _, h₂⟩ := d
+  -- ⊢ { toProd := (s₁, t₁), closure_fst := closure_fst✝¹, closure_snd := h₁ } = {  …
   dsimp at h₁ h₂ h
+  -- ⊢ { toProd := (s₁, t₁), closure_fst := closure_fst✝¹, closure_snd := h₁ } = {  …
   substs h h₁ h₂
+  -- ⊢ { toProd := (extentClosure r t₁, t₁), closure_fst := closure_fst✝¹, closure_ …
   rfl
+  -- 🎉 no goals
 #align concept.ext' Concept.ext'
 
 theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
@@ -241,15 +251,21 @@ theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
 @[simp]
 theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ d ≤ c
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
+    -- ⊢ extentClosure r d.snd ⊆ extentClosure r c.snd
     exact extentClosure_anti _ h
+    -- 🎉 no goals
   · rw [← c.closure_fst, ← d.closure_fst]
+    -- ⊢ intentClosure r c.fst ⊆ intentClosure r d.fst
     exact intentClosure_anti _ h
+    -- 🎉 no goals
 #align concept.snd_subset_snd_iff Concept.snd_subset_snd_iff
 
 @[simp]
 theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
   rw [ssubset_iff_subset_not_subset, lt_iff_le_not_le, snd_subset_snd_iff, snd_subset_snd_iff]
+  -- 🎉 no goals
 #align concept.snd_ssubset_snd_iff Concept.snd_ssubset_snd_iff
 
 theorem strictMono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun _ _ =>
@@ -267,7 +283,9 @@ instance instLatticeConcept : Lattice (Concept α β r) :=
     le_sup_right := fun c d => snd_subset_snd_iff.1 <| inter_subset_right _ _
     sup_le := fun c d e => by
       simp_rw [← snd_subset_snd_iff]
+      -- ⊢ e.snd ⊆ c.snd → e.snd ⊆ d.snd → e.snd ⊆ (c ⊔ d).snd
       exact subset_inter }
+      -- 🎉 no goals
 
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
   top := ⟨⟨univ, intentClosure r univ⟩, rfl, eq_univ_of_forall fun _ _ hb => hb trivial⟩

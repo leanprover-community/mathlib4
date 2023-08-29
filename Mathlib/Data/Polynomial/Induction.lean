@@ -52,7 +52,9 @@ protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C
       rw [sum_insert ns]
       exact h_add _ _ A ih
   rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
+  -- ⊢ M (Finset.sum (support p) fun n => ↑C (coeff p n) * X ^ n)
   exact B (support p)
+  -- 🎉 no goals
 #align polynomial.induction_on Polynomial.induction_on
 
 /-- To prove something about polynomials,
@@ -64,6 +66,8 @@ protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q,
     (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
   Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>
     by rw [C_mul_X_pow_eq_monomial]; exact h_monomial _ _
+       -- ⊢ M (↑(monomial (n + 1)) a)
+                                     -- 🎉 no goals
 #align polynomial.induction_on' Polynomial.induction_on'
 
 open Submodule Polynomial Set
@@ -75,23 +79,33 @@ the ideal spanned by the coefficients of the polynomial. -/
 theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
     Ideal.span { g | ∃ i, g = C (f.coeff i) } ≤ I := by
   simp (config := { singlePass := true }) only [@eq_comm _ _ (C _)]
+  -- ⊢ Ideal.span {g | ∃ i, ↑C (coeff f i) = g} ≤ I
   exact (Ideal.span_le.trans range_subset_iff).mpr cf
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.span_le_of_C_coeff_mem Polynomial.span_le_of_C_coeff_mem
 
 theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
   let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
+  -- ⊢ f ∈ Ideal.span {g | ∃ i, g = ↑C (coeff f i)}
   nth_rw 1 [(sum_C_mul_X_pow_eq f).symm]
+  -- ⊢ (sum f fun n a => ↑C a * X ^ n) ∈ Ideal.span {g | ∃ i, g = ↑C (coeff f i)}
   refine' Submodule.sum_mem _ fun n _hn => _
+  -- ⊢ (fun n a => ↑C a * X ^ n) n (coeff f n) ∈ Ideal.span {g | ∃ i, g = ↑C (coeff …
   dsimp
+  -- ⊢ ↑C (coeff f n) * X ^ n ∈ Ideal.span {g | ∃ i, g = ↑C (coeff f i)}
   have : C (coeff f n) ∈ p := by
     apply subset_span
     rw [mem_setOf_eq]
     use n
   have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
+  -- ⊢ ↑C (coeff f n) * X ^ n ∈ Ideal.span {g | ∃ i, g = ↑C (coeff f i)}
   convert this using 1
+  -- ⊢ ↑C (coeff f n) * X ^ n = ↑(monomial n) 1 • ↑C (coeff f n)
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
+  -- ⊢ ↑C (coeff f n) * X ^ n = ↑(monomial n) (coeff f n)
   rw [← C_mul_X_pow_eq_monomial]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.mem_span_C_coeff Polynomial.mem_span_C_coeff
 

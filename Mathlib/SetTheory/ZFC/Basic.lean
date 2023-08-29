@@ -201,6 +201,7 @@ protected theorem Equiv.trans {x y z} (h1 : Equiv x y) (h2 : Equiv y z) : Equiv 
 
 protected theorem equiv_of_isEmpty (x y : PSet) [IsEmpty x.Type] [IsEmpty y.Type] : Equiv x y :=
   equiv_iff.2 <| by simp
+                    -- 🎉 no goals
 #align pSet.equiv_of_is_empty PSet.equiv_of_isEmpty
 
 instance setoid : Setoid PSet :=
@@ -222,8 +223,11 @@ instance : IsRefl PSet (· ⊆ ·) :=
 instance : IsTrans PSet (· ⊆ ·) :=
   ⟨fun x y z hxy hyz a => by
     cases' hxy a with b hb
+    -- ⊢ ∃ b, Equiv (Func x a) (Func z b)
     cases' hyz b with c hc
+    -- ⊢ ∃ b, Equiv (Func x a) (Func z b)
     exact ⟨c, hb.trans hc⟩⟩
+    -- 🎉 no goals
 
 theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
   | ⟨_, _⟩, ⟨_, _⟩ =>
@@ -275,7 +279,9 @@ theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
 
 theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := by
   cases x
+  -- ⊢ Func (mk α✝ A✝) i ∈ mk α✝ A✝
   apply Mem.mk
+  -- 🎉 no goals
 #align pSet.func_mem PSet.func_mem
 
 theorem Mem.ext : ∀ {x y : PSet.{u}}, (∀ w : PSet.{u}, w ∈ x ↔ w ∈ y) → Equiv x y
@@ -312,10 +318,15 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
   | ⟨α, A⟩, ⟨β, B⟩, H =>
     ⟨_, by
       rintro ⟨γ, C⟩ ⟨b, hc⟩
+      -- ⊢ Acc (fun x x_1 => x ∈ x_1) (mk γ C)
       cases' H.exists_right b with a ha
+      -- ⊢ Acc (fun x x_1 => x ∈ x_1) (mk γ C)
       have H := ha.trans hc.symm
+      -- ⊢ Acc (fun x x_1 => x ∈ x_1) (mk γ C)
       rw [mk_func] at H
+      -- ⊢ Acc (fun x x_1 => x ∈ x_1) (mk γ C)
       exact mem_wf_aux H⟩
+      -- 🎉 no goals
 
 theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
@@ -403,6 +414,7 @@ theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
+                                        -- 🎉 no goals
 #align pSet.to_set_empty PSet.toSet_empty
 
 @[simp]
@@ -411,6 +423,7 @@ theorem empty_subset (x : PSet.{u}) : (∅ : PSet) ⊆ x := fun x => x.elim
 
 @[simp]
 theorem not_nonempty_empty : ¬PSet.Nonempty ∅ := by simp [PSet.Nonempty]
+                                                    -- 🎉 no goals
 #align pSet.not_nonempty_empty PSet.not_nonempty_empty
 
 protected theorem equiv_empty (x : PSet) [IsEmpty x.Type] : Equiv x ∅ :=
@@ -482,8 +495,10 @@ theorem mem_sUnion : ∀ {x y : PSet.{u}}, y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈
     ⟨fun ⟨⟨a, c⟩, (e : Equiv y ((A a).Func c))⟩ =>
       have : Func (A a) c ∈ mk (A a).Type (A a).Func := Mem.mk (A a).Func c
       ⟨_, Mem.mk _ _, (Mem.congr_left e).2 (by rwa [eta] at this)⟩,
+                                               -- 🎉 no goals
       fun ⟨⟨β, B⟩, ⟨a, (e : Equiv (mk β B) (A a))⟩, ⟨b, yb⟩⟩ => by
       rw [← eta (A a)] at e
+      -- ⊢ y ∈ ⋃₀ mk α A
       exact
         let ⟨βt, _⟩ := e
         let ⟨c, bc⟩ := βt b
@@ -493,7 +508,9 @@ theorem mem_sUnion : ∀ {x y : PSet.{u}}, y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈
 @[simp]
 theorem toSet_sUnion (x : PSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
   ext
+  -- ⊢ x✝ ∈ toSet (⋃₀ x) ↔ x✝ ∈ ⋃₀ (toSet '' toSet x)
   simp
+  -- 🎉 no goals
 #align pSet.to_set_sUnion PSet.toSet_sUnion
 
 /-- The image of a function from pre-sets to pre-sets. -/
@@ -658,14 +675,23 @@ noncomputable def allDefinable : ∀ {n} (F : Arity ZFSet n), Definable n F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : Arity ZFSet (n + 1)) => by
     have I := fun x => allDefinable (F x)
+    -- ⊢ Definable (n + 1) F
     refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
+    -- ⊢ Arity.Equiv (fun x => ↑(Definable.Resp (F (Quotient.mk setoid x)))) fun x => …
     · dsimp [Arity.Equiv]
+      -- ⊢ ∀ (x y : PSet), PSet.Equiv x y → Arity.Equiv ↑(Definable.Resp (F (Quotient.m …
       intro x y h
+      -- ⊢ Arity.Equiv ↑(Definable.Resp (F (Quotient.mk setoid x))) ↑(Definable.Resp (F …
       rw [@Quotient.sound PSet _ _ _ h]
+      -- ⊢ Arity.Equiv ↑(Definable.Resp (F (Quotient.mk setoid y))) ↑(Definable.Resp (F …
       exact (Definable.Resp (F ⟦y⟧)).2
+      -- 🎉 no goals
     refine' funext fun q => Quotient.inductionOn q fun x => _
+    -- ⊢ Resp.eval (n + 1) { val := fun x => ↑(Definable.Resp (F (Quotient.mk setoid  …
     simp_rw [Resp.eval_val, Resp.f]
+    -- ⊢ Resp.eval n { val := ↑(Definable.Resp (F (Quotient.mk setoid x))), property  …
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
+    -- 🎉 no goals
 #align classical.all_definable Classical.allDefinable
 
 end Classical
@@ -734,11 +760,17 @@ theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
 instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
   Quotient.inductionOn x fun a => by
     let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
+    -- ⊢ Small.{u, u + 1} ↑(toSet (Quotient.mk setoid a))
     suffices Function.Surjective f by exact small_of_surjective this
+    -- ⊢ Function.Surjective f
     rintro ⟨y, hb⟩
+    -- ⊢ ∃ a_1, f a_1 = { val := y, property := hb }
     induction y using Quotient.inductionOn
+    -- ⊢ ∃ a_1, f a_1 = { val := Quotient.mk setoid a✝, property := hb }
     cases' hb with i h
+    -- ⊢ ∃ a_1, f a_1 = { val := Quotient.mk setoid a✝, property := (_ : ∃ b, PSet.Eq …
     exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
+    -- 🎉 no goals
 #align Set.small_to_set ZFSet.small_toSet
 
 /-- A nonempty set is one that contains some element. -/
@@ -790,6 +822,7 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
 @[simp]
 theorem toSet_subset_iff {x y : ZFSet} : x.toSet ⊆ y.toSet ↔ x ⊆ y := by
   simp [subset_def, Set.subset_def]
+  -- 🎉 no goals
 #align Set.to_set_subset_iff ZFSet.toSet_subset_iff
 
 @[ext]
@@ -799,6 +832,7 @@ theorem ext {x y : ZFSet.{u}} : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x =
 
 theorem ext_iff {x y : ZFSet.{u}} : x = y ↔ ∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y :=
   ⟨fun h => by simp [h], ext⟩
+               -- 🎉 no goals
 #align Set.ext_iff ZFSet.ext_iff
 
 theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ext_iff.1 h
@@ -830,6 +864,7 @@ theorem not_mem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
+                                        -- 🎉 no goals
 #align Set.to_set_empty ZFSet.toSet_empty
 
 @[simp]
@@ -839,24 +874,33 @@ theorem empty_subset (x : ZFSet.{u}) : (∅ : ZFSet) ⊆ x :=
 
 @[simp]
 theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
+                                                     -- 🎉 no goals
 #align Set.not_nonempty_empty ZFSet.not_nonempty_empty
 
 @[simp]
 theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
   refine' ⟨_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+  -- ⊢ ZFSet.Nonempty (mk x) → PSet.Nonempty x
   rintro ⟨a, h⟩
+  -- ⊢ PSet.Nonempty x
   induction a using Quotient.inductionOn
+  -- ⊢ PSet.Nonempty x
   exact ⟨_, h⟩
+  -- 🎉 no goals
 #align Set.nonempty_mk_iff ZFSet.nonempty_mk_iff
 
 theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
   rw [ext_iff]
+  -- ⊢ (∀ (z : ZFSet), z ∈ x ↔ z ∈ ∅) ↔ ∀ (y : ZFSet), ¬y ∈ x
   simp
+  -- 🎉 no goals
 #align Set.eq_empty ZFSet.eq_empty
 
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
   rw [eq_empty, ← not_exists]
+  -- ⊢ (¬∃ x, x ∈ u) ∨ ZFSet.Nonempty u
   apply em'
+  -- 🎉 no goals
 #align Set.eq_empty_or_nonempty ZFSet.eq_empty_or_nonempty
 
 /-- `Insert x y` is the set `{x} ∪ y` -/
@@ -911,7 +955,9 @@ theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
 @[simp]
 theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
   ext
+  -- ⊢ x✝ ∈ toSet (insert x y) ↔ x✝ ∈ insert x (toSet y)
   simp
+  -- 🎉 no goals
 #align Set.to_set_insert ZFSet.toSet_insert
 
 @[simp]
@@ -923,7 +969,9 @@ theorem mem_singleton {x y : ZFSet.{u}} : x ∈ @singleton ZFSet.{u} ZFSet.{u} _
 @[simp]
 theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} := by
   ext
+  -- ⊢ x✝ ∈ toSet {x} ↔ x✝ ∈ {x}
   simp
+  -- 🎉 no goals
 #align Set.to_set_singleton ZFSet.toSet_singleton
 
 theorem insert_nonempty (u v : ZFSet) : (insert u v).Nonempty :=
@@ -936,6 +984,7 @@ theorem singleton_nonempty (u : ZFSet) : ZFSet.Nonempty {u} :=
 
 theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = z := by
   simp
+  -- 🎉 no goals
 #align Set.mem_pair ZFSet.mem_pair
 
 /-- `omega` is the first infinite von Neumann ordinal -/
@@ -955,7 +1004,9 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
       ZFSet.exact <|
         show insert (mk x) (mk x) = insert (mk <| ofNat n) (mk <| ofNat n) by
           rw [ZFSet.sound h]
+          -- ⊢ insert (mk (Func PSet.omega { down := n })) (mk (Func PSet.omega { down := n …
           rfl⟩
+          -- 🎉 no goals
 #align Set.omega_succ ZFSet.omega_succ
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
@@ -965,9 +1016,11 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
         ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
+                -- 🎉 no goals
         fun ⟨b, pb⟩ =>
         let ⟨a, ha⟩ := βα b
         ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩⟩
+                -- 🎉 no goals
 #align Set.sep ZFSet.sep
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
@@ -979,9 +1032,12 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
     y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y :=
   Quotient.inductionOn₂ x y fun ⟨α, A⟩ y =>
     ⟨fun ⟨⟨a, pa⟩, h⟩ => ⟨⟨a, h⟩, by rwa [@Quotient.sound PSet _ _ _ h]⟩, fun ⟨⟨a, h⟩, pa⟩ =>
+                                     -- 🎉 no goals
       ⟨⟨a, by
           rw [mk_func] at h
+          -- ⊢ p (mk (Func (PSet.mk α A) a))
           rwa [mk_func, ← ZFSet.sound h]⟩,
+          -- 🎉 no goals
         h⟩⟩
 #align Set.mem_sep ZFSet.mem_sep
 
@@ -989,7 +1045,9 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
     (ZFSet.sep p a).toSet = { x ∈ a.toSet | p x } := by
   ext
+  -- ⊢ x✝ ∈ toSet (ZFSet.sep p a) ↔ x✝ ∈ {x | x ∈ toSet a ∧ p x}
   simp
+  -- 🎉 no goals
 #align Set.to_set_sep ZFSet.toSet_sep
 
 /-- The powerset operation, the collection of subsets of a ZFC set -/
@@ -1011,20 +1069,30 @@ def powerset : ZFSet → ZFSet :=
 theorem mem_powerset {x y : ZFSet.{u}} : y ∈ powerset x ↔ y ⊆ x :=
   Quotient.inductionOn₂ x y fun ⟨α, A⟩ ⟨β, B⟩ =>
     show (⟨β, B⟩ : PSet.{u}) ∈ PSet.powerset.{u} ⟨α, A⟩ ↔ _ by simp [mem_powerset, subset_iff]
+                                                               -- 🎉 no goals
 #align Set.mem_powerset ZFSet.mem_powerset
 
 theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : ∀ a, ∃ b, Equiv (A a) (B b)) :
     ∀ a, ∃ b, Equiv ((sUnion ⟨α, A⟩).Func a) ((sUnion ⟨β, B⟩).Func b)
   | ⟨a, c⟩ => by
     let ⟨b, hb⟩ := αβ a
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c }) (Func (⋃₀ PSe …
     induction' ea : A a with γ Γ
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c }) (Func (⋃₀ PSe …
     induction' eb : B b with δ Δ
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c }) (Func (⋃₀ PSe …
     rw [ea, eb] at hb
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c }) (Func (⋃₀ PSe …
     cases' hb with γδ δγ
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c }) (Func (⋃₀ PSe …
     let c : (A a).Type := c
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c✝ }) (Func (⋃₀ PS …
     let ⟨d, hd⟩ := γδ (by rwa [ea] at c)
+    -- ⊢ ∃ b, PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c✝ }) (Func (⋃₀ PS …
     use ⟨b, Eq.ndrec d (Eq.symm eb)⟩
+    -- ⊢ PSet.Equiv (Func (⋃₀ PSet.mk α A) { fst := a, snd := c✝ }) (Func (⋃₀ PSet.mk …
     change PSet.Equiv ((A a).Func c) ((B b).Func (Eq.ndrec d eb.symm))
+    -- ⊢ PSet.Equiv (Func (A a) c) (Func (B b) ((_ : PSet.mk δ Δ = B b) ▸ d))
     match A a, B b, ea, eb, c, d, hd with
     | _, _, rfl, rfl, _, _, hd => exact hd
 #align Set.sUnion_lem ZFSet.sUnion_lem
@@ -1046,6 +1114,7 @@ prefix:110 "⋃₀ " => ZFSet.sUnion
 special-case `⋂₀ ∅ = ∅`. -/
 noncomputable def sInter (x : ZFSet) : ZFSet := by
    classical exact if h : x.Nonempty then ZFSet.sep (fun y => ∀ z ∈ x, y ∈ z) h.some else ∅
+   -- 🎉 no goals
 #align Set.sInter ZFSet.sInter
 
 @[inherit_doc]
@@ -1060,24 +1129,33 @@ theorem mem_sUnion {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :
 
 theorem mem_sInter {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z := by
   rw [sInter, dif_pos h]
+  -- ⊢ y ∈ ZFSet.sep (fun y => ∀ (z : ZFSet), z ∈ x → y ∈ z) (Set.Nonempty.some h)  …
   simp only [mem_toSet, mem_sep, and_iff_right_iff_imp]
+  -- ⊢ (∀ (z : ZFSet), z ∈ x → y ∈ z) → y ∈ Set.Nonempty.some h
   exact fun H => H _ h.some_mem
+  -- 🎉 no goals
 #align Set.mem_sInter ZFSet.mem_sInter
 
 @[simp]
 theorem sUnion_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ := by
   ext
+  -- ⊢ z✝ ∈ ⋃₀ ∅ ↔ z✝ ∈ ∅
   simp
+  -- 🎉 no goals
 #align Set.sUnion_empty ZFSet.sUnion_empty
 
 @[simp]
 theorem sInter_empty : ⋂₀ (∅ : ZFSet) = ∅ := dif_neg <| by simp
+                                                           -- 🎉 no goals
 #align Set.sInter_empty ZFSet.sInter_empty
 
 theorem mem_of_mem_sInter {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   rcases eq_empty_or_nonempty x with (rfl | hx)
+  -- ⊢ y ∈ z
   · exact (not_mem_empty z hz).elim
+    -- 🎉 no goals
   · exact (mem_sInter hx).1 hy z hz
+    -- 🎉 no goals
 #align Set.mem_of_mem_sInter ZFSet.mem_of_mem_sInter
 
 theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
@@ -1091,27 +1169,35 @@ theorem not_mem_sInter_of_not_mem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x
 @[simp]
 theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sUnion, mem_singleton, exists_eq_left]
+                  -- 🎉 no goals
 #align Set.sUnion_singleton ZFSet.sUnion_singleton
 
 @[simp]
 theorem sInter_singleton {x : ZFSet.{u}} : ⋂₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sInter (singleton_nonempty x), mem_singleton, forall_eq]
+                  -- 🎉 no goals
 #align Set.sInter_singleton ZFSet.sInter_singleton
 
 @[simp]
 theorem toSet_sUnion (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
   ext
+  -- ⊢ x✝ ∈ toSet (⋃₀ x) ↔ x✝ ∈ ⋃₀ (toSet '' toSet x)
   simp
+  -- 🎉 no goals
 #align Set.to_set_sUnion ZFSet.toSet_sUnion
 
 theorem toSet_sInter {x : ZFSet.{u}} (h : x.Nonempty) : (⋂₀ x).toSet = ⋂₀ (toSet '' x.toSet) := by
   ext
+  -- ⊢ x✝ ∈ toSet (⋂₀ x) ↔ x✝ ∈ ⋂₀ (toSet '' toSet x)
   simp [mem_sInter h]
+  -- 🎉 no goals
 #align Set.to_set_sInter ZFSet.toSet_sInter
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
   let this := congr_arg sUnion H
+  -- ⊢ x = y
   rwa [sUnion_singleton, sUnion_singleton] at this
+  -- 🎉 no goals
 #align Set.singleton_injective ZFSet.singleton_injective
 
 @[simp]
@@ -1146,27 +1232,37 @@ instance : SDiff ZFSet :=
 @[simp]
 theorem toSet_union (x y : ZFSet.{u}) : (x ∪ y).toSet = x.toSet ∪ y.toSet := by
   change (⋃₀ {x, y}).toSet = _
+  -- ⊢ toSet (⋃₀ {x, y}) = toSet x ∪ toSet y
   simp
+  -- 🎉 no goals
 #align Set.to_set_union ZFSet.toSet_union
 
 @[simp]
 theorem toSet_inter (x y : ZFSet.{u}) : (x ∩ y).toSet = x.toSet ∩ y.toSet := by
   change (ZFSet.sep (fun z => z ∈ y) x).toSet = _
+  -- ⊢ toSet (ZFSet.sep (fun z => z ∈ y) x) = toSet x ∩ toSet y
   ext
+  -- ⊢ x✝ ∈ toSet (ZFSet.sep (fun z => z ∈ y) x) ↔ x✝ ∈ toSet x ∩ toSet y
   simp
+  -- 🎉 no goals
 #align Set.to_set_inter ZFSet.toSet_inter
 
 @[simp]
 theorem toSet_sdiff (x y : ZFSet.{u}) : (x \ y).toSet = x.toSet \ y.toSet := by
   change (ZFSet.sep (fun z => z ∉ y) x).toSet = _
+  -- ⊢ toSet (ZFSet.sep (fun z => ¬z ∈ y) x) = toSet x \ toSet y
   ext
+  -- ⊢ x✝ ∈ toSet (ZFSet.sep (fun z => ¬z ∈ y) x) ↔ x✝ ∈ toSet x \ toSet y
   simp
+  -- 🎉 no goals
 #align Set.to_set_sdiff ZFSet.toSet_sdiff
 
 @[simp]
 theorem mem_union {x y z : ZFSet.{u}} : z ∈ x ∪ y ↔ z ∈ x ∨ z ∈ y := by
   rw [← mem_toSet]
+  -- ⊢ z ∈ toSet (x ∪ y) ↔ z ∈ x ∨ z ∈ y
   simp
+  -- 🎉 no goals
 #align Set.mem_union ZFSet.mem_union
 
 @[simp]
@@ -1254,7 +1350,9 @@ theorem mem_image :
 theorem toSet_image (f : ZFSet → ZFSet) [H : Definable 1 f] (x : ZFSet) :
     (image f x).toSet = f '' x.toSet := by
   ext
+  -- ⊢ x✝ ∈ toSet (image f x) ↔ x✝ ∈ f '' toSet x
   simp
+  -- 🎉 no goals
 #align Set.to_set_image ZFSet.toSet_image
 
 /-- The range of an indexed family of sets. The universes allow for a more general index type
@@ -1268,18 +1366,26 @@ theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v
     x ∈ range.{u, v} f ↔ x ∈ Set.range f :=
   Quotient.inductionOn x fun y => by
     constructor
+    -- ⊢ Quotient.mk setoid y ∈ range f → Quotient.mk setoid y ∈ Set.range f
     · rintro ⟨z, hz⟩
+      -- ⊢ Quotient.mk setoid y ∈ Set.range f
       exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
+      -- 🎉 no goals
     · rintro ⟨z, hz⟩
+      -- ⊢ Quotient.mk setoid y ∈ range f
       use ULift.up z
+      -- ⊢ PSet.Equiv y (Func (PSet.mk (ULift α) (Quotient.out ∘ f ∘ ULift.down)) { dow …
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
+      -- 🎉 no goals
 #align Set.mem_range ZFSet.mem_range
 
 @[simp]
 theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) :
     (range.{u, v} f).toSet = Set.range f := by
   ext
+  -- ⊢ x✝ ∈ toSet (range f) ↔ x✝ ∈ Set.range f
   simp
+  -- 🎉 no goals
 #align Set.to_set_range ZFSet.toSet_range
 
 /-- Kuratowski ordered pair -/
@@ -1289,6 +1395,7 @@ def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
 
 @[simp]
 theorem toSet_pair (x y : ZFSet.{u}) : (pair x y).toSet = {{x}, {x, y}} := by simp [pair]
+                                                                              -- 🎉 no goals
 #align Set.to_set_pair ZFSet.toSet_pair
 
 /-- A subset of pairs `{(a, b) ∈ x × y | p a b}` -/
@@ -1300,17 +1407,30 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
   refine' mem_sep.trans ⟨And.right, fun e => ⟨_, e⟩⟩
+  -- ⊢ z ∈ powerset (powerset (x ∪ y))
   rcases e with ⟨a, ax, b, bY, rfl, pab⟩
+  -- ⊢ pair a b ∈ powerset (powerset (x ∪ y))
   simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
+  -- ⊢ ∀ ⦃z : ZFSet⦄, z = {a} ∨ z = {a, b} → ∀ ⦃z_1 : ZFSet⦄, z_1 ∈ z → z_1 ∈ x ∨ z …
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
+  -- ⊢ v ∈ {a} → v ∈ x ∨ v ∈ y
+                             -- ⊢ v = a → v ∈ x ∨ v ∈ y
+                             -- ⊢ v = a ∨ v = b → v ∈ x ∨ v ∈ y
   · rintro rfl
+    -- ⊢ v ∈ x ∨ v ∈ y
     exact Or.inl ax
+    -- 🎉 no goals
   · rintro (rfl | rfl) <;> [left; right] <;> assumption
+    -- ⊢ v ∈ x
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
 #align Set.mem_pair_sep ZFSet.mem_pairSep
 
 theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
   have ae := ext_iff.1 H
+  -- ⊢ x = x' ∧ y = y'
   simp only [pair, mem_pair] at ae
+  -- ⊢ x = x' ∧ y = y'
   obtain rfl : x = x' := by
     cases' (ae {x}).1 (by simp) with h h
     · exact singleton_injective h
@@ -1323,11 +1443,17 @@ theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
       exact Or.inr rfl
     · simpa [eq_comm] using (ext_iff.1 xy'xx y').1 (by simp)
   obtain xyx | xyy' := (ae {x, y}).1 (by simp)
+  -- ⊢ x = x ∧ y = y'
   · obtain rfl := mem_singleton.mp ((ext_iff.1 xyx y).1 <| by simp)
+    -- ⊢ y = y ∧ y = y'
     simp [he rfl]
+    -- 🎉 no goals
   · obtain rfl | yy' := mem_pair.mp ((ext_iff.1 xyy' y).1 <| by simp)
+    -- ⊢ y = y ∧ y = y'
     · simp [he rfl]
+      -- 🎉 no goals
     · simp [yy']
+      -- 🎉 no goals
 #align Set.pair_injective ZFSet.pair_injective
 
 @[simp]
@@ -1343,10 +1469,12 @@ def prod : ZFSet.{u} → ZFSet.{u} → ZFSet.{u} :=
 @[simp]
 theorem mem_prod {x y z : ZFSet.{u}} : z ∈ prod x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b := by
   simp [prod]
+  -- 🎉 no goals
 #align Set.mem_prod ZFSet.mem_prod
 
 theorem pair_mem_prod {x y a b : ZFSet.{u}} : pair a b ∈ prod x y ↔ a ∈ x ∧ b ∈ y := by
   simp
+  -- 🎉 no goals
 #align Set.pair_mem_prod ZFSet.pair_mem_prod
 
 /-- `isFunc x y f` is the assertion that `f` is a subset of `x × y` which relates to each element
@@ -1362,6 +1490,7 @@ def funs (x y : ZFSet.{u}) : ZFSet.{u} :=
 
 @[simp]
 theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by simp [funs, IsFunc]
+                                                                         -- 🎉 no goals
 #align Set.mem_funs ZFSet.mem_funs
 
 -- TODO(Mario): Prove this computably
@@ -1388,8 +1517,11 @@ theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSe
     (zx : z ∈ x) : ∃! w, pair z w ∈ map f x :=
   ⟨f z, image.mk _ _ zx, fun y yx => by
     let ⟨w, _, we⟩ := mem_image.1 yx
+    -- ⊢ y = f z
     let ⟨wz, fy⟩ := pair_injective we
+    -- ⊢ y = f z
     rw [← fy, wz]⟩
+    -- 🎉 no goals
 #align Set.map_unique ZFSet.map_unique
 
 @[simp]
@@ -1418,6 +1550,7 @@ variable {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}}
 
 theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditarily p y := by
   rw [← Hereditarily]
+  -- 🎉 no goals
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
 alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
@@ -1433,10 +1566,15 @@ theorem Hereditarily.mem (h : x.Hereditarily p) (hy : y ∈ x) : y.Hereditarily 
 
 theorem Hereditarily.empty : Hereditarily p x → p ∅ := by
   apply @ZFSet.inductionOn _ x
+  -- ⊢ ∀ (x : ZFSet), (∀ (y : ZFSet), y ∈ x → Hereditarily p y → p ∅) → Hereditaril …
   intro y IH h
+  -- ⊢ p ∅
   rcases ZFSet.eq_empty_or_nonempty y with (rfl | ⟨a, ha⟩)
+  -- ⊢ p ∅
   · exact h.self
+    -- 🎉 no goals
   · exact IH a ha (h.mem ha)
+    -- 🎉 no goals
 #align Set.hereditarily.empty ZFSet.Hereditarily.empty
 
 end Hereditarily
@@ -1535,8 +1673,11 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
     · refine' fun A => ⟨A, _⟩
+      -- ⊢ ∀ (y : Class), y ∈ A → Acc (fun x x_1 => x ∈ x_1) y
       rintro B ⟨x, rfl, _⟩
+      -- ⊢ Acc (fun x x_1 => x ∈ x_1) ↑x
       exact H x⟩
+      -- 🎉 no goals
 #align Class.mem_wf Class.mem_wf
 
 instance : WellFoundedRelation Class :=
@@ -1572,8 +1713,11 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 @[simp]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
   ext z
+  -- ⊢ congToClass ∅ z ↔ ∅ z
   simp only [congToClass, not_empty_hom, iff_false_iff]
+  -- ⊢ ¬setOf (fun y => ↑y ∈ ∅) z
   exact Set.not_mem_empty z
+  -- 🎉 no goals
 #align Class.Cong_to_Class_empty Class.congToClass_empty
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
@@ -1584,7 +1728,9 @@ def classToCong (x : Class.{u}) : Set Class.{u} :=
 @[simp]
 theorem classToCong_empty : classToCong ∅ = ∅ := by
   ext
+  -- ⊢ x✝ ∈ classToCong ∅ ↔ x✝ ∈ ∅
   simp [classToCong]
+  -- 🎉 no goals
 #align Class.Class_to_Cong_empty Class.classToCong_empty
 
 /-- The power class of a class is the class of all subclasses that are ZFC sets -/
@@ -1610,12 +1756,15 @@ prefix:110 "⋂₀ " => Class.sInter
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
   ZFSet.ext fun z => by
     change (x : Class.{u}) z ↔ (y : Class.{u}) z
+    -- ⊢ ↑x z ↔ ↑y z
     rw [h]
+    -- 🎉 no goals
 #align Class.of_Set.inj Class.ofSet.inj
 
 @[simp]
 theorem toSet_of_ZFSet (A : Class.{u}) (x : ZFSet.{u}) : ToSet A x ↔ A x :=
   ⟨fun ⟨y, yx, py⟩ => by rwa [ofSet.inj yx] at py, fun px => ⟨x, rfl, px⟩⟩
+                         -- 🎉 no goals
 #align Class.to_Set_of_Set Class.toSet_of_ZFSet
 
 @[simp, norm_cast]
@@ -1677,30 +1826,43 @@ theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : powerset A x ↔ ↑x �
 @[simp]
 theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x z ∧ y ∈ z := by
   constructor
+  -- ⊢ (⋃₀ x) y → ∃ z, x z ∧ y ∈ z
   · rintro ⟨-, ⟨z, rfl, hxz⟩, hyz⟩
+    -- ⊢ ∃ z, x z ∧ y ∈ z
     exact ⟨z, hxz, hyz⟩
+    -- 🎉 no goals
   · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
+    -- 🎉 no goals
 #align Class.sUnion_apply Class.sUnion_apply
 
 @[simp, norm_cast]
 theorem coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : Class.{u}) :=
   ext fun y =>
     ZFSet.mem_sUnion.trans (sUnion_apply.trans <| by rfl).symm
+                                                     -- 🎉 no goals
 #align Class.coe_sUnion Class.coe_sUnion
 
 @[simp]
 theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y ∈ z := by
   constructor
+  -- ⊢ y ∈ ⋃₀ x → ∃ z, z ∈ x ∧ y ∈ z
   · rintro ⟨w, rfl, z, hzx, hwz⟩
+    -- ⊢ ∃ z, z ∈ x ∧ ↑w ∈ z
     exact ⟨z, hzx, coe_mem.2 hwz⟩
+    -- 🎉 no goals
   · rintro ⟨w, hwx, z, rfl, hwz⟩
+    -- ⊢ ↑z ∈ ⋃₀ x
     exact ⟨z, rfl, w, hwx, hwz⟩
+    -- 🎉 no goals
 #align Class.mem_sUnion Class.mem_sUnion
 
 theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
   refine' ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, _⟩
+  -- ⊢ (∀ (z : ZFSet), x z → y ∈ z) → (⋂₀ x) y
   rintro H - ⟨z, rfl, hxz⟩
+  -- ⊢ y ∈ ↑z
   exact H _ hxz
+  -- 🎉 no goals
 #align Class.sInter_apply Class.sInter_apply
 
 @[simp, norm_cast]
@@ -1710,27 +1872,38 @@ theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = �
 
 theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   obtain ⟨w, rfl, hw⟩ := hy
+  -- ⊢ ↑w ∈ z
   exact coe_mem.2 (hw z hz)
+  -- 🎉 no goals
 #align Class.mem_of_mem_sInter Class.mem_of_mem_sInter
 
 theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
   refine' ⟨fun hy z => mem_of_mem_sInter hy, fun H => _⟩
+  -- ⊢ y ∈ ⋂₀ x
   simp_rw [mem_def, sInter_apply]
+  -- ⊢ ∃ x_1, ↑x_1 = y ∧ ∀ (z : ZFSet), x z → x_1 ∈ z
   obtain ⟨z, hz⟩ := h
+  -- ⊢ ∃ x_1, ↑x_1 = y ∧ ∀ (z : ZFSet), x z → x_1 ∈ z
   obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
+  -- ⊢ ∃ x_1, ↑x_1 = ↑y ∧ ∀ (z : ZFSet), x z → x_1 ∈ z
   refine' ⟨y, rfl, fun w hxw => _⟩
+  -- ⊢ y ∈ w
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
+  -- 🎉 no goals
 #align Class.mem_sInter Class.mem_sInter
 
 @[simp]
 theorem sUnion_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) := by
   ext
+  -- ⊢ (⋃₀ ∅) z✝ ↔ ∅ z✝
   simp
+  -- 🎉 no goals
 #align Class.sUnion_empty Class.sUnion_empty
 
 @[simp]
 theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
   rw [sInter, classToCong_empty, Set.sInter_empty, univ]
+  -- 🎉 no goals
 #align Class.sInter_empty Class.sInter_empty
 
 /-- An induction principle for sets. If every subset of a class is a member, then the class is
@@ -1739,6 +1912,7 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
   eq_univ_of_forall
     (by
       by_contra' hnA
+      -- ⊢ False
       exact
         WellFounded.min_mem ZFSet.mem_wf _ hnA
           (hA fun x hx =>
@@ -1755,6 +1929,7 @@ def iota (A : Class) : Class :=
 theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = ↑x :=
   ext fun y =>
     ⟨fun ⟨_, ⟨x', rfl, h⟩, yx'⟩ => by rwa [← (H x').1 <| (h x').2 rfl], fun yx =>
+                                      -- 🎉 no goals
       ⟨_, ⟨x, rfl, H⟩, yx⟩⟩
 #align Class.iota_val Class.iota_val
 
@@ -1789,6 +1964,7 @@ theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : Z
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=
   Class.iota_val _ _ fun z => by
     rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
+    -- ⊢ (∃ z_1, z_1 ∈ x ∧ pair z_1 (f z_1) = pair y z) ↔ z = f y
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr
@@ -1808,6 +1984,7 @@ theorem choice_mem_aux (y : ZFSet.{u}) (yx : y ∈ x) :
     (Classical.epsilon fun z : ZFSet.{u} => z ∈ y) ∈ y :=
   (@Classical.epsilon_spec _ fun z : ZFSet.{u} => z ∈ y) <|
     by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
+                                      -- 🎉 no goals
 #align Set.choice_mem_aux ZFSet.choice_mem_aux
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -1818,8 +1995,11 @@ theorem choice_isFunc : IsFunc x (⋃₀ x) (choice x) :=
 
 theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u}) ∈ (y : Class.{u}) := by
   delta choice
+  -- ⊢ ↑(map (fun y => Classical.epsilon fun z => z ∈ y) x) ′ ↑y ∈ ↑y
   rw [@map_fval _ (Classical.allDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
+  -- ⊢ (Classical.epsilon fun z => z ∈ y) ∈ y
   exact choice_mem_aux x h y yx
+  -- 🎉 no goals
 #align Set.choice_mem ZFSet.choice_mem
 
 end ZFSet

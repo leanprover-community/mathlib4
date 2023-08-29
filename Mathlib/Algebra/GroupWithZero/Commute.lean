@@ -26,11 +26,17 @@ open Classical
 theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by
   by_cases hab : IsUnit (a * b)
+  -- ⊢ inverse (a * b) = inverse b * inverse a
   · obtain ⟨⟨a, rfl⟩, b, rfl⟩ := h.isUnit_mul_iff.mp hab
+    -- ⊢ inverse (↑a * ↑b) = inverse ↑b * inverse ↑a
     rw [← Units.val_mul, inverse_unit, inverse_unit, inverse_unit, ← Units.val_mul, mul_inv_rev]
+    -- 🎉 no goals
   obtain ha | hb := not_and_or.mp (mt h.isUnit_mul_iff.mpr hab)
+  -- ⊢ inverse (a * b) = inverse b * inverse a
   · rw [inverse_non_unit _ hab, inverse_non_unit _ ha, mul_zero]
+    -- 🎉 no goals
   · rw [inverse_non_unit _ hab, inverse_non_unit _ hb, zero_mul]
+    -- 🎉 no goals
 #align ring.mul_inverse_rev' Ring.mul_inverse_rev'
 
 theorem mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
@@ -86,7 +92,9 @@ theorem div_right (hab : Commute a b) (hac : Commute a c) : Commute a (b / c) :=
 @[simp]
 theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := by
   rw [div_eq_mul_inv]
+  -- ⊢ Commute (a * b⁻¹) c
   exact hac.mul_left hbc.inv_left₀
+  -- 🎉 no goals
 #align commute.div_left Commute.div_left
 
 end Commute

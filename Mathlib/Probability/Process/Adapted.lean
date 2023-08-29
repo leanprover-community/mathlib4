@@ -100,9 +100,13 @@ theorem Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace �
     {u : ι → Ω → β} (hum : ∀ i, StronglyMeasurable[m] (u i)) :
     Adapted (Filtration.natural u hum) u := by
   intro i
+  -- ⊢ StronglyMeasurable (u i)
   refine' StronglyMeasurable.mono _ (le_iSup₂_of_le i (le_refl i) le_rfl)
+  -- ⊢ StronglyMeasurable (u i)
   rw [stronglyMeasurable_iff_measurable_separable]
+  -- ⊢ Measurable (u i) ∧ IsSeparable (Set.range (u i))
   exact ⟨measurable_iff_comap_le.2 le_rfl, (hum i).isSeparable_range⟩
+  -- 🎉 no goals
 #align measure_theory.filtration.adapted_natural MeasureTheory.Filtration.adapted_natural
 
 /-- Progressively measurable process. A sequence of functions `u` is said to be progressively
@@ -126,21 +130,27 @@ variable [MeasurableSpace ι]
 
 protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
   intro i
+  -- ⊢ StronglyMeasurable (u i)
   have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl
   rw [this]
+  -- ⊢ StronglyMeasurable ((fun p => u (↑p.fst) p.snd) ∘ fun x => ({ val := i, prop …
   exact (h i).comp_measurable measurable_prod_mk_left
+  -- 🎉 no goals
 #align measure_theory.prog_measurable.adapted MeasureTheory.ProgMeasurable.adapted
 
 protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [MetrizableSpace ι]
     (h : ProgMeasurable f u) (ht : ProgMeasurable f t) (ht_le : ∀ i ω, t i ω ≤ i) :
     ProgMeasurable f fun i ω => u (t i ω) ω := by
   intro i
+  -- ⊢ StronglyMeasurable fun p => (fun i ω => u (t i ω) ω) (↑p.fst) p.snd
   have : (fun p : ↥(Set.Iic i) × Ω => u (t (p.fst : ι) p.snd) p.snd) =
     (fun p : ↥(Set.Iic i) × Ω => u (p.fst : ι) p.snd) ∘ fun p : ↥(Set.Iic i) × Ω =>
       (⟨t (p.fst : ι) p.snd, Set.mem_Iic.mpr ((ht_le _ _).trans p.fst.prop)⟩, p.snd) := rfl
   rw [this]
+  -- ⊢ StronglyMeasurable ((fun p => u (↑p.fst) p.snd) ∘ fun p => ({ val := t (↑p.f …
   exact (h i).comp_measurable ((ht i).measurable.subtype_mk.prod_mk measurable_snd)
+  -- 🎉 no goals
 #align measure_theory.prog_measurable.comp MeasureTheory.ProgMeasurable.comp
 
 section Arithmetic
@@ -165,6 +175,9 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
     {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) :
     ProgMeasurable f fun i a => ∏ c in s, U c i a := by
   convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
+  -- ⊢ (fun i a => ∏ c in s, U c i a) = ∏ c in s, U c
+                                                 -- ⊢ ∏ c in s, U c i a = Finset.prod s (fun c => U c) i a
+                                                            -- 🎉 no goals
 #align measure_theory.prog_measurable.finset_prod MeasureTheory.ProgMeasurable.finset_prod
 #align measure_theory.prog_measurable.finset_sum MeasureTheory.ProgMeasurable.finset_sum
 
@@ -189,13 +202,19 @@ theorem progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSp
     (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
     (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) : ProgMeasurable f u := by
   intro i
+  -- ⊢ StronglyMeasurable fun p => u (↑p.fst) p.snd
   apply @stronglyMeasurable_of_tendsto (Set.Iic i × Ω) β γ
     (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _ _ fun l => h l i
   rw [tendsto_pi_nhds] at h_tendsto ⊢
+  -- ⊢ ∀ (x : ↑(Set.Iic i) × Ω), Tendsto (fun i_1 => U i_1 (↑x.fst) x.snd) fltr (𝓝  …
   intro x
+  -- ⊢ Tendsto (fun i_1 => U i_1 (↑x.fst) x.snd) fltr (𝓝 (u (↑x.fst) x.snd))
   specialize h_tendsto x.fst
+  -- ⊢ Tendsto (fun i_1 => U i_1 (↑x.fst) x.snd) fltr (𝓝 (u (↑x.fst) x.snd))
   rw [tendsto_nhds] at h_tendsto ⊢
+  -- ⊢ ∀ (s : Set β), IsOpen s → u (↑x.fst) x.snd ∈ s → (fun i_1 => U i_1 (↑x.fst)  …
   exact fun s hs h_mem => h_tendsto {g | g x.snd ∈ s} (hs.preimage (continuous_apply x.snd)) h_mem
+  -- 🎉 no goals
 #align measure_theory.prog_measurable_of_tendsto' MeasureTheory.progMeasurable_of_tendsto'
 
 theorem progMeasurable_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β] {U : ℕ → ι → Ω → β}

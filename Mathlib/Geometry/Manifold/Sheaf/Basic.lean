@@ -60,19 +60,29 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
   pred {U : Opens (TopCat.of M)} := fun f : U → M' => ChartedSpace.LiftProp P f
   res := by
     intro U V i f h x
+    -- ⊢ ChartedSpace.LiftPropAt P (fun x => f ((fun x => { val := ↑x, property := (_ …
     have hUV : U ≤ V := CategoryTheory.leOfHom i
+    -- ⊢ ChartedSpace.LiftPropAt P (fun x => f ((fun x => { val := ↑x, property := (_ …
     show ChartedSpace.LiftPropAt P (f ∘ Set.inclusion hUV) x
+    -- ⊢ ChartedSpace.LiftPropAt P (f ∘ inclusion hUV) x
     rw [← hG.liftPropAt_iff_comp_inclusion hUV]
+    -- ⊢ ChartedSpace.LiftPropAt P f (inclusion hUV x)
     apply h
+    -- 🎉 no goals
   locality := by
     intro V f h x
+    -- ⊢ ChartedSpace.LiftPropAt P f x
     obtain ⟨U, hxU, i, hU : ChartedSpace.LiftProp P (f ∘ i)⟩ := h x
+    -- ⊢ ChartedSpace.LiftPropAt P f x
     let x' : U := ⟨x, hxU⟩
+    -- ⊢ ChartedSpace.LiftPropAt P f x
     have hUV : U ≤ V := CategoryTheory.leOfHom i
+    -- ⊢ ChartedSpace.LiftPropAt P f x
     have : ChartedSpace.LiftPropAt P f (inclusion hUV x') := by
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
     convert this
+    -- 🎉 no goals
 #align structure_groupoid.local_invariant_prop.local_predicate StructureGroupoid.LocalInvariantProp.localPredicate
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`

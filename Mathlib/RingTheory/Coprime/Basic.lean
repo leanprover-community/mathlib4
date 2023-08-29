@@ -45,6 +45,7 @@ variable {x y z}
 theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
   let ⟨a, b, H⟩ := H
   ⟨b, a, by rw [add_comm, H]⟩
+            -- 🎉 no goals
 #align is_coprime.symm IsCoprime.symm
 
 theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
@@ -53,14 +54,18 @@ theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
 
 theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
   ⟨fun ⟨a, b, h⟩ => isUnit_of_mul_eq_one x (a + b) <| by rwa [mul_comm, add_mul], fun h =>
+                                                         -- 🎉 no goals
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h
     ⟨b, 0, by rwa [zero_mul, add_zero]⟩⟩
+              -- 🎉 no goals
 #align is_coprime_self isCoprime_self
 
 theorem isCoprime_zero_left : IsCoprime 0 x ↔ IsUnit x :=
   ⟨fun ⟨a, b, H⟩ => isUnit_of_mul_eq_one x b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H =>
+                                                   -- 🎉 no goals
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 H
     ⟨1, b, by rwa [one_mul, zero_add]⟩⟩
+              -- 🎉 no goals
 #align is_coprime_zero_left isCoprime_zero_left
 
 theorem isCoprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
@@ -74,32 +79,45 @@ theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
 /-- If a 2-vector `p` satisfies `IsCoprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by
   rintro rfl
+  -- ⊢ False
   exact not_isCoprime_zero_zero h
+  -- 🎉 no goals
 #align is_coprime.ne_zero IsCoprime.ne_zero
 
 theorem IsCoprime.ne_zero_or_ne_zero [Nontrivial R] (h : IsCoprime x y) : x ≠ 0 ∨ y ≠ 0 := by
   apply not_or_of_imp
+  -- ⊢ x = 0 → y ≠ 0
   rintro rfl rfl
+  -- ⊢ False
   exact not_isCoprime_zero_zero h
+  -- 🎉 no goals
 
 theorem isCoprime_one_left : IsCoprime 1 x :=
   ⟨1, 0, by rw [one_mul, zero_mul, add_zero]⟩
+            -- 🎉 no goals
 #align is_coprime_one_left isCoprime_one_left
 
 theorem isCoprime_one_right : IsCoprime x 1 :=
   ⟨0, 1, by rw [one_mul, zero_mul, zero_add]⟩
+            -- 🎉 no goals
 #align is_coprime_one_right isCoprime_one_right
 
 theorem IsCoprime.dvd_of_dvd_mul_right (H1 : IsCoprime x z) (H2 : x ∣ y * z) : x ∣ y := by
   let ⟨a, b, H⟩ := H1
+  -- ⊢ x ∣ y
   rw [← mul_one y, ← H, mul_add, ← mul_assoc, mul_left_comm]
+  -- ⊢ x ∣ y * a * x + b * (y * z)
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
+  -- 🎉 no goals
 #align is_coprime.dvd_of_dvd_mul_right IsCoprime.dvd_of_dvd_mul_right
 
 theorem IsCoprime.dvd_of_dvd_mul_left (H1 : IsCoprime x y) (H2 : x ∣ y * z) : x ∣ z := by
   let ⟨a, b, H⟩ := H1
+  -- ⊢ x ∣ z
   rw [← one_mul z, ← H, add_mul, mul_right_comm, mul_assoc b]
+  -- ⊢ x ∣ a * z * x + b * (y * z)
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
+  -- 🎉 no goals
 #align is_coprime.dvd_of_dvd_mul_left IsCoprime.dvd_of_dvd_mul_left
 
 theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime (x * y) z :=
@@ -110,43 +128,61 @@ theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime
       a * c * (x * y) + (a * x * d + b * c * y + b * d * z) * z =
           (a * x + b * z) * (c * y + d * z) :=
         by ring
+           -- 🎉 no goals
       _ = 1 := by rw [h1, h2, mul_one]
+                  -- 🎉 no goals
       ⟩
 #align is_coprime.mul_left IsCoprime.mul_left
 
 theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprime x (y * z) := by
   rw [isCoprime_comm] at H1 H2 ⊢
+  -- ⊢ IsCoprime (y * z) x
   exact H1.mul_left H2
+  -- 🎉 no goals
 #align is_coprime.mul_right IsCoprime.mul_right
 
 theorem IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z := by
   obtain ⟨a, b, h⟩ := H
+  -- ⊢ x * y ∣ z
   rw [← mul_one z, ← h, mul_add]
+  -- ⊢ x * y ∣ z * (a * x) + z * (b * y)
   apply dvd_add
+  -- ⊢ x * y ∣ z * (a * x)
   · rw [mul_comm z, mul_assoc]
+    -- ⊢ x * y ∣ a * (x * z)
     exact (mul_dvd_mul_left _ H2).mul_left _
+    -- 🎉 no goals
   · rw [mul_comm b, ← mul_assoc]
+    -- ⊢ x * y ∣ z * y * b
     exact (mul_dvd_mul_right H1 _).mul_right _
+    -- 🎉 no goals
 #align is_coprime.mul_dvd IsCoprime.mul_dvd
 
 theorem IsCoprime.of_mul_left_left (H : IsCoprime (x * y) z) : IsCoprime x z :=
   let ⟨a, b, h⟩ := H
   ⟨a * y, b, by rwa [mul_right_comm, mul_assoc]⟩
+                -- 🎉 no goals
 #align is_coprime.of_mul_left_left IsCoprime.of_mul_left_left
 
 theorem IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z := by
   rw [mul_comm] at H
+  -- ⊢ IsCoprime y z
   exact H.of_mul_left_left
+  -- 🎉 no goals
 #align is_coprime.of_mul_left_right IsCoprime.of_mul_left_right
 
 theorem IsCoprime.of_mul_right_left (H : IsCoprime x (y * z)) : IsCoprime x y := by
   rw [isCoprime_comm] at H ⊢
+  -- ⊢ IsCoprime y x
   exact H.of_mul_left_left
+  -- 🎉 no goals
 #align is_coprime.of_mul_right_left IsCoprime.of_mul_right_left
 
 theorem IsCoprime.of_mul_right_right (H : IsCoprime x (y * z)) : IsCoprime x z := by
   rw [mul_comm] at H
+  -- ⊢ IsCoprime x z
   exact H.of_mul_right_left
+  -- 🎉 no goals
 #align is_coprime.of_mul_right_right IsCoprime.of_mul_right_right
 
 theorem IsCoprime.mul_left_iff : IsCoprime (x * y) z ↔ IsCoprime x z ∧ IsCoprime y z :=
@@ -155,11 +191,14 @@ theorem IsCoprime.mul_left_iff : IsCoprime (x * y) z ↔ IsCoprime x z ∧ IsCop
 
 theorem IsCoprime.mul_right_iff : IsCoprime x (y * z) ↔ IsCoprime x y ∧ IsCoprime x z := by
   rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ z]
+  -- 🎉 no goals
 #align is_coprime.mul_right_iff IsCoprime.mul_right_iff
 
 theorem IsCoprime.of_isCoprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
   obtain ⟨d, rfl⟩ := hdvd
+  -- ⊢ IsCoprime x z
   exact IsCoprime.of_mul_left_left h
+  -- 🎉 no goals
 #align is_coprime.of_coprime_of_dvd_left IsCoprime.of_isCoprime_of_dvd_left
 
 theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) : IsCoprime z x :=
@@ -180,6 +219,7 @@ theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R �
     IsCoprime (f x) (f y) :=
   let ⟨a, b, h⟩ := H
   ⟨f a, f b, by rw [← f.map_mul, ← f.map_mul, ← f.map_add, h, f.map_one]⟩
+                -- 🎉 no goals
 #align is_coprime.map IsCoprime.map
 
 theorem IsCoprime.of_add_mul_left_left (h : IsCoprime (x + y * z) y) : IsCoprime x y :=
@@ -191,37 +231,51 @@ theorem IsCoprime.of_add_mul_left_left (h : IsCoprime (x + y * z) y) : IsCoprime
 
 theorem IsCoprime.of_add_mul_right_left (h : IsCoprime (x + z * y) y) : IsCoprime x y := by
   rw [mul_comm] at h
+  -- ⊢ IsCoprime x y
   exact h.of_add_mul_left_left
+  -- 🎉 no goals
 #align is_coprime.of_add_mul_right_left IsCoprime.of_add_mul_right_left
 
 theorem IsCoprime.of_add_mul_left_right (h : IsCoprime x (y + x * z)) : IsCoprime x y := by
   rw [isCoprime_comm] at h ⊢
+  -- ⊢ IsCoprime y x
   exact h.of_add_mul_left_left
+  -- 🎉 no goals
 #align is_coprime.of_add_mul_left_right IsCoprime.of_add_mul_left_right
 
 theorem IsCoprime.of_add_mul_right_right (h : IsCoprime x (y + z * x)) : IsCoprime x y := by
   rw [mul_comm] at h
+  -- ⊢ IsCoprime x y
   exact h.of_add_mul_left_right
+  -- 🎉 no goals
 #align is_coprime.of_add_mul_right_right IsCoprime.of_add_mul_right_right
 
 theorem IsCoprime.of_mul_add_left_left (h : IsCoprime (y * z + x) y) : IsCoprime x y := by
   rw [add_comm] at h
+  -- ⊢ IsCoprime x y
   exact h.of_add_mul_left_left
+  -- 🎉 no goals
 #align is_coprime.of_mul_add_left_left IsCoprime.of_mul_add_left_left
 
 theorem IsCoprime.of_mul_add_right_left (h : IsCoprime (z * y + x) y) : IsCoprime x y := by
   rw [add_comm] at h
+  -- ⊢ IsCoprime x y
   exact h.of_add_mul_right_left
+  -- 🎉 no goals
 #align is_coprime.of_mul_add_right_left IsCoprime.of_mul_add_right_left
 
 theorem IsCoprime.of_mul_add_left_right (h : IsCoprime x (x * z + y)) : IsCoprime x y := by
   rw [add_comm] at h
+  -- ⊢ IsCoprime x y
   exact h.of_add_mul_left_right
+  -- 🎉 no goals
 #align is_coprime.of_mul_add_left_right IsCoprime.of_mul_add_left_right
 
 theorem IsCoprime.of_mul_add_right_right (h : IsCoprime x (z * x + y)) : IsCoprime x y := by
   rw [add_comm] at h
+  -- ⊢ IsCoprime x y
   exact h.of_add_mul_right_right
+  -- 🎉 no goals
 #align is_coprime.of_mul_add_right_right IsCoprime.of_mul_add_right_right
 
 end CommSemiring
@@ -233,7 +287,9 @@ variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
   ⟨fun ⟨a, b, h⟩ => ⟨x • a, b, by rwa [smul_mul_assoc, ← mul_smul_comm]⟩, fun ⟨a, b, h⟩ =>
+                                  -- 🎉 no goals
     ⟨x⁻¹ • a, b, by rwa [smul_mul_smul, inv_mul_self, one_smul]⟩⟩
+                    -- 🎉 no goals
 #align is_coprime_group_smul_left isCoprime_group_smul_left
 
 theorem isCoprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
@@ -286,41 +342,56 @@ variable {R : Type u} [CommRing R]
 
 theorem add_mul_left_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
+                                           -- 🎉 no goals
 #align is_coprime.add_mul_left_left IsCoprime.add_mul_left_left
 
 theorem add_mul_right_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (x + z * y) y := by
   rw [mul_comm]
+  -- ⊢ IsCoprime (x + y * z) y
   exact h.add_mul_left_left z
+  -- 🎉 no goals
 #align is_coprime.add_mul_right_left IsCoprime.add_mul_right_left
 
 theorem add_mul_left_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x (y + x * z) := by
   rw [isCoprime_comm]
+  -- ⊢ IsCoprime (y + x * z) x
   exact h.symm.add_mul_left_left z
+  -- 🎉 no goals
 #align is_coprime.add_mul_left_right IsCoprime.add_mul_left_right
 
 theorem add_mul_right_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x (y + z * x) := by
   rw [isCoprime_comm]
+  -- ⊢ IsCoprime (y + z * x) x
   exact h.symm.add_mul_right_left z
+  -- 🎉 no goals
 #align is_coprime.add_mul_right_right IsCoprime.add_mul_right_right
 
 theorem mul_add_left_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (y * z + x) y := by
   rw [add_comm]
+  -- ⊢ IsCoprime (x + y * z) y
   exact h.add_mul_left_left z
+  -- 🎉 no goals
 #align is_coprime.mul_add_left_left IsCoprime.mul_add_left_left
 
 theorem mul_add_right_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (z * y + x) y := by
   rw [add_comm]
+  -- ⊢ IsCoprime (x + z * y) y
   exact h.add_mul_right_left z
+  -- 🎉 no goals
 #align is_coprime.mul_add_right_left IsCoprime.mul_add_right_left
 
 theorem mul_add_left_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x (x * z + y) := by
   rw [add_comm]
+  -- ⊢ IsCoprime x (y + x * z)
   exact h.add_mul_left_right z
+  -- 🎉 no goals
 #align is_coprime.mul_add_left_right IsCoprime.mul_add_left_right
 
 theorem mul_add_right_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x (z * x + y) := by
   rw [add_comm]
+  -- ⊢ IsCoprime x (y + z * x)
   exact h.add_mul_right_right z
+  -- 🎉 no goals
 #align is_coprime.mul_add_right_right IsCoprime.mul_add_right_right
 
 theorem add_mul_left_left_iff {x y z : R} : IsCoprime (x + y * z) y ↔ IsCoprime x y :=
@@ -357,8 +428,11 @@ theorem mul_add_right_right_iff {x y z : R} : IsCoprime x (z * x + y) ↔ IsCopr
 
 theorem neg_left {x y : R} (h : IsCoprime x y) : IsCoprime (-x) y := by
   obtain ⟨a, b, h⟩ := h
+  -- ⊢ IsCoprime (-x) y
   use -a, b
+  -- ⊢ -a * -x + b * y = 1
   rwa [neg_mul_neg]
+  -- 🎉 no goals
 #align is_coprime.neg_left IsCoprime.neg_left
 
 theorem neg_left_iff (x y : R) : IsCoprime (-x) y ↔ IsCoprime x y :=
@@ -386,13 +460,17 @@ end CommRing
 theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
+  -- ⊢ False
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff'
   --Porting TODO: replace with sq_nonneg when that file is ported
     (by rw [pow_two]; exact mul_self_nonneg _)
     (by rw [pow_two]; exact mul_self_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
+  -- ⊢ False
   obtain rfl := pow_eq_zero hb
+  -- ⊢ False
   exact not_isCoprime_zero_zero h
+  -- 🎉 no goals
 #align is_coprime.sq_add_sq_ne_zero IsCoprime.sq_add_sq_ne_zero
 
 end IsCoprime

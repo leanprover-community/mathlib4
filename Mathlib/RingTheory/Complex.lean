@@ -17,27 +17,37 @@ open Complex
 theorem Algebra.leftMulMatrix_complex (z : ℂ) :
     Algebra.leftMulMatrix Complex.basisOneI z = !![z.re, -z.im; z.im, z.re] := by
   ext i j
+  -- ⊢ ↑(leftMulMatrix basisOneI) z i j = ↑Matrix.of ![![z.re, -z.im], ![z.im, z.re …
   rw [Algebra.leftMulMatrix_eq_repr_mul, Complex.coe_basisOneI_repr, Complex.coe_basisOneI, mul_re,
     mul_im, Matrix.of_apply]
   fin_cases j
+  -- ⊢ Matrix.vecCons (z.re * (Matrix.vecCons 1 ![I] { val := 0, isLt := (_ : 0 < 2 …
   · simp only [Fin.mk_zero, Matrix.cons_val_zero, one_re, mul_one, one_im, mul_zero, sub_zero,
       zero_add]
     fin_cases i <;> rfl
+    -- ⊢ Matrix.vecCons z.re ![z.im] { val := 0, isLt := (_ : 0 < 2) } = Matrix.vecCo …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
   · simp only [Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons, I_re, mul_zero, I_im, mul_one,
       zero_sub, add_zero]
     fin_cases i <;> rfl
+    -- ⊢ Matrix.vecCons (-z.im) ![z.re] { val := 0, isLt := (_ : 0 < 2) } = Matrix.ve …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 #align algebra.left_mul_matrix_complex Algebra.leftMulMatrix_complex
 
 theorem Algebra.trace_complex_apply (z : ℂ) : Algebra.trace ℝ ℂ z = 2 * z.re := by
   rw [Algebra.trace_eq_matrix_trace Complex.basisOneI, Algebra.leftMulMatrix_complex,
     Matrix.trace_fin_two]
   exact (two_mul _).symm
+  -- 🎉 no goals
 #align algebra.trace_complex_apply Algebra.trace_complex_apply
 
 theorem Algebra.norm_complex_apply (z : ℂ) : Algebra.norm ℝ z = Complex.normSq z := by
   rw [Algebra.norm_eq_matrix_det Complex.basisOneI, Algebra.leftMulMatrix_complex,
     Matrix.det_fin_two, normSq_apply]
   simp
+  -- 🎉 no goals
 #align algebra.norm_complex_apply Algebra.norm_complex_apply
 
 theorem Algebra.norm_complex_eq : Algebra.norm ℝ = normSq.toMonoidHom :=

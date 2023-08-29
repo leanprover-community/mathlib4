@@ -71,8 +71,12 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
   id C := 𝟭 C
   comp F G := F ⋙ G
   id_comp _ := by rfl
+                  -- 🎉 no goals
   comp_id _ := by rfl
+                  -- 🎉 no goals
   assoc := by intros; rfl
+              -- ⊢ (f✝ ≫ g✝) ≫ h✝ = f✝ ≫ g✝ ≫ h✝
+                      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.category CategoryTheory.Grpd.category
 
@@ -125,18 +129,28 @@ def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit 
   Limits.mkFanLimit (piLimitFan F) (fun s => Functor.pi' fun j => s.proj j)
     (by
       intros
+      -- ⊢ (fun s => Functor.pi' fun j => Limits.Fan.proj s j) s✝ ≫ Limits.Fan.proj (pi …
       dsimp only [piLimitFan]
+      -- ⊢ (Functor.pi' fun j => Limits.Fan.proj s✝ j) ≫ Limits.Fan.proj (Limits.Fan.mk …
       simp [hom_to_functor])
+      -- 🎉 no goals
     (by
       intro s m w
+      -- ⊢ m = (fun s => Functor.pi' fun j => Limits.Fan.proj s j) s
       apply Functor.pi_ext
+      -- ⊢ ∀ (i : J), m ⋙ Pi.eval (fun i => ↑(F i)) i = (fun s => Functor.pi' fun j =>  …
       intro j; specialize w j
+      -- ⊢ m ⋙ Pi.eval (fun i => ↑(F i)) j = (fun s => Functor.pi' fun j => Limits.Fan. …
+               -- ⊢ m ⋙ Pi.eval (fun i => ↑(F i)) j = (fun s => Functor.pi' fun j => Limits.Fan. …
       simpa)
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.pi_limit_fan_is_limit CategoryTheory.Grpd.piLimitFanIsLimit
 
 instance has_pi : Limits.HasProducts Grpd.{u, u} :=
   Limits.hasProducts_of_limit_fans (by apply piLimitFan) (by apply piLimitFanIsLimit)
+                                       -- 🎉 no goals
+                                                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.has_pi CategoryTheory.Grpd.has_pi
 
@@ -152,7 +166,9 @@ set_option linter.uppercaseLean3 false in
 theorem piIsoPi_hom_π (J : Type u) (f : J → Grpd.{u, u}) (j : J) :
     (piIsoPi J f).hom ≫ Limits.Pi.π f j = CategoryTheory.Pi.eval _ j := by
   simp [piIsoPi]
+  -- ⊢ NatTrans.app (piLimitFan f).π { as := j } = Pi.eval (fun i => ↑(f i)) j
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.pi_iso_pi_hom_π CategoryTheory.Grpd.piIsoPi_hom_π
 

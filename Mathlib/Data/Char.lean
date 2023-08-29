@@ -21,8 +21,11 @@ def Char.toUInt8 (n : Char) : UInt8 := n.1.toUInt8
 
 theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
   simp only [utf8Size]
+  -- ⊢ 0 < if c.val ≤ UInt32.ofNatCore 127 utf8Size.proof_1 then UInt32.ofNatCore 1 …
   repeat (split; decide)
+  -- ⊢ 0 < UInt32.ofNatCore 4 utf8Size.proof_7
   decide
+  -- 🎉 no goals
 
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
@@ -40,5 +43,7 @@ instance : LinearOrder Char where
 
 theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
+  -- ⊢ ofNatAux (toNat c) h = c
   rfl
+  -- 🎉 no goals
 #align char.of_nat_to_nat Char.ofNat_toNat

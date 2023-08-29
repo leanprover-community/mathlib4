@@ -53,6 +53,8 @@ theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n
 @[simp]
 theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {a} := by
   rw [toMultiset_apply, sum_single_index]; apply zero_nsmul
+  -- ⊢ 0 • {a} = 0
+                                           -- 🎉 no goals
 #align finsupp.to_multiset_single Finsupp.toMultiset_single
 
 theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
@@ -63,43 +65,58 @@ theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
     Finsupp.toMultiset (∑ i in s, single i n) = n • s.val := by
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
+  -- 🎉 no goals
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
 
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
   simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
+  -- 🎉 no goals
 #align finsupp.card_to_multiset Finsupp.card_toMultiset
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
   refine' f.induction _ _
+  -- ⊢ Multiset.map g (↑toMultiset 0) = ↑toMultiset (mapDomain g 0)
   · rw [toMultiset_zero, Multiset.map_zero, mapDomain_zero, toMultiset_zero]
+    -- 🎉 no goals
   · intro a n f _ _ ih
+    -- ⊢ Multiset.map g (↑toMultiset (single a n + f)) = ↑toMultiset (mapDomain g (si …
     rw [toMultiset_add, Multiset.map_add, ih, mapDomain_add, mapDomain_single,
       toMultiset_single, toMultiset_add, toMultiset_single, ← Multiset.coe_mapAddMonoidHom,
       (Multiset.mapAddMonoidHom g).map_nsmul]
     rfl
+    -- 🎉 no goals
 #align finsupp.to_multiset_map Finsupp.toMultiset_map
 
 @[simp]
 theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
     f.toMultiset.prod = f.prod fun a n => a ^ n := by
   refine' f.induction _ _
+  -- ⊢ Multiset.prod (↑toMultiset 0) = prod 0 fun a n => a ^ n
   · rw [toMultiset_zero, Multiset.prod_zero, Finsupp.prod_zero_index]
+    -- 🎉 no goals
   · intro a n f _ _ ih
+    -- ⊢ Multiset.prod (↑toMultiset (single a n + f)) = prod (single a n + f) fun a n …
     rw [toMultiset_add, Multiset.prod_add, ih, toMultiset_single, Multiset.prod_nsmul,
       Finsupp.prod_add_index' pow_zero pow_add, Finsupp.prod_single_index, Multiset.prod_singleton]
     · exact pow_zero a
+      -- 🎉 no goals
 #align finsupp.prod_to_multiset Finsupp.prod_toMultiset
 
 @[simp]
 theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.toFinset = f.support := by
   refine' f.induction _ _
+  -- ⊢ Multiset.toFinset (↑toMultiset 0) = 0.support
   · rw [toMultiset_zero, Multiset.toFinset_zero, support_zero]
+    -- 🎉 no goals
   · intro a n f ha hn ih
+    -- ⊢ Multiset.toFinset (↑toMultiset (single a n + f)) = (single a n + f).support
     rw [toMultiset_add, Multiset.toFinset_add, ih, toMultiset_single, support_add_eq,
       support_single_ne_zero _ hn, Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton]
     refine' Disjoint.mono_left support_single_subset _
+    -- ⊢ Disjoint {a} f.support
     rwa [Finset.disjoint_singleton_left]
+    -- 🎉 no goals
 #align finsupp.to_finset_to_multiset Finsupp.toFinset_toMultiset
 
 @[simp]
@@ -107,23 +124,33 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
   calc
     (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) :=
       by rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
+         -- ⊢ Multiset.count a (sum f fun a n => n • {a}) = sum f fun x n => Multiset.coun …
+                                -- 🎉 no goals
     _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
+                                                              -- 🎉 no goals
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
         (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero]) fun H =>
+                          -- 🎉 no goals
         by simp only [not_mem_support_iff.1 H, zero_mul]
+           -- 🎉 no goals
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
+                  -- 🎉 no goals
 #align finsupp.count_to_multiset Finsupp.count_toMultiset
 
 theorem toMultiset_sup [DecidableEq α] (f g : α →₀ ℕ) :
     toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g := by
   ext
+  -- ⊢ Multiset.count a✝ (↑toMultiset (f ⊔ g)) = Multiset.count a✝ (↑toMultiset f ∪ …
   simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply, sup_eq_max]
+  -- 🎉 no goals
 
 theorem toMultiset_inf [DecidableEq α] (f g : α →₀ ℕ) :
     toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g := by
   ext
+  -- ⊢ Multiset.count a✝ (↑toMultiset (f ⊓ g)) = Multiset.count a✝ (↑toMultiset f ∩ …
   simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply, inf_eq_min]
+  -- 🎉 no goals
 
 @[simp]
 theorem mem_toMultiset (f : α →₀ ℕ) (i : α) : i ∈ toMultiset f ↔ i ∈ f.support := by
@@ -142,6 +169,7 @@ the multiplicities of the elements of `s`. -/
 @[simps symm_apply]
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
   toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
+                                                          -- 🎉 no goals
   invFun f := Finsupp.toMultiset f
   map_add' s t := Finsupp.ext <| fun _ => count_add _ _ _
   right_inv f :=
@@ -150,6 +178,7 @@ def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
         Multiset.count_singleton, mul_boole, Finsupp.coe_mk, Finsupp.mem_support_iff,
         Multiset.count_nsmul, Finset.sum_ite_eq, ite_not, ite_eq_right_iff]
       exact Eq.symm
+      -- 🎉 no goals
   left_inv s := by simp only [Finsupp.toMultiset_apply, Finsupp.sum, Finsupp.coe_mk,
     Multiset.toFinset_sum_count_nsmul_eq]
 #align multiset.to_finsupp Multiset.toFinsupp
@@ -172,6 +201,8 @@ theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + to
 @[simp]
 theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 :=
   by ext; rw [toFinsupp_apply, count_singleton, Finsupp.single_eq_pi_single, Pi.single_apply]
+     -- ⊢ ↑(↑toFinsupp {a}) a✝ = ↑(Finsupp.single a 1) a✝
+          -- 🎉 no goals
 #align multiset.to_finsupp_singleton Multiset.toFinsupp_singleton
 
 @[simp]
@@ -186,11 +217,15 @@ theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext
+  -- ⊢ ↑(↑toFinsupp (s ∪ t)) a✝ = ↑(↑toFinsupp s ⊔ ↑toFinsupp t) a✝
   simp [sup_eq_max]
+  -- 🎉 no goals
 
 theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s ⊓ toFinsupp t := by
   ext
+  -- ⊢ ↑(↑toFinsupp (s ∩ t)) a✝ = ↑(↑toFinsupp s ⊓ ↑toFinsupp t) a✝
   simp [inf_eq_min]
+  -- 🎉 no goals
 
 end Multiset
 
@@ -211,6 +246,7 @@ namespace Finsupp
 def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
   toEquiv := Multiset.toFinsupp.symm.toEquiv
   map_rel_iff' {f g} := by simp [le_def, Multiset.le_iff_count]
+                           -- 🎉 no goals
 #align finsupp.order_iso_multiset Finsupp.orderIsoMultiset
 
 @[simp]
@@ -226,12 +262,16 @@ theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
 
 theorem toMultiset_strictMono : StrictMono (@toMultiset ι) :=
   by classical exact (@orderIsoMultiset ι _).strictMono
+     -- 🎉 no goals
 #align finsupp.to_multiset_strict_mono Finsupp.toMultiset_strictMono
 
 theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by
   rw [← card_toMultiset, ← card_toMultiset]
+  -- ⊢ ↑Multiset.card (↑toMultiset m) < ↑Multiset.card (↑toMultiset n)
   apply Multiset.card_lt_of_lt
+  -- ⊢ ↑toMultiset m < ↑toMultiset n
   exact toMultiset_strictMono h
+  -- 🎉 no goals
 #align finsupp.sum_id_lt_of_lt Finsupp.sum_id_lt_of_lt
 
 variable (ι)

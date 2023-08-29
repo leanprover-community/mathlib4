@@ -67,6 +67,8 @@ def conePoint : Algebra T where
       rw [Category.assoc, t.fac, newCone_π_app, ← T.η.naturality_assoc, Functor.id_map,
         (D.obj j).unit]
       dsimp; simp
+      -- ⊢ NatTrans.app c.π j ≫ 𝟙 (D.obj j).A = 𝟙 c.pt ≫ NatTrans.app c.π j
+             -- 🎉 no goals
   -- See library note [dsimp, simp]
   assoc :=
     t.hom_ext fun j => by
@@ -74,6 +76,7 @@ def conePoint : Algebra T where
         Functor.map_comp_assoc, t.fac (newCone D c), newCone_π_app, ← T.μ.naturality_assoc,
         (D.obj j).assoc, Functor.map_comp, Category.assoc]
       rfl
+      -- 🎉 no goals
 #align category_theory.monad.forget_creates_limits.cone_point CategoryTheory.Monad.ForgetCreatesLimits.conePoint
 
 /-- (Impl) Construct the lifted cone in `Algebra T` which will be limiting. -/
@@ -84,9 +87,13 @@ def liftedCone : Cone D where
     { app := fun j => { f := c.π.app j }
       naturality := fun X Y f => by
         ext1
+        -- ⊢ (((Functor.const J).obj (conePoint D c t)).map f ≫ (fun j => Algebra.Hom.mk  …
         dsimp
+        -- ⊢ 𝟙 c.pt ≫ NatTrans.app c.π Y = NatTrans.app c.π X ≫ (D.map f).f
         erw [c.w f]
+        -- ⊢ 𝟙 c.pt ≫ NatTrans.app c.π Y = NatTrans.app c.π Y
         simp }
+        -- 🎉 no goals
 #align category_theory.monad.forget_creates_limits.lifted_cone CategoryTheory.Monad.ForgetCreatesLimits.liftedCone
 
 /-- (Impl) Prove that the lifted cone is limiting. -/
@@ -97,14 +104,20 @@ def liftedConeIsLimit : IsLimit (liftedCone D c t) where
       h :=
         t.hom_ext fun j => by
           dsimp
+          -- ⊢ (T.map (IsLimit.lift t ((forget T).mapCone s)) ≫ IsLimit.lift t (newCone D c …
           rw [Category.assoc, Category.assoc, t.fac, newCone_π_app, ← Functor.map_comp_assoc,
             t.fac, Functor.mapCone_π_app]
           apply (s.π.app j).h }
+          -- 🎉 no goals
   uniq s m J := by
     ext1
+    -- ⊢ m.f = ((fun s => Algebra.Hom.mk (IsLimit.lift t ((forget T).mapCone s))) s).f
     apply t.hom_ext
+    -- ⊢ ∀ (j : J✝), m.f ≫ NatTrans.app c.π j = ((fun s => Algebra.Hom.mk (IsLimit.li …
     intro j
+    -- ⊢ m.f ≫ NatTrans.app c.π j = ((fun s => Algebra.Hom.mk (IsLimit.lift t ((forge …
     simpa [t.fac ((forget T).mapCone s) j] using congr_arg Algebra.Hom.f (J j)
+    -- 🎉 no goals
 #align category_theory.monad.forget_creates_limits.lifted_cone_is_limit CategoryTheory.Monad.ForgetCreatesLimits.liftedConeIsLimit
 
 end ForgetCreatesLimits
@@ -188,18 +201,24 @@ def coconePoint : Algebra T where
   a := lambda c t
   unit := by
     apply t.hom_ext
+    -- ⊢ ∀ (j : J), NatTrans.app c.ι j ≫ NatTrans.app (η T) c.pt ≫ lambda c t = NatTr …
     intro j
+    -- ⊢ NatTrans.app c.ι j ≫ NatTrans.app (η T) c.pt ≫ lambda c t = NatTrans.app c.ι …
     rw [show c.ι.app j ≫ T.η.app c.pt ≫ _ = T.η.app (D.obj j).A ≫ _ ≫ _ from
         T.η.naturality_assoc _ _,
       commuting, Algebra.unit_assoc (D.obj j)]
     dsimp; simp
+    -- ⊢ NatTrans.app c.ι j = NatTrans.app c.ι j ≫ 𝟙 c.pt
+           -- 🎉 no goals
   -- See library note [dsimp, simp]
   assoc := by
     refine' (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => _
+    -- ⊢ NatTrans.app (T.mapCocone (T.mapCocone c)).ι j ≫ NatTrans.app (μ T) c.pt ≫ l …
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
     apply (D.obj j).assoc_assoc _
+    -- 🎉 no goals
 #align category_theory.monad.forget_creates_colimits.cocone_point CategoryTheory.Monad.ForgetCreatesColimits.coconePoint
 
 /-- (Impl) Construct the lifted cocone in `Algebra T` which will be colimiting. -/
@@ -212,9 +231,13 @@ def liftedCocone : Cocone D where
           h := commuting _ _ _ }
       naturality := fun A B f => by
         ext1
+        -- ⊢ (D.map f ≫ (fun j => Algebra.Hom.mk (NatTrans.app c.ι j)) B).f = ((fun j =>  …
         dsimp
+        -- ⊢ (D.map f).f ≫ NatTrans.app c.ι B = NatTrans.app c.ι A ≫ 𝟙 c.pt
         rw [comp_id]
+        -- ⊢ (D.map f).f ≫ NatTrans.app c.ι B = NatTrans.app c.ι A
         apply c.w }
+        -- 🎉 no goals
 #align category_theory.monad.forget_creates_colimits.lifted_cocone CategoryTheory.Monad.ForgetCreatesColimits.liftedCocone
 
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
@@ -225,13 +248,20 @@ def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
       h :=
         (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
           dsimp
+          -- ⊢ T.map (NatTrans.app c.ι j) ≫ T.map (IsColimit.desc t ((forget T).mapCocone s …
           rw [← Functor.map_comp_assoc, ← Category.assoc, t.fac, commuting, Category.assoc, t.fac]
+          -- ⊢ T.map (NatTrans.app ((forget T).mapCocone s).ι j) ≫ s.pt.a = (D.obj j).a ≫ N …
           apply Algebra.Hom.h }
+          -- 🎉 no goals
   uniq s m J := by
     ext1
+    -- ⊢ m.f = ((fun s => Algebra.Hom.mk (IsColimit.desc t ((forget T).mapCocone s))) …
     apply t.hom_ext
+    -- ⊢ ∀ (j : J✝), NatTrans.app c.ι j ≫ m.f = NatTrans.app c.ι j ≫ ((fun s => Algeb …
     intro j
+    -- ⊢ NatTrans.app c.ι j ≫ m.f = NatTrans.app c.ι j ≫ ((fun s => Algebra.Hom.mk (I …
     simpa using congr_arg Algebra.Hom.f (J j)
+    -- 🎉 no goals
 #align category_theory.monad.forget_creates_colimits.lifted_cocone_is_colimit CategoryTheory.Monad.ForgetCreatesColimits.liftedCoconeIsColimit
 
 end ForgetCreatesColimits
@@ -254,18 +284,23 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
+                -- ⊢ (D.map f ≫ (fun j => Algebra.Hom.mk (NatTrans.app c.ι j)) B).f = ((fun j =>  …
                 dsimp
+                -- ⊢ (D.map f).f ≫ NatTrans.app c.ι B = NatTrans.app c.ι A ≫ 𝟙 c.pt
                 erw [comp_id, c.w] } }
+                -- 🎉 no goals
       validLift := Cocones.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 #align category_theory.monad.forget_creates_colimit CategoryTheory.Monad.forgetCreatesColimit
 
 noncomputable instance forgetCreatesColimitsOfShape [PreservesColimitsOfShape J (T : C ⥤ C)] :
     CreatesColimitsOfShape J (forget T) where CreatesColimit := by infer_instance
+                                                                   -- 🎉 no goals
 #align category_theory.monad.forget_creates_colimits_of_shape CategoryTheory.Monad.forgetCreatesColimitsOfShape
 
 noncomputable instance forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T : C ⥤ C)] :
     CreatesColimitsOfSize.{v, u} (forget T) where CreatesColimitsOfShape := by infer_instance
+                                                                               -- 🎉 no goals
 #align category_theory.monad.forget_creates_colimits CategoryTheory.Monad.forgetCreatesColimits
 
 /-- For `D : J ⥤ Algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
@@ -310,7 +345,9 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
   -- Porting note: It would be nice to have a variant of apply which introduces goals for missing
   -- instances.
   letI A := Monad.comparison (Adjunction.ofRightAdjoint R)
+  -- ⊢ CreatesColimit K R
   letI B := Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))
+  -- ⊢ CreatesColimit K R
   let i : (K ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) ⋙ Monad.forget _ ≅ K ⋙ R :=
     Functor.associator _ _ _ ≪≫
       isoWhiskerLeft K (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
@@ -326,9 +363,13 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
     dsimp
     refine' preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
+  -- ⊢ CreatesColimit K R
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
+  -- ⊢ CreatesColimit K R
   let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  -- ⊢ CreatesColimit K R
   apply createsColimitOfNatIso e
+  -- 🎉 no goals
 #align category_theory.monadic_creates_colimit_of_preserves_colimit CategoryTheory.monadicCreatesColimitOfPreservesColimit
 
 /-- A monadic functor creates any colimits of shapes it preserves. -/
@@ -336,8 +377,10 @@ noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D
     [MonadicRightAdjoint R] [PreservesColimitsOfShape J R] : CreatesColimitsOfShape J R :=
   letI : PreservesColimitsOfShape J (leftAdjoint R) := by
     apply (Adjunction.leftAdjointPreservesColimits (Adjunction.ofRightAdjoint R)).1
+    -- 🎉 no goals
   letI : PreservesColimitsOfShape J (leftAdjoint R ⋙ R) := by
     apply CategoryTheory.Limits.compPreservesColimitsOfShape _ _
+    -- 🎉 no goals
   ⟨monadicCreatesColimitOfPreservesColimit _ _⟩
 #align category_theory.monadic_creates_colimits_of_shape_of_preserves_colimits_of_shape CategoryTheory.monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape
 
@@ -373,10 +416,13 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
     HasColimitsOfShape J D where
   has_colimit := fun F => by
       let c := (leftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
+      -- ⊢ HasColimit F
       letI : PreservesColimitsOfShape J _ :=
         (Adjunction.ofRightAdjoint R).leftAdjointPreservesColimits.1
       let t : IsColimit c := isColimitOfPreserves (leftAdjoint R) (colimit.isColimit _)
+      -- ⊢ HasColimit F
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
+      -- ⊢ (F ⋙ R) ⋙ leftAdjoint R ≅ F
       apply
         (isoWhiskerLeft F (asIso (Adjunction.ofRightAdjoint R).counit) : _) ≪≫ F.rightUnitor
 #align category_theory.has_colimits_of_shape_of_reflective CategoryTheory.hasColimitsOfShape_of_reflective
@@ -394,6 +440,7 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
     PreservesLimitsOfShape (Discrete.{v} PEmpty) (leftAdjoint R) where
   preservesLimit {K} := by
     let F := Functor.empty.{v} D
+    -- ⊢ PreservesLimit K (leftAdjoint R)
     letI : PreservesLimit (F ⋙ R) (leftAdjoint R) := by
       constructor
       intro c h
@@ -406,6 +453,7 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
       let A := (CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R)
       apply (A.preserves (limit.isLimit F)).conePointUniqueUpToIso h
     apply preservesLimitOfIsoDiagram _ (Functor.emptyExt (F ⋙ R) _)
+    -- 🎉 no goals
 #align category_theory.left_adjoint_preserves_terminal_of_reflective CategoryTheory.leftAdjointPreservesTerminalOfReflective
 
 end

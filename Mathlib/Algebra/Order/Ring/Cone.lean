@@ -58,15 +58,22 @@ open Ring
 def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing α :=
   { ‹Ring α›, OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
     exists_pair_ne := ⟨0, 1, fun h => by simpa [← h, C.pos_iff] using C.one_pos⟩,
+                                         -- 🎉 no goals
     zero_le_one := by
       change C.nonneg (1 - 0)
+      -- ⊢ AddCommGroup.PositiveCone.nonneg C.toPositiveCone (1 - 0)
       convert C.one_nonneg
+      -- ⊢ 1 - 0 = 1
       simp,
+      -- 🎉 no goals
     mul_pos := fun x y xp yp => by
       change C.pos (x * y - 0)
+      -- ⊢ AddCommGroup.PositiveCone.pos C.toPositiveCone (x * y - 0)
       -- porting note: used to be convert, but it relied on unfolding definitions
       rw [sub_zero]
+      -- ⊢ AddCommGroup.PositiveCone.pos C.toPositiveCone (x * y)
       exact C.mul_pos x y (by rwa [← sub_zero x]) (by rwa [← sub_zero y]) }
+      -- 🎉 no goals
 #align strict_ordered_ring.mk_of_positive_cone StrictOrderedRing.mkOfPositiveCone
 
 /-- Construct a `LinearOrderedRing` by

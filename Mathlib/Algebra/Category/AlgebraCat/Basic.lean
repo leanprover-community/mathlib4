@@ -65,6 +65,9 @@ instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
     { obj := fun R => R
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => AlgHom.ext (by intros x; dsimp at h; rw [h])⟩
+                                              -- ⊢ ↑a₁✝ x = ↑a₂✝ x
+                                                        -- ⊢ ↑a₁✝ x = ↑a₂✝ x
+                                                                    -- 🎉 no goals
 
 instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Ring S.carrier)
@@ -143,15 +146,27 @@ def free : Type u ⥤ AlgebraCat.{u} R where
   map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
   -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
   map_id := by intro X; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; rfl
+               -- ⊢ { obj := fun S => mk (FreeAlgebra R S), map := fun {X Y} f => ↑(FreeAlgebra. …
+                        -- ⊢ ↑({ obj := fun S => mk (FreeAlgebra R S), map := fun {X Y} f => ↑(FreeAlgebr …
+                                                   -- ⊢ FreeAlgebra.ι R ∘ 𝟙 X = ↑(𝟙 (mk (FreeAlgebra R X))) ∘ FreeAlgebra.ι R
+                                                                                        -- 🎉 no goals
   map_comp := by
   -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
     intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
+    -- ⊢ { obj := fun S => mk (FreeAlgebra R S), map := fun {X Y} f => ↑(FreeAlgebra. …
+            -- ⊢ ↑({ obj := fun S => mk (FreeAlgebra R S), map := fun {X Y} f => ↑(FreeAlgebr …
+                                       -- ⊢ FreeAlgebra.ι R ∘ (f✝ ≫ g✝) = ↑(↑(FreeAlgebra.lift R) (FreeAlgebra.ι R ∘ f✝) …
+                                                                            -- ⊢ (FreeAlgebra.ι R ∘ (f✝ ≫ g✝)) x✝ = (↑(↑(FreeAlgebra.lift R) (FreeAlgebra.ι R …
     -- Porting node: this ↓ `erw` used to be handled by the `simp` below it
     erw [CategoryTheory.coe_comp]
+    -- ⊢ (FreeAlgebra.ι R ∘ (f✝ ≫ g✝)) x✝ = ((↑(↑(FreeAlgebra.lift R) (FreeAlgebra.ι  …
     simp only [CategoryTheory.coe_comp, Function.comp_apply, types_comp_apply]
+    -- ⊢ FreeAlgebra.ι R (g✝ (f✝ x✝)) = ↑(↑(FreeAlgebra.lift R) (FreeAlgebra.ι R ∘ g✝ …
     -- Porting node: this ↓ `erw` and `rfl` used to be handled by the `simp` above
     erw [FreeAlgebra.lift_ι_apply, FreeAlgebra.lift_ι_apply]
+    -- ⊢ FreeAlgebra.ι R (g✝ (f✝ x✝)) = (FreeAlgebra.ι R ∘ g✝) (f✝ x✝)
     rfl
+    -- 🎉 no goals
 #align Algebra.free AlgebraCat.free
 
 /-- The free/forget adjunction for `R`-algebras. -/
@@ -162,19 +177,28 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
       homEquiv_naturality_left_symm := by
         -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
         intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
+        -- ⊢ ↑((fun X A => (FreeAlgebra.lift R).symm) X'✝ Y✝).symm (f✝ ≫ g✝) = (free R).m …
+                -- ⊢ ↑(↑((fun X A => (FreeAlgebra.lift R).symm) X'✝ Y✝).symm (f✝ ≫ g✝)) ∘ FreeAlg …
+                                           -- ⊢ ↑(↑(FreeAlgebra.lift R).symm.symm (f✝ ≫ g✝)) ∘ FreeAlgebra.ι R = ↑((free R). …
+                                                                                -- ⊢ (↑(↑(FreeAlgebra.lift R).symm.symm (f✝ ≫ g✝)) ∘ FreeAlgebra.ι R) x✝ = (↑((fr …
         simp only [free_map, Equiv.symm_symm, FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp,
           Function.comp_apply, types_comp_apply]
         -- Porting node: this ↓ `erw` and `rfl` used to be handled by the `simp` above
         erw [FreeAlgebra.lift_ι_apply, CategoryTheory.comp_apply, FreeAlgebra.lift_ι_apply,
           Function.comp_apply, FreeAlgebra.lift_ι_apply]
         rfl
+        -- 🎉 no goals
       homEquiv_naturality_right := by
         intros; ext
+        -- ⊢ ↑((fun X A => (FreeAlgebra.lift R).symm) X✝ Y'✝) (f✝ ≫ g✝) = ↑((fun X A => ( …
+                -- ⊢ ↑((fun X A => (FreeAlgebra.lift R).symm) X✝ Y'✝) (f✝ ≫ g✝) a✝ = (↑((fun X A  …
         simp only [CategoryTheory.coe_comp, Function.comp_apply,
           FreeAlgebra.lift_symm_apply, types_comp_apply]
         -- Porting note: proof used to be done after this ↑ `simp`; added ↓ two lines
         erw [FreeAlgebra.lift_symm_apply, FreeAlgebra.lift_symm_apply]
+        -- ⊢ (↑(f✝ ≫ g✝) ∘ FreeAlgebra.ι R) a✝ = (forget (AlgebraCat R)).map g✝ ((↑f✝ ∘ F …
         rfl }
+        -- 🎉 no goals
 #align Algebra.adj AlgebraCat.adj
 
 instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
@@ -193,7 +217,11 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
   hom := (e : X₁ →ₐ[R] X₂)
   inv := (e.symm : X₂ →ₐ[R] X₁)
   hom_inv_id := by ext x; exact e.left_inv x
+                   -- ⊢ ↑(↑e ≫ ↑(symm e)) x = ↑(𝟙 (AlgebraCat.of R X₁)) x
+                          -- 🎉 no goals
   inv_hom_id := by ext x; exact e.right_inv x
+                   -- ⊢ ↑(↑(symm e) ≫ ↑e) x = ↑(𝟙 (AlgebraCat.of R X₂)) x
+                          -- 🎉 no goals
 #align alg_equiv.to_Algebra_iso AlgEquiv.toAlgebraIso
 
 namespace CategoryTheory.Iso
@@ -206,13 +234,19 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
   left_inv x := by
     -- porting note: was `by tidy`
     change (i.hom ≫ i.inv) x = x
+    -- ⊢ ↑(i.hom ≫ i.inv) x = x
     simp only [hom_inv_id]
+    -- ⊢ ↑(𝟙 X) x = x
     rw [id_apply]
+    -- 🎉 no goals
   right_inv x := by
     -- porting note: was `by tidy`
     change (i.inv ≫ i.hom) x = x
+    -- ⊢ ↑(i.inv ≫ i.hom) x = x
     simp only [inv_hom_id]
+    -- ⊢ ↑(𝟙 Y) x = x
     rw [id_apply]
+    -- 🎉 no goals
   map_add' := i.hom.map_add -- Porting note: was `by tidy`
   map_mul' := i.hom.map_mul -- Porting note: was `by tidy`
   commutes' := i.hom.commutes -- Porting note: was `by tidy`
@@ -236,6 +270,9 @@ instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraC
 instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
+    -- ⊢ IsIso f
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
+    -- ⊢ IsIso f
     exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
+    -- 🎉 no goals
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos

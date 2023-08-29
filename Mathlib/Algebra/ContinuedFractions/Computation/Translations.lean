@@ -67,8 +67,11 @@ theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
   cases' ifp_n with _ fr
+  -- ⊢ IntFractPair.stream v (n + 1) = none
   change fr = 0 at nth_fr_eq_zero
+  -- ⊢ IntFractPair.stream v (n + 1) = none
   simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
+  -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.stream_eq_none_of_fr_eq_zero GeneralizedContinuedFraction.IntFractPair.stream_eq_none_of_fr_eq_zero
 
 /-- Gives a recurrence to compute the `n + 1`th value of the sequence of integer and fractional
@@ -78,7 +81,11 @@ theorem succ_nth_stream_eq_none_iff :
     IntFractPair.stream v (n + 1) = none ↔
       IntFractPair.stream v n = none ∨ ∃ ifp, IntFractPair.stream v n = some ifp ∧ ifp.fr = 0 := by
   rw [IntFractPair.stream]
+  -- ⊢ (Option.bind (IntFractPair.stream v n) fun ap_n => if ap_n.fr = 0 then none  …
   cases IntFractPair.stream v n <;> simp [imp_false]
+  -- ⊢ (Option.bind none fun ap_n => if ap_n.fr = 0 then none else some (IntFractPa …
+                                    -- 🎉 no goals
+                                    -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_none_iff GeneralizedContinuedFraction.IntFractPair.succ_nth_stream_eq_none_iff
 
 /-- Gives a recurrence to compute the `n + 1`th value of the sequence of integer and fractional
@@ -90,6 +97,7 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
         IntFractPair.stream v n = some ifp_n ∧
           ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
   by simp [IntFractPair.stream, ite_eq_iff]
+     -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_some_iff GeneralizedContinuedFraction.IntFractPair.succ_nth_stream_eq_some_iff
 
 /-- An easier to use version of one direction of
@@ -104,9 +112,13 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 -/
 theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
   induction' n with n ih
+  -- ⊢ IntFractPair.stream (↑a) (Nat.zero + 1) = none
   · refine' IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) _
+    -- ⊢ (IntFractPair.of ↑a).fr = 0
     simp only [IntFractPair.of, Int.fract_intCast]
+    -- 🎉 no goals
   · exact IntFractPair.succ_nth_stream_eq_none_iff.mpr (Or.inl ih)
+    -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.stream_succ_of_int GeneralizedContinuedFraction.IntFractPair.stream_succ_of_int
 
 theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
@@ -118,7 +130,9 @@ theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
   rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with
     ⟨ifp_n, seq_nth_eq, _, rfl⟩
   refine' ⟨ifp_n, seq_nth_eq, _⟩
+  -- ⊢ ifp_n.fr⁻¹ = ↑⌊ifp_n.fr⁻¹⌋
   simpa only [IntFractPair.of, Int.fract, sub_eq_zero] using succ_nth_fr_eq_zero
+  -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.exists_succ_nth_stream_of_fr_zero GeneralizedContinuedFraction.IntFractPair.exists_succ_nth_stream_of_fr_zero
 
 /-- A recurrence relation that expresses the `(n+1)`th term of the stream of `IntFractPair`s
@@ -128,17 +142,27 @@ the inverse of the fractional part of `v`.
 theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
     IntFractPair.stream v (n + 1) = IntFractPair.stream (Int.fract v)⁻¹ n := by
   induction' n with n ih
+  -- ⊢ IntFractPair.stream v (Nat.zero + 1) = IntFractPair.stream (Int.fract v)⁻¹ N …
   · have H : (IntFractPair.of v).fr = Int.fract v := rfl
+    -- ⊢ IntFractPair.stream v (Nat.zero + 1) = IntFractPair.stream (Int.fract v)⁻¹ N …
     rw [stream_zero, stream_succ_of_some (stream_zero v) (ne_of_eq_of_ne H h), H]
+    -- 🎉 no goals
   · cases' eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone hsome
+    -- ⊢ IntFractPair.stream v (Nat.succ n + 1) = IntFractPair.stream (Int.fract v)⁻¹ …
     · rw [hnone] at ih
+      -- ⊢ IntFractPair.stream v (Nat.succ n + 1) = IntFractPair.stream (Int.fract v)⁻¹ …
       rw [succ_nth_stream_eq_none_iff.mpr (Or.inl hnone),
         succ_nth_stream_eq_none_iff.mpr (Or.inl ih)]
     · obtain ⟨p, hp⟩ := Option.ne_none_iff_exists'.mp hsome
+      -- ⊢ IntFractPair.stream v (Nat.succ n + 1) = IntFractPair.stream (Int.fract v)⁻¹ …
       rw [hp] at ih
+      -- ⊢ IntFractPair.stream v (Nat.succ n + 1) = IntFractPair.stream (Int.fract v)⁻¹ …
       cases' eq_or_ne p.fr 0 with hz hnz
+      -- ⊢ IntFractPair.stream v (Nat.succ n + 1) = IntFractPair.stream (Int.fract v)⁻¹ …
       · rw [stream_eq_none_of_fr_eq_zero hp hz, stream_eq_none_of_fr_eq_zero ih hz]
+        -- 🎉 no goals
       · rw [stream_succ_of_some hp hnz, stream_succ_of_some ih hnz]
+        -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.stream_succ GeneralizedContinuedFraction.IntFractPair.stream_succ
 
 end IntFractPair
@@ -162,13 +186,16 @@ theorem IntFractPair.seq1_fst_eq_of : (IntFractPair.seq1 v).fst = IntFractPair.o
 
 theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b := by
   cases aux_seq_eq : IntFractPair.seq1 v
+  -- ⊢ (of v).h = ↑(fst✝, snd✝).fst.b
   simp [of, aux_seq_eq]
+  -- 🎉 no goals
 #align generalized_continued_fraction.of_h_eq_int_fract_pair_seq1_fst_b GeneralizedContinuedFraction.of_h_eq_intFractPair_seq1_fst_b
 
 /-- The head term of the gcf of `v` is `⌊v⌋`. -/
 @[simp]
 theorem of_h_eq_floor : (of v).h = ⌊v⌋ := by
   simp [of_h_eq_intFractPair_seq1_fst_b, IntFractPair.of]
+  -- 🎉 no goals
 #align generalized_continued_fraction.of_h_eq_floor GeneralizedContinuedFraction.of_h_eq_floor
 
 end Head
@@ -231,7 +258,9 @@ theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair
     unfold of IntFractPair.seq1 at s_nth_eq
     simpa [Stream'.Seq.get?_tail, Stream'.Seq.map_get?] using s_nth_eq
   cases gp_n_eq
+  -- ⊢ ∃ ifp_1, IntFractPair.stream v (n + 1) = some ifp_1 ∧ ↑ifp_1.b = { a := 1, b …
   simp_all only [Option.some.injEq, exists_eq_left']
+  -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.exists_succ_nth_stream_of_gcf_of_nth_eq_some GeneralizedContinuedFraction.IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
@@ -241,7 +270,9 @@ theorem get?_of_eq_some_of_succ_get?_intFractPair_stream {ifp_succ_n : IntFractP
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (of v).s.get? n = some ⟨1, ifp_succ_n.b⟩ := by
   unfold of IntFractPair.seq1
+  -- ⊢ Stream'.Seq.get?
   simp [Stream'.Seq.map_tail, Stream'.Seq.get?_tail, Stream'.Seq.map_get?, stream_succ_nth_eq]
+  -- 🎉 no goals
 #align generalized_continued_fraction.nth_of_eq_some_of_succ_nth_int_fract_pair_stream GeneralizedContinuedFraction.get?_of_eq_some_of_succ_get?_intFractPair_stream
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
@@ -252,8 +283,12 @@ theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFract
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
   have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
     cases ifp_n
+    -- ⊢ IntFractPair.stream v (n + 1) = some (IntFractPair.of { b := b✝, fr := fr✝ } …
     simp [IntFractPair.stream, stream_nth_eq, nth_fr_ne_zero]
+    -- ⊢ fr✝ = 0 → False
     intro; contradiction
+    -- ⊢ False
+           -- 🎉 no goals
   get?_of_eq_some_of_succ_get?_intFractPair_stream this
 #align generalized_continued_fraction.nth_of_eq_some_of_nth_int_fract_pair_stream_fr_ne_zero GeneralizedContinuedFraction.get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero
 
@@ -263,18 +298,26 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]
+  -- ⊢ Stream'.Seq.get?
   simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
     Stream'.Seq.get?, Stream'.map]
   rw [← Stream'.nth_succ, Stream'.nth, Option.map]
+  -- ⊢ (match IntFractPair.stream v (Nat.succ 0) with
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
+  -- ⊢ some { a := 1, b := ↑x✝.b } = Option.bind (IntFractPair.stream v 1) (some ∘  …
+            -- 🎉 no goals
+            -- 🎉 no goals
 #align generalized_continued_fraction.of_s_head_aux GeneralizedContinuedFraction.of_s_head_aux
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
 -/
 theorem of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)⁻¹⌋⟩ := by
   change (of v).s.get? 0 = _
+  -- ⊢ Stream'.Seq.get? (of v).s 0 = some { a := 1, b := ↑⌊(fract v)⁻¹⌋ }
   rw [of_s_head_aux, stream_succ_of_some (stream_zero v) h, Option.bind]
+  -- ⊢ (match some (IntFractPair.of (IntFractPair.of v).fr⁻¹), some ∘ fun p => { a  …
   rfl
+  -- 🎉 no goals
 #align generalized_continued_fraction.of_s_head GeneralizedContinuedFraction.of_s_head
 
 variable (K)
@@ -284,9 +327,13 @@ variable (K)
 theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
   haveI h : ∀ n, (of (a : K)).s.get? n = none := by
     intro n
+    -- ⊢ Stream'.Seq.get? (of ↑a).s n = none
     induction' n with n ih
+    -- ⊢ Stream'.Seq.get? (of ↑a).s Nat.zero = none
     · rw [of_s_head_aux, stream_succ_of_int, Option.bind]
+      -- 🎉 no goals
     · exact (of (a : K)).s.prop ih
+      -- 🎉 no goals
   Stream'.Seq.ext fun n => (h n).trans (Stream'.Seq.get?_nil n).symm
 #align generalized_continued_fraction.of_s_of_int GeneralizedContinuedFraction.of_s_of_int
 
@@ -297,18 +344,26 @@ that of the inverse of the fractional part of `v`.
 -/
 theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get? n := by
   cases' eq_or_ne (fract v) 0 with h h
+  -- ⊢ Stream'.Seq.get? (of v).s (n + 1) = Stream'.Seq.get? (of (fract v)⁻¹).s n
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
+    -- ⊢ Stream'.Seq.get? (of ↑a).s (n + 1) = Stream'.Seq.get? (of (fract ↑a)⁻¹).s n
     rw [fract_intCast, inv_zero, of_s_of_int, ← cast_zero, of_s_of_int,
       Stream'.Seq.get?_nil, Stream'.Seq.get?_nil]
   cases' eq_or_ne ((of (fract v)⁻¹).s.get? n) none with h₁ h₁
+  -- ⊢ Stream'.Seq.get? (of v).s (n + 1) = Stream'.Seq.get? (of (fract v)⁻¹).s n
   · rwa [h₁, ← terminatedAt_iff_s_none,
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, stream_succ h, ←
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, terminatedAt_iff_s_none]
   · obtain ⟨p, hp⟩ := Option.ne_none_iff_exists'.mp h₁
+    -- ⊢ Stream'.Seq.get? (of v).s (n + 1) = Stream'.Seq.get? (of (fract v)⁻¹).s n
     obtain ⟨p', hp'₁, _⟩ := exists_succ_get?_stream_of_gcf_of_get?_eq_some hp
+    -- ⊢ Stream'.Seq.get? (of v).s (n + 1) = Stream'.Seq.get? (of (fract v)⁻¹).s n
     have Hp := get?_of_eq_some_of_succ_get?_intFractPair_stream hp'₁
+    -- ⊢ Stream'.Seq.get? (of v).s (n + 1) = Stream'.Seq.get? (of (fract v)⁻¹).s n
     rw [← stream_succ h] at hp'₁
+    -- ⊢ Stream'.Seq.get? (of v).s (n + 1) = Stream'.Seq.get? (of (fract v)⁻¹).s n
     rw [Hp, get?_of_eq_some_of_succ_get?_intFractPair_stream hp'₁]
+    -- 🎉 no goals
 #align generalized_continued_fraction.of_s_succ GeneralizedContinuedFraction.of_s_succ
 
 /-- This expresses the tail of the coefficient sequence of the `GeneralizedContinuedFraction.of`
@@ -326,9 +381,13 @@ are all equal to `a`.
 -/
 theorem convergents'_of_int (a : ℤ) : (of (a : K)).convergents' n = a := by
   induction' n with n
+  -- ⊢ convergents' (of ↑a) Nat.zero = ↑a
   · simp only [zeroth_convergent'_eq_h, of_h_eq_floor, floor_intCast, Nat.zero_eq]
+    -- 🎉 no goals
   · rw [convergents', of_h_eq_floor, floor_intCast, add_right_eq_self]
+    -- ⊢ convergents'Aux (of ↑a).s (Nat.succ n) = 0
     exact convergents'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _
+    -- 🎉 no goals
 #align generalized_continued_fraction.convergents'_of_int GeneralizedContinuedFraction.convergents'_of_int
 
 variable {K}
@@ -339,11 +398,15 @@ of an element `v` of `K` in terms of the convergents of the inverse of its fract
 theorem convergents'_succ :
     (of v).convergents' (n + 1) = ⌊v⌋ + 1 / (of (fract v)⁻¹).convergents' n := by
   cases' eq_or_ne (fract v) 0 with h h
+  -- ⊢ convergents' (of v) (n + 1) = ↑⌊v⌋ + 1 / convergents' (of (fract v)⁻¹) n
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
+    -- ⊢ convergents' (of ↑a) (n + 1) = ↑⌊↑a⌋ + 1 / convergents' (of (fract ↑a)⁻¹) n
     rw [convergents'_of_int, fract_intCast, inv_zero, ← cast_zero, convergents'_of_int, cast_zero,
       div_zero, add_zero, floor_intCast]
   · rw [convergents', of_h_eq_floor, add_right_inj, convergents'Aux_succ_some (of_s_head h)]
+    -- ⊢ { a := 1, b := ↑⌊(fract v)⁻¹⌋ }.a / ({ a := 1, b := ↑⌊(fract v)⁻¹⌋ }.b + con …
     exact congr_arg ((· / ·) 1) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
+    -- 🎉 no goals
 #align generalized_continued_fraction.convergents'_succ GeneralizedContinuedFraction.convergents'_succ
 
 end Values

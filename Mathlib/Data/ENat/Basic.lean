@@ -156,6 +156,8 @@ theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
+                     -- 🎉 no goals
+                                        -- 🎉 no goals
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
@@ -167,23 +169,36 @@ theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
 
 theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n := by
   lift m to ℕ using hm
+  -- ⊢ ↑toNat (↑m + n) = ↑toNat ↑m + ↑toNat n
   lift n to ℕ using hn
+  -- ⊢ ↑toNat (↑m + ↑n) = ↑toNat ↑m + ↑toNat ↑n
   rfl
+  -- 🎉 no goals
 #align enat.to_nat_add ENat.toNat_add
 
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
+  -- ⊢ ↑toNat (m - ↑n) = ↑toNat m - ↑toNat ↑n
   induction m using ENat.recTopCoe
+  -- ⊢ ↑toNat (⊤ - ↑n) = ↑toNat ⊤ - ↑toNat ↑n
   · rw [top_sub_coe, toNat_top, zero_tsub]
+    -- 🎉 no goals
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
+    -- 🎉 no goals
 #align enat.to_nat_sub ENat.toNat_sub
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m using ENat.recTopCoe <;> simp [hn.symm]
+  -- ⊢ ↑toNat ⊤ = n ↔ ⊤ = ↑n
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
 @[simp]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
+                                                       -- ⊢ Order.succ none = none + 1
+                                                                   -- 🎉 no goals
+                                                                   -- 🎉 no goals
 #align enat.succ_def ENat.succ_def
 
 theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
@@ -192,6 +207,7 @@ theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
 
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   m.succ_def ▸ (Order.succ_le_iff_of_not_isMax <| by rwa [isMax_iff_eq_top])
+                                                     -- 🎉 no goals
 #align enat.add_one_le_iff ENat.add_one_le_iff
 
 theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
@@ -213,9 +229,13 @@ theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n =
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
   have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
+  -- ⊢ P a
   cases a
+  -- ⊢ P none
   · exact htop A
+    -- 🎉 no goals
   · exact A _
+    -- 🎉 no goals
 #align enat.nat_induction ENat.nat_induction
 
 end ENat

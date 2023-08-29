@@ -148,10 +148,15 @@ variable [LinearOrderedAddCommGroup α]
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
     Nonempty ↑(Ico x (x + dx) \ Ico y (y + dy)) := by
   cases' lt_or_le x y with h' h'
+  -- ⊢ Nonempty ↑(Ico x (x + dx) \ Ico y (y + dy))
   · use x
+    -- ⊢ x ∈ Ico x (x + dx) \ Ico y (y + dy)
     simp [*, not_le.2 h']
+    -- 🎉 no goals
   · use max x (x + dy)
+    -- ⊢ max x (x + dy) ∈ Ico x (x + dx) \ Ico y (y + dy)
     simp [*, le_refl]
+    -- 🎉 no goals
 #align set.nonempty_Ico_sdiff Set.nonempty_Ico_sdiff
 
 end LinearOrderedAddCommGroup
@@ -168,15 +173,22 @@ variable [OrderedCommGroup α] (a b : α)
 theorem pairwise_disjoint_Ioc_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a * b ^ n) (a * b ^ (n + 1))) := by
   simp_rw [Function.onFun, Set.disjoint_iff]
+  -- ⊢ Pairwise fun x y => Ioc (a * b ^ x) (a * b ^ (x + 1)) ∩ Ioc (a * b ^ y) (a * …
   intro m n hmn x hx
+  -- ⊢ x ∈ ∅
   apply hmn
+  -- ⊢ m = n
   have hb : 1 < b := by
     have : a * b ^ m < a * b ^ (m + 1) := hx.1.1.trans_le hx.1.2
     rwa [mul_lt_mul_iff_left, ← mul_one (b ^ m), zpow_add_one, mul_lt_mul_iff_left] at this
   have i1 := hx.1.1.trans_le hx.2.2
+  -- ⊢ m = n
   have i2 := hx.2.1.trans_le hx.1.2
+  -- ⊢ m = n
   rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff hb, Int.lt_add_one_iff] at i1 i2
+  -- ⊢ m = n
   exact le_antisymm i1 i2
+  -- 🎉 no goals
 #align set.pairwise_disjoint_Ioc_mul_zpow Set.pairwise_disjoint_Ioc_mul_zpow
 #align set.pairwise_disjoint_Ioc_add_zsmul Set.pairwise_disjoint_Ioc_add_zsmul
 
@@ -184,15 +196,22 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
 theorem pairwise_disjoint_Ico_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
   simp_rw [Function.onFun, Set.disjoint_iff]
+  -- ⊢ Pairwise fun x y => Ico (a * b ^ x) (a * b ^ (x + 1)) ∩ Ico (a * b ^ y) (a * …
   intro m n hmn x hx
+  -- ⊢ x ∈ ∅
   apply hmn
+  -- ⊢ m = n
   have hb : 1 < b := by
     have : a * b ^ m < a * b ^ (m + 1) := hx.1.1.trans_lt hx.1.2
     rwa [mul_lt_mul_iff_left, ← mul_one (b ^ m), zpow_add_one, mul_lt_mul_iff_left] at this
   have i1 := hx.1.1.trans_lt hx.2.2
+  -- ⊢ m = n
   have i2 := hx.2.1.trans_lt hx.1.2
+  -- ⊢ m = n
   rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff hb, Int.lt_add_one_iff] at i1 i2
+  -- ⊢ m = n
   exact le_antisymm i1 i2
+  -- 🎉 no goals
 #align set.pairwise_disjoint_Ico_mul_zpow Set.pairwise_disjoint_Ico_mul_zpow
 #align set.pairwise_disjoint_Ico_add_zsmul Set.pairwise_disjoint_Ico_add_zsmul
 
@@ -207,6 +226,7 @@ theorem pairwise_disjoint_Ioo_mul_zpow :
 theorem pairwise_disjoint_Ioc_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (b ^ n) (b ^ (n + 1))) := by
   simpa only [one_mul] using pairwise_disjoint_Ioc_mul_zpow 1 b
+  -- 🎉 no goals
 #align set.pairwise_disjoint_Ioc_zpow Set.pairwise_disjoint_Ioc_zpow
 #align set.pairwise_disjoint_Ioc_zsmul Set.pairwise_disjoint_Ioc_zsmul
 
@@ -214,6 +234,7 @@ theorem pairwise_disjoint_Ioc_zpow :
 theorem pairwise_disjoint_Ico_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (b ^ n) (b ^ (n + 1))) := by
   simpa only [one_mul] using pairwise_disjoint_Ico_mul_zpow 1 b
+  -- 🎉 no goals
 #align set.pairwise_disjoint_Ico_zpow Set.pairwise_disjoint_Ico_zpow
 #align set.pairwise_disjoint_Ico_zsmul Set.pairwise_disjoint_Ico_zsmul
 
@@ -221,6 +242,7 @@ theorem pairwise_disjoint_Ico_zpow :
 theorem pairwise_disjoint_Ioo_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioo (b ^ n) (b ^ (n + 1))) := by
   simpa only [one_mul] using pairwise_disjoint_Ioo_mul_zpow 1 b
+  -- 🎉 no goals
 #align set.pairwise_disjoint_Ioo_zpow Set.pairwise_disjoint_Ioo_zpow
 #align set.pairwise_disjoint_Ioo_zsmul Set.pairwise_disjoint_Ioo_zsmul
 
@@ -252,14 +274,17 @@ variable (α)
 
 theorem pairwise_disjoint_Ico_int_cast : Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ico_add_int_cast (0 : α)
+     -- 🎉 no goals
 #align set.pairwise_disjoint_Ico_int_cast Set.pairwise_disjoint_Ico_int_cast
 
 theorem pairwise_disjoint_Ioo_int_cast : Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ioo_add_int_cast (0 : α)
+     -- 🎉 no goals
 #align set.pairwise_disjoint_Ioo_int_cast Set.pairwise_disjoint_Ioo_int_cast
 
 theorem pairwise_disjoint_Ioc_int_cast : Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ioc_add_int_cast (0 : α)
+     -- 🎉 no goals
 #align set.pairwise_disjoint_Ioc_int_cast Set.pairwise_disjoint_Ioc_int_cast
 
 end OrderedRing

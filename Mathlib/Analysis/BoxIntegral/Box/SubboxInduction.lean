@@ -47,15 +47,25 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   upper := s.piecewise I.upper fun i ↦ (I.lower i + I.upper i) / 2
   lower_lt_upper i := by
     dsimp only [Set.piecewise]
+    -- ⊢ (if i ∈ s then (lower I i + upper I i) / 2 else lower I i) < if i ∈ s then u …
     split_ifs <;> simp only [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
+    -- ⊢ (lower I i + upper I i) / 2 < upper I i
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align box_integral.box.split_center_box BoxIntegral.Box.splitCenterBox
 
 theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
     y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
   simp only [splitCenterBox, mem_def, ← forall_and]
+  -- ⊢ (∀ (i : ι), y i ∈ Set.Ioc (Set.piecewise s (fun i => (lower I i + upper I i) …
   refine' forall_congr' fun i ↦ _
+  -- ⊢ y i ∈ Set.Ioc (Set.piecewise s (fun i => (lower I i + upper I i) / 2) I.lowe …
   dsimp only [Set.piecewise]
+  -- ⊢ y i ∈ Set.Ioc (if i ∈ s then (lower I i + upper I i) / 2 else lower I i) (if …
   split_ifs with hs <;> simp only [hs, iff_true_iff, iff_false_iff, not_lt]
+  -- ⊢ y i ∈ Set.Ioc ((lower I i + upper I i) / 2) (upper I i) ↔ y i ∈ Set.Ioc (low …
+                        -- ⊢ y i ∈ Set.Ioc ((lower I i + upper I i) / 2) (upper I i) ↔ y i ∈ Set.Ioc (low …
+                        -- ⊢ y i ∈ Set.Ioc (lower I i) ((lower I i + upper I i) / 2) ↔ y i ∈ Set.Ioc (low …
   exacts [⟨fun H ↦ ⟨⟨(left_lt_add_div_two.2 (I.lower_lt_upper i)).trans H.1, H.2⟩, H.1⟩,
       fun H ↦ ⟨H.2, H.1.2⟩⟩,
     ⟨fun H ↦ ⟨⟨H.1, H.2.trans (add_div_two_lt_right.2 (I.lower_lt_upper i)).le⟩, H.2⟩,
@@ -69,10 +79,16 @@ theorem splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :
 theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
     Disjoint (I.splitCenterBox s : Set (ι → ℝ)) (I.splitCenterBox t) := by
   rw [disjoint_iff_inf_le]
+  -- ⊢ ↑(splitCenterBox I s) ⊓ ↑(splitCenterBox I t) ≤ ⊥
   rintro y ⟨hs, ht⟩; apply h
+  -- ⊢ y ∈ ⊥
+                     -- ⊢ s = t
   ext i
+  -- ⊢ i ∈ s ↔ i ∈ t
   rw [mem_coe, mem_splitCenterBox] at hs ht
+  -- ⊢ i ∈ s ↔ i ∈ t
   rw [← hs.2, ← ht.2]
+  -- 🎉 no goals
 #align box_integral.box.disjoint_split_center_box BoxIntegral.Box.disjoint_splitCenterBox
 
 theorem injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fun _ _ H ↦
@@ -94,13 +110,21 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 @[simp]
 theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
   ext x
+  -- ⊢ x ∈ ⋃ (s : Set ι), ↑(splitCenterBox I s) ↔ x ∈ ↑I
   simp
+  -- 🎉 no goals
 #align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
 
 @[simp]
 theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
   by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
+  -- ⊢ upper (splitCenterBox I s) i - lower (splitCenterBox I s) i = (upper I i - l …
+  -- ⊢ upper (splitCenterBox I s) i - lower (splitCenterBox I s) i = (upper I i - l …
+                     -- ⊢ upper I i * 2 - (lower I i + upper I i) = upper I i - lower I i
+                     -- ⊢ lower I i + upper I i - 2 * lower I i = upper I i - lower I i
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 #align box_integral.box.upper_sub_lower_split_center_box BoxIntegral.Box.upper_sub_lower_splitCenterBox
 
 /-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
@@ -125,17 +149,23 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
       Box.Icc J ⊆ U → (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :
     p I := by
   by_contra hpI
+  -- ⊢ False
   -- First we use `H_ind` to construct a decreasing sequence of boxes such that `∀ m, ¬p (J m)`.
   replace H_ind := fun J hJ ↦ not_imp_not.2 (H_ind J hJ)
+  -- ⊢ False
   simp only [exists_imp, not_forall] at H_ind
+  -- ⊢ False
   choose! s hs using H_ind
+  -- ⊢ False
   set J : ℕ → Box ι := fun m ↦ (fun J ↦ splitCenterBox J (s J))^[m] I
+  -- ⊢ False
   have J_succ : ∀ m, J (m + 1) = splitCenterBox (J m) (s <| J m) :=
     fun m ↦ iterate_succ_apply' _ _ _
   -- Now we prove some properties of `J`
   have hJmono : Antitone J :=
     antitone_nat_of_succ_le fun n ↦ by simpa [J_succ] using splitCenterBox_le _ _
   have hJle : ∀ m, J m ≤ I := fun m ↦ hJmono (zero_le m)
+  -- ⊢ False
   have hJp : ∀ m, ¬p (J m) :=
     fun m ↦ Nat.recOn m hpI fun m ↦ by simpa only [J_succ] using hs (J m) (hJle m)
   have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
@@ -144,16 +174,22 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     · simp [Nat.zero_eq]
     simp only [pow_succ', J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
+  -- ⊢ False
   clear_value J
+  -- ⊢ False
   clear hpI hs J_succ s
+  -- ⊢ False
   -- Let `z` be the unique common point of all `(J m).Icc`. Then `H_nhds` proves `p (J m)` for
   -- sufficiently large `m`. This contradicts `hJp`.
   set z : ι → ℝ := ⨆ m, (J m).lower
+  -- ⊢ False
   have hzJ : ∀ m, z ∈ Box.Icc (J m) :=
     mem_iInter.1 (ciSup_mem_Inter_Icc_of_antitone_Icc
       ((@Box.Icc ι).monotone.comp_antitone hJmono) fun m ↦ (J m).lower_le_upper)
   have hJl_mem : ∀ m, (J m).lower ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).lower_mem_Icc
+  -- ⊢ False
   have hJu_mem : ∀ m, (J m).upper ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).upper_mem_Icc
+  -- ⊢ False
   have hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝 z) :=
     tendsto_atTop_ciSup (antitone_lower.comp hJmono) ⟨I.upper, fun x ⟨m, hm⟩ ↦ hm ▸ (hJl_mem m).2⟩
   have hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝 z) := by
@@ -162,14 +198,19 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     simpa [hJsub] using
       tendsto_const_nhds.div_atTop (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)
   replace hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝[Icc I.lower I.upper] z)
+  -- ⊢ Tendsto (fun m => (J m).lower) atTop (𝓝[Set.Icc I.lower I.upper] z)
   · exact
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (eventually_of_forall hJl_mem)
   replace hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝[Icc I.lower I.upper] z)
+  -- ⊢ Tendsto (fun m => (J m).upper) atTop (𝓝[Set.Icc I.lower I.upper] z)
   · exact
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
   rcases H_nhds z (h0 ▸ hzJ 0) with ⟨U, hUz, hU⟩
+  -- ⊢ False
   rcases(tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
+  -- ⊢ False
   exact hJp m (hU (J m) (hJle m) m (hzJ m) hUm (hJsub m))
+  -- 🎉 no goals
 #align box_integral.box.subbox_induction_on' BoxIntegral.Box.subbox_induction_on'
 
 end Box

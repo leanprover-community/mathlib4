@@ -99,7 +99,11 @@ def Iso.mk {α β : BddOrdCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedOrderHom _ _)
   inv := (e.symm : BoundedOrderHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑(↑e ≫ ↑(OrderIso.symm e)) x✝ = ↑(𝟙 α) x✝
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑(↑(OrderIso.symm e) ≫ ↑e) x✝ = ↑(𝟙 β) x✝
+                        -- 🎉 no goals
 #align BddOrd.iso.mk BddOrdCat.Iso.mk
 
 /-- The equivalence between `BddOrd` and itself induced by `OrderDual` both ways. -/

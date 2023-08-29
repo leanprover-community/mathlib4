@@ -67,8 +67,10 @@ def vanishingIdeal (V : Set (σ → k)) : Ideal (MvPolynomial σ k) where
   carrier := {p | ∀ x ∈ V, eval x p = 0}
   zero_mem' x _ := RingHom.map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, RingHom.map_add]
+                                  -- 🎉 no goals
   smul_mem' p q hq x hx := by
     simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, RingHom.map_mul]
+    -- 🎉 no goals
 #align mv_polynomial.vanishing_ideal MvPolynomial.vanishingIdeal
 
 @[simp]
@@ -126,14 +128,19 @@ instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
         rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
           ← Quotient.eq_zero_iff_mem] at hp )
   rw [← bot_quotient_isMaximal_iff, RingEquiv.bot_maximal_iff this]
+  -- ⊢ IsMaximal ⊥
   exact bot_isMaximal
+  -- 🎉 no goals
 #align mv_polynomial.vanishing_ideal_singleton_is_maximal MvPolynomial.vanishingIdeal_singleton_isMaximal
 
 theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
     I.radical ≤ vanishingIdeal (zeroLocus I) := by
   intro p hp x hx
+  -- ⊢ ↑(eval x) p = 0
   rw [← mem_vanishingIdeal_singleton_iff]
+  -- ⊢ p ∈ vanishingIdeal {x}
   rw [radical_eq_sInf] at hp
+  -- ⊢ p ∈ vanishingIdeal {x}
   refine'
     (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I)
@@ -144,6 +151,7 @@ theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
 /-- The point in the prime spectrum associated to a given point -/
 def pointToPoint (x : σ → k) : PrimeSpectrum (MvPolynomial σ k) :=
   ⟨(vanishingIdeal {x} : Ideal (MvPolynomial σ k)), by infer_instance⟩
+                                                       -- 🎉 no goals
 #align mv_polynomial.point_to_point MvPolynomial.pointToPoint
 
 @[simp]
@@ -152,7 +160,9 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → k)) :
   le_antisymm
     (fun p hp x hx =>
       (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal {x}, by infer_instance⟩ <| by
+                                                                             -- 🎉 no goals
           exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note : tactic mode code compiles but term mode does not
+          -- 🎉 no goals
         x rfl)
     fun p hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun I hI =>
@@ -173,26 +183,37 @@ variable [IsAlgClosed k] [Finite σ]
 theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)) :
     I.IsMaximal ↔ ∃ x : σ → k, I = vanishingIdeal {x} := by
   cases nonempty_fintype σ
+  -- ⊢ IsMaximal I ↔ ∃ x, I = vanishingIdeal {x}
   refine'
     ⟨fun hI => _, fun h =>
       let ⟨x, hx⟩ := h
       hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
   letI : I.IsMaximal := hI
+  -- ⊢ ∃ x, I = vanishingIdeal {x}
   letI : Field (MvPolynomial σ k ⧸ I) := Quotient.field I
+  -- ⊢ ∃ x, I = vanishingIdeal {x}
   let ϕ : k →+* MvPolynomial σ k ⧸ I := (Ideal.Quotient.mk I).comp C
+  -- ⊢ ∃ x, I = vanishingIdeal {x}
   have hϕ : Function.Bijective ϕ :=
     ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
       IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
         (MvPolynomial.comp_C_integral_of_surjective_of_jacobson _ Quotient.mk_surjective)⟩
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
+  -- ⊢ ∃ x, I = vanishingIdeal {x}
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
+  -- ⊢ ∃ x, I = vanishingIdeal {x}
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
     hφ ((Ideal.Quotient.mk I) (X s))
   refine' ⟨x, (IsMaximal.eq_of_le (by infer_instance) hI.ne_top _).symm⟩
+  -- ⊢ vanishingIdeal {x} ≤ I
   intro p hp
+  -- ⊢ p ∈ I
   rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
+  -- ⊢ (Finset.sum (support p) fun d => ↑(RingHom.comp (Ideal.Quotient.mk I) C) (co …
   rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
+  -- ⊢ (Finset.sum (support p) fun d => ↑(RingHom.comp (Ideal.Quotient.mk I) C) (co …
   simpa only [ϕ.map_sum, ϕ.map_mul, ϕ.map_prod, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
+  -- 🎉 no goals
 #align mv_polynomial.is_maximal_iff_eq_vanishing_ideal_singleton MvPolynomial.isMaximal_iff_eq_vanishingIdeal_singleton
 
 /-- Main statement of the Nullstellensatz -/
@@ -200,13 +221,21 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
     vanishingIdeal (zeroLocus I) = I.radical := by
   rw [I.radical_eq_jacobson]
+  -- ⊢ vanishingIdeal (zeroLocus I) = jacobson I
   refine' le_antisymm (le_sInf _) fun p hp x hx => _
+  -- ⊢ ∀ (b : Ideal (MvPolynomial σ k)), b ∈ {J | I ≤ J ∧ IsMaximal J} → vanishingI …
   · rintro J ⟨hJI, hJ⟩
+    -- ⊢ vanishingIdeal (zeroLocus I) ≤ J
     obtain ⟨x, hx⟩ := (isMaximal_iff_eq_vanishingIdeal_singleton J).1 hJ
+    -- ⊢ vanishingIdeal (zeroLocus I) ≤ J
     refine' hx.symm ▸ vanishingIdeal_anti_mono fun y hy p hp => _
+    -- ⊢ ↑(eval y) p = 0
     rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
+    -- ⊢ p ∈ J
     refine' hJI hp
+    -- 🎉 no goals
   · rw [← mem_vanishingIdeal_singleton_iff x p]
+    -- ⊢ p ∈ vanishingIdeal {x}
     refine' (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I) (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
         MvPolynomial.vanishingIdeal_singleton_isMaximal⟩

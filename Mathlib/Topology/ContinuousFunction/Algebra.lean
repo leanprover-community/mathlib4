@@ -327,11 +327,13 @@ instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, �
 instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
+    -- ⊢ Continuous (Function.uncurry fun x y => ↑(x.fst * x.snd) y)
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
       continuous_eval'.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
       continuous_eval'.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
+    -- 🎉 no goals
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
@@ -384,6 +386,7 @@ theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι)
 @[to_additive]
 theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β))
     (a : α) : (∏ i in s, f i) a = ∏ i in s, f i a := by simp
+                                                        -- 🎉 no goals
 #align continuous_map.prod_apply ContinuousMap.prod_apply
 #align continuous_map.sum_apply ContinuousMap.sum_apply
 
@@ -399,20 +402,30 @@ instance instCommGroupContinuousMap [CommGroup β] [TopologicalGroup β] : CommG
 instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
   continuous_mul := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
+    -- ⊢ Continuous fun p => p.fst * p.snd
     have : UniformGroup β := comm_topologicalGroup_is_uniform
+    -- ⊢ Continuous fun p => p.fst * p.snd
     rw [continuous_iff_continuousAt]
+    -- ⊢ ∀ (x : C(α, β) × C(α, β)), ContinuousAt (fun p => p.fst * p.snd) x
     rintro ⟨f, g⟩
+    -- ⊢ ContinuousAt (fun p => p.fst * p.snd) (f, g)
     rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn, nhds_prod_eq]
+    -- ⊢ ∀ (K : Set α), IsCompact K → TendstoUniformlyOn (fun i a => ↑(i.fst * i.snd) …
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
         ((tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
           (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
+    -- ⊢ Continuous fun a => a⁻¹
     have : UniformGroup β := comm_topologicalGroup_is_uniform
+    -- ⊢ Continuous fun a => a⁻¹
     rw [continuous_iff_continuousAt]
+    -- ⊢ ∀ (x : C(α, β)), ContinuousAt (fun a => a⁻¹) x
     intro f
+    -- ⊢ ContinuousAt (fun a => a⁻¹) f
     rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn]
+    -- ⊢ ∀ (K : Set α), IsCompact K → TendstoUniformlyOn (fun i a => ↑i⁻¹ a) (↑f⁻¹) ( …
     exact fun K hK =>
       uniformContinuous_inv.comp_tendstoUniformlyOn
         (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
@@ -426,7 +439,9 @@ theorem hasSum_apply {γ : Type*} [AddCommMonoid β] [ContinuousAdd β]
     {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) :
     HasSum (fun i : γ => f i x) (g x) := by
   let ev : C(α, β) →+ β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
+  -- ⊢ HasSum (fun i => ↑(f i) x) (↑g x)
   exact hf.map ev (ContinuousMap.continuous_eval_const x)
+  -- 🎉 no goals
 #align continuous_map.has_sum_apply ContinuousMap.hasSum_apply
 
 theorem summable_apply [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
@@ -602,9 +617,11 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
     ContinuousSMul R C(α, M) :=
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
+    -- ⊢ Continuous (Function.uncurry fun x y => ↑(x.fst • x.snd) y)
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
       continuous_eval'.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
+    -- 🎉 no goals
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
@@ -712,9 +729,17 @@ variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Ty
 def ContinuousMap.C : R →+* C(α, A) where
   toFun := fun c : R => ⟨fun _ : α => (algebraMap R A) c, continuous_const⟩
   map_one' := by ext _; exact (algebraMap R A).map_one
+                 -- ⊢ ↑((fun c => mk fun x => ↑(algebraMap R A) c) 1) a✝ = ↑1 a✝
+                        -- 🎉 no goals
   map_mul' c₁ c₂ := by ext _; exact (algebraMap R A).map_mul _ _
+                       -- ⊢ ↑(OneHom.toFun { toFun := fun c => mk fun x => ↑(algebraMap R A) c, map_one' …
+                              -- 🎉 no goals
   map_zero' := by ext _; exact (algebraMap R A).map_zero
+                  -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun c => mk fun x => ↑(algebraMap  …
+                         -- 🎉 no goals
   map_add' c₁ c₂ := by ext _; exact (algebraMap R A).map_add _ _
+                       -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun c => mk fun x => ↑(algebraMap  …
+                              -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align continuous_map.C ContinuousMap.C
 
@@ -727,7 +752,11 @@ set_option linter.uppercaseLean3 false in
 instance ContinuousMap.algebra : Algebra R C(α, A) where
   toRingHom := ContinuousMap.C
   commutes' c f := by ext x; exact Algebra.commutes' _ _
+                      -- ⊢ ↑(↑C c * f) x = ↑(f * ↑C c) x
+                             -- 🎉 no goals
   smul_def' c f := by ext x; exact Algebra.smul_def' _ _
+                      -- ⊢ ↑(c • f) x = ↑(↑C c * f) x
+                             -- 🎉 no goals
 #align continuous_map.algebra ContinuousMap.algebra
 
 variable (R)
@@ -751,19 +780,29 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
   toFun g := g.comp f
   map_zero' := by
     ext
+    -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun g => comp g f, map_one' := (_  …
     rfl
+    -- 🎉 no goals
   map_add' g₁ g₂ := by
     ext
+    -- ⊢ ↑(OneHom.toFun (↑{ toOneHom := { toFun := fun g => comp g f, map_one' := (_  …
+    -- ⊢ ↑((fun g => comp g f) 1) a✝ = ↑1 a✝
     rfl
+    -- 🎉 no goals
+    -- 🎉 no goals
   map_one' := by
+    -- ⊢ ↑(OneHom.toFun { toFun := fun g => comp g f, map_one' := (_ : (fun g => comp …
     ext
+    -- 🎉 no goals
     rfl
   map_mul' g₁ g₂ := by
     ext
     rfl
   commutes' r := by
     ext
+    -- ⊢ ↑(OneHom.toFun (↑↑{ toMonoidHom := { toOneHom := { toFun := fun g => comp g  …
     rfl
+    -- 🎉 no goals
 #align continuous_map.comp_right_alg_hom ContinuousMap.compRightAlgHom
 
 variable {A}
@@ -787,14 +826,19 @@ abbrev Subalgebra.SeparatesPoints (s : Subalgebra R C(α, A)) : Prop :=
 theorem Subalgebra.separatesPoints_monotone :
     Monotone fun s : Subalgebra R C(α, A) => s.SeparatesPoints := fun s s' r h x y n => by
   obtain ⟨f, m, w⟩ := h n
+  -- ⊢ ∃ f, f ∈ (fun f => ↑f) '' ↑s' ∧ f x ≠ f y
   rcases m with ⟨f, ⟨m, rfl⟩⟩
+  -- ⊢ ∃ f, f ∈ (fun f => ↑f) '' ↑s' ∧ f x ≠ f y
   exact ⟨_, ⟨f, ⟨r m, rfl⟩⟩, w⟩
+  -- 🎉 no goals
 #align subalgebra.separates_points_monotone Subalgebra.separatesPoints_monotone
 
 @[simp]
 theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
   rw [Algebra.algebraMap_eq_smul_one]
+  -- ⊢ ↑(k • 1) a = k • 1
   rfl
+  -- 🎉 no goals
 #align algebra_map_apply algebraMap_apply
 
 variable {𝕜 : Type*} [TopologicalSpace 𝕜]
@@ -828,17 +872,27 @@ By an affine transformation in the field we can arrange so that `f x = a` and `f
 theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h : s.SeparatesPoints) :
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
+  -- ⊢ ∃ f, f ∈ ↑s ∧ ↑f x = v x ∧ ↑f y = v y
   · subst n
+    -- ⊢ ∃ f, f ∈ ↑s ∧ ↑f x = v x ∧ ↑f x = v x
     refine' ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
+    -- 🎉 no goals
   obtain ⟨_, ⟨f, hf, rfl⟩, hxy⟩ := h n
+  -- ⊢ ∃ f, f ∈ ↑s ∧ ↑f x = v x ∧ ↑f y = v y
   replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
+  -- ⊢ ∃ f, f ∈ ↑s ∧ ↑f x = v x ∧ ↑f y = v y
   let a := v x
+  -- ⊢ ∃ f, f ∈ ↑s ∧ ↑f x = v x ∧ ↑f y = v y
   let b := v y
+  -- ⊢ ∃ f, f ∈ ↑s ∧ ↑f x = v x ∧ ↑f y = v y
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine' ⟨f', f'.prop, _, _⟩
+  -- ⊢ ↑↑f' x = v x
   · simp
+    -- 🎉 no goals
   · simp [inv_mul_cancel_right₀ hxy]
+    -- 🎉 no goals
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly
 
 end ContinuousMap
@@ -848,17 +902,24 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
+    -- ⊢ s₁ = s₂
     · haveI : Subsingleton C(α, R) := FunLike.coe_injective.subsingleton
+      -- ⊢ s₁ = s₂
       exact Subsingleton.elim _ _
+      -- 🎉 no goals
     · inhabit α
+      -- ⊢ s₁ = s₂
       ext f
+      -- ⊢ f ∈ s₁ ↔ f ∈ s₂
       have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
         simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
         congr
         simp
       rw [h]
+      -- ⊢ ↑(algebraMap R C(α, R)) (↑f default) ∈ s₁ ↔ ↑(algebraMap R C(α, R)) (↑f defa …
       simp only [Subalgebra.algebraMap_mem]⟩
+      -- 🎉 no goals
 #align continuous_map.subsingleton_subalgebra ContinuousMap.subsingleton_subalgebra
 
 end AlgebraStructure
@@ -885,10 +946,22 @@ instance module' {α : Type*} [TopologicalSpace α] (R : Type*) [Semiring R] [To
     [Module R M] [ContinuousSMul R M] : Module C(α, R) C(α, M) where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
+                       -- ⊢ ↑(c • (f + g)) x = ↑(c • f + c • g) x
+                              -- 🎉 no goals
+                         -- ⊢ ↑((c₁ * c₂) • f) x = ↑(c₁ • c₂ • f) x
+                   -- ⊢ ↑(1 • f) x = ↑f x
+                          -- 🎉 no goals
+                                -- 🎉 no goals
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
+                         -- ⊢ ↑((c₁ + c₂) • f) x = ↑(c₁ • f + c₂ • f) x
+                                -- 🎉 no goals
+                    -- ⊢ ↑(r • 0) x = ↑0 x
+                           -- 🎉 no goals
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)
   one_smul f := by ext x; exact one_smul R (f x)
   zero_smul f := by ext x; exact zero_smul _ _
+                    -- ⊢ ↑(0 • f) x = ↑0 x
+                           -- 🎉 no goals
   smul_zero r := by ext x; exact smul_zero _
 #align continuous_map.module' ContinuousMap.module'
 
@@ -1031,18 +1104,26 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [A
     [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
     Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
   intro x
+  -- ⊢ ↑(∑' (n : ℤ), comp f (ContinuousMap.addRight (n • p))) (x + p) = ↑(∑' (n : ℤ …
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
+  -- ⊢ ↑(∑' (n : ℤ), comp f (ContinuousMap.addRight (n • p))) (x + p) = ↑(∑' (n : ℤ …
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
+    -- ⊢ ↑(∑' (n : ℤ), comp f (ContinuousMap.addRight (n • p))) (x + p) = ↑(∑' (c : ℤ …
     -- Porting note: in mathlib3 the proof from here was:
     -- simp_rw [←tsum_apply h, ←tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
     --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
     --   ←add_assoc]
     -- However now the second `←tsum_apply` doesn't fire unless we use `erw`.
     simp_rw [← tsum_apply h]
+    -- ⊢ ∑' (i : ℤ), ↑(comp f (ContinuousMap.addRight (i • p))) (x + p) = ↑(∑' (c : ℤ …
     erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
+    -- ⊢ ∑' (i : ℤ), ↑(comp f (ContinuousMap.addRight (i • p))) (x + p) = ∑' (i : ℤ), …
     simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
+    -- 🎉 no goals
   · rw [tsum_eq_zero_of_not_summable h]
+    -- ⊢ ↑0 (x + p) = ↑0 x
     simp only [coe_zero, Pi.zero_apply]
+    -- 🎉 no goals
 #align continuous_map.periodic_tsum_comp_add_zsmul ContinuousMap.periodic_tsum_comp_add_zsmul
 
 end Periodicity

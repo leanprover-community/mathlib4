@@ -290,9 +290,11 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
   one_mul s :=
     (Option.map₂_coe_left _ _ _).trans <| by
       simp_rw [NonemptyInterval.pure_one, one_mul, ← id_def, Option.map_id, id]
+      -- 🎉 no goals
   mul_one s :=
     (Option.map₂_coe_right _ _ _).trans <| by
       simp_rw [NonemptyInterval.pure_one, mul_one, ← id_def, Option.map_id, id]
+      -- 🎉 no goals
 
 @[to_additive]
 instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=
@@ -528,13 +530,25 @@ variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
+  -- ⊢ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1
   · rw [ext_iff, Prod.ext_iff] at h
+    -- ⊢ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
+    -- ⊢ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1
     refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
+    -- ⊢ s = pure s.fst
+                                          -- ⊢ s.toProd = (pure s.fst).toProd
+                                          -- ⊢ t.toProd = (pure t.fst).toProd
+                                                                         -- ⊢ s.toProd = (s.fst, s.fst)
+                                                                         -- ⊢ t.toProd = (t.fst, t.fst)
     · nth_rw 2 [this.1]
+      -- 🎉 no goals
     · nth_rw 2 [this.2]
+      -- 🎉 no goals
   · rintro ⟨b, c, rfl, rfl, h⟩
+    -- ⊢ pure b * pure c = 1
     rw [pure_mul_pure, h, pure_one]
+    -- 🎉 no goals
 #align nonempty_interval.mul_eq_one_iff NonemptyInterval.mul_eq_one_iff
 #align nonempty_interval.add_eq_zero_iff NonemptyInterval.add_eq_zero_iff
 
@@ -545,14 +559,24 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     sub := Sub.sub
     sub_eq_add_neg := fun s t => by
       refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      -- ⊢ (s - t).fst = (s + -t).fst
       exact sub_eq_add_neg _ _
+      -- 🎉 no goals
+      -- 🎉 no goals
     neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
+                           -- ⊢ (- -s).toProd = s.toProd
+                                                       -- 🎉 no goals
     neg_add_rev := fun s t => by
       refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      -- ⊢ (-(s + t)).fst = (-t + -s).fst
       exact neg_add_rev _ _
+      -- 🎉 no goals
+      -- 🎉 no goals
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
+      -- ⊢ -pure a = pure b
       rw [neg_pure, neg_eq_of_add_eq_zero_right hab] }
+      -- 🎉 no goals
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
@@ -561,14 +585,24 @@ instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
     div := (· / ·)
     div_eq_mul_inv := fun s t => by
       refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      -- ⊢ (s / t).fst = (s * t⁻¹).fst
       exact div_eq_mul_inv _ _
+      -- 🎉 no goals
+      -- 🎉 no goals
     inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
+                           -- ⊢ s⁻¹⁻¹.toProd = s.toProd
+                                                       -- 🎉 no goals
     mul_inv_rev := fun s t => by
       refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      -- ⊢ (s * t)⁻¹.fst = (t⁻¹ * s⁻¹).fst
       exact mul_inv_rev _ _
+      -- 🎉 no goals
+      -- 🎉 no goals
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
+      -- ⊢ (pure a)⁻¹ = pure b
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab] }
+      -- 🎉 no goals
 
 end NonemptyInterval
 
@@ -579,12 +613,17 @@ variable [OrderedCommGroup α] {s t : Interval α}
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   cases s
+  -- ⊢ none * t = 1 ↔ ∃ a b, none = pure a ∧ t = pure b ∧ a * b = 1
   · simp [WithBot.none_eq_bot]
+    -- 🎉 no goals
   cases t
+  -- ⊢ some val✝ * none = 1 ↔ ∃ a b, some val✝ = pure a ∧ none = pure b ∧ a * b = 1
   · simp [WithBot.none_eq_bot]
+    -- 🎉 no goals
   · simp_rw [WithBot.some_eq_coe, ← NonemptyInterval.coe_mul_interval,
       ← NonemptyInterval.coe_one_interval, WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
     exact NonemptyInterval.mul_eq_one_iff
+    -- 🎉 no goals
 #align interval.mul_eq_one_iff Interval.mul_eq_one_iff
 #align interval.add_eq_zero_iff Interval.add_eq_zero_iff
 
@@ -595,8 +634,19 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     sub := Sub.sub
     sub_eq_add_neg := by
       rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (sub_eq_add_neg _ _)
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
     neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg some (neg_neg _)
+                  -- ⊢ - -none = none
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
     neg_add_rev := by rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (neg_add_rev _ _)
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -610,8 +660,19 @@ instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
     div := (· / ·)
     div_eq_mul_inv := by
       rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (div_eq_mul_inv _ _)
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
     inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg some (inv_inv _)
+                  -- ⊢ none⁻¹⁻¹ = none
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
     mul_inv_rev := by rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (mul_inv_rev _ _)
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -661,6 +722,7 @@ theorem length_add : (s + t).length = s.length + t.length :=
 
 @[simp]
 theorem length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add_neg]
+                                                                -- 🎉 no goals
 #align nonempty_interval.length_sub NonemptyInterval.length_sub
 
 @[simp]
@@ -706,20 +768,26 @@ theorem length_neg : ∀ s : Interval α, (-s).length = s.length
 
 theorem length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
   | ⊥, _ => by simp
+               -- 🎉 no goals
   | _, ⊥ => by simp
+               -- 🎉 no goals
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => (s.length_add t).le
 #align interval.length_add_le Interval.length_add_le
 
 theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
   simpa [sub_eq_add_neg] using length_add_le s (-t)
+  -- 🎉 no goals
 #align interval.length_sub_le Interval.length_sub_le
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
   -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
   apply Finset.le_sum_of_subadditive
+  -- ⊢ length 0 = 0
   exact length_zero
+  -- ⊢ ∀ (x y : Interval α), length (x + y) ≤ length x + length y
   exact length_add_le
+  -- 🎉 no goals
 #align interval.length_sum_le Interval.length_sum_le
 
 end Interval

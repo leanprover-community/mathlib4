@@ -67,26 +67,36 @@ attribute [coe] FGModuleCat.carrier
 
 instance (M : FGModuleCat R) : AddCommGroup M := by
   change AddCommGroup M.obj
+  -- ⊢ AddCommGroup ↑M.obj
   infer_instance
+  -- 🎉 no goals
 
 instance (M : FGModuleCat R) : Module R M := by
   change Module R M.obj
+  -- ⊢ Module R ↑M.obj
   infer_instance
+  -- 🎉 no goals
 
 instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ LargeCategory (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 instance {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
 instance : ConcreteCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ ConcreteCategory (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 instance : Preadditive (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ Preadditive (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 end Ring
 
@@ -106,6 +116,8 @@ instance : Inhabited (FGModuleCat R) :=
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
 def of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
   ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
+                        -- ⊢ Module.Finite R V
+                                                  -- 🎉 no goals
 #align fgModule.of FGModuleCat.of
 
 instance (V : FGModuleCat R) : Module.Finite R V :=
@@ -113,7 +125,9 @@ instance (V : FGModuleCat R) : Module.Finite R V :=
 
 instance : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
   dsimp [FGModuleCat]
+  -- ⊢ HasForget₂ (FullSubcategory fun V => Module.Finite R ↑V) (ModuleCat R)
   infer_instance
+  -- 🎉 no goals
 
 instance : Full (forget₂ (FGModuleCat R) (ModuleCat.{u} R)) where
   preimage f := f
@@ -135,7 +149,11 @@ def _root_.LinearEquiv.toFGModuleCatIso
   hom := e.toLinearMap
   inv := e.symm.toLinearMap
   hom_inv_id := by ext x; exact e.left_inv x
+                   -- ⊢ ↑(↑e ≫ ↑(LinearEquiv.symm e)) x = ↑(𝟙 (of R V)) x
+                          -- 🎉 no goals
   inv_hom_id := by ext x; exact e.right_inv x
+                   -- ⊢ ↑(↑(LinearEquiv.symm e) ≫ ↑e) x = ↑(𝟙 (of R W)) x
+                          -- 🎉 no goals
 #align linear_equiv.to_fgModule_iso LinearEquiv.toFGModuleCatIso
 
 end Ring
@@ -146,7 +164,9 @@ variable (R : Type u) [CommRing R]
 
 instance : Linear R (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ Linear R (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 instance monoidalPredicate_module_finite :
     MonoidalCategory.MonoidalPredicate fun V : ModuleCat.{u} R => Module.Finite R V where
@@ -156,7 +176,9 @@ instance monoidalPredicate_module_finite :
 
 instance : MonoidalCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ MonoidalCategory (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 open MonoidalCategory
 
@@ -165,15 +187,21 @@ open MonoidalCategory
 
 instance : SymmetricCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ SymmetricCategory (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 instance : MonoidalPreadditive (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ MonoidalPreadditive (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 instance : MonoidalLinear R (FGModuleCat R) := by
   dsimp [FGModuleCat]
+  -- ⊢ MonoidalLinear R (FullSubcategory fun V => Module.Finite R ↑V)
   infer_instance
+  -- 🎉 no goals
 
 /-- The forgetful functor `FGModuleCat R ⥤ Module R` as a monoidal functor. -/
 def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
@@ -182,20 +210,26 @@ def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
 
 instance forget₂Monoidal_faithful : Faithful (forget₂Monoidal R).toFunctor := by
   dsimp [forget₂Monoidal]
+  -- ⊢ Faithful (fullSubcategoryInclusion fun V => Module.Finite R ↑V)
   -- Porting note: was `infer_instance`
   exact FullSubcategory.faithful _
+  -- 🎉 no goals
 #align fgModule.forget₂_monoidal_faithful FGModuleCat.forget₂Monoidal_faithful
 
 instance forget₂Monoidal_additive : (forget₂Monoidal R).toFunctor.Additive := by
   dsimp [forget₂Monoidal]
+  -- ⊢ Functor.Additive (fullSubcategoryInclusion fun V => Module.Finite R ↑V)
   -- Porting note: was `infer_instance`
   exact Functor.fullSubcategoryInclusion_additive _
+  -- 🎉 no goals
 #align fgModule.forget₂_monoidal_additive FGModuleCat.forget₂Monoidal_additive
 
 instance forget₂Monoidal_linear : (forget₂Monoidal R).toFunctor.Linear R := by
   dsimp [forget₂Monoidal]
+  -- ⊢ Functor.Linear R (fullSubcategoryInclusion fun V => Module.Finite R ↑V)
   -- Porting note: was `infer_instance`
   exact Functor.fullSubcategoryInclusionLinear _ _
+  -- 🎉 no goals
 #align fgModule.forget₂_monoidal_linear FGModuleCat.forget₂Monoidal_linear
 
 theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
@@ -211,6 +245,7 @@ variable (K : Type u) [Field K]
 
 instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
   (by infer_instance : Module.Finite K (V →ₗ[K] W))
+      -- 🎉 no goals
 
 instance closedPredicateModuleFinite :
     MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K => Module.Finite K V where
@@ -219,8 +254,10 @@ instance closedPredicateModuleFinite :
 
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
+  -- ⊢ MonoidalClosed (FullSubcategory fun V => Module.Finite K ↑V)
   -- Porting note: was `infer_instance`
   exact MonoidalCategory.fullMonoidalClosedSubcategory _
+  -- 🎉 no goals
 
 variable (V W : FGModuleCat K)
 
@@ -271,6 +308,7 @@ private theorem coevaluation_evaluation :
     (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
       (ρ_ V').hom ≫ (λ_ V').inv := by
   apply contractLeft_assoc_coevaluation K V
+  -- 🎉 no goals
 
 -- Porting note: extremely slow, was fast in mathlib3.
 set_option maxHeartbeats 1600000 in
@@ -279,6 +317,7 @@ private theorem evaluation_coevaluation :
         (α_ V (FGModuleCatDual K V) V).hom ≫ (𝟙 V ⊗ FGModuleCatEvaluation K V) =
       (λ_ V).hom ≫ (ρ_ V).inv := by
   apply contractLeft_assoc_coevaluation' K V
+  -- 🎉 no goals
 
 instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
   coevaluation' := FGModuleCatCoevaluation K V

@@ -157,22 +157,32 @@ group. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_zero' := by apply Quot.sound; apply Relation.zero
+                  -- ⊢ Setoid.r (Prequotient.of j 0) zero
+                                    -- 🎉 no goals
   map_add' := by intros; apply Quot.sound; apply Relation.add
+                 -- ⊢ ZeroHom.toFun { toFun := coconeFun F j, map_zero' := (_ : Quot.mk Setoid.r ( …
+                         -- ⊢ Setoid.r (Prequotient.of j (x✝ + y✝)) (add (Prequotient.of j x✝) (Prequotien …
+                                           -- 🎉 no goals
 #align AddCommGroup.colimits.cocone_morphism AddCommGroupCat.Colimits.coconeMorphism
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
+  -- ⊢ ↑(F.map f ≫ coconeMorphism F j') x✝ = ↑(coconeMorphism F j) x✝
   apply Quot.sound
+  -- ⊢ Setoid.r (Prequotient.of j' (↑(F.map f) x✝)) (Prequotient.of j x✝)
   apply Relation.map
+  -- 🎉 no goals
 #align AddCommGroup.colimits.cocone_naturality AddCommGroupCat.Colimits.cocone_naturality
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
+  -- ⊢ ↑(coconeMorphism F j') (↑(F.map f) x) = ↑(F.map f ≫ coconeMorphism F j') x
   rfl
+  -- 🎉 no goals
 #align AddCommGroup.colimits.cocone_naturality_components AddCommGroupCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit abelian group. -/
@@ -194,8 +204,11 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
 /-- The function from the colimit abelian group to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
+  -- ⊢ Prequotient F → ↑s.pt
   · exact descFunLift F s
+    -- 🎉 no goals
   · intro x y r
+    -- ⊢ descFunLift F s x = descFunLift F s y
     induction r with
     | refl => rfl
     | symm _ _ _ r_ih => exact r_ih.symm
@@ -221,6 +234,9 @@ def descMorphism (s : Cocone F) : colimit.{v} F ⟶ s.pt where
   map_zero' := rfl
   -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
   map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp [(· + ·)]; rw [←quot_add F]; rfl
+                                                       -- ⊢ descFun F s (Add.add (Quot.mk Setoid.r x✝¹) (Quot.mk Setoid.r x✝)) = Add.add …
+                                                                        -- ⊢ descFun F s (Quot.mk Setoid.r (add x✝¹ x✝)) = Add.add (descFun F s (Quot.mk  …
+                                                                                          -- 🎉 no goals
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
@@ -228,6 +244,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v} F) where
   desc s := descMorphism F s
   uniq s m w := FunLike.ext _ _ <| fun x => Quot.inductionOn x fun x => by
     change (m : ColimitType F →+ s.pt) _ = (descMorphism F s : ColimitType F →+ s.pt) _
+    -- ⊢ ↑m (Quot.mk Setoid.r x) = ↑(descMorphism F s) (Quot.mk Setoid.r x)
     induction x using Prequotient.recOn with
     | of j x => exact FunLike.congr_fun (w j) x
     | zero =>
@@ -262,22 +279,35 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
     cokernel f ≅ AddCommGroupCat.of (H ⧸ AddMonoidHom.range f) where
   hom := cokernel.desc f (mk' _) <| by
         ext x
+        -- ⊢ ↑(f ≫ mk' (AddMonoidHom.range f)) x = ↑0 x
         apply Quotient.sound
+        -- ⊢ ↑f x ≈ 0
         apply leftRel_apply.mpr
+        -- ⊢ -↑f x + 0 ∈ AddMonoidHom.range f
         fconstructor
+        -- ⊢ ↑G
         exact -x
+        -- ⊢ ↑f (-x) = -↑f x + 0
         simp only [add_zero, AddMonoidHom.map_neg]
+        -- 🎉 no goals
   inv :=
     QuotientAddGroup.lift _ (cokernel.π f) <| by
       rintro _ ⟨x, rfl⟩
+      -- ⊢ ↑(cokernel.π f) (↑f x) = 0
       exact cokernel.condition_apply f x
+      -- 🎉 no goals
   hom_inv_id := by
     refine coequalizer.hom_ext ?_
+    -- ⊢ coequalizer.π f 0 ≫ cokernel.desc f (mk' (AddMonoidHom.range f)) (_ : f ≫ mk …
     simp only [coequalizer_as_cokernel, cokernel.π_desc_assoc, Category.comp_id]
+    -- ⊢ mk' (AddMonoidHom.range f) ≫ lift (AddMonoidHom.range f) (cokernel.π f) (_ : …
     rfl
+    -- 🎉 no goals
   inv_hom_id := by
     ext x
+    -- ⊢ ↑(lift (AddMonoidHom.range f) (cokernel.π f) (_ : ∀ (x : ↑H), x ∈ AddMonoidH …
     exact QuotientAddGroup.induction_on x <| cokernel.π_desc_apply f _ _
+    -- 🎉 no goals
 #align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 
 end AddCommGroupCat

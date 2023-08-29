@@ -100,7 +100,9 @@ theorem strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
   { epi := epi_comp _ _
     llp := by
       intros
+      -- ⊢ HasLiftingProperty (f ≫ g) z✝
       infer_instance }
+      -- 🎉 no goals
 #align category_theory.strong_epi_comp CategoryTheory.strongEpi_comp
 
 /-- The composition of two strong monomorphisms is a strong monomorphism. -/
@@ -108,7 +110,9 @@ theorem strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
   { mono := mono_comp _ _
     rlp := by
       intros
+      -- ⊢ HasLiftingProperty z✝ (f ≫ g)
       infer_instance }
+      -- 🎉 no goals
 #align category_theory.strong_mono_comp CategoryTheory.strongMono_comp
 
 /-- If `f ≫ g` is a strong epimorphism, then so is `g`. -/
@@ -116,8 +120,11 @@ theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
   { epi := epi_of_epi f g
     llp := fun {X Y} z _ => by
       constructor
+      -- ⊢ ∀ {f : Q ⟶ X} {g_1 : R ⟶ Y} (sq : CommSq f g z g_1), CommSq.HasLift sq
       intro u v sq
+      -- ⊢ CommSq.HasLift sq
       have h₀ : (f ≫ u) ≫ z = (f ≫ g) ≫ v := by simp only [Category.assoc, sq.w]
+      -- ⊢ CommSq.HasLift sq
       exact
         CommSq.HasLift.mk'
           ⟨(CommSq.mk h₀).lift, by
@@ -129,22 +136,28 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
   { mono := mono_of_mono f g
     rlp := fun {X Y} z => by
       intros
+      -- ⊢ HasLiftingProperty z f
       constructor
+      -- ⊢ ∀ {f_1 : X ⟶ P} {g : Y ⟶ Q} (sq : CommSq f_1 z f g), CommSq.HasLift sq
       intro u v sq
+      -- ⊢ CommSq.HasLift sq
       have h₀ : u ≫ f ≫ g = z ≫ v ≫ g := by
         rw [←Category.assoc, eq_whisker sq.w, Category.assoc]
       exact CommSq.HasLift.mk' ⟨(CommSq.mk h₀).lift, by simp, by simp [← cancel_epi z, sq.w]⟩ }
+      -- 🎉 no goals
 #align category_theory.strong_mono_of_strong_mono CategoryTheory.strongMono_of_strongMono
 
 /-- An isomorphism is in particular a strong epimorphism. -/
 instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
   epi := by infer_instance
+            -- 🎉 no goals
   llp {X Y} z := HasLiftingProperty.of_left_iso _ _
 #align category_theory.strong_epi_of_is_iso CategoryTheory.strongEpi_of_isIso
 
 /-- An isomorphism is in particular a strong monomorphism. -/
 instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
   mono := by infer_instance
+             -- 🎉 no goals
   rlp {X Y} z := HasLiftingProperty.of_right_iso _ _
 #align category_theory.strong_mono_of_is_iso CategoryTheory.strongMono_of_isIso
 
@@ -152,34 +165,52 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g :=
   { epi := by
       rw [Arrow.iso_w' e]
+      -- ⊢ Epi (e.inv.left ≫ f ≫ e.hom.right)
       haveI := epi_comp f e.hom.right
+      -- ⊢ Epi (e.inv.left ≫ f ≫ e.hom.right)
       apply epi_comp
+      -- 🎉 no goals
     llp := fun {X Y} z => by
       intro
+      -- ⊢ HasLiftingProperty g z
       apply HasLiftingProperty.of_arrow_iso_left e z }
+      -- 🎉 no goals
 #align category_theory.strong_epi.of_arrow_iso CategoryTheory.StrongEpi.of_arrow_iso
 
 theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongMono f] : StrongMono g :=
   { mono := by
       rw [Arrow.iso_w' e]
+      -- ⊢ Mono (e.inv.left ≫ f ≫ e.hom.right)
       haveI := mono_comp f e.hom.right
+      -- ⊢ Mono (e.inv.left ≫ f ≫ e.hom.right)
       apply mono_comp
+      -- 🎉 no goals
     rlp := fun {X Y} z => by
       intro
+      -- ⊢ HasLiftingProperty z g
       apply HasLiftingProperty.of_arrow_iso_right z e }
+      -- 🎉 no goals
 #align category_theory.strong_mono.of_arrow_iso CategoryTheory.StrongMono.of_arrow_iso
 
 theorem StrongEpi.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) : StrongEpi f ↔ StrongEpi g := by
   constructor <;> intro
+  -- ⊢ StrongEpi f → StrongEpi g
+                  -- ⊢ StrongEpi g
+                  -- ⊢ StrongEpi f
   exacts [StrongEpi.of_arrow_iso e, StrongEpi.of_arrow_iso e.symm]
+  -- 🎉 no goals
 #align category_theory.strong_epi.iff_of_arrow_iso CategoryTheory.StrongEpi.iff_of_arrow_iso
 
 theorem StrongMono.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) : StrongMono f ↔ StrongMono g := by
   constructor <;> intro
+  -- ⊢ StrongMono f → StrongMono g
+                  -- ⊢ StrongMono g
+                  -- ⊢ StrongMono f
   exacts [StrongMono.of_arrow_iso e, StrongMono.of_arrow_iso e.symm]
+  -- 🎉 no goals
 #align category_theory.strong_mono.iff_of_arrow_iso CategoryTheory.StrongMono.iff_of_arrow_iso
 
 end
@@ -187,11 +218,15 @@ end
 /-- A strong epimorphism that is a monomorphism is an isomorphism. -/
 theorem isIso_of_mono_of_strongEpi (f : P ⟶ Q) [Mono f] [StrongEpi f] : IsIso f :=
   ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
+                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
 #align category_theory.is_iso_of_mono_of_strong_epi CategoryTheory.isIso_of_mono_of_strongEpi
 
 /-- A strong monomorphism that is an epimorphism is an isomorphism. -/
 theorem isIso_of_epi_of_strongMono (f : P ⟶ Q) [Epi f] [StrongMono f] : IsIso f :=
   ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
+                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
 #align category_theory.is_iso_of_epi_of_strong_mono CategoryTheory.isIso_of_epi_of_strongMono
 
 section

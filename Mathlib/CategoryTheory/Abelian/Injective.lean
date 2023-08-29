@@ -38,14 +38,18 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 def preservesFiniteColimitsPreadditiveYonedaObjOfInjective (J : C) [hP : Injective J] :
     PreservesFiniteColimits (preadditiveYonedaObj J) := by
   letI := (injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' J).mp hP
+  -- ⊢ PreservesFiniteColimits (preadditiveYonedaObj J)
   apply Functor.preservesFiniteColimitsOfPreservesEpisAndKernels
+  -- 🎉 no goals
 #align category_theory.preserves_finite_colimits_preadditive_yoneda_obj_of_injective CategoryTheory.preservesFiniteColimitsPreadditiveYonedaObjOfInjective
 
 /-- An object is injective if its preadditive Yoneda functor preserves finite colimits. -/
 theorem injective_of_preservesFiniteColimits_preadditiveYonedaObj (J : C)
     [hP : PreservesFiniteColimits (preadditiveYonedaObj J)] : Injective J := by
   rw [injective_iff_preservesEpimorphisms_preadditive_yoneda_obj']
+  -- ⊢ Functor.PreservesEpimorphisms (preadditiveYonedaObj J)
   infer_instance
+  -- 🎉 no goals
 #align category_theory.injective_of_preserves_finite_colimits_preadditive_yoneda_obj CategoryTheory.injective_of_preservesFiniteColimits_preadditiveYonedaObj
 
 end CategoryTheory

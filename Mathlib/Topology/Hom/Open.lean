@@ -66,8 +66,11 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
+    -- ⊢ { toContinuousMap := ContinuousMap.mk toFun✝, map_open' := map_open'✝ } = g
     obtain ⟨⟨_, _⟩, _⟩ := g
+    -- ⊢ { toContinuousMap := ContinuousMap.mk toFun✝¹, map_open' := map_open'✝¹ } =  …
     congr
+    -- 🎉 no goals
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 
@@ -159,6 +162,7 @@ theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjectiv
 theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align continuous_open_map.cancel_left ContinuousOpenMap.cancel_left
 
 end ContinuousOpenMap

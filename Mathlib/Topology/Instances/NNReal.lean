@@ -130,11 +130,15 @@ theorem _root_.tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} 
 
 theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop := by
   rw [← tendsto_coe_atTop]
+  -- ⊢ Tendsto (fun a => ↑(Real.toNNReal a)) atTop atTop
   exact tendsto_atTop_mono Real.le_coe_toNNReal tendsto_id
+  -- 🎉 no goals
 #align tendsto_real_to_nnreal_at_top tendsto_real_toNNReal_atTop
 
 theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
+                             -- ⊢ ⨅ (l : ℝ≥0) (_ : l ≠ ⊥), 𝓟 (Set.Iio l) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Set.Iio …
+                                                            -- 🎉 no goals
 #align nnreal.nhds_zero NNReal.nhds_zero
 
 theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
@@ -153,13 +157,17 @@ instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
 @[norm_cast]
 theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
   simp only [HasSum, ← coe_sum, tendsto_coe]
+  -- 🎉 no goals
 #align nnreal.has_sum_coe NNReal.hasSum_coe
 
 protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
     (hy : HasSum f y) : HasSum (fun x => Real.toNNReal (f x)) y.toNNReal := by
   lift y to ℝ≥0 using hy.nonneg hf₀
+  -- ⊢ HasSum (fun x => Real.toNNReal (f x)) (Real.toNNReal ↑y)
   lift f to α → ℝ≥0 using hf₀
+  -- ⊢ HasSum (fun x => Real.toNNReal ((fun i => ↑(f i)) x)) (Real.toNNReal ↑y)
   simpa [hasSum_coe] using hy
+  -- 🎉 no goals
 
 theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
     HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) :=
@@ -169,8 +177,11 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
 @[norm_cast]
 theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
   constructor
+  -- ⊢ (Summable fun a => ↑(f a)) → Summable f
   exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
+  -- ⊢ Summable f → Summable fun a => ↑(f a)
   exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  -- 🎉 no goals
 #align nnreal.summable_coe NNReal.summable_coe
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -184,6 +195,7 @@ open Classical
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
   if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
   else by simp [tsum_def, hf, mt summable_coe.1 hf]
+          -- 🎉 no goals
 #align nnreal.coe_tsum NNReal.coe_tsum
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
@@ -193,16 +205,20 @@ theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
 
 nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
+                  -- 🎉 no goals
 #align nnreal.tsum_mul_left NNReal.tsum_mul_left
 
 nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
+                  -- 🎉 no goals
 #align nnreal.tsum_mul_right NNReal.tsum_mul_right
 
 theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by
   rw [← summable_coe] at hf ⊢
+  -- ⊢ Summable fun a => ↑((f ∘ i) a)
   exact hf.comp_injective hi
+  -- 🎉 no goals
 #align nnreal.summable_comp_injective NNReal.summable_comp_injective
 
 theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
@@ -212,12 +228,16 @@ theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Sum
 nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
     (Summable fun i => f (i + k)) ↔ Summable f := by
   rw [← summable_coe, ← summable_coe]
+  -- ⊢ (Summable fun a => ↑(f (a + k))) ↔ Summable fun a => ↑(f a)
   exact @summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
+  -- 🎉 no goals
 #align nnreal.summable_nat_add_iff NNReal.summable_nat_add_iff
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
     HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i in range k, f i) := by
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
+  -- ⊢ HasSum (fun n => ↑(f n)) (↑a + ∑ i in Finset.range k, ↑(f i)) ↔ HasSum f (a  …
+                                                                        -- 🎉 no goals
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
@@ -235,12 +255,16 @@ end coe
 theorem tendsto_cofinite_zero_of_summable {α} {f : α → ℝ≥0} (hf : Summable f) :
     Tendsto f cofinite (𝓝 0) := by
   simp only [← summable_coe, ← tendsto_coe] at hf ⊢
+  -- ⊢ Tendsto (fun a => ↑(f a)) cofinite (𝓝 ↑0)
   exact hf.tendsto_cofinite_zero
+  -- 🎉 no goals
 #align nnreal.tendsto_cofinite_zero_of_summable NNReal.tendsto_cofinite_zero_of_summable
 
 theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
   rw [← Nat.cofinite_eq_atTop]
+  -- ⊢ Tendsto f cofinite (𝓝 0)
   exact tendsto_cofinite_zero_of_summable hf
+  -- 🎉 no goals
 #align nnreal.tendsto_at_top_zero_of_summable NNReal.tendsto_atTop_zero_of_summable
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
@@ -248,7 +272,9 @@ space. This does not need a summability assumption, as otherwise all sums are ze
 nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
+  -- ⊢ Tendsto (fun a => ∑' (a_1 : { x // ¬x ∈ a }), ↑(f ↑a_1)) atTop (𝓝 0)
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
+  -- 🎉 no goals
 #align nnreal.tendsto_tsum_compl_at_top_zero NNReal.tendsto_tsum_compl_atTop_zero
 
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
@@ -257,6 +283,7 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
       strictMonoOn_pow hn.bot_lt (zero_le x) (zero_le y) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
+      -- 🎉 no goals
 #align nnreal.pow_order_iso NNReal.powOrderIso
 
 end NNReal

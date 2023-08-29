@@ -111,6 +111,7 @@ theorem coe_nil : ↑(@Sym.nil α) = (0 : Multiset α) :=
 @[match_pattern]
 def cons (a : α) (s : Sym α n) : Sym α n.succ :=
   ⟨a ::ₘ s.1, by rw [Multiset.card_cons, s.2]⟩
+                 -- 🎉 no goals
 #align sym.cons Sym.cons
 
 @[inherit_doc]
@@ -153,7 +154,9 @@ theorem ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
 @[simp]
 theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
+  -- ⊢ ofVector (a ::ᵥ { val := val✝, property := property✝ }) = a ::ₛ ofVector { v …
   rfl
+  -- 🎉 no goals
 #align sym.of_vector_cons Sym.ofVector_cons
 
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
@@ -192,7 +195,9 @@ theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
 theorem cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
   Subtype.ext <| by
     cases v
+    -- ⊢ ↑(a ::ₛ ofVector { val := val✝, property := property✝ }) = ↑(ofVector (a ::ᵥ …
     rfl
+    -- 🎉 no goals
 #align sym.cons_of_coe_eq Sym.cons_of_coe_eq
 
 theorem sound {a b : Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
@@ -210,6 +215,8 @@ theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
     (mk m hc).erase a h =mk (m.erase a)
         (by rw [Multiset.card_erase_of_mem h, hc]; rfl) :=
+            -- ⊢ Nat.pred (n + 1) = n
+                                                   -- 🎉 no goals
   rfl
 #align sym.erase_mk Sym.erase_mk
 
@@ -249,12 +256,16 @@ scoped notation a " :: " b => cons' a b
 -/
 def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
   Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
+                                                             -- 🎉 no goals
+                                                                                -- 🎉 no goals
 #align sym.sym_equiv_sym' Sym.symEquivSym'
 
 theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
     (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
+  -- ⊢ (a :: ↑symEquivSym' { val := Quot.mk Setoid.r l, property := property✝ }) =  …
   rfl
+  -- 🎉 no goals
 #align sym.cons_equiv_eq_equiv_cons Sym.cons_equiv_eq_equiv_cons
 
 instance instZeroSym : Zero (Sym α 0) :=
@@ -291,7 +302,9 @@ theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
 
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
   erw [Subtype.ext_iff, Multiset.eq_replicate]
+  -- ⊢ (↑Multiset.card ↑s = n ∧ ∀ (b : α), b ∈ ↑s → b = a) ↔ ∀ (b : α), b ∈ s → b = a
   exact and_iff_right s.2
+  -- 🎉 no goals
 #align sym.eq_replicate_iff Sym.eq_replicate_iff
 
 theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
@@ -300,7 +313,9 @@ theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
 
 theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
+  -- ⊢ ∃ a s', s = a ::ₛ s'
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
+  -- 🎉 no goals
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
 
 theorem eq_replicate {a : α} {n : ℕ} {s : Sym α n} : s = replicate n a ↔ ∀ b ∈ s, b = a :=
@@ -315,10 +330,15 @@ theorem eq_replicate_of_subsingleton [Subsingleton α] (a : α) {n : ℕ} (s : S
 instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
   ⟨by
     cases n
+    -- ⊢ ∀ (a b : Sym α Nat.zero), a = b
     · simp
+      -- 🎉 no goals
     · intro s s'
+      -- ⊢ s = s'
       obtain ⟨b, -⟩ := exists_mem s
+      -- ⊢ s = s'
       rw [eq_replicate_of_subsingleton b s', eq_replicate_of_subsingleton b s]⟩
+      -- 🎉 no goals
 
 instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
@@ -331,7 +351,9 @@ instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by
     obtain ⟨a, -⟩ := exists_mem s
+    -- ⊢ False
     exact isEmptyElim a⟩
+    -- 🎉 no goals
 
 instance (n : ℕ) [Unique α] : Unique (Sym α n) :=
   Unique.mk' _
@@ -351,6 +373,7 @@ instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
 the underlying `n`-tuple. -/
 def map {n : ℕ} (f : α → β) (x : Sym α n) : Sym β n :=
   ⟨x.val.map f, by simpa [Multiset.card_map] using x.property⟩
+                   -- 🎉 no goals
 #align sym.map Sym.map
 
 @[simp]
@@ -363,16 +386,24 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
   ext; simp [Sym.map]; rfl
+  -- ⊢ ↑(map (fun x => x) s) = ↑s
+       -- ⊢ { val := ↑s, property := (_ : (fun s => ↑Multiset.card s = n) ↑s) } = s
+                       -- 🎉 no goals
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
   ext; simp [Sym.map]; rfl
+  -- ⊢ ↑(map id s) = ↑s
+       -- ⊢ { val := ↑s, property := (_ : (fun s => ↑Multiset.card s = n) ↑s) } = s
+                       -- 🎉 no goals
 #align sym.map_id Sym.map_id
 
 @[simp]
 theorem map_map {α β γ : Type*} {n : ℕ} (g : β → γ) (f : α → β) (s : Sym α n) :
     Sym.map g (Sym.map f s) = Sym.map (g ∘ f) s :=
   Subtype.ext <| by dsimp only [Sym.map]; simp
+                    -- ⊢ Multiset.map g (Multiset.map f ↑s) = Multiset.map (g ∘ f) ↑s
+                                          -- 🎉 no goals
 #align sym.map_map Sym.map_map
 
 @[simp]
@@ -393,6 +424,7 @@ theorem map_congr {f g : α → β} {s : Sym α n} (h : ∀ x ∈ s, f x = g x) 
 @[simp]
 theorem map_mk {f : α → β} {m : Multiset α} {hc : Multiset.card m = n} :
     map f (mk m hc) = mk (m.map f) (by simp [hc]) :=
+                                       -- 🎉 no goals
   rfl
 #align sym.map_mk Sym.map_mk
 
@@ -413,7 +445,9 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
   toFun := map e
   invFun := map e.symm
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
+                   -- 🎉 no goals
   right_inv x := by rw [map_map, Equiv.self_comp_symm, map_id]
+                    -- 🎉 no goals
 #align sym.equiv_congr Sym.equivCongr
 #align sym.equiv_congr_symm_apply Sym.equivCongr_symm_apply
 #align sym.equiv_congr_apply Sym.equivCongr_apply
@@ -422,6 +456,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
   ⟨s.val.attach, by conv_rhs => rw [← s.2, ← Multiset.card_attach]⟩
+                    -- 🎉 no goals
 #align sym.attach Sym.attach
 
 @[simp]
@@ -490,6 +525,7 @@ theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
 /-- Append a pair of `Sym` terms. -/
 def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
   ⟨s.1 + s'.1, by rw [map_add, s.2, s'.2]⟩
+                  -- 🎉 no goals
 #align sym.append Sym.append
 
 @[simp]
@@ -505,7 +541,9 @@ theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.appe
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
   ext
+  -- ⊢ ↑(append s s') = ↑(↑(Sym.cast (_ : n' + n' = n' + n')) (append s' s))
   simp [append, add_comm]
+  -- 🎉 no goals
 #align sym.append_comm Sym.append_comm
 
 @[simp, norm_cast]
@@ -532,6 +570,7 @@ theorem coe_fill {a : α} {i : Fin (n + 1)} {m : Sym α (n - i)} :
 theorem mem_fill_iff {a b : α} {i : Fin (n + 1)} {s : Sym α (n - i)} :
     a ∈ Sym.fill b i s ↔ (i : ℕ) ≠ 0 ∧ a = b ∨ a ∈ s := by
   rw [fill, mem_cast, mem_append_iff, or_comm, mem_replicate]
+  -- 🎉 no goals
 #align sym.mem_fill_iff Sym.mem_fill_iff
 
 open Multiset
@@ -540,13 +579,17 @@ open Multiset
 Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
+                                                    -- 🎉 no goals
     m.1.filter ((· ≠ ·) a),
     eq_tsub_of_add_eq <|
       Eq.trans
         (by
           rw [← countP_eq_card_filter, add_comm]
+          -- ⊢ ↑{ val := count a ↑m, isLt := (_ : count a ↑m < n + 1) } + countP ((fun x x_ …
           simp only [eq_comm, Ne.def, count]
+          -- ⊢ countP (fun x => a = x) ↑m + countP (fun x => ¬a = x) ↑m = ↑card ↑m
           rw [← card_eq_countP_add_countP _ _])
+          -- 🎉 no goals
         m.2⟩
 #align sym.filter_ne Sym.filterNe
 
@@ -564,11 +607,18 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
   Sym.ext
     (by
       rw [coe_fill, filterNe, ← val_eq_coe, Subtype.coe_mk, Fin.val_mk]
+      -- ⊢ filter ((fun x x_1 => x ≠ x_1) a) ↑m + ↑(replicate (count a ↑m) a) = ↑m
       ext b; dsimp
+      -- ⊢ count b (filter ((fun x x_1 => x ≠ x_1) a) ↑m + ↑(replicate (count a ↑m) a)) …
+             -- ⊢ count b (filter (fun x => ¬a = x) ↑m + ↑(replicate (count a ↑m) a)) = count  …
       rw [count_add, count_filter, Sym.coe_replicate, count_replicate]
+      -- ⊢ ((if ¬a = b then count b ↑m else 0) + if b = a then count a ↑m else 0) = cou …
       obtain rfl | h := eq_or_ne a b
+      -- ⊢ ((if ¬a = a then count a ↑m else 0) + if a = a then count a ↑m else 0) = cou …
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
+        -- 🎉 no goals
       · rw [if_pos h, if_neg h.symm, add_zero])
+        -- 🎉 no goals
 #align sym.fill_filter_ne Sym.fill_filterNe
 
 theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
@@ -576,11 +626,17 @@ theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α 
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
+      -- ⊢ filter ((fun x x_1 => x ≠ x_1) a) (↑m.snd + ↑(replicate (↑m.fst) a)) = ↑m.snd
       rw [filter_add, filter_eq_self.2, add_right_eq_self, eq_zero_iff_forall_not_mem]
+      -- ⊢ ∀ (a_1 : α), ¬a_1 ∈ filter ((fun x x_1 => x ≠ x_1) a) ↑(replicate (↑m.fst) a)
       · intro b hb
+        -- ⊢ False
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
+        -- ⊢ False
         exact hb.2 hb.1.2.symm
+        -- 🎉 no goals
       · exact fun a ha ha' => h <| ha'.symm ▸ ha)
+        -- 🎉 no goals
 #align sym.filter_ne_fill Sym.filter_ne_fill
 
 end Sym
@@ -641,25 +697,39 @@ theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.so
 @[simp]
 theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s := by
   by_cases h : none ∈ s
+  -- ⊢ decode (encode s) = s
   · simp [h]
+    -- 🎉 no goals
   · simp only [decode, h, not_false_iff, encode_of_not_none_mem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
     convert s.attach_map_coe
+    -- 🎉 no goals
 #align sym_option_succ_equiv.decode_encode SymOptionSuccEquiv.decode_encode
 
 @[simp]
 theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.succ)) :
     encode (decode s) = s := by
   obtain s | s := s
+  -- ⊢ encode (decode (Sum.inl s)) = Sum.inl s
   · simp
+    -- 🎉 no goals
   · unfold SymOptionSuccEquiv.encode
+    -- ⊢ (if h : none ∈ decode (Sum.inr s) then Sum.inl (erase (decode (Sum.inr s)) n …
     split_ifs with h
+    -- ⊢ False
     · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
+      -- ⊢ False
       exact Option.some_ne_none _ ha
+      -- 🎉 no goals
     · refine' congr_arg Sum.inr _
+      -- ⊢ map (fun o => Option.get ↑o (_ : Option.isSome ↑o = true)) (attach (decode ( …
       refine' map_injective (Option.some_injective _) _ _
+      -- ⊢ map some (map (fun o => Option.get ↑o (_ : Option.isSome ↑o = true)) (attach …
       refine' Eq.trans _ (Eq.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _)
+      -- ⊢ map some (map (fun o => Option.get ↑o (_ : Option.isSome ↑o = true)) (attach …
       simp; simp
+      -- ⊢ decode (Sum.inr s) = map some s
+            -- 🎉 no goals
 #align sym_option_succ_equiv.encode_decode SymOptionSuccEquiv.encode_decode
 
 end SymOptionSuccEquiv

@@ -30,19 +30,32 @@ namespace Complex
 
 theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by
   rcases eq_or_ne x 0 with (rfl | hx)
+  -- ⊢ SameRay ℝ 0 y ↔ 0 = 0 ∨ y = 0 ∨ arg 0 = arg y
   · simp
+    -- 🎉 no goals
   rcases eq_or_ne y 0 with (rfl | hy)
+  -- ⊢ SameRay ℝ x 0 ↔ x = 0 ∨ 0 = 0 ∨ arg x = arg 0
   · simp
+    -- 🎉 no goals
   simp only [hx, hy, false_or_iff, sameRay_iff_norm_smul_eq, arg_eq_arg_iff hx hy]
+  -- ⊢ ‖x‖ • y = ‖y‖ • x ↔ ↑(↑abs y) / ↑(↑abs x) * x = y
   field_simp [hx, hy]
+  -- ⊢ ↑(↑abs x) * y = ↑(↑abs y) * x ↔ ↑(↑abs y) * x = y * ↑(↑abs x)
   rw [mul_comm, eq_comm]
+  -- 🎉 no goals
 #align complex.same_ray_iff Complex.sameRay_iff
 
 theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
   rw [← Real.Angle.toReal_zero, ← arg_coe_angle_eq_iff_eq_toReal, sameRay_iff]
+  -- ⊢ x = 0 ∨ y = 0 ∨ arg x = arg y ↔ ↑(arg (x / y)) = 0
   by_cases hx : x = 0; · simp [hx]
+  -- ⊢ x = 0 ∨ y = 0 ∨ arg x = arg y ↔ ↑(arg (x / y)) = 0
+                         -- 🎉 no goals
   by_cases hy : y = 0; · simp [hy]
+  -- ⊢ x = 0 ∨ y = 0 ∨ arg x = arg y ↔ ↑(arg (x / y)) = 0
+                         -- 🎉 no goals
   simp [hx, hy, arg_div_coe_angle, sub_eq_zero]
+  -- 🎉 no goals
 #align complex.same_ray_iff_arg_div_eq_zero Complex.sameRay_iff_arg_div_eq_zero
 
 -- Porting note: `(x + y).abs` stopped working.

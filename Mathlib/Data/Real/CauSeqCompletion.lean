@@ -73,7 +73,9 @@ theorem ofRat_one : (ofRat 1 : Cauchy abv) = 1 :=
 @[simp]
 theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
   have : mk f = 0 ↔ LimZero (f - 0) := Quotient.eq
+  -- ⊢ mk f = 0 ↔ LimZero f
   rwa [sub_zero] at this
+  -- 🎉 no goals
 #align cau_seq.completion.mk_eq_zero CauSeq.Completion.mk_eq_zero
 
 instance : Add (Cauchy abv) :=
@@ -218,31 +220,45 @@ noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
+      -- ⊢ mk (if h : LimZero f then 0 else inv f h) = mk (if h : LimZero g then 0 else …
       by_cases hf : LimZero f
+      -- ⊢ mk (if h : LimZero f then 0 else inv f h) = mk (if h : LimZero g then 0 else …
       · simp [hf, this.1 hf, Setoid.refl]
+        -- 🎉 no goals
       · have hg := mt this.2 hf
+        -- ⊢ mk (if h : LimZero f then 0 else inv f h) = mk (if h : LimZero g then 0 else …
         simp [hf, hg]
+        -- ⊢ mk (inv f (_ : ¬LimZero f)) = mk (inv g (_ : ¬LimZero g))
         have If : mk (inv f hf) * mk f = 1 := mk_eq.2 (inv_mul_cancel hf)
+        -- ⊢ mk (inv f (_ : ¬LimZero f)) = mk (inv g (_ : ¬LimZero g))
         have Ig : mk (inv g hg) * mk g = 1 := mk_eq.2 (inv_mul_cancel hg)
+        -- ⊢ mk (inv f (_ : ¬LimZero f)) = mk (inv g (_ : ¬LimZero g))
         have Ig' : mk g * mk (inv g hg) = 1 := mk_eq.2 (mul_inv_cancel hg)
+        -- ⊢ mk (inv f (_ : ¬LimZero f)) = mk (inv g (_ : ¬LimZero g))
         rw [mk_eq.2 fg, ← Ig] at If
+        -- ⊢ mk (inv f (_ : ¬LimZero f)) = mk (inv g (_ : ¬LimZero g))
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
+        -- 🎉 no goals
 
 -- porting note: simp can prove this
 -- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
+                     -- 🎉 no goals
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
 theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
   congr_arg mk <| by rw [dif_neg]
+                     -- 🎉 no goals
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0) := Setoid.symm h
   have : LimZero 1 := by simpa
+                         -- 🎉 no goals
   by apply one_ne_zero <| const_limZero.1 this
+     -- 🎉 no goals
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
 
 theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
@@ -251,19 +267,26 @@ theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <
 protected theorem inv_mul_cancel {x : (Cauchy abv)} : x ≠ 0 → x⁻¹ * x = 1 :=
   Quotient.inductionOn x fun f hf => by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
+    -- ⊢ (Quotient.mk equiv f)⁻¹ * Quotient.mk equiv f = 1
     simp [hf]
+    -- ⊢ mk (inv f (_ : ¬LimZero f) * f) = 1
     exact Quotient.sound (CauSeq.inv_mul_cancel hf)
+    -- 🎉 no goals
 #align cau_seq.completion.inv_mul_cancel CauSeq.Completion.inv_mul_cancel
 
 protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1 :=
   Quotient.inductionOn x fun f hf => by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
+    -- ⊢ Quotient.mk equiv f * (Quotient.mk equiv f)⁻¹ = 1
     simp [hf]
+    -- ⊢ mk (f * inv f (_ : ¬LimZero f)) = 1
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
+    -- 🎉 no goals
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
   congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h]; rfl]
+                     -- 🎉 no goals
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
 /- porting note: This takes a long time to compile.
@@ -275,9 +298,12 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
   ratCast q := ofRat q
   ratCast_mk n d hd hnd := by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
+                              -- ⊢ ofRat ↑n * (ofRat ↑d)⁻¹ = ↑n * (↑d)⁻¹
+                                                                                        -- 🎉 no goals
 
 theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
+  -- 🎉 no goals
 #align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
@@ -365,7 +391,9 @@ theorem lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
   eq_lim_of_const_equiv <|
     show LimZero (const abv (lim f + lim g) - (f + g)) by
       rw [const_add, add_sub_add_comm]
+      -- ⊢ LimZero (const abv (lim f) - f + (const abv (lim g) - g))
       exact add_limZero (Setoid.symm (equiv_lim f)) (Setoid.symm (equiv_lim g))
+      -- 🎉 no goals
 #align cau_seq.lim_add CauSeq.lim_add
 
 theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
@@ -378,6 +406,7 @@ theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
               rw [coe_add]
               simp [sub_mul, mul_sub]
       rw [h]
+      -- ⊢ LimZero ((const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g …
       exact
         add_limZero (mul_limZero_left _ (Setoid.symm (equiv_lim _)))
           (mul_limZero_right _ (Setoid.symm (equiv_lim _)))
@@ -385,24 +414,33 @@ theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
 
 theorem lim_mul (f : CauSeq β abv) (x : β) : lim f * x = lim (f * const abv x) := by
   rw [← lim_mul_lim, lim_const]
+  -- 🎉 no goals
 #align cau_seq.lim_mul CauSeq.lim_mul
 
 theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
   lim_eq_of_equiv_const
     (show LimZero (-f - const abv (-lim f)) by
       rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg]
+      -- ⊢ LimZero (const abv (lim f) - f)
       exact Setoid.symm (equiv_lim f))
+      -- 🎉 no goals
 #align cau_seq.lim_neg CauSeq.lim_neg
 
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by
     have hf := equiv_lim f
+    -- ⊢ LimZero f
     rw [h] at hf
+    -- ⊢ LimZero f
     exact (limZero_congr hf).mpr (const_limZero.mpr rfl),
+    -- 🎉 no goals
    fun h => by
     have h₁ : f = f - const abv 0 := ext fun n => by simp [sub_apply, const_apply]
+    -- ⊢ lim f = 0
     rw [h₁] at h
+    -- ⊢ lim f = 0
     exact lim_eq_of_equiv_const h⟩
+    -- 🎉 no goals
 #align cau_seq.lim_eq_zero_iff CauSeq.lim_eq_zero_iff
 
 end
@@ -413,21 +451,30 @@ variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv] [IsComp
 
 theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f)⁻¹ :=
   have hl : lim f ≠ 0 := by rwa [← lim_eq_zero_iff] at hf
+                            -- 🎉 no goals
   lim_eq_of_equiv_const <|
     show LimZero (inv f hf - const abv (lim f)⁻¹) from
       have h₁ : ∀ (g f : CauSeq β abv) (hf : ¬LimZero f), LimZero (g - f * inv f hf * g) :=
         fun g f hf => by
           have h₂ : g - f * inv f hf * g = 1 * g - f * inv f hf * g := by rw [one_mul g]
+          -- ⊢ LimZero (g - f * inv f hf * g)
           have h₃ : f * inv f hf * g = (f * inv f hf) * g := by simp [mul_assoc]
+          -- ⊢ LimZero (g - f * inv f hf * g)
           have h₄ : g - f * inv f hf * g = (1 - f * inv f hf) * g := by rw [h₂, h₃, ← sub_mul]
+          -- ⊢ LimZero (g - f * inv f hf * g)
           have h₅ : g - f * inv f hf * g = g * (1 - f * inv f hf) := by rw [h₄, mul_comm]
+          -- ⊢ LimZero (g - f * inv f hf * g)
           have h₆ : g - f * inv f hf * g = g * (1 - inv f hf * f) := by rw [h₅, mul_comm f]
+          -- ⊢ LimZero (g - f * inv f hf * g)
           rw [h₆]; exact mul_limZero_right _ (Setoid.symm (CauSeq.inv_mul_cancel _))
+          -- ⊢ LimZero (g * (1 - inv f hf * f))
+                   -- 🎉 no goals
       have h₂ :
         LimZero
           (inv f hf - const abv (lim f)⁻¹ -
             (const abv (lim f) - f) * (inv f hf * const abv (lim f)⁻¹)) := by
               rw [sub_mul, ← sub_add, sub_sub, sub_add_eq_sub_sub, sub_right_comm, sub_add]
+              -- ⊢ LimZero (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) - ( …
               show LimZero
                 (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
                   (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))

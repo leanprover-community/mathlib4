@@ -59,46 +59,67 @@ set_option linter.uppercaseLean3 false in
 theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     HasDerivAt (gronwallBound δ K ε) (K * gronwallBound δ K ε x + ε) x := by
   by_cases hK : K = 0
+  -- ⊢ HasDerivAt (gronwallBound δ K ε) (K * gronwallBound δ K ε x + ε) x
   · subst K
+    -- ⊢ HasDerivAt (gronwallBound δ 0 ε) (0 * gronwallBound δ 0 ε x + ε) x
     simp only [gronwallBound_K0, zero_mul, zero_add]
+    -- ⊢ HasDerivAt (fun x => δ + ε * x) ε x
     convert ((hasDerivAt_id x).const_mul ε).const_add δ
+    -- ⊢ ε = ε * 1
     rw [mul_one]
+    -- 🎉 no goals
   · simp only [gronwallBound_of_K_ne_0 hK]
+    -- ⊢ HasDerivAt (fun x => δ * exp (K * x) + ε / K * (exp (K * x) - 1)) (K * (δ *  …
     convert (((hasDerivAt_id x).const_mul K).exp.const_mul δ).add
       ((((hasDerivAt_id x).const_mul K).exp.sub_const 1).const_mul (ε / K)) using 1
     simp only [id, mul_add, (mul_assoc _ _ _).symm, mul_comm _ K, mul_div_cancel' _ hK]
+    -- ⊢ K * δ * exp (K * x) + ε * (exp (K * x) - 1) + ε = K * δ * exp (K * x) * 1 +  …
     ring
+    -- 🎉 no goals
 #align has_deriv_at_gronwall_bound hasDerivAt_gronwallBound
 
 theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
     HasDerivAt (fun y => gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
   convert (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
+  -- ⊢ K * gronwallBound δ K ε (x - a) + ε = (K * gronwallBound δ K ε (id x - a) +  …
   rw [id, mul_one]
+  -- 🎉 no goals
 #align has_deriv_at_gronwall_bound_shift hasDerivAt_gronwallBound_shift
 
 theorem gronwallBound_x0 (δ K ε : ℝ) : gronwallBound δ K ε 0 = δ := by
   by_cases hK : K = 0
+  -- ⊢ gronwallBound δ K ε 0 = δ
   · simp only [gronwallBound, if_pos hK, mul_zero, add_zero]
+    -- 🎉 no goals
   · simp only [gronwallBound, if_neg hK, mul_zero, exp_zero, sub_self, mul_one,
       add_zero]
 #align gronwall_bound_x0 gronwallBound_x0
 
 theorem gronwallBound_ε0 (δ K x : ℝ) : gronwallBound δ K 0 x = δ * exp (K * x) := by
   by_cases hK : K = 0
+  -- ⊢ gronwallBound δ K 0 x = δ * exp (K * x)
   · simp only [gronwallBound_K0, hK, zero_mul, exp_zero, add_zero, mul_one]
+    -- 🎉 no goals
   · simp only [gronwallBound_of_K_ne_0 hK, zero_div, zero_mul, add_zero]
+    -- 🎉 no goals
 #align gronwall_bound_ε0 gronwallBound_ε0
 
 theorem gronwallBound_ε0_δ0 (K x : ℝ) : gronwallBound 0 K 0 x = 0 := by
   simp only [gronwallBound_ε0, zero_mul]
+  -- 🎉 no goals
 #align gronwall_bound_ε0_δ0 gronwallBound_ε0_δ0
 
 theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwallBound δ K ε x := by
   by_cases hK : K = 0
+  -- ⊢ Continuous fun ε => gronwallBound δ K ε x
   · simp only [gronwallBound_K0, hK]
+    -- ⊢ Continuous fun ε => δ + ε * x
     exact continuous_const.add (continuous_id.mul continuous_const)
+    -- 🎉 no goals
   · simp only [gronwallBound_of_K_ne_0 hK]
+    -- ⊢ Continuous fun ε => δ * exp (K * x) + ε / K * (exp (K * x) - 1)
     exact continuous_const.add ((continuous_id.mul continuous_const).mul continuous_const)
+    -- 🎉 no goals
 #align gronwall_bound_continuous_ε gronwallBound_continuous_ε
 
 /-! ### Inequality and corollaries -/
@@ -126,10 +147,15 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
       exact add_lt_add_left (mem_Ioi.1 hε') _
     · exact hx
   intro x hx
+  -- ⊢ f x ≤ gronwallBound δ K ε (x - a)
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
+  -- ⊢ f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
   convert continuousWithinAt_const.closure_le _ _ (H x hx)
+  -- ⊢ ε ∈ closure (Ioi ε)
   · simp only [closure_Ioi, left_mem_Ici]
+    -- 🎉 no goals
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
+  -- 🎉 no goals
 #align le_gronwall_bound_of_liminf_deriv_right_le le_gronwallBound_of_liminf_deriv_right_le
 
 /-- A Grönwall-like inequality: if `f : ℝ → E` is continuous on `[a, b]`, has right derivative
@@ -160,15 +186,21 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem_set {v : ℝ → E → E} {s :
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) := by
   simp only [dist_eq_norm] at ha ⊢
+  -- ⊢ ∀ (t : ℝ), t ∈ Icc a b → ‖f t - g t‖ ≤ gronwallBound δ K (εf + εg) (t - a)
   have h_deriv : ∀ t ∈ Ico a b, HasDerivWithinAt (fun t => f t - g t) (f' t - g' t) (Ici t) t :=
     fun t ht => (hf' t ht).sub (hg' t ht)
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
+  -- ⊢ ∀ (x : ℝ), x ∈ Ico a b → ‖f' x - g' x‖ ≤ K * ‖f x - g x‖ + (εf + εg)
   intro t ht
+  -- ⊢ ‖f' t - g' t‖ ≤ K * ‖f t - g t‖ + (εf + εg)
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
+  -- ⊢ ‖f' t - g' t‖ ≤ K * ‖f t - g t‖ + (εf + εg)
   rw [dist_eq_norm] at this
+  -- ⊢ ‖f' t - g' t‖ ≤ K * ‖f t - g t‖ + (εf + εg)
   refine' this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht))
     (hv t (f t) (hfs t ht) (g t) (hgs t ht))).trans _)
   rw [dist_eq_norm, add_comm]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align dist_le_of_approx_trajectories_ODE_of_mem_set dist_le_of_approx_trajectories_ODE_of_mem_set
 
@@ -204,11 +236,15 @@ theorem dist_le_of_trajectories_ODE_of_mem_set {v : ℝ → E → E} {s : ℝ �
     (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) := by
   have f_bound : ∀ t ∈ Ico a b, dist (v t (f t)) (v t (f t)) ≤ 0 := by intros; rw [dist_self]
+  -- ⊢ ∀ (t : ℝ), t ∈ Icc a b → dist (f t) (g t) ≤ δ * exp (K * (t - a))
   have g_bound : ∀ t ∈ Ico a b, dist (v t (g t)) (v t (g t)) ≤ 0 := by intros; rw [dist_self]
+  -- ⊢ ∀ (t : ℝ), t ∈ Icc a b → dist (f t) (g t) ≤ δ * exp (K * (t - a))
   intro t ht
+  -- ⊢ dist (f t) (g t) ≤ δ * exp (K * (t - a))
   have :=
     dist_le_of_approx_trajectories_ODE_of_mem_set hv hf hf' f_bound hfs hg hg' g_bound hgs ha t ht
   rwa [zero_add, gronwallBound_ε0] at this
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align dist_le_of_trajectories_ODE_of_mem_set dist_le_of_trajectories_ODE_of_mem_set
 
@@ -238,7 +274,9 @@ theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E}
     (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : ∀ t ∈ Icc a b, f t = g t := fun t ht ↦ by
   have := dist_le_of_trajectories_ODE_of_mem_set hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
+  -- ⊢ f t = g t
   rwa [zero_mul, dist_le_zero] at this
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
 

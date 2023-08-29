@@ -83,12 +83,16 @@ def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u
     NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
       funext fun x => by
         dsimp
+        -- ⊢ NatTrans.app x { unop := Y.unop } (𝟙 Y.unop ≫ f.unop) = P.map f (NatTrans.ap …
         have : x.app X (CategoryStruct.id (Opposite.unop X)) =
             (x.app X (𝟙 (Opposite.unop X)))
               := by rfl
         rw [this]
+        -- ⊢ NatTrans.app x { unop := Y.unop } (𝟙 Y.unop ≫ f.unop) = P.map f (NatTrans.ap …
         rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
+        -- ⊢ NatTrans.app x { unop := Y.unop } (𝟙 Y.unop ≫ f.unop) = NatTrans.app x Y ((y …
         simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
+        -- 🎉 no goals
 #align category_theory.colimit_adj.restricted_yoneda_yoneda CategoryTheory.ColimitAdj.restrictedYonedaYoneda
 
 /-- (Implementation). The equivalence of homsets which helps construct the left adjoint to
@@ -110,15 +114,23 @@ def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ)
         { val := fun p => τ.app p.unop.1 p.unop.2
           property := @fun p p' f => by
             simp_rw [← f.unop.2]
+            -- ⊢ ((CategoryOfElements.π P).leftOp ⋙ A).map f ≫ NatTrans.app τ p'.unop.fst p'. …
             apply (congr_fun (τ.naturality f.unop.1) p'.unop.2).symm }
+            -- 🎉 no goals
       left_inv := by
         rintro ⟨k₁, k₂⟩
+        -- ⊢ (fun τ => { val := fun p => NatTrans.app τ p.unop.fst p.unop.snd, property : …
         ext
+        -- ⊢ ↑((fun τ => { val := fun p => NatTrans.app τ p.unop.fst p.unop.snd, property …
         dsimp
+        -- ⊢ k₁ (Opposite.op { fst := x✝.unop.fst, snd := x✝.unop.snd }) = k₁ x✝
         congr 1
+        -- 🎉 no goals
       right_inv := by
         rintro ⟨_, _⟩
+        -- ⊢ (fun k => NatTrans.mk fun c p => ↑k (Opposite.op { fst := c, snd := p })) (( …
         rfl }
+        -- 🎉 no goals
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv CategoryTheory.ColimitAdj.restrictYonedaHomEquiv
 
 /--
@@ -129,7 +141,9 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
   ext x X
+  -- ⊢ NatTrans.app (↑(restrictYonedaHomEquiv A P E₂ t) (k ≫ g)) x X = NatTrans.app …
   apply (assoc _ _ _).symm
+  -- 🎉 no goals
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
 variable [HasColimits ℰ]
@@ -165,7 +179,9 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
   ext J
+  -- ⊢ colimit.ι ((CategoryOfElements.π X).leftOp ⋙ A) J ≫ (extendAlongYoneda A).ma …
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
+  -- ⊢ colimit.ι ((CategoryOfElements.π X).leftOp ⋙ A) J ≫ (extendAlongYoneda A).ma …
   dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso', IsColimit.homIso,
     uliftTrivial]
   -- porting note: in mathlib3 the rest of the proof was `simp, refl`; this is squeezed
@@ -179,6 +195,7 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     Adjunction.leftAdjointOfEquiv_obj, Function.comp_apply, Functor.map_id, comp_id,
     colimit.cocone_ι, Functor.op_obj]
   rfl
+  -- 🎉 no goals
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
 
 /-- Show `extendAlongYoneda` is left adjoint to `restrictedYoneda`.
@@ -203,8 +220,12 @@ def isInitial (A : C) : IsInitial (Elements.initial A) where
   desc s := ⟨s.pt.2.op, comp_id _⟩
   uniq s m _ := by
     simp_rw [← m.2]
+    -- ⊢ m = { val := ((yoneda.obj A).map (↑m) (asEmptyCocone (Elements.initial A)).p …
     dsimp [Elements.initial]
+    -- ⊢ m = { val := 𝟙 (Opposite.op A) ≫ ↑m, property := (_ : (𝟙 (Opposite.op A) ≫ ↑ …
+            -- 🎉 no goals
     simp
+    -- 🎉 no goals
   fac := by rintro s ⟨⟨⟩⟩
 #align category_theory.colimit_adj.is_initial CategoryTheory.ColimitAdj.isInitial
 
@@ -224,16 +245,25 @@ noncomputable def isExtensionAlongYoneda :
         (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _))
     (by
       intro X Y f
+      -- ⊢ (yoneda ⋙ extendAlongYoneda A).map f ≫ ((fun X => IsColimit.coconePointUniqu …
       -- porting note: this is slightly different to the `change` in mathlib3 which
       -- didn't work
       change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
+      -- ⊢ colimit.desc ((CategoryOfElements.π (yoneda.obj X)).leftOp ⋙ A) { pt := (fun …
       ext
+      -- ⊢ colimit.ι ((CategoryOfElements.π (yoneda.obj X)).leftOp ⋙ A) j✝ ≫ colimit.de …
       rw [colimit.ι_desc_assoc, colimit.ι_desc_assoc]
+      -- ⊢ NatTrans.app { pt := (fun P => (colimit.cocone ((CategoryOfElements.π P).lef …
       change (colimit.ι _ _ ≫ 𝟙 _) ≫ colimit.desc _ _ = _
+      -- ⊢ (colimit.ι (Opposite.op ((CategoryOfElements.π (yoneda.obj Y)).leftOp ⋙ A)). …
       rw [comp_id, colimit.ι_desc]
+      -- ⊢ NatTrans.app (coconeOfDiagramTerminal (terminalOpOfInitial (isInitial Y)) (( …
       dsimp
+      -- ⊢ A.map (↑(IsTerminal.from (terminalOpOfInitial (isInitial Y)) (Opposite.op {  …
       rw [← A.map_comp]
+      -- ⊢ A.map (↑(IsTerminal.from (terminalOpOfInitial (isInitial Y)) (Opposite.op {  …
       congr 1)
+      -- 🎉 no goals
 #align category_theory.colimit_adj.is_extension_along_yoneda CategoryTheory.ColimitAdj.isExtensionAlongYoneda
 
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
@@ -251,22 +281,38 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     inv := colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse
     hom_inv_id := by
       erw [colimit.pre_pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse]
+      -- ⊢ colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (eq.functor ⋙ eq.inverse)  …
       trans colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (𝟭 _)
+      -- ⊢ colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (eq.functor ⋙ eq.inverse)  …
       congr
+      -- ⊢ eq.functor ⋙ eq.inverse = 𝟭 (Functor.Elements X)ᵒᵖ
       · exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
+        -- 🎉 no goals
       · ext
+        -- ⊢ colimit.ι (𝟭 (Functor.Elements X)ᵒᵖ ⋙ (CategoryOfElements.π X).leftOp ⋙ A) j …
         simp only [colimit.ι_pre]
+        -- ⊢ colimit.ι ((CategoryOfElements.π X).leftOp ⋙ A) ((𝟭 (Functor.Elements X)ᵒᵖ). …
         erw [Category.comp_id]
+        -- ⊢ colimit.ι ((CategoryOfElements.π X).leftOp ⋙ A) ((𝟭 (Functor.Elements X)ᵒᵖ). …
         congr
+        -- 🎉 no goals
     inv_hom_id := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
+      -- ⊢ colimit.pre (Lan.diagram yoneda A X) (eq.inverse ⋙ eq.functor) = 𝟙 (((lan yo …
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
+      -- ⊢ colimit.pre (Lan.diagram yoneda A X) (eq.inverse ⋙ eq.functor) = colimit.pre …
       congr
+      -- ⊢ eq.inverse ⋙ eq.functor = 𝟭 (CostructuredArrow yoneda X)
       · exact CategoryOfElements.to_fromCostructuredArrow_eq X
+        -- 🎉 no goals
       · ext
+        -- ⊢ colimit.ι (𝟭 (CostructuredArrow yoneda X) ⋙ Lan.diagram yoneda A X) j✝ ≫ col …
         simp only [colimit.ι_pre]
+        -- ⊢ colimit.ι (Lan.diagram yoneda A X) ((𝟭 (CostructuredArrow yoneda X)).obj j✝) …
         erw [Category.comp_id]
+        -- ⊢ colimit.ι (Lan.diagram yoneda A X) ((𝟭 (CostructuredArrow yoneda X)).obj j✝) …
         congr }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan_app CategoryTheory.ColimitAdj.extendAlongYonedaIsoKanApp
 
@@ -277,12 +323,18 @@ noncomputable def extendAlongYonedaIsoKan :
     extendAlongYoneda A ≅ (lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A :=
   NatIso.ofComponents (extendAlongYonedaIsoKanApp A) (by
     intro X Y f; simp
+    -- ⊢ (extendAlongYoneda A).map f ≫ (extendAlongYonedaIsoKanApp A Y).hom = (extend …
+                 -- ⊢ (extendAlongYoneda A).map f ≫ colimit.pre (Lan.diagram yoneda A Y) (Category …
     rw [extendAlongYoneda_map]
+    -- ⊢ colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f) …
     erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (CostructuredArrow.map f)]
+    -- ⊢ colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f) …
     erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y)
         (CategoryOfElements.costructuredArrowYonedaEquivalence Y).functor]
     congr 1
+    -- ⊢ (CategoryOfElements.map f).op ⋙ (CategoryOfElements.costructuredArrowYonedaE …
     apply CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality)
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan CategoryTheory.ColimitAdj.extendAlongYonedaIsoKan
 
@@ -354,7 +406,9 @@ theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type u₁} (α
     (coconeOfRepresentable P₁).ι.app j ≫ α =
       (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
   ext T f
+  -- ⊢ NatTrans.app (NatTrans.app (coconeOfRepresentable P₁).ι j ≫ α) T f = NatTran …
   simpa [coconeOfRepresentable_ι_app] using FunctorToTypes.naturality _ _ α f.op _
+  -- 🎉 no goals
 #align category_theory.cocone_of_representable_naturality CategoryTheory.coconeOfRepresentable_naturality
 
 /-- The cocone with point `P` given by `coconeOfRepresentable` is a colimit:
@@ -372,8 +426,11 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) :
     (coconeOfRepresentable P)) by
     apply IsColimit.ofPointIso (colimit.isColimit (functorToRepresentables P))
   change IsIso (colimit.desc _ (Cocone.extend _ _))
+  -- ⊢ IsIso (colimit.desc (functorToRepresentables P) (Cocone.extend (colimit.coco …
   rw [colimit.desc_extend, colimit.desc_cocone]
+  -- ⊢ IsIso (𝟙 (colimit (functorToRepresentables P)) ≫ NatTrans.app extendAlongYon …
   infer_instance
+  -- 🎉 no goals
 #align category_theory.colimit_of_representable CategoryTheory.colimitOfRepresentable
 
 /-- Given two functors L₁ and L₂ which preserve colimits, if they agree when restricted to the
@@ -382,16 +439,24 @@ representable presheaves then they agree everywhere.
 noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ)
     [PreservesColimits L₁] [PreservesColimits L₂] (h : yoneda ⋙ L₁ ≅ yoneda ⋙ L₂) : L₁ ≅ L₂ := by
   apply NatIso.ofComponents _ _
+  -- ⊢ (X : Cᵒᵖ ⥤ Type u₁) → L₁.obj X ≅ L₂.obj X
   · intro P
+    -- ⊢ L₁.obj P ≅ L₂.obj P
     refine'
       (isColimitOfPreserves L₁ (colimitOfRepresentable P)).coconePointsIsoOfNatIso
         (isColimitOfPreserves L₂ (colimitOfRepresentable P)) _
     apply Functor.associator _ _ _ ≪≫ _
+    -- ⊢ (CategoryOfElements.π P).leftOp ⋙ yoneda ⋙ L₁ ≅ functorToRepresentables P ⋙ L₂
     exact isoWhiskerLeft (CategoryOfElements.π P).leftOp h
+    -- 🎉 no goals
   · intro P₁ P₂ f
+    -- ⊢ L₁.map f ≫ (IsColimit.coconePointsIsoOfNatIso (isColimitOfPreserves L₁ (coli …
     apply (isColimitOfPreserves L₁ (colimitOfRepresentable P₁)).hom_ext
+    -- ⊢ ∀ (j : (Functor.Elements P₁)ᵒᵖ), NatTrans.app (L₁.mapCocone (coconeOfReprese …
     intro j
+    -- ⊢ NatTrans.app (L₁.mapCocone (coconeOfRepresentable P₁)).ι j ≫ L₁.map f ≫ (IsC …
     dsimp only [id.def, IsColimit.comp_coconePointsIsoOfNatIso_hom, isoWhiskerLeft_hom]
+    -- ⊢ NatTrans.app (L₁.mapCocone (coconeOfRepresentable P₁)).ι j ≫ L₁.map f ≫ (IsC …
     have :
       (L₁.mapCocone (coconeOfRepresentable P₁)).ι.app j ≫ L₁.map f =
         (L₁.mapCocone (coconeOfRepresentable P₂)).ι.app
@@ -400,9 +465,13 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
       rw [← L₁.map_comp, coconeOfRepresentable_naturality]
       rfl
     erw [reassoc_of% this, IsColimit.ι_map_assoc, IsColimit.ι_map]
+    -- ⊢ NatTrans.app (Functor.associator (CategoryOfElements.π P₂).leftOp yoneda L₁  …
     dsimp
+    -- ⊢ (𝟙 (L₁.obj (yoneda.obj j.unop.fst.unop)) ≫ NatTrans.app h.hom j.unop.fst.uno …
     rw [← L₂.map_comp, coconeOfRepresentable_naturality]
+    -- ⊢ (𝟙 (L₁.obj (yoneda.obj j.unop.fst.unop)) ≫ NatTrans.app h.hom j.unop.fst.uno …
     rfl
+    -- 🎉 no goals
 #align category_theory.nat_iso_of_nat_iso_on_representables CategoryTheory.natIsoOfNatIsoOnRepresentables
 
 variable [HasColimits ℰ]
@@ -457,27 +526,45 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
     refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
+    -- ⊢ ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y), (tautologicalCocone P).pt.map f ≫ (fun X t => ↑yo …
     intros X Y f
+    -- ⊢ (tautologicalCocone P).pt.map f ≫ (fun X t => ↑yonedaEquiv (NatTrans.app s.ι …
     ext t
+    -- ⊢ ((tautologicalCocone P).pt.map f ≫ (fun X t => ↑yonedaEquiv (NatTrans.app s. …
     dsimp
+    -- ⊢ ↑yonedaEquiv (NatTrans.app s.ι (CostructuredArrow.mk (↑yonedaEquiv.symm (P.m …
     rw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
+    -- ⊢ ↑yonedaEquiv (NatTrans.app s.ι (CostructuredArrow.mk (yoneda.map f.unop ≫ ↑y …
     simpa using (s.ι.naturality
       (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
   fac := by
     intro s t
+    -- ⊢ NatTrans.app (tautologicalCocone P).ι t ≫ (fun s => NatTrans.mk fun X t => ↑ …
     dsimp
+    -- ⊢ (t.hom ≫ NatTrans.mk fun X t => ↑yonedaEquiv (NatTrans.app s.ι (Costructured …
     apply yonedaEquiv.injective
+    -- ⊢ ↑yonedaEquiv (t.hom ≫ NatTrans.mk fun X t => ↑yonedaEquiv (NatTrans.app s.ι  …
     rw [yonedaEquiv_comp]
+    -- ⊢ NatTrans.app (NatTrans.mk fun X t => ↑yonedaEquiv (NatTrans.app s.ι (Costruc …
     dsimp only
+    -- ⊢ ↑yonedaEquiv (NatTrans.app s.ι (CostructuredArrow.mk (↑yonedaEquiv.symm (↑yo …
     rw [Equiv.symm_apply_apply]
+    -- ⊢ ↑yonedaEquiv (NatTrans.app s.ι (CostructuredArrow.mk t.hom)) = ↑yonedaEquiv  …
     rfl
+    -- 🎉 no goals
   uniq := by
     intro s j h
+    -- ⊢ j = (fun s => NatTrans.mk fun X t => ↑yonedaEquiv (NatTrans.app s.ι (Costruc …
     ext V x
+    -- ⊢ NatTrans.app j V x = NatTrans.app ((fun s => NatTrans.mk fun X t => ↑yonedaE …
     obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
+    -- ⊢ NatTrans.app j V (↑yonedaEquiv t) = NatTrans.app ((fun s => NatTrans.mk fun  …
     dsimp
+    -- ⊢ NatTrans.app j V (↑yonedaEquiv t) = ↑yonedaEquiv (NatTrans.app s.ι (Costruct …
     rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
+    -- ⊢ ↑yonedaEquiv (t ≫ j) = ↑yonedaEquiv (NatTrans.app s.ι (CostructuredArrow.mk  …
     exact congr_arg _ (h (CostructuredArrow.mk t))
+    -- 🎉 no goals
 
 end ArbitraryUniverses
 

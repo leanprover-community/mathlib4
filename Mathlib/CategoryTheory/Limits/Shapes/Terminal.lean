@@ -34,6 +34,7 @@ def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π :=
     { app := by aesop_cat } }
+                -- 🎉 no goals
 #align category_theory.limits.as_empty_cone CategoryTheory.Limits.asEmptyCone
 
 /-- Construct a cocone for the empty diagram given an object. -/
@@ -42,6 +43,7 @@ def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
   { pt := X
     ι :=
     { app := by aesop_cat } }
+                -- 🎉 no goals
 #align category_theory.limits.as_empty_cocone CategoryTheory.Limits.asEmptyCocone
 
 /-- `X` is terminal if the cone it induces on the empty diagram is limiting. -/
@@ -57,17 +59,31 @@ abbrev IsInitial (X : C) :=
 /-- An object `Y` is terminal iff for every `X` there is a unique morphism `X ⟶ Y`. -/
 def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
     IsLimit (⟨Y, by aesop_cat, by aesop_cat⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
+                    -- 🎉 no goals
+                                  -- 🎉 no goals
   toFun t X :=
     { default := t.lift ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩
+                                -- 🎉 no goals
+                                              -- 🎉 no goals
       uniq := fun f =>
         t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
+                       -- 🎉 no goals
+                                     -- 🎉 no goals
+                                                       -- 🎉 no goals
   invFun u :=
     { lift := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
+                 -- ⊢ ∀ (x : IsLimit { pt := Y, π := NatTrans.mk fun X => False.elim (_ : False) } …
+                                               -- ⊢ (IsLimit.mk fun s => IsLimit.lift x { pt := s.pt, π := NatTrans.mk fun X_1 = …
+                                                        -- 🎉 no goals
   right_inv := by
     dsimp [Function.RightInverse,Function.LeftInverse]
+    -- ⊢ ∀ (x : (X : C) → Unique (X ⟶ Y)), (fun X => { toInhabited := { default := de …
     intro u; funext X; simp only
+    -- ⊢ (fun X => { toInhabited := { default := default }, uniq := (_ : ∀ (f : X ⟶ Y …
+             -- ⊢ { toInhabited := { default := default }, uniq := (_ : ∀ (f : X ⟶ Y), f = def …
+                       -- 🎉 no goals
 #align category_theory.limits.is_terminal_equiv_unique CategoryTheory.Limits.isTerminalEquivUnique
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
@@ -99,16 +115,30 @@ def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z 
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
 def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     IsColimit (⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
+                       -- 🎉 no goals
+                                     -- 🎉 no goals
   toFun t X :=
     { default := t.desc ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩
+                                -- 🎉 no goals
+                                              -- 🎉 no goals
       uniq := fun f => t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
+                                      -- 🎉 no goals
+                                                    -- 🎉 no goals
+                                                                      -- 🎉 no goals
   invFun u :=
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
+                 -- ⊢ ∀ (x : IsColimit { pt := X, ι := NatTrans.mk fun X_1 => False.elim (_ : Fals …
+                                               -- ⊢ (IsColimit.mk fun s => IsColimit.desc x✝ { pt := s.pt, ι := NatTrans.mk fun  …
+                                                      -- 🎉 no goals
   right_inv := by
     dsimp [Function.RightInverse,Function.LeftInverse]
+    -- ⊢ ∀ (x : (Y : C) → Unique (X ⟶ Y)), (fun X_1 => { toInhabited := { default :=  …
     intro; funext; simp only
+    -- ⊢ (fun X_1 => { toInhabited := { default := default }, uniq := (_ : ∀ (f : X ⟶ …
+           -- ⊢ { toInhabited := { default := default }, uniq := (_ : ∀ (f : X ⟶ x✝), f = de …
+                   -- 🎉 no goals
 #align category_theory.limits.is_initial_equiv_unique CategoryTheory.Limits.isInitialEquivUnique
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
@@ -145,6 +175,7 @@ def IsTerminal.from {X : C} (t : IsTerminal X) (Y : C) : Y ⟶ X :=
 /-- Any two morphisms to a terminal object are equal. -/
 theorem IsTerminal.hom_ext {X Y : C} (t : IsTerminal X) (f g : Y ⟶ X) : f = g :=
   IsLimit.hom_ext t (by aesop_cat)
+                        -- 🎉 no goals
 #align category_theory.limits.is_terminal.hom_ext CategoryTheory.Limits.IsTerminal.hom_ext
 
 @[simp]
@@ -166,6 +197,7 @@ def IsInitial.to {X : C} (t : IsInitial X) (Y : C) : X ⟶ Y :=
 /-- Any two morphisms from an initial object are equal. -/
 theorem IsInitial.hom_ext {X Y : C} (t : IsInitial X) (f g : X ⟶ Y) : f = g :=
   IsColimit.hom_ext t (by aesop_cat)
+                          -- 🎉 no goals
 #align category_theory.limits.is_initial.hom_ext CategoryTheory.Limits.IsInitial.hom_ext
 
 @[simp]
@@ -191,11 +223,15 @@ theorem IsInitial.isSplitEpi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : IsSp
 /-- Any morphism from a terminal object is mono. -/
 theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
   haveI := t.isSplitMono_from f; infer_instance
+  -- ⊢ Mono f
+                                 -- 🎉 no goals
 #align category_theory.limits.is_terminal.mono_from CategoryTheory.Limits.IsTerminal.mono_from
 
 /-- Any morphism to an initial object is epi. -/
 theorem IsInitial.epi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : Epi f := by
   haveI := t.isSplitEpi_to f; infer_instance
+  -- ⊢ Epi f
+                              -- 🎉 no goals
 #align category_theory.limits.is_initial.epi_to CategoryTheory.Limits.IsInitial.epi_to
 
 /-- If `T` and `T'` are terminal, they are isomorphic. -/
@@ -237,11 +273,17 @@ variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty
 def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F₂) (hi : c₁.pt ≅ c₂.pt) :
     IsLimit c₂ where
   lift c := hl.lift ⟨c.pt, by aesop_cat, by aesop_cat⟩ ≫ hi.hom
+                              -- 🎉 no goals
+                                            -- 🎉 no goals
   uniq c f _ := by
     dsimp
+    -- ⊢ f = IsLimit.lift hl { pt := c.pt, π := NatTrans.mk fun X_1 => False.elim (_  …
     rw [← hl.uniq _ (f ≫ hi.inv) _]
+    -- ⊢ f = (f ≫ hi.inv) ≫ hi.hom
     · simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
+      -- 🎉 no goals
     · aesop_cat
+      -- 🎉 no goals
 #align category_theory.limits.is_limit_change_empty_cone CategoryTheory.Limits.isLimitChangeEmptyCone
 
 /-- Replacing an empty cone in `IsLimit` by another with the same cone point
@@ -251,13 +293,22 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
   toFun hl := isLimitChangeEmptyCone C hl c₂ h
   invFun hl := isLimitChangeEmptyCone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
+                 -- ⊢ ∀ (x : IsLimit c₁), isLimitChangeEmptyCone C (isLimitChangeEmptyCone C x c₂  …
+                                               -- ⊢ isLimitChangeEmptyCone C (isLimitChangeEmptyCone C x✝ c₂ h) c₁ h.symm = x✝
+                                                      -- 🎉 no goals
   right_inv := by
     dsimp [Function.LeftInverse,Function.RightInverse]; intro; funext
+    -- ⊢ ∀ (x : IsLimit c₂), isLimitChangeEmptyCone C (isLimitChangeEmptyCone C x c₁  …
+                                                        -- ⊢ isLimitChangeEmptyCone C (isLimitChangeEmptyCone C x✝ c₁ h.symm) c₂ h = x✝
+                                                               -- ⊢ isLimitChangeEmptyCone C (isLimitChangeEmptyCone C x✝ c₁ h.symm) c₂ h = x✝
     simp only [eq_iff_true_of_subsingleton]
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_empty_cone_equiv CategoryTheory.Limits.isLimitEmptyConeEquiv
 
 theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
   ⟨⟨⟨⟨limit F₁, by aesop_cat, by aesop_cat⟩,
+                   -- 🎉 no goals
+                                 -- 🎉 no goals
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_terminal_change_diagram CategoryTheory.Limits.hasTerminalChangeDiagram
 
@@ -271,11 +322,17 @@ theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C]
 def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ : Cocone F₂)
     (hi : c₁.pt ≅ c₂.pt) : IsColimit c₂ where
   desc c := hi.inv ≫ hl.desc ⟨c.pt, by aesop_cat, by aesop_cat⟩
+                                       -- 🎉 no goals
+                                                     -- 🎉 no goals
   uniq c f _ := by
     dsimp
+    -- ⊢ f = hi.inv ≫ IsColimit.desc hl { pt := c.pt, ι := NatTrans.mk fun X_1 => Fal …
     rw [← hl.uniq _ (hi.hom ≫ f) _]
+    -- ⊢ f = hi.inv ≫ hi.hom ≫ f
     · simp only [Iso.inv_hom_id_assoc]
+      -- 🎉 no goals
     · aesop_cat
+      -- 🎉 no goals
 #align category_theory.limits.is_colimit_change_empty_cocone CategoryTheory.Limits.isColimitChangeEmptyCocone
 
 /-- Replacing an empty cocone in `IsColimit` by another with the same cocone point
@@ -285,13 +342,22 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   toFun hl := isColimitChangeEmptyCocone C hl c₂ h
   invFun hl := isColimitChangeEmptyCocone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
+                 -- ⊢ ∀ (x : IsColimit c₁), isColimitChangeEmptyCocone C (isColimitChangeEmptyCoco …
+                                               -- ⊢ isColimitChangeEmptyCocone C (isColimitChangeEmptyCocone C x✝ c₂ h) c₁ h.sym …
+                                                      -- 🎉 no goals
   right_inv := by
     dsimp [Function.LeftInverse,Function.RightInverse]; intro; funext
+    -- ⊢ ∀ (x : IsColimit c₂), isColimitChangeEmptyCocone C (isColimitChangeEmptyCoco …
+                                                        -- ⊢ isColimitChangeEmptyCocone C (isColimitChangeEmptyCocone C x✝ c₁ h.symm) c₂  …
+                                                               -- ⊢ isColimitChangeEmptyCocone C (isColimitChangeEmptyCocone C x✝ c₁ h.symm) c₂  …
     simp only [eq_iff_true_of_subsingleton]
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_empty_cocone_equiv CategoryTheory.Limits.isColimitEmptyCoconeEquiv
 
 theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
   ⟨⟨⟨⟨colimit F₁, by aesop_cat, by aesop_cat⟩,
+                     -- 🎉 no goals
+                                   -- 🎉 no goals
     isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_initial_change_diagram CategoryTheory.Limits.hasInitialChangeDiagram
 
@@ -336,6 +402,8 @@ theorem hasTerminal_of_unique (X : C) [h : ∀ Y : C, Unique (Y ⟶ X)] : HasTer
 
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
   { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩,
+                                              -- 🎉 no goals
+                                                            -- 🎉 no goals
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 #align category_theory.limits.is_terminal.has_terminal CategoryTheory.Limits.IsTerminal.hasTerminal
 
@@ -348,6 +416,8 @@ theorem hasInitial_of_unique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : HasInit
 theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
   has_colimit F :=
     HasColimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
+                          -- 🎉 no goals
+                                        -- 🎉 no goals
 #align category_theory.limits.is_initial.has_initial CategoryTheory.Limits.IsInitial.hasInitial
 
 /-- The map from an object to the terminal object. -/
@@ -381,11 +451,13 @@ instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
 @[simp]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by aesop
+                                                -- 🎉 no goals
 #align category_theory.limits.terminal.comp_from CategoryTheory.Limits.terminal.comp_from
 
 @[simp]
 theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
   aesop
+  -- 🎉 no goals
 #align category_theory.limits.initial.to_comp CategoryTheory.Limits.initial.to_comp
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
@@ -474,6 +546,7 @@ theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by aesop_cat
+                            -- 🎉 no goals
 #align category_theory.limits.limit_const_terminal_inv_π CategoryTheory.Limits.limitConstTerminal_inv_π
 
 instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
@@ -500,6 +573,7 @@ theorem ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Categor
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
       initial.to _ := by aesop_cat
+                         -- 🎉 no goals
 #align category_theory.limits.ι_colimit_const_initial_hom CategoryTheory.Limits.ι_colimitConstInitial_hom
 
 /-- A category is an `InitialMonoClass` if the canonical morphism of an initial object is a
@@ -519,7 +593,9 @@ class InitialMonoClass (C : Type u₁) [Category.{v₁} C] : Prop where
 theorem IsInitial.mono_from [InitialMonoClass C] {I} {X : C} (hI : IsInitial I) (f : I ⟶ X) :
     Mono f := by
   rw [hI.hom_ext f (hI.to X)]
+  -- ⊢ Mono (to hI X)
   apply InitialMonoClass.isInitial_mono_from
+  -- 🎉 no goals
 #align category_theory.limits.is_initial.mono_from CategoryTheory.Limits.IsInitial.mono_from
 
 instance (priority := 100) initial.mono_from [HasInitial C] [InitialMonoClass C] (X : C)
@@ -533,7 +609,9 @@ theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mon
     InitialMonoClass C where
   isInitial_mono_from {I'} X hI' := by
     rw [hI'.hom_ext (hI'.to X) ((hI'.uniqueUpToIso hI).hom ≫ hI.to X)]
+    -- ⊢ Mono ((IsInitial.uniqueUpToIso hI' hI).hom ≫ IsInitial.to hI X)
     apply mono_comp
+    -- 🎉 no goals
 #align category_theory.limits.initial_mono_class.of_is_initial CategoryTheory.Limits.InitialMonoClass.of_isInitial
 
 /-- To show a category is an `InitialMonoClass` it suffices to show every morphism out of the
@@ -592,7 +670,9 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
     { app := fun j => F.map (tX.to j)
       naturality := fun j j' k => by
         dsimp
+        -- ⊢ 𝟙 (F.obj X) ≫ F.map (IsInitial.to tX j') = F.map (IsInitial.to tX j) ≫ F.map k
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
+        -- 🎉 no goals
 #align category_theory.limits.cone_of_diagram_initial CategoryTheory.Limits.coneOfDiagramInitial
 
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
@@ -602,8 +682,12 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
   lift s := s.π.app X
   uniq s m w := by
     conv_lhs => dsimp
+    -- ⊢ m = (fun s => NatTrans.app s.π X) s
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
+    -- ⊢ m = m ≫ F.map (𝟙 X)
     dsimp; simp
+    -- ⊢ m = m ≫ F.map (𝟙 X)
+           -- 🎉 no goals
 #align category_theory.limits.limit_of_diagram_initial CategoryTheory.Limits.limitOfDiagramInitial
 
 -- See note [dsimp, simp]
@@ -626,7 +710,9 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     { app := fun i => inv (F.map (hX.from _))
       naturality := by
         intro i j f
+        -- ⊢ ((Functor.const J).obj (F.obj X)).map f ≫ (fun i => inv (F.map (IsTerminal.f …
         dsimp
+        -- ⊢ 𝟙 (F.obj X) ≫ inv (F.map (IsTerminal.from hX j)) = inv (F.map (IsTerminal.fr …
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 #align category_theory.limits.cone_of_diagram_terminal CategoryTheory.Limits.coneOfDiagramTerminal
@@ -656,7 +742,9 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
     { app := fun j => F.map (tX.from j)
       naturality := fun j j' k => by
         dsimp
+        -- ⊢ F.map k ≫ F.map (IsTerminal.from tX j') = F.map (IsTerminal.from tX j) ≫ 𝟙 ( …
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
+        -- 🎉 no goals
 #align category_theory.limits.cocone_of_diagram_terminal CategoryTheory.Limits.coconeOfDiagramTerminal
 
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, show the cocone
@@ -666,8 +754,11 @@ def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
   desc s := s.ι.app X
   uniq s m w := by
     conv_rhs => dsimp -- Porting note: why do I need this much firepower?
+    -- ⊢ m = NatTrans.app s.ι X
     rw [← w X, coconeOfDiagramTerminal_ι_app, tX.hom_ext (tX.from X) (𝟙 _)]
+    -- ⊢ m = F.map (𝟙 X) ≫ m
     simp
+    -- 🎉 no goals
 #align category_theory.limits.colimit_of_diagram_terminal CategoryTheory.Limits.colimitOfDiagramTerminal
 
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
@@ -690,7 +781,9 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
     { app := fun i => inv (F.map (hX.to _))
       naturality := by
         intro i j f
+        -- ⊢ F.map f ≫ (fun i => inv (F.map (IsInitial.to hX i))) j = (fun i => inv (F.ma …
         dsimp
+        -- ⊢ F.map f ≫ inv (F.map (IsInitial.to hX j)) = inv (F.map (IsInitial.to hX i))  …
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.comp_id, ← F.map_comp,
           hX.hom_ext (hX.to i ≫ f) (hX.to j)] }
 #align category_theory.limits.cocone_of_diagram_initial CategoryTheory.Limits.coconeOfDiagramInitial
@@ -717,6 +810,9 @@ def colimitOfInitial (F : J ⥤ C) [HasInitial J] [HasColimit F]
 theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
     IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramInitial I F), ⟨by ext; simp, by simp⟩⟩⟩
+                                                 -- ⊢ (limit.π F j ≫ limit.lift F (coneOfDiagramInitial I F)) ≫ limit.π F j✝ = 𝟙 ( …
+                                                      -- 🎉 no goals
+                                                               -- 🎉 no goals
 #align category_theory.limits.is_iso_π_of_is_initial CategoryTheory.Limits.isIso_π_of_isInitial
 
 instance isIso_π_initial [HasInitial J] (F : J ⥤ C) [HasLimit F] : IsIso (limit.π F (⊥_ J)) :=
@@ -726,6 +822,9 @@ instance isIso_π_initial [HasInitial J] (F : J ⥤ C) [HasLimit F] : IsIso (lim
 theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramTerminal I F), by ext; simp, by simp⟩⟩
+                                                 -- ⊢ (limit.π F j ≫ limit.lift F (coneOfDiagramTerminal I F)) ≫ limit.π F j✝ = 𝟙  …
+                                                      -- 🎉 no goals
+                                                               -- 🎉 no goals
 #align category_theory.limits.is_iso_π_of_is_terminal CategoryTheory.Limits.isIso_π_of_isTerminal
 
 instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [HasLimit F]
@@ -738,6 +837,9 @@ instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [HasLimit F]
 theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColimit F] :
     IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramTerminal I F), ⟨by simp, by ext; simp⟩⟩⟩
+                                                      -- 🎉 no goals
+                                                               -- ⊢ colimit.ι F j✝ ≫ colimit.desc F (coconeOfDiagramTerminal I F) ≫ colimit.ι F  …
+                                                                    -- 🎉 no goals
 #align category_theory.limits.is_iso_ι_of_is_terminal CategoryTheory.Limits.isIso_ι_of_isTerminal
 
 instance isIso_ι_terminal [HasTerminal J] (F : J ⥤ C) [HasColimit F] : IsIso (colimit.ι F (⊤_ J)) :=
@@ -748,10 +850,15 @@ theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimi
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramInitial I F), by
     refine ⟨?_, by ext; simp⟩
+    -- ⊢ colimit.ι F j ≫ colimit.desc F (coconeOfDiagramInitial I F) = 𝟙 (F.obj j)
     dsimp; simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
+    -- ⊢ colimit.ι F j ≫ colimit.desc F (coconeOfDiagramInitial I F) = 𝟙 (F.obj j)
       Functor.const_obj_obj, IsInitial.to_self, Functor.map_id]
     dsimp [inv]; simp only [Category.id_comp, Category.comp_id, and_self]
+    -- ⊢ Classical.choose (_ : ∃ inv, 𝟙 (F.obj j) ≫ inv = 𝟙 (F.obj j) ∧ inv ≫ 𝟙 (F.ob …
+                 -- ⊢ Classical.choose (_ : ∃ x, (fun x => x = 𝟙 (F.obj j)) x) = 𝟙 (F.obj j)
     apply @Classical.choose_spec _ (fun x => x = 𝟙 F.obj j) _
+    -- 🎉 no goals
   ⟩⟩
 #align category_theory.limits.is_iso_ι_of_is_initial CategoryTheory.Limits.isIso_ι_of_isInitial
 

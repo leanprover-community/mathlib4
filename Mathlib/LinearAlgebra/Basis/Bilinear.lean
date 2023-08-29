@@ -52,6 +52,7 @@ theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁
     ((b₁.repr x).sum fun i xi => (b₂.repr y).sum fun j yj => ρ₁₂ xi • σ₁₂ yj • B (b₁ i) (b₂ j)) =
       B x y := by
   conv_rhs => rw [← b₁.total_repr x, ← b₂.total_repr y]
+  -- ⊢ (Finsupp.sum (↑b₁.repr x) fun i xi => Finsupp.sum (↑b₂.repr y) fun j yj => ↑ …
   simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smulₛₗ₂,
     LinearMap.map_smulₛₗ]
 #align linear_map.sum_repr_mul_repr_mulₛₗ LinearMap.sum_repr_mul_repr_mulₛₗ
@@ -63,6 +64,7 @@ theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} (x y) :
     ((b₁'.repr x).sum fun i xi => (b₂'.repr y).sum fun j yj => xi • yj • B (b₁' i) (b₂' j)) =
       B x y := by
   conv_rhs => rw [← b₁'.total_repr x, ← b₂'.total_repr y]
+  -- ⊢ (Finsupp.sum (↑b₁'.repr x) fun i xi => Finsupp.sum (↑b₂'.repr y) fun j yj => …
   simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smul₂,
     LinearMap.map_smul]
 #align linear_map.sum_repr_mul_repr_mul LinearMap.sum_repr_mul_repr_mul

@@ -39,7 +39,10 @@ def enumerate : Set α → ℕ → Option α
 
 theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enumerate sel s n = none
   | 0 => by simp [h, enumerate]
+            -- 🎉 no goals
   | n + 1 => by simp [h, enumerate]; rfl
+                -- ⊢ (do
+                                     -- 🎉 no goals
 #align set.enumerate_eq_none_of_sel Set.enumerate_eq_none_of_sel
 
 theorem enumerate_eq_none :
@@ -47,8 +50,11 @@ theorem enumerate_eq_none :
   | s, 0, m => fun h _ ↦ enumerate_eq_none_of_sel sel h
   | s, n + 1, m => fun h hm ↦ by
     cases hs : sel s
+    -- ⊢ enumerate sel s m = none
     · exact enumerate_eq_none_of_sel sel hs
+      -- 🎉 no goals
     · cases m
+      -- ⊢ enumerate sel s Nat.zero = none
       case zero =>
         contradiction
       case succ m' =>
@@ -62,7 +68,10 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
   | s, 0, a => h_sel s a
   | s, n + 1, a => by
     cases h : sel s
+    -- ⊢ enumerate sel s (n + 1) = some a → a ∈ s
     case none => simp [enumerate_eq_none_of_sel, h]
+    -- ⊢ enumerate sel s (n + 1) = some a → a ∈ s
+    -- 🎉 no goals
     case some a' =>
       simp [enumerate, h]
       exact fun h' : enumerate sel (s \ {a'}) n = some a ↦
@@ -75,7 +84,10 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
   /- porting note : The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/
   rcases le_total n₁ n₂ with (hn|hn)
+  -- ⊢ n₁ = n₂
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂
+  -- ⊢ n₁ = n₂
+  -- ⊢ n₁ = n₂
   all_goals
     rcases Nat.le.dest hn with ⟨m, rfl⟩
     clear hn

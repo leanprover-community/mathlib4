@@ -56,11 +56,14 @@ variable [LawfulFunctor t]
 
 protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
   simp [Equiv.map, id_map]
+  -- 🎉 no goals
 #align equiv.id_map Equiv.id_map
 
 protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
   simp [Equiv.map]; apply comp_map
+  -- ⊢ (h ∘ g) <$> ↑(eqv α).symm x = h <$> g <$> ↑(eqv α).symm x
+                    -- 🎉 no goals
 #align equiv.comp_map Equiv.comp_map
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
@@ -80,7 +83,9 @@ protected theorem lawfulFunctor' [F : Functor t']
     dsimp [Equiv.functor]
     congr <;> ext <;> dsimp only <;> [rw [← h₀]; rw [← h₁]] <;> rfl
   subst this
+  -- ⊢ LawfulFunctor t'
   exact Equiv.lawfulFunctor eqv
+  -- 🎉 no goals
 #align equiv.is_lawful_functor' Equiv.lawfulFunctor'
 
 end Functor
@@ -133,22 +138,30 @@ open LawfulTraversable Functor
 protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
   -- Porting note: Changing this `simp` to an `rw` somehow breaks the proof of `comp_traverse`.
   simp [Equiv.traverse]
+  -- 🎉 no goals
 #align equiv.id_traverse Equiv.id_traverse
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
   simp [Equiv.traverse, traverse_eq_map_id, functor_norm]; rfl
+  -- ⊢ ↑(eqv β) (id.mk (f <$> ↑(eqv α).symm x)) = Equiv.map eqv f x
+                                                           -- 🎉 no goals
 #align equiv.traverse_eq_map_id Equiv.traverse_eq_map_id
 
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
   simp [Equiv.traverse, comp_traverse, functor_norm]; congr; ext; simp
+  -- ⊢ Comp.mk (((fun x => ↑(eqv γ) <$> x) ∘ traverse f) <$> traverse g (↑(eqv α).s …
+                                                      -- ⊢ (fun x => ↑(eqv γ) <$> x) ∘ traverse f = (fun x => ↑(eqv γ) <$> traverse f ( …
+                                                             -- ⊢ ((fun x => ↑(eqv γ) <$> x) ∘ traverse f) x✝ = ((fun x => ↑(eqv γ) <$> traver …
+                                                                  -- 🎉 no goals
 #align equiv.comp_traverse Equiv.comp_traverse
 
 protected theorem naturality (f : α → F β) (x : t' α) :
     η (Equiv.traverse eqv f x) = Equiv.traverse eqv (@η _ ∘ f) x := by
   simp only [Equiv.traverse, functor_norm]
+  -- 🎉 no goals
 #align equiv.naturality Equiv.naturality
 
 /-- The fact that `t` is a lawful traversable functor carries over the
@@ -179,12 +192,23 @@ protected theorem isLawfulTraversable' [Traversable t']
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
   refine' { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros
+                                                                        -- ⊢ traverse pure x✝ = x✝
+                                                                        -- ⊢ traverse (Comp.mk ∘ map f✝ ∘ g✝) x✝ = Comp.mk (traverse f✝ <$> traverse g✝ x✝)
+                                                                        -- ⊢ traverse (pure ∘ f✝) x✝ = id.mk (f✝ <$> x✝)
+                                                                        -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (traverse f✝ x✝) = traverse  …
   · rw [h₂, Equiv.id_traverse]
+    -- 🎉 no goals
   · rw [h₂, Equiv.comp_traverse, h₂]
+    -- ⊢ Comp.mk (Equiv.traverse eqv f✝ <$> Equiv.traverse eqv g✝ x✝) = Comp.mk (Equi …
     congr
+    -- ⊢ Equiv.traverse eqv g✝ x✝ = traverse g✝ x✝
     rw [h₂]
+    -- 🎉 no goals
   · rw [h₂, Equiv.traverse_eq_map_id, h₀]; rfl
+    -- ⊢ pure (Equiv.map eqv f✝ x✝) = id.mk (Equiv.map eqv f✝ x✝)
+                                           -- 🎉 no goals
   · rw [h₂, Equiv.naturality, h₂]
+    -- 🎉 no goals
 #align equiv.is_lawful_traversable' Equiv.isLawfulTraversable'
 
 end Equiv

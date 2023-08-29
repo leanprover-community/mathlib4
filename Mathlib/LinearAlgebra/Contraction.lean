@@ -87,10 +87,12 @@ theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
     Dual.transpose (R := R) (dualTensorHom R M M (f ⊗ₜ m)) =
     dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
   ext f' m'
+  -- ⊢ ↑(↑(↑Dual.transpose (↑(dualTensorHom R M M) (f ⊗ₜ[R] m))) f') m' = ↑(↑(↑(dua …
   simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
     LinearMap.map_smulₛₗ, RingHom.id_apply, Algebra.id.smul_eq_mul, Dual.eval_apply,
     LinearMap.smul_apply]
   exact mul_comm _ _
+  -- 🎉 no goals
 #align transpose_dual_tensor_hom transpose_dualTensorHom
 
 @[simp]
@@ -115,6 +117,7 @@ theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q
     TensorProduct.map (dualTensorHom R M P (f ⊗ₜ[R] p)) (dualTensorHom R N Q (g ⊗ₜ[R] q)) =
       dualTensorHom R (M ⊗[R] N) (P ⊗[R] Q) (dualDistrib R M N (f ⊗ₜ g) ⊗ₜ[R] p ⊗ₜ[R] q) := by
   ext m n
+  -- ⊢ ↑(↑(compr₂ (TensorProduct.mk R M N) (TensorProduct.map (↑(dualTensorHom R M  …
   simp only [compr₂_apply, mk_apply, map_tmul, dualTensorHom_apply, dualDistrib_apply, ←
     smul_tmul_smul]
 #align map_dual_tensor_hom map_dualTensorHom
@@ -124,9 +127,11 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m
+  -- ⊢ ↑(comp (↑(dualTensorHom R N P) (g ⊗ₜ[R] p)) (↑(dualTensorHom R M N) (f ⊗ₜ[R] …
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
     RingHom.id_apply, LinearMap.smul_apply]
   rw [smul_comm]
+  -- 🎉 no goals
 #align comp_dual_tensor_hom comp_dualTensorHom
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
@@ -135,10 +140,18 @@ theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Fintype n] [
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
     toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
   ext i' j'
+  -- ⊢ ↑(toMatrix bM bN) (↑(dualTensorHom R M N) (Basis.coord bM j ⊗ₜ[R] ↑bN i)) i' …
   by_cases hij : i = i' ∧ j = j' <;>
+  -- ⊢ ↑(toMatrix bM bN) (↑(dualTensorHom R M N) (Basis.coord bM j ⊗ₜ[R] ↑bN i)) i' …
     simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
+    -- 🎉 no goals
+    -- ⊢ Pi.single i (Pi.single j' 1 j) i' = 0
   rw [and_iff_not_or_not, Classical.not_not] at hij
+  -- ⊢ Pi.single i (Pi.single j' 1 j) i' = 0
   cases' hij with hij hij <;> simp [hij]
+  -- ⊢ Pi.single i (Pi.single j' 1 j) i' = 0
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align to_matrix_dual_tensor_hom toMatrix_dualTensorHom
 
 end CommSemiring
@@ -163,11 +176,13 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
     (by
       ext f m
+      -- ⊢ ↑(↑(comp (dualTensorHom R M N) (∑ i : ι, comp (↑(TensorProduct.mk R ((fun x  …
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
         f.map_smul, (dualTensorHom R M N).map_sum, ← f.map_sum, b.sum_repr])
     (by
       ext f m
+      -- ⊢ ↑(↑(compr₂ (TensorProduct.mk R (Dual R M) N) (comp (∑ i : ι, comp (↑(TensorP …
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, compr₂_apply,
         tmul_smul, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
@@ -178,6 +193,8 @@ theorem dualTensorHomEquivOfBasis_apply (x : Module.Dual R M ⊗[R] N) :
     (dualTensorHomEquivOfBasis (N := N) b :
     Module.Dual R M ⊗[R] N → (M →ₗ[R] N)) x = (dualTensorHom R M N) x := by
   ext; rfl
+  -- ⊢ ↑(↑(dualTensorHomEquivOfBasis b) x) x✝ = ↑(↑(dualTensorHom R M N) x) x✝
+       -- 🎉 no goals
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_toLinearMap :
@@ -198,6 +215,7 @@ theorem dualTensorHomEquivOfBasis_symm_cancel_left (x : Module.Dual R M ⊗[R] N
 theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
     dualTensorHom R M N ((dualTensorHomEquivOfBasis (N := N) b).symm x) = x := by
   rw [← dualTensorHomEquivOfBasis_apply b, LinearEquiv.apply_symm_apply]
+  -- 🎉 no goals
 #align dual_tensor_hom_equiv_of_basis_symm_cancel_right dualTensorHomEquivOfBasis_symm_cancel_right
 
 variable (R M N P Q)
@@ -286,12 +304,14 @@ variable {R M N P Q}
 theorem lTensorHomEquivHomLTensor_apply (x : P ⊗[R] (M →ₗ[R] Q)) :
     lTensorHomEquivHomLTensor R M P Q x = lTensorHomToHomLTensor R M P Q x := by
   rw [← LinearEquiv.coe_toLinearMap, lTensorHomEquivHomLTensor_toLinearMap]
+  -- 🎉 no goals
 #align ltensor_hom_equiv_hom_ltensor_apply lTensorHomEquivHomLTensor_apply
 
 @[simp]
 theorem rTensorHomEquivHomRTensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
     rTensorHomEquivHomRTensor R M P Q x = rTensorHomToHomRTensor R M P Q x := by
   rw [← LinearEquiv.coe_toLinearMap, rTensorHomEquivHomRTensor_toLinearMap]
+  -- 🎉 no goals
 #align rtensor_hom_equiv_hom_rtensor_apply rTensorHomEquivHomRTensor_apply
 
 variable (R M N P Q)
@@ -310,6 +330,7 @@ noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃
 theorem homTensorHomEquiv_toLinearMap :
     (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap R M N P Q := by
   ext m n
+  -- ⊢ ↑(↑(compr₂ (TensorProduct.mk R M N) (↑(↑(compr₂ (TensorProduct.mk R (M →ₗ[R] …
   simp only [homTensorHomEquiv, compr₂_apply, mk_apply, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
     LinearEquiv.refl_apply, rTensorHomEquivHomRTensor_apply, lTensorHomEquivHomLTensor_apply,
@@ -323,6 +344,7 @@ variable {R M N P Q}
 theorem homTensorHomEquiv_apply (x : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
     homTensorHomEquiv R M N P Q x = homTensorHomMap R M N P Q x := by
   rw [← LinearEquiv.coe_toLinearMap, homTensorHomEquiv_toLinearMap]
+  -- 🎉 no goals
 #align hom_tensor_hom_equiv_apply homTensorHomEquiv_apply
 
 end CommRing

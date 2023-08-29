@@ -25,7 +25,9 @@ variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : AddHom α β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) := by
   rw [tsub_le_iff_right, ← f.map_add]
+  -- ⊢ ↑f a ≤ ↑f (a - b + b)
   exact hf le_tsub_add
+  -- 🎉 no goals
 #align add_hom.le_map_tsub AddHom.le_map_tsub
 
 theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
@@ -36,6 +38,7 @@ theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
 theorem le_tsub_mul {R : Type*} [CommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
     [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
   simpa only [mul_comm _ c] using le_mul_tsub
+  -- 🎉 no goals
 #align le_tsub_mul le_tsub_mul
 
 end Add
@@ -46,9 +49,13 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
     [PartialOrder N] [Add N] [Sub N] [OrderedSub N] (e : M ≃o N)
     (h_add : ∀ a b, e (a + b) = e a + e b) (a b : M) : e (a - b) = e a - e b := by
   let e_add : M ≃+ N := { e with map_add' := h_add }
+  -- ⊢ ↑e (a - b) = ↑e a - ↑e b
   refine' le_antisymm _ (e_add.toAddHom.le_map_tsub e.monotone a b)
+  -- ⊢ ↑e (a - b) ≤ ↑e a - ↑e b
   suffices e (e.symm (e a) - e.symm (e b)) ≤ e (e.symm (e a - e b)) by simpa
+  -- ⊢ ↑e (↑(symm e) (↑e a) - ↑(symm e) (↑e b)) ≤ ↑e (↑(symm e) (↑e a - ↑e b))
   exact e.monotone (e_add.symm.toAddHom.le_map_tsub e.symm.monotone _ _)
+  -- 🎉 no goals
 #align order_iso.map_tsub OrderIso.map_tsub
 
 /-! ### Preorder -/

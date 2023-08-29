@@ -38,6 +38,8 @@ instance instCommRingInt : CommRing ℤ where
   npow n x := x ^ n
   npow_zero _ := rfl
   npow_succ _ _ := by rw [Int.mul_comm]; rfl
+                      -- ⊢ (fun n x => x ^ n) (x✝¹ + 1) x✝ = (fun n x => x ^ n) x✝¹ x✝ * x✝
+                                         -- 🎉 no goals
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
@@ -47,13 +49,16 @@ instance instCommRingInt : CommRing ℤ where
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
+       -- 🎉 no goals
     show (n + 1 : ℤ) * x = x + n * x
     by rw [Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
     simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+    -- 🎉 no goals
   zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
+                       -- 🎉 no goals
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
   natCast_zero := rfl
@@ -89,19 +94,33 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 instance : AddCommMonoid ℤ    := by infer_instance
+                                    -- 🎉 no goals
 instance : AddMonoid ℤ        := by infer_instance
+                                    -- 🎉 no goals
 instance : Monoid ℤ           := by infer_instance
+                                    -- 🎉 no goals
 instance : CommMonoid ℤ       := by infer_instance
+                                    -- 🎉 no goals
 instance : CommSemigroup ℤ    := by infer_instance
+                                    -- 🎉 no goals
 instance : Semigroup ℤ        := by infer_instance
+                                    -- 🎉 no goals
 instance : AddCommGroup ℤ     := by infer_instance
+                                    -- 🎉 no goals
 instance : AddGroup ℤ         := by infer_instance
+                                    -- 🎉 no goals
 instance : AddCommSemigroup ℤ := by infer_instance
+                                    -- 🎉 no goals
 instance : AddSemigroup ℤ     := by infer_instance
+                                    -- 🎉 no goals
 instance : CommSemiring ℤ     := by infer_instance
+                                    -- 🎉 no goals
 instance : Semiring ℤ         := by infer_instance
+                                    -- 🎉 no goals
 instance instRingInt : Ring ℤ             := by infer_instance
+                                                -- 🎉 no goals
 instance : Distrib ℤ          := by infer_instance
+                                    -- 🎉 no goals
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg
 #align int.neg_succ_not_pos Int.negSucc_not_pos
@@ -158,13 +177,16 @@ theorem neg_succ (a : ℤ) : -succ a = pred (-a) := neg_add _ _
 #align int.neg_succ Int.neg_succ
 
 theorem succ_neg_succ (a : ℤ) : succ (-succ a) = -a := by rw [neg_succ, succ_pred]
+                                                          -- 🎉 no goals
 #align int.succ_neg_succ Int.succ_neg_succ
 
 theorem neg_pred (a : ℤ) : -pred a = succ (-a) := by
   rw [neg_eq_iff_eq_neg.mp (neg_succ (-a)), neg_neg]
+  -- 🎉 no goals
 #align int.neg_pred Int.neg_pred
 
 theorem pred_neg_pred (a : ℤ) : pred (-pred a) = -a := by rw [neg_pred, pred_succ]
+                                                          -- 🎉 no goals
 #align int.pred_neg_pred Int.pred_neg_pred
 
 theorem pred_nat_succ (n : ℕ) : pred (Nat.succ n) = n := pred_succ n
@@ -178,6 +200,9 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 @[norm_cast] theorem coe_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
   cases n; cases h; simp
+  -- ⊢ ↑(zero - 1) = ↑zero - 1
+           -- ⊢ ↑(Nat.succ n✝ - 1) = ↑(Nat.succ n✝) - 1
+                    -- 🎉 no goals
 #align int.coe_pred_of_pos Int.coe_pred_of_pos
 
 @[elab_as_elim] protected theorem induction_on {p : ℤ → Prop} (i : ℤ)
@@ -240,6 +265,9 @@ theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -(
   match a, b, eq_negSucc_of_lt_zero Ha, eq_succ_of_zero_lt Hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl]; rw [add_sub_cancel]; rfl
+    -- ⊢ ediv -[m+1] ↑(Nat.succ n) = -((↑m + 1 - 1) / ↑(Nat.succ n) + 1)
+                                                   -- ⊢ ediv -[m+1] ↑(Nat.succ n) = -(↑m / ↑(Nat.succ n) + 1)
+                                                                        -- 🎉 no goals
 #align int.div_of_neg_of_pos Int.ediv_of_neg_of_pos
 
 #align int.div_nonneg Int.div_nonnegₓ -- int div alignment

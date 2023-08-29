@@ -80,15 +80,20 @@ theorem T_one : T R 1 = X := rfl
 
 @[simp]
 theorem T_add_two (n : ℕ) : T R (n + 2) = 2 * X * T R (n + 1) - T R n := by rw [T]
+                                                                            -- 🎉 no goals
 #align polynomial.chebyshev.T_add_two Polynomial.Chebyshev.T_add_two
 
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by simp only [T, sub_left_inj, sq, mul_assoc]
+                                            -- 🎉 no goals
 #align polynomial.chebyshev.T_two Polynomial.Chebyshev.T_two
 
 theorem T_of_two_le (n : ℕ) (h : 2 ≤ n) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
+  -- ⊢ T R (2 + n) = 2 * X * T R (2 + n - 1) - T R (2 + n - 2)
   rw [add_comm]
+  -- ⊢ T R (n + 2) = 2 * X * T R (n + 2 - 1) - T R (n + 2 - 2)
   exact T_add_two R n
+  -- 🎉 no goals
 #align polynomial.chebyshev.T_of_two_le Polynomial.Chebyshev.T_of_two_le
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind -/
@@ -108,51 +113,72 @@ theorem U_one : U R 1 = 2 * X := rfl
 
 @[simp]
 theorem U_add_two (n : ℕ) : U R (n + 2) = 2 * X * U R (n + 1) - U R n := by rw [U]
+                                                                            -- 🎉 no goals
 #align polynomial.chebyshev.U_add_two Polynomial.Chebyshev.U_add_two
 
 theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
   simp only [U]
+  -- ⊢ 2 * X * (2 * X) - 1 = 4 * X ^ 2 - 1
   ring
+  -- 🎉 no goals
 #align polynomial.chebyshev.U_two Polynomial.Chebyshev.U_two
 
 theorem U_of_two_le (n : ℕ) (h : 2 ≤ n) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
+  -- ⊢ U R (2 + n) = 2 * X * U R (2 + n - 1) - U R (2 + n - 2)
   rw [add_comm]
+  -- ⊢ U R (n + 2) = 2 * X * U R (n + 2 - 1) - U R (n + 2 - 2)
   exact U_add_two R n
+  -- 🎉 no goals
 #align polynomial.chebyshev.U_of_two_le Polynomial.Chebyshev.U_of_two_le
 
 theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
   | 0 => by simp only [T, U, two_mul, mul_one]
+            -- 🎉 no goals
   | 1 => by simp only [T, U]; ring
+            -- ⊢ 2 * X * (2 * X) - 1 = X * (2 * X) + (2 * X * X - 1)
+                              -- 🎉 no goals
   | n + 2 =>
     calc
       U R (n + 2 + 1) = 2 * X * (X * U R (n + 1) + T R (n + 2)) - (X * U R n + T R (n + 1)) := by
         rw [U_add_two, U_eq_X_mul_U_add_T n, U_eq_X_mul_U_add_T (n + 1), U_eq_X_mul_U_add_T n]
+        -- 🎉 no goals
       _ = X * (2 * X * U R (n + 1) - U R n) + (2 * X * T R (n + 2) - T R (n + 1)) := by ring
+                                                                                        -- 🎉 no goals
       _ = X * U R (n + 2) + T R (n + 2 + 1) := by simp only [U_add_two, T_add_two]
+                                                  -- 🎉 no goals
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
 theorem T_eq_U_sub_X_mul_U (n : ℕ) : T R (n + 1) = U R (n + 1) - X * U R n := by
   rw [U_eq_X_mul_U_add_T, add_comm (X * U R n), add_sub_cancel]
+  -- 🎉 no goals
 #align polynomial.chebyshev.T_eq_U_sub_X_mul_U Polynomial.Chebyshev.T_eq_U_sub_X_mul_U
 
 theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n
   | 0 => by simp only [T, U]; ring
+            -- ⊢ 2 * X * X - 1 = X * X - (1 - X ^ 2) * 1
+                              -- 🎉 no goals
   | 1 => by simp only [T, U]; ring
+            -- ⊢ 2 * X * (2 * X * X - 1) - X = X * (2 * X * X - 1) - (1 - X ^ 2) * (2 * X)
+                              -- 🎉 no goals
   | n + 2 =>
     calc
       T R (n + 2 + 2) = 2 * X * T R (n + 2 + 1) - T R (n + 2) := T_add_two _ _
       _ = 2 * X * (X * T R (n + 2) - (1 - X ^ 2) * U R (n + 1)) -
             (X * T R (n + 1) - (1 - X ^ 2) * U R n) :=
         by simp only [T_eq_X_mul_T_sub_pol_U]
+           -- 🎉 no goals
       _ = X * (2 * X * T R (n + 2) - T R (n + 1)) - (1 - X ^ 2) * (2 * X * U R (n + 1) - U R n) :=
         by ring
+           -- 🎉 no goals
       _ = X * T R (n + 2 + 1) - (1 - X ^ 2) * U R (n + 2) := by rw [T_add_two _ (n + 1), U_add_two]
+                                                                -- 🎉 no goals
 #align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.T_eq_X_mul_T_sub_pol_U
 
 theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℕ) :
     (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
   rw [T_eq_X_mul_T_sub_pol_U, ← sub_add, sub_self, zero_add]
+  -- 🎉 no goals
 #align polynomial.chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T
 
 variable {R S}
@@ -160,7 +186,9 @@ variable {R S}
 @[simp]
 theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
   | 0 => by simp only [T_zero, Polynomial.map_one]
+            -- 🎉 no goals
   | 1 => by simp only [T_one, map_X]
+            -- 🎉 no goals
   | n + 2 => by
     simp only [T_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, Polynomial.map_add,
       Polynomial.map_one, Polynomial.map_ofNat, map_T f (n + 1), map_T f n]
@@ -169,18 +197,23 @@ theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
 @[simp]
 theorem map_U (f : R →+* S) : ∀ n : ℕ, map f (U R n) = U S n
   | 0 => by simp only [U_zero, Polynomial.map_one]
+            -- 🎉 no goals
   | 1 => by
     simp [U_one, map_X, Polynomial.map_mul, Polynomial.map_add, Polynomial.map_one]
+    -- 🎉 no goals
   | n + 2 => by
     simp only [U_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, Polynomial.map_add,
       Polynomial.map_one, map_U f (n + 1), map_U f n]
     norm_num
+    -- 🎉 no goals
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
 theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U R n
   | 0 => by simp only [T_one, U_zero, derivative_X, Nat.cast_zero, zero_add, mul_one]
+            -- 🎉 no goals
   | 1 => by
     simp [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow, add_mul]
+    -- 🎉 no goals
   | n + 2 =>
     calc
       derivative (T R (n + 2 + 1)) =
@@ -188,13 +221,19 @@ theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U 
         rw [T_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X,
           derivative_ofNat]
         ring_nf
+        -- 🎉 no goals
       _ = 2 * (U R (n + 1 + 1) - X * U R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * U R (n + 1))
           - ((n + 1) : R[X]) * U R n := by
         rw_mod_cast [T_derivative_eq_U (n + 1), T_derivative_eq_U n, T_eq_U_sub_X_mul_U _ (n + 1)]
+        -- 🎉 no goals
       _ = (n + 1 : R[X]) * (2 * X * U R (n + 1) - U R n) + 2 * U R (n + 2) := by ring
+                                                                                 -- 🎉 no goals
       _ = (n + 1) * U R (n + 2) + 2 * U R (n + 2) := by rw [U_add_two]
+                                                        -- 🎉 no goals
       _ = (n + 2 + 1) * U R (n + 2) := by ring
+                                          -- 🎉 no goals
       _ = (↑(n + 2) + 1) * U R (n + 2) := by norm_cast
+                                             -- 🎉 no goals
 #align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.T_derivative_eq_U
 
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
@@ -202,10 +241,14 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
   calc
     (1 - X ^ 2) * derivative (T R (n + 1)) = (1 - X ^ 2) * ((n + 1 : R[X]) * U R n) := by
       rw [T_derivative_eq_U]
+      -- 🎉 no goals
     _ = (n + 1 : R[X]) * ((1 - X ^ 2) * U R n) := by ring
+                                                     -- 🎉 no goals
     _ = (n + 1 : R[X]) * (X * T R (n + 1) - (2 * X * T R (n + 1) - T R n)) := by
       rw [one_sub_X_sq_mul_U_eq_pol_in_T, T_add_two]
+      -- 🎉 no goals
     _ = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by ring
+                                                         -- 🎉 no goals
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
 theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
@@ -238,9 +281,12 @@ variable (R)
 /-- The product of two Chebyshev polynomials is the sum of two other Chebyshev polynomials. -/
 theorem mul_T : ∀ m k, 2 * T R m * T R (m + k) = T R (2 * m + k) + T R k
   | 0 => by simp [two_mul, add_mul]
+            -- 🎉 no goals
   | 1 => by simp [add_comm]
+            -- 🎉 no goals
   | m + 2 => by
     intro k
+    -- ⊢ 2 * T R (m + 2) * T R (m + 2 + k) = T R (2 * (m + 2) + k) + T R k
     -- clean up the `T` nat indices in the goal
     suffices 2 * T R (m + 2) * T R (m + k + 2) = T R (2 * m + k + 4) + T R k by
       have h_nat₁ : 2 * (m + 2) + k = 2 * m + k + 4 := by ring
@@ -258,22 +304,29 @@ theorem mul_T : ∀ m k, 2 * T R m * T R (m + k) = T R (2 * m + k) + T R k
       simpa [h_nat₁, h_nat₂] using mul_T m (k + 2)
     -- state the `T` recurrence relation for a few useful indices
     have h₁ := T_add_two R m
+    -- ⊢ 2 * T R (m + 2) * T R (m + k + 2) = T R (2 * m + k + 4) + T R k
     have h₂ : T R (2 * m + k + 4) = 2 * X * T R (2 * m + k + 3) - T R (2 * m + k + 2) :=
       T_add_two R (2 * m + k + 2)
     have h₃ := T_add_two R k
+    -- ⊢ 2 * T R (m + 2) * T R (m + k + 2) = T R (2 * m + k + 4) + T R k
     -- the desired identity is an appropriate linear combination of H₁, H₂, h₁, h₂, h₃
     linear_combination 2 * T R (m + k + 2) * h₁ + 2 * (X : R[X]) * H₁ - H₂ - h₂ - h₃
+    -- 🎉 no goals
 #align polynomial.chebyshev.mul_T Polynomial.Chebyshev.mul_T
 
 /-- The `(m * n)`-th Chebyshev polynomial is the composition of the `m`-th and `n`-th -/
 theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
   | 0 => by simp
+            -- 🎉 no goals
   | 1 => by simp
+            -- 🎉 no goals
   | m + 2 => by
     intro n
+    -- ⊢ T R ((m + 2) * n) = comp (T R (m + 2)) (T R n)
     have : 2 * T R n * T R ((m + 1) * n) = T R ((m + 2) * n) + T R (m * n) := by
       convert mul_T R n (m * n) using 1 <;> ring_nf
     simp [this, T_mul m, ← T_mul (m + 1)]
+    -- 🎉 no goals
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
 end Polynomial.Chebyshev

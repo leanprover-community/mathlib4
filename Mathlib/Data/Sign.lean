@@ -35,6 +35,9 @@ namespace SignType
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
    Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp only)
+                                                                               -- 🎉 no goals
+                                                                               -- 🎉 no goals
+                                                                               -- 🎉 no goals
 
 instance : Zero SignType :=
   ⟨zero⟩
@@ -83,13 +86,67 @@ instance : LE SignType :=
 
 instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 instance decidableEq : DecidableEq SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
+                                                                                  -- 🎉 no goals
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
+                      -- 🎉 no goals
 
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
@@ -99,10 +156,26 @@ instance : CommGroupWithZero SignType where
   mul := (· * ·)
   inv := id
   mul_zero a := by cases a <;> rfl
+                               -- 🎉 no goals
+                               -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                               -- 🎉 no goals
+                               -- 🎉 no goals
+                               -- 🎉 no goals
+                               -- 🎉 no goals
   zero_mul a := by cases a <;> rfl
   mul_one a := by cases a <;> rfl
   one_mul a := by cases a <;> rfl
   mul_inv_cancel a ha := by cases a <;> trivial
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
+                              -- 🎉 no goals
   mul_comm := mul_comm
   mul_assoc := mul_assoc
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
@@ -110,14 +183,62 @@ instance : CommGroupWithZero SignType where
 
 private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b := by
   cases a <;> cases b <;> trivial
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
   cases a <;> cases b <;> cases c <;> first | tauto | constructor
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
   le_antisymm := le_antisymm
   le_trans := le_trans
   decidableLE := LE.decidableRel
@@ -131,16 +252,40 @@ instance : BoundedOrder SignType where
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
     neg_mul := fun x y => by cases x <;> cases y <;> rfl
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 
 /-- `SignType` is equivalent to `Fin 3`. -/
 def fin3Equiv : SignType ≃* Fin 3 where
   toFun a :=
     match a with
     | 0 => ⟨0, by simp⟩
+                  -- 🎉 no goals
     | 1 => ⟨1, by simp⟩
+                  -- 🎉 no goals
     | -1 => ⟨2, by simp⟩
+                   -- 🎉 no goals
   invFun a :=
     match a with
     | ⟨0, _⟩ => 0
@@ -148,39 +293,76 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨2, _⟩ => -1
     | ⟨n + 3, h⟩ => (h.not_le le_add_self).elim
   left_inv a := by cases a <;> rfl
+                               -- 🎉 no goals
+                               -- 🎉 no goals
+                               -- 🎉 no goals
   right_inv a :=
     match a with
     | ⟨0, _⟩ => by simp
+                   -- 🎉 no goals
     | ⟨1, _⟩ => by simp
+                   -- 🎉 no goals
     | ⟨2, _⟩ => by simp
+                   -- 🎉 no goals
     | ⟨n + 3, h⟩ => by simp at h
+                       -- 🎉 no goals
   map_mul' a b := by
     cases a <;> cases b <;> simp
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
 
 -- Porting note: a lot of these thms used to use decide! which is not implemented yet
 theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by cases a <;> decide
+                                                                            -- 🎉 no goals
+                                                                            -- 🎉 no goals
+                                                                            -- 🎉 no goals
 #align sign_type.nonneg_iff SignType.nonneg_iff
 
 theorem nonneg_iff_ne_neg_one {a : SignType} : 0 ≤ a ↔ a ≠ -1 := by cases a <;> decide
+                                                                                -- 🎉 no goals
+                                                                                -- 🎉 no goals
+                                                                                -- 🎉 no goals
 #align sign_type.nonneg_iff_ne_neg_one SignType.nonneg_iff_ne_neg_one
 
 theorem neg_one_lt_iff {a : SignType} : -1 < a ↔ 0 ≤ a := by cases a <;> decide
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
+                                                                         -- 🎉 no goals
 #align sign_type.neg_one_lt_iff SignType.neg_one_lt_iff
 
 theorem nonpos_iff {a : SignType} : a ≤ 0 ↔ a = -1 ∨ a = 0 := by cases a <;> decide
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
+                                                                             -- 🎉 no goals
 #align sign_type.nonpos_iff SignType.nonpos_iff
 
 theorem nonpos_iff_ne_one {a : SignType} : a ≤ 0 ↔ a ≠ 1 := by cases a <;> decide
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
 #align sign_type.nonpos_iff_ne_one SignType.nonpos_iff_ne_one
 
 theorem lt_one_iff {a : SignType} : a < 1 ↔ a ≤ 0 := by cases a <;> decide
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
 #align sign_type.lt_one_iff SignType.lt_one_iff
 
 @[simp]
 theorem neg_iff {a : SignType} : a < 0 ↔ a = -1 := by cases a <;> decide
+                                                                  -- 🎉 no goals
+                                                                  -- 🎉 no goals
+                                                                  -- 🎉 no goals
 #align sign_type.neg_iff SignType.neg_iff
 
 @[simp]
@@ -190,6 +372,9 @@ theorem le_neg_one_iff {a : SignType} : a ≤ -1 ↔ a = -1 :=
 
 @[simp]
 theorem pos_iff {a : SignType} : 0 < a ↔ a = 1 := by cases a <;> decide
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
 #align sign_type.pos_iff SignType.pos_iff
 
 @[simp]
@@ -219,10 +404,16 @@ theorem not_one_lt (a : SignType) : ¬1 < a :=
 
 @[simp]
 theorem self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by cases a <;> decide
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align sign_type.self_eq_neg_iff SignType.self_eq_neg_iff
 
 @[simp]
 theorem neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by cases a <;> decide
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align sign_type.neg_eq_self_iff SignType.neg_eq_self_iff
 
 @[simp]
@@ -275,15 +466,27 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α w
   map_zero' := rfl
   map_one' := rfl
   map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
 #align sign_type.cast_hom SignType.castHom
 
 --Porting note: new theorem
 theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
   decide
+  -- 🎉 no goals
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]
+  -- ⊢ ↑(Finset.image f {0, -1, 1}) = {f zero, f neg, f pos}
   classical simp [Finset.coe_insert]
+  -- 🎉 no goals
 #align sign_type.range_eq SignType.range_eq
 
 end SignType
@@ -301,10 +504,23 @@ variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 def SignType.sign : α →o SignType :=
   ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
+    -- ⊢ (if 0 < a then 1 else if a < 0 then -1 else 0) ≤ if 0 < b then 1 else if b < …
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
+                                             -- 🎉 no goals
+                                             -- ⊢ 1 ≤ -1
+                                             -- ⊢ 1 ≤ 0
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- ⊢ 0 ≤ -1
+                                             -- 🎉 no goals
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
+      -- 🎉 no goals
     · cases h₂ (h₁.trans_le h)
+      -- 🎉 no goals
     · cases h₄ (h.trans_lt h₃)⟩
+      -- 🎉 no goals
 #align sign SignType.sign
 
 theorem sign_apply : sign a = ite (0 < a) 1 (ite (a < 0) (-1) 0) :=
@@ -313,28 +529,39 @@ theorem sign_apply : sign a = ite (0 < a) 1 (ite (a < 0) (-1) 0) :=
 
 @[simp]
 theorem sign_zero : sign (0 : α) = 0 := by simp [sign_apply]
+                                           -- 🎉 no goals
 #align sign_zero sign_zero
 
 @[simp]
 theorem sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, if_pos]
+                                                 -- 🎉 no goals
 #align sign_pos sign_pos
 
 @[simp]
 theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asymm ha, if_pos]
+                                                  -- 🎉 no goals
 #align sign_neg sign_neg
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
   refine' ⟨fun h => _, fun h => sign_pos h⟩
+  -- ⊢ 0 < a
   by_contra hn
+  -- ⊢ False
   rw [sign_apply, if_neg hn] at h
+  -- ⊢ False
   split_ifs at h
+  -- 🎉 no goals
 #align sign_eq_one_iff sign_eq_one_iff
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
   refine' ⟨fun h => _, fun h => sign_neg h⟩
+  -- ⊢ a < 0
   rw [sign_apply] at h
+  -- ⊢ a < 0
   split_ifs at h
+  -- ⊢ a < 0
   · assumption
+    -- 🎉 no goals
 #align sign_eq_neg_one_iff sign_eq_neg_one_iff
 
 end Preorder
@@ -346,10 +573,15 @@ variable [Zero α] [LinearOrder α] {a : α}
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
+  -- ⊢ a = 0
   rw [sign_apply] at h
+  -- ⊢ a = 0
   split_ifs at h with h_1 h_2
+  -- ⊢ a = 0
   cases' h
+  -- ⊢ a = 0
   exact (le_of_not_lt h_1).eq_of_not_lt h_2
+  -- 🎉 no goals
 #align sign_eq_zero_iff sign_eq_zero_iff
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
@@ -360,16 +592,22 @@ theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
 theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
+    -- 🎉 no goals
   · simp [←h]
+    -- 🎉 no goals
   · simp [h, h.not_le]
+    -- 🎉 no goals
 #align sign_nonneg_iff sign_nonneg_iff
 
 @[simp]
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.not_le]
+    -- 🎉 no goals
   · simp [←h]
+    -- 🎉 no goals
   · simp [h, h.le]
+    -- 🎉 no goals
 #align sign_nonpos_iff sign_nonpos_iff
 
 end LinearOrder
@@ -396,19 +634,34 @@ attribute [local instance] LinearOrderedRing.decidableLT
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
     simp [hx, hy, mul_pos_of_neg_of_neg, mul_neg_of_neg_of_pos, mul_neg_of_pos_of_neg]
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align sign_mul sign_mul
 
 @[simp] theorem sign_mul_abs (x : α) : (sign x * |x| : α) = x := by
   rcases lt_trichotomy x 0 with (hx | rfl | hx)
   · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, neg_one_mul, neg_neg]
+    -- 🎉 no goals
   · rw [abs_zero, mul_zero]
+    -- 🎉 no goals
   · rw [sign_pos hx, abs_of_pos hx, coe_one, one_mul]
+    -- 🎉 no goals
 
 @[simp] theorem abs_mul_sign (x : α) : (|x| * sign x : α) = x := by
   rcases lt_trichotomy x 0 with (hx | rfl | hx)
   · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, mul_neg_one, neg_neg]
+    -- 🎉 no goals
   · rw [abs_zero, zero_mul]
+    -- 🎉 no goals
   · rw [sign_pos hx, abs_of_pos hx, coe_one, mul_one]
+    -- 🎉 no goals
 
 /-- `SignType.sign` as a `MonoidWithZeroHom` for a nontrivial ordered semiring. Note that linearity
 is required; consider ℂ with the order `z ≤ w` iff they have the same imaginary part and
@@ -433,21 +686,31 @@ variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Pr
 
 theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
+  -- ⊢ (if a < 0 then 1 else if 0 < a then -1 else 0) = -if 0 < a then 1 else if a  …
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
 #align left.sign_neg Left.sign_neg
 
 theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)] (a : α) :
     sign (-a) = -sign a := by
   simp_rw [sign_apply, Right.neg_pos_iff, Right.neg_neg_iff]
+  -- ⊢ (if a < 0 then 1 else if 0 < a then -1 else 0) = -if 0 < a then 1 else if a  …
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
 #align right.sign_neg Right.sign_neg
 
 end AddGroup
@@ -466,11 +729,17 @@ theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) 
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
   cases t
   · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
+    -- ⊢ ∑ i in s, f i = 0
     exact Finset.sum_eq_zero h
+    -- 🎉 no goals
   · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h ⊢
+    -- ⊢ ∑ i in s, f i < 0
     exact Finset.sum_neg h hs
+    -- 🎉 no goals
   · simp_rw [pos_eq_one, sign_eq_one_iff] at h ⊢
+    -- ⊢ 0 < ∑ i in s, f i
     exact Finset.sum_pos h hs
+    -- 🎉 no goals
 #align sign_sum sign_sum
 
 end LinearOrderedAddCommGroup
@@ -479,6 +748,9 @@ namespace Int
 
 theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
   obtain (n | _) | _ := n <;> simp [sign, Int.sign_neg, negSucc_lt_zero]
+                              -- 🎉 no goals
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align int.sign_eq_sign Int.sign_eq_sign
 
 end Int
@@ -498,7 +770,9 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
     ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,
       fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, _, _⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
+    -- 🎉 no goals
   · intro x hx
+    -- ⊢ (∑ b in Finset.sigma univ fun a => range (Int.natAbs (f ↑a)), if (fun a => ↑ …
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
       sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
 
@@ -510,6 +784,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
+                                                                     -- 🎉 no goals
     (@sum_attach _ _ t _ fun b => ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 #align exists_signed_sum exists_signed_sum
 
@@ -520,11 +795,15 @@ theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : F
       (∀ b, g b ∉ s → sgn b = 0) ∧
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
+  -- ⊢ ∃ β x sgn g, (∀ (b : β), ¬g b ∈ s → sgn b = 0) ∧ Fintype.card β = n ∧ ∀ (a : …
   refine'
     ⟨Sum β (Fin (n - ∑ i in s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
       Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i => Int.natAbs (f i)) → α)),
         _, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
   rintro (b | b) hb
+  -- ⊢ Sum.elim sgn 0 (Sum.inl b) = 0
   · cases hb (hg _)
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
 #align exists_signed_sum' exists_signed_sum'

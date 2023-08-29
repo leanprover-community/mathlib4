@@ -49,9 +49,13 @@ variable (hv : LinearIndependent R v) {M : ModuleCat R}
 theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
+  -- ⊢ Disjoint (span R (range (u ∘ Sum.inr))) (span R (range (↑f ∘ v)))
   refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
+  -- ⊢ Disjoint (span R (range (u ∘ Sum.inr))) (span R (range ↑f))
   rw [← LinearMap.range_coe, (span_eq (LinearMap.range f)), (exact_iff _ _).mp he]
+  -- ⊢ Disjoint (span R (range (u ∘ Sum.inr))) (LinearMap.ker g)
   exact range_ker_disjoint hw
+  -- 🎉 no goals
 
 /-- In the commutative diagram
 ```
@@ -77,11 +81,14 @@ theorem linearIndependent_shortExact {w : ι' → P}
     (hw : LinearIndependent R w) (hse : ShortExact f g) :
     LinearIndependent R (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) := by
   refine' linearIndependent_leftExact hv _ hse.mono hse.exact _
+  -- ⊢ LinearIndependent R (↑g ∘ Sum.elim (↑f ∘ v) (Function.invFun g.toFun ∘ w) ∘  …
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
+    -- ⊢ LinearIndependent R (↑g ∘ Function.invFun ↑g ∘ w)
     rwa [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun
       ((epi_iff_surjective _).mp hse.epi)),
       Function.comp.left_id]
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
+    -- 🎉 no goals
 
 end LinearIndependent
 
@@ -104,33 +111,58 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
     (hw : ⊤ ≤ span R (range (g ∘ u ∘ Sum.inr))) :
     ⊤ ≤ span R (range u) := by
   intro m _
+  -- ⊢ m ∈ span R (range u)
   have hgm : g m ∈ span R (range (g ∘ u ∘ Sum.inr)) := hw mem_top
+  -- ⊢ m ∈ span R (range u)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
+  -- ⊢ m ∈ span R (range u)
   obtain ⟨cm, hm⟩ := hgm
+  -- ⊢ m ∈ span R (range u)
   let m' : M := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j))
+  -- ⊢ m ∈ span R (range u)
   have hsub : m - m' ∈ LinearMap.range f
+  -- ⊢ m - m' ∈ LinearMap.range f
   · rw [(exact_iff _ _).mp he]
+    -- ⊢ m - m' ∈ LinearMap.ker g
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
+    -- ⊢ ↑g m = ↑g (Finsupp.sum cm fun j a => a • u (Sum.inr j))
     rw [← hm, map_finsupp_sum]
+    -- ⊢ (Finsupp.sum cm fun i a => a • (↑g ∘ u ∘ Sum.inr) i) = Finsupp.sum cm fun a  …
     simp only [Function.comp_apply, SMulHomClass.map_smul]
+    -- 🎉 no goals
   obtain ⟨n, hnm⟩ := hsub
+  -- ⊢ m ∈ span R (range u)
   have hn : n ∈ span R (range v) := hv mem_top
+  -- ⊢ m ∈ span R (range u)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
+  -- ⊢ m ∈ span R (range u)
   obtain ⟨cn, hn⟩ := hn
+  -- ⊢ m ∈ span R (range u)
   rw [← hn, map_finsupp_sum] at hnm
+  -- ⊢ m ∈ span R (range u)
   rw [← sub_add_cancel m m', ← hnm,]
+  -- ⊢ (Finsupp.sum cn fun a b => ↑f (b • v a)) + m' ∈ span R (range u)
   simp only [SMulHomClass.map_smul]
+  -- ⊢ ((Finsupp.sum cn fun a b => b • ↑f (v a)) + Finsupp.sum cm fun j a => a • u  …
   have hn' : (Finsupp.sum cn fun a b ↦ b • f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
     by congr; ext a b; change b • (f ∘ v) a = _; rw [← huv]; rfl
   rw [hn']
+  -- ⊢ ((Finsupp.sum cn fun a b => b • u (Sum.inl a)) + Finsupp.sum cm fun j a => a …
   apply add_mem
+  -- ⊢ (Finsupp.sum cn fun a b => b • u (Sum.inl a)) ∈ span R (range u)
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
+    -- ⊢ ∃ c, (Finsupp.sum c fun i a => a • u i) = Finsupp.sum cn fun a b => b • u (S …
     use cn.mapDomain (Sum.inl)
+    -- ⊢ (Finsupp.sum (Finsupp.mapDomain Sum.inl cn) fun i a => a • u i) = Finsupp.su …
     rw [Finsupp.sum_mapDomain_index_inj Sum.inl_injective]
+    -- 🎉 no goals
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
+    -- ⊢ ∃ c, (Finsupp.sum c fun i a => a • u i) = Finsupp.sum cm fun j a => a • u (S …
     use cm.mapDomain (Sum.inr)
+    -- ⊢ (Finsupp.sum (Finsupp.mapDomain Sum.inr cm) fun i a => a • u i) = Finsupp.su …
     rw [Finsupp.sum_mapDomain_index_inj Sum.inr_injective]
+    -- 🎉 no goals
 
 /-- Given an exact sequence `N ⟶ M ⟶ P ⟶ 0` of `R`-modules and spanning
     families `v : ι → N` and `w : ι' → P`, we get a spanning family `ι ⊕ ι' → M` -/
@@ -138,10 +170,15 @@ theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi g) (he : Exact f g) :
     ⊤ ≤ span R (range (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w))) := by
   refine' span_exact he _ hv _
+  -- ⊢ Sum.elim (↑f ∘ v) (Function.invFun g.toFun ∘ w) ∘ Sum.inl = ↑f ∘ v
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
+    -- 🎉 no goals
   · convert hw
+    -- ⊢ ↑g ∘ Sum.elim (↑f ∘ v) (Function.invFun g.toFun ∘ w) ∘ Sum.inr = w
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
+    -- ⊢ ↑g ∘ Function.invFun ↑g ∘ w = w
     rw [ModuleCat.epi_iff_surjective] at hE
+    -- ⊢ ↑g ∘ Function.invFun ↑g ∘ w = w
     rw [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),
       Function.comp.left_id]
 
@@ -166,6 +203,7 @@ theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] [StrongRankCondition R] :
     Module.rank R M = Module.rank R N + Module.rank R P := by
   haveI := free_shortExact h
+  -- ⊢ Module.rank R ↑M = Module.rank R ↑N + Module.rank R ↑P
   rw [Module.Free.rank_eq_card_chooseBasisIndex, Module.Free.rank_eq_card_chooseBasisIndex R N,
     Module.Free.rank_eq_card_chooseBasisIndex R P, Cardinal.add_def, Cardinal.eq]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R M) (Basis.ofShortExact h
@@ -179,7 +217,10 @@ theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
     [StrongRankCondition R]:
     FiniteDimensional.finrank R M = n + p := by
   apply FiniteDimensional.finrank_eq_of_rank_eq
+  -- ⊢ Module.rank R ↑M = ↑(n + p)
   rw [free_shortExact_rank_add h, ← hN, ← hP]
+  -- ⊢ Module.rank R ↑N + Module.rank R ↑P = ↑(FiniteDimensional.finrank R ↑N + Fin …
   simp only [Nat.cast_add, FiniteDimensional.finrank_eq_rank]
+  -- 🎉 no goals
 
 end ModuleCat

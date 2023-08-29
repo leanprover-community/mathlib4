@@ -85,13 +85,17 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
 
 theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by
   let diag : X ⊞ X ⟶ Y ⊞ Y := biprod.lift (biprod.desc f g) (biprod.desc h k)
+  -- ⊢ leftAdd X Y (rightAdd X Y f g) (rightAdd X Y h k) = rightAdd X Y (leftAdd X  …
   have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp
+  -- ⊢ leftAdd X Y (rightAdd X Y f g) (rightAdd X Y h k) = rightAdd X Y (leftAdd X  …
   have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp
+  -- ⊢ leftAdd X Y (rightAdd X Y f g) (rightAdd X Y h k) = rightAdd X Y (leftAdd X  …
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
       ext <;> aesop_cat
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
     ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
+  -- 🎉 no goals
 #align category_theory.semiadditive_of_binary_biproducts.distrib CategoryTheory.SemiadditiveOfBinaryBiproducts.distrib
 
 /-- In a category with binary biproducts, the morphisms form a commutative monoid. -/
@@ -126,14 +130,24 @@ theorem add_eq_left_addition (f g : X ⟶ Y) : f + g = biprod.lift f g ≫ bipro
 
 theorem add_comp (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
   simp only [add_eq_right_addition, Category.assoc]
+  -- ⊢ biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g ≫ h = biprod.lift (𝟙 X) (𝟙 X) ≫ bi …
   congr
+  -- ⊢ biprod.desc f g ≫ h = biprod.desc (f ≫ h) (g ≫ h)
   ext <;> simp
+  -- ⊢ biprod.inl ≫ biprod.desc f g ≫ h = biprod.inl ≫ biprod.desc (f ≫ h) (g ≫ h)
+          -- 🎉 no goals
+          -- 🎉 no goals
 #align category_theory.semiadditive_of_binary_biproducts.add_comp CategoryTheory.SemiadditiveOfBinaryBiproducts.add_comp
 
 theorem comp_add (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
   simp only [add_eq_left_addition, ← Category.assoc]
+  -- ⊢ (f ≫ biprod.lift g h) ≫ biprod.desc (𝟙 Z) (𝟙 Z) = biprod.lift (f ≫ g) (f ≫ h …
   congr
+  -- ⊢ f ≫ biprod.lift g h = biprod.lift (f ≫ g) (f ≫ h)
   ext <;> simp
+  -- ⊢ (f ≫ biprod.lift g h) ≫ biprod.fst = biprod.lift (f ≫ g) (f ≫ h) ≫ biprod.fst
+          -- 🎉 no goals
+          -- 🎉 no goals
 #align category_theory.semiadditive_of_binary_biproducts.comp_add CategoryTheory.SemiadditiveOfBinaryBiproducts.comp_add
 
 end

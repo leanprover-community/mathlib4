@@ -58,17 +58,21 @@ section HeytingAlgebra
 variable [HeytingAlgebra α] {a b : α}
 
 theorem isRegular_bot : IsRegular (⊥ : α) := by rw [IsRegular, compl_bot, compl_top]
+                                                -- 🎉 no goals
 #align heyting.is_regular_bot Heyting.isRegular_bot
 
 theorem isRegular_top : IsRegular (⊤ : α) := by rw [IsRegular, compl_top, compl_bot]
+                                                -- 🎉 no goals
 #align heyting.is_regular_top Heyting.isRegular_top
 
 theorem IsRegular.inf (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⊓ b) := by
   rw [IsRegular, compl_compl_inf_distrib, ha.eq, hb.eq]
+  -- 🎉 no goals
 #align heyting.is_regular.inf Heyting.IsRegular.inf
 
 theorem IsRegular.himp (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⇨ b) := by
   rw [IsRegular, compl_compl_himp_distrib, ha.eq, hb.eq]
+  -- 🎉 no goals
 #align heyting.is_regular.himp Heyting.IsRegular.himp
 
 theorem isRegular_compl (a : α) : IsRegular aᶜ :=
@@ -77,10 +81,12 @@ theorem isRegular_compl (a : α) : IsRegular aᶜ :=
 
 protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
   by rw [← le_compl_iff_disjoint_left, ha.eq]
+     -- 🎉 no goals
 #align heyting.is_regular.disjoint_compl_left_iff Heyting.IsRegular.disjoint_compl_left_iff
 
 protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
   by rw [← le_compl_iff_disjoint_right, hb.eq]
+     -- 🎉 no goals
 #align heyting.is_regular.disjoint_compl_right_iff Heyting.IsRegular.disjoint_compl_right_iff
 
 -- See note [reducible non-instances]
@@ -90,6 +96,7 @@ def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : B
   have : ∀ a : α, IsCompl a aᶜ := fun a =>
     ⟨disjoint_compl_right,
       codisjoint_iff.2 <| by erw [← (h a), compl_sup, inf_compl_eq_bot, compl_bot]⟩
+                             -- 🎉 no goals
   { ‹HeytingAlgebra α›,
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun a b =>
@@ -227,20 +234,29 @@ instance : BooleanAlgebra (Regular α) :=
     le_sup_inf := fun a b c =>
       coe_le_coe.1 <| by
         dsimp
+        -- ⊢ (↑a ⊔ ↑b)ᶜᶜ ⊓ (↑a ⊔ ↑c)ᶜᶜ ≤ (↑a ⊔ ↑b ⊓ ↑c)ᶜᶜ
         rw [sup_inf_left, compl_compl_inf_distrib]
+        -- 🎉 no goals
     inf_compl_le_bot := fun a => coe_le_coe.1 <| disjoint_iff_inf_le.1 disjoint_compl_right
     top_le_sup_compl := fun a =>
       coe_le_coe.1 <| by
         dsimp
+        -- ⊢ ⊤ ≤ (↑a ⊔ (↑a)ᶜ)ᶜᶜ
         rw [compl_sup, inf_compl_eq_bot, compl_bot]
+        -- 🎉 no goals
     himp_eq := fun a b =>
       coe_injective
         (by
           dsimp
+          -- ⊢ ↑a ⇨ ↑b = (↑b ⊔ (↑a)ᶜ)ᶜᶜ
           rw [compl_sup, a.prop.eq]
+          -- ⊢ ↑a ⇨ ↑b = ((↑b)ᶜ ⊓ ↑a)ᶜ
           refine' eq_of_forall_le_iff fun c => le_himp_iff.trans _
+          -- ⊢ c ⊓ ↑a ≤ ↑b ↔ c ≤ ((↑b)ᶜ ⊓ ↑a)ᶜ
           rw [le_compl_iff_disjoint_right, disjoint_left_comm]
+          -- ⊢ c ⊓ ↑a ≤ ↑b ↔ Disjoint (↑b)ᶜ (c ⊓ ↑a)
           rw [b.prop.disjoint_compl_left_iff]) }
+          -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_sdiff (a b : Regular α) : (↑(a \ b) : α) = (a : α) ⊓ bᶜ :=

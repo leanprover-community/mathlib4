@@ -45,12 +45,20 @@ attribute [instance] isCommRing isTopologicalSpace isTopologicalRing
 instance : Category TopCommRingCat.{u} where
   Hom R S := { f : R →+* S // Continuous f }
   id R := ⟨RingHom.id R, by rw [RingHom.id]; continuity⟩
+                            -- ⊢ Continuous ↑{ toMonoidHom := { toOneHom := { toFun := id, map_one' := (_ : i …
+                                             -- 🎉 no goals
   comp f g :=
     ⟨g.val.comp f.val, by
       -- TODO automate
       cases f
+      -- ⊢ Continuous ↑(RingHom.comp ↑g ↑{ val := val✝, property := property✝ })
       cases g
+      -- ⊢ Continuous ↑(RingHom.comp ↑{ val := val✝, property := property✝ } ↑{ val :=  …
       dsimp; apply Continuous.comp <;> assumption⟩
+      -- ⊢ Continuous (↑val✝ ∘ ↑val✝¹)
+             -- ⊢ Continuous ↑val✝
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 
 instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
@@ -116,8 +124,10 @@ instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u}) where
   reflects {X Y} f _ := by
     -- We have an isomorphism in `TopCat`,
     let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)
+    -- ⊢ IsIso f
     -- and a `RingEquiv`.
     let e_Ring : X ≃+* Y := { f.1, ((forget TopCat).mapIso i_Top).toEquiv with }
+    -- ⊢ IsIso f
     -- Putting these together we obtain the isomorphism we're after:
     exact
       ⟨⟨⟨e_Ring.symm, i_Top.inv.2⟩,

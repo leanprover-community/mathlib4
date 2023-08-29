@@ -34,6 +34,7 @@ theorem strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono
 @[simp]
 theorem monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
   simpa only [monotone_iff_forall_lt] using @liftFun_vecCons α n (· ≤ ·) _ f a
+  -- 🎉 no goals
 #align monotone_vec_cons monotone_vecCons
 
 --Porting note: new lemma, in Lean3 would be proven by `Subsingleton.monotone`
@@ -83,3 +84,4 @@ theorem Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons 
 #align antitone.vec_cons Antitone.vecCons
 
 example : Monotone ![1, 2, 2, 3] := by simp
+                                       -- 🎉 no goals

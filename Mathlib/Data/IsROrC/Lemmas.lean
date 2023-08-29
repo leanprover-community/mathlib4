@@ -40,12 +40,19 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 instance isROrC_to_real : FiniteDimensional ℝ K :=
   ⟨⟨{1, I}, by
       rw [eq_top_iff]
+      -- ⊢ ⊤ ≤ Submodule.span ℝ ↑{1, I}
       intro a _
+      -- ⊢ a ∈ Submodule.span ℝ ↑{1, I}
       rw [Finset.coe_insert, Finset.coe_singleton, Submodule.mem_span_insert]
+      -- ⊢ ∃ a_1 z, z ∈ Submodule.span ℝ {I} ∧ a = a_1 • 1 + z
       refine' ⟨re a, im a • I, _, _⟩
+      -- ⊢ ↑im a • I ∈ Submodule.span ℝ {I}
       · rw [Submodule.mem_span_singleton]
+        -- ⊢ ∃ a_1, a_1 • I = ↑im a • I
         use im a
+        -- 🎉 no goals
       simp [re_add_im a, Algebra.smul_def, algebraMap_eq_ofReal]⟩⟩
+      -- 🎉 no goals
 #align finite_dimensional.is_R_or_C_to_real FiniteDimensional.isROrC_to_real
 
 variable (K E)
@@ -57,8 +64,11 @@ This is not an instance because it would cause a search for `FiniteDimensional ?
 `IsROrC ?x`. -/
 theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
   letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
+  -- ⊢ ProperSpace E
   letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
+  -- ⊢ ProperSpace E
   infer_instance
+  -- 🎉 no goals
 #align finite_dimensional.proper_is_R_or_C FiniteDimensional.proper_isROrC
 
 variable {E}
@@ -75,8 +85,11 @@ namespace IsROrC
 @[simp, isROrC_simps]
 theorem reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
+  -- ⊢ 1 ≤ ‖LinearMap.mkContinuous reLm 1 (_ : ∀ (x : K), ‖↑reLm x‖ ≤ 1 * ‖x‖)‖
   convert ContinuousLinearMap.ratio_le_op_norm (reClm : K →L[ℝ] ℝ) (1 : K)
+  -- ⊢ 1 = ‖↑reClm 1‖ / ‖1‖
   simp
+  -- 🎉 no goals
 #align is_R_or_C.re_clm_norm IsROrC.reClm_norm
 
 @[simp, isROrC_simps]

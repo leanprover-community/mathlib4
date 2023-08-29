@@ -31,17 +31,27 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
     (h_local_min : IsLocalMinOn f (Icc a b) a) (h_conv : ConvexOn ℝ (Icc a b) f) :
     IsMinOn f (Icc a b) a := by
   rintro c hc
+  -- ⊢ c ∈ {x | (fun x => f a ≤ f x) x}
   dsimp only [mem_setOf_eq]
+  -- ⊢ f a ≤ f c
   rw [IsLocalMinOn, nhdsWithin_Icc_eq_nhdsWithin_Ici a_lt_b] at h_local_min
+  -- ⊢ f a ≤ f c
   rcases hc.1.eq_or_lt with (rfl | a_lt_c)
+  -- ⊢ f a ≤ f a
   · exact le_rfl
+    -- 🎉 no goals
   have H₁ : ∀ᶠ y in 𝓝[>] a, f a ≤ f y :=
     h_local_min.filter_mono (nhdsWithin_mono _ Ioi_subset_Ici_self)
   have H₂ : ∀ᶠ y in 𝓝[>] a, y ∈ Ioc a c := Ioc_mem_nhdsWithin_Ioi (left_mem_Ico.2 a_lt_c)
+  -- ⊢ f a ≤ f c
   rcases(H₁.and H₂).exists with ⟨y, hfy, hy_ac⟩
+  -- ⊢ f a ≤ f c
   rcases(Convex.mem_Ioc a_lt_c).mp hy_ac with ⟨ya, yc, ya₀, yc₀, yac, rfl⟩
+  -- ⊢ f a ≤ f c
   suffices : ya • f a + yc • f a ≤ ya • f a + yc • f c
+  -- ⊢ f a ≤ f c
   exact (smul_le_smul_iff_of_pos yc₀).1 (le_of_add_le_add_left this)
+  -- ⊢ ya • f a + yc • f a ≤ ya • f a + yc • f c
   calc
     ya • f a + yc • f a = f a := by rw [← add_smul, yac, one_smul]
     _ ≤ f (ya * a + yc * c) := hfy
@@ -53,10 +63,15 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
 theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a ∈ s)
     (h_localmin : IsLocalMinOn f s a) (h_conv : ConvexOn ℝ s f) : IsMinOn f s a := by
   intro x x_in_s
+  -- ⊢ x ∈ {x | (fun x => f a ≤ f x) x}
   let g : ℝ →ᵃ[ℝ] E := AffineMap.lineMap a x
+  -- ⊢ x ∈ {x | (fun x => f a ≤ f x) x}
   have hg0 : g 0 = a := AffineMap.lineMap_apply_zero a x
+  -- ⊢ x ∈ {x | (fun x => f a ≤ f x) x}
   have hg1 : g 1 = x := AffineMap.lineMap_apply_one a x
+  -- ⊢ x ∈ {x | (fun x => f a ≤ f x) x}
   have hgc : Continuous g := AffineMap.lineMap_continuous
+  -- ⊢ x ∈ {x | (fun x => f a ≤ f x) x}
   have h_maps : MapsTo g (Icc 0 1) s := by
     simpa only [mapsTo', ← segment_eq_image_lineMap] using h_conv.1.segment_subset a_in_s x_in_s
   have fg_local_min_on : IsLocalMinOn (f ∘ g) (Icc 0 1) 0 := by
@@ -66,6 +81,7 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a �
     refine' IsMinOn.of_isLocalMinOn_of_convexOn_Icc one_pos fg_local_min_on _
     exact (h_conv.comp_affineMap g).subset h_maps (convex_Icc 0 1)
   simpa only [hg0, hg1, comp_apply, mem_setOf_eq] using fg_min_on (right_mem_Icc.2 zero_le_one)
+  -- 🎉 no goals
 #align is_min_on.of_is_local_min_on_of_convex_on IsMinOn.of_isLocalMinOn_of_convexOn
 
 /-- A local maximum of a concave function is a global maximum, restricted to a set `s`. -/

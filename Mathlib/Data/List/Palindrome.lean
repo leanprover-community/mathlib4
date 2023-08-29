@@ -49,16 +49,27 @@ variable {l : List α}
 
 theorem reverse_eq {l : List α} (p : Palindrome l) : reverse l = l := by
   induction p <;> try (exact rfl)
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- ⊢ reverse (x✝ :: (l✝ ++ [x✝])) = x✝ :: (l✝ ++ [x✝])
   simp; assumption
+  -- ⊢ reverse l✝ = l✝
+        -- 🎉 no goals
 #align list.palindrome.reverse_eq List.Palindrome.reverse_eq
 
 theorem of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by
   refine' bidirectionalRecOn l (fun _ => Palindrome.nil) (fun a _ => Palindrome.singleton a) _
+  -- ⊢ ∀ (a : α) (l : List α) (b : α), (reverse l = l → Palindrome l) → reverse (a  …
   intro x l y hp hr
+  -- ⊢ Palindrome (x :: (l ++ [y]))
   rw [reverse_cons, reverse_append] at hr
+  -- ⊢ Palindrome (x :: (l ++ [y]))
   rw [head_eq_of_cons_eq hr]
+  -- ⊢ Palindrome (x :: (l ++ [x]))
   have : Palindrome l := hp (append_inj_left' (tail_eq_of_cons_eq hr) rfl)
+  -- ⊢ Palindrome (x :: (l ++ [x]))
   exact Palindrome.cons_concat x this
+  -- 🎉 no goals
 #align list.palindrome.of_reverse_eq List.Palindrome.of_reverse_eq
 
 theorem iff_reverse_eq {l : List α} : Palindrome l ↔ reverse l = l :=
@@ -67,11 +78,14 @@ theorem iff_reverse_eq {l : List α} : Palindrome l ↔ reverse l = l :=
 
 theorem append_reverse (l : List α) : Palindrome (l ++ reverse l) := by
   apply of_reverse_eq
+  -- ⊢ reverse (l ++ reverse l) = l ++ reverse l
   rw [reverse_append, reverse_reverse]
+  -- 🎉 no goals
 #align list.palindrome.append_reverse List.Palindrome.append_reverse
 
 protected theorem map (f : α → β) (p : Palindrome l) : Palindrome (map f l) :=
   of_reverse_eq <| by rw [← map_reverse, p.reverse_eq]
+                      -- 🎉 no goals
 #align list.palindrome.map List.Palindrome.map
 
 instance [DecidableEq α] (l : List α) : Decidable (Palindrome l) :=

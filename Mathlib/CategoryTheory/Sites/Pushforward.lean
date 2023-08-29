@@ -59,6 +59,7 @@ instance (G : C ⥤ D) [RepresentablyFlat G] : PreservesFiniteLimits (Sites.push
   have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
     compPreservesFiniteLimits _ _
   apply compPreservesFiniteLimits
+  -- 🎉 no goals
 
 /-- The pushforward functor is left adjoint to the pullback functor. -/
 def Sites.pullbackPushforwardAdjunction {G : C ⥤ D} (hG₁ : CompatiblePreserving K G)

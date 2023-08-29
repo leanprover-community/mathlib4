@@ -215,79 +215,148 @@ def rmatch : RegularExpression α → List α → Bool
 @[simp]
 theorem zero_rmatch (x : List α) : rmatch 0 x = false := by
   induction x <;> simp [rmatch, matchEpsilon, *]
+  -- ⊢ rmatch 0 [] = false
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align regular_expression.zero_rmatch RegularExpression.zero_rmatch
 
 theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
   induction x <;> simp [rmatch, matchEpsilon, *]
+  -- ⊢ rmatch 1 [] = true ↔ [] = []
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align regular_expression.one_rmatch_iff RegularExpression.one_rmatch_iff
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   cases' x with _ x
+  -- ⊢ rmatch (char a) [] = true ↔ [] = [a]
   · exact of_decide_eq_true rfl
+    -- 🎉 no goals
   cases' x with head tail
+  -- ⊢ rmatch (char a) [head✝] = true ↔ [head✝] = [a]
   · rw [rmatch, deriv]
+    -- ⊢ rmatch (if a = head✝ then 1 else 0) [] = true ↔ [head✝] = [a]
     split_ifs
+    -- ⊢ rmatch 1 [] = true ↔ [head✝] = [a]
     · tauto
+      -- 🎉 no goals
     · simp [List.singleton_inj]; tauto
+      -- ⊢ ¬head✝ = a
+                                 -- 🎉 no goals
   · rw [rmatch, rmatch, deriv]
+    -- ⊢ rmatch (deriv (if a = head✝ then 1 else 0) head) tail = true ↔ head✝ :: head …
     split_ifs with h
+    -- ⊢ rmatch (deriv 1 head) tail = true ↔ head✝ :: head :: tail = [a]
     · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
+      -- 🎉 no goals
     · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
+      -- 🎉 no goals
 #align regular_expression.char_rmatch_iff RegularExpression.char_rmatch_iff
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
+  -- ⊢ rmatch (P + Q) [] = true ↔ rmatch P [] = true ∨ rmatch Q [] = true
   · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
+    -- 🎉 no goals
   · repeat' rw [rmatch]
+    -- ⊢ rmatch (deriv (P + Q) head✝) tail✝ = true ↔ rmatch (deriv P head✝) tail✝ = t …
     rw [deriv_add]
+    -- ⊢ rmatch (deriv P head✝ + deriv Q head✝) tail✝ = true ↔ rmatch (deriv P head✝) …
     exact ih _ _
+    -- 🎉 no goals
 #align regular_expression.add_rmatch_iff RegularExpression.add_rmatch_iff
 
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u := by
   induction' x with a x ih generalizing P Q
+  -- ⊢ rmatch (P * Q) [] = true ↔ ∃ t u, [] = t ++ u ∧ rmatch P t = true ∧ rmatch Q …
   · rw [rmatch]; simp only [matchEpsilon]
+    -- ⊢ matchEpsilon (P * Q) = true ↔ ∃ t u, [] = t ++ u ∧ rmatch P t = true ∧ rmatc …
+                 -- ⊢ (matchEpsilon P && matchEpsilon Q) = true ↔ ∃ t u, [] = t ++ u ∧ rmatch P t  …
     constructor
+    -- ⊢ (matchEpsilon P && matchEpsilon Q) = true → ∃ t u, [] = t ++ u ∧ rmatch P t  …
     · intro h
+      -- ⊢ ∃ t u, [] = t ++ u ∧ rmatch P t = true ∧ rmatch Q u = true
       refine' ⟨[], [], rfl, _⟩
+      -- ⊢ rmatch P [] = true ∧ rmatch Q [] = true
       rw [rmatch, rmatch]
+      -- ⊢ matchEpsilon P = true ∧ matchEpsilon Q = true
       rwa [Bool.and_coe_iff] at h
+      -- 🎉 no goals
     · rintro ⟨t, u, h₁, h₂⟩
+      -- ⊢ (matchEpsilon P && matchEpsilon Q) = true
       cases' List.append_eq_nil.1 h₁.symm with ht hu
+      -- ⊢ (matchEpsilon P && matchEpsilon Q) = true
       subst ht
+      -- ⊢ (matchEpsilon P && matchEpsilon Q) = true
       subst hu
+      -- ⊢ (matchEpsilon P && matchEpsilon Q) = true
       repeat' rw [rmatch] at h₂
+      -- ⊢ (matchEpsilon P && matchEpsilon Q) = true
       simp [h₂]
+      -- 🎉 no goals
   · rw [rmatch]; simp [deriv]
+    -- ⊢ rmatch (deriv (P * Q) a) x = true ↔ ∃ t u, a :: x = t ++ u ∧ rmatch P t = tr …
+                 -- ⊢ rmatch (if matchEpsilon P = true then deriv P a * Q + deriv Q a else deriv P …
     split_ifs with hepsilon
+    -- ⊢ rmatch (deriv P a * Q + deriv Q a) x = true ↔ ∃ t u, a :: x = t ++ u ∧ rmatc …
     · rw [add_rmatch_iff, ih]
+      -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true) ∨ rmat …
       constructor
+      -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true) ∨ rmat …
       · rintro (⟨t, u, _⟩ | h)
+        -- ⊢ ∃ t u, a :: x = t ++ u ∧ rmatch P t = true ∧ rmatch Q u = true
         · exact ⟨a :: t, u, by tauto⟩
+          -- 🎉 no goals
         · exact ⟨[], a :: x, rfl, hepsilon, h⟩
+          -- 🎉 no goals
       · rintro ⟨t, u, h, hP, hQ⟩
+        -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true) ∨ rmat …
         cases' t with b t
+        -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true) ∨ rmat …
         · right
+          -- ⊢ rmatch (deriv Q a) x = true
           rw [List.nil_append] at h
+          -- ⊢ rmatch (deriv Q a) x = true
           rw [← h] at hQ
+          -- ⊢ rmatch (deriv Q a) x = true
           exact hQ
+          -- 🎉 no goals
         · left
+          -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true
           rw [List.cons_append, List.cons_eq_cons] at h
+          -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true
           refine' ⟨t, u, h.2, _, hQ⟩
+          -- ⊢ rmatch (deriv P a) t = true
           rw [rmatch] at hP
+          -- ⊢ rmatch (deriv P a) t = true
           convert hP
+          -- ⊢ a = b
           exact h.1
+          -- 🎉 no goals
     · rw [ih]
+      -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true) ↔ ∃ t  …
       constructor <;> rintro ⟨t, u, h, hP, hQ⟩
+      -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true) → ∃ t  …
+                      -- ⊢ ∃ t u, a :: x = t ++ u ∧ rmatch P t = true ∧ rmatch Q u = true
+                      -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true
       · exact ⟨a :: t, u, by tauto⟩
+        -- 🎉 no goals
       · cases' t with b t
+        -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true
         · contradiction
+          -- 🎉 no goals
         · rw [List.cons_append, List.cons_eq_cons] at h
+          -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch Q u = true
           refine' ⟨t, u, h.2, _, hQ⟩
+          -- ⊢ rmatch (deriv P a) t = true
           rw [rmatch] at hP
+          -- ⊢ rmatch (deriv P a) t = true
           convert hP
+          -- ⊢ a = b
           exact h.1
+          -- 🎉 no goals
 #align regular_expression.mul_rmatch_iff RegularExpression.mul_rmatch_iff
 
 theorem star_rmatch_iff (P : RegularExpression α) :
@@ -299,50 +368,88 @@ theorem star_rmatch_iff (P : RegularExpression α) :
       convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
       simp
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
+    -- ⊢ rmatch (star P) x = true ↔ ∃ S, x = join S ∧ ∀ (t : List α), t ∈ S → t ≠ []  …
     clear star_rmatch_iff
+    -- ⊢ rmatch (star P) x = true ↔ ∃ S, x = join S ∧ ∀ (t : List α), t ∈ S → t ≠ []  …
     constructor
+    -- ⊢ rmatch (star P) x = true → ∃ S, x = join S ∧ ∀ (t : List α), t ∈ S → t ≠ []  …
     · cases' x with a x
+      -- ⊢ rmatch (star P) [] = true → ∃ S, [] = join S ∧ ∀ (t : List α), t ∈ S → t ≠ [ …
       · intro _h
+        -- ⊢ ∃ S, [] = join S ∧ ∀ (t : List α), t ∈ S → t ≠ [] ∧ rmatch P t = true
         use []; dsimp; tauto
+        -- ⊢ [] = join [] ∧ ∀ (t : List α), t ∈ [] → t ≠ [] ∧ rmatch P t = true
+                -- ⊢ [] = [] ∧ ∀ (t : List α), t ∈ [] → ¬t = [] ∧ rmatch P t = true
+                       -- 🎉 no goals
       · rw [rmatch, deriv, mul_rmatch_iff]
+        -- ⊢ (∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch (star P) u = true) …
         rintro ⟨t, u, hs, ht, hu⟩
+        -- ⊢ ∃ S, a :: x = join S ∧ ∀ (t : List α), t ∈ S → t ≠ [] ∧ rmatch P t = true
         have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
           apply A
         rw [IH _ hwf] at hu
+        -- ⊢ ∃ S, a :: x = join S ∧ ∀ (t : List α), t ∈ S → t ≠ [] ∧ rmatch P t = true
         rcases hu with ⟨S', hsum, helem⟩
+        -- ⊢ ∃ S, a :: x = join S ∧ ∀ (t : List α), t ∈ S → t ≠ [] ∧ rmatch P t = true
         use (a :: t) :: S'
+        -- ⊢ a :: x = join ((a :: t) :: S') ∧ ∀ (t_1 : List α), t_1 ∈ (a :: t) :: S' → t_ …
         constructor
+        -- ⊢ a :: x = join ((a :: t) :: S')
         · simp [hs, hsum]
+          -- 🎉 no goals
         · intro t' ht'
+          -- ⊢ t' ≠ [] ∧ rmatch P t' = true
           cases ht'
+          -- ⊢ a :: t ≠ [] ∧ rmatch P (a :: t) = true
           case head ht' =>
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           case tail ht' => exact helem t' ht'
+          -- 🎉 no goals
+          -- 🎉 no goals
     · rintro ⟨S, hsum, helem⟩
+      -- ⊢ rmatch (star P) x = true
       cases' x with a x
+      -- ⊢ rmatch (star P) [] = true
       · rfl
+        -- 🎉 no goals
       · rw [rmatch, deriv, mul_rmatch_iff]
+        -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch (star P) u = true
         cases' S with t' U
+        -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch (star P) u = true
         · exact ⟨[], [], by tauto⟩
+          -- 🎉 no goals
         · cases' t' with b t
+          -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch (star P) u = true
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
+            -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch (star P) u = true
             simp only [eq_self_iff_true, not_true, Ne.def, false_and_iff] at helem
+            -- 🎉 no goals
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
+          -- ⊢ ∃ t u, x = t ++ u ∧ rmatch (deriv P a) t = true ∧ rmatch (star P) u = true
           refine' ⟨t, U.join, hsum.2, _, _⟩
+          -- ⊢ rmatch (deriv P a) t = true
           · specialize helem (b :: t) (by simp)
+            -- ⊢ rmatch (deriv P a) t = true
             rw [rmatch] at helem
+            -- ⊢ rmatch (deriv P a) t = true
             convert helem.2
+            -- ⊢ a = b
             exact hsum.1
+            -- 🎉 no goals
           · have hwf : U.join.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
               simp only [List.length_append, List.length_join, List.length]
               apply A
             rw [IH _ hwf]
+            -- ⊢ ∃ S, join U = join S ∧ ∀ (t : List α), t ∈ S → t ≠ [] ∧ rmatch P t = true
             refine' ⟨U, rfl, fun t h => helem t _⟩
+            -- ⊢ t ∈ (b :: t✝) :: U
             right
+            -- ⊢ Mem t U
             assumption
+            -- 🎉 no goals
   termination_by star_rmatch_iff P t => (P,t.length)
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
@@ -350,6 +457,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 theorem rmatch_iff_matches' (P : RegularExpression α) :
     ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' := by
   intro x
+  -- ⊢ rmatch P x = true ↔ x ∈ matches' P
   induction P generalizing x
   all_goals
     try rw [zero_def]
@@ -413,6 +521,8 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by dsimp; rfl
+            -- ⊢ 1 = map f P ^ 0
+                   -- 🎉 no goals
   | n + 1 => (congr_arg ((· * ·) (map f P)) (RegularExpression.map_pow f P n) : _)
 #align regular_expression.map_pow RegularExpression.map_pow
 
@@ -422,8 +532,11 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 1 => rfl
   | char a => rfl
   | R + S => by simp_rw [map, map_id]
+                -- 🎉 no goals
   | R * S => by simp_rw [map, map_id]
+                -- 🎉 no goals
   | star R => by simp_rw [map, map_id]
+                 -- 🎉 no goals
 #align regular_expression.map_id RegularExpression.map_id
 
 @[simp]
@@ -432,8 +545,11 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 1 => rfl
   | char a => rfl
   | R + S => by simp only [map, Function.comp_apply, map_map]
+                -- 🎉 no goals
   | R * S => by simp only [map, Function.comp_apply, map_map]
+                -- 🎉 no goals
   | star R => by simp only [map, Function.comp_apply, map_map]
+                 -- 🎉 no goals
 #align regular_expression.map_map RegularExpression.map_map
 
 /-- The language of the map is the map of the language. -/
@@ -444,15 +560,25 @@ theorem matches'_map (f : α → β) :
   | 1 => (map_one _).symm
   | char a => by
     rw [eq_comm]
+    -- ⊢ ↑(Language.map f) (matches' (char a)) = matches' (map f (char a))
     exact image_singleton
+    -- 🎉 no goals
   -- porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
+                -- ⊢ ↑(Language.map f) (matches' R) + ↑(Language.map f) (matches' S) = ↑(Language …
+                                                             -- 🎉 no goals
   | R * S => by simp only [matches'_map, map, matches'_mul]; rw [map_mul]
+                -- ⊢ ↑(Language.map f) (matches' R) * ↑(Language.map f) (matches' S) = ↑(Language …
+                                                             -- 🎉 no goals
   | star R => by
     simp_rw [map, matches', matches'_map]
+    -- ⊢ (↑(Language.map f) (matches' R))∗ = ↑(Language.map f) (matches' R)∗
     rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]
+    -- ⊢ ⨆ (i : ℕ), ↑(Language.map f) (matches' R) ^ i = ↑(Language.map f) (⨆ (i : ℕ) …
     simp_rw [← map_pow]
+    -- ⊢ ⨆ (i : ℕ), ↑(Language.map f) (matches' R ^ i) = ↑(Language.map f) (⨆ (i : ℕ) …
     exact image_iUnion.symm
+    -- 🎉 no goals
 #align regular_expression.matches_map RegularExpression.matches'_map
 
 end RegularExpression

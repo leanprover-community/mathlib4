@@ -44,9 +44,11 @@ open scoped Classical BigOperators Topology Real
 theorem tendsto_sum_pi_div_four :
     Tendsto (fun k => ∑ i in Finset.range k, (-(1 : ℝ)) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
   rw [tendsto_iff_norm_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
+  -- ⊢ Tendsto (fun e => ∑ i in Finset.range e, (-1) ^ i / (2 * ↑i + 1) - π / 4) at …
   -- (1) We introduce a useful sequence `u` of values in [0,1], then prove that another sequence
   --     constructed from `u` tends to `0` at `+∞`
   let u := fun k : ℕ => (k : NNReal) ^ (-1 / (2 * (k : ℝ) + 1))
+  -- ⊢ Tendsto (fun e => ∑ i in Finset.range e, (-1) ^ i / (2 * ↑i + 1) - π / 4) at …
   have H : Tendsto (fun k : ℕ => (1 : ℝ) - u k + u k ^ (2 * (k : ℝ) + 1)) atTop (𝓝 0) := by
     convert (((tendsto_rpow_div_mul_add (-1) 2 1 two_ne_zero.symm).neg.const_add 1).add
         tendsto_inv_atTop_zero).comp tendsto_nat_cast_atTop_atTop using 1
@@ -59,16 +61,25 @@ theorem tendsto_sum_pi_div_four :
     · simp only [add_zero, add_right_neg]
   -- (2) We convert the limit in our goal to an inequality
   refine' squeeze_zero_norm _ H
+  -- ⊢ ∀ (n : ℕ), ‖∑ i in Finset.range n, (-1) ^ i / (2 * ↑i + 1) - π / 4‖ ≤ 1 - ↑( …
   intro k
+  -- ⊢ ‖∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4‖ ≤ 1 - ↑(u k) + ↑(u  …
   -- Since `k` is now fixed, we henceforth denote `u k` as `U`
   let U := u k
+  -- ⊢ ‖∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4‖ ≤ 1 - ↑(u k) + ↑(u  …
   -- (3) We introduce an auxiliary function `f`
   let b (i : ℕ) x := (-(1 : ℝ)) ^ i * x ^ (2 * i + 1) / (2 * i + 1)
+  -- ⊢ ‖∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4‖ ≤ 1 - ↑(u k) + ↑(u  …
   let f x := arctan x - ∑ i in Finset.range k, b i x
+  -- ⊢ ‖∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4‖ ≤ 1 - ↑(u k) + ↑(u  …
   suffices f_bound : |f 1 - f 0| ≤ (1 : ℝ) - U + U ^ (2 * (k : ℝ) + 1)
+  -- ⊢ ‖∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4‖ ≤ 1 - ↑(u k) + ↑(u  …
   · rw [← norm_neg]
+    -- ⊢ ‖-(∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4)‖ ≤ 1 - ↑(u k) + ↑ …
     convert f_bound using 1
+    -- ⊢ ‖-(∑ i in Finset.range k, (-1) ^ i / (2 * ↑i + 1) - π / 4)‖ = |f 1 - f 0|
     simp
+    -- 🎉 no goals
   -- We show that `U` is indeed in [0,1]
   have hU1 : (U : ℝ) ≤ 1 := by
     by_cases hk : k = 0
@@ -78,8 +89,10 @@ theorem tendsto_sum_pi_div_four :
           (@div_neg_of_neg_of_pos _ _ (-(1 : ℝ)) (2 * k + 1) (neg_neg_iff_pos.mpr zero_lt_one)
             (by norm_cast; exact Nat.succ_pos')))
   have hU2 := NNReal.coe_nonneg U
+  -- ⊢ |f 1 - f 0| ≤ 1 - ↑U + ↑(U ^ (2 * ↑k + 1))
   -- (4) We compute the derivative of `f`, denoted by `f'`
   let f' := fun x : ℝ => (-x ^ 2) ^ k / (1 + x ^ 2)
+  -- ⊢ |f 1 - f 0| ≤ 1 - ↑U + ↑(U ^ (2 * ↑k + 1))
   have has_deriv_at_f : ∀ x, HasDerivAt f (f' x) x := by
     intro x
     have has_deriv_at_b : ∀ i ∈ Finset.range k, HasDerivAt (b i) ((-x ^ 2) ^ i) x := by
@@ -126,7 +139,9 @@ theorem tendsto_sum_pi_div_four :
     exact (f'_bound x (mem_Icc.mpr (abs_le.mp (le_trans (le_of_lt hx_right) hU1)))).trans hincr
   -- (6) We twice apply the Mean Value Theorem to obtain bounds on `f` from the bounds on `f'`
   have mvt1 := norm_image_sub_le_of_norm_deriv_le_segment' hderiv1 hbound1 _ (right_mem_Icc.mpr hU1)
+  -- ⊢ |f 1 - f 0| ≤ 1 - ↑U + ↑(U ^ (2 * ↑k + 1))
   have mvt2 := norm_image_sub_le_of_norm_deriv_le_segment' hderiv2 hbound2 _ (right_mem_Icc.mpr hU2)
+  -- ⊢ |f 1 - f 0| ≤ 1 - ↑U + ↑(U ^ (2 * ↑k + 1))
   -- The following algebra is enough to complete the proof
   calc
     |f 1 - f 0| = |f 1 - f U + (f U - f 0)| := by simp

@@ -48,8 +48,13 @@ theorem smoothOn_continuousLinearMapCoordChange
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
   have h₁ := smoothOn_coordChangeL IB e₁' e₁
+  -- ⊢ SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂) (continuousLinearMapCoordC …
   have h₂ := smoothOn_coordChangeL IB e₂ e₂'
+  -- ⊢ SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂) (continuousLinearMapCoordC …
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
+  -- ⊢ e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet) ⊆ e₁'.baseSet ∩ e₁.bas …
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
 #align smooth_on_continuous_linear_map_coord_change smoothOn_continuousLinearMapCoordChange
 
 theorem hom_chart (y₀ y : LE₁E₂) :
@@ -83,6 +88,7 @@ instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
     (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB where
   exists_smoothCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
+    -- ⊢ ∃ f, SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂) f ((continuousLinearM …
     exact ⟨continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
       smoothOn_continuousLinearMapCoordChange IB,
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩

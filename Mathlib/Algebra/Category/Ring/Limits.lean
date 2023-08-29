@@ -42,7 +42,9 @@ variable {J : Type v} [SmallCategory J]
 instance semiringObj (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
     Semiring ((F ⋙ forget SemiRingCat).obj j) := by
   change Semiring (F.obj j)
+  -- ⊢ Semiring ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align SemiRing.semiring_obj SemiRingCat.semiringObj
 
@@ -130,6 +132,7 @@ Auxiliary lemma to prove the cone induced by `limitCone` is a limit cone.
 def forget₂AddCommMonPreservesLimitsAux (F : J ⥤ SemiRingCatMax.{v, u}) :
     IsLimit ((forget₂ SemiRingCat AddCommMonCat).mapCone (limitCone F)) := by
   apply AddCommMonCat.limitConeIsLimit.{v, u}
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget₂_AddCommMon_preserves_limits_aux SemiRingCat.forget₂AddCommMonPreservesLimitsAux
 
@@ -155,6 +158,7 @@ set_option linter.uppercaseLean3 false in
 def forget₂MonPreservesLimitsAux (F : J ⥤ SemiRingCatMax.{v, u}) :
     IsLimit ((forget₂ SemiRingCat MonCat).mapCone (limitCone F)) := by
   apply MonCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ SemiRingCat MonCat.{max v u})
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget₂_Mon_preserves_limits_aux SemiRingCat.forget₂MonPreservesLimitsAux
 
@@ -204,7 +208,9 @@ variable {J : Type v} [SmallCategory J]
 instance commSemiringObj (F : J ⥤ CommSemiRingCatMax.{v, u}) (j) :
     CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) := by
   change CommSemiring (F.obj j)
+  -- ⊢ CommSemiring ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.comm_semiring_obj CommSemiRingCat.commSemiringObj
 
@@ -328,7 +334,9 @@ variable {J : Type v} [SmallCategory J]
 
 instance ringObj (F : J ⥤ RingCatMax.{v, u}) (j) : Ring ((F ⋙ forget RingCat).obj j) := by
   change Ring (F.obj j)
+  -- ⊢ Ring ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Ring.ring_obj RingCat.ringObj
 
@@ -369,9 +377,11 @@ instance (F : J ⥤ RingCatMax.{v, u}) :
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
+                      -- 🎉 no goals
       makesLimit :=
         IsLimit.ofFaithful (forget₂ RingCat SemiRingCat.{max v u})
           (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
+              -- 🎉 no goals
 
 /-- A choice of limit cone for a functor into `RingCat`.
 (Generally, you'll just want to use `limit F`.)
@@ -425,7 +435,9 @@ def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ RingCatMax.{v, u}) :
     IsLimit ((forget₂ RingCatMax.{v, u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
   -- Porting note : inline `f` would not compile
   letI f := (F ⋙ forget₂ RingCatMax.{v, u} AddCommGroupCat.{max v u})
+  -- ⊢ IsLimit ((forget₂ RingCatMax AddCommGroupCat).mapCone (limitCone F))
   apply AddCommGroupCat.limitConeIsLimit.{v, u} f
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits_aux RingCat.forget₂AddCommGroupPreservesLimitsAux
 
@@ -476,7 +488,9 @@ variable {J : Type v} [SmallCategory J]
 instance commRingObj (F : J ⥤ CommRingCatMax.{v, u}) (j) :
     CommRing ((F ⋙ forget CommRingCat).obj j) := by
   change CommRing (F.obj j)
+  -- ⊢ CommRing ↑(F.obj j)
   infer_instance
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommRing.comm_ring_obj CommRingCat.commRingObj
 
@@ -584,6 +598,7 @@ set_option linter.uppercaseLean3 false in
 def forget₂CommSemiRingPreservesLimitsAux (F : J ⥤ CommRingCatMax.{v, u}) :
     IsLimit ((forget₂ CommRingCat CommSemiRingCat).mapCone (limitCone F)) := by
   apply CommSemiRingCat.limitConeIsLimit (F ⋙ forget₂ CommRingCat CommSemiRingCat.{max v u})
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget₂_CommSemiRing_preserves_limits_aux CommRingCat.forget₂CommSemiRingPreservesLimitsAux
 

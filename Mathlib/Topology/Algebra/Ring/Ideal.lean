@@ -60,15 +60,21 @@ variable [TopologicalRing R]
 
 theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) := by
   intro s s_op
+  -- ⊢ IsOpen (↑(mk N) '' s)
   change IsOpen (mk N ⁻¹' (mk N '' s))
+  -- ⊢ IsOpen (↑(mk N) ⁻¹' (↑(mk N) '' s))
   rw [quotient_ring_saturate]
+  -- ⊢ IsOpen (⋃ (x : { x // x ∈ N }), (fun y => ↑x + y) '' s)
   exact isOpen_iUnion fun ⟨n, _⟩ => isOpenMap_add_left n s s_op
+  -- 🎉 no goals
 #align quotient_ring.is_open_map_coe QuotientRing.isOpenMap_coe
 
 theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
   IsOpenMap.to_quotientMap ((QuotientRing.isOpenMap_coe N).prod (QuotientRing.isOpenMap_coe N))
     ((continuous_quot_mk.comp continuous_fst).prod_mk (continuous_quot_mk.comp continuous_snd))
     (by rintro ⟨⟨x⟩, ⟨y⟩⟩; exact ⟨(x, y), rfl⟩)
+        -- ⊢ ∃ a, (fun p => (↑(mk N) p.fst, ↑(mk N) p.snd)) a = (Quot.mk Setoid.r x, Quot …
+                           -- 🎉 no goals
 #align quotient_ring.quotient_map_coe_coe QuotientRing.quotientMap_coe_coe
 
 instance topologicalRing_quotient : TopologicalRing (R ⧸ N) :=

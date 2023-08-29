@@ -25,6 +25,7 @@ open Finset Function
 
 instance {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] : Fintype (Sigma β) :=
   ⟨univ.sigma fun _ => univ, fun ⟨a, b⟩ => by simp⟩
+                                              -- 🎉 no goals
 
 @[simp]
 theorem Finset.univ_sigma_univ {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :

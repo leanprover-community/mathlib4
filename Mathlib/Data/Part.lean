@@ -66,17 +66,26 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 
 @[simp] lemma toOption_isSome (o : Part α) [Decidable o.Dom] : o.toOption.isSome ↔ o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
+  -- ⊢ Option.isSome (toOption o) = true ↔ o.Dom
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align part.to_option_is_some Part.toOption_isSome
 
 @[simp] lemma toOption_isNone (o : Part α) [Decidable o.Dom] : o.toOption.isNone ↔ ¬o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
+  -- ⊢ Option.isNone (toOption o) = true ↔ ¬o.Dom
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
+    -- ⊢ { Dom := od, get := o } = { Dom := pd, get := p }
     cases t; rw [show o = p from funext fun p => H2 p p]
+    -- ⊢ { Dom := od, get := o } = { Dom := od, get := p }
+             -- 🎉 no goals
 #align part.ext' Part.ext'
 
 /-- `Part` eta expansion -/
@@ -176,6 +185,7 @@ theorem eq_some_iff {a : α} {o : Part α} : o = some a ↔ a ∈ o :=
 
 theorem eq_none_iff {o : Part α} : o = none ↔ ∀ a, a ∉ o :=
   ⟨fun e => e.symm ▸ not_mem_none, fun h => ext (by simpa)⟩
+                                                    -- 🎉 no goals
 #align part.eq_none_iff Part.eq_none_iff
 
 theorem eq_none_iff' {o : Part α} : o = none ↔ ¬o.Dom :=
@@ -190,7 +200,9 @@ theorem not_none_dom : ¬(none : Part α).Dom :=
 @[simp]
 theorem some_ne_none (x : α) : some x ≠ none := by
   intro h
+  -- ⊢ False
   exact true_ne_false (congr_arg Dom h)
+  -- 🎉 no goals
 #align part.some_ne_none Part.some_ne_none
 
 @[simp]
@@ -200,10 +212,15 @@ theorem none_ne_some (x : α) : none ≠ some x :=
 
 theorem ne_none_iff {o : Part α} : o ≠ none ↔ ∃ x, o = some x := by
   constructor
+  -- ⊢ o ≠ none → ∃ x, o = some x
   · rw [Ne, eq_none_iff', not_not]
+    -- ⊢ o.Dom → ∃ x, o = some x
     exact fun h => ⟨o.get h, eq_some_iff.2 (get_mem h)⟩
+    -- 🎉 no goals
   · rintro ⟨x, rfl⟩
+    -- ⊢ some x ≠ none
     apply some_ne_none
+    -- 🎉 no goals
 #align part.ne_none_iff Part.ne_none_iff
 
 theorem eq_none_or_eq_some (o : Part α) : o = none ∨ ∃ x, o = some x :=
@@ -226,11 +243,14 @@ theorem some_get {a : Part α} (ha : a.Dom) : Part.some (Part.get a ha) = a :=
 
 theorem get_eq_iff_eq_some {a : Part α} {ha : a.Dom} {b : α} : a.get ha = b ↔ a = some b :=
   ⟨fun h => by simp [h.symm], fun h => by simp [h]⟩
+               -- 🎉 no goals
+                                          -- 🎉 no goals
 #align part.get_eq_iff_eq_some Part.get_eq_iff_eq_some
 
 theorem get_eq_get_of_eq (a : Part α) (ha : a.Dom) {b : Part α} (h : a = b) :
     a.get ha = b.get (h ▸ ha) := by
   congr
+  -- 🎉 no goals
 #align part.get_eq_get_of_eq Part.get_eq_get_of_eq
 
 theorem get_eq_iff_mem {o : Part α} {a : α} (h : o.Dom) : o.get h = a ↔ a ∈ o :=
@@ -288,9 +308,15 @@ theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (s
 --Porting note: removed `simp`
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
+  -- ⊢ (a ∈ if h : o.Dom then Option.some (get o h) else Option.none) ↔ a ∈ o
   by_cases h : o.Dom <;> simp [h]
+  -- ⊢ (a ∈ if h : o.Dom then Option.some (get o h) else Option.none) ↔ a ∈ o
+                         -- ⊢ get o (_ : o.Dom) = a ↔ a ∈ o
+                         -- ⊢ ¬a ∈ o
   · exact ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
+    -- 🎉 no goals
   · exact mt Exists.fst h
+    -- 🎉 no goals
 #align part.mem_to_option Part.mem_toOption
 
 --Porting note : New theorem, like `mem_toOption` but with LHS in `simp` normal form
@@ -298,6 +324,7 @@ theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
     toOption o = Option.some a ↔ a ∈ o :=
   by rw [← Option.mem_def, mem_toOption]
+     -- 🎉 no goals
 
 protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
   dif_pos h
@@ -312,10 +339,15 @@ theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Opti
 theorem elim_toOption {α β : Type*} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
   split_ifs with h
+  -- ⊢ Option.elim (toOption a) b f = f (get a h)
   · rw [h.toOption]
+    -- ⊢ Option.elim (Option.some (get a h)) b f = f (get a h)
     rfl
+    -- 🎉 no goals
   · rw [Part.toOption_eq_none_iff.2 h]
+    -- ⊢ Option.elim Option.none b f = b
     rfl
+    -- 🎉 no goals
 #align part.elim_to_option Part.elim_toOption
 
 /-- Converts an `Option α` into a `Part α`. -/
@@ -334,14 +366,19 @@ theorem mem_ofOption {a : α} : ∀ {o : Option α}, a ∈ ofOption o ↔ a ∈ 
 @[simp]
 theorem ofOption_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
   | Option.none => by simp [ofOption, none]
+                      -- 🎉 no goals
   | Option.some a => by simp [ofOption]
+                        -- 🎉 no goals
 #align part.of_option_dom Part.ofOption_dom
 
 theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ o⟩ :=
   Part.ext' (ofOption_dom o) fun h₁ h₂ => by
     cases o
+    -- ⊢ get (↑Option.none) h₁ = get { Dom := Option.isSome Option.none = true, get : …
     · simp at h₂
+      -- 🎉 no goals
     · rfl
+      -- 🎉 no goals
 #align part.of_option_eq_get Part.ofOption_eq_get
 
 instance : Coe (Option α) (Part α) :=
@@ -375,6 +412,9 @@ instance ofOptionDecidable : ∀ o : Option α, Decidable (ofOption o).Dom
 
 @[simp]
 theorem to_ofOption (o : Option α) : toOption (ofOption o) = o := by cases o <;> rfl
+                                                                     -- ⊢ toOption ↑Option.none = Option.none
+                                                                                 -- 🎉 no goals
+                                                                                 -- 🎉 no goals
 #align part.to_of_option Part.to_ofOption
 
 @[simp]
@@ -387,6 +427,8 @@ noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
   ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
     Eq.trans (by dsimp; congr ) (to_ofOption o)⟩
+                 -- ⊢ toOption ↑o = toOption ↑o
+                        -- 🎉 no goals
 #align part.equiv_option Part.equivOption
 
 /-- We give `Part α` the order where everything is greater than `none`. -/
@@ -401,19 +443,33 @@ instance : OrderBot (Part α) where
   bot := none
   bot_le := by
     introv x
+    -- ⊢ x ∈ ⊥ → x ∈ a
     rintro ⟨⟨_⟩, _⟩
+    -- 🎉 no goals
 
 theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : y ≤ z) :
     x ≤ y ∨ y ≤ x := by
   rcases Part.eq_none_or_eq_some x with (h | ⟨b, h₀⟩)
+  -- ⊢ x ≤ y ∨ y ≤ x
   · rw [h]
+    -- ⊢ none ≤ y ∨ y ≤ none
     left
+    -- ⊢ none ≤ y
     apply OrderBot.bot_le _
+    -- 🎉 no goals
   right; intro b' h₁
+  -- ⊢ y ≤ x
+         -- ⊢ b' ∈ x
   rw [Part.eq_some_iff] at h₀
+  -- ⊢ b' ∈ x
   have hx := hx _ h₀; have hy := hy _ h₁
+  -- ⊢ b' ∈ x
+                      -- ⊢ b' ∈ x
   have hx := Part.mem_unique hx hy; subst hx
+  -- ⊢ b' ∈ x
+                                    -- ⊢ b ∈ x
   exact h₀
+  -- 🎉 no goals
 #align part.le_total_of_le_of_le Part.le_total_of_le_of_le
 
 /-- `assert p f` is a bind-like operation which appends an additional condition
@@ -450,6 +506,7 @@ theorem mem_map_iff (f : α → β) {o : Part α} {b} : b ∈ map f o ↔ ∃ a 
 @[simp]
 theorem map_none (f : α → β) : map f none = none :=
   eq_none_iff.2 fun a => by simp
+                            -- 🎉 no goals
 #align part.map_none Part.map_none
 
 @[simp]
@@ -470,19 +527,31 @@ theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔
 
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
   dsimp [assert]
+  -- ⊢ { Dom := ∃ h, (f h).Dom, get := fun ha => get (f (_ : p)) (_ : (f (_ : p)).D …
   cases h' : f h
+  -- ⊢ { Dom := ∃ h, (f h).Dom, get := fun ha => get (f (_ : p)) (_ : (f (_ : p)).D …
   simp [h', mk.injEq, h, exists_prop_of_true, true_and]
+  -- ⊢ HEq (fun ha => get✝ (_ : { Dom := Dom✝, get := get✝ }.Dom)) get✝
   apply Function.hfunext
+  -- ⊢ (∃ h, (f h).Dom) = Dom✝
   · simp only [h, h', exists_prop_of_true]
+    -- 🎉 no goals
   · aesop
+    -- 🎉 no goals
 #align part.assert_pos Part.assert_pos
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
   dsimp [assert, none]; congr
+  -- ⊢ { Dom := ∃ h, (f h).Dom, get := fun ha => get (f (_ : p)) (_ : (f (_ : p)).D …
+                        -- ⊢ (∃ h, (f h).Dom) = False
   · simp only [h, not_false_iff, exists_prop_of_false]
+    -- 🎉 no goals
   · apply Function.hfunext
+    -- ⊢ (∃ h, (f h).Dom) = False
     · simp only [h, not_false_iff, exists_prop_of_false]
+      -- 🎉 no goals
     simp at *
+    -- 🎉 no goals
 #align part.assert_neg Part.assert_neg
 
 theorem mem_bind {f : Part α} {g : α → Part β} : ∀ {a b}, a ∈ f → b ∈ g a → b ∈ f.bind g
@@ -498,10 +567,15 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
 
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
+  -- ⊢ b ∈ Part.bind o f ↔ b ∈ f (get o h)
   simp only [Part.mem_bind_iff, exists_prop]
+  -- ⊢ (∃ a, a ∈ o ∧ b ∈ f a) ↔ b ∈ f (get o h)
   refine' ⟨_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
+  -- ⊢ (∃ a, a ∈ o ∧ b ∈ f a) → b ∈ f (get o h)
   rintro ⟨a, ha, hb⟩
+  -- ⊢ b ∈ f (get o h)
   rwa [Part.get_eq_of_mem ha]
+  -- 🎉 no goals
 #align part.dom.bind Part.Dom.bind
 
 theorem Dom.of_bind {f : α → Part β} {a : Part α} (h : (a.bind f).Dom) : a.Dom :=
@@ -511,35 +585,45 @@ theorem Dom.of_bind {f : α → Part β} {a : Part α} (h : (a.bind f).Dom) : a.
 @[simp]
 theorem bind_none (f : α → Part β) : none.bind f = none :=
   eq_none_iff.2 fun a => by simp
+                            -- 🎉 no goals
 #align part.bind_none Part.bind_none
 
 @[simp]
 theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
   ext <| by simp
+            -- 🎉 no goals
 #align part.bind_some Part.bind_some
 
 theorem bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.bind f = f a := by
   rw [eq_some_iff.2 h, bind_some]
+  -- 🎉 no goals
 #align part.bind_of_mem Part.bind_of_mem
 
 theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
   ext <| by simp [eq_comm]
+            -- 🎉 no goals
 #align part.bind_some_eq_map Part.bind_some_eq_map
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
     [Decidable (o.bind f).Dom] :
     (o.bind f).toOption = o.toOption.elim Option.none fun a => (f a).toOption := by
   by_cases h : o.Dom
+  -- ⊢ toOption (Part.bind o f) = Option.elim (toOption o) Option.none fun a => toO …
   · simp_rw [h.toOption, h.bind]
+    -- ⊢ toOption (f (get o h)) = Option.elim (Option.some (get o h)) Option.none fun …
     rfl
+    -- 🎉 no goals
   · rw [Part.toOption_eq_none_iff.2 h]
+    -- ⊢ toOption (Part.bind o f) = Option.elim Option.none Option.none fun a => toOp …
     exact Part.toOption_eq_none_iff.2 fun ho => h ho.of_bind
+    -- 🎉 no goals
 #align part.bind_to_option Part.bind_toOption
 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
     (f.bind g).bind k = f.bind fun x => (g x).bind k :=
   ext fun a => by
     simp
+    -- ⊢ (∃ a_1, (∃ a, a ∈ f ∧ a_1 ∈ g a) ∧ a ∈ k a_1) ↔ ∃ a_1, a_1 ∈ f ∧ ∃ a_2, a_2  …
     exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,
            fun ⟨_, h₁, _, h₂, h₃⟩ => ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
 #align part.bind_assoc Part.bind_assoc
@@ -547,16 +631,21 @@ theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) 
 @[simp]
 theorem bind_map {γ} (f : α → β) (x) (g : β → Part γ) :
     (map f x).bind g = x.bind fun y => g (f y) := by rw [← bind_some_eq_map, bind_assoc]; simp
+                                                     -- ⊢ (Part.bind x fun x => Part.bind ((some ∘ f) x) g) = Part.bind x fun y => g ( …
+                                                                                          -- 🎉 no goals
 #align part.bind_map Part.bind_map
 
 @[simp]
 theorem map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
     map g (x.bind f) = x.bind fun y => map g (f y) := by
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
+  -- ⊢ (Part.bind x fun x => Part.bind (f x) (some ∘ g)) = Part.bind x fun y => map …
+                                       -- 🎉 no goals
 #align part.map_bind Part.map_bind
 
 theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
   erw [← bind_some_eq_map, bind_map, bind_some_eq_map]
+  -- 🎉 no goals
 #align part.map_map Part.map_map
 
 instance : Monad Part where
@@ -568,30 +657,41 @@ instance : LawfulMonad
       Part where
   bind_pure_comp := @bind_some_eq_map
   id_map f := by cases f; rfl
+                 -- ⊢ id <$> { Dom := Dom✝, get := get✝ } = { Dom := Dom✝, get := get✝ }
+                          -- 🎉 no goals
   pure_bind := @bind_some
+                  -- 🎉 no goals
   bind_assoc := @bind_assoc
   map_const := by simp [Functor.mapConst, Functor.map]
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
     (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
+        -- 🎉 no goals
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
     (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
+        -- 🎉 no goals
     (fun _ _ => rfl)
   pure_seq x y := ext'
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
+        -- 🎉 no goals
     (fun _ _ => rfl)
   bind_map x y := ext'
     (by simp [(· >>= ·), Part.bind, assert, Seq.seq, get, (· <$> ·)] )
+        -- 🎉 no goals
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
   rw [show f = id from funext H]; exact id_map o
+  -- ⊢ map id o = o
+                                  -- 🎉 no goals
 #align part.map_id' Part.map_id'
 
 @[simp]
 theorem bind_some_right (x : Part α) : x.bind some = x := by
   erw [bind_some_eq_map]; simp [map_id']
+  -- ⊢ map (fun a => a) x = x
+                          -- 🎉 no goals
 #align part.bind_some_right Part.bind_some_right
 
 @[simp]
@@ -617,14 +717,25 @@ theorem bind_eq_bind {α β} (f : Part α) (g : α → Part β) : f >>= g = f.bi
 theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
     x >>= f ≤ y ↔ ∀ a, a ∈ x → f a ≤ y := by
   constructor <;> intro h
+  -- ⊢ x >>= f ≤ y → ∀ (a : α), a ∈ x → f a ≤ y
+                  -- ⊢ ∀ (a : α), a ∈ x → f a ≤ y
+                  -- ⊢ x >>= f ≤ y
   · intro a h' b
+    -- ⊢ b ∈ f a → b ∈ y
     have h := h b
+    -- ⊢ b ∈ f a → b ∈ y
     simp only [and_imp, exists_prop, bind_eq_bind, mem_bind_iff, exists_imp] at h
+    -- ⊢ b ∈ f a → b ∈ y
     apply h _ h'
+    -- 🎉 no goals
   · intro b h'
+    -- ⊢ b ∈ y
     simp only [exists_prop, bind_eq_bind, mem_bind_iff] at h'
+    -- ⊢ b ∈ y
     rcases h' with ⟨a, h₀, h₁⟩
+    -- ⊢ b ∈ y
     apply h _ h₀ _ h₁
+    -- 🎉 no goals
 #align part.bind_le Part.bind_le
 
 --Porting note: No MonadFail in Lean4 yet
@@ -641,9 +752,15 @@ def restrict (p : Prop) (o : Part α) (H : p → o.Dom) : Part α :=
 theorem mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
     a ∈ restrict p o h ↔ p ∧ a ∈ o := by
   dsimp [restrict, mem_eq]; constructor
+  -- ⊢ (∃ h_1, get o (_ : o.Dom) = a) ↔ p ∧ ∃ h, get o h = a
+                            -- ⊢ (∃ h_1, get o (_ : o.Dom) = a) → p ∧ ∃ h, get o h = a
   · rintro ⟨h₀, h₁⟩
+    -- ⊢ p ∧ ∃ h, get o h = a
     exact ⟨h₀, ⟨_, h₁⟩⟩
+    -- 🎉 no goals
   rintro ⟨h₀, _, h₂⟩; exact ⟨h₀, h₂⟩
+  -- ⊢ ∃ h_1, get o (_ : o.Dom) = a
+                      -- 🎉 no goals
 #align part.mem_restrict Part.mem_restrict
 
 /-- `unwrap o` gets the value at `o`, ignoring the condition. This function is unsound. -/
@@ -713,6 +830,8 @@ theorem one_mem_one [One α] : (1 : α) ∈ (1 : Part α) :=
 @[to_additive]
 theorem mul_mem_mul [Mul α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp [← ha.2, ← hb.2]; rfl⟩
+                                         -- ⊢ get (a * b) (_ : ∃ h, ((fun b_1 => (fun y => map y ((fun x => b) ())) (get ( …
+                                                                -- 🎉 no goals
 #align part.mul_mem_mul Part.mul_mem_mul
 #align part.add_mem_add Part.add_mem_add
 
@@ -734,12 +853,15 @@ theorem mul_get_eq [Mul α] (a b : Part α) (hab : Dom (a * b)) :
 
 @[to_additive]
 theorem some_mul_some [Mul α] (a b : α) : some a * some b = some (a * b) := by simp [mul_def]
+                                                                               -- 🎉 no goals
 #align part.some_mul_some Part.some_mul_some
 #align part.some_add_some Part.some_add_some
 
 @[to_additive]
 theorem inv_mem_inv [Inv α] (a : Part α) (ma : α) (ha : ma ∈ a) : ma⁻¹ ∈ a⁻¹ :=
   by simp [inv_def]; aesop
+     -- ⊢ ∃ a_1, a_1 ∈ a ∧ a_1⁻¹ = ma⁻¹
+                     -- 🎉 no goals
 #align part.inv_mem_inv Part.inv_mem_inv
 #align part.neg_mem_neg Part.neg_mem_neg
 
@@ -752,6 +874,8 @@ theorem inv_some [Inv α] (a : α) : (some a)⁻¹ = some a⁻¹ :=
 @[to_additive]
 theorem div_mem_div [Div α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma / mb ∈ a / b := by simp [div_def]; aesop
+                          -- ⊢ ∃ a_1, a_1 ∈ a ∧ ∃ a, a ∈ b ∧ a_1 / a = ma / mb
+                                          -- 🎉 no goals
 #align part.div_mem_div Part.div_mem_div
 #align part.sub_mem_sub Part.sub_mem_sub
 
@@ -769,16 +893,21 @@ theorem right_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : b.Do
 theorem div_get_eq [Div α] (a b : Part α) (hab : Dom (a / b)) :
     (a / b).get hab = a.get (left_dom_of_div_dom hab) / b.get (right_dom_of_div_dom hab) :=
   by simp [div_def]; aesop
+     -- ⊢ get (Part.bind a fun y => map (fun x => y / x) b) (_ : (Part.bind a fun y => …
+                     -- 🎉 no goals
 #align part.div_get_eq Part.div_get_eq
 #align part.sub_get_eq Part.sub_get_eq
 
 @[to_additive]
 theorem some_div_some [Div α] (a b : α) : some a / some b = some (a / b) := by simp [div_def]
+                                                                               -- 🎉 no goals
 #align part.some_div_some Part.some_div_some
 #align part.some_sub_some Part.some_sub_some
 
 theorem mod_mem_mod [Mod α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma % mb ∈ a % b := by simp [mod_def]; aesop
+                          -- ⊢ ∃ a_1, a_1 ∈ a ∧ ∃ a, a ∈ b ∧ a_1 % a = ma % mb
+                                          -- 🎉 no goals
 #align part.mod_mem_mod Part.mod_mem_mod
 
 theorem left_dom_of_mod_dom [Mod α] {a b : Part α} (hab : Dom (a % b)) : a.Dom := hab.1
@@ -791,13 +920,18 @@ theorem right_dom_of_mod_dom [Mod α] {a b : Part α} (hab : Dom (a % b)) : b.Do
 theorem mod_get_eq [Mod α] (a b : Part α) (hab : Dom (a % b)) :
     (a % b).get hab = a.get (left_dom_of_mod_dom hab) % b.get (right_dom_of_mod_dom hab) :=
   by simp [mod_def]; aesop
+     -- ⊢ get (Part.bind a fun y => map (fun x => y % x) b) (_ : (Part.bind a fun y => …
+                     -- 🎉 no goals
 #align part.mod_get_eq Part.mod_get_eq
 
 theorem some_mod_some [Mod α] (a b : α) : some a % some b = some (a % b) := by simp [mod_def]
+                                                                               -- 🎉 no goals
 #align part.some_mod_some Part.some_mod_some
 
 theorem append_mem_append [Append α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma ++ mb ∈ a ++ b := by simp [append_def]; aesop
+                            -- ⊢ ∃ a_1, a_1 ∈ a ∧ ∃ a, a ∈ b ∧ a_1 ++ a = ma ++ mb
+                                               -- 🎉 no goals
 #align part.append_mem_append Part.append_mem_append
 
 theorem left_dom_of_append_dom [Append α] {a b : Part α} (hab : Dom (a ++ b)) : a.Dom := hab.1
@@ -810,14 +944,19 @@ theorem right_dom_of_append_dom [Append α] {a b : Part α} (hab : Dom (a ++ b))
 theorem append_get_eq [Append α] (a b : Part α) (hab : Dom (a ++ b)) :
     (a ++ b).get hab = a.get (left_dom_of_append_dom hab) ++ b.get (right_dom_of_append_dom hab) :=
   by simp [append_def]; aesop
+     -- ⊢ get (Part.bind a fun y => map (fun x => y ++ x) b) (_ : (Part.bind a fun y = …
+                        -- 🎉 no goals
 #align part.append_get_eq Part.append_get_eq
 
 theorem some_append_some [Append α] (a b : α) : some a ++ some b = some (a ++ b) :=
   by simp [append_def]
+     -- 🎉 no goals
 #align part.some_append_some Part.some_append_some
 
 theorem inter_mem_inter [Inter α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma ∩ mb ∈ a ∩ b := by simp [inter_def]; aesop
+                          -- ⊢ ∃ a_1, a_1 ∈ a ∧ ∃ a, a ∈ b ∧ a_1 ∩ a = ma ∩ mb
+                                            -- 🎉 no goals
 #align part.inter_mem_inter Part.inter_mem_inter
 
 theorem left_dom_of_inter_dom [Inter α] {a b : Part α} (hab : Dom (a ∩ b)) : a.Dom := hab.1
@@ -830,14 +969,19 @@ theorem right_dom_of_inter_dom [Inter α] {a b : Part α} (hab : Dom (a ∩ b)) 
 theorem inter_get_eq [Inter α] (a b : Part α) (hab : Dom (a ∩ b)) :
     (a ∩ b).get hab = a.get (left_dom_of_inter_dom hab) ∩ b.get (right_dom_of_inter_dom hab) :=
   by simp [inter_def]; aesop
+     -- ⊢ get (Part.bind a fun y => map (fun x => y ∩ x) b) (_ : (Part.bind a fun y => …
+                       -- 🎉 no goals
 #align part.inter_get_eq Part.inter_get_eq
 
 theorem some_inter_some [Inter α] (a b : α) : some a ∩ some b = some (a ∩ b) :=
   by simp [inter_def]
+     -- 🎉 no goals
 #align part.some_inter_some Part.some_inter_some
 
 theorem union_mem_union [Union α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma ∪ mb ∈ a ∪ b := by simp [union_def]; aesop
+                          -- ⊢ ∃ a_1, a_1 ∈ a ∧ ∃ a, a ∈ b ∧ a_1 ∪ a = ma ∪ mb
+                                            -- 🎉 no goals
 #align part.union_mem_union Part.union_mem_union
 
 theorem left_dom_of_union_dom [Union α] {a b : Part α} (hab : Dom (a ∪ b)) : a.Dom := hab.1
@@ -850,13 +994,18 @@ theorem right_dom_of_union_dom [Union α] {a b : Part α} (hab : Dom (a ∪ b)) 
 theorem union_get_eq [Union α] (a b : Part α) (hab : Dom (a ∪ b)) :
     (a ∪ b).get hab = a.get (left_dom_of_union_dom hab) ∪ b.get (right_dom_of_union_dom hab) :=
   by simp [union_def]; aesop
+     -- ⊢ get (Part.bind a fun y => map (fun x => y ∪ x) b) (_ : (Part.bind a fun y => …
+                       -- 🎉 no goals
 #align part.union_get_eq Part.union_get_eq
 
 theorem some_union_some [Union α] (a b : α) : some a ∪ some b = some (a ∪ b) := by simp [union_def]
+                                                                                   -- 🎉 no goals
 #align part.some_union_some Part.some_union_some
 
 theorem sdiff_mem_sdiff [SDiff α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma \ mb ∈ a \ b := by simp [sdiff_def]; aesop
+                          -- ⊢ ∃ a_1, a_1 ∈ a ∧ ∃ a, a ∈ b ∧ a_1 \ a = ma \ mb
+                                            -- 🎉 no goals
 #align part.sdiff_mem_sdiff Part.sdiff_mem_sdiff
 
 theorem left_dom_of_sdiff_dom [SDiff α] {a b : Part α} (hab : Dom (a \ b)) : a.Dom := hab.1
@@ -869,9 +1018,12 @@ theorem right_dom_of_sdiff_dom [SDiff α] {a b : Part α} (hab : Dom (a \ b)) : 
 theorem sdiff_get_eq [SDiff α] (a b : Part α) (hab : Dom (a \ b)) :
     (a \ b).get hab = a.get (left_dom_of_sdiff_dom hab) \ b.get (right_dom_of_sdiff_dom hab) :=
   by simp [sdiff_def]; aesop
+     -- ⊢ get (Part.bind a fun y => map (fun x => y \ x) b) (_ : (Part.bind a fun y => …
+                       -- 🎉 no goals
 #align part.sdiff_get_eq Part.sdiff_get_eq
 
 theorem some_sdiff_some [SDiff α] (a b : α) : some a \ some b = some (a \ b) := by simp [sdiff_def]
+                                                                                   -- 🎉 no goals
 #align part.some_sdiff_some Part.some_sdiff_some
 
 end Instances

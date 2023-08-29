@@ -78,27 +78,38 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
+  -- ⊢ a * b ≤ a * c
   induction a using WithZero.recZeroCoe; · exact zero_le _
+  -- ⊢ 0 * b ≤ 0 * c
+                                           -- 🎉 no goals
   induction b using WithZero.recZeroCoe; · exact zero_le _
+  -- ⊢ ↑a✝ * 0 ≤ ↑a✝ * c
+                                           -- 🎉 no goals
   rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
+  -- ⊢ ↑a✝¹ * ↑a✝ ≤ ↑a✝¹ * ↑c
   refine le_trans ?_ (le_of_eq <| coe_mul)
+  -- ⊢ ↑a✝¹ * ↑a✝ ≤ ↑(a✝¹ * c)
   -- rw [← coe_mul, ← coe_mul, coe_le_coe]
   -- Porting note: rewriting `coe_mul` here doesn't work because of some difference between
   -- `coe` and `WithBot.some`, even though they're definitionally equal as shown by the `refine'`
   rw [← coe_mul, coe_le_coe]
+  -- ⊢ a✝¹ * a✝ ≤ a✝¹ * c
   exact mul_le_mul_left' hbc' _
+  -- 🎉 no goals
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
 -- Porting note: @[simp] can prove this
 nonrec theorem le_max_iff [LinearOrder α] {a b c : α} :
     (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
+  -- 🎉 no goals
 #align with_zero.le_max_iff WithZero.le_max_iff
 
 -- Porting note: @[simp] can prove this
 nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
     min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
+  -- 🎉 no goals
 #align with_zero.min_le_iff WithZero.min_le_iff
 
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
@@ -112,18 +123,31 @@ protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
     [CovariantClass α α (· + ·) (· ≤ ·)] (h : ∀ a : α, 0 ≤ a) :
     CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
+  -- ⊢ a + b ≤ a + c
   induction a using WithZero.recZeroCoe
+  -- ⊢ 0 + b ≤ 0 + c
   · rwa [zero_add, zero_add]
+    -- 🎉 no goals
   induction b using WithZero.recZeroCoe
+  -- ⊢ ↑a✝ + 0 ≤ ↑a✝ + c
   · rw [add_zero]
+    -- ⊢ ↑a✝ ≤ ↑a✝ + c
     induction c using WithZero.recZeroCoe
+    -- ⊢ ↑a✝ ≤ ↑a✝ + 0
     · rw [add_zero]
+      -- 🎉 no goals
     · rw [← coe_add, coe_le_coe]
+      -- ⊢ a✝¹ ≤ a✝¹ + a✝
       exact le_add_of_nonneg_right (h _)
+      -- 🎉 no goals
   · rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
+    -- ⊢ ↑a✝¹ + ↑a✝ ≤ ↑a✝¹ + ↑c
     refine le_trans ?_ (le_of_eq <| coe_add _ _)
+    -- ⊢ ↑a✝¹ + ↑a✝ ≤ ↑(a✝¹ + c)
     rw [← coe_add, coe_le_coe]
+    -- ⊢ a✝¹ + a✝ ≤ a✝¹ + c
     exact add_le_add_left hbc' _
+    -- 🎉 no goals
 #align with_zero.covariant_class_add_le WithZero.covariantClass_add_le
 
 /-
@@ -149,12 +173,19 @@ instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
     induction a using WithZero.cases_on
+    -- ⊢ 0 ≤ b → ∃ c, b = 0 + c
     · exact fun _ => ⟨b, (zero_add b).symm⟩
+      -- 🎉 no goals
     induction b using WithZero.cases_on
+    -- ⊢ ↑a✝ ≤ 0 → ∃ c, 0 = ↑a✝ + c
     · exact fun h => (WithBot.not_coe_le_bot _ h).elim
+      -- 🎉 no goals
     intro h
+    -- ⊢ ∃ c, ↑a✝ = ↑a✝¹ + c
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
+    -- ⊢ ∃ c_1, ↑(a✝ + c) = ↑a✝ + c_1
     exact ⟨c, rfl⟩⟩
+    -- 🎉 no goals
 #align with_zero.has_exists_add_of_le WithZero.existsAddOfLE
 
 -- This instance looks absurd: a monoid already has a zero
@@ -166,10 +197,15 @@ instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
     WithZero.existsAddOfLE with
     le_self_add := fun a b => by
       induction a using WithZero.cases_on
+      -- ⊢ 0 ≤ 0 + b
       · exact bot_le
+        -- 🎉 no goals
       induction b using WithZero.cases_on
+      -- ⊢ ↑a✝ ≤ ↑a✝ + 0
       · exact le_rfl
+        -- 🎉 no goals
       · exact WithZero.coe_le_coe.2 le_self_add }
+        -- 🎉 no goals
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddMonoid
 
 end CanonicallyOrderedMonoid

@@ -76,10 +76,12 @@ theorem smul_swap : (a • x).swap = a • x.swap :=
 
 theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
+                                        -- 🎉 no goals
 #align prod.smul_zero_mk Prod.smul_zero_mk
 
 theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
     a • (b, (0 : β)) = (a • b, 0) := by rw [Prod.smul_mk, smul_zero]
+                                        -- 🎉 no goals
 #align prod.smul_mk_zero Prod.smul_mk_zero
 
 variable [Pow α E] [Pow β E]
@@ -139,6 +141,7 @@ instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α
   ⟨fun h =>
     let ⟨b⟩ := ‹Nonempty β›
     eq_of_smul_eq_smul fun a : α => by injection h (a, b)⟩
+                                       -- 🎉 no goals
 #align prod.has_faithful_smul_left Prod.faithfulSMulLeft
 #align prod.has_faithful_vadd_left Prod.faithfulVAddLeft
 
@@ -147,6 +150,7 @@ instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (�
   ⟨fun h =>
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun b : β => by injection h (a, b)⟩
+                                       -- 🎉 no goals
 #align prod.has_faithful_smul_right Prod.faithfulSMulRight
 #align prod.has_faithful_vadd_right Prod.faithfulVAddRight
 
@@ -156,12 +160,14 @@ end
 instance smulCommClassBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [SMulCommClass M N N]
     [SMulCommClass M P P] : SMulCommClass M (N × P) (N × P) :=
   ⟨fun c x y => by simp [smul_def, mul_def, mul_smul_comm]⟩
+                   -- 🎉 no goals
 #align prod.smul_comm_class_both Prod.smulCommClassBoth
 #align prod.vadd_comm_class_both Prod.vaddCommClassBoth
 
 instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower M N N]
     [IsScalarTower M P P] : IsScalarTower M (N × P) (N × P) :=
   ⟨fun c x y => by simp [smul_def, mul_def, smul_mul_assoc]⟩
+                   -- 🎉 no goals
 #align prod.is_scalar_tower_both Prod.isScalarTowerBoth
 
 @[to_additive]

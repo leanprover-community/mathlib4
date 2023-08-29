@@ -216,11 +216,16 @@ theorem run_bind (f : α → OptionT m β) :
 @[simp]
 theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
   rw [← bind_pure_comp _ x.run]
+  -- ⊢ run (f <$> x) = do
   change x.run >>= (fun
                      | some a => OptionT.run (pure (f a))
                      | none   => pure none) = _
   apply bind_congr
+  -- ⊢ ∀ (a : Option α),
   intro a; cases a <;> simp [Option.map, Option.bind]
+  -- ⊢ (match a with
+                       -- 🎉 no goals
+                       -- 🎉 no goals
 #align option_t.run_map OptionTₓ.run_map
 
 @[simp]
@@ -241,10 +246,28 @@ instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (Option
   LawfulMonad.mk'
     (id_map := by
       intros; apply OptionT.ext; simp only [OptionT.run_map]
+      -- ⊢ id <$> x✝ = x✝
+              -- ⊢ OptionT.run (id <$> x✝) = OptionT.run x✝
+                                 -- ⊢ Option.map id <$> OptionT.run x✝ = OptionT.run x✝
       rw [map_congr, id_map]
+      -- ⊢ ∀ (a : Option α✝), Option.map id a = id a
       intro a; cases a <;> rfl)
+      -- ⊢ Option.map id a = id a
+               -- ⊢ Option.map id none = id none
+                           -- 🎉 no goals
+                           -- 🎉 no goals
     (bind_assoc := by
       intros; apply OptionT.ext; simp only [OptionT.run_bind, bind_assoc]
+      -- ⊢ x✝ >>= f✝ >>= g✝ = x✝ >>= fun x => f✝ x >>= g✝
+              -- ⊢ OptionT.run (x✝ >>= f✝ >>= g✝) = OptionT.run (x✝ >>= fun x => f✝ x >>= g✝)
+                                 -- ⊢ (do
+                     -- ⊢ pure x✝ >>= f✝ = f✝ x✝
+                             -- ⊢ OptionT.run (pure x✝ >>= f✝) = OptionT.run (f✝ x✝)
+                                                -- 🎉 no goals
       rw [bind_congr]
+      -- ⊢ ∀ (a : Option α✝),
       intro a; cases a <;> simp)
+      -- ⊢ (do
+                           -- 🎉 no goals
+                           -- 🎉 no goals
     (pure_bind := by intros; apply OptionT.ext; simp)

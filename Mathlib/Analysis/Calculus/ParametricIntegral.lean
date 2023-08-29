@@ -77,11 +77,17 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
     (h_diff : ∀ᵐ a ∂μ, HasFDerivAt (fun x => F x a) (F' a) x₀) :
     Integrable F' μ ∧ HasFDerivAt (fun x => ∫ a, F x a ∂μ) (∫ a, F' a ∂μ) x₀ := by
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   have nneg : ∀ x, 0 ≤ ‖x - x₀‖⁻¹ := fun x => inv_nonneg.mpr (norm_nonneg _)
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   set b : α → ℝ := fun a => |bound a|
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   have b_int : Integrable b μ := bound_integrable.norm
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   have b_nonneg : ∀ a, 0 ≤ b a := fun a => abs_nonneg _
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   replace h_lipsch : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, ‖F x a - F x₀ a‖ ≤ b a * ‖x - x₀‖
+  -- ⊢ ∀ᵐ (a : α) ∂μ, ∀ (x : H), x ∈ ball x₀ ε → ‖F x a - F x₀ a‖ ≤ b a * ‖x - x₀‖
   exact h_lipsch.mono fun a ha x hx =>
     (ha x hx).trans <| mul_le_mul_of_nonneg_right (le_abs_self _) (norm_nonneg _)
   have hF_int' : ∀ x ∈ ball x₀ ε, Integrable (F x) μ := fun x x_in ↦ by
@@ -100,7 +106,9 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
       refine' ha_diff.le_of_lip' (b_nonneg a) (mem_of_superset (ball_mem_nhds _ ε_pos) <| ha_lip)
     b_int.mono' hF'_meas this
   refine' ⟨hF'_int, _⟩
+  -- ⊢ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a ∂μ) x₀
   have h_ball : ball x₀ ε ∈ 𝓝 x₀ := ball_mem_nhds x₀ ε_pos
+  -- ⊢ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a ∂μ) x₀
   have : ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖⁻¹ * ‖((∫ a, F x a ∂μ) - ∫ a, F x₀ a ∂μ) - (∫ a, F' a ∂μ) (x - x₀)‖ =
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
     apply mem_of_superset (ball_mem_nhds _ ε_pos)
@@ -113,13 +121,21 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
     show (∫ a : α, ‖x₀ - x₀‖⁻¹ • (F x₀ a - F x₀ a - (F' a) (x₀ - x₀)) ∂μ) = 0 by simp]
   apply tendsto_integral_filter_of_dominated_convergence
   · filter_upwards [h_ball] with _ x_in
+    -- ⊢ AEStronglyMeasurable (fun a => ‖a✝ - x₀‖⁻¹ • (F a✝ a - F x₀ a - ↑(F' a) (a✝  …
     apply AEStronglyMeasurable.const_smul
+    -- ⊢ AEStronglyMeasurable (fun a => F a✝ a - F x₀ a - ↑(F' a) (a✝ - x₀)) μ
     exact ((hF_meas _ x_in).sub (hF_meas _ x₀_in)).sub (hF'_meas.apply_continuousLinearMap _)
+    -- 🎉 no goals
   · refine mem_of_superset h_ball fun x hx ↦ ?_
+    -- ⊢ x ∈ {x | (fun n => ∀ᵐ (a : α) ∂μ, ‖‖n - x₀‖⁻¹ • (F n a - F x₀ a - ↑(F' a) (n …
     apply (h_diff.and h_lipsch).mono
+    -- ⊢ ∀ (x_1 : α), (HasFDerivAt (fun x => F x x_1) (F' x_1) x₀ ∧ ∀ (x : H), x ∈ ba …
     rintro a ⟨-, ha_bound⟩
+    -- ⊢ ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - ↑(F' a) (x - x₀))‖ ≤ ?bound a
     show ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ ≤ b a + ‖F' a‖
+    -- ⊢ ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - ↑(F' a) (x - x₀))‖ ≤ b a + ‖F' a‖
     replace ha_bound : ‖F x a - F x₀ a‖ ≤ b a * ‖x - x₀‖ := ha_bound x hx
+    -- ⊢ ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - ↑(F' a) (x - x₀))‖ ≤ b a + ‖F' a‖
     calc
       ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ =
           ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a) - ‖x - x₀‖⁻¹ • F' a (x - x₀)‖ :=
@@ -131,17 +147,29 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
         gcongr; exact (F' a).le_op_norm _
       _ ≤ b a + ‖F' a‖ := ?_
     simp only [← div_eq_inv_mul]
+    -- ⊢ |bound a| * ‖x - x₀‖ / ‖x - x₀‖ + ‖F' a‖ * ‖x - x₀‖ / ‖x - x₀‖ ≤ |bound a| + …
     apply_rules [add_le_add, div_le_of_nonneg_of_le_mul] <;> first | rfl | positivity
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
+                                                             -- 🎉 no goals
   · exact b_int.add hF'_int.norm
+    -- 🎉 no goals
   · apply h_diff.mono
+    -- ⊢ ∀ (x : α), HasFDerivAt (fun x_1 => F x_1 x) (F' x) x₀ → Tendsto (fun n => ‖n …
     intro a ha
+    -- ⊢ Tendsto (fun n => ‖n - x₀‖⁻¹ • (F n a - F x₀ a - ↑(F' a) (n - x₀))) (𝓝 x₀) ( …
     suffices Tendsto (fun x => ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))) (𝓝 x₀) (𝓝 0) by simpa
+    -- ⊢ Tendsto (fun x => ‖x - x₀‖⁻¹ • (F x a - F x₀ a - ↑(F' a) (x - x₀))) (𝓝 x₀) ( …
     rw [tendsto_zero_iff_norm_tendsto_zero]
+    -- ⊢ Tendsto (fun e => ‖‖e - x₀‖⁻¹ • (F e a - F x₀ a - ↑(F' a) (e - x₀))‖) (𝓝 x₀) …
     have : (fun x => ‖x - x₀‖⁻¹ * ‖F x a - F x₀ a - F' a (x - x₀)‖) = fun x =>
         ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ := by
       ext x
       rw [norm_smul_of_nonneg (nneg _)]
     rwa [hasFDerivAt_iff_tendsto, this] at ha
+    -- 🎉 no goals
 #align has_fderiv_at_integral_of_dominated_loc_of_lip' hasFDerivAt_integral_of_dominated_loc_of_lip'
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
@@ -156,12 +184,24 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F : H → α → E} {F' : 
     (h_diff : ∀ᵐ a ∂μ, HasFDerivAt (fun x => F x a) (F' a) x₀) :
     Integrable F' μ ∧ HasFDerivAt (fun x => ∫ a, F x a ∂μ) (∫ a, F' a ∂μ) x₀ := by
   obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ x ∈ ball x₀ δ, AEStronglyMeasurable (F x) μ ∧ x ∈ ball x₀ ε
+  -- ⊢ ∃ δ, δ > 0 ∧ ∀ (x : H), x ∈ ball x₀ δ → AEStronglyMeasurable (F x) μ ∧ x ∈ b …
   exact eventually_nhds_iff_ball.mp (hF_meas.and (ball_mem_nhds x₀ ε_pos))
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   choose hδ_meas hδε using hδ
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   replace h_lip : ∀ᵐ a : α ∂μ, ∀ x ∈ ball x₀ δ, ‖F x a - F x₀ a‖ ≤ |bound a| * ‖x - x₀‖
+  -- ⊢ ∀ᵐ (a : α) ∂μ, ∀ (x : H), x ∈ ball x₀ δ → ‖F x a - F x₀ a‖ ≤ |bound a| * ‖x  …
   exact h_lip.mono fun a lip x hx => lip.norm_sub_le (hδε x hx) (mem_ball_self ε_pos)
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   replace bound_integrable := bound_integrable.norm
+  -- ⊢ Integrable F' ∧ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a  …
   apply hasFDerivAt_integral_of_dominated_loc_of_lip' δ_pos <;> assumption
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align has_fderiv_at_integral_of_dominated_loc_of_lip hasFDerivAt_integral_of_dominated_loc_of_lip
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
@@ -177,7 +217,9 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F : H → α → E} {F' 
     (h_diff : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, HasFDerivAt (fun x => F x a) (F' x a) x) :
     HasFDerivAt (fun x => ∫ a, F x a ∂μ) (∫ a, F' x₀ a ∂μ) x₀ := by
   letI : NormedSpace ℝ H := NormedSpace.restrictScalars ℝ 𝕜 H
+  -- ⊢ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' x₀ a ∂μ) x₀
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
+  -- ⊢ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' x₀ a ∂μ) x₀
   have diff_x₀ : ∀ᵐ a ∂μ, HasFDerivAt (fun x => F x a) (F' x₀ a) x₀ :=
     h_diff.mono fun a ha => ha x₀ x₀_in
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (fun x => F x a) (ball x₀ ε) := by
@@ -204,22 +246,29 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → α → E} {F' 
     (h_diff : ∀ᵐ a ∂μ, HasDerivAt (fun x => F x a) (F' a) x₀) :
     Integrable F' μ ∧ HasDerivAt (fun x => ∫ a, F x a ∂μ) (∫ a, F' a ∂μ) x₀ := by
   set L : E →L[𝕜] 𝕜 →L[𝕜] E := ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1
+  -- ⊢ Integrable F' ∧ HasDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a ∂ …
   replace h_diff : ∀ᵐ a ∂μ, HasFDerivAt (fun x => F x a) (L (F' a)) x₀ :=
     h_diff.mono fun x hx => hx.hasFDerivAt
   have hm : AEStronglyMeasurable (L ∘ F') μ := L.continuous.comp_aestronglyMeasurable hF'_meas
+  -- ⊢ Integrable F' ∧ HasDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a ∂ …
   cases'
     hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hm h_lipsch bound_integrable
       h_diff with
     hF'_int key
   replace hF'_int : Integrable F' μ
+  -- ⊢ Integrable F'
   · rw [← integrable_norm_iff hm] at hF'_int
+    -- ⊢ Integrable F'
     simpa only [(· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
       ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_restrict_scalarsL',
       ContinuousLinearMap.norm_restrictScalars, ContinuousLinearMap.norm_smulRightL_apply] using
       hF'_int
   refine' ⟨hF'_int, _⟩
+  -- ⊢ HasDerivAt (fun x => ∫ (a : α), F x a ∂μ) (∫ (a : α), F' a ∂μ) x₀
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
+  -- ⊢ HasFDerivAt (fun x => ∫ (a : α), F x a ∂μ) (ContinuousLinearMap.smulRight 1  …
   simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
+  -- 🎉 no goals
 #align has_deriv_at_integral_of_dominated_loc_of_lip hasDerivAt_integral_of_dominated_loc_of_lip
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : ℝ`, assuming
@@ -233,6 +282,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le {F : 𝕜 → α → E}
     (h_diff : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, HasDerivAt (fun x => F x a) (F' x a) x) :
     Integrable (F' x₀) μ ∧ HasDerivAt (fun n => ∫ a, F n a ∂μ) (∫ a, F' x₀ a ∂μ) x₀ := by
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
+  -- ⊢ Integrable (F' x₀) ∧ HasDerivAt (fun n => ∫ (a : α), F n a ∂μ) (∫ (a : α), F …
   have diff_x₀ : ∀ᵐ a ∂μ, HasDerivAt (fun x => F x a) (F' x₀ a) x₀ :=
     h_diff.mono fun a ha => ha x₀ x₀_in
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (fun x : 𝕜 => F x a) (ball x₀ ε) := by

@@ -54,6 +54,7 @@ theorem coe_powerSeries (x : PowerSeries R) :
 theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
     HahnSeries.coeff (x : LaurentSeries R) n = PowerSeries.coeff R n x := by
   rw [ofPowerSeries_apply_coeff]
+  -- 🎉 no goals
 #align laurent_series.coeff_coe_power_series LaurentSeries.coeff_coe_powerSeries
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
@@ -72,45 +73,69 @@ theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
 @[simp]
 theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
   ext
+  -- ⊢ ↑(PowerSeries.coeff R n✝) (powerSeriesPart 0) = ↑(PowerSeries.coeff R n✝) 0
   simp
+  -- 🎉 no goals
 #align laurent_series.power_series_part_zero LaurentSeries.powerSeriesPart_zero
 
 @[simp]
 theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 ↔ x = 0 := by
   constructor
+  -- ⊢ powerSeriesPart x = 0 → x = 0
   · contrapose!
+    -- ⊢ x ≠ 0 → powerSeriesPart x ≠ 0
     simp only [ne_eq]
+    -- ⊢ ¬x = 0 → ¬powerSeriesPart x = 0
     intro h
+    -- ⊢ ¬powerSeriesPart x = 0
     rw [PowerSeries.ext_iff, not_forall]
+    -- ⊢ ∃ x_1, ¬↑(PowerSeries.coeff R x_1) (powerSeriesPart x) = ↑(PowerSeries.coeff …
     refine' ⟨0, _⟩
+    -- ⊢ ¬↑(PowerSeries.coeff R 0) (powerSeriesPart x) = ↑(PowerSeries.coeff R 0) 0
     simp [coeff_order_ne_zero h]
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ powerSeriesPart 0 = 0
     simp
+    -- 🎉 no goals
 #align laurent_series.power_series_part_eq_zero LaurentSeries.powerSeriesPart_eq_zero
 
 @[simp]
 theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
     (single x.order 1 : LaurentSeries R) * x.powerSeriesPart = x := by
   ext n
+  -- ⊢ HahnSeries.coeff (↑(single (order x)) 1 * ↑(ofPowerSeries ℤ R) (powerSeriesP …
   rw [← sub_add_cancel n x.order, single_mul_coeff_add, sub_add_cancel, one_mul]
+  -- ⊢ HahnSeries.coeff (↑(ofPowerSeries ℤ R) (powerSeriesPart x)) (n - order x) =  …
   by_cases h : x.order ≤ n
+  -- ⊢ HahnSeries.coeff (↑(ofPowerSeries ℤ R) (powerSeriesPart x)) (n - order x) =  …
   · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
       powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
       add_sub_cancel'_right]
   · rw [ofPowerSeries_apply, embDomain_notin_range]
+    -- ⊢ 0 = HahnSeries.coeff x n
     · contrapose! h
+      -- ⊢ order x ≤ n
       exact order_le_of_coeff_ne_zero h.symm
+      -- 🎉 no goals
     · contrapose! h
+      -- ⊢ order x ≤ n
       simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
+      -- ⊢ order x ≤ n
       obtain ⟨m, hm⟩ := h
+      -- ⊢ order x ≤ n
       rw [← sub_nonneg, ← hm]
+      -- ⊢ 0 ≤ ↑m
       simp only [Nat.cast_nonneg]
+      -- 🎉 no goals
 #align laurent_series.single_order_mul_power_series_part LaurentSeries.single_order_mul_powerSeriesPart
 
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
   refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
+  -- ⊢ ↑(ofPowerSeries ℤ R) (powerSeriesPart x) = ↑(single (-order x)) 1 * (↑(singl …
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
+  -- 🎉 no goals
 #align laurent_series.of_power_series_power_series_part LaurentSeries.ofPowerSeries_powerSeriesPart
 
 end Semiring
@@ -130,37 +155,64 @@ instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
     rintro ⟨_, n, rfl⟩
+    -- ⊢ IsUnit (↑(algebraMap (PowerSeries R) (LaurentSeries R)) ↑{ val := (fun x x_1 …
     refine' ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, _, _⟩, _⟩
     · simp only [single_mul_single, mul_one, add_right_neg]
+      -- ⊢ ↑(single 0) 1 = 1
       rfl
+      -- 🎉 no goals
     · simp only [single_mul_single, mul_one, add_left_neg]
+      -- ⊢ ↑(single 0) 1 = 1
       rfl
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
   surj' := by
     intro z
+    -- ⊢ ∃ x, z * ↑(algebraMap (PowerSeries R) (LaurentSeries R)) ↑x.snd = ↑(algebraM …
     by_cases h : 0 ≤ z.order
+    -- ⊢ ∃ x, z * ↑(algebraMap (PowerSeries R) (LaurentSeries R)) ↑x.snd = ↑(algebraM …
     · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
+      -- ⊢ z * ↑(algebraMap (PowerSeries R) (LaurentSeries R)) ↑(PowerSeries.X ^ Int.na …
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
+      -- 🎉 no goals
     · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
+      -- ⊢ z * ↑(algebraMap (PowerSeries R) (LaurentSeries R)) ↑(powerSeriesPart z, { v …
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
+      -- ⊢ z * ↑(ofPowerSeries ℤ R) (PowerSeries.X ^ Int.natAbs (order z)) = ↑(single ( …
       rw [mul_comm _ z]
+      -- ⊢ z * ↑(ofPowerSeries ℤ R) (PowerSeries.X ^ Int.natAbs (order z)) = z * ↑(sing …
       refine' congr rfl _
+      -- ⊢ ↑(ofPowerSeries ℤ R) (PowerSeries.X ^ Int.natAbs (order z)) = ↑(single (-ord …
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
+      -- ⊢ order z ≤ 0
       exact le_of_not_ge h
+      -- 🎉 no goals
   eq_iff_exists' := by
     intro x y
+    -- ⊢ ↑(algebraMap (PowerSeries R) (LaurentSeries R)) x = ↑(algebraMap (PowerSerie …
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
+    -- ⊢ x = y ↔ ∃ c, ↑c * x = ↑c * y
     constructor
+    -- ⊢ x = y → ∃ c, ↑c * x = ↑c * y
     · rintro rfl
+      -- ⊢ ∃ c, ↑c * x = ↑c * x
       exact ⟨1, rfl⟩
+      -- 🎉 no goals
     · rintro ⟨⟨_, n, rfl⟩, hc⟩
+      -- ⊢ x = y
       rw [← sub_eq_zero, ← mul_sub, PowerSeries.ext_iff] at hc
+      -- ⊢ x = y
       rw [← sub_eq_zero, PowerSeries.ext_iff]
+      -- ⊢ ∀ (n : ℕ), ↑(PowerSeries.coeff R n) (x - y) = ↑(PowerSeries.coeff R n) 0
       intro m
+      -- ⊢ ↑(PowerSeries.coeff R m) (x - y) = ↑(PowerSeries.coeff R m) 0
       have h := hc (m + n)
+      -- ⊢ ↑(PowerSeries.coeff R m) (x - y) = ↑(PowerSeries.coeff R m) 0
       simp only at h
+      -- ⊢ ↑(PowerSeries.coeff R m) (x - y) = ↑(PowerSeries.coeff R m) 0
       rwa [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
         add_comm m, PowerSeries.coeff, Finsupp.single_add, MvPowerSeries.coeff_add_monomial_mul,
         one_mul] at h
@@ -215,9 +267,11 @@ theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
+  -- ⊢ HahnSeries.coeff (↑(ofPowerSeries ℤ R) f) (Int.ofNat a✝) = if Int.ofNat a✝ < …
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.coe_nat_nonneg _).not_lt,
       Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
+    -- ⊢ ¬Int.negSucc a✝ ∈ ↑{ toEmbedding := { toFun := Nat.cast, inj' := (_ : Functi …
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff]
@@ -239,7 +293,9 @@ set_option linter.uppercaseLean3 false in
 theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
     ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
+  -- ⊢ HahnSeries.coeff (↑(ofPowerSeries ℤ S) (r • x)) x✝ = HahnSeries.coeff (r • ↑ …
   simp [coeff_coe, coeff_smul, smul_ite]
+  -- 🎉 no goals
 #align power_series.coe_smul PowerSeries.coe_smul
 
 -- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist

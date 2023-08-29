@@ -200,8 +200,11 @@ def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _
 @[reassoc (attr := simp, nolint simpNF)]
 theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
+                           -- 🎉 no goals
   cases w
+  -- ⊢ π f j ≫ eqToHom (_ : f j = f j) = π f j
   simp
+  -- 🎉 no goals
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
@@ -209,8 +212,11 @@ theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') 
 @[reassoc (attr := simp, nolint simpNF)]
 theorem Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
+                -- 🎉 no goals
   cases w
+  -- ⊢ eqToHom (_ : f j = f j) ≫ ι f j = ι f j
   simp
+  -- 🎉 no goals
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ f`. -/
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ f :=
@@ -232,16 +238,22 @@ abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶
 @[simp]
 lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ f) := by
   ext; simp
+  -- ⊢ (map fun a => 𝟙 (f a)) ≫ π (fun a => f a) b✝ = 𝟙 (∏ f) ≫ π (fun a => f a) b✝
+       -- 🎉 no goals
 
 lemma Pi.map_comp_map {f g h : α → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h a) :
     Pi.map q ≫ Pi.map q' = Pi.map (fun a => q a ≫ q' a) := by
   ext; simp
+  -- ⊢ (map q ≫ map q') ≫ π (fun b => h b) b✝ = (map fun a => q a ≫ q' a) ≫ π (fun  …
+       -- 🎉 no goals
 
 instance Pi.map_mono {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b)
     [∀ i, Mono (p i)] : Mono <| Pi.map p :=
   @Limits.limMap_mono _ _ _ _ (Discrete.functor f) (Discrete.functor g) _ _
     (Discrete.natTrans fun X => p X.as) (by dsimp; infer_instance)
+                                            -- ⊢ ∀ (j : Discrete β), Mono (p j.as)
+                                                   -- 🎉 no goals
 #align category_theory.limits.pi.map_mono CategoryTheory.Limits.Pi.map_mono
 
 /-- Construct a morphism between categorical products from a family of morphisms between the
@@ -257,6 +269,8 @@ lemma Pi.map'_comp_π {f : α → C} {g : β → C} [HasProduct f] [HasProduct g
 
 lemma Pi.map'_id_id {f : α → C} [HasProduct f] : Pi.map' id (fun a => 𝟙 (f a)) = 𝟙 (∏ f) := by
   ext; simp
+  -- ⊢ (map' id fun a => 𝟙 (f a)) ≫ π (fun a => f a) b✝ = 𝟙 (∏ f) ≫ π (fun a => f a …
+       -- 🎉 no goals
 
 @[simp]
 lemma Pi.map'_id {f g : α → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) :
@@ -268,21 +282,28 @@ lemma Pi.map'_comp_map' {f : α → C} {g : β → C} {h : γ → C} [HasProduct
     (q' : ∀ (c : γ), g (p' c) ⟶ h c) :
     Pi.map' p q ≫ Pi.map' p' q' = Pi.map' (p ∘ p') (fun c => q (p' c) ≫ q' c) := by
   ext; simp
+  -- ⊢ (map' p q ≫ map' p' q') ≫ π (fun b => h b) b✝ = (map' (p ∘ p') fun c => q (p …
+       -- 🎉 no goals
 
 lemma Pi.map'_comp_map {f : α → C} {g h : β → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (p : β → α) (q : ∀ (b : β), f (p b) ⟶ g b) (q' : ∀ (b : β), g b ⟶ h b) :
     Pi.map' p q ≫ Pi.map q' = Pi.map' p (fun b => q b ≫ q' b) := by
   ext; simp
+  -- ⊢ (map' p q ≫ map q') ≫ π (fun b => h b) b✝ = (map' p fun b => q b ≫ q' b) ≫ π …
+       -- 🎉 no goals
 
 lemma Pi.map_comp_map' {f g : α → C} {h : β → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (p : β → α) (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (b : β), g (p b) ⟶ h b) :
     Pi.map q ≫ Pi.map' p q' = Pi.map' p (fun b => q (p b) ≫ q' b) := by
   ext; simp
+  -- ⊢ (map q ≫ map' p q') ≫ π (fun b => h b) b✝ = (map' p fun b => q (p b) ≫ q' b) …
+       -- 🎉 no goals
 
 lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p p' : β → α}
     {q : ∀ (b : β), f (p b) ⟶ g b} {q' : ∀ (b : β), f (p' b) ⟶ g b} (hp : p = p')
     (hq : ∀ (b : β), eqToHom (hp ▸ rfl) ≫ q b = q' b) : Pi.map' p q = Pi.map' p' q' := by
   aesop_cat
+  -- 🎉 no goals
 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -301,16 +322,22 @@ abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, 
 @[simp]
 lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
   ext; simp
+  -- ⊢ (ι (fun a => f a) b✝ ≫ map fun a => 𝟙 (f a)) = ι (fun a => f a) b✝ ≫ 𝟙 (∐ f)
+       -- 🎉 no goals
 
 lemma Sigma.map_comp_map {f g h : α → C} [HasCoproduct f] [HasCoproduct g] [HasCoproduct h]
     (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h a) :
     Sigma.map q ≫ Sigma.map q' = Sigma.map (fun a => q a ≫ q' a) := by
   ext; simp
+  -- ⊢ ι (fun b => f b) b✝ ≫ map q ≫ map q' = ι (fun b => f b) b✝ ≫ map fun a => q  …
+       -- 🎉 no goals
 
 instance Sigma.map_epi {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b)
     [∀ i, Epi (p i)] : Epi <| Sigma.map p :=
   @Limits.colimMap_epi _ _ _ _ (Discrete.functor f) (Discrete.functor g) _ _
     (Discrete.natTrans fun X => p X.as) (by dsimp; infer_instance)
+                                            -- ⊢ ∀ (j : Discrete β), Epi (p j.as)
+                                                   -- 🎉 no goals
 #align category_theory.limits.sigma.map_epi CategoryTheory.Limits.Sigma.map_epi
 
 /-- Construct a morphism between categorical coproducts from a family of morphisms between the
@@ -328,6 +355,8 @@ lemma Sigma.ι_comp_map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCopr
 lemma Sigma.map'_id_id {f : α → C} [HasCoproduct f] :
     Sigma.map' id (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
   ext; simp
+  -- ⊢ (ι (fun a => f a) b✝ ≫ map' id fun a => 𝟙 (f a)) = ι (fun a => f a) b✝ ≫ 𝟙 ( …
+       -- 🎉 no goals
 
 @[simp]
 lemma Sigma.map'_id {f g : α → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
@@ -339,22 +368,29 @@ lemma Sigma.map'_comp_map' {f : α → C} {g : β → C} {h : γ → C} [HasCopr
     (q' : ∀ (b : β), g b ⟶ h (p' b)) :
     Sigma.map' p q ≫ Sigma.map' p' q' = Sigma.map' (p' ∘ p) (fun a => q a ≫ q' (p a)) := by
   ext; simp
+  -- ⊢ ι (fun a => f a) b✝ ≫ map' p q ≫ map' p' q' = ι (fun a => f a) b✝ ≫ map' (p' …
+       -- 🎉 no goals
 
 lemma Sigma.map'_comp_map {f : α → C} {g h : β → C} [HasCoproduct f] [HasCoproduct g]
     [HasCoproduct h] (p : α → β) (q : ∀ (a : α), f a ⟶ g (p a)) (q' : ∀ (b : β), g b ⟶ h b) :
     Sigma.map' p q ≫ Sigma.map q' = Sigma.map' p (fun a => q a ≫ q' (p a)) := by
   ext; simp
+  -- ⊢ ι (fun a => f a) b✝ ≫ map' p q ≫ map q' = ι (fun a => f a) b✝ ≫ map' p fun a …
+       -- 🎉 no goals
 
 lemma Sigma.map_comp_map' {f g : α → C} {h : β → C} [HasCoproduct f] [HasCoproduct g]
     [HasCoproduct h] (p : α → β) (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h (p a)) :
     Sigma.map q ≫ Sigma.map' p q' = Sigma.map' p (fun a => q a ≫ q' a) := by
   ext; simp
+  -- ⊢ ι (fun b => f b) b✝ ≫ map q ≫ map' p q' = ι (fun b => f b) b✝ ≫ map' p fun a …
+       -- 🎉 no goals
 
 lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g]
     {p p' : α → β} {q : ∀ (a : α), f a ⟶ g (p a)} {q' : ∀ (a : α), f a ⟶ g (p' a)}
     (hp : p = p') (hq : ∀ (a : α), q a ≫ eqToHom (hp ▸ rfl) = q' a) :
     Sigma.map' p q = Sigma.map' p' q' := by
   aesop_cat
+  -- 🎉 no goals
 
 /-- Construct an isomorphism between categorical coproducts (indexed by the same type)
 from a family of isomorphisms between the factors.
@@ -370,6 +406,7 @@ and up to isomorphism in the factors, are isomorphic.
 def Pi.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
   hom := Pi.map' e.symm fun k => (w (e.symm k)).inv ≫ eqToHom (by simp)
+                                                                  -- 🎉 no goals
   inv := Pi.map' e fun j => (w j).hom
 
 /-- Two coproducts which differ by an equivalence in the indexing type,
@@ -380,6 +417,7 @@ def Sigma.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (
     [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
   hom := Sigma.map' e fun j => (w j).inv
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
+                                                -- 🎉 no goals
 
 instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
@@ -436,6 +474,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext j
+  -- ⊢ (G.map (Pi.lift g) ≫ piComparison G f) ≫ Pi.π (fun b => G.obj (f b)) j = (Pi …
   simp only [Discrete.functor_obj, Category.assoc, piComparison_comp_π, ← G.map_comp,
     limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 #align category_theory.limits.map_lift_pi_comparison CategoryTheory.Limits.map_lift_piComparison
@@ -458,6 +497,7 @@ theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (
     (g : ∀ j, f j ⟶ P) :
     sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
   ext j
+  -- ⊢ Sigma.ι (fun b => G.obj (f b)) j ≫ sigmaComparison G f ≫ G.map (Sigma.desc g …
   simp only [Discrete.functor_obj, ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
     Cofan.mk_pt, Cofan.mk_ι_app]
 #align category_theory.limits.sigma_comparison_map_desc CategoryTheory.Limits.sigmaComparison_map_desc
@@ -513,17 +553,25 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
     { pt := f default
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
         dsimp
+        -- ⊢ f default = f j
         congr
+        -- ⊢ default = j
         apply Subsingleton.elim)) }
+        -- 🎉 no goals
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
         have h := Subsingleton.elim j default
+        -- ⊢ (fun s => NatTrans.app s.π default) s ≫
         subst h
+        -- ⊢ (fun s => NatTrans.app s.π default) s ≫
         simp
+        -- 🎉 no goals
       uniq := fun s m w => by
         specialize w default
+        -- ⊢ m = (fun s => NatTrans.app s.π default) s
         simpa using w }
+        -- 🎉 no goals
 #align category_theory.limits.limit_cone_of_unique CategoryTheory.Limits.limitConeOfUnique
 
 instance (priority := 100) hasProduct_unique : HasProduct f :=
@@ -544,18 +592,27 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
     { pt := f default
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
         dsimp
+        -- ⊢ f j = f default
         congr
+        -- ⊢ j = default
         apply Subsingleton.elim)) }
+        -- 🎉 no goals
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by
         have h := Subsingleton.elim j default
+        -- ⊢ NatTrans.app
         subst h
+        -- ⊢ NatTrans.app
         apply Category.id_comp
+        -- 🎉 no goals
       uniq := fun s m w => by
         specialize w default
+        -- ⊢ m = (fun s => NatTrans.app s.ι default) s
         erw [Category.id_comp] at w
+        -- ⊢ m = (fun s => NatTrans.app s.ι default) s
         exact w }
+        -- 🎉 no goals
 #align category_theory.limits.colimit_cocone_of_unique CategoryTheory.Limits.colimitCoconeOfUnique
 
 instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
@@ -586,15 +643,18 @@ def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
 @[reassoc (attr := simp)]
 theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
   dsimp [Pi.reindex]
+  -- ⊢ (HasLimit.isoOfEquivalence (Discrete.equivalence ε) (Discrete.natIso fun x = …
   simp only [HasLimit.isoOfEquivalence_hom_π, Discrete.equivalence_inverse, Discrete.functor_obj,
     Function.comp_apply, Functor.id_obj, Discrete.equivalence_functor, Functor.comp_obj,
     Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
   exact limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
+  -- 🎉 no goals
 #align category_theory.limits.pi.reindex_hom_π CategoryTheory.Limits.Pi.reindex_hom_π
 
 @[reassoc (attr := simp)]
 theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
   simp [Iso.inv_comp_eq]
+  -- 🎉 no goals
 #align category_theory.limits.pi.reindex_inv_π CategoryTheory.Limits.Pi.reindex_inv_π
 
 end
@@ -612,18 +672,23 @@ def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
 theorem Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
   dsimp [Sigma.reindex]
+  -- ⊢ ι (f ∘ ↑ε) b ≫ (HasColimit.isoOfEquivalence (Discrete.equivalence ε) (Discre …
   simp only [HasColimit.isoOfEquivalence_hom_π, Functor.id_obj, Discrete.functor_obj,
     Function.comp_apply, Discrete.equivalence_functor, Discrete.equivalence_inverse,
     Functor.comp_obj, Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
   have h := colimit.w (Discrete.functor f) (Discrete.eqToHom' (ε.apply_symm_apply (ε b)))
+  -- ⊢ (Discrete.functor (f ∘ ↑ε)).map (NatTrans.app (Equivalence.unit (Discrete.eq …
   simp only [Discrete.functor_obj] at h
+  -- ⊢ (Discrete.functor (f ∘ ↑ε)).map (NatTrans.app (Equivalence.unit (Discrete.eq …
   erw [← h, eqToHom_map, eqToHom_map, eqToHom_trans_assoc]
   all_goals { simp }
+  -- 🎉 no goals
 #align category_theory.limits.sigma.ι_reindex_hom CategoryTheory.Limits.Sigma.ι_reindex_hom
 
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_inv (b : β) :
     Sigma.ι f (ε b) ≫ (Sigma.reindex ε f).inv = Sigma.ι (f ∘ ε) b := by simp [Iso.comp_inv_eq]
+                                                                        -- 🎉 no goals
 #align category_theory.limits.sigma.ι_reindex_inv CategoryTheory.Limits.Sigma.ι_reindex_inv
 
 end

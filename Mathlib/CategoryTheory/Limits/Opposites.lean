@@ -41,9 +41,12 @@ def isLimitCoconeOp (F : J ⥤ C) {c : Cocone F} (hc : IsColimit c) : IsLimit c.
     where
   lift s := (hc.desc s.unop).op
   fac s j := Quiver.Hom.unop_inj (by simp)
+                                     -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.unop).op = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.unop_op, IsColimit.fac] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cocone_op CategoryTheory.Limits.isLimitCoconeOp
 
 /-- Turn a limit for `F : J ⥤ C` into a colimit for `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
@@ -52,9 +55,12 @@ def isColimitConeOp (F : J ⥤ C) {c : Cone F} (hc : IsLimit c) : IsColimit c.op
     where
   desc s := (hc.lift s.unop).op
   fac s j := Quiver.Hom.unop_inj (by simp)
+                                     -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (m.unop ≫ NatTrans.app c.π j).op = (((fun s => (IsLimit.lift hc (Cocone.unop …
     simpa only [Quiver.Hom.unop_op, IsLimit.fac] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cone_op CategoryTheory.Limits.isColimitConeOp
 
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
@@ -69,7 +75,9 @@ def isLimitConeLeftOpOfCocone (F : J ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit
         coconeOfConeLeftOp_ι_app, op_unop]
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.op).unop = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.op_unop, IsColimit.fac, coconeOfConeLeftOp_ι_app] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cone_left_op_of_cocone CategoryTheory.Limits.isLimitConeLeftOpOfCocone
 
 /-- Turn a limit of `F : J ⥤ Cᵒᵖ` into a colimit of `F.leftOp : Jᵒᵖ ⥤ C`. -/
@@ -84,7 +92,9 @@ def isColimitCoconeLeftOpOfCone (F : J ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c
         coneOfCoconeLeftOp_π_app, op_unop]
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (m.op ≫ NatTrans.app c.π j).unop = (((fun s => (IsLimit.lift hc (coneOfCocon …
     simpa only [Quiver.Hom.op_unop, IsLimit.fac, coneOfCoconeLeftOp_π_app] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cocone_left_op_of_cone CategoryTheory.Limits.isColimitCoconeLeftOpOfCone
 
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ C` into a limit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
@@ -94,9 +104,12 @@ def isLimitConeRightOpOfCocone (F : Jᵒᵖ ⥤ C) {c : Cocone F} (hc : IsColimi
     where
   lift s := (hc.desc (coconeOfConeRightOp s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
+                                     -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.unop).op = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.unop_op, IsColimit.fac] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cone_right_op_of_cocone CategoryTheory.Limits.isLimitConeRightOpOfCocone
 
 /-- Turn a limit for `F : Jᵒᵖ ⥤ C` into a colimit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
@@ -106,9 +119,12 @@ def isColimitCoconeRightOpOfCone (F : Jᵒᵖ ⥤ C) {c : Cone F} (hc : IsLimit 
     where
   desc s := (hc.lift (coneOfCoconeRightOp s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
+                                     -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (m.unop ≫ NatTrans.app c.π j).op = (((fun s => (IsLimit.lift hc (coneOfCocon …
     simpa only [Quiver.Hom.unop_op, IsLimit.fac] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cocone_right_op_of_cone CategoryTheory.Limits.isColimitCoconeRightOpOfCone
 
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ` into a limit for `F.unop : J ⥤ C`. -/
@@ -118,9 +134,12 @@ def isLimitConeUnopOfCocone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsCol
     where
   lift s := (hc.desc (coconeOfConeUnop s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
+                                   -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.op).unop = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cone_unop_of_cocone CategoryTheory.Limits.isLimitConeUnopOfCocone
 
 /-- Turn a limit of `F : Jᵒᵖ ⥤ Cᵒᵖ` into a colimit of `F.unop : J ⥤ C`. -/
@@ -130,9 +149,12 @@ def isColimitCoconeUnopOfCone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLim
     where
   desc s := (hc.lift (coneOfCoconeUnop s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
+                                   -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (m.op ≫ NatTrans.app c.π j).unop = (((fun s => (IsLimit.lift hc (coneOfCocon …
     simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cocone_unop_of_cone CategoryTheory.Limits.isColimitCoconeUnopOfCone
 
 /-- Turn a colimit for `F.op : Jᵒᵖ ⥤ Cᵒᵖ` into a limit for `F : J ⥤ C`. -/
@@ -141,9 +163,12 @@ def isLimitCoconeUnop (F : J ⥤ C) {c : Cocone F.op} (hc : IsColimit c) : IsLim
     where
   lift s := (hc.desc s.op).unop
   fac s j := Quiver.Hom.op_inj (by simp)
+                                   -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.op).unop = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cocone_unop CategoryTheory.Limits.isLimitCoconeUnop
 
 /-- Turn a limit for `F.op : Jᵒᵖ ⥤ Cᵒᵖ` into a colimit for `F : J ⥤ C`. -/
@@ -152,9 +177,12 @@ def isColimitConeUnop (F : J ⥤ C) {c : Cone F.op} (hc : IsLimit c) : IsColimit
     where
   desc s := (hc.lift s.op).unop
   fac s j := Quiver.Hom.op_inj (by simp)
+                                   -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (m.op ≫ NatTrans.app c.π j).unop = (((fun s => (IsLimit.lift hc (Cocone.op s …
     simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cone_unop CategoryTheory.Limits.isColimitConeUnop
 
 /-- Turn a colimit for `F.leftOp : Jᵒᵖ ⥤ C` into a limit for `F : J ⥤ Cᵒᵖ`. -/
@@ -169,7 +197,9 @@ def isLimitConeOfCoconeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cocone F.leftOp} (hc : Is
         coconeLeftOpOfCone_ι_app, unop_op]
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.unop).op = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.unop_op, IsColimit.fac, coneOfCoconeLeftOp_π_app] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cone_of_cocone_left_op CategoryTheory.Limits.isLimitConeOfCoconeLeftOp
 
 /-- Turn a limit of `F.leftOp : Jᵒᵖ ⥤ C` into a colimit of `F : J ⥤ Cᵒᵖ`. -/
@@ -184,7 +214,9 @@ def isColimitCoconeOfConeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cone F.leftOp} (hc : Is
         coneLeftOpOfCocone_π_app, unop_op]
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (m.unop ≫ NatTrans.app c.π j).op = (((fun s => (IsLimit.lift hc (coneLeftOpO …
     simpa only [Quiver.Hom.unop_op, IsLimit.fac, coconeOfConeLeftOp_ι_app] using w (unop j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cocone_of_cone_left_op CategoryTheory.Limits.isColimitCoconeOfConeLeftOp
 
 /-- Turn a colimit for `F.rightOp : J ⥤ Cᵒᵖ` into a limit for `F : Jᵒᵖ ⥤ C`. -/
@@ -194,9 +226,12 @@ def isLimitConeOfCoconeRightOp (F : Jᵒᵖ ⥤ C) {c : Cocone F.rightOp} (hc : 
     where
   lift s := (hc.desc (coconeRightOpOfCone s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
+                                   -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.op).unop = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cone_of_cocone_right_op CategoryTheory.Limits.isLimitConeOfCoconeRightOp
 
 /-- Turn a limit for `F.rightOp : J ⥤ Cᵒᵖ` into a limit for `F : Jᵒᵖ ⥤ C`. -/
@@ -206,9 +241,12 @@ def isColimitCoconeOfConeRightOp (F : Jᵒᵖ ⥤ C) {c : Cone F.rightOp} (hc : 
     where
   desc s := (hc.lift (coneRightOpOfCocone s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
+                                   -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
+    -- ⊢ (m.op ≫ NatTrans.app c.π j).unop = (((fun s => (IsLimit.lift hc (coneRightOp …
     simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cocone_of_cone_right_op CategoryTheory.Limits.isColimitCoconeOfConeRightOp
 
 /-- Turn a colimit for `F.unop : J ⥤ C` into a limit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
@@ -218,9 +256,12 @@ def isLimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop} (hc : 
     where
   lift s := (hc.desc (coconeUnopOfCone s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
+                                     -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (NatTrans.app c.ι j ≫ m.unop).op = (NatTrans.app c.ι j ≫ ((fun s => (IsColim …
     simpa only [Quiver.Hom.unop_op, IsColimit.fac] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_limit_cone_of_cocone_unop CategoryTheory.Limits.isLimitConeOfCoconeUnop
 
 /-- Turn a limit for `F.unop : J ⥤ C` into a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
@@ -230,9 +271,12 @@ def isColimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop} (hc : 
     where
   desc s := (hc.lift (coneUnopOfCocone s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
+                                     -- 🎉 no goals
   uniq s m w := by
     refine' Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj _)
+    -- ⊢ (m.unop ≫ NatTrans.app c.π j).op = (((fun s => (IsLimit.lift hc (coneUnopOfC …
     simpa only [Quiver.Hom.unop_op, IsLimit.fac] using w (op j)
+    -- 🎉 no goals
 #align category_theory.limits.is_colimit_cone_of_cocone_unop CategoryTheory.Limits.isColimitConeOfCoconeUnop
 
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a colimit, we can construct a limit for `F : J ⥤ Cᵒᵖ`.
@@ -345,6 +389,7 @@ instance hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsO
   haveI : HasLimitsOfShape (Discrete X)ᵒᵖ C :=
     hasLimitsOfShape_of_equivalence (Discrete.opposite X).symm
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_coproducts_of_shape_opposite CategoryTheory.Limits.hasCoproductsOfShape_opposite
 
 theorem hasCoproductsOfShape_of_opposite [HasProductsOfShape X Cᵒᵖ] : HasCoproductsOfShape X C :=
@@ -359,6 +404,7 @@ instance hasProductsOfShape_opposite [HasCoproductsOfShape X C] : HasProductsOfS
   haveI : HasColimitsOfShape (Discrete X)ᵒᵖ C :=
     hasColimitsOfShape_of_equivalence (Discrete.opposite X).symm
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_products_of_shape_opposite CategoryTheory.Limits.hasProductsOfShape_opposite
 
 theorem hasProductsOfShape_of_opposite [HasCoproductsOfShape X Cᵒᵖ] : HasProductsOfShape X C :=
@@ -410,6 +456,7 @@ instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor fun i 
 
 instance : HasProduct (fun z ↦ op (Z z)) := hasLimitOfIso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
+                                                          -- 🎉 no goals
     (Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op ≅
     Discrete.functor (fun z ↦ op (Z z)))
 
@@ -421,16 +468,21 @@ def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
     (limit.isLimit _) ≪≫ (IsLimit.conePointsIsoOfEquivalence
     (productIsProduct (fun z ↦ op (Z z))) (limit.isLimit _) (Discrete.opposite α).symm
     (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
+                                                           -- 🎉 no goals
 
 lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op =
     Pi.π (fun a => op (Z a)) b := by
   dsimp only [opCoproductIsoProduct]
+  -- ⊢ (IsLimit.conePointUniqueUpToIso (isLimitCoconeOp (Discrete.functor fun b =>  …
   simp only [Iso.trans_inv]
+  -- ⊢ ((IsLimit.conePointsIsoOfEquivalence (productIsProduct fun z => op (Z z)) (l …
   have := IsLimit.conePointUniqueUpToIso_inv_comp
     (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b)) (limit.isLimit _) (op ⟨b⟩)
   dsimp at this
+  -- ⊢ ((IsLimit.conePointsIsoOfEquivalence (productIsProduct fun z => op (Z z)) (l …
   rw [Category.assoc, this]
+  -- ⊢ (IsLimit.conePointsIsoOfEquivalence (productIsProduct fun z => op (Z z)) (li …
   simp only [limit.cone_x, Fan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor,
     Functor.comp_obj, Functor.op_obj, Iso.symm_inv, IsLimit.conePointsIsoOfEquivalence_hom,
     Equivalence.symm_inverse, Cones.equivalenceOfReindexing_functor, Iso.trans_hom, Iso.symm_hom,
@@ -446,8 +498,11 @@ lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
 lemma desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
   rw [← Iso.eq_comp_inv (opCoproductIsoProduct Z)]
+  -- ⊢ (Sigma.desc π).op = (Pi.lift fun a => (π a).op) ≫ (opCoproductIsoProduct Z). …
   congr
+  -- ⊢ Sigma.desc π = (opCoproductIsoProduct Z).inv.unop ≫ (Pi.lift fun a => (π a). …
   refine' Sigma.hom_ext (f := Z) _ _ (fun a => _)
+  -- ⊢ Sigma.ι Z a ≫ Sigma.desc π = Sigma.ι Z a ≫ (opCoproductIsoProduct Z).inv.uno …
   rw [← Category.assoc, colimit.ι_desc, ← Quiver.Hom.unop_op (Sigma.ι Z a), ← unop_comp,
     opCoproductIsoProduct_inv_comp_ι, ← unop_comp]
   simp only [Cofan.mk_pt, Cofan.mk_ι_app, Pi.lift, Pi.π, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
@@ -466,6 +521,7 @@ instance : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor fun 
 
 instance : HasCoproduct (fun z ↦ op (Z z)) := hasColimitOfIso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
+                                                          -- 🎉 no goals
     (Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op ≅
     Discrete.functor (fun z ↦ op (Z z))).symm
 
@@ -477,15 +533,20 @@ def opProductIsoCoproduct : op (∏ Z) ≅ ∐  (fun z => op (Z z)) :=
     (colimit.isColimit _) ≪≫ (IsColimit.coconePointsIsoOfEquivalence
     (coproductIsCoproduct (fun z ↦ op (Z z))) (colimit.isColimit _) (Discrete.opposite α).symm
     (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
+                                                           -- 🎉 no goals
 
 lemma π_comp_opProductIsoCoproduct (b : α) : (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom =
     Sigma.ι (fun a => op (Z a)) b := by
   dsimp only [opProductIsoCoproduct]
+  -- ⊢ (Pi.π Z b).op ≫ (IsColimit.coconePointUniqueUpToIso (isColimitConeOp (Discre …
   simp only [Iso.trans_hom]
+  -- ⊢ (Pi.π Z b).op ≫ (IsColimit.coconePointUniqueUpToIso (isColimitConeOp (Discre …
   have := IsColimit.comp_coconePointUniqueUpToIso_hom
     (isColimitConeOp _ (productIsProduct Z)) (colimit.isColimit _) (op ⟨b⟩)
   dsimp at this
+  -- ⊢ (Pi.π Z b).op ≫ (IsColimit.coconePointUniqueUpToIso (isColimitConeOp (Discre …
   rw [← Category.assoc, this]
+  -- ⊢ colimit.ι (Discrete.functor fun b => Z b).op (op { as := b }) ≫ (IsColimit.c …
   simp only [colimit.cocone_x, Cofan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor,
     comp_obj, op_obj, Iso.symm_hom, IsColimit.coconePointsIsoOfEquivalence_inv,
     Equivalence.symm_inverse, Cocones.equivalenceOfReindexing_functor_obj, Iso.trans_inv,
@@ -501,8 +562,11 @@ lemma π_comp_opProductIsoCoproduct (b : α) : (Pi.π Z b).op ≫ (opProductIsoC
 lemma opProductIsoCoproduct_inv_comp_π_op {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a => Quiver.Hom.op (π a)) := by
   rw [Iso.inv_comp_eq (opProductIsoCoproduct Z)]
+  -- ⊢ (Pi.lift π).op = (opProductIsoCoproduct Z).hom ≫ Sigma.desc fun a => (π a).op
   congr
+  -- ⊢ Pi.lift π = (Sigma.desc fun a => (π a).op).unop ≫ (opProductIsoCoproduct Z). …
   refine' Pi.hom_ext (f := Z) _ _ (fun a => _)
+  -- ⊢ Pi.lift π ≫ Pi.π Z a = ((Sigma.desc fun a => (π a).op).unop ≫ (opProductIsoC …
   rw [Category.assoc, limit.lift_π, ← Quiver.Hom.unop_op (Pi.π Z a), ← unop_comp,
     π_comp_opProductIsoCoproduct, ← unop_comp]
   simp only [Fan.mk_pt, Fan.mk_π_app, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
@@ -514,12 +578,14 @@ instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ := b
   haveI : HasColimitsOfShape WalkingParallelPairᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingParallelPairOpEquiv
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_equalizers_opposite CategoryTheory.Limits.hasEqualizers_opposite
 
 instance hasCoequalizers_opposite [HasEqualizers C] : HasCoequalizers Cᵒᵖ := by
   haveI : HasLimitsOfShape WalkingParallelPairᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingParallelPairOpEquiv
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_coequalizers_opposite CategoryTheory.Limits.hasCoequalizers_opposite
 
 instance hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒᵖ :=
@@ -534,12 +600,14 @@ instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
   haveI : HasColimitsOfShape WalkingCospanᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingCospanOpEquiv.symm
   apply hasLimitsOfShape_op_of_hasColimitsOfShape
+  -- 🎉 no goals
 #align category_theory.limits.has_pullbacks_opposite CategoryTheory.Limits.hasPullbacks_opposite
 
 instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
   haveI : HasLimitsOfShape WalkingSpanᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance
+  -- 🎉 no goals
 #align category_theory.limits.has_pushouts_opposite CategoryTheory.Limits.hasPushouts_opposite
 
 /-- The canonical isomorphism relating `Span f.op g.op` and `(Cospan f g).op` -/
@@ -547,7 +615,24 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     span f.op g.op ≅ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+                                             -- ⊢ (span f.op g.op).map (WidePushoutShape.Hom.id none) ≫ (Option.casesOn none ( …
+                                             -- ⊢ (span f.op g.op).map (WidePushoutShape.Hom.init WalkingPair.left) ≫ (Option. …
+                                             -- ⊢ (span f.op g.op).map (WidePushoutShape.Hom.init WalkingPair.right) ≫ (Option …
+                                             -- 🎉 no goals
+                                             -- ⊢ (span f.op g.op).map (WidePushoutShape.Hom.id (some WalkingPair.left)) ≫ (Op …
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- ⊢ (span f.op g.op).map (WidePushoutShape.Hom.id (some WalkingPair.right)) ≫ (O …
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
 #align category_theory.limits.span_op CategoryTheory.Limits.spanOp
 
 /-- The canonical isomorphism relating `(Cospan f g).op` and `Span f.op g.op` -/
@@ -556,6 +641,7 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).op ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op :=
   calc
     (cospan f g).op ≅ 𝟭 _ ⋙ (cospan f g).op := by rfl
+                                                  -- 🎉 no goals
     _ ≅ (walkingCospanOpEquiv.functor ⋙ walkingCospanOpEquiv.inverse) ⋙ (cospan f g).op :=
       (isoWhiskerRight walkingCospanOpEquiv.unitIso _)
     _ ≅ walkingCospanOpEquiv.functor ⋙ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
@@ -568,7 +654,24 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     cospan f.op g.op ≅ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+                                             -- ⊢ (cospan f.op g.op).map (WidePullbackShape.Hom.id none) ≫ (Option.casesOn non …
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+                                             -- ⊢ (cospan f.op g.op).map (WidePullbackShape.Hom.term WalkingPair.left) ≫ (Opti …
+                                             -- ⊢ (cospan f.op g.op).map (WidePullbackShape.Hom.id (some WalkingPair.left)) ≫  …
+                                             -- 🎉 no goals
+                                             -- ⊢ (cospan f.op g.op).map (WidePullbackShape.Hom.term WalkingPair.right) ≫ (Opt …
+                                             -- 🎉 no goals
+                                             -- ⊢ (cospan f.op g.op).map (WidePullbackShape.Hom.id (some WalkingPair.right)) ≫ …
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
+                                                         -- 🎉 no goals
 #align category_theory.limits.cospan_op CategoryTheory.Limits.cospanOp
 
 /-- The canonical isomorphism relating `(Span f g).op` and `Cospan f.op g.op` -/
@@ -577,6 +680,7 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     (span f g).op ≅ walkingSpanOpEquiv.functor ⋙ cospan f.op g.op :=
   calc
     (span f g).op ≅ 𝟭 _ ⋙ (span f g).op := by rfl
+                                              -- 🎉 no goals
     _ ≅ (walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse) ⋙ (span f g).op :=
       (isoWhiskerRight walkingSpanOpEquiv.unitIso _)
     _ ≅ walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
@@ -599,11 +703,13 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.fst = c.inl.unop := by simp
+                                  -- 🎉 no goals
 #align category_theory.limits.pushout_cocone.unop_fst CategoryTheory.Limits.PushoutCocone.unop_fst
 
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.snd = c.inr.unop := by aesop_cat
+                                  -- 🎉 no goals
 #align category_theory.limits.pushout_cocone.unop_snd CategoryTheory.Limits.PushoutCocone.unop_snd
 
 -- porting note: it was originally @[simps (config := lemmasOnly)]
@@ -617,11 +723,13 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.fst = c.inl.op :=
   by aesop_cat
+     -- 🎉 no goals
 #align category_theory.limits.pushout_cocone.op_fst CategoryTheory.Limits.PushoutCocone.op_fst
 
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.snd = c.inr.op :=
   by aesop_cat
+     -- 🎉 no goals
 #align category_theory.limits.pushout_cocone.op_snd CategoryTheory.Limits.PushoutCocone.op_snd
 
 end PushoutCocone
@@ -641,11 +749,13 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inl = c.fst.unop := by aesop_cat
+                                  -- 🎉 no goals
 #align category_theory.limits.pullback_cone.unop_inl CategoryTheory.Limits.PullbackCone.unop_inl
 
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inr = c.snd.unop := by aesop_cat
+                                  -- 🎉 no goals
 #align category_theory.limits.pullback_cone.unop_inr CategoryTheory.Limits.PullbackCone.unop_inr
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
@@ -658,21 +768,27 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inl = c.fst.op :=
   by aesop_cat
+     -- 🎉 no goals
 #align category_theory.limits.pullback_cone.op_inl CategoryTheory.Limits.PullbackCone.op_inl
 
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inr = c.snd.op :=
   by aesop_cat
+     -- 🎉 no goals
 #align category_theory.limits.pullback_cone.op_inr CategoryTheory.Limits.PullbackCone.op_inr
 
 /-- If `c` is a pullback cone, then `c.op.unop` is isomorphic to `c`. -/
 def opUnop {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.unop ≅ c :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+                                    -- 🎉 no goals
+                                              -- 🎉 no goals
 #align category_theory.limits.pullback_cone.op_unop CategoryTheory.Limits.PullbackCone.opUnop
 
 /-- If `c` is a pullback cone in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
 def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.unop.op ≅ c :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+                                    -- 🎉 no goals
+                                              -- 🎉 no goals
 #align category_theory.limits.pullback_cone.unop_op CategoryTheory.Limits.PullbackCone.unopOp
 
 end PullbackCone
@@ -682,11 +798,15 @@ namespace PushoutCocone
 /-- If `c` is a pushout cocone, then `c.op.unop` is isomorphic to `c`. -/
 def opUnop {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.unop ≅ c :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+                                     -- 🎉 no goals
+                                               -- 🎉 no goals
 #align category_theory.limits.pushout_cocone.op_unop CategoryTheory.Limits.PushoutCocone.opUnop
 
 /-- If `c` is a pushout cocone in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
 def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.unop.op ≅ c :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+                                     -- 🎉 no goals
+                                               -- 🎉 no goals
 #align category_theory.limits.pushout_cocone.unop_op CategoryTheory.Limits.PushoutCocone.unopOp
 
 /-- A pushout cone is a colimit cocone if and only if the corresponding pullback cone
@@ -694,10 +814,13 @@ in the opposite category is a limit cone. -/
 def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.op := by
   apply equivOfSubsingletonOfSubsingleton
+  -- ⊢ IsColimit c → IsLimit (op c)
   · intro h
+    -- ⊢ IsLimit (op c)
     exact (IsLimit.postcomposeHomEquiv _ _).invFun
       ((IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).toFun (isLimitCoconeOp _ h))
   · intro h
+    -- ⊢ IsColimit c
     exact (IsColimit.equivIsoColimit c.opUnop).toFun
       (isColimitConeUnop _ ((IsLimit.postcomposeHomEquiv _ _).invFun
         ((IsLimit.whiskerEquivalenceEquiv _).toFun h)))
@@ -708,10 +831,13 @@ in `C` is a limit cone. -/
 def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
+  -- ⊢ IsColimit c → IsLimit (unop c)
   · intro h
+    -- ⊢ IsLimit (unop c)
     exact isLimitCoconeUnop _ ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
   · intro h
+    -- ⊢ IsColimit c
     exact (IsColimit.equivIsoColimit c.unopOp).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv walkingCospanOpEquiv.symm).toFun (isColimitConeOp _ h)))
@@ -754,6 +880,7 @@ theorem pullbackIsoUnopPushout_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
     [HasPushout f.op g.op] :
     (pullbackIsoUnopPushout f g).inv ≫ pullback.fst = (pushout.inl : _ ⟶ pushout f.op g.op).unop :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
+                                                            -- 🎉 no goals
 #align category_theory.limits.pullback_iso_unop_pushout_inv_fst CategoryTheory.Limits.pullbackIsoUnopPushout_inv_fst
 
 @[reassoc (attr := simp)]
@@ -761,6 +888,7 @@ theorem pullbackIsoUnopPushout_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
     [HasPushout f.op g.op] :
     (pullbackIsoUnopPushout f g).inv ≫ pullback.snd = (pushout.inr : _ ⟶ pushout f.op g.op).unop :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
+                                                            -- 🎉 no goals
 #align category_theory.limits.pullback_iso_unop_pushout_inv_snd CategoryTheory.Limits.pullbackIsoUnopPushout_inv_snd
 
 @[reassoc (attr := simp)]
@@ -768,8 +896,11 @@ theorem pullbackIsoUnopPushout_hom_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
     [HasPushout f.op g.op] :
     pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.fst.op := by
   apply Quiver.Hom.unop_inj
+  -- ⊢ (pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op).unop = pullback.fst.op.u …
   dsimp
+  -- ⊢ (pullbackIsoUnopPushout f g).hom ≫ pushout.inl.unop = pullback.fst
   rw [← pullbackIsoUnopPushout_inv_fst, Iso.hom_inv_id_assoc]
+  -- 🎉 no goals
 #align category_theory.limits.pullback_iso_unop_pushout_hom_inl CategoryTheory.Limits.pullbackIsoUnopPushout_hom_inl
 
 @[reassoc (attr := simp)]
@@ -777,8 +908,11 @@ theorem pullbackIsoUnopPushout_hom_inr {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
     [HasPushout f.op g.op] : pushout.inr ≫ (pullbackIsoUnopPushout f g).hom.op =
     pullback.snd.op := by
   apply Quiver.Hom.unop_inj
+  -- ⊢ (pushout.inr ≫ (pullbackIsoUnopPushout f g).hom.op).unop = pullback.snd.op.u …
   dsimp
+  -- ⊢ (pullbackIsoUnopPushout f g).hom ≫ pushout.inr.unop = pullback.snd
   rw [← pullbackIsoUnopPushout_inv_snd, Iso.hom_inv_id_assoc]
+  -- 🎉 no goals
 #align category_theory.limits.pullback_iso_unop_pushout_hom_inr CategoryTheory.Limits.pullbackIsoUnopPushout_hom_inr
 
 end Pullback
@@ -799,6 +933,7 @@ theorem pushoutIsoUnopPullback_inl_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
     pushout.inl ≫ (pushoutIsoUnopPullback f g).hom =
       (pullback.fst : pullback f.op g.op ⟶ _).unop :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
+                                                                -- 🎉 no goals
 #align category_theory.limits.pushout_iso_unop_pullback_inl_hom CategoryTheory.Limits.pushoutIsoUnopPullback_inl_hom
 
 @[reassoc (attr := simp)]
@@ -807,6 +942,7 @@ theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
     pushout.inr ≫ (pushoutIsoUnopPullback f g).hom =
       (pullback.snd : pullback f.op g.op ⟶ _).unop :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
+                                                                -- 🎉 no goals
 #align category_theory.limits.pushout_iso_unop_pullback_inr_hom CategoryTheory.Limits.pushoutIsoUnopPullback_inr_hom
 
 @[simp]
@@ -814,8 +950,11 @@ theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
     [HasPullback f.op g.op] :
     (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op := by
   apply Quiver.Hom.unop_inj
+  -- ⊢ ((pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst).unop = pushout.inl.op.u …
   dsimp
+  -- ⊢ pullback.fst.unop ≫ (pushoutIsoUnopPullback f g).inv = pushout.inl
   rw [← pushoutIsoUnopPullback_inl_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  -- 🎉 no goals
 #align category_theory.limits.pushout_iso_unop_pullback_inv_fst CategoryTheory.Limits.pushoutIsoUnopPullback_inv_fst
 
 @[simp]
@@ -823,8 +962,11 @@ theorem pushoutIsoUnopPullback_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
     [HasPullback f.op g.op] :
     (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op := by
   apply Quiver.Hom.unop_inj
+  -- ⊢ ((pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd).unop = pushout.inr.op.u …
   dsimp
+  -- ⊢ pullback.snd.unop ≫ (pushoutIsoUnopPullback f g).inv = pushout.inr
   rw [← pushoutIsoUnopPullback_inr_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  -- 🎉 no goals
 #align category_theory.limits.pushout_iso_unop_pullback_inv_snd CategoryTheory.Limits.pushoutIsoUnopPullback_inv_snd
 
 end Pushout
@@ -837,33 +979,39 @@ variable [HasZeroMorphisms C]
 def CokernelCofork.IsColimit.ofπOp {X Y Q : C} (p : Y ⟶ Q) {f : X ⟶ Y}
     (w : f ≫ p = 0) (h : IsColimit (CokernelCofork.ofπ p w)) :
     IsLimit (KernelFork.ofι p.op (show p.op ≫ f.op = 0 by rw [← op_comp, w, op_zero])) :=
+                                                          -- 🎉 no goals
   KernelFork.IsLimit.ofι _ _
     (fun x hx => (h.desc (CokernelCofork.ofπ x.unop (Quiver.Hom.op_inj hx))).op)
     (fun x hx => Quiver.Hom.unop_inj (Cofork.IsColimit.π_desc h))
     (fun x hx b hb => Quiver.Hom.unop_inj (Cofork.IsColimit.hom_ext h
       (by simpa only [Quiver.Hom.unop_op, Cofork.IsColimit.π_desc] using Quiver.Hom.op_inj hb)))
+          -- 🎉 no goals
 
 /-- A colimit cokernel cofork in the opposite category gives a limit kernel fork
 in the original category -/
 def CokernelCofork.IsColimit.ofπUnop {X Y Q : Cᵒᵖ} (p : Y ⟶ Q) {f : X ⟶ Y}
     (w : f ≫ p = 0) (h : IsColimit (CokernelCofork.ofπ p w)) :
     IsLimit (KernelFork.ofι p.unop (show p.unop ≫ f.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
+                                                                -- 🎉 no goals
   KernelFork.IsLimit.ofι _ _
     (fun x hx => (h.desc (CokernelCofork.ofπ x.op (Quiver.Hom.unop_inj hx))).unop)
     (fun x hx => Quiver.Hom.op_inj (Cofork.IsColimit.π_desc h))
     (fun x hx b hb => Quiver.Hom.op_inj (Cofork.IsColimit.hom_ext h
       (by simpa only [Quiver.Hom.op_unop, Cofork.IsColimit.π_desc] using Quiver.Hom.unop_inj hb)))
+          -- 🎉 no goals
 
 /-- A limit kernel fork gives a colimit cokernel cofork in the opposite category -/
 def KernelFork.IsLimit.ofιOp {K X Y : C} (i : K ⟶ X) {f : X ⟶ Y}
     (w : i ≫ f = 0) (h : IsLimit (KernelFork.ofι i w)) :
     IsColimit (CokernelCofork.ofπ i.op
       (show f.op ≫ i.op = 0 by rw [← op_comp, w, op_zero])) :=
+                               -- 🎉 no goals
   CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => (h.lift (KernelFork.ofι x.unop (Quiver.Hom.op_inj hx))).op)
     (fun x hx => Quiver.Hom.unop_inj (Fork.IsLimit.lift_ι h))
     (fun x hx b hb => Quiver.Hom.unop_inj (Fork.IsLimit.hom_ext h (by
       simpa only [Quiver.Hom.unop_op, Fork.IsLimit.lift_ι] using Quiver.Hom.op_inj hb)))
+      -- 🎉 no goals
 
 /-- A limit kernel fork in the opposite category gives a colimit cokernel cofork
 in the original category -/
@@ -871,11 +1019,13 @@ def KernelFork.IsLimit.ofιUnop {K X Y : Cᵒᵖ} (i : K ⟶ X) {f : X ⟶ Y}
     (w : i ≫ f = 0) (h : IsLimit (KernelFork.ofι i w)) :
     IsColimit (CokernelCofork.ofπ i.unop
       (show f.unop ≫ i.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
+                                   -- 🎉 no goals
   CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => (h.lift (KernelFork.ofι x.op (Quiver.Hom.unop_inj hx))).unop)
     (fun x hx => Quiver.Hom.op_inj (Fork.IsLimit.lift_ι h))
     (fun x hx b hb => Quiver.Hom.op_inj (Fork.IsLimit.hom_ext h (by
       simpa only [Quiver.Hom.op_unop, Fork.IsLimit.lift_ι] using Quiver.Hom.unop_inj hb)))
+      -- 🎉 no goals
 
 end HasZeroMorphisms
 

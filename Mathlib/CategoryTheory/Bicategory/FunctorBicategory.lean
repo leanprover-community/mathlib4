@@ -37,8 +37,11 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
   app a := η.app a ◁ Γ.app a
   naturality {a b} f := by
     dsimp
+    -- ⊢ (↑F.toPrelaxFunctor).map f ◁ η.app b ◁ Γ.app b ≫ (α_ ((↑F.toPrelaxFunctor).m …
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
+    -- ⊢ (α_ ((↑F.toPrelaxFunctor).map f) (η.app b) (θ.app b)).inv ≫ naturality η f ▷ …
     simp
+    -- 🎉 no goals
 #align category_theory.oplax_nat_trans.whisker_left CategoryTheory.OplaxNatTrans.whiskerLeft
 
 /-- Right whiskering of an oplax natural transformation and a modification. -/
@@ -47,8 +50,11 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
   app a := Γ.app a ▷ ι.app a
   naturality {a b} f := by
     dsimp
+    -- ⊢ (↑F.toPrelaxFunctor).map f ◁ Γ.app b ▷ ι.app b ≫ (α_ ((↑F.toPrelaxFunctor).m …
     simp_rw [assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
+    -- ⊢ (↑F.toPrelaxFunctor).map f ◁ Γ.app b ▷ ι.app b ≫ (α_ ((↑F.toPrelaxFunctor).m …
     simp
+    -- 🎉 no goals
 #align category_theory.oplax_nat_trans.whisker_right CategoryTheory.OplaxNatTrans.whiskerRight
 
 /-- Associator for the vertical composition of oplax natural transformations. -/
@@ -56,6 +62,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by aesop_cat)
+                                                                               -- 🎉 no goals
 #align category_theory.oplax_nat_trans.associator CategoryTheory.OplaxNatTrans.associator
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
@@ -63,6 +70,7 @@ def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
+                                                           -- 🎉 no goals
 #align category_theory.oplax_nat_trans.left_unitor CategoryTheory.OplaxNatTrans.leftUnitor
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
@@ -70,6 +78,7 @@ def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
+                                                           -- 🎉 no goals
 #align category_theory.oplax_nat_trans.right_unitor CategoryTheory.OplaxNatTrans.rightUnitor
 
 end OplaxNatTrans
@@ -87,7 +96,9 @@ instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   rightUnitor {F G} := OplaxNatTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
     ext
+    -- ⊢ ((fun {F G H} η x x_1 Γ => OplaxNatTrans.whiskerLeft η Γ) f h i θ ≫ (fun {F  …
     exact whisker_exchange _ _
+    -- 🎉 no goals
 #align category_theory.oplax_functor.bicategory CategoryTheory.OplaxFunctor.bicategory
 
 end CategoryTheory

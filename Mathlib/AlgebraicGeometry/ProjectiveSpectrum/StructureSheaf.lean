@@ -86,6 +86,8 @@ subset `V` of `U`.
 def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x where
   pred f := IsFraction f
   res := by rintro V U i f ⟨j, r, s, w⟩; exact ⟨j, r, s, fun y => w (i y)⟩
+            -- ⊢ IsFraction fun x => f ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U) }) x)
+                                         -- 🎉 no goals
 #align algebraic_geometry.projective_spectrum.structure_sheaf.is_fraction_prelocal AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.isFractionPrelocal
 
 /-- We will define the structure sheaf as the subsheaf of all dependent functions in
@@ -115,7 +117,9 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
     (isLocallyFraction 𝒜).pred (a + b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, wa⟩
+  -- ⊢ ∃ V x i, PrelocalPredicate.pred (isFractionPrelocal 𝒜) fun x => (a + b) ((fu …
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, wb⟩
+  -- ⊢ ∃ V x i, PrelocalPredicate.pred (isFractionPrelocal 𝒜) fun x => (a + b) ((fu …
   refine'
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨sb * ra + sa * rb,
@@ -123,45 +127,76 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
           (mul_mem_graded sa_mem rb_mem)⟩,
       ⟨sa * sb, mul_mem_graded sa_mem sb_mem⟩, fun y => ⟨fun h => _, _⟩⟩
   · cases' (y : ProjectiveSpectrum.top 𝒜).isPrime.mem_or_mem h with h h
+    -- ⊢ False
     · obtain ⟨nin, -⟩ := wa ⟨y, (Opens.infLELeft Va Vb y).2⟩; exact nin h
+      -- ⊢ False
+                                                              -- 🎉 no goals
     · obtain ⟨nin, -⟩ := wb ⟨y, (Opens.infLERight Va Vb y).2⟩; exact nin h
+      -- ⊢ False
+                                                               -- 🎉 no goals
   · simp only [add_mul, map_add, Pi.add_apply, RingHom.map_mul, ext_iff_val, add_val]
+    -- ⊢ val (a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) }) + val (b { val := ↑y,  …
     obtain ⟨nin1, hy1⟩ := wa (Opens.infLELeft Va Vb y)
+    -- ⊢ val (a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) }) + val (b { val := ↑y,  …
     obtain ⟨nin2, hy2⟩ := wb (Opens.infLERight Va Vb y)
+    -- ⊢ val (a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) }) + val (b { val := ↑y,  …
     dsimp only at hy1 hy2
+    -- ⊢ val (a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) }) + val (b { val := ↑y,  …
     erw [hy1, hy2]
+    -- ⊢ val (Quotient.mk'' { deg := ja, num := { val := ra, property := ra_mem }, de …
     simp only [val_mk'', add_mk, add_comm (sa * rb)]
+    -- ⊢ Localization.mk (sb * ra + sa * rb) ({ val := sa, property := (_ : ↑{ deg := …
     rfl
+    -- 🎉 no goals
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.add_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.addMem'
 
 theorem negMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, w⟩
+  -- ⊢ ∃ V x i, PrelocalPredicate.pred (isFractionPrelocal 𝒜) fun x => (-a) ((fun x …
   choose nin hy using w
+  -- ⊢ ∃ V x i, PrelocalPredicate.pred (isFractionPrelocal 𝒜) fun x => (-a) ((fun x …
   refine' ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, fun y => ⟨nin y, _⟩⟩
+  -- ⊢ (fun x => (-a) ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U.unop) }) x)) …
   simp only [ext_iff_val, val_mk''] at hy
+  -- ⊢ (fun x => (-a) ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U.unop) }) x)) …
   simp only [Pi.neg_apply, ext_iff_val, neg_val, hy, val_mk'', neg_mk]
+  -- 🎉 no goals
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.neg_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.negMem'
 
 theorem mulMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
     (isLocallyFraction 𝒜).pred (a * b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, wa⟩
+  -- ⊢ ∃ V x i, PrelocalPredicate.pred (isFractionPrelocal 𝒜) fun x => (a * b) ((fu …
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, wb⟩
+  -- ⊢ ∃ V x i, PrelocalPredicate.pred (isFractionPrelocal 𝒜) fun x => (a * b) ((fu …
   refine'
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
       ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y => ⟨fun h => _, _⟩⟩
   · cases' (y : ProjectiveSpectrum.top 𝒜).isPrime.mem_or_mem h with h h
+    -- ⊢ False
     · choose nin _ using wa ⟨y, (Opens.infLELeft Va Vb y).2⟩; exact nin h
+      -- ⊢ False
+                                                              -- 🎉 no goals
     · choose nin _ using wb ⟨y, (Opens.infLERight Va Vb y).2⟩; exact nin h
+      -- ⊢ False
+                                                               -- 🎉 no goals
   · simp only [Pi.mul_apply, RingHom.map_mul]
+    -- ⊢ a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) } * b { val := ↑y, property := …
     choose nin1 hy1 using wa (Opens.infLELeft Va Vb y)
+    -- ⊢ a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) } * b { val := ↑y, property := …
     choose nin2 hy2 using wb (Opens.infLERight Va Vb y)
+    -- ⊢ a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) } * b { val := ↑y, property := …
     rw [ext_iff_val] at hy1 hy2 ⊢
+    -- ⊢ val (a { val := ↑y, property := (_ : ↑y ∈ ↑U.unop) } * b { val := ↑y, proper …
     erw [mul_val, hy1, hy2]
+    -- ⊢ val (Quotient.mk'' { deg := ja, num := { val := ra, property := ra_mem }, de …
     simp only [val_mk'', mk_mul]
+    -- ⊢ Localization.mk (ra * rb) ({ val := sa, property := (_ : ↑{ deg := ja, num : …
     rfl
+    -- 🎉 no goals
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.mul_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.mulMem'
 
 end SectionSubring
@@ -216,6 +251,7 @@ valued structure presheaf.-/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
   NatIso.ofComponents (fun U => Iso.refl _) (by aesop_cat)
+                                                -- 🎉 no goals
 #align algebraic_geometry.projective_spectrum.structure_sheaf.structure_presheaf_comp_forget AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafCompForget
 
 end ProjectiveSpectrum.StructureSheaf
@@ -305,7 +341,9 @@ theorem stalkToFiberRingHom_germ (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : 
 theorem HomogeneousLocalization.mem_basicOpen (x : ProjectiveSpectrum.top 𝒜) (f : at x) :
     x ∈ ProjectiveSpectrum.basicOpen 𝒜 f.den := by
   rw [ProjectiveSpectrum.mem_basicOpen]
+  -- ⊢ ¬HomogeneousLocalization.den f ∈ x.asHomogeneousIdeal
   exact f.den_mem
+  -- 🎉 no goals
 #align algebraic_geometry.homogeneous_localization.mem_basic_open AlgebraicGeometry.HomogeneousLocalization.mem_basicOpen
 
 /-- Given a point `x` corresponding to a homogeneous prime ideal, there is a (dependent) function
@@ -336,19 +374,31 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
   RingEquiv.ofBijective (stalkToFiberRingHom _ x)
     ⟨fun z1 z2 eq1 => by
       obtain ⟨u1, memu1, s1, rfl⟩ := (Proj.structureSheaf 𝒜).presheaf.germ_exist x z1
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       obtain ⟨u2, memu2, s2, rfl⟩ := (Proj.structureSheaf 𝒜).presheaf.germ_exist x z2
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       obtain ⟨v1, memv1, i1, ⟨j1, ⟨a1, a1_mem⟩, ⟨b1, b1_mem⟩, hs1⟩⟩ := s1.2 ⟨x, memu1⟩
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       obtain ⟨v2, memv2, i2, ⟨j2, ⟨a2, a2_mem⟩, ⟨b2, b2_mem⟩, hs2⟩⟩ := s2.2 ⟨x, memu2⟩
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       obtain ⟨b1_nin_x, eq2⟩ := hs1 ⟨x, memv1⟩
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       obtain ⟨b2_nin_x, eq3⟩ := hs2 ⟨x, memv2⟩
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       dsimp only at eq1 eq2 eq3
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       erw [stalkToFiberRingHom_germ 𝒜 u1 ⟨x, memu1⟩ s1,
         stalkToFiberRingHom_germ 𝒜 u2 ⟨x, memu2⟩ s2] at eq1
       erw [eq1] at eq2
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       erw [eq2, Quotient.eq''] at eq3
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       change Localization.mk _ _ = Localization.mk _ _ at eq3
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       rw [Localization.mk_eq_mk', IsLocalization.eq] at eq3
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       obtain ⟨⟨c, hc⟩, eq3⟩ := eq3
+      -- ⊢ ↑(Presheaf.germ (Sheaf.presheaf (Proj.structureSheaf 𝒜)) { val := x, propert …
       have eq3' :
         ∀ (y : ProjectiveSpectrum.top 𝒜)
           (hy : y ∈ ProjectiveSpectrum.basicOpen 𝒜 b1 ⊓ ProjectiveSpectrum.basicOpen 𝒜 b2 ⊓
@@ -374,14 +424,21 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
           ⟨⟨⟨⟨b1_nin_x, b2_nin_x⟩, hc⟩, memv1⟩, memv2⟩
           (Opens.infLELeft _ _ ≫ Opens.infLERight _ _ ≫ i1) (Opens.infLERight _ _ ≫ i2) _
       rw [Subtype.ext_iff_val]
+      -- ⊢ ↑(↑((Proj.structureSheaf 𝒜).val.map (infLELeft (ProjectiveSpectrum.basicOpen …
       ext1 y
+      -- ⊢ ↑(↑((Proj.structureSheaf 𝒜).val.map (infLELeft (ProjectiveSpectrum.basicOpen …
       simp only [res_apply]
+      -- ⊢ ↑s1 { val := ↑y, property := (_ : ↑y ∈ ↑(op u1).unop) } = ↑s2 { val := ↑y, p …
       obtain ⟨b1_nin_y, eq6⟩ :=
         hs1 ⟨_, leOfHom (Opens.infLELeft _ _ ≫ Opens.infLERight _ _) y.2⟩
       obtain ⟨b2_nin_y, eq7⟩ := hs2 ⟨_, leOfHom (Opens.infLERight _ _) y.2⟩
+      -- ⊢ ↑s1 { val := ↑y, property := (_ : ↑y ∈ ↑(op u1).unop) } = ↑s2 { val := ↑y, p …
       simp only at eq6 eq7
+      -- ⊢ ↑s1 { val := ↑y, property := (_ : ↑y ∈ ↑(op u1).unop) } = ↑s2 { val := ↑y, p …
       erw [eq6, eq7, Quotient.eq'']
+      -- ⊢ Setoid.r { deg := j1, num := { val := a1, property := a1_mem }, den := { val …
       change Localization.mk _ _ = Localization.mk _ _
+      -- ⊢ Localization.mk ↑{ deg := j1, num := { val := a1, property := a1_mem }, den  …
       exact eq3' _
           ⟨⟨leOfHom
                 (Opens.infLELeft _ _ ≫
@@ -393,10 +450,13 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
       Function.surjective_iff_hasRightInverse.mpr
         ⟨homogeneousLocalizationToStalk 𝒜 x, fun f => by
           rw [homogeneousLocalizationToStalk]
+          -- ⊢ ↑(stalkToFiberRingHom 𝒜 x) (↑(Presheaf.germ (Sheaf.presheaf (Proj.structureS …
           erw [stalkToFiberRingHom_germ 𝒜 (ProjectiveSpectrum.basicOpen 𝒜 f.den) ⟨x, _⟩
               (sectionInBasicOpen _ x f)]
           rw [sectionInBasicOpen, HomogeneousLocalization.ext_iff_val, f.eq_num_div_den]
+          -- ⊢ HomogeneousLocalization.val (↑{ val := fun y => Quotient.mk'' { deg := Homog …
           simp only [unop_op, HomogeneousLocalization.val_mk'', mk_eq_monoidOf_mk'] ⟩⟩
+          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Proj.stalk_iso' AlgebraicGeometry.Proj.stalkIso'
 

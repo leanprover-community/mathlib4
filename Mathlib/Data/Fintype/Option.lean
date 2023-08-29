@@ -25,6 +25,7 @@ open Finset Function
 
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
+                                       -- 🎉 no goals
 
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
@@ -34,6 +35,7 @@ theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = in
 theorem Fintype.card_option {α : Type*} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
+                        -- 🎉 no goals
 #align fintype.card_option Fintype.card_option
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
@@ -62,6 +64,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     intro e
     exact of_equiv (Equiv.ulift.trans e.symm) h
   apply ind where
+  -- 🎉 no goals
     -- porting note: do a manual recursion, instead of `induction` tactic,
     -- to ensure the result is computable
     /-- Internal induction hypothesis -/
@@ -69,17 +72,26 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     | Nat.zero => by
           have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty,
                                                                      card_ulift]
+          -- ⊢ PEmpty ≃ ULift (Fin 0) → Trunc (P (ULift (Fin zero)))
           apply Trunc.bind (truncEquivOfCardEq this)
+          -- ⊢ Trunc (P (ULift (Fin zero)))
           intro e
+          -- ⊢ P (ULift (Fin zero))
           apply Trunc.mk
+          -- 🎉 no goals
           refine' of_equiv e h_empty
       | Nat.succ n => by
           have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
             simp only [card_fin, card_option, card_ulift]
+          -- ⊢ Option (ULift (Fin n)) ≃ ULift (Fin (succ n)) → Trunc (P (ULift (Fin (succ n …
           apply Trunc.bind (truncEquivOfCardEq this)
+          -- ⊢ Trunc (P (ULift (Fin (succ n))))
           intro e
+          -- ⊢ P (ULift (Fin n)) → P (ULift (Fin (succ n)))
           apply Trunc.map _ (ind n)
+          -- ⊢ P (ULift (Fin (succ n)))
           intro ih
+          -- 🎉 no goals
           refine' of_equiv e (h_option ih)
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
@@ -102,6 +114,7 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   · exact p _
+    -- 🎉 no goals
   -- ·
 #align fintype.induction_empty_option Fintype.induction_empty_option
 
@@ -113,6 +126,8 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α], P α → P (Option α)) (α : Type u)
     [Finite α] : P α := by
   cases nonempty_fintype α
+  -- ⊢ P α
   refine' Fintype.induction_empty_option _ _ _ α
   exacts [fun α β _ => of_equiv, h_empty, @h_option]
+  -- 🎉 no goals
 #align finite.induction_empty_option Finite.induction_empty_option

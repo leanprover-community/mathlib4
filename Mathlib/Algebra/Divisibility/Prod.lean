@@ -16,6 +16,8 @@ variable {G₁ : Type*} {G₂ : Type*} [Semigroup G₁] [Semigroup G₂]
 theorem prod_dvd_iff {x y : G₁ × G₂} :
     x ∣ y ↔ x.1 ∣ y.1 ∧ x.2 ∣ y.2 := by
   cases x; cases y
+  -- ⊢ (fst✝, snd✝) ∣ y ↔ (fst✝, snd✝).fst ∣ y.fst ∧ (fst✝, snd✝).snd ∣ y.snd
+           -- ⊢ (fst✝¹, snd✝¹) ∣ (fst✝, snd✝) ↔ (fst✝¹, snd✝¹).fst ∣ (fst✝, snd✝).fst ∧ (fst …
   simp only [dvd_def, Prod.exists, Prod.mk_mul_mk, Prod.mk.injEq,
     exists_and_left, exists_and_right, and_self, true_and]
 

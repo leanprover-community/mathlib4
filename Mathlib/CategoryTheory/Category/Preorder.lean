@@ -116,11 +116,13 @@ theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
   uniq := fun a => by rfl
+                      -- 🎉 no goals
 #align category_theory.unique_to_top CategoryTheory.uniqueToTop
 
 instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
   default := homOfLE bot_le
   uniq := fun a => by rfl
+                      -- 🎉 no goals
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot
 
 end CategoryTheory

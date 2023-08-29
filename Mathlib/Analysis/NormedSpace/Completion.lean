@@ -42,6 +42,7 @@ instance : NormedSpace 𝕜 (Completion E) :=
       induction_on x
         (isClosed_le (continuous_const_smul _).norm (continuous_const.mul continuous_norm)) fun y =>
         by simp only [← coe_smul, norm_coe, norm_smul, le_rfl] }
+           -- 🎉 no goals
 
 variable {𝕜 E}
 
@@ -86,31 +87,50 @@ instance [SeminormedRing A] : NormedRing (Completion A) :=
     Completion.instMetricSpace with
     dist_eq := fun x y => by
       refine Completion.induction_on₂ x y ?_ ?_ <;> clear x y
+      -- ⊢ IsClosed {x | dist x.fst x.snd = ‖x.fst - x.snd‖}
+                                                    -- ⊢ IsClosed {x | dist x.fst x.snd = ‖x.fst - x.snd‖}
+                                                    -- ⊢ ∀ (a b : A), dist (↑A a) (↑A b) = ‖↑A a - ↑A b‖
       · refine' isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous _
+        -- ⊢ Continuous fun x => ‖x.fst - x.snd‖
         exact Continuous.comp Completion.continuous_extension continuous_sub
+        -- 🎉 no goals
       · intro x y
+        -- ⊢ dist (↑A x) (↑A y) = ‖↑A x - ↑A y‖
         rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
+        -- 🎉 no goals
     norm_mul := fun x y => by
       refine Completion.induction_on₂ x y ?_ ?_ <;> clear x y
+      -- ⊢ IsClosed {x | ‖x.fst * x.snd‖ ≤ ‖x.fst‖ * ‖x.snd‖}
+                                                    -- ⊢ IsClosed {x | ‖x.fst * x.snd‖ ≤ ‖x.fst‖ * ‖x.snd‖}
+                                                    -- ⊢ ∀ (a b : A), ‖↑A a * ↑A b‖ ≤ ‖↑A a‖ * ‖↑A b‖
       · exact
           isClosed_le (Continuous.comp continuous_norm continuous_mul)
             (Continuous.comp _root_.continuous_mul
               (Continuous.prod_map continuous_norm continuous_norm))
       · intro x y
+        -- ⊢ ‖↑A x * ↑A y‖ ≤ ‖↑A x‖ * ‖↑A y‖
         simp only [← coe_mul, norm_coe]
+        -- ⊢ ‖x * y‖ ≤ ‖x‖ * ‖y‖
         exact norm_mul_le x y }
+        -- 🎉 no goals
 
 instance [SeminormedCommRing A] [NormedAlgebra 𝕜 A] [UniformContinuousConstSMul 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) :=
   { Completion.algebra A 𝕜 with
     norm_smul_le := fun r x => by
       refine Completion.induction_on x ?_ ?_ <;> clear x
+      -- ⊢ IsClosed {a | ‖r • a‖ ≤ ‖r‖ * ‖a‖}
+                                                 -- ⊢ IsClosed {a | ‖r • a‖ ≤ ‖r‖ * ‖a‖}
+                                                 -- ⊢ ∀ (a : A), ‖r • ↑A a‖ ≤ ‖r‖ * ‖↑A a‖
       · exact
           isClosed_le (Continuous.comp continuous_norm (continuous_const_smul r))
             (Continuous.comp (continuous_mul_left _) continuous_norm)
       · intro x
+        -- ⊢ ‖r • ↑A x‖ ≤ ‖r‖ * ‖↑A x‖
         simp only [← coe_smul, norm_coe]
+        -- ⊢ ‖r • x‖ ≤ ‖r‖ * ‖x‖
         exact norm_smul_le r x }
+        -- 🎉 no goals
 
 end Algebra
 

@@ -71,13 +71,19 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
   (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
+  -- ⊢ HEq f f'
   have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
+  -- ⊢ HEq f f'
   have : β = β' := by funext a
                       exact type_eq_of_heq (this a)
   subst this
+  -- ⊢ HEq f f'
   apply heq_of_eq
+  -- ⊢ f = f'
   funext a
+  -- ⊢ f a = f' a
   exact eq_of_heq (this a)
+  -- 🎉 no goals
 #align function.hfunext Function.hfunext
 
 theorem funext_iff {β : α → Sort*} {f₁ f₂ : ∀ x : α, β x} : f₁ = f₂ ↔ ∀ a, f₁ a = f₂ a :=
@@ -100,6 +106,11 @@ theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
 theorem Injective.beq_eq [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β]
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
+  -- ⊢ (f a == f b) = (a == b)
+                          -- ⊢ f a = f b
+                          -- ⊢ ¬f a = f b
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 
 theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
   h ▸ I.eq_iff
@@ -158,12 +169,25 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
   (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
   Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
 by intros x₁ x₂ h
+   -- ⊢ x₁ = x₂
    dsimp only at h
+   -- ⊢ x₁ = x₂
    by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+   -- ⊢ x₁ = x₂
+                          -- ⊢ x₁ = x₂
+                          -- ⊢ x₁ = x₂
    · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+     -- ⊢ x₁ = x₂
+                                       -- 🎉 no goals
    · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+     -- ⊢ x₁ = x₂
+                                       -- 🎉 no goals
    · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+     -- ⊢ x₁ = x₂
+                                       -- 🎉 no goals
    · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+     -- ⊢ x₁ = x₂
+                                       -- 🎉 no goals
 #align function.injective.dite Function.Injective.dite
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
@@ -237,7 +261,11 @@ protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
     Surjective f := by
   specialize h (fun y ↦ ∃ x, f x = y) (fun _ ↦ True) (funext fun x ↦ eq_true ⟨_, rfl⟩)
+  -- ⊢ Surjective f
   intro y; rw [congr_fun h y]; trivial
+  -- ⊢ ∃ a, f a = y
+           -- ⊢ True
+                               -- 🎉 no goals
 #align function.surjective_of_right_cancellable_Prop Function.surjective_of_right_cancellable_Prop
 
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
@@ -258,10 +286,12 @@ theorem Bijective.existsUnique_iff {f : α → β} (hf : Bijective f) {p : β �
   ⟨fun ⟨y, hpy, hy⟩ ↦
     let ⟨x, hx⟩ := hf.surjective y
     ⟨x, by simpa [hx], fun z (hz : p (f z)) ↦ hf.injective <| hx.symm ▸ hy _ hz⟩,
+           -- 🎉 no goals
     fun ⟨x, hpx, hx⟩ ↦
     ⟨f x, hpx, fun y hy ↦
       let ⟨z, hz⟩ := hf.surjective y
       hz ▸ congr_arg f (hx _ (by simpa [hz]))⟩⟩
+                                 -- 🎉 no goals
 #align function.bijective.exists_unique_iff Function.Bijective.existsUnique_iff
 
 theorem Bijective.of_comp_iff (f : α → β) {g : γ → α} (hg : Bijective g) :
@@ -292,9 +322,13 @@ theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   demonstrates why `Type : Type` would be inconsistent in Lean. -/
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
   intro hf
+  -- ⊢ False
   let T : Type max u v := Sigma f
+  -- ⊢ False
   cases' hf (Set T) with U hU
+  -- ⊢ False
   let g : Set T → T := fun s ↦ ⟨U, cast hU.symm s⟩
+  -- ⊢ False
   have hg : Injective g := by
     intro s t h
     suffices cast hU (g s).2 = cast hU (g t).2 by
@@ -302,6 +336,7 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
       assumption
     · congr
   exact cantor_injective g hg
+  -- 🎉 no goals
 #align function.not_surjective_Type Function.not_surjective_Type
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
@@ -344,6 +379,7 @@ theorem rightInverse_iff_comp {f : α → β} {g : β → α} : RightInverse f g
 theorem LeftInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β} (hf : LeftInverse f g)
     (hh : LeftInverse h i) : LeftInverse (h ∘ f) (g ∘ i) :=
   fun a ↦ show h (f (g (i a))) = a by rw [hf (i a), hh a]
+                                      -- 🎉 no goals
 #align function.left_inverse.comp Function.LeftInverse.comp
 
 theorem RightInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β} (hf : RightInverse f g)
@@ -391,7 +427,9 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
+                           -- 🎉 no goals
      _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
+                  -- 🎉 no goals
 #align function.left_inverse.eq_right_inverse Function.LeftInverse.eq_rightInverse
 
 attribute [local instance] Classical.propDecidable
@@ -409,10 +447,16 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
       rfl
     if h' : ∃ a, f a = b
     then by rw [hpi, dif_pos h'] at h
+            -- ⊢ f a = b
             injection h with h
+            -- ⊢ f a = b
             subst h
+            -- ⊢ f (Classical.choose h') = b
             apply Classical.choose_spec h'
+            -- 🎉 no goals
     else by rw [hpi, dif_neg h'] at h; contradiction,
+            -- ⊢ f a = b
+                                       -- 🎉 no goals
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 #align function.partial_inv_of_injective Function.partialInv_of_injective
@@ -438,6 +482,7 @@ noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β �
 
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
+     -- 🎉 no goals
 #align function.inv_fun_eq Function.invFun_eq
 
 theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
@@ -454,7 +499,9 @@ theorem invFun_eq_of_injective_of_rightInverse {g : β → α} (hf : Injective f
     hf
       (by
         rw [hg b]
+        -- ⊢ f (invFun f b) = b
         exact invFun_eq ⟨g b, hg b⟩)
+        -- 🎉 no goals
 #align function.inv_fun_eq_of_injective_of_right_inverse Function.invFun_eq_of_injective_of_rightInverse
 
 theorem rightInverse_invFun (hf : Surjective f) : RightInverse (invFun f) f :=
@@ -561,7 +608,9 @@ by have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=
    have h3 : (λ h : a = a' => Eq.rec (motive := λ _ _ => β) b h.symm) =
              (λ _ : a = a' => b) := funext h2
    let f := λ x => dite (a = a') x (λ (_: ¬ a = a') => (f a))
+   -- ⊢ update f✝ a' b a = if a = a' then b else f✝ a
    exact congrArg f h3
+   -- 🎉 no goals
 #align function.update_apply Function.update_apply
 
 @[simp]
@@ -577,7 +626,9 @@ theorem surjective_eval {α : Sort u} {β : α → Sort v} [h : ∀ a, Nonempty 
 
 theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') := fun v v' h ↦ by
   have := congr_fun h a'
+  -- ⊢ v = v'
   rwa [update_same, update_same] at this
+  -- 🎉 no goals
 #align function.update_injective Function.update_injective
 
 @[simp]
@@ -588,13 +639,17 @@ theorem update_noteq {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : 
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
   (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_same]
+  -- ⊢ (p a b ∧ ∀ (b_1 : α), b_1 ≠ a → p b_1 (update f a b b_1)) ↔ p a b ∧ ∀ (x : α …
   simp (config := { contextual := true })
+  -- 🎉 no goals
 #align function.forall_update_iff Function.forall_update_iff
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _) (_ : x ≠ a), p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b ↦ ¬p a b]
+  -- ⊢ ¬(¬p a b ∧ ∀ (x : α), x ≠ a → ¬p x (f x)) ↔ p a b ∨ ∃ x x_1, p x (f x)
   simp [-not_and, not_and_or]
+  -- 🎉 no goals
 #align function.exists_update_iff Function.exists_update_iff
 
 theorem update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} :
@@ -608,9 +663,11 @@ theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 #align function.eq_update_iff Function.eq_update_iff
 
 @[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
+                                                                    -- 🎉 no goals
 #align function.update_eq_self_iff Function.update_eq_self_iff
 
 @[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
+                                                                    -- 🎉 no goals
 #align function.eq_update_self_iff Function.eq_update_self_iff
 
 lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
@@ -651,18 +708,26 @@ theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : �
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
     f j (update g i v j) = update (fun k ↦ f k (g k)) i (f i v) j := by
   by_cases h:j = i
+  -- ⊢ f j (update g i v j) = update (fun k => f k (g k)) i (f i v) j
   · subst j
+    -- ⊢ f i (update g i v i) = update (fun k => f k (g k)) i (f i v) i
     simp
+    -- 🎉 no goals
   · simp [h]
+    -- 🎉 no goals
 #align function.apply_update Function.apply_update
 
 theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} (f : ∀ i, α i → β i → γ i)
     (g : ∀ i, α i) (h : ∀ i, β i) (i : ι) (v : α i) (w : β i) (j : ι) :
     f j (update g i v j) (update h i w j) = update (fun k ↦ f k (g k) (h k)) i (f i v w) j := by
   by_cases h:j = i
+  -- ⊢ f j (update g i v j) (update h✝ i w j) = update (fun k => f k (g k) (h✝ k))  …
   · subst j
+    -- ⊢ f i (update g i v i) (update h i w i) = update (fun k => f k (g k) (h k)) i  …
     simp
+    -- 🎉 no goals
   · simp [h]
+    -- 🎉 no goals
 #align function.apply_update₂ Function.apply_update₂
 
 
@@ -674,20 +739,34 @@ theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α')
 theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a ≠ b) (v : β a) (w : β b)
     (f : ∀ a, β a) : update (update f a v) b w = update (update f b w) a v := by
   funext c
+  -- ⊢ update (update f a v) b w c = update (update f b w) a v c
   simp only [update]
+  -- ⊢ (if h : c = b then (_ : b = c) ▸ w else if h : c = a then (_ : a = c) ▸ v el …
   by_cases h₁ : c = b <;> by_cases h₂ : c = a
+  -- ⊢ (if h : c = b then (_ : b = c) ▸ w else if h : c = a then (_ : a = c) ▸ v el …
+                          -- ⊢ (if h : c = b then (_ : b = c) ▸ w else if h : c = a then (_ : a = c) ▸ v el …
+                          -- ⊢ (if h : c = b then (_ : b = c) ▸ w else if h : c = a then (_ : a = c) ▸ v el …
   · rw [dif_pos h₁, dif_pos h₂]
+    -- ⊢ (_ : b = c) ▸ w = (_ : a = c) ▸ v
     cases h (h₂.symm.trans h₁)
+    -- 🎉 no goals
   · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
+    -- 🎉 no goals
   · rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
+    -- 🎉 no goals
   · rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
+    -- 🎉 no goals
 #align function.update_comm Function.update_comm
 
 @[simp]
 theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
   funext b
+  -- ⊢ update (update f a v) a w b = update f a w b
   by_cases h : b = a <;> simp [update, h]
+  -- ⊢ update (update f a v) a w b = update f a w b
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align function.update_idem Function.update_idem
 
 end Update
@@ -717,7 +796,9 @@ def FactorsThrough (g : α → γ) (f : α → β) : Prop :=
 theorem extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [Decidable (∃ a, f a = b)] :
     extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b := by
   unfold extend
+  -- ⊢ (if h : ∃ a, f a = b then g (Classical.choose h) else e' b) = if h : ∃ a, f  …
   congr
+  -- 🎉 no goals
 #align function.extend_def Function.extend_def
 
 lemma Injective.FactorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThrough f :=
@@ -727,7 +808,9 @@ lemma Injective.FactorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
   extend f g e' (f a) = g a := by
   simp only [extend_def, dif_pos, exists_apply_eq_apply]
+  -- ⊢ g (Classical.choose (_ : ∃ a_1, f a_1 = f a)) = g a
   exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
+  -- 🎉 no goals
 #align function.factors_through.extend_apply Function.FactorsThrough.extend_apply
 
 @[simp]
@@ -740,19 +823,23 @@ theorem Injective.extend_apply (hf : Injective f) (g : α → γ) (e' : β → �
 theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f a = b) :
     extend f g e' b = e' b := by
   simp [Function.extend_def, hb]
+  -- 🎉 no goals
 #align function.extend_apply' Function.extend_apply'
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] :
   g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
 ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
+                          -- 🎉 no goals
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
+                     -- 🎉 no goals
 #align function.factors_through_iff Function.factorsThrough_iff
 
 lemma FactorsThrough.apply_extend {δ} {g : α → γ} (hf : FactorsThrough g f)
   (F : γ → δ) (e' : β → γ) (b : β) :
   F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
   by_cases hb : ∃ a, f a = b
+  -- ⊢ F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b
   case pos =>
     rcases hb with ⟨a, ha⟩
     subst b
@@ -773,10 +860,15 @@ lemma Injective.apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α →
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
+  -- ⊢ g₁ = g₂
   refine' funext fun x ↦ _
+  -- ⊢ g₁ x = g₂ x
   have H := congr_fun hg (f x)
+  -- ⊢ g₁ x = g₂ x
   simp only [hf.extend_apply] at H
+  -- ⊢ g₁ x = g₂ x
   exact H
+  -- 🎉 no goals
 #align function.extend_injective Function.extend_injective
 
 lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsThrough g f) :
@@ -803,6 +895,7 @@ theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ �
   ⟨hf.surjective.injective_comp_right, fun g ↦
     ⟨g ∘ surjInv hf.surjective,
      by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp.right_id]⟩⟩
+        -- 🎉 no goals
 #align function.bijective.comp_right Function.Bijective.comp_right
 
 end Extend
@@ -913,6 +1006,7 @@ protected theorem bijective : Bijective f := ⟨h.injective, h.surjective⟩
 /-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
 protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) :=
   by rw [apply_ite f, h, ite_not]
+     -- 🎉 no goals
 #align function.involutive.ite_not Function.Involutive.ite_not
 
 /-- An involution commutes across an equality. Compare to `Function.Injective.eq_iff`. -/
@@ -985,6 +1079,7 @@ theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : some
 theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p → α) (a : p)
     (h : P (f a)) : P (sometimes f) :=
   by rwa [sometimes_eq]
+     -- 🎉 no goals
 #align function.sometimes_spec Function.sometimes_spec
 
 end Sometimes
@@ -1009,17 +1104,23 @@ theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
   -- due to `@[macro_inline]` possibly?
   cases h
+  -- ⊢ Bijective (Eq.mp (_ : α = α))
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  -- 🎉 no goals
 #align eq_mp_bijective eq_mp_bijective
 
 theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) := by
   cases h
+  -- ⊢ Bijective (Eq.mpr (_ : α = α))
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  -- 🎉 no goals
 #align eq_mpr_bijective eq_mpr_bijective
 
 theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) := by
   cases h
+  -- ⊢ Bijective (cast (_ : α = α))
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  -- 🎉 no goals
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
@@ -1042,6 +1143,7 @@ theorem Function.LeftInverse.eq_rec_eq {α β : Sort*} {γ : β → Sort v} {f :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).rec (C (g (f a)))` for LHS
     @Eq.rec β (f (g (f a))) (fun x _ ↦ γ x) (C (g (f a))) (f a) (congr_arg f (h a)) = C a :=
   eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
+                                            -- 🎉 no goals
 #align function.left_inverse.eq_rec_eq Function.LeftInverse.eq_rec_eq
 
 theorem Function.LeftInverse.eq_rec_on_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
@@ -1055,6 +1157,7 @@ theorem Function.LeftInverse.cast_eq {α β : Sort*} {γ : β → Sort v} {f : �
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     cast (congr_arg (fun a ↦ γ (f a)) (h a)) (C (g (f a))) = C a := by
   rw [cast_eq_iff_heq, h]
+  -- 🎉 no goals
 #align function.left_inverse.cast_eq Function.LeftInverse.cast_eq
 
 /-- A set of functions "separates points"

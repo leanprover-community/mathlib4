@@ -59,9 +59,13 @@ class Decomposition where
 instance : Subsingleton (Decomposition ℳ) :=
   ⟨fun x y ↦ by
     cases' x with x xl xr
+    -- ⊢ { decompose' := x, left_inv := xl, right_inv := xr } = y
     cases' y with y yl yr
+    -- ⊢ { decompose' := x, left_inv := xl, right_inv := xr } = { decompose' := y, le …
     congr
+    -- ⊢ x = y
     exact Function.LeftInverse.eq_rightInverse xr yl⟩
+    -- 🎉 no goals
 
 variable [Decomposition ℳ]
 
@@ -108,6 +112,7 @@ theorem decompose_symm_of {i : ι} (x : ℳ i) : (decompose ℳ).symm (DirectSum
 @[simp]
 theorem decompose_coe {i : ι} (x : ℳ i) : decompose ℳ (x : M) = DirectSum.of _ i x := by
   rw [← decompose_symm_of _, Equiv.apply_symm_apply]
+  -- 🎉 no goals
 #align direct_sum.decompose_coe DirectSum.decompose_coe
 
 theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
@@ -117,11 +122,13 @@ theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
 
 theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_same, Subtype.coe_mk]
+  -- 🎉 no goals
 #align direct_sum.decompose_of_mem_same DirectSum.decompose_of_mem_same
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ _ hij, ZeroMemClass.coe_zero]
+  -- 🎉 no goals
 #align direct_sum.decompose_of_mem_ne DirectSum.decompose_of_mem_ne
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
@@ -177,7 +184,9 @@ theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M)
   conv_rhs =>
     rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i ↦ ℳ i) (decompose ℳ r)]
   rw [decompose_symm_sum]
+  -- ⊢ ∑ i in DFinsupp.support (↑(decompose ℳ) r), ↑(↑(↑(decompose ℳ) r) i) = ∑ i i …
   simp_rw [decompose_symm_of]
+  -- 🎉 no goals
 #align direct_sum.sum_support_decompose DirectSum.sum_support_decompose
 
 end AddCommMonoid
@@ -191,6 +200,7 @@ to be found by unification rather than synthesis, then everything works fine wit
 instance. -/
 instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
     AddCommGroup (⨁ i, ℳ i) := by infer_instance
+                                  -- 🎉 no goals
 #align direct_sum.add_comm_group_set_like DirectSum.addCommGroupSetLike
 
 section AddCommGroup

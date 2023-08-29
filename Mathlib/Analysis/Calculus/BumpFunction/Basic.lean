@@ -115,7 +115,9 @@ set_option linter.uppercaseLean3 false in
 
 theorem one_lt_rOut_div_rIn {c : E} (f : ContDiffBump c) : 1 < f.rOut / f.rIn := by
   rw [one_lt_div f.rIn_pos]
+  -- ⊢ f.rIn < f.rOut
   exact f.rIn_lt_rOut
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align cont_diff_bump.one_lt_R_div_r ContDiffBump.one_lt_rOut_div_rIn
 
@@ -141,16 +143,19 @@ protected theorem apply (x : E) :
 
 protected theorem sub (x : E) : f (c - x) = f (c + x) := by
   simp [f.apply, ContDiffBumpBase.symmetric]
+  -- 🎉 no goals
 #align cont_diff_bump.sub ContDiffBump.sub
 
 protected theorem neg (f : ContDiffBump (0 : E)) (x : E) : f (-x) = f x := by
   simp_rw [← zero_sub, f.sub, zero_add]
+  -- 🎉 no goals
 #align cont_diff_bump.neg ContDiffBump.neg
 
 open Metric
 
 theorem one_of_mem_closedBall (hx : x ∈ closedBall c f.rIn) : f x = 1 := by
   apply ContDiffBumpBase.eq_one _ _ f.one_lt_rOut_div_rIn
+  -- ⊢ ‖(fun x => f.rIn⁻¹ • (x - c)) x‖ ≤ 1
   simpa only [norm_smul, Real.norm_eq_abs, abs_inv, abs_of_nonneg f.rIn_pos.le, ← div_eq_inv_mul,
     div_le_one f.rIn_pos] using mem_closedBall_iff_norm.1 hx
 #align cont_diff_bump.one_of_mem_closed_ball ContDiffBump.one_of_mem_closedBall
@@ -169,25 +174,31 @@ theorem le_one : f x ≤ 1 :=
 
 theorem support_eq : Function.support f = Metric.ball c f.rOut := by
   simp only [toFun, support_comp_eq_preimage, ContDiffBumpBase.support _ _ f.one_lt_rOut_div_rIn]
+  -- ⊢ (fun x => f.rIn⁻¹ • (x - c)) ⁻¹' ball 0 (f.rOut / f.rIn) = ball c f.rOut
   ext x
+  -- ⊢ x ∈ (fun x => f.rIn⁻¹ • (x - c)) ⁻¹' ball 0 (f.rOut / f.rIn) ↔ x ∈ ball c f. …
   simp only [mem_ball_iff_norm, sub_zero, norm_smul, mem_preimage, Real.norm_eq_abs, abs_inv,
     abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_right f.rIn_pos]
 #align cont_diff_bump.support_eq ContDiffBump.support_eq
 
 theorem tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']
+  -- 🎉 no goals
 #align cont_diff_bump.tsupport_eq ContDiffBump.tsupport_eq
 
 theorem pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x :=
   f.nonneg.lt_of_ne' <| by rwa [← support_eq, mem_support] at hx
+                           -- 🎉 no goals
 #align cont_diff_bump.pos_of_mem_ball ContDiffBump.pos_of_mem_ball
 
 theorem zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
   rwa [← nmem_support, support_eq, mem_ball, not_lt]
+  -- 🎉 no goals
 #align cont_diff_bump.zero_of_le_dist ContDiffBump.zero_of_le_dist
 
 protected theorem hasCompactSupport [FiniteDimensional ℝ E] : HasCompactSupport f := by
   simp_rw [HasCompactSupport, f.tsupport_eq, isCompact_closedBall]
+  -- 🎉 no goals
 #align cont_diff_bump.has_compact_support ContDiffBump.hasCompactSupport
 
 theorem eventuallyEq_one_of_mem_ball (h : x ∈ ball c f.rIn) : f =ᶠ[𝓝 x] 1 :=
@@ -209,8 +220,11 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
   change ContDiffWithinAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
     ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))) s x
   refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le le_top).comp_contDiffWithinAt x ?_
+  -- ⊢ Ioi 1 ×ˢ univ ∈ 𝓝 ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))
   · exact prod_mem_nhds (Ioi_mem_nhds (f x).one_lt_rOut_div_rIn) univ_mem
+    -- 🎉 no goals
   · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
+    -- 🎉 no goals
 
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
@@ -225,7 +239,9 @@ theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c
     (hR : ContDiff ℝ n fun x => (f x).rOut) (hg : ContDiff ℝ n g) :
     ContDiff ℝ n fun x => f x (g x) := by
   rw [contDiff_iff_contDiffAt] at *
+  -- ⊢ ∀ (x : X), ContDiffAt ℝ n (fun x => ↑(f x) (g x)) x
   exact fun x => (hc x).contDiffBump (hr x) (hR x) (hg x)
+  -- 🎉 no goals
 #align cont_diff.cont_diff_bump ContDiff.contDiffBump
 
 protected theorem contDiff : ContDiff ℝ n f :=

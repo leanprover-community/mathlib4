@@ -120,11 +120,17 @@ instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlgCat FinPartO
   -- are quite inconsistent. We need to go back through and make all these files uniform.
   ⟨fun {X Y} f g h => by
     dsimp at *
+    -- ⊢ f = g
     apply FunLike.coe_injective
+    -- ⊢ (fun f => ↑f) f = (fun f => ↑f) g
     dsimp
+    -- ⊢ ↑f = ↑g
     ext x
+    -- ⊢ ↑f x = ↑g x
     apply_fun (fun f => f x) at h
+    -- ⊢ ↑f x = ↑g x
     exact h ⟩
+    -- 🎉 no goals
 #align FinBoolAlg.forget_to_FinPartOrd_faithful FinBoolAlgCat.forgetToFinPartOrdFaithful
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
@@ -134,7 +140,11 @@ def Iso.mk {α β : FinBoolAlgCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : ↑α.toBo …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑((let src := { toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ :  …
+                        -- 🎉 no goals
 #align FinBoolAlg.iso.mk FinBoolAlgCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/

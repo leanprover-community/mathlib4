@@ -80,14 +80,19 @@ theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
   simp_rw [balancedCore, mem_sUnion, mem_setOf_eq, and_assoc]
+  -- 🎉 no goals
 #align mem_balanced_core_iff mem_balancedCore_iff
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
     a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s := by
   rintro x ⟨y, hy, rfl⟩
+  -- ⊢ (fun x => a • x) y ∈ balancedCore 𝕜 s
   rw [mem_balancedCore_iff] at hy
+  -- ⊢ (fun x => a • x) y ∈ balancedCore 𝕜 s
   rcases hy with ⟨t, ht1, ht2, hy⟩
+  -- ⊢ (fun x => a • x) y ∈ balancedCore 𝕜 s
   exact ⟨t, ⟨ht1, ht2⟩, ht1 a ha (smul_mem_smul_set hy)⟩
+  -- 🎉 no goals
 #align smul_balanced_core_subset smul_balancedCore_subset
 
 theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) := fun _ =>
@@ -114,8 +119,11 @@ theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜) (_ :
 theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆ t) :
     balancedHull 𝕜 s ⊆ t := by
   intros x hx
+  -- ⊢ x ∈ t
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
+  -- ⊢ (fun x => r • x) y ∈ t
   exact ht.smul_mem hr (h hy)
+  -- 🎉 no goals
 #align balanced.hull_subset_of_subset Balanced.balancedHull_subset_of_subset
 
 end SMul
@@ -145,10 +153,15 @@ variable {𝕜}
 
 theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
   intro a ha
+  -- ⊢ a • balancedHull 𝕜 s ⊆ balancedHull 𝕜 s
   simp_rw [balancedHull, smul_set_iUnion₂, subset_def, mem_iUnion₂]
+  -- ⊢ ∀ (x : E), (∃ i j, x ∈ a • i • s) → ∃ i j, x ∈ i • s
   rintro x ⟨r, hr, hx⟩
+  -- ⊢ ∃ i j, x ∈ i • s
   rw [← smul_assoc] at hx
+  -- ⊢ ∃ i j, x ∈ i • s
   exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one ha (norm_nonneg r) hr), hx⟩
+  -- 🎉 no goals
 #align balanced_hull.balanced balancedHull.balanced
 
 end Module
@@ -162,33 +175,48 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 @[simp]
 theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
   simp_rw [balancedCoreAux, iInter₂_eq_empty_iff, smul_set_empty]
+  -- ⊢ ∀ (a : E), ∃ i h, ¬a ∈ ∅
   exact fun _ => ⟨1, norm_one.ge, not_mem_empty _⟩
+  -- 🎉 no goals
 #align balanced_core_aux_empty balancedCoreAux_empty
 
 theorem balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun x hx => by
   simpa only [one_smul] using mem_balancedCoreAux_iff.1 hx 1 norm_one.ge
+  -- 🎉 no goals
 #align balanced_core_aux_subset balancedCoreAux_subset
 
 theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
     Balanced 𝕜 (balancedCoreAux 𝕜 s) := by
   rintro a ha x ⟨y, hy, rfl⟩
+  -- ⊢ (fun x => a • x) y ∈ balancedCoreAux 𝕜 s
   obtain rfl | h := eq_or_ne a 0
+  -- ⊢ (fun x => 0 • x) y ∈ balancedCoreAux 𝕜 s
   · simp_rw [zero_smul, h0]
+    -- 🎉 no goals
   rw [mem_balancedCoreAux_iff] at hy ⊢
+  -- ⊢ ∀ (r : 𝕜), 1 ≤ ‖r‖ → (fun x => a • x) y ∈ r • s
   intro r hr
+  -- ⊢ (fun x => a • x) y ∈ r • s
   have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
     rw [norm_smul, norm_inv]
     exact one_le_mul_of_one_le_of_one_le (one_le_inv (norm_pos_iff.mpr h) ha) hr
   have h' := hy (a⁻¹ • r) h''
+  -- ⊢ (fun x => a • x) y ∈ r • s
   rwa [smul_assoc, mem_inv_smul_set_iff₀ h] at h'
+  -- 🎉 no goals
 #align balanced_core_aux_balanced balancedCoreAux_balanced
 
 theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
   refine' fun x hx => mem_balancedCoreAux_iff.2 fun r hr => _
+  -- ⊢ x ∈ r • s
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
+  -- ⊢ r⁻¹ • x ∈ s
   refine' h (ht.smul_mem _ hx)
+  -- ⊢ ‖r⁻¹‖ ≤ 1
   rw [norm_inv]
+  -- ⊢ ‖r‖⁻¹ ≤ 1
   exact inv_le_one hr
+  -- 🎉 no goals
 #align balanced_core_aux_maximal balancedCoreAux_maximal
 
 theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCoreAux 𝕜 s :=
@@ -198,18 +226,27 @@ theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCo
 theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
     balancedCore 𝕜 s = ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s := by
   refine' balancedCore_subset_balancedCoreAux.antisymm _
+  -- ⊢ balancedCoreAux 𝕜 s ⊆ balancedCore 𝕜 s
   refine' (balancedCoreAux_balanced _).subset_balancedCore_of_subset (balancedCoreAux_subset s)
+  -- ⊢ 0 ∈ balancedCoreAux 𝕜 s
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
+  -- 🎉 no goals
 #align balanced_core_eq_Inter balancedCore_eq_iInter
 
 theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ (a : 𝕜) (_ : ‖a‖ ≤ 1), a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
+  -- ⊢ s ⊆ ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • t
   refine' subset_iInter₂ fun a ha => _
+  -- ⊢ s ⊆ a • t
   rw [← smul_inv_smul₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha) s]
+  -- ⊢ a • a⁻¹ • s ⊆ a • t
   refine' smul_set_mono (hst _ _)
+  -- ⊢ ‖a⁻¹‖ ≤ 1
   rw [norm_inv]
+  -- ⊢ ‖a‖⁻¹ ≤ 1
   exact inv_le_one ha
+  -- 🎉 no goals
 #align subset_balanced_core subset_balancedCore
 
 end NormedField
@@ -226,17 +263,26 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Topolo
 
 protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
   by_cases h : (0 : E) ∈ U
+  -- ⊢ IsClosed (balancedCore 𝕜 U)
   · rw [balancedCore_eq_iInter h]
+    -- ⊢ IsClosed (⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • U)
     refine' isClosed_iInter fun a => _
+    -- ⊢ IsClosed (⋂ (_ : 1 ≤ ‖a‖), a • U)
     refine' isClosed_iInter fun ha => _
+    -- ⊢ IsClosed (a • U)
     have ha' := lt_of_lt_of_le zero_lt_one ha
+    -- ⊢ IsClosed (a • U)
     rw [norm_pos_iff] at ha'
+    -- ⊢ IsClosed (a • U)
     exact isClosedMap_smul_of_ne_zero ha' U hU
+    -- 🎉 no goals
   · have : balancedCore 𝕜 U = ∅ := by
       contrapose! h
       exact balancedCore_nonempty_iff.mp (Set.nonempty_iff_ne_empty.2 h)
     rw [this]
+    -- ⊢ IsClosed ∅
     exact isClosed_empty
+    -- 🎉 no goals
 #align is_closed.balanced_core IsClosed.balancedCore
 
 theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
@@ -248,15 +294,24 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
     simpa only [← Prod.exists', ← Prod.forall', ← and_imp, ← and_assoc, exists_prop] using
       h.basis_left (NormedAddCommGroup.nhds_zero_basis_norm_lt.prod_nhds (𝓝 _).basis_sets) U hU
   rcases NormedField.exists_norm_lt 𝕜 hr with ⟨y, hy₀, hyr⟩
+  -- ⊢ balancedCore 𝕜 U ∈ 𝓝 0
   rw [norm_pos_iff] at hy₀
+  -- ⊢ balancedCore 𝕜 U ∈ 𝓝 0
   have : y • V ∈ 𝓝 (0 : E) := (set_smul_mem_nhds_zero_iff hy₀).mpr hV
+  -- ⊢ balancedCore 𝕜 U ∈ 𝓝 0
   -- It remains to show that `y • V ⊆ balancedCore 𝕜 U`
   refine' Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => _)
+  -- ⊢ a • y • V ⊆ U
   rw [smul_smul]
+  -- ⊢ (a * y) • V ⊆ U
   rintro _ ⟨z, hz, rfl⟩
+  -- ⊢ (fun x => (a * y) • x) z ∈ U
   refine' hrVU _ _ _ hz
+  -- ⊢ ‖a * y‖ < r
   rw [norm_mul, ← one_mul r]
+  -- ⊢ ‖a‖ * ‖y‖ < 1 * r
   exact mul_lt_mul' ha hyr (norm_nonneg y) one_pos
+  -- 🎉 no goals
 #align balanced_core_mem_nhds_zero balancedCore_mem_nhds_zero
 
 variable (𝕜 E)
@@ -273,7 +328,9 @@ theorem nhds_basis_closed_balanced [RegularSpace E] :
   refine'
     (closed_nhds_basis 0).to_hasBasis (fun s hs => _) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩
   refine' ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, _⟩, balancedCore_subset s⟩
+  -- ⊢ IsClosed (balancedCore 𝕜 s) ∧ Balanced 𝕜 (balancedCore 𝕜 s)
   exact ⟨hs.2.balancedCore, balancedCore_balanced s⟩
+  -- 🎉 no goals
 #align nhds_basis_closed_balanced nhds_basis_closed_balanced
 
 end Topology

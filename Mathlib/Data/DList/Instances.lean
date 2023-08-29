@@ -30,6 +30,8 @@ def DList.listEquivDList : List α ≃ DList α := by
       { toFun := DList.ofList
         invFun := DList.toList.. } <;>
     simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align dlist.list_equiv_dlist Std.DList.listEquivDList
 
 instance : Traversable DList :=

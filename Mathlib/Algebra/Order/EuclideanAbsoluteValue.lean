@@ -71,6 +71,7 @@ open Int
 protected theorem abs_isEuclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteValue ℤ ℤ) :=
   {  map_lt_map_iff' := fun {x y} =>
        show abs x < abs y ↔ natAbs x < natAbs y by rw [abs_eq_natAbs, abs_eq_natAbs, ofNat_lt] }
+                                                   -- 🎉 no goals
 #align absolute_value.abs_is_euclidean AbsoluteValue.abs_isEuclidean
 
 end Int

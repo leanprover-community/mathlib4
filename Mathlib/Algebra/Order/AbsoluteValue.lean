@@ -52,6 +52,9 @@ variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+                             -- ⊢ { toMulHom := { toFun := toFun✝, map_mul' := map_mul'✝ }, nonneg' := nonneg' …
+                                                      -- ⊢ { toMulHom := { toFun := toFun✝¹, map_mul' := map_mul'✝¹ }, nonneg' := nonne …
+                                                                               -- 🎉 no goals
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
@@ -131,6 +134,7 @@ protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
+          -- 🎉 no goals
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
 -- porting note: was `@[simp]` but `simp` can prove it
@@ -146,6 +150,7 @@ variable {R S : Type*} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
 protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
+  -- 🎉 no goals
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
 @[simp high] -- porting note: added `high` to apply it before `abv.eq_zero`
@@ -214,6 +219,7 @@ variable {R S : Type*} [Ring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
 protected theorem le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
   sub_le_iff_le_add.2 <| by simpa using abv.add_le (a - b) b
+                            -- 🎉 no goals
 #align absolute_value.le_sub AbsoluteValue.le_sub
 
 end Ring
@@ -229,12 +235,16 @@ variable [NoZeroDivisors S]
 @[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
+  -- ⊢ ↑abv (-a) = ↑abv a
+                         -- 🎉 no goals
   refine'
     (mul_self_eq_mul_self_iff.mp (by rw [← abv.map_mul, neg_mul_neg, abv.map_mul])).resolve_right _
   exact ((neg_lt_zero.mpr (abv.pos ha)).trans (abv.pos (neg_ne_zero.mpr ha))).ne'
+  -- 🎉 no goals
 #align absolute_value.map_neg AbsoluteValue.map_neg
 
 protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← neg_sub, abv.map_neg]
+                                                                      -- 🎉 no goals
 #align absolute_value.map_sub AbsoluteValue.map_sub
 
 end OrderedCommRing
@@ -273,6 +283,8 @@ variable {R S : Type*} [Ring R] [LinearOrderedCommRing S] (abv : AbsoluteValue R
 
 theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
   abs_sub_le_iff.2 ⟨abv.le_sub _ _, by rw [abv.map_sub]; apply abv.le_sub⟩
+                                       -- ⊢ ↑abv b - ↑abv a ≤ ↑abv (b - a)
+                                                         -- 🎉 no goals
 #align absolute_value.abs_abv_sub_le_abv_sub AbsoluteValue.abs_abv_sub_le_abv_sub
 
 end LinearOrderedCommRing
@@ -398,6 +410,7 @@ variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv_add abv (a - b) (b - c)
+  -- 🎉 no goals
 #align is_absolute_value.abv_sub_le IsAbsoluteValue.abv_sub_le
 
 theorem sub_abv_le_abv_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=

@@ -44,6 +44,7 @@ variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMon
 protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
     (hf : HasSum f x) : HasSum (fun b : ι => φ (f b)) (φ x) := by
   simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
+  -- 🎉 no goals
 #align continuous_linear_map.has_sum ContinuousLinearMap.hasSum
 
 alias HasSum.mapL := ContinuousLinearMap.hasSum
@@ -68,13 +69,16 @@ protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] {f : ι → M} (φ
 protected theorem ContinuousLinearEquiv.hasSum {f : ι → M} (e : M ≃SL[σ] M₂) {y : M₂} :
     HasSum (fun b : ι => e (f b)) y ↔ HasSum f (e.symm y) :=
   ⟨fun h => by simpa only [e.symm.coe_coe, e.symm_apply_apply] using h.mapL (e.symm : M₂ →SL[σ'] M),
+               -- 🎉 no goals
     fun h => by simpa only [e.coe_coe, e.apply_symm_apply] using (e : M →SL[σ] M₂).hasSum h⟩
+                -- 🎉 no goals
 #align continuous_linear_equiv.has_sum ContinuousLinearEquiv.hasSum
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearEquiv.hasSum' {f : ι → M} (e : M ≃SL[σ] M₂) {x : M} :
     HasSum (fun b : ι => e (f b)) (e x) ↔ HasSum f x := by
   rw [e.hasSum, ContinuousLinearEquiv.symm_apply_apply]
+  -- 🎉 no goals
 #align continuous_linear_equiv.has_sum' ContinuousLinearEquiv.hasSum'
 
 protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ] M₂) :
@@ -85,21 +89,30 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
     {y : M₂} : (∑' z, e (f z)) = y ↔ ∑' z, f z = e.symm y := by
   by_cases hf : Summable f
+  -- ⊢ ∑' (z : ι), ↑e (f z) = y ↔ ∑' (z : ι), f z = ↑(ContinuousLinearEquiv.symm e) y
   · exact
       ⟨fun h => (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>
         (e.hasSum.mpr (hf.hasSum_iff.mpr h)).tsum_eq⟩
   · have hf' : ¬Summable fun z => e (f z) := fun h => hf (e.summable.mp h)
+    -- ⊢ ∑' (z : ι), ↑e (f z) = y ↔ ∑' (z : ι), f z = ↑(ContinuousLinearEquiv.symm e) y
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hf']
+    -- ⊢ 0 = y ↔ 0 = ↑(ContinuousLinearEquiv.symm e) y
     refine ⟨?_, fun H => ?_⟩
+    -- ⊢ 0 = y → 0 = ↑(ContinuousLinearEquiv.symm e) y
     · rintro rfl
+      -- ⊢ 0 = ↑(ContinuousLinearEquiv.symm e) 0
       simp
+      -- 🎉 no goals
     · simpa using congr_arg (fun z => e z) H
+      -- 🎉 no goals
 #align continuous_linear_equiv.tsum_eq_iff ContinuousLinearEquiv.tsum_eq_iff
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
     (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
   refine' symm (e.tsum_eq_iff.mpr _)
+  -- ⊢ ∑' (z : ι), f z = ↑(ContinuousLinearEquiv.symm e) (↑e (∑' (z : ι), f z))
   rw [e.symm_apply_apply _]
+  -- 🎉 no goals
 #align continuous_linear_equiv.map_tsum ContinuousLinearEquiv.map_tsum
 
 end HasSum

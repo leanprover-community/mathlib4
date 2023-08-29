@@ -38,18 +38,33 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   target := Ioi (0 : ℝ) ×ˢ Ioo (-π) π
   map_target' := by
     rintro ⟨r, θ⟩ ⟨hr, hθ⟩
+    -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) (r, θ) ∈ {q | 0 < q.fst} ∪ …
     dsimp at hr hθ
+    -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) (r, θ) ∈ {q | 0 < q.fst} ∪ …
     rcases eq_or_ne θ 0 with (rfl | h'θ)
+    -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) (r, 0) ∈ {q | 0 < q.fst} ∪ …
     · simpa using hr
+      -- 🎉 no goals
     · right
+      -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) (r, θ) ∈ {q | q.snd ≠ 0}
+    -- ⊢ (fun q => (sqrt (q.fst ^ 2 + q.snd ^ 2), Complex.arg (↑Complex.equivRealProd …
       simp at hr
+      -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) (r, θ) ∈ {q | q.snd ≠ 0}
       simpa only [ne_of_gt hr, Ne.def, mem_setOf_eq, mul_eq_zero, false_or_iff,
+    -- ⊢ 0 < x ^ 2 + y ^ 2
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
+      -- ⊢ 0 < x ^ 2 + y ^ 2
   map_source' := by
+        -- ⊢ 0 < x ^ 2 + y ^ 2
+                      -- 🎉 no goals
     rintro ⟨x, y⟩ hxy
+        -- 🎉 no goals
     simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
+      -- ⊢ 0 ≤ (↑Complex.equivRealProd.symm (x, y)).re ∨ (↑Complex.equivRealProd.symm ( …
       true_and_iff, Complex.arg_lt_pi_iff]
+        -- 🎉 no goals
     constructor
+        -- 🎉 no goals
     · cases' hxy with hxy hxy
       · dsimp at hxy; linarith [sq_pos_of_ne_zero _ hxy.ne', sq_nonneg y]
       · linarith [sq_nonneg x, sq_pos_of_ne_zero _ hxy]
@@ -58,17 +73,29 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       · exact Or.inr hxy
   right_inv' := by
     rintro ⟨r, θ⟩ ⟨hr, hθ⟩
+    -- ⊢ (fun q => (sqrt (q.fst ^ 2 + q.snd ^ 2), Complex.arg (↑Complex.equivRealProd …
     dsimp at hr hθ
+    -- ⊢ (fun q => (sqrt (q.fst ^ 2 + q.snd ^ 2), Complex.arg (↑Complex.equivRealProd …
     simp only [Prod.mk.inj_iff]
+    -- ⊢ sqrt ((r * cos θ) ^ 2 + (r * sin θ) ^ 2) = r ∧ Complex.arg (↑Complex.equivRe …
     constructor
+    -- ⊢ sqrt ((r * cos θ) ^ 2 + (r * sin θ) ^ 2) = r
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
+      -- ⊢ sqrt ((r * cos θ) ^ 2 + (r * sin θ) ^ 2) = sqrt ((sin θ ^ 2 + cos θ ^ 2) * r …
       congr 1
+      -- ⊢ (r * cos θ) ^ 2 + (r * sin θ) ^ 2 = (sin θ ^ 2 + cos θ ^ 2) * r ^ 2
       ring
+    -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) ((fun q => (sqrt (q.fst ^  …
+      -- 🎉 no goals
     · convert Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
+      -- ⊢ ↑Complex.equivRealProd.symm (r * cos θ, r * sin θ) = ↑r * (Complex.cos ↑θ +  …
       simp only [Complex.equivRealProd_symm_apply, Complex.ofReal_mul, Complex.ofReal_cos,
         Complex.ofReal_sin]
+    -- ⊢ (fun p => (p.fst * cos p.snd, p.fst * sin p.snd)) ((fun q => (sqrt (q.fst ^  …
       ring
+      -- 🎉 no goals
   left_inv' := by
+    -- 🎉 no goals
     rintro ⟨x, y⟩ _
     have A : sqrt (x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
       simp [Complex.abs_def, Complex.normSq, pow_two, MonoidWithZeroHom.coe_mk, Complex.add_re,
@@ -87,13 +114,16 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
         (continuous_fst.mul (continuous_sin.comp continuous_snd))).continuousOn
   continuous_toFun := by
     apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.continuousOn.prod
+    -- ⊢ ContinuousOn (fun x => Complex.arg (↑Complex.equivRealProd.symm x)) { toFun  …
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         {z | 0 < z.re ∨ z.im ≠ 0} := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
     refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
       (g := Complex.arg) (fun z hz => _) _ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
+      -- 🎉 no goals
     · exact Complex.equivRealProdClm.symm.continuous.continuousOn
+      -- 🎉 no goals
 #align polar_coord polarCoord
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
@@ -101,10 +131,13 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
       (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
         !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])) p := by
   rw [Matrix.toLin_finTwoProd_toContinuousLinearMap]
+  -- ⊢ HasFDerivAt (↑(LocalHomeomorph.symm polarCoord)) (ContinuousLinearMap.prod ( …
   convert HasFDerivAt.prod (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, neg_smul, smul_neg]
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
@@ -124,7 +157,9 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
     have : (LinearMap.snd ℝ ℝ ℝ) (0, 1) = (0 : ℝ × ℝ →ₗ[ℝ] ℝ) (0, 1) := by rw [h]
     simp at this
   simp only [ae_eq_univ]
+  -- ⊢ ↑↑volume polarCoord.sourceᶜ = 0
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
+  -- 🎉 no goals
 #align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
 theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -142,6 +177,7 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
       Matrix.det_fin_two_of, sub_neg_eq_add]
     ring
   symm
+  -- ⊢ ∫ (p : ℝ × ℝ), f p = ∫ (p : ℝ × ℝ) in polarCoord.target, p.fst • f (↑(LocalH …
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
       rw [← integral_univ]

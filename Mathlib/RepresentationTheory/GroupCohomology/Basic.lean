@@ -105,10 +105,13 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
         (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
   map_add' f g := by
     ext x
+    -- ⊢ (fun f g => ↑(↑(ρ A) (g 0)) (f fun i => g (Fin.succ i)) + Finset.sum Finset. …
 /- Porting note: changed from `simp only` which needed extra heartbeats -/
     simp_rw [Pi.add_apply, map_add, smul_add, Finset.sum_add_distrib, add_add_add_comm]
+    -- 🎉 no goals
   map_smul' r f := by
     ext x
+    -- ⊢ AddHom.toFun { toFun := fun f g => ↑(↑(ρ A) (g 0)) (f fun i => g (Fin.succ i …
 /- Porting note: changed from `simp only` which needed extra heartbeats -/
     simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
       smul_eq_mul, mul_comm r]
@@ -127,6 +130,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
         (linearYonedaObjResolution A).d n (n + 1) ≫
           (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
   ext f g
+  -- ⊢ ↑(d n A) f g = ↑((LinearEquiv.toModuleIso (diagonalHomEquiv n A)).inv ≫ Homo …
 /- Porting note: broken proof was
   simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
@@ -151,17 +155,25 @@ and the homogeneous `linearYonedaObjResolution`. -/
   rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     Resolution.d_eq]
   erw [Resolution.d_of (Fin.partialProd g)]
+  -- ⊢ ↑(d n A) f g = ↑(↑(LinearEquiv.symm (diagonalHomEquiv n A)) f).hom (Finset.s …
   rw [LinearMap.map_sum]
+  -- ⊢ ↑(d n A) f g = Finset.sum Finset.univ fun i => ↑(↑(LinearEquiv.symm (diagona …
   simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  -- ⊢ ↑(d n A) f g = Finset.sum Finset.univ fun x => ↑(↑(LinearEquiv.symm (diagona …
   rw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
   simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
     Fin.partialProd_zero, one_mul]
   rcongr x
+  -- ⊢ g (Fin.succ x) = (Fin.partialProd g (Fin.castSucc (Fin.castSucc x)) * g (Fin …
   · have := Fin.partialProd_right_inv g (Fin.castSucc x)
+    -- ⊢ g (Fin.succ x) = (Fin.partialProd g (Fin.castSucc (Fin.castSucc x)) * g (Fin …
     simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
+    -- ⊢ g (Fin.succ x) = (g (Fin.castSucc x))⁻¹ * (Fin.partialProd g (Fin.castSucc ( …
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
+    -- 🎉 no goals
   · rw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
+    -- 🎉 no goals
 #align inhomogeneous_cochains.d_eq InhomogeneousCochains.d_eq
 
 end InhomogeneousCochains
@@ -187,16 +199,22 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
       LinearEquiv.toModuleIso_inv, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, this,
       LinearMap.zero_apply, map_zero, Pi.zero_apply] -/
     ext x
+    -- ⊢ ↑((fun n => d n A) n ≫ (fun n => d n A) (n + 1)) x = ↑0 x
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
+    -- ⊢ ↑((fun n => d n A) n ≫ (fun n => d n A) (n + 1)) x = ↑0 x
     simp only [ModuleCat.comp_def, LinearMap.comp_apply] at this
+    -- ⊢ ↑((fun n => d n A) n ≫ (fun n => d n A) (n + 1)) x = ↑0 x
     dsimp only
+    -- ⊢ ↑(d n A ≫ d (n + 1) A) x = ↑0 x
     simp only [d_eq, LinearEquiv.toModuleIso_inv, LinearEquiv.toModuleIso_hom, ModuleCat.coe_comp,
       Function.comp_apply]
     /- Porting note: I can see I need to rewrite `LinearEquiv.coe_coe` twice to at
       least reduce the need for `symm_apply_apply` to be an `erw`. However, even `erw` refuses to
       rewrite the second `coe_coe`... -/
     erw [LinearEquiv.symm_apply_apply, this]
+    -- ⊢ ↑↑(Rep.diagonalHomEquiv (n + 1 + 1) A) (↑0 (↑↑(LinearEquiv.symm (Rep.diagona …
     exact map_zero _
+    -- 🎉 no goals
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
 set_option maxHeartbeats 3200000 in
@@ -207,7 +225,9 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
   refine' HomologicalComplex.Hom.isoOfComponents (fun i =>
     (Rep.diagonalHomEquiv i A).toModuleIso.symm) _
   rintro i j (h : i + 1 = j)
+  -- ⊢ ((fun i => (LinearEquiv.toModuleIso (Rep.diagonalHomEquiv i A)).symm) i).hom …
   subst h
+  -- ⊢ ((fun i => (LinearEquiv.toModuleIso (Rep.diagonalHomEquiv i A)).symm) i).hom …
   simp only [CochainComplex.of_d, d_eq, Category.assoc, Iso.symm_hom, Iso.hom_inv_id,
     Category.comp_id]
 #align group_cohomology.inhomogeneous_cochains_iso GroupCohomology.inhomogeneousCochainsIso

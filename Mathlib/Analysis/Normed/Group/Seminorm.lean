@@ -148,7 +148,9 @@ variable [AddGroup E] [NonarchAddGroupSeminormClass F E] (f : F) (x y : E)
 
 theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
   rw [sub_eq_add_neg, ← NonarchAddGroupSeminormClass.map_neg_eq_map' f y]
+  -- ⊢ ↑f (x + -y) ≤ max (↑f x) (↑f (-y))
   exact map_add_le_max _ _ _
+  -- 🎉 no goals
 #align map_sub_le_max map_sub_le_max
 
 end NonarchAddGroupSeminormClass
@@ -160,8 +162,11 @@ instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass 
     map_add_le_add := fun f x y =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
+        -- ⊢ 0 ≤ ↑f a
         rw [← NonarchAddGroupSeminormClass.map_zero f, ← sub_self a]
+        -- ⊢ ↑f (a - a) ≤ ↑f a
         exact le_trans (map_sub_le_max _ _ _) (by rw [max_self (f a)])
+        -- 🎉 no goals
       le_trans (map_add_le_max _ _ _)
         (max_le (le_add_of_nonneg_right (h_nonneg _)) (le_add_of_nonneg_left (h_nonneg _)))
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
@@ -189,6 +194,9 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ { toFun := toFun✝, map_one' := map_one'✝, mul_le' := mul_le'✝, inv' := inv'✝ …
+                                      -- ⊢ { toFun := toFun✝¹, map_one' := map_one'✝¹, mul_le' := mul_le'✝¹, inv' := in …
+                                               -- 🎉 no goals
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -271,10 +279,12 @@ instance : Add (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => p x + q x
       map_one' := by simp_rw [map_one_eq_zero p, map_one_eq_zero q, zero_add]
+                     -- 🎉 no goals
       mul_le' := fun _ _ =>
         (add_le_add (map_mul_le_add p _ _) <| map_mul_le_add q _ _).trans_eq <|
           add_add_add_comm _ _ _ _
       inv' := fun x => by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
+                          -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem coe_add : ⇑(p + q) = p + q :=
@@ -296,10 +306,12 @@ instance : Sup (GroupSeminorm E) :=
     { toFun := p ⊔ q
       map_one' := by
         rw [Pi.sup_apply, ← map_one_eq_zero p, sup_eq_left, map_one_eq_zero p, map_one_eq_zero q]
+        -- 🎉 no goals
       mul_le' := fun x y =>
         sup_le ((map_mul_le_add p x y).trans <| add_le_add le_sup_left le_sup_left)
           ((map_mul_le_add q x y).trans <| add_le_add le_sup_right le_sup_right)
       inv' := fun x => by rw [Pi.sup_apply, Pi.sup_apply, map_inv_eq_map p, map_inv_eq_map q] }⟩
+                          -- 🎉 no goals
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
@@ -324,8 +336,10 @@ def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F
     where
   toFun x := p (f x)
   map_one' := by simp_rw [f.map_one, map_one_eq_zero p]
+                 -- 🎉 no goals
   mul_le' _ _ := (congr_arg p <| f.map_mul _ _).trans_le <| map_mul_le_add p _ _
   inv' x := by simp_rw [map_inv, map_inv_eq_map p]
+               -- 🎉 no goals
 #align group_seminorm.comp GroupSeminorm.comp
 #align add_group_seminorm.comp AddGroupSeminorm.comp
 
@@ -395,8 +409,11 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x / y)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
+    -- ⊢ 0 ≤ (fun y => ↑p y + ↑q (x✝ / y)) x
     dsimp
+    -- ⊢ 0 ≤ ↑p x + ↑q (x✝ / x)
     positivity⟩
+    -- 🎉 no goals
 #align group_seminorm.mul_bdd_below_range_add GroupSeminorm.mul_bddBelow_range_add
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
@@ -409,14 +426,19 @@ noncomputable instance : Inf (GroupSeminorm E) :=
           -- porting note: replace `add_nonneg` with `positivity` once we have the extension
           (fun x => add_nonneg (map_nonneg _ _) (map_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
+                 -- 🎉 no goals
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
           refine' ciInf_le_of_le mul_bddBelow_range_add (u * v) _
+          -- ⊢ ↑p (u * v) + ↑q (x * y / (u * v)) ≤ ↑p u + ↑q (x / u) + (↑p v + ↑q (y / v))
           rw [mul_div_mul_comm, add_add_add_comm]
+          -- ⊢ ↑p (u * v) + ↑q (x / u * (y / v)) ≤ ↑p u + ↑p v + (↑q (x / u) + ↑q (y / v))
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
+          -- 🎉 no goals
       inv' := fun x =>
         (inv_surjective.iInf_comp _).symm.trans <| by
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
+          -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
@@ -430,9 +452,11 @@ noncomputable instance : Lattice (GroupSeminorm E) :=
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
       ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
+                                                    -- 🎉 no goals
     inf_le_right := fun p q x =>
       ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
+        -- 🎉 no goals
     le_inf := fun a b c hb hc x =>
       le_ciInf fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
@@ -451,12 +475,25 @@ instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
       map_zero' := if_pos rfl
       add_le' := fun x y => by
         by_cases hx : x = 0
+        -- ⊢ (fun x => if x = 0 then 0 else 1) (x + y) ≤ (fun x => if x = 0 then 0 else 1 …
         · simp only
+          -- ⊢ (if x + y = 0 then 0 else 1) ≤ (if x = 0 then 0 else 1) + if y = 0 then 0 el …
           rw [if_pos hx, hx, zero_add, zero_add]
+          -- 🎉 no goals
         · simp only
+          -- ⊢ (if x + y = 0 then 0 else 1) ≤ (if x = 0 then 0 else 1) + if y = 0 then 0 el …
           rw [if_neg hx]
+          -- ⊢ (if x + y = 0 then 0 else 1) ≤ 1 + if y = 0 then 0 else 1
           refine' le_add_of_le_of_nonneg _ _ <;> split_ifs <;> norm_num
+          -- ⊢ (if x + y = 0 then 0 else 1) ≤ 1
+                                                 -- ⊢ 0 ≤ 1
+                                                 -- ⊢ 0 ≤ 0
+                                                               -- 🎉 no goals
+                                                               -- 🎉 no goals
+                                                               -- 🎉 no goals
+                                                               -- 🎉 no goals
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
+                          -- 🎉 no goals
 
 @[simp]
 theorem apply_one [DecidableEq E] (x : E) : (1 : AddGroupSeminorm E) x = if x = 0 then 0 else 1 :=
@@ -469,11 +506,16 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
     { toFun := fun x => r • p x
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero, mul_zero]
+        -- 🎉 no goals
       add_le' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
+        -- ⊢ ↑(r • 1) * ↑p (x✝¹ + x✝) ≤ ↑(r • 1) * (↑p x✝¹ + ↑p x✝)
         gcongr
+        -- ⊢ ↑p (x✝¹ + x✝) ≤ ↑p x✝¹ + ↑p x✝
         apply map_add_le_add
+        -- 🎉 no goals
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
+                          -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_smul (r : R) (p : AddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
@@ -508,6 +550,9 @@ instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAdd
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
+                             -- ⊢ { toZeroHom := { toFun := toFun✝, map_zero' := map_zero'✝ }, add_le_max' :=  …
+                                                         -- ⊢ { toZeroHom := { toFun := toFun✝, map_zero' := map_zero'✝ }, add_le_max' :=  …
+                                                                  -- 🎉 no goals
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
@@ -521,6 +566,7 @@ instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
+  -- 🎉 no goals
 #align nonarch_add_group_seminorm.to_fun_eq_coe NonarchAddGroupSeminorm.toZeroHom_eq_coe
 
 @[ext]
@@ -555,6 +601,9 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
       map_zero' := Pi.zero_apply _
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
+                                   -- ⊢ 0 ≤ max 0 0
+                                                              -- ⊢ 0 ≤ 0
+                                                                                 -- 🎉 no goals
       neg' := fun x => rfl }⟩
 
 @[simp, norm_cast]
@@ -576,10 +625,12 @@ instance : Sup (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_zero' := by rw [Pi.sup_apply, ← map_zero p, sup_eq_left, map_zero p, map_zero q]
+                      -- 🎉 no goals
       add_le_max' := fun x y =>
         sup_le ((map_add_le_max p x y).trans <| max_le_max le_sup_left le_sup_left)
           ((map_add_le_max q x y).trans <| max_le_max le_sup_right le_sup_right)
       neg' := fun x => by simp_rw [Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
+                          -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
@@ -604,8 +655,11 @@ theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
+    -- ⊢ 0 ≤ (fun y => ↑p y + ↑q (x✝ - y)) x
     dsimp
+    -- ⊢ 0 ≤ ↑p x + ↑q (x✝ - x)
     positivity⟩
+    -- 🎉 no goals
 #align nonarch_add_group_seminorm.add_bdd_below_range_add NonarchAddGroupSeminorm.add_bddBelow_range_add
 
 end AddCommGroup
@@ -622,12 +676,25 @@ instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
       map_one' := if_pos rfl
       mul_le' := fun x y => by
         by_cases hx : x = 1
+        -- ⊢ (fun x => if x = 1 then 0 else 1) (x * y) ≤ (fun x => if x = 1 then 0 else 1 …
         · simp only
+          -- ⊢ (if x * y = 1 then 0 else 1) ≤ (if x = 1 then 0 else 1) + if y = 1 then 0 el …
           rw [if_pos hx, hx, one_mul, zero_add]
+          -- 🎉 no goals
         · simp only
+          -- ⊢ (if x * y = 1 then 0 else 1) ≤ (if x = 1 then 0 else 1) + if y = 1 then 0 el …
           rw [if_neg hx]
+          -- ⊢ (if x * y = 1 then 0 else 1) ≤ 1 + if y = 1 then 0 else 1
           refine' le_add_of_le_of_nonneg _ _ <;> split_ifs <;> norm_num
+          -- ⊢ (if x * y = 1 then 0 else 1) ≤ 1
+                                                 -- ⊢ 0 ≤ 1
+                                                 -- ⊢ 0 ≤ 0
+                                                               -- 🎉 no goals
+                                                               -- 🎉 no goals
+                                                               -- 🎉 no goals
+                                                               -- 🎉 no goals
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
+                          -- 🎉 no goals
 
 @[to_additive (attr := simp) existing AddGroupSeminorm.apply_one]
 theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
@@ -644,9 +711,13 @@ instance : SMul R (GroupSeminorm E) :=
           mul_zero]
       mul_le' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←mul_add]
+        -- ⊢ ↑(r • 1) * ↑p (x✝¹ * x✝) ≤ ↑(r • 1) * (↑p x✝¹ + ↑p x✝)
         gcongr
+        -- ⊢ ↑p (x✝¹ * x✝) ≤ ↑p x✝¹ + ↑p x✝
         apply map_mul_le_add
+        -- 🎉 no goals
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
+                          -- 🎉 no goals
 
 @[to_additive existing AddGroupSeminorm.isScalarTower]
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
@@ -682,11 +753,20 @@ instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
       map_zero' := if_pos rfl
       add_le_max' := fun x y => by
         by_cases hx : x = 0
+        -- ⊢ ZeroHom.toFun { toFun := fun x => if x = 0 then 0 else 1, map_zero' := (_ :  …
         · simp_rw [if_pos hx, hx, zero_add]
+          -- ⊢ (if y = 0 then 0 else 1) ≤ max 0 (if y = 0 then 0 else 1)
           exact le_max_of_le_right (le_refl _)
+          -- 🎉 no goals
         · simp_rw [if_neg hx]
+          -- ⊢ (if x + y = 0 then 0 else 1) ≤ max 1 (if y = 0 then 0 else 1)
           split_ifs <;> norm_num
+                        -- 🎉 no goals
+                        -- 🎉 no goals
+                        -- 🎉 no goals
+                        -- 🎉 no goals
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
+                          -- 🎉 no goals
 
 @[simp]
 theorem apply_one [DecidableEq E] (x : E) :
@@ -705,8 +785,11 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←
           mul_max_of_nonneg _ _ NNReal.zero_le_coe]
         gcongr
+        -- ⊢ ↑p (x + y) ≤ max (↑p x) (↑p y)
         apply map_add_le_max
+        -- 🎉 no goals
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
+                          -- 🎉 no goals
 
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (NonarchAddGroupSeminorm E) :=
@@ -745,6 +828,9 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
+                             -- ⊢ { toGroupSeminorm := { toFun := toFun✝, map_one' := map_one'✝, mul_le' := mu …
+                                                            -- ⊢ { toGroupSeminorm := { toFun := toFun✝, map_one' := map_one'✝, mul_le' := mu …
+                                                                     -- 🎉 no goals
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -900,6 +986,9 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
+                             -- ⊢ { toNonarchAddGroupSeminorm := { toZeroHom := { toFun := toFun✝, map_zero' : …
+                                                              -- ⊢ { toNonarchAddGroupSeminorm := { toZeroHom := { toFun := toFun✝, map_zero' : …
+                                                                       -- 🎉 no goals
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'

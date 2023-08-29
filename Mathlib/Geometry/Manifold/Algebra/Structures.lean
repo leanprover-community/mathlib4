@@ -42,6 +42,7 @@ instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E
   compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
   smooth_add := smooth_add I
   smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
+                   -- 🎉 no goals
 #align smooth_ring.to_lie_add_group SmoothRing.toLieAddGroup
 
 end SmoothRing
@@ -52,10 +53,15 @@ instance (priority := 100) fieldSmoothRing {𝕜 : Type*} [NontriviallyNormedFie
   { normedSpaceLieAddGroup with
     smooth_mul := by
       rw [smooth_iff]
+      -- ⊢ (Continuous fun p => p.fst * p.snd) ∧ ∀ (x : 𝕜 × 𝕜) (y : 𝕜), ContDiffOn 𝕜 ⊤  …
       refine' ⟨continuous_mul, fun x y => _⟩
+      -- ⊢ ContDiffOn 𝕜 ⊤ (↑(extChartAt 𝓘(𝕜, 𝕜) y) ∘ (fun p => p.fst * p.snd) ∘ ↑(Local …
       simp only [Prod.mk.eta, mfld_simps]
+      -- ⊢ ContDiffOn 𝕜 ⊤ (fun p => p.fst * p.snd) Set.univ
       rw [contDiffOn_univ]
+      -- ⊢ ContDiff 𝕜 ⊤ fun p => p.fst * p.snd
       exact contDiff_mul }
+      -- 🎉 no goals
 #align field_smooth_ring fieldSmoothRing
 
 variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]

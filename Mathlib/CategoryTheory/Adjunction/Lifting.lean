@@ -78,14 +78,21 @@ def counitCoequalises [∀ X : B, RegularEpi (adj₁.counit.app X)] (X : B) :
   Cofork.IsColimit.mk' _ fun s => by
     refine' ⟨(RegularEpi.desc' (adj₁.counit.app X) s.π _).1, _, _⟩
     · rw [← cancel_epi (adj₁.counit.app (RegularEpi.W (adj₁.counit.app X)))]
+      -- ⊢ NatTrans.app adj₁.counit (RegularEpi.W (NatTrans.app adj₁.counit X)) ≫ Regul …
       rw [← adj₁.counit_naturality_assoc RegularEpi.left]
+      -- ⊢ F.map (U.map RegularEpi.left) ≫ NatTrans.app adj₁.counit ((U ⋙ F).obj X) ≫ C …
       dsimp only [Functor.comp_obj]
+      -- ⊢ F.map (U.map RegularEpi.left) ≫ NatTrans.app adj₁.counit (F.obj (U.obj X)) ≫ …
       rw [← s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
         F.map_comp_assoc, s.condition, ← adj₁.counit_naturality_assoc RegularEpi.right]
     · apply (RegularEpi.desc' (adj₁.counit.app X) s.π _).2
+      -- 🎉 no goals
     · intro m hm
+      -- ⊢ m = ↑(RegularEpi.desc' (NatTrans.app adj₁.counit X) (Cofork.π s) (_ : Regula …
       rw [← cancel_epi (adj₁.counit.app X)]
+      -- ⊢ NatTrans.app adj₁.counit X ≫ m = NatTrans.app adj₁.counit X ≫ ↑(RegularEpi.d …
       apply hm.trans (RegularEpi.desc' (adj₁.counit.app X) s.π _).2.symm
+      -- 🎉 no goals
 #align category_theory.lift_adjoint.counit_coequalises CategoryTheory.LiftAdjoint.counitCoequalises
 
 /-- (Implementation)
@@ -109,9 +116,12 @@ instance (X : B) :
   IsReflexivePair.mk' (F'.map (adj₁.unit.app (U.obj X)))
     (by
       rw [← F'.map_comp, adj₁.right_triangle_components]
+      -- ⊢ F'.map (𝟙 (U.obj X)) = 𝟙 (F'.obj (U.obj ((𝟭 B).obj X)))
       apply F'.map_id)
+      -- 🎉 no goals
     (by
       dsimp [otherMap]
+      -- ⊢ F'.map (NatTrans.app adj₁.unit (U.obj X)) ≫ F'.map (U.map (F.map (NatTrans.a …
       rw [← F'.map_comp_assoc, U.map_comp, adj₁.unit_naturality_assoc,
         adj₁.right_triangle_components, comp_id, adj₂.left_triangle_components])
 
@@ -136,34 +146,47 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
     _ ≃ { g : U.obj X ⟶ U.obj (R.obj Y) //
           U.map (F.map g ≫ adj₁.counit.app _) = U.map (adj₁.counit.app _) ≫ g } := by
       apply (adj₂.homEquiv _ _).subtypeEquiv _
+      -- ⊢ ∀ (a : F'.obj (U.obj X) ⟶ Y), F'.map (U.map (NatTrans.app adj₁.counit X)) ≫  …
       intro f
+      -- ⊢ F'.map (U.map (NatTrans.app adj₁.counit X)) ≫ f = otherMap R F' adj₁ adj₂ X  …
       rw [← (adj₂.homEquiv _ _).injective.eq_iff, eq_comm, adj₂.homEquiv_naturality_left,
         otherMap, assoc, adj₂.homEquiv_naturality_left, ← adj₂.counit_naturality,
         adj₂.homEquiv_naturality_left, adj₂.homEquiv_unit, adj₂.right_triangle_components,
         comp_id, Functor.comp_map, ← U.map_comp, assoc, ← adj₁.counit_naturality,
         adj₂.homEquiv_unit, adj₂.homEquiv_unit, F.map_comp, assoc]
       rfl
+      -- 🎉 no goals
     _ ≃ { z : F.obj (U.obj X) ⟶ R.obj Y // _ } := by
       apply (adj₁.homEquiv _ _).symm.subtypeEquiv
+      -- ⊢ ∀ (a : U.obj X ⟶ U.obj (R.obj Y)), U.map (F.map a ≫ NatTrans.app adj₁.counit …
       intro g
+      -- ⊢ U.map (F.map g ≫ NatTrans.app adj₁.counit (R.obj Y)) = U.map (NatTrans.app a …
       rw [← (adj₁.homEquiv _ _).symm.injective.eq_iff, adj₁.homEquiv_counit,
         adj₁.homEquiv_counit, adj₁.homEquiv_counit, F.map_comp, assoc, U.map_comp, F.map_comp,
         assoc, adj₁.counit_naturality, adj₁.counit_naturality_assoc]
       apply eq_comm
+      -- 🎉 no goals
     _ ≃ (X ⟶ R.obj Y) := (Cofork.IsColimit.homIso (counitCoequalises adj₁ X) _).symm
 #align category_theory.lift_adjoint.construct_left_adjoint_equiv CategoryTheory.LiftAdjoint.constructLeftAdjointEquiv
 
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app X)] : B ⥤ A := by
   refine' Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ Y X) _
+  -- ⊢ ∀ (X : B) (Y Y' : A) (g : Y ⟶ Y') (h : constructLeftAdjointObj R F' adj₁ adj …
   intro X Y Y' g h
+  -- ⊢ ↑((fun X Y => constructLeftAdjointEquiv R F' adj₁ adj₂ Y X) X Y') (h ≫ g) =  …
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
+  -- ⊢ F.map (↑(Adjunction.homEquiv adj₂ (U.obj X) Y') ↑(↑(Cofork.IsColimit.homIso  …
   rw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
+  -- ⊢ F.map (↑(Adjunction.homEquiv adj₂ (U.obj X) Y') (↑(↑(Cofork.IsColimit.homIso …
   erw [adj₂.homEquiv_naturality_right]
+  -- ⊢ F.map (↑(Adjunction.homEquiv adj₂ (U.obj X) Y) ↑(↑(Cofork.IsColimit.homIso ( …
   simp_rw [Functor.comp_map]
+  -- ⊢ F.map (↑(Adjunction.homEquiv adj₂ (U.obj X) Y) ↑(↑(Cofork.IsColimit.homIso ( …
   simp
+  -- 🎉 no goals
 #align category_theory.lift_adjoint.construct_left_adjoint CategoryTheory.LiftAdjoint.constructLeftAdjoint
 
 end LiftAdjoint
@@ -189,12 +212,15 @@ This is a special case of `adjointTriangleLift` which is often more useful in pr
 noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
     [HasReflexiveCoequalizers A] [IsRightAdjoint (R ⋙ U)] : IsRightAdjoint R := by
   let R' : A ⥤ _ := R ⋙ Monad.comparison (Adjunction.ofRightAdjoint U)
+  -- ⊢ IsRightAdjoint R
   rsuffices : IsRightAdjoint R'
+  -- ⊢ IsRightAdjoint R
   · let this : IsRightAdjoint (R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv) := by
       infer_instance
     · let this : R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv ≅ R :=
         (isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm : _) ≪≫ R.rightUnitor
       exact Adjunction.rightAdjointOfNatIso this
+      -- 🎉 no goals
   let this : IsRightAdjoint (R' ⋙ Monad.forget (Adjunction.ofRightAdjoint U).toMonad) :=
     Adjunction.rightAdjointOfNatIso
       (isoWhiskerLeft R (Monad.comparisonForget (Adjunction.ofRightAdjoint U)).symm : _)
@@ -203,6 +229,7 @@ noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint 
     simp only [Monad.adj_counit]
     exact ⟨_, _, _, _, Monad.beckAlgebraCoequalizer X⟩
   exact adjointTriangleLift R' (Monad.adj _)
+  -- 🎉 no goals
 #align category_theory.monadic_adjoint_triangle_lift CategoryTheory.monadicAdjointTriangleLift
 
 variable {D : Type u₄}

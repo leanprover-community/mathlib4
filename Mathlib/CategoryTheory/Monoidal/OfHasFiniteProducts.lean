@@ -127,9 +127,17 @@ open MonoidalCategory
 def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C where
   braiding X Y := Limits.prod.braiding X Y
   braiding_naturality f g := by dsimp [tensorHom]; simp
+                                -- ⊢ prod.map f g ≫ prod.lift prod.snd prod.fst = prod.lift prod.snd prod.fst ≫ p …
+                                                   -- 🎉 no goals
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
+                              -- ⊢ prod.lift (prod.fst ≫ prod.fst) (prod.lift (prod.fst ≫ prod.snd) prod.snd) ≫ …
+                                                                                  -- 🎉 no goals
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
+                              -- ⊢ prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) ≫ …
+                                                                                  -- 🎉 no goals
   symmetry X Y := by dsimp; simp
+                     -- ⊢ prod.lift prod.snd prod.fst ≫ prod.lift prod.snd prod.fst = 𝟙 (X ⨯ Y)
+                            -- 🎉 no goals
 #align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
 end
@@ -219,9 +227,17 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
   braiding := Limits.coprod.braiding
   braiding_naturality f g := by dsimp [tensorHom]; simp
+                                -- ⊢ coprod.map f g ≫ coprod.desc coprod.inr coprod.inl = coprod.desc coprod.inr  …
+                                                   -- 🎉 no goals
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
+                              -- ⊢ coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ …
+                                                                                    -- 🎉 no goals
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
+                              -- ⊢ coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) …
+                                                                                    -- 🎉 no goals
   symmetry X Y := by dsimp; simp
+                     -- ⊢ coprod.desc coprod.inr coprod.inl ≫ coprod.desc coprod.inr coprod.inl = 𝟙 (X …
+                            -- 🎉 no goals
 #align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
 
 end

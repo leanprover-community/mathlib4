@@ -24,6 +24,7 @@ This sign choice here corresponds to the signs obtained by multiplying two compl
 theorem sq_add_sq_mul_sq_add_sq :
     (x₁ ^ 2 + x₂ ^ 2) * (y₁ ^ 2 + y₂ ^ 2) = (x₁ * y₁ - x₂ * y₂) ^ 2 + (x₁ * y₂ + x₂ * y₁) ^ 2 := by
   ring
+  -- 🎉 no goals
 #align sq_add_sq_mul_sq_add_sq sq_add_sq_mul_sq_add_sq
 
 /-- Brahmagupta's identity, see <https://en.wikipedia.org/wiki/Brahmagupta%27s_identity>
@@ -32,6 +33,7 @@ theorem sq_add_mul_sq_mul_sq_add_mul_sq :
     (x₁ ^ 2 + n * x₂ ^ 2) * (y₁ ^ 2 + n * y₂ ^ 2) =
     (x₁ * y₁ - n * x₂ * y₂) ^ 2 + n * (x₁ * y₂ + x₂ * y₁) ^ 2 := by
   ring
+  -- 🎉 no goals
 #align sq_add_mul_sq_mul_sq_add_mul_sq sq_add_mul_sq_mul_sq_add_mul_sq
 
 /-- Sophie Germain's identity, see <https://www.cut-the-knot.org/blue/SophieGermainIdentity.shtml>.
@@ -39,6 +41,7 @@ theorem sq_add_mul_sq_mul_sq_add_mul_sq :
 theorem pow_four_add_four_mul_pow_four :
     a ^ 4 + 4 * b ^ 4 = ((a - b) ^ 2 + b ^ 2) * ((a + b) ^ 2 + b ^ 2) := by
   ring
+  -- 🎉 no goals
 #align pow_four_add_four_mul_pow_four pow_four_add_four_mul_pow_four
 
 /-- Sophie Germain's identity, see <https://www.cut-the-knot.org/blue/SophieGermainIdentity.shtml>.
@@ -46,6 +49,7 @@ theorem pow_four_add_four_mul_pow_four :
 theorem pow_four_add_four_mul_pow_four' :
     a ^ 4 + 4 * b ^ 4 = (a ^ 2 - 2 * a * b + 2 * b ^ 2) * (a ^ 2 + 2 * a * b + 2 * b ^ 2) := by
   ring
+  -- 🎉 no goals
 #align pow_four_add_four_mul_pow_four' pow_four_add_four_mul_pow_four'
 
 /-- Euler's four-square identity, see <https://en.wikipedia.org/wiki/Euler%27s_four-square_identity>.
@@ -58,6 +62,7 @@ theorem sum_four_sq_mul_sum_four_sq :
           (x₁ * y₃ - x₂ * y₄ + x₃ * y₁ + x₄ * y₂) ^ 2 +
         (x₁ * y₄ + x₂ * y₃ - x₃ * y₂ + x₄ * y₁) ^ 2 :=
   by ring
+     -- 🎉 no goals
 #align sum_four_sq_mul_sum_four_sq sum_four_sq_mul_sum_four_sq
 
 /-- Degen's eight squares identity, see <https://en.wikipedia.org/wiki/Degen%27s_eight-square_identity>.
@@ -76,4 +81,5 @@ theorem sum_eight_sq_mul_sum_eight_sq :
       (x₁ * y₇ + x₂ * y₈ + x₃ * y₅ - x₄ * y₆ - x₅ * y₃ + x₆ * y₄ + x₇ * y₁ - x₈ * y₂) ^ 2 +
       (x₁ * y₈ - x₂ * y₇ + x₃ * y₆ + x₄ * y₅ - x₅ * y₄ - x₆ * y₃ + x₇ * y₂ + x₈ * y₁) ^ 2 := by
   ring
+  -- 🎉 no goals
 #align sum_eight_sq_mul_sum_eight_sq sum_eight_sq_mul_sum_eight_sq

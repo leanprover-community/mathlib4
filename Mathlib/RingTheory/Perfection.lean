@@ -58,6 +58,7 @@ def Ring.perfectionSubring (R : Type u₁) [CommRing R] (p : ℕ) [hp : Fact p.P
     Subring (ℕ → R) :=
   (Ring.perfectionSubsemiring R p).toSubring fun n => by
     simp_rw [← frobenius_def, Pi.neg_apply, Pi.one_apply, RingHom.map_neg, RingHom.map_one]
+    -- 🎉 no goals
 #align ring.perfection_subring Ring.perfectionSubring
 
 /-- The perfection of a ring `R` with characteristic `p`,
@@ -128,6 +129,8 @@ theorem coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
 
 theorem coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) (f ^ p) = coeff R p n f :=
   by rw [RingHom.map_pow]; exact f.2 n
+     -- ⊢ ↑(coeff R p (n + 1)) f ^ p = ↑(coeff R p n) f
+                           -- 🎉 no goals
 #align perfection.coeff_pow_p Perfection.coeff_pow_p
 
 theorem coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
@@ -136,12 +139,14 @@ theorem coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^
 
 theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p (n + 1) (frobenius _ p f) = coeff R p n f := by apply coeff_pow_p f n
+                                                              -- 🎉 no goals
 #align perfection.coeff_frobenius Perfection.coeff_frobenius
 
 -- `coeff_pow_p f n` also works but is slow!
 theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
   Nat.recOn m rfl fun m ih => by erw [Function.iterate_succ_apply', coeff_frobenius, ih]
+                                 -- 🎉 no goals
 #align perfection.coeff_iterate_frobenius Perfection.coeff_iterate_frobenius
 
 theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
@@ -152,6 +157,7 @@ theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m 
 theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
   RingHom.ext fun x =>
     ext fun n => by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
+                    -- 🎉 no goals
 #align perfection.pth_root_frobenius Perfection.pthRoot_frobenius
 
 theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
@@ -164,6 +170,7 @@ theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
 theorem coeff_add_ne_zero {f : Ring.Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
   Nat.recOn k hfn fun k ih h => ih <| by erw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.pos]
+                                         -- 🎉 no goals
 #align perfection.coeff_add_ne_zero Perfection.coeff_add_ne_zero
 
 theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
@@ -189,6 +196,7 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by erw [← f.map_pow, Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p]⟩
+                    -- 🎉 no goals
       map_one' := ext fun n => (congr_arg f <| RingHom.iterate_map_one _ _).trans f.map_one
       map_mul' := fun x y =>
         ext fun n => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
@@ -214,6 +222,7 @@ variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 @[simps]
 def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
   toFun f := ⟨fun n => φ (coeff R p n f), fun n => by rw [← φ.map_pow, coeff_pow_p']⟩
+                                                      -- 🎉 no goals
   map_one' := Subtype.eq <| funext fun _ => φ.map_one
   map_mul' f g := Subtype.eq <| funext fun n => φ.map_mul _ _
   map_zero' := Subtype.eq <| funext fun _ => φ.map_zero
@@ -258,6 +267,7 @@ theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.
       ⟨x, fun n =>
         show Perfection.coeff R p n (Perfection.lift p P R f x) = Perfection.coeff R p n ⟨y, hy⟩ by
           simp [hfg, hx]⟩ }
+          -- 🎉 no goals
 #align perfection_map.mk' PerfectionMap.mk'
 
 variable (p R P)
@@ -275,6 +285,7 @@ theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from
           Nat.recOn n rfl fun n ih => injective_pow_p R p <| by
             rw [Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p, ih, hf]⟩ }
+            -- 🎉 no goals
 #align perfection_map.id PerfectionMap.id
 
 variable {p R P}
@@ -323,7 +334,9 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   invFun f := π.comp f
   left_inv f := by
     simp_rw [← RingHom.comp_assoc, comp_symm_equiv']
+    -- ⊢ RingHom.comp (Perfection.coeff S p 0) (↑(Perfection.lift p R S) f) = f
     exact (Perfection.lift p R S).symm_apply_apply f
+    -- 🎉 no goals
   right_inv f := by
     exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
@@ -363,6 +376,7 @@ theorem map_map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : 
 
 theorem map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
   hom_ext _ (of p S) fun f => by rw [map_map, Perfection.coeff_map]
+                                 -- 🎉 no goals
 #align perfection_map.map_eq_map PerfectionMap.map_eq_map
 
 end PerfectionMap
@@ -413,7 +427,9 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0)
   obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Quotient.mk'' x).out' - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
   refine' (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_le _)
+  -- ⊢ ¬↑v (↑(algebraMap O K) x) ≤ ↑v (↑(algebraMap O K) (Quotient.out' (↑(Ideal.Qu …
   erw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
+  -- ⊢ ¬r * ↑p ∣ x
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 #align mod_p.pre_val_mk ModP.preVal_mk
@@ -425,40 +441,66 @@ theorem preVal_zero : preVal K v O hv p 0 = 0 :=
 theorem preVal_mul {x y : ModP K v O hv p} (hxy0 : x * y ≠ 0) :
     preVal K v O hv p (x * y) = preVal K v O hv p x * preVal K v O hv p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
+  -- ⊢ preVal K v O hv p (x * y) = preVal K v O hv p x * preVal K v O hv p y
   have hy0 : y ≠ 0 := mt (by rintro rfl; rw [mul_zero]) hxy0
+  -- ⊢ preVal K v O hv p (x * y) = preVal K v O hv p x * preVal K v O hv p y
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
+  -- ⊢ preVal K v O hv p (↑(Ideal.Quotient.mk (Ideal.span {↑p})) r * y) = preVal K  …
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
+  -- ⊢ preVal K v O hv p (↑(Ideal.Quotient.mk (Ideal.span {↑p})) r * ↑(Ideal.Quotie …
   rw [← RingHom.map_mul] at hxy0 ⊢
+  -- ⊢ preVal K v O hv p (↑(Ideal.Quotient.mk (Ideal.span {↑p})) (r * s)) = preVal  …
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_mul, v.map_mul]
+  -- 🎉 no goals
 #align mod_p.pre_val_mul ModP.preVal_mul
 
 theorem preVal_add (x y : ModP K v O hv p) :
     preVal K v O hv p (x + y) ≤ max (preVal K v O hv p x) (preVal K v O hv p y) := by
   by_cases hx0 : x = 0
+  -- ⊢ preVal K v O hv p (x + y) ≤ max (preVal K v O hv p x) (preVal K v O hv p y)
   · rw [hx0, zero_add]; exact le_max_right _ _
+    -- ⊢ preVal K v O hv p y ≤ max (preVal K v O hv p 0) (preVal K v O hv p y)
+                        -- 🎉 no goals
   by_cases hy0 : y = 0
+  -- ⊢ preVal K v O hv p (x + y) ≤ max (preVal K v O hv p x) (preVal K v O hv p y)
   · rw [hy0, add_zero]; exact le_max_left _ _
+    -- ⊢ preVal K v O hv p x ≤ max (preVal K v O hv p x) (preVal K v O hv p 0)
+                        -- 🎉 no goals
   by_cases hxy0 : x + y = 0
+  -- ⊢ preVal K v O hv p (x + y) ≤ max (preVal K v O hv p x) (preVal K v O hv p y)
   · rw [hxy0, preVal_zero]; exact zero_le _
+    -- ⊢ 0 ≤ max (preVal K v O hv p x) (preVal K v O hv p y)
+                            -- 🎉 no goals
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
+  -- ⊢ preVal K v O hv p (↑(Ideal.Quotient.mk (Ideal.span {↑p})) r + y) ≤ max (preV …
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
+  -- ⊢ preVal K v O hv p (↑(Ideal.Quotient.mk (Ideal.span {↑p})) r + ↑(Ideal.Quotie …
   rw [← RingHom.map_add] at hxy0 ⊢
+  -- ⊢ preVal K v O hv p (↑(Ideal.Quotient.mk (Ideal.span {↑p})) (r + s)) ≤ max (pr …
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_add]; exact v.map_add _ _
+  -- ⊢ ↑v (↑(algebraMap O K) r + ↑(algebraMap O K) s) ≤ max (↑v (↑(algebraMap O K)  …
+                                                                      -- 🎉 no goals
 #align mod_p.pre_val_add ModP.preVal_add
 
 theorem v_p_lt_preVal {x : ModP K v O hv p} : v p < preVal K v O hv p x ↔ x ≠ 0 := by
   refine' ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
     fun h => lt_of_not_le fun hp => h _⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
+  -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) r = 0
   rw [preVal_mk h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
+  -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) r = 0
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
+  -- ⊢ ↑p ∣ r
+                                                                 -- 🎉 no goals
 #align mod_p.v_p_lt_pre_val ModP.v_p_lt_preVal
 
 theorem preVal_eq_zero {x : ModP K v O hv p} : preVal K v O hv p x = 0 ↔ x = 0 :=
   ⟨fun hvx =>
     by_contradiction fun hx0 : x ≠ 0 => by
       rw [← v_p_lt_preVal, hvx] at hx0
+      -- ⊢ False
       exact not_lt_zero' hx0,
+      -- 🎉 no goals
     fun hx => hx.symm ▸ preVal_zero⟩
 #align mod_p.pre_val_eq_zero ModP.preVal_eq_zero
 
@@ -477,20 +519,37 @@ variable {hv} -- Porting note: Originally `{hv} (hvp)`. Removed `(hvp)` because 
 theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) (hy : y ^ p ≠ 0) :
     x * y ≠ 0 := by
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
+  -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) r * y ≠ 0
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
+  -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) r * ↑(Ideal.Quotient.mk (Ideal.span { …
   have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
+  -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) r * ↑(Ideal.Quotient.mk (Ideal.span { …
   rw [← RingHom.map_mul]; rw [← RingHom.map_pow] at hx hy
+  -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) (r * s) ≠ 0
+                          -- ⊢ ↑(Ideal.Quotient.mk (Ideal.span {↑p})) (r * s) ≠ 0
   rw [← v_p_lt_val hv] at hx hy ⊢
+  -- ⊢ ↑v ↑p < ↑v (↑(algebraMap O K) (r * s))
   rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)
+  -- ⊢ ↑v ↑p < ↑v (↑(algebraMap O K) r) * ↑v (↑(algebraMap O K) s)
+                                   -- ⊢ ↑v ↑p ≤ ↑v ↑p ^ (1 / ↑p) * ↑v ↑p ^ (1 / ↑p)
   by_cases hvp : v p = 0
+  -- ⊢ ↑v ↑p ≤ ↑v ↑p ^ (1 / ↑p) * ↑v ↑p ^ (1 / ↑p)
   · rw [hvp]; exact zero_le _
+    -- ⊢ 0 ≤ 0 ^ (1 / ↑p) * 0 ^ (1 / ↑p)
+              -- 🎉 no goals
   replace hvp := zero_lt_iff.2 hvp
+  -- ⊢ ↑v ↑p ≤ ↑v ↑p ^ (1 / ↑p) * ↑v ↑p ^ (1 / ↑p)
   conv_lhs => rw [← rpow_one (v p)]
+  -- ⊢ ↑v ↑p ^ 1 ≤ ↑v ↑p ^ (1 / ↑p) * ↑v ↑p ^ (1 / ↑p)
   rw [← rpow_add (ne_of_gt hvp)]
+  -- ⊢ ↑v ↑p ^ 1 ≤ ↑v ↑p ^ (1 / ↑p + 1 / ↑p)
   refine' rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) _
+  -- ⊢ 1 / ↑p + 1 / ↑p ≤ 1
   rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact_mod_cast hp.1.two_le
+  -- ⊢ 1 + 1 ≤ ↑p
+                                                                      -- 🎉 no goals
 #align mod_p.mul_ne_zero_of_pow_p_ne_zero ModP.mul_ne_zero_of_pow_p_ne_zero
 
 end Classical
@@ -536,12 +595,19 @@ theorem coeff_nat_find_add_ne_zero {f : PreTilt K v O hv p} {h : ∃ n, coeff _ 
 theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0) :
     valAux K v O hv p f = ModP.preVal K v O hv p (coeff _ _ n f) ^ p ^ n := by
   have h : ∃ n, coeff _ _ n f ≠ 0 := ⟨n, hfn⟩
+  -- ⊢ valAux K v O hv p f = ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p n) …
   rw [valAux, dif_pos h]
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (Nat.find h)) f) ^ p ^ N …
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (Nat.find h)) f) ^ p ^ N …
   induction' k with k ih
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (Nat.find h)) f) ^ p ^ N …
   · rfl
+    -- 🎉 no goals
   obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff _ _ (Nat.find h + k + 1) f)
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (Nat.find h)) f) ^ p ^ N …
   have h1 : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0 := hx.symm ▸ hfn
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (Nat.find h)) f) ^ p ^ N …
   have h2 : (Ideal.Quotient.mk _ (x ^ p) : ModP K v O hv p) ≠ 0 := by
     erw [RingHom.map_pow, hx, ← RingHom.map_pow, coeff_pow_p]
     exact coeff_nat_find_add_ne_zero k
@@ -549,6 +615,7 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
     ← RingHom.map_pow, ModP.preVal_mk h1, ModP.preVal_mk h2, RingHom.map_pow, v.map_pow, ← pow_mul,
     pow_succ]
   rfl
+  -- 🎉 no goals
 #align pre_tilt.val_aux_eq PreTilt.valAux_eq
 
 theorem valAux_zero : valAux K v O hv p 0 = 0 :=
@@ -560,48 +627,82 @@ theorem valAux_one : valAux K v O hv p 1 = 1 :=
     rw [pow_zero, pow_one, RingHom.map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk,
       RingHom.map_one, v.map_one]
     change (1 : ModP K v O hv p) ≠ 0
+    -- ⊢ 1 ≠ 0
     exact one_ne_zero
+    -- 🎉 no goals
 #align pre_tilt.val_aux_one PreTilt.valAux_one
 
 theorem valAux_mul (f g : PreTilt K v O hv p) :
     valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g := by
   by_cases hf : f = 0
+  -- ⊢ valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g
   · rw [hf, zero_mul, valAux_zero, zero_mul]
+    -- 🎉 no goals
   by_cases hg : g = 0
+  -- ⊢ valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g
   · rw [hg, mul_zero, valAux_zero, mul_zero]
+    -- 🎉 no goals
   obtain ⟨m, hm⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf <| Perfection.ext h
+  -- ⊢ valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g
   obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h => hg <| Perfection.ext h
+  -- ⊢ valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g
   replace hm := coeff_ne_zero_of_le hm (le_max_left m n)
+  -- ⊢ valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g
   replace hn := coeff_ne_zero_of_le hn (le_max_right m n)
+  -- ⊢ valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g
   have hfg : coeff _ _ (max m n + 1) (f * g) ≠ 0 := by
     rw [RingHom.map_mul]
     refine' ModP.mul_ne_zero_of_pow_p_ne_zero _ _
     · rw [← RingHom.map_pow, coeff_pow_p f]; assumption
     · rw [← RingHom.map_pow, coeff_pow_p g]; assumption
   rw [valAux_eq (coeff_add_ne_zero hm 1), valAux_eq (coeff_add_ne_zero hn 1), valAux_eq hfg]
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (max m n + 1)) (f * g))  …
   rw [RingHom.map_mul] at hfg ⊢; rw [ModP.preVal_mul hfg, mul_pow]
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (max m n + 1)) f * ↑(coe …
+                                 -- 🎉 no goals
 #align pre_tilt.val_aux_mul PreTilt.valAux_mul
 
 theorem valAux_add (f g : PreTilt K v O hv p) :
     valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g) := by
   by_cases hf : f = 0
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   · rw [hf, zero_add, valAux_zero, max_eq_right]; exact zero_le _
+    -- ⊢ 0 ≤ valAux K v O hv p g
+                                                  -- 🎉 no goals
   by_cases hg : g = 0
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   · rw [hg, add_zero, valAux_zero, max_eq_left]; exact zero_le _
+    -- ⊢ 0 ≤ valAux K v O hv p f
+                                                 -- 🎉 no goals
   by_cases hfg : f + g = 0
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   · rw [hfg, valAux_zero]; exact zero_le _
+    -- ⊢ 0 ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
+                           -- 🎉 no goals
   replace hf : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf <| Perfection.ext h
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   replace hg : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h => hg <| Perfection.ext h
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   replace hfg : ∃ n, coeff _ _ n (f + g) ≠ 0 := not_forall.1 fun h => hfg <| Perfection.ext h
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   obtain ⟨m, hm⟩ := hf; obtain ⟨n, hn⟩ := hg; obtain ⟨k, hk⟩ := hfg
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
+                        -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
+                                              -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   replace hm := coeff_ne_zero_of_le hm (le_trans (le_max_left m n) (le_max_left _ k))
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   replace hn := coeff_ne_zero_of_le hn (le_trans (le_max_right m n) (le_max_left _ k))
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   replace hk := coeff_ne_zero_of_le hk (le_max_right (max m n) k)
+  -- ⊢ valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g)
   rw [valAux_eq hm, valAux_eq hn, valAux_eq hk, RingHom.map_add]
+  -- ⊢ ModP.preVal K v O hv p (↑(coeff (ModP K v O hv p) p (max (max m n) k)) f + ↑ …
   cases' le_max_iff.1
       (ModP.preVal_add (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h h
   · exact le_max_of_le_left (pow_le_pow_of_le_left' h _)
+    -- 🎉 no goals
   · exact le_max_of_le_right (pow_le_pow_of_le_left' h _)
+    -- 🎉 no goals
 #align pre_tilt.val_aux_add PreTilt.valAux_add
 
 variable (K v O hv p)
@@ -621,21 +722,32 @@ variable {K v O hv p}
 
 theorem map_eq_zero {f : PreTilt K v O hv p} : val K v O hv p f = 0 ↔ f = 0 := by
   by_cases hf0 : f = 0
+  -- ⊢ ↑(val K v O hv p) f = 0 ↔ f = 0
   · rw [hf0]; exact iff_of_true (Valuation.map_zero _) rfl
+    -- ⊢ ↑(val K v O hv p) 0 = 0 ↔ 0 = 0
+              -- 🎉 no goals
   obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf0 <| Perfection.ext h
+  -- ⊢ ↑(val K v O hv p) f = 0 ↔ f = 0
   show valAux K v O hv p f = 0 ↔ f = 0; refine' iff_of_false (fun hvf => hn _) hf0
+  -- ⊢ valAux K v O hv p f = 0 ↔ f = 0
+                                        -- ⊢ ↑(coeff (ModP K v O hv p) p n) f = 0
   rw [valAux_eq hn] at hvf; replace hvf := pow_eq_zero hvf; rwa [ModP.preVal_eq_zero] at hvf
+  -- ⊢ ↑(coeff (ModP K v O hv p) p n) f = 0
+                            -- ⊢ ↑(coeff (ModP K v O hv p) p n) f = 0
+                                                            -- 🎉 no goals
 #align pre_tilt.map_eq_zero PreTilt.map_eq_zero
 
 end Classical
 
 instance : IsDomain (PreTilt K v O hv p) := by
   haveI : Nontrivial (PreTilt K v O hv p) := ⟨(CharP.nontrivial_of_char_ne_one hp.1.ne_one).1⟩
+  -- ⊢ IsDomain (PreTilt K v O hv p)
   haveI : NoZeroDivisors (PreTilt K v O hv p) :=
     ⟨fun hfg => by
       simp_rw [← map_eq_zero] at hfg ⊢; contrapose! hfg; rw [Valuation.map_mul]
       exact mul_ne_zero hfg.1 hfg.2⟩
   exact NoZeroDivisors.to_isDomain _
+  -- 🎉 no goals
 
 end PreTilt
 

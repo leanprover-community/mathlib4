@@ -102,25 +102,33 @@ instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
 instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_gt a
+    -- ⊢ ∃ b_1, (a, b) < b_1
     exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
+    -- 🎉 no goals
 #align no_max_order_of_left noMaxOrder_of_left
 
 instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_gt b
+    -- ⊢ ∃ b_1, (a, b) < b_1
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
+    -- 🎉 no goals
 #align no_max_order_of_right noMaxOrder_of_right
 
 instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_lt a
+    -- ⊢ ∃ b_1, b_1 < (a, b)
     exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
+    -- 🎉 no goals
 #align no_min_order_of_left noMinOrder_of_left
 
 instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_lt b
+    -- ⊢ ∃ b_1, b_1 < (a, b)
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
+    -- 🎉 no goals
 #align no_min_order_of_right noMinOrder_of_right
 
 instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
@@ -140,11 +148,13 @@ instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)
 -- Porting note: mathlib3 proof uses `convert`
 theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
+                             -- 🎉 no goals
 #align no_bot_order.to_no_min_order NoBotOrder.to_noMinOrder
 
 -- Porting note: mathlib3 proof uses `convert`
 theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
+                             -- 🎉 no goals
 #align no_top_order.to_no_max_order NoTopOrder.to_noMaxOrder
 
 theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
@@ -336,11 +346,13 @@ theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
 @[simp]
 theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
   simp [lt_iff_le_not_le, IsMin, not_forall, exists_prop]
+  -- 🎉 no goals
 #align not_is_min_iff not_isMin_iff
 
 @[simp]
 theorem not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
   simp [lt_iff_le_not_le, IsMax, not_forall, exists_prop]
+  -- 🎉 no goals
 #align not_is_max_iff not_isMax_iff
 
 @[simp]

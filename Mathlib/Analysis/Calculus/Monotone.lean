@@ -57,11 +57,17 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
     field_simp [sub_ne_zero.2 hy]
     ring
   have Z := (hf.comp h').mul L
+  -- ⊢ Tendsto (fun y => (f (y + c * (y - x) ^ 2) - d) / (y - x)) l (𝓝 a)
   rw [mul_one] at Z
+  -- ⊢ Tendsto (fun y => (f (y + c * (y - x) ^ 2) - d) / (y - x)) l (𝓝 a)
   apply Tendsto.congr' _ Z
+  -- ⊢ (fun x_1 => ((fun y => (f y - d) / (y - x)) ∘ fun y => y + c * (y - x) ^ 2)  …
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := by apply Tendsto.mono_right h' hl self_mem_nhdsWithin
+  -- ⊢ (fun x_1 => ((fun y => (f y - d) / (y - x)) ∘ fun y => y + c * (y - x) ^ 2)  …
   filter_upwards [this] with y hy
+  -- ⊢ ((fun y => (f y - d) / (y - x)) ∘ fun y => y + c * (y - x) ^ 2) y * ((y + c  …
   field_simp [sub_ne_zero.2 hy]
+  -- 🎉 no goals
 #align tendsto_apply_add_mul_sq_div_sub tendsto_apply_add_mul_sq_div_sub
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
@@ -130,7 +136,9 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
       simpa only [sub_le_sub_iff_right] using f.mono.leftLim_le (le_refl y)
   -- prove the result by splitting into left and right limits.
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhds_left'_sup_nhds_right', tendsto_sup]
+  -- ⊢ Tendsto (fun b => (↑f b - ↑f x) / (b - x)) (𝓝[Iio x] x) (𝓝 (ENNReal.toReal ( …
   exact ⟨L4, L1⟩
+  -- 🎉 no goals
 #align stieltjes_function.ae_has_deriv_at StieltjesFunction.ae_hasDerivAt
 
 /-- A monotone function is almost everywhere differentiable, with derivative equal to the
@@ -212,12 +220,14 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, (nhds_left'_sup_nhds_right' x).symm,
     tendsto_sup]
   exact ⟨L2, L1⟩
+  -- 🎉 no goals
 #align monotone.ae_has_deriv_at Monotone.ae_hasDerivAt
 
 /-- A monotone real function is differentiable Lebesgue-almost everywhere. -/
 theorem Monotone.ae_differentiableAt {f : ℝ → ℝ} (hf : Monotone f) :
     ∀ᵐ x, DifferentiableAt ℝ f x := by
   filter_upwards [hf.ae_hasDerivAt] with x hx using hx.differentiableAt
+  -- 🎉 no goals
 #align monotone.ae_differentiable_at Monotone.ae_differentiableAt
 
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
@@ -230,17 +240,25 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
     almost everywhere. Such an extension need not exist (think of `1/x` on `(0, +∞)`), but it exists
     if one restricts first the function to a compact interval `[a, b]`. -/
   apply ae_of_mem_of_ae_of_mem_inter_Ioo
+  -- ⊢ ∀ (a b : ℝ), a ∈ s → b ∈ s → a < b → ∀ᵐ (x : ℝ), x ∈ s ∩ Ioo a b → Different …
   intro a b as bs _
+  -- ⊢ ∀ᵐ (x : ℝ), x ∈ s ∩ Ioo a b → DifferentiableWithinAt ℝ f s x
   obtain ⟨g, hg, gf⟩ : ∃ g : ℝ → ℝ, Monotone g ∧ EqOn f g (s ∩ Icc a b) :=
     (hf.mono (inter_subset_left s (Icc a b))).exists_monotone_extension
       (hf.map_bddBelow (inter_subset_left _ _) ⟨a, fun x hx => hx.2.1, as⟩)
       (hf.map_bddAbove (inter_subset_left _ _) ⟨b, fun x hx => hx.2.2, bs⟩)
   filter_upwards [hg.ae_differentiableAt] with x hx
+  -- ⊢ x ∈ s ∩ Ioo a b → DifferentiableWithinAt ℝ f s x
   intro h'x
+  -- ⊢ DifferentiableWithinAt ℝ f s x
   apply hx.differentiableWithinAt.congr_of_eventuallyEq _ (gf ⟨h'x.1, h'x.2.1.le, h'x.2.2.le⟩)
+  -- ⊢ f =ᶠ[𝓝[s] x] g
   have : Ioo a b ∈ 𝓝[s] x := nhdsWithin_le_nhds (Ioo_mem_nhds h'x.2.1 h'x.2.2)
+  -- ⊢ f =ᶠ[𝓝[s] x] g
   filter_upwards [self_mem_nhdsWithin, this] with y hy h'y
+  -- ⊢ f y = g y
   exact gf ⟨hy, h'y.1.le, h'y.2.le⟩
+  -- 🎉 no goals
 #align monotone_on.ae_differentiable_within_at_of_mem MonotoneOn.ae_differentiableWithinAt_of_mem
 
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
@@ -250,5 +268,7 @@ see `MonotoneOn.ae_differentiableWithinAt_of_mem`. -/
 theorem MonotoneOn.ae_differentiableWithinAt {f : ℝ → ℝ} {s : Set ℝ} (hf : MonotoneOn f s)
     (hs : MeasurableSet s) : ∀ᵐ x ∂volume.restrict s, DifferentiableWithinAt ℝ f s x := by
   rw [ae_restrict_iff' hs]
+  -- ⊢ ∀ᵐ (x : ℝ), x ∈ s → DifferentiableWithinAt ℝ f s x
   exact hf.ae_differentiableWithinAt_of_mem
+  -- 🎉 no goals
 #align monotone_on.ae_differentiable_within_at MonotoneOn.ae_differentiableWithinAt

@@ -96,6 +96,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
       suffices mkAlgHom R L (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) = mkAlgHom R L (ιₜ x * ιₜ y) by
         rw [AlgHom.map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
       exact RingQuot.mkAlgHom_rel _ (Rel.lie_compat x y) }
+      -- 🎉 no goals
 #align universal_enveloping_algebra.ι UniversalEnvelopingAlgebra.ι
 
 variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
@@ -107,11 +108,14 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     RingQuot.liftAlgHom R
       ⟨TensorAlgebra.lift R (f : L →ₗ[R] A), by
         intro a b h; induction' h with x y
+        -- ⊢ ↑(↑(TensorAlgebra.lift R) ↑f) a = ↑(↑(TensorAlgebra.lift R) ↑f) b
+                     -- ⊢ ↑(↑(TensorAlgebra.lift R) ↑f) (↑ιₜ ⁅x, y⁆ + ↑ιₜ y * ↑ιₜ x) = ↑(↑(TensorAlgeb …
         simp only [LieRing.of_associative_ring_bracket, map_add, TensorAlgebra.lift_ι_apply,
           LieHom.coe_toLinearMap, LieHom.map_lie, map_mul, sub_add_cancel]⟩
   invFun F := (F : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)
   left_inv f := by
     ext
+    -- ⊢ ↑((fun F => LieHom.comp (AlgHom.toLieHom F) (ι R)) ((fun f => ↑(RingQuot.lif …
     -- Porting note: was
     -- simp only [ι, mkAlgHom, TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap,
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_comp, AlgHom.coe_toLieHom,
@@ -120,16 +124,21 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
     rw [RingQuot.liftAlgHom_mkAlgHom_apply]
+    -- ⊢ ↑(↑(TensorAlgebra.lift R) ↑f) (↑ιₜ x✝) = ↑f x✝
     simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
+    -- 🎉 no goals
   right_inv F := by
     apply RingQuot.ringQuot_ext'
+    -- ⊢ AlgHom.comp ((fun f => ↑(RingQuot.liftAlgHom R) { val := ↑(TensorAlgebra.lif …
     ext
+    -- ⊢ ↑(LinearMap.comp (AlgHom.toLinearMap (AlgHom.comp ((fun f => ↑(RingQuot.lift …
     -- Porting note: was
     -- simp only [ι, mkAlgHom, TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap,
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_linearMap_comp,
     --   AlgHom.comp_toLinearMap, Function.comp_apply, AlgHom.toLinearMap_apply,
     --   RingQuot.liftAlgHom_mkAlgHom_apply, AlgHom.coe_toLieHom, LieHom.coe_mk]
     simp [mkAlgHom]
+    -- 🎉 no goals
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 
 @[simp]
@@ -146,16 +155,26 @@ theorem ι_comp_lift : lift R f ∘ ι R = f :=
 -- Porting note: moved `@[simp]` to the next theorem (LHS simplifies)
 theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x := by
   rw [← Function.comp_apply (f := lift R f) (g := ι R) (x := x), ι_comp_lift]
+  -- 🎉 no goals
 #align universal_enveloping_algebra.lift_ι_apply UniversalEnvelopingAlgebra.lift_ι_apply
 
 @[simp]
 theorem lift_ι_apply' (x : L) :
     lift R f ((UniversalEnvelopingAlgebra.mkAlgHom R L) (ιₜ x)) = f x := by
   simpa using lift_ι_apply R f x
+  -- 🎉 no goals
 
 theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
   refine' Iff.trans _ (lift R).symm_apply_eq
+  -- ⊢ ↑g ∘ ↑(ι R) = ↑f ↔ ↑(lift R).symm g = f
   constructor <;> · intro h; ext; simp [← h]
+  -- ⊢ ↑g ∘ ↑(ι R) = ↑f → ↑(lift R).symm g = f
+                    -- ⊢ ↑(lift R).symm g = f
+                             -- ⊢ ↑(↑(lift R).symm g) x✝ = ↑f x✝
+                                  -- 🎉 no goals
+                    -- ⊢ ↑g ∘ ↑(ι R) = ↑f
+                             -- ⊢ (↑g ∘ ↑(ι R)) x✝ = ↑f x✝
+                                  -- 🎉 no goals
 #align universal_enveloping_algebra.lift_unique UniversalEnvelopingAlgebra.lift_unique
 
 /-- See note [partially-applied ext lemmas]. -/
@@ -166,6 +185,8 @@ theorem hom_ext {g₁ g₂ : UniversalEnvelopingAlgebra R L →ₐ[R] A}
         (g₂ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)) :
     g₁ = g₂ :=
   have h' : (lift R).symm g₁ = (lift R).symm g₂ := by ext; simp [h]
+                                                      -- ⊢ ↑(↑(lift R).symm g₁) x✝ = ↑(↑(lift R).symm g₂) x✝
+                                                           -- 🎉 no goals
   (lift R).symm.injective h'
 #align universal_enveloping_algebra.hom_ext UniversalEnvelopingAlgebra.hom_ext
 

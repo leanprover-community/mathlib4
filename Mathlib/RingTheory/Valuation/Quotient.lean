@@ -30,6 +30,7 @@ def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
   Quotient.liftOn' q v fun a b h =>
     calc
       v a = v (b + -(-a + b)) := by simp
+                                    -- 🎉 no goals
       _ = v b :=
         v.map_add_supp b <| (Ideal.neg_mem_iff _).2 <| hJ <| QuotientAddGroup.leftRel_apply.mp h
 #align valuation.on_quot_val Valuation.onQuotVal
@@ -52,7 +53,9 @@ theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
 theorem self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp := by
   rw [comap_supp, ← Ideal.map_le_iff_le_comap]
+  -- ⊢ Ideal.map (Ideal.Quotient.mk J) J ≤ supp v
   simp
+  -- 🎉 no goals
 #align valuation.self_le_supp_comap Valuation.self_le_supp_comap
 
 @[simp]
@@ -60,24 +63,35 @@ theorem comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     (v.comap (Ideal.Quotient.mk J)).onQuot (v.self_le_supp_comap J) = v :=
   ext <| by
     rintro ⟨x⟩
+    -- ⊢ ↑(onQuot (comap (Ideal.Quotient.mk J) v) (_ : J ≤ supp (comap (Ideal.Quotien …
     rfl
+    -- 🎉 no goals
 #align valuation.comap_on_quot_eq Valuation.comap_onQuot_eq
 
 /-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
 theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) := by
   apply le_antisymm
+  -- ⊢ supp (onQuot v hJ) ≤ Ideal.map (Ideal.Quotient.mk J) (supp v)
   · rintro ⟨x⟩ hx
+    -- ⊢ Quot.mk Setoid.r x ∈ Ideal.map (Ideal.Quotient.mk J) (supp v)
     apply Ideal.subset_span
+    -- ⊢ Quot.mk Setoid.r x ∈ ↑(Ideal.Quotient.mk J) '' ↑(supp v)
     exact ⟨x, hx, rfl⟩
+    -- 🎉 no goals
   · rw [Ideal.map_le_iff_le_comap]
+    -- ⊢ supp v ≤ Ideal.comap (Ideal.Quotient.mk J) (supp (onQuot v hJ))
     intro x hx
+    -- ⊢ x ∈ Ideal.comap (Ideal.Quotient.mk J) (supp (onQuot v hJ))
     exact hx
+    -- 🎉 no goals
 #align valuation.supp_quot Valuation.supp_quot
 
 theorem supp_quot_supp : supp (v.onQuot le_rfl) = 0 := by
   rw [supp_quot]
+  -- ⊢ Ideal.map (Ideal.Quotient.mk (supp v)) (supp v) = 0
   exact Ideal.map_quotient_self _
+  -- 🎉 no goals
 #align valuation.supp_quot_supp Valuation.supp_quot_supp
 
 end Valuation

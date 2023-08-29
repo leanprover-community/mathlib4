@@ -88,10 +88,15 @@ protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAs
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
+  -- ⊢ Acc s b → Acc r a
   intro ac
+  -- ⊢ Acc r a
   induction' ac with _ H IH generalizing a
+  -- ⊢ Acc r a
   subst h
+  -- ⊢ Acc r a
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
+  -- 🎉 no goals
 #align rel_hom_class.acc RelHomClass.acc
 
 protected theorem wellFounded [RelHomClass F r s] (f : F) : ∀ _ : WellFounded s, WellFounded r
@@ -106,8 +111,11 @@ instance : RelHomClass (r →r s) r s where
   coe o := o.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toFun := toFun✝, map_rel' := map_rel'✝ } = g
     cases g
+    -- ⊢ { toFun := toFun✝¹, map_rel' := map_rel'✝¹ } = { toFun := toFun✝, map_rel' : …
     congr
+    -- 🎉 no goals
   map_rel := map_rel'
 
 initialize_simps_projections RelHom (toFun → apply)
@@ -165,16 +173,26 @@ end RelHom
 theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
     [IsIrrefl β s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
   intro x y hxy
+  -- ⊢ x = y
   rcases trichotomous_of r x y with (h | h | h)
   · have := hf h
+    -- ⊢ x = y
     rw [hxy] at this
+    -- ⊢ x = y
     exfalso
+    -- ⊢ False
     exact irrefl_of s (f y) this
+    -- 🎉 no goals
   · exact h
+    -- 🎉 no goals
   · have := hf h
+    -- ⊢ x = y
     rw [hxy] at this
+    -- ⊢ x = y
     exfalso
+    -- ⊢ False
     exact irrefl_of s (f y) this
+    -- 🎉 no goals
 #align injective_of_increasing injective_of_increasing
 
 /-- An increasing function is injective -/
@@ -190,11 +208,17 @@ theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
   Iff.intro
     (by
       refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
+      -- ⊢ β → α
       · exact Classical.choose hf.hasRightInverse
+        -- 🎉 no goals
       intro a b h
+      -- ⊢ r (Classical.choose (_ : HasRightInverse f) a) (Classical.choose (_ : HasRig …
       apply o.2
+      -- ⊢ s (f (Classical.choose (_ : HasRightInverse f) a)) (f (Classical.choose (_ : …
       convert h
+      -- ⊢ f (Classical.choose (_ : HasRightInverse f) a) = a
       iterate 2 apply Classical.choose_spec hf.hasRightInverse)
+      -- 🎉 no goals
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
 #align surjective.well_founded_iff Surjective.wellFounded_iff
 
@@ -241,8 +265,11 @@ instance : RelHomClass (r ↪r s) r s where
   coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
+    -- ⊢ { toEmbedding := { toFun := toFun✝, inj' := inj'✝ }, map_rel_iff' := map_rel …
     rcases g with ⟨⟨⟩⟩
+    -- ⊢ { toEmbedding := { toFun := toFun✝¹, inj' := inj'✝¹ }, map_rel_iff' := map_r …
     congr
+    -- 🎉 no goals
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
 
@@ -304,6 +331,7 @@ protected def refl (r : α → α → Prop) : r ↪r r :=
 /-- Composition of two relation embeddings is a relation embedding. -/
 protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
   ⟨f.1.trans g.1, by simp [f.map_rel_iff, g.map_rel_iff]⟩
+                     -- 🎉 no goals
 #align rel_embedding.trans RelEmbedding.trans
 
 instance (r : α → α → Prop) : Inhabited (r ↪r r) :=
@@ -331,7 +359,9 @@ def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
 
 theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   ext a b
+  -- ⊢ r a b ↔ (↑f ⁻¹'o s) a b
   exact f.map_rel_iff.symm
+  -- 🎉 no goals
 #align rel_embedding.eq_preimage RelEmbedding.eq_preimage
 
 protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
@@ -389,10 +419,15 @@ protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β
 
 protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
+  -- ⊢ Acc s b → Acc r a
   intro ac
+  -- ⊢ Acc r a
   induction' ac with _ H IH generalizing a
+  -- ⊢ Acc r a
   subst h
+  -- ⊢ Acc r a
   exact ⟨_, fun a' h => IH (f a') (f.map_rel_iff.2 h) _ rfl⟩
+  -- 🎉 no goals
 #align rel_embedding.acc RelEmbedding.acc
 
 protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounded r
@@ -432,7 +467,11 @@ noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
+    -- ⊢ r (↑(Embedding.quotientOut α) (Quotient.mk inst✝ a)) (↑(Embedding.quotientOu …
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
+    -- ⊢ ↑(Embedding.quotientOut α) (Quotient.mk inst✝ a) ≈ a
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 #align quotient.out_rel_embedding Quotient.outRelEmbedding
 #align quotient.out_rel_embedding_apply Quotient.outRelEmbedding_apply
 
@@ -449,12 +488,19 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
     Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a := by
   constructor
+  -- ⊢ Acc (Quotient.lift₂ r H) (Quotient.mk inst✝ a) → Acc r a
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
+    -- 🎉 no goals
   · intro ac
+    -- ⊢ Acc (Quotient.lift₂ r H) (Quotient.mk inst✝ a)
     induction' ac with _ _ IH
+    -- ⊢ Acc (Quotient.lift₂ r H) (Quotient.mk inst✝ x✝)
     refine' ⟨_, fun q h => _⟩
+    -- ⊢ Acc (Quotient.lift₂ r H) q
     obtain ⟨a', rfl⟩ := q.exists_rep
+    -- ⊢ Acc (Quotient.lift₂ r H) (Quotient.mk inst✝ a')
     exact IH a' h
+    -- 🎉 no goals
 #align acc_lift₂_iff acc_lift₂_iff
 
 @[simp]
@@ -469,10 +515,15 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
   constructor
+  -- ⊢ WellFounded (Quotient.lift₂ r H) → WellFounded r
   · exact RelHomClass.wellFounded (Quotient.mkRelHom H)
+    -- 🎉 no goals
   · refine' fun wf => ⟨fun q => _⟩
+    -- ⊢ Acc (Quotient.lift₂ r H) q
     obtain ⟨a, rfl⟩ := q.exists_rep
+    -- ⊢ Acc (Quotient.lift₂ r H) (Quotient.mk inst✝ a)
     exact acc_lift₂_iff.2 (wf.apply a)
+    -- 🎉 no goals
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
 alias ⟨WellFounded.of_quotient_lift₂, WellFounded.quotient_lift₂⟩ := wellFounded_lift₂_iff
@@ -513,13 +564,22 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
+  -- ⊢ r ↪r s
   refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
+  -- ⊢ a = b
   · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
+    -- ⊢ ¬r a b
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
+      -- 🎉 no goals
+      -- 🎉 no goals
   · refine' (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => _) fun h' => _)
+    -- ⊢ False
     · subst e
+      -- ⊢ False
       exact irrefl _ h
+      -- 🎉 no goals
     · exact asymm (H _ _ h') h
+      -- 🎉 no goals
 #align rel_embedding.of_monotone RelEmbedding.ofMonotone
 
 @[simp]
@@ -557,6 +617,10 @@ def sumLiftRelMap (f : r ↪r s) (g : t ↪r u) : Sum.LiftRel r t ↪r Sum.LiftR
   toFun := Sum.map f g
   inj' := f.injective.sum_map g.injective
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
 #align rel_embedding.sum_lift_rel_map RelEmbedding.sumLiftRelMap
 #align rel_embedding.sum_lift_rel_map_apply RelEmbedding.sumLiftRelMap_apply
 
@@ -584,6 +648,10 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
   toFun := Sum.map f g
   inj' := f.injective.sum_map g.injective
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
 #align rel_embedding.sum_lex_map RelEmbedding.sumLexMap
 #align rel_embedding.sum_lex_map_apply RelEmbedding.sumLexMap_apply
 
@@ -593,6 +661,7 @@ def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.
   toFun := Prod.mk a
   inj' := Prod.mk.inj_left a
   map_rel_iff' := by simp [Prod.lex_def, h]
+                     -- 🎉 no goals
 #align rel_embedding.prod_lex_mk_left RelEmbedding.prodLexMkLeft
 #align rel_embedding.prod_lex_mk_left_apply RelEmbedding.prodLexMkLeft_apply
 
@@ -602,6 +671,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
   toFun a := (a, b)
   inj' := Prod.mk.inj_right b
   map_rel_iff' := by simp [Prod.lex_def, h]
+                     -- 🎉 no goals
 #align rel_embedding.prod_lex_mk_right RelEmbedding.prodLexMkRight
 #align rel_embedding.prod_lex_mk_right_apply RelEmbedding.prodLexMkRight_apply
 
@@ -611,6 +681,7 @@ def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u wh
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
   map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
+                     -- 🎉 no goals
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
@@ -636,6 +707,7 @@ def toRelEmbedding (f : r ≃r s) : r ↪r s :=
 
 theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
+                               -- 🎉 no goals
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
 instance : CoeOut (r ≃r s) (r ↪r s) :=
@@ -701,6 +773,7 @@ theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=
   ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
+                                  -- 🎉 no goals
 #align rel_iso.symm RelIso.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -744,8 +817,11 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
     (h₂ : HEq r s) : r ≃r s :=
   ⟨Equiv.cast h₁, @fun a b => by
     subst h₁
+    -- ⊢ s (↑(Equiv.cast (_ : α = α)) a) (↑(Equiv.cast (_ : α = α)) b) ↔ r a b
     rw [eq_of_heq h₂]
+    -- ⊢ s (↑(Equiv.cast (_ : α = α)) a) (↑(Equiv.cast (_ : α = α)) b) ↔ s a b
     rfl⟩
+    -- 🎉 no goals
 #align rel_iso.cast RelIso.cast
 #align rel_iso.cast_apply RelIso.cast_apply
 #align rel_iso.cast_to_equiv RelIso.cast_toEquiv
@@ -767,6 +843,8 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
     {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
   ext fun x => by subst h₁; rfl
+                  -- ⊢ ↑(RelIso.trans (RelIso.cast (_ : α = α) h₂) (RelIso.cast h₁' h₂')) x = ↑(Rel …
+                            -- 🎉 no goals
 #align rel_iso.cast_trans RelIso.cast_trans
 
 /-- a relation isomorphism is also a relation isomorphism between dual relations. -/
@@ -791,10 +869,12 @@ theorem symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x :=
 
 theorem rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
+  -- 🎉 no goals
 #align rel_iso.rel_symm_apply RelIso.rel_symm_apply
 
 theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
+  -- 🎉 no goals
 #align rel_iso.symm_apply_rel RelIso.symm_apply_rel
 
 protected theorem bijective (e : r ≃r s) : Bijective e :=
@@ -842,6 +922,15 @@ def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
     cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
+    -- ⊢ Sum.Lex s₁ s₂ (↑(Equiv.sumCongr { toEquiv := f, map_rel_iff' := hf }.toEquiv …
+                         -- ⊢ Sum.Lex s₁ s₂ (↑(Equiv.sumCongr { toEquiv := f, map_rel_iff' := hf }.toEquiv …
+                                              -- ⊢ Sum.Lex s₁ s₂ (↑(Equiv.sumCongr { toEquiv := f, map_rel_iff' := hf }.toEquiv …
+                                                          -- ⊢ Sum.Lex s₁ s₂ (↑(Equiv.sumCongr { toEquiv := f, map_rel_iff' := hf }.toEquiv …
+                                                          -- ⊢ Sum.Lex s₁ s₂ (↑(Equiv.sumCongr { toEquiv := f, map_rel_iff' := hf }.toEquiv …
+                                                                      -- 🎉 no goals
+                                                                      -- 🎉 no goals
+                                                                      -- 🎉 no goals
+                                                                      -- 🎉 no goals
 #align rel_iso.sum_lex_congr RelIso.sumLexCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the

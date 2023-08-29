@@ -80,9 +80,14 @@ theorem not_bex_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x := fun ⟨_, hx
 theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
   ⟨fun ⟨x, h, px⟩ => by
     simp only [find?, mem_cons] at h
+    -- ⊢ p a ∨ ∃ x, x ∈ l ∧ p x
     cases' h with h h
+    -- ⊢ p a ∨ ∃ x, x ∈ l ∧ p x
     · cases h; exact Or.inl px;
+      -- ⊢ p a ∨ ∃ x, x ∈ l ∧ p x
+               -- 🎉 no goals
     · exact Or.inr ⟨x, h, px⟩,
+      -- 🎉 no goals
   fun o =>
     o.elim (fun pa => ⟨a, mem_cons_self _ _, pa⟩) fun ⟨x, h, px⟩ => ⟨x, mem_cons_of_mem _ h, px⟩⟩
 #align list.bex_cons List.bex_cons

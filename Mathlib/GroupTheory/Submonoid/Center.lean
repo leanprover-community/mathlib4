@@ -81,6 +81,7 @@ instance center.smulCommClass_right : SMulCommClass M (center M) M :=
 `Submonoid.smulCommClass_right` -/
 
 example : SMulCommClass (center M) (center M) M := by infer_instance
+                                                      -- 🎉 no goals
 
 end
 

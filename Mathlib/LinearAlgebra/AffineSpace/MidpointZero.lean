@@ -29,6 +29,7 @@ theorem lineMap_inv_two {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] 
 theorem lineMap_one_half {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (1 / 2 : R) = midpoint R a b := by
   rw [one_div, lineMap_inv_two]
+  -- 🎉 no goals
 #align line_map_one_half lineMap_one_half
 
 theorem homothety_invOf_two {R : Type*} {V P : Type*} [CommRing R] [Invertible (2 : R)]
@@ -45,6 +46,7 @@ theorem homothety_inv_two {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddC
 theorem homothety_one_half {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
     [Module k V] [AddTorsor V P] (a b : P) : homothety a (1 / 2 : k) b = midpoint k a b := by
   rw [one_div, homothety_inv_two]
+  -- 🎉 no goals
 #align homothety_one_half homothety_one_half
 
 @[simp]

@@ -60,11 +60,17 @@ inductive GameAdd : α × β → α × β → Prop
 theorem gameAdd_iff {rα rβ} {x y : α × β} :
     GameAdd rα rβ x y ↔ rα x.1 y.1 ∧ x.2 = y.2 ∨ rβ x.2 y.2 ∧ x.1 = y.1 := by
   constructor
+  -- ⊢ GameAdd rα rβ x y → rα x.fst y.fst ∧ x.snd = y.snd ∨ rβ x.snd y.snd ∧ x.fst  …
   · rintro (@⟨a₁, a₂, b, h⟩ | @⟨a, b₁, b₂, h⟩)
+    -- ⊢ rα (a₁, b).fst (a₂, b).fst ∧ (a₁, b).snd = (a₂, b).snd ∨ rβ (a₁, b).snd (a₂, …
     exacts [Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
+    -- 🎉 no goals
   · revert x y
+    -- ⊢ ∀ {x y : α × β}, rα x.fst y.fst ∧ x.snd = y.snd ∨ rβ x.snd y.snd ∧ x.fst = y …
     rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨h, rfl : b₁ = b₂⟩ | ⟨h, rfl : a₁ = a₂⟩)
+    -- ⊢ GameAdd rα rβ (a₁, b₁) (a₂, b₁)
     exacts [GameAdd.fst h, GameAdd.snd h]
+    -- 🎉 no goals
 #align prod.game_add_iff Prod.gameAdd_iff
 
 theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
@@ -75,6 +81,7 @@ theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
 @[simp]
 theorem gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.swap b.swap ↔ GameAdd rα rβ a b :=
   fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => by rw [Prod.swap, Prod.swap, gameAdd_mk_iff, gameAdd_mk_iff, or_comm]
+                              -- 🎉 no goals
 #align prod.game_add_swap_swap Prod.gameAdd_swap_swap
 
 theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
@@ -91,7 +98,9 @@ theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h =>
 theorem rprod_le_transGen_gameAdd : RProd rα rβ ≤ Relation.TransGen (GameAdd rα rβ)
   | _, _, h => h.rec (by
       intro _ _ _ _ hα hβ
+      -- ⊢ Relation.TransGen (GameAdd rα rβ) (a₁✝, b₁✝) (a₂✝, b₂✝)
       exact Relation.TransGen.tail (Relation.TransGen.single $ GameAdd.fst hα) (GameAdd.snd hβ))
+      -- 🎉 no goals
 #align prod.rprod_le_trans_gen_game_add Prod.rprod_le_transGen_gameAdd
 
 end Prod
@@ -102,10 +111,15 @@ end Prod
 theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction' ha with a _ iha generalizing b
+  -- ⊢ Acc (Prod.GameAdd rα rβ) (a, b)
   induction' hb with b hb ihb
+  -- ⊢ Acc (Prod.GameAdd rα rβ) (a, b)
   refine' Acc.intro _ fun h => _
+  -- ⊢ Prod.GameAdd rα rβ h (a, b) → Acc (Prod.GameAdd rα rβ) h
   rintro (⟨ra⟩ | ⟨rb⟩)
+  -- ⊢ Acc (Prod.GameAdd rα rβ) (a₁✝, b)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
+  -- 🎉 no goals
 #align acc.prod_game_add Acc.prod_gameAdd
 
 /-- The `Prod.GameAdd` relation on well-founded inputs is well-founded.
@@ -157,14 +171,19 @@ def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
     ⟨fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂),
       fun a₁ b₁ a₂ b₂ => by
         dsimp
+        -- ⊢ (Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂) …
         rw [Prod.gameAdd_swap_swap_mk _ _ b₁ b₂ a₁ a₂, Prod.gameAdd_swap_swap_mk _ _ a₁ b₂ b₁ a₂]
+        -- ⊢ (Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂) …
         simp [or_comm]⟩
+        -- 🎉 no goals
 #align sym2.game_add Sym2.GameAdd
 
 theorem gameAdd_iff :
     ∀ {x y : α × α}, GameAdd rα ⟦x⟧ ⟦y⟧ ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y := by
   rintro ⟨_, _⟩ ⟨_, _⟩
+  -- ⊢ GameAdd rα (Quotient.mk (Rel.setoid α) (fst✝¹, snd✝¹)) (Quotient.mk (Rel.set …
   rfl
+  -- 🎉 no goals
 #align sym2.game_add_iff Sym2.gameAdd_iff
 
 theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
@@ -188,12 +207,16 @@ theorem GameAdd.snd {a b₁ b₂ : α} (h : rα b₁ b₂) : GameAdd rα ⟦(a, 
 
 theorem GameAdd.fst_snd {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(a₁, b)⟧ ⟦(b, a₂)⟧ := by
   rw [Sym2.eq_swap]
+  -- ⊢ GameAdd rα (Quotient.mk (Rel.setoid α) (b, a₁)) (Quotient.mk (Rel.setoid α)  …
   exact GameAdd.snd h
+  -- 🎉 no goals
 #align sym2.game_add.fst_snd Sym2.GameAdd.fst_snd
 
 theorem GameAdd.snd_fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(b, a₁)⟧ ⟦(a₂, b)⟧ := by
   rw [Sym2.eq_swap]
+  -- ⊢ GameAdd rα (Quotient.mk (Rel.setoid α) (a₁, b)) (Quotient.mk (Rel.setoid α)  …
   exact GameAdd.fst h
+  -- 🎉 no goals
 #align sym2.game_add.snd_fst Sym2.GameAdd.snd_fst
 
 end Sym2
@@ -201,18 +224,30 @@ end Sym2
 theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) ⟦(a, b)⟧ := by
   induction' ha with a _ iha generalizing b
+  -- ⊢ Acc (Sym2.GameAdd rα) (Quotient.mk (Sym2.Rel.setoid α) (a, b))
   induction' hb with b hb ihb
+  -- ⊢ Acc (Sym2.GameAdd rα) (Quotient.mk (Sym2.Rel.setoid α) (a, b))
   refine' Acc.intro _ fun s => _
+  -- ⊢ Sym2.GameAdd rα s (Quotient.mk (Sym2.Rel.setoid α) (a, b)) → Acc (Sym2.GameA …
   induction' s using Sym2.inductionOn with c d
+  -- ⊢ Sym2.GameAdd rα (Quotient.mk (Sym2.Rel.setoid α) (c, d)) (Quotient.mk (Sym2. …
   rw [Sym2.GameAdd]
+  -- ⊢ ↑Sym2.lift₂ { val := fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) …
   dsimp
+  -- ⊢ Prod.GameAdd rα rα (c, d) (a, b) ∨ Prod.GameAdd rα rα (d, c) (a, b) → Acc (↑ …
   rintro ((rc | rd) | (rd | rc))
   · exact iha c rc ⟨b, hb⟩
+    -- 🎉 no goals
   · exact ihb d rd
+    -- 🎉 no goals
   · rw [Sym2.eq_swap]
+    -- ⊢ Acc (↑Sym2.lift₂ { val := fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂ …
     exact iha d rd ⟨b, hb⟩
+    -- 🎉 no goals
   · rw [Sym2.eq_swap]
+    -- ⊢ Acc (↑Sym2.lift₂ { val := fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂ …
     exact ihb c rc
+    -- 🎉 no goals
 #align acc.sym2_game_add Acc.sym2_gameAdd
 
 /-- The `Sym2.GameAdd` relation on well-founded inputs is well-founded. -/
@@ -228,7 +263,9 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     C a b := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
+  -- ⊢ C a b
   dsimp only [GameAdd, lift₂, FunLike.coe, EquivLike.coe] at this
+  -- ⊢ C a b
   exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 #align sym2.game_add.fix Sym2.GameAdd.fix
@@ -238,7 +275,9 @@ theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
   dsimp [GameAdd.fix]
+  -- ⊢ WellFounded.fix (_ : WellFounded fun a b => Prod.GameAdd rα rα (a.fst, a.snd …
   exact WellFounded.fix_eq _ _ _
+  -- 🎉 no goals
 #align sym2.game_add.fix_eq Sym2.GameAdd.fix_eq
 
 /-- Induction on the well-founded `Sym2.GameAdd` relation. -/

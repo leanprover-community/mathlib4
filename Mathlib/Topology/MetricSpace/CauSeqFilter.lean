@@ -29,15 +29,25 @@ theorem CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β �
   tendsto_nhds.mpr
     (by
       intro s os lfs
+      -- ⊢ ↑f ⁻¹' s ∈ atTop
       suffices ∃ a : ℕ, ∀ b : ℕ, b ≥ a → f b ∈ s by simpa using this
+      -- ⊢ ∃ a, ∀ (b : ℕ), b ≥ a → ↑f b ∈ s
       rcases Metric.isOpen_iff.1 os _ lfs with ⟨ε, ⟨hε, hεs⟩⟩
+      -- ⊢ ∃ a, ∀ (b : ℕ), b ≥ a → ↑f b ∈ s
       cases' Setoid.symm (CauSeq.equiv_lim f) _ hε with N hN
+      -- ⊢ ∃ a, ∀ (b : ℕ), b ≥ a → ↑f b ∈ s
       exists N
+      -- ⊢ ∀ (b : ℕ), b ≥ N → ↑f b ∈ s
       intro b hb
+      -- ⊢ ↑f b ∈ s
       apply hεs
+      -- ⊢ ↑f b ∈ Metric.ball (lim f) ε
       dsimp [Metric.ball]
+      -- ⊢ dist (↑f b) (lim f) < ε
       rw [dist_comm, dist_eq_norm]
+      -- ⊢ ‖lim f - ↑f b‖ < ε
       solve_by_elim)
+      -- 🎉 no goals
 #align cau_seq.tendsto_limit CauSeq.tendsto_limit
 
 variable [NormedField β]
@@ -53,32 +63,61 @@ open Metric
 
 theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f := by
   cases' cauchy_iff.1 hf with hf1 hf2
+  -- ⊢ IsCauSeq norm f
   intro ε hε
+  -- ⊢ ∃ i, ∀ (j : ℕ), j ≥ i → ‖f j - f i‖ < ε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
+  -- ⊢ ∃ i, ∀ (j : ℕ), j ≥ i → ‖f j - f i‖ < ε
   simp at ht; cases' ht with N hN
+  -- ⊢ ∃ i, ∀ (j : ℕ), j ≥ i → ‖f j - f i‖ < ε
+              -- ⊢ ∃ i, ∀ (j : ℕ), j ≥ i → ‖f j - f i‖ < ε
   exists N
+  -- ⊢ ∀ (j : ℕ), j ≥ N → ‖f j - f N‖ < ε
   intro j hj
+  -- ⊢ ‖f j - f N‖ < ε
   rw [← dist_eq_norm]
+  -- ⊢ dist (f j) (f N) < ε
   apply @htsub (f j, f N)
+  -- ⊢ (f j, f N) ∈ t ×ˢ t
   apply Set.mk_mem_prod <;> solve_by_elim [le_refl]
+  -- ⊢ f j ∈ t
+                            -- 🎉 no goals
+                            -- 🎉 no goals
 #align cauchy_seq.is_cau_seq CauchySeq.isCauSeq
 
 theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   refine' cauchy_iff.2 ⟨by infer_instance, fun s hs => _⟩
+  -- ⊢ ∃ t, t ∈ map (↑f) atTop ∧ t ×ˢ t ⊆ s
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
+  -- ⊢ ∃ t, t ∈ map (↑f) atTop ∧ t ×ˢ t ⊆ s
   cases' CauSeq.cauchy₂ f hε with N hN
+  -- ⊢ ∃ t, t ∈ map (↑f) atTop ∧ t ×ˢ t ⊆ s
   exists { n | n ≥ N }.image f
+  -- ⊢ ↑f '' {n | n ≥ N} ∈ map (↑f) atTop ∧ (↑f '' {n | n ≥ N}) ×ˢ (↑f '' {n | n ≥  …
   simp only [exists_prop, mem_atTop_sets, mem_map, mem_image, ge_iff_le, mem_setOf_eq]
+  -- ⊢ (∃ a, ∀ (b : ℕ), a ≤ b → b ∈ ↑f ⁻¹' (↑f '' {n | N ≤ n})) ∧ (↑f '' {n | N ≤ n …
   constructor
+  -- ⊢ ∃ a, ∀ (b : ℕ), a ≤ b → b ∈ ↑f ⁻¹' (↑f '' {n | N ≤ n})
   · exists N
+    -- ⊢ ∀ (b : ℕ), N ≤ b → b ∈ ↑f ⁻¹' (↑f '' {n | N ≤ n})
     intro b hb
+    -- ⊢ b ∈ ↑f ⁻¹' (↑f '' {n | N ≤ n})
     exists b
+    -- 🎉 no goals
   · rintro ⟨a, b⟩ ⟨⟨a', ⟨ha'1, ha'2⟩⟩, ⟨b', ⟨hb'1, hb'2⟩⟩⟩
+    -- ⊢ (a, b) ∈ s
     dsimp at ha'1 ha'2 hb'1 hb'2
+    -- ⊢ (a, b) ∈ s
     rw [← ha'2, ← hb'2]
+    -- ⊢ (↑f a', ↑f b') ∈ s
     apply hεs
+    -- ⊢ dist (↑f a') (↑f b') < ε
     rw [dist_eq_norm]
+    -- ⊢ ‖↑f a' - ↑f b'‖ < ε
     apply hN <;> assumption
+    -- ⊢ a' ≥ N
+                 -- 🎉 no goals
+                 -- 🎉 no goals
 #align cau_seq.cauchy_seq CauSeq.cauchySeq
 
 /-- In a normed field, `CauSeq` coincides with the usual notion of Cauchy sequences. -/
@@ -93,12 +132,21 @@ assumption and this suffices to characterize completeness. -/
 instance (priority := 100) completeSpace_of_cauSeq_isComplete [CauSeq.IsComplete β norm] :
     CompleteSpace β := by
   apply complete_of_cauchySeq_tendsto
+  -- ⊢ ∀ (u : ℕ → β), CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)
   intro u hu
+  -- ⊢ ∃ a, Tendsto u atTop (𝓝 a)
   have C : IsCauSeq norm u := isCauSeq_iff_cauchySeq.2 hu
+  -- ⊢ ∃ a, Tendsto u atTop (𝓝 a)
   exists CauSeq.lim ⟨u, C⟩
+  -- ⊢ Tendsto u atTop (𝓝 (CauSeq.lim { val := u, property := C }))
   rw [Metric.tendsto_atTop]
+  -- ⊢ ∀ (ε : ℝ), ε > 0 → ∃ N, ∀ (n : ℕ), n ≥ N → dist (u n) (CauSeq.lim { val := u …
   intro ε εpos
+  -- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → dist (u n) (CauSeq.lim { val := u, property := C })  …
   cases' (CauSeq.equiv_lim ⟨u, C⟩) _ εpos with N hN
+  -- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → dist (u n) (CauSeq.lim { val := u, property := C })  …
   exists N
+  -- ⊢ ∀ (n : ℕ), n ≥ N → dist (u n) (CauSeq.lim { val := u, property := C }) < ε
   simpa [dist_eq_norm] using hN
+  -- 🎉 no goals
 #align complete_space_of_cau_seq_complete completeSpace_of_cauSeq_isComplete

@@ -47,32 +47,55 @@ theorem mem_sumLift₂ :
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
+  -- ⊢ c ∈ sumLift₂ f g a b → (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c …
   · cases' a with a a <;> cases' b with b b
+    -- ⊢ c ∈ sumLift₂ f g (inl a) b → (∃ a₁ b₁ c₁, inl a = inl a₁ ∧ b = inl b₁ ∧ c =  …
+                          -- ⊢ c ∈ sumLift₂ f g (inl a) (inl b) → (∃ a₁ b₁ c₁, inl a = inl a₁ ∧ inl b = inl …
+                          -- ⊢ c ∈ sumLift₂ f g (inr a) (inl b) → (∃ a₁ b₁ c₁, inr a = inl a₁ ∧ inl b = inl …
     · rw [sumLift₂, mem_map]
+      -- ⊢ (∃ a_1, a_1 ∈ f a b ∧ ↑Embedding.inl a_1 = c) → (∃ a₁ b₁ c₁, inl a = inl a₁  …
       rintro ⟨c, hc, rfl⟩
+      -- ⊢ (∃ a₁ b₁ c₁, inl a = inl a₁ ∧ inl b = inl b₁ ∧ ↑Embedding.inl c = inl c₁ ∧ c …
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
+      -- 🎉 no goals
     · refine' fun h ↦ (not_mem_empty _ h).elim
+      -- 🎉 no goals
     · refine' fun h ↦ (not_mem_empty _ h).elim
+      -- 🎉 no goals
     · rw [sumLift₂, mem_map]
+      -- ⊢ (∃ a_1, a_1 ∈ g a b ∧ ↑Embedding.inr a_1 = c) → (∃ a₁ b₁ c₁, inr a = inl a₁  …
       rintro ⟨c, hc, rfl⟩
+      -- ⊢ (∃ a₁ b₁ c₁, inr a = inl a₁ ∧ inr b = inl b₁ ∧ ↑Embedding.inr c = inl c₁ ∧ c …
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩
+      -- 🎉 no goals
   · rintro (⟨a, b, c, rfl, rfl, rfl, h⟩ | ⟨a, b, c, rfl, rfl, rfl, h⟩) <;> exact mem_map_of_mem _ h
+    -- ⊢ inl c ∈ sumLift₂ f g (inl a) (inl b)
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
 #align finset.mem_sum_lift₂ Finset.mem_sumLift₂
 
 theorem inl_mem_sumLift₂ {c₁ : γ₁} :
     inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ := by
   rw [mem_sumLift₂, or_iff_left]
+  -- ⊢ (∃ a₁ b₁ c₁_1, a = inl a₁ ∧ b = inl b₁ ∧ inl c₁ = inl c₁_1 ∧ c₁_1 ∈ f a₁ b₁) …
   simp only [inl.injEq, exists_and_left, exists_eq_left']
+  -- ⊢ ¬∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ inl c₁ = inr c₂ ∧ c₂ ∈ g a₂ b₂
   rintro ⟨_, _, c₂, _, _, h, _⟩
+  -- ⊢ False
   exact inl_ne_inr h
+  -- 🎉 no goals
 #align finset.inl_mem_sum_lift₂ Finset.inl_mem_sumLift₂
 
 theorem inr_mem_sumLift₂ {c₂ : γ₂} :
     inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ := by
   rw [mem_sumLift₂, or_iff_right]
+  -- ⊢ (∃ a₂ b₂ c₂_1, a = inr a₂ ∧ b = inr b₂ ∧ inr c₂ = inr c₂_1 ∧ c₂_1 ∈ g a₂ b₂) …
   simp only [inr.injEq, exists_and_left, exists_eq_left']
+  -- ⊢ ¬∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ inr c₂ = inl c₁ ∧ c₁ ∈ f a₁ b₁
   rintro ⟨_, _, c₂, _, _, h, _⟩
+  -- ⊢ False
   exact inr_ne_inl h
+  -- 🎉 no goals
 #align finset.inr_mem_sum_lift₂ Finset.inr_mem_sumLift₂
 
 theorem sumLift₂_eq_empty :
@@ -80,14 +103,27 @@ theorem sumLift₂_eq_empty :
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
   refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  -- ⊢ (∀ (a₁ : α₁) (b₁ : β₁), a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧ ∀ (a₂ : α₂) …
   · constructor <;>
+    -- ⊢ ∀ (a₁ : α₁) (b₁ : β₁), a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅
     · rintro a b rfl rfl
+      -- ⊢ f a b = ∅
+      -- ⊢ g a b = ∅
+      -- 🎉 no goals
       exact map_eq_empty.1 h
+      -- 🎉 no goals
   cases a <;> cases b
+  -- ⊢ sumLift₂ f g (inl val✝) b = ∅
+              -- ⊢ sumLift₂ f g (inl val✝¹) (inl val✝) = ∅
+              -- ⊢ sumLift₂ f g (inr val✝¹) (inl val✝) = ∅
   · exact map_eq_empty.2 (h.1 _ _ rfl rfl)
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
   · exact map_eq_empty.2 (h.2 _ _ rfl rfl)
+    -- 🎉 no goals
 #align finset.sum_lift₂_eq_empty Finset.sumLift₂_eq_empty
 
 theorem sumLift₂_nonempty :
@@ -95,6 +131,7 @@ theorem sumLift₂_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
   simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, not_imp]
+  -- 🎉 no goals
 #align finset.sum_lift₂_nonempty Finset.sumLift₂_nonempty
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
@@ -129,9 +166,41 @@ instance : LocallyFiniteOrder (Sum α β)
   finsetIoc := sumLift₂ Ioc Ioc
   finsetIoo := sumLift₂ Ioo Ioo
   finset_mem_Icc := by rintro (a | a) (b | b) (x | x) <;> simp
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
   finset_mem_Ico := by rintro (a | a) (b | b) (x | x) <;> simp
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
   finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
   finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
+                                                          -- 🎉 no goals
 
 variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : Sum α β)
 
@@ -169,6 +238,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
 @[simp, nolint simpNF] -- Porting note: dsimp can not prove this
 theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
   rfl
+  -- 🎉 no goals
 #align sum.Ioo_inl_inr Sum.Ioo_inl_inr
 
 @[simp]
@@ -189,6 +259,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
 @[simp, nolint simpNF] -- Porting note: dsimp can not prove this
 theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
+  -- 🎉 no goals
 #align sum.Ioo_inr_inl Sum.Ioo_inr_inl
 
 theorem Icc_inr_inr : Icc (inr b₁ : Sum α β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=

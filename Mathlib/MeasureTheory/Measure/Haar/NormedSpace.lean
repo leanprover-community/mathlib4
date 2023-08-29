@@ -32,6 +32,7 @@ an additive Haar measure on a nontrivial finite-dimensional real vector space ha
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
+  -- 🎉 no goals
 
 section ContinuousLinearEquiv
 
@@ -65,13 +66,21 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
   rcases eq_or_ne R 0 with (rfl | hR)
+  -- ⊢ ∫ (x : E), f (0 • x) ∂μ = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), f x ∂μ
   · simp only [zero_smul, integral_const]
+    -- ⊢ ENNReal.toReal (↑↑μ univ) • f 0 = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), f x ∂μ
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
+    -- ⊢ ENNReal.toReal (↑↑μ univ) • f 0 = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), f x ∂μ
     · have : Subsingleton E := finrank_zero_iff.1 hE
+      -- ⊢ ENNReal.toReal (↑↑μ univ) • f 0 = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), f x ∂μ
       have : f = fun _ => f 0 := by ext x; rw [Subsingleton.elim x 0]
+      -- ⊢ ENNReal.toReal (↑↑μ univ) • f 0 = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), f x ∂μ
       conv_rhs => rw [this]
+      -- ⊢ ENNReal.toReal (↑↑μ univ) • f 0 = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), (fun x  …
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
+      -- 🎉 no goals
     · have : Nontrivial E := finrank_pos_iff.1 hE
+      -- ⊢ ENNReal.toReal (↑↑μ univ) • f 0 = |(0 ^ finrank ℝ E)⁻¹| • ∫ (x : E), f x ∂μ
       simp only [zero_pow hE, measure_univ_of_isAddLeftInvariant, ENNReal.top_toReal, zero_smul,
         inv_zero, abs_zero]
   · calc
@@ -88,6 +97,7 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul_of_nonneg (f : E → F) (R : ℝ) {hR : 0 ≤ R} :
     (∫ x, f (R • x) ∂μ) = (R ^ finrank ℝ E)⁻¹ • ∫ x, f x ∂μ := by
   rw [integral_comp_smul μ f R, abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR _))]
+  -- 🎉 no goals
 #align measure_theory.measure.integral_comp_smul_of_nonneg MeasureTheory.Measure.integral_comp_smul_of_nonneg
 
 /-- The integral of `f (R⁻¹ • x)` with respect to an additive Haar measure is a multiple of the
@@ -96,6 +106,7 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_inv_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R⁻¹ • x) ∂μ) = |R ^ finrank ℝ E| • ∫ x, f x ∂μ := by
   rw [integral_comp_smul μ f R⁻¹, inv_pow, inv_inv]
+  -- 🎉 no goals
 #align measure_theory.measure.integral_comp_inv_smul MeasureTheory.Measure.integral_comp_inv_smul
 
 /-- The integral of `f (R⁻¹ • x)` with respect to an additive Haar measure is a multiple of the
@@ -104,24 +115,29 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_inv_smul_of_nonneg (f : E → F) {R : ℝ} (hR : 0 ≤ R) :
     (∫ x, f (R⁻¹ • x) ∂μ) = R ^ finrank ℝ E • ∫ x, f x ∂μ := by
   rw [integral_comp_inv_smul μ f R, abs_of_nonneg (pow_nonneg hR _)]
+  -- 🎉 no goals
 #align measure_theory.measure.integral_comp_inv_smul_of_nonneg MeasureTheory.Measure.integral_comp_inv_smul_of_nonneg
 
 theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
   by simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
+     -- 🎉 no goals
 #align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
   simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
+  -- 🎉 no goals
 #align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
 
 theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
   by simpa only [mul_comm] using integral_comp_mul_left g a
+     -- 🎉 no goals
 #align measure_theory.measure.integral_comp_mul_right MeasureTheory.Measure.integral_comp_mul_right
 
 theorem integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a⁻¹)) = |a| • ∫ y : ℝ, g y := by
   simpa only [mul_comm] using integral_comp_inv_mul_left g a
+  -- 🎉 no goals
 #align measure_theory.measure.integral_comp_inv_mul_right MeasureTheory.Measure.integral_comp_inv_mul_right
 
 theorem integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) = |a| • ∫ y : ℝ, g y :=
@@ -143,10 +159,15 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
     rw [← mul_smul, mul_inv_cancel hR, one_smul]
   -- now prove
   intro g hg S hS
+  -- ⊢ Integrable fun x => g (S • x)
   let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).unit).toMeasurableEquiv : E ≃ᵐ E)
+  -- ⊢ Integrable fun x => g (S • x)
   refine' (integrable_map_equiv t g).mp (_ : Integrable g (map (S • ·) μ))
+  -- ⊢ Integrable g
   rwa [map_addHaar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
+  -- ⊢ ENNReal.ofReal |(S ^ finrank ℝ E)⁻¹| ≠ 0
   simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
+  -- 🎉 no goals
 #align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff
 
 theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -158,6 +179,7 @@ theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
 theorem integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (R * x)) ↔ Integrable g := by
   simpa only [smul_eq_mul] using integrable_comp_smul_iff volume g hR
+  -- 🎉 no goals
 #align measure_theory.integrable_comp_mul_left_iff MeasureTheory.integrable_comp_mul_left_iff
 
 theorem Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
@@ -168,6 +190,7 @@ theorem Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} 
 theorem integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x * R)) ↔ Integrable g := by
   simpa only [mul_comm] using integrable_comp_mul_left_iff g hR
+  -- 🎉 no goals
 #align measure_theory.integrable_comp_mul_right_iff MeasureTheory.integrable_comp_mul_right_iff
 
 theorem Integrable.comp_mul_right' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :

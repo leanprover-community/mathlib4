@@ -157,7 +157,11 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : SupBotHom _ _)
   inv := (e.symm : SupBotHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑({ toSupHom := { toFun := ↑e, map_sup' := (_ : ∀ (a b : α.X), ↑e (a ⊔ b) =  …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑({ toSupHom := { toFun := ↑(OrderIso.symm e), map_sup' := (_ : ∀ (a b : β.X …
+                        -- 🎉 no goals
 #align SemilatSup.iso.mk SemilatSupCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/
@@ -177,7 +181,11 @@ def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : InfTopHom _ _)
   inv := (e.symm :  InfTopHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
+                   -- ⊢ ↑({ toInfHom := { toFun := ↑e, map_inf' := (_ : ∀ (a b : α.X), ↑e (a ⊓ b) =  …
+                        -- 🎉 no goals
   inv_hom_id := by ext; exact e.apply_symm_apply _
+                   -- ⊢ ↑({ toInfHom := { toFun := ↑(OrderIso.symm e), map_inf' := (_ : ∀ (a b : β.X …
+                        -- 🎉 no goals
 #align SemilatInf.iso.mk SemilatInfCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/

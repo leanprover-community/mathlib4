@@ -82,7 +82,9 @@ theorem exists_maximal_of_chains_bounded (h : ∀ c, IsChain r c → ∃ ub, ∀
       maxChain_spec.1.insert fun b hb _ => Or.inr <| trans (hub b hb) ha
     hub a <| by
       rw [maxChain_spec.right this (subset_insert _ _)]
+      -- ⊢ a ∈ insert a (maxChain r)
       exact mem_insert _ _⟩
+      -- 🎉 no goals
 #align exists_maximal_of_chains_bounded exists_maximal_of_chains_bounded
 
 /-- A variant of Zorn's lemma. If every nonempty chain of a nonempty type has an upper bound, then
@@ -121,7 +123,9 @@ theorem zorn_preorder₀ (s : Set α)
         ih (Subtype.val '' c) (fun _ ⟨⟨_, hx⟩, _, h⟩ => h ▸ hx)
           (by
             rintro _ ⟨p, hpc, rfl⟩ _ ⟨q, hqc, rfl⟩ hpq
+            -- ⊢ (fun x x_1 => x ≤ x_1) ↑p ↑q ∨ (fun x x_1 => x ≤ x_1) ↑q ↑p
             refine' hc hpc hqc fun t => hpq (Subtype.ext_iff.1 t))
+            -- 🎉 no goals
       ⟨⟨ub, hubs⟩, fun ⟨y, hy⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
   ⟨m, hms, fun z hzs hmz => h ⟨z, hzs⟩ hmz⟩
 #align zorn_preorder₀ zorn_preorder₀
@@ -134,18 +138,26 @@ theorem zorn_nonempty_preorder₀ (s : Set α)
   -- rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_ with ⟨m, ⟨hms, hxm⟩, hm⟩
   -- · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   have H := zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
+  -- ⊢ ∃ m, m ∈ s ∧ x ≤ m ∧ ∀ (z : α), z ∈ s → m ≤ z → z ≤ m
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
+    -- ⊢ ∃ m, m ∈ s ∧ x ≤ m ∧ ∀ (z : α), z ∈ s → m ≤ z → z ≤ m
     exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
+    -- 🎉 no goals
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
+    -- ⊢ ∃ ub, ub ∈ {y | y ∈ s ∧ x ≤ y} ∧ ∀ (z : α), z ∈ ∅ → z ≤ ub
     · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩
+      -- 🎉 no goals
     · rcases ih c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
+      -- ⊢ ∃ ub, ub ∈ {y | y ∈ s ∧ x ≤ y} ∧ ∀ (z : α), z ∈ c → z ≤ ub
       exact ⟨z, ⟨hzs, (hcs hy).2.trans <| hz _ hy⟩, hz⟩
+      -- 🎉 no goals
 #align zorn_nonempty_preorder₀ zorn_nonempty_preorder₀
 
 theorem zorn_nonempty_Ici₀ (a : α)
     (ih : ∀ (c) (_ : c ⊆ Ici a), IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, a ≤ ub ∧ ∀ z ∈ c, z ≤ ub)
     (x : α) (hax : a ≤ x) : ∃ m, x ≤ m ∧ ∀ z, m ≤ z → z ≤ m :=
   let ⟨m, _, hxm, hm⟩ := zorn_nonempty_preorder₀ (Ici a) (by simpa using ih) x hax
+                                                             -- 🎉 no goals
   ⟨m, hxm, fun z hmz => hm _ (hax.trans <| hxm.trans hmz) hmz⟩
 #align zorn_nonempty_Ici₀ zorn_nonempty_Ici₀
 
@@ -215,16 +227,26 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   -- obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ :=
   --   zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } _ c ⟨Subset.rfl, hc⟩
   have H := zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } ?_ c ⟨Subset.rfl, hc⟩
+  -- ⊢ ∃ M, IsMaxChain r M ∧ c ⊆ M
   · obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ := H
+    -- ⊢ ∃ M, IsMaxChain r M ∧ c ⊆ M
     exact ⟨M, ⟨hM₀, fun d hd hMd => (hM₂ _ ⟨hM₁.trans hMd, hd⟩ hMd).symm⟩, hM₁⟩
+    -- 🎉 no goals
   rintro cs hcs₀ hcs₁ ⟨s, hs⟩
+  -- ⊢ ∃ ub, ub ∈ {s | c ⊆ s ∧ IsChain r s} ∧ ∀ (s : Set α), s ∈ cs → s ⊆ ub
   refine'
     ⟨⋃₀cs, ⟨fun _ ha => Set.mem_sUnion_of_mem ((hcs₀ hs).left ha) hs, _⟩, fun _ =>
       Set.subset_sUnion_of_mem⟩
   rintro y ⟨sy, hsy, hysy⟩ z ⟨sz, hsz, hzsz⟩ hyz
+  -- ⊢ r y z ∨ r z y
   obtain rfl | hsseq := eq_or_ne sy sz
+  -- ⊢ r y z ∨ r z y
   · exact (hcs₀ hsy).right hysy hzsz hyz
+    -- 🎉 no goals
   cases' hcs₁ hsy hsz hsseq with h h
+  -- ⊢ r y z ∨ r z y
   · exact (hcs₀ hsz).right (h hysy) hzsz hyz
+    -- 🎉 no goals
   · exact (hcs₀ hsy).right hysy (h hzsz) hyz
+    -- 🎉 no goals
 #align is_chain.exists_max_chain IsChain.exists_maxChain

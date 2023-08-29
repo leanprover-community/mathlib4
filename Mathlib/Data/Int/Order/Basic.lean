@@ -48,6 +48,7 @@ instance orderedRing : OrderedRing ℤ :=
   StrictOrderedRing.toOrderedRing'
 
 instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ := by infer_instance
+                                                                       -- 🎉 no goals
 
 end Int
 
@@ -63,13 +64,17 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
   by rw [←coe_natAbs, Int.cast_ofNat]
+     -- 🎉 no goals
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
+                                                         -- ⊢ natAbs ↑(natAbs a) = natAbs a
+                                                                             -- 🎉 no goals
 #align int.nat_abs_abs Int.natAbs_abs
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
+  -- 🎉 no goals
 #align int.sign_mul_abs Int.sign_mul_abs
 
 theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
@@ -77,6 +82,7 @@ theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
 #align int.coe_nat_eq_zero Int.coe_nat_eq_zero
 
 theorem coe_nat_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
+                                                            -- 🎉 no goals
 #align int.coe_nat_ne_zero Int.coe_nat_ne_zero
 
 theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
@@ -89,9 +95,23 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
 
 theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   have : (1 : ℤ) ≠ -1 := by decide
+  -- ⊢ ∀ {m n : ℤ}, sign m = sign n → sign (m + n) = sign n
   rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm]
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
+                                         -- ⊢ sign (↑m + 1 + (↑n + 1)) = 1
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
   rw [Int.sign_eq_one_iff_pos]
+  -- ⊢ 0 < ↑m + 1 + (↑n + 1)
   apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+  -- ⊢ 0 < ↑m + 1
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-! ### succ and pred -/
@@ -120,14 +140,18 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
   ⟨fun a0 => by
     let ⟨hn, hp⟩ := abs_lt.mp a0
+    -- ⊢ a = 0
     rw [←zero_add 1, lt_add_one_iff] at hp
+    -- ⊢ a = 0
     -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
     exact hp.antisymm hn,
+    -- 🎉 no goals
     fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
   rw [le_iff_lt_or_eq, abs_lt_one_iff, abs_eq (zero_le_one' ℤ)]
+  -- 🎉 no goals
 #align int.abs_le_one_iff Int.abs_le_one_iff
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
@@ -140,13 +164,17 @@ than `b`, and the `pred` of a number less than `b`. -/
     (z : ℤ) (b : ℤ) (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1))
     (Hp : ∀ k ≤ b, C k → C (k - 1)) : C z := by
   rw [← sub_add_cancel (G := ℤ) z b, add_comm]
+  -- ⊢ C (b + (z - b))
   exact match z - b with
   | .ofNat n => pos n
   | .negSucc n => neg n
 where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, C (b + n)
+                         -- 🎉 no goals
   | 0 => _root_.cast (by erw [add_zero]) H0
+                           -- ⊢ C (b + (↑n + 1)) = C (b + ↑(n + 1))
+                                           -- 🎉 no goals
   | n+1 => _root_.cast (by rw [add_assoc]; rfl) <|
     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
 
@@ -154,8 +182,12 @@ where
   neg : ∀ n : ℕ, C (b + -[n+1])
   | 0 => Hp _ (Int.le_refl _) H0
   | n+1 => by
+    -- ⊢ b + -[n+1] < b
     refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
+    -- ⊢ b + -[n+1] < b + 0
     conv => rhs; apply (add_zero b).symm
+    -- ⊢ -[n+1] < 0
+                                  -- 🎉 no goals
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 #align int.induction_on' Int.inductionOn'
 
@@ -164,12 +196,19 @@ protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_
   · intro
+    -- ⊢ P m
     exact h0
+    -- 🎉 no goals
   · intro k hle hi _
+    -- ⊢ P (k + 1)
     exact h1 k hle (hi hle)
+    -- 🎉 no goals
   · intro k hle _ hle'
+    -- ⊢ P (k - 1)
     exfalso
+    -- ⊢ False
     exact lt_irrefl k (le_sub_one_iff.mp (hle.trans hle'))
+    -- 🎉 no goals
 #align int.le_induction Int.le_induction
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
@@ -177,12 +216,19 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n := by
   refine Int.inductionOn' n m ?_ ?_ ?_
   · intro
+    -- ⊢ P m
     exact h0
+    -- 🎉 no goals
   · intro k hle _ hle'
+    -- ⊢ P (k + 1)
     exfalso
+    -- ⊢ False
     exact lt_irrefl k (add_one_le_iff.mp (hle'.trans hle))
+    -- 🎉 no goals
   · intro k hle hi _
+    -- ⊢ P (k - 1)
     exact h1 k hle (hi hle)
+    -- 🎉 no goals
 #align int.le_induction_down Int.le_induction_down
 
 /-! ### nat abs -/
@@ -202,6 +248,8 @@ theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b
   match b, |b|, abs_eq_natAbs b, H2 with
   | (n : ℕ), _, rfl, H2 => ediv_eq_zero_of_lt H1 H2
   | -[n+1], _, rfl, H2 => neg_injective <| by rw [← Int.ediv_neg]; exact ediv_eq_zero_of_lt H1 H2
+                                              -- ⊢ a / - -[n+1] = -0
+                                                                   -- 🎉 no goals
 #align int.div_eq_zero_of_lt_abs Int.ediv_eq_zero_of_lt_abs
 
 #align int.add_mul_div_right Int.add_mul_ediv_right
@@ -234,6 +282,8 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 
 theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
+  -- ⊢ a % |b| < |b|
+                   -- 🎉 no goals
 #align int.mod_lt Int.emod_lt
 
 #align int.add_mul_mod_self Int.add_mul_emod_self
@@ -252,6 +302,7 @@ theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
 
 theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
     (m + i) % n = (k + i) % n := by rw [← emod_add_emod, ← emod_add_emod k, H]
+                                    -- 🎉 no goals
 #align int.add_mod_eq_add_mod_right Int.add_emod_eq_add_emod_right
 
 #align int.add_mod_eq_add_mod_left Int.add_emod_eq_add_emod_left
@@ -287,8 +338,11 @@ attribute [local simp] Int.zero_emod
 @[simp]
 theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
+  -- ⊢ (-i - i) % 2 = 0
   convert Int.mul_emod_right 2 (-i) using 2
+  -- ⊢ -i - i = 2 * -i
   rw [two_mul, sub_eq_add_neg]
+  -- 🎉 no goals
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/
@@ -300,6 +354,9 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
     match b, eq_nat_or_neg b with
     | _, ⟨n, Or.inl rfl⟩ => this _ _
     | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
+                               -- ⊢ |a / ↑n| ≤ |a|
+                                                           -- 🎉 no goals
+  -- ⊢ ↑(natAbs (a / ↑n)) ≤ ↑(natAbs a)
   fun a n => by
   rw [abs_eq_natAbs, abs_eq_natAbs];
     exact
@@ -314,7 +371,10 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
 
 theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   have h : n % 2 < 2 := abs_of_nonneg (show 0 ≤ (2 : ℤ) by decide) ▸ Int.emod_lt _ (by decide)
+                                                           -- 🎉 no goals
+                                                                                       -- 🎉 no goals
   have h₁ : 0 ≤ n % 2 := Int.emod_nonneg _ (by decide)
+                                               -- 🎉 no goals
   match n % 2, h, h₁ with
   | (0 : ℕ), _ ,_ => Or.inl rfl
   | (1 : ℕ), _ ,_ => Or.inr rfl
@@ -322,9 +382,12 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   -- see https://github.com/leanprover-community/mathlib4/issues/994
   | (k + 2 : ℕ), h₁, _ => False.elim (h₁.not_le (by
     rw [Nat.cast_add]
+    -- ⊢ 2 ≤ ↑k + ↑2
     exact (le_add_iff_nonneg_left 2).2 (NonNeg.mk k)))
+    -- 🎉 no goals
   -- Porting note: this used to be `=> absurd h₁ (by decide)`
   | -[a+1], _, h₁ => by cases h₁
+                        -- 🎉 no goals
 #align int.mod_two_eq_zero_or_one Int.emod_two_eq_zero_or_one
 
 /-! ### dvd -/
@@ -350,9 +413,12 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
 theorem ediv_dvd_ediv : ∀ {a b c : ℤ} (_ : a ∣ b) (_ : b ∣ c), b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
+                          -- 🎉 no goals
     else by
       rw [Int.mul_ediv_cancel_left _ az, mul_assoc, Int.mul_ediv_cancel_left _ az];
+      -- ⊢ b ∣ b * c
         apply dvd_mul_right
+        -- 🎉 no goals
 #align int.div_dvd_div Int.ediv_dvd_ediv
 
 #align int.eq_mul_of_div_eq_right Int.eq_mul_of_ediv_eq_right
@@ -375,6 +441,7 @@ theorem ediv_dvd_ediv : ∀ {a b c : ℤ} (_ : a ∣ b) (_ : b ∣ c), b / a ∣
 
 theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
   rw [abs_eq_natAbs, natAbs_sign_of_nonzero hz, Int.ofNat_one]
+  -- 🎉 no goals
 #align int.abs_sign_of_nonzero Int.abs_sign_of_nonzero
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
@@ -382,17 +449,29 @@ theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
 theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     (∃ k, n * k < m ∧ m < n * (k + 1)) ↔ ¬n ∣ m := by
   constructor
+  -- ⊢ (∃ k, n * k < m ∧ m < n * (k + 1)) → ¬n ∣ m
   · rintro ⟨k, h1k, h2k⟩ ⟨l, rfl⟩
+    -- ⊢ False
     rw [mul_lt_mul_left hn] at h1k h2k
+    -- ⊢ False
     rw [lt_add_one_iff, ← not_lt] at h2k
+    -- ⊢ False
     exact h2k h1k
+    -- 🎉 no goals
   · intro h
+    -- ⊢ ∃ k, n * k < m ∧ m < n * (k + 1)
     rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
+    -- ⊢ ∃ k, n * k < m ∧ m < n * (k + 1)
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
+    -- ⊢ ∃ k, n * k < m ∧ m < n * (k + 1)
     simp (config := { singlePass := true }) only [← emod_add_ediv m n]
+    -- ⊢ ∃ k, n * k < m % n + n * (m / n) ∧ m % n + n * (m / n) < n * (k + 1)
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
+    -- ⊢ m % n + n * (m / n) < n * (m / n + 1)
     rw [add_comm _ (1 : ℤ), left_distrib, mul_one]
+    -- ⊢ m % n + n * (m / n) < n + n * (m / n)
     exact add_lt_add_right (emod_lt_of_pos _ hn) _
+    -- 🎉 no goals
 #align int.exists_lt_and_lt_iff_not_dvd Int.exists_lt_and_lt_iff_not_dvd
 
 attribute [local simp] Int.ediv_zero
@@ -409,6 +488,7 @@ attribute [local simp] Int.ediv_zero
 
 protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
+                        -- 🎉 no goals
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
 #align int.sign_eq_div_abs Int.sign_eq_ediv_abs
 
@@ -417,6 +497,8 @@ protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
 
 protected theorem ediv_mul_le (a : ℤ) {b : ℤ} (H : b ≠ 0) : a / b * b ≤ a :=
   le_of_sub_nonneg <| by rw [mul_comm, ← emod_def]; apply emod_nonneg _ H
+                         -- ⊢ 0 ≤ a % b
+                                                    -- 🎉 no goals
 #align int.div_mul_le Int.ediv_mul_le
 
 protected theorem ediv_le_of_le_mul {a b c : ℤ} (H : 0 < c) (H' : a ≤ b * c) : a / c ≤ b :=
@@ -458,6 +540,8 @@ protected theorem ediv_lt_iff_lt_mul {a b c : ℤ} (H : 0 < c) : a / c < b ↔ a
 
 protected theorem le_mul_of_ediv_le {a b c : ℤ} (H1 : 0 ≤ b) (H2 : b ∣ a) (H3 : a / b ≤ c) :
     a ≤ c * b := by rw [← Int.ediv_mul_cancel H2]; exact mul_le_mul_of_nonneg_right H3 H1
+                    -- ⊢ a / b * b ≤ c * b
+                                                   -- 🎉 no goals
 #align int.le_mul_of_div_le Int.le_mul_of_ediv_le
 
 protected theorem lt_ediv_of_mul_lt {a b c : ℤ} (H1 : 0 ≤ b) (H2 : b ∣ c) (H3 : a * b < c) :
@@ -472,6 +556,7 @@ protected theorem lt_ediv_iff_mul_lt {a b : ℤ} (c : ℤ) (H : 0 < c) (H' : c �
 
 theorem ediv_pos_of_pos_of_dvd {a b : ℤ} (H1 : 0 < a) (H2 : 0 ≤ b) (H3 : b ∣ a) : 0 < a / b :=
   Int.lt_ediv_of_mul_lt H2 H3 (by rwa [zero_mul])
+                                  -- 🎉 no goals
 #align int.div_pos_of_pos_of_dvd Int.ediv_pos_of_pos_of_dvd
 
 theorem natAbs_eq_of_dvd_dvd {s t : ℤ} (hst : s ∣ t) (hts : t ∣ s) : natAbs s = natAbs t :=
@@ -482,13 +567,19 @@ theorem ediv_eq_ediv_of_mul_eq_mul {a b c d : ℤ} (H2 : d ∣ c) (H3 : b ≠ 0)
     (H5 : a * d = b * c) : a / b = c / d :=
   Int.ediv_eq_of_eq_mul_right H3 <| by
     rw [← Int.mul_ediv_assoc _ H2]; exact (Int.ediv_eq_of_eq_mul_left H4 H5.symm).symm
+    -- ⊢ a = b * c / d
+                                    -- 🎉 no goals
 #align int.div_eq_div_of_mul_eq_mul Int.ediv_eq_ediv_of_mul_eq_mul
 
 theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
   rcases eq_or_ne s 0 with (rfl | hs)
+  -- ⊢ t / 0 ∣ t
   · simpa using hst
+    -- 🎉 no goals
   rcases hst with ⟨c, hc⟩
+  -- ⊢ t / s ∣ t
   simp [hc, Int.mul_ediv_cancel_left _ hs]
+  -- 🎉 no goals
 #align int.div_dvd_of_dvd Int.ediv_dvd_of_dvd
 
 /-! ### toNat -/
@@ -497,6 +588,8 @@ theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
 @[simp]
 theorem toNat_le {a : ℤ} {n : ℕ} : toNat a ≤ n ↔ a ≤ n := by
   rw [ofNat_le.symm, toNat_eq_max, max_le_iff]; exact and_iff_left (ofNat_zero_le _)
+  -- ⊢ a ≤ ↑n ∧ 0 ≤ ↑n ↔ a ≤ ↑n
+                                                -- 🎉 no goals
 #align int.to_nat_le Int.toNat_le
 
 @[simp]
@@ -512,11 +605,20 @@ theorem coe_nat_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
 
 theorem toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
   rw [toNat_le]; exact le_trans h (self_le_toNat b)
+  -- ⊢ a ≤ ↑(toNat b)
+                 -- 🎉 no goals
 #align int.to_nat_le_to_nat Int.toNat_le_toNat
 
 theorem toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
   ⟨fun h => by cases a; exact lt_toNat.1 h; exact lt_trans (neg_of_sign_eq_neg_one rfl) hb,
+               -- ⊢ ofNat a✝ < b
+                        -- ⊢ -[a✝+1] < b
+                                            -- 🎉 no goals
    fun h => by rw [lt_toNat]; cases a; exact h; exact hb⟩
+               -- ⊢ ↑(toNat a) < b
+                              -- ⊢ ↑(toNat (ofNat a✝)) < b
+                                       -- ⊢ ↑(toNat -[a✝+1]) < b
+                                                -- 🎉 no goals
 #align int.to_nat_lt_to_nat Int.toNat_lt_toNat
 
 theorem lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
@@ -526,6 +628,7 @@ theorem lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
 @[simp]
 theorem toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp [h, le_of_lt h, push_cast]
+  -- 🎉 no goals
 #align int.to_nat_pred_coe_of_pos Int.toNat_pred_coe_of_pos
 
 @[simp]

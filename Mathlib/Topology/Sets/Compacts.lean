@@ -43,6 +43,9 @@ namespace Compacts
 instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective' s t h := by cases s; cases t; congr
+                             -- ⊢ { carrier := carrier✝, isCompact' := isCompact'✝ } = t
+                                      -- ⊢ { carrier := carrier✝¹, isCompact' := isCompact'✝¹ } = { carrier := carrier✝ …
+                                               -- 🎉 no goals
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
@@ -124,8 +127,11 @@ theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
     (↑(s.sup f) : Set α) = s.sup fun i => ↑(f i) := by
   refine Finset.cons_induction_on s rfl fun a s _ h => ?_
+  -- ⊢ ↑(Finset.sup (Finset.cons a s x✝) f) = Finset.sup (Finset.cons a s x✝) fun i …
   simp_rw [Finset.sup_cons, coe_sup, sup_eq_union]
+  -- ⊢ ↑(f a) ∪ ↑(Finset.sup s f) = ↑(f a) ∪ Finset.sup s fun i => ↑(f i)
   congr
+  -- 🎉 no goals
 #align topological_space.compacts.coe_finset_sup TopologicalSpace.Compacts.coe_finset_sup
 
 /-- The image of a compact set under a continuous function. -/
@@ -155,10 +161,14 @@ protected def equiv (f : α ≃ₜ β) : Compacts α ≃ Compacts β where
   invFun := Compacts.map _ f.symm.continuous
   left_inv s := by
     ext1
+    -- ⊢ ↑(Compacts.map ↑(Homeomorph.symm f) (_ : Continuous ↑(Homeomorph.symm f)) (C …
     simp only [coe_map, ← image_comp, f.symm_comp_self, image_id]
+    -- 🎉 no goals
   right_inv s := by
     ext1
+    -- ⊢ ↑(Compacts.map ↑f (_ : Continuous ↑f) (Compacts.map ↑(Homeomorph.symm f) (_  …
     simp only [coe_map, ← image_comp, f.self_comp_symm, image_id]
+    -- 🎉 no goals
 #align topological_space.compacts.equiv TopologicalSpace.Compacts.equiv
 
 @[simp]
@@ -214,8 +224,11 @@ instance : SetLike (NonemptyCompacts α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
+    -- ⊢ { toCompacts := { carrier := carrier✝, isCompact' := isCompact'✝ }, nonempty …
     obtain ⟨⟨_, _⟩, _⟩ := t
+    -- ⊢ { toCompacts := { carrier := carrier✝¹, isCompact' := isCompact'✝¹ }, nonemp …
     congr
+    -- 🎉 no goals
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
@@ -318,8 +331,11 @@ instance : SetLike (PositiveCompacts α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
+    -- ⊢ { toCompacts := { carrier := carrier✝, isCompact' := isCompact'✝ }, interior …
     obtain ⟨⟨_, _⟩, _⟩ := t
+    -- ⊢ { toCompacts := { carrier := carrier✝¹, isCompact' := isCompact'✝¹ }, interi …
     congr
+    -- 🎉 no goals
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
@@ -433,7 +449,9 @@ protected def prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
   toCompacts := K.toCompacts.prod L.toCompacts
   interior_nonempty' := by
     simp only [Compacts.carrier_eq_coe, Compacts.coe_prod, interior_prod_eq]
+    -- ⊢ Set.Nonempty (interior ↑K.toCompacts ×ˢ interior ↑L.toCompacts)
     exact K.interior_nonempty.prod L.interior_nonempty
+    -- 🎉 no goals
 #align topological_space.positive_compacts.prod TopologicalSpace.PositiveCompacts.prod
 
 @[simp]
@@ -458,8 +476,11 @@ instance : SetLike (CompactOpens α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
+    -- ⊢ { toCompacts := { carrier := carrier✝, isCompact' := isCompact'✝ }, isOpen'  …
     obtain ⟨⟨_, _⟩, _⟩ := t
+    -- ⊢ { toCompacts := { carrier := carrier✝¹, isCompact' := isCompact'✝¹ }, isOpen …
     congr
+    -- 🎉 no goals
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s

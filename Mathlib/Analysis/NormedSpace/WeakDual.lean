@@ -144,7 +144,9 @@ theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (Dual 𝕜 E)) ≤
       (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
   convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
+  -- ⊢ WeakDual.instTopologicalSpace = TopologicalSpace.induced (fun x' => ↑toWeakD …
   exact induced_id.symm
+  -- 🎉 no goals
 #align normed_space.dual.dual_norm_topology_le_weak_dual_topology NormedSpace.Dual.dual_norm_topology_le_weak_dual_topology
 
 end Dual
@@ -201,7 +203,9 @@ theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈
 is used. -/
 theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
+  -- ⊢ IsClosed (⋂ (i : E) (_ : i ∈ s), {x | ‖↑x i‖ ≤ 1})
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
+  -- 🎉 no goals
 #align weak_dual.is_closed_polar WeakDual.isClosed_polar
 
 variable {𝕜}

@@ -48,19 +48,25 @@ theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
 instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
   ⟨fun a b x => by
     cases x
+    -- ⊢ (a • b) • { fst := fst✝, snd := snd✝ } = a • b • { fst := fst✝, snd := snd✝ }
     rw [smul_mk, smul_mk, smul_mk, smul_assoc]⟩
+    -- 🎉 no goals
 
 @[to_additive]
 instance [∀ i, SMulCommClass M N (α i)] : SMulCommClass M N (Σi, α i) :=
   ⟨fun a b x => by
     cases x
+    -- ⊢ a • b • { fst := fst✝, snd := snd✝ } = b • a • { fst := fst✝, snd := snd✝ }
     rw [smul_mk, smul_mk, smul_mk, smul_mk, smul_comm]⟩
+    -- 🎉 no goals
 
 @[to_additive]
 instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsCentralScalar M (Σi, α i) :=
   ⟨fun a x => by
     cases x
+    -- ⊢ MulOpposite.op a • { fst := fst✝, snd := snd✝ } = a • { fst := fst✝, snd :=  …
     rw [smul_mk, smul_mk, op_smul_eq_smul]⟩
+    -- 🎉 no goals
 
 /-- This is not an instance because `i` becomes a metavariable. -/
 @[to_additive "This is not an instance because `i` becomes a metavariable."]
@@ -80,8 +86,12 @@ instance {m : Monoid M} [∀ i, MulAction M (α i)] :
     MulAction M (Σi, α i) where
   mul_smul a b x := by
     cases x
+    -- ⊢ (a * b) • { fst := fst✝, snd := snd✝ } = a • b • { fst := fst✝, snd := snd✝ }
     rw [smul_mk, smul_mk, smul_mk, mul_smul]
+    -- 🎉 no goals
+    -- ⊢ 1 • { fst := fst✝, snd := snd✝ } = { fst := fst✝, snd := snd✝ }
   one_smul x := by
+    -- 🎉 no goals
     cases x
     rw [smul_mk, one_smul]
 

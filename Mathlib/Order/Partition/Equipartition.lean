@@ -36,6 +36,7 @@ theorem isEquipartition_iff_card_parts_eq_average :
       ∀ a : Finset α,
         a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 :=
   by simp_rw [IsEquipartition, Finset.equitableOn_iff, P.sum_card_parts]
+     -- 🎉 no goals
 #align finpartition.is_equipartition_iff_card_parts_eq_average Finpartition.isEquipartition_iff_card_parts_eq_average
 
 variable {P}
@@ -53,13 +54,17 @@ theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t �
 theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     s.card / P.parts.card ≤ t.card := by
   rw [← P.sum_card_parts]
+  -- ⊢ (Finset.sum P.parts fun i => Finset.card i) / Finset.card P.parts ≤ Finset.c …
   exact Finset.EquitableOn.le hP ht
+  -- 🎉 no goals
 #align finpartition.is_equipartition.average_le_card_part Finpartition.IsEquipartition.average_le_card_part
 
 theorem IsEquipartition.card_part_le_average_add_one (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     t.card ≤ s.card / P.parts.card + 1 := by
   rw [← P.sum_card_parts]
+  -- ⊢ Finset.card t ≤ (Finset.sum P.parts fun i => Finset.card i) / Finset.card P. …
   exact Finset.EquitableOn.le_add_one hP ht
+  -- 🎉 no goals
 #align finpartition.is_equipartition.card_part_le_average_add_one Finpartition.IsEquipartition.card_part_le_average_add_one
 
 /-! ### Discrete and indiscrete finpartition -/
@@ -69,6 +74,7 @@ variable (s) -- [Decidable (a = ⊥)]
 
 theorem bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨1, by simp⟩
+                                                    -- 🎉 no goals
 #align finpartition.bot_is_equipartition Finpartition.bot_isEquipartition
 
 theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
@@ -77,7 +83,9 @@ theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEqu
 
 theorem indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by
   rw [IsEquipartition, indiscrete_parts, coe_singleton]
+  -- ⊢ Set.EquitableOn {s} Finset.card
   exact Set.equitableOn_singleton s _
+  -- 🎉 no goals
 #align finpartition.indiscrete_is_equipartition Finpartition.indiscrete_isEquipartition
 
 end Finpartition

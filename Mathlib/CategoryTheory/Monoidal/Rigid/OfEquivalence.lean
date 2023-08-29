@@ -33,7 +33,9 @@ def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 
   coevaluation' := coeval
   evaluation_coevaluation' :=
     F.toFunctor.map_injective (by simp [map_eval, map_coeval, MonoidalFunctor.map_tensor])
+                                  -- 🎉 no goals
   coevaluation_evaluation' :=
+                                  -- 🎉 no goals
     F.toFunctor.map_injective (by simp [map_eval, map_coeval, MonoidalFunctor.map_tensor])
 #align category_theory.exact_pairing_of_faithful CategoryTheory.exactPairingOfFaithful
 
@@ -44,6 +46,8 @@ def exactPairingOfFullyFaithful [Full F.toFunctor] [Faithful F.toFunctor] (X Y :
     [ExactPairing (F.obj X) (F.obj Y)] : ExactPairing X Y :=
   exactPairingOfFaithful F (F.toFunctor.preimage (inv (F.μ _ _) ≫ ε_ _ _ ≫ F.ε))
     (F.toFunctor.preimage (inv F.ε ≫ η_ _ _ ≫ F.μ _ _)) (by simp) (by simp)
+                                                            -- 🎉 no goals
+                                                                      -- 🎉 no goals
 #align category_theory.exact_pairing_of_fully_faithful CategoryTheory.exactPairingOfFullyFaithful
 
 /-- Pull back a left dual along an equivalence. -/
@@ -54,9 +58,13 @@ def hasLeftDualOfEquivalence [IsEquivalence F.toFunctor] (X : C) [HasLeftDual (F
     -- porting note: in Lean3, `apply exactPairingOfFullyFaithful F _ _` automatically
     -- created the goals for `ExactPairing` type class
     refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ ?_
+    -- ⊢ ExactPairing (F.obj ((Functor.inv F.toFunctor).obj ᘁ(F.obj X))) (F.obj X)
     refine @exactPairingCongrLeft _ _ _ _ _ _ ?_ (F.toFunctor.asEquivalence.counitIso.app _)
+    -- ⊢ ExactPairing ((𝟭 D).obj ᘁ(F.obj X)) (F.obj X)
     dsimp
+    -- ⊢ ExactPairing (ᘁ(F.obj X)) (F.obj X)
     infer_instance
+    -- 🎉 no goals
 #align category_theory.has_left_dual_of_equivalence CategoryTheory.hasLeftDualOfEquivalence
 
 /-- Pull back a right dual along an equivalence. -/
@@ -65,9 +73,13 @@ def hasRightDualOfEquivalence [IsEquivalence F.toFunctor] (X : C) [HasRightDual 
   rightDual := F.toFunctor.inv.obj ((F.obj X)ᘁ)
   exact := by
     refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ ?_
+    -- ⊢ ExactPairing (F.obj X) (F.obj ((Functor.inv F.toFunctor).obj (F.obj X)ᘁ))
     refine @exactPairingCongrRight _ _ _ _ _ _ ?_ (F.toFunctor.asEquivalence.counitIso.app _)
+    -- ⊢ ExactPairing (F.obj X) ((𝟭 D).obj (F.obj X)ᘁ)
     dsimp
+    -- ⊢ ExactPairing (F.obj X) (F.obj X)ᘁ
     infer_instance
+    -- 🎉 no goals
 #align category_theory.has_right_dual_of_equivalence CategoryTheory.hasRightDualOfEquivalence
 
 /-- Pull back a left rigid structure along an equivalence. -/

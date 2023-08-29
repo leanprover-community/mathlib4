@@ -97,6 +97,9 @@ instance : EquivLike (α ≃ β) α β where
   left_inv := left_inv
   right_inv := right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
+                                   -- ⊢ { toFun := toFun✝, invFun := invFun✝, left_inv := left_inv✝, right_inv := ri …
+                                             -- ⊢ { toFun := toFun✝¹, invFun := invFun✝¹, left_inv := left_inv✝¹, right_inv := …
+                                                       -- 🎉 no goals
 
 /-- Helper instance when inference gets stuck on following the normal chain
 `EquivLike → EmbeddingLike → FunLike → CoeFun`. -/
@@ -248,6 +251,10 @@ protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjectiv
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
   ⟨cast h, cast h.symm, fun _ => by cases h; rfl, fun _ => by cases h; rfl⟩
+                                    -- ⊢ cast (_ : α = α) (cast (_ : α = α) x✝) = x✝
+                                             -- 🎉 no goals
+                                                              -- ⊢ cast (_ : α = α) (cast (_ : α = α) x✝) = x✝
+                                                                       -- 🎉 no goals
 #align equiv.cast Equiv.cast
 
 @[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
@@ -260,6 +267,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 `synonym α` is semireducible. This makes a mess of `Multiplicative.ofAdd` etc. -/
 theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
+  -- 🎉 no goals
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
 
 -- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_refl`
@@ -301,7 +309,9 @@ theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := Equi
 
 theorem apply_eq_iff_eq_symm_apply (f : α ≃ β) : f x = y ↔ x = f.symm y := by
   conv_lhs => rw [← apply_symm_apply f y]
+  -- ⊢ ↑f x = ↑f (↑f.symm y) ↔ x = ↑f.symm y
   rw [apply_eq_iff_eq]
+  -- 🎉 no goals
 #align equiv.apply_eq_iff_eq_symm_apply Equiv.apply_eq_iff_eq_symm_apply
 
 @[simp] theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
@@ -316,14 +326,20 @@ theorem apply_eq_iff_eq_symm_apply (f : α ≃ β) : f x = y ↔ x = f.symm y :=
 @[simp] theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
     (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
   ext fun x => by substs h h2; rfl
+                  -- ⊢ ↑((Equiv.cast (_ : α = α)).trans (Equiv.cast (_ : α = α))) x = ↑(Equiv.cast  …
+                               -- 🎉 no goals
 #align equiv.cast_trans Equiv.cast_trans
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
   subst h; simp [coe_refl]
+  -- ⊢ ↑(Equiv.cast (_ : α = α)) a = b ↔ HEq a b
+           -- 🎉 no goals
 #align equiv.cast_eq_iff_heq Equiv.cast_eq_iff_heq
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
+               -- 🎉 no goals
+                                          -- 🎉 no goals
 #align equiv.symm_apply_eq Equiv.symm_apply_eq
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :=
@@ -331,21 +347,29 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 #align equiv.eq_symm_apply Equiv.eq_symm_apply
 
 @[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
+                                                              -- ⊢ { toFun := toFun✝, invFun := invFun✝, left_inv := left_inv✝, right_inv := ri …
+                                                                       -- 🎉 no goals
 #align equiv.symm_symm Equiv.symm_symm
 
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
+                                                                          -- ⊢ { toFun := toFun✝, invFun := invFun✝, left_inv := left_inv✝, right_inv := ri …
+                                                                                   -- 🎉 no goals
 #align equiv.trans_refl Equiv.trans_refl
 
 @[simp] theorem refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
 #align equiv.refl_symm Equiv.refl_symm
 
 @[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := by cases e; rfl
+                                                                          -- ⊢ (Equiv.refl α).trans { toFun := toFun✝, invFun := invFun✝, left_inv := left_ …
+                                                                                   -- 🎉 no goals
 #align equiv.refl_trans Equiv.refl_trans
 
 @[simp] theorem symm_trans_self (e : α ≃ β) : e.symm.trans e = Equiv.refl β := ext <| by simp
+                                                                                         -- 🎉 no goals
 #align equiv.symm_trans_self Equiv.symm_trans_self
 
 @[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
+                                                                                         -- 🎉 no goals
 #align equiv.self_trans_symm Equiv.self_trans_symm
 
 theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
@@ -388,20 +412,30 @@ def equivCongr (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) w
   toFun ac := (ab.symm.trans ac).trans cd
   invFun bd := ab.trans <| bd.trans <| cd.symm
   left_inv ac := by ext x; simp only [trans_apply, comp_apply, symm_apply_apply]
+                    -- ⊢ ↑((fun bd => ab.trans (bd.trans cd.symm)) ((fun ac => (ab.symm.trans ac).tra …
+                           -- 🎉 no goals
   right_inv ac := by ext x; simp only [trans_apply, comp_apply, apply_symm_apply]
+                     -- ⊢ ↑((fun ac => (ab.symm.trans ac).trans cd) ((fun bd => ab.trans (bd.trans cd. …
+                            -- 🎉 no goals
 #align equiv.equiv_congr Equiv.equivCongr
 
 @[simp] theorem equivCongr_refl {α β} :
     (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by ext; rfl
+                                                                        -- ⊢ ↑(↑(equivCongr (Equiv.refl α) (Equiv.refl β)) x✝¹) x✝ = ↑(↑(Equiv.refl (α ≃  …
+                                                                             -- 🎉 no goals
 #align equiv.equiv_congr_refl Equiv.equivCongr_refl
 
 @[simp] theorem equivCongr_symm {δ} (ab : α ≃ β) (cd : γ ≃ δ) :
     (ab.equivCongr cd).symm = ab.symm.equivCongr cd.symm := by ext; rfl
+                                                               -- ⊢ ↑(↑(equivCongr ab cd).symm x✝¹) x✝ = ↑(↑(equivCongr ab.symm cd.symm) x✝¹) x✝
+                                                                    -- 🎉 no goals
 #align equiv.equiv_congr_symm Equiv.equivCongr_symm
 
 @[simp] theorem equivCongr_trans {δ ε ζ} (ab : α ≃ β) (de : δ ≃ ε) (bc : β ≃ γ) (ef : ε ≃ ζ) :
     (ab.equivCongr de).trans (bc.equivCongr ef) = (ab.trans bc).equivCongr (de.trans ef) := by
   ext; rfl
+  -- ⊢ ↑(↑((equivCongr ab de).trans (equivCongr bc ef)) x✝¹) x✝ = ↑(↑(equivCongr (a …
+       -- 🎉 no goals
 #align equiv.equiv_congr_trans Equiv.equivCongr_trans
 
 @[simp] theorem equivCongr_refl_left {α β γ} (bg : β ≃ γ) (e : α ≃ β) :
@@ -429,6 +463,7 @@ theorem permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).tr
 
 @[simp] theorem permCongr_refl : e.permCongr (Equiv.refl _) = Equiv.refl _ := by
   simp [permCongr_def]
+  -- 🎉 no goals
 #align equiv.perm_congr_refl Equiv.permCongr_refl
 
 @[simp] theorem permCongr_symm : e.permCongr.symm = e.symm.permCongr := rfl
@@ -444,6 +479,8 @@ theorem permCongr_symm_apply (p : Equiv.Perm β') (x) :
 theorem permCongr_trans (p p' : Equiv.Perm α') :
     (e.permCongr p).trans (e.permCongr p') = e.permCongr (p.trans p') := by
   ext; simp only [trans_apply, comp_apply, permCongr_apply, symm_apply_apply]
+  -- ⊢ ↑((↑(permCongr e) p).trans (↑(permCongr e) p')) x✝ = ↑(↑(permCongr e) (p.tra …
+       -- 🎉 no goals
 #align equiv.perm_congr_trans Equiv.permCongr_trans
 
 end permCongr
@@ -511,7 +548,9 @@ def arrowCongr {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ 
   toFun f := e₂ ∘ f ∘ e₁.symm
   invFun f := e₂.symm ∘ f ∘ e₁
   left_inv f := funext fun x => by simp only [comp_apply, symm_apply_apply]
+                                   -- 🎉 no goals
   right_inv f := funext fun x => by simp only [comp_apply, apply_symm_apply]
+                                    -- 🎉 no goals
 #align equiv.arrow_congr_apply Equiv.arrowCongr_apply
 #align equiv.arrow_congr Equiv.arrowCongr
 
@@ -519,6 +558,8 @@ theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α�
     (f : α₁ → β₁) (g : β₁ → γ₁) :
     arrowCongr ea ec (g ∘ f) = arrowCongr eb ec g ∘ arrowCongr ea eb f := by
   ext; simp only [comp, arrowCongr_apply, eb.symm_apply_apply]
+  -- ⊢ ↑(arrowCongr ea ec) (g ∘ f) x✝ = (↑(arrowCongr eb ec) g ∘ ↑(arrowCongr ea eb …
+       -- 🎉 no goals
 #align equiv.arrow_congr_comp Equiv.arrowCongr_comp
 
 @[simp] theorem arrowCongr_refl {α β : Sort*} :
@@ -579,6 +620,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ :
 -- `f₁ := g` and `f₂ := fun x ↦ x`. This causes nontermination.
 theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
   apply arrowCongr_comp
+  -- 🎉 no goals
 #align equiv.conj_comp Equiv.conj_comp
 
 theorem eq_comp_symm {α β γ} (e : α ≃ β) (f : β → γ) (g : α → γ) : f = g ∘ e.symm ↔ f ∘ e = g :=
@@ -607,7 +649,11 @@ noncomputable def propEquivBool : Prop ≃ Bool where
   toFun p := @decide p (Classical.propDecidable _)
   invFun b := b
   left_inv p := by simp [@Bool.decide_iff p (Classical.propDecidable _)]
+                   -- 🎉 no goals
   right_inv b := by cases b <;> simp
+                    -- ⊢ (fun p => decide p) ((fun b => b = true) false) = false
+                                -- 🎉 no goals
+                                -- 🎉 no goals
 #align equiv.Prop_equiv_bool Equiv.propEquivBool
 
 section
@@ -623,6 +669,8 @@ is equivalent to `β a`. -/
   toFun := eval a
   invFun x b := cast (congr_arg β <| Subsingleton.elim a b) x
   left_inv _ := funext fun b => by rw [Subsingleton.elim b a]; rfl
+                                   -- ⊢ (fun x b => cast (_ : β a = β b) x) (eval a x✝) a = x✝ a
+                                                               -- 🎉 no goals
   right_inv _ := rfl
 #align equiv.Pi_subsingleton_apply Equiv.piSubsingleton_apply
 #align equiv.Pi_subsingleton_symm_apply Equiv.piSubsingleton_symm_apply
@@ -848,14 +896,20 @@ end
 protected theorem exists_unique_congr {p : α → Prop} {q : β → Prop}
     (f : α ≃ β) (h : ∀ {x}, p x ↔ q (f x)) : (∃! x, p x) ↔ ∃! y, q y := by
   constructor
+  -- ⊢ (∃! x, p x) → ∃! y, q y
   · rintro ⟨a, ha₁, ha₂⟩
+    -- ⊢ ∃! y, q y
     exact ⟨f a, h.1 ha₁, fun b hb => f.symm_apply_eq.1 (ha₂ (f.symm b) (h.2 (by simpa using hb)))⟩
+    -- 🎉 no goals
   · rintro ⟨b, hb₁, hb₂⟩
+    -- ⊢ ∃! x, p x
     exact ⟨f.symm b, h.2 (by simpa using hb₁), fun y hy => (eq_symm_apply f).2 (hb₂ _ (h.1 hy))⟩
+    -- 🎉 no goals
 #align equiv.exists_unique_congr Equiv.exists_unique_congr
 
 protected theorem exists_unique_congr_left' {p : α → Prop} (f : α ≃ β) :
     (∃! x, p x) ↔ ∃! y, p (f.symm y) := Equiv.exists_unique_congr f fun {_} => by simp
+                                                                                  -- 🎉 no goals
 #align equiv.exists_unique_congr_left' Equiv.exists_unique_congr_left'
 
 protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
@@ -865,8 +919,16 @@ protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
 protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
+  -- ⊢ (∀ (x : α), p x) → ∀ (y : β), q y
+                  -- ⊢ q x
+                  -- ⊢ p x
   · rw [← f.right_inv x]; apply h.mp; apply h₂
+    -- ⊢ q (toFun f (invFun f x))
+                          -- ⊢ p (invFun f x)
+                                      -- 🎉 no goals
   · apply h.mpr; apply h₂
+    -- ⊢ q (↑f x)
+                 -- 🎉 no goals
 #align equiv.forall_congr Equiv.forall_congr
 
 protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ β)
@@ -906,6 +968,7 @@ protected theorem forall₃_congr' {p : α₁ → β₁ → γ₁ → Prop} {q :
 
 protected theorem forall_congr_left' {p : α → Prop} (f : α ≃ β) : (∀ x, p x) ↔ ∀ y, p (f.symm y) :=
   Equiv.forall_congr f <| by simp
+                             -- 🎉 no goals
 #align equiv.forall_congr_left' Equiv.forall_congr_left'
 
 protected theorem forall_congr_left {p : β → Prop} (f : α ≃ β) : (∀ x, p (f x)) ↔ ∀ y, p y :=
@@ -915,6 +978,7 @@ protected theorem forall_congr_left {p : β → Prop} (f : α ≃ β) : (∀ x, 
 protected theorem exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
     (∃ a, p a) ↔ ∃ b, p (f.symm b) :=
   ⟨fun ⟨a, h⟩ => ⟨f a, by simpa using h⟩, fun ⟨b, h⟩ => ⟨_, h⟩⟩
+                          -- 🎉 no goals
 #align equiv.exists_congr_left Equiv.exists_congr_left
 
 end Equiv
@@ -930,7 +994,11 @@ protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α 
     (eq (e.symm b₁) (e.symm b₂)).2
       ((e.apply_symm_apply b₁).symm ▸ (e.apply_symm_apply b₂).symm ▸ h)
   left_inv := by rintro ⟨a⟩; simp only [Quot.map, Equiv.symm_apply_apply]
+                 -- ⊢ Quot.map ↑e.symm (_ : ∀ (b₁ b₂ : β), rb b₁ b₂ → ra (↑e.symm b₁) (↑e.symm b₂) …
+                             -- 🎉 no goals
   right_inv := by rintro ⟨a⟩; simp only [Quot.map, Equiv.apply_symm_apply]
+                  -- ⊢ Quot.map ↑e (_ : ∀ (a₁ a₂ : α), ra a₁ a₂ → rb (↑e a₁) (↑e a₂)) (Quot.map ↑e. …
+                              -- 🎉 no goals
 #align quot.congr Quot.congr
 
 @[simp] theorem congr_mk {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
@@ -949,6 +1017,7 @@ by a relation `ra` and the quotient space of `β` by the image of this relation 
 protected def congrLeft {r : α → α → Prop} (e : α ≃ β) :
     Quot r ≃ Quot fun b b' => r (e.symm b) (e.symm b') :=
   Quot.congr e fun _ _ => by simp only [e.symm_apply_apply]
+                             -- 🎉 no goals
 #align quot.congr_left Quot.congrLeft
 
 end Quot

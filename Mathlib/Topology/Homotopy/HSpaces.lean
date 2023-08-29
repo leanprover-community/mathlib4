@@ -87,9 +87,12 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
+    -- ⊢ ↑hmul (e, e) = e ∧ ↑hmul (e, e) = e
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
+    -- 🎉 no goals
   eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
+    -- ⊢ HomotopyRel (comp (ContinuousMap.mk fun p => (↑hmul (p.fst.fst, p.snd.fst),  …
     have hG : Continuous G :=
       (Continuous.comp HSpace.eHmul.1.1.2
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
@@ -97,11 +100,17 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
+      -- ⊢ ContinuousMap.toFun (ContinuousMap.mk G) (0, x, y) = ↑(comp (ContinuousMap.m …
       exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
+      -- 🎉 no goals
     · rintro ⟨x, y⟩
+      -- ⊢ ContinuousMap.toFun (ContinuousMap.mk G) (1, x, y) = ↑(ContinuousMap.id (X × …
       exact Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
+      -- 🎉 no goals
     · rintro t ⟨x, y⟩ h
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       exact
         ⟨Prod.mk.inj_iff.mpr
             ⟨HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.1),
@@ -109,6 +118,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
           Prod.mk.inj_iff.mpr ⟨(HSpace.eHmul.2 t x h.1).2, (HSpace.eHmul.2 t y h.2).2⟩⟩
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
+    -- ⊢ HomotopyRel (comp (ContinuousMap.mk fun p => (↑hmul (p.fst.fst, p.snd.fst),  …
     have hG : Continuous G :=
       (Continuous.comp HSpace.hmulE.1.1.2
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
@@ -116,11 +126,17 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
+      -- ⊢ ContinuousMap.toFun (ContinuousMap.mk G) (0, x, y) = ↑(comp (ContinuousMap.m …
       exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
+      -- 🎉 no goals
     · rintro ⟨x, y⟩
+      -- ⊢ ContinuousMap.toFun (ContinuousMap.mk G) (1, x, y) = ↑(ContinuousMap.id (X × …
       exact Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
+      -- 🎉 no goals
     · rintro t ⟨x, y⟩ h
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       exact
         ⟨Prod.mk.inj_iff.mpr
             ⟨HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.1),
@@ -145,7 +161,11 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   e := 1
   hmul_e_e := one_mul 1
   eHmul := (HomotopyRel.refl _ _).cast rfl (by ext1; apply one_mul)
+                                               -- ⊢ ↑(comp (ContinuousMap.mk (Function.uncurry Mul.mul)) (prodMk (const M 1) (Co …
+                                                     -- 🎉 no goals
   hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
+                                               -- ⊢ ↑(comp (ContinuousMap.mk (Function.uncurry Mul.mul)) (prodMk (ContinuousMap. …
+                                                     -- 🎉 no goals
 #align topological_group.to_H_space TopologicalGroup.toHSpace
 #align topological_add_group.to_H_space TopologicalAddGroup.toHSpace
 
@@ -166,7 +186,9 @@ groups is definitionally equally to the product `H-space`-structure of the two g
 example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
     [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
+  -- ⊢ hSpace (G × G') = { hmul := ContinuousMap.mk fun p => (↑HSpace.hmul (p.fst.f …
   rfl
+  -- 🎉 no goals
 
 
 end TopologicalGroup
@@ -182,41 +204,61 @@ def qRight (p : I × I) : I :=
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by continuity) (by continuity) fun x => (add_pos zero_lt_one).ne'
+                       -- 🎉 no goals
+                                       -- 🎉 no goals
 #align unit_interval.continuous_Q_right unitInterval.continuous_qRight
 
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
+                                 -- 🎉 no goals
 #align unit_interval.Q_right_zero_left unitInterval.qRight_zero_left
 
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
     (le_div_iff <| add_pos zero_lt_one).2 <| by
       dsimp only
+      -- ⊢ 1 * (1 + ↑θ) ≤ 2 * ↑1
       rw [coe_one, one_mul, mul_one, add_comm, ← one_add_one_eq_two]
+      -- ⊢ ↑θ + 1 ≤ 1 + 1
       simp only [add_le_add_iff_right]
+      -- ⊢ ↑θ ≤ 1
       exact le_one _
+      -- 🎉 no goals
 #align unit_interval.Q_right_one_left unitInterval.qRight_one_left
 
 theorem qRight_zero_right (t : I) :
     (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then (2 : ℝ) * t else 1 := by
   simp only [qRight, coe_zero, add_zero, div_one]
+  -- ⊢ ↑(Set.projIcc 0 1 qRight.proof_1 (2 * ↑t)) = if ↑t ≤ 1 / 2 then 2 * ↑t else 1
   split_ifs
+  -- ⊢ ↑(Set.projIcc 0 1 qRight.proof_1 (2 * ↑t)) = 2 * ↑t
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]
+    -- ⊢ ↑t ∈ Set.Icc 0 (1 / 2)
     refine' ⟨t.2.1, _⟩
+    -- ⊢ ↑t ≤ 1 / 2
     tauto
+    -- 🎉 no goals
   · rw [(Set.projIcc_eq_right _).2]
+    -- ⊢ 1 ≤ 2 * ↑t
     · linarith
+      -- 🎉 no goals
     · exact zero_lt_one
+      -- 🎉 no goals
 #align unit_interval.Q_right_zero_right unitInterval.qRight_zero_right
 
 theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
   Eq.trans
       (by
         rw [qRight]
+        -- ⊢ Set.projIcc 0 1 qRight.proof_1 (2 * ↑(t, 1).fst / (1 + ↑(t, 1).snd)) = Set.p …
         congr
+        -- ⊢ 2 * ↑(t, 1).fst / (1 + ↑(t, 1).snd) = ↑t
         norm_num
+        -- ⊢ 2 * ↑t / 2 = ↑t
         apply mul_div_cancel_left
+        -- ⊢ 2 ≠ 0
         exact two_ne_zero) <|
+        -- 🎉 no goals
     Set.projIcc_val zero_le_one _
 #align unit_interval.Q_right_one_right unitInterval.qRight_one_right
 
@@ -235,10 +277,14 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   continuous_toFun := γ.continuous.comp (continuous_qRight.comp <| Continuous.Prod.mk_left θ)
   source' := by
     dsimp only
+    -- ⊢ ↑γ (qRight (0, θ)) = x
     rw [qRight_zero_left, γ.source]
+    -- 🎉 no goals
   target' := by
     dsimp only
+    -- ⊢ ↑γ (qRight (1, θ)) = y
     rw [qRight_one_left, γ.target]
+    -- 🎉 no goals
 #align path.delay_refl_right Path.delayReflRight
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
@@ -249,16 +295,24 @@ theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayRef
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
+  -- ⊢ ↑(delayReflRight 0 γ) t = ↑(trans γ (refl y)) t
   simp only [delayReflRight, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
     refl_apply]
   split_ifs with h; swap; conv_rhs => rw [← γ.target]
+  -- ⊢ ↑γ (qRight (t, 0)) = ↑γ { val := 2 * ↑t, property := (_ : 2 * ↑t ∈ I) }
+                    -- ⊢ ↑γ (qRight (t, 0)) = y
+                          -- ⊢ ↑γ (qRight (t, 0)) = ↑γ 1
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
+  -- ⊢ (if ↑t ≤ 1 / 2 then 2 * ↑t else 1) = ↑1
   exacts [if_neg h, if_pos h]
+  -- 🎉 no goals
 #align path.delay_refl_right_zero Path.delayReflRight_zero
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
+  -- ⊢ ↑(delayReflRight 1 γ) t = ↑γ t
   exact congr_arg γ (qRight_one_right t)
+  -- 🎉 no goals
 #align path.delay_refl_right_one Path.delayReflRight_one
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
@@ -275,10 +329,12 @@ theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayRefl
 
 theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
   simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]
+  -- 🎉 no goals
 #align path.delay_refl_left_zero Path.delayReflLeft_zero
 
 theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
+  -- 🎉 no goals
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
 /-- The loop space at x carries a structure of an `H-space`. Note that the field `eHmul`
@@ -294,10 +350,14 @@ instance (x : X) : HSpace (Path x x) where
         ⟨⟨fun p : I × Path x x => delayReflLeft p.1 p.2, continuous_delayReflLeft⟩,
           delayReflLeft_zero, delayReflLeft_one⟩
       prop' := by rintro t _ (rfl : _ = _); exact ⟨refl_trans_refl.symm, rfl⟩ }
+                  -- ⊢ ↑(ContinuousMap.mk fun x_1 => ContinuousMap.toFun { toContinuousMap := Conti …
+                                            -- 🎉 no goals
   hmulE :=
     { toHomotopy :=
         ⟨⟨fun p : I × Path x x => delayReflRight p.1 p.2, continuous_delayReflRight⟩,
           delayReflRight_zero, delayReflRight_one⟩
       prop' := by rintro t _ (rfl : _ = _); exact ⟨refl_trans_refl.symm, rfl⟩ }
+                  -- ⊢ ↑(ContinuousMap.mk fun x_1 => ContinuousMap.toFun { toContinuousMap := Conti …
+                                            -- 🎉 no goals
 
 end Path

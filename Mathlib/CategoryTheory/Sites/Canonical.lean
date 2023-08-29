@@ -66,6 +66,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       Presieve.IsSeparatedFor P (((B h).pullback g) : Presieve Z)) :
     Presieve.IsSheafFor P (Sieve.bind (U : Presieve X) B : Presieve X) := by
   intro s hs
+  -- ⊢ ∃! t, Presieve.FamilyOfElements.IsAmalgamation s t
   let y : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.FamilyOfElements P (B hf : Presieve Y) :=
     fun Y f hf Z g hg => s _ (Presieve.bind_comp _ _ hg)
   have hy : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).Compatible := by
@@ -102,14 +103,23 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       rw [h]
       simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
   refine' ⟨hU.amalgamate t hT, _, _⟩
+  -- ⊢ (fun t => Presieve.FamilyOfElements.IsAmalgamation s t) (Presieve.IsSheafFor …
   · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
+    -- ⊢ P.map (f ≫ g).op (Presieve.IsSheafFor.amalgamate hU t hT) = s (f ≫ g) (_ : ∃ …
     rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
+    -- ⊢ P.map f.op (t g hg) = s (f ≫ g) (_ : ∃ Y_1 g_1 f_1 H, (fun Y f h => (B h).ar …
     apply ht hg _ hf
+    -- 🎉 no goals
   · intro y hy
+    -- ⊢ y = Presieve.IsSheafFor.amalgamate hU t hT
     apply hU.isSeparatedFor.ext
+    -- ⊢ ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, U.arrows f → P.map f.op y = P.map f.op (Presieve.IsSh …
     intro Y f hf
+    -- ⊢ P.map f.op y = P.map f.op (Presieve.IsSheafFor.amalgamate hU t hT)
     apply (hB hf).isSeparatedFor.ext
+    -- ⊢ ∀ ⦃Y_1 : C⦄ ⦃f_1 : Y_1 ⟶ Y⦄, (B hf).arrows f_1 → P.map f_1.op (P.map f.op y) …
     intro Z g hg
+    -- ⊢ P.map g.op (P.map f.op y) = P.map g.op (P.map f.op (Presieve.IsSheafFor.amal …
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, hy _ (Presieve.bind_comp _ _ hg),
       hU.valid_glue _ _ hf, ht hf _ hg]
 #align category_theory.sheaf.is_sheaf_for_bind CategoryTheory.Sheaf.isSheafFor_bind
@@ -132,11 +142,17 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     rintro Z f ⟨W, f, g, hg, hf : S _, rfl⟩
     apply hf
   apply Presieve.isSheafFor_subsieve_aux P this
+  -- ⊢ Presieve.IsSheafFor P (Sieve.bind R.arrows fun Y f x => Sieve.pullback f S). …
   apply isSheafFor_bind _ _ _ hR hS
+  -- ⊢ ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, R.arrows f → ∀ ⦃Z : C⦄ (g : Z ⟶ Y), Presieve.IsSepara …
   · intro Y f hf Z g
+    -- ⊢ Presieve.IsSeparatedFor P (Sieve.pullback g (Sieve.pullback f S)).arrows
     rw [← pullback_comp]
+    -- ⊢ Presieve.IsSeparatedFor P (Sieve.pullback (g ≫ f) S).arrows
     apply (hS (R.downward_closed hf _)).isSeparatedFor
+    -- 🎉 no goals
   · intro Y f hf
+    -- ⊢ Presieve.IsSeparatedFor P (Sieve.pullback f (Sieve.bind R.arrows fun Y f x = …
     have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
         R.pullback f := by
       ext Z g
@@ -148,7 +164,9 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
         refine' ⟨Z, 𝟙 Z, _, a, _⟩
         simp [hf]
     rw [this]
+    -- ⊢ Presieve.IsSeparatedFor P (Sieve.pullback f R).arrows
     apply hR' hf
+    -- 🎉 no goals
 #align category_theory.sheaf.is_sheaf_for_trans CategoryTheory.Sheaf.isSheafFor_trans
 
 /-- Construct the finest (largest) Grothendieck topology for which the given presheaf is a sheaf.
@@ -160,21 +178,33 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
+    -- ⊢ Presieve.IsSheafFor P ⊤.arrows
     exact Presieve.isSheafFor_top_sieve P
+    -- 🎉 no goals
   pullback_stable' X Y S f hS Z g := by
     rw [← pullback_comp]
+    -- ⊢ Presieve.IsSheafFor P (Sieve.pullback (g ≫ f) S).arrows
     apply hS
+    -- 🎉 no goals
   transitive' X S hS R hR Z g := by
     -- This is the hard part of the construction, showing that the given set of sieves satisfies
     -- the transitivity axiom.
     refine' isSheafFor_trans P (pullback g S) _ (hS Z g) _ _
+    -- ⊢ ∀ ⦃Y : C⦄ ⦃f : Y ⟶ Z⦄, (Sieve.pullback g R).arrows f → Presieve.IsSeparatedF …
     · intro Y f _
+      -- ⊢ Presieve.IsSeparatedFor P (Sieve.pullback f (Sieve.pullback g S)).arrows
       rw [← pullback_comp]
+      -- ⊢ Presieve.IsSeparatedFor P (Sieve.pullback (f ≫ g) S).arrows
       apply (hS _ _).isSeparatedFor
+      -- 🎉 no goals
     · intro Y f hf
+      -- ⊢ Presieve.IsSheafFor P (Sieve.pullback f (Sieve.pullback g R)).arrows
       have := hR hf _ (𝟙 _)
+      -- ⊢ Presieve.IsSheafFor P (Sieve.pullback f (Sieve.pullback g R)).arrows
       rw [pullback_id, pullback_comp] at this
+      -- ⊢ Presieve.IsSheafFor P (Sieve.pullback f (Sieve.pullback g R)).arrows
       apply this
+      -- 🎉 no goals
 #align category_theory.sheaf.finest_topology_single CategoryTheory.Sheaf.finestTopologySingle
 
 /--
@@ -190,6 +220,7 @@ def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) : GrothendieckTopology C :=
 theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) :
     Presieve.IsSheaf (finestTopology Ps) P := fun X S hS => by
   simpa using hS _ ⟨⟨_, _, ⟨_, h, rfl⟩, rfl⟩, rfl⟩ _ (𝟙 _)
+  -- 🎉 no goals
 #align category_theory.sheaf.sheaf_for_finest_topology CategoryTheory.Sheaf.sheaf_for_finestTopology
 
 /--
@@ -198,9 +229,12 @@ Check that if each `P ∈ Ps` is a sheaf for `J`, then `J` is a subtopology of `
 theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopology C)
     (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps := by
   rintro X S hS _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩
+  -- ⊢ S ∈ (fun f => ↑f X) { val := (finestTopologySingle P).sieves, property := (_ …
   intro Y f
+  -- ⊢ Presieve.IsSheafFor P (Sieve.pullback f S).arrows
   -- this can't be combined with the previous because the `subst` is applied at the end
   exact hJ P hP (S.pullback f) (J.pullback_stable f hS)
+  -- 🎉 no goals
 #align category_theory.sheaf.le_finest_topology CategoryTheory.Sheaf.le_finestTopology
 
 /-- The `canonicalTopology` on a category is the finest (largest) topology for which every
@@ -238,7 +272,9 @@ theorem of_yoneda_isSheaf (J : GrothendieckTopology C)
   le_finestTopology _ _
     (by
       rintro P ⟨X, rfl⟩
+      -- ⊢ Presieve.IsSheaf J (yoneda.obj X)
       apply h)
+      -- 🎉 no goals
 #align category_theory.sheaf.subcanonical.of_yoneda_is_sheaf CategoryTheory.Sheaf.Subcanonical.of_yoneda_isSheaf
 
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/

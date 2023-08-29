@@ -82,18 +82,27 @@ variable [AddGroup α] [LinearOrder α]
 
 @[simp]
 theorem abs_neg (a : α) : |(-a)| = |a| := by rw [abs_eq_max_neg, max_comm, neg_neg, abs_eq_max_neg]
+                                             -- 🎉 no goals
 #align abs_neg abs_neg
 
 theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
   simpa only [← h, eq_comm (a := |a|), neg_eq_iff_eq_neg] using abs_choice a
+  -- 🎉 no goals
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ a = b ∨ a = -b
   · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
+    -- ⊢ |b| = b ∨ |b| = -b
       simpa only [neg_eq_iff_eq_neg (a := |b|), neg_inj, or_comm] using abs_choice b
+      -- 🎉 no goals
+      -- 🎉 no goals
   · cases' h with h h <;>
+    -- ⊢ |a| = |b|
     simp [h, abs_neg]
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align abs_eq_abs abs_eq_abs
 
 theorem abs_sub_comm (a b : α) : |a - b| = |b - a| :=
@@ -122,6 +131,7 @@ theorem abs_of_neg (h : a < 0) : |a| = -a :=
 
 theorem abs_le_abs_of_nonneg (ha : 0 ≤ a) (hab : a ≤ b) : |a| ≤ |b| := by
   rwa [abs_of_nonneg ha, abs_of_nonneg (ha.trans hab)]
+  -- 🎉 no goals
 #align abs_le_abs_of_nonneg abs_le_abs_of_nonneg
 
 @[simp]
@@ -133,8 +143,11 @@ theorem abs_zero : |0| = (0 : α) :=
 theorem abs_pos : 0 < |a| ↔ a ≠ 0 := by
   rcases lt_trichotomy a 0 with (ha | rfl | ha)
   · simp [abs_of_neg ha, neg_pos, ha.ne, ha]
+    -- 🎉 no goals
   · simp
+    -- 🎉 no goals
   · simp [abs_of_pos ha, ha, ha.ne.symm]
+    -- 🎉 no goals
 #align abs_pos abs_pos
 
 theorem abs_pos_of_pos (h : 0 < a) : 0 < |a| :=
@@ -147,6 +160,7 @@ theorem abs_pos_of_neg (h : a < 0) : 0 < |a| :=
 
 theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
   cases' le_total 0 a with h h
+  -- ⊢ -|a| ≤ a
   · calc
       -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
       _ ≤ 0 := neg_nonpos.mpr h
@@ -158,11 +172,15 @@ theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
 
 theorem add_abs_nonneg (a : α) : 0 ≤ a + |a| := by
   rw [← add_right_neg a]
+  -- ⊢ a + -a ≤ a + |a|
   apply add_le_add_left
+  -- ⊢ -a ≤ |a|
   exact neg_le_abs_self a
+  -- 🎉 no goals
 #align add_abs_nonneg add_abs_nonneg
 
 theorem neg_abs_le_neg (a : α) : -|a| ≤ -a := by simpa using neg_abs_le_self (-a)
+                                                 -- 🎉 no goals
 #align neg_abs_le_neg neg_abs_le_neg
 
 @[simp]
@@ -190,11 +208,14 @@ variable [CovariantClass α α (swap (· + ·)) (· ≤ ·)]
 
 theorem abs_le_abs_of_nonpos (ha : a ≤ 0) (hab : b ≤ a) : |a| ≤ |b| := by
   rw [abs_of_nonpos ha, abs_of_nonpos (hab.trans ha)]
+  -- ⊢ -a ≤ -b
   exact neg_le_neg_iff.mpr hab
+  -- 🎉 no goals
 #align abs_le_abs_of_nonpos abs_le_abs_of_nonpos
 
 theorem abs_lt : |a| < b ↔ -b < a ∧ a < b :=
   max_lt_iff.trans <| and_comm.trans <| by rw [neg_lt]
+                                           -- 🎉 no goals
 #align abs_lt abs_lt
 
 theorem neg_lt_of_abs_lt (h : |a| < b) : -b < a :=
@@ -207,15 +228,22 @@ theorem lt_of_abs_lt (h : |a| < b) : a < b :=
 
 theorem max_sub_min_eq_abs' (a b : α) : max a b - min a b = |a - b| := by
   cases' le_total a b with ab ba
+  -- ⊢ max a b - min a b = |a - b|
   · rw [max_eq_right ab, min_eq_left ab, abs_of_nonpos, neg_sub]
+    -- ⊢ a - b ≤ 0
     rwa [sub_nonpos]
+    -- 🎉 no goals
   · rw [max_eq_left ba, min_eq_right ba, abs_of_nonneg]
+    -- ⊢ 0 ≤ a - b
     rwa [sub_nonneg]
+    -- 🎉 no goals
 #align max_sub_min_eq_abs' max_sub_min_eq_abs'
 
 theorem max_sub_min_eq_abs (a b : α) : max a b - min a b = |b - a| := by
   rw [abs_sub_comm]
+  -- ⊢ max a b - min a b = |a - b|
   exact max_sub_min_eq_abs' _ _
+  -- 🎉 no goals
 #align max_sub_min_eq_abs max_sub_min_eq_abs
 
 end AddGroup
@@ -232,9 +260,11 @@ variable [LinearOrderedAddCommGroup α] {a b c d : α}
 example : CovariantClass α α (swap fun x y ↦ x + y) fun x y ↦ x ≤ y := inferInstance
 
 theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
+                                                -- 🎉 no goals
 #align abs_le abs_le
 
 theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
+                                                 -- 🎉 no goals
 #align le_abs' le_abs'
 
 theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
@@ -271,19 +301,24 @@ theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
 #align abs_add abs_add
 
 theorem abs_add' (a b : α) : |a| ≤ |b| + |b + a| := by simpa using abs_add (-b) (b + a)
+                                                       -- 🎉 no goals
 #align abs_add' abs_add'
 
 theorem abs_sub (a b : α) : |a - b| ≤ |a| + |b| := by
   rw [sub_eq_add_neg, ← abs_neg b]
+  -- ⊢ |a + -b| ≤ |a| + |(-b)|
   exact abs_add a _
+  -- 🎉 no goals
 #align abs_sub abs_sub
 
 theorem abs_sub_le_iff : |a - b| ≤ c ↔ a - b ≤ c ∧ b - a ≤ c := by
   rw [abs_le, neg_le_sub_iff_le_add, sub_le_iff_le_add', and_comm, sub_le_iff_le_add']
+  -- 🎉 no goals
 #align abs_sub_le_iff abs_sub_le_iff
 
 theorem abs_sub_lt_iff : |a - b| < c ↔ a - b < c ∧ b - a < c := by
   rw [@abs_lt α, neg_lt_sub_iff_lt_add', sub_lt_iff_lt_add', and_comm, sub_lt_iff_lt_add']
+  -- 🎉 no goals
 #align abs_sub_lt_iff abs_sub_lt_iff
 
 theorem sub_le_of_abs_sub_le_left (h : |a - b| ≤ c) : b - c ≤ a :=
@@ -306,23 +341,32 @@ theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
   (@sub_le_iff_le_add α ..).2 <|
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
+                              -- 🎉 no goals
       _ ≤ |a - b| + |b| := abs_add _ _
 #align abs_sub_abs_le_abs_sub abs_sub_abs_le_abs_sub
 
 theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
   abs_sub_le_iff.2
     ⟨abs_sub_abs_le_abs_sub _ _, by rw [abs_sub_comm]; apply abs_sub_abs_le_abs_sub⟩
+                                    -- ⊢ |b| - |a| ≤ |b - a|
+                                                       -- 🎉 no goals
 #align abs_abs_sub_abs_le_abs_sub abs_abs_sub_abs_le_abs_sub
 
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
   refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
+  -- ⊢ a = b ∨ a = -b → |a| = b
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
+  -- ⊢ |a| = a
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align abs_eq abs_eq
 
 theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c| :=
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
+        -- 🎉 no goals
       simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs_self a)]⟩
+      -- 🎉 no goals
 #align abs_le_max_abs_abs abs_le_max_abs_abs
 
 theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
@@ -352,6 +396,7 @@ theorem eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=
 theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
   calc
     |a - c| = |a - b + (b - c)| := by rw [sub_add_sub_cancel]
+                                      -- 🎉 no goals
     _ ≤ |a - b| + |b - c| := abs_add _ _
 #align abs_sub_le abs_sub_le
 

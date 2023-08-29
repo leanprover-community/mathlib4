@@ -67,9 +67,11 @@ to the linear map itself, is zero.
 See `Matrix.aeval_self_charpoly` for the equivalent statement about matrices. -/
 theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
   apply (LinearEquiv.map_eq_zero_iff (algEquivMatrix (chooseBasis R M)).toLinearEquiv).1
+  -- ⊢ ↑(AlgEquiv.toLinearEquiv (algEquivMatrix (chooseBasis R M))) (↑(aeval f) (ch …
   rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_algHom, ← Polynomial.aeval_algHom_apply _ _ _,
     charpoly_def]
   exact Matrix.aeval_self_charpoly _
+  -- 🎉 no goals
 #align linear_map.aeval_self_charpoly LinearMap.aeval_self_charpoly
 
 theorem isIntegral : IsIntegral R f :=
@@ -91,6 +93,7 @@ theorem aeval_eq_aeval_mod_charpoly (p : R[X]) : aeval f p = aeval f (p %ₘ f.c
 dimension of the module. -/
 theorem pow_eq_aeval_mod_charpoly (k : ℕ) : f ^ k = aeval f (X ^ k %ₘ f.charpoly) := by
   rw [← aeval_eq_aeval_mod_charpoly, map_pow, aeval_X]
+  -- 🎉 no goals
 #align linear_map.pow_eq_aeval_mod_charpoly LinearMap.pow_eq_aeval_mod_charpoly
 
 variable {f}
@@ -98,7 +101,9 @@ variable {f}
 theorem minpoly_coeff_zero_of_injective (hf : Function.Injective f) :
     (minpoly R f).coeff 0 ≠ 0 := by
   intro h
+  -- ⊢ False
   obtain ⟨P, hP⟩ := X_dvd_iff.2 h
+  -- ⊢ False
   have hdegP : P.degree < (minpoly R f).degree := by
     rw [hP, mul_comm]
     refine' degree_lt_degree_mul_X fun h => _
@@ -109,9 +114,11 @@ theorem minpoly_coeff_zero_of_injective (hf : Function.Injective f) :
       rwa [Monic.def, hP, mul_comm, leadingCoeff_mul_X, ← Monic.def] at this
     exact minpoly.monic (isIntegral f)
   have hzero : aeval f (minpoly R f) = 0 := minpoly.aeval _ _
+  -- ⊢ False
   simp only [hP, mul_eq_comp, ext_iff, hf, aeval_X, map_eq_zero_iff, coe_comp, AlgHom.map_mul,
     zero_apply, Function.comp_apply] at hzero
   exact not_le.2 hdegP (minpoly.min _ _ hPmonic (ext hzero))
+  -- 🎉 no goals
 #align linear_map.minpoly_coeff_zero_of_injective LinearMap.minpoly_coeff_zero_of_injective
 
 end CayleyHamilton

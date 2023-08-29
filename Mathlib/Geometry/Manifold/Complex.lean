@@ -57,24 +57,41 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
     (hd : ∀ᶠ z in 𝓝 c, MDifferentiableAt I 𝓘(ℂ, F) f z) (hc : IsLocalMax (norm ∘ f) c) :
     ∀ᶠ y in 𝓝 c, ‖f y‖ = ‖f c‖ := by
   set e := extChartAt I c
+  -- ⊢ ∀ᶠ (y : M) in 𝓝 c, ‖f y‖ = ‖f c‖
   have hI : range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
+  -- ⊢ ∀ᶠ (y : M) in 𝓝 c, ‖f y‖ = ‖f c‖
   have H₁ : 𝓝[range I] (e c) = 𝓝 (e c) := by rw [hI, nhdsWithin_univ]
+  -- ⊢ ∀ᶠ (y : M) in 𝓝 c, ‖f y‖ = ‖f c‖
   have H₂ : map e.symm (𝓝 (e c)) = 𝓝 c
+  -- ⊢ map (↑(LocalEquiv.symm e)) (𝓝 (↑e c)) = 𝓝 c
   · rw [← map_extChartAt_symm_nhdsWithin_range I c, H₁]
+    -- 🎉 no goals
   rw [← H₂, eventually_map]
+  -- ⊢ ∀ᶠ (a : E) in 𝓝 (↑e c), ‖f (↑(LocalEquiv.symm e) a)‖ = ‖f c‖
   replace hd : ∀ᶠ y in 𝓝 (e c), DifferentiableAt ℂ (f ∘ e.symm) y
+  -- ⊢ ∀ᶠ (y : E) in 𝓝 (↑e c), DifferentiableAt ℂ (f ∘ ↑(LocalEquiv.symm e)) y
   · have : e.target ∈ 𝓝 (e c) := H₁ ▸ extChartAt_target_mem_nhdsWithin I c
+    -- ⊢ ∀ᶠ (y : E) in 𝓝 (↑e c), DifferentiableAt ℂ (f ∘ ↑(LocalEquiv.symm e)) y
     filter_upwards [this, Tendsto.eventually H₂.le hd] with y hyt hy₂
+    -- ⊢ DifferentiableAt ℂ (f ∘ ↑(LocalEquiv.symm (extChartAt I c))) y
     have hys : e.symm y ∈ (chartAt H c).source
+    -- ⊢ ↑(LocalEquiv.symm e) y ∈ (chartAt H c).toLocalEquiv.source
     · rw [← extChartAt_source I c]
+      -- ⊢ ↑(LocalEquiv.symm e) y ∈ (extChartAt I c).source
       exact (extChartAt I c).map_target hyt
+      -- 🎉 no goals
     have hfy : f (e.symm y) ∈ (chartAt F (0 : F)).source := mem_univ _
+    -- ⊢ DifferentiableAt ℂ (f ∘ ↑(LocalEquiv.symm (extChartAt I c))) y
     rw [mdifferentiableAt_iff_of_mem_source hys hfy, hI, differentiableWithinAt_univ,
       e.right_inv hyt] at hy₂
     exact hy₂.2
+    -- 🎉 no goals
   convert norm_eventually_eq_of_isLocalMax hd _
+  -- ⊢ f c = (f ∘ ↑(LocalEquiv.symm e)) (↑e c)
   · exact congr_arg f (extChartAt_to_inv _ _).symm
+    -- 🎉 no goals
   · simpa only [IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
+    -- 🎉 no goals
 
 /-!
 ### Functions holomorphic on a set
@@ -89,9 +106,14 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const M ‖f c‖) U := by
   set V := {z ∈ U | ‖f z‖ = ‖f c‖}
+  -- ⊢ EqOn (norm ∘ f) (const M ‖f c‖) U
   suffices : U ⊆ V; exact fun x hx => (this hx).2
+  -- ⊢ EqOn (norm ∘ f) (const M ‖f c‖) U
+                    -- ⊢ U ⊆ V
   have hVo : IsOpen V
+  -- ⊢ IsOpen V
   · refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) ?_
+    -- ⊢ (fun z => ‖f z‖ = ‖f c‖) ∈ 𝓝 x
     replace hm : IsLocalMax (‖f ·‖) x :=
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDifferentiableAt I 𝓘(ℂ, F) f y :=
@@ -99,11 +121,17 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     exact (Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax hd hm).mono fun _ ↦
       (Eq.trans · hx.2)
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩
+  -- ⊢ U ⊆ V
   set W := U ∩ {z | ‖f z‖ = ‖f c‖}ᶜ
+  -- ⊢ U ⊆ V
   have hWo : IsOpen W := hd.continuousOn.norm.preimage_open_of_open ho isOpen_ne
+  -- ⊢ U ⊆ V
   have hdVW : Disjoint V W := disjoint_compl_right.mono inf_le_right inf_le_right
+  -- ⊢ U ⊆ V
   have hUVW : U ⊆ V ∪ W := fun x hx => (eq_or_ne ‖f x‖ ‖f c‖).imp (.intro hx) (.intro hx)
+  -- ⊢ U ⊆ V
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
+  -- 🎉 no goals
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
@@ -120,6 +148,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=
     hd'.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm.norm_add_self hx
   eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]
+                                        -- 🎉 no goals
 
 /-- If a function `f : M → F` from a complex manifold to a complex normed space is holomorphic on a
 (pre)connected compact open set, then it is a constant on this set. -/
@@ -127,15 +156,20 @@ theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a
      (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
      (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
   refine ?_
+  -- ⊢ f a = f b
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f
+  -- ⊢ f a = f b
   · have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · - f b) U := fun x hx ↦
       ⟨(hd x hx).1.sub continuousWithinAt_const, (hd x hx).2.sub_const _⟩
     simpa [sub_eq_zero] using this hd' (sub_self _)
+    -- 🎉 no goals
   rcases hc.exists_isMaxOn ⟨a, ha⟩ hd.continuousOn.norm with ⟨c, hcU, hc⟩
+  -- ⊢ f a = f b
   have : ∀ x ∈ U, ‖f x‖ = ‖f c‖ :=
     norm_eqOn_of_isPreconnected_of_isMaxOn hd hpc ho hcU hc
   rw [hb₀, ← norm_eq_zero, this a ha, ← this b hb, hb₀, norm_zero]
+  -- 🎉 no goals
 
 end MDifferentiableOn
 

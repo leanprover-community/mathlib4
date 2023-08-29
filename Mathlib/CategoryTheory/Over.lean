@@ -58,13 +58,18 @@ variable {X : T}
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
   let ⟨_,b,_⟩ := f
+  -- ⊢ CommaMorphism.mk left✝ b = g
   let ⟨_,e,_⟩ := g
+  -- ⊢ CommaMorphism.mk left✝¹ b = CommaMorphism.mk left✝ e
   congr
+  -- ⊢ b = e
   simp only [eq_iff_true_of_subsingleton]
+  -- 🎉 no goals
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
 -- @[simp] : Porting note : simp can prove this
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
+                                                       -- 🎉 no goals
 #align category_theory.over.over_right CategoryTheory.Over.over_right
 
 @[simp]
@@ -79,6 +84,8 @@ theorem comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left 
 
 @[reassoc (attr := simp)]
 theorem w {A B : Over X} (f : A ⟶ B) : f.left ≫ B.hom = A.hom := by have := f.w; aesop_cat
+                                                                    -- ⊢ f.left ≫ B.hom = A.hom
+                                                                                 -- 🎉 no goals
 #align category_theory.over.w CategoryTheory.Over.w
 
 /-- To give an object in the over category, it suffices to give a morphism with codomain `X`. -/
@@ -200,8 +207,11 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
+    -- ⊢ IsIso f
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
+    -- ⊢ f ≫ g = 𝟙 Y
     repeat (ext; simp)
+    -- 🎉 no goals
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
 /-- The identity over `X` is terminal. -/
@@ -240,12 +250,17 @@ The converse of `CategoryTheory.Over.mono_of_mono_left`.
 -/
 instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := by
   refine' ⟨fun { Y : T } l m a => _⟩
+  -- ⊢ l = m
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ←Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
   suffices l' = (homMk m : mk (m ≫ f.hom) ⟶ f) by apply congrArg CommaMorphism.left this
+  -- ⊢ l' = homMk m
   rw [← cancel_mono k]
+  -- ⊢ l' ≫ k = homMk m ≫ k
   ext
+  -- ⊢ (l' ≫ k).left = (homMk m ≫ k).left
   apply a
+  -- 🎉 no goals
 #align category_theory.over.mono_left_of_mono CategoryTheory.Over.mono_left_of_mono
 
 section IteratedSlice
@@ -258,6 +273,9 @@ def iteratedSliceForward : Over f ⥤ Over f.left
     where
   obj α := Over.mk α.hom.left
   map κ := Over.homMk κ.left.left (by dsimp; rw [← Over.w κ]; rfl)
+                                      -- ⊢ κ.left.left ≫ Y✝.hom.left = X✝.hom.left
+                                             -- ⊢ κ.left.left ≫ Y✝.hom.left = (κ.left ≫ Y✝.hom).left
+                                                              -- 🎉 no goals
 #align category_theory.over.iterated_slice_forward CategoryTheory.Over.iteratedSliceForward
 
 /-- Given f : Y ⟶ X, this is the obvious functor from T/Y to (T/X)/f -/
@@ -300,6 +318,8 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
     where
   obj Y := mk <| F.map Y.hom
   map f := Over.homMk (F.map f.left) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
+                                         -- ⊢ F.map f.left ≫ F.map Y.hom = F.map X_1.hom
+                                                                -- 🎉 no goals
 #align category_theory.over.post CategoryTheory.Over.post
 
 end
@@ -356,11 +376,16 @@ variable {X : T}
 theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
     f = g := by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
+  -- ⊢ CommaMorphism.mk left✝ b = g
+                    -- ⊢ CommaMorphism.mk left✝¹ b = CommaMorphism.mk left✝ e
   congr; simp only [eq_iff_true_of_subsingleton]
+  -- ⊢ left✝¹ = left✝
+         -- 🎉 no goals
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
 
 -- @[simp] Porting note: simp can prove this
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
+                                                       -- 🎉 no goals
 #align category_theory.under.under_left CategoryTheory.Under.under_left
 
 @[simp]
@@ -375,6 +400,8 @@ theorem comp_right (a b c : Under X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).rig
 
 @[reassoc (attr := simp)]
 theorem w {A B : Under X} (f : A ⟶ B) : A.hom ≫ f.right = B.hom := by have := f.w; aesop_cat
+                                                                      -- ⊢ A.hom ≫ f.right = B.hom
+                                                                                   -- 🎉 no goals
 #align category_theory.under.w CategoryTheory.Under.w
 
 /-- To give an object in the under category, it suffices to give an arrow with domain `X`. -/
@@ -482,8 +509,11 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
     let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
+    -- ⊢ IsIso f
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
+    -- ⊢ f ≫ g = 𝟙 Y
     repeat (ext; simp)
+    -- 🎉 no goals
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
 /-- The identity under `X` is initial. -/
@@ -521,11 +551,16 @@ The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
   refine' ⟨fun { Y : T } l m a => _⟩
+  -- ⊢ l = m
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
   suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  -- ⊢ l' = homMk m
   rw [← cancel_epi k]; ext; apply a
+  -- ⊢ k ≫ l' = k ≫ homMk m
+                       -- ⊢ (k ≫ l').right = (k ≫ homMk m).right
+                            -- 🎉 no goals
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 
 section
@@ -537,6 +572,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Under.homMk (F.map f.right) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
+                                           -- ⊢ F.map X_2.hom ≫ F.map f.right = F.map Y.hom
+                                                                  -- 🎉 no goals
 #align category_theory.under.post CategoryTheory.Under.post
 
 end

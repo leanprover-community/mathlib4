@@ -52,7 +52,9 @@ variable (n : ℕ)
 theorem hasStrictDerivAt_pow :
     ∀ (n : ℕ) (x : 𝕜), HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) ((n : 𝕜) * x ^ (n - 1)) x
   | 0, x => by simp [hasStrictDerivAt_const]
+               -- 🎉 no goals
   | 1, x => by simpa using hasStrictDerivAt_id x
+               -- 🎉 no goals
   | n + 1 + 1, x => by
     simpa [pow_succ', add_mul, mul_assoc] using
       (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
@@ -106,7 +108,9 @@ theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
 theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
     HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
   rw [← hasDerivWithinAt_univ] at *
+  -- ⊢ HasDerivWithinAt (fun y => c y ^ n) (↑n * c x ^ (n - 1) * c') univ x
   exact hc.pow n
+  -- 🎉 no goals
 #align has_deriv_at.pow HasDerivAt.pow
 
 theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :

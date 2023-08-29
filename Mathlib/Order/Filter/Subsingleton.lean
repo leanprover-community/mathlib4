@@ -50,25 +50,38 @@ theorem subsingleton_bot : Filter.Subsingleton (⊥ : Filter α) :=
 /-- A nontrivial subsingleton filter is equal to `pure a` for some `a`. -/
 theorem Subsingleton.exists_eq_pure [l.NeBot] (hl : l.Subsingleton) : ∃ a, l = pure a := by
   rcases hl with ⟨s, hsl, hs⟩
+  -- ⊢ ∃ a, l = pure a
   rcases exists_eq_singleton_iff_nonempty_subsingleton.2 ⟨nonempty_of_mem hsl, hs⟩ with ⟨a, rfl⟩
+  -- ⊢ ∃ a, l = pure a
   refine ⟨a, (NeBot.le_pure_iff ‹_›).1 ?_⟩
+  -- ⊢ l ≤ pure a
   rwa [le_pure_iff]
+  -- 🎉 no goals
 
 /-- A filter is a subsingleton iff it is equal to `⊥` or to `pure a` for some `a`. -/
 theorem subsingleton_iff_bot_or_pure : l.Subsingleton ↔ l = ⊥ ∨ ∃ a, l = pure a := by
   refine ⟨fun hl ↦ ?_, ?_⟩
+  -- ⊢ l = ⊥ ∨ ∃ a, l = pure a
   · exact (eq_or_neBot l).imp_right (@Subsingleton.exists_eq_pure _ _ · hl)
+    -- 🎉 no goals
   · rintro (rfl | ⟨a, rfl⟩) <;> simp
+    -- ⊢ Filter.Subsingleton ⊥
+                                -- 🎉 no goals
+                                -- 🎉 no goals
 
 /-- In a nonempty type, a filter is a subsingleton iff
 it is less than or equal to a pure filter. -/
 theorem subsingleton_iff_exists_le_pure [Nonempty α] : l.Subsingleton ↔ ∃ a, l ≤ pure a := by
   rcases eq_or_neBot l with rfl | hbot
+  -- ⊢ Filter.Subsingleton ⊥ ↔ ∃ a, ⊥ ≤ pure a
   · simp
+    -- 🎉 no goals
   · simp [subsingleton_iff_bot_or_pure, ← hbot.le_pure_iff, hbot.ne]
+    -- 🎉 no goals
 
 theorem subsingleton_iff_exists_singleton_mem [Nonempty α] : l.Subsingleton ↔ ∃ a, {a} ∈ l := by
   simp only [subsingleton_iff_exists_le_pure, le_pure_iff]
+  -- 🎉 no goals
 
 /-- A subsingleton filter on a nonempty type is less than or equal to `pure a` for some `a`. -/
 alias ⟨Subsingleton.exists_le_pure, _⟩ := subsingleton_iff_exists_le_pure

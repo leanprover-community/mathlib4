@@ -77,19 +77,25 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
 def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
   toFun := F.toHomotopy.curry t
   source' := by simp
+                -- 🎉 no goals
   target' := by simp
+                -- 🎉 no goals
 #align path.homotopy.eval Path.Homotopy.eval
 
 @[simp]
 theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
   ext t
+  -- ⊢ ↑(eval F 0) t = ↑p₀ t
   simp [eval]
+  -- 🎉 no goals
 #align path.homotopy.eval_zero Path.Homotopy.eval_zero
 
 @[simp]
 theorem eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ := by
   ext t
+  -- ⊢ ↑(eval F 1) t = ↑p₁ t
   simp [eval]
+  -- 🎉 no goals
 #align path.homotopy.eval_one Path.Homotopy.eval_one
 
 end
@@ -161,14 +167,23 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
     (F.toHomotopy.continuous.comp (by continuity)).continuousOn
+                                      -- 🎉 no goals
     (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
+                                      -- 🎉 no goals
+                                                                               -- 🎉 no goals
   map_zero_left x := by simp [Path.trans]
+                        -- 🎉 no goals
   map_one_left x := by simp [Path.trans]
+                       -- 🎉 no goals
   prop' x t ht := by
     cases' ht with ht ht
+    -- ⊢ ↑(ContinuousMap.mk fun x_1 => ContinuousMap.toFun { toContinuousMap := Conti …
     · norm_num [ht]
+      -- 🎉 no goals
     · rw [Set.mem_singleton_iff] at ht
+      -- ⊢ ↑(ContinuousMap.mk fun x_1 => ContinuousMap.toFun { toContinuousMap := Conti …
       norm_num [ht]
+      -- 🎉 no goals
 #align path.homotopy.hcomp Path.Homotopy.hcomp
 
 theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :
@@ -179,11 +194,17 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
         G.eval x.1
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_extends _ _
+                        -- ⊢ extend (eval F x.fst) (2 * ↑x.snd) = ↑(eval F x.fst) { val := 2 * ↑x.snd, pr …
+                                      -- 🎉 no goals
+                                      -- 🎉 no goals
 #align path.homotopy.hcomp_apply Path.Homotopy.hcomp_apply
 
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
+                             -- 🎉 no goals
+                                          -- 🎉 no goals
   show ite _ _ _ = _ by norm_num
+                        -- 🎉 no goals
 #align path.homotopy.hcomp_half Path.Homotopy.hcomp_half
 
 end
@@ -196,16 +217,36 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
   toFun x := p ⟨σ x.1 * x.2 + x.1 * f x.2,
     show (σ x.1 : ℝ) • (x.2 : ℝ) + (x.1 : ℝ) • (f x.2 : ℝ) ∈ I from
       convex_Icc _ _ x.2.2 (f x.2).2 (by unit_interval) (by unit_interval) (by simp)⟩
+                                         -- 🎉 no goals
+                                                            -- 🎉 no goals
+                                                                               -- 🎉 no goals
   map_zero_left x := by norm_num
+                        -- 🎉 no goals
   map_one_left x := by norm_num
+                       -- 🎉 no goals
   prop' t x hx := by
     cases' hx with hx hx
+    -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
     · rw [hx]
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       simp [hf₀]
+      -- 🎉 no goals
     · rw [Set.mem_singleton_iff] at hx
+    -- ⊢ Continuous fun x => { val := ↑(σ x.fst) * ↑x.snd + ↑x.fst * ↑(f x.snd), prop …
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
+    -- ⊢ Continuous fun x => ↑(σ x.fst) * ↑x.snd + ↑x.fst * ↑(f x.snd)
       rw [hx]
+    -- ⊢ Continuous fun x => ↑(σ x.fst) * ↑x.snd
+                             -- ⊢ Continuous fun x => ↑(σ x.fst)
+                             -- ⊢ Continuous fun x => ↑x.fst
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
+      -- 🎉 no goals
       simp [hf₁]
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
   continuous_toFun := by
+      -- 🎉 no goals
     -- Porting note: was `continuity` in auto-param
     refine continuous_const.path_eval ?_
     apply Continuous.subtype_mk
@@ -223,14 +264,22 @@ argument.
 def symm₂ {p q : Path x₀ x₁} (F : p.Homotopy q) : p.symm.Homotopy q.symm where
   toFun x := F ⟨x.1, σ x.2⟩
   map_zero_left := by simp [Path.symm]
+                      -- 🎉 no goals
   map_one_left := by simp [Path.symm]
+                     -- 🎉 no goals
   prop' t x hx := by
     cases' hx with hx hx
+    -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
     · rw [hx]
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       simp
+      -- 🎉 no goals
     · rw [Set.mem_singleton_iff] at hx
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       rw [hx]
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       simp
+      -- 🎉 no goals
 #align path.homotopy.symm₂ Path.Homotopy.symm₂
 
 /--
@@ -242,12 +291,18 @@ def map {p q : Path x₀ x₁} (F : p.Homotopy q) (f : C(X, Y)) :
     Homotopy (p.map f.continuous) (q.map f.continuous) where
   toFun := f ∘ F
   map_zero_left := by simp
+                      -- 🎉 no goals
   map_one_left := by simp
+                     -- 🎉 no goals
   prop' t x hx := by
     cases' hx with hx hx
+    -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
     · simp [hx]
+      -- 🎉 no goals
     · rw [Set.mem_singleton_iff] at hx
+      -- ⊢ ↑(ContinuousMap.mk fun x => ContinuousMap.toFun { toContinuousMap := Continu …
       simp [hx]
+      -- 🎉 no goals
 #align path.homotopy.map Path.Homotopy.map
 
 end Homotopy
@@ -334,8 +389,14 @@ theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuou
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     @HEq (Path.Homotopic.Quotient _ _) ⟦p₁⟧ (Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
+  -- ⊢ HEq (Quotient.mk (Homotopic.setoid x₀ x₁) p₁) (Quotient.mk (Homotopic.setoid …
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
+  -- ⊢ HEq (Quotient.mk (Homotopic.setoid x₀ x₁) p₁) (Quotient.mk (Homotopic.setoid …
   rw [heq_iff_eq]; congr; ext t; exact hp t
+  -- ⊢ Quotient.mk (Homotopic.setoid x₀ x₁) p₁ = Quotient.mk (Homotopic.setoid x₀ x …
+                   -- ⊢ p₁ = p₂
+                          -- ⊢ ↑p₁ t = ↑p₂ t
+                                 -- 🎉 no goals
 #align path.homotopic.hpath_hext Path.Homotopic.hpath_hext
 
 end Homotopic
@@ -357,8 +418,11 @@ joined by a path in the codomain. -/
 theorem ContinuousMap.homotopic_const_iff [Nonempty Y] :
     (ContinuousMap.const Y x₀).Homotopic (ContinuousMap.const Y x₁) ↔ Joined x₀ x₁ := by
   inhabit Y
+  -- ⊢ Homotopic (const Y x₀) (const Y x₁) ↔ Joined x₀ x₁
   refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, ?_, ?_⟩⟩,
     fun ⟨p⟩ ↦ ⟨p.toHomotopyConst⟩⟩ <;> simp
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
 
 namespace ContinuousMap.Homotopy
 

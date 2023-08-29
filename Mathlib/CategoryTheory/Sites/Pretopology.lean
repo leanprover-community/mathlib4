@@ -113,16 +113,26 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   top_mem' X := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
+    -- ⊢ Sieve.pullback g S ∈ (fun X S => ∃ R, R ∈ coverings K X ∧ R ≤ S.arrows) Y
     refine' ⟨_, K.pullbacks g _ hR, _⟩
+    -- ⊢ pullbackArrows g R ≤ (Sieve.pullback g S).arrows
     rw [← Sieve.sets_iff_generate, Sieve.pullbackArrows_comm]
+    -- ⊢ Sieve.pullback g (Sieve.generate R) ≤ Sieve.pullback g S
     apply Sieve.pullback_monotone
+    -- ⊢ Sieve.generate R ≤ S
     rwa [Sieve.giGenerate.gc]
+    -- 🎉 no goals
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
+    -- ⊢ R ∈ (fun X S => ∃ R, R ∈ coverings K X ∧ R ≤ S.arrows) X
     choose t₁ t₂ t₃ using t
+    -- ⊢ R ∈ (fun X S => ∃ R, R ∈ coverings K X ∧ R ≤ S.arrows) X
     refine' ⟨_, K.Transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), _⟩
+    -- ⊢ (Presieve.bind R' fun x f hf => t₁ (_ : f ∈ S.arrows)) ≤ R.arrows
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
+    -- ⊢ g ≫ f ∈ R.arrows
     apply t₃ (RS _ hg) _ hf
+    -- 🎉 no goals
 #align category_theory.pretopology.to_grothendieck CategoryTheory.Pretopology.toGrothendieck
 
 theorem mem_toGrothendieck (K : Pretopology C) (X S) :
@@ -137,29 +147,46 @@ See [MM92] Chapter III, Section 2, Equations (3,4).
 def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
   coverings X R := Sieve.generate R ∈ J X
   has_isos X Y f i := J.covering_of_eq_top (by simp)
+                                               -- 🎉 no goals
   pullbacks X Y f R hR := by
     simp only [Set.mem_def, Sieve.pullbackArrows_comm]
+    -- ⊢ GrothendieckTopology.sieves J Y (Sieve.pullback f (Sieve.generate R))
     apply J.pullback_stable f hR
+    -- 🎉 no goals
   Transitive X S Ti hS hTi := by
     apply J.transitive hS
+    -- ⊢ ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, (Sieve.generate S).arrows f → Sieve.pullback f (Sieve …
     intro Y f
+    -- ⊢ (Sieve.generate S).arrows f → Sieve.pullback f (Sieve.generate (Presieve.bin …
     rintro ⟨Z, g, f, hf, rfl⟩
+    -- ⊢ Sieve.pullback (g ≫ f) (Sieve.generate (Presieve.bind S Ti)) ∈ GrothendieckT …
     rw [Sieve.pullback_comp]
+    -- ⊢ Sieve.pullback g (Sieve.pullback f (Sieve.generate (Presieve.bind S Ti))) ∈  …
     apply J.pullback_stable g
+    -- ⊢ Sieve.pullback f (Sieve.generate (Presieve.bind S Ti)) ∈ GrothendieckTopolog …
     apply J.superset_covering _ (hTi _ hf)
+    -- ⊢ Sieve.generate (Ti f hf) ≤ Sieve.pullback f (Sieve.generate (Presieve.bind S …
     rintro Y g ⟨W, h, g, hg, rfl⟩
+    -- ⊢ (Sieve.pullback f (Sieve.generate (Presieve.bind S Ti))).arrows (h ≫ g)
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
+    -- 🎉 no goals
 #align category_theory.pretopology.of_grothendieck CategoryTheory.Pretopology.ofGrothendieck
 
 /-- We have a galois insertion from pretopologies to Grothendieck topologies. -/
 def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
   gc K J := by
     constructor
+    -- ⊢ toGrothendieck C K ≤ J → K ≤ ofGrothendieck C J
     · intro h X R hR
+      -- ⊢ R ∈ coverings (ofGrothendieck C J) X
       exact h _ ⟨_, hR, Sieve.le_generate R⟩
+      -- 🎉 no goals
     · rintro h X S ⟨R, hR, RS⟩
+      -- ⊢ S ∈ GrothendieckTopology.sieves J X
       apply J.superset_covering _ (h _ hR)
+      -- ⊢ Sieve.generate R ≤ S
       rwa [Sieve.giGenerate.gc]
+      -- 🎉 no goals
   le_l_u J X S hS := ⟨S, J.superset_covering (Sieve.le_generate S.arrows) hS, le_rfl⟩
   choice x _ := toGrothendieck C x
   choice_eq _ _ := rfl
@@ -176,39 +203,66 @@ def trivial : Pretopology C where
   has_isos X Y f i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
+    -- ⊢ pullbackArrows f (Presieve.singleton g) ∈ (fun X S => ∃ Y f x, S = Presieve. …
     refine' ⟨pullback g f, pullback.snd, _, _⟩
+    -- ⊢ IsIso pullback.snd
     · refine' ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨_, by aesop_cat⟩⟩⟩
+      -- ⊢ pullback.snd ≫ pullback.lift (f ≫ inv g) (𝟙 Y) (_ : (f ≫ inv g) ≫ g = 𝟙 Y ≫  …
       ext
+      -- ⊢ (pullback.snd ≫ pullback.lift (f ≫ inv g) (𝟙 Y) (_ : (f ≫ inv g) ≫ g = 𝟙 Y ≫ …
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
+        -- ⊢ pullback.fst ≫ g ≫ inv g = 𝟙 (pullback g f) ≫ pullback.fst
         simp
+        -- 🎉 no goals
       · simp
+        -- 🎉 no goals
     · apply pullback_singleton
+      -- 🎉 no goals
   Transitive := by
     rintro X S Ti ⟨Z, g, i, rfl⟩ hS
+    -- ⊢ Presieve.bind (Presieve.singleton g) Ti ∈ (fun X S => ∃ Y f x, S = Presieve. …
     rcases hS g (singleton_self g) with ⟨Y, f, i, hTi⟩
+    -- ⊢ Presieve.bind (Presieve.singleton g) Ti ∈ (fun X S => ∃ Y f x, S = Presieve. …
     refine' ⟨_, f ≫ g, _, _⟩
+    -- ⊢ IsIso (f ≫ g)
     · infer_instance
+      -- 🎉 no goals
     -- Porting note: the next four lines were just "ext (W k)"
     apply funext
+    -- ⊢ ∀ (x : C), Presieve.bind (Presieve.singleton g) Ti = Presieve.singleton (f ≫ …
     rintro W
+    -- ⊢ Presieve.bind (Presieve.singleton g) Ti = Presieve.singleton (f ≫ g)
     apply Set.ext
+    -- ⊢ ∀ (x : W ⟶ X), x ∈ Presieve.bind (Presieve.singleton g) Ti ↔ x ∈ Presieve.si …
     rintro k
+    -- ⊢ k ∈ Presieve.bind (Presieve.singleton g) Ti ↔ k ∈ Presieve.singleton (f ≫ g)
     constructor
+    -- ⊢ k ∈ Presieve.bind (Presieve.singleton g) Ti → k ∈ Presieve.singleton (f ≫ g)
     · rintro ⟨V, h, k, ⟨_⟩, hh, rfl⟩
+      -- ⊢ h ≫ g ∈ Presieve.singleton (f ≫ g)
       rw [hTi] at hh
+      -- ⊢ h ≫ g ∈ Presieve.singleton (f ≫ g)
       cases hh
+      -- ⊢ f ≫ g ∈ Presieve.singleton (f ≫ g)
       apply singleton.mk
+      -- 🎉 no goals
     · rintro ⟨_⟩
+      -- ⊢ f ≫ g ∈ Presieve.bind (Presieve.singleton g) Ti
       refine' bind_comp g singleton.mk _
+      -- ⊢ Ti g (_ : Presieve.singleton g g) f
       rw [hTi]
+      -- ⊢ Presieve.singleton f f
       apply singleton.mk
+      -- 🎉 no goals
 #align category_theory.pretopology.trivial CategoryTheory.Pretopology.trivial
 
 instance : OrderBot (Pretopology C) where
   bot := trivial C
   bot_le K X R := by
     rintro ⟨Y, f, hf, rfl⟩
+    -- ⊢ Presieve.singleton f ∈ coverings K X
     exact K.has_isos f
+    -- 🎉 no goals
 
 /-- The trivial pretopology induces the trivial grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=

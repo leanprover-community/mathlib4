@@ -70,8 +70,11 @@ instance : EmbeddingLike (r ≼i s) α β :=
   { coe := fun f => f.toFun
     coe_injective' := by
       rintro ⟨f, hf⟩ ⟨g, hg⟩ h
+      -- ⊢ { toRelEmbedding := f, init' := hf } = { toRelEmbedding := g, init' := hg }
       congr with x
+      -- ⊢ ↑f x = ↑g x
       exact congr_fun h x,
+      -- 🎉 no goals
     injective' := fun f => f.inj' }
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
@@ -94,7 +97,9 @@ theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
     rcases f.init h with ⟨a', rfl⟩
+    -- ⊢ ∃ a'_1, ↑f a'_1 = ↑f a' ∧ r a'_1 a
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
+    -- 🎉 no goals
     fun ⟨a', e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
 #align initial_seg.init_iff InitialSeg.init_iff
 
@@ -117,8 +122,13 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
     simp at h ⊢
+    -- ⊢ ∃ a', ↑g (↑f a') = c
     rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
+    -- ⊢ ∃ a', ↑g (↑f a') = ↑g.toRelEmbedding b
+                                    -- ⊢ ∃ a', ↑g (↑f a') = ↑g.toRelEmbedding b
     rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
+    -- ⊢ ∃ a'_1, ↑g (↑f a'_1) = ↑g.toRelEmbedding (↑f.toRelEmbedding a')
+                                     -- 🎉 no goals
 #align initial_seg.trans InitialSeg.trans
 
 @[simp]
@@ -135,17 +145,23 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     [IsWellFounded α r] : Subsingleton (r ≼i s) :=
   ⟨fun f g => by
     ext a
+    -- ⊢ ↑f a = ↑g a
     refine' IsWellFounded.induction r a fun b IH =>
       extensional_of_trichotomous_of_irrefl s fun x => _
     rw [f.init_iff, g.init_iff]
+    -- ⊢ (∃ a', ↑f a' = x ∧ r a' b) ↔ ∃ a', ↑g a' = x ∧ r a' b
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
+    -- 🎉 no goals
 #align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
+               -- ⊢ ∀ (b : r ≼i s), a = b
+                                         -- 🎉 no goals
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
+  -- 🎉 no goals
 #align initial_seg.eq InitialSeg.eq
 
 theorem Antisymm.aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
@@ -179,6 +195,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
           ⟨x, fun y =>
             ⟨IH _, fun ⟨a, e⟩ => by
               rw [← e];
+              -- ⊢ s (↑f a) x
                 exact
                   (trichotomous _ _).resolve_right
                     (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
@@ -189,6 +206,8 @@ def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subr
   ⟨RelEmbedding.codRestrict p f H, fun a ⟨b, m⟩ h =>
     let ⟨a', e⟩ := f.init h
     ⟨a', by subst e; rfl⟩⟩
+            -- ⊢ ↑(RelEmbedding.codRestrict p f.toRelEmbedding H) a' = { val := ↑f a', proper …
+                     -- 🎉 no goals
 #align initial_seg.cod_restrict InitialSeg.codRestrict
 
 @[simp]
@@ -205,6 +224,7 @@ def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r
 def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s :=
   ⟨⟨⟨Sum.inl, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩, fun a b => by
     cases b <;> [exact fun _ => ⟨_, rfl⟩; exact False.elim ∘ Sum.lex_inr_inl]⟩
+    -- 🎉 no goals
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
@@ -215,8 +235,11 @@ theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAd
 protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   ⟨by
     refine' fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => _
+    -- ⊢ Acc s b
     obtain ⟨a', rfl⟩ := f.init hb
+    -- ⊢ Acc s (↑f a')
     exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
+    -- 🎉 no goals
 #align initial_seg.acc InitialSeg.acc
 
 end InitialSeg
@@ -287,8 +310,11 @@ theorem init_iff [IsTrans β s] (f : r ≺i s) {a : α} {b : β} : s b (f a) ↔
 
 theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
   have h := f.lt_top f.top
+  -- ⊢ False
   rw [show f f.top = f.top from InitialSeg.eq (↑f) (InitialSeg.refl r) f.top] at h
+  -- ⊢ False
   exact _root_.irrefl _ h
+  -- 🎉 no goals
 #align principal_seg.irrefl PrincipalSeg.irrefl
 
 instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
@@ -331,6 +357,8 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
 def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c =>
     suffices (∃ a : β, g a = c) ↔ ∃ a : α, g (f a) = c by simpa [PrincipalSeg.down]
+                                                          -- 🎉 no goals
+                                 -- 🎉 no goals
     ⟨fun ⟨b, h⟩ => ⟨f.symm b, by simp only [h, RelIso.apply_symm_apply]⟩,
       fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
 #align principal_seg.equiv_lt PrincipalSeg.equivLT
@@ -340,8 +368,12 @@ def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ →
     (g : s ≃r t) : PrincipalSeg r t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, by
     intro x
+    -- ⊢ t x (↑g f.top) ↔ ∃ a, ↑(RelEmbedding.trans f.toRelEmbedding (RelIso.toRelEmb …
     rw [← g.apply_symm_apply x, g.map_rel_iff, f.down', exists_congr]
+    -- ⊢ ∀ (a : α), ↑f.toRelEmbedding a = ↑(RelIso.symm g) x ↔ ↑(RelEmbedding.trans f …
     intro y; exact ⟨congr_arg g, fun h => g.toEquiv.bijective.1 h⟩⟩
+    -- ⊢ ↑f.toRelEmbedding y = ↑(RelIso.symm g) x ↔ ↑(RelEmbedding.trans f.toRelEmbed …
+             -- 🎉 no goals
 #align principal_seg.lt_equiv PrincipalSeg.ltEquiv
 
 @[simp]
@@ -364,17 +396,25 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       refine' extensional_of_trichotomous_of_irrefl s fun x => _
       simp only [PrincipalSeg.down, ef]
     cases f
+    -- ⊢ { toRelEmbedding := toRelEmbedding✝, top := top✝, down' := down'✝ } = g
     cases g
+    -- ⊢ { toRelEmbedding := toRelEmbedding✝¹, top := top✝¹, down' := down'✝¹ } = { t …
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
+    -- ⊢ { toRelEmbedding := toRelEmbedding✝¹, top := top✝¹, down' := down'✝¹ } = { t …
+                                              -- 🎉 no goals
 
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
+  -- ⊢ (equivLT e g).top = g.top
+                                                       -- 🎉 no goals
 #align principal_seg.top_eq PrincipalSeg.top_eq
 
 theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
     (f : PrincipalSeg r s) (g : PrincipalSeg s t) (h : PrincipalSeg r t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
+  -- ⊢ t (PrincipalSeg.trans f g).top g.top
   apply PrincipalSeg.lt_top
+  -- 🎉 no goals
 #align principal_seg.top_lt_top PrincipalSeg.topLTTop
 
 /-- Any element of a well order yields a principal segment -/
@@ -432,6 +472,7 @@ def ofIsEmpty (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b'
   { RelEmbedding.ofIsEmpty r s with
     top := b
     down' := by simp [H] }
+                -- 🎉 no goals
 #align principal_seg.of_is_empty PrincipalSeg.ofIsEmpty
 
 @[simp]
@@ -463,8 +504,11 @@ theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop}
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
       ⟨fun b => Acc.intro _ fun b' hb' => _⟩⟩
   let f := PrincipalSeg.ofElement s b
+  -- ⊢ Acc s b'
   obtain ⟨b', rfl⟩ := f.down.mp ((PrincipalSeg.ofElement_top s b).symm ▸ hb' : s b' f.top)
+  -- ⊢ Acc s (↑f.toRelEmbedding b')
   exact (f.acc b').mp ((wf b).apply b')
+  -- 🎉 no goals
 #align well_founded_iff_well_founded_subrel wellFounded_iff_wellFounded_subrel
 
 theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
@@ -481,9 +525,13 @@ segment (if the range is not everything, hence one can take as top the minimum o
 of the range) or an order isomorphism (if the range is everything). -/
 noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : Sum (r ≺i s) (r ≃r s) := by
   by_cases h : Surjective f
+  -- ⊢ (r ≺i s) ⊕ (r ≃r s)
   · exact Sum.inr (RelIso.ofSurjective f h)
+    -- 🎉 no goals
   · have h' : _ := (InitialSeg.eq_or_principal f).resolve_left h
+    -- ⊢ (r ≺i s) ⊕ (r ≃r s)
     exact Sum.inl ⟨f, Classical.choose h', Classical.choose_spec h'⟩
+    -- 🎉 no goals
 #align initial_seg.lt_or_eq InitialSeg.ltOrEq
 
 theorem InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
@@ -508,8 +556,11 @@ noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i 
 theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
   delta InitialSeg.leLT; cases' h : f.ltOrEq with f' f'
+  -- ⊢ ↑(match ltOrEq f with
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
+    -- 🎉 no goals
   · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+    -- 🎉 no goals
 #align initial_seg.le_lt_apply InitialSeg.leLT_apply
 
 namespace RelEmbedding
@@ -520,29 +571,41 @@ but the proof of the fact that it is an initial segment will be given in `collap
 noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬s (f a) b } :=
   (RelEmbedding.wellFounded f <| IsWellFounded.wf).fix fun a IH => by
     let S := { b | ∀ a h, s (IH a h).1 b }
+    -- ⊢ { b // ¬s (↑f a) b }
     have : f a ∈ S := fun a' h =>
       ((trichotomous _ _).resolve_left fun h' =>
             (IH a' h).2 <| _root_.trans (f.map_rel_iff.2 h) h').resolve_left
         fun h' => (IH a' h).2 <| h' ▸ f.map_rel_iff.2 h
     exact ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, this⟩ this⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F RelEmbedding.collapseF
 
 theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a').1 (collapseF f a).1 := @fun a => by
   revert a
+  -- ⊢ ∀ (a_1 : α), r a_1 a → s ↑(collapseF f a_1) ↑(collapseF f a)
   show (collapseF f a).1 ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b }
+  -- ⊢ ↑(collapseF f a) ∈ {b | ∀ (a' : α), r a' a → s (↑(collapseF f a')) b}
   unfold collapseF; rw [WellFounded.fix_eq]
+  -- ⊢ ↑(WellFounded.fix (_ : WellFounded r)
+                    -- ⊢ ↑(let S :=
   dsimp only
+  -- ⊢ WellFounded.min (_ : WellFounded s) {b | ∀ (a_1 : α), r a_1 a → s (↑(WellFou …
   apply WellFounded.min_mem _ _
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.lt RelEmbedding.collapseF.lt
 
 theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
     (h : ∀ a' (_ : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
   unfold collapseF; rw [WellFounded.fix_eq]
+  -- ⊢ ¬s b
+                    -- ⊢ ¬s b
   dsimp only
+  -- ⊢ ¬s b (WellFounded.min (_ : WellFounded s) {b | ∀ (a_1 : α), r a_1 a → s (↑(W …
   exact WellFounded.not_lt_min _ _ _ h
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.not_lt RelEmbedding.collapseF.not_lt
 
@@ -558,7 +621,9 @@ noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
         refine' ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
           (collapseF.not_lt f _ fun a' h' => _)⟩
         by_contra hn
+        -- ⊢ False
         exact hm' _ hn h')
+        -- 🎉 no goals
       a⟩
 #align rel_embedding.collapse RelEmbedding.collapse
 

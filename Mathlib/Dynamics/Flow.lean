@@ -50,6 +50,7 @@ variable (ϕ : τ → α → α) (s : Set α)
 
 theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo']
+  -- 🎉 no goals
 #align is_invariant_iff_image isInvariant_iff_image
 
 /-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if
@@ -109,8 +110,11 @@ instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
 theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂
   | ⟨f₁, _, _, _⟩, ⟨f₂, _, _, _⟩, h => by
     congr
+    -- ⊢ f₁ = f₂
     funext
+    -- ⊢ f₁ x✝¹ x✝ = f₂ x✝¹ x✝
     exact h _ _
+    -- 🎉 no goals
 #align flow.ext Flow.ext
 
 @[continuity]
@@ -160,7 +164,9 @@ theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t
   (isInvariant_iff_image _ _).trans
     (Iff.intro
       (fun h t => Subset.antisymm (h t) fun _ hx => ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
+                                                                                -- 🎉 no goals
       fun h t => by rw [h t])
+                    -- 🎉 no goals
 #align flow.is_invariant_iff_image_eq Flow.isInvariant_iff_image_eq
 
 /-- The time-reversal of a flow `ϕ` by a (commutative, additive) group
@@ -169,7 +175,11 @@ def reverse : Flow τ α where
   toFun t := ϕ (-t)
   cont' := ϕ.continuous continuous_fst.neg continuous_snd
   map_add' _ _ _ := by dsimp; rw [neg_add, map_add]
+                       -- ⊢ toFun ϕ (-(x✝² + x✝¹)) x✝ = toFun ϕ (-x✝²) (toFun ϕ (-x✝¹) x✝)
+                              -- 🎉 no goals
   map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
+                    -- ⊢ toFun ϕ (-0) x✝ = x✝
+                           -- 🎉 no goals
 #align flow.reverse Flow.reverse
 
 -- Porting note: add @continuity to Flow.toFun so that these works:
@@ -178,15 +188,20 @@ def reverse : Flow τ α where
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
   rw [←curry_uncurry ϕ.toFun]
+  -- ⊢ Continuous (curry (uncurry ϕ.toFun) t)
   apply continuous_curry
+  -- ⊢ Continuous (uncurry ϕ.toFun)
   exact ϕ.cont'
+  -- 🎉 no goals
 
 /-- The map `ϕ t` as a homeomorphism. -/
 def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
   left_inv x := by rw [← map_add, neg_add_self, map_zero_apply]
+                   -- 🎉 no goals
   right_inv x := by rw [← map_add, add_neg_self, map_zero_apply]
+                    -- 🎉 no goals
 #align flow.to_homeomorph Flow.toHomeomorph
 
 theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=

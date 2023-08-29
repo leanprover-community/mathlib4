@@ -30,6 +30,7 @@ theorem image_list_prod (f : F) :
     ∀ l : List (Set α), (f : α → β) '' l.prod = (l.map fun s => f '' s).prod
   | [] => image_one.trans <| congr_arg singleton (map_one f)
   | a :: as => by rw [List.map_cons, List.prod_cons, List.prod_cons, image_mul, image_list_prod _ _]
+                  -- 🎉 no goals
 #align set.image_list_prod Set.image_list_prod
 #align set.image_list_sum Set.image_list_sum
 
@@ -87,7 +88,9 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
 theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
     (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α) (_ : ∀ i, g i ∈ f i), ∏ i, g i = a := by
   rw [mem_finset_prod]
+  -- ⊢ (∃ g x, ∏ i : ι, g i = a) ↔ ∃ g x, ∏ i : ι, g i = a
   simp
+  -- 🎉 no goals
 #align set.mem_fintype_prod Set.mem_fintype_prod
 #align set.mem_fintype_sum Set.mem_fintype_sum
 
@@ -96,8 +99,11 @@ theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
 theorem list_prod_mem_list_prod (t : List ι) (f : ι → Set α) (g : ι → α) (hg : ∀ i ∈ t, g i ∈ f i) :
     (t.map g).prod ∈ (t.map f).prod := by
   induction' t with h tl ih
+  -- ⊢ List.prod (List.map g []) ∈ List.prod (List.map f [])
   · simp_rw [List.map_nil, List.prod_nil, Set.mem_one]
+    -- 🎉 no goals
   · simp_rw [List.map_cons, List.prod_cons]
+    -- ⊢ g h * List.prod (List.map g tl) ∈ f h * List.prod (List.map f tl)
     exact mul_mem_mul (hg h <| List.mem_cons_self _ _)
       (ih fun i hi ↦ hg i <| List.mem_cons_of_mem _ hi)
 #align set.list_prod_mem_list_prod Set.list_prod_mem_list_prod
@@ -108,8 +114,11 @@ theorem list_prod_mem_list_prod (t : List ι) (f : ι → Set α) (g : ι → α
 theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) :
     (t.map f₁).prod ⊆ (t.map f₂).prod := by
   induction' t with h tl ih
+  -- ⊢ List.prod (List.map f₁ []) ⊆ List.prod (List.map f₂ [])
   · rfl
+    -- 🎉 no goals
   · simp_rw [List.map_cons, List.prod_cons]
+    -- ⊢ f₁ h * List.prod (List.map f₁ tl) ⊆ f₂ h * List.prod (List.map f₂ tl)
     exact mul_subset_mul (hf h <| List.mem_cons_self _ _)
       (ih fun i hi ↦ hf i <| List.mem_cons_of_mem _ hi)
 #align set.list_prod_subset_list_prod Set.list_prod_subset_list_prod
@@ -127,8 +136,11 @@ theorem list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
 theorem multiset_prod_mem_multiset_prod (t : Multiset ι) (f : ι → Set α) (g : ι → α)
     (hg : ∀ i ∈ t, g i ∈ f i) : (t.map g).prod ∈ (t.map f).prod := by
   induction t using Quotient.inductionOn
+  -- ⊢ Multiset.prod (Multiset.map g (Quotient.mk (List.isSetoid ι) a✝)) ∈ Multiset …
   simp_rw [Multiset.quot_mk_to_coe, Multiset.coe_map, Multiset.coe_prod]
+  -- ⊢ List.prod (List.map g a✝) ∈ List.prod (List.map f a✝)
   exact list_prod_mem_list_prod _ _ _ hg
+  -- 🎉 no goals
 #align set.multiset_prod_mem_multiset_prod Set.multiset_prod_mem_multiset_prod
 #align set.multiset_sum_mem_multiset_sum Set.multiset_sum_mem_multiset_sum
 
@@ -137,8 +149,11 @@ theorem multiset_prod_mem_multiset_prod (t : Multiset ι) (f : ι → Set α) (g
 theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι → Set α)
     (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : (t.map f₁).prod ⊆ (t.map f₂).prod := by
   induction t using Quotient.inductionOn
+  -- ⊢ Multiset.prod (Multiset.map f₁ (Quotient.mk (List.isSetoid ι) a✝)) ⊆ Multise …
   simp_rw [Multiset.quot_mk_to_coe, Multiset.coe_map, Multiset.coe_prod]
+  -- ⊢ List.prod (List.map f₁ a✝) ⊆ List.prod (List.map f₂ a✝)
   exact list_prod_subset_list_prod _ _ _ hf
+  -- 🎉 no goals
 #align set.multiset_prod_subset_multiset_prod Set.multiset_prod_subset_multiset_prod
 #align set.multiset_sum_subset_multiset_sum Set.multiset_sum_subset_multiset_sum
 
@@ -177,7 +192,9 @@ theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I :
 theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
     (fun f : ι → α => ∏ i in l, f i) '' (l : Set ι).pi S = ∏ i in l, S i := by
   ext
+  -- ⊢ x✝ ∈ (fun f => ∏ i in l, f i) '' pi (↑l) S ↔ x✝ ∈ ∏ i in l, S i
   simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop, Finset.mem_coe]
+  -- 🎉 no goals
 #align set.image_finset_prod_pi Set.image_finset_prod_pi
 #align set.image_finset_sum_pi Set.image_finset_sum_pi
 
@@ -186,6 +203,7 @@ theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
 theorem image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
     (fun f : ι → α => ∏ i, f i) '' univ.pi S = ∏ i, S i := by
   simpa only [Finset.coe_univ] using image_finset_prod_pi Finset.univ S
+  -- 🎉 no goals
 #align set.image_fintype_prod_pi Set.image_fintype_prod_pi
 #align set.image_fintype_sum_pi Set.image_fintype_sum_pi
 

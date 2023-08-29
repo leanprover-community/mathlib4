@@ -64,7 +64,9 @@ macro_rules
       $[at $location]?)
 
 @[qify_simps] lemma int_cast_eq (a b : ℤ) : a = b ↔ (a : ℚ) = (b : ℚ) := by simp only [Int.cast_inj]
+                                                                            -- 🎉 no goals
 @[qify_simps] lemma int_cast_le (a b : ℤ) : a ≤ b ↔ (a : ℚ) ≤ (b : ℚ) := Int.cast_le.symm
 @[qify_simps] lemma int_cast_lt (a b : ℤ) : a < b ↔ (a : ℚ) < (b : ℚ) := Int.cast_lt.symm
 @[qify_simps] lemma int_cast_ne (a b : ℤ) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := by
   simp only [ne_eq, Int.cast_inj]
+  -- 🎉 no goals

@@ -58,7 +58,9 @@ def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
   inj' f g h :=
     Finsupp.ext fun i => by
       dsimp at h
+      -- ⊢ ↑f i = ↑g i
       rw [h]
+      -- 🎉 no goals
   map_rel_iff' {a b} := (@le_def _ _ _ _ a b).symm
 #align finsupp.order_embedding_to_fun Finsupp.orderEmbeddingToFun
 
@@ -121,6 +123,8 @@ variable [DecidableEq ι] [Lattice α] (f g : ι →₀ α)
 
 theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
+                                         -- ⊢ x✝ ∈ (↑((f ⊓ g).support ∪ (f ⊔ g).support))ᶜ ↔ x✝ ∈ (↑(f.support ∪ g.support …
+                                              -- 🎉 no goals
 #align finsupp.support_inf_union_support_sup Finsupp.support_inf_union_support_sup
 
 theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
@@ -153,6 +157,7 @@ variable [CanonicallyOrderedAddMonoid α]
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
   bot_le := by simp only [le_def, coe_zero, Pi.zero_apply, imp_true_iff, zero_le]
+               -- 🎉 no goals
 
 protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
   rfl
@@ -161,6 +166,7 @@ protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
 @[simp]
 theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [FunLike.ext_iff, forall_and]
+  -- 🎉 no goals
 #align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
@@ -180,6 +186,7 @@ instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
   (le_iff' _ _ support_single_subset).trans <| by simp
+                                                  -- 🎉 no goals
 #align finsupp.single_le_iff Finsupp.single_le_iff
 
 variable [Sub α] [OrderedSub α] {f g : ι →₀ α} {i : ι} {a b : α}
@@ -211,9 +218,13 @@ theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
+  -- ⊢ ↑(single i (a - b)) j = ↑(single i a - single i b) j
   obtain rfl | h := eq_or_ne i j
+  -- ⊢ ↑(single i (a - b)) i = ↑(single i a - single i b) i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
+    -- 🎉 no goals
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
+    -- 🎉 no goals
 #align finsupp.single_tsub Finsupp.single_tsub
 
 theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support := by
@@ -224,6 +235,7 @@ theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support :
 theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
   simp (config := { contextual := true }) [subset_iff]
+  -- 🎉 no goals
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
 end CanonicallyOrderedAddMonoid
@@ -235,16 +247,21 @@ variable [CanonicallyLinearOrderedAddMonoid α]
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
   ext
+  -- ⊢ a✝ ∈ (f ⊓ g).support ↔ a✝ ∈ f.support ∩ g.support
   simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_union, Finset.mem_filter,
     Finset.mem_inter]
   simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
+  -- 🎉 no goals
 #align finsupp.support_inf Finsupp.support_inf
 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
   ext
+  -- ⊢ a✝ ∈ (f ⊔ g).support ↔ a✝ ∈ f.support ∪ g.support
   simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne.def, ← bot_eq_zero]
+  -- ⊢ ¬↑f a✝ ⊔ ↑g a✝ = ⊥ ↔ ¬↑f a✝ = ⊥ ∨ ¬↑g a✝ = ⊥
   rw [_root_.sup_eq_bot_iff, not_and_or]
+  -- 🎉 no goals
 #align finsupp.support_sup Finsupp.support_sup
 
 nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by

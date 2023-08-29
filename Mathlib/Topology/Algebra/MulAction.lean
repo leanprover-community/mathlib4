@@ -130,6 +130,7 @@ instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : Continuou
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
       this.comp (MulOpposite.continuous_unop.prod_map continuous_id)
     simpa only [op_smul_eq_smul] using (continuous_smul : Continuous fun p : M × X => _)⟩
+    -- 🎉 no goals
 #align has_continuous_smul.op ContinuousSMul.op
 #align has_continuous_vadd.op ContinuousVAdd.op
 
@@ -197,6 +198,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
   @ContinuousSMul.mk M X _ _ (_) <| by
       -- porting note: needs `( :)`
       rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
+      -- ⊢ Continuous fun p => p.fst • p.snd
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
@@ -215,8 +217,13 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
+  -- ⊢ ContinuousSMul M X
   refine' continuousSMul_iInf fun b => _
+  -- ⊢ ContinuousSMul M X
   cases b <;> assumption
+  -- ⊢ ContinuousSMul M X
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align has_continuous_smul_inf continuousSMul_inf
 #align has_continuous_vadd_inf continuousVAdd_inf
 
@@ -236,6 +243,7 @@ protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
         isPreconnected_univ.image (Equiv.vaddConst (Classical.arbitrary P) : G → P)
           (continuous_id.vadd continuous_const).continuousOn
       rw [Set.image_univ, Equiv.range_eq_univ]
+      -- 🎉 no goals
     toNonempty := inferInstance }
 #align add_torsor.connected_space AddTorsor.connectedSpace
 

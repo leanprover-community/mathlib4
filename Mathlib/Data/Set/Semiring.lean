@@ -242,7 +242,9 @@ def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α
   map_zero' := image_empty _
   map_one' := by
     dsimp only  -- porting note: structures do not do this automatically any more
+    -- ⊢ ↑up (↑f '' ↑down 1) = 1
     rw [down_one, image_one, map_one, singleton_one, up_one]
+    -- 🎉 no goals
   map_add' := image_union _
   map_mul' _ _ := image_mul f
 #align set_semiring.image_hom SetSemiring.imageHom

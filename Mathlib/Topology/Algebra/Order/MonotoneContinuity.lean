@@ -44,15 +44,23 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
+  -- ⊢ ContinuousWithinAt f (Ici a) a
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
+  -- ⊢ ContinuousWithinAt f (Ici a) a
   refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
+  -- ⊢ ∀ᶠ (b_1 : α) in 𝓝[Ici a] a, b < f b_1
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       ((h_mono.le_iff_le has hxs).2 hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
+    -- ⊢ ∀ᶠ (b_1 : α) in 𝓝[Ici a] a, f b_1 < b
     rw [h_mono.lt_iff_lt has hcs] at hac
+    -- ⊢ ∀ᶠ (b_1 : α) in 𝓝[Ici a] a, f b_1 < b
     filter_upwards [hs, Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 hac)]
+    -- ⊢ ∀ (a_1 : α), a_1 ∈ s → a_1 ∈ Ico a c → f a_1 < b
     rintro x hx ⟨_, hxc⟩
+    -- ⊢ f x < b
     exact ((h_mono.lt_iff_lt hx hcs).2 hxc).trans_le hcb
+    -- 🎉 no goals
 #align strict_mono_on.continuous_at_right_of_exists_between StrictMonoOn.continuousWithinAt_right_of_exists_between
 
 /-- If `f` is a monotone function on a right neighborhood of `a` and the image of this neighborhood
@@ -65,15 +73,23 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
     (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioo (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
+  -- ⊢ ContinuousWithinAt f (Ici a) a
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
+  -- ⊢ ContinuousWithinAt f (Ici a) a
   refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
+  -- ⊢ ∀ᶠ (b_1 : α) in 𝓝[Ici a] a, b < f b_1
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
+    -- ⊢ ∀ᶠ (b_1 : α) in 𝓝[Ici a] a, f b_1 < b
     have : a < c := not_le.1 fun h => hac.not_le <| h_mono hcs has h
+    -- ⊢ ∀ᶠ (b_1 : α) in 𝓝[Ici a] a, f b_1 < b
     filter_upwards [hs, Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 this)]
+    -- ⊢ ∀ (a_1 : α), a_1 ∈ s → a_1 ∈ Ico a c → f a_1 < b
     rintro x hx ⟨_, hxc⟩
+    -- ⊢ f x < b
     exact (h_mono hx hcs hxc.le).trans_lt hcb
+    -- 🎉 no goals
 #align continuous_at_right_of_monotone_on_of_exists_between continuousWithinAt_right_of_monotoneOn_of_exists_between
 
 /-- If a function `f` with a densely ordered codomain is monotone on a right neighborhood of `a` and
@@ -83,11 +99,15 @@ theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
   refine' continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => _
+  -- ⊢ ∃ c, c ∈ s ∧ f c ∈ Ioo (f a) b
   rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
+  -- ⊢ ∃ c, c ∈ s ∧ f c ∈ Ioo (f a) b
   rcases exists_between hab' with ⟨c', hc'⟩
+  -- ⊢ ∃ c, c ∈ s ∧ f c ∈ Ioo (f a) b
   rcases mem_closure_iff.1 (hb' ⟨hc'.1.le, hc'.2⟩) (Ioo (f a) b') isOpen_Ioo hc' with
     ⟨_, hc, ⟨c, hcs, rfl⟩⟩
   exact ⟨c, hcs, hc.1, hc.2.trans_le hbb'⟩
+  -- 🎉 no goals
 #align continuous_at_right_of_monotone_on_of_closure_image_mem_nhds_within continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin
 
 /-- If a function `f` with a densely ordered codomain is monotone on a right neighborhood of `a` and
@@ -279,6 +299,7 @@ theorem Monotone.continuous_of_denseRange [DenselyOrdered β] {f : α → β} (h
     continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun x _ y _ hxy => h_mono hxy)
         univ_mem <|
       by simp only [image_univ, h_dense.closure_eq, univ_mem]
+         -- 🎉 no goals
 #align monotone.continuous_of_dense_range Monotone.continuous_of_denseRange
 
 /-- A monotone surjective function with a densely ordered codomain is continuous. -/
@@ -304,12 +325,19 @@ variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace �
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by
   rw [‹OrderTopology β›.topology_eq_generate_intervals]
+  -- ⊢ Continuous ↑e
   refine' continuous_generateFrom fun s hs => _
+  -- ⊢ IsOpen (↑e ⁻¹' s)
   rcases hs with ⟨a, rfl | rfl⟩
+  -- ⊢ IsOpen (↑e ⁻¹' Ioi a)
   · rw [e.preimage_Ioi]
+    -- ⊢ IsOpen (Ioi (↑(symm e) a))
     apply isOpen_lt'
+    -- 🎉 no goals
   · rw [e.preimage_Iio]
+    -- ⊢ IsOpen (Iio (↑(symm e) a))
     apply isOpen_gt'
+    -- 🎉 no goals
 #align order_iso.continuous OrderIso.continuous
 
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/

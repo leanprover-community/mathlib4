@@ -80,14 +80,20 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
           (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
             (by
               rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
+              -- ⊢ minimalPeriod ((fun x x_1 => x +ᵥ x_1) a) b • { val := a, property := (_ : a …
               simp_rw [← vadd_iterate]
+              -- ⊢ (fun x => { val := a, property := (_ : a ∈ zmultiples a) } +ᵥ x)^[minimalPer …
               exact isPeriodicPt_minimalPeriod ((· +ᵥ ·) a) b))
+              -- 🎉 no goals
           ⟨by
             rw [← ker_eq_bot_iff, eq_bot_iff]
+            -- ⊢ ker (QuotientAddGroup.map (zmultiples ↑(minimalPeriod ((fun x x_1 => x +ᵥ x_ …
             refine' fun q => induction_on' q fun n hn => _
+            -- ⊢ ↑n ∈ ⊥
             rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ←
               zsmul_vadd_eq_iff_minimalPeriod_dvd]
             exact (eq_zero_iff _).mp hn, fun q =>
+            -- 🎉 no goals
             induction_on' q fun ⟨_, n, rfl⟩ => ⟨n, rfl⟩⟩).symm.trans
     (Int.quotientZmultiplesNatEquivZMod (minimalPeriod ((· +ᵥ ·) a) b))
 #align add_action.zmultiples_quotient_stabilizer_equiv AddAction.zmultiplesQuotientStabilizerEquiv
@@ -145,7 +151,9 @@ theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
     (orbitZpowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ := by
   rw [orbitZpowersEquiv_symm_apply, ZMod.coe_int_cast]
+  -- ⊢ { val := a, property := (_ : a ∈ zpowers a) } ^ (k % ↑(minimalPeriod ((fun x …
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
+  -- 🎉 no goals
 #align mul_action.orbit_zpowers_equiv_symm_apply' MulAction.orbitZpowersEquiv_symm_apply'
 
 theorem _root_.AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
@@ -153,8 +161,10 @@ theorem _root_.AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type*} [AddGr
     (AddAction.orbitZmultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
   rw [AddAction.orbit_zmultiples_equiv_symm_apply, ZMod.coe_int_cast]
+  -- ⊢ (k % ↑(minimalPeriod ((fun x x_1 => x +ᵥ x_1) a) b)) • { val := a, property  …
   -- porting note: times out without `a b` explicit
   exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a b k)
+  -- 🎉 no goals
 #align add_action.orbit_zmultiples_equiv_symm_apply' AddAction.orbitZmultiplesEquiv_symm_apply'
 
 attribute [to_additive existing AddAction.orbitZmultiplesEquiv_symm_apply']
@@ -165,6 +175,7 @@ theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
     minimalPeriod ((· • ·) a) b = Fintype.card (orbit (zpowers a) b) := by
   -- porting note: added `(_)` to find `Fintype` by unification
   rw [← Fintype.ofEquiv_card (orbitZpowersEquiv a b), @ZMod.card _ (_)]
+  -- 🎉 no goals
 #align mul_action.minimal_period_eq_card MulAction.minimalPeriod_eq_card
 #align add_action.minimal_period_eq_card AddAction.minimalPeriod_eq_card
 
@@ -173,9 +184,13 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod ((· • ·) a) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)
+    -- ⊢ minimalPeriod ((fun x x_1 => x • x_1) a) b ≠ 0
     haveI : Nonempty (orbit (zpowers a) b) := (orbit_nonempty b).to_subtype
+    -- ⊢ minimalPeriod ((fun x x_1 => x • x_1) a) b ≠ 0
     rw [minimalPeriod_eq_card]
+    -- ⊢ Fintype.card ↑(orbit { x // x ∈ zpowers a } b) ≠ 0
     exact Fintype.card_ne_zero⟩
+    -- 🎉 no goals
 #align mul_action.minimal_period_pos MulAction.minimalPeriod_pos
 #align add_action.minimal_period_pos AddAction.minimalPeriod_pos
 
@@ -191,7 +206,9 @@ variable {α : Type*} [Group α] (a : α)
 @[to_additive add_order_eq_card_zmultiples' "See also `add_order_eq_card_zmultiples`."]
 theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
+  -- ⊢ orderOf a = Nat.card { x // x ∈ zpowers a }
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self, eq_comm] at this
+  -- 🎉 no goals
 #align order_eq_card_zpowers' order_eq_card_zpowers'
 #align add_order_eq_card_zmultiples' add_order_eq_card_zmultiples'
 
@@ -200,7 +217,9 @@ variable {a}
 @[to_additive IsOfFinAddOrder.finite_zmultiples]
 theorem IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a := by
   rw [← orderOf_pos_iff, order_eq_card_zpowers'] at h
+  -- ⊢ Finite { x // x ∈ zpowers a }
   exact Nat.finite_of_card_ne_zero h.ne.symm
+  -- 🎉 no goals
 #align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers
 #align is_of_fin_add_order.finite_zmultiples IsOfFinAddOrder.finite_zmultiples
 

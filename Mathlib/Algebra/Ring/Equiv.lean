@@ -139,9 +139,13 @@ instance : RingEquivClass (R ≃+* S) R S where
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
     cases e
+    -- ⊢ { toEquiv := toEquiv✝, map_mul' := map_mul'✝, map_add' := map_add'✝ } = f
     cases f
+    -- ⊢ { toEquiv := toEquiv✝¹, map_mul' := map_mul'✝¹, map_add' := map_add'✝¹ } = { …
     congr
+    -- ⊢ toEquiv✝¹ = toEquiv✝
     apply Equiv.coe_fn_injective h₁
+    -- 🎉 no goals
   map_add := map_add'
   map_mul := map_mul'
   left_inv f := f.left_inv
@@ -389,10 +393,14 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
   invFun f := { AddEquiv.mulOp.symm f.toAddEquiv, MulEquiv.op.symm f.toMulEquiv with }
   left_inv f := by
     ext
+    -- ⊢ ↑((fun f =>
     rfl
+    -- 🎉 no goals
   right_inv f := by
     ext
+    -- ⊢ ↑((fun f =>
     rfl
+    -- 🎉 no goals
 #align ring_equiv.op RingEquiv.op
 #align ring_equiv.op_symm_apply_apply RingEquiv.op_symm_apply_apply
 #align ring_equiv.op_symm_apply_symm_apply RingEquiv.op_symm_apply_symm_apply
@@ -606,6 +614,7 @@ theorem map_neg_one : f (-1) = -1 :=
 
 theorem map_eq_neg_one_iff {x : R} : f x = -1 ↔ x = -1 := by
   rw [← neg_eq_iff_eq_neg, ← neg_eq_iff_eq_neg, ← map_neg, RingEquiv.map_eq_one_iff]
+  -- 🎉 no goals
 #align ring_equiv.map_eq_neg_one_iff RingEquiv.map_eq_neg_one_iff
 
 end Ring
@@ -636,6 +645,7 @@ theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
 theorem coe_nonUnitalRingHom_inj_iff {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
+               -- 🎉 no goals
 #align ring_equiv.coe_non_unital_ring_hom_inj_iff RingEquiv.coe_nonUnitalRingHom_inj_iff
 
 @[simp]
@@ -666,14 +676,18 @@ theorem toNonUnitalRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
 theorem toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
     e.toNonUnitalRingHom.comp e.symm.toNonUnitalRingHom = NonUnitalRingHom.id _ := by
   ext
+  -- ⊢ ↑(NonUnitalRingHom.comp (toNonUnitalRingHom e) (toNonUnitalRingHom (RingEqui …
   simp
+  -- 🎉 no goals
 #align ring_equiv.to_non_unital_ring_hom_comp_symm_to_non_unital_ring_hom RingEquiv.toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom
 
 @[simp]
 theorem symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
     e.symm.toNonUnitalRingHom.comp e.toNonUnitalRingHom = NonUnitalRingHom.id _ := by
   ext
+  -- ⊢ ↑(NonUnitalRingHom.comp (toNonUnitalRingHom (RingEquiv.symm e)) (toNonUnital …
   simp
+  -- 🎉 no goals
 #align ring_equiv.symm_to_non_unital_ring_hom_comp_to_non_unital_ring_hom RingEquiv.symm_toNonUnitalRingHom_comp_toNonUnitalRingHom
 
 end NonUnitalSemiringHom
@@ -703,6 +717,7 @@ theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
 theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
+               -- 🎉 no goals
 #align ring_equiv.coe_ring_hom_inj_iff RingEquiv.coe_ringHom_inj_iff
 
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
@@ -776,14 +791,18 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   ext
+  -- ⊢ ↑(RingHom.comp (toRingHom e) (toRingHom (RingEquiv.symm e))) x✝ = ↑(RingHom. …
   simp
+  -- 🎉 no goals
 #align ring_equiv.to_ring_hom_comp_symm_to_ring_hom RingEquiv.toRingHom_comp_symm_toRingHom
 
 -- Porting note : Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   ext
+  -- ⊢ ↑(RingHom.comp (toRingHom (RingEquiv.symm e)) (toRingHom e)) x✝ = ↑(RingHom. …
   simp
+  -- 🎉 no goals
 #align ring_equiv.symm_to_ring_hom_comp_to_ring_hom RingEquiv.symm_toRingHom_comp_toRingHom
 
 /-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.
@@ -894,9 +913,12 @@ protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB 
     (e : A ≃* B) : IsField A where
   exists_pair_ne := have ⟨x, y, h⟩ := hB.exists_pair_ne; ⟨e.symm x, e.symm y, e.symm.injective.ne h⟩
   mul_comm := fun x y => e.injective <| by rw [map_mul, map_mul, hB.mul_comm]
+                                           -- 🎉 no goals
   mul_inv_cancel := fun h => by
     obtain ⟨a', he⟩ := hB.mul_inv_cancel ((e.injective.ne h).trans_eq <| map_zero e)
+    -- ⊢ ∃ b, a✝ * b = 1
     exact ⟨e.symm a', e.injective <| by rw [map_mul, map_one, e.apply_symm_apply, he]⟩
+    -- 🎉 no goals
 
 end MulEquiv
 

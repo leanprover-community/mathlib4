@@ -48,6 +48,8 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
   -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
   map_comp _ _ := by ext; aesop_cat
+                     -- ⊢ { obj := fun S => FintypeCat.of (Quotient S.toSetoid), map := fun {X_1 Y} f  …
+                          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
 
@@ -68,18 +70,27 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit X.diagram).lift X.asL
   isIso_of_bijective _
     (by
       refine' ⟨fun a b h => _, fun a => _⟩
+      -- ⊢ a = b
       · refine' DiscreteQuotient.eq_of_forall_proj_eq fun S => _
+        -- ⊢ DiscreteQuotient.proj S a = DiscreteQuotient.proj S b
         apply_fun fun f : (limitCone X.diagram).pt => f.val S at h
+        -- ⊢ DiscreteQuotient.proj S a = DiscreteQuotient.proj S b
         exact h
+        -- 🎉 no goals
       · obtain ⟨b, hb⟩ :=
           DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (homOfLE h)
         use b
+        -- ⊢ ↑(Limits.IsLimit.lift (limitConeIsLimit (diagram X)) (asLimitCone X)) b = a
         -- ext S : 3 -- Porting note: `ext` does not work, replaced with following three lines.
         apply Subtype.ext
+        -- ⊢ ↑(↑(Limits.IsLimit.lift (limitConeIsLimit (diagram X)) (asLimitCone X)) b) = …
         apply funext
+        -- ⊢ ∀ (x : DiscreteQuotient ↑X.toCompHaus.toTop), ↑(↑(Limits.IsLimit.lift (limit …
         rintro S
+        -- ⊢ ↑(↑(Limits.IsLimit.lift (limitConeIsLimit (diagram X)) (asLimitCone X)) b) S …
         -- Porting note: end replacement block
         apply hb
+        -- 🎉 no goals
     )
 set_option linter.uppercaseLean3 false in
 #align Profinite.is_iso_as_limit_cone_lift Profinite.isIso_asLimitCone_lift

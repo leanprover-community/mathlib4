@@ -66,28 +66,43 @@ variable {G}
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge ⟦(v, w)⟧ := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
+  -- ⊢ IsAcyclic G ↔ ∀ ⦃v w : V⦄, Adj G v w → Adj G v w ∧ ∀ ⦃u : V⦄ (p : Walk G u u …
   constructor
+  -- ⊢ IsAcyclic G → ∀ ⦃v w : V⦄, Adj G v w → Adj G v w ∧ ∀ ⦃u : V⦄ (p : Walk G u u …
   · intro ha v w hvw
+    -- ⊢ Adj G v w ∧ ∀ ⦃u : V⦄ (p : Walk G u u), IsCycle p → ¬Quotient.mk (Sym2.Rel.s …
     apply And.intro hvw
+    -- ⊢ ∀ ⦃u : V⦄ (p : Walk G u u), IsCycle p → ¬Quotient.mk (Sym2.Rel.setoid V) (v, …
     intro u p hp
+    -- ⊢ ¬Quotient.mk (Sym2.Rel.setoid V) (v, w) ∈ edges p
     cases ha p hp
+    -- 🎉 no goals
   · rintro hb v (_ | ⟨ha, p⟩) hp
+    -- ⊢ False
     · exact hp.not_of_nil
+      -- 🎉 no goals
     · apply (hb ha).2 _ hp
+      -- ⊢ Quotient.mk (Sym2.Rel.setoid V) (v, v✝) ∈ edges (cons ha p)
       rw [Walk.edges_cons]
+      -- ⊢ Quotient.mk (Sym2.Rel.setoid V) (v, v✝) ∈ Quotient.mk (Sym2.Rel.setoid V) (v …
       apply List.mem_cons_self
+      -- 🎉 no goals
 #align simple_graph.is_acyclic_iff_forall_adj_is_bridge SimpleGraph.isAcyclic_iff_forall_adj_isBridge
 
 theorem isAcyclic_iff_forall_edge_isBridge :
     G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
   simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
+  -- 🎉 no goals
 #align simple_graph.is_acyclic_iff_forall_edge_is_bridge SimpleGraph.isAcyclic_iff_forall_edge_isBridge
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
   obtain ⟨p, hp⟩ := p
+  -- ⊢ { val := p, property := hp } = q
   obtain ⟨q, hq⟩ := q
+  -- ⊢ { val := p, property := hp } = { val := q, property := hq }
   rw [Subtype.mk.injEq]
+  -- ⊢ p = q
   induction p with
   | nil =>
     cases (Walk.isPath_iff_eq_nil _).mp hq
@@ -115,7 +130,9 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
 
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
+  -- ⊢ False
   simp only [Walk.isCycle_def, Ne.def] at hc
+  -- ⊢ False
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>
@@ -158,7 +175,9 @@ lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
   have := hG.isConnected.nonempty
+  -- ⊢ Finset.card (edgeFinset G) + 1 = Fintype.card V
   inhabit V
+  -- ⊢ Finset.card (edgeFinset G) + 1 = Fintype.card V
   classical
   have : Finset.card ({default} : Finset V)ᶜ + 1 = Fintype.card V := by
     rw [Finset.card_compl, Finset.card_singleton, Nat.sub_add_cancel Fintype.card_pos]

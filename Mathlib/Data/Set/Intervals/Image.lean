@@ -21,26 +21,32 @@ variable [Preorder α] [Preorder β]
 theorem Monotone.mapsTo_Icc (h : Monotone f) :
     MapsTo f (Icc a b) (Icc (f a) (f b)) :=
   fun _ _ => by aesop
+                -- 🎉 no goals
 
 theorem StrictMono.mapsTo_Ioo (h : StrictMono f) :
     MapsTo f (Ioo a b) (Ioo (f a) (f b)) :=
   fun _ _ => by aesop
+                -- 🎉 no goals
 
 theorem Monotone.mapsTo_Ici  (h : Monotone f) :
     MapsTo f (Ici a) (Ici (f a)) :=
   fun _ _ => by aesop
+                -- 🎉 no goals
 
 theorem Monotone.mapsTo_Iic (h : Monotone f) :
     MapsTo f (Iic a) (Iic (f a)) :=
   fun _ _ => by aesop
+                -- 🎉 no goals
 
 theorem StrictMono.mapsTo_Ioi (h : StrictMono f) :
     MapsTo f (Ioi a) (Ioi (f a)) :=
   fun _ _ => by aesop
+                -- 🎉 no goals
 
 theorem StrictMono.mapsTo_Iio (h : StrictMono f) :
     MapsTo f (Iio a) (Iio (f a)) :=
   fun _ _ => by aesop
+                -- 🎉 no goals
 
 end
 

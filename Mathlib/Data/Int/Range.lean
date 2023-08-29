@@ -29,6 +29,7 @@ def range (m n : ℤ) : List ℤ :=
 
 theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n := by
   simp only [range, List.mem_map, List.mem_range, lt_toNat, lt_sub_iff_add_lt, add_comm]
+  -- ⊢ (∃ a, m + ↑a < n ∧ m + ↑a = r) ↔ m ≤ r ∧ r < n
   exact ⟨fun ⟨a, ha⟩ => ha.2 ▸ ⟨le_add_of_nonneg_right (Int.coe_nat_nonneg _), ha.1⟩,
     fun h => ⟨toNat (r - m), by simp [toNat_of_nonneg (sub_nonneg.2 h.1), h.2] ⟩⟩
 #align int.mem_range_iff Int.mem_range_iff
@@ -36,6 +37,7 @@ theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n := b
 instance decidableLELT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m ≤ r → r < n → P r) :=
   decidable_of_iff (∀ r ∈ range m n, P r) <| by simp only [mem_range_iff, and_imp]
+                                                -- 🎉 no goals
 #align int.decidable_le_lt Int.decidableLELT
 
 instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
@@ -47,10 +49,18 @@ instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
   -- This fails to synthesize an instance
   -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)`
     apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
+    -- ⊢ (∀ (r : ℤ), r ∈ range m (n + 1) → P r) ↔ ∀ (r : ℤ), m ≤ r → r ≤ n → P r
     apply Iff.intro <;> intros h _ _
+    -- ⊢ (∀ (r : ℤ), r ∈ range m (n + 1) → P r) → ∀ (r : ℤ), m ≤ r → r ≤ n → P r
+                        -- ⊢ r✝ ≤ n → P r✝
+                        -- ⊢ P r✝
     · intro _; apply h
+      -- ⊢ P r✝
+               -- ⊢ r✝ ∈ range m (n + 1)
       simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
+      -- 🎉 no goals
     · simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
+      -- 🎉 no goals
 #align int.decidable_le_le Int.decidableLELE
 
 instance decidableLTLT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :

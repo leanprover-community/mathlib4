@@ -57,10 +57,16 @@ theorem ordConnected_iff : OrdConnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x ≤ y 
 theorem ordConnected_of_Ioo {α : Type*} [PartialOrder α] {s : Set α}
     (hs : ∀ x ∈ s, ∀ y ∈ s, x < y → Ioo x y ⊆ s) : OrdConnected s := by
   rw [ordConnected_iff]
+  -- ⊢ ∀ (x : α), x ∈ s → ∀ (y : α), y ∈ s → x ≤ y → Icc x y ⊆ s
   intro x hx y hy hxy
+  -- ⊢ Icc x y ⊆ s
   rcases eq_or_lt_of_le hxy with (rfl | hxy'); · simpa
+  -- ⊢ Icc x x ⊆ s
+                                                 -- 🎉 no goals
   rw [← Ioc_insert_left hxy, ← Ioo_insert_right hxy']
+  -- ⊢ insert x (insert y (Ioo x y)) ⊆ s
   exact insert_subset_iff.2 ⟨hx, insert_subset_iff.2 ⟨hy, hs x hx y hy hxy'⟩⟩
+  -- 🎉 no goals
 #align set.ord_connected_of_Ioo Set.ordConnected_of_Ioo
 
 theorem OrdConnected.preimage_mono {f : β → α} (hs : OrdConnected s) (hf : Monotone f) :
@@ -95,6 +101,7 @@ theorem OrdConnected.dual {s : Set α} (hs : OrdConnected s) :
 
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
   ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
+               -- 🎉 no goals
 #align set.ord_connected_dual Set.ordConnected_dual
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
@@ -172,7 +179,9 @@ theorem ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
 theorem ordConnected_singleton {α : Type*} [PartialOrder α] {a : α} :
     OrdConnected ({a} : Set α) := by
   rw [← Icc_self]
+  -- ⊢ OrdConnected (Icc a a)
   exact ordConnected_Icc
+  -- 🎉 no goals
 #align set.ord_connected_singleton Set.ordConnected_singleton
 
 @[instance]
@@ -202,20 +211,26 @@ theorem ordConnected_preimage {F : Type*} [OrderHomClass F α β] (f : F) {s : S
 theorem ordConnected_image {E : Type*} [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
   erw [(e : α ≃o β).image_eq_preimage]
+  -- ⊢ OrdConnected (↑(OrderIso.symm ↑e) ⁻¹' s)
   apply ordConnected_preimage (e : α ≃o β).symm
+  -- 🎉 no goals
 #align set.ord_connected_image Set.ordConnected_image
 
 -- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
 theorem ordConnected_range {E : Type*} [OrderIsoClass E α β] (e : E) : OrdConnected (range e) := by
   simp_rw [← image_univ]
+  -- ⊢ OrdConnected (↑e '' univ)
   exact ordConnected_image (e : α ≃o β)
+  -- 🎉 no goals
 #align set.ord_connected_range Set.ordConnected_range
 
 @[simp]
 theorem dual_ordConnected_iff {s : Set α} : OrdConnected (ofDual ⁻¹' s) ↔ OrdConnected s := by
   simp_rw [ordConnected_def, toDual.surjective.forall, dual_Icc, Subtype.forall']
+  -- ⊢ (∀ (x x_1 : { a // ↑toDual a ∈ ↑ofDual ⁻¹' s }), ↑ofDual ⁻¹' Icc ↑x_1 ↑x ⊆ ↑ …
   exact forall_swap
+  -- 🎉 no goals
 #align set.dual_ord_connected_iff Set.dual_ordConnected_iff
 
 @[instance]
@@ -232,8 +247,11 @@ variable {α : Type*} [PartialOrder α] {s : Set α}
 protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
   ⟨fun x hx y hy z hz => by
     obtain rfl := hs.eq hx hy (hz.1.trans hz.2)
+    -- ⊢ z ∈ s
     rw [Icc_self, mem_singleton_iff] at hz
+    -- ⊢ z ∈ s
     rwa [hz]⟩
+    -- 🎉 no goals
 #align is_antichain.ord_connected IsAntichain.ordConnected
 
 end PartialOrder
@@ -272,6 +290,7 @@ theorem ordConnected_of_uIcc_subset_left (h : ∀ y ∈ s, [[x, y]] ⊆ s) : Ord
     calc
       [[y, z]] ⊆ [[y, x]] ∪ [[x, z]] := uIcc_subset_uIcc_union_uIcc
       _ = [[x, y]] ∪ [[x, z]] := by rw [uIcc_comm]
+                                    -- 🎉 no goals
       _ ⊆ s := union_subset (h y hy) (h z hz)
 #align set.ord_connected_of_uIcc_subset_left Set.ordConnected_of_uIcc_subset_left
 
@@ -283,4 +302,5 @@ theorem ordConnected_iff_uIcc_subset_left (hx : x ∈ s) :
 theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[y, x]] ⊆ s := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
+  -- 🎉 no goals
 #align set.ord_connected_iff_uIcc_subset_right Set.ordConnected_iff_uIcc_subset_right

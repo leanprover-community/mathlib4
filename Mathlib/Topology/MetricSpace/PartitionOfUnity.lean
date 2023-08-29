@@ -49,11 +49,15 @@ theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i
     simp only [mem_iInter, mem_compl_iff, not_imp_not, mem_preimage] at hxy
     exact hyU _ (hxy _ hi)
   intro i hi
+  -- ⊢ ∀ᶠ (p : ℝ≥0∞ × X) in 𝓝 0 ×ˢ 𝓝 x, closedBall p.snd p.fst ⊆ U i
   rcases nhds_basis_closed_eball.mem_iff.1 ((hU i).mem_nhds <| hKU i hi) with ⟨R, hR₀, hR⟩
+  -- ⊢ ∀ᶠ (p : ℝ≥0∞ × X) in 𝓝 0 ×ˢ 𝓝 x, closedBall p.snd p.fst ⊆ U i
   rcases ENNReal.lt_iff_exists_nnreal_btwn.mp hR₀ with ⟨r, hr₀, hrR⟩
+  -- ⊢ ∀ᶠ (p : ℝ≥0∞ × X) in 𝓝 0 ×ˢ 𝓝 x, closedBall p.snd p.fst ⊆ U i
   filter_upwards [prod_mem_prod (eventually_lt_nhds hr₀)
       (closedBall_mem_nhds x (tsub_pos_iff_lt.2 hrR))] with p hp z hz
   apply hR
+  -- ⊢ z ∈ closedBall x R
   calc
     edist z x ≤ edist z p.2 + edist p.2 x := edist_triangle _ _ _
     _ ≤ p.1 + (R - p.1) := (add_le_add hz <| le_trans hp.2 <| tsub_le_tsub_left hp.1.out.le _)
@@ -67,8 +71,11 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
   have := (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
     (eventually_nhds_zero_forall_closedBall_subset hK hU hKU hfin x).curry
   rcases this.exists_gt with ⟨r, hr0, hr⟩
+  -- ⊢ ∃ r, ∀ᶠ (y : X) in 𝓝 x, r ∈ Ioi 0 ∩ ENNReal.ofReal ⁻¹' ⋂ (i : ι) (_ : y ∈ K  …
   refine' ⟨r, hr.mono fun y hy => ⟨hr0, _⟩⟩
+  -- ⊢ r ∈ ENNReal.ofReal ⁻¹' ⋂ (i : ι) (_ : y ∈ K i), {r | closedBall y r ⊆ U i}
   rwa [mem_preimage, mem_iInter₂]
+  -- 🎉 no goals
 #align emetric.exists_forall_closed_ball_subset_aux₁ EMetric.exists_forall_closedBall_subset_aux₁
 
 theorem exists_forall_closedBall_subset_aux₂ (y : X) :
@@ -100,9 +107,13 @@ theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed 
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases exists_continuous_real_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ₀, hδ⟩
+  -- ⊢ ∃ δ, (∀ (x : X), 0 < ↑δ x) ∧ ∀ (i : ι) (x : X), x ∈ K i → closedBall x ↑(↑δ  …
   lift δ to C(X, ℝ≥0) using fun x => (hδ₀ x).le
+  -- ⊢ ∃ δ, (∀ (x : X), 0 < ↑δ x) ∧ ∀ (i : ι) (x : X), x ∈ K i → closedBall x ↑(↑δ  …
   refine' ⟨δ, hδ₀, fun i x hi => _⟩
+  -- ⊢ closedBall x ↑(↑δ x) ⊆ U i
   simpa only [← ENNReal.ofReal_coe_nnreal] using hδ i x hi
+  -- 🎉 no goals
 #align emetric.exists_continuous_nnreal_forall_closed_ball_subset EMetric.exists_continuous_nNReal_forall_closedBall_subset
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
@@ -130,9 +141,13 @@ theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed 
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases EMetric.exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
+  -- ⊢ ∃ δ, (∀ (x : X), 0 < ↑δ x) ∧ ∀ (i : ι) (x : X), x ∈ K i → closedBall x ↑(↑δ  …
   refine' ⟨δ, hδ0, fun i x hx => _⟩
+  -- ⊢ closedBall x ↑(↑δ x) ⊆ U i
   rw [← emetric_closedBall_nnreal]
+  -- ⊢ EMetric.closedBall x ↑(↑δ x) ⊆ U i
   exact hδ i x hx
+  -- 🎉 no goals
 #align metric.exists_continuous_nnreal_forall_closed_ball_subset Metric.exists_continuous_nNReal_forall_closedBall_subset
 
 /-- Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets, let

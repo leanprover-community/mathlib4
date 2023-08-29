@@ -89,12 +89,14 @@ instance : Inhabited (SheafedSpace (Discrete Unit)) :=
 instance : Category (SheafedSpace C) :=
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
+    -- 🎉 no goals
 
 -- Porting note: adding an ext lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
+                                         -- 🎉 no goals
   PresheafedSpace.ext α β w h
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
@@ -136,7 +138,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem id_c_app (X : SheafedSpace C) (U) :
     (𝟙 X : X ⟶ X).c.app U = eqToHom (by aesop_cat) := by
+                                        -- 🎉 no goals
   aesop_cat
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_c_app AlgebraicGeometry.SheafedSpace.id_c_app
 
@@ -162,6 +166,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem congr_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) :=
+                                                        -- ⊢ (Opens.map α.base).op.obj U = (Opens.map α.base).op.obj U
+                                                                 -- 🎉 no goals
   PresheafedSpace.congr_app h U
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.congr_app AlgebraicGeometry.SheafedSpace.congr_app

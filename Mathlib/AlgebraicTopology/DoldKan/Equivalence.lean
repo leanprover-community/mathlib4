@@ -167,9 +167,13 @@ set_option linter.uppercaseLean3 false in
 @[simps! functor]
 def equivalence : SimplicialObject A ≌ ChainComplex A ℕ := by
   let F : SimplicialObject A ⥤ _ := Idempotents.DoldKan.N
+  -- ⊢ SimplicialObject A ≌ ChainComplex A ℕ
   let hF : IsEquivalence F := IsEquivalence.ofEquivalence Idempotents.DoldKan.equivalence
+  -- ⊢ SimplicialObject A ≌ ChainComplex A ℕ
   letI : IsEquivalence (N : SimplicialObject A ⥤ _) := IsEquivalence.ofIso comparisonN.symm hF
+  -- ⊢ SimplicialObject A ≌ ChainComplex A ℕ
   exact N.asEquivalence
+  -- 🎉 no goals
 #align category_theory.abelian.dold_kan.equivalence CategoryTheory.Abelian.DoldKan.equivalence
 
 theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=

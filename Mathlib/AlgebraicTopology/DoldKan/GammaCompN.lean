@@ -36,23 +36,35 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
   HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)
     (by
       rintro _ n (rfl : n + 1 = _)
+      -- ⊢ ((fun n => Iso.refl (HomologicalComplex.X (Splitting.nondegComplex (Γ₀.split …
       dsimp
+      -- ⊢ 𝟙 (Splitting.N (Γ₀.splitting K) (n + 1)) ≫ HomologicalComplex.d K (n + 1) n  …
       simp only [id_comp, comp_id, AlternatingFaceMapComplex.obj_d_eq, Preadditive.sum_comp,
         Preadditive.comp_sum]
       rw [Fintype.sum_eq_single (0 : Fin (n + 2))]
+      -- ⊢ HomologicalComplex.d K (n + 1) n = Splitting.ιSummand (Γ₀.splitting K) (Spli …
       · simp only [Fin.val_zero, pow_zero, one_zsmul]
+        -- ⊢ HomologicalComplex.d K (n + 1) n = Splitting.ιSummand (Γ₀.splitting K) (Spli …
         erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
           Splitting.ι_πSummand_eq_id, comp_id]
       · intro i hi
+        -- ⊢ Splitting.ιSummand (Γ₀.splitting K) (Splitting.IndexSet.id (op [n + 1])) ≫ ( …
         dsimp
+        -- ⊢ Splitting.ιSummand (Γ₀.splitting K) (Splitting.IndexSet.id (op [n + 1])) ≫ ( …
         simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
+        -- ⊢ (-1) ^ ↑i • Splitting.ιSummand (Γ₀.splitting K) (Splitting.IndexSet.id (op [ …
         erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
           zsmul_zero]
         · intro h
+          -- ⊢ False
           replace h := congr_arg SimplexCategory.len h
+          -- ⊢ False
           change n + 1 = n at h
+          -- ⊢ False
           linarith
+          -- 🎉 no goals
         · simpa only [Isδ₀.iff] using hi)
+          -- 🎉 no goals
 #align algebraic_topology.dold_kan.Γ₀_nondeg_complex_iso AlgebraicTopology.DoldKan.Γ₀NondegComplexIso
 
 /-- The natural isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for `K : ChainComplex C ℕ`. -/
@@ -76,9 +88,13 @@ theorem N₁Γ₀_app (K : ChainComplex C ℕ) :
     N₁Γ₀.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.symm ≪≫
       (toKaroubi _).mapIso (Γ₀NondegComplexIso K) := by
   ext1
+  -- ⊢ (N₁Γ₀.app K).hom = ((Splitting.toKaroubiNondegComplexIsoN₁ (Γ₀.splitting K)) …
   dsimp [N₁Γ₀]
+  -- ⊢ (((Karoubi.Hom.mk PInfty ≫ NatTrans.app Split.toKaroubiNondegComplexFunctorI …
   erw [id_comp, comp_id, comp_id]
+  -- ⊢ NatTrans.app Split.toKaroubiNondegComplexFunctorIsoN₁.inv (Split.mk' (Γ₀.spl …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_app AlgebraicTopology.DoldKan.N₁Γ₀_app
 
@@ -86,8 +102,11 @@ theorem N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
     N₁Γ₀.hom.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv ≫
         (toKaroubi _).map (Γ₀NondegComplexIso K).hom := by
   change (N₁Γ₀.app K).hom = _
+  -- ⊢ (N₁Γ₀.app K).hom = (Splitting.toKaroubiNondegComplexIsoN₁ (Γ₀.splitting K)). …
   simp only [N₁Γ₀_app]
+  -- ⊢ ((Splitting.toKaroubiNondegComplexIsoN₁ (Γ₀.splitting K)).symm ≪≫ (toKaroubi …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_hom_app AlgebraicTopology.DoldKan.N₁Γ₀_hom_app
 
@@ -95,8 +114,11 @@ theorem N₁Γ₀_inv_app (K : ChainComplex C ℕ) :
     N₁Γ₀.inv.app K = (toKaroubi _).map (Γ₀NondegComplexIso K).inv ≫
         (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.hom := by
   change (N₁Γ₀.app K).inv = _
+  -- ⊢ (N₁Γ₀.app K).inv = (toKaroubi (ChainComplex C ℕ)).map (Γ₀NondegComplexIso K) …
   simp only [N₁Γ₀_app]
+  -- ⊢ ((Splitting.toKaroubiNondegComplexIsoN₁ (Γ₀.splitting K)).symm ≪≫ (toKaroubi …
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_inv_app AlgebraicTopology.DoldKan.N₁Γ₀_inv_app
 
@@ -104,7 +126,9 @@ set_option linter.uppercaseLean3 false in
 theorem N₁Γ₀_hom_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
     (N₁Γ₀.hom.app K).f.f n = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv.f.f n := by
   rw [N₁Γ₀_hom_app]
+  -- ⊢ HomologicalComplex.Hom.f ((Splitting.toKaroubiNondegComplexIsoN₁ (Γ₀.splitti …
   apply comp_id
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_hom_app_f_f AlgebraicTopology.DoldKan.N₁Γ₀_hom_app_f_f
 
@@ -112,7 +136,9 @@ set_option linter.uppercaseLean3 false in
 theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
     (N₁Γ₀.inv.app K).f.f n = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.hom.f.f n := by
   rw [N₁Γ₀_inv_app]
+  -- ⊢ HomologicalComplex.Hom.f ((toKaroubi (ChainComplex C ℕ)).map (Γ₀NondegComple …
   apply id_comp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_inv_app_f_f AlgebraicTopology.DoldKan.N₁Γ₀_inv_app_f_f
 
@@ -125,7 +151,9 @@ theorem N₂Γ₂_toKaroubi : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ 
   have h' := Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi
     (SimplicialObject C) (ChainComplex C ℕ)) N₁
   dsimp [N₂, Γ₂, functorExtension₁] at h h' ⊢
+  -- ⊢ toKaroubi (ChainComplex C ℕ) ⋙ (functorExtension₂ (ChainComplex C ℕ) (Simpli …
   rw [← Functor.assoc, h, Functor.assoc, h']
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_to_karoubi AlgebraicTopology.DoldKan.N₂Γ₂_toKaroubi
 
@@ -168,10 +196,13 @@ set_option linter.uppercaseLean3 false in
 lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
   let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
+  -- ⊢ whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ …
   have h := ((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
     (toKaroubi (ChainComplex C ℕ))).image_preimage e.hom
   dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
+  -- ⊢ whiskerLeft (toKaroubi (ChainComplex C ℕ)) ((CategoryTheory.Functor.mk { obj …
   exact h
+  -- 🎉 no goals
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] N₂Γ₂

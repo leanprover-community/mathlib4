@@ -147,7 +147,9 @@ the given bilinear map `M →[A] N →[R] P`. -/
 def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
   map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
+                                    -- 🎉 no goals
   map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
+                                     -- 🎉 no goals
 -- porting note: new `B` argument
 #align tensor_product.algebra_tensor_module.uncurry TensorProduct.AlgebraTensorModule.uncurryₓ
 
@@ -200,22 +202,26 @@ def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] 
 theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
+  -- ⊢ ↑(↑(curry (map (f₁ + f₂) g)) x✝¹) x✝ = ↑(↑(curry (map f₁ g + map f₂ g)) x✝¹) …
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
     add_apply, add_tmul]
 
 theorem map_add_right (f : M →ₗ[A] P) (g₁ g₂ : N →ₗ[R] Q) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
+  -- ⊢ ↑(↑(curry (map f (g₁ + g₂))) x✝¹) x✝ = ↑(↑(curry (map f g₁ + map f g₂)) x✝¹) …
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
     add_apply, tmul_add]
 
 theorem map_smul_right (r : R) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
   ext
+  -- ⊢ ↑(↑(curry (map f (r • g))) x✝¹) x✝ = ↑(↑(curry (r • map f g)) x✝¹) x✝
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, tmul_smul]
 
 theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b • f) g = b • map f g := by
   ext
+  -- ⊢ ↑(↑(curry (map (b • f) g)) x✝¹) x✝ = ↑(↑(curry (b • map f g)) x✝¹) x✝
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, smul_tmul']
 
@@ -307,7 +313,11 @@ def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
     (lift <| uncurry R A B P Q _ ∘ₗ curry (mk R B _ Q))
     (by ext; rfl)
+        -- ⊢ ↑(↑(curry (↑(curry (comp (lift (lift (comp (lcurry R A B P Q (M ⊗[A] P ⊗[R]  …
+             -- 🎉 no goals
     (by ext; rfl)
+        -- ⊢ ↑(↑(↑(curry (curry (comp (lift (comp (uncurry R A B P Q ((M ⊗[A] P) ⊗[R] Q)) …
+             -- 🎉 no goals
 -- porting note: new `B` argument
 #align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assocₓ
 

@@ -63,41 +63,61 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
 theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
     (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
+  -- ⊢ (Finset.sum Finset.univ fun j_1 => (if j_1 ∈ ↑f i then 1 else 0) * M j_1 j)  …
   cases' h : f i with fi
+  -- ⊢ (Finset.sum Finset.univ fun j_1 => (if j_1 ∈ none then 1 else 0) * M j_1 j)  …
   · simp [h]
+    -- 🎉 no goals
   · rw [Finset.sum_eq_single fi] <;> simp (config := { contextual := true }) [h, eq_comm]
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
+                                     -- 🎉 no goals
 #align pequiv.mul_matrix_apply PEquiv.mul_matrix_apply
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
     (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by
   ext
+  -- ⊢ toMatrix (PEquiv.symm f) i✝ x✝ = (toMatrix f)ᵀ i✝ x✝
   simp only [transpose, mem_iff_mem f, toMatrix_apply]
+  -- ⊢ (if i✝ ∈ ↑f x✝ then 1 else 0) = ↑of (fun x y => if x ∈ ↑f y then 1 else 0) i …
   congr
+  -- 🎉 no goals
 #align pequiv.to_matrix_symm PEquiv.toMatrix_symm
 
 @[simp]
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
   ext
+  -- ⊢ toMatrix (PEquiv.refl n) i✝ x✝ = OfNat.ofNat 1 i✝ x✝
   simp [toMatrix_apply, one_apply]
+  -- 🎉 no goals
 #align pequiv.to_matrix_refl PEquiv.toMatrix_refl
 
 theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
     (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 fun fj => M i fj := by
   dsimp [toMatrix, Matrix.mul_apply]
+  -- ⊢ (Finset.sum Finset.univ fun j_1 => M i j_1 * if j ∈ ↑f j_1 then 1 else 0) =  …
   cases' h : f.symm j with fj
+  -- ⊢ (Finset.sum Finset.univ fun j_1 => M i j_1 * if j ∈ ↑f j_1 then 1 else 0) =  …
   · simp [h, ← f.eq_some_iff]
+    -- 🎉 no goals
   · rw [Finset.sum_eq_single fj]
     · simp [h, ← f.eq_some_iff]
+      -- 🎉 no goals
     · rintro b - n
+      -- ⊢ (M i b * if j ∈ ↑f b then 1 else 0) = 0
       simp [h, ← f.eq_some_iff, n.symm]
+      -- 🎉 no goals
     · simp
+      -- 🎉 no goals
 #align pequiv.matrix_mul_apply PEquiv.matrix_mul_apply
 
 theorem toPEquiv_mul_matrix [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
     (M : Matrix m n α) : f.toPEquiv.toMatrix * M = fun i => M (f i) := by
   ext i j
+  -- ⊢ (toMatrix (Equiv.toPEquiv f) * M) i j = M (↑f i) j
   rw [mul_matrix_apply, Equiv.toPEquiv_apply]
+  -- 🎉 no goals
 #align pequiv.to_pequiv_mul_matrix PEquiv.toPEquiv_mul_matrix
 
 theorem mul_toPEquiv_toMatrix {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
@@ -110,9 +130,15 @@ theorem mul_toPEquiv_toMatrix {m n α : Type*} [Fintype n] [DecidableEq n] [Semi
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
   ext i j
+  -- ⊢ toMatrix (PEquiv.trans f g) i j = (toMatrix f * toMatrix g) i j
   rw [mul_matrix_apply]
+  -- ⊢ toMatrix (PEquiv.trans f g) i j = Option.casesOn (↑f i) 0 fun fi => toMatrix …
   dsimp [toMatrix, PEquiv.trans]
+  -- ⊢ (if j ∈ Option.bind (↑f i) ↑g then 1 else 0) = Option.rec 0 (fun val => if j …
   cases f i <;> simp
+  -- ⊢ (if j ∈ Option.bind none ↑g then 1 else 0) = Option.rec 0 (fun val => if j ∈ …
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align pequiv.to_matrix_trans PEquiv.toMatrix_trans
 
 @[simp]
@@ -145,8 +171,58 @@ theorem toMatrix_swap [DecidableEq n] [Ring α] (i j : n) :
       (1 : Matrix n n α) - (single i i).toMatrix - (single j j).toMatrix + (single i j).toMatrix +
         (single j i).toMatrix := by
   ext
+  -- ⊢ toMatrix (Equiv.toPEquiv (Equiv.swap i j)) i✝ x✝ = (1 - toMatrix (single i i …
   dsimp [toMatrix, single, Equiv.swap_apply_def, Equiv.toPEquiv, one_apply]
+  -- ⊢ (if x✝ ∈ some (if i✝ = i then j else if i✝ = j then i else i✝) then 1 else 0 …
   split_ifs <;> simp_all
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
+                -- 🎉 no goals
 #align pequiv.to_matrix_swap PEquiv.toMatrix_swap
 
 @[simp]
@@ -154,12 +230,14 @@ theorem single_mul_single [Fintype n] [DecidableEq k] [DecidableEq m] [Decidable
     (a : m) (b : n) (c : k) :
     ((single a b).toMatrix : Matrix _ _ α) * (single b c).toMatrix = (single a c).toMatrix := by
   rw [← toMatrix_trans, single_trans_single]
+  -- 🎉 no goals
 #align pequiv.single_mul_single PEquiv.single_mul_single
 
 theorem single_mul_single_of_ne [Fintype n] [DecidableEq n] [DecidableEq k] [DecidableEq m]
     [Semiring α] {b₁ b₂ : n} (hb : b₁ ≠ b₂) (a : m) (c : k) :
     (single a b₁).toMatrix * (single b₂ c).toMatrix = (0 : Matrix _ _ α) := by
   rw [← toMatrix_trans, single_trans_single_of_ne hb, toMatrix_bot]
+  -- 🎉 no goals
 #align pequiv.single_mul_single_of_ne PEquiv.single_mul_single_of_ne
 
 /-- Restatement of `single_mul_single`, which will simplify expressions in `simp` normal form,
@@ -169,6 +247,7 @@ theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [Decidab
     [DecidableEq m] [Semiring α] (a : m) (b : n) (c : k) (M : Matrix k l α) :
     (single a b).toMatrix * ((single b c).toMatrix * M) = (single a c).toMatrix * M := by
   rw [← Matrix.mul_assoc, single_mul_single]
+  -- 🎉 no goals
 #align pequiv.single_mul_single_right PEquiv.single_mul_single_right
 
 /-- We can also define permutation matrices by permuting the rows of the identity matrix. -/

@@ -75,6 +75,9 @@ is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) := by
   constructor <;> intro hT
+  -- ⊢ IsLocallySurjective T → ∀ (x : ↑X), Function.Surjective ↑((stalkFunctor C x) …
+                  -- ⊢ ∀ (x : ↑X), Function.Surjective ↑((stalkFunctor C x).map T)
+                  -- ⊢ IsLocallySurjective T
   · /- human proof:
         Let g ∈ Γₛₜ 𝒢 x be a germ. Represent it on an open set U ⊆ X
         as ⟨t, U⟩. By local surjectivity, pass to a smaller open set V
@@ -82,17 +85,23 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
         Then the germ of s maps to g -/
     -- Let g ∈ Γₛₜ 𝒢 x be a germ.
     intro x g
+    -- ⊢ ∃ a, ↑((stalkFunctor C x).map T) a = g
     -- Represent it on an open set U ⊆ X as ⟨t, U⟩.
     obtain ⟨U, hxU, t, rfl⟩ := 𝒢.germ_exist x g
+    -- ⊢ ∃ a, ↑((stalkFunctor C x).map T) a = ↑(germ 𝒢 { val := x, property := hxU }) t
     -- By local surjectivity, pass to a smaller open set V
     -- on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
     rcases hT U t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
+    -- ⊢ ∃ a, ↑((stalkFunctor C x).map T) a = ↑(germ 𝒢 { val := x, property := hxU }) t
     -- Then the germ of s maps to g.
     use ℱ.germ ⟨x, hxV⟩ s
+    -- ⊢ ↑((stalkFunctor C x).map T) (↑(germ ℱ { val := x, property := hxV }) s) = ↑( …
     -- Porting note: `convert` went too deep and swapped LHS and RHS of the remaining goal relative
     -- to lean 3.
     convert stalkFunctor_map_germ_apply V ⟨x, hxV⟩ T s using 1
+    -- ⊢ ↑(germ 𝒢 { val := x, property := hxU }) t = ↑(Limits.colimit.ι ((OpenNhds.in …
     simpa [h_eq] using (germ_res_apply 𝒢 ι ⟨x, hxV⟩ t).symm
+    -- 🎉 no goals
   · /- human proof:
         Let U be an open set, t ∈ Γ ℱ U a section, x ∈ U a point.
         By surjectivity on stalks, the germ of t is the image of
@@ -100,18 +109,26 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
         Then there is some possibly smaller open set x ∈ W ⊆ V ∩ U on which
         we have T(s) |_ W = t |_ W. -/
     intro U t x hxU
+    -- ⊢ ∃ U_1 f, (imageSieve T t).arrows f ∧ x ∈ U_1
     set t_x := 𝒢.germ ⟨x, hxU⟩ t with ht_x
+    -- ⊢ ∃ U_1 f, (imageSieve T t).arrows f ∧ x ∈ U_1
     obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
+    -- ⊢ ∃ U_1 f, (imageSieve T t).arrows f ∧ x ∈ U_1
     obtain ⟨V, hxV, s, rfl⟩ := ℱ.germ_exist x s_x
+    -- ⊢ ∃ U_1 f, (imageSieve T t).arrows f ∧ x ∈ U_1
     -- rfl : ℱ.germ x s = s_x
     have key_W := 𝒢.germ_eq x hxV hxU (T.app _ s) t <| by
       convert hs_x using 1
       symm
       convert stalkFunctor_map_germ_apply _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
+    -- ⊢ ∃ U_1 f, (imageSieve T t).arrows f ∧ x ∈ U_1
     refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
+    -- ⊢ ↑(NatTrans.app T (op W)) (↑(ℱ.map hWV.op) s) = ↑(𝒢.map hWU.op) t
     convert h_eq using 1
+    -- ⊢ ↑(NatTrans.app T (op W)) (↑(ℱ.map hWV.op) s) = ↑(𝒢.map hWV.op) (↑(NatTrans.a …
     simp only [← comp_apply, T.naturality]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.locally_surjective_iff_surjective_on_stalks TopCat.Presheaf.locally_surjective_iff_surjective_on_stalks
 

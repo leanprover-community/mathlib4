@@ -29,11 +29,13 @@ theorem Fintype.card_finset [Fintype α] : Fintype.card (Finset α) = 2 ^ Fintyp
 @[simp]
 theorem Finset.powerset_univ [Fintype α] : (univ : Finset α).powerset = univ :=
   coe_injective <| by simp [-coe_eq_univ]
+                      -- 🎉 no goals
 #align finset.powerset_univ Finset.powerset_univ
 
 @[simp]
 theorem Finset.powerset_eq_univ [Fintype α] {s : Finset α} : s.powerset = univ ↔ s = univ := by
   rw [← Finset.powerset_univ, powerset_inj]
+  -- 🎉 no goals
 #align finset.powerset_eq_univ Finset.powerset_eq_univ
 
 @[simp]
@@ -46,13 +48,16 @@ theorem Finset.mem_powerset_len_univ_iff [Fintype α] {s : Finset α} {k : ℕ} 
 theorem Finset.univ_filter_card_eq (α : Type*) [Fintype α] (k : ℕ) :
     ((Finset.univ : Finset (Finset α)).filter fun s => s.card = k) = Finset.univ.powersetLen k := by
   ext
+  -- ⊢ a✝ ∈ filter (fun s => card s = k) univ ↔ a✝ ∈ powersetLen k univ
   simp [Finset.mem_powersetLen]
+  -- 🎉 no goals
 #align finset.univ_filter_card_eq Finset.univ_filter_card_eq
 
 @[simp]
 theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
     Fintype.card { s : Finset α // s.card = k } = Nat.choose (Fintype.card α) k := by
   simp [Fintype.subtype_card, Finset.card_univ]
+  -- 🎉 no goals
 #align fintype.card_finset_len Fintype.card_finset_len
 
 instance Set.fintype [Fintype α] : Fintype (Set α) :=
@@ -67,7 +72,9 @@ instance Set.fintype [Fintype α] : Fintype (Set α) :=
 -- Not to be confused with `Set.Finite`, the predicate
 instance Set.finite' [Finite α] : Finite (Set α) := by
   cases nonempty_fintype α
+  -- ⊢ Finite (Set α)
   infer_instance
+  -- 🎉 no goals
 #align set.finite' Set.finite'
 
 @[simp]

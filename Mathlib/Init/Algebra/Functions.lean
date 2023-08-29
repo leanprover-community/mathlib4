@@ -17,10 +17,12 @@ variable {α : Type u} [LinearOrder α]
 
 theorem min_def (a b : α) : min a b = if a ≤ b then a else b := by
   rw [LinearOrder.min_def a]
+  -- 🎉 no goals
 #align min_def min_def
 
 theorem max_def (a b : α) : max a b = if a ≤ b then b else a := by
   rw [LinearOrder.max_def a]
+  -- 🎉 no goals
 #align max_def max_def
 
 theorem min_le_left (a b : α) : min a b ≤ a := by
@@ -77,9 +79,22 @@ theorem min_comm (a b : α) : min a b = min b a :=
 theorem min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
   · apply le_trans; apply min_le_left; apply min_le_left
+                    -- ⊢ min a b ≤ a
+                                       -- 🎉 no goals
   · apply le_min; apply le_trans; apply min_le_left; apply min_le_right; apply min_le_right
+    -- ⊢ min (min a b) c ≤ b
+                                  -- ⊢ min a b ≤ b
+                                                     -- ⊢ min (min a b) c ≤ c
+                                                                         -- 🎉 no goals
   · intro d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
+    -- ⊢ d ≤ min (min a b) c
+                   -- ⊢ d ≤ min a b
+                                 -- ⊢ d ≤ b
+                                                  -- ⊢ min b c ≤ b
+                                                                     -- ⊢ d ≤ c
     apply le_trans h₂; apply min_le_right
+    -- ⊢ min b c ≤ c
+                       -- 🎉 no goals
 #align min_assoc min_assoc
 
 theorem min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
@@ -88,10 +103,15 @@ theorem min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
 
 @[simp]
 theorem min_self (a : α) : min a a = a := by simp [min_def]
+                                             -- 🎉 no goals
 #align min_self min_self
 
 theorem min_eq_left {a b : α} (h : a ≤ b) : min a b = a := by
   apply Eq.symm; apply eq_min (le_refl _) h; intros; assumption
+  -- ⊢ a = min a b
+                 -- ⊢ ∀ {d : α}, d ≤ a → d ≤ b → d ≤ a
+                                             -- ⊢ d✝ ≤ a
+                                                     -- 🎉 no goals
 #align min_eq_left min_eq_left
 
 theorem min_eq_right {a b : α} (h : b ≤ a) : min a b = b :=
@@ -110,9 +130,20 @@ theorem max_comm (a b : α) : max a b = max b a :=
 theorem max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
   · apply le_trans; apply le_max_left a b; apply le_max_left
+                    -- ⊢ max a b ≤ max (max a b) c
+                                           -- 🎉 no goals
   · apply max_le; apply le_trans; apply le_max_right a b; apply le_max_left; apply le_max_right
+    -- ⊢ b ≤ max (max a b) c
+                                  -- ⊢ max a b ≤ max (max a b) c
+                                                          -- ⊢ c ≤ max (max a b) c
+                                                                             -- 🎉 no goals
   · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
+    -- ⊢ max (max a b) c ≤ d
+                   -- ⊢ max a b ≤ d
+                                 -- ⊢ b ≤ d
+                                                  -- ⊢ c ≤ d
     apply le_trans (le_max_right _ _) h₂
+    -- 🎉 no goals
 #align max_assoc max_assoc
 
 theorem max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
@@ -121,10 +152,15 @@ theorem max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
 
 @[simp]
 theorem max_self (a : α) : max a a = a := by simp [max_def]
+                                             -- 🎉 no goals
 #align max_self max_self
 
 theorem max_eq_left {a b : α} (h : b ≤ a) : max a b = a := by
   apply Eq.symm; apply eq_max (le_refl _) h; intros; assumption
+  -- ⊢ a = max a b
+                 -- ⊢ ∀ {d : α}, a ≤ d → b ≤ d → a ≤ d
+                                             -- ⊢ a ≤ d✝
+                                                     -- 🎉 no goals
 #align max_eq_left max_eq_left
 
 theorem max_eq_right {a b : α} (h : a ≤ b) : max a b = b :=
@@ -153,14 +189,18 @@ theorem lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
   -- porting note: no `min_tac` tactic
   Or.elim (le_or_gt b c)
     (λ h : b ≤ c => by rwa [min_eq_left h])
+                       -- 🎉 no goals
     (λ h : b > c => by rwa [min_eq_right_of_lt h])
+                       -- 🎉 no goals
 #align lt_min lt_min
 
 theorem max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
   -- porting note: no `min_tac` tactic
   Or.elim (le_or_gt a b)
     (λ h : a ≤ b => by rwa [max_eq_right h])
+                       -- 🎉 no goals
     (λ h : a > b => by rwa [max_eq_left_of_lt h])
+                       -- 🎉 no goals
 #align max_lt max_lt
 
 end

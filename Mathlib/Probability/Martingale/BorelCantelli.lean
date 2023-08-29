@@ -90,19 +90,29 @@ theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → 
     (hπn : ∀ ω, π ω ≤ n) : stoppedValue (fun i => stoppedValue f (leastGE f r i)) π =
       stoppedValue (stoppedProcess f (leastGE f r n)) π := by
   ext1 ω; simp_rw [stoppedProcess, stoppedValue]; rw [leastGE_eq_min _ _ _ hπn]
+  -- ⊢ stoppedValue (fun i => stoppedValue f (leastGE f r i)) π ω = stoppedValue (s …
+          -- ⊢ f (leastGE f r (π ω) ω) ω = f (min (π ω) (leastGE f r n ω)) ω
+                                                  -- 🎉 no goals
 #align measure_theory.stopped_value_stopped_value_least_ge MeasureTheory.stoppedValue_stoppedValue_leastGE
 
 theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
     Submartingale (fun i => stoppedValue f (leastGE f r i)) ℱ μ := by
   rw [submartingale_iff_expected_stoppedValue_mono]
   · intro σ π hσ hπ hσ_le_π hπ_bdd
+    -- ⊢ ∫ (x : Ω), stoppedValue (fun i => stoppedValue f (leastGE f r i)) σ x ∂μ ≤ ∫ …
     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
+    -- ⊢ ∫ (x : Ω), stoppedValue (fun i => stoppedValue f (leastGE f r i)) σ x ∂μ ≤ ∫ …
     simp_rw [stoppedValue_stoppedValue_leastGE f σ r fun i => (hσ_le_π i).trans (hπ_le_n i)]
+    -- ⊢ ∫ (x : Ω), stoppedValue (stoppedProcess f (leastGE f r n)) σ x ∂μ ≤ ∫ (x : Ω …
     simp_rw [stoppedValue_stoppedValue_leastGE f π r hπ_le_n]
+    -- ⊢ ∫ (x : Ω), stoppedValue (stoppedProcess f (leastGE f r n)) σ x ∂μ ≤ ∫ (x : Ω …
     refine' hf.expected_stoppedValue_mono _ _ _ fun ω => (min_le_left _ _).trans (hπ_le_n ω)
     · exact hσ.min (hf.adapted.isStoppingTime_leastGE _ _)
+      -- 🎉 no goals
     · exact hπ.min (hf.adapted.isStoppingTime_leastGE _ _)
+      -- 🎉 no goals
     · exact fun ω => min_le_min (hσ_le_π ω) le_rfl
+      -- 🎉 no goals
   · exact fun i => stronglyMeasurable_stoppedValue_of_le hf.adapted.progMeasurable_of_discrete
       (hf.adapted.isStoppingTime_leastGE _ _) leastGE_le
   · exact fun i => integrable_stoppedValue _ (hf.adapted.isStoppingTime_leastGE _ _) hf.integrable
@@ -115,15 +125,25 @@ theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     ∀ᵐ ω ∂μ, stoppedValue f (leastGE f r i) ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
+  -- ⊢ stoppedValue f (leastGE f r i) ω ≤ r + ↑R
   change f (leastGE f r i ω) ω ≤ r + R
+  -- ⊢ f (leastGE f r i ω) ω ≤ r + ↑R
   by_cases heq : leastGE f r i ω = 0
+  -- ⊢ f (leastGE f r i ω) ω ≤ r + ↑R
   · rw [heq, hf0, Pi.zero_apply]
+    -- ⊢ 0 ≤ r + ↑R
     exact add_nonneg hr R.coe_nonneg
+    -- 🎉 no goals
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero heq
+    -- ⊢ f (leastGE f r i ω) ω ≤ r + ↑R
     rw [hk, add_comm, ← sub_le_iff_le_add]
+    -- ⊢ f (Nat.succ k) ω - r ≤ ↑R
     have := not_mem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
+    -- ⊢ f (Nat.succ k) ω - r ≤ ↑R
     simp only [Set.mem_union, Set.mem_Iic, Set.mem_Ici, not_or, not_le] at this
+    -- ⊢ f (Nat.succ k) ω - r ≤ ↑R
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
+    -- 🎉 no goals
 #align measure_theory.norm_stopped_value_least_ge_le MeasureTheory.norm_stoppedValue_leastGE_le
 
 theorem Submartingale.stoppedValue_leastGE_snorm_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -132,8 +152,11 @@ theorem Submartingale.stoppedValue_leastGE_snorm_le [IsFiniteMeasure μ] (hf : S
   refine' snorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) _
     (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
   rw [← integral_univ]
+  -- ⊢ 0 ≤ ∫ (x : Ω) in Set.univ, stoppedValue f (leastGE f r i) x ∂μ
   refine' le_trans _ ((hf.stoppedValue_leastGE r).set_integral_le (zero_le _) MeasurableSet.univ)
+  -- ⊢ 0 ≤ ∫ (ω : Ω) in Set.univ, stoppedValue f (leastGE f r 0) ω ∂μ
   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
+  -- 🎉 no goals
 #align measure_theory.submartingale.stopped_value_least_ge_snorm_le MeasureTheory.Submartingale.stoppedValue_leastGE_snorm_le
 
 theorem Submartingale.stoppedValue_leastGE_snorm_le' [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -141,7 +164,9 @@ theorem Submartingale.stoppedValue_leastGE_snorm_le' [IsFiniteMeasure μ] (hf : 
     snorm (stoppedValue f (leastGE f r i)) 1 μ ≤
       ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
   refine' (hf.stoppedValue_leastGE_snorm_le hr hf0 hbdd i).trans _
+  -- ⊢ 2 * ↑↑μ Set.univ * ENNReal.ofReal (r + ↑R) ≤ ↑(ENNReal.toNNReal (2 * ↑↑μ Set …
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
+  -- 🎉 no goals
 #align measure_theory.submartingale.stopped_value_least_ge_snorm_le' MeasureTheory.Submartingale.stoppedValue_leastGE_snorm_le'
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
@@ -154,8 +179,11 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     exact fun i => Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedValue_leastGE i)
       (hf.stoppedValue_leastGE_snorm_le' i.cast_nonneg hf0 hbdd)
   filter_upwards [ht] with ω hω hωb
+  -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
   rw [BddAbove] at hωb
+  -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
   obtain ⟨i, hi⟩ := exists_nat_gt hωb.some
+  -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
   have hib : ∀ n, f n ω < i := by
     intro n
     exact lt_of_le_of_lt ((mem_upperBounds.1 hωb.some_mem) _ ⟨n, rfl⟩) hi
@@ -167,6 +195,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     push_neg
     exact fun j _ => hib j
   simp only [← heq, hω i]
+  -- 🎉 no goals
 #align measure_theory.submartingale.exists_tendsto_of_abs_bdd_above_aux MeasureTheory.Submartingale.exists_tendsto_of_abs_bddAbove_aux
 
 theorem Submartingale.bddAbove_iff_exists_tendsto_aux [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -182,6 +211,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) ↔ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   set g : ℕ → Ω → ℝ := fun n ω => f n ω - f 0 ω
+  -- ⊢ ∀ᵐ (ω : Ω) ∂μ, BddAbove (Set.range fun n => f n ω) ↔ ∃ c, Tendsto (fun n =>  …
   have hg : Submartingale g ℱ μ :=
     hf.sub_martingale (martingale_const_fun _ _ (hf.adapted 0) (hf.integrable 0))
   have hg0 : g 0 = 0 := by
@@ -190,17 +220,36 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
+  -- ⊢ BddAbove (Set.range fun n => f n ω) ↔ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 …
   convert hω using 1
+  -- ⊢ BddAbove (Set.range fun n => f n ω) ↔ BddAbove (Set.range fun n => f n ω - f …
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨b, hb⟩ := h <;>
+    -- ⊢ BddAbove (Set.range fun n => f n ω - f 0 ω)
+                                         -- ⊢ BddAbove (Set.range fun n => f n ω - f 0 ω)
+                                         -- ⊢ BddAbove (Set.range fun n => f n ω)
     refine' ⟨b + |f 0 ω|, fun y hy => _⟩ <;> obtain ⟨n, rfl⟩ := hy
+    -- ⊢ y ≤ b + |f 0 ω|
+    -- ⊢ y ≤ b + |f 0 ω|
+                                             -- ⊢ (fun n => f n ω - f 0 ω) n ≤ b + |f 0 ω|
+                                             -- ⊢ (fun n => f n ω) n ≤ b + |f 0 ω|
     · simp_rw [sub_eq_add_neg]
+      -- ⊢ f n ω + -f 0 ω ≤ b + |f 0 ω|
       exact add_le_add (hb ⟨n, rfl⟩) (neg_le_abs_self _)
+      -- 🎉 no goals
     · exact sub_le_iff_le_add.1 (le_trans (sub_le_sub_left (le_abs_self _) _) (hb ⟨n, rfl⟩))
+      -- 🎉 no goals
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨c, hc⟩ := h
+    -- ⊢ ∃ c, Tendsto (fun n => f n ω - f 0 ω) atTop (𝓝 c)
+                                         -- ⊢ ∃ c, Tendsto (fun n => f n ω - f 0 ω) atTop (𝓝 c)
+                                         -- ⊢ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)
     · exact ⟨c - f 0 ω, hc.sub_const _⟩
+      -- 🎉 no goals
     · refine' ⟨c + f 0 ω, _⟩
+      -- ⊢ Tendsto (fun n => f n ω) atTop (𝓝 (c + f 0 ω))
       have := hc.add_const (f 0 ω)
+      -- ⊢ Tendsto (fun n => f n ω) atTop (𝓝 (c + f 0 ω))
       simpa only [sub_add_cancel]
+      -- 🎉 no goals
 #align measure_theory.submartingale.bdd_above_iff_exists_tendsto MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto
 
 /-!
@@ -234,8 +283,11 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     erw [← abs_neg, neg_sub, sub_neg_eq_add, neg_add_eq_sub]
     exact hω i
   have hup := hf.submartingale.bddAbove_iff_exists_tendsto hbdd
+  -- ⊢ ∀ᵐ (ω : Ω) ∂μ, BddAbove (Set.range fun n => f n ω) ↔ BddBelow (Set.range fun …
   have hdown := hf.neg.submartingale.bddAbove_iff_exists_tendsto hbdd'
+  -- ⊢ ∀ᵐ (ω : Ω) ∂μ, BddAbove (Set.range fun n => f n ω) ↔ BddBelow (Set.range fun …
   filter_upwards [hup, hdown] with ω hω₁ hω₂
+  -- ⊢ BddAbove (Set.range fun n => f n ω) ↔ BddBelow (Set.range fun n => f n ω)
   have : (∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c)) ↔
       ∃ c, Tendsto (fun n => (-f) n ω) atTop (𝓝 c) := by
     constructor <;> rintro ⟨c, hc⟩
@@ -244,14 +296,27 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
       convert hc.neg
       simp only [neg_neg, Pi.neg_apply]
   rw [hω₁, this, ← hω₂]
+  -- ⊢ BddAbove (Set.range fun n => (-f) n ω) ↔ BddBelow (Set.range fun n => f n ω)
   constructor <;> rintro ⟨c, hc⟩ <;> refine' ⟨-c, fun ω hω => _⟩
+  -- ⊢ BddAbove (Set.range fun n => (-f) n ω) → BddBelow (Set.range fun n => f n ω)
+                  -- ⊢ BddBelow (Set.range fun n => f n ω)
+                  -- ⊢ BddAbove (Set.range fun n => (-f) n ω)
+                                     -- ⊢ -c ≤ ω
+                                     -- ⊢ ω ≤ -c
   · rw [mem_upperBounds] at hc
+    -- ⊢ -c ≤ ω
     refine' neg_le.2 (hc _ _)
+    -- ⊢ -ω ∈ Set.range fun n => (-f) n ω✝
     simpa only [Pi.neg_apply, Set.mem_range, neg_inj]
+    -- 🎉 no goals
   · rw [mem_lowerBounds] at hc
+    -- ⊢ ω ≤ -c
     simp_rw [Set.mem_range, Pi.neg_apply, neg_eq_iff_eq_neg] at hω
+    -- ⊢ ω ≤ -c
     refine' le_neg.1 (hc _ _)
+    -- ⊢ -ω ∈ Set.range fun n => f n ω✝
     simpa only [Set.mem_range]
+    -- 🎉 no goals
 #align measure_theory.martingale.bdd_above_range_iff_bdd_below_range MeasureTheory.Martingale.bddAbove_range_iff_bddBelow_range
 
 theorem Martingale.ae_not_tendsto_atTop_atTop [IsFiniteMeasure μ] (hf : Martingale f ℱ μ)
@@ -279,6 +344,7 @@ noncomputable def process (s : ℕ → Set Ω) (n : ℕ) : Ω → ℝ :=
 variable {s : ℕ → Set Ω}
 
 theorem process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
+                                             -- 🎉 no goals
 #align measure_theory.borel_cantelli.process_zero MeasureTheory.BorelCantelli.process_zero
 
 theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
@@ -290,25 +356,34 @@ theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω)
     martingalePart (process s) ℱ μ n =
       ∑ k in Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
   simp only [martingalePart_eq_sum, process_zero, zero_add]
+  -- ⊢ ∑ i in Finset.range n, (process s (i + 1) - process s i - μ[process s (i + 1 …
   refine' Finset.sum_congr rfl fun k _ => _
+  -- ⊢ process s (k + 1) - process s k - μ[process s (k + 1) - process s k|↑ℱ k] =  …
   simp only [process, Finset.sum_range_succ_sub_sum]
+  -- 🎉 no goals
 #align measure_theory.borel_cantelli.martingale_part_process_ae_eq MeasureTheory.BorelCantelli.martingalePart_process_ae_eq
 
 theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
     (n : ℕ) : predictablePart (process s) ℱ μ n =
     ∑ k in Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k] := by
   have := martingalePart_process_ae_eq ℱ μ s n
+  -- ⊢ predictablePart (process s) ℱ μ n = ∑ k in Finset.range n, μ[Set.indicator ( …
   simp_rw [martingalePart, process, Finset.sum_sub_distrib] at this
+  -- ⊢ predictablePart (process s) ℱ μ n = ∑ k in Finset.range n, μ[Set.indicator ( …
   exact sub_right_injective this
+  -- 🎉 no goals
 #align measure_theory.borel_cantelli.predictable_part_process_ae_eq MeasureTheory.BorelCantelli.predictablePart_process_ae_eq
 
 theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
     |process s (n + 1) ω - process s n ω| ≤ (1 : ℝ≥0) := by
   norm_cast
+  -- ⊢ |process s (n + 1) ω - process s n ω| ≤ 1
   rw [process, process, Finset.sum_apply, Finset.sum_apply,
     Finset.sum_range_succ_sub_sum, ← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
   refine' Set.indicator_le' (fun _ _ => _) (fun _ _ => zero_le_one) _
+  -- ⊢ ‖OfNat.ofNat 1 x✝¹‖ ≤ 1
   rw [Pi.one_apply, norm_one]
+  -- 🎉 no goals
 #align measure_theory.borel_cantelli.process_difference_le MeasureTheory.BorelCantelli.process_difference_le
 
 theorem integrable_process (μ : Measure Ω) [IsFiniteMeasure μ] (hs : ∀ n, MeasurableSet[ℱ n] (s n))
@@ -336,18 +411,31 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     refine' ae_all_iff.2 fun n => condexp_nonneg _
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω
   filter_upwards [h₁, h₂, h₃, hfmono] with ω hω₁ hω₂ hω₃ hω₄
+  -- ⊢ Tendsto (fun n => f n ω) atTop atTop ↔ Tendsto (fun n => predictablePart f ℱ …
   constructor <;> intro ht
+  -- ⊢ Tendsto (fun n => f n ω) atTop atTop → Tendsto (fun n => predictablePart f ℱ …
+                  -- ⊢ Tendsto (fun n => predictablePart f ℱ μ n ω) atTop atTop
+                  -- ⊢ Tendsto (fun n => f n ω) atTop atTop
   · refine' tendsto_atTop_atTop_of_monotone' _ _
+    -- ⊢ Monotone fun n => predictablePart f ℱ μ n ω
     · intro n m hnm
+      -- ⊢ (fun n => predictablePart f ℱ μ n ω) n ≤ (fun n => predictablePart f ℱ μ n ω …
       simp only [predictablePart, Finset.sum_apply]
+      -- ⊢ ∑ c in Finset.range n, (μ[f (c + 1) - f c|↑ℱ c]) ω ≤ ∑ c in Finset.range m,  …
       refine' Finset.sum_mono_set_of_nonneg hω₃ (Finset.range_mono hnm)
+      -- 🎉 no goals
     rintro ⟨b, hbdd⟩
+    -- ⊢ False
     rw [← tendsto_neg_atBot_iff] at ht
+    -- ⊢ False
     simp only [martingalePart, sub_eq_add_neg] at hω₁
+    -- ⊢ False
     exact hω₁ (tendsto_atTop_add_right_of_le _ (-b) (tendsto_neg_atBot_iff.1 ht) fun n =>
       neg_le_neg (hbdd ⟨n, rfl⟩))
   · refine' tendsto_atTop_atTop_of_monotone' (monotone_nat_of_le_succ hω₄) _
+    -- ⊢ ¬BddAbove (Set.range fun n => f n ω)
     rintro ⟨b, hbdd⟩
+    -- ⊢ False
     exact hω₂ ((tendsto_atBot_add_left_of_ge _ b fun n =>
       hbdd ⟨n, rfl⟩) <| tendsto_neg_atBot_iff.2 ht)
 #align measure_theory.tendsto_sum_indicator_at_top_iff MeasureTheory.tendsto_sum_indicator_atTop_iff
@@ -363,11 +451,15 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
   have := tendsto_sum_indicator_atTop_iff (eventually_of_forall fun ω n => ?_) (adapted_process hs)
     (integrable_process μ hs) (eventually_of_forall <| process_difference_le s)
   swap
+  -- ⊢ process (fun n => s n) n ω ≤ process (fun n => s n) (n + 1) ω
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]
     exact Set.indicator_nonneg (fun _ _ => zero_le_one) _
+    -- 🎉 no goals
   simp_rw [process, predictablePart_process_ae_eq] at this
+  -- ⊢ ∀ᵐ (ω : Ω) ∂μ, Tendsto (fun n => ∑ k in Finset.range n, Set.indicator (s (k  …
   simpa using this
+  -- 🎉 no goals
 #align measure_theory.tendsto_sum_indicator_at_top_iff' MeasureTheory.tendsto_sum_indicator_atTop_iff'
 
 /-- **Lévy's generalization of the Borel-Cantelli lemma**: given a sequence of sets `s` and a

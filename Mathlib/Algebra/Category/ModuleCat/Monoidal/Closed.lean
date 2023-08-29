@@ -32,7 +32,9 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
   invFun f := (β_ M N).hom ≫ TensorProduct.lift f
   left_inv f := by
     apply TensorProduct.ext'
+    -- ⊢ ∀ (x : ↑M) (y : ↑N), ↑((fun f => (β_ M N).hom ≫ TensorProduct.lift f) ((fun  …
     intro m n
+    -- ⊢ ↑((fun f => (β_ M N).hom ≫ TensorProduct.lift f) ((fun f => LinearMap.compr₂ …
     rw [coe_comp, Function.comp_apply, MonoidalCategory.braiding_hom_apply,
       TensorProduct.lift.tmul, LinearMap.compr₂_apply,
       TensorProduct.mk_apply, coe_comp, Function.comp_apply, MonoidalCategory.braiding_hom_apply]
@@ -49,9 +51,13 @@ instance : MonoidalClosed (ModuleCat.{u} R) where
               -- porting note: this proof was automatic in mathlib3
               homEquiv_naturality_left_symm := by
                 intros
+                -- ⊢ ↑((fun N P => monoidalClosedHomEquiv M N P) X'✝ Y✝).symm (f✝ ≫ g✝) = (Monoid …
                 apply TensorProduct.ext'
+                -- ⊢ ∀ (x : ↑M) (y : ↑X'✝), ↑(↑((fun N P => monoidalClosedHomEquiv M N P) X'✝ Y✝) …
                 intro m n
+                -- ⊢ ↑(↑((fun N P => monoidalClosedHomEquiv M N P) X'✝ Y✝).symm (f✝ ≫ g✝)) (m ⊗ₜ[ …
                 rfl } } }
+                -- 🎉 no goals
 
 theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of R (M ⟶ N)) :
     (ihom M).map f g = g ≫ f :=
@@ -86,7 +92,9 @@ should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
     (ihom.ev M).app N = TensorProduct.uncurry _ _ _ _ LinearMap.id.flip := by
   apply TensorProduct.ext'
+  -- ⊢ ∀ (x : ↑M) (y : ↑((ihom M).obj N)), ↑(NatTrans.app (ihom.ev M) N) (x ⊗ₜ[R] y …
   apply ModuleCat.monoidalClosed_uncurry
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.ihom_ev_app ModuleCat.ihom_ev_app
 

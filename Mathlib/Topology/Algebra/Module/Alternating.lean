@@ -97,6 +97,7 @@ theorem ext_iff {f g : M [Λ^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) := fun f g h =>
   FunLike.ext' <| by convert FunLike.ext'_iff.1 h
+                     -- 🎉 no goals
 
 @[simp]
 theorem range_toAlternatingMap :
@@ -328,7 +329,11 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M')
   toFun f := f.compContinuousLinearMap ↑e.symm
   invFun f := f.compContinuousLinearMap ↑e
   left_inv f := by ext; simp [(· ∘ ·)]
+                   -- ⊢ ↑((fun f => compContinuousLinearMap f ↑e) ((fun f => compContinuousLinearMap …
+                        -- 🎉 no goals
   right_inv f := by ext; simp [(· ∘ ·)]
+                    -- ⊢ ↑((fun f => compContinuousLinearMap f ↑(ContinuousLinearEquiv.symm e)) ((fun …
+                         -- 🎉 no goals
 
 /-- A continuous linear equivalence of codomains defines an equivalence between continuous
 alternating maps. -/
@@ -337,7 +342,11 @@ def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N')
   toFun := (e : N →L[R] N').compContinuousAlternatingMap
   invFun := (e.symm : N' →L[R] N).compContinuousAlternatingMap
   left_inv f := by ext; simp [(· ∘ ·)]
+                   -- ⊢ ↑(ContinuousLinearMap.compContinuousAlternatingMap (↑(ContinuousLinearEquiv. …
+                        -- 🎉 no goals
   right_inv f := by ext; simp [(· ∘ ·)]
+                    -- ⊢ ↑(ContinuousLinearMap.compContinuousAlternatingMap (↑e) (ContinuousLinearMap …
+                         -- 🎉 no goals
 
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
@@ -357,7 +366,11 @@ def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ 
   toFun := pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] N i).compContinuousAlternatingMap f
   left_inv f := by ext; rfl
+                   -- ⊢ ↑((fun f i => ContinuousLinearMap.compContinuousAlternatingMap (ContinuousLi …
+                        -- 🎉 no goals
   right_inv f := by ext; rfl
+                    -- ⊢ ↑(pi ((fun f i => ContinuousLinearMap.compContinuousAlternatingMap (Continuo …
+                         -- 🎉 no goals
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
@@ -571,7 +584,11 @@ variable {R M M' N N' ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M
 def compContinuousLinearMapₗ (f : M →L[R] M') : (M' [Λ^ι]→L[R] N) →ₗ[R] (M [Λ^ι]→L[R] N) where
   toFun g := g.compContinuousLinearMap f
   map_add' g g' := by ext; simp
+                      -- ⊢ ↑((fun g => compContinuousLinearMap g f) (g + g')) x✝ = ↑((fun g => compCont …
+                           -- 🎉 no goals
   map_smul' c g := by ext; simp
+                      -- ⊢ ↑(AddHom.toFun { toFun := fun g => compContinuousLinearMap g f, map_add' :=  …
+                           -- 🎉 no goals
 
 variable (R M N N')
 
@@ -580,6 +597,10 @@ def _root_.ContinuousLinearMap.compContinuousAlternatingMapₗ :
     (N →L[R] N') →ₗ[R] (M [Λ^ι]→L[R] N) →ₗ[R] (M [Λ^ι]→L[R] N') :=
   LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun f₁ f₂ g => rfl)
     (fun c f g => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
+                                          -- ⊢ ↑(ContinuousLinearMap.compContinuousAlternatingMap f (g₁ + g₂)) x✝ = ↑(Conti …
+                                                -- 🎉 no goals
+                                                                                 -- ⊢ ↑(ContinuousLinearMap.compContinuousAlternatingMap f (c • g)) x✝ = ↑(c • Con …
+                                                                                       -- 🎉 no goals
 
 end Semiring
 
@@ -600,16 +621,23 @@ def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [Λ^
         simpa [MultilinearMap.alternatization_apply]
           using f.1.alternatization.map_eq_zero_of_eq' v i j hv hne }
   map_zero' := by ext; simp
+                  -- ⊢ ↑((fun f => { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, ↑Equiv.Perm. …
+                       -- 🎉 no goals
   map_add' _ _ := by ext; simp [Finset.sum_add_distrib]
+                     -- ⊢ ↑(ZeroHom.toFun { toFun := fun f => { toContinuousMultilinearMap := ∑ σ : Eq …
+                          -- 🎉 no goals
 
 theorem alternatization_apply_apply (v : ι → M) :
     alternatization f v = ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f (v ∘ σ) := by
   simp [alternatization, (· ∘ ·)]
+  -- 🎉 no goals
 
 @[simp]
 theorem alternatization_apply_toAlternatingMap :
     (alternatization f).toAlternatingMap = MultilinearMap.alternatization f.1 := by
   ext v
+  -- ⊢ ↑(ContinuousAlternatingMap.toAlternatingMap (↑alternatization f)) v = ↑(↑Mul …
   simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, (· ∘ ·)]
+  -- 🎉 no goals
 
 end ContinuousMultilinearMap

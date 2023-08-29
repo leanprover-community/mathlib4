@@ -115,6 +115,7 @@ theorem toPrefunctor_comp (f : α → β) (g : β → γ) :
 theorem toPrefunctor_symm_comp (f : SingleObj α ⥤q SingleObj β) (g : SingleObj β ⥤q SingleObj γ) :
     toPrefunctor.symm (f ⋙q g) = toPrefunctor.symm g ∘ toPrefunctor.symm f := by
   simp only [Equiv.symm_apply_eq, toPrefunctor_comp, Equiv.apply_symm_apply]
+  -- 🎉 no goals
 #align quiver.single_obj.to_prefunctor_symm_comp Quiver.SingleObj.toPrefunctor_symm_comp
 
 /-- Auxiliary definition for `quiver.SingleObj.pathEquivList`.
@@ -137,14 +138,22 @@ def listToPath : List α → Path (star α) (star α)
 theorem listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
     listToPath (pathToList p) = p.cast rfl ext := by
   induction' p with y z p a ih
+  -- ⊢ listToPath (pathToList Path.nil) = Path.cast (_ : star α = star α) (_ : star …
   · rfl
+    -- 🎉 no goals
   · dsimp at *; rw [ih]
+    -- ⊢ Path.cons (listToPath (pathToList p)) a = Path.cons p a
+                -- 🎉 no goals
 #align quiver.single_obj.path_to_list_to_path Quiver.SingleObj.listToPath_pathToList
 
 theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := by
   induction' l with a l ih
+  -- ⊢ pathToList (listToPath []) = []
   · rfl
+    -- 🎉 no goals
   · change a :: pathToList (listToPath l) = a :: l; rw [ih]
+    -- ⊢ a :: pathToList (listToPath l) = a :: l
+                                                    -- 🎉 no goals
 #align quiver.single_obj.list_to_path_to_list Quiver.SingleObj.pathToList_listToPath
 
 /-- Paths in `SingleObj α` quiver correspond to lists of elements of type `α`. -/

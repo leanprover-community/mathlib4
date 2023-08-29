@@ -65,11 +65,17 @@ theorem prod_mem_prod {s : Set α} {t : Set β} {f : Filter α} {g : Filter β} 
 theorem mem_prod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f ×ˢ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ ×ˢ t₂ ⊆ s := by
   simp only [SProd.sprod, Filter.prod]
+  -- ⊢ s ∈ comap Prod.fst f ⊓ comap Prod.snd g ↔ ∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ g ∧ prod …
   constructor
+  -- ⊢ s ∈ comap Prod.fst f ⊓ comap Prod.snd g → ∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ g ∧ prod …
   · rintro ⟨t₁, ⟨s₁, hs₁, hts₁⟩, t₂, ⟨s₂, hs₂, hts₂⟩, rfl⟩
+    -- ⊢ ∃ t₁_1, t₁_1 ∈ f ∧ ∃ t₂_1, t₂_1 ∈ g ∧ prod t₁_1 t₂_1 ⊆ t₁ ∩ t₂
     exact ⟨s₁, hs₁, s₂, hs₂, fun p ⟨h, h'⟩ => ⟨hts₁ h, hts₂ h'⟩⟩
+    -- 🎉 no goals
   · rintro ⟨t₁, ht₁, t₂, ht₂, h⟩
+    -- ⊢ s ∈ comap Prod.fst f ⊓ comap Prod.snd g
     exact mem_inf_of_inter (preimage_mem_comap ht₁) (preimage_mem_comap ht₂) h
+    -- 🎉 no goals
 #align filter.mem_prod_iff Filter.mem_prod_iff
 
 @[simp]
@@ -87,43 +93,60 @@ theorem prod_mem_prod_iff {s : Set α} {t : Set β} {f : Filter α} {g : Filter 
 theorem mem_prod_principal {f : Filter α} {s : Set (α × β)} {t : Set β} :
     s ∈ f ×ˢ 𝓟 t ↔ { a | ∀ b ∈ t, (a, b) ∈ s } ∈ f := by
   rw [← @exists_mem_subset_iff _ f, mem_prod_iff]
+  -- ⊢ (∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ 𝓟 t ∧ t₁ ×ˢ t₂ ⊆ s) ↔ ∃ t_1, t_1 ∈ f ∧ t_1 ⊆ {a | …
   refine' exists_congr fun u => Iff.rfl.and ⟨_, fun h => ⟨t, mem_principal_self t, _⟩⟩
+  -- ⊢ (∃ t₂, t₂ ∈ 𝓟 t ∧ u ×ˢ t₂ ⊆ s) → u ⊆ {a | ∀ (b : β), b ∈ t → (a, b) ∈ s}
   · rintro ⟨v, v_in, hv⟩ a a_in b b_in
+    -- ⊢ (a, b) ∈ s
     exact hv (mk_mem_prod a_in <| v_in b_in)
+    -- 🎉 no goals
   · rintro ⟨x, y⟩ ⟨hx, hy⟩
+    -- ⊢ (x, y) ∈ s
     exact h hx y hy
+    -- 🎉 no goals
 #align filter.mem_prod_principal Filter.mem_prod_principal
 
 theorem mem_prod_top {f : Filter α} {s : Set (α × β)} :
     s ∈ f ×ˢ (⊤ : Filter β) ↔ { a | ∀ b, (a, b) ∈ s } ∈ f := by
   rw [← principal_univ, mem_prod_principal]
+  -- ⊢ {a | ∀ (b : β), b ∈ univ → (a, b) ∈ s} ∈ f ↔ {a | ∀ (b : β), (a, b) ∈ s} ∈ f
   simp only [mem_univ, forall_true_left]
+  -- 🎉 no goals
 #align filter.mem_prod_top Filter.mem_prod_top
 
 theorem eventually_prod_principal_iff {p : α × β → Prop} {s : Set β} :
     (∀ᶠ x : α × β in f ×ˢ 𝓟 s, p x) ↔ ∀ᶠ x : α in f, ∀ y : β, y ∈ s → p (x, y) := by
   rw [eventually_iff, eventually_iff, mem_prod_principal]
+  -- ⊢ {a | ∀ (b : β), b ∈ s → (a, b) ∈ {x | p x}} ∈ f ↔ {x | ∀ (y : β), y ∈ s → p  …
   simp only [mem_setOf_eq]
+  -- 🎉 no goals
 #align filter.eventually_prod_principal_iff Filter.eventually_prod_principal_iff
 
 theorem comap_prod (f : α → β × γ) (b : Filter β) (c : Filter γ) :
     comap f (b ×ˢ c) = comap (Prod.fst ∘ f) b ⊓ comap (Prod.snd ∘ f) c := by
   erw [comap_inf, Filter.comap_comap, Filter.comap_comap]
+  -- 🎉 no goals
 #align filter.comap_prod Filter.comap_prod
 
 theorem prod_top {f : Filter α} : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
   dsimp only [SProd.sprod]
+  -- ⊢ Filter.prod f ⊤ = comap Prod.fst f
   rw [Filter.prod, comap_top, inf_top_eq]
+  -- 🎉 no goals
 #align filter.prod_top Filter.prod_top
 
 theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ g = (f₁ ×ˢ g) ⊔ (f₂ ×ˢ g) := by
   dsimp only [SProd.sprod]
+  -- ⊢ Filter.prod (f₁ ⊔ f₂) g = Filter.prod f₁ g ⊔ Filter.prod f₂ g
   rw [Filter.prod, comap_sup, inf_sup_right, ← Filter.prod, ← Filter.prod]
+  -- 🎉 no goals
 #align filter.sup_prod Filter.sup_prod
 
 theorem prod_sup (f : Filter α) (g₁ g₂ : Filter β) : f ×ˢ (g₁ ⊔ g₂) = (f ×ˢ g₁) ⊔ (f ×ˢ g₂) := by
   dsimp only [SProd.sprod]
+  -- ⊢ Filter.prod f (g₁ ⊔ g₂) = Filter.prod f g₁ ⊔ Filter.prod f g₂
   rw [Filter.prod, comap_sup, inf_sup_left, ← Filter.prod, ← Filter.prod]
+  -- 🎉 no goals
 #align filter.prod_sup Filter.prod_sup
 
 theorem eventually_prod_iff {p : α × β → Prop} {f : Filter α} {g : Filter β} :
@@ -131,6 +154,7 @@ theorem eventually_prod_iff {p : α × β → Prop} {f : Filter α} {g : Filter 
       ∃ pa : α → Prop, (∀ᶠ x in f, pa x) ∧ ∃ pb : β → Prop, (∀ᶠ y in g, pb y) ∧
         ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) :=
   by simpa only [Set.prod_subset_iff] using @mem_prod_iff α β p f g
+     -- 🎉 no goals
 #align filter.eventually_prod_iff Filter.eventually_prod_iff
 
 theorem tendsto_fst {f : Filter α} {g : Filter β} : Tendsto Prod.fst (f ×ˢ g) f :=
@@ -181,7 +205,9 @@ theorem EventuallyLE.prod_map {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α 
 theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
     (h : ∀ᶠ x in la ×ˢ lb, p x) : ∀ᶠ x in la, ∀ᶠ y in lb, p (x, y) := by
   rcases eventually_prod_iff.1 h with ⟨pa, ha, pb, hb, h⟩
+  -- ⊢ ∀ᶠ (x : α) in la, ∀ᶠ (y : β) in lb, p (x, y)
   exact ha.mono fun a ha => hb.mono fun b hb => h ha hb
+  -- 🎉 no goals
 #align filter.eventually.curry Filter.Eventually.curry
 
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
@@ -189,21 +215,29 @@ all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {f : Filter α} {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
     ∀ᶠ i in f, p (i, i) := by
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
+  -- ⊢ ∀ᶠ (i : α) in f, p (i, i)
   apply (ht.and hs).mono fun x hx => hst hx.1 hx.2
+  -- 🎉 no goals
 #align filter.eventually.diag_of_prod Filter.Eventually.diag_of_prod
 
 theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
   intro h
+  -- ⊢ ∀ᶠ (x : α × γ) in f ×ˢ g, p ((x.fst, x.fst), x.snd)
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
+  -- ⊢ ∀ᶠ (x : α × γ) in f ×ˢ g, p ((x.fst, x.fst), x.snd)
   refine' (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2, Prod.mk.eta]
+  -- 🎉 no goals
 #align filter.eventually.diag_of_prod_left Filter.Eventually.diag_of_prod_left
 
 theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
     (∀ᶠ x in f ×ˢ (g ×ˢ g), p x) → ∀ᶠ x : α × γ in f ×ˢ g, p (x.1, x.2, x.2) := by
   intro h
+  -- ⊢ ∀ᶠ (x : α × γ) in f ×ˢ g, p (x.fst, x.snd, x.snd)
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
+  -- ⊢ ∀ᶠ (x : α × γ) in f ×ˢ g, p (x.fst, x.snd, x.snd)
   refine' (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2, Prod.mk.eta]
+  -- 🎉 no goals
 #align filter.eventually.diag_of_prod_right Filter.Eventually.diag_of_prod_right
 
 theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
@@ -213,15 +247,21 @@ theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
     (⨅ i, f i) ×ˢ g = ⨅ i, f i ×ˢ g := by
   dsimp only [SProd.sprod]
+  -- ⊢ Filter.prod (⨅ (i : ι), f i) g = ⨅ (i : ι), Filter.prod (f i) g
   rw [Filter.prod, comap_iInf, iInf_inf]
+  -- ⊢ ⨅ (x : ι), comap Prod.fst (f x) ⊓ comap Prod.snd g = ⨅ (i : ι), Filter.prod  …
   simp only [Filter.prod, eq_self_iff_true]
+  -- 🎉 no goals
 #align filter.prod_infi_left Filter.prod_iInf_left
 
 theorem prod_iInf_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
     (f ×ˢ ⨅ i, g i) = ⨅ i, f ×ˢ g i := by
   dsimp only [SProd.sprod]
+  -- ⊢ Filter.prod f (⨅ (i : ι), g i) = ⨅ (i : ι), Filter.prod f (g i)
   rw [Filter.prod, comap_iInf, inf_iInf]
+  -- ⊢ ⨅ (x : ι), comap Prod.fst f ⊓ comap Prod.snd (g x) = ⨅ (i : ι), Filter.prod  …
   simp only [Filter.prod, eq_self_iff_true]
+  -- 🎉 no goals
 #align filter.prod_infi_right Filter.prod_iInf_right
 
 @[mono]
@@ -242,30 +282,40 @@ theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β�
     {f₁ : Filter α₁} {f₂ : Filter α₂} {m₁ : β₁ → α₁} {m₂ : β₂ → α₂} :
     comap m₁ f₁ ×ˢ comap m₂ f₂ = comap (fun p : β₁ × β₂ => (m₁ p.1, m₂ p.2)) (f₁ ×ˢ f₂) := by
   simp only [SProd.sprod, Filter.prod, comap_comap, comap_inf, (· ∘ ·)]
+  -- 🎉 no goals
 #align filter.prod_comap_comap_eq Filter.prod_comap_comap_eq
 
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
   simp only [SProd.sprod, Filter.prod, comap_comap, (· ∘ ·), inf_comm, Prod.swap, comap_inf]
+  -- 🎉 no goals
 #align filter.prod_comm' Filter.prod_comm'
 
 theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
+  -- ⊢ Prod.swap <$> (g ×ˢ f) = map (fun p => (p.snd, p.fst)) (g ×ˢ f)
   rfl
+  -- 🎉 no goals
 #align filter.prod_comm Filter.prod_comm
 
 theorem mem_prod_iff_left {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
   simp only [mem_prod_iff, prod_subset_iff]
+  -- ⊢ (∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ g ∧ ∀ (x : α), x ∈ t₁ → ∀ (y : β), y ∈ t₂ → (x, y …
   refine exists_congr fun _ => Iff.rfl.and <| Iff.trans ?_ exists_mem_subset_iff
+  -- ⊢ (∃ t₂, t₂ ∈ g ∧ ∀ (x : α), x ∈ x✝ → ∀ (y : β), y ∈ t₂ → (x, y) ∈ s) ↔ ∃ t, t …
   exact exists_congr fun _ => Iff.rfl.and forall₂_swap
+  -- 🎉 no goals
 
 theorem mem_prod_iff_right {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ g, ∀ᶠ x in f, ∀ y ∈ t, (x, y) ∈ s := by
   rw [prod_comm, mem_map, mem_prod_iff_left]; rfl
+  -- ⊢ (∃ t, t ∈ g ∧ ∀ᶠ (y : α) in f, ∀ (x : β), x ∈ t → (x, y) ∈ (fun p => (p.snd, …
+                                              -- 🎉 no goals
 
 @[simp]
 theorem map_fst_prod (f : Filter α) (g : Filter β) [NeBot g] : map Prod.fst (f ×ˢ g) = f := by
   ext s
+  -- ⊢ s ∈ map Prod.fst (f ×ˢ g) ↔ s ∈ f
   simp only [mem_map, mem_prod_iff_left, mem_preimage, eventually_const, ← subset_def,
     exists_mem_subset_iff]
 #align filter.map_fst_prod Filter.map_fst_prod
@@ -273,6 +323,8 @@ theorem map_fst_prod (f : Filter α) (g : Filter β) [NeBot g] : map Prod.fst (f
 @[simp]
 theorem map_snd_prod (f : Filter α) (g : Filter β) [NeBot f] : map Prod.snd (f ×ˢ g) = g := by
   rw [prod_comm, map_map]; apply map_fst_prod
+  -- ⊢ map (Prod.snd ∘ fun p => (p.snd, p.fst)) (g ×ˢ f) = g
+                           -- 🎉 no goals
 #align filter.map_snd_prod Filter.map_snd_prod
 
 @[simp]
@@ -287,14 +339,21 @@ theorem prod_le_prod {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁
 theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [NeBot g₁] :
     f₁ ×ˢ g₁ = f₂ ×ˢ g₂ ↔ f₁ = f₂ ∧ g₁ = g₂ := by
   refine' ⟨fun h => _, fun h => h.1 ▸ h.2 ▸ rfl⟩
+  -- ⊢ f₁ = f₂ ∧ g₁ = g₂
   have hle : f₁ ≤ f₂ ∧ g₁ ≤ g₂ := prod_le_prod.1 h.le
+  -- ⊢ f₁ = f₂ ∧ g₁ = g₂
   haveI := neBot_of_le hle.1; haveI := neBot_of_le hle.2
+  -- ⊢ f₁ = f₂ ∧ g₁ = g₂
+                              -- ⊢ f₁ = f₂ ∧ g₁ = g₂
   exact ⟨hle.1.antisymm <| (prod_le_prod.1 h.ge).1, hle.2.antisymm <| (prod_le_prod.1 h.ge).2⟩
+  -- 🎉 no goals
 #align filter.prod_inj Filter.prod_inj
 
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by
   rw [prod_comm]; rfl
+  -- ⊢ (∀ᶠ (x : α × β) in map (fun p => (p.snd, p.fst)) (g ×ˢ f), p x) ↔ ∀ᶠ (y : β  …
+                  -- 🎉 no goals
 #align filter.eventually_swap_iff Filter.eventually_swap_iff
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
@@ -324,6 +383,8 @@ theorem map_swap4_prod {f : Filter α} {g : Filter β} {h : Filter γ} {k : Filt
     map (fun p : (α × β) × γ × δ => ((p.1.1, p.2.1), (p.1.2, p.2.2))) ((f ×ˢ g) ×ˢ (h ×ˢ k)) =
       (f ×ˢ h) ×ˢ (g ×ˢ k) :=
   by simp_rw [map_swap4_eq_comap, SProd.sprod, Filter.prod, comap_inf, comap_comap]; ac_rfl
+     -- ⊢ comap ((Prod.fst ∘ Prod.fst) ∘ fun p => ((p.fst.fst, p.snd.fst), p.fst.snd,  …
+                                                                                     -- 🎉 no goals
 #align filter.map_swap4_prod Filter.map_swap4_prod
 
 theorem tendsto_swap4_prod {f : Filter α} {g : Filter β} {h : Filter γ} {k : Filter δ} :
@@ -340,6 +401,7 @@ theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : 
       let ⟨s₁, hs₁, s₂, hs₂, h⟩ := mem_prod_iff.mp hs
       mem_of_superset (prod_mem_prod (image_mem_map hs₁) (image_mem_map hs₂)) <|
         by rwa [prod_image_image_eq, image_subset_iff])
+           -- 🎉 no goals
     ((tendsto_map.comp tendsto_fst).prod_mk (tendsto_map.comp tendsto_snd))
 #align filter.prod_map_map_eq Filter.prod_map_map_eq
 
@@ -352,10 +414,12 @@ theorem prod_map_map_eq' {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ 
 theorem prod_map_left (f : α → β) (F : Filter α) (G : Filter γ) :
     map f F ×ˢ G = map (Prod.map f id) (F ×ˢ G) := by
   rw [← prod_map_map_eq', map_id]
+  -- 🎉 no goals
 
 theorem prod_map_right (f : β → γ) (F : Filter α) (G : Filter β) :
     F ×ˢ map f G = map (Prod.map id f) (F ×ˢ G) := by
   rw [← prod_map_map_eq', map_id]
+  -- 🎉 no goals
 
 theorem le_prod_map_fst_snd {f : Filter (α × β)} : f ≤ map Prod.fst f ×ˢ map Prod.snd f :=
   le_inf le_comap_map le_comap_map
@@ -365,57 +429,76 @@ theorem Tendsto.prod_map {δ : Type*} {f : α → γ} {g : β → δ} {a : Filte
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a ×ˢ b) (c ×ˢ d) := by
   erw [Tendsto, ← prod_map_map_eq]
+  -- ⊢ map f a ×ˢ map g b ≤ c ×ˢ d
   exact Filter.prod_mono hf hg
+  -- 🎉 no goals
 #align filter.tendsto.prod_map Filter.Tendsto.prod_map
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
   simp [Filter.ext_iff, mem_prod_iff, mem_map_seq_iff]
+  -- ⊢ ∀ (s : Set γ), (∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ g ∧ t₁ ×ˢ t₂ ⊆ m ⁻¹' s) ↔ ∃ t, t ∈ …
   intro s
+  -- ⊢ (∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ g ∧ t₁ ×ˢ t₂ ⊆ m ⁻¹' s) ↔ ∃ t, t ∈ g ∧ ∃ x, x ∈ f …
   constructor
+  -- ⊢ (∃ t₁, t₁ ∈ f ∧ ∃ t₂, t₂ ∈ g ∧ t₁ ×ˢ t₂ ⊆ m ⁻¹' s) → ∃ t, t ∈ g ∧ ∃ x, x ∈ f …
   exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩
+  -- ⊢ (∃ t, t ∈ g ∧ ∃ x, x ∈ f ∧ ∀ (x_1 : α), x_1 ∈ x → ∀ (y : β), y ∈ t → m (x_1, …
   exact fun ⟨s, hs, t, ht, h⟩ => ⟨t, ht, s, hs, fun ⟨x, y⟩ ⟨hx, hy⟩ => h x hx y hy⟩
+  -- 🎉 no goals
 #align filter.map_prod Filter.map_prod
 
 theorem prod_eq {f : Filter α} {g : Filter β} : f ×ˢ g = (f.map Prod.mk).seq g := by
   have h := f.map_prod id g
+  -- ⊢ f ×ˢ g = seq (map Prod.mk f) g
   rwa [map_id] at h
+  -- 🎉 no goals
 #align filter.prod_eq Filter.prod_eq
 
 theorem prod_inf_prod {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} :
     (f₁ ×ˢ g₁) ⊓ (f₂ ×ˢ g₂) = (f₁ ⊓ f₂) ×ˢ (g₁ ⊓ g₂) := by
   simp only [SProd.sprod, Filter.prod, comap_inf, inf_comm, inf_assoc, inf_left_comm]
+  -- 🎉 no goals
 #align filter.prod_inf_prod Filter.prod_inf_prod
 
 theorem inf_prod {f₁ f₂ : Filter α} {g : Filter β} : (f₁ ⊓ f₂) ×ˢ g = (f₁ ×ˢ g) ⊓ (f₂ ×ˢ g) := by
   rw [prod_inf_prod, inf_idem]
+  -- 🎉 no goals
 
 theorem prod_inf {f : Filter α} {g₁ g₂ : Filter β} : f ×ˢ (g₁ ⊓ g₂) = (f ×ˢ g₁) ⊓ (f ×ˢ g₂) := by
   rw [prod_inf_prod, inf_idem]
+  -- 🎉 no goals
 
 @[simp]
 theorem prod_principal_principal {s : Set α} {t : Set β} : 𝓟 s ×ˢ 𝓟 t = 𝓟 (s ×ˢ t) := by
   simp only [SProd.sprod, Filter.prod, comap_principal, principal_eq_iff_eq, comap_principal,
     inf_principal]; rfl
+                    -- 🎉 no goals
 #align filter.prod_principal_principal Filter.prod_principal_principal
 
 @[simp]
 theorem pure_prod {a : α} {f : Filter β} : pure a ×ˢ f = map (Prod.mk a) f := by
   rw [prod_eq, map_pure, pure_seq_eq_map]
+  -- 🎉 no goals
 #align filter.pure_prod Filter.pure_prod
 
 theorem map_pure_prod (f : α → β → γ) (a : α) (B : Filter β) :
     map (Function.uncurry f) (pure a ×ˢ B) = map (f a) B := by
   rw [Filter.pure_prod]; rfl
+  -- ⊢ map (Function.uncurry f) (map (Prod.mk a) B) = map (f a) B
+                         -- 🎉 no goals
 #align filter.map_pure_prod Filter.map_pure_prod
 
 @[simp]
 theorem prod_pure {f : Filter α} {b : β} : f ×ˢ pure b = map (fun a => (a, b)) f := by
   rw [prod_eq, seq_pure, map_map]; rfl
+  -- ⊢ map ((fun g => g b) ∘ Prod.mk) f = map (fun a => (a, b)) f
+                                   -- 🎉 no goals
 #align filter.prod_pure Filter.prod_pure
 
 theorem prod_pure_pure {a : α} {b : β} :
     (pure a : Filter α) ×ˢ (pure b : Filter β) = pure (a, b) := by simp
+                                                                   -- 🎉 no goals
 #align filter.prod_pure_pure Filter.prod_pure_pure
 
 theorem prod_eq_bot {f : Filter α} {g : Filter β} : f ×ˢ g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
@@ -431,6 +514,7 @@ theorem prod_eq_bot {f : Filter α} {g : Filter β} : f ×ˢ g = ⊥ ↔ f = ⊥
 
 theorem prod_neBot {f : Filter α} {g : Filter β} : NeBot (f ×ˢ g) ↔ NeBot f ∧ NeBot g := by
   simp only [neBot_iff, Ne, prod_eq_bot, not_or]
+  -- 🎉 no goals
 #align filter.prod_ne_bot Filter.prod_neBot
 
 theorem NeBot.prod {f : Filter α} {g : Filter β} (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) :=
@@ -445,19 +529,26 @@ instance prod_neBot' {f : Filter α} {g : Filter β} [hf : NeBot f] [hg : NeBot 
 theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {z : Filter γ} :
     Tendsto f (x ×ˢ y) z ↔ ∀ W ∈ z, ∃ U ∈ x, ∃ V ∈ y, ∀ x y, x ∈ U → y ∈ V → f (x, y) ∈ W :=
   by simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+     -- 🎉 no goals
 #align filter.tendsto_prod_iff Filter.tendsto_prod_iff
 
 theorem le_prod {f : Filter (α × β)} {g : Filter α} {g' : Filter β} :
     (f ≤ g ×ˢ g') ↔ Tendsto Prod.fst f g ∧ Tendsto Prod.snd f g' := by
   dsimp only [SProd.sprod]
+  -- ⊢ f ≤ Filter.prod g g' ↔ Tendsto Prod.fst f g ∧ Tendsto Prod.snd f g'
   unfold Filter.prod
+  -- ⊢ f ≤ comap Prod.fst g ⊓ comap Prod.snd g' ↔ Tendsto Prod.fst f g ∧ Tendsto Pr …
   simp only [le_inf_iff, ← map_le_iff_le_comap, Tendsto]
+  -- 🎉 no goals
 
 theorem tendsto_prod_iff' {f : Filter α} {g : Filter β} {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
   dsimp only [SProd.sprod]
+  -- ⊢ Tendsto s f (Filter.prod g g') ↔ Tendsto (fun n => (s n).fst) f g ∧ Tendsto  …
   unfold Filter.prod
+  -- ⊢ Tendsto s f (comap Prod.fst g ⊓ comap Prod.snd g') ↔ Tendsto (fun n => (s n) …
   simp only [tendsto_inf, tendsto_comap_iff, (· ∘ ·)]
+  -- 🎉 no goals
 #align filter.tendsto_prod_iff' Filter.tendsto_prod_iff'
 
 end Prod
@@ -477,24 +568,29 @@ protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
 theorem mem_coprod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f.coprod g ↔ (∃ t₁ ∈ f, Prod.fst ⁻¹' t₁ ⊆ s) ∧ ∃ t₂ ∈ g, Prod.snd ⁻¹' t₂ ⊆ s := by
   simp [Filter.coprod]
+  -- 🎉 no goals
 #align filter.mem_coprod_iff Filter.mem_coprod_iff
 
 @[simp]
 theorem bot_coprod (l : Filter β) : (⊥ : Filter α).coprod l = comap Prod.snd l := by
   simp [Filter.coprod]
+  -- 🎉 no goals
 #align filter.bot_coprod Filter.bot_coprod
 
 @[simp]
 theorem coprod_bot (l : Filter α) : l.coprod (⊥ : Filter β) = comap Prod.fst l := by
   simp [Filter.coprod]
+  -- 🎉 no goals
 #align filter.coprod_bot Filter.coprod_bot
 
 theorem bot_coprod_bot : (⊥ : Filter α).coprod (⊥ : Filter β) = ⊥ := by simp
+                                                                        -- 🎉 no goals
 #align filter.bot_coprod_bot Filter.bot_coprod_bot
 
 theorem compl_mem_coprod {s : Set (α × β)} {la : Filter α} {lb : Filter β} :
     sᶜ ∈ la.coprod lb ↔ (Prod.fst '' s)ᶜ ∈ la ∧ (Prod.snd '' s)ᶜ ∈ lb := by
   simp only [Filter.coprod, mem_sup, compl_mem_comap]
+  -- 🎉 no goals
 #align filter.compl_mem_coprod Filter.compl_mem_coprod
 
 @[mono]
@@ -505,6 +601,7 @@ theorem coprod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ �
 
 theorem coprod_neBot_iff : (f.coprod g).NeBot ↔ f.NeBot ∧ Nonempty β ∨ Nonempty α ∧ g.NeBot := by
   simp [Filter.coprod]
+  -- 🎉 no goals
 #align filter.coprod_ne_bot_iff Filter.coprod_neBot_iff
 
 @[instance]
@@ -529,9 +626,15 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
     {f₁ : Filter α₁} {f₂ : Filter α₂} {m₁ : α₁ → β₁} {m₂ : α₂ → β₂} :
     map (Prod.map m₁ m₂) (f₁.coprod f₂) ≤ (map m₁ f₁).coprod (map m₂ f₂) := by
   intro s
+  -- ⊢ s ∈ Filter.coprod (map m₁ f₁) (map m₂ f₂) → s ∈ map (Prod.map m₁ m₂) (Filter …
   simp only [mem_map, mem_coprod_iff]
+  -- ⊢ ((∃ t₁, m₁ ⁻¹' t₁ ∈ f₁ ∧ Prod.fst ⁻¹' t₁ ⊆ s) ∧ ∃ t₂, m₂ ⁻¹' t₂ ∈ f₂ ∧ Prod. …
   rintro ⟨⟨u₁, hu₁, h₁⟩, u₂, hu₂, h₂⟩
+  -- ⊢ (∃ t₁, t₁ ∈ f₁ ∧ Prod.fst ⁻¹' t₁ ⊆ Prod.map m₁ m₂ ⁻¹' s) ∧ ∃ t₂, t₂ ∈ f₂ ∧ P …
   refine' ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ _⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ _⟩⟩ <;> convert hx
+  -- ⊢ Prod.map m₁ m₂ x✝ ∈ Prod.fst ⁻¹' u₁
+                                                                                       -- 🎉 no goals
+                                                                                       -- 🎉 no goals
 #align filter.map_prod_map_coprod_le Filter.map_prod_map_coprod_le
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
@@ -555,14 +658,23 @@ theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type*} (a :
     map (Prod.map (fun _ : α => b) id) ((𝓟 {a}).coprod (𝓟 {i})) =
       𝓟 (({b} : Set β) ×ˢ (univ : Set ι)) := by
   rw [principal_coprod_principal, map_principal]
+  -- ⊢ 𝓟 (Prod.map (fun x => b) id '' ({a}ᶜ ×ˢ {i}ᶜ)ᶜ) = 𝓟 ({b} ×ˢ univ)
   congr
+  -- ⊢ Prod.map (fun x => b) id '' ({a}ᶜ ×ˢ {i}ᶜ)ᶜ = {b} ×ˢ univ
   ext ⟨b', i'⟩
+  -- ⊢ (b', i') ∈ Prod.map (fun x => b) id '' ({a}ᶜ ×ˢ {i}ᶜ)ᶜ ↔ (b', i') ∈ {b} ×ˢ u …
   constructor
+  -- ⊢ (b', i') ∈ Prod.map (fun x => b) id '' ({a}ᶜ ×ˢ {i}ᶜ)ᶜ → (b', i') ∈ {b} ×ˢ u …
   · rintro ⟨⟨a'', i''⟩, _, h₂, h₃⟩
+    -- ⊢ ((fun x => b) a'', id i'') ∈ {b} ×ˢ univ
     simp
+    -- 🎉 no goals
   · rintro ⟨h₁, _⟩
+    -- ⊢ (b', i') ∈ Prod.map (fun x => b) id '' ({a}ᶜ ×ˢ {i}ᶜ)ᶜ
     use (a, i')
+    -- ⊢ (a, i') ∈ ({a}ᶜ ×ˢ {i}ᶜ)ᶜ ∧ Prod.map (fun x => b) id (a, i') = (b', i')
     simpa using h₁.symm
+    -- 🎉 no goals
 #align filter.map_prod_map_const_id_principal_coprod_principal Filter.map_prod_map_const_id_principal_coprod_principal
 
 theorem Tendsto.prod_map_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}

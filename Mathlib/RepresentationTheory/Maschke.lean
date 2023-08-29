@@ -104,8 +104,11 @@ lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.con
 def sumOfConjugatesEquivariant : W →ₗ[MonoidAlgebra k G] V :=
   MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
     simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
+    -- ⊢ ∑ x : G, MonoidAlgebra.single x⁻¹ 1 • ↑π (MonoidAlgebra.single x 1 • MonoidA …
     refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
+    -- ⊢ MonoidAlgebra.single i⁻¹ 1 • ↑π (MonoidAlgebra.single i 1 • MonoidAlgebra.si …
     simp only [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]
+    -- 🎉 no goals
 #align linear_map.sum_of_conjugates_equivariant LinearMap.sumOfConjugatesEquivariant
 
 theorem sumOfConjugatesEquivariant_apply (v : W) :
@@ -126,10 +129,13 @@ def equivariantProjection : W →ₗ[MonoidAlgebra k G] V :=
 theorem equivariantProjection_apply (v : W) :
     π.equivariantProjection G v = ⅟(Fintype.card G : k) • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply]
+  -- 🎉 no goals
 
 theorem equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v := by
   rw [equivariantProjection_apply]
+  -- ⊢ ⅟↑(Fintype.card G) • ∑ g : G, ↑(conjugate π g) (↑i v) = v
   simp only [conjugate_i π i h]
+  -- ⊢ ⅟↑(Fintype.card G) • ∑ x : G, v = v
   rw [Finset.sum_const, Finset.card_univ, nsmul_eq_smul_cast k, smul_smul,
     Invertible.invOf_mul_self, one_smul]
 #align linear_map.equivariant_projection_condition LinearMap.equivariantProjection_condition
@@ -156,7 +162,9 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
   refine ⟨φ.equivariantProjection G, FunLike.ext _ _ ?_⟩
+  -- ⊢ ∀ (x : V), ↑(LinearMap.comp (LinearMap.equivariantProjection G φ) f) x = ↑Li …
   exact φ.equivariantProjection_condition G _ <| FunLike.congr_fun hφ
+  -- 🎉 no goals
 #align monoid_algebra.exists_left_inverse_of_injective MonoidAlgebra.exists_leftInverse_of_injective
 
 namespace Submodule
@@ -164,9 +172,13 @@ namespace Submodule
 theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
     ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
   have : IsScalarTower k (MonoidAlgebra k G) p := p.isScalarTower'
+  -- ⊢ ∃ q, IsCompl p q
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
+  -- ⊢ ∃ q, IsCompl p q
   refine ⟨LinearMap.ker f, LinearMap.isCompl_of_proj ?_⟩
+  -- ⊢ ∀ (x : { x // x ∈ p }), ↑f ↑x = x
   exact FunLike.congr_fun hf
+  -- 🎉 no goals
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
 /-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/

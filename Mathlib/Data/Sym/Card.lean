@@ -69,7 +69,9 @@ protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } �
   toFun s := s.1.erase 0 s.2
   invFun s := ⟨cons 0 s, mem_cons_self 0 s⟩
   left_inv s := by simp
+                   -- 🎉 no goals
   right_inv s := by simp
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align sym.E1 Sym.e1
 
@@ -84,25 +86,37 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
       (mt mem_map.1) (not_exists.2 fun t => not_and.2 fun _ => Fin.succAbove_ne _ t)⟩
   left_inv s := by
     ext1
+    -- ⊢ ↑((fun s => { val := map (Fin.succAbove 0) s, property := (_ : ¬0 ∈ map (Fin …
     simp only [map_map]
+    -- ⊢ map (Fin.succAbove 0 ∘ Fin.predAbove 0) ↑s = ↑s
     refine (Sym.map_congr fun v hv ↦ ?_).trans (map_id' _)
+    -- ⊢ (Fin.succAbove 0 ∘ Fin.predAbove 0) v = v
     exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
+    -- 🎉 no goals
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align sym.E2 Sym.e2
 
 -- porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
+               -- 🎉 no goals
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
+                   -- ⊢ Fintype.card (Sym (Fin 0) (k + 1)) = 0
+                                               -- 🎉 no goals
   | 1, k + 1 => by simp
+                   -- 🎉 no goals
   | n + 2, k + 1 => by
     rw [multichoose_succ_succ, ← card_sym_fin_eq_multichoose (n + 1) (k + 1),
       ← card_sym_fin_eq_multichoose (n + 2) k, add_comm (Fintype.card _), ← card_sum]
     refine Fintype.card_congr (Equiv.symm ?_)
+    -- ⊢ Sym (Fin (n + 2)) k ⊕ Sym (Fin (n + 1)) (k + 1) ≃ Sym (Fin (n + 2)) (k + 1)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
+    -- ⊢ { s // 0 ∈ s } ⊕ { s // ¬0 ∈ s } ≃ Sym (Fin (n + 2)) (k + 1)
     apply Equiv.sumCompl
+    -- 🎉 no goals
   termination_by card_sym_fin_eq_multichoose n k => n + k
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
@@ -110,7 +124,9 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
+  -- ⊢ Fintype.card (Sym α k) = Fintype.card (Sym (Fin (Fintype.card α)) k)
   exact card_congr (equivCongr (equivFin α))
+  -- 🎉 no goals
 #align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
@@ -118,6 +134,7 @@ theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sy
 theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
+  -- 🎉 no goals
 #align sym.card_sym_eq_choose Sym.card_sym_eq_choose
 
 end Sym
@@ -131,23 +148,35 @@ variable [DecidableEq α]
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
 theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card := by
   rw [card_image_of_injOn, diag_card]
+  -- ⊢ Set.InjOn Quotient.mk' ↑(Finset.diag s)
   rintro ⟨x₀, x₁⟩ hx _ _ h
+  -- ⊢ (x₀, x₁) = x₂✝
   cases Quotient.eq'.1 h
+  -- ⊢ (x₀, x₁) = (x₀, x₁)
   · rfl
+    -- 🎉 no goals
   · simp only [mem_coe, mem_diag] at hx
+    -- ⊢ (x₀, x₁) = (x₁, x₀)
     rw [hx.2]
+    -- 🎉 no goals
 #align sym2.card_image_diag Sym2.card_image_diag
 
 theorem two_mul_card_image_offDiag (s : Finset α) :
     2 * (s.offDiag.image Quotient.mk').card = s.offDiag.card := by
   rw [card_eq_sum_card_image (Quotient.mk' : α × α → _), sum_const_nat (Quotient.ind' _), mul_comm]
+  -- ⊢ ∀ (a : α × α), Quotient.mk'' a ∈ image Quotient.mk' (offDiag s) → Finset.car …
   rintro ⟨x, y⟩ hxy
+  -- ⊢ Finset.card (filter (fun x_1 => Quotient.mk' x_1 = Quotient.mk'' (x, y)) (of …
   simp_rw [mem_image, mem_offDiag] at hxy
+  -- ⊢ Finset.card (filter (fun x_1 => Quotient.mk' x_1 = Quotient.mk'' (x, y)) (of …
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
+  -- ⊢ Finset.card (filter (fun x_1 => Quotient.mk' x_1 = Quotient.mk'' (x, y)) (of …
   replace h := Quotient.eq.1 h
+  -- ⊢ Finset.card (filter (fun x_1 => Quotient.mk' x_1 = Quotient.mk'' (x, y)) (of …
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
     cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
+  -- ⊢ Finset.card (filter (fun x_1 => Quotient.mk' x_1 = Quotient.mk'' (x, y)) (of …
   have : (s.offDiag.filter fun z => ⟦z⟧ = ⟦(x, y)⟧) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩
     rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
@@ -155,9 +184,13 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
     -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
   dsimp [Quotient.mk', Quotient.mk''_eq_mk] -- Porting note: Added `dsimp`
+  -- ⊢ Finset.card (filter (fun x_1 => Quotient.mk (Rel.setoid α) x_1 = Quotient.mk …
   rw [this, card_insert_of_not_mem, card_singleton]
+  -- ⊢ ¬(x, y) ∈ {(y, x)}
   simp only [not_and, Prod.mk.inj_iff, mem_singleton]
+  -- ⊢ x = y → ¬y = x
   exact fun _ => hxy'
+  -- 🎉 no goals
 #align sym2.two_mul_card_image_off_diag Sym2.two_mul_card_image_offDiag
 
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.offDiag.card / 2`.
@@ -171,23 +204,37 @@ theorem card_image_offDiag (s : Finset α) :
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
+  -- ⊢ Fintype.card { a // IsDiag a } = Finset.card (image Quotient.mk' (Finset.dia …
   simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
+  -- ⊢ Fintype.card { a // IsDiag a } = Finset.card (image (fun a => Quotient.mk''  …
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_isDiag]
+  -- ⊢ ∀ (x : Sym2 α), x ∈ filter IsDiag (image Quotient.mk'' (univ ×ˢ univ)) ↔ IsD …
   rintro x
+  -- ⊢ x ∈ filter IsDiag (image Quotient.mk'' (univ ×ˢ univ)) ↔ IsDiag x
   rw [mem_filter, univ_product_univ, mem_image]
+  -- ⊢ (∃ a, a ∈ univ ∧ Quotient.mk'' a = x) ∧ IsDiag x ↔ IsDiag x
   obtain ⟨a, ha⟩ := Quotient.exists_rep x
+  -- ⊢ (∃ a, a ∈ univ ∧ Quotient.mk'' a = x) ∧ IsDiag x ↔ IsDiag x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
+  -- 🎉 no goals
 #align sym2.card_subtype_diag Sym2.card_subtype_diag
 
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
   convert card_image_offDiag (univ : Finset α)
+  -- ⊢ Fintype.card { a // ¬IsDiag a } = Finset.card (image Quotient.mk' (offDiag u …
   simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
+  -- ⊢ Fintype.card { a // ¬IsDiag a } = Finset.card (image (fun a => Quotient.mk'' …
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_not_isDiag]
+  -- ⊢ ∀ (x : Sym2 α), x ∈ filter (fun a => ¬IsDiag a) (image Quotient.mk'' (univ × …
   rintro x
+  -- ⊢ x ∈ filter (fun a => ¬IsDiag a) (image Quotient.mk'' (univ ×ˢ univ)) ↔ ¬IsDi …
   rw [mem_filter, univ_product_univ, mem_image]
+  -- ⊢ (∃ a, a ∈ univ ∧ Quotient.mk'' a = x) ∧ ¬IsDiag x ↔ ¬IsDiag x
   obtain ⟨a, ha⟩ := Quotient.exists_rep x
+  -- ⊢ (∃ a, a ∈ univ ∧ Quotient.mk'' a = x) ∧ ¬IsDiag x ↔ ¬IsDiag x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
+  -- 🎉 no goals
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
@@ -196,13 +243,21 @@ theorem _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card
     Sym2.card_image_offDiag, Nat.choose_two_right, add_comm, ← Nat.triangle_succ, Nat.succ_sub_one,
     mul_comm]
   rw [disjoint_left]
+  -- ⊢ ∀ ⦃a : Quotient (Rel.setoid α)⦄, a ∈ image Quotient.mk' (Finset.diag s) → ¬a …
   rintro m ha hb
+  -- ⊢ False
   rw [mem_image] at ha hb
+  -- ⊢ False
   obtain ⟨⟨a, ha, rfl⟩, ⟨b, hb, hab⟩⟩ := ha, hb
+  -- ⊢ False
   refine' not_isDiag_mk'_of_mem_offDiag hb _
+  -- ⊢ IsDiag (Quotient.mk (Rel.setoid α) b)
   dsimp [Quotient.mk'] at hab -- Porting note: Added `dsimp`
+  -- ⊢ IsDiag (Quotient.mk (Rel.setoid α) b)
   rw [hab]
+  -- ⊢ IsDiag (Quotient.mk (Rel.setoid α) a)
   exact isDiag_mk'_of_mem_diag ha
+  -- 🎉 no goals
 #align finset.card_sym2 Finset.card_sym2
 
 /-- Type **stars and bars** for the case `n = 2`. -/

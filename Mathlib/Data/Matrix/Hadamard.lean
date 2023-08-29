@@ -118,12 +118,20 @@ variable (M : Matrix n n α)
 
 theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
   ext i j
+  -- ⊢ (M ⊙ 1) i j = diagonal (fun i => M i i) i j
   by_cases h: i = j <;> simp [h]
+  -- ⊢ (M ⊙ 1) i j = diagonal (fun i => M i i) i j
+                        -- 🎉 no goals
+                        -- 🎉 no goals
 #align matrix.hadamard_one Matrix.hadamard_one
 
 theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
   ext i j
+  -- ⊢ (1 ⊙ M) i j = diagonal (fun i => M i i) i j
   by_cases h : i = j <;> simp [h]
+  -- ⊢ (1 ⊙ M) i j = diagonal (fun i => M i i) i j
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align matrix.one_hadamard Matrix.one_hadamard
 
 end One
@@ -152,7 +160,9 @@ theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * B�
 theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α) (w : n → α) :
     dotProduct (vecMul v (A ⊙ B)) w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
   rw [← sum_hadamard_eq, Finset.sum_comm]
+  -- ⊢ vecMul v (A ⊙ B) ⬝ᵥ w = ∑ y : n, ∑ x : m, ((diagonal v * A) ⊙ (B * diagonal  …
   simp [dotProduct, vecMul, Finset.sum_mul, mul_assoc]
+  -- 🎉 no goals
 #align matrix.dot_product_vec_mul_hadamard Matrix.dotProduct_vecMul_hadamard
 
 end trace

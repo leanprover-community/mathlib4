@@ -42,6 +42,7 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
   { inferInstanceAs (Group (IsUnit.submonoid M)) with
     mul_comm := fun a b ↦ by convert mul_comm a b }
+                             -- 🎉 no goals
 
 @[to_additive]
 theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
@@ -62,14 +63,18 @@ def leftInv : Submonoid M where
   one_mem' := ⟨1, mul_one 1⟩
   mul_mem' := fun {a} _b ⟨a', ha⟩ ⟨b', hb⟩ ↦
     ⟨b' * a', by simp only [coe_mul, ← mul_assoc, mul_assoc a, hb, mul_one, ha]⟩
+                 -- 🎉 no goals
 #align submonoid.left_inv Submonoid.leftInv
 #align add_submonoid.left_neg AddSubmonoid.leftNeg
 
 @[to_additive]
 theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rintro x ⟨⟨y, z, h₁⟩, h₂ : x * y = 1⟩
+  -- ⊢ x ∈ S
   convert z.prop
+  -- ⊢ x = ↑z
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
+  -- 🎉 no goals
 #align submonoid.left_inv_left_inv_le Submonoid.leftInv_leftInv_le
 #align add_submonoid.left_neg_left_neg_le AddSubmonoid.leftNeg_leftNeg_le
 
@@ -82,12 +87,16 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 @[to_additive]
 theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv = S := by
   refine' le_antisymm S.leftInv_leftInv_le _
+  -- ⊢ S ≤ leftInv (leftInv S)
   intro x hx
+  -- ⊢ x ∈ leftInv (leftInv S)
   have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) := by
     rw [inv_inv (hS hx).unit]
     rfl
   rw [this]
+  -- ⊢ ↑(IsUnit.unit (_ : x ∈ IsUnit.submonoid M))⁻¹⁻¹ ∈ leftInv (leftInv S)
   exact S.leftInv.unit_mem_leftInv _ (S.unit_mem_leftInv _ hx)
+  -- 🎉 no goals
 #align submonoid.left_inv_left_inv_eq Submonoid.leftInv_leftInv_eq
 #align add_submonoid.left_neg_left_neg_eq AddSubmonoid.leftNeg_leftNeg_eq
 
@@ -121,6 +130,7 @@ variable [CommMonoid M] (S : Submonoid M)
 @[to_additive (attr := simp)]
 theorem fromLeftInv_mul (x : S.leftInv) : (S.fromLeftInv x : M) * x = 1 := by
   rw [mul_comm, mul_fromLeftInv]
+  -- 🎉 no goals
 #align submonoid.from_left_inv_mul Submonoid.fromLeftInv_mul
 #align add_submonoid.from_left_neg_add AddSubmonoid.fromLeftNeg_add
 
@@ -133,6 +143,7 @@ theorem leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx�
 @[to_additive]
 theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) : (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 :=
   by rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
+     -- 🎉 no goals
 #align submonoid.from_left_inv_eq_iff Submonoid.fromLeftInv_eq_iff
 #align add_submonoid.from_left_neg_eq_iff AddSubmonoid.fromLeftNeg_eq_iff
 
@@ -162,18 +173,30 @@ noncomputable def leftInvEquiv : S.leftInv ≃* S :=
   { S.fromCommLeftInv with
     invFun := fun x ↦ by
       choose x' hx using hS x.prop
+      -- ⊢ { x // x ∈ leftInv S }
       exact ⟨x'.inv, x, hx ▸ x'.inv_val⟩
+      -- 🎉 no goals
     left_inv := fun x ↦
       Subtype.eq <| by
         dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
+        -- ⊢ (Classical.choose (_ : ↑(OneHom.toFun (↑(fromCommLeftInv S)) x) ∈ IsUnit.sub …
+                    -- ⊢ (Classical.choose h).inv = ↑x
+                                         -- ⊢ (Classical.choose h).inv * ↑(Exists.choose h) = ↑x * ↑(Exists.choose h)
         conv => rhs; rw [h.choose_spec]
+        -- ⊢ (Classical.choose h).inv * ↑(Exists.choose h) = ↑x * ↑(OneHom.toFun (↑(fromC …
         exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
+        -- 🎉 no goals
     right_inv := fun x ↦ by
       dsimp only [fromCommLeftInv]
+      -- ⊢ fromLeftInv S { val := (Classical.choose (_ : ↑x ∈ IsUnit.submonoid M)).inv, …
       ext
+      -- ⊢ ↑(fromLeftInv S { val := (Classical.choose (_ : ↑x ∈ IsUnit.submonoid M)).in …
       rw [fromLeftInv_eq_iff]
+      -- ⊢ ↑{ val := (Classical.choose (_ : ↑x ∈ IsUnit.submonoid M)).inv, property :=  …
       convert (hS x.prop).choose.inv_val
+      -- ⊢ ↑x = ↑(Exists.choose (_ : ↑x ∈ IsUnit.submonoid M))
       exact (hS x.prop).choose_spec.symm }
+      -- 🎉 no goals
 #align submonoid.left_inv_equiv Submonoid.leftInvEquiv
 #align add_submonoid.left_neg_equiv AddSubmonoid.leftNegEquiv
 
@@ -193,26 +216,32 @@ theorem leftInvEquiv_symm_fromLeftInv (x : S.leftInv) :
 @[to_additive]
 theorem leftInvEquiv_mul (x : S.leftInv) : (S.leftInvEquiv hS x : M) * x = 1 := by
   simpa only [leftInvEquiv_apply, fromCommLeftInv] using fromLeftInv_mul S x
+  -- 🎉 no goals
 #align submonoid.left_inv_equiv_mul Submonoid.leftInvEquiv_mul
 #align add_submonoid.left_neg_equiv_add AddSubmonoid.leftNegEquiv_add
 
 @[to_additive]
 theorem mul_leftInvEquiv (x : S.leftInv) : (x : M) * S.leftInvEquiv hS x = 1 := by
   simp only [leftInvEquiv_apply, fromCommLeftInv, mul_fromLeftInv]
+  -- 🎉 no goals
 #align submonoid.mul_left_inv_equiv Submonoid.mul_leftInvEquiv
 #align add_submonoid.add_left_neg_equiv AddSubmonoid.add_leftNegEquiv
 
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_mul (x : S) : ((S.leftInvEquiv hS).symm x : M) * x = 1 := by
   convert S.mul_leftInvEquiv hS ((S.leftInvEquiv hS).symm x)
+  -- ⊢ x = ↑(leftInvEquiv S hS) (↑(MulEquiv.symm (leftInvEquiv S hS)) x)
   simp
+  -- 🎉 no goals
 #align submonoid.left_inv_equiv_symm_mul Submonoid.leftInvEquiv_symm_mul
 #align add_submonoid.left_neg_equiv_symm_add AddSubmonoid.leftNegEquiv_symm_add
 
 @[to_additive (attr := simp)]
 theorem mul_leftInvEquiv_symm (x : S) : (x : M) * (S.leftInvEquiv hS).symm x = 1 := by
   convert S.leftInvEquiv_mul hS ((S.leftInvEquiv hS).symm x)
+  -- ⊢ x = ↑(leftInvEquiv S hS) (↑(MulEquiv.symm (leftInvEquiv S hS)) x)
   simp
+  -- 🎉 no goals
 #align submonoid.mul_left_inv_equiv_symm Submonoid.mul_leftInvEquiv_symm
 #align add_submonoid.add_left_neg_equiv_symm AddSubmonoid.add_leftNegEquiv_symm
 
@@ -236,6 +265,7 @@ theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=
 @[to_additive (attr := simp)]
 theorem fromLeftInv_eq_inv (x : S.leftInv) : (S.fromLeftInv x : M) = (x : M)⁻¹ := by
   rw [← mul_right_inj (x : M), mul_right_inv, mul_fromLeftInv]
+  -- 🎉 no goals
 #align submonoid.from_left_inv_eq_inv Submonoid.fromLeftInv_eq_inv
 #align add_submonoid.from_left_neg_eq_neg AddSubmonoid.fromLeftNeg_eq_neg
 
@@ -248,6 +278,7 @@ variable [CommGroup M] (S : Submonoid M) (hS : S ≤ IsUnit.submonoid M)
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_eq_inv (x : S) : ((S.leftInvEquiv hS).symm x : M) = (x : M)⁻¹ := by
   rw [← mul_right_inj (x : M), mul_right_inv, mul_leftInvEquiv_symm]
+  -- 🎉 no goals
 #align submonoid.left_inv_equiv_symm_eq_inv Submonoid.leftInvEquiv_symm_eq_inv
 #align add_submonoid.left_neg_equiv_symm_eq_neg AddSubmonoid.leftNegEquiv_symm_eq_neg
 

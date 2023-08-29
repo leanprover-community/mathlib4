@@ -68,6 +68,9 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 @[ext]
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
   cases f; cases g; congr
+  -- ⊢ { seq := seq✝, mono' := mono'✝, le' := le'✝ } = g
+           -- ⊢ { seq := seq✝¹, mono' := mono'✝¹, le' := le'✝¹ } = { seq := seq✝, mono' := m …
+                    -- 🎉 no goals
 #align measure_theory.filtration.ext MeasureTheory.Filtration.ext
 
 variable (ι)
@@ -125,18 +128,30 @@ instance : SupSet (Filtration ι m) :=
     { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
       mono' := fun i j hij => by
         refine' sSup_le fun m' hm' => _
+        -- ⊢ m' ≤ (fun i => sSup ((fun f => ↑f i) '' s)) j
         rw [Set.mem_image] at hm'
+        -- ⊢ m' ≤ (fun i => sSup ((fun f => ↑f i) '' s)) j
         obtain ⟨f, hf_mem, hfm'⟩ := hm'
+        -- ⊢ m' ≤ (fun i => sSup ((fun f => ↑f i) '' s)) j
         rw [← hfm']
+        -- ⊢ ↑f i ≤ (fun i => sSup ((fun f => ↑f i) '' s)) j
         refine' (f.mono hij).trans _
+        -- ⊢ ↑f j ≤ (fun i => sSup ((fun f => ↑f i) '' s)) j
         have hfj_mem : f j ∈ (fun g : Filtration ι m => g j) '' s := ⟨f, hf_mem, rfl⟩
+        -- ⊢ ↑f j ≤ (fun i => sSup ((fun f => ↑f i) '' s)) j
         exact le_sSup hfj_mem
+        -- 🎉 no goals
       le' := fun i => by
         refine' sSup_le fun m' hm' => _
+        -- ⊢ m' ≤ m
         rw [Set.mem_image] at hm'
+        -- ⊢ m' ≤ m
         obtain ⟨f, _, hfm'⟩ := hm'
+        -- ⊢ m' ≤ m
         rw [← hfm']
+        -- ⊢ ↑f i ≤ m
         exact f.le i }⟩
+        -- 🎉 no goals
 
 theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
     sSup s i = sSup ((fun f : Filtration ι m => f i) '' s) :=
@@ -148,18 +163,30 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
+        -- ⊢ (fun i => if Set.Nonempty s then sInf ((fun f => ↑f i) '' s) else m) i ≤ (fu …
         swap; · simp only [h_nonempty, Set.nonempty_image_iff, if_false, le_refl]
+        -- ⊢ (fun i => if Set.Nonempty s then sInf ((fun f => ↑f i) '' s) else m) i ≤ (fu …
+                -- 🎉 no goals
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine' fun f hf_mem => le_trans _ (f.mono hij)
+        -- ⊢ sInf ((fun f => ↑f i) '' s) ≤ ↑f i
         have hfi_mem : f i ∈ (fun g : Filtration ι m => g i) '' s := ⟨f, hf_mem, rfl⟩
+        -- ⊢ sInf ((fun f => ↑f i) '' s) ≤ ↑f i
         exact sInf_le hfi_mem
+        -- 🎉 no goals
       le' := fun i => by
         by_cases h_nonempty : Set.Nonempty s
+        -- ⊢ (fun i => if Set.Nonempty s then sInf ((fun f => ↑f i) '' s) else m) i ≤ m
         swap; · simp only [h_nonempty, if_false, le_refl]
+        -- ⊢ (fun i => if Set.Nonempty s then sInf ((fun f => ↑f i) '' s) else m) i ≤ m
+                -- 🎉 no goals
         simp only [h_nonempty, if_true]
+        -- ⊢ sInf ((fun f => ↑f i) '' s) ≤ m
         obtain ⟨f, hf_mem⟩ := h_nonempty
+        -- ⊢ sInf ((fun f => ↑f i) '' s) ≤ m
         exact le_trans (sInf_le ⟨f, hf_mem, rfl⟩) (f.le i) }⟩
+        -- 🎉 no goals
 
 theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
     sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
@@ -184,19 +211,30 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   sSup_le s f h_forall i :=
     sSup_le fun m' hm' => by
       obtain ⟨g, hg_mem, hfm'⟩ := hm'
+      -- ⊢ m' ≤ ↑f i
       rw [← hfm']
+      -- ⊢ (fun f => ↑f i) g ≤ ↑f i
       exact h_forall g hg_mem i
+      -- 🎉 no goals
   sInf := sInf
   sInf_le s f hf_mem i := by
     have hs : s.Nonempty := ⟨f, hf_mem⟩
+    -- ⊢ ↑(sInf s) i ≤ ↑f i
     simp only [sInf_def, hs, if_true]
+    -- ⊢ sInf ((fun f => ↑f i) '' s) ≤ ↑f i
     exact sInf_le ⟨f, hf_mem, rfl⟩
+    -- 🎉 no goals
   le_sInf s f h_forall i := by
     by_cases hs : s.Nonempty
+    -- ⊢ ↑f i ≤ ↑(sInf s) i
     swap; · simp only [sInf_def, hs, if_false]; exact f.le i
+    -- ⊢ ↑f i ≤ ↑(sInf s) i
+            -- ⊢ ↑f i ≤ m
+                                                -- 🎉 no goals
     simp only [sInf_def, hs, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂]
     exact fun g hg_mem => h_forall g hg_mem i
+    -- 🎉 no goals
   top := ⊤
   bot := ⊥
   le_top f i := f.le' i
@@ -223,6 +261,7 @@ instance sigmaFinite_of_sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f
 instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω)
     (f : Filtration ι m) [IsFiniteMeasure μ] : SigmaFiniteFiltration μ f :=
   ⟨fun n => by infer_instance⟩
+               -- 🎉 no goals
 #align measure_theory.is_finite_measure.sigma_finite_filtration MeasureTheory.IsFiniteMeasure.sigmaFiniteFiltration
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
@@ -270,8 +309,11 @@ def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Fil
   mono' i j hij := biSup_mono fun k => ge_trans hij
   le' i := by
     refine' iSup₂_le _
+    -- ⊢ ∀ (i_1 : ι), i_1 ≤ i → MeasurableSpace.comap (u i_1) mβ ≤ m
     rintro j _ s ⟨t, ht, rfl⟩
+    -- ⊢ MeasurableSet (u j ⁻¹' t)
     exact (hum j).measurable ht
+    -- 🎉 no goals
 #align measure_theory.filtration.natural MeasureTheory.Filtration.natural
 
 section
@@ -283,21 +325,33 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
   simp [natural, filtrationOfSet, measurableSpace_iSup_eq]
+  -- ⊢ (fun i => MeasurableSpace.generateFrom {t | ∃ j, j ≤ i ∧ s j = t}) = fun i = …
   ext1 i
+  -- ⊢ MeasurableSpace.generateFrom {t | ∃ j, j ≤ i ∧ s j = t} = MeasurableSpace.ge …
   refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
+  -- ⊢ ∀ (t : Set Ω), t ∈ {t | ∃ j, j ≤ i ∧ s j = t} → MeasurableSet t
   · rintro _ ⟨j, hij, rfl⟩
+    -- ⊢ MeasurableSet (s j)
     refine' measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, _⟩⟩
+    -- ⊢ MeasurableSet (s j)
     rw [comap_eq_generateFrom]
+    -- ⊢ MeasurableSet (s j)
     refine' measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, _⟩
+    -- ⊢ (Set.indicator (s j) fun x => 1) ⁻¹' {1} = s j
     ext x
+    -- ⊢ x ∈ (Set.indicator (s j) fun x => 1) ⁻¹' {1} ↔ x ∈ s j
     simp [Set.indicator_const_preimage_eq_union]
+    -- 🎉 no goals
   · rintro t ⟨n, ht⟩
+    -- ⊢ MeasurableSet t
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
     refine' generateFrom_le _
+    -- ⊢ ∀ (t : Set Ω), t ∈ {t | n ≤ i ∧ MeasurableSet t} → MeasurableSet t
     rintro t ⟨hn, u, _, hu'⟩
+    -- ⊢ MeasurableSet t
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
     pick_goal 4; rw [Set.mem_singleton_iff] at heq
     all_goals rw [heq] at hu'; rw [← hu']
@@ -327,8 +381,11 @@ noncomputable def limitProcess (f : ι → Ω → E) (ℱ : Filtration ι m)
 
 theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limitProcess f ℱ μ) := by
   rw [limitProcess]
+  -- ⊢ StronglyMeasurable (if h : ∃ g, StronglyMeasurable g ∧ ∀ᵐ (ω : Ω) ∂μ, Tendst …
   split_ifs with h
+  -- ⊢ StronglyMeasurable (Classical.choose h)
   exacts [(Classical.choose_spec h).1, stronglyMeasurable_zero]
+  -- 🎉 no goals
 #align measure_theory.filtration.strongly_measurable_limit_process MeasureTheory.Filtration.stronglyMeasurable_limitProcess
 
 theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess f ℱ μ) :=
@@ -339,14 +396,19 @@ theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
     (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]
+  -- ⊢ Memℒp (if h : ∃ g, StronglyMeasurable g ∧ ∀ᵐ (ω : Ω) ∂μ, Tendsto (fun n => f …
   split_ifs with h
+  -- ⊢ Memℒp (Classical.choose h) p
   · refine' ⟨StronglyMeasurable.aestronglyMeasurable
       ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
       lt_of_le_of_lt (Lp.snorm_lim_le_liminf_snorm hfm _ (Classical.choose_spec h).2)
         (lt_of_le_of_lt _ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
+    -- ⊢ sSup {a | ∃ a_1, ∀ (b : ℕ), b ≥ a_1 → a ≤ snorm (f b) p μ} ≤ ↑R
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
+    -- 🎉 no goals
   · exact zero_memℒp
+    -- 🎉 no goals
 #align measure_theory.filtration.mem_ℒp_limit_process_of_snorm_bdd MeasureTheory.Filtration.memℒp_limitProcess_of_snorm_bdd
 
 end Limit

@@ -27,9 +27,13 @@ def kernelCone : KernelFork f :=
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
     (fun s => (by exact Fork.ι s : _ →+ G).codRestrict _ <| fun c => f.mem_ker.mpr <|
+                  -- 🎉 no goals
       by exact FunLike.congr_fun s.condition c)
+         -- 🎉 no goals
     (fun _ => by rfl)
+                 -- 🎉 no goals
     (fun _ _ h => ext fun x => Subtype.ext_iff_val.mpr <| by exact FunLike.congr_fun h x)
+                                                             -- 🎉 no goals
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
@@ -43,5 +47,6 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
       (cancel_epi _).mp <| by simpa only [parallelPair_obj_one] using h)
+                              -- 🎉 no goals
 
 end AddCommGroupCat

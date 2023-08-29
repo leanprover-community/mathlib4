@@ -45,6 +45,8 @@ def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   one := M.η
   mul := M.μ
   mul_assoc := by ext; simp [M.assoc]
+                  -- ⊢ NatTrans.app (MonoidalCategory.tensorHom (μ M) (𝟙 M.toFunctor) ≫ μ M) x✝ = N …
+                       -- 🎉 no goals
 #align category_theory.Monad.to_Mon CategoryTheory.Monad.toMon
 
 variable (C)
@@ -67,12 +69,19 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   left_unit' := fun X => by
     -- Porting note: now using `erw`
     erw [← NatTrans.id_hcomp_app M.one, ← NatTrans.comp_app, M.mul_one]
+    -- ⊢ NatTrans.app (MonoidalCategory.rightUnitor M.X).hom X = 𝟙 ((𝟭 C).obj (M.X.ob …
     rfl
+    -- 🎉 no goals
   right_unit' := fun X => by
     -- Porting note: now using `erw`
     erw [← NatTrans.hcomp_id_app M.one, ← NatTrans.comp_app, M.one_mul]
+    -- ⊢ NatTrans.app (MonoidalCategory.leftUnitor M.X).hom X = 𝟙 (M.X.obj ((𝟭 C).obj …
+    -- ⊢ NatTrans.app ((M.mul ◫ 𝟙 M.X) ≫ M.mul) X = NatTrans.app M.mul (M.X.obj X) ≫  …
     rfl
+    -- 🎉 no goals
+    -- ⊢ NatTrans.app ((MonoidalCategory.associator M.X M.X M.X).hom ≫ MonoidalCatego …
   assoc' := fun X => by
+    -- 🎉 no goals
     rw [← NatTrans.hcomp_id_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
     erw [M.mul_assoc]
@@ -92,12 +101,18 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
     { f.hom with
       app_η := by
         intro X
+        -- ⊢ NatTrans.app (η (ofMon X✝)) X ≫ NatTrans.app (NatTrans.mk src✝.app) X = NatT …
         erw [← NatTrans.comp_app, f.one_hom]
+        -- ⊢ NatTrans.app Y.one X = NatTrans.app (η (ofMon Y)) X
         rfl
+        -- 🎉 no goals
       app_μ := by
         intro Z
+        -- ⊢ NatTrans.app (μ (ofMon X)) Z ≫ NatTrans.app (NatTrans.mk src✝.app) Z = ((ofM …
         erw [← NatTrans.comp_app, f.mul_hom]
+        -- ⊢ NatTrans.app (MonoidalCategory.tensorHom f.hom f.hom ≫ Y.mul) Z = ((ofMon X) …
         dsimp
+        -- ⊢ (NatTrans.app f.hom (X.X.obj Z) ≫ Y.X.map (NatTrans.app f.hom Z)) ≫ NatTrans …
         simp only [NatTrans.naturality, NatTrans.hcomp_app, assoc, NatTrans.comp_app,
           ofMon_μ] }
 #align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad

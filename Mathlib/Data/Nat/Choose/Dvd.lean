@@ -24,9 +24,11 @@ variable {p a b k : ℕ}
 theorem dvd_choose_add (hp : Prime p) (hap : a < p) (hbp : b < p) (h : p ≤ a + b) :
     p ∣ choose (a + b) a := by
   have h₁ : p ∣ (a + b)! := hp.dvd_factorial.2 h
+  -- ⊢ p ∣ choose (a + b) a
   rw [← add_choose_mul_factorial_mul_factorial, ← choose_symm_add, hp.dvd_mul, hp.dvd_mul,
     hp.dvd_factorial, hp.dvd_factorial] at h₁
   exact (h₁.resolve_right hbp.not_le).resolve_right hap.not_le
+  -- 🎉 no goals
 #align nat.prime.dvd_choose_add Nat.Prime.dvd_choose_add
 
 lemma dvd_choose (hp : Prime p) (ha : a < p) (hab : b - a < p) (h : p ≤ b) : p ∣ choose b a :=

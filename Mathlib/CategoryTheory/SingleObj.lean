@@ -89,7 +89,9 @@ instance groupoid [Group α] : Groupoid (SingleObj α)
 
 theorem inv_as_inv [Group α] {x y : SingleObj α} (f : x ⟶ y) : inv f = f⁻¹ := by
   apply IsIso.inv_eq_of_hom_inv_id
+  -- ⊢ f ≫ f⁻¹ = 𝟙 x
   rw [comp_as_mul, inv_mul_self, id_as_one]
+  -- 🎉 no goals
 #align category_theory.single_obj.inv_as_inv CategoryTheory.SingleObj.inv_as_inv
 
 /-- Abbreviation that allows writing `CategoryTheory.SingleObj.star` rather than
@@ -128,7 +130,9 @@ def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] :
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
   left_inv := by aesop_cat
+                 -- 🎉 no goals
   right_inv := by aesop_cat
+                  -- 🎉 no goals
 #align category_theory.single_obj.map_hom CategoryTheory.SingleObj.mapHom
 
 theorem mapHom_id (α : Type u) [Monoid α] : mapHom α α (MonoidHom.id α) = 𝟭 _ :=
@@ -149,11 +153,16 @@ def differenceFunctor {C G} [Category C] [Group G] (f : C → G) : C ⥤ SingleO
   map {x y} _ := f y * (f x)⁻¹
   map_id := by
     intro
+    -- ⊢ { obj := fun x => (), map := fun {x y} x_1 => f y * (f x)⁻¹ }.map (𝟙 X✝) = 𝟙 …
     simp only [SingleObj.id_as_one, mul_right_inv]
+    -- 🎉 no goals
   map_comp := by
     intros
+    -- ⊢ { obj := fun x => (), map := fun {x y} x_1 => f y * (f x)⁻¹ }.map (f✝ ≫ g✝)  …
     dsimp
+    -- ⊢ f Z✝ * (f X✝)⁻¹ = (f Y✝ * (f X✝)⁻¹) ≫ (f Z✝ * (f Y✝)⁻¹)
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_self, mul_one]
+    -- 🎉 no goals
 #align category_theory.single_obj.difference_functor CategoryTheory.SingleObj.differenceFunctor
 
 end SingleObj
@@ -195,6 +204,7 @@ variable (α : Type u) [Monoid α]
 the automorphisms of `star` when we think of the monoid as a single-object category. -/
 def toAut : αˣ ≃* Aut (SingleObj.star α) :=
   MulEquiv.trans (Units.mapEquiv (by exact SingleObj.toEnd α))
+                                     -- 🎉 no goals
     (Aut.unitsEndEquivAut (SingleObj.star α))
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut Units.toAut
@@ -232,6 +242,7 @@ set_option linter.uppercaseLean3 false in
 
 instance toCat_faithful : Faithful toCat where
   map_injective h := by simpa [toCat] using h
+                        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_faithful MonCat.toCat_faithful
 

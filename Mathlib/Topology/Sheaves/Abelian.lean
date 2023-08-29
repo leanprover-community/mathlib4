@@ -51,6 +51,7 @@ variable {J : GrothendieckTopology C}
 -- This also needs to be specified manually, but I don't know why.
 instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
   out j := { has_limit := fun F => by infer_instance }
+                                      -- 🎉 no goals
 
 -- sheafification assumptions
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]

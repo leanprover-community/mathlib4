@@ -129,10 +129,15 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
 theorem isSatisfiable_directed_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
     (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
   refine' ⟨fun h' i => h'.mono (Set.subset_iUnion _ _), fun h' => _⟩
+  -- ⊢ IsSatisfiable (⋃ (i : ι), T i)
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  -- ⊢ ∀ (T0 : Finset (Sentence L)), ↑T0 ⊆ ⋃ (i : ι), T i → IsSatisfiable ↑T0
   intro T0 hT0
+  -- ⊢ IsSatisfiable ↑T0
   obtain ⟨i, hi⟩ := h.exists_mem_subset_of_finset_subset_biUnion hT0
+  -- ⊢ IsSatisfiable ↑T0
   exact (h' i).mono hi
+  -- 🎉 no goals
 #align first_order.language.Theory.is_satisfiable_directed_union_iff FirstOrder.Language.Theory.isSatisfiable_directed_union_iff
 
 theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s : Set α)
@@ -140,8 +145,11 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
     (h : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} #M) :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
   haveI : Inhabited M := Classical.inhabited_of_nonempty inferInstance
+  -- ⊢ IsSatisfiable (LHom.onTheory (lhomWithConstants L α) T ∪ distinctConstantsTh …
   rw [Cardinal.lift_mk_le'] at h
+  -- ⊢ IsSatisfiable (LHom.onTheory (lhomWithConstants L α) T ∪ distinctConstantsTh …
   letI : (constantsOn α).Structure M := constantsOn.structure (Function.extend (↑) h.some default)
+  -- ⊢ IsSatisfiable (LHom.onTheory (lhomWithConstants L α) T ∪ distinctConstantsTh …
   have : M ⊨ (L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s := by
     refine' ((LHom.onTheory_model _ _).2 inferInstance).union _
     rw [model_distinctConstantsTheory]
@@ -152,6 +160,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
         ((Subtype.coe_injective.extend_apply h.some default ⟨a, as⟩).symm.trans
           (ab.trans (Subtype.coe_injective.extend_apply h.some default ⟨b, bs⟩)))
   exact Model.isSatisfiable M
+  -- 🎉 no goals
 #align first_order.language.Theory.is_satisfiable_union_distinct_constants_theory_of_card_le FirstOrder.Language.Theory.isSatisfiable_union_distinctConstantsTheory_of_card_le
 
 theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (s : Set α)
@@ -177,13 +186,19 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   obtain ⟨N⟩ :=
     isSatisfiable_union_distinctConstantsTheory_of_infinite T (Set.univ : Set κ.out) M
   refine' ⟨(N.is_model.mono (Set.subset_union_left _ _)).bundled.reduct _, _⟩
+  -- ⊢ lift.{max u v w, w} κ ≤ #↑(ModelType.reduct (lhomWithConstants L (Quotient.o …
   haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono (Set.subset_union_right _ _)
+  -- ⊢ lift.{max u v w, w} κ ≤ #↑(ModelType.reduct (lhomWithConstants L (Quotient.o …
   rw [ModelType.reduct_Carrier, coe_of]
+  -- ⊢ lift.{max u v w, w} κ ≤ #↑N
   refine' _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
+  -- ⊢ lift.{max (max u v) w, w} #(Quotient.out κ) ≤ #↑N
   rw [← mk_univ]
+  -- ⊢ lift.{max (max u v) w, w} #↑Set.univ ≤ #↑N
   refine'
     (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{max u v w}.1 _)
   rw [lift_lift]
+  -- 🎉 no goals
 #align first_order.language.Theory.exists_large_model_of_infinite_model FirstOrder.Language.Theory.exists_large_model_of_infinite_model
 
 theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : ι → L.Theory) :
@@ -214,6 +229,7 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
     (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} #M) :
     ∃ N : Bundled L.Structure, Nonempty (N ↪ₑ[L] M) ∧ #N = κ := by
   obtain ⟨S, _, hS⟩ := exists_elementarySubstructure_card_eq L ∅ κ h1 (by simp) h2 h3
+  -- ⊢ ∃ N, Nonempty (↑N ↪ₑ[L] M) ∧ #↑N = κ
   have : Small.{w} S := by
     rw [← lift_inj.{_, w + 1}, lift_lift, lift_lift] at hS
     exact small_iff_lift_mk_lt_univ.2 (lt_of_eq_of_lt hS κ.lift_lt_univ')
@@ -222,6 +238,7 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
       ⟨S.subtype.comp (Equiv.bundledInducedEquiv L _).symm.toElementaryEmbedding⟩,
       lift_inj.1 (_root_.trans _ hS)⟩
   simp only [Equiv.bundledInduced_α, lift_mk_shrink']
+  -- 🎉 no goals
 #align first_order.language.exists_elementary_embedding_card_eq_of_le FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_le
 
 section
@@ -235,7 +252,9 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
     (h2 : Cardinal.lift.{w} #M ≤ Cardinal.lift.{w'} κ) :
     ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ #N = κ := by
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
+  -- ⊢ ∃ N, Nonempty (M ↪ₑ[L] ↑N) ∧ #↑N = κ
   rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
+  -- ⊢ ∃ N, Nonempty (M ↪ₑ[L] ↑N) ∧ #↑N = κ
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
     exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
       (aleph0_le_lift.1 ((aleph0_le_lift.2 (aleph0_le_mk M)).trans h2))
@@ -246,10 +265,13 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax', lift_id]))
   · letI := (lhomWithConstants L M).reduct N
+    -- ⊢ ∃ N, Nonempty (M ↪ₑ[L] ↑N) ∧ #↑N = κ
     haveI h : N ⊨ L.elementaryDiagram M :=
       (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
     refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
+    -- ⊢ M ↪ₑ[L] ↑(Bundled.of ↑N)
     apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
+    -- 🎉 no goals
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
 
 end
@@ -261,6 +283,7 @@ theorem exists_elementaryEmbedding_card_eq (M : Type w') [L.Structure M] [iM : I
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
     ∃ N : Bundled L.Structure, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ #N = κ := by
   cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M)
+  -- ⊢ ∃ N, (Nonempty (↑N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] ↑N)) ∧ #↑N = κ
   case inl h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_le L M κ h1 h2 h
     exact ⟨N, Or.inl hN1, hN2⟩
@@ -276,8 +299,11 @@ theorem exists_elementarilyEquivalent_card_eq (M : Type w') [L.Structure M] [Inf
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
     ∃ N : CategoryTheory.Bundled L.Structure, (M ≅[L] N) ∧ #N = κ := by
   obtain ⟨N, NM | MN, hNκ⟩ := exists_elementaryEmbedding_card_eq L M κ h1 h2
+  -- ⊢ ∃ N, (M ≅[L] ↑N) ∧ #↑N = κ
   · exact ⟨N, NM.some.elementarilyEquivalent.symm, hNκ⟩
+    -- 🎉 no goals
   · exact ⟨N, MN.some.elementarilyEquivalent, hNκ⟩
+    -- 🎉 no goals
 #align first_order.language.exists_elementarily_equivalent_card_eq FirstOrder.Language.exists_elementarilyEquivalent_card_eq
 
 variable {L}
@@ -325,6 +351,7 @@ theorem models_sentence_of_mem {φ : L.Sentence} (h : φ ∈ T) : T ⊨ᵇ φ :=
 
 theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatisfiable (T ∪ {φ.not}) := by
   rw [models_sentence_iff, IsSatisfiable]
+  -- ⊢ (∀ (M : ModelType T), ↑M ⊨ φ) ↔ ¬Nonempty (ModelType (T ∪ {Formula.not φ}))
   refine'
     ⟨fun h1 h2 =>
       (Sentence.realize_not _).1
@@ -333,24 +360,31 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
         (h1 (h2.some.subtheoryModel (Set.subset_union_left _ _))),
       fun h M => _⟩
   contrapose! h
+  -- ⊢ Nonempty (ModelType (T ∪ {Formula.not φ}))
   rw [← Sentence.realize_not] at h
+  -- ⊢ Nonempty (ModelType (T ∪ {Formula.not φ}))
   refine'
     ⟨{  Carrier := M
         is_model := ⟨fun ψ hψ => hψ.elim (realize_sentence_of_mem _) fun h' => _⟩ }⟩
   rw [Set.mem_singleton_iff.1 h']
+  -- ⊢ ↑M ⊨ Formula.not φ
   exact h
+  -- 🎉 no goals
 #align first_order.language.Theory.models_iff_not_satisfiable FirstOrder.Language.Theory.models_iff_not_satisfiable
 
 theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ) (M : Type*)
     [L.Structure M] [M ⊨ T] [Nonempty M] : M ⊨ φ := by
   rw [models_iff_not_satisfiable] at h
+  -- ⊢ M ⊨ φ
   contrapose! h
+  -- ⊢ IsSatisfiable (T ∪ {Formula.not φ})
   have : M ⊨ T ∪ {Formula.not φ} := by
     simp only [Set.union_singleton, model_iff, Set.mem_insert_iff, forall_eq_or_imp,
       Sentence.realize_not]
     rw [← model_iff]
     exact ⟨h, inferInstance⟩
   exact Model.isSatisfiable M
+  -- 🎉 no goals
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
 
 /-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
@@ -358,16 +392,23 @@ theory iff there is a finite subset `T0` of the theory such that `φ` is modeled
 theorem models_iff_finset_models {φ : L.Sentence} :
     T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
   simp only [models_iff_not_satisfiable]
+  -- ⊢ ¬IsSatisfiable (T ∪ {Formula.not φ}) ↔ ∃ T0, ↑T0 ⊆ T ∧ ¬IsSatisfiable (↑T0 ∪ …
   rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  -- ⊢ (∀ (T0 : Finset (Sentence L)), ↑T0 ⊆ T ∪ {Formula.not φ} → IsSatisfiable ↑T0 …
   push_neg
+  -- ⊢ (∀ (T0 : Finset (Sentence L)), ↑T0 ⊆ T ∪ {Formula.not φ} → IsSatisfiable ↑T0 …
   letI := Classical.decEq (Sentence L)
+  -- ⊢ (∀ (T0 : Finset (Sentence L)), ↑T0 ⊆ T ∪ {Formula.not φ} → IsSatisfiable ↑T0 …
   constructor
+  -- ⊢ (∀ (T0 : Finset (Sentence L)), ↑T0 ⊆ T ∪ {Formula.not φ} → IsSatisfiable ↑T0 …
   · intro h T0 hT0
+    -- ⊢ IsSatisfiable (↑T0 ∪ {Formula.not φ})
     simpa using h (T0 ∪ {Formula.not φ})
       (by
         simp only [Finset.coe_union, Finset.coe_singleton]
         exact Set.union_subset_union hT0 (Set.Subset.refl _))
   · intro h T0 hT0
+    -- ⊢ IsSatisfiable ↑T0
     exact IsSatisfiable.mono (h (T0.erase (Formula.not φ))
       (by simpa using hT0)) (by simp)
 
@@ -380,21 +421,33 @@ namespace IsComplete
 
 theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not ↔ ¬T ⊨ᵇ φ := by
   cases' h.2 φ with hφ hφn
+  -- ⊢ T ⊨ᵇ Formula.not φ ↔ ¬T ⊨ᵇ φ
   · simp only [hφ, not_true, iff_false_iff]
+    -- ⊢ ¬T ⊨ᵇ Formula.not φ
     rw [models_sentence_iff, not_forall]
+    -- ⊢ ∃ x, ¬↑x ⊨ Formula.not φ
     refine' ⟨h.1.some, _⟩
+    -- ⊢ ¬↑(Nonempty.some (_ : IsSatisfiable T)) ⊨ Formula.not φ
     simp only [Sentence.realize_not, Classical.not_not]
+    -- ⊢ ↑(Nonempty.some (_ : IsSatisfiable T)) ⊨ φ
     exact models_sentence_iff.1 hφ _
+    -- 🎉 no goals
   · simp only [hφn, true_iff_iff]
+    -- ⊢ ¬T ⊨ᵇ φ
     intro hφ
+    -- ⊢ False
     rw [models_sentence_iff] at *
+    -- ⊢ False
     exact hφn h.1.some (hφ _)
+    -- 🎉 no goals
 #align first_order.language.Theory.is_complete.models_not_iff FirstOrder.Language.Theory.IsComplete.models_not_iff
 
 theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L.Structure M]
     [M ⊨ T] [Nonempty M] : M ⊨ φ ↔ T ⊨ᵇ φ := by
   cases' h.2 φ with hφ hφn
+  -- ⊢ M ⊨ φ ↔ T ⊨ᵇ φ
   · exact iff_of_true (hφ.realize_sentence M) hφ
+    -- 🎉 no goals
   · exact
       iff_of_false ((Sentence.realize_not M).1 (hφn.realize_sentence M))
         ((h.models_not_iff φ).1 hφn)
@@ -418,8 +471,11 @@ theorem IsMaximal.mem_or_not_mem (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T 
 
 theorem IsMaximal.mem_of_models (h : T.IsMaximal) {φ : L.Sentence} (hφ : T ⊨ᵇ φ) : φ ∈ T := by
   refine' (h.mem_or_not_mem φ).resolve_right fun con => _
+  -- ⊢ False
   rw [models_iff_not_satisfiable, Set.union_singleton, Set.insert_eq_of_mem con] at hφ
+  -- ⊢ False
   exact hφ h.1
+  -- 🎉 no goals
 #align first_order.language.Theory.is_maximal.mem_of_models FirstOrder.Language.Theory.IsMaximal.mem_of_models
 
 theorem IsMaximal.mem_iff_models (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T ↔ T ⊨ᵇ φ :=
@@ -436,6 +492,7 @@ def SemanticallyEquivalent (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop
 @[refl]
 theorem SemanticallyEquivalent.refl (φ : L.BoundedFormula α n) : T.SemanticallyEquivalent φ φ :=
   fun M v xs => by rw [BoundedFormula.realize_iff]
+                   -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.refl FirstOrder.Language.Theory.SemanticallyEquivalent.refl
 
 instance : IsRefl (L.BoundedFormula α n) T.SemanticallyEquivalent :=
@@ -445,7 +502,9 @@ instance : IsRefl (L.BoundedFormula α n) T.SemanticallyEquivalent :=
 theorem SemanticallyEquivalent.symm {φ ψ : L.BoundedFormula α n}
     (h : T.SemanticallyEquivalent φ ψ) : T.SemanticallyEquivalent ψ φ := fun M v xs => by
   rw [BoundedFormula.realize_iff, Iff.comm, ← BoundedFormula.realize_iff]
+  -- ⊢ BoundedFormula.Realize (φ ⇔ ψ) v xs
   exact h M v xs
+  -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.symm FirstOrder.Language.Theory.SemanticallyEquivalent.symm
 
 @[trans]
@@ -453,9 +512,13 @@ theorem SemanticallyEquivalent.trans {φ ψ θ : L.BoundedFormula α n}
     (h1 : T.SemanticallyEquivalent φ ψ) (h2 : T.SemanticallyEquivalent ψ θ) :
     T.SemanticallyEquivalent φ θ := fun M v xs => by
   have h1' := h1 M v xs
+  -- ⊢ BoundedFormula.Realize (φ ⇔ θ) v xs
   have h2' := h2 M v xs
+  -- ⊢ BoundedFormula.Realize (φ ⇔ θ) v xs
   rw [BoundedFormula.realize_iff] at *
+  -- ⊢ BoundedFormula.Realize φ v xs ↔ BoundedFormula.Realize θ v xs
   exact ⟨h2'.1 ∘ h1'.1, h1'.2 ∘ h2'.2⟩
+  -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.trans FirstOrder.Language.Theory.SemanticallyEquivalent.trans
 
 theorem SemanticallyEquivalent.realize_bd_iff {φ ψ : L.BoundedFormula α n} {M : Type max u v}
@@ -481,6 +544,7 @@ protected theorem SemanticallyEquivalent.all {φ ψ : L.BoundedFormula α (n + 1
   simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_all]
   exact fun M v xs => forall_congr' fun a => h.realize_bd_iff
+  -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.all FirstOrder.Language.Theory.SemanticallyEquivalent.all
 
 protected theorem SemanticallyEquivalent.ex {φ ψ : L.BoundedFormula α (n + 1)}
@@ -488,6 +552,7 @@ protected theorem SemanticallyEquivalent.ex {φ ψ : L.BoundedFormula α (n + 1)
   simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_ex]
   exact fun M v xs => exists_congr fun a => h.realize_bd_iff
+  -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.ex FirstOrder.Language.Theory.SemanticallyEquivalent.ex
 
 protected theorem SemanticallyEquivalent.not {φ ψ : L.BoundedFormula α n}
@@ -495,6 +560,7 @@ protected theorem SemanticallyEquivalent.not {φ ψ : L.BoundedFormula α n}
   simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_not]
   exact fun M v xs => not_congr h.realize_bd_iff
+  -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.not FirstOrder.Language.Theory.SemanticallyEquivalent.not
 
 protected theorem SemanticallyEquivalent.imp {φ ψ φ' ψ' : L.BoundedFormula α n}
@@ -503,6 +569,7 @@ protected theorem SemanticallyEquivalent.imp {φ ψ φ' ψ' : L.BoundedFormula �
   simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
+  -- 🎉 no goals
 #align first_order.language.Theory.semantically_equivalent.imp FirstOrder.Language.Theory.SemanticallyEquivalent.imp
 
 end Theory
@@ -518,6 +585,7 @@ theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=
 
 theorem mem_or_not_mem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
   simp_rw [completeTheory, Set.mem_setOf_eq, Sentence.Realize, Formula.realize_not, or_not]
+  -- 🎉 no goals
 #align first_order.language.complete_theory.mem_or_not_mem FirstOrder.Language.completeTheory.mem_or_not_mem
 
 theorem isMaximal [Nonempty M] : (L.completeTheory M).IsMaximal :=
@@ -536,33 +604,41 @@ variable (φ ψ : L.BoundedFormula α n)
 
 theorem semanticallyEquivalent_not_not : T.SemanticallyEquivalent φ φ.not.not := fun M v xs => by
   simp
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.semantically_equivalent_not_not FirstOrder.Language.BoundedFormula.semanticallyEquivalent_not_not
 
 theorem imp_semanticallyEquivalent_not_sup : T.SemanticallyEquivalent (φ.imp ψ) (φ.not ⊔ ψ) :=
   fun M v xs => by simp [imp_iff_not_or]
+                   -- 🎉 no goals
 #align first_order.language.bounded_formula.imp_semantically_equivalent_not_sup FirstOrder.Language.BoundedFormula.imp_semanticallyEquivalent_not_sup
 
 theorem sup_semanticallyEquivalent_not_inf_not :
     T.SemanticallyEquivalent (φ ⊔ ψ) (φ.not ⊓ ψ.not).not := fun M v xs => by simp [imp_iff_not_or]
+                                                                             -- 🎉 no goals
 #align first_order.language.bounded_formula.sup_semantically_equivalent_not_inf_not FirstOrder.Language.BoundedFormula.sup_semanticallyEquivalent_not_inf_not
 
 theorem inf_semanticallyEquivalent_not_sup_not :
     T.SemanticallyEquivalent (φ ⊓ ψ) (φ.not ⊔ ψ.not).not := fun M v xs => by
   simp [and_iff_not_or_not]
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.inf_semantically_equivalent_not_sup_not FirstOrder.Language.BoundedFormula.inf_semanticallyEquivalent_not_sup_not
 
 theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
     T.SemanticallyEquivalent φ.all φ.not.ex.not := fun M v xs => by simp
+                                                                    -- 🎉 no goals
 #align first_order.language.bounded_formula.all_semantically_equivalent_not_ex_not FirstOrder.Language.BoundedFormula.all_semanticallyEquivalent_not_ex_not
 
 theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1)) :
     T.SemanticallyEquivalent φ.ex φ.not.all.not := fun M v xs => by simp
+                                                                    -- 🎉 no goals
 #align first_order.language.bounded_formula.ex_semantically_equivalent_not_all_not FirstOrder.Language.BoundedFormula.ex_semanticallyEquivalent_not_all_not
 
 theorem semanticallyEquivalent_all_liftAt : T.SemanticallyEquivalent φ (φ.liftAt 1 n).all :=
   fun M v xs => by
   skip
+  -- ⊢ Realize (φ ⇔ ∀'liftAt 1 n φ) v xs
   rw [realize_iff, realize_all_liftAt_one_self]
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.semantically_equivalent_all_lift_at FirstOrder.Language.BoundedFormula.semanticallyEquivalent_all_liftAt
 
 end BoundedFormula
@@ -620,6 +696,7 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
 theorem semanticallyEquivalent_toPrenex (φ : L.BoundedFormula α n) :
     (∅ : L.Theory).SemanticallyEquivalent φ φ.toPrenex := fun M v xs => by
   rw [realize_iff, realize_toPrenex]
+  -- 🎉 no goals
 #align first_order.language.bounded_formula.semantically_equivalent_to_prenex FirstOrder.Language.BoundedFormula.semanticallyEquivalent_toPrenex
 
 theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
@@ -630,12 +707,18 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
       Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
     P φ := by
   suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ
+  -- ⊢ P φ
   · exact (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
+    -- 🎉 no goals
   intro m φ hφ
+  -- ⊢ P φ
   induction' hφ with _ _ hφ _ _ _ hφ _ _ _ hφ
   · exact hqf hφ
+    -- 🎉 no goals
   · exact hall hφ
+    -- 🎉 no goals
   · exact hex hφ
+    -- 🎉 no goals
 #align first_order.language.bounded_formula.induction_on_all_ex FirstOrder.Language.BoundedFormula.induction_on_all_ex
 
 theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
@@ -673,17 +756,29 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     (hT : ∀ M : Theory.ModelType.{u, v, max u v} T, Infinite M) : T.IsComplete :=
   ⟨hS, fun φ => by
     obtain ⟨_, _⟩ := Theory.exists_model_card_eq ⟨hS.some, hT hS.some⟩ κ h1 h2
+    -- ⊢ T ⊨ᵇ φ ∨ T ⊨ᵇ Formula.not φ
     rw [Theory.models_sentence_iff, Theory.models_sentence_iff]
+    -- ⊢ (∀ (M : Theory.ModelType T), ↑M ⊨ φ) ∨ ∀ (M : Theory.ModelType T), ↑M ⊨ Form …
     by_contra con
+    -- ⊢ False
     push_neg at con
+    -- ⊢ False
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
+    -- ⊢ False
     rw [Sentence.realize_not, Classical.not_not] at hMT
+    -- ⊢ False
     refine' hMF _
+    -- ⊢ ↑MF ⊨ φ
     haveI := hT MT
+    -- ⊢ ↑MF ⊨ φ
     haveI := hT MF
+    -- ⊢ ↑MF ⊨ φ
     obtain ⟨NT, MNT, hNT⟩ := exists_elementarilyEquivalent_card_eq L MT κ h1 h2
+    -- ⊢ ↑MF ⊨ φ
     obtain ⟨NF, MNF, hNF⟩ := exists_elementarilyEquivalent_card_eq L MF κ h1 h2
+    -- ⊢ ↑MF ⊨ φ
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF
+    -- ⊢ ↑MF ⊨ φ
     exact
       ((MNT.realize_sentence φ).trans
         ((TF.realize_sentence φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
@@ -691,10 +786,12 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
 
 theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN =>
   by rw [empty.nonempty_equiv_iff, hM, hN]
+     -- 🎉 no goals
 #align cardinal.empty_Theory_categorical Cardinal.empty_theory_categorical
 
 theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsComplete :=
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)
+                                                                 -- 🎉 no goals
     ⟨Theory.Model.bundled ((model_infiniteTheory_iff Language.empty).2
       (inferInstanceAs (Infinite ℕ)))⟩ fun M =>
     (model_infiniteTheory_iff Language.empty).1 M.is_model

@@ -33,7 +33,10 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
+  -- ⊢ 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) = sqrt (2 - sqrtTwoAddSeries 0 …
   rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+  -- ⊢ 2 ≠ 0
+                                                                  -- 🎉 no goals
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
@@ -60,11 +63,19 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     -- Porting note: removed `convert le_rfl`
     all_goals (repeat' apply pow_pos); norm_num
   apply lt_of_lt_of_le this (le_of_eq _); rw [add_mul]; congr 1
+  -- ⊢ (sqrt (2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * 2 ^ (n + 2) =  …
+                                          -- ⊢ sqrt (2 - sqrtTwoAddSeries 0 n) / 2 * 2 ^ (n + 2) + 1 / (2 ^ n) ^ 3 / 4 * 2  …
+                                                        -- ⊢ sqrt (2 - sqrtTwoAddSeries 0 n) / 2 * 2 ^ (n + 2) = 2 ^ (n + 1) * sqrt (2 -  …
   · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+    -- ⊢ 2 ≠ 0
+                                                                    -- 🎉 no goals
   rw [pow_succ, ← pow_mul, mul_comm n 2, pow_mul, show (2 : ℝ) ^ 2 = 4 by norm_num, pow_succ,
     pow_succ, ← mul_assoc (2 : ℝ), show (2 : ℝ) * 2 = 4 by norm_num, ← mul_assoc, div_mul_cancel,
     mul_comm ((2 : ℝ) ^ n), ← div_div, div_mul_cancel]
   apply pow_ne_zero; norm_num; norm_num
+  -- ⊢ 2 ≠ 0
+                     -- ⊢ 4 ≠ 0
+                               -- 🎉 no goals
 #align real.pi_lt_sqrt_two_add_series Real.pi_lt_sqrtTwoAddSeries
 
 /-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
@@ -74,19 +85,29 @@ theorem pi_lower_bound_start (n : ℕ) {a}
     (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ (2 : ℝ) - (a / (2 : ℝ) ^ (n + 1)) ^ 2) :
     a < π := by
   refine' lt_of_le_of_lt _ (pi_gt_sqrtTwoAddSeries n); rw [mul_comm]
+  -- ⊢ a ≤ 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n)
+                                                       -- ⊢ a ≤ sqrt (2 - sqrtTwoAddSeries 0 n) * 2 ^ (n + 1)
   refine' (div_le_iff (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le _)
+  -- ⊢ (a / 2 ^ (n + 1)) ^ 2 ≤ 2 - sqrtTwoAddSeries 0 n
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
+  -- 🎉 no goals
 #align real.pi_lower_bound_start Real.pi_lower_bound_start
 
 theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
     (hb : 0 < b) (hd : 0 < d) (h : (2 * b + a) * d ^ 2 ≤ c ^ 2 * b) :
     sqrtTwoAddSeries (a / b) (n + 1) ≤ z := by
   refine' le_trans _ hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
+  -- ⊢ sqrtTwoAddSeries (↑a / ↑b) (n + 1) ≤ sqrtTwoAddSeries (↑c / ↑d) n
+                         -- ⊢ sqrtTwoAddSeries (sqrt (2 + ↑a / ↑b)) n ≤ sqrtTwoAddSeries (↑c / ↑d) n
+                                                     -- ⊢ sqrt (2 + ↑a / ↑b) ≤ ↑c / ↑d
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
+  -- ⊢ sqrt (2 + ↑a / ↑b) ≤ ↑c / ↑d
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
+  -- ⊢ sqrt (2 + ↑a / ↑b) ≤ ↑c / ↑d
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
     add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
   exact_mod_cast h
+  -- 🎉 no goals
 #align real.sqrt_two_add_series_step_up Real.sqrtTwoAddSeries_step_up
 
 section Tactic
@@ -126,21 +147,33 @@ theorem pi_upper_bound_start (n : ℕ) {a}
         sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n)
     (h₂ : (1 : ℝ) / (4 : ℝ) ^ n ≤ a) : π < a := by
   refine' lt_of_lt_of_le (pi_lt_sqrtTwoAddSeries n) _
+  -- ⊢ 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n ≤ a
   rw [← le_sub_iff_add_le, ← le_div_iff', sqrt_le_left, sub_le_comm]
   · rwa [Nat.cast_zero, zero_div] at h
+    -- 🎉 no goals
   · exact div_nonneg (sub_nonneg.2 h₂) (pow_nonneg (le_of_lt zero_lt_two) _)
+    -- 🎉 no goals
   · exact pow_pos zero_lt_two _
+    -- 🎉 no goals
 #align real.pi_upper_bound_start Real.pi_upper_bound_start
 
 theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
     (hz : z ≤ sqrtTwoAddSeries (a / b) n) (hb : 0 < b) (hd : 0 < d)
     (h : a ^ 2 * d ≤ (2 * d + c) * b ^ 2) : z ≤ sqrtTwoAddSeries (c / d) (n + 1) := by
   apply le_trans hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
+  -- ⊢ sqrtTwoAddSeries (↑a / ↑b) n ≤ sqrtTwoAddSeries (↑c / ↑d) (n + 1)
+                     -- ⊢ sqrtTwoAddSeries (↑a / ↑b) n ≤ sqrtTwoAddSeries (sqrt (2 + ↑c / ↑d)) n
+                                                 -- ⊢ ↑a / ↑b ≤ sqrt (2 + ↑c / ↑d)
   apply le_sqrt_of_sq_le
+  -- ⊢ (↑a / ↑b) ^ 2 ≤ 2 + ↑c / ↑d
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
+  -- ⊢ (↑a / ↑b) ^ 2 ≤ 2 + ↑c / ↑d
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
+  -- ⊢ (↑a / ↑b) ^ 2 ≤ 2 + ↑c / ↑d
   rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff (pow_pos hb' _) hd']
+  -- ⊢ ↑a ^ 2 * ↑d ≤ (2 * ↑d + ↑c) * ↑b ^ 2
   exact_mod_cast h
+  -- 🎉 no goals
 #align real.sqrt_two_add_series_step_down Real.sqrtTwoAddSeries_step_down
 
 section Tactic
@@ -166,14 +199,17 @@ end Tactic
 
 theorem pi_gt_three : 3 < π := by
   pi_lower_bound [23/16]
+  -- 🎉 no goals
 #align real.pi_gt_three Real.pi_gt_three
 
 theorem pi_gt_314 : 3.14 < π := by
   pi_lower_bound [99 / 70, 874 / 473, 1940 / 989, 1447 / 727]
+  -- 🎉 no goals
 #align real.pi_gt_314 Real.pi_gt_314
 
 theorem pi_lt_315 : π < 3.15 := by
   pi_upper_bound [140 / 99, 279 / 151, 51 / 26, 412 / 207]
+  -- 🎉 no goals
 #align real.pi_lt_315 Real.pi_lt_315
 
 theorem pi_gt_31415 : 3.1415 < π := by

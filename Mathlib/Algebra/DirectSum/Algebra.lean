@@ -65,23 +65,37 @@ instance : Algebra R (⨁ i, A i) where
   map_one' := (DirectSum.of A 0).congr_arg GAlgebra.map_one
   map_mul' a b := by
     simp only [AddMonoidHom.comp_apply]
+    -- ⊢ ↑(of A 0) (↑GAlgebra.toFun (a * b)) = ↑(of A 0) (↑GAlgebra.toFun a) * ↑(of A …
     rw [of_mul_of]
+    -- ⊢ ↑(of A 0) (↑GAlgebra.toFun (a * b)) = ↑(of A (0 + 0)) (GradedMonoid.GMul.mul …
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b)
+    -- 🎉 no goals
   commutes' r x := by
     change AddMonoidHom.mul (DirectSum.of _ _ _) x = AddMonoidHom.mul.flip (DirectSum.of _ _ _) x
+    -- ⊢ ↑(↑AddMonoidHom.mul (↑(of (fun i => A i) 0) (↑GAlgebra.toFun r))) x = ↑(↑(Ad …
     apply FunLike.congr_fun _ x
+    -- ⊢ ↑AddMonoidHom.mul (↑(of (fun i => A i) 0) (↑GAlgebra.toFun r)) = ↑(AddMonoid …
     ext i xi : 2
+    -- ⊢ ↑(AddMonoidHom.comp (↑AddMonoidHom.mul (↑(of (fun i => A i) 0) (↑GAlgebra.to …
     dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.mul_apply, AddMonoidHom.flip_apply]
+    -- ⊢ ↑(of (fun i => A i) 0) (↑GAlgebra.toFun r) * ↑(of (fun i => A i) i) xi = ↑(o …
     rw [of_mul_of, of_mul_of]
+    -- ⊢ ↑(of (fun i => A i) (0 + i)) (GradedMonoid.GMul.mul (↑GAlgebra.toFun r) xi)  …
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.commutes r ⟨i, xi⟩)
+    -- 🎉 no goals
   smul_def' r x := by
     change DistribMulAction.toAddMonoidHom _ r x = AddMonoidHom.mul (DirectSum.of _ _ _) x
+    -- ⊢ ↑(DistribMulAction.toAddMonoidHom ((fun x => ⨁ (i : ι), A i) r) r) x = ↑(↑Ad …
     apply FunLike.congr_fun _ x
+    -- ⊢ DistribMulAction.toAddMonoidHom ((fun x => ⨁ (i : ι), A i) r) r = ↑AddMonoid …
     ext i xi : 2
+    -- ⊢ ↑(AddMonoidHom.comp (DistribMulAction.toAddMonoidHom ((fun x => ⨁ (i : ι), A …
     dsimp only [AddMonoidHom.comp_apply, DistribMulAction.toAddMonoidHom_apply,
       AddMonoidHom.mul_apply]
     rw [DirectSum.of_mul_of, ← of_smul]
+    -- ⊢ ↑(of (fun i => A i) i) (r • xi) = ↑(of (fun i => A i) (0 + i)) (GradedMonoid …
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.smul_def r ⟨i, xi⟩)
+    -- 🎉 no goals
 
 theorem algebraMap_apply (r : R) :
     algebraMap R (⨁ i, A i) r = DirectSum.of A 0 (GAlgebra.toFun r) :=

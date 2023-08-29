@@ -44,11 +44,13 @@ theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : We
 
 instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]
+  -- ⊢ IsCompact (characterSpace 𝕜 A)
   have h : characterSpace 𝕜 A ⊆ toNormedDual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by
     intro φ hφ
     rw [Set.mem_preimage, mem_closedBall_zero_iff]
     exact (norm_le_norm_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ : _)
   exact isCompact_of_isClosed_subset (isCompact_closedBall 𝕜 0 _) CharacterSpace.isClosed h
+  -- 🎉 no goals
 
 end CharacterSpace
 

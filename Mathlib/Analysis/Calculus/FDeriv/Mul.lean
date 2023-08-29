@@ -227,16 +227,19 @@ theorem fderiv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜
 theorem HasStrictFDerivAt.smul_const (hc : HasStrictFDerivAt c c' x) (f : F) :
     HasStrictFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
   simpa only [smul_zero, zero_add] using hc.smul (hasStrictFDerivAt_const f x)
+  -- 🎉 no goals
 #align has_strict_fderiv_at.smul_const HasStrictFDerivAt.smul_const
 
 theorem HasFDerivWithinAt.smul_const (hc : HasFDerivWithinAt c c' s x) (f : F) :
     HasFDerivWithinAt (fun y => c y • f) (c'.smulRight f) s x := by
   simpa only [smul_zero, zero_add] using hc.smul (hasFDerivWithinAt_const f x s)
+  -- 🎉 no goals
 #align has_fderiv_within_at.smul_const HasFDerivWithinAt.smul_const
 
 theorem HasFDerivAt.smul_const (hc : HasFDerivAt c c' x) (f : F) :
     HasFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
   simpa only [smul_zero, zero_add] using hc.smul (hasFDerivAt_const f x)
+  -- 🎉 no goals
 #align has_fderiv_at.smul_const HasFDerivAt.smul_const
 
 theorem DifferentiableWithinAt.smul_const (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
@@ -288,8 +291,11 @@ theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
   convert hc.mul' hd
+  -- ⊢ d x • c' = smulRight c' (d x)
   ext z
+  -- ⊢ ↑(d x • c') z = ↑(smulRight c' (d x)) z
   apply mul_comm
+  -- 🎉 no goals
 #align has_strict_fderiv_at.mul HasStrictFDerivAt.mul
 
 theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
@@ -301,8 +307,11 @@ theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDeriv
 theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (fun y => c y * d y) (c x • d' + d x • c') s x := by
   convert hc.mul' hd
+  -- ⊢ d x • c' = smulRight c' (d x)
   ext z
+  -- ⊢ ↑(d x • c') z = ↑(smulRight c' (d x)) z
   apply mul_comm
+  -- 🎉 no goals
 #align has_fderiv_within_at.mul HasFDerivWithinAt.mul
 
 theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
@@ -313,8 +322,11 @@ theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
   convert hc.mul' hd
+  -- ⊢ d x • c' = smulRight c' (d x)
   ext z
+  -- ⊢ ↑(d x • c') z = ↑(smulRight c' (d x)) z
   apply mul_comm
+  -- 🎉 no goals
 #align has_fderiv_at.mul HasFDerivAt.mul
 
 theorem DifferentiableWithinAt.mul (ha : DifferentiableWithinAt 𝕜 a s x)
@@ -340,7 +352,9 @@ theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable �
 theorem DifferentiableWithinAt.pow (ha : DifferentiableWithinAt 𝕜 a s x) :
     ∀ n : ℕ, DifferentiableWithinAt 𝕜 (fun x => a x ^ n) s x
   | 0 => by simp only [pow_zero, differentiableWithinAt_const]
+            -- 🎉 no goals
   | n + 1 => by simp only [pow_succ, DifferentiableWithinAt.pow ha n, ha.mul]
+                -- 🎉 no goals
 #align differentiable_within_at.pow DifferentiableWithinAt.pow
 
 @[simp]
@@ -390,8 +404,11 @@ theorem HasStrictFDerivAt.mul_const' (ha : HasStrictFDerivAt a a' x) (b : 𝔸) 
 theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') :
     HasStrictFDerivAt (fun y => c y * d) (d • c') x := by
   convert hc.mul_const' d
+  -- ⊢ d • c' = smulRight c' d
   ext z
+  -- ⊢ ↑(d • c') z = ↑(smulRight c' d) z
   apply mul_comm
+  -- 🎉 no goals
 #align has_strict_fderiv_at.mul_const HasStrictFDerivAt.mul_const
 
 theorem HasFDerivWithinAt.mul_const' (ha : HasFDerivWithinAt a a' s x) (b : 𝔸) :
@@ -402,8 +419,11 @@ theorem HasFDerivWithinAt.mul_const' (ha : HasFDerivWithinAt a a' s x) (b : 𝔸
 theorem HasFDerivWithinAt.mul_const (hc : HasFDerivWithinAt c c' s x) (d : 𝔸') :
     HasFDerivWithinAt (fun y => c y * d) (d • c') s x := by
   convert hc.mul_const' d
+  -- ⊢ d • c' = smulRight c' d
   ext z
+  -- ⊢ ↑(d • c') z = ↑(smulRight c' d) z
   apply mul_comm
+  -- 🎉 no goals
 #align has_fderiv_within_at.mul_const HasFDerivWithinAt.mul_const
 
 theorem HasFDerivAt.mul_const' (ha : HasFDerivAt a a' x) (b : 𝔸) :
@@ -414,8 +434,11 @@ theorem HasFDerivAt.mul_const' (ha : HasFDerivAt a a' x) (b : 𝔸) :
 theorem HasFDerivAt.mul_const (hc : HasFDerivAt c c' x) (d : 𝔸') :
     HasFDerivAt (fun y => c y * d) (d • c') x := by
   convert hc.mul_const' d
+  -- ⊢ d • c' = smulRight c' d
   ext z
+  -- ⊢ ↑(d • c') z = ↑(smulRight c' d) z
   apply mul_comm
+  -- 🎉 no goals
 #align has_fderiv_at.mul_const HasFDerivAt.mul_const
 
 theorem DifferentiableWithinAt.mul_const (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
@@ -521,6 +544,7 @@ theorem hasFDerivAt_ring_inverse (x : Rˣ) :
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
+     -- 🎉 no goals
 #align has_fderiv_at_ring_inverse hasFDerivAt_ring_inverse
 
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
@@ -580,6 +604,7 @@ open NormedRing ContinuousLinearMap Ring
 inversion operation is the linear map `λ t, - x⁻¹ * t * x⁻¹`. -/
 theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x :=
   by simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
+     -- 🎉 no goals
 #align has_fderiv_at_inv' hasFDerivAt_inv'
 
 theorem differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
@@ -604,7 +629,9 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]
+  -- ⊢ fderiv 𝕜 Inv.inv x = -↑(↑(mulLeftRight 𝕜 R) x⁻¹) x⁻¹
   exact fderiv_inv' hx
+  -- 🎉 no goals
 #align fderiv_within_inv' fderivWithin_inv'
 
 variable {h : E → R} {z : E} {S : Set E}

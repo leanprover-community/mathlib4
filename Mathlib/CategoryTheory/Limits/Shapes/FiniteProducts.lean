@@ -45,8 +45,11 @@ instance (priority := 10) hasFiniteProducts_of_hasFiniteLimits [HasFiniteLimits 
 instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
     HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
+  -- ⊢ HasLimitsOfShape (Discrete ι) C
   haveI : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
+  -- ⊢ HasLimitsOfShape (Discrete ι) C
   exact hasLimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
+  -- 🎉 no goals
 #align category_theory.limits.has_limits_of_shape_discrete CategoryTheory.Limits.hasLimitsOfShape_discrete
 
 /-- We can now write this for powers. -/
@@ -75,14 +78,18 @@ class HasFiniteCoproducts : Prop where
 instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
     HasColimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
+  -- ⊢ HasColimitsOfShape (Discrete ι) C
   haveI : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n
+  -- ⊢ HasColimitsOfShape (Discrete ι) C
   exact hasColimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
+  -- 🎉 no goals
 #align category_theory.limits.has_colimits_of_shape_discrete CategoryTheory.Limits.hasColimitsOfShape_discrete
 
 /-- If `C` has finite colimits then it has finite coproducts. -/
 instance (priority := 10) hasFiniteCoproducts_of_hasFiniteColimits [HasFiniteColimits C] :
     HasFiniteCoproducts C :=
   ⟨fun J => by infer_instance⟩
+               -- 🎉 no goals
 #align category_theory.limits.has_finite_coproducts_of_has_finite_colimits CategoryTheory.Limits.hasFiniteCoproducts_of_hasFiniteColimits
 
 /-- If a category has all coproducts then in particular it has finite coproducts.

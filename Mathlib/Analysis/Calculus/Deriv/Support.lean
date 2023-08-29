@@ -37,10 +37,15 @@ open Function
 
 theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro x
+  -- ⊢ x ∈ support (deriv f) → x ∈ tsupport f
   rw [← not_imp_not]
+  -- ⊢ ¬x ∈ tsupport f → ¬x ∈ support (deriv f)
   intro h2x
+  -- ⊢ ¬x ∈ support (deriv f)
   rw [not_mem_tsupport_iff_eventuallyEq] at h2x
+  -- ⊢ ¬x ∈ support (deriv f)
   exact nmem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
+  -- 🎉 no goals
 #align support_deriv_subset support_deriv_subset
 
 theorem HasCompactSupport.deriv (hf : HasCompactSupport f) : HasCompactSupport (deriv f) :=

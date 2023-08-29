@@ -102,10 +102,13 @@ protected theorem comp_of_aemeasurable {u : γ → δ} (h : IdentDistrib f g μ 
     (hu : AEMeasurable u (Measure.map f μ)) : IdentDistrib (u ∘ f) (u ∘ g) μ ν :=
   { aemeasurable_fst := hu.comp_aemeasurable h.aemeasurable_fst
     aemeasurable_snd := by rw [h.map_eq] at hu; exact hu.comp_aemeasurable h.aemeasurable_snd
+                           -- ⊢ AEMeasurable (u ∘ g)
+                                                -- 🎉 no goals
     map_eq := by
       rw [← AEMeasurable.map_map_of_aemeasurable hu h.aemeasurable_fst, ←
         AEMeasurable.map_map_of_aemeasurable _ h.aemeasurable_snd, h.map_eq]
       rwa [← h.map_eq] }
+      -- 🎉 no goals
 #align probability_theory.ident_distrib.comp_of_ae_measurable ProbabilityTheory.IdentDistrib.comp_of_aemeasurable
 
 protected theorem comp {u : γ → δ} (h : IdentDistrib f g μ ν) (hu : Measurable u) :
@@ -132,8 +135,11 @@ alias measure_preimage_eq := measure_mem_eq
 theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})
     (hp : ∀ᵐ x ∂μ, p (f x)) : ∀ᵐ x ∂ν, p (g x) := by
   apply (ae_map_iff h.aemeasurable_snd pmeas).1
+  -- ⊢ ∀ᵐ (y : γ) ∂Measure.map g ν, p y
   rw [← h.map_eq]
+  -- ⊢ ∀ᵐ (y : γ) ∂Measure.map f μ, p y
   exact (ae_map_iff h.aemeasurable_fst pmeas).2 hp
+  -- 🎉 no goals
 #align probability_theory.ident_distrib.ae_snd ProbabilityTheory.IdentDistrib.ae_snd
 
 theorem ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
@@ -153,10 +159,15 @@ theorem aestronglyMeasurable_fst [TopologicalSpace γ] [MetrizableSpace γ] [Ope
 theorem aestronglyMeasurable_snd [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable g ν := by
   refine' aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨h.aemeasurable_snd, _⟩
+  -- ⊢ ∃ t, IsSeparable t ∧ ∀ᵐ (x : β) ∂ν, g x ∈ t
   rcases(aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
+  -- ⊢ ∃ t, IsSeparable t ∧ ∀ᵐ (x : β) ∂ν, g x ∈ t
   refine' ⟨closure t, t_sep.closure, _⟩
+  -- ⊢ ∀ᵐ (x : β) ∂ν, g x ∈ closure t
   apply h.ae_mem_snd isClosed_closure.measurableSet
+  -- ⊢ ∀ᵐ (x : α) ∂μ, f x ∈ closure t
   filter_upwards [ht] with x hx using subset_closure hx
+  -- 🎉 no goals
 #align probability_theory.ident_distrib.ae_strongly_measurable_snd ProbabilityTheory.IdentDistrib.aestronglyMeasurable_snd
 
 theorem aestronglyMeasurable_iff [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
@@ -169,11 +180,13 @@ theorem essSup_eq [ConditionallyCompleteLinearOrder γ] [TopologicalSpace γ] [O
   have I : ∀ a, μ {x : α | a < f x} = ν {x : β | a < g x} := fun a =>
     h.measure_mem_eq measurableSet_Ioi
   simp_rw [essSup_eq_sInf, I]
+  -- 🎉 no goals
 #align probability_theory.ident_distrib.ess_sup_eq ProbabilityTheory.IdentDistrib.essSup_eq
 
 theorem lintegral_eq {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     ∫⁻ x, f x ∂μ = ∫⁻ x, g x ∂ν := by
   change ∫⁻ x, id (f x) ∂μ = ∫⁻ x, id (g x) ∂ν
+  -- ⊢ ∫⁻ (x : α), id (f x) ∂μ = ∫⁻ (x : β), id (g x) ∂ν
   rw [← lintegral_map' aemeasurable_id h.aemeasurable_fst, ←
     lintegral_map' aemeasurable_id h.aemeasurable_snd, h.map_eq]
 #align probability_theory.ident_distrib.lintegral_eq ProbabilityTheory.IdentDistrib.lintegral_eq
@@ -181,6 +194,7 @@ theorem lintegral_eq {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (h : IdentD
 theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) : ∫ x, f x ∂μ = ∫ x, g x ∂ν := by
   by_cases hf : AEStronglyMeasurable f μ
+  -- ⊢ ∫ (x : α), f x ∂μ = ∫ (x : β), g x ∂ν
   · have A : AEStronglyMeasurable id (Measure.map f μ) := by
       rw [aestronglyMeasurable_iff_aemeasurable_separable]
       rcases(aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
@@ -189,25 +203,41 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
       · filter_upwards [ht] with x hx using subset_closure hx
       · exact isClosed_closure.measurableSet
     change ∫ x, id (f x) ∂μ = ∫ x, id (g x) ∂ν
+    -- ⊢ ∫ (x : α), id (f x) ∂μ = ∫ (x : β), id (g x) ∂ν
     rw [← integral_map h.aemeasurable_fst A]
+    -- ⊢ ∫ (y : γ), id y ∂Measure.map f μ = ∫ (x : β), id (g x) ∂ν
     rw [h.map_eq] at A
+    -- ⊢ ∫ (y : γ), id y ∂Measure.map f μ = ∫ (x : β), id (g x) ∂ν
     rw [← integral_map h.aemeasurable_snd A, h.map_eq]
+    -- 🎉 no goals
   · rw [integral_non_aestronglyMeasurable hf]
+    -- ⊢ 0 = ∫ (x : β), g x ∂ν
     rw [h.aestronglyMeasurable_iff] at hf
+    -- ⊢ 0 = ∫ (x : β), g x ∂ν
     rw [integral_non_aestronglyMeasurable hf]
+    -- 🎉 no goals
 #align probability_theory.ident_distrib.integral_eq ProbabilityTheory.IdentDistrib.integral_eq
 
 theorem snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
     (p : ℝ≥0∞) : snorm f p μ = snorm g p ν := by
   by_cases h0 : p = 0
+  -- ⊢ snorm f p μ = snorm g p ν
   · simp [h0]
+    -- 🎉 no goals
   by_cases h_top : p = ∞
+  -- ⊢ snorm f p μ = snorm g p ν
   · simp only [h_top, snorm, snormEssSup, ENNReal.top_ne_zero, eq_self_iff_true, if_true, if_false]
+    -- ⊢ essSup (fun x => ↑‖f x‖₊) μ = essSup (fun x => ↑‖g x‖₊) ν
     apply essSup_eq
+    -- ⊢ IdentDistrib (fun x => ↑‖f x‖₊) fun x => ↑‖g x‖₊
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
+    -- 🎉 no goals
   simp only [snorm_eq_snorm' h0 h_top, snorm', one_div]
+  -- ⊢ (∫⁻ (a : α), ↑‖f a‖₊ ^ ENNReal.toReal p ∂μ) ^ (ENNReal.toReal p)⁻¹ = (∫⁻ (a  …
   congr 1
+  -- ⊢ ∫⁻ (a : α), ↑‖f a‖₊ ^ ENNReal.toReal p ∂μ = ∫⁻ (a : β), ↑‖g a‖₊ ^ ENNReal.to …
   apply lintegral_eq
+  -- ⊢ IdentDistrib (fun x => ↑‖f x‖₊ ^ ENNReal.toReal p) fun x => ↑‖g x‖₊ ^ ENNRea …
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
     p.toReal)
 #align probability_theory.ident_distrib.snorm_eq ProbabilityTheory.IdentDistrib.snorm_eq
@@ -215,8 +245,11 @@ theorem snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDis
 theorem memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : Memℒp f p μ) : Memℒp g p ν := by
   refine' ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, _⟩
+  -- ⊢ snorm g p ν < ⊤
   rw [← h.snorm_eq]
+  -- ⊢ snorm f p μ < ⊤
   exact hf.2
+  -- 🎉 no goals
 #align probability_theory.ident_distrib.mem_ℒp_snd ProbabilityTheory.IdentDistrib.memℒp_snd
 
 theorem memℒp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
@@ -227,7 +260,9 @@ theorem memℒp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h 
 theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
+  -- ⊢ Memℒp g 1
   exact h.memℒp_snd hf
+  -- 🎉 no goals
 #align probability_theory.ident_distrib.integrable_snd ProbabilityTheory.IdentDistrib.integrable_snd
 
 theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
@@ -291,12 +326,17 @@ theorem const_div [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : 
 theorem evariance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     evariance f μ = evariance g ν := by
   convert (h.sub_const (∫ x, f x ∂μ)).nnnorm.coe_nnreal_ennreal.sq.lintegral_eq
+  -- ⊢ evariance g ν = ∫⁻ (x : β), ↑‖g x - ∫ (x : α), f x ∂μ‖₊ ^ 2 ∂ν
   rw [h.integral_eq]
+  -- ⊢ evariance g ν = ∫⁻ (x : β), ↑‖g x - ∫ (x : β), g x ∂ν‖₊ ^ 2 ∂ν
   rfl
+  -- 🎉 no goals
 #align probability_theory.ident_distrib.evariance_eq ProbabilityTheory.IdentDistrib.evariance_eq
 
 theorem variance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     variance f μ = variance g ν := by rw [variance, h.evariance_eq]; rfl
+                                      -- ⊢ ENNReal.toReal (evariance g ν) = variance g ν
+                                                                     -- 🎉 no goals
 #align probability_theory.ident_distrib.variance_eq ProbabilityTheory.IdentDistrib.variance_eq
 
 end IdentDistrib
@@ -314,18 +354,26 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
   refine' uniformIntegrable_of' hp hp' hfmeas fun ε hε => _
+  -- ⊢ ∃ C, ∀ (i : ι), snorm (Set.indicator {x | C ≤ ‖f i x‖₊} (f i)) p μ ≤ ENNReal …
   by_cases hι : Nonempty ι
+  -- ⊢ ∃ C, ∀ (i : ι), snorm (Set.indicator {x | C ≤ ‖f i x‖₊} (f i)) p μ ≤ ENNReal …
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
+  -- ⊢ ∃ C, ∀ (i : ι), snorm (Set.indicator {x | C ≤ ‖f i x‖₊} (f i)) p μ ≤ ENNReal …
+          -- 🎉 no goals
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.snorm_indicator_norm_ge_pos_le μ (hfmeas _) hε
+  -- ⊢ ∃ C, ∀ (i : ι), snorm (Set.indicator {x | C ≤ ‖f i x‖₊} (f i)) p μ ≤ ENNReal …
   refine' ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq _) hC₂⟩
+  -- ⊢ snorm (Set.indicator {x | { val := C, property := (_ : 0 ≤ C) } ≤ ‖f i x‖₊}  …
   have : {x : α | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊}.indicator (f i) =
       (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then x else 0) ∘ f i := by
     ext x
     simp only [Set.indicator, Set.mem_setOf_eq]; norm_cast
   simp_rw [coe_nnnorm, this]
+  -- ⊢ snorm ((fun x => if { val := C, property := (_ : 0 ≤ C) } ≤ ‖x‖₊ then x else …
   rw [← snorm_map_measure _ (hf i).aemeasurable_fst, (hf i).map_eq,
     snorm_map_measure _ (hf j).aemeasurable_fst]
   · rfl
+    -- 🎉 no goals
   all_goals
     exact_mod_cast aestronglyMeasurable_id.indicator
       (measurableSet_le measurable_const measurable_nnnorm)
@@ -338,9 +386,13 @@ theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α �
   have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>
     (hf i).aestronglyMeasurable_iff.2 hℒp.1
   set g : ι → α → E := fun i => (hfmeas i).choose
+  -- ⊢ UniformIntegrable f p μ
   have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfmeas i).1
+  -- ⊢ UniformIntegrable f p μ
   have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i => (Exists.choose_spec <| hfmeas i).2.symm
+  -- ⊢ UniformIntegrable f p μ
   have hgℒp : Memℒp (g j) p μ := hℒp.ae_eq (hgeq j).symm
+  -- ⊢ UniformIntegrable f p μ
   exact UniformIntegrable.ae_eq
     (Memℒp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>
       (IdentDistrib.of_ae_eq (hgmeas i).aemeasurable (hgeq i)).trans

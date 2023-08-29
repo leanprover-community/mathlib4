@@ -101,13 +101,21 @@ end
 theorem span_singleton_annIdealGenerator (a : A) :
     Ideal.span {annIdealGenerator 𝕜 a} = annIdeal 𝕜 a := by
   by_cases h : annIdealGenerator 𝕜 a = 0
+  -- ⊢ Ideal.span {annIdealGenerator 𝕜 a} = annIdeal 𝕜 a
   · rw [h, annIdealGenerator_eq_zero_iff.mp h, Set.singleton_zero, Ideal.span_zero]
+    -- 🎉 no goals
   · rw [annIdealGenerator, Ideal.span_singleton_mul_right_unit, Ideal.span_singleton_generator]
+    -- ⊢ IsUnit (↑C (leadingCoeff (IsPrincipal.generator (annIdeal 𝕜 a)))⁻¹)
     apply Polynomial.isUnit_C.mpr
+    -- ⊢ IsUnit (leadingCoeff (IsPrincipal.generator (annIdeal 𝕜 a)))⁻¹
     apply IsUnit.mk0
+    -- ⊢ (leadingCoeff (IsPrincipal.generator (annIdeal 𝕜 a)))⁻¹ ≠ 0
     apply inv_eq_zero.not.mpr
+    -- ⊢ ¬leadingCoeff (IsPrincipal.generator (annIdeal 𝕜 a)) = 0
     apply Polynomial.leadingCoeff_eq_zero.not.mpr
+    -- ⊢ ¬IsPrincipal.generator (annIdeal 𝕜 a) = 0
     apply (mul_ne_zero_iff.mp h).1
+    -- 🎉 no goals
 #align polynomial.span_singleton_ann_ideal_generator Polynomial.span_singleton_annIdealGenerator
 
 /-- The annihilating ideal generator is a member of the annihilating ideal. -/
@@ -118,6 +126,7 @@ theorem annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal �
 theorem mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
     p ∈ annIdeal 𝕜 a ↔ ∃ s : 𝕜[X], p = s • annIdealGenerator 𝕜 a := by
   simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a, Ideal.span]
+  -- 🎉 no goals
 #align polynomial.mem_iff_eq_smul_ann_ideal_generator Polynomial.mem_iff_eq_smul_annIdealGenerator
 
 /-- The generator we chose for the annihilating ideal is monic when the ideal is non-zero. -/
@@ -142,6 +151,7 @@ variable {𝕜}
 theorem mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
     p ∈ annIdeal 𝕜 a ↔ annIdealGenerator 𝕜 a ∣ p := by
   rw [← Ideal.mem_span_singleton, span_singleton_annIdealGenerator]
+  -- 🎉 no goals
 #align polynomial.mem_iff_ann_ideal_generator_dvd Polynomial.mem_iff_annIdealGenerator_dvd
 
 /-- The generator of the annihilating ideal has minimal degree among
@@ -156,10 +166,15 @@ variable (𝕜)
 /-- The generator of the annihilating ideal is the minimal polynomial. -/
 theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpoly 𝕜 a := by
   by_cases h : annIdealGenerator 𝕜 a = 0
+  -- ⊢ annIdealGenerator 𝕜 a = minpoly 𝕜 a
   · rw [h, minpoly.eq_zero]
+    -- ⊢ ¬IsIntegral 𝕜 a
     rintro ⟨p, p_monic, hp : aeval a p = 0⟩
+    -- ⊢ False
     refine' p_monic.ne_zero (Ideal.mem_bot.mp _)
+    -- ⊢ p ∈ ⊥
     simpa only [annIdealGenerator_eq_zero_iff.mp h] using mem_annIdeal_iff_aeval_eq_zero.mpr hp
+    -- 🎉 no goals
   · exact minpoly.unique _ _ (monic_annIdealGenerator _ _ h) (annIdealGenerator_aeval_eq_zero _ _)
       fun q q_monic hq =>
         degree_annIdealGenerator_le_of_mem a q (mem_annIdeal_iff_aeval_eq_zero.mpr hq)
@@ -171,11 +186,17 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
 theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
     (p_gen : Ideal.span {p} = annIdeal 𝕜 a) : annIdealGenerator 𝕜 a = p := by
   by_cases h : p = 0
+  -- ⊢ annIdealGenerator 𝕜 a = p
   · rwa [h, annIdealGenerator_eq_zero_iff, ← p_gen, Ideal.span_singleton_eq_bot.mpr]
+    -- 🎉 no goals
   · rw [← span_singleton_annIdealGenerator, Ideal.span_singleton_eq_span_singleton] at p_gen
+    -- ⊢ annIdealGenerator 𝕜 a = p
     rw [eq_comm]
+    -- ⊢ p = annIdealGenerator 𝕜 a
     apply eq_of_monic_of_associated p_monic _ p_gen
+    -- ⊢ Monic (annIdealGenerator 𝕜 a)
     · apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
+      -- 🎉 no goals
 #align polynomial.monic_generator_eq_minpoly Polynomial.monic_generator_eq_minpoly
 
 end Field

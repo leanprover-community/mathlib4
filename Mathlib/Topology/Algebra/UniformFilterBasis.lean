@@ -43,12 +43,17 @@ theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
       F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U := by
   letI := B.uniformSpace
+  -- ⊢ Cauchy F ↔ NeBot F ∧ ∀ (U : Set G), U ∈ B → ∃ M, M ∈ F ∧ ∀ (x : G), x ∈ M →  …
   haveI := B.uniformAddGroup
+  -- ⊢ Cauchy F ↔ NeBot F ∧ ∀ (U : Set G), U ∈ B → ∃ M, M ∈ F ∧ ∀ (x : G), x ∈ M →  …
   suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
     constructor <;> rintro ⟨h', h⟩ <;> refine' ⟨h', _⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
+  -- ⊢ map (fun x => x.snd - x.fst) (F ×ˢ F) ≤ nhds 0 ↔ ∀ (U : Set G), U ∈ B → ∃ M, …
   change Tendsto _ _ _ ↔ _
+  -- ⊢ Tendsto (fun x => x.snd - x.fst) (F ×ˢ F) (nhds 0) ↔ ∀ (U : Set G), U ∈ B →  …
   simp [(basis_sets F).prod_self.tendsto_iff B.nhds_zero_hasBasis, @forall_swap (_ ∈ _) G]
+  -- 🎉 no goals
 #align add_group_filter_basis.cauchy_iff AddGroupFilterBasis.cauchy_iff
 
 end AddGroupFilterBasis

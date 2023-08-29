@@ -102,13 +102,17 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b�
 
 theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
   intro b₁ b₂ h
+  -- ⊢ b₁ = b₂
   simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
+  -- 🎉 no goals
 #align prod.mk.inj_left Prod.mk.inj_left
 
 theorem mk.inj_right {α β : Type*} (b : β) :
     Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
+  -- ⊢ b₁ = b₂
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
+  -- 🎉 no goals
 #align prod.mk.inj_right Prod.mk.inj_right
 
 lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
@@ -119,6 +123,7 @@ lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).e
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
   rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
+  -- 🎉 no goals
 #align prod.ext_iff Prod.ext_iff
 
 @[ext]
@@ -213,14 +218,17 @@ theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
 
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp
+                             -- 🎉 no goals
 #align prod.eq_iff_fst_eq_snd_eq Prod.eq_iff_fst_eq_snd_eq
 
 theorem fst_eq_iff : ∀ {p : α × β} {x : α}, p.1 = x ↔ p = (x, p.2)
   | ⟨a, b⟩, x => by simp
+                    -- 🎉 no goals
 #align prod.fst_eq_iff Prod.fst_eq_iff
 
 theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
+                    -- 🎉 no goals
 #align prod.snd_eq_iff Prod.snd_eq_iff
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
@@ -228,9 +236,14 @@ variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
   ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
+              -- ⊢ r (a₁✝, b₁✝).fst (a₂✝, b₂✝).fst ∨ (a₁✝, b₁✝).fst = (a₂✝, b₂✝).fst ∧ s (a₁✝,  …
+                          -- 🎉 no goals
+                          -- 🎉 no goals
     match p, q, h with
     | (a, b), (c, d), Or.inl h => Lex.left _ _ h
     | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
+                                          -- ⊢ Prod.Lex r s (a, b) ((a, b).fst, d)
+                                                   -- 🎉 no goals
 #align prod.lex_def Prod.lex_def
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
@@ -259,6 +272,9 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+      -- ⊢ False
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
@@ -292,8 +308,11 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (.left _ _ hij)
+      -- 🎉 no goals
     · exact (total_of s a b).imp (.right _) (.right _)
+      -- 🎉 no goals
     · exact Or.inr (.left _ _ hji) ⟩
+      -- 🎉 no goals
 #align prod.is_total_right Prod.isTotal_right
 
 instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
@@ -301,8 +320,11 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
 ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
+  -- ⊢ Prod.Lex r s (i, a) (i, b) ∨ (i, a) = (i, b) ∨ Prod.Lex r s (i, b) (i, a)
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
+  -- ⊢ Prod.Lex r s (i, a) (j, b) ∨ (i, a) = (j, b) ∨ Prod.Lex r s (j, b) (i, a)
   { exact Or.inr (Or.inr $ Lex.left _ _ hji) }⟩
+  -- 🎉 no goals
 
 end Prod
 
@@ -330,6 +352,7 @@ theorem Bijective.Prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (ma
 theorem LeftInverse.Prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
     LeftInverse (map f₁ g₁) (map f₂ g₂) :=
   fun a ↦ by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
+             -- 🎉 no goals
 #align function.left_inverse.prod_map Function.LeftInverse.Prod_map
 
 theorem RightInverse.Prod_map :
@@ -354,11 +377,14 @@ theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
   ⟨fun h =>
     ⟨fun a₁ a₂ ha => by
       inhabit β
+      -- ⊢ a₁ = a₂
       injection
         @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha : _),
       fun b₁ b₂ hb => by
       inhabit α
+      -- ⊢ b₁ = b₂
       injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
+      -- 🎉 no goals
     fun h => h.1.Prod_map h.2⟩
 #align prod.map_injective Prod.map_injective
 
@@ -368,12 +394,18 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
   ⟨fun h =>
     ⟨fun c => by
       inhabit δ
+      -- ⊢ ∃ a, f a = c
       obtain ⟨⟨a, b⟩, h⟩ := h (c, default)
+      -- ⊢ ∃ a, f a = c
       exact ⟨a, congr_arg Prod.fst h⟩,
+      -- 🎉 no goals
       fun d => by
       inhabit γ
+      -- ⊢ ∃ a, g a = d
       obtain ⟨⟨a, b⟩, h⟩ := h (default, d)
+      -- ⊢ ∃ a, g a = d
       exact ⟨b, congr_arg Prod.snd h⟩⟩,
+      -- 🎉 no goals
     fun h => h.1.Prod_map h.2⟩
 #align prod.map_surjective Prod.map_surjective
 
@@ -381,8 +413,11 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
 theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
     Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
   haveI := Nonempty.map f ‹_›
+  -- ⊢ Bijective (map f g) ↔ Bijective f ∧ Bijective g
   haveI := Nonempty.map g ‹_›
+  -- ⊢ Bijective (map f g) ↔ Bijective f ∧ Bijective g
   exact (map_injective.and map_surjective).trans (and_and_and_comm)
+  -- 🎉 no goals
 #align prod.map_bijective Prod.map_bijective
 
 @[simp]
@@ -391,10 +426,14 @@ theorem map_leftInverse [Nonempty β] [Nonempty δ] {f₁ : α → β} {g₁ : �
   ⟨fun h =>
     ⟨fun b => by
       inhabit δ
+      -- ⊢ f₁ (f₂ b) = b
       exact congr_arg Prod.fst (h (b, default)),
+      -- 🎉 no goals
       fun d => by
       inhabit β
+      -- ⊢ g₁ (g₂ d) = d
       exact congr_arg Prod.snd (h (default, d))⟩,
+      -- 🎉 no goals
     fun h => h.1.Prod_map h.2 ⟩
 #align prod.map_left_inverse Prod.map_leftInverse
 

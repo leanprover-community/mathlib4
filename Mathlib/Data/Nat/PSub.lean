@@ -54,17 +54,38 @@ theorem psub_zero : psub m 0 = some m := rfl
 theorem psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
 
 theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
+                                                                -- ⊢ pred zero = Option.getD (ppred zero) 0
+                                                                            -- 🎉 no goals
+                                                                            -- 🎉 no goals
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
 theorem sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getD 0
   | 0 => rfl
   | n + 1 => (pred_eq_ppred (m - n)).trans <| by rw [sub_eq_psub m n, psub]; cases psub m n <;> rfl
+                                                 -- ⊢ Option.getD (ppred (Option.getD (psub m n) 0)) 0 = Option.getD (psub m n >>= …
+                                                                             -- ⊢ Option.getD (ppred (Option.getD none 0)) 0 = Option.getD (none >>= ppred) 0
+                                                                                                -- 🎉 no goals
+                                                                                                -- 🎉 no goals
 #align nat.sub_eq_psub Nat.sub_eq_psub
 
 @[simp]
 theorem ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
   | 0 => by constructor <;> intro h <;> contradiction
+            -- ⊢ ppred 0 = some m → succ m = 0
+                            -- ⊢ succ m = 0
+                            -- ⊢ ppred 0 = some m
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
   | n + 1 => by constructor <;> intro h <;> injection h <;> subst m <;> rfl
+                -- ⊢ ppred (n + 1) = some m → succ m = n + 1
+                                -- ⊢ succ m = n + 1
+                                -- ⊢ ppred (n + 1) = some m
+                                            -- ⊢ succ m = n + 1
+                                            -- ⊢ ppred (n + 1) = some m
+                                                            -- ⊢ succ (Nat.add n 0) = n + 1
+                                                            -- ⊢ ppred (n + 1) = some (Nat.add n 0)
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align nat.ppred_eq_some Nat.ppred_eq_some
 
 -- Porting note: `contradiction` required an `intro` for the goals
@@ -73,26 +94,46 @@ theorem ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
 @[simp]
 theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
   | 0 => by simp
+            -- 🎉 no goals
   | n + 1 => by constructor <;> intro <;> contradiction
+                -- ⊢ ppred (n + 1) = none → n + 1 = 0
+                                -- ⊢ n + 1 = 0
+                                -- ⊢ ppred (n + 1) = none
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
 #align nat.ppred_eq_none Nat.ppred_eq_none
 
 theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
+               -- 🎉 no goals
   | n + 1, k => by
     apply Option.bind_eq_some.trans
+    -- ⊢ (∃ a, psub m (Nat.add n 0) = some a ∧ ppred a = some k) ↔ k + (n + 1) = m
     simp only [psub_eq_some, ppred_eq_some]
+    -- ⊢ (∃ a, a + Nat.add n 0 = m ∧ succ k = a) ↔ k + (n + 1) = m
     simp [add_comm, add_left_comm, Nat.succ_eq_add_one]
+    -- 🎉 no goals
 #align nat.psub_eq_some Nat.psub_eq_some
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
   cases s : psub m n <;> simp [eq_comm]
+  -- ⊢ none = none ↔ m < n
+                         -- ⊢ m < n
+                         -- ⊢ n ≤ m
   · show m < n
+    -- ⊢ m < n
     refine' lt_of_not_ge fun h => _
+    -- ⊢ False
     cases' le.dest h with k e
+    -- ⊢ False
     injection s.symm.trans (psub_eq_some.2 <| (add_comm _ _).trans e)
+    -- 🎉 no goals
   · show n ≤ m
+    -- ⊢ n ≤ m
     rw [← psub_eq_some.1 s]
+    -- ⊢ n ≤ val✝ + n
     apply Nat.le_add_left
+    -- 🎉 no goals
 #align nat.psub_eq_none Nat.psub_eq_none
 
 theorem ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
@@ -108,7 +149,9 @@ theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
     simp [Option.bind_eq_bind, Option.bind_some]
+    -- ⊢ psub m (n + succ n✝) = do
     simp [*, Nat.add_succ]
+    -- 🎉 no goals
 #align nat.psub_add Nat.psub_add
 
 /-- Same as `psub`, but with a more efficient implementation. -/
@@ -119,9 +162,13 @@ def psub' (m n : ℕ) : Option ℕ :=
 
 theorem psub'_eq_psub (m n) : psub' m n = psub m n := by
   rw [psub']
+  -- ⊢ (if n ≤ m then some (m - n) else none) = psub m n
   split_ifs with h
+  -- ⊢ some (m - n) = psub m n
   exact (psub_eq_sub h).symm
+  -- ⊢ none = psub m n
   exact (psub_eq_none.2 (not_le.1 h)).symm
+  -- 🎉 no goals
 #align nat.psub'_eq_psub Nat.psub'_eq_psub
 
 end Nat

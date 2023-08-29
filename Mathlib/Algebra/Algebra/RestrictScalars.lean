@@ -113,7 +113,9 @@ instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) 
 instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
   ⟨fun r S M ↦ by
     rw [Algebra.smul_def, mul_smul]
+    -- ⊢ ↑(algebraMap R S✝) r • S • M = r • S • M
     rfl⟩
+    -- 🎉 no goals
 #align restrict_scalars.is_scalar_tower RestrictScalars.isScalarTower
 
 end
@@ -176,7 +178,9 @@ theorem RestrictScalars.addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
     (RestrictScalars.addEquiv R S M).symm ((r • s) • x) =
       r • (RestrictScalars.addEquiv R S M).symm (s • x) := by
   rw [Algebra.smul_def, mul_smul]
+  -- ⊢ ↑(AddEquiv.symm (addEquiv R S M)) (↑(algebraMap R S) r • s • x) = r • ↑(AddE …
   rfl
+  -- 🎉 no goals
 #align restrict_scalars.add_equiv_symm_map_smul_smul RestrictScalars.addEquiv_symm_map_smul_smul
 
 theorem RestrictScalars.lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :

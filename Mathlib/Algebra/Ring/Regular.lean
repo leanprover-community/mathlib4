@@ -20,7 +20,9 @@ The typeclass that restricts all terms of `α` to have this property is `NoZeroD
 theorem isLeftRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
     (h : ∀ x : α, k * x = 0 → x = 0) : IsLeftRegular k := by
   refine' fun x y (h' : k * x = k * y) => sub_eq_zero.mp (h _ _)
+  -- ⊢ k * (x - y) = 0
   rw [mul_sub, sub_eq_zero, h']
+  -- 🎉 no goals
 #align is_left_regular_of_non_zero_divisor isLeftRegular_of_non_zero_divisor
 
 /-- Right `Mul` by a `k : α` over `[Ring α]` is injective, if `k` is not a zero divisor.
@@ -28,7 +30,9 @@ The typeclass that restricts all terms of `α` to have this property is `NoZeroD
 theorem isRightRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
     (h : ∀ x : α, x * k = 0 → x = 0) : IsRightRegular k := by
   refine' fun x y (h' : x * k = y * k) => sub_eq_zero.mp (h _ _)
+  -- ⊢ (x - y) * k = 0
   rw [sub_mul, sub_eq_zero, h']
+  -- 🎉 no goals
 #align is_right_regular_of_non_zero_divisor isRightRegular_of_non_zero_divisor
 
 theorem isRegular_of_ne_zero' [NonUnitalNonAssocRing α] [NoZeroDivisors α] {k : α} (hk : k ≠ 0) :
@@ -43,7 +47,9 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
     {k : α} : IsRegular k ↔ k ≠ 0 :=
   ⟨fun h => by
     rintro rfl
+    -- ⊢ False
     exact not_not.mpr h.left not_isLeftRegular_zero, isRegular_of_ne_zero'⟩
+    -- 🎉 no goals
 #align is_regular_iff_ne_zero' isRegular_iff_ne_zero'
 
 /-- A ring with no zero divisors is a `CancelMonoidWithZero`.
@@ -52,6 +58,7 @@ Note this is not an instance as it forms a typeclass loop. -/
 @[reducible]
 def NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
   { (by infer_instance : MonoidWithZero α) with
+        -- 🎉 no goals
     mul_left_cancel_of_ne_zero := fun ha =>
       @IsRegular.left _ _ _ (isRegular_of_ne_zero' ha) _ _,
     mul_right_cancel_of_ne_zero := fun hb =>

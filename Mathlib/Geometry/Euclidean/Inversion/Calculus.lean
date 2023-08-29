@@ -71,7 +71,9 @@ protected theorem DifferentiableAt.inversion (hc : DifferentiableAt ℝ c a)
     (hR : DifferentiableAt ℝ R a) (hx : DifferentiableAt ℝ x a) (hne : x a ≠ c a) :
     DifferentiableAt ℝ (fun a ↦ inversion (c a) (R a) (x a)) a := by
   rw [← differentiableWithinAt_univ] at *
+  -- ⊢ DifferentiableWithinAt ℝ (fun a => inversion (c a) (R a) (x a)) univ a
   exact hc.inversion hR hx hne
+  -- 🎉 no goals
 
 protected theorem Differentiable.inversion (hc : Differentiable ℝ c)
     (hR : Differentiable ℝ R) (hx : Differentiable ℝ x) (hne : ∀ a, x a ≠ c a) :
@@ -89,17 +91,24 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
+  -- ⊢ HasFDerivAt (inversion c R) ((R / dist ((fun x x_1 => x + x_1) c x) c) ^ 2 • …
   have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x)
+  -- ⊢ HasFDerivAt (inversion c R) ?m.24683 (c + x)
   · simp_rw [inversion, dist_eq_norm, div_pow, div_eq_mul_inv]
+    -- ⊢ HasFDerivAt (fun x => (R ^ 2 * (‖x - c‖ ^ 2)⁻¹) • (x -ᵥ c) +ᵥ c) ?m.24683 (c …
     have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
+    -- ⊢ HasFDerivAt (fun x => (R ^ 2 * (‖x - c‖ ^ 2)⁻¹) • (x -ᵥ c) +ᵥ c) ?m.24683 (c …
     have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul
       (R ^ 2)
     exact (B.smul A).add_const c
+    -- 🎉 no goals
   refine this.congr_fderiv (LinearMap.ext_on_codisjoint
     (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
+    -- ⊢ ((‖x‖ ^ 2) ^ 2)⁻¹ * ‖x‖ ^ 2 = (‖x‖ ^ 2)⁻¹
     · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
+      -- 🎉 no goals
     simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
       two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
   · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,

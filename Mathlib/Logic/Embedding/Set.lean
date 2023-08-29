@@ -24,6 +24,7 @@ variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
     Set.range e.asEmbedding = setOf p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
+                                                                                         -- 🎉 no goals
 #align equiv.as_embedding_range Equiv.asEmbedding_range
 
 end Equiv
@@ -53,7 +54,15 @@ def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(
   toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
   left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]; rfl
+                          -- ⊢ ↑((fun f => optionElim f.fst ↑f.snd (_ : ↑f.snd ∈ (Set.range ↑f.fst)ᶜ)) ((fu …
+                                             -- 🎉 no goals
+                                             -- ⊢ ↑val✝ = some val✝
+                                                                    -- 🎉 no goals
   right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]; rfl
+                                   -- ⊢ ↑((fun f => { fst := Embedding.trans coeWithTop f, snd := { val := ↑f none,  …
+                                           -- ⊢ ↑(optionElim f y (_ : ↑{ fst := f, snd := { val := y, property := hy } }.snd …
+                                           -- 🎉 no goals
+                                                                  -- 🎉 no goals
 #align function.embedding.option_embedding_equiv Function.Embedding.optionEmbeddingEquiv
 #align function.embedding.option_embedding_equiv_apply_snd_coe Function.Embedding.optionEmbeddingEquiv_apply_snd_coe
 #align function.embedding.option_embedding_equiv_symm_apply Function.Embedding.optionEmbeddingEquiv_symm_apply
@@ -89,7 +98,9 @@ namespace Set
 def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
   ⟨fun x ↦ ⟨x.1, h x.2⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
     congr
+    -- ⊢ x = y
     injection h⟩
+    -- 🎉 no goals
 #align set.embedding_of_subset Set.embeddingOfSubset
 #align set.embedding_of_subset_apply Set.embeddingOfSubset_apply
 
@@ -113,10 +124,15 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
       (Subtype.impEmbedding _ _ fun x hx ↦ (Or.inr hx : p x ∨ q x))
   left_inv x := by
     by_cases hx : p x
+    -- ⊢ Sum.elim (↑(Subtype.impEmbedding (fun x => p x) (fun x => p x ∨ q x) (_ : ∀  …
     · rw [subtypeOrLeftEmbedding_apply_left _ hx]
+      -- ⊢ Sum.elim (↑(Subtype.impEmbedding (fun x => p x) (fun x => p x ∨ q x) (_ : ∀  …
       simp [Subtype.ext_iff]
+      -- 🎉 no goals
     · rw [subtypeOrLeftEmbedding_apply_right _ hx]
+      -- ⊢ Sum.elim (↑(Subtype.impEmbedding (fun x => p x) (fun x => p x ∨ q x) (_ : ∀  …
       simp [Subtype.ext_iff]
+      -- 🎉 no goals
   right_inv x := by
     cases x with
     | inl x =>

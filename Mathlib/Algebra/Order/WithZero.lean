@@ -87,10 +87,12 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [O
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
+                        -- 🎉 no goals
 #align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
 theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
+                               -- 🎉 no goals
 #align zero_le' zero_le'
 
 @[simp]
@@ -135,16 +137,21 @@ theorem one_le_mul₀ (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
 
 theorem le_of_le_mul_right (h : c ≠ 0) (hab : a * c ≤ b * c) : a ≤ b := by
   simpa only [mul_inv_cancel_right₀ h] using mul_le_mul_right' hab c⁻¹
+  -- 🎉 no goals
 #align le_of_le_mul_right le_of_le_mul_right
 
 theorem le_mul_inv_of_mul_le (h : c ≠ 0) (hab : a * c ≤ b) : a ≤ b * c⁻¹ :=
   le_of_le_mul_right h (by simpa [h] using hab)
+                           -- 🎉 no goals
 #align le_mul_inv_of_mul_le le_mul_inv_of_mul_le
 
 theorem mul_inv_le_of_le_mul (hab : a ≤ b * c) : a * c⁻¹ ≤ b := by
   by_cases h : c = 0
+  -- ⊢ a * c⁻¹ ≤ b
   · simp [h]
+    -- 🎉 no goals
   · exact le_of_le_mul_right h (by simpa [h] using hab)
+    -- 🎉 no goals
 #align mul_inv_le_of_le_mul mul_inv_le_of_le_mul
 
 theorem inv_le_one₀ (ha : a ≠ 0) : a⁻¹ ≤ 1 ↔ 1 ≤ a :=
@@ -165,6 +172,7 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
 
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
   by rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
+     -- 🎉 no goals
 #align div_le_div₀ div_le_div₀
 
 @[simp]
@@ -176,11 +184,15 @@ theorem mul_lt_mul_of_lt_of_le₀ (hab : a ≤ b) (hb : b ≠ 0) (hcd : c < d) :
   have hd : d ≠ 0 := ne_zero_of_lt hcd
   if ha : a = 0 then by
     rw [ha, zero_mul, zero_lt_iff]
+    -- ⊢ b * d ≠ 0
     exact mul_ne_zero hb hd
+    -- 🎉 no goals
   else
     if hc : c = 0 then by
       rw [hc, mul_zero, zero_lt_iff]
+      -- ⊢ b * d ≠ 0
       exact mul_ne_zero hb hd
+      -- 🎉 no goals
     else
       show Units.mk0 a ha * Units.mk0 c hc < Units.mk0 b hb * Units.mk0 d hd from
         mul_lt_mul_of_le_of_lt hab hcd
@@ -192,17 +204,23 @@ theorem mul_lt_mul₀ (hab : a < b) (hcd : c < d) : a * c < b * d :=
 
 theorem mul_inv_lt_of_lt_mul₀ (h : x < y * z) : x * z⁻¹ < y := by
   contrapose! h
+  -- ⊢ y * z ≤ x
   simpa only [inv_inv] using mul_inv_le_of_le_mul h
+  -- 🎉 no goals
 #align mul_inv_lt_of_lt_mul₀ mul_inv_lt_of_lt_mul₀
 
 theorem inv_mul_lt_of_lt_mul₀ (h : x < y * z) : y⁻¹ * x < z := by
   rw [mul_comm] at *
+  -- ⊢ x * y⁻¹ < z
   exact mul_inv_lt_of_lt_mul₀ h
+  -- 🎉 no goals
 #align inv_mul_lt_of_lt_mul₀ inv_mul_lt_of_lt_mul₀
 
 theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := by
   contrapose! h
+  -- ⊢ b ≤ a
   exact le_of_le_mul_right hc h
+  -- 🎉 no goals
 #align mul_lt_right₀ mul_lt_right₀
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
@@ -223,9 +241,13 @@ theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b �
 
 theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a) : b < d := by
   have ha : a ≠ 0 := ne_of_gt (lt_of_lt_of_le hc hh)
+  -- ⊢ b < d
   simp_rw [← inv_le_inv₀ ha (ne_of_gt hc)] at hh
+  -- ⊢ b < d
   have := mul_lt_mul_of_lt_of_le₀ hh (inv_ne_zero (ne_of_gt hc)) h
+  -- ⊢ b < d
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ (ne_of_gt hc)] using this
+  -- 🎉 no goals
 #align lt_of_mul_lt_mul_of_le₀ lt_of_mul_lt_mul_of_le₀
 
 theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
@@ -234,23 +256,29 @@ theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
 
 theorem mul_le_mul_left₀ (ha : a ≠ 0) : a * b ≤ a * c ↔ b ≤ c := by
   simp only [mul_comm a]
+  -- ⊢ b * a ≤ c * a ↔ b ≤ c
   exact mul_le_mul_right₀ ha
+  -- 🎉 no goals
 #align mul_le_mul_left₀ mul_le_mul_left₀
 
 theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right₀ (inv_ne_zero hc)]
+  -- 🎉 no goals
 #align div_le_div_right₀ div_le_div_right₀
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
   simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc]
+  -- 🎉 no goals
 #align div_le_div_left₀ div_le_div_left₀
 
 theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by
   rw [div_eq_mul_inv, le_mul_inv_iff₀ hc]
+  -- 🎉 no goals
 #align le_div_iff₀ le_div_iff₀
 
 theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
   rw [div_eq_mul_inv, mul_inv_le_iff₀ hc]
+  -- 🎉 no goals
 #align div_le_iff₀ div_le_iff₀
 
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
@@ -266,7 +294,9 @@ def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
 theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
   ext
+  -- ⊢ ↑(symm (mulLeft₀' ha)) x✝ = ↑(mulLeft₀' (_ : a⁻¹ ≠ 0)) x✝
   rfl
+  -- 🎉 no goals
 #align order_iso.mul_left₀'_symm OrderIso.mulLeft₀'_symm
 
 /-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
@@ -282,7 +312,9 @@ def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
 theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
   ext
+  -- ⊢ ↑(symm (mulRight₀' ha)) x✝ = ↑(mulRight₀' (_ : a⁻¹ ≠ 0)) x✝
   rfl
+  -- 🎉 no goals
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=

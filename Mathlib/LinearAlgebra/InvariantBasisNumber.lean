@@ -95,9 +95,13 @@ theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
   refine' ⟨fun h n => fun f hf => _, fun h => ⟨@fun n m f hf => _⟩⟩
+  -- ⊢ False
   · letI : StrongRankCondition R := h
+    -- ⊢ False
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
+    -- 🎉 no goals
   · by_contra H
+    -- ⊢ False
     exact
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
@@ -106,7 +110,9 @@ theorem strongRankCondition_iff_succ :
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
+  -- ⊢ Fintype.card α ≤ Fintype.card β
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
+  -- ⊢ Fintype.card α ≤ Fintype.card β
   exact
     le_of_fin_injective R ((Q.symm.toLinearMap.comp f).comp P.toLinearMap)
       (((LinearEquiv.symm Q).injective.comp i).comp (LinearEquiv.injective P))
@@ -115,7 +121,9 @@ theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α
 theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := Finsupp.linearEquivFunOnFinite R R β
+  -- ⊢ Fintype.card α ≤ Fintype.card β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
+  -- ⊢ Fintype.card α ≤ Fintype.card β
   exact
     card_le_of_injective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.injective.comp i).comp Q.injective)
@@ -136,7 +144,9 @@ theorem le_of_fin_surjective [RankCondition R] {n m : ℕ} (f : (Fin n → R) �
 theorem card_le_of_surjective [RankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
+  -- ⊢ Fintype.card β ≤ Fintype.card α
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
+  -- ⊢ Fintype.card β ≤ Fintype.card α
   exact
     le_of_fin_surjective R ((Q.symm.toLinearMap.comp f).comp P.toLinearMap)
       (((LinearEquiv.symm Q).surjective.comp i).comp (LinearEquiv.surjective P))
@@ -145,7 +155,9 @@ theorem card_le_of_surjective [RankCondition R] {α β : Type*} [Fintype α] [Fi
 theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := Finsupp.linearEquivFunOnFinite R R β
+  -- ⊢ Fintype.card β ≤ Fintype.card α
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
+  -- ⊢ Fintype.card β ≤ Fintype.card α
   exact
     card_le_of_surjective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.surjective.comp i).comp Q.surjective)
@@ -196,8 +208,11 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
+  -- ⊢ False
   refine' zero_ne_one (eq_of_fin_equiv R _)
+  -- ⊢ (Fin 0 → R) ≃ₗ[R] Fin 1 → R
   haveI := not_nontrivial_iff_subsingleton.1 h
+  -- ⊢ (Fin 0 → R) ≃ₗ[R] Fin 1 → R
   haveI : Subsingleton (Fin 1 → R) :=
     Subsingleton.intro <| fun a b => funext fun x => Subsingleton.elim _ _
   exact
@@ -225,10 +240,15 @@ which is not the case!
 -/
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
   constructor
+  -- ⊢ ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Injective ↑f → n ≤ m
   intro m n f i
+  -- ⊢ m ≤ n
   by_contra h
+  -- ⊢ False
   rw [not_le, ← Nat.add_one_le_iff, le_iff_exists_add] at h
+  -- ⊢ False
   obtain ⟨m, rfl⟩ := h
+  -- ⊢ False
   let e : Fin (n + 1 + m) ≃ Sum (Fin n) (Fin (1 + m)) :=
     (finCongr (add_assoc _ _ _)).trans finSumFinEquiv.symm
   let f' :=
@@ -236,9 +256,13 @@ instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCond
       ((LinearEquiv.sumArrowLequivProdArrow _ _ R R).symm.trans
           (LinearEquiv.funCongrLeft R R e)).toLinearMap
   have i' : Injective f' := i.comp (LinearEquiv.injective _)
+  -- ⊢ False
   apply @zero_ne_one (Fin (1 + m) → R) _ _
+  -- ⊢ 0 = 1
   apply (IsNoetherian.equivPUnitOfProdInjective f' i').injective
+  -- ⊢ ↑(IsNoetherian.equivPUnitOfProdInjective f' i') 0 = ↑(IsNoetherian.equivPUni …
   ext
+  -- 🎉 no goals
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 
 end
@@ -268,9 +292,13 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
       refine' fun a b hab => Ideal.Quotient.eq.2 fun h => _
+      -- ⊢ (↑e a - ↑e b) h ∈ I
       rw [Submodule.quotientRel_r_def] at hab
+      -- ⊢ (↑e a - ↑e b) h ∈ I
       rw [← LinearMap.map_sub]
+      -- ⊢ ↑e (a - b) h ∈ I
       exact Ideal.map_pi _ _ hab e h)
+      -- 🎉 no goals
 #noalign induced_map
 -- porting note: `#noalign` since this is marked `private`
 

@@ -53,7 +53,9 @@ irreducible_def vitaliFamily (K : ℝ) : VitaliFamily μ := by
     doubling property. We enlarge this family to add large sets, to make sure that all balls and not
     only small ones belong to the family, for convenience. -/
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
+  -- ⊢ VitaliFamily μ
   have Rpos : 0 < R := scalingScaleOf_pos _ _
+  -- ⊢ VitaliFamily μ
   have A : ∀ x : α, ∃ᶠ r in 𝓝[>] (0 : ℝ),
       μ (closedBall x (3 * r)) ≤ scalingConstantOf μ (max (4 * K + 3) 3) * μ (closedBall x r) := by
     intro x
@@ -71,6 +73,7 @@ contain all balls `closedBall y r` when `dist x y ≤ K * r`. -/
 theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ} (h : dist x y ≤ K * r)
     (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
+  -- ⊢ closedBall y r ∈ VitaliFamily.setsAt (vitaliFamily μ K) x
   simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_setOf_eq,
     isClosed_ball, true_and_iff, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
     measurableSet_closedBall]
@@ -78,17 +81,27 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     and large balls. For large balls, this follows directly from the enlargement we used in the
     definition. -/
   by_cases H : closedBall y r ⊆ closedBall x (R / 4)
+  -- ⊢ (∃ r_1, closedBall y r ⊆ closedBall x r_1 ∧ ↑↑μ (closedBall x (3 * r_1)) ≤ ↑ …
   swap; · exact Or.inr H
+  -- ⊢ (∃ r_1, closedBall y r ⊆ closedBall x r_1 ∧ ↑↑μ (closedBall x (3 * r_1)) ≤ ↑ …
+          -- 🎉 no goals
   left
+  -- ⊢ ∃ r_1, closedBall y r ⊆ closedBall x r_1 ∧ ↑↑μ (closedBall x (3 * r_1)) ≤ ↑( …
   /- For small balls, there is the difficulty that `r` could be large but still the ball could be
     small, if the annulus `{y | ε ≤ dist y x ≤ R/4}` is empty. We split between the cases `r ≤ R`
     and `r > R`, and use the doubling for the former and rough estimates for the latter. -/
   rcases le_or_lt r R with (hr | hr)
+  -- ⊢ ∃ r_1, closedBall y r ⊆ closedBall x r_1 ∧ ↑↑μ (closedBall x (3 * r_1)) ≤ ↑( …
   · refine' ⟨(K + 1) * r, _⟩
+    -- ⊢ closedBall y r ⊆ closedBall x ((K + 1) * r) ∧ ↑↑μ (closedBall x (3 * ((K + 1 …
     constructor
+    -- ⊢ closedBall y r ⊆ closedBall x ((K + 1) * r)
     · apply closedBall_subset_closedBall'
+      -- ⊢ r + dist y x ≤ (K + 1) * r
       rw [dist_comm]
+      -- ⊢ r + dist x y ≤ (K + 1) * r
       linarith
+      -- 🎉 no goals
     · have I1 : closedBall x (3 * ((K + 1) * r)) ⊆ closedBall y ((4 * K + 3) * r) := by
         apply closedBall_subset_closedBall'
         linarith
@@ -96,40 +109,58 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
         apply closedBall_subset_closedBall
         exact mul_le_mul_of_nonneg_right (le_max_left _ _) rpos.le
       apply (measure_mono (I1.trans I2)).trans
+      -- ⊢ ↑↑μ (closedBall y (max (4 * K + 3) 3 * r)) ≤ ↑(scalingConstantOf μ (max (4 * …
       exact measure_mul_le_scalingConstantOf_mul _
         ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
   · refine' ⟨R / 4, H, _⟩
+    -- ⊢ ↑↑μ (closedBall x (3 * (R / 4))) ≤ ↑(scalingConstantOf μ (max (4 * K + 3) 3) …
     have : closedBall x (3 * (R / 4)) ⊆ closedBall y r := by
       apply closedBall_subset_closedBall'
       have A : y ∈ closedBall y r := mem_closedBall_self rpos.le
       have B := mem_closedBall'.1 (H A)
       linarith
     apply (measure_mono this).trans _
+    -- ⊢ ↑↑μ (closedBall y r) ≤ ↑(scalingConstantOf μ (max (4 * K + 3) 3)) * ↑↑μ (clo …
     refine' le_mul_of_one_le_left (zero_le _) _
+    -- ⊢ 1 ≤ ↑(scalingConstantOf μ (max (4 * K + 3) 3))
     exact ENNReal.one_le_coe_iff.2 (le_max_right _ _)
+    -- 🎉 no goals
 #align is_unif_loc_doubling_measure.closed_ball_mem_vitali_family_of_dist_le_mul IsUnifLocDoublingMeasure.closedBall_mem_vitaliFamily_of_dist_le_mul
 
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
     Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by
   refine' (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨_, fun ε hε => _⟩
+  -- ⊢ ∀ᶠ (i : ι) in l, closedBall (w i) (δ i) ∈ VitaliFamily.setsAt (vitaliFamily  …
   · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
+    -- ⊢ closedBall (w j) (δ j) ∈ VitaliFamily.setsAt (vitaliFamily μ K) x
     exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
+    -- 🎉 no goals
   · rcases l.eq_or_neBot with rfl | h
+    -- ⊢ ∀ᶠ (i : ι) in ⊥, closedBall (w i) (δ i) ⊆ closedBall x ε
     · simp
+      -- 🎉 no goals
     have hK : 0 ≤ K := by
       rcases (xmem.and (δlim self_mem_nhdsWithin)).exists with ⟨j, hj, h'j⟩
       have : 0 ≤ K * δ j := nonempty_closedBall.1 ⟨x, hj⟩
       exact (mul_nonneg_iff_left_nonneg_of_pos (mem_Ioi.1 h'j)).1 this
     have δpos := eventually_mem_of_tendsto_nhdsWithin δlim
+    -- ⊢ ∀ᶠ (i : ι) in l, closedBall (w i) (δ i) ⊆ closedBall x ε
     replace δlim := tendsto_nhds_of_tendsto_nhdsWithin δlim
+    -- ⊢ ∀ᶠ (i : ι) in l, closedBall (w i) (δ i) ⊆ closedBall x ε
     replace hK : 0 < K + 1; · linarith
+    -- ⊢ 0 < K + 1
+                              -- 🎉 no goals
     apply (((Metric.tendsto_nhds.mp δlim _ (div_pos hε hK)).and δpos).and xmem).mono
+    -- ⊢ ∀ (x_1 : ι), (dist (δ x_1) 0 < ε / (K + 1) ∧ δ x_1 ∈ Ioi 0) ∧ x ∈ closedBall …
     rintro j ⟨⟨hjε, hj₀ : 0 < δ j⟩, hx⟩ y hy
+    -- ⊢ y ∈ closedBall x ε
     replace hjε : (K + 1) * δ j < ε := by
       simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
+    -- ⊢ dist y x ≤ ε
     linarith [dist_triangle_right y x (w j)]
+    -- 🎉 no goals
 #align is_unif_loc_doubling_measure.tendsto_closed_ball_filter_at IsUnifLocDoublingMeasure.tendsto_closedBall_filterAt
 
 end

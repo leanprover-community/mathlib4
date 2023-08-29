@@ -61,12 +61,19 @@ theorem hasSum_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     (hs : ∀ c, c ∉ Set.range e → 0 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : HasSum f a₁)
     (hg : HasSum g a₂) : a₁ ≤ a₂ := by
   rw [← hasSum_extend_zero he] at hf
+  -- ⊢ a₁ ≤ a₂
   refine hasSum_le (fun c => ?_) hf hg
+  -- ⊢ extend e f 0 c ≤ g c
   obtain ⟨i, rfl⟩ | h := em (c ∈ Set.range e)
+  -- ⊢ extend e f 0 (e i) ≤ g (e i)
   · rw [he.extend_apply]
+    -- ⊢ f i ≤ g (e i)
     exact h _
+    -- 🎉 no goals
   · rw [extend_apply' _ _ _ h]
+    -- ⊢ OfNat.ofNat 0 c ≤ g c
     exact hs _ h
+    -- 🎉 no goals
 #align has_sum_le_inj hasSum_le_inj
 
 theorem tsum_le_tsum_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
@@ -90,6 +97,7 @@ theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j)
   calc
     f i = ∑ i in {i}, f i := Finset.sum_singleton.symm
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
+                                 -- 🎉 no goals
 #align le_has_sum le_hasSum
 
 theorem sum_le_tsum {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 0 ≤ f i) (hf : Summable f) :
@@ -117,9 +125,13 @@ theorem tsum_le_of_sum_le (hf : Summable f) (h : ∀ s, ∑ i in s, f i ≤ a₂
 
 theorem tsum_le_of_sum_le' (ha₂ : 0 ≤ a₂) (h : ∀ s, ∑ i in s, f i ≤ a₂) : ∑' i, f i ≤ a₂ := by
   by_cases hf : Summable f
+  -- ⊢ ∑' (i : ι), f i ≤ a₂
   · exact tsum_le_of_sum_le hf h
+    -- 🎉 no goals
   · rw [tsum_eq_zero_of_not_summable hf]
+    -- ⊢ 0 ≤ a₂
     exact ha₂
+    -- 🎉 no goals
 #align tsum_le_of_sum_le' tsum_le_of_sum_le'
 
 theorem HasSum.nonneg (h : ∀ i, 0 ≤ g i) (ha : HasSum g a) : 0 ≤ a :=
@@ -132,23 +144,34 @@ theorem HasSum.nonpos (h : ∀ i, g i ≤ 0) (ha : HasSum g a) : a ≤ 0 :=
 
 theorem tsum_nonneg (h : ∀ i, 0 ≤ g i) : 0 ≤ ∑' i, g i := by
   by_cases hg : Summable g
+  -- ⊢ 0 ≤ ∑' (i : ι), g i
   · exact hg.hasSum.nonneg h
+    -- 🎉 no goals
   · rw [tsum_eq_zero_of_not_summable hg]
+    -- 🎉 no goals
 #align tsum_nonneg tsum_nonneg
 
 theorem tsum_nonpos (h : ∀ i, f i ≤ 0) : ∑' i, f i ≤ 0 := by
   by_cases hf : Summable f
+  -- ⊢ ∑' (i : ι), f i ≤ 0
   · exact hf.hasSum.nonpos h
+    -- 🎉 no goals
   · rw [tsum_eq_zero_of_not_summable hf]
+    -- 🎉 no goals
 #align tsum_nonpos tsum_nonpos
 
 -- porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
 theorem hasSum_zero_iff_of_nonneg (hf : ∀ i, 0 ≤ f i) : HasSum f 0 ↔ f = 0 := by
   refine' ⟨fun hf' => _, _⟩
+  -- ⊢ f = 0
   · ext i
+    -- ⊢ f i = OfNat.ofNat 0 i
     exact (hf i).antisymm' (le_hasSum hf' _ fun j _ => hf j)
+    -- 🎉 no goals
   · rintro rfl
+    -- ⊢ HasSum 0 0
     exact hasSum_zero
+    -- 🎉 no goals
 #align has_sum_zero_iff_of_nonneg hasSum_zero_iff_of_nonneg
 
 end OrderedAddCommMonoid
@@ -160,8 +183,11 @@ variable [OrderedAddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
 
 theorem hasSum_lt (h : f ≤ g) (hi : f i < g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ < a₂ := by
   have : update f i 0 ≤ update g i 0 := update_le_update_iff.mpr ⟨rfl.le, fun i _ => h i⟩
+  -- ⊢ a₁ < a₂
   have : 0 - f i + a₁ ≤ 0 - g i + a₂ := hasSum_le this (hf.update i 0) (hg.update i 0)
+  -- ⊢ a₁ < a₂
   simpa only [zero_sub, add_neg_cancel_left] using add_lt_add_of_lt_of_le hi this
+  -- 🎉 no goals
 #align has_sum_lt hasSum_lt
 
 @[mono]
@@ -185,7 +211,9 @@ theorem tsum_strict_mono (hf : Summable f) (hg : Summable g) (h : f < g) :
 theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < g i) :
     0 < ∑' i, g i := by
   rw [← tsum_zero]
+  -- ⊢ ∑' (x : ?m.47496), 0 < ∑' (i : ι), g i
   exact tsum_lt_tsum hg hi summable_zero hsum
+  -- 🎉 no goals
 #align tsum_pos tsum_pos
 
 end OrderedAddCommGroup
@@ -209,10 +237,12 @@ theorem hasSum_zero_iff : HasSum f 0 ↔ ∀ x, f x = 0 :=
 
 theorem tsum_eq_zero_iff (hf : Summable f) : ∑' i, f i = 0 ↔ ∀ x, f x = 0 := by
   rw [← hasSum_zero_iff, hf.hasSum_iff]
+  -- 🎉 no goals
 #align tsum_eq_zero_iff tsum_eq_zero_iff
 
 theorem tsum_ne_zero_iff (hf : Summable f) : ∑' i, f i ≠ 0 ↔ ∃ x, f x ≠ 0 := by
   rw [Ne.def, tsum_eq_zero_iff hf, not_forall]
+  -- 🎉 no goals
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 
 theorem isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, f i) a :=
@@ -252,7 +282,9 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
       (Summable fun x : s => |f x|) ∧ Summable fun x : ↑sᶜ => |f x| :=
         summable_subtype_and_compl.symm
   _ ↔ (Summable fun x : s => f x) ∧ Summable fun x : ↑sᶜ => -f x := by simp only [h1, h2]
+                                                                       -- 🎉 no goals
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
+                       -- 🎉 no goals
 #align summable_abs_iff summable_abs_iff
 
 alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
@@ -265,10 +297,13 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
   have H : ∀ s : Finset ι, s.card • b ≤ ∑' _ : ι, b := fun s => by
     simpa using sum_le_hasSum s (fun a _ => hb.le) hf.hasSum
   obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
+  -- ⊢ Finite ι
   have : ∀ s : Finset ι, s.card ≤ n := fun s => by
     simpa [nsmul_le_nsmul_iff hb] using (H s).trans hn
   have : Fintype ι := fintypeOfFinsetCardLe n this
+  -- ⊢ Finite ι
   infer_instance
+  -- 🎉 no goals
 
 theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α]
     [Archimedean α] [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι => b) :

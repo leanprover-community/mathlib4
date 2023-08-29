@@ -56,6 +56,7 @@ theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Non
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp1,
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp2]
   simp
+  -- 🎉 no goals
 #align euclidean_geometry.dist_eq_iff_dist_orthogonal_projection_eq EuclideanGeometry.dist_eq_iff_dist_orthogonalProjection_eq
 
 /-- `p` is equidistant from a set of points in `s` if and only if its
@@ -79,8 +80,11 @@ theorem exists_dist_eq_iff_exists_dist_orthogonalProjection_eq {s : AffineSubspa
     [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
     (∃ r, ∀ p1 ∈ ps, dist p1 p = r) ↔ ∃ r, ∀ p1 ∈ ps, dist p1 ↑(orthogonalProjection s p) = r := by
   have h := dist_set_eq_iff_dist_orthogonalProjection_eq hps p
+  -- ⊢ (∃ r, ∀ (p1 : P), p1 ∈ ps → dist p1 p = r) ↔ ∃ r, ∀ (p1 : P), p1 ∈ ps → dist …
   simp_rw [Set.pairwise_eq_iff_exists_eq] at h
+  -- ⊢ (∃ r, ∀ (p1 : P), p1 ∈ ps → dist p1 p = r) ↔ ∃ r, ∀ (p1 : P), p1 ∈ ps → dist …
   exact h
+  -- 🎉 no goals
 #align euclidean_geometry.exists_dist_eq_iff_exists_dist_orthogonal_projection_eq EuclideanGeometry.exists_dist_eq_iff_exists_dist_orthogonalProjection_eq
 
 /-- The induction step for the existence and uniqueness of the
@@ -96,44 +100,66 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
   haveI : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   rcases hu with ⟨⟨cc, cr⟩, ⟨hcc, hcr⟩, hcccru⟩
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   simp only at hcc hcr hcccru
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   let x := dist cc (orthogonalProjection s p)
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   let y := dist p (orthogonalProjection s p)
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   have hy0 : y ≠ 0 := dist_orthogonalProjection_ne_zero_of_not_mem hp
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   let ycc₂ := (x * x + y * y - cr * cr) / (2 * y)
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   let cc₂ := (ycc₂ / y) • (p -ᵥ orthogonalProjection s p : V) +ᵥ cc
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   let cr₂ := Real.sqrt (cr * cr + ycc₂ * ycc₂)
+  -- ⊢ ∃! cs₂, cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.spher …
   use ⟨cc₂, cr₂⟩
+  -- ⊢ (fun cs₂ => cs₂.center ∈ affineSpan ℝ (insert p ↑s) ∧ insert p ps ⊆ Metric.s …
   simp (config := { zeta := false, proj := false }) only
+  -- ⊢ ({ center := cc₂, radius := cr₂ }.center ∈ affineSpan ℝ (insert p ↑s) ∧ inse …
   have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
     by simp
   constructor
+  -- ⊢ { center := cc₂, radius := cr₂ }.center ∈ affineSpan ℝ (insert p ↑s) ∧ inser …
   · constructor
+    -- ⊢ { center := cc₂, radius := cr₂ }.center ∈ affineSpan ℝ (insert p ↑s)
     · refine' vadd_mem_of_mem_direction _ (mem_affineSpan ℝ (Set.mem_insert_of_mem _ hcc))
+      -- ⊢ (ycc₂ / y) • (p -ᵥ ↑(↑(orthogonalProjection s) p)) ∈ direction (affineSpan ℝ …
       rw [direction_affineSpan]
+      -- ⊢ (ycc₂ / y) • (p -ᵥ ↑(↑(orthogonalProjection s) p)) ∈ vectorSpan ℝ (insert p  …
       exact
         Submodule.smul_mem _ _
           (vsub_mem_vectorSpan ℝ (Set.mem_insert _ _)
             (Set.mem_insert_of_mem _ (orthogonalProjection_mem _)))
     · intro p1 hp1
+      -- ⊢ p1 ∈ Metric.sphere { center := cc₂, radius := cr₂ }.center { center := cc₂,  …
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
       cases' hp1 with hp1 hp1
+      -- ⊢ dist p1 { center := cc₂, radius := cr₂ }.center * dist p1 { center := cc₂, r …
       · rw [hp1]
+        -- ⊢ dist p { center := cc₂, radius := cr₂ }.center * dist p { center := cc₂, rad …
         rw [hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
         field_simp [hy0]
+        -- ⊢ (dist cc ↑(↑(orthogonalProjection s) p) * dist cc ↑(↑(orthogonalProjection s …
         ring
+        -- 🎉 no goals
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
           dist_of_mem_subset_mk_sphere hp1 hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
           dist_eq_norm_vsub V, Real.norm_eq_abs, abs_div, abs_of_nonneg dist_nonneg,
           div_mul_cancel _ hy0, abs_mul_abs_self]
   · rintro ⟨cc₃, cr₃⟩ ⟨hcc₃, hcr₃⟩
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     simp only at hcc₃ hcr₃
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     obtain ⟨t₃, cc₃', hcc₃', hcc₃''⟩ :
       ∃ (r : ℝ)(p0 : P)(_ : p0 ∈ s), cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
       rwa [mem_affineSpan_insert_iff (orthogonalProjection_mem p)] at hcc₃
@@ -142,13 +168,18 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq hps cc₃, hcc₃'',
       orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃'] at hcr₃'
     cases' hcr₃' with cr₃' hcr₃'
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     have hu := hcccru ⟨cc₃', cr₃'⟩
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     simp only at hu
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     replace hu := hu ⟨hcc₃', hcr₃'⟩
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     -- Porting note: was
     -- cases' hu with hucc hucr
     -- substs hucc hucr
     cases' hu
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     have hcr₃val : cr₃ = Real.sqrt (cr * cr + t₃ * y * (t₃ * y)) := by
       cases' hnps with p0 hp0
       have h' : ↑(⟨cc, hcc₃'⟩ : s) = cc := rfl
@@ -162,12 +193,14 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         abs_mul_abs_self]
       ring
     replace hcr₃ := dist_of_mem_subset_mk_sphere (Set.mem_insert _ _) hcr₃
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     rw [hpo, hcc₃'', hcr₃val, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
       dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc₃' _ _
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
       dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
     change x * x + _ * (y * y) = _ at hcr₃
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     rw [show
         x * x + (1 - t₃) * (1 - t₃) * (y * y) = x * x + y * y - 2 * y * (t₃ * y) + t₃ * y * (t₃ * y)
         by ring,
@@ -176,12 +209,19 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       field_simp [← hcr₃, hy0]
       ring
     subst ht₃
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     change cc₃ = cc₂ at hcc₃''
+    -- ⊢ { center := cc₃, radius := cr₃ } = { center := cc₂, radius := cr₂ }
     congr
+    -- ⊢ cr₃ = cr₂
     rw [hcr₃val]
+    -- ⊢ Real.sqrt (cr * cr + ycc₂ / y * y * (ycc₂ / y * y)) = cr₂
     congr 2
+    -- ⊢ ycc₂ / y * y * (ycc₂ / y * y) = ycc₂ * ycc₂
     field_simp [hy0]
+    -- ⊢ (dist cc ↑(↑(orthogonalProjection s) p) * dist cc ↑(↑(orthogonalProjection s …
     ring
+    -- 🎉 no goals
 #align euclidean_geometry.exists_unique_dist_eq_of_insert EuclideanGeometry.existsUnique_dist_eq_of_insert
 
 /-- Given a finite nonempty affinely independent family of points,
@@ -191,27 +231,49 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     {p : ι → P} (ha : AffineIndependent ℝ p) :
     ∃! cs : Sphere P, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ (cs : Set P) := by
   cases nonempty_fintype ι
+  -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
   induction' hn : Fintype.card ι with m hm generalizing ι
+  -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
   · exfalso
+    -- ⊢ False
     have h := Fintype.card_pos_iff.2 hne
+    -- ⊢ False
     rw [hn] at h
+    -- ⊢ False
     exact lt_irrefl 0 h
+    -- 🎉 no goals
   · cases' m with m
+    -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
     · rw [Fintype.card_eq_one_iff] at hn
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       cases' hn with i hi
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       haveI : Unique ι := ⟨⟨i⟩, hi⟩
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       use ⟨p i, 0⟩
+      -- ⊢ (fun cs => cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sph …
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
+      -- ⊢ (p i = p default ∧ {p default} ⊆ Metric.sphere (p i) 0) ∧ ∀ (y : Sphere P),  …
       constructor
+      -- ⊢ p i = p default ∧ {p default} ⊆ Metric.sphere (p i) 0
       · simp_rw [hi default, Set.singleton_subset_iff]
+        -- ⊢ True ∧ p i ∈ Metric.sphere (p i) 0
         exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton_iff]⟩
+        -- 🎉 no goals
       · rintro ⟨cc, cr⟩
+        -- ⊢ { center := cc, radius := cr }.center = p default ∧ {p default} ⊆ Metric.sph …
         simp only
+        -- ⊢ cc = p default ∧ {p default} ⊆ Metric.sphere cc cr → { center := cc, radius  …
         rintro ⟨rfl, hdist⟩
+        -- ⊢ { center := p default, radius := cr } = { center := p i, radius := 0 }
         simp [Set.singleton_subset_iff] at hdist
+        -- ⊢ { center := p default, radius := cr } = { center := p i, radius := 0 }
         rw [hi default, hdist]
+        -- 🎉 no goals
     · have i := hne.some
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       let ι2 := { x // x ≠ i }
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
         · rw [Finset.filter_not]
@@ -221,20 +283,30 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
           simp
         · simp
       haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := ha.subtype _
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       replace hm := hm ha2 _ hc
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ Metric.sphere  …
       have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 => p i2) := by
         change _ = insert _ (Set.range fun i2 : { x | x ≠ i } => p i2)
         rw [← Set.image_eq_range, ← Set.image_univ, ← Set.image_insert_eq]
         congr with j
         simp [Classical.em]
       rw [hr, ← affineSpan_insert_affineSpan]
+      -- ⊢ ∃! cs, cs.center ∈ affineSpan ℝ (insert (p i) ↑(affineSpan ℝ (Set.range fun  …
       refine' existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_spanPoints ℝ _) _ hm
+      -- ⊢ ¬p i ∈ affineSpan ℝ (Set.range fun i2 => p ↑i2)
       convert ha.not_mem_affineSpan_diff i Set.univ
+      -- ⊢ (Set.range fun i2 => p ↑i2) = p '' (Set.univ \ {i})
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
+      -- ⊢ (Set.range fun i2 => p ↑i2) = p '' (Set.univ \ {i})
       rw [← Set.image_eq_range]
+      -- ⊢ p '' {x | x ≠ i} = p '' (Set.univ \ {i})
       congr with j
+      -- ⊢ j ∈ p '' {x | x ≠ i} ↔ j ∈ p '' (Set.univ \ {i})
       simp
+      -- 🎉 no goals
 #align affine_independent.exists_unique_dist_eq AffineIndependent.existsUnique_dist_eq
 
 end EuclideanGeometry
@@ -311,8 +383,11 @@ circumradius. -/
 theorem dist_circumcenter_eq_circumradius' {n : ℕ} (s : Simplex ℝ P n) :
     ∀ i, dist s.circumcenter (s.points i) = s.circumradius := by
   intro i
+  -- ⊢ dist (circumcenter s) (points s i) = circumradius s
   rw [dist_comm]
+  -- ⊢ dist (points s i) (circumcenter s) = circumradius s
   exact dist_circumcenter_eq_circumradius _ _
+  -- 🎉 no goals
 #align affine.simplex.dist_circumcenter_eq_circumradius' Affine.Simplex.dist_circumcenter_eq_circumradius'
 
 /-- Given a point in the affine span from which all the points are
@@ -321,13 +396,16 @@ theorem eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     p = s.circumcenter := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
+  -- ⊢ p = circumcenter s
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
     Set.forall_range_iff, mem_sphere, true_and] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
+  -- ⊢ p = circumcenter s
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
     Set.forall_range_iff, mem_sphere, true_and] at h
   exact h.1
+  -- 🎉 no goals
 #align affine.simplex.eq_circumcenter_of_dist_eq Affine.Simplex.eq_circumcenter_of_dist_eq
 
 /-- Given a point in the affine span from which all the points are
@@ -336,13 +414,16 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
+  -- ⊢ r = circumradius s
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
     Set.forall_range_iff, mem_sphere, true_and_iff] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
+  -- ⊢ r = circumradius s
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
     Set.forall_range_iff, mem_sphere, true_and_iff] at h
   exact h.2
+  -- 🎉 no goals
 #align affine.simplex.eq_circumradius_of_dist_eq Affine.Simplex.eq_circumradius_of_dist_eq
 
 /-- The circumradius is non-negative. -/
@@ -354,21 +435,33 @@ theorem circumradius_nonneg {n : ℕ} (s : Simplex ℝ P n) : 0 ≤ s.circumradi
 positive. -/
 theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumradius := by
   refine' lt_of_le_of_ne s.circumradius_nonneg _
+  -- ⊢ 0 ≠ circumradius s
   intro h
+  -- ⊢ False
   have hr := s.dist_circumcenter_eq_circumradius
+  -- ⊢ False
   simp_rw [← h, dist_eq_zero] at hr
+  -- ⊢ False
   have h01 := s.Independent.injective.ne (by simp : (0 : Fin (n + 2)) ≠ 1)
+  -- ⊢ False
   simp [hr] at h01
+  -- 🎉 no goals
 #align affine.simplex.circumradius_pos Affine.Simplex.circumradius_pos
 
 /-- The circumcenter of a 0-simplex equals its unique point. -/
 theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
   have h := s.circumcenter_mem_affineSpan
+  -- ⊢ circumcenter s = points s i
   have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
+  -- ⊢ circumcenter s = points s i
   simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton] at h
+  -- ⊢ circumcenter s = points s i
   rw [h]
+  -- ⊢ points s default = points s i
   congr
+  -- ⊢ default = i
   simp only [eq_iff_true_of_subsingleton]
+  -- 🎉 no goals
 #align affine.simplex.circumcenter_eq_point Affine.Simplex.circumcenter_eq_point
 
 /-- The circumcenter of a 1-simplex equals its centroid. -/
@@ -384,7 +477,9 @@ theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
       one_smul ℝ (s.points i -ᵥ s.points 0), ← one_smul ℝ (s.points j -ᵥ s.points 0)]
     fin_cases i <;> fin_cases j <;> simp [-one_smul, ← sub_smul] <;> norm_num
   rw [Set.pairwise_eq_iff_exists_eq] at hr
+  -- ⊢ circumcenter s = centroid ℝ univ s.points
   cases' hr with r hr
+  -- ⊢ circumcenter s = centroid ℝ univ s.points
   exact
     (s.eq_circumcenter_of_dist_eq
         (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (Finset.card_fin 2)) fun i =>
@@ -396,20 +491,27 @@ theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
 theorem circumsphere_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumsphere = s.circumsphere := by
   refine' s.circumsphere_unique_dist_eq.2 _ ⟨_, _⟩ <;> rw [← s.reindex_range_points e]
+  -- ⊢ (circumsphere (reindex s e)).center ∈ affineSpan ℝ (Set.range s.points)
+                                                       -- ⊢ (circumsphere (reindex s e)).center ∈ affineSpan ℝ (Set.range (reindex s e). …
+                                                       -- ⊢ Set.range (reindex s e).points ⊆ Metric.sphere (circumsphere (reindex s e)). …
   · exact (s.reindex e).circumsphere_unique_dist_eq.1.1
+    -- 🎉 no goals
   · exact (s.reindex e).circumsphere_unique_dist_eq.1.2
+    -- 🎉 no goals
 #align affine.simplex.circumsphere_reindex Affine.Simplex.circumsphere_reindex
 
 /-- Reindexing a simplex along an `Equiv` of index types does not change the circumcenter. -/
 @[simp]
 theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumcenter = s.circumcenter := by simp_rw [circumcenter, circumsphere_reindex]
+                                                      -- 🎉 no goals
 #align affine.simplex.circumcenter_reindex Affine.Simplex.circumcenter_reindex
 
 /-- Reindexing a simplex along an `Equiv` of index types does not change the circumradius. -/
 @[simp]
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
+                                                      -- 🎉 no goals
 #align affine.simplex.circumradius_reindex Affine.Simplex.circumradius_reindex
 
 attribute [local instance] AffineSubspace.toAddTorsor
@@ -457,6 +559,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
   rw [dist_comm, ← h₁ 0,
     s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₁ h]
   simp only [h₁', dist_comm p₁, add_sub_cancel', Simplex.dist_circumcenter_eq_circumradius]
+  -- 🎉 no goals
 #align affine.simplex.dist_circumcenter_sq_eq_sq_sub_circumradius Affine.Simplex.dist_circumcenter_sq_eq_sq_sub_circumradius
 
 /-- If there exists a distance that a point has from all vertices of a
@@ -466,6 +569,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
   change ∃ r : ℝ, ∀ i, (fun x => dist x p = r) (s.points i) at hr
+  -- ⊢ ↑(↑(orthogonalProjectionSpan s) p) = circumcenter s
   have hr : ∃ (r : ℝ), ∀ (a : P),
       a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
     cases' hr with r hr
@@ -473,7 +577,9 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
     refine' Set.forall_range_iff.mpr _
     exact hr
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
+  -- ⊢ ↑(↑(orthogonalProjectionSpan s) p) = circumcenter s
   cases' hr with r hr
+  -- ⊢ ↑(↑(orthogonalProjectionSpan s) p) = circumcenter s
   exact
     s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i => hr _ (Set.mem_range_self i)
 #align affine.simplex.orthogonal_projection_eq_circumcenter_of_exists_dist_eq Affine.Simplex.orthogonalProjection_eq_circumcenter_of_exists_dist_eq
@@ -493,7 +599,9 @@ theorem orthogonalProjection_circumcenter {n : ℕ} (s : Simplex ℝ P n) {fs : 
     ↑((s.face h).orthogonalProjectionSpan s.circumcenter) = (s.face h).circumcenter :=
   haveI hr : ∃ r, ∀ i, dist ((s.face h).points i) s.circumcenter = r := by
     use s.circumradius
+    -- ⊢ ∀ (i : Fin (m + 1)), dist (points (face s h) i) (circumcenter s) = circumrad …
     simp [face_points]
+    -- 🎉 no goals
   orthogonalProjection_eq_circumcenter_of_exists_dist_eq _ hr
 #align affine.simplex.orthogonal_projection_circumcenter Affine.Simplex.orthogonalProjection_circumcenter
 
@@ -509,6 +617,7 @@ theorem circumcenter_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
     rcases hi with ⟨j, hj⟩
     rw [← hj, s₁.dist_circumcenter_eq_circumradius j]
   exact s₂.eq_circumcenter_of_dist_eq hs hr
+  -- 🎉 no goals
 #align affine.simplex.circumcenter_eq_of_range_eq Affine.Simplex.circumcenter_eq_of_range_eq
 
 /-- An index type for the vertices of a simplex plus its circumcenter.
@@ -531,6 +640,7 @@ instance pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithC
 /-- `point_index` as an embedding. -/
 def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex n :=
   ⟨fun i => point_index i, fun _ _ h => by injection h⟩
+                                           -- 🎉 no goals
 #align affine.simplex.point_index_embedding Affine.Simplex.pointIndexEmbedding
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
@@ -544,10 +654,15 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
   change _ = (∑ i, f (pointIndexEmbedding n i)) + _
+  -- ⊢ ∑ i : PointsWithCircumcenterIndex n, f i = ∑ i : Fin (n + 1), f (↑(pointInde …
   rw [add_comm, h, ← sum_map, sum_insert]
+  -- ⊢ ¬circumcenter_index ∈ Finset.map (pointIndexEmbedding n) univ
   simp_rw [Finset.mem_map, not_exists]
+  -- ⊢ ∀ (x : Fin (n + 1)), ¬(x ∈ univ ∧ ↑(pointIndexEmbedding n) x = circumcenter_ …
   rintro x ⟨_, h⟩
+  -- ⊢ False
   injection h
+  -- 🎉 no goals
 #align affine.simplex.sum_points_with_circumcenter Affine.Simplex.sum_pointsWithCircumcenter
 
 /-- The vertices of a simplex plus its circumcenter. -/
@@ -584,8 +699,13 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
   convert sum_ite_eq' univ (point_index i) (Function.const _ (1 : ℝ)) with j
+  -- ⊢ pointWeightsWithCircumcenter i j = if j = point_index i then Function.const  …
   · cases j <;> simp [pointWeightsWithCircumcenter]
+    -- ⊢ pointWeightsWithCircumcenter i (point_index a✝¹) = if point_index a✝¹ = poin …
+                -- 🎉 no goals
+                -- 🎉 no goals
   · simp
+    -- 🎉 no goals
 #align affine.simplex.sum_point_weights_with_circumcenter Affine.Simplex.sum_pointWeightsWithCircumcenter
 
 /-- A single vertex, in terms of `pointsWithCircumcenter`. -/
@@ -595,15 +715,22 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
       (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (pointWeightsWithCircumcenter i) := by
   rw [← pointsWithCircumcenter_point]
+  -- ⊢ pointsWithCircumcenter s (point_index i) = ↑(affineCombination ℝ univ (point …
   symm
+  -- ⊢ ↑(affineCombination ℝ univ (pointsWithCircumcenter s)) (pointWeightsWithCirc …
   refine'
     affineCombination_of_eq_one_of_eq_zero _ _ _ (mem_univ _)
       (by simp [pointWeightsWithCircumcenter]) _
   intro i hi hn
+  -- ⊢ pointWeightsWithCircumcenter i✝ i = 0
   cases i
+  -- ⊢ pointWeightsWithCircumcenter i (point_index a✝) = 0
   · have h : _ ≠ i := fun h => hn (h ▸ rfl)
+    -- ⊢ pointWeightsWithCircumcenter i (point_index a✝) = 0
     simp [pointWeightsWithCircumcenter, h]
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
 #align affine.simplex.point_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.point_eq_affineCombination_of_pointsWithCircumcenter
 
 /-- The weights for the centroid of some vertices of a simplex, in
@@ -621,6 +748,7 @@ theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))
   simp_rw [sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter, add_zero, ←
     fs.sum_centroidWeights_eq_one_of_nonempty ℝ h, Set.sum_indicator_subset _ fs.subset_univ]
   rcongr
+  -- 🎉 no goals
 #align affine.simplex.sum_centroid_weights_with_circumcenter Affine.Simplex.sum_centroidWeightsWithCircumcenter
 
 /-- The centroid of some vertices of a simplex, in terms of `pointsWithCircumcenter`. -/
@@ -637,6 +765,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
       zero_smul ℝ _,
     Set.indicator_apply]
   congr
+  -- 🎉 no goals
 #align affine.simplex.centroid_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.centroid_eq_affineCombination_of_pointsWithCircumcenter
 
 /-- The weights for the circumcenter of a simplex, in terms of `pointsWithCircumcenter`. -/
@@ -650,8 +779,13 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
   convert sum_ite_eq' univ circumcenter_index (Function.const _ (1 : ℝ)) with j
+  -- ⊢ circumcenterWeightsWithCircumcenter n j = if j = circumcenter_index then Fun …
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]
+    -- ⊢ circumcenterWeightsWithCircumcenter n (point_index a✝¹) = if point_index a✝¹ …
+                -- 🎉 no goals
+                -- 🎉 no goals
   · simp
+    -- 🎉 no goals
 #align affine.simplex.sum_circumcenter_weights_with_circumcenter Affine.Simplex.sum_circumcenterWeightsWithCircumcenter
 
 /-- The circumcenter of a simplex, in terms of `pointsWithCircumcenter`. -/
@@ -660,9 +794,15 @@ theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s
       (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (circumcenterWeightsWithCircumcenter n) := by
   rw [← pointsWithCircumcenter_eq_circumcenter]
+  -- ⊢ pointsWithCircumcenter s circumcenter_index = ↑(affineCombination ℝ univ (po …
   symm
+  -- ⊢ ↑(affineCombination ℝ univ (pointsWithCircumcenter s)) (circumcenterWeightsW …
   refine' affineCombination_of_eq_one_of_eq_zero _ _ _ (mem_univ _) rfl _
+  -- ⊢ ∀ (i2 : PointsWithCircumcenterIndex n), i2 ∈ univ → i2 ≠ circumcenter_index  …
   rintro ⟨i⟩ _ hn <;> tauto
+  -- ⊢ circumcenterWeightsWithCircumcenter n (point_index i) = 0
+                      -- 🎉 no goals
+                      -- 🎉 no goals
 #align affine.simplex.circumcenter_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.circumcenter_eq_affineCombination_of_pointsWithCircumcenter
 
 /-- The weights for the reflection of the circumcenter in an edge of a
@@ -680,8 +820,11 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
   simp_rw [sum_pointsWithCircumcenter, reflectionCircumcenterWeightsWithCircumcenter, sum_ite,
     sum_const, filter_or, filter_eq']
   rw [card_union_eq]
+  -- ⊢ (card (if i₁ ∈ univ then {i₁} else ∅) + card (if i₂ ∈ univ then {i₂} else ∅) …
   · simp
+    -- 🎉 no goals
   · simpa only [if_true, mem_univ, disjoint_singleton] using h
+    -- 🎉 no goals
 #align affine.simplex.sum_reflection_circumcenter_weights_with_circumcenter Affine.Simplex.sum_reflectionCircumcenterWeightsWithCircumcenter
 
 /-- The reflection of the circumcenter of a simplex in an edge, in
@@ -692,8 +835,10 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
       (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (reflectionCircumcenterWeightsWithCircumcenter i₁ i₂) := by
   have hc : card ({i₁, i₂} : Finset (Fin (n + 1))) = 2 := by simp [h]
+  -- ⊢ ↑(EuclideanGeometry.reflection (affineSpan ℝ (s.points '' {i₁, i₂}))) (circu …
   -- Making the next line a separate definition helps the elaborator:
   set W : AffineSubspace ℝ P := affineSpan ℝ (s.points '' {i₁, i₂})
+  -- ⊢ ↑(EuclideanGeometry.reflection (affineSpan ℝ (s.points '' {i₁, i₂}))) (circu …
   have h_faces :
     (orthogonalProjection W s.circumcenter : P) =
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
@@ -712,7 +857,9 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
   -- Porting note: was `convert sum_const_zero`
   rw [← sum_const_zero]
   congr
+  -- ⊢ (fun x => (if x ∈ {i₁, i₂} then ((↑2)⁻¹ + (↑2)⁻¹) • (pointsWithCircumcenter  …
   norm_num
+  -- 🎉 no goals
 #align affine.simplex.reflection_circumcenter_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter
 
 end Simplex
@@ -733,10 +880,15 @@ theorem cospherical_iff_exists_mem_of_complete {s : AffineSubspace ℝ P} {ps : 
     [Nonempty s] [HasOrthogonalProjection s.direction] :
     Cospherical ps ↔ ∃ center ∈ s, ∃ radius : ℝ, ∀ p ∈ ps, dist p center = radius := by
   constructor
+  -- ⊢ Cospherical ps → ∃ center, center ∈ s ∧ ∃ radius, ∀ (p : P), p ∈ ps → dist p …
   · rintro ⟨c, hcr⟩
+    -- ⊢ ∃ center, center ∈ s ∧ ∃ radius, ∀ (p : P), p ∈ ps → dist p center = radius
     rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq h c] at hcr
+    -- ⊢ ∃ center, center ∈ s ∧ ∃ radius, ∀ (p : P), p ∈ ps → dist p center = radius
     exact ⟨orthogonalProjection s c, orthogonalProjection_mem _, hcr⟩
+    -- 🎉 no goals
   · exact fun ⟨c, _, hd⟩ => ⟨c, hd⟩
+    -- 🎉 no goals
 #align euclidean_geometry.cospherical_iff_exists_mem_of_complete EuclideanGeometry.cospherical_iff_exists_mem_of_complete
 
 /-- Given a nonempty affine subspace, whose direction is
@@ -756,15 +908,20 @@ theorem exists_circumradius_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     (hd : finrank ℝ s.direction = n) (hc : Cospherical ps) :
     ∃ r : ℝ, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumradius = r := by
   rw [cospherical_iff_exists_mem_of_finiteDimensional h] at hc
+  -- ⊢ ∃ r, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumradius …
   rcases hc with ⟨c, hc, r, hcr⟩
+  -- ⊢ ∃ r, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumradius …
   use r
+  -- ⊢ ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumradius sx = r
   intro sx hsxps
+  -- ⊢ Simplex.circumradius sx = r
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
     refine'
       sx.Independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
         (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) _
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
+  -- ⊢ Simplex.circumradius sx = r
   exact
     (sx.eq_circumradius_of_dist_eq hc fun i =>
         hcr (sx.points i) (hsxps (Set.mem_range_self i))).symm
@@ -777,7 +934,9 @@ theorem circumradius_eq_of_cospherical_subset {s : AffineSubspace ℝ P} {ps : S
     (hc : Cospherical ps) {sx₁ sx₂ : Simplex ℝ P n} (hsx₁ : Set.range sx₁.points ⊆ ps)
     (hsx₂ : Set.range sx₂.points ⊆ ps) : sx₁.circumradius = sx₂.circumradius := by
   rcases exists_circumradius_eq_of_cospherical_subset h hd hc with ⟨r, hr⟩
+  -- ⊢ Simplex.circumradius sx₁ = Simplex.circumradius sx₂
   rw [hr sx₁ hsx₁, hr sx₂ hsx₂]
+  -- 🎉 no goals
 #align euclidean_geometry.circumradius_eq_of_cospherical_subset EuclideanGeometry.circumradius_eq_of_cospherical_subset
 
 /-- All n-simplices among cospherical points in n-space have the same
@@ -786,9 +945,13 @@ theorem exists_circumradius_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDime
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ r : ℝ, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumradius = r := by
   haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
+  -- ⊢ ∃ r, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumradius …
   rw [← finrank_top, ← direction_top ℝ V P] at hd
+  -- ⊢ ∃ r, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumradius …
   refine' exists_circumradius_eq_of_cospherical_subset _ hd hc
+  -- ⊢ ps ⊆ ↑⊤
   exact Set.subset_univ _
+  -- 🎉 no goals
 #align euclidean_geometry.exists_circumradius_eq_of_cospherical EuclideanGeometry.exists_circumradius_eq_of_cospherical
 
 /-- Two n-simplices among cospherical points in n-space have the same
@@ -798,7 +961,9 @@ theorem circumradius_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional
     (hsx₁ : Set.range sx₁.points ⊆ ps) (hsx₂ : Set.range sx₂.points ⊆ ps) :
     sx₁.circumradius = sx₂.circumradius := by
   rcases exists_circumradius_eq_of_cospherical hd hc with ⟨r, hr⟩
+  -- ⊢ Simplex.circumradius sx₁ = Simplex.circumradius sx₂
   rw [hr sx₁ hsx₁, hr sx₂ hsx₂]
+  -- 🎉 no goals
 #align euclidean_geometry.circumradius_eq_of_cospherical EuclideanGeometry.circumradius_eq_of_cospherical
 
 /-- All n-simplices among cospherical points in an n-dimensional
@@ -808,15 +973,20 @@ theorem exists_circumcenter_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     (hd : finrank ℝ s.direction = n) (hc : Cospherical ps) :
     ∃ c : P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumcenter = c := by
   rw [cospherical_iff_exists_mem_of_finiteDimensional h] at hc
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumcenter …
   rcases hc with ⟨c, hc, r, hcr⟩
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumcenter …
   use c
+  -- ⊢ ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumcenter sx = c
   intro sx hsxps
+  -- ⊢ Simplex.circumcenter sx = c
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
     refine'
       sx.Independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
         (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) _
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
+  -- ⊢ Simplex.circumcenter sx = c
   exact
     (sx.eq_circumcenter_of_dist_eq hc fun i =>
         hcr (sx.points i) (hsxps (Set.mem_range_self i))).symm
@@ -829,7 +999,9 @@ theorem circumcenter_eq_of_cospherical_subset {s : AffineSubspace ℝ P} {ps : S
     (hc : Cospherical ps) {sx₁ sx₂ : Simplex ℝ P n} (hsx₁ : Set.range sx₁.points ⊆ ps)
     (hsx₂ : Set.range sx₂.points ⊆ ps) : sx₁.circumcenter = sx₂.circumcenter := by
   rcases exists_circumcenter_eq_of_cospherical_subset h hd hc with ⟨r, hr⟩
+  -- ⊢ Simplex.circumcenter sx₁ = Simplex.circumcenter sx₂
   rw [hr sx₁ hsx₁, hr sx₂ hsx₂]
+  -- 🎉 no goals
 #align euclidean_geometry.circumcenter_eq_of_cospherical_subset EuclideanGeometry.circumcenter_eq_of_cospherical_subset
 
 /-- All n-simplices among cospherical points in n-space have the same
@@ -838,9 +1010,13 @@ theorem exists_circumcenter_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDime
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumcenter = c := by
   haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumcenter …
   rw [← finrank_top, ← direction_top ℝ V P] at hd
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumcenter …
   refine' exists_circumcenter_eq_of_cospherical_subset _ hd hc
+  -- ⊢ ps ⊆ ↑⊤
   exact Set.subset_univ _
+  -- 🎉 no goals
 #align euclidean_geometry.exists_circumcenter_eq_of_cospherical EuclideanGeometry.exists_circumcenter_eq_of_cospherical
 
 /-- Two n-simplices among cospherical points in n-space have the same
@@ -850,7 +1026,9 @@ theorem circumcenter_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional
     (hsx₁ : Set.range sx₁.points ⊆ ps) (hsx₂ : Set.range sx₂.points ⊆ ps) :
     sx₁.circumcenter = sx₂.circumcenter := by
   rcases exists_circumcenter_eq_of_cospherical hd hc with ⟨r, hr⟩
+  -- ⊢ Simplex.circumcenter sx₁ = Simplex.circumcenter sx₂
   rw [hr sx₁ hsx₁, hr sx₂ hsx₂]
+  -- 🎉 no goals
 #align euclidean_geometry.circumcenter_eq_of_cospherical EuclideanGeometry.circumcenter_eq_of_cospherical
 
 /-- All n-simplices among cospherical points in an n-dimensional
@@ -860,8 +1038,11 @@ theorem exists_circumsphere_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     (hd : finrank ℝ s.direction = n) (hc : Cospherical ps) :
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
   obtain ⟨r, hr⟩ := exists_circumradius_eq_of_cospherical_subset h hd hc
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumsphere …
   obtain ⟨c, hc⟩ := exists_circumcenter_eq_of_cospherical_subset h hd hc
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumsphere …
   exact ⟨⟨c, r⟩, fun sx hsx => Sphere.ext _ _ (hc sx hsx) (hr sx hsx)⟩
+  -- 🎉 no goals
 #align euclidean_geometry.exists_circumsphere_eq_of_cospherical_subset EuclideanGeometry.exists_circumsphere_eq_of_cospherical_subset
 
 /-- Two n-simplices among cospherical points in an n-dimensional
@@ -871,7 +1052,9 @@ theorem circumsphere_eq_of_cospherical_subset {s : AffineSubspace ℝ P} {ps : S
     (hc : Cospherical ps) {sx₁ sx₂ : Simplex ℝ P n} (hsx₁ : Set.range sx₁.points ⊆ ps)
     (hsx₂ : Set.range sx₂.points ⊆ ps) : sx₁.circumsphere = sx₂.circumsphere := by
   rcases exists_circumsphere_eq_of_cospherical_subset h hd hc with ⟨r, hr⟩
+  -- ⊢ Simplex.circumsphere sx₁ = Simplex.circumsphere sx₂
   rw [hr sx₁ hsx₁, hr sx₂ hsx₂]
+  -- 🎉 no goals
 #align euclidean_geometry.circumsphere_eq_of_cospherical_subset EuclideanGeometry.circumsphere_eq_of_cospherical_subset
 
 /-- All n-simplices among cospherical points in n-space have the same
@@ -880,9 +1063,13 @@ theorem exists_circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDime
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
   haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumsphere …
   rw [← finrank_top, ← direction_top ℝ V P] at hd
+  -- ⊢ ∃ c, ∀ (sx : Simplex ℝ P n), Set.range sx.points ⊆ ps → Simplex.circumsphere …
   refine' exists_circumsphere_eq_of_cospherical_subset _ hd hc
+  -- ⊢ ps ⊆ ↑⊤
   exact Set.subset_univ _
+  -- 🎉 no goals
 #align euclidean_geometry.exists_circumsphere_eq_of_cospherical EuclideanGeometry.exists_circumsphere_eq_of_cospherical
 
 /-- Two n-simplices among cospherical points in n-space have the same
@@ -892,7 +1079,9 @@ theorem circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional
     (hsx₁ : Set.range sx₁.points ⊆ ps) (hsx₂ : Set.range sx₂.points ⊆ ps) :
     sx₁.circumsphere = sx₂.circumsphere := by
   rcases exists_circumsphere_eq_of_cospherical hd hc with ⟨r, hr⟩
+  -- ⊢ Simplex.circumsphere sx₁ = Simplex.circumsphere sx₂
   rw [hr sx₁ hsx₁, hr sx₂ hsx₂]
+  -- 🎉 no goals
 #align euclidean_geometry.circumsphere_eq_of_cospherical EuclideanGeometry.circumsphere_eq_of_cospherical
 
 /-- Suppose all distances from `p₁` and `p₂` to the points of a
@@ -906,21 +1095,29 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     (h₂ : ∀ i, dist (s.points i) p₂ = r) :
     p₁ = p₂ ∨ p₁ = reflection (affineSpan ℝ (Set.range s.points)) p₂ := by
   set span_s := affineSpan ℝ (Set.range s.points)
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   have h₁' := s.orthogonalProjection_eq_circumcenter_of_dist_eq h₁
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   have h₂' := s.orthogonalProjection_eq_circumcenter_of_dist_eq h₂
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   rw [← affineSpan_insert_affineSpan, mem_affineSpan_insert_iff (orthogonalProjection_mem p)]
     at hp₁ hp₂
   obtain ⟨r₁, p₁o, hp₁o, hp₁⟩ := hp₁
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   obtain ⟨r₂, p₂o, hp₂o, hp₂⟩ := hp₂
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   obtain rfl : ↑(s.orthogonalProjectionSpan p₁) = p₁o := by
     subst hp₁
     exact s.coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection hp₁o
   rw [h₁'] at hp₁
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   obtain rfl : ↑(s.orthogonalProjectionSpan p₂) = p₂o := by
     subst hp₂
     exact s.coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection hp₂o
   rw [h₂'] at hp₂
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   have h : s.points 0 ∈ span_s := mem_affineSpan ℝ (Set.mem_range_self _)
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   have hd₁ :
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius :=
     s.dist_circumcenter_sq_eq_sq_sub_circumradius h₁ h₁' h
@@ -932,17 +1129,27 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     real_inner_smul_left, real_inner_smul_left, real_inner_smul_right, real_inner_smul_right, ←
     mul_assoc, ← mul_assoc] at hd₁
   by_cases hp : p = s.orthogonalProjectionSpan p
+  -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
   · rw [Simplex.orthogonalProjectionSpan] at hp
+    -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
     rw [hp₁, hp₂, ← hp]
+    -- ⊢ r₁ • (p -ᵥ p) +ᵥ Simplex.circumcenter s = r₂ • (p -ᵥ p) +ᵥ Simplex.circumcen …
     simp only [true_or_iff, eq_self_iff_true, smul_zero, vsub_self]
+    -- 🎉 no goals
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
       simpa only [Ne.def, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
+    -- ⊢ p₁ = p₂ ∨ p₁ = ↑(reflection (affineSpan ℝ (Set.range s.points))) p₂
     rw [hp₁, hp₂]
+    -- ⊢ r₁ • (p -ᵥ ↑(↑(orthogonalProjection (affineSpan ℝ (Set.range s.points))) p)) …
     cases' hd₁ with hd₁ hd₁
+    -- ⊢ r₁ • (p -ᵥ ↑(↑(orthogonalProjection (affineSpan ℝ (Set.range s.points))) p)) …
     · left
+      -- ⊢ r₁ • (p -ᵥ ↑(↑(orthogonalProjection (affineSpan ℝ (Set.range s.points))) p)) …
       rw [hd₁]
+      -- 🎉 no goals
     · right
+      -- ⊢ r₁ • (p -ᵥ ↑(↑(orthogonalProjection (affineSpan ℝ (Set.range s.points))) p)) …
       rw [hd₁, reflection_vadd_smul_vsub_orthogonalProjection p r₂ s.circumcenter_mem_affineSpan,
         neg_smul]
 #align euclidean_geometry.eq_or_eq_reflection_of_dist_eq EuclideanGeometry.eq_or_eq_reflection_of_dist_eq

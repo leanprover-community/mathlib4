@@ -49,46 +49,77 @@ theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
 
 instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) := by
   refine' (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 _
+  -- ⊢ ∀ {i : Set ℚ × Set ℚ}, IsCompact i.fst ∧ p ∈ i.snd ∧ IsOpen i.snd → Set.None …
   rintro ⟨s, o⟩ ⟨hs, hpo, ho⟩; rw [inter_comm]
+  -- ⊢ Set.Nonempty ((s, o).fstᶜ ∩ (s, o).snd)
+                               -- ⊢ Set.Nonempty ((s, o).snd ∩ (s, o).fstᶜ)
   exact (dense_compl_compact hs).inter_open_nonempty _ ho ⟨p, hpo⟩
+  -- 🎉 no goals
 #align rat.cocompact_inf_nhds_ne_bot Rat.cocompact_inf_nhds_neBot
 
 theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact ℚ) := by
   intro H
+  -- ⊢ False
   rcases exists_seq_tendsto (cocompact ℚ ⊓ 𝓝 0) with ⟨x, hx⟩
+  -- ⊢ False
   rw [tendsto_inf] at hx; rcases hx with ⟨hxc, hx0⟩
+  -- ⊢ False
+                          -- ⊢ False
   obtain ⟨n, hn⟩ : ∃ n : ℕ, x n ∉ insert (0 : ℚ) (range x)
+  -- ⊢ ∃ n, ¬x n ∈ insert 0 (range x)
   exact (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
+  -- ⊢ False
   exact hn (Or.inr ⟨n, rfl⟩)
+  -- 🎉 no goals
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 
 theorem not_countably_generated_nhds_infty_opc : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
   intro
+  -- ⊢ False
   have : IsCountablyGenerated (comap (OnePoint.some : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
+  -- ⊢ False
   rw [OnePoint.comap_coe_nhds_infty, coclosedCompact_eq_cocompact] at this
+  -- ⊢ False
   exact not_countably_generated_cocompact this
+  -- 🎉 no goals
 #align rat.not_countably_generated_nhds_infty_alexandroff Rat.not_countably_generated_nhds_infty_opc
 
 theorem not_firstCountableTopology_opc : ¬FirstCountableTopology ℚ∞ := by
   intro
+  -- ⊢ False
   exact not_countably_generated_nhds_infty_opc inferInstance
+  -- 🎉 no goals
 #align rat.not_first_countable_topology_alexandroff Rat.not_firstCountableTopology_opc
 
 theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   intro
+  -- ⊢ False
   exact not_firstCountableTopology_opc inferInstance
+  -- 🎉 no goals
 #align rat.not_second_countable_topology_alexandroff Rat.not_secondCountableTopology_opc
 
 instance : TotallyDisconnectedSpace ℚ := by
   refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
+  -- ⊢ x = y
+                                         -- ⊢ x = y
   by_contra' H : x ≠ y
+  -- ⊢ False
   wlog hlt : x < y
+  -- ⊢ False
   · refine' this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
+  -- ⊢ False
   have := hs.image _ continuous_coe_real.continuousOn
+  -- ⊢ False
   rw [isPreconnected_iff_ordConnected] at this
+  -- ⊢ False
   have : z ∈ Rat.cast '' s :=
     this.out (mem_image_of_mem _ hx) (mem_image_of_mem _ hy) ⟨hxz.le, hzy.le⟩
   exact hz (image_subset_range _ _ this)
+  -- 🎉 no goals
 
 end Rat

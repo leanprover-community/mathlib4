@@ -38,24 +38,40 @@ theorem closure_mul_image_mul_eq_top
     (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (1 : G) ∈ R) (hS : closure S = ⊤) :
     (closure ((R * S).image fun g => g * (toFun hR g : G)⁻¹)) * R = ⊤ := by
   let f : G → R := fun g => toFun hR g
+  -- ⊢ ↑(closure ((fun g => g * (↑(toFun hR g))⁻¹) '' (R * S))) * R = ⊤
   let U : Set G := (R * S).image fun g => g * (f g : G)⁻¹
+  -- ⊢ ↑(closure ((fun g => g * (↑(toFun hR g))⁻¹) '' (R * S))) * R = ⊤
   change (closure U : Set G) * R = ⊤
+  -- ⊢ ↑(closure U) * R = ⊤
   refine' top_le_iff.mp fun g _ => _
+  -- ⊢ g ∈ ↑(closure U) * R
   apply closure_induction_right (eq_top_iff.mp hS (mem_top g))
   · exact ⟨1, 1, (closure U).one_mem, hR1, one_mul 1⟩
+    -- 🎉 no goals
   · rintro - s hs ⟨u, r, hu, hr, rfl⟩
+    -- ⊢ (fun x x_1 => x * x_1) u r * s ∈ ↑(closure U) * R
     rw [show u * r * s = u * (r * s * (f (r * s) : G)⁻¹) * f (r * s) by group]
+    -- ⊢ u * (r * s * (↑(f (r * s)))⁻¹) * ↑(f (r * s)) ∈ ↑(closure U) * R
     refine' Set.mul_mem_mul ((closure U).mul_mem hu _) (f (r * s)).coe_prop
+    -- ⊢ r * s * (↑(f (r * s)))⁻¹ ∈ closure U
     exact subset_closure ⟨r * s, Set.mul_mem_mul hr hs, rfl⟩
+    -- 🎉 no goals
   · rintro - s hs ⟨u, r, hu, hr, rfl⟩
+    -- ⊢ (fun x x_1 => x * x_1) u r * s⁻¹ ∈ ↑(closure U) * R
     rw [show u * r * s⁻¹ = u * (f (r * s⁻¹) * s * r⁻¹)⁻¹ * f (r * s⁻¹) by group]
+    -- ⊢ u * (↑(f (r * s⁻¹)) * s * r⁻¹)⁻¹ * ↑(f (r * s⁻¹)) ∈ ↑(closure U) * R
     refine' Set.mul_mem_mul ((closure U).mul_mem hu ((closure U).inv_mem _)) (f (r * s⁻¹)).2
+    -- ⊢ ↑(f (r * s⁻¹)) * s * r⁻¹ ∈ closure U
     refine' subset_closure ⟨f (r * s⁻¹) * s, Set.mul_mem_mul (f (r * s⁻¹)).2 hs, _⟩
+    -- ⊢ (fun g => g * (↑(f g))⁻¹) (↑(f (r * s⁻¹)) * s) = ↑(f (r * s⁻¹)) * s * r⁻¹
     rw [mul_right_inj, inv_inj, ← Subtype.coe_mk r hr, ← Subtype.ext_iff, Subtype.coe_mk]
+    -- ⊢ f (↑(toFun hR (↑{ val := r, property := hr } * s⁻¹)) * s) = { val := r, prop …
     apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.mp hR (f (r * s⁻¹) * s)).unique
       (mul_inv_toFun_mem hR (f (r * s⁻¹) * s))
     rw [mul_assoc, ← inv_inv s, ← mul_inv_rev, inv_inv]
+    -- ⊢ ↑(f (r * s⁻¹)) * (↑{ val := r, property := hr } * s⁻¹)⁻¹ ∈ ↑H
     exact toFun_mul_inv_mem hR (r * s⁻¹)
+    -- 🎉 no goals
 #align subgroup.closure_mul_image_mul_eq_top Subgroup.closure_mul_image_mul_eq_top
 
 /-- **Schreier's Lemma**: If `R : Set G` is a `rightTransversal of` `H : Subgroup G`
@@ -68,15 +84,21 @@ theorem closure_mul_image_eq (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (
     rintro - ⟨g, -, rfl⟩
     exact mul_inv_toFun_mem hR g
   refine' le_antisymm hU fun h hh => _
+  -- ⊢ h ∈ closure ((fun g => g * (↑(toFun hR g))⁻¹) '' (R * S))
   obtain ⟨g, r, hg, hr, rfl⟩ :=
     show h ∈ _ from eq_top_iff.mp (closure_mul_image_mul_eq_top hR hR1 hS) (mem_top h)
   suffices (⟨r, hr⟩ : R) = (⟨1, hR1⟩ : R) by
     simpa only [show r = 1 from Subtype.ext_iff.mp this, mul_one]
   apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.mp hR r).unique
+  -- ⊢ r * (↑{ val := r, property := hr })⁻¹ ∈ ↑H
   · rw [Subtype.coe_mk, mul_inv_self]
+    -- ⊢ 1 ∈ ↑H
     exact H.one_mem
+    -- 🎉 no goals
   · rw [Subtype.coe_mk, inv_one, mul_one]
+    -- ⊢ r ∈ ↑H
     exact (H.mul_mem_cancel_left (hU hg)).mp hh
+    -- 🎉 no goals
 #align subgroup.closure_mul_image_eq Subgroup.closure_mul_image_eq
 
 /-- **Schreier's Lemma**: If `R : Set G` is a `rightTransversal` of `H : Subgroup G`
@@ -86,7 +108,9 @@ theorem closure_mul_image_eq_top (hR : R ∈ rightTransversals (H : Set G)) (hR1
     (hS : closure S = ⊤) : closure ((R * S).image fun g =>
       ⟨g * (toFun hR g : G)⁻¹, mul_inv_toFun_mem hR g⟩ : Set H) = ⊤ := by
   rw [eq_top_iff, ← map_subtype_le_map_subtype, MonoidHom.map_closure, Set.image_image]
+  -- ⊢ map (Subgroup.subtype H) ⊤ ≤ closure ((fun x => ↑(Subgroup.subtype H) { val  …
   exact (map_subtype_le ⊤).trans (ge_of_eq (closure_mul_image_eq hR hR1 hS))
+  -- 🎉 no goals
 #align subgroup.closure_mul_image_eq_top Subgroup.closure_mul_image_eq_top
 
 /-- **Schreier's Lemma**: If `R : Finset G` is a `rightTransversal` of `H : Subgroup G`
@@ -97,7 +121,9 @@ theorem closure_mul_image_eq_top' [DecidableEq G] {R S : Finset G}
     (hS : closure (S : Set G) = ⊤) :
     closure (((R * S).image fun g => ⟨_, mul_inv_toFun_mem hR g⟩ : Finset H) : Set H) = ⊤ := by
   rw [Finset.coe_image, Finset.coe_mul]
+  -- ⊢ closure ((fun g => { val := g * (↑(toFun hR g))⁻¹, property := (_ : g * (↑(t …
   exact closure_mul_image_eq_top hR hR1 hS
+  -- 🎉 no goals
 #align subgroup.closure_mul_image_eq_top' Subgroup.closure_mul_image_eq_top'
 
 variable (H)
@@ -105,13 +131,21 @@ variable (H)
 theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (S : Set G) = ⊤) :
     ∃ T : Finset H, T.card ≤ H.index * S.card ∧ closure (T : Set H) = ⊤ := by
   letI := H.fintypeQuotientOfFiniteIndex
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   haveI : DecidableEq G := Classical.decEq G
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   obtain ⟨R₀, hR : R₀ ∈ rightTransversals (H : Set G), hR1⟩ := exists_right_transversal (1 : G)
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   haveI : Fintype R₀ := Fintype.ofEquiv _ (toEquiv hR)
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   let R : Finset G := Set.toFinset R₀
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   replace hR : (R : Set G) ∈ rightTransversals (H : Set G) := by rwa [Set.coe_toFinset]
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   replace hR1 : (1 : G) ∈ R := by rwa [Set.mem_toFinset]
+  -- ⊢ ∃ T, Finset.card T ≤ index H * Finset.card S ∧ closure ↑T = ⊤
   refine' ⟨_, _, closure_mul_image_eq_top' hR hR1 hS⟩
+  -- ⊢ Finset.card (Finset.image (fun g => { val := g * (↑(toFun hR g))⁻¹, property …
   calc
     _ ≤ (R * S).card := Finset.card_image_le
     _ ≤ (R ×ˢ S).card := Finset.card_image_le
@@ -128,15 +162,21 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
   group is finitely generated. -/
 instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := by
   obtain ⟨S, hS⟩ := hG.1
+  -- ⊢ Group.FG { x // x ∈ H }
   obtain ⟨T, -, hT⟩ := exists_finset_card_le_mul H hS
+  -- ⊢ Group.FG { x // x ∈ H }
   exact ⟨⟨T, hT⟩⟩
+  -- 🎉 no goals
 #align subgroup.fg_of_index_ne_zero Subgroup.fg_of_index_ne_zero
 
 theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
   haveI := H.fg_of_index_ne_zero
+  -- ⊢ Group.rank { x // x ∈ H } ≤ index H * Group.rank G
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
+  -- ⊢ Group.rank { x // x ∈ H } ≤ index H * Group.rank G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
+  -- ⊢ Group.rank { x // x ∈ H } ≤ index H * Group.rank G
   calc
     Group.rank H ≤ T.card := Group.rank_le H hT
     _ ≤ H.index * S.card := hT₀
@@ -152,30 +192,43 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
       (center G).index ^ ((center G).index * Nat.card (commutatorSet G) + 1) := by
   -- First handle the case when `Z(G)` has infinite index and `[G : Z(G)]` is defined to be `0`
   by_cases hG : (center G).index = 0
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ∣ index (center G) ^ (index (cente …
   · simp_rw [hG, zero_mul, zero_add, pow_one, dvd_zero]
+    -- 🎉 no goals
   haveI : FiniteIndex (center G) := ⟨hG⟩
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ∣ index (center G) ^ (index (cente …
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ']
+  -- ⊢ Nat.card { x // x ∈ subgroupOf (center G) (_root_.commutator G) } * index (s …
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
   have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
+  -- ⊢ Nat.card { x // x ∈ subgroupOf (center G) (_root_.commutator G) } * index (s …
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine' mul_dvd_mul _ h1
+  -- ⊢ Nat.card { x // x ∈ subgroupOf (center G) (_root_.commutator G) } ∣ index (c …
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
   haveI : FiniteIndex ((center G).subgroupOf (_root_.commutator G)) :=
     ⟨ne_zero_of_dvd_ne_zero hG h1⟩
   -- We have `h2 : rank (Z(G) ∩ G') ≤ [G' : Z(G) ∩ G'] * rank G'` by Schreier's lemma
   have h2 := rank_le_index_mul_rank ((center G).subgroupOf (_root_.commutator G))
+  -- ⊢ Nat.card { x // x ∈ subgroupOf (center G) (_root_.commutator G) } ∣ index (c …
   -- We have `h3 : [G' : Z(G) ∩ G'] * rank G' ≤ [G : Z(G)] * n` by `h1` and `rank G' ≤ n`
   have h3 := Nat.mul_le_mul (Nat.le_of_dvd (Nat.pos_of_ne_zero hG) h1) (rank_commutator_le_card G)
+  -- ⊢ Nat.card { x // x ∈ subgroupOf (center G) (_root_.commutator G) } ∣ index (c …
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ rank (Z(G) ∩ G')`
   refine' dvd_trans _ (pow_dvd_pow (center G).index (h2.trans h3))
+  -- ⊢ Nat.card { x // x ∈ subgroupOf (center G) (_root_.commutator G) } ∣ index (c …
   -- `Z(G) ∩ G'` is abelian, so it enough to prove that `g ^ [G : Z(G)] = 1` for `g ∈ Z(G) ∩ G'`
   apply card_dvd_exponent_pow_rank'
+  -- ⊢ ∀ (g : { x // x ∈ subgroupOf (center G) (_root_.commutator G) }), g ^ index  …
   intro g
+  -- ⊢ g ^ index (center G) = 1
   -- `Z(G)` is abelian, so `g ∈ Z(G) ∩ G' ≤ G' ≤ ker (transfer : G → Z(G))`
   have := Abelianization.commutator_subset_ker (MonoidHom.transferCenterPow G) g.1.2
+  -- ⊢ g ^ index (center G) = 1
   -- `transfer g` is defeq to `g ^ [G : Z(G)]`, so we are done
   simpa only [MonoidHom.mem_ker, Subtype.ext_iff] using this
+  -- 🎉 no goals
 #align subgroup.card_commutator_dvd_index_center_pow Subgroup.card_commutator_dvd_index_center_pow
 
 /-- A bound for the size of the commutator subgroup in terms of the number of commutators. -/
@@ -188,24 +241,36 @@ def cardCommutatorBound (n : ℕ) :=
 theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
     Nat.card (_root_.commutator G) ≤ cardCommutatorBound (Nat.card (commutatorSet G)) := by
   have h1 := index_center_le_pow (closureCommutatorRepresentatives G)
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ≤ cardCommutatorBound (Nat.card ↑( …
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ≤ cardCommutatorBound (Nat.card ↑( …
   rw [card_commutatorSet_closureCommutatorRepresentatives] at h1 h2
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ≤ cardCommutatorBound (Nat.card ↑( …
   rw [card_commutator_closureCommutatorRepresentatives] at h2
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ≤ cardCommutatorBound (Nat.card ↑( …
   replace h1 :=
     h1.trans
       (Nat.pow_le_pow_of_le_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_right (mul_le_mul_right' h1 _) 1))
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ≤ cardCommutatorBound (Nat.card ↑( …
   rw [← pow_succ'] at h2
+  -- ⊢ Nat.card { x // x ∈ _root_.commutator G } ≤ cardCommutatorBound (Nat.card ↑( …
   refine' (Nat.le_of_dvd _ h2).trans (Nat.pow_le_pow_of_le_left h1 _)
+  -- ⊢ 0 < index (center { x // x ∈ closureCommutatorRepresentatives G }) ^ (Nat.ca …
   exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.finiteIndex) _
+  -- 🎉 no goals
 #align subgroup.card_commutator_le_of_finite_commutator_set
   Subgroup.card_commutator_le_of_finite_commutatorSet
 
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
 instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
+  -- ⊢ Finite { x // x ∈ _root_.commutator G }
   refine' Nat.finite_of_card_ne_zero fun h => _
+  -- ⊢ False
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
+  -- ⊢ False
   exact FiniteIndex.finiteIndex (pow_eq_zero h2)
+  -- 🎉 no goals
 
 end Subgroup

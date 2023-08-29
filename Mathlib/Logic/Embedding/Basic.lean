@@ -36,6 +36,7 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
   coe := Embedding.toFun
   injective' := Embedding.inj'
   coe_injective' f g h := by { cases f; cases g; congr }
+                             -- 🎉 no goals
 
 initialize_simps_projections Embedding (toFun → apply)
 
@@ -149,14 +150,18 @@ instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
   ext
+  -- ⊢ ↑(Embedding.trans (Equiv.toEmbedding e) (Equiv.toEmbedding e.symm)) x✝ = ↑(E …
   simp
+  -- 🎉 no goals
 #align function.embedding.equiv_to_embedding_trans_symm_to_embedding Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding
 
 @[simp]
 theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.symm.toEmbedding.trans e.toEmbedding = Embedding.refl _ := by
   ext
+  -- ⊢ ↑(Embedding.trans (Equiv.toEmbedding e.symm) (Equiv.toEmbedding e)) x✝ = ↑(E …
   simp
+  -- 🎉 no goals
 #align function.embedding.equiv_symm_to_embedding_trans_to_embedding Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 /-- Transfer an embedding along a pair of equivalences. -/
@@ -188,23 +193,52 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y (h : ite _ _ _ = ite _ _ _)
+    -- ⊢ x = y
     -- TODO: once we have `cc` we can avoid all the manual cases below by doing
     -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
         (try subst b) <;>
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
         (try simp only [f.injective.eq_iff] at *)
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- 🎉 no goals
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- ⊢ x = y
+         -- 🎉 no goals
+         -- ⊢ x = y
+         -- ⊢ x = y
     · rw[h₁,h₂]
+      -- 🎉 no goals
     · rw[h₁,h]
+      -- 🎉 no goals
     · rw[h₅,←h]
+      -- 🎉 no goals
     · exact h₆.symm
+      -- 🎉 no goals
     · exfalso; exact h₅ h.symm
+      -- ⊢ False
+               -- 🎉 no goals
     · exfalso; exact h₁ h
+      -- ⊢ False
+               -- 🎉 no goals
     · exact h ⟩
+      -- 🎉 no goals
 #align function.embedding.set_value Function.Embedding.setValue
 
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
+  -- 🎉 no goals
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
 /-- Embedding into `Option α` using `some`. -/
@@ -249,7 +283,9 @@ theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
 def punit {β : Sort*} (b : β) : PUnit ↪ β :=
   ⟨fun _ => b, by
     rintro ⟨⟩ ⟨⟩ _
+    -- ⊢ PUnit.unit = PUnit.unit
     rfl⟩
+    -- 🎉 no goals
 #align function.embedding.punit Function.Embedding.punit
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
@@ -360,6 +396,7 @@ noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inha
     (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
+                       -- 🎉 no goals
 #align function.embedding.arrow_congr_left Function.Embedding.arrowCongrLeft
 
 /-- Restrict both domain and codomain of an embedding. -/
@@ -416,10 +453,14 @@ def embeddingCongr {α β γ δ : Sort*} (h : α ≃ β) (h' : γ ≃ δ) : (α 
   invFun f := f.congr h.symm h'.symm
   left_inv x := by
     ext
+    -- ⊢ ↑((fun f => Embedding.congr h.symm h'.symm f) ((fun f => Embedding.congr h h …
     simp
+    -- 🎉 no goals
   right_inv x := by
     ext
+    -- ⊢ ↑((fun f => Embedding.congr h h' f) ((fun f => Embedding.congr h.symm h'.sym …
     simp
+    -- 🎉 no goals
 #align equiv.embedding_congr Equiv.embeddingCongr
 #align equiv.embedding_congr_apply Equiv.embeddingCongr_apply
 
@@ -448,7 +489,9 @@ theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*}
     Equiv.embeddingCongr ea ec (f.trans g) =
       (Equiv.embeddingCongr ea eb f).trans (Equiv.embeddingCongr eb ec g) := by
   ext
+  -- ⊢ ↑(↑(embeddingCongr ea ec) (Embedding.trans f g)) x✝ = ↑(Embedding.trans (↑(e …
   simp
+  -- 🎉 no goals
 #align equiv.embedding_congr_apply_trans Equiv.embeddingCongr_apply_trans
 
 @[simp]
@@ -474,8 +517,14 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     { x // p x ∨ q x } ↪ Sum { x // p x } { x // q x } :=
   ⟨fun x => if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
     intro x y
+    -- ⊢ (fun x => if h : p ↑x then Sum.inl { val := ↑x, property := h } else Sum.inr …
     dsimp only
+    -- ⊢ ((if h : p ↑x then Sum.inl { val := ↑x, property := h } else Sum.inr { val : …
     split_ifs <;> simp [Subtype.ext_iff]⟩
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align subtype_or_left_embedding subtypeOrLeftEmbedding
 
 theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
@@ -495,6 +544,7 @@ if `p x → q x` for all `x : α`. -/
 @[simps]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
   ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
+                                           -- 🎉 no goals
 #align subtype.imp_embedding Subtype.impEmbedding
 #align subtype.imp_embedding_apply_coe Subtype.impEmbedding_apply_coe
 

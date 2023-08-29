@@ -34,13 +34,17 @@ theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortEx
     (comm₁ : i₁ ≫ f' = f ≫ i₂ := by aesop_cat)
     (comm₂ : i₂ ≫ g' = g ≫ i₃ := by aesop_cat) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by
   obtain ⟨_⟩ := h
+  -- ⊢ IsIso i₂
   obtain ⟨_⟩ := h'
+  -- ⊢ IsIso i₂
   refine @Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
       0 i₁ i₂ i₃ ?_ comm₁ comm₂ 0 0 0 0 0 ?_ ?_ ?_ ?_ ?_ ?_ ?_ _ _ _ _
   all_goals try simp
   all_goals try assumption
   all_goals try apply exact_zero_left_of_mono
+  -- ⊢ Exact g 0
   all_goals rwa [← epi_iff_exact_zero_right ]
+  -- 🎉 no goals
 #align category_theory.is_iso_of_short_exact_of_is_iso_of_is_iso CategoryTheory.isIso_of_shortExact_of_isIso_of_isIso
 
 /-- To construct a splitting of `A -f⟶ B -g⟶ C` it suffices to supply
@@ -68,7 +72,9 @@ def Splitting.mk'' (h : ShortExact f g) (i : A ⊞ C ⟶ B) (h1 : biprod.inl ≫
   have : IsIso i := isIso_of_shortExact_of_isIso_of_isIso ⟨exact_inl_snd A C⟩ h (𝟙 _) i (𝟙 _)
   { iso := (asIso i).symm
     comp_iso_eq_inl := by rw [Iso.symm_hom, asIso_inv, IsIso.comp_inv_eq, h1]
+                          -- 🎉 no goals
     iso_comp_snd_eq := by rw [Iso.symm_hom, asIso_inv, IsIso.inv_comp_eq, h2] }
+                          -- 🎉 no goals
 #align category_theory.splitting.mk'' CategoryTheory.Splitting.mk''
 
 /-- A short exact sequence that is left split admits a splitting. -/
@@ -76,9 +82,13 @@ def LeftSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : LeftSplit f g) : Splitt
   Splitting.mk' h.shortExact (biprod.lift h.left_split.choose g)
     (by
       ext
+      -- ⊢ (f ≫ biprod.lift (Exists.choose (_ : ∃ φ, f ≫ φ = 𝟙 A)) g) ≫ biprod.fst = bi …
       · simpa only [biprod.inl_fst, biprod.lift_fst, Category.assoc] using h.left_split.choose_spec
+        -- 🎉 no goals
       · simp only [biprod.inl_snd, biprod.lift_snd, Category.assoc, h.exact.w])
+        -- 🎉 no goals
     (by simp only [biprod.lift_snd])
+        -- 🎉 no goals
 #align category_theory.left_split.splitting CategoryTheory.LeftSplit.splitting
 
 /-- A short exact sequence that is right split admits a splitting. -/
@@ -86,8 +96,11 @@ def RightSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : RightSplit f g) : Spli
   Splitting.mk'' h.shortExact (biprod.desc f h.right_split.choose) (biprod.inl_desc _ _)
     (by
       ext
+      -- ⊢ biprod.inl ≫ biprod.desc f (Exists.choose (_ : ∃ χ, χ ≫ g = 𝟙 C)) ≫ g = bipr …
       · rw [biprod.inl_snd, ← Category.assoc, biprod.inl_desc, h.exact.w]
+        -- 🎉 no goals
       · rw [biprod.inr_snd, ← Category.assoc, biprod.inr_desc, h.right_split.choose_spec])
+        -- 🎉 no goals
 #align category_theory.right_split.splitting CategoryTheory.RightSplit.splitting
 
 end CategoryTheory

@@ -44,6 +44,7 @@ def energy : ℚ :=
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
   refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
+  -- 🎉 no goals
 #align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=
@@ -55,15 +56,21 @@ theorem energy_le_one : P.energy G ≤ 1 :=
       _ = P.parts.offDiag.card := (Nat.smul_one_eq_coe _)
       _ ≤ _ := by
         rw [offDiag_card, one_mul]
+        -- ⊢ ↑(card P.parts * card P.parts - card P.parts) ≤ ↑(card P.parts) ^ 2
         norm_cast
+        -- ⊢ card P.parts * card P.parts - card P.parts ≤ card P.parts ^ 2
         rw [sq]
+        -- ⊢ card P.parts * card P.parts - card P.parts ≤ card P.parts * card P.parts
         exact tsub_le_self
+        -- 🎉 no goals
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
 theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
     (∑ uv in P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
+  -- ⊢ ↑((∑ uv in offDiag P.parts, SimpleGraph.edgeDensity G uv.fst uv.snd ^ 2) / ↑ …
+               -- 🎉 no goals
 #align finpartition.coe_energy Finpartition.coe_energy
 
 end Finpartition

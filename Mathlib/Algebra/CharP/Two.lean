@@ -26,32 +26,40 @@ section Semiring
 variable [Semiring R] [CharP R 2]
 
 theorem two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero]
+                                        -- 🎉 no goals
 #align char_two.two_eq_zero CharTwo.two_eq_zero
 
 @[simp]
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
+                                                   -- 🎉 no goals
 #align char_two.add_self_eq_zero CharTwo.add_self_eq_zero
 
 set_option linter.deprecated false in
 @[simp]
 theorem bit0_eq_zero : (bit0 : R → R) = 0 := by
   funext
+  -- ⊢ bit0 x✝ = OfNat.ofNat 0 x✝
   exact add_self_eq_zero _
+  -- 🎉 no goals
 #align char_two.bit0_eq_zero CharTwo.bit0_eq_zero
 
 set_option linter.deprecated false in
 theorem bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
+                                                            -- 🎉 no goals
 #align char_two.bit0_apply_eq_zero CharTwo.bit0_apply_eq_zero
 
 set_option linter.deprecated false in
 @[simp]
 theorem bit1_eq_one : (bit1 : R → R) = 1 := by
   funext
+  -- ⊢ bit1 x✝ = OfNat.ofNat 1 x✝
   simp [bit1]
+  -- 🎉 no goals
 #align char_two.bit1_eq_one CharTwo.bit1_eq_one
 
 set_option linter.deprecated false in
 theorem bit1_apply_eq_one (x : R) : (bit1 x : R) = 1 := by simp
+                                                           -- 🎉 no goals
 #align char_two.bit1_apply_eq_one CharTwo.bit1_apply_eq_one
 
 end Semiring
@@ -63,6 +71,7 @@ variable [Ring R] [CharP R 2]
 @[simp]
 theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]
+  -- 🎉 no goals
 #align char_two.neg_eq CharTwo.neg_eq
 
 theorem neg_eq' : Neg.neg = (id : R → R) :=
@@ -71,6 +80,7 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 
 @[simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
+                                                   -- 🎉 no goals
 #align char_two.sub_eq_add CharTwo.sub_eq_add
 
 theorem sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
@@ -89,6 +99,7 @@ theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
 
 theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
+  -- 🎉 no goals
 #align char_two.add_mul_self CharTwo.add_mul_self
 
 open BigOperators
@@ -99,6 +110,7 @@ theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
 
 theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
   simp_rw [← pow_two, list_sum_sq]
+  -- 🎉 no goals
 #align char_two.list_sum_mul_self CharTwo.list_sum_mul_self
 
 theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
@@ -107,6 +119,7 @@ theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
 
 theorem multiset_sum_mul_self (l : Multiset R) :
     l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
+                                                                -- 🎉 no goals
 #align char_two.multiset_sum_mul_self CharTwo.multiset_sum_mul_self
 
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in s, f i ^ 2 :=
@@ -115,6 +128,7 @@ theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in
 
 theorem sum_mul_self (s : Finset ι) (f : ι → R) :
     ((∑ i in s, f i) * ∑ i in s, f i) = ∑ i in s, f i * f i := by simp_rw [← pow_two, sum_sq]
+                                                                  -- 🎉 no goals
 #align char_two.sum_mul_self CharTwo.sum_mul_self
 
 end CommSemiring
@@ -127,17 +141,25 @@ variable [Ring R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
   refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
+  -- ⊢ ringChar R = 2
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
+  -- ⊢ ringChar R = 2
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
+  -- 🎉 no goals
 #align neg_one_eq_one_iff neg_one_eq_one_iff
 
 @[simp]
 theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
   split_ifs with h
+  -- ⊢ orderOf (-1) = 1
   · rw [neg_one_eq_one_iff.2 h, orderOf_one]
+    -- 🎉 no goals
   apply orderOf_eq_prime
+  -- ⊢ (-1) ^ 2 = 1
   · simp
+    -- 🎉 no goals
   simpa [neg_one_eq_one_iff] using h
+  -- 🎉 no goals
 #align order_of_neg_one orderOf_neg_one
 
 end ringChar

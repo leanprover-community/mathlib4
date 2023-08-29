@@ -83,19 +83,30 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
       rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
+      -- 🎉 no goals
     _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
       rw [primeCounting', count_eq_card_filter_range]
+      -- 🎉 no goals
     _ ≤ π' k + ((Ico k (k + n)).filter (coprime a)).card := by
       refine' add_le_add_left (card_le_of_subset _) k.primeCounting'
+      -- ⊢ filter Prime (Ico k (k + n)) ⊆ filter (coprime a) (Ico k (k + n))
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
+      -- ⊢ ∀ ⦃x : ℕ⦄, k ≤ x → x < k + n → Prime x → (k ≤ x ∧ x < k + n) ∧ coprime a x
       intro p succ_k_le_p p_lt_n p_prime
+      -- ⊢ (k ≤ p ∧ p < k + n) ∧ coprime a p
       constructor
+      -- ⊢ k ≤ p ∧ p < k + n
       · exact ⟨succ_k_le_p, p_lt_n⟩
+        -- 🎉 no goals
       · rw [coprime_comm]
+        -- ⊢ coprime p a
         exact coprime_of_lt_prime h0 (gt_of_ge_of_gt succ_k_le_p h1) p_prime
+        -- 🎉 no goals
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
+      -- ⊢ card (filter (coprime a) (Ico k (k + n))) ≤ φ a * (n / a + 1)
       exact Ico_filter_coprime_le k n h0
+      -- 🎉 no goals
 #align nat.prime_counting'_add_le Nat.primeCounting'_add_le
 
 end Nat

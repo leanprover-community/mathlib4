@@ -288,10 +288,13 @@ def ofModule' [CommSemiring R] [Semiring A] [Module R A]
   toFun r := r • (1 : A)
   map_one' := one_smul _ _
   map_mul' r₁ r₂ := by simp only [h₁, mul_smul]
+                       -- 🎉 no goals
   map_zero' := zero_smul _ _
   map_add' r₁ r₂ := add_smul r₁ r₂ 1
   commutes' r x := by simp [h₁, h₂]
+                      -- 🎉 no goals
   smul_def' r x := by simp [h₁]
+                      -- 🎉 no goals
 #align algebra.of_module' Algebra.ofModule'
 
 /-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
@@ -304,6 +307,8 @@ def ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
   ofModule' (fun r x => by rw [h₁, one_mul]) fun r x => by rw [h₂, mul_one]
+                           -- 🎉 no goals
+                                                           -- 🎉 no goals
 #align algebra.of_module Algebra.ofModule
 
 section Semiring
@@ -322,22 +327,32 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     (h : ∀ r : R, (haveI := P; algebraMap R A r) = haveI := Q; algebraMap R A r) :
     P = Q := by
   replace h : P.toRingHom = Q.toRingHom := FunLike.ext _ _ h
+  -- ⊢ P = Q
   have h' : (haveI := P; (· • ·) : R → A → A) = (haveI := Q; (· • ·) : R → A → A) := by
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
+  -- ⊢ mk toRingHom✝ commutes'✝ smul_def'✝ = Q
   rcases Q with @⟨⟨Q⟩⟩
+  -- ⊢ mk toRingHom✝¹ commutes'✝¹ smul_def'✝¹ = mk toRingHom✝ commutes'✝ smul_def'✝
   congr
+  -- 🎉 no goals
 #align algebra.algebra_ext Algebra.algebra_ext
 
 -- see Note [lower instance priority]
 instance (priority := 200) toModule : Module R A where
   one_smul _ := by simp [smul_def']
+                   -- 🎉 no goals
   mul_smul := by simp [smul_def', mul_assoc]
+                 -- 🎉 no goals
   smul_add := by simp [smul_def', mul_add]
+                 -- 🎉 no goals
+                  -- 🎉 no goals
   smul_zero := by simp [smul_def']
   add_smul := by simp [smul_def', add_mul]
+                 -- 🎉 no goals
   zero_smul := by simp [smul_def']
+                  -- 🎉 no goals
 #align algebra.to_module Algebra.toModule
 
 -- porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
@@ -366,15 +381,18 @@ theorem commutes (r : R) (x : A) : algebraMap R A r * x = x * algebraMap R A r :
 theorem left_comm (x : A) (r : R) (y : A) :
     x * (algebraMap R A r * y) = algebraMap R A r * (x * y) := by
   rw [← mul_assoc, ← commutes, mul_assoc]
+  -- 🎉 no goals
 #align algebra.left_comm Algebra.left_comm
 
 /-- `mul_right_comm` for `Algebra`s when one element is from the base ring. -/
 theorem right_comm (x : A) (r : R) (y : A) : x * algebraMap R A r * y = x * y * algebraMap R A r :=
   by rw [mul_assoc, commutes, ← mul_assoc]
+     -- 🎉 no goals
 #align algebra.right_comm Algebra.right_comm
 
 instance _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
+                   -- 🎉 no goals
 #align is_scalar_tower.right IsScalarTower.right
 
 -- TODO: set up `IsScalarTower.smulCommClass` earlier so that we can actually prove this using
@@ -385,6 +403,7 @@ search (and was here first). -/
 @[simp]
 protected theorem mul_smul_comm (s : R) (x y : A) : x * s • y = s • (x * y) := by
   rw [smul_def, smul_def, left_comm]
+  -- 🎉 no goals
 #align algebra.mul_smul_comm Algebra.mul_smul_comm
 
 /-- This is just a special case of the global `smul_mul_assoc` lemma that requires less typeclass
@@ -398,6 +417,7 @@ protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y)
 theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
+  -- 🎉 no goals
 #align smul_algebra_map smul_algebraMap
 
 section
@@ -420,6 +440,7 @@ packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
   { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
+                                                   -- 🎉 no goals
 #align algebra.linear_map Algebra.linearMap
 
 @[simp]
@@ -560,13 +581,17 @@ variable [CommSemiring R]
 
 theorem mul_sub_algebraMap_commutes [Ring A] [Algebra R A] (x : A) (r : R) :
     x * (x - algebraMap R A r) = (x - algebraMap R A r) * x := by rw [mul_sub, ← commutes, sub_mul]
+                                                                  -- 🎉 no goals
 #align algebra.mul_sub_algebra_map_commutes Algebra.mul_sub_algebraMap_commutes
 
 theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (n : ℕ) :
     x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
   induction' n with n ih
+  -- ⊢ x * (x - ↑(algebraMap R A) r) ^ Nat.zero = (x - ↑(algebraMap R A) r) ^ Nat.z …
   · simp
+    -- 🎉 no goals
   · rw [pow_succ, ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
+    -- 🎉 no goals
 #align algebra.mul_sub_algebra_map_pow_commutes Algebra.mul_sub_algebraMap_pow_commutes
 
 end CommSemiring
@@ -584,7 +609,9 @@ def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
   { Module.addCommMonoidToAddCommGroup R, (inferInstance : Semiring A) with
     intCast := fun z => algebraMap R A z
     intCast_ofNat := fun z => by simp only [Int.cast_ofNat, map_natCast]
+                                 -- 🎉 no goals
     intCast_negSucc := fun z => by simp }
+                                   -- 🎉 no goals
 #align algebra.semiring_to_ring Algebra.semiringToRing
 
 end Ring
@@ -630,8 +657,11 @@ theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
     mpr := fun H =>
       H.symm ▸ by
         apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
+        -- ⊢ ↑↑(IsUnit.unit h) (↑↑(IsUnit.unit h)⁻¹ (x • m')) = ↑↑(IsUnit.unit h) m'
         erw [End_isUnit_apply_inv_apply_of_isUnit]
+        -- ⊢ x • m' = ↑↑(IsUnit.unit h) m'
         rfl }
+        -- 🎉 no goals
 #align module.End_algebra_map_is_unit_inv_apply_eq_iff Module.End_algebraMap_isUnit_inv_apply_eq_iff
 
 theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
@@ -641,8 +671,11 @@ theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     mpr := fun H =>
       H.symm ▸ by
         apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
+        -- ⊢ ↑↑(IsUnit.unit h) m' = ↑↑(IsUnit.unit h) (↑↑(IsUnit.unit h)⁻¹ (x • m'))
         erw [End_isUnit_apply_inv_apply_of_isUnit]
+        -- ⊢ ↑↑(IsUnit.unit h) m' = x • m'
         rfl }
+        -- 🎉 no goals
 #align module.End_algebra_map_is_unit_inv_apply_eq_iff' Module.End_algebraMap_isUnit_inv_apply_eq_iff'
 
 end
@@ -659,11 +692,13 @@ work with than `•`. -/
 theorem map_algebraMap_mul (f : A →ₗ[R] B) (a : A) (r : R) :
     f (algebraMap R A r * a) = algebraMap R B r * f a := by
   rw [← Algebra.smul_def, ← Algebra.smul_def, map_smul]
+  -- 🎉 no goals
 #align linear_map.map_algebra_map_mul LinearMap.map_algebraMap_mul
 
 theorem map_mul_algebraMap (f : A →ₗ[R] B) (a : A) (r : R) :
     f (a * algebraMap R A r) = f a * algebraMap R B r := by
   rw [← Algebra.commutes, ← Algebra.commutes, map_algebraMap_mul]
+  -- 🎉 no goals
 #align linear_map.map_mul_algebra_map LinearMap.map_mul_algebraMap
 
 end LinearMap
@@ -684,6 +719,8 @@ instance (priority := 99) algebraNat : Algebra ℕ R where
 
 instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
   ⟨fun P Q => by ext; simp⟩
+                 -- ⊢ ↑(algebraMap ℕ R) r✝ = ↑(algebraMap ℕ R) r✝
+                      -- 🎉 no goals
 #align nat_algebra_subsingleton nat_algebra_subsingleton
 
 end Nat
@@ -777,6 +814,7 @@ theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
   have := @smul_left_injective R A CommRing.toRing Ring.toAddCommGroup Algebra.toModule
     ‹_› 1 one_ne_zero
   simpa only [algebraMap_eq_smul_one'] using this
+  -- 🎉 no goals
 #align no_zero_smul_divisors.algebra_map_injective NoZeroSMulDivisors.algebraMap_injective
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
@@ -828,6 +866,7 @@ variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower 
 
 theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r • m := by
   rw [← one_smul A m, ← smul_assoc, Algebra.smul_def, mul_one, one_smul]
+  -- 🎉 no goals
 #align algebra_compatible_smul algebra_compatible_smul
 
 @[simp]
@@ -844,14 +883,21 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
   refine' ⟨fun {r m} h => _⟩
+  -- ⊢ r = 0 ∨ m = 0
   rw [algebra_compatible_smul A r m] at h
+  -- ⊢ r = 0 ∨ m = 0
   cases' smul_eq_zero.1 h with H H
+  -- ⊢ r = 0 ∨ m = 0
   · have : Function.Injective (algebraMap R A) :=
       NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
     left
+    -- ⊢ r = 0
     exact (injective_iff_map_eq_zero _).1 this _ H
+    -- 🎉 no goals
   · right
+    -- ⊢ m = 0
     exact H
+    -- 🎉 no goals
 #align no_zero_smul_divisors.trans NoZeroSMulDivisors.trans
 
 variable {A}

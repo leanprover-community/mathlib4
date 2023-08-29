@@ -87,6 +87,9 @@ variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [Complete
 instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
+                             -- ⊢ { toStarSubalgebra := { toSubalgebra := { toSubsemiring := { toSubmonoid :=  …
+                                                                          -- ⊢ { toStarSubalgebra := { toSubalgebra := { toSubsemiring := { toSubmonoid :=  …
+                                                                                   -- 🎉 no goals
 
 -- porting note: `StarMemClass` should be in `Prop`?
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
@@ -131,12 +134,14 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
 def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
   toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
   centralizer_centralizer' := by simp
+                                 -- 🎉 no goals
 #align von_neumann_algebra.commutant VonNeumannAlgebra.commutant
 
 @[simp]
 theorem coe_commutant (S : VonNeumannAlgebra H) :
     ↑S.commutant = Set.centralizer (S : Set (H →L[ℂ] H)) := by
   simp [commutant]
+  -- 🎉 no goals
 
 #align von_neumann_algebra.coe_commutant VonNeumannAlgebra.coe_commutant
 
@@ -144,12 +149,15 @@ theorem coe_commutant (S : VonNeumannAlgebra H) :
 theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
     z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g := by
   rw [←SetLike.mem_coe, coe_commutant]
+  -- ⊢ z ∈ Set.centralizer ↑S ↔ ∀ (g : H →L[ℂ] H), g ∈ S → g * z = z * g
   rfl
+  -- 🎉 no goals
 #align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 
 @[simp]
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
+                              -- 🎉 no goals
 #align von_neumann_algebra.commutant_commutant VonNeumannAlgebra.commutant_commutant
 
 end VonNeumannAlgebra

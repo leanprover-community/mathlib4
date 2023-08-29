@@ -87,6 +87,7 @@ instance (X : Pointed) : Inhabited (Pointed.Hom X X) :=
 @[simps]
 def comp {X Y Z : Pointed.{u}} (f : Pointed.Hom X Y) (g : Pointed.Hom Y Z) : Pointed.Hom X Z :=
   ⟨g.toFun ∘ f.toFun, by rw [Function.comp_apply, f.map_point, g.map_point]⟩
+                         -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Pointed.hom.comp Pointed.Hom.comp
 
@@ -139,14 +140,24 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
           invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
           left_inv := fun f => by
             apply Pointed.Hom.ext
+            -- ⊢ ((fun f => { toFun := fun o => Option.elim o Y.point f, map_point := (_ : (f …
             funext x
+            -- ⊢ Pointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.point f, ma …
             cases x
+            -- ⊢ Pointed.Hom.toFun ((fun f => { toFun := fun o => Option.elim o Y.point f, ma …
             · exact f.map_point.symm
+              -- 🎉 no goals
             · rfl
+              -- 🎉 no goals
           right_inv := fun f => funext fun _ => rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext
+        -- ⊢ (↑((fun X Y => { toFun := fun f => f.toFun ∘ some, invFun := fun f => { toFu …
         funext x
+        -- ⊢ Pointed.Hom.toFun (↑((fun X Y => { toFun := fun f => f.toFun ∘ some, invFun  …
         cases x <;> rfl }
+        -- ⊢ Pointed.Hom.toFun (↑((fun X Y => { toFun := fun f => f.toFun ∘ some, invFun  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Type_to_Pointed_forget_adjunction typeToPointedForgetAdjunction

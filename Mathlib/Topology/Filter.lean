@@ -54,13 +54,16 @@ theorem isOpen_Iic_principal {s : Set α} : IsOpen (Iic (𝓟 s)) :=
 
 theorem isOpen_setOf_mem {s : Set α} : IsOpen { l : Filter α | s ∈ l } := by
   simpa only [Iic_principal] using isOpen_Iic_principal
+  -- 🎉 no goals
 #align filter.is_open_set_of_mem Filter.isOpen_setOf_mem
 
 theorem isTopologicalBasis_Iic_principal :
     IsTopologicalBasis (range (Iic ∘ 𝓟 : Set α → Set (Filter α))) :=
   { exists_subset_inter := by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ l hl
+      -- ⊢ ∃ t₃, t₃ ∈ range (Iic ∘ 𝓟) ∧ l ∈ t₃ ∧ t₃ ⊆ (Iic ∘ 𝓟) s ∩ (Iic ∘ 𝓟) t
       exact ⟨Iic (𝓟 s) ∩ Iic (𝓟 t), ⟨s ∩ t, by simp⟩, hl, Subset.rfl⟩
+      -- 🎉 no goals
     sUnion_eq := sUnion_eq_univ_iff.2 fun l => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
       mem_Iic.2 le_top⟩
     eq_generateFrom := rfl }
@@ -69,6 +72,7 @@ theorem isTopologicalBasis_Iic_principal :
 theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s = ⋃ t ∈ T, Iic (𝓟 t) :=
   isTopologicalBasis_Iic_principal.open_iff_eq_sUnion.trans <| by
     simp only [exists_subset_range_and_iff, sUnion_image, (· ∘ ·)]
+    -- 🎉 no goals
 #align filter.is_open_iff Filter.isOpen_iff
 
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
@@ -79,23 +83,29 @@ theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
 
 theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by
   simpa only [(· ∘ ·), Iic_principal] using nhds_eq l
+  -- 🎉 no goals
 #align filter.nhds_eq' Filter.nhds_eq'
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
     Tendsto f la (𝓝 lb) ↔ ∀ s ∈ lb, ∀ᶠ a in la, s ∈ f a := by
   simp only [nhds_eq', tendsto_lift', mem_setOf_eq]
+  -- 🎉 no goals
 #align filter.tendsto_nhds Filter.tendsto_nhds
 
 protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
   rw [nhds_eq]
+  -- ⊢ HasBasis (Filter.lift' l (Iic ∘ 𝓟)) p fun i => Iic (𝓟 (s i))
   exact h.lift' monotone_principal.Iic
+  -- 🎉 no goals
 #align filter.has_basis.nhds Filter.HasBasis.nhds
 
 protected theorem tendsto_pure_self (l : Filter X) :
     Tendsto (pure : X → Filter X) l (𝓝 l) := by
   rw [Filter.tendsto_nhds]
+  -- ⊢ ∀ (s : Set X), s ∈ l → ∀ᶠ (a : X) in l, s ∈ pure a
   refine fun s hs ↦ Eventually.mono hs fun x ↦ id
+  -- 🎉 no goals
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
@@ -104,6 +114,7 @@ instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l
 
 theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => { l' | s i ∈ l' } := by simpa only [Iic_principal] using h.nhds
+                                                      -- 🎉 no goals
 #align filter.has_basis.nhds' Filter.HasBasis.nhds'
 
 theorem mem_nhds_iff {l : Filter α} {S : Set (Filter α)} : S ∈ 𝓝 l ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ S :=
@@ -118,10 +129,12 @@ theorem mem_nhds_iff' {l : Filter α} {S : Set (Filter α)} :
 @[simp]
 theorem nhds_bot : 𝓝 (⊥ : Filter α) = pure ⊥ := by
   simp [nhds_eq, (· ∘ ·), lift'_bot monotone_principal.Iic]
+  -- 🎉 no goals
 #align filter.nhds_bot Filter.nhds_bot
 
 @[simp]
 theorem nhds_top : 𝓝 (⊤ : Filter α) = ⊤ := by simp [nhds_eq]
+                                              -- 🎉 no goals
 #align filter.nhds_top Filter.nhds_top
 
 @[simp]
@@ -132,17 +145,23 @@ theorem nhds_principal (s : Set α) : 𝓝 (𝓟 s) = 𝓟 (Iic (𝓟 s)) :=
 @[simp]
 theorem nhds_pure (x : α) : 𝓝 (pure x : Filter α) = 𝓟 {⊥, pure x} := by
   rw [← principal_singleton, nhds_principal, principal_singleton, Iic_pure]
+  -- 🎉 no goals
 #align filter.nhds_pure Filter.nhds_pure
 
 @[simp]
 theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
   simp only [nhds_eq]
+  -- ⊢ Filter.lift' (⨅ (i : ι), f i) (Iic ∘ 𝓟) = ⨅ (i : ι), Filter.lift' (f i) (Iic …
   apply lift'_iInf_of_map_univ <;> simp
+  -- ⊢ ∀ {s t : Set α}, (Iic ∘ 𝓟) (s ∩ t) = (Iic ∘ 𝓟) s ∩ (Iic ∘ 𝓟) t
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align filter.nhds_infi Filter.nhds_iInf
 
 @[simp]
 theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
   simpa only [iInf_bool_eq] using nhds_iInf fun b => cond b l₁ l₂
+  -- 🎉 no goals
 #align filter.nhds_inf Filter.nhds_inf
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
@@ -157,12 +176,16 @@ theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
   refine' ⟨fun h => _, fun h => monotone_nhds h⟩
+  -- ⊢ l₁ ≤ l₂
   rw [← Iic_subset_Iic, ← sInter_nhds, ← sInter_nhds]
+  -- ⊢ ⋂₀ {s | s ∈ 𝓝 l₁} ⊆ ⋂₀ {s | s ∈ 𝓝 l₂}
   exact sInter_subset_sInter h
+  -- 🎉 no goals
 #align filter.nhds_mono Filter.nhds_mono
 
 protected theorem mem_interior {s : Set (Filter α)} {l : Filter α} :
     l ∈ interior s ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ s := by rw [mem_interior_iff_mem_nhds, mem_nhds_iff]
+                                                  -- 🎉 no goals
 #align filter.mem_interior Filter.mem_interior
 
 protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
@@ -175,12 +198,15 @@ protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
 @[simp]
 protected theorem closure_singleton (l : Filter α) : closure {l} = Ici l := by
   ext l'
+  -- ⊢ l' ∈ closure {l} ↔ l' ∈ Ici l
   simp [Filter.mem_closure, Filter.le_def]
+  -- 🎉 no goals
 #align filter.closure_singleton Filter.closure_singleton
 
 @[simp]
 theorem specializes_iff_le {l₁ l₂ : Filter α} : l₁ ⤳ l₂ ↔ l₁ ≤ l₂ := by
   simp only [specializes_iff_closure_subset, Filter.closure_singleton, Ici_subset_Ici]
+  -- 🎉 no goals
 #align filter.specializes_iff_le Filter.specializes_iff_le
 
 instance : T0Space (Filter α) :=
@@ -189,11 +215,13 @@ instance : T0Space (Filter α) :=
 
 theorem nhds_atTop [Preorder α] : 𝓝 atTop = ⨅ x : α, 𝓟 (Iic (𝓟 (Ici x))) := by
   simp only [atTop, nhds_iInf, nhds_principal]
+  -- 🎉 no goals
 #align filter.nhds_at_top Filter.nhds_atTop
 
 protected theorem tendsto_nhds_atTop_iff [Preorder β] {l : Filter α} {f : α → Filter β} :
     Tendsto f l (𝓝 atTop) ↔ ∀ y, ∀ᶠ a in l, Ici y ∈ f a := by
   simp only [nhds_atTop, tendsto_iInf, tendsto_principal, mem_Iic, le_principal_iff]
+  -- 🎉 no goals
 #align filter.tendsto_nhds_at_top_iff Filter.tendsto_nhds_atTop_iff
 
 theorem nhds_atBot [Preorder α] : 𝓝 atBot = ⨅ x : α, 𝓟 (Iic (𝓟 (Iic x))) :=
@@ -209,6 +237,7 @@ variable [TopologicalSpace X]
 
 theorem nhds_nhds (x : X) : 𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) :=
   by simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
+     -- 🎉 no goals
 #align filter.nhds_nhds Filter.nhds_nhds
 
 theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=

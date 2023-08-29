@@ -83,6 +83,7 @@ def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
+                                                                       -- 🎉 no goals
 #align category_theory.over.pullback CategoryTheory.Over.pullback
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
@@ -93,22 +94,37 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
           invFun := fun Y => by
             refine' Over.homMk _ _
+            -- ⊢ ((map f).obj g).left ⟶ h.left
             refine' Y.left ≫ pullback.fst
+            -- ⊢ (Y.left ≫ pullback.fst) ≫ h.hom = ((map f).obj g).hom
             dsimp
+            -- ⊢ (Y.left ≫ pullback.fst) ≫ h.hom = g.hom ≫ f
             rw [← Over.w Y, Category.assoc, pullback.condition, Category.assoc]; rfl
+            -- ⊢ Y.left ≫ pullback.snd ≫ f = Y.left ≫ ((pullback f).obj h).hom ≫ f
+                                                                                 -- 🎉 no goals
           left_inv := fun X => by
             ext
+            -- ⊢ ((fun Y => homMk (Y.left ≫ pullback.fst)) ((fun X => homMk (pullback.lift X. …
             dsimp
+            -- ⊢ pullback.lift X.left g.hom (_ : X.left ≫ h.hom = ((map f).obj g).hom) ≫ pull …
             simp
+            -- 🎉 no goals
           right_inv := fun Y => by
             -- TODO: It would be nice to replace the next two lines with just `ext`.
             apply OverMorphism.ext
+            -- ⊢ ((fun X => homMk (pullback.lift X.left g.hom (_ : X.left ≫ h.hom = ((map f). …
             apply pullback.hom_ext
+            -- ⊢ ((fun X => homMk (pullback.lift X.left g.hom (_ : X.left ≫ h.hom = ((map f). …
             · dsimp
+              -- ⊢ pullback.lift (Y.left ≫ pullback.fst) g.hom (_ : (homMk (Y.left ≫ pullback.f …
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+              -- 🎉 no goals
             · dsimp
+              -- ⊢ pullback.lift (Y.left ≫ pullback.fst) g.hom (_ : (homMk (Y.left ≫ pullback.f …
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
+              -- ⊢ Y.left ≫ ((pullback f).obj h).hom = Y.left ≫ pullback.snd
               rfl } }
+              -- 🎉 no goals
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
 /-- pullback (𝟙 A) : over A ⥤ over A is the identity functor. -/
@@ -172,6 +188,7 @@ def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
   obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
   map := fun g {h} {k} =>
     Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
+                                                                      -- 🎉 no goals
 #align category_theory.under.pushout CategoryTheory.Under.pushout
 
 end

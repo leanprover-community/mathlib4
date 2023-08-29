@@ -39,11 +39,13 @@ set_option linter.uppercaseLean3 false in
 theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f = ⊥ :=
   ⟨fun hf => ker_eq_bot_of_mono _, fun hf =>
     ConcreteCategory.mono_of_injective _ <| by convert LinearMap.ker_eq_bot.1 hf⟩
+                                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.mono_iff_ker_eq_bot ModuleCat.mono_iff_ker_eq_bot
 
 theorem mono_iff_injective : Mono f ↔ Function.Injective f := by
   rw [mono_iff_ker_eq_bot, LinearMap.ker_eq_bot]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.mono_iff_injective ModuleCat.mono_iff_injective
 
@@ -55,6 +57,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.epi_iff_surjective ModuleCat.epi_iff_surjective
 
@@ -77,14 +80,18 @@ set_option linter.uppercaseLean3 false in
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
       erw [CategoryTheory.epi_iff_surjective, ← epi_iff_surjective]
+      -- ⊢ Epi f
       exact hf
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.forget_preserves_epimorphisms ModuleCat.forget_preservesEpimorphisms
 
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
       erw [CategoryTheory.mono_iff_injective, ← mono_iff_injective]
+      -- ⊢ Mono f
       exact hf
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Module.forget_preserves_monomorphisms ModuleCat.forget_preservesMonomorphisms
 

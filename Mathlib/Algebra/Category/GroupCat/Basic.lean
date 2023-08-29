@@ -50,7 +50,9 @@ attribute [to_additive] instGroupCatLargeCategory
 @[to_additive]
 instance concreteCategory : ConcreteCategory GroupCat := by
   dsimp only [GroupCat]
+  -- ⊢ ConcreteCategory (Bundled Group)
   infer_instance
+  -- 🎉 no goals
 
 @[to_additive]
 instance : CoeSort GroupCat (Type*) where
@@ -164,6 +166,7 @@ set_option linter.uppercaseLean3 false in
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : GroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+                                                                         -- 🎉 no goals
 
 end GroupCat
 
@@ -195,7 +198,9 @@ attribute [to_additive] instCommGroupCatLargeCategory
 @[to_additive]
 instance concreteCategory : ConcreteCategory CommGroupCat := by
   dsimp only [CommGroupCat]
+  -- ⊢ ConcreteCategory (Bundled CommGroup)
   infer_instance
+  -- 🎉 no goals
 
 @[to_additive]
 instance : CoeSort CommGroupCat (Type*) where
@@ -331,6 +336,7 @@ set_option linter.uppercaseLean3 false in
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+                                                                             -- 🎉 no goals
 
 end CommGroupCat
 
@@ -354,6 +360,9 @@ set_option linter.uppercaseLean3 false in
 
 theorem asHom_injective {G : AddCommGroupCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
   convert congr_arg (fun k : AddCommGroupCat.of ℤ ⟶ G => (k : ℤ → G) (1 : ℤ)) w <;> simp
+  -- ⊢ h = ↑(asHom h) 1
+                                                                                    -- 🎉 no goals
+                                                                                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_injective AddCommGroupCat.asHom_injective
 
@@ -369,8 +378,11 @@ set_option linter.uppercaseLean3 false in
 theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
   have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
+  -- ⊢ g₁ = g₂
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
+  -- ⊢ g₁ = g₂
   apply asHom_injective t1
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.injective_of_mono AddCommGroupCat.injective_of_mono
 
@@ -470,11 +482,15 @@ def isoPerm {α : Type u} : GroupCat.of (Aut α) ≅ GroupCat.of (Equiv.Perm α)
   hom :=
     { toFun := fun g => g.toEquiv
       map_one' := by aesop
+                     -- 🎉 no goals
       map_mul' := by aesop }
+                     -- 🎉 no goals
   inv :=
     { toFun := fun g => g.toIso
       map_one' := by aesop
+                     -- 🎉 no goals
       map_mul' := by aesop }
+                     -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.iso_perm CategoryTheory.Aut.isoPerm
 
@@ -491,10 +507,12 @@ end CategoryTheory.Aut
 instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
+    -- ⊢ IsIso f
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
       -- Porting note: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
       (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toGroupCatIso
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -504,10 +522,12 @@ set_option linter.uppercaseLean3 false in
 instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
+    -- ⊢ IsIso f
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
       -- Porting note: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
       (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toCommGroupCatIso
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in

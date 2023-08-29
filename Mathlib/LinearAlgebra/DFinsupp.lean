@@ -139,23 +139,38 @@ def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
       map_add' := (DFinsupp.liftAddHom (β := M) (fun (i : ι) => (F i).toAddMonoidHom)).map_add
       map_smul' := fun c f => by
         dsimp
+        -- ⊢ ↑(sumAddHom fun i => LinearMap.toAddMonoidHom (F i)) (c • f) = c • ↑(sumAddH …
         apply DFinsupp.induction f
+        -- ⊢ ↑(sumAddHom fun i => LinearMap.toAddMonoidHom (F i)) (c • 0) = c • ↑(sumAddH …
         · rw [smul_zero, AddMonoidHom.map_zero, smul_zero]
+          -- 🎉 no goals
         · intro a b f _ _ hf
+          -- ⊢ ↑(sumAddHom fun i => LinearMap.toAddMonoidHom (F i)) (c • (single a b + f))  …
           rw [smul_add, AddMonoidHom.map_add, AddMonoidHom.map_add, smul_add, hf, ← single_smul,
             sumAddHom_single, sumAddHom_single, LinearMap.toAddMonoidHom_coe,
             LinearMap.map_smul] }
   invFun F i := F.comp (lsingle i)
   left_inv F := by
     ext
+    -- ⊢ ↑((fun F i => LinearMap.comp F (lsingle i)) (AddHom.toFun { toAddHom := { to …
     simp
+    -- 🎉 no goals
   right_inv F := by
     refine DFinsupp.lhom_ext' (fun i ↦ ?_)
+    -- ⊢ LinearMap.comp (AddHom.toFun { toAddHom := { toFun := fun F => { toAddHom := …
     ext
+    -- ⊢ LinearMap.comp ((fun F => { toAddHom := { toFun := ↑(sumAddHom fun i => Line …
+    -- ⊢ ↑(LinearMap.comp (AddHom.toFun { toAddHom := { toFun := fun F => { toAddHom  …
+    -- ⊢ ↑(LinearMap.comp ((fun F => { toAddHom := { toFun := ↑(sumAddHom fun i => Li …
     simp
+    -- 🎉 no goals
+    -- 🎉 no goals
   map_add' F G := by
+    -- ⊢ LinearMap.comp (AddHom.toFun { toFun := fun F => { toAddHom := { toFun := ↑( …
     refine DFinsupp.lhom_ext' (fun i ↦ ?_)
+    -- ⊢ ↑(LinearMap.comp (AddHom.toFun { toFun := fun F => { toAddHom := { toFun :=  …
     ext
+    -- 🎉 no goals
     simp
   map_smul' c F := by
     refine DFinsupp.lhom_ext' (fun i ↦ ?_)
@@ -168,6 +183,7 @@ with `DFinsupp.lsum_apply_apply`. -/
 theorem lsum_single [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, M i →ₗ[R] N) (i)
     (x : M i) : lsum S (M := M) F (single i x) = F i x := by
   simp
+  -- 🎉 no goals
 #align dfinsupp.lsum_single DFinsupp.lsum_single
 
 end Lsum
@@ -190,7 +206,9 @@ theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (
     (hf' : ∀ i x, f i (r • x) = r • f i x) (g : Π₀ i, β₁ i) :
     mapRange f hf (r • g) = r • mapRange f hf g := by
   ext
+  -- ⊢ ↑(mapRange f hf (r • g)) i✝ = ↑(r • mapRange f hf g) i✝
   simp only [mapRange_apply f, coe_smul, Pi.smul_apply, hf']
+  -- 🎉 no goals
 #align dfinsupp.map_range_smul DFinsupp.mapRange_smul
 
 /-- `DFinsupp.mapRange` as a `LinearMap`. -/
@@ -205,7 +223,9 @@ def mapRange.linearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) : (Π₀ i, β₁ 
 theorem mapRange.linearMap_id :
     (mapRange.linearMap fun i => (LinearMap.id : β₂ i →ₗ[R] _)) = LinearMap.id := by
   ext
+  -- ⊢ ↑(↑(LinearMap.comp (linearMap fun i => LinearMap.id) (lsingle i✝¹)) x✝) i✝ = …
   simp [linearMap]
+  -- 🎉 no goals
 #align dfinsupp.map_range.linear_map_id DFinsupp.mapRange.linearMap_id
 
 theorem mapRange.linearMap_comp (f : ∀ i, β₁ i →ₗ[R] β₂ i) (f₂ : ∀ i, β i →ₗ[R] β₁ i) :
@@ -213,6 +233,7 @@ theorem mapRange.linearMap_comp (f : ∀ i, β₁ i →ₗ[R] β₂ i) (f₂ : �
       (mapRange.linearMap f).comp (mapRange.linearMap f₂) :=
   LinearMap.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x)
     (fun i => (f i).map_zero) (fun i => (f₂ i).map_zero) (by simp)
+                                                             -- 🎉 no goals
 #align dfinsupp.map_range.linear_map_comp DFinsupp.mapRange.linearMap_comp
 
 theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x ≠ 0)]
@@ -222,6 +243,7 @@ theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x �
     (DFinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
       = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l  := by
   simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
+  -- 🎉 no goals
 #align dfinsupp.sum_map_range_index.linear_map DFinsupp.sum_mapRange_index.linearMap
 
 /-- `DFinsupp.mapRange.linearMap` as a `LinearEquiv`. -/
@@ -244,6 +266,7 @@ theorem mapRange.linearEquiv_trans (f : ∀ i, β i ≃ₗ[R] β₁ i) (f₂ : �
       (mapRange.linearEquiv f).trans (mapRange.linearEquiv f₂) :=
   LinearEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x)
     (fun i => (f₂ i).map_zero) (fun i => (f i).map_zero) (by simp)
+                                                             -- 🎉 no goals
 #align dfinsupp.map_range.linear_equiv_trans DFinsupp.mapRange.linearEquiv_trans
 
 @[simp]
@@ -276,6 +299,7 @@ theorem coprodMap_apply (f : ∀ i : ι, M i →ₗ[R] N) (x : Π₀ i, M i) :
 theorem coprodMap_apply_single (f : ∀ i : ι, M i →ₗ[R] N) (i : ι) (x : M i) :
     coprodMap f (single i x) = f i x := by
   simp [coprodMap]
+  -- 🎉 no goals
 
 end CoprodMap
 
@@ -318,12 +342,19 @@ of `p i`, coercing them to `N`, and summing them. -/
 theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
     iSup p = LinearMap.range (DFinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   apply le_antisymm
+  -- ⊢ iSup p ≤ LinearMap.range (↑(lsum ℕ) fun i => Submodule.subtype (p i))
   · apply iSup_le _
+    -- ⊢ ∀ (i : ι), p i ≤ LinearMap.range (↑(lsum ℕ) fun i => Submodule.subtype (p i))
     intro i y hy
+    -- ⊢ y ∈ LinearMap.range (↑(lsum ℕ) fun i => Submodule.subtype (p i))
     simp only [LinearMap.mem_range, lsum_apply_apply]
+    -- ⊢ ∃ y_1, ↑(sumAddHom fun i => LinearMap.toAddMonoidHom (Submodule.subtype (p i …
     exact ⟨DFinsupp.single i ⟨y, hy⟩, DFinsupp.sumAddHom_single _ _ _⟩
+    -- 🎉 no goals
   · rintro x ⟨v, rfl⟩
+    -- ⊢ ↑(↑(lsum ℕ) fun i => Submodule.subtype (p i)) v ∈ iSup p
     exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_iSup p i : p i ≤ _) (v i).2
+    -- 🎉 no goals
 #align submodule.supr_eq_range_dfinsupp_lsum Submodule.iSup_eq_range_dfinsupp_lsum
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
@@ -337,15 +368,25 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
           (DFinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype))
             (DFinsupp.filterLinearMap R _ p)) := by
   apply le_antisymm
+  -- ⊢ ⨆ (i : ι) (_ : p i), S i ≤ LinearMap.range (LinearMap.comp (↑(lsum ℕ) fun i  …
   · refine' iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, _⟩
+    -- ⊢ ↑(LinearMap.comp (↑(lsum ℕ) fun i => Submodule.subtype (S i)) (filterLinearM …
     rw [LinearMap.comp_apply, filterLinearMap_apply, filter_single_pos _ _ hi]
+    -- ⊢ ↑(↑(lsum ℕ) fun i => Submodule.subtype (S i)) (single i { val := y, property …
     simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coeSubtype]
+    -- 🎉 no goals
   · rintro x ⟨v, rfl⟩
+    -- ⊢ ↑(LinearMap.comp (↑(lsum ℕ) fun i => Submodule.subtype (S i)) (filterLinearM …
     refine' dfinsupp_sumAddHom_mem _ _ _ fun i _ => _
+    -- ⊢ ↑((fun i => LinearMap.toAddMonoidHom ((fun i => Submodule.subtype (S i)) i)) …
     refine' mem_iSup_of_mem i _
+    -- ⊢ ↑((fun i => LinearMap.toAddMonoidHom ((fun i => Submodule.subtype (S i)) i)) …
     by_cases hp : p i
+    -- ⊢ ↑((fun i => LinearMap.toAddMonoidHom ((fun i => Submodule.subtype (S i)) i)) …
     · simp [hp]
+      -- 🎉 no goals
     · simp [hp]
+      -- 🎉 no goals
 #align submodule.bsupr_eq_range_dfinsupp_lsum Submodule.biSup_eq_range_dfinsupp_lsum
 
 theorem mem_iSup_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
@@ -358,6 +399,7 @@ theorem mem_iSup_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
 theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p i), Decidable (x ≠ 0)]
     (x : N) : x ∈ iSup p ↔ ∃ f : Π₀ i, p i, (f.sum fun i xi => ↑xi) = x := by
   rw [mem_iSup_iff_exists_dfinsupp]
+  -- ⊢ (∃ f, ↑(↑(lsum ℕ) fun i => Submodule.subtype (p i)) f = x) ↔ ∃ f, (sum f fun …
   simp_rw [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply,
     LinearMap.toAddMonoidHom_coe, coeSubtype]
 #align submodule.mem_supr_iff_exists_dfinsupp' Submodule.mem_iSup_iff_exists_dfinsupp'
@@ -431,7 +473,9 @@ theorem independent_iff_forall_dfinsupp (p : ι → Submodule R N) :
   simp_rw [CompleteLattice.independent_def, Submodule.disjoint_def,
     Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
   refine' forall_congr' fun i => Subtype.forall'.trans _
+  -- ⊢ (∀ (x : { a // a ∈ p i }) (x_1 : Π₀ (i : ι), { x // x ∈ p i }), ↑(↑(lsum ℕ)  …
   simp_rw [Submodule.coe_eq_zero]
+  -- 🎉 no goals
 #align complete_lattice.independent_iff_forall_dfinsupp CompleteLattice.independent_iff_forall_dfinsupp
 
 /- If `DFinsupp.lsum` applied with `Submodule.subtype` is injective then the submodules are
@@ -440,13 +484,18 @@ theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     (h : Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype)) :
     Independent p := by
   rw [independent_iff_forall_dfinsupp]
+  -- ⊢ ∀ (i : ι) (x : { x // x ∈ p i }) (v : Π₀ (i : ι), { x // x ∈ p i }), ↑(↑(lsu …
   intro i x v hv
+  -- ⊢ x = 0
   replace hv :
     lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
       lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x)
   · simpa only [lsum_single] using hv
+    -- 🎉 no goals
   have := FunLike.ext_iff.mp (h hv) i
+  -- ⊢ x = 0
   simpa [eq_comm] using this
+  -- 🎉 no goals
 #align complete_lattice.independent_of_dfinsupp_lsum_injective CompleteLattice.independent_of_dfinsupp_lsum_injective
 
 /- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
@@ -454,7 +503,9 @@ submonoids are independent. -/
 theorem independent_of_dfinsupp_sumAddHom_injective (p : ι → AddSubmonoid N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : Independent p := by
   rw [← independent_map_orderIso_iff (AddSubmonoid.toNatSubmodule : AddSubmonoid N ≃o _)]
+  -- ⊢ Independent (↑AddSubmonoid.toNatSubmodule ∘ p)
   exact independent_of_dfinsupp_lsum_injective _ h
+  -- 🎉 no goals
 #align complete_lattice.independent_of_dfinsupp_sum_add_hom_injective CompleteLattice.independent_of_dfinsupp_sumAddHom_injective
 
 /-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as `Finsupp.total` -/
@@ -466,7 +517,9 @@ theorem lsum_comp_mapRange_toSpanSingleton [∀ m : R, Decidable (m ≠ 0)] (p :
           (finsuppLequivDFinsupp R : (ι →₀ R) ≃ₗ[R] _).toLinearMap) =
       Finsupp.total ι N R v := by
   ext
+  -- ⊢ ↑(LinearMap.comp (LinearMap.comp (↑(lsum ℕ) fun i => Submodule.subtype (p i) …
   simp
+  -- 🎉 no goals
 #align complete_lattice.lsum_comp_map_range_to_span_singleton CompleteLattice.lsum_comp_mapRange_toSpanSingleton
 
 end Semiring
@@ -480,7 +533,9 @@ subgroups are independent. -/
 theorem independent_of_dfinsupp_sumAddHom_injective' (p : ι → AddSubgroup N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : Independent p := by
   rw [← independent_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
+  -- ⊢ Independent (↑AddSubgroup.toIntSubmodule ∘ p)
   exact independent_of_dfinsupp_lsum_injective _ h
+  -- 🎉 no goals
 #align complete_lattice.independent_of_dfinsupp_sum_add_hom_injective' CompleteLattice.independent_of_dfinsupp_sumAddHom_injective'
 
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
@@ -494,17 +549,23 @@ theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Inde
     Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`
   rw [independent_iff_forall_dfinsupp] at h
+  -- ⊢ Function.Injective ↑(↑(lsum ℕ) fun i => Submodule.subtype (p i))
   suffices LinearMap.ker (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) = ⊥ by
     -- Lean can't find this without our help
     letI thisI : AddCommGroup (Π₀ i, p i) := inferInstance
     rw [LinearMap.ker_eq_bot] at this
     exact this
   rw [LinearMap.ker_eq_bot']
+  -- ⊢ ∀ (m : Π₀ (i : ι), { x // x ∈ p i }), ↑(↑(lsum ℕ) fun i => Submodule.subtype …
   intro m hm
+  -- ⊢ m = 0
   ext i : 1
+  -- ⊢ ↑m i = ↑0 i
   -- split `m` into the piece at `i` and the pieces elsewhere, to match `h`
   rw [DFinsupp.zero_apply, ← neg_eq_zero]
+  -- ⊢ -↑m i = 0
   refine' h i (-m i) m _
+  -- ⊢ ↑(↑(lsum ℕ) fun i => Submodule.subtype (p i)) (erase i m) = ↑(-↑m i)
   rwa [← erase_add_single i m, LinearMap.map_add, lsum_single, Submodule.subtype_apply,
     add_eq_zero_iff_eq_neg, ← Submodule.coe_neg] at hm
 #align complete_lattice.independent.dfinsupp_lsum_injective CompleteLattice.Independent.dfinsupp_lsum_injective
@@ -514,7 +575,9 @@ additive subgroups are `CompleteLattice.Independent`. -/
 theorem Independent.dfinsupp_sumAddHom_injective {p : ι → AddSubgroup N} (h : Independent p) :
     Function.Injective (sumAddHom fun i => (p i).subtype) := by
   rw [← independent_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)] at h
+  -- ⊢ Function.Injective ↑(sumAddHom fun i => AddSubgroup.subtype (p i))
   exact h.dfinsupp_lsum_injective
+  -- 🎉 no goals
 #align complete_lattice.independent.dfinsupp_sum_add_hom_injective CompleteLattice.Independent.dfinsupp_sumAddHom_injective
 
 /-- A family of submodules over an additive group are independent if and only iff `DFinsupp.lsum`
@@ -542,9 +605,13 @@ theorem Independent.linearIndependent [NoZeroSMulDivisors R N] (p : ι → Submo
     (hp : Independent p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
     LinearIndependent R v := by
   let _ := Classical.decEq ι
+  -- ⊢ LinearIndependent R v
   let _ := Classical.decEq R
+  -- ⊢ LinearIndependent R v
   rw [linearIndependent_iff]
+  -- ⊢ ∀ (l : ι →₀ R), ↑(Finsupp.total ι N R v) l = 0 → l = 0
   intro l hl
+  -- ⊢ l = 0
   let a :=
     DFinsupp.mapRange.linearMap (fun i => LinearMap.toSpanSingleton R (p i) ⟨v i, hv i⟩)
       l.toDFinsupp
@@ -552,10 +619,15 @@ theorem Independent.linearIndependent [NoZeroSMulDivisors R N] (p : ι → Submo
     apply hp.dfinsupp_lsum_injective
     rwa [← lsum_comp_mapRange_toSpanSingleton _ hv] at hl
   ext i
+  -- ⊢ ↑l i = ↑0 i
   apply smul_left_injective R (hv' i)
+  -- ⊢ (fun c => c • v i) (↑l i) = (fun c => c • v i) (↑0 i)
   have : l i • v i = a i := rfl
+  -- ⊢ (fun c => c • v i) (↑l i) = (fun c => c • v i) (↑0 i)
   simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
+  -- ⊢ (fun c => c • v i) (↑l i) = (fun c => c • v i) (↑0 i)
   simpa
+  -- 🎉 no goals
 #align complete_lattice.independent.linear_independent CompleteLattice.Independent.linearIndependent
 
 theorem independent_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {v : ι → N}

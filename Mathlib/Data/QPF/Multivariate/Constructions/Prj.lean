@@ -59,7 +59,12 @@ instance Prj.mvqpf : MvQPF (Prj i) where
   abs := @Prj.abs _ i
   repr := @Prj.repr _ i
   abs_repr := by intros; rfl
+                 -- ⊢ abs i (repr i x✝) = x✝
+                         -- 🎉 no goals
   abs_map := by intros α β f P; cases P; rfl
+                -- ⊢ abs i (f <$$> P) = f <$$> abs i P
+                                -- ⊢ abs i (f <$$> { fst := fst✝, snd := snd✝ }) = f <$$> abs i { fst := fst✝, sn …
+                                         -- 🎉 no goals
 #align mvqpf.prj.mvqpf MvQPF.Prj.mvqpf
 
 end MvQPF

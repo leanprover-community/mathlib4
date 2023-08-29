@@ -46,18 +46,34 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   map {C D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     dsimp; apply funext; intro x
+    -- ⊢ Quot.map (𝟙 C).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r ((𝟙 C).obj X)  …
+           -- ⊢ ∀ (x : Quot Setoid.r), Quot.map (𝟙 C).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y →  …
+                         -- ⊢ Quot.map (𝟙 C).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r ((𝟙 C).obj X)  …
     apply x.recOn  -- Porting note: `induction x` not working yet
+    -- ⊢ ∀ (a b : ↑C) (p : Setoid.r a b), (_ : Quot.map (𝟙 C).obj (_ : ∀ (X Y : ↑C),  …
     · intro _ _ p
+      -- ⊢ (_ : Quot.map (𝟙 C).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r ((𝟙 C).ob …
       simp only [types_id_apply]
+      -- 🎉 no goals
     · intro _
+      -- ⊢ Quot.map (𝟙 C).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r ((𝟙 C).obj X)  …
       rfl
+      -- 🎉 no goals
   map_comp {C D E} f g := by -- Porting note(s): idem
     dsimp; apply funext; intro x
+    -- ⊢ Quot.map (f ≫ g).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r (g.obj (f.ob …
+           -- ⊢ ∀ (x : Quot Setoid.r), Quot.map (f ≫ g).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y  …
+                         -- ⊢ Quot.map (f ≫ g).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r (g.obj (f.ob …
     apply x.recOn
+    -- ⊢ ∀ (a b : ↑C) (p : Setoid.r a b), (_ : Quot.map (f ≫ g).obj (_ : ∀ (X Y : ↑C) …
     · intro _ _ _
+      -- ⊢ (_ : Quot.map (f ≫ g).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r (g.obj  …
       simp only [types_id_apply]
+      -- 🎉 no goals
     · intro _
+      -- ⊢ Quot.map (f ≫ g).obj (_ : ∀ (X Y : ↑C), Setoid.r X Y → Setoid.r (g.obj (f.ob …
       rfl
+      -- 🎉 no goals
 #align category_theory.isomorphism_classes CategoryTheory.isomorphismClasses
 
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :

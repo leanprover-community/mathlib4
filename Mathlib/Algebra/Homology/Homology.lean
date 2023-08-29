@@ -61,8 +61,11 @@ def cyclesIsoKernel {i j : ι} (r : c.Rel i j) : (C.cycles i : V) ≅ kernel (C.
 
 theorem cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles i = ⊤ := by
   rw [eq_top_iff]
+  -- ⊢ ⊤ ≤ cycles C i
   apply le_kernelSubobject
+  -- ⊢ Subobject.arrow ⊤ ≫ dFrom C i = 0
   rw [C.dFrom_eq_zero h, comp_zero]
+  -- 🎉 no goals
 #align homological_complex.cycles_eq_top HomologicalComplex.cycles_eq_top
 
 end Cycles
@@ -90,8 +93,11 @@ def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
 
 theorem boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
   rw [eq_bot_iff]
+  -- ⊢ boundaries C j ≤ ⊥
   refine' imageSubobject_le _ 0 _
+  -- ⊢ 0 ≫ Subobject.arrow ⊥ = dTo C j
   rw [C.dTo_eq_zero h, zero_comp]
+  -- 🎉 no goals
 #align homological_complex.boundaries_eq_bot HomologicalComplex.boundaries_eq_bot
 
 end Boundaries
@@ -130,9 +136,13 @@ def homologyIso (C : HomologicalComplex V c) {i j k : ι} (hij : c.Rel i j) (hjk
     C.homology j ≅ _root_.homology (C.d i j) (C.d j k) (C.d_comp_d i j k) :=
   homology.mapIso _ _
     (Arrow.isoMk (C.xPrevIso hij) (Iso.refl _) <| by dsimp; rw [C.dTo_eq hij, Category.comp_id])
+                                                     -- ⊢ (xPrevIso C hij).hom ≫ d C i j = dTo C j ≫ 𝟙 (X C j)
+                                                            -- 🎉 no goals
     (Arrow.isoMk (Iso.refl _) (C.xNextIso hjk) <| by
       dsimp
+      -- ⊢ 𝟙 (X C j) ≫ d C j k = dFrom C j ≫ (xNextIso C hjk).hom
       rw [C.dFrom_comp_xNextIso hjk, Category.id_comp])
+      -- 🎉 no goals
     rfl
 #align homological_complex.homology_iso HomologicalComplex.homologyIso
 
@@ -146,7 +156,9 @@ def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
   (homology.mapIso _ _
       (Arrow.isoMk (C.xPrevIso rfl) (Iso.refl _) <| by
         rw [C.dTo_eq rfl]
+        -- ⊢ (HomologicalComplex.xPrevIso C (_ : 0 + 1 = 0 + 1)).hom ≫ (Arrow.mk (Homolog …
         exact (Category.comp_id _).symm : Arrow.mk (C.dTo 0) ≅ Arrow.mk (C.d 1 0))
+        -- 🎉 no goals
       (Arrow.isoMk (Iso.refl _) (Iso.refl _) <| by
         simp [C.dFrom_eq_zero fun h : _ = _ =>
           one_ne_zero <| by rwa [ChainComplex.next_nat_zero, Nat.zero_add] at h] :
@@ -160,10 +172,15 @@ def CochainComplex.homologyZeroIso [HasZeroObject V] [HasKernels V] [HasImages V
     (C : CochainComplex V ℕ) : C.homology 0 ≅ kernel (C.d 0 1) :=
   (homology.mapIso _ _
       (Arrow.isoMk (C.xPrevIsoSelf (by rw [CochainComplex.prev_nat_zero]; exact one_ne_zero))
+                                       -- ⊢ ¬ComplexShape.Rel (ComplexShape.up ℕ) 0 0
+                                                                          -- 🎉 no goals
           (Iso.refl _) (by simp) : Arrow.mk (C.dTo 0) ≅ Arrow.mk 0)
+                           -- 🎉 no goals
       (Arrow.isoMk (Iso.refl _) (C.xNextIso rfl) (by simp) :
+                                                     -- 🎉 no goals
         Arrow.mk (C.dFrom 0) ≅ Arrow.mk (C.d 0 1)) <|
       by simp).trans <|
+         -- 🎉 no goals
     homologyOfZeroLeft _
 #align cochain_complex.homology_zero_iso CochainComplex.homologyZeroIso
 
@@ -199,12 +216,14 @@ variable {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 /-- The morphism between cycles induced by a chain map. -/
 abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cycles i : V) :=
   Subobject.factorThru _ ((C₁.cycles i).arrow ≫ f.f i) (kernelSubobject_factors _ _ (by simp))
+                                                                                        -- 🎉 no goals
 #align cycles_map cyclesMap
 
 -- Porting note: Originally `@[simp, reassoc.1, elementwise]`
 @[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cyclesMap f i ≫ (C₂.cycles i).arrow = (C₁.cycles i).arrow ≫ f.f i := by simp
+                                                                            -- 🎉 no goals
 #align cycles_map_arrow cyclesMap_arrow
 
 attribute [simp 1100] cyclesMap_arrow_assoc
@@ -213,14 +232,18 @@ attribute [simp] cyclesMap_arrow_apply
 @[simp]
 theorem cyclesMap_id (i : ι) : cyclesMap (𝟙 C₁) i = 𝟙 _ := by
   dsimp only [cyclesMap]
+  -- ⊢ Subobject.factorThru (cycles C₁ i) (Subobject.arrow (cycles C₁ i) ≫ Hom.f (𝟙 …
   simp
+  -- 🎉 no goals
 #align cycles_map_id cyclesMap_id
 
 @[simp]
 theorem cyclesMap_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     cyclesMap (f ≫ g) i = cyclesMap f i ≫ cyclesMap g i := by
   dsimp only [cyclesMap]
+  -- ⊢ Subobject.factorThru (cycles C₃ i) (Subobject.arrow (cycles C₁ i) ≫ Hom.f (f …
   simp [Subobject.factorThru_right]
+  -- 🎉 no goals
 #align cycles_map_comp cyclesMap_comp
 
 variable (V c)
@@ -273,7 +296,9 @@ variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 theorem boundariesToCycles_naturality (i : ι) :
     boundariesMap f i ≫ C₂.boundariesToCycles i = C₁.boundariesToCycles i ≫ cyclesMap f i := by
   ext
+  -- ⊢ (boundariesMap f i ≫ boundariesToCycles C₂ i) ≫ Subobject.arrow (cycles C₂ i …
   simp
+  -- 🎉 no goals
 #align boundaries_to_cycles_naturality boundariesToCycles_naturality
 
 variable (V c)
@@ -295,12 +320,16 @@ def homologyFunctor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V whe
   map {C₁ C₂} f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
   map_id _ := by
     simp only
+    -- ⊢ homology.map (_ : dTo x✝ i ≫ dFrom x✝ i = 0) (_ : dTo x✝ i ≫ dFrom x✝ i = 0) …
     ext1
+    -- ⊢ homology.π (dTo x✝ i) (dFrom x✝ i) (_ : dTo x✝ i ≫ dFrom x✝ i = 0) ≫ homolog …
     simp only [homology.π_map, kernelSubobjectMap_id, Hom.sqFrom_id, Category.id_comp,
       Category.comp_id]
   map_comp _ _ := by
     simp only
+    -- ⊢ homology.map (_ : dTo X✝ i ≫ dFrom X✝ i = 0) (_ : dTo Z✝ i ≫ dFrom Z✝ i = 0) …
     ext1
+    -- ⊢ homology.π (dTo X✝ i) (dFrom X✝ i) (_ : dTo X✝ i ≫ dFrom X✝ i = 0) ≫ homolog …
     simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
       Category.assoc]
 #align homology_functor homologyFunctor
@@ -312,14 +341,20 @@ def gradedHomologyFunctor [HasCokernels V] : HomologicalComplex V c ⥤ GradedOb
   map {C C'} f i := (homologyFunctor V c i).map f
   map_id _ := by
     ext
+    -- ⊢ { obj := fun C i => HomologicalComplex.homology C i, map := fun {C C'} f i = …
     simp only [GradedObject.categoryOfGradedObjects_id]
+    -- ⊢ (homologyFunctor V c x✝).map (𝟙 x✝¹) = 𝟙 (HomologicalComplex.homology x✝¹ x✝)
     ext
+    -- ⊢ homology.π (dTo x✝¹ x✝) (dFrom x✝¹ x✝) (_ : dTo x✝¹ x✝ ≫ dFrom x✝¹ x✝ = 0) ≫ …
     simp only [homology.π_map, homologyFunctor_map, kernelSubobjectMap_id, Hom.sqFrom_id,
       Category.id_comp, Category.comp_id]
   map_comp _ _ := by
     ext
+    -- ⊢ { obj := fun C i => HomologicalComplex.homology C i, map := fun {C C'} f i = …
     simp only [GradedObject.categoryOfGradedObjects_comp]
+    -- ⊢ (homologyFunctor V c x✝).map (x✝² ≫ x✝¹) = (homologyFunctor V c x✝).map x✝²  …
     ext
+    -- ⊢ homology.π (dTo X✝ x✝) (dFrom X✝ x✝) (_ : dTo X✝ x✝ ≫ dFrom X✝ x✝ = 0) ≫ (ho …
     simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
       homologyFunctor_map, Category.assoc]
 #align graded_homology_functor gradedHomologyFunctor

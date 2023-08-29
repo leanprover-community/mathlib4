@@ -93,8 +93,11 @@ protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b �
 
 theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
   refine' ⟨fun h => ⟨fun a b => _⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
+  -- ⊢ r a b ∨ a = b ∨ r b a
   rw [or_left_comm, or_iff_not_imp_left]
+  -- ⊢ ¬a = b → r a b ∨ r b a
   exact h trivial trivial
+  -- 🎉 no goals
 #align is_chain_univ_iff isChain_univ_iff
 
 theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
@@ -106,7 +109,9 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
 theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsChain (· ≤ ·) (range f) := by
   rw [← image_univ]
+  -- ⊢ IsChain (fun x x_1 => x ≤ x_1) (f '' univ)
   exact (isChain_of_trichotomous _).image (· ≤ ·) _ _ hf
+  -- 🎉 no goals
 
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
@@ -129,16 +134,20 @@ protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f 
   fun ⟨a, ha⟩ ⟨b, hb⟩ =>
     (by_cases fun hab : a = b => by
       simp only [hab, exists_prop, and_self_iff, Subtype.exists]
+      -- ⊢ ∃ a, a ∈ c ∧ r (f b) (f a)
       exact ⟨b, hb, refl _⟩)
+      -- 🎉 no goals
     fun hab => ((h ha hb hab).elim fun h => ⟨⟨b, hb⟩, h, refl _⟩) fun h => ⟨⟨a, ha⟩, refl _, h⟩
 #align is_chain.directed IsChain.directed
 
 theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a ∈ s) (mem2 : b ∈ s)
     (mem3 : c ∈ s) : ∃ (z : _) (_ : z ∈ s), r a z ∧ r b z ∧ r c z := by
   rcases directedOn_iff_directed.mpr (IsChain.directed hchain) a mem1 b mem2 with ⟨z, mem4, H1, H2⟩
+  -- ⊢ ∃ z x, r a z ∧ r b z ∧ r c z
   rcases directedOn_iff_directed.mpr (IsChain.directed hchain) z mem4 c mem3 with
     ⟨z', mem5, H3, H4⟩
   exact ⟨z', mem5, _root_.trans H1 H3, _root_.trans H2 H3, H4⟩
+  -- 🎉 no goals
 #align is_chain.exists3 IsChain.exists3
 
 end Total
@@ -172,27 +181,35 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s (choose h) :=
     @choose_spec _ (fun t => IsChain r s ∧ SuperChain r s t) _
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
+  -- 🎉 no goals
 #align succ_chain_spec succChain_spec
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
   else by
     rw [exists_and_left] at h
+    -- ⊢ IsChain r (SuccChain r s)
     simpa [SuccChain, dif_neg, h] using hs
+    -- 🎉 no goals
 #align is_chain.succ IsChain.succ
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
   simp only [IsMaxChain, not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  -- ⊢ SuperChain r s (SuccChain r s)
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
+  -- ⊢ SuperChain r s (SuccChain r s)
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
+  -- 🎉 no goals
 #align is_chain.super_chain_succ_chain IsChain.superChain_succChain
 
 theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
     rw [exists_and_left] at h
+    -- ⊢ s ⊆ SuccChain r s
     simp [SuccChain, dif_neg, h, Subset.rfl]
+    -- 🎉 no goals
 #align subset_succ_chain subset_succChain
 
 /-- Predicate for whether a set is reachable from `∅` using `SuccChain` and `⋃₀`. -/
@@ -209,7 +226,9 @@ def maxChain (r : α → α → Prop) : Set α :=
 
 theorem chainClosure_empty : ChainClosure r ∅ := by
   have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => False.rec h
+  -- ⊢ ChainClosure r ∅
   simpa using this
+  -- 🎉 no goals
 #align chain_closure_empty chainClosure_empty
 
 theorem chainClosure_maxChain : ChainClosure r (maxChain r) :=
@@ -220,6 +239,7 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     (h : ∀ ⦃c₃⦄, ChainClosure r c₃ → c₃ ⊆ c₂ → c₂ = c₃ ∨ SuccChain r c₃ ⊆ c₂) :
     SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁
+  -- ⊢ SuccChain r c₂ ⊆ SuccChain r s✝ ∨ SuccChain r s✝ ⊆ c₂
   case succ c₃ hc₃ ih =>
     cases' ih with ih ih
     · exact Or.inl (ih.trans subset_succChain)
@@ -231,6 +251,7 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
 private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
   induction hc₂ generalizing c₁ hc₁
+  -- ⊢ SuccChain r s✝ = c₁ ∨ SuccChain r c₁ ⊆ SuccChain r s✝
   case succ c₂ _ ih =>
     refine' ((chainClosure_succ_total_aux hc₁) fun c₁ => ih).imp h.antisymm' fun h₁ => _
     obtain rfl | h₂ := ih hc₁ h₁
@@ -256,8 +277,13 @@ theorem ChainClosure.total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r
 theorem ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (hc : SuccChain r c₂ = c₂) : c₁ ⊆ c₂ := by
   induction hc₁
+  -- ⊢ SuccChain r s✝ ⊆ c₂
   case succ s₁ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h => h ▸ hc.subset) id
+  -- ⊢ ⋃₀ s✝ ⊆ c₂
+  -- 🎉 no goals
   case union s _ ih => exact sUnion_subset ih
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align chain_closure.succ_fixpoint ChainClosure.succ_fixpoint
 
 theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
@@ -268,7 +294,10 @@ theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
 
 theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
   induction hc
+  -- ⊢ IsChain r (SuccChain r s✝)
   case succ c _ h => exact h.succ
+  -- ⊢ IsChain r (⋃₀ s✝)
+  -- 🎉 no goals
   case union s hs h =>
     exact fun c₁ ⟨t₁, ht₁, (hc₁ : c₁ ∈ t₁)⟩ c₂ ⟨t₂, ht₂, (hc₂ : c₂ ∈ t₂)⟩ hneq =>
       ((hs _ ht₁).total <| hs _ ht₂).elim (fun ht => h t₂ ht₂ (ht hc₁) hc₂ hneq) fun ht =>
@@ -310,8 +339,11 @@ instance : SetLike (Flag α) α where
   coe := carrier
   coe_injective' s t h := by
     cases s
+    -- ⊢ { carrier := carrier✝, Chain' := Chain'✝, max_chain' := max_chain'✝ } = t
     cases t
+    -- ⊢ { carrier := carrier✝¹, Chain' := Chain'✝¹, max_chain' := max_chain'✝¹ } = { …
     congr
+    -- 🎉 no goals
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=

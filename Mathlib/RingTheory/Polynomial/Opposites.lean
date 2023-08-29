@@ -57,6 +57,7 @@ set_option linter.uppercaseLean3 false in
 theorem opRingEquiv_op_C_mul_X_pow (r : R) (n : ℕ) :
     opRingEquiv R (op (C r * X ^ n : R[X])) = C (op r) * X ^ n := by
   simp only [X_pow_mul, op_mul, op_pow, map_mul, map_pow, opRingEquiv_op_X, opRingEquiv_op_C]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.op_ring_equiv_op_C_mul_X_pow Polynomial.opRingEquiv_op_C_mul_X_pow
 
@@ -68,6 +69,7 @@ set_option linter.uppercaseLean3 false in
 theorem opRingEquiv_symm_monomial (n : ℕ) (r : Rᵐᵒᵖ) :
     (opRingEquiv R).symm (monomial n r) = op (monomial n (unop r)) :=
   (opRingEquiv R).injective (by simp)
+                                -- 🎉 no goals
 #align polynomial.op_ring_equiv_symm_monomial Polynomial.opRingEquiv_symm_monomial
 
 @[simp]
@@ -85,6 +87,7 @@ set_option linter.uppercaseLean3 false in
 theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R).symm (C r * X ^ n : Rᵐᵒᵖ[X]) = op (C (unop r) * X ^ n) := by
   rw [C_mul_X_pow_eq_monomial, opRingEquiv_symm_monomial, C_mul_X_pow_eq_monomial]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align polynomial.op_ring_equiv_symm_C_mul_X_pow Polynomial.opRingEquiv_symm_C_mul_X_pow
 
@@ -95,21 +98,29 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
   induction' p using MulOpposite.rec' with p
+  -- ⊢ coeff (↑(opRingEquiv R) (op p)) n = op (coeff (unop (op p)) n)
   cases p
+  -- ⊢ coeff (↑(opRingEquiv R) (op { toFinsupp := toFinsupp✝ })) n = op (coeff (uno …
   rfl
+  -- 🎉 no goals
 #align polynomial.coeff_op_ring_equiv Polynomial.coeff_opRingEquiv
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by
   induction' p using MulOpposite.rec' with p
+  -- ⊢ support (↑(opRingEquiv R) (op p)) = support (unop (op p))
   cases p
+  -- ⊢ support (↑(opRingEquiv R) (op { toFinsupp := toFinsupp✝ })) = support (unop  …
   exact Finsupp.support_mapRange_of_injective (map_zero _) _ op_injective
+  -- 🎉 no goals
 #align polynomial.support_op_ring_equiv Polynomial.support_opRingEquiv
 
 @[simp]
 theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by
   by_cases p0 : p = 0
+  -- ⊢ natDegree (↑(opRingEquiv R) p) = natDegree (unop p)
   · simp only [p0, _root_.map_zero, natDegree_zero, unop_zero]
+    -- 🎉 no goals
   · simp only [p0, natDegree_eq_support_max', Ne.def, AddEquivClass.map_eq_zero_iff, not_false_iff,
       support_opRingEquiv, unop_eq_zero_iff]
 #align polynomial.nat_degree_op_ring_equiv Polynomial.natDegree_opRingEquiv
@@ -118,6 +129,7 @@ theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree 
 theorem leadingCoeff_opRingEquiv (p : R[X]ᵐᵒᵖ) :
     (opRingEquiv R p).leadingCoeff = op (unop p).leadingCoeff := by
   rw [leadingCoeff, coeff_opRingEquiv, natDegree_opRingEquiv, leadingCoeff]
+  -- 🎉 no goals
 #align polynomial.leading_coeff_op_ring_equiv Polynomial.leadingCoeff_opRingEquiv
 
 end Polynomial

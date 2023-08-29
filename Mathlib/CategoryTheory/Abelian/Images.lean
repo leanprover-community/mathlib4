@@ -105,23 +105,32 @@ See <https://stacks.math.columbia.edu/tag/0107>
 -/
 def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
   cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) (by ext; simp)
+                                                               -- 🎉 no goals
+                                                                          -- ⊢ (kernel.ι f ≫ kernel.lift (cokernel.π f) f (_ : f ≫ cokernel.π f = 0)) ≫ equ …
+                                                                               -- 🎉 no goals
 #align category_theory.abelian.coimage_image_comparison CategoryTheory.Abelian.coimageImageComparison
 
 /-- An alternative formulation of the canonical map from the abelian coimage to the abelian image.
 -/
 def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) (cokernel.desc (kernel.ι f) f (by simp)) (by ext; simp)
+                                                               -- 🎉 no goals
+                                                                          -- ⊢ coequalizer.π (kernel.ι f) 0 ≫ cokernel.desc (kernel.ι f) f (_ : kernel.ι f  …
+                                                                               -- 🎉 no goals
 #align category_theory.abelian.coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison'
 
 theorem coimageImageComparison_eq_coimageImageComparison' :
     coimageImageComparison f = coimageImageComparison' f := by
   ext
+  -- ⊢ (coequalizer.π (kernel.ι f) 0 ≫ coimageImageComparison f) ≫ equalizer.ι (cok …
   simp [coimageImageComparison, coimageImageComparison']
+  -- 🎉 no goals
 #align category_theory.abelian.coimage_image_comparison_eq_coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison_eq_coimageImageComparison'
 
 @[reassoc (attr := simp)]
 theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
   simp [coimageImageComparison]
+  -- 🎉 no goals
 #align category_theory.abelian.coimage_image_factorisation CategoryTheory.Abelian.coimage_image_factorisation
 
 end CategoryTheory.Abelian

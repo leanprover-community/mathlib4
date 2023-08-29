@@ -61,10 +61,15 @@ variable [Full G] [Faithful G] (Hld : LocallyCoverDense K G)
 theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
     K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
   constructor
+  -- ⊢ GrothendieckTopology.sieves K (G.obj X) (Sieve.functorPushforward G S) → ∃ T …
   · intro hS
+    -- ⊢ ∃ T, Sieve.functorPullback G ↑T = S
     exact ⟨⟨_, hS⟩, (Sieve.fullyFaithfulFunctorGaloisCoinsertion G X).u_l_eq S⟩
+    -- 🎉 no goals
   · rintro ⟨T, rfl⟩
+    -- ⊢ GrothendieckTopology.sieves K (G.obj X) (Sieve.functorPushforward G (Sieve.f …
     exact Hld T
+    -- 🎉 no goals
 #align category_theory.locally_cover_dense.pushforward_cover_iff_cover_pullback CategoryTheory.LocallyCoverDense.pushforward_cover_iff_cover_pullback
 
 /-- If a functor `G : C ⥤ (D, K)` is fully faithful and locally dense,
@@ -75,8 +80,11 @@ def inducedTopology : GrothendieckTopology C where
   sieves X S := K _ (S.functorPushforward G)
   top_mem' X := by
     change K _ _
+    -- ⊢ GrothendieckTopology.sieves K (G.obj X) (Sieve.functorPushforward G ⊤)
     rw [Sieve.functorPushforward_top]
+    -- ⊢ GrothendieckTopology.sieves K (G.obj X) ⊤
     exact K.top_mem _
+    -- 🎉 no goals
   pullback_stable' X Y S f hS := by
     have : S.pullback f = ((S.functorPushforward G).pullback (G.map f)).functorPullback G := by
       conv_lhs => rw [← (Sieve.fullyFaithfulFunctorGaloisCoinsertion G X).u_l_eq S]
@@ -84,17 +92,28 @@ def inducedTopology : GrothendieckTopology C where
       change (S.functorPushforward G) _ ↔ (S.functorPushforward G) _
       rw [G.map_comp]
     rw [this]
+    -- ⊢ Sieve.functorPullback G (Sieve.pullback (G.map f) (Sieve.functorPushforward  …
     change K _ _
+    -- ⊢ GrothendieckTopology.sieves K (G.obj Y) (Sieve.functorPushforward G (Sieve.f …
     apply Hld ⟨_, K.pullback_stable (G.map f) hS⟩
+    -- 🎉 no goals
   transitive' X S hS S' H' := by
     apply K.transitive hS
+    -- ⊢ ∀ ⦃Y : D⦄ ⦃f : Y ⟶ G.obj X⦄, (Sieve.functorPushforward G S).arrows f → Sieve …
     rintro Y _ ⟨Z, g, i, hg, rfl⟩
+    -- ⊢ Sieve.pullback (i ≫ G.map g) (Sieve.functorPushforward G S') ∈ GrothendieckT …
     rw [Sieve.pullback_comp]
+    -- ⊢ Sieve.pullback i (Sieve.pullback (G.map g) (Sieve.functorPushforward G S'))  …
     apply K.pullback_stable i
+    -- ⊢ Sieve.pullback (G.map g) (Sieve.functorPushforward G S') ∈ GrothendieckTopol …
     refine' K.superset_covering _ (H' hg)
+    -- ⊢ Sieve.functorPushforward G (Sieve.pullback g S') ≤ Sieve.pullback (G.map g)  …
     rintro W _ ⟨Z', g', i', hg, rfl⟩
+    -- ⊢ (Sieve.pullback (G.map g) (Sieve.functorPushforward G S')).arrows (i' ≫ G.ma …
     refine' ⟨Z', g' ≫ g , i', hg, _⟩
+    -- ⊢ (i' ≫ G.map g') ≫ G.map g = i' ≫ G.map (g' ≫ g)
     simp
+    -- 🎉 no goals
 #align category_theory.locally_cover_dense.induced_topology CategoryTheory.LocallyCoverDense.inducedTopology
 
 /-- `G` is cover-lifting wrt the induced topology. -/
@@ -111,12 +130,21 @@ end LocallyCoverDense
 
 theorem CoverDense.locallyCoverDense [Full G] (H : CoverDense K G) : LocallyCoverDense K G := by
   intro X T
+  -- ⊢ Sieve.functorPushforward G (Sieve.functorPullback G ↑T) ∈ GrothendieckTopolo …
   refine' K.superset_covering _ (K.bind_covering T.property fun Y f _ => H.is_cover Y)
+  -- ⊢ (Sieve.bind (↑T).arrows fun Y f x => Sieve.coverByImage G Y) ≤ Sieve.functor …
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', rfl : _ = _⟩, rfl⟩
+  -- ⊢ (Sieve.functorPushforward G (Sieve.functorPullback G ↑T)).arrows ((g ≫ f') ≫ …
   use W; use G.preimage (f' ≫ f); use g
+  -- ⊢ ∃ g_1 h, (Sieve.functorPullback G ↑T).arrows g_1 ∧ (g ≫ f') ≫ f = h ≫ G.map  …
+         -- ⊢ ∃ h, (Sieve.functorPullback G ↑T).arrows (G.preimage (f' ≫ f)) ∧ (g ≫ f') ≫  …
+                                  -- ⊢ (Sieve.functorPullback G ↑T).arrows (G.preimage (f' ≫ f)) ∧ (g ≫ f') ≫ f = g …
   constructor
+  -- ⊢ (Sieve.functorPullback G ↑T).arrows (G.preimage (f' ≫ f))
   simpa using T.val.downward_closed hf f'
+  -- ⊢ (g ≫ f') ≫ f = g ≫ G.map (G.preimage (f' ≫ f))
   simp
+  -- 🎉 no goals
 #align category_theory.cover_dense.locally_cover_dense CategoryTheory.CoverDense.locallyCoverDense
 
 /-- Given a fully faithful cover-dense functor `G : C ⥤ (D, K)`, we may induce a topology on `C`.
@@ -130,13 +158,21 @@ variable (J)
 
 theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
   intro Y T
+  -- ⊢ Sieve.functorPushforward (Over.forget X) (Sieve.functorPullback (Over.forget …
   convert T.property
+  -- ⊢ Sieve.functorPushforward (Over.forget X) (Sieve.functorPullback (Over.forget …
   ext Z f
+  -- ⊢ (Sieve.functorPushforward (Over.forget X) (Sieve.functorPullback (Over.forge …
   constructor
+  -- ⊢ (Sieve.functorPushforward (Over.forget X) (Sieve.functorPullback (Over.forge …
   · rintro ⟨_, _, g', hg, rfl⟩
+    -- ⊢ (↑T).arrows (g' ≫ (Over.forget X).map w✝)
     exact T.val.downward_closed hg g'
+    -- 🎉 no goals
   · intro hf
+    -- ⊢ (Sieve.functorPushforward (Over.forget X) (Sieve.functorPullback (Over.forge …
     exact ⟨Over.mk (f ≫ Y.hom), Over.homMk f, 𝟙 _, hf, (Category.id_comp _).symm⟩
+    -- 🎉 no goals
 #align category_theory.over_forget_locally_cover_dense CategoryTheory.over_forget_locallyCoverDense
 
 end

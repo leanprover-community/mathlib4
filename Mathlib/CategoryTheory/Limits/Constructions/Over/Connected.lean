@@ -54,14 +54,19 @@ def raiseCone [IsConnected J] {B : C} {F : J ⥤ Over B} (c : Cone (F ⋙ forget
         Over.homMk (c.π.app j) (nat_trans_from_is_connected (c.π ≫ natTransInOver F) j _)
       naturality := by
         intro X Y f
+        -- ⊢ ((Functor.const J).obj (mk (NatTrans.app c.π (Classical.arbitrary J) ≫ (F.ob …
         apply CommaMorphism.ext
+        -- ⊢ (((Functor.const J).obj (mk (NatTrans.app c.π (Classical.arbitrary J) ≫ (F.o …
         · simpa using (c.w f).symm
+          -- 🎉 no goals
         · simp }
+          -- 🎉 no goals
 #align category_theory.over.creates_connected.raise_cone CategoryTheory.Over.CreatesConnected.raiseCone
 
 theorem raised_cone_lowers_to_original [IsConnected J] {B : C} {F : J ⥤ Over B}
     (c : Cone (F ⋙ forget B)) :
     (forget B).mapCone (raiseCone c) = c := by aesop_cat
+                                               -- 🎉 no goals
 #align category_theory.over.creates_connected.raised_cone_lowers_to_original CategoryTheory.Over.CreatesConnected.raised_cone_lowers_to_original
 
 /-- (Impl) Show that the raised cone is a limit. -/
@@ -71,9 +76,13 @@ def raisedConeIsLimit [IsConnected J] {B : C} {F : J ⥤ Over B} {c : Cone (F �
     Over.homMk (t.lift ((forget B).mapCone s))
   uniq s m K := by
     ext1
+    -- ⊢ m.left = ((fun s => homMk (IsLimit.lift t ((forget B).mapCone s))) s).left
     apply t.hom_ext
+    -- ⊢ ∀ (j : J), m.left ≫ NatTrans.app c.π j = ((fun s => homMk (IsLimit.lift t (( …
     intro j
+    -- ⊢ m.left ≫ NatTrans.app c.π j = ((fun s => homMk (IsLimit.lift t ((forget B).m …
     simp [← K j]
+    -- 🎉 no goals
 #align category_theory.over.creates_connected.raised_cone_is_limit CategoryTheory.Over.CreatesConnected.raisedConeIsLimit
 
 end CreatesConnected

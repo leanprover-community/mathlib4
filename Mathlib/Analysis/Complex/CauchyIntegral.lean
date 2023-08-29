@@ -177,21 +177,34 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
       I • ∫ y : ℝ in z.im..w.im, f (re z + y * I) =
       ∫ x : ℝ in z.re..w.re, ∫ y : ℝ in z.im..w.im, I • f' (x + y * I) 1 - f' (x + y * I) I := by
   set e : (ℝ × ℝ) ≃L[ℝ] ℂ := equivRealProdClm.symm
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑x + ↑z.im * I)) - ∫ (x : ℝ) in z.re..w.re, f …
   have he : ∀ x y : ℝ, ↑x + ↑y * I = e (x, y) := fun x y => (mk_eq_add_mul_I x y).symm
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑x + ↑z.im * I)) - ∫ (x : ℝ) in z.re..w.re, f …
   have he₁ : e (1, 0) = 1 := rfl; have he₂ : e (0, 1) = I := rfl
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑x + ↑z.im * I)) - ∫ (x : ℝ) in z.re..w.re, f …
+                                  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑x + ↑z.im * I)) - ∫ (x : ℝ) in z.re..w.re, f …
   simp only [he] at *
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   set F : ℝ × ℝ → E := f ∘ e
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   set F' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fun p => (f' (e p)).comp (e : ℝ × ℝ →L[ℝ] ℂ)
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   have hF' : ∀ p : ℝ × ℝ, (-(I • F' p)) (1, 0) + F' p (0, 1) = -(I • f' (e p) 1 - f' (e p) I) := by
     rintro ⟨x, y⟩
     simp only [ContinuousLinearMap.neg_apply, ContinuousLinearMap.smul_apply,
       ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe, he₁, he₂, neg_add_eq_sub,
       neg_sub]
   set R : Set (ℝ × ℝ) := [[z.re, w.re]] ×ˢ [[w.im, z.im]]
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   set t : Set (ℝ × ℝ) := e ⁻¹' s
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   rw [uIcc_comm z.im] at Hc Hi; rw [min_comm z.im, max_comm z.im] at Hd
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
+                                -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   have hR : e ⁻¹' ([[z.re, w.re]] ×ℂ [[w.im, z.im]]) = R := rfl
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   have htc : ContinuousOn F R := Hc.comp e.continuousOn hR.ge
+  -- ⊢ (((∫ (x : ℝ) in z.re..w.re, f (↑(ContinuousLinearEquiv.symm equivRealProdClm …
   have htd :
     ∀ p ∈ Ioo (min z.re w.re) (max z.re w.re) ×ˢ Ioo (min w.im z.im) (max w.im z.im) \ t,
       HasFDerivAt F (F' p) p :=
@@ -204,6 +217,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
   rw [← (volume_preserving_equiv_real_prod.symm _).integrableOn_comp_preimage
     (MeasurableEquiv.measurableEmbedding _)] at Hi
   simpa only [hF'] using Hi.neg
+  -- 🎉 no goals
 #align complex.integral_boundary_rect_of_has_fderiv_at_real_off_countable Complex.integral_boundary_rect_of_hasFDerivAt_real_off_countable
 
 /-- Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
@@ -243,6 +257,7 @@ theorem integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : �
     Hd.continuousOn
     (fun x hx => Hd.hasFDerivAt <| by
       simpa only [← mem_interior_iff_mem_nhds, interior_reProdIm, uIcc, interior_Icc] using hx.1)
+      -- 🎉 no goals
     Hi
 #align complex.integral_boundary_rect_of_differentiable_on_real Complex.integral_boundary_rect_of_differentiableOn_real
 
@@ -263,6 +278,8 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
   refine (integral_boundary_rect_of_hasFDerivAt_real_off_countable f
     (fun z => (fderiv ℂ f z).restrictScalars ℝ) z w s hs Hc
     (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;> simp [this]
+                                                                           -- 🎉 no goals
+                                                                           -- 🎉 no goals
 #align complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
 
 /-- **Cauchy-Goursat theorem for a rectangle**: the integral of a complex differentiable function
@@ -305,9 +322,15 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   /- We apply the previous lemma to `fun z ↦ f (c + exp z)` on the rectangle
     `[log r, log R] × [0, 2 * π]`. -/
   set A := closedBall c R \ ball c r
+  -- ⊢ (∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) = ∮ (z : ℂ) in C(c, r), (z - c)⁻¹ •  …
   obtain ⟨a, rfl⟩ : ∃ a, Real.exp a = r; exact ⟨Real.log r, Real.exp_log h0⟩
+  -- ⊢ ∃ a, Real.exp a = r
+                                         -- ⊢ (∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) = ∮ (z : ℂ) in C(c, Real.exp a), (z  …
   obtain ⟨b, rfl⟩ : ∃ b, Real.exp b = R; exact ⟨Real.log R, Real.exp_log (h0.trans_le hle)⟩
+  -- ⊢ ∃ b, Real.exp b = R
+                                         -- ⊢ (∮ (z : ℂ) in C(c, Real.exp b), (z - c)⁻¹ • f z) = ∮ (z : ℂ) in C(c, Real.ex …
   rw [Real.exp_le_exp] at hle
+  -- ⊢ (∮ (z : ℂ) in C(c, Real.exp b), (z - c)⁻¹ • f z) = ∮ (z : ℂ) in C(c, Real.ex …
   -- Unfold definition of `circleIntegral` and cancel some terms.
   suffices
     (∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp b) θ)) =
@@ -316,16 +339,25 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
       div_eq_mul_inv, mul_div_cancel_left _ (circleMap_ne_center (Real.exp_pos _).ne'),
       circleMap_sub_center, deriv_circleMap]
   set R := [[a, b]] ×ℂ [[0, 2 * π]]
+  -- ⊢ ∫ (θ : ℝ) in 0 ..2 * π, I • f (circleMap c (Real.exp b) θ) = ∫ (θ : ℝ) in 0  …
   set g : ℂ → ℂ := (· + ·) c ∘ exp
+  -- ⊢ ∫ (θ : ℝ) in 0 ..2 * π, I • f (circleMap c (Real.exp b) θ) = ∫ (θ : ℝ) in 0  …
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
+  -- ⊢ ∫ (θ : ℝ) in 0 ..2 * π, I • f (circleMap c (Real.exp b) θ) = ∫ (θ : ℝ) in 0  …
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
+  -- ⊢ ∫ (θ : ℝ) in 0 ..2 * π, I • f (circleMap c (Real.exp b) θ) = ∫ (θ : ℝ) in 0  …
   have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [dist_eq, abs_exp, hle] using h.symm
+  -- ⊢ ∫ (θ : ℝ) in 0 ..2 * π, I • f (circleMap c (Real.exp b) θ) = ∫ (θ : ℝ) in 0  …
   replace hc : ContinuousOn (f ∘ g) R; exact hc.comp hdg.continuous.continuousOn h_maps
+  -- ⊢ ContinuousOn (f ∘ g) R
+                                       -- ⊢ ∫ (θ : ℝ) in 0 ..2 * π, I • f (circleMap c (Real.exp b) θ) = ∫ (θ : ℝ) in 0  …
   replace hd :
     ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
       DifferentiableAt ℂ (f ∘ g) z
   · refine' fun z hz => (hd (g z) ⟨_, hz.2⟩).comp z (hdg _)
+    -- ⊢ g z ∈ ball c (Real.exp b) \ closedBall c (Real.exp a)
     simpa [dist_eq, abs_exp, hle, and_comm] using hz.1.1
+    -- 🎉 no goals
   simpa [circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
     integral_boundary_rect_eq_zero_of_differentiable_on_off_countable _ ⟨a, 0⟩ ⟨b, 2 * π⟩ _ hs hc hd
 #align complex.circle_integral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable Complex.circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable
@@ -359,8 +391,11 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     (hd : ∀ z ∈ (ball c R \ {c}) \ s, DifferentiableAt ℂ f z) (hy : Tendsto f (𝓝[{c}ᶜ] c) (𝓝 y)) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • y := by
   rw [← sub_eq_zero, ← norm_le_zero_iff]
+  -- ⊢ ‖(∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) - (2 * ↑π * I) • y‖ ≤ 0
   refine' le_of_forall_le_of_dense fun ε ε0 => _
+  -- ⊢ ‖(∮ (z : ℂ) in C(c, R), (z - c)⁻¹ • f z) - (2 * ↑π * I) • y‖ ≤ ε
   obtain ⟨δ, δ0, hδ⟩ : ∃ δ > (0 : ℝ), ∀ z ∈ closedBall c δ \ {c}, dist (f z) y < ε / (2 * π)
+  -- ⊢ ∃ δ, δ > 0 ∧ ∀ (z : ℂ), z ∈ closedBall c δ \ {c} → dist (f z) y < ε / (2 * π)
   exact ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_ball).1 hy _
     (div_pos ε0 Real.two_pi_pos)
   obtain ⟨r, hr0, hrδ, hrR⟩ : ∃ r, 0 < r ∧ r ≤ δ ∧ r ≤ R :=
@@ -417,6 +452,8 @@ theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 
     {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) : (∮ z in C(c, R), f z) = 0 := by
   rcases h0.eq_or_lt with (rfl | h0); · apply circleIntegral.integral_radius_zero
+  -- ⊢ (∮ (z : ℂ) in C(c, 0), f z) = 0
+                                        -- 🎉 no goals
   calc
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), (z - c)⁻¹ • (z - c) • f z :=
       (circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _).symm
@@ -435,15 +472,20 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
     (hc : ContinuousOn f (closedBall c R)) (hd : ∀ x ∈ ball c R \ s, DifferentiableAt ℂ f x) :
     (∮ z in C(c, R), (z - w)⁻¹ • f z) = (2 * π * I : ℂ) • f w := by
   have hR : 0 < R := dist_nonneg.trans_lt hw.1
+  -- ⊢ (∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = (2 * ↑π * I) • f w
   set F : ℂ → E := dslope f w
+  -- ⊢ (∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = (2 * ↑π * I) • f w
   have hws : (insert w s).Countable := hs.insert w
+  -- ⊢ (∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = (2 * ↑π * I) • f w
   have hcF : ContinuousOn F (closedBall c R) :=
     (continuousOn_dslope <| closedBall_mem_nhds_of_mem hw.1).2 ⟨hc, hd _ hw⟩
   have hdF : ∀ z ∈ ball (c : ℂ) R \ insert w s, DifferentiableAt ℂ F z := fun z hz =>
     (differentiableAt_dslope_of_ne (ne_of_mem_of_not_mem (mem_insert _ _) hz.2).symm).2
       (hd _ (diff_subset_diff_right (subset_insert _ _) hz))
   have HI := circleIntegral_eq_zero_of_differentiable_on_off_countable hR.le hws hcF hdF
+  -- ⊢ (∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = (2 * ↑π * I) • f w
   have hne : ∀ z ∈ sphere c R, z ≠ w := fun z hz => ne_of_mem_of_not_mem hz (ne_of_lt hw.1)
+  -- ⊢ (∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = (2 * ↑π * I) • f w
   have hFeq : EqOn F (fun z => (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
     calc
       F z = (z - w)⁻¹ • (f z - f w) := update_noteq (hne z hz) _ _
@@ -465,6 +507,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     (hc : ContinuousOn f (closedBall c R)) (hd : ∀ x ∈ ball c R \ s, DifferentiableAt ℂ f x) :
     ((2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) = f w := by
   have hR : 0 < R := dist_nonneg.trans_lt hw
+  -- ⊢ ((2 * ↑π * I)⁻¹ • ∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = f w
   suffices w ∈ closure (ball c R \ s) by
     lift R to ℝ≥0 using hR.le
     have A : ContinuousAt (fun w => (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) w := by
@@ -479,8 +522,10 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
       inv_smul_smul₀]
     simp [Real.pi_ne_zero, I_ne_zero]
   refine' mem_closure_iff_nhds.2 fun t ht => _
+  -- ⊢ Set.Nonempty (t ∩ (ball c R \ s))
   -- TODO: generalize to any vector space over `ℝ`
   set g : ℝ → ℂ := fun x => w + ofReal x
+  -- ⊢ Set.Nonempty (t ∩ (ball c R \ s))
   have : Tendsto g (𝓝 0) (𝓝 w) :=
     (continuous_const.add continuous_ofReal).tendsto' 0 w (add_zero _)
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
@@ -492,6 +537,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this
     exact this.not_lt Cardinal.aleph0_lt_continuum
   exact ⟨g x, (hlu_sub hx.1).1, (hlu_sub hx.1).2, hx.2⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align complex.two_pi_I_inv_smul_circle_integral_sub_inv_smul_of_differentiable_on_off_countable Complex.two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
 
@@ -506,6 +552,7 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable {R : ℝ}
   rw [← two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
     hs hw hc hd, smul_inv_smul₀]
   simp [Real.pi_ne_zero, I_ne_zero]
+  -- 🎉 no goals
 #align complex.circle_integral_sub_inv_smul_of_differentiable_on_off_countable Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
 
 /-- **Cauchy integral formula**: if `f : ℂ → E` is complex differentiable on an open disc and is
@@ -525,10 +572,13 @@ theorem _root_.DiffContOnCl.two_pi_i_inv_smul_circleIntegral_sub_inv_smul {R : �
     {f : ℂ → E} (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     ((2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) = f w := by
   have hR : 0 < R := not_le.mp (ball_eq_empty.not.mp (Set.nonempty_of_mem hw).ne_empty)
+  -- ⊢ ((2 * ↑π * I)⁻¹ • ∮ (z : ℂ) in C(c, R), (z - w)⁻¹ • f z) = f w
   refine' two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
     countable_empty hw _ _
   · simpa only [closure_ball c hR.ne.symm] using hf.continuousOn
+    -- 🎉 no goals
   · simpa only [diff_empty] using fun z hz => hf.differentiableAt isOpen_ball hz
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align diff_cont_on_cl.two_pi_I_inv_smul_circle_integral_sub_inv_smul DiffContOnCl.two_pi_i_inv_smul_circleIntegral_sub_inv_smul
 
@@ -597,8 +647,11 @@ such that `s ∈ 𝓝 z` (equivalently, `z ∈ interior s`). -/
 protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → E} {z : ℂ}
     (hd : DifferentiableOn ℂ f s) (hz : s ∈ 𝓝 z) : AnalyticAt ℂ f z := by
   rcases nhds_basis_closedBall.mem_iff.1 hz with ⟨R, hR0, hRs⟩
+  -- ⊢ AnalyticAt ℂ f z
   lift R to ℝ≥0 using hR0.le
+  -- ⊢ AnalyticAt ℂ f z
   exact ((hd.mono hRs).hasFPowerSeriesOnBall hR0).analyticAt
+  -- 🎉 no goals
 #align differentiable_on.analytic_at DifferentiableOn.analyticAt
 
 theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)

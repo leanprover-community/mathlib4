@@ -174,10 +174,15 @@ instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵈᵐ�
 instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐᵃ (α → β) where
   eq_of_smul_eq_smul {c₁ c₂} h := mk.symm.injective <| eq_of_smul_eq_smul <| fun a : α ↦ by
     rcases exists_pair_ne β with ⟨x, y, hne⟩
+    -- ⊢ ↑mk.symm c₁ • a = ↑mk.symm c₂ • a
     contrapose! hne
+    -- ⊢ x = y
     haveI := Classical.decEq α
+    -- ⊢ x = y
     replace h := congr_fun (h (update (const α x) (mk.symm c₂ • a) y)) a
+    -- ⊢ x = y
     simpa [smul_apply, hne] using h
+    -- 🎉 no goals
 
 instance [SMul M α] [Zero β] : SMulZeroClass Mᵈᵐᵃ (α → β) where
   smul_zero _ := rfl

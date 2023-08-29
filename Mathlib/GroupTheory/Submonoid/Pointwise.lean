@@ -59,7 +59,9 @@ variable {s t u : Set M}
 @[to_additive]
 theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S := by
   rintro _ ⟨p, q, hp, hq, rfl⟩
+  -- ⊢ (fun x x_1 => x * x_1) p q ∈ ↑S
   exact Submonoid.mul_mem _ (hs hp) (ht hq)
+  -- 🎉 no goals
 #align submonoid.mul_subset Submonoid.mul_subset
 #align add_submonoid.add_subset AddSubmonoid.add_subset
 
@@ -72,9 +74,13 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
   ext x
+  -- ⊢ x ∈ ↑s * ↑s ↔ x ∈ ↑s
   refine' ⟨_, fun h => ⟨x, 1, h, s.one_mem, mul_one x⟩⟩
+  -- ⊢ x ∈ ↑s * ↑s → x ∈ ↑s
   rintro ⟨a, b, ha, hb, rfl⟩
+  -- ⊢ (fun x x_1 => x * x_1) a b ∈ ↑s
   exact s.mul_mem ha hb
+  -- 🎉 no goals
 #align submonoid.coe_mul_self_eq Submonoid.coe_mul_self_eq
 #align add_submonoid.coe_add_self_eq AddSubmonoid.coe_add_self_eq
 
@@ -92,6 +98,7 @@ theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
+                                      -- 🎉 no goals
 #align submonoid.sup_eq_closure Submonoid.sup_eq_closure
 #align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure
 
@@ -100,12 +107,19 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   refine' @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx _ _ _
   · intro x hx
+    -- ⊢ ∃ n, r ^ n • x ∈ closure (r • s)
     exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
+    -- 🎉 no goals
   · exact ⟨0, by simpa using one_mem _⟩
+    -- 🎉 no goals
   · rintro x y ⟨nx, hx⟩ ⟨ny, hy⟩
+    -- ⊢ ∃ n, r ^ n • (x * y) ∈ closure (r • s)
     use ny + nx
+    -- ⊢ r ^ (ny + nx) • (x * y) ∈ closure (r • s)
     rw [pow_add, mul_smul, ← smul_mul_assoc, mul_comm, ← smul_mul_assoc]
+    -- ⊢ r ^ ny • y * r ^ nx • x ∈ closure (r • s)
     exact mul_mem hy hx
+    -- 🎉 no goals
 #align submonoid.pow_smul_mem_closure_smul Submonoid.pow_smul_mem_closure_smul
 #align add_submonoid.nsmul_vadd_mem_closure_vadd AddSubmonoid.nsmul_vadd_mem_closure_vadd
 
@@ -117,7 +131,11 @@ protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
       mul_mem' := fun ha hb => by rw [mem_inv, mul_inv_rev]; exact mul_mem hb ha
+                                  -- ⊢ b✝⁻¹ * a✝⁻¹ ∈ ↑S
+                                                             -- 🎉 no goals
       one_mem' := mem_inv.2 <| by rw [inv_one]; exact S.one_mem' }
+                                  -- ⊢ 1 ∈ ↑S
+                                                -- 🎉 no goals
 #align submonoid.has_inv Submonoid.inv
 #align add_submonoid.has_neg AddSubmonoid.neg
 
@@ -165,10 +183,15 @@ def invOrderIso : Submonoid G ≃o Submonoid G where
 @[to_additive]
 theorem closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ := by
   apply le_antisymm
+  -- ⊢ closure s⁻¹ ≤ (closure s)⁻¹
   · rw [closure_le, coe_inv, ← Set.inv_subset, inv_inv]
+    -- ⊢ s ⊆ ↑(closure s)
     exact subset_closure
+    -- 🎉 no goals
   · rw [inv_le, closure_le, coe_inv, ← Set.inv_subset]
+    -- ⊢ s⁻¹ ⊆ ↑(closure s⁻¹)
     exact subset_closure
+    -- 🎉 no goals
 #align submonoid.closure_inv Submonoid.closure_inv
 #align add_submonoid.closure_neg AddSubmonoid.closure_neg
 
@@ -224,7 +247,9 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
   one_smul S := by
     change S.map _ = S
+    -- ⊢ map (↑(MulDistribMulAction.toMonoidEnd α M) 1) S = S
     simpa only [map_one] using S.map_id
+    -- 🎉 no goals
   mul_smul a₁ a₂ S :=
     (congr_arg (fun f : Monoid.End M => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
@@ -340,6 +365,7 @@ end GroupWithZero
 @[to_additive]
 theorem mem_closure_inv {G : Type*} [Group G] (S : Set G) (x : G) :
     x ∈ Submonoid.closure S⁻¹ ↔ x⁻¹ ∈ Submonoid.closure S := by rw [closure_inv, mem_inv]
+                                                                -- 🎉 no goals
 #align submonoid.mem_closure_inv Submonoid.mem_closure_inv
 #align add_submonoid.mem_closure_neg AddSubmonoid.mem_closure_neg
 
@@ -509,9 +535,13 @@ theorem mem_one {x : R} : x ∈ (1 : AddSubmonoid R) ↔ ∃ n : ℕ, ↑n = x :
 
 theorem one_eq_closure : (1 : AddSubmonoid R) = closure {1} := by
   rw [closure_singleton_eq, one_eq_mrange]
+  -- ⊢ AddMonoidHom.mrange (Nat.castAddMonoidHom R) = AddMonoidHom.mrange (↑(multip …
   congr 1
+  -- ⊢ Nat.castAddMonoidHom R = ↑(multiplesHom R) 1
   ext
+  -- ⊢ ↑(Nat.castAddMonoidHom R) 1 = ↑(↑(multiplesHom R) 1) 1
   simp
+  -- 🎉 no goals
 #align add_submonoid.one_eq_closure AddSubmonoid.one_eq_closure
 
 theorem one_eq_closure_one_set : (1 : AddSubmonoid R) = closure 1 :=
@@ -532,6 +562,7 @@ scoped[Pointwise] attribute [instance] AddSubmonoid.mul
 
 theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
   (le_iSup _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
+                                             -- 🎉 no goals
 #align add_submonoid.mul_mem_mul AddSubmonoid.mul_mem_mul
 
 theorem mul_le {M N P : AddSubmonoid R} : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
@@ -544,39 +575,56 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
   (@mul_le _ _ _ _ ⟨⟨setOf C, ha _ _⟩, by
     simpa only [zero_mul] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm hr
+    -- 🎉 no goals
 #align add_submonoid.mul_induction_on AddSubmonoid.mul_induction_on
 
 -- this proof is copied directly from `Submodule.span_mul_span`
 -- porting note: proof rewritten
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
+  -- ⊢ closure S * closure T ≤ closure (S * T)
   · refine mul_le.2 fun a ha b hb => ?_
+    -- ⊢ a * b ∈ closure (S * T)
     rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
+    -- ⊢ a ∈ comap (AddMonoidHom.mulRight b) (closure (S * T))
     refine (closure_le.2 fun a' ha' => ?_) ha
+    -- ⊢ a' ∈ ↑(comap (AddMonoidHom.mulRight b) (closure (S * T)))
     change b ∈ (closure (S * T)).comap (AddMonoidHom.mulLeft a')
+    -- ⊢ b ∈ comap (AddMonoidHom.mulLeft a') (closure (S * T))
     refine (closure_le.2 fun b' hb' => ?_) hb
+    -- ⊢ b' ∈ ↑(comap (AddMonoidHom.mulLeft a') (closure (S * T)))
     change a' * b' ∈ closure (S * T)
+    -- ⊢ a' * b' ∈ closure (S * T)
     exact subset_closure (Set.mul_mem_mul ha' hb')
+    -- 🎉 no goals
   · rw [closure_le]
+    -- ⊢ S * T ⊆ ↑(closure S * closure T)
     rintro _ ⟨a, b, ha, hb, rfl⟩
+    -- ⊢ (fun x x_1 => x * x_1) a b ∈ ↑(closure S * closure T)
     exact mul_mem_mul (subset_closure ha) (subset_closure hb)
+    -- 🎉 no goals
 #align add_submonoid.closure_mul_closure AddSubmonoid.closure_mul_closure
 
 theorem mul_eq_closure_mul_set (M N : AddSubmonoid R) :
     M * N = closure ((M : Set R) * (N : Set R)) := by
   rw [← closure_mul_closure, closure_eq, closure_eq]
+  -- 🎉 no goals
 #align add_submonoid.mul_eq_closure_mul_set AddSubmonoid.mul_eq_closure_mul_set
 
 @[simp]
 theorem mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
   eq_bot_iff.2 <| mul_le.2 fun m _ n hn => by
     rw [AddSubmonoid.mem_bot] at hn ⊢; rw [hn, mul_zero]
+    -- ⊢ m * n = 0
+                                       -- 🎉 no goals
 #align add_submonoid.mul_bot AddSubmonoid.mul_bot
 
 @[simp]
 theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
   eq_bot_iff.2 <| mul_le.2 fun m hm n hn => by
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
+    -- ⊢ m * n = 0
+                                       -- 🎉 no goals
 #align add_submonoid.bot_mul AddSubmonoid.bot_mul
 
 @[mono]
@@ -595,7 +643,9 @@ theorem mul_le_mul_right {M N P : AddSubmonoid R} (h : N ≤ P) : M * N ≤ M * 
 theorem mul_subset_mul {M N : AddSubmonoid R} :
     (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) := by
   rintro _ ⟨i, j, hi, hj, rfl⟩
+  -- ⊢ (fun x x_1 => x * x_1) i j ∈ ↑(M * N)
   exact mul_mem_mul hi hj
+  -- 🎉 no goals
 #align add_submonoid.mul_subset_mul AddSubmonoid.mul_subset_mul
 
 end NonUnitalNonAssocSemiring
@@ -615,15 +665,23 @@ protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
           le_antisymm (mul_le.2 fun m hm n hn => _)
             ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => _) <;>
         simp only [AddSubmonoid.mem_neg, ← neg_mul] at *
+        -- ⊢ -m * n ∈ x * y
+        -- ⊢ -m * n ∈ -x * y
       · exact mul_mem_mul hm hn
+        -- 🎉 no goals
       · exact mul_mem_mul (neg_mem_neg.2 hm) hn
+        -- 🎉 no goals
     mul_neg := fun x y => by
       refine'
           le_antisymm (mul_le.2 fun m hm n hn => _)
             ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => _) <;>
         simp only [AddSubmonoid.mem_neg, ← mul_neg] at *
+        -- ⊢ m * -n ∈ x * y
+        -- ⊢ m * -n ∈ x * -y
       · exact mul_mem_mul hm hn
+        -- 🎉 no goals
       · exact mul_mem_mul hm (neg_mem_neg.2 hn) }
+        -- 🎉 no goals
 #align add_submonoid.has_distrib_neg AddSubmonoid.hasDistribNeg
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.hasDistribNeg
@@ -639,7 +697,9 @@ protected def mulOneClass : MulOneClass (AddSubmonoid R) where
   one := 1
   mul := (· * ·)
   one_mul M := by rw [one_eq_closure_one_set, ← closure_eq M, closure_mul_closure, one_mul]
+                  -- 🎉 no goals
   mul_one M := by rw [one_eq_closure_one_set, ← closure_eq M, closure_mul_closure, mul_one]
+                  -- 🎉 no goals
 scoped[Pointwise] attribute [instance] AddSubmonoid.mulOneClass
 
 end NonAssocSemiring
@@ -678,11 +738,14 @@ scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
 
 theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
   | 0 => by rw [pow_zero, pow_zero, one_eq_closure_one_set]
+            -- 🎉 no goals
   | n + 1 => by rw [pow_succ, pow_succ, closure_pow s n, closure_mul_closure]
+                -- 🎉 no goals
 #align add_submonoid.closure_pow AddSubmonoid.closure_pow
 
 theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) : s ^ n = closure ((s : Set R) ^ n) :=
   by rw [← closure_pow, closure_eq]
+     -- 🎉 no goals
 #align add_submonoid.pow_eq_closure_pow_set AddSubmonoid.pow_eq_closure_pow_set
 
 theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ ↑(s ^ n) :=
@@ -701,8 +764,11 @@ variable [OrderedCancelCommMonoid α] {s : Set α}
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPwo) :
     IsPwo (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
+  -- ⊢ IsPwo (List.prod '' {l | ∀ (x : α), x ∈ l → x ∈ s})
   refine' (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on _
+  -- ⊢ ∀ (a₁ : List α), a₁ ∈ {l | ∀ (x : α), x ∈ l → x ∈ s} → ∀ (a₂ : List α), a₂ ∈ …
   exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
+  -- 🎉 no goals
 #align set.is_pwo.submonoid_closure Set.IsPwo.submonoid_closure
 #align set.is_pwo.add_submonoid_closure Set.IsPwo.addSubmonoid_closure
 

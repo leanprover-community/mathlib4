@@ -280,12 +280,18 @@ instance : Algebra R (LocallyConstant X Y) where
   toRingHom := constRingHom.comp <| algebraMap R Y
   commutes' := by
     intros
+    -- ⊢ ↑(RingHom.comp constRingHom (algebraMap R Y)) r✝ * x✝ = x✝ * ↑(RingHom.comp  …
     ext
+    -- ⊢ ↑(↑(RingHom.comp constRingHom (algebraMap R Y)) r✝ * x✝¹) x✝ = ↑(x✝¹ * ↑(Rin …
     exact Algebra.commutes' _ _
+    -- 🎉 no goals
   smul_def' := by
     intros
+    -- ⊢ r✝ • x✝ = ↑(RingHom.comp constRingHom (algebraMap R Y)) r✝ * x✝
     ext
+    -- ⊢ ↑(r✝ • x✝¹) x✝ = ↑(↑(RingHom.comp constRingHom (algebraMap R Y)) r✝ * x✝¹) x✝
     exact Algebra.smul_def' _ _
+    -- 🎉 no goals
 
 @[simp]
 theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = algebraMap R (X → Y) r :=
@@ -350,6 +356,8 @@ def comapMulHom [Mul Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →ₙ* LocallyConstant X Z where
   toFun := comap f
   map_mul' r s := by ext x; simp [hf]
+                     -- ⊢ ↑(comap f (r * s)) x = ↑(comap f r * comap f s) x
+                            -- 🎉 no goals
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
@@ -358,6 +366,8 @@ def comapMonoidHom [MulOneClass Z] (f : X → Y) (hf : Continuous f) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
   map_one' := by ext x; simp [hf]
+                 -- ⊢ ↑(comap f 1) x = ↑1 x
+                        -- 🎉 no goals
   map_mul' := map_mul (comapMulHom f hf)
 
 /-- `LocallyConstant.comap` as a linear map. -/
@@ -368,6 +378,8 @@ def comapₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → 
   toFun := comap f
   map_add' := map_add (comapAddMonoidHom f hf)
   map_smul' r s := by ext x; simp [hf]
+                      -- ⊢ ↑(AddHom.toFun { toFun := comap f, map_add' := (_ : ∀ (x y : LocallyConstant …
+                             -- 🎉 no goals
 
 /-- `LocallyConstant.comap` as a `RingHom`. -/
 @[simps!]
@@ -384,6 +396,8 @@ def comapₐ (R: Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
     (f : X → Y) (hf : Continuous f) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
   toRingHom := comapRingHom f hf
   commutes' r := by ext x; simp [hf]
+                    -- ⊢ ↑(OneHom.toFun (↑↑(comapRingHom f hf)) (↑(algebraMap R (LocallyConstant Y Z) …
+                           -- 🎉 no goals
 
 lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : X → Y)
     (hf : Continuous f) (hfs : Function.Surjective f) :

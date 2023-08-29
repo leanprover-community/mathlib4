@@ -107,7 +107,9 @@ theorem removeZero_coeff_succ (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
 theorem removeZero_of_pos (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (h : 0 < n) :
     p.removeZero n = p n := by
   rw [← Nat.succ_pred_eq_of_pos h]
+  -- ⊢ removeZero p (Nat.succ (Nat.pred n)) = p (Nat.succ (Nat.pred n))
   rfl
+  -- 🎉 no goals
 #align formal_multilinear_series.remove_zero_of_pos FormalMultilinearSeries.removeZero_of_pos
 
 /-- Convenience congruence lemma stating in a dependent setting that, if the arguments to a formal
@@ -116,8 +118,11 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
     (h1 : m = n) (h2 : ∀ (i : ℕ) (him : i < m) (hin : i < n), v ⟨i, him⟩ = w ⟨i, hin⟩) :
     p m v = p n w := by
   subst n
+  -- ⊢ ↑(p m) v = ↑(p m) w
   congr with ⟨i, hi⟩
+  -- ⊢ v { val := i, isLt := hi } = w { val := i, isLt := hi }
   exact h2 i hi hi
+  -- 🎉 no goals
 #align formal_multilinear_series.congr FormalMultilinearSeries.congr
 
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
@@ -218,13 +223,16 @@ noncomputable def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
 
 @[simp]
 theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp [order]
+                                                                         -- 🎉 no goals
 #align formal_multilinear_series.order_zero FormalMultilinearSeries.order_zero
 
 theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
+                                                                           -- 🎉 no goals
 #align formal_multilinear_series.ne_zero_of_order_ne_zero FormalMultilinearSeries.ne_zero_of_order_ne_zero
 
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
     p.order = Nat.find hp := by convert Nat.sInf_def hp
+                                -- 🎉 no goals
 #align formal_multilinear_series.order_eq_find FormalMultilinearSeries.order_eq_find
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
@@ -239,6 +247,7 @@ theorem order_eq_zero_iff' : p.order = 0 ↔ p = 0 ∨ p 0 ≠ 0 := by
 
 theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
   simp [order_eq_zero_iff', hp]
+  -- 🎉 no goals
 #align formal_multilinear_series.order_eq_zero_iff FormalMultilinearSeries.order_eq_zero_iff
 
 theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
@@ -275,21 +284,27 @@ theorem mkPiField_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
   convert (p n).toMultilinearMap.map_smul_univ y 1
+  -- ⊢ y x✝ = y x✝ • OfNat.ofNat 1 x✝
   funext
+  -- ⊢ y x✝ = y x✝ • OfNat.ofNat 1 x✝
   simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
+  -- 🎉 no goals
 #align formal_multilinear_series.apply_eq_prod_smul_coeff FormalMultilinearSeries.apply_eq_prod_smul_coeff
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
   rw [← mkPiField_coeff_eq p, ContinuousMultilinearMap.mkPiField_eq_zero_iff]
+  -- 🎉 no goals
 #align formal_multilinear_series.coeff_eq_zero FormalMultilinearSeries.coeff_eq_zero
 
 @[simp]
 theorem apply_eq_pow_smul_coeff : (p n fun _ => z) = z ^ n • p.coeff n := by simp
+                                                                             -- 🎉 no goals
 #align formal_multilinear_series.apply_eq_pow_smul_coeff FormalMultilinearSeries.apply_eq_pow_smul_coeff
 
 @[simp]
 theorem norm_apply_eq_norm_coef : ‖p n‖ = ‖coeff p n‖ := by
   rw [← mkPiField_coeff_eq p, ContinuousMultilinearMap.norm_mkPiField]
+  -- 🎉 no goals
 #align formal_multilinear_series.norm_apply_eq_norm_coef FormalMultilinearSeries.norm_apply_eq_norm_coef
 
 end Coef
@@ -308,8 +323,11 @@ noncomputable def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMulti
 @[simp]
 theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
   simp only [fslope, coeff, ContinuousMultilinearMap.curryLeft_apply]
+  -- ⊢ ↑(p (n + 1)) (cons 1 1) = ↑(p (n + 1)) 1
   congr 1
+  -- ⊢ cons 1 1 = 1
   exact Fin.cons_self_tail 1
+  -- 🎉 no goals
 #align formal_multilinear_series.coeff_fslope FormalMultilinearSeries.coeff_fslope
 
 @[simp]

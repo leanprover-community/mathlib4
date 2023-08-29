@@ -47,8 +47,11 @@ protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : Loca
 theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
     LocallyFinite (f ∘ g) := fun x => by
   let ⟨t, htx, htf⟩ := hf x
+  -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((f ∘ g) i ∩ t)}
   refine ⟨t, htx, htf.preimage <| ?_⟩
+  -- ⊢ InjOn (fun i => g i) ((fun i => g i) ⁻¹' {i | Set.Nonempty (f i ∩ t)})
   exact hg.mono fun i (hi : Set.Nonempty _) => hi.left
+  -- 🎉 no goals
 #align locally_finite.comp_inj_on LocallyFinite.comp_injOn
 
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
@@ -77,7 +80,9 @@ theorem exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop}
 protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = ⨆ i, 𝓝[f i] a := by
   rcases hf a with ⟨U, haU, hfin⟩
+  -- ⊢ 𝓝[⋃ (i : ι), f i] a = ⨆ (i : ι), 𝓝[f i] a
   refine le_antisymm ?_ (Monotone.le_map_iSup fun _ _ ↦ nhdsWithin_mono _)
+  -- ⊢ 𝓝[⋃ (i : ι), f i] a ≤ ⨆ (i : ι), 𝓝[f i] a
   calc
     𝓝[⋃ i, f i] a = 𝓝[⋃ i, f i ∩ U] a := by
       rw [← iUnion_inter, ← nhdsWithin_inter_of_mem' (nhdsWithin_le_nhds haU)]
@@ -92,13 +97,21 @@ theorem continuousOn_iUnion' {g : X → Y} (hf : LocallyFinite f)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     ContinuousOn g (⋃ i, f i) := by
   rintro x -
+  -- ⊢ ContinuousWithinAt g (⋃ (i : ι), f i) x
   rw [ContinuousWithinAt, hf.nhdsWithin_iUnion, tendsto_iSup]
+  -- ⊢ ∀ (i : ι), Tendsto g (𝓝[f i] x) (𝓝 (g x))
   intro i
+  -- ⊢ Tendsto g (𝓝[f i] x) (𝓝 (g x))
   by_cases hx : x ∈ closure (f i)
+  -- ⊢ Tendsto g (𝓝[f i] x) (𝓝 (g x))
   · exact hc i _ hx
+    -- 🎉 no goals
   · rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
+    -- ⊢ Tendsto g (𝓝[f i] x) (𝓝 (g x))
     rw [hx]
+    -- ⊢ Tendsto g ⊥ (𝓝 (g x))
     exact tendsto_bot
+    -- 🎉 no goals
 #align locally_finite.continuous_on_Union' LocallyFinite.continuousOn_iUnion'
 
 theorem continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, IsClosed (f i))
@@ -120,20 +133,26 @@ protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i
 
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
+  -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((fun i => closure (f i)) i ∩ t)}
   rcases hf x with ⟨s, hsx, hsf⟩
+  -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((fun i => closure (f i)) i ∩ t)}
   refine' ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => _⟩
+  -- ⊢ i ∈ {i | Set.Nonempty (f i ∩ s)}
   exact (hi.mono isOpen_interior.closure_inter).of_closure.mono
     (inter_subset_inter_right _ interior_subset)
 #align locally_finite.closure LocallyFinite.closure
 
 theorem closure_iUnion (h : LocallyFinite f) : closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   ext x
+  -- ⊢ x ∈ closure (⋃ (i : ι), f i) ↔ x ∈ ⋃ (i : ι), closure (f i)
   simp only [mem_closure_iff_nhdsWithin_neBot, h.nhdsWithin_iUnion, iSup_neBot, mem_iUnion]
+  -- 🎉 no goals
 #align locally_finite.closure_Union LocallyFinite.closure_iUnion
 
 theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
     IsClosed (⋃ i, f i) := by
   simp only [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
+  -- 🎉 no goals
 #align locally_finite.is_closed_Union LocallyFinite.isClosed_iUnion
 
 /-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
@@ -141,9 +160,11 @@ intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
   refine' IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
+  -- ⊢ IsOpen (⋂ (i : ι) (_ : ¬x ∈ f i), (f i)ᶜ)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this
   exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i => hc _
+  -- 🎉 no goals
 #align locally_finite.Inter_compl_mem_nhds LocallyFinite.iInter_compl_mem_nhds
 
 /-- Let `f : ℕ → Π a, β a` be a sequence of (dependent) functions on a topological space. Suppose
@@ -156,14 +177,23 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by
   choose U hUx hU using hf
+  -- ⊢ ∃ F, ∀ (x : X), ∀ᶠ (p : ℕ × X) in atTop ×ˢ 𝓝 x, f p.fst p.snd = F p.snd
   choose N hN using fun x => (hU x).bddAbove
+  -- ⊢ ∃ F, ∀ (x : X), ∀ᶠ (p : ℕ × X) in atTop ×ˢ 𝓝 x, f p.fst p.snd = F p.snd
   replace hN : ∀ (x), ∀ n > N x, ∀ y ∈ U x, f (n + 1) y = f n y
+  -- ⊢ ∀ (x : X) (n : ℕ), n > N x → ∀ (y : X), y ∈ U x → f (n + 1) y = f n y
   exact fun x n hn y hy => by_contra fun hne => hn.lt.not_le <| hN x ⟨y, hne, hy⟩
+  -- ⊢ ∃ F, ∀ (x : X), ∀ᶠ (p : ℕ × X) in atTop ×ˢ 𝓝 x, f p.fst p.snd = F p.snd
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y
+  -- ⊢ ∀ (x : X) (n : ℕ), n ≥ N x + 1 → ∀ (y : X), y ∈ U x → f n y = f (N x + 1) y
   exact fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
+  -- ⊢ ∃ F, ∀ (x : X), ∀ᶠ (p : ℕ × X) in atTop ×ˢ 𝓝 x, f p.fst p.snd = F p.snd
   refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
+  -- ⊢ ∀ᶠ (p : ℕ × X) in atTop ×ˢ 𝓝 x, f p.fst p.snd = (fun x => f (N x + 1) x) p.snd
   filter_upwards [Filter.prod_mem_prod (eventually_gt_atTop (N x)) (hUx x)]
+  -- ⊢ ∀ (a : ℕ × X), a ∈ {x_1 | N x < x_1} ×ˢ U x → f a.fst a.snd = f (N a.snd + 1 …
   rintro ⟨n, y⟩ ⟨hn : N x < n, hy : y ∈ U x⟩
+  -- ⊢ f (n, y).fst (n, y).snd = f (N (n, y).snd + 1) (n, y).snd
   calc
     f n y = f (N x + 1) y := hN _ _ hn _ hy
     _ = f (max (N x + 1) (N y + 1)) y := (hN _ _ (le_max_left _ _) _ hy).symm
@@ -208,6 +238,7 @@ end LocallyFinite
 @[simp]
 theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) ↔ LocallyFinite f :=
   ⟨fun h => by simpa only [(· ∘ ·), e.apply_symm_apply] using h.comp_injective e.symm.injective,
+               -- 🎉 no goals
     fun h => h.comp_injective e.injective⟩
 #align equiv.locally_finite_comp_iff Equiv.locallyFinite_comp_iff
 
@@ -225,8 +256,11 @@ theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
   rw [← (Equiv.optionEquivSumPUnit.{_, 0} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
+  -- ⊢ LocallyFinite ((f ∘ ↑(Equiv.optionEquivSumPUnit ι).symm) ∘ Sum.inl) ∧ Locall …
   simp only [locallyFinite_of_finite, and_true]
+  -- ⊢ LocallyFinite ((f ∘ ↑(Equiv.optionEquivSumPUnit ι).symm) ∘ Sum.inl) ↔ Locall …
   rfl
+  -- 🎉 no goals
 #align locally_finite_option locallyFinite_option
 
 theorem LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :

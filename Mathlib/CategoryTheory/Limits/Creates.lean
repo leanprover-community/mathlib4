@@ -266,17 +266,22 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms 
   toReflectsLimit :=
     { reflects := fun {d} hd => by
         let d' : Cone K := (h (F.mapCone d) hd).toLiftableCone.liftedCone
+        -- ⊢ IsLimit d
         let i : F.mapCone d' ≅ F.mapCone d :=
           (h (F.mapCone d) hd).toLiftableCone.validLift
         let hd' : IsLimit d' := (h (F.mapCone d) hd).makesLimit
+        -- ⊢ IsLimit d
         let f : d ⟶ d' := hd'.liftConeMorphism d
+        -- ⊢ IsLimit d
         have : (Cones.functoriality K F).map f = i.inv :=
           (hd.ofIsoLimit i.symm).uniq_cone_morphism
         haveI : IsIso ((Cones.functoriality K F).map f) := by
           rw [this]
           infer_instance
         haveI : IsIso f := isIso_of_reflects_iso f (Cones.functoriality K F)
+        -- ⊢ IsLimit d
         exact IsLimit.ofIsoLimit hd' (asIso f).symm }
+        -- 🎉 no goals
 #align category_theory.creates_limit_of_reflects_iso CategoryTheory.createsLimitOfReflectsIso
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
@@ -324,8 +329,11 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fait
           naturality := fun Y Z f =>
             F.map_injective <| by
               dsimp
+              -- ⊢ F.map (𝟙 X ≫ F.preimage (i.hom ≫ NatTrans.app l.π Z)) = F.map (F.preimage (i …
               simpa using (l.w f).symm } }
+              -- 🎉 no goals
     (Cones.ext i fun j => by simp only [Functor.image_preimage, Functor.mapCone_π_app])
+                             -- 🎉 no goals
 #align category_theory.creates_limit_of_fully_faithful_of_iso' CategoryTheory.createsLimitOfFullyFaithfulOfIso'
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
@@ -373,17 +381,22 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphism
     {
       reflects := fun {d} hd => by
         let d' : Cocone K := (h (F.mapCocone d) hd).toLiftableCocone.liftedCocone
+        -- ⊢ IsColimit d
         let i : F.mapCocone d' ≅ F.mapCocone d :=
           (h (F.mapCocone d) hd).toLiftableCocone.validLift
         let hd' : IsColimit d' := (h (F.mapCocone d) hd).makesColimit
+        -- ⊢ IsColimit d
         let f : d' ⟶ d := hd'.descCoconeMorphism d
+        -- ⊢ IsColimit d
         have : (Cocones.functoriality K F).map f = i.hom :=
           (hd.ofIsoColimit i.symm).uniq_cocone_morphism
         haveI : IsIso ((Cocones.functoriality K F).map f) := by
           rw [this]
           infer_instance
         haveI := isIso_of_reflects_iso f (Cocones.functoriality K F)
+        -- ⊢ IsColimit d
         exact IsColimit.ofIsoColimit hd' (asIso f) }
+        -- 🎉 no goals
 #align category_theory.creates_colimit_of_reflects_iso CategoryTheory.createsColimitOfReflectsIso
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
@@ -432,8 +445,11 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fa
           naturality := fun Y Z f =>
             F.map_injective <| by
               dsimp
+              -- ⊢ F.map (K.map f ≫ F.preimage (NatTrans.app l.ι Z ≫ i.inv)) = F.map (F.preimag …
               simpa [← cancel_mono i.hom] using l.w f } }
+              -- 🎉 no goals
     (Cocones.ext i fun j => by simp)
+                               -- 🎉 no goals
 #align category_theory.creates_colimit_of_fully_faithful_of_iso' CategoryTheory.createsColimitOfFullyFaithfulOfIso'
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
@@ -485,8 +501,11 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
             (Cones.postcompose (isoWhiskerRight h F).hom).mapIso (liftedLimitMapsToOriginal t') ≪≫
               Cones.ext (Iso.refl _) fun j => by
                 dsimp
+                -- ⊢ (NatTrans.app c.π j ≫ F.map (NatTrans.app h.inv j)) ≫ F.map (NatTrans.app h. …
                 rw [Category.assoc, ← F.map_comp]
+                -- ⊢ NatTrans.app c.π j ≫ F.map (NatTrans.app h.inv j ≫ NatTrans.app h.hom j) = 𝟙 …
                 simp } }
+                -- 🎉 no goals
 #align category_theory.creates_limit_of_iso_diagram CategoryTheory.createsLimitOfIsoDiagram
 
 /-- If `F` creates the limit of `K` and `F ≅ G`, then `G` creates the limit of `K`. -/
@@ -496,8 +515,11 @@ def createsLimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimit K F] : Crea
     { liftedCone := liftLimit ((IsLimit.postcomposeInvEquiv (isoWhiskerLeft K h : _) c).symm t)
       validLift := by
         refine' (IsLimit.mapConeEquiv h _).uniqueUpToIso t
+        -- ⊢ IsLimit (F.mapCone (liftLimit (↑(IsLimit.postcomposeInvEquiv (isoWhiskerLeft …
         apply IsLimit.ofIsoLimit _ (liftedLimitMapsToOriginal _).symm
+        -- ⊢ IsLimit ((Cones.postcompose (isoWhiskerLeft K h).inv).obj c)
         apply (IsLimit.postcomposeInvEquiv _ _).symm t }
+        -- 🎉 no goals
   toReflectsLimit := reflectsLimitOfNatIso _ h
 #align category_theory.creates_limit_of_nat_iso CategoryTheory.createsLimitOfNatIso
 
@@ -525,8 +547,11 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
                 (liftedColimitMapsToOriginal t') ≪≫
               Cocones.ext (Iso.refl _) fun j => by
                 dsimp
+                -- ⊢ (F.map (NatTrans.app h.inv j) ≫ F.map (NatTrans.app h.hom j) ≫ NatTrans.app  …
                 rw [← F.map_comp_assoc]
+                -- ⊢ (F.map (NatTrans.app h.inv j ≫ NatTrans.app h.hom j) ≫ NatTrans.app c.ι j) ≫ …
                 simp } }
+                -- 🎉 no goals
 #align category_theory.creates_colimit_of_iso_diagram CategoryTheory.createsColimitOfIsoDiagram
 
 /-- If `F` creates the colimit of `K` and `F ≅ G`, then `G` creates the colimit of `K`. -/
@@ -536,8 +561,11 @@ def createsColimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimit K F] : 
     { liftedCocone := liftColimit ((IsColimit.precomposeHomEquiv (isoWhiskerLeft K h : _) c).symm t)
       validLift := by
         refine' (IsColimit.mapCoconeEquiv h _).uniqueUpToIso t
+        -- ⊢ IsColimit (F.mapCocone (liftColimit (↑(IsColimit.precomposeHomEquiv (isoWhis …
         apply IsColimit.ofIsoColimit _ (liftedColimitMapsToOriginal _).symm
+        -- ⊢ IsColimit ((Cocones.precompose (isoWhiskerLeft K h).hom).obj c)
         apply (IsColimit.precomposeHomEquiv _ _).symm t }
+        -- 🎉 no goals
   toReflectsColimit := reflectsColimitOfNatIso _ h
 #align category_theory.creates_colimit_of_nat_iso CategoryTheory.createsColimitOfNatIso
 
@@ -632,7 +660,9 @@ instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
     CreatesLimit K (F ⋙ G) where
   lifts c t := by
     let c' : Cone ((K ⋙ F) ⋙ G) := c
+    -- ⊢ LiftableCone K (F ⋙ G) c
     let t' : IsLimit c' := t
+    -- ⊢ LiftableCone K (F ⋙ G) c
     exact
       { liftedCone := liftLimit (liftedLimitIsLimit t')
         validLift := (Cones.functoriality (K ⋙ F) G).mapIso

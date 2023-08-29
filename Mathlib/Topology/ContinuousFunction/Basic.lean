@@ -83,6 +83,9 @@ variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
+                             -- ⊢ mk toFun✝ = g
+                                      -- ⊢ mk toFun✝¹ = mk toFun✝
+                                               -- 🎉 no goals
   map_continuous := ContinuousMap.continuous_toFun
 
 /- Porting note: Probably not needed anymore
@@ -159,6 +162,9 @@ protected theorem congr_arg (f : C(α, β)) {x y : α} (h : x = y) : f x = f y :
 
 theorem coe_injective : @Function.Injective C(α, β) (α → β) (↑) := fun f g h => by
   cases f; cases g; congr
+  -- ⊢ mk toFun✝ = g
+           -- ⊢ mk toFun✝¹ = mk toFun✝
+                    -- 🎉 no goals
 #align continuous_map.coe_injective ContinuousMap.coe_injective
 
 @[simp]
@@ -182,7 +188,11 @@ def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
   ⟨fun f => f,
     fun f => ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
+                -- ⊢ ↑((fun f => mk f) ((fun f => ↑f) x✝)) a✝ = ↑x✝ a✝
+                     -- 🎉 no goals
     fun _ => by ext; rfl⟩
+                -- ⊢ (fun f => ↑f) ((fun f => mk f) x✝¹) x✝ = x✝¹ x✝
+                     -- 🎉 no goals
 #align continuous_map.equiv_fn_of_discrete ContinuousMap.equivFnOfDiscrete
 
 end
@@ -278,6 +288,7 @@ theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g)
 theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align continuous_map.cancel_left ContinuousMap.cancel_left
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
@@ -409,7 +420,9 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
+    -- ⊢ Continuous (Set.restrict (S i) (Set.liftCover S (fun i => ↑(φ i)) hφ H))
     simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous
+    -- 🎉 no goals
 #align continuous_map.lift_cover ContinuousMap.liftCover
 
 variable {S φ hφ hS}
@@ -417,12 +430,15 @@ variable {S φ hφ hS}
 @[simp]
 theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
   rw [liftCover, coe_mk, Set.liftCover_coe _]
+  -- 🎉 no goals
 #align continuous_map.lift_cover_coe ContinuousMap.liftCover_coe
 
 -- @[simp] -- Porting note: the simpNF linter complained
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
+  -- ⊢ ↑(restrict (S i) (liftCover S φ hφ hS)) a✝ = ↑(φ i) a✝
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
+  -- 🎉 no goals
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
@@ -435,11 +451,17 @@ of sets in `α` which contain a neighbourhood of each point in `α` and (2) the 
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := (↑)
+  -- ⊢ C(α, β)
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
+  -- ⊢ C(α, β)
   refine' liftCover S F (fun i j => hF i i.prop j j.prop) _
+  -- ⊢ ∀ (x : α), ∃ i, S i ∈ nhds x
   intro x
+  -- ⊢ ∃ i, S i ∈ nhds x
   obtain ⟨s, hs, hsx⟩ := hA x
+  -- ⊢ ∃ i, S i ∈ nhds x
   exact ⟨⟨s, hs⟩, hsx⟩
+  -- 🎉 no goals
 #align continuous_map.lift_cover' ContinuousMap.liftCover'
 
 variable {A F hF hA}
@@ -451,6 +473,8 @@ variable {A F hF hA}
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
   by delta liftCover'; exact liftCover_coe x'
+     -- ⊢ ↑(let S := Subtype.val;
+                       -- 🎉 no goals
 #align continuous_map.lift_cover_coe' ContinuousMap.liftCover_coe'
 
 -- porting note: porting program suggested `ext <| liftCover_coe'`
@@ -500,12 +524,14 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
 @[simp]
 theorem symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
   by rw [← coe_trans, self_trans_symm, coe_refl]
+     -- 🎉 no goals
 #align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_toContinuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
 theorem toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
   by rw [← coe_trans, symm_trans_self, coe_refl]
+     -- 🎉 no goals
 #align homeomorph.to_continuous_map_comp_symm Homeomorph.toContinuousMap_comp_symm
 
 end Homeomorph

@@ -100,9 +100,15 @@ theorem inv_right (a : N ⋊[φ] G) : a⁻¹.right = a.right⁻¹ := rfl
 
 instance : Group (N ⋊[φ] G) where
   mul_assoc a b c := SemidirectProduct.ext _ _ (by simp [mul_assoc]) (by simp [mul_assoc])
+                                                   -- 🎉 no goals
+                                                                         -- 🎉 no goals
   one_mul a := SemidirectProduct.ext _ _ (by simp) (one_mul a.2)
+                                             -- 🎉 no goals
   mul_one a := SemidirectProduct.ext _ _ (by simp) (mul_one _)
+                                             -- 🎉 no goals
   mul_left_inv a := SemidirectProduct.ext _ _ (by simp) (by simp)
+                                                  -- 🎉 no goals
+                                                            -- 🎉 no goals
 
 instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 
@@ -111,7 +117,11 @@ def inl : N →* N ⋊[φ] G where
   toFun n := ⟨n, 1⟩
   map_one' := rfl
   map_mul' := by intros; ext <;>
+                 -- ⊢ OneHom.toFun { toFun := fun n => { left := n, right := 1 }, map_one' := (_ : …
+                         -- ⊢ (OneHom.toFun { toFun := fun n => { left := n, right := 1 }, map_one' := (_  …
     simp only [mul_left, map_one, MulAut.one_apply, mul_right, mul_one]
+    -- 🎉 no goals
+    -- 🎉 no goals
 #align semidirect_product.inl SemidirectProduct.inl
 
 @[simp]
@@ -136,6 +146,10 @@ def inr : G →* N ⋊[φ] G where
   toFun g := ⟨1, g⟩
   map_one' := rfl
   map_mul' := by intros; ext <;> simp
+                 -- ⊢ OneHom.toFun { toFun := fun g => { left := 1, right := g }, map_one' := (_ : …
+                         -- ⊢ (OneHom.toFun { toFun := fun g => { left := 1, right := g }, map_one' := (_  …
+                                 -- 🎉 no goals
+                                 -- 🎉 no goals
 #align semidirect_product.inr SemidirectProduct.inr
 
 @[simp]
@@ -157,18 +171,28 @@ theorem inr_inj {g₁ g₂ : G} : (inr g₁ : N ⋊[φ] G) = inr g₂ ↔ g₁ =
 
 theorem inl_aut (g : G) (n : N) : (inl (φ g n) : N ⋊[φ] G) = inr g * inl n * inr g⁻¹ := by
   ext <;> simp
+  -- ⊢ (↑inl (↑(↑φ g) n)).left = (↑inr g * ↑inl n * ↑inr g⁻¹).left
+          -- 🎉 no goals
+          -- 🎉 no goals
 #align semidirect_product.inl_aut SemidirectProduct.inl_aut
 
 theorem inl_aut_inv (g : G) (n : N) : (inl ((φ g)⁻¹ n) : N ⋊[φ] G) = inr g⁻¹ * inl n * inr g := by
   rw [← MonoidHom.map_inv, inl_aut, inv_inv]
+  -- 🎉 no goals
 #align semidirect_product.inl_aut_inv SemidirectProduct.inl_aut_inv
 
 @[simp]
 theorem mk_eq_inl_mul_inr (g : G) (n : N) : (⟨n, g⟩ : N ⋊[φ] G) = inl n * inr g := by ext <;> simp
+                                                                                      -- ⊢ { left := n, right := g }.left = (↑inl n * ↑inr g).left
+                                                                                              -- 🎉 no goals
+                                                                                              -- 🎉 no goals
 #align semidirect_product.mk_eq_inl_mul_inr SemidirectProduct.mk_eq_inl_mul_inr
 
 @[simp]
 theorem inl_left_mul_inr_right (x : N ⋊[φ] G) : inl x.left * inr x.right = x := by ext <;> simp
+                                                                                   -- ⊢ (↑inl x.left * ↑inr x.right).left = x.left
+                                                                                           -- 🎉 no goals
+                                                                                           -- 🎉 no goals
 #align semidirect_product.inl_left_mul_inr_right SemidirectProduct.inl_left_mul_inr_right
 
 /-- The canonical projection map `N ⋊[φ] G →* G`, as a group hom. -/
@@ -184,19 +208,25 @@ theorem rightHom_eq_right : (rightHom : N ⋊[φ] G → G) = right := rfl
 
 @[simp]
 theorem rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext; simp [rightHom]
+                                                                          -- ⊢ ↑(MonoidHom.comp rightHom inl) x✝ = ↑1 x✝
+                                                                               -- 🎉 no goals
 #align semidirect_product.right_hom_comp_inl SemidirectProduct.rightHom_comp_inl
 
 @[simp]
 theorem rightHom_comp_inr : (rightHom : N ⋊[φ] G →* G).comp inr = MonoidHom.id _ := by
   ext; simp [rightHom]
+  -- ⊢ ↑(MonoidHom.comp rightHom inr) x✝ = ↑(MonoidHom.id G) x✝
+       -- 🎉 no goals
 #align semidirect_product.right_hom_comp_inr SemidirectProduct.rightHom_comp_inr
 
 @[simp]
 theorem rightHom_inl (n : N) : rightHom (inl n : N ⋊[φ] G) = 1 := by simp [rightHom]
+                                                                     -- 🎉 no goals
 #align semidirect_product.right_hom_inl SemidirectProduct.rightHom_inl
 
 @[simp]
 theorem rightHom_inr (g : G) : rightHom (inr g : N ⋊[φ] G) = g := by simp [rightHom]
+                                                                     -- 🎉 no goals
 #align semidirect_product.right_hom_inr SemidirectProduct.rightHom_inr
 
 theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G) :=
@@ -205,7 +235,11 @@ theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G)
 
 theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
   le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [MonoidHom.mem_ker, eq_comm])
+                          -- 🎉 no goals
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
+                           -- ⊢ (↑inl x.left).left = x.left
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align semidirect_product.range_inl_eq_ker_right_hom SemidirectProduct.range_inl_eq_ker_rightHom
 
 section lift
@@ -219,31 +253,44 @@ def lift (f₁ : N →* H) (f₂ : G →* H)
     where
   toFun a := f₁ a.1 * f₂ a.2
   map_one' := by simp
+                 -- 🎉 no goals
   map_mul' a b := by
     have := fun n g ↦ FunLike.ext_iff.1 (h n) g
+    -- ⊢ OneHom.toFun { toFun := fun a => ↑f₁ a.left * ↑f₂ a.right, map_one' := (_ :  …
     simp only [MulAut.conj_apply, MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom] at this
+    -- ⊢ OneHom.toFun { toFun := fun a => ↑f₁ a.left * ↑f₂ a.right, map_one' := (_ :  …
     simp only [mul_left, mul_right, map_mul, this, mul_assoc, inv_mul_cancel_left]
+    -- 🎉 no goals
 #align semidirect_product.lift SemidirectProduct.lift
 
 @[simp]
 theorem lift_inl (n : N) : lift f₁ f₂ h (inl n) = f₁ n := by simp [lift]
+                                                             -- 🎉 no goals
 #align semidirect_product.lift_inl SemidirectProduct.lift_inl
 
 @[simp]
 theorem lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext; simp
+                                                           -- ⊢ ↑(MonoidHom.comp (lift f₁ f₂ h) inl) x✝ = ↑f₁ x✝
+                                                                -- 🎉 no goals
 #align semidirect_product.lift_comp_inl SemidirectProduct.lift_comp_inl
 
 @[simp]
 theorem lift_inr (g : G) : lift f₁ f₂ h (inr g) = f₂ g := by simp [lift]
+                                                             -- 🎉 no goals
 #align semidirect_product.lift_inr SemidirectProduct.lift_inr
 
 @[simp]
 theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext; simp
+                                                           -- ⊢ ↑(MonoidHom.comp (lift f₁ f₂ h) inr) x✝ = ↑f₂ x✝
+                                                                -- 🎉 no goals
 #align semidirect_product.lift_comp_inr SemidirectProduct.lift_comp_inr
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
     F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext; simp [inl_aut] := by
+                                                  -- ⊢ ↑(MonoidHom.comp (MonoidHom.comp F inl) (MulEquiv.toMonoidHom (↑φ x✝¹))) x✝  …
+                                                       -- 🎉 no goals
   rw [FunLike.ext_iff]
+  -- ⊢ ∀ (x : N ⋊[φ] G), ↑F x = ↑(lift (MonoidHom.comp F inl) (MonoidHom.comp F inr …
   simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
     inl_left_mul_inr_right, forall_const]
 #align semidirect_product.lift_unique SemidirectProduct.lift_unique
@@ -253,7 +300,9 @@ theorem lift_unique (F : N ⋊[φ] G →* H) :
 theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
     (hr : f.comp inr = g.comp inr) : f = g := by
   rw [lift_unique f, lift_unique g]
+  -- ⊢ lift (MonoidHom.comp f inl) (MonoidHom.comp f inr) (_ : ∀ (x : G), MonoidHom …
   simp only [*]
+  -- 🎉 no goals
 #align semidirect_product.hom_ext SemidirectProduct.hom_ext
 
 end lift
@@ -269,9 +318,14 @@ def map (f₁ : N →* N₁) (f₂ : G →* G₁)
     N ⋊[φ] G →* N₁ ⋊[φ₁] G₁ where
   toFun x := ⟨f₁ x.1, f₂ x.2⟩
   map_one' := by simp
+                 -- 🎉 no goals
   map_mul' x y := by
     replace h := FunLike.ext_iff.1 (h x.right) y.left
+    -- ⊢ OneHom.toFun { toFun := fun x => { left := ↑f₁ x.left, right := ↑f₂ x.right  …
     ext <;> simp_all
+    -- ⊢ (OneHom.toFun { toFun := fun x => { left := ↑f₁ x.left, right := ↑f₂ x.right …
+            -- 🎉 no goals
+            -- 🎉 no goals
 #align semidirect_product.map SemidirectProduct.map
 
 variable (f₁ : N →* N₁) (f₂ : G →* G₁)
@@ -291,18 +345,26 @@ theorem rightHom_comp_map : rightHom.comp (map f₁ f₂ h) = f₂.comp rightHom
 
 @[simp]
 theorem map_inl (n : N) : map f₁ f₂ h (inl n) = inl (f₁ n) := by simp [map]
+                                                                 -- 🎉 no goals
 #align semidirect_product.map_inl SemidirectProduct.map_inl
 
 @[simp]
 theorem map_comp_inl : (map f₁ f₂ h).comp inl = inl.comp f₁ := by ext <;> simp
+                                                                  -- ⊢ (↑(MonoidHom.comp (map f₁ f₂ h) inl) x✝).left = (↑(MonoidHom.comp inl f₁) x✝ …
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align semidirect_product.map_comp_inl SemidirectProduct.map_comp_inl
 
 @[simp]
 theorem map_inr (g : G) : map f₁ f₂ h (inr g) = inr (f₂ g) := by simp [map]
+                                                                 -- 🎉 no goals
 #align semidirect_product.map_inr SemidirectProduct.map_inr
 
 @[simp]
 theorem map_comp_inr : (map f₁ f₂ h).comp inr = inr.comp f₂ := by ext <;> simp [map]
+                                                                  -- ⊢ (↑(MonoidHom.comp (map f₁ f₂ h) inr) x✝).left = (↑(MonoidHom.comp inr f₂) x✝ …
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align semidirect_product.map_comp_inr SemidirectProduct.map_comp_inr
 
 end Map

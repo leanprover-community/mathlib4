@@ -75,10 +75,15 @@ def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
   { Homotopy.pi fun i => (homotopies i).toHomotopy with
     prop' := by
       intro t x hx
+      -- ⊢ ↑(mk fun x => ContinuousMap.toFun { toContinuousMap := src✝.toContinuousMap, …
       dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
+      -- ⊢ (↑(Homotopy.pi fun i => (homotopies i).toHomotopy).toContinuousMap (t, x) =  …
       simp only [Function.funext_iff, ← forall_and]
+      -- ⊢ ∀ (x_1 : I), ↑(Homotopy.pi fun i => (homotopies i).toHomotopy).toContinuousM …
       intro i
+      -- ⊢ ↑(Homotopy.pi fun i => (homotopies i).toHomotopy).toContinuousMap (t, x) i = …
       exact (homotopies i).prop' t x hx }
+      -- 🎉 no goals
 #align continuous_map.homotopy_rel.pi ContinuousMap.HomotopyRel.pi
 
 end Pi
@@ -95,7 +100,9 @@ def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (ContinuousMap.prodMk f₀ g₀) (ContinuousMap.prodMk f₁ g₁) where
   toFun t := (F t, G t)
   map_zero_left x := by simp only [prod_eval, Homotopy.apply_zero]
+                        -- 🎉 no goals
   map_one_left x := by simp only [prod_eval, Homotopy.apply_one]
+                       -- 🎉 no goals
 #align continuous_map.homotopy.prod ContinuousMap.Homotopy.prod
 
 /-- The relative product of homotopies `F` and `G`,
@@ -106,10 +113,15 @@ def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S)
   { Homotopy.prod F.toHomotopy G.toHomotopy with
     prop' := by
       intro t x hx
+      -- ⊢ ↑(mk fun x => ContinuousMap.toFun { toContinuousMap := src✝.toContinuousMap, …
       have hF := F.prop' t x hx
+      -- ⊢ ↑(mk fun x => ContinuousMap.toFun { toContinuousMap := src✝.toContinuousMap, …
       have hG := G.prop' t x hx
+      -- ⊢ ↑(mk fun x => ContinuousMap.toFun { toContinuousMap := src✝.toContinuousMap, …
       simp only [coe_mk, prod_eval, Prod.mk.inj_iff, Homotopy.prod] at hF hG⊢
+      -- ⊢ (↑F.toHomotopy (t, x) = ↑f₀ x ∧ ↑G.toHomotopy (t, x) = ↑g₀ x) ∧ ↑F.toHomotop …
       exact ⟨⟨hF.1, hG.1⟩, ⟨hF.2, hG.2⟩⟩ }
+      -- 🎉 no goals
 #align continuous_map.homotopy_rel.prod ContinuousMap.HomotopyRel.prod
 
 end Prod
@@ -140,6 +152,8 @@ def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quot
 
 theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
     (Path.Homotopic.pi fun i => ⟦γ i⟧) = ⟦Path.pi γ⟧ := by unfold pi; simp
+                                                           -- ⊢ Quotient.map Path.pi (_ : ∀ (x y : (i : ι) → Path (as i) (bs i)), x ≈ y → No …
+                                                                      -- 🎉 no goals
 #align path.homotopic.pi_lift Path.Homotopic.pi_lift
 
 /-- Composition and products commute.
@@ -147,12 +161,19 @@ theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
 theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i))
     (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)): pi γ₀ ⬝ pi γ₁ = pi fun i => γ₀ i ⬝ γ₁ i := by
   apply Quotient.induction_on_pi (p := _) γ₁
+  -- ⊢ ∀ (a : (i : ι) → Path (bs i) (cs i)), (pi γ₀ ⬝ pi fun i => Quotient.mk (Homo …
   intro a
+  -- ⊢ (pi γ₀ ⬝ pi fun i => Quotient.mk (Homotopic.setoid (bs i) (cs i)) (a i)) = p …
   apply Quotient.induction_on_pi (p := _) γ₀
+  -- ⊢ ∀ (a_1 : (i : ι) → Path (as i) (bs i)), ((pi fun i => Quotient.mk (Homotopic …
   intros
+  -- ⊢ ((pi fun i => Quotient.mk (Homotopic.setoid (as i) (bs i)) (a✝ i)) ⬝ pi fun  …
   simp only [pi_lift]
+  -- ⊢ Quotient.mk (Homotopic.setoid (fun i => as i) fun i => bs i) (Path.pi fun i  …
   rw [← Path.Homotopic.comp_lift, Path.trans_pi_eq_pi_trans, ← pi_lift]
+  -- ⊢ (pi fun i => Quotient.mk (Homotopic.setoid (as i) (cs i)) (Path.trans (a✝ i) …
   rfl
+  -- 🎉 no goals
 #align path.homotopic.comp_pi_eq_pi_comp Path.Homotopic.comp_pi_eq_pi_comp
 
 /-- Abbreviation for projection onto the ith coordinate. -/
@@ -166,18 +187,29 @@ def proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient 
 theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) :
     proj i (pi paths) = paths i := by
   apply Quotient.induction_on_pi (p := _) paths
+  -- ⊢ ∀ (a : (i : ι) → Path (as i) (bs i)), proj i (pi fun i => Quotient.mk (Homot …
   intro; unfold proj
+  -- ⊢ proj i (pi fun i => Quotient.mk (Homotopic.setoid (as i) (bs i)) (a✝ i)) = ( …
+         -- ⊢ Quotient.mapFn (pi fun i => Quotient.mk (Homotopic.setoid (as i) (bs i)) (a✝ …
   rw [pi_lift, ← Path.Homotopic.map_lift]
+  -- ⊢ Quotient.mk (Homotopic.setoid (↑(ContinuousMap.mk fun p => p i) fun i => as  …
   congr
+  -- 🎉 no goals
 #align path.homotopic.proj_pi Path.Homotopic.proj_pi
 
 @[simp]
 theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
   apply Quotient.inductionOn (motive := _) p
+  -- ⊢ ∀ (a : Path as bs), (pi fun i => proj i (Quotient.mk (Homotopic.setoid as bs …
   intro; unfold proj
+  -- ⊢ (pi fun i => proj i (Quotient.mk (Homotopic.setoid as bs) a✝)) = Quotient.mk …
+         -- ⊢ (pi fun i => Quotient.mapFn (Quotient.mk (Homotopic.setoid as bs) a✝) (Conti …
   simp_rw [← Path.Homotopic.map_lift]
+  -- ⊢ (pi fun i => Quotient.mk (Homotopic.setoid (↑(ContinuousMap.mk fun p => p i) …
   erw [pi_lift]
+  -- ⊢ Quotient.mk (Homotopic.setoid (fun i => as i) fun i => bs i) (Path.pi fun i  …
   congr
+  -- 🎉 no goals
 #align path.homotopic.pi_proj Path.Homotopic.pi_proj
 
 end Pi
@@ -213,10 +245,15 @@ variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quoti
     This is `trans_prod_eq_prod_trans` descended to the quotient.-/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
+  -- ⊢ ∀ (a : Path a₁ a₂) (b : Path b₁ b₂), prod (Quotient.mk (Homotopic.setoid a₁  …
   intro a b
+  -- ⊢ prod (Quotient.mk (Homotopic.setoid a₁ a₂) a) (Quotient.mk (Homotopic.setoid …
   apply Quotient.inductionOn₂ (motive := _) r₁ r₂
+  -- ⊢ ∀ (a_1 : Path a₂ a₃) (b_1 : Path b₂ b₃), prod (Quotient.mk (Homotopic.setoid …
   intros
+  -- ⊢ prod (Quotient.mk (Homotopic.setoid a₁ a₂) a) (Quotient.mk (Homotopic.setoid …
   simp only [prod_lift, ← Path.Homotopic.comp_lift, Path.trans_prod_eq_prod_trans]
+  -- 🎉 no goals
 #align path.homotopic.comp_prod_eq_prod_comp Path.Homotopic.comp_prod_eq_prod_comp
 
 variable {c₁ c₂ : α × β}
@@ -237,29 +274,45 @@ def projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient 
 @[simp]
 theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
+  -- ⊢ ∀ (a : Path a₁ a₂) (b : Path b₁ b₂), projLeft (prod (Quotient.mk (Homotopic. …
   intro p₁ p₂
+  -- ⊢ projLeft (prod (Quotient.mk (Homotopic.setoid a₁ a₂) p₁) (Quotient.mk (Homot …
   unfold projLeft
+  -- ⊢ Quotient.mapFn (prod (Quotient.mk (Homotopic.setoid a₁ a₂) p₁) (Quotient.mk  …
   rw [prod_lift, ← Path.Homotopic.map_lift]
+  -- ⊢ Quotient.mk (Homotopic.setoid (↑(ContinuousMap.mk Prod.fst) (a₁, b₁)) (↑(Con …
   congr
+  -- 🎉 no goals
 #align path.homotopic.proj_left_prod Path.Homotopic.projLeft_prod
 
 @[simp]
 theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
+  -- ⊢ ∀ (a : Path a₁ a₂) (b : Path b₁ b₂), projRight (prod (Quotient.mk (Homotopic …
   intro p₁ p₂
+  -- ⊢ projRight (prod (Quotient.mk (Homotopic.setoid a₁ a₂) p₁) (Quotient.mk (Homo …
   unfold projRight
+  -- ⊢ Quotient.mapFn (prod (Quotient.mk (Homotopic.setoid a₁ a₂) p₁) (Quotient.mk  …
   rw [prod_lift, ← Path.Homotopic.map_lift]
+  -- ⊢ Quotient.mk (Homotopic.setoid (↑(ContinuousMap.mk Prod.snd) (a₁, b₁)) (↑(Con …
   congr
+  -- 🎉 no goals
 #align path.homotopic.proj_right_prod Path.Homotopic.projRight_prod
 
 @[simp]
 theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
     prod (projLeft p) (projRight p) = p := by
   apply Quotient.inductionOn (motive := _) p
+  -- ⊢ ∀ (a : Path (a₁, b₁) (a₂, b₂)), prod (projLeft (Quotient.mk (Homotopic.setoi …
   intro p'
+  -- ⊢ prod (projLeft (Quotient.mk (Homotopic.setoid (a₁, b₁) (a₂, b₂)) p')) (projR …
   unfold projLeft; unfold projRight
+  -- ⊢ prod (Quotient.mapFn (Quotient.mk (Homotopic.setoid (a₁, b₁) (a₂, b₂)) p') ( …
+                   -- ⊢ prod (Quotient.mapFn (Quotient.mk (Homotopic.setoid (a₁, b₁) (a₂, b₂)) p') ( …
   simp only [← Path.Homotopic.map_lift, prod_lift]
+  -- ⊢ prod (Quotient.mk (Homotopic.setoid (↑(ContinuousMap.mk Prod.fst) (a₁, b₁))  …
   congr
+  -- 🎉 no goals
 #align path.homotopic.prod_proj_left_proj_right Path.Homotopic.prod_projLeft_projRight
 
 end Prod

@@ -42,10 +42,12 @@ def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
   simp only [verschiebungFun, ge_iff_le]
+  -- 🎉 no goals
 #align witt_vector.verschiebung_fun_coeff WittVector.verschiebungFun_coeff
 
 theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
   rw [verschiebungFun_coeff, if_pos rfl]
+  -- 🎉 no goals
 #align witt_vector.verschiebung_fun_coeff_zero WittVector.verschiebungFun_coeff_zero
 
 @[simp]
@@ -65,9 +67,11 @@ theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
 theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
+  -- ⊢ (Finset.sum (Finset.range (n + 1 + 1)) fun i => ↑p ^ i * coeff (verschiebung …
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl, zero_pow (pow_pos hp.1.pos _),
     mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
+  -- ⊢ ↑p ^ (i + 1) * coeff (verschiebungFun x) (i + 1) ^ p ^ (n + 1 - (i + 1)) = ↑ …
   simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
     Nat.succ_sub_succ, tsub_zero]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
@@ -87,6 +91,7 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   cases' n with n
+  -- ⊢ ↑(aeval x.coeff) (verschiebungPoly Nat.zero) = coeff (verschiebungFun x) Nat …
   · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
     verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
@@ -100,7 +105,9 @@ variable (p)
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
+  -- ⊢ ∀ ⦃R : Type ?u.111750⦄ [inst : CommRing R] (x : 𝕎 R), (verschiebungFun x).co …
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
+  -- 🎉 no goals
 #align witt_vector.verschiebung_fun_is_poly WittVector.verschiebungFun_isPoly
 
 -- Porting note: we add this example as a verification that Lean 4's instance resolution
@@ -121,12 +128,22 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun
   map_zero' := by
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
+    -- ⊢ coeff (verschiebungFun 0) Nat.zero = coeff 0 Nat.zero
+               -- ⊢ (if Nat.zero = 0 then 0 else coeff 0 (Nat.zero - 1)) = coeff 0 Nat.zero
+               -- ⊢ (if Nat.succ n✝ = 0 then 0 else coeff 0 (Nat.succ n✝ - 1)) = coeff 0 (Nat.su …
       simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
+      -- 🎉 no goals
+      -- 🎉 no goals
   map_add' := by
     dsimp
+    -- ⊢ ∀ (x y : 𝕎 R), verschiebungFun (x + y) = verschiebungFun x + verschiebungFun y
     ghost_calc _ _
+    -- ⊢ ∀ (n : ℕ), ↑(ghostComponent n) (verschiebungFun (x✝ + y✝)) = ↑(ghostComponen …
     rintro ⟨⟩ <;> -- Uses the dumb induction principle, hence adding `Nat.zero_eq` to ghost_simps.
+    -- ⊢ ↑(ghostComponent Nat.zero) (verschiebungFun (x✝ + y✝)) = ↑(ghostComponent Na …
       ghost_simp
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align witt_vector.verschiebung WittVector.verschiebung
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
@@ -139,6 +156,9 @@ theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :
 @[simp]
 theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
     map f (verschiebung x) = verschiebung (map f x) := by ext ⟨-, -⟩; exact f.map_zero; rfl
+                                                          -- ⊢ coeff (↑(map f) (↑verschiebung x)) Nat.zero = coeff (↑verschiebung (↑(map f) …
+                                                                      -- ⊢ coeff (↑(map f) (↑verschiebung x)) (Nat.succ n✝) = coeff (↑verschiebung (↑(m …
+                                                                                        -- 🎉 no goals
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]
@@ -178,13 +198,21 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
       if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) := by
   apply MvPolynomial.funext
+  -- ⊢ ∀ (x : ℕ → ℤ), ↑(MvPolynomial.eval x) (↑(bind₁ verschiebungPoly) (wittPolyno …
   intro x
+  -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ verschiebungPoly) (wittPolynomial p ℤ n)) =  …
   split_ifs with hn
+  -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ verschiebungPoly) (wittPolynomial p ℤ n)) =  …
   · simp only [hn, wittPolynomial_zero, bind₁_X_right, verschiebungPoly_zero, map_zero, ite_true]
+    -- 🎉 no goals
   · obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
+    -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ verschiebungPoly) (wittPolynomial p ℤ (Nat.s …
     rw [Nat.succ_eq_add_one, add_tsub_cancel_right]
+    -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ verschiebungPoly) (wittPolynomial p ℤ (n + 1 …
     simp only [add_eq_zero, and_false, ite_false, map_mul]
+    -- ⊢ ↑(MvPolynomial.eval x) (↑(bind₁ verschiebungPoly) (wittPolynomial p ℤ (n + 1 …
     rw [map_natCast, hom_bind₁]
+    -- ⊢ ↑(eval₂Hom (RingHom.comp (MvPolynomial.eval x) C) fun i => ↑(MvPolynomial.ev …
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
        apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl

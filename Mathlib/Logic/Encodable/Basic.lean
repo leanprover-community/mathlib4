@@ -63,6 +63,7 @@ universe u
 
 theorem encode_injective [Encodable α] : Function.Injective (@encode α _)
   | x, y, e => Option.some.inj <| by rw [← encodek, e, encodek]
+                                     -- 🎉 no goals
 #align encodable.encode_injective Encodable.encode_injective
 
 @[simp]
@@ -78,6 +79,7 @@ instance (priority := 400) countable [Encodable α] : Countable α where
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
     Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+                          -- 🎉 no goals
 #align encodable.surjective_decode_iget Encodable.surjective_decode_iget
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
@@ -91,6 +93,7 @@ def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
   ⟨fun b => encode (f b), fun n => (decode n).bind finv, fun b => by
     simp [Encodable.encodek, linv]⟩
+    -- 🎉 no goals
 #align encodable.of_left_injection Encodable.ofLeftInjection
 
 /-- If `α` is encodable and `f : β → α` is invertible, then `β` is encodable as well. -/
@@ -115,6 +118,7 @@ theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
   by rw [Option.map_eq_bind]
+     -- 🎉 no goals
 #align encodable.decode_of_equiv Encodable.decode_ofEquiv
 
 instance _root_.Nat.encodable : Encodable ℕ :=
@@ -137,6 +141,7 @@ instance (priority := 100) _root_.IsEmpty.toEncodable [IsEmpty α] : Encodable �
 
 instance _root_.PUnit.encodable : Encodable PUnit :=
   ⟨fun _ => 0, fun n => Nat.casesOn n (some PUnit.unit) fun _ => none, fun _ => by simp⟩
+                                                                                   -- 🎉 no goals
 #align punit.encodable PUnit.encodable
 
 @[simp]
@@ -159,6 +164,10 @@ instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Op
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
     cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
+    -- ⊢ (fun n => Nat.casesOn n (some none) fun m => Option.map some (decode m)) ((f …
+                -- 🎉 no goals
+                -- ⊢ Option.map some (decode (encode val✝)) = some (some val✝)
+                       -- 🎉 no goals
 #align option.encodable Option.encodable
 
 @[simp]
@@ -192,6 +201,8 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
   simp [decode₂]; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  -- ⊢ (∃ a_1, decode n = some a_1 ∧ a_1 = a ∧ encode a_1 = n) ↔ decode n = some a  …
+                  -- 🎉 no goals
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
@@ -205,7 +216,9 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 @[simp]
 theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
   ext
+  -- ⊢ a✝ ∈ decode₂ α (encode a) ↔ a✝ ∈ some a
   simp [mem_decode₂, eq_comm, decode₂_eq_some]
+  -- 🎉 no goals
 #align encodable.decode₂_encode Encodable.decode₂_encode
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
@@ -232,7 +245,10 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
     ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
+                                  -- 🎉 no goals
       fun ⟨n, hn⟩ => by rw [← hn, encodek₂]; exact rfl⟩
+                        -- ⊢ isSome (some n) = true
+                                             -- 🎉 no goals
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
@@ -242,14 +258,22 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   invFun n :=
     Option.get _
       (show isSome (decode₂ α n.1) by cases' n.2 with x hx; rw [← hx, encodek₂]; exact rfl)
+                                      -- ⊢ isSome (decode₂ α ↑n) = true
+                                                            -- ⊢ isSome (some x) = true
+                                                                                 -- 🎉 no goals
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
+                   -- ⊢ Option.get (decode₂ α (encode a)) (_ : isSome (decode₂ α (encode a)) = true) …
+                          -- 🎉 no goals
   right_inv := fun ⟨n, x, hx⟩ => by
     apply Subtype.eq
+    -- ⊢ ↑((fun a => { val := encode a, property := (_ : encode a ∈ Set.range encode) …
     dsimp
+    -- ⊢ encode (Option.get (decode₂ α n) (_ : isSome (decode₂ α n) = true)) = n
     conv =>
       rhs
       rw [← hx]
     rw [encode_injective.eq_iff, ← Option.some_inj, Option.some_get, ← hx, encodek₂]
+    -- 🎉 no goals
 #align encodable.equiv_range_encode Encodable.equivRangeEncode
 
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
@@ -278,6 +302,9 @@ def decodeSum (n : ℕ) : Option (Sum α β) :=
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance _root_.Sum.encodable : Encodable (Sum α β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
+                                     -- ⊢ decodeSum (encodeSum (Sum.inl val✝)) = some (Sum.inl val✝)
+                                                 -- 🎉 no goals
+                                                 -- 🎉 no goals
 #align sum.encodable Sum.encodable
 
 --Porting note: removing bit0 and bit1 from statement
@@ -332,7 +359,11 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
   cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
+  -- ⊢ decodeSum n = none
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
+  -- ⊢ (match (bodd n, n / 2) with
+                                               -- 🎉 no goals
+                                               -- 🎉 no goals
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
@@ -357,6 +388,7 @@ def decodeSigma (n : ℕ) : Option (Sigma γ) :=
 instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
   ⟨encodeSigma, decodeSigma, fun ⟨a, b⟩ => by
     simp [encodeSigma, decodeSigma, unpair_pair, encodek]⟩
+    -- 🎉 no goals
 #align sigma.encodable Sigma.encodable
 
 @[simp]
@@ -386,8 +418,16 @@ theorem decode_prod_val [i : Encodable α] (n : ℕ) :
     (@decode (α × β) _ n : Option (α × β))
       = (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a := by
   simp only [decode_ofEquiv, Equiv.symm_symm, decode_sigma_val]
+  -- ⊢ Option.map (↑(Equiv.sigmaEquivProd α β)) (Option.bind (decode (unpair n).fst …
   cases (decode n.unpair.1 : Option α) <;> cases (decode n.unpair.2 : Option β)
+  -- ⊢ Option.map (↑(Equiv.sigmaEquivProd α β)) (Option.bind none fun a => Option.m …
+                                           -- ⊢ Option.map (↑(Equiv.sigmaEquivProd α β)) (Option.bind none fun a => Option.m …
+                                           -- ⊢ Option.map (↑(Equiv.sigmaEquivProd α β)) (Option.bind (some val✝) fun a => O …
   <;> rfl
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
+      -- 🎉 no goals
 #align encodable.decode_prod_val Encodable.decode_prod_val
 
 @[simp]
@@ -420,9 +460,12 @@ def decodeSubtype (v : ℕ) : Option { a : α // P a } :=
 /-- A decidable subtype of an encodable type is encodable. -/
 instance _root_.Subtype.encodable : Encodable { a : α // P a } :=
   ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encodeSubtype, decodeSubtype, encodek, h]⟩
+                                                  -- 🎉 no goals
 #align subtype.encodable Subtype.encodable
 
 theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a; rfl
+                                                                          -- ⊢ encode { val := val✝, property := property✝ } = encode ↑{ val := val✝, prope …
+                                                                                   -- 🎉 no goals
 #align encodable.subtype.encode_eq Encodable.Subtype.encode_eq
 
 end Subtype
@@ -474,6 +517,8 @@ theorem nonempty_encodable (α : Type*) [Countable α] : Nonempty (Encodable α)
 #align nonempty_encodable nonempty_encodable
 
 instance : Countable ℕ+ := by delta PNat; infer_instance
+                              -- ⊢ Countable { n // 0 < n }
+                                          -- 🎉 no goals
 
 -- short-circuit instance search
 section ULower
@@ -487,9 +532,13 @@ def ULower (α : Type*) [Encodable α] : Type :=
 
 instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
   by delta ULower; exact Encodable.decidableEqOfEncodable _
+     -- ⊢ DecidableEq ↑(Set.range Encodable.encode)
+                   -- 🎉 no goals
 
 instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
   by delta ULower; infer_instance
+     -- ⊢ Encodable ↑(Set.range Encodable.encode)
+                   -- 🎉 no goals
 
 end ULower
 
@@ -525,6 +574,7 @@ theorem down_up {a : ULower α} : down a.up = a :=
 @[simp]
 theorem up_down {a : α} : (down a).up = a := by
   simp [up, down,Equiv.left_inv _ _, Equiv.symm_apply_apply]
+  -- 🎉 no goals
 #align ulower.up_down ULower.up_down
 
 @[simp]
@@ -565,6 +615,13 @@ private def good : Option α → Prop
 private def decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
+    -- ⊢ Decidable (Encodable.good p none)
+                -- ⊢ Decidable
+                -- ⊢ Decidable
+                                -- ⊢ Decidable False
+                                -- ⊢ Decidable (p val✝)
+                                          -- 🎉 no goals
+                                          -- 🎉 no goals
 attribute [local instance] decidable_good
 
 open Encodable
@@ -576,6 +633,7 @@ def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
+                  -- 🎉 no goals
   match (motive := ∀ o, good p o → { a // p a }) _, Nat.find_spec this with
   | some a, h => ⟨a, h⟩
 #align encodable.choose_x Encodable.chooseX
@@ -643,16 +701,22 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
 theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
+  -- ⊢ r (f (Directed.sequence f hf n))
   generalize hf.sequence f n = p
+  -- ⊢ r (f p)
   cases' h : (decode n: Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
+    -- 🎉 no goals
   · exact (Classical.choose_spec (hf p a)).1
+    -- 🎉 no goals
 #align directed.sequence_mono_nat Directed.sequence_mono_nat
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
   simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
+  -- ⊢ r (f a) (f (Classical.choose (_ : ∃ x, (fun x => r (f (Directed.sequence f h …
   exact (Classical.choose_spec (hf _ a)).2
+  -- 🎉 no goals
 #align directed.rel_sequence Directed.rel_sequence
 
 variable [Preorder β] {f : α → β} (hf : Directed (· ≤ ·) f)
@@ -687,6 +751,10 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
     rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩
+    -- ⊢ (fun n => Quotient.mk'' <$> decode n) ((fun q => encode (rep q)) (Quot.mk Se …
+                -- ⊢ Option.map Quotient.mk'' (decode (encode (rep (Quot.mk Setoid.r l)))) = some …
+                       -- ⊢ Option.map Quotient.mk'' (some (rep (Quot.mk Setoid.r l))) = some (Quot.mk S …
+                                     -- 🎉 no goals
 #align encodable_quotient encodableQuotient
 
 end Quotient

@@ -38,6 +38,7 @@ theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=
 @[simp]
 theorem exp_smul_eps (r : R) : exp 𝕜 (r • eps : DualNumber R) = 1 + r • eps := by
   rw [eps, ← inr_smul, exp_inr, Nat.cast_one]
+  -- 🎉 no goals
 #align dual_number.exp_smul_eps DualNumber.exp_smul_eps
 
 end DualNumber

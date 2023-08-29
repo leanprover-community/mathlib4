@@ -27,9 +27,13 @@ theorem IsComplete.isClosed [UniformSpace α] [SeparatedSpace α] {s : Set α} (
     IsClosed s :=
   isClosed_iff_clusterPt.2 fun a ha => by
     let f := 𝓝[s] a
+    -- ⊢ a ∈ s
     have : Cauchy f := cauchy_nhds.mono' ha inf_le_left
+    -- ⊢ a ∈ s
     rcases h f this inf_le_right with ⟨y, ys, fy⟩
+    -- ⊢ a ∈ s
     rwa [(tendsto_nhds_unique' ha inf_le_left fy : a = y)]
+    -- 🎉 no goals
 #align is_complete.is_closed IsComplete.isClosed
 
 namespace DenseInducing

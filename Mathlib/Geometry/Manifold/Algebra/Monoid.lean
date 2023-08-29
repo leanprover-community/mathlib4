@@ -201,7 +201,9 @@ set_option linter.uppercaseLean3 false in
 theorem L_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
     (g h : G) : 𝑳 I (g * h) = (𝑳 I g).comp (𝑳 I h) := by
   ext
+  -- ⊢ ↑(𝑳 I (g * h)) x✝ = ↑(ContMDiffMap.comp (𝑳 I g) (𝑳 I h)) x✝
   simp only [ContMDiffMap.comp_apply, L_apply, mul_assoc]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align L_mul L_mul
 
@@ -209,7 +211,9 @@ set_option linter.uppercaseLean3 false in
 theorem R_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
     (g h : G) : 𝑹 I (g * h) = (𝑹 I h).comp (𝑹 I g) := by
   ext
+  -- ⊢ ↑(𝑹 I (g * h)) x✝ = ↑(ContMDiffMap.comp (𝑹 I h) (𝑹 I g)) x✝
   simp only [ContMDiffMap.comp_apply, R_apply, mul_assoc]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align R_mul R_mul
 
@@ -256,7 +260,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 @[to_additive]
 theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
   | 0 => by simp only [pow_zero]; exact smooth_const
+            -- ⊢ Smooth I I fun a => 1
+                                  -- 🎉 no goals
   | k + 1 => by simpa [pow_succ] using smooth_id.mul (smooth_pow _)
+                -- 🎉 no goals
 #align smooth_pow smooth_pow
 
 /-- Morphism of additive smooth monoids. -/
@@ -290,6 +297,10 @@ instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
 instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
   coe a := a.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
+                             -- ⊢ { toMonoidHom := toMonoidHom✝, smooth_toFun := smooth_toFun✝ } = g
+                                      -- ⊢ { toMonoidHom := toMonoidHom✝¹, smooth_toFun := smooth_toFun✝¹ } = { toMonoi …
+                                               -- ⊢ toMonoidHom✝¹ = toMonoidHom✝
+                                                      -- 🎉 no goals
   map_one f := f.map_one
   map_mul f := f.map_mul
 
@@ -342,7 +353,9 @@ theorem contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
 theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (fun x => ∏ i in t, f i x) s x := by
   simp only [← Finset.prod_apply]
+  -- ⊢ ContMDiffWithinAt I' I n (fun x => Finset.prod t (fun c => f c) x) s x
   exact contMDiffWithinAt_finset_prod' h
+  -- 🎉 no goals
 #align cont_mdiff_within_at_finset_prod contMDiffWithinAt_finset_prod
 #align cont_mdiff_within_at_finset_sum contMDiffWithinAt_finset_sum
 
@@ -428,8 +441,11 @@ open Function Filter
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
     (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x := by
   intro x
+  -- ⊢ ContMDiffAt I' I n (fun x => ∏ᶠ (i : ι), f i x) x
   rcases finprod_eventually_eq_prod hfin x with ⟨s, hs⟩
+  -- ⊢ ContMDiffAt I' I n (fun x => ∏ᶠ (i : ι), f i x) x
   exact (contMDiff_finset_prod (fun i _ => h i) x).congr_of_eventuallyEq hs
+  -- 🎉 no goals
 #align cont_mdiff_finprod contMDiff_finprod
 #align cont_mdiff_finsum contMDiff_finsum
 
@@ -438,7 +454,9 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
+  -- ⊢ ContMDiff I' I n fun x => ∏ᶠ (j : { i // p i }), f (↑j) x
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  -- 🎉 no goals
 #align cont_mdiff_finprod_cond contMDiff_finprod_cond
 #align cont_mdiff_finsum_cond contMDiff_finsum_cond
 
@@ -466,6 +484,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
   ⟨by rw [← modelWithCornersSelf_prod]; exact contDiff_add.contMDiff⟩
+      -- ⊢ Smooth 𝓘(𝕜, E × E) 𝓘(𝕜, E) fun p => p.fst + p.snd
+                                        -- 🎉 no goals
 #align has_smooth_add_self hasSmoothAddSelf
 
 end
@@ -485,6 +505,7 @@ variable {f : M → G} {s : Set M} {x : M} {n : ℕ∞} (c : G)
 theorem ContMDiffWithinAt.div_const (hf : ContMDiffWithinAt I' I n f s x) :
     ContMDiffWithinAt I' I n (fun x ↦ f x / c) s x := by
   simpa only [div_eq_mul_inv] using hf.mul contMDiffWithinAt_const
+  -- 🎉 no goals
 
 @[to_additive]
 nonrec theorem ContMDiffAt.div_const (hf : ContMDiffAt I' I n f x) :

@@ -100,6 +100,7 @@ protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
 
 theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
   simp [h]
+  -- 🎉 no goals
 #align eq_star_of_eq_star eq_star_of_eq_star
 
 theorem eq_star_iff_eq_star [InvolutiveStar R] {r s : R} : r = star s ↔ s = star r :=
@@ -138,15 +139,18 @@ section StarSemigroup
 variable [Semigroup R] [StarSemigroup R]
 
 theorem star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
+                                                                       -- 🎉 no goals
 #align star_star_mul star_star_mul
 
 theorem star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
+                                                                       -- 🎉 no goals
 #align star_mul_star star_mul_star
 
 @[simp]
 theorem semiconjBy_star_star_star {x y z : R} :
     SemiconjBy (star x) (star z) (star y) ↔ SemiconjBy x y z := by
   simp_rw [SemiconjBy, ← star_mul, star_inj, eq_comm]
+  -- 🎉 no goals
 #align semiconj_by_star_star_star semiconjBy_star_star_star
 
 alias ⟨_, SemiconjBy.star_star_star⟩ := semiconjBy_star_star_star
@@ -162,6 +166,7 @@ alias ⟨_, Commute.star_star⟩ := commute_star_star
 
 theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
   rw [← commute_star_star, star_star]
+  -- 🎉 no goals
 #align commute_star_comm commute_star_comm
 
 end StarSemigroup
@@ -178,6 +183,7 @@ def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
   { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
     toFun := fun x => MulOpposite.op (star x)
     map_mul' := fun x y => by simp only [star_mul, op_mul] }
+                              -- 🎉 no goals
 #align star_mul_equiv starMulEquiv
 #align star_mul_equiv_apply starMulEquiv_apply
 
@@ -280,6 +286,7 @@ theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x 
 
 theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
   simp only [ne_eq, star_eq_zero]
+  -- 🎉 no goals
 #align star_ne_zero star_ne_zero
 
 @[simp]
@@ -398,8 +405,11 @@ instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] [CommSemiring R
   toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
   star_involutive := by
     intro
+    -- ⊢ star (star x✝) = x✝
     ext
+    -- ⊢ ↑(star (star x✝¹)) x✝ = ↑x✝¹ x✝
     simp only [RingHom.coe_comp, Function.comp_apply, starRingEnd_self_apply]
+    -- 🎉 no goals
 #align ring_hom.has_involutive_star RingHom.involutiveStar
 
 theorem RingHom.star_def {S : Type*} [NonAssocSemiring S] [CommSemiring R] [StarRing R]
@@ -434,7 +444,9 @@ theorem star_zpow₀ [DivisionSemiring R] [StarRing R] (x : R) (z : ℤ) : star 
 @[simp]
 theorem star_div' [Semifield R] [StarRing R] (x y : R) : star (x / y) = star x / star y := by
   apply op_injective
+  -- ⊢ op (star (x / y)) = op (star x / star y)
   rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
+  -- 🎉 no goals
 #align star_div' star_div'
 
 section
@@ -444,11 +456,13 @@ set_option linter.deprecated false
 @[simp]
 theorem star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0 (star r) := by
   simp [bit0]
+  -- 🎉 no goals
 #align star_bit0 star_bit0
 
 @[simp]
 theorem star_bit1 [Semiring R] [StarRing R] (r : R) : star (bit1 r) = bit1 (star r) := by
   simp [bit1]
+  -- 🎉 no goals
 #align star_bit1 star_bit1
 
 end
@@ -555,16 +569,22 @@ theorem isUnit_star [Monoid R] [StarSemigroup R] {a : R} : IsUnit (star a) ↔ I
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     Ring.inverse (star a) = star (Ring.inverse a) := by
   by_cases ha : IsUnit a
+  -- ⊢ inverse (star a) = star (inverse a)
   · obtain ⟨u, rfl⟩ := ha
+    -- ⊢ inverse (star ↑u) = star (inverse ↑u)
     rw [Ring.inverse_unit, ← Units.coe_star, Ring.inverse_unit, ← Units.coe_star_inv]
+    -- 🎉 no goals
   rw [Ring.inverse_non_unit _ ha, Ring.inverse_non_unit _ (mt isUnit_star.mp ha), star_zero]
+  -- 🎉 no goals
 #align ring.inverse_star Ring.inverse_star
 
 instance Invertible.star {R : Type*} [Monoid R] [StarSemigroup R] (r : R) [Invertible r] :
     Invertible (star r) where
   invOf := Star.star (⅟ r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
+                       -- 🎉 no goals
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
+                       -- 🎉 no goals
 #align invertible.star Invertible.star
 
 theorem star_invOf {R : Type*} [Monoid R] [StarSemigroup R] (r : R) [Invertible r]
@@ -572,8 +592,11 @@ theorem star_invOf {R : Type*} [Monoid R] [StarSemigroup R] (r : R) [Invertible 
   have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
     simp only [mul_invOf_self, mul_one]
   rw [this, ← mul_assoc]
+  -- ⊢ star ⅟r * star r * ⅟(star r) = ⅟(star r)
   have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
+  -- ⊢ star ⅟r * star r * ⅟(star r) = ⅟(star r)
   rw [this, star_one, one_mul]
+  -- 🎉 no goals
 #align star_inv_of star_invOf
 
 namespace MulOpposite

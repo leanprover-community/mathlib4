@@ -66,16 +66,30 @@ instance : LE (ValueGroup A K) :=
     Quotient.liftOn₂' x y (fun a b => ∃ c : A, c • b = a)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩; ext
+        -- ⊢ (fun a b => ∃ c, c • b = a) ((fun m => m • a) c) ((fun m => m • b) d) = (fun …
+                                          -- ⊢ (fun a b => ∃ c, c • b = a) ((fun m => m • a) c) ((fun m => m • b) d) ↔ (fun …
         constructor
+        -- ⊢ (fun a b => ∃ c, c • b = a) ((fun m => m • a) c) ((fun m => m • b) d) → (fun …
         · rintro ⟨e, he⟩; use (c⁻¹ : Aˣ) * e * d
+          -- ⊢ ∃ c, c • b = a
+                          -- ⊢ (↑c⁻¹ * e * ↑d) • b = a
           apply_fun fun t => c⁻¹ • t at he
+          -- ⊢ (↑c⁻¹ * e * ↑d) • b = a
           simpa [mul_smul] using he
+          -- 🎉 no goals
         · rintro ⟨e, he⟩; dsimp
+          -- ⊢ ∃ c_1, c_1 • (fun m => m • b) d = (fun m => m • a) c
+                          -- ⊢ ∃ c_1, c_1 • d • b = c • a
           use (d⁻¹ : Aˣ) * c * e
+          -- ⊢ (↑d⁻¹ * ↑c * e) • d • b = c • a
           erw [← he, ← mul_smul, ← mul_smul]
+          -- ⊢ (↑d⁻¹ * ↑c * e * ↑d) • b = (↑c * e) • b
           congr 1
+          -- ⊢ ↑d⁻¹ * ↑c * e * ↑d = ↑c * e
           rw [mul_comm]
+          -- ⊢ ↑d * (↑d⁻¹ * ↑c * e) = ↑c * e
           simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
+          -- 🎉 no goals
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
@@ -86,20 +100,30 @@ instance : Mul (ValueGroup A K) :=
     Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
+        -- ⊢ (fun a b => Quotient.mk'' (a * b)) ((fun m => m • a) c) ((fun m => m • b) d) …
         apply Quotient.sound'
+        -- ⊢ Setoid.r ((fun m => m • a) c * (fun m => m • b) d) (a * b)
         dsimp
+        -- ⊢ Setoid.r (c • a * d • b) (a * b)
         use c * d
+        -- ⊢ (fun m => m • (a * b)) (c * d) = c • a * d • b
         simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
+        -- ⊢ ↑(algebraMap A K) ↑c * (↑(algebraMap A K) ↑d * (a * b)) = ↑(algebraMap A K)  …
         ring)
+        -- 🎉 no goals
 
 instance : Inv (ValueGroup A K) :=
   Inv.mk fun x =>
     Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
       (by
         rintro _ a ⟨b, rfl⟩
+        -- ⊢ (fun a => Quotient.mk'' a⁻¹) ((fun m => m • a) b) = (fun a => Quotient.mk''  …
         apply Quotient.sound'
+        -- ⊢ Setoid.r ((fun m => m • a) b)⁻¹ a⁻¹
         use b⁻¹
+        -- ⊢ (fun m => m • a⁻¹) b⁻¹ = ((fun m => m • a) b)⁻¹
         dsimp
+        -- ⊢ b⁻¹ • a⁻¹ = (b • a)⁻¹
         rw [Units.smul_def, Units.smul_def, Algebra.smul_def, Algebra.smul_def, mul_inv,
           map_units_inv])
 
@@ -107,31 +131,61 @@ variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
 protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
   rcases a with ⟨a⟩; rcases b with ⟨b⟩
+  -- ⊢ Quot.mk Setoid.r a ≤ b ∨ b ≤ Quot.mk Setoid.r a
+                     -- ⊢ Quot.mk Setoid.r a ≤ Quot.mk Setoid.r b ∨ Quot.mk Setoid.r b ≤ Quot.mk Setoi …
   obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
+  -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) ≤ Quot.mk Set …
   obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
+  -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) ≤ Quot.mk Set …
   have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
+  -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) ≤ Quot.mk Set …
   have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
+  -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) ≤ Quot.mk Set …
   obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
+  -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) ≤ Quot.mk Set …
   · right
+    -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xb / ↑(algebraMap A K) yb) ≤ Quot.mk Set …
     use c
+    -- ⊢ c • (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) = ↑(algebraMap A K) xb / ↑ …
     rw [Algebra.smul_def]
+    -- ⊢ ↑(algebraMap A K) c * (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) = ↑(alge …
     field_simp
+    -- ⊢ ↑(algebraMap A K) c * ↑(algebraMap A K) xa * ↑(algebraMap A K) yb = ↑(algebr …
     simp only [← RingHom.map_mul, ← h]; congr 1; ring
+    -- ⊢ ↑(algebraMap A K) (c * xa * yb) = ↑(algebraMap A K) (xa * yb * c)
+                                        -- ⊢ c * xa * yb = xa * yb * c
+                                                 -- 🎉 no goals
   · left
+    -- ⊢ Quot.mk Setoid.r (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) ≤ Quot.mk Set …
     use c
+    -- ⊢ c • (↑(algebraMap A K) xb / ↑(algebraMap A K) yb) = ↑(algebraMap A K) xa / ↑ …
     rw [Algebra.smul_def]
+    -- ⊢ ↑(algebraMap A K) c * (↑(algebraMap A K) xb / ↑(algebraMap A K) yb) = ↑(alge …
     field_simp
+    -- ⊢ ↑(algebraMap A K) c * ↑(algebraMap A K) xb * ↑(algebraMap A K) ya = ↑(algebr …
     simp only [← RingHom.map_mul, ← h]; congr 1; ring
+    -- ⊢ ↑(algebraMap A K) (c * xb * ya) = ↑(algebraMap A K) (xb * ya * c)
+                                        -- ⊢ c * xb * ya = xb * ya * c
+                                                 -- 🎉 no goals
 #align valuation_ring.le_total ValuationRing.le_total
 
 -- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
 -- into two parts
 noncomputable instance : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
+                -- ⊢ Quot.mk Setoid.r a✝ ≤ Quot.mk Setoid.r a✝
+                           -- ⊢ 1 • a✝ = a✝
+                                  -- 🎉 no goals
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
+                 -- ⊢ Quot.mk Setoid.r (e • f • c) ≤ Quot.mk Setoid.r c
+                                                       -- ⊢ (e * f) • c = e • f • c
+                                                                  -- 🎉 no goals
   le_antisymm := by
     rintro ⟨a⟩ ⟨b⟩ ⟨e, rfl⟩ ⟨f, hf⟩
+    -- ⊢ Quot.mk Setoid.r (e • b) = Quot.mk Setoid.r b
     by_cases hb : b = 0; · simp [hb]
+    -- ⊢ Quot.mk Setoid.r (e • b) = Quot.mk Setoid.r b
+                           -- 🎉 no goals
     have : IsUnit e := by
       apply isUnit_of_dvd_one
       use f
@@ -141,38 +195,87 @@ noncomputable instance : LinearOrder (ValueGroup A K) where
       rw [← (algebraMap A K).map_one] at hf
       exact IsFractionRing.injective _ _ (mul_right_cancel₀ hb hf).symm
     apply Quotient.sound'
+    -- ⊢ Setoid.r (e • b) b
     exact ⟨this.unit, rfl⟩
+    -- 🎉 no goals
   le_total := ValuationRing.le_total _ _
   decidableLE := by classical infer_instance
+                    -- 🎉 no goals
 
 noncomputable instance linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) where
   mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
+                  -- ⊢ Quot.mk Setoid.r a * Quot.mk Setoid.r b * Quot.mk Setoid.r c = Quot.mk Setoi …
+                                      -- ⊢ Setoid.r (a * b * c) (a * (b * c))
+                                                             -- ⊢ Setoid.r (a * (b * c)) (a * (b * c))
+                                                                             -- 🎉 no goals
   one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
+                -- ⊢ 1 * Quot.mk Setoid.r a = Quot.mk Setoid.r a
+                            -- ⊢ Setoid.r (1 * a) a
+                                                   -- ⊢ Setoid.r a a
+                                                                 -- 🎉 no goals
   mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
+                -- ⊢ Quot.mk Setoid.r a * 1 = Quot.mk Setoid.r a
+                            -- ⊢ Setoid.r (a * 1) a
+                                                   -- ⊢ Setoid.r a a
+                                                                 -- 🎉 no goals
   mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]; apply Setoid.refl'
+                 -- ⊢ Quot.mk Setoid.r a * Quot.mk Setoid.r b = Quot.mk Setoid.r b * Quot.mk Setoi …
+                                 -- ⊢ Setoid.r (a * b) (b * a)
+                                                        -- ⊢ Setoid.r (b * a) (b * a)
+                                                                       -- 🎉 no goals
   mul_le_mul_left := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
+    -- ⊢ Quot.mk Setoid.r d * Quot.mk Setoid.r (c • b) ≤ Quot.mk Setoid.r d * Quot.mk …
     use c; simp only [Algebra.smul_def]; ring
+    -- ⊢ c • (d * b) = d * c • b
+           -- ⊢ ↑(algebraMap A K) c * (d * b) = d * (↑(algebraMap A K) c * b)
+                                         -- 🎉 no goals
   zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
+                 -- ⊢ 0 * Quot.mk Setoid.r a = 0
+                             -- ⊢ Setoid.r (0 * a) 0
+                                                    -- ⊢ Setoid.r 0 0
+                                                                   -- 🎉 no goals
   mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
+                 -- ⊢ Quot.mk Setoid.r a * 0 = 0
+                             -- ⊢ Setoid.r (a * 0) 0
+                                                    -- ⊢ Setoid.r 0 0
+                                                                   -- 🎉 no goals
   zero_le_one := ⟨0, by rw [zero_smul]⟩
+                        -- 🎉 no goals
   exists_pair_ne := by
     use 0, 1
+    -- ⊢ 0 ≠ 1
     intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
+    -- ⊢ False
+             -- ⊢ False
     apply_fun fun t => d⁻¹ • t at hd
+    -- ⊢ False
     simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
+    -- 🎉 no goals
   inv_zero := by apply Quotient.sound'; rw [inv_zero]; apply Setoid.refl'
+                 -- ⊢ Setoid.r 0⁻¹ 0
+                                        -- ⊢ Setoid.r 0 0
+                                                       -- 🎉 no goals
   mul_inv_cancel := by
     rintro ⟨a⟩ ha
+    -- ⊢ Quot.mk Setoid.r a * (Quot.mk Setoid.r a)⁻¹ = 1
     apply Quotient.sound'
+    -- ⊢ Setoid.r (a * a⁻¹) 1
     use 1
+    -- ⊢ (fun m => m • 1) 1 = a * a⁻¹
     simp only [one_smul, ne_eq]
+    -- ⊢ 1 = a * a⁻¹
     apply (mul_inv_cancel _).symm
+    -- ⊢ a ≠ 0
     contrapose ha
+    -- ⊢ ¬Quot.mk Setoid.r a ≠ 0
     simp only [Classical.not_not] at ha ⊢
+    -- ⊢ Quot.mk Setoid.r a = 0
     rw [ha]
+    -- ⊢ Quot.mk Setoid.r 0 = 0
     rfl
+    -- 🎉 no goals
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
@@ -182,34 +285,62 @@ def valuation : Valuation K (ValueGroup A K) where
   map_mul' _ _ := rfl
   map_add_le_max' := by
     intro a b
+    -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
     obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
+    -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
     obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
+    -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
     have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
+    -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
     have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
+    -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
     obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
+    -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
     dsimp
+    -- ⊢ Quotient.mk'' (↑(algebraMap A K) xa / ↑(algebraMap A K) ya + ↑(algebraMap A  …
     · apply le_trans _ (le_max_left _ _)
+      -- ⊢ Quotient.mk'' (↑(algebraMap A K) xa / ↑(algebraMap A K) ya + ↑(algebraMap A  …
       use c + 1
+      -- ⊢ (c + 1) • (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) = ↑(algebraMap A K)  …
       rw [Algebra.smul_def]
+      -- ⊢ ↑(algebraMap A K) (c + 1) * (↑(algebraMap A K) xa / ↑(algebraMap A K) ya) =  …
       field_simp
+      -- ⊢ (↑(algebraMap A K) c + 1) * ↑(algebraMap A K) xa * (↑(algebraMap A K) ya * ↑ …
       simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
+      -- ⊢ ↑(algebraMap A K) ((c + 1) * xa * (ya * yb)) = ↑(algebraMap A K) ((xa * yb + …
       congr 1; ring
+      -- ⊢ (c + 1) * xa * (ya * yb) = (xa * yb + xa * yb * c) * ya
+               -- 🎉 no goals
     · apply le_trans _ (le_max_right _ _)
+      -- ⊢ ZeroHom.toFun (↑{ toZeroHom := { toFun := Quotient.mk'', map_zero' := (_ : Q …
       use c + 1
+      -- ⊢ (c + 1) • (↑(algebraMap A K) xb / ↑(algebraMap A K) yb) = ↑(algebraMap A K)  …
       rw [Algebra.smul_def]
+      -- ⊢ ↑(algebraMap A K) (c + 1) * (↑(algebraMap A K) xb / ↑(algebraMap A K) yb) =  …
       field_simp
+      -- ⊢ (↑(algebraMap A K) c + 1) * ↑(algebraMap A K) xb * (↑(algebraMap A K) ya * ↑ …
       simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
+      -- ⊢ ↑(algebraMap A K) ((c + 1) * xb * (ya * yb)) = ↑(algebraMap A K) ((xb * ya * …
       congr 1; ring
+      -- ⊢ (c + 1) * xb * (ya * yb) = (xb * ya * c + xb * ya) * yb
+               -- 🎉 no goals
 #align valuation_ring.valuation ValuationRing.valuation
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
   constructor
+  -- ⊢ x ∈ Valuation.integer (valuation A K) → ∃ a, ↑(algebraMap A K) a = x
   · rintro ⟨c, rfl⟩
+    -- ⊢ ∃ a, ↑(algebraMap A K) a = c • 1
     use c
+    -- ⊢ ↑(algebraMap A K) c = c • 1
     rw [Algebra.smul_def, mul_one]
+    -- 🎉 no goals
   · rintro ⟨c, rfl⟩
+    -- ⊢ ↑(algebraMap A K) c ∈ Valuation.integer (valuation A K)
     use c
+    -- ⊢ c • 1 = ↑(algebraMap A K) c
     rw [Algebra.smul_def, mul_one]
+    -- 🎉 no goals
 #align valuation_ring.mem_integer_iff ValuationRing.mem_integer_iff
 
 /-- The valuation ring `A` is isomorphic to the ring of integers of its associated valuation. -/
@@ -218,17 +349,30 @@ noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
     (show A →ₙ+* (valuation A K).integer from
       { toFun := fun a => ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
         map_mul' := fun _ _ => by ext1; exact (algebraMap A K).map_mul _ _
+                                  -- ⊢ ↑((fun a => { val := ↑(algebraMap A K) a, property := (_ : ↑(algebraMap A K) …
+                                        -- 🎉 no goals
         map_zero' := by ext1; exact (algebraMap A K).map_zero
+                        -- ⊢ ↑(MulHom.toFun { toFun := fun a => { val := ↑(algebraMap A K) a, property := …
+                              -- 🎉 no goals
         map_add' := fun _ _ => by ext1; exact (algebraMap A K).map_add _ _ })
+                                  -- ⊢ ↑(MulHom.toFun { toFun := fun a => { val := ↑(algebraMap A K) a, property := …
+                                        -- 🎉 no goals
     (by
       constructor
       · intro x y h
+        -- ⊢ x = y
         apply_fun (algebraMap (valuation A K).integer K) at h
+        -- ⊢ x = y
         exact IsFractionRing.injective _ _ h
+        -- 🎉 no goals
       · rintro ⟨-, ha⟩
+        -- ⊢ ∃ a,
         rw [mem_integer_iff] at ha
+        -- ⊢ ∃ a,
         obtain ⟨a, rfl⟩ := ha
+        -- ⊢ ∃ a_1,
         exact ⟨a, rfl⟩)
+        -- 🎉 no goals
 #align valuation_ring.equiv_integer ValuationRing.equivInteger
 
 @[simp]
@@ -237,6 +381,8 @@ theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A
 
 theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
+  -- ⊢ x✝ ∈ Valuation.integer (valuation A K) ↔ x✝ ∈ RingHom.range (algebraMap A K)
+       -- 🎉 no goals
 #align valuation_ring.range_algebra_map_eq ValuationRing.range_algebraMap_eq
 
 end
@@ -249,29 +395,52 @@ instance (priority := 100) localRing : LocalRing A :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self
     (by
       intro a
+      -- ⊢ IsUnit a ∨ IsUnit (1 - a)
       obtain ⟨c, h | h⟩ := ValuationRing.cond a (1 - a)
+      -- ⊢ IsUnit a ∨ IsUnit (1 - a)
       · left
+        -- ⊢ IsUnit a
         apply isUnit_of_mul_eq_one _ (c + 1)
+        -- ⊢ a * (c + 1) = 1
         simp [mul_add, h]
+        -- 🎉 no goals
       · right
+        -- ⊢ IsUnit (1 - a)
         apply isUnit_of_mul_eq_one _ (c + 1)
+        -- ⊢ (1 - a) * (c + 1) = 1
         simp [mul_add, h])
+        -- 🎉 no goals
 
 instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
   { (inferInstance : CompleteLattice (Ideal A)) with
     le_total := by
       intro α β
+      -- ⊢ α ≤ β ∨ β ≤ α
       by_cases h : α ≤ β; · exact Or.inl h
+      -- ⊢ α ≤ β ∨ β ≤ α
+                            -- 🎉 no goals
       erw [not_forall] at h
+      -- ⊢ α ≤ β ∨ β ≤ α
       push_neg at h
+      -- ⊢ α ≤ β ∨ β ≤ α
       obtain ⟨a, h₁, h₂⟩ := h
+      -- ⊢ α ≤ β ∨ β ≤ α
       right
+      -- ⊢ β ≤ α
       intro b hb
+      -- ⊢ b ∈ α
       obtain ⟨c, h | h⟩ := ValuationRing.cond a b
+      -- ⊢ b ∈ α
       · rw [← h]
+        -- ⊢ a * c ∈ α
         exact Ideal.mul_mem_right _ _ h₁
+        -- 🎉 no goals
       · exfalso; apply h₂; rw [← h]
+        -- ⊢ False
+                 -- ⊢ a ∈ β
+                           -- ⊢ b * c ∈ β
         apply Ideal.mul_mem_right _ _ hb
+        -- 🎉 no goals
     decidableLE := inferInstance }
 
 end
@@ -306,8 +475,11 @@ theorem dvd_total [h : ValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
 theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   have := dvd_total p q
+  -- ⊢ Associated p q
   rw [Irreducible.dvd_comm hp hq, or_self_iff] at this
+  -- ⊢ Associated p q
   exact associated_of_dvd_dvd (Irreducible.dvd_symm hq hp this) this
+  -- 🎉 no goals
 #align valuation_ring.unique_irreducible ValuationRing.unique_irreducible
 
 variable (R)
@@ -315,25 +487,47 @@ variable (R)
 theorem iff_isInteger_or_isInteger :
     ValuationRing R ↔ ∀ x : K, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ := by
   constructor
+  -- ⊢ ValuationRing R → ∀ (x : K), IsLocalization.IsInteger R x ∨ IsLocalization.I …
   · intro H x
+    -- ⊢ IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹
     obtain ⟨x : R, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+    -- ⊢ IsLocalization.IsInteger R (↑(algebraMap R K) x / ↑(algebraMap R K) y) ∨ IsL …
     have := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr (nonZeroDivisors.ne_zero hy)
+    -- ⊢ IsLocalization.IsInteger R (↑(algebraMap R K) x / ↑(algebraMap R K) y) ∨ IsL …
     obtain ⟨s, rfl | rfl⟩ := ValuationRing.cond x y
+    -- ⊢ IsLocalization.IsInteger R (↑(algebraMap R K) x / ↑(algebraMap R K) (x * s)) …
     · exact Or.inr
         ⟨s, eq_inv_of_mul_eq_one_left <| by rwa [mul_div, div_eq_one_iff_eq, map_mul, mul_comm]⟩
     · exact Or.inl ⟨s, by rwa [eq_div_iff, map_mul, mul_comm]⟩
+      -- 🎉 no goals
   · intro H
+    -- ⊢ ValuationRing R
     constructor
+    -- ⊢ ∀ (a b : R), ∃ c, a * c = b ∨ b * c = a
     intro a b
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
     by_cases ha : a = 0; · subst ha; exact ⟨0, Or.inr <| mul_zero b⟩
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
+                           -- ⊢ ∃ c, 0 * c = b ∨ b * c = 0
+                                     -- 🎉 no goals
     by_cases hb : b = 0; · subst hb; exact ⟨0, Or.inl <| mul_zero a⟩
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
+                           -- ⊢ ∃ c, a * c = 0 ∨ 0 * c = a
+                                     -- 🎉 no goals
     replace ha := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr ha
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
     replace hb := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr hb
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
     obtain ⟨c, e⟩ | ⟨c, e⟩ := H (algebraMap R K a / algebraMap R K b)
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
     · rw [eq_div_iff hb, ← map_mul, (IsFractionRing.injective R K).eq_iff, mul_comm] at e
+      -- ⊢ ∃ c, a * c = b ∨ b * c = a
       exact ⟨c, Or.inr e⟩
+      -- 🎉 no goals
     · rw [inv_div, eq_div_iff ha, ← map_mul, (IsFractionRing.injective R K).eq_iff, mul_comm c] at e
+      -- ⊢ ∃ c, a * c = b ∨ b * c = a
       exact ⟨c, Or.inl e⟩
+      -- 🎉 no goals
 #align valuation_ring.iff_is_integer_or_is_integer ValuationRing.iff_isInteger_or_isInteger
 
 variable {K}
@@ -384,10 +578,19 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
         IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] := by
   tfae_have 1 ↔ 2; · exact iff_isInteger_or_isInteger R _
+  -- ⊢ ValuationRing R ↔ ∀ (x : FractionRing R), IsLocalization.IsInteger R x ∨ IsL …
+                     -- 🎉 no goals
   tfae_have 1 ↔ 3; · exact iff_dvd_total
+  -- ⊢ ValuationRing R ↔ IsTotal R fun x x_1 => x ∣ x_1
+                     -- 🎉 no goals
   tfae_have 1 ↔ 4; · exact iff_ideal_total
+  -- ⊢ ValuationRing R ↔ IsTotal (Ideal R) fun x x_1 => x ≤ x_1
+                     -- 🎉 no goals
   tfae_have 1 ↔ 5; · exact iff_local_bezout_domain
+  -- ⊢ ValuationRing R ↔ LocalRing R ∧ IsBezout R
+                     -- 🎉 no goals
   tfae_finish
+  -- 🎉 no goals
 #align valuation_ring.tfae ValuationRing.tFAE
 
 end
@@ -397,8 +600,11 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
     ValuationRing S :=
   ⟨fun a b => by
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
+    -- ⊢ ∃ c, ↑f a * c = ↑f b ∨ ↑f b * c = ↑f a
     obtain ⟨c, rfl | rfl⟩ := ValuationRing.cond a b
+    -- ⊢ ∃ c_1, ↑f a * c_1 = ↑f (a * c) ∨ ↑f (a * c) * c_1 = ↑f a
     exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩
+    -- 🎉 no goals
 #align function.surjective.valuation_ring Function.Surjective.valuationRing
 
 section
@@ -410,12 +616,21 @@ variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain �
 is a valuation ring. -/
 theorem of_integers : ValuationRing 𝒪 := by
   constructor
+  -- ⊢ ∀ (a b : 𝒪), ∃ c, a * c = b ∨ b * c = a
   intro a b
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
   cases' le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h h
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
     use c; exact Or.inr hc.symm
+    -- ⊢ a * c = b ∨ b * c = a
+           -- 🎉 no goals
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
+    -- ⊢ ∃ c, a * c = b ∨ b * c = a
     use c; exact Or.inl hc.symm
+    -- ⊢ a * c = b ∨ b * c = a
+           -- 🎉 no goals
 #align valuation_ring.of_integers ValuationRing.of_integers
 
 end
@@ -427,10 +642,21 @@ variable (K : Type u) [Field K]
 /-- A field is a valuation ring. -/
 instance (priority := 100) of_field : ValuationRing K := by
   constructor
+  -- ⊢ ∀ (a b : K), ∃ c, a * c = b ∨ b * c = a
   intro a b
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
   by_cases b = 0
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
   · use 0; left; simp [h]
+    -- ⊢ a * 0 = b ∨ b * 0 = a
+           -- ⊢ a * 0 = b
+                 -- 🎉 no goals
   · use a * b⁻¹; right; field_simp; rw [mul_comm]
+    -- ⊢ a * (a * b⁻¹) = b ∨ b * (a * b⁻¹) = a
+                 -- ⊢ b * (a * b⁻¹) = a
+                        -- ⊢ b * a = a * b
+                                    -- 🎉 no goals
 #align valuation_ring.of_field ValuationRing.of_field
 
 end
@@ -442,23 +668,49 @@ variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 /-- A DVR is a valuation ring. -/
 instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
   constructor
+  -- ⊢ ∀ (a b : A), ∃ c, a * c = b ∨ b * c = a
   intro a b
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
   by_cases ha : a = 0; · use 0; right; simp [ha]
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
+                         -- ⊢ a * 0 = b ∨ b * 0 = a
+                                -- ⊢ b * 0 = a
+                                       -- 🎉 no goals
   by_cases hb : b = 0; · use 0; left; simp [hb]
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
+                         -- ⊢ a * 0 = b ∨ b * 0 = a
+                                -- ⊢ a * 0 = b
+                                      -- 🎉 no goals
   obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
+  -- ⊢ ∃ c, a * c = b ∨ b * c = a
   obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
+  -- ⊢ ∃ c, ↑u * ϖ ^ m * c = b ∨ b * c = ↑u * ϖ ^ m
   obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
+  -- ⊢ ∃ c, ↑u * ϖ ^ m * c = ↑v * ϖ ^ n ∨ ↑v * ϖ ^ n * c = ↑u * ϖ ^ m
   cases' le_total m n with h h
+  -- ⊢ ∃ c, ↑u * ϖ ^ m * c = ↑v * ϖ ^ n ∨ ↑v * ϖ ^ n * c = ↑u * ϖ ^ m
   · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
+    -- ⊢ ↑u * ϖ ^ m * (↑(u⁻¹ * v) * ϖ ^ (n - m)) = ↑v * ϖ ^ n ∨ ↑v * ϖ ^ n * (↑(u⁻¹ * …
+                                      -- ⊢ ↑u * ϖ ^ m * (↑(u⁻¹ * v) * ϖ ^ (n - m)) = ↑v * ϖ ^ n
     simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
+    -- ⊢ ϖ ^ m * (↑u * ↑u⁻¹) * ↑v * ϖ ^ (n - m) = ↑v * ϖ ^ n
     simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]
+    -- ⊢ ↑v * ϖ ^ (m + (n - m)) = ↑v * ϖ ^ n
     congr 2
+    -- ⊢ m + (n - m) = n
     exact Nat.add_sub_of_le h
+    -- 🎉 no goals
   · use (v⁻¹ * u : Aˣ) * ϖ ^ (m - n); right
+    -- ⊢ ↑u * ϖ ^ m * (↑(v⁻¹ * u) * ϖ ^ (m - n)) = ↑v * ϖ ^ n ∨ ↑v * ϖ ^ n * (↑(v⁻¹ * …
+                                      -- ⊢ ↑v * ϖ ^ n * (↑(v⁻¹ * u) * ϖ ^ (m - n)) = ↑u * ϖ ^ m
     simp_rw [mul_comm (v : A), Units.val_mul, ← mul_assoc, mul_assoc _ (v : A)]
+    -- ⊢ ϖ ^ n * (↑v * ↑v⁻¹) * ↑u * ϖ ^ (m - n) = ↑u * ϖ ^ m
     simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
+    -- ⊢ ↑u * ϖ ^ (n + (m - n)) = ↑u * ϖ ^ m
     congr 2
+    -- ⊢ n + (m - n) = m
     exact Nat.add_sub_of_le h
+    -- 🎉 no goals
 #align valuation_ring.of_discrete_valuation_ring ValuationRing.of_discreteValuationRing
 
 end

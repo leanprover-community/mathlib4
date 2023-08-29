@@ -39,7 +39,9 @@ def smallSets (l : Filter α) : Filter (Set α) :=
 
 theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset '' f.sets) := by
   simp_rw [generate_eq_biInf, smallSets, iInf_image]
+  -- ⊢ Filter.lift' f powerset = ⨅ (b : Set α) (_ : b ∈ f.sets), 𝓟 (𝒫 b)
   rfl
+  -- 🎉 no goals
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
 
 theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
@@ -63,7 +65,10 @@ theorem tendsto_smallSets_iff {f : α → Set β} :
 theorem eventually_smallSets {p : Set α → Prop} :
     (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, ∀ t, t ⊆ s → p t := by
   rw [smallSets, eventually_lift'_iff]; rfl
+  -- ⊢ (∃ t, t ∈ l ∧ ∀ (y : Set α), y ∈ 𝒫 t → p y) ↔ ∃ s, s ∈ l ∧ ∀ (t : Set α), t  …
+                                        -- ⊢ Monotone powerset
   exact monotone_powerset
+  -- 🎉 no goals
 #align filter.eventually_small_sets Filter.eventually_smallSets
 
 theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
@@ -94,12 +99,15 @@ theorem monotone_smallSets : Monotone (@smallSets α) :=
 @[simp]
 theorem smallSets_bot : (⊥ : Filter α).smallSets = pure ∅ := by
   rw [smallSets, lift'_bot, powerset_empty, principal_singleton]
+  -- ⊢ Monotone powerset
   exact monotone_powerset
+  -- 🎉 no goals
 #align filter.small_sets_bot Filter.smallSets_bot
 
 @[simp]
 theorem smallSets_top : (⊤ : Filter α).smallSets = ⊤ := by
   rw [smallSets, lift'_top, powerset_univ, principal_univ]
+  -- 🎉 no goals
 #align filter.small_sets_top Filter.smallSets_top
 
 @[simp]
@@ -127,13 +135,17 @@ theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁
 
 instance smallSets_neBot (l : Filter α) : NeBot l.smallSets := by
   refine' (lift'_neBot_iff _).2 fun _ _ => powerset_nonempty
+  -- ⊢ Monotone powerset
   exact monotone_powerset
+  -- 🎉 no goals
 #align filter.small_sets_ne_bot Filter.smallSets_neBot
 
 theorem Tendsto.smallSets_mono {s t : α → Set β} (ht : Tendsto t la lb.smallSets)
     (hst : ∀ᶠ x in la, s x ⊆ t x) : Tendsto s la lb.smallSets := by
   rw [tendsto_smallSets_iff] at ht ⊢
+  -- ⊢ ∀ (t : Set β), t ∈ lb → ∀ᶠ (x : α) in la, s x ⊆ t
   exact fun u hu => (ht u hu).mp (hst.mono fun _ hst ht => hst.trans ht)
+  -- 🎉 no goals
 #align filter.tendsto.small_sets_mono Filter.Tendsto.smallSets_mono
 
 /-- Generalized **squeeze theorem** (also known as **sandwich theorem**). If `s : α → Set β` is a
@@ -155,13 +167,16 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
       eventually_smallSets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
+                                                          -- 🎉 no goals
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
+                                  -- 🎉 no goals
 #align filter.eventually_small_sets_eventually Filter.eventually_smallSets_eventually
 
 @[simp]
 theorem eventually_smallSets_forall {p : α → Prop} :
     (∀ᶠ s in l.smallSets, ∀ x ∈ s, p x) ↔ ∀ᶠ x in l, p x := by
   simpa only [inf_top_eq, eventually_top] using @eventually_smallSets_eventually α l ⊤ p
+  -- 🎉 no goals
 #align filter.eventually_small_sets_forall Filter.eventually_smallSets_forall
 
 alias ⟨Eventually.of_smallSets, Eventually.smallSets⟩ := eventually_smallSets_forall

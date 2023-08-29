@@ -33,8 +33,11 @@ variable (F : C ⥤ D)
 theorem preserves_mono_of_preservesLimit {X Y : C} (f : X ⟶ Y) [PreservesLimit (cospan f f) F]
     [Mono f] : Mono (F.map f) := by
   have := isLimitPullbackConeMapOfIsLimit F _ (PullbackCone.isLimitMkIdId f)
+  -- ⊢ Mono (F.map f)
   simp_rw [F.map_id] at this
+  -- ⊢ Mono (F.map f)
   apply PullbackCone.mono_of_isLimitMkIdId _ this
+  -- 🎉 no goals
 #align category_theory.preserves_mono_of_preserves_limit CategoryTheory.preserves_mono_of_preservesLimit
 
 instance (priority := 100) preservesMonomorphisms_of_preservesLimitsOfShape
@@ -46,8 +49,11 @@ instance (priority := 100) preservesMonomorphisms_of_preservesLimitsOfShape
 theorem reflects_mono_of_reflectsLimit {X Y : C} (f : X ⟶ Y) [ReflectsLimit (cospan f f) F]
     [Mono (F.map f)] : Mono f := by
   have := PullbackCone.isLimitMkIdId (F.map f)
+  -- ⊢ Mono f
   simp_rw [← F.map_id] at this
+  -- ⊢ Mono f
   apply PullbackCone.mono_of_isLimitMkIdId _ (isLimitOfIsLimitPullbackConeMap F _ this)
+  -- 🎉 no goals
 #align category_theory.reflects_mono_of_reflects_limit CategoryTheory.reflects_mono_of_reflectsLimit
 
 instance (priority := 100) reflectsMonomorphisms_of_reflectsLimitsOfShape
@@ -59,8 +65,11 @@ instance (priority := 100) reflectsMonomorphisms_of_reflectsLimitsOfShape
 theorem preserves_epi_of_preservesColimit {X Y : C} (f : X ⟶ Y) [PreservesColimit (span f f) F]
     [Epi f] : Epi (F.map f) := by
   have := isColimitPushoutCoconeMapOfIsColimit F _ (PushoutCocone.isColimitMkIdId f)
+  -- ⊢ Epi (F.map f)
   simp_rw [F.map_id] at this
+  -- ⊢ Epi (F.map f)
   apply PushoutCocone.epi_of_isColimitMkIdId _ this
+  -- 🎉 no goals
 #align category_theory.preserves_epi_of_preserves_colimit CategoryTheory.preserves_epi_of_preservesColimit
 
 instance (priority := 100) preservesEpimorphisms_of_preservesColimitsOfShape
@@ -72,7 +81,9 @@ instance (priority := 100) preservesEpimorphisms_of_preservesColimitsOfShape
 theorem reflects_epi_of_reflectsColimit {X Y : C} (f : X ⟶ Y) [ReflectsColimit (span f f) F]
     [Epi (F.map f)] : Epi f := by
   have := PushoutCocone.isColimitMkIdId (F.map f)
+  -- ⊢ Epi f
   simp_rw [← F.map_id] at this
+  -- ⊢ Epi f
   apply
     PushoutCocone.epi_of_isColimitMkIdId _
       (isColimitOfIsColimitPushoutCoconeMap F _ this)

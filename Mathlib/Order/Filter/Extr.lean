@@ -426,6 +426,7 @@ theorem IsExtrOn.on_preimage (g : δ → α) {b : δ} (hf : IsExtrOn f s (g b)) 
 theorem IsMinOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMinOn f s a) (hg : MapsTo g t s)
     (ha : g b = a) : IsMinOn (f ∘ g) t b := fun y hy => by
   simpa only [ha, (· ∘ ·)] using hf (hg hy)
+  -- 🎉 no goals
 #align is_min_on.comp_maps_to IsMinOn.comp_mapsTo
 
 theorem IsMaxOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn f s a) (hg : MapsTo g t s)
@@ -502,18 +503,22 @@ theorem IsExtrOn.neg (hf : IsExtrOn f s a) : IsExtrOn (fun x => -f x) s a :=
 
 theorem IsMinFilter.sub (hf : IsMinFilter f l a) (hg : IsMaxFilter g l a) :
     IsMinFilter (fun x => f x - g x) l a := by simpa only [sub_eq_add_neg] using hf.add hg.neg
+                                               -- 🎉 no goals
 #align is_min_filter.sub IsMinFilter.sub
 
 theorem IsMaxFilter.sub (hf : IsMaxFilter f l a) (hg : IsMinFilter g l a) :
     IsMaxFilter (fun x => f x - g x) l a := by simpa only [sub_eq_add_neg] using hf.add hg.neg
+                                               -- 🎉 no goals
 #align is_max_filter.sub IsMaxFilter.sub
 
 theorem IsMinOn.sub (hf : IsMinOn f s a) (hg : IsMaxOn g s a) : IsMinOn (fun x => f x - g x) s a :=
   by simpa only [sub_eq_add_neg] using hf.add hg.neg
+     -- 🎉 no goals
 #align is_min_on.sub IsMinOn.sub
 
 theorem IsMaxOn.sub (hf : IsMaxOn f s a) (hg : IsMinOn g s a) : IsMaxOn (fun x => f x - g x) s a :=
   by simpa only [sub_eq_add_neg] using hf.add hg.neg
+     -- 🎉 no goals
 #align is_max_on.sub IsMaxOn.sub
 
 end OrderedAddCommGroup
@@ -635,8 +640,11 @@ theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α 
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
   refine' hle.mp (h.mono fun x hf hgf => _)
+  -- ⊢ g x ≤ g a
   rw [← hfga]
+  -- ⊢ g x ≤ f a
   exact le_trans hgf hf
+  -- 🎉 no goals
 #align filter.eventually_le.is_max_filter Filter.EventuallyLE.isMaxFilter
 
 theorem IsMaxFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
@@ -668,7 +676,9 @@ theorem Filter.EventuallyEq.isMinFilter_iff {α β : Type*} [Preorder β] {f g :
 theorem IsExtrFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsExtrFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter g l a := by
   rw [IsExtrFilter] at *
+  -- ⊢ IsMinFilter g l a ∨ IsMaxFilter g l a
   rwa [← heq.isMaxFilter_iff hfga, ← heq.isMinFilter_iff hfga]
+  -- 🎉 no goals
 #align is_extr_filter.congr IsExtrFilter.congr
 
 theorem Filter.EventuallyEq.isExtrFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}

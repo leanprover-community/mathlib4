@@ -68,23 +68,38 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         Multifork.ofι _ S.pt (fun i => S.ι i ≫ (E.π.app k).app (op i.Y))
           (by
             intro i
+            -- ⊢ (fun i => Multifork.ι S i ≫ NatTrans.app (NatTrans.app E.π k) (op i.Y)) (Mul …
             simp only [Category.assoc]
+            -- ⊢ Multifork.ι S (MulticospanIndex.fstTo (GrothendieckTopology.Cover.index W (F …
             erw [← (E.π.app k).naturality, ← (E.π.app k).naturality]
+            -- ⊢ Multifork.ι S (MulticospanIndex.fstTo (GrothendieckTopology.Cover.index W (F …
             dsimp
+            -- ⊢ Multifork.ι S (MulticospanIndex.fstTo (GrothendieckTopology.Cover.index W (F …
             simp only [← Category.assoc]
+            -- ⊢ (Multifork.ι S (MulticospanIndex.fstTo (GrothendieckTopology.Cover.index W ( …
             congr 1
+            -- ⊢ Multifork.ι S (MulticospanIndex.fstTo (GrothendieckTopology.Cover.index W (F …
             apply S.condition)
+            -- 🎉 no goals
       naturality := by
         intro i j f
+        -- ⊢ ((Functor.const K).obj S.pt).map f ≫ (fun k => IsLimit.lift (Presheaf.isLimi …
         dsimp [Presheaf.isLimitOfIsSheaf]
+        -- ⊢ 𝟙 S.pt ≫ Presheaf.IsSheaf.amalgamate (_ : Presheaf.IsSheaf J (F.obj j).val)  …
         rw [Category.id_comp]
+        -- ⊢ Presheaf.IsSheaf.amalgamate (_ : Presheaf.IsSheaf J (F.obj j).val) W (fun I  …
         apply Presheaf.IsSheaf.hom_ext (F.obj j).2 W
+        -- ⊢ ∀ (I : GrothendieckTopology.Cover.Arrow W), Presheaf.IsSheaf.amalgamate (_ : …
         intro ii
+        -- ⊢ Presheaf.IsSheaf.amalgamate (_ : Presheaf.IsSheaf J (F.obj j).val) W (fun I  …
         rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).val.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
         dsimp [Multifork.ofι]
+        -- ⊢ Multifork.ι
         erw [Category.assoc, ← E.w f]
+        -- ⊢ Multifork.ι
         aesop_cat }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.multifork_evaluation_cone CategoryTheory.Sheaf.multiforkEvaluationCone
 
@@ -103,31 +118,54 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       multiforkEvaluationCone F E X W S)
     (by
       intro S i
+      -- ⊢ (fun S => IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) h …
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) hE).hom_ext
+      -- ⊢ ∀ (j : K), ((fun S => IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).o …
       intro k
+      -- ⊢ ((fun S => IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X))  …
       dsimp [Multifork.ofι]
+      -- ⊢ (IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE) (multi …
       erw [Category.assoc, (E.π.app k).naturality]
+      -- ⊢ IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE) (multif …
       dsimp
+      -- ⊢ IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE) (multif …
       rw [← Category.assoc]
+      -- ⊢ (IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE) (multi …
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
         (multiforkEvaluationCone F E X W S)]
       dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
+      -- ⊢ Presheaf.IsSheaf.amalgamate (_ : Presheaf.IsSheaf J (F.obj k).val) W (fun I  …
       erw [Presheaf.IsSheaf.amalgamate_map]
+      -- ⊢ Multifork.ι (Multifork.ofι (GrothendieckTopology.Cover.index W (F.obj k).val …
       rfl)
+      -- 🎉 no goals
     (by
       intro S m hm
+      -- ⊢ m = (fun S => IsLimit.lift (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X …
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).hom_ext
+      -- ⊢ ∀ (j : K), m ≫ NatTrans.app (((evaluation Cᵒᵖ D).obj (op X)).mapCone E).π j  …
       intro k
+      -- ⊢ m ≫ NatTrans.app (((evaluation Cᵒᵖ D).obj (op X)).mapCone E).π k = (fun S => …
       dsimp
+      -- ⊢ m ≫ NatTrans.app (NatTrans.app E.π k) (op X) = IsLimit.lift (isLimitOfPreser …
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac]
+      -- ⊢ m ≫ NatTrans.app (NatTrans.app E.π k) (op X) = NatTrans.app (multiforkEvalua …
       apply Presheaf.IsSheaf.hom_ext (F.obj k).2 W
+      -- ⊢ ∀ (I : GrothendieckTopology.Cover.Arrow W), (m ≫ NatTrans.app (NatTrans.app  …
       intro i
+      -- ⊢ (m ≫ NatTrans.app (NatTrans.app E.π k) (op X)) ≫ (F.obj k).val.map i.f.op =  …
       dsimp only [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
+      -- ⊢ (m ≫ NatTrans.app (NatTrans.app E.π k) (op X)) ≫ (F.obj k).val.map i.f.op =  …
       rw [(F.obj k).cond.amalgamate_map]
+      -- ⊢ (m ≫ NatTrans.app (NatTrans.app E.π k) (op X)) ≫ (F.obj k).val.map i.f.op =  …
       dsimp [Multifork.ofι]
+      -- ⊢ (m ≫ NatTrans.app (NatTrans.app E.π k) (op X)) ≫ (F.obj k).val.map i.f.op =
       change _ = S.ι i ≫ _
+      -- ⊢ (m ≫ NatTrans.app (NatTrans.app E.π k) (op X)) ≫ (F.obj k).val.map i.f.op =  …
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
+      -- ⊢ m ≫ (((Functor.const K).obj E.pt).obj k).map i.f.op ≫ NatTrans.app (NatTrans …
       rfl)
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_limit_multifork_of_is_limit CategoryTheory.Sheaf.isLimitMultiforkOfIsLimit
 
@@ -139,8 +177,11 @@ This is used to show that the forgetful functor from sheaves to presheaves creat
 theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
     (hE : IsLimit E) : Presheaf.IsSheaf J E.pt := by
   rw [Presheaf.isSheaf_iff_multifork]
+  -- ⊢ ∀ (X : C) (S : GrothendieckTopology.Cover J X), Nonempty (IsLimit (Grothendi …
   intro X S
+  -- ⊢ Nonempty (IsLimit (GrothendieckTopology.Cover.multifork S E.pt))
   exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
@@ -150,14 +191,19 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
         ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
       validLift := Cones.ext (eqToIso rfl) fun j => by
         dsimp
+        -- ⊢ NatTrans.app E.π j = 𝟙 E.pt ≫ NatTrans.app E.π j
         simp
+        -- 🎉 no goals
       makesLimit :=
         { lift := fun S => ⟨hE.lift ((sheafToPresheaf J D).mapCone S)⟩
           fac := fun S j => by
             ext1
+            -- ⊢ ((fun S => { val := IsLimit.lift hE ((sheafToPresheaf J D).mapCone S) }) S ≫ …
             apply hE.fac ((sheafToPresheaf J D).mapCone S) j
+            -- 🎉 no goals
           uniq := fun S m hm => by
             ext1
+            -- ⊢ m.val = ((fun S => { val := IsLimit.lift hE ((sheafToPresheaf J D).mapCone S …
             exact hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j =>
               congr_arg Hom.val (hm j) } }
 
@@ -212,8 +258,11 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     { app := fun k => ⟨E.ι.app k ≫ J.toSheafify E.pt⟩
       naturality := fun i j f => by
         ext1
+        -- ⊢ (F.map f ≫ (fun k => { val := NatTrans.app E.ι k ≫ GrothendieckTopology.toSh …
         dsimp
+        -- ⊢ (F.map f).val ≫ NatTrans.app E.ι j ≫ GrothendieckTopology.toSheafify J E.pt  …
         erw [Category.comp_id, ← Category.assoc, E.w f] }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.sheafify_cocone CategoryTheory.Sheaf.sheafifyCocone
 
@@ -225,19 +274,32 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
   desc S := ⟨J.sheafifyLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
   fac := by
     intro S j
+    -- ⊢ NatTrans.app (sheafifyCocone E).ι j ≫ (fun S => { val := GrothendieckTopolog …
     ext1
+    -- ⊢ (NatTrans.app (sheafifyCocone E).ι j ≫ (fun S => { val := GrothendieckTopolo …
     dsimp [sheafifyCocone]
+    -- ⊢ (NatTrans.app E.ι j ≫ GrothendieckTopology.toSheafify J E.pt) ≫ Grothendieck …
     erw [Category.assoc, J.toSheafify_sheafifyLift, hE.fac]
+    -- ⊢ NatTrans.app ((sheafToPresheaf J D).mapCocone S).ι j = (NatTrans.app S.ι j). …
     rfl
+    -- 🎉 no goals
   uniq := by
     intro S m hm
+    -- ⊢ m = (fun S => { val := GrothendieckTopology.sheafifyLift J (IsColimit.desc h …
     ext1
+    -- ⊢ m.val = ((fun S => { val := GrothendieckTopology.sheafifyLift J (IsColimit.d …
     apply J.sheafifyLift_unique
+    -- ⊢ GrothendieckTopology.toSheafify J E.pt ≫ m.val = IsColimit.desc hE ((sheafTo …
     apply hE.uniq ((sheafToPresheaf J D).mapCocone S)
+    -- ⊢ ∀ (j : K), NatTrans.app E.ι j ≫ GrothendieckTopology.toSheafify J E.pt ≫ m.v …
     intro j
+    -- ⊢ NatTrans.app E.ι j ≫ GrothendieckTopology.toSheafify J E.pt ≫ m.val = NatTra …
     dsimp
+    -- ⊢ NatTrans.app E.ι j ≫ GrothendieckTopology.toSheafify J E.pt ≫ m.val = (NatTr …
     simp only [← Category.assoc, ← hm] -- Porting note: was `simpa only [...]`
+    -- ⊢ (NatTrans.app E.ι j ≫ GrothendieckTopology.toSheafify J E.pt) ≫ m.val = (Nat …
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 

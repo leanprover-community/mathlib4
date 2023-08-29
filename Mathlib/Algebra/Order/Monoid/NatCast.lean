@@ -32,19 +32,25 @@ variable [AddMonoidWithOne α]
 lemma zero_le_two [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
     (0 : α) ≤ 2 := by
   rw [← one_add_one_eq_two]
+  -- ⊢ 0 ≤ 1 + 1
   exact add_nonneg zero_le_one zero_le_one
+  -- 🎉 no goals
 #align zero_le_two zero_le_two
 
 lemma zero_le_three [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
   (0 : α) ≤ 3 := by
   rw [← two_add_one_eq_three]
+  -- ⊢ 0 ≤ 2 + 1
   exact add_nonneg zero_le_two zero_le_one
+  -- 🎉 no goals
 #align zero_le_three zero_le_three
 
 lemma zero_le_four [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
     (0 : α) ≤ 4 := by
   rw [← three_add_one_eq_four]
+  -- ⊢ 0 ≤ 3 + 1
   exact add_nonneg zero_le_three zero_le_one
+  -- 🎉 no goals
 #align zero_le_four zero_le_four
 
 lemma one_le_two [LE α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
@@ -74,13 +80,17 @@ variable [CovariantClass α α (·+·) (·≤·)]
 /-- See `zero_lt_three'` for a version with the type explicit. -/
 @[simp] lemma zero_lt_three : (0 : α) < 3 := by
   rw [← two_add_one_eq_three]
+  -- ⊢ 0 < 2 + 1
   exact lt_add_of_lt_of_nonneg zero_lt_two zero_le_one
+  -- 🎉 no goals
 #align zero_lt_three zero_lt_three
 
 /-- See `zero_lt_four'` for a version with the type explicit. -/
 @[simp] lemma zero_lt_four : (0 : α) < 4 := by
   rw [← three_add_one_eq_four]
+  -- ⊢ 0 < 3 + 1
   exact lt_add_of_lt_of_nonneg zero_lt_three zero_le_one
+  -- 🎉 no goals
 #align zero_lt_four zero_lt_four
 
 variable (α)
@@ -105,7 +115,9 @@ end
 
 lemma one_lt_two [CovariantClass α α (·+·) (·<·)] : (1 : α) < 2 := by
   rw [← one_add_one_eq_two]
+  -- ⊢ 1 < 1 + 1
   exact lt_add_one _
+  -- 🎉 no goals
 #align one_lt_two one_lt_two
 
 end

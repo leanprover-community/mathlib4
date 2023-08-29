@@ -59,16 +59,23 @@ theorem PosSemidef.re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef
 
 theorem PosDef.posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine' ⟨hM.1, _⟩
+  -- ⊢ ∀ (x : n → R), 0 ≤ star x ⬝ᵥ mulVec M x
   intro x
+  -- ⊢ 0 ≤ star x ⬝ᵥ mulVec M x
   by_cases hx : x = 0
+  -- ⊢ 0 ≤ star x ⬝ᵥ mulVec M x
   · simp only [hx, zero_dotProduct, star_zero, IsROrC.zero_re']
+    -- ⊢ 0 ≤ 0
     exact le_rfl
+    -- 🎉 no goals
   · exact le_of_lt (hM.2 x hx)
+    -- 🎉 no goals
 #align matrix.pos_def.pos_semidef Matrix.PosDef.posSemidef
 
 theorem PosSemidef.submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n) :
     (M.submatrix e e).PosSemidef := by
   refine' ⟨hM.1.submatrix e, fun x => _⟩
+  -- ⊢ 0 ≤ star x ⬝ᵥ mulVec (Matrix.submatrix M ↑e ↑e) x
   have : (M.submatrix (⇑e) e).mulVec x = (M.mulVec fun i : n => x (e.symm i)) ∘ e := by
     ext i
     dsimp only [(· ∘ ·), mulVec, dotProduct]
@@ -76,54 +83,77 @@ theorem PosSemidef.submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n
       simp only [eq_self_iff_true, imp_true_iff, Equiv.symm_apply_apply, Finset.mem_univ,
         submatrix_apply, Equiv.apply_symm_apply]
   rw [this]
+  -- ⊢ 0 ≤ star x ⬝ᵥ (mulVec M fun i => x (↑e.symm i)) ∘ ↑e
   convert hM.2 fun i => x (e.symm i) using 3
+  -- ⊢ star x ⬝ᵥ (mulVec M fun i => x (↑e.symm i)) ∘ ↑e = (star fun i => x (↑e.symm …
   unfold dotProduct
+  -- ⊢ (Finset.sum Finset.univ fun i => star x i * ((mulVec M fun i => x (↑e.symm i …
   rw [Finset.sum_bij' (fun i _ => e i) _ _ fun i _ => e.symm i] <;>
   simp
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
 @[simp]
 theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
+               -- 🎉 no goals
 #align matrix.pos_semidef_submatrix_equiv Matrix.posSemidef_submatrix_equiv
 
 theorem PosDef.transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
+  -- ⊢ 0 < star x ⬝ᵥ mulVec Mᵀ x
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
+  -- ⊢ star x ⬝ᵥ mulVec Mᵀ x = star (star x) ⬝ᵥ mulVec M (star x)
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  -- 🎉 no goals
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
 theorem posDef_of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine' ⟨hM, fun x hx => _⟩
+  -- ⊢ 0 < star x ⬝ᵥ mulVec M x
   simp only [toQuadraticForm', QuadraticForm.PosDef, BilinForm.toQuadraticForm_apply,
     Matrix.toBilin'_apply'] at hMq
   apply hMq x hx
+  -- 🎉 no goals
 #align matrix.pos_def_of_to_quadratic_form' Matrix.posDef_of_toQuadraticForm'
 
 theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
+  -- ⊢ 0 < ↑(toQuadraticForm' M) x
   simp only [toQuadraticForm', BilinForm.toQuadraticForm_apply, Matrix.toBilin'_apply']
+  -- ⊢ 0 < x ⬝ᵥ mulVec M x
   apply hM.2 x hx
+  -- 🎉 no goals
 #align matrix.pos_def_to_quadratic_form' Matrix.posDef_toQuadraticForm'
 
 /-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : Matrix.PosSemidef (Aᴴ * A) := by
   refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
+  -- ⊢ 0 ≤ star x ⬝ᵥ mulVec (Aᴴ * A) x
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
+  -- ⊢ 0 ≤ star (mulVec A x) ⬝ᵥ mulVec A x
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
+  -- 🎉 no goals
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : Matrix.PosSemidef (A * Aᴴ) :=
   by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+     -- 🎉 no goals
 
 /-- The eigenvalues of a positive definite matrix are positive -/
 lemma PosDef.eigenvalues_pos [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   rw [hA.1.eigenvalues_eq, hA.1.transpose_eigenvectorMatrix_apply]
+  -- ⊢ 0 < ↑IsROrC.re (star (↑(IsHermitian.eigenvectorBasis (_ : IsHermitian A)) i) …
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
+  -- 🎉 no goals
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
@@ -136,10 +166,15 @@ variable {M : Matrix n n ℝ} (hM : M.PosDef)
 
 theorem det_pos [DecidableEq n] : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
+  -- ⊢ 0 < Finset.prod Finset.univ fun i => ↑(IsHermitian.eigenvalues (_ : IsHermit …
   apply Finset.prod_pos
+  -- ⊢ ∀ (i : n), i ∈ Finset.univ → 0 < ↑(IsHermitian.eigenvalues (_ : IsHermitian  …
   intro i _
+  -- ⊢ 0 < ↑(IsHermitian.eigenvalues (_ : IsHermitian M) i)
   rw [hM.isHermitian.eigenvalues_eq]
+  -- ⊢ 0 < ↑(↑IsROrC.re (star ((IsHermitian.eigenvectorMatrix (_ : IsHermitian M))ᵀ …
   refine hM.2 _ fun h => ?_
+  -- ⊢ False
   have h_det : hM.isHermitian.eigenvectorMatrixᵀ.det = 0 :=
     Matrix.det_eq_zero_of_row_eq_zero i fun j => congr_fun h j
   simpa only [h_det, not_isUnit_zero] using
@@ -157,7 +192,9 @@ variable {n : Type*} [Fintype n]
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
   rw [← toQuadraticForm_associated ℝ Q, ← BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)]
+  -- ⊢ PosDef (BilinForm.toQuadraticForm (LinearEquiv.invFun BilinForm.toMatrix' (A …
   apply Matrix.posDef_toQuadraticForm' hQ
+  -- 🎉 no goals
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
@@ -165,6 +202,7 @@ theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ
   rw [← toQuadraticForm_associated ℝ Q, ←
     BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)] at hQ
   apply Matrix.posDef_of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
+  -- 🎉 no goals
 #align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'
 
 end QuadraticForm
@@ -181,19 +219,28 @@ noncomputable def NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosD
     { inner := fun x y => dotProduct (star x) (M.mulVec y)
       conj_symm := fun x y => by
         dsimp only [Inner.inner]
+        -- ⊢ ↑(starRingEnd 𝕜) (star y ⬝ᵥ mulVec M x) = star x ⬝ᵥ mulVec M y
         rw [star_dotProduct, starRingEnd_apply, star_star, star_mulVec, dotProduct_mulVec,
           hM.isHermitian.eq]
       nonneg_re := fun x => by
         by_cases h : x = 0
+        -- ⊢ 0 ≤ ↑IsROrC.re (inner x x)
         · simp [h]
+          -- 🎉 no goals
         · exact le_of_lt (hM.re_dotProduct_pos h)
+          -- 🎉 no goals
       definite := fun x (hx : dotProduct _ _ = 0) => by
         by_contra' h
+        -- ⊢ False
         simpa [hx, lt_irrefl] using hM.re_dotProduct_pos h
+        -- 🎉 no goals
       add_left := by simp only [star_add, add_dotProduct, eq_self_iff_true, forall_const]
+                     -- 🎉 no goals
       smul_left := fun x y r => by
         simp only
+        -- ⊢ star (r • x) ⬝ᵥ mulVec M y = ↑(starRingEnd 𝕜) r * star x ⬝ᵥ mulVec M y
         rw [← smul_eq_mul, ← smul_dotProduct, starRingEnd_apply, ← star_smul] }
+        -- 🎉 no goals
 #align matrix.normed_add_comm_group.of_matrix Matrix.NormedAddCommGroup.ofMatrix
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/

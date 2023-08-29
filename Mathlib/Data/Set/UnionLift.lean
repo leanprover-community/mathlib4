@@ -74,20 +74,31 @@ theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
 
 theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
     iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
+                                                 -- ⊢ iUnionLift S f hf T hT { val := x, property := hx✝ } = f i { val := ↑{ val : …
+                                                                     -- 🎉 no goals
 #align set.Union_lift_of_mem Set.iUnionLift_of_mem
 
 theorem preimage_iUnionLift (t : Set β) :
     iUnionLift S f hf T hT ⁻¹' t =
       inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' (f i ⁻¹' t)) := by
   ext x
+  -- ⊢ x ∈ iUnionLift S f hf T hT ⁻¹' t ↔ x ∈ inclusion hT ⁻¹' ⋃ (i : ι), inclusion …
   simp only [mem_preimage, mem_iUnion, mem_image]
+  -- ⊢ iUnionLift S f hf T hT x ∈ t ↔ ∃ i x_1, f i x_1 ∈ t ∧ inclusion (_ : S i ⊆ ⋃ …
   constructor
+  -- ⊢ iUnionLift S f hf T hT x ∈ t → ∃ i x_1, f i x_1 ∈ t ∧ inclusion (_ : S i ⊆ ⋃ …
   · rcases mem_iUnion.1 (hT x.prop) with ⟨i, hi⟩
+    -- ⊢ iUnionLift S f hf T hT x ∈ t → ∃ i x_1, f i x_1 ∈ t ∧ inclusion (_ : S i ⊆ ⋃ …
     refine fun h => ⟨i, ⟨x, hi⟩, ?_, rfl⟩
+    -- ⊢ f i { val := ↑x, property := hi } ∈ t
     rwa [iUnionLift_of_mem x hi] at h
+    -- 🎉 no goals
   · rintro ⟨i, ⟨y, hi⟩, h, hxy⟩
+    -- ⊢ iUnionLift S f hf T hT x ∈ t
     obtain rfl : y = x := congr_arg Subtype.val hxy
+    -- ⊢ iUnionLift S f hf T hT x ∈ t
     rwa [iUnionLift_of_mem x hi]
+    -- 🎉 no goals
 
 /-- `iUnionLift_const` is useful for proving that `iUnionLift` is a homomorphism
   of algebraic structures when defined on the Union of algebraic subobjects.
@@ -96,8 +107,11 @@ theorem preimage_iUnionLift (t : Set β) :
 theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c) (cβ : β)
     (h : ∀ i, f i (ci i) = cβ) : iUnionLift S f hf T hT c = cβ := by
   let ⟨i, hi⟩ := Set.mem_iUnion.1 (hT c.prop)
+  -- ⊢ iUnionLift S f hf T hT c = cβ
   have : ci i = ⟨c, hi⟩ := Subtype.ext (hci i)
+  -- ⊢ iUnionLift S f hf T hT c = cβ
   rw [iUnionLift_of_mem _ hi, ← this, h]
+  -- 🎉 no goals
 #align set.Union_lift_const Set.iUnionLift_const
 
 /-- `iUnionLift_unary` is useful for proving that `iUnionLift` is a homomorphism
@@ -112,12 +126,16 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
     (uβ : β → β) (h : ∀ (i) (x : S i), f i (ui i x) = uβ (f i x)) (x : T) :
     iUnionLift S f hf T (le_of_eq hT') (u x) = uβ (iUnionLift S f hf T (le_of_eq hT') x) := by
   subst hT'
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (u x) = uβ (iUnionLif …
   cases' Set.mem_iUnion.1 x.prop with i hi
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (u x) = uβ (iUnionLif …
   rw [iUnionLift_of_mem x hi, ← h i]
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (u x) = f i (ui i { v …
   have : x = Set.inclusion (Set.subset_iUnion S i) ⟨x, hi⟩ := by
     cases x
     rfl
   conv_lhs => rw [this, hui, iUnionLift_inclusion]
+  -- 🎉 no goals
 #align set.Union_lift_unary Set.iUnionLift_unary
 
 /-- `iUnionLift_binary` is useful for proving that `iUnionLift` is a homomorphism
@@ -134,10 +152,15 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
     iUnionLift S f hf T (le_of_eq hT') (op x y) =
       opβ (iUnionLift S f hf T (le_of_eq hT') x) (iUnionLift S f hf T (le_of_eq hT') y) := by
   subst hT'
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (op x y) = opβ (iUnio …
   cases' Set.mem_iUnion.1 x.prop with i hi
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (op x y) = opβ (iUnio …
   cases' Set.mem_iUnion.1 y.prop with j hj
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (op x y) = opβ (iUnio …
   rcases dir i j with ⟨k, hik, hjk⟩
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (op x y) = opβ (iUnio …
   rw [iUnionLift_of_mem x (hik hi), iUnionLift_of_mem y (hjk hj), ← h k]
+  -- ⊢ iUnionLift S f hf (iUnion S) (_ : iUnion S ≤ iUnion S) (op x y) = f k (opi k …
   have hx : x = Set.inclusion (Set.subset_iUnion S k) ⟨x, hik hi⟩ := by
     cases x
     rfl
@@ -147,6 +170,7 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
   have hxy : (Set.inclusion (Set.subset_iUnion S k) (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩) : α) ∈ S k :=
     (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩).prop
   conv_lhs => rw [hx, hy, ← hopi, iUnionLift_of_mem _ hxy]
+  -- 🎉 no goals
 #align set.Union_lift_binary Set.iUnionLift_binary
 
 end UnionLift
@@ -175,7 +199,11 @@ theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
 
 theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
+  -- ⊢ (iUnionLift S f hf univ (_ : univ ⊆ iUnion S) ∘ fun a => { val := a, propert …
   rw [preimage_comp, preimage_iUnionLift]
+  -- ⊢ (fun a => { val := a, property := (_ : a ∈ univ) }) ⁻¹' (inclusion (_ : univ …
   ext; simp
+  -- ⊢ x✝ ∈ (fun a => { val := a, property := (_ : a ∈ univ) }) ⁻¹' (inclusion (_ : …
+       -- 🎉 no goals
 
 end Set

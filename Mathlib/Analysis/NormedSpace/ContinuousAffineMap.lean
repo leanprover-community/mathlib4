@@ -60,6 +60,8 @@ def contLinear (f : P →A[R] Q) : V →L[R] W :=
   { f.linear with
     toFun := f.linear
     cont := by rw [AffineMap.continuous_linear_iff]; exact f.cont }
+               -- ⊢ Continuous ↑f.toAffineMap
+                                                     -- 🎉 no goals
 #align continuous_affine_map.cont_linear ContinuousAffineMap.contLinear
 
 @[simp]
@@ -70,6 +72,8 @@ theorem coe_contLinear (f : P →A[R] Q) : (f.contLinear : V → W) = f.linear :
 @[simp]
 theorem coe_contLinear_eq_linear (f : P →A[R] Q) :
     (f.contLinear : V →ₗ[R] W) = (f : P →ᵃ[R] Q).linear := by ext; rfl
+                                                              -- ⊢ ↑↑(contLinear f) x✝ = ↑f.linear x✝
+                                                                   -- 🎉 no goals
 #align continuous_affine_map.coe_cont_linear_eq_linear ContinuousAffineMap.coe_contLinear_eq_linear
 
 @[simp]
@@ -116,13 +120,17 @@ theorem contLinear_eq_zero_iff_exists_const (f : P →A[R] Q) :
     · rw [h]; rfl
     · rw [← coe_to_affineMap, h]; rfl
   simp_rw [h₁, h₂]
+  -- ⊢ f.linear = 0 ↔ ∃ q, f.toAffineMap = AffineMap.const R P q
   exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
+  -- 🎉 no goals
 #align continuous_affine_map.cont_linear_eq_zero_iff_exists_const ContinuousAffineMap.contLinear_eq_zero_iff_exists_const
 
 @[simp]
 theorem to_affine_map_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f := by
   ext
+  -- ⊢ ↑(contLinear (ContinuousLinearMap.toContinuousAffineMap f)) x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align continuous_affine_map.to_affine_map_cont_linear ContinuousAffineMap.to_affine_map_contLinear
 
 @[simp]
@@ -152,6 +160,7 @@ theorem smul_contLinear (t : R) (f : P →A[R] W) : (t • f).contLinear = t •
 
 theorem decomp (f : V →A[R] W) : (f : V → W) = f.contLinear + Function.const V (f 0) := by
   rcases f with ⟨f, h⟩
+  -- ⊢ ↑{ toAffineMap := f, cont := h } = ↑(contLinear { toAffineMap := f, cont :=  …
   rw [coe_mk_const_linear_eq_linear, coe_mk, f.decomp, Pi.add_apply, LinearMap.map_zero, zero_add,
     ← Function.const_def]
 #align continuous_affine_map.decomp ContinuousAffineMap.decomp
@@ -182,7 +191,9 @@ theorem norm_image_zero_le : ‖f 0‖ ≤ ‖f‖ :=
 theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
   calc
     ‖f‖ = max ‖f 0‖ ‖f.contLinear‖ := by rw [norm_def]
+                                         -- 🎉 no goals
     _ = max 0 ‖f.contLinear‖ := by rw [h, norm_zero]
+                                   -- 🎉 no goals
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
 
 #align continuous_affine_map.norm_eq ContinuousAffineMap.norm_eq
@@ -191,46 +202,69 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
       map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
+                      -- 🎉 no goals
       neg' := fun f => by
         simp [(ContinuousAffineMap.neg_apply)]
+        -- 🎉 no goals
       add_le' := fun f g => by
+        -- ⊢ ‖(↑f + ↑g) 0‖ ≤ max ‖↑f 0‖ ‖contLinear f‖ + max ‖↑g 0‖ ‖contLinear g‖ ∧ ‖con …
         simp only [coe_add, max_le_iff]
         -- Porting note: previously `Pi.add_apply, add_contLinear, ` in the previous `simp only`
         -- suffices, but now they don't fire.
+        -- ⊢ ‖(↑f + ↑g) 0‖ ≤ max ‖↑f 0‖ ‖contLinear f‖ + max ‖↑g 0‖ ‖contLinear g‖ ∧ ‖con …
         rw [add_contLinear]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
       eq_zero_of_map_eq_zero' := fun f h₀ => by
         rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂
+        -- ⊢ f = 0
+                                                               -- ⊢ f = 0
+                                                               -- ⊢ f = 0
         · rw [norm_le_zero_iff, contLinear_eq_zero_iff_exists_const] at h₂
+          -- ⊢ f = 0
           obtain ⟨q, rfl⟩ := h₂
+          -- ⊢ const 𝕜 V q = 0
           simp only [norm_eq_zero] at h₁
+          -- ⊢ const 𝕜 V q = 0
           -- Porting note: prevously `coe_const, Function.const_apply` were in the previous
           -- `simp only`, but now they don't fire.
           rw [coe_const, Function.const_apply] at h₁
+          -- ⊢ const 𝕜 V q = 0
           rw [h₁]
+          -- ⊢ const 𝕜 V 0 = 0
           rfl
+          -- 🎉 no goals
         · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
+          -- ⊢ f = 0
           obtain ⟨q, rfl⟩ := h₁
+          -- ⊢ const 𝕜 V q = 0
           simp only [norm_le_zero_iff] at h₂
+          -- ⊢ const 𝕜 V q = 0
           -- Porting note: prevously `coe_const, Function.const_apply` were in the previous
           -- `simp only`, but now they don't fire.
           rw [coe_const, Function.const_apply] at h₂
+          -- ⊢ const 𝕜 V q = 0
           rw [h₂]
+          -- ⊢ const 𝕜 V 0 = 0
           rfl }
+          -- 🎉 no goals
 
 instance : NormedSpace 𝕜 (V →A[𝕜] W) where
   norm_smul_le t f := by
     simp only [norm_def, (smul_contLinear), norm_smul]
+    -- ⊢ max ‖↑(t • f) 0‖ (‖t‖ * ‖contLinear f‖) ≤ ‖t‖ * max ‖↑f 0‖ ‖contLinear f‖
     -- Porting note: previously all these rewrites were in the `simp only`,
     -- but now they don't fire.
     -- (in fact, `norm_smul` fires, but only once rather than twice!)
     rw [coe_smul, Pi.smul_apply, norm_smul, ← mul_max_of_nonneg _ _ (norm_nonneg t)]
+    -- 🎉 no goals
 
 theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]
+  -- ⊢ ‖↑(comp f g) 0‖ ≤ ‖f‖ * ‖g‖ + ‖↑f 0‖ ∧ ‖contLinear (comp f g)‖ ≤ ‖f‖ * ‖g‖ + …
   constructor
+  -- ⊢ ‖↑(comp f g) 0‖ ≤ ‖f‖ * ‖g‖ + ‖↑f 0‖
   · calc
       ‖f.comp g 0‖ = ‖f (g 0)‖ := by simp
       _ = ‖f.contLinear (g 0) + f 0‖ := by rw [f.decomp]; simp
@@ -258,11 +292,19 @@ def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V �
   invFun p := p.2.toContinuousAffineMap + const 𝕜 V p.1
   left_inv f := by
     ext
+    -- ⊢ ↑((fun p => ContinuousLinearMap.toContinuousAffineMap p.snd + const 𝕜 V p.fs …
     rw [f.decomp]
+    -- ⊢ ↑((fun p => ContinuousLinearMap.toContinuousAffineMap p.snd + const 𝕜 V p.fs …
     -- Porting note: previously `simp` closed the goal, but now we need to rewrite:
     simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply]
+    -- ⊢ ↑(contLinear f) x✝ + ↑(const 𝕜 V (↑f 0)) x✝ = ↑(contLinear f) x✝ + Function. …
     rw [ContinuousAffineMap.coe_const, Function.const_apply]
+    -- 🎉 no goals
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
+                  -- ⊢ AddHom.toFun { toAddHom := { toFun := fun f => (↑f 0, contLinear f), map_add …
+                                 -- ⊢ (AddHom.toFun { toAddHom := { toFun := fun f => (↑f 0, contLinear f), map_ad …
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   norm_map' f := rfl

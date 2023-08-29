@@ -77,6 +77,8 @@ variable {𝕜 A}
 theorem splitMul_apply (x : Unitization 𝕜 A) :
     splitMul 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
   show (x.fst + 0, _) = (x.fst, _) by rw [add_zero]; rfl
+                                      -- ⊢ (fst x, ↑↑(↑lift (NonUnitalAlgHom.Lmul 𝕜 A)) x) = (fst x, ↑(algebraMap 𝕜 (A  …
+                                                     -- 🎉 no goals
 
 /-- this lemma establishes that if `ContinuousLinearMap.mul 𝕜 A` is injective, then so is
 `Unitization.splitMul 𝕜 A`. When `A` is a `RegularNormedAlgebra`, then
@@ -85,15 +87,23 @@ theorem splitMul_injective_of_clm_mul_injective
     (h : Function.Injective (mul 𝕜 A)) :
     Function.Injective (splitMul 𝕜 A) := by
   rw [injective_iff_map_eq_zero]
+  -- ⊢ ∀ (a : Unitization 𝕜 A), ↑(splitMul 𝕜 A) a = 0 → a = 0
   intro x hx
+  -- ⊢ x = 0
   induction x using Unitization.ind
+  -- ⊢ inl r✝ + ↑a✝ = 0
   rw [map_add] at hx
+  -- ⊢ inl r✝ + ↑a✝ = 0
   simp only [splitMul_apply, fst_inl, snd_inl, map_zero, add_zero, fst_inr, snd_inr,
     zero_add, Prod.mk_add_mk, Prod.mk_eq_zero] at hx
   obtain ⟨rfl, hx⟩ := hx
+  -- ⊢ inl 0 + ↑a✝ = 0
   simp only [map_zero, zero_add, inl_zero] at hx ⊢
+  -- ⊢ ↑a✝ = 0
   rw [← map_zero (mul 𝕜 A)] at hx
+  -- ⊢ ↑a✝ = 0
   rw [h hx, inr_zero]
+  -- 🎉 no goals
 
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
@@ -138,6 +148,7 @@ theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x�
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
   rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
+  -- 🎉 no goals
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to
 `Unitization.nnnorm_def`. -/
@@ -149,13 +160,21 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
+  -- ⊢ LipschitzWith (Real.toNNReal 2) ↑(addEquiv 𝕜 A)
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
+  -- ⊢ ‖↑(addEquiv 𝕜 A) x‖ ≤ 2 * ‖x‖
   rw [norm_eq_sup, Prod.norm_def]
+  -- ⊢ max ‖(↑(addEquiv 𝕜 A) x).fst‖ ‖(↑(addEquiv 𝕜 A) x).snd‖ ≤ 2 * (‖fst x‖ ⊔ ‖↑( …
   refine' max_le ?_ ?_
+  -- ⊢ ‖(↑(addEquiv 𝕜 A) x).fst‖ ≤ 2 * (‖fst x‖ ⊔ ‖↑(algebraMap 𝕜 (A →L[𝕜] A)) (fst …
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
+    -- ⊢ ‖(↑(addEquiv 𝕜 A) x).fst‖ ≤ max (2 * ‖fst x‖) (2 * ‖↑(algebraMap 𝕜 (A →L[𝕜]  …
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
+    -- 🎉 no goals
   · nontriviality A
+    -- ⊢ ‖(↑(addEquiv 𝕜 A) x).snd‖ ≤ 2 * (‖fst x‖ ⊔ ‖↑(algebraMap 𝕜 (A →L[𝕜] A)) (fst …
     rw [two_mul]
+    -- ⊢ ‖(↑(addEquiv 𝕜 A) x).snd‖ ≤ ‖fst x‖ ⊔ ‖↑(algebraMap 𝕜 (A →L[𝕜] A)) (fst x) + …
     calc
       ‖x.snd‖ = ‖mul 𝕜 A x.snd‖ :=
         .symm <| (isometry_mul 𝕜 A).norm_map_of_map_zero (map_zero _) _
@@ -167,11 +186,17 @@ theorem lipschitzWith_addEquiv :
 theorem antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
   refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
+  -- ⊢ ‖x‖ ≤ ↑2 * ‖↑(addEquiv 𝕜 A) x‖
   rw [norm_eq_sup, Prod.norm_def, NNReal.coe_two]
+  -- ⊢ ‖fst x‖ ⊔ ‖↑(algebraMap 𝕜 (A →L[𝕜] A)) (fst x) + ↑(mul 𝕜 A) (snd x)‖ ≤ 2 * m …
   refine max_le ?_ ?_
+  -- ⊢ ‖fst x‖ ≤ 2 * max ‖(↑(addEquiv 𝕜 A) x).fst‖ ‖(↑(addEquiv 𝕜 A) x).snd‖
   · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
+    -- ⊢ ‖fst x‖ ≤ max (2 * ‖(↑(addEquiv 𝕜 A) x).fst‖) (2 * ‖(↑(addEquiv 𝕜 A) x).snd‖)
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
+    -- 🎉 no goals
   · nontriviality A
+    -- ⊢ ‖↑(algebraMap 𝕜 (A →L[𝕜] A)) (fst x) + ↑(mul 𝕜 A) (snd x)‖ ≤ 2 * max ‖(↑(add …
     calc
       ‖algebraMap 𝕜 _ x.fst + mul 𝕜 A x.snd‖ ≤ ‖algebraMap 𝕜 _ x.fst‖ + ‖mul 𝕜 A x.snd‖ :=
         norm_add_le _ _
@@ -187,7 +212,9 @@ theorem uniformity_eq_aux :
   have key : UniformInducing (addEquiv 𝕜 A) :=
     antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
+  -- ⊢ 𝓤 (Unitization 𝕜 A) = comap (fun x => (↑(addEquiv 𝕜 A) x.fst, ↑(addEquiv 𝕜 A …
   rfl
+  -- 🎉 no goals
 
 theorem cobounded_eq_aux :
     @cobounded _ (Bornology.induced <| addEquiv 𝕜 A) = cobounded (Unitization 𝕜 A) :=
@@ -233,6 +260,7 @@ algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul, norm_smul, ← norm_def]
+    -- 🎉 no goals
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
@@ -240,6 +268,7 @@ instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
 
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]
+  -- 🎉 no goals
 
 lemma nnnorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inr a

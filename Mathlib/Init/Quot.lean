@@ -36,6 +36,9 @@ protected abbrev Quot.recOnSubsingleton'
     (f : (a : α) → motive (Quot.mk r a))
     : motive q := by
   induction q using Quot.rec
+  -- ⊢ motive (mk r a✝)
   apply f
+  -- ⊢ (_ : mk r a✝ = mk r b✝) ▸ f a✝ = f b✝
   apply Subsingleton.elim
+  -- 🎉 no goals
 #align quot.rec_on_subsingleton Quot.recOnSubsingleton'

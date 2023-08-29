@@ -158,7 +158,9 @@ position `n`, we also return `none` at `n + 1`.
 -/
 theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
   intro _ hyp
+  -- ⊢ IntFractPair.stream v (n✝ + 1) = none
   simp [IntFractPair.stream, hyp]
+  -- 🎉 no goals
 #align generalized_continued_fraction.int_fract_pair.stream_is_seq GeneralizedContinuedFraction.IntFractPair.stream_isSeq
 
 /--

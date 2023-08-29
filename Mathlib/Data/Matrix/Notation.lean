@@ -117,6 +117,9 @@ instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
 @[simp]
 theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
     vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine' Fin.cases _ _ i <;> simp
+                                                             -- ⊢ vecCons v B 0 j = vecCons (v j) (fun i => B i j) 0
+                                                                                         -- 🎉 no goals
+                                                                                         -- 🎉 no goals
 #align matrix.cons_val' Matrix.cons_val'
 
 @[simp, nolint simpNF] -- Porting note: LHS does not simplify.
@@ -128,7 +131,9 @@ theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B 
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
     (vecTail fun i => B i j) = fun i => vecTail B i j := by
   ext
+  -- ⊢ vecTail (fun i => B i j) x✝ = vecTail B x✝ j
   simp [vecTail]
+  -- 🎉 no goals
 #align matrix.tail_val' Matrix.tail_val'
 
 section DotProduct
@@ -144,17 +149,20 @@ theorem dotProduct_empty (v w : Fin 0 → α) : dotProduct v w = 0 :=
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     dotProduct (vecCons x v) w = x * vecHead w + dotProduct v (vecTail w) := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
+  -- 🎉 no goals
 #align matrix.cons_dot_product Matrix.cons_dotProduct
 
 @[simp]
 theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
     dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
+  -- 🎉 no goals
 #align matrix.dot_product_cons Matrix.dotProduct_cons
 
 -- @[simp] -- Porting note: simp can prove this
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
+                                                                          -- 🎉 no goals
 #align matrix.cons_dot_product_cons Matrix.cons_dotProduct_cons
 
 end DotProduct
@@ -169,19 +177,27 @@ theorem col_empty (v : Fin 0 → α) : col v = vecEmpty :=
 @[simp]
 theorem col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) := by
   ext i j
+  -- ⊢ col (vecCons x u) i j = vecCons (fun x_1 => x) (col u) i j
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
+  -- ⊢ col (vecCons x u) 0 j = vecCons (fun x_1 => x) (col u) 0 j
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align matrix.col_cons Matrix.col_cons
 
 @[simp]
 theorem row_empty : row (vecEmpty : Fin 0 → α) = fun _ => vecEmpty := by
   ext
+  -- ⊢ row ![] i✝ x✝ = ![]
   rfl
+  -- 🎉 no goals
 #align matrix.row_empty Matrix.row_empty
 
 @[simp]
 theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = fun _ => vecCons x u := by
   ext
+  -- ⊢ row (vecCons x u) i✝ x✝ = vecCons x u x✝
   rfl
+  -- 🎉 no goals
 #align matrix.row_cons Matrix.row_cons
 
 end ColRow
@@ -202,7 +218,11 @@ theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
     (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
   ext i j
+  -- ⊢ (↑of (vecCons v A))ᵀ i j = ↑of (fun i => vecCons (v i) (Aᵀ i)) i j
   refine' Fin.cases _ _ j <;> simp
+  -- ⊢ (↑of (vecCons v A))ᵀ i 0 = ↑of (fun i => vecCons (v i) (Aᵀ i)) i 0
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align matrix.cons_transpose Matrix.cons_transpose
 
 @[simp]
@@ -214,7 +234,9 @@ theorem head_transpose (A : Matrix m' (Fin n.succ) α) :
 @[simp]
 theorem tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ := by
   ext i j
+  -- ⊢ vecTail (↑of.symm Aᵀ) i j = (vecTail ∘ A)ᵀ i j
   rfl
+  -- 🎉 no goals
 #align matrix.tail_transpose Matrix.tail_transpose
 
 end Transpose
@@ -248,9 +270,13 @@ theorem mul_val_succ [Fintype n'] (A : Matrix (Fin m.succ) n' α) (B : Matrix n'
 theorem cons_mul [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (B : Matrix n' o' α) :
     of (vecCons v A) * B = of (vecCons (vecMul v B) (of.symm (of A * B))) := by
   ext i j
+  -- ⊢ (↑of (vecCons v A) * B) i j = ↑of (vecCons (vecMul v B) (↑of.symm (↑of A * B …
   refine' Fin.cases _ _ i
+  -- ⊢ (↑of (vecCons v A) * B) 0 j = ↑of (vecCons (vecMul v B) (↑of.symm (↑of A * B …
   · rfl
+    -- 🎉 no goals
   simp [mul_val_succ]
+  -- 🎉 no goals
 #align matrix.cons_mul Matrix.cons_mul
 
 end Mul
@@ -273,19 +299,24 @@ theorem vecMul_empty [Fintype n'] (v : n' → α) (B : Matrix n' (Fin 0) α) : v
 theorem cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
     vecMul (vecCons x v) (of B) = x • vecHead B + vecMul v (of <| vecTail B) := by
   ext i
+  -- ⊢ vecMul (vecCons x v) (↑of B) i = (x • vecHead B + vecMul v (↑of (vecTail B)) …
   simp [vecMul]
+  -- 🎉 no goals
 #align matrix.cons_vec_mul Matrix.cons_vecMul
 
 @[simp]
 theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
     vecMul v (of <| vecCons w B) = vecHead v • w + vecMul (vecTail v) (of B) := by
   ext i
+  -- ⊢ vecMul v (↑of (vecCons w B)) i = (vecHead v • w + vecMul (vecTail v) (↑of B) …
   simp [vecMul]
+  -- 🎉 no goals
 #align matrix.vec_mul_cons Matrix.vecMul_cons
 
 -- @[simp] -- Porting note: simp can prove this
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
     vecMul (vecCons x v) (of <| vecCons w B) = x • w + vecMul v (of B) := by simp
+                                                                             -- 🎉 no goals
 #align matrix.cons_vec_mul_cons Matrix.cons_vecMul_cons
 
 end VecMul
@@ -308,14 +339,20 @@ theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : mulVec A v 
 theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : n' → α) :
     mulVec (of <| vecCons v A) w = vecCons (dotProduct v w) (mulVec (of A) w) := by
   ext i
+  -- ⊢ mulVec (↑of (vecCons v A)) w i = vecCons (v ⬝ᵥ w) (mulVec (↑of A) w) i
   refine' Fin.cases _ _ i <;> simp [mulVec]
+  -- ⊢ mulVec (↑of (vecCons v A)) w 0 = vecCons (v ⬝ᵥ w) (mulVec (↑of A) w) 0
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align matrix.cons_mul_vec Matrix.cons_mulVec
 
 @[simp]
 theorem mulVec_cons {α} [CommSemiring α] (A : m' → Fin n.succ → α) (x : α) (v : Fin n → α) :
     mulVec (of A) (vecCons x v) = x • vecHead ∘ A + mulVec (of (vecTail ∘ A)) v := by
   ext i
+  -- ⊢ mulVec (↑of A) (vecCons x v) i = (x • vecHead ∘ A + mulVec (↑of (vecTail ∘ A …
   simp [mulVec, mul_comm]
+  -- 🎉 no goals
 #align matrix.mul_vec_cons Matrix.mulVec_cons
 
 end MulVec
@@ -338,14 +375,20 @@ theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = fun
 theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
     vecMulVec (vecCons x v) w = vecCons (x • w) (vecMulVec v w) := by
   ext i
+  -- ⊢ vecMulVec (vecCons x v) w i x✝ = vecCons (x • w) (vecMulVec v w) i x✝
   refine' Fin.cases _ _ i <;> simp [vecMulVec]
+  -- ⊢ vecMulVec (vecCons x v) w 0 x✝ = vecCons (x • w) (vecMulVec v w) 0 x✝
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align matrix.cons_vec_mul_vec Matrix.cons_vecMulVec
 
 @[simp]
 theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
     vecMulVec v (vecCons x w) = fun i => v i • vecCons x w := by
   ext i j
+  -- ⊢ vecMulVec v (vecCons x w) i j = (v i • vecCons x w) j
   rw [vecMulVec_apply, Pi.smul_apply, smul_eq_mul]
+  -- 🎉 no goals
 #align matrix.vec_mul_vec_cons Matrix.vecMulVec_cons
 
 end VecMulVec
@@ -363,7 +406,11 @@ theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A
 theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
     x • vecCons v A = vecCons (x • v) (x • A) := by
   ext i
+  -- ⊢ (x • vecCons v A) i x✝ = vecCons (x • v) (x • A) i x✝
   refine' Fin.cases _ _ i <;> simp
+  -- ⊢ (x • vecCons v A) 0 x✝ = vecCons (x • v) (x • A) 0 x✝
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align matrix.smul_mat_cons Matrix.smul_mat_cons
 
 end Smul
@@ -380,7 +427,11 @@ theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' →
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
     submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by
   ext i j
+  -- ⊢ submatrix A (vecCons i✝ row) col i j = vecCons (fun j => A i✝ (col j)) (subm …
   refine' Fin.cases _ _ i <;> simp [submatrix]
+  -- ⊢ submatrix A (vecCons i✝ row) col 0 j = vecCons (fun j => A i✝ (col j)) (subm …
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align matrix.submatrix_cons_row Matrix.submatrix_cons_row
 
 /-- Updating a row then removing it is the same as removing it. -/
@@ -407,19 +458,45 @@ variable [Zero α] [One α]
 
 theorem one_fin_two : (1 : Matrix (Fin 2) (Fin 2) α) = !![1, 0; 0, 1] := by
   ext i j
+  -- ⊢ OfNat.ofNat 1 i j = ↑of ![![1, 0], ![0, 1]] i j
   fin_cases i <;> fin_cases j <;> rfl
+  -- ⊢ OfNat.ofNat 1 { val := 0, isLt := (_ : 0 < 2) } j = ↑of ![![1, 0], ![0, 1]]  …
+                  -- ⊢ OfNat.ofNat 1 { val := 0, isLt := (_ : 0 < 2) } { val := 0, isLt := (_ : 0 < …
+                  -- ⊢ OfNat.ofNat 1 { val := 1, isLt := (_ : (fun a => a < 2) 1) } { val := 0, isL …
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align matrix.one_fin_two Matrix.one_fin_two
 
 theorem one_fin_three : (1 : Matrix (Fin 3) (Fin 3) α) = !![1, 0, 0; 0, 1, 0; 0, 0, 1] := by
   ext i j
+  -- ⊢ OfNat.ofNat 1 i j = ↑of ![![1, 0, 0], ![0, 1, 0], ![0, 0, 1]] i j
   fin_cases i <;> fin_cases j <;> rfl
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align matrix.one_fin_three Matrix.one_fin_three
 
 end One
 
 theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
   ext i j
+  -- ⊢ A i j = ↑of ![![A 0 0, A 0 1], ![A 1 0, A 1 1]] i j
   fin_cases i <;> fin_cases j <;> rfl
+  -- ⊢ A { val := 0, isLt := (_ : 0 < 2) } j = ↑of ![![A 0 0, A 0 1], ![A 1 0, A 1  …
+                  -- ⊢ A { val := 0, isLt := (_ : 0 < 2) } { val := 0, isLt := (_ : 0 < 2) } = ↑of  …
+                  -- ⊢ A { val := 1, isLt := (_ : (fun a => a < 2) 1) } { val := 0, isLt := (_ : 0  …
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align matrix.eta_fin_two Matrix.eta_fin_two
 
 theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
@@ -427,7 +504,17 @@ theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
            A 1 0, A 1 1, A 1 2;
            A 2 0, A 2 1, A 2 2] := by
   ext i j
+  -- ⊢ A i j = ↑of ![![A 0 0, A 0 1, A 0 2], ![A 1 0, A 1 1, A 1 2], ![A 2 0, A 2 1 …
   fin_cases i <;> fin_cases j <;> rfl
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align matrix.eta_fin_three Matrix.eta_fin_three
 
 theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
@@ -436,7 +523,15 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext i j
+  -- ⊢ (↑of ![![a₁₁, a₁₂], ![a₂₁, a₂₂]] * ↑of ![![b₁₁, b₁₂], ![b₂₁, b₂₂]]) i j = ↑o …
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ]
+  -- ⊢ (↑of ![![a₁₁, a₁₂], ![a₂₁, a₂₂]] * ↑of ![![b₁₁, b₁₂], ![b₂₁, b₂₂]]) { val := …
+                  -- ⊢ (↑of ![![a₁₁, a₁₂], ![a₂₁, a₂₂]] * ↑of ![![b₁₁, b₁₂], ![b₂₁, b₂₂]]) { val := …
+                  -- ⊢ (↑of ![![a₁₁, a₁₂], ![a₂₁, a₂₂]] * ↑of ![![b₁₁, b₁₂], ![b₂₁, b₂₂]]) { val := …
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
+                                  -- 🎉 no goals
 #align matrix.mul_fin_two Matrix.mul_fin_two
 
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
@@ -450,43 +545,62 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
        a₂₁*b₁₁ + a₂₂*b₂₁ + a₂₃*b₃₁, a₂₁*b₁₂ + a₂₂*b₂₂ + a₂₃*b₃₂, a₂₁*b₁₃ + a₂₂*b₂₃ + a₂₃*b₃₃;
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext i j
+  -- ⊢ (↑of ![![a₁₁, a₁₂, a₁₃], ![a₂₁, a₂₂, a₂₃], ![a₃₁, a₃₂, a₃₃]] * ↑of ![![b₁₁,  …
   fin_cases i <;> fin_cases j
     <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, ← add_assoc]
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
+        -- 🎉 no goals
 #align matrix.mul_fin_three Matrix.mul_fin_three
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
   subst_vars
+  -- ⊢ ![b₀, b₁] = ![b₀, b₁]
   rfl
+  -- 🎉 no goals
 #align matrix.vec2_eq Matrix.vec2_eq
 
 theorem vec3_eq {a₀ a₁ a₂ b₀ b₁ b₂ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) (h₂ : a₂ = b₂) :
     ![a₀, a₁, a₂] = ![b₀, b₁, b₂] := by
   subst_vars
+  -- ⊢ ![b₀, b₁, b₂] = ![b₀, b₁, b₂]
   rfl
+  -- 🎉 no goals
 #align matrix.vec3_eq Matrix.vec3_eq
 
 theorem vec2_add [Add α] (a₀ a₁ b₀ b₁ : α) : ![a₀, a₁] + ![b₀, b₁] = ![a₀ + b₀, a₁ + b₁] := by
   rw [cons_add_cons, cons_add_cons, empty_add_empty]
+  -- 🎉 no goals
 #align matrix.vec2_add Matrix.vec2_add
 
 theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
     ![a₀, a₁, a₂] + ![b₀, b₁, b₂] = ![a₀ + b₀, a₁ + b₁, a₂ + b₂] := by
   rw [cons_add_cons, cons_add_cons, cons_add_cons, empty_add_empty]
+  -- 🎉 no goals
 #align matrix.vec3_add Matrix.vec3_add
 
 theorem smul_vec2 {R : Type*} [SMul R α] (x : R) (a₀ a₁ : α) :
     x • ![a₀, a₁] = ![x • a₀, x • a₁] := by rw [smul_cons, smul_cons, smul_empty]
+                                            -- 🎉 no goals
 #align matrix.smul_vec2 Matrix.smul_vec2
 
 theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
     x • ![a₀, a₁, a₂] = ![x • a₀, x • a₁, x • a₂] := by
   rw [smul_cons, smul_cons, smul_cons, smul_empty]
+  -- 🎉 no goals
 #align matrix.smul_vec3 Matrix.smul_vec3
 
 variable [AddCommMonoid α] [Mul α]
 
 theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
   rw [cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty, add_zero]
+  -- 🎉 no goals
 #align matrix.vec2_dot_product' Matrix.vec2_dotProduct'
 
 @[simp]

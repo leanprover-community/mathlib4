@@ -48,16 +48,24 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
   ⟨f, by
     -- It suffices to show that `f` is continuous at `0`.
     refine' continuous_of_continuousAt_zero f _
+    -- ⊢ ContinuousAt (↑f) 0
     rw [continuousAt_def, f.map_zero]
+    -- ⊢ ∀ (A : Set F), A ∈ 𝓝 0 → ↑f ⁻¹' A ∈ 𝓝 0
     intro U hU
+    -- ⊢ ↑f ⁻¹' U ∈ 𝓝 0
     -- Continuity means that `U ∈ 𝓝 0` implies that `f ⁻¹' U ∈ 𝓝 0`.
     rcases h with ⟨V, hV, h⟩
+    -- ⊢ ↑f ⁻¹' U ∈ 𝓝 0
     rcases h hU with ⟨r, hr, h⟩
+    -- ⊢ ↑f ⁻¹' U ∈ 𝓝 0
     rcases NormedField.exists_lt_norm 𝕜 r with ⟨x, hx⟩
+    -- ⊢ ↑f ⁻¹' U ∈ 𝓝 0
     specialize h x hx.le
+    -- ⊢ ↑f ⁻¹' U ∈ 𝓝 0
     -- After unfolding all the definitions, we know that `f '' V ⊆ x • U`. We use this to show the
     -- inclusion `x⁻¹ • V ⊆ f⁻¹' U`.
     have x_ne := norm_pos_iff.mp (hr.trans hx)
+    -- ⊢ ↑f ⁻¹' U ∈ 𝓝 0
     have : x⁻¹ • V ⊆ f ⁻¹' U :=
       calc
         x⁻¹ • V ⊆ x⁻¹ • f ⁻¹' (f '' V) := Set.smul_set_mono (Set.subset_preimage_image (⇑f) V)
@@ -68,8 +76,11 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
         _ ⊆ f ⁻¹' U := by rw [inv_smul_smul₀ x_ne _]
     -- Using this inclusion, it suffices to show that `x⁻¹ • V` is in `𝓝 0`, which is trivial.
     refine' mem_of_superset _ this
+    -- ⊢ x⁻¹ • V ∈ 𝓝 0
     convert set_smul_mem_nhds_smul hV (inv_ne_zero x_ne)
+    -- ⊢ 0 = x⁻¹ • 0
     exact (smul_zero _).symm⟩
+    -- 🎉 no goals
 #align linear_map.clm_of_exists_bounded_image LinearMap.clmOfExistsBoundedImage
 
 theorem LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
@@ -103,10 +114,13 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     (hf : ∀ (s : Set E) (_ : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : ContinuousAt f 0 := by
   -- Assume that f is not continuous at 0
   by_contra h
+  -- ⊢ False
   -- We use a decreasing balanced basis for 0 : E and a balanced basis for 0 : F
   -- and reformulate non-continuity in terms of these bases
   rcases(nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
+  -- ⊢ False
   simp only [id.def] at bE
+  -- ⊢ False
   have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n := by
     refine' bE.1.to_hasBasis _ _
     · intro n _
@@ -133,11 +147,16 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     refine' ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, _⟩⟩
     simp [← mul_smul, hn]
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
+  -- ⊢ False
   push_neg at h
+  -- ⊢ False
   rcases h with ⟨V, ⟨hV, -⟩, h⟩
+  -- ⊢ False
   simp only [id.def, forall_true_left] at h
+  -- ⊢ False
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
+  -- ⊢ False
   -- The sequence `(fun n ↦ n • u n)` converges to `0`
   have h_tendsto : Tendsto (fun n : ℕ => (n : 𝕜) • u n) atTop (𝓝 (0 : E)) := by
     apply bE.tendsto
@@ -154,13 +173,17 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
   -- Since `range u` is bounded it absorbs `V`
   rcases hf _ h_bounded hV with ⟨r, hr, h'⟩
+  -- ⊢ False
   cases' exists_nat_gt r with n hn
+  -- ⊢ False
   -- We now find a contradiction between `f (u n) ∉ V` and the absorbing property
   have h1 : r ≤ ‖(n : 𝕜')‖ := by
     rw [IsROrC.norm_natCast]
     exact hn.le
   have hn' : 0 < ‖(n : 𝕜')‖ := lt_of_lt_of_le hr h1
+  -- ⊢ False
   rw [norm_pos_iff, Ne.def, Nat.cast_eq_zero] at hn'
+  -- ⊢ False
   have h'' : f (u n) ∈ V := by
     simp only [Set.image_subset_iff] at h'
     specialize h' (n : 𝕜') h1 (Set.mem_range_self n)
@@ -170,6 +193,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     simp only [hn', inv_smul_smul₀, Ne.def, Nat.cast_eq_zero, not_false_iff] at h'
     rwa [← h']
   exact hu' n hn' h''
+  -- 🎉 no goals
 #align linear_map.continuous_at_zero_of_locally_bounded LinearMap.continuousAt_zero_of_locally_bounded
 
 /-- If `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous. -/

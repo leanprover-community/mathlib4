@@ -206,10 +206,15 @@ theorem StructureGroupoid.eq_on_source (G : StructureGroupoid H) {e e' : LocalHo
 instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
   PartialOrder.lift StructureGroupoid.members fun a b h ↦ by
     cases a
+    -- ⊢ { members := members✝, trans' := trans'✝, symm' := symm'✝, id_mem' := id_mem …
     cases b
+    -- ⊢ { members := members✝¹, trans' := trans'✝¹, symm' := symm'✝¹, id_mem' := id_ …
     dsimp at h
+    -- ⊢ { members := members✝¹, trans' := trans'✝¹, symm' := symm'✝¹, id_mem' := id_ …
     induction h
+    -- ⊢ { members := members✝¹, trans' := trans'✝¹, symm' := symm'✝¹, id_mem' := id_ …
     rfl
+    -- 🎉 no goals
 #align structure_groupoid.partial_order StructureGroupoid.partialOrder
 
 theorem StructureGroupoid.le_iff {G₁ G₂ : StructureGroupoid H} : G₁ ≤ G₂ ↔ ∀ e, e ∈ G₁ → e ∈ G₂ :=
@@ -222,52 +227,83 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
   members := {LocalHomeomorph.refl H} ∪ { e : LocalHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
     cases' he with he he
+    -- ⊢ e ≫ₕ e' ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
     · simpa only [mem_singleton_iff.1 he, refl_trans]
+      -- 🎉 no goals
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
+      -- ⊢ e ≫ₕ e' ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
       rw [he] at this
+      -- ⊢ e ≫ₕ e' ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
       have : e ≫ₕ e' ∈ { e : LocalHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
+      -- ⊢ e ≫ₕ e' ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
       exact (mem_union _ _ _).2 (Or.inr this)
+      -- 🎉 no goals
   symm' e he := by
     cases' (mem_union _ _ _).1 he with E E
+    -- ⊢ LocalHomeomorph.symm e ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
     · simp [mem_singleton_iff.mp E]
+      -- 🎉 no goals
     · right
+      -- ⊢ LocalHomeomorph.symm e ∈ {e | e.source = ∅}
       simpa only [e.toLocalEquiv.image_source_eq_target.symm, mfld_simps] using E
+      -- 🎉 no goals
   id_mem' := mem_union_left _ rfl
   locality' e he := by
     cases' e.source.eq_empty_or_nonempty with h h
+    -- ⊢ e ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
     · right
+      -- ⊢ e ∈ {e | e.source = ∅}
       exact h
+      -- 🎉 no goals
     · left
+      -- ⊢ e ∈ {LocalHomeomorph.refl H}
       rcases h with ⟨x, hx⟩
+      -- ⊢ e ∈ {LocalHomeomorph.refl H}
       rcases he x hx with ⟨s, open_s, xs, hs⟩
+      -- ⊢ e ∈ {LocalHomeomorph.refl H}
       have x's : x ∈ (e.restr s).source := by
         rw [restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
       cases' hs with hs hs
+      -- ⊢ e ∈ {LocalHomeomorph.refl H}
       · replace hs : LocalHomeomorph.restr e s = LocalHomeomorph.refl H
+        -- ⊢ LocalHomeomorph.restr e s = LocalHomeomorph.refl H
         · simpa only using hs
+          -- 🎉 no goals
         have : (e.restr s).source = univ := by
           rw [hs]
           simp
         have : e.toLocalEquiv.source ∩ interior s = univ := this
+        -- ⊢ e ∈ {LocalHomeomorph.refl H}
         have : univ ⊆ interior s := by
           rw [← this]
           exact inter_subset_right _ _
         have : s = univ := by rwa [open_s.interior_eq, univ_subset_iff] at this
+        -- ⊢ e ∈ {LocalHomeomorph.refl H}
         simpa only [this, restr_univ] using hs
+        -- 🎉 no goals
       · exfalso
+        -- ⊢ False
         rw [mem_setOf_eq] at hs
+        -- ⊢ False
         rwa [hs] at x's
+        -- 🎉 no goals
   eq_on_source' e e' he he'e := by
     cases' he with he he
+    -- ⊢ e' ∈ {LocalHomeomorph.refl H} ∪ {e | e.source = ∅}
     · left
+      -- ⊢ e' ∈ {LocalHomeomorph.refl H}
       have : e = e' := by
         refine' eq_of_eq_on_source_univ (Setoid.symm he'e) _ _ <;>
           rw [Set.mem_singleton_iff.1 he] <;> rfl
       rwa [← this]
+      -- 🎉 no goals
     · right
+      -- ⊢ e' ∈ {e | e.source = ∅}
       have he : e.toLocalEquiv.source = ∅ := he
+      -- ⊢ e' ∈ {e | e.source = ∅}
       rwa [Set.mem_setOf_eq, EqOnSource.source_eq he'e]
+      -- 🎉 no goals
 #align id_groupoid idGroupoid
 
 /-- Every structure groupoid contains the identity groupoid. -/
@@ -275,15 +311,25 @@ instance : OrderBot (StructureGroupoid H) where
   bot := idGroupoid H
   bot_le := by
     intro u f hf
+    -- ⊢ f ∈ u.members
     have hf : f ∈ {LocalHomeomorph.refl H} ∪ { e : LocalHomeomorph H H | e.source = ∅ } := hf
+    -- ⊢ f ∈ u.members
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
+    -- ⊢ f ∈ u.members
     cases' hf with hf hf
+    -- ⊢ f ∈ u.members
     · rw [hf]
+      -- ⊢ LocalHomeomorph.refl H ∈ u.members
       apply u.id_mem
+      -- 🎉 no goals
     · apply u.locality
+      -- ⊢ ∀ (x : H), x ∈ f.source → ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr f s  …
       intro x hx
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr f s ∈ u
       rw [hf, mem_empty_iff_false] at hx
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr f s ∈ u
       exact hx.elim
+      -- 🎉 no goals
 
 instance (H : Type u) [TopologicalSpace H] : Inhabited (StructureGroupoid H) :=
   ⟨idGroupoid H⟩
@@ -308,40 +354,67 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
   members := { e : LocalHomeomorph H H | PG.property e e.source ∧ PG.property e.symm e.target }
   trans' e e' he he' := by
     constructor
+    -- ⊢ property PG (↑(e ≫ₕ e')) (e ≫ₕ e').toLocalEquiv.source
     · apply PG.comp he.1 he'.1 e.open_source e'.open_source
+      -- ⊢ IsOpen (e.source ∩ ↑e ⁻¹' e'.source)
       apply e.continuous_toFun.preimage_open_of_open e.open_source e'.open_source
+      -- 🎉 no goals
     · apply PG.comp he'.2 he.2 e'.open_target e.open_target
+      -- ⊢ IsOpen (e'.target ∩ ↑(LocalHomeomorph.symm e') ⁻¹' e.target)
       apply e'.continuous_invFun.preimage_open_of_open e'.open_target e.open_target
+      -- 🎉 no goals
   symm' e he := ⟨he.2, he.1⟩
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
+    -- ⊢ property PG (↑e) e.source
     · refine' PG.locality e.open_source fun x xu ↦ _
+      -- ⊢ ∃ v, IsOpen v ∧ x ∈ v ∧ property PG (↑e) (e.source ∩ v)
       rcases he x xu with ⟨s, s_open, xs, hs⟩
+      -- ⊢ ∃ v, IsOpen v ∧ x ∈ v ∧ property PG (↑e) (e.source ∩ v)
       refine' ⟨s, s_open, xs, _⟩
+      -- ⊢ property PG (↑e) (e.source ∩ s)
       convert hs.1 using 1
+      -- ⊢ e.source ∩ s = (LocalHomeomorph.restr e s).toLocalEquiv.source
       dsimp [LocalHomeomorph.restr]
+      -- ⊢ e.source ∩ s = e.source ∩ interior s
       rw [s_open.interior_eq]
+      -- 🎉 no goals
     · refine' PG.locality e.open_target fun x xu ↦ _
+      -- ⊢ ∃ v, IsOpen v ∧ x ∈ v ∧ property PG (↑(LocalHomeomorph.symm e)) (e.target ∩ v)
       rcases he (e.symm x) (e.map_target xu) with ⟨s, s_open, xs, hs⟩
+      -- ⊢ ∃ v, IsOpen v ∧ x ∈ v ∧ property PG (↑(LocalHomeomorph.symm e)) (e.target ∩ v)
       refine' ⟨e.target ∩ e.symm ⁻¹' s, _, ⟨xu, xs⟩, _⟩
+      -- ⊢ IsOpen (e.target ∩ ↑(LocalHomeomorph.symm e) ⁻¹' s)
       · exact ContinuousOn.preimage_open_of_open e.continuous_invFun e.open_target s_open
+        -- 🎉 no goals
       · rw [← inter_assoc, inter_self]
+        -- ⊢ property PG (↑(LocalHomeomorph.symm e)) (e.target ∩ ↑(LocalHomeomorph.symm e …
         convert hs.2 using 1
+        -- ⊢ e.target ∩ ↑(LocalHomeomorph.symm e) ⁻¹' s = (LocalHomeomorph.restr e s).toL …
         dsimp [LocalHomeomorph.restr]
+        -- ⊢ e.target ∩ ↑(LocalHomeomorph.symm e) ⁻¹' s = e.target ∩ ↑(LocalHomeomorph.sy …
         rw [s_open.interior_eq]
+        -- 🎉 no goals
   eq_on_source' e e' he ee' := by
     constructor
+    -- ⊢ property PG (↑e') e'.source
     · apply PG.congr e'.open_source ee'.2
+      -- ⊢ property PG (fun x => ↑e x) e'.source
       simp only [ee'.1, he.1]
+      -- 🎉 no goals
     · have A := EqOnSource.symm' ee'
+      -- ⊢ property PG (↑(LocalHomeomorph.symm e')) e'.target
       apply PG.congr e'.symm.open_source A.2
+      -- ⊢ property PG (fun x => ↑(LocalHomeomorph.symm e) x) (LocalHomeomorph.symm e') …
       -- Porting note: was
       -- convert he.2
       -- rw [A.1]
       -- rfl
       rw [A.1, symm_toLocalEquiv, LocalEquiv.symm_source]
+      -- ⊢ property PG (fun x => ↑(LocalHomeomorph.symm e) x) e.target
       exact he.2
+      -- 🎉 no goals
 #align pregroupoid.groupoid Pregroupoid.groupoid
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : LocalHomeomorph H H} :
@@ -352,14 +425,19 @@ theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : LocalHomeomorph H 
 theorem groupoid_of_pregroupoid_le (PG₁ PG₂ : Pregroupoid H)
     (h : ∀ f s, PG₁.property f s → PG₂.property f s) : PG₁.groupoid ≤ PG₂.groupoid := by
   refine' StructureGroupoid.le_iff.2 fun e he ↦ _
+  -- ⊢ e ∈ Pregroupoid.groupoid PG₂
   rw [mem_groupoid_of_pregroupoid] at he ⊢
+  -- ⊢ Pregroupoid.property PG₂ (↑e) e.source ∧ Pregroupoid.property PG₂ (↑(LocalHo …
   exact ⟨h _ _ he.1, h _ _ he.2⟩
+  -- 🎉 no goals
 #align groupoid_of_pregroupoid_le groupoid_of_pregroupoid_le
 
 theorem mem_pregroupoid_of_eq_on_source (PG : Pregroupoid H) {e e' : LocalHomeomorph H H}
     (he' : e ≈ e') (he : PG.property e e.source) : PG.property e' e'.source := by
   rw [← he'.1]
+  -- ⊢ Pregroupoid.property PG (↑e') e.source
   exact PG.congr e.open_source he'.eqOn.symm he
+  -- 🎉 no goals
 #align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eq_on_source
 
 /-- The pregroupoid of all local maps on a topological space `H`. -/
@@ -403,29 +481,45 @@ def idRestrGroupoid : StructureGroupoid H where
   members := { e | ∃ (s : Set H) (h : IsOpen s), e ≈ LocalHomeomorph.ofSet s h }
   trans' := by
     rintro e e' ⟨s, hs, hse⟩ ⟨s', hs', hse'⟩
+    -- ⊢ e ≫ₕ e' ∈ {e | ∃ s h, e ≈ ofSet s h}
     refine' ⟨s ∩ s', IsOpen.inter hs hs', _⟩
+    -- ⊢ e ≫ₕ e' ≈ ofSet (s ∩ s') (_ : IsOpen (s ∩ s'))
     have := LocalHomeomorph.EqOnSource.trans' hse hse'
+    -- ⊢ e ≫ₕ e' ≈ ofSet (s ∩ s') (_ : IsOpen (s ∩ s'))
     rwa [LocalHomeomorph.ofSet_trans_ofSet] at this
+    -- 🎉 no goals
   symm' := by
     rintro e ⟨s, hs, hse⟩
+    -- ⊢ LocalHomeomorph.symm e ∈ {e | ∃ s h, e ≈ ofSet s h}
     refine' ⟨s, hs, _⟩
+    -- ⊢ LocalHomeomorph.symm e ≈ ofSet s hs
     rw [← ofSet_symm]
+    -- ⊢ LocalHomeomorph.symm e ≈ LocalHomeomorph.symm (ofSet s hs)
     exact LocalHomeomorph.EqOnSource.symm' hse
+    -- 🎉 no goals
   id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
+                                    -- 🎉 no goals
   locality' := by
     intro e h
+    -- ⊢ e ∈ {e | ∃ s h, e ≈ ofSet s h}
     refine' ⟨e.source, e.open_source, by simp only [mfld_simps], _⟩
+    -- ⊢ EqOn (↑e) (↑(ofSet e.source (_ : IsOpen e.source))) e.source
     intro x hx
+    -- ⊢ ↑e x = ↑(ofSet e.source (_ : IsOpen e.source)) x
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
+    -- ⊢ ↑e x = ↑(ofSet e.source (_ : IsOpen e.source)) x
     have hes : x ∈ (e.restr s).source := by
       rw [e.restr_source]
       refine' ⟨hx, _⟩
       rw [hs.interior_eq]
       exact hxs
     simpa only [mfld_simps] using LocalHomeomorph.EqOnSource.eqOn hes' hes
+    -- 🎉 no goals
   eq_on_source' := by
     rintro e e' ⟨s, hs, hse⟩ hee'
+    -- ⊢ e' ∈ {e | ∃ s h, e ≈ ofSet s h}
     exact ⟨s, hs, Setoid.trans hee' hse⟩
+    -- 🎉 no goals
 #align id_restr_groupoid idRestrGroupoid
 
 theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRestrGroupoid H _ :=
@@ -436,9 +530,13 @@ theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRest
 instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
+    -- ⊢ LocalHomeomorph.restr e s ∈ idRestrGroupoid
     use s' ∩ s, IsOpen.inter hs' hs
+    -- ⊢ LocalHomeomorph.restr e s ≈ ofSet (s' ∩ s) (_ : IsOpen (s' ∩ s))
     refine' Setoid.trans (LocalHomeomorph.EqOnSource.restr he s) _
+    -- ⊢ LocalHomeomorph.restr (ofSet s' hs') s ≈ ofSet (s' ∩ s) (_ : IsOpen (s' ∩ s))
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
+    -- 🎉 no goals
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
 
 /-- A groupoid is closed under restriction if and only if it contains the trivial restriction-closed
@@ -446,26 +544,42 @@ groupoid. -/
 theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     ClosedUnderRestriction G ↔ idRestrGroupoid ≤ G := by
   constructor
+  -- ⊢ ClosedUnderRestriction G → idRestrGroupoid ≤ G
   · intro _i
+    -- ⊢ idRestrGroupoid ≤ G
     apply StructureGroupoid.le_iff.mpr
+    -- ⊢ ∀ (e : LocalHomeomorph H H), e ∈ idRestrGroupoid → e ∈ G
     rintro e ⟨s, hs, hes⟩
+    -- ⊢ e ∈ G
     refine' G.eq_on_source _ hes
+    -- ⊢ ofSet s hs ∈ G
     convert closedUnderRestriction' G.id_mem hs
+    -- ⊢ ofSet s hs = LocalHomeomorph.restr (LocalHomeomorph.refl H) s
     -- Porting note: was
     -- change s = _ ∩ _
     -- rw [hs.interior_eq]
     -- simp only [mfld_simps]
     ext
     · rw [LocalHomeomorph.restr_apply, LocalHomeomorph.refl_apply, id, ofSet_apply, id_eq]
+      -- 🎉 no goals
     · simp [hs]
+      -- 🎉 no goals
     · simp [hs.interior_eq]
+      -- 🎉 no goals
   · intro h
+    -- ⊢ ClosedUnderRestriction G
     constructor
+    -- ⊢ ∀ {e : LocalHomeomorph H H}, e ∈ G → ∀ (s : Set H), IsOpen s → LocalHomeomor …
     intro e he s hs
+    -- ⊢ LocalHomeomorph.restr e s ∈ G
     rw [← ofSet_trans (e : LocalHomeomorph H H) hs]
+    -- ⊢ ofSet s hs ≫ₕ e ∈ G
     refine' G.trans _ he
+    -- ⊢ ofSet s hs ∈ G
     apply StructureGroupoid.le_iff.mp h
+    -- ⊢ ofSet s hs ∈ idRestrGroupoid
     exact idRestrGroupoid_mem hs
+    -- 🎉 no goals
 #align closed_under_restriction_iff_id_le closedUnderRestriction_iff_id_le
 
 /-- The groupoid of all local homeomorphisms on a topological space `H` is closed under restriction.
@@ -585,8 +699,11 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
   haveI : ∀ x : M, SecondCountableTopology (chartAt H x).source :=
     fun x ↦ (chartAt (H := H) x).secondCountableTopology_source
   haveI := hsc.toEncodable
+  -- ⊢ SecondCountableTopology M
   rw [biUnion_eq_iUnion] at hs
+  -- ⊢ SecondCountableTopology M
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt H (x : M)).open_source) hs
+  -- 🎉 no goals
 #align charted_space.second_countable_of_countable_cover ChartedSpace.secondCountable_of_countable_cover
 
 variable (M)
@@ -596,6 +713,7 @@ theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
     countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
+  -- 🎉 no goals
 #align charted_space.second_countable_of_sigma_compact ChartedSpace.secondCountable_of_sigma_compact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
@@ -608,22 +726,29 @@ theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompac
     exact ((compact_basis_nhds (chartAt H x x)).hasBasis_self_subset
       (chart_target_mem_nhds H x)).map _
   refine locallyCompactSpace_of_hasBasis this ?_
+  -- ⊢ ∀ (x : M) (i : Set H), i ∈ 𝓝 (↑(chartAt H x) x) ∧ IsCompact i ∧ i ⊆ (chartAt …
   rintro x s ⟨_, h₂, h₃⟩
+  -- ⊢ IsCompact (↑(LocalHomeomorph.symm (chartAt H x)) '' s)
   exact h₂.image_of_continuousOn ((chartAt H x).continuousOn_symm.mono h₃)
+  -- 🎉 no goals
 #align charted_space.locally_compact ChartedSpace.locallyCompactSpace
 
 /-- If a topological space admits an atlas with locally connected charts, then the space itself is
 locally connected. -/
 theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyConnectedSpace M := by
   let e : M → LocalHomeomorph M H := chartAt H
+  -- ⊢ LocallyConnectedSpace M
   refine' locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) _ _
   · intro x
+    -- ⊢ HasBasis (𝓝 x) ((fun x s => (IsOpen s ∧ ↑(e x) x ∈ s ∧ IsConnected s) ∧ s ⊆  …
     simpa only [LocalHomeomorph.symm_map_nhds_eq, mem_chart_source] using
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
+    -- ⊢ IsPreconnected ((fun x s => ↑(LocalHomeomorph.symm (e x)) '' s) x s)
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
+    -- 🎉 no goals
 #align charted_space.locally_connected_space ChartedSpace.locallyConnectedSpace
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
@@ -634,6 +759,7 @@ def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [Topological
   atlas := image2 LocalHomeomorph.trans (atlas H' M) (atlas H H')
   chartAt p := (chartAt H' p).trans (chartAt H (chartAt H' p p))
   mem_chart_source p := by simp only [mfld_simps]
+                           -- 🎉 no goals
   chart_mem_atlas p := ⟨chartAt _ p, chartAt _ _, chart_mem_atlas _ p, chart_mem_atlas _ _, rfl⟩
 #align charted_space.comp ChartedSpace.comp
 
@@ -690,7 +816,9 @@ instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
 theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
+  -- ⊢ (range fun p => (f p.fst, p.snd)) = range fun p => (f p.fst, p.snd)
   rfl
+  -- 🎉 no goals
 #align model_prod_range_prod_id modelProd_range_prod_id
 
 end
@@ -737,10 +865,15 @@ theorem prodChartedSpace_chartAt :
 
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
+  -- ⊢ ChartedSpace.atlas = ChartedSpace.atlas
   · simp [prodChartedSpace, atlas, ChartedSpace.atlas]
+    -- 🎉 no goals
   · ext1
+    -- ⊢ ChartedSpace.chartAt x✝ = ChartedSpace.chartAt x✝
     simp only [prodChartedSpace_chartAt, chartAt_self_eq, refl_prod_refl]
+    -- ⊢ LocalHomeomorph.refl (H × H') = LocalHomeomorph.refl (ModelProd H H')
     rfl
+    -- 🎉 no goals
 #align charted_space_self_prod chartedSpaceSelf_prod
 
 end prodChartedSpace
@@ -797,9 +930,13 @@ protected def toTopologicalSpace : TopologicalSpace M :=
 
 theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.source := by
   apply TopologicalSpace.GenerateOpen.basic
+  -- ⊢ e.source ∈ ⋃ (e : LocalEquiv M H) (_ : e ∈ c.atlas) (s : Set H) (_ : IsOpen  …
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
+  -- ⊢ ∃ i, i ∈ c.atlas ∧ ∃ i_1, IsOpen i_1 ∧ e.source = ↑i ⁻¹' i_1 ∩ i.source
   refine' ⟨e, he, univ, isOpen_univ, _⟩
+  -- ⊢ e.source = ↑e ⁻¹' univ ∩ e.source
   simp only [Set.univ_inter, Set.preimage_univ]
+  -- 🎉 no goals
 #align charted_space_core.open_source' ChartedSpaceCore.open_source'
 
 theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
@@ -807,6 +944,7 @@ theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
     Subset.antisymm (inter_subset_left _ _) fun x hx ↦
       ⟨hx, LocalEquiv.target_subset_preimage_source _ hx⟩
   simpa [LocalEquiv.trans_source, E] using c.open_source e e he he
+  -- 🎉 no goals
 #align charted_space_core.open_target ChartedSpaceCore.open_target
 
 /-- An element of the atlas in a charted space without topology becomes a local homeomorphism
@@ -816,23 +954,39 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
     @LocalHomeomorph M H c.toTopologicalSpace _ :=
   { c.toTopologicalSpace, e with
     open_source := by convert c.open_source' he
+                      -- 🎉 no goals
     open_target := by convert c.open_target he
+                      -- 🎉 no goals
     continuous_toFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
+      -- ⊢ ContinuousOn ↑{ toFun := ↑e, invFun := e.invFun, source := e.source, target  …
       rw [continuousOn_open_iff (c.open_source' he)]
+      -- ⊢ ∀ (t : Set H), IsOpen t → IsOpen (e.source ∩ ↑{ toFun := ↑e, invFun := e.inv …
       intro s s_open
+      -- ⊢ IsOpen (e.source ∩ ↑{ toFun := ↑e, invFun := e.invFun, source := e.source, t …
       rw [inter_comm]
+      -- ⊢ IsOpen (↑{ toFun := ↑e, invFun := e.invFun, source := e.source, target := e. …
       apply TopologicalSpace.GenerateOpen.basic
+      -- ⊢ ↑{ toFun := ↑e, invFun := e.invFun, source := e.source, target := e.target,  …
       simp only [exists_prop, mem_iUnion, mem_singleton_iff]
+      -- ⊢ ∃ i, i ∈ c.atlas ∧ ∃ i_1, IsOpen i_1 ∧ ↑e ⁻¹' s ∩ e.source = ↑i ⁻¹' i_1 ∩ i. …
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
+      -- 🎉 no goals
     continuous_invFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
+      -- ⊢ ContinuousOn { toFun := ↑e, invFun := e.invFun, source := e.source, target : …
       apply continuousOn_open_of_generateFrom
+      -- ⊢ ∀ (t : Set M), t ∈ ⋃ (e : LocalEquiv M H) (_ : e ∈ c.atlas) (s : Set H) (_ : …
       intro t ht
+      -- ⊢ IsOpen ({ toFun := ↑e, invFun := e.invFun, source := e.source, target := e.t …
       simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
+      -- ⊢ IsOpen ({ toFun := ↑e, invFun := e.invFun, source := e.source, target := e.t …
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩
+      -- ⊢ IsOpen ({ toFun := ↑e, invFun := e.invFun, source := e.source, target := e.t …
       rw [ts]
+      -- ⊢ IsOpen ({ toFun := ↑e, invFun := e.invFun, source := e.source, target := e.t …
       let f := e.symm.trans e'
+      -- ⊢ IsOpen ({ toFun := ↑e, invFun := e.invFun, source := e.source, target := e.t …
       have : IsOpen (f ⁻¹' s ∩ f.source) := by
         simpa [inter_comm] using (continuousOn_open_iff (c.open_source e e' he e'_atlas)).1
           (c.continuous_toFun e e' he e'_atlas) s s_open
@@ -842,6 +996,7 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
         congr 1
         exact inter_comm _ _
       simpa [LocalEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
+      -- 🎉 no goals
 #align charted_space_core.local_homeomorph ChartedSpaceCore.localHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
@@ -853,7 +1008,9 @@ def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
       simp only [mem_iUnion, mem_singleton_iff]
+      -- ⊢ ∃ i h, ChartedSpaceCore.localHomeomorph c (chartAt c x) (_ : chartAt c x ∈ c …
       exact ⟨c.chartAt x, c.chart_mem_atlas x, rfl⟩}
+      -- 🎉 no goals
 #align charted_space_core.to_charted_space ChartedSpaceCore.toChartedSpace
 
 end ChartedSpaceCore
@@ -897,14 +1054,19 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
     HasGroupoid H G where
   compatible {e e'} he he' := by
     rw [chartedSpaceSelf_atlas] at he he'
+    -- ⊢ LocalHomeomorph.symm e ≫ₕ e' ∈ G
     simp [he, he', StructureGroupoid.id_mem]
+    -- 🎉 no goals
 #align has_groupoid_model_space hasGroupoid_model_space
 
 /-- Any charted space structure is compatible with the groupoid of all local homeomorphisms. -/
 instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
   refine' ⟨fun _ _ ↦ _⟩
+  -- ⊢ LocalHomeomorph.symm e✝ ≫ₕ e'✝ ∈ continuousGroupoid H
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
+  -- ⊢ Pregroupoid.property (continuousPregroupoid H) (↑(LocalHomeomorph.symm e✝ ≫ₕ …
   simp only [and_self_iff]
+  -- 🎉 no goals
 #align has_groupoid_continuous_groupoid hasGroupoid_continuousGroupoid
 
 section MaximalAtlas
@@ -942,17 +1104,24 @@ of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
   refine' G.locality fun x hx ↦ _
+  -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') …
   set f := chartAt (H := H) (e.symm x)
+  -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') …
   let s := e.target ∩ e.symm ⁻¹' f.source
+  -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') …
   have hs : IsOpen s := by
     apply e.symm.continuous_toFun.preimage_open_of_open <;> apply open_source
   have xs : x ∈ s := by
     simp only [mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
   refine' ⟨s, hs, xs, _⟩
+  -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') s ∈ G
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _ _)).1
+  -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') s ∈ G
   have B : f.symm ≫ₕ e' ∈ G := (mem_maximalAtlas_iff.1 he' f (chart_mem_atlas _ _)).2
+  -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') s ∈ G
   have C : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ∈ G := G.trans A B
+  -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm e ≫ₕ e') s ∈ G
   have D : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ≈ (e.symm ≫ₕ e').restr s := calc
     (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' = e.symm ≫ₕ (f ≫ₕ f.symm) ≫ₕ e' := by simp only [trans_assoc]
     _ ≈ e.symm ≫ₕ ofSet f.source f.open_source ≫ₕ e' :=
@@ -961,6 +1130,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph
     _ ≈ e.symm.restr s ≫ₕ e' := by rw [trans_of_set']; apply refl
     _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]
   exact G.eq_on_source C (Setoid.symm D)
+  -- 🎉 no goals
 #align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
 
 variable (G)
@@ -968,13 +1138,16 @@ variable (G)
 /-- In the model space, the identity is in any maximal atlas. -/
 theorem StructureGroupoid.id_mem_maximalAtlas : LocalHomeomorph.refl H ∈ G.maximalAtlas H :=
   G.subset_maximalAtlas <| by simp
+                              -- 🎉 no goals
 #align structure_groupoid.id_mem_maximal_atlas StructureGroupoid.id_mem_maximalAtlas
 
 /-- In the model space, any element of the groupoid is in the maximal atlas. -/
 theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : LocalHomeomorph H H} (hf : f ∈ G) :
     f ∈ G.maximalAtlas H := by
   rintro e (rfl : e = LocalHomeomorph.refl H)
+  -- ⊢ LocalHomeomorph.symm f ≫ₕ LocalHomeomorph.refl H ∈ G ∧ LocalHomeomorph.symm  …
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
+  -- 🎉 no goals
 #align structure_groupoid.mem_maximal_atlas_of_mem_groupoid StructureGroupoid.mem_maximalAtlas_of_mem_groupoid
 
 end MaximalAtlas
@@ -995,7 +1168,10 @@ def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
   mem_chart_source _ := by rw [h]; apply mem_univ
+                           -- ⊢ x✝ ∈ univ
+                                   -- 🎉 no goals
   chart_mem_atlas _ := by tauto
+                          -- 🎉 no goals
 #align local_homeomorph.singleton_charted_space LocalHomeomorph.singletonChartedSpace
 
 @[simp, mfld_simps]
@@ -1022,11 +1198,15 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
   { e.singletonChartedSpace h with
     compatible := by
       intro e' e'' he' he''
+      -- ⊢ LocalHomeomorph.symm e' ≫ₕ e'' ∈ G
       rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
         e.singletonChartedSpace_mem_atlas_eq h e'' he'']
       refine' G.eq_on_source _ e.trans_symm_self
+      -- ⊢ ofSet e.target (_ : IsOpen e.target) ∈ G
       have hle : idRestrGroupoid ≤ G := (closedUnderRestriction_iff_id_le G).mp (by assumption)
+      -- ⊢ ofSet e.target (_ : IsOpen e.target) ∈ G
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
+      -- 🎉 no goals
 #align local_homeomorph.singleton_has_groupoid LocalHomeomorph.singleton_hasGroupoid
 
 end LocalHomeomorph
@@ -1070,7 +1250,9 @@ protected instance instChartedSpace : ChartedSpace H s where
   mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
+    -- ⊢ ∃ i, subtypeRestr (chartAt H ↑x) s = subtypeRestr (chartAt H ↑i) s
     use x
+    -- 🎉 no goals
 #align topological_space.opens.charted_space TopologicalSpace.Opens.instChartedSpace
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
@@ -1078,15 +1260,25 @@ protected instance instChartedSpace : ChartedSpace H s where
 protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G where
   compatible := by
     rintro e e' ⟨_, ⟨x, hc⟩, he⟩ ⟨_, ⟨x', hc'⟩, he'⟩
+    -- ⊢ LocalHomeomorph.symm e ≫ₕ e' ∈ G
     haveI : Nonempty s := ⟨x⟩
+    -- ⊢ LocalHomeomorph.symm e ≫ₕ e' ∈ G
     have asdf := he
+    -- ⊢ LocalHomeomorph.symm e ≫ₕ e' ∈ G
     rw [hc.symm, mem_singleton_iff] at he
+    -- ⊢ LocalHomeomorph.symm e ≫ₕ e' ∈ G
     rw [hc'.symm, mem_singleton_iff] at he'
+    -- ⊢ LocalHomeomorph.symm e ≫ₕ e' ∈ G
     rw [he, he']
+    -- ⊢ LocalHomeomorph.symm (subtypeRestr (chartAt H ↑x) s) ≫ₕ subtypeRestr (chartA …
     refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt H x) (chartAt H x'))
+    -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm (chartAt H ↑x) ≫ₕ chartAt H ↑x') …
     apply closedUnderRestriction'
+    -- ⊢ LocalHomeomorph.symm (chartAt H ↑x) ≫ₕ chartAt H ↑x' ∈ G
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
+      -- 🎉 no goals
     · exact preimage_open_of_open_symm (chartAt _ _) s.2
+      -- 🎉 no goals
 #align topological_space.opens.has_groupoid TopologicalSpace.Opens.instHasGroupoid
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
@@ -1094,13 +1286,18 @@ theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x :
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
     Set.inclusion hUV ∘ (chartAt H x).symm := by
   set i := Set.inclusion hUV
+  -- ⊢ ↑(LocalHomeomorph.symm (chartAt H (i x))) =ᶠ[𝓝 (↑(chartAt H (i x)) (i x))] i …
   set e := chartAt H (x : M)
+  -- ⊢ ↑(LocalHomeomorph.symm (chartAt H (i x))) =ᶠ[𝓝 (↑(chartAt H (i x)) (i x))] i …
   haveI : Nonempty U := ⟨x⟩
+  -- ⊢ ↑(LocalHomeomorph.symm (chartAt H (i x))) =ᶠ[𝓝 (↑(chartAt H (i x)) (i x))] i …
   haveI : Nonempty V := ⟨i x⟩
+  -- ⊢ ↑(LocalHomeomorph.symm (chartAt H (i x))) =ᶠ[𝓝 (↑(chartAt H (i x)) (i x))] i …
   have heUx_nhds : (e.subtypeRestr U).target ∈ 𝓝 (e x) := by
     apply (e.subtypeRestr U).open_target.mem_nhds
     exact e.map_subtype_source (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn_of_le hUV)
+  -- 🎉 no goals
 #align topological_space.opens.chart_at_inclusion_symm_eventually_eq TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq
 
 end TopologicalSpace.Opens
@@ -1126,8 +1323,11 @@ def Structomorph.refl (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [HasGr
   { Homeomorph.refl M with
     mem_groupoid := fun c c' hc hc' ↦ by
       change LocalHomeomorph.symm c ≫ₕ LocalHomeomorph.refl M ≫ₕ c' ∈ G
+      -- ⊢ LocalHomeomorph.symm c ≫ₕ LocalHomeomorph.refl M ≫ₕ c' ∈ G
       rw [LocalHomeomorph.refl_trans]
+      -- ⊢ LocalHomeomorph.symm c ≫ₕ c' ∈ G
       exact G.compatible hc hc' }
+      -- 🎉 no goals
 #align structomorph.refl Structomorph.refl
 
 /-- The inverse of a structomorphism is a structomorphism. -/
@@ -1135,6 +1335,7 @@ def Structomorph.symm (e : Structomorph G M M') : Structomorph G M' M :=
   { e.toHomeomorph.symm with
     mem_groupoid := by
       intro c c' hc hc'
+      -- ⊢ LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorph (Homeomorph.mk src✝.t …
       have : (c'.symm ≫ₕ e.toHomeomorph.toLocalHomeomorph ≫ₕ c).symm ∈ G :=
         G.symm (e.mem_groupoid c' c hc' hc)
       rwa [trans_symm_eq_symm_trans_symm, trans_symm_eq_symm_trans_symm, symm_symm, trans_assoc]
@@ -1151,17 +1352,28 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       Then g ∘ e ∘ c⁻¹ and c' ∘ e' ∘ g⁻¹ are both smooth as e and e' are structomorphisms, so
       their composition is smooth, and it coincides with c' ∘ e' ∘ e ∘ c⁻¹ around x. -/
       intro c c' hc hc'
+      -- ⊢ LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorph (Homeomorph.mk src✝.t …
       refine' G.locality fun x hx ↦ _
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       let f₁ := e.toHomeomorph.toLocalHomeomorph
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       let f₂ := e'.toHomeomorph.toLocalHomeomorph
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       let f := (e.toHomeomorph.trans e'.toHomeomorph).toLocalHomeomorph
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toLocalHomeomorph _ _
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       -- define the atlas g around y
       let y := (c.symm ≫ₕ f₁) x
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       let g := chartAt (H := H) y
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       have hg₁ := chart_mem_atlas (H := H) y
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       have hg₂ := mem_chart_source (H := H) y
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       let s := (c.symm ≫ₕ f₁).source ∩ c.symm ≫ₕ f₁ ⁻¹' g.source
+      -- ⊢ ∃ s, IsOpen s ∧ x ∈ s ∧ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Hom …
       have open_s : IsOpen s := by
         apply (c.symm ≫ₕ f₁).continuous_toFun.preimage_open_of_open <;> apply open_source
       have : x ∈ s := by
@@ -1171,9 +1383,13 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
           exact hx.1
         · exact hg₂
       refine' ⟨s, open_s, this, _⟩
+      -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorp …
       let F₁ := (c.symm ≫ₕ f₁ ≫ₕ g) ≫ₕ g.symm ≫ₕ f₂ ≫ₕ c'
+      -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorp …
       have A : F₁ ∈ G := G.trans (e.mem_groupoid c g hc hg₁) (e'.mem_groupoid g c' hg₁ hc')
+      -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorp …
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s
+      -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorp …
       have : F₁ ≈ F₂ := calc
         F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by simp only [trans_assoc, _root_.refl]
         _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
@@ -1187,7 +1403,9 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
           by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [feq, _root_.refl]
       have : F₂ ∈ G := G.eq_on_source A (Setoid.symm this)
+      -- ⊢ LocalHomeomorph.restr (LocalHomeomorph.symm c ≫ₕ Homeomorph.toLocalHomeomorp …
       exact this }
+      -- 🎉 no goals
 #align structomorph.trans Structomorph.trans
 
 end HasGroupoid

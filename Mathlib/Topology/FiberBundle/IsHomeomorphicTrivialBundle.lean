@@ -43,17 +43,23 @@ protected theorem proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
 protected theorem surjective_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
     Function.Surjective proj := by
   obtain ⟨e, rfl⟩ := h.proj_eq
+  -- ⊢ Function.Surjective (Prod.fst ∘ ↑e)
   exact Prod.fst_surjective.comp e.surjective
+  -- 🎉 no goals
 #align is_homeomorphic_trivial_fiber_bundle.surjective_proj IsHomeomorphicTrivialFiberBundle.surjective_proj
 
 /-- The projection from a trivial fiber bundle to its base is continuous. -/
 protected theorem continuous_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : Continuous proj :=
   by obtain ⟨e, rfl⟩ := h.proj_eq; exact continuous_fst.comp e.continuous
+     -- ⊢ Continuous (Prod.fst ∘ ↑e)
+                                   -- 🎉 no goals
 #align is_homeomorphic_trivial_fiber_bundle.continuous_proj IsHomeomorphicTrivialFiberBundle.continuous_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
 protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : IsOpenMap proj :=
   by obtain ⟨e, rfl⟩ := h.proj_eq; exact isOpenMap_fst.comp e.isOpenMap
+     -- ⊢ IsOpenMap (Prod.fst ∘ ↑e)
+                                   -- 🎉 no goals
 #align is_homeomorphic_trivial_fiber_bundle.is_open_map_proj IsHomeomorphicTrivialFiberBundle.isOpenMap_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/

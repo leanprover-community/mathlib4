@@ -48,22 +48,37 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
     rintro ⟨x, hx⟩
+    -- ⊢ IsUnit (↑(algebraMap ℤ ℚ) ↑{ val := x, property := hx })
     rw [mem_nonZeroDivisors_iff_ne_zero] at hx
+    -- ⊢ IsUnit (↑(algebraMap ℤ ℚ) ↑{ val := x, property := hx✝ })
     simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne.def, Subtype.coe_mk] using hx
+    -- 🎉 no goals
   surj' := by
     rintro ⟨n, d, hd, h⟩
+    -- ⊢ ∃ x, mk' n d * ↑(algebraMap ℤ ℚ) ↑x.snd = ↑(algebraMap ℤ ℚ) x.fst
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
+    -- ⊢ ↑d ∈ nonZeroDivisors ℤ
     rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
+    -- ⊢ 0 < d
     exact Nat.zero_lt_of_ne_zero hd
+    -- 🎉 no goals
   eq_iff_exists' := by
     intro x y
+    -- ⊢ ↑(algebraMap ℤ ℚ) x = ↑(algebraMap ℤ ℚ) y ↔ ∃ c, ↑c * x = ↑c * y
     rw [eq_intCast, eq_intCast, Int.cast_inj]
+    -- ⊢ x = y ↔ ∃ c, ↑c * x = ↑c * y
     apply Iff.intro
+    -- ⊢ x = y → ∃ c, ↑c * x = ↑c * y
     · rintro rfl
+      -- ⊢ ∃ c, ↑c * x = ↑c * x
       use 1
+      -- 🎉 no goals
     · rintro ⟨⟨c, hc⟩, h⟩
+      -- ⊢ x = y
       apply mul_left_cancel₀ _ h
+      -- ⊢ ↑{ val := c, property := hc } ≠ 0
       rwa [mem_nonZeroDivisors_iff_ne_zero] at hc
+      -- 🎉 no goals
 #align rat.is_fraction_ring Rat.isFractionRing
 
 namespace IsFractionRing
@@ -129,7 +144,9 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
             hx <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) x) h0⟩),
     one_mul, mul_assoc]
   rw [mk'_spec, ← eq_mk'_iff_mul_eq]
+  -- ⊢ x = mk' ((fun x => K) ↑{ val := (sec (nonZeroDivisors A) x).fst, property := …
   exact (mk'_sec _ x).symm
+  -- 🎉 no goals
 #align is_fraction_ring.mul_inv_cancel IsFractionRing.mul_inv_cancel
 
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
@@ -141,8 +158,11 @@ noncomputable def toField : Field K :=
     mul_inv_cancel := IsFractionRing.mul_inv_cancel A
     inv_zero := by
       change IsFractionRing.inv A (0 : K) = 0
+      -- ⊢ IsFractionRing.inv A 0 = 0
       rw [IsFractionRing.inv]
+      -- ⊢ (if h : 0 = 0 then 0 else mk' K ↑(sec (nonZeroDivisors A) 0).snd { val := (s …
       exact dif_pos rfl }
+      -- 🎉 no goals
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 end CommRing
@@ -166,6 +186,7 @@ theorem div_surjective (z : K) :
     ∃ (x y : A) (hy : y ∈ nonZeroDivisors A), algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
+                -- 🎉 no goals
 #align is_fraction_ring.div_surjective IsFractionRing.div_surjective
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
@@ -178,17 +199,24 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
   refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
+  -- ⊢ x = 0
   · simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
+    -- ⊢ x = 0
     exact (exists_const _).mp hxy
+    -- 🎉 no goals
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
   refine' ⟨_, fun hxy => by rw [hxy, mk'_self']⟩
+  -- ⊢ mk' K x y = 1 → x = ↑y
   · intro hxy
+    -- ⊢ x = ↑y
     have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
       IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property
     rw [IsFractionRing.mk'_eq_div, div_eq_one_iff_eq hy] at hxy
+    -- ⊢ x = ↑y
     exact IsFractionRing.injective A K hxy
+    -- 🎉 no goals
 #align is_fraction_ring.mk'_eq_one_iff_eq IsFractionRing.mk'_eq_one_iff_eq
 
 open Function
@@ -216,6 +244,7 @@ field hom induced from `K` to `L` maps `f x / f y` to `g x / g y` for all
 `x : A, y ∈ NonZeroDivisors A`. -/
 theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) : lift hg (mk' K x y) = g x / g y :=
   by simp only [mk'_eq_div, map_div₀, lift_algebraMap]
+     -- 🎉 no goals
 #align is_fraction_ring.lift_mk' IsFractionRing.lift_mk'
 
 /-- Given integral domains `A, B` with fields of fractions `K`, `L`
@@ -238,29 +267,46 @@ noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : 
   ringEquivOfRingEquiv K L h
     (by
       ext b
+      -- ⊢ b ∈ Submonoid.map (RingEquiv.toMonoidHom h) (?m.392285 h) ↔ b ∈ ?m.392287 h
       show b ∈ h.toEquiv '' _ ↔ _
+      -- ⊢ b ∈ ↑h.toEquiv '' ↑(?m.392285 h) ↔ b ∈ ?m.392287 h
       erw [h.toEquiv.image_eq_preimage, Set.preimage, Set.mem_setOf_eq,
         mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero]
       exact h.symm.map_ne_zero_iff)
+      -- 🎉 no goals
 #align is_fraction_ring.field_equiv_of_ring_equiv IsFractionRing.fieldEquivOfRingEquiv
 
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
+  -- ⊢ IsLocalization (nonZeroDivisors R) S ↔ IsLocalization (nonZeroDivisors P) S
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
+  -- ⊢ nonZeroDivisors P = Submonoid.map (RingEquiv.toMonoidHom h) (nonZeroDivisors …
   ext x
+  -- ⊢ x ∈ nonZeroDivisors P ↔ x ∈ Submonoid.map (RingEquiv.toMonoidHom h) (nonZero …
   erw [Submonoid.map_equiv_eq_comap_symm]
+  -- ⊢ x ∈ nonZeroDivisors P ↔ x ∈ Submonoid.comap (MulEquiv.toMonoidHom (MulEquiv. …
   simp only [MulEquiv.coe_toMonoidHom, RingEquiv.toMulEquiv_eq_coe, Submonoid.mem_comap]
+  -- ⊢ x ∈ nonZeroDivisors P ↔ ↑(MulEquiv.symm ↑h) x ∈ nonZeroDivisors R
   constructor
+  -- ⊢ x ∈ nonZeroDivisors P → ↑(MulEquiv.symm ↑h) x ∈ nonZeroDivisors R
   · rintro hx z (hz : z * h.symm x = 0)
+    -- ⊢ z = 0
     rw [← h.map_eq_zero_iff]
+    -- ⊢ ↑h z = 0
     apply hx
+    -- ⊢ ↑h z * x = 0
     simpa only [h.map_zero, h.apply_symm_apply, h.map_mul] using congr_arg h hz
+    -- 🎉 no goals
   · rintro (hx : h.symm x ∈ _) z hz
+    -- ⊢ z = 0
     rw [← h.symm.map_eq_zero_iff]
+    -- ⊢ ↑(RingEquiv.symm h) z = 0
     apply hx
+    -- ⊢ ↑(RingEquiv.symm h) z * ↑(RingEquiv.symm h) x = 0
     rw [← h.symm.map_mul, hz, h.symm.map_zero]
+    -- 🎉 no goals
 #align is_fraction_ring.is_fraction_ring_iff_of_base_ring_equiv IsFractionRing.isFractionRing_iff_of_base_ringEquiv
 
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
@@ -308,6 +354,7 @@ theorem mk_eq_div {r s} :
     (Localization.mk r s : FractionRing A) =
       (algebraMap _ _ r / algebraMap A _ s : FractionRing A) :=
   by rw [Localization.mk_eq_mk', IsFractionRing.mk'_eq_div]
+     -- 🎉 no goals
 #align fraction_ring.mk_eq_div FractionRing.mk_eq_div
 
 noncomputable instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
@@ -330,7 +377,9 @@ noncomputable def algEquiv (K : Type*) [Field K] [Algebra A K] [IsFractionRing A
 
 instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) := by
   apply NoZeroSMulDivisors.of_algebraMap_injective
+  -- ⊢ Function.Injective ↑(algebraMap R (FractionRing A))
   rw [IsScalarTower.algebraMap_eq R A]
+  -- ⊢ Function.Injective ↑(RingHom.comp (algebraMap A (FractionRing A)) (algebraMa …
   apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))
     (NoZeroSMulDivisors.algebraMap_injective R A)
 

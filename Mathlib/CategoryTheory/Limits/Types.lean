@@ -61,12 +61,15 @@ noncomputable def limitCone (F : J ⥤ Type u) : Cone F where
     { app := fun j u => ((equivShrink _).symm u).val j
       naturality := fun j j' f => by
         funext x
+        -- ⊢ (((Functor.const J).obj (Shrink ↑(Functor.sections F))).map f ≫ (fun j u =>  …
         simp }
+        -- 🎉 no goals
 
 @[ext]
 lemma limitCone_pt_ext (F : J ⥤ Type u) {x y : (limitCone F).pt}
     (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
   aesop
+  -- 🎉 no goals
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
@@ -76,7 +79,9 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u
       property := fun f => congr_fun (Cone.w s f) _ }
   uniq := fun _ _ w => by
     ext x j
+    -- ⊢ ↑(↑(equivShrink ↑(Functor.sections F)).symm (x✝ x)) j = ↑(↑(equivShrink ↑(Fu …
     simpa using congr_fun (w j) x
+    -- 🎉 no goals
 
 end UnivLE
 
@@ -94,7 +99,9 @@ noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
     { app := fun j u => u.val j
       naturality := fun j j' f => by
         funext x
+        -- ⊢ (((Functor.const J).obj ↑(Functor.sections F)).map f ≫ (fun j u => ↑u j) j') …
         simp }
+        -- 🎉 no goals
 #align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.limitCone
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
@@ -105,9 +112,13 @@ noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCo
       property := fun f => congr_fun (Cone.w s f) _ }
   uniq := fun _ _ w => by
     funext x
+    -- ⊢ x✝ x = (fun s v => { val := fun j => NatTrans.app s.π j v, property := (_ :  …
     apply Subtype.ext
+    -- ⊢ ↑(x✝ x) = ↑((fun s v => { val := fun j => NatTrans.app s.π j v, property :=  …
     funext j
+    -- ⊢ ↑(x✝ x) j = ↑((fun s v => { val := fun j => NatTrans.app s.π j v, property : …
     exact congr_fun (w j) x
+    -- 🎉 no goals
 #align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.limitConeIsLimit
 
 end TypeMax
@@ -137,6 +148,7 @@ noncomputable def isLimitEquivSections {F : J ⥤ Type u} {c : Cone F} (t : IsLi
 theorem isLimitEquivSections_apply {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c) (j : J)
     (x : c.pt) : ((isLimitEquivSections.{v, u} t) x : ∀ j, F.obj j) j = c.π.app j x := by
   simp [isLimitEquivSections, IsLimit.conePointUniqueUpToIso]
+  -- 🎉 no goals
 #align category_theory.limits.types.is_limit_equiv_sections_apply CategoryTheory.Limits.Types.isLimitEquivSections_apply
 
 @[simp]
@@ -144,7 +156,9 @@ theorem isLimitEquivSections_symm_apply {F : J ⥤ Type u} {c : Cone F} (t : IsL
     (x : F.sections) (j : J) :
     c.π.app j ((isLimitEquivSections.{v, u} t).symm x) = (x : ∀ j, F.obj j) j := by
   obtain ⟨x, rfl⟩ := (isLimitEquivSections.{v, u} t).surjective x
+  -- ⊢ NatTrans.app c.π j (↑(isLimitEquivSections t).symm (↑(isLimitEquivSections t …
   simp
+  -- 🎉 no goals
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 /--
@@ -177,6 +191,7 @@ noncomputable def limitEquivSections (F : J ⥤ Type u) :
 theorem limitEquivSections_apply (F : J ⥤ Type u) (x : limit F) (j : J) :
     ((limitEquivSections.{v, u} F) x : ∀ j, F.obj j) j = limit.π F j x := by
   simp [limitEquivSections, isLimitEquivSections, IsLimit.conePointUniqueUpToIso]
+  -- 🎉 no goals
 #align category_theory.limits.types.limit_equiv_sections_apply CategoryTheory.Limits.Types.limitEquivSections_apply
 
 @[simp]
@@ -207,7 +222,9 @@ theorem Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
     (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
       limit.π F j (Limit.mk.{v, u} F x h) = x j := by
   dsimp [Limit.mk]
+  -- ⊢ limit.π F j (↑(limitEquivSections F).symm { val := x, property := (_ : ∀ {j  …
   simp
+  -- 🎉 no goals
 #align category_theory.limits.types.limit.π_mk CategoryTheory.Limits.Types.Limit.π_mk
 
 -- porting note : `Limit.π_mk'` was removed because the linter complains it is unnecessary
@@ -224,8 +241,11 @@ theorem Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
 theorem limit_ext (F : J ⥤ Type u) (x y : limit F)
     (w : ∀ j, limit.π F j x = limit.π F j y) : x = y := by
   apply (limitEquivSections.{v, u} F).injective
+  -- ⊢ ↑(limitEquivSections F) x = ↑(limitEquivSections F) y
   ext j
+  -- ⊢ ↑(↑(limitEquivSections F) x) j = ↑(↑(limitEquivSections F) y) j
   simp [w j]
+  -- 🎉 no goals
 #align category_theory.limits.types.limit_ext CategoryTheory.Limits.Types.limit_ext
 
 @[ext]
@@ -335,12 +355,18 @@ def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone
   desc s :=
     Quot.lift (fun p : Σj, F.obj j => s.ι.app p.1 p.2) fun ⟨j, x⟩ ⟨j', x'⟩ ⟨f, hf⟩ => by
       dsimp at hf
+      -- ⊢ (fun p => NatTrans.app s.ι p.fst p.snd) { fst := j, snd := x } = (fun p => N …
       rw [hf]
+      -- ⊢ (fun p => NatTrans.app s.ι p.fst p.snd) { fst := j, snd := x } = (fun p => N …
       exact (congr_fun (Cocone.w s f) x).symm
+      -- 🎉 no goals
   uniq s m hm := by
     funext x
+    -- ⊢ m x = (fun s => Quot.lift (fun p => NatTrans.app s.ι p.fst p.snd) (_ : ∀ (x  …
     induction' x using Quot.ind with x
+    -- ⊢ m (Quot.mk (Quot.Rel F) x) = (fun s => Quot.lift (fun p => NatTrans.app s.ι  …
     exact congr_fun (hm x.1) x.2
+    -- 🎉 no goals
 #align category_theory.limits.types.colimit_cocone_is_colimit CategoryTheory.Limits.Types.colimitCoconeIsColimit
 
 /-- The category of types has all colimits.
@@ -381,7 +407,9 @@ theorem colimitEquivQuot_symm_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.ob
 theorem colimitEquivQuot_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) :
     (colimitEquivQuot.{v, u} F) (colimit.ι F j x) = Quot.mk _ ⟨j, x⟩ := by
   apply (colimitEquivQuot F).symm.injective
+  -- ⊢ ↑(colimitEquivQuot F).symm (↑(colimitEquivQuot F) (colimit.ι F j x)) = ↑(col …
   simp
+  -- 🎉 no goals
 #align category_theory.limits.types.colimit_equiv_quot_apply CategoryTheory.Limits.Types.colimitEquivQuot_apply
 
 --porting note: @[simp] was removed because the linter said it was useless
@@ -423,20 +451,25 @@ theorem Colimit.ι_map_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J) (x) :
 theorem colimit_sound {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
     (w : F.map f x = x') : colimit.ι F j x = colimit.ι F j' x' := by
   rw [← w, Colimit.w_apply.{v, u}]
+  -- 🎉 no goals
 #align category_theory.limits.types.colimit_sound CategoryTheory.Limits.Types.colimit_sound
 
 theorem colimit_sound' {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
     (f : j ⟶ j'') (f' : j' ⟶ j'') (w : F.map f x = F.map f' x') :
     colimit.ι F j x = colimit.ι F j' x' := by
   rw [← colimit.w _ f, ← colimit.w _ f']
+  -- ⊢ (F.map f ≫ colimit.ι F j'') x = (F.map f' ≫ colimit.ι F j'') x'
   rw [types_comp_apply, types_comp_apply, w]
+  -- 🎉 no goals
 #align category_theory.limits.types.colimit_sound' CategoryTheory.Limits.Types.colimit_sound'
 
 theorem colimit_eq {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
       EqvGen (Quot.Rel.{v, u} F) ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
+  -- ⊢ Quot.mk (Quot.Rel F) { fst := j, snd := x } = Quot.mk (Quot.Rel F) { fst :=  …
   simpa using congr_arg (colimitEquivQuot.{v, u} F) w
+  -- 🎉 no goals
 #align category_theory.limits.types.colimit_eq CategoryTheory.Limits.Types.colimit_eq
 
 theorem jointly_surjective (F : J ⥤ TypeMax.{v, u}) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
@@ -445,16 +478,22 @@ theorem jointly_surjective (F : J ⥤ TypeMax.{v, u}) {t : Cocone F} (h : IsColi
     have := congr_fun this x
     simpa using congr_arg ULift.down this
   refine' h.hom_ext _
+  -- ⊢ ∀ (j : J), (NatTrans.app t.ι j ≫ fun x => { down := ∃ j y, NatTrans.app t.ι  …
   intro j
+  -- ⊢ (NatTrans.app t.ι j ≫ fun x => { down := ∃ j y, NatTrans.app t.ι j y = x })  …
   funext y
+  -- ⊢ (NatTrans.app t.ι j ≫ fun x => { down := ∃ j y, NatTrans.app t.ι j y = x })  …
   simp only [Functor.const_obj_obj, types_comp_apply, ULift.up_inj, eq_iff_iff, iff_true]
+  -- ⊢ ∃ j_1 y_1, NatTrans.app t.ι j_1 y_1 = NatTrans.app t.ι j y
   exact ⟨j, y, rfl⟩
+  -- 🎉 no goals
 #align category_theory.limits.types.jointly_surjective CategoryTheory.Limits.Types.jointly_surjective
 
 /-- A variant of `jointly_surjective` for `x : colimit F`. -/
 theorem jointly_surjective' {F : J ⥤ TypeMax.{v, u}} (x : colimit F) :
     ∃ j y, colimit.ι F j y = x := by
   exact jointly_surjective.{v, u} F (colimit.isColimit F) x
+  -- 🎉 no goals
 #align category_theory.limits.types.jointly_surjective' CategoryTheory.Limits.Types.jointly_surjective'
 
 namespace FilteredColimit
@@ -478,13 +517,17 @@ protected def Rel (x y : Σ j, F.obj j) : Prop :=
 theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
   Quot.Rel.{v, u} F x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
+                                   -- 🎉 no goals
 #align category_theory.limits.types.filtered_colimit.rel_of_quot_rel CategoryTheory.Limits.Types.FilteredColimit.rel_of_quot_rel
 
 theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel.{v, u} F) x y := fun ⟨k, f, g, h⟩ => by
   refine' EqvGen.trans _ ⟨k, F.map f x.2⟩ _ _ _
+  -- ⊢ EqvGen (Quot.Rel F) x { fst := k, snd := F.map f x.snd }
   · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
+    -- 🎉 no goals
   · exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
+    -- 🎉 no goals
 #align category_theory.limits.types.filtered_colimit.eqv_gen_quot_rel_of_rel CategoryTheory.Limits.Types.FilteredColimit.eqvGen_quot_rel_of_rel
 
 --attribute [local elab_without_expected_type] nat_trans.app
@@ -498,28 +541,48 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
   -- Strategy: Prove that the map from "the" colimit of F (defined above) to t.X
   -- is a bijection.
   apply IsColimit.ofIsoColimit (colimit.isColimit F)
+  -- ⊢ colimit.cocone F ≅ t
   refine' Cocones.ext (Equiv.toIso (Equiv.ofBijective _ _)) _
   · exact colimit.desc F t
+    -- 🎉 no goals
   · constructor
+    -- ⊢ Function.Injective (colimit.desc F t)
     · show Function.Injective _
+      -- ⊢ Function.Injective (colimit.desc F t)
       intro a b h
+      -- ⊢ a = b
       rcases jointly_surjective.{v, u} F (colimit.isColimit F) a with ⟨i, xi, rfl⟩
+      -- ⊢ NatTrans.app (colimit.cocone F).ι i xi = b
       rcases jointly_surjective.{v, u} F (colimit.isColimit F) b with ⟨j, xj, rfl⟩
+      -- ⊢ NatTrans.app (colimit.cocone F).ι i xi = NatTrans.app (colimit.cocone F).ι j …
       replace h : (colimit.ι F i ≫ colimit.desc F t) xi = (colimit.ι F j ≫ colimit.desc F t) xj
         := h
       rw [colimit.ι_desc, colimit.ι_desc] at h
+      -- ⊢ NatTrans.app (colimit.cocone F).ι i xi = NatTrans.app (colimit.cocone F).ι j …
       rcases hinj i j xi xj h with ⟨k, f, g, h'⟩
+      -- ⊢ NatTrans.app (colimit.cocone F).ι i xi = NatTrans.app (colimit.cocone F).ι j …
       change colimit.ι F i xi = colimit.ι F j xj
+      -- ⊢ colimit.ι F i xi = colimit.ι F j xj
       rw [← colimit.w F f, ← colimit.w F g]
+      -- ⊢ (F.map f ≫ colimit.ι F k) xi = (F.map g ≫ colimit.ι F k) xj
       change colimit.ι F k (F.map f xi) = colimit.ι F k (F.map g xj)
+      -- ⊢ colimit.ι F k (F.map f xi) = colimit.ι F k (F.map g xj)
       rw [h']
+      -- 🎉 no goals
     · show Function.Surjective _
+      -- ⊢ Function.Surjective (colimit.desc F t)
       intro x
+      -- ⊢ ∃ a, colimit.desc F t a = x
       rcases hsurj x with ⟨i, xi, rfl⟩
+      -- ⊢ ∃ a, colimit.desc F t a = NatTrans.app t.ι i xi
       use colimit.ι F i xi
+      -- ⊢ colimit.desc F t (colimit.ι F i xi) = NatTrans.app t.ι i xi
       apply Colimit.ι_desc_apply.{v, u}
+      -- 🎉 no goals
   · intro j
+    -- ⊢ NatTrans.app (colimit.cocone F).ι j ≫ (Equiv.toIso (Equiv.ofBijective (colim …
     apply colimit.ι_desc
+    -- 🎉 no goals
 #align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf
 
 variable [IsFilteredOrEmpty J]
@@ -533,36 +596,54 @@ protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) 
     ⟨m, f ≫ fl ≫ n, g' ≫ gl ≫ n,
       calc
         F.map (f ≫ fl ≫ n) x.2 = F.map (fl ≫ n) (F.map f x.2) := by simp
+                                                                    -- 🎉 no goals
         _ = F.map (fl ≫ n) (F.map g y.2) := by rw [h]
+                                               -- 🎉 no goals
         _ = F.map ((g ≫ fl) ≫ n) y.2 := by simp
+                                           -- 🎉 no goals
         _ = F.map ((f' ≫ gl) ≫ n) y.2 := by rw [hn]
+                                            -- 🎉 no goals
         _ = F.map (gl ≫ n) (F.map f' y.2) := by simp
+                                                -- 🎉 no goals
         _ = F.map (gl ≫ n) (F.map g' z.2) := by rw [h']
+                                                -- 🎉 no goals
         _ = F.map (g' ≫ gl ≫ n) z.2 := by simp⟩
+                                          -- 🎉 no goals
 #align category_theory.limits.types.filtered_colimit.rel_equiv CategoryTheory.Limits.Types.FilteredColimit.rel_equiv
 
 protected theorem rel_eq_eqvGen_quot_rel :
     FilteredColimit.Rel.{v, u} F = EqvGen (Quot.Rel.{v, u} F) := by
   ext ⟨j, x⟩ ⟨j', y⟩
+  -- ⊢ FilteredColimit.Rel F { fst := j, snd := x } { fst := j', snd := y } ↔ EqvGe …
   constructor
+  -- ⊢ FilteredColimit.Rel F { fst := j, snd := x } { fst := j', snd := y } → EqvGe …
   · apply eqvGen_quot_rel_of_rel
+    -- 🎉 no goals
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
+    -- ⊢ EqvGen (Quot.Rel F) { fst := j, snd := x } { fst := j', snd := y } → EqvGen  …
     exact EqvGen.mono (rel_of_quot_rel F)
+    -- 🎉 no goals
 #align category_theory.limits.types.filtered_colimit.rel_eq_eqv_gen_quot_rel CategoryTheory.Limits.Types.FilteredColimit.rel_eq_eqvGen_quot_rel
 
 theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
     (colimitCocone.{v, u} F).ι.app i xi = (colimitCocone.{v, u} F).ι.app j xj ↔
       FilteredColimit.Rel.{v, u} F ⟨i, xi⟩ ⟨j, xj⟩ := by
   change Quot.mk _ _ = Quot.mk _ _ ↔ _
+  -- ⊢ Quot.mk (Quot.Rel F) { fst := i, snd := xi } = Quot.mk (Quot.Rel F) { fst := …
   rw [Quot.eq, FilteredColimit.rel_eq_eqvGen_quot_rel]
+  -- 🎉 no goals
 #align category_theory.limits.types.filtered_colimit.colimit_eq_iff_aux CategoryTheory.Limits.Types.FilteredColimit.colimit_eq_iff_aux
 
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
   let t' := colimitCocone.{v, u} F
+  -- ⊢ NatTrans.app t.ι i xi = NatTrans.app t.ι j xj ↔ ∃ k f g, F.map f xi = F.map  …
   let e : t' ≅ t := IsColimit.uniqueUpToIso (colimitCoconeIsColimit F) ht
+  -- ⊢ NatTrans.app t.ι i xi = NatTrans.app t.ι j xj ↔ ∃ k f g, F.map f xi = F.map  …
   let e' : t'.pt ≅ t.pt := (Cocones.forget _).mapIso e
+  -- ⊢ NatTrans.app t.ι i xi = NatTrans.app t.ι j xj ↔ ∃ k f g, F.map f xi = F.map  …
   refine' Iff.trans _ (colimit_eq_iff_aux.{v, u} F)
+  -- ⊢ NatTrans.app t.ι i xi = NatTrans.app t.ι j xj ↔ NatTrans.app (colimitCocone  …
   exact @Equiv.apply_eq_iff_eq _ _ e'.toEquiv ((colimitCocone.{v, u} F).ι.app i xi)
     ((colimitCocone.{v, u} F).ι.app j xj)
 #align category_theory.limits.types.filtered_colimit.is_colimit_eq_iff CategoryTheory.Limits.Types.FilteredColimit.isColimit_eq_iff
@@ -604,9 +685,13 @@ noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   funext x
+  -- ⊢ (lift F' ≫ F'.m) x = ι f x
   change (F'.e ≫ F'.m) _ = _
+  -- ⊢ (F'.e ≫ F'.m) ↑(Classical.indefiniteDescription (fun x_1 => f x_1 = ↑x) (_ : …
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
+  -- ⊢ ↑x = ι f x
   rfl
+  -- 🎉 no goals
 #align category_theory.limits.types.image.lift_fac CategoryTheory.Limits.Types.Image.lift_fac
 
 end
@@ -629,14 +714,19 @@ instance : HasImage f :=
 
 instance : HasImages (Type u) where
   has_image := by infer_instance
+                  -- 🎉 no goals
 
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
+        -- ⊢ Comma.hom g (CommaMorphism.left st (Classical.choose (_ : ↑x ∈ Set.range f.h …
         replace p := congr_fun p (Classical.choose x.2)
+        -- ⊢ Comma.hom g (CommaMorphism.left st (Classical.choose (_ : ↑x ∈ Set.range f.h …
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
+        -- ⊢ Comma.hom g (CommaMorphism.left st (Classical.choose (_ : ↑x ∈ Set.range f.h …
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
+        -- 🎉 no goals
 
 end CategoryTheory.Limits.Types

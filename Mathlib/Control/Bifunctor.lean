@@ -88,24 +88,28 @@ theorem id_snd : ∀ {α β} (x : F α β), snd id x = x :=
 @[higher_order fst_comp_fst]
 theorem comp_fst {α₀ α₁ α₂ β} (f : α₀ → α₁) (f' : α₁ → α₂) (x : F α₀ β) :
     fst f' (fst f x) = fst (f' ∘ f) x := by simp [fst, bimap_bimap]
+                                            -- 🎉 no goals
 #align bifunctor.comp_fst Bifunctor.comp_fst
 #align bifunctor.fst_comp_fst Bifunctor.fst_comp_fst
 
 @[higher_order fst_comp_snd]
 theorem fst_snd {α₀ α₁ β₀ β₁} (f : α₀ → α₁) (f' : β₀ → β₁) (x : F α₀ β₀) :
     fst f (snd f' x) = bimap f f' x := by simp [fst, bimap_bimap]
+                                          -- 🎉 no goals
 #align bifunctor.fst_snd Bifunctor.fst_snd
 #align bifunctor.fst_comp_snd Bifunctor.fst_comp_snd
 
 @[higher_order snd_comp_fst]
 theorem snd_fst {α₀ α₁ β₀ β₁} (f : α₀ → α₁) (f' : β₀ → β₁) (x : F α₀ β₀) :
     snd f' (fst f x) = bimap f f' x := by simp [snd, bimap_bimap]
+                                          -- 🎉 no goals
 #align bifunctor.snd_fst Bifunctor.snd_fst
 #align bifunctor.snd_comp_fst Bifunctor.snd_comp_fst
 
 @[higher_order snd_comp_snd]
 theorem comp_snd {α β₀ β₁ β₂} (g : β₀ → β₁) (g' : β₁ → β₂) (x : F α β₀) :
     snd g' (snd g x) = snd (g' ∘ g) x := by simp [snd, bimap_bimap]
+                                            -- 🎉 no goals
 #align bifunctor.comp_snd Bifunctor.comp_snd
 #align bifunctor.snd_comp_snd Bifunctor.snd_comp_snd
 
@@ -122,12 +126,22 @@ instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
 
 instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
   refine' { .. } <;> intros <;> rfl
+  -- ⊢ ∀ {α : Type ?u.3875} {β : Type ?u.3874} (x : α × β), bimap id id x = x
+                     -- ⊢ bimap id id x✝ = x✝
+                     -- ⊢ bimap f'✝ g'✝ (bimap f✝ g✝ x✝) = bimap (f'✝ ∘ f✝) (g'✝ ∘ g✝) x✝
+                                -- 🎉 no goals
+                                -- 🎉 no goals
 #align prod.is_lawful_bifunctor Prod.lawfulBifunctor
 
 instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 #align bifunctor.const Bifunctor.const
 
 instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
+                                                             -- ⊢ ∀ {α : Type ?u.4176} {β : Type ?u.4177} (x : Const α β), bimap id id x = x
+                                                                                -- ⊢ bimap id id x✝ = x✝
+                                                                                -- ⊢ bimap f'✝ g'✝ (bimap f✝ g✝ x✝) = bimap (f'✝ ∘ f✝) (g'✝ ∘ g✝) x✝
+                                                                                           -- 🎉 no goals
+                                                                                           -- 🎉 no goals
 #align is_lawful_bifunctor.const LawfulBifunctor.const
 
 instance Bifunctor.flip : Bifunctor (flip F)
@@ -136,6 +150,11 @@ instance Bifunctor.flip : Bifunctor (flip F)
 
 instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
   refine' { .. } <;> intros <;> simp [bimap, functor_norm]
+  -- ⊢ ∀ {α : Type u₁} {β : Type u₀} (x : _root_.flip F α β), bimap id id x = x
+                     -- ⊢ bimap id id x✝ = x✝
+                     -- ⊢ bimap f'✝ g'✝ (bimap f✝ g✝ x✝) = bimap (f'✝ ∘ f✝) (g'✝ ∘ g✝) x✝
+                                -- 🎉 no goals
+                                -- 🎉 no goals
 #align is_lawful_bifunctor.flip LawfulBifunctor.flip
 
 instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
@@ -143,6 +162,9 @@ instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
 
 instance Sum.lawfulBifunctor : LawfulBifunctor Sum := by
   refine' { .. } <;> aesop
+  -- ⊢ ∀ {α : Type ?u.4990} {β : Type ?u.4989} (x : α ⊕ β), bimap id id x = x
+                     -- 🎉 no goals
+                     -- 🎉 no goals
 #align sum.is_lawful_bifunctor Sum.lawfulBifunctor
 
 open Bifunctor Functor
@@ -153,6 +175,12 @@ instance (priority := 10) Bifunctor.functor {α} : Functor (F α) where map f x 
 instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} : LawfulFunctor (F α) :=
   -- Porting note: `mapConst` is required to prove new theorem
   by refine' { .. } <;> intros <;> simp [mapConst, Functor.map, functor_norm]
+                        -- ⊢ mapConst = map ∘ Function.const β✝
+                        -- ⊢ id <$> x✝ = x✝
+                        -- ⊢ (h✝ ∘ g✝) <$> x✝ = h✝ <$> g✝ <$> x✝
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 #align bifunctor.is_lawful_functor Bifunctor.lawfulFunctor
 
 section Bicompl
@@ -166,6 +194,11 @@ instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H)
 instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
     LawfulBifunctor (bicompl F G H) := by
   constructor <;> intros <;> simp [bimap, map_id, map_comp_map, functor_norm]
+  -- ⊢ ∀ {α : Type u_1} {β : Type u_2} (x : bicompl F G H α β), bimap id id x = x
+                  -- ⊢ bimap id id x✝ = x✝
+                  -- ⊢ bimap f'✝ g'✝ (bimap f✝ g✝ x✝) = bimap (f'✝ ∘ f✝) (g'✝ ∘ g✝) x✝
+                             -- 🎉 no goals
+                             -- 🎉 no goals
 #align function.bicompl.is_lawful_bifunctor Function.bicompl.lawfulBifunctor
 
 end Bicompl
@@ -181,6 +214,11 @@ instance Function.bicompr.bifunctor : Bifunctor (bicompr G F)
 instance Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :
     LawfulBifunctor (bicompr G F) := by
   constructor <;> intros <;> simp [bimap, functor_norm]
+  -- ⊢ ∀ {α : Type u₀} {β : Type u₁} (x : bicompr G F α β), bimap id id x = x
+                  -- ⊢ bimap id id x✝ = x✝
+                  -- ⊢ bimap f'✝ g'✝ (bimap f✝ g✝ x✝) = bimap (f'✝ ∘ f✝) (g'✝ ∘ g✝) x✝
+                             -- 🎉 no goals
+                             -- 🎉 no goals
 #align function.bicompr.is_lawful_bifunctor Function.bicompr.lawfulBifunctor
 
 end Bicompr

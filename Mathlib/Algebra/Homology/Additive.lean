@@ -53,12 +53,14 @@ instance hasNatScalar : SMul ℕ (C ⟶ D) :=
   ⟨fun n f =>
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.nsmul_comp, Preadditive.comp_nsmul] }⟩
+                               -- 🎉 no goals
 #align homological_complex.has_nat_scalar HomologicalComplex.hasNatScalar
 
 instance hasIntScalar : SMul ℤ (C ⟶ D) :=
   ⟨fun n f =>
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
+                               -- 🎉 no goals
 #align homological_complex.has_int_scalar HomologicalComplex.hasIntScalar
 
 @[simp]
@@ -94,18 +96,30 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
 instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+        -- 🎉 no goals
+                       -- 🎉 no goals
+                                      -- 🎉 no goals
+                                                     -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                                   -- 🎉 no goals
 
 -- porting note: proofs had to be provided here, otherwise Lean tries to apply
 -- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
   add_comp _ _ _ f f' g := by
     ext
+    -- ⊢ Hom.f ((f + f') ≫ g) i✝ = Hom.f (f ≫ g + f' ≫ g) i✝
     simp only [comp_f, add_f_apply]
+    -- ⊢ (Hom.f f i✝ + Hom.f f' i✝) ≫ Hom.f g i✝ = Hom.f f i✝ ≫ Hom.f g i✝ + Hom.f f' …
     rw [Preadditive.add_comp]
+    -- 🎉 no goals
   comp_add _ _ _ f g g' := by
     ext
+    -- ⊢ Hom.f (f ≫ (g + g')) i✝ = Hom.f (f ≫ g + f ≫ g') i✝
     simp only [comp_f, add_f_apply]
+    -- ⊢ Hom.f f i✝ ≫ (Hom.f g i✝ + Hom.f g' i✝) = Hom.f f i✝ ≫ Hom.f g i✝ + Hom.f f  …
     rw [Preadditive.comp_add]
+    -- 🎉 no goals
 
 /-- The `i`-th component of a chain map, as an additive map from chain maps to morphisms. -/
 @[simps!]
@@ -133,11 +147,17 @@ variable [HasEqualizers V] [HasCokernels V]
 instance homology_additive : (homologyFunctor V c i).Additive where
   map_add {_ _ f g} := by
     dsimp [homologyFunctor]
+    -- ⊢ homology.map (_ : dTo x✝¹ i ≫ dFrom x✝¹ i = 0) (_ : dTo x✝ i ≫ dFrom x✝ i =  …
     ext
+    -- ⊢ homology.π (dTo x✝¹ i) (dFrom x✝¹ i) (_ : dTo x✝¹ i ≫ dFrom x✝¹ i = 0) ≫ hom …
     simp only [homology.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
+    -- ⊢ kernelSubobjectMap (Hom.sqFrom (f + g) i) ≫ homology.π (dTo x✝ i) (dFrom x✝  …
     congr
+    -- ⊢ kernelSubobjectMap (Hom.sqFrom (f + g) i) = kernelSubobjectMap (Hom.sqFrom f …
     ext
+    -- ⊢ kernelSubobjectMap (Hom.sqFrom (f + g) i) ≫ Subobject.arrow (kernelSubobject …
     simp
+    -- 🎉 no goals
 #align homological_complex.homology_additive HomologicalComplex.homology_additive
 
 end HomologicalComplex
@@ -157,13 +177,18 @@ def Functor.mapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape �
       d := fun i j => F.map (C.d i j)
       shape := fun i j w => by
         dsimp only
+        -- ⊢ F.map (d C i j) = 0
         rw [C.shape _ _ w, F.map_zero]
+        -- 🎉 no goals
       d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
+                                       -- 🎉 no goals
   map f :=
     { f := fun i => F.map (f.f i)
       comm' := fun i j _ => by
         dsimp
+        -- ⊢ F.map (Hom.f f i) ≫ F.map (d Y✝ i j) = F.map (d X✝ i j) ≫ F.map (Hom.f f j)
         rw [← F.map_comp, ← F.map_comp, f.comm] }
+        -- 🎉 no goals
 #align category_theory.functor.map_homological_complex CategoryTheory.Functor.mapHomologicalComplex
 
 variable (V)
@@ -187,11 +212,14 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
     ReflectsIsomorphisms (F.mapHomologicalComplex c) :=
   ⟨fun f => by
     intro
+    -- ⊢ IsIso f
     haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
       IsIso.of_iso
         ((HomologicalComplex.eval W c n).mapIso (asIso ((F.mapHomologicalComplex c).map f)))
     haveI := fun n => isIso_of_reflects_iso (f.f n) F
+    -- ⊢ IsIso f
     exact HomologicalComplex.Hom.isIso_of_components f⟩
+    -- 🎉 no goals
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso
 
 /-- A natural transformation between functors induces a natural transformation
@@ -206,6 +234,7 @@ def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
     NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by aesop_cat
+                                                                                 -- 🎉 no goals
 #align category_theory.nat_trans.map_homological_complex_id CategoryTheory.NatTrans.mapHomologicalComplex_id
 
 @[simp]
@@ -214,6 +243,7 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : V ⥤
     NatTrans.mapHomologicalComplex (α ≫ β) c =
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c :=
   by aesop_cat
+     -- 🎉 no goals
 #align category_theory.nat_trans.map_homological_complex_comp CategoryTheory.NatTrans.mapHomologicalComplex_comp
 
 @[reassoc (attr := simp 1100)]
@@ -222,6 +252,7 @@ theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : V
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
       (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f :=
   by aesop_cat
+     -- 🎉 no goals
 #align category_theory.nat_trans.map_homological_complex_naturality CategoryTheory.NatTrans.mapHomologicalComplex_naturality
 
 /-- A natural isomorphism between functors induces a natural isomorphism
@@ -264,8 +295,11 @@ theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ 
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
       ChainComplex.of (fun n => F.obj (X n)) (fun n => F.map (d n)) fun n => by
         rw [← F.map_comp, sq n, Functor.map_zero] := by
+        -- 🎉 no goals
   refine' HomologicalComplex.ext rfl _
+  -- ⊢ ∀ (i j : α), ComplexShape.Rel (ComplexShape.down α) i j → HomologicalComplex …
   rintro i j (rfl : j + 1 = i)
+  -- ⊢ HomologicalComplex.d ((Functor.mapHomologicalComplex F (ComplexShape.down α) …
   simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
     id_comp]
 #align chain_complex.map_chain_complex_of ChainComplex.map_chain_complex_of
@@ -286,25 +320,44 @@ def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
   NatIso.ofComponents
     (fun X =>
       { hom := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
+                                                             -- 🎉 no goals
         inv := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
+                                                             -- 🎉 no goals
         hom_inv_id := by
           ext i
+          -- ⊢ Hom.f ((Hom.mk fun i => if h : i = j then eqToHom (_ : HomologicalComplex.X  …
           dsimp
+          -- ⊢ ((if h : i = j then eqToHom (_ : F.obj (if i = j then X else 0) = if i = j t …
           split_ifs with h
+          -- ⊢ eqToHom (_ : F.obj (if i = j then X else 0) = if i = j then F.obj X else 0)  …
           · simp [h]
+            -- 🎉 no goals
           · rw [zero_comp, if_neg h]
+            -- ⊢ 0 = 𝟙 (F.obj 0)
             exact (zero_of_source_iso_zero _ F.mapZeroObject).symm
+            -- 🎉 no goals
         inv_hom_id := by
           ext i
+          -- ⊢ Hom.f ((Hom.mk fun i => if h : i = j then eqToHom (_ : HomologicalComplex.X  …
           dsimp
+          -- ⊢ ((if h : i = j then eqToHom (_ : (if i = j then F.obj X else 0) = F.obj (if  …
           split_ifs with h
+          -- ⊢ eqToHom (_ : (if i = j then F.obj X else 0) = F.obj (if i = j then X else 0) …
           · simp [h]
+            -- 🎉 no goals
           · rw [zero_comp, if_neg h]
+            -- ⊢ 0 = 𝟙 0
             simp })
+            -- 🎉 no goals
     fun f => by
     ext i
+    -- ⊢ Hom.f ((single V c j ⋙ Functor.mapHomologicalComplex F c).map f ≫ ((fun X => …
     dsimp
+    -- ⊢ (F.map (if h : i = j then eqToHom (_ : X ((fun A => mk (fun i => if i = j th …
     split_ifs with h <;> simp [h]
+    -- ⊢ F.map (eqToHom (_ : X ((fun A => mk (fun i => if i = j then A else 0) fun i  …
+                         -- 🎉 no goals
+                         -- 🎉 no goals
 #align homological_complex.single_map_homological_complex HomologicalComplex.singleMapHomologicalComplex
 
 variable (F : V ⥤ W) [Functor.Additive F] (c)
@@ -312,25 +365,31 @@ variable (F : V ⥤ W) [Functor.Additive F] (c)
 @[simp]
 theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : V) :
     ((singleMapHomologicalComplex F c j).hom.app X).f j = eqToHom (by simp) := by
+                                                                      -- 🎉 no goals
   simp [singleMapHomologicalComplex]
+  -- 🎉 no goals
 #align homological_complex.single_map_homological_complex_hom_app_self HomologicalComplex.singleMapHomologicalComplex_hom_app_self
 
 @[simp]
 theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : V) :
     ((singleMapHomologicalComplex F c j).hom.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
+  -- 🎉 no goals
 #align homological_complex.single_map_homological_complex_hom_app_ne HomologicalComplex.singleMapHomologicalComplex_hom_app_ne
 
 @[simp]
 theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : V) :
     ((singleMapHomologicalComplex F c j).inv.app X).f j = eqToHom (by simp) := by
+                                                                      -- 🎉 no goals
   simp [singleMapHomologicalComplex]
+  -- 🎉 no goals
 #align homological_complex.single_map_homological_complex_inv_app_self HomologicalComplex.singleMapHomologicalComplex_inv_app_self
 
 @[simp]
 theorem singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : V) :
     ((singleMapHomologicalComplex F c j).inv.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
+  -- 🎉 no goals
 #align homological_complex.single_map_homological_complex_inv_app_ne HomologicalComplex.singleMapHomologicalComplex_inv_app_ne
 
 end HomologicalComplex
@@ -357,12 +416,18 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
         hom_inv_id := by
           ext (_|_)
           · simp
+            -- 🎉 no goals
           · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+            -- 🎉 no goals
         inv_hom_id := by
           ext (_|_)
           · simp
+            -- 🎉 no goals
           · exact IsZero.eq_of_src (isZero_zero _) _ _ })
+            -- 🎉 no goals
     fun f => by ext (_|_) <;> simp
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align chain_complex.single₀_map_homological_complex ChainComplex.single₀MapHomologicalComplex
 
 @[simp]
@@ -413,12 +478,18 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
         hom_inv_id := by
           ext (_|_)
           · simp
+            -- 🎉 no goals
           · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+            -- 🎉 no goals
         inv_hom_id := by
           ext (_|_)
           · simp
+            -- 🎉 no goals
           · exact IsZero.eq_of_src (isZero_zero _) _ _ })
+            -- 🎉 no goals
     fun f => by ext (_|_) <;> simp
+                              -- 🎉 no goals
+                              -- 🎉 no goals
 #align cochain_complex.single₀_map_homological_complex CochainComplex.single₀MapHomologicalComplex
 
 @[simp]

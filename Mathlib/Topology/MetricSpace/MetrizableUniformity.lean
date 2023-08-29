@@ -60,18 +60,24 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
   dist_self x :=
     (NNReal.coe_eq_zero _).2 <|
       nonpos_iff_eq_zero.1 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp [dist_self]
+                                                                                 -- 🎉 no goals
   dist_comm x y :=
     NNReal.coe_eq.2 <| by
       refine' reverse_surjective.iInf_congr _ fun l => _
+      -- ⊢ sum (zipWith d (y :: reverse l) (reverse l ++ [x])) = sum (zipWith d (x :: l …
       rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
       simp only [length, length_append]
+      -- 🎉 no goals
   dist_triangle x y z := by
     -- Porting note: added `unfold`
     unfold dist
+    -- ⊢ { dist := fun x y => ↑(⨅ (l : List X), sum (zipWith d (x :: l) (l ++ [y])))  …
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
+    -- ⊢ ⨅ (l : List X), sum (zipWith d (x :: l) (l ++ [z])) ≤ (⨅ (l : List X), sum ( …
     refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
+    -- ⊢ ⨅ (l : List X), sum (zipWith d (x :: l) (l ++ [z])) ≤ sum (zipWith d (x :: l …
     calc
       ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
@@ -98,6 +104,7 @@ theorem dist_ofPreNNDist_le (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x 
         y ≤
       d x y :=
   NNReal.coe_le_coe.2 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp
+                                                                            -- 🎉 no goals
 #align pseudo_metric_space.dist_of_prenndist_le PseudoMetricSpace.dist_ofPreNNDist_le
 
 /-- Consider a function `d : X → X → ℝ≥0` such that `d x x = 0` and `d x y = d y x` for all `x`,
@@ -116,24 +123,39 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     `d xₖ₊₁ xₖ₊₂ + ... + d xₙ₋₁ xₙ` are less than or equal to `L / 2`.
     Then `d x₀ xₖ ≤ L`, `d xₖ xₖ₊₁ ≤ L`, and `d xₖ₊₁ xₙ ≤ L`, thus `d x₀ xₙ ≤ 2 * L`. -/
   rw [dist_ofPreNNDist, ← NNReal.coe_two, ← NNReal.coe_mul, NNReal.mul_iInf, NNReal.coe_le_coe]
+  -- ⊢ d x y ≤ ⨅ (i : List X), 2 * sum (zipWith d (x :: i) (i ++ [y]))
   refine' le_ciInf fun l => _
+  -- ⊢ d x y ≤ 2 * sum (zipWith d (x :: l) (l ++ [y]))
   have hd₀_trans : Transitive fun x y => d x y = 0 := by
     intro a b c hab hbc
     rw [← nonpos_iff_eq_zero]
     simpa only [nonpos_iff_eq_zero, hab, hbc, dist_self c, max_self, mul_zero] using hd a b c c
   haveI : IsTrans X fun x y => d x y = 0 := ⟨hd₀_trans⟩
+  -- ⊢ d x y ≤ 2 * sum (zipWith d (x :: l) (l ++ [y]))
   induction' hn : length l using Nat.strong_induction_on with n ihn generalizing x y l
+  -- ⊢ d x y ≤ 2 * sum (zipWith d (x :: l) (l ++ [y]))
   simp only at ihn
+  -- ⊢ d x y ≤ 2 * sum (zipWith d (x :: l) (l ++ [y]))
   subst n
+  -- ⊢ d x y ≤ 2 * sum (zipWith d (x :: l) (l ++ [y]))
   set L := zipWith d (x::l) (l ++ [y])
+  -- ⊢ d x y ≤ 2 * sum L
   have hL_len : length L = length l + 1 := by simp
+  -- ⊢ d x y ≤ 2 * sum L
   cases' eq_or_ne (d x y) 0 with hd₀ hd₀
+  -- ⊢ d x y ≤ 2 * sum L
   · simp only [hd₀, zero_le]
+    -- 🎉 no goals
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
+  -- ⊢ d x y ≤ 2 * sum L
   · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
+    -- 🎉 no goals
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
+  -- ⊢ ∃ z z', d x z ≤ sum L ∧ d z z' ≤ sum L ∧ d z' y ≤ sum L
   have hs₀ : 0 ∈ s := by simp
+  -- ⊢ ∃ z z', d x z ≤ sum L ∧ d z z' ≤ sum L ∧ d z' y ≤ sum L
   have hsne : s.Nonempty := ⟨0, hs₀⟩
+  -- ⊢ ∃ z z', d x z ≤ sum L ∧ d z z' ≤ sum L ∧ d z' y ≤ sum L
   obtain ⟨M, hMl, hMs⟩ : ∃ M ≤ length l, IsGreatest s M := by
     have hs_ub : length l ∈ upperBounds s := by
       intro m hm
@@ -147,8 +169,11 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     have hs_bdd : BddAbove s := ⟨length l, hs_ub⟩
     exact ⟨sSup s, csSup_le hsne hs_ub, ⟨Nat.sSup_mem hsne hs_bdd, fun k => le_csSup hs_bdd⟩⟩
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
+  -- ⊢ ∃ z z', d x z ≤ sum L ∧ d z z' ≤ sum L ∧ d z' y ≤ sum L
   have hM_ltx : M < length (x::l) := lt_length_left_of_zipWith hM_lt
+  -- ⊢ ∃ z z', d x z ≤ sum L ∧ d z z' ≤ sum L ∧ d z' y ≤ sum L
   have hM_lty : M < length (l ++ [y]) := lt_length_right_of_zipWith hM_lt
+  -- ⊢ ∃ z z', d x z ≤ sum L ∧ d z z' ≤ sum L ∧ d z' y ≤ sum L
   refine' ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, _, _, _⟩
   · cases M with
     | zero =>
@@ -162,19 +187,29 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
         Option.to_list_some, take_append_of_le_length hMl.le]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, get_zipWith⟩)
+    -- 🎉 no goals
   · rcases hMl.eq_or_lt with (rfl | hMl)
+    -- ⊢ d (List.get (l ++ [y]) { val := length l, isLt := hM_lty }) y ≤ sum L
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
+      -- 🎉 no goals
     rw [get_append _ hMl]
+    -- ⊢ d (List.get l { val := M, isLt := hMl }) y ≤ sum L
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
+    -- ⊢ d (List.get l { val := M, isLt := hMl }) y ≤ sum L
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
+    -- ⊢ d (List.get l { val := M, isLt := hMl }) y ≤ sum L
     refine' (ihn _ hlen_lt _ y _ hlen).trans _
+    -- ⊢ 2 * sum (zipWith d (List.get l { val := M, isLt := hMl } :: drop (M + 1) l)  …
     rw [cons_get_drop_succ]
+    -- ⊢ 2 * sum (zipWith d (drop (↑{ val := M, isLt := hMl }) l) (drop (M + 1) l ++  …
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
       not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
+    -- ⊢ zipWith d (drop (↑{ val := M, isLt := hMl }) l) (drop (M + 1) l ++ [y]) = dr …
     rwa [zipWith_distrib_drop, drop, drop_append_of_le_length]
+    -- 🎉 no goals
 #align pseudo_metric_space.le_two_mul_dist_of_prenndist PseudoMetricSpace.le_two_mul_dist_ofPreNNDist
 
 end PseudoMetricSpace
@@ -270,7 +305,9 @@ protected noncomputable def UniformSpace.metricSpace (X : Type*) [UniformSpace X
 instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : TopologicalSpace.PseudoMetrizableSpace X := by
   letI := UniformSpace.pseudoMetricSpace X
+  -- ⊢ TopologicalSpace.PseudoMetrizableSpace X
   infer_instance
+  -- 🎉 no goals
 #align uniform_space.pseudo_metrizable_space UniformSpace.pseudoMetrizableSpace
 
 /-- A T₀ uniform space with countably generated `𝓤 X` is metrizable. This is not an instance to
@@ -278,5 +315,7 @@ avoid loops. -/
 theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (𝓤 X)] [T0Space X] :
     TopologicalSpace.MetrizableSpace X := by
   letI := UniformSpace.metricSpace X
+  -- ⊢ TopologicalSpace.MetrizableSpace X
   infer_instance
+  -- 🎉 no goals
 #align uniform_space.metrizable_space UniformSpace.metrizableSpace

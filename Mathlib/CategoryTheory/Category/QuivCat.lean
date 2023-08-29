@@ -79,14 +79,20 @@ def free : QuivCat.{v, u} ⥤ Cat.{max u v, u} where
       map_comp := fun f g => F.mapPath_comp f g }
   map_id V := by
     change (show Paths V ⥤ _ from _) = _
+    -- ⊢ (let_fun this := { obj := fun V => of (Paths ↑V), map := fun {X Y} F => Func …
     ext; swap
     apply eq_conj_eqToHom
+    -- ⊢ (let_fun this := { obj := fun V => of (Paths ↑V), map := fun {X Y} F => Func …
     rfl
+    -- 🎉 no goals
   map_comp {U _ _} F G := by
     change (show Paths U ⥤ _ from _) = _
+    -- ⊢ (let_fun this := { obj := fun V => of (Paths ↑V), map := fun {X Y} F => Func …
     ext; swap
     apply eq_conj_eqToHom
+    -- ⊢ (let_fun this := { obj := fun V => of (Paths ↑V), map := fun {X Y} F => Func …
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.free CategoryTheory.Cat.free
 
@@ -115,17 +121,26 @@ def adj : Cat.free ⊣ QuivCat.forget :=
         { toFun := fun F => Paths.of.comp F.toPrefunctor
           invFun := fun F => @lift V _ C _ F
           left_inv := fun F => Paths.ext_functor rfl (by simp)
+                                                         -- 🎉 no goals
           right_inv := by
             rintro ⟨obj, map⟩
+            -- ⊢ (fun F => Paths.of ⋙q F.toPrefunctor) ((fun F => lift F) { obj := obj, map : …
             dsimp only [Prefunctor.comp]
+            -- ⊢ { obj := fun X => (lift { obj := obj, map := map }).obj (Paths.of.obj X), ma …
             congr
+            -- ⊢ (fun {X Y} f => (lift { obj := obj, map := map }).map (Paths.of.map f)) = map
             funext X Y f
+            -- ⊢ (lift { obj := obj, map := map }).map (Paths.of.map f) = map f
             exact Category.id_comp _ }
+            -- 🎉 no goals
       homEquiv_naturality_left_symm := fun {V _ _} f g => by
         change (show Paths V ⥤ _ from _) = _
+        -- ⊢ (let_fun this := ↑((fun V C => { toFun := fun F => Paths.of ⋙q F.toPrefuncto …
         ext; swap
         apply eq_conj_eqToHom
+        -- ⊢ (let_fun this := ↑((fun V C => { toFun := fun F => Paths.of ⋙q F.toPrefuncto …
         rfl }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.adj CategoryTheory.QuivCat.adj
 

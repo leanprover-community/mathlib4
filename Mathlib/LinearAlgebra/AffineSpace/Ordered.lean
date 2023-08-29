@@ -50,22 +50,30 @@ variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
   simp only [lineMap_apply_module]
+  -- ⊢ (1 - r) • a + r • b ≤ (1 - r) • a' + r • b
   exact add_le_add_right (smul_le_smul_of_nonneg ha (sub_nonneg.2 hr)) _
+  -- 🎉 no goals
 #align line_map_mono_left lineMap_mono_left
 
 theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
+  -- ⊢ (1 - r) • a + r • b < (1 - r) • a' + r • b
   exact add_lt_add_right (smul_lt_smul_of_pos ha (sub_pos.2 hr)) _
+  -- 🎉 no goals
 #align line_map_strict_mono_left lineMap_strict_mono_left
 
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
+  -- ⊢ (1 - r) • a + r • b ≤ (1 - r) • a + r • b'
   exact add_le_add_left (smul_le_smul_of_nonneg hb hr) _
+  -- 🎉 no goals
 #align line_map_mono_right lineMap_mono_right
 
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
   simp only [lineMap_apply_module]
+  -- ⊢ (1 - r) • a + r • b < (1 - r) • a + r • b'
   exact add_lt_add_left (smul_lt_smul_of_pos hb hr) _
+  -- 🎉 no goals
 #align line_map_strict_mono_right lineMap_strict_mono_right
 
 theorem lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
@@ -76,17 +84,22 @@ theorem lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) 
 theorem lineMap_strict_mono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
     lineMap a b r < lineMap a' b' r := by
   rcases h₀.eq_or_lt with (rfl | h₀); · simpa
+  -- ⊢ ↑(lineMap a b) 0 < ↑(lineMap a' b') 0
+                                        -- 🎉 no goals
   exact (lineMap_mono_left ha.le h₁).trans_lt (lineMap_strict_mono_right hb h₀)
+  -- 🎉 no goals
 #align line_map_strict_mono_endpoints lineMap_strict_mono_endpoints
 
 theorem lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b r' ↔ a < b := by
   simp only [lineMap_apply_module]
+  -- ⊢ (1 - r) • a + r • b < (1 - r') • a + r' • b ↔ a < b
   rw [← lt_sub_iff_add_lt, add_sub_assoc, ← sub_lt_iff_lt_add', ← sub_smul, ← sub_smul,
     sub_sub_sub_cancel_left, smul_lt_smul_iff_of_pos (sub_pos.2 h)]
 #align line_map_lt_line_map_iff_of_lt lineMap_lt_lineMap_iff_of_lt
 
 theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_lt_lineMap_iff_of_lt h)
+                -- 🎉 no goals
 #align left_lt_line_map_iff_lt left_lt_lineMap_iff_lt
 
 theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
@@ -95,6 +108,7 @@ theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
 
 theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_lt_lineMap_iff_of_lt h)
+                -- 🎉 no goals
 #align line_map_lt_right_iff_lt lineMap_lt_right_iff_lt
 
 theorem right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
@@ -126,12 +140,14 @@ variable {a b : E} {r r' : k}
 
 theorem lineMap_le_lineMap_iff_of_lt (h : r < r') : lineMap a b r ≤ lineMap a b r' ↔ a ≤ b := by
   simp only [lineMap_apply_module]
+  -- ⊢ (1 - r) • a + r • b ≤ (1 - r') • a + r' • b ↔ a ≤ b
   rw [← le_sub_iff_add_le, add_sub_assoc, ← sub_le_iff_le_add', ← sub_smul, ← sub_smul,
     sub_sub_sub_cancel_left, smul_le_smul_iff_of_pos (sub_pos.2 h)]
 #align line_map_le_line_map_iff_of_lt lineMap_le_lineMap_iff_of_lt
 
 theorem left_le_lineMap_iff_le (h : 0 < r) : a ≤ lineMap a b r ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt h)
+                -- 🎉 no goals
 #align left_le_line_map_iff_le left_le_lineMap_iff_le
 
 @[simp]
@@ -150,6 +166,7 @@ theorem midpoint_le_left : midpoint k a b ≤ a ↔ b ≤ a :=
 
 theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt h)
+                -- 🎉 no goals
 #align line_map_le_right_iff_le lineMap_le_right_iff_le
 
 @[simp]
@@ -241,11 +258,18 @@ segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f c b`. -/
 theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
     f c ≤ lineMap (f a) (f b) r ↔ slope f a b ≤ slope f c b := by
   rw [← lineMap_apply_one_sub, ← lineMap_apply_one_sub _ _ r]
+  -- ⊢ f (↑(lineMap b a) (1 - r)) ≤ ↑(lineMap (f b) (f a)) (1 - r) ↔ slope f a b ≤  …
   revert h; generalize 1 - r = r'; clear! r; intro h
+  -- ⊢ 0 < (1 - r) * (b - a) → (f (↑(lineMap b a) (1 - r)) ≤ ↑(lineMap (f b) (f a)) …
+            -- ⊢ 0 < r' * (b - a) → (f (↑(lineMap b a) r') ≤ ↑(lineMap (f b) (f a)) r' ↔ slop …
+                                   -- ⊢ 0 < r' * (b - a) → (f (↑(lineMap b a) r') ≤ ↑(lineMap (f b) (f a)) r' ↔ slop …
+                                             -- ⊢ f (↑(lineMap b a) r') ≤ ↑(lineMap (f b) (f a)) r' ↔ slope f a b ≤ slope f (↑ …
   simp_rw [lineMap_apply, slope, vsub_eq_sub, vadd_eq_add, smul_eq_mul]
+  -- ⊢ f (r' * (a - b) + b) ≤ r' • (f a - f b) + f b ↔ (b - a)⁻¹ • (f b - f a) ≤ (b …
   rw [sub_add_eq_sub_sub_swap, sub_self, zero_sub, neg_mul_eq_mul_neg, neg_sub, le_inv_smul_iff h,
     smul_smul, mul_inv_cancel_right₀, le_sub_comm, ← neg_sub (f b), smul_neg, neg_add_eq_sub]
   · exact right_ne_zero_of_mul h.ne'
+    -- 🎉 no goals
 #align map_le_line_map_iff_slope_le_slope_right map_le_lineMap_iff_slope_le_slope_right
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly above the

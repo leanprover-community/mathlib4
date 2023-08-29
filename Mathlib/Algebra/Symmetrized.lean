@@ -199,10 +199,12 @@ theorem unsym_neg [Neg α] (a : αˢʸᵐ) : unsym (-a) = -unsym a :=
 
 theorem mul_def [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
     a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := by rfl
+                                                                      -- 🎉 no goals
 #align sym_alg.mul_def SymAlg.mul_def
 
 theorem unsym_mul [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
     unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := by rfl
+                                                                        -- 🎉 no goals
 #align sym_alg.unsym_mul SymAlg.unsym_mul
 
 theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : α) :
@@ -280,8 +282,10 @@ instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertib
   invOf := sym (⅟ a)
   invOf_mul_self := by
     rw [sym_mul_sym, mul_invOf_self, invOf_mul_self, one_add_one_eq_two, invOf_mul_self, sym_one]
+    -- 🎉 no goals
   mul_invOf_self := by
     rw [sym_mul_sym, mul_invOf_self, invOf_mul_self, one_add_one_eq_two, invOf_mul_self, sym_one]
+    -- 🎉 no goals
 
 @[simp]
 theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
@@ -302,18 +306,30 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
         mul_zero, sym_zero]
     mul_one := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_self_assoc, sym_unsym]
+      -- 🎉 no goals
     one_mul := fun _ => by
+      -- 🎉 no goals
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_self_assoc, sym_unsym]
     left_distrib := fun a b c => by
+      -- ⊢ ↑sym (⅟2 * (↑unsym a * (↑unsym b + ↑unsym c) + (↑unsym b * ↑unsym a + ↑unsym …
       -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
+      -- ⊢ ↑unsym a * (↑unsym b + ↑unsym c) + (↑unsym b * ↑unsym a + ↑unsym c * ↑unsym  …
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
+      -- ⊢ ↑unsym a * ↑unsym b + ↑unsym a * ↑unsym c + (↑unsym b * ↑unsym a + ↑unsym c  …
       congr 2
+      -- 🎉 no goals
+      -- 🎉 no goals
       rw [mul_add]
       abel
     right_distrib := fun a b c => by
+      -- ⊢ ↑sym (⅟2 * (↑unsym a * ↑unsym c + ↑unsym b * ↑unsym c + ↑unsym c * (↑unsym a …
       -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
+      -- ⊢ ↑unsym a * ↑unsym c + ↑unsym b * ↑unsym c + ↑unsym c * (↑unsym a + ↑unsym b) …
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
+      -- ⊢ ↑unsym a * ↑unsym c + ↑unsym b * ↑unsym c + (↑unsym c * ↑unsym a + ↑unsym c  …
       congr 2
+      -- 🎉 no goals
+      -- 🎉 no goals
       rw [mul_add]
       abel }
 
@@ -326,15 +342,18 @@ instance [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
 
 theorem unsym_mul_self [Semiring α] [Invertible (2 : α)] (a : αˢʸᵐ) :
     unsym (a * a) = unsym a * unsym a := by rw [mul_def, unsym_sym, ← two_mul, invOf_mul_self_assoc]
+                                            -- 🎉 no goals
 #align sym_alg.unsym_mul_self SymAlg.unsym_mul_self
 
 theorem sym_mul_self [Semiring α] [Invertible (2 : α)] (a : α) : sym (a * a) = sym a * sym a := by
   rw [sym_mul_sym, ← two_mul, invOf_mul_self_assoc]
+  -- 🎉 no goals
 #align sym_alg.sym_mul_self SymAlg.sym_mul_self
 
 theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertible (2 : α)]
     (a b : αˢʸᵐ) :
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
+                        -- 🎉 no goals
 #align sym_alg.mul_comm SymAlg.mul_comm
 
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
@@ -365,14 +384,20 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
     · rw [unsym_sym, sym_inj, ← mul_assoc, ← commute_half_left (unsym a), mul_assoc (⅟ 2) (unsym a),
         mul_assoc (⅟ 2) _ (unsym a), ← mul_add, ← mul_assoc]
       conv_rhs => rw [mul_add (unsym a)]
+      -- ⊢ ⅟2 * ⅟2 * (↑unsym a * ↑unsym b * ↑unsym (a * a) + ↑unsym b * ↑unsym a * ↑uns …
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
+      -- ⊢ ⅟2 * ⅟2 * (↑unsym a * ↑unsym b * ↑unsym (a * a) + ↑unsym b * ↑unsym a * ↑uns …
       rw [unsym_mul_self]
+      -- ⊢ ⅟2 * ⅟2 * (↑unsym a * ↑unsym b * (↑unsym a * ↑unsym a) + ↑unsym b * ↑unsym a …
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
+      -- ⊢ ⅟2 * ⅟2 * (↑unsym a * ↑unsym b * ↑unsym a * ↑unsym a + ↑unsym b * ↑unsym a * …
       convert mul_zero (⅟ (2 : α) * ⅟ (2 : α))
+      -- ⊢ ↑unsym a * ↑unsym b * ↑unsym a * ↑unsym a + ↑unsym b * ↑unsym a * ↑unsym a * …
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
 
     -- Rearrange RHS
     · rw [← mul_def, ← mul_def]
+      -- 🎉 no goals
 
 end SymAlg

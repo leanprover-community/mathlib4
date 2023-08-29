@@ -15,6 +15,8 @@ namespace Fin
 
 theorem eq_of_veq : ∀ {i j : Fin n}, i.val = j.val → i = j
   | ⟨iv, ilt₁⟩, ⟨jv, jlt₁⟩, h => by cases h; rfl
+                                    -- ⊢ { val := iv, isLt := ilt₁ } = { val := iv, isLt := jlt₁ }
+                                             -- 🎉 no goals
 
 theorem veq_of_eq : ∀ {i j : Fin n}, i = j → i.val = j.val
   | ⟨_, _⟩, _, rfl => rfl

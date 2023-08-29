@@ -74,9 +74,13 @@ theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a :=
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
   cases a <;> rfl
+  -- ⊢ Option.elim' b f none = Option.elim none b f
+              -- 🎉 no goals
+              -- 🎉 no goals
 
 
 theorem mem_some_iff {α : Type*} {a b : α} : a ∈ some b ↔ b = a := by simp
+                                                                      -- 🎉 no goals
 #align option.mem_some_iff Option.mem_some_iff
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
@@ -91,6 +95,7 @@ def decidableEqNone {o : Option α} : Decidable (o = none) :=
 instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
   | none => isTrue (by simp [false_imp_iff])
+                       -- 🎉 no goals
   | some a =>
       if h : p a then isTrue fun o e ↦ some_inj.1 e ▸ h
       else isFalse <| mt (fun H ↦ H _ rfl) h
@@ -98,6 +103,7 @@ instance decidableForallMem {p : α → Prop} [DecidablePred p] :
 instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∃ a ∈ o, p a)
   | none => isFalse fun ⟨a, ⟨h, _⟩⟩ ↦ by cases h
+                                         -- 🎉 no goals
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
@@ -114,25 +120,59 @@ theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
 @[simp]
 theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
+  -- ⊢ a ∈ toList none ↔ a ∈ none
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align option.mem_to_list Option.mem_toList
 
 instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
     IsCommutative (Option α) (liftOrGet f) :=
   ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
+                -- ⊢ liftOrGet f none b = liftOrGet f b none
+                            -- ⊢ liftOrGet f none none = liftOrGet f none none
+                            -- ⊢ liftOrGet f (some val✝) none = liftOrGet f none (some val✝)
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
+                                        -- 🎉 no goals
 
 instance liftOrGet_isAssociative (f : α → α → α) [IsAssociative α f] :
     IsAssociative (Option α) (liftOrGet f) :=
   ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
+                  -- ⊢ liftOrGet f (liftOrGet f none b) c = liftOrGet f none (liftOrGet f b c)
+                              -- ⊢ liftOrGet f (liftOrGet f none none) c = liftOrGet f none (liftOrGet f none c)
+                              -- ⊢ liftOrGet f (liftOrGet f (some val✝) none) c = liftOrGet f (some val✝) (lift …
+                                          -- ⊢ liftOrGet f (liftOrGet f none none) none = liftOrGet f none (liftOrGet f non …
+                                          -- ⊢ liftOrGet f (liftOrGet f none (some val✝)) none = liftOrGet f none (liftOrGe …
+                                          -- ⊢ liftOrGet f (liftOrGet f (some val✝) none) none = liftOrGet f (some val✝) (l …
+                                          -- ⊢ liftOrGet f (liftOrGet f (some val✝¹) (some val✝)) none = liftOrGet f (some  …
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
+                                                      -- 🎉 no goals
 
 instance liftOrGet_isIdempotent (f : α → α → α) [IsIdempotent α f] :
     IsIdempotent (Option α) (liftOrGet f) :=
   ⟨fun a ↦ by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
+              -- ⊢ liftOrGet f none none = none
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
   ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+              -- ⊢ liftOrGet f none none = none
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
   ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+              -- ⊢ liftOrGet f none none = none
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 
 #align option.lift_or_get_comm Option.liftOrGet_isCommutative
 #align option.lift_or_get_assoc Option.liftOrGet_isAssociative

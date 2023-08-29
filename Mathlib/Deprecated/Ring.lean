@@ -53,20 +53,33 @@ variable {f : α → β} (hf : IsSemiringHom f) {x y : α}
 
 /-- The identity map is a semiring homomorphism. -/
 theorem id : IsSemiringHom (@id α) := by refine' { .. } <;> intros <;> rfl
+                                                            -- ⊢ _root_.id 0 = 0
+                                                            -- ⊢ _root_.id 1 = 1
+                                                            -- ⊢ _root_.id (x✝ + y✝) = _root_.id x✝ + _root_.id y✝
+                                                            -- ⊢ _root_.id (x✝ * y✝) = _root_.id x✝ * _root_.id y✝
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
+                                                                       -- 🎉 no goals
 #align is_semiring_hom.id IsSemiringHom.id
 
 /-- The composition of two semiring homomorphisms is a semiring homomorphism. -/
 theorem comp (hf : IsSemiringHom f) {γ} [Semiring γ] {g : β → γ} (hg : IsSemiringHom g) :
     IsSemiringHom (g ∘ f) :=
   { map_zero := by simpa [map_zero hf] using map_zero hg
+                   -- 🎉 no goals
     map_one := by simpa [map_one hf] using map_one hg
+                  -- 🎉 no goals
     map_add := fun {x y} => by simp [map_add hf, map_add hg]
+                               -- 🎉 no goals
     map_mul := fun {x y} => by simp [map_mul hf, map_mul hg] }
+                               -- 🎉 no goals
 #align is_semiring_hom.comp IsSemiringHom.comp
 
 /-- A semiring homomorphism is an additive monoid homomorphism. -/
 theorem to_isAddMonoidHom (hf : IsSemiringHom f) : IsAddMonoidHom f :=
   { ‹IsSemiringHom f› with map_add := by apply @‹IsSemiringHom f›.map_add }
+                                         -- 🎉 no goals
 #align is_semiring_hom.to_is_add_monoid_hom IsSemiringHom.to_isAddMonoidHom
 
 /-- A semiring homomorphism is a monoid homomorphism. -/
@@ -101,29 +114,48 @@ variable {f : α → β} (hf : IsRingHom f) {x y : α}
 theorem map_zero (hf : IsRingHom f) : f 0 = 0 :=
   calc
     f 0 = f (0 + 0) - f 0 := by rw [hf.map_add]; simp
+                                -- ⊢ f 0 = f 0 + f 0 - f 0
+                                                 -- 🎉 no goals
     _ = 0 := by simp
+                -- 🎉 no goals
 #align is_ring_hom.map_zero IsRingHom.map_zero
 
 /-- Ring homomorphisms preserve additive inverses. -/
 theorem map_neg (hf : IsRingHom f) : f (-x) = -f x :=
   calc
     f (-x) = f (-x + x) - f x := by rw [hf.map_add]; simp
+                                    -- ⊢ f (-x) = f (-x) + f x - f x
+                                                     -- 🎉 no goals
     _ = -f x := by simp [hf.map_zero]
+                   -- 🎉 no goals
 #align is_ring_hom.map_neg IsRingHom.map_neg
 
 /-- Ring homomorphisms preserve subtraction. -/
 theorem map_sub (hf : IsRingHom f) : f (x - y) = f x - f y := by
   simp [sub_eq_add_neg, hf.map_add, hf.map_neg]
+  -- 🎉 no goals
 #align is_ring_hom.map_sub IsRingHom.map_sub
 
 /-- The identity map is a ring homomorphism. -/
 theorem id : IsRingHom (@id α) := by refine' { .. } <;> intros <;> rfl
+                                                        -- ⊢ _root_.id 1 = 1
+                                                        -- ⊢ _root_.id (x✝ * y✝) = _root_.id x✝ * _root_.id y✝
+                                                        -- ⊢ _root_.id (x✝ + y✝) = _root_.id x✝ + _root_.id y✝
+                                                                   -- 🎉 no goals
+                                                                   -- 🎉 no goals
+                                                                   -- 🎉 no goals
 #align is_ring_hom.id IsRingHom.id
 
 -- see Note [no instance on morphisms]
 /-- The composition of two ring homomorphisms is a ring homomorphism. -/
 theorem comp (hf : IsRingHom f) {γ} [Ring γ] {g : β → γ} (hg : IsRingHom g) : IsRingHom (g ∘ f) :=
   { map_add := fun x y => by simp [map_add hf]; rw [map_add hg]
+                             -- ⊢ g (f x + f y) = g (f x) + g (f y)
+                             -- ⊢ g (f x * f y) = g (f x) * g (f y)
+                  -- ⊢ g 1 = 1
+                                     -- 🎉 no goals
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
     map_mul := fun x y => by simp [map_mul hf]; rw [map_mul hg]
     map_one := by simp [map_one hf]; exact map_one hg }
 #align is_ring_hom.comp IsRingHom.comp

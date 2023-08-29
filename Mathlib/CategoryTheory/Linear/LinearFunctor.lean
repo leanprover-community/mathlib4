@@ -113,7 +113,9 @@ instance inverseLinear (e : C ≌ D) [e.functor.Additive] [e.functor.Linear R] :
   e.inverse.Linear R where
     map_smul r f := by
       apply e.functor.map_injective
+      -- ⊢ e.functor.map (e.inverse.map (f • r)) = e.functor.map (f • e.inverse.map r)
       simp
+      -- 🎉 no goals
 #align category_theory.equivalence.inverse_linear CategoryTheory.Equivalence.inverseLinear
 
 end Equivalence

@@ -73,6 +73,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     ∃ C : ℝ≥0,
       ∀ᶠ ε in 𝓝[>] 0, ∀ (x t) (_ : t ≤ K), μ (closedBall x (t * ε)) ≤ C * μ (closedBall x ε) := by
   let C := doublingConstant μ
+  -- ⊢ ∃ C, ∀ᶠ (ε : ℝ) in 𝓝[Ioi 0] 0, ∀ (x : α) (t : ℝ), t ≤ K → ↑↑μ (closedBall x  …
   have hμ :
     ∀ n : ℕ, ∀ᶠ ε in 𝓝[>] 0, ∀ x,
       μ (closedBall x ((2 : ℝ) ^ n * ε)) ≤ ↑(C ^ n) * μ (closedBall x ε) := by
@@ -88,8 +89,11 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
       _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
       _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ', ENNReal.coe_mul]
   rcases lt_or_le K 1 with (hK | hK)
+  -- ⊢ ∃ C, ∀ᶠ (ε : ℝ) in 𝓝[Ioi 0] 0, ∀ (x : α) (t : ℝ), t ≤ K → ↑↑μ (closedBall x  …
   · refine' ⟨1, _⟩
+    -- ⊢ ∀ᶠ (ε : ℝ) in 𝓝[Ioi 0] 0, ∀ (x : α) (t : ℝ), t ≤ K → ↑↑μ (closedBall x (t *  …
     simp only [ENNReal.coe_one, one_mul]
+    -- ⊢ ∀ᶠ (ε : ℝ) in 𝓝[Ioi 0] 0, ∀ (x : α) (t : ℝ), t ≤ K → ↑↑μ (closedBall x (t *  …
     exact
       eventually_mem_nhdsWithin.mono fun ε hε x t ht =>
         measure_mono <| closedBall_subset_closedBall (by nlinarith [mem_Ioi.mp hε])
@@ -98,9 +102,13 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
         ((hμ ⌈Real.logb 2 K⌉₊).and eventually_mem_nhdsWithin).mono fun ε hε x t ht =>
           le_trans (measure_mono <| closedBall_subset_closedBall _) (hε.1 x)⟩
     refine' mul_le_mul_of_nonneg_right (ht.trans _) (mem_Ioi.mp hε.2).le
+    -- ⊢ K ≤ 2 ^ ⌈Real.logb 2 K⌉₊
     conv_lhs => rw [← Real.rpow_logb two_pos (by norm_num) (by linarith : 0 < K)]
+    -- ⊢ 2 ^ Real.logb 2 K ≤ 2 ^ ⌈Real.logb 2 K⌉₊
     rw [← Real.rpow_nat_cast]
+    -- ⊢ 2 ^ Real.logb 2 K ≤ 2 ^ ↑⌈Real.logb 2 K⌉₊
     exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
+    -- 🎉 no goals
 #align is_unif_loc_doubling_measure.exists_eventually_forall_measure_closed_ball_le_mul IsUnifLocDoublingMeasure.exists_eventually_forall_measure_closedBall_le_mul
 
 /-- A variant of `IsUnifLocDoublingMeasure.doublingConstant` which allows for scaling the
@@ -120,16 +128,26 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
         ∀ (x t r) (_ : t ∈ Ioc 0 K) (_ : r ≤ R),
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
+  -- ⊢ ∃ R, 0 < R ∧ ∀ (x : α) (t r : ℝ), t ∈ Ioc 0 K → r ≤ R → ↑↑μ (closedBall x (t …
   rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
+  -- ⊢ ∃ R, 0 < R ∧ ∀ (x : α) (t r : ℝ), t ∈ Ioc 0 K → r ≤ R → ↑↑μ (closedBall x (t …
   refine' ⟨R, Rpos, fun x t r ht hr => _⟩
+  -- ⊢ ↑↑μ (closedBall x (t * r)) ≤ ↑(scalingConstantOf μ K) * ↑↑μ (closedBall x r)
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
+    -- ⊢ ↑↑μ (closedBall x (t * r)) ≤ ↑(scalingConstantOf μ K) * ↑↑μ (closedBall x r)
     simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
+    -- 🎉 no goals
   · simp only [mul_zero, closedBall_zero]
+    -- ⊢ ↑↑μ {x} ≤ ↑(scalingConstantOf μ K) * ↑↑μ {x}
     refine' le_mul_of_one_le_of_le _ le_rfl
+    -- ⊢ 1 ≤ ↑(scalingConstantOf μ K)
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
+    -- 🎉 no goals
   · apply (hR ⟨rpos, hr⟩ x t ht.2).trans _
+    -- ⊢ ↑(Classical.choose (_ : ∃ C, ∀ᶠ (ε : ℝ) in 𝓝[Ioi 0] 0, ∀ (x : α) (t : ℝ), t  …
     exact mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _
+    -- 🎉 no goals
 #align is_unif_loc_doubling_measure.eventually_measure_mul_le_scaling_constant_of_mul IsUnifLocDoublingMeasure.eventually_measure_mul_le_scalingConstantOf_mul
 
 theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
@@ -137,13 +155,16 @@ theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
   filter_upwards [Classical.choose_spec
       (exists_eventually_forall_measure_closedBall_le_mul μ K)]with r hr x
   exact (hr x K le_rfl).trans (mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _)
+  -- 🎉 no goals
 #align is_unif_loc_doubling_measure.eventually_measure_le_scaling_constant_mul IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul
 
 theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,
       μ (closedBall x r) ≤ scalingConstantOf μ K⁻¹ * μ (closedBall x (K * r)) := by
   convert eventually_nhdsWithin_pos_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
+  -- ⊢ x✝ = K⁻¹ * (K * x✝)
   simp [inv_mul_cancel_left₀ hK.ne']
+  -- 🎉 no goals
 #align is_unif_loc_doubling_measure.eventually_measure_le_scaling_constant_mul' IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul'
 
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one

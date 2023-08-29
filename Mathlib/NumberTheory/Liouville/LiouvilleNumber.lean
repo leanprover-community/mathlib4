@@ -84,10 +84,13 @@ protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / 
 theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
     Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
   convert(summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
+  -- 🎉 no goals
 #align liouville_number.remainder_summable LiouvilleNumber.remainder_summable
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
   tsum_pos (remainder_summable hm k) (fun _ => by positivity) 0 (by positivity)
+                                                  -- 🎉 no goals
+                                                                    -- 🎉 no goals
 #align liouville_number.remainder_pos LiouvilleNumber.remainder_pos
 
 theorem partialSum_succ (m : ℝ) (n : ℕ) :
@@ -128,10 +131,12 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     -- split the sum in the exponent and massage
     _ = ∑' i : ℕ, (1 / m) ^ i * (1 / m ^ (n + 1)!) :=
     by simp only [pow_add, one_div, mul_inv, inv_pow]
+       -- 🎉 no goals
     -- factor the constant `(1 / m ^ (n + 1)!)` out of the series
     _ = (∑' i, (1 / m) ^ i) * (1 / m ^ (n + 1)!) := tsum_mul_right
     -- the series is the geometric series
     _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_1 (by positivity) mi]
+                                                 -- 🎉 no goals
 #align liouville_number.remainder_lt' LiouvilleNumber.remainder_lt'
 
 theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
@@ -141,6 +146,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- the second factors coincide (and are non-negative),
       -- the first factors satisfy the inequality `sub_one_div_inv_le_two`
       mul_le_mul_of_nonneg_right (sub_one_div_inv_le_two hm) (by positivity)
+                                                                 -- 🎉 no goals
     _ = 2 / m ^ (n + 1)! := (mul_one_div 2 _)
     _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg ((· / ·) 2) (congr_arg (Pow.pow m) (mul_comm _ _)))
     _ ≤ 1 / m ^ (n ! * n) := by
@@ -153,6 +159,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       refine' (mul_le_mul_right _).mpr _
       -- solve all the inequalities `0 < m ^ ??`
       any_goals exact pow_pos (zero_lt_two.trans_le hm) _
+      -- ⊢ 2 ≤ m ^ n !
       -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
       exact _root_.trans (_root_.trans hm (pow_one _).symm.le)
         (pow_mono (one_le_two.trans hm) n.factorial_pos)
@@ -174,15 +181,22 @@ numbers where the denominator is `m ^ k!`. -/
 theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) :
     ∃ p : ℕ, partialSum m k = p / (m ^ k ! : ℝ) := by
   induction' k with k h
+  -- ⊢ ∃ p, partialSum (↑m) Nat.zero = ↑p / ↑(m ^ Nat.zero !)
   · exact ⟨1, by rw [partialSum, range_one, sum_singleton, Nat.cast_one, Nat.factorial,
       pow_one, pow_one]⟩
   · rcases h with ⟨p_k, h_k⟩
+    -- ⊢ ∃ p, partialSum (↑m) (Nat.succ k) = ↑p / ↑(m ^ (Nat.succ k)!)
     use p_k * m ^ ((k + 1)! - k !) + 1
+    -- ⊢ partialSum (↑m) (Nat.succ k) = ↑(p_k * m ^ ((k + 1)! - k !) + 1) / ↑(m ^ (Na …
     rw [partialSum_succ, h_k, div_add_div, div_eq_div_iff, add_mul]
     · norm_cast
+      -- ⊢ p_k * m ^ (k + 1)! * m ^ (Nat.succ k)! + m ^ k ! * 1 * m ^ (Nat.succ k)! = ( …
       rw [add_mul, one_mul, Nat.factorial_succ, add_mul, one_mul, add_tsub_cancel_right, pow_add]
+      -- ⊢ p_k * (m ^ (k * k !) * m ^ k !) * (m ^ (k * k !) * m ^ k !) + m ^ k ! * 1 *  …
       simp [mul_assoc]
+      -- 🎉 no goals
     all_goals positivity
+    -- 🎉 no goals
 #align liouville_number.partial_sum_eq_rat LiouvilleNumber.partialSum_eq_rat
 
 end LiouvilleNumber
@@ -192,17 +206,27 @@ open LiouvilleNumber
 theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvilleNumber m) := by
   -- two useful inequalities
   have mZ1 : 1 < (m : ℤ) := by norm_cast
+  -- ⊢ Liouville (liouvilleNumber ↑m)
   have m1 : 1 < (m : ℝ) := by norm_cast
+  -- ⊢ Liouville (liouvilleNumber ↑m)
   intro n
+  -- ⊢ ∃ a b, 1 < b ∧ liouvilleNumber ↑m ≠ ↑a / ↑b ∧ |liouvilleNumber ↑m - ↑a / ↑b| …
   -- the first `n` terms sum to `p / m ^ k!`
   rcases partialSum_eq_rat (zero_lt_two.trans_le hm) n with ⟨p, hp⟩
+  -- ⊢ ∃ a b, 1 < b ∧ liouvilleNumber ↑m ≠ ↑a / ↑b ∧ |liouvilleNumber ↑m - ↑a / ↑b| …
   refine' ⟨p, m ^ n !, by rw [Nat.cast_pow]; exact one_lt_pow mZ1 n.factorial_ne_zero, _⟩
+  -- ⊢ liouvilleNumber ↑m ≠ ↑↑p / ↑↑(m ^ n !) ∧ |liouvilleNumber ↑m - ↑↑p / ↑↑(m ^  …
   push_cast
+  -- ⊢ liouvilleNumber ↑m ≠ ↑p / ↑m ^ n ! ∧ |liouvilleNumber ↑m - ↑p / ↑m ^ n !| <  …
   rw [Nat.cast_pow] at hp
+  -- ⊢ liouvilleNumber ↑m ≠ ↑p / ↑m ^ n ! ∧ |liouvilleNumber ↑m - ↑p / ↑m ^ n !| <  …
   -- separate out the sum of the first `n` terms and the rest
   rw [← partialSum_add_remainder m1 n, ← hp]
+  -- ⊢ partialSum (↑m) n + remainder (↑m) n ≠ partialSum (↑m) n ∧ |partialSum (↑m)  …
   have hpos := remainder_pos m1 n
+  -- ⊢ partialSum (↑m) n + remainder (↑m) n ≠ partialSum (↑m) n ∧ |partialSum (↑m)  …
   simpa [abs_of_pos hpos, hpos.ne'] using @remainder_lt n m (by assumption_mod_cast)
+  -- 🎉 no goals
 #align liouville_liouville_number liouville_liouvilleNumber
 
 theorem transcendental_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) :

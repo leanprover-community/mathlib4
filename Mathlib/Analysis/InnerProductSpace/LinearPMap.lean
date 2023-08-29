@@ -77,6 +77,7 @@ variable {T : E →ₗ.[𝕜] F} {S : F →ₗ.[𝕜] E}
 protected theorem IsFormalAdjoint.symm (h : T.IsFormalAdjoint S) :
     S.IsFormalAdjoint T := fun y _ => by
   rw [← inner_conj_symm, ← inner_conj_symm (y : F), h]
+  -- 🎉 no goals
 #align linear_pmap.is_formal_adjoint.symm LinearPMap.IsFormalAdjoint.symm
 
 variable (T)
@@ -89,11 +90,17 @@ def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
     rw [Set.mem_setOf_eq, LinearMap.map_zero, LinearMap.zero_comp]
+    -- ⊢ Continuous ↑0
     exact continuous_zero
+                       -- ⊢ Continuous ↑(LinearMap.comp (↑(innerₛₗ 𝕜) a✝ + ↑(innerₛₗ 𝕜) b✝) T.toFun)
+                                                                      -- 🎉 no goals
+    -- 🎉 no goals
   add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
     rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
+    -- ⊢ Continuous ↑(LinearMap.comp (↑(starRingEnd 𝕜) a • ↑(innerₛₗ 𝕜) x) T.toFun)
     exact hx.const_smul (conj a)
+    -- 🎉 no goals
 #align linear_pmap.adjoint_domain LinearPMap.adjointDomain
 
 /-- The operator `λ x, ⟪y, T x⟫` considered as a continuous linear operator from `T.adjointDomain`
@@ -140,6 +147,7 @@ def adjointAux : T.adjointDomain →ₗ[𝕜] E where
       rw [adjointDomainMkClmExtend_apply, adjointDomainMkClmExtend_apply,
         adjointDomainMkClmExtend_apply]
       simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, inner_add_left]
+      -- 🎉 no goals
   map_smul' _ _ :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
@@ -147,7 +155,9 @@ def adjointAux : T.adjointDomain →ₗ[𝕜] E where
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- mathlib3 was finished here
       rw [adjointDomainMkClmExtend_apply, adjointDomainMkClmExtend_apply]
+      -- ⊢ inner (↑(x✝² • x✝¹)) (↑T x✝) = ↑(starRingEnd 𝕜) x✝² * inner (↑x✝¹) (↑T x✝)
       simp only [Submodule.coe_smul_of_tower, inner_smul_left]
+      -- 🎉 no goals
 #align linear_pmap.adjoint_aux LinearPMap.adjointAux
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
@@ -157,7 +167,9 @@ theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
   -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
   -- mathlib3 was finished here
   simp only [AddHom.coe_mk, InnerProductSpace.toDual_symm_apply]
+  -- ⊢ ↑(adjointDomainMkClmExtend hT y) ↑x = inner (↑y) (↑T x)
   rw [adjointDomainMkClmExtend_apply]
+  -- 🎉 no goals
 #align linear_pmap.adjoint_aux_inner LinearPMap.adjointAux_inner
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
@@ -184,21 +196,30 @@ variable {T}
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
   cases' h with w hw
+  -- ⊢ y ∈ T†.domain
   rw [T.mem_adjoint_domain_iff]
+  -- ⊢ Continuous ↑(LinearMap.comp (↑(innerₛₗ 𝕜) y) T.toFun)
   -- Porting note: was `by continuity`
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := ContinuousLinearMap.continuous _
+  -- ⊢ Continuous ↑(LinearMap.comp (↑(innerₛₗ 𝕜) y) T.toFun)
   convert this using 1
+  -- ⊢ ↑(LinearMap.comp (↑(innerₛₗ 𝕜) y) T.toFun) = ↑(ContinuousLinearMap.comp (↑(i …
   exact funext fun x => (hw x).symm
+  -- 🎉 no goals
 #align linear_pmap.mem_adjoint_domain_of_exists LinearPMap.mem_adjoint_domain_of_exists
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
+  -- ⊢ ↑(if hT : Dense ↑T.domain then adjointAux hT else 0) y = 0
   simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
+  -- 🎉 no goals
 #align linear_pmap.adjoint_apply_of_not_dense LinearPMap.adjoint_apply_of_not_dense
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
+  -- ⊢ ↑(if hT : Dense ↑T.domain then adjointAux hT else 0) y = ↑(adjointAux hT) y
   simp only [hT, dif_pos, LinearMap.coe_mk]
+  -- 🎉 no goals
 #align linear_pmap.adjoint_apply_of_dense LinearPMap.adjoint_apply_of_dense
 
 theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) :
@@ -219,6 +240,7 @@ theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
       ⟨S ⟨x, hx⟩, h.symm ⟨x, hx⟩⟩,-- Equality on `S.domain` follows from equality
   -- `⟪v, S x⟫ = ⟪v, T.adjoint y⟫` for all `v : T.domain`:
   fun _ _ hxy => (adjoint_apply_eq hT _ fun _ => by rw [h.symm, hxy]).symm⟩
+                                                    -- 🎉 no goals
 #align linear_pmap.is_formal_adjoint.le_adjoint LinearPMap.IsFormalAdjoint.le_adjoint
 
 end LinearPMap
@@ -234,13 +256,18 @@ as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
+  -- ⊢ x ∈ (LinearPMap.adjoint (LinearMap.toPMap (↑A) p)).domain ↔ x ∈ (LinearMap.t …
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
+    -- 🎉 no goals
   refine' LinearPMap.adjoint_apply_eq _ _ fun v => _
+  -- ⊢ Dense ↑(LinearMap.toPMap (↑A) p).domain
   · -- Porting note: was simply `hp` as an argument above
     simpa using hp
+    -- 🎉 no goals
   · simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]
+    -- 🎉 no goals
 #align continuous_linear_map.to_pmap_adjoint_eq_adjoint_to_pmap_of_dense ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense
 
 end ContinuousLinearMap
@@ -265,7 +292,9 @@ domain is dense, but the choice of the junk value implies that a `LinearPMap` ca
 if it does not have dense domain. -/
 theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.domain : Set E) := by
   by_contra h
+  -- ⊢ False
   rw [isSelfAdjoint_def] at hA
+  -- ⊢ False
   have h' : A.domain = ⊤ := by
     rw [← hA, Submodule.eq_top_iff']
     intro x
@@ -273,6 +302,7 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
     refine (innerSL 𝕜 x).cont.comp ?_
     simp [adjoint, h, continuous_const]
   simp [h'] at h
+  -- 🎉 no goals
 
 end LinearPMap
 

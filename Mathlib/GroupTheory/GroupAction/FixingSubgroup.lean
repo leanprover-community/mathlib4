@@ -52,6 +52,7 @@ def fixingSubmonoid (s : Set α) : Submonoid M
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
   one_mem' _ := one_smul _ _
   mul_mem' {x y} hx hy z := by rw [mul_smul, hy z, hx z]
+                               -- 🎉 no goals
 #align fixing_submonoid fixingSubmonoid
 #align fixing_add_submonoid fixingAddSubmonoid
 
@@ -113,6 +114,7 @@ variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 @[to_additive " The additive subgroup fixing a set under an `AddAction`. "]
 def fixingSubgroup (s : Set α) : Subgroup M :=
   { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
+                                                        -- 🎉 no goals
 #align fixing_subgroup fixingSubgroup
 #align fixing_add_subgroup fixingAddSubgroup
 

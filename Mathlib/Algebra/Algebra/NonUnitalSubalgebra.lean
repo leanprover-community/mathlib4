@@ -64,6 +64,10 @@ instance : SetLike (NonUnitalSubalgebra R A) A
     where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+                             -- ⊢ { toNonUnitalSubsemiring := toNonUnitalSubsemiring✝, smul_mem' := smul_mem'✝ …
+                                      -- ⊢ { toNonUnitalSubsemiring := toNonUnitalSubsemiring✝¹, smul_mem' := smul_mem' …
+                                               -- ⊢ toNonUnitalSubsemiring✝¹ = toNonUnitalSubsemiring✝
+                                                      -- 🎉 no goals
 
 instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A
     where
@@ -101,6 +105,7 @@ theorem toNonUnitalSubsemiring_injective :
       (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A) :=
   fun S T h =>
   ext fun x => by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
+                  -- 🎉 no goals
 
 theorem toNonUnitalSubsemiring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubsemiring = U.toNonUnitalSubsemiring ↔ S = U :=
@@ -116,6 +121,7 @@ theorem coe_toSubmodule (S : NonUnitalSubalgebra R A) : (↑S.toSubmodule : Set 
 theorem toSubmodule_injective :
     Function.Injective (toSubmodule : NonUnitalSubalgebra R A → Submodule R A) := fun S T h =>
   ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
+                  -- 🎉 no goals
 
 theorem toSubmodule_inj {S U : NonUnitalSubalgebra R A} : S.toSubmodule = U.toSubmodule ↔ S = U :=
   toSubmodule_injective.eq_iff
@@ -127,8 +133,11 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
   { S.toNonUnitalSubsemiring.copy s hs with
     smul_mem' := fun r a (ha : a ∈ s) => by
       show r • a ∈ s
+      -- ⊢ r • a ∈ s
       rw [hs] at ha ⊢
+      -- ⊢ r • a ∈ ↑S
       exact S.smul_mem' r ha }
+      -- 🎉 no goals
 
 @[simp]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -160,6 +169,7 @@ theorem toNonUnitalSubring_injective {R : Type u} {A : Type v} [CommRing R] [Non
     [Module R A] :
     Function.Injective (toNonUnitalSubring : NonUnitalSubalgebra R A → NonUnitalSubring A) :=
   fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
+                               -- 🎉 no goals
 
 theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     {S U : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
@@ -198,6 +208,7 @@ def toSubmodule' : NonUnitalSubalgebra R A ↪o Submodule R A
   toEmbedding :=
     { toFun := fun S => S.toSubmodule
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
+                                     -- 🎉 no goals
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /-- The forgetful map from `NonUnitalSubalgebra` to `NonUnitalSubsemiring` as an
@@ -207,6 +218,7 @@ def toNonUnitalSubsemiring' : NonUnitalSubalgebra R A ↪o NonUnitalSubsemiring 
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubsemiring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
+                                     -- 🎉 no goals
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 /-- The forgetful map from `NonUnitalSubalgebra` to `NonUnitalSubsemiring` as an
@@ -217,6 +229,7 @@ def toNonUnitalSubring' {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
+                                     -- 🎉 no goals
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 section
@@ -296,7 +309,9 @@ def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
   { S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) with
     smul_mem' := fun r b hb => by
       rcases hb with ⟨a, ha, rfl⟩
+      -- ⊢ r • ↑↑f a ∈ { toAddSubmonoid := src✝.toAddSubmonoid, mul_mem' := (_ : ∀ {a b …
       exact map_smul f r a ▸ Set.mem_image_of_mem f (S.smul_mem' r ha) }
+      -- 🎉 no goals
 
 theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalSubalgebra R B) ≤ map f S₂ :=
@@ -407,6 +422,8 @@ variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F R A 
 protected def range (φ : F) : NonUnitalSubalgebra R B where
   toNonUnitalSubsemiring := NonUnitalRingHom.srange (φ : A →ₙ+* B)
   smul_mem' := fun r a => by rintro ⟨a, rfl⟩; exact ⟨r • a, map_smul φ r a⟩
+                             -- ⊢ r • ↑↑φ a ∈ (NonUnitalRingHom.srange ↑φ).toAddSubmonoid.toAddSubsemigroup.ca …
+                                              -- 🎉 no goals
 
 @[simp]
 theorem mem_range (φ : F) {y : B} :
@@ -421,8 +438,11 @@ theorem mem_range_self (φ : F) (x : A) :
 theorem coe_range (φ : F) :
     ((NonUnitalAlgHom.range φ : NonUnitalSubalgebra R B) : Set B) = Set.range (φ : A → B) := by
   ext
+  -- ⊢ x✝ ∈ ↑(NonUnitalAlgHom.range φ) ↔ x✝ ∈ Set.range ↑φ
   rw [SetLike.mem_coe, mem_range]
+  -- ⊢ (∃ x, ↑φ x = x✝) ↔ x✝ ∈ Set.range ↑φ
   rfl
+  -- 🎉 no goals
 
 theorem range_comp (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
     NonUnitalAlgHom.range (g.comp f) = (NonUnitalAlgHom.range f).map g :=
@@ -463,11 +483,15 @@ def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A
     where
   carrier := {a | (ϕ a : B) = ψ a}
   zero_mem' := by rw [Set.mem_setOf_eq, map_zero, map_zero]
+                  -- 🎉 no goals
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
+    -- 🎉 no goals
     rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
   mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
     rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
+    -- 🎉 no goals
   smul_mem' r x (hx : ϕ x = ψ x) := by rw [Set.mem_setOf_eq, map_smul, map_smul, hx]
+                                       -- 🎉 no goals
 
 @[simp]
 theorem mem_equalizer (φ ψ : F) (x : A) :
@@ -503,11 +527,17 @@ def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
           · exact fun x (hx : x ∈ NonUnitalSubsemiring.closure s) y
               (hy : y ∈ NonUnitalSubsemiring.closure s) => Submodule.subset_span (mul_mem hy hx)
           · exact fun x _hx => (mul_zero x).symm ▸ Submodule.zero_mem _
+            -- 🎉 no goals
           · exact fun x y hx hy z hz => (mul_add z x y).symm ▸ add_mem (hx z hz) (hy z hz)
+            -- 🎉 no goals
           · exact fun r x hx y hy => (mul_smul_comm r y x).symm ▸ SMulMemClass.smul_mem r (hx y hy)
+            -- 🎉 no goals
         · exact (zero_mul b).symm ▸ Submodule.zero_mem _
+          -- 🎉 no goals
         · exact fun x y => (add_mul x y b).symm ▸ add_mem
+          -- 🎉 no goals
         · exact fun r x hx => (smul_mul_assoc r x b).symm ▸ SMulMemClass.smul_mem r hx }
+          -- 🎉 no goals
 
 theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
@@ -550,14 +580,18 @@ lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
   (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
 Subtype.recOn a <| fun b hb => by
   refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
+  -- ⊢ ∃ x, p { val := b, property := x }
   apply adjoin_induction hb
   · exact fun x hx => ⟨subset_adjoin R hx, Hs x hx⟩
+    -- 🎉 no goals
   · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
       ⟨add_mem hx' hy', Hadd _ _ hx hy⟩
   · exact ⟨_, H0⟩
+    -- 🎉 no goals
   · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
       ⟨mul_mem hx' hy', Hmul _ _ hx hy⟩
   · exact fun r x hx => Exists.elim hx <| fun hx' hx => ⟨SMulMemClass.smul_mem r hx', Hsmul r _ hx⟩
+    -- 🎉 no goals
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) :=
   fun s S =>
@@ -591,6 +625,8 @@ variable (R A)
 @[simp]
 theorem adjoin_empty : adjoin R (∅ : Set A) = ⊥ :=
   show adjoin R ⊥ = ⊥ by apply GaloisConnection.l_bot; exact NonUnitalAlgebra.gc
+                         -- ⊢ GaloisConnection (adjoin R) ?u
+                                                       -- 🎉 no goals
 
 @[simp]
 theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
@@ -636,11 +672,15 @@ theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
+  -- ⊢ S ≤ S ⊔ T
   exact le_sup_left
+  -- 🎉 no goals
 
 theorem mem_sup_right {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
+  -- ⊢ T ≤ S ⊔ T
   exact le_sup_right
+  -- 🎉 no goals
 
 theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
     x * y ∈ S ⊔ T :=
@@ -674,28 +714,34 @@ theorem coe_sInf (S : Set (NonUnitalSubalgebra R A)) : (↑(sInf S) : Set A) = �
 
 theorem mem_sInf {S : Set (NonUnitalSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
+  -- 🎉 no goals
 
 @[simp]
 theorem sInf_toSubmodule (S : Set (NonUnitalSubalgebra R A)) :
     (sInf S).toSubmodule = sInf (NonUnitalSubalgebra.toSubmodule '' S) :=
   SetLike.coe_injective <| by simp
+                              -- 🎉 no goals
 
 @[simp]
 theorem sInf_toNonUnitalSubsemiring (S : Set (NonUnitalSubalgebra R A)) :
     (sInf S).toNonUnitalSubsemiring = sInf (NonUnitalSubalgebra.toNonUnitalSubsemiring '' S) :=
   SetLike.coe_injective <| by simp
+                              -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
+                                           -- 🎉 no goals
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+                                        -- 🎉 no goals
 
 @[simp]
 theorem iInf_toSubmodule {ι : Sort*} (S : ι → NonUnitalSubalgebra R A) :
     (⨅ i, S i).toSubmodule = ⨅ i, (S i).toSubmodule :=
   SetLike.coe_injective <| by simp
+                              -- 🎉 no goals
 
 instance : Inhabited (NonUnitalSubalgebra R A) :=
   ⟨⊥⟩
@@ -707,14 +753,21 @@ theorem mem_bot {x : A} : x ∈ (⊥ : NonUnitalSubalgebra R A) ↔ x = 0 :=
 
 theorem toSubmodule_bot : (⊥ : NonUnitalSubalgebra R A).toSubmodule = ⊥ := by
   ext
+  -- ⊢ x✝ ∈ NonUnitalSubalgebra.toSubmodule ⊥ ↔ x✝ ∈ ⊥
   simp only [mem_bot, NonUnitalSubalgebra.mem_toSubmodule, Submodule.mem_bot]
+  -- 🎉 no goals
 
 @[simp]
 theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
   simp [Set.ext_iff, NonUnitalAlgebra.mem_bot]
+  -- 🎉 no goals
 
 theorem eq_top_iff {S : NonUnitalSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+                 -- ⊢ x ∈ ⊤
+                         -- 🎉 no goals
+                                                    -- ⊢ x ∈ S ↔ x ∈ ⊤
+                                                           -- 🎉 no goals
 
 theorem range_top_iff_surjective (f : A →ₙₐ[R] B) :
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
@@ -731,6 +784,7 @@ theorem map_top (f : A →ₙₐ[R] B) : (⊤ : NonUnitalSubalgebra R A).map f =
 @[simp]
 theorem map_bot (f : A →ₙₐ[R] B) : (⊥ : NonUnitalSubalgebra R A).map f = ⊥ :=
   SetLike.coe_injective <| by simp [NonUnitalAlgebra.coe_bot, NonUnitalSubalgebra.coe_map]
+                              -- 🎉 no goals
 
 @[simp]
 theorem comap_top (f : A →ₙₐ[R] B) : (⊤ : NonUnitalSubalgebra R B).comap f = ⊤ :=
@@ -756,6 +810,7 @@ variable (S : NonUnitalSubalgebra R A)
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+                              -- 🎉 no goals
 
 instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
     Subsingleton (A →ₙₐ[R] B) :=
@@ -830,6 +885,8 @@ theorem mem_prod {S : NonUnitalSubalgebra R A} {S₁ : NonUnitalSubalgebra R B} 
 
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalSubalgebra R (A × B)) = ⊤ := by ext; simp
+                                                                        -- ⊢ x✝ ∈ prod ⊤ ⊤ ↔ x✝ ∈ ⊤
+                                                                             -- 🎉 no goals
 
 theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
     S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
@@ -878,6 +935,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
     (f : ∀ i, K i →ₙₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : NonUnitalSubalgebra R A) (hT : T = iSup K) : ↥T →ₙₐ[R] B := by
   subst hT
+  -- ⊢ { x // x ∈ iSup K } →ₙₐ[R] B
   exact
       { toFun :=
           Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
@@ -915,26 +973,38 @@ variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Directed (· 
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   subst T
+  -- ⊢ ↑(iSupLift K dir f hf (iSup K) (_ : iSup K = iSup K)) (↑(inclusion h) x) = ↑ …
   dsimp [iSupLift]
+  -- ⊢ Set.iUnionLift (fun i => ↑(K i)) (fun i x => ↑(f i) x) (_ : ∀ (i j : ι) (x : …
   apply Set.iUnionLift_inclusion
+  -- ⊢ ↑(K i) ⊆ ↑(iSup K)
   exact h
+  -- 🎉 no goals
 
 @[simp]
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
+                                                              -- ⊢ ↑(NonUnitalAlgHom.comp (iSupLift K dir f hf T hT) (inclusion h)) x✝ = ↑(f i) …
+                                                                   -- 🎉 no goals
 
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
   subst hT
+  -- ⊢ ↑(iSupLift K dir f hf (iSup K) (_ : iSup K = iSup K)) { val := ↑x, property  …
   dsimp [iSupLift]
+  -- ⊢ Set.iUnionLift (fun i => ↑(K i)) (fun i x => ↑(f i) x) (_ : ∀ (i j : ι) (x : …
   apply Set.iUnionLift_mk
+  -- 🎉 no goals
 
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   subst hT
+  -- ⊢ ↑(iSupLift K dir f hf (iSup K) (_ : iSup K = iSup K)) x = ↑(f i) { val := ↑x …
   dsimp [iSupLift]
+  -- ⊢ Set.iUnionLift (fun i => ↑(K i)) (fun i x => ↑(f i) x) (_ : ∀ (i j : ι) (x : …
   apply Set.iUnionLift_of_mem
+  -- 🎉 no goals
 
 end SuprLift
 
@@ -946,6 +1016,7 @@ theorem _root_.Set.smul_mem_center {R A : Type*} [CommSemiring R] [NonUnitalNonA
   [Module R A] [IsScalarTower R A A] [SMulCommClass R A A](r : R) {a : A} (ha : a ∈ Set.center A) :
     r • a ∈ Set.center A := by
   simp [Set.mem_center_iff, mul_smul_comm, smul_mul_assoc, (Set.mem_center_iff A).mp ha]
+  -- 🎉 no goals
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
@@ -996,6 +1067,7 @@ variable {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsSc
 theorem _root_.Set.smul_mem_centralizer {s : Set A} (r : R) {a : A} (ha : a ∈ s.centralizer) :
     r • a ∈ s.centralizer :=
   fun x hx => by rw [mul_smul_comm, smul_mul_assoc, ha x hx]
+                 -- 🎉 no goals
 
 variable (R)
 

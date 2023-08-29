@@ -272,9 +272,11 @@ theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃!
 #align decidable.to_bool Decidable.decide
 
 theorem decide_True' (h : Decidable True) : decide True = true := by simp
+                                                                     -- 🎉 no goals
 #align to_bool_true_eq_tt decide_True'
 
 theorem decide_False' (h : Decidable False) : decide False = false := by simp
+                                                                         -- 🎉 no goals
 #align to_bool_false_eq_ff decide_False'
 
 namespace Decidable
@@ -282,11 +284,13 @@ namespace Decidable
 def recOn_true [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u}
     (h₃ : p) (h₄ : h₁ h₃) : Decidable.recOn h h₂ h₁ :=
   cast (by match h with | .isTrue _ => rfl) h₄
+           -- 🎉 no goals
 #align decidable.rec_on_true Decidable.recOn_true
 
 def recOn_false [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} (h₃ : ¬p) (h₄ : h₂ h₃) :
     Decidable.recOn h h₂ h₁ :=
   cast (by match h with | .isFalse _ => rfl) h₄
+           -- 🎉 no goals
 #align decidable.rec_on_false Decidable.recOn_false
 
 alias by_cases := byCases
@@ -326,6 +330,7 @@ def decidableEq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDe
   | x, y =>
     if hp : p x y = true then isTrue (h₁ hp)
     else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
+                                                     -- 🎉 no goals
 #align decidable_eq_of_bool_pred decidableEq_of_bool_pred
 
 theorem decidableEq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
@@ -356,10 +361,14 @@ theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t :
 
 theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
   by have := if_pos hc ▸ h; exact this
+     -- ⊢ t
+                            -- 🎉 no goals
 #align implies_of_if_pos imp_of_if_pos
 
 theorem imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) (hnc : ¬c) : e :=
   by have := if_neg hnc ▸ h; exact this
+     -- ⊢ e
+                             -- 🎉 no goals
 #align implies_of_if_neg imp_of_if_neg
 
 theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
@@ -445,15 +454,19 @@ theorem let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β
 
 theorem let_value_heq {α : Sort v} {β : α → Sort u} {a₁ a₂ : α} (b : ∀ x : α, β x)
     (h : a₁ = a₂) : HEq (let x : α := a₁; b x) (let x : α := a₂; b x) := by cases h; rfl
+                                                                            -- ⊢ HEq
+                                                                                     -- 🎉 no goals
 #align let_value_heq let_value_heq -- FIXME: mathport thinks this is a dubious translation
 
 theorem let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀ x : α, β x}
     (h : ∀ x, b₁ x = b₂ x) : (let x : α := a; b₁ x) = (let x : α := a; b₂ x) := by exact h _ ▸ rfl
+                                                                                   -- 🎉 no goals
 #align let_value_eq let_value_eq -- FIXME: mathport thinks this is a dubious translation
 
 theorem let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β}
     (h₁ : a₁ = a₂) (h₂ : ∀ x, b₁ x = b₂ x) :
     (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) := by simp [h₁, h₂]
+                                                            -- 🎉 no goals
 #align let_eq let_eq -- FIXME: mathport thinks this is a dubious translation
 
 section Relation

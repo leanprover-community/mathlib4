@@ -106,10 +106,14 @@ def selfAdjointPart : A →ₗ[R] selfAdjoint A where
         star_bit0, star_one, star_star, star_invOf (2 : R), star_trivial]⟩
   map_add' x y := by
     ext
+    -- ⊢ ↑((fun x => { val := ⅟2 • (x + star x), property := (_ : ⅟2 • (x + star x) ∈ …
     simp [add_add_add_comm]
+    -- 🎉 no goals
   map_smul' r x := by
     ext
+    -- ⊢ ↑(AddHom.toFun { toFun := fun x => { val := ⅟2 • (x + star x), property := ( …
     simp [← mul_smul, show ⅟ 2 * r = r * ⅟ 2 from Commute.invOf_left <| (2 : ℕ).cast_commute r]
+    -- 🎉 no goals
 #align self_adjoint_part selfAdjointPart
 
 /-- The skew-adjoint part of an element of a star module, as a linear map. -/
@@ -121,10 +125,12 @@ def skewAdjointPart : A →ₗ[R] skewAdjoint A where
         neg_sub]⟩
   map_add' x y := by
     ext
+    -- ⊢ ↑((fun x => { val := ⅟2 • (x - star x), property := (_ : ⅟2 • (x - star x) ∈ …
     simp only [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_mk,
       AddSubgroup.coe_add]
   map_smul' r x := by
     ext
+    -- ⊢ ↑(AddHom.toFun { toFun := fun x => { val := ⅟2 • (x - star x), property := ( …
     simp [← mul_smul, ← smul_sub,
       show r * ⅟ 2 = ⅟ 2 * r from Commute.invOf_right <| (2 : ℕ).commute_cast r]
 #align skew_adjoint_part skewAdjointPart
@@ -138,6 +144,7 @@ theorem StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
 theorem IsSelfAdjoint.coe_selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     (selfAdjointPart R x : A) = x := by
   rw [selfAdjointPart_apply_coe, hx.star_eq, smul_add, invOf_two_smul_add_invOf_two_smul]
+  -- 🎉 no goals
 
 theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
@@ -151,6 +158,7 @@ theorem selfAdjointPart_comp_subtype_selfAdjoint :
 theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.eq <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
+  -- 🎉 no goals
 
 -- porting note: todo: make it a `simp`
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
@@ -161,6 +169,7 @@ theorem skewAdjointPart_comp_subtype_selfAdjoint :
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
+                                                         -- 🎉 no goals
 
 -- porting note: todo: make it a `simp`
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
@@ -168,6 +177,7 @@ theorem skewAdjointPart_comp_subtype_skewAdjoint :
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by
     simp only [LinearMap.comp_apply, Submodule.subtype_apply, skewAdjointPart_apply_coe, hx,
       sub_neg_eq_add, smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
+                                                                    -- 🎉 no goals
 
 variable (A)
 
@@ -180,6 +190,10 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
   ext <;> simp
+          -- 🎉 no goals
+          -- 🎉 no goals
+          -- 🎉 no goals
+          -- 🎉 no goals
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
@@ -187,4 +201,5 @@ theorem algebraMap_star_comm {R A : Type*} [CommSemiring R] [StarRing R] [Semiri
     [StarSemigroup A] [Algebra R A] [StarModule R A] (r : R) :
     algebraMap R A (star r) = star (algebraMap R A r) := by
   simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
+  -- 🎉 no goals
 #align algebra_map_star_comm algebraMap_star_comm

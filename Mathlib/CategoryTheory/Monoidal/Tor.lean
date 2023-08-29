@@ -61,6 +61,7 @@ set_option linter.uppercaseLean3 false in
 lemma Tor'_map_app' (n : ℕ) {X Y : C} (f : X ⟶ Y) (Z : C) :
     ((Tor' C n).map f).app Z = (Functor.leftDerived ((tensoringRight C).obj Z) n).map f := by
   rfl
+  -- 🎉 no goals
 
 -- porting note: this specific lemma was added because otherwise the internals of
 -- `NatTrans.leftDerived` leaks into the RHS (it was already so in mathlib)
@@ -80,7 +81,9 @@ set_option linter.uppercaseLean3 false in
 def tor'SuccOfProjective (X Y : C) [Projective X] (n : ℕ) : ((Tor' C (n + 1)).obj X).obj Y ≅ 0 := by
   -- This unfortunately needs a manual `dsimp`, to avoid a slow unification problem.
   dsimp only [Tor', Functor.flip]
+  -- ⊢ (Functor.leftDerived ((tensoringRight C).obj Y) (n + 1)).obj X ≅ 0
   exact ((tensoringRight C).obj Y).leftDerivedObjProjectiveSucc n X
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.Tor'_succ_of_projective CategoryTheory.tor'SuccOfProjective
 

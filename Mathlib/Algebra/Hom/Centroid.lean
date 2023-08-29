@@ -89,9 +89,13 @@ instance : CentroidHomClass (CentroidHom α) α where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
+    -- ⊢ { toAddMonoidHom := toAddMonoidHom✝, map_mul_left' := map_mul_left'✝, map_mu …
     cases g
+    -- ⊢ { toAddMonoidHom := toAddMonoidHom✝¹, map_mul_left' := map_mul_left'✝¹, map_ …
     congr with x
+    -- ⊢ ↑toAddMonoidHom✝¹ x = ↑toAddMonoidHom✝ x
     exact congrFun h x
+    -- 🎉 no goals
   map_zero f := f.map_zero'
   map_add f := f.map_add'
   map_mul_left f := f.map_mul_left'
@@ -146,7 +150,9 @@ protected def copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : Centroid
   { f.toAddMonoidHom.copy f' <| h with
     toFun := f'
     map_mul_left' := fun a b ↦ by simp_rw [h, map_mul_left]
+                                  -- 🎉 no goals
     map_mul_right' := fun a b ↦ by simp_rw [h, map_mul_right] }
+                                   -- 🎉 no goals
 #align centroid_hom.copy CentroidHom.copy
 
 @[simp]
@@ -233,6 +239,7 @@ theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
 theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                -- 🎉 no goals
 #align centroid_hom.cancel_left CentroidHom.cancel_left
 
 instance : Zero (CentroidHom α) :=
@@ -248,10 +255,14 @@ instance : Add (CentroidHom α) :=
     { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
         show f (a * b) + g (a * b) = a * (f b + g b)
+        -- ⊢ ↑f (a * b) + ↑g (a * b) = a * (↑f b + ↑g b)
         simp [map_mul_left, mul_add]
+        -- 🎉 no goals
       map_mul_right' := fun a b ↦ by
         show f (a * b) + g (a * b) = (f a + g a) * b
+        -- ⊢ ↑f (a * b) + ↑g (a * b) = (↑f a + ↑g a) * b
         simp [map_mul_right, add_mul] }⟩
+        -- 🎉 no goals
 
 instance : Mul (CentroidHom α) :=
   ⟨comp⟩
@@ -261,10 +272,14 @@ instance hasNsmul : SMul ℕ (CentroidHom α) :=
     { ((SMul.smul n f) : α →+ α) with
         map_mul_left' := fun a b ↦ by
           change n • f (a * b) = a * n • f b
+          -- ⊢ n • ↑f (a * b) = a * n • ↑f b
           rw [map_mul_left f, ← mul_smul_comm]
+          -- 🎉 no goals
         map_mul_right' := fun a b ↦ by
           change n • f (a * b) = n • f a * b
+          -- ⊢ n • ↑f (a * b) = n • ↑f a * b
           rw [map_mul_right f, ← smul_mul_assoc] }⟩
+          -- 🎉 no goals
 #align centroid_hom.has_nsmul CentroidHom.hasNsmul
 
 instance hasNpowNat : Pow (CentroidHom α) ℕ :=
@@ -273,15 +288,23 @@ instance hasNpowNat : Pow (CentroidHom α) ℕ :=
       map_mul_left' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
+          -- 🎉 no goals
         · simp
+          -- ⊢ ↑(toEnd f ^ Nat.succ n) (a * b) = a * ↑(toEnd f ^ Nat.succ n) b
           rw [pow_succ]
+          -- ⊢ ↑(toEnd f * toEnd f ^ n) (a * b) = a * ↑(toEnd f * toEnd f ^ n) b
           exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
+          -- 🎉 no goals
       map_mul_right' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
+          -- 🎉 no goals
         · simp
+          -- ⊢ ↑(toEnd f ^ Nat.succ n) (a * b) = ↑(toEnd f ^ Nat.succ n) a * b
           rw [pow_succ]
+          -- ⊢ ↑(toEnd f * toEnd f ^ n) (a * b) = ↑(toEnd f * toEnd f ^ n) a * b
           exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _) }⟩
+          -- 🎉 no goals
 #align centroid_hom.has_npow_nat CentroidHom.hasNpowNat
 
 @[simp, norm_cast]
@@ -394,7 +417,9 @@ instance : Semiring (CentroidHom α) :=
 
 theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S ∘ T) (a * b) := by
   simp
+  -- ⊢ ↑T (↑S (a * b)) = ↑S (↑T (a * b))
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
+  -- 🎉 no goals
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 
 end NonUnitalNonAssocSemiring
@@ -409,30 +434,42 @@ instance : Neg (CentroidHom α) :=
     { (-f : α →+ α) with
       map_mul_left' := fun a b ↦ by
         change -f (a * b) = a * (-f b)
+        -- ⊢ -↑f (a * b) = a * -↑f b
         simp [map_mul_left]
+        -- 🎉 no goals
       map_mul_right' := fun a b ↦ by
         change -f (a * b) = (-f a) * b
+        -- ⊢ -↑f (a * b) = -↑f a * b
         simp [map_mul_right] }⟩
+        -- 🎉 no goals
 
 instance : Sub (CentroidHom α) :=
   ⟨fun f g ↦
     { (f - g : α →+ α) with
       map_mul_left' := fun a b ↦ by
         change (FunLike.coe f - FunLike.coe g) (a * b) = a * (FunLike.coe f - FunLike.coe g) b
+        -- ⊢ (↑f - ↑g) (a * b) = a * (↑f - ↑g) b
         simp [map_mul_left, mul_sub]
+        -- 🎉 no goals
       map_mul_right' := fun a b ↦ by
         change (FunLike.coe f - FunLike.coe g) (a * b) = ((FunLike.coe f - FunLike.coe g) a) * b
+        -- ⊢ (↑f - ↑g) (a * b) = (↑f - ↑g) a * b
         simp [map_mul_right, sub_mul] }⟩
+        -- 🎉 no goals
 
 instance hasZsmul : SMul ℤ (CentroidHom α) :=
   ⟨fun n f ↦
     { (SMul.smul n f : α →+ α) with
       map_mul_left' := fun a b ↦ by
         change n • f (a * b) = a * n • f b
+        -- ⊢ n • ↑f (a * b) = a * n • ↑f b
         rw [map_mul_left f, ← mul_smul_comm]
+        -- 🎉 no goals
       map_mul_right' := fun a b ↦ by
         change n • f (a * b) = n • f a * b
+        -- ⊢ n • ↑f (a * b) = n • ↑f a * b
         rw [map_mul_right f, ← smul_mul_assoc] }⟩
+        -- 🎉 no goals
 #align centroid_hom.has_zsmul CentroidHom.hasZsmul
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
@@ -507,7 +544,9 @@ def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0)
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
+      -- ⊢ ↑(f * g) a✝ = ↑(g * f) a✝
       refine' sub_eq_zero.1 ((or_self_iff _).1 <| (h _ _) fun r ↦ _)
+      -- ⊢ (↑(f * g) a✝ - ↑(g * f) a✝) * r * (↑(f * g) a✝ - ↑(g * f) a✝) = 0
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing

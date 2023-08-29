@@ -81,9 +81,13 @@ variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCo
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
   cases' le_or_lt r 0 with hr hr
+  -- ⊢ StrictConvex 𝕜 (closedBall x r)
   · exact (subsingleton_closedBall x hr).strictConvex
+    -- 🎉 no goals
   rw [← vadd_closedBall_zero]
+  -- ⊢ StrictConvex 𝕜 (x +ᵥ closedBall 0 r)
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _
+  -- 🎉 no goals
 #align strict_convex_closed_ball strictConvex_closedBall
 
 variable [NormedSpace ℝ E]
@@ -92,6 +96,7 @@ variable [NormedSpace ℝ E]
 theorem StrictConvexSpace.of_strictConvex_closed_unit_ball [LinearMap.CompatibleSMul E E 𝕜 ℝ]
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
   ⟨fun r hr => by simpa only [smul_closedUnitBall_of_nonneg hr.le] using h.smul r⟩
+                  -- 🎉 no goals
 #align strict_convex_space.of_strict_convex_closed_unit_ball StrictConvexSpace.of_strictConvex_closed_unit_ball
 
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
@@ -106,7 +111,9 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
   rw [interior_closedBall (0 : E) one_ne_zero, closedBall_diff_ball,
     mem_sphere_zero_iff_norm] at hx hy
   rcases h x y hx hy hne with ⟨a, b, hab, hlt⟩
+  -- ⊢ ∃ c, ↑(AffineMap.lineMap x y) c ∈ interior (closedBall 0 1)
   use b
+  -- ⊢ ↑(AffineMap.lineMap x y) b ∈ interior (closedBall 0 1)
   rwa [AffineMap.lineMap_apply_module, interior_closedBall (0 : E) one_ne_zero, mem_ball_zero_iff,
     sub_eq_iff_eq_add.2 hab.symm]
 #align strict_convex_space.of_norm_combo_lt_one StrictConvexSpace.of_norm_combo_lt_one
@@ -121,8 +128,11 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
   simp only [interior_closedBall _ one_ne_zero, closedBall_diff_ball, Set.Pairwise,
     frontier_closedBall _ one_ne_zero, mem_sphere_zero_iff_norm]
   intro x hx y hy hne
+  -- ⊢ Set.Nonempty ([x-[ℝ]y] \ sphere 0 1)
   rcases h x y hx hy hne with ⟨a, b, ha, hb, hab, hne'⟩
+  -- ⊢ Set.Nonempty ([x-[ℝ]y] \ sphere 0 1)
   exact ⟨_, ⟨a, b, ha, hb, hab, rfl⟩, mt mem_sphere_zero_iff_norm.1 hne'⟩
+  -- 🎉 no goals
 #align strict_convex_space.of_norm_combo_ne_one StrictConvexSpace.of_norm_combo_ne_one
 
 theorem StrictConvexSpace.of_norm_add_ne_two
@@ -133,6 +143,7 @@ theorem StrictConvexSpace.of_norm_add_ne_two
   rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne.def,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
+  -- 🎉 no goals
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
 
 theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
@@ -146,8 +157,11 @@ convex space. See also a more -/
 theorem StrictConvexSpace.of_norm_add
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
   refine' StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => _
+  -- ⊢ x = y
   rw [mem_sphere_zero_iff_norm] at hx hy
+  -- ⊢ x = y
   exact (sameRay_iff_of_norm_eq (hx.trans hy.symm)).1 (h x y hx hy h₂)
+  -- 🎉 no goals
 #align strict_convex_space.of_norm_add StrictConvexSpace.of_norm_add
 
 variable [StrictConvexSpace ℝ E] {x y z : E} {a b r : ℝ}
@@ -157,10 +171,15 @@ positive coefficients belongs to the corresponding open ball. -/
 theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r) (hne : x ≠ y)
     (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a • x + b • y ∈ ball z r := by
   rcases eq_or_ne r 0 with (rfl | hr)
+  -- ⊢ a • x + b • y ∈ ball z 0
   · rw [closedBall_zero, mem_singleton_iff] at hx hy
+    -- ⊢ a • x + b • y ∈ ball z 0
     exact (hne (hx.trans hy.symm)).elim
+    -- 🎉 no goals
   · simp only [← interior_closedBall _ hr] at hx hy ⊢
+    -- ⊢ a • x + b • y ∈ interior (closedBall z r)
     exact strictConvex_closedBall ℝ z r hx hy hne ha hb hab
+    -- 🎉 no goals
 #align combo_mem_ball_of_ne combo_mem_ball_of_ne
 
 /-- If `x ≠ y` belong to the same closed ball, then the open segment with endpoints `x` and `y` is
@@ -175,16 +194,22 @@ and `y` with positive coefficients has norm strictly less than `r`. -/
 theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x ≠ y) (ha : 0 < a) (hb : 0 < b)
     (hab : a + b = 1) : ‖a • x + b • y‖ < r := by
   simp only [← mem_ball_zero_iff, ← mem_closedBall_zero_iff] at hx hy ⊢
+  -- ⊢ a • x + b • y ∈ ball 0 r
   exact combo_mem_ball_of_ne hx hy hne ha hb hab
+  -- 🎉 no goals
 #align norm_combo_lt_of_ne norm_combo_lt_of_ne
 
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
 -/
 theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
   simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
+  -- ⊢ ‖x + y‖ < ‖x‖ + ‖y‖
   rcases h with ⟨hx, hy, hne⟩
+  -- ⊢ ‖x + y‖ < ‖x‖ + ‖y‖
   rw [← norm_pos_iff] at hx hy
+  -- ⊢ ‖x + y‖ < ‖x‖ + ‖y‖
   have hxy : 0 < ‖x‖ + ‖y‖ := add_pos hx hy
+  -- ⊢ ‖x + y‖ < ‖x‖ + ‖y‖
   have :=
     combo_mem_ball_of_ne (inv_norm_smul_mem_closed_unit_ball x)
       (inv_norm_smul_mem_closed_unit_ball y) hne (div_pos hx hxy) (div_pos hy hxy)
@@ -196,13 +221,18 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
 
 theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
   nth_rw 1 [← sub_add_cancel x y] at h ⊢
+  -- ⊢ ‖x - y + y‖ - ‖y‖ < ‖x - y‖
   exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
+  -- 🎉 no goals
 #align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 
 theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
   refine' abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, _⟩
+  -- ⊢ ‖y‖ - ‖x‖ < ‖x - y‖
   rw [norm_sub_rev]
+  -- ⊢ ‖y‖ - ‖x‖ < ‖y - x‖
   exact lt_norm_sub_of_not_sameRay (mt SameRay.symm h)
+  -- 🎉 no goals
 #align abs_lt_norm_sub_of_not_same_ray abs_lt_norm_sub_of_not_sameRay
 
 /-- In a strictly convex space, two vectors `x`, `y` are in the same ray if and only if the triangle
@@ -257,22 +287,33 @@ theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = 
     rw [← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right, ← dist_eq_norm_vsub', ←
       dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right, one_mul]
   rcases eq_or_ne x z with (rfl | hne)
+  -- ⊢ y = ↑(AffineMap.lineMap x x) r
   · obtain rfl : y = x := by simpa
+    -- ⊢ y = ↑(AffineMap.lineMap y y) r
     simp
+    -- 🎉 no goals
   · rw [← dist_ne_zero] at hne
+    -- ⊢ y = ↑(AffineMap.lineMap x z) r
     rcases this with ⟨a, b, _, hb, _, H⟩
+    -- ⊢ y = ↑(AffineMap.lineMap x z) r
     rw [smul_zero, zero_add] at H
+    -- ⊢ y = ↑(AffineMap.lineMap x z) r
     have H' := congr_arg norm H
+    -- ⊢ y = ↑(AffineMap.lineMap x z) r
     rw [norm_smul, Real.norm_of_nonneg hb, ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy,
       mul_left_inj' hne] at H'
     rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]
+    -- 🎉 no goals
 #align eq_line_map_of_dist_eq_mul_of_dist_eq_mul eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
 
 theorem eq_midpoint_of_dist_eq_half {x y z : PE} (hx : dist x y = dist x z / 2)
     (hy : dist y z = dist x z / 2) : y = midpoint ℝ x z := by
   apply eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
+  -- ⊢ dist x y = ⅟2 * dist x z
   · rwa [invOf_eq_inv, ← div_eq_inv_mul]
+    -- 🎉 no goals
   · rwa [invOf_eq_inv, ← one_div, sub_half, one_div, ← div_eq_inv_mul]
+    -- 🎉 no goals
 #align eq_midpoint_of_dist_eq_half eq_midpoint_of_dist_eq_half
 
 namespace Isometry
@@ -285,12 +326,18 @@ noncomputable def affineIsometryOfStrictConvexSpace {f : PF → PE} (hi : Isomet
   { AffineMap.ofMapMidpoint f
       (fun x y => by
         apply eq_midpoint_of_dist_eq_half
+        -- ⊢ dist (f x) (f (midpoint ℝ x y)) = dist (f x) (f y) / 2
         · rw [hi.dist_eq, hi.dist_eq]
+          -- ⊢ dist x (midpoint ℝ x y) = dist x y / 2
           simp only [dist_left_midpoint, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul]
+          -- 🎉 no goals
         · rw [hi.dist_eq, hi.dist_eq]
+          -- ⊢ dist (midpoint ℝ x y) y = dist x y / 2
           simp only [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
+          -- 🎉 no goals
       hi.continuous with
     norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
+                            -- 🎉 no goals
 #align isometry.affine_isometry_of_strict_convex_space Isometry.affineIsometryOfStrictConvexSpace
 
 @[simp]

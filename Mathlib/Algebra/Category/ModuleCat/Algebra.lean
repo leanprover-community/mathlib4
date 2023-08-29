@@ -66,8 +66,11 @@ instance linearOverField : Linear k (ModuleCat.{v} A) where
   smul_comp := by
     -- Porting note: this was automatic by `aesop_cat`
     aesop_cat_nonterminal
+    -- ⊢ ↑g (↑(r • f) x✝) = ↑(r • f ≫ g) x✝
     rw [LinearMap.smul_apply, LinearMap.smul_apply, LinearMap.map_smul_of_tower]
+    -- ⊢ r • ↑g (↑f x✝) = r • ↑(f ≫ g) x✝
     rfl
+    -- 🎉 no goals
 #align Module.linear_over_field ModuleCat.linearOverField
 
 end ModuleCat

@@ -76,6 +76,7 @@ lemma isoAdd_hom_app {a b : A}
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫ e₂.hom.app ((shiftFunctor C a).obj X) ≫
           (shiftFunctor D b).map (e₁.hom.app X) ≫ (shiftFunctorAdd D a b).inv.app (F.obj X) := by
   simp only [isoAdd, isoAdd'_hom_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
+  -- 🎉 no goals
 
 @[simp]
 lemma isoAdd_inv_app {a b : A}
@@ -85,6 +86,7 @@ lemma isoAdd_inv_app {a b : A}
         (shiftFunctor D b).map (e₁.inv.app X) ≫ e₂.inv.app ((shiftFunctor C a).obj X) ≫
         F.map ((shiftFunctorAdd C a b).inv.app X) := by
   simp only [isoAdd, isoAdd'_inv_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
+  -- 🎉 no goals
 
 end CommShift
 
@@ -140,7 +142,9 @@ lemma commShiftIso_add (a b : A) :
 lemma commShiftIso_add' {a b c : A} (h : a + b = c) :
     F.commShiftIso c = CommShift.isoAdd' h (F.commShiftIso a) (F.commShiftIso b) := by
   subst h
+  -- ⊢ commShiftIso F (a + b) = CommShift.isoAdd' (_ : a + b = a + b) (commShiftIso …
   simp only [commShiftIso_add, CommShift.isoAdd]
+  -- 🎉 no goals
 
 end
 

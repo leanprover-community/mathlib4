@@ -31,8 +31,14 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M)
   tensorUnit' := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)
   whiskerLeft X _ _ f := eqToHom (by dsimp; rw [eq_of_hom f])
+                                     -- ⊢ { as := X.as * x✝¹.as } = { as := X.as * x✝.as }
+                                            -- 🎉 no goals
   whiskerRight f X := eqToHom (by dsimp; rw [eq_of_hom f])
+                                  -- ⊢ { as := X₁✝.as * X.as } = { as := X₂✝.as * X.as }
+                                         -- 🎉 no goals
   tensorHom f g := eqToHom (by dsimp; rw [eq_of_hom f, eq_of_hom g])
+                               -- ⊢ { as := X₁✝.as * X₂✝.as } = { as := Y₁✝.as * Y₂✝.as }
+                                      -- 🎉 no goals
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
   associator X Y Z := Discrete.eqToIso (mul_assoc _ _ _)

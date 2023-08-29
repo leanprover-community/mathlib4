@@ -67,67 +67,85 @@ theorem map_subtype_embedding_uIcc : (uIcc a b).map (Embedding.subtype _) = uIcc
 @[simp]
 theorem card_Icc : (Icc a b).card = b + 1 - a := by
   rw [← Nat.card_Icc]
+  -- ⊢ card (Icc a b) = card (Icc ↑a ↑b)
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [← Finset.map_subtype_embedding_Icc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
+  -- ⊢ card (Icc a b) = card (map (Embedding.subtype fun n => 0 < n) (Icc a b))
   rw [card_map]
+  -- 🎉 no goals
 #align pnat.card_Icc PNat.card_Icc
 
 @[simp]
 theorem card_Ico : (Ico a b).card = b - a := by
   rw [← Nat.card_Ico]
+  -- ⊢ card (Ico a b) = card (Ico ↑a ↑b)
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [← Finset.map_subtype_embedding_Ico _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
+  -- ⊢ card (Ico a b) = card (map (Embedding.subtype fun n => 0 < n) (Ico a b))
   rw [card_map]
+  -- 🎉 no goals
 #align pnat.card_Ico PNat.card_Ico
 
 @[simp]
 theorem card_Ioc : (Ioc a b).card = b - a := by
   rw [← Nat.card_Ioc]
+  -- ⊢ card (Ioc a b) = card (Ioc ↑a ↑b)
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [← Finset.map_subtype_embedding_Ioc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
+  -- ⊢ card (Ioc a b) = card (map (Embedding.subtype fun n => 0 < n) (Ioc a b))
   rw [card_map]
+  -- 🎉 no goals
 #align pnat.card_Ioc PNat.card_Ioc
 
 @[simp]
 theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
   rw [← Nat.card_Ioo]
+  -- ⊢ card (Ioo a b) = card (Ioo ↑a ↑b)
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [← Finset.map_subtype_embedding_Ioo _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
+  -- ⊢ card (Ioo a b) = card (map (Embedding.subtype fun n => 0 < n) (Ioo a b))
   rw [card_map]
+  -- 🎉 no goals
 #align pnat.card_Ioo PNat.card_Ioo
 
 @[simp]
 theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   rw [←Nat.card_uIcc, ←map_subtype_embedding_uIcc, card_map]
+  -- 🎉 no goals
 #align pnat.card_uIcc PNat.card_uIcc
 
 -- porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [← card_Icc, Fintype.card_ofFinset]
+  -- 🎉 no goals
 #align pnat.card_fintype_Icc PNat.card_fintype_Icc
 
 -- porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = b - a := by
   rw [← card_Ico, Fintype.card_ofFinset]
+  -- 🎉 no goals
 #align pnat.card_fintype_Ico PNat.card_fintype_Ico
 
 -- porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [← card_Ioc, Fintype.card_ofFinset]
+  -- 🎉 no goals
 #align pnat.card_fintype_Ioc PNat.card_fintype_Ioc
 
 -- porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
+  -- 🎉 no goals
 #align pnat.card_fintype_Ioo PNat.card_fintype_Ioo
 
 -- porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [←card_uIcc, Fintype.card_ofFinset]
+  -- 🎉 no goals
 #align pnat.card_fintype_uIcc PNat.card_fintype_uIcc
 
 end PNat

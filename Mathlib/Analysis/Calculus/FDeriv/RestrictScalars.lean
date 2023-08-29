@@ -89,13 +89,17 @@ theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differenti
 theorem hasFDerivWithinAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivWithinAt f g' s x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivWithinAt f f' s x := by
   rw [← H] at h
+  -- ⊢ HasFDerivWithinAt f f' s x
   exact h
+  -- 🎉 no goals
 #align has_fderiv_within_at_of_restrict_scalars hasFDerivWithinAt_of_restrictScalars
 
 theorem hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f g' x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivAt f f' x := by
   rw [← H] at h
+  -- ⊢ HasFDerivAt f f' x
   exact h
+  -- 🎉 no goals
 #align has_fderiv_at_of_restrict_scalars hasFDerivAt_of_restrictScalars
 
 theorem DifferentiableAt.fderiv_restrictScalars (h : DifferentiableAt 𝕜' f x) :
@@ -107,15 +111,21 @@ theorem differentiableWithinAt_iff_restrictScalars (hf : DifferentiableWithinAt 
     (hs : UniqueDiffWithinAt 𝕜 s x) : DifferentiableWithinAt 𝕜' f s x ↔
       ∃ g' : E →L[𝕜'] F, g'.restrictScalars 𝕜 = fderivWithin 𝕜 f s x := by
   constructor
+  -- ⊢ DifferentiableWithinAt 𝕜' f s x → ∃ g', restrictScalars 𝕜 g' = fderivWithin  …
   · rintro ⟨g', hg'⟩
+    -- ⊢ ∃ g', restrictScalars 𝕜 g' = fderivWithin 𝕜 f s x
     exact ⟨g', hs.eq (hg'.restrictScalars 𝕜) hf.hasFDerivWithinAt⟩
+    -- 🎉 no goals
   · rintro ⟨f', hf'⟩
+    -- ⊢ DifferentiableWithinAt 𝕜' f s x
     exact ⟨f', hasFDerivWithinAt_of_restrictScalars 𝕜 hf.hasFDerivWithinAt hf'⟩
+    -- 🎉 no goals
 #align differentiable_within_at_iff_restrict_scalars differentiableWithinAt_iff_restrictScalars
 
 theorem differentiableAt_iff_restrictScalars (hf : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜' f x ↔ ∃ g' : E →L[𝕜'] F, g'.restrictScalars 𝕜 = fderiv 𝕜 f x := by
   rw [← differentiableWithinAt_univ, ← fderivWithin_univ]
+  -- ⊢ DifferentiableWithinAt 𝕜' f univ x ↔ ∃ g', restrictScalars 𝕜 g' = fderivWith …
   exact
     differentiableWithinAt_iff_restrictScalars 𝕜 hf.differentiableWithinAt uniqueDiffWithinAt_univ
 #align differentiable_at_iff_restrict_scalars differentiableAt_iff_restrictScalars

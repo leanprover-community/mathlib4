@@ -67,19 +67,27 @@ theorem toDFinsupp_support (s : Multiset α) : s.toDFinsupp.support = s.toFinset
 theorem toDFinsupp_replicate (a : α) (n : ℕ) :
     toDFinsupp (Multiset.replicate n a) = DFinsupp.single a n := by
   ext i
+  -- ⊢ ↑(↑toDFinsupp (replicate n a)) i = ↑(DFinsupp.single a n) i
   dsimp [toDFinsupp]
+  -- ⊢ count i (replicate n a) = ↑(DFinsupp.single a n) i
   simp [count_replicate, eq_comm]
+  -- 🎉 no goals
 #align multiset.to_dfinsupp_replicate Multiset.toDFinsupp_replicate
 
 @[simp]
 theorem toDFinsupp_singleton (a : α) : toDFinsupp {a} = DFinsupp.single a 1 := by
   rw [← replicate_one, toDFinsupp_replicate]
+  -- 🎉 no goals
 #align multiset.to_dfinsupp_singleton Multiset.toDFinsupp_singleton
 
 /-- `Multiset.toDFinsupp` as an `AddEquiv`. -/
 @[simps! apply symm_apply]
 def equivDFinsupp : Multiset α ≃+ Π₀ _ : α, ℕ :=
   AddMonoidHom.toAddEquiv Multiset.toDFinsupp DFinsupp.toMultiset (by ext; simp) (by ext; simp)
+                                                                      -- ⊢ count a✝ (↑(AddMonoidHom.comp DFinsupp.toMultiset toDFinsupp) {x✝}) = count  …
+                                                                           -- 🎉 no goals
+                                                                                     -- ⊢ ↑(↑(AddMonoidHom.comp (AddMonoidHom.comp toDFinsupp DFinsupp.toMultiset) (DF …
+                                                                                          -- 🎉 no goals
 #align multiset.equiv_dfinsupp Multiset.equivDFinsupp
 
 @[simp]
@@ -99,6 +107,7 @@ theorem toDFinsupp_inj : toDFinsupp s = toDFinsupp t ↔ s = t :=
 @[simp]
 theorem toDFinsupp_le_toDFinsupp : toDFinsupp s ≤ toDFinsupp t ↔ s ≤ t := by
   simp [Multiset.le_iff_count, DFinsupp.le_def]
+  -- 🎉 no goals
 #align multiset.to_dfinsupp_le_to_dfinsupp Multiset.toDFinsupp_le_toDFinsupp
 
 @[simp]
@@ -109,11 +118,15 @@ theorem toDFinsupp_lt_toDFinsupp : toDFinsupp s < toDFinsupp t ↔ s < t :=
 @[simp]
 theorem toDFinsupp_inter (s t : Multiset α) : toDFinsupp (s ∩ t) = toDFinsupp s ⊓ toDFinsupp t := by
   ext i; simp [inf_eq_min]
+  -- ⊢ ↑(↑toDFinsupp (s ∩ t)) i = ↑(↑toDFinsupp s ⊓ ↑toDFinsupp t) i
+         -- 🎉 no goals
 #align multiset.to_dfinsupp_inter Multiset.toDFinsupp_inter
 
 @[simp]
 theorem toDFinsupp_union (s t : Multiset α) : toDFinsupp (s ∪ t) = toDFinsupp s ⊔ toDFinsupp t := by
   ext i; simp [sup_eq_max]
+  -- ⊢ ↑(↑toDFinsupp (s ∪ t)) i = ↑(↑toDFinsupp s ⊔ ↑toDFinsupp t) i
+         -- 🎉 no goals
 #align multiset.to_dfinsupp_union Multiset.toDFinsupp_union
 
 end Multiset
@@ -141,11 +154,13 @@ theorem toMultiset_inj : toMultiset f = toMultiset g ↔ f = g :=
 @[simp]
 theorem toMultiset_le_toMultiset : toMultiset f ≤ toMultiset g ↔ f ≤ g := by
   simp_rw [← Multiset.toDFinsupp_le_toDFinsupp, toMultiset_toDFinsupp]
+  -- 🎉 no goals
 #align dfinsupp.to_multiset_le_to_multiset DFinsupp.toMultiset_le_toMultiset
 
 @[simp]
 theorem toMultiset_lt_toMultiset : toMultiset f < toMultiset g ↔ f < g := by
   simp_rw [← Multiset.toDFinsupp_lt_toDFinsupp, toMultiset_toDFinsupp]
+  -- 🎉 no goals
 #align dfinsupp.to_multiset_lt_to_multiset DFinsupp.toMultiset_lt_toMultiset
 
 variable (f g)
@@ -153,11 +168,13 @@ variable (f g)
 @[simp]
 theorem toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
+                                      -- 🎉 no goals
 #align dfinsupp.to_multiset_inf DFinsupp.toMultiset_inf
 
 @[simp]
 theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
+                                      -- 🎉 no goals
 #align dfinsupp.to_multiset_sup DFinsupp.toMultiset_sup
 
 end DFinsupp

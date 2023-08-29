@@ -68,14 +68,18 @@ theorem reindexLinearEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m'
     (reindexLinearEquiv R A e₁ e₂).trans (reindexLinearEquiv R A e₁' e₂') =
       (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) := by
   ext
+  -- ⊢ ↑(LinearEquiv.trans (reindexLinearEquiv R A e₁ e₂) (reindexLinearEquiv R A e …
   rfl
+  -- 🎉 no goals
 #align matrix.reindex_linear_equiv_trans Matrix.reindexLinearEquiv_trans
 
 theorem reindexLinearEquiv_comp (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     reindexLinearEquiv R A e₁' e₂' ∘ reindexLinearEquiv R A e₁ e₂ =
       reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') := by
   rw [← reindexLinearEquiv_trans]
+  -- ⊢ ↑(reindexLinearEquiv R A e₁' e₂') ∘ ↑(reindexLinearEquiv R A e₁ e₂) = ↑(Line …
   rfl
+  -- 🎉 no goals
 #align matrix.reindex_linear_equiv_comp Matrix.reindexLinearEquiv_comp
 
 theorem reindexLinearEquiv_comp_apply (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'')
@@ -126,6 +130,7 @@ def reindexAlgEquiv (e : m ≃ n) : Matrix m m R ≃ₐ[R] Matrix n n R :=
     map_mul' := fun a b => (reindexLinearEquiv_mul R R e e e a b).symm
     -- Porting note: `submatrix_smul` needed help
     commutes' := fun r => by simp [algebraMap, Algebra.toRingHom, submatrix_smul _ 1] }
+                             -- 🎉 no goals
 #align matrix.reindex_alg_equiv Matrix.reindexAlgEquiv
 
 @[simp]

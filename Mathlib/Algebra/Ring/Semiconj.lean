@@ -33,12 +33,14 @@ namespace SemiconjBy
 theorem add_right [Distrib R] {a x y x' y' : R} (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x + x') (y + y') := by
   simp only [SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
+  -- 🎉 no goals
 #align semiconj_by.add_right SemiconjBy.add_right
 
 @[simp]
 theorem add_left [Distrib R] {a b x y : R} (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
     SemiconjBy (a + b) x y := by
   simp only [SemiconjBy, left_distrib, right_distrib, ha.eq, hb.eq]
+  -- 🎉 no goals
 #align semiconj_by.add_left SemiconjBy.add_left
 
 section
@@ -47,6 +49,7 @@ variable [Mul R] [HasDistribNeg R] {a x y : R}
 
 theorem neg_right (h : SemiconjBy a x y) : SemiconjBy a (-x) (-y) := by
   simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
+  -- 🎉 no goals
 #align semiconj_by.neg_right SemiconjBy.neg_right
 
 @[simp]
@@ -56,6 +59,7 @@ theorem neg_right_iff : SemiconjBy a (-x) (-y) ↔ SemiconjBy a x y :=
 
 theorem neg_left (h : SemiconjBy a x y) : SemiconjBy (-a) x y := by
   simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
+  -- 🎉 no goals
 #align semiconj_by.neg_left SemiconjBy.neg_left
 
 @[simp]
@@ -89,12 +93,14 @@ variable [NonUnitalNonAssocRing R] {a b x y x' y' : R}
 theorem sub_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x - x') (y - y') := by
   simpa only [sub_eq_add_neg] using h.add_right h'.neg_right
+  -- 🎉 no goals
 #align semiconj_by.sub_right SemiconjBy.sub_right
 
 @[simp]
 theorem sub_left (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
     SemiconjBy (a - b) x y := by
   simpa only [sub_eq_add_neg] using ha.add_left hb.neg_left
+  -- 🎉 no goals
 #align semiconj_by.sub_left SemiconjBy.sub_left
 
 end

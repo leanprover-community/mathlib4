@@ -57,21 +57,32 @@ variable (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F)
 theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
   { has_limit := fun f => by
       have := NatIso.naturality_1 i f
+      -- ⊢ HasKernel f
       simp at this
+      -- ⊢ HasKernel f
       rw [← this]
+      -- ⊢ HasKernel (NatTrans.app i.inv X✝ ≫ G.map (F.map f) ≫ NatTrans.app i.hom Y✝)
       haveI : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
+      -- ⊢ HasKernel (NatTrans.app i.inv X✝ ≫ G.map (F.map f) ≫ NatTrans.app i.hom Y✝)
       apply Limits.hasKernel_iso_comp }
+      -- 🎉 no goals
 #align category_theory.abelian_of_adjunction.has_kernels CategoryTheory.AbelianOfAdjunction.hasKernels
 
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels : HasCokernels C :=
   { has_colimit := fun f => by
       have : PreservesColimits G := adj.leftAdjointPreservesColimits
+      -- ⊢ HasCokernel f
       have := NatIso.naturality_1 i f
+      -- ⊢ HasCokernel f
       simp at this
+      -- ⊢ HasCokernel f
       rw [← this]
+      -- ⊢ HasCokernel (NatTrans.app i.inv X✝ ≫ G.map (F.map f) ≫ NatTrans.app i.hom Y✝)
       haveI : HasCokernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasCokernel_comp_iso _ _
+      -- ⊢ HasCokernel (NatTrans.app i.inv X✝ ≫ G.map (F.map f) ≫ NatTrans.app i.hom Y✝)
       apply Limits.hasCokernel_epi_comp }
+      -- 🎉 no goals
 #align category_theory.abelian_of_adjunction.has_cokernels CategoryTheory.AbelianOfAdjunction.hasCokernels
 
 variable [Limits.HasCokernels C]
@@ -81,8 +92,10 @@ def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokerne
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
   have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  -- ⊢ G.obj (cokernel (F.map f)) ≅ cokernel f
   -- porting note: the next `have` has been added, otherwise some instance were not found
   have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
+  -- ⊢ G.obj (cokernel (F.map f)) ≅ cokernel f
   calc
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
@@ -97,8 +110,10 @@ variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 def coimageIsoImageAux {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
   have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  -- ⊢ kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f)
   -- porting note: the next `have` has been added, otherwise some instance were not found
   have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
+  -- ⊢ kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f)
   calc
     kernel (G.map (cokernel.π (F.map f))) ≅
         kernel (cokernel.π (G.map (F.map f)) ≫ cokernelComparison (F.map f) G) :=
@@ -125,8 +140,10 @@ We still need to check that this agrees with the canonical morphism.
 -/
 def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.image f := by
   have : PreservesLimits F := adj.rightAdjointPreservesLimits
+  -- ⊢ Abelian.coimage f ≅ Abelian.image f
   -- porting note: the next `have` has been added, otherwise some instance were not found
   haveI : ∀ (X' Y' : D) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
+  -- ⊢ Abelian.coimage f ≅ Abelian.image f
   calc
     Abelian.coimage f ≅ cokernel (kernel.ι f) := Iso.refl _
     _ ≅ G.obj (cokernel (F.map (kernel.ι f))) := (cokernelIso _ _ i adj _).symm
@@ -147,9 +164,13 @@ theorem coimageIsoImage_hom {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
   -- porting note: the next `have` have been added, otherwise some instance were not found
   have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
+  -- ⊢ (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f
   have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasKernel f' := inferInstance
+  -- ⊢ (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f
   have : ∀ (X' Y' : D) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
+  -- ⊢ (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f
   have : ∀ (X' Y' : D) (f' : X' ⟶ Y'), HasKernel f' := inferInstance
+  -- ⊢ (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f
   dsimp only [coimageIsoImage, Iso.instTransIso_trans, Iso.refl, Iso.trans, Iso.symm,
     Functor.mapIso, cokernelEpiComp, cokernelIso, cokernelCompIsIso_inv,
     asIso, coimageIsoImageAux, kernelCompMono]
@@ -180,12 +201,15 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFin
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
     (adj : G ⊣ F) : Abelian C := by
   haveI := hasKernels F G i
+  -- ⊢ Abelian C
   haveI := hasCokernels F G i adj
+  -- ⊢ Abelian C
   have : ∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f) := by
     intro X Y f
     rw [← coimageIsoImage_hom F G i adj f]
     infer_instance
   apply Abelian.ofCoimageImageComparisonIsIso
+  -- 🎉 no goals
 #align category_theory.abelian_of_adjunction CategoryTheory.abelianOfAdjunction
 
 /-- If `C` is an additive category equivalent to an abelian category `D`

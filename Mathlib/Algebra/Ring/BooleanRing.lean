@@ -69,20 +69,25 @@ theorem add_self : a + a = 0 := by
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
       _ = a + a + (a + a) := by rw [mul_self]
   rwa [self_eq_add_left] at this
+  -- 🎉 no goals
 #align add_self add_self
 
 @[simp]
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
+                      -- 🎉 no goals
     _ = -a + -a + a := by rw [← neg_add_self, add_assoc]
+                          -- 🎉 no goals
     _ = a := by rw [add_self, zero_add]
+                -- 🎉 no goals
 #align neg_eq neg_eq
 
 theorem add_eq_zero' : a + b = 0 ↔ a = b :=
   calc
     a + b = 0 ↔ a = -b := add_eq_zero_iff_eq_neg
     _ ↔ a = b := by rw [neg_eq]
+                    -- 🎉 no goals
 #align add_eq_zero' add_eq_zero'
 
 @[simp]
@@ -94,20 +99,24 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
   rwa [self_eq_add_right] at this
+  -- 🎉 no goals
 #align mul_add_mul mul_add_mul
 
 @[simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
+                                         -- 🎉 no goals
 #align sub_eq_add sub_eq_add
 
 @[simp]
 theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
+                                                 -- 🎉 no goals
 #align mul_one_add_self mul_one_add_self
 
 -- Note [lower instance priority]
 instance (priority := 100) BooleanRing.toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
+                              -- 🎉 no goals
 #align boolean_ring.to_comm_ring BooleanRing.toCommRing
 
 end BooleanRing
@@ -189,32 +198,44 @@ open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
   dsimp only [(· ⊔ ·)]
+  -- ⊢ a + b + a * b = b + a + b * a
   ring
+  -- 🎉 no goals
 #align boolean_ring.sup_comm BooleanRing.sup_comm
 
 theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := by
   dsimp only [(· ⊓ ·)]
+  -- ⊢ a * b = b * a
   ring
+  -- 🎉 no goals
 #align boolean_ring.inf_comm BooleanRing.inf_comm
 
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) := by
   dsimp only [(· ⊔ ·)]
+  -- ⊢ a + b + a * b + c + (a + b + a * b) * c = a + (b + c + b * c) + a * (b + c + …
   ring
+  -- 🎉 no goals
 #align boolean_ring.sup_assoc BooleanRing.sup_assoc
 
 theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := by
   dsimp only [(· ⊓ ·)]
+  -- ⊢ a * b * c = a * (b * c)
   ring
+  -- 🎉 no goals
 #align boolean_ring.inf_assoc BooleanRing.inf_assoc
 
 theorem sup_inf_self (a b : α) : a ⊔ a ⊓ b = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
+  -- ⊢ a + a * b + a * (a * b) = a
   rw [← mul_assoc, mul_self, add_assoc, add_self, add_zero]
+  -- 🎉 no goals
 #align boolean_ring.sup_inf_self BooleanRing.sup_inf_self
 
 theorem inf_sup_self (a b : α) : a ⊓ (a ⊔ b) = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
+  -- ⊢ a * (a + b + a * b) = a
   rw [mul_add, mul_add, mul_self, ← mul_assoc, mul_self, add_assoc, add_self, add_zero]
+  -- 🎉 no goals
 #align boolean_ring.inf_sup_self BooleanRing.inf_sup_self
 
 theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b * c + a * (b * c) :=
@@ -223,13 +244,17 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
           (a * b * c + a * a * b * c) :=
       by ring
+         -- 🎉 no goals
     _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
+                                      -- 🎉 no goals
 
 #align boolean_ring.le_sup_inf_aux BooleanRing.le_sup_inf_aux
 
 theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
+  -- ⊢ (a + b + a * b) * (a + c + a * c) + (a + b * c + a * (b * c)) + (a + b + a * …
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
+  -- 🎉 no goals
 #align boolean_ring.le_sup_inf BooleanRing.le_sup_inf
 
 /-- The Boolean algebra structure on a Boolean ring.
@@ -251,14 +276,18 @@ def toBooleanAlgebra : BooleanAlgebra α :=
                                                      add_assoc, add_self, add_zero]
     bot := 0
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
+                                                 -- 🎉 no goals
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
+                                                    -- 🎉 no goals
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
     top_le_sup_compl := fun a => by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
+      -- ⊢ 1 + (a + (1 + a)) = 0
       norm_num [mul_add, mul_self, add_self]
+      -- 🎉 no goals
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
@@ -305,12 +334,16 @@ private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * 
   calc
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
+         -- 🎉 no goals
     _ = a + b := by simp only [mul_self, add_self, add_zero]
+                    -- 🎉 no goals
 
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
+  -- ⊢ ↑ofBoolAlg ((a ⊔ b) \ (a ⊓ b)) = ↑ofBoolAlg a + ↑ofBoolAlg b
   exact of_boolalg_symmDiff_aux _ _
+  -- 🎉 no goals
 #align of_boolalg_symm_diff ofBoolAlg_symmDiff
 
 @[simp]
@@ -352,7 +385,9 @@ protected def RingHom.asBoolAlg (f : α →+* β) : BoundedLatticeHom (AsBoolAlg
   toFun := toBoolAlg ∘ f ∘ ofBoolAlg
   map_sup' a b := by
     dsimp
+    -- ⊢ ↑toBoolAlg (↑f (↑ofBoolAlg a + ↑ofBoolAlg b + ↑ofBoolAlg a * ↑ofBoolAlg b))  …
     simp_rw [map_add f, map_mul f, toBoolAlg_add_add_mul]
+    -- 🎉 no goals
   map_inf' := f.map_mul'
   map_top' := f.map_one'
   map_bot' := f.map_zero'
@@ -608,3 +643,6 @@ instance : BooleanRing Bool where
   mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
+                   -- ⊢ false * 0 = 0
+                               -- 🎉 no goals
+                               -- 🎉 no goals

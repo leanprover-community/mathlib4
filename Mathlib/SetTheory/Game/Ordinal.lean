@@ -47,24 +47,31 @@ theorem toPGame_def (o : Ordinal) :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     o.toPGame = ⟨o.out.α, PEmpty, fun x => (typein (· < ·) x).toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
+  -- 🎉 no goals
 #align ordinal.to_pgame_def Ordinal.toPGame_def
 
 @[simp, nolint unusedHavesSuffices]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.out.α := by
   rw [toPGame, LeftMoves]
+  -- 🎉 no goals
 #align ordinal.to_pgame_left_moves Ordinal.toPGame_leftMoves
 
 @[simp, nolint unusedHavesSuffices]
 theorem toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
   rw [toPGame, RightMoves]
+  -- 🎉 no goals
 #align ordinal.to_pgame_right_moves Ordinal.toPGame_rightMoves
 
 instance isEmpty_zero_toPGame_leftMoves : IsEmpty (toPGame 0).LeftMoves := by
   rw [toPGame_leftMoves]; infer_instance
+  -- ⊢ IsEmpty (Quotient.out 0).α
+                          -- 🎉 no goals
 #align ordinal.is_empty_zero_to_pgame_left_moves Ordinal.isEmpty_zero_toPGame_leftMoves
 
 instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves := by
   rw [toPGame_rightMoves]; infer_instance
+  -- ⊢ IsEmpty PEmpty
+                           -- 🎉 no goals
 #align ordinal.is_empty_to_pgame_right_moves Ordinal.isEmpty_toPGame_rightMoves
 
 /-- Converts an ordinal less than `o` into a move for the `PGame` corresponding to `o`, and vice
@@ -84,7 +91,9 @@ theorem toPGame_moveLeft_hEq {o : Ordinal} :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     HEq o.toPGame.moveLeft fun x : o.out.α => (typein (· < ·) x).toPGame := by
   rw [toPGame]
+  -- ⊢ let_fun this := (_ : IsWellOrder (Quotient.out o).α fun x x_1 => x < x_1);
   rfl
+  -- 🎉 no goals
 #align ordinal.to_pgame_move_left_heq Ordinal.toPGame_moveLeft_hEq
 
 @[simp]
@@ -95,6 +104,7 @@ theorem toPGame_moveLeft' {o : Ordinal} (i) :
 
 theorem toPGame_moveLeft {o : Ordinal} (i) :
     o.toPGame.moveLeft (toLeftMovesToPGame i) = i.val.toPGame := by simp
+                                                                    -- 🎉 no goals
 #align ordinal.to_pgame_move_left Ordinal.toPGame_moveLeft
 
 /-- `0.to_pgame` has the same moves as `0`. -/
@@ -116,25 +126,33 @@ theorem one_toPGame_leftMoves_default_eq :
 theorem to_leftMoves_one_toPGame_symm (i) :
     (@toLeftMovesToPGame 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
   simp
+  -- 🎉 no goals
 #align ordinal.to_left_moves_one_to_pgame_symm Ordinal.to_leftMoves_one_toPGame_symm
 
 theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
+                                                                            -- 🎉 no goals
 #align ordinal.one_to_pgame_move_left Ordinal.one_toPGame_moveLeft
 
 /-- `1.to_pgame` has the same moves as `1`. -/
 noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
   ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
     simpa using zeroToPgameRelabelling, isEmptyElim⟩
+    -- 🎉 no goals
 #align ordinal.one_to_pgame_relabelling Ordinal.oneToPGameRelabelling
 
 theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
   convert moveLeft_lf (toLeftMovesToPGame ⟨a, h⟩); rw [toPGame_moveLeft]
+  -- ⊢ toPGame a = moveLeft (toPGame b) (↑toLeftMovesToPGame { val := a, property : …
+                                                   -- 🎉 no goals
 #align ordinal.to_pgame_lf Ordinal.toPGame_lf
 
 theorem toPGame_le {a b : Ordinal} (h : a ≤ b) : a.toPGame ≤ b.toPGame := by
   refine' le_iff_forall_lf.2 ⟨fun i => _, isEmptyElim⟩
+  -- ⊢ moveLeft (toPGame a) i ⧏ toPGame b
   rw [toPGame_moveLeft']
+  -- ⊢ toPGame ↑(↑toLeftMovesToPGame.symm i) ⧏ toPGame b
   exact toPGame_lf ((toLeftMovesToPGame_symm_lt i).trans_le h)
+  -- 🎉 no goals
 #align ordinal.to_pgame_le Ordinal.toPGame_le
 
 theorem toPGame_lt {a b : Ordinal} (h : a < b) : a.toPGame < b.toPGame :=
@@ -148,23 +166,34 @@ theorem toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
 @[simp]
 theorem toPGame_lf_iff {a b : Ordinal} : a.toPGame ⧏ b.toPGame ↔ a < b :=
   ⟨by contrapose; rw [not_lt, not_lf]; exact toPGame_le, toPGame_lf⟩
+      -- ⊢ ¬a < b → ¬toPGame a ⧏ toPGame b
+                  -- ⊢ b ≤ a → toPGame b ≤ toPGame a
+                                       -- 🎉 no goals
 #align ordinal.to_pgame_lf_iff Ordinal.toPGame_lf_iff
 
 @[simp]
 theorem toPGame_le_iff {a b : Ordinal} : a.toPGame ≤ b.toPGame ↔ a ≤ b :=
   ⟨by contrapose; rw [not_le, PGame.not_le]; exact toPGame_lf, toPGame_le⟩
+      -- ⊢ ¬a ≤ b → ¬toPGame a ≤ toPGame b
+                  -- ⊢ b < a → toPGame b ⧏ toPGame a
+                                             -- 🎉 no goals
 #align ordinal.to_pgame_le_iff Ordinal.toPGame_le_iff
 
 @[simp]
 theorem toPGame_lt_iff {a b : Ordinal} : a.toPGame < b.toPGame ↔ a < b :=
   ⟨by contrapose; rw [not_lt]; exact fun h => not_lt_of_le (toPGame_le h), toPGame_lt⟩
+      -- ⊢ ¬a < b → ¬toPGame a < toPGame b
+                  -- ⊢ b ≤ a → ¬toPGame a < toPGame b
+                               -- 🎉 no goals
 #align ordinal.to_pgame_lt_iff Ordinal.toPGame_lt_iff
 
 @[simp]
 theorem toPGame_equiv_iff {a b : Ordinal} : (a.toPGame ≈ b.toPGame) ↔ a = b := by
   -- Porting note: was `rw [PGame.Equiv]`
   change _ ≤_ ∧ _ ≤ _ ↔ _
+  -- ⊢ toPGame a ≤ toPGame b ∧ toPGame b ≤ toPGame a ↔ a = b
   rw [le_antisymm_iff, toPGame_le_iff, toPGame_le_iff]
+  -- 🎉 no goals
 #align ordinal.to_pgame_equiv_iff Ordinal.toPGame_equiv_iff
 
 theorem toPGame_injective : Function.Injective Ordinal.toPGame := fun _ _ h =>
@@ -188,22 +217,46 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
 theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b).toPGame
   | a, b => by
     refine' ⟨le_of_forall_lf (fun i => _) isEmptyElim, le_of_forall_lf (fun i => _) isEmptyElim⟩
+    -- ⊢ moveLeft (toPGame a + toPGame b) i ⧏ toPGame (a ♯ b)
     · apply leftMoves_add_cases i <;>
+      -- ⊢ ∀ (i : LeftMoves (toPGame a)), moveLeft (toPGame a + toPGame b) (↑toLeftMove …
       intro i <;>
+      -- ⊢ moveLeft (toPGame a + toPGame b) (↑toLeftMovesAdd (Sum.inl i)) ⧏ toPGame (a  …
+      -- ⊢ moveLeft (toPGame a + toPGame b) (↑toLeftMovesAdd (Sum.inr i)) ⧏ toPGame (a  …
       let wf := toLeftMovesToPGame_symm_lt i <;>
+      -- ⊢ moveLeft (toPGame a + toPGame b) (↑toLeftMovesAdd (Sum.inl i)) ⧏ toPGame (a  …
+      -- ⊢ moveLeft (toPGame a + toPGame b) (↑toLeftMovesAdd (Sum.inr i)) ⧏ toPGame (a  …
       (try rw [add_moveLeft_inl]) <;>
+       -- ⊢ moveLeft (toPGame a) i + toPGame b ⧏ toPGame (a ♯ b)
+       -- ⊢ moveLeft (toPGame a + toPGame b) (↑toLeftMovesAdd (Sum.inr i)) ⧏ toPGame (a  …
       (try rw [add_moveLeft_inr]) <;>
+       -- ⊢ moveLeft (toPGame a) i + toPGame b ⧏ toPGame (a ♯ b)
+       -- ⊢ toPGame a + moveLeft (toPGame b) i ⧏ toPGame (a ♯ b)
       rw [toPGame_moveLeft', lf_congr_left (toPGame_add _ _), toPGame_lf_iff]
+      -- ⊢ ↑(↑toLeftMovesToPGame.symm i) ♯ b < a ♯ b
+      -- ⊢ a ♯ ↑(↑toLeftMovesToPGame.symm i) < a ♯ b
       · exact nadd_lt_nadd_right wf _
+        -- 🎉 no goals
       · exact nadd_lt_nadd_left wf _
+        -- 🎉 no goals
     · rw [toPGame_moveLeft']
+      -- ⊢ toPGame ↑(↑toLeftMovesToPGame.symm i) ⧏ toPGame a + toPGame b
       rcases lt_nadd_iff.1 (toLeftMovesToPGame_symm_lt i) with (⟨c, hc, hc'⟩ | ⟨c, hc, hc'⟩) <;>
+      -- ⊢ toPGame ↑(↑toLeftMovesToPGame.symm i) ⧏ toPGame a + toPGame b
       rw [← toPGame_le_iff, ← le_congr_right (toPGame_add _ _)] at hc' <;>
+      -- ⊢ toPGame ↑(↑toLeftMovesToPGame.symm i) ⧏ toPGame a + toPGame b
+      -- ⊢ toPGame ↑(↑toLeftMovesToPGame.symm i) ⧏ toPGame a + toPGame b
       apply lf_of_le_of_lf hc'
+      -- ⊢ toPGame c + toPGame b ⧏ toPGame a + toPGame b
+      -- ⊢ toPGame a + toPGame c ⧏ toPGame a + toPGame b
       · apply add_lf_add_right
+        -- ⊢ toPGame c ⧏ toPGame a
         rwa [toPGame_lf_iff]
+        -- 🎉 no goals
       · apply add_lf_add_left
+        -- ⊢ toPGame c ⧏ toPGame b
         rwa [toPGame_lf_iff]
+        -- 🎉 no goals
 termination_by toPGame_add a b => (a, b)
 #align ordinal.to_pgame_add Ordinal.toPGame_add
 

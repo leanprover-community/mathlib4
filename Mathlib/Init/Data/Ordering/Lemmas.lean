@@ -22,18 +22,30 @@ namespace Ordering
 theorem ite_eq_lt_distrib (c : Prop) [Decidable c] (a b : Ordering) :
     ((if c then a else b) = Ordering.lt) = if c then a = Ordering.lt else b = Ordering.lt := by
   by_cases c <;> simp [*]
+  -- ⊢ ((if c then a else b) = lt) = if c then a = lt else b = lt
+  -- ⊢ ((if c then a else b) = lt) = if c then a = lt else b = lt
+                 -- 🎉 no goals
+                 -- 🎉 no goals
 #align ordering.ite_eq_lt_distrib Ordering.ite_eq_lt_distrib
 
 @[simp]
 theorem ite_eq_eq_distrib (c : Prop) [Decidable c] (a b : Ordering) :
     ((if c then a else b) = Ordering.eq) = if c then a = Ordering.eq else b = Ordering.eq := by
   by_cases c <;> simp [*]
+  -- ⊢ ((if c then a else b) = eq) = if c then a = eq else b = eq
+  -- ⊢ ((if c then a else b) = eq) = if c then a = eq else b = eq
+                 -- 🎉 no goals
+                 -- 🎉 no goals
 #align ordering.ite_eq_eq_distrib Ordering.ite_eq_eq_distrib
 
 @[simp]
 theorem ite_eq_gt_distrib (c : Prop) [Decidable c] (a b : Ordering) :
     ((if c then a else b) = Ordering.gt) = if c then a = Ordering.gt else b = Ordering.gt := by
   by_cases c <;> simp [*]
+  -- ⊢ ((if c then a else b) = gt) = if c then a = gt else b = gt
+  -- ⊢ ((if c then a else b) = gt) = if c then a = gt else b = gt
+                 -- 🎉 no goals
+                 -- 🎉 no goals
 #align ordering.ite_eq_gt_distrib Ordering.ite_eq_gt_distrib
 
 end Ordering
@@ -46,6 +58,7 @@ attribute [local simp] cmpUsing
 
 @[simp]
 theorem cmpUsing_eq_lt (a b : α) : (cmpUsing lt a b = Ordering.lt) = lt a b := by simp
+                                                                                  -- 🎉 no goals
 #align cmp_using_eq_lt cmpUsing_eq_lt
 
 @[simp]
@@ -54,17 +67,26 @@ theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) :
   simp only [cmpUsing, Ordering.ite_eq_gt_distrib, if_false_right_eq_and, and_true,
     if_false_left_eq_and]
   apply propext
+  -- ⊢ ¬lt a b ∧ lt b a ↔ lt b a
   apply Iff.intro
+  -- ⊢ ¬lt a b ∧ lt b a → lt b a
   · exact fun h => h.2
+    -- 🎉 no goals
   · intro hba
+    -- ⊢ ¬lt a b ∧ lt b a
     constructor
+    -- ⊢ ¬lt a b
     · intro hab
+      -- ⊢ False
       exact absurd (_root_.trans hab hba) (irrefl a)
+      -- 🎉 no goals
     · assumption
+      -- 🎉 no goals
 #align cmp_using_eq_gt cmpUsing_eq_gt
 
 @[simp]
 theorem cmpUsing_eq_eq (a b : α) : (cmpUsing lt a b = Ordering.eq) = (¬lt a b ∧ ¬lt b a) := by simp
+                                                                                               -- 🎉 no goals
 #align cmp_using_eq_eq cmpUsing_eq_eq
 
 end

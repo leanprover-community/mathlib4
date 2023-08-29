@@ -97,6 +97,8 @@ theorem iInf_apply {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) (x 
 theorem coe_iInf {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
     ((⨅ i, f i : α →o β) : α → β) = ⨅ i, (f i : α → β) := by
   funext x; simp [iInf_apply]
+  -- ⊢ ↑(⨅ (i : ι), f i) x = iInf (fun i => ↑(f i)) x
+            -- 🎉 no goals
 #align order_hom.coe_infi OrderHom.coe_iInf
 
 instance [CompleteLattice β] : SupSet (α →o β) where
@@ -117,6 +119,8 @@ theorem iSup_apply {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) (x 
 theorem coe_iSup {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
     ((⨆ i, f i : α →o β) : α → β) = ⨆ i, (f i : α → β) := by
   funext x; simp [iSup_apply]
+  -- ⊢ ↑(⨆ (i : ι), f i) x = iSup (fun i => ↑(f i)) x
+            -- 🎉 no goals
 #align order_hom.coe_supr OrderHom.coe_iSup
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
@@ -124,6 +128,7 @@ instance [CompleteLattice β] : CompleteLattice (α →o β) :=
     -- sSup := SupSet.sSup   -- Porting note: removed, unnecessary?
     -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`
     le_sSup := fun s f hf x => le_iSup_of_le f (by apply le_iSup _ hf)
+                                                   -- 🎉 no goals
     sSup_le := fun s f hf x => iSup₂_le fun g hg => hf g hg x
     --inf := sInf      -- Porting note: removed, unnecessary?
     le_sInf := fun s f hf x => le_iInf₂ fun g hg => hf g hg x
@@ -134,8 +139,13 @@ theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α)
     (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔
       ∀ a₁ a₂, f (a₁ ⊔ a₂) ≤ f a₁ ⊔ a₂ := by
   constructor <;> intro h
+  -- ⊢ (∀ (n₁ n₂ : ℕ) (a₁ a₂ : α), (↑f)^[n₁ + n₂] (a₁ ⊔ a₂) ≤ (↑f)^[n₁] a₁ ⊔ (↑f)^[ …
+                  -- ⊢ ∀ (a₁ a₂ : α), ↑f (a₁ ⊔ a₂) ≤ ↑f a₁ ⊔ a₂
+                  -- ⊢ ∀ (n₁ n₂ : ℕ) (a₁ a₂ : α), (↑f)^[n₁ + n₂] (a₁ ⊔ a₂) ≤ (↑f)^[n₁] a₁ ⊔ (↑f)^[n …
   · exact h 1 0
+    -- 🎉 no goals
   · intro n₁ n₂ a₁ a₂
+    -- ⊢ (↑f)^[n₁ + n₂] (a₁ ⊔ a₂) ≤ (↑f)^[n₁] a₁ ⊔ (↑f)^[n₂] a₂
     have h' : ∀ n a₁ a₂, f^[n] (a₁ ⊔ a₂) ≤ f^[n] a₁ ⊔ a₂ := by
       intro n
       induction' n with n ih <;> intro a₁ a₂

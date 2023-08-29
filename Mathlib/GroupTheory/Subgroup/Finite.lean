@@ -112,7 +112,9 @@ theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s 
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
   ⟨{1}, by
     rintro ⟨x, ⟨hx⟩⟩
+    -- ⊢ { val := 1, property := (_ : 1 = 1) } ∈ {1}
     exact Finset.mem_singleton_self _⟩
+    -- 🎉 no goals
 #align subgroup.fintype_bot Subgroup.fintypeBot
 #align add_subgroup.fintype_bot AddSubgroup.fintypeBot
 
@@ -128,21 +130,26 @@ theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup
 @[to_additive]
 theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
   rw [Fintype.card_eq]
+  -- ⊢ Nonempty ({ x // x ∈ ⊤ } ≃ G)
   exact Nonempty.intro Subgroup.topEquiv.toEquiv
+  -- 🎉 no goals
 
 @[to_additive]
 theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
     H = ⊤ := by
   letI : Fintype (H : Set G) := ‹Fintype H›
+  -- ⊢ H = ⊤
   rw [SetLike.ext'_iff, coe_top, ← Finset.coe_univ, ← (H : Set G).coe_toFinset, Finset.coe_inj, ←
     Finset.card_eq_iff_eq_univ, ← h, Set.toFinset_card]
   congr
+  -- 🎉 no goals
 #align subgroup.eq_top_of_card_eq Subgroup.eq_top_of_card_eq
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
 
 @[to_additive (attr := simp)]
 theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
   Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
+                                              -- 🎉 no goals
 
 @[to_additive]
 theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
@@ -169,7 +176,9 @@ theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
   ⟨fun h =>
     (eq_bot_iff_forall _).2 fun x hx => by
       simpa [Subtype.ext_iff] using Fintype.card_le_one_iff.1 h ⟨x, hx⟩ 1,
+      -- 🎉 no goals
     fun h => by simp [h]⟩
+                -- 🎉 no goals
 #align subgroup.card_le_one_iff_eq_bot Subgroup.card_le_one_iff_eq_bot
 #align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_le_one_iff_eq_bot
 
@@ -198,9 +207,13 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
     (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
     x ∈ H := by
   induction' I using Finset.induction_on with i I hnmem ih generalizing x
+  -- ⊢ x ∈ H
   · convert one_mem H
+    -- ⊢ x = 1
     ext i
+    -- ⊢ x i = OfNat.ofNat 1 i
     exact h1 i (Finset.not_mem_empty i)
+    -- 🎉 no goals
   · have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
       ext j
       by_cases heq : j = i
@@ -208,24 +221,42 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         simp
       · simp [heq]
     rw [this]
+    -- ⊢ Function.update x i 1 * Pi.mulSingle i (x i) ∈ H
     clear this
+    -- ⊢ Function.update x i 1 * Pi.mulSingle i (x i) ∈ H
     apply mul_mem
+    -- ⊢ Function.update x i 1 ∈ H
     · apply ih <;> clear ih
+      -- ⊢ ∀ (i_1 : η), ¬i_1 ∈ I → Function.update x i 1 i_1 = 1
+                   -- ⊢ ∀ (i_1 : η), ¬i_1 ∈ I → Function.update x i 1 i_1 = 1
+                   -- ⊢ ∀ (i_1 : η), i_1 ∈ I → Pi.mulSingle i_1 (Function.update x i 1 i_1) ∈ H
       · intro j hj
+        -- ⊢ Function.update x i 1 j = 1
         by_cases heq : j = i
+        -- ⊢ Function.update x i 1 j = 1
         · subst heq
+          -- ⊢ Function.update x j 1 j = 1
           simp
+          -- 🎉 no goals
         · simp [heq]
+          -- ⊢ x j = 1
           apply h1 j
+          -- ⊢ ¬j ∈ insert i I
           simpa [heq] using hj
+          -- 🎉 no goals
       · intro j hj
+        -- ⊢ Pi.mulSingle j (Function.update x i 1 j) ∈ H
         have : j ≠ i := by
           rintro rfl
           contradiction
         simp [this]
+        -- ⊢ Pi.mulSingle j (x j) ∈ H
         exact h2 _ (Finset.mem_insert_of_mem hj)
+        -- 🎉 no goals
     · apply h2
+      -- ⊢ i ∈ insert i I
       simp
+      -- 🎉 no goals
 #align subgroup.pi_mem_of_mul_single_mem_aux Subgroup.pi_mem_of_mulSingle_mem_aux
 #align add_subgroup.pi_mem_of_single_mem_aux AddSubgroup.pi_mem_of_single_mem_aux
 
@@ -233,7 +264,9 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
 theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)
     (h : ∀ i, Pi.mulSingle i (x i) ∈ H) : x ∈ H := by
   cases nonempty_fintype η
+  -- ⊢ x ∈ H
   exact pi_mem_of_mulSingle_mem_aux Finset.univ x (by simp) fun i _ => h i
+  -- 🎉 no goals
 #align subgroup.pi_mem_of_mul_single_mem Subgroup.pi_mem_of_mulSingle_mem
 #align add_subgroup.pi_mem_of_single_mem AddSubgroup.pi_mem_of_single_mem
 
@@ -243,10 +276,15 @@ theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ 
 theorem pi_le_iff [DecidableEq η] [Finite η] {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
     pi univ H ≤ J ↔ ∀ i : η, map (MonoidHom.single f i) (H i) ≤ J := by
   constructor
+  -- ⊢ pi univ H ≤ J → ∀ (i : η), map (MonoidHom.single f i) (H i) ≤ J
   · rintro h i _ ⟨x, hx, rfl⟩
+    -- ⊢ ↑(MonoidHom.single f i) x ∈ J
     apply h
+    -- ⊢ ↑(MonoidHom.single f i) x ∈ pi univ H
     simpa using hx
+    -- 🎉 no goals
   · exact fun h x hx => pi_mem_of_mulSingle_mem x fun i => h i (mem_map_of_mem _ (hx i trivial))
+    -- 🎉 no goals
 #align subgroup.pi_le_iff Subgroup.pi_le_iff
 #align add_subgroup.pi_le_iff AddSubgroup.pi_le_iff
 
@@ -261,7 +299,10 @@ section Normalizer
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.setNormalizer S := by
   haveI := Classical.propDecidable; cases nonempty_fintype S;
+  -- ⊢ x ∈ setNormalizer S
+                                    -- ⊢ x ∈ setNormalizer S
       haveI := Set.fintypeImage S fun n => x * n * x⁻¹;
+      -- ⊢ x ∈ setNormalizer S
     exact fun n =>
       ⟨h n, fun h₁ =>
         have heq : (fun n => x * n * x⁻¹) '' S = S :=

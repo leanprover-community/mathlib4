@@ -50,11 +50,17 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
   set g' :=
     g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
   · refine' ⟨g', g_eq, _⟩
+    -- ⊢ ‖g'‖ = ‖f‖
     · apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
+      -- ⊢ ‖f‖ ≤ ‖LinearMap.mkContinuous g ‖f‖ (_ : ∀ (x : E), |↑g x| ≤ ‖f‖ * ‖x‖)‖
       refine' f.op_norm_le_bound (norm_nonneg _) fun x => _
+      -- ⊢ ‖↑f x‖ ≤ ‖LinearMap.mkContinuous g ‖f‖ (_ : ∀ (x : E), |↑g x| ≤ ‖f‖ * ‖x‖)‖  …
       dsimp at g_eq
+      -- ⊢ ‖↑f x‖ ≤ ‖LinearMap.mkContinuous g ‖f‖ (_ : ∀ (x : E), |↑g x| ≤ ‖f‖ * ‖x‖)‖  …
       rw [← g_eq]
+      -- ⊢ ‖↑g ↑x‖ ≤ ‖LinearMap.mkContinuous g ‖f‖ (_ : ∀ (x : E), |↑g x| ≤ ‖f‖ * ‖x‖)‖ …
       apply g'.le_op_norm
+      -- 🎉 no goals
 #align real.exists_extension_norm_eq Real.exists_extension_norm_eq
 
 end Real
@@ -69,15 +75,21 @@ variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [No
 theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     ∃ g : F →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : Module ℝ F := RestrictScalars.module ℝ 𝕜 F
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ p }), ↑g ↑x = ↑f x) ∧ ‖g‖ = ‖f‖
   letI : IsScalarTower ℝ 𝕜 F := RestrictScalars.isScalarTower _ _ _
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ p }), ↑g ↑x = ↑f x) ∧ ‖g‖ = ‖f‖
   letI : NormedSpace ℝ F := NormedSpace.restrictScalars _ 𝕜 _
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ p }), ↑g ↑x = ↑f x) ∧ ‖g‖ = ‖f‖
   -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
   let fr := reClm.comp (f.restrictScalars ℝ)
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ p }), ↑g ↑x = ↑f x) ∧ ‖g‖ = ‖f‖
   -- Use the real version to get a norm-preserving extension of `fr`, which
   -- we'll call `g : F →L[ℝ] ℝ`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
+  -- ⊢ ∃ g, (∀ (x : { x // x ∈ p }), ↑g ↑x = ↑f x) ∧ ‖g‖ = ‖f‖
   -- Now `g` can be extended to the `F →L[𝕜] 𝕜` we need.
   refine' ⟨g.extendTo𝕜, _⟩
+  -- ⊢ (∀ (x : { x // x ∈ p }), ↑(ContinuousLinearMap.extendTo𝕜 g) ↑x = ↑f x) ∧ ‖Co …
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
@@ -94,12 +106,14 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine' ⟨h, le_antisymm _ _⟩
+  -- ⊢ ‖ContinuousLinearMap.extendTo𝕜 g‖ ≤ ‖f‖
   · calc
       ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
       _ = ‖fr‖ := hnormeq
       _ ≤ ‖reClm‖ * ‖f‖ := (ContinuousLinearMap.op_norm_comp_le _ _)
       _ = ‖f‖ := by rw [reClm_norm, one_mul]
   · exact f.op_norm_le_bound g.extendTo𝕜.op_norm_nonneg fun x => h x ▸ g.extendTo𝕜.le_op_norm x
+    -- 🎉 no goals
 #align exists_extension_norm_eq exists_extension_norm_eq
 
 end IsROrC
@@ -123,10 +137,15 @@ theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x
     element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   let p : Submodule 𝕜 E := 𝕜 ∙ x
+  -- ⊢ ∃ g, ‖g‖ = 1 ∧ ↑g x = ↑‖x‖
   let f := (‖x‖ : 𝕜) • coord 𝕜 x h
+  -- ⊢ ∃ g, ‖g‖ = 1 ∧ ↑g x = ↑‖x‖
   obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
+  -- ⊢ ∃ g, ‖g‖ = 1 ∧ ↑g x = ↑‖x‖
   refine' ⟨g, _, _⟩
+  -- ⊢ ‖g‖ = 1
   · rw [hg.2, coord_norm']
+    -- 🎉 no goals
   · calc
       g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
       _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
@@ -137,11 +156,17 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
     the dual element arbitrarily when `x = 0`. -/
 theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
+  -- ⊢ ∃ g, ‖g‖ = 1 ∧ ↑g x = ↑‖x‖
   · obtain ⟨y, hy⟩ := exists_ne (0 : E)
+    -- ⊢ ∃ g, ‖g‖ = 1 ∧ ↑g x = ↑‖x‖
     obtain ⟨g, hg⟩ : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g y = ‖y‖ := exists_dual_vector 𝕜 y hy
+    -- ⊢ ∃ g, ‖g‖ = 1 ∧ ↑g x = ↑‖x‖
     refine' ⟨g, hg.left, _⟩
+    -- ⊢ ↑g x = ↑‖x‖
     simp [hx]
+    -- 🎉 no goals
   · exact exists_dual_vector 𝕜 x hx
+    -- 🎉 no goals
 #align exists_dual_vector' exists_dual_vector'
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
@@ -149,11 +174,17 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, 
     vector space). -/
 theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
+  -- ⊢ ∃ g, ‖g‖ ≤ 1 ∧ ↑g x = ↑‖x‖
   · refine' ⟨0, by simp, _⟩
+    -- ⊢ ↑0 x = ↑‖x‖
     symm
+    -- ⊢ ↑‖x‖ = ↑0 x
     simp [hx]
+    -- 🎉 no goals
   · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩
+    -- ⊢ ∃ g, ‖g‖ ≤ 1 ∧ ↑g x = ↑‖x‖
     exact ⟨g, g_norm.le, g_eq⟩
+    -- 🎉 no goals
 #align exists_dual_vector'' exists_dual_vector''
 
 end DualVector

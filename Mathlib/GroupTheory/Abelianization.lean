@@ -48,10 +48,12 @@ theorem commutator_def : commutator G = ⁅(⊤ : Subgroup G), ⊤⁆ :=
 
 theorem commutator_eq_closure : commutator G = Subgroup.closure (commutatorSet G) := by
   simp [commutator, Subgroup.commutator_def, commutatorSet]
+  -- 🎉 no goals
 #align commutator_eq_closure commutator_eq_closure
 
 theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (commutatorSet G) := by
   simp [commutator, Subgroup.commutator_def', commutatorSet]
+  -- 🎉 no goals
 #align commutator_eq_normal_closure commutator_eq_normalClosure
 
 instance commutator_characteristic : (commutator G).Characteristic :=
@@ -60,12 +62,16 @@ instance commutator_characteristic : (commutator G).Characteristic :=
 
 instance [Finite (commutatorSet G)] : Group.FG (commutator G) := by
   rw [commutator_eq_closure]
+  -- ⊢ Group.FG { x // x ∈ Subgroup.closure (commutatorSet G) }
   apply Group.closure_finite_fg
+  -- 🎉 no goals
 
 theorem rank_commutator_le_card [Finite (commutatorSet G)] :
     Group.rank (commutator G) ≤ Nat.card (commutatorSet G) := by
   rw [Subgroup.rank_congr (commutator_eq_closure G)]
+  -- ⊢ Group.rank { x // x ∈ Subgroup.closure (commutatorSet G) } ≤ Nat.card ↑(comm …
   apply Subgroup.rank_closure_finite_le_nat_card
+  -- 🎉 no goals
 #align rank_commutator_le_card rank_commutator_le_card
 
 theorem commutator_centralizer_commutator_le_center :
@@ -76,7 +82,9 @@ theorem commutator_centralizer_commutator_le_center :
     refine' Subgroup.commutator_commutator_eq_bot_of_rotate _ this
     rwa [Subgroup.commutator_comm (centralizer (commutator G : Set G))]
   rw [Subgroup.commutator_comm, Subgroup.commutator_eq_bot_iff_le_centralizer]
+  -- ⊢ centralizer ↑(commutator G) ≤ centralizer ↑⁅⊤, centralizer ↑(commutator G)⁆
   exact Set.centralizer_subset (Subgroup.commutator_mono le_top le_top)
+  -- 🎉 no goals
 #align commutator_centralizer_commutator_le_center commutator_centralizer_commutator_le_center
 
 /-- The abelianization of G is the quotient of G by its commutator subgroup. -/
@@ -96,6 +104,7 @@ instance commGroup : CommGroup (Abelianization G) :=
           QuotientGroup.leftRel_apply.mpr <|
             Subgroup.subset_closure
               ⟨b⁻¹, Subgroup.mem_top b⁻¹, a⁻¹, Subgroup.mem_top a⁻¹, by group⟩ }
+                                                                        -- 🎉 no goals
 
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩
@@ -129,8 +138,11 @@ variable {A : Type v} [CommGroup A] (f : G →* A)
 
 theorem commutator_subset_ker : commutator G ≤ f.ker := by
   rw [commutator_eq_closure, Subgroup.closure_le]
+  -- ⊢ commutatorSet G ⊆ ↑(MonoidHom.ker f)
   rintro x ⟨p, q, rfl⟩
+  -- ⊢ ⁅p, q⁆ ∈ ↑(MonoidHom.ker f)
   simp [MonoidHom.mem_ker, mul_right_comm (f p) (f q), commutatorElement_def]
+  -- 🎉 no goals
 #align abelianization.commutator_subset_ker Abelianization.commutator_subset_ker
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
@@ -214,10 +226,14 @@ def MulEquiv.abelianizationCongr : Abelianization G ≃* Abelianization H where
   invFun := Abelianization.map e.symm.toMonoidHom
   left_inv := by
     rintro ⟨a⟩
+    -- ⊢ ↑(Abelianization.map (toMonoidHom (symm e))) (↑(Abelianization.map (toMonoid …
     simp
+    -- 🎉 no goals
   right_inv := by
     rintro ⟨a⟩
+    -- ⊢ ↑(Abelianization.map (toMonoidHom e)) (↑(Abelianization.map (toMonoidHom (sy …
     simp
+    -- 🎉 no goals
   map_mul' := MonoidHom.map_mul _
 #align mul_equiv.abelianization_congr MulEquiv.abelianizationCongr
 
@@ -255,7 +271,9 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
     left_inv := fun a => rfl
     right_inv := by
       rintro ⟨a⟩
+      -- ⊢ ↑of (↑(↑lift (MonoidHom.id H)) (Quot.mk Setoid.r a)) = Quot.mk Setoid.r a
       rfl }
+      -- 🎉 no goals
 #align abelianization.equiv_of_comm Abelianization.equivOfComm
 
 section commutatorRepresentatives
@@ -283,6 +301,7 @@ instance closureCommutatorRepresentatives_fg [Finite (commutatorSet G)] :
 theorem rank_closureCommutatorRepresentatives_le [Finite (commutatorSet G)] :
     Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) := by
   rw [two_mul]
+  -- ⊢ Group.rank { x // x ∈ closureCommutatorRepresentatives G } ≤ Nat.card ↑(comm …
   exact
     (Subgroup.rank_closure_finite_le_nat_card _).trans
       ((Set.card_union_le _ _).trans
@@ -295,8 +314,11 @@ theorem image_commutatorSet_closureCommutatorRepresentatives :
         commutatorSet (closureCommutatorRepresentatives G) =
       commutatorSet G := by
   apply Set.Subset.antisymm
+  -- ⊢ ↑(Subgroup.subtype (closureCommutatorRepresentatives G)) '' commutatorSet {  …
   · rintro - ⟨-, ⟨g₁, g₂, rfl⟩, rfl⟩
+    -- ⊢ ↑(Subgroup.subtype (closureCommutatorRepresentatives G)) ⁅g₁, g₂⁆ ∈ commutat …
     exact ⟨g₁, g₂, rfl⟩
+    -- 🎉 no goals
   · exact fun g hg =>
       ⟨_,
         ⟨⟨_, subset_closure (Or.inl ⟨_, ⟨⟨g, hg⟩, rfl⟩, rfl⟩)⟩,
@@ -307,7 +329,9 @@ theorem image_commutatorSet_closureCommutatorRepresentatives :
 theorem card_commutatorSet_closureCommutatorRepresentatives :
     Nat.card (commutatorSet (closureCommutatorRepresentatives G)) = Nat.card (commutatorSet G) := by
   rw [← image_commutatorSet_closureCommutatorRepresentatives G]
+  -- ⊢ Nat.card ↑(commutatorSet { x // x ∈ closureCommutatorRepresentatives G }) =  …
   exact Nat.card_congr (Equiv.Set.image _ _ (subtype_injective _))
+  -- 🎉 no goals
 #align card_commutator_set_closure_commutator_representatives card_commutatorSet_closureCommutatorRepresentatives
 
 theorem card_commutator_closureCommutatorRepresentatives :
@@ -315,12 +339,16 @@ theorem card_commutator_closureCommutatorRepresentatives :
   rw [commutator_eq_closure G, ← image_commutatorSet_closureCommutatorRepresentatives, ←
     MonoidHom.map_closure, ← commutator_eq_closure]
   exact Nat.card_congr (Equiv.Set.image _ _ (subtype_injective _))
+  -- 🎉 no goals
 #align card_commutator_closure_commutator_representatives card_commutator_closureCommutatorRepresentatives
 
 instance [Finite (commutatorSet G)] :
     Finite (commutatorSet (closureCommutatorRepresentatives G)) := by
   apply Nat.finite_of_card_ne_zero
+  -- ⊢ Nat.card ↑(commutatorSet { x // x ∈ closureCommutatorRepresentatives G }) ≠ 0
   rw [card_commutatorSet_closureCommutatorRepresentatives]
+  -- ⊢ Nat.card ↑(commutatorSet G) ≠ 0
   exact Finite.card_pos.ne'
+  -- 🎉 no goals
 
 end commutatorRepresentatives

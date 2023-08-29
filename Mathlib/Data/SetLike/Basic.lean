@@ -214,6 +214,7 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
+  -- 🎉 no goals
 #align set_like.lt_iff_le_and_exists SetLike.lt_iff_le_and_exists
 
 end SetLike

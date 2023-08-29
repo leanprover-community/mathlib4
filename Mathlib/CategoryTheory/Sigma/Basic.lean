@@ -98,6 +98,7 @@ instance (i : I) : Full (incl i : C i ⥤ Σi, C i) where
 instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
   -- Porting note: was `tidy`
   map_injective {_ _ _ _} h := by injection h
+                                  -- 🎉 no goals
 
 section
 
@@ -111,7 +112,9 @@ def natTrans {F G : (Σi, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i �
   app := fun ⟨j, X⟩ => (h j).app X
   naturality := by
     rintro ⟨j, X⟩ ⟨_, _⟩ ⟨f⟩
+    -- ⊢ F.map (SigmaHom.mk f) ≫
     apply (h j).naturality
+    -- 🎉 no goals
 #align category_theory.sigma.nat_trans CategoryTheory.Sigma.natTrans
 
 @[simp]
@@ -140,10 +143,14 @@ def desc : (Σi, C i) ⥤ D where
   map g := descMap F _ _ g
   map_id := by
     rintro ⟨i, X⟩
+    -- ⊢ { obj := fun X => (F X.fst).obj X.snd, map := fun {X Y} g => descMap F X Y g …
     apply (F i).map_id
+    -- 🎉 no goals
   map_comp := by
     rintro ⟨i, X⟩ ⟨_, Y⟩ ⟨_, Z⟩ ⟨f⟩ ⟨g⟩
+    -- ⊢ { obj := fun X => (F X.fst).obj X.snd, map := fun {X Y} g => descMap F X Y g …
     apply (F i).map_comp
+    -- 🎉 no goals
 #align category_theory.sigma.desc CategoryTheory.Sigma.desc
 
 @[simp]
@@ -175,7 +182,9 @@ lemma inclDesc_inv_app (i : I) (X : C i) : (inclDesc F i).inv.app X = 𝟙 ((F i
 def descUniq (q : (Σi, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i) : q ≅ desc F :=
   NatIso.ofComponents (fun ⟨i, X⟩ => (h i).app X) <| by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
+    -- ⊢ q.map (SigmaHom.mk f) ≫
     apply (h i).hom.naturality f
+    -- 🎉 no goals
 #align category_theory.sigma.desc_uniq CategoryTheory.Sigma.descUniq
 
 @[simp]
@@ -275,8 +284,11 @@ def sigma (α : ∀ i, F i ⟶ G i) : Functor.sigma F ⟶ Functor.sigma G where
   app f := SigmaHom.mk ((α f.1).app _)
   naturality := by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
+    -- ⊢ (Functor.sigma F).map (SigmaHom.mk f) ≫ (fun f => SigmaHom.mk (NatTrans.app  …
     change SigmaHom.mk _ = SigmaHom.mk _
+    -- ⊢ SigmaHom.mk ((F { fst := i, snd := X }.fst).map f ≫ NatTrans.app (α { fst := …
     rw [(α i).naturality]
+    -- 🎉 no goals
 #align category_theory.sigma.nat_trans.sigma CategoryTheory.Sigma.natTrans.sigma
 
 end natTrans

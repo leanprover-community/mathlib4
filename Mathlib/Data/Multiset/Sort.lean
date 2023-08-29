@@ -48,6 +48,7 @@ theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
 
 @[simp]
 theorem mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by rw [← mem_coe, sort_eq]
+                                                                       -- 🎉 no goals
 #align multiset.mem_sort Multiset.mem_sort
 
 @[simp]

@@ -102,6 +102,10 @@ variable [NonUnitalStarAlgHomClass F R A B]
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+                             -- ⊢ { toNonUnitalSubalgebra := toNonUnitalSubalgebra✝, star_mem' := star_mem'✝ } …
+                                      -- ⊢ { toNonUnitalSubalgebra := toNonUnitalSubalgebra✝¹, star_mem' := star_mem'✝¹ …
+                                               -- ⊢ toNonUnitalSubalgebra✝¹ = toNonUnitalSubalgebra✝
+                                                      -- 🎉 no goals
 
 instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A
     where
@@ -142,6 +146,7 @@ theorem toNonUnitalSubalgebra_injective :
       (toNonUnitalSubalgebra : NonUnitalStarSubalgebra R A → NonUnitalSubalgebra R A) :=
   fun S T h =>
   ext fun x => by rw [← mem_toNonUnitalSubalgebra, ← mem_toNonUnitalSubalgebra, h]
+                  -- 🎉 no goals
 
 theorem toNonUnitalSubalgebra_inj {S U : NonUnitalStarSubalgebra R A} :
     S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
@@ -158,8 +163,11 @@ protected def copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S)
   { S.toNonUnitalSubalgebra.copy s hs with
     star_mem' := @fun x (hx : x ∈ s) => by
       show star x ∈ s
+      -- ⊢ star x ∈ s
       rw [hs] at hx ⊢
+      -- ⊢ star x ∈ ↑S
       exact S.star_mem' hx }
+      -- 🎉 no goals
 
 @[simp]
 theorem coe_copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -191,6 +199,7 @@ theorem toNonUnitalSubring_injective {R : Type u} {A : Type v} [CommRing R] [Non
     [Module R A] [Star A] :
     Function.Injective (toNonUnitalSubring : NonUnitalStarSubalgebra R A → NonUnitalSubring A) :=
   fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
+                               -- 🎉 no goals
 
 theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] {S U : NonUnitalStarSubalgebra R A} :
@@ -228,6 +237,7 @@ def toNonUnitalSubalgebra' : NonUnitalStarSubalgebra R A ↪o NonUnitalSubalgebr
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubalgebra
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
+                                     -- 🎉 no goals
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
 section
@@ -301,6 +311,8 @@ theorem toSubring_subtype {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R
 def map (f : F) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B where
   toNonUnitalSubalgebra := S.toNonUnitalSubalgebra.map (f : A →ₙₐ[R] B)
   star_mem' := by rintro _ ⟨a, ha, rfl⟩; exact ⟨star a, star_mem (s := S) ha, map_star f a⟩
+                  -- ⊢ star (↑↑↑f a) ∈ (NonUnitalSubalgebra.map (↑f) S.toNonUnitalSubalgebra).toNon …
+                                         -- 🎉 no goals
 
 theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalStarSubalgebra R B) ≤ map f S₂ :=
@@ -404,6 +416,8 @@ variable [NonUnitalStarAlgHomClass F R A B]
 protected def range (φ : F) : NonUnitalStarSubalgebra R B where
   toNonUnitalSubalgebra := NonUnitalAlgHom.range (φ : A →ₙₐ[R] B)
   star_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨star a, map_star φ a⟩
+                  -- ⊢ star (↑↑↑φ a) ∈ (NonUnitalAlgHom.range ↑φ).toNonUnitalSubsemiring.toAddSubmo …
+                                     -- 🎉 no goals
 
 @[simp]
 theorem mem_range (φ : F) {y : B} :
@@ -418,6 +432,9 @@ theorem mem_range_self (φ : F) (x : A) :
 theorem coe_range (φ : F) :
     ((NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) : Set B) = Set.range (φ : A → B) :=
   by ext; rw [SetLike.mem_coe, mem_range]; rfl
+     -- ⊢ x✝ ∈ ↑(NonUnitalStarAlgHom.range φ) ↔ x✝ ∈ Set.range ↑φ
+          -- ⊢ (∃ x, ↑φ x = x✝) ↔ x✝ ∈ Set.range ↑φ
+                                           -- 🎉 no goals
 
 theorem range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
   NonUnitalStarAlgHom.range (g.comp f) = (NonUnitalStarAlgHom.range f).map g :=
@@ -458,6 +475,7 @@ def rangeRestrict (f : F) : A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : Non
 def equalizer (ϕ ψ : F) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ ψ
   star_mem' := @fun x (hx : ϕ x = ψ x) => by simp [map_star, hx]
+                                             -- 🎉 no goals
 
 @[simp]
 theorem mem_equalizer (φ ψ : F) (x : A) :
@@ -487,6 +505,7 @@ def ofLeftInverse' {g : B → A} {f : F} (h : Function.LeftInverse g f) :
       Subtype.ext <|
         let ⟨x', hx'⟩ := (NonUnitalStarAlgHom.mem_range f).mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
+                            -- 🎉 no goals
 
 @[simp]
 theorem ofLeftInverse'_apply {g : B → A} {f : F} (h : Function.LeftInverse g f) (x : A) :
@@ -544,6 +563,7 @@ theorem mem_star_iff (S : NonUnitalSubalgebra R A) (x : A) : x ∈ star S ↔ st
 
 theorem star_mem_star_iff (S : NonUnitalSubalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
   simp
+  -- 🎉 no goals
 
 @[simp]
 theorem coe_star (S : NonUnitalSubalgebra R A) : star S = star (S : Set A) :=
@@ -561,6 +581,7 @@ theorem star_adjoin_comm (s : Set A) :
     ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun t =>
     NonUnitalAlgebra.adjoin_le fun x hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
+                  -- 🎉 no goals
     (this s)
 
 variable {R}
@@ -572,7 +593,9 @@ def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A wher
   toNonUnitalSubalgebra := S ⊔ star S
   star_mem' := @fun a (ha : a ∈ S ⊔ star S) => show star a ∈ S ⊔ star S by
     simp only [← mem_star_iff _ a, ← (@NonUnitalAlgebra.gi R A _ _ _ _ _).l_sup_u _ _] at *
+    -- ⊢ a ∈ star (NonUnitalAlgebra.adjoin R (↑S ⊔ ↑(star S)))
     convert ha using 2
+    -- ⊢ star (NonUnitalAlgebra.adjoin R (↑S ⊔ ↑(star S))) = NonUnitalAlgebra.adjoin  …
     simp only [Set.sup_eq_union, star_adjoin_comm, Set.union_star, coe_star, star_star,
       Set.union_comm]
 
@@ -647,6 +670,7 @@ variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalStarSubalgebra R A) (↑) := by
   intro s S
+  -- ⊢ adjoin R s ≤ S ↔ s ≤ ↑S
   rw [← toNonUnitalSubalgebra_le_iff, adjoin_toNonUnitalSubalgebra,
     NonUnitalAlgebra.adjoin_le_iff, coe_toNonUnitalSubalgebra]
   exact ⟨fun h => (Set.subset_union_left s _).trans h,
@@ -684,6 +708,8 @@ theorem mem_top {x : A} : x ∈ (⊤ : NonUnitalStarSubalgebra R A) :=
 @[simp]
 theorem top_toNonUnitalSubalgebra :
     (⊤ : NonUnitalStarSubalgebra R A).toNonUnitalSubalgebra = ⊤ := by ext; simp
+                                                                      -- ⊢ x✝ ∈ ⊤.toNonUnitalSubalgebra ↔ x✝ ∈ ⊤
+                                                                           -- 🎉 no goals
 
 @[simp]
 theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
@@ -692,11 +718,15 @@ theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
 
 theorem mem_sup_left {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
+  -- ⊢ S ≤ S ⊔ T
   exact le_sup_left
+  -- 🎉 no goals
 
 theorem mem_sup_right {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
+  -- ⊢ T ≤ S ⊔ T
   exact le_sup_right
+  -- 🎉 no goals
 
 theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
     x * y ∈ S ⊔ T :=
@@ -726,23 +756,28 @@ theorem coe_sInf (S : Set (NonUnitalStarSubalgebra R A)) : (↑(sInf S) : Set A)
 
 theorem mem_sInf {S : Set (NonUnitalStarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
+  -- 🎉 no goals
 
 @[simp]
 theorem sInf_toNonUnitalSubalgebra (S : Set (NonUnitalStarSubalgebra R A)) :
     (sInf S).toNonUnitalSubalgebra = sInf (NonUnitalStarSubalgebra.toNonUnitalSubalgebra '' S) :=
   SetLike.coe_injective <| by simp
+                              -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
+                                           -- 🎉 no goals
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+                                        -- 🎉 no goals
 
 @[simp]
 theorem iInf_toNonUnitalSubalgebra {ι : Sort*} (S : ι → NonUnitalStarSubalgebra R A) :
     (⨅ i, S i).toNonUnitalSubalgebra = ⨅ i, (S i).toNonUnitalSubalgebra :=
   SetLike.coe_injective <| by simp
+                              -- 🎉 no goals
 
 instance : Inhabited (NonUnitalStarSubalgebra R A) :=
   ⟨⊥⟩
@@ -750,11 +785,14 @@ instance : Inhabited (NonUnitalStarSubalgebra R A) :=
 theorem mem_bot {x : A} : x ∈ (⊥ : NonUnitalStarSubalgebra R A) ↔ x = 0 :=
   show x ∈ NonUnitalAlgebra.adjoin R (∅ ∪ star ∅ : Set A) ↔ x = 0 by
     rw [Set.star_empty, Set.union_empty, NonUnitalAlgebra.adjoin_empty, NonUnitalAlgebra.mem_bot]
+    -- 🎉 no goals
 
 theorem toNonUnitalSubalgebra_bot :
     (⊥ : NonUnitalStarSubalgebra R A).toNonUnitalSubalgebra = ⊥ := by
   ext x
+  -- ⊢ x ∈ ⊥.toNonUnitalSubalgebra ↔ x ∈ ⊥
   simp only [mem_bot, NonUnitalStarSubalgebra.mem_toNonUnitalSubalgebra, NonUnitalAlgebra.mem_bot]
+  -- 🎉 no goals
 
 @[simp]
 theorem coe_bot : ((⊥ : NonUnitalStarSubalgebra R A) : Set A) = {0} := by
@@ -763,7 +801,11 @@ theorem coe_bot : ((⊥ : NonUnitalStarSubalgebra R A) : Set A) = {0} := by
 
 theorem eq_top_iff {S : NonUnitalStarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top,
+                 -- ⊢ x ∈ ⊤
+                         -- 🎉 no goals
     fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+                -- ⊢ x ∈ S ↔ x ∈ ⊤
+                       -- 🎉 no goals
 
 theorem range_top_iff_surjective (f : F) :
     NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔ Function.Surjective f :=
@@ -780,6 +822,7 @@ theorem map_top (f : F) : (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalS
 @[simp]
 theorem map_bot (f : F) : (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
   SetLike.coe_injective <| by simp [NonUnitalAlgebra.coe_bot, NonUnitalStarSubalgebra.coe_map]
+                              -- 🎉 no goals
 
 @[simp]
 theorem comap_top (f : F) : (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
@@ -805,6 +848,7 @@ variable [hF : NonUnitalStarAlgHomClass F R A B] (S : NonUnitalStarSubalgebra R 
 instance subsingleton_of_subsingleton [Subsingleton A] :
     Subsingleton (NonUnitalStarSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+                              -- 🎉 no goals
 
 instance _root_.NonUnitalStarAlgHom.subsingleton [Subsingleton (NonUnitalStarSubalgebra R A)] :
     Subsingleton (A →⋆ₙₐ[R] B) :=
@@ -878,6 +922,8 @@ theorem mem_prod {S : NonUnitalStarSubalgebra R A} {S₁ : NonUnitalStarSubalgeb
 
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalStarSubalgebra R (A × B)) = ⊤ := by ext; simp
+                                                                            -- ⊢ x✝ ∈ prod ⊤ ⊤ ↔ x✝ ∈ ⊤
+                                                                                 -- 🎉 no goals
 
 theorem prod_mono {S T : NonUnitalStarSubalgebra R A} {S₁ T₁ : NonUnitalStarSubalgebra R B} :
     S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
@@ -929,6 +975,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : NonUnitalStarSubalgebra R A) (hT : T = iSup K) : ↥T →⋆ₙₐ[R] B := by
   subst hT
+  -- ⊢ { x // x ∈ iSup K } →⋆ₙₐ[R] B
   exact
     { toFun :=
         Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
@@ -981,26 +1028,38 @@ variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed 
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   subst T
+  -- ⊢ ↑(iSupLift K dir f hf (iSup K) (_ : iSup K = iSup K)) (↑(inclusion h) x) = ↑ …
   dsimp [iSupLift]
+  -- ⊢ Set.iUnionLift (fun i => ↑(K i)) (fun i x => ↑(f i) x) (_ : ∀ (i j : ι) (x : …
   apply Set.iUnionLift_inclusion
+  -- ⊢ ↑(K i) ⊆ ↑(iSup K)
   exact h
+  -- 🎉 no goals
 
 @[simp]
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
+                                                              -- ⊢ ↑(NonUnitalStarAlgHom.comp (iSupLift K dir f hf T hT) (inclusion h)) x✝ = ↑( …
+                                                                   -- 🎉 no goals
 
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
   subst hT
+  -- ⊢ ↑(iSupLift K dir f hf (iSup K) (_ : iSup K = iSup K)) { val := ↑x, property  …
   dsimp [iSupLift]
+  -- ⊢ Set.iUnionLift (fun i => ↑(K i)) (fun i x => ↑(f i) x) (_ : ∀ (i j : ι) (x : …
   apply Set.iUnionLift_mk
+  -- 🎉 no goals
 
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   subst hT
+  -- ⊢ ↑(iSupLift K dir f hf (iSup K) (_ : iSup K = iSup K)) x = ↑(f i) { val := ↑x …
   dsimp [iSupLift]
+  -- ⊢ Set.iUnionLift (fun i => ↑(K i)) (fun i x => ↑(f i) x) (_ : ∀ (i j : ι) (x : …
   apply Set.iUnionLift_of_mem
+  -- 🎉 no goals
 
 end iSupLift
 
@@ -1057,7 +1116,9 @@ theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s)
 theorem mem_centralizer_iff {s : Set A} {z : A} :
     z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
   show (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
+  -- ⊢ (∀ (g : A), g ∈ s ∪ star s → g * z = z * g) ↔ ∀ (g : A), g ∈ s → g * z = z * …
   simp only [Set.mem_union, or_imp, forall_and, and_congr_right_iff]
+  -- ⊢ (∀ (x : A), x ∈ s → x * z = z * x) → ((∀ (x : A), x ∈ star s → x * z = z * x …
   exact fun _ =>
     ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
 
@@ -1067,6 +1128,7 @@ theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ central
 @[simp]
 theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' <| by rw [coe_centralizer, Set.univ_union, coe_center, Set.centralizer_univ]
+                     -- 🎉 no goals
 
 end Centralizer
 

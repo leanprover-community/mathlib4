@@ -63,6 +63,7 @@ theorem mem_orbit (a : α) (x : M) : x • a ∈ orbit M a :=
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
   ⟨1, by simp [MulAction.one_smul]⟩
+         -- 🎉 no goals
 #align mul_action.mem_orbit_self MulAction.mem_orbit_self
 #align add_action.mem_orbit_self AddAction.mem_orbit_self
 
@@ -157,6 +158,7 @@ def Stabilizer.submonoid (a : α) : Submonoid M where
   one_mem' := one_smul _ a
   mul_mem' {m m'} (ha : m • a = a) (hb : m' • a = a) :=
     show (m * m') • a = a by rw [← smul_smul, hb, ha]
+                             -- 🎉 no goals
 #align mul_action.stabilizer.submonoid MulAction.Stabilizer.submonoid
 #align add_action.stabilizer.add_submonoid AddAction.Stabilizer.addSubmonoid
 
@@ -178,10 +180,15 @@ variable {M}
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   rw [Fintype.card_eq_one_iff, mem_fixedPoints]
+  -- ⊢ (∀ (m : M), m • a = a) ↔ ∃ x, ∀ (y : ↑(orbit M a)), y = x
   constructor
+  -- ⊢ (∀ (m : M), m • a = a) → ∃ x, ∀ (y : ↑(orbit M a)), y = x
   · exact fun h => ⟨⟨a, mem_orbit_self _⟩, fun ⟨a, ⟨x, hx⟩⟩ => Subtype.eq <| by simp [h x, hx.symm]⟩
+    -- 🎉 no goals
   · intro h x
+    -- ⊢ x • a = a
     rcases h with ⟨⟨z, hz⟩, hz₁⟩
+    -- ⊢ x • a = a
     calc
       x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
       _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
@@ -202,6 +209,7 @@ A subgroup. -/
 def stabilizer (a : α) : Subgroup G :=
   { Stabilizer.submonoid G a with
     inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
+                                                                -- 🎉 no goals
 #align mul_action.stabilizer MulAction.stabilizer
 #align add_action.stabilizer AddAction.stabilizer
 
@@ -227,6 +235,7 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
   (orbit_smul_subset g a).antisymm <|
     calc
       orbit G a = orbit G (g⁻¹ • g • a) := by rw [inv_smul_smul]
+                                              -- 🎉 no goals
       _ ⊆ orbit G (g • a) := orbit_smul_subset _ _
 #align mul_action.orbit_smul MulAction.orbit_smul
 #align add_action.orbit_vadd AddAction.orbit_vadd
@@ -236,9 +245,13 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
 instance (a : α) : IsPretransitive G (orbit G a) :=
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
+    -- ⊢ ∃ g_1, g_1 • { val := (fun m => m • a) g, property := (_ : ∃ y, (fun m => m  …
     use h * g⁻¹
+    -- ⊢ (h * g⁻¹) • { val := (fun m => m • a) g, property := (_ : ∃ y, (fun m => m • …
     ext1
+    -- ⊢ ↑((h * g⁻¹) • { val := (fun m => m • a) g, property := (_ : ∃ y, (fun m => m …
     simp [mul_smul]⟩
+    -- 🎉 no goals
 
 @[to_additive]
 theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
@@ -251,12 +264,14 @@ variable (G)
 @[to_additive]
 theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
   simp only [orbit_smul, mem_orbit_self]
+  -- 🎉 no goals
 #align mul_action.mem_orbit_smul MulAction.mem_orbit_smul
 #align add_action.mem_orbit_vadd AddAction.mem_orbit_vadd
 
 @[to_additive]
 theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) := by
   simp only [orbit_smul, mem_orbit]
+  -- 🎉 no goals
 #align mul_action.smul_mem_orbit_smul MulAction.smul_mem_orbit_smul
 #align add_action.vadd_mem_orbit_vadd AddAction.vadd_mem_orbit_vadd
 
@@ -268,7 +283,9 @@ def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
     ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
+                                     -- 🎉 no goals
       simp (config := { contextual := true }) [orbit_eq_iff.symm, eq_comm]⟩
+      -- 🎉 no goals
 #align mul_action.orbit_rel MulAction.orbitRel
 #align add_action.orbit_rel AddAction.orbitRel
 
@@ -289,21 +306,37 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (· • ·) g '' U := by
   letI := orbitRel G α
+  -- ⊢ Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ (g : G), (fun x x_1 => x • x_1) g ' …
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  -- ⊢ f ⁻¹' (f '' U) = ⋃ (g : G), (fun x x_1 => x • x_1) g '' U
   ext a
+  -- ⊢ a ∈ f ⁻¹' (f '' U) ↔ a ∈ ⋃ (g : G), (fun x x_1 => x • x_1) g '' U
   constructor
+  -- ⊢ a ∈ f ⁻¹' (f '' U) → a ∈ ⋃ (g : G), (fun x x_1 => x • x_1) g '' U
   · rintro ⟨b, hb, hab⟩
+    -- ⊢ a ∈ ⋃ (g : G), (fun x x_1 => x • x_1) g '' U
     obtain ⟨g, rfl⟩ := Quotient.exact hab
+    -- ⊢ a ∈ ⋃ (g : G), (fun x x_1 => x • x_1) g '' U
     rw [Set.mem_iUnion]
+    -- ⊢ ∃ i, a ∈ (fun x x_1 => x • x_1) i '' U
     exact ⟨g⁻¹, g • a, hb, inv_smul_smul g a⟩
+    -- 🎉 no goals
   · intro hx
+    -- ⊢ a ∈ f ⁻¹' (f '' U)
     rw [Set.mem_iUnion] at hx
+    -- ⊢ a ∈ f ⁻¹' (f '' U)
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
+    -- ⊢ a ∈ f ⁻¹' (f '' U)
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
+    -- ⊢ ∃ x x_1, f x = f a
     refine' ⟨g⁻¹ • a, _, by simp only [Quotient.eq']; use g⁻¹⟩
+    -- ⊢ g⁻¹ • a ∈ U
     rw [← hu₂]
+    -- ⊢ g⁻¹ • (fun x x_1 => x • x_1) g u ∈ U
     convert hu₁
+    -- ⊢ g⁻¹ • (fun x x_1 => x • x_1) g u = u
     simp only [inv_smul_smul]
+    -- 🎉 no goals
 #align mul_action.quotient_preimage_image_eq_union_mul MulAction.quotient_preimage_image_eq_union_mul
 #align add_action.quotient_preimage_image_eq_union_add AddAction.quotient_preimage_image_eq_union_add
 
@@ -312,16 +345,24 @@ theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
+  -- ⊢ Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ (x : α), x ∈ U → ∀ (g : …
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  -- ⊢ Disjoint (f '' U) (f '' V) ↔ ∀ (x : α), x ∈ U → ∀ (g : G), ¬g • x ∈ V
   refine'
     ⟨fun h a a_in_U g g_in_V =>
       h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, _⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, _⟩
   · simp
+    -- 🎉 no goals
   · intro h
+    -- ⊢ Disjoint (f '' U) (f '' V)
     rw [Set.disjoint_left]
+    -- ⊢ ∀ ⦃a : Quotient (orbitRel G α)⦄, a ∈ f '' U → ¬a ∈ f '' V
     rintro _ ⟨b, hb₁, hb₂⟩ ⟨c, hc₁, hc₂⟩
+    -- ⊢ False
     obtain ⟨g, rfl⟩ := Quotient.exact (hc₂.trans hb₂.symm)
+    -- ⊢ False
     exact h b hb₁ g hc₁
+    -- 🎉 no goals
 #align mul_action.disjoint_image_image_iff MulAction.disjoint_image_image_iff
 #align add_action.disjoint_image_image_iff AddAction.disjoint_image_image_iff
 
@@ -363,8 +404,11 @@ theorem orbitRel.Quotient.orbit_mk (a : α) :
 theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
     a ∈ x.orbit ↔ Quotient.mk'' a = x := by
   induction x using Quotient.inductionOn'
+  -- ⊢ a ∈ orbit (Quotient.mk'' a✝) ↔ Quotient.mk'' a = Quotient.mk'' a✝
   rw [Quotient.eq'']
+  -- ⊢ a ∈ orbit (Quotient.mk'' a✝) ↔ Setoid.r a a✝
   rfl
+  -- 🎉 no goals
 #align mul_action.orbit_rel.quotient.mem_orbit MulAction.orbitRel.Quotient.mem_orbit
 #align add_action.orbit_rel.quotient.mem_orbit AddAction.orbitRel.Quotient.mem_orbit
 
@@ -374,6 +418,7 @@ theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
   conv_lhs => rw [← hφ x]
+  -- 🎉 no goals
 #align mul_action.orbit_rel.quotient.orbit_eq_orbit_out MulAction.orbitRel.Quotient.orbit_eq_orbit_out
 #align add_action.orbit_rel.quotient.orbit_eq_orbit_out AddAction.orbitRel.Quotient.orbit_eq_orbit_out
 
@@ -418,6 +463,7 @@ variable {G α}
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
+  -- ⊢ h ∈ stabilizer G (g • a) ↔ h ∈ Subgroup.map (MulEquiv.toMonoidHom (↑MulAut.c …
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
     one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 #align mul_action.stabilizer_smul_eq_stabilizer_map_conj MulAction.stabilizer_smul_eq_stabilizer_map_conj
@@ -429,6 +475,7 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel 
   have hg : g • b = a := Classical.choose_spec h
   have this : stabilizer G a = (stabilizer G b).map (MulAut.conj g).toMonoidHom := by
     rw [← hg, stabilizer_smul_eq_stabilizer_map_conj]
+    -- 🎉 no goals
   (MulEquiv.subgroupCongr this).trans ((MulAut.conj g).subgroupMap <| stabilizer G b).symm
 #align mul_action.stabilizer_equiv_stabilizer_of_orbit_rel MulAction.stabilizerEquivStabilizerOfOrbitRel
 
@@ -442,6 +489,7 @@ variable (G : Type u) (α : Type v) [AddGroup G] [AddAction G α]
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
+  -- ⊢ h ∈ stabilizer G (g +ᵥ a) ↔ h ∈ AddSubgroup.map (AddEquiv.toAddMonoidHom (↑A …
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
     add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
@@ -454,6 +502,7 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel 
   have hg : g +ᵥ b = a := Classical.choose_spec h
   have this : stabilizer G a = (stabilizer G b).map (AddAut.conj g).toAddMonoidHom := by
     rw [← hg, stabilizer_vadd_eq_stabilizer_map_conj]
+    -- 🎉 no goals
   (AddEquiv.addSubgroupCongr this).trans ((AddAut.conj g).addSubgroupMap <| stabilizer G b).symm
 #align add_action.stabilizer_equiv_stabilizer_of_orbit_rel AddAction.stabilizerEquivStabilizerOfOrbitRel
 
@@ -466,6 +515,9 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
+  -- ⊢ a - b = 0
   refine' h _ _
+  -- ⊢ k • (a - b) = 0
   rw [smul_sub, h', sub_self]
+  -- 🎉 no goals
 #align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor

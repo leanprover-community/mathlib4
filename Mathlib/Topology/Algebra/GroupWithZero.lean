@@ -52,6 +52,7 @@ variable [DivInvMonoid G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : �
 theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G₀) :
     Tendsto (fun a => f a / y) l (𝓝 (x / y)) := by
   simpa only [div_eq_mul_inv] using hf.mul tendsto_const_nhds
+  -- 🎉 no goals
 #align filter.tendsto.div_const Filter.Tendsto.div_const
 
 variable [TopologicalSpace α]
@@ -69,11 +70,13 @@ nonrec theorem ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) 
 theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
     ContinuousOn (fun x => f x / y) s := by
   simpa only [div_eq_mul_inv] using hf.mul continuousOn_const
+  -- 🎉 no goals
 #align continuous_on.div_const ContinuousOn.div_const
 
 @[continuity]
 theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
   simpa only [div_eq_mul_inv] using hf.mul continuous_const
+  -- 🎉 no goals
 #align continuous.div_const Continuous.div_const
 
 end DivConst
@@ -161,15 +164,20 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
 theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (hy : b ≠ 0) : Tendsto (f / g) l (𝓝 (a / b)) := by
   simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ hy)
+  -- 🎉 no goals
 #align filter.tendsto.div Filter.Tendsto.div
 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
     Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
   refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
+  -- ⊢ Tendsto f l (𝓝 x)
   rw [← mul_div_cancel x hy]
+  -- ⊢ Tendsto f l (𝓝 (x * y / y))
   refine' Tendsto.congr' _ (hfg.div hg hy)
+  -- ⊢ (fun n => f n * g n) / g =ᶠ[l] f
   refine' (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
+  -- 🎉 no goals
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}
@@ -193,6 +201,7 @@ nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) 
 @[continuity]
 theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
     Continuous (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+                             -- 🎉 no goals
 #align continuous.div Continuous.div
 
 theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p | p.2 ≠ 0 } :=
@@ -209,11 +218,17 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
     (h2h : g a = 0 → Tendsto (↿h) (𝓝 a ×ˢ ⊤) (𝓝 (h a 0))) :
     ContinuousAt (fun x => h x (f x / g x)) a := by
   show ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
+  -- ⊢ ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
   by_cases hga : g a = 0
+  -- ⊢ ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
   · rw [ContinuousAt]
+    -- ⊢ Tendsto (↿h ∘ fun x => (x, f x / g x)) (𝓝 a) (𝓝 ((↿h ∘ fun x => (x, f x / g  …
     simp_rw [comp_apply, hga, div_zero]
+    -- ⊢ Tendsto (↿h ∘ fun x => (x, f x / g x)) (𝓝 a) (𝓝 ((↿h) (a, 0)))
     exact (h2h hga).comp (continuousAt_id.prod_mk tendsto_top)
+    -- 🎉 no goals
   · exact ContinuousAt.comp (hh hga) (continuousAt_id.prod (hf.div hg hga))
+    -- 🎉 no goals
 #align continuous_at.comp_div_cases ContinuousAt.comp_div_cases
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes
@@ -284,15 +299,18 @@ theorem map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) =
 
 theorem map_mul_left_nhds_one₀ (ha : a ≠ 0) : map (a * ·) (𝓝 1) = 𝓝 (a) := by
   rw [map_mul_left_nhds₀ ha, mul_one]
+  -- 🎉 no goals
 
 theorem map_mul_right_nhds₀ (ha : a ≠ 0) (b : G₀) : map (· * a) (𝓝 b) = 𝓝 (b * a) :=
   (Homeomorph.mulRight₀ a ha).map_nhds_eq b
 
 theorem map_mul_right_nhds_one₀ (ha : a ≠ 0) : map (· * a) (𝓝 1) = 𝓝 (a) := by
   rw [map_mul_right_nhds₀ ha, one_mul]
+  -- 🎉 no goals
 
 theorem nhds_translation_mul_inv₀ (ha : a ≠ 0) : comap (· * a⁻¹) (𝓝 1) = 𝓝 a :=
   ((Homeomorph.mulRight₀ a ha).symm.comap_nhds_eq 1).trans <| by simp
+                                                                 -- 🎉 no goals
 
 /-- If a group with zero has continuous multiplication and `fun x ↦ x⁻¹` is continuous at one,
 then it is continuous at any unit. -/
@@ -300,9 +318,11 @@ theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (
     HasContinuousInv₀ G₀ where
   continuousAt_inv₀ x hx := by
     have hx' := inv_ne_zero hx
+    -- ⊢ ContinuousAt Inv.inv x
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
     simpa only [(· ∘ ·), mul_inv_rev, mul_inv_cancel_right₀ hx']
+    -- 🎉 no goals
 
 end map_comap
 
@@ -313,10 +333,15 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   cases' m with m m
+  -- ⊢ ContinuousAt (fun x => x ^ Int.ofNat m) x
   · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using continuousAt_pow x m
+    -- 🎉 no goals
   · simp only [zpow_negSucc]
+    -- ⊢ ContinuousAt (fun x => (x ^ (m + 1))⁻¹) x
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le
+    -- ⊢ ContinuousAt (fun x => (x ^ (m + 1))⁻¹) x
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
+    -- 🎉 no goals
 #align continuous_at_zpow₀ continuousAt_zpow₀
 
 theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>

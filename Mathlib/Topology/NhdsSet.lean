@@ -41,11 +41,14 @@ def nhdsSet (s : Set α) : Filter α :=
 theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
     𝓝ˢ (diagonal α) = ⨆ (x : α), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]
+  -- ⊢ sSup (range (𝓝 ∘ fun x => (x, x))) = ⨆ (x : α), 𝓝 (x, x)
   rfl
+  -- 🎉 no goals
 #align nhds_set_diagonal nhdsSet_diagonal
 
 theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : α, x ∈ t → s ∈ 𝓝 x := by
   simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
+  -- 🎉 no goals
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
 
 theorem bUnion_mem_nhdsSet {t : α → Set α} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
@@ -55,6 +58,7 @@ theorem bUnion_mem_nhdsSet {t : α → Set α} (h : ∀ x ∈ s, t x ∈ 𝓝 x)
 
 theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s := by
   simp_rw [mem_nhdsSet_iff_forall, subset_interior_iff_nhds]
+  -- 🎉 no goals
 #align subset_interior_iff_mem_nhds_set subset_interior_iff_mem_nhdsSet
 
 theorem disjoint_principal_nhdsSet : Disjoint (𝓟 s) (𝓝ˢ t) ↔ Disjoint (closure s) t := by
@@ -63,17 +67,21 @@ theorem disjoint_principal_nhdsSet : Disjoint (𝓟 s) (𝓝ˢ t) ↔ Disjoint (
 
 theorem disjoint_nhdsSet_principal : Disjoint (𝓝ˢ s) (𝓟 t) ↔ Disjoint s (closure t) := by
   rw [disjoint_comm, disjoint_principal_nhdsSet, disjoint_comm]
+  -- 🎉 no goals
 
 theorem mem_nhdsSet_iff_exists : s ∈ 𝓝ˢ t ↔ ∃ U : Set α, IsOpen U ∧ t ⊆ U ∧ U ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, subset_interior_iff]
+  -- 🎉 no goals
 #align mem_nhds_set_iff_exists mem_nhdsSet_iff_exists
 
 theorem hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
+               -- 🎉 no goals
 #align has_basis_nhds_set hasBasis_nhdsSet
 
 theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
+  -- 🎉 no goals
 #align is_open.mem_nhds_set IsOpen.mem_nhdsSet
 
 theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
@@ -104,6 +112,7 @@ theorem nhdsSet_interior : 𝓝ˢ (interior s) = 𝓟 (interior s) :=
 
 @[simp]
 theorem nhdsSet_singleton : 𝓝ˢ {x} = 𝓝 x := by simp [nhdsSet]
+                                               -- 🎉 no goals
 #align nhds_set_singleton nhdsSet_singleton
 
 theorem mem_nhdsSet_interior : s ∈ 𝓝ˢ (interior s) :=
@@ -112,13 +121,16 @@ theorem mem_nhdsSet_interior : s ∈ 𝓝ˢ (interior s) :=
 
 @[simp]
 theorem nhdsSet_empty : 𝓝ˢ (∅ : Set α) = ⊥ := by rw [isOpen_empty.nhdsSet_eq, principal_empty]
+                                                 -- 🎉 no goals
 #align nhds_set_empty nhdsSet_empty
 
 theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set α) := by simp
+                                                     -- 🎉 no goals
 #align mem_nhds_set_empty mem_nhdsSet_empty
 
 @[simp]
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set α) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
+                                                   -- 🎉 no goals
 #align nhds_set_univ nhdsSet_univ
 
 @[mono]
@@ -136,16 +148,20 @@ theorem nhds_le_nhdsSet (h : x ∈ s) : 𝓝 x ≤ 𝓝ˢ s :=
 @[simp]
 theorem nhdsSet_union (s t : Set α) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t := by
   simp only [nhdsSet, image_union, sSup_union]
+  -- 🎉 no goals
 #align nhds_set_union nhdsSet_union
 
 theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) := by
   rw [nhdsSet_union]
+  -- ⊢ s₁ ∪ s₂ ∈ 𝓝ˢ t₁ ⊔ 𝓝ˢ t₂
   exact union_mem_sup h₁ h₂
+  -- 🎉 no goals
 #align union_mem_nhds_set union_mem_nhdsSet
 
 @[simp]
 theorem nhdsSet_insert (x : α) (s : Set α) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ 𝓝ˢ s := by
   rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
+  -- 🎉 no goals
 
 /-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
 provided that `f` maps `s` to `t`.  -/

@@ -66,9 +66,13 @@ instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
     cases' (AddTorsor.Nonempty : Nonempty P1) with p
+    -- ⊢ { toFun := f, linear := f_linear, map_vadd' := f_add } = { toFun := g, linea …
     congr with v
+    -- ⊢ ↑f_linear v = ↑g_linear v
     apply vadd_right_cancel (f p)
+    -- ⊢ ↑f_linear v +ᵥ f p = ↑g_linear v +ᵥ f p
     erw [← f_add, h, ← g_add]
+    -- 🎉 no goals
 #align affine_map.fun_like AffineMap.funLike
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
@@ -135,6 +139,7 @@ points. -/
 @[simp]
 theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2) = f p1 -ᵥ f p2 := by
   conv_rhs => rw [← vsub_vadd p1 p2, map_vadd, vadd_vsub]
+  -- 🎉 no goals
 #align affine_map.linear_map_vsub AffineMap.linearMap_vsub
 
 /-- Two affine maps are equal if they coerce to the same function. -/
@@ -168,6 +173,7 @@ def const (p : P2) : P1 →ᵃ[k] P2 where
   map_vadd' _ _ :=
     letI : AddAction V2 P2 := inferInstance
     by simp
+       -- 🎉 no goals
 #align affine_map.const AffineMap.const
 
 @[simp]
@@ -189,12 +195,17 @@ variable {k P1}
 theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     f.linear = 0 ↔ ∃ q, f = const k P1 q := by
   refine' ⟨fun h => _, fun h => _⟩
+  -- ⊢ ∃ q, f = const k P1 q
   · use f (Classical.arbitrary P1)
+    -- ⊢ f = const k P1 (↑f (Classical.arbitrary P1))
     ext
+    -- ⊢ ↑f p✝ = ↑(const k P1 (↑f (Classical.arbitrary P1))) p✝
     rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,
       LinearMap.zero_apply]
   · rcases h with ⟨q, rfl⟩
+    -- ⊢ (const k P1 q).linear = 0
     exact const_linear k P1 q
+    -- 🎉 no goals
 #align affine_map.linear_eq_zero_iff_exists_const AffineMap.linear_eq_zero_iff_exists_const
 
 instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
@@ -209,6 +220,7 @@ def mk' (f : P1 → P2) (f' : V1 →ₗ[k] V2) (p : P1) (h : ∀ p' : P1, f p' =
   toFun := f
   linear := f'
   map_vadd' p' v := by rw [h, h p', vadd_vsub_assoc, f'.map_add, vadd_vadd]
+                       -- 🎉 no goals
 #align affine_map.mk' AffineMap.mk'
 
 @[simp]
@@ -228,6 +240,7 @@ variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
   -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
+                                                   -- 🎉 no goals
   one_smul f := ext fun p => one_smul _ _
   mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
 
@@ -253,14 +266,17 @@ instance : Add (P1 →ᵃ[k] V2)
     where add f g := ⟨f + g, f.linear + g.linear,
       -- porting note: `simp` needs lemmas to be expressions
       fun p v => by simp [add_add_add_comm, (map_vadd)]⟩
+                    -- 🎉 no goals
 
 instance : Sub (P1 →ᵃ[k] V2)
     where sub f g := ⟨f - g, f.linear - g.linear,
       -- porting note: `simp` needs lemmas to be expressions
       fun p v => by simp [sub_add_sub_comm, (map_vadd)]⟩
+                    -- 🎉 no goals
 
 instance : Neg (P1 →ᵃ[k] V2)
     where neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
+                                                 -- 🎉 no goals
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : P1 →ᵃ[k] V2) = 0 :=
@@ -315,6 +331,7 @@ instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
       -- porting note: `simp` needs lemmas to be expressions
       letI : AddAction V2 P2 := inferInstance
       fun p v => by simp [vadd_vadd, add_right_comm, (map_vadd)]⟩
+                    -- 🎉 no goals
   zero_vadd f := ext fun p => zero_vadd _ (f p)
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
@@ -406,8 +423,11 @@ def comp (f : P2 →ᵃ[k] P3) (g : P1 →ᵃ[k] P2) : P1 →ᵃ[k] P3 where
   linear := f.linear.comp g.linear
   map_vadd' := by
     intro p v
+    -- ⊢ (↑f ∘ ↑g) (v +ᵥ p) = ↑(LinearMap.comp f.linear g.linear) v +ᵥ (↑f ∘ ↑g) p
     rw [Function.comp_apply, g.map_vadd, f.map_vadd]
+    -- ⊢ ↑f.linear (↑g.linear v) +ᵥ ↑f (↑g p) = ↑(LinearMap.comp f.linear g.linear) v …
     rfl
+    -- 🎉 no goals
 #align affine_map.comp AffineMap.comp
 
 /-- Composition of affine maps acts as applying the two functions. -/
@@ -465,20 +485,24 @@ def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1 where
 theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
     Function.Injective f.linear ↔ Function.Injective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
+  -- ⊢ Function.Injective ↑f.linear ↔ Function.Injective ↑f
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_injective, Equiv.injective_comp]
+  -- 🎉 no goals
 #align affine_map.linear_injective_iff AffineMap.linear_injective_iff
 
 @[simp]
 theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
     Function.Surjective f.linear ↔ Function.Surjective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
+  -- ⊢ Function.Surjective ↑f.linear ↔ Function.Surjective ↑f
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_surjective, Equiv.surjective_comp]
+  -- 🎉 no goals
 #align affine_map.linear_surjective_iff AffineMap.linear_surjective_iff
 
 @[simp]
@@ -490,14 +514,20 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
+  -- ⊢ v ∈ ↑f '' s -ᵥ ↑f '' t ↔ v ∈ ↑f.linear '' (s -ᵥ t)
   -- porting note: `simp` needs `Set.mem_vsub` to be an expression
   simp only [(Set.mem_vsub), Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
+  -- ⊢ (∃ a, a ∈ s ∧ ∃ a_1, a_1 ∈ t ∧ ↑f.linear (a -ᵥ a_1) = v) → ∃ x, (∃ x_1, x_1  …
   · rintro ⟨x, hx, y, hy, hv⟩
+    -- ⊢ ∃ x, (∃ x_1, x_1 ∈ s ∧ ∃ x_2, x_2 ∈ t ∧ x_1 -ᵥ x_2 = x) ∧ ↑f.linear x = v
     exact ⟨x -ᵥ y, ⟨x, hx, y, hy, rfl⟩, hv⟩
+    -- 🎉 no goals
   · rintro ⟨-, ⟨x, hx, y, hy, rfl⟩, rfl⟩
+    -- ⊢ ∃ a, a ∈ s ∧ ∃ a_1, a_1 ∈ t ∧ ↑f.linear (a -ᵥ a_1) = ↑f.linear (x -ᵥ y)
     exact ⟨x, hx, y, hy, rfl⟩
+    -- 🎉 no goals
 #align affine_map.image_vsub_image AffineMap.image_vsub_image
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
@@ -521,6 +551,9 @@ theorem lineMap_apply_module' (p₀ p₁ : V1) (c : k) : lineMap p₀ p₁ c = c
 
 theorem lineMap_apply_module (p₀ p₁ : V1) (c : k) : lineMap p₀ p₁ c = (1 - c) • p₀ + c • p₁ := by
   simp [lineMap_apply_module', smul_sub, sub_smul]; abel
+  -- ⊢ c • p₁ - c • p₀ + p₀ = p₀ - c • p₀ + c • p₁
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
 #align affine_map.line_map_apply_module AffineMap.lineMap_apply_module
 
 theorem lineMap_apply_ring' (a b c : k) : lineMap a b c = c * (b - a) + a :=
@@ -533,6 +566,7 @@ theorem lineMap_apply_ring (a b c : k) : lineMap a b c = (1 - c) * a + c * b :=
 
 theorem lineMap_vadd_apply (p : P1) (v : V1) (c : k) : lineMap p (v +ᵥ p) c = c • v +ᵥ p := by
   rw [lineMap_apply, vadd_vsub]
+  -- 🎉 no goals
 #align affine_map.line_map_vadd_apply AffineMap.lineMap_vadd_apply
 
 @[simp]
@@ -543,8 +577,10 @@ theorem lineMap_linear (p₀ p₁ : P1) :
 
 theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
   letI : AddAction V1 P1 := inferInstance
+  -- ⊢ ↑(lineMap p p) c = p
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply), (vsub_self)]
+  -- 🎉 no goals
 #align affine_map.line_map_same_apply AffineMap.lineMap_same_apply
 
 @[simp]
@@ -555,14 +591,17 @@ theorem lineMap_same (p : P1) : lineMap p p = const k k p :=
 @[simp]
 theorem lineMap_apply_zero (p₀ p₁ : P1) : lineMap p₀ p₁ (0 : k) = p₀ := by
   letI : AddAction V1 P1 := inferInstance
+  -- ⊢ ↑(lineMap p₀ p₁) 0 = p₀
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply)]
+  -- 🎉 no goals
 #align affine_map.line_map_apply_zero AffineMap.lineMap_apply_zero
 
 @[simp]
 theorem lineMap_apply_one (p₀ p₁ : P1) : lineMap p₀ p₁ (1 : k) = p₁ := by
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply), (vsub_vadd)]
+  -- 🎉 no goals
 #align affine_map.line_map_apply_one AffineMap.lineMap_apply_one
 
 @[simp]
@@ -576,12 +615,14 @@ theorem lineMap_eq_lineMap_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c₁ 
 theorem lineMap_eq_left_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} :
     lineMap p₀ p₁ c = p₀ ↔ p₀ = p₁ ∨ c = 0 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_zero]
+  -- 🎉 no goals
 #align affine_map.line_map_eq_left_iff AffineMap.lineMap_eq_left_iff
 
 @[simp]
 theorem lineMap_eq_right_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} :
     lineMap p₀ p₁ c = p₁ ↔ p₀ = p₁ ∨ c = 1 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_one]
+  -- 🎉 no goals
 #align affine_map.line_map_eq_right_iff AffineMap.lineMap_eq_right_iff
 
 variable (k)
@@ -598,6 +639,7 @@ theorem apply_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) (c : k) :
     f (lineMap p₀ p₁ c) = lineMap (f p₀) (f p₁) c := by
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply), (map_vadd), (linearMap_vsub)]
+  -- 🎉 no goals
 #align affine_map.apply_line_map AffineMap.apply_lineMap
 
 @[simp]
@@ -619,13 +661,18 @@ theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = l
 theorem lineMap_symm (p₀ p₁ : P1) :
     lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
   rw [comp_lineMap]
+  -- ⊢ lineMap p₀ p₁ = lineMap (↑(lineMap p₁ p₀) 1) (↑(lineMap p₁ p₀) 0)
   simp
+  -- 🎉 no goals
 #align affine_map.line_map_symm AffineMap.lineMap_symm
 
 theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
   rw [lineMap_symm p₀, comp_apply]
+  -- ⊢ ↑(lineMap p₁ p₀) (↑(lineMap 1 0) (1 - c)) = ↑(lineMap p₁ p₀) c
   congr
+  -- ⊢ ↑(lineMap 1 0) (1 - c) = c
   simp [lineMap_apply]
+  -- 🎉 no goals
 #align affine_map.line_map_apply_one_sub AffineMap.lineMap_apply_one_sub
 
 @[simp]
@@ -636,16 +683,19 @@ theorem lineMap_vsub_left (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c -ᵥ p�
 @[simp]
 theorem left_vsub_lineMap (p₀ p₁ : P1) (c : k) : p₀ -ᵥ lineMap p₀ p₁ c = c • (p₀ -ᵥ p₁) := by
   rw [← neg_vsub_eq_vsub_rev, lineMap_vsub_left, ← smul_neg, neg_vsub_eq_vsub_rev]
+  -- 🎉 no goals
 #align affine_map.left_vsub_line_map AffineMap.left_vsub_lineMap
 
 @[simp]
 theorem lineMap_vsub_right (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c -ᵥ p₁ = (1 - c) • (p₀ -ᵥ p₁) := by
   rw [← lineMap_apply_one_sub, lineMap_vsub_left]
+  -- 🎉 no goals
 #align affine_map.line_map_vsub_right AffineMap.lineMap_vsub_right
 
 @[simp]
 theorem right_vsub_lineMap (p₀ p₁ : P1) (c : k) : p₁ -ᵥ lineMap p₀ p₁ c = (1 - c) • (p₁ -ᵥ p₀) := by
   rw [← lineMap_apply_one_sub, left_vsub_lineMap]
+  -- 🎉 no goals
 #align affine_map.right_vsub_line_map AffineMap.right_vsub_lineMap
 
 theorem lineMap_vadd_lineMap (v₁ v₂ : V1) (p₁ p₂ : P1) (c : k) :
@@ -662,6 +712,7 @@ theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
 are the same. -/
 theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => f 0 := by
   ext x
+  -- ⊢ ↑f x = (↑f.linear + fun x => ↑f 0) x
   calc
     f x = f.linear x +ᵥ f 0 := by rw [← f.map_vadd, vadd_eq_add, add_zero]
     _ = (f.linear + fun _ : V1 => f 0) x := rfl
@@ -671,7 +722,9 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
+  -- ⊢ ↑f.linear = (↑f.linear + fun x => ↑f 0) - fun x => (↑f.linear + fun x => ↑f  …
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
+  -- 🎉 no goals
 #align affine_map.decomp' AffineMap.decomp'
 
 theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
@@ -682,7 +735,9 @@ theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b :
     rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]
     simp only [vsub_eq_sub, add_zero, mul_one, vadd_eq_add, sub_zero, smul_eq_mul]
   rw [this, Set.image_comp]
+  -- ⊢ (fun x => x + ↑f 0) '' ((fun x => x * (↑f 1 - ↑f 0)) '' Set.uIcc a b) = Set. …
   simp only [Set.image_add_const_uIcc, Set.image_mul_const_uIcc, Function.comp_apply]
+  -- 🎉 no goals
 #align affine_map.image_uIcc AffineMap.image_uIcc
 
 section
@@ -761,11 +816,20 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   invFun p := p.2.toAffineMap + const k V1 p.1
   left_inv f := by
     ext
+    -- ⊢ ↑((fun p => LinearMap.toAffineMap p.snd + const k V1 p.fst) (AddHom.toFun {  …
     rw [f.decomp]
+    -- ⊢ ↑((fun p => LinearMap.toAffineMap p.snd + const k V1 p.fst) (AddHom.toFun {  …
     simp [const_apply _ _]  -- porting note: `simp` needs `_`s to use this lemma
+    -- 🎉 no goals
   right_inv := by
+                 -- 🎉 no goals
     rintro ⟨v, f⟩
+                  -- 🎉 no goals
+    -- ⊢ AddHom.toFun { toAddHom := { toFun := fun f => (↑f 0, f.linear), map_add' := …
     ext <;> simp [const_apply _ _, const_linear _ _]  -- porting note: `simp` needs `_`s
+    -- ⊢ (AddHom.toFun { toAddHom := { toFun := fun f => (↑f 0, f.linear), map_add' : …
+            -- 🎉 no goals
+            -- 🎉 no goals
   map_add' := by simp
   map_smul' := by simp
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap
@@ -801,7 +865,9 @@ theorem homothety_eq_lineMap (c : P1) (r : k) (p : P1) : homothety c r p = lineM
 @[simp]
 theorem homothety_one (c : P1) : homothety c (1 : k) = id k P1 := by
   ext p
+  -- ⊢ ↑(homothety c 1) p = ↑(id k P1) p
   simp [homothety_apply]
+  -- 🎉 no goals
 #align affine_map.homothety_one AffineMap.homothety_one
 
 @[simp]
@@ -812,6 +878,7 @@ theorem homothety_apply_same (c : P1) (r : k) : homothety c r c = c :=
 theorem homothety_mul_apply (c : P1) (r₁ r₂ : k) (p : P1) :
     homothety c (r₁ * r₂) p = homothety c r₁ (homothety c r₂ p) := by
   simp only [homothety_apply, mul_smul, vadd_vsub]
+  -- 🎉 no goals
 #align affine_map.homothety_mul_apply AffineMap.homothety_mul_apply
 
 theorem homothety_mul (c : P1) (r₁ r₂ : k) :
@@ -822,13 +889,16 @@ theorem homothety_mul (c : P1) (r₁ r₂ : k) :
 @[simp]
 theorem homothety_zero (c : P1) : homothety c (0 : k) = const k P1 c := by
   ext p
+  -- ⊢ ↑(homothety c 0) p = ↑(const k P1 c) p
   simp [homothety_apply]
+  -- 🎉 no goals
 #align affine_map.homothety_zero AffineMap.homothety_zero
 
 @[simp]
 theorem homothety_add (c : P1) (r₁ r₂ : k) :
     homothety c (r₁ + r₂) = r₁ • (id k P1 -ᵥ const k P1 c) +ᵥ homothety c r₂ := by
   simp only [homothety_def, add_smul, vadd_vadd]
+  -- 🎉 no goals
 #align affine_map.homothety_add AffineMap.homothety_add
 
 /-- `homothety` as a multiplicative monoid homomorphism. -/
@@ -867,7 +937,9 @@ the images. -/
 theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} (h : a + b = 1) :
     f (a • x + b • y) = a • f x + b • f y := by
   simp only [Convex.combo_eq_smul_sub_add h, ← vsub_eq_sub]
+  -- ⊢ ↑f (b • (y -ᵥ x) + x) = b • (↑f y -ᵥ ↑f x) + ↑f x
   exact f.apply_lineMap _ _ _
+  -- 🎉 no goals
 #align convex.combo_affine_apply Convex.combo_affine_apply
 
 end

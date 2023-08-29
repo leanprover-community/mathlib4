@@ -65,14 +65,19 @@ theorem recF_eq {α : TypeVec n} {β : Type _} (g : F (α.append1 β) → β) (a
     (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
     recF g (q.P.wMk a f' f) = g (abs ⟨a, splitFun f' (recF g ∘ f)⟩) := by
   rw [recF, MvPFunctor.wRec_eq]; rfl
+  -- ⊢ g (abs { fst := a, snd := splitFun f' fun i => MvPFunctor.wRec (P F) (fun a  …
+                                 -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq MvQPF.recF_eq
 
 theorem recF_eq' {α : TypeVec n} {β : Type _} (g : F (α.append1 β) → β) (x : q.P.W α) :
     recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
   apply q.P.w_cases _ x
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
   intro a f' f
+  -- ⊢ recF g (MvPFunctor.wMk (P F) a f' f) = g (abs ((TypeVec.id ::: recF g) <$$>  …
   rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq' MvQPF.recF_eq'
 
@@ -92,16 +97,32 @@ set_option linter.uppercaseLean3 false in
 theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
   apply q.P.w_cases _ x
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
   intro a₀ f'₀ f₀
+  -- ⊢ WEquiv (MvPFunctor.wMk (P F) a₀ f'₀ f₀) y → recF u (MvPFunctor.wMk (P F) a₀  …
   apply q.P.w_cases _ y
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
   intro a₁ f'₁ f₁
+  -- ⊢ WEquiv (MvPFunctor.wMk (P F) a₀ f'₀ f₀) (MvPFunctor.wMk (P F) a₁ f'₁ f₁) → r …
   intro h
+  -- ⊢ recF u (MvPFunctor.wMk (P F) a₀ f'₀ f₀) = recF u (MvPFunctor.wMk (P F) a₁ f' …
   -- porting note: induction on h doesn't work.
   refine' @WEquiv.recOn _ _ _ _ _ (λ a a' _ => recF u a = recF u a') _ _ h _ _ _
   · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
+    -- ⊢ recF u (MvPFunctor.wMk (P F) a f' f₀) = recF u (MvPFunctor.wMk (P F) a f' f₁)
+                             -- ⊢ u (abs { fst := a, snd := splitFun f' fun x => recF u (f₀ x) }) = u (abs { f …
     congr; funext; congr; funext; apply ih
+    -- ⊢ (splitFun f' fun x => recF u (f₀ x)) = splitFun f' fun x => recF u (f₁ x)
+           -- ⊢ splitFun f' (fun x => recF u (f₀ x)) x✝¹ x✝ = splitFun f' (fun x => recF u ( …
+                   -- ⊢ (fun x => recF u (f₀ x)) = fun x => recF u (f₁ x)
+                          -- ⊢ recF u (f₀ x✝) = recF u (f₁ x✝)
+                                  -- 🎉 no goals
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+    -- ⊢ recF u (MvPFunctor.wMk (P F) a₀ f'₀ f₀) = recF u (MvPFunctor.wMk (P F) a₁ f' …
+                                  -- 🎉 no goals
   · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
+    -- ⊢ recF u x = recF u z
+                                  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wEquiv
 
@@ -109,24 +130,40 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
                     (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
+  -- ⊢ abs (MvPFunctor.wDest' (P F) x) = abs (MvPFunctor.wDest' (P F) y) → WEquiv x y
   apply q.P.w_cases _ x
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
   intro a₀ f'₀ f₀
+  -- ⊢ abs (MvPFunctor.wDest' (P F) (MvPFunctor.wMk (P F) a₀ f'₀ f₀)) = abs (MvPFun …
   apply q.P.w_cases _ y
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
   intro a₁ f'₁ f₁
+  -- ⊢ abs (MvPFunctor.wDest' (P F) (MvPFunctor.wMk (P F) a₀ f'₀ f₀)) = abs (MvPFun …
   apply WEquiv.abs
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.abs' MvQPF.wEquiv.abs'
 
 theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := by
   apply q.P.w_cases _ x; intro a f' f; exact WEquiv.abs a f' f a f' f rfl
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
+                         -- ⊢ WEquiv (MvPFunctor.wMk (P F) a f' f) (MvPFunctor.wMk (P F) a f' f)
+                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.refl MvQPF.wEquiv.refl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
   intro h; induction h
+  -- ⊢ WEquiv y x
   case ind a f' f₀ f₁ _h ih => exact WEquiv.ind _ _ _ _ ih
+  -- ⊢ WEquiv (MvPFunctor.wMk (P F) a₁✝ f'₁✝ f₁✝) (MvPFunctor.wMk (P F) a₀✝ f'₀✝ f₀✝)
+  -- 🎉 no goals
   case abs a₀ f'₀ f₀ a₁ f'₁ f₁ h => exact WEquiv.abs _ _ _ _ _ _ h.symm
+  -- ⊢ WEquiv w✝ u✝
+  -- 🎉 no goals
   case trans x y z _e₁ _e₂ ih₁ ih₂ => exact MvQPF.WEquiv.trans _ _ _ ih₂ ih₁
+  -- 🎉 no goals
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.symm MvQPF.wEquiv.symm
 
@@ -141,23 +178,36 @@ theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
     wrepr (q.P.wMk a f' f) =
       q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) :=
   by rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
+     -- ⊢ (MvPFunctor.wMk' (P F) ∘ repr) (abs ((TypeVec.id ::: recF (MvPFunctor.wMk' ( …
+                                           -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr_W_mk MvQPF.wrepr_wMk
 
 theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
   apply q.P.w_ind _ x; intro a f' f ih
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
+                       -- ⊢ WEquiv (wrepr (MvPFunctor.wMk (P F) a f' f)) (MvPFunctor.wMk (P F) a f' f)
   apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
+  -- ⊢ WEquiv (wrepr (MvPFunctor.wMk (P F) a f' f)) (MvPFunctor.wMk' (P F) ((TypeVe …
   · apply wEquiv.abs'
+    -- ⊢ abs (MvPFunctor.wDest' (P F) (wrepr (MvPFunctor.wMk (P F) a f' f))) = abs (M …
     rw [wrepr_wMk, q.P.wDest'_wMk', q.P.wDest'_wMk', abs_repr]
+    -- 🎉 no goals
   rw [q.P.map_eq, MvPFunctor.wMk', appendFun_comp_splitFun, id_comp]
+  -- ⊢ WEquiv
   apply WEquiv.ind; exact ih
+  -- ⊢ ∀ (x : PFunctor.B (MvPFunctor.last (P F)) a), WEquiv (lastFun (splitFun f' ( …
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr_equiv MvQPF.wrepr_equiv
 
 theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
   intro h; induction h
+  -- ⊢ WEquiv (g <$$> x) (g <$$> y)
   case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
+  -- ⊢ WEquiv (g <$$> MvPFunctor.wMk (P F) a₀✝ f'₀✝ f₀✝) (g <$$> MvPFunctor.wMk (P  …
+  -- 🎉 no goals
   case
     abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
     rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.abs
@@ -166,6 +216,8 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
   case trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
+  -- 🎉 no goals
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv_map MvQPF.wEquiv_map
 
@@ -235,8 +287,11 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     rw [Fix.rec, Fix.mk]
     dsimp
   cases' h : repr x with a f
+  -- ⊢ recF g (MvPFunctor.wMk' (P F) ((TypeVec.id ::: fixToW) <$$> { fst := a, snd  …
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
+  -- ⊢ g (abs ((TypeVec.id ::: recF g) <$$> (TypeVec.id ::: fixToW) <$$> { fst := a …
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
+  -- 🎉 no goals
 #align mvqpf.fix.rec_eq MvQPF.Fix.rec_eq
 
 theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
@@ -251,8 +306,11 @@ theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a →
     rw [appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
     rfl
   rw [this]
+  -- ⊢ Quotient.mk (wSetoid α) (wrepr (MvPFunctor.wMk (P F) a f' f)) = Quotient.mk  …
   apply Quot.sound
+  -- ⊢ Setoid.r (wrepr (MvPFunctor.wMk (P F) a f' f)) (MvPFunctor.wMk (P F) a f' f)
   apply wrepr_equiv
+  -- 🎉 no goals
 #align mvqpf.fix.ind_aux MvQPF.Fix.ind_aux
 
 theorem Fix.ind_rec {β : Type _} (g₁ g₂ : Fix F α → β)
@@ -261,66 +319,107 @@ theorem Fix.ind_rec {β : Type _} (g₁ g₂ : Fix F α → β)
         appendFun id g₁ <$$> x = appendFun id g₂ <$$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) :
     ∀ x, g₁ x = g₂ x := by
   apply Quot.ind
+  -- ⊢ ∀ (a : MvPFunctor.W (P F) α), g₁ (Quot.mk Setoid.r a) = g₂ (Quot.mk Setoid.r …
   intro x
+  -- ⊢ g₁ (Quot.mk Setoid.r x) = g₂ (Quot.mk Setoid.r x)
   apply q.P.w_ind _ x
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
   intro a f' f ih
+  -- ⊢ g₁ (Quot.mk Setoid.r (MvPFunctor.wMk (P F) a f' f)) = g₂ (Quot.mk Setoid.r ( …
   show g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
+  -- ⊢ g₁ (Quotient.mk (wSetoid α) (MvPFunctor.wMk (P F) a f' f)) = g₂ (Quotient.mk …
   rw [← Fix.ind_aux a f' f]
+  -- ⊢ g₁ (mk (abs { fst := a, snd := MvPFunctor.appendContents (P F) f' fun x => Q …
   apply h
+  -- ⊢ (TypeVec.id ::: g₁) <$$> abs { fst := a, snd := MvPFunctor.appendContents (P …
   rw [← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
+  -- ⊢ abs { fst := a, snd := (TypeVec.id ::: g₁) ⊚ MvPFunctor.appendContents (P F) …
   congr 2
+  -- ⊢ ((TypeVec.id ::: g₁) ⊚ MvPFunctor.appendContents (P F) f' fun x => Quotient. …
   rw [MvPFunctor.appendContents, appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
+  -- ⊢ splitFun (TypeVec.id ⊚ f') (g₁ ∘ fun x => Quotient.mk (wSetoid α) (f x)) = s …
   have : (g₁ ∘ fun x => ⟦f x⟧) = g₂ ∘ fun x => ⟦f x⟧ := by
     ext x
     exact ih x
   rw [this]
+  -- 🎉 no goals
 #align mvqpf.fix.ind_rec MvQPF.Fix.ind_rec
 
 theorem Fix.rec_unique {β : Type _} (g : F (append1 α β) → β) (h : Fix F α → β)
     (hyp : ∀ x, h (Fix.mk x) = g (appendFun id h <$$> x)) : Fix.rec g = h := by
   ext x
+  -- ⊢ rec g x = h x
   apply Fix.ind_rec
+  -- ⊢ ∀ (x : F (α ::: Fix F α)), (TypeVec.id ::: rec g) <$$> x = (TypeVec.id ::: f …
   intro x hyp'
+  -- ⊢ rec g (mk x) = h (mk x)
   rw [hyp, ← hyp', Fix.rec_eq]
+  -- 🎉 no goals
 #align mvqpf.fix.rec_unique MvQPF.Fix.rec_unique
 
 theorem Fix.mk_dest (x : Fix F α) : Fix.mk (Fix.dest x) = x := by
   change (Fix.mk ∘ Fix.dest) x = x
+  -- ⊢ (mk ∘ dest) x = x
   apply Fix.ind_rec
+  -- ⊢ ∀ (x : F (α ::: Fix F α)), (TypeVec.id ::: mk ∘ dest) <$$> x = (TypeVec.id : …
   intro x; dsimp
+  -- ⊢ (TypeVec.id ::: mk ∘ dest) <$$> x = (TypeVec.id ::: fun x => x) <$$> x → (mk …
+           -- ⊢ (TypeVec.id ::: mk ∘ dest) <$$> x = (TypeVec.id ::: fun x => x) <$$> x → mk  …
   rw [Fix.dest, Fix.rec_eq, ← comp_map, ← appendFun_comp, id_comp]
+  -- ⊢ (TypeVec.id ::: mk ∘ rec (MvFunctor.map (TypeVec.id ::: mk))) <$$> x = (Type …
   intro h; rw [h]
+  -- ⊢ mk ((TypeVec.id ::: mk ∘ rec (MvFunctor.map (TypeVec.id ::: mk))) <$$> x) =  …
+           -- ⊢ mk ((TypeVec.id ::: fun x => x) <$$> x) = mk x
   show Fix.mk (appendFun id id <$$> x) = Fix.mk x
+  -- ⊢ mk ((TypeVec.id ::: _root_.id) <$$> x) = mk x
   rw [appendFun_id_id, MvFunctor.id_map]
+  -- 🎉 no goals
 #align mvqpf.fix.mk_dest MvQPF.Fix.mk_dest
 
 theorem Fix.dest_mk (x : F (append1 α (Fix F α))) : Fix.dest (Fix.mk x) = x := by
   unfold Fix.dest
+  -- ⊢ rec (MvFunctor.map (TypeVec.id ::: mk)) (mk x) = x
   rw [Fix.rec_eq, ← Fix.dest, ← comp_map]
+  -- ⊢ ((TypeVec.id ::: mk) ⊚ (TypeVec.id ::: dest)) <$$> x = x
   conv =>
     rhs
     rw [← MvFunctor.id_map x]
   rw [← appendFun_comp, id_comp]
+  -- ⊢ (TypeVec.id ::: mk ∘ dest) <$$> x = TypeVec.id <$$> x
   have : Fix.mk ∘ Fix.dest = _root_.id := by
     ext (x : Fix F α)
     apply Fix.mk_dest
   rw [this, appendFun_id_id]
+  -- 🎉 no goals
 #align mvqpf.fix.dest_mk MvQPF.Fix.dest_mk
 
 theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
     (h : ∀ x : F (α.append1 (Fix F α)), LiftP (PredLast α p) x → p (Fix.mk x)) : ∀ x, p x := by
   apply Quot.ind
+  -- ⊢ ∀ (a : MvPFunctor.W (P F) α), p (Quot.mk Setoid.r a)
   intro x
+  -- ⊢ p (Quot.mk Setoid.r x)
   apply q.P.w_ind _ x; intro a f' f ih
+  -- ⊢ ∀ (a : (P F).A) (f' : MvPFunctor.B (MvPFunctor.drop (P F)) a ⟹ α) (f : PFunc …
+                       -- ⊢ p (Quot.mk Setoid.r (MvPFunctor.wMk (P F) a f' f))
   change p ⟦q.P.wMk a f' f⟧
+  -- ⊢ p (Quotient.mk (wSetoid α) (MvPFunctor.wMk (P F) a f' f))
   rw [← Fix.ind_aux a f' f]
+  -- ⊢ p (mk (abs { fst := a, snd := MvPFunctor.appendContents (P F) f' fun x => Qu …
   apply h
+  -- ⊢ LiftP (PredLast α p) (abs { fst := a, snd := MvPFunctor.appendContents (P F) …
   rw [MvQPF.liftP_iff]
+  -- ⊢ ∃ a_1 f_1, abs { fst := a, snd := MvPFunctor.appendContents (P F) f' fun x = …
   refine' ⟨_, _, rfl, _⟩
+  -- ⊢ ∀ (i : Fin2 (n + 1)) (j : MvPFunctor.B (P F) a i), PredLast α p (MvPFunctor. …
   intro i j
+  -- ⊢ PredLast α p (MvPFunctor.appendContents (P F) f' (fun x => Quotient.mk (wSet …
   cases i
+  -- ⊢ PredLast α p (MvPFunctor.appendContents (P F) f' (fun x => Quotient.mk (wSet …
   · apply ih
+    -- 🎉 no goals
   · trivial
+    -- 🎉 no goals
 #align mvqpf.fix.ind MvQPF.Fix.ind
 
 instance mvqpfFix : MvQPF (Fix F) where
@@ -329,12 +428,18 @@ instance mvqpfFix : MvQPF (Fix F) where
   repr α := fixToW α
   abs_repr := by
     intro α
+    -- ⊢ ∀ (x : Fix F α), (fun {α} α_1 => Quot.mk WEquiv α_1) ((fun {α} α_1 => fixToW …
     apply Quot.ind
+    -- ⊢ ∀ (a : MvPFunctor.W (P F) α), (fun {α} α_1 => Quot.mk WEquiv α_1) ((fun {α}  …
     intro a
+    -- ⊢ (fun {α} α_1 => Quot.mk WEquiv α_1) ((fun {α} α_1 => fixToW α_1) (Quot.mk Se …
     apply Quot.sound
+    -- ⊢ WEquiv ((fun {α} α_1 => fixToW α_1) (Quot.mk Setoid.r a)) a
     apply wrepr_equiv
+    -- 🎉 no goals
   abs_map := by
     intro α β g x;
+    -- ⊢ (fun {α} α_1 => Quot.mk WEquiv α_1) (g <$$> x) = g <$$> (fun {α} α_1 => Quot …
     conv =>
       rhs
       dsimp [MvFunctor.map]
@@ -346,19 +451,30 @@ def Fix.drec {β : Fix F α → Type u}
   let y := @Fix.rec _ F _ _ α (Sigma β) (fun i => ⟨_, g i⟩) x
   have : x = y.1 := by
     symm
+    -- ⊢ y.fst = x
     dsimp
+    -- ⊢ (rec (fun i => { fst := mk ((TypeVec.id ::: Sigma.fst) <$$> i), snd := g i } …
     apply Fix.ind_rec _ id _ x
+    -- ⊢ ∀ (x : F (α ::: Fix F α)), (TypeVec.id ::: fun x => (rec (fun i => { fst :=  …
     intro x' ih
+    -- ⊢ (rec (fun i => { fst := mk ((TypeVec.id ::: Sigma.fst) <$$> i), snd := g i } …
     rw [Fix.rec_eq]
+    -- ⊢ { fst := mk ((TypeVec.id ::: Sigma.fst) <$$> (TypeVec.id ::: rec fun i => {  …
     dsimp
+    -- ⊢ mk ((TypeVec.id ::: Sigma.fst) <$$> (TypeVec.id ::: rec fun i => { fst := mk …
     simp [appendFun_id_id] at ih
+    -- ⊢ mk ((TypeVec.id ::: Sigma.fst) <$$> (TypeVec.id ::: rec fun i => { fst := mk …
     congr
+    -- ⊢ (TypeVec.id ::: Sigma.fst) <$$> (TypeVec.id ::: rec fun i => { fst := mk ((T …
     conv =>
       rhs
       rw [← ih]
     rw [MvFunctor.map_map, ← appendFun_comp, id_comp]
+    -- ⊢ (TypeVec.id ::: Sigma.fst ∘ rec fun i => { fst := mk ((TypeVec.id ::: Sigma. …
     simp only [Function.comp]
+    -- 🎉 no goals
   cast (by rw [this]) y.2
+           -- 🎉 no goals
 #align mvqpf.fix.drec MvQPF.Fix.drec
 
 end MvQPF

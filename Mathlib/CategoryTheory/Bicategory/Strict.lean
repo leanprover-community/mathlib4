@@ -79,14 +79,18 @@ variable {B}
 theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = h) :
     f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
   cases η
+  -- ⊢ f ◁ eqToHom (_ : g = g) = eqToHom (_ : f ≫ g = f ≫ g)
   simp only [whiskerLeft_id, eqToHom_refl]
+  -- 🎉 no goals
 #align category_theory.bicategory.whisker_left_eq_to_hom CategoryTheory.Bicategory.whiskerLeft_eqToHom
 
 @[simp]
 theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
     eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
   cases η
+  -- ⊢ eqToHom (_ : f = f) ▷ h = eqToHom (_ : f ≫ h = f ≫ h)
   simp only [id_whiskerRight, eqToHom_refl]
+  -- 🎉 no goals
 #align category_theory.bicategory.eq_to_hom_whisker_right CategoryTheory.Bicategory.eqToHom_whiskerRight
 
 end Bicategory

@@ -63,7 +63,9 @@ theorem inv_def (x : α) (y : β) : r.inv y x ↔ r x y :=
 
 theorem inv_inv : inv (inv r) = r := by
   ext x y
+  -- ⊢ inv (inv r) x y ↔ r x y
   rfl
+  -- 🎉 no goals
 #align rel.inv_inv Rel.inv_inv
 
 /-- Domain of a relation -/
@@ -79,12 +81,16 @@ def codom := { y | ∃ x, r x y }
 
 theorem codom_inv : r.inv.codom = r.dom := by
   ext x
+  -- ⊢ x ∈ codom (inv r) ↔ x ∈ dom r
   rfl
+  -- 🎉 no goals
 #align rel.codom_inv Rel.codom_inv
 
 theorem dom_inv : r.inv.dom = r.codom := by
   ext x
+  -- ⊢ x ∈ dom (inv r) ↔ x ∈ codom r
   rfl
+  -- 🎉 no goals
 #align rel.dom_inv Rel.dom_inv
 
 /-- Composition of relation; note that it follows the `CategoryTheory/` order of arguments. -/
@@ -98,32 +104,51 @@ local infixr:90 " • " => Rel.comp
 
 theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : (r • s) • t = r • (s • t) := by
   unfold comp; ext (x w); constructor
+  -- ⊢ (fun x z => ∃ y, (∃ y_1, r x y_1 ∧ s y_1 y) ∧ t y z) = fun x z => ∃ y, r x y …
+               -- ⊢ (∃ y, (∃ y_1, r x y_1 ∧ s y_1 y) ∧ t y w) ↔ ∃ y, r x y ∧ ∃ y_1, s y y_1 ∧ t  …
+                          -- ⊢ (∃ y, (∃ y_1, r x y_1 ∧ s y_1 y) ∧ t y w) → ∃ y, r x y ∧ ∃ y_1, s y y_1 ∧ t  …
   · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
+    -- ⊢ ∃ y, r x y ∧ ∃ y_1, s y y_1 ∧ t y_1 w
+                                    -- 🎉 no goals
   · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
+    -- ⊢ ∃ y, (∃ y_1, r x y_1 ∧ s y_1 y) ∧ t y w
+                                  -- 🎉 no goals
 #align rel.comp_assoc Rel.comp_assoc
 
 @[simp]
 theorem comp_right_id (r : Rel α β) : r • @Eq β = r := by
   unfold comp
+  -- ⊢ (fun x z => ∃ y, r x y ∧ y = z) = r
   ext y
+  -- ⊢ (∃ y_1, r y y_1 ∧ y_1 = x✝) ↔ r y x✝
   simp
+  -- 🎉 no goals
 #align rel.comp_right_id Rel.comp_right_id
 
 @[simp]
 theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
   unfold comp
+  -- ⊢ (fun x z => ∃ y, x = y ∧ r y z) = r
   ext x
+  -- ⊢ (∃ y, x = y ∧ r y x✝) ↔ r x x✝
   simp
+  -- 🎉 no goals
 #align rel.comp_left_id Rel.comp_left_id
 
 theorem inv_id : inv (@Eq α) = @Eq α := by
   ext x y
+  -- ⊢ inv Eq x y ↔ x = y
   constructor <;> apply Eq.symm
+  -- ⊢ inv Eq x y → x = y
+                  -- 🎉 no goals
+                  -- 🎉 no goals
 #align rel.inv_id Rel.inv_id
 
 theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv r := by
   ext x z
+  -- ⊢ inv (r • s) x z ↔ (inv s • inv r) x z
   simp [comp, inv, flip, and_comm]
+  -- 🎉 no goals
 #align rel.inv_comp Rel.inv_comp
 
 /-- Image of a set under a relation -/
@@ -156,18 +181,29 @@ theorem image_union (s t : Set α) : r.image (s ∪ t) = r.image s ∪ r.image t
 @[simp]
 theorem image_id (s : Set α) : image (@Eq α) s = s := by
   ext x
+  -- ⊢ x ∈ image Eq s ↔ x ∈ s
   simp [mem_image]
+  -- 🎉 no goals
 #align rel.image_id Rel.image_id
 
 theorem image_comp (s : Rel β γ) (t : Set α) : image (r • s) t = image s (image r t) := by
   ext z; simp only [mem_image]; constructor
+  -- ⊢ z ∈ image (r • s) t ↔ z ∈ image s (image r t)
+         -- ⊢ (∃ x, x ∈ t ∧ (r • s) x z) ↔ ∃ x, (∃ x_1, x_1 ∈ t ∧ r x_1 x) ∧ s x z
+                                -- ⊢ (∃ x, x ∈ t ∧ (r • s) x z) → ∃ x, (∃ x_1, x_1 ∈ t ∧ r x_1 x) ∧ s x z
   · rintro ⟨x, xt, y, rxy, syz⟩; exact ⟨y, ⟨x, xt, rxy⟩, syz⟩
+    -- ⊢ ∃ x, (∃ x_1, x_1 ∈ t ∧ r x_1 x) ∧ s x z
+                                 -- 🎉 no goals
   · rintro ⟨y, ⟨x, xt, rxy⟩, syz⟩; exact ⟨x, xt, y, rxy, syz⟩
+    -- ⊢ ∃ x, x ∈ t ∧ (r • s) x z
+                                   -- 🎉 no goals
 #align rel.image_comp Rel.image_comp
 
 theorem image_univ : r.image Set.univ = r.codom := by
   ext y
+  -- ⊢ y ∈ image r Set.univ ↔ y ∈ codom r
   simp [mem_image, codom]
+  -- 🎉 no goals
 #align rel.image_univ Rel.image_univ
 
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
@@ -197,13 +233,16 @@ theorem preimage_union (s t : Set β) : r.preimage (s ∪ t) = r.preimage s ∪ 
 
 theorem preimage_id (s : Set α) : preimage (@Eq α) s = s := by
   simp only [preimage, inv_id, image_id]
+  -- 🎉 no goals
 #align rel.preimage_id Rel.preimage_id
 
 theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = preimage r (preimage s t) :=
   by simp only [preimage, inv_comp, image_comp]
+     -- 🎉 no goals
 #align rel.preimage_comp Rel.preimage_comp
 
 theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
+                                                          -- 🎉 no goals
 #align rel.preimage_univ Rel.preimage_univ
 
 /-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
@@ -224,6 +263,7 @@ theorem core_mono : Monotone r.core :=
 
 theorem core_inter (s t : Set β) : r.core (s ∩ t) = r.core s ∩ r.core t :=
   Set.ext (by simp [mem_core, imp_and, forall_and])
+              -- 🎉 no goals
 #align rel.core_inter Rel.core_inter
 
 theorem core_union (s t : Set β) : r.core s ∪ r.core t ⊆ r.core (s ∪ t) :=
@@ -233,15 +273,22 @@ theorem core_union (s t : Set β) : r.core s ∪ r.core t ⊆ r.core (s ∪ t) :
 @[simp]
 theorem core_univ : r.core Set.univ = Set.univ :=
   Set.ext (by simp [mem_core])
+              -- 🎉 no goals
 #align rel.core_univ Rel.core_univ
 
 theorem core_id (s : Set α) : core (@Eq α) s = s := by simp [core]
+                                                       -- 🎉 no goals
 #align rel.core_id Rel.core_id
 
 theorem core_comp (s : Rel β γ) (t : Set γ) : core (r • s) t = core r (core s t) := by
   ext x; simp [core, comp]; constructor
+  -- ⊢ x ∈ core (r • s) t ↔ x ∈ core r (core s t)
+         -- ⊢ (∀ (y : γ) (x_1 : β), r x x_1 → s x_1 y → y ∈ t) ↔ ∀ (y : β), r x y → ∀ (y_1 …
+                            -- ⊢ (∀ (y : γ) (x_1 : β), r x x_1 → s x_1 y → y ∈ t) → ∀ (y : β), r x y → ∀ (y_1 …
   · exact fun h y rxy z => h z y rxy
+    -- 🎉 no goals
   · exact fun h z y rzy => h y rzy z
+    -- 🎉 no goals
 #align rel.core_comp Rel.core_comp
 
 /-- Restrict the domain of a relation to a subtype. -/
@@ -272,14 +319,17 @@ namespace Set
 -- be definitional
 theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
   simp [Set.image, Function.graph, Rel.image]
+  -- 🎉 no goals
 #align set.image_eq Set.image_eq
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by
   simp [Set.preimage, Function.graph, Rel.preimage, Rel.inv, flip, Rel.image]
+  -- 🎉 no goals
 #align set.preimage_eq Set.preimage_eq
 
 theorem preimage_eq_core (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).core s := by
   simp [Set.preimage, Function.graph, Rel.core]
+  -- 🎉 no goals
 #align set.preimage_eq_core Set.preimage_eq_core
 
 end Set

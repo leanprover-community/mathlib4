@@ -131,6 +131,8 @@ end
 /-- If `f` is an isomorphism, so is `f.op` -/
 instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
   ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
+                                         -- 🎉 no goals
+                                                                             -- 🎉 no goals
 #align category_theory.is_iso_op CategoryTheory.isIso_op
 
 /-- If `f.op` is an isomorphism `f` must be too.
@@ -138,6 +140,8 @@ instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
 -/
 theorem isIso_of_op {X Y : C} (f : X ⟶ Y) [IsIso f.op] : IsIso f :=
   ⟨⟨(inv f.op).unop, ⟨Quiver.Hom.op_inj (by simp), Quiver.Hom.op_inj (by simp)⟩⟩⟩
+                                            -- 🎉 no goals
+                                                                         -- 🎉 no goals
 #align category_theory.is_iso_of_op CategoryTheory.isIso_of_op
 
 theorem isIso_op_iff {X Y : C} (f : X ⟶ Y) : IsIso f.op ↔ IsIso f :=
@@ -146,6 +150,7 @@ theorem isIso_op_iff {X Y : C} (f : X ⟶ Y) : IsIso f.op ↔ IsIso f :=
 
 theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f := by
   rw [← isIso_op_iff f.unop, Quiver.Hom.op_unop]
+  -- 🎉 no goals
 #align category_theory.is_iso_unop_iff CategoryTheory.isIso_unop_iff
 
 instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
@@ -155,13 +160,17 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
   aesop_cat_nonterminal
+  -- ⊢ f.op ≫ (inv f).op = 𝟙 (op Y)
   rw [← op_comp, IsIso.inv_hom_id, op_id]
+  -- 🎉 no goals
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
   aesop_cat_nonterminal
+  -- ⊢ f.unop ≫ (inv f).unop = 𝟙 Y.unop
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
+  -- 🎉 no goals
 #align category_theory.unop_inv CategoryTheory.unop_inv
 
 namespace Functor
@@ -248,6 +257,7 @@ instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.p
 
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
+                                               -- 🎉 no goals
 
 /-- If F is faithful then the right_op of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
@@ -275,7 +285,9 @@ def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
 instead of this equality of functors. -/
 theorem rightOp_leftOp_eq (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp = F := by
   cases F
+  -- ⊢ (mk toPrefunctor✝).rightOp.leftOp = mk toPrefunctor✝
   rfl
+  -- 🎉 no goals
 #align category_theory.functor.right_op_left_op_eq CategoryTheory.Functor.rightOp_leftOp_eq
 
 end
@@ -295,6 +307,7 @@ variable {F G : C ⥤ D}
 protected def op (α : F ⟶ G) : G.op ⟶ F.op where
   app X := (α.app (unop X)).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
+                                              -- 🎉 no goals
 #align category_theory.nat_trans.op CategoryTheory.NatTrans.op
 
 @[simp]
@@ -307,6 +320,7 @@ theorem op_id (F : C ⥤ D) : NatTrans.op (𝟙 F) = 𝟙 F.op :=
 protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.unop where
   app X := (α.app (op X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
+                                            -- 🎉 no goals
 #align category_theory.nat_trans.unop CategoryTheory.NatTrans.unop
 
 @[simp]
@@ -322,6 +336,7 @@ protected def removeOp (α : F.op ⟶ G.op) : G ⟶ F where
   app X := (α.app (op X)).unop
   naturality X Y f :=
     Quiver.Hom.op_inj <| by simpa only [Functor.op_map] using (α.naturality f.op).symm
+                            -- 🎉 no goals
 #align category_theory.nat_trans.remove_op CategoryTheory.NatTrans.removeOp
 
 @[simp]
@@ -336,6 +351,7 @@ protected def removeUnop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F.unop ⟶ G.unop) : 
   app X := (α.app (unop X)).op
   naturality X Y f :=
     Quiver.Hom.unop_inj <| by simpa only [Functor.unop_map] using (α.naturality f.unop).symm
+                              -- 🎉 no goals
 #align category_theory.nat_trans.remove_unop CategoryTheory.NatTrans.removeUnop
 
 @[simp]
@@ -356,6 +372,7 @@ taking `unop` of each component gives a natural transformation `G.leftOp ⟶ F.l
 protected def leftOp (α : F ⟶ G) : G.leftOp ⟶ F.leftOp where
   app X := (α.app (unop X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
+                                            -- 🎉 no goals
 #align category_theory.nat_trans.left_op CategoryTheory.NatTrans.leftOp
 
 @[simp]
@@ -377,6 +394,7 @@ protected def removeLeftOp (α : F.leftOp ⟶ G.leftOp) : G ⟶ F where
   app X := (α.app (op X)).op
   naturality X Y f :=
     Quiver.Hom.unop_inj <| by simpa only [Functor.leftOp_map] using (α.naturality f.op).symm
+                              -- 🎉 no goals
 #align category_theory.nat_trans.remove_left_op CategoryTheory.NatTrans.removeLeftOp
 
 @[simp]
@@ -397,6 +415,7 @@ taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.ri
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
   app X := (α.app _).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
+                                              -- 🎉 no goals
 #align category_theory.nat_trans.right_op CategoryTheory.NatTrans.rightOp
 
 @[simp]
@@ -418,6 +437,7 @@ protected def removeRightOp (α : F.rightOp ⟶ G.rightOp) : G ⟶ F where
   app X := (α.app X.unop).unop
   naturality X Y f :=
     Quiver.Hom.op_inj <| by simpa only [Functor.rightOp_map] using (α.naturality f.unop).symm
+                            -- 🎉 no goals
 #align category_theory.nat_trans.remove_right_op CategoryTheory.NatTrans.removeRightOp
 
 @[simp]
@@ -449,15 +469,21 @@ def unop {X Y : Cᵒᵖ} (f : X ≅ Y) : Y.unop ≅ X.unop where
   hom := f.hom.unop
   inv := f.inv.unop
   hom_inv_id := by simp only [← unop_comp, f.inv_hom_id, unop_id]
+                   -- 🎉 no goals
   inv_hom_id := by simp only [← unop_comp, f.hom_inv_id, unop_id]
+                   -- 🎉 no goals
 #align category_theory.iso.unop CategoryTheory.Iso.unop
 
 @[simp]
 theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)
+                                                               -- ⊢ (Iso.op (unop f)).hom = f.hom
+                                                                    -- 🎉 no goals
 #align category_theory.iso.unop_op CategoryTheory.Iso.unop_op
 
 @[simp]
 theorem op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by (ext; rfl)
+                                                             -- ⊢ (unop (Iso.op f)).hom = f.hom
+                                                                  -- 🎉 no goals
 #align category_theory.iso.op_unop CategoryTheory.Iso.op_unop
 
 end Iso
@@ -475,7 +501,17 @@ protected def op (α : F ≅ G) : G.op ≅ F.op where
   hom := NatTrans.op α.hom
   inv := NatTrans.op α.inv
   hom_inv_id := by ext; dsimp; rw [← op_comp]; rw [α.inv_hom_id_app]; rfl
+                   -- ⊢ NatTrans.app (NatTrans.op α.hom ≫ NatTrans.op α.inv) x✝ = NatTrans.app (𝟙 G. …
+                        -- ⊢ (NatTrans.app α.hom x✝.unop).op ≫ (NatTrans.app α.inv x✝.unop).op = 𝟙 (op (G …
+                               -- ⊢ (NatTrans.app α.inv x✝.unop ≫ NatTrans.app α.hom x✝.unop).op = 𝟙 (op (G.obj  …
+                                               -- ⊢ (𝟙 (G.obj x✝.unop)).op = 𝟙 (op (G.obj x✝.unop))
+                                                                      -- 🎉 no goals
   inv_hom_id := by ext; dsimp; rw [← op_comp]; rw [α.hom_inv_id_app]; rfl
+                   -- ⊢ NatTrans.app (NatTrans.op α.inv ≫ NatTrans.op α.hom) x✝ = NatTrans.app (𝟙 F. …
+                        -- ⊢ (NatTrans.app α.inv x✝.unop).op ≫ (NatTrans.app α.hom x✝.unop).op = 𝟙 (op (F …
+                               -- ⊢ (NatTrans.app α.hom x✝.unop ≫ NatTrans.app α.inv x✝.unop).op = 𝟙 (op (F.obj  …
+                                               -- ⊢ (𝟙 (F.obj x✝.unop)).op = 𝟙 (op (F.obj x✝.unop))
+                                                                      -- 🎉 no goals
 #align category_theory.nat_iso.op CategoryTheory.NatIso.op
 
 /-- The natural isomorphism between functors `G ≅ F` induced by a natural isomorphism
@@ -485,7 +521,17 @@ protected def removeOp (α : F.op ≅ G.op) : G ≅ F where
   hom := NatTrans.removeOp α.hom
   inv := NatTrans.removeOp α.inv
   hom_inv_id := by ext; dsimp; rw [← unop_comp]; rw [α.inv_hom_id_app]; rfl
+                   -- ⊢ NatTrans.app (NatTrans.removeOp α.hom ≫ NatTrans.removeOp α.inv) x✝ = NatTra …
+                        -- ⊢ (NatTrans.app α.hom (op x✝)).unop ≫ (NatTrans.app α.inv (op x✝)).unop = 𝟙 (G …
+                               -- ⊢ (NatTrans.app α.inv (op x✝) ≫ NatTrans.app α.hom (op x✝)).unop = 𝟙 (G.obj x✝)
+                                                 -- ⊢ (𝟙 (G.op.obj (op x✝))).unop = 𝟙 (G.obj x✝)
+                                                                        -- 🎉 no goals
   inv_hom_id := by ext; dsimp; rw [← unop_comp]; rw [α.hom_inv_id_app]; rfl
+                   -- ⊢ NatTrans.app (NatTrans.removeOp α.inv ≫ NatTrans.removeOp α.hom) x✝ = NatTra …
+                        -- ⊢ (NatTrans.app α.inv (op x✝)).unop ≫ (NatTrans.app α.hom (op x✝)).unop = 𝟙 (F …
+                               -- ⊢ (NatTrans.app α.hom (op x✝) ≫ NatTrans.app α.inv (op x✝)).unop = 𝟙 (F.obj x✝)
+                                                 -- ⊢ (𝟙 (F.op.obj (op x✝))).unop = 𝟙 (F.obj x✝)
+                                                                        -- 🎉 no goals
 #align category_theory.nat_iso.remove_op CategoryTheory.NatIso.removeOp
 
 /-- The natural isomorphism between functors `G.unop ≅ F.unop` induced by a natural isomorphism
@@ -495,7 +541,17 @@ protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) : G.unop ≅ F.uno
   hom := NatTrans.unop α.hom
   inv := NatTrans.unop α.inv
   hom_inv_id := by ext; dsimp; rw [← unop_comp]; rw [α.inv_hom_id_app]; rfl
+                   -- ⊢ NatTrans.app (NatTrans.unop α.hom ≫ NatTrans.unop α.inv) x✝ = NatTrans.app ( …
+                        -- ⊢ (NatTrans.app α.hom (op x✝)).unop ≫ (NatTrans.app α.inv (op x✝)).unop = 𝟙 (G …
+                               -- ⊢ (NatTrans.app α.inv (op x✝) ≫ NatTrans.app α.hom (op x✝)).unop = 𝟙 (G.obj (o …
+                                                 -- ⊢ (𝟙 (G.obj (op x✝))).unop = 𝟙 (G.obj (op x✝)).unop
+                                                                        -- 🎉 no goals
   inv_hom_id := by ext; dsimp; rw [← unop_comp]; rw [α.hom_inv_id_app]; rfl
+                   -- ⊢ NatTrans.app (NatTrans.unop α.inv ≫ NatTrans.unop α.hom) x✝ = NatTrans.app ( …
+                        -- ⊢ (NatTrans.app α.inv (op x✝)).unop ≫ (NatTrans.app α.hom (op x✝)).unop = 𝟙 (F …
+                               -- ⊢ (NatTrans.app α.hom (op x✝) ≫ NatTrans.app α.inv (op x✝)).unop = 𝟙 (F.obj (o …
+                                                 -- ⊢ (𝟙 (F.obj (op x✝))).unop = 𝟙 (F.obj (op x✝)).unop
+                                                                        -- 🎉 no goals
 #align category_theory.nat_iso.unop CategoryTheory.NatIso.unop
 
 end NatIso
@@ -514,8 +570,11 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   counitIso := (NatIso.op e.counitIso).symm
   functor_unitIso_comp X := by
     apply Quiver.Hom.unop_inj
+    -- ⊢ (e.functor.op.map (NatTrans.app (NatIso.op e.unitIso).symm.hom X) ≫ NatTrans …
     dsimp
+    -- ⊢ NatTrans.app e.counitIso.inv (e.functor.obj X.unop) ≫ e.functor.map (NatTran …
     simp
+    -- 🎉 no goals
 #align category_theory.equivalence.op CategoryTheory.Equivalence.op
 
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
@@ -528,8 +587,11 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
   counitIso := (NatIso.unop e.counitIso).symm
   functor_unitIso_comp X := by
     apply Quiver.Hom.op_inj
+    -- ⊢ ((Functor.unop e.functor).map (NatTrans.app (NatIso.unop e.unitIso).symm.hom …
     dsimp
+    -- ⊢ NatTrans.app e.counitIso.inv (e.functor.obj (Opposite.op X)) ≫ e.functor.map …
     simp
+    -- 🎉 no goals
 #align category_theory.equivalence.unop CategoryTheory.Equivalence.unop
 
 end Equivalence
@@ -577,10 +639,14 @@ def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop) where
   invFun g := g.op
   left_inv _ := by
     ext
+    -- ⊢ ((fun g => Iso.op g) ((fun f => Iso.unop f) x✝)).hom = x✝.hom
     rfl
+    -- 🎉 no goals
   right_inv _ := by
     ext
+    -- ⊢ ((fun f => Iso.unop f) ((fun g => Iso.op g) x✝)).hom = x✝.hom
     rfl
+    -- 🎉 no goals
 #align category_theory.iso_op_equiv CategoryTheory.isoOpEquiv
 
 namespace Functor
@@ -599,10 +665,15 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
     NatIso.ofComponents (fun F => F.unop.opUnopIso.op)
       (by
         intro F G f
+        -- ⊢ (𝟭 (C ⥤ D)ᵒᵖ).map f ≫ ((fun F => Iso.op (opUnopIso F.unop)) G).hom = ((fun F …
         dsimp [opUnopIso]
+        -- ⊢ f ≫ (NatIso.ofComponents fun X => Iso.refl (G.unop.obj X)).hom.op = (NatIso. …
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
+        -- ⊢ ((NatIso.ofComponents fun X => Iso.refl (G.unop.obj X)).hom ≫ f.unop).op = ( …
         congr 1
+        -- ⊢ (NatIso.ofComponents fun X => Iso.refl (G.unop.obj X)).hom ≫ f.unop = (NatTr …
         aesop_cat)
+        -- 🎉 no goals
   counitIso := NatIso.ofComponents fun F => F.unopOpIso
 #align category_theory.functor.op_unop_equiv CategoryTheory.Functor.opUnopEquiv
 
@@ -620,10 +691,15 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
     NatIso.ofComponents (fun F => F.unop.rightOpLeftOpIso.op)
       (by
         intro F G η
+        -- ⊢ (𝟭 (Cᵒᵖ ⥤ D)ᵒᵖ).map η ≫ ((fun F => Iso.op (rightOpLeftOpIso F.unop)) G).hom  …
         dsimp
+        -- ⊢ η ≫ (rightOpLeftOpIso G.unop).hom.op = (rightOpLeftOpIso F.unop).hom.op ≫ (N …
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
+        -- ⊢ ((rightOpLeftOpIso G.unop).hom ≫ η.unop).op = (NatTrans.leftOp (NatTrans.rig …
         congr 1
+        -- ⊢ (rightOpLeftOpIso G.unop).hom ≫ η.unop = NatTrans.leftOp (NatTrans.rightOp η …
         aesop_cat)
+        -- 🎉 no goals
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 #align category_theory.functor.left_op_right_op_equiv CategoryTheory.Functor.leftOpRightOpEquiv
 

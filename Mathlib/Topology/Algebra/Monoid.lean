@@ -139,7 +139,9 @@ theorem Filter.Tendsto.mul_const (b : M) {c : M} {f : α → M} {l : Filter α}
 @[to_additive]
 theorem le_nhds_mul (a b : M) : 𝓝 a * 𝓝 b ≤ 𝓝 (a * b) := by
   rw [← map₂_mul, ← map_uncurry_prod, ← nhds_prod_eq]
+  -- ⊢ map (Function.uncurry fun x x_1 => x * x_1) (𝓝 (a, b)) ≤ 𝓝 (a * b)
   exact continuous_mul.tendsto _
+  -- 🎉 no goals
 #align le_nhds_mul le_nhds_mul
 #align le_nhds_add le_nhds_add
 
@@ -205,10 +207,14 @@ def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Sp
   inv := r₂
   val_inv := by
     symm
+    -- ⊢ 1 = r₁ * r₂
     simpa using h₁.mul h₂
+    -- 🎉 no goals
   inv_val := by
     symm
+    -- ⊢ 1 = r₂ * r₁
     simpa using h₂.mul h₁
+    -- 🎉 no goals
 #align filter.tendsto.units Filter.Tendsto.units
 #align filter.tendsto.add_units Filter.Tendsto.addUnits
 
@@ -267,7 +273,9 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
     (hright : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x * x₀) (𝓝 1)) : ContinuousMul M :=
   ⟨by
     rw [continuous_iff_continuousAt]
+    -- ⊢ ∀ (x : M × M), ContinuousAt (fun p => p.fst * p.snd) x
     rintro ⟨x₀, y₀⟩
+    -- ⊢ ContinuousAt (fun p => p.fst * p.snd) (x₀, y₀)
     have key : (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) =
         ((fun x => x₀ * x) ∘ fun x => x * y₀) ∘ uncurry (· * ·) := by
       ext p
@@ -297,8 +305,11 @@ theorem continuousMul_of_comm_of_nhds_one (M : Type u) [CommMonoid M] [Topologic
     (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)) : ContinuousMul M := by
   apply ContinuousMul.of_nhds_one hmul hleft
+  -- ⊢ ∀ (x₀ : M), 𝓝 x₀ = map (fun x => x * x₀) (𝓝 1)
   intro x₀
+  -- ⊢ 𝓝 x₀ = map (fun x => x * x₀) (𝓝 1)
   simp_rw [mul_comm, hleft x₀]
+  -- 🎉 no goals
 #align has_continuous_mul_of_comm_of_nhds_one continuousMul_of_comm_of_nhds_one
 #align has_continuous_add_of_comm_of_nhds_zero continuousAdd_of_comm_of_nhds_zero
 
@@ -318,6 +329,7 @@ theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M
 theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
   simp only [setOf_forall]
+  -- ⊢ IsClosed (⋂ (i : M₁) (i_1 : M₁), {x | x (i * i_1) = x i * x i_1})
   exact
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
@@ -377,6 +389,7 @@ theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M 
     ContinuousMul M :=
   ⟨hf.continuous_iff.2 <| by
       simpa only [(· ∘ ·), map_mul f] using hf.continuous.fst'.mul hf.continuous.snd'⟩
+      -- 🎉 no goals
 #align inducing.has_continuous_mul Inducing.continuousMul
 #align inducing.has_continuous_add Inducing.continuousAdd
 
@@ -477,6 +490,7 @@ theorem exists_open_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
   have : (fun a : M × M => a.1 * a.2) ⁻¹' s ∈ 𝓝 ((1, 1) : M × M) :=
     tendsto_mul (by simpa only [one_mul] using hs)
   simpa only [prod_subset_iff] using exists_nhds_square this
+  -- 🎉 no goals
 #align exists_open_nhds_one_split exists_open_nhds_one_split
 #align exists_open_nhds_zero_half exists_open_nhds_zero_half
 
@@ -492,10 +506,15 @@ theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
 theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
     ∃ V ∈ 𝓝 (1 : M), ∀ {v w s t}, v ∈ V → w ∈ V → s ∈ V → t ∈ V → v * w * s * t ∈ u := by
   rcases exists_nhds_one_split hu with ⟨W, W1, h⟩
+  -- ⊢ ∃ V, V ∈ 𝓝 1 ∧ ∀ {v w s t : M}, v ∈ V → w ∈ V → s ∈ V → t ∈ V → v * w * s *  …
   rcases exists_nhds_one_split W1 with ⟨V, V1, h'⟩
+  -- ⊢ ∃ V, V ∈ 𝓝 1 ∧ ∀ {v w s t : M}, v ∈ V → w ∈ V → s ∈ V → t ∈ V → v * w * s *  …
   use V, V1
+  -- ⊢ ∀ {v w s t : M}, v ∈ V → w ∈ V → s ∈ V → t ∈ V → v * w * s * t ∈ u
   intro v w s t v_in w_in s_in t_in
+  -- ⊢ v * w * s * t ∈ u
   simpa only [mul_assoc] using h _ (h' v v_in w w_in) _ (h' s s_in t t_in)
+  -- 🎉 no goals
 #align exists_nhds_one_split4 exists_nhds_one_split4
 #align exists_nhds_zero_quarter exists_nhds_zero_quarter
 
@@ -506,16 +525,22 @@ such that `VV ⊆ U`. -/
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
   rcases exists_open_nhds_one_split hU with ⟨V, Vo, V1, hV⟩
+  -- ⊢ ∃ V, IsOpen V ∧ 1 ∈ V ∧ V * V ⊆ U
   use V, Vo, V1
+  -- ⊢ V * V ⊆ U
   rintro _ ⟨x, y, hx, hy, rfl⟩
+  -- ⊢ (fun x x_1 => x * x_1) x y ∈ U
   exact hV _ hx _ hy
+  -- 🎉 no goals
 #align exists_open_nhds_one_mul_subset exists_open_nhds_one_mul_subset
 #align exists_open_nhds_zero_add_subset exists_open_nhds_zero_add_subset
 
 @[to_additive]
 theorem IsCompact.mul {s t : Set M} (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s * t) := by
   rw [← image_mul_prod]
+  -- ⊢ IsCompact ((fun x => x.fst * x.snd) '' s ×ˢ t)
   exact (hs.prod ht).image continuous_mul
+  -- 🎉 no goals
 #align is_compact.mul IsCompact.mul
 #align is_compact.add IsCompact.add
 
@@ -525,8 +550,10 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
       (∀ i ∈ l, Tendsto (f i) x (𝓝 (a i))) →
         Tendsto (fun b => (l.map fun c => f c b).prod) x (𝓝 (l.map a).prod)
   | [], _ => by simp [tendsto_const_nhds]
+                -- 🎉 no goals
   | f::l, h => by
     simp only [List.map_cons, List.prod_cons]
+    -- ⊢ Tendsto (fun b => f✝ f b * List.prod (List.map (fun c => f✝ c b) l)) x (𝓝 (a …
     exact
       (h f (List.mem_cons_self _ _)).mul
         (tendsto_list_prod l fun c hc => h c (List.mem_cons_of_mem _ hc))
@@ -546,20 +573,29 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
     (h : ∀ i ∈ l, ContinuousOn (f i) t) :
     ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
   intro x hx
+  -- ⊢ ContinuousWithinAt (fun a => List.prod (List.map (fun i => f i a) l)) t x
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
+  -- ⊢ ContinuousAt (restrict t fun a => List.prod (List.map (fun i => f i a) l)) { …
   refine' tendsto_list_prod _ fun i hi => _
+  -- ⊢ Tendsto (fun b => f i ↑b) (𝓝 { val := x, property := hx }) (𝓝 (f i ↑{ val := …
   specialize h i hi x hx
+  -- ⊢ Tendsto (fun b => f i ↑b) (𝓝 { val := x, property := hx }) (𝓝 (f i ↑{ val := …
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx] at h
+  -- ⊢ Tendsto (fun b => f i ↑b) (𝓝 { val := x, property := hx }) (𝓝 (f i ↑{ val := …
   exact h
+  -- 🎉 no goals
 #align continuous_on_list_prod continuousOn_list_prod
 #align continuous_on_list_sum continuousOn_list_sum
 
 @[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
+            -- 🎉 no goals
   | k + 1 => by
     simp only [pow_succ]
+    -- ⊢ Continuous fun a => a * a ^ k
     exact continuous_id.mul (continuous_pow _)
+    -- 🎉 no goals
 #align continuous_pow continuous_pow
 #align continuous_nsmul continuous_nsmul
 
@@ -623,8 +659,11 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_left b))
+  -- ⊢ Tendsto ((fun b_1 => b * b_1) ∘ fun x => a * x) (cocompact M) (cocompact M)
   simp only [comp_mul_left, ha, one_mul]
+  -- ⊢ Tendsto (fun x => x) (cocompact M) (cocompact M)
   exact Filter.tendsto_id
+  -- 🎉 no goals
   -- Porting note: changed proof, original proof was:
   /-refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
@@ -637,8 +676,11 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
     Filter.Tendsto (fun x : M => x * a) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_right b))
+  -- ⊢ Tendsto ((fun b_1 => b_1 * b) ∘ fun x => x * a) (cocompact M) (cocompact M)
   simp only [comp_mul_right, ha, mul_one]
+  -- ⊢ Tendsto (fun x => x) (cocompact M) (cocompact M)
   exact Filter.tendsto_id
+  -- 🎉 no goals
   -- Porting note: changed proof
 #align filter.tendsto_cocompact_mul_right Filter.tendsto_cocompact_mul_right
 
@@ -652,7 +694,9 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
     simp (config := { singlePass := true }) only [← smul_one_mul q (_ : A)]
+    -- ⊢ Continuous fun x => q • 1 * x
     exact continuous_const.mul continuous_id
+    -- 🎉 no goals
 #align is_scalar_tower.has_continuous_const_smul IsScalarTower.continuousConstSMul
 #align vadd_assoc_class.has_continuous_const_vadd VAddAssocClass.continuousConstVAdd
 
@@ -668,7 +712,9 @@ instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Mono
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
     simp (config := { singlePass := true }) only [← mul_smul_one q (_ : A)]
+    -- ⊢ Continuous fun x => x * q • 1
     exact continuous_id.mul continuous_const
+    -- 🎉 no goals
 #align smul_comm_class.has_continuous_const_smul SMulCommClass.continuousConstSMul
 #align vadd_comm_class.has_continuous_const_vadd VAddCommClass.continuousConstVAdd
 
@@ -729,7 +775,9 @@ theorem tendsto_multiset_prod {f : ι → α → M} {x : Filter α} {a : ι → 
     (∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) →
       Tendsto (fun b => (s.map fun c => f c b).prod) x (𝓝 (s.map a).prod) := by
   rcases s with ⟨l⟩
+  -- ⊢ (∀ (i : ι), i ∈ Quot.mk Setoid.r l → Tendsto (f i) x (𝓝 (a i))) → Tendsto (f …
   simpa using tendsto_list_prod l
+  -- 🎉 no goals
 #align tendsto_multiset_prod tendsto_multiset_prod
 #align tendsto_multiset_sum tendsto_multiset_sum
 
@@ -745,7 +793,9 @@ theorem tendsto_finset_prod {f : ι → α → M} {x : Filter α} {a : ι → M}
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => (s.map fun i => f i a).prod := by
   rcases s with ⟨l⟩
+  -- ⊢ (∀ (i : ι), i ∈ Quot.mk Setoid.r l → Continuous (f i)) → Continuous fun a => …
   simpa using continuous_list_prod l
+  -- 🎉 no goals
 #align continuous_multiset_prod continuous_multiset_prod
 #align continuous_multiset_sum continuous_multiset_sum
 
@@ -753,7 +803,9 @@ theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
 theorem continuousOn_multiset_prod {f : ι → X → M} (s : Multiset ι) {t : Set X} :
     (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => (s.map fun i => f i a).prod) t := by
   rcases s with ⟨l⟩
+  -- ⊢ (∀ (i : ι), i ∈ Quot.mk Setoid.r l → ContinuousOn (f i) t) → ContinuousOn (f …
   simpa using continuousOn_list_prod l
+  -- 🎉 no goals
 #align continuous_on_multiset_prod continuousOn_multiset_prod
 #align continuous_on_multiset_sum continuousOn_multiset_sum
 
@@ -775,9 +827,13 @@ theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
+  -- ⊢ ∀ᶠ (x : X) in l, ∀ (i : ι), i ∈ s → f i x = g i x
   · rwa [eventually_all_finset]
+    -- 🎉 no goals
   filter_upwards [hs] with x hx
+  -- ⊢ Finset.prod s (fun i => f i) x = Finset.prod s (fun i => g i) x
   simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
+  -- 🎉 no goals
 #align eventually_eq_prod eventuallyEq_prod
 #align eventually_eq_sum eventuallyEq_sum
 
@@ -788,9 +844,13 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : �
     (hf : LocallyFinite fun i => mulSupport <| f i) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, (mulSupport fun i => f i x) ⊆ I := by
   rcases hf x₀ with ⟨U, hxU, hUf⟩
+  -- ⊢ ∃ I, ∀ᶠ (x : X) in 𝓝 x₀, (mulSupport fun i => f i x) ⊆ ↑I
   refine' ⟨hUf.toFinset, mem_of_superset hxU fun y hy i hi => _⟩
+  -- ⊢ i ∈ ↑(Finite.toFinset hUf)
   rw [hUf.coe_toFinset]
+  -- ⊢ i ∈ {i | Set.Nonempty ((fun i => mulSupport (f i)) i ∩ U)}
   exact ⟨y, hi, hy⟩
+  -- 🎉 no goals
 #align locally_finite.exists_finset_mul_support LocallyFinite.exists_finset_mulSupport
 #align locally_finite.exists_finset_support LocallyFinite.exists_finset_support
 
@@ -807,9 +867,13 @@ theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → 
 theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ i, f i x := by
   refine' continuous_iff_continuousAt.2 fun x => _
+  -- ⊢ ContinuousAt (fun x => ∏ᶠ (i : ι), f i x) x
   rcases finprod_eventually_eq_prod hf x with ⟨s, hs⟩
+  -- ⊢ ContinuousAt (fun x => ∏ᶠ (i : ι), f i x) x
   refine' ContinuousAt.congr _ (EventuallyEq.symm hs)
+  -- ⊢ ContinuousAt (fun x => ∏ i in s, f i x) x
   exact tendsto_finset_prod _ fun i _ => (hc i).continuousAt
+  -- 🎉 no goals
 #align continuous_finprod continuous_finprod
 #align continuous_finsum continuous_finsum
 
@@ -818,7 +882,9 @@ theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     Continuous fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
+  -- ⊢ Continuous fun x => ∏ᶠ (j : { i // p i }), f (↑j) x
   exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  -- 🎉 no goals
 #align continuous_finprod_cond continuous_finprod_cond
 #align continuous_finsum_cond continuous_finsum_cond
 
@@ -848,7 +914,9 @@ theorem continuousMul_sInf {ts : Set (TopologicalSpace M)}
 theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
     (h' : ∀ i, @ContinuousMul M (ts i) _) : @ContinuousMul M (⨅ i, ts i) _ := by
   rw [← sInf_range]
+  -- ⊢ ContinuousMul M
   exact continuousMul_sInf (Set.forall_range_iff.mpr h')
+  -- 🎉 no goals
 #align has_continuous_mul_infi continuousMul_iInf
 #align has_continuous_add_infi continuousAdd_iInf
 
@@ -856,8 +924,13 @@ theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
 theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMul M t₁ _)
     (h₂ : @ContinuousMul M t₂ _) : @ContinuousMul M (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
+  -- ⊢ ContinuousMul M
   refine' continuousMul_iInf fun b => _
+  -- ⊢ ContinuousMul M
   cases b <;> assumption
+  -- ⊢ ContinuousMul M
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align has_continuous_mul_inf continuousMul_inf
 #align has_continuous_add_inf continuousAdd_inf
 

@@ -163,8 +163,11 @@ def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
       apply CompleteSemilatticeSup.sSup_le
+      -- ⊢ ∀ (b : α), b ∈ Set.range U → b ≤ s.pt
       rintro _ ⟨j, rfl⟩
+      -- ⊢ U j ≤ s.pt
       exact (s.ι.app (single j)).le)
+      -- 🎉 no goals
 #align category_theory.pairwise.cocone_is_colimit CategoryTheory.Pairwise.coconeIsColimit
 
 end

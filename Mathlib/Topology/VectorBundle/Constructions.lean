@@ -49,8 +49,11 @@ theorem trivialization.coordChangeL (b : B) :
     (trivialization B F).coordChangeL 𝕜 (trivialization B F) b =
       ContinuousLinearEquiv.refl 𝕜 F := by
   ext v
+  -- ⊢ ↑(Trivialization.coordChangeL 𝕜 (trivialization B F) (trivialization B F) b) …
   rw [Trivialization.coordChangeL_apply']
+  -- ⊢ (↑(trivialization B F) (↑(LocalHomeomorph.symm (trivialization B F).toLocalH …
   exacts [rfl, ⟨mem_univ _, mem_univ _⟩]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align bundle.trivial.trivialization.coord_changeL Bundle.Trivial.trivialization.coordChangeL
 
@@ -59,12 +62,18 @@ variable (𝕜)
 instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
   trivialization_linear' e he := by
     rw [eq_trivialization B F e]
+    -- ⊢ Trivialization.IsLinear 𝕜 (trivialization B F)
     infer_instance
+    -- 🎉 no goals
   continuousOn_coordChange' e e' he he' := by
     obtain rfl := eq_trivialization B F e
+    -- ⊢ ContinuousOn (fun b => ↑(Trivialization.coordChangeL 𝕜 (trivialization B F)  …
     obtain rfl := eq_trivialization B F e'
+    -- ⊢ ContinuousOn (fun b => ↑(Trivialization.coordChangeL 𝕜 (trivialization B F)  …
     simp only [trivialization.coordChangeL]
+    -- ⊢ ContinuousOn (fun b => ↑(ContinuousLinearEquiv.refl 𝕜 F)) ((trivialization B …
     exact continuous_const.continuousOn
+    -- 🎉 no goals
 #align bundle.trivial.vector_bundle Bundle.Trivial.vectorBundle
 
 end Bundle.Trivial
@@ -96,12 +105,15 @@ theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLin
     ((e₁.prod e₂).coordChangeL 𝕜 (e₁'.prod e₂') b : F₁ × F₂ →L[𝕜] F₁ × F₂) =
       (e₁.coordChangeL 𝕜 e₁' b : F₁ →L[𝕜] F₁).prodMap (e₂.coordChangeL 𝕜 e₂' b) := by
   rw [ContinuousLinearMap.ext_iff, ContinuousLinearMap.coe_prodMap']
+  -- ⊢ ∀ (x : F₁ × F₂), ↑↑(coordChangeL 𝕜 (prod e₁ e₂) (prod e₁' e₂') b) x = Prod.m …
   rintro ⟨v₁, v₂⟩
+  -- ⊢ ↑↑(coordChangeL 𝕜 (prod e₁ e₂) (prod e₁' e₂') b) (v₁, v₂) = Prod.map ↑↑(coor …
   show
     (e₁.prod e₂).coordChangeL 𝕜 (e₁'.prod e₂') b (v₁, v₂) =
       (e₁.coordChangeL 𝕜 e₁' b v₁, e₂.coordChangeL 𝕜 e₂' b v₂)
   rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
   exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align trivialization.coord_changeL_prod Trivialization.coordChangeL_prod
 
@@ -128,21 +140,35 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
     VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) where
   trivialization_linear' := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩; skip
+    -- ⊢ Trivialization.IsLinear 𝕜 (Trivialization.prod e₁ e₂)
+                                      -- ⊢ Trivialization.IsLinear 𝕜 (Trivialization.prod e₁ e₂)
     infer_instance
+    -- 🎉 no goals
   continuousOn_coordChange' := by
     rintro _ _ ⟨e₁, e₂, he₁, he₂, rfl⟩ ⟨e₁', e₂', he₁', he₂', rfl⟩; skip
+    -- ⊢ ContinuousOn (fun b => ↑(coordChangeL 𝕜 (Trivialization.prod e₁ e₂) (Trivial …
+                                                                    -- ⊢ ContinuousOn (fun b => ↑(coordChangeL 𝕜 (Trivialization.prod e₁ e₂) (Trivial …
     refine' (((continuousOn_coordChange 𝕜 e₁ e₁').mono _).prod_mapL 𝕜
       ((continuousOn_coordChange 𝕜 e₂ e₂').mono _)).congr _ <;>
       dsimp only [baseSet_prod, mfld_simps]
+      -- ⊢ e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet) ⊆ e₁.baseSet ∩ e₁'.bas …
+      -- ⊢ e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet) ⊆ e₂.baseSet ∩ e₂'.bas …
+      -- ⊢ EqOn (fun b => ↑(coordChangeL 𝕜 (Trivialization.prod e₁ e₂) (Trivialization. …
     · mfld_set_tac
+      -- 🎉 no goals
     · mfld_set_tac
+      -- 🎉 no goals
     · rintro b hb
+      -- ⊢ (fun b => ↑(coordChangeL 𝕜 (Trivialization.prod e₁ e₂) (Trivialization.prod  …
       rw [ContinuousLinearMap.ext_iff]
+      -- ⊢ ∀ (x : F₁ × F₂), ↑((fun b => ↑(coordChangeL 𝕜 (Trivialization.prod e₁ e₂) (T …
       rintro ⟨v₁, v₂⟩
+      -- ⊢ ↑((fun b => ↑(coordChangeL 𝕜 (Trivialization.prod e₁ e₂) (Trivialization.pro …
       show (e₁.prod e₂).coordChangeL 𝕜 (e₁'.prod e₂') b (v₁, v₂) =
         (e₁.coordChangeL 𝕜 e₁' b v₁, e₂.coordChangeL 𝕜 e₂' b v₂)
       rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
       exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
+      -- 🎉 no goals
 #align vector_bundle.prod VectorBundle.prod
 
 variable {𝕜 F₁ E₁ F₂ E₂}
@@ -154,9 +180,13 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
     (e₁.prod e₂).continuousLinearEquivAt 𝕜 x hx =
       (e₁.continuousLinearEquivAt 𝕜 x hx.1).prod (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
   ext v : 2
+  -- ⊢ ↑(continuousLinearEquivAt 𝕜 (prod e₁ e₂) x hx) v = ↑(ContinuousLinearEquiv.p …
   obtain ⟨v₁, v₂⟩ := v
+  -- ⊢ ↑(continuousLinearEquivAt 𝕜 (prod e₁ e₂) x hx) (v₁, v₂) = ↑(ContinuousLinear …
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
+  -- ⊢ (fun y => (↑{ toLocalHomeomorph := { toLocalEquiv := { toFun := Prod.toFun'  …
   exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) : _)
+  -- 🎉 no goals
 #align trivialization.continuous_linear_equiv_at_prod Trivialization.continuousLinearEquivAt_prodₓ
 
 end
@@ -185,15 +215,23 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     (f : K) : VectorBundle 𝕜 F ((f : B' → B) *ᵖ E) where
   trivialization_linear' := by
     rintro _ ⟨e, he, rfl⟩
+    -- ⊢ Trivialization.IsLinear 𝕜 (Trivialization.pullback e f)
     infer_instance
+    -- 🎉 no goals
   continuousOn_coordChange' := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
+    -- ⊢ ContinuousOn (fun b => ↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullb …
     refine' ((continuousOn_coordChange 𝕜 e e').comp
       (map_continuous f).continuousOn fun b hb => hb).congr _
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
+    -- ⊢ (fun b => ↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullback e f) (Tri …
+                                                  -- ⊢ ↑((fun b => ↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullback e f) (T …
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
+    -- ⊢ ↑(Trivialization.coordChangeL 𝕜 (Trivialization.pullback e f) (Trivializatio …
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
+    -- ⊢ (↑(Trivialization.pullback e' f) (↑(LocalHomeomorph.symm (Trivialization.pul …
     exacts [rfl, hb]
+    -- 🎉 no goals
 #align vector_bundle.pullback VectorBundle.pullback
 
 end

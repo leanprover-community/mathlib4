@@ -113,12 +113,16 @@ theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList
 @[to_additive (attr := simp)]
 theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toList).join := by
   induction xs <;> simp [*, List.join]
+  -- ⊢ ↑toList (List.prod []) = List.join (List.map ↑toList [])
+                   -- 🎉 no goals
+                   -- 🎉 no goals
 #align free_monoid.to_list_prod FreeMonoid.toList_prod
 #align free_add_monoid.to_list_sum FreeAddMonoid.toList_sum
 
 @[to_additive (attr := simp)]
 theorem ofList_join (xs : List (List α)) : ofList xs.join = (xs.map ofList).prod :=
   toList.injective <| by simp
+                         -- 🎉 no goals
 #align free_monoid.of_list_join FreeMonoid.ofList_join
 #align free_add_monoid.of_list_join FreeAddMonoid.ofList_join
 
@@ -200,6 +204,7 @@ theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid �
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ recOn l (f.map_one.trans g.map_one.symm)
     (fun x xs hxs ↦ by simp only [h, hxs, MonoidHom.map_mul])
+                       -- 🎉 no goals
 #align free_monoid.hom_eq FreeMonoid.hom_eq
 #align free_add_monoid.hom_eq FreeAddMonoid.hom_eq
 
@@ -228,6 +233,7 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
   { toFun := fun l ↦ prodAux ((toList l).map f)
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
+                             -- 🎉 no goals
   invFun f x := f (of x)
   left_inv f := rfl
   right_inv f := hom_eq fun x ↦ rfl
@@ -268,7 +274,9 @@ theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.a
 @[to_additive]
 theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) := by
   ext
+  -- ⊢ ↑(MonoidHom.comp g (↑lift f)) (of x✝) = ↑(↑lift (↑g ∘ f)) (of x✝)
   simp
+  -- 🎉 no goals
 #align free_monoid.comp_lift FreeMonoid.comp_lift
 #align free_add_monoid.comp_lift FreeAddMonoid.comp_lift
 

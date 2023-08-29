@@ -77,21 +77,35 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   have := ParacompactSpace.locallyFinite_refinement (range u) (fun r ↦ (r : Set X))
     (SetCoe.forall.2 <| forall_range_iff.2 uo) (by rwa [← sUnion_range, Subtype.range_coe])
   simp only [SetCoe.exists, exists_range_iff', iUnion_eq_univ_iff, exists_prop] at this
+  -- ⊢ ∃ v, (∀ (a : ι), IsOpen (v a)) ∧ ⋃ (i : ι), v i = univ ∧ LocallyFinite v ∧ ∀ …
   choose α t hto hXt htf ind hind using this
+  -- ⊢ ∃ v, (∀ (a : ι), IsOpen (v a)) ∧ ⋃ (i : ι), v i = univ ∧ LocallyFinite v ∧ ∀ …
   choose t_inv ht_inv using hXt
+  -- ⊢ ∃ v, (∀ (a : ι), IsOpen (v a)) ∧ ⋃ (i : ι), v i = univ ∧ LocallyFinite v ∧ ∀ …
   choose U hxU hU using htf
+  -- ⊢ ∃ v, (∀ (a : ι), IsOpen (v a)) ∧ ⋃ (i : ι), v i = univ ∧ LocallyFinite v ∧ ∀ …
   -- Send each `i` to the union of `t a` over `a ∈ ind ⁻¹' {i}`
   refine' ⟨fun i ↦ ⋃ (a : α) (_ : ind a = i), t a, _, _, _, _⟩
   · exact fun a ↦ isOpen_iUnion fun a ↦ isOpen_iUnion fun _ ↦ hto a
+    -- 🎉 no goals
   · simp only [eq_univ_iff_forall, mem_iUnion]
+    -- ⊢ ∀ (x : X), ∃ i i_1 i, x ∈ t i_1
     exact fun x ↦ ⟨ind (t_inv x), _, rfl, ht_inv _⟩
+    -- 🎉 no goals
   · refine' fun x ↦ ⟨U x, hxU x, ((hU x).image ind).subset _⟩
+    -- ⊢ {i | Set.Nonempty ((fun i => ⋃ (a : α) (_ : ind a = i), t a) i ∩ U x)} ⊆ ind …
     simp only [subset_def, mem_iUnion, mem_setOf_eq, Set.Nonempty, mem_inter_iff]
+    -- ⊢ ∀ (x_1 : ι), (∃ x_2, (∃ i i_1, x_2 ∈ t i) ∧ x_2 ∈ U x) → x_1 ∈ ind '' {i | ∃ …
     rintro i ⟨y, ⟨a, rfl, hya⟩, hyU⟩
+    -- ⊢ ind a ∈ ind '' {i | ∃ x_1, x_1 ∈ t i ∧ x_1 ∈ U x}
     exact mem_image_of_mem _ ⟨y, hya, hyU⟩
+    -- 🎉 no goals
   · simp only [subset_def, mem_iUnion]
+    -- ⊢ ∀ (a : ι) (x : X), (∃ i i_1, x ∈ t i) → x ∈ u a
     rintro i x ⟨a, rfl, hxa⟩
+    -- ⊢ x ∈ u (ind a)
     exact hind _ hxa
+    -- 🎉 no goals
 #align precise_refinement precise_refinement
 
 /-- In a paracompact space, every open covering of a closed set admits a locally finite refinement
@@ -108,21 +122,28 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
       uc with
     ⟨v, vo, vc, vf, vu⟩
   refine' ⟨v ∘ some, fun i ↦ vo _, _, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
+  -- ⊢ s ⊆ ⋃ (i : ι), (v ∘ some) i
   · simp only [iUnion_option, ← compl_subset_iff_union] at vc
+    -- ⊢ s ⊆ ⋃ (i : ι), (v ∘ some) i
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
+    -- 🎉 no goals
 #align precise_refinement_set precise_refinement_set
 
 theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
     ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
     choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
+    -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
     simp only [← hU] at hu ⊢
+    -- ⊢ ∃ β t h h, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ e ⁻¹' U a
     have heU : range e ⊆ ⋃ i, U i := by
       simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using hu
     rcases precise_refinement_set he.closed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
+    -- ⊢ ∃ β t h h, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ e ⁻¹' U a
     refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
+    -- 🎉 no goals
 
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
@@ -139,25 +160,39 @@ instance (priority := 200) [CompactSpace X] [ParacompactSpace Y] : ParacompactSp
         IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ×ˢ V ⊆ s a := fun x y ↦
       (iUnion_eq_univ_iff.1 hu (x, y)).imp fun a ha ↦ isOpen_prod_iff.1 (ho a) x y ha
     choose a U V hUo hVo hxU hyV hUV using this
+    -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
     choose T hT using fun y ↦ CompactSpace.elim_nhds_subcover (U · y) fun x ↦
       (hUo x y).mem_nhds (hxU x y)
     set W : Y → Set Y := fun y ↦ ⋂ x ∈ T y, V x y
+    -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
     have hWo : ∀ y, IsOpen (W y) := fun y ↦ isOpen_biInter_finset fun _ _ ↦ hVo _ _
+    -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
     have hW : ∀ y, y ∈ W y := fun _ ↦ mem_iInter₂.2 fun _ _ ↦ hyV _ _
+    -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
     rcases precise_refinement W hWo (iUnion_eq_univ_iff.2 fun y ↦ ⟨y, hW y⟩)
       with ⟨E, hEo, hE, hEf, hEA⟩
     refine ⟨Σ y, T y, fun z ↦ U z.2.1 z.1 ×ˢ E z.1, fun _ ↦ (hUo _ _).prod (hEo _),
       iUnion_eq_univ_iff.2 fun (x, y) ↦ ?_, fun (x, y) ↦ ?_, fun ⟨y, x, hx⟩ ↦ ?_⟩
     · rcases iUnion_eq_univ_iff.1 hE y with ⟨b, hb⟩
+      -- ⊢ ∃ i, (x, y) ∈ (fun z => U (↑z.snd) z.fst ×ˢ E z.fst) i
       rcases iUnion₂_eq_univ_iff.1 (hT b) x with ⟨a, ha, hx⟩
+      -- ⊢ ∃ i, (x, y) ∈ (fun z => U (↑z.snd) z.fst ×ˢ E z.fst) i
       exact ⟨⟨b, a, ha⟩, hx, hb⟩
+      -- 🎉 no goals
     · rcases hEf y with ⟨t, ht, htf⟩
+      -- ⊢ ∃ t, t ∈ 𝓝 (x, y) ∧ Set.Finite {i | Set.Nonempty ((fun z => U (↑z.snd) z.fst …
       refine ⟨univ ×ˢ t, prod_mem_nhds univ_mem ht, ?_⟩
+      -- ⊢ Set.Finite {i | Set.Nonempty ((fun z => U (↑z.snd) z.fst ×ˢ E z.fst) i ∩ uni …
       refine (htf.biUnion fun y _ ↦ finite_range (Sigma.mk y)).subset ?_
+      -- ⊢ {i | Set.Nonempty ((fun z => U (↑z.snd) z.fst ×ˢ E z.fst) i ∩ univ ×ˢ t)} ⊆  …
       rintro ⟨b, a, ha⟩ ⟨⟨c, d⟩, ⟨-, hd : d ∈ E b⟩, -, hdt : d ∈ t⟩
+      -- ⊢ { fst := b, snd := { val := a, property := ha } } ∈ ⋃ (i : Y) (_ : i ∈ {i |  …
       exact mem_iUnion₂.2 ⟨b, ⟨d, hd, hdt⟩, mem_range_self _⟩
+      -- 🎉 no goals
     · refine ⟨a x y, (Set.prod_mono Subset.rfl ?_).trans (hUV x y)⟩
+      -- ⊢ E { fst := y, snd := { val := x, property := hx } }.fst ⊆ V x y
       exact (hEA _).trans (iInter₂_subset x hx)
+      -- 🎉 no goals
 
 instance (priority := 200) [ParacompactSpace X] [CompactSpace Y] : ParacompactSpace (X × Y) :=
   (Homeomorph.prodComm X Y).paracompactSpace_iff.2 inferInstance
@@ -167,10 +202,13 @@ instance (priority := 200) [ParacompactSpace X] [CompactSpace Y] : ParacompactSp
 instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X := by
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
   refine' ⟨fun ι s ho hu ↦ _⟩
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   rcases isCompact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   refine' ⟨(T : Set ι), fun t ↦ s t, fun t ↦ ho _, _, locallyFinite_of_finite _,
     fun t ↦ ⟨t, Subset.rfl⟩⟩
   simpa only [iUnion_coe_set, ← univ_subset_iff]
+  -- 🎉 no goals
 #align paracompact_of_compact paracompact_of_compact
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space, let `s` be a closed set
@@ -279,12 +317,15 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [LocallyCompactS
 instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [LocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] : ParacompactSpace X := by
   refine' ⟨fun α s ho hc ↦ _⟩
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   choose i hi using iUnion_eq_univ_iff.1 hc
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   have : ∀ x : X, (𝓝 x).HasBasis (fun t : Set X ↦ (x ∈ t ∧ IsOpen t) ∧ t ⊆ s (i x)) id :=
     fun x : X ↦ (nhds_basis_opens x).restrict_subset (IsOpen.mem_nhds (ho (i x)) (hi x))
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis this with
     ⟨β, c, t, hto, htc, htf⟩
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
+  -- 🎉 no goals
 #align paracompact_of_locally_compact_sigma_compact paracompact_of_locallyCompact_sigmaCompact
 
 /- Dieudonné's theorem: a paracompact Hausdorff space is normal. Formalization is based on the proof
@@ -309,9 +350,11 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
     exact fun y hyu hyv ↦ (huv i).le_bot ⟨hsub _ hyu, hyv⟩
   -- Now we apply the lemma twice: first to `s` and `t`, then to `t` and each point of `s`.
   refine' ⟨fun s t hs ht hst ↦ this s t hs ht fun x hx ↦ _⟩
+  -- ⊢ ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v
   rcases this t {x} ht isClosed_singleton fun y hy ↦ (by
     simp_rw [singleton_subset_iff]
     exact t2_separation (hst.symm.ne_of_mem hy hx))
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
+  -- 🎉 no goals
 #align normal_of_paracompact_t2 normal_of_paracompact_t2

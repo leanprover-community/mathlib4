@@ -81,11 +81,15 @@ variable (S : DiscreteQuotient X)
 -- porting note: new lemma
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
+                            -- 🎉 no goals
 
 /-- Construct a discrete quotient from a clopen set. -/
 def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
+                           -- ⊢ IsOpen (setOf (Setoid.Rel { r := fun x y => x ∈ A ↔ y ∈ A, iseqv := (_ : Equ …
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
 #align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
 
 theorem refl : ∀ x, S.Rel x x := S.refl'
@@ -129,7 +133,9 @@ theorem proj_continuous : Continuous S.proj :=
 instance : DiscreteTopology S :=
   singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
     rw [← S.proj_quotientMap.isOpen_preimage, fiber_eq]
+    -- ⊢ IsOpen (setOf (Setoid.Rel S.toSetoid x))
     exact S.isOpen_setOf_rel _
+    -- 🎉 no goals
 
 theorem proj_isLocallyConstant : IsLocallyConstant S.proj :=
   (IsLocallyConstant.iff_continuous S.proj).2 S.proj_continuous
@@ -149,7 +155,9 @@ theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
 
 theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
   rw [← fiber_eq]
+  -- ⊢ IsClopen (proj S ⁻¹' {proj S x})
   apply isClopen_preimage
+  -- 🎉 no goals
 #align discrete_quotient.is_clopen_set_of_rel DiscreteQuotient.isClopen_setOf_rel
 
 instance : Inf (DiscreteQuotient X) :=
@@ -161,6 +169,7 @@ instance : SemilatticeInf (DiscreteQuotient X) :=
 instance : OrderTop (DiscreteQuotient X) where
   top := ⟨⊤, fun _ => isOpen_univ⟩
   le_top a := by tauto
+                 -- 🎉 no goals
 
 instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
@@ -174,6 +183,8 @@ instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
 instance : Subsingleton (⊤ : DiscreteQuotient X) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound trivial
+              -- ⊢ Quot.mk Setoid.r a✝¹ = Quot.mk Setoid.r a✝
+                              -- 🎉 no goals
 
 section Comap
 
@@ -196,6 +207,7 @@ theorem comap_comp (S : DiscreteQuotient Z) : S.comap (g.comp f) = (S.comap g).c
 
 @[mono]
 theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
+                                                                                        -- 🎉 no goals
 #align discrete_quotient.comap_mono DiscreteQuotient.comap_mono
 
 end Comap
@@ -212,17 +224,22 @@ def ofLE (h : A ≤ B) : A → B :=
 @[simp]
 theorem ofLE_refl : ofLE (le_refl A) = id := by
   ext ⟨⟩
+  -- ⊢ ofLE (_ : A ≤ A) (Quot.mk Setoid.r a✝) = id (Quot.mk Setoid.r a✝)
   rfl
+  -- 🎉 no goals
 #align discrete_quotient.of_le_refl DiscreteQuotient.ofLE_refl
 
 theorem ofLE_refl_apply (a : A) : ofLE (le_refl A) a = a := by simp
+                                                               -- 🎉 no goals
 #align discrete_quotient.of_le_refl_apply DiscreteQuotient.ofLE_refl_apply
 
 @[simp]
 theorem ofLE_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) :
     ofLE h₂ (ofLE h₁ x) = ofLE (h₁.trans h₂) x := by
   rcases x with ⟨⟩
+  -- ⊢ ofLE h₂ (ofLE h₁ (Quot.mk Setoid.r a✝)) = ofLE (_ : A ≤ C) (Quot.mk Setoid.r …
   rfl
+  -- 🎉 no goals
 #align discrete_quotient.of_le_of_le DiscreteQuotient.ofLE_ofLE
 
 @[simp]
@@ -254,8 +271,11 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
     { toSetoid := connectedComponentSetoid X
       isOpen_setOf_rel := fun x => by
         convert isOpen_connectedComponent (x := x)
+        -- ⊢ setOf (Setoid.Rel (connectedComponentSetoid X) x) = connectedComponent x
         ext y
+        -- ⊢ y ∈ setOf (Setoid.Rel (connectedComponentSetoid X) x) ↔ y ∈ connectedCompone …
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
+        -- 🎉 no goals
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
     (S.isClopen_setOf_rel x).connectedComponent_subset (S.refl _) <| h.symm ▸ mem_connectedComponent
 
@@ -266,6 +286,7 @@ theorem proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
 #align discrete_quotient.proj_bot_eq DiscreteQuotient.proj_bot_eq
 
 theorem proj_bot_inj [DiscreteTopology X] {x y : X} : proj ⊥ x = proj ⊥ y ↔ x = y := by simp
+                                                                                        -- 🎉 no goals
 #align discrete_quotient.proj_bot_inj DiscreteQuotient.proj_bot_inj
 
 theorem proj_bot_injective [DiscreteTopology X] : Injective (⊥ : DiscreteQuotient X).proj :=
@@ -297,6 +318,7 @@ theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
 #align discrete_quotient.le_comap_id_iff DiscreteQuotient.leComap_id_iff
 
 theorem LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
+                                                                                    -- 🎉 no goals
 #align discrete_quotient.le_comap.comp DiscreteQuotient.LEComap.comp
 
 @[mono]
@@ -324,20 +346,26 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 
 @[simp]
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
+                                                 -- ⊢ map (ContinuousMap.id X) (_ : LEComap (ContinuousMap.id X) A A) (Quot.mk Set …
+                                                         -- 🎉 no goals
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
 -- porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
+  -- ⊢ map (ContinuousMap.comp g f) (_ : LEComap (ContinuousMap.comp g f) A C) (Quo …
   rfl
+  -- 🎉 no goals
 #align discrete_quotient.map_comp DiscreteQuotient.map_comp
 
 @[simp]
 theorem ofLE_map (cond : LEComap f A B) (h : B ≤ B') (a : A) :
     ofLE h (map f cond a) = map f (cond.mono le_rfl h) a := by
   rcases a with ⟨⟩
+  -- ⊢ ofLE h (map f cond (Quot.mk Setoid.r a✝)) = map f (_ : LEComap f A B') (Quot …
   rfl
+  -- 🎉 no goals
 #align discrete_quotient.of_le_map DiscreteQuotient.ofLE_map
 
 @[simp]
@@ -350,7 +378,9 @@ theorem ofLE_comp_map (cond : LEComap f A B) (h : B ≤ B') :
 theorem map_ofLE (cond : LEComap f A B) (h : A' ≤ A) (c : A') :
     map f cond (ofLE h c) = map f (cond.mono h le_rfl) c := by
   rcases c with ⟨⟩
+  -- ⊢ map f cond (ofLE h (Quot.mk Setoid.r a✝)) = map f (_ : LEComap f A' B) (Quot …
   rfl
+  -- 🎉 no goals
 #align discrete_quotient.map_of_le DiscreteQuotient.map_ofLE
 
 @[simp]
@@ -366,14 +396,19 @@ theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconn
   rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
     mem_iInter]
   rintro ⟨U, hU1, hU2⟩
+  -- ⊢ x ∈ ↑{ val := U, property := (_ : IsClopen U ∧ y ∈ U) }
   exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
+  -- 🎉 no goals
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
 theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
     A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLE h a} := by
   rcases A.proj_surjective a with ⟨a, rfl⟩
+  -- ⊢ proj A ⁻¹' {proj A a} ⊆ proj B ⁻¹' {ofLE h (proj A a)}
   rw [fiber_eq, ofLE_proj, fiber_eq]
+  -- ⊢ setOf (Setoid.Rel A.toSetoid a) ⊆ setOf (Setoid.Rel B.toSetoid a)
   exact fun _ h' => h h'
+  -- 🎉 no goals
 #align discrete_quotient.fiber_subset_of_le DiscreteQuotient.fiber_subset_ofLE
 
 theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
@@ -388,12 +423,15 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
   exact ⟨x, mem_iInter.1 hx⟩
+  -- 🎉 no goals
 #align discrete_quotient.exists_of_compat DiscreteQuotient.exists_of_compat
 
 /-- If `X` is a compact space, then any discrete quotient of `X` is finite. -/
 instance [CompactSpace X] : Finite S := by
   have : CompactSpace S := Quotient.compactSpace
+  -- ⊢ Finite (Quotient S.toSetoid)
   rwa [← isCompact_univ_iff, isCompact_iff_finite, finite_univ_iff] at this
+  -- 🎉 no goals
 
 end DiscreteQuotient
 

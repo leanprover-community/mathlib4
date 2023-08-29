@@ -50,70 +50,109 @@ def MinFacHelper (n k : ℕ) : Prop :=
 
 theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   have : 2 < minFac n := h.1.trans_le h.2.2
+  -- ⊢ 1 < n
   rcases eq_zero_or_pos n with rfl|h
+  -- ⊢ 1 < 0
   · contradiction
+    -- 🎉 no goals
   rcases (succ_le_of_lt h).eq_or_lt with rfl|h
+  -- ⊢ 1 < succ 0
   · contradiction
+    -- 🎉 no goals
   exact h
+  -- 🎉 no goals
 
 theorem minFacHelper_0 (n : ℕ)
     (h1 : Nat.ble (nat_lit 2) n = true) (h2 : nat_lit 1 = n % (nat_lit 2)) :
     MinFacHelper n (nat_lit 3) := by
   refine ⟨by norm_num, by norm_num, ?_⟩
+  -- ⊢ 3 ≤ minFac n
   refine (le_minFac'.mpr λ p hp hpn ↦ ?_).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
+  -- ⊢ 3 ≤ p
   rcases hp.eq_or_lt with rfl|h
+  -- ⊢ 3 ≤ 2
   · simp [(Nat.dvd_iff_mod_eq_zero ..).1 hpn] at h2
+    -- 🎉 no goals
   · exact h
+    -- 🎉 no goals
 
 theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
   (np : minFac n ≠ k) : MinFacHelper n k' := by
   rw [← e]
+  -- ⊢ MinFacHelper n (k + 2)
   refine ⟨Nat.lt_add_right _ _ _ h.1, ?_, ?_⟩
+  -- ⊢ (k + 2) % 2 = 1
   · rw [add_mod, mod_self, add_zero, mod_mod]
+    -- ⊢ k % 2 = 1
     exact h.2.1
+    -- 🎉 no goals
   rcases h.2.2.eq_or_lt with rfl|h2
+  -- ⊢ minFac n + 2 ≤ minFac n
   · exact (np rfl).elim
+    -- 🎉 no goals
   rcases (succ_le_of_lt h2).eq_or_lt with h2|h2
+  -- ⊢ k + 2 ≤ minFac n
   · refine ((h.1.trans_le h.2.2).ne ?_).elim
+    -- ⊢ 2 = minFac n
     have h3 : 2 ∣ minFac n
+    -- ⊢ 2 ∣ minFac n
     · rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
+      -- ⊢ (1 + 1 % 2) % 2 = 0
       norm_num
+      -- 🎉 no goals
     rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
+    -- ⊢ 2 = minFac n
     norm_num at h3
+    -- ⊢ 2 = minFac n
     exact h3
+    -- 🎉 no goals
   exact h2
+  -- 🎉 no goals
 
 theorem minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
   refine minFacHelper_1 e h λ h2 ↦ ?_
+  -- ⊢ False
   rw [← h2] at nk
+  -- ⊢ False
   exact nk <| minFac_prime h.one_lt.ne'
+  -- 🎉 no goals
 
 theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = false)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
   refine minFacHelper_1 e h λ h2 ↦ ?_
+  -- ⊢ False
   have nk := Nat.ne_of_beq_eq_false nk
+  -- ⊢ False
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
+  -- ⊢ False
   exact nk <| minFac_dvd n
+  -- 🎉 no goals
 
 theorem isNat_minFac_1 : {a : ℕ} → IsNat a (nat_lit 1) → IsNat a.minFac 1
   | _, ⟨rfl⟩ => ⟨minFac_one⟩
 
 theorem isNat_minFac_2 : {a a' : ℕ} → IsNat a a' → a' % 2 = 0 → IsNat a.minFac 2
   | a, _, ⟨rfl⟩, h => ⟨by rw [cast_ofNat, minFac_eq_two_iff, Nat.dvd_iff_mod_eq_zero, h]⟩
+                          -- 🎉 no goals
 
 theorem isNat_minFac_3 : {n n' : ℕ} → (k : ℕ) →
     IsNat n n' → MinFacHelper n' k → nat_lit 0 = n' % k → IsNat (minFac n) k
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     rw [eq_comm, ← Nat.dvd_iff_mod_eq_zero] at h2
+    -- ⊢ IsNat (minFac n) k
     exact ⟨le_antisymm (minFac_le_of_dvd h1.1.le h2) h1.2.2⟩
+    -- 🎉 no goals
 
 theorem isNat_minFac_4 : {n n' k : ℕ} →
     IsNat n n' → MinFacHelper n' k → (k * k).ble n' = false → IsNat (minFac n) n'
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     refine ⟨(Nat.prime_def_minFac.mp ?_).2⟩
+    -- ⊢ Nat.Prime n
     rw [Nat.prime_def_le_sqrt]
+    -- ⊢ 2 ≤ n ∧ ∀ (m : ℕ), 2 ≤ m → m ≤ sqrt n → ¬m ∣ n
     refine ⟨h1.one_lt, λ m hm hmn h2mn ↦ ?_⟩
+    -- ⊢ False
     exact lt_irrefl m <| calc
       m ≤ sqrt n   := hmn
       _ < k        := sqrt_lt.mpr (ble_eq_false.mp h2)

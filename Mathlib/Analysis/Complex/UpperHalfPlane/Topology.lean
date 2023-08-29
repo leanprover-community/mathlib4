@@ -68,10 +68,15 @@ instance : LocPathConnectedSpace ℍ :=
 
 instance : NoncompactSpace ℍ := by
   refine' ⟨fun h => _⟩
+  -- ⊢ False
   have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
+  -- ⊢ False
   replace := this.isClosed.closure_eq
+  -- ⊢ False
   rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this
+  -- ⊢ False
   exact absurd ((this 0).1 (@left_mem_Ici ℝ _ 0)) (@lt_irrefl ℝ _ 0)
+  -- 🎉 no goals
 
 instance : LocallyCompactSpace ℍ :=
   openEmbedding_coe.locallyCompactSpace

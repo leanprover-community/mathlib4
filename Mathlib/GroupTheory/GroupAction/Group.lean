@@ -34,12 +34,14 @@ variable [Group α] [MulAction α β]
 
 @[to_additive (attr := simp)]
 theorem inv_smul_smul (c : α) (x : β) : c⁻¹ • c • x = x := by rw [smul_smul, mul_left_inv, one_smul]
+                                                              -- 🎉 no goals
 #align inv_smul_smul inv_smul_smul
 #align neg_vadd_vadd neg_vadd_vadd
 
 @[to_additive (attr := simp)]
 theorem smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
   rw [smul_smul, mul_right_inv, one_smul]
+  -- 🎉 no goals
 #align smul_inv_smul smul_inv_smul
 #align vadd_neg_vadd vadd_neg_vadd
 
@@ -120,12 +122,16 @@ theorem eq_inv_smul_iff {a : α} {x y : β} : x = a⁻¹ • y ↔ a • x = y :
 theorem smul_inv [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
   rw [inv_eq_iff_mul_eq_one, smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
+  -- 🎉 no goals
 #align smul_inv smul_inv
 
 theorem smul_zpow [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) (p : ℤ) :
     (c • x) ^ p = c ^ p • x ^ p := by
   cases p <;>
+  -- ⊢ (c • x) ^ Int.ofNat a✝ = c ^ Int.ofNat a✝ • x ^ Int.ofNat a✝
   simp [smul_pow, smul_inv]
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align smul_zpow smul_zpow
 
 @[simp]
@@ -138,6 +144,7 @@ theorem Commute.smul_right_iff [Mul β] [SMulCommClass α β β] [IsScalarTower 
 theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {a b : β}
     (r : α) : Commute (r • a) b ↔ Commute a b := by
   rw [Commute.symm_iff, Commute.smul_right_iff, Commute.symm_iff]
+  -- 🎉 no goals
 #align commute.smul_left_iff Commute.smul_left_iff
 
 @[to_additive]
@@ -200,6 +207,8 @@ theorem smul_inv_smul₀ {c : α} (hc : c ≠ 0) (x : β) : c • c⁻¹ • x =
 
 theorem inv_smul_eq_iff₀ {a : α} (ha : a ≠ 0) {x y : β} : a⁻¹ • x = y ↔ x = a • y :=
   ⟨fun h => by rw [← h, smul_inv_smul₀ ha], fun h => by rw [h, inv_smul_smul₀ ha]⟩
+               -- 🎉 no goals
+                                                        -- 🎉 no goals
 #align inv_smul_eq_iff₀ inv_smul_eq_iff₀
 
 theorem eq_inv_smul_iff₀ {a : α} (ha : a ≠ 0) {x y : β} : x = a⁻¹ • y ↔ a • x = y :=
@@ -269,6 +278,7 @@ variable {α β}
 
 theorem smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
   ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
+               -- 🎉 no goals
 #align smul_eq_zero_iff_eq smul_eq_zero_iff_eq
 
 theorem smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
@@ -335,12 +345,18 @@ def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G
   smul g F a := F (g⁻¹ • a)
   one_smul := by
     intro f
+    -- ⊢ 1 • f = f
     show (fun x => f ((1 : G)⁻¹ • x)) = f
+    -- ⊢ (fun x => f (1⁻¹ • x)) = f
     simp only [inv_one, one_smul]
+    -- 🎉 no goals
   mul_smul := by
     intros x y f
+    -- ⊢ (x * y) • f = x • y • f
     show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
+    -- ⊢ (fun a => f ((x * y)⁻¹ • a)) = fun a => f (y⁻¹ • x⁻¹ • a)
     simp only [mul_smul, mul_inv_rev]
+    -- 🎉 no goals
 #align arrow_action arrowAction
 #align arrow_add_action arrowAddAction
 
@@ -407,6 +423,7 @@ theorem isUnit_smul_iff [MulAction α β] [SMulCommClass α β β] [IsScalarTowe
 theorem IsUnit.smul_sub_iff_sub_inv_smul [AddGroup β] [DistribMulAction α β] [IsScalarTower α β β]
     [SMulCommClass α β β] (r : α) (a : β) : IsUnit (r • (1 : β) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
   rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+  -- 🎉 no goals
 #align is_unit.smul_sub_iff_sub_inv_smul IsUnit.smul_sub_iff_sub_inv_smul
 
 end SMul

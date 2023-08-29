@@ -51,6 +51,7 @@ namespace Core
 /- Porting note: abomination -/
 theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by
   rfl
+  -- 🎉 no goals
 #align category_theory.core.id_hom CategoryTheory.Core.id_hom
 
 @[simp]
@@ -70,7 +71,9 @@ def inclusion : Core C ⥤ C where
 instance : Faithful (inclusion C) where
   map_injective := by
     intro _ _
+    -- ⊢ Function.Injective (inclusion C).map
     apply Iso.ext
+    -- 🎉 no goals
 
 variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 
@@ -99,10 +102,18 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u
   obj := m
   map f := (EquivFunctor.mapEquiv m f.toEquiv).toIso
   map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x
+                 -- ⊢ ({ obj := m, map := fun {X Y} f => Equiv.toIso (EquivFunctor.mapEquiv m f.to …
+                                -- ⊢ ({ obj := m, map := fun {X Y} f => Equiv.toIso (EquivFunctor.mapEquiv m f.to …
+                                          -- 🎉 no goals
   map_comp f g := by
     apply Iso.ext; funext x; dsimp
+    -- ⊢ ({ obj := m, map := fun {X Y} f => Equiv.toIso (EquivFunctor.mapEquiv m f.to …
+                   -- ⊢ ({ obj := m, map := fun {X Y} f => Equiv.toIso (EquivFunctor.mapEquiv m f.to …
+                             -- ⊢ EquivFunctor.map (f ≫ g).toEquiv x = EquivFunctor.map g.toEquiv (EquivFuncto …
     erw [Iso.toEquiv_comp, EquivFunctor.map_trans']
+    -- ⊢ (EquivFunctor.map g.toEquiv ∘ EquivFunctor.map f.toEquiv) x = EquivFunctor.m …
     rw [Function.comp]
+    -- 🎉 no goals
 #align category_theory.of_equiv_functor CategoryTheory.ofEquivFunctor
 
 end CategoryTheory

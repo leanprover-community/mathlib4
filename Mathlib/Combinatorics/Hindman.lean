@@ -73,6 +73,7 @@ def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
       Ultrafilter.coe_inj.mp <|
         -- porting note: `simp` was slow to typecheck, replaced by `simp_rw`
         Filter.ext' fun p => by simp_rw [Ultrafilter.eventually_mul, mul_assoc] }
+                                -- 🎉 no goals
 #align ultrafilter.semigroup Ultrafilter.semigroup
 #align ultrafilter.add_semigroup Ultrafilter.addSemigroup
 
@@ -120,15 +121,25 @@ theorem FP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ FP a) :
     ∃ n, ∀ m' ∈ FP (a.drop n), m * m' ∈ FP a := by
   induction' hm with a a m hm ih a m hm ih
   · exact ⟨1, fun m hm => FP.cons a m hm⟩
+    -- 🎉 no goals
   · cases' ih with n hn
+    -- ⊢ ∃ n, ∀ (m' : M), m' ∈ FP (Stream'.drop n a) → m * m' ∈ FP a
     use n + 1
+    -- ⊢ ∀ (m' : M), m' ∈ FP (Stream'.drop (n + 1) a) → m * m' ∈ FP a
     intro m' hm'
+    -- ⊢ m * m' ∈ FP a
     exact FP.tail _ _ (hn _ hm')
+    -- 🎉 no goals
   · cases' ih with n hn
+    -- ⊢ ∃ n, ∀ (m' : M), m' ∈ FP (Stream'.drop n a) → Stream'.head a * m * m' ∈ FP a
     use n + 1
+    -- ⊢ ∀ (m' : M), m' ∈ FP (Stream'.drop (n + 1) a) → Stream'.head a * m * m' ∈ FP a
     intro m' hm'
+    -- ⊢ Stream'.head a * m * m' ∈ FP a
     rw [mul_assoc]
+    -- ⊢ Stream'.head a * (m * m') ∈ FP a
     exact FP.cons _ _ (hn _ hm')
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.FP.mul Hindman.FP.mul
 set_option linter.uppercaseLean3 false in
@@ -138,33 +149,59 @@ set_option linter.uppercaseLean3 false in
 theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     ∃ U : Ultrafilter M, U * U = U ∧ ∀ᶠ m in U, m ∈ FP a := by
   let S : Set (Ultrafilter M) := ⋂ n, { U | ∀ᶠ m in U, m ∈ FP (a.drop n) }
+  -- ⊢ ∃ U, U * U = U ∧ ∀ᶠ (m : M) in ↑U, m ∈ FP a
   have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
   · rcases h with ⟨U, hU, U_idem⟩
+    -- ⊢ ∃ U, U * U = U ∧ ∀ᶠ (m : M) in ↑U, m ∈ FP a
     refine' ⟨U, U_idem, _⟩
+    -- ⊢ ∀ᶠ (m : M) in ↑U, m ∈ FP a
     convert Set.mem_iInter.mp hU 0
+    -- 🎉 no goals
   · exact Ultrafilter.continuous_mul_left
+    -- 🎉 no goals
   · apply IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
     · intro n U hU
+      -- ⊢ U ∈ {U | ∀ᶠ (m : M) in ↑U, m ∈ FP (Stream'.drop n a)}
       apply Eventually.mono hU
+      -- ⊢ ∀ (x : M), x ∈ FP (Stream'.drop (n + 1) a) → x ∈ FP (Stream'.drop n a)
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
+      -- ⊢ ∀ (x : M), x ∈ FP (Stream'.tail (Stream'.drop n a)) → x ∈ FP (Stream'.drop n …
       exact FP.tail _
+      -- 🎉 no goals
     · intro n
+      -- ⊢ Set.Nonempty {U | ∀ᶠ (m : M) in ↑U, m ∈ FP (Stream'.drop n a)}
       exact ⟨pure _, mem_pure.mpr <| FP.head _⟩
+      -- 🎉 no goals
     · exact (ultrafilter_isClosed_basic _).isCompact
+      -- 🎉 no goals
     · intro n
+      -- ⊢ IsClosed {U | ∀ᶠ (m : M) in ↑U, m ∈ FP (Stream'.drop n a)}
       apply ultrafilter_isClosed_basic
+      -- 🎉 no goals
   · exact IsClosed.isCompact (isClosed_iInter fun i => ultrafilter_isClosed_basic _)
+    -- 🎉 no goals
   · intro U hU V hV
+    -- ⊢ U * V ∈ S
     rw [Set.mem_iInter] at *
+    -- ⊢ ∀ (i : ℕ), U * V ∈ {U | ∀ᶠ (m : M) in ↑U, m ∈ FP (Stream'.drop i a)}
     intro n
+    -- ⊢ U * V ∈ {U | ∀ᶠ (m : M) in ↑U, m ∈ FP (Stream'.drop n a)}
     rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
+    -- ⊢ ∀ᶠ (m : M) in ↑U, ∀ᶠ (m' : M) in ↑V, m * m' ∈ FP (Stream'.drop n a)
     apply Eventually.mono (hU n)
+    -- ⊢ ∀ (x : M), x ∈ FP (Stream'.drop n a) → ∀ᶠ (m' : M) in ↑V, x * m' ∈ FP (Strea …
     intro m hm
+    -- ⊢ ∀ᶠ (m' : M) in ↑V, m * m' ∈ FP (Stream'.drop n a)
     obtain ⟨n', hn⟩ := FP.mul hm
+    -- ⊢ ∀ᶠ (m' : M) in ↑V, m * m' ∈ FP (Stream'.drop n a)
     apply Eventually.mono (hV (n' + n))
+    -- ⊢ ∀ (x : M), x ∈ FP (Stream'.drop (n' + n) a) → m * x ∈ FP (Stream'.drop n a)
     intro m' hm'
+    -- ⊢ m * m' ∈ FP (Stream'.drop n a)
     apply hn
+    -- ⊢ m' ∈ FP (Stream'.drop n' (Stream'.drop n a))
     simpa only [Stream'.drop_drop] using hm'
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.exists_idempotent_ultrafilter_le_FP Hindman.exists_idempotent_ultrafilter_le_FP
 set_option linter.uppercaseLean3 false in
@@ -181,6 +218,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   have exists_elem : ∀ {s : Set M} (_hs : s ∈ U), (s ∩ { m | ∀ᶠ m' in U, m * m' ∈ s }).Nonempty :=
     fun {s} hs => Ultrafilter.nonempty_of_mem (inter_mem hs <| by rwa [← U_idem] at hs)
   let elem : { s // s ∈ U } → M := fun p => (exists_elem p.property).some
+  -- ⊢ ∃ a, FP a ⊆ s₀
   let succ : {s // s ∈ U} → {s // s ∈ U} := fun (p : {s // s ∈ U}) =>
         ⟨p.val ∩ {m : M | elem p * m ∈ p.val},
          inter_mem p.property
@@ -188,22 +226,35 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
               p.val.inter_subset_right {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val}
                 (exists_elem p.property).some_mem)⟩
   use Stream'.corec elem succ (Subtype.mk s₀ sU)
+  -- ⊢ FP (Stream'.corec elem succ { val := s₀, property := sU }) ⊆ s₀
   suffices ∀ (a : Stream' M), ∀ m ∈ FP a, ∀ p, a = Stream'.corec elem succ p → m ∈ p.val by
     intro m hm
     exact this _ m hm ⟨s₀, sU⟩ rfl
   clear sU s₀
+  -- ⊢ ∀ (a : Stream' M) (m : M), m ∈ FP a → ∀ (p : { s // s ∈ U }), a = Stream'.co …
   intro a m h
+  -- ⊢ ∀ (p : { s // s ∈ U }), a = Stream'.corec elem succ p → m ∈ ↑p
   induction' h with b b n h ih b n h ih
   · rintro p rfl
+    -- ⊢ Stream'.head (Stream'.corec elem succ p) ∈ ↑p
     rw [Stream'.corec_eq, Stream'.head_cons]
+    -- ⊢ elem p ∈ ↑p
     exact Set.inter_subset_left _ _ (Set.Nonempty.some_mem _)
+    -- 🎉 no goals
   · rintro p rfl
+    -- ⊢ n ∈ ↑p
     refine' Set.inter_subset_left _ _ (ih (succ p) _)
+    -- ⊢ Stream'.tail (Stream'.corec elem succ p) = Stream'.corec elem succ (succ p)
     rw [Stream'.corec_eq, Stream'.tail_cons]
+    -- 🎉 no goals
   · rintro p rfl
+    -- ⊢ Stream'.head (Stream'.corec elem succ p) * n ∈ ↑p
     have := Set.inter_subset_right _ _ (ih (succ p) ?_)
+    -- ⊢ Stream'.head (Stream'.corec elem succ p) * n ∈ ↑p
     · simpa only using this
+      -- 🎉 no goals
     rw [Stream'.corec_eq, Stream'.tail_cons]
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.exists_FP_of_large Hindman.exists_FP_of_large
 set_option linter.uppercaseLean3 false in
@@ -243,9 +294,13 @@ set_option linter.uppercaseLean3 false in
 @[to_additive FS_iter_tail_sub_FS]
 theorem FP_drop_subset_FP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : FP (a.drop n) ⊆ FP a := by
   induction' n with n ih
+  -- ⊢ FP (Stream'.drop Nat.zero a) ⊆ FP a
   · rfl
+    -- 🎉 no goals
   rw [Nat.succ_eq_one_add, ← Stream'.drop_drop]
+  -- ⊢ FP (Stream'.drop 1 (Stream'.drop n a)) ⊆ FP a
   exact _root_.trans (FP.tail _) ih
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.FP_drop_subset_FP Hindman.FP_drop_subset_FP
 set_option linter.uppercaseLean3 false in
@@ -254,9 +309,13 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.nth i ∈ FP a := by
   induction' i with i ih generalizing a
+  -- ⊢ Stream'.nth a Nat.zero ∈ FP a
   · apply FP.head
+    -- 🎉 no goals
   · apply FP.tail
+    -- ⊢ FP (Stream'.tail a) (Stream'.nth a (Nat.succ i))
     apply ih
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.FP.singleton Hindman.FP.singleton
 set_option linter.uppercaseLean3 false in
@@ -266,15 +325,24 @@ set_option linter.uppercaseLean3 false in
 theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
     a.nth i * a.nth j ∈ FP a := by
   refine' FP_drop_subset_FP _ i _
+  -- ⊢ Stream'.nth a i * Stream'.nth a j ∈ FP (Stream'.drop i a)
   rw [← Stream'.head_drop]
+  -- ⊢ Stream'.head (Stream'.drop i a) * Stream'.nth a j ∈ FP (Stream'.drop i a)
   apply FP.cons
+  -- ⊢ FP (Stream'.tail (Stream'.drop i a)) (Stream'.nth a j)
   rcases le_iff_exists_add.mp (Nat.succ_le_of_lt ij) with ⟨d, hd⟩
+  -- ⊢ FP (Stream'.tail (Stream'.drop i a)) (Stream'.nth a j)
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
+  -- ⊢ Stream'.nth a j ∈ FP (Stream'.tail (Stream'.drop i a))
   have := FP.singleton (a.drop i).tail d
+  -- ⊢ Stream'.nth a j ∈ FP (Stream'.tail (Stream'.drop i a))
   rw [Stream'.tail_eq_drop, Stream'.nth_drop, Stream'.nth_drop] at this
+  -- ⊢ Stream'.nth a j ∈ FP (Stream'.tail (Stream'.drop i a))
   convert this
+  -- ⊢ j = d + 1 + i
   rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.FP.mul_two Hindman.FP.mul_two
 set_option linter.uppercaseLean3 false in
@@ -284,19 +352,31 @@ set_option linter.uppercaseLean3 false in
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
     (s.prod fun i => a.nth i) ∈ FP a := by
   refine' FP_drop_subset_FP _ (s.min' hs) _
+  -- ⊢ (Finset.prod s fun i => Stream'.nth a i) ∈ FP (Stream'.drop (Finset.min' s h …
   induction' s using Finset.strongInduction with s ih
+  -- ⊢ (Finset.prod s fun i => Stream'.nth a i) ∈ FP (Stream'.drop (Finset.min' s h …
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
+  -- ⊢ (Stream'.head (Stream'.drop (Finset.min' s hs) a) * Finset.prod (Finset.eras …
   cases' (s.erase (s.min' hs)).eq_empty_or_nonempty with h h
+  -- ⊢ (Stream'.head (Stream'.drop (Finset.min' s hs) a) * Finset.prod (Finset.eras …
   · rw [h, Finset.prod_empty, mul_one]
+    -- ⊢ Stream'.head (Stream'.drop (Finset.min' s hs) a) ∈ FP (Stream'.drop (Finset. …
     exact FP.head _
+    -- 🎉 no goals
   · apply FP.cons
+    -- ⊢ FP (Stream'.tail (Stream'.drop (Finset.min' s hs) a)) (Finset.prod (Finset.e …
     rw [Stream'.tail_eq_drop, Stream'.drop_drop, add_comm]
+    -- ⊢ FP (Stream'.drop (Finset.min' s hs + 1) a) (Finset.prod (Finset.erase s (Fin …
     refine' Set.mem_of_subset_of_mem _ (ih _ (Finset.erase_ssubset <| s.min'_mem hs) h)
+    -- ⊢ FP (Stream'.drop (Finset.min' (Finset.erase s (Finset.min' s hs)) h) a) ⊆ FP …
     have : s.min' hs + 1 ≤ (s.erase (s.min' hs)).min' h :=
       Nat.succ_le_of_lt (Finset.min'_lt_of_mem_erase_min' _ _ <| Finset.min'_mem _ _)
     cases' le_iff_exists_add.mp this with d hd
+    -- ⊢ FP (Stream'.drop (Finset.min' (Finset.erase s (Finset.min' s hs)) h) a) ⊆ FP …
     rw [hd, add_comm, ← Stream'.drop_drop]
+    -- ⊢ FP (Stream'.drop d (Stream'.drop (Finset.min' s hs + 1) a)) ⊆ FP (Stream'.dr …
     apply FP_drop_subset_FP
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align hindman.FP.finset_prod Hindman.FP.finset_prod
 set_option linter.uppercaseLean3 false in

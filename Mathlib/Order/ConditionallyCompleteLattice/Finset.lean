@@ -26,10 +26,12 @@ theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f 
     s.sup' hs f = sSup (f '' s) :=
   eq_of_forall_ge_iff fun a => by
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (hs.to_set.image f)]
+    -- 🎉 no goals
 #align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
 
 theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = sSup s :=
   by rw [hs.sup'_eq_cSup_image, Set.image_id]
+     -- 🎉 no goals
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
 end ConditionallyCompleteLattice
@@ -48,7 +50,9 @@ theorem Finset.Nonempty.cInf_eq_min' {s : Finset α} (h : s.Nonempty) : sInf ↑
 
 theorem Finset.Nonempty.cSup_mem {s : Finset α} (h : s.Nonempty) : sSup (s : Set α) ∈ s := by
   rw [h.cSup_eq_max']
+  -- ⊢ max' s h ∈ s
   exact s.max'_mem _
+  -- 🎉 no goals
 #align finset.nonempty.cSup_mem Finset.Nonempty.cSup_mem
 
 theorem Finset.Nonempty.cInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Set α) ∈ s :=
@@ -57,7 +61,9 @@ theorem Finset.Nonempty.cInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Se
 
 theorem Set.Nonempty.cSup_mem (h : s.Nonempty) (hs : s.Finite) : sSup s ∈ s := by
   lift s to Finset α using hs
+  -- ⊢ sSup ↑s ∈ ↑s
   exact Finset.Nonempty.cSup_mem h
+  -- 🎉 no goals
 #align set.nonempty.cSup_mem Set.Nonempty.cSup_mem
 
 theorem Set.Nonempty.cInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :=
@@ -87,13 +93,21 @@ namespace Finset
 theorem sup'_eq_csSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
     s.sup' H f = sSup (f '' s) := by
   apply le_antisymm
+  -- ⊢ sup' s H f ≤ sSup (f '' ↑s)
   · refine' Finset.sup'_le _ _ fun a ha => _
+    -- ⊢ f a ≤ sSup (f '' ↑s)
     refine' le_csSup ⟨s.sup' H f, _⟩ ⟨a, ha, rfl⟩
+    -- ⊢ sup' s H f ∈ upperBounds (f '' ↑s)
     rintro i ⟨j, hj, rfl⟩
+    -- ⊢ f j ≤ sup' s H f
     exact Finset.le_sup' _ hj
+    -- 🎉 no goals
   · apply csSup_le ((coe_nonempty.mpr H).image _)
+    -- ⊢ ∀ (b : β), b ∈ f '' ↑s → b ≤ sup' s H f
     rintro _ ⟨a, ha, rfl⟩
+    -- ⊢ f a ≤ sup' s H f
     exact Finset.le_sup' _ ha
+    -- 🎉 no goals
 #align finset.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
 
 theorem inf'_eq_csInf_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
@@ -103,6 +117,7 @@ theorem inf'_eq_csInf_image [ConditionallyCompleteLattice β] (s : Finset α) (H
 
 theorem sup'_id_eq_csSup [ConditionallyCompleteLattice α] (s : Finset α) (H) :
     s.sup' H id = sSup s := by rw [sup'_eq_csSup_image s H, Set.image_id]
+                               -- 🎉 no goals
 #align finset.sup'_id_eq_cSup Finset.sup'_id_eq_csSup
 
 theorem inf'_id_eq_csInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :

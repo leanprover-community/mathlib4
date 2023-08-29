@@ -64,17 +64,27 @@ variable [DecidableEq α] [Fintype α]
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
+  -- ⊢ card 𝒜 * r ≤ card (∂ 𝒜) * (Fintype.card α - r + 1)
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
+  -- ⊢ r ≤ card (bipartiteBelow (fun x x_1 => x ⊆ x_1) (∂ 𝒜) s)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
+    -- ⊢ card (image (erase s) s) ≤ card (bipartiteBelow (fun x x_1 => x ⊆ x_1) (∂ 𝒜) …
     refine' card_le_of_subset _
+    -- ⊢ image (erase s) s ⊆ bipartiteBelow (fun x x_1 => x ⊆ x_1) (∂ 𝒜) s
     simp_rw [image_subset_iff, mem_bipartiteBelow]
+    -- ⊢ ∀ (x : α), x ∈ s → erase s x ∈ ∂ 𝒜 ∧ erase s x ⊆ s
     exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
+    -- 🎉 no goals
   refine' le_trans _ tsub_tsub_le_tsub_add
+  -- ⊢ card (bipartiteAbove (fun x x_1 => x ⊆ x_1) 𝒜 s) ≤ Fintype.card α - (r - 1)
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
+  -- ⊢ card (bipartiteAbove (fun x x_1 => x ⊆ x_1) 𝒜 s) ≤ card (image (fun a => ins …
   refine' card_le_of_subset fun t ht => _
+  -- ⊢ t ∈ image (fun a => insert a s) sᶜ
   -- porting note: commented out the following line
   -- infer_instance
   rw [mem_bipartiteAbove] at ht
+  -- ⊢ t ∈ image (fun a => insert a s) sᶜ
   have : ∅ ∉ 𝒜 := by
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
     rintro rfl
@@ -83,7 +93,9 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   have h := exists_eq_insert_iff.2 ⟨ht.2, by
     rw [(sized_shadow_iff this).1 (Set.Sized.shadow h𝒜) ht.1, (Set.Sized.shadow h𝒜) hs]⟩
   rcases h with ⟨a, ha, rfl⟩
+  -- ⊢ insert a s ∈ image (fun a => insert a s) sᶜ
   exact mem_image_of_mem _ (mem_compl.2 ha)
+  -- 🎉 no goals
 #align finset.card_mul_le_card_shadow_mul Finset.card_mul_le_card_shadow_mul
 
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
@@ -92,22 +104,41 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
     (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (𝒜.card : 𝕜) / (Fintype.card α).choose r
     ≤ (∂ 𝒜).card / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
+  -- ⊢ ↑(card 𝒜) / ↑(Nat.choose (Fintype.card α) r) ≤ ↑(card (∂ 𝒜)) / ↑(Nat.choose  …
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
+    -- ⊢ 0 ≤ ↑(card (∂ 𝒜)) / ↑(Nat.choose (Fintype.card α) (r - 1))
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
+    -- 🎉 no goals
   replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
+  -- ⊢ ↑(card 𝒜) / ↑(Nat.choose (Fintype.card α) r) ≤ ↑(card (∂ 𝒜)) / ↑(Nat.choose  …
   rw [div_le_div_iff] <;> norm_cast
+                          -- ⊢ card 𝒜 * Nat.choose (Fintype.card α) (r - 1) ≤ card (∂ 𝒜) * Nat.choose (Fint …
+                          -- ⊢ 0 < Nat.choose (Fintype.card α) r
+                          -- ⊢ 0 < Nat.choose (Fintype.card α) (r - 1)
   · cases' r with r
+    -- ⊢ card 𝒜 * Nat.choose (Fintype.card α) (zero - 1) ≤ card (∂ 𝒜) * Nat.choose (F …
     · exact (hr rfl).elim
+      -- 🎉 no goals
     rw [Nat.succ_eq_add_one] at *
+    -- ⊢ card 𝒜 * Nat.choose (Fintype.card α) (r + 1 - 1) ≤ card (∂ 𝒜) * Nat.choose ( …
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
+    -- ⊢ card 𝒜 * Nat.choose (Fintype.card α) (r + 1 - 1) ≤ card (∂ 𝒜) * Nat.choose ( …
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
+    -- ⊢ card 𝒜 * Nat.choose (Fintype.card α) (r + 1 - 1) * (r + 1) ≤ card (∂ 𝒜) * Na …
     convert Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
+    -- ⊢ card 𝒜 * Nat.choose (Fintype.card α) (r + 1 - 1) * (r + 1) = card 𝒜 * (r + 1 …
     · simp [mul_assoc, Nat.choose_succ_right_eq]
+      -- ⊢ Nat.choose (Fintype.card α) r * (r + 1) = (r + 1) * Nat.choose (Fintype.card …
       exact Or.inl (mul_comm _ _)
+      -- 🎉 no goals
     · simp only [mul_assoc, choose_succ_right_eq, mul_eq_mul_left_iff]
+      -- ⊢ Nat.choose (Fintype.card α) r * (Fintype.card α - r) = (Fintype.card α - r)  …
       exact Or.inl (mul_comm _ _)
+      -- 🎉 no goals
   · exact Nat.choose_pos hr'
+    -- 🎉 no goals
   · exact Nat.choose_pos (r.pred_le.trans hr')
+    -- 🎉 no goals
 #align finset.card_div_choose_le_card_shadow_div_choose Finset.card_div_choose_le_card_shadow_div_choose
 
 end LocalLYM
@@ -130,7 +161,9 @@ variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetLen]
+  -- ⊢ (∃ v, v ∈ 𝒜 ∧ s ⊆ v ∧ card s = k) ↔ (∃ t, t ∈ 𝒜 ∧ s ⊆ t) ∧ card s = k
   aesop
+  -- 🎉 no goals
 #align finset.mem_falling Finset.mem_falling
 
 variable (𝒜 k)
@@ -148,19 +181,33 @@ theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
 
 theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
+  -- ⊢ s ∈ 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) ↔ s ∈ falling k 𝒜
   simp_rw [mem_union, mem_slice, mem_shadow_iff, mem_falling]
+  -- ⊢ (s ∈ 𝒜 ∧ card s = k ∨ ∃ t, ((∃ t_1, t_1 ∈ 𝒜 ∧ t ⊆ t_1) ∧ card t = k + 1) ∧ ∃ …
   constructor
+  -- ⊢ (s ∈ 𝒜 ∧ card s = k ∨ ∃ t, ((∃ t_1, t_1 ∈ 𝒜 ∧ t ⊆ t_1) ∧ card t = k + 1) ∧ ∃ …
   · rintro (h | ⟨s, ⟨⟨t, ht, hst⟩, hs⟩, a, ha, rfl⟩)
+    -- ⊢ (∃ t, t ∈ 𝒜 ∧ s ⊆ t) ∧ card s = k
     · exact ⟨⟨s, h.1, Subset.refl _⟩, h.2⟩
+      -- 🎉 no goals
     refine' ⟨⟨t, ht, (erase_subset _ _).trans hst⟩, _⟩
+    -- ⊢ card (erase s a) = k
     rw [card_erase_of_mem ha, hs]
+    -- ⊢ k + 1 - 1 = k
     rfl
+    -- 🎉 no goals
   · rintro ⟨⟨t, ht, hst⟩, hs⟩
+    -- ⊢ s ∈ 𝒜 ∧ card s = k ∨ ∃ t, ((∃ t_1, t_1 ∈ 𝒜 ∧ t ⊆ t_1) ∧ card t = k + 1) ∧ ∃  …
     by_cases h : s ∈ 𝒜
+    -- ⊢ s ∈ 𝒜 ∧ card s = k ∨ ∃ t, ((∃ t_1, t_1 ∈ 𝒜 ∧ t ⊆ t_1) ∧ card t = k + 1) ∧ ∃  …
     · exact Or.inl ⟨h, hs⟩
+      -- 🎉 no goals
     obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_not_mem h).symm)
+    -- ⊢ s ∈ 𝒜 ∧ card s = k ∨ ∃ t, ((∃ t_1, t_1 ∈ 𝒜 ∧ t ⊆ t_1) ∧ card t = k + 1) ∧ ∃  …
     refine' Or.inr ⟨insert a s, ⟨⟨t, ht, hst⟩, _⟩, a, mem_insert_self _ _, erase_insert ha⟩
+    -- ⊢ card (insert a s) = k + 1
     rw [card_insert_of_not_mem ha, hs]
+    -- 🎉 no goals
 #align finset.slice_union_shadow_falling_succ Finset.slice_union_shadow_falling_succ
 
 variable {𝒜 k}
@@ -171,10 +218,15 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) (∂ (falling n 𝒜)) :=
   disjoint_right.2 fun s h₁ h₂ => by
     simp_rw [mem_shadow_iff, mem_falling] at h₁
+    -- ⊢ False
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
+    -- ⊢ False
     refine' h𝒜 (slice_subset h₂) ht _ ((erase_subset _ _).trans hst)
+    -- ⊢ erase s a ≠ t
     rintro rfl
+    -- ⊢ False
     exact not_mem_erase _ _ (hst ha)
+    -- 🎉 no goals
 #align finset.is_antichain.disjoint_slice_shadow_falling Finset.IsAntichain.disjoint_slice_shadow_falling
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
@@ -184,15 +236,19 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
         ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction' k with k ih
+  -- ⊢ ∑ r in range (zero + 1), ↑(card (𝒜 # (Fintype.card α - r))) / ↑(Nat.choose ( …
   · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_eq, zero_add, range_one, ge_iff_le, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_of_subset (slice_subset_falling _ _)
+    -- 🎉 no goals
   rw [succ_eq_add_one] at *
+  -- ⊢ ∑ r in range (k + 1 + 1), ↑(card (𝒜 # (Fintype.card α - r))) / ↑(Nat.choose  …
   rw [sum_range_succ, ← slice_union_shadow_falling_succ,
     card_disjoint_union (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
     add_comm]
   rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
+  -- ⊢ ↑(card (𝒜 # (Fintype.card α - k - 1))) / ↑(Nat.choose (Fintype.card α) (Fint …
   exact
     add_le_add_left
       ((ih <| le_of_succ_le hk).trans <|

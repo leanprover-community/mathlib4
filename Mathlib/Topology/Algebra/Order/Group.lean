@@ -30,14 +30,20 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
     where
   continuous_add := by
     refine' continuous_iff_continuousAt.2 _
+    -- ⊢ ∀ (x : G × G), ContinuousAt (fun p => p.fst + p.snd) x
     rintro ⟨a, b⟩
+    -- ⊢ ContinuousAt (fun p => p.fst + p.snd) (a, b)
     refine' LinearOrderedAddCommGroup.tendsto_nhds.2 fun ε ε0 => _
+    -- ⊢ ∀ᶠ (b_1 : G × G) in 𝓝 (a, b), |b_1.fst + b_1.snd - (fun p => p.fst + p.snd)  …
     rcases dense_or_discrete 0 ε with (⟨δ, δ0, δε⟩ | ⟨_h₁, h₂⟩)
+    -- ⊢ ∀ᶠ (b_1 : G × G) in 𝓝 (a, b), |b_1.fst + b_1.snd - (fun p => p.fst + p.snd)  …
     · -- If there exists `δ ∈ (0, ε)`, then we choose `δ`-nhd of `a` and `(ε-δ)`-nhd of `b`
       filter_upwards [(eventually_abs_sub_lt a δ0).prod_nhds
           (eventually_abs_sub_lt b (sub_pos.2 δε))]
       rintro ⟨x, y⟩ ⟨hx : |x - a| < δ, hy : |y - b| < ε - δ⟩
+      -- ⊢ |(x, y).fst + (x, y).snd - (a + b)| < ε
       rw [add_sub_add_comm]
+      -- ⊢ |(x, y).fst - a + ((x, y).snd - b)| < ε
       calc
         |x - a + (y - b)| ≤ |x - a| + |y - b| := abs_add _ _
         _ < δ + (ε - δ) := add_lt_add hx hy
@@ -47,12 +53,16 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
         intro x y h
         simpa [sub_eq_zero] using h₂ _ h
       filter_upwards [(eventually_abs_sub_lt a ε0).prod_nhds (eventually_abs_sub_lt b ε0)]
+      -- ⊢ ∀ (a_1 : G × G), |a_1.fst - a| < ε ∧ |a_1.snd - b| < ε → |a_1.fst + a_1.snd  …
       rintro ⟨x, y⟩ ⟨hx : |x - a| < ε, hy : |y - b| < ε⟩
+      -- ⊢ |(x, y).fst + (x, y).snd - (a + b)| < ε
       simpa [hε hx, hε hy]
+      -- 🎉 no goals
   continuous_neg :=
     continuous_iff_continuousAt.2 fun a =>
       LinearOrderedAddCommGroup.tendsto_nhds.2 fun ε ε0 =>
         (eventually_abs_sub_lt a ε0).mono fun x hx => by rwa [neg_sub_neg, abs_sub_comm]
+                                                         -- 🎉 no goals
 #align linear_ordered_add_comm_group.topological_add_group LinearOrderedAddCommGroup.topologicalAddGroup
 
 @[continuity]
@@ -68,7 +78,9 @@ protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
 theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
     Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) := by
   refine' ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => _⟩
+  -- ⊢ Tendsto f l (𝓝 0)
   have : Tendsto (fun a => -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
+  -- ⊢ Tendsto f l (𝓝 0)
   exact
     tendsto_of_tendsto_of_tendsto_of_le_of_le this h (fun x => neg_abs_le_self <| f x) fun x =>
       le_abs_self <| f x

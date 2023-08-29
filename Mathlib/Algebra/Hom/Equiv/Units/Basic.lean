@@ -186,7 +186,9 @@ protected def divLeft (a : G) : G ≃ G where
   toFun b := a / b
   invFun b := b⁻¹ * a
   left_inv b := by simp [div_eq_mul_inv]
+                   -- 🎉 no goals
   right_inv b := by simp [div_eq_mul_inv]
+                    -- 🎉 no goals
 #align equiv.div_left Equiv.divLeft
 #align equiv.sub_left Equiv.subLeft
 #align equiv.div_left_apply Equiv.divLeft_apply
@@ -208,7 +210,9 @@ protected def divRight (a : G) : G ≃
   toFun b := b / a
   invFun b := b * a
   left_inv b := by simp [div_eq_mul_inv]
+                   -- 🎉 no goals
   right_inv b := by simp [div_eq_mul_inv]
+                    -- 🎉 no goals
 #align equiv.div_right Equiv.divRight
 #align equiv.sub_right Equiv.subRight
 #align equiv.div_right_symm_apply Equiv.divRight_symm_apply

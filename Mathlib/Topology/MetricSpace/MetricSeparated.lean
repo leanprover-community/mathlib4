@@ -55,6 +55,7 @@ theorem empty_right (s : Set X) : IsMetricSeparated s ∅ :=
 protected theorem disjoint (h : IsMetricSeparated s t) : Disjoint s t :=
   let ⟨r, r0, hr⟩ := h
   Set.disjoint_left.mpr fun x hx1 hx2 => r0 <| by simpa using hr x hx1 x hx2
+                                                  -- 🎉 no goals
 #align is_metric_separated.disjoint IsMetricSeparated.disjoint
 
 theorem subset_compl_right (h : IsMetricSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
@@ -78,11 +79,16 @@ theorem mono_right {t'} (h' : IsMetricSeparated s t') (ht : t ⊆ t') : IsMetric
 theorem union_left {s'} (h : IsMetricSeparated s t) (h' : IsMetricSeparated s' t) :
     IsMetricSeparated (s ∪ s') t := by
   rcases h, h' with ⟨⟨r, r0, hr⟩, ⟨r', r0', hr'⟩⟩
+  -- ⊢ IsMetricSeparated (s ∪ s') t
   refine' ⟨min r r', _, fun x hx y hy => hx.elim _ _⟩
   · rw [← pos_iff_ne_zero] at r0 r0' ⊢
+    -- ⊢ 0 < min r r'
     exact lt_min r0 r0'
+    -- 🎉 no goals
   · exact fun hx => (min_le_left _ _).trans (hr _ hx _ hy)
+    -- 🎉 no goals
   · exact fun hx => (min_le_right _ _).trans (hr' _ hx _ hy)
+    -- 🎉 no goals
 #align is_metric_separated.union_left IsMetricSeparated.union_left
 
 @[simp]
@@ -106,7 +112,9 @@ theorem union_right_iff {t'} :
 theorem finite_iUnion_left_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t := by
   refine' Finite.induction_on hI (by simp) @fun i I _ _ hI => _
+  -- ⊢ IsMetricSeparated (⋃ (i_1 : ι) (_ : i_1 ∈ insert i I), s i_1) t ↔ ∀ (i_1 : ι …
   rw [biUnion_insert, ball_insert_iff, union_left_iff, hI]
+  -- 🎉 no goals
 #align is_metric_separated.finite_Union_left_iff IsMetricSeparated.finite_iUnion_left_iff
 
 alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff
@@ -115,6 +123,7 @@ alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff
 theorem finite_iUnion_right_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : Set X}
     {t : ι → Set X} : IsMetricSeparated s (⋃ i ∈ I, t i) ↔ ∀ i ∈ I, IsMetricSeparated s (t i) := by
   simpa only [@comm _ _ s] using finite_iUnion_left_iff hI
+  -- 🎉 no goals
 #align is_metric_separated.finite_Union_right_iff IsMetricSeparated.finite_iUnion_right_iff
 
 @[simp]

@@ -100,13 +100,17 @@ variable [RingHomInvPair σ σ']
 -- @[simp] Porting note: `simp` can prove it
 theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
+  -- ⊢ ↑(RingHom.id R₁) x = x
   simp
+  -- 🎉 no goals
 #align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
 -- @[simp] Porting note: `simp` can prove it
 theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
+  -- ⊢ ↑(RingHom.id R₂) x = x
   simp
+  -- 🎉 no goals
 #align ring_hom_inv_pair.comp_apply_eq₂ RingHomInvPair.comp_apply_eq₂
 
 instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
@@ -116,11 +120,13 @@ instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
 instance triples {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁) :=
   ⟨by simp only [comp_eq]⟩
+      -- 🎉 no goals
 #align ring_hom_inv_pair.triples RingHomInvPair.triples
 
 instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₂₁ σ₁₂ (RingHom.id R₂) :=
   ⟨by simp only [comp_eq₂]⟩
+      -- 🎉 no goals
 #align ring_hom_inv_pair.triples₂ RingHomInvPair.triples₂
 
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
@@ -155,13 +161,17 @@ namespace RingHomCompTriple
 instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
   ⟨by
     ext
+    -- ⊢ ↑(RingHom.comp σ₁₂ (RingHom.id R₁)) x✝ = ↑σ₁₂ x✝
     simp⟩
+    -- 🎉 no goals
 #align ring_hom_comp_triple.ids RingHomCompTriple.ids
 
 instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
   ⟨by
     ext
+    -- ⊢ ↑(RingHom.comp (RingHom.id R₂) σ₁₂) x✝ = ↑σ₁₂ x✝
     simp⟩
+    -- 🎉 no goals
 #align ring_hom_comp_triple.right_ids RingHomCompTriple.right_ids
 
 end RingHomCompTriple
@@ -195,7 +205,9 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
     RingHomSurjective σ₁₃ :=
   { is_surjective := by
       have := σ₂₃.surjective.comp σ₁₂.surjective
+      -- ⊢ Function.Surjective ↑σ₁₃
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
+      -- 🎉 no goals
 #align ring_hom_surjective.comp RingHomSurjective.comp
 
 end RingHomSurjective

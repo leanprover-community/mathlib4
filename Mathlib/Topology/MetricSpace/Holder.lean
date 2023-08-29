@@ -65,8 +65,11 @@ theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f �
 @[simp]
 theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
   rintro a (rfl : a = x) b (rfl : b = a)
+  -- ⊢ edist (f b) (f b) ≤ ↑C * edist b b ^ ↑r
   rw [edist_self]
+  -- ⊢ 0 ≤ ↑C * edist b b ^ ↑r
   exact zero_le _
+  -- 🎉 no goals
 #align holder_on_with_singleton holderOnWith_singleton
 
 theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
@@ -76,12 +79,14 @@ theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : �
 
 theorem holderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HolderOnWith C r f univ ↔ HolderWith C r f := by
   simp only [HolderOnWith, HolderWith, mem_univ, true_imp_iff]
+  -- 🎉 no goals
 #align holder_on_with_univ holderOnWith_univ
 
 @[simp]
 theorem holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
     HolderOnWith C 1 f s ↔ LipschitzOnWith C f s := by
   simp only [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
+  -- 🎉 no goals
 #align holder_on_with_one holderOnWith_one
 
 alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
@@ -121,9 +126,11 @@ theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg r
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
     HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s := by
   intro x hx y hy
+  -- ⊢ edist ((g ∘ f) x) ((g ∘ f) y) ≤ ↑(Cg * NNReal.rpow Cf ↑rg) * edist x y ^ ↑(r …
   rw [ENNReal.coe_mul, mul_comm rg, NNReal.coe_mul, ENNReal.rpow_mul, mul_assoc, NNReal.rpow_eq_pow,
     ← ENNReal.coe_rpow_of_nonneg _ rg.coe_nonneg, ← ENNReal.mul_rpow_of_nonneg _ _ rg.coe_nonneg]
   exact hg.edist_le_of_le (hst hx) (hst hy) (hf.edist_le hx hy)
+  -- 🎉 no goals
 #align holder_on_with.comp HolderOnWith.comp
 
 theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
@@ -136,10 +143,13 @@ theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : Holder
 protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
     UniformContinuousOn f s := by
   refine' EMetric.uniformContinuousOn_iff.2 fun ε εpos => _
+  -- ⊢ ∃ δ, δ > 0 ∧ ∀ {a : X}, a ∈ s → ∀ {b : X}, b ∈ s → edist a b < δ → edist (f  …
   have : Tendsto (fun d : ℝ≥0∞ => (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
     ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top h0
   rcases ENNReal.nhds_zero_basis.mem_iff.1 (this (gt_mem_nhds εpos)) with ⟨δ, δ0, H⟩
+  -- ⊢ ∃ δ, δ > 0 ∧ ∀ {a : X}, a ∈ s → ∀ {b : X}, b ∈ s → edist a b < δ → edist (f  …
   exact ⟨δ, δ0, fun hx y hy h => (hf.edist_le hx hy).trans_lt (H h)⟩
+  -- 🎉 no goals
 #align holder_on_with.uniform_continuous_on HolderOnWith.uniformContinuousOn
 
 protected theorem continuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) : ContinuousOn f s :=
@@ -237,10 +247,13 @@ namespace HolderWith
 theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
     nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   norm_cast
+  -- ⊢ nndist (f x) (f y) ≤ C * d ^ ↑r
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul, ←
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le
+  -- ⊢ edist x y ≤ ↑d
   rwa [edist_nndist, ENNReal.coe_le_coe]
+  -- 🎉 no goals
 #align holder_with.nndist_le_of_le HolderWith.nndist_le_of_le
 
 theorem nndist_le (hf : HolderWith C r f) (x y : X) :
@@ -251,9 +264,13 @@ theorem nndist_le (hf : HolderWith C r f) (x y : X) :
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
     dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   lift d to ℝ≥0 using dist_nonneg.trans hd
+  -- ⊢ dist (f x) (f y) ≤ ↑C * ↑d ^ ↑r
   rw [dist_nndist] at hd ⊢
+  -- ⊢ ↑(nndist (f x) (f y)) ≤ ↑C * ↑d ^ ↑r
   norm_cast at hd ⊢
+  -- ⊢ nndist (f x) (f y) ≤ C * d ^ ↑r
   exact hf.nndist_le_of_le hd
+  -- 🎉 no goals
 #align holder_with.dist_le_of_le HolderWith.dist_le_of_le
 
 theorem dist_le (hf : HolderWith C r f) (x y : X) : dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=

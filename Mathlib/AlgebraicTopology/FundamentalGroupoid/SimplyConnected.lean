@@ -45,6 +45,8 @@ theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
   rw [simply_connected_def, equiv_punit_iff_unique]; rfl
+  -- ⊢ (Nonempty (FundamentalGroupoid X) ∧ ∀ (x y : FundamentalGroupoid X), Nonempt …
+                                                     -- 🎉 no goals
 #align simply_connected_iff_unique_homotopic simply_connected_iff_unique_homotopic
 
 namespace SimplyConnectedSpace
@@ -54,6 +56,8 @@ variable {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X]
 instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
+    -- ⊢ Nonempty (Unique (Path.Homotopic.Quotient x y))
+                                                     -- 🎉 no goals
 
 attribute [local instance] Path.Homotopic.setoid
 
@@ -85,8 +89,15 @@ theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
   ⟨by intro; constructor <;> infer_instance, fun h => by
+      -- ⊢ PathConnectedSpace Y ∧ ∀ (x y : Y), Subsingleton (Path.Homotopic.Quotient x y)
+             -- ⊢ PathConnectedSpace Y
+                             -- 🎉 no goals
+                             -- 🎉 no goals
     cases h; rw [simply_connected_iff_unique_homotopic]
+    -- ⊢ SimplyConnectedSpace Y
+             -- ⊢ Nonempty Y ∧ ∀ (x y : Y), Nonempty (Unique (Path.Homotopic.Quotient x y))
     exact ⟨inferInstance, fun x y => ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
+    -- 🎉 no goals
 #align simply_connected_iff_paths_homotopic simply_connected_iff_paths_homotopic
 
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
@@ -94,5 +105,8 @@ theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic (Y := Y)
+  -- ⊢ (∀ (p₁ p₂ : Path a✝¹ a✝), Path.Homotopic p₁ p₂) ↔ Subsingleton (Path.Homotop …
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
+  -- ⊢ (∀ (p₁ p₂ : Path a✝¹ a✝), Path.Homotopic p₁ p₂) ↔ ∀ (x y : Path a✝¹ a✝), Set …
+                                                     -- 🎉 no goals
 #align simply_connected_iff_paths_homotopic' simply_connected_iff_paths_homotopic'

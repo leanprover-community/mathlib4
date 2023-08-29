@@ -37,6 +37,7 @@ variable {A : Mon_ C} (M : Mod_ A)
 
 theorem assoc_flip :
     (𝟙 A.X ⊗ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ⊗ 𝟙 M.X) ≫ M.act := by simp
+                                                                                   -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
 
@@ -82,6 +83,7 @@ lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f
 @[simp]
 theorem id_hom' (M : Mod_ A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
   rfl
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mod_.id_hom' Mod_.id_hom'
 
@@ -124,25 +126,40 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
       act := (f.hom ⊗ 𝟙 M.X) ≫ M.act
       one_act := by
         slice_lhs 1 2 => rw [← comp_tensor_id]
+        -- ⊢ (A.one ≫ f.hom ⊗ 𝟙 M.X) ≫ M.act = (λ_ M.X).hom
         rw [f.one_hom, one_act]
+        -- 🎉 no goals
       assoc := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (α_ A.X A.X M.X).hom ≫ ((f.hom ⊗ …
         rw [id_tensor_comp]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (α_ A.X A.X M.X).hom ≫ ((f.hom ⊗ …
         slice_rhs 4 5 => rw [Mod_.assoc_flip]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (α_ A.X A.X M.X).hom ≫ (f.hom ⊗  …
         slice_rhs 3 4 => rw [associator_inv_naturality]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (α_ A.X A.X M.X).hom ≫ (f.hom ⊗  …
         slice_rhs 2 3 => rw [← tensor_id, associator_inv_naturality]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (α_ A.X A.X M.X).hom ≫ ((((α_ A. …
         slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = ((((f.hom ⊗ 𝟙 A.X) ⊗ 𝟙 M.X) ≫ (( …
         slice_rhs 1 2 => rw [← comp_tensor_id, tensor_id_comp_id_tensor]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (((f.hom ⊗ f.hom) ⊗ 𝟙 M.X) ≫ (B. …
         slice_rhs 1 2 => rw [← comp_tensor_id, ← f.mul_hom]
+        -- ⊢ (A.mul ⊗ 𝟙 M.X) ≫ (f.hom ⊗ 𝟙 M.X) ≫ M.act = (A.mul ≫ f.hom ⊗ 𝟙 M.X) ≫ M.act
         rw [comp_tensor_id, Category.assoc] }
+        -- 🎉 no goals
   map g :=
     { hom := g.hom
       act_hom := by
         dsimp
+        -- ⊢ ((f.hom ⊗ 𝟙 X✝.X) ≫ X✝.act) ≫ g.hom = (𝟙 A.X ⊗ g.hom) ≫ (f.hom ⊗ 𝟙 Y✝.X) ≫ Y …
         slice_rhs 1 2 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
+        -- ⊢ ((f.hom ⊗ 𝟙 X✝.X) ≫ X✝.act) ≫ g.hom = ((f.hom ⊗ 𝟙 X✝.X) ≫ (𝟙 B.X ⊗ g.hom)) ≫ …
         slice_rhs 2 3 => rw [← g.act_hom]
+        -- ⊢ ((f.hom ⊗ 𝟙 X✝.X) ≫ X✝.act) ≫ g.hom = (f.hom ⊗ 𝟙 X✝.X) ≫ X✝.act ≫ g.hom
         rw [Category.assoc] }
+        -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mod_.comap Mod_.comap
 

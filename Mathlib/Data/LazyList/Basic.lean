@@ -31,11 +31,19 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   invFun := LazyList.toList
   right_inv := by
     intro xs
+    -- ⊢ ofList (toList xs) = xs
     induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
+      -- 🎉 no goals
     · simpa only [toList, ofList, cons.injEq, true_and]
+      -- 🎉 no goals
+    -- ⊢ toList (ofList xs) = xs
     · rw [Thunk.get, ih]
+    -- ⊢ toList (ofList []) = []
+      -- 🎉 no goals
+      -- 🎉 no goals
   left_inv := by
+      -- 🎉 no goals
     intro xs
     induction xs
     · rfl
@@ -50,10 +58,27 @@ instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
       match decidableEq xs.get ys.get with
       | isFalse h2 => by
         apply isFalse; simp only [cons.injEq, not_and]; intro _ xs_ys; apply h2; rw [xs_ys]
+        -- ⊢ ¬cons x xs = cons y ys
+                       -- ⊢ x = y → ¬xs = ys
+                                                        -- ⊢ False
+                                                                       -- ⊢ Thunk.get xs = Thunk.get ys
+                                                                                 -- 🎉 no goals
       | isTrue h2 => by apply isTrue; congr; ext; exact h2
+                        -- ⊢ cons x xs = cons y ys
+                                      -- ⊢ xs = ys
+                                             -- ⊢ Thunk.get xs = Thunk.get ys
+                                                  -- 🎉 no goals
     else by apply isFalse; simp only [cons.injEq, not_and]; intro; contradiction
+            -- ⊢ ¬cons x xs = cons y ys
+                           -- ⊢ x = y → ¬xs = ys
+                                                            -- ⊢ ¬xs = ys
+                                                                   -- 🎉 no goals
   | nil, cons _ _ => by apply isFalse; simp
+                        -- ⊢ ¬nil = cons hd✝ tl✝
+                                       -- 🎉 no goals
   | cons _ _, nil => by apply isFalse; simp
+                        -- ⊢ ¬cons hd✝ tl✝ = nil
+                                       -- 🎉 no goals
 
 /-- Traversal of lazy lists using an applicative effect. -/
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} (f : α → m β) :
@@ -68,24 +93,47 @@ instance : Traversable LazyList where
 
 instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
+                                                         -- ⊢ Functor.map f✝ = Equiv.map listEquivLazyList f✝
+                                                         -- ⊢ Functor.mapConst f✝ = (Equiv.map listEquivLazyList ∘ const α✝) f✝
+                                                         -- ⊢ traverse f✝ = Equiv.traverse listEquivLazyList f✝
+                                                                    -- ⊢ f✝ <$> x✝ = Equiv.map listEquivLazyList f✝ x✝
+                                                                    -- ⊢ Functor.mapConst f✝ x✝ = (Equiv.map listEquivLazyList ∘ const α✝) f✝ x✝
+                                                                    -- ⊢ traverse f✝ x✝ = Equiv.traverse listEquivLazyList f✝ x✝
+                                                                            -- ⊢ f <$> xs = Equiv.map listEquivLazyList f xs
+                                                                            -- ⊢ Functor.mapConst f xs = (Equiv.map listEquivLazyList ∘ const α✝) f xs
+                                                                            -- ⊢ traverse f xs = Equiv.traverse listEquivLazyList f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
+      -- 🎉 no goals
     · simpa only [Equiv.map, Functor.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk,
         LazyList.traverse, Seq.seq, toList, ofList, cons.injEq, true_and]
     · ext; apply ih
+      -- ⊢ Thunk.get (Thunk.pure (LazyList.traverse f (Thunk.get { fn := fn✝ }))) = Thu …
+           -- 🎉 no goals
   · simp only [Equiv.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, comp,
       Functor.mapConst]
     induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
+      -- 🎉 no goals
     · simpa only [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
+      -- 🎉 no goals
     · congr; apply ih
+      -- ⊢ LazyList.traverse (const α✝ f) (Thunk.get { fn := fn✝ }) = ofList (List.map  …
+             -- 🎉 no goals
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
+    -- ⊢ LazyList.traverse f xs = ofList <$> List.traverse f (toList xs)
     induction' xs using LazyList.rec with _ tl ih _ ih
     · simp only [List.traverse, map_pure]; rfl
+      -- ⊢ LazyList.traverse f nil = pure (ofList [])
+                                           -- 🎉 no goals
     · have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
+      -- ⊢ LazyList.traverse f (cons hd✝ tl) = ofList <$> List.traverse f (toList (cons …
       simp only [traverse._eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
+      -- ⊢ (Seq.seq (((fun x => x ∘ Thunk.pure ∘ ofList) ∘ cons) <$> f hd✝) fun x => Li …
       · rfl
+        -- 🎉 no goals
     · apply ih
+      -- 🎉 no goals
 
 /-- `init xs`, if `xs` non-empty, drops the last element of the list.
 Otherwise, return the empty list. -/
@@ -143,16 +191,24 @@ instance : Monad LazyList where
 theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction' xs using LazyList.rec with _ _ _ _ ih
   · rfl
+    -- 🎉 no goals
   · simpa only [append, cons.injEq, true_and]
+    -- 🎉 no goals
   · ext; apply ih
+    -- ⊢ Thunk.get { fn := fun x => append (Thunk.get { fn := fn✝ }) (Thunk.pure nil) …
+         -- 🎉 no goals
 #align lazy_list.append_nil LazyList.append_nil
 
 theorem append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
   induction' xs using LazyList.rec with _ _ _ _ ih
   · rfl
+    -- 🎉 no goals
   · simpa only [append, cons.injEq, true_and]
+    -- 🎉 no goals
   · ext; apply ih
+    -- ⊢ Thunk.get { fn := fun x => append (Thunk.get { fn := fun x => append (Thunk. …
+         -- 🎉 no goals
 #align lazy_list.append_assoc LazyList.append_assoc
 
 -- Porting note: Rewrote proof of `append_bind`.
@@ -170,14 +226,36 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
     intro _ _ f xs
+    -- ⊢ (do
     simp only [bind, Functor.map, pure, singleton]
+    -- ⊢ (LazyList.bind xs fun y => cons (f y) (Thunk.pure nil)) = LazyList.traverse  …
     induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
+      -- 🎉 no goals
     · simp only [bind._eq_2, append, traverse._eq_2, Id.map_eq, cons.injEq, true_and]; congr
+    -- ⊢ pure x✝ >>= f✝ = f✝ x✝
+      -- ⊢ cons (f hd✝) { fn := fun x => append (Thunk.get (Thunk.pure nil)) { fn := fu …
+    -- ⊢ append (f✝ x✝) { fn := fun x => LazyList.bind (Thunk.get (Thunk.pure nil)) f …
+                                                                                       -- 🎉 no goals
+    -- 🎉 no goals
     · ext; apply ih)
+      -- ⊢ Thunk.get { fn := fun x => append (Thunk.get (Thunk.pure nil)) { fn := fun x …
+    -- ⊢ xs >>= f✝ >>= g✝ = xs >>= fun x => f✝ x >>= g✝
+           -- 🎉 no goals
   (pure_bind := by
+    -- ⊢ id <$> xs = xs
+      -- 🎉 no goals
     intros
+      -- 🎉 no goals
+      -- ⊢ append (LazyList.bind (f✝ hd✝) g✝) { fn := fun x => LazyList.bind (Thunk.get …
+      -- 🎉 no goals
+                                                    -- 🎉 no goals
+      -- ⊢ Thunk.get (Thunk.pure (LazyList.traverse id (Thunk.get { fn := fn✝ }))) = Th …
+           -- 🎉 no goals
     simp only [bind, pure, singleton, LazyList.bind]
+      -- ⊢ (fun x => LazyList.bind (Thunk.get { fn := fun x => LazyList.bind (Thunk.get …
+             -- ⊢ LazyList.bind (Thunk.get { fn := fun x => LazyList.bind (Thunk.get { fn := f …
+                     -- 🎉 no goals
     apply append_nil)
   (bind_assoc := by
     intro _ _ _ xs _ _
@@ -212,16 +290,24 @@ instance {α} : Membership α (LazyList α) :=
 instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
   | LazyList.nil => by
     apply Decidable.isFalse
+    -- ⊢ ¬x ∈ nil
     simp [Membership.mem, LazyList.Mem]
+    -- 🎉 no goals
   | LazyList.cons y ys =>
     if h : x = y then by
       apply Decidable.isTrue
+      -- ⊢ x ∈ cons y ys
       simp only [Membership.mem, LazyList.Mem]
+      -- ⊢ x = y ∨ LazyList.Mem x (Thunk.get ys)
       exact Or.inl h
+      -- 🎉 no goals
     else by
       have := Mem.decidable x ys.get
+      -- ⊢ Decidable (x ∈ cons y ys)
       have : (x ∈ ys.get) ↔ (x ∈ cons y ys) := by simp [(· ∈ ·), LazyList.Mem, h]
+      -- ⊢ Decidable (x ∈ cons y ys)
       exact decidable_of_decidable_of_iff this
+      -- 🎉 no goals
 #align lazy_list.mem.decidable LazyList.Mem.decidable
 
 @[simp]
@@ -233,11 +319,13 @@ theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
 theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
     x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get := by
   simp [Membership.mem, LazyList.Mem]
+  -- 🎉 no goals
 #align lazy_list.mem_cons LazyList.mem_cons
 
 theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
     (∀ x ∈ @LazyList.cons _ a l, p x) ↔ p a ∧ ∀ x ∈ l.get, p x := by
   simp only [Membership.mem, LazyList.Mem, or_imp, forall_and, forall_eq]
+  -- 🎉 no goals
 #align lazy_list.forall_mem_cons LazyList.forall_mem_cons
 
 /-! ### map for partial functions -/

@@ -44,21 +44,25 @@ theorem nodup_Ioo : (Ioo a b).Nodup :=
 @[simp]
 theorem Icc_eq_zero_iff : Icc a b = 0 ↔ ¬a ≤ b := by
   rw [Icc, Finset.val_eq_zero, Finset.Icc_eq_empty_iff]
+  -- 🎉 no goals
 #align multiset.Icc_eq_zero_iff Multiset.Icc_eq_zero_iff
 
 @[simp]
 theorem Ico_eq_zero_iff : Ico a b = 0 ↔ ¬a < b := by
   rw [Ico, Finset.val_eq_zero, Finset.Ico_eq_empty_iff]
+  -- 🎉 no goals
 #align multiset.Ico_eq_zero_iff Multiset.Ico_eq_zero_iff
 
 @[simp]
 theorem Ioc_eq_zero_iff : Ioc a b = 0 ↔ ¬a < b := by
   rw [Ioc, Finset.val_eq_zero, Finset.Ioc_eq_empty_iff]
+  -- 🎉 no goals
 #align multiset.Ioc_eq_zero_iff Multiset.Ioc_eq_zero_iff
 
 @[simp]
 theorem Ioo_eq_zero_iff [DenselyOrdered α] : Ioo a b = 0 ↔ ¬a < b := by
   rw [Ioo, Finset.val_eq_zero, Finset.Ioo_eq_empty_iff]
+  -- 🎉 no goals
 #align multiset.Ioo_eq_zero_iff Multiset.Ioo_eq_zero_iff
 
 alias ⟨_, Icc_eq_zero⟩ := Icc_eq_zero_iff
@@ -99,14 +103,17 @@ variable (a)
 
 -- Porting note: simp can prove this -- @[simp]
 theorem Ico_self : Ico a a = 0 := by rw [Ico, Finset.Ico_self, Finset.empty_val]
+                                     -- 🎉 no goals
 #align multiset.Ico_self Multiset.Ico_self
 
 -- Porting note: simp can prove this -- @[simp]
 theorem Ioc_self : Ioc a a = 0 := by rw [Ioc, Finset.Ioc_self, Finset.empty_val]
+                                     -- 🎉 no goals
 #align multiset.Ioc_self Multiset.Ioc_self
 
 -- Porting note: simp can prove this -- @[simp]
 theorem Ioo_self : Ioo a a = 0 := by rw [Ioo, Finset.Ioo_self, Finset.empty_val]
+                                     -- 🎉 no goals
 #align multiset.Ioo_self Multiset.Ioo_self
 
 variable {a}
@@ -150,35 +157,45 @@ theorem right_not_mem_Ioo : b ∉ Ioo a b :=
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => x < c) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_left hca]
+  -- ⊢ ∅.val = ∅
   rfl
+  -- 🎉 no goals
 #align multiset.Ico_filter_lt_of_le_left Multiset.Ico_filter_lt_of_le_left
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
     ((Ico a b).filter fun x => x < c) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_right_le hbc]
+  -- 🎉 no goals
 #align multiset.Ico_filter_lt_of_right_le Multiset.Ico_filter_lt_of_right_le
 
 theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
     ((Ico a b).filter fun x => x < c) = Ico a c := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_right hcb]
+  -- ⊢ (Finset.Ico a c).val = Ico a c
   rfl
+  -- 🎉 no goals
 #align multiset.Ico_filter_lt_of_le_right Multiset.Ico_filter_lt_of_le_right
 
 theorem Ico_filter_le_of_le_left [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => c ≤ x) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_le_left hca]
+  -- 🎉 no goals
 #align multiset.Ico_filter_le_of_le_left Multiset.Ico_filter_le_of_le_left
 
 theorem Ico_filter_le_of_right_le [DecidablePred ((· ≤ ·) b)] :
     ((Ico a b).filter fun x => b ≤ x) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_right_le]
+  -- ⊢ ∅.val = ∅
   rfl
+  -- 🎉 no goals
 #align multiset.Ico_filter_le_of_right_le Multiset.Ico_filter_le_of_right_le
 
 theorem Ico_filter_le_of_left_le [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
     ((Ico a b).filter fun x => c ≤ x) = Ico c b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_left_le hac]
+  -- ⊢ (Finset.Ico c b).val = Ico c b
   rfl
+  -- 🎉 no goals
 #align multiset.Ico_filter_le_of_left_le Multiset.Ico_filter_le_of_left_le
 
 end Preorder
@@ -189,6 +206,7 @@ variable [PartialOrder α] [LocallyFiniteOrder α] {a b : α}
 
 @[simp]
 theorem Icc_self (a : α) : Icc a a = {a} := by rw [Icc, Finset.Icc_self, Finset.singleton_val]
+                                               -- 🎉 no goals
 #align multiset.Icc_self Multiset.Icc_self
 
 theorem Ico_cons_right (h : a ≤ b) : b ::ₘ Ico a b = Icc a b := by
@@ -206,7 +224,9 @@ theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
 theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : (Ico a b).Disjoint (Ico c d) :=
   fun x hab hbc => by
   rw [mem_Ico] at hab hbc
+  -- ⊢ False
   exact hab.2.not_le (h.trans hbc.1)
+  -- 🎉 no goals
 #align multiset.Ico_disjoint_Ico Multiset.Ico_disjoint_Ico
 
 @[simp]
@@ -217,7 +237,9 @@ theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     ((Ico a b).filter fun x => x ≤ a) = {a} := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_left hab]
+  -- ⊢ {a}.val = {a}
   rfl
+  -- 🎉 no goals
 #align multiset.Ico_filter_le_left Multiset.Ico_filter_le_left
 
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : card (Ico a b) = card (Icc a b) - 1 :=
@@ -255,26 +277,31 @@ theorem Ico_add_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
 
 theorem Ico_inter_Ico : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [Ico, Ico, Ico, ← Finset.inter_val, Finset.Ico_inter_Ico]
+  -- 🎉 no goals
 #align multiset.Ico_inter_Ico Multiset.Ico_inter_Ico
 
 @[simp]
 theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_lt]
+  -- 🎉 no goals
 #align multiset.Ico_filter_lt Multiset.Ico_filter_lt
 
 @[simp]
 theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (max a c) b := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_le]
+  -- 🎉 no goals
 #align multiset.Ico_filter_le Multiset.Ico_filter_le
 
 @[simp]
 theorem Ico_sub_Ico_left (a b c : α) : Ico a b - Ico a c = Ico (max a c) b := by
   rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_diff_Ico_left]
+  -- 🎉 no goals
 #align multiset.Ico_sub_Ico_left Multiset.Ico_sub_Ico_left
 
 @[simp]
 theorem Ico_sub_Ico_right (a b c : α) : Ico a b - Ico c b = Ico a (min b c) := by
   rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_diff_Ico_right]
+  -- 🎉 no goals
 #align multiset.Ico_sub_Ico_right Multiset.Ico_sub_Ico_right
 
 end LinearOrder
@@ -305,22 +332,30 @@ theorem map_add_left_Ioo (a b c : α) : (Ioo a b).map ((· + ·) c) = Ioo (c + a
 
 theorem map_add_right_Icc (a b c : α) : ((Icc a b).map fun x => x + c) = Icc (a + c) (b + c) := by
   simp_rw [add_comm _ c]
+  -- ⊢ map (fun x => c + x) (Icc a b) = Icc (c + a) (c + b)
   exact map_add_left_Icc _ _ _
+  -- 🎉 no goals
 #align multiset.map_add_right_Icc Multiset.map_add_right_Icc
 
 theorem map_add_right_Ico (a b c : α) : ((Ico a b).map fun x => x + c) = Ico (a + c) (b + c) := by
   simp_rw [add_comm _ c]
+  -- ⊢ map (fun x => c + x) (Ico a b) = Ico (c + a) (c + b)
   exact map_add_left_Ico _ _ _
+  -- 🎉 no goals
 #align multiset.map_add_right_Ico Multiset.map_add_right_Ico
 
 theorem map_add_right_Ioc (a b c : α) : ((Ioc a b).map fun x => x + c) = Ioc (a + c) (b + c) := by
   simp_rw [add_comm _ c]
+  -- ⊢ map (fun x => c + x) (Ioc a b) = Ioc (c + a) (c + b)
   exact map_add_left_Ioc _ _ _
+  -- 🎉 no goals
 #align multiset.map_add_right_Ioc Multiset.map_add_right_Ioc
 
 theorem map_add_right_Ioo (a b c : α) : ((Ioo a b).map fun x => x + c) = Ioo (a + c) (b + c) := by
   simp_rw [add_comm _ c]
+  -- ⊢ map (fun x => c + x) (Ioo a b) = Ioo (c + a) (c + b)
   exact map_add_left_Ioo _ _ _
+  -- 🎉 no goals
 #align multiset.map_add_right_Ioo Multiset.map_add_right_Ioo
 
 end OrderedCancelAddCommMonoid

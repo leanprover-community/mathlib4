@@ -78,10 +78,16 @@ structure Hom (X Y : Grothendieck F) where
 @[ext]
 theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
     (w_fiber : eqToHom (by rw [w_base]) ≫ f.fiber = g.fiber) : f = g := by
+                           -- 🎉 no goals
   cases f; cases g
+  -- ⊢ { base := base✝, fiber := fiber✝ } = g
+           -- ⊢ { base := base✝¹, fiber := fiber✝¹ } = { base := base✝, fiber := fiber✝ }
   congr
+  -- ⊢ HEq fiber✝¹ fiber✝
   dsimp at w_base
+  -- ⊢ HEq fiber✝¹ fiber✝
   aesop_cat
+  -- 🎉 no goals
 #align category_theory.grothendieck.ext CategoryTheory.Grothendieck.ext
 
 /-- The identity morphism in the Grothendieck category.
@@ -90,6 +96,7 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
 def id (X : Grothendieck F) : Hom X X where
   base := 𝟙 X.base
   fiber := eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber])
+                       -- 🎉 no goals
 #align category_theory.grothendieck.id CategoryTheory.Grothendieck.id
 
 instance (X : Grothendieck F) : Inhabited (Hom X X) :=
@@ -102,6 +109,7 @@ def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
   base := f.base ≫ g.base
   fiber :=
     eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫ (F.map g.base).map f.fiber ≫ g.fiber
+                -- 🎉 no goals
 #align category_theory.grothendieck.comp CategoryTheory.Grothendieck.comp
 
 attribute [local simp] eqToHom_map
@@ -112,29 +120,51 @@ instance : Category (Grothendieck F) where
   comp := @fun X Y Z f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
     dsimp; ext
+    -- ⊢ comp f (id Y) = f
+           -- ⊢ (comp f (id Y)).base = f.base
     · simp
+      -- 🎉 no goals
     · dsimp
+                              -- ⊢ comp (id X) f = f
+                                     -- ⊢ (comp (id X) f).base = f.base
+                                             -- 🎉 no goals
+                                             -- 🎉 no goals
+      -- ⊢ eqToHom (_ : (F.map f.base).obj X.fiber = (F.map (f.base ≫ 𝟙 Y.base)).obj X. …
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
+      -- ⊢ eqToHom (_ : (F.map f.base).obj X.fiber = (F.map (f.base ≫ 𝟙 Y.base)).obj X. …
       simp
+      -- 🎉 no goals
   id_comp := @fun X Y f => by dsimp; ext <;> simp
   assoc := @fun W X Y Z f g h => by
     dsimp; ext
+    -- ⊢ comp (comp f g) h = comp f (comp g h)
+           -- ⊢ (comp (comp f g) h).base = (comp f (comp g h)).base
     · simp
+      -- 🎉 no goals
     · dsimp
+      -- ⊢ eqToHom (_ : (F.map (f.base ≫ g.base ≫ h.base)).obj W.fiber = (F.map ((f.bas …
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
+      -- ⊢ eqToHom (_ : (F.map (f.base ≫ g.base ≫ h.base)).obj W.fiber = (F.map ((f.bas …
       simp
+      -- 🎉 no goals
 
 @[simp]
 theorem id_fiber' (X : Grothendieck F) :
     Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber]) :=
+                                  -- 🎉 no goals
   id_fiber X
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
 
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
+                          -- ⊢ (F.map f.base).obj X.fiber = (F.map f.base).obj X.fiber
+                                   -- 🎉 no goals
   subst h
+  -- ⊢ f.fiber = eqToHom (_ : (F.map f.base).obj X.fiber = (F.map f.base).obj X.fib …
   dsimp
+  -- ⊢ f.fiber = 𝟙 ((F.map f.base).obj X.fiber) ≫ f.fiber
   simp
+  -- 🎉 no goals
 #align category_theory.grothendieck.congr CategoryTheory.Grothendieck.congr
 
 section
@@ -191,27 +221,43 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     NatIso.ofComponents
       (fun X => by
         rcases X with ⟨_, ⟨⟩⟩
+        -- ⊢ (𝟭 (Grothendieck (G ⋙ typeToCat))).obj { base := base✝, fiber := { as := as✝ …
         exact Iso.refl _)
+        -- 🎉 no goals
       (by
         rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
+        -- ⊢ (𝟭 (Grothendieck (G ⋙ typeToCat))).map { base := base, fiber := { down := {  …
         dsimp at *
+        -- ⊢ { base := base, fiber := { down := { down := f } } } ≫ 𝟙 { base := base✝, fi …
         simp
+        -- ⊢ { base := base, fiber := { down := { down := f } } } = (grothendieckTypeToCa …
         rfl )
+        -- 🎉 no goals
   counitIso :=
     NatIso.ofComponents
       (fun X => by
         cases X
+        -- ⊢ (grothendieckTypeToCatInverse G ⋙ grothendieckTypeToCatFunctor G).obj { fst  …
         exact Iso.refl _)
+        -- 🎉 no goals
       (by
         rintro ⟨⟩ ⟨⟩ ⟨f, e⟩
+        -- ⊢ (grothendieckTypeToCatInverse G ⋙ grothendieckTypeToCatFunctor G).map { val  …
         dsimp at *
+        -- ⊢ (grothendieckTypeToCatFunctor G).map ((grothendieckTypeToCatInverse G).map { …
         simp
+        -- ⊢ (grothendieckTypeToCatFunctor G).map ((grothendieckTypeToCatInverse G).map { …
         rfl)
+        -- 🎉 no goals
   functor_unitIso_comp := by
     rintro ⟨_, ⟨⟩⟩
+    -- ⊢ (grothendieckTypeToCatFunctor G).map (NatTrans.app (NatIso.ofComponents fun  …
     dsimp
+    -- ⊢ (grothendieckTypeToCatFunctor G).map (𝟙 { base := base✝, fiber := { as := as …
     simp
+    -- ⊢ (Sigma.rec (motive := fun t => (grothendieckTypeToCatFunctor G).obj { base : …
     rfl
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat CategoryTheory.Grothendieck.grothendieckTypeToCat
 

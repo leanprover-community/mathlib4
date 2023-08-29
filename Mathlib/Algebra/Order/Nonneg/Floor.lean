@@ -29,6 +29,7 @@ instance archimedean [OrderedAddCommMonoid α] [Archimedean α] : Archimedean { 
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
     ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
+                                                       -- 🎉 no goals
 #align nonneg.archimedean Nonneg.archimedean
 
 instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :

@@ -100,27 +100,48 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
          _⟩, _⟩, _, _⟩, _⟩)
       (fun s => _)
   · intro j j' f
+    -- ⊢ (F ⋙ forget (AlgebraCatMax R)).map f ((fun j => NatTrans.app ((forget (Algeb …
     exact FunLike.congr_fun (Cone.w s f) v
+    -- 🎉 no goals
   · -- Porting note: we could add a custom `ext` lemma here.
     apply Subtype.ext
+    -- ⊢ ↑((fun v => { val := fun j => NatTrans.app ((forget (AlgebraCat R)).mapCone  …
     ext j
+    -- ⊢ ↑((fun v => { val := fun j => NatTrans.app ((forget (AlgebraCat R)).mapCone  …
     simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    -- ⊢ 1 = ↑1 j
     rfl
+    -- 🎉 no goals
   · intro x y
+    -- ⊢ OneHom.toFun { toFun := fun v => { val := fun j => NatTrans.app ((forget (Al …
     apply Subtype.ext
+    -- ⊢ ↑(OneHom.toFun { toFun := fun v => { val := fun j => NatTrans.app ((forget ( …
     ext j
+    -- ⊢ ↑(OneHom.toFun { toFun := fun v => { val := fun j => NatTrans.app ((forget ( …
     simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    -- ⊢ ↑(NatTrans.app s.π j) x * ↑(NatTrans.app s.π j) y = ↑({ val := fun j => ↑(Na …
     rfl
+    -- 🎉 no goals
   · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+    -- ⊢ { val := fun j => 0, property := (_ : (fun x => x ∈ Functor.sections (F ⋙ fo …
     rfl
+    -- 🎉 no goals
   · intro x y
+    -- ⊢ OneHom.toFun (↑{ toOneHom := { toFun := fun v => { val := fun j => NatTrans. …
     simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    -- ⊢ { val := fun j => ↑(NatTrans.app s.π j) x + ↑(NatTrans.app s.π j) y, propert …
     rfl
+    -- 🎉 no goals
   · intro r
+    -- ⊢ OneHom.toFun (↑↑{ toMonoidHom := { toOneHom := { toFun := fun v => { val :=  …
     apply Subtype.ext
+    -- ⊢ ↑(OneHom.toFun (↑↑{ toMonoidHom := { toOneHom := { toFun := fun v => { val : …
     ext j
+    -- ⊢ ↑(OneHom.toFun (↑↑{ toMonoidHom := { toOneHom := { toFun := fun v => { val : …
     exact (s.π.app j).commutes r
+    -- 🎉 no goals
   · rfl
+    -- 🎉 no goals
 #align Algebra.has_limits.limit_cone_is_limit AlgebraCat.HasLimits.limitConeIsLimit
 
 end HasLimits

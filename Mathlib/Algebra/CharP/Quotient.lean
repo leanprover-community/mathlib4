@@ -37,9 +37,13 @@ theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
     (h : ∀ x : ℕ, (x : R) ∈ I → (x : R) = 0) : CharP (R ⧸ I) p :=
   ⟨fun x => by
     rw [← cast_eq_zero_iff R p x, ← map_natCast (Ideal.Quotient.mk I)]
+    -- ⊢ ↑(Ideal.Quotient.mk I) ↑x = 0 ↔ ↑x = 0
     refine' Ideal.Quotient.eq.trans (_ : ↑x - 0 ∈ I ↔ _)
+    -- ⊢ ↑x - 0 ∈ I ↔ ↑x = 0
     rw [sub_zero]
+    -- ⊢ ↑x ∈ I ↔ ↑x = 0
     exact ⟨h x, fun h' => h'.symm ▸ I.zero_mem⟩⟩
+    -- 🎉 no goals
 #align char_p.quotient' CharP.quotient'
 
 end CharP
@@ -47,10 +51,18 @@ end CharP
 theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
     (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
+  -- ⊢ ↑(if h : Finite (R ⧸ Submodule.toAddSubgroup I) then Fintype.card (R ⧸ Submo …
   split_ifs with hq; swap; simp
+  -- ⊢ ↑(Fintype.card (R ⧸ Submodule.toAddSubgroup I)) = 0
+                     -- ⊢ ↑0 = 0
+                           -- ⊢ ↑(Fintype.card (R ⧸ Submodule.toAddSubgroup I)) = 0
   by_contra h
+  -- ⊢ False
   -- TODO: can we avoid rewriting the `I.to_add_subgroup` here?
   letI : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
+  -- ⊢ False
   have h : (Fintype.card (R ⧸ I) : R ⧸ I) ≠ 0 := h
+  -- ⊢ False
   simp at h
+  -- 🎉 no goals
 #align ideal.quotient.index_eq_zero Ideal.Quotient.index_eq_zero

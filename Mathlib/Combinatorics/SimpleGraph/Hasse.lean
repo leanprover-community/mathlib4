@@ -49,6 +49,7 @@ theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
 /-- `αᵒᵈ` and `α` have the same Hasse diagram. -/
 def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
   { ofDual with map_rel_iff' := by simp [or_comm] }
+                                   -- 🎉 no goals
 #align simple_graph.hasse_dual_iso SimpleGraph.hasseDualIso
 
 @[simp]
@@ -70,6 +71,7 @@ variable [PartialOrder α] [PartialOrder β]
 @[simp]
 theorem hasse_prod : hasse (α × β) = hasse α □ hasse β := by
   ext x y
+  -- ⊢ Adj (hasse (α × β)) x y ↔ Adj (hasse α □ hasse β) x y
   simp_rw [boxProd_adj, hasse_adj, Prod.covby_iff, or_and_right, @eq_comm _ y.1, @eq_comm _ y.2,
     or_or_or_comm]
 #align simple_graph.hasse_prod SimpleGraph.hasse_prod
@@ -83,6 +85,7 @@ variable [LinearOrder α]
 theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen]
+  -- ⊢ ReflTransGen (hasse α).Adj a b
   exact
     reflTransGen_of_succ _ (fun c hc => Or.inl <| covby_succ_of_not_isMax hc.2.not_isMax)
       fun c hc => Or.inr <| covby_succ_of_not_isMax hc.2.not_isMax
@@ -91,6 +94,7 @@ theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hass
 theorem hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
+  -- ⊢ ReflTransGen (Function.swap (hasse α).Adj) b a
   exact
     reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covby_of_not_isMin hc.1.not_isMin)
       fun c hc => Or.inr <| pred_covby_of_not_isMin hc.1.not_isMin

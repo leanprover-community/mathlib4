@@ -106,8 +106,11 @@ variable [SMul 𝕜 E] {s : Set E} {f g : E → β}
 theorem QuasiconvexOn.sup [SemilatticeSup β] (hf : QuasiconvexOn 𝕜 s f)
     (hg : QuasiconvexOn 𝕜 s g) : QuasiconvexOn 𝕜 s (f ⊔ g) := by
   intro r
+  -- ⊢ Convex 𝕜 {x | x ∈ s ∧ (f ⊔ g) x ≤ r}
   simp_rw [Pi.sup_def, sup_le_iff, Set.sep_and]
+  -- ⊢ Convex 𝕜 ({x | x ∈ s ∧ f x ≤ r} ∩ {x | x ∈ s ∧ g x ≤ r})
   exact (hf r).inter (hg r)
+  -- 🎉 no goals
 #align quasiconvex_on.sup QuasiconvexOn.sup
 
 theorem QuasiconcaveOn.inf [SemilatticeInf β] (hf : QuasiconcaveOn 𝕜 s f)
@@ -140,14 +143,19 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
   rw [QuasilinearOn, quasiconvexOn_iff_le_max, quasiconcaveOn_iff_min_le, and_and_and_comm,
     and_self_iff]
   apply and_congr_right'
+  -- ⊢ ((∀ ⦃x : E⦄, x ∈ s → ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = …
   simp_rw [← forall_and, ← Icc_min_max, mem_Icc, and_comm]
+  -- 🎉 no goals
 #align quasilinear_on_iff_mem_uIcc quasilinearOn_iff_mem_uIcc
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
   refine' fun x hx y hy a b ha hb hab => _
+  -- ⊢ a • x + b • y ∈ {x | x ∈ s ∧ f x < r}
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
+  -- ⊢ a • x + b • y ∈ {x | x ∈ s ∧ f x < r}
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
+  -- 🎉 no goals
 #align quasiconvex_on.convex_lt QuasiconvexOn.convex_lt
 
 theorem QuasiconcaveOn.convex_gt (hf : QuasiconcaveOn 𝕜 s f) (r : β) :
@@ -238,8 +246,14 @@ variable [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → β}
 theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : QuasilinearOn 𝕜 s f) :
     MonotoneOn f s ∨ AntitoneOn f s := by
   simp_rw [monotoneOn_or_antitoneOn_iff_uIcc, ← segment_eq_uIcc]
+  -- ⊢ ∀ (a : 𝕜), a ∈ s → ∀ (b : 𝕜), b ∈ s → ∀ (c : 𝕜), c ∈ s → c ∈ segment 𝕜 a b → …
   rintro a ha b hb c _ h
+  -- ⊢ f c ∈ uIcc (f a) (f b)
   refine' ⟨((hf.2 _).segment_subset _ _ h).2, ((hf.1 _).segment_subset _ _ h).2⟩ <;> simp [*]
+                                                                                     -- 🎉 no goals
+                                                                                     -- 🎉 no goals
+                                                                                     -- 🎉 no goals
+                                                                                     -- 🎉 no goals
 #align quasilinear_on.monotone_on_or_antitone_on QuasilinearOn.monotoneOn_or_antitoneOn
 
 theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrderedAddCommMonoid β]

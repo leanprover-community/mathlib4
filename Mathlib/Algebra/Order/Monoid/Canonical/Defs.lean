@@ -58,7 +58,9 @@ variable [MulOneClass α] [Preorder α] [ContravariantClass α α (· * ·) (· 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt' (h : a < b) : ∃ c, 1 < c ∧ a * c = b := by
   obtain ⟨c, rfl⟩ := exists_mul_of_le h.le
+  -- ⊢ ∃ c_1, 1 < c_1 ∧ a * c_1 = a * c
   exact ⟨c, one_lt_of_lt_mul_right h, rfl⟩
+  -- 🎉 no goals
 #align exists_one_lt_mul_of_lt' exists_one_lt_mul_of_lt'
 #align exists_pos_add_of_lt' exists_pos_add_of_lt'
 
@@ -73,7 +75,9 @@ variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
 theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
   le_of_forall_le_of_dense fun x hxb => by
     obtain ⟨ε, rfl⟩ := exists_mul_of_le hxb.le
+    -- ⊢ a ≤ b * ε
     exact h _ ((lt_mul_iff_one_lt_right' b).1 hxb)
+    -- 🎉 no goals
 #align le_of_forall_one_lt_le_mul le_of_forall_one_lt_le_mul
 #align le_of_forall_pos_le_add le_of_forall_pos_le_add
 
@@ -160,7 +164,9 @@ theorem le_self_mul : a ≤ a * c :=
 @[to_additive]
 theorem le_mul_self : a ≤ b * a := by
   rw [mul_comm]
+  -- ⊢ a ≤ a * b
   exact le_self_mul
+  -- 🎉 no goals
 #align le_mul_self le_mul_self
 #align le_add_self le_add_self
 
@@ -204,13 +210,16 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
 theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
   ⟨exists_mul_of_le, by
     rintro ⟨c, rfl⟩
+    -- ⊢ a ≤ a * c
     exact le_self_mul⟩
+    -- 🎉 no goals
 #align le_iff_exists_mul le_iff_exists_mul
 #align le_iff_exists_add le_iff_exists_add
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
+  -- 🎉 no goals
 #align le_iff_exists_mul' le_iff_exists_mul'
 #align le_iff_exists_add' le_iff_exists_add'
 
@@ -255,15 +264,20 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
+  -- 🎉 no goals
 #align one_lt_mul_iff one_lt_mul_iff
 #align add_pos_iff add_pos_iff
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
+  -- ⊢ ∃ c x, a * c = b
   refine' ⟨c, one_lt_iff_ne_one.2 _, hc.symm⟩
+  -- ⊢ c ≠ 1
   rintro rfl
+  -- ⊢ False
   simp [hc, lt_irrefl] at h
+  -- 🎉 no goals
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
 #align exists_pos_add_of_lt exists_pos_add_of_lt
 
@@ -271,6 +285,7 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
 theorem le_mul_left (h : a ≤ c) : a ≤ b * c :=
   calc
     a = 1 * a := by simp
+                    -- 🎉 no goals
     _ ≤ b * c := mul_le_mul' (one_le _) h
 #align le_mul_left le_mul_left
 #align le_add_left le_add_left
@@ -279,6 +294,7 @@ theorem le_mul_left (h : a ≤ c) : a ≤ b * c :=
 theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
   calc
     a = a * 1 := by simp
+                    -- 🎉 no goals
     _ ≤ b * c := mul_le_mul' h (one_le _)
 #align le_mul_right le_mul_right
 #align le_add_right le_add_right
@@ -286,17 +302,29 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
+  -- ⊢ (∃ x, b = a * x ∧ a ≠ b) ↔ ∃ c, c > 1 ∧ b = a * c
   apply exists_congr
+  -- ⊢ ∀ (a_1 : α), b = a * a_1 ∧ a ≠ b ↔ a_1 > 1 ∧ b = a * a_1
   intro c
+  -- ⊢ b = a * c ∧ a ≠ b ↔ c > 1 ∧ b = a * c
   rw [and_comm, and_congr_left_iff, gt_iff_lt]
+  -- ⊢ b = a * c → (a ≠ b ↔ 1 < c)
   rintro rfl
+  -- ⊢ a ≠ a * c ↔ 1 < c
   constructor
+  -- ⊢ a ≠ a * c → 1 < c
   · rw [one_lt_iff_ne_one]
+    -- ⊢ a ≠ a * c → c ≠ 1
     apply mt
+    -- ⊢ c = 1 → a = a * c
     rintro rfl
+    -- ⊢ a = a * 1
     rw [mul_one]
+    -- 🎉 no goals
   · rw [← (self_le_mul_right a c).lt_iff_ne]
+    -- ⊢ 1 < c → a < a * c
     apply lt_mul_of_one_lt_right'
+    -- 🎉 no goals
 #align lt_iff_exists_mul lt_iff_exists_mul
 #align lt_iff_exists_add lt_iff_exists_add
 
@@ -357,16 +385,22 @@ instance (priority := 100) CanonicallyLinearOrderedMonoid.semilatticeSup : Semil
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
   cases' le_total a b with hb hb
+  -- ⊢ min a (b * c) = min a (min a b * min a c)
   · simp [hb, le_mul_right]
+    -- 🎉 no goals
   · cases' le_total a c with hc hc
+    -- ⊢ min a (b * c) = min a (min a b * min a c)
     · simp [hc, le_mul_left]
+      -- 🎉 no goals
     · simp [hb, hc]
+      -- 🎉 no goals
 #align min_mul_distrib min_mul_distrib
 #align min_add_distrib min_add_distrib
 
 @[to_additive]
 theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) c := by
   simpa [min_comm _ c] using min_mul_distrib c a b
+  -- 🎉 no goals
 #align min_mul_distrib' min_mul_distrib'
 #align min_add_distrib' min_add_distrib'
 

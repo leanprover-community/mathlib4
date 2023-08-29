@@ -161,6 +161,7 @@ instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso
 
 @[reassoc (attr := simp)]
 lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by aesop_cat
+                                                                         -- 🎉 no goals
 
 variable {D}
 variable [HasZeroMorphisms D]
@@ -170,6 +171,7 @@ short complex in `C`, assuming that `F` preserves zero morphisms. -/
 @[simps]
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
+                                              -- 🎉 no goals
 
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
@@ -200,10 +202,14 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
       τ₃ := F.map φ.τ₃
       comm₁₂ := by
         dsimp
+        -- ⊢ F.map φ.τ₁ ≫ F.map Y✝.f = F.map X✝.f ≫ F.map φ.τ₂
         simp only [← F.map_comp, φ.comm₁₂]
+        -- 🎉 no goals
       comm₂₃ := by
         dsimp
+        -- ⊢ F.map φ.τ₂ ≫ F.map Y✝.g = F.map X✝.g ≫ F.map φ.τ₃
         simp only [← F.map_comp, φ.comm₂₃] }
+        -- 🎉 no goals
 
 /-- A constructor for isomorphisms in the category `ShortComplex C`-/
 @[simps]
@@ -225,6 +231,8 @@ lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso 
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
+                       -- ⊢ 0.op = 0
+                                                      -- 🎉 no goals
 
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
@@ -234,10 +242,14 @@ def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
   τ₃ := φ.τ₁.op
   comm₁₂ := by
     dsimp
+    -- ⊢ φ.τ₃.op ≫ S₁.g.op = S₂.g.op ≫ φ.τ₂.op
     simp only [← op_comp, φ.comm₂₃]
+    -- 🎉 no goals
   comm₂₃ := by
     dsimp
+    -- ⊢ φ.τ₂.op ≫ S₁.f.op = S₂.f.op ≫ φ.τ₁.op
     simp only [← op_comp, φ.comm₁₂]
+    -- 🎉 no goals
 
 @[simp]
 lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
@@ -246,6 +258,8 @@ lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
   mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
+                           -- ⊢ 0.unop = 0
+                                                            -- 🎉 no goals
 
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]
@@ -255,10 +269,14 @@ def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop 
   τ₃ := φ.τ₁.unop
   comm₁₂ := by
     dsimp
+    -- ⊢ φ.τ₃.unop ≫ S₁.g.unop = S₂.g.unop ≫ φ.τ₂.unop
     simp only [← unop_comp, φ.comm₂₃]
+    -- 🎉 no goals
   comm₂₃ := by
     dsimp
+    -- ⊢ φ.τ₂.unop ≫ S₁.f.unop = S₂.f.unop ≫ φ.τ₁.unop
     simp only [← unop_comp, φ.comm₁₂]
+    -- 🎉 no goals
 
 @[simp]
 lemma unopMap_id (S : ShortComplex Cᵒᵖ) : unopMap (𝟙 S) = 𝟙 S.unop := rfl

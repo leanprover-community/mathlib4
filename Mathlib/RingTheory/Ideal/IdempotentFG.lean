@@ -19,31 +19,50 @@ namespace Ideal
 theorem isIdempotentElem_iff_of_fg {R : Type*} [CommRing R] (I : Ideal R) (h : I.FG) :
     IsIdempotentElem I ↔ ∃ e : R, IsIdempotentElem e ∧ I = R ∙ e := by
   constructor
+  -- ⊢ IsIdempotentElem I → ∃ e, IsIdempotentElem e ∧ I = Submodule.span R {e}
   · intro e
+    -- ⊢ ∃ e, IsIdempotentElem e ∧ I = Submodule.span R {e}
     obtain ⟨r, hr, hr'⟩ :=
       Submodule.exists_mem_and_smul_eq_self_of_fg_of_le_smul I I h
         (by
           rw [smul_eq_mul]
           exact e.ge)
     simp_rw [smul_eq_mul] at hr'
+    -- ⊢ ∃ e, IsIdempotentElem e ∧ I = Submodule.span R {e}
     refine' ⟨r, hr' r hr, antisymm _ ((Submodule.span_singleton_le_iff_mem _ _).mpr hr)⟩
+    -- ⊢ I ≤ Submodule.span R {r}
     intro x hx
+    -- ⊢ x ∈ Submodule.span R {r}
     rw [← hr' x hx]
+    -- ⊢ r * x ∈ Submodule.span R {r}
     exact Ideal.mem_span_singleton'.mpr ⟨_, mul_comm _ _⟩
+    -- 🎉 no goals
   · rintro ⟨e, he, rfl⟩
+    -- ⊢ IsIdempotentElem (Submodule.span R {e})
     simp [IsIdempotentElem, Ideal.span_singleton_mul_span_singleton, he.eq]
+    -- 🎉 no goals
 #align ideal.is_idempotent_elem_iff_of_fg Ideal.isIdempotentElem_iff_of_fg
 
 theorem isIdempotentElem_iff_eq_bot_or_top {R : Type*} [CommRing R] [IsDomain R] (I : Ideal R)
     (h : I.FG) : IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
   constructor
+  -- ⊢ IsIdempotentElem I → I = ⊥ ∨ I = ⊤
   · intro H
+    -- ⊢ I = ⊥ ∨ I = ⊤
     obtain ⟨e, he, rfl⟩ := (I.isIdempotentElem_iff_of_fg h).mp H
+    -- ⊢ Submodule.span R {e} = ⊥ ∨ Submodule.span R {e} = ⊤
     simp only [Ideal.submodule_span_eq, Ideal.span_singleton_eq_bot]
+    -- ⊢ e = 0 ∨ span {e} = ⊤
     apply Or.imp id _ (IsIdempotentElem.iff_eq_zero_or_one.mp he)
+    -- ⊢ e = 1 → span {e} = ⊤
     rintro rfl
+    -- ⊢ span {1} = ⊤
     simp
+    -- 🎉 no goals
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
+    -- ⊢ IsIdempotentElem ⊥
+                           -- 🎉 no goals
+                           -- 🎉 no goals
 #align ideal.is_idempotent_elem_iff_eq_bot_or_top Ideal.isIdempotentElem_iff_eq_bot_or_top
 
 end Ideal

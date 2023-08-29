@@ -73,16 +73,28 @@ protected def fix (x : α) : Part (β x) :=
 protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x := by
   let p := fun i : ℕ => (Fix.approx f i x).Dom
+  -- ⊢ Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x
   have : p (Nat.find h') := Nat.find_spec h'
+  -- ⊢ Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x
   generalize hk : Nat.find h' = k
+  -- ⊢ Part.fix f x = Fix.approx f (Nat.succ k) x
   replace hk : Nat.find h' = k + (@Upto.zero p).val := hk
+  -- ⊢ Part.fix f x = Fix.approx f (Nat.succ k) x
   rw [hk] at this
+  -- ⊢ Part.fix f x = Fix.approx f (Nat.succ k) x
   revert hk
+  -- ⊢ Nat.find h' = k + ↑Upto.zero → Part.fix f x = Fix.approx f (Nat.succ k) x
   dsimp [Part.fix]; rw [assert_pos h']; revert this
+  -- ⊢ Nat.find h' = k + ↑Upto.zero → (assert (∃ i, (Fix.approx f i x).Dom) fun h = …
+                    -- ⊢ Nat.find h' = k + ↑Upto.zero → WellFounded.fix (_ : WellFounded (Upto.GT fun …
+                                        -- ⊢ p (k + ↑Upto.zero) → Nat.find h' = k + ↑Upto.zero → WellFounded.fix (_ : Wel …
   generalize Upto.zero = z; intro _this hk
+  -- ⊢ p (k + ↑z) → Nat.find h' = k + ↑z → WellFounded.fix (_ : WellFounded (Upto.G …
+                            -- ⊢ WellFounded.fix (_ : WellFounded (Upto.GT fun x_1 => (Fix.approx f x_1 x).Do …
   suffices : ∀ x',
     WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
   exact this _
+  -- ⊢ ∀ (x' : α), WellFounded.fix (_ : WellFounded (Upto.GT fun x_1 => (Fix.approx …
   induction k generalizing z with
   | zero =>
     intro x'
@@ -109,7 +121,9 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
 
 theorem fix_def' {x : α} (h' : ¬∃ i, (Fix.approx f i x).Dom) : Part.fix f x = none := by
   dsimp [Part.fix]
+  -- ⊢ (assert (∃ i, (Fix.approx f i x).Dom) fun h => WellFounded.fix (_ : WellFoun …
   rw [assert_neg h']
+  -- 🎉 no goals
 #align part.fix_def' Part.fix_def'
 
 end Basic

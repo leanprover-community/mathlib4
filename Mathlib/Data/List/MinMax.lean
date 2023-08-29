@@ -41,25 +41,42 @@ def argAux (a : Option α) (b : α) : Option α :=
 @[simp]
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
+                          -- 🎉 no goals
     simp [argAux]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
+    -- ⊢ (foldl (fun a b => Option.rec (some b) (fun val => if r b val then some b el …
+                   -- ⊢ (none = none ↔ tl = [] ∧ o = none) → ¬Option.rec (some hd) (fun val => if r  …
+                                                   -- 🎉 no goals
+                                                   -- ⊢ (tl = [] → ¬o = none) → ¬(if r hd val✝ then some hd else some val✝) = none
+                                                         -- 🎉 no goals
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
   List.reverseRecOn l (by simp [eq_comm])
+                          -- 🎉 no goals
     (by
       intro tl hd ih a m
+      -- ⊢ m ∈ foldl (argAux r) (some a) (tl ++ [hd]) → m ∈ a :: (tl ++ [hd])
       simp only [foldl_append, foldl_cons, foldl_nil, argAux]
+      -- ⊢ m ∈ Option.rec (some hd) (fun val => if r hd val then some hd else some val) …
       cases hf : foldl (argAux r) (some a) tl
+      -- ⊢ m ∈ Option.rec (some hd) (fun val => if r hd val then some hd else some val) …
       · simp (config := { contextual := true })
+        -- 🎉 no goals
       · dsimp only
+        -- ⊢ (m ∈ if r hd val✝ then some hd else some val✝) → m ∈ a :: (tl ++ [hd])
         split_ifs
+        -- ⊢ m ∈ some hd → m ∈ a :: (tl ++ [hd])
         · simp (config := { contextual := true })
+          -- 🎉 no goals
         · -- `finish [ih _ _ hf]` closes this goal
           simp only [List.mem_cons] at ih
+          -- ⊢ m ∈ some val✝ → m ∈ a :: (tl ++ [hd])
           rcases ih _ _ hf with rfl | H
+          -- ⊢ m ∈ some val✝ → m ∈ val✝ :: (tl ++ [hd])
           · simp (config := { contextual := true }) only [Option.mem_def, Option.some.injEq,
               find?, eq_comm, mem_cons, mem_append, mem_singleton, true_or, implies_true]
           · simp (config := { contextual := true }) [@eq_comm _ _ m, H])
+            -- 🎉 no goals
 
 @[simp]
 theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :=
@@ -69,21 +86,46 @@ theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :
 theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
   induction' l using List.reverseRecOn with tl a ih
+  -- ⊢ ∀ {a m : α} {o : Option α}, a ∈ [] → m ∈ foldl (argAux r) o [] → ¬r a m
   · simp
+    -- 🎉 no goals
   intro b m o hb ho
+  -- ⊢ ¬r b m
   rw [foldl_append, foldl_cons, foldl_nil, argAux] at ho
+  -- ⊢ ¬r b m
   cases' hf : foldl (argAux r) o tl with c
+  -- ⊢ ¬r b m
   · rw [hf] at ho
+    -- ⊢ ¬r b m
     rw [foldl_argAux_eq_none] at hf
+    -- ⊢ ¬r b m
     simp_all [hf.1, hf.2, hr₀ _]
+    -- 🎉 no goals
   rw [hf, Option.mem_def] at ho
+  -- ⊢ ¬r b m
   dsimp only at ho
+  -- ⊢ ¬r b m
   split_ifs at ho with hac <;> cases' mem_append.1 hb with h h <;>
+  -- ⊢ ¬r b m
+                               -- ⊢ ¬r b m
+                               -- ⊢ ¬r b m
     injection ho with ho <;> subst ho
+    -- ⊢ ¬r b m
+    -- ⊢ ¬r b m
+    -- ⊢ ¬r b m
+    -- ⊢ ¬r b m
+                             -- ⊢ ¬r b a
+                             -- ⊢ ¬r b a
+                             -- ⊢ ¬r b c
+                             -- ⊢ ¬r b c
   · exact fun hba => ih h hf (hr₁ hba hac)
+    -- 🎉 no goals
   · simp_all [hr₀ _]
+    -- 🎉 no goals
   · exact ih h hf
+    -- 🎉 no goals
   · simp_all
+    -- 🎉 no goals
 #align list.not_of_mem_foldl_arg_aux List.not_of_mem_foldl_argAux
 
 end ArgAux
@@ -140,6 +182,8 @@ theorem argmax_concat (f : α → β) (a : α) (l : List α) :
     argmax f (l ++ [a]) =
       Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c :=
   by rw [argmax, argmax]; simp [argAux]
+     -- ⊢ foldl (argAux fun b c => f c < f b) none (l ++ [a]) = Option.casesOn (foldl  …
+                          -- 🎉 no goals
 #align list.argmax_concat List.argmax_concat
 
 theorem argmin_concat (f : α → β) (a : α) (l : List α) :
@@ -150,7 +194,9 @@ theorem argmin_concat (f : α → β) (a : α) (l : List α) :
 
 theorem argmax_mem : ∀ {l : List α} {m : α}, m ∈ argmax f l → m ∈ l
   | [], m => by simp
+                -- 🎉 no goals
   | hd :: tl, m => by simpa [argmax, argAux] using foldl_argAux_mem _ tl hd m
+                      -- 🎉 no goals
 #align list.argmax_mem List.argmax_mem
 
 theorem argmin_mem : ∀ {l : List α} {m : α}, m ∈ argmin f l → m ∈ l :=
@@ -159,6 +205,7 @@ theorem argmin_mem : ∀ {l : List α} {m : α}, m ∈ argmin f l → m ∈ l :=
 
 @[simp]
 theorem argmax_eq_none : l.argmax f = none ↔ l = [] := by simp [argmax]
+                                                          -- 🎉 no goals
 #align list.argmax_eq_none List.argmax_eq_none
 
 @[simp]
@@ -185,14 +232,29 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
       Option.casesOn (argmax f l) (some a) fun c => if f a < f c then some c else some a :=
   List.reverseRecOn l rfl fun hd tl ih => by
     rw [← cons_append, argmax_concat, ih, argmax_concat]
+    -- ⊢ (Option.casesOn (Option.casesOn (argmax f hd) (some a) fun c => if f a < f c …
     cases' h : argmax f hd with m
+    -- ⊢ (Option.casesOn (Option.casesOn none (some a) fun c => if f a < f c then som …
     · simp [h]
+      -- 🎉 no goals
     dsimp
+    -- ⊢ Option.rec (some tl) (fun val => if f val < f tl then some tl else some val) …
     rw [← apply_ite, ← apply_ite]
+    -- ⊢ Option.rec (some tl) (fun val => if f val < f tl then some tl else some val) …
     dsimp
+    -- ⊢ (if f (if f a < f m then m else a) < f tl then some tl else some (if f a < f …
     split_ifs <;> try rfl
+                  -- 🎉 no goals
+                  -- ⊢ some tl = some a
+                  -- 🎉 no goals
+                  -- 🎉 no goals
+                  -- ⊢ some tl = some a
+                  -- 🎉 no goals
+                  -- 🎉 no goals
     · exact absurd (lt_trans ‹f a < f m› ‹_›) ‹_›
+      -- 🎉 no goals
     · cases (‹f a < f tl›.lt_or_lt _).elim ‹_› ‹_›
+      -- 🎉 no goals
 #align list.argmax_cons List.argmax_cons
 
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
@@ -206,22 +268,47 @@ variable [DecidableEq α]
 theorem index_of_argmax :
     ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
   | [], m, _, _, _, _ => by simp
+                            -- 🎉 no goals
   | hd :: tl, m, hm, a, ha, ham => by
     simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm ⊢
+    -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
     cases h : argmax f tl
+    -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
     · rw [h] at hm
+      -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
       simp_all
+      -- 🎉 no goals
     rw [h] at hm
+    -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
     dsimp only at hm
+    -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
+    -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if hd = hd then 0 else Nat …
+                             -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if hd = hd then 0 else Nat …
+                             -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
+                                                 -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if hd = hd then 0 else Nat …
+                                                 -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if hd = hd then 0 else Nat …
+                                                 -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
+                                                 -- ⊢ (if m = hd then 0 else Nat.succ (indexOf m tl)) ≤ if a = hd then 0 else Nat. …
+                                                                          -- ⊢ (if val✝ = hd then 0 else Nat.succ (indexOf val✝ tl)) ≤ if hd = hd then 0 el …
+                                                                          -- ⊢ (if hd = hd then 0 else Nat.succ (indexOf hd tl)) ≤ if hd = hd then 0 else N …
+                                                                          -- ⊢ (if val✝ = hd then 0 else Nat.succ (indexOf val✝ tl)) ≤ if a = hd then 0 els …
+                                                                          -- ⊢ (if hd = hd then 0 else Nat.succ (indexOf hd tl)) ≤ if a = hd then 0 else Na …
     · cases not_le_of_lt ‹_› ‹_›
+      -- 🎉 no goals
     · rw [if_pos rfl]
+      -- 🎉 no goals
     · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
+      -- ⊢ ¬a = hd
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
+        -- 🎉 no goals
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
+        -- 🎉 no goals
     · rw [if_pos rfl]
+      -- ⊢ 0 ≤ if a = hd then 0 else Nat.succ (indexOf a tl)
       exact Nat.zero_le _
+      -- 🎉 no goals
 #align list.index_of_argmax List.index_of_argmax
 
 theorem index_of_argmin :
@@ -235,12 +322,16 @@ theorem mem_argmax_iff :
   ⟨fun hm => ⟨argmax_mem hm, fun a ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
+      -- ⊢ m ∈ argmax f l
       cases' harg : argmax f l with n
+      -- ⊢ m ∈ none
       · simp_all
+        -- 🎉 no goals
       · have :=
           _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
             (index_of_argmax harg hml (ham _ (argmax_mem harg)))
         rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+        -- 🎉 no goals
 #align list.mem_argmax_iff List.mem_argmax_iff
 
 theorem argmax_eq_some_iff :
@@ -329,8 +420,11 @@ theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a
 
 theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum
+  -- ⊢ ¬none < ↑a
   · simp_all
+    -- 🎉 no goals
   · simp [WithBot.some_eq_coe, WithBot.coe_lt_coe, not_lt_maximum_of_mem ha h, not_false_iff]
+    -- 🎉 no goals
 #align list.not_lt_maximum_of_mem' List.not_lt_maximum_of_mem'
 
 theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l :=
@@ -345,9 +439,13 @@ variable [LinearOrder α] {l : List α} {a m : α}
 
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
+  -- ⊢ Option.rec (some a) (fun val => if val < a then some a else some val) (argma …
   cases h : argmax id l
+  -- ⊢ Option.rec (some a) (fun val => if val < a then some a else some val) none = …
   · exact (max_eq_right bot_le).symm
+    -- 🎉 no goals
   · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
+    -- 🎉 no goals
 #align list.maximum_concat List.maximum_concat
 
 theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
@@ -372,7 +470,9 @@ theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimu
 
 theorem maximum_cons (a : α) (l : List α) : maximum (a :: l) = max ↑a (maximum l) :=
   List.reverseRecOn l (by simp [@max_eq_left (WithBot α) _ _ _ bot_le]) fun tl hd ih => by
+                          -- 🎉 no goals
     rw [← cons_append, maximum_concat, ih, maximum_concat, max_assoc]
+    -- 🎉 no goals
 #align list.maximum_cons List.maximum_cons
 
 theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minimum l) :=
@@ -381,9 +481,13 @@ theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minim
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
+  -- ⊢ (m ∈ l ∧ (∀ (a : α), a ∈ l → id a ≤ id m) ∧ ∀ (a : α), a ∈ l → id m ≤ id a → …
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
+  -- ⊢ m ∈ l → (∀ (a : α), a ∈ l → a ≤ m) → ∀ (a : α), a ∈ l → m ≤ a → indexOf m l  …
   intro _ h a hal hma
+  -- ⊢ indexOf m l ≤ indexOf a l
   rw [_root_.le_antisymm hma (h a hal)]
+  -- 🎉 no goals
 #align list.maximum_eq_coe_iff List.maximum_eq_coe_iff
 
 theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
@@ -401,12 +505,14 @@ theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
+                                    -- 🎉 no goals
 
 theorem minimum_ne_top_of_ne_nil (h : l ≠ []) : l.minimum ≠ ⊤ :=
   @maximum_ne_bot_of_ne_nil αᵒᵈ _ _ h
 
 theorem maximum_ne_bot_of_length_pos (h : 0 < l.length) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
+                                    -- 🎉 no goals
 
 theorem minimum_ne_top_of_length_pos (h : 0 < l.length) : l.minimum ≠ ⊤ :=
   maximum_ne_bot_of_length_pos (α := αᵒᵈ) h
@@ -442,7 +548,9 @@ theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
 theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
      a ≤ l.maximum_of_length_pos w := by
   simp [le_maximum_of_length_pos_iff]
+  -- ⊢ ↑a ≤ maximum l
   exact le_maximum_of_mem' h
+  -- 🎉 no goals
 
 theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
      l.minimum_of_length_pos w ≤ a :=
@@ -451,7 +559,9 @@ theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
 theorem getElem_le_maximum_of_length_pos (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
+  -- ⊢ l[i] ∈ l
   exact get_mem l i w
+  -- 🎉 no goals
 
 theorem minimum_of_length_pos_le_getElem (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l.minimum_of_length_pos h ≤ l[i] :=
@@ -472,26 +582,41 @@ variable [OrderBot α] {l : List α}
 @[simp]
 theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum := by
   induction' l with hd tl IH
+  -- ⊢ ↑(foldr max ⊥ []) = maximum []
   · contradiction
+    -- 🎉 no goals
   · rw [maximum_cons, foldr, WithBot.coe_max]
+    -- ⊢ max ↑hd ↑(foldr max ⊥ tl) = max (↑hd) (maximum tl)
     by_cases h : tl = []
+    -- ⊢ max ↑hd ↑(foldr max ⊥ tl) = max (↑hd) (maximum tl)
     · simp [h]
+      -- 🎉 no goals
     · simp [IH h]
+      -- 🎉 no goals
 #align list.foldr_max_of_ne_nil List.foldr_max_of_ne_nil
 
 theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a := by
   induction' l with y l IH
+  -- ⊢ foldr max ⊥ [] ≤ a
   · simp
+    -- 🎉 no goals
   · simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
+    -- 🎉 no goals
 #align list.max_le_of_forall_le List.max_le_of_forall_le
 
 theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
   induction' l with y l IH
+  -- ⊢ a ≤ foldr max ⊥ []
   · exact absurd hx (not_mem_nil _)
+    -- 🎉 no goals
   · obtain hl | hl := hx
+    -- ⊢ a ≤ foldr max ⊥ (x :: l)
     simp only [foldr, foldr_cons]
+    -- ⊢ a ≤ max x (foldr max ⊥ l)
     · exact le_max_of_le_left h
+      -- 🎉 no goals
     · exact le_max_of_le_right (IH (by assumption))
+      -- 🎉 no goals
 #align list.le_max_of_le List.le_max_of_le
 
 end OrderBot

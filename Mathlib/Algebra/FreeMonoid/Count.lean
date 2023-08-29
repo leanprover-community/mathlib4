@@ -31,6 +31,7 @@ def countP : FreeAddMonoid α →+ ℕ where
 
 theorem countP_of (x : α) : countP p (of x) = if p x = true then 1 else 0 := by
   simp [countP, List.countP, List.countP.go]
+  -- 🎉 no goals
 #align free_add_monoid.countp_of FreeAddMonoid.countP_of
 
 theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
@@ -62,11 +63,15 @@ def countP : FreeMonoid α →* Multiplicative ℕ :=
 theorem countP_of' (x : α) :
     countP p (of x) = if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
     erw [FreeAddMonoid.countP_of]
+    -- ⊢ (if p x = (true = true) then 1 else 0) = if p x then ↑Multiplicative.ofAdd 1 …
     simp only [eq_iff_iff, iff_true, ofAdd_zero]; rfl
+    -- ⊢ (if p x then 1 else 0) = if p x then ↑Multiplicative.ofAdd 1 else 1
+                                                  -- 🎉 no goals
 #align free_monoid.countp_of' FreeMonoid.countP_of'
 
 theorem countP_of (x : α) : countP p (of x) = if p x then Multiplicative.ofAdd 1 else 1 := by
   rw [countP_of', ofAdd_zero]
+  -- 🎉 no goals
 #align free_monoid.countp_of FreeMonoid.countP_of
 
 -- `rfl` is not transitive
@@ -85,6 +90,7 @@ theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :
 theorem count_of [DecidableEq α] (x y : α) :
     count x (of y) = @Pi.mulSingle α (fun _ => Multiplicative ℕ) _ _ x (Multiplicative.ofAdd 1) y :=
   by simp [count, countP_of, Pi.mulSingle_apply, eq_comm, Bool.beq_eq_decide_eq]
+     -- 🎉 no goals
 #align free_monoid.count_of FreeMonoid.count_of
 
 end FreeMonoid

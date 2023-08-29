@@ -120,13 +120,21 @@ def continuousLocal (T : TopCat.{v}) : LocalPredicate fun _ : X => T :=
   { continuousPrelocal X T with
     locality := fun {U} f w => by
       apply continuous_iff_continuousAt.2
+      -- ⊢ ∀ (x : { x // x ∈ U }), ContinuousAt f x
       intro x
+      -- ⊢ ContinuousAt f x
       specialize w x
+      -- ⊢ ContinuousAt f x
       rcases w with ⟨V, m, i, w⟩
+      -- ⊢ ContinuousAt f x
       dsimp at w
+      -- ⊢ ContinuousAt f x
       rw [continuous_iff_continuousAt] at w
+      -- ⊢ ContinuousAt f x
       specialize w ⟨x, m⟩
+      -- ⊢ ContinuousAt f x
       simpa using (Opens.openEmbedding_of_le i.le).continuousAt_iff.1 w }
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.continuous_local TopCat.continuousLocal
 
@@ -145,21 +153,31 @@ def PrelocalPredicate.sheafify {T : X → Type v} (P : PrelocalPredicate T) : Lo
   pred {U} f := ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U), P.pred fun x : V => f (i x : U)
   res {V U} i f w x := by
     specialize w (i x)
+    -- ⊢ ∃ V_1 x i_1, pred P fun x => (fun x => f ((fun x => { val := ↑x, property := …
     rcases w with ⟨V', m', i', p⟩
+    -- ⊢ ∃ V_1 x i_1, pred P fun x => (fun x => f ((fun x => { val := ↑x, property := …
     refine' ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, _⟩
+    -- ⊢ pred P fun x => (fun x => f ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U …
     convert P.res (Opens.infLERight V V') _ p
+    -- 🎉 no goals
   locality {U} f w x := by
     specialize w x
+    -- ⊢ ∃ V x i, pred P fun x => f ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U) …
     rcases w with ⟨V, m, i, p⟩
+    -- ⊢ ∃ V x i, pred P fun x => f ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U) …
     specialize p ⟨x.1, m⟩
+    -- ⊢ ∃ V x i, pred P fun x => f ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U) …
     rcases p with ⟨V', m', i', p'⟩
+    -- ⊢ ∃ V x i, pred P fun x => f ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑U) …
     exact ⟨V', m', i' ≫ i, p'⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.prelocal_predicate.sheafify TopCat.PrelocalPredicate.sheafify
 
 theorem PrelocalPredicate.sheafifyOf {T : X → Type v} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x =>
   ⟨U, x.2, 𝟙 _, by convert h⟩
+                   -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.prelocal_predicate.sheafify_of TopCat.PrelocalPredicate.sheafifyOf
 
@@ -193,31 +211,43 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     -- First we obtain a family of sections for the underlying sheaf of functions,
     -- by forgetting that the predicate holds
     let sf' : ∀ i : ι, (presheafToTypes X T).obj (op (U i)) := fun i => (sf i).val
+    -- ⊢ ∃! s, IsGluing (subpresheafToTypes P.toPrelocalPredicate) U sf s
     -- Since our original family is compatible, this one is as well
     have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j =>
       congr_arg Subtype.val (sf_comp i j)
     -- So, we can obtain a unique gluing
     obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf' sf'_comp
+    -- ⊢ ∃! s, IsGluing (subpresheafToTypes P.toPrelocalPredicate) U sf s
     refine' ⟨⟨gl, _⟩, _, _⟩
     · -- Our first goal is to show that this chosen gluing satisfies the
       -- predicate. Of course, we use locality of the predicate.
       apply P.locality
+      -- ⊢ ∀ (x : { x // x ∈ (op (iSup U)).unop }), ∃ V x i, PrelocalPredicate.pred P.t …
       rintro ⟨x, mem⟩
+      -- ⊢ ∃ V x i, PrelocalPredicate.pred P.toPrelocalPredicate fun x => gl ((fun x => …
       -- Once we're at a particular point `x`, we can select some open set `x ∈ U i`.
       choose i hi using Opens.mem_iSup.mp mem
+      -- ⊢ ∃ V x i, PrelocalPredicate.pred P.toPrelocalPredicate fun x => gl ((fun x => …
       -- We claim that the predicate holds in `U i`
       use U i, hi, Opens.leSupr U i
+      -- ⊢ PrelocalPredicate.pred P.toPrelocalPredicate fun x => gl ((fun x => { val := …
       -- This follows, since our original family `sf` satisfies the predicate
       convert (sf i).property using 1
+      -- ⊢ (fun x => gl ((fun x => { val := ↑x, property := (_ : ↑x ∈ ↑(op (iSup U)).un …
       exact gl_spec i
+      -- 🎉 no goals
 
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
     -- in the sheaf of functions without the local predicate.
     · exact fun i => Subtype.ext (gl_spec i)
+      -- 🎉 no goals
     · intro gl' hgl'
+      -- ⊢ gl' = { val := gl, property := (_ : PrelocalPredicate.pred P.toPrelocalPredi …
       refine Subtype.ext ?_
+      -- ⊢ ↑gl' = ↑{ val := gl, property := (_ : PrelocalPredicate.pred P.toPrelocalPre …
       exact gl_uniq gl'.1 fun i => congr_arg Subtype.val (hgl' i)
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.subpresheaf_to_Types.is_sheaf TopCat.subpresheafToTypes.isSheaf
 
@@ -241,7 +271,9 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
           { app := fun U f => _
             naturality := _ } }
   · exact f.1 ⟨x, (unop U).2⟩
+    -- 🎉 no goals
   · aesop
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber TopCat.stalkToFiber
 
@@ -249,8 +281,11 @@ set_option linter.uppercaseLean3 false in
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]
+  -- ⊢ colimit.desc ((OpenNhds.inclusion ↑x).op ⋙ subpresheafToTypes P.toPrelocalPr …
   cases x
+  -- ⊢ colimit.desc ((OpenNhds.inclusion ↑{ val := val✝, property := property✝ }).o …
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_germ TopCat.stalkToFiber_germ
 
@@ -261,9 +296,13 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
     (w : ∀ t : T x, ∃ (U : OpenNhds x) (f : ∀ y : U.1, T y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
     Function.Surjective (stalkToFiber P x) := fun t => by
   rcases w t with ⟨U, f, h, rfl⟩
+  -- ⊢ ∃ a, stalkToFiber P x a = f { val := x, property := (_ : x ∈ U.obj) }
   fconstructor
+  -- ⊢ Presheaf.stalk (Sheaf.presheaf (subsheafToTypes P)) x
   · exact (subsheafToTypes P).presheaf.germ ⟨x, U.2⟩ ⟨f, h⟩
+    -- 🎉 no goals
   · exact stalkToFiber_germ _ U.1 ⟨x, U.2⟩ ⟨f, h⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_surjective TopCat.stalkToFiber_surjective
 
@@ -284,20 +323,32 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
         tV = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ :=
     ?_
   · choose W s hW e using Q
+    -- ⊢ tU = tV
     exact e.1.trans e.2.symm
+    -- 🎉 no goals
   -- Then use induction to pick particular representatives of `tU tV : stalk x`
   obtain ⟨U, ⟨fU, hU⟩, rfl⟩ := jointly_surjective'.{v, v} tU
+  -- ⊢ ∃ W s hW, colimit.ι (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ (Type v)). …
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective'.{v, v} tV
+  -- ⊢ ∃ W s hW, colimit.ι (((whiskeringLeft (OpenNhds x)ᵒᵖ (Opens ↑X)ᵒᵖ (Type v)). …
   · -- Decompose everything into its constituent parts:
     dsimp
+    -- ⊢ ∃ W s hW, colimit.ι ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrel …
     simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+    -- ⊢ ∃ W s hW, colimit.ι ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrel …
     specialize w (unop U) (unop V) fU hU fV hV h
+    -- ⊢ ∃ W s hW, colimit.ι ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrel …
     rcases w with ⟨W, iU, iV, w⟩
+    -- ⊢ ∃ W s hW, colimit.ι ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrel …
     -- and put it back together again in the correct order.
     refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
+    -- ⊢ (op W).unop.obj ⟶ U.unop.obj
     rcases W with ⟨W, m⟩
+    -- ⊢ (op { obj := W, property := m }).unop.obj ⟶ U.unop.obj
     · exact iU
+      -- 🎉 no goals
     · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_injective TopCat.stalkToFiber_injective
 
@@ -309,7 +360,11 @@ def subpresheafContinuousPrelocalIsoPresheafToTop (T : TopCat.{v}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X =>
     { hom := by rintro ⟨f, c⟩; exact ⟨f, c⟩
+                -- ⊢ (presheafToTop X✝ T).obj X
+                               -- 🎉 no goals
       inv := by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
+                -- ⊢ (subpresheafToTypes (continuousPrelocal X✝ T)).obj X
+                               -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Top.subpresheaf_continuous_prelocal_iso_presheaf_to_Top TopCat.subpresheafContinuousPrelocalIsoPresheafToTop
 

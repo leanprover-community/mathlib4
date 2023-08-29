@@ -48,6 +48,7 @@ instance noZeroSMulDivisors {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N]
       -- ⟨fun c ⟨x, y⟩ h =>
       --   or_iff_not_imp_left.mpr fun hc =>
       intro c ⟨x, y⟩ h
+      -- ⊢ c = 0 ∨ (x, y) = 0
       exact or_iff_not_imp_left.mpr fun hc =>
         mk.inj_iff.mpr
           ⟨(smul_eq_zero.mp (congr_arg fst h)).resolve_left hc,

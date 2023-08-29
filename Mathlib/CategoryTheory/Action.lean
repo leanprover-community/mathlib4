@@ -50,7 +50,9 @@ def ActionCategory :=
 
 instance : Category (ActionCategory M X) := by
   dsimp only [ActionCategory]
+  -- ⊢ Category.{?u.1482, u} (Functor.Elements (actionAsFunctor M X))
   infer_instance
+  -- 🎉 no goals
 
 namespace ActionCategory
 
@@ -87,6 +89,8 @@ theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
 
 @[simp]
 theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x; rfl
+                                                              -- ⊢ { fst := (), snd := ActionCategory.back { fst := fst✝, snd := snd✝ } } = { f …
+                                                                       -- 🎉 no goals
 #align category_theory.action_category.back_coe CategoryTheory.ActionCategory.back_coe
 
 variable (M X)
@@ -173,19 +177,29 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
   refine' cast _ (hyp b.back f.val)
+  -- ⊢ P (homOfPair (ActionCategory.back b) ↑f) = P f
   rcases a with ⟨⟨⟩, a : X⟩
+  -- ⊢ P (homOfPair (ActionCategory.back b) ↑f) = P f
   rcases b with ⟨⟨⟩, b : X⟩
+  -- ⊢ P (homOfPair (ActionCategory.back { fst := PUnit.unit, snd := b }) ↑f) = P f
   rcases f with ⟨g : G, h : g • a = b⟩
+  -- ⊢ P (homOfPair (ActionCategory.back { fst := PUnit.unit, snd := b }) ↑{ val := …
   cases inv_smul_eq_iff.mpr h.symm
+  -- ⊢ P (homOfPair (ActionCategory.back { fst := PUnit.unit, snd := b }) ↑{ val := …
   rfl
+  -- 🎉 no goals
 #align category_theory.action_category.cases CategoryTheory.ActionCategory.cases
 
 -- porting note: added to ease the proof of `uncurry`
 lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
     ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
+                      -- 🎉 no goals
+                                                                 -- 🎉 no goals
   revert a' b' f
+  -- ⊢ ∀ ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b'), ∃ a b g ha hb hg, f = eqToHom  …
   exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
+  -- 🎉 no goals
 
 variable {H : Type*} [Group H]
 
@@ -195,22 +209,36 @@ variable {H : Type*} [Group H]
 def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAutArrow] G :=
   have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.val) : H) := by
     apply ActionCategory.cases
+    -- ⊢ ∀ (t : X) (g : G), F.map (homOfPair t g) = F.map (homOfPair (ActionCategory. …
     intros
+    -- ⊢ F.map (homOfPair t✝ g✝) = F.map (homOfPair (ActionCategory.back { fst := (), …
     rfl
+    -- 🎉 no goals
   { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
       congr
+      -- ⊢ (fun g => { left := fun b => F.map (homOfPair b g), right := g }) 1 = 1
       dsimp
+      -- ⊢ { left := fun b => F.map (homOfPair b 1), right := 1 } = 1
       ext1
+      -- ⊢ { left := fun b => F.map (homOfPair b 1), right := 1 }.left = 1.left
       ext b
+      -- ⊢ left { left := fun b => F.map (homOfPair b 1), right := 1 } b = left 1 b
       exact F_map_eq.symm.trans (F.map_id b)
+      -- ⊢ { left := fun b => F.map (homOfPair b 1), right := 1 }.right = 1.right
       rfl
+      -- 🎉 no goals
     map_mul' := by
       intro g h
+      -- ⊢ OneHom.toFun { toFun := fun g => { left := fun b => F.map (homOfPair b g), r …
       congr
+      -- ⊢ OneHom.toFun { toFun := fun g => { left := fun b => F.map (homOfPair b g), r …
       ext b
+      -- ⊢ left (OneHom.toFun { toFun := fun g => { left := fun b => F.map (homOfPair b …
       exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
+      -- ⊢ (OneHom.toFun { toFun := fun g => { left := fun b => F.map (homOfPair b g),  …
       rfl }
+      -- 🎉 no goals
 #align category_theory.action_category.curry CategoryTheory.ActionCategory.curry
 
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
@@ -222,8 +250,11 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
   map {_ b} f := (F f.val).left b.back
   map_id x := by
     dsimp
+    -- ⊢ left (↑F 1) (ActionCategory.back x) = 𝟙 ()
     rw [F.map_one]
+    -- ⊢ left 1 (ActionCategory.back x) = 𝟙 ()
     rfl
+    -- 🎉 no goals
   map_comp f g := by
     -- porting note: I was not able to use `ActionCategory.cases` here,
     -- but `ActionCategory.cases'` seems as good; the original proof was:
@@ -231,10 +262,15 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
     -- refine' action_category.cases _
     -- simp [single_obj.comp_as_mul, sane]
     obtain ⟨_, z, γ₁, rfl, rfl, rfl, rfl⟩ := ActionCategory.cases' g
+    -- ⊢ { obj := fun x => (), map := fun {x b} f => left (↑F ↑f) (ActionCategory.bac …
     obtain ⟨_, y, γ₂, rfl, hy, rfl, rfl⟩ := ActionCategory.cases' f
+    -- ⊢ { obj := fun x => (), map := fun {x b} f => left (↑F ↑f) (ActionCategory.bac …
     obtain rfl : y = γ₁⁻¹ • z := congr_arg Sigma.snd hy.symm
+    -- ⊢ { obj := fun x => (), map := fun {x b} f => left (↑F ↑f) (ActionCategory.bac …
     simp [sane]
+    -- ⊢ left (↑F γ₁) z * (γ₁ • (↑F γ₂).left) z = left (↑F γ₂) (γ₁⁻¹ • z) ≫ left (↑F  …
     rfl
+    -- 🎉 no goals
 #align category_theory.action_category.uncurry CategoryTheory.ActionCategory.uncurry
 
 end Group

@@ -35,6 +35,7 @@ variable {ι : Type*} [Fintype ι]
 noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι → ℝ) :
     IsometryEquiv (weightedSumSquares ℝ w) (weightedSumSquares ℝ (Real.sign ∘ w)) := by
   let u i := if h : w i = 0 then (1 : ℝˣ) else Units.mk0 (w i) h
+  -- ⊢ IsometryEquiv (weightedSumSquares ℝ w) (weightedSumSquares ℝ (sign ∘ w))
   have hu' : ∀ i : ι, (Real.sign (u i) * u i) ^ (-(1 / 2 : ℝ)) ≠ 0 := by
     intro i
     refine' (ne_of_lt (Real.rpow_pos_of_pos (sign_mul_pos_of_ne_zero _ <| Units.ne_zero _) _)).symm
@@ -42,8 +43,11 @@ noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι �
     (weightedSumSquares ℝ w).isometryEquivBasisRepr
       ((Pi.basisFun ℝ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hu' i).unit)
   ext1 v
+  -- ⊢ ↑(weightedSumSquares ℝ (sign ∘ w)) v = ↑(basisRepr (weightedSumSquares ℝ w)  …
   rw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
+  -- ⊢ ∑ i : ι, (sign ∘ w) i • (v i * v i) = ∑ i : ι, w i • (Finset.sum univ (fun i …
   refine' sum_congr rfl fun j hj => _
+  -- ⊢ (sign ∘ w) j • (v j * v j) = w j • (Finset.sum univ (fun i => v i • ↑(Basis. …
   have hsum :
     (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hu' i).unit : ℝ) • (Pi.basisFun ℝ ι) i) j =
       v j • (Real.sign (u j) * u j) ^ (-(1 / 2 : ℝ)) := by
@@ -56,13 +60,21 @@ noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι �
       mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
+  -- ⊢ (sign ∘ w) j • (v j * v j) = w j • (Finset.sum univ (fun x => v x • IsUnit.u …
   erw [hsum]
+  -- ⊢ (sign ∘ w) j • (v j * v j) = w j • (v j • (sign ↑(u j) * ↑(u j)) ^ (-(1 / 2) …
   simp only [Function.comp, smul_eq_mul]
+  -- ⊢ sign (w j) * (v j * v j) = w j * (v j * (sign ↑(if h : w j = 0 then 1 else U …
   split_ifs with h
+  -- ⊢ sign (w j) * (v j * v j) = w j * (v j * (sign ↑1 * ↑1) ^ (-(1 / 2)) * (v j * …
   · simp only [h, zero_smul, zero_mul, Real.sign_zero]
+    -- 🎉 no goals
   have hwu : w j = u j := by simp only [dif_neg h, Units.val_mk0]
+  -- ⊢ sign (w j) * (v j * v j) = w j * (v j * (sign ↑(Units.mk0 (w j) h) * ↑(Units …
   simp only [Units.val_mk0]
+  -- ⊢ sign (w j) * (v j * v j) = w j * (v j * (sign (w j) * w j) ^ (-(1 / 2)) * (v …
   rw [hwu]
+  -- ⊢ sign ↑(u j) * (v j * v j) = ↑(u j) * (v j * (sign ↑(u j) * ↑(u j)) ^ (-(1 /  …
   suffices
     (u j : ℝ).sign * v j * v j =
       (Real.sign (u j) * u j) ^ (-(1 / 2 : ℝ)) * (Real.sign (u j) * u j) ^ (-(1 / 2 : ℝ)) *

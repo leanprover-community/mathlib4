@@ -57,7 +57,9 @@ theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), (A ⟹ i.obj B) ∈ i.ess
     ExponentialIdeal i :=
   ⟨fun hB A => by
     rcases hB with ⟨B', ⟨iB'⟩⟩
+    -- ⊢ (A ⟹ B✝) ∈ Functor.essImage i
     exact Functor.essImage.ofIso ((exp A).mapIso iB') (h B' A)⟩
+    -- 🎉 no goals
 #align category_theory.exponential_ideal.mk' CategoryTheory.ExponentialIdeal.mk'
 
 /-- The entire category viewed as a subcategory is an exponential ideal. -/
@@ -69,9 +71,13 @@ open CartesianClosed
 /-- The subcategory of subterminal objects is an exponential ideal. -/
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
+  -- ⊢ ∀ (B : Subterminals C) (A : C), (A ⟹ (subterminalInclusion C).obj B) ∈ Funct …
   intro B A
+  -- ⊢ (A ⟹ (subterminalInclusion C).obj B) ∈ Functor.essImage (subterminalInclusio …
   refine' ⟨⟨A ⟹ B.1, fun Z g h => _⟩, ⟨Iso.refl _⟩⟩
+  -- ⊢ g = h
   exact uncurry_injective (B.2 (CartesianClosed.uncurry g) (CartesianClosed.uncurry h))
+  -- 🎉 no goals
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
@@ -81,11 +87,17 @@ The converse is given in `ExponentialIdeal.mk_of_iso`.
 def exponentialIdealReflective (A : C) [Reflective i] [ExponentialIdeal i] :
     i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A := by
   symm
+  -- ⊢ i ⋙ exp A ≅ i ⋙ exp A ⋙ leftAdjoint i ⋙ i
   apply NatIso.ofComponents _ _
+  -- ⊢ (X : D) → (i ⋙ exp A).obj X ≅ (i ⋙ exp A ⋙ leftAdjoint i ⋙ i).obj X
   · intro X
+    -- ⊢ (i ⋙ exp A).obj X ≅ (i ⋙ exp A ⋙ leftAdjoint i ⋙ i).obj X
     haveI := Functor.essImage.unit_isIso (ExponentialIdeal.exp_closed (i.obj_mem_essImage X) A)
+    -- ⊢ (i ⋙ exp A).obj X ≅ (i ⋙ exp A ⋙ leftAdjoint i ⋙ i).obj X
     apply asIso ((Adjunction.ofRightAdjoint i).unit.app (A ⟹ i.obj X))
+    -- 🎉 no goals
   · simp [asIso]
+    -- 🎉 no goals
 #align category_theory.exponential_ideal_reflective CategoryTheory.exponentialIdealReflective
 
 /-- Given a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, we can show `i`
@@ -94,8 +106,11 @@ is an exponential ideal.
 theorem ExponentialIdeal.mk_of_iso [Reflective i]
     (h : ∀ A : C, i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A) : ExponentialIdeal i := by
   apply ExponentialIdeal.mk'
+  -- ⊢ ∀ (B : D) (A : C), (A ⟹ i.obj B) ∈ Functor.essImage i
   intro B A
+  -- ⊢ (A ⟹ i.obj B) ∈ Functor.essImage i
   exact ⟨_, ⟨(h A).app B⟩⟩
+  -- 🎉 no goals
 #align category_theory.exponential_ideal.mk_of_iso CategoryTheory.ExponentialIdeal.mk_of_iso
 
 end Ideal
@@ -124,15 +139,25 @@ This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) (leftAdjoint i)] : ExponentialIdeal i := by
   let ir := Adjunction.ofRightAdjoint i
+  -- ⊢ ExponentialIdeal i
   let L : C ⥤ D := leftAdjoint i
+  -- ⊢ ExponentialIdeal i
   let η : 𝟭 C ⟶ L ⋙ i := ir.unit
+  -- ⊢ ExponentialIdeal i
   let ε : i ⋙ L ⟶ 𝟭 D := ir.counit
+  -- ⊢ ExponentialIdeal i
   apply ExponentialIdeal.mk'
+  -- ⊢ ∀ (B : D) (A : C), (A ⟹ i.obj B) ∈ Functor.essImage i
   intro B A
+  -- ⊢ (A ⟹ i.obj B) ∈ Functor.essImage i
   let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B
+  -- ⊢ i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B
   apply CartesianClosed.curry (ir.homEquiv _ _ _)
+  -- ⊢ (leftAdjoint i).obj (A ⨯ i.obj (L.obj (A ⟹ i.obj B))) ⟶ B
   apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
+  -- ⊢ (leftAdjoint i).obj (A ⨯ i.obj (L.obj (A ⟹ i.obj B))) ⟶ (leftAdjoint i).obj  …
   refine' prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
+  -- ⊢ (A ⟹ i.obj B) ∈ Functor.essImage i
   have : η.app (A ⟹ i.obj B) ≫ q = 𝟙 (A ⟹ i.obj B) := by
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,
@@ -140,7 +165,9 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
       ← prod.map_id_comp_assoc, ir.left_triangle_components, prod.map_id_id, id_comp]
     apply IsIso.hom_inv_id_assoc
   haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
+  -- ⊢ (A ⟹ i.obj B) ∈ Functor.essImage i
   apply mem_essImage_of_unit_isSplitMono
+  -- 🎉 no goals
 #align category_theory.exponential_ideal_of_preserves_binary_products CategoryTheory.exponentialIdeal_of_preservesBinaryProducts
 
 variable [ExponentialIdeal i]
@@ -155,14 +182,21 @@ def cartesianClosedOfReflective : CartesianClosed D :=
           { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i
             adj := by
               apply Adjunction.restrictFullyFaithful i i (exp.adjunction (i.obj B))
+              -- ⊢ i ⋙ prod.functor.obj (i.obj B) ≅ MonoidalCategory.tensorLeft B ⋙ i
               · symm
+                -- ⊢ MonoidalCategory.tensorLeft B ⋙ i ≅ i ⋙ prod.functor.obj (i.obj B)
                 refine' NatIso.ofComponents (fun X => _) (fun f => _)
+                -- ⊢ (MonoidalCategory.tensorLeft B ⋙ i).obj X ≅ (i ⋙ prod.functor.obj (i.obj B)) …
                 · haveI :=
                     Adjunction.rightAdjointPreservesLimits.{0, 0} (Adjunction.ofRightAdjoint i)
                   apply asIso (prodComparison i B X)
+                  -- 🎉 no goals
                 · dsimp [asIso]
+                  -- ⊢ i.map (prod.map (𝟙 B) f) ≫ prodComparison i B Y✝ = prodComparison i B X✝ ≫ p …
                   rw [prodComparison_natural, Functor.map_id]
+                  -- 🎉 no goals
               · apply (exponentialIdealReflective i _).symm } } }
+                -- 🎉 no goals
 #align category_theory.cartesian_closed_of_reflective CategoryTheory.cartesianClosedOfReflective
 
 -- It's annoying that I need to do this.
@@ -205,33 +239,46 @@ theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   -- Porting note: added
   have : PreservesLimits i := (Adjunction.ofRightAdjoint i).rightAdjointPreservesLimits
+  -- ⊢ ↑(bijection i A B ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B)).symm (𝟙 ( …
   have := preservesSmallestLimitsOfPreservesLimits i
+  -- ⊢ ↑(bijection i A B ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B)).symm (𝟙 ( …
   dsimp [bijection]
+  -- ⊢ ↑(Adjunction.homEquiv (Adjunction.ofRightAdjoint i) (A ⨯ B) ((leftAdjoint i) …
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
+  -- ⊢ ↑(Adjunction.homEquiv (Adjunction.ofRightAdjoint i) (A ⨯ B) ((leftAdjoint i) …
   rw [comp_id, comp_id, comp_id, i.map_id, comp_id, unitCompPartialBijective_symm_apply,
     unitCompPartialBijective_symm_apply, uncurry_natural_left, uncurry_curry,
     uncurry_natural_left, uncurry_curry, prod.lift_map_assoc, comp_id, prod.lift_map_assoc, comp_id]
   -- Porting note: added
   dsimp only [Functor.comp_obj]
+  -- ⊢ ↑(Adjunction.homEquiv (Adjunction.ofRightAdjoint i) (A ⨯ B) ((leftAdjoint i) …
   rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
     ← Adjunction.eq_homEquiv_apply, Adjunction.homEquiv_unit, Iso.comp_inv_eq, assoc]
   -- Porting note: rw became erw
   erw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
+  -- ⊢ prod.map (NatTrans.app (Adjunction.ofRightAdjoint i).unit A) (NatTrans.app ( …
   apply prod.hom_ext
+  -- ⊢ prod.map (NatTrans.app (Adjunction.ofRightAdjoint i).unit A) (NatTrans.app ( …
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
+    -- ⊢ prod.fst ≫ NatTrans.app (Adjunction.ofRightAdjoint i).unit A = NatTrans.app  …
     apply (Adjunction.ofRightAdjoint i).unit.naturality
+    -- 🎉 no goals
   · rw [Limits.prod.map_snd, assoc, assoc, prodComparison_snd, ← i.map_comp, prodComparison_snd]
+    -- ⊢ prod.snd ≫ NatTrans.app (Adjunction.ofRightAdjoint i).unit B = NatTrans.app  …
     apply (Adjunction.ofRightAdjoint i).unit.naturality
+    -- 🎉 no goals
 #align category_theory.bijection_symm_apply_id CategoryTheory.bijection_symm_apply_id
 
 theorem bijection_natural (A B : C) (X X' : D) (f : (leftAdjoint i).obj (A ⨯ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]
+  -- ⊢ i.preimage ((PreservesLimitPair.iso i ((leftAdjoint i).obj A) ((leftAdjoint  …
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq,
     homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   apply i.map_injective
+  -- ⊢ i.map (i.preimage ((PreservesLimitPair.iso i ((leftAdjoint i).obj A) ((leftA …
   rw [i.image_preimage, i.map_comp, i.image_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
     comp_id, Adjunction.homEquiv_naturality_right, ← assoc, curry_natural_right _ (i.map g),
     unitCompPartialBijective_natural, uncurry_natural_right, ← assoc, curry_natural_right,
@@ -247,6 +294,7 @@ theorem prodComparison_iso (A B : C) : IsIso (prodComparison (leftAdjoint i) A B
       rw [← (bijection i _ _ _).injective.eq_iff, bijection_natural, ← bijection_symm_apply_id,
         Equiv.apply_symm_apply, id_comp],
       by rw [← bijection_natural, id_comp, ← bijection_symm_apply_id, Equiv.apply_symm_apply]⟩⟩
+         -- 🎉 no goals
 #align category_theory.prod_comparison_iso CategoryTheory.prodComparison_iso
 
 attribute [local instance] prodComparison_iso
@@ -269,8 +317,11 @@ If a reflective subcategory is an exponential ideal, then the reflector preserve
 noncomputable def preservesFiniteProductsOfExponentialIdeal (J : Type) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) (leftAdjoint i) := by
   letI := preservesBinaryProductsOfExponentialIdeal i
+  -- ⊢ PreservesLimitsOfShape (Discrete J) (leftAdjoint i)
   letI := leftAdjointPreservesTerminalOfReflective.{0} i
+  -- ⊢ PreservesLimitsOfShape (Discrete J) (leftAdjoint i)
   apply preservesFiniteProductsOfPreservesBinaryAndTerminal (leftAdjoint i) J
+  -- 🎉 no goals
 #align category_theory.preserves_finite_products_of_exponential_ideal CategoryTheory.preservesFiniteProductsOfExponentialIdeal
 
 end

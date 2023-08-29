@@ -77,6 +77,7 @@ theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' (h x) L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
     HasDerivAtFilter (g₁ ∘ h) (h' • g₁') x L := by
   simpa using ((hg.restrictScalars 𝕜).comp x hh hL).hasDerivAtFilter
+  -- 🎉 no goals
 #align has_deriv_at_filter.scomp HasDerivAtFilter.scomp
 
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
@@ -99,6 +100,7 @@ nonrec theorem HasDerivAt.scomp (hg : HasDerivAt g₁ g₁' (h x)) (hh : HasDeri
 theorem HasStrictDerivAt.scomp (hg : HasStrictDerivAt g₁ g₁' (h x)) (hh : HasStrictDerivAt h h' x) :
     HasStrictDerivAt (g₁ ∘ h) (h' • g₁') x := by
   simpa using ((hg.restrictScalars 𝕜).comp x hh).hasStrictDerivAt
+  -- 🎉 no goals
 #align has_strict_deriv_at.scomp HasStrictDerivAt.scomp
 
 theorem HasDerivAt.scomp_hasDerivWithinAt (hg : HasDerivAt g₁ g₁' (h x))
@@ -124,17 +126,24 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
     (hh₂ : HasDerivAtFilter h₂ h₂' (f x) L') (hf : HasFDerivAtFilter f f' x L'')
     (hL : Tendsto f L'' L') : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' := by
   convert (hh₂.restrictScalars 𝕜).comp x hf hL
+  -- ⊢ HSMul.hSMul h₂' = ContinuousLinearMap.comp (ContinuousLinearMap.restrictScal …
   ext x
+  -- ⊢ ↑(h₂' • x) x✝ = ↑(ContinuousLinearMap.comp (ContinuousLinearMap.restrictScal …
   simp [mul_comm]
+  -- 🎉 no goals
 #align has_deriv_at_filter.comp_has_fderiv_at_filter HasDerivAtFilter.comp_hasFDerivAtFilter
 
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' (f x)) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x := by
   rw [HasStrictDerivAt] at hh
+  -- ⊢ HasStrictFDerivAt (h₂ ∘ f) (h₂' • f') x
   convert (hh.restrictScalars 𝕜).comp x hf
+  -- ⊢ HSMul.hSMul h₂' = ContinuousLinearMap.comp (ContinuousLinearMap.restrictScal …
   ext x
+  -- ⊢ ↑(h₂' • x) x✝ = ↑(ContinuousLinearMap.comp (ContinuousLinearMap.restrictScal …
   simp [mul_comm]
+  -- 🎉 no goals
 #align has_strict_deriv_at.comp_has_strict_fderiv_at HasStrictDerivAt.comp_hasStrictFDerivAt
 
 theorem HasDerivAt.comp_hasFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
@@ -160,14 +169,18 @@ theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' (h x) L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
     HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
   rw [mul_comm]
+  -- ⊢ HasDerivAtFilter (h₂ ∘ h) (h' * h₂') x L
   exact hh₂.scomp x hh hL
+  -- 🎉 no goals
 #align has_deriv_at_filter.comp HasDerivAtFilter.comp
 
 theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') :
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [mul_comm]
+  -- ⊢ HasDerivWithinAt (h₂ ∘ h) (h' * h₂') s x
   exact hh₂.scomp x hh hst
+  -- 🎉 no goals
 #align has_deriv_within_at.comp HasDerivWithinAt.comp
 
 /-- The chain rule. -/
@@ -179,7 +192,9 @@ nonrec theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDe
 theorem HasStrictDerivAt.comp (hh₂ : HasStrictDerivAt h₂ h₂' (h x)) (hh : HasStrictDerivAt h h' x) :
     HasStrictDerivAt (h₂ ∘ h) (h₂' * h') x := by
   rw [mul_comm]
+  -- ⊢ HasStrictDerivAt (h₂ ∘ h) (h' * h₂') x
   exact hh₂.scomp x hh
+  -- 🎉 no goals
 #align has_strict_deriv_at.comp HasStrictDerivAt.comp
 
 theorem HasDerivAt.comp_hasDerivWithinAt (hh₂ : HasDerivAt h₂ h₂' (h x))
@@ -202,25 +217,32 @@ protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
     HasDerivAtFilter f^[n] (f' ^ n) x L := by
   have := hf.iterate hL hx n
+  -- ⊢ HasDerivAtFilter f^[n] (f' ^ n) x L
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  -- 🎉 no goals
 #align has_deriv_at_filter.iterate HasDerivAtFilter.iterate
 
 protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
   hf.iterate _ (have := hf.tendsto_nhds le_rfl; by rwa [hx] at this) hx n
+                                                   -- 🎉 no goals
 #align has_deriv_at.iterate HasDerivAt.iterate
 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
+  -- ⊢ HasDerivWithinAt f^[n] (f' ^ n) s x
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  -- 🎉 no goals
 #align has_deriv_within_at.iterate HasDerivWithinAt.iterate
 
 protected nonrec theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictDerivAt f^[n] (f' ^ n) x := by
   have := hf.iterate hx n
+  -- ⊢ HasStrictDerivAt f^[n] (f' ^ n) x
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
+  -- 🎉 no goals
 #align has_strict_deriv_at.iterate HasStrictDerivAt.iterate
 
 end Composition

@@ -22,10 +22,15 @@ namespace NormNum
 theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
   refine Nat.dvd_antisymm ?_ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
+  -- ⊢ Int.gcd x y ∣ d
   rw [← Int.coe_nat_dvd, ← h₃]
+  -- ⊢ ↑(Int.gcd x y) ∣ x * a + y * b
   apply dvd_add
+  -- ⊢ ↑(Int.gcd x y) ∣ x * a
   · exact (Int.gcd_dvd_left _ _).mul_right _
+    -- 🎉 no goals
   · exact (Int.gcd_dvd_right _ _).mul_right _
+    -- 🎉 no goals
 
 theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
   Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)
@@ -36,11 +41,14 @@ theorem nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :
 theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : x * a = y * b + d) : Nat.gcd x y = d := by
   rw [← Int.coe_nat_gcd]
+  -- ⊢ Int.gcd ↑x ↑y = d
   apply int_gcd_helper' a (-b)
     (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hu))
     (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hv))
   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
+  -- ⊢ ↑x * ↑a = ↑y * ↑b + ↑d
   exact_mod_cast h
+  -- 🎉 no goals
 
 theorem nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : y * b = x * a + d) : Nat.gcd x y = d :=
@@ -59,15 +67,21 @@ theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     (dm : x * y = d * m) : Nat.lcm x y = m :=
   mul_right_injective₀ (Nat.ne_of_beq_eq_false d0) <| by
     dsimp only -- Porting note: the `dsimp only` was not necessary in Lean3.
+    -- ⊢ d * Nat.lcm x y = d * m
     rw [← dm, ← hd, Nat.gcd_mul_lcm]
+    -- 🎉 no goals
 
 theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.gcd x' y' = d) :
     Int.gcd x y = d := by subst_vars; rw [Int.gcd_def]
+                          -- ⊢ Int.gcd x y = Nat.gcd (Int.natAbs x) (Int.natAbs y)
+                                      -- 🎉 no goals
 
 theorem int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
     Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
+                          -- ⊢ Int.lcm x y = Nat.lcm (Int.natAbs x) (Int.natAbs y)
+                                      -- 🎉 no goals
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 

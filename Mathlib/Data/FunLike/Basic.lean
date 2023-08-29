@@ -163,6 +163,8 @@ theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)
 @[simp]
 theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
   ⟨fun h ↦ FunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
+                                                -- ⊢ ↑f = ↑f
+                                                         -- 🎉 no goals
 #align fun_like.coe_fn_eq FunLike.coe_fn_eq
 
 theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=

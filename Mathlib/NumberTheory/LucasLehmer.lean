@@ -45,6 +45,7 @@ def mersenne (p : ℕ) : ℕ :=
 
 theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
   dsimp [mersenne]
+  -- ⊢ 0 < 2 ^ p - 1
   calc
     0 < 2 ^ 1 - 1 := by norm_num
     _ ≤ 2 ^ p - 1 := Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_right (Nat.succ_pos 1) h) 1
@@ -53,12 +54,15 @@ theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
 theorem one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
   lt_tsub_iff_right.2 <|
     calc 1 + 1 = 2 ^ 1 := by rw [one_add_one_eq_two, pow_one]
+                             -- 🎉 no goals
     _ < 2 ^ p := Nat.pow_lt_pow_of_lt_right one_lt_two hp
 
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
   rw [mersenne, tsub_add_cancel_of_le]
+  -- ⊢ 1 ≤ 2 ^ k
   exact one_le_pow_of_one_le (by norm_num) k
+  -- 🎉 no goals
 #align succ_mersenne succ_mersenne
 
 namespace LucasLehmer
@@ -96,6 +100,7 @@ def sMod (p : ℕ) : ℕ → ℤ
 
 theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
   sub_pos.2 <| by exact_mod_cast Nat.one_lt_two_pow p hp
+                  -- 🎉 no goals
 
 theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
   (mersenne_int_pos w).ne'
@@ -103,39 +108,64 @@ theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
 
 theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
   cases i <;> dsimp [sMod]
+  -- ⊢ 0 ≤ sMod p zero
+              -- ⊢ 0 ≤ 4 % (2 ^ p - 1)
+              -- ⊢ 0 ≤ (sMod p n✝ ^ 2 - 2) % (2 ^ p - 1)
   · exact sup_eq_right.mp rfl
+    -- 🎉 no goals
   · apply Int.emod_nonneg
+    -- ⊢ 2 ^ p - 1 ≠ 0
     exact mersenne_int_ne_zero p w
+    -- 🎉 no goals
 #align lucas_lehmer.s_mod_nonneg LucasLehmer.sMod_nonneg
 
 theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [sMod]
+                                                                     -- ⊢ sMod p zero % (2 ^ p - 1) = sMod p zero
+                                                                                 -- 🎉 no goals
+                                                                                 -- 🎉 no goals
 #align lucas_lehmer.s_mod_mod LucasLehmer.sMod_mod
 
 theorem sMod_lt (p : ℕ) (w : 0 < p) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
+  -- ⊢ sMod p i % (2 ^ p - 1) < 2 ^ p - 1
   refine (Int.emod_lt _ (mersenne_int_ne_zero p w)).trans_eq ?_
+  -- ⊢ |2 ^ p - 1| = 2 ^ p - 1
   exact abs_of_nonneg (mersenne_int_pos w).le
+  -- 🎉 no goals
 #align lucas_lehmer.s_mod_lt LucasLehmer.sMod_lt
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
   induction' i with i ih
+  -- ⊢ sZMod (p' + 2) zero = ↑(s zero)
   · dsimp [s, sZMod]
+    -- ⊢ 4 = ↑4
     norm_num
+    -- 🎉 no goals
   · push_cast [s, sZMod, ih]; rfl
+    -- ⊢ ↑(s i) ^ 2 - 2 = ↑(s i) ^ 2 - 2
+                              -- 🎉 no goals
 #align lucas_lehmer.s_zmod_eq_s LucasLehmer.sZMod_eq_s
 
 -- These next two don't make good `norm_cast` lemmas.
 theorem Int.coe_nat_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
+  -- ⊢ ↑(b ^ p - 1) = ↑b ^ p - 1
   norm_cast
+  -- 🎉 no goals
 #align lucas_lehmer.int.coe_nat_pow_pred LucasLehmer.Int.coe_nat_pow_pred
 
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   Int.coe_nat_pow_pred 2 p (by decide)
+                               -- 🎉 no goals
 #align lucas_lehmer.int.coe_nat_two_pow_pred LucasLehmer.Int.coe_nat_two_pow_pred
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
   induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
+  -- ⊢ sZMod p zero = ↑(sMod p zero)
+                  -- ⊢ 4 = 4
+                  -- ⊢ ↑(sMod p n✝) ^ 2 - 2 = ↑(sMod p n✝) ^ 2 - 2
+                                                                               -- 🎉 no goals
+                                                                               -- 🎉 no goals
 #align lucas_lehmer.s_zmod_eq_s_mod LucasLehmer.sZMod_eq_sMod
 
 /-- The Lucas-Lehmer residue is `s p (p-2)` in `ZMod (2^p - 1)`. -/
@@ -146,18 +176,31 @@ def lucasLehmerResidue (p : ℕ) : ZMod (2 ^ p - 1) :=
 theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     lucasLehmerResidue p = 0 ↔ sMod p (p - 2) = 0 := by
   dsimp [lucasLehmerResidue]
+  -- ⊢ sZMod p (p - 2) = 0 ↔ sMod p (p - 2) = 0
   rw [sZMod_eq_sMod p]
+  -- ⊢ ↑(sMod p (p - 2)) = 0 ↔ sMod p (p - 2) = 0
   constructor
+  -- ⊢ ↑(sMod p (p - 2)) = 0 → sMod p (p - 2) = 0
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
+    -- ⊢ sMod p (p - 2) = 0
     simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
+    -- ⊢ sMod p (p - 2) = 0
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
+    -- ⊢ 0 ≤ sMod p (p - 2)
+                                                       -- ⊢ 0 ≤ sMod p (p - 2)
+                                                       -- ⊢ sMod p (p - 2) < 2 ^ p - 1
     · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
+      -- 🎉 no goals
     · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
+      -- 🎉 no goals
   · intro h
+    -- ⊢ ↑(sMod p (p - 2)) = 0
     rw [h]
+    -- ⊢ ↑0 = 0
     simp
+    -- 🎉 no goals
 #align lucas_lehmer.residue_eq_zero_iff_s_mod_eq_zero LucasLehmer.residue_eq_zero_iff_sMod_eq_zero
 
 /-- A Mersenne number `2^p-1` is prime if and only if
@@ -202,6 +245,9 @@ instance : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q
 @[ext]
 theorem ext {x y : X q} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y := by
   cases x; cases y; congr
+  -- ⊢ (fst✝, snd✝) = y
+           -- ⊢ (fst✝¹, snd✝¹) = (fst✝, snd✝)
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.ext LucasLehmer.X.ext
 
@@ -268,8 +314,19 @@ set_option linter.uppercaseLean3 false in
 instance : Monoid (X q) :=
   { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
+                                 -- ⊢ (x * y * z).fst = (x * (y * z)).fst
+                                         -- ⊢ (x.fst * y.fst + 3 * x.snd * y.snd) * z.fst + 3 * (x.fst * y.snd + x.snd * y …
+                                         -- ⊢ (x.fst * y.fst + 3 * x.snd * y.snd) * z.snd + (x.fst * y.snd + x.snd * y.fst …
+                                                   -- 🎉 no goals
+                                                   -- 🎉 no goals
     one_mul := fun x => by ext <;> simp
+                           -- ⊢ (1 * x).fst = x.fst
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
     mul_one := fun x => by ext <;> simp }
+                           -- ⊢ (x * 1).fst = x.fst
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
 
 instance : NatCast (X q) where
     natCast := fun n => ⟨n, 0⟩
@@ -294,18 +351,40 @@ instance : AddGroupWithOne (X q) :=
   { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
       inferInstanceAs (NatCast (X q)) with
     natCast_zero := by ext <;> simp
+                       -- ⊢ (NatCast.natCast 0).fst = 0.fst
+                               -- 🎉 no goals
+                               -- 🎉 no goals
     natCast_succ := fun _ ↦ by ext <;> simp
+                               -- ⊢ (NatCast.natCast (x✝ + 1)).fst = (NatCast.natCast x✝ + 1).fst
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
     intCast := fun n => ⟨n, 0⟩
     intCast_ofNat := fun n => by ext <;> simp
+                                 -- ⊢ (IntCast.intCast ↑n).fst = (↑n).fst
+                                         -- 🎉 no goals
+                                         -- 🎉 no goals
     intCast_negSucc := fun n => by ext <;> simp }
+                                   -- ⊢ (IntCast.intCast (Int.negSucc n)).fst = (-↑(n + 1)).fst
+                                           -- 🎉 no goals
+                                           -- 🎉 no goals
 
 theorem left_distrib (x y z : X q) : x * (y + z) = x * y + x * z := by
   ext <;> dsimp <;> ring
+  -- ⊢ (x * (y + z)).fst = (x * y + x * z).fst
+          -- ⊢ x.fst * (y.fst + z.fst) + 3 * x.snd * (y.snd + z.snd) = x.fst * y.fst + 3 *  …
+          -- ⊢ x.fst * (y.snd + z.snd) + x.snd * (y.fst + z.fst) = x.fst * y.snd + x.snd *  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.left_distrib LucasLehmer.X.left_distrib
 
 theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
   ext <;> dsimp <;> ring
+  -- ⊢ ((x + y) * z).fst = (x * z + y * z).fst
+          -- ⊢ (x.fst + y.fst) * z.fst + 3 * (x.snd + y.snd) * z.snd = x.fst * z.fst + 3 *  …
+          -- ⊢ (x.fst + y.fst) * z.snd + (x.snd + y.snd) * z.fst = x.fst * z.snd + x.snd *  …
+                    -- 🎉 no goals
+                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.right_distrib LucasLehmer.X.right_distrib
 
@@ -315,11 +394,22 @@ instance : Ring (X q) :=
     left_distrib := left_distrib
     right_distrib := right_distrib
     mul_zero := fun _ ↦ by ext <;> simp
+                           -- ⊢ (x✝ * 0).fst = 0.fst
+                           -- ⊢ (0 * x✝).fst = 0.fst
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
     zero_mul := fun _ ↦ by ext <;> simp }
 
 instance : CommRing (X q) :=
   { inferInstanceAs (Ring (X q)) with
     mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
+                             -- ⊢ (x✝¹ * x✝).fst = (x✝ * x✝¹).fst
+                                     -- ⊢ x✝¹.fst * x✝.fst + 3 * x✝¹.snd * x✝.snd = x✝.fst * x✝¹.fst + 3 * x✝.snd * x✝ …
+                                     -- ⊢ x✝¹.fst * x✝.snd + x✝¹.snd * x✝.fst = x✝.fst * x✝¹.snd + x✝.snd * x✝¹.fst
+                                               -- 🎉 no goals
+                                               -- 🎉 no goals
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩
@@ -338,26 +428,37 @@ set_option linter.uppercaseLean3 false in
 
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
+                                                                              -- ⊢ (↑(n * m)).fst = (↑n * ↑m).fst
+                                                                                      -- 🎉 no goals
+                                                                                      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_mul LucasLehmer.X.coe_mul
 
 @[norm_cast]
 theorem coe_nat (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
+                                                            -- ⊢ (↑↑n).fst = (↑n).fst
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_nat
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
   dsimp [X]
+  -- ⊢ Fintype.card (ZMod ↑q × ZMod ↑q) = ↑q ^ 2
   rw [Fintype.card_prod, ZMod.card q, sq]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.X_card LucasLehmer.X.card_eq
 
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
 nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
+  -- ⊢ Fintype.card (X q)ˣ < ↑q ^ 2
   convert card_units_lt (X q)
+  -- ⊢ ↑q ^ 2 = Fintype.card (X q)
   rw [card_eq]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.units_card LucasLehmer.X.card_units_lt
 
@@ -373,20 +474,31 @@ set_option linter.uppercaseLean3 false in
 
 theorem ω_mul_ωb (q : ℕ+) : (ω : X q) * ωb = 1 := by
   dsimp [ω, ωb]
+  -- ⊢ (2, 1) * (2, -1) = 1
   ext <;> simp; ring
+  -- ⊢ ((2, 1) * (2, -1)).fst = 1.fst
+          -- ⊢ 2 * 2 + -3 = 1
+          -- 🎉 no goals
+                -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.ω_mul_ωb LucasLehmer.X.ω_mul_ωb
 
 theorem ωb_mul_ω (q : ℕ+) : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.ωb_mul_ω LucasLehmer.X.ωb_mul_ω
 
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
   induction' i with i ih
+  -- ⊢ ↑(s zero) = ω ^ 2 ^ zero + ωb ^ 2 ^ zero
   · dsimp [s, ω, ωb]
+    -- ⊢ ↑4 = (2, 1) ^ 1 + (2, -1) ^ 1
     ext <;> norm_num
+    -- ⊢ (↑4).fst = ((2, 1) ^ 1 + (2, -1) ^ 1).fst
+            -- 🎉 no goals
+            -- 🎉 no goals
   · calc
       (s (i + 1) : X q) = (s i ^ 2 - 2 : ℤ) := rfl
       _ = (s i : X q) ^ 2 - 2 := by push_cast; rfl
@@ -409,9 +521,13 @@ Here and below, we introduce `p' = p - 2`, in order to avoid using subtraction i
 /-- If `1 < p`, then `q p`, the smallest prime factor of `mersenne p`, is more than 2. -/
 theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
   refine (minFac_prime (one_lt_mersenne ?_).ne').two_le.lt_of_ne' ?_
+  -- ⊢ 1 < p' + 2
   · exact le_add_left _ _
+    -- 🎉 no goals
   · rw [Ne.def, minFac_eq_two_iff, mersenne, Nat.pow_succ']
+    -- ⊢ ¬2 ∣ 2 * 2 ^ (p' + 1) - 1
     exact Nat.two_not_dvd_two_mul_sub_one (Nat.one_le_two_pow _)
+    -- 🎉 no goals
 #align lucas_lehmer.two_lt_q LucasLehmer.two_lt_q
 
 theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
@@ -419,37 +535,61 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
       (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) =
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
+  -- ⊢ ∃ k, ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   rw [sZMod_eq_s p'] at h
+  -- ⊢ ∃ k, ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
+  -- ⊢ ∃ k, ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   cases' h with k h
+  -- ⊢ ∃ k, ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   use k
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   -- coercion from ℤ to X q
   dsimp at h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   rw [closed_form] at h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   dsimp at h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   rw [mul_comm, coe_mul] at h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   rw [mul_comm _ (k : X (q (p' + 2)))] at h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   replace h := eq_sub_of_add_eq h
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
+  -- ⊢ ω ^ 2 ^ (p' + 1) = ↑k * ↑(mersenne (p' + 2)) * ω ^ 2 ^ p' - 1
   exact_mod_cast h
+  -- 🎉 no goals
 #align lucas_lehmer.ω_pow_formula LucasLehmer.ω_pow_formula
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
   ext <;> simp [mersenne, q, ZMod.nat_cast_zmod_eq_zero_iff_dvd, -pow_pos]
+  -- ⊢ (↑(mersenne p)).fst = 0.fst
+          -- ⊢ minFac (2 ^ p - 1) ∣ 2 ^ p - 1
+          -- 🎉 no goals
   apply Nat.minFac_dvd
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.mersenne_coe_X LucasLehmer.mersenne_coe_X
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) = -1 := by
   cases' ω_pow_formula p' h with k w
+  -- ⊢ ω ^ 2 ^ (p' + 1) = -1
   rw [mersenne_coe_X] at w
+  -- ⊢ ω ^ 2 ^ (p' + 1) = -1
   simpa using w
+  -- 🎉 no goals
 #align lucas_lehmer.ω_pow_eq_neg_one LucasLehmer.ω_pow_eq_neg_one
 
 theorem ω_pow_eq_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
@@ -457,8 +597,11 @@ theorem ω_pow_eq_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   calc
     (ω : X (q (p' + 2))) ^ 2 ^ (p' + 2) = (ω ^ 2 ^ (p' + 1)) ^ 2 := by
       rw [← pow_mul, ← Nat.pow_succ]
+      -- 🎉 no goals
     _ = (-1) ^ 2 := by rw [ω_pow_eq_neg_one p' h]
+                       -- 🎉 no goals
     _ = 1 := by simp
+                -- 🎉 no goals
 #align lucas_lehmer.ω_pow_eq_one LucasLehmer.ω_pow_eq_one
 
 /-- `ω` as an element of the group of units. -/
@@ -480,19 +623,29 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   apply Nat.eq_prime_pow_of_dvd_least_prime_pow
   -- the order of ω divides 2^p
   · exact Nat.prime_two
+    -- 🎉 no goals
   · intro o
+    -- ⊢ False
     have ω_pow := orderOf_dvd_iff_pow_eq_one.1 o
+    -- ⊢ False
     replace ω_pow :=
       congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) ω_pow
     simp at ω_pow
+    -- ⊢ False
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
+    -- ⊢ False
     apply ZMod.neg_one_ne_one h.symm
+    -- 🎉 no goals
   · apply orderOf_dvd_iff_pow_eq_one.2
+    -- ⊢ ωUnit (p' + 2) ^ 2 ^ (p' + 1 + 1) = 1
     apply Units.ext
+    -- ⊢ ↑(ωUnit (p' + 2) ^ 2 ^ (p' + 1 + 1)) = ↑1
     push_cast
+    -- ⊢ ↑(ωUnit (p' + 2)) ^ 2 ^ (p' + 1 + 1) = 1
     exact ω_pow_eq_one p' h
+    -- 🎉 no goals
 #align lucas_lehmer.order_ω LucasLehmer.order_ω
 
 theorem order_ineq (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
@@ -511,16 +664,27 @@ open LucasLehmer
 
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   let p' := p - 2
+  -- ⊢ LucasLehmerTest p → Nat.Prime (mersenne p)
   have z : p = p' + 2 := (tsub_eq_iff_eq_add_of_le w.nat_succ_le).mp rfl
+  -- ⊢ LucasLehmerTest p → Nat.Prime (mersenne p)
   have w : 1 < p' + 2 := Nat.lt_of_sub_eq_succ rfl
+  -- ⊢ LucasLehmerTest p → Nat.Prime (mersenne p)
   contrapose
+  -- ⊢ ¬Nat.Prime (mersenne p) → ¬LucasLehmerTest p
   intro a t
+  -- ⊢ False
   rw [z] at a
+  -- ⊢ False
   rw [z] at t
+  -- ⊢ False
   have h₁ := order_ineq p' t
+  -- ⊢ False
   have h₂ := Nat.minFac_sq_le_self (mersenne_pos (Nat.lt_of_succ_lt w)) a
+  -- ⊢ False
   have h := lt_of_lt_of_le h₁ h₂
+  -- ⊢ False
   exact not_lt_of_ge (Nat.sub_le _ _) h
+  -- 🎉 no goals
 #align lucas_lehmer_sufficiency lucas_lehmer_sufficiency
 
 namespace LucasLehmer
@@ -552,6 +716,7 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
     4 = 2 ^ 2 := by norm_num
     _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
   have h2 : 1 ≤ 2 ^ p := by linarith
+  -- ⊢ ↑(sMod' (2 ^ p - 1) k) = sMod p k
   induction k with
   | zero =>
     rw [sMod', sMod, Int.ofNat_emod]
@@ -570,15 +735,22 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
 lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod' (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
+  -- ⊢ LucasLehmerTest p
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp, h]
+  -- ⊢ ↑0 = 0
   rfl
+  -- 🎉 no goals
 
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
     (h : Nat.ble 1 (sMod' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
+  -- ⊢ ¬LucasLehmerTest p
   rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
+  -- ⊢ ¬LucasLehmerTest p
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp]
+  -- ⊢ ¬↑(sMod' (2 ^ p - 1) (p - 2)) = 0
   simpa using h
+  -- 🎉 no goals
 
 theorem isNat_lucasLehmerTest : {p np : ℕ} →
     IsNat p np → LucasLehmerTest np → LucasLehmerTest p
@@ -638,6 +810,7 @@ theorem modEq_mersenne (n k : ℕ) : k ≡ k / 2 ^ n + k % 2 ^ n [MOD 2 ^ n - 1]
     _ ≡ 1 * (k / 2 ^ n) + k % 2 ^ n [MOD 2 ^ n - 1] :=
       ((Nat.modEq_sub <| Nat.succ_le_of_lt <| pow_pos zero_lt_two _).mul_right _).add_right _
     _ = k / 2 ^ n + k % 2 ^ n := by rw [one_mul]
+                                    -- 🎉 no goals
 #align modeq_mersenne modEq_mersenne
 
 -- It's hard to know what the limiting factor for large Mersenne primes would be.

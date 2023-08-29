@@ -162,7 +162,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem bind₁_X_left : bind₁ (X : σ → MvPolynomial σ R) = AlgHom.id R _ := by
   ext1 i
+  -- ⊢ ↑(bind₁ X) (X i) = ↑(AlgHom.id R (MvPolynomial σ R)) (X i)
   simp
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.bind₁_X_left MvPolynomial.bind₁_X_left
 
@@ -171,6 +173,7 @@ variable (f : σ → MvPolynomial τ R)
 @[simp]
 theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := by
   simp [bind₁, algebraMap_eq]
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.bind₁_C_right MvPolynomial.bind₁_C_right
 
@@ -182,6 +185,9 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem bind₂_C_left : bind₂ (C : R →+* MvPolynomial σ R) = RingHom.id _ := by ext : 2 <;> simp
+                                                                               -- ⊢ ↑(RingHom.comp (bind₂ C) C) x✝ = ↑(RingHom.comp (RingHom.id (MvPolynomial σ  …
+                                                                                           -- 🎉 no goals
+                                                                                           -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.bind₂_C_left MvPolynomial.bind₂_C_left
 
@@ -194,6 +200,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem join₂_map (f : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :
     join₂ (map f φ) = bind₂ f φ := by simp only [join₂, bind₂, eval₂Hom_map_hom, RingHom.id_comp]
+                                      -- 🎉 no goals
 #align mv_polynomial.join₂_map MvPolynomial.join₂_map
 
 @[simp]
@@ -203,6 +210,7 @@ theorem join₂_comp_map (f : R →+* MvPolynomial σ S) : join₂.comp (map f) 
 
 theorem aeval_id_rename (f : σ → MvPolynomial τ R) (p : MvPolynomial σ R) :
     aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.comp.left_id]
+                                            -- 🎉 no goals
 #align mv_polynomial.aeval_id_rename MvPolynomial.aeval_id_rename
 
 @[simp]
@@ -224,16 +232,22 @@ theorem bind₂_id : bind₂ (RingHom.id (MvPolynomial σ R)) = join₂ :=
 theorem bind₁_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R)
     (φ : MvPolynomial σ R) : (bind₁ g) (bind₁ f φ) = bind₁ (fun i => bind₁ g (f i)) φ := by
   simp [bind₁, ← comp_aeval]
+  -- 🎉 no goals
 #align mv_polynomial.bind₁_bind₁ MvPolynomial.bind₁_bind₁
 
 theorem bind₁_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R) :
     (bind₁ g).comp (bind₁ f) = bind₁ fun i => bind₁ g (f i) := by
   ext1
+  -- ⊢ ↑(AlgHom.comp (bind₁ g) (bind₁ f)) (X i✝) = ↑(bind₁ fun i => ↑(bind₁ g) (f i …
   apply bind₁_bind₁
+  -- 🎉 no goals
 #align mv_polynomial.bind₁_comp_bind₁ MvPolynomial.bind₁_comp_bind₁
 
 theorem bind₂_comp_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomial σ T) :
     (bind₂ g).comp (bind₂ f) = bind₂ ((bind₂ g).comp f) := by ext : 2 <;> simp
+                                                              -- ⊢ ↑(RingHom.comp (RingHom.comp (bind₂ g) (bind₂ f)) C) x✝ = ↑(RingHom.comp (bi …
+                                                                          -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align mv_polynomial.bind₂_comp_bind₂ MvPolynomial.bind₂_comp_bind₂
 
 theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomial σ T)
@@ -244,7 +258,9 @@ theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomia
 theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) :
     (rename g).comp (bind₁ f) = bind₁ fun i => rename g <| f i := by
   ext1 i
+  -- ⊢ ↑(AlgHom.comp (rename g) (bind₁ f)) (X i) = ↑(bind₁ fun i => ↑(rename g) (f  …
   simp
+  -- 🎉 no goals
 #align mv_polynomial.rename_comp_bind₁ MvPolynomial.rename_comp_bind₁
 
 theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
@@ -255,14 +271,19 @@ theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → �
 theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPolynomial σ R) :
     map g (bind₂ f φ) = bind₂ ((map g).comp f) φ := by
   simp only [bind₂, eval₂_comp_right, coe_eval₂Hom, eval₂_map]
+  -- ⊢ eval₂ (RingHom.comp (map g) f) (↑(map g) ∘ X) φ = eval₂ (RingHom.comp (map g …
   congr 1 with : 1
+  -- ⊢ (↑(map g) ∘ X) x✝ = X x✝
   simp only [Function.comp_apply, map_X]
+  -- 🎉 no goals
 #align mv_polynomial.map_bind₂ MvPolynomial.map_bind₂
 
 theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) :
     (bind₁ f).comp (rename g) = bind₁ (f ∘ g) := by
   ext1 i
+  -- ⊢ ↑(AlgHom.comp (bind₁ f) (rename g)) (X i) = ↑(bind₁ (f ∘ g)) (X i)
   simp
+  -- 🎉 no goals
 #align mv_polynomial.bind₁_comp_rename MvPolynomial.bind₁_comp_rename
 
 theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
@@ -272,12 +293,15 @@ theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → �
 
 theorem bind₂_map (f : S →+* MvPolynomial σ T) (g : R →+* S) (φ : MvPolynomial σ R) :
     bind₂ f (map g φ) = bind₂ (f.comp g) φ := by simp [bind₂]
+                                                 -- 🎉 no goals
 #align mv_polynomial.bind₂_map MvPolynomial.bind₂_map
 
 @[simp]
 theorem map_comp_C (f : R →+* S) : (map f).comp (C : R →+* MvPolynomial σ R) = C.comp f := by
   ext1
+  -- ⊢ ↑(RingHom.comp (map f) C) x✝ = ↑(RingHom.comp C f) x✝
   apply map_C
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.map_comp_C MvPolynomial.map_comp_C
 
@@ -285,24 +309,30 @@ set_option linter.uppercaseLean3 false in
 theorem hom_bind₁ (f : MvPolynomial τ R →+* S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     f (bind₁ g φ) = eval₂Hom (f.comp C) (fun i => f (g i)) φ := by
   rw [bind₁, map_aeval, algebraMap_eq]
+  -- 🎉 no goals
 #align mv_polynomial.hom_bind₁ MvPolynomial.hom_bind₁
 
 theorem map_bind₁ (f : R →+* S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     map f (bind₁ g φ) = bind₁ (fun i : σ => (map f) (g i)) (map f φ) := by
   rw [hom_bind₁, map_comp_C, ← eval₂Hom_map_hom]
+  -- ⊢ ↑(eval₂Hom C fun i => ↑(map f) (g i)) (↑(map f) φ) = ↑(bind₁ fun i => ↑(map  …
   rfl
+  -- 🎉 no goals
 #align mv_polynomial.map_bind₁ MvPolynomial.map_bind₁
 
 @[simp]
 theorem eval₂Hom_comp_C (f : R →+* S) (g : σ → S) : (eval₂Hom f g).comp C = f := by
   ext1 r
+  -- ⊢ ↑(RingHom.comp (eval₂Hom f g) C) r = ↑f r
   exact eval₂_C f g r
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.eval₂_hom_comp_C MvPolynomial.eval₂Hom_comp_C
 
 theorem eval₂Hom_bind₁ (f : R →+* S) (g : τ → S) (h : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     eval₂Hom f g (bind₁ h φ) = eval₂Hom f (fun i => eval₂Hom f g (h i)) φ := by
   rw [hom_bind₁, eval₂Hom_comp_C]
+  -- 🎉 no goals
 #align mv_polynomial.eval₂_hom_bind₁ MvPolynomial.eval₂Hom_bind₁
 
 theorem aeval_bind₁ [Algebra R S] (f : τ → S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
@@ -313,11 +343,16 @@ theorem aeval_bind₁ [Algebra R S] (f : τ → S) (g : σ → MvPolynomial τ R
 theorem aeval_comp_bind₁ [Algebra R S] (f : τ → S) (g : σ → MvPolynomial τ R) :
     (aeval f).comp (bind₁ g) = aeval fun i => aeval f (g i) := by
   ext1
+  -- ⊢ ↑(AlgHom.comp (aeval f) (bind₁ g)) (X i✝) = ↑(aeval fun i => ↑(aeval f) (g i …
   apply aeval_bind₁
+  -- 🎉 no goals
 #align mv_polynomial.aeval_comp_bind₁ MvPolynomial.aeval_comp_bind₁
 
 theorem eval₂Hom_comp_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPolynomial σ S) :
     (eval₂Hom f g).comp (bind₂ h) = eval₂Hom ((eval₂Hom f g).comp h) g := by ext : 2 <;> simp
+                                                                             -- ⊢ ↑(RingHom.comp (RingHom.comp (eval₂Hom f g) (bind₂ h)) C) x✝ = ↑(RingHom.com …
+                                                                                         -- 🎉 no goals
+                                                                                         -- 🎉 no goals
 #align mv_polynomial.eval₂_hom_comp_bind₂ MvPolynomial.eval₂Hom_comp_bind₂
 
 theorem eval₂Hom_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPolynomial σ S)
@@ -350,6 +385,7 @@ theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r 
 @[simp]
 theorem bind₂_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) :
     bind₂ f (monomial d 1) = monomial d 1 := by rw [bind₂_monomial, f.map_one, one_mul]
+                                                -- 🎉 no goals
 #align mv_polynomial.bind₂_monomial_one MvPolynomial.bind₂_monomial_one
 
 section
@@ -368,7 +404,9 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
     _ ≤ φ.vars.biUnion fun i : σ => vars (f i) := ?_
     -- proof below
   · apply Finset.biUnion_mono
+    -- ⊢ ∀ (a : σ →₀ ℕ), a ∈ support φ → vars (↑C (coeff a φ) * ∏ i in a.support, f i …
     intro d _hd
+    -- ⊢ vars (↑C (coeff d φ) * ∏ i in d.support, f i ^ ↑d i) ⊆ Finset.biUnion d.supp …
     calc
       vars (C (coeff d φ) * ∏ i : σ in d.support, f i ^ d i) ≤
           (C (coeff d φ)).vars ∪ (∏ i : σ in d.support, f i ^ d i).vars :=
@@ -378,12 +416,19 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
       _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := (vars_prod _)
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
     apply Finset.biUnion_mono
+    -- ⊢ ∀ (a : σ), a ∈ d.support → vars (f a ^ ↑d a) ⊆ vars (f a)
     intro i _hi
+    -- ⊢ vars (f i ^ ↑d i) ⊆ vars (f i)
     apply vars_pow
+    -- 🎉 no goals
   · intro j
+    -- ⊢ (j ∈ Finset.biUnion (support φ) fun d => Finset.biUnion d.support fun i => v …
     simp_rw [Finset.mem_biUnion]
+    -- ⊢ (∃ a, a ∈ support φ ∧ ∃ a_1, a_1 ∈ a.support ∧ j ∈ vars (f a_1)) → ∃ a, a ∈  …
     rintro ⟨d, hd, ⟨i, hi, hj⟩⟩
+    -- ⊢ ∃ a, a ∈ vars φ ∧ j ∈ vars (f a)
     exact ⟨i, (mem_vars _).mpr ⟨d, hd, hi⟩, hj⟩
+    -- 🎉 no goals
 #align mv_polynomial.vars_bind₁ MvPolynomial.vars_bind₁
 
 end
@@ -404,16 +449,36 @@ instance monad : Monad fun σ => MvPolynomial σ R
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
     where
   map_const := by intros; rfl
+                  -- ⊢ Functor.mapConst = Functor.map ∘ Function.const β✝
+                          -- 🎉 no goals
   -- porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
+               -- ⊢ id <$> x✝ = x✝
+                       -- 🎉 no goals
   comp_map := by intros; simp [(· <$> ·)]
+                 -- ⊢ (h✝ ∘ g✝) <$> x✝ = h✝ <$> g✝ <$> x✝
+                         -- 🎉 no goals
 #align mv_polynomial.is_lawful_functor MvPolynomial.lawfulFunctor
 
 instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R
     where
   pure_bind := by intros; simp [pure, bind]
+                  -- ⊢ pure x✝ >>= f✝ = f✝ x✝
+                          -- 🎉 no goals
+                   -- ⊢ (SeqLeft.seqLeft x✝ fun x => y✝) = Seq.seq (Function.const β✝ <$> x✝) fun x  …
+                           -- ⊢ ↑(bind₁ fun a => ↑(bind₁ fun x => X a) y✝) x✝ = ↑(bind₁ ((fun y => ↑(rename  …
+                                                                                     -- 🎉 no goals
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
+                    -- ⊢ (SeqRight.seqRight x✝ fun x => y✝) = Seq.seq (Function.const α✝ id <$> x✝) f …
+                            -- ⊢ ↑(bind₁ fun x => y✝) x✝ = ↑(bind₁ (Function.const α✝ y✝)) x✝
+                                                                                        -- 🎉 no goals
+                   -- ⊢ x✝ >>= f✝ >>= g✝ = x✝ >>= fun x => f✝ x >>= g✝
+                 -- ⊢ (Seq.seq (pure g✝) fun x => x✝) = g✝ <$> x✝
+                         -- 🎉 no goals
+                           -- 🎉 no goals
+                       -- 🎉 no goals
   seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl
+                 -- 🎉 no goals
   seqRight_eq := by intros; simp [SeqRight.seqRight, Seq.seq, (· <$> ·), bind₁_rename]; rfl
   pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
   bind_pure_comp := by aesop

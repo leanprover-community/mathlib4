@@ -39,6 +39,7 @@ variable {R}
 
 instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y} : Ideal R).IsPrincipal :=
   by classical exact isPrincipal_of_FG (Ideal.span {x, y}) ⟨{x, y}, by simp⟩
+     -- 🎉 no goals
 #align is_bezout.span_pair_is_principal IsBezout.span_pair_isPrincipal
 
 theorem iff_span_pair_isPrincipal :
@@ -67,20 +68,28 @@ theorem span_gcd (x y : R) : (Ideal.span {gcd x y} : Ideal R) = Ideal.span {x, y
 
 theorem gcd_dvd_left (x y : R) : gcd x y ∣ x :=
   (Submodule.IsPrincipal.mem_iff_generator_dvd _).mp (Ideal.subset_span (by simp))
+                                                                            -- 🎉 no goals
 #align is_bezout.gcd_dvd_left IsBezout.gcd_dvd_left
 
 theorem gcd_dvd_right (x y : R) : gcd x y ∣ y :=
   (Submodule.IsPrincipal.mem_iff_generator_dvd _).mp (Ideal.subset_span (by simp))
+                                                                            -- 🎉 no goals
 #align is_bezout.gcd_dvd_right IsBezout.gcd_dvd_right
 
 theorem dvd_gcd {x y z : R} (hx : z ∣ x) (hy : z ∣ y) : z ∣ gcd x y := by
   rw [← Ideal.span_singleton_le_span_singleton] at hx hy ⊢
+  -- ⊢ Ideal.span {gcd x y} ≤ Ideal.span {z}
   rw [span_gcd, Ideal.span_insert, sup_le_iff]
+  -- ⊢ Ideal.span {x} ≤ Ideal.span {z} ∧ Ideal.span {y} ≤ Ideal.span {z}
   exact ⟨hx, hy⟩
+  -- 🎉 no goals
 #align is_bezout.dvd_gcd IsBezout.dvd_gcd
 
 theorem gcd_eq_sum (x y : R) : ∃ a b : R, a * x + b * y = gcd x y :=
   Ideal.mem_span_pair.mp (by rw [← span_gcd]; apply Ideal.subset_span; simp)
+                             -- ⊢ gcd x y ∈ Ideal.span {gcd x y}
+                                              -- ⊢ gcd x y ∈ {gcd x y}
+                                                                       -- 🎉 no goals
 #align is_bezout.gcd_eq_sum IsBezout.gcd_eq_sum
 
 variable (R)
@@ -99,16 +108,25 @@ attribute [local instance] toGCDDomain
 -- be stated.
 instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
   classical exact GCDMonoid.toIsIntegrallyClosed
+  -- 🎉 no goals
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
   rw [iff_span_pair_isPrincipal]
+  -- ⊢ ∀ (x y : S), Submodule.IsPrincipal (Ideal.span {x, y})
   intro x y
+  -- ⊢ Submodule.IsPrincipal (Ideal.span {x, y})
   obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := hf x, hf y
+  -- ⊢ Submodule.IsPrincipal (Ideal.span {↑f x, ↑f y})
   use f (gcd x y)
+  -- ⊢ Ideal.span {↑f x, ↑f y} = Submodule.span S {↑f (gcd x y)}
   trans Ideal.map f (Ideal.span {gcd x y})
+  -- ⊢ Ideal.span {↑f x, ↑f y} = Ideal.map f (Ideal.span {gcd x y})
   · rw [span_gcd, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
+    -- 🎉 no goals
   · rw [Ideal.map_span, Set.image_singleton]; rfl
+    -- ⊢ Ideal.span {↑f (gcd x y)} = Submodule.span S {↑f (gcd x y)}
+                                              -- 🎉 no goals
 #align function.surjective.is_bezout Function.Surjective.isBezout
 
 instance (priority := 100) of_isPrincipalIdealRing [IsPrincipalIdealRing R] : IsBezout R :=

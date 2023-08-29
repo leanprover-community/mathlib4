@@ -26,6 +26,7 @@ variable {α M : Type*} [CommMonoid M]
 @[to_additive (attr := simp)]
 theorem prod_insertNone (f : Option α → M) (s : Finset α) :
     ∏ x in insertNone s, f x = f none * ∏ x in s, f (some x) := by simp [insertNone]
+                                                                   -- 🎉 no goals
 #align finset.prod_insert_none Finset.prod_insertNone
 #align finset.sum_insert_none Finset.sum_insertNone
 

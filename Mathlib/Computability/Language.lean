@@ -99,6 +99,7 @@ theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
+                                                                   -- 🎉 no goals
 #align language.mem_one Language.mem_one
 
 theorem nil_mem_one : [] ∈ (1 : Language α) :=
@@ -127,6 +128,7 @@ theorem join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.join 
 
 theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
+                         -- 🎉 no goals
 #align language.nil_mem_kstar Language.nil_mem_kstar
 
 instance instSemiring : Semiring (Language α) where
@@ -142,10 +144,15 @@ instance instSemiring : Semiring (Language α) where
   mul_zero _ := image2_empty_right
   one := 1
   one_mul l := by simp [mul_def, one_def]
+                  -- 🎉 no goals
   mul_one l := by simp [mul_def, one_def]
+                  -- 🎉 no goals
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
+                       -- ⊢ NatCast.natCast (Nat.zero + 1) = NatCast.natCast Nat.zero + 1
+                                   -- 🎉 no goals
+                                   -- 🎉 no goals
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
 
@@ -165,26 +172,35 @@ def map (f : α → β) : Language α →+* Language β where
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
+                                                     -- 🎉 no goals
 #align language.map_id Language.map_id
 
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
+  -- 🎉 no goals
 #align language.map_map Language.map_map
 
 theorem kstar_def_nonempty (l : Language α) :
     l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
   ext x
+  -- ⊢ x ∈ l∗ ↔ x ∈ {x | ∃ S, x = join S ∧ ∀ (y : List α), y ∈ S → y ∈ l ∧ y ≠ []}
   constructor
+  -- ⊢ x ∈ l∗ → x ∈ {x | ∃ S, x = join S ∧ ∀ (y : List α), y ∈ S → y ∈ l ∧ y ≠ []}
   · rintro ⟨S, rfl, h⟩
+    -- ⊢ join S ∈ {x | ∃ S, x = join S ∧ ∀ (y : List α), y ∈ S → y ∈ l ∧ y ≠ []}
     refine' ⟨S.filter fun l ↦ ¬List.isEmpty l, by simp, fun y hy ↦ _⟩
+    -- ⊢ y ∈ l ∧ y ≠ []
     -- Porting note: The previous code was:
     -- rw [mem_filter, empty_iff_eq_nil] at hy
     rw [mem_filter, decide_not, Bool.decide_coe, Bool.not_eq_true', ← Bool.bool_iff_false,
       isEmpty_iff_eq_nil] at hy
     exact ⟨h y hy.1, hy.2⟩
+    -- 🎉 no goals
   · rintro ⟨S, hx, h⟩
+    -- ⊢ x ∈ l∗
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
+    -- 🎉 no goals
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
@@ -193,8 +209,11 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
+  -- ⊢ x ∈ m₁ * m₂
   simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
+  -- ⊢ ∃ a, a ∈ m₁ ∧ ∃ x_1, x_1 ∈ m₂ ∧ a ++ x_1 = x
   tauto
+  -- 🎉 no goals
 #align language.le_mul_congr Language.le_mul_congr
 
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
@@ -228,67 +247,110 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.join ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction' n with n ihn generalizing x
+  -- ⊢ x ∈ l ^ Nat.zero ↔ ∃ S, x = join S ∧ length S = Nat.zero ∧ ∀ (y : List α), y …
   · simp only [mem_one, pow_zero, length_eq_zero]
+    -- ⊢ x = [] ↔ ∃ S, x = join S ∧ S = [] ∧ ∀ (y : List α), y ∈ S → y ∈ l
     constructor
+    -- ⊢ x = [] → ∃ S, x = join S ∧ S = [] ∧ ∀ (y : List α), y ∈ S → y ∈ l
     · rintro rfl
+      -- ⊢ ∃ S, [] = join S ∧ S = [] ∧ ∀ (y : List α), y ∈ S → y ∈ l
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
+      -- 🎉 no goals
     · rintro ⟨_, rfl, rfl, _⟩
+      -- ⊢ join [] = []
       rfl
+      -- 🎉 no goals
   · simp only [pow_succ, mem_mul, ihn]
+    -- ⊢ (∃ a b, a ∈ l ∧ (∃ S, b = join S ∧ length S = n ∧ ∀ (y : List α), y ∈ S → y  …
     constructor
+    -- ⊢ (∃ a b, a ∈ l ∧ (∃ S, b = join S ∧ length S = n ∧ ∀ (y : List α), y ∈ S → y  …
     · rintro ⟨a, b, ha, ⟨S, rfl, rfl, hS⟩, rfl⟩
+      -- ⊢ ∃ S_1, a ++ join S = join S_1 ∧ length S_1 = Nat.succ (length S) ∧ ∀ (y : Li …
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
+      -- 🎉 no goals
     · rintro ⟨_ | ⟨a, S⟩, rfl, hn, hS⟩ <;> cases hn
+      -- ⊢ ∃ a b, a ∈ l ∧ (∃ S, b = join S ∧ length S = n ∧ ∀ (y : List α), y ∈ S → y ∈ …
+                                           -- 🎉 no goals
+                                           -- ⊢ ∃ a_1 b, a_1 ∈ l ∧ (∃ S_1, b = join S_1 ∧ length S_1 = Nat.add (length S) 0  …
       rw [forall_mem_cons] at hS
+      -- ⊢ ∃ a_1 b, a_1 ∈ l ∧ (∃ S_1, b = join S_1 ∧ length S_1 = Nat.add (length S) 0  …
       exact ⟨a, _, hS.1, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
+      -- 🎉 no goals
 #align language.mem_pow Language.mem_pow
 
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
+  -- ⊢ x ∈ l∗ ↔ x ∈ ⨆ (i : ℕ), l ^ i
   simp only [mem_kstar, mem_iSup, mem_pow]
+  -- ⊢ (∃ L, x = join L ∧ ∀ (y : List α), y ∈ L → y ∈ l) ↔ ∃ i S, x = join S ∧ leng …
   constructor
+  -- ⊢ (∃ L, x = join L ∧ ∀ (y : List α), y ∈ L → y ∈ l) → ∃ i S, x = join S ∧ leng …
   · rintro ⟨S, rfl, hS⟩
+    -- ⊢ ∃ i S_1, join S = join S_1 ∧ length S_1 = i ∧ ∀ (y : List α), y ∈ S_1 → y ∈ l
     exact ⟨_, S, rfl, rfl, hS⟩
+    -- 🎉 no goals
   · rintro ⟨_, S, rfl, rfl, hS⟩
+    -- ⊢ ∃ L, join S = join L ∧ ∀ (y : List α), y ∈ L → y ∈ l
     exact ⟨S, rfl, hS⟩
+    -- 🎉 no goals
 #align language.kstar_eq_supr_pow Language.kstar_eq_iSup_pow
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
   rw [kstar_eq_iSup_pow, kstar_eq_iSup_pow]
+  -- ⊢ ↑(map f) (⨆ (i : ℕ), l ^ i) = ⨆ (i : ℕ), ↑(map f) l ^ i
   simp_rw [← map_pow]
+  -- ⊢ ↑(map f) (⨆ (i : ℕ), l ^ i) = ⨆ (i : ℕ), ↑(map f) (l ^ i)
   exact image_iUnion
+  -- 🎉 no goals
 #align language.map_kstar Language.map_kstar
 
 theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
+  -- 🎉 no goals
 #align language.mul_self_kstar_comm Language.mul_self_kstar_comm
 
 @[simp]
 theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ, ← pow_zero l]
+  -- ⊢ l ^ 0 + ⨆ (i : ℕ), l ^ (i + 1) = ⨆ (i : ℕ), l ^ i
   exact sup_iSup_nat_succ _
+  -- 🎉 no goals
 #align language.one_add_self_mul_kstar_eq_kstar Language.one_add_self_mul_kstar_eq_kstar
 
 @[simp]
 theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
+  -- 🎉 no goals
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
 instance : KleeneAlgebra (Language α) :=
   { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
+                                             -- 🎉 no goals
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, iSup_mul]
+      -- ⊢ ⨆ (i : ℕ), l ^ i * m ≤ m
       refine' iSup_le (fun n ↦ _)
+      -- ⊢ l ^ n * m ≤ m
       induction' n with n ih
+      -- ⊢ l ^ Nat.zero * m ≤ m
       · simp
+        -- 🎉 no goals
+      -- ⊢ ⨆ (i : ℕ), m * l ^ i ≤ m
       rw [pow_succ', mul_assoc (l^n) l m]
+      -- ⊢ m * l ^ n ≤ m
+      -- ⊢ l ^ n * (l * m) ≤ m
+      -- ⊢ m * l ^ Nat.zero ≤ m
       exact le_trans (le_mul_congr le_rfl h) ih,
+        -- 🎉 no goals
+      -- 🎉 no goals
+      -- ⊢ m * l * l ^ n ≤ m
     mul_kstar_le_self := fun l m h ↦ by
+      -- 🎉 no goals
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine' iSup_le (fun n ↦ _)
       induction' n with n ih

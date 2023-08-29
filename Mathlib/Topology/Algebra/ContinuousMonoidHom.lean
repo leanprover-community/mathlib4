@@ -102,8 +102,11 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass :
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
+    -- ⊢ { toMonoidHom := { toOneHom := { toFun := toFun✝, map_one' := map_one'✝ }, m …
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := g
+    -- ⊢ { toMonoidHom := { toOneHom := { toFun := toFun✝¹, map_one' := map_one'✝¹ }, …
     congr
+    -- 🎉 no goals
 
   map_mul f := f.map_mul'
   map_one f := f.map_one'
@@ -132,6 +135,7 @@ def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert FunLike.ext_iff.1 h
+            -- 🎉 no goals
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
@@ -306,11 +310,14 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       simp_rw [Set.compl_union, Set.compl_iUnion, Set.image_singleton, Set.singleton_subset_iff,
         Set.ext_iff, Set.mem_inter_iff, Set.mem_iInter, Set.mem_compl_iff]
       refine' fun f => ⟨_, _⟩
+      -- ⊢ f ∈ Set.range toContinuousMap → ¬f ∈ {f | ¬↑f 1 ∈ {1}} ∧ ∀ (i i_1 : A) (i_2  …
       · rintro ⟨f, rfl⟩
+        -- ⊢ ¬toContinuousMap f ∈ {f | ¬↑f 1 ∈ {1}} ∧ ∀ (i i_1 : A) (i_2 i_3 i_4 : Set B) …
         exact
           ⟨fun h => h (map_one f), fun x y U V W _hU _hV _hW h ⟨⟨hfU, hfV⟩, hfW⟩ =>
             h.le_bot ⟨Set.mul_mem_mul hfU hfV, (congr_arg (· ∈ W) (map_mul f x y)).mp hfW⟩⟩
       · rintro ⟨hf1, hf2⟩
+        -- ⊢ f ∈ Set.range toContinuousMap
         suffices ∀ x y, f (x * y) = f x * f y by
           refine'
             ⟨({ f with
@@ -319,14 +326,21 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
                 ContinuousMonoidHom A B),
               ContinuousMap.ext fun _ => rfl⟩
         intro x y
+        -- ⊢ ↑f (x * y) = ↑f x * ↑f y
         contrapose! hf2
+        -- ⊢ ∃ i i_1 i_2 i_3 i_4, IsOpen i_2 ∧ IsOpen i_3 ∧ IsOpen i_4 ∧ Disjoint (i_2 *  …
         obtain ⟨UV, W, hUV, hW, hfUV, hfW, h⟩ := t2_separation hf2.symm
+        -- ⊢ ∃ i i_1 i_2 i_3 i_4, IsOpen i_2 ∧ IsOpen i_3 ∧ IsOpen i_4 ∧ Disjoint (i_2 *  …
         have hB := @continuous_mul B _ _ _
+        -- ⊢ ∃ i i_1 i_2 i_3 i_4, IsOpen i_2 ∧ IsOpen i_3 ∧ IsOpen i_4 ∧ Disjoint (i_2 *  …
         obtain ⟨U, V, hU, hV, hfU, hfV, h'⟩ :=
           isOpen_prod_iff.mp (hUV.preimage hB) (f x) (f y) hfUV
         refine' ⟨x, y, U, V, W, hU, hV, hW, h.mono_left _, ⟨hfU, hfV⟩, hfW⟩
+        -- ⊢ U * V ≤ UV
         rintro _ ⟨x, y, hx : (x, y).1 ∈ U, hy : (x, y).2 ∈ V, rfl⟩
+        -- ⊢ (fun x x_1 => x * x_1) x y ∈ UV
         exact h' ⟨hx, hy⟩⟩⟩
+        -- 🎉 no goals
 #align continuous_monoid_hom.closed_embedding_to_continuous_map ContinuousMonoidHom.closedEmbedding_toContinuousMap
 #align continuous_add_monoid_hom.closed_embedding_to_continuous_map ContinuousAddMonoidHom.closedEmbedding_toContinuousMap
 

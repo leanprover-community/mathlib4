@@ -45,8 +45,11 @@ def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
     cokernel.mapIso _ _ (PreservesKernel.iso ((evaluation C D).obj X) _) (Iso.refl _)
       (by
         dsimp
+        -- ⊢ NatTrans.app (kernel.ι α) X ≫ 𝟙 (F.obj X) = (PreservesKernel.iso ((evaluatio …
         simp only [Category.comp_id, PreservesKernel.iso_hom]
+        -- ⊢ NatTrans.app (kernel.ι α) X = kernelComparison α ((evaluation C D).obj X) ≫  …
         exact (kernelComparison_comp_ι _ ((evaluation C D).obj X)).symm)
+        -- 🎉 no goals
 #align category_theory.abelian.functor_category.coimage_obj_iso CategoryTheory.Abelian.FunctorCategory.coimageObjIso
 
 /-- The abelian image in a functor category can be calculated componentwise. -/
@@ -56,24 +59,33 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
     kernel.mapIso _ _ (Iso.refl _) (PreservesCokernel.iso ((evaluation C D).obj X) _)
       (by
         apply (cancel_mono (PreservesCokernel.iso ((evaluation C D).obj X) α).inv).1
+        -- ⊢ (((evaluation C D).obj X).map (cokernel.π α) ≫ (PreservesCokernel.iso ((eval …
         simp only [Category.assoc, Iso.hom_inv_id]
+        -- ⊢ ((evaluation C D).obj X).map (cokernel.π α) ≫ 𝟙 (((evaluation C D).obj X).ob …
         dsimp
+        -- ⊢ NatTrans.app (cokernel.π α) X ≫ 𝟙 ((cokernel α).obj X) = 𝟙 (G.obj X) ≫ coker …
         simp only [PreservesCokernel.iso_inv, Category.id_comp, Category.comp_id]
+        -- ⊢ NatTrans.app (cokernel.π α) X = cokernel.π (NatTrans.app α X) ≫ cokernelComp …
         exact (π_comp_cokernelComparison _ ((evaluation C D).obj X)).symm)
+        -- 🎉 no goals
 #align category_theory.abelian.functor_category.image_obj_iso CategoryTheory.Abelian.FunctorCategory.imageObjIso
 
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
       (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by
   ext
+  -- ⊢ (coequalizer.π (kernel.ι (NatTrans.app α X)) 0 ≫ coimageImageComparison (Nat …
   dsimp
+  -- ⊢ (cokernel.π (kernel.ι (NatTrans.app α X)) ≫ coimageImageComparison (NatTrans …
   dsimp [imageObjIso, coimageObjIso, cokernel.map]
+  -- ⊢ (cokernel.π (kernel.ι (NatTrans.app α X)) ≫ coimageImageComparison (NatTrans …
   simp only [coimage_image_factorisation, PreservesKernel.iso_hom, Category.assoc,
     kernel.lift_ι, Category.comp_id, PreservesCokernel.iso_inv,
     cokernel.π_desc_assoc, Category.id_comp]
   erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
     π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
   conv_lhs => rw [← coimage_image_factorisation α]
+  -- 🎉 no goals
 #align category_theory.abelian.functor_category.coimage_image_comparison_app CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app
 
 theorem coimageImageComparison_app' :
@@ -90,6 +102,7 @@ instance functor_category_isIso_coimageImageComparison :
     rw [coimageImageComparison_app']
     infer_instance
   apply NatIso.isIso_of_isIso_app
+  -- 🎉 no goals
 #align category_theory.abelian.functor_category.functor_category_is_iso_coimage_image_comparison CategoryTheory.Abelian.FunctorCategory.functor_category_isIso_coimageImageComparison
 
 end FunctorCategory

@@ -123,6 +123,8 @@ instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
 @[simps]
 def id (X : LocallyRingedSpace) : Hom X X :=
   ⟨𝟙 _, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
+                    -- ⊢ IsLocalRingHom (𝟙 (PresheafedSpace.stalk X.toPresheafedSpace x))
+                                                       -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.id AlgebraicGeometry.LocallyRingedSpace.id
 
@@ -133,7 +135,9 @@ instance (X : LocallyRingedSpace) : Inhabited (Hom X X) :=
 def comp {X Y Z : LocallyRingedSpace} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
   ⟨f.val ≫ g.val, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
+    -- ⊢ IsLocalRingHom (PresheafedSpace.stalkMap g.val (↑f.val.base x) ≫ PresheafedS …
     exact @isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp AlgebraicGeometry.LocallyRingedSpace.comp
 
@@ -143,8 +147,11 @@ instance : Category LocallyRingedSpace where
   id := id
   comp {X Y Z} f g := comp f g
   comp_id {X Y} f := Hom.ext _ _ <| by simp [comp]
+                                       -- 🎉 no goals
+                                       -- 🎉 no goals
   id_comp {X Y} f := Hom.ext _ _ <| by simp [comp]
   assoc {_ _ _ _} f g h := Hom.ext _ _ <| by simp [comp]
+                                             -- 🎉 no goals
 
 /-- The forgetful functor from `LocallyRingedSpace` to `SheafedSpace CommRing`. -/
 @[simps]
@@ -200,6 +207,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace} (f : X.toSheafedSpace
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
     show IsLocalRingHom (PresheafedSpace.stalkMap (SheafedSpace.forgetToPresheafedSpace.map f) x) by
       infer_instance
+      -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.hom_of_SheafedSpace_hom_of_is_iso AlgebraicGeometry.LocallyRingedSpace.homOfSheafedSpaceHomOfIsIso
 
@@ -236,9 +244,12 @@ def restrict {U : TopCat} (X : LocallyRingedSpace) {f : U ⟶ X.toTopCat} (h : O
     LocallyRingedSpace where
   localRing := by
     intro x
+    -- ⊢ LocalRing ↑(Presheaf.stalk (SheafedSpace.restrict X.toSheafedSpace h).toPres …
     -- We show that the stalk of the restriction is isomorphic to the original stalk,
     apply @RingEquiv.localRing _ _ _ (X.localRing (f x))
+    -- ⊢ ↑(Presheaf.stalk X.presheaf (↑f x)) ≃+* ↑(Presheaf.stalk (SheafedSpace.restr …
     exact (X.restrictStalkIso h x).symm.commRingCatIsoToRingEquiv
+    -- 🎉 no goals
   toSheafedSpace := X.toSheafedSpace.restrict h
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.restrict AlgebraicGeometry.LocallyRingedSpace.restrict
@@ -296,15 +307,23 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace} (f : X ⟶ Y) {U : Opens Y
     (Opens.map f.1.base).obj (Y.toRingedSpace.basicOpen s) =
       @RingedSpace.basicOpen X.toRingedSpace ((Opens.map f.1.base).obj U) (f.1.c.app _ s) := by
   ext x
+  -- ⊢ x ∈ ↑((Opens.map f.val.base).obj (RingedSpace.basicOpen (toRingedSpace Y) s) …
   constructor
+  -- ⊢ x ∈ ↑((Opens.map f.val.base).obj (RingedSpace.basicOpen (toRingedSpace Y) s) …
   · rintro ⟨⟨y, hyU⟩, hy : IsUnit _, rfl : y = _⟩
+    -- ⊢ x ∈ ↑(RingedSpace.basicOpen (toRingedSpace X) (↑(NatTrans.app f.val.c (op U) …
     erw [RingedSpace.mem_basicOpen _ _ ⟨x, show x ∈ (Opens.map f.1.base).obj U from hyU⟩,
       ← PresheafedSpace.stalkMap_germ_apply]
     exact (PresheafedSpace.stalkMap f.1 _).isUnit_map hy
+    -- 🎉 no goals
   · rintro ⟨y, hy : IsUnit _, rfl⟩
+    -- ⊢ ↑y ∈ ↑((Opens.map f.val.base).obj (RingedSpace.basicOpen (toRingedSpace Y) s))
     erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
+    -- ⊢ IsUnit (↑(Presheaf.germ Y.presheaf { val := ↑f.val.base ↑y, property := (_ : …
     erw [← PresheafedSpace.stalkMap_germ_apply] at hy
+    -- ⊢ IsUnit (↑(Presheaf.germ Y.presheaf { val := ↑f.val.base ↑y, property := (_ : …
     exact (isUnit_map_iff (PresheafedSpace.stalkMap f.1 _) _).mp hy
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen
 
@@ -313,13 +332,18 @@ set_option linter.uppercaseLean3 false in
 theorem basicOpen_zero (X : LocallyRingedSpace) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
+  -- ⊢ x ∈ ↑(RingedSpace.basicOpen (toRingedSpace X) 0) ↔ x ∈ ↑⊥
   simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
     exists_and_right, exists_eq_right, Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
   intros hx
+  -- ⊢ ¬IsUnit (↑(Presheaf.germ (toRingedSpace X).toPresheafedSpace.presheaf { val  …
   rw [map_zero, isUnit_zero_iff]
+  -- ⊢ ¬0 = 1
   change (0 : X.stalk x) ≠ (1 : X.stalk x)
+  -- ⊢ 0 ≠ 1
   exact zero_ne_one
+  -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.basic_open_zero AlgebraicGeometry.LocallyRingedSpace.basicOpen_zero
 

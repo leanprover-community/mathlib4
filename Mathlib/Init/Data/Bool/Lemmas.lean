@@ -45,36 +45,58 @@ namespace Bool
 
 @[simp]
 theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
+                                                                             -- ⊢ (bif false then a else a) = a
+                                                                                         -- 🎉 no goals
+                                                                                         -- 🎉 no goals
 #align cond_a_a Bool.cond_self
 
 @[simp]
 theorem xor_self (b : Bool) : xor b b = false := by cases b <;> simp
+                                                    -- ⊢ xor false false = false
+                                                                -- 🎉 no goals
+                                                                -- 🎉 no goals
 #align bxor_self Bool.xor_self
 
 @[simp]
 theorem xor_true (b : Bool) : xor b true = not b := by cases b <;> simp
+                                                       -- ⊢ xor false true = !false
+                                                                   -- 🎉 no goals
+                                                                   -- 🎉 no goals
 #align bxor_tt Bool.xor_true
 
 theorem xor_false (b : Bool) : xor b false = b := by cases b <;> simp
+                                                     -- ⊢ xor false false = false
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
 #align bxor_ff Bool.xor_false
 
 @[simp]
 theorem true_xor (b : Bool) : xor true b = not b := by cases b <;> simp
+                                                       -- ⊢ xor true false = !false
+                                                                   -- 🎉 no goals
+                                                                   -- 🎉 no goals
 #align tt_bxor Bool.true_xor
 
 theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
+                                                     -- ⊢ xor false false = false
+                                                                 -- 🎉 no goals
+                                                                 -- 🎉 no goals
 #align ff_bxor Bool.false_xor
 
 theorem true_eq_false_eq_False : ¬true = false := by decide
+                                                     -- 🎉 no goals
 #align tt_eq_ff_eq_false Bool.true_eq_false_eq_False
 
 theorem false_eq_true_eq_False : ¬false = true := by decide
+                                                     -- 🎉 no goals
 #align ff_eq_tt_eq_false Bool.false_eq_true_eq_False
 
 theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
+                                                                             -- 🎉 no goals
 #align eq_ff_eq_not_eq_tt Bool.eq_false_eq_not_eq_true
 
 theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
+                                                                             -- 🎉 no goals
 #align eq_tt_eq_not_eq_ft Bool.eq_true_eq_not_eq_false
 
 theorem eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
@@ -87,43 +109,70 @@ theorem eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
 
 theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
     ((a && b) = true) = (a = true ∧ b = true) := by simp
+                                                    -- 🎉 no goals
 #align band_eq_true_eq_eq_tt_and_eq_tt Bool.and_eq_true_eq_eq_true_and_eq_true
 
 theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
     ((a || b) = true) = (a = true ∨ b = true) := by simp
+                                                    -- 🎉 no goals
 #align bor_eq_true_eq_eq_tt_or_eq_tt Bool.or_eq_true_eq_eq_true_or_eq_true
 
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
+                                                                                -- ⊢ ((!false) = true) = (false = false)
+                                                                                            -- 🎉 no goals
+                                                                                            -- 🎉 no goals
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
 @[simp]
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
+  -- ⊢ ((false && b) = false) = (false = false ∨ b = false)
+              -- ⊢ ((false && false) = false) = (false = false ∨ false = false)
+              -- ⊢ ((true && false) = false) = (true = false ∨ false = false)
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align band_eq_false_eq_eq_ff_or_eq_ff Bool.and_eq_false_eq_eq_false_or_eq_false
 
 @[simp]
 theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
     ((a || b) = false) = (a = false ∧ b = false) := by
   cases a <;> cases b <;> simp
+  -- ⊢ ((false || b) = false) = (false = false ∧ b = false)
+              -- ⊢ ((false || false) = false) = (false = false ∧ false = false)
+              -- ⊢ ((true || false) = false) = (true = false ∧ false = false)
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align bor_eq_false_eq_eq_ff_and_eq_ff Bool.or_eq_false_eq_eq_false_and_eq_false
 
 theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
+                                                                                -- ⊢ ((!false) = false) = (false = true)
+                                                                                            -- 🎉 no goals
+                                                                                            -- 🎉 no goals
 #align bnot_eq_ff_eq_eq_tt Bool.not_eq_false_eq_eq_true
 
 theorem coe_false : ↑false = False := by simp
+                                         -- 🎉 no goals
 #align coe_ff Bool.coe_false
 
 theorem coe_true : ↑true = True := by simp
+                                      -- 🎉 no goals
 #align coe_tt Bool.coe_true
 
 theorem coe_sort_false : (↥false : Prop) = False := by simp
+                                                       -- 🎉 no goals
 #align coe_sort_ff Bool.coe_sort_false
 
 theorem coe_sort_true : (↥true : Prop) = True := by simp
+                                                    -- 🎉 no goals
 #align coe_sort_tt Bool.coe_sort_true
 
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
+                                                                            -- 🎉 no goals
 #align to_bool_iff Bool.decide_iff
 
 theorem decide_true {p : Prop} [Decidable p] : p → decide p :=
@@ -136,6 +185,9 @@ theorem of_decide_true {p : Prop} [Decidable p] : decide p → p :=
 #align of_to_bool_true Bool.of_decide_true
 
 theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> exact by decide
+                                                         -- ⊢ ¬false = true ↔ false = false
+                                                                     -- 🎉 no goals
+                                                                     -- 🎉 no goals
 #align bool_iff_false Bool.bool_iff_false
 
 theorem bool_eq_false {b : Bool} : ¬b → b = false :=
@@ -162,25 +214,42 @@ theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
 #align to_bool_congr Bool.decide_congr
 
 theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
+                                                       -- 🎉 no goals
 #align bor_coe_iff Bool.or_coe_iff
 
 theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
+                                                        -- 🎉 no goals
 #align band_coe_iff Bool.and_coe_iff
 
 @[simp]
 theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> exact by decide
+  -- ⊢ xor false b = true ↔ Xor' (false = true) (b = true)
+              -- ⊢ xor false false = true ↔ Xor' (false = true) (false = true)
+              -- ⊢ xor true false = true ↔ Xor' (true = true) (false = true)
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
+                          -- 🎉 no goals
 #align bxor_coe_iff Bool.xor_coe_iff
 
 @[simp]
 theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
     ((if c then a else b) = true) = if c then a = true else b = true := by by_cases c <;> simp [*]
+                                                                           -- ⊢ ((if c then a else b) = true) = if c then a = true else b = true
+                                                                           -- ⊢ ((if c then a else b) = true) = if c then a = true else b = true
+                                                                                          -- 🎉 no goals
+                                                                                          -- 🎉 no goals
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib
 
 @[simp]
 theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
     ((if c then a else b) = false) = if c then a = false else b = false := by
   by_cases c <;> simp [*]
+  -- ⊢ ((if c then a else b) = false) = if c then a = false else b = false
+  -- ⊢ ((if c then a else b) = false) = if c then a = false else b = false
+                 -- 🎉 no goals
+                 -- 🎉 no goals
 #align ite_eq_ff_distrib Bool.ite_eq_false_distrib
 
 end Bool

@@ -70,8 +70,11 @@ theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
 theorem conj_eq : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
+  -- ⊢ q = p / (p - 1)
   rw [← eq_sub_iff_add_eq', one_div, inv_eq_iff_eq_inv] at this
+  -- ⊢ q = p / (p - 1)
   field_simp [this, h.ne_zero]
+  -- 🎉 no goals
 #align real.is_conjugate_exponent.conj_eq Real.IsConjugateExponent.conj_eq
 
 theorem conjugate_eq : conjugateExponent p = q := h.conj_eq.symm
@@ -83,24 +86,32 @@ theorem sub_one_mul_conj : (p - 1) * q = p :=
 
 theorem mul_eq_add : p * q = p + q := by
   simpa only [sub_mul, sub_eq_iff_eq_add, one_mul] using h.sub_one_mul_conj
+  -- 🎉 no goals
 #align real.is_conjugate_exponent.mul_eq_add Real.IsConjugateExponent.mul_eq_add
 
 @[symm]
 protected theorem symm : q.IsConjugateExponent p :=
   { one_lt := by
       rw [h.conj_eq]
+      -- ⊢ 1 < p / (p - 1)
       exact (one_lt_div h.sub_one_pos).mpr (sub_one_lt p)
+      -- 🎉 no goals
     inv_add_inv_conj := by simpa [add_comm] using h.inv_add_inv_conj }
+                           -- 🎉 no goals
 #align real.is_conjugate_exponent.symm Real.IsConjugateExponent.symm
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
+  -- ⊢ p = (p - 1) * q
   rw [h.sub_one_mul_conj]
+  -- 🎉 no goals
 #align real.is_conjugate_exponent.div_conj_eq_sub_one Real.IsConjugateExponent.div_conj_eq_sub_one
 
 theorem one_lt_nnreal : 1 < Real.toNNReal p := by
   rw [← Real.toNNReal_one, Real.toNNReal_lt_toNNReal_iff h.pos]
+  -- ⊢ 1 < p
   exact h.one_lt
+  -- 🎉 no goals
 #align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nnreal
 
 theorem inv_add_inv_conj_nnreal : 1 / Real.toNNReal p + 1 / Real.toNNReal q = 1 := by
@@ -118,6 +129,7 @@ end IsConjugateExponent
 
 theorem isConjugateExponent_iff {p q : ℝ} (h : 1 < p) : p.IsConjugateExponent q ↔ q = p / (p - 1) :=
   ⟨fun H => H.conj_eq, fun H => ⟨h, by field_simp [H, ne_of_gt (lt_trans zero_lt_one h)] ⟩⟩
+                                       -- 🎉 no goals
 #align real.is_conjugate_exponent_iff Real.isConjugateExponent_iff
 
 theorem isConjugateExponent_conjugateExponent {p : ℝ} (h : 1 < p) :
@@ -127,7 +139,11 @@ theorem isConjugateExponent_conjugateExponent {p : ℝ} (h : 1 < p) :
 theorem isConjugateExponent_one_div {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
     (1 / a).IsConjugateExponent (1 / b) :=
   ⟨by rw [lt_div_iff ha, one_mul]; linarith,
+      -- ⊢ a < 1
+                                   -- 🎉 no goals
    by simp_rw [one_div_one_div]; exact hab⟩
+      -- ⊢ a + b = 1
+                                 -- 🎉 no goals
 #align real.is_conjugate_exponent_one_div Real.isConjugateExponent_one_div
 
 end Real

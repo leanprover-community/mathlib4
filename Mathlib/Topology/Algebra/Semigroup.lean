@@ -33,8 +33,11 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
   let S : Set (Set M) :=
     { N | IsClosed N ∧ N.Nonempty ∧ ∀ (m) (_ : m ∈ N) (m') (_ : m' ∈ N), m * m' ∈ N }
   obtain ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
+  -- ⊢ ∃ N, N ∈ S ∧ ∀ (N' : Set M), N' ∈ S → N' ⊆ N → N' = N
   rotate_left -- Porting note: restore to `rsuffices`
+  -- ⊢ ∃ m, m * m = m
   · use m
+    -- ⊢ m * m = m
     /- We now have an element `m : M` of a minimal subsemigroup `N`, and want to show `m + m = m`.
     We first show that every element of `N` is of the form `m' + m`.-/
     have scaling_eq_self : (· * m) '' N = N := by
@@ -56,22 +59,33 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
       apply Set.inter_subset_left
     -- Thus `m * m = m` as desired.
     rw [← absorbing_eq_self] at hm
+    -- ⊢ m * m = m
     exact hm.2
+    -- 🎉 no goals
   refine' zorn_superset _ fun c hcs hc => _
+  -- ⊢ ∃ lb, lb ∈ S ∧ ∀ (s : Set M), s ∈ c → lb ⊆ s
   refine'
     ⟨⋂₀ c, ⟨isClosed_sInter fun t ht => (hcs ht).1, _, fun m hm m' hm' => _⟩, fun s hs =>
       Set.sInter_subset_of_mem hs⟩
   · obtain rfl | hcnemp := c.eq_empty_or_nonempty
+    -- ⊢ Set.Nonempty (⋂₀ ∅)
     · rw [Set.sInter_empty]
+      -- ⊢ Set.Nonempty Set.univ
       apply Set.univ_nonempty
+      -- 🎉 no goals
     convert
       @IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
     · exact Set.sInter_eq_iInter
+      -- 🎉 no goals
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
+      -- 🎉 no goals
     exacts [fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
+    -- 🎉 no goals
   · rw [Set.mem_sInter]
+    -- ⊢ ∀ (t : Set M), t ∈ c → m * m' ∈ t
     exact fun t ht => (hcs ht).2.2 m (Set.mem_sInter.mp hm t ht) m' (Set.mem_sInter.mp hm' t ht)
+    -- 🎉 no goals
 #align exists_idempotent_of_compact_t2_of_continuous_mul_left exists_idempotent_of_compact_t2_of_continuous_mul_left
 #align exists_idempotent_of_compact_t2_of_continuous_add_left exists_idempotent_of_compact_t2_of_continuous_add_left
 
@@ -88,14 +102,19 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
     (s_compact : IsCompact s) (s_add : ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), x * y ∈ s) :
     ∃ m ∈ s, m * m = m := by
   let M' := { m // m ∈ s }
+  -- ⊢ ∃ m, m ∈ s ∧ m * m = m
   letI : Semigroup M' :=
     { mul := fun p q => ⟨p.1 * q.1, s_add _ p.2 _ q.2⟩
       mul_assoc := fun p q r => Subtype.eq (mul_assoc _ _ _) }
   haveI : CompactSpace M' := isCompact_iff_compactSpace.mp s_compact
+  -- ⊢ ∃ m, m ∈ s ∧ m * m = m
   haveI : Nonempty M' := nonempty_subtype.mpr snemp
+  -- ⊢ ∃ m, m ∈ s ∧ m * m = m
   have : ∀ p : M', Continuous (· * p) := fun p =>
     ((continuous_mul_left p.1).comp continuous_subtype_val).subtype_mk _
   obtain ⟨⟨m, hm⟩, idem⟩ := exists_idempotent_of_compact_t2_of_continuous_mul_left this
+  -- ⊢ ∃ m, m ∈ s ∧ m * m = m
   exact ⟨m, hm, Subtype.ext_iff.mp idem⟩
+  -- 🎉 no goals
 #align exists_idempotent_in_compact_subsemigroup exists_idempotent_in_compact_subsemigroup
 #align exists_idempotent_in_compact_add_subsemigroup exists_idempotent_in_compact_add_subsemigroup

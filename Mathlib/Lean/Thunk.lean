@@ -20,15 +20,23 @@ namespace Thunk
 @[ext]
 theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
   have ⟨_⟩ := a
+  -- ⊢ { fn := fn✝ } = b
   have ⟨_⟩ := b
+  -- ⊢ { fn := fn✝¹ } = { fn := fn✝ }
   congr
+  -- ⊢ fn✝¹ = fn✝
   exact funext fun _ ↦ eq
+  -- 🎉 no goals
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
   intro a b
+  -- ⊢ Decidable (a = b)
   have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩
+  -- ⊢ Decidable (a = b)
   rw [this]
+  -- ⊢ Decidable (Thunk.get a = Thunk.get b)
   infer_instance
+  -- 🎉 no goals
 
 /-- The product of two thunks. -/
 def prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (a.get, b.get)

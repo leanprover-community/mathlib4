@@ -53,9 +53,20 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
       -- `tidy` can do this using `case_bash`, but let's try to be a good `-T50000` citizen:
       naturality := fun X Y f => by
         dsimp; cases X <;> cases Y <;> cases f
+        -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
+               -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
+                           -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
+                           -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
+                                       -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
+                                       -- 🎉 no goals
+                                       -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
+                                       -- ⊢ 𝟙 c.pt.left ≫ Option.rec c.pt.hom (fun val => (NatTrans.app c.π { as := val  …
         · rw [Category.id_comp, Category.comp_id]
+          -- 🎉 no goals
         · rw [Over.w, Category.id_comp]
+          -- 🎉 no goals
         · rw [Category.id_comp, Category.comp_id] }
+          -- 🎉 no goals
 #align category_theory.over.construct_products.cones_equiv_inverse_obj CategoryTheory.Over.ConstructProducts.conesEquivInverseObj
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
@@ -67,10 +78,15 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     { Hom := f.Hom.left
       w := fun j => by
         cases' j with j
+        -- ⊢ f.Hom.left ≫ NatTrans.app (conesEquivInverseObj B F Y✝).π none = NatTrans.ap …
         · simp
+          -- 🎉 no goals
         · dsimp
+          -- ⊢ f.Hom.left ≫ (NatTrans.app Y✝.π { as := j }).left = (NatTrans.app X✝.π { as  …
           rw [← f.w ⟨j⟩]
+          -- ⊢ f.Hom.left ≫ (NatTrans.app Y✝.π { as := j }).left = (f.Hom ≫ NatTrans.app Y✝ …
           rfl }
+          -- 🎉 no goals
 #align category_theory.over.construct_products.cones_equiv_inverse CategoryTheory.Over.ConstructProducts.conesEquivInverse
 
 -- Porting note: this should help with the additional `naturality` proof we now have to give in
@@ -87,6 +103,8 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
           -- Porting note: Added a proof for `naturality`
           naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
+                                                -- ⊢ 𝟙 (mk (NatTrans.app c.π none)) ≫ homMk (NatTrans.app c.π (some Y)) = homMk ( …
+                                                              -- 🎉 no goals
   map f := { Hom := Over.homMk f.Hom }
 #align category_theory.over.construct_products.cones_equiv_functor CategoryTheory.Over.ConstructProducts.conesEquivFunctor
 
@@ -104,6 +122,9 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     { hom := 𝟙 _
       inv := 𝟙 _ }
     (by rintro (j | j) <;> aesop_cat)
+        -- ⊢ NatTrans.app ((𝟭 (Cone (widePullbackDiagramOfDiagramOver B F))).obj x✝).π no …
+                           -- 🎉 no goals
+                           -- 🎉 no goals
 #align category_theory.over.construct_products.cones_equiv_unit_iso CategoryTheory.Over.ConstructProducts.conesEquivUnitIso
 
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
@@ -178,11 +199,17 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
           fac := fun _ j => j.as.elim
           uniq := fun s m _ => by
             simp only
+            -- ⊢ m = homMk s.pt.hom
             ext
+            -- ⊢ m.left = (homMk s.pt.hom).left
             rw [Over.homMk_left _]
+            -- ⊢ m.left = s.pt.hom
             have := m.w
+            -- ⊢ m.left = s.pt.hom
             dsimp at this
+            -- ⊢ m.left = s.pt.hom
             rwa [Category.comp_id, Category.comp_id] at this } }
+            -- 🎉 no goals
 #align category_theory.over.over_has_terminal CategoryTheory.Over.over_hasTerminal
 
 end CategoryTheory.Over

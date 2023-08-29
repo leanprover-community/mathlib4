@@ -43,30 +43,40 @@ theorem disjSum_zero : s.disjSum (0 : Multiset β) = s.map inl :=
 @[simp]
 theorem card_disjSum : Multiset.card (s.disjSum t) = Multiset.card s + Multiset.card t := by
   rw [disjSum, card_add, card_map, card_map]
+  -- 🎉 no goals
 #align multiset.card_disj_sum Multiset.card_disjSum
 
 variable {s t} {s₁ s₂ : Multiset α} {t₁ t₂ : Multiset β} {a : α} {b : β} {x : Sum α β}
 
 theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x := by
   simp_rw [disjSum, mem_add, mem_map]
+  -- 🎉 no goals
 #align multiset.mem_disj_sum Multiset.mem_disjSum
 
 @[simp]
 theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disjSum, or_iff_left]
+  -- ⊢ (∃ a_1, a_1 ∈ s ∧ inl a_1 = inl a) ↔ a ∈ s
   -- Porting note: Previous code for L62 was: simp only [exists_eq_right]
   simp only [inl.injEq, exists_eq_right]
+  -- ⊢ ¬∃ b, b ∈ t ∧ inr b = inl a
   rintro ⟨b, _, hb⟩
+  -- ⊢ False
   exact inr_ne_inl hb
+  -- 🎉 no goals
 #align multiset.inl_mem_disj_sum Multiset.inl_mem_disjSum
 
 @[simp]
 theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disjSum, or_iff_right]
+  -- ⊢ (∃ b_1, b_1 ∈ t ∧ inr b_1 = inr b) ↔ b ∈ t
   -- Porting note: Previous code for L72 was: simp only [exists_eq_right]
   simp only [inr.injEq, exists_eq_right]
+  -- ⊢ ¬∃ a, a ∈ s ∧ inl a = inr b
   rintro ⟨a, _, ha⟩
+  -- ⊢ False
   exact inl_ne_inr ha
+  -- 🎉 no goals
 #align multiset.inr_mem_disj_sum Multiset.inr_mem_disjSum
 
 theorem disjSum_mono (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.disjSum t₁ ≤ s₂.disjSum t₂ :=
@@ -103,10 +113,15 @@ theorem disjSum_strictMono_right (s : Multiset α) :
 
 protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by
   refine' ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => _
+  -- ⊢ False
   rw [Multiset.mem_map] at hs ht
+  -- ⊢ False
   obtain ⟨a, _, rfl⟩ := hs
+  -- ⊢ False
   obtain ⟨b, _, h⟩ := ht
+  -- ⊢ False
   exact inr_ne_inl h
+  -- 🎉 no goals
 #align multiset.nodup.disj_sum Multiset.Nodup.disjSum
 
 end Multiset

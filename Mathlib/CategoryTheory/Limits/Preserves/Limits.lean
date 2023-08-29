@@ -46,6 +46,7 @@ variable [PreservesLimit F G]
 theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
     (PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
   ((PreservesLimit.preserves t).uniq (G.mapCone c₂) _ (by simp [← G.map_comp])).symm
+                                                          -- 🎉 no goals
 #align category_theory.preserves_lift_map_cone CategoryTheory.preserves_lift_mapCone
 
 variable [HasLimit F] [HasLimit (F ⋙ G)]
@@ -74,7 +75,9 @@ theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
     G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
     limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
+  -- ⊢ (G.map (limit.lift F t) ≫ (preservesLimitIso G F).hom) ≫ limit.π (F ⋙ G) j✝  …
   simp [← G.map_comp]
+  -- 🎉 no goals
 #align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preservesLimitsIso_hom
 
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
@@ -86,8 +89,12 @@ def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :
   NatIso.ofComponents (fun F => preservesLimitIso G F)
     (by
       intro _ _ f
+      -- ⊢ (lim ⋙ G).map f ≫ ((fun F => preservesLimitIso G F) Y✝).hom = ((fun F => pre …
       apply limit.hom_ext; intro j
+      -- ⊢ ∀ (j : J), ((lim ⋙ G).map f ≫ ((fun F => preservesLimitIso G F) Y✝).hom) ≫ l …
+                           -- ⊢ ((lim ⋙ G).map f ≫ ((fun F => preservesLimitIso G F) Y✝).hom) ≫ limit.π (((w …
       dsimp
+      -- ⊢ (G.map (limMap f) ≫ (preservesLimitIso G Y✝).hom) ≫ limit.π (Y✝ ⋙ G) j = ((p …
       simp only [preservesLimitsIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitsIso_hom_π_assoc, ← G.map_comp])
 #align category_theory.preserves_limit_nat_iso CategoryTheory.preservesLimitNatIso
@@ -102,6 +109,7 @@ variable [PreservesColimit F G]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
     (PreservesColimit.preserves t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
   ((PreservesColimit.preserves t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
+                                                             -- 🎉 no goals
 #align category_theory.preserves_desc_map_cocone CategoryTheory.preserves_desc_mapCocone
 
 variable [HasColimit F] [HasColimit (F ⋙ G)]
@@ -131,7 +139,9 @@ theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
     (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =
     colimit.desc _ (G.mapCocone t) := by
   ext
+  -- ⊢ colimit.ι (F ⋙ G) j✝ ≫ (preservesColimitIso G F).inv ≫ G.map (colimit.desc F …
   simp [← G.map_comp]
+  -- 🎉 no goals
 #align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preservesColimitsIso_inv_comp_desc
 
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
@@ -143,13 +153,20 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
   NatIso.ofComponents (fun F => preservesColimitIso G F)
     (by
       intro _ _ f
+      -- ⊢ (colim ⋙ G).map f ≫ ((fun F => preservesColimitIso G F) Y✝).hom = ((fun F => …
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
+      -- ⊢ ((fun F => preservesColimitIso G F) X✝).inv ≫ (colim ⋙ G).map f = ((whiskeri …
       apply colimit.hom_ext; intro j
+      -- ⊢ ∀ (j : J), colimit.ι (((whiskeringRight J C D).obj G).obj X✝) j ≫ ((fun F => …
+                             -- ⊢ colimit.ι (((whiskeringRight J C D).obj G).obj X✝) j ≫ ((fun F => preservesC …
       dsimp
+      -- ⊢ colimit.ι (X✝ ⋙ G) j ≫ (preservesColimitIso G X✝).inv ≫ G.map (colimMap f) = …
       erw [ι_colimMap_assoc]
+      -- ⊢ colimit.ι (X✝ ⋙ G) j ≫ (preservesColimitIso G X✝).inv ≫ G.map (colimMap f) = …
       simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,
         ι_preservesColimitsIso_inv_assoc, ← G.map_comp]
       erw [ι_colimMap])
+      -- 🎉 no goals
 #align category_theory.preserves_colimit_nat_iso CategoryTheory.preservesColimitNatIso
 
 end

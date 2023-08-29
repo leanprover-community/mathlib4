@@ -35,12 +35,16 @@ def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
 
 theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
   refine' le_trans _ (le_iSup _ ⟨0, Nat.cast_zero⟩)
+  -- ⊢ 1 ≤ LinearMap.range (ι Q) ^ ↑{ val := 0, property := (_ : ↑0 = 0) }
   exact (pow_zero _).ge
+  -- 🎉 no goals
 #align clifford_algebra.one_le_even_odd_zero CliffordAlgebra.one_le_evenOdd_zero
 
 theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
   refine' le_trans _ (le_iSup _ ⟨1, Nat.cast_one⟩)
+  -- ⊢ LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) ^ ↑{ val := 1, property := (_  …
   exact (pow_one _).ge
+  -- 🎉 no goals
 #align clifford_algebra.range_ι_le_even_odd_one CliffordAlgebra.range_ι_le_evenOdd_one
 
 theorem ι_mem_evenOdd_one (m : M) : ι Q m ∈ evenOdd Q 1 :=
@@ -51,6 +55,7 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
   Submodule.mem_iSup_of_mem ⟨2, rfl⟩
     (by
       rw [Subtype.coe_mk, pow_two]
+      -- ⊢ ↑(ι Q) m₁ * ↑(ι Q) m₂ ∈ LinearMap.range (ι Q) * LinearMap.range (ι Q)
       exact
         Submodule.mul_mem_mul (LinearMap.mem_range_self (ι Q) m₁)
           (LinearMap.mem_range_self (ι Q) m₂))
@@ -58,14 +63,23 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
 
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
+  -- ⊢ Submodule.span R ((⋃ (i_1 : { n // ↑n = i }), ↑(LinearMap.range (ι Q) ^ ↑i_1 …
   apply Submodule.span_mono
+  -- ⊢ (⋃ (i_1 : { n // ↑n = i }), ↑(LinearMap.range (ι Q) ^ ↑i_1)) * ⋃ (i : { n // …
   intro z hz
+  -- ⊢ z ∈ ⋃ (i_1 : { n // ↑n = i + j }), ↑(LinearMap.range (ι Q) ^ ↑i_1)
   obtain ⟨x, y, hx, hy, rfl⟩ := hz
+  -- ⊢ (fun x x_1 => x * x_1) x y ∈ ⋃ (i_1 : { n // ↑n = i + j }), ↑(LinearMap.rang …
   obtain ⟨xi, hx'⟩ := Set.mem_iUnion.mp hx
+  -- ⊢ (fun x x_1 => x * x_1) x y ∈ ⋃ (i_1 : { n // ↑n = i + j }), ↑(LinearMap.rang …
   obtain ⟨yi, hy'⟩ := Set.mem_iUnion.mp hy
+  -- ⊢ (fun x x_1 => x * x_1) x y ∈ ⋃ (i_1 : { n // ↑n = i + j }), ↑(LinearMap.rang …
   refine' Set.mem_iUnion.mpr ⟨⟨xi + yi, by simp only [Nat.cast_add, xi.prop, yi.prop]⟩, _⟩
+  -- ⊢ (fun x x_1 => x * x_1) x y ∈ ↑(LinearMap.range (ι Q) ^ ↑{ val := ↑xi + ↑yi,  …
   simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
+  -- ⊢ x * y ∈ ↑(LinearMap.range (ι Q) ^ ↑xi * LinearMap.range (ι Q) ^ ↑yi)
   exact Submodule.mul_mem_mul hx' hy'
+  -- 🎉 no goals
 #align clifford_algebra.even_odd_mul_le CliffordAlgebra.evenOdd_mul_le
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
@@ -88,15 +102,21 @@ theorem GradedAlgebra.ι_apply (m : M) :
 nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
     GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R _ (Q m) := by
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
+  -- ⊢ ↑(DirectSum.of (fun i => { x // x ∈ evenOdd Q i }) (1 + 1)) (GradedMonoid.GM …
   refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
+  -- 🎉 no goals
 #align clifford_algebra.graded_algebra.ι_sq_scalar CliffordAlgebra.GradedAlgebra.ι_sq_scalar
 
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
+               -- 🎉 no goals
+                                           -- 🎉 no goals
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
   cases' x' with x' hx'
+  -- ⊢ ↑(↑(lift Q) { val := GradedAlgebra.ι Q, property := (_ : ∀ (m : M), ↑(Graded …
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
+  -- ⊢ ↑(↑(lift Q) { val := GradedAlgebra.ι Q, property := (_ : ∀ (m : M), ↑(Graded …
   induction hx' using Submodule.iSup_induction' with
   | hp i x hx =>
     obtain ⟨i, rfl⟩ := i
@@ -129,19 +149,25 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
+                -- 🎉 no goals
+                                            -- 🎉 no goals
     -- the proof from here onward is mostly similar to the `TensorAlgebra` case, with some extra
     -- handling for the `iSup` in `evenOdd`.
     (by
       ext m
+      -- ⊢ ↑(LinearMap.comp (AlgHom.toLinearMap (AlgHom.comp (DirectSum.coeAlgHom (even …
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
         AlgHom.id_apply]
       rw [lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.coeAlgHom_of, Subtype.coe_mk])
+      -- 🎉 no goals
     (by apply GradedAlgebra.lift_ι_eq Q)
+        -- 🎉 no goals
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
 set_option maxHeartbeats 300000 in
 theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
+  -- ⊢ iSup (evenOdd Q) = ⨆ (i : ℕ), LinearMap.range (ι Q) ^ i
   calc
     -- porting note: needs extra annotations, no longer unifies against the goal in the face of
     -- ambiguity
@@ -155,7 +181,9 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
+    -- ⊢ Set.univ = {0, 1}
     simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
+    -- 🎉 no goals
 #align clifford_algebra.even_odd_is_compl CliffordAlgebra.evenOdd_isCompl
 
 /-- To show a property is true on the even or odd part, it suffices to show it is true on the
@@ -174,10 +202,13 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
   apply Submodule.iSup_induction' (C := P) _ (hr 0 (Submodule.zero_mem _)) @hadd
+  -- ⊢ ∀ (i : { n_1 // ↑n_1 = n }) (x : CliffordAlgebra Q) (hx : x ∈ LinearMap.rang …
   refine' Subtype.rec _
+  -- ⊢ ∀ (val : ℕ) (property : ↑val = n) (x : CliffordAlgebra Q) (hx : x ∈ LinearMa …
   -- porting note: was `simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]`
   -- leanprover/lean4#1926 is to blame.
   dsimp only [Subtype.coe_mk]
+  -- ⊢ ∀ (val : ℕ) (property : ↑val = n) (x : CliffordAlgebra Q) (hx : x ∈ LinearMa …
   let hlean1926 : ∀ val : ℕ, ↑val = n ↔ ∃ k, val = 2 * k + ZMod.val n := by
     intro val
     simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
@@ -186,8 +217,11 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
       P x (Submodule.mem_iSup_of_mem { val := val, property := property } hx))
     (hq := fun property => Iff.rfl) (hp := hlean1926 val)
   simp_rw [this]; clear this
+  -- ⊢ ∀ (val : ℕ) (h : ∃ k, val = 2 * k + ZMod.val n) (x : CliffordAlgebra Q) (hx  …
+                  -- ⊢ ∀ (val : ℕ) (h : ∃ k, val = 2 * k + ZMod.val n) (x : CliffordAlgebra Q) (hx  …
   -- end porting note
   rintro n' ⟨k, rfl⟩ xv
+  -- ⊢ ∀ (hx : xv ∈ LinearMap.range (ι Q) ^ (2 * k + ZMod.val n)), P xv (_ : xv ∈ ⨆ …
   -- porting note: was `simp_rw [pow_add, pow_mul]`
   -- leanprover/lean4#1926 is to blame.
   refine (forall_prop_congr' (hq := fun property => Iff.rfl) (
@@ -196,6 +230,7 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
       simp_rw [pow_add, pow_mul])).mpr ?_
   -- end porting note
   intro hxv
+  -- ⊢ P xv (_ : xv ∈ ⨆ (i : { n_1 // ↑n_1 = n }), LinearMap.range (ι Q) ^ ↑i)
   induction hxv using Submodule.mul_induction_on' with
   | hm a ha b hb =>
     induction ha using Submodule.pow_induction_on_left' with
@@ -241,8 +276,11 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
   refine' evenOdd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
+  -- ⊢ ∀ (h : rx ∈ LinearMap.range (ι Q) ^ ZMod.val 0), P rx (_ : rx ∈ ⨆ (i : { n / …
   rintro ⟨r, rfl⟩
+  -- ⊢ P (↑(Algebra.linearMap R (CliffordAlgebra Q)) r) (_ : ↑(Algebra.linearMap R  …
   exact hr r
+  -- 🎉 no goals
 #align clifford_algebra.even_induction CliffordAlgebra.even_induction
 
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
@@ -258,10 +296,16 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
   refine' evenOdd_induction Q 1 (fun ιv => _) (@hadd) hιι_mul x hx
+  -- ⊢ ∀ (h : ιv ∈ LinearMap.range (ι Q) ^ ZMod.val 1), P ιv (_ : ιv ∈ ⨆ (i : { n / …
   -- porting note: was `simp_rw [ZMod.val_one, pow_one]`, lean4#1926
   intro h; rw [ZMod.val_one, pow_one] at h; revert h
+  -- ⊢ P ιv (_ : ιv ∈ ⨆ (i : { n // ↑n = 1 }), LinearMap.range (ι Q) ^ ↑i)
+           -- ⊢ P ιv (_ : ιv ∈ ⨆ (i : { n // ↑n = 1 }), LinearMap.range (ι Q) ^ ↑i)
+                                            -- ⊢ ιv ∈ LinearMap.range (ι Q) → P ιv (_ : ιv ∈ ⨆ (i : { n // ↑n = 1 }), LinearM …
   rintro ⟨v, rfl⟩
+  -- ⊢ P (↑(ι Q) v) (_ : ↑(ι Q) v ∈ ⨆ (i : { n // ↑n = 1 }), LinearMap.range (ι Q)  …
   exact hι v
+  -- 🎉 no goals
 #align clifford_algebra.odd_induction CliffordAlgebra.odd_induction
 
 end CliffordAlgebra

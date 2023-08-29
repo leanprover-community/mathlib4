@@ -31,10 +31,20 @@ instance commGroup: CommGroup PUnit where
   npow _ _ := unit
   zpow _ _ := unit
   mul_assoc := by intros; rfl
+                  -- ⊢ a✝ * b✝ * c✝ = a✝ * (b✝ * c✝)
+                          -- 🎉 no goals
   one_mul := by intros; rfl
+                -- ⊢ 1 * a✝ = a✝
+                        -- 🎉 no goals
   mul_one := by intros; rfl
+                -- ⊢ a✝ * 1 = a✝
+                        -- 🎉 no goals
   mul_left_inv := by intros; rfl
+                     -- ⊢ a✝⁻¹ * a✝ = 1
+                             -- 🎉 no goals
   mul_comm := by intros; rfl
+                 -- ⊢ a✝ * b✝ = b✝ * a✝
+                         -- 🎉 no goals
 
 -- shortcut instances
 @[to_additive] instance : One PUnit where one := ()
@@ -73,13 +83,24 @@ instance commRing: CommRing PUnit where
   __ := PUnit.commGroup
   __ := PUnit.addCommGroup
   left_distrib := by intros; rfl
+                     -- ⊢ a✝ * (b✝ + c✝) = a✝ * b✝ + a✝ * c✝
+                             -- 🎉 no goals
   right_distrib := by intros; rfl
+                      -- ⊢ (a✝ + b✝) * c✝ = a✝ * c✝ + b✝ * c✝
+                              -- 🎉 no goals
   zero_mul := by intros; rfl
+                 -- ⊢ 0 * a✝ = 0
+                         -- 🎉 no goals
   mul_zero := by intros; rfl
+                 -- ⊢ a✝ * 0 = 0
+                         -- 🎉 no goals
   natCast _ := unit
 
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
+  -- ⊢ ∀ {a b c : PUnit}, a ≠ 0 → a * b = a * c → b = c
+                                      -- ⊢ b✝ = c✝
+                                              -- 🎉 no goals
 
 instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
@@ -87,15 +108,27 @@ instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   normUnit _ := 1
   normUnit_zero := rfl
   normUnit_mul := by intros; rfl
+                     -- ⊢ (fun x => 1) (a✝² * b✝) = (fun x => 1) a✝² * (fun x => 1) b✝
+                             -- 🎉 no goals
   normUnit_coe_units := by intros; rfl
+                           -- ⊢ (fun x => 1) ↑u✝ = u✝⁻¹
+                                   -- 🎉 no goals
   gcd_dvd_left _ _ := ⟨unit, Subsingleton.elim _ _⟩
   gcd_dvd_right _ _ := ⟨unit, Subsingleton.elim _ _⟩
   dvd_gcd {_ _} _ _ _ := ⟨unit, Subsingleton.elim _ _⟩
   gcd_mul_lcm _ _ := ⟨1, Subsingleton.elim _ _⟩
   lcm_zero_left := by intros; rfl
+                      -- ⊢ (fun x x => unit) 0 a✝ = 0
+                              -- 🎉 no goals
   lcm_zero_right := by intros; rfl
+                       -- ⊢ (fun x x => unit) a✝ 0 = 0
+                               -- 🎉 no goals
   normalize_gcd := by intros; rfl
+                      -- ⊢ ↑normalize (gcd a✝ b✝) = gcd a✝ b✝
+                              -- 🎉 no goals
   normalize_lcm := by intros; rfl
+                      -- ⊢ ↑normalize (lcm a✝ b✝) = lcm a✝ b✝
+                              -- 🎉 no goals
 
 --porting notes: simpNF lint: simp can prove this @[simp]
 theorem gcd_eq : gcd x y = unit :=
@@ -117,13 +150,19 @@ instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
     { PUnit.commRing, PUnit.completeBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
     intros <;>
+    -- ⊢ c✝ + a✝¹ ≤ c✝ + b✝
+    -- ⊢ a✝ ≤ a✝ + b✝
     trivial
+    -- 🎉 no goals
+    -- 🎉 no goals
 
 instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit where
   __ := PUnit.canonicallyOrderedAddMonoid
   __ := PUnit.linearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
+                        -- ⊢ c✝ + a✝¹ ≤ c✝ + b✝
+                                -- 🎉 no goals
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
   { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
@@ -153,15 +192,35 @@ instance [SMul R S] : IsScalarTower R S PUnit :=
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
   refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
+  -- ⊢ ∀ (a : R), a • 0 = 0
+                                     -- ⊢ a✝ • 0 = 0
+                                     -- ⊢ 0 • m✝ = 0
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
 
 instance mulAction [Monoid R] : MulAction R PUnit := by
   refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
+  -- ⊢ ∀ (b : PUnit), 1 • b = b
+                                     -- ⊢ 1 • b✝ = b✝
+                                     -- ⊢ (x✝ * y✝) • b✝ = x✝ • y✝ • b✝
+                                                -- 🎉 no goals
+                                                -- 🎉 no goals
 
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+  -- ⊢ ∀ (a : R), a • 0 = 0
+                                          -- ⊢ a✝ • 0 = 0
+                                          -- ⊢ a✝ • (x✝ + y✝) = a✝ • x✝ + a✝ • y✝
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 
 instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+  -- ⊢ ∀ (r : R) (x y : PUnit), r • (x * y) = r • x * r • y
+                                          -- ⊢ r✝ • (x✝ * y✝) = r✝ • x✝ * r✝ • y✝
+                                          -- ⊢ r✝ • 1 = 1
+                                                     -- 🎉 no goals
+                                                     -- 🎉 no goals
 
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
@@ -171,5 +230,10 @@ instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
 
 instance module [Semiring R] : Module R PUnit := by
   refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+  -- ⊢ ∀ (r s : R) (x : PUnit), (r + s) • x = r • x + s • x
+                                                 -- ⊢ (r✝ + s✝) • x✝ = r✝ • x✝ + s✝ • x✝
+                                                 -- ⊢ 0 • x✝ = 0
+                                                            -- 🎉 no goals
+                                                            -- 🎉 no goals
 
 end PUnit

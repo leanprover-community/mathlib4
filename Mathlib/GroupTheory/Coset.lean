@@ -123,18 +123,21 @@ variable [Semigroup α]
 @[to_additive (attr := simp) leftAddCoset_assoc]
 theorem leftCoset_assoc (s : Set α) (a b : α) : a *l (b *l s) = a * b *l s := by
   simp [leftCoset, rightCoset, (image_comp _ _ _).symm, Function.comp, mul_assoc]
+  -- 🎉 no goals
 #align left_coset_assoc leftCoset_assoc
 #align left_add_coset_assoc leftAddCoset_assoc
 
 @[to_additive (attr := simp) rightAddCoset_assoc]
 theorem rightCoset_assoc (s : Set α) (a b : α) : s *r a *r b = s *r (a * b) := by
   simp [leftCoset, rightCoset, (image_comp _ _ _).symm, Function.comp, mul_assoc]
+  -- 🎉 no goals
 #align right_coset_assoc rightCoset_assoc
 #align right_add_coset_assoc rightAddCoset_assoc
 
 @[to_additive leftAddCoset_rightAddCoset]
 theorem leftCoset_rightCoset (s : Set α) (a b : α) : a *l s *r b = a *l (s *r b) := by
   simp [leftCoset, rightCoset, (image_comp _ _ _).symm, Function.comp, mul_assoc]
+  -- 🎉 no goals
 #align left_coset_right_coset leftCoset_rightCoset
 #align left_add_coset_right_add_coset leftAddCoset_rightAddCoset
 
@@ -147,12 +150,14 @@ variable [Monoid α] (s : Set α)
 @[to_additive (attr := simp) zero_leftAddCoset]
 theorem one_leftCoset : 1 *l s = s :=
   Set.ext <| by simp [leftCoset]
+                -- 🎉 no goals
 #align one_left_coset one_leftCoset
 #align zero_left_add_coset zero_leftAddCoset
 
 @[to_additive (attr := simp) rightAddCoset_zero]
 theorem rightCoset_one : s *r 1 = s :=
   Set.ext <| by simp [rightCoset]
+                -- 🎉 no goals
 #align right_coset_one rightCoset_one
 #align right_add_coset_zero rightAddCoset_zero
 
@@ -167,6 +172,7 @@ variable [Monoid α] (s : Submonoid α)
 @[to_additive mem_own_leftAddCoset]
 theorem mem_own_leftCoset (a : α) : a ∈ a *l s :=
   suffices a * 1 ∈ a *l s by simpa
+                             -- 🎉 no goals
   mem_leftCoset a (one_mem s : 1 ∈ s)
 #align mem_own_left_coset mem_own_leftCoset
 #align mem_own_left_add_coset mem_own_leftAddCoset
@@ -174,6 +180,7 @@ theorem mem_own_leftCoset (a : α) : a ∈ a *l s :=
 @[to_additive mem_own_rightAddCoset]
 theorem mem_own_rightCoset (a : α) : a ∈ (s : Set α) *r a :=
   suffices 1 * a ∈ (s : Set α) *r a by simpa
+                                       -- 🎉 no goals
   mem_rightCoset a (one_mem s : 1 ∈ s)
 #align mem_own_right_coset mem_own_rightCoset
 #align mem_own_right_add_coset mem_own_rightAddCoset
@@ -181,12 +188,16 @@ theorem mem_own_rightCoset (a : α) : a ∈ (s : Set α) *r a :=
 @[to_additive mem_leftAddCoset_leftAddCoset]
 theorem mem_leftCoset_leftCoset {a : α} (ha : a *l s = s) : a ∈ s := by
   rw [← SetLike.mem_coe, ← ha]; exact mem_own_leftCoset s a
+  -- ⊢ a ∈ a *l ↑s
+                                -- 🎉 no goals
 #align mem_left_coset_left_coset mem_leftCoset_leftCoset
 #align mem_left_add_coset_left_add_coset mem_leftAddCoset_leftAddCoset
 
 @[to_additive mem_rightAddCoset_rightAddCoset]
 theorem mem_rightCoset_rightCoset {a : α} (ha : (s : Set α) *r a = s) : a ∈ s := by
   rw [← SetLike.mem_coe, ← ha]; exact mem_own_rightCoset s a
+  -- ⊢ a ∈ ↑s *r a
+                                -- 🎉 no goals
 #align mem_right_coset_right_coset mem_rightCoset_rightCoset
 #align mem_right_add_coset_right_add_coset mem_rightAddCoset_rightAddCoset
 
@@ -199,12 +210,16 @@ variable [Group α] {s : Set α} {x : α}
 @[to_additive mem_leftAddCoset_iff]
 theorem mem_leftCoset_iff (a : α) : x ∈ a *l s ↔ a⁻¹ * x ∈ s :=
   Iff.intro (fun ⟨b, hb, Eq⟩ => by simp [Eq.symm, hb]) fun h => ⟨a⁻¹ * x, h, by simp⟩
+                                   -- 🎉 no goals
+                                                                                -- 🎉 no goals
 #align mem_left_coset_iff mem_leftCoset_iff
 #align mem_left_add_coset_iff mem_leftAddCoset_iff
 
 @[to_additive mem_rightAddCoset_iff]
 theorem mem_rightCoset_iff (a : α) : x ∈ s *r a ↔ x * a⁻¹ ∈ s :=
   Iff.intro (fun ⟨b, hb, Eq⟩ => by simp [Eq.symm, hb]) fun h => ⟨x * a⁻¹, h, by simp⟩
+                                   -- 🎉 no goals
+                                                                                -- 🎉 no goals
 #align mem_right_coset_iff mem_rightCoset_iff
 #align mem_right_add_coset_iff mem_rightAddCoset_iff
 
@@ -219,12 +234,14 @@ variable [Group α] (s : Subgroup α)
 @[to_additive leftAddCoset_mem_leftAddCoset]
 theorem leftCoset_mem_leftCoset {a : α} (ha : a ∈ s) : a *l s = s :=
   Set.ext <| by simp [mem_leftCoset_iff, mul_mem_cancel_left (s.inv_mem ha)]
+                -- 🎉 no goals
 #align left_coset_mem_left_coset leftCoset_mem_leftCoset
 #align left_add_coset_mem_left_add_coset leftAddCoset_mem_leftAddCoset
 
 @[to_additive rightAddCoset_mem_rightAddCoset]
 theorem rightCoset_mem_rightCoset {a : α} (ha : a ∈ s) : (s : Set α) *r a = s :=
   Set.ext fun b => by simp [mem_rightCoset_iff, mul_mem_cancel_right (s.inv_mem ha)]
+                      -- 🎉 no goals
 #align right_coset_mem_right_coset rightCoset_mem_rightCoset
 #align right_add_coset_mem_right_add_coset rightAddCoset_mem_rightAddCoset
 
@@ -249,6 +266,8 @@ theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
 @[to_additive eq_addCosets_of_normal]
 theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g *l s = s *r g :=
   Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff]; rw [N.mem_comm_iff]
+                      -- ⊢ g⁻¹ * a ∈ s ↔ a * g⁻¹ ∈ s
+                                                                    -- 🎉 no goals
 #align eq_cosets_of_normal eq_cosets_of_normal
 #align eq_add_cosets_of_normal eq_addCosets_of_normal
 
@@ -256,6 +275,8 @@ theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g *l s = s *r g :=
 theorem normal_of_eq_cosets (h : ∀ g : α, g *l s = s *r g) : s.Normal :=
   ⟨fun a ha g =>
     show g * a * g⁻¹ ∈ (s : Set α) by rw [← mem_rightCoset_iff, ← h]; exact mem_leftCoset g ha⟩
+                                      -- ⊢ g * a ∈ g *l ↑s
+                                                                      -- 🎉 no goals
 #align normal_of_eq_cosets normal_of_eq_cosets
 #align normal_of_eq_add_cosets normal_of_eq_addCosets
 
@@ -268,32 +289,54 @@ theorem normal_iff_eq_cosets : s.Normal ↔ ∀ g : α, g *l s = s *r g :=
 @[to_additive leftAddCoset_eq_iff]
 theorem leftCoset_eq_iff {x y : α} : leftCoset x s = leftCoset y s ↔ x⁻¹ * y ∈ s := by
   rw [Set.ext_iff]
+  -- ⊢ (∀ (x_1 : α), x_1 ∈ x *l ↑s ↔ x_1 ∈ y *l ↑s) ↔ x⁻¹ * y ∈ s
   simp_rw [mem_leftCoset_iff, SetLike.mem_coe]
+  -- ⊢ (∀ (x_1 : α), x⁻¹ * x_1 ∈ s ↔ y⁻¹ * x_1 ∈ s) ↔ x⁻¹ * y ∈ s
   constructor
+  -- ⊢ (∀ (x_1 : α), x⁻¹ * x_1 ∈ s ↔ y⁻¹ * x_1 ∈ s) → x⁻¹ * y ∈ s
   · intro h
+    -- ⊢ x⁻¹ * y ∈ s
     apply (h y).mpr
+    -- ⊢ y⁻¹ * y ∈ s
     rw [mul_left_inv]
+    -- ⊢ 1 ∈ s
     exact s.one_mem
+    -- 🎉 no goals
   · intro h z
+    -- ⊢ x⁻¹ * z ∈ s ↔ y⁻¹ * z ∈ s
     rw [← mul_inv_cancel_right x⁻¹ y]
+    -- ⊢ x⁻¹ * y * y⁻¹ * z ∈ s ↔ y⁻¹ * z ∈ s
     rw [mul_assoc]
+    -- ⊢ x⁻¹ * y * (y⁻¹ * z) ∈ s ↔ y⁻¹ * z ∈ s
     exact s.mul_mem_cancel_left h
+    -- 🎉 no goals
 #align left_coset_eq_iff leftCoset_eq_iff
 #align left_add_coset_eq_iff leftAddCoset_eq_iff
 
 @[to_additive rightAddCoset_eq_iff]
 theorem rightCoset_eq_iff {x y : α} : rightCoset (↑s) x = rightCoset s y ↔ y * x⁻¹ ∈ s := by
   rw [Set.ext_iff]
+  -- ⊢ (∀ (x_1 : α), x_1 ∈ ↑s *r x ↔ x_1 ∈ ↑s *r y) ↔ y * x⁻¹ ∈ s
   simp_rw [mem_rightCoset_iff, SetLike.mem_coe]
+  -- ⊢ (∀ (x_1 : α), x_1 * x⁻¹ ∈ s ↔ x_1 * y⁻¹ ∈ s) ↔ y * x⁻¹ ∈ s
   constructor
+  -- ⊢ (∀ (x_1 : α), x_1 * x⁻¹ ∈ s ↔ x_1 * y⁻¹ ∈ s) → y * x⁻¹ ∈ s
   · intro h
+    -- ⊢ y * x⁻¹ ∈ s
     apply (h y).mpr
+    -- ⊢ y * y⁻¹ ∈ s
     rw [mul_right_inv]
+    -- ⊢ 1 ∈ s
     exact s.one_mem
+    -- 🎉 no goals
   · intro h z
+    -- ⊢ z * x⁻¹ ∈ s ↔ z * y⁻¹ ∈ s
     rw [← inv_mul_cancel_left y x⁻¹]
+    -- ⊢ z * (y⁻¹ * (y * x⁻¹)) ∈ s ↔ z * y⁻¹ ∈ s
     rw [← mul_assoc]
+    -- ⊢ z * y⁻¹ * (y * x⁻¹) ∈ s ↔ z * y⁻¹ ∈ s
     exact s.mul_mem_cancel_right h
+    -- 🎉 no goals
 #align right_coset_eq_iff rightCoset_eq_iff
 #align right_add_coset_eq_iff rightAddCoset_eq_iff
 
@@ -324,7 +367,9 @@ theorem leftRel_apply {x y : α} : @Setoid.r _ (leftRel s) x y ↔ x⁻¹ * y �
       s.oppositeEquiv.symm.exists_congr_left
     _ ↔ ∃ a : s, x⁻¹ * y = a⁻¹ :=
       by simp only [inv_mul_eq_iff_eq_mul, Subgroup.coe_inv, eq_mul_inv_iff_mul_eq]
+         -- 🎉 no goals
     _ ↔ x⁻¹ * y ∈ s := by simp [exists_inv_mem_iff_exists_mem]
+                          -- 🎉 no goals
 #align quotient_group.left_rel_apply QuotientGroup.leftRel_apply
 #align quotient_add_group.left_rel_apply QuotientAddGroup.leftRel_apply
 
@@ -334,21 +379,28 @@ variable (s)
 theorem leftRel_eq : @Setoid.r _ (leftRel s) = fun x y => x⁻¹ * y ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
+    -- ⊢ ∀ (a b : α), Setoid.r a b ↔ a⁻¹ * b ∈ s
     apply leftRel_apply
+    -- 🎉 no goals
 #align quotient_group.left_rel_eq QuotientGroup.leftRel_eq
 #align quotient_add_group.left_rel_eq QuotientAddGroup.leftRel_eq
 
 theorem leftRel_r_eq_leftCosetEquivalence :
     @Setoid.r _ (QuotientGroup.leftRel s) = LeftCosetEquivalence s := by
   ext
+  -- ⊢ Setoid.r x✝¹ x✝ ↔ LeftCosetEquivalence (↑s) x✝¹ x✝
   rw [leftRel_eq]
+  -- ⊢ (fun x y => x⁻¹ * y ∈ s) x✝¹ x✝ ↔ LeftCosetEquivalence (↑s) x✝¹ x✝
   exact (leftCoset_eq_iff s).symm
+  -- 🎉 no goals
 #align quotient_group.left_rel_r_eq_left_coset_equivalence QuotientGroup.leftRel_r_eq_leftCosetEquivalence
 
 @[to_additive]
 instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
   rw [leftRel_eq]
+  -- ⊢ Decidable ((fun x y => x⁻¹ * y ∈ s) x y)
   exact ‹DecidablePred (· ∈ s)› _
+  -- 🎉 no goals
 #align quotient_group.left_rel_decidable QuotientGroup.leftRelDecidable
 #align quotient_add_group.left_rel_decidable QuotientAddGroup.leftRelDecidable
 
@@ -375,7 +427,9 @@ theorem rightRel_apply {x y : α} : @Setoid.r _ (rightRel s) x y ↔ y * x⁻¹ 
   calc
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ :=
       by simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
+         -- 🎉 no goals
     _ ↔ y * x⁻¹ ∈ s := by simp [exists_inv_mem_iff_exists_mem]
+                          -- 🎉 no goals
 #align quotient_group.right_rel_apply QuotientGroup.rightRel_apply
 #align quotient_add_group.right_rel_apply QuotientAddGroup.rightRel_apply
 
@@ -385,21 +439,28 @@ variable (s)
 theorem rightRel_eq : @Setoid.r _ (rightRel s) = fun x y => y * x⁻¹ ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
+    -- ⊢ ∀ (a b : α), Setoid.r a b ↔ b * a⁻¹ ∈ s
     apply rightRel_apply
+    -- 🎉 no goals
 #align quotient_group.right_rel_eq QuotientGroup.rightRel_eq
 #align quotient_add_group.right_rel_eq QuotientAddGroup.rightRel_eq
 
 theorem rightRel_r_eq_rightCosetEquivalence :
     @Setoid.r _ (QuotientGroup.rightRel s) = RightCosetEquivalence s := by
   ext
+  -- ⊢ Setoid.r x✝¹ x✝ ↔ RightCosetEquivalence (↑s) x✝¹ x✝
   rw [rightRel_eq]
+  -- ⊢ (fun x y => y * x⁻¹ ∈ s) x✝¹ x✝ ↔ RightCosetEquivalence (↑s) x✝¹ x✝
   exact (rightCoset_eq_iff s).symm
+  -- 🎉 no goals
 #align quotient_group.right_rel_r_eq_right_coset_equivalence QuotientGroup.rightRel_r_eq_rightCosetEquivalence
 
 @[to_additive]
 instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y => by
   rw [rightRel_eq]
+  -- ⊢ Decidable ((fun x y => y * x⁻¹ ∈ s) x y)
   exact ‹DecidablePred (· ∈ s)› _
+  -- 🎉 no goals
 #align quotient_group.right_rel_decidable QuotientGroup.rightRelDecidable
 #align quotient_add_group.right_rel_decidable QuotientAddGroup.rightRelDecidable
 
@@ -410,25 +471,33 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
+      -- ⊢ b * a⁻¹ ∈ s → ((fun g => g⁻¹) a)⁻¹ * (fun g => g⁻¹) b ∈ s
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      -- 🎉 no goals
       -- porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
+      -- ⊢ a⁻¹ * b ∈ s → (fun g => g⁻¹) b * ((fun g => g⁻¹) a)⁻¹ ∈ s
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      -- 🎉 no goals
       -- porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
+          -- ⊢ Setoid.r g g
           exact Quotient.exact' rfl)
+          -- 🎉 no goals
   right_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
+          -- ⊢ Setoid.r g g
           exact Quotient.exact' rfl)
+          -- 🎉 no goals
 #align quotient_group.quotient_right_rel_equiv_quotient_left_rel QuotientGroup.quotientRightRelEquivQuotientLeftRel
 #align quotient_add_group.quotient_right_rel_equiv_quotient_left_rel QuotientAddGroup.quotientRightRelEquivQuotientLeftRel
 
@@ -517,6 +586,7 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
   calc
     _ ↔ @Setoid.r _ (leftRel s) a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
+                -- 🎉 no goals
 #align quotient_group.eq QuotientGroup.eq
 #align quotient_add_group.eq QuotientAddGroup.eq
 
@@ -540,6 +610,7 @@ variable (s)
 @[to_additive QuotientAddGroup.mk_out'_eq_mul]
 theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
   ⟨⟨g⁻¹ * (mk g).out', eq'.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+                                                       -- 🎉 no goals
 #align quotient_group.mk_out'_eq_mul QuotientGroup.mk_out'_eq_mul
 #align quotient_add_group.mk_out'_eq_mul QuotientAddGroup.mk_out'_eq_mul
 
@@ -548,6 +619,7 @@ variable {s} {a b : α}
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
   rwa [eq', mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
+  -- 🎉 no goals
 #align quotient_group.mk_mul_of_mem QuotientGroup.mk_mul_of_mem
 #align quotient_add_group.mk_add_of_mem QuotientAddGroup.mk_add_of_mem
 
@@ -556,6 +628,7 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
     { x : α | (x : α ⧸ s) = g } = leftCoset g s :=
   Set.ext fun z => by
     rw [mem_leftCoset_iff, Set.mem_setOf_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
+    -- 🎉 no goals
 #align quotient_group.eq_class_eq_left_coset QuotientGroup.eq_class_eq_leftCoset
 #align quotient_add_group.eq_class_eq_left_coset QuotientAddGroup.eq_class_eq_leftCoset
 
@@ -563,6 +636,7 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) ⁻¹' s := by
   ext x
+  -- ⊢ x ∈ mk ⁻¹' (mk '' s) ↔ x ∈ ⋃ (x : { x // x ∈ N }), (fun x_1 => x_1 * ↑x) ⁻¹' s
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
     Set.mem_image, ← eq_inv_mul_iff_mul_eq]
   exact
@@ -575,7 +649,9 @@ theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
 theorem preimage_image_mk_eq_iUnion_image (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) '' s := by
   rw [preimage_image_mk, iUnion_congr_of_surjective (·⁻¹) inv_surjective]
+  -- ⊢ ∀ (x : { x // x ∈ N }), (fun x_1 => x_1 * ↑x⁻¹) '' s = (fun x_1 => x_1 * ↑x) …
   exact fun x ↦ image_mul_right'
+  -- 🎉 no goals
 
 end QuotientGroup
 
@@ -590,6 +666,8 @@ variable [Group α] {s : Subgroup α}
 def leftCosetEquivSubgroup (g : α) : leftCoset g s ≃ s :=
   ⟨fun x => ⟨g⁻¹ * x.1, (mem_leftCoset_iff _).1 x.2⟩, fun x => ⟨g * x.1, x.1, x.2, rfl⟩,
     fun ⟨x, hx⟩ => Subtype.eq <| by simp, fun ⟨g, hg⟩ => Subtype.eq <| by simp⟩
+                                    -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align subgroup.left_coset_equiv_subgroup Subgroup.leftCosetEquivSubgroup
 #align add_subgroup.left_coset_equiv_add_subgroup AddSubgroup.leftCosetEquivAddSubgroup
 
@@ -598,6 +676,8 @@ def leftCosetEquivSubgroup (g : α) : leftCoset g s ≃ s :=
 def rightCosetEquivSubgroup (g : α) : rightCoset (↑s) g ≃ s :=
   ⟨fun x => ⟨x.1 * g⁻¹, (mem_rightCoset_iff _).1 x.2⟩, fun x => ⟨x.1 * g, x.1, x.2, rfl⟩,
     fun ⟨x, hx⟩ => Subtype.eq <| by simp, fun ⟨g, hg⟩ => Subtype.eq <| by simp⟩
+                                    -- 🎉 no goals
+                                                                          -- 🎉 no goals
 #align subgroup.right_coset_equiv_subgroup Subgroup.rightCosetEquivSubgroup
 #align add_subgroup.right_coset_equiv_add_subgroup AddSubgroup.rightCosetEquivAddSubgroup
 
@@ -610,11 +690,14 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
     _ ≃ ΣL : α ⧸ s, leftCoset (Quotient.out' L) s :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
+        -- ⊢ { x // ↑x = L } ≃ ↑{x | ↑x = ↑(Quotient.out' L)}
         show
           (_root_.Subtype fun x : α => Quotient.mk'' x = L) ≃
             _root_.Subtype fun x : α => Quotient.mk'' x = Quotient.mk'' _
         simp [-Quotient.eq'']
+        -- ⊢ { x // Quotient.mk'' x = L } ≃ { x // Quotient.mk'' x = L }
         rfl
+        -- 🎉 no goals
     _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun L => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _
 #align subgroup.group_equiv_quotient_times_subgroup Subgroup.groupEquivQuotientProdSubgroup
@@ -651,10 +734,13 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
         fun b c h => by
         rw [leftRel_apply]
+        -- ⊢ ((fun g => { val := (f (Quotient.mk'' g))⁻¹ * g, property := (_ : (f (Quotie …
         change ((f b)⁻¹ * b)⁻¹ * ((f c)⁻¹ * c) ∈ s
+        -- ⊢ ((f ↑b)⁻¹ * b)⁻¹ * ((f ↑c)⁻¹ * c) ∈ s
         have key : f b = f c :=
           congr_arg f (Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
+        -- 🎉 no goals
   invFun a := by
     refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
       rw [leftRel_apply] at h ⊢
@@ -662,14 +748,20 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
     refine' Quotient.ind' fun a => _
+    -- ⊢ (fun a => Quotient.map' (fun b => f a.fst * ↑b) (_ : ∀ (b c : { x // x ∈ t } …
     simp_rw [Quotient.map'_mk'', id.def, mul_inv_cancel_left]
+    -- 🎉 no goals
   right_inv := by
     refine' Prod.rec _
+    -- ⊢ ∀ (fst : α ⧸ t) (snd : { x // x ∈ t } ⧸ subgroupOf s t), (fun a => (Quotient …
     refine' Quotient.ind' fun a => _
+    -- ⊢ ∀ (snd : { x // x ∈ t } ⧸ subgroupOf s t), (fun a => (Quotient.map' id (_ :  …
     refine' Quotient.ind' fun b => _
+    -- ⊢ (fun a => (Quotient.map' id (_ : ∀ (b c : α), Setoid.r b c → Setoid.r (id b) …
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id.def, key, inv_mul_cancel_left]
+    -- 🎉 no goals
 #align subgroup.quotient_equiv_prod_of_le' Subgroup.quotientEquivProdOfLE'
 #align add_subgroup.quotient_equiv_sum_of_le' AddSubgroup.quotientEquivSumOfLE'
 
@@ -691,11 +783,15 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
   toFun :=
     Quotient.map' (inclusion h) fun a b => by
       simp_rw [leftRel_eq]
+      -- ⊢ a⁻¹ * b ∈ subgroupOf H s → (↑(inclusion h) a)⁻¹ * ↑(inclusion h) b ∈ subgrou …
       exact id
+      -- 🎉 no goals
   inj' :=
     Quotient.ind₂' <| by
       intro a b h
+      -- ⊢ Quotient.mk'' a = Quotient.mk'' b
       simpa only [Quotient.map'_mk'', eq'] using h
+      -- 🎉 no goals
 #align subgroup.quotient_subgroup_of_embedding_of_le Subgroup.quotientSubgroupOfEmbeddingOfLE
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE
 
@@ -714,7 +810,9 @@ def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
   Quotient.map' id fun a b => by
     simp_rw [leftRel_eq]
+    -- ⊢ a⁻¹ * b ∈ subgroupOf s H → (id a)⁻¹ * id b ∈ subgroupOf t H
     apply h
+    -- 🎉 no goals
 #align subgroup.quotient_subgroup_of_map_of_le Subgroup.quotientSubgroupOfMapOfLE
 #align add_subgroup.quotient_add_subgroup_of_map_of_le AddSubgroup.quotientAddSubgroupOfMapOfLE
 
@@ -732,7 +830,9 @@ theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
 def quotientMapOfLE (h : s ≤ t) : α ⧸ s → α ⧸ t :=
   Quotient.map' id fun a b => by
     simp_rw [leftRel_eq]
+    -- ⊢ a⁻¹ * b ∈ s → (id a)⁻¹ * id b ∈ t
     apply h
+    -- 🎉 no goals
 #align subgroup.quotient_map_of_le Subgroup.quotientMapOfLE
 #align add_subgroup.quotient_map_of_le AddSubgroup.quotientMapOfLE
 
@@ -775,6 +875,7 @@ def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i,
   inj' :=
     Quotient.ind₂' <| by
       simp_rw [funext_iff, quotientMapOfLE_apply_mk, eq', mem_iInf, imp_self, forall_const]
+      -- 🎉 no goals
 #align subgroup.quotient_infi_embedding Subgroup.quotientiInfEmbedding
 #align add_subgroup.quotient_infi_embedding AddSubgroup.quotientiInfEmbedding
 
@@ -789,6 +890,8 @@ theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g 
 theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [Fintype s]
     [DecidablePred fun a => a ∈ s] : Fintype.card α = Fintype.card (α ⧸ s) * Fintype.card s := by
   rw [← Fintype.card_prod]; exact Fintype.card_congr Subgroup.groupEquivQuotientProdSubgroup
+  -- ⊢ Fintype.card α = Fintype.card ((α ⧸ s) × { x // x ∈ s })
+                            -- 🎉 no goals
 #align subgroup.card_eq_card_quotient_mul_card_subgroup Subgroup.card_eq_card_quotient_mul_card_subgroup
 #align add_subgroup.card_eq_card_quotient_add_card_add_subgroup AddSubgroup.card_eq_card_quotient_add_card_addSubgroup
 
@@ -798,6 +901,7 @@ theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [
 theorem card_subgroup_dvd_card [Fintype α] (s : Subgroup α) [Fintype s] :
     Fintype.card s ∣ Fintype.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
+  -- 🎉 no goals
 #align subgroup.card_subgroup_dvd_card Subgroup.card_subgroup_dvd_card
 #align add_subgroup.card_add_subgroup_dvd_card AddSubgroup.card_addSubgroup_dvd_card
 
@@ -805,6 +909,7 @@ theorem card_subgroup_dvd_card [Fintype α] (s : Subgroup α) [Fintype s] :
 theorem card_quotient_dvd_card [Fintype α] (s : Subgroup α) [DecidablePred (· ∈ s)] :
     Fintype.card (α ⧸ s) ∣ Fintype.card α := by
   simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_right ℕ]
+  -- 🎉 no goals
 #align subgroup.card_quotient_dvd_card Subgroup.card_quotient_dvd_card
 #align add_subgroup.card_quotient_dvd_card AddSubgroup.card_quotient_dvd_card
 
@@ -862,9 +967,15 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
     ⟨Quotient.out' a.2.1 * a.1.1,
       show QuotientGroup.mk _ ∈ t by
         rw [mk_mul_of_mem _ a.1.2, out_eq']
+        -- ⊢ ↑a.snd ∈ t
         exact a.2.2⟩
+        -- 🎉 no goals
   left_inv := fun ⟨a, ha⟩ => Subtype.eq <| show _ * _ = a by simp
+                                                             -- 🎉 no goals
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
+                                            -- ⊢ ↑((fun a => ({ val := (Quotient.out' ↑↑a)⁻¹ * ↑a, property := (_ : (Quotient …
+                                                    -- 🎉 no goals
+                                                    -- 🎉 no goals
 #align quotient_group.preimage_mk_equiv_subgroup_times_set QuotientGroup.preimageMkEquivSubgroupProdSet
 #align quotient_add_group.preimage_mk_equiv_add_subgroup_times_set QuotientAddGroup.preimageMkEquivAddSubgroupProdSet
 

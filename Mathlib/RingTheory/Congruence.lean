@@ -92,9 +92,14 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
   { coe := fun c => c.r,
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
+      -- ⊢ { toSetoid := { r := x, iseqv := iseqv✝ }, add' := add'✝, mul' := mul'✝ } = y
       rcases y with ⟨⟨y, _⟩, _⟩
+      -- ⊢ { toSetoid := { r := x, iseqv := iseqv✝¹ }, add' := add'✝¹, mul' := mul'✝¹ } …
       have : x = y := h
+      -- ⊢ { toSetoid := { r := x, iseqv := iseqv✝¹ }, add' := add'✝¹, mul' := mul'✝¹ } …
       subst x; rfl }
+      -- ⊢ { toSetoid := { r := y, iseqv := iseqv✝ }, add' := add'✝, mul' := mul'✝ } =  …
+               -- 🎉 no goals
 
 @[simp]
 theorem rel_eq_coe : c.r = c :=
@@ -160,6 +165,8 @@ instance : CoeTC R c.Quotient :=
 /-- The quotient by a decidable congruence relation has decidable equality. -/
 instance (priority := 500) [d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient := by
   delta RingCon.Quotient; infer_instance
+  -- ⊢ DecidableEq (Quotient c.toSetoid)
+                          -- 🎉 no goals
 
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=

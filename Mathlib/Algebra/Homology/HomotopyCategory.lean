@@ -54,7 +54,9 @@ def HomotopyCategory :=
 
 instance : Category (HomotopyCategory V v) := by
   dsimp only [HomotopyCategory]
+  -- ⊢ Category.{?u.1722, max (max u v) ?u.1725} (CategoryTheory.Quotient (homotopi …
   infer_instance
+  -- 🎉 no goals
 
 -- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
@@ -104,12 +106,15 @@ is homotopic to the original chain map.
 def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
     Homotopy ((quotient V c).map f).out f := by
   apply homotopyOfEq
+  -- ⊢ (quotient V c).map (Quot.out ((quotient V c).map f)) = (quotient V c).map f
   simp
+  -- 🎉 no goals
 #align homotopy_category.homotopy_out_map HomotopyCategory.homotopyOutMap
 
 @[simp 1100]
 theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
+                                                               -- 🎉 no goals
 #align homotopy_category.quotient_map_out_comp_out HomotopyCategory.quotient_map_out_comp_out
 
 /-- Homotopy equivalent complexes become isomorphic in the homotopy category. -/
@@ -120,10 +125,14 @@ def isoOfHomotopyEquiv {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) :
   inv := (quotient V c).map f.inv
   hom_inv_id := by
     rw [← (quotient V c).map_comp, ← (quotient V c).map_id]
+    -- ⊢ (quotient V c).map (f.hom ≫ f.inv) = (quotient V c).map (𝟙 C)
     exact eq_of_homotopy _ _ f.homotopyHomInvId
+    -- 🎉 no goals
   inv_hom_id := by
     rw [← (quotient V c).map_comp, ← (quotient V c).map_id]
+    -- ⊢ (quotient V c).map (f.inv ≫ f.hom) = (quotient V c).map (𝟙 D)
     exact eq_of_homotopy _ _ f.homotopyInvHomId
+    -- 🎉 no goals
 #align homotopy_category.iso_of_homotopy_equiv HomotopyCategory.isoOfHomotopyEquiv
 
 /-- If two complexes become isomorphic in the homotopy category,
@@ -135,9 +144,11 @@ def homotopyEquivOfIso {C D : HomologicalComplex V c}
   homotopyHomInvId :=
     homotopyOfEq _ _
       (by rw [quotient_map_out_comp_out, i.hom_inv_id, (quotient V c).map_id])
+          -- 🎉 no goals
   homotopyInvHomId :=
     homotopyOfEq _ _
       (by rw [quotient_map_out_comp_out, i.inv_hom_id, (quotient V c).map_id])
+          -- 🎉 no goals
 #align homotopy_category.homotopy_equiv_of_iso HomotopyCategory.homotopyEquivOfIso
 
 variable (V c)
@@ -207,6 +218,7 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
   app C := (HomotopyCategory.quotient W c).map ((NatTrans.mapHomologicalComplex α c).app C.as)
   naturality := by
     rintro ⟨C⟩ ⟨D⟩ ⟨f : C ⟶ D⟩
+    -- ⊢ (Functor.mapHomotopyCategory F c).map (Quot.mk (Quotient.CompClosure (homoto …
     simp only [HomotopyCategory.quot_mk_eq_quotient_map, Functor.mapHomotopyCategory_map,
       ← Functor.map_comp, NatTrans.naturality]
 #align category_theory.nat_trans.map_homotopy_category CategoryTheory.NatTrans.mapHomotopyCategory
@@ -214,6 +226,7 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
     NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by aesop_cat
+                                                                             -- 🎉 no goals
 #align category_theory.nat_trans.map_homotopy_category_id CategoryTheory.NatTrans.mapHomotopyCategory_id
 
 @[simp]
@@ -221,6 +234,7 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
+                                                                                -- 🎉 no goals
 #align category_theory.nat_trans.map_homotopy_category_comp CategoryTheory.NatTrans.mapHomotopyCategory_comp
 
 end CategoryTheory

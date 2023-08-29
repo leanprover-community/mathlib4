@@ -55,8 +55,11 @@ instance : Coe (P →A[R] Q) (P →ᵃ[R] Q) :=
 theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
     f = g := by
   cases f
+  -- ⊢ { toAffineMap := toAffineMap✝, cont := cont✝ } = g
   cases g
+  -- ⊢ { toAffineMap := toAffineMap✝¹, cont := cont✝¹ } = { toAffineMap := toAffine …
   congr
+  -- 🎉 no goals
 #align continuous_affine_map.to_affine_map_injective ContinuousAffineMap.to_affineMap_injective
 
 instance : ContinuousMapClass (P →A[R] Q) P Q where
@@ -113,7 +116,9 @@ theorem coe_to_continuousMap (f : P →A[R] Q) : ((f : C(P, Q)) : P → Q) = f :
 theorem to_continuousMap_injective {f g : P →A[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
+  -- ⊢ ↑f a = ↑g a
   exact ContinuousMap.congr_fun h a
+  -- 🎉 no goals
 #align continuous_affine_map.to_continuous_map_injective ContinuousAffineMap.to_continuousMap_injective
 
 -- Porting note: removed `norm_cast`
@@ -131,7 +136,9 @@ theorem coe_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P → Q) 
 @[simp]
 theorem mk_coe (f : P →A[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →A[R] Q) = f := by
   ext
+  -- ⊢ ↑{ toAffineMap := f.toAffineMap, cont := h } x✝ = ↑f x✝
   rfl
+  -- 🎉 no goals
 #align continuous_affine_map.mk_coe ContinuousAffineMap.mk_coe
 
 @[continuity]
@@ -153,6 +160,7 @@ theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
 
 noncomputable instance : Inhabited (P →A[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
+                                  -- 🎉 no goals
 
 variable {R P} {W₂ Q₂ : Type*}
 
@@ -273,6 +281,7 @@ def toContinuousAffineMap (f : V →L[R] W) : V →A[R] W where
   toFun := f
   linear := f
   map_vadd' := by simp
+                  -- 🎉 no goals
   cont := f.cont
 #align continuous_linear_map.to_continuous_affine_map ContinuousLinearMap.toContinuousAffineMap
 
@@ -282,6 +291,7 @@ theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap
 
 @[simp]
 theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
+                                                                                             -- 🎉 no goals
 #align continuous_linear_map.to_continuous_affine_map_map_zero ContinuousLinearMap.toContinuousAffineMap_map_zero
 
 end ContinuousLinearMap

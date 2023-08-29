@@ -194,8 +194,11 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
 theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
+  -- ⊢ Continuous fun x => Finset.sum Finset.univ fun x_1 => ↑Equiv.Perm.sign x_1 • …
   refine' continuous_finset_sum _ fun l _ => Continuous.const_smul _ _
+  -- ⊢ Continuous fun x => Finset.prod Finset.univ fun x_1 => A x (↑l x_1) x_1
   refine' continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
+  -- 🎉 no goals
 #align continuous.matrix_det Continuous.matrix_det
 
 @[continuity]
@@ -244,6 +247,14 @@ theorem Continuous.matrix_fromBlocks {A : X → Matrix n l R} {B : X → Matrix 
     Continuous fun x => Matrix.fromBlocks (A x) (B x) (C x) (D x) :=
   continuous_matrix <| by
     rintro (i | i) (j | j) <;> refine' Continuous.matrix_elem _ i j <;> assumption
+                               -- ⊢ Continuous fun a => A a
+                               -- ⊢ Continuous fun a => B a
+                               -- ⊢ Continuous fun a => C a
+                               -- ⊢ Continuous fun a => D a
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
+                                                                        -- 🎉 no goals
 #align continuous.matrix_from_blocks Continuous.matrix_fromBlocks
 
 @[continuity]
@@ -265,10 +276,15 @@ theorem Continuous.matrix_blockDiagonal' [Zero R] [DecidableEq l]
     Continuous fun x => blockDiagonal' (A x) :=
   continuous_matrix fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
     dsimp only [blockDiagonal'_apply']
+    -- ⊢ Continuous fun a => if h : i₁ = j₁ then A a i₁ i₂ (cast (_ : n' j₁ = n' i₁)  …
     split_ifs with h
+    -- ⊢ Continuous fun a => A a i₁ i₂ (cast (_ : n' j₁ = n' i₁) j₂)
     · subst h
+      -- ⊢ Continuous fun a => A a i₁ i₂ (cast (_ : n' i₁ = n' i₁) j₂)
       exact ((continuous_apply i₁).comp hA).matrix_elem i₂ j₂
+      -- 🎉 no goals
     · exact continuous_const
+      -- 🎉 no goals
 #align continuous.matrix_block_diagonal' Continuous.matrix_blockDiagonal'
 
 @[continuity]
@@ -307,9 +323,13 @@ theorem summable_matrix_transpose {f : X → Matrix m n R} :
 
 theorem Matrix.transpose_tsum [T2Space R] {f : X → Matrix m n R} : (∑' x, f x)ᵀ = ∑' x, (f x)ᵀ := by
   by_cases hf : Summable f
+  -- ⊢ (∑' (x : X), f x)ᵀ = ∑' (x : X), (f x)ᵀ
   · exact hf.hasSum.matrix_transpose.tsum_eq.symm
+    -- 🎉 no goals
   · have hft := summable_matrix_transpose.not.mpr hf
+    -- ⊢ (∑' (x : X), f x)ᵀ = ∑' (x : X), (f x)ᵀ
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft, transpose_zero]
+    -- 🎉 no goals
 #align matrix.transpose_tsum Matrix.transpose_tsum
 
 theorem HasSum.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : X → Matrix m n R}
@@ -332,9 +352,13 @@ theorem summable_matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : 
 theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space R]
     {f : X → Matrix m n R} : (∑' x, f x)ᴴ = ∑' x, (f x)ᴴ := by
   by_cases hf : Summable f
+  -- ⊢ (∑' (x : X), f x)ᴴ = ∑' (x : X), (f x)ᴴ
   · exact hf.hasSum.matrix_conjTranspose.tsum_eq.symm
+    -- 🎉 no goals
   · have hft := summable_matrix_conjTranspose.not.mpr hf
+    -- ⊢ (∑' (x : X), f x)ᴴ = ∑' (x : X), (f x)ᴴ
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft, conjTranspose_zero]
+    -- 🎉 no goals
 #align matrix.conj_transpose_tsum Matrix.conjTranspose_tsum
 
 theorem HasSum.matrix_diagonal [DecidableEq n] {f : X → n → R} {a : n → R} (hf : HasSum f a) :
@@ -357,10 +381,15 @@ theorem summable_matrix_diagonal [DecidableEq n] {f : X → n → R} :
 theorem Matrix.diagonal_tsum [DecidableEq n] [T2Space R] {f : X → n → R} :
     diagonal (∑' x, f x) = ∑' x, diagonal (f x) := by
   by_cases hf : Summable f
+  -- ⊢ diagonal (∑' (x : X), f x) = ∑' (x : X), diagonal (f x)
   · exact hf.hasSum.matrix_diagonal.tsum_eq.symm
+    -- 🎉 no goals
   · have hft := summable_matrix_diagonal.not.mpr hf
+    -- ⊢ diagonal (∑' (x : X), f x) = ∑' (x : X), diagonal (f x)
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
+    -- ⊢ diagonal 0 = 0
     exact diagonal_zero
+    -- 🎉 no goals
 #align matrix.diagonal_tsum Matrix.diagonal_tsum
 
 theorem HasSum.matrix_diag {f : X → Matrix n n R} {a : Matrix n n R} (hf : HasSum f a) :
@@ -396,10 +425,15 @@ theorem summable_matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m 
 theorem Matrix.blockDiagonal_tsum [DecidableEq p] [T2Space R] {f : X → p → Matrix m n R} :
     blockDiagonal (∑' x, f x) = ∑' x, blockDiagonal (f x) := by
   by_cases hf : Summable f
+  -- ⊢ blockDiagonal (∑' (x : X), f x) = ∑' (x : X), blockDiagonal (f x)
   · exact hf.hasSum.matrix_blockDiagonal.tsum_eq.symm
+    -- 🎉 no goals
   · have hft := summable_matrix_blockDiagonal.not.mpr hf
+    -- ⊢ blockDiagonal (∑' (x : X), f x) = ∑' (x : X), blockDiagonal (f x)
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
+    -- ⊢ blockDiagonal 0 = 0
     exact blockDiagonal_zero
+    -- 🎉 no goals
 #align matrix.block_diagonal_tsum Matrix.blockDiagonal_tsum
 
 theorem HasSum.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R} {a : Matrix (m × p) (n × p) R}
@@ -434,10 +468,15 @@ theorem Matrix.blockDiagonal'_tsum [DecidableEq l] [T2Space R]
     {f : X → ∀ i, Matrix (m' i) (n' i) R} :
     blockDiagonal' (∑' x, f x) = ∑' x, blockDiagonal' (f x) := by
   by_cases hf : Summable f
+  -- ⊢ blockDiagonal' (∑' (x : X), f x) = ∑' (x : X), blockDiagonal' (f x)
   · exact hf.hasSum.matrix_blockDiagonal'.tsum_eq.symm
+    -- 🎉 no goals
   · have hft := summable_matrix_blockDiagonal'.not.mpr hf
+    -- ⊢ blockDiagonal' (∑' (x : X), f x) = ∑' (x : X), blockDiagonal' (f x)
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
+    -- ⊢ blockDiagonal' 0 = 0
     exact blockDiagonal'_zero
+    -- 🎉 no goals
 #align matrix.block_diagonal'_tsum Matrix.blockDiagonal'_tsum
 
 theorem HasSum.matrix_blockDiag' {f : X → Matrix (Σi, m' i) (Σi, n' i) R}

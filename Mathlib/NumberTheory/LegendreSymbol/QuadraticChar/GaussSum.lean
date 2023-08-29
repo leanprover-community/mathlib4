@@ -99,6 +99,7 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
     quadraticChar F (Fintype.card F') =
     quadraticChar F' (quadraticChar F (-1) * Fintype.card F) := by
   let χ := (quadraticChar F).ringHomComp (algebraMap ℤ F')
+  -- ⊢ ↑(quadraticChar F) ↑(Fintype.card F') = ↑(quadraticChar F') (↑(↑(quadraticCh …
   have hχ₁ : χ.IsNontrivial := by
     obtain ⟨a, ha⟩ := quadraticChar_exists_neg_one hF
     have hu : IsUnit a := by
@@ -109,8 +110,11 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
     rw [Int.cast_neg, Int.cast_one]
     exact Ring.neg_one_ne_one_of_char_ne_two hF'
   have hχ₂ : χ.IsQuadratic := IsQuadratic.comp (quadraticChar_isQuadratic F) _
+  -- ⊢ ↑(quadraticChar F) ↑(Fintype.card F') = ↑(quadraticChar F') (↑(↑(quadraticCh …
   have h := Char.card_pow_card hχ₁ hχ₂ h hF'
+  -- ⊢ ↑(quadraticChar F) ↑(Fintype.card F') = ↑(quadraticChar F') (↑(↑(quadraticCh …
   rw [← quadraticChar_eq_pow_of_char_ne_two' hF'] at h
+  -- ⊢ ↑(quadraticChar F) ↑(Fintype.card F') = ↑(quadraticChar F') (↑(↑(quadraticCh …
   exact (IsQuadratic.eq_of_eq_coe (quadraticChar_isQuadratic F')
     (quadraticChar_isQuadratic F) hF' h).symm
 #align quadratic_char_card_card quadraticChar_card_card
@@ -120,9 +124,11 @@ theorem quadraticChar_odd_prime [DecidableEq F] (hF : ringChar F ≠ 2) {p : ℕ
     (hp₁ : p ≠ 2) (hp₂ : ringChar F ≠ p) :
     quadraticChar F p = quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) := by
   rw [← quadraticChar_neg_one hF]
+  -- ⊢ ↑(quadraticChar F) ↑p = ↑(quadraticChar (ZMod p)) (↑(↑(quadraticChar F) (-1) …
   have h := quadraticChar_card_card hF (ne_of_eq_of_ne (ringChar_zmod_n p) hp₁)
     (ne_of_eq_of_ne (ringChar_zmod_n p) hp₂.symm)
   rwa [card p] at h
+  -- 🎉 no goals
 #align quadratic_char_odd_prime quadraticChar_odd_prime
 
 /-- An odd prime `p` is a square in `F` iff the quadratic character of `ZMod p` does not

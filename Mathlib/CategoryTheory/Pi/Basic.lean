@@ -77,7 +77,9 @@ variable {J : Type w₁}
 
 instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
   dsimp
+  -- ⊢ (j : J) → Category.{?u.5215, u₁} (C (f j))
   infer_instance
+  -- 🎉 no goals
 
 /-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
@@ -99,6 +101,7 @@ def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
 #align category_theory.pi.comap_id CategoryTheory.Pi.comapId
 
 example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
+                                                         -- 🎉 no goals
 
 variable {I}
 
@@ -113,15 +116,23 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
   hom :=
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
+                                   -- ⊢ ((Functor.mk { obj := fun f i => f (g i), map := fun {X Y} α i => α (g i) }  …
+                                                                     -- ⊢ ((Functor.mk { obj := fun f i => f (g i), map := fun {X Y} α i => α (g i) }  …
+                                                                             -- 🎉 no goals
   inv :=
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
+                                   -- ⊢ ((fun i => f' (g (f i))) ≫ fun b => 𝟙 (Y (g (f b)))) = (fun b => 𝟙 (X (g (f  …
+                                                                     -- ⊢ ((fun i => f' (g (f i))) ≫ fun b => 𝟙 (Y (g (f b)))) x✝ = ((fun b => 𝟙 (X (g …
+                                                                             -- 🎉 no goals
 #align category_theory.pi.comap_comp CategoryTheory.Pi.comapComp
 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
   NatIso.ofComponents (fun f => Iso.refl _) (by simp only [Iso.refl]; aesop_cat)
+                                                -- ⊢ ∀ {X Y : (i : I) → C i} (f : X ⟶ Y), (comap C h ⋙ eval (C ∘ h) j).map f ≫ 𝟙  …
+                                                                      -- 🎉 no goals
 #align category_theory.pi.comap_eval_iso_eval CategoryTheory.Pi.comapEvalIsoEval
 
 end
@@ -134,10 +145,14 @@ variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
+    -- ⊢ Category.{v₁, u₁} (C i)
     infer_instance
+    -- 🎉 no goals
   | Sum.inr j => by
     dsimp
+    -- ⊢ Category.{v₁, u₁} (D j)
     infer_instance
+    -- 🎉 no goals
 #align category_theory.pi.sum_elim_category CategoryTheory.Pi.sumElimCategoryₓ
 
 /- Porting note: replaced `Sum.rec` with `match`'s per the error about
@@ -174,6 +189,8 @@ pair of corresponding components. -/
 def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
   ⟨f.hom i, f.inv i,
     by rw [← comp_apply, Iso.hom_inv_id, id_apply], by rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
+       -- 🎉 no goals
+                                                       -- 🎉 no goals
 #align category_theory.pi.iso_app CategoryTheory.Pi.isoApp
 
 @[simp]
@@ -222,7 +239,9 @@ section EqToHom
 theorem eqToHom_proj {x x' : ∀ i, C i} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
   subst h
+  -- ⊢ eqToHom (_ : x = x) i = eqToHom (_ : x i = x i)
   rfl
+  -- 🎉 no goals
 #align category_theory.functor.eq_to_hom_proj CategoryTheory.Functor.eqToHom_proj
 
 end EqToHom
@@ -232,27 +251,45 @@ end EqToHom
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
+  -- ⊢ autoParam (∀ (X Y : A) (f_1 : X ⟶ Y), (pi' f ⋙ Pi.eval C i).map f_1 = eqToHo …
   intro _ _ _
+  -- ⊢ (pi' f ⋙ Pi.eval C i).map f✝ = eqToHom (_ : ?F.obj X✝ = ?G.obj X✝) ≫ (f i).m …
   · simp
+    -- 🎉 no goals
   · intro _
+    -- ⊢ (pi' f ⋙ Pi.eval C i).obj X✝ = (f i).obj X✝
     rfl
+    -- 🎉 no goals
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
 theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i))
     : f = f' := by
   apply Functor.ext; rotate_left
+  -- ⊢ autoParam (∀ (X Y : A) (f_1 : X ⟶ Y), f.map f_1 = eqToHom (_ : ?F.obj X = ?G …
+                     -- ⊢ ∀ (X : A), f.obj X = f'.obj X
   · intro X
+    -- ⊢ f.obj X = f'.obj X
     ext i
+    -- ⊢ f.obj X i = f'.obj X i
     specialize h i
+    -- ⊢ f.obj X i = f'.obj X i
     have := congr_obj h X
+    -- ⊢ f.obj X i = f'.obj X i
     simpa
+    -- 🎉 no goals
   · intro X Y g
+    -- ⊢ f.map g = eqToHom (_ : f.obj X = f'.obj X) ≫ f'.map g ≫ eqToHom (_ : f'.obj  …
     dsimp
+    -- ⊢ f.map g = eqToHom (_ : f.obj X = f'.obj X) ≫ f'.map g ≫ eqToHom (_ : f'.obj  …
     funext i
+    -- ⊢ f.map g i = (eqToHom (_ : f.obj X = f'.obj X) ≫ f'.map g ≫ eqToHom (_ : f'.o …
     specialize h i
+    -- ⊢ f.map g i = (eqToHom (_ : f.obj X = f'.obj X) ≫ f'.map g ≫ eqToHom (_ : f'.o …
     have := congr_hom h g
+    -- ⊢ f.map g i = (eqToHom (_ : f.obj X = f'.obj X) ≫ f'.map g ≫ eqToHom (_ : f'.o …
     simpa
+    -- 🎉 no goals
 #align category_theory.functor.pi_ext CategoryTheory.Functor.pi_ext
 
 end Functor

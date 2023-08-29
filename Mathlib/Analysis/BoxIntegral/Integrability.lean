@@ -40,7 +40,10 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     HasIntegral.{u, v, v} I l (s.indicator fun _ => y) μ.toBoxAdditive.toSMul
       ((μ (s ∩ I)).toReal • y) := by
   refine' HasIntegral.of_mul ‖y‖ fun ε ε0 => _
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   lift ε to ℝ≥0 using ε0.le; rw [NNReal.coe_pos] at ε0
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
+                             -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   /- First we choose a closed set `F ⊆ s ∩ I.Icc` and an open set `U ⊇ s` such that
     both `(s ∩ I.Icc) \ F` and `U \ s` have measure less than `ε`. -/
   have A : μ (s ∩ Box.Icc I) ≠ ∞ :=
@@ -58,44 +61,68 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     rcases nhds_basis_closedBall.mem_iff.1 (hUo.mem_nhds <| hsU hx) with ⟨r, hr₀, hr⟩
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose! rs hrsU using this
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   have : ∀ x ∈ Box.Icc I \ s, ∃ r : Ioi (0 : ℝ), closedBall x r ⊆ Fᶜ := fun x hx => by
     obtain ⟨r, hr₀, hr⟩ :=
       nhds_basis_closedBall.mem_iff.1 (hFc.isOpen_compl.mem_nhds fun hx' => hx.2 (hFs hx').1)
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose! rs' hrs'F using this
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   set r : (ι → ℝ) → Ioi (0 : ℝ) := s.piecewise rs rs'
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   refine' ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => _⟩; rw [mul_comm]
+  -- ⊢ dist (integralSum (indicator s fun x => y) (BoxAdditiveMap.toSMul (Measure.t …
+                                                                                       -- ⊢ dist (integralSum (indicator s fun x => y) (BoxAdditiveMap.toSMul (Measure.t …
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,
     hence its measure is `ε`-close to the measure of `s`. -/
   dsimp [integralSum]
+  -- ⊢ dist (∑ J in π.boxes, ENNReal.toReal (↑↑μ ↑J) • indicator s (fun x => y) (Ta …
   simp only [mem_closedBall, dist_eq_norm, ← indicator_const_smul_apply,
     sum_indicator_eq_sum_filter, ← sum_smul, ← sub_smul, norm_smul, Real.norm_eq_abs, ←
     Prepartition.filter_boxes, ← Prepartition.measure_iUnion_toReal]
   refine' mul_le_mul_of_nonneg_right _ (norm_nonneg y)
+  -- ⊢ |ENNReal.toReal (↑↑μ (Prepartition.iUnion (Prepartition.filter π.toPrepartit …
   set t := (π.filter (π.tag · ∈ s)).iUnion
+  -- ⊢ |ENNReal.toReal (↑↑μ (Prepartition.iUnion (Prepartition.filter π.toPrepartit …
   change abs ((μ t).toReal - (μ (s ∩ I)).toReal) ≤ ε
+  -- ⊢ |ENNReal.toReal (↑↑μ t) - ENNReal.toReal (↑↑μ (s ∩ ↑I))| ≤ ↑ε
   have htU : t ⊆ U ∩ I := by
     simp only [TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
       and_imp]
     refine' fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ _, π.le_of_mem' J hJ hx⟩
     simpa only [s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine' abs_sub_le_iff.2 ⟨_, _⟩
+  -- ⊢ ENNReal.toReal (↑↑μ t) - ENNReal.toReal (↑↑μ (s ∩ ↑I)) ≤ ↑ε
   · refine' (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe _)
+    -- ⊢ ↑↑μ t - ↑↑μ (s ∩ ↑I) ≤ ↑ε
     refine' (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans _)
+    -- ⊢ ↑↑μ ((U ∩ ↑I) \ (s ∩ ↑I)) ≤ ↑ε
     refine' (measure_mono fun x hx => _).trans hμU.le
+    -- ⊢ x ∈ U \ (s ∩ ↑Box.Icc I)
     exact ⟨hx.1.1, fun hx' => hx.2 ⟨hx'.1, hx.1.2⟩⟩
+    -- 🎉 no goals
   · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans (inter_subset_left _ _))).trans_lt hUt).ne
+    -- ⊢ ENNReal.toReal (↑↑μ (s ∩ ↑I)) - ENNReal.toReal (↑↑μ t) ≤ ↑ε
     refine' (ENNReal.le_toReal_sub hμt).trans (ENNReal.toReal_le_coe_of_le_coe _)
+    -- ⊢ ↑↑μ (s ∩ ↑I) - ↑↑μ t ≤ ↑ε
     refine' le_measure_diff.trans ((measure_mono _).trans hμF.le)
+    -- ⊢ (s ∩ ↑I) \ t ⊆ (s ∩ ↑Box.Icc I) \ F
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
+    -- ⊢ x ∈ (s ∩ ↑Box.Icc I) \ F
     refine' ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt _⟩
+    -- ⊢ x ∈ t
     simp only [TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
       exists_prop]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
+    -- ⊢ ∃ i, (i ∈ π ∧ TaggedPrepartition.tag π i ∈ s) ∧ x ∈ ↑i
     refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
+    -- ⊢ TaggedPrepartition.tag π J ∈ s
     contrapose hxF
+    -- ⊢ ¬x ∈ F
     refine' hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ _
+    -- ⊢ x ∈ closedBall (TaggedPrepartition.tag π J) ↑(rs' (TaggedPrepartition.tag π  …
     simpa only [s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
+    -- 🎉 no goals
 #align box_integral.has_integral_indicator_const BoxIntegral.hasIntegralIndicatorConst
 
 /-- If `f` is a.e. equal to zero on a rectangular box, then it has McShane integral zero on this
@@ -106,12 +133,20 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   /- Each set `{x | n < ‖f x‖ ≤ n + 1}`, `n : ℕ`, has measure zero. We cover it by an open set of
     measure less than `ε / 2 ^ n / (n + 1)`. Then the norm of the integral sum is less than `ε`. -/
   refine' hasIntegral_iff.2 fun ε ε0 => _
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   lift ε to ℝ≥0 using ε0.lt.le; rw [gt_iff_lt, NNReal.coe_pos] at ε0
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
+                                -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   rcases NNReal.exists_pos_sum_of_countable ε0.ne' ℕ with ⟨δ, δ0, c, hδc, hcε⟩
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   haveI := Fact.mk (I.measure_coe_lt_top μ)
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := by
     refine' fun n => (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ _
     cases' n with n
@@ -120,25 +155,36 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
       · exact fun x hxN hxf => n.succ_ne_zero ((Eq.symm hxN).trans <| N0.2 hxf)
       · simp [(δ0 _).ne']
   choose U hNU hUo hμU using this
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   have : ∀ x, ∃ r : Ioi (0 : ℝ), closedBall x r ⊆ U (N x) := fun x => by
     obtain ⟨r, hr₀, hr⟩ := nhds_basis_closedBall.mem_iff.1 ((hUo _).mem_nhds (hNU _ rfl))
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose r hrU using this
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   refine' ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ _ => _⟩
+  -- ⊢ dist (integralSum f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) π) 0 ≤ …
   rw [dist_eq_norm, sub_zero, ← integralSum_fiberwise fun J => N (π.tag J)]
+  -- ⊢ ‖∑ y in Finset.image (fun J => N (TaggedPrepartition.tag π J)) π.boxes, inte …
   refine' le_trans _ (NNReal.coe_lt_coe.2 hcε).le
+  -- ⊢ ‖∑ y in Finset.image (fun J => N (TaggedPrepartition.tag π J)) π.boxes, inte …
   refine' (norm_sum_le_of_le _ _).trans
     (sum_le_hasSum _ (fun n _ => (δ n).2) (NNReal.hasSum_coe.2 hδc))
   rintro n -
+  -- ⊢ ‖integralSum f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (TaggedPrep …
   dsimp [integralSum]
+  -- ⊢ ‖∑ J in (TaggedPrepartition.filter π fun x => ⌈‖f (TaggedPrepartition.tag π  …
   have : ∀ J ∈ π.filter fun J => N (π.tag J) = n,
       ‖(μ ↑J).toReal • f (π.tag J)‖ ≤ (μ J).toReal * n := fun J hJ ↦ by
     rw [TaggedPrepartition.mem_filter] at hJ
     rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
     exact mul_le_mul_of_nonneg_left (hJ.2 ▸ Nat.le_ceil _) ENNReal.toReal_nonneg
   refine' (norm_sum_le_of_le _ this).trans _; clear this
+  -- ⊢ ∑ b in (TaggedPrepartition.filter π fun J => N (TaggedPrepartition.tag π J)  …
+                                              -- ⊢ ∑ b in (TaggedPrepartition.filter π fun J => N (TaggedPrepartition.tag π J)  …
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
+  -- ⊢ ENNReal.toReal (↑↑μ (Prepartition.iUnion (TaggedPrepartition.filter π fun J  …
   generalize hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
+  -- ⊢ ENNReal.toReal m * ↑n ≤ ↑(δ n)
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
     refine' hm ▸ (measure_mono _).trans_lt (hμU _)
@@ -146,9 +192,11 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     rintro x ⟨J, ⟨hJ, rfl⟩, hx⟩
     exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
   lift m to ℝ≥0 using ne_top_of_lt this
+  -- ⊢ ENNReal.toReal ↑m * ↑n ≤ ↑(δ n)
   rw [ENNReal.coe_toReal, ← NNReal.coe_nat_cast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_nat, mul_comm]
   exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
+  -- 🎉 no goals
 #align box_integral.has_integral_zero_of_ae_eq_zero BoxIntegral.HasIntegral.of_aeEq_zero
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
@@ -158,7 +206,9 @@ theorem HasIntegral.congr_ae {l : IntegrationParams} {I : Box ι} {y : E} {f g :
     (hf : HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul y) (hfg : f =ᵐ[μ.restrict I] g)
     (hl : l.bRiemann = false) : HasIntegral.{u, v, v} I l g μ.toBoxAdditive.toSMul y := by
   have : g - f =ᵐ[μ.restrict I] 0 := hfg.mono fun x hx => sub_eq_zero.2 hx.symm
+  -- ⊢ HasIntegral I l g (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) y
   simpa using hf.add (HasIntegral.of_aeEq_zero this hl)
+  -- 🎉 no goals
 #align box_integral.has_integral.congr_ae BoxIntegral.HasIntegral.congr_ae
 
 end BoxIntegral
@@ -172,10 +222,13 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
     (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
   induction' f using MeasureTheory.SimpleFunc.induction with y s hs f g _ hfi hgi
+  -- ⊢ HasIntegral I l (↑(piecewise s hs (const (ι → ℝ) y) (const (ι → ℝ) 0))) (Box …
   · simpa only [Measure.restrict_apply hs, const_zero, integral_piecewise_zero, integral_const,
       Measure.restrict_apply, MeasurableSet.univ, Set.univ_inter] using
       BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
   · borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
+    -- ⊢ HasIntegral I l (↑(f + g)) (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) …
+                -- ⊢ HasIntegral I l (↑(f + g)) (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) …
     rw [integral_add]
     exacts [hfi.add hgi, integrable_iff.2 fun _ _ => measure_lt_top _ _,
       integrable_iff.2 fun _ _ => measure_lt_top _ _]
@@ -200,12 +253,19 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     (hl : l.bRiemann = false) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   borelize E
+  -- ⊢ HasIntegral I l f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (x :  …
   -- First we replace an `ae_strongly_measurable` function by a measurable one.
   rcases hf.aestronglyMeasurable with ⟨g, hg, hfg⟩
+  -- ⊢ HasIntegral I l f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (x :  …
   haveI : SeparableSpace (range g ∪ {0} : Set E) := hg.separableSpace_range_union_singleton
+  -- ⊢ HasIntegral I l f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (x :  …
   rw [integral_congr_ae hfg]; have hgi : IntegrableOn g I μ := (integrable_congr hfg).1 hf
+  -- ⊢ HasIntegral I l f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (a :  …
+                              -- ⊢ HasIntegral I l f (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (a :  …
   refine' BoxIntegral.HasIntegral.congr_ae _ hfg.symm hl
+  -- ⊢ HasIntegral I l g (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (a :  …
   clear! f
+  -- ⊢ HasIntegral I l g (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (a :  …
   /- Now consider the sequence of simple functions
     `simple_func.approx_on g hg.measurable (range g ∪ {0}) 0 (by simp)`
     approximating `g`. Recall some properties of this sequence. -/
@@ -214,6 +274,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   have hfi : ∀ n, IntegrableOn (f n) I μ :=
     SimpleFunc.integrable_approxOn_range hg.measurable hgi
   have hfi' := fun n => ((f n).hasBoxIntegral μ I l hl).integrable
+  -- ⊢ HasIntegral I l g (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) (∫ (a :  …
   have hfg_mono : ∀ (x) {m n}, m ≤ n → ‖f n x - g x‖ ≤ ‖f m x - g x‖ := by
     intro x m n hmn
     rw [← dist_eq_norm, ← dist_eq_norm, dist_nndist, dist_nndist, NNReal.coe_le_coe, ←
@@ -222,7 +283,11 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   /- Now consider `ε > 0`. We need to find `r` such that for any tagged partition subordinate
     to `r`, the integral sum is `(μ I + 1 + 1) * ε`-close to the Bochner integral. -/
   refine' HasIntegral.of_mul ((μ I).toReal + 1 + 1) fun ε ε0 => _
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   lift ε to ℝ≥0 using ε0.le; rw [NNReal.coe_pos] at ε0; have ε0' := ENNReal.coe_pos.2 ε0
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
+                             -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
+                                                        -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   -- Choose `N` such that the integral of `‖f N x - g x‖` is less than or equal to `ε`.
   obtain ⟨N₀, hN₀⟩ : ∃ N : ℕ, ∫ x in I, ‖f N x - g x‖ ∂μ ≤ ε := by
     have : Tendsto (fun n => ∫⁻ x in I, ‖f n x - g x‖₊ ∂μ) atTop (𝓝 0) :=
@@ -235,14 +300,18 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
       SimpleFunc.tendsto_approxOn hg.measurable _ (subset_closure (by simp))
     exact ((eventually_ge_atTop N₀).and <| this <| closedBall_mem_nhds _ ε0).exists
   choose Nx hNx hNxε using this
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   -- We also choose a convergent series with `∑' i : ℕ, δ i < ε`.
   rcases NNReal.exists_pos_sum_of_countable ε0.ne' ℕ with ⟨δ, δ0, c, hδc, hcε⟩
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   /- Since each simple function `fᵢ` is integrable, there exists `rᵢ : ℝⁿ → (0, ∞)` such that
     the integral sum of `f` over any tagged prepartition is `δᵢ`-close to the sum of integrals
     of `fᵢ` over the boxes of this prepartition. For each `x`, we choose `r (Nx x)` as the radius
     at `x`. -/
   set r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) := fun c x => (hfi' <| Nx x).convergenceR (δ <| Nx x) c x
+  -- ⊢ ∃ r, (∀ (c : ℝ≥0), IntegrationParams.RCond l (r c)) ∧ ∀ (c : ℝ≥0) (π : Tagge …
   refine' ⟨r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => _⟩
+  -- ⊢ dist (integralSum g (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) π) (∫  …
   /- Now we prove the estimate in 3 "jumps": first we replace `g x` in the formula for the
     integral sum by `f (Nx x)`; then we replace each `μ J • f (Nx (π.tag J)) (π.tag J)`
     by the Bochner integral of `f (Nx (π.tag J)) x` over `J`, then we jump to the Bochner
@@ -250,20 +319,30 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   refine' (dist_triangle4 _ (∑ J in π.boxes, (μ J).toReal • f (Nx <| π.tag J) (π.tag J))
     (∑ J in π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans _
   rw [add_mul, add_mul, one_mul]
+  -- ⊢ dist (integralSum g (BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) π) (∑  …
   refine' add_le_add_three _ _ _
   · /- Since each `f (Nx $ π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
         the former in the formula for the integral sum changes the sum at most by `μ I * ε`. -/
     rw [← hπp.iUnion_eq, π.measure_iUnion_toReal, sum_mul, integralSum]
+    -- ⊢ dist (∑ J in π.boxes, ↑(↑(BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) J …
     refine' dist_sum_sum_le_of_le _ fun J _ => _; dsimp
+    -- ⊢ dist (↑(↑(BoxAdditiveMap.toSMul (Measure.toBoxAdditive μ)) J) (g (TaggedPrep …
+                                                  -- ⊢ dist (ENNReal.toReal (↑↑μ ↑J) • g (TaggedPrepartition.tag π J)) (ENNReal.toR …
     rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
+    -- ⊢ ENNReal.toReal (↑↑μ ↑J) * ‖g (TaggedPrepartition.tag π J) - ↑(SimpleFunc.app …
     refine' mul_le_mul_of_nonneg_left _ ENNReal.toReal_nonneg
+    -- ⊢ ‖g (TaggedPrepartition.tag π J) - ↑(SimpleFunc.approxOn g (_ : Measurable g) …
     rw [← dist_eq_norm']; exact hNxε _
+    -- ⊢ dist (↑(SimpleFunc.approxOn g (_ : Measurable g) (Set.range g ∪ {0}) 0 (_ :  …
+                          -- 🎉 no goals
   · /- We group the terms of both sums by the values of `Nx (π.tag J)`.
         For each `N`, the sum of Bochner integrals over the boxes is equal
         to the sum of box integrals, and the sum of box integrals is `δᵢ`-close
         to the corresponding integral sum due to the Henstock-Sacks inequality. -/
     rw [← π.sum_fiberwise fun J => Nx (π.tag J), ← π.sum_fiberwise fun J => Nx (π.tag J)]
+    -- ⊢ dist (∑ y in Finset.image (fun J => Nx (TaggedPrepartition.tag π J)) π.boxes …
     refine' le_trans _ (NNReal.coe_lt_coe.2 hcε).le
+    -- ⊢ dist (∑ y in Finset.image (fun J => Nx (TaggedPrepartition.tag π J)) π.boxes …
     refine'
       (dist_sum_sum_le_of_le _ fun n hn => _).trans
         (sum_le_hasSum _ (fun n _ => (δ n).2) (NNReal.hasSum_coe.2 hδc))
@@ -277,28 +356,39 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
         l.MemBaseSet I c ((hfi' n).convergenceR (δ n) c) (π.filter fun J => Nx (π.tag J) = n) :=
       (hπ.filter _).mono' _ le_rfl le_rfl fun J hJ => (hrn J hJ).le
     convert (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
+    -- ⊢ ∑ J in (Prepartition.filter π.toPrepartition fun J => Nx (TaggedPrepartition …
     · refine' sum_congr rfl fun J hJ => _
+      -- ⊢ ENNReal.toReal (↑↑μ ↑J) • ↑(f (Nx (TaggedPrepartition.tag π J))) (TaggedPrep …
       simp [hNxn J hJ]
+      -- 🎉 no goals
     · refine' sum_congr rfl fun J hJ => _
+      -- ⊢ ∫ (x : ι → ℝ) in ↑J, ↑(f (Nx (TaggedPrepartition.tag π J))) x ∂μ = BoxIntegr …
       rw [← SimpleFunc.integral_eq_integral, SimpleFunc.box_integral_eq_integral _ _ _ _ hl,
         hNxn J hJ]
       exact (hfi _).mono_set (Prepartition.le_of_mem _ hJ)
+      -- 🎉 no goals
   · /-  For the last jump, we use the fact that the distance between `f (Nx x) x` and `g x` is less
         than or equal to the distance between `f N₀ x` and `g x` and the integral of
         `‖f N₀ x - g x‖` is less than or equal to `ε`. -/
     refine' le_trans _ hN₀
+    -- ⊢ dist (∑ J in π.boxes, ∫ (x : ι → ℝ) in ↑J, ↑(f (Nx (TaggedPrepartition.tag π …
     have hfi : ∀ (n), ∀ J ∈ π, IntegrableOn (f n) (↑J) μ := fun n J hJ =>
       (hfi n).mono_set (π.le_of_mem' J hJ)
     have hgi : ∀ J ∈ π, IntegrableOn g (↑J) μ := fun J hJ => hgi.mono_set (π.le_of_mem' J hJ)
+    -- ⊢ dist (∑ J in π.boxes, ∫ (x : ι → ℝ) in ↑J, ↑(f (Nx (TaggedPrepartition.tag π …
     have hfgi : ∀ (n), ∀ J ∈ π, IntegrableOn (fun x => ‖f n x - g x‖) J μ := fun n J hJ =>
       ((hfi n J hJ).sub (hgi J hJ)).norm
     rw [← hπp.iUnion_eq, Prepartition.iUnion_def',
       integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint hgi,
       integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint (hfgi _)]
     refine' dist_sum_sum_le_of_le _ fun J hJ => _
+    -- ⊢ dist (∫ (x : ι → ℝ) in ↑J, ↑(f (Nx (TaggedPrepartition.tag π J))) x ∂μ) (∫ ( …
     rw [dist_eq_norm, ← integral_sub (hfi _ J hJ) (hgi J hJ)]
+    -- ⊢ ‖∫ (a : ι → ℝ) in ↑J, ↑(f (Nx (TaggedPrepartition.tag π J))) a - g a ∂μ‖ ≤ ∫ …
     refine' norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => _)
+    -- ⊢ ‖↑(f (Nx (TaggedPrepartition.tag π J))) x - g x‖ ≤ ‖↑(f N₀) x - g x‖
     exact hfg_mono x (hNx (π.tag J))
+    -- 🎉 no goals
 #align measure_theory.integrable_on.has_box_integral MeasureTheory.IntegrableOn.hasBoxIntegral
 
 end MeasureTheory

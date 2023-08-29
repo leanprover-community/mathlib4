@@ -35,19 +35,25 @@ variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopolog
 
 theorem nhdsSet_Ici : 𝓝ˢ (Ici a) = 𝓝 a ⊔ 𝓟 (Ioi a) := by
   rw [← Ioi_insert, nhdsSet_insert, nhdsSet_Ioi]
+  -- 🎉 no goals
 
 theorem nhdsSet_Iic : 𝓝ˢ (Iic a) = 𝓝 a ⊔ 𝓟 (Iio a) := nhdsSet_Ici (α := αᵒᵈ)
 
 theorem nhdsSet_Ico (h : a < b) : 𝓝ˢ (Ico a b) = 𝓝 a ⊔ 𝓟 (Ioo a b) := by
   rw [← Ioo_insert_left h, nhdsSet_insert, nhdsSet_Ioo]
+  -- 🎉 no goals
 
 theorem nhdsSet_Ioc (h : a < b) : 𝓝ˢ (Ioc a b) = 𝓝 b ⊔ 𝓟 (Ioo a b) := by
   rw [← Ioo_insert_right h, nhdsSet_insert, nhdsSet_Ioo]
+  -- 🎉 no goals
 
 theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ 𝓟 (Ioo a b) := by
   rcases h.eq_or_lt with rfl | hlt
+  -- ⊢ 𝓝ˢ (Icc a a) = 𝓝 a ⊔ 𝓝 a ⊔ 𝓟 (Ioo a a)
   · simp
+    -- 🎉 no goals
   · rw [← Ioc_insert_left h, nhdsSet_insert, nhdsSet_Ioc hlt, sup_assoc]
+    -- 🎉 no goals
 
 /-!
 ### Lemmas about `Ixi _ ∈ 𝓝ˢ (Set.Ici _)`
@@ -56,6 +62,7 @@ theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ �
 @[simp]
 theorem Ioi_mem_nhdsSet_Ici_iff : Ioi a ∈ 𝓝ˢ (Ici b) ↔ a < b := by
   rw [isOpen_Ioi.mem_nhdsSet, Ici_subset_Ioi]
+  -- 🎉 no goals
 
 alias ⟨_, Ioi_mem_nhdsSet_Ici⟩ := Ioi_mem_nhdsSet_Ici_iff
 
@@ -114,6 +121,7 @@ theorem Ioi_mem_nhdsSet_Ico (h : a < b) : Ioi a ∈ 𝓝ˢ (Ico b c) :=
 
 theorem Iio_mem_nhdsSet_Ico (h : b ≤ c) : Iio c ∈ 𝓝ˢ (Ico a b) :=
   nhdsSet_mono Ico_subset_Iio_self <| by simpa
+                                         -- 🎉 no goals
 
 theorem Iic_mem_nhdsSet_Ico (h : b ≤ c) : Iic c ∈ 𝓝ˢ (Ico a b) :=
   mem_of_superset (Iio_mem_nhdsSet_Ico h) Iio_subset_Iic_self
@@ -136,6 +144,7 @@ theorem Ico_mem_nhdsSet_Ico (h : a < b) (h' : c ≤ d) : Ico a d ∈ 𝓝ˢ (Ico
 
 theorem Ioi_mem_nhdsSet_Ioc (h : a ≤ b) : Ioi a ∈ 𝓝ˢ (Ioc b c) :=
   nhdsSet_mono Ioc_subset_Ioi_self <| by simpa
+                                         -- 🎉 no goals
 
 theorem Iio_mem_nhdsSet_Ioc (h : b < c) : Iio c ∈ 𝓝ˢ (Ioc a b) :=
   nhdsSet_mono Ioc_subset_Icc_self <| Iio_mem_nhdsSet_Icc h
@@ -169,9 +178,13 @@ variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 theorem hasBasis_nhdsSet_Iic_Iio (a : α) [h : Nonempty (Ioi a)] :
     HasBasis (𝓝ˢ (Iic a)) (a < ·) Iio := by
   refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨b, hab, hb⟩ ↦ mem_of_superset (Iio_mem_nhdsSet_Iic hab) hb⟩⟩
+  -- ⊢ ∃ i, a < i ∧ Iio i ⊆ s
   rw [nhdsSet_Iic, mem_sup, mem_principal] at hs
+  -- ⊢ ∃ i, a < i ∧ Iio i ⊆ s
   rcases exists_Ico_subset_of_mem_nhds hs.1 (Set.nonempty_coe_sort.1 h) with ⟨b, hab, hbs⟩
+  -- ⊢ ∃ i, a < i ∧ Iio i ⊆ s
   exact ⟨b, hab, Iio_subset_Iio_union_Ico.trans (union_subset hs.2 hbs)⟩
+  -- 🎉 no goals
 
 theorem hasBasis_nhdsSet_Iic_Iic (a : α) [NeBot (𝓝[>] a)] :
     HasBasis (𝓝ˢ (Iic a)) (a < ·) Iic := by
@@ -180,6 +193,7 @@ theorem hasBasis_nhdsSet_Iic_Iic (a : α) [NeBot (𝓝[>] a)] :
   refine (hasBasis_nhdsSet_Iic_Iio _).to_hasBasis
     (fun c hc ↦ ?_) (fun _ h ↦ ⟨_, h, Iio_subset_Iic_self⟩)
   simpa only [Iic_subset_Iio] using (Filter.nonempty_of_mem <| Ioo_mem_nhdsWithin_Ioi' hc)
+  -- 🎉 no goals
 
 @[simp]
 theorem Iic_mem_nhdsSet_Iic_iff {a b : α} [NeBot (𝓝[>] b)] : Iic a ∈ 𝓝ˢ (Iic b) ↔ b < a :=

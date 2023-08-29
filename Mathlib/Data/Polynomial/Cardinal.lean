@@ -28,13 +28,18 @@ namespace Polynomial
 theorem cardinal_mk_eq_max {R : Type u} [Semiring R] [Nontrivial R] : #(R[X]) = max #R ℵ₀ :=
   (toFinsuppIso R).toEquiv.cardinal_eq.trans <| by
     rw [AddMonoidAlgebra, mk_finsupp_lift_of_infinite, lift_uzero, max_comm]
+    -- ⊢ max (#R) (lift.{u, 0} #ℕ) = max #R ℵ₀
     rfl
+    -- 🎉 no goals
 #align polynomial.cardinal_mk_eq_max Polynomial.cardinal_mk_eq_max
 
 theorem cardinal_mk_le_max {R : Type u} [Semiring R] : #(R[X]) ≤ max #R ℵ₀ := by
   cases subsingleton_or_nontrivial R
+  -- ⊢ #R[X] ≤ max #R ℵ₀
   · exact (mk_eq_one _).trans_le (le_max_of_le_right one_le_aleph0)
+    -- 🎉 no goals
   · exact cardinal_mk_eq_max.le
+    -- 🎉 no goals
 #align polynomial.cardinal_mk_le_max Polynomial.cardinal_mk_le_max
 
 end Polynomial

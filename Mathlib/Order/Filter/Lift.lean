@@ -30,6 +30,7 @@ variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 
 @[simp]
 theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
+                                                                               -- 🎉 no goals
 #align filter.lift_top Filter.lift_top
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
@@ -46,10 +47,15 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
   refine' (mem_biInf_of_directed _ ⟨univ, univ_sets _⟩).trans _
+  -- ⊢ DirectedOn ((fun s => g s) ⁻¹'o fun x x_1 => x ≥ x_1) f.sets
   · intro t₁ ht₁ t₂ ht₂
+    -- ⊢ ∃ z, z ∈ f.sets ∧ ((fun s => g s) ⁻¹'o fun x x_1 => x ≥ x_1) t₁ z ∧ ((fun s  …
     exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm <| inter_subset_left _ _, gm <| inter_subset_right _ _⟩
+    -- 🎉 no goals
   · simp only [← (hg _).mem_iff]
+    -- ⊢ (∃ i, i ∈ f.sets ∧ s ∈ g i) ↔ ∃ i, p i ∧ s ∈ g (s✝ i)
     exact hf.exists_iff fun t₁ t₂ ht H => gm ht H
+    -- 🎉 no goals
 #align filter.has_basis.mem_lift_iff Filter.HasBasis.mem_lift_iffₓ
 
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
@@ -65,12 +71,15 @@ theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
     (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
   refine' ⟨fun t => (hf.mem_lift_iff hg gm).trans _⟩
+  -- ⊢ (∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ t) ↔ ∃ i, (p i.fst ∧ pg i.fst i.snd) ∧ sg …
   simp [Sigma.exists, and_assoc, exists_and_left]
+  -- 🎉 no goals
 #align filter.has_basis.lift Filter.HasBasis.lift
 
 theorem mem_lift_sets (hg : Monotone g) {s : Set β} : s ∈ f.lift g ↔ ∃ t ∈ f, s ∈ g t :=
   (f.basis_sets.mem_lift_iff (fun s => (g s).basis_sets) hg).trans <| by
     simp only [id, exists_mem_subset_iff]
+    -- 🎉 no goals
 #align filter.mem_lift_sets Filter.mem_lift_sets
 
 theorem sInter_lift_sets (hg : Monotone g) :
@@ -104,16 +113,20 @@ theorem lift_mono' (hg : ∀ s ∈ f, g₁ s ≤ g₂ s) : f.lift g₁ ≤ f.lif
 theorem tendsto_lift {m : γ → β} {l : Filter γ} :
     Tendsto m l (f.lift g) ↔ ∀ s ∈ f, Tendsto m l (g s) := by
   simp only [Filter.lift, tendsto_iInf]
+  -- 🎉 no goals
 #align filter.tendsto_lift Filter.tendsto_lift
 
 theorem map_lift_eq {m : β → γ} (hg : Monotone g) : map m (f.lift g) = f.lift (map m ∘ g) :=
   have : Monotone (map m ∘ g) := map_mono.comp hg
   Filter.ext fun s => by
     simp only [mem_lift_sets hg, mem_lift_sets this, exists_prop, mem_map, Function.comp_apply]
+    -- 🎉 no goals
 #align filter.map_lift_eq Filter.map_lift_eq
 
 theorem comap_lift_eq {m : γ → β} : comap m (f.lift g) = f.lift (comap m ∘ g) := by
   simp only [Filter.lift, comap_iInf]; rfl
+  -- ⊢ ⨅ (i : Set α) (_ : i ∈ f), comap m (g i) = ⨅ (s : Set α) (_ : s ∈ f), (comap …
+                                       -- 🎉 no goals
 #align filter.comap_lift_eq Filter.comap_lift_eq
 
 theorem comap_lift_eq2 {m : β → α} {g : Set β → Filter γ} (hg : Monotone g) :
@@ -174,6 +187,7 @@ theorem monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α �
 
 theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
   simp only [neBot_iff, Ne.def, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
+  -- 🎉 no goals
 #align filter.lift_ne_bot_iff Filter.lift_neBot_iff
 
 @[simp]
@@ -184,12 +198,14 @@ theorem lift_const {f : Filter α} {g : Filter β} : (f.lift fun _ => g) = g :=
 @[simp]
 theorem lift_inf {f : Filter α} {g h : Set α → Filter β} :
     (f.lift fun x => g x ⊓ h x) = f.lift g ⊓ f.lift h := by simp only [Filter.lift, iInf_inf_eq]
+                                                            -- 🎉 no goals
 #align filter.lift_inf Filter.lift_inf
 
 @[simp]
 theorem lift_principal2 {f : Filter α} : f.lift 𝓟 = f :=
   le_antisymm (fun s hs => mem_lift hs (mem_principal_self s))
     (le_iInf fun s => le_iInf fun hs => by simp only [hs, le_principal_iff])
+                                           -- 🎉 no goals
 #align filter.lift_principal2 Filter.lift_principal2
 
 theorem lift_iInf_le {f : ι → Filter α} {g : Set α → Filter β} :
@@ -200,6 +216,7 @@ theorem lift_iInf_le {f : ι → Filter α} {g : Set α → Filter β} :
 theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (iInf f).lift g = ⨅ i, (f i).lift g := by
   refine' lift_iInf_le.antisymm fun s => _
+  -- ⊢ s ∈ Filter.lift (iInf f) g → s ∈ ⨅ (i : ι), Filter.lift (f i) g
   have H : ∀ t ∈ iInf f, ⨅ i, (f i).lift g ≤ g t := by
     intro t ht
     refine' iInf_sets_induct ht _ fun hs ht => _
@@ -208,22 +225,29 @@ theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β
     · rw [hg]
       exact le_inf (iInf₂_le_of_le _ _ <| iInf_le _ hs) ht
   simp only [mem_lift_sets (Monotone.of_map_inf hg), exists_imp, and_imp]
+  -- ⊢ ∀ (x : Set α), x ∈ iInf f → s ∈ g x → s ∈ ⨅ (i : ι), Filter.lift (f i) g
   exact fun t ht hs => H t ht hs
+  -- 🎉 no goals
 #align filter.lift_infi Filter.lift_iInf
 
 theorem lift_iInf_of_directed [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hf : Directed (· ≥ ·) f) (hg : Monotone g) : (iInf f).lift g = ⨅ i, (f i).lift g :=
   lift_iInf_le.antisymm fun s => by
     simp only [mem_lift_sets hg, exists_imp, and_imp, mem_iInf_of_directed hf]
+    -- ⊢ ∀ (x : Set α) (x_1 : ι), x ∈ f x_1 → s ∈ g x → s ∈ ⨅ (i : ι), Filter.lift (f …
     exact fun t i ht hs => mem_iInf_of_mem i <| mem_lift ht hs
+    -- 🎉 no goals
 #align filter.lift_infi_of_directed Filter.lift_iInf_of_directed
 
 theorem lift_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) (hg' : g univ = ⊤) :
     (iInf f).lift g = ⨅ i, (f i).lift g := by
   cases isEmpty_or_nonempty ι
+  -- ⊢ Filter.lift (iInf f) g = ⨅ (i : ι), Filter.lift (f i) g
   · simp [iInf_of_empty, hg']
+    -- 🎉 no goals
   · exact lift_iInf hg
+    -- 🎉 no goals
 #align filter.lift_infi_of_map_univ Filter.lift_iInf_of_map_univ
 
 end lift
@@ -250,12 +274,14 @@ theorem mem_lift' {t : Set α} (ht : t ∈ f) : h t ∈ f.lift' h :=
 theorem tendsto_lift' {m : γ → β} {l : Filter γ} :
     Tendsto m l (f.lift' h) ↔ ∀ s ∈ f, ∀ᶠ a in l, m a ∈ h s := by
   simp only [Filter.lift', tendsto_lift, tendsto_principal, comp]
+  -- 🎉 no goals
 #align filter.tendsto_lift' Filter.tendsto_lift'
 
 theorem HasBasis.lift' {ι} {p : ι → Prop} {s} (hf : f.HasBasis p s) (hh : Monotone h) :
     (f.lift' h).HasBasis p (h ∘ s) :=
   ⟨fun t => (hf.mem_lift_iff (fun i => hasBasis_principal (h (s i)))
     (monotone_principal.comp hh)).trans <| by simp only [exists_const, true_and, comp]⟩
+                                              -- 🎉 no goals
 #align filter.has_basis.lift' Filter.HasBasis.lift'
 
 theorem mem_lift'_sets (hh : Monotone h) {s : Set β} : s ∈ f.lift' h ↔ ∃ t ∈ f, h t ⊆ s :=
@@ -293,6 +319,7 @@ theorem map_lift'_eq {m : β → γ} (hh : Monotone h) : map m (f.lift' h) = f.l
   calc
     map m (f.lift' h) = f.lift (map m ∘ 𝓟 ∘ h) := map_lift_eq <| monotone_principal.comp hh
     _ = f.lift' (image m ∘ h) := by simp only [comp, Filter.lift', map_principal]
+                                    -- 🎉 no goals
 #align filter.map_lift'_eq Filter.map_lift'_eq
 
 theorem lift'_map_le {g : Set β → Set γ} {m : α → β} : (map m f).lift' g ≤ f.lift' (g ∘ image m) :=
@@ -306,6 +333,7 @@ theorem map_lift'_eq2 {g : Set β → Set γ} {m : α → β} (hg : Monotone g) 
 
 theorem comap_lift'_eq {m : γ → β} : comap m (f.lift' h) = f.lift' (preimage m ∘ h) := by
   simp only [Filter.lift', comap_lift_eq, (· ∘ ·), comap_principal]
+  -- 🎉 no goals
 #align filter.comap_lift'_eq Filter.comap_lift'_eq
 
 theorem comap_lift'_eq2 {m : β → α} {g : Set β → Set γ} (hg : Monotone g) :
@@ -319,10 +347,12 @@ theorem lift'_principal {s : Set α} (hh : Monotone h) : (𝓟 s).lift' h = 𝓟
 
 theorem lift'_pure {a : α} (hh : Monotone h) : (pure a : Filter α).lift' h = 𝓟 (h {a}) := by
   rw [← principal_singleton, lift'_principal hh]
+  -- 🎉 no goals
 #align filter.lift'_pure Filter.lift'_pure
 
 theorem lift'_bot (hh : Monotone h) : (⊥ : Filter α).lift' h = 𝓟 (h ∅) := by
   rw [← principal_empty, lift'_principal hh]
+  -- 🎉 no goals
 #align filter.lift'_bot Filter.lift'_bot
 
 theorem le_lift' {f : Filter α} {h : Set α → Set β} {g : Filter β} :
@@ -343,6 +373,7 @@ theorem lift_lift'_assoc {g : Set α → Set β} {h : Set β → Filter γ} (hg 
   calc
     (f.lift' g).lift h = f.lift fun s => (𝓟 (g s)).lift h := lift_assoc (monotone_principal.comp hg)
     _ = f.lift fun s => h (g s) := by simp only [lift_principal, hh, eq_self_iff_true]
+                                      -- 🎉 no goals
 #align filter.lift_lift'_assoc Filter.lift_lift'_assoc
 
 theorem lift'_lift'_assoc {g : Set α → Set β} {h : Set β → Set γ} (hg : Monotone g)
@@ -370,12 +401,14 @@ theorem lift_lift'_same_eq_lift' {g : Set α → Set α → Set β} (hg₁ : ∀
 theorem lift'_inf_principal_eq {h : Set α → Set β} {s : Set β} :
     f.lift' h ⊓ 𝓟 s = f.lift' fun t => h t ∩ s := by
   simp only [Filter.lift', Filter.lift, (· ∘ ·), ← inf_principal, iInf_subtype', ← iInf_inf]
+  -- 🎉 no goals
 #align filter.lift'_inf_principal_eq Filter.lift'_inf_principal_eq
 
 theorem lift'_neBot_iff (hh : Monotone h) : NeBot (f.lift' h) ↔ ∀ s ∈ f, (h s).Nonempty :=
   calc
     NeBot (f.lift' h) ↔ ∀ s ∈ f, NeBot (𝓟 (h s)) := lift_neBot_iff (monotone_principal.comp hh)
     _ ↔ ∀ s ∈ f, (h s).Nonempty := by simp only [principal_neBot_iff]
+                                      -- 🎉 no goals
 #align filter.lift'_ne_bot_iff Filter.lift'_neBot_iff
 
 @[simp]
@@ -386,20 +419,28 @@ theorem lift'_id {f : Filter α} : f.lift' id = f :=
 theorem lift'_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Set β}
     (hg : ∀ s t, g (s ∩ t) = g s ∩ g t) : (iInf f).lift' g = ⨅ i, (f i).lift' g :=
   lift_iInf fun s t => by simp only [inf_principal, comp, hg]
+                          -- 🎉 no goals
 #align filter.lift'_infi Filter.lift'_iInf
 
 theorem lift'_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Set β}
     (hg : ∀ {s t}, g (s ∩ t) = g s ∩ g t) (hg' : g univ = univ) :
     (iInf f).lift' g = ⨅ i, (f i).lift' g :=
   lift_iInf_of_map_univ (fun s t => by simp only [inf_principal, comp, hg])
+                                       -- 🎉 no goals
     (by rw [Function.comp_apply, hg', principal_univ])
+        -- 🎉 no goals
 #align filter.lift'_infi_of_map_univ Filter.lift'_iInf_of_map_univ
 
 theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂, s (t₁ ∩ t₂) = s t₁ ∩ s t₂) :
     (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   rw [inf_eq_iInf, inf_eq_iInf, lift'_iInf hs]
+  -- ⊢ ⨅ (i : Bool), Filter.lift' (bif i then f else g) s = ⨅ (b : Bool), bif b the …
   refine iInf_congr ?_
+  -- ⊢ ∀ (i : Bool), Filter.lift' (bif i then f else g) s = bif i then Filter.lift' …
   rintro (_|_) <;> rfl
+  -- ⊢ Filter.lift' (bif false then f else g) s = bif false then Filter.lift' f s e …
+                   -- 🎉 no goals
+                   -- 🎉 no goals
 #align filter.lift'_inf Filter.lift'_inf
 
 theorem lift'_inf_le (f g : Filter α) (s : Set α → Set β) :
@@ -433,6 +474,7 @@ theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
 theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter β} :
     Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
   simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+  -- 🎉 no goals
 #align filter.tendsto_prod_self_iff Filter.tendsto_prod_self_iff
 
 variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
@@ -441,10 +483,17 @@ theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set �
     {g₂ : Set α₂ → Filter β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :
     f₁.lift g₁ ×ˢ f₂.lift g₂ = f₁.lift fun s => f₂.lift fun t => g₁ s ×ˢ g₂ t := by
   simp only [prod_def, lift_assoc hg₁]
+  -- ⊢ (Filter.lift f₁ fun s => Filter.lift (g₁ s) fun s => Filter.lift' (Filter.li …
   apply congr_arg; funext x
+  -- ⊢ (fun s => Filter.lift (g₁ s) fun s => Filter.lift' (Filter.lift f₂ g₂) fun t …
+                   -- ⊢ (Filter.lift (g₁ x) fun s => Filter.lift' (Filter.lift f₂ g₂) fun t => s ×ˢ  …
   rw [lift_comm]
+  -- ⊢ (Filter.lift (g₁ x) fun s => Filter.lift' (Filter.lift f₂ g₂) fun t => s ×ˢ  …
   apply congr_arg; funext y
+  -- ⊢ (fun s => Filter.lift' (Filter.lift f₂ g₂) fun t => s ×ˢ t) = fun t => Filte …
+                   -- ⊢ (Filter.lift' (Filter.lift f₂ g₂) fun t => y ×ˢ t) = Filter.lift f₂ fun s => …
   apply lift'_lift_assoc hg₂
+  -- 🎉 no goals
 #align filter.prod_lift_lift Filter.prod_lift_lift
 
 theorem prod_lift'_lift' {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Set β₁}
@@ -455,6 +504,7 @@ theorem prod_lift'_lift' {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set
       prod_lift_lift (monotone_principal.comp hg₁) (monotone_principal.comp hg₂)
     _ = f₁.lift fun s => f₂.lift fun t => 𝓟 (g₁ s ×ˢ g₂ t) := by
       { simp only [prod_principal_principal] }
+      -- 🎉 no goals
 #align filter.prod_lift'_lift' Filter.prod_lift'_lift'
 
 end Prod

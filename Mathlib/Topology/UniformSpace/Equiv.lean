@@ -50,6 +50,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 
 theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
+                                         -- 🎉 no goals
 #align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
 
 instance : EquivLike (α ≃ᵤ β) α β where
@@ -194,12 +195,16 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
     funext fun x => calc
       g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
       _ = f.symm x := by rw [hg x]
+                         -- 🎉 no goals
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
+                   -- 🎉 no goals
     right_inv := by convert f.right_inv using 1
+                    -- 🎉 no goals
     uniformContinuous_toFun := f.uniformContinuous
     uniformContinuous_invFun := by convert f.symm.uniformContinuous }
+                                   -- 🎉 no goals
 #align uniform_equiv.change_inv UniformEquiv.changeInv
 
 @[simp]
@@ -238,10 +243,13 @@ theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :
 protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
   uniformInducing_of_compose h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, uniformInducing_id]
+    -- 🎉 no goals
 #align uniform_equiv.uniform_inducing UniformEquiv.uniformInducing
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› := by
   ext : 1; exact h.uniformInducing.comap_uniformity
+  -- ⊢ uniformity α = uniformity α
+           -- 🎉 no goals
 #align uniform_equiv.comap_eq UniformEquiv.comap_eq
 
 protected theorem uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
@@ -256,6 +264,7 @@ noncomputable def ofUniformEmbedding (f : α → β) (hf : UniformEmbedding f) :
     rw [hf.toUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
     exact uniformContinuous_subtype_val
+    -- 🎉 no goals
   toEquiv := Equiv.ofInjective f hf.inj
 #align uniform_equiv.of_uniform_embedding UniformEquiv.ofUniformEmbedding
 
@@ -320,6 +329,7 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ
       ((uniformContinuous_snd.comp uniformContinuous_fst).prod_mk uniformContinuous_snd)
   uniformContinuous_invFun := by -- Porting note: the `rw` was not necessary in Lean 3
     rw [Equiv.invFun, Equiv.prodAssoc]
+    -- ⊢ UniformContinuous { toFun := fun p => (p.fst.fst, p.fst.snd, p.snd), invFun  …
     exact (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp
     uniformContinuous_snd)).prod_mk (uniformContinuous_snd.comp uniformContinuous_snd)
   toEquiv := Equiv.prodAssoc α β γ
@@ -349,8 +359,11 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
     uniformContinuous_toFun := uniformContinuous_comap
     uniformContinuous_invFun := by
       have hf : UniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
+      -- ⊢ UniformContinuous { toFun := src✝.toFun, invFun := src✝.invFun, left_inv :=  …
       simp_rw [hf.uniformContinuous_iff]
+      -- ⊢ UniformContinuous (Equiv.ulift.toFun ∘ Equiv.ulift.invFun)
       exact uniformContinuous_id }
+      -- 🎉 no goals
 #align uniform_equiv.ulift UniformEquiv.ulift
 
 end
@@ -400,4 +413,5 @@ def Equiv.toUniformEquivOfUniformInducing [UniformSpace α] [UniformSpace β] (f
   { f with
     uniformContinuous_toFun := hf.uniformContinuous
     uniformContinuous_invFun := hf.uniformContinuous_iff.2 <| by simpa using uniformContinuous_id }
+                                                                 -- 🎉 no goals
 #align equiv.to_uniform_equiv_of_uniform_inducing Equiv.toUniformEquivOfUniformInducing

@@ -56,7 +56,11 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
   ⟨λ h => by cases h; exact ⟨rfl, heq_of_eq rfl⟩, -- in Lean 3 `simp` solved this
+             -- ⊢ a₁ = a₁ ∧ HEq b₁ b₁
+                      -- 🎉 no goals
    λ ⟨h₁, h₂⟩ => by subst h₁; rw [eq_of_heq h₂]⟩
+                    -- ⊢ { fst := a₁, snd := b₁ } = { fst := a₁, snd := b₂ }
+                              -- 🎉 no goals
 #align sigma.mk.inj_iff Sigma.mk.inj_iff
 
 @[simp]
@@ -67,10 +71,18 @@ theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
 @[ext]
 theorem ext {x₀ x₁ : Sigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x₁.2) : x₀ = x₁ := by
   cases x₀; cases x₁; cases h₀; cases h₁; rfl
+  -- ⊢ { fst := fst✝, snd := snd✝ } = x₁
+            -- ⊢ { fst := fst✝¹, snd := snd✝¹ } = { fst := fst✝, snd := snd✝ }
+                      -- ⊢ { fst := fst✝, snd := snd✝¹ } = { fst := fst✝, snd := snd✝ }
+                                -- ⊢ { fst := fst✝, snd := snd✝ } = { fst := fst✝, snd := snd✝ }
+                                          -- 🎉 no goals
 #align sigma.ext Sigma.ext
 
 theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
   cases x₀; cases x₁; exact Sigma.mk.inj_iff
+  -- ⊢ { fst := fst✝, snd := snd✝ } = x₁ ↔ { fst := fst✝, snd := snd✝ }.fst = x₁.fs …
+            -- ⊢ { fst := fst✝¹, snd := snd✝¹ } = { fst := fst✝, snd := snd✝ } ↔ { fst := fst …
+                      -- 🎉 no goals
 #align sigma.ext_iff Sigma.ext_iff
 
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
@@ -78,8 +90,11 @@ theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
     {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :
     a = b ∧ HEq f g := by
   rcases ‹Nonempty γ› with ⟨i⟩
+  -- ⊢ a = b ∧ HEq f g
   obtain rfl : a = b := congr_arg Sigma.fst (congr_fun h i)
+  -- ⊢ a = a ∧ HEq f g
   simpa [Function.funext_iff] using h
+  -- 🎉 no goals
 
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]
@@ -121,8 +136,11 @@ theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β�
     Function.Injective (Sigma.map f₁ f₂)
   | ⟨i, x⟩, ⟨j, y⟩, h => by
     obtain rfl : i = j := h₁ (Sigma.mk.inj_iff.mp h).1
+    -- ⊢ { fst := i, snd := x } = { fst := i, snd := y }
     obtain rfl : x = y := h₂ i (sigma_mk_injective h)
+    -- ⊢ { fst := i, snd := x } = { fst := i, snd := x }
     rfl
+    -- 🎉 no goals
 #align function.injective.sigma_map Function.Injective.sigma_map
 
 theorem Function.Injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
@@ -141,7 +159,9 @@ theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β
   (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
     Function.Surjective (Sigma.map f₁ f₂) := by
   simp only [Function.Surjective, Sigma.forall, h₁.forall]
+  -- ⊢ ∀ (x : α₁) (b : β₂ (f₁ x)), ∃ a, Sigma.map f₁ f₂ a = { fst := f₁ x, snd := b }
   exact fun i ↦ (h₂ _).forall.2 fun x ↦ ⟨⟨i, x⟩, rfl⟩
+  -- 🎉 no goals
 #align function.surjective.sigma_map Function.Surjective.sigma_map
 
 /-- Interpret a function on `Σ x : α, β x` as a dependent function with two arguments.
@@ -240,10 +260,18 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
 @[ext]
 theorem ext {x₀ x₁ : PSigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x₁.2) : x₀ = x₁ := by
   cases x₀; cases x₁; cases h₀; cases h₁; rfl
+  -- ⊢ { fst := fst✝, snd := snd✝ } = x₁
+            -- ⊢ { fst := fst✝¹, snd := snd✝¹ } = { fst := fst✝, snd := snd✝ }
+                      -- ⊢ { fst := fst✝, snd := snd✝¹ } = { fst := fst✝, snd := snd✝ }
+                                -- ⊢ { fst := fst✝, snd := snd✝ } = { fst := fst✝, snd := snd✝ }
+                                          -- 🎉 no goals
 #align psigma.ext PSigma.ext
 
 theorem ext_iff {x₀ x₁ : PSigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
   cases x₀; cases x₁; exact PSigma.mk.inj_iff
+  -- ⊢ { fst := fst✝, snd := snd✝ } = x₁ ↔ { fst := fst✝, snd := snd✝ }.fst = x₁.fs …
+            -- ⊢ { fst := fst✝¹, snd := snd✝¹ } = { fst := fst✝, snd := snd✝ } ↔ { fst := fst …
+                      -- 🎉 no goals
 #align psigma.ext_iff PSigma.ext_iff
 
 @[simp]

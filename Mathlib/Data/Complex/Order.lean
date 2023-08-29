@@ -36,8 +36,11 @@ protected def partialOrder : PartialOrder ℂ where
   lt z w := z.re < w.re ∧ z.im = w.im
   lt_iff_le_not_le z w := by
     dsimp
+    -- ⊢ z.re < w.re ∧ z.im = w.im ↔ (z.re ≤ w.re ∧ z.im = w.im) ∧ ¬(w.re ≤ z.re ∧ w. …
     rw [lt_iff_le_not_le]
+    -- ⊢ (z.re ≤ w.re ∧ ¬w.re ≤ z.re) ∧ z.im = w.im ↔ (z.re ≤ w.re ∧ z.im = w.im) ∧ ¬ …
     tauto
+    -- 🎉 no goals
   le_refl x := ⟨le_rfl, rfl⟩
   le_trans x y z h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
   le_antisymm z w h₁ h₂ := ext (h₁.1.antisymm h₂.1) h₁.2
@@ -63,10 +66,12 @@ theorem lt_def {z w : ℂ} : z < w ↔ z.re < w.re ∧ z.im = w.im :=
 
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal']
+                                                                 -- 🎉 no goals
 #align complex.real_le_real Complex.real_le_real
 
 @[simp, norm_cast]
 theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal']
+                                                                 -- 🎉 no goals
 #align complex.real_lt_real Complex.real_lt_real
 
 
@@ -82,10 +87,12 @@ theorem zero_lt_real {x : ℝ} : (0 : ℂ) < (x : ℂ) ↔ 0 < x :=
 
 theorem not_le_iff {z w : ℂ} : ¬z ≤ w ↔ w.re < z.re ∨ z.im ≠ w.im := by
   rw [le_def, not_and_or, not_le]
+  -- 🎉 no goals
 #align complex.not_le_iff Complex.not_le_iff
 
 theorem not_lt_iff {z w : ℂ} : ¬z < w ↔ w.re ≤ z.re ∨ z.im ≠ w.im := by
   rw [lt_def, not_and_or, not_lt]
+  -- 🎉 no goals
 #align complex.not_lt_iff Complex.not_lt_iff
 
 theorem not_le_zero_iff {z : ℂ} : ¬z ≤ 0 ↔ 0 < z.re ∨ z.im ≠ 0 :=
@@ -98,8 +105,11 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
 
 theorem eq_re_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
   ext
+  -- ⊢ z.re = (↑z.re).re
   rfl
+  -- ⊢ z.im = (↑z.re).im
   simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
+  -- 🎉 no goals
 #align complex.eq_re_of_real_le Complex.eq_re_ofReal_le
 
 end Complex

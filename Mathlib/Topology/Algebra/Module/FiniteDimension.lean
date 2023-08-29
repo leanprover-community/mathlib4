@@ -80,11 +80,15 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
   -- topology on `𝕜`. To show that `𝓣₀ = 𝓣`, it suffices to show that they have the same
   -- neighborhoods of 0.
   refine' TopologicalAddGroup.ext h₁ inferInstance (le_antisymm _ _)
+  -- ⊢ nhds 0 ≤ nhds 0
   · -- To show `𝓣 ≤ 𝓣₀`, we have to show that closed balls are `𝓣`-neighborhoods of 0.
     rw [Metric.nhds_basis_closedBall.ge_iff]
+    -- ⊢ ∀ (i' : ℝ), 0 < i' → Metric.closedBall 0 i' ∈ nhds 0
     -- Let `ε > 0`. Since `𝕜` is nontrivially normed, we have `0 < ‖ξ₀‖ < ε` for some `ξ₀ : 𝕜`.
     intro ε hε
+    -- ⊢ Metric.closedBall 0 ε ∈ nhds 0
     rcases NormedField.exists_norm_lt 𝕜 hε with ⟨ξ₀, hξ₀, hξ₀ε⟩
+    -- ⊢ Metric.closedBall 0 ε ∈ nhds 0
     -- Since `ξ₀ ≠ 0` and `𝓣` is T2, we know that `{ξ₀}ᶜ` is a `𝓣`-neighborhood of 0.
     -- Porting note: added `mem_compl_singleton_iff.mpr`
     have : {ξ₀}ᶜ ∈ @nhds 𝕜 t 0 := IsOpen.mem_nhds isOpen_compl_singleton <|
@@ -92,23 +96,33 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
     -- Thus, its balanced core `𝓑` is too. Let's show that the closed ball of radius `ε` contains
     -- `𝓑`, which will imply that the closed ball is indeed a `𝓣`-neighborhood of 0.
     have : balancedCore 𝕜 {ξ₀}ᶜ ∈ @nhds 𝕜 t 0 := balancedCore_mem_nhds_zero this
+    -- ⊢ Metric.closedBall 0 ε ∈ nhds 0
     refine' mem_of_superset this fun ξ hξ => _
+    -- ⊢ ξ ∈ Metric.closedBall 0 ε
     -- Let `ξ ∈ 𝓑`. We want to show `‖ξ‖ < ε`. If `ξ = 0`, this is trivial.
     by_cases hξ0 : ξ = 0
+    -- ⊢ ξ ∈ Metric.closedBall 0 ε
     · rw [hξ0]
+      -- ⊢ 0 ∈ Metric.closedBall 0 ε
       exact Metric.mem_closedBall_self hε.le
+      -- 🎉 no goals
     · rw [mem_closedBall_zero_iff]
+      -- ⊢ ‖ξ‖ ≤ ε
       -- Now suppose `ξ ≠ 0`. By contradiction, let's assume `ε < ‖ξ‖`, and show that
       -- `ξ₀ ∈ 𝓑 ⊆ {ξ₀}ᶜ`, which is a contradiction.
       by_contra' h
+      -- ⊢ False
       suffices (ξ₀ * ξ⁻¹) • ξ ∈ balancedCore 𝕜 {ξ₀}ᶜ by
         rw [smul_eq_mul 𝕜, mul_assoc, inv_mul_cancel hξ0, mul_one] at this
         exact not_mem_compl_iff.mpr (mem_singleton ξ₀) ((balancedCore_subset _) this)
       -- For that, we use that `𝓑` is balanced : since `‖ξ₀‖ < ε < ‖ξ‖`, we have `‖ξ₀ / ξ‖ ≤ 1`,
       -- hence `ξ₀ = (ξ₀ / ξ) • ξ ∈ 𝓑` because `ξ ∈ 𝓑`.
       refine' (balancedCore_balanced _).smul_mem _ hξ
+      -- ⊢ ‖ξ₀ * ξ⁻¹‖ ≤ 1
       rw [norm_mul, norm_inv, mul_inv_le_iff (norm_pos_iff.mpr hξ0), mul_one]
+      -- ⊢ ‖ξ₀‖ ≤ ‖ξ‖
       exact (hξ₀ε.trans h).le
+      -- 🎉 no goals
   · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
     -- `(𝕜, 𝓣₀)` to `(𝕜, 𝓣)` because `(•) : (𝕜, 𝓣₀) × (𝕜, 𝓣) → (𝕜, 𝓣)` is continuous.
     calc
@@ -133,9 +147,13 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     Continuous l := by
   -- `l` is either constant or surjective. If it is constant, the result is trivial.
   by_cases H : finrank 𝕜 (LinearMap.range l) = 0
+  -- ⊢ Continuous ↑l
   · rw [finrank_eq_zero, LinearMap.range_eq_bot] at H
+    -- ⊢ Continuous ↑l
     rw [H]
+    -- ⊢ Continuous ↑0
     exact continuous_zero
+    -- 🎉 no goals
   · -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
     -- `E ⧸ l.ker` is T2 since `l.ker` is closed.
     have : finrank 𝕜 (LinearMap.range l) = 1 :=
@@ -149,6 +167,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     let φ : (E ⧸ LinearMap.ker l) ≃ₗ[𝕜] 𝕜 :=
       LinearEquiv.ofBijective ((LinearMap.ker l).liftQ l (le_refl _)) ⟨hi, hs⟩
     have hlφ : (l : E → 𝕜) = φ ∘ (LinearMap.ker l).mkQ := by ext; rfl
+    -- ⊢ Continuous ↑l
     -- Since the quotient map `E →ₗ[𝕜] (E ⧸ l.ker)` is continuous, the continuity of `l` will follow
     -- form the continuity of `φ`.
     suffices Continuous φ.toEquiv by
@@ -170,7 +189,9 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- that `φ` is continuous when `𝕜` is endowed with the pushforward by `φ` of the quotient
     -- topology, which is trivial by definition of the pushforward.
     rw [this.symm, Equiv.induced_symm]
+    -- ⊢ Continuous ↑(LinearEquiv.toEquiv φ)
     exact continuous_coinduced_rng
+    -- 🎉 no goals
 #align linear_map.continuous_of_is_closed_ker LinearMap.continuous_of_isClosed_ker
 
 /-- Any linear form on a topological vector space over a nontrivially normed field is continuous if
@@ -185,11 +206,14 @@ theorem LinearMap.continuous_iff_isClosed_ker (l : E →ₗ[𝕜] 𝕜) :
 theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : Set E) (hs₁ : IsOpen s)
     (hs₂ : s.Nonempty) (hs₃ : ∀ x ∈ s, l x ≠ 0) : Continuous l := by
   refine' l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => _)
+  -- ⊢ False
   rcases hs₂ with ⟨x, hx⟩
+  -- ⊢ False
   have : x ∈ interior (LinearMap.ker l : Set E)ᶜ := by
     rw [mem_interior_iff_mem_nhds]
     exact mem_of_superset (hs₁.mem_nhds hx) hs₃
   rwa [hl.interior_compl] at this
+  -- 🎉 no goals
 #align linear_map.continuous_of_nonzero_on_open LinearMap.continuous_of_nonzero_on_open
 
 variable [CompleteSpace 𝕜]
@@ -199,12 +223,18 @@ variable [CompleteSpace 𝕜]
 private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
+  -- ⊢ Continuous ↑(Basis.equivFun ξ)
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
+  -- ⊢ Continuous ↑(Basis.equivFun ξ)
   letI : SeparatedSpace E := separated_iff_t2.mpr ht2
+  -- ⊢ Continuous ↑(Basis.equivFun ξ)
   induction' hn : Fintype.card ι with n IH generalizing ι E
   · rw [Fintype.card_eq_zero_iff] at hn
+    -- ⊢ Continuous ↑(Basis.equivFun ξ)
     exact continuous_of_const fun x y => funext hn.elim
+    -- 🎉 no goals
   · haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
+    -- ⊢ Continuous ↑(Basis.equivFun ξ)
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
@@ -238,9 +268,13 @@ private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [F
         have : IsClosed (LinearMap.ker f : Set E) := H₁ _ this
         exact LinearMap.continuous_of_isClosed_ker f this
     rw [continuous_pi_iff]
+    -- ⊢ ∀ (i : ι), Continuous fun a => ↑(Basis.equivFun ξ) a i
     intro i
+    -- ⊢ Continuous fun a => ↑(Basis.equivFun ξ) a i
     change Continuous (ξ.coord i)
+    -- ⊢ Continuous ↑(Basis.coord ξ i)
     exact H₂ (ξ.coord i)
+    -- 🎉 no goals
 
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
 theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
@@ -248,7 +282,9 @@ theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- argue that all linear maps there are continuous.
   let b := Basis.ofVectorSpace 𝕜 E
+  -- ⊢ Continuous ↑f
   have A : Continuous b.equivFun := continuous_equivFun_basis_aux b
+  -- ⊢ Continuous ↑f
   have B : Continuous (f.comp (b.equivFun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E)) :=
     LinearMap.continuous_on_pi _
   have :
@@ -256,9 +292,13 @@ theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional
       (f.comp (b.equivFun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E) ∘ b.equivFun) :=
     B.comp A
   convert this
+  -- ⊢ ↑f = ↑(comp f ↑(LinearEquiv.symm (Basis.equivFun b))) ∘ ↑(Basis.equivFun b)
   ext x
+  -- ⊢ ↑f x = (↑(comp f ↑(LinearEquiv.symm (Basis.equivFun b))) ∘ ↑(Basis.equivFun  …
   dsimp
+  -- ⊢ ↑f x = ↑f (↑(LinearEquiv.symm (Basis.equivFun (Basis.ofVectorSpace 𝕜 E))) ↑( …
   rw [Basis.equivFun_symm_apply, Basis.sum_repr]
+  -- 🎉 no goals
 #align linear_map.continuous_of_finite_dimensional LinearMap.continuous_of_finiteDimensional
 
 instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
@@ -331,13 +371,17 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
   rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
+  -- ⊢ IsOpenMap ↑f
   refine' IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, _, _, fun y => _⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
           continuous_const).continuousAt
   · simp only
+    -- ⊢ ↑g (↑f x - ↑f x) + x = x
     rw [sub_self, map_zero, zero_add]
+    -- 🎉 no goals
   · simp only [map_sub, map_add, ← comp_apply f g, hg, id_apply, sub_add_cancel]
+    -- 🎉 no goals
 #align linear_map.is_open_map_of_finite_dimensional LinearMap.isOpenMap_of_finiteDimensional
 
 instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
@@ -388,14 +432,18 @@ theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
 theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.toLinearEquiv = e := by
   ext x
+  -- ⊢ ↑(toContinuousLinearEquiv e).toLinearEquiv x = ↑e x
   rfl
+  -- 🎉 no goals
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv LinearEquiv.toLinearEquiv_toContinuousLinearEquiv
 
 -- Porting note: @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
+  -- ⊢ ↑(ContinuousLinearEquiv.symm (toContinuousLinearEquiv e)).toLinearEquiv x =  …
   rfl
+  -- 🎉 no goals
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv_symm LinearEquiv.toLinearEquiv_toContinuousLinearEquiv_symm
 
 instance canLiftContinuousLinearEquiv :
@@ -456,7 +504,9 @@ def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
       v.equivFun.toLinearMap.continuous_of_finiteDimensional
     continuous_invFun := by
       change Continuous v.equivFun.symm.toFun
+      -- ⊢ Continuous (↑(LinearEquiv.symm (equivFun v))).toAddHom.toFun
       exact v.equivFun.symm.toLinearMap.continuous_of_finiteDimensional }
+      -- 🎉 no goals
 #align basis.equiv_funL Basis.equivFunL
 
 @[simp]
@@ -486,7 +536,9 @@ def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
 theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
     (f.toContinuousLinearEquivOfDetNeZero hf : E →L[𝕜] E) = f := by
   ext x
+  -- ⊢ ↑↑(toContinuousLinearEquivOfDetNeZero f hf) x = ↑f x
   rfl
+  -- 🎉 no goals
 #align continuous_linear_map.coe_to_continuous_linear_equiv_of_det_ne_zero ContinuousLinearMap.coe_toContinuousLinearEquivOfDetNeZero
 
 @[simp]

@@ -65,8 +65,11 @@ variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisenstein
 
 theorem map {A : Type v} [CommRing A] (φ : R →+* A) : (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine' (IsWeaklyEisensteinAt_iff _ _).2 fun hn => _
+  -- ⊢ coeff (Polynomial.map φ f) n✝ ∈ Ideal.map φ 𝓟
   rw [coeff_map]
+  -- ⊢ ↑φ (coeff f n✝) ∈ Ideal.map φ 𝓟
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn (natDegree_map_le _ _)))
+  -- 🎉 no goals
 #align polynomial.is_weakly_eisenstein_at.map Polynomial.IsWeaklyEisensteinAt.map
 
 end CommSemiring
@@ -88,10 +91,12 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     sum_insert not_mem_range_self, sum_range, (hmo.map (algebraMap R S)).coeff_natDegree,
     one_mul] at hx
   replace hx := eq_neg_of_add_eq_zero_left hx
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = x ^ natDegree (Polynomial. …
   have : ∀ n < f.natDegree, p ∣ f.coeff n := by
     intro n hn
     refine' mem_span_singleton.1 (by simpa using hf.mem hn)
   choose! φ hφ using this
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = x ^ natDegree (Polynomial. …
   conv_rhs at hx =>
     congr
     congr
@@ -100,6 +105,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 (natDegree_map_le _ _)),
       RingHom.map_mul, mul_assoc]
   rw [hx, ← mul_sum, neg_eq_neg_one_mul, ← mul_assoc (-1 : S), mul_comm (-1 : S), mul_assoc]
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = ↑(algebraMap R S) p * (-1  …
   refine'
     ⟨-1 * ∑ i : Fin (f.map (algebraMap R S)).natDegree, (algebraMap R S) (φ i.1) * x ^ i.1, _, rfl⟩
   exact
@@ -114,12 +120,19 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree_le {x : S} (hx : aeval x f = 0) (
     ∀ i, (f.map (algebraMap R S)).natDegree ≤ i →
         ∃ y ∈ adjoin R ({x} : Set S), (algebraMap R S) p * y = x ^ i := by
   intro i hi
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = x ^ i
   obtain ⟨k, hk⟩ := exists_add_of_le hi
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = x ^ i
   rw [hk, pow_add]
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = x ^ natDegree (Polynomial. …
   obtain ⟨y, hy, H⟩ := exists_mem_adjoin_mul_eq_pow_natDegree hx hmo hf
+  -- ⊢ ∃ y, y ∈ adjoin R {x} ∧ ↑(algebraMap R S) p * y = x ^ natDegree (Polynomial. …
   refine' ⟨y * x ^ k, _, _⟩
+  -- ⊢ y * x ^ k ∈ adjoin R {x}
   · exact Subalgebra.mul_mem _ hy (Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton x)) _)
+    -- 🎉 no goals
   · rw [← mul_assoc _ y, H]
+    -- 🎉 no goals
 #align polynomial.is_weakly_eisenstein_at.exists_mem_adjoin_mul_eq_pow_nat_degree_le Polynomial.IsWeaklyEisensteinAt.exists_mem_adjoin_mul_eq_pow_natDegree_le
 
 end Principal
@@ -129,14 +142,20 @@ end Principal
 theorem pow_natDegree_le_of_root_of_monic_mem {x : R} (hroot : IsRoot f x) (hmo : f.Monic) :
     ∀ i, f.natDegree ≤ i → x ^ i ∈ 𝓟 := by
   intro i hi
+  -- ⊢ x ^ i ∈ 𝓟
   obtain ⟨k, hk⟩ := exists_add_of_le hi
+  -- ⊢ x ^ i ∈ 𝓟
   rw [hk, pow_add]
+  -- ⊢ x ^ natDegree f * x ^ k ∈ 𝓟
   suffices x ^ f.natDegree ∈ 𝓟 by exact mul_mem_right (x ^ k) 𝓟 this
+  -- ⊢ x ^ natDegree f ∈ 𝓟
   rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
     Finset.sum_insert Finset.not_mem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
   rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
+  -- ⊢ ∑ i : Fin (natDegree f), coeff f ↑i * x ^ ↑i ∈ 𝓟
   refine' Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
+  -- 🎉 no goals
 #align polynomial.is_weakly_eisenstein_at.pow_nat_degree_le_of_root_of_monic_mem Polynomial.IsWeaklyEisensteinAt.pow_natDegree_le_of_root_of_monic_mem
 
 theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map {x : S} (hx : aeval x f = 0)
@@ -148,7 +167,9 @@ theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map {x : S} (hx : aeval x f 
     rw [hk, pow_add]
     refine' mul_mem_right _ _ this
   rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.def] at hx
+  -- ⊢ x ^ natDegree (Polynomial.map (algebraMap R S) f) ∈ Ideal.map (algebraMap R  …
   refine' pow_natDegree_le_of_root_of_monic_mem (hf.map _) hx (hmo.map _) _ rfl.le
+  -- 🎉 no goals
 #align polynomial.is_weakly_eisenstein_at.pow_nat_degree_le_of_aeval_zero_of_monic_mem_map Polynomial.IsWeaklyEisensteinAt.pow_natDegree_le_of_aeval_zero_of_monic_mem_map
 
 end CommRing
@@ -162,22 +183,30 @@ variable {A : Type*} [CommRing R] [CommRing A]
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
   refine' ⟨fun i => _⟩
+  -- ⊢ coeff (scaleRoots p x) n✝ ∈ P
   rw [coeff_scaleRoots]
+  -- ⊢ coeff p n✝ * x ^ (natDegree p - n✝) ∈ P
   rw [natDegree_scaleRoots, ← tsub_pos_iff_lt] at i
+  -- ⊢ coeff p n✝ * x ^ (natDegree p - n✝) ∈ P
   exact Ideal.mul_mem_left _ _ (Ideal.pow_mem_of_mem P hP _ i)
+  -- 🎉 no goals
 #align polynomial.scale_roots.is_weakly_eisenstein_at Polynomial.scaleRoots.isWeaklyEisensteinAt
 
 theorem dvd_pow_natDegree_of_eval₂_eq_zero {f : R →+* A} (hf : Function.Injective f) {p : R[X]}
     (hp : p.Monic) (x y : R) (z : A) (h : p.eval₂ f z = 0) (hz : f x * z = f y) :
     x ∣ y ^ p.natDegree := by
   rw [← natDegree_scaleRoots p x, ← Ideal.mem_span_singleton]
+  -- ⊢ y ^ natDegree (scaleRoots p x) ∈ span {x}
   refine'
     (scaleRoots.isWeaklyEisensteinAt _
           (Ideal.mem_span_singleton.mpr <| dvd_refl x)).pow_natDegree_le_of_root_of_monic_mem
       _ ((monic_scaleRoots_iff x).mpr hp) _ le_rfl
   rw [injective_iff_map_eq_zero'] at hf
+  -- ⊢ IsRoot (scaleRoots p x) y
   have : eval₂ _ _ (p.scaleRoots x) = 0 := scaleRoots_eval₂_eq_zero f h
+  -- ⊢ IsRoot (scaleRoots p x) y
   rwa [hz, Polynomial.eval₂_at_apply, hf] at this
+  -- 🎉 no goals
 #align polynomial.dvd_pow_nat_degree_of_eval₂_eq_zero Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero
 
 theorem dvd_pow_natDegree_of_aeval_eq_zero [Algebra R A] [Nontrivial A] [NoZeroSMulDivisors R A]
@@ -213,9 +242,13 @@ theorem isWeaklyEisensteinAt : IsWeaklyEisensteinAt f 𝓟 :=
 
 theorem coeff_mem {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
   cases' ne_iff_lt_or_gt.1 hn with h₁ h₂
+  -- ⊢ coeff f n ∈ 𝓟
   · exact hf.mem h₁
+    -- 🎉 no goals
   · rw [coeff_eq_zero_of_natDegree_lt h₂]
+    -- ⊢ 0 ∈ 𝓟
     exact Ideal.zero_mem _
+    -- 🎉 no goals
 #align polynomial.is_eisenstein_at.coeff_mem Polynomial.IsEisensteinAt.coeff_mem
 
 end CommSemiring

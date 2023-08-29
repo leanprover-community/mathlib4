@@ -48,14 +48,20 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel]
   -- Consider an open covering `S : Set (Set α)`
   refine' ⟨fun ι s ho hcov => _⟩
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   simp only [iUnion_eq_univ_iff] at hcov
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   -- choose a well founded order on `S`
   -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   set ind : α → ι := fun x => wf.min { i : ι | x ∈ s i } (hcov x)
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wf.min_mem _ (hcov x)
+  -- ⊢ ∃ β t x x, LocallyFinite t ∧ ∀ (b : β), ∃ a, t b ⊆ s a
   have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := @fun x i hlt hxi =>
     wf.not_lt_min _ (hcov x) hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
@@ -108,20 +114,29 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   -- Let us show the rest of the properties. Since the definition expects a family indexed
   -- by a single parameter, we use `ℕ × ι` as the domain.
   refine' ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, _, _, fun ni => ⟨ni.2, HDS _ _⟩⟩
+  -- ⊢ ⋃ (b : ℕ × ι), (fun ni => D ni.fst ni.snd) b = univ
   -- The sets `D n i` cover the whole space as we proved earlier
   · refine' iUnion_eq_univ_iff.2 fun x => _
+    -- ⊢ ∃ i, x ∈ (fun ni => D ni.fst ni.snd) i
     rcases Dcov x with ⟨n, i, h⟩
+    -- ⊢ ∃ i, x ∈ (fun ni => D ni.fst ni.snd) i
     exact ⟨⟨n, i⟩, h⟩
+    -- 🎉 no goals
   /- Let us prove that the covering `D n i` is locally finite. Take a point `x` and choose
     `n`, `i` so that `x ∈ D n i`. Since `D n i` is an open set, we can choose `k` so that
     `B = ball x (1 / 2 ^ (n + k + 1)) ⊆ D n i`. -/
   · intro x
+    -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((fun ni => D ni.fst ni.snd) i ∩ …
     rcases Dcov x with ⟨n, i, hn⟩
+    -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((fun ni => D ni.fst ni.snd) i ∩ …
     have : D n i ∈ 𝓝 x := IsOpen.mem_nhds (Dopen _ _) hn
+    -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((fun ni => D ni.fst ni.snd) i ∩ …
     rcases(nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
       ⟨k, -, hsub : ball x (2⁻¹ ^ k) ⊆ D n i⟩
     set B := ball x (2⁻¹ ^ (n + k + 1))
+    -- ⊢ ∃ t, t ∈ 𝓝 x ∧ Set.Finite {i | Set.Nonempty ((fun ni => D ni.fst ni.snd) i ∩ …
     refine' ⟨B, ball_mem_nhds _ (pow_pos _), _⟩
+    -- ⊢ Set.Finite {i | Set.Nonempty ((fun ni => D ni.fst ni.snd) i ∩ B)}
     -- The sets `D m i`, `m > n + k`, are disjoint with `B`
     have Hgt : ∀ m ≥ n + k + 1, ∀ (i : ι), Disjoint (D m i) B := fun m hm i => by
       rw [disjoint_iff_inf_le]
@@ -161,9 +176,13 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       (finite_le_nat _).biUnion' fun i hi =>
         (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
     refine' this.subset fun I hI => _
+    -- ⊢ I ∈ ⋃ (m : ℕ) (_ : m ≤ n + k) (i : ι) (_ : i ∈ {i | Set.Nonempty (D m i ∩ B) …
     simp only [mem_iUnion]
+    -- ⊢ ∃ i h i_1 i_2, I ∈ {(i, i_1)}
     refine' ⟨I.1, _, I.2, hI, Prod.mk.eta.symm⟩
+    -- ⊢ I.fst ≤ n + k
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
+    -- 🎉 no goals
 
 -- see Note [lower instance priority]
 instance (priority := 100) normal_of_emetric [EMetricSpace α] : NormalSpace α :=

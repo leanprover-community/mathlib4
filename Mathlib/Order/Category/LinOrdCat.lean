@@ -70,10 +70,14 @@ def Iso.mk {α β : LinOrdCat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : OrderHom _ _)
   hom_inv_id := by
     ext x
+    -- ⊢ ↑(↑e ≫ ↑(OrderIso.symm e)) x = ↑(𝟙 α) x
     exact e.symm_apply_apply x
+    -- 🎉 no goals
   inv_hom_id := by
     ext x
+    -- ⊢ ↑(↑(OrderIso.symm e) ≫ ↑e) x = ↑(𝟙 β) x
     exact e.apply_symm_apply x
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align LinOrd.iso.mk LinOrdCat.Iso.mk
 

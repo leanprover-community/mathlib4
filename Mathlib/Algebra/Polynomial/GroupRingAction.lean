@@ -36,8 +36,11 @@ theorem smul_eq_map [MulSemiringAction M R] (m : M) :
     ext1 r
     exact FunLike.congr_fun this r
   ext n r : 2
+  -- ⊢ ↑(AddMonoidHom.comp (DistribMulAction.toAddMonoidHom R[X] m) (LinearMap.toAd …
   change m • monomial n r = map (MulSemiringAction.toRingHom M R m) (monomial n r)
+  -- ⊢ m • ↑(monomial n) r = map (MulSemiringAction.toRingHom M R m) (↑(monomial n) …
   rw [Polynomial.map_monomial, Polynomial.smul_monomial, MulSemiringAction.toRingHom_apply]
+  -- 🎉 no goals
 #align polynomial.smul_eq_map Polynomial.smul_eq_map
 
 variable (M)
@@ -64,7 +67,9 @@ variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
+                                        -- 🎉 no goals
     (fun f g ihf ihg ↦ by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ ↦ by
+                          -- 🎉 no goals
     rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C,
       eval_pow, eval_X, smul_mul', smul_pow']
 #align polynomial.smul_eval_smul Polynomial.smul_eval_smul
@@ -74,11 +79,13 @@ variable (G : Type*) [Group G]
 theorem eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     f.eval (g • x) = g • (g⁻¹ • f).eval x := by
   rw [← smul_eval_smul, smul_inv_smul]
+  -- 🎉 no goals
 #align polynomial.eval_smul' Polynomial.eval_smul'
 
 theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     (g • f).eval x = g • f.eval (g⁻¹ • x) := by
   rw [← smul_eval_smul, smul_inv_smul]
+  -- 🎉 no goals
 #align polynomial.smul_eval Polynomial.smul_eval
 
 end Polynomial
@@ -107,17 +114,20 @@ theorem prodXSubSmul.monic (x : R) : (prodXSubSmul G R x).Monic :=
 theorem prodXSubSmul.eval (x : R) : (prodXSubSmul G R x).eval x = 0 :=
   (map_prod ((Polynomial.aeval x).toRingHom.toMonoidHom : R[X] →* R) _ _).trans <|
     Finset.prod_eq_zero (Finset.mem_univ <| QuotientGroup.mk 1) <| by simp
+                                                                      -- 🎉 no goals
 #align prod_X_sub_smul.eval prodXSubSmul.eval
 
 theorem prodXSubSmul.smul (x : R) (g : G) : g • prodXSubSmul G R x = prodXSubSmul G R x :=
   Finset.smul_prod.trans <|
     Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]
+      -- 🎉 no goals
 #align prod_X_sub_smul.smul prodXSubSmul.smul
 
 theorem prodXSubSmul.coeff (x : R) (g : G) (n : ℕ) :
     g • (prodXSubSmul G R x).coeff n = (prodXSubSmul G R x).coeff n := by
   rw [← Polynomial.coeff_smul, prodXSubSmul.smul]
+  -- 🎉 no goals
 #align prod_X_sub_smul.coeff prodXSubSmul.coeff
 
 end CommRing
@@ -138,8 +148,10 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
   map_smul' m p :=
     Polynomial.induction_on p
       (fun b ↦ by rw [smul_C, map_C, coe_fn_coe, g.map_smul, map_C, coe_fn_coe, smul_C])
+                  -- 🎉 no goals
       (fun p q ihp ihq ↦ by
         rw [smul_add, Polynomial.map_add, ihp, ihq, Polynomial.map_add, smul_add])
+        -- 🎉 no goals
       fun n b _ ↦ by
       rw [smul_mul', smul_C, smul_pow', smul_X, Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,

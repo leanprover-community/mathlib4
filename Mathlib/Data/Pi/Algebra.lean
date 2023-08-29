@@ -277,6 +277,7 @@ theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
 theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
     (mulSingle i x : I → β) i' = (mulSingle i' x : I → β) i := by
   simp [mulSingle_apply, eq_comm]
+  -- 🎉 no goals
 #align pi.mul_single_comm Pi.mulSingle_comm
 #align pi.single_comm Pi.single_comm
 
@@ -284,6 +285,7 @@ theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
 theorem apply_mulSingle (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
   simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
+  -- 🎉 no goals
 #align pi.apply_mul_single Pi.apply_mulSingle
 #align pi.apply_single Pi.apply_single
 
@@ -292,9 +294,13 @@ theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 
     (x : f i) (y : g i) (j : I) :
     f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j := by
   by_cases h : j = i
+  -- ⊢ f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j
   · subst h
+    -- ⊢ f' j (mulSingle j x j) (mulSingle j y j) = mulSingle j (f' j x y) j
     simp only [mulSingle_eq_same]
+    -- 🎉 no goals
   · simp only [mulSingle_eq_of_ne h, hf']
+    -- 🎉 no goals
 #align pi.apply_mul_single₂ Pi.apply_mulSingle₂
 #align pi.apply_single₂ Pi.apply_single₂
 
@@ -357,6 +363,7 @@ section Extend
 @[to_additive]
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
+                     -- 🎉 no goals
 #align function.extend_one Function.extend_one
 #align function.extend_zero Function.extend_zero
 
@@ -433,6 +440,7 @@ def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surje
 theorem Subsingleton.pi_mulSingle_eq {α : Type*} [DecidableEq I] [Subsingleton I] [One α]
     (i : I) (x : α) : Pi.mulSingle i x = fun _ => x :=
   funext fun j => by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
+                     -- 🎉 no goals
 #align subsingleton.pi_mul_single_eq Subsingleton.pi_mulSingle_eq
 #align subsingleton.pi_single_eq Subsingleton.pi_single_eq
 
@@ -450,11 +458,13 @@ theorem elim_one_one [One γ] : Sum.elim (1 : α → γ) (1 : β → γ) = 1 :=
 theorem elim_mulSingle_one [DecidableEq α] [DecidableEq β] [One γ] (i : α) (c : γ) :
     Sum.elim (Pi.mulSingle i c) (1 : β → γ) = Pi.mulSingle (Sum.inl i) c := by
   simp only [Pi.mulSingle, Sum.elim_update_left, elim_one_one]
+  -- 🎉 no goals
 
 @[to_additive (attr := simp)]
 theorem elim_one_mulSingle [DecidableEq α] [DecidableEq β] [One γ] (i : β) (c : γ) :
     Sum.elim (1 : α → γ) (Pi.mulSingle i c) = Pi.mulSingle (Sum.inr i) c := by
   simp only [Pi.mulSingle, Sum.elim_update_right, elim_one_one]
+  -- 🎉 no goals
 #align sum.elim_mul_single_one Sum.elim_mulSingle_one
 #align sum.elim_one_mul_single Sum.elim_one_mulSingle
 #align sum.elim_single_zero Sum.elim_single_zero
@@ -469,14 +479,22 @@ theorem elim_inv_inv [Inv γ] : Sum.elim a⁻¹ b⁻¹ = (Sum.elim a b)⁻¹ :=
 @[to_additive]
 theorem elim_mul_mul [Mul γ] : Sum.elim (a * a') (b * b') = Sum.elim a b * Sum.elim a' b' := by
   ext x
+  -- ⊢ Sum.elim (a * a') (b * b') x = (Sum.elim a b * Sum.elim a' b') x
   cases x <;> rfl
+  -- ⊢ Sum.elim (a * a') (b * b') (inl val✝) = (Sum.elim a b * Sum.elim a' b') (inl …
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.elim_mul_mul Sum.elim_mul_mul
 #align sum.elim_add_add Sum.elim_add_add
 
 @[to_additive]
 theorem elim_div_div [Div γ] : Sum.elim (a / a') (b / b') = Sum.elim a b / Sum.elim a' b' := by
   ext x
+  -- ⊢ Sum.elim (a / a') (b / b') x = (Sum.elim a b / Sum.elim a' b') x
   cases x <;> rfl
+  -- ⊢ Sum.elim (a / a') (b / b') (inl val✝) = (Sum.elim a b / Sum.elim a' b') (inl …
+              -- 🎉 no goals
+              -- 🎉 no goals
 #align sum.elim_div_div Sum.elim_div_div
 #align sum.elim_sub_sub Sum.elim_sub_sub
 

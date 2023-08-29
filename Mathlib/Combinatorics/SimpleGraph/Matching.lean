@@ -63,21 +63,28 @@ noncomputable def IsMatching.toEdge {M : Subgraph G} (h : M.IsMatching) (v : M.v
 theorem IsMatching.toEdge_eq_of_adj {M : Subgraph G} (h : M.IsMatching) {v w : V} (hv : v ∈ M.verts)
     (hvw : M.Adj v w) : h.toEdge ⟨v, hv⟩ = ⟨⟦(v, w)⟧, hvw⟩ := by
   simp only [IsMatching.toEdge, Subtype.mk_eq_mk]
+  -- ⊢ Quotient.mk (Sym2.Rel.setoid V) (v, Exists.choose (_ : ∃! w, Adj M (↑{ val : …
   congr
+  -- ⊢ Exists.choose (_ : ∃! w, Adj M (↑{ val := v, property := hv }) w) = w
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
+  -- 🎉 no goals
 #align simple_graph.subgraph.is_matching.to_edge_eq_of_adj SimpleGraph.Subgraph.IsMatching.toEdge_eq_of_adj
 
 theorem IsMatching.toEdge.surjective {M : Subgraph G} (h : M.IsMatching) :
     Function.Surjective h.toEdge := by
   rintro ⟨e, he⟩
+  -- ⊢ ∃ a, toEdge h a = { val := e, property := he }
   refine Sym2.ind (fun x y he => ?_) e he
+  -- ⊢ ∃ a, toEdge h a = { val := Quotient.mk (Sym2.Rel.setoid V) (x, y), property  …
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
+  -- 🎉 no goals
 #align simple_graph.subgraph.is_matching.to_edge.surjective SimpleGraph.Subgraph.IsMatching.toEdge.surjective
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj {M : Subgraph G} {v w : V} (h : M.IsMatching)
     (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
     h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
   rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
+  -- 🎉 no goals
 #align simple_graph.subgraph.is_matching.to_edge_eq_to_edge_of_adj SimpleGraph.Subgraph.IsMatching.toEdge_eq_toEdge_of_adj
 
 /--
@@ -89,13 +96,17 @@ def IsPerfectMatching : Prop := M.IsMatching ∧ M.IsSpanning
 
 theorem IsMatching.support_eq_verts {M : Subgraph G} (h : M.IsMatching) : M.support = M.verts := by
   refine M.support_subset_verts.antisymm fun v hv => ?_
+  -- ⊢ v ∈ support M
   obtain ⟨w, hvw, -⟩ := h hv
+  -- ⊢ v ∈ support M
   exact ⟨_, hvw⟩
+  -- 🎉 no goals
 #align simple_graph.subgraph.is_matching.support_eq_verts SimpleGraph.Subgraph.IsMatching.support_eq_verts
 
 theorem isMatching_iff_forall_degree {M : Subgraph G} [∀ v : V, Fintype (M.neighborSet v)] :
     M.IsMatching ↔ ∀ v : V, v ∈ M.verts → M.degree v = 1 := by
   simp only [degree_eq_one_iff_unique_adj, IsMatching]
+  -- 🎉 no goals
 #align simple_graph.subgraph.is_matching_iff_forall_degree SimpleGraph.Subgraph.isMatching_iff_forall_degree
 
 theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatching) :
@@ -113,15 +124,21 @@ theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatchin
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
   refine' ⟨_, fun hm => ⟨fun v _ => hm v, fun v => _⟩⟩
+  -- ⊢ IsPerfectMatching M → ∀ (v : V), ∃! w, Adj M v w
   · rintro ⟨hm, hs⟩ v
+    -- ⊢ ∃! w, Adj M v w
     exact hm (hs v)
+    -- 🎉 no goals
   · obtain ⟨w, hw, -⟩ := hm v
+    -- ⊢ v ∈ M.verts
     exact M.edge_vert hw
+    -- 🎉 no goals
 #align simple_graph.subgraph.is_perfect_matching_iff SimpleGraph.Subgraph.isPerfectMatching_iff
 
 theorem isPerfectMatching_iff_forall_degree {M : Subgraph G} [∀ v, Fintype (M.neighborSet v)] :
     M.IsPerfectMatching ↔ ∀ v, M.degree v = 1 := by
   simp [degree_eq_one_iff_unique_adj, isPerfectMatching_iff]
+  -- 🎉 no goals
 #align simple_graph.subgraph.is_perfect_matching_iff_forall_degree SimpleGraph.Subgraph.isPerfectMatching_iff_forall_degree
 
 theorem IsPerfectMatching.even_card {M : Subgraph G} [Fintype V] (h : M.IsPerfectMatching) :

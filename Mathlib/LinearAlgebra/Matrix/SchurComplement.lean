@@ -103,14 +103,18 @@ theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
     ⅟ (fromBlocks A B 0 D) = fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D) := by
   letI := fromBlocksZero₂₁Invertible A B D
+  -- ⊢ ⅟(fromBlocks A B 0 D) = fromBlocks (⅟A) (-(⅟A * B * ⅟D)) 0 ⅟D
   convert (rfl : ⅟ (fromBlocks A B 0 D) = _)
+  -- 🎉 no goals
 #align matrix.inv_of_from_blocks_zero₂₁_eq Matrix.invOf_fromBlocks_zero₂₁_eq
 
 theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
     ⅟ (fromBlocks A 0 C D) = fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A)) (⅟ D) := by
   letI := fromBlocksZero₁₂Invertible A C D
+  -- ⊢ ⅟(fromBlocks A 0 C D) = fromBlocks (⅟A) 0 (-(⅟D * C * ⅟A)) ⅟D
   convert (rfl : ⅟ (fromBlocks A 0 C D) = _)
+  -- 🎉 no goals
 #align matrix.inv_of_from_blocks_zero₁₂_eq Matrix.invOf_fromBlocks_zero₁₂_eq
 
 /-- Both diagonal entries of an invertible upper-block-triangular matrix are invertible (by reading
@@ -120,15 +124,21 @@ def invertibleOfFromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m
   fst :=
     invertibleOfLeftInverse _ (⅟ (fromBlocks A B 0 D)).toBlocks₁₁ <| by
       have := invOf_mul_self (fromBlocks A B 0 D)
+      -- ⊢ toBlocks₁₁ ⅟(fromBlocks A B 0 D) * A = 1
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A B 0 D)), fromBlocks_multiply] at this
+      -- ⊢ toBlocks₁₁ ⅟(fromBlocks A B 0 D) * A = 1
       replace := congr_arg Matrix.toBlocks₁₁ this
+      -- ⊢ toBlocks₁₁ ⅟(fromBlocks A B 0 D) * A = 1
       simpa only [Matrix.toBlocks_fromBlocks₁₁, Matrix.mul_zero, add_zero, ← fromBlocks_one] using
         this
   snd :=
     invertibleOfRightInverse _ (⅟ (fromBlocks A B 0 D)).toBlocks₂₂ <| by
       have := mul_invOf_self (fromBlocks A B 0 D)
+      -- ⊢ D * toBlocks₂₂ ⅟(fromBlocks A B 0 D) = 1
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A B 0 D)), fromBlocks_multiply] at this
+      -- ⊢ D * toBlocks₂₂ ⅟(fromBlocks A B 0 D) = 1
       replace := congr_arg Matrix.toBlocks₂₂ this
+      -- ⊢ D * toBlocks₂₂ ⅟(fromBlocks A B 0 D) = 1
       simpa only [Matrix.toBlocks_fromBlocks₂₂, Matrix.zero_mul, zero_add, ← fromBlocks_one] using
         this
 #align matrix.invertible_of_from_blocks_zero₂₁_invertible Matrix.invertibleOfFromBlocksZero₂₁Invertible
@@ -140,15 +150,21 @@ def invertibleOfFromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n
   fst :=
     invertibleOfRightInverse _ (⅟ (fromBlocks A 0 C D)).toBlocks₁₁ <| by
       have := mul_invOf_self (fromBlocks A 0 C D)
+      -- ⊢ A * toBlocks₁₁ ⅟(fromBlocks A 0 C D) = 1
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A 0 C D)), fromBlocks_multiply] at this
+      -- ⊢ A * toBlocks₁₁ ⅟(fromBlocks A 0 C D) = 1
       replace := congr_arg Matrix.toBlocks₁₁ this
+      -- ⊢ A * toBlocks₁₁ ⅟(fromBlocks A 0 C D) = 1
       simpa only [Matrix.toBlocks_fromBlocks₁₁, Matrix.zero_mul, add_zero, ← fromBlocks_one] using
         this
   snd :=
     invertibleOfLeftInverse _ (⅟ (fromBlocks A 0 C D)).toBlocks₂₂ <| by
       have := invOf_mul_self (fromBlocks A 0 C D)
+      -- ⊢ toBlocks₂₂ ⅟(fromBlocks A 0 C D) * D = 1
       rw [← fromBlocks_toBlocks (⅟ (fromBlocks A 0 C D)), fromBlocks_multiply] at this
+      -- ⊢ toBlocks₂₂ ⅟(fromBlocks A 0 C D) * D = 1
       replace := congr_arg Matrix.toBlocks₂₂ this
+      -- ⊢ toBlocks₂₂ ⅟(fromBlocks A 0 C D) * D = 1
       simpa only [Matrix.toBlocks_fromBlocks₂₂, Matrix.mul_zero, zero_add, ← fromBlocks_one] using
         this
 #align matrix.invertible_of_from_blocks_zero₁₂_invertible Matrix.invertibleOfFromBlocksZero₁₂Invertible
@@ -160,8 +176,11 @@ def fromBlocksZero₂₁InvertibleEquiv (A : Matrix m m α) (B : Matrix m n α) 
   toFun _ := invertibleOfFromBlocksZero₂₁Invertible A B D
   invFun i := by
     letI := i.1
+    -- ⊢ Invertible (fromBlocks A B 0 D)
     letI := i.2
+    -- ⊢ Invertible (fromBlocks A B 0 D)
     exact fromBlocksZero₂₁Invertible A B D
+    -- 🎉 no goals
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align matrix.from_blocks_zero₂₁_invertible_equiv Matrix.fromBlocksZero₂₁InvertibleEquiv
@@ -173,8 +192,11 @@ def fromBlocksZero₁₂InvertibleEquiv (A : Matrix m m α) (C : Matrix n m α) 
   toFun _ := invertibleOfFromBlocksZero₁₂Invertible A C D
   invFun i := by
     letI := i.1
+    -- ⊢ Invertible (fromBlocks A 0 C D)
     letI := i.2
+    -- ⊢ Invertible (fromBlocks A 0 C D)
     exact fromBlocksZero₁₂Invertible A C D
+    -- 🎉 no goals
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align matrix.from_blocks_zero₁₂_invertible_equiv Matrix.fromBlocksZero₁₂InvertibleEquiv
@@ -205,12 +227,19 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
     (hAD : IsUnit A ↔ IsUnit D) :
     (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹ := by
   by_cases hA : IsUnit A
+  -- ⊢ (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹
   · have hD := hAD.mp hA
+    -- ⊢ (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹
     cases hA.nonempty_invertible
+    -- ⊢ (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹
     cases hD.nonempty_invertible
+    -- ⊢ (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹
     letI := fromBlocksZero₂₁Invertible A B D
+    -- ⊢ (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹
     simp_rw [← invOf_eq_nonsing_inv, invOf_fromBlocks_zero₂₁_eq]
+    -- 🎉 no goals
   · have hD := hAD.not.mp hA
+    -- ⊢ (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹
     have : ¬IsUnit (fromBlocks A B 0 D) :=
       isUnit_fromBlocks_zero₂₁.not.mpr (not_and'.mpr fun _ => hA)
     simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
@@ -223,12 +252,19 @@ theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix 
     (hAD : IsUnit A ↔ IsUnit D) :
     (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹ := by
   by_cases hA : IsUnit A
+  -- ⊢ (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹
   · have hD := hAD.mp hA
+    -- ⊢ (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹
     cases hA.nonempty_invertible
+    -- ⊢ (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹
     cases hD.nonempty_invertible
+    -- ⊢ (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹
     letI := fromBlocksZero₁₂Invertible A C D
+    -- ⊢ (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹
     simp_rw [← invOf_eq_nonsing_inv, invOf_fromBlocks_zero₁₂_eq]
+    -- 🎉 no goals
   · have hD := hAD.not.mp hA
+    -- ⊢ (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹
     have : ¬IsUnit (fromBlocks A 0 C D) :=
       isUnit_fromBlocks_zero₁₂.not.mpr (not_and'.mpr fun _ => hA)
     simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
@@ -258,8 +294,11 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
+    -- ⊢ Invertible (fromBlocks 1 (B * ⅟D) 0 1 * fromBlocks (A - B * ⅟D * C) 0 0 D *  …
     letI : Invertible (1 : Matrix m m α) := invertibleOne
+    -- ⊢ Invertible (fromBlocks 1 (B * ⅟D) 0 1 * fromBlocks (A - B * ⅟D * C) 0 0 D *  …
     refine' Invertible.mul _ (fromBlocksZero₁₂Invertible _ _ _)
+    -- ⊢ Invertible (fromBlocks 1 (B * ⅟D) 0 1 * fromBlocks (A - B * ⅟D * C) 0 0 D)
     exact
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
@@ -282,6 +321,7 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     Invertible (fromBlocks A B C D) := by
   -- we argue by symmetry
   letI := fromBlocks₂₂Invertible D C B A
+  -- ⊢ Invertible (fromBlocks A B C D)
   letI iDCBA :=
     submatrixEquivInvertible (fromBlocks D C B A) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
   exact
@@ -299,7 +339,9 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
       fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
         (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D) := by
   letI := fromBlocks₂₂Invertible A B C D
+  -- ⊢ ⅟(fromBlocks A B C D) = fromBlocks (⅟(A - B * ⅟D * C)) (-(⅟(A - B * ⅟D * C)  …
   convert (rfl : ⅟ (fromBlocks A B C D) = _)
+  -- 🎉 no goals
 #align matrix.inv_of_from_blocks₂₂_eq Matrix.invOf_fromBlocks₂₂_eq
 
 theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
@@ -309,7 +351,9 @@ theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
       fromBlocks (⅟ A + ⅟ A * B * ⅟ (D - C * ⅟ A * B) * C * ⅟ A) (-(⅟ A * B * ⅟ (D - C * ⅟ A * B)))
         (-(⅟ (D - C * ⅟ A * B) * C * ⅟ A)) (⅟ (D - C * ⅟ A * B)) := by
   letI := fromBlocks₁₁Invertible A B C D
+  -- ⊢ ⅟(fromBlocks A B C D) = fromBlocks (⅟A + ⅟A * B * ⅟(D - C * ⅟A * B) * C * ⅟A …
   convert (rfl : ⅟ (fromBlocks A B C D) = _)
+  -- 🎉 no goals
 #align matrix.inv_of_from_blocks₁₁_eq Matrix.invOf_fromBlocks₁₁_eq
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
@@ -320,14 +364,19 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
   suffices Invertible (fromBlocks (A - B * ⅟ D * C) 0 0 D) by
     exact (invertibleOfFromBlocksZero₁₂Invertible (A - B * ⅟ D * C) 0 D).1
   letI : Invertible (1 : Matrix n n α) := invertibleOne
+  -- ⊢ Invertible (fromBlocks (A - B * ⅟D * C) 0 0 D)
   letI : Invertible (1 : Matrix m m α) := invertibleOne
+  -- ⊢ Invertible (fromBlocks (A - B * ⅟D * C) 0 0 D)
   letI iDC : Invertible (fromBlocks 1 0 (⅟ D * C) 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₁₂Invertible _ _ _
   letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
+  -- ⊢ Invertible (fromBlocks (A - B * ⅟D * C) 0 0 D)
   refine' (iBD.mulLeft _).symm _
+  -- ⊢ Invertible (fromBlocks 1 (B * ⅟D) 0 1 * fromBlocks (A - B * ⅟D * C) 0 0 D)
   refine' (iDC.mulRight _).symm iBDC
+  -- 🎉 no goals
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
@@ -339,7 +388,9 @@ def invertibleOfFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iABCD' :=
     submatrixEquivInvertible (fromBlocks A B C D) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
   letI iDCBA := iABCD'.copy _ (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
+  -- ⊢ Invertible (D - C * ⅟A * B)
   refine' invertibleOfFromBlocks₂₂Invertible D C B A
+  -- 🎉 no goals
 #align matrix.invertible_of_from_blocks₁₁_invertible Matrix.invertibleOfFromBlocks₁₁Invertible
 
 /-- `Matrix.invertibleOfFromBlocks₂₂Invertible` and `Matrix.fromBlocks₂₂Invertible` as an
@@ -402,7 +453,9 @@ theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
 theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
     (Matrix.fromBlocks 1 B C D).det = det (D - C * B) := by
   haveI : Invertible (1 : Matrix m m α) := invertibleOne
+  -- ⊢ det (fromBlocks 1 B C D) = det (D - C * B)
   rw [det_fromBlocks₁₁, invOf_one, Matrix.mul_one, det_one, one_mul]
+  -- 🎉 no goals
 #align matrix.det_from_blocks_one₁₁ Matrix.det_fromBlocks_one₁₁
 
 /-- Determinant of a 2×2 block matrix, expanded around an invertible bottom right element in terms
@@ -415,13 +468,16 @@ theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
     ext (i j)
     cases i <;> cases j <;> rfl
   rw [this, det_submatrix_equiv_self, det_fromBlocks₁₁]
+  -- 🎉 no goals
 #align matrix.det_from_blocks₂₂ Matrix.det_fromBlocks₂₂
 
 @[simp]
 theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
     (Matrix.fromBlocks A B C 1).det = det (A - B * C) := by
   haveI : Invertible (1 : Matrix n n α) := invertibleOne
+  -- ⊢ det (fromBlocks A B C 1) = det (A - B * C)
   rw [det_fromBlocks₂₂, invOf_one, Matrix.mul_one, det_one, one_mul]
+  -- 🎉 no goals
 #align matrix.det_from_blocks_one₂₂ Matrix.det_fromBlocks_one₂₂
 
 /-- The **Weinstein–Aronszajn identity**. Note the `1` on the LHS is of shape m×m, while the `1` on
@@ -431,17 +487,21 @@ theorem det_one_add_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
   calc
     det (1 + A * B) = det (fromBlocks 1 (-A) B 1) := by
       rw [det_fromBlocks_one₂₂, Matrix.neg_mul, sub_neg_eq_add]
+      -- 🎉 no goals
     _ = det (1 + B * A) := by rw [det_fromBlocks_one₁₁, Matrix.mul_neg, sub_neg_eq_add]
+                              -- 🎉 no goals
 #align matrix.det_one_add_mul_comm Matrix.det_one_add_mul_comm
 
 /-- Alternate statement of the **Weinstein–Aronszajn identity** -/
 theorem det_mul_add_one_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (A * B + 1) = det (B * A + 1) := by rw [add_comm, det_one_add_mul_comm, add_comm]
+                                            -- 🎉 no goals
 #align matrix.det_mul_add_one_comm Matrix.det_mul_add_one_comm
 
 theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (1 - A * B) = det (1 - B * A) := by
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
+  -- 🎉 no goals
 #align matrix.det_one_sub_mul_comm Matrix.det_one_sub_mul_comm
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`.
@@ -475,6 +535,8 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align matrix.schur_complement_eq₁₁ Matrix.schur_complement_eq₁₁
 
 theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
@@ -487,6 +549,8 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
+  -- 🎉 no goals
+  -- 🎉 no goals
 #align matrix.schur_complement_eq₂₂ Matrix.schur_complement_eq₂₂
 
 theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m 𝕜} (B : Matrix m n 𝕜)
@@ -496,13 +560,21 @@ theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m
     apply isHermitian_conjTranspose_mul_mul
     apply hA.inv
   rw [isHermitian_fromBlocks_iff]
+  -- ⊢ IsHermitian A ∧ Bᴴ = Bᴴ ∧ Bᴴᴴ = B ∧ IsHermitian D ↔ IsHermitian (D - Bᴴ * A⁻ …
   constructor
+  -- ⊢ IsHermitian A ∧ Bᴴ = Bᴴ ∧ Bᴴᴴ = B ∧ IsHermitian D → IsHermitian (D - Bᴴ * A⁻ …
   · intro h
+    -- ⊢ IsHermitian (D - Bᴴ * A⁻¹ * B)
     apply IsHermitian.sub h.2.2.2 hBAB
+    -- 🎉 no goals
   · intro h
+    -- ⊢ IsHermitian A ∧ Bᴴ = Bᴴ ∧ Bᴴᴴ = B ∧ IsHermitian D
     refine' ⟨hA, rfl, conjTranspose_conjTranspose B, _⟩
+    -- ⊢ IsHermitian D
     rw [← sub_add_cancel D]
+    -- ⊢ IsHermitian (D - ?mpr + ?mpr)
     apply IsHermitian.add h hBAB
+    -- 🎉 no goals
 #align matrix.is_hermitian.from_blocks₁₁ Matrix.IsHermitian.fromBlocks₁₁
 
 theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜) (B : Matrix m n 𝕜)
@@ -511,25 +583,41 @@ theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+  -- ⊢ B = Bᴴᴴ
+                                              -- 🎉 no goals
+                                              -- 🎉 no goals
 #align matrix.is_hermitian.from_blocks₂₂ Matrix.IsHermitian.fromBlocks₂₂
 
 theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
+  -- ⊢ (IsHermitian (D - Bᴴ * A⁻¹ * B) ∧ ∀ (x : m ⊕ n → 𝕜), 0 ≤ star x ⬝ᵥ mulVec (f …
   constructor
+  -- ⊢ (IsHermitian (D - Bᴴ * A⁻¹ * B) ∧ ∀ (x : m ⊕ n → 𝕜), 0 ≤ star x ⬝ᵥ mulVec (f …
   · refine' fun h => ⟨h.1, fun x => _⟩
+    -- ⊢ 0 ≤ star x ⬝ᵥ mulVec (D - Bᴴ * A⁻¹ * B) x
     have := h.2 (-(A⁻¹ * B).mulVec x ⊕ᵥ x)
+    -- ⊢ 0 ≤ star x ⬝ᵥ mulVec (D - Bᴴ * A⁻¹ * B) x
     rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_self, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
+    -- ⊢ 0 ≤ vecMul (star x) (D - Bᴴ * A⁻¹ * B) ⬝ᵥ x
+                            -- 🎉 no goals
   · refine' fun h => ⟨h.1, fun x => _⟩
+    -- ⊢ 0 ≤ star x ⬝ᵥ mulVec (fromBlocks A B Bᴴ D) x
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
+    -- ⊢ 0 ≤ vecMul (star (x ∘ Sum.inl + mulVec (A⁻¹ * B) (x ∘ Sum.inr))) A ⬝ᵥ (x ∘ S …
     apply le_add_of_nonneg_of_le
+    -- ⊢ 0 ≤ vecMul (star (x ∘ Sum.inl + mulVec (A⁻¹ * B) (x ∘ Sum.inr))) A ⬝ᵥ (x ∘ S …
     · rw [← dotProduct_mulVec]
+      -- ⊢ 0 ≤ star (x ∘ Sum.inl + mulVec (A⁻¹ * B) (x ∘ Sum.inr)) ⬝ᵥ mulVec A (x ∘ Sum …
       apply hA.posSemidef.2
+      -- 🎉 no goals
     · rw [← dotProduct_mulVec (star (x ∘ Sum.inr))]
+      -- ⊢ 0 ≤ star (x ∘ Sum.inr) ⬝ᵥ mulVec (D - Bᴴ * A⁻¹ * B) (x ∘ Sum.inr)
       apply h.2
+      -- 🎉 no goals
 #align matrix.pos_semidef.from_blocks₁₁ Matrix.PosSemidef.fromBlocks₁₁
 
 theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
@@ -538,6 +626,7 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert PosSemidef.fromBlocks₁₁ Bᴴ A hD <;>
+  -- ⊢ B = Bᴴᴴ
     first
     | infer_instance
     | simp

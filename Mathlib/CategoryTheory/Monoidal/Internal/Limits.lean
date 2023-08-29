@@ -50,6 +50,8 @@ def limitCone (F : J ⥤ Mon_ C) : Cone F where
   π :=
     { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
       naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
+                                     -- ⊢ (((Functor.const J).obj (limit F)).map f ≫ (fun j => Hom.mk (limit.π (F ⋙ fo …
+                                          -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone Mon_.limitCone
 
@@ -59,6 +61,7 @@ set_option linter.uppercaseLean3 false in
 def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
   Cones.ext (Iso.refl _) (by aesop_cat)
+                             -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon_.forget_map_cone_limit_cone_iso Mon_.forgetMapConeLimitConeIso
 
@@ -71,14 +74,25 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
     { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
       mul_hom := by
         dsimp
+        -- ⊢ s.pt.mul ≫ limit.lift (F ⋙ forget C) ((forget C).mapCone s) = MonoidalCatego …
         ext; simp
+        -- ⊢ (s.pt.mul ≫ limit.lift (F ⋙ forget C) ((forget C).mapCone s)) ≫ limit.π (F ⋙ …
+             -- ⊢ MonoidalCategory.tensorHom (NatTrans.app s.π j✝).hom (NatTrans.app s.π j✝).h …
         slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π] }
+        -- 🎉 no goals
   fac s h := by ext; simp
+                -- ⊢ ((fun s => Hom.mk (limit.lift (F ⋙ forget C) ((forget C).mapCone s))) s ≫ Na …
+                     -- 🎉 no goals
   uniq s m w := by
     ext1
+    -- ⊢ m.hom = ((fun s => Hom.mk (limit.lift (F ⋙ forget C) ((forget C).mapCone s)) …
     refine' limit.hom_ext (fun j => _)
+    -- ⊢ m.hom ≫ limit.π (MonFunctorCategoryEquivalence.inverse.obj F).X j = ((fun s  …
     dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
+    -- ⊢ m.hom ≫ limit.π (F ⋙ forget C) j = limit.lift (F ⋙ forget C) ((forget C).map …
+           -- ⊢ m.hom ≫ limit.π (F ⋙ forget C) j = (NatTrans.app s.π j).hom
     exact congr_arg Mon_.Hom.hom (w j)
+    -- 🎉 no goals
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 

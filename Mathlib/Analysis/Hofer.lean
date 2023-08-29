@@ -37,6 +37,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     {ϕ : X → ℝ} (cont : Continuous ϕ) (nonneg : ∀ y, 0 ≤ ϕ y) : ∃ ε' > 0, ∃ x' : X,
     ε' ≤ ε ∧ d x' x ≤ 2 * ε ∧ ε * ϕ x ≤ ε' * ϕ x' ∧ ∀ y, d x' y ≤ ε' → ϕ y ≤ 2 * ϕ x' := by
   by_contra H
+  -- ⊢ False
   have reformulation : ∀ (x') (k : ℕ), ε * ϕ x ≤ ε / 2 ^ k * ϕ x' ↔ 2 ^ k * ϕ x ≤ ϕ x' := by
     intro x' k
     rw [div_mul_eq_mul_div, le_div_iff, mul_assoc, mul_le_mul_left ε_pos, mul_comm]
@@ -45,15 +46,23 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   replace H :
     ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
   · intro k x'
+    -- ⊢ d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
     push_neg at H
+    -- ⊢ d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
     have := H (ε / 2 ^ k) (by simp [ε_pos]) x' (by simp [ε_pos.le, one_le_two])
+    -- ⊢ d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
     simpa [reformulation] using this
+    -- 🎉 no goals
   clear reformulation
+  -- ⊢ False
   haveI : Nonempty X := ⟨x⟩
+  -- ⊢ False
   choose! F hF using H
+  -- ⊢ False
   -- Use the axiom of choice
   -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
   let u : ℕ → X := fun n => Nat.recOn n x F
+  -- ⊢ False
   -- The properties of F translate to properties of u
   have hu :
     ∀ n,
@@ -62,6 +71,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     intro n
     exact hF n (u n)
   clear hF
+  -- ⊢ False
   -- Key properties of u, to be proven by induction
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
@@ -85,14 +95,18 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
       exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le
     exact hu (n + 1) ⟨A, B⟩
   cases' forall_and.mp key with key₁ key₂
+  -- ⊢ False
   clear hu key
+  -- ⊢ False
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
     refine' cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => _
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
   obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y)
+  -- ⊢ ∃ y, Tendsto u atTop (𝓝 y)
   exact CompleteSpace.complete cauchy_u
+  -- ⊢ False
   -- And ϕ ∘ u goes to +∞
   have lim_top : Tendsto (ϕ ∘ u) atTop atTop := by
     let v n := (ϕ ∘ u) (n + 1)
@@ -106,6 +120,8 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     exact fun n => (key₂ (n + 1)).le
   -- But ϕ ∘ u also needs to go to ϕ(y)
   have lim : Tendsto (ϕ ∘ u) atTop (𝓝 (ϕ y)) := Tendsto.comp cont.continuousAt limy
+  -- ⊢ False
   -- So we have our contradiction!
   exact not_tendsto_atTop_of_tendsto_nhds lim lim_top
+  -- 🎉 no goals
 #align hofer hofer

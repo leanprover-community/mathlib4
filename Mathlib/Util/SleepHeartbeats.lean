@@ -35,4 +35,6 @@ elab "sleep_heartbeats " n:num : tactic => do
 
 example : 1 = 1 := by
   sleep_heartbeats 1000
+  -- ⊢ 1 = 1
   rfl
+  -- 🎉 no goals

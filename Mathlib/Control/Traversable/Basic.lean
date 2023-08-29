@@ -115,16 +115,22 @@ protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {
 theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
     η = η' := by
   cases η
+  -- ⊢ { app := app✝, preserves_pure' := preserves_pure'✝, preserves_seq' := preser …
   cases η'
+  -- ⊢ { app := app✝¹, preserves_pure' := preserves_pure'✝¹, preserves_seq' := pres …
   congr
+  -- 🎉 no goals
 #align applicative_transformation.coe_inj ApplicativeTransformation.coe_inj
 
 @[ext]
 theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
     η = η' := by
   apply coe_inj
+  -- ⊢ (fun {α} => app η α) = fun {α} => app η' α
   ext1 α
+  -- ⊢ app η α = app η' α
   exact funext (h α)
+  -- 🎉 no goals
 #align applicative_transformation.ext ApplicativeTransformation.ext
 
 theorem ext_iff {η η' : ApplicativeTransformation F G} :
@@ -149,11 +155,14 @@ theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
+  -- 🎉 no goals
 #align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
 theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
   ext y
+  -- ⊢ ((fun {α} => app η α) ∘ Functor.map x) y = (Functor.map x ∘ fun {α} => app η …
   exact preserves_map η x y
+  -- 🎉 no goals
 #align applicative_transformation.preserves_map' ApplicativeTransformation.preserves_map'
 
 end Preserves
@@ -162,7 +171,9 @@ end Preserves
 def idTransformation : ApplicativeTransformation F F where
   app α := id
   preserves_pure' := by simp
+                        -- 🎉 no goals
   preserves_seq' x y := by simp
+                           -- 🎉 no goals
 #align applicative_transformation.id_transformation ApplicativeTransformation.idTransformation
 
 instance : Inhabited (ApplicativeTransformation F F) :=
@@ -179,7 +190,9 @@ def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F
   -- Porting note: something has gone wrong with `simp [functor_norm]`,
   -- which should suffice for the next two.
   preserves_pure' x := by simp only [preserves_pure]
+                          -- 🎉 no goals
   preserves_seq' x y := by simp only [preserves_seq]
+                           -- 🎉 no goals
 #align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]
@@ -271,6 +284,20 @@ instance : Traversable Id :=
   ⟨id⟩
 
 instance : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
+                                                         -- ⊢ mapConst = map ∘ const β✝
+                                                         -- ⊢ id <$> x✝ = x✝
+                                                         -- ⊢ (h✝ ∘ g✝) <$> x✝ = h✝ <$> g✝ <$> x✝
+                                                         -- ⊢ traverse pure x✝ = x✝
+                                                         -- ⊢ traverse (Comp.mk ∘ map f✝ ∘ g✝) x✝ = Comp.mk (traverse f✝ <$> traverse g✝ x✝)
+                                                         -- ⊢ traverse (pure ∘ f✝) x✝ = id.mk (f✝ <$> x✝)
+                                                         -- ⊢ (fun {α} => ApplicativeTransformation.app η✝ α) (traverse f✝ x✝) = traverse  …
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
+                                                                    -- 🎉 no goals
 
 section
 

@@ -64,16 +64,22 @@ theorem exists_least_of_bdd
     (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → b ≤ z)
     (Hinh : ∃ z : ℤ , P z) : ∃ lb : ℤ , P lb ∧ ∀ z : ℤ , P z → lb ≤ z := by
   let ⟨b , Hb⟩ := Hbdd
+  -- ⊢ ∃ lb, P lb ∧ ∀ (z : ℤ), P z → lb ≤ z
   let ⟨lb , H⟩ := leastOfBdd b Hb Hinh
+  -- ⊢ ∃ lb, P lb ∧ ∀ (z : ℤ), P z → lb ≤ z
   exact ⟨lb , H⟩
+  -- 🎉 no goals
 #align int.exists_least_of_bdd Int.exists_least_of_bdd
 
 theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
     (leastOfBdd b Hb Hinh : ℤ) = leastOfBdd b' Hb' Hinh := by
   rcases leastOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
+  -- ⊢ ↑{ val := n, property := (_ : P n ∧ ∀ (z : ℤ), P z → n ≤ z) } = ↑(leastOfBdd …
   rcases leastOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
+  -- ⊢ ↑{ val := n, property := (_ : P n ∧ ∀ (z : ℤ), P z → n ≤ z) } = ↑{ val := n' …
   exact le_antisymm (h2n _ hn') (h2n' _ hn)
+  -- 🎉 no goals
 #align int.coe_least_of_bdd_eq Int.coe_leastOfBdd_eq
 
 /-- A computable version of `exists_greatest_of_bdd`: given a decidable predicate on the
@@ -85,8 +91,11 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
   have Hinh' : ∃ z : ℤ, P (-z) :=
     let ⟨elt, Helt⟩ := Hinh
     ⟨-elt, by rw [neg_neg]; exact Helt⟩
+              -- ⊢ P elt
+                            -- 🎉 no goals
   let ⟨lb, Plb, al⟩ := leastOfBdd (-b) Hbdd' Hinh'
   ⟨-lb, Plb, fun z h => le_neg.1 <| al _ <| by rwa [neg_neg]⟩
+                                               -- 🎉 no goals
 #align int.greatest_of_bdd Int.greatestOfBdd
 
 /--
@@ -99,16 +108,22 @@ theorem exists_greatest_of_bdd
     (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → z ≤ b)
     (Hinh : ∃ z : ℤ , P z) : ∃ ub : ℤ , P ub ∧ ∀ z : ℤ , P z → z ≤ ub := by
   let ⟨ b , Hb ⟩ := Hbdd
+  -- ⊢ ∃ ub, P ub ∧ ∀ (z : ℤ), P z → z ≤ ub
   let ⟨ lb , H ⟩ := greatestOfBdd b Hb Hinh
+  -- ⊢ ∃ ub, P ub ∧ ∀ (z : ℤ), P z → z ≤ ub
   exact ⟨ lb , H ⟩
+  -- 🎉 no goals
 #align int.exists_greatest_of_bdd Int.exists_greatest_of_bdd
 
 theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hb' : ∀ z : ℤ, P z → z ≤ b') (Hinh : ∃ z : ℤ, P z) :
     (greatestOfBdd b Hb Hinh : ℤ) = greatestOfBdd b' Hb' Hinh := by
   rcases greatestOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
+  -- ⊢ ↑{ val := n, property := (_ : P n ∧ ∀ (z : ℤ), P z → z ≤ n) } = ↑(greatestOf …
   rcases greatestOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
+  -- ⊢ ↑{ val := n, property := (_ : P n ∧ ∀ (z : ℤ), P z → z ≤ n) } = ↑{ val := n' …
   exact le_antisymm (h2n' _ hn) (h2n _ hn')
+  -- 🎉 no goals
 #align int.coe_greatest_of_bdd_eq Int.coe_greatestOfBdd_eq
 
 end Int

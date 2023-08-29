@@ -165,6 +165,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         refine' mul_le_mul_of_nonneg_left (Nat.cast_le.2 cNn) _
         exact mul_nonneg εpos.le (add_nonneg zero_le_one lnonneg)
   refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩
+  -- ⊢ ∀ᶠ (b : ℕ) in atTop, d < u b / ↑b
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, d + ε * (1 + l) < l ∧ 0 < ε := by
       have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
@@ -172,7 +173,9 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       simp only [zero_mul, add_zero] at L
       exact (((tendsto_order.1 L).2 l hd).and self_mem_nhdsWithin).exists
     filter_upwards [B ε εpos, Ioi_mem_atTop 0]with n hn npos
+    -- ⊢ d < u n / ↑n
     simp_rw [div_eq_inv_mul]
+    -- ⊢ d < (↑n)⁻¹ * u n
     calc
       d < (n : ℝ)⁻¹ * n * (l - ε * (1 + l)) := by
         rw [inv_mul_cancel, one_mul]
@@ -191,7 +194,9 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       simp only [zero_mul, add_zero] at L
       exact (((tendsto_order.1 L).2 d hd).and self_mem_nhdsWithin).exists
     filter_upwards [A ε εpos, Ioi_mem_atTop 0]with n hn npos
+    -- ⊢ u n / ↑n < d
     simp_rw [div_eq_inv_mul]
+    -- ⊢ (↑n)⁻¹ * u n < d
     calc
       (n : ℝ)⁻¹ * u n ≤ (n : ℝ)⁻¹ * (n * l + ε * (1 + ε + l) * n) := by
         refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (Nat.cast_nonneg _))
@@ -211,8 +216,11 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     (hc : ∀ k, Tendsto (fun n : ℕ => u ⌊c k ^ n⌋₊ / ⌊c k ^ n⌋₊) atTop (𝓝 l)) :
     Tendsto (fun n => u n / n) atTop (𝓝 l) := by
   apply tendsto_div_of_monotone_of_exists_subseq_tendsto_div u l hmono
+  -- ⊢ ∀ (a : ℝ), 1 < a → ∃ c, (∀ᶠ (n : ℕ) in atTop, ↑(c (n + 1)) ≤ a * ↑(c n)) ∧ T …
   intro a ha
+  -- ⊢ ∃ c, (∀ᶠ (n : ℕ) in atTop, ↑(c (n + 1)) ≤ a * ↑(c n)) ∧ Tendsto c atTop atTo …
   obtain ⟨k, hk⟩ : ∃ k, c k < a := ((tendsto_order.1 clim).2 a ha).exists
+  -- ⊢ ∃ c, (∀ᶠ (n : ℕ) in atTop, ↑(c (n + 1)) ≤ a * ↑(c n)) ∧ Tendsto c atTop atTo …
   refine'
     ⟨fun n => ⌊c k ^ n⌋₊, _,
       (tendsto_nat_floor_atTop (α := ℝ)).comp (tendsto_pow_atTop_atTop_of_one_lt (cone k)), hc k⟩
@@ -236,7 +244,9 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
     ring
   filter_upwards [(tendsto_order.1 B).2 a hk]with n hn
+  -- ⊢ ↑⌊c k ^ (n + 1)⌋₊ ≤ a * ↑⌊c k ^ n⌋₊
   exact (div_le_iff (H n)).1 hn.le
+  -- 🎉 no goals
 #align tendsto_div_of_monotone_of_tendsto_div_floor_pow tendsto_div_of_monotone_of_tendsto_div_floor_pow
 
 /-- The sum of `1/(c^i)^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
@@ -244,7 +254,9 @@ constant. -/
 theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc : 1 < c) :
     (∑ i in (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by
   have cpos : 0 < c := zero_lt_one.trans hc
+  -- ⊢ ∑ i in filter (fun x => j < c ^ x) (range N), 1 / (c ^ i) ^ 2 ≤ c ^ 3 * (c - …
   have A : (0 : ℝ) < c⁻¹ ^ 2 := sq_pos_of_pos (inv_pos.2 cpos)
+  -- ⊢ ∑ i in filter (fun x => j < c ^ x) (range N), 1 / (c ^ i) ^ 2 ≤ c ^ 3 * (c - …
   have B : c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ ≤ c ^ 3 * (c - 1)⁻¹ := by
     rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_le_div_iff _ (sub_pos.2 hc)]
     swap
@@ -302,9 +314,13 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
 
 theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹) * c ^ i ≤ ⌊c ^ i⌋₊ := by
   have cpos : 0 < c := zero_lt_one.trans hc
+  -- ⊢ (1 - c⁻¹) * c ^ i ≤ ↑⌊c ^ i⌋₊
   rcases Nat.eq_zero_or_pos i with (rfl | hi)
+  -- ⊢ (1 - c⁻¹) * c ^ 0 ≤ ↑⌊c ^ 0⌋₊
   · simp only [pow_zero, Nat.floor_one, Nat.cast_one, mul_one, sub_le_self_iff, inv_nonneg, cpos.le]
+    -- 🎉 no goals
   have hident : 1 ≤ i := hi
+  -- ⊢ (1 - c⁻¹) * c ^ i ≤ ↑⌊c ^ i⌋₊
   calc
     (1 - c⁻¹) * c ^ i = c ^ i - c ^ i * c⁻¹ := by ring
     _ ≤ c ^ i - 1 := by
@@ -320,7 +336,9 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
     (∑ i in (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
       c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
   have cpos : 0 < c := zero_lt_one.trans hc
+  -- ⊢ ∑ i in filter (fun x => j < ↑⌊c ^ x⌋₊) (range N), 1 / ↑⌊c ^ i⌋₊ ^ 2 ≤ c ^ 5  …
   have A : 0 < 1 - c⁻¹ := sub_pos.2 (inv_lt_one hc)
+  -- ⊢ ∑ i in filter (fun x => j < ↑⌊c ^ x⌋₊) (range N), 1 / ↑⌊c ^ i⌋₊ ^ 2 ≤ c ^ 5  …
   calc
     (∑ i in (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
         ∑ i in (range N).filter (j < c ^ ·), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by

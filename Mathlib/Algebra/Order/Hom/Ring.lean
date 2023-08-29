@@ -175,8 +175,12 @@ instance : OrderRingHomClass (α →+*o β) α β
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+    -- ⊢ { toRingHom := { toMonoidHom := toMonoidHom✝, map_zero' := map_zero'✝, map_a …
+                             -- ⊢ { toRingHom := { toMonoidHom := toMonoidHom✝¹, map_zero' := map_zero'✝¹, map …
+                                                      -- ⊢ toMonoidHom✝¹ = toMonoidHom✝
     -- porting note: needed to add the following line
     exact MonoidHom.monoidHomClass.coe_injective' h
+    -- 🎉 no goals
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_add f := f.map_add'
@@ -329,10 +333,12 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
   ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, fun h => by rw [h]⟩
+                                                                   -- 🎉 no goals
 #align order_ring_hom.cancel_right OrderRingHom.cancel_right
 theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+                                  -- 🎉 no goals
 #align order_ring_hom.cancel_left OrderRingHom.cancel_left
 
 end Preorder
@@ -369,8 +375,11 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
+    -- ⊢ { toRingEquiv := { toEquiv := { toFun := toFun✝, invFun := invFun✝, left_inv …
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
+    -- ⊢ { toRingEquiv := { toEquiv := { toFun := toFun✝¹, invFun := invFun✝¹, left_i …
     congr
+    -- 🎉 no goals
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   map_le_map_iff f _ _ := f.map_le_map_iff'
@@ -437,6 +446,7 @@ instance : Inhabited (α ≃+*o α) :=
 @[simp]
 theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
   rfl
+  -- 🎉 no goals
 #align order_ring_iso.refl_apply OrderRingIso.refl_apply
 
 @[simp]
@@ -456,7 +466,9 @@ variable {α}
 protected def symm (e : α ≃+*o β) : β ≃+*o α :=
   ⟨e.toRingEquiv.symm, by
     intro a b
+    -- ⊢ Equiv.toFun (RingEquiv.symm e.toRingEquiv).toEquiv a ≤ Equiv.toFun (RingEqui …
     erw [← map_le_map_iff e, e.1.apply_symm_apply, e.1.apply_symm_apply]⟩
+    -- 🎉 no goals
 #align order_ring_iso.symm OrderRingIso.symm
 
 /-- See Note [custom simps projection] -/
@@ -536,6 +548,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
   fun f g h => FunLike.coe_injective <| by convert FunLike.ext'_iff.1 h using 0
+                                           -- 🎉 no goals
 #align order_ring_iso.to_order_ring_hom_injective OrderRingIso.toOrderRingHom_injective
 
 end NonAssocSemiring
@@ -556,14 +569,21 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
+    -- ⊢ ↑f x = ↑g x
     by_contra' h' : f x ≠ g x
+    -- ⊢ False
     wlog h : f x < g x generalizing α β with h₂
+    -- ⊢ False
     -- porting note: had to add the `generalizing` as there are random variables
     -- `F γ δ` flying around in context.
     · exact h₂ g f x (Ne.symm h') (h'.lt_or_lt.resolve_left h)
+      -- 🎉 no goals
     obtain ⟨q, hf, hg⟩ := exists_rat_btwn h
+    -- ⊢ False
     rw [← map_ratCast f] at hf
+    -- ⊢ False
     rw [← map_ratCast g] at hg
+    -- ⊢ False
     exact
       (lt_asymm ((OrderHomClass.mono g).reflect_lt hg) <|
           (OrderHomClass.mono f).reflect_lt hf).elim⟩
