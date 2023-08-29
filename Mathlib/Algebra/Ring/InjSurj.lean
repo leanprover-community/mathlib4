@@ -32,8 +32,8 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.distrib {S} [Mul R] [Add R] [Distrib S] (f : R → S)
     (hf : Injective f) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     Distrib R where
-  toMul := inferInstance
-  toAdd := inferInstance
+  toMul := by assumption
+  toAdd := by assumption
   left_distrib x y z := hf <| by simp only [*, left_distrib]
   right_distrib x y z := hf <| by simp only [*, right_distrib]
 #align function.injective.distrib Function.Injective.distrib
@@ -44,8 +44,8 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.distrib {S} [Distrib R] [Add S] [Mul S] (f : R → S)
     (hf : Surjective f) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     Distrib S where
-  toMul := inferInstance
-  toAdd := inferInstance
+  toMul := by assumption
+  toAdd := by assumption
   left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
   right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
 #align function.surjective.distrib Function.Surjective.distrib
@@ -68,7 +68,7 @@ protected def Function.Injective.nonUnitalNonAssocSemiring {α : Type u}
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) : NonUnitalNonAssocSemiring β :=
   { hf.mulZeroClass f zero mul, hf.distrib f add mul with
     toAddCommMonoid := hf.addCommMonoid f zero add nsmul
-    toMul := inferInstance }
+    toMul := by assumption }
 #align function.injective.non_unital_non_assoc_semiring Function.Injective.nonUnitalNonAssocSemiring
 
 /-- Pullback a `NonUnitalSemiring` instance along an injective function.
@@ -93,7 +93,8 @@ protected def Function.Injective.nonAssocSemiring {α : Type u} [NonAssocSemirin
   { hf.addMonoidWithOne f zero one add nsmul nat_cast,
     hf.mulOneClass f one mul with
     toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
-    toOne := inferInstance }
+    toOne := by assumption
+    toNatCast := by assumption }
 #align function.injective.non_assoc_semiring Function.Injective.nonAssocSemiring
 
 /-- Pullback a `Semiring` instance along an injective function.
@@ -108,7 +109,8 @@ protected def Function.Injective.semiring {α : Type u} [Semiring α] {β : Type
     hf.monoidWithZero f zero one mul npow,
     hf.distrib f add mul with
     toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
-    toOne := inferInstance }
+    toOne := by assumption
+    toNatCast := by assumption }
 #align function.injective.semiring Function.Injective.semiring
 
 /-- Pushforward a `NonUnitalNonAssocSemiring` instance along a surjective function.
@@ -120,7 +122,7 @@ protected def Function.Surjective.nonUnitalNonAssocSemiring {α : Type u}
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) : NonUnitalNonAssocSemiring β :=
   { hf.mulZeroClass f zero mul, hf.addCommMonoid f zero add nsmul, hf.distrib f add mul with
     toAddCommMonoid := hf.addCommMonoid f zero add nsmul
-    toMul := inferInstance }
+    toMul := by assumption }
 #align function.surjective.non_unital_non_assoc_semiring Function.Surjective.nonUnitalNonAssocSemiring
 
 /-- Pushforward a `NonUnitalSemiring` instance along a surjective function.
@@ -145,8 +147,8 @@ protected def Function.Surjective.nonAssocSemiring {α : Type u} [NonAssocSemiri
   { hf.addMonoidWithOne f zero one add nsmul nat_cast,
     hf.mulOneClass f one mul with
     toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
-    toOne := inferInstance
-    toNatCast := inferInstance }
+    toOne := by assumption
+    toNatCast := by assumption }
 #align function.surjective.non_assoc_semiring Function.Surjective.nonAssocSemiring
 
 /-- Pushforward a `Semiring` instance along a surjective function.
@@ -162,8 +164,8 @@ protected def Function.Surjective.semiring {α : Type u} [Semiring α] {β : Typ
     hf.addCommMonoid f zero add nsmul,
     hf.distrib f add mul with
     toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
-    toNatCast := inferInstance
-    toOne := inferInstance }
+    toNatCast := by assumption
+    toOne := by assumption }
 #align function.surjective.semiring Function.Surjective.semiring
 
 end InjectiveSurjectiveMaps
@@ -286,7 +288,7 @@ protected def Function.Injective.nonUnitalNonAssocRing [Zero β] [Add β] [Mul �
   { hf.mulZeroClass f zero mul,
     hf.distrib f add mul with
     toAddCommGroup := hf.addCommGroup f zero add neg sub nsmul zsmul
-    toMul := inferInstance }
+    toMul := by assumption }
 #align function.injective.non_unital_non_assoc_ring Function.Injective.nonUnitalNonAssocRing
 
 /-- Pushforward a `NonUnitalNonAssocRing` instance along a surjective function.
@@ -301,7 +303,7 @@ protected def Function.Surjective.nonUnitalNonAssocRing [Zero β] [Add β] [Mul 
   { hf.mulZeroClass f zero mul,
     hf.distrib f add mul with
     toAddCommGroup := hf.addCommGroup f zero add neg sub nsmul zsmul
-    toMul := inferInstance }
+    toMul := by assumption }
 #align function.surjective.non_unital_non_assoc_ring Function.Surjective.nonUnitalNonAssocRing
 
 end NonUnitalNonAssocRing
@@ -353,7 +355,8 @@ protected def Function.Injective.nonAssocRing [Zero β] [One β] [Add β] [Mul �
   { hf.addGroupWithOne f zero one add neg sub nsmul gsmul nat_cast int_cast,
     hf.mulOneClass f one mul with
     toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul gsmul
-    toOne := inferInstance }
+    toOne := by assumption
+    toNatCast := by assumption }
 #align function.injective.non_assoc_ring Function.Injective.nonAssocRing
 
 /-- Pushforward a `NonAssocRing` instance along a surjective function.
@@ -369,7 +372,8 @@ protected def Function.Surjective.nonAssocRing [Zero β] [One β] [Add β] [Mul 
   { hf.addGroupWithOne f zero one add neg sub nsmul gsmul nat_cast int_cast,
     hf.mulOneClass f one mul with
     toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul gsmul
-    toOne := inferInstance }
+    toOne := by assumption
+    toNatCast := by assumption }
 #align function.surjective.non_assoc_ring Function.Surjective.nonAssocRing
 
 end NonAssocRing
@@ -391,8 +395,9 @@ protected def Function.Injective.ring [Zero β] [One β] [Add β] [Mul β] [Neg 
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
     hf.addCommGroup f zero add neg sub nsmul zsmul with
     toSemiring := hf.semiring f zero one add mul nsmul npow nat_cast
-    toNeg := inferInstance
-    toSub := inferInstance }
+    toNeg := by assumption
+    toSub := by assumption
+    toIntCast := by assumption }
 #align function.injective.ring Function.Injective.ring
 
 /-- Pushforward a `Ring` instance along a surjective function.
@@ -408,8 +413,9 @@ protected def Function.Surjective.ring [Zero β] [One β] [Add β] [Mul β] [Neg
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
     hf.addCommGroup f zero add neg sub nsmul zsmul with
     toSemiring := hf.semiring f zero one add mul nsmul npow nat_cast
-    toNeg := inferInstance
-    toSub := inferInstance }
+    toNeg := by assumption
+    toSub := by assumption
+    toIntCast := by assumption }
 #align function.surjective.ring Function.Surjective.ring
 
 end Ring
