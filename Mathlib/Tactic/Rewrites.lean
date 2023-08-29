@@ -139,6 +139,9 @@ structure RewriteResult where
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
   rfl? : Option Bool
+  /-- The metavariable context after the rewrite.
+  This needs to be stored as part of the result so we can backtrack the state. -/
+  mctx : MetavarContext
 
 /-- Update a `RewriteResult` by filling in the `rfl?` field if it is currently `none`,
 to reflect whether the remaining goal can be closed by `with_reducible rfl`. -/
@@ -146,8 +149,11 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
   if let some _ := r.rfl? then
     return r
   try
-    (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
-    pure { r with rfl? := some true }
+    withoutModifyingState <| withMCtx r.mctx do
+      -- We use `withReducible` here to follow the behaviour of `rw`.
+      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+      -- We do not need to record the updated `MetavarContext` here.
+      pure { r with rfl? := some true }
   catch _ =>
     pure { r with rfl? := some false }
 
@@ -157,17 +163,19 @@ Find lemmas which can rewrite the goal.
 This core function returns a monadic list, to allow the caller to decide how long to search.
 See also `rewrites` for a more convenient interface.
 -/
+-- We need to supply the current `MetavarContext` (which will be reused for each lemma application)
+-- because `MLList.squash` executes lazily,
+-- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def rewritesCore (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) : MLList MetaM RewriteResult := MLList.squash fun _ => do
-
+    (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
+    MLList MetaM RewriteResult := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)
     ++ (← lemmas.2.getSubexpressionMatches target)
 
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
-
   let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
 
   -- Now deduplicate. We can't use `Array.deduplicateSorted` as we haven't completely sorted,
@@ -193,12 +201,12 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     -- Lift to a monadic list, so the caller can decide how much of the computation to run.
     MLList.ofList deduped.toList |>.filterMapM fun ⟨lem, symm, weight⟩ => try? do pure <|
       ⟨← mkConstWithFreshMVarLevels lem, symm, weight⟩
-  pure <| lazy.filterMapM fun ⟨expr, symm, weight⟩ => do
+  pure <| lazy.filterMapM fun ⟨expr, symm, weight⟩ => withMCtx ctx do
     trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
     return if result.mvarIds.isEmpty then
-      some ⟨expr, symm, weight, result, none⟩
+      some ⟨expr, symm, weight, result, none, ← getMCtx⟩
     else
       -- TODO Perhaps allow new goals? Try closing them with solveByElim?
       none
@@ -206,22 +214,22 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) (stop_at_rfl : Bool := False) (max : Nat := 20)
+    (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
-  let results ← rewritesCore hyps lemmas goal target
+  let results ← rewritesCore hyps lemmas (← getMCtx) goal target
     -- Don't report duplicate results.
     -- (TODO: we later pretty print results; save them here?)
     -- (TODO: a config flag to disable this,
     -- if distinct-but-pretty-print-the-same results are desirable?)
     |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stop_at_rfl` is False
-    |>.takeUpToFirst (fun r => stop_at_rfl && r.rfl? = some true)
+    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
+    |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)
     -- Don't use too many heartbeats.
     |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
     -- Bound the number of results.
     |>.takeAsList max
-  return match results.filter (fun r => stop_at_rfl && r.rfl? = some true) with
+  return match results.filter (fun r => stopAtRfl && r.rfl? = some true) with
   | [] =>
     -- TODO consider sorting the results,
     -- e.g. if we use solveByElim to fill arguments,
@@ -254,17 +262,18 @@ elab_rules : tactic |
       if a.isImplementationDetail then return
       let target ← instantiateMVars (← f.getType)
       let hyps ← localHypotheses (except := [f])
-      let results ← rewrites hyps lems goal target (stop_at_rfl := false)
+      let results ← rewrites hyps lems goal target (stopAtRfl := false)
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the hypothesis {
           ← f.getUserName}"
-      for r in results do
+      for r in results do withMCtx r.mctx do
         addRewriteSuggestion tk [(r.expr, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
         | some r => do
+            setMCtx r.mctx
             let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
             replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
         | _ => failure
@@ -272,22 +281,23 @@ elab_rules : tactic |
     do withMainContext do
       let target ← instantiateMVars (← goal.getType)
       let hyps ← localHypotheses
-      let results ← rewrites hyps lems goal target (stop_at_rfl := true)
+      let results ← rewrites hyps lems goal target (stopAtRfl := true)
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the goal"
-      for r in results do
+      for r in results do withMCtx r.mctx do
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
         addRewriteSuggestion tk [(r.expr, r.symm)]
           newGoal (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
         | some r => do
+            setMCtx r.mctx
             replaceMainGoal
               ((← goal.replaceTargetEq r.result.eNew r.result.eqProof) :: r.result.mvarIds)
             evalTactic (← `(tactic| try rfl))
         | _ => failure
-    (λ _ => throwError "Failed to find a rewrite for some location")
+    (fun _ => throwError "Failed to find a rewrite for some location")
 
 @[inherit_doc rewrites'] macro "rw?!" h:(ppSpace location)? : tactic =>
   `(tactic| rw? ! $[$h]?)
