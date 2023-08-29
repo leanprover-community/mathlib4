@@ -228,7 +228,8 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
     ∏ i : Fin n, f i = ∏ i in range n, f i :=
   calc
     ∏ i : Fin n, f i = ∏ i : { x // x ∈ range n }, f i :=
-      (Fin.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))).prod_comp' _ _ (by simp)
+      (Fin.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))).prod_comp' _ _
+        (fun i ↦ by simp; rfl)
     _ = ∏ i in range n, f i := by rw [← attach_eq_univ, prod_attach]
 #align fin.prod_univ_eq_prod_range Fin.prod_univ_eq_prod_range
 #align fin.sum_univ_eq_sum_range Fin.sum_univ_eq_sum_range

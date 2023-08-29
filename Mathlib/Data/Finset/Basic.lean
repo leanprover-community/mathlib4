@@ -172,8 +172,13 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 
 /-! ### Membership -/
 
+/-- We define a custom membership instance, because it has nicer definitional behavior than the one
+that comes from the `SetLike` instance. -/
+instance : Membership α (Finset α) :=
+  ⟨fun a s => a ∈ s.1⟩
+
 instance : SetLike (Finset α) α where
-  coe := fun s => { x | x ∈ s.1 }
+  coe := fun s => { x | x ∈ s }
   coe_injective' := fun s s' hss' ↦ by
     rw [← val_inj, s.nodup.ext s'.nodup]
     simpa [Set.ext_iff] using hss'
@@ -2609,18 +2614,13 @@ instance decidableDisjoint [DecidableEq α] (U V : Finset α) : Decidable (Disjo
   decidable_of_iff _ disjoint_left.symm
 #align finset.decidable_disjoint Finset.decidableDisjoint
 
--- porting notes: In lean3, the above was picked up when decidability of s ⊆ t was needed
--- in lean4 it seems this is not the case.
+-- porting notes: In lean3, `decidableDforallFinset` was picked up when decidability of s ⊆ t was
+-- needed, In lean4 it seems this is not the case.
 instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
   decidableDforallFinset
 
--- porting notes: In lean3, the above was picked up when decidability of s ⊂ t was needed
--- in lean4 it seems this is not the case.
-instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) := by
-  rw [ssubset_iff_subset_ne]
-  have h₁ : Decidable (s ⊆ t) := decidableSubsetFinset
-  have h₂ : Decidable (s ≠ t) := instDecidableNot
-  exact instDecidableAnd
+instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) :=
+  decidable_of_iff _ ssubset_iff_subset_ne.symm
 
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)] :

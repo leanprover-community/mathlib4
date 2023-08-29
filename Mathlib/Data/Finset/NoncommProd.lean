@@ -362,11 +362,11 @@ theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Di
   obtain ⟨sl, sl', rfl⟩ := exists_list_nodup_eq s
   obtain ⟨tl, tl', rfl⟩ := exists_list_nodup_eq t
   rw [List.disjoint_toFinset_iff_disjoint] at h
-  calc noncommProd (List.toFinset sl ∪ List.toFinset tl) f comm
+  calc noncommProd (sl.toFinset ∪ tl.toFinset) f comm
      = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
          (by convert comm; simp [Set.ext_iff]) := noncommProd_congr (by ext; simp) (by simp) _
-   _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 <| subset_union_left _ _) *
-         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 <| subset_union_right _ _) :=
+   _ = noncommProd sl.toFinset f (comm.mono <| coe_subset.2 <| subset_union_left _ _) *
+       noncommProd tl.toFinset f (comm.mono <| coe_subset.2 <| subset_union_right _ _) :=
     by simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl', h]
 #align finset.noncomm_prod_union_of_disjoint Finset.noncommProd_union_of_disjoint
 #align finset.noncomm_sum_union_of_disjoint Finset.noncommSum_union_of_disjoint
