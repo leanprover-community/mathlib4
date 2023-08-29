@@ -90,9 +90,9 @@ theorem suffixLevenshtein_minimum_le_levenshtein_append (xs ys₁ ys₂) :
 theorem le_levenshtein_cons (xs : List α) (y ys) :
     ∃ xs', xs' <:+ xs ∧ levenshtein C xs' ys ≤ levenshtein C xs (y :: ys) := by
   simpa [suffixLevenshtein_eq_tails_map, List.minimum_le_coe_iff] using
-    @suffixLevenshtein_minimum_le_levenshtein_cons _ _ δ _ _ xs y ys
+    suffixLevenshtein_minimum_le_levenshtein_cons (δ := δ) xs y ys
 
 theorem le_levenshtein_append (xs : List α) (ys₁ ys₂) :
     ∃ xs', xs' <:+ xs ∧ levenshtein C xs' ys₂ ≤ levenshtein C xs (ys₁ ++ ys₂) := by
   simpa [suffixLevenshtein_eq_tails_map, List.minimum_le_coe_iff] using
-    @suffixLevenshtein_minimum_le_levenshtein_append _ _ δ _ _  xs ys₁ ys₂
+    suffixLevenshtein_minimum_le_levenshtein_append (δ := δ) xs ys₁ ys₂
