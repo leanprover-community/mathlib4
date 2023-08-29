@@ -22,7 +22,7 @@ as a presheaf of abelian groups with additional data.
 * Pushforward and pullback.
 -/
 
-universe v₁ u₁ u
+universe v₁ u₁ u v
 
 open CategoryTheory LinearMap Opposite
 
@@ -34,9 +34,9 @@ described as a presheaf of abelian groups, and the extra data of the action at e
 and a condition relating functoriality and scalar multiplication. -/
 structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
   presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v}
-  module : ∀ X : Cᵒᵖ, Module (R.obj X) (presheaf.obj X)
+  module : ∀ X : Cᵒᵖ, Module (R.obj X) (presheaf.obj X) := by infer_instance
   map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
-    presheaf.map f (r • x) = R.map f r • presheaf.map f x
+    presheaf.map f (r • x) = R.map f r • presheaf.map f x := by aesop_cat
 
 namespace PresheafOfModules
 
@@ -128,6 +128,25 @@ theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   ext X x
   exact LinearMap.congr_fun (w X) x
 
+section
+
+variable (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
+  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
+    app Y (P.presheaf.map f x) = Q.presheaf.map f (app X x))
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`. -/
+def mk' : P ⟶ Q where
+  hom :=
+    { app := fun X => (app X).toAddMonoidHom
+      naturality := fun X Y f => by ext x; apply naturality }
+  map_smul X := (app X).map_smul
+
+@[simp]
+lemma mk'_app : (mk' app naturality).app = app := rfl
+
+end
+
 instance : Zero (P ⟶ Q) := ⟨mk 0 (by
   intros
   simp only [Limits.zero_app, AddMonoidHom.zero_apply, smul_zero])⟩
@@ -201,5 +220,70 @@ instance : Faithful (toPresheaf R) where
     have eq := congr_app h X
     simp only [toPresheaf_obj, toPresheaf_map_app] at eq
     simp only [← toAddMonoidHom_coe, eq]
+
+variable (R)
+
+/-- Evaluation on an object `X` gives a functor
+`PresheafOfModules R ⥤ ModuleCat (R.obj X)`. -/
+@[simps]
+def evaluation (X : Cᵒᵖ) : PresheafOfModules R ⥤ ModuleCat (R.obj X) where
+  obj M := M.obj X
+  map f := f.app X
+
+/-- Forgetting the module structure commutes with the evaluation on presheaves of modules. -/
+def evaluationCompForget₂Iso (X : Cᵒᵖ) :
+    evaluation R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
+      toPresheaf R ⋙ (CategoryTheory.evaluation Cᵒᵖ AddCommGroupCat).obj X :=
+  Iso.refl _
+
+/-- This structure contains the data and axioms in order to
+produce a `PresheafOfModules R` from a collection of types
+equipped with module structures over the various rings `R.obj X`.
+(See constructor `PresheafOfModules.mk'`.) -/
+structure MkStruct where
+  /-- the datum of a type for each object in `Cᵒᵖ` -/
+  obj (X : Cᵒᵖ) : Type v
+  /-- the abelian group structure on the types `obj X` -/
+  addCommGroup (X : Cᵒᵖ) : AddCommGroup (obj X) := by infer_instance
+  /-- the module structure on the types `obj X` over the various rings `R.obj X` -/
+  module (X : Cᵒᵖ) : Module (R.obj X) (obj X) := by infer_instance
+  /-- the semi-linear restriction maps -/
+  map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X →ₛₗ[R.map f] obj Y
+  /-- `map` is compatible with the identities -/
+  map_id (X : Cᵒᵖ) (x : obj X) : map (𝟙 X) x = x := by aesop_cat
+  /-- `map` is compatible with the composition -/
+  map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (x : obj X) :
+    map (f ≫ g) x = map g (map f x) := by aesop_cat
+
+-- this example is meant to test automation: the axioms for `MkStruct` are
+-- automatically found if we use the data from `M : PresheafOfModules R`
+example (M : PresheafOfModules R) : MkStruct R where
+  obj X := M.obj X
+  map f := M.map f
+
+variable {R}
+
+namespace MkStruct
+
+attribute [instance] addCommGroup module
+attribute [simp] map_id map_comp
+
+variable (M : MkStruct R)
+
+/-- The presheaf of abelian groups attached to a `MkStruct R`. -/
+@[simps]
+def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
+  obj X := AddCommGroupCat.of (M.obj X)
+  map f := AddCommGroupCat.ofHom (M.map f).toAddMonoidHom
+
+instance (X : Cᵒᵖ) : Module (R.obj X) (M.presheaf.obj X) := M.module X
+
+end MkStruct
+
+/-- Constructor for `PresheafOfModules R` based on a collection of types
+equipped with module structures over the various rings `R.obj X`, see
+the structure `MkStruct`. -/
+def mk' (M : MkStruct R) : PresheafOfModules R where
+  presheaf := M.presheaf
 
 end PresheafOfModules
