@@ -376,19 +376,52 @@ end Equivalence
 
 section Generator
 
+theorem Injective.of_subobject
+    (I : C)
+    (hI : ∀ (X : C) (S : Subobject X) (e : (S : C) ⟶ I),
+      ∃ (f : X ⟶ I), S.arrow ≫ f = e) :
+    Injective I := sorry
+
+#check WellPowered
+#find CompleteLattice (Subobject _)
+#check CategoryTheory.Subobject.completeSemilatticeSup
+#find (_ : _ → Subobject _) → (⨆ _, _ ⟶ _)
+
 theorem Injective.of_generator
+    [HasPullbacks C]
+    [Balanced C]
+    [HasCoproducts.{v₁} C]
+    [HasImages C]
     (G I : C)
     (hG : IsSeparator G)
     (h : ∀ (S : Subobject G) (t : (S : C) ⟶ I), ∃ e : G ⟶ I, S.arrow ≫ e = t) :
     Injective I := by
-  constructor
-  intro A B f i _
-  let As : Subobject B := .mk i
-  let e : (As : C) ≅ A := Subobject.underlyingIso i
-  let α : Type _ := { s : Σ (A' : Subobject B), (A' : C) ⟶ I //
-    ∃ (h : As ≤ s.fst), Subobject.ofLE _ _ h ≫ s.snd = e.hom ≫ f }
+  have : WellPowered C := by
+    apply wellPowered_of_isDetector
+    exact hG.isDetector
+  apply Injective.of_subobject
+  intro X S e
+  have : CompleteSemilatticeSup (Subobject X) := Subobject.completeSemilatticeSup
+  let β := Σ' (T : Subobject X) (hT : S ≤ T), (T : C) ⟶ I
+  let α : Type _ := { Tf : β // Subobject.ofLE _ _ Tf.snd.fst ≫ Tf.snd.snd = e }
   let r : α → α → Prop := fun s t => s.val.fst ≤ t.val.fst
-  have key := exists_maximal_of_chains_bounded (r := r)
+  have : Nonempty α := sorry
+  have key := exists_maximal_of_nonempty_chains_bounded (r := r) ?chain ?transitive
+  case chain =>
+    intro chain hchain hnonempty
+    let chain₁ := Subtype.val '' chain
+    let chain₂ := PSigma.fst '' chain₁
+    let ub₁ : β := ⟨sSup chain₂, ?_, ?_⟩
+    let ub : α := ⟨ub₁, ?_⟩
+    refine ⟨ub, ?_⟩
+    · sorry -- easy
+    · sorry -- not as easy
+    · sorry -- easy
+    · sorry
+  case transitive => exact fun {_ _ _} ↦ LE.le.trans
+  obtain ⟨m, hm⟩ := key
+  suffices m.val.fst = ⊤ by sorry
+  -- use h
   sorry
 
 end Generator
