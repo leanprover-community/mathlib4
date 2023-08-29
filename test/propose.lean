@@ -6,6 +6,7 @@ import Mathlib.Algebra.Associated
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true
 -- set_option trace.Meta.Tactic.solveByElim true
+set_option autoImplicit true
 
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 

@@ -72,13 +72,13 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
       TensorProduct.lmul' (S := S) R x • D.tensorProductTo y +
         TensorProduct.lmul' (S := S) R y • D.tensorProductTo x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_
-  · rw [MulZeroClass.zero_mul, map_zero, map_zero, zero_smul, smul_zero, add_zero]
+  · rw [zero_mul, map_zero, map_zero, zero_smul, smul_zero, add_zero]
   swap
   · intro x₁ y₁ h₁ h₂
     rw [add_mul, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
   intro x₁ x₂
   refine TensorProduct.induction_on y ?_ ?_ ?_
-  · rw [MulZeroClass.mul_zero, map_zero, map_zero, zero_smul, smul_zero, add_zero]
+  · rw [mul_zero, map_zero, map_zero, zero_smul, smul_zero, add_zero]
   swap
   · intro x₁ y₁ h₁ h₂
     rw [mul_add, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]

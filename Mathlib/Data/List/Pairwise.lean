@@ -279,7 +279,7 @@ theorem pairwise_of_reflexive_on_dupl_of_forall_ne [DecidableEq α] {l : List α
       by_cases H : hd = x
       · rw [H]
         refine' hr _ _
-        simpa [count_cons, H, Nat.succ_lt_succ_iff, count_pos] using hx
+        simpa [count_cons, H, Nat.succ_lt_succ_iff, count_pos_iff_mem] using hx
       · exact h hd (mem_cons_self _ _) x (mem_cons_of_mem _ hx) H
     · refine' IH _ _
       · intro x hx
@@ -297,7 +297,7 @@ theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : 
   classical
     refine'
       pairwise_of_reflexive_on_dupl_of_forall_ne (fun a ha' => _) fun a ha b hb _ => h a ha b hb
-    have ha := List.one_le_count_iff_mem.1 ha'.le
+    have ha := List.count_pos_iff_mem.1 ha'.le
     exact h a ha a ha
 #align list.pairwise_of_forall_mem_list List.pairwise_of_forall_mem_list
 
@@ -416,7 +416,7 @@ theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
     rw [pwFilter_cons_of_pos (BAll.imp_left (pwFilter_subset l) al), IH p]⟩
 #align list.pw_filter_eq_self List.pwFilter_eq_self
 
-alias pwFilter_eq_self ↔ _ Pairwise.pwFilter
+alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 #align list.pairwise.pw_filter List.Pairwise.pwFilter
 
 -- Porting note: commented out
@@ -432,7 +432,7 @@ theorem forall_mem_pwFilter (neg_trans : ∀ {x y z}, R x z → R x y ∨ R y z)
   ⟨by
     induction' l with x l IH; · exact fun _ _ h => (not_mem_nil _ h).elim
     simp only [forall_mem_cons]
-    by_cases h : ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · simp only [pwFilter_cons_of_pos h, forall_mem_cons, and_imp]
       exact fun r H => ⟨r, IH H⟩
     · rw [pwFilter_cons_of_neg h]
