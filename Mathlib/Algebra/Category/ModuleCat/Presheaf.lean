@@ -128,7 +128,7 @@ theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   ext X x
   exact LinearMap.congr_fun (w X) x
 
-instance : Zero (P ⟶ Q) := ⟨Hom.mk 0 (by
+instance : Zero (P ⟶ Q) := ⟨mk 0 (by
   intros
   simp only [Limits.zero_app, AddMonoidHom.zero_apply, smul_zero])⟩
 
