@@ -40,7 +40,7 @@ noncomputable def isometryEquivSumSquares [DecidableEq ι] (w' : ι → ℂ) :
   erw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
   refine' sum_congr rfl fun j hj => _
   have hsum : (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hw' i).unit : ℂ) • (Pi.basisFun ℂ ι) i) j =
-      v j • w j ^ (-(1 / 2 : ℂ)) := by
+      v j • (w j : ℂ) ^ (-(1 / 2 : ℂ)) := by
     rw [Finset.sum_apply, sum_eq_single j, Pi.basisFun_apply, IsUnit.unit_spec,
       LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply, Function.update_same, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_one]

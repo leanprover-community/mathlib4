@@ -515,7 +515,6 @@ theorem oangle_add {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
   rw [← Complex.arg_mul_coe_angle, o.kahler_mul y x z]
   congr 1
   convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
-  · norm_cast
   · have : 0 < ‖y‖ := by simpa using hy
     positivity
   · exact o.kahler_ne_zero hx hy

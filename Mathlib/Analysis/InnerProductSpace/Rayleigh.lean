@@ -242,7 +242,7 @@ namespace IsSymmetric
 /-- The supremum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2) := by
+    HasEigenvalue T (⨆ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_isROrC 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
@@ -262,7 +262,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
 /-- The infimum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2) := by
+    HasEigenvalue T (⨅ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_isROrC 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
