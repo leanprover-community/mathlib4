@@ -27,8 +27,8 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀) (hf : Injective f)
     (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) : MulZeroClass M₀' where
-  toMul := inferInstance
-  toZero := inferInstance
+  toMul := by assumption
+  toZero := by assumption
   zero_mul a := hf <| by simp only [mul, zero, zero_mul]
   mul_zero a := hf <| by simp only [mul, zero, mul_zero]
 #align function.injective.mul_zero_class Function.Injective.mulZeroClass
@@ -39,8 +39,8 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀ → M₀')
     (hf : Surjective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroClass M₀' where
-  toMul := inferInstance
-  toZero := inferInstance
+  toMul := by assumption
+  toZero := by assumption
   mul_zero := hf.forall.2 fun x => by simp only [← zero, ← mul, mul_zero]
   zero_mul := hf.forall.2 fun x => by simp only [← zero, ← mul, zero_mul]
 #align function.surjective.mul_zero_class Function.Surjective.mulZeroClass
@@ -88,7 +88,7 @@ protected def Function.Injective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M
     MulZeroOneClass M₀' :=
   { hf.mulZeroClass f zero mul with
     toMulOneClass := hf.mulOneClass f one mul
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.injective.mul_zero_one_class Function.Injective.mulZeroOneClass
 
 /-- Push forward a `MulZeroOneClass` instance along a surjective function.
@@ -99,7 +99,7 @@ protected def Function.Surjective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One 
     MulZeroOneClass M₀' :=
   { hf.mulZeroClass f zero mul with
     toMulOneClass := hf.mulOneClass f one mul
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.surjective.mul_zero_one_class Function.Surjective.mulZeroOneClass
 
 end MulZeroOneClass
@@ -114,7 +114,7 @@ protected def Function.Injective.semigroupWithZero [Zero M₀'] [Mul M₀'] [Sem
     SemigroupWithZero M₀' :=
   { hf.mulZeroClass f zero mul with
     toSemigroup := hf.semigroup f mul
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.injective.semigroup_with_zero Function.Injective.semigroupWithZero
 
 /-- Push forward a `SemigroupWithZero` along a surjective function.
@@ -125,7 +125,7 @@ protected def Function.Surjective.semigroupWithZero [SemigroupWithZero M₀] [Ze
     SemigroupWithZero M₀' :=
   { hf.mulZeroClass f zero mul with
     toSemigroup := hf.semigroup f mul
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.surjective.semigroup_with_zero Function.Surjective.semigroupWithZero
 
 end SemigroupWithZero
@@ -141,7 +141,7 @@ protected def Function.Injective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M�
     MonoidWithZero M₀' :=
   { hf.mulZeroClass f zero mul with
     toMonoid := hf.monoid f one mul npow
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.injective.monoid_with_zero Function.Injective.monoidWithZero
 
 /-- Push forward a `MonoidWithZero` along a surjective function.
@@ -153,7 +153,7 @@ protected def Function.Surjective.monoidWithZero [Zero M₀'] [Mul M₀'] [One M
     MonoidWithZero M₀' :=
   { hf.mulZeroClass f zero mul with
     toMonoid := hf.monoid f one mul npow
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.surjective.monoid_with_zero Function.Surjective.monoidWithZero
 
 /-- Pull back a `CommMonoidWithZero` along an injective function.
@@ -165,7 +165,7 @@ protected def Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [On
     CommMonoidWithZero M₀' :=
   { hf.mulZeroClass f zero mul with
     toCommMonoid := hf.commMonoid f one mul npow
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.injective.comm_monoid_with_zero Function.Injective.commMonoidWithZero
 
 /-- Push forward a `CommMonoidWithZero` along a surjective function.
@@ -177,7 +177,7 @@ protected def Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [O
     CommMonoidWithZero M₀' :=
   { hf.mulZeroClass f zero mul with
     toCommMonoid := hf.commMonoid f one mul npow
-    toZero := inferInstance }
+    toZero := by assumption }
 #align function.surjective.comm_monoid_with_zero Function.Surjective.commMonoidWithZero
 
 end MonoidWithZero
@@ -234,8 +234,8 @@ protected def Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One G�
   { hf.divInvMonoid f one mul inv div npow zpow,
     pullback_nonzero f zero one with
     toMonoidWithZero := hf.monoidWithZero f zero one mul npow,
-    toInv := inferInstance
-    toDiv := inferInstance
+    toInv := by assumption
+    toDiv := by assumption
     inv_zero := hf <| by erw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
       erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }
@@ -252,8 +252,8 @@ protected def Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G�
     GroupWithZero G₀' :=
   { hf.divInvMonoid f one mul inv div npow zpow with
     toMonoidWithZero := hf.monoidWithZero f zero one mul npow,
-    toInv := inferInstance
-    toDiv := inferInstance
+    toInv := by assumption
+    toDiv := by assumption
     inv_zero := by erw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
         erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) <| fun h ↦ hx (h.trans zero)), one]
@@ -276,8 +276,8 @@ protected def Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroupWithZero G₀' :=
   { hf.groupWithZero f zero one mul inv div npow zpow with
     toCommMonoidWithZero := hf.commMonoidWithZero f zero one mul npow
-    toInv := inferInstance
-    toDiv := inferInstance }
+    toInv := by assumption
+    toDiv := by assumption }
 #align function.injective.comm_group_with_zero Function.Injective.commGroupWithZero
 
 /-- Push forward a `CommGroupWithZero` along a surjective function.
@@ -290,8 +290,8 @@ protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [On
     CommGroupWithZero G₀' :=
   { hf.groupWithZero h01 f zero one mul inv div npow zpow with
     toCommMonoidWithZero := hf.commMonoidWithZero f zero one mul npow
-    toInv := inferInstance
-    toDiv := inferInstance }
+    toInv := by assumption
+    toDiv := by assumption }
 #align function.surjective.comm_group_with_zero Function.Surjective.commGroupWithZero
 
 end CommGroupWithZero
