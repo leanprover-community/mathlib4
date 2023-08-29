@@ -41,7 +41,7 @@ protected theorem ConvexOn.IciExtend (hf : ConvexOn 𝕜 s f) (hf' : MonotoneOn 
     ConvexOn 𝕜 {x | IciExtend (restrict (Ici z) (· ∈ s)) x} (IciExtend $ restrict (Ici z) f) := by
   refine' ⟨hf.1.IciExtend, λ x hx y hy a b ha hb hab ↦ _⟩
   dsimp [IciExtend_apply] at hx hy ⊢
-  refine' (hf' (hf.1.OrdConnected.uIcc_subset hx hy $ (Monotone.image_uIcc_subset λ _ _ ↦
+  refine' (hf' (hf.1.ordConnected.uIcc_subset hx hy $ (Monotone.image_uIcc_subset λ _ _ ↦
     max_le_max le_rfl) $ mem_image_of_mem _ $ convex_uIcc _ _
     left_mem_uIcc right_mem_uIcc ha hb hab) (hf.1 hx hy ha hb hab) _).trans (hf.2 hx hy ha hb hab)
   rw [smul_max ha z, smul_max hb z]
@@ -54,7 +54,7 @@ protected theorem ConvexOn.IicExtend (hf : ConvexOn 𝕜 s f) (hf' : AntitoneOn 
     ConvexOn 𝕜 {x | IicExtend (restrict (Iic z) (· ∈ s)) x} (IicExtend $ restrict (Iic z) f) := by
   refine' ⟨hf.1.IicExtend, λ x hx y hy a b ha hb hab ↦ _⟩
   dsimp [IicExtend_apply] at hx hy ⊢
-  refine' (hf' (hf.1 hx hy ha hb hab) (hf.1.OrdConnected.uIcc_subset hx hy $
+  refine' (hf' (hf.1 hx hy ha hb hab) (hf.1.ordConnected.uIcc_subset hx hy $
     (Monotone.image_uIcc_subset λ _ _ ↦ min_le_min le_rfl) $ mem_image_of_mem _ $ convex_uIcc _ _
     left_mem_uIcc right_mem_uIcc ha hb hab) _).trans (hf.2 hx hy ha hb hab)
   rw [smul_min ha z, smul_min hb z]
