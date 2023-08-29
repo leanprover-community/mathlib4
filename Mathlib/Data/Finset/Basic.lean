@@ -178,7 +178,7 @@ instance : Membership α (Finset α) :=
   ⟨fun a s => a ∈ s.1⟩
 
 instance : SetLike (Finset α) α where
-  coe := fun s => { x | x ∈ s }
+  coe := fun s => { x | x ∈ s.1 }
   coe_injective' := fun s s' hss' ↦ by
     rw [← val_inj, s.nodup.ext s'.nodup]
     simpa [Set.ext_iff] using hss'
