@@ -100,11 +100,11 @@ theorem ofCoprodI_of (i : ι) (g : G i) :
     (ofCoprodI (CoprodI.of g) : AmalgamatedProduct φ) = of g := by
   simp [ofCoprodI]
 
-theorem induction_on {C : AmalgamatedProduct φ → Prop}
+theorem induction_on {motive : AmalgamatedProduct φ → Prop}
     (x : AmalgamatedProduct φ)
-    (of  : ∀ (i : ι) (g : G i), C (of g))
-    (base : ∀ h, C (base h))
-    (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
+    (of  : ∀ (i : ι) (g : G i), motive (of g))
+    (base : ∀ h, motive (base h))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta AmalgamatedProduct AmalgamatedProduct.of AmalgamatedProduct.base at *
   induction x using QuotientGroup.induction_on with
   | H x =>
@@ -123,7 +123,7 @@ namespace NormalWord
 
 open Coset
 
-variable [Inhabited ι] (φ)
+variable (φ)
 
 noncomputable def normalizeSingle {i : ι} (g : G i) : H × G i :=
   letI := Classical.propDecidable (g ∈ (φ i).range )
@@ -552,7 +552,7 @@ end NormalWord
 open NormalWord
 
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
-    Function.Injective (of (G := G) (φ := φ) (i := i)) := by
+    Function.Injective (of (φ := φ) (i := i)) := by
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp (f := toPermNormalWord hφ) ?_
