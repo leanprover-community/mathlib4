@@ -203,6 +203,11 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
+/-- Turn a Finset into a Set. This definition might be deprecated in the future.
+Use the coercion instead. -/
+def toSet (s : Finset α) : Set α :=
+  s
+
 @[simp, norm_cast]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
