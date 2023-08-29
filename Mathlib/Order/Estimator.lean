@@ -159,6 +159,7 @@ instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a 
     Estimator.improveUntil (a.prod b) (fun p => bd < p.1) e.inner
       |>.toOption |>.map Estimator.fst.mk
 
+/-- Given an estimator for a pair, we can extract an estimator for the first factor. -/
 -- This isn't an instance as at the sole use case we need to provide
 -- the instance arguments by hand anyway.
 def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
