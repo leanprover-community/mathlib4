@@ -44,7 +44,7 @@ a semigroup. See note [reducible non-instances]. -/
 injective map that preserves `+` to an additive semigroup."]
 protected def semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₁ :=
-  { toMul := inferInstance
+  { toMul := by assumption
     mul_assoc := fun x y z => hf <| by erw [mul, mul, mul, mul, mul_assoc] }
 #align function.injective.semigroup Function.Injective.semigroup
 #align function.injective.add_semigroup Function.Injective.addSemigroup
@@ -93,9 +93,7 @@ preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -
 injective map that preserves `0` and `+` to an `AddZeroClass`."]
 protected def mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₁ :=
-  { toOne := inferInstance
-    toMul := inferInstance
-    one_mul := fun x => hf <| by erw [mul, one, one_mul],
+  { one_mul := fun x => hf <| by erw [mul, one, one_mul],
     mul_one := fun x => hf <| by erw [mul, one, mul_one] }
 #align function.injective.mul_one_class Function.Injective.mulOneClass
 #align function.injective.add_zero_class Function.Injective.addZeroClass
@@ -112,7 +110,6 @@ protected def monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (one :
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₁ :=
   { hf.mulOneClass f one mul with
     toSemigroup := hf.semigroup f mul
-    toOne := inferInstance
     npow := fun n x => x ^ n,
     npow_zero := fun x => hf <| by erw [npow, one, pow_zero],
     npow_succ := fun n x => hf <| by erw [npow, pow_succ, mul, npow] }
@@ -128,8 +125,6 @@ protected def addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul �
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
   { toAddMonoid := hf.addMonoid f zero add nsmul
-    toOne := inferInstance
-    toNatCast := inferInstance
     natCast_zero := hf (by erw [nat_cast, Nat.cast_zero, zero]),
     natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]) }
 #align function.injective.add_monoid_with_one Function.Injective.addMonoidWithOne
@@ -144,7 +139,7 @@ protected def leftCancelMonoid [LeftCancelMonoid M₂] (f : M₁ → M₂) (hf :
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : LeftCancelMonoid M₁ :=
   { hf.monoid f one mul npow with
     toLeftCancelSemigroup := hf.leftCancelSemigroup f mul
-    toOne := inferInstance }
+    toOne := by assumption }
 #align function.injective.left_cancel_monoid Function.Injective.leftCancelMonoid
 #align function.injective.add_left_cancel_monoid Function.Injective.addLeftCancelMonoid
 
@@ -158,7 +153,7 @@ protected def rightCancelMonoid [RightCancelMonoid M₂] (f : M₁ → M₂) (hf
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : RightCancelMonoid M₁ :=
   { hf.monoid f one mul npow with
     toRightCancelSemigroup := hf.rightCancelSemigroup f mul
-    toOne := inferInstance }
+    toOne := by assumption }
 #align function.injective.right_cancel_monoid Function.Injective.rightCancelMonoid
 #align function.injective.add_right_cancel_monoid Function.Injective.addRightCancelMonoid
 
@@ -220,7 +215,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation."]
 protected def involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
-  toInv := inferInstance
+  toInv := by assumption
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
 #align function.injective.has_involutive_inv Function.Injective.involutiveInv
 #align function.injective.has_involutive_neg Function.Injective.involutiveNeg
@@ -234,8 +229,8 @@ preserves `1` and `⁻¹` to a `InvOneClass`.  See note [reducible non-instances
 injective map that preserves `0` and unary `-` to an `NegZeroClass`."]
 protected def invOneClass [InvOneClass M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (inv : ∀ x, f (x⁻¹) = (f x)⁻¹) : InvOneClass M₁ :=
-  { toOne := inferInstance
-    toInv := inferInstance
+  { toOne := by assumption
+    toInv := by assumption
     inv_one := hf <| by erw [inv, one, inv_one] }
 
 variable [Div M₁] [Pow M₁ ℤ]
@@ -252,8 +247,8 @@ protected def divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injecti
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₁ :=
   { toMonoid := hf.monoid f one mul npow
-    toInv := inferInstance
-    toDiv := inferInstance
+    toInv := by assumption
+    toDiv := by assumption
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by erw [zpow, zpow_zero, one],
     zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_ofNat, pow_succ, zpow, zpow_ofNat],
@@ -339,9 +334,9 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
   { hf.addGroup f zero add neg sub nsmul zsmul with
     toAddMonoidWithOne := hf.addMonoidWithOne f zero one add nsmul nat_cast,
-    toIntCast := inferInstance
-    toNeg := inferInstance
-    toSub := inferInstance
+    toIntCast := by assumption
+    toNeg := by assumption
+    toSub := by assumption
     intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
@@ -372,9 +367,9 @@ protected def addCommGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul
     (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast with
     toAddCommGroup := hf.addCommGroup f zero add neg sub nsmul zsmul
-    toIntCast := inferInstance
-    toNatCast := inferInstance
-    toOne := inferInstance }
+    toIntCast := by assumption
+    toNatCast := by assumption
+    toOne := by assumption }
 #align function.injective.add_comm_group_with_one Function.Injective.addCommGroupWithOne
 
 end Injective
@@ -395,7 +390,7 @@ semigroup. See note [reducible non-instances]. -/
 surjective map that preserves `+` from an additive semigroup."]
 protected def semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₂ :=
-  { toMul := inferInstance
+  { toMul := by assumption
     mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc] }
 #align function.surjective.semigroup Function.Surjective.semigroup
 #align function.surjective.add_semigroup Function.Surjective.addSemigroup
@@ -421,8 +416,8 @@ variable [One M₂]
 surjective map that preserves `0` and `+` to an `AddZeroClass`."]
 protected def mulOneClass [MulOneClass M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₂ :=
-  { toOne := inferInstance
-    toMul := inferInstance
+  { toOne := by assumption
+    toMul := by assumption
     one_mul := hf.forall.2 fun x => by erw [← one, ← mul, one_mul],
     mul_one := hf.forall.2 fun x => by erw [← one, ← mul, mul_one] }
 #align function.surjective.mul_one_class Function.Surjective.mulOneClass
@@ -440,7 +435,7 @@ protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one 
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
   {  hf.mulOneClass f one mul with
     toSemigroup := hf.semigroup f mul
-    toOne := inferInstance
+    toOne := by assumption
     npow := fun n x => x ^ n,
     npow_zero := hf.forall.2 fun x => by dsimp only; erw [←npow, pow_zero, ←one],
     npow_succ := fun n => hf.forall.2 fun x => by dsimp only; erw [←npow, pow_succ, ←npow, ←mul] }
@@ -456,7 +451,7 @@ protected def addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul �
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
   { toAddMonoid := hf.addMonoid f zero add nsmul,
-    toOne := inferInstance,
+    toOne := by assumption,
     natCast := Nat.cast,
     natCast_zero := by rw [← Nat.cast, ← nat_cast, Nat.cast_zero, zero]
     natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast] }
@@ -494,7 +489,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation."]
 protected def involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
-  toInv := inferInstance
+  toInv := by assumption
   inv_inv := hf.forall.2 fun x => by erw [← inv, ← inv, inv_inv]
 #align function.surjective.has_involutive_inv Function.Surjective.involutiveInv
 #align function.surjective.has_involutive_neg Function.Surjective.involutiveNeg
@@ -513,8 +508,8 @@ protected def divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surject
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₂ :=
   { hf.monoid f one mul npow, ‹Div M₂›, ‹Inv M₂› with
     toMonoid := hf.monoid f one mul npow
-    toInv := inferInstance
-    toDiv := inferInstance
+    toInv := by assumption
+    toDiv := by assumption
     zpow := fun n x => x ^ n,
     zpow_zero' := hf.forall.2 fun x => by dsimp only; erw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
@@ -553,9 +548,9 @@ protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
   { hf.addGroup f zero add neg sub nsmul zsmul with
     toAddMonoidWithOne := hf.addMonoidWithOne f zero one add nsmul nat_cast
-    toNeg := inferInstance
-    toSub := inferInstance
-    toIntCast := inferInstance
+    toNeg := by assumption
+    toSub := by assumption
+    toIntCast := by assumption
     intCast_ofNat := fun n => by rw [← Int.cast, ← int_cast, Int.cast_ofNat, nat_cast],
     intCast_negSucc := fun n => by
       rw [← Int.cast, ← int_cast, Int.cast_negSucc, neg, nat_cast] }
@@ -589,9 +584,9 @@ protected def addCommGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg 
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
     hf.addCommMonoid _ zero add nsmul with
     toAddCommGroup := hf.addCommGroup f zero add neg sub nsmul zsmul
-    toIntCast := inferInstance
-    toNatCast := inferInstance
-    toOne := inferInstance }
+    toIntCast := by assumption
+    toNatCast := by assumption
+    toOne := by assumption }
 #align function.surjective.add_comm_group_with_one Function.Surjective.addCommGroupWithOne
 
 end Surjective
