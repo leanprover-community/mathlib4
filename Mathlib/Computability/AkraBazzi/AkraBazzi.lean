@@ -162,7 +162,9 @@ lemma eventually_b_le_r : ∀ᶠ (n:ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n /
   intro i
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
   rw [sub_le_iff_le_add, add_comm, ←sub_le_iff_le_add]
-  calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by aesop (add norm Real.norm_of_nonneg)
+  calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
+                            simp only [norm_mul, IsROrC.norm_natCast, sub_left_inj,
+                                       Nat.cast_eq_zero, Real.norm_of_nonneg h₁]
                          _ ≤ ‖(b i * n : ℝ) - r i n‖     := norm_sub_norm_le _ _
                          _ = ‖(r i n : ℝ) - b i * n‖      := norm_sub_rev _ _
                          _ ≤ n / log n ^ 2                := hn i
@@ -398,7 +400,6 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
     _ = fun x => (-x * log x ^ 2)⁻¹ := by
             simp_rw [neg_div, div_eq_mul_inv, ←mul_inv, neg_inv, neg_mul]
     _ =o[atTop] fun x => (x * 1)⁻¹ := by
-            simp_rw [one_div]
             refine IsLittleO.inv_rev ?_ ?_
             · refine IsBigO.mul_isLittleO
                 (by rw [isBigO_neg_right]; aesop (add safe isBigO_refl)) ?_
