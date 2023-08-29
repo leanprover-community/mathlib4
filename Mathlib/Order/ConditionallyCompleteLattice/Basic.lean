@@ -961,6 +961,19 @@ theorem csSup_eq_of_is_forall_le_of_forall_le_imp_ge (hs : s.Nonempty) (h_is_ub 
   (csSup_le hs h_is_ub).antisymm ((h_b_le_ub _) fun _ => le_csSup ⟨b, h_is_ub⟩)
 #align cSup_eq_of_is_forall_le_of_forall_le_imp_ge csSup_eq_of_is_forall_le_of_forall_le_imp_ge
 
+lemma Set.Iic_ciInf [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
+    Iic (⨅ i, f i) = ⋂ i, Iic (f i) := by
+  apply Subset.antisymm
+  · rintro x hx - ⟨i, rfl⟩
+    exact hx.trans (ciInf_le hf _)
+  · rintro x hx
+    apply le_ciInf
+    simpa using hx
+
+lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
+    Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
+  Iic_ciInf (α := αᵒᵈ) hf
+
 end ConditionallyCompleteLattice
 
 instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ∀ _i : ι, Type*}
@@ -1063,6 +1076,16 @@ theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) (ht : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
     sInf s = sInf t :=
   @csSup_eq_csSup_of_forall_exists_le αᵒᵈ _ s t hs ht
+
+lemma sSup_iUnion_Iic (f : ι → α) : sSup (⋃ (i : ι), Iic (f i)) = ⨆ i, f i := by
+  apply csSup_eq_csSup_of_forall_exists_le
+  · rintro x ⟨-, ⟨i, rfl⟩, hi⟩
+    exact ⟨f i, mem_range_self _, hi⟩
+  · rintro x ⟨i, rfl⟩
+    exact ⟨f i, mem_iUnion_of_mem i le_rfl, le_rfl⟩
+
+lemma sInf_iUnion_Ici (f : ι → α) : sInf (⋃ (i : ι), Ici (f i)) = ⨅ i, f i :=
+  sSup_iUnion_Iic (α := αᵒᵈ) f
 
 theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : ¬ (∀ i, p i)) :
     ⨆ (i) (h : p i), f ⟨i, h⟩ = iSup f ⊔ sSup ∅ := by
