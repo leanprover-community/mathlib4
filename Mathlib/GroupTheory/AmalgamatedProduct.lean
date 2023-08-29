@@ -30,7 +30,6 @@ def of {i : ι} : G i →* AmalgamatedProduct φ :=
 def base : H →* AmalgamatedProduct φ :=
   (QuotientGroup.mk' _).comp <| inr
 
-@[simp]
 theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
   ext x
   apply QuotientGroup.eq.2
@@ -38,7 +37,6 @@ theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
   simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
   exact ⟨_, _, rfl⟩
 
-@[simp]
 theorem of_apply_eq_base (i : ι) (x : H) : of (φ i x) = base (φ := φ) x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
