@@ -25,7 +25,7 @@ to avoid needing the entire edit distance calculation in unlikely search paths.
 
 set_option autoImplicit true
 
-variable [CanonicallyLinearOrderedAddMonoid δ]
+variable {α β δ : Type} [CanonicallyLinearOrderedAddMonoid δ]
     (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--
@@ -40,7 +40,7 @@ this variant constructs a lower bound for the pair consisting of
 the Levenshtein distance from `xs` to `ys`,
 along with the length of `ys`.
 -/
-structure LevenshteinEstimator' : Type _ where
+structure LevenshteinEstimator' : Type where
   /-- The prefix of `ys` that is not is not involved in the bound, in reverse order. -/
   pre_rev : List β
   /-- The suffix of `ys`, such that the distance from `xs` to `ys` is bounded below
@@ -105,7 +105,8 @@ instance estimator' :
     | [y], split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff, List.reverse_nil, List.nil_append]
       right
-      simp at b_eq
+      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff)
+      · simpa using b_eq
       rw [b_eq]
       constructor
       · refine (?_ : _ ≤ _).trans (List.minimum_of_length_pos_le_getElem _)
@@ -115,7 +116,8 @@ instance estimator' :
     | y₁ :: y₂ :: t, split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff]
       right
-      simp at b_eq
+      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff)
+      · simpa using b_eq
       rw [b_eq]
       constructor
       · simp only [d_eq, List.minimum_of_length_pos_le_iff, List.coe_minimum_of_length_pos]
@@ -128,7 +130,7 @@ def LevenshteinEstimator : Type _ :=
 
 instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
     Estimator (Thunk.mk fun _ => levenshtein C xs ys) (LevenshteinEstimator C xs ys) :=
-  @instEstimatorFst _ _ _ _ _ _ (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) _ (estimator' C xs ys)
+  Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
 instance [CanonicallyLinearOrderedAddMonoid δ]

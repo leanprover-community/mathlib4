@@ -159,9 +159,11 @@ instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a 
     Estimator.improveUntil (a.prod b) (fun p => bd < p.1) e.inner
       |>.toOption |>.map Estimator.fst.mk
 
-instance instEstimatorFst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
+-- This isn't an instance as at the sole use case we need to provide
+-- the instance arguments by hand anyway.
+def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
     [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
-    (a : Thunk α) (b : Thunk β) (ε : Type _) [Estimator (a.prod b) ε] :
+    (a : Thunk α) (b : Thunk β) {ε : Type _} (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1
   improve_spec e := by
