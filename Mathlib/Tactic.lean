@@ -134,6 +134,7 @@ import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
+import Mathlib.Tactic.RewriteSearch
 import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
