@@ -6,6 +6,8 @@ Authors: Scott Morrison
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Control.Basic
 
+set_option autoImplicit true
+
 /-!
 # The `check_instances` tactic
 
