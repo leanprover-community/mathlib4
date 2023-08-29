@@ -11,12 +11,13 @@ import Mathlib.Data.Finset.Basic
 /-!
 # Complete Partial Order
 
-This file begins by showing that each set `s` in a join-semilattice generates a directed set `d`
-such that:
+This file begins by showing that each set `s` in a join-semilattice generates a set
+`directedClosure s` such that:
 
-- `s` is a subset of `d`
-- `s` and `d` share the same upper bounds
-- `u` is the least upper bound of `s` if and only if it is the least upper bound of `d`
+- `directedClosure_directedOn`: `directedClosure s` is directed
+- `subset_toDirectedSet`: `s` is a subset of `directedClosure s`
+- `Set_DirectedSet_LUB`: `u` is the least upper bound of `s` if and only if it is the least upper
+  bound of `directedClosure s`
 
 It follows that if every directed set in a join-semilattice has a least upper bound then the join is
 complete.
