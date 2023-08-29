@@ -10,33 +10,33 @@ import Mathlib.GroupTheory.QuotientGroup
 
 open Monoid CoprodI Subgroup Coprod Function
 
-variable {ι : Type*} {G : ι → Type*} [∀ i, Group (G i)] {H : Type*} [Group H]
-  (φ : ∀ i, H →* G i) {K : Type*} [Monoid K]
+variable {ι : Type*} {G : ι → Type*} {H : Type*} {K : Type*} [Monoid K]
 
-
-def AmalgamatedProduct : Type _ :=
-  ((CoprodI G) ∗ H) ⧸ normalClosure
-    (⋃ (i : ι), Set.range (fun g : H => inl (of ((φ i) g)⁻¹) * (inr g)))
+def AmalgamatedProduct [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) : Type _ :=
+  (conGen (fun x y : Coprod (CoprodI G) H =>
+    ∃ i x', x = inl (of (φ i x')) ∧ y = inr x')).Quotient
 
 namespace AmalgamatedProduct
 
-variable {φ}
+section Monoid
 
-instance : Group (AmalgamatedProduct φ) :=
-  QuotientGroup.Quotient.group _
+variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
+
+instance : Monoid (AmalgamatedProduct φ) := by
+  delta AmalgamatedProduct; infer_instance
 
 def of {i : ι} : G i →* AmalgamatedProduct φ :=
-  (QuotientGroup.mk' _).comp <| inl.comp CoprodI.of
+  (Con.mk' _).comp <| inl.comp CoprodI.of
 
 def base : H →* AmalgamatedProduct φ :=
-  (QuotientGroup.mk' _).comp inr
+  (Con.mk' _).comp inr
 
 theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
   ext x
-  apply QuotientGroup.eq.2
-  refine subset_normalClosure ?_
+  apply (Con.eq _).2
+  refine ConGen.Rel.of _ _ ?_
   simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
-  exact ⟨_, _, rfl⟩
+  exact ⟨_, _, rfl, rfl⟩
 
 theorem of_apply_eq_base (i : ι) (x : H) : of (φ i x) = base (φ := φ) x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
@@ -44,40 +44,32 @@ theorem of_apply_eq_base (i : ι) (x : H) : of (φ i x) = base (φ := φ) x := b
 def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     AmalgamatedProduct φ →* K :=
-  QuotientGroup.lift _ (Coprod.lift (CoprodI.lift f) k)
-    (show normalClosure _ ≤ (Coprod.lift (CoprodI.lift f) k).ker
-      from normalClosure_le_normal <| by
-        simp only [Set.iUnion_subset_iff, Set.range_subset_iff,
-          MonoidHom.mem_ker, SetLike.mem_coe, Coprod.lift_inl,
-          map_inv, map_mul, lift_inl, lift_inr]
-        intro i h
-        simp only [FunLike.ext_iff, MonoidHom.coe_comp, Function.comp_apply] at hf
-        simp only [← map_inv, CoprodI.lift_of, hf, inv_mul_self, ← map_mul, map_one])
+  Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
+    apply Con.conGen_le <| fun x y => ?_
+    rintro ⟨i, x', rfl, rfl⟩
+    simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
+    simp [hf]
 
-set_option maxHeartbeats 200000 in
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
     {i : ι} (g : G i) : (lift f k hf) (of g : AmalgamatedProduct φ) = f i g := by
   delta AmalgamatedProduct lift of
-  simp only [MonoidHom.coe_comp, QuotientGroup.coe_mk', Function.comp_apply,
-    QuotientGroup.lift_mk, lift_inl, lift_of, CoprodI.lift_of]
+  simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inl, CoprodI.lift_of]
 
-set_option maxHeartbeats 200000 in
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
     (g : H) : (lift f k hf) (base g : AmalgamatedProduct φ) = k g := by
   delta AmalgamatedProduct lift base
-  simp only [MonoidHom.coe_comp, QuotientGroup.coe_mk', Function.comp_apply,
-    QuotientGroup.lift_mk, lift_inr, lift_of]
+  simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inr]
 
 set_option maxHeartbeats 200000 in
 @[ext 1199]
 theorem hom_ext {f g : AmalgamatedProduct φ →* K}
     (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _))
     (hbase : f.comp base = g.comp base) : f = g :=
-  QuotientGroup.monoidHom_ext _ <|
+  (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.ext_hom _ _
       (CoprodI.ext_hom _ _ h)
       hbase
@@ -106,7 +98,7 @@ theorem induction_on {motive : AmalgamatedProduct φ → Prop}
     (base : ∀ h, motive (base h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta AmalgamatedProduct AmalgamatedProduct.of AmalgamatedProduct.base at *
-  induction x using QuotientGroup.induction_on with
+  induction x using Con.induction_on with
   | H x =>
     induction x using Coprod.induction_on with
     | h_inl g =>
@@ -118,6 +110,15 @@ theorem induction_on {motive : AmalgamatedProduct φ → Prop}
       | h_one => simpa using base 1
     | h_inr h => exact base h
     | h_mul x y ihx ihy => exact mul _ _ ihx ihy
+
+end Monoid
+
+variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
+
+instance : Group (AmalgamatedProduct φ) := by
+  delta AmalgamatedProduct; exact
+  { inferInstanceAs (Group (Con.Quotient _)) with
+    toMonoid := inferInstance }
 
 namespace NormalWord
 
@@ -517,6 +518,7 @@ theorem prod_toPermNormalWord (g : AmalgamatedProduct φ) (w : NormalWord φ hφ
 @[simp]
 theorem prod_empty : (empty : NormalWord φ hφ).prod = 1 := by
   simp [prod, empty]
+  rw [map_one, map_one]
 
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some i)
