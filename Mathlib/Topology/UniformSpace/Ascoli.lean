@@ -96,11 +96,39 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
 
-lemma Equicontinuous.uniformInducing_pi_iff_uniformFun [UniformSpace ι] [CompactSpace X]
+lemma Equicontinuous.uniformInducing_uniformFun_iff_pi [UniformSpace ι] [CompactSpace X]
     (hF : Equicontinuous F) :
     UniformInducing (UniformFun.ofFun ∘ F) ↔ UniformInducing F := by
   rw [uniformInducing_iff_uniformSpace, uniformInducing_iff_uniformSpace, ← hF.comap_uniformFun_eq]
   rfl
+
+lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSpace X]
+    (hF : Equicontinuous F) :
+    Inducing (UniformFun.ofFun ∘ F) ↔ Inducing F := by
+  rw [inducing_iff, inducing_iff]
+  change (_ = (UniformFun.uniformSpace X α |>.comap F |>.toTopologicalSpace)) ↔
+         (_ = (Pi.uniformSpace _ |>.comap F |>.toTopologicalSpace))
+  rw [hF.comap_uniformFun_eq]
+
+theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
+    (hF : Equicontinuous F) (ℱ : Filter ι) (f : X → α) :
+    Tendsto (UniformFun.ofFun ∘ F) ℱ (𝓝 <| UniformFun.ofFun f) ↔
+    Tendsto F ℱ (𝓝 f) := by
+  rcases ℱ.eq_or_neBot with rfl | ℱ_ne
+  · simp
+  constructor <;> intro H
+  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _|>.comp H
+  · set S : Set (X → α) := closure (range F)
+    set 𝒢 : Filter S := comap (↑) (map F ℱ)
+    have hS : S.Equicontinuous := closure' (by rwa [equicontinuous_iff_range] at hF) continuous_id
+    have ind : Inducing (UniformFun.ofFun ∘ (↑) : S → X →ᵤ α) :=
+      hS.inducing_uniformFun_iff_pi.mpr ⟨rfl⟩
+    have f_mem : f ∈ S := mem_closure_of_tendsto H range_mem_map
+    have h𝒢ℱ : map (↑) 𝒢 = map F ℱ := Filter.map_comap_of_mem
+      (Subtype.range_coe ▸ mem_of_superset range_mem_map subset_closure)
+    have H' : Tendsto id 𝒢 (𝓝 ⟨f, f_mem⟩) := by
+      rwa [tendsto_id', nhds_induced, ← map_le_iff_le_comap, h𝒢ℱ]
+    rwa [ind.tendsto_nhds_iff, comp.right_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
 
 theorem Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
@@ -119,8 +147,8 @@ theorem Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K
   -- goal is the uniform structure induced by the maps `K.restrict ∘ F : ι → (K → α)` for `K ∈ 𝔖`.
   have H2 : (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) =
       ⨅ (K ∈ 𝔖), (Pi.uniformSpace _).comap (K.restrict ∘ F) := by
-    simp_rw [UniformSpace.comap_comap, Pi.uniformSpace_comap_restrict (fun _ ↦ α),
-      UniformSpace.comap_iInf, iInf_sUnion]
+    simp_rw [UniformSpace.comap_comap, Pi.uniformSpace_comap_restrict_sUnion (fun _ ↦ α) 𝔖,
+      UniformSpace.comap_iInf]
   -- But, for `K ∈ 𝔖` fixed, we know that the uniform structures of `K →ᵤ α` and `K → α`
   -- induce, via the equicontinuous family `K.restrict ∘ F`, the same uniform structure on `ι`.
   have H3 : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.restrict ∘ F) =
@@ -130,7 +158,7 @@ theorem Equicontinuous.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K
   -- Combining these three facts completes the proof.
   simp_rw [H1, H2, iInf_congr fun K ↦ iInf_congr fun hK ↦ H3 K hK]
 
-lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun' [UniformSpace ι]
+lemma Equicontinuous.uniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
     UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
@@ -139,7 +167,7 @@ lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun' [UniformSpace ι]
       ← Equicontinuous.comap_uniformOnFun_eq h𝔖 hF]
   rfl
 
-lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun [UniformSpace ι]
+lemma Equicontinuous.uniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous ((K.restrict : (X → α) → (K → α)) ∘ F)) :
     UniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
@@ -147,11 +175,11 @@ lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun [UniformSpace ι]
   rw [eq_univ_iff_forall] at 𝔖_covers
   let φ : ((⋃₀ 𝔖) → α) ≃ᵤ (X → α) := UniformEquiv.piCongrLeft (β := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
-  rw [Equicontinuous.uniformInducing_pi_iff_uniformOnFun' h𝔖 hF,
+  rw [Equicontinuous.uniformInducing_uniformOnFun_iff_pi' h𝔖 hF,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.uniformInducing.comp H, fun H ↦ φ.symm.uniformInducing.comp H⟩
 
-lemma Equicontinuous.inducing_pi_iff_uniformOnFun' [TopologicalSpace ι]
+lemma Equicontinuous.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
     Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
@@ -161,7 +189,7 @@ lemma Equicontinuous.inducing_pi_iff_uniformOnFun' [TopologicalSpace ι]
     (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F)).toTopologicalSpace)
   rw [← Equicontinuous.comap_uniformOnFun_eq h𝔖 hF]
 
-lemma Equicontinuous.inducing_pi_iff_uniformOnFun [TopologicalSpace ι]
+lemma Equicontinuous.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
     Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
@@ -169,9 +197,96 @@ lemma Equicontinuous.inducing_pi_iff_uniformOnFun [TopologicalSpace ι]
   rw [eq_univ_iff_forall] at 𝔖_covers
   let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (β := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
-  rw [Equicontinuous.inducing_pi_iff_uniformOnFun' h𝔖 hF,
+  rw [Equicontinuous.inducing_uniformOnFun_iff_pi' h𝔖 hF,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.inducing.comp H, fun H ↦ φ.symm.inducing.comp H⟩
+
+theorem Equicontinuous.tendsto_pi_iff_uniformOnFun
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) (ℱ : Filter ι) (f : X → α) :
+    Tendsto (UniformOnFun.ofFun 𝔖 ∘ F) ℱ (𝓝 <| UniformOnFun.ofFun 𝔖 f) ↔
+    Tendsto ((⋃₀ 𝔖).restrict ∘ F) ℱ (𝓝 <| (⋃₀ 𝔖).restrict f) := by
+  rcases ℱ.eq_or_neBot with rfl | ℱ_ne
+  · simp
+  constructor <;> intro H
+  · exact (UniformOnFun.uniformContinuous_restrict_toFun).continuous.tendsto _|>.comp H
+  · let _ : TopologicalSpace (X → α) := induced (⋃₀ 𝔖).restrict inferInstance
+    set S : Set (X → α) := closure (range F)
+    set 𝒢 : Filter S := comap (↑) (map F ℱ)
+    have hS : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ ((↑) : S → X → α)) :=
+      fun K hK ↦ closure' _ continuous_id
+    have ind : Inducing (UniformFun.ofFun ∘ (↑) : S → X →ᵤ α) :=
+      hS.inducing_uniformFun_iff_pi.mpr ⟨rfl⟩
+    have f_mem : f ∈ S := mem_closure_of_tendsto H range_mem_map
+    have h𝒢ℱ : map (↑) 𝒢 = map F ℱ := Filter.map_comap_of_mem
+      (Subtype.range_coe ▸ mem_of_superset range_mem_map subset_closure)
+    have H' : Tendsto id 𝒢 (𝓝 ⟨f, f_mem⟩) := by
+      rwa [tendsto_id', nhds_induced, ← map_le_iff_le_comap, h𝒢ℱ]
+    rwa [ind.tendsto_nhds_iff, comp.right_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
+
+  --rcases ℱ.eq_or_neBot with rfl | ℱ_ne
+  --· simp
+  --have : Nonempty ι := ℱ_ne.nonempty
+  --constructor <;> intro H
+  --· rw [tendsto_pi_nhds]
+  --  intro ⟨x, hx⟩
+  --  rcases mem_sUnion.mpr hx with ⟨K, hK, x_in_K⟩
+  --  change Tendsto (eval x ∘ F) ℱ (𝓝 <| f x)
+  --  exact (UniformOnFun.uniformContinuous_eval_of_mem α 𝔖 x_in_K hK).continuous.tendsto _ |>.comp H
+  --· let _ : TopologicalSpace (X → α) := induced (⋃₀ 𝔖).restrict inferInstance
+  --  have restrict_inducing : Inducing ((⋃₀ 𝔖).restrict : (X → α) → _ → α) := ⟨rfl⟩
+  --  rw [← tendsto_comap_iff, ← nhds_induced] at H
+  --  set s := closure (range F)
+  --  have f_mem_s : f ∈ s := mem_closure_of_tendsto H (eventually_of_forall mem_range_self)
+--
+  --  have : Inducing ((UniformOnFun.ofFun 𝔖) ∘ ((↑) : s → X → α)) := by
+  --    rw [Equicontinuous.inducing_pi_iff_uniformOnFun' h𝔖 fun K hK ↦ ?_]
+  --    · exact Inducing.comp ⟨rfl⟩ ⟨rfl⟩
+  --    · refine Equicontinuous.closure' ?_ (continuous_pi fun ⟨x, hx⟩ ↦ ?_)
+  --      · have : K.restrict ∘ ((↑) : range F → X → α) =
+  --               K.restrict ∘ F ∘ F.invFun ∘ ((↑) : range F → X → α) :=
+  --          funext <| forall_subtype_range_iff.mpr fun i ↦ by
+  --          simp only [comp_apply, apply_invFun_apply]
+  --        have hF' := (hF K hK).comp (F.invFun ∘ ((↑) : range F → X → α))
+  --        rwa [comp.assoc, ← this] at hF'
+  --      · have hx' : x ∈ ⋃₀ 𝔖 := mem_sUnion_of_mem hx hK
+  --        exact (continuous_apply (⟨x, hx'⟩ : ⋃₀ 𝔖)).comp restrict_inducing.continuous
+  --  sorry
+
+theorem Equicontinuous.tendsto_pi_iff_uniformOnFun'
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) (ℱ : Filter ι) (f : X → α) :
+    Tendsto (UniformOnFun.ofFun 𝔖 ∘ F) ℱ (𝓝 <| UniformOnFun.ofFun 𝔖 f) ↔
+    Tendsto ((⋃₀ 𝔖).restrict ∘ F) ℱ (𝓝 <| (⋃₀ 𝔖).restrict f) := by
+  rcases ℱ.eq_or_neBot with rfl | ℱ_ne
+  · simp
+  have : Nonempty ι := ℱ_ne.nonempty
+  constructor <;> intro H
+  · rw [tendsto_pi_nhds]
+    intro ⟨x, hx⟩
+    rcases mem_sUnion.mpr hx with ⟨K, hK, x_in_K⟩
+    change Tendsto (eval x ∘ F) ℱ (𝓝 <| f x)
+    exact (UniformOnFun.uniformContinuous_eval_of_mem α 𝔖 x_in_K hK).continuous.tendsto _ |>.comp H
+  · let _ : TopologicalSpace (X → α) := induced (⋃₀ 𝔖).restrict inferInstance
+    have restrict_inducing : Inducing ((⋃₀ 𝔖).restrict : (X → α) → _ → α) := ⟨rfl⟩
+    rw [← tendsto_comap_iff, ← nhds_induced] at H
+    set s := closure (range F)
+    have f_mem_s : f ∈ s := mem_closure_of_tendsto H (eventually_of_forall mem_range_self)
+
+    have : Inducing ((UniformOnFun.ofFun 𝔖) ∘ ((↑) : s → X → α)) := by
+      rw [Equicontinuous.inducing_pi_iff_uniformOnFun' h𝔖 fun K hK ↦ ?_]
+      · exact Inducing.comp ⟨rfl⟩ ⟨rfl⟩
+      · refine Equicontinuous.closure' ?_ (continuous_pi fun ⟨x, hx⟩ ↦ ?_)
+        · have : K.restrict ∘ ((↑) : range F → X → α) =
+                 K.restrict ∘ F ∘ F.invFun ∘ ((↑) : range F → X → α) :=
+            funext <| forall_subtype_range_iff.mpr fun i ↦ by
+            simp only [comp_apply, apply_invFun_apply]
+          have hF' := (hF K hK).comp (F.invFun ∘ ((↑) : range F → X → α))
+          rwa [comp.assoc, ← this] at hF'
+        · have hx' : x ∈ ⋃₀ 𝔖 := mem_sUnion_of_mem hx hK
+          exact (continuous_apply (⟨x, hx'⟩ : ⋃₀ 𝔖)).comp restrict_inducing.continuous
+    sorry
+
 
 --lemma Equicontinuous.closure_pi_eq_closure_uniformOnFun'
 --    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) {s : Set ι}
