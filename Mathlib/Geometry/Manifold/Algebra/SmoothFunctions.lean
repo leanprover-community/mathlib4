@@ -204,8 +204,8 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
     SmoothMap.monoid with
     left_distrib := fun a b c => by ext; exact left_distrib _ _ _
     right_distrib := fun a b c => by ext; exact right_distrib _ _ _
-    zero_mul := fun a => by ext; exact MulZeroClass.zero_mul _
-    mul_zero := fun a => by ext; exact MulZeroClass.mul_zero _ }
+    zero_mul := fun a => by ext; exact zero_mul _
+    mul_zero := fun a => by ext; exact mul_zero _ }
 #align smooth_map.semiring SmoothMap.semiring
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :

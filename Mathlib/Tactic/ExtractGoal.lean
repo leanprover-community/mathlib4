@@ -93,6 +93,8 @@ example : (X : Nat[X]) = X := by
 ```
 -/
 
+namespace Mathlib.Tactic
+
 open Lean Elab Tactic
 
 /--
