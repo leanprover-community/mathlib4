@@ -154,7 +154,7 @@ instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
 @[simp]
 lemma sub_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f - g).app X = f.app X - g.app X := rfl
 
-instance : Neg (P ⟶ Q) := ⟨fun f => Hom.mk (-f.hom) (by
+instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
   intros
   rw [NatTrans.app_neg, AddMonoidHom.neg_apply, AddMonoidHom.neg_apply,
     map_smul, smul_neg])⟩
