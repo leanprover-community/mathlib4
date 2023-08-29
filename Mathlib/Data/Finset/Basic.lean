@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.SetLike.Basic
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
@@ -169,11 +170,15 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 #align finset.has_decidable_eq Finset.decidableEq
 
-/-! ### membership -/
+/-! ### SetLike instance -/
 
+instance : SetLike (Finset α) α where
+  coe := fun s => { x | x ∈ s.1 }
+  coe_injective' := fun s s' hss' ↦ by
+    rw [← val_inj, s.nodup.ext s'.nodup]
+    simpa [Set.ext_iff] using hss'
 
-instance : Membership α (Finset α) :=
-  ⟨fun a s => a ∈ s.1⟩
+/-! ### Membership -/
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
