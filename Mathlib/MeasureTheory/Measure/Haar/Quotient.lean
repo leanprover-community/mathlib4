@@ -36,15 +36,6 @@ open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal
 
-section SigmaFiniteSmul -- delete after merging origin/master
-
-theorem MeasureTheory.SigmaFinite.add {α : Type u_1} {m0 : MeasurableSpace α}
-    {μ ν : MeasureTheory.Measure α} (hμ : MeasureTheory.SigmaFinite μ)
-    (hν : MeasureTheory.SigmaFinite ν) : MeasureTheory.SigmaFinite (μ + ν) := by
-  sorry --- exists already
-
-end SigmaFiniteSmul
-
 section
 
 variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
@@ -73,27 +64,11 @@ end
 section smulInvariantMeasure
 
 variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
-  [SecondCountableTopology (G ⧸ Γ)]
-
---variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 μ)
-
-variable {μ : Measure (G ⧸ Γ)}
+  [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Countable Γ] [T2Space (G ⧸ Γ)]
+  [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
+  [QuotientVolumeEqVolumePreimage μ]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
-
--- set_option linter.unusedVariables false in
--- class QuotientVolumeEqVolumePreimage' [MeasureSpace (G ⧸ Γ)] : Prop where
---   projection_respects_measure : ∀ (t : Set G)
---   (fund_dom_t : IsFundamentalDomain (Subgroup.opposite Γ) t)
---     (meas_t : MeasurableSet t) (U : Set (G ⧸ Γ)) (meas_U : MeasurableSet U),
---     volume U = volume (π ⁻¹' U ∩ t)
-
-
-variable [Countable Γ] --[MeasureSpace G] -- [MeasureSpace (G ⧸ Γ)]
-  [QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ]
---[BorelSpace (G ⧸ Γ)]
-
 
 -- more beautiful theorem: if you have a measure speace downstairs and the downstairs one is smul invariant
 -- then fund dom independent
@@ -139,38 +114,31 @@ theorem measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
     [IsMulLeftInvariant (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)]
     (𝓕 : Set G) (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
     (meas_𝓕 : MeasurableSet 𝓕) (μ : Measure (G ⧸ Γ))
-    [QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ] :
-    MeasurePreserving (@QuotientGroup.mk G _ Γ) (volume.restrict 𝓕) μ := by
-  apply measurePreserving_quotient_mk_of_quotientVolumeEqVolumePreimage
-  · assumption
-  · assumption
+    [QuotientVolumeEqVolumePreimage μ] :
+    MeasurePreserving (@QuotientGroup.mk G _ Γ) (volume.restrict 𝓕) μ :=
+  measurePreserving_quotient_mk_of_quotientVolumeEqVolumePreimage 𝓕 h𝓕 meas_𝓕 μ
 
-
----- the quotient measure is finite, assuming the covolume is finite
+/-- The quotient measure is finite, assuming the covolume is finite -/
 theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
     [IsMulRightInvariant (volume : Measure G)]
-    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
-    (h : hasFun.covolume ≠ ⊤) :
+    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] (h : hasFun.covolume ≠ ⊤) :
     IsFiniteMeasure μ := by
   obtain ⟨𝓕, h𝓕, meas_𝓕⟩ := hasFun.has_fundamental_domain_characterization
-  rw [@QuotientVolumeEqVolumePreimage.eq_map_restrict (s := 𝓕) (G := Subgroup.opposite Γ) _
-    _ _ _ _ _ _ meas_𝓕 h𝓕 μ _]
+  rw [QuotientVolumeEqVolumePreimage.eq_map_restrict h𝓕 meas_𝓕 μ]
   have : Fact (volume 𝓕 < ⊤) := by
     apply Fact.mk
     convert Ne.lt_top h
-    rw [hasFun.covolume_eq_volume]
-    exact h𝓕
+    rw [h𝓕.covolume_eq_volume meas_𝓕]
   exact inferInstance
 
 end smulInvariantMeasure
 
 section mulInvariantMeasure
 
-
 variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
   [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
-  [Countable Γ] [QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ]
+  [Countable Γ] [QuotientVolumeEqVolumePreimage μ]
 
 /-- Assuming `Γ` is a normal subgroup of a topological group `G`, the pushforward to the quotient
   group `G ⧸ Γ` of the restriction of a both left- and right-invariant measure on `G` to a
@@ -187,12 +155,9 @@ instance MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotie
     apply Measure.ext
     intro A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
-    --haveI := h𝓕.smulInvariantMeasure_map
     convert measure_preimage_smul x₁ μ A using 1
-    rw [← h, Measure.map_apply]
-    · rfl
-    · exact measurable_const_mul _
-    · exact hA
+    rw [← h, Measure.map_apply (measurable_const_mul _) hA]
+    rfl
 
 end mulInvariantMeasure
 
@@ -209,19 +174,18 @@ variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [Topologic
   satisfies `QuotientVolumeEqVolumePreimage`. -/
 theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
     [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
-    (h : hasFun.covolume = μ univ)
-    (finiteCovol : hasFun.covolume ≠ ⊤) :
-    QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ where
+    (h : hasFun.covolume = μ univ) (finiteCovol : hasFun.covolume ≠ ⊤) :
+    QuotientVolumeEqVolumePreimage μ where
       projection_respects_measure := by
         intro 𝓕 h𝓕 meas_𝓕 U meas_U
         let π := @QuotientGroup.mk G _ Γ
         let μ' := Measure.map π (volume.restrict 𝓕)
-        have QVEVPμ' : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ' :=
-            quotientVolumeEqVolumePreimage_map_restrict (G := (Subgroup.opposite Γ)) G 𝓕 meas_𝓕 h𝓕
+        have QVEVPμ' : QuotientVolumeEqVolumePreimage μ' :=
+            quotientVolumeEqVolumePreimage_map_restrict 𝓕 h𝓕 meas_𝓕
         have Fin_μ' : IsFiniteMeasure μ' :=
           QuotientVolumeEqVolumePreimage.Finite_quotient finiteCovol
         have covol_𝓕 : hasFun.covolume = volume 𝓕
-        · rw [hasFun.covolume_eq_volume 𝓕 h𝓕]
+        · rw [h𝓕.covolume_eq_volume meas_𝓕]
         rw [covol_𝓕] at finiteCovol h
         by_cases meas_𝓕_ne_zero : volume 𝓕 = 0
         · trans (0 : ENNReal)
@@ -233,9 +197,8 @@ theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
             rw [← le_zero_iff]
             calc _ ≤ volume 𝓕 := measure_mono (Set.inter_subset_right _ _)
                 _   = 0 := meas_𝓕_ne_zero
-        suffices : μ =  μ'
-        · rw [this]
-          rw [Measure.map_apply]
+        suffices : μ = μ'
+        · rw [this, Measure.map_apply]
           · rw [Measure.restrict_apply]
             · rfl
             · exact @measurable_quotient_mk' _ _ (MulAction.orbitRel (Subgroup.opposite Γ) G) U
@@ -246,8 +209,8 @@ theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
             MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotient
           rw [measure_eq_div_smul (μ := μ') (ν := μ) (s := univ), ← h]
           simp only
-          rw [Measure.map_apply, Measure.restrict_apply, preimage_univ, Set.univ_inter]
-          rw [ENNReal.div_self, one_smul]
+          rw [Measure.map_apply, Measure.restrict_apply, preimage_univ, Set.univ_inter,
+            ENNReal.div_self, one_smul]
           · exact meas_𝓕_ne_zero
           · exact finiteCovol
           · rw [preimage_univ]
@@ -268,7 +231,7 @@ section QuotientIsHaar
 variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [i : T2Space (G ⧸ Γ)]
   [ii : SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
-  [Countable Γ] [QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ]
+  [Countable Γ] [QuotientVolumeEqVolumePreimage μ]
 
 variable [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] (K : PositiveCompacts (G ⧸ Γ))
 
@@ -277,7 +240,8 @@ variable [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] (K : Positive
   with the volume on `G`, that measure `μ` is a multiple of Haar measure on `G ⧸ Γ`. -/
 theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar [Subgroup.Normal Γ]
     [MeasureTheory.Measure.IsHaarMeasure (volume : Measure G)]
-    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] [IsMulRightInvariant (volume : Measure G)]
+    [IsMulRightInvariant (volume : Measure G)]
+    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
     (h : hasFun.covolume < ⊤) :
     μ = μ K • MeasureTheory.Measure.haarMeasure K := by
   have : IsFiniteMeasure μ := QuotientVolumeEqVolumePreimage.Finite_quotient h.ne
@@ -291,7 +255,7 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar [Subgroup.
 
 
 /-- Any map on the zero measures is `MeasurePreserving` -/
-theorem MeasurePreserving.zero {f : X → Y} [MeasurableSpace X] [MeasurableSpace Y]
+theorem MeasurePreserving.zero {X Y : Type _} {f : X → Y} [MeasurableSpace X] [MeasurableSpace Y]
     (hf : Measurable f) : MeasurePreserving f 0 0 where
       measurable := hf
       map_eq := Measure.map_zero f
@@ -370,18 +334,16 @@ theorem MeasurePreserving_QuotientGroup.foo [Subgroup.Normal Γ]
     ext U meas_U
     simp only [nnreal_smul_coe_apply]
     congr
-  haveI hasDom : HasFundamentalDomain (Subgroup.opposite Γ) G := {
-    has_fundamental_domain_characterization := ⟨𝓕, h𝓕, meas_𝓕⟩
-  }
-  haveI : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := by
+  haveI hasDom : HasFundamentalDomain (Subgroup.opposite Γ) G := ⟨⟨𝓕, h𝓕, meas_𝓕⟩⟩
+  haveI : QuotientVolumeEqVolumePreimage μ := by
     apply MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
-    · rw [hasDom.covolume_eq_volume 𝓕 h𝓕]
+    · rw [h𝓕.covolume_eq_volume meas_𝓕]
       norm_cast
       simp only [QuotientGroup.coe_mk', Pi.smul_apply, smul_eq_mul]
 
       sorry -- ???
     · convert h𝓕_finite
-      rw [hasDom.covolume_eq_volume 𝓕 h𝓕]
+      rw [h𝓕.covolume_eq_volume meas_𝓕]
   apply measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
   · exact h𝓕
   · exact meas_𝓕

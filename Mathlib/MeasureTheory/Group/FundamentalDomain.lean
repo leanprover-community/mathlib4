@@ -779,9 +779,9 @@ lemma HasFundamentalDomain_of_IsFundamentalDomain  {G : Type _} {α : Type _} [G
     (meas_s : MeasurableSet s) : HasFundamentalDomain G α := ⟨⟨s, fund_dom_s, meas_s⟩⟩
 
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s` -/
-lemma HasFundamentalDomain.covolume_eq_volume {G : Type _} {α : Type _} [Group G] [MulAction G α]
+lemma IsFundamentalDomain.covolume_eq_volume {G : Type _} {α : Type _} [Group G] [MulAction G α]
     [MeasurableSpace G] [Countable G] [MeasureSpace α] [MeasurableSMul G α]
-    [SMulInvariantMeasure G α volume] (s : Set α) (fund_dom_s : IsFundamentalDomain G s)
+    [SMulInvariantMeasure G α volume] {s : Set α} (fund_dom_s : IsFundamentalDomain G s)
     (meas_s : MeasurableSet s) :
     (HasFundamentalDomain_of_IsFundamentalDomain s fund_dom_s meas_s).covolume = volume s := by
   set funDom := (HasFundamentalDomain_of_IsFundamentalDomain s fund_dom_s meas_s)
@@ -793,7 +793,7 @@ end HasFundamentalDomain
 
 section QuotientVolumeEqVolume
 
-variable (G α : Type _) [Group G] [MulAction G α] [MeasureSpace α]
+variable {G α : Type _} [Group G] [MulAction G α] [MeasureSpace α]
 
 local notation "α_mod_G" => MulAction.orbitRel G α
 
@@ -811,8 +811,8 @@ projection_respects_measure : ∀ (t : Set α) (fund_dom_t : IsFundamentalDomain
 /-- One can make an instance of the `QuotientVolumeEqVolumePreimage` typeclass from any given
   fundamental domain `s` -/
 lemma Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage [Countable G] [MeasurableSpace G]
-    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
-    (fund_dom_s : IsFundamentalDomain G s) :
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α)
+    (fund_dom_s : IsFundamentalDomain G s) (meas_s : MeasurableSet s) :
     @QuotientVolumeEqVolumePreimage G α _ _ _ (s.quotientMeasure volume meas_s) :=
   { projection_respects_measure := by
       intro t fund_dom_t meas_t U meas_U
@@ -822,17 +822,16 @@ lemma Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage [Countable G] [Mea
 /-- One can make an instance of the `QuotientVolumeEqVolumePreimage` typeclass from any given
   fundamental domain `s` -/
 lemma quotientVolumeEqVolumePreimage_map_restrict [Countable G] [MeasurableSpace G]
-    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
-    (fund_dom_s : IsFundamentalDomain G s) :
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α)
+    (fund_dom_s : IsFundamentalDomain G s) (meas_s : MeasurableSet s) :
     @QuotientVolumeEqVolumePreimage G α _ _ _ (Measure.map π (volume.restrict s)) := by
-  convert Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage G α s meas_s fund_dom_s
+  convert Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage s fund_dom_s meas_s
   exact Eq.symm (quotientMeasure_eq_map_restrict s volume meas_s)
 
 /-- Any two measures satisfying `QuotientVolumeEqVolumePreimage` are equal. -/
 lemma QuotientVolumeEqVolumePreimage.unique
-    [hasFun : HasFundamentalDomain G α]
-    (μ ν : Measure (Quotient α_mod_G))
-    [QuotientVolumeEqVolumePreimage G α μ] [QuotientVolumeEqVolumePreimage G α ν] :
+    [hasFun : HasFundamentalDomain G α] (μ ν : Measure (Quotient α_mod_G))
+    [QuotientVolumeEqVolumePreimage μ] [QuotientVolumeEqVolumePreimage ν] :
     μ = ν := by
   ext U meas_U
   obtain ⟨𝓕, h𝓕, meas_𝓕⟩ := hasFun.has_fundamental_domain_characterization
@@ -842,22 +841,23 @@ lemma QuotientVolumeEqVolumePreimage.unique
 /-- Any measure satisfying `QuotientVolumeEqVolumePreimage` is equal to the quotient measure
   associated to the fundamental domain. -/
 lemma QuotientVolumeEqVolumePreimage.eq_quotient_measure [Countable G] [MeasurableSpace G]
-    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
-    (fund_dom_s : IsFundamentalDomain G s) (μ : Measure (Quotient α_mod_G))
-    [QuotientVolumeEqVolumePreimage G α μ] :
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α)
+    (fund_dom_s : IsFundamentalDomain G s) (meas_s : MeasurableSet s)
+    (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ] :
     μ = s.quotientMeasure volume meas_s := by
   haveI : HasFundamentalDomain G α := ⟨⟨s, fund_dom_s, meas_s⟩⟩
-  haveI := Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage G α s meas_s fund_dom_s
+  haveI := Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage s fund_dom_s meas_s
   apply QuotientVolumeEqVolumePreimage.unique
 
 /-- Any measure satisfying `QuotientVolumeEqVolumePreimage` is equal to the quotient measure
   associated to the fundamental domain. -/
 lemma QuotientVolumeEqVolumePreimage.eq_map_restrict [Countable G] [MeasurableSpace G]
-    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
-    (fund_dom_s : IsFundamentalDomain G s) (μ : Measure (Quotient α_mod_G))
-    [QuotientVolumeEqVolumePreimage G α μ] :
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] {s : Set α}
+    (fund_dom_s : IsFundamentalDomain G s) (meas_s : MeasurableSet s)
+    (μ : Measure (Quotient α_mod_G))
+    [QuotientVolumeEqVolumePreimage μ] :
     μ = Measure.map π (volume.restrict s) := by
-  rw [QuotientVolumeEqVolumePreimage.eq_quotient_measure G α s meas_s fund_dom_s μ]
+  rw [QuotientVolumeEqVolumePreimage.eq_quotient_measure s fund_dom_s meas_s μ]
   exact Set.quotientMeasure_eq_map_restrict s volume meas_s
 
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
@@ -865,7 +865,7 @@ lemma QuotientVolumeEqVolumePreimage.eq_map_restrict [Countable G] [MeasurableSp
 theorem measurePreserving_quotient_mk_of_quotientVolumeEqVolumePreimage
     [Countable G] [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α volume]
     (𝓕 : Set α) (h𝓕 : IsFundamentalDomain G 𝓕) (meas_𝓕 : MeasurableSet 𝓕)
-    (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage G α μ] :
+    (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ] :
     MeasurePreserving π (volume.restrict 𝓕) μ where
   measurable := measurable_quotient_mk' (s := α_mod_G)
   map_eq := by
