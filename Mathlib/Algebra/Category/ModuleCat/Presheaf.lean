@@ -139,7 +139,7 @@ lemma zero_app (X : Cᵒᵖ) : (0 : P ⟶ Q).app X = 0 := rfl
 
 variable {P Q}
 
-instance : Add (P ⟶ Q) := ⟨fun f g => Hom.mk (f.hom + g.hom) (by
+instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
   intros
   simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
 
