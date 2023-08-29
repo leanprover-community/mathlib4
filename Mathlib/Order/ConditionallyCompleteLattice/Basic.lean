@@ -1092,7 +1092,7 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
   classical
   rcases not_forall.1 hp with ⟨i₀, hi₀⟩
   have : Nonempty ι := ⟨i₀⟩
-  simp [ciSup_eq_ite]
+  simp only [ciSup_eq_ite]
   by_cases H : BddAbove (range f)
   · have B : BddAbove (range fun i ↦ if h : p i then f ⟨i, h⟩ else sSup ∅) := by
       rcases H with ⟨c, hc⟩

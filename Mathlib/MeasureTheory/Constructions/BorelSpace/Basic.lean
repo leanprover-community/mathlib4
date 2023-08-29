@@ -1136,6 +1136,8 @@ theorem measurable_of_Ici {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
   assumption
 #align measurable_of_Ici measurable_of_Ici
 
+/-- If a function is the least upper bound of countably many measurable functions,
+then it is measurable. -/
 theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
     (hg : ∀ b, IsLUB { a | ∃ i, f i b = a } (g b)) : Measurable g := by
   change ∀ b, IsLUB (range fun i => f i b) (g b) at hg
@@ -1146,6 +1148,8 @@ theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
 #align measurable.is_lub Measurable.isLUB
 
+/-- If a function is the least upper bound of countably many measurable functions on a measurable
+set `s`, and coincides with a measurable function outside of `s`, then it is measurable. -/
 theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g' : δ → α}
     (hf : ∀ i, Measurable (f i))
     {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsLUB { a | ∃ i, f i b = a } (g b))
@@ -1210,10 +1214,20 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
         (aeSeq.measure_compl_aeSeqSet_eq_zero hf hg)).symm
 #align ae_measurable.is_lub AEMeasurable.isLUB
 
+/-- If a function is the greatest lower bound of countably many measurable functions,
+then it is measurable. -/
 theorem Measurable.isGLB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
     (hg : ∀ b, IsGLB { a | ∃ i, f i b = a } (g b)) : Measurable g :=
   Measurable.isLUB (α := αᵒᵈ) hf hg
 #align measurable.is_glb Measurable.isGLB
+
+/-- If a function is the greatest lower bound of countably many measurable functions on a measurable
+set `s`, and coincides with a measurable function outside of `s`, then it is measurable. -/
+theorem Measurable.isGLB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g' : δ → α}
+    (hf : ∀ i, Measurable (f i))
+    {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsGLB { a | ∃ i, f i b = a } (g b))
+    (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g :=
+  Measurable.isLUB_of_mem (α := αᵒᵈ) hf hs hg hg'  g'_meas
 
 theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsGLB { a | ∃ i, f i b = a } (g b)) :
@@ -1433,174 +1447,20 @@ theorem aemeasurable_biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   aemeasurable_biSup (α := αᵒᵈ) s hs hf
 #align ae_measurable_binfi aemeasurable_biInf
 
-theorem Filter.HasBasis.liminf_eq_sSup_univ_of_empty {ι ι'} {f : ι → α} {v : Filter ι}
-    {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) (i : ι') (hi : p i) (h'i : s i = ∅) :
-    liminf f v = sSup univ := by
-  simp_rw [liminf_eq, hv.eventually_iff]
-  congr
-  ext x
-  simp only [mem_setOf_eq, mem_univ, iff_true]
-  exact ⟨i, by simp [hi, h'i]⟩
-
-theorem measurableSet_bddAbove_iUnion_iInter_Iic {ι' ι : Type*} {s : ι' → Set ι} [Countable ι']
-    (hs : ∀ j, Set.Countable (s j)) {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
-    MeasurableSet {x | BddAbove (⋃ (j : ι'), ⋂ (i : s j), Iic (f i x))} := by
-  by_cases H : ∃ j, s j = ∅
-  · rcases H with ⟨j, hj⟩
-    have : ∀ x, ⋃ (j : ι'), ⋂ (i : s j), Iic (f i x) = univ := by
-      intro x
-      apply univ_subset_iff.1 (fun y _hy ↦ ?_)
-      apply mem_iUnion_of_mem j
-      simp [hj]
-    simp only [this, MeasurableSet.const]
-  push_neg at H
-  have : {x | BddAbove (⋃ (j : ι'), ⋂ (i : s j), Iic (f i x))}
-      = {x | BddAbove (range (fun (j : ι') ↦ ⨅ (i : s j), f i x))} := by
-    refine Subset.antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
-    · rcases hx with ⟨c, hc⟩
-      refine ⟨c ⊔ sInf ∅, ?_⟩
-      rintro - ⟨j, rfl⟩
-      simp only [le_sup_iff]
-      by_cases H' : BddBelow (range fun (i : s j) ↦ f (↑i) x)
-      · left
-        contrapose! hc
-        simp only [upperBounds, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic,
-          forall_exists_index, mem_setOf_eq, not_forall, not_le, exists_prop, exists_and_right]
-        exact ⟨_, ⟨j, fun i hi ↦ ciInf_le H' ⟨i, hi⟩⟩, hc⟩
-      · right
-        apply le_of_eq
-        exact csInf_of_not_bddBelow H'
-    · rcases hx with ⟨c, hc⟩
-      refine ⟨c, ?_⟩
-      simp only [upperBounds, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, forall_exists_index,
-        mem_setOf_eq]
-      intro a j Hj
-      apply le_trans _ (hc (mem_range_self j))
-      have : Nonempty (s j) := nonempty_iff_ne_empty'.2 (H j)
-      exact le_ciInf (fun (i : s j) ↦ Hj i i.2)
-  rw [this]
-  apply measurableSet_bddAbove_range (fun j ↦ ?_)
-  have : Countable (s j) := countable_coe_iff.2 (hs j)
-  exact measurable_iInf (fun i ↦ hf _)
-
-lemma sSup_iUnion_Iic {ι : Type*} (f : ι → α) : sSup (⋃ (i : ι), Iic (f i)) = ⨆ i, f i := by
-  apply csSup_eq_csSup_of_forall_exists_le
-  · rintro x ⟨-, ⟨i, rfl⟩, hi⟩
-    exact ⟨f i, mem_range_self _, hi⟩
-  · rintro x ⟨i, rfl⟩
-    exact ⟨f i, mem_iUnion_of_mem i le_rfl, le_rfl⟩
-
-lemma Iic_ciInf {ι : Type*} [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
-    Iic (⨅ i, f i) = ⋂ (i : ι), Iic (f i) := by
-  apply Subset.antisymm
-  · rintro x hx - ⟨i, rfl⟩
-    apply le_trans hx _
-    exact ciInf_le hf _
-  · rintro x hx
-    apply le_ciInf
-    simpa using hx
-
-lemma nonempty_iInter_Iic_iff {f : ι → α} :
-    (⋂ (i : ι), Iic (f i)).Nonempty ↔ BddBelow (range f) := by
-  have : (⋂ (i : ι), Iic (f i)) = lowerBounds (range f) := by
-    ext c; simp [lowerBounds]
-  simp [this, BddBelow]
-
-/-- Given an indexed family of sets `s j` and a function `f`, then `liminf_reparam j` is equal
-to `j` if `f` is bounded below on `s j`, and otherwise to some index `k` such that `f` is bounded
-below on `s k` (if there exists one). To ensure good measurability behavior, this index `k` is
-chosen as the minimal suitable index. -/
-def liminf_reparam {ι ι' : Type*} (f : ι → α) (s : ι' → Set ι) [Countable ι'] [Nonempty ι']
-    (j : ι') : ι' :=
-  let m : Set ι' := {j | BddBelow (range (fun (i : s j) ↦ f i))}
-  let g : ℕ → ι' := choose (exists_surjective_nat ι')
-  have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
-    by_cases H : ∃ j, j ∈ m
-    · rcases H with ⟨j, hj⟩
-      rcases choose_spec (exists_surjective_nat ι') j with ⟨n, rfl⟩
-      exact ⟨n, Or.inl hj⟩
-    · push_neg at H
-      exact ⟨0, Or.inr H⟩
-  if j ∈ m then j else g (Nat.find Z)
-
-theorem Filter.HasBasis.liminf_eq_sSup {ι ι' : Type*} {f : ι → α} {v : Filter ι}
-    {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
-    liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
-  simp_rw [liminf_eq, hv.eventually_iff]
-  congr
-  ext x
-  simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
-    exists_prop]
-
-theorem Filter.HasBasis.liminf_eq_ciSup_ciInf {ι ι' : Type*} {f : ι → α} {v : Filter ι}
-    {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
-    (hv : v.HasBasis p s) (hs : ∀ (j : Subtype p), (s j).Nonempty)
-    (H : ∃ (j : Subtype p), BddBelow (range (fun (i : s j) ↦ f i))) :
-    liminf f v =
-      ⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i := by
-  rcases H with ⟨j0, hj0⟩
-  let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
-  let reparam : Subtype p → Subtype p := liminf_reparam f (fun (j : Subtype p) ↦ s j)
-  have : ∀ (j : Subtype p), Nonempty (s j) := fun j ↦ Nonempty.coe_sort (hs j)
-  have A : ⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i) =
-         ⋃ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) := by
-    apply Subset.antisymm
-    · apply iUnion_subset (fun j ↦ ?_)
-      by_cases hj : j ∈ m
-      · have : j = reparam j := by simp only [liminf_reparam, hj, ite_true]
-        conv_lhs => rw [this]
-        apply subset_iUnion _ j
-      · simp only [mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
-        simp only [hj, empty_subset]
-    · apply iUnion_subset (fun j ↦ ?_)
-      exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (reparam j)
-  have B : ∀ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) =
-                                Iic (⨅ (i : s (reparam j)), f i) := by
-    intro j
-    apply (Iic_ciInf _).symm
-    change reparam j ∈ m
-    by_cases Hj : j ∈ m
-    · simpa only [liminf_reparam, if_pos Hj] using Hj
-    · simp only [liminf_reparam, if_neg Hj]
-      have Z : ∃ n, choose (exists_surjective_nat (Subtype p)) n ∈ m ∨ ∀ j, j ∉ m := by
-        rcases choose_spec (exists_surjective_nat (Subtype p)) j0 with ⟨n, rfl⟩
-        exact ⟨n, Or.inl hj0⟩
-      rcases Nat.find_spec Z with hZ|hZ
-      · exact hZ
-      · exact (hZ j0 hj0).elim
-  simp_rw [hv.liminf_eq_sSup, A, B, sSup_iUnion_Iic]
-
-theorem Filter.HasBasis.liminf_eq_ite {ι ι' : Type*} {f : ι → α} {v : Filter ι}
-    {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
-    (hv : v.HasBasis p s) :
-    liminf f v = if ∃ (j : Subtype p), s j = ∅ then sSup univ else
-      if ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i)) then sSup ∅ else
-      ⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i := by
-  by_cases H : ∃ (j : Subtype p), s j = ∅
-  · rw [if_pos H]
-    rcases H with ⟨j, hj⟩
-    simp [hv.liminf_eq_sSup_univ_of_empty j j.2 hj]
-  rw [if_neg H]
-  by_cases H' : ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))
-  · have A : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
-      simp_rw [← not_nonempty_iff_eq_empty, nonempty_iInter_Iic_iff]
-      exact H'
-    simp_rw [if_pos H', hv.liminf_eq_sSup, A, iUnion_empty]
-  rw [if_neg H']
-  apply hv.liminf_eq_ciSup_ciInf
-  · push_neg at H
-    simpa only [nonempty_iff_ne_empty] using H
-  · push_neg at H'
-    exact H'
-
 /-- `liminf` over a general filter is measurable. See `measurable_liminf` for the version over `ℕ`.
 -/
 theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasCountableBasis p s) (hs : ∀ j, (s j).Countable) :
     Measurable fun x => liminf (fun i => f i x) v := by
+  /- We would like to write the liminf as `⨆ (j : Subtype p), ⨅ (i : s j), f i x`, as the
+  measurability would follow from the measurability of infs and sups. Unfortunately, this is not
+  true in general conditionally complete linear orders because of issues with empty sets or sets
+  which are not bounded above or below. A slightly more complicated expression for the liminf,
+  valid in general, is given in `Filter.HasBasis.liminf_eq_ite`. This expression, built from
+  `if ... then ... else` and infs and sups, can be readily checked to be measurable. -/
   have : Countable (Subtype p) := Encodable.nonempty_encodable.1 hv.countable
   rcases isEmpty_or_nonempty (Subtype p) with hp|hp
-  · simp [hv.liminf_eq_sSup]
+  · simp [hv.liminf_eq_sSup_iUnion_iInter]
   by_cases H : ∃ (j : Subtype p), s j = ∅
   · simp_rw [hv.liminf_eq_ite, if_pos H, measurable_const]
   simp_rw [hv.liminf_eq_ite, if_neg H]
@@ -1628,10 +1488,9 @@ theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
       exact ⟨n, Or.inl hk⟩
     · push_neg at H
       exact ⟨0, Or.inr H⟩
-  have A : ∀ x, reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := by
-    intro x; rfl
   have : F1 = fun x ↦ if x ∈ m j then F0 j x else F0 (g (Nat.find (Z x))) x := by
     ext x
+    have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
     split_ifs with hjx
     · have : reparam x j = j := by rw [A, if_pos hjx]
       simp only [hF1, this]
