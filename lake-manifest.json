@@ -26,12 +26,12 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/JLimperg/aesop",
+   {"url": "https://github.com/semorrison/aesop",
     "subDir?": null,
-    "rev": "086c98bb129ca856381d4414dc0afd6e3e4ae2ef",
+    "rev": "bb0ff4341b6dbe7a687dda219bab60252d4376f3",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "master",
+    "inputRev?": "v4.0.0-rc3",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
