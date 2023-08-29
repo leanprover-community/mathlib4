@@ -28,16 +28,16 @@ universe u v
 open CategoryTheory CategoryTheory.Limits
 
 /-- A typeclass for nonempty finite linear orders. -/
-class NonemptyFinLinOrd (α : Type*) extends Fintype α, LinearOrder α where
+class NonemptyFiniteLinearOrder (α : Type*) extends Fintype α, LinearOrder α where
   Nonempty : Nonempty α := by infer_instance
 #align nonempty_fin_lin_ord NonemptyFiniteLinearOrder
 
 attribute [instance] NonemptyFiniteLinearOrder.Nonempty
 
-instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type*) [NonemptyFinLinOrd α] :
-    BoundedOrder α :=
+instance (priority := 100) NonemptyFiniteLinearOrder.toBoundedOrder (α : Type*)
+  [NonemptyFiniteLinearOrder α] : BoundedOrder α :=
   Fintype.toBoundedOrder α
-#align nonempty_fin_lin_ord.to_bounded_order NonemptyFinLinOrd.toBoundedOrder
+#align nonempty_fin_lin_ord.to_bounded_order NonemptyFiniteLinearOrder.toBoundedOrder
 
 instance PUnit.nonemptyFiniteLinearOrder : NonemptyFiniteLinearOrder PUnit where
 #align punit.nonempty_fin_lin_ord PUnit.nonemptyFiniteLinearOrder
@@ -50,7 +50,7 @@ instance ULift.nonemptyFiniteLinearOrder (α : Type u) [NonemptyFiniteLinearOrde
   { LinearOrder.lift' Equiv.ulift (Equiv.injective _) with }
 #align ulift.nonempty_fin_lin_ord ULift.nonemptyFiniteLinearOrder
 
-instance (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
+instance (α : Type*) [NonemptyFiniteLinearOrder α] : NonemptyFiniteLinearOrder αᵒᵈ :=
   { OrderDual.fintype α with }
 
 /-- The category of nonempty finite linear orders. -/
@@ -74,13 +74,13 @@ instance : CoeSort NonemptyFinLinOrd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
-def of (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrd :=
+def of (α : Type*) [NonemptyFiniteLinearOrder α] : NonemptyFinLinOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrd.of
 
 @[simp]
-theorem coe_of (α : Type*) [NonemptyFinLinOrd α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [NonemptyFiniteLinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrd.coe_of
