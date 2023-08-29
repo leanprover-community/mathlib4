@@ -17,7 +17,7 @@ import Mathlib.Topology.UniformSpace.Equiv
 ## Tags
 -/
 
-open Set Filter Uniformity Function UniformConvergence
+open Set Filter Uniformity Topology TopologicalSpace Function UniformConvergence
 
 section prelim
 
@@ -150,6 +150,96 @@ lemma Equicontinuous.uniformInducing_pi_iff_uniformOnFun [UniformSpace ι]
   rw [Equicontinuous.uniformInducing_pi_iff_uniformOnFun' h𝔖 hF,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.uniformInducing.comp H, fun H ↦ φ.symm.uniformInducing.comp H⟩
+
+lemma Equicontinuous.inducing_pi_iff_uniformOnFun' [TopologicalSpace ι]
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+    Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    Inducing ((⋃₀ 𝔖).restrict ∘ F) := by
+  rw [inducing_iff, inducing_iff]
+  change (_ = ((UniformOnFun.uniformSpace X α 𝔖).comap F).toTopologicalSpace) ↔
+    (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F)).toTopologicalSpace)
+  rw [← Equicontinuous.comap_uniformOnFun_eq h𝔖 hF]
+
+lemma Equicontinuous.inducing_pi_iff_uniformOnFun [TopologicalSpace ι]
+    {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+    Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    Inducing F := by
+  rw [eq_univ_iff_forall] at 𝔖_covers
+  let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (β := fun _ ↦ α)
+    (Equiv.subtypeUnivEquiv 𝔖_covers)
+  rw [Equicontinuous.inducing_pi_iff_uniformOnFun' h𝔖 hF,
+      show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
+  exact ⟨fun H ↦ φ.inducing.comp H, fun H ↦ φ.symm.inducing.comp H⟩
+
+--lemma Equicontinuous.closure_pi_eq_closure_uniformOnFun'
+--    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) {s : Set ι}
+--    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F ∘ ((↑) : s → ι))) :
+--    closure[(UniformOnFun.topologicalSpace X α 𝔖).induced F] s =
+--    closure[Pi.topologicalSpace.induced ((⋃₀ 𝔖).restrict ∘ F)] s := by
+--  suffices : ∀ i, ∀ 𝒰 : Ultrafilter ι, s ∈ 𝒰 →
+--      (𝒰 ≤ @nhds _ ((UniformOnFun.topologicalSpace X α 𝔖).induced F) i ↔
+--      𝒰 ≤ @nhds _ (Pi.topologicalSpace.induced ((⋃₀ 𝔖).restrict ∘ F)) i)
+--  · ext i
+--    rw [@mem_closure_iff_ultrafilter _ (_), @mem_closure_iff_ultrafilter _ (_)]
+--    exact exists_congr fun 𝒰 ↦ and_congr_right fun h𝒰 ↦ this i 𝒰 h𝒰
+--  intro i 𝒰 h𝒰
+--  constructor
+--  · simp_rw [nhds_induced (T := _), ← map_le_iff_le_comap]
+--  · sorry
+
+lemma Equicontinuous.closure_pi_eq_closure_uniformOnFun'
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) {s : Set ι}
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F ∘ ((↑) : s → ι))) :
+    closure[(UniformOnFun.topologicalSpace X α 𝔖).induced F] s =
+    closure[Pi.topologicalSpace.induced ((⋃₀ 𝔖).restrict ∘ F)] s := by
+  set u := closure[Pi.topologicalSpace.induced ((⋃₀ 𝔖).restrict ∘ F)] s
+  set t := closure[(UniformOnFun.topologicalSpace X α 𝔖).induced F] s
+  refine subset_antisymm ?_ ?_ <;> refine @closure_minimal _ (_) _ _ (@subset_closure _ (_) _) ?_
+  · sorry
+  · sorry
+
+-- lemma Equicontinuous.closure_pi_eq_closure_uniformOnFun'
+--     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) {s : Set ι}
+--     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F ∘ ((↑) : s → ι))) :
+--     closure[(UniformOnFun.topologicalSpace X α 𝔖).induced F] s =
+--     closure[Pi.topologicalSpace.induced ((⋃₀ 𝔖).restrict ∘ F)] s := by
+--   set u := closure[Pi.topologicalSpace.induced ((⋃₀ 𝔖).restrict ∘ F)] s
+--   set t := closure[(UniformOnFun.topologicalSpace X α 𝔖).induced F] s
+--   refine le_antisymm (closure.mono ?_) ?_
+--   -- The direct inclusion follows from the fact that the uniform convergence topology is finer
+--   -- than the product topology
+--   · rw [← continuous_iff_le_induced]
+--     let _ : TopologicalSpace ι := induced F (UniformOnFun.topologicalSpace X α 𝔖)
+--     refine continuous_pi fun ⟨x, hx⟩ ↦ show Continuous fun i ↦ F i x from ?_
+--     rcases mem_sUnion.mpr hx with ⟨K, hK, x_in_K⟩
+--     exact (UniformOnFun.uniformContinuous_eval_of_mem α 𝔖 x_in_K hK).continuous.comp
+--       continuous_induced_dom
+--   -- For the revese inclusion, we
+--   · intro x hx
+--     rcases (@mem_closure_iff_ultrafilter _ (_)).mp hx
+
+-- lemma Equicontinuous.isClosedMap_pi_iff_uniformOnFun' [TopologicalSpace ι]
+--     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+--     (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+--     IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F) ↔
+--     IsClosed (range <| (⋃₀ 𝔖).restrict ∘ F) := by
+--   change _ ↔ IsClosed[UniformOnFun.topologicalSpace X α 𝔖] (range (@id (X → α) ∘ F))
+
+theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_cl : IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_eqcont : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F))
+    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
+    CompactSpace ι := by
+  have : Inducing (restrict (⋃₀ 𝔖) ∘ F) := by
+    rwa [Equicontinuous.inducing_pi_iff_uniformOnFun' h𝔖 F_eqcont] at F_ind
+  have F_closed : IsClosed <| range <| (⋃₀ 𝔖).restrict ∘ F := sorry
+  choose K K_compact F_in_K using F_pointwiseCompact
+  rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
+  refine isCompact_of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_closed
+    (range_subset_iff.mpr fun i ⟨x, _⟩ _ ↦ F_in_K x i)
 
 #exit
 

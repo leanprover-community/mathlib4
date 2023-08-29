@@ -52,7 +52,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 -/
 
 
-open Set Filter Topology TopologicalSpace Classical
+open Set Filter Topology TopologicalSpace Classical Function
 
 universe u v
 
@@ -1052,6 +1052,21 @@ instance Pi.compactSpace [∀ i, CompactSpace (π i)] : CompactSpace (∀ i, π 
 instance Function.compactSpace [CompactSpace β] : CompactSpace (ι → β) :=
   Pi.compactSpace
 #align function.compact_space Function.compactSpace
+
+lemma Pi.isCompact_iff_of_isClosed {s : Set (∀ i, π i)} (hs : IsClosed s) :
+    IsCompact s ↔ ∀ i, IsCompact (eval i '' s) := by
+  constructor <;> intro H
+  · exact fun i ↦ H.image <| continuous_apply i
+  · exact isCompact_of_isClosed_subset (isCompact_univ_pi H) hs (subset_pi_eval_image univ s)
+
+protected lemma Pi.exists_compact_superset_iff {s : Set (∀ i, π i)} :
+    (∃ K, IsCompact K ∧ s ⊆ K) ↔ ∀ i, ∃ Ki, IsCompact Ki ∧ s ⊆ eval i ⁻¹' Ki := by
+  constructor
+  · intro ⟨K, hK, hsK⟩ i
+    exact ⟨eval i '' K, hK.image <| continuous_apply i, hsK.trans <| K.subset_preimage_image _⟩
+  · intro H
+    choose K hK hsK using H
+    exact ⟨pi univ K, isCompact_univ_pi hK, fun _ hx i _ ↦ hsK i hx⟩
 
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
 type `Π d, κ d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `κ d`. -/

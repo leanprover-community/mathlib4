@@ -453,7 +453,7 @@ theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
 
 /-- If a set of functions is equicontinuous, its closure for the product topology is also
 equicontinuous. -/
-theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
+protected theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
     (closure A).Equicontinuous := fun x => (hA x).closure
 #align equicontinuous.closure Equicontinuous.closure
 
