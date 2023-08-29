@@ -36,61 +36,48 @@ complete partial order, directedly complete partial order
 
 section SemilatticeSup
 
-structure DirectedSet (α : Type _) [PartialOrder α] where
-  set : Set α
-  directed : DirectedOn (. ≤ .) set
-
 variable [SemilatticeSup α]
 
 /--
 Every subset of a join-semilattice generates a directed set
 -/
-def directedClosure (s : Set α) : DirectedSet α := {
-  set := { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   },
-  directed := by classical
-    intros a ha b hb
-    simp at ha hb
-    obtain ⟨Fa,hFa⟩ := ha
-    obtain ⟨Fb,hFb⟩ := hb
-    use a⊔b
+def directedClosure (s : Set α) : Set α :=
+  { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   }
+
+lemma directedClosure_directedOn (s : Set α) : DirectedOn (. ≤ .) (directedClosure s) := by classical
+  rintro a ⟨Fa,hFa⟩ b ⟨Fb,hFb⟩
+  use a⊔b
+  constructor
+  · use (Fa ⊔ Fb)
+    simp
+    rw [exists_and_left] at hFa
+    rw [exists_and_left] at hFb
     constructor
-    · simp
-      use (Fa ⊔ Fb)
-      simp
-      simp at hFa
+    · exact ⟨hFa.1, hFb.1⟩
+    · obtain ⟨hnFa,ha⟩ := hFa.2
+      obtain ⟨hnFb,hb⟩ := hFb.2
+      use (Finset.Nonempty.inl hnFa)
+      rw [le_antisymm_iff]
       constructor
-      · constructor
-        · exact hFa.1
-        · exact hFb.1
-      · obtain ⟨hnFa,ha⟩ := hFa.2
-        obtain ⟨hnFb,hb⟩ := hFb.2
-        use (Finset.Nonempty.inl hnFa)
-        rw [le_antisymm_iff]
+      · rw [sup_le_iff]
         constructor
-        · simp
-          constructor
-          · rw [hFa.2.2]
-            apply Finset.sup'_mono
-            exact Finset.subset_union_left Fa Fb
-          · rw [hFb.2.2]
-            apply Finset.sup'_mono
-            exact Finset.subset_union_right Fa Fb
-        · simp
-          intros c hc
-          cases' hc with h₁ h₂
-          · apply le_sup_of_le_left
-            rw [ha]
-            exact Finset.le_sup'_of_le _ h₁ (Eq.le rfl)
-          · apply le_sup_of_le_right
-            rw [hb]
-            exact Finset.le_sup'_of_le _ h₂ (Eq.le rfl)
-    · constructor
-      · exact le_sup_left
-      · exact le_sup_right
-}
+        · rw [hFa.2.2]
+          exact Finset.sup'_mono _ (Finset.subset_union_left Fa Fb) _
+        · rw [hFb.2.2]
+          exact Finset.sup'_mono _ (Finset.subset_union_right Fa Fb) _
+      · simp
+        intros c hc
+        cases' hc with h₁ h₂
+        · apply le_sup_of_le_left
+          rw [ha]
+          exact Finset.le_sup'_of_le _ h₁ (Eq.le rfl)
+        · apply le_sup_of_le_right
+          rw [hb]
+          exact Finset.le_sup'_of_le _ h₂ (Eq.le rfl)
+  · exact ⟨le_sup_left,le_sup_right⟩
 
 lemma subset_toDirectedSet {s : Set α} :
-    s ⊆ ↑(directedClosure s).set := by
+    s ⊆ directedClosure s := by
   intro a ha
   rw [directedClosure]
   simp only [id_eq, exists_and_left, Set.mem_setOf_eq]
@@ -101,7 +88,7 @@ lemma subset_toDirectedSet {s : Set α} :
     rfl
 
 @[simp] lemma Set_DirectedSet_upperBounds (s : Set α) :
-    upperBounds (directedClosure s).set = upperBounds s := by
+    upperBounds (directedClosure s) = upperBounds s := by
   rw [subset_antisymm_iff]
   constructor
   · exact upperBounds_mono_set subset_toDirectedSet
@@ -114,7 +101,7 @@ lemma subset_toDirectedSet {s : Set α} :
     exact hu (hFb.1 hc)
 
 @[simp] lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} :
-    IsLUB (directedClosure s).set u ↔ IsLUB s u := by
+    IsLUB (directedClosure s) u ↔ IsLUB s u := by
   constructor
   · intro h
     constructor
@@ -140,17 +127,17 @@ def SemilatticeSup.toCompleteSemilatticeSup (dSup : Set α → α)
   sSup := fun s => dSup (directedClosure s)
   le_sSup := by
     intros s a ha
-    have e1: IsLUB (directedClosure s).set (dSup (directedClosure s)) := by
+    have e1: IsLUB (directedClosure s) (dSup (directedClosure s)) := by
       rw [← Set_DirectedSet_LUB]
-      exact Iff.mpr Set_DirectedSet_LUB (h (directedClosure s))
+      exact Iff.mpr Set_DirectedSet_LUB (h (directedClosure s) (directedClosure_directedOn s))
     simp only [ge_iff_le]
     rw [IsLUB, IsLeast] at e1
     exact e1.1 (subset_toDirectedSet ha)
   sSup_le := by
     intros s a ha
-    have e1: IsLUB (directedClosure s).set (dSup (directedClosure s)) := by
+    have e1: IsLUB (directedClosure s) (dSup (directedClosure s)) := by
       rw [← Set_DirectedSet_LUB]
-      exact Iff.mpr Set_DirectedSet_LUB (h (directedClosure s))
+      exact Iff.mpr Set_DirectedSet_LUB (h (directedClosure s) (directedClosure_directedOn s))
     simp only [ge_iff_le]
     rw [isLUB_le_iff e1, Set_DirectedSet_upperBounds]
     exact ha
@@ -159,26 +146,24 @@ end SemilatticeSup
 
 class CompletePartialOrder (α : Type _) extends PartialOrder α where
   /-- The supremum of an increasing sequence -/
-  dSup : DirectedSet α → α
+  dSup : Set α → α
   /-- For each directed set `d`, `dSup d` is the least upper bound of `d` -/
-  is_LUB: ∀ d : DirectedSet α, IsLUB d.set (dSup d)
+  is_LUB: ∀ d, DirectedOn (. ≤ .) d → IsLUB d (dSup d)
 
-lemma CompletePartialOrder.le_dSup [CompletePartialOrder α] (d : DirectedSet α) :
-    ∀ a ∈ d.set, a ≤ dSup d := fun _ ha => (is_LUB d).1 ha
+lemma CompletePartialOrder.le_dSup [CompletePartialOrder α] (d : Set α) (hd: DirectedOn (. ≤ .) d) :
+  ∀ a ∈ d, a ≤ dSup d := fun _ ha => (is_LUB d hd).1 ha
 
-lemma CompletePartialOrder.dSup_le [CompletePartialOrder α] (d : DirectedSet α) (x : α) :
-    (∀ a ∈ d.set, a  ≤ x) → dSup d ≤ x := fun h => (is_LUB d).2 h
+lemma CompletePartialOrder.dSup_le [CompletePartialOrder α] (d : Set α) (hd: DirectedOn (. ≤ .) d)
+  (x : α) : (∀ a ∈ d, a  ≤ x) → dSup d ≤ x := fun h => (is_LUB d hd).2 h
 
 /-
 A complete lattice is a complete partial order
 -/
 instance [CompleteLattice α] : CompletePartialOrder α := {
-  dSup := fun d => sSup d.set,
+  dSup := fun d => sSup d,
   is_LUB := fun d => by
-    simp
-    constructor
-    · exact fun _ ↦ le_sSup
-    · exact fun x a ↦ sSup_le a
+    intro _
+    exact ⟨fun _ ↦ le_sSup, fun x a ↦ sSup_le a⟩
 }
 
 /-
@@ -186,18 +171,16 @@ Scott continuity takes on a simpler form in complete partial orders
 -/
 lemma CompletePartialOrder.ScottContinuous [CompletePartialOrder α] [Preorder β] {f : α → β} :
     ScottContinuous f ↔
-    ∀ ⦃d : DirectedSet α⦄, d.set.Nonempty → IsLUB (f '' d.set) (f (dSup d)) := by
+    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (. ≤ .) d → IsLUB (f '' d) (f (dSup d)) := by
   constructor
-  · intros h d hd
-    apply h hd d.directed (is_LUB d)
+  · intros h d hd₁ hd₂
+    apply h hd₁ hd₂ (is_LUB d hd₂)
   · intro h
     rw [_root_.ScottContinuous]
     intros d hne hd a hda
-    let D := DirectedSet.mk d hd
-    have e1: a = (dSup D) := by apply IsLUB.unique hda (is_LUB D)
+    have e1: a = (dSup d) := by apply IsLUB.unique hda (is_LUB d hd)
     rw [e1]
-    apply h
-    apply hne
+    exact h hne hd
 
 open OmegaCompletePartialOrder
 

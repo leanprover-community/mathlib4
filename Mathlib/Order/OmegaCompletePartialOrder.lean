@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
+import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
 
@@ -107,6 +108,8 @@ variable (f : α →o β)
 variable (g : β →o γ)
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
+
+lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
 /-- `map` function for `Chain` -/
 @[simps! (config := { fullyApplied := false })]
