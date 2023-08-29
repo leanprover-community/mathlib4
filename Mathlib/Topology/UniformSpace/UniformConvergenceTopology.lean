@@ -622,7 +622,8 @@ of `S.restrict : (α →ᵤ[𝔖] β) → (↥S →ᵤ β)` of restriction to `S
 the topology of uniform convergence. -/
 protected theorem topologicalSpace_eq :
     UniformOnFun.topologicalSpace α β 𝔖 =
-      ⨅ (s : Set α) (_ : s ∈ 𝔖), TopologicalSpace.induced (s.restrict ∘ UniformFun.toFun)
+      ⨅ (s : Set α) (_ : s ∈ 𝔖), TopologicalSpace.induced
+        (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖)
         (UniformFun.topologicalSpace s β) := by
   simp only [UniformOnFun.topologicalSpace, toTopologicalSpace_iInf, toTopologicalSpace_iInf,
     toTopologicalSpace_comap]
