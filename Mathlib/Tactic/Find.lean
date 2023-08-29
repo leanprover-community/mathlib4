@@ -303,22 +303,8 @@ subsequent uses are faster.
 
 It may be useful to open a scratch file, `import Mathlib`, and use `#find` there, this way you will
 find lemmas that you have not yet imported, and the cache will stay up-to-date.
-
-Inside tactic proofs, the `#find` tactic can be used instead.
 -/
 elab s:"#find " args:find_filters : command => liftTermElabM do
-  profileitM Exception "find" (← getOptions) do
-    match ← find (← parseFindFilters args) with
-    | .error warn =>
-      Lean.logWarningAt s warn
-    | .ok (summary, hits) =>
-      Lean.logInfo $ summary ++ (← MessageData.bulletListOfConsts hits)
-
-/--
-Tactic version of the `#find` command.
-See also the `apply?` tactic to search for theorems matching the current goal.
--/
-elab s:"#find " args:find_filters : tactic => do
   profileitM Exception "find" (← getOptions) do
     match ← find (← parseFindFilters args) with
     | .error warn =>
