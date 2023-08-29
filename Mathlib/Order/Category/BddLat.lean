@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.Lat
-import Mathlib.Order.Category.SemilatCat
+import Mathlib.Order.Category.Semilat
 
 #align_import order.category.BddLat from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 
@@ -104,9 +104,9 @@ theorem coe_forget_to_bddOrd (X : BddLat) : ↥((forget₂ BddLat BddOrd).obj X)
 #align BddLat.coe_forget_to_BddOrd BddLat.coe_forget_to_bddOrd
 
 @[simp]
-theorem coe_forget_to_latCat (X : BddLat) : ↥((forget₂ BddLat Lat).obj X) = ↥X :=
+theorem coe_forget_to_lat (X : BddLat) : ↥((forget₂ BddLat Lat).obj X) = ↥X :=
   rfl
-#align BddLat.coe_forget_to_Lat BddLat.coe_forget_to_latCat
+#align BddLat.coe_forget_to_Lat BddLat.coe_forget_to_lat
 
 @[simp]
 theorem coe_forget_to_semilatSup (X : BddLat) :
@@ -120,11 +120,11 @@ theorem coe_forget_to_semilatInf (X : BddLat) :
   rfl
 #align BddLat.coe_forget_to_SemilatInf BddLat.coe_forget_to_semilatInf
 
-theorem forget_latCat_partOrd_eq_forget_bddOrd_partOrd :
+theorem forget_lat_partOrd_eq_forget_bddOrd_partOrd :
     forget₂ BddLat Lat ⋙ forget₂ Lat PartOrd =
       forget₂ BddLat BddOrd ⋙ forget₂ BddOrd PartOrd :=
   rfl
-#align BddLat.forget_Lat_PartOrd_eq_forget_BddOrd_PartOrd BddLat.forget_latCat_partOrd_eq_forget_bddOrd_partOrd
+#align BddLat.forget_Lat_PartOrd_eq_forget_BddOrd_PartOrd BddLat.forget_lat_partOrd_eq_forget_bddOrd_partOrd
 
 theorem forget_semilatSup_partOrd_eq_forget_bddOrd_partOrd :
     forget₂ BddLat SemilatSupCat ⋙ forget₂ SemilatSupCat PartOrd =
@@ -172,10 +172,10 @@ theorem bddLat_dual_comp_forget_to_bddOrd :
   rfl
 #align BddLat_dual_comp_forget_to_BddOrd bddLat_dual_comp_forget_to_bddOrd
 
-theorem bddLat_dual_comp_forget_to_latCat :
+theorem bddLat_dual_comp_forget_to_lat :
     BddLat.dual ⋙ forget₂ BddLat Lat = forget₂ BddLat Lat ⋙ Lat.dual :=
   rfl
-#align BddLat_dual_comp_forget_to_Lat bddLat_dual_comp_forget_to_latCat
+#align BddLat_dual_comp_forget_to_Lat bddLat_dual_comp_forget_to_lat
 
 theorem bddLat_dual_comp_forget_to_semilatSupCat :
     BddLat.dual ⋙ forget₂ BddLat SemilatSupCat =
