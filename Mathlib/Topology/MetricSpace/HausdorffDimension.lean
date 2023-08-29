@@ -179,7 +179,7 @@ theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
 set_option linter.uppercaseLean3 false in
 #align dimH_subsingleton dimH_subsingleton
 
-alias dimH_subsingleton ← Set.Subsingleton.dimH_zero
+alias Set.Subsingleton.dimH_zero := dimH_subsingleton
 set_option linter.uppercaseLean3 false in
 #align set.subsingleton.dimH_zero Set.Subsingleton.dimH_zero
 
@@ -232,7 +232,7 @@ theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_countable dimH_countable
 
-alias dimH_countable ← Set.Countable.dimH_zero
+alias Set.Countable.dimH_zero := dimH_countable
 set_option linter.uppercaseLean3 false in
 #align set.countable.dimH_zero Set.Countable.dimH_zero
 
@@ -241,7 +241,7 @@ theorem dimH_finite {s : Set X} (hs : s.Finite) : dimH s = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_finite dimH_finite
 
-alias dimH_finite ← Set.Finite.dimH_zero
+alias Set.Finite.dimH_zero := dimH_finite
 set_option linter.uppercaseLean3 false in
 #align set.finite.dimH_zero Set.Finite.dimH_zero
 
@@ -251,7 +251,7 @@ theorem dimH_coe_finset (s : Finset X) : dimH (s : Set X) = 0 :=
 set_option linter.uppercaseLean3 false in
 #align dimH_coe_finset dimH_coe_finset
 
-alias dimH_coe_finset ← Finset.dimH_zero
+alias Finset.dimH_zero := dimH_coe_finset
 set_option linter.uppercaseLean3 false in
 #align finset.dimH_zero Finset.dimH_zero
 

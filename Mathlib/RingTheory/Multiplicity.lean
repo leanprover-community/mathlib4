@@ -295,7 +295,7 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
 
-alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
+alias ⟨_, _root_.has_dvd.dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos
 
 end Monoid
 
