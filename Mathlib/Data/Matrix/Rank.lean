@@ -218,16 +218,7 @@ variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
 theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᴴ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
-  simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
-  constructor
-  · intro h
-    replace h := congr_arg (dotProduct (star x)) h
-    haveI : NoZeroDivisors R := inferInstance
-    rwa [dotProduct_mulVec, dotProduct_zero, vecMul_conjTranspose, star_star,
-      -- Porting note: couldn't find `NoZeroDivisors R` instance.
-      @dotProduct_star_self_eq_zero R _ _ _ _ _ ‹_›] at h
-  · intro h
-    rw [h, mulVec_zero]
+  simp only [LinearMap.mem_ker, mulVecLin_apply, conjTranspose_mul_self_mulVec_eq_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
