@@ -195,13 +195,16 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
 
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{deduped}"
 
-  let lazy :=
-    -- Try rewriting by local hypotheses.
-    MLList.ofArray hyps |>.append fun _ =>
-    -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-    MLList.ofList deduped.toList |>.filterMapM fun ⟨lem, symm, weight⟩ => try? do pure <|
-      ⟨← mkConstWithFreshMVarLevels lem, symm, weight⟩
-  pure <| lazy.filterMapM fun ⟨expr, symm, weight⟩ => withMCtx ctx do
+  -- Lift to a monadic list, so the caller can decide how much of the computation to run.
+  let hyps := MLList.ofArray <| hyps.map fun ⟨hyp, symm, weight⟩ => (Sum.inl hyp, symm, weight)
+  let lemmas := MLList.ofList <| deduped.toList.map fun ⟨lem, symm, weight⟩ => (Sum.inr lem, symm, weight)
+
+  let lazy : MLList MetaM ((Expr ⊕ Name) × Bool × ℕ) :=
+    hyps |>.append fun _ => lemmas
+  pure <| lazy.filterMapM fun ⟨hyp_or_lemma, symm, weight⟩ => withMCtx ctx do
+    let some expr ← (match hyp_or_lemma with
+    | .inl hyp => pure (some hyp)
+    | .inr lem => try? <| mkConstWithFreshMVarLevels lem) | return none
     trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
@@ -209,6 +212,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
       some ⟨expr, symm, weight, result, none, ← getMCtx⟩
     else
       -- TODO Perhaps allow new goals? Try closing them with solveByElim?
+      -- A challenge is knowing what suggestions to print if we do so!
       none
 
 /-- Find lemmas which can rewrite the goal. -/
