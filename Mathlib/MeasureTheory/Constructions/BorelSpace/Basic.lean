@@ -1574,8 +1574,8 @@ theorem Filter.HasBasis.liminf_eq_ite {ι ι' : Type*} {f : ι → α} {v : Filt
     {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
     (hv : v.HasBasis p s) :
     liminf f v = if ∃ (j : Subtype p), s j = ∅ then sSup univ else
-    if (∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))) then sSup ∅
-    else (⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i) := by
+      if ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i)) then sSup ∅ else
+      ⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i := by
   by_cases H : ∃ (j : Subtype p), s j = ∅
   · rw [if_pos H]
     rcases H with ⟨j, hj⟩
