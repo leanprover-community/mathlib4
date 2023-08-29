@@ -116,9 +116,7 @@ end Monoid
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
 instance : Group (AmalgamatedProduct φ) := by
-  delta AmalgamatedProduct; exact
-  { inferInstanceAs (Group (Con.Quotient _)) with
-    toMonoid := inferInstance }
+  delta AmalgamatedProduct; infer_instance
 
 namespace NormalWord
 
