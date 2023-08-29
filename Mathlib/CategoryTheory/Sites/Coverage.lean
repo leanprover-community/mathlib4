@@ -509,9 +509,9 @@ instance {X : C} (S : Presieve X) [S.extensive]
     simp only [Equalizer.forkMap, Category.assoc, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
       Category.id_comp]
     obtain ⟨a, ha⟩ := sigma_surjective π f
-    rw [firstObj_to_base, Category.assoc, Category.assoc, Category.assoc, ← Functor.map_comp, ← op_inv,
-      ← op_comp, ← ha, comp_inv_desc_eq_ι, ← Functor.map_comp, opCoproductIsoProduct_inv_comp_ι,
-      PreservesProduct.isoInvCompMap F a]
+    rw [firstObj_to_base, Category.assoc, Category.assoc, Category.assoc, ← Functor.map_comp,
+      ← op_inv, ← op_comp, ← ha, comp_inv_desc_eq_ι, ← Functor.map_comp,
+      opCoproductIsoProduct_inv_comp_ι, PreservesProduct.isoInvCompMap F a]
     simp only [prod_map, Category.comp_id, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
 end ExtensiveSheafConditionProof
