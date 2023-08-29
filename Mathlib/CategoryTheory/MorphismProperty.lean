@@ -726,8 +726,7 @@ class IsMultiplicative (W : MorphismProperty C) extends W.ContainsIdentities : P
   stableUnderComposition : W.StableUnderComposition
 
 lemma comp_mem (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g)
-    [IsMultiplicative W] :
-    W (f ≫ g) :=
+    [IsMultiplicative W] : W (f ≫ g) :=
   IsMultiplicative.stableUnderComposition f g hf hg
 
 namespace IsMultiplicative
