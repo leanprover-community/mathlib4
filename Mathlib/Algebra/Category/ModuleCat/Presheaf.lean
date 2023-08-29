@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 /-!
 # Presheaves of modules over a presheaf of rings.
@@ -22,7 +22,7 @@ as a presheaf of abelian groups with additional data.
 * Pushforward and pullback.
 -/
 
-universe v₁ u₁ u v
+universe v v₁ u₁ u
 
 open CategoryTheory LinearMap Opposite
 
@@ -132,7 +132,7 @@ section
 
 variable (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
   (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
-    app Y (P.presheaf.map f x) = Q.presheaf.map f (app X x))
+    app Y (P.map f x) = Q.map f (app X x))
 
 /-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
 of a family of linear maps over the various rings `R.obj X`. -/
@@ -226,15 +226,31 @@ variable (R)
 /-- Evaluation on an object `X` gives a functor
 `PresheafOfModules R ⥤ ModuleCat (R.obj X)`. -/
 @[simps]
-def evaluation (X : Cᵒᵖ) : PresheafOfModules R ⥤ ModuleCat (R.obj X) where
+def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) where
   obj M := M.obj X
   map f := f.app X
 
 /-- Forgetting the module structure commutes with the evaluation on presheaves of modules. -/
 def evaluationCompForget₂Iso (X : Cᵒᵖ) :
-    evaluation R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
+    evaluation.{v} R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
       toPresheaf R ⋙ (CategoryTheory.evaluation Cᵒᵖ AddCommGroupCat).obj X :=
   Iso.refl _
+
+@[simps app_apply]
+def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
+  app M :=
+    -- this should be a standard construction relating semilinear maps and
+    -- the restriction of scalars
+    { toFun := fun x => M.map f x
+      map_add' := by intros; simp
+      map_smul' := fun r x => by
+        dsimp
+        rw [M.map_smul]
+        rfl }
+  naturality := fun M N φ => by
+    ext x
+    exact (congr_hom (φ.hom.naturality f) x).symm
 
 /-- This structure contains the data and axioms in order to
 produce a `PresheafOfModules R` from a collection of types
