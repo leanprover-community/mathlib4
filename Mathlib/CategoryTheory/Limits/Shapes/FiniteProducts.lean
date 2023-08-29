@@ -105,7 +105,7 @@ instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y :
     HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
 
 /-- If `C` has pullbacks then it has the pullbacks relevant to `HasPullbacksOfInclusions` -/
-instance (priority := 10) [HasPullbacks C] :
+instance (priority := 5) [HasPullbacks C] :
   HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
 
 /-- A category is *extensive* if it has all finite coproducts and those coproducts are preserved
