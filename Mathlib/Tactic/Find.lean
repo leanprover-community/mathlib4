@@ -194,15 +194,14 @@ def find (args : Arguments) (maxShown := 200) :
 
 open Parser
 
-/-- The turnstyle for `conclusion_pattern`, unicode or ascii allowed -/
-syntax turnstyle := "⊢ " <|> "|- "
-/-- a single `#find` pattern -/
-syntax find_pattern := (turnstyle term) <|> term
+/-- The turnstyle uesd bin `#find`, unicode or ascii allowed -/
+syntax turnstyle := patternIgnore("⊢ " <|> "|- ")
+/-- a single `#find` filter. The `term` can also be an ident or a strlit,
+these are distinguished in `parseFindFilters` -/
+syntax find_filter := (turnstyle term) <|> term
 
-/-- A syntax category for the argument to `#find`, so that it can be used by external tools. -/
-declare_syntax_cat find_patterns
-/-- `#find` patterns -/
-syntax find_pattern,* : find_patterns
+/-- The argument to `#find`, a list of filters -/
+syntax find_filters := find_filter,*
 
 /-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
 when a type class constraint has no instances.  -/
@@ -212,31 +211,31 @@ def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
     Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
     return t
 
-/-- Parses a list of `find_pattern` syntax into `Arguments` -/
-def parseFindPatterns (args : TSyntax `find_patterns) : TermElabM Arguments :=
+/-- Parses `find_filters` syntax into `Arguments` -/
+def parseFindFilters (args : TSyntax ``find_filters) : TermElabM Arguments :=
   withReader (fun ctx => { ctx with errToSorry := false }) do
     let mut idents := #[]
     let mut namePats := #[]
     let mut terms := #[]
     match args with
-    | `(find_patterns| $args':find_pattern,*) =>
+    | `(find_filters| $args':find_filter,*) =>
       for arg in args'.getElems do
         match arg with
-        | `(find_pattern| $_:turnstyle $s:term) => do
+        | `(find_filter| $_:turnstyle $s:term) => do
           let t ← elabTerm' s none
           terms := terms.push (true, t)
-        | `(find_pattern| $ss:str) => do
+        | `(find_filter| $ss:str) => do
           let str := Lean.TSyntax.getString ss
           namePats := namePats.push str
-        | `(find_pattern| $i:ident) => do
+        | `(find_filter| $i:ident) => do
           let n := Lean.TSyntax.getId i
           unless (← getEnv).contains n do
             throwErrorAt i "unknown identifier '{n}'"
           idents := idents.push n
-        | `(find_pattern| _) => do
+        | `(find_filter| _) => do
             throwErrorAt arg ("Cannot search for _. " ++
               "Did you forget to put a term pattern in parentheses?")
-        | `(find_pattern| $s:term) => do
+        | `(find_filter| $s:term) => do
           let t ← elabTerm' s none
           terms := terms.push (false, t)
         | _ => throwErrorAt args "unexpected argument to #find"
@@ -307,9 +306,9 @@ find lemmas that you have not yet imported, and the cache will stay up-to-date.
 
 Inside tactic proofs, the `#find` tactic can be used instead.
 -/
-elab s:"#find " args:find_patterns : command => liftTermElabM do
+elab s:"#find " args:find_filters : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
-    match ← find (← parseFindPatterns args) with
+    match ← find (← parseFindFilters args) with
     | .error warn =>
       Lean.logWarningAt s warn
     | .ok (summary, hits) =>
@@ -319,9 +318,9 @@ elab s:"#find " args:find_patterns : command => liftTermElabM do
 Tactic version of the `#find` command.
 See also the `apply?` tactic to search for theorems matching the current goal.
 -/
-elab s:"#find " args:find_patterns : tactic => do
+elab s:"#find " args:find_filters : tactic => do
   profileitM Exception "find" (← getOptions) do
-    match ← find (← parseFindPatterns args) with
+    match ← find (← parseFindFilters args) with
     | .error warn =>
       Lean.logWarningAt s warn
     | .ok (summary, hits) =>
