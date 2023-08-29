@@ -391,6 +391,11 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
 theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
     fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
 
+@[simp]
+theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
+    prod (cons m w h2 h1) = of m * prod w := by
+  simp [cons, prod, List.map_cons, List.prod_cons]
+
 @[elab_as_elim]
 def consRecOn {motive : Word M → Sort*} (w : Word M) (h_empty : motive empty)
     (h_cons : ∀ (i) (m : M i) (w) h1 h2, motive w → motive (cons m w h1 h2)) :
