@@ -16,6 +16,7 @@ import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 open scoped Classical BigOperators Topology ENNReal
 open Filter
+set_option autoImplicit true
 
 noncomputable section
 
@@ -28,7 +29,7 @@ open Finset
 -- move to Data.Finset.Basic
 theorem Finset.monotone_iff {α β : Type _} [Preorder β] (f : Finset α → β) :
     Monotone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s ≤ f (insert i s) := by
-  refine ⟨fun h s i hi ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h s i _hi ↦ ?_, fun h ↦ ?_⟩
   · exact h (Finset.subset_insert i s)
   · intro s
     suffices : ∀ t, s ∩ t = ∅ → f s ≤ f (s ∪ t)
@@ -250,7 +251,7 @@ theorem prod_insert_div [CommGroup β] [DecidableEq α] (ha : a ∉ s) {f : α �
     (∏ x in insert a s, f x) / f a = ∏ x in s, f x := by simp [ha]
 
 attribute [gcongr] ENNReal.rpow_le_rpow
-
+set_option maxHeartbeats 300000 in
 /-- A version of Hölder with multiple arguments -/
 theorem ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
     (hs : s.Nonempty)
@@ -302,7 +303,7 @@ theorem ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measu
             · exact hpi₀
             · apply add_sub_cancel'_right
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∏ i in s, (∫⁻ a, f i a ∂μ) ^ q i) ^ (1 - p i₀) := by
-            gcongr
+            gcongr -- the behavior of gcongr is heartbeat-dependent, which makes code really fragile...
             exact ih hs (fun i hi ↦ hf i <| mem_insert_of_mem hi) hq h2q
         _ = (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
             simp [← ENNReal.prod_rpow_of_nonneg hpi₀, ← ENNReal.rpow_mul,
@@ -331,7 +332,7 @@ theorem ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : M
             · exact hg
             · refine hf i ?_
               simpa using hi
-          · simp_rw [sum_insertNone, compl_insert, Option.elim, sum_const, nsmul_eq_mul]
+          · simp_rw [sum_insertNone, Option.elim]
             exact hpq
           · rintro (_|i) hi
             · exact hq

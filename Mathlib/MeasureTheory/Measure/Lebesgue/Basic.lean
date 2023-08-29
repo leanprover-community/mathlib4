@@ -376,8 +376,8 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
 #align real.smul_map_diagonal_volume_pi Real.smul_map_diagonal_volume_pi
 
 -- todo: move
-theorem mulVec_stdBasisMatrix [Semiring R] [Fintype n] [DecidableEq n] [Fintype m] [DecidableEq m]
-    (i : n) (j : m) (c : R) (x : m → R) :
+theorem mulVec_stdBasisMatrix {R n m} [Semiring R] [Fintype n] [DecidableEq n] [Fintype m]
+    [DecidableEq m] (i : n) (j : m) (c : R) (x : m → R) :
     mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → R) i (c * x j) := by
   ext i'
   simp [stdBasisMatrix, mulVec, dotProduct]
@@ -389,7 +389,8 @@ theorem mulVec_stdBasisMatrix [Semiring R] [Fintype n] [DecidableEq n] [Fintype 
 -- integration:
 -- add import Mathlib.MeasureTheory.Group.Lintegral after #6715 is merged
 @[to_additive]
-theorem _root_.MeasureTheory.lintegral_mul_right_eq_self [MeasurableSpace G] [Group G] {μ : Measure G}
+theorem _root_.MeasureTheory.lintegral_mul_right_eq_self
+    {G} [MeasurableSpace G] [Group G] {μ : Measure G}
     [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by sorry
 

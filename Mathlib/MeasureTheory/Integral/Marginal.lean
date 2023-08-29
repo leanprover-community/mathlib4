@@ -12,6 +12,7 @@ import Mathlib.MeasureTheory.Constructions.Pi
 
 open scoped Classical BigOperators Topology ENNReal
 open Filter
+set_option autoImplicit true
 
 noncomputable section
 
@@ -45,7 +46,7 @@ theorem prod_univ_comp_equiv [Fintype α] [Fintype γ] (f : γ → β) (g : α �
 
 namespace Function
 
-@[simp] theorem comp_def (f : β → γ) (g : α → β) : f ∘ g = fun x => f (g x) := rfl
+theorem comp_def (f : β → γ) (g : α → β) : f ∘ g = fun x => f (g x) := rfl
 
 end Function
 
@@ -139,7 +140,7 @@ theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι) (t : ∀ i, S
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' pi univ t = pi univ fun i => t (f i) := by
   apply Set.ext; rw [← (f.piCongrLeft α).symm.forall_congr_left]
-  intro x; simp_rw [mem_preimage, apply_symm_apply, piCongrLeft_symm_apply, mem_univ_pi]
+  intro x; simp_rw [mem_preimage, apply_symm_apply, mem_univ_pi]
   exact f.forall_congr_left.symm
 
 open Sum
@@ -215,8 +216,8 @@ open Set
 
 variable {α : Type*} [DecidableEq α] {s t : Finset α}
 
--- @[simps apply symm_apply]
 /-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
+@[simps!]
 def Equiv.finsetUnion (s t : Finset α) :
     ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
   subtypeEquivRight <| by simp
@@ -463,7 +464,7 @@ lintegral_mono' h2 hfg
 --     lintegral μ f = lintegral μ g :=
 -- lintegral_congr hfg
 
-alias ENNReal.coe_le_coe ↔ _ ENNReal.monotone2
+alias ⟨_, ENNReal.monotone2⟩ := ENNReal.coe_le_coe
 attribute [gcongr] ENNReal.monotone2
 
 
@@ -620,7 +621,7 @@ theorem marginal_union [DecidableEq δ] (f : (∀ i, π i) → ℝ≥0∞) (hf :
           ∂.pi fun i' : ↥(s ∪ t) ↦ μ i' := by rfl
     _ = ∫⁻ (y : (i : s ⊕ t) → π (e₁ i)), f (updateSet x (s ∪ t) (e₂ y))
           ∂.pi fun i' : s ⊕ t ↦ μ (e₁ i') := by
-        simp_rw [marginal, ← Measure.pi_map_left _ e₁, lintegral_map_equiv]
+        simp_rw [← Measure.pi_map_left _ e₁, lintegral_map_equiv]
     _ = ∫⁻ (y : ((i : s) → π i) × ((j : t) → π j)), f (updateSet x (s ∪ t) (e₂ (e₃ y)))
           ∂(Measure.pi fun i : s ↦ μ i).prod (.pi fun j : t ↦ μ j) := by
         simp_rw [← Measure.pi_sum, lintegral_map_equiv]; rfl
@@ -786,7 +787,7 @@ theorem insertNth_apply_dcomp_succAbove (i : Fin (n + 1)) (x : α i) (z : ∀ i,
 
 theorem insertNth_comp_dcomp_succAbove (i : Fin (n + 1)) (x : α i) :
     insertNth i x ∘ (· ∘' i.succAbove) = (update · i x) := by
-  simp
+  simp [comp]
 
 theorem insertNth_eq_of_ne {i j : Fin (n + 1)} (h : i ≠ j) (x x' : α i)
     (p : ∀ j, α (i.succAbove j)) : insertNth i x p j = insertNth i x' p j := by
@@ -842,7 +843,7 @@ theorem lintegral_measure_insertNth {s : Set (∀ i, α i)} (hs : MeasurableSet 
         rfl
     _ = ∫⁻ x : α i, (∫⋯∫_{i}ᶜ,
           indicator ((Function.update · i x) ⁻¹' s) 1 ∂μ) z ∂μ i := by
-        simp
+        simp [comp]
     _ = (∫⋯∫_insert i {i}ᶜ, indicator s 1 ∂μ) z := by
         simp_rw [marginal_insert _ (measurable_one.indicator hs) hi,
           marginal_update_of_not_mem (measurable_one.indicator hs) hi]
