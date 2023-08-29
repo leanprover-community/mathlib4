@@ -125,6 +125,7 @@ protected def addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul �
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
   { toAddMonoid := hf.addMonoid f zero add nsmul
+    toNatCast := by assumption
     natCast_zero := hf (by erw [nat_cast, Nat.cast_zero, zero]),
     natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]) }
 #align function.injective.add_monoid_with_one Function.Injective.addMonoidWithOne
@@ -452,7 +453,7 @@ protected def addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul �
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
   { toAddMonoid := hf.addMonoid f zero add nsmul,
     toOne := by assumption,
-    natCast := Nat.cast,
+    toNatCast := by assumption,
     natCast_zero := by rw [← Nat.cast, ← nat_cast, Nat.cast_zero, zero]
     natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast] }
 #align function.surjective.add_monoid_with_one Function.Surjective.addMonoidWithOne
