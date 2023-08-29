@@ -146,7 +146,7 @@ instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
 @[simp]
 lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
 
-instance : Sub (P ⟶ Q) := ⟨fun f g => Hom.mk (f.hom - g.hom) (by
+instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
   intros
   rw [NatTrans.app_sub, AddMonoidHom.sub_apply, AddMonoidHom.sub_apply,
     smul_sub, map_smul, map_smul])⟩
