@@ -3446,3 +3446,4 @@ import Mathlib.Util.Tactic
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.binop2
