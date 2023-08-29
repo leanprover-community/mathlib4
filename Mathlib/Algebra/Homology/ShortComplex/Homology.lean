@@ -29,11 +29,13 @@ such a structure could be used as a basis for the *definition* of homology.
 
 -/
 
+universe v u
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (S : ShortComplex C)
   {S₁ S₂ S₃ S₄ : ShortComplex C}
 
 namespace ShortComplex
@@ -195,7 +197,7 @@ end HomologyData
 
 /-- A short complex `S` has homology when there exists a `S.HomologyData` -/
 class HasHomology : Prop where
-  /-- the condition that there exists an homology data -/
+  /-- the condition that there exists a homology data -/
   condition : Nonempty S.HomologyData
 
 end ShortComplex
