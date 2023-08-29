@@ -284,8 +284,8 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommGroupCat.{u} GroupCat.{u} where coe := (forget₂ CommGroupCat GroupCat).obj
 
-@[to_additive hasForgetToAddCommMon]
-instance hasForgetToCommMon : HasForget₂ CommGroupCat CommMonCat :=
+@[to_additive hasForgetToAddCommMonCat]
+instance hasForgetToCommMonCat : HasForget₂ CommGroupCat CommMonCat :=
   InducedCategory.hasForget₂ fun G : CommGroupCat => CommMonCat.of G
 set_option linter.uppercaseLean3 false in
 #align CommGroup.has_forget_to_CommMon CommGroupCat.hasForgetToCommMonCat
