@@ -708,8 +708,14 @@ namespace ContainsIdentities
 instance op (W : MorphismProperty C) [W.ContainsIdentities] :
     W.op.ContainsIdentities := ⟨fun X => W.id_mem X.unop⟩
 
-lemma unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
+instance unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
     W.unop.ContainsIdentities := ⟨fun X => W.id_mem (Opposite.op X)⟩
+
+lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
+    W.ContainsIdentities := (inferInstance : W.op.unop.ContainsIdentities)
+
+lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
+    W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
 end ContainsIdentities
 
@@ -729,9 +735,15 @@ namespace IsMultiplicative
 instance op (W : MorphismProperty C) [IsMultiplicative W] : IsMultiplicative W.op where
   stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.unop f.unop hg hf
 
-lemma unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
+instance unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
   id_mem' _ := W.id_mem _
   stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.op f.op hg hf
+
+lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative W :=
+  (inferInstance : IsMultiplicative W.op.unop)
+
+lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
+  (inferInstance : IsMultiplicative W.unop.op)
 
 end IsMultiplicative
 
