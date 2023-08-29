@@ -28,7 +28,7 @@ def of {i : ι} : G i →* AmalgamatedProduct φ :=
   (QuotientGroup.mk' _).comp <| inl.comp CoprodI.of
 
 def base : H →* AmalgamatedProduct φ :=
-  (QuotientGroup.mk' _).comp <| inr
+  (QuotientGroup.mk' _).comp inr
 
 theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
   ext x
@@ -564,7 +564,7 @@ open NormalWord
 variable (φ)
 
 def Reduced (w : Word G) : Prop :=
-  ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∉ (φ i).range
+  ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
 
 variable {φ} (hφ : ∀ _i, Function.Injective (φ _i))
 
@@ -576,11 +576,11 @@ theorem Reduced.exists_normalWord_prod_eq {w : Word G} (hw : Reduced φ w) :
   induction w using Word.consRecOn with
   | h_empty => exact ⟨empty, by simp, rfl⟩
   | h_cons i g w hIdx hg1 ih =>
-    rcases ih (fun _ _ hg => hw _ _ (List.mem_cons_of_mem _ hg)) with
+    rcases ih (fun _ hg => hw _ (List.mem_cons_of_mem _ hg)) with
       ⟨w', hw'prod, hw'map⟩
     refine ⟨cons hφ g w' ?_ ?_, ?_⟩
     · rwa [Word.fstIdx, ← List.head?_map, hw'map, List.head?_map]
-    · exact hw _ _ (List.mem_cons_self _ _)
+    · exact hw _ (List.mem_cons_self _ _)
     · simp [hw'prod, hw'map]
 
 theorem Reduced.eq_empty_of_mem_range {w : Word G} (hw : Reduced φ w) :
@@ -597,5 +597,43 @@ theorem Reduced.eq_empty_of_mem_range {w : Word G} (hw : Reduced φ w) :
   · rw [← prod_injective hφ heq]
 
 end Reduced
+
+theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij : i ≠ j) :
+    (of (i := i)).range ⊓ (of (i := j)).range = (base (φ := φ)).range :=
+  le_antisymm
+    (by
+      intro x hx
+      rcases hx with ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
+      by_contra hx
+      have hx1 : x ≠ 1 := by rintro rfl; simp_all only [map_one, one_mem]
+      have hg₁1 : g₁ ≠ 1 :=
+        ne_of_apply_ne (of (φ := φ)) (by simp_all)
+      have hg₂1 : g₂ ≠ 1 :=
+        ne_of_apply_ne (of (φ := φ)) (by simp_all)
+      have hg₁r : g₁ ∉ (φ i).range := by
+        rintro ⟨y, rfl⟩
+        subst hg₁
+        simp_all [of_apply_eq_base]
+      have hg₂r : g₂ ∉ (φ j).range := by
+        rintro ⟨y, rfl⟩
+        subst hg₂
+        simp_all [of_apply_eq_base]
+      let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
+      have hw : Reduced φ w := by
+        simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
+          forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq, true_and, hg₁r, hg₂r,
+          List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true, inv_mem_iff]
+      have := hw.eq_empty_of_mem_range hφ (by
+        simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
+          List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
+          mul_inv_self, one_mem])
+      simp [Word.empty] at this)
+    (le_inf
+      (by rw [← of_comp_eq_base i]
+          rintro _ ⟨_, rfl⟩
+          simp)
+      (by rw [← of_comp_eq_base j]
+          rintro _ ⟨_, rfl⟩
+          simp))
 
 end AmalgamatedProduct
