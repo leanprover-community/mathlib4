@@ -148,8 +148,6 @@ protected def leftCancelMonoid [LeftCancelMonoid M₂] (f : M₁ → M₂) (hf :
 #align function.injective.left_cancel_monoid Function.Injective.leftCancelMonoid
 #align function.injective.add_left_cancel_monoid Function.Injective.addLeftCancelMonoid
 
-set_option pp.all true
-
 /-- A type endowed with `1` and `*` is a right cancel monoid, if it admits an injective map that
 preserves `1` and `*` to a right cancel monoid. See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
