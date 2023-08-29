@@ -264,11 +264,10 @@ theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t : α) (h : 
       simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
       split_ifs with h1 h2 h2
       · simp_all
-      · rw [eq_comm] at h2
-        have := (@ha x b).mpr h2
-        split_ifs at this; simp_all
+      · have := (@ha b x).mpr h2
+        split_ifs at this; simp_all only; tauto
       · have := (@ha a x).mpr h1
-        split_ifs at this; simp_all [adj_comm]
+        split_ifs at this; simp_all only; tauto
       · rw [← @ha a b]
         have := (@hi a x).mt h1
         have := (@hi b x).mt h2
