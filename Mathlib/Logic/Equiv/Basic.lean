@@ -22,7 +22,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 * canonical isomorphisms between various types: e.g.,
 
   - `Equiv.sumEquivSigmaBool` is the canonical equivalence between the sum of two types `α ⊕ β`
-    and the sigma-type `Σ b : Bool, cond b α β`;
+    and the sigma-type `Σ b : Bool, b.casesOn α β`;
 
   - `Equiv.prodSumDistrib : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ)` shows that type product and type sum
     satisfy the distributive law up to a canonical equivalence;
@@ -376,7 +376,7 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
-  ⟨fun b => cond b (inr PUnit.unit) (inl PUnit.unit), Sum.elim (fun _ => false) fun _ => true,
+  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 #align equiv.bool_equiv_punit_sum_punit Equiv.boolEquivPUnitSumPUnit
 
@@ -521,7 +521,7 @@ def piOptionEquivProd {β : Option α → Type*} :
 `β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
-def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b β α :=
+def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, b.casesOn α β :=
   ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
     match s with
     | ⟨false, a⟩ => inl a
@@ -1043,7 +1043,7 @@ def sigmaNatSucc (f : ℕ → Type u) : (Σ n, f n) ≃ Sum (f 0) (Σ n, f (n + 
 /-- The product `Bool × α` is equivalent to `α ⊕ α`. -/
 @[simps]
 def boolProdEquivSum (α) : Bool × α ≃ Sum α α where
-  toFun p := cond p.1 (inr p.2) (inl p.2)
+  toFun p := p.1.casesOn (inl p.2) (inr p.2)
   invFun := Sum.elim (Prod.mk false) (Prod.mk true)
   left_inv := by rintro ⟨_ | _, _⟩ <;> rfl
   right_inv := by rintro (_ | _) <;> rfl
@@ -1055,7 +1055,7 @@ def boolProdEquivSum (α) : Bool × α ≃ Sum α α where
 @[simps]
 def boolArrowEquivProd (α) : (Bool → α) ≃ α × α where
   toFun f := (f false, f true)
-  invFun p b := cond b p.2 p.1
+  invFun p b := b.casesOn p.1 p.2
   left_inv _ := funext <| Bool.forall_bool.2 ⟨rfl, rfl⟩
   right_inv := fun _ => rfl
 #align equiv.bool_arrow_equiv_prod Equiv.boolArrowEquivProd
