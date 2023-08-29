@@ -124,7 +124,7 @@ open Coset
 variable (φ)
 
 noncomputable def normalizeSingle {i : ι} (g : G i) : H × G i :=
-  letI := Classical.propDecidable (g ∈ (φ i).range )
+  letI := Classical.propDecidable (g ∈ (φ i).range)
   if hg : g ∈ (φ i).range
   then ⟨Classical.choose hg, 1⟩
   else
