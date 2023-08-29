@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Find
 import Std.Tactic.GuardMsgs
 import Std.Data.List.Lemmas
+import Mathlib.Tactic.RunCmd
 
 /-- warning: Cannot search: No constants in search pattern. -/
 #guard_msgs in
@@ -159,3 +160,27 @@ Of these, 1 match your patterns.
 
 
 end LinearPatternTest
+
+section ListMapTest
+
+open Mathlib.Tactic.Find
+open Lean Elab Command
+
+elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => liftTermElabM do
+    let pat ← Lean.Elab.Term.elabTerm query none
+    let name := Lean.TSyntax.getId name_s
+    let matcher ←
+      if concl.isSome
+      then matchConclusion pat
+      else matchAnywhere pat
+    let c := (← getEnv).constants.find! name
+    unless ← matcher c do
+      logErrorAt s "Pattern does not match when it should!"
+
+/-- error: Pattern does not match when it should! -/
+#guard_msgs in
+#assert_match List.map (?a -> ?b) -> List ?a -> List ?b
+
+#assert_match List.map |- (?a -> ?b) -> List ?a -> List ?b
+
+end ListMapTest
