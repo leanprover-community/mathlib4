@@ -30,8 +30,11 @@ theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
         List.minimum_singleton, WithTop.coe_le_coe]
       exact le_add_of_nonneg_left (by simp)
   | cons x xs ih =>
-    simp only [levenshtein_cons_cons]
-    simp only [ge_iff_le, le_min_iff, min_le_iff, WithTop.coe_min, WithTop.coe_le_coe]
+    suffices :
+      (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.delete x + levenshtein C xs (y :: ys)) ∧
+        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.insert y + levenshtein C (x :: xs) ys) ∧
+        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.substitute x y + levenshtein C xs ys)
+    · simpa [suffixLevenshtein_eq_tails_map]
     refine ⟨?_, ?_, ?_⟩
     · calc
         _ ≤ (suffixLevenshtein C xs ys).1.minimum := by
@@ -39,11 +42,11 @@ theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
         _ ≤ ↑(levenshtein C xs (y :: ys)) := ih
         _ ≤ _ := by simp
     · calc
-        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ ↑(levenshtein C (x :: xs) ys) := by
+        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (levenshtein C (x :: xs) ys) := by
             simp [suffixLevenshtein_cons₁_fst, List.minimum_cons]
         _ ≤ _ := by simp
     · calc
-        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ ↑(levenshtein C xs ys) := by
+        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (levenshtein C xs ys) := by
             simp only [suffixLevenshtein_cons₁_fst, List.minimum_cons]
             apply min_le_of_right_le
             cases xs
@@ -61,10 +64,13 @@ theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
   simp only [suffixLevenshtein_eq_tails_map]
   apply List.le_minimum_of_forall_le
   intro b m
-  simp only [List.mem_map, List.mem_tails] at m
+  replace m : ∃ a_1, a_1 <:+ a ∧ levenshtein C a_1 ys = b
+  · simpa using m
   obtain ⟨a', suff', rfl⟩ := m
   apply List.minimum_le_of_mem'
   simp only [List.mem_map, List.mem_tails]
+  suffices : ∃ a, a <:+ xs ∧ levenshtein C a ys = levenshtein C a' ys
+  · simpa
   exact ⟨a', suff'.trans suff, rfl⟩
 
 theorem le_suffixLevenshtein_append_minimum (xs : List α) (ys₁ ys₂) :
