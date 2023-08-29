@@ -158,7 +158,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
 @[simps]
-instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
 /-- Notation for composition of isomorphisms. -/

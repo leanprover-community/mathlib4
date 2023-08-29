@@ -14,16 +14,16 @@ These results are kept separate from `Algebra.Star.Basic` to avoid it needing to
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 open BigOperators
 
 @[simp]
-theorem star_prod [CommMonoid R] [StarSemigroup R] {α : Type _} (s : Finset α) (f : α → R) :
+theorem star_prod [CommMonoid R] [StarSemigroup R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∏ x in s, f x) = ∏ x in s, star (f x) := map_prod (starMulAut : R ≃* R) _ _
 #align star_prod star_prod
 
 @[simp]
-theorem star_sum [AddCommMonoid R] [StarAddMonoid R] {α : Type _} (s : Finset α) (f : α → R) :
+theorem star_sum [AddCommMonoid R] [StarAddMonoid R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∑ x in s, f x) = ∑ x in s, star (f x) := (starAddEquiv : R ≃+ R).map_sum _ _
 #align star_sum star_sum

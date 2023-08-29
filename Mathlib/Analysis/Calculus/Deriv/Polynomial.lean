@@ -59,7 +59,7 @@ namespace Polynomial
 /-! ### Derivative of a polynomial -/
 
 
-variable {R : Type _} [CommSemiring R] [Algebra R 𝕜]
+variable {R : Type*} [CommSemiring R] [Algebra R 𝕜]
 
 variable (p : 𝕜[X]) (q : R[X])
 

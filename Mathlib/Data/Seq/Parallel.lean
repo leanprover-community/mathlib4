@@ -307,7 +307,7 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
       simp [parallel.aux1]
       rw [this]
       cases' parallel.aux2 l with a l' <;> simp
-      induction' S using WSeq.recOn with c S S <;> simp <;> simp [parallel.aux1] <;>
+      induction' S using WSeq.recOn with c S S <;> simp <;>
         exact ⟨_, _, rfl, rfl⟩
 #align computation.map_parallel Computation.map_parallel
 

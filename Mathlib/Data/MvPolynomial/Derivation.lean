@@ -24,7 +24,7 @@ open scoped BigOperators
 
 noncomputable section
 
-variable {σ R A : Type _} [CommSemiring R] [AddCommMonoid A] [Module R A]
+variable {σ R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
   [Module (MvPolynomial σ R) A]
 
 section
@@ -63,17 +63,11 @@ theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) 
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.derivation_C MvPolynomial.derivation_C
 
--- @[simp] -- Porting note: simp normal form is `derivation_C_mul'`
-theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
-    D (C a * f) = a • D f := by rw [C_mul', D.map_smul]
-set_option linter.uppercaseLean3 false in
-#align mv_polynomial.derivation_C_mul MvPolynomial.derivation_C_mul
-
 @[simp]
-theorem derivation_C_mul' (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
+theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
     C (σ := σ) a • D f = a • D f := by
   have : C (σ := σ) a • D f = D (C a * f) := by simp
-  rw [this, derivation_C_mul]
+  rw [this, C_mul', D.map_smul]
 
 /-- If two derivations agree on `X i`, `i ∈ s`, then they agree on all polynomials from
 `MvPolynomial.supported R s`. -/

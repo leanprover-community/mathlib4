@@ -54,10 +54,10 @@ open Set Fin Filter Function
 
 open scoped Topology
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddCommGroup D]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddCommGroup D]
   [NormedSpace 𝕜 D] {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type _} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s s₁ t u : Set E} {f f₁ : E → F}
+  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s s₁ t u : Set E} {f f₁ : E → F}
   {g : F → G} {x x₀ : E} {c : F} {b : E × F → G} {m n : ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
@@ -845,7 +845,7 @@ theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
 
 section NAry
 
-variable {E₁ E₂ E₃ E₄ : Type _}
+variable {E₁ E₂ E₃ E₄ : Type*}
 
 variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup E₃]
   [NormedAddCommGroup E₄] [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 E₃]
@@ -1034,6 +1034,18 @@ theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x�
     contDiffWithinAt_id hs hmn hx₀s (by rw [preimage_id'])
 #align cont_diff_within_at.fderiv_within_right ContDiffWithinAt.fderivWithin_right
 
+-- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
+theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
+    (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
+    ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
+  induction' i with i hi generalizing m
+  · rw [Nat.zero_eq, ENat.coe_zero, add_zero] at hmn
+    exact (hf.of_le hmn).continuousLinearMap_comp
+      ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
+  · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
+    exact ((hi hmn).fderivWithin_right hs le_rfl hx₀s).continuousLinearMap_comp
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i+1) ↦ E) F : _ →L[𝕜] E [×(i+1)]→L[𝕜] F)
+
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth at `x₀`. -/
 protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F} {n : ℕ∞}
     (hf : ContDiffAt 𝕜 n (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀)
@@ -1050,6 +1062,11 @@ theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : (m + 1 : 
   ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id hmn
 #align cont_diff_at.fderiv_right ContDiffAt.fderiv_right
 
+theorem ContDiffAt.iteratedFDeriv_right {i : ℕ} (hf : ContDiffAt 𝕜 n f x₀)
+    (hmn : (m + i : ℕ∞) ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
+  rw [← iteratedFDerivWithin_univ, ← contDiffWithinAt_univ] at *
+  exact hf.iteratedFderivWithin_right uniqueDiffOn_univ hmn trivial
+
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth. -/
 protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F} {n m : ℕ∞}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hnm : n + 1 ≤ m) :
@@ -1062,6 +1079,10 @@ theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : (m + 1 : ℕ∞) �
     ContDiff 𝕜 m (fderiv 𝕜 f) :=
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.fderiv_right hmn
 #align cont_diff.fderiv_right ContDiff.fderiv_right
+
+theorem ContDiff.iteratedFDeriv_right {i : ℕ} (hf : ContDiff 𝕜 n f)
+    (hmn : (m + i : ℕ∞) ≤ n) : ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
+  contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right hmn
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is continuous. -/
 theorem Continuous.fderiv {f : E → F → G} {g : E → F} {n : ℕ∞}
@@ -1107,7 +1128,7 @@ theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (h
 
 section Pi
 
-variable {ι ι' : Type _} [Fintype ι] [Fintype ι'] {F' : ι → Type _} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
@@ -1337,7 +1358,7 @@ theorem ContDiff.sub {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff �
 
 /-! ### Sum of finitely many functions -/
 
-theorem ContDiffWithinAt.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} {t : Set E} {x : E}
+theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {t : Set E} {x : E}
     (h : ∀ i ∈ s, ContDiffWithinAt 𝕜 n (fun x => f i x) t x) :
     ContDiffWithinAt 𝕜 n (fun x => ∑ i in s, f i x) t x := by
   classical
@@ -1348,19 +1369,19 @@ theorem ContDiffWithinAt.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} 
         (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
 #align cont_diff_within_at.sum ContDiffWithinAt.sum
 
-theorem ContDiffAt.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} {x : E}
+theorem ContDiffAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {x : E}
     (h : ∀ i ∈ s, ContDiffAt 𝕜 n (fun x => f i x) x) :
     ContDiffAt 𝕜 n (fun x => ∑ i in s, f i x) x := by
   rw [← contDiffWithinAt_univ] at *; exact ContDiffWithinAt.sum h
 #align cont_diff_at.sum ContDiffAt.sum
 
-theorem ContDiffOn.sum {ι : Type _} {f : ι → E → F} {s : Finset ι} {t : Set E}
+theorem ContDiffOn.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {t : Set E}
     (h : ∀ i ∈ s, ContDiffOn 𝕜 n (fun x => f i x) t) :
     ContDiffOn 𝕜 n (fun x => ∑ i in s, f i x) t := fun x hx =>
   ContDiffWithinAt.sum fun i hi => h i hi x hx
 #align cont_diff_on.sum ContDiffOn.sum
 
-theorem ContDiff.sum {ι : Type _} {f : ι → E → F} {s : Finset ι}
+theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
     (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i in s, f i x := by
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 #align cont_diff.sum ContDiff.sum
@@ -1369,7 +1390,7 @@ theorem ContDiff.sum {ι : Type _} {f : ι → E → F} {s : Finset ι}
 
 section MulProd
 
-variable {𝔸 𝔸' ι 𝕜' : Type _} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
+variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
   [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
@@ -1528,7 +1549,7 @@ Porting note: TODO: generalize results in this section.
 
 section ConstSmul
 
-variable {R : Type _} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
+variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
 
 variable [ContinuousConstSMul R F]
 
@@ -1581,9 +1602,9 @@ end ConstSmul
 
 section Prod_map
 
-variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
-variable {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
@@ -1601,7 +1622,7 @@ theorem ContDiffWithinAt.prod_map {s : Set E} {t : Set E'} {f : E → F} {g : E'
 #align cont_diff_within_at.prod_map ContDiffWithinAt.prod_map
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
-theorem ContDiffOn.prod_map {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type _}
+theorem ContDiffOn.prod_map {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
     [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prod
@@ -1646,7 +1667,7 @@ end Prod_map
 
 section AlgebraInverse
 
-variable (𝕜) {R : Type _} [NormedRing R]
+variable (𝕜) {R : Type*} [NormedRing R]
 -- porting note: this couldn't be on the same line as the binder type update of `𝕜`
 variable [NormedAlgebra 𝕜 R]
 
@@ -1679,7 +1700,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
   · exact contDiffAt_top.mpr Itop
 #align cont_diff_at_ring_inverse contDiffAt_ring_inverse
 
-variable {𝕜' : Type _} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
+variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
 
 theorem contDiffAt_inv {x : 𝕜'} (hx : x ≠ 0) {n} : ContDiffAt 𝕜 n Inv.inv x := by
   simpa only [Ring.inverse_eq_inv'] using contDiffAt_ring_inverse 𝕜 (Units.mk0 x hx)
@@ -1928,8 +1949,8 @@ section Real
 -/
 
 
-variable {𝕂 : Type _} [IsROrC 𝕂] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
-  {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
+variable {𝕂 : Type*} [IsROrC 𝕂] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
 
 /-- If a function has a Taylor series at order at least 1, then at points in the interior of the
     domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
@@ -1986,7 +2007,7 @@ theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff �
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type _}
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
@@ -2005,7 +2026,7 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type _
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 then `f` is Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGroup E]
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) :
@@ -2015,7 +2036,7 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type _} [NormedAddC
 
 /-- If `f` is `C^1` within a convex set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
-theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type _} [NormedAddCommGroup E]
+theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {s : Set E} {x : E}
     (hf : ContDiffWithinAt ℝ 1 f s x) (hs : Convex ℝ s) :
     ∃ K : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
@@ -2191,7 +2212,7 @@ over `𝕜`.
 -/
 
 
-variable (𝕜) {𝕜' : Type _} [NontriviallyNormedField 𝕜']
+variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
 -- porting note: this couldn't be on the same line as the binder type update of `𝕜`
 variable [NormedAlgebra 𝕜 𝕜']
 
@@ -2473,7 +2494,7 @@ theorem ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one (B : E 
 
 section
 
-variable {𝕜' : Type _} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 theorem norm_iteratedFDerivWithin_smul_le {f : E → 𝕜'} {g : E → F} {N : ℕ∞}
@@ -2498,7 +2519,7 @@ end
 
 section
 
-variable {A : Type _} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem norm_iteratedFDerivWithin_mul_le {f : E → A} {g : E → A} {N : ℕ∞} (hf : ContDiffOn 𝕜 N f s)
     (hg : ContDiffOn 𝕜 N g s) (hs : UniqueDiffOn 𝕜 s) {x : E} (hx : x ∈ s) {n : ℕ}
