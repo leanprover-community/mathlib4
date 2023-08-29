@@ -197,12 +197,10 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
 
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
   let hyps := MLList.ofArray <| hyps.map fun ⟨hyp, symm, weight⟩ => (Sum.inl hyp, symm, weight)
-  let lemmas := MLList.ofList <| deduped.toList.map fun ⟨lem, symm, weight⟩ => (Sum.inr lem, symm, weight)
+  let lemmas := MLList.ofArray <| deduped.map fun ⟨lem, symm, weight⟩ => (Sum.inr lem, symm, weight)
 
-  let lazy : MLList MetaM ((Expr ⊕ Name) × Bool × ℕ) :=
-    hyps |>.append fun _ => lemmas
-  pure <| lazy.filterMapM fun ⟨hyp_or_lemma, symm, weight⟩ => withMCtx ctx do
-    let some expr ← (match hyp_or_lemma with
+  pure <| (hyps |>.append fun _ => lemmas).filterMapM fun ⟨lem, symm, weight⟩ => withMCtx ctx do
+    let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
     | .inr lem => try? <| mkConstWithFreshMVarLevels lem) | return none
     trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
