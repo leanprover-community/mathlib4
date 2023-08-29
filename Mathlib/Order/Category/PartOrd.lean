@@ -96,15 +96,15 @@ set_option linter.uppercaseLean3 false in
 
 end PartOrd
 
-theorem partOrd_dual_comp_forget_to_preordCat :
+theorem partOrd_dual_comp_forget_to_preord :
     PartOrd.dual ⋙ forget₂ PartOrd Preord =
       forget₂ PartOrd Preord ⋙ Preord.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align PartOrd_dual_comp_forget_to_Preord partOrd_dual_comp_forget_to_preordCat
+#align PartOrd_dual_comp_forget_to_Preord partOrd_dual_comp_forget_to_preord
 
 /-- `antisymmetrization` as a functor. It is the free functor. -/
-def preordCatToPartOrd : Preord.{u} ⥤ PartOrd where
+def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   obj X := PartOrd.of (Antisymmetrization X (· ≤ ·))
   map f := f.antisymmetrization
   map_id X := by
@@ -114,12 +114,12 @@ def preordCatToPartOrd : Preord.{u} ⥤ PartOrd where
     ext x
     exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
 set_option linter.uppercaseLean3 false in
-#align Preord_to_PartOrd preordCatToPartOrd
+#align Preord_to_PartOrd preordToPartOrd
 
 /-- `Preord_to_PartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/
-def preordCatToPartOrdForgetAdjunction :
-    preordCatToPartOrd.{u} ⊣ forget₂ PartOrd Preord :=
+def preordToPartOrdForgetAdjunction :
+    preordToPartOrd.{u} ⊣ forget₂ PartOrd Preord :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
         { toFun := fun f =>
@@ -134,15 +134,15 @@ def preordCatToPartOrdForgetAdjunction :
         OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl
       homEquiv_naturality_right := fun _ _ => OrderHom.ext _ _ <| funext fun _ => rfl }
 set_option linter.uppercaseLean3 false in
-#align Preord_to_PartOrd_forget_adjunction preordCatToPartOrdForgetAdjunction
+#align Preord_to_PartOrd_forget_adjunction preordToPartOrdForgetAdjunction
 
--- The `simpNF` linter would complain as `Functor.comp_obj`, `PreordCat.dual_obj` both apply to LHS
--- of `preordCatToPartOrdCompToDualIsoToDualCompPreordCatToPartOrd_hom_app_coe`
-/-- `PreordCatToPartOrd` and `OrderDual` commute. -/
+-- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
+-- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
+/-- `PreordToPartOrd` and `OrderDual` commute. -/
 @[simps! inv_app_coe, simps! (config := .lemmasOnly) hom_app_coe]
-def preordCatToPartOrdCompToDualIsoToDualCompPreordCatToPartOrd :
-    preordCatToPartOrd.{u} ⋙ PartOrd.dual ≅ PreordCat.dual ⋙ preordCatToPartOrd :=
+def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
+    preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl)
 set_option linter.uppercaseLean3 false in
-#align Preord_to_PartOrd_comp_to_dual_iso_to_dual_comp_Preord_to_PartOrd preordCatToPartOrdCompToDualIsoToDualCompPreordToPartOrd
+#align Preord_to_PartOrd_comp_to_dual_iso_to_dual_comp_Preord_to_PartOrd preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd
