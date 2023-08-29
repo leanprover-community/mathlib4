@@ -114,9 +114,9 @@ instance : Inhabited GroupCat :=
 instance hasForgetToMonCat : HasForget₂ GroupCat MonCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
-#align Group.has_forget_to_Mon GroupCat.hasForgetToMon
+#align Group.has_forget_to_Mon GroupCat.hasForgetToMonCat
 set_option linter.uppercaseLean3 false in
-#align AddGroup.has_forget_to_AddMon AddGroupCat.hasForgetToAddMon
+#align AddGroup.has_forget_to_AddMon AddGroupCat.hasForgetToAddMonCat
 
 @[to_additive]
 instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).obj
@@ -285,15 +285,15 @@ set_option linter.uppercaseLean3 false in
 instance : Coe CommGroupCat.{u} GroupCat.{u} where coe := (forget₂ CommGroupCat GroupCat).obj
 
 @[to_additive hasForgetToAddCommMon]
-instance hasForgetToCommMon : HasForget₂ CommGroupCat CommMon :=
-  InducedCategory.hasForget₂ fun G : CommGroupCat => CommMon.of G
+instance hasForgetToCommMon : HasForget₂ CommGroupCat CommMonCat :=
+  InducedCategory.hasForget₂ fun G : CommGroupCat => CommMonCat.of G
 set_option linter.uppercaseLean3 false in
-#align CommGroup.has_forget_to_CommMon CommGroupCat.hasForgetToCommMon
+#align CommGroup.has_forget_to_CommMon CommGroupCat.hasForgetToCommMonCat
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.has_forget_to_AddCommMon AddCommGroupCat.hasForgetToAddCommMon
+#align AddCommGroup.has_forget_to_AddCommMon AddCommGroupCat.hasForgetToAddCommMonCat
 
 @[to_additive]
-instance : Coe CommGroupCat.{u} CommMon.{u} where coe := (forget₂ CommGroupCat CommMon).obj
+instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroupCat CommMonCat).obj
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
