@@ -98,8 +98,6 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {ι : Type u} (s : Finset ι)
 
 section GeomMeanLEArithMean
