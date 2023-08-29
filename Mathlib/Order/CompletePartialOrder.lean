@@ -36,13 +36,13 @@ complete partial order, directedly complete partial order
 
 section SemilatticeSup
 
-variable [SemilatticeSup α]
+variable {α : Type*} [SemilatticeSup α]
 
 /--
 Every subset of a join-semilattice generates a directed set
 -/
-def directedClosure (s : Set α) : Set α :=
-  { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   }
+def directedClosure (s : Set α) :=
+  { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id }
 
 lemma directedClosure_directedOn (s : Set α) : DirectedOn (. ≤ .) (directedClosure s) := by classical
   rintro a ⟨Fa,hFa⟩ b ⟨Fb,hFb⟩
@@ -61,9 +61,9 @@ lemma directedClosure_directedOn (s : Set α) : DirectedOn (. ≤ .) (directedCl
       constructor
       · rw [sup_le_iff]
         constructor
-        · rw [hFa.2.2]
+        · rw [ha]
           exact Finset.sup'_mono _ (Finset.subset_union_left Fa Fb) _
-        · rw [hFb.2.2]
+        · rw [hb]
           exact Finset.sup'_mono _ (Finset.subset_union_right Fa Fb) _
       · simp
         intros c hc
@@ -144,17 +144,15 @@ def SemilatticeSup.toCompleteSemilatticeSup (dSup : Set α → α)
 
 end SemilatticeSup
 
-class CompletePartialOrder (α : Type _) extends PartialOrder α where
+section CompletePartialOrder
+
+class CompletePartialOrder (α : Type*) extends PartialOrder α where
   /-- The supremum of an increasing sequence -/
   dSup : Set α → α
   /-- For each directed set `d`, `dSup d` is the least upper bound of `d` -/
   is_LUB: ∀ d, DirectedOn (. ≤ .) d → IsLUB d (dSup d)
 
-lemma CompletePartialOrder.le_dSup [CompletePartialOrder α] (d : Set α) (hd: DirectedOn (. ≤ .) d) :
-  ∀ a ∈ d, a ≤ dSup d := fun _ ha => (is_LUB d hd).1 ha
-
-lemma CompletePartialOrder.dSup_le [CompletePartialOrder α] (d : Set α) (hd: DirectedOn (. ≤ .) d)
-  (x : α) : (∀ a ∈ d, a  ≤ x) → dSup d ≤ x := fun h => (is_LUB d hd).2 h
+variable {α : Type*}
 
 /-
 A complete lattice is a complete partial order
@@ -166,10 +164,18 @@ instance [CompleteLattice α] : CompletePartialOrder α := {
     exact ⟨fun _ ↦ le_sSup, fun x a ↦ sSup_le a⟩
 }
 
+variable [CompletePartialOrder α]
+
+lemma CompletePartialOrder.le_dSup  (d : Set α) (hd: DirectedOn (. ≤ .) d) :
+  ∀ a ∈ d, a ≤ dSup d := fun _ ha => (is_LUB d hd).1 ha
+
+lemma CompletePartialOrder.dSup_le  (d : Set α) (hd: DirectedOn (. ≤ .) d)
+  (x : α) : (∀ a ∈ d, a  ≤ x) → dSup d ≤ x := fun h => (is_LUB d hd).2 h
+
 /-
 Scott continuity takes on a simpler form in complete partial orders
 -/
-lemma CompletePartialOrder.ScottContinuous [CompletePartialOrder α] [Preorder β] {f : α → β} :
+lemma CompletePartialOrder.ScottContinuous {β : Type*} [Preorder β] {f : α → β} :
     ScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (. ≤ .) d → IsLUB (f '' d) (f (dSup d)) := by
   constructor
@@ -184,35 +190,12 @@ lemma CompletePartialOrder.ScottContinuous [CompletePartialOrder α] [Preorder �
 
 open OmegaCompletePartialOrder
 
-/--
-Every chain in a partial order gives rise to a directed set
--/
-def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
-  set := Set.range c,
-  directed := by
-    intros x hx y hy
-    obtain ⟨n,cn⟩ := Set.mem_range.mp hx
-    obtain ⟨m,cm⟩ := Set.mem_range.mp hy
-    cases' le_or_gt n m with hnm hmn
-    · use y
-      constructor
-      · exact hy
-      · simp only [le_refl, and_true]
-        rw [← cn, ← cm]
-        apply (c.monotone' hnm)
-    · use x
-      constructor
-      · exact hx
-      · simp
-        rw [← cn, ← cm]
-        apply (c.monotone' (Nat.le_of_lt hmn)) }
-
-lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
 
 /-
 A complete partial order is a ω-complete partial order
 -/
-instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
+/-
+instance : OmegaCompletePartialOrder α where
   ωSup := fun c => CompletePartialOrder.dSup (Chain.to_DirectedSet c)
   le_ωSup := fun c => fun i => CompletePartialOrder.le_dSup (Chain.to_DirectedSet c) (c i)
     (by rw [Chain_Set, Set.mem_range]; use i)
@@ -224,3 +207,4 @@ instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
     obtain ⟨i,hi⟩:= ha
     rw [← hi]
     exact h i
+-/
