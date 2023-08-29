@@ -15,6 +15,8 @@ set_option autoImplicit true
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 
+set_option autoImplicit true
+
 /--
 info: Try this: rw [@List.map_append]
 -- "no goals"
@@ -148,3 +150,12 @@ info: Try this: rw [f_eq]
 lemma test : f n = f m := by
   rw?
   rw [f_eq, f_eq]
+
+
+def zero : Nat := 0
+
+-- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
+-- rather than `withReducible` `rfl`.
+example : zero = 0 := by
+  rw?!
+  sorry
