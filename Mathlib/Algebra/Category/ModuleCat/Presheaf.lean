@@ -239,7 +239,7 @@ def evaluationCompForget₂Iso (X : Cᵒᵖ) :
 /-- This structure contains the data and axioms in order to
 produce a `PresheafOfModules R` from a collection of types
 equipped with module structures over the various rings `R.obj X`.
-(See constructor `PresheafOfModules.mk'`.) -/
+(See the constructor `PresheafOfModules.mk'`.) -/
 structure MkStruct where
   /-- the datum of a type for each object in `Cᵒᵖ` -/
   obj (X : Cᵒᵖ) : Type v
