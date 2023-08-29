@@ -153,7 +153,7 @@ lemma stableUnderCompositionW [IsTriangulated C] : (W S).StableUnderComposition 
   refine' ⟨_, _, _, H₁₃, S.ext₂ _ (someOctahedron rfl H₁₂ H₂₃ H₁₃).mem mem₁₂ mem₂₃⟩
 
 instance multiplicativeW [IsTriangulated C] : S.W.IsMultiplicative where
-  comp_mem' := S.stableUnderCompositionW
+  stableUnderComposition := S.stableUnderCompositionW
 
 lemma respectsIsoW : S.W.RespectsIso where
   left := by
