@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Control.Basic
 
-set_option autoImplicit true
-
 /-!
 # The `check_instances` tactic
 
@@ -15,6 +13,9 @@ Resynthesizes all typeclasses in the goal,
 and reports for each whether this succeeds,
 and if so how closely it matches the original.
 -/
+
+set_option autoImplicit true
+
 open Lean Elab Meta Tactic
 namespace Lean.Expr
 
