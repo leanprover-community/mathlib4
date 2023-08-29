@@ -558,8 +558,7 @@ def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 #align subring.top_equiv Subring.topEquiv
 
-@[simp]
-def card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
+theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
 
 /-! ## comap -/
