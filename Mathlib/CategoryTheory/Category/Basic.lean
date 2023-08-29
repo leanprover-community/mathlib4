@@ -353,6 +353,24 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
   subst h; exact epi_of_epi f g
 #align category_theory.epi_of_epi_fac CategoryTheory.epi_of_epi_fac
 
+variable (C) in
+/-- Describes the property that epimorphisms can be "pulled back" along any morphism. This is
+satisfied e.g. by categories that have pullbacks that preserve epimorphisms (like `Profinite` and
+`CompHaus`), and categories where every object is projective (like  `Stonean`). -/
+class EpiStable : Prop where
+/-- For `X`, `Y`, `Z`, `f`, `g` like in the diagram, where `g` is an epi, there exists an object
+`W`, a morphism `i : W ⟶ Z` and an epi `h : W ⟶ X` making the diagram commute.
+```
+W --i-→ Z
+|       |
+h       g
+↓       ↓
+X --f-→ Y
+
+```-/
+  exists_fac : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ Y) [Epi g],
+    (∃ (W : C) (h : W ⟶ X) (_ : Epi h) (i : W ⟶ Z), i ≫ g = h ≫ f)
+
 end
 
 section

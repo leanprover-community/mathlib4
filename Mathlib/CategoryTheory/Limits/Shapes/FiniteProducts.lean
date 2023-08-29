@@ -91,4 +91,27 @@ theorem hasFiniteCoproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasFiniteCo
   ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
 #align category_theory.limits.has_finite_coproducts_of_has_coproducts CategoryTheory.Limits.hasFiniteCoproducts_of_hasCoproducts
 
+/-- Describes the property of having pullbacks of morphsims into a finite coproduct, where one
+of the morphisms is an inclusion map into the coproduct (up to isomorphism). -/
+class HasPullbacksOfInclusions : Prop where
+    /-- For any morphism `f : X ⟶ Z`, where `Z` is the coproduct of `i : (a : α) → Y a ⟶ Z` with
+    `α` finite, the pullback of `f` and `i a` exists for every `a : α`. -/
+    has_pullback : ∀ {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
+    (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α),
+    HasPullback f (i a)
+
+instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
+    (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
+    HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
+
+instance [HasPullbacks C] : HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
+
+/-- A category is *extensive* if it has all finite coproducts and those coproducts are preserved
+by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacksOfInclusions`). -/
+class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
+  /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
+  sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
+    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
+    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
+
 end CategoryTheory.Limits
