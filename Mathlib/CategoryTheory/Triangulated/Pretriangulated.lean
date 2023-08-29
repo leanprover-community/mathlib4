@@ -290,28 +290,28 @@ namespace Triangle
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 
-lemma yoneda_exact₂ {X : C}
-    (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) : ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
+lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
+    ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
   obtain ⟨g, ⟨hg₁, _⟩⟩ := complete_distinguished_triangle_morphism T _ hT
     (contractible_distinguished₁ X) 0 f (by aesop_cat)
   exact ⟨g, by simpa using hg₁.symm⟩
 
-lemma yoneda_exact₃ {X : C}
-    (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) : ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
+lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
+    ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
   yoneda_exact₂ _ (rot_of_dist_triangle _ hT) f hf
 
-lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂)
-    (hf : f ≫ T.mor₂ = 0) : ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
+lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
+    ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
   obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ T
     (contractible_distinguished X) hT f 0 (by aesop_cat)
   exact ⟨a, by simpa using ha₁⟩
 
-lemma coyoneda_exact₁ {X : C}
-    (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) : ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
+lemma coyoneda_exact₁ {X : C} (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) :
+    ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
   coyoneda_exact₂ _ (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)) f (by aesop_cat)
 
-lemma coyoneda_exact₃ {X : C} (f : X ⟶ T.obj₃)
-    (hf : f ≫ T.mor₃ = 0) : ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=
+lemma coyoneda_exact₃ {X : C} (f : X ⟶ T.obj₃) (hf : f ≫ T.mor₃ = 0) :
+    ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=
   coyoneda_exact₂ _ (rot_of_dist_triangle _ hT) f hf
 
 lemma mor₃_eq_zero_iff_epi₂ : T.mor₃ = 0 ↔ Epi T.mor₂ := by

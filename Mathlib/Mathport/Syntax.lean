@@ -36,6 +36,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -153,8 +154,6 @@ open Lean Parser.Tactic
   (" with " binderIdent)? : tactic
 /- S -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")?
   term:51 " = " ident (" with " binderIdent)? : tactic
-/- S -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
-  (" with" (ppSpace colGt ident)*)? : tactic
 /- S -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace colGt ident)*)? : tactic
 /- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
