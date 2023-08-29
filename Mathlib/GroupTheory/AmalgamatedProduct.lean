@@ -116,7 +116,11 @@ end Monoid
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
 instance : Group (AmalgamatedProduct φ) := by
-  delta AmalgamatedProduct; infer_instance
+  letI t : Group (AmalgamatedProduct φ) := by
+    delta AmalgamatedProduct; infer_instance
+  exact
+    { t with
+      toMonoid := inferInstance }
 
 namespace NormalWord
 
@@ -516,7 +520,6 @@ theorem prod_toPermNormalWord (g : AmalgamatedProduct φ) (w : NormalWord φ hφ
 @[simp]
 theorem prod_empty : (empty : NormalWord φ hφ).prod = 1 := by
   simp [prod, empty]
-  rw [map_one, map_one]
 
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some i)
@@ -603,6 +606,7 @@ theorem Reduced.eq_empty_of_mem_range {w : Word G} (hw : Reduced φ w) :
 
 end Reduced
 
+set_option maxHeartbeats 0 in
 theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij : i ≠ j) :
     (of (i := i)).range ⊓ (of (i := j)).range = (base (φ := φ)).range :=
   le_antisymm
