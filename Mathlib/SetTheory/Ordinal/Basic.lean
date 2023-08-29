@@ -636,6 +636,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
   see `lift.initialSeg`. -/
+@[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
   Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
@@ -676,8 +677,7 @@ theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Pr
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-/-- `lift.{(max u v) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
@@ -685,8 +685,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
 #align ordinal.lift_umax Ordinal.lift_umax
 
-/-- `lift.{(max v u) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax

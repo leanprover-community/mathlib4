@@ -28,6 +28,8 @@ and `S.homology` (TODO).
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Category Limits
@@ -964,13 +966,13 @@ lemma liftCycles_leftHomologyπ_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k =
   LeftHomologyData.liftK_π_eq_zero_of_boundary _ k x hx
 
 @[reassoc (attr := simp)]
-lemma toCycles_comp_leftHomology_π : S.toCycles ≫ S.leftHomologyπ = 0 :=
+lemma toCycles_comp_leftHomologyπ : S.toCycles ≫ S.leftHomologyπ = 0 :=
   S.liftCycles_leftHomologyπ_eq_zero_of_boundary S.f (𝟙 _) (by rw [id_comp])
 
 /-- Via `S.leftHomologyπ : S.cycles ⟶ S.leftHomology`, the object `S.leftHomology` identifies
 to the cokernel of `S.toCycles : S.X₁ ⟶ S.cycles`. -/
 noncomputable def leftHomologyIsCokernel :
-    IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomology_π) :=
+    IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomologyπ) :=
   S.leftHomologyData.hπ
 
 @[reassoc (attr := simp)]
@@ -1018,6 +1020,29 @@ noncomputable def leftHomologyIsoCokernelLift [S.HasLeftHomology] [HasKernel S.g
     [HasCokernel (kernel.lift S.g S.f S.zero)] :
     S.leftHomology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
   (LeftHomologyData.ofHasKernelOfHasCokernel S).leftHomologyIso
+
+/-! The following lemmas and instance gives a sufficient condition for a morphism
+of short complexes to induce an isomorphism on cycles. -/
+
+lemma isIso_cyclesMap'_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    IsIso (cyclesMap' φ h₁ h₂) := by
+  refine' ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) _, _, _⟩
+  · simp only [assoc, ← cancel_mono φ.τ₃, zero_comp, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, h₂.wi]
+  · simp only [← cancel_mono h₁.i, assoc, h₁.liftK_i, cyclesMap'_i_assoc,
+      IsIso.hom_inv_id, comp_id, id_comp]
+  · simp only [← cancel_mono h₂.i, assoc, cyclesMap'_i, h₁.liftK_i_assoc,
+      IsIso.inv_hom_id, comp_id, id_comp]
+
+lemma isIso_cyclesMap_of_isIso_of_mono' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    IsIso (cyclesMap φ) :=
+  isIso_cyclesMap'_of_isIso_of_mono φ h₂ h₃ _ _
+
+instance isIso_cyclesMap_of_isIso_of_mono (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Mono φ.τ₃]
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    IsIso (cyclesMap φ) :=
+  isIso_cyclesMap_of_isIso_of_mono' φ inferInstance inferInstance
 
 end ShortComplex
 

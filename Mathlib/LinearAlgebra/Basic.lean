@@ -56,7 +56,6 @@ linear algebra, vector space, module
 
 -/
 
-
 open Function
 
 open BigOperators Pointwise
@@ -981,7 +980,7 @@ end SemilinearMap
 
 section OrderIso
 
-variable [SemilinearEquivClass F σ₁₂ M M₂]
+variable {F : Type*} [SemilinearEquivClass F σ₁₂ M M₂]
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
@@ -996,7 +995,7 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
 
 end OrderIso
 
-variable [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
 
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}
@@ -1062,7 +1061,7 @@ theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a 
   ext b; simp only [Submodule.mem_comap, p.smul_mem_iff h, LinearMap.smul_apply]
 #align submodule.comap_smul Submodule.comap_smul
 
-theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0) :
+protected theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0) :
     p.map (a • f) = p.map f :=
   le_antisymm (by rw [map_le_iff_le_comap, comap_smul f _ a h, ← map_le_iff_le_comap])
     (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap])
@@ -1078,7 +1077,7 @@ theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
 -- Porting note: Idem.
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = iSup (fun _ : a ≠ 0 => p.map f) := by
-  classical by_cases h : a = 0 <;> simp [h, map_smul]
+  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
 #align submodule.map_smul' Submodule.map_smul'
 
 end Submodule
@@ -2122,12 +2121,12 @@ def ofLinear (h₁ : f.comp g = LinearMap.id) (h₂ : g.comp f = LinearMap.id) :
 #align linear_equiv.of_linear LinearEquiv.ofLinear
 
 @[simp]
-theorem ofLinear_apply (x : M) : ofLinear f g h₁ h₂ x = f x :=
+theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 #align linear_equiv.of_linear_apply LinearEquiv.ofLinear_apply
 
 @[simp]
-theorem ofLinear_symm_apply (x : M₂) : (ofLinear f g h₁ h₂).symm x = g x :=
+theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
   rfl
 #align linear_equiv.of_linear_symm_apply LinearEquiv.ofLinear_symm_apply
 

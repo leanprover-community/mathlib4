@@ -169,7 +169,7 @@ theorem isCompact_iff_ultrafilter_le_nhds :
   · simp only [Ultrafilter.clusterPt_iff]
 #align is_compact_iff_ultrafilter_le_nhds isCompact_iff_ultrafilter_le_nhds
 
-alias isCompact_iff_ultrafilter_le_nhds ↔ IsCompact.ultrafilter_le_nhds _
+alias ⟨IsCompact.ultrafilter_le_nhds, _⟩ := isCompact_iff_ultrafilter_le_nhds
 #align is_compact.ultrafilter_le_nhds IsCompact.ultrafilter_le_nhds
 
 /-- For every open directed cover of a compact set, there exists a single element of the
@@ -647,6 +647,7 @@ def NhdsContainBoxes (s : Set α) (t : Set β) : Prop :=
     ∃ (u : Set α) (v : Set β), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n
 #align nhds_contain_boxes NhdsContainBoxes
 
+@[symm]
 theorem NhdsContainBoxes.symm {s : Set α} {t : Set β} :
     NhdsContainBoxes s t → NhdsContainBoxes t s := fun H n hn hp =>
   let ⟨u, v, uo, vo, su, tv, p⟩ :=
@@ -1443,7 +1444,7 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
   /-- The sequence of compact sets that form a compact exhaustion. -/
   toFun : ℕ → Set X
   /-- The sets in the compact exhaustion are in fact compact. -/
-  is_compact' : ∀ n, IsCompact (toFun n)
+  isCompact' : ∀ n, IsCompact (toFun n)
   /-- The sets in the compact exhaustion form a sequence:
     each set is contained in the interior of the next. -/
   subset_interior_succ' : ∀ n, toFun n ⊆ interior (toFun (n + 1))
@@ -1453,28 +1454,32 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
--- porting note: todo: use `FunLike`?
-instance : CoeFun (CompactExhaustion α) fun _ => ℕ → Set α :=
-  ⟨toFun⟩
+instance : @RelHomClass (CompactExhaustion α) ℕ (Set α) LE.le HasSubset.Subset where
+  coe := toFun
+  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  map_rel f _ _ h := monotone_nat_of_le_succ
+    (fun n ↦ (f.subset_interior_succ' n).trans interior_subset) h
 
 variable (K : CompactExhaustion α)
 
+@[simp]
+theorem toFun_eq_coe : K.toFun = K := rfl
+
 protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
-  K.is_compact' n
+  K.isCompact' n
 #align compact_exhaustion.is_compact CompactExhaustion.isCompact
 
 theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 #align compact_exhaustion.subset_interior_succ CompactExhaustion.subset_interior_succ
 
-theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) :=
-  Subset.trans (K.subset_interior_succ n) interior_subset
-#align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
-
 @[mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
-  show K m ≤ K n from monotone_nat_of_le_succ K.subset_succ h
+  OrderHomClass.mono K h
 #align compact_exhaustion.subset CompactExhaustion.subset
+
+theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
+#align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
 theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
   Subset.trans (K.subset_interior_succ m) <| interior_mono <| K.subset h
@@ -1504,7 +1509,7 @@ theorem mem_iff_find_le {x : α} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n :=
 /-- Prepend the empty set to a compact exhaustion `K n`. -/
 def shiftr : CompactExhaustion α where
   toFun n := Nat.casesOn n ∅ K
-  is_compact' n := Nat.casesOn n isCompact_empty K.isCompact
+  isCompact' n := Nat.casesOn n isCompact_empty K.isCompact
   subset_interior_succ' n := Nat.casesOn n (empty_subset _) K.subset_interior_succ
   iUnion_eq' := iUnion_eq_univ_iff.2 fun x => ⟨K.find x + 1, K.mem_find x⟩
 #align compact_exhaustion.shiftr CompactExhaustion.shiftr
@@ -1563,7 +1568,7 @@ theorem isClopen_iff_frontier_eq_empty {s : Set α} : IsClopen s ↔ frontier s 
     (h.trans interior_subset).antisymm subset_closure⟩
 #align is_clopen_iff_frontier_eq_empty isClopen_iff_frontier_eq_empty
 
-alias isClopen_iff_frontier_eq_empty ↔ IsClopen.frontier_eq _
+alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
 #align is_clopen.frontier_eq IsClopen.frontier_eq
 
 theorem IsClopen.union {s t : Set α} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∪ t) :=
@@ -1742,16 +1747,10 @@ theorem isIrreducible_iff_closure {s : Set α} : IsIrreducible (closure s) ↔ I
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 #align is_irreducible_iff_closure isIrreducible_iff_closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma IsPreirreducible.closure {s : Set α} (h : IsPreirreducible s) :
-    IsPreirreducible (closure s) :=
-  isPreirreducible_iff_closure.2 h
+protected alias ⟨_, IsPreirreducible.closure⟩ := isPreirreducible_iff_closure
 #align is_preirreducible.closure IsPreirreducible.closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma IsIrreducible.closure {s : Set α} (h : IsIrreducible s) :
-    IsIrreducible (closure s) :=
-  isIrreducible_iff_closure.2 h
+protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 #align is_irreducible.closure IsIrreducible.closure
 
 theorem exists_preirreducible (s : Set α) (H : IsPreirreducible s) :

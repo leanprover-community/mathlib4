@@ -61,7 +61,6 @@ set_option linter.uppercaseLean3 false in
 theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) := by
   have hdvd : map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣ X ^ n - 1 := by
-    simp [Polynomial.map_pow, map_X, Polynomial.map_one, Polynomial.map_sub]
     convert RingHom.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
         (minpoly_dvd_x_pow_sub_one h)
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]

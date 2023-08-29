@@ -27,7 +27,8 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 `Option.map₂` and casing already fulfills this task.
 -/
 
-universe u
+set_option autoImplicit true
+
 
 open Function
 

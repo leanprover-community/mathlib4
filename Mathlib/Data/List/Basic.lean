@@ -23,9 +23,9 @@ assert_not_exists Set.range
 
 namespace List
 
-universe u v w x
+universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -96,6 +96,9 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 
 #align list.ne_nil_of_mem List.ne_nil_of_mem
 
+lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
+  rw [mem_cons, mem_singleton]
+
 theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
   induction' l with b l ih; {cases h}; rcases h with (_ | ⟨_, h⟩)
   · exact ⟨[], l, rfl⟩
@@ -119,6 +122,10 @@ theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = 
 
 #align list.mem_map_of_mem List.mem_map_of_memₓ -- implicits order
 
+-- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
@@ -173,7 +180,7 @@ theorem map_bind (g : β → List γ) (f : α → β) :
 
 #align list.length_pos_iff_exists_mem List.length_pos_iff_exists_mem
 
-alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
+alias ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩ := length_pos
 #align list.ne_nil_of_length_pos List.ne_nil_of_length_pos
 #align list.length_pos_of_ne_nil List.length_pos_of_ne_nil
 
@@ -324,7 +331,7 @@ fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 -- Porting note: in Std
 #align list.append_subset_iff List.append_subset
 
-alias subset_nil ↔ eq_nil_of_subset_nil _
+alias ⟨eq_nil_of_subset_nil, _⟩ := subset_nil
 #align list.eq_nil_of_subset_nil List.eq_nil_of_subset_nil
 
 #align list.eq_nil_iff_forall_not_mem List.eq_nil_iff_forall_not_mem
@@ -495,11 +502,7 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
   rfl
 #align list.bind_eq_bind List.bind_eq_bind
 
--- TODO: duplicate of a lemma in core
-theorem bind_append (f : α → List β) (l₁ l₂ : List α) :
-    (l₁ ++ l₂).bind f = l₁.bind f ++ l₂.bind f :=
-  append_bind _ _ _
-#align list.bind_append List.bind_append
+#align list.bind_append List.append_bind
 
 /-! ### concat -/
 
@@ -1038,7 +1041,7 @@ theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
 #align list.eq_nil_of_sublist_nil List.eq_nil_of_sublist_nil
 
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Std4
-alias sublist_nil ← sublist_nil_iff_eq_nil
+alias sublist_nil_iff_eq_nil := sublist_nil
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate

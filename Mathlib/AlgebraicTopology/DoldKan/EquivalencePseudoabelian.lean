@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 
-#align_import algebraic_topology.dold_kan.equivalence_pseudoabelian from "leanprover-community/mathlib"@"63721b2c3eba6c325ecf8ae8cca27155a4f6306f"
+#align_import algebraic_topology.dold_kan.equivalence_pseudoabelian from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -29,6 +29,8 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 `ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`. The functor
 `Idempotents.DoldKan.Γ` of the equivalence is by definition the functor
 `Γ₀` introduced in `FunctorGamma.lean`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -52,7 +54,7 @@ open AlgebraicTopology.DoldKan
 of the equivalence `ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`. -/
 @[simps!, nolint unusedArguments]
 def N  [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
-  N₁ ⋙ (toKaroubi_equivalence _).inverse
+  N₁ ⋙ (toKaroubiEquivalence _).inverse
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.dold_kan.N CategoryTheory.Idempotents.DoldKan.N
 
@@ -65,15 +67,15 @@ def Γ  [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ �
 variable [IsIdempotentComplete C] [HasFiniteCoproducts C]
 
 theorem hN₁ :
-    (toKaroubi_equivalence (SimplicialObject C)).functor ⋙ Preadditive.DoldKan.equivalence.functor =
+    (toKaroubiEquivalence (SimplicialObject C)).functor ⋙ Preadditive.DoldKan.equivalence.functor =
       N₁ :=
   Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi _ _) N₁
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.dold_kan.hN₁ CategoryTheory.Idempotents.DoldKan.hN₁
 
 theorem hΓ₀ :
-    (toKaroubi_equivalence (ChainComplex C ℕ)).functor ⋙ Preadditive.DoldKan.equivalence.inverse =
-      Γ ⋙ (toKaroubi_equivalence _).functor :=
+    (toKaroubiEquivalence (ChainComplex C ℕ)).functor ⋙ Preadditive.DoldKan.equivalence.inverse =
+      Γ ⋙ (toKaroubiEquivalence _).functor :=
   Functor.congr_obj (functorExtension₂_comp_whiskeringLeft_toKaroubi _ _) Γ₀
 #align category_theory.idempotents.dold_kan.hΓ₀ CategoryTheory.Idempotents.DoldKan.hΓ₀
 
@@ -97,7 +99,7 @@ for the construction of our counit isomorphism `η` -/
 theorem hη :
     Compatibility.τ₀ =
       Compatibility.τ₁ (eqToIso hN₁) (eqToIso hΓ₀)
-        (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubi_equivalence (ChainComplex C ℕ)).functor) := by
+        (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubiEquivalence (ChainComplex C ℕ)).functor) := by
   ext K : 3
   simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app, eqToIso.hom]
   refine' (N₂Γ₂_compatible_with_N₁Γ₀ K).trans _
@@ -108,7 +110,7 @@ theorem hη :
 @[simps!]
 def η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ) :=
   Compatibility.equivalenceCounitIso
-    (N₁Γ₀ : (Γ : ChainComplex C ℕ ⥤ _) ⋙ N₁ ≅ (toKaroubi_equivalence _).functor)
+    (N₁Γ₀ : (Γ : ChainComplex C ℕ ⥤ _) ⋙ N₁ ≅ (toKaroubiEquivalence _).functor)
 #align category_theory.idempotents.dold_kan.η CategoryTheory.Idempotents.DoldKan.η
 
 theorem equivalence_counitIso :
@@ -118,7 +120,7 @@ theorem equivalence_counitIso :
 
 theorem hε :
     Compatibility.υ (eqToIso hN₁) =
-      (Γ₂N₁ : (toKaroubi_equivalence _).functor ≅
+      (Γ₂N₁ : (toKaroubiEquivalence _).functor ≅
           (N₁ : SimplicialObject C ⥤ _) ⋙ Preadditive.DoldKan.equivalence.inverse) := by
   ext1
   rw [← cancel_epi Γ₂N₁.inv, Iso.inv_hom_id]

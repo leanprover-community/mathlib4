@@ -43,6 +43,7 @@ for good definitional properties of the default term.
 
 -/
 
+set_option autoImplicit true
 
 universe u v w
 

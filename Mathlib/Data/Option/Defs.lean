@@ -15,6 +15,8 @@ files under `Mathlib.Data.Option`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
+set_option autoImplicit true
+
 namespace Option
 
 #align option.lift_or_get Option.liftOrGet

@@ -126,7 +126,7 @@ end SMul
 
 section PositiveCone
 
-variable (𝕜 E) 
+variable (𝕜 E)
 variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   [TopologicalSpace E] [OrderClosedTopology E]
 

@@ -10,7 +10,7 @@ import Mathlib.Tactic.LeftRight
 /-!
 # mk_iff_of_inductive_prop
 
-This file defines a tactic `tactic.mk_iff_of_inductive_prop` that generates `iff` rules for
+This file defines a command `mk_iff_of_inductive_prop` that generates `iff` rules for
 inductive `Prop`s. For example, when applied to `List.Chain`, it creates a declaration with
 the following type:
 
@@ -23,11 +23,13 @@ This tactic can be called using either the `mk_iff_of_inductive_prop` user comma
 the `mk_iff` attribute.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.MkIff
 
 open Lean Meta Elab
 
-/-- `select m n` runs `tactic.right` `m` times, and then `tactic.left` `(n-m)` times.
+/-- `select m n` runs `right` `m` times, and then `left` `(n-m)` times.
 Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
@@ -60,6 +62,11 @@ partial def compactRelation :
       let (bs, as_ps', subst) := compactRelation (bs.map i) ((ps₁ ++ ps₂).map (λ⟨a, p⟩ => (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 
+private def updateLambdaBinderInfoD! (e : Expr) : Expr :=
+  match e with
+  | .lam n domain body _ => .lam n domain body .default
+  | _           => panic! "lambda expected"
+
 /-- Generates an expression of the form `∃(args), inner`. `args` is assumed to be a list of fvars.
 When possible, `p ∧ q` is used instead of `∃(_ : p), q`. -/
 def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
@@ -67,7 +74,8 @@ args.foldrM (λarg i:Expr => do
     let t ← inferType arg
     let l := (← inferType t).sortLevel!
     if arg.occurs i || l != Level.zero
-      then pure <| mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
+      then pure (mkApp2 (mkConst `Exists [l] : Expr) t
+        (updateLambdaBinderInfoD! <| ←mkLambdaFVars #[arg] i))
       else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
