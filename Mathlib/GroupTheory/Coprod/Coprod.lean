@@ -122,14 +122,14 @@ theorem lift_inr (left : M →* P) (right : N →* P) (n : N) :
     lift left right (inr n) = right n := rfl
 
 @[elab_as_elim]
-theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N) (h_one : C 1)
+theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
     (h_inl : ∀ (m : M), C (inl m))
     (h_inr : ∀ (n : N), C (inr n))
     (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
   let S : Submonoid (M ∗ N) :=
     { carrier := setOf C
       mul_mem' := h_mul _ _
-      one_mem' := h_one }
+      one_mem' := by simpa using h_inl 1 }
   have : C _ := Subtype.prop (lift (inl.codRestrict S (h_inl)) (inr.codRestrict S (h_inr)) m)
   convert this
   change MonoidHom.id _ m = S.subtype.comp _ m
@@ -158,7 +158,6 @@ theorem lift_mrange_le (left : M →* P) (right : N →* P) {s : Submonoid P}
     MonoidHom.mrange (lift left right) ≤ s := by
   rintro _ ⟨x, rfl⟩
   induction' x using Coprod.induction_on with i x x y hx hy
-  · exact s.one_mem
   · simp only [lift_inl, SetLike.mem_coe]
     exact hleft (Set.mem_range_self _)
   · simp only [lift_inr, SetLike.mem_coe]
@@ -199,7 +198,6 @@ instance : Group (G ∗ H) :=
       intro m
       rw [inv_def]
       induction m using Coprod.induction_on with
-      | h_one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
       | h_inl m =>
         change inl _⁻¹ * inl _ = 1
         rw [← inl.map_mul, mul_left_inv, inl.map_one]
