@@ -145,7 +145,7 @@ theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     ∑ i in Finset.range n, x ^ i * x ^ (n - 1 - i) =
         ∑ i in Finset.range n, x ^ (i + (n - 1 - i)) :=
       by simp_rw [← pow_add]
-    _ = ∑ i in Finset.range n, x ^ (n - 1) :=
+    _ = ∑ _i in Finset.range n, x ^ (n - 1) :=
       Finset.sum_congr rfl fun i hi =>
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
