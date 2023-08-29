@@ -56,7 +56,7 @@ attribute [reassoc (attr := simp)] HomologyData.comm
 
 variable (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
 
-/-- An homology map data for a morphism `φ : S₁ ⟶ S₂` where both `S₁` and `S₂` are
+/-- A homology map data for a morphism `φ : S₁ ⟶ S₂` where both `S₁` and `S₂` are
 equipped with homology data consist of left and right homology map data. -/
 structure HomologyMapData where
   /-- a left homology map data -/
