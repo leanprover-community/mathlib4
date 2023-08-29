@@ -8,14 +8,15 @@ import Mathlib.GroupTheory.Coprod.CoprodI
 import Mathlib.GroupTheory.Coprod.Coprod
 import Mathlib.GroupTheory.QuotientGroup
 
-variable {ι : Type*} {G : ι → Type*} [∀ i, Group (G i)] {H : Type*} [Group H]
-  (φ : ∀ i, H →* G i) {K : Type*} [Group K]
+open Monoid CoprodI Subgroup Coprod Function
 
-open Monoid CoprodI Subgroup Coprod
+variable {ι : Type*} {G : ι → Type*} [∀ i, Group (G i)] {H : Type*} [Group H]
+  (φ : ∀ i, H →* G i) {K : Type*} [Monoid K]
+
 
 def AmalgamatedProduct : Type _ :=
   ((CoprodI G) ∗ H) ⧸ normalClosure
-    (⋃ (i : ι), Set.range (fun g : H => inl (of (φ i g)⁻¹) * (inr g)))
+    (⋃ (i : ι), Set.range (fun g : H => inl (of ((φ i) g)⁻¹) * (inr g)))
 
 namespace AmalgamatedProduct
 
@@ -47,10 +48,11 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (show normalClosure _ ≤ (Coprod.lift (CoprodI.lift f) k).ker
       from normalClosure_le_normal <| by
         simp only [Set.iUnion_subset_iff, Set.range_subset_iff,
-          MonoidHom.mem_ker, SetLike.mem_coe]
+          MonoidHom.mem_ker, SetLike.mem_coe, Coprod.lift_inl,
+          map_inv, map_mul, lift_inl, lift_inr]
         intro i h
         simp only [FunLike.ext_iff, MonoidHom.coe_comp, Function.comp_apply] at hf
-        simp [hf i])
+        simp only [← map_inv, CoprodI.lift_of, hf, inv_mul_self, ← map_mul, map_one])
 
 set_option maxHeartbeats 200000 in
 @[simp]
