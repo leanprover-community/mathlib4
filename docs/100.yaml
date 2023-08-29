@@ -196,6 +196,8 @@
   author : mathlib
 53:
   title  : Pi is Transcendental
+  decl   : transcendental_pi
+  author : Yuyang Zhao
 54:
   title  : Königsberg Bridges Problem
   links:
@@ -207,6 +209,8 @@
   author : Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
+  decl   : linear_independent_exp
+  author : Yuyang Zhao
 57:
   title  : Heron’s Formula
   links :
@@ -252,10 +256,8 @@
   author : Sander R. Dahmen (finite) and Johannes Hölzl (infinite)
 67:
   title  : e is Transcendental
-  author : Jujian Zhang
-  links  :
-    result: https://github.com/jjaassoonn/transcendental/blob/master/src/e_transcendental.lean
-    website: https://jjaassoonn.github.io/transcendental/
+  author : Jujian Zhang, Yuyang Zhao
+  decl   : transcendental_e
 68:
   title  : Sum of an arithmetic series
   decl   : Finset.sum_range_id

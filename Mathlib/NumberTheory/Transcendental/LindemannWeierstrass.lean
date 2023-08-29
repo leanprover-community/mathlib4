@@ -1416,6 +1416,9 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
   simp
 #align transcendental_exp transcendental_exp
 
+theorem transcendental_e : Transcendental ℤ (exp 1) :=
+  transcendental_exp one_ne_zero isAlgebraic_one
+
 theorem transcendental_pi : Transcendental ℤ Real.pi := by
   intro h
   have is_integral_pi' : IsIntegral ℚ Real.pi :=
