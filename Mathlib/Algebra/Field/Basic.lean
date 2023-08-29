@@ -290,9 +290,7 @@ protected def Function.Injective.divisionSemiring [DivisionSemiring β] [Zero α
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) : DivisionSemiring α :=
   { hf.groupWithZero f zero one mul inv div npow zpow with
-    toSemiring := hf.semiring f zero one add mul nsmul npow nat_cast
-    toInv := inferInstance
-    toDiv := inferInstance }
+    toSemiring := hf.semiring f zero one add mul nsmul npow nat_cast }
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
 /-- Pullback a `DivisionSemiring` along an injective function.
@@ -310,10 +308,8 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
     DivisionRing K' :=
   { hf.groupWithZero f zero one mul inv div npow zpow with
-    toInv := inferInstance
-    toDiv := inferInstance
     toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast,
-    toRatCast := inferInstance
+    toRatCast := by assumption
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -333,9 +329,7 @@ protected def Function.Injective.semifield [Semifield β] [Zero α] [Mul α] [Ad
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) : Semifield α :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow with
-    toCommSemiring := hf.commSemiring f zero one add mul nsmul npow nat_cast
-    toInv := inferInstance
-    toDiv := inferInstance }
+    toCommSemiring := hf.commSemiring f zero one add mul nsmul npow nat_cast }
 #align function.injective.semifield Function.Injective.semifield
 
 /-- Pullback a `Field` along an injective function.
@@ -352,10 +346,8 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
     Field K' :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow with
-    toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast,
-    toInv := inferInstance
-    toDiv := inferInstance
-    toRatCast := inferInstance
+    toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast
+    toRatCast := by assumption
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
