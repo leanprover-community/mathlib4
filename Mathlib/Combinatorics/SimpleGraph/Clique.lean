@@ -238,27 +238,19 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   exact absurd he hn
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
-theorem cliqueFree_of_replaceVertex_cliqueFree (s t : α) (h : G.CliqueFree n) :
+theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t : α) (h : G.CliqueFree n) :
     (G.replaceVertex s t).CliqueFree n := by
   contrapose h
   obtain ⟨⟨f, hi⟩, ha⟩ := topEmbeddingOfNotCliqueFree h
-  simp only [Function.Embedding.coeFn_mk, top_adj, replaceVertex, incidenceSet,
-    mem_neighborSet, Set.mem_diff, Set.mem_singleton_iff, Pi.sup_apply, Pi.sdiff_apply,
-    Sym2.toRel_prop, Set.mem_setOf_eq, mem_edgeSet, Sym2.mem_iff, Quotient.eq, Sym2.rel_iff,
-    ge_iff_le, le_Prop_eq, forall_exists_index, and_imp, sdiff_le_iff, sup_Prop_eq, ne_eq] at ha
+  simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq] at ha
   rw [not_cliqueFree_iff]
   by_cases mt : t ∈ Set.range f
   · obtain ⟨x, hx⟩ := mt
     by_cases ms : s ∈ Set.range f
     · obtain ⟨y, hy⟩ := ms
       by_cases hst : s = t
-      · simpa [hst, not_cliqueFree_iff] using h
-      · replace ha := @ha x y
-        simp_all only [true_or, and_true, _root_.sdiff_self, true_and]
-        change False ∨ _ ↔ _ at ha
-        have vst : ∀ (v s t : α), (v = s ∨ t = s ∧ v = t) = (v = s) := by simp
-        have : ¬x = y := by intro a; simp_all only [not_true]
-        simp [vst, this] at ha
+      · simp_all [not_cliqueFree_iff]
+      · replace ha := @ha x y; simp_all
     · use ⟨fun v => if v = x then s else f v, ?_⟩
       swap
       · intro a b
@@ -272,48 +264,16 @@ theorem cliqueFree_of_replaceVertex_cliqueFree (s t : α) (h : G.CliqueFree n) :
       simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
       split_ifs with h1 h2 h2
       · simp_all
-      · rw [eq_comm] at h1 h2
-        subst h1
-        simp only [h2, iff_true]
-        have := (@ha x b).mpr h2
-        simp_all only [Set.mem_range, not_exists, true_or, and_true, _root_.sdiff_self, true_and]
-        change False ∨ _ at this
-        simp only [false_or] at this
-        have hv : ∀ (v t : α), (v = f b ∨ t = f b ∧ v = t) = (v = f b) := by simp
-        simp only [hv, exists_eq_right] at this
-        exact this.1
       · rw [eq_comm] at h2
-        subst h2
-        simp only [h1, iff_true]
-        have := (@ha a x).mpr h1
-        simp_all only [Set.mem_range, not_exists, or_true, and_true, _root_.sdiff_self, true_and]
-        change False ∨ _ at this
-        simp only [false_or] at this
-        have hv : ∀ (v t : α), (t = f a ∧ v = t ∨ v = f a) = (v = f a) := by simp
-        simp only [hv, exists_eq_right] at this
-        exact this.1.symm
+        have := (@ha x b).mpr h2
+        split_ifs at this; simp_all
+      · have := (@ha a x).mpr h1
+        split_ifs at this; simp_all [adj_comm]
       · rw [← @ha a b]
-        have ha : (t = f a) = False := by
-          have := (@hi a x).mt h1
-          rw [hx, eq_comm] at this
-          simpa
-        have hb : (t = f b) = False := by
-          have := (@hi b x).mt h2
-          rw [hx, eq_comm] at this
-          simpa
-        simp only [ha, hb, or_self, and_false, false_and, exists_false, or_false]
-        change _ ↔ _ \ ⊥
-        simp only [sdiff_bot]
-  · use ⟨f, hi⟩
-    simp_all only [Set.mem_range, not_exists, Function.Embedding.coeFn_mk, top_adj, ne_eq]
-    intro a b
-    rw [← @ha a b]
-    have mta := eq_false (mt a)
-    have mtb := eq_false (mt b)
-    rw [@eq_comm _ _ t] at mta mtb
-    simp only [mta, mtb, or_self, and_false, false_and, exists_false, or_false]
-    change _ ↔ _ \ ⊥
-    simp only [sdiff_bot]
+        have := (@hi a x).mt h1
+        have := (@hi b x).mt h2
+        simp_all
+  · use ⟨f, hi⟩; simp_all
 
 end CliqueFree
 
