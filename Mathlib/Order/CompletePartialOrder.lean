@@ -148,6 +148,9 @@ end SemilatticeSup
 
 section CompletePartialOrder
 
+/--
+Complete partial orders are partial orders where every directed set has a least upper bound.
+-/
 class CompletePartialOrder (α : Type*) extends PartialOrder α where
   /-- The supremum of an increasing sequence -/
   dSup : Set α → α
