@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.Bipointed
-! leanprover-community/mathlib commit c8ab806ef73c20cab1d87b5157e43a82c205f28e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Pointed
+
+#align_import category_theory.category.Bipointed from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
 /-!
 # The category of bipointed types
@@ -25,7 +22,7 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -37,23 +34,23 @@ structure Bipointed : Type (u + 1) where
 
 namespace Bipointed
 
-instance : CoeSort Bipointed (Type _) :=
+instance : CoeSort Bipointed (Type*) :=
   ⟨X⟩
 
 -- porting note: protected attribute does not work
 -- attribute [protected] Bipointed.X
 
 /-- Turns a bipointing into a bipointed type. -/
-def of {X : Type _} (to_prod : X × X) : Bipointed :=
+def of {X : Type*} (to_prod : X × X) : Bipointed :=
   ⟨X, to_prod⟩
 #align Bipointed.of Bipointed.of
 
 @[simp]
-theorem coe_of {X : Type _} (to_prod : X × X) : ↥(of to_prod) = X :=
+theorem coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
   rfl
 #align Bipointed.coe_of Bipointed.coe_of
 
-alias of ← _root_.Prod.Bipointed
+alias _root_.Prod.Bipointed := of
 #align prod.Bipointed Prod.Bipointed
 
 instance : Inhabited Bipointed :=
@@ -95,7 +92,7 @@ instance largeCategory : LargeCategory Bipointed where
 #align Bipointed.large_category Bipointed.largeCategory
 
 instance concreteCategory : ConcreteCategory Bipointed where
-  Forget :=
+  forget :=
     { obj := Bipointed.X
       map := @Hom.toFun }
   forget_faithful := ⟨@Hom.ext⟩
@@ -112,16 +109,12 @@ def swap : Bipointed ⥤ Bipointed where
 @[simps!]
 def swapEquiv : Bipointed ≌ Bipointed :=
   CategoryTheory.Equivalence.mk swap swap
-    (NatIso.ofComponents
-      (fun X =>
+    (NatIso.ofComponents fun X =>
         { hom := ⟨id, rfl, rfl⟩
           inv := ⟨id, rfl, rfl⟩ })
-      fun f => rfl)
-    (NatIso.ofComponents
-      (fun X =>
+    (NatIso.ofComponents fun X =>
         { hom := ⟨id, rfl, rfl⟩
           inv := ⟨id, rfl, rfl⟩ })
-      fun f => rfl)
 #align Bipointed.swap_equiv Bipointed.swapEquiv
 
 @[simp]
@@ -205,22 +198,18 @@ theorem pointedToBipointedSnd_comp_swap :
 @[simps!]
 def pointedToBipointedCompBipointedToPointedFst :
     pointedToBipointed ⋙ bipointedToPointedFst ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := ⟨id, rfl⟩
-        inv := ⟨id, rfl⟩ })
-    fun f => rfl
+  NatIso.ofComponents fun X =>
+    { hom := ⟨id, rfl⟩
+      inv := ⟨id, rfl⟩ }
 #align Pointed_to_Bipointed_comp_Bipointed_to_Pointed_fst pointedToBipointedCompBipointedToPointedFst
 
 /-- `BipointedToPointed_snd` is inverse to `PointedToBipointed`. -/
 @[simps!]
 def pointedToBipointedCompBipointedToPointedSnd :
     pointedToBipointed ⋙ bipointedToPointedSnd ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := ⟨id, rfl⟩
-        inv := ⟨id, rfl⟩ })
-    fun f => rfl
+  NatIso.ofComponents fun X =>
+    { hom := ⟨id, rfl⟩
+      inv := ⟨id, rfl⟩ }
 #align Pointed_to_Bipointed_comp_Bipointed_to_Pointed_snd pointedToBipointedCompBipointedToPointedSnd
 
 /-- The free/forgetful adjunction between `PointedToBipointed_fst` and `BipointedToPointed_fst`.

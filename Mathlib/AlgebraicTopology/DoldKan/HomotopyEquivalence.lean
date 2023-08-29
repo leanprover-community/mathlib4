@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.homotopy_equivalence
-! leanprover-community/mathlib commit f951e201d416fb50cc7826171d80aa510ec20747
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Normalized
+
+#align_import algebraic_topology.dold_kan.homotopy_equivalence from "leanprover-community/mathlib"@"f951e201d416fb50cc7826171d80aa510ec20747"
 
 /-!
 
@@ -30,7 +27,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] (X : SimplicialObject C)
+variable {C : Type*} [Category C] [Preadditive C] (X : SimplicialObject C)
 
 /-- Inductive construction of homotopies from `P q` to `𝟙 _` -/
 noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙 _)
@@ -71,19 +68,29 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
     rcases n with _|n
-    . simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
+    · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, Nat.zero_eq, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
-    · simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
-        HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1),
-        homotopyPToId_eventually_constant X (lt_add_one (n + 1))] using
-        (homotopyPToId X (n + 2)).comm (n + 1)
+    · -- Porting note: this branch had been:
+      -- simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
+      --   HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1),
+      --   homotopyPToId_eventually_constant X (lt_add_one (n + 1))] using
+      --   (homotopyPToId X (n + 2)).comm (n + 1)
+      -- which fails on leanprover/lean4:nightly-2023-05-16 due to
+      -- https://github.com/leanprover/lean4/pull/2146
+      -- The `erw` below clunkily works around this.
+      rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex, PInfty_f,
+        ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1)]
+      erw [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
+      have := (homotopyPToId X (n + 2)).comm (n + 1)
+      rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex] at this
+      exact this
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_infty_to_id AlgebraicTopology.DoldKan.homotopyPInftyToId
 
 /-- The inclusion of the Moore complex in the alternating face map complex
-is an homotopy equivalence -/
+is a homotopy equivalence -/
 @[simps]
-def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type _} [Category A]
+def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type*} [Category A]
     [Abelian A] {Y : SimplicialObject A} :
     HomotopyEquiv ((normalizedMooreComplex A).obj Y) ((alternatingFaceMapComplex A).obj Y) where
   hom := inclusionOfMooreComplexMap Y

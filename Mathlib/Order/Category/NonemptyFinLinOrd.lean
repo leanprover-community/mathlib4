@@ -2,23 +2,24 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.NonemptyFinLinOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
+import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+
+#align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
 /-!
 # Nonempty finite linear orders
 
 This defines `NonemptyFinLinOrd`, the category of nonempty finite linear
 orders with monotone maps. This is the index category for simplicial objects.
+
+Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its morphisms do not
+preserve `⊥` and `⊤`.
 -/
 
 
@@ -27,14 +28,13 @@ universe u v
 open CategoryTheory CategoryTheory.Limits
 
 /-- A typeclass for nonempty finite linear orders. -/
-class NonemptyFiniteLinearOrder (α : Type _) extends Fintype α, LinearOrder α where
+class NonemptyFinLinOrd (α : Type*) extends Fintype α, LinearOrder α where
   Nonempty : Nonempty α := by infer_instance
 #align nonempty_fin_lin_ord NonemptyFiniteLinearOrder
 
 attribute [instance] NonemptyFiniteLinearOrder.Nonempty
 
-instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type _)
-  [NonemptyFiniteLinearOrder α] :
+instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type*) [NonemptyFinLinOrd α] :
     BoundedOrder α :=
   Fintype.toBoundedOrder α
 #align nonempty_fin_lin_ord.to_bounded_order NonemptyFinLinOrd.toBoundedOrder
@@ -50,7 +50,7 @@ instance ULift.nonemptyFiniteLinearOrder (α : Type u) [NonemptyFiniteLinearOrde
   { LinearOrder.lift' Equiv.ulift (Equiv.injective _) with }
 #align ulift.nonempty_fin_lin_ord ULift.nonemptyFiniteLinearOrder
 
-instance (α : Type _) [NonemptyFiniteLinearOrder α] : NonemptyFiniteLinearOrder αᵒᵈ :=
+instance (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
   { OrderDual.fintype α with }
 
 /-- The category of nonempty finite linear orders. -/
@@ -66,20 +66,21 @@ instance : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder 
 
 deriving instance LargeCategory for NonemptyFinLinOrd
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory NonemptyFinLinOrd :=
   BundledHom.concreteCategory _
 
-instance : CoeSort NonemptyFinLinOrd (Type _) :=
+instance : CoeSort NonemptyFinLinOrd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
-def of (α : Type _) [NonemptyFiniteLinearOrder α] : NonemptyFinLinOrd :=
+def of (α : Type*) [NonemptyFinLinOrd α] : NonemptyFinLinOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [NonemptyFiniteLinearOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [NonemptyFinLinOrd α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrd.coe_of
@@ -94,6 +95,13 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.has_forget_to_LinOrd NonemptyFinLinOrd.hasForgetToLinOrd
+
+instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd
+    where forget₂ :=
+    { obj := fun X => FinPartOrd.of X
+      map := @fun X Y => id }
+set_option linter.uppercaseLean3 false in
+#align NonemptyFinLinOrd.has_forget_to_FinPartOrd NonemptyFinLinOrd.hasForgetToFinPartOrd
 
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
 between them. -/
@@ -118,13 +126,13 @@ def dual : NonemptyFinLinOrd ⥤ NonemptyFinLinOrd where
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual NonemptyFinLinOrd.dual
 
-/-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
+/-- The equivalence between `NonemptyFinLinOrd` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrd.dualEquiv
 
@@ -142,8 +150,8 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrd.of (ULift (Fin 1))
-  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _  _ => by rfl⟩
-  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _  _ => by rfl⟩
+  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
+  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext
@@ -185,8 +193,8 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [forget_obj_eq_coe, coe_of, FunctorToTypes.map_comp_apply]
-      simp only [forget_map_apply]
+      simp only [coe_of, comp_apply]
+      change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
       · exfalso
@@ -214,7 +222,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl
@@ -239,9 +247,19 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
 
 end NonemptyFinLinOrd
 
-theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrdCat :
+theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd LinOrd =
       forget₂ NonemptyFinLinOrd LinOrd ⋙ LinOrd.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align NonemptyFinLinOrd_dual_comp_forget_to_LinOrd nonemptyFinLinOrd_dual_comp_forget_to_linOrdCat
+#align NonemptyFinLinOrd_dual_comp_forget_to_LinOrd nonemptyFinLinOrd_dual_comp_forget_to_linOrd
+
+/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `order_dual` commute. -/
+def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
+    NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
+      forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual
+    where
+  hom := { app := fun X => OrderHom.id }
+  inv := { app := fun X => OrderHom.id }
+set_option linter.uppercaseLean3 false in
+#align NonemptyFinLinOrd_dual_comp_forget_to_FinPartOrd nonemptyFinLinOrdDualCompForgetToFinPartOrd

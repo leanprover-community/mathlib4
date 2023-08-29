@@ -26,7 +26,7 @@ theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n
   Exists.elim (le.dest h) h'
 #align int.le.elim Int.le.elim
 
-alias ofNat_le ↔ le_of_ofNat_le_ofNat ofNat_le_ofNat_of_le
+alias ⟨le_of_ofNat_le_ofNat, ofNat_le_ofNat_of_le⟩ := ofNat_le
 #align int.coe_nat_le_coe_nat_of_le Int.ofNat_le_ofNat_of_le
 #align int.le_of_coe_nat_le_coe_nat Int.le_of_ofNat_le_ofNat
 #align int.coe_nat_le_coe_nat_iff Int.ofNat_le
@@ -38,12 +38,12 @@ theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Na
   Exists.elim (lt.dest h) h'
 #align int.lt.elim Int.lt.elim
 
-alias ofNat_lt ↔ lt_of_ofNat_lt_ofNat ofNat_lt_ofNat_of_lt
+alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 #align int.coe_nat_lt_coe_nat_iff Int.ofNat_lt
 #align int.lt_of_coe_nat_lt_coe_nat Int.lt_of_ofNat_lt_ofNat
 #align int.coe_nat_lt_coe_nat_of_lt Int.ofNat_lt_ofNat_of_lt
 
-instance : LinearOrder ℤ where
+instance instLinearOrderInt : LinearOrder ℤ where
   le := (·≤·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans
@@ -51,13 +51,12 @@ instance : LinearOrder ℤ where
   lt := (·<·)
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
-  decidable_eq := by infer_instance
-  decidable_le := by infer_instance
-  decidable_lt := by infer_instance
+  decidableEq := by infer_instance
+  decidableLE := by infer_instance
+  decidableLT := by infer_instance
 
 #align int.eq_nat_abs_of_zero_le Int.eq_natAbs_of_zero_le
 #align int.le_nat_abs Int.le_natAbs
-#align int.neg_succ_lt_zero Int.negSucc_lt_zero
 #align int.eq_neg_succ_of_lt_zero Int.eq_negSucc_of_lt_zero
 #align int.sub_eq_zero_iff_eq Int.sub_eq_zero
 
@@ -82,8 +81,7 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) 
       rw [h] at this
       exact absurd this (lt_irrefl _)
     | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
-    | Or.inr (Or.inr hgt₂) =>
-      by
+    | Or.inr (Or.inr hgt₂) => by
       have : 0 > a * b := Int.mul_neg_of_pos_of_neg hlt₁ hgt₂
       rw [h] at this
       exact absurd this (lt_irrefl _)
@@ -95,8 +93,7 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) 
       rw [h] at this
       exact absurd this (lt_irrefl _)
     | Or.inr (Or.inl heq₂) => Or.inr heq₂.symm
-    | Or.inr (Or.inr hgt₂) =>
-      by
+    | Or.inr (Or.inr hgt₂) => by
       have : 0 < a * b := Int.mul_pos_of_neg_of_neg hgt₁ hgt₂
       rw [h] at this
       exact absurd this (lt_irrefl _)

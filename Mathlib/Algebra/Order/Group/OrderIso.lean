@@ -2,15 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.group.order_iso
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
+
+#align_import algebra.order.group.order_iso from "leanprover-community/mathlib"@"6632ca2081e55ff5cf228ca63011979a0efb495b"
 
 /-!
 # Inverse and multiplication as order isomorphisms in ordered groups
@@ -54,7 +50,7 @@ theorem inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
 #align inv_le' inv_le'
 #align neg_le neg_le
 
-alias inv_le' ↔ inv_le_of_inv_le' _
+alias ⟨inv_le_of_inv_le', _⟩ := inv_le'
 #align inv_le_of_inv_le' inv_le_of_inv_le'
 
 attribute [to_additive neg_le_of_neg_le] inv_le_of_inv_le'
@@ -66,11 +62,19 @@ theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
 #align le_inv' le_inv'
 #align le_neg le_neg
 
+/-- `x ↦ a / x` as an order-reversing equivalence. -/
+@[to_additive (attr := simps!) "`x ↦ a - x` as an order-reversing equivalence."]
+def OrderIso.divLeft (a : α) : α ≃o αᵒᵈ where
+  toEquiv := (Equiv.divLeft a).trans OrderDual.toDual
+  map_rel_iff' {_ _} := @div_le_div_iff_left α _ _ _ _ _ _ _
+#align order_iso.div_left OrderIso.divLeft
+#align order_iso.sub_left OrderIso.subLeft
+
 end TypeclassesLeftRightLE
 
 end Group
 
-alias le_inv' ↔ le_inv_of_le_inv _
+alias ⟨le_inv_of_le_inv, _⟩ := le_inv'
 #align le_inv_of_le_inv le_inv_of_le_inv
 
 attribute [to_additive] le_inv_of_le_inv
@@ -101,6 +105,14 @@ theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.
   rfl
 #align order_iso.mul_right_symm OrderIso.mulRight_symm
 #align order_iso.add_right_symm OrderIso.addRight_symm
+
+/-- `x ↦ x / a` as an order isomorphism. -/
+@[to_additive (attr := simps!) "`x ↦ x - a` as an order isomorphism."]
+def OrderIso.divRight (a : α) : α ≃o α where
+  toEquiv := Equiv.divRight a
+  map_rel_iff' {_ _} := div_le_div_iff_right a
+#align order_iso.div_right OrderIso.divRight
+#align order_iso.sub_right OrderIso.subRight
 
 end Right
 

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.Pointed
-! leanprover-community/mathlib commit c8ab806ef73c20cab1d87b5157e43a82c205f28e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.category.Pointed from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
 /-!
 # The category of pointed types
@@ -18,7 +15,7 @@ This defines `Pointed`, the category of pointed types.
 ## TODO
 
 * Monoidal structure
-* Upgrade `Type_to_Pointed` to an equivalence
+* Upgrade `typeToPointed` to an equivalence
 -/
 
 
@@ -26,7 +23,7 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
@@ -39,25 +36,25 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pointed
 
-instance : CoeSort Pointed (Type _) :=
+instance : CoeSort Pointed (Type*) :=
   ⟨X⟩
 
 -- porting note: protected attribute does not work
 --attribute [protected] Pointed.X
 
 /-- Turns a point into a pointed type. -/
-def of {X : Type _} (point : X) : Pointed :=
+def of {X : Type*} (point : X) : Pointed :=
   ⟨X, point⟩
 set_option linter.uppercaseLean3 false in
 #align Pointed.of Pointed.of
 
 @[simp]
-theorem coe_of {X : Type _} (point : X) : ↥(of point) = X :=
+theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Pointed.coe_of Pointed.coe_of
 
-alias of ← _root_.Prod.Pointed
+alias _root_.Prod.Pointed := of
 set_option linter.uppercaseLean3 false in
 #align prod.Pointed Prod.Pointed
 
@@ -104,14 +101,14 @@ set_option linter.uppercaseLean3 false in
 #align Pointed.large_category Pointed.largeCategory
 
 instance concreteCategory : ConcreteCategory Pointed where
-  Forget :=
+  forget :=
     { obj := Pointed.X
       map := @Hom.toFun }
   forget_faithful := ⟨@Hom.ext⟩
 set_option linter.uppercaseLean3 false in
 #align Pointed.concrete_category Pointed.concreteCategory
 
-/-- Constructs a isomorphism between pointed types from an equivalence that preserves the point
+/-- Constructs an isomorphism between pointed types from an equivalence that preserves the point
 between them. -/
 @[simps]
 def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β where
@@ -134,7 +131,7 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 set_option linter.uppercaseLean3 false in
 #align Type_to_Pointed typeToPointed
 
-/-- `Type_to_Pointed` is the free functor. -/
+/-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
@@ -144,8 +141,8 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             apply Pointed.Hom.ext
             funext x
             cases x
-            . exact f.map_point.symm
-            . rfl
+            · exact f.map_point.symm
+            · rfl
           right_inv := fun f => funext fun _ => rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext

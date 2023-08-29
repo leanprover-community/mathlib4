@@ -2,16 +2,14 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
-
-! This file was ported from Lean 3 source module category_theory.types
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.PPWithUniv
+
+#align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # The category `Type`.
@@ -188,19 +186,18 @@ theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X
 
 end FunctorToTypes
 
-/-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
+/-- The isomorphism between a `Type` which has been `ULift`ed to the same universe,
 and the original type.
 -/
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   hom a := a.1
   inv a := .up a
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
-Write this as `uliftFunctor.{5 2}` to get `Type 2 ⥤ Type 5`.
+Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
+@[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v
     where
   obj X := ULift.{v} X
@@ -222,15 +219,15 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 #align category_theory.ulift_functor_faithful CategoryTheory.uliftFunctor_faithful
 
-/-- The functor embedding `Type u` into `Type u` via `ulift` is isomorphic to the identity functor.
+/-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
-  NatIso.ofComponents uliftTrivial (by aesop_cat)
+  NatIso.ofComponents uliftTrivial
 #align category_theory.ulift_functor_trivial CategoryTheory.uliftFunctorTrivial
 
 -- TODO We should connect this to a general story about concrete categories
 -- whose forgetful functor is representable.
-/-- Any term `x` of a type `X` corresponds to a morphism `punit ⟶ X`. -/
+/-- Any term `x` of a type `X` corresponds to a morphism `PUnit ⟶ X`. -/
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 #align category_theory.hom_of_element CategoryTheory.homOfElement
 
@@ -246,7 +243,7 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
   constructor
   · intro H x x' h
     skip
-    rw [← homOfElement_eq_iff] at h⊢
+    rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩
 #align category_theory.mono_iff_injective CategoryTheory.mono_iff_injective
@@ -342,8 +339,8 @@ open CategoryTheory
 
 variable {X Y : Type u}
 
-/-- Any isomorphism between types gives an equivalence.
--/
+/-- Any isomorphism between types gives an equivalence. -/
+@[pp_dot]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv

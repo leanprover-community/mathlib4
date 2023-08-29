@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.multiequalizer
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.ConeCategory
+
+#align_import category_theory.limits.shapes.multiequalizer from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -174,7 +171,7 @@ structure MultispanIndex (C : Type u) [Category.{v} C] where
 
 namespace MulticospanIndex
 
-variable {C : Type u} [Category.{v} C] (I : MulticospanIndex C)
+variable {C : Type u} [Category.{v} C] (I : MulticospanIndex.{w} C)
 
 /-- The multicospan associated to `I : MulticospanIndex`. -/
 def multicospan : WalkingMulticospan I.fstTo I.sndTo ⥤ C where
@@ -247,7 +244,7 @@ end MulticospanIndex
 
 namespace MultispanIndex
 
-variable {C : Type u} [Category.{v} C] (I : MultispanIndex C)
+variable {C : Type u} [Category.{v} C] (I : MultispanIndex.{w} C)
 
 /-- The multispan associated to `I : MultispanIndex`. -/
 def multispan : WalkingMultispan I.fstFrom I.sndFrom ⥤ C where
@@ -322,19 +319,19 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
 --@[nolint has_nonempty_instance]
-abbrev Multifork (I : MulticospanIndex C) :=
+abbrev Multifork (I : MulticospanIndex.{w} C) :=
   Cone I.multicospan
 #align category_theory.limits.multifork CategoryTheory.Limits.Multifork
 
 /-- A multicofork is a cocone over a multispan. -/
 --@[nolint has_nonempty_instance]
-abbrev Multicofork (I : MultispanIndex C) :=
+abbrev Multicofork (I : MultispanIndex.{w} C) :=
   Cocone I.multispan
 #align category_theory.limits.multicofork CategoryTheory.Limits.Multicofork
 
 namespace Multifork
 
-variable {I : MulticospanIndex C} (K : Multifork I)
+variable {I : MulticospanIndex.{w} C} (K : Multifork I)
 
 /-- The maps from the cone point of a multifork to the objects on the left. -/
 def ι (a : I.L) : K.pt ⟶ I.left a :=
@@ -367,7 +364,7 @@ theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.
 
 /-- Construct a multifork using a collection `ι` of morphisms. -/
 @[simps]
-def ofι (I : MulticospanIndex C) (P : C) (ι : ∀ a, P ⟶ I.left a)
+def ofι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
     (w : ∀ b, ι (I.fstTo b) ≫ I.fst b = ι (I.sndTo b) ≫ I.snd b) : Multifork I where
   pt := P
   π :=
@@ -414,7 +411,6 @@ variable [HasProduct I.left] [HasProduct I.right]
 @[reassoc (attr := simp)]
 theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
   ext
-  discrete_cases
   simp
 #align category_theory.limits.multifork.pi_condition CategoryTheory.Limits.Multifork.pi_condition
 
@@ -479,7 +475,7 @@ end Multifork
 
 namespace MulticospanIndex
 
-variable (I : MulticospanIndex C) [HasProduct I.left] [HasProduct I.right]
+variable (I : MulticospanIndex.{w} C) [HasProduct I.left] [HasProduct I.right]
 
 --attribute [local tidy] tactic.case_bash
 
@@ -492,7 +488,6 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
       w := by
         rintro (_ | _)
         · apply limit.hom_ext
-          dsimp
           simp
         · apply limit.hom_ext
           intros j
@@ -519,24 +514,19 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
   functor := toPiForkFunctor I
   inverse := ofPiForkFunctor I
   unitIso :=
-    NatIso.ofComponents
-      (fun K =>
-        Cones.ext (Iso.refl _)
-          (by
-            rintro (_ | _) <;> dsimp <;>
-              simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left]))
-      fun {K₁ K₂} f => by dsimp; ext; simp
+    NatIso.ofComponents fun K =>
+      Cones.ext (Iso.refl _) (by
+        rintro (_ | _) <;> dsimp <;>
+          simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left])
   counitIso :=
-    NatIso.ofComponents
-      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext j; dsimp; simp))
-      fun {K₁ K₂} f => by dsimp; ext; simp
+    NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork
 
 end MulticospanIndex
 
 namespace Multicofork
 
-variable {I : MultispanIndex C} (K : Multicofork I)
+variable {I : MultispanIndex.{w} C} (K : Multicofork I)
 
 /-- The maps to the cocone point of a multicofork from the objects on the right. -/
 def π (b : I.R) : I.right b ⟶ K.pt :=
@@ -566,7 +556,7 @@ lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K�
 
 /-- Construct a multicofork using a collection `π` of morphisms. -/
 @[simps]
-def ofπ (I : MultispanIndex C) (P : C) (π : ∀ b, I.right b ⟶ P)
+def ofπ (I : MultispanIndex.{w} C) (P : C) (π : ∀ b, I.right b ⟶ P)
     (w : ∀ a, I.fst a ≫ π (I.fstFrom a) = I.snd a ≫ π (I.sndFrom a)) : Multicofork I where
   pt := P
   ι :=
@@ -613,7 +603,6 @@ variable [HasCoproduct I.left] [HasCoproduct I.right]
 @[reassoc (attr := simp)]
 theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
   ext
-  discrete_cases
   simp
 #align category_theory.limits.multicofork.sigma_condition CategoryTheory.Limits.Multicofork.sigma_condition
 
@@ -649,10 +638,10 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
         | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp
+        rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
         · simp
-        · dsimp ; rw [c.condition] ; simp
+        · simp [c.condition]
         · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 
@@ -679,7 +668,7 @@ end Multicofork
 
 namespace MultispanIndex
 
-variable (I : MultispanIndex C) [HasCoproduct I.left] [HasCoproduct I.right]
+variable (I : MultispanIndex.{w} C) [HasCoproduct I.left] [HasCoproduct I.right]
 
 --attribute [local tidy] tactic.case_bash
 
@@ -723,64 +712,48 @@ noncomputable def multicoforkEquivSigmaCofork :
     Multicofork I ≌ Cofork I.fstSigmaMap I.sndSigmaMap where
   functor := toSigmaCoforkFunctor I
   inverse := ofSigmaCoforkFunctor I
-  unitIso :=
-    NatIso.ofComponents (fun K => Cocones.ext (Iso.refl _) (by
-      rintro (_ | _)
-      · dsimp; simp
-      -- porting note; `dsimp, simp` worked in mathlib3.
-      · dsimp [Multicofork.ofSigmaCofork]; simp ))
-      fun {K₁ K₂} f => by
-        -- porting note: in mathlib3 `ext` works and I don't
-        -- really understand why it doesn't work here
-        apply Limits.CoconeMorphism.ext
-        simp
-  counitIso :=
-    NatIso.ofComponents
-      (fun K =>
-        Cofork.ext (Iso.refl _)
-          (by
-            -- porting note: in mathlib3 this was just `ext` and I don't know why it's not here
-            apply Limits.colimit.hom_ext
-            rintro ⟨j⟩
-            dsimp
-            simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι_app]
-            rfl))
-      fun {K₁ K₂} f => by
-        -- porting note: in mathlib3 the next line was just `ext`
-        apply Limits.CoconeMorphism.ext
+  unitIso := NatIso.ofComponents fun K => Cocones.ext (Iso.refl _) (by
+      rintro (_ | _) <;> simp)
+  counitIso := NatIso.ofComponents fun K =>
+    Cofork.ext (Iso.refl _)
+      (by
+        -- porting note: in mathlib3 this was just `ext` and I don't know why it's not here
+        apply Limits.colimit.hom_ext
+        rintro ⟨j⟩
         dsimp
-        simp
+        simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι_app]
+        rfl)
 #align category_theory.limits.multispan_index.multicofork_equiv_sigma_cofork CategoryTheory.Limits.MultispanIndex.multicoforkEquivSigmaCofork
 
 end MultispanIndex
 
 /-- For `I : MulticospanIndex C`, we say that it has a multiequalizer if the associated
   multicospan has a limit. -/
-abbrev HasMultiequalizer (I : MulticospanIndex C) :=
+abbrev HasMultiequalizer (I : MulticospanIndex.{w} C) :=
   HasLimit I.multicospan
 #align category_theory.limits.has_multiequalizer CategoryTheory.Limits.HasMultiequalizer
 
 noncomputable section
 
 /-- The multiequalizer of `I : MulticospanIndex C`. -/
-abbrev multiequalizer (I : MulticospanIndex C) [HasMultiequalizer I] : C :=
+abbrev multiequalizer (I : MulticospanIndex.{w} C) [HasMultiequalizer I] : C :=
   limit I.multicospan
 #align category_theory.limits.multiequalizer CategoryTheory.Limits.multiequalizer
 
 /-- For `I : MultispanIndex C`, we say that it has a multicoequalizer if
   the associated multicospan has a limit. -/
-abbrev HasMulticoequalizer (I : MultispanIndex C) :=
+abbrev HasMulticoequalizer (I : MultispanIndex.{w} C) :=
   HasColimit I.multispan
 #align category_theory.limits.has_multicoequalizer CategoryTheory.Limits.HasMulticoequalizer
 
 /-- The multiecoqualizer of `I : MultispanIndex C`. -/
-abbrev multicoequalizer (I : MultispanIndex C) [HasMulticoequalizer I] : C :=
+abbrev multicoequalizer (I : MultispanIndex.{w} C) [HasMulticoequalizer I] : C :=
   colimit I.multispan
 #align category_theory.limits.multicoequalizer CategoryTheory.Limits.multicoequalizer
 
 namespace Multiequalizer
 
-variable (I : MulticospanIndex C) [HasMultiequalizer I]
+variable (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
 abbrev ι (a : I.L) : multiequalizer I ⟶ I.left a :=
@@ -860,7 +833,7 @@ end Multiequalizer
 
 namespace Multicoequalizer
 
-variable (I : MultispanIndex C) [HasMulticoequalizer I]
+variable (I : MultispanIndex.{w} C) [HasMulticoequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
 abbrev π (b : I.R) : I.right b ⟶ multicoequalizer I :=

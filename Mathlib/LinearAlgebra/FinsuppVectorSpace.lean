@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.finsupp_vector_space
-! leanprover-community/mathlib commit 59628387770d82eb6f6dd7b7107308aa2509ec95
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.StdBasis
+
+#align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -21,8 +18,6 @@ This file contains results on the `R`-module structure on functions of finite su
 
 noncomputable section
 
-open Classical
-
 open Set LinearMap Submodule
 
 open Cardinal
@@ -33,15 +28,14 @@ namespace Finsupp
 
 section Ring
 
-variable {R : Type _} {M : Type _} {ι : Type _}
+variable {R : Type*} {M : Type*} {ι : Type*}
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-set_option maxHeartbeats 300000 in
-theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
+theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
-  apply @linearIndependent_unionᵢ_finite R _ _ _ _ ι φ fun i x => single i (f i x)
+  apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
   · intro i
     have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
       rw [ker_lsingle]
@@ -50,10 +44,10 @@ theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
   · intro i t _ hit
     refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
     · rw [span_le]
-      simp only [supᵢ_singleton]
+      simp only [iSup_singleton]
       rw [range_coe]
       apply range_comp_subset_range _ (lsingle i)
-    · refine' supᵢ₂_mono fun i hi => _
+    · refine' iSup₂_mono fun i hi => _
       rw [span_le, range_coe]
       apply range_comp_subset_range _ (lsingle i)
 #align finsupp.linear_independent_single Finsupp.linearIndependent_single
@@ -62,14 +56,15 @@ end Ring
 
 section Semiring
 
-variable {R : Type _} {M : Type _} {ι : Type _}
+variable {R : Type*} {M : Type*} {ι : Type*}
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
 
+open scoped Classical in
 /-- The basis on `ι →₀ M` with basis vectors `λ ⟨i, x⟩, single i (b i x)`. -/
-protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
+protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
   Basis.ofRepr
     { toFun := fun g =>
         { toFun := fun ix => (b ix.1).repr (g ix.1) ix.2
@@ -104,16 +99,17 @@ protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (
 #align finsupp.basis Finsupp.basis
 
 @[simp]
-theorem basis_repr {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
+theorem basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
     (Finsupp.basis b).repr g ix = (b ix.1).repr (g ix.1) ix.2 :=
   rfl
 #align finsupp.basis_repr Finsupp.basis_repr
 
 @[simp]
-theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
+theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
     ⇑(Finsupp.basis b) = fun ix : Σi, φ i => single ix.1 (b ix.1 ix.2) :=
   funext fun ⟨i, x⟩ =>
     Basis.apply_eq_iff.mpr <| by
+      classical
       ext ⟨j, y⟩
       by_cases h : i = j
       · cases h
@@ -125,7 +121,7 @@ theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
         zero_apply]
 #align finsupp.coe_basis Finsupp.coe_basis
 
-/-- The basis on `ι →₀ M` with basis vectors `λ i, single i 1`. -/
+/-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
@@ -145,7 +141,7 @@ end Finsupp
 
 namespace Basis
 
-variable {R M n : Type _}
+variable {R M n : Type*}
 
 variable [DecidableEq n] [Fintype n]
 

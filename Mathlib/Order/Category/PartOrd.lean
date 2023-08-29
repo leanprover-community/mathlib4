@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.PartOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Category.Preord
+
+#align_import order.category.PartOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # Category of partial orders
@@ -35,20 +32,21 @@ instance : BundledHom.ParentProjection @PartialOrder.toPreorder :=
 
 deriving instance LargeCategory for PartOrd
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory PartOrd :=
   BundledHom.concreteCategory _
 
-instance : CoeSort PartOrd (Type _) :=
+instance : CoeSort PartOrd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled PartOrd from the underlying type and typeclass. -/
-def of (α : Type _) [PartialOrder α] : PartOrd :=
+def of (α : Type*) [PartialOrder α] : PartOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align PartOrd.of PartOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align PartOrd.coe_of PartOrd.coe_of
@@ -91,19 +89,19 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : PartOrd ≌ PartOrd where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align PartOrd.dual_equiv PartOrd.dualEquiv
 
 end PartOrd
 
-theorem partOrdCat_dual_comp_forget_to_preordCat :
+theorem partOrd_dual_comp_forget_to_preordCat :
     PartOrd.dual ⋙ forget₂ PartOrd Preord =
       forget₂ PartOrd Preord ⋙ Preord.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align PartOrd_dual_comp_forget_to_Preord partOrdCat_dual_comp_forget_to_preordCat
+#align PartOrd_dual_comp_forget_to_Preord partOrd_dual_comp_forget_to_preordCat
 
 /-- `antisymmetrization` as a functor. It is the free functor. -/
 def preordCatToPartOrd : Preord.{u} ⥤ PartOrd where
@@ -138,10 +136,12 @@ def preordCatToPartOrdForgetAdjunction :
 set_option linter.uppercaseLean3 false in
 #align Preord_to_PartOrd_forget_adjunction preordCatToPartOrdForgetAdjunction
 
-/-- `PreordToPartOrd` and `OrderDual` commute. -/
-@[simps!]
-def preordCatToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
-    preordCatToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordCatToPartOrd :=
+-- The `simpNF` linter would complain as `Functor.comp_obj`, `PreordCat.dual_obj` both apply to LHS
+-- of `preordCatToPartOrdCompToDualIsoToDualCompPreordCatToPartOrd_hom_app_coe`
+/-- `PreordCatToPartOrd` and `OrderDual` commute. -/
+@[simps! inv_app_coe, simps! (config := .lemmasOnly) hom_app_coe]
+def preordCatToPartOrdCompToDualIsoToDualCompPreordCatToPartOrd :
+    preordCatToPartOrd.{u} ⋙ PartOrd.dual ≅ PreordCat.dual ⋙ preordCatToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl)
 set_option linter.uppercaseLean3 false in

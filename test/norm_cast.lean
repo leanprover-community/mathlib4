@@ -11,6 +11,7 @@ import Mathlib.Data.Rat.Cast
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
+set_option autoImplicit true
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 variable (aq bq cq dq : ℚ)
@@ -114,8 +115,7 @@ example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1
 end hidden
 
 example (k : ℕ) {x y : ℕ} :
-  (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = ↑y * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) :=
-by
+    (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = ↑y * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) := by
   push_cast
   ring
 
@@ -126,8 +126,7 @@ example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 
   assumption_mod_cast
 
 example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
-  ((a + b : ℕ) : ℤ) = 10 :=
-by
+    ((a + b : ℕ) : ℤ) = 10 := by
   push_cast
   push_cast [Int.add_zero] at h2
   exact h2

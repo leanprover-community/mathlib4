@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.adj_matrix
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+
+#align_import combinatorics.simple_graph.adj_matrix from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Adjacency Matrices
@@ -45,7 +42,7 @@ open BigOperators Matrix
 
 open Finset Matrix SimpleGraph
 
-variable {V α β : Type _}
+variable {V α β : Type*}
 
 namespace Matrix
 
@@ -136,7 +133,7 @@ theorem compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
 
 theorem toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
     h.compl.toGraph = h.toGraphᶜ := by
-  ext (v w)
+  ext v w
   cases' h.zero_or_one v w with h h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
 #align matrix.is_adj_matrix.to_graph_compl_eq Matrix.IsAdjMatrix.toGraph_compl_eq
 
@@ -226,13 +223,13 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 
 @[simp]
 theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
-    (G.adjMatrix α ⬝ M) v w = ∑ u in G.neighborFinset v, M u w := by
+    (G.adjMatrix α * M) v w = ∑ u in G.neighborFinset v, M u w := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter]
 #align simple_graph.adj_matrix_mul_apply SimpleGraph.adjMatrix_mul_apply
 
 @[simp]
 theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
-    (M ⬝ G.adjMatrix α) v w = ∑ u in G.neighborFinset w, M v u := by
+    (M * G.adjMatrix α) v w = ∑ u in G.neighborFinset w, M v u := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 #align simple_graph.mul_adj_matrix_apply SimpleGraph.mul_adjMatrix_apply
 
@@ -246,7 +243,7 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
-    (G.adjMatrix α ⬝ G.adjMatrix α) i i = degree G i := by simp [degree]
+    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [degree]
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
@@ -267,8 +264,8 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
   induction' n with n ih generalizing u v
   · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
   · nth_rw 1 [Nat.succ_eq_one_add]
-    simp only [pow_add, pow_one, finsetWalkLength, ih, mul_eq_mul, adjMatrix_mul_apply]
-    rw [Finset.card_bunionᵢ]
+    simp only [pow_add, pow_one, finsetWalkLength, ih, adjMatrix_mul_apply]
+    rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
       apply Finset.sum_toFinset_eq_subtype
@@ -293,7 +290,7 @@ variable {A : Matrix V V α} (h : IsAdjMatrix A)
 /-- If `A` is qualified as an adjacency matrix,
     then the adjacency matrix of the graph induced by `A` is itself. -/
 theorem adjMatrix_toGraph_eq [DecidableEq α] : h.toGraph.adjMatrix α = A := by
-  ext (i j)
+  ext i j
   obtain h' | h' := h.zero_or_one i j <;> simp [h']
 #align matrix.is_adj_matrix.adj_matrix_to_graph_eq Matrix.IsAdjMatrix.adjMatrix_toGraph_eq
 

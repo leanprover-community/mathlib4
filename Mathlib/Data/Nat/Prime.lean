@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.prime
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Parity
@@ -16,7 +11,8 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Tactic.ByContra
+
+#align_import data.nat.prime from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Prime numbers
@@ -250,7 +246,7 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
 
 /-- If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
   Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
-  If `n` is odd and `1 < n`, then then `minFacAux n 3` is the smallest prime factor of `n`. -/
+  If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`. -/
 def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if h : n < k * k then n
@@ -263,10 +259,8 @@ termination_by _ n k => sqrt n + 2 - k
 #align nat.min_fac_aux Nat.minFacAux
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
-def minFac : ℕ → ℕ
-  | 0 => 2
-  | 1 => 1
-  | n + 2 => if 2 ∣ n then 2 else minFacAux (n + 2) 3
+def minFac (n : ℕ) : ℕ :=
+  if 2 ∣ n then 2 else minFacAux n 3
 #align nat.min_fac Nat.minFac
 
 @[simp]
@@ -279,11 +273,7 @@ theorem minFac_one : minFac 1 = 1 :=
   rfl
 #align nat.min_fac_one Nat.minFac_one
 
-theorem minFac_eq : ∀ n, minFac n = if 2 ∣ n then 2 else minFacAux n 3
-  | 0 => by simp
-  | 1 => by simp [show 2 ≠ 1 by decide]
-  | n + 2 => by
-    simp [minFac]
+theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 #align nat.min_fac_eq Nat.minFac_eq
 
 private def minFacProp (n k : ℕ) :=
@@ -343,12 +333,12 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 #align nat.min_fac_prime Nat.minFac_prime
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
-  by_cases n1 : n = 1 <;> [exact fun m2 _ => n1.symm ▸ le_trans (by decide) m2,
+  by_cases n1 : n = 1 <;> [exact fun m2 _ => n1.symm ▸ le_trans (by decide) m2;
     apply (minFac_has_prop n1).2.2]
 #align nat.min_fac_le_of_dvd Nat.minFac_le_of_dvd
 
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
-  by_cases n1 : n = 1 <;> [exact n1.symm ▸ by decide, exact (minFac_prime n1).pos]
+  by_cases n1 : n = 1 <;> [exact n1.symm ▸ (by decide); exact (minFac_prime n1).pos]
 #align nat.min_fac_pos Nat.minFac_pos
 
 theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
@@ -364,7 +354,7 @@ theorem le_minFac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p → 
 
 theorem le_minFac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p → p ∣ n → m ≤ p :=
   ⟨fun h p (pp : 1 < p) d =>
-    h.elim (by rintro rfl ; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
+    h.elim (by rintro rfl; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
       le_trans h <| minFac_le_of_dvd pp d,
     fun H => le_minFac.2 fun p pp d => H p pp.two_le d⟩
 #align nat.le_min_fac' Nat.le_minFac'
@@ -581,7 +571,7 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 #align nat.prime_iff Nat.prime_iff
 
-alias prime_iff ↔ Prime.prime _root_.Prime.nat_prime
+alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 #align nat.prime.prime Nat.Prime.prime
 #align prime.nat_prime Prime.nat_prime
 
@@ -645,8 +635,8 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
     suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
       obtain hx | hy := hp.dvd_mul.1 pdvdxy <;>
-        [skip, rw [And.comm]] <;>
-        [skip, rw [mul_comm] at h pdvdxy] <;>
+        [skip; rw [And.comm]] <;>
+        [skip; rw [mul_comm] at h pdvdxy] <;>
         apply this <;>
         assumption
     rintro x y hx hy h ⟨a, ha⟩
@@ -688,7 +678,7 @@ theorem coprime_pow_primes {p q : ℕ} (n m : ℕ) (pp : Prime p) (pq : Prime q)
 #align nat.coprime_pow_primes Nat.coprime_pow_primes
 
 theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : coprime p i ∨ p ∣ i := by
-  rw [pp.dvd_iff_not_coprime] ; apply em
+  rw [pp.dvd_iff_not_coprime]; apply em
 #align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : coprime p n :=
@@ -701,7 +691,7 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
 #align nat.eq_or_coprime_of_le_prime Nat.eq_or_coprime_of_le_prime
 
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
-  simp_rw [_root_.dvd_prime_pow  (prime_iff.mp pp)  m, associated_eq_eq]
+  simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 #align nat.dvd_prime_pow Nat.dvd_prime_pow
 
 theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
@@ -753,8 +743,8 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
 theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
   ⟨fun hp =>
     ⟨Int.coe_nat_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
-      rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h ;
-        rwa [← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]⟩,
+      rw [← Int.dvd_natAbs, Int.coe_nat_dvd, Int.natAbs_mul, hp.dvd_mul] at h
+      rwa [← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]⟩,
     fun hp =>
     Nat.prime_iff.2
       ⟨Int.coe_nat_ne_zero.1 hp.1,
@@ -792,7 +782,7 @@ theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
 
 end Primes
 
-instance monoid.primePow {α : Type _} [Monoid α] : Pow α Primes :=
+instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
 #align nat.monoid.prime_pow Nat.monoid.primePow
 

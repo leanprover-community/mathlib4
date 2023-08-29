@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.Lat
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.PartOrd
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.category.Lat from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of lattices
@@ -38,19 +35,19 @@ set_option linter.uppercaseLean3 false
 
 namespace Lat
 
-instance : CoeSort Lat (Type _) :=
+instance : CoeSort Lat Type* :=
   Bundled.coeSort
 
 instance (X : Lat) : Lattice X :=
   X.str
 
 /-- Construct a bundled `Lat` from a `Lattice`. -/
-def of (α : Type _) [Lattice α] : Lat :=
+def of (α : Type*) [Lattice α] : Lat :=
   Bundled.of α
 #align Lat.of Lat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Lattice α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
   rfl
 #align Lat.coe_of Lat.coe_of
 
@@ -100,13 +97,13 @@ def dual : Lat ⥤ Lat where
 def dualEquiv : Lat ≌ Lat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align Lat.dual_equiv Lat.dualEquiv
 
 end Lat
 
-theorem Lat_dual_comp_forget_to_partOrdCat :
+theorem Lat_dual_comp_forget_to_partOrd :
     Lat.dual ⋙ forget₂ Lat PartOrd = forget₂ Lat PartOrd ⋙ PartOrd.dual :=
   rfl
-#align Lat_dual_comp_forget_to_PartOrd Lat_dual_comp_forget_to_partOrdCat
+#align Lat_dual_comp_forget_to_PartOrd Lat_dual_comp_forget_to_partOrd

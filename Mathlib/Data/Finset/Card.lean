@@ -2,14 +2,10 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.finset.card
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
-import Mathlib.Tactic.ByContra
+
+#align_import data.finset.card from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Cardinality of a finite set
@@ -36,7 +32,7 @@ Should we add a noncomputable version?
 
 open Function Multiset Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Finset
 
@@ -78,7 +74,7 @@ theorem card_pos : 0 < s.card ↔ s.Nonempty :=
   pos_iff_ne_zero.trans <| (not_congr card_eq_zero).trans nonempty_iff_ne_empty.symm
 #align finset.card_pos Finset.card_pos
 
-alias card_pos ↔ _ Nonempty.card_pos
+alias ⟨_, Nonempty.card_pos⟩ := card_pos
 #align finset.nonempty.card_pos Finset.Nonempty.card_pos
 
 theorem card_ne_zero_of_mem (h : a ∈ s) : s.card ≠ 0 :=
@@ -177,7 +173,7 @@ theorem card_attach : s.attach.card = s.card :=
 
 end Finset
 
-section ToListMultiset
+section ToMLListultiset
 
 variable [DecidableEq α] (m : Multiset α) (l : List α)
 
@@ -206,7 +202,7 @@ theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : l.toFinset.car
   Multiset.toFinset_card_of_nodup h
 #align list.to_finset_card_of_nodup List.toFinset_card_of_nodup
 
-end ToListMultiset
+end ToMLListultiset
 
 namespace Finset
 
@@ -294,7 +290,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     (hf' : ∀ (i) (h : i < n), f i h ∈ s)
     (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
   classical
-    have : ∀ a : α, a ∈ s ↔ ∃ (i : _)(hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
+    have : ∀ a : α, a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
       ⟨fun ha =>
         let ⟨i, hi, eq⟩ := hf a ha
         ⟨i, mem_range.2 hi, eq⟩,
@@ -495,8 +491,7 @@ theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
-    (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) :=
-  by
+    (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : (X ∩ (Y \ X)).card = 0 := Finset.card_eq_zero.mpr (Finset.inter_sdiff_self X Y)
   have h₂ : (X ∪ Y).card = X.card + (Y \ X).card := by
     rw [← card_union_add_card_inter X (Y \ X), Finset.union_sdiff_self_eq_union, h₁, add_zero]
@@ -515,7 +510,7 @@ theorem card_eq_one : s.card = 1 ↔ ∃ a, s = {a} := by
 #align finset.card_eq_one Finset.card_eq_one
 
 theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
-    (∃ (a : _)(_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
+    (∃ (a : _) (_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
   constructor
   · rintro ⟨a, ha, rfl⟩
     exact ⟨subset_insert _ _, (card_insert_of_not_mem ha).symm⟩
@@ -564,8 +559,7 @@ theorem one_lt_card : 1 < s.card ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
   exact card_le_one
 #align finset.one_lt_card Finset.one_lt_card
 
-theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
-  by
+theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
   simp only [exists_prop, exists_and_left]
 #align finset.one_lt_card_iff Finset.one_lt_card_iff
@@ -586,7 +580,7 @@ theorem two_lt_card_iff : 2 < s.card ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c �
 #align finset.two_lt_card_iff Finset.two_lt_card_iff
 
 theorem two_lt_card : 2 < s.card ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
-  simp_rw [two_lt_card_iff, exists_prop, exists_and_left]
+  simp_rw [two_lt_card_iff, exists_and_left]
 #align finset.two_lt_card Finset.two_lt_card
 
 theorem exists_ne_of_one_lt_card (hs : 1 < s.card) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
@@ -634,7 +628,7 @@ theorem card_eq_three [DecidableEq α] :
 /-- Suppose that, given objects defined on all strict subsets of any finset `s`, one knows how to
 define an object on `s`. Then one can inductively define an object on all finsets, starting from
 the empty set and iterating. This can be used either to define data, or to prove properties. -/
-def strongInduction {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
+def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
     ∀ s : Finset α, p s
   | s =>
     H s fun t h =>
@@ -644,19 +638,19 @@ def strongInduction {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s
 #align finset.strong_induction Finset.strongInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
-theorem strongInduction_eq {p : Finset α → Sort _} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s)
+theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s)
     (s : Finset α) : strongInduction H s = H s fun t _ => strongInduction H t := by
   rw [strongInduction]
 #align finset.strong_induction_eq Finset.strongInduction_eq
 
 /-- Analogue of `strongInduction` with order of arguments swapped. -/
 @[elab_as_elim]
-def strongInductionOn {p : Finset α → Sort _} (s : Finset α) :
+def strongInductionOn {p : Finset α → Sort*} (s : Finset α) :
     (∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) → p s := fun H => strongInduction H s
 #align finset.strong_induction_on Finset.strongInductionOn
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
-theorem strongInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
+theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
     s.strongInductionOn H = H s fun t _ => t.strongInductionOn H := by
   dsimp only [strongInductionOn]
@@ -675,7 +669,7 @@ theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : 
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all finsets `s` of
 cardinality less than `n`, starting from finsets of card `n` and iterating. This
 can be used either to define data, or to prove properties. -/
-def strongDownwardInduction {p : Finset α → Sort _} {n : ℕ}
+def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
     ∀ s : Finset α, s.card ≤ n → p s
   | s =>
@@ -686,7 +680,7 @@ def strongDownwardInduction {p : Finset α → Sort _} {n : ℕ}
 #align finset.strong_downward_induction Finset.strongDownwardInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
-theorem strongDownwardInduction_eq {p : Finset α → Sort _}
+theorem strongDownwardInduction_eq {p : Finset α → Sort*}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁)
     (s : Finset α) :
     strongDownwardInduction H s = H s fun {t} ht _ => strongDownwardInduction H t ht := by
@@ -695,17 +689,16 @@ theorem strongDownwardInduction_eq {p : Finset α → Sort _}
 
 /-- Analogue of `strongDownwardInduction` with order of arguments swapped. -/
 @[elab_as_elim]
-def strongDownwardInductionOn {p : Finset α → Sort _} (s : Finset α)
+def strongDownwardInductionOn {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
     s.card ≤ n → p s :=
   strongDownwardInduction H s
 #align finset.strong_downward_induction_on Finset.strongDownwardInductionOn
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
-theorem strongDownwardInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
+theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
-    s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht :=
-  by
+    s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht := by
   dsimp only [strongDownwardInductionOn]
   rw [strongDownwardInduction]
 #align finset.strong_downward_induction_on_eq Finset.strongDownwardInductionOn_eq

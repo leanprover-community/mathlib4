@@ -2,17 +2,15 @@
 Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.perm.cycle.type
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Combinatorics.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.NormNum.GCD
+
+#align_import group_theory.perm.cycle.type from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # Cycle Types
@@ -39,7 +37,7 @@ namespace Equiv.Perm
 
 open Equiv List Multiset
 
-variable {α : Type _} [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section CycleType
 
@@ -272,7 +270,7 @@ theorem isConj_iff_cycleType_eq {σ τ : Perm α} : IsConj σ τ ↔ σ.cycleTyp
 #align equiv.perm.is_conj_iff_cycle_type_eq Equiv.Perm.isConj_iff_cycleType_eq
 
 @[simp]
-theorem cycleType_extendDomain {β : Type _} [Fintype β] [DecidableEq β] {p : β → Prop}
+theorem cycleType_extendDomain {β : Type*} [Fintype β] [DecidableEq β] {p : β → Prop}
     [DecidablePred p] (f : α ≃ Subtype p) {g : Perm α} :
     cycleType (g.extendDomain f) = cycleType g := by
   induction g using cycle_induction_on with
@@ -366,7 +364,7 @@ theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
 
 section Cauchy
 
-variable (G : Type _) [Group G] (n : ℕ)
+variable (G : Type*) [Group G] (n : ℕ)
 
 /-- The type of vectors with terms from `G`, length `n`, and product equal to `1:G`. -/
 def vectorsProdEqOne : Set (Vector G n) :=
@@ -454,7 +452,7 @@ end VectorsProdEqOne
 
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
-theorem _root_.exists_prime_orderOf_dvd_card {G : Type _} [Group G] [Fintype G] (p : ℕ)
+theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, orderOf x = p := by
   have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_lt hp.out.one_lt)
   have Scard :=
@@ -487,7 +485,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type _} [Group G] [Fintype G] 
 
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
-theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type _} [AddGroup G] [Fintype G] (p : ℕ)
+theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
   @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
 #align exists_prime_add_order_of_dvd_card exists_prime_addOrderOf_dvd_card
@@ -506,7 +504,7 @@ theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
   have hσ3 : (σ : Perm α).support = ⊤ :=
     Finset.eq_univ_of_card (σ : Perm α).support (hσ2.orderOf.symm.trans hσ1)
   have hσ4 : Subgroup.closure {↑σ, τ} = ⊤ := closure_prime_cycle_swap h0 hσ2 hσ3 h3
-  rw [eq_top_iff, ← hσ4, Subgroup.closure_le, Set.insert_subset, Set.singleton_subset_iff]
+  rw [eq_top_iff, ← hσ4, Subgroup.closure_le, Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨Subtype.mem σ, h2⟩
 #align equiv.perm.subgroup_eq_top_of_swap_mem Equiv.Perm.subgroup_eq_top_of_swap_mem
 
@@ -583,8 +581,7 @@ theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCyc
   obtain ⟨m, hm⟩ := exists_mem_of_ne_zero h1
   rw [← sum_cycleType, ← cons_erase hn, ← cons_erase hm, Multiset.sum_cons, Multiset.sum_cons] at h
   -- TODO: linarith [...] should solve this directly
-  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False :=
-    by
+  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by
     intros
     linarith
   cases this (two_le_of_mem_cycleType (mem_of_mem_erase hm)) (two_le_of_mem_cycleType hn) h
@@ -614,31 +611,9 @@ theorem orderOf {g : Perm α} (ht : IsThreeCycle g) : orderOf g = 3 := by
   rw [← lcm_cycleType, ht.cycleType, Multiset.lcm_singleton, normalize_eq]
 #align equiv.perm.is_three_cycle.order_of Equiv.Perm.IsThreeCycle.orderOf
 
--- Copied the following lemmas from Data/Int/GCD.lean; see #3246
-private theorem int_gcd_helper' {d : ℕ} {x y a b : ℤ} (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
-    (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
-  refine' Nat.dvd_antisymm _ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
-  rw [← Int.coe_nat_dvd, ← h₃]
-  apply dvd_add
-  · exact (Int.gcd_dvd_left _ _).mul_right _
-  · exact (Int.gcd_dvd_right _ _).mul_right _
-private theorem nat_gcd_helper_2 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
-    (hx : x * a = tx) (hy : y * b = ty) (h : ty + d = tx) : Nat.gcd x y = d := by
-  rw [← Int.coe_nat_gcd];
-  apply
-    @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2
-     ⟨_, hv.symm⟩)
-  rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
-  norm_cast; rw [hx, hy, h]
-private theorem nat_gcd_helper_1 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
-    (hx : x * a = tx) (hy : y * b = ty) (h : tx + d = ty) : Nat.gcd x y = d :=
-  (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ hv hu hy hx h
-
 theorem isThreeCycle_sq {g : Perm α} (ht : IsThreeCycle g) : IsThreeCycle (g * g) := by
   rw [← pow_two, ← card_support_eq_three_iff, support_pow_coprime, ht.card_support]
-  rw [ht.orderOf, Nat.coprime_iff_gcd_eq_one]
-  -- Porting note: was `norm_num`
-  apply nat_gcd_helper_1 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) (mul_one _) (mul_one _)
+  rw [ht.orderOf]
   norm_num
 #align equiv.perm.is_three_cycle.is_three_cycle_sq Equiv.Perm.IsThreeCycle.isThreeCycle_sq
 

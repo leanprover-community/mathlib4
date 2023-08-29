@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module ring_theory.ideal.prod
-! leanprover-community/mathlib commit 052f6013363326d50cb99c6939814a4b8eb7b301
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
+
+#align_import ring_theory.ideal.prod from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
 /-!
 # Ideals in product rings
@@ -47,10 +44,6 @@ theorem mem_prod {r : R} {s : S} : (⟨r, s⟩ : R × S) ∈ prod I J ↔ r ∈ 
 theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
   Ideal.ext <| by simp
 #align ideal.prod_top_top Ideal.prod_top_top
-
-/- Porting note: This is necessary to prevent failing type class searches in
-`map (RingHom.fst R S) I`, remove when `etaExperiment` becomes the default. -/
-attribute [-instance] Ring.toNonAssocRing
 
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
     given as the image under the projection maps. -/
@@ -108,8 +101,8 @@ theorem idealProdEquiv_symm_apply (I : Ideal R) (J : Ideal S) :
   rfl
 #align ideal.ideal_prod_equiv_symm_apply Ideal.idealProdEquiv_symm_apply
 
-theorem prod.ext_iff {I I' : Ideal R} {J J' : Ideal S} : prod I J = prod I' J' ↔ I = I' ∧ J = J' :=
-  by
+theorem prod.ext_iff {I I' : Ideal R} {J J' : Ideal S} :
+    prod I J = prod I' J' ↔ I = I' ∧ J = J' := by
   simp only [← idealProdEquiv_symm_apply, idealProdEquiv.symm.injective.eq_iff, Prod.mk.inj_iff]
 #align ideal.prod.ext_iff Ideal.prod.ext_iff
 
@@ -120,8 +113,7 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
     rw [h, prod_top_top, isPrime_iff]
     simp [isPrime_iff, h]
   · intro x y hxy
-    have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ :=
-      by
+    have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ := by
       rw [Prod.mk_mul_mk, mul_one, mem_prod]
       exact ⟨hxy, trivial⟩
     simpa using h.mem_or_mem this
@@ -170,10 +162,10 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
     intro hI
     rcases ideal_prod_prime_aux hI with (h | h)
     · right
-      rw [h] at hI⊢
+      rw [h] at hI ⊢
       exact ⟨_, ⟨isPrime_of_isPrime_prod_top' hI, rfl⟩⟩
     · left
-      rw [h] at hI⊢
+      rw [h] at hI ⊢
       exact ⟨_, ⟨isPrime_of_isPrime_prod_top hI, rfl⟩⟩
   · rintro (⟨p, ⟨h, rfl⟩⟩ | ⟨p, ⟨h, rfl⟩⟩)
     · exact isPrime_ideal_prod_top

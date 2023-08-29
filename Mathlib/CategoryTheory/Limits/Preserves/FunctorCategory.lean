@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.functor_category
-! leanprover-community/mathlib commit 7cd8adb7a9d7d0498d2e76c23cd4255f966899f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.Presheaf
+
+#align_import category_theory.limits.preserves.functor_category from "leanprover-community/mathlib"@"39478763114722f0ec7613cb2f3f7701f9b86c8d"
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -89,8 +86,8 @@ instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
         exact PreservesLimit.preserves hc⟩⟩⟩
 #align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
 
-instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Type _}
-    [Category.{u} D] {E : Type _} [Category.{u} E] {J : Type u} [SmallCategory J]
+instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Type*}
+    [Category.{u} D] {E : Type*} [Category.{u} E] {J : Type u} [SmallCategory J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
@@ -100,8 +97,8 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Ty
       exact PreservesLimit.preserves hc⟩⟩
 #align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
 
-instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type _} [Category.{u} D]
-    {E : Type _} [Category.{u} E] (F : D ⥤ E) [HasLimits D] [PreservesLimits F] :
+instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type*} [Category.{u} D]
+    {E : Type*} [Category.{u} E] (F : D ⥤ E) [HasLimits D] [PreservesLimits F] :
     PreservesLimits ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 #align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
@@ -114,6 +111,6 @@ noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategor
   apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
   exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
 set_option linter.uppercaseLean3 false in
-#align category_theory.preserves_limit_of_Lan_presesrves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
+#align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
 
 end CategoryTheory

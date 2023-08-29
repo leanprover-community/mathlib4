@@ -2,14 +2,12 @@
 Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.fintype.order
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Order
+import Mathlib.Order.Atoms.Finite
+
+#align_import data.fintype.order from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Order structures on finite types
@@ -27,14 +25,14 @@ Those are marked as `def` to avoid defeqness issues.
 
 ## Completion instances
 
-Those instances are noncomputable because the definitions of `supₛ` and `infₛ` use `Set.toFinset`
+Those instances are noncomputable because the definitions of `sSup` and `sInf` use `Set.toFinset`
 and set membership is undecidable in general.
 
 On a `Fintype`, we can promote:
 * a `Lattice` to a `CompleteLattice`.
 * a `DistribLattice` to a `CompleteDistribLattice`.
-* a `LinearOrder`  to a `CompleteLinearOrder`.
-* a `BooleanAlgebra` to a `CompleteBooleanAlgebra`.
+* a `LinearOrder` to a `CompleteLinearOrder`.
+* a `BooleanAlgebra` to a `CompleteAtomicBooleanAlgebra`.
 
 Those are marked as `def` to avoid typeclass loops.
 
@@ -51,7 +49,7 @@ open Finset
 
 namespace Fintype
 
-variable {ι α : Type _} [Fintype ι] [Fintype α]
+variable {ι α : Type*} [Fintype ι] [Fintype α]
 
 section Nonempty
 
@@ -95,12 +93,12 @@ open Classical
 noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α :=
   { ‹Lattice α›,
     ‹BoundedOrder α› with
-    supₛ := fun s => s.toFinset.sup id
-    infₛ := fun s => s.toFinset.inf id
-    le_supₛ := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-    supₛ_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
-    infₛ_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-    le_infₛ := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb }
+    sSup := fun s => s.toFinset.sup id
+    sInf := fun s => s.toFinset.inf id
+    le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
+    sSup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
+    sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
+    le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb }
 #align fintype.to_complete_lattice Fintype.toCompleteLattice
 
 -- Porting note: `convert` doesn't work as well as it used to.
@@ -110,14 +108,14 @@ noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLat
 noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α :=
   { toCompleteLattice α with
-    infᵢ_sup_le_sup_infₛ := fun a s => by
+    iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
-      rw [Finset.inf_eq_infᵢ]
+      rw [Finset.inf_eq_iInf]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_supₛ_le_supᵢ_inf := fun a s => by
+    inf_sSup_le_iSup_inf := fun a s => by
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
-      rw [Finset.sup_eq_supᵢ]
+      rw [Finset.sup_eq_iSup]
       simp_rw [Set.mem_toFinset]
       rfl }
 #align fintype.to_complete_distrib_lattice Fintype.toCompleteDistribLattice
@@ -136,17 +134,24 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
   -- Porting note: using `Fintype.toCompleteDistribLattice α` caused timeouts
   { Fintype.toCompleteLattice α,
     ‹BooleanAlgebra α› with
-    infᵢ_sup_le_sup_infₛ := fun a s => by
+    iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
-      rw [Finset.inf_eq_infᵢ]
+      rw [Finset.inf_eq_iInf]
       simp_rw [Set.mem_toFinset]
       rfl
-    inf_supₛ_le_supᵢ_inf := fun a s => by
+    inf_sSup_le_iSup_inf := fun a s => by
       convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
-      rw [Finset.sup_eq_supᵢ]
+      rw [Finset.sup_eq_iSup]
       simp_rw [Set.mem_toFinset]
       rfl }
 #align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra
+
+-- See note [reducible non-instances]
+/-- A finite boolean algebra is complete and atomic. -/
+@[reducible]
+noncomputable def toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
+    CompleteAtomicBooleanAlgebra α :=
+  (toCompleteBooleanAlgebra α).toCompleteAtomicBooleanAlgebra
 
 end BoundedOrder
 
@@ -187,27 +192,41 @@ noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
 
+noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
+  Fintype.toCompleteAtomicBooleanAlgebra _
+
 /-! ### Directed Orders -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
-theorem Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type _} [Nonempty γ] {f : γ → α}
+theorem Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
     [Fintype β] (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finset_le (Finset.image g Finset.univ)
     exact ⟨z, fun i => hz (g i) (Finset.mem_image_of_mem g (Finset.mem_univ i))⟩
 #align directed.fintype_le Directed.fintype_le
 
-theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type _} [Fintype β]
+theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*} [Fintype β]
     (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.fintype_le _
 #align fintype.exists_le Fintype.exists_le
 
-theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type _}
+theorem Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*} [Fintype β]
+    (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+  directed_id.fintype_le (r := (· ≥ ·)) _
+
+theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*}
     [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_le f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Fintype.bddAbove_range
+
+theorem Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*}
+    [Fintype β] (f : β → α) : BddBelow (Set.range f) := by
+  obtain ⟨M, hM⟩ := Fintype.exists_ge f
+  refine' ⟨M, fun a ha => _⟩
+  obtain ⟨b, rfl⟩ := ha
+  exact hM b

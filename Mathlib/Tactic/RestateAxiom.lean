@@ -2,7 +2,6 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-Ported by: E.W.Ayers
 -/
 import Lean
 import Lean.Data
@@ -18,13 +17,13 @@ It is still present for backwards compatibility but will probably be removed in 
 # Original Docstring
 
 `restate_axiom` makes a new copy of a structure field, first definitionally simplifying the type.
-This is useful to remove `auto_param` or `opt_param` from the statement.
+This is useful to remove `autoParam` or `optParam` from the statement.
 
 As an example, we have:
 ```lean
 structure A :=
-(x : ℕ)
-(a' : x = 1 . skip)
+  (x : ℕ)
+  (a' : x = 1 . skip)
 
 example (z : A) : z.x = 1 := by rw A.a' -- rewrite tactic failed, lemma is not an equality nor a iff
 
@@ -40,7 +39,7 @@ restate_axiom A.a f
 example (z : A) : z.x = 1 := by rw A.f
 ```
 -/
-elab "restate_axiom " oldName:ident newName:optional(ident) : command => do
+elab "restate_axiom " oldName:ident newName:(ppSpace ident)? : command => do
   let oldName ← resolveGlobalConstNoOverloadWithInfo oldName
   let newName : Name :=
     match newName with

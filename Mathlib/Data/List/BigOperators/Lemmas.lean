@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
-
-! This file was ported from Lean 3 source module data.list.big_operators.lemmas
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Group.Opposite
@@ -20,12 +15,14 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Set.Basic
 
+#align_import data.list.big_operators.lemmas from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
+
 /-! # Lemmas about `List.sum` and `List.prod` requiring extra algebra imports -/
 
 
 open MulOpposite List
 
-variable {ι α M N P M₀ G R : Type _}
+variable {ι α M N P M₀ G R : Type*}
 
 namespace Commute
 
@@ -113,8 +110,7 @@ theorem alternatingProd_append :
 theorem alternatingProd_reverse :
     ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
   | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
-  | a :: l =>
-    by
+  | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
       alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ, neg_mul,
       one_mul, zpow_neg, inv_inv]
@@ -161,7 +157,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-theorem unop_map_list_prod {F : Type _} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) (l : List M) :
+theorem unop_map_list_prod {F : Type*} [MonoidHomClass F M Nᵐᵒᵖ] (f : F) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
 #align unop_map_list_prod unop_map_list_prod

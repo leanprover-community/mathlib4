@@ -2,16 +2,14 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module logic.nontrivial
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Unique
+
+#align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Nontrivial types
@@ -24,13 +22,13 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 -/
 
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 open Classical
 
 /-- Predicate typeclass for expressing that a type is not reduced to a single element. In rings,
 this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. -/
-class Nontrivial (α : Type _) : Prop where
+class Nontrivial (α : Type*) : Prop where
   /-- In a nontrivial type, there exists a pair of distinct terms. -/
   exists_pair_ne : ∃ x y : α, x ≠ y
 #align nontrivial Nontrivial
@@ -39,7 +37,7 @@ theorem nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
   ⟨fun h ↦ h.exists_pair_ne, fun h ↦ ⟨h⟩⟩
 #align nontrivial_iff nontrivial_iff
 
-theorem exists_pair_ne (α : Type _) [Nontrivial α] : ∃ x y : α, x ≠ y :=
+theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
   Nontrivial.exists_pair_ne
 #align exists_pair_ne exists_pair_ne
 
@@ -67,7 +65,7 @@ theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
   ⟨⟨x, y, ne_of_lt h⟩⟩
 #align nontrivial_of_lt nontrivial_of_lt
 
-theorem exists_pair_lt (α : Type _) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
+theorem exists_pair_lt (α : Type*) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
   rcases exists_pair_ne α with ⟨x, y, hxy⟩
   cases lt_or_gt_of_ne hxy <;> exact ⟨_, _, ‹_›⟩
 #align exists_pair_lt exists_pair_lt
@@ -98,7 +96,7 @@ instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α 
   ⟨x⟩
 
 /-- An inhabited type is either nontrivial, or has a unique element. -/
-noncomputable def nontrivialPSumUnique (α : Type _) [Inhabited α] :
+noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
     PSum (Nontrivial α) (Unique α) :=
   if h : Nontrivial α then PSum.inl h
   else
@@ -128,12 +126,12 @@ theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
 #align not_subsingleton not_subsingleton
 
 /-- A type is either a subsingleton or nontrivial. -/
-theorem subsingleton_or_nontrivial (α : Type _) : Subsingleton α ∨ Nontrivial α := by
+theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, or_comm]
   exact Classical.em _
 #align subsingleton_or_nontrivial subsingleton_or_nontrivial
 
-theorem false_of_nontrivial_of_subsingleton (α : Type _) [Nontrivial α] [Subsingleton α] : False :=
+theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsingleton α] : False :=
   not_nontrivial _ ‹_›
 #align false_of_nontrivial_of_subsingleton false_of_nontrivial_of_subsingleton
 
@@ -141,14 +139,14 @@ instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, fun .⟩
 
-/-- Pushforward a `nontrivial` instance along an injective function. -/
+/-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
     (hf : Function.Injective f) : Nontrivial β :=
   let ⟨x, y, h⟩ := exists_pair_ne α
   ⟨⟨f x, f y, hf.ne h⟩⟩
 #align function.injective.nontrivial Function.Injective.nontrivial
 
-/-- Pullback a `nontrivial` instance along a surjective function. -/
+/-- Pullback a `Nontrivial` instance along a surjective function. -/
 protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
     (hf : Function.Surjective f) : Nontrivial α := by
   rcases exists_pair_ne β with ⟨x, y, h⟩
@@ -179,7 +177,7 @@ instance nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × 
 
 namespace Pi
 
-variable {I : Type _} {f : I → Type _}
+variable {I : Type*} {f : I → Type*}
 
 /-- A pi type is nontrivial if it's nonempty everywhere and nontrivial somewhere. -/
 theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
@@ -201,9 +199,14 @@ end Pi
 instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) :=
   h.elim fun a ↦ Pi.nontrivial_at a
 
+@[nontriviality]
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)
 #align subsingleton.le Subsingleton.le
+
+@[to_additive]
+theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
+  Subsingleton.elim _ _
 
 namespace Bool
 

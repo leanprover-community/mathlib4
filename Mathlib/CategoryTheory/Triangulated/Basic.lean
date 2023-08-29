@@ -2,14 +2,11 @@
 Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
-
-! This file was ported from Lean 3 source module category_theory.triangulated.basic
-! leanprover-community/mathlib commit 6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.CategoryTheory.Shift.Basic
+
+#align_import category_theory.triangulated.basic from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
 /-!
 # Triangles
@@ -23,9 +20,7 @@ TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v v₀ v₁ v₂ u u₀ u₁ u₂
 
@@ -168,8 +163,9 @@ lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
 @[simps]
 def Triangle.homMk (A B : Triangle C)
     (hom₁ : A.obj₁ ⟶ B.obj₁) (hom₂ : A.obj₂ ⟶ B.obj₂) (hom₃ : A.obj₃ ⟶ B.obj₃)
-    (comm₁ : A.mor₁ ≫ hom₂ = hom₁ ≫ B.mor₁) (comm₂ : A.mor₂ ≫ hom₃ = hom₂ ≫ B.mor₂)
-    (comm₃ : A.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ B.mor₃) :
+    (comm₁ : A.mor₁ ≫ hom₂ = hom₁ ≫ B.mor₁ := by aesop_cat)
+    (comm₂ : A.mor₂ ≫ hom₃ = hom₂ ≫ B.mor₂ := by aesop_cat)
+    (comm₃ : A.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ B.mor₃ := by aesop_cat) :
     A ⟶ B where
   hom₁ := hom₁
   hom₂ := hom₂
@@ -182,9 +178,9 @@ def Triangle.homMk (A B : Triangle C)
 @[simps]
 def Triangle.isoMk (A B : Triangle C)
     (iso₁ : A.obj₁ ≅ B.obj₁) (iso₂ : A.obj₂ ≅ B.obj₂) (iso₃ : A.obj₃ ≅ B.obj₃)
-    (comm₁ : A.mor₁ ≫ iso₂.hom = iso₁.hom ≫ B.mor₁)
-    (comm₂ : A.mor₂ ≫ iso₃.hom = iso₂.hom ≫ B.mor₂)
-    (comm₃ : A.mor₃ ≫ iso₁.hom⟦1⟧' = iso₃.hom ≫ B.mor₃) : A ≅ B where
+    (comm₁ : A.mor₁ ≫ iso₂.hom = iso₁.hom ≫ B.mor₁ := by aesop_cat)
+    (comm₂ : A.mor₂ ≫ iso₃.hom = iso₂.hom ≫ B.mor₂ := by aesop_cat)
+    (comm₃ : A.mor₃ ≫ iso₁.hom⟦1⟧' = iso₃.hom ≫ B.mor₃ := by aesop_cat) : A ≅ B where
   hom := Triangle.homMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
   inv := Triangle.homMk _ _ iso₁.inv iso₂.inv iso₃.inv
     (by simp only [← cancel_mono iso₂.hom, assoc, Iso.inv_hom_id, comp_id,

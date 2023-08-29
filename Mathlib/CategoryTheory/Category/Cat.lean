@@ -2,16 +2,13 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.category.Cat
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Bicategory.Strict
+
+#align_import category_theory.category.Cat from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Category of categories
@@ -164,8 +161,7 @@ instance : Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
-instance : Full typeToCat.{u}
-    where
+instance : Full typeToCat.{u} where
   preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
   witness := by
     intro X Y F

@@ -3,9 +3,8 @@ manually ported from
 https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
 -/
 import Mathlib.Data.Matrix.Notation
--- import linear_algebra.Matrix.determinant
 import Mathlib.GroupTheory.Perm.Fin
--- import Mathlib.Tactic.NormSwap
+import Mathlib.LinearAlgebra.Matrix.Determinant
 import Qq
 import Std.Tactic.GuardExpr
 
@@ -13,7 +12,7 @@ open Qq
 
 -- TODO: uncomment above imports when they are ported
 
-variables {α β : Type} [Semiring α] [Ring β]
+variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 
@@ -39,38 +38,6 @@ elab "dims% " e:term : term => do
   let m ← instantiateMVars m
   let n ← instantiateMVars n
   mkAppM ``Prod.mk #[m, n]
-
-/-- Check equality of two expressions.
-* `#guard_expr e = e'` checks that `e` and `e'` are defeq at reducible transparency.
-* `#guard_expr e =~ e'` checks that `e` and `e'` are defeq at default transparency.
-* `#guard_expr e =ₛ e'` checks that `e` and `e'` are syntactically equal.
-* `#guard_expr e =ₐ e'` checks that `e` and `e'` are alpha-equivalent.
-
-This is similar to the `guard_expr` tactic but also uses default instances and instantiates
-metavariables. -/
-syntax (name := guardExprCmd) "#guard_expr " term:51 Std.Tactic.GuardExpr.equal term : command
-
-elab_rules (kind := guardExprCmd) : command
-  | `(command| #guard_expr $r $eq:equal $p) => liftTermElabM do
-    let some mk := Std.Tactic.GuardExpr.equal.toMatchKind eq | throwUnsupportedSyntax
-    let r ← Term.elabTerm r none
-    let p ← Term.elabTerm p none
-    Term.synthesizeSyntheticMVarsUsingDefault
-    let r ← instantiateMVars r
-    let p ← instantiateMVars p
-    unless ← mk.isEq r p do
-      throwError "expression{indentExpr r}\nis not {eq} to{indentExpr p}"
-
-/-- `#guard e` checks that the expression `e` evaluates to `true`. -/
-elab "#guard " e:term : command => liftTermElabM do
-  let e ← Term.elabTermEnsuringType e (mkConst ``Bool)
-  Term.synthesizeSyntheticMVarsUsingDefault
-  let e ← instantiateMVars e
-  if e.hasMVar then
-    throwError "expression{indentExpr e}\nhas metavariables"
-  let v ← unsafe (evalExpr Bool (mkConst ``Bool) e)
-  unless v do
-    throwError "expression{indentExpr e}\ndid not evaluate to `true`"
 
 end elaborators
 
@@ -123,7 +90,7 @@ example {a a' b b' c c' d d' : β} :
 by simp
 
 example {a a' b b' c c' d d' : α} :
-  !![a, b; c, d] ⬝ !![a', b'; c', d'] =
+  !![a, b; c, d] * !![a', b'; c', d'] =
     !![a * a' + b * c', a * b' + b * d'; c * a' + d * c', c * b' + d * d'] :=
 by simp
 
@@ -168,30 +135,28 @@ example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 37 = f := by simp
 example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
 -/
 
--- TODO: uncomment snd update `try this` when porting `Matrix.det`
-/-
 example {α : Type _} [CommRing α] {a b c d : α} :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
-  /-
-  Try this: simp only [det_succ_row_zero, Fin.sum_univ_succ, neg_mul, mul_one,
-  Fin.default_eq_zero, Fin.coe_zero, one_mul, cons_val_one, Fin.coe_succ, univ_unique,
-  submatrix_apply, pow_one, Fin.zero_succ_above, Fin.succ_succ_above_zero,  finset.sum_singleton,
-  cons_val_zero, cons_val_succ, det_fin_zero, pow_zero]
-  -/
+  simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
+    simp only [det_succ_row_zero, Nat.odd_iff_not_even, of_apply, cons_val', empty_val',
+      cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply, Fin.succ_zero_eq_one, ne_eq,
+      cons_val_one, head_fin_const, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, head_cons,
+      Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, cons_val_succ, neg_mul,
+      Fin.succ_succAbove_zero, Finset.sum_const, Finset.card_singleton, smul_neg, one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
     Matrix.det !![a, b, c; d, e, f; g, h, i] =
       a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
-  /-
-  Try this: simp only [det_succ_row_zero, Fin.sum_univ_succ, neg_mul, cons_append,
-  mul_one, Fin.default_eq_zero, Fin.coe_zero, cons_vec_bit0_eq_alt0, one_mul, cons_val_one,
-  cons_vec_alt0, Fin.succ_succ_above_one, Fin.coe_succ, univ_unique, submatrix_apply, pow_one,
-  Fin.zero_succ_above, Fin.succ_zero_eq_one, Fin.succ_succ_above_zero, nat.neg_one_sq,
-  finset.sum_singleton, cons_val_zero, cons_val_succ, det_fin_zero, head_cons, pow_zero]
-   -/
+  simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
+    simp only [det_succ_row_zero, Nat.odd_iff_not_even, of_apply, cons_val', empty_val',
+      cons_val_fin_one, cons_val_zero, submatrix_apply, Fin.succ_zero_eq_one, cons_val_one,
+      head_cons, submatrix_submatrix, det_unique, Fin.default_eq_zero, Function.comp_apply,
+      Fin.succ_one_eq_two, ne_eq, cons_val_two, tail_cons, head_fin_const, Fin.sum_univ_succ,
+      Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ,
+      Fin.coe_fin_one, zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib,
+      Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, even_add_self, Even.neg_pow,
+      one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
   ring
--/
+
 end Matrix

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Simon Hudon All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfunctor.univariate.M
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Univariate.Basic
+
+#align_import data.pfunctor.univariate.M from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # M-types
@@ -226,7 +223,7 @@ theorem ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y := b
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext' PFunctor.M.ext'
 
-variable {X : Type _}
+variable {X : Type*}
 
 variable (f : X → F.Obj X)
 
@@ -261,7 +258,7 @@ def children (x : M F) (i : F.B (head x)) : M F :=
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children PFunctor.M.children
 
-/-- select a subtree using a `i : F.Idx` or return an arbitrary tree if
+/-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
 def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.IdxCat) (x : M F) : M F :=
   if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
@@ -324,7 +321,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.M.mk
 
 /-- `Agree' n` relates two trees of type `M F` that
-are the same up to dept `n` -/
+are the same up to depth `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
   | step {n : ℕ} {a} (x y : F.B a → M F) {x' y'} :
@@ -346,8 +343,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
   cases' h : x.approx (succ n) with _ hd ch
-  have h' : hd = head' (x.approx 1) :=
-    by
+  have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
   revert ch
@@ -438,7 +434,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree_iff_agree' PFunctor.M.agree_iff_agree'
 
 @[simp]
-theorem cases_mk {r : M F → Sort _} (x : F.Obj <| M F) (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
+theorem cases_mk {r : M F → Sort*} (x : F.Obj <| M F) (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
     PFunctor.M.cases f (M.mk x) = f x := by
   dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
   cases x; dsimp only [Approx.sMk]
@@ -449,14 +445,14 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_mk PFunctor.M.cases_mk
 
 @[simp]
-theorem casesOn_mk {r : M F → Sort _} (x : F.Obj <| M F) (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
+theorem casesOn_mk {r : M F → Sort*} (x : F.Obj <| M F) (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
     PFunctor.M.casesOn (M.mk x) f = f x :=
   cases_mk x f
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_on_mk PFunctor.M.casesOn_mk
 
 @[simp]
-theorem casesOn_mk' {r : M F → Sort _} {a} (x : F.B a → M F)
+theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
                     (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
     PFunctor.M.casesOn' (M.mk ⟨a, x⟩) f = f a x :=
   @cases_mk F r ⟨a, x⟩ (fun ⟨a, g⟩ => f a g)
@@ -521,7 +517,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     constructor
   · cases' ps_hd with a i
     induction' x using PFunctor.M.casesOn' with x_a x_f
-    simp only [iselect, isubtree] at ps_ih⊢
+    simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     subst x_a
     · simp only [dif_pos, eq_self_iff_true, casesOn_mk']
@@ -668,7 +664,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
     (R s₁ s₂) →
       IsPath ps s₁ ∨ IsPath ps s₂ →
         iselect ps s₁ = iselect ps s₂ ∧
-          ∃ (a : _)(f f' : F.B a → M F),
+          ∃ (a : _) (f f' : F.B a → M F),
             isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
               isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
@@ -683,11 +679,11 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
     apply bisim.tail h₀
   cases' i with a' i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
-  dsimp only [iselect] at ps_ih⊢
+  dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
   induction' h : f i using PFunctor.M.casesOn' with a₀ f₀
   induction' h' : f' i using PFunctor.M.casesOn' with a₁ f₁
-  simp only [h, h', isubtree_cons] at ps_ih⊢
+  simp only [h, h', isubtree_cons] at ps_ih ⊢
   rw [h, h'] at h₁
   obtain rfl : a₀ = a₁ := bisim.head h₁
   apply ps_ih _ _ _ h₁
@@ -714,7 +710,7 @@ end Bisim
 universe u' v'
 
 /-- corecursor for `M F` with swapped arguments -/
-def corecOn {X : Type _} (x₀ : X) (f : X → F.Obj X) : M F :=
+def corecOn {X : Type*} (x₀ : X) (f : X → F.Obj X) : M F :=
   M.corec f x₀
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_on PFunctor.M.corecOn
@@ -744,7 +740,7 @@ theorem bisim (R : M P → M P → Prop)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim PFunctor.M.bisim
 
-theorem bisim' {α : Type _} (Q : α → Prop) (u v : α → M P)
+theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
     (h : ∀ x, Q x → ∃ a f f',
           M.dest (u x) = ⟨a, f⟩
           ∧ M.dest (v x) = ⟨a, f'⟩

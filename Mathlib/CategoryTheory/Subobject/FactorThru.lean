@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.subobject.factor_thru
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Preadditive.Basic
+
+#align_import category_theory.subobject.factor_thru from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # Factoring through subobjects
@@ -170,13 +167,13 @@ theorem factorThru_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y}
 #align category_theory.subobject.factor_thru_zero CategoryTheory.Subobject.factorThru_zero
 
 -- `h` is an explicit argument here so we can use
--- `rw factorThru_ofLe h`, obtaining a subgoal `P.Factors f`.
+-- `rw factorThru_ofLE h`, obtaining a subgoal `P.Factors f`.
 -- (While the reverse direction looks plausible as a simp lemma, it seems to be unproductive.)
-theorem factorThru_ofLe {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
+theorem factorThru_ofLE {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
     Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLE P Q h := by
   ext
   simp
-#align category_theory.subobject.factor_thru_of_le CategoryTheory.Subobject.factorThru_ofLe
+#align category_theory.subobject.factor_thru_of_le CategoryTheory.Subobject.factorThru_ofLE
 
 section Preadditive
 

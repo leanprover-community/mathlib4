@@ -2,11 +2,6 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.generator
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.Data.Set.Opposite
+
+#align_import category_theory.generator from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # Separating and detecting sets
@@ -165,8 +162,8 @@ theorem IsCodetecting.isCoseparating [HasCoequalizers C] {𝒢 : Set C} :
 
 end
 
-theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) : IsDetecting 𝒢 :=
-  by
+theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) :
+    IsDetecting 𝒢 := by
   intro X Y f hf
   refine'
     (isIso_iff_mono_and_epi _).2 ⟨⟨fun g h hgh => h𝒢 _ _ fun G hG i => _⟩, ⟨fun g h hgh => _⟩⟩

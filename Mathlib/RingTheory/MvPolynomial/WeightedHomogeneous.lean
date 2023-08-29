@@ -2,14 +2,11 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.weighted_homogeneous
-! leanprover-community/mathlib commit bcbee715ab85a4f516c814effdf232618c0322af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Weighted homogeneous polynomials
@@ -20,12 +17,12 @@ respect to the weights of the variables. The weights are represented by a functi
 where `σ` are the indeterminates.
 
 A multivariate polynomial `φ` is weighted homogeneous of weighted degree `m : M` if all monomials
-occuring in `φ` have the same weighted degree `m`.
+occurring in `φ` have the same weighted degree `m`.
 
 ## Main definitions/lemmas
 
 * `weightedTotalDegree' w φ` : the weighted total degree of a multivariate polynomial with respect
-to the weights `w`, taking values in `with_bot M`.
+to the weights `w`, taking values in `WithBot M`.
 
 * `weightedTotalDegree w φ` : When `M` has a `⊥` element, we can define the weighted total degree
 of a multivariate polynomial as a function taking values in `M`.
@@ -46,15 +43,15 @@ components.
 
 noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 
-variable {R M : Type _} [CommSemiring R]
+variable {R M : Type*} [CommSemiring R]
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 section AddCommMonoid
 
@@ -131,7 +128,7 @@ end OrderBot
 end SemilatticeSup
 
 /-- A multivariate polynomial `φ` is weighted homogeneous of weighted degree `m` if all monomials
-  occuring in `φ` have weighted degree `m`. -/
+  occurring in `φ` have weighted degree `m`. -/
 def IsWeightedHomogeneous (w : σ → M) (φ : MvPolynomial σ R) (m : M) : Prop :=
   ∀ ⦃d⦄, coeff d φ ≠ 0 → weightedDegree' w d = m
 #align mv_polynomial.is_weighted_homogeneous MvPolynomial.IsWeightedHomogeneous
@@ -179,6 +176,7 @@ variable {R}
 theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
     weightedHomogeneousSubmodule R w m * weightedHomogeneousSubmodule R w n ≤
       weightedHomogeneousSubmodule R w (m + n) := by
+  classical
   rw [Submodule.mul_le]
   intro φ hφ ψ hψ c hc
   rw [coeff_mul] at hc
@@ -186,13 +184,14 @@ theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
   have aux : coeff d φ ≠ 0 ∧ coeff e ψ ≠ 0 := by
     contrapose! H
     by_cases h : coeff d φ = 0 <;>
-      simp_all only [Ne.def, not_false_iff, MulZeroClass.zero_mul, MulZeroClass.mul_zero]
+      simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
   rw [← Finsupp.mem_antidiagonal.mp hde, ← hφ aux.1, ← hψ aux.2, map_add]
 #align mv_polynomial.weighted_homogeneous_submodule_mul MvPolynomial.weightedHomogeneousSubmodule_mul
 
 /-- Monomials are weighted homogeneous. -/
 theorem isWeightedHomogeneous_monomial (w : σ → M) (d : σ →₀ ℕ) (r : R) {m : M}
     (hm : weightedDegree' w d = m) : IsWeightedHomogeneous w (monomial d r) m := by
+  classical
   intro c hc
   rw [coeff_monomial] at hc
   split_ifs at hc with h
@@ -269,7 +268,7 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
-theorem sum {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
+theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
     (h : ∀ i ∈ s, IsWeightedHomogeneous w (φ i) n) : IsWeightedHomogeneous w (∑ i in s, φ i) n :=
   (weightedHomogeneousSubmodule R w n).sum_mem h
 #align mv_polynomial.is_weighted_homogeneous.sum MvPolynomial.IsWeightedHomogeneous.sum
@@ -283,9 +282,10 @@ theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeighte
 
 /-- A product of weighted homogeneous polynomials is weighted homogeneous, with weighted degree
   equal to the sum of the weighted degrees. -/
-theorem prod {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
+theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
     (∀ i ∈ s, IsWeightedHomogeneous w (φ i) (n i)) →
       IsWeightedHomogeneous w (∏ i in s, φ i) (∑ i in s, n i) := by
+  classical
   refine Finset.induction_on s ?_ ?_
   · intro
     simp only [isWeightedHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
@@ -333,13 +333,13 @@ section WeightedHomogeneousComponent
 
 variable {w : σ → M} (n : M) (φ ψ : MvPolynomial σ R)
 
-theorem coeff_weightedHomogeneousComponent (d : σ →₀ ℕ) :
+theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
       if weightedDegree' w d = n then coeff d φ else 0 :=
   Finsupp.filter_apply (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ d
 #align mv_polynomial.coeff_weighted_homogeneous_component MvPolynomial.coeff_weightedHomogeneousComponent
 
-theorem weightedHomogeneousComponent_apply :
+theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d in φ.support.filter fun d => weightedDegree' w d = n, monomial d (coeff d φ) :=
   Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ
@@ -349,6 +349,7 @@ theorem weightedHomogeneousComponent_apply :
 weighted degree `n`. -/
 theorem weightedHomogeneousComponent_isWeightedHomogeneous :
     (weightedHomogeneousComponent w n φ).IsWeightedHomogeneous w n := by
+  classical
   intro d hd
   contrapose! hd
   rw [coeff_weightedHomogeneousComponent, if_neg hd]
@@ -364,6 +365,7 @@ set_option linter.uppercaseLean3 false in
 theorem weightedHomogeneousComponent_eq_zero'
     (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → weightedDegree' w d ≠ n) :
     weightedHomogeneousComponent w n φ = 0 := by
+  classical
   rw [weightedHomogeneousComponent_apply, sum_eq_zero]
   intro d hd; rw [mem_filter] at hd
   exfalso; exact h _ hd.1 hd.2
@@ -371,11 +373,10 @@ theorem weightedHomogeneousComponent_eq_zero'
 
 theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
     (h : weightedTotalDegree w φ < n) : weightedHomogeneousComponent w n φ = 0 := by
+  classical
   rw [weightedHomogeneousComponent_apply, sum_eq_zero]
   intro d hd
-  have := @Finset.mem_filter _ _
-      (fun a => propDecidable ((fun d => weightedDegree' w d = n) a)) (support φ)
-  rw [this] at hd
+  rw [Finset.mem_filter] at hd
   exfalso
   apply lt_irrefl n
   nth_rw 1 [← hd.2]
@@ -401,6 +402,7 @@ variable (w)
 /-- Every polynomial is the sum of its weighted homogeneous components. -/
 theorem sum_weightedHomogeneousComponent :
     (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
+  classical
   rw [finsum_eq_sum _ (weightedHomogeneousComponent_finsupp φ)]
   ext1 d
   simp only [coeff_sum, coeff_weightedHomogeneousComponent]
@@ -419,7 +421,7 @@ theorem sum_weightedHomogeneousComponent :
 variable {w}
 
 /-- The weighted homogeneous components of a weighted homogeneous polynomial. -/
-theorem weightedHomogeneousComponent_weighted_homogeneous_polynomial (m n : M)
+theorem weightedHomogeneousComponent_weighted_homogeneous_polynomial [DecidableEq M] (m n : M)
     (p : MvPolynomial σ R) (h : p ∈ weightedHomogeneousSubmodule R w n) :
     weightedHomogeneousComponent w m p = if m = n then p else 0 := by
   simp only [mem_weightedHomogeneousSubmodule] at h
@@ -448,6 +450,7 @@ variable [CanonicallyOrderedAddMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 @[simp]
 theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     weightedHomogeneousComponent w 0 φ = C (coeff 0 φ) := by
+  classical
   ext1 d
   rcases Classical.em (d = 0) with (rfl | hd)
   · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]

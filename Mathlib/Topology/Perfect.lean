@@ -2,14 +2,11 @@
 Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
-
-! This file was ported from Lean 3 source module topology.perfect
-! leanprover-community/mathlib commit 9b2b58d6b14b895b2f375108e765cb47de71aebd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
+
+#align_import topology.perfect from "leanprover-community/mathlib"@"3905fa80e62c0898131285baab35559fbc4e5cda"
 
 /-!
 # Perfect Sets
@@ -21,8 +18,6 @@ including a version of the Cantor-Bendixson Theorem.
 
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
-* `Set.scheme β α`: A `β`-scheme on `α`, a collection of subsets of `α` indexed by `List β`.
-  Used to construct maps `(β → ℕ) → α` as limiting objects.
 
 ## Main Statements
 
@@ -32,7 +27,7 @@ including a version of the Cantor-Bendixson Theorem.
 * `exists_countable_union_perfect_of_isClosed`: One version of the **Cantor-Bendixson Theorem**:
   A closed set in a second countable space can be written as the union of a countable set and a
   perfect set.
-* `exists_nat_bool_injection`: A perfect nonempty set in a complete metric space
+* `Perfect.exists_nat_bool_injection`: A perfect nonempty set in a complete metric space
   admits an embedding from the Cantor space.
 
 ## Implementation Notes
@@ -60,7 +55,7 @@ open TopologicalSpace Filter Set
 
 section Basic
 
-variable {α : Type _} [TopologicalSpace α] {C : Set α}
+variable {α : Type*} [TopologicalSpace α] {C : Set α}
 
 /-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
 then `x` is an accumulation point of `U ∩ C`. -/
@@ -173,12 +168,12 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   let V := ⋃ U ∈ v, U
   let D := C \ V
   have Vct : (V ∩ C).Countable := by
-    simp only [unionᵢ_inter, mem_sep_iff]
-    apply Countable.bunionᵢ
+    simp only [iUnion_inter, mem_sep_iff]
+    apply Countable.biUnion
     · exact Countable.mono (inter_subset_left _ _) bct
     · exact inter_subset_right _ _
   refine' ⟨V ∩ C, D, Vct, ⟨_, _⟩, _⟩
-  · refine' hclosed.sdiff (isOpen_bunionᵢ fun _ ↦ _)
+  · refine' hclosed.sdiff (isOpen_biUnion fun _ ↦ _)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
   · rw [preperfect_iff_nhds]
     intro x xD E xE
@@ -195,11 +190,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
         exact Countable.union h Vct
       have : U ∈ v := ⟨hUb, hU_cnt⟩
       apply xD.2
-      exact mem_bunionᵢ this xU
-    by_contra h
-    -- Porting note: `push_neg` somehow didn't work. Add a `rw` to make `push_neg` work.
-    rw [not_exists] at h
-    push_neg at h
+      exact mem_biUnion this xU
+    by_contra' h
     exact absurd (Countable.mono h (Set.countable_singleton _)) this
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
@@ -227,7 +219,7 @@ section CantorInjMetric
 
 open Function ENNReal
 
-variable {α : Type _} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
+variable {α : Type*} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
 
 private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
     let D := closure (EMetric.ball x (ε / 2) ∩ C)
@@ -323,7 +315,7 @@ end CantorInjMetric
 
 /-- Any closed uncountable subset of a Polish space admits a continuous injection
 from the Cantor space `ℕ → Bool`.-/
-theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type _} [TopologicalSpace α]
+theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
   letI := upgradePolishSpace α

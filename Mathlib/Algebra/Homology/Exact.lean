@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.homology.exact
-! leanprover-community/mathlib commit 3feb151caefe53df080ca6ca67a0c6685cfd1b82
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ImageToKernel
+
+#align_import algebra.homology.exact from "leanprover-community/mathlib"@"3feb151caefe53df080ca6ca67a0c6685cfd1b82"
 
 /-!
 # Exact sequences
@@ -239,7 +236,8 @@ instance Exact.epi_factorThruKernelSubobject (h : Exact f g) :
   haveI := h.epi
   apply epi_comp
 
-instance (h : Exact f g) : Epi (kernel.lift g f h.w) := by
+-- porting note: this can no longer be an instance in Lean4
+lemma Exact.epi_kernel_lift (h : Exact f g) : Epi (kernel.lift g f h.w) := by
   rw [← factorThruKernelSubobject_comp_kernelSubobjectIso]
   haveI := h.epi_factorThruKernelSubobject
   apply epi_comp
@@ -357,7 +355,7 @@ variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an
     exact pair is itself exact. -/
-class ReflectsExactSequences (F : V ⥤ W) where
+class ReflectsExactSequences (F : V ⥤ W) : Prop where
   reflects : ∀ {A B C : V} (f : A ⟶ B) (g : B ⟶ C), Exact (F.map f) (F.map g) → Exact f g
 #align category_theory.functor.reflects_exact_sequences CategoryTheory.Functor.ReflectsExactSequences
 

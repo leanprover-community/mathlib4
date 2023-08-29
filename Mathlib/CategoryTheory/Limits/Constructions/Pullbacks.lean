@@ -2,15 +2,12 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.pullbacks
-! leanprover-community/mathlib commit cd7a8a184d7c5635e30083eabc4baf5589c30b7a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+
+#align_import category_theory.limits.constructions.pullbacks from "leanprover-community/mathlib"@"cd7a8a184d7c5635e30083eabc4baf5589c30b7a"
 
 /-!
 # Constructing pullbacks from binary products and equalizers
@@ -43,8 +40,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
               rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π];
                 exact PullbackCone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          apply equalizer.hom_ext
-          apply prod.hom_ext
+          ext
           · dsimp; simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_limit_cospan_of_has_limit_pair_of_has_limit_parallel_pair CategoryTheory.Limits.hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
@@ -77,14 +73,12 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
           rw [← Category.assoc, ← Category.assoc, coequalizer.condition]
       isColimit :=
         PushoutCocone.IsColimit.mk _
-          (fun s =>
-            coequalizer.desc (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <|
-              by
-              rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc];
-                exact PushoutCocone.condition _)
+          (fun s => coequalizer.desc
+              (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <| by
+            rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc]
+            exact PushoutCocone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          apply coequalizer.hom_ext
-          apply coprod.hom_ext
+          ext
           · simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair CategoryTheory.Limits.hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair

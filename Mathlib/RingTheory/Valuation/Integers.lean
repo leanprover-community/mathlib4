@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.valuation.integers
-! leanprover-community/mathlib commit 7b7da89322fe46a16bf03eeb345b0acfc73fe10e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import ring_theory.valuation.integers from "leanprover-community/mathlib"@"7b7da89322fe46a16bf03eeb345b0acfc73fe10e"
 
 /-!
 # Ring of integers under a given valuation
@@ -74,8 +71,7 @@ variable {v O} [CommRing O] [Algebra O R] (hv : Integers v O)
 
 theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
-  le_antisymm (hv.2 _) <|
-    by
+  le_antisymm (hv.2 _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
     exact mul_le_mul_left' (hv.2 (u⁻¹ : Units O)) _
@@ -120,8 +116,7 @@ theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) 
           (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
-    have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 :=
-      by
+    have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel hy, v.map_mul, v.map_mul]
       exact mul_le_mul_left' h _
     let ⟨z, hz⟩ := hv.3 this

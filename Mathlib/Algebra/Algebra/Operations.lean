@@ -2,14 +2,10 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.algebra.operations
-! leanprover-community/mathlib commit 27b54c47c3137250a521aa64e9f1db90be5f6a26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Opposites
@@ -18,6 +14,8 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+
+#align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
 /-!
 # Multiplication and division of submodules of an algebra.
@@ -81,7 +79,7 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
 instance one : One (Submodule R A) :=
--- porting note: `f.range` notation doesn't work
+  -- porting note: `f.range` notation doesn't work
   ⟨LinearMap.range (Algebra.linearMap R A)⟩
 #align submodule.has_one Submodule.one
 
@@ -131,8 +129,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 
 @[simp]
 theorem map_op_one :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 :=
-  by
+    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
   induction x using MulOpposite.rec'
   simp
@@ -140,8 +137,7 @@ theorem map_op_one :
 
 @[simp]
 theorem comap_op_one :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 :=
-  by
+    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
   ext
   simp
 #align submodule.comap_op_one Submodule.comap_op_one
@@ -175,9 +171,7 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
-  simp_rw [← LinearMap.mulLeft_toAddMonoidHom R, LinearMap.mulLeft, ← map_toAddSubmonoid _ N,
-    map₂]
-  rw [supᵢ_toAddSubmonoid]
+  rw [map₂, iSup_toAddSubmonoid]
   rfl
 #align submodule.mul_to_add_submonoid Submodule.mul_toAddSubmonoid
 
@@ -265,10 +259,9 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
     map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
   calc
     map f.toLinearMap (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f.toLinearMap :=
-      map_supᵢ _ _
-    _ = map f.toLinearMap M * map f.toLinearMap N :=
-      by
-      apply congr_arg supₛ
+      map_iSup _ _
+    _ = map f.toLinearMap M * map f.toLinearMap N := by
+      apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- porting note: added `⟨⟩`
@@ -294,7 +287,7 @@ theorem map_op_mul :
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
-    rw [Submodule.mem_map_equiv] at hm hn⊢
+    rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
 
@@ -327,21 +320,11 @@ section
 
 open Pointwise
 
-/-
-Porting note: the following def ought to be
-```
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
-  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
-```
-but this is not possible due to η-for-classes issues. See lean4#2074
--/
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] :
-    HasDistribNeg (@Submodule R A _ _ Algebra.toModule) :=
-  @Function.Injective.hasDistribNeg _ _ _ _ (id _) _ _ toAddSubmonoid_injective
-    (@neg_toAddSubmonoid R A _ _ Algebra.toModule) mul_toAddSubmonoid
+This is available as an instance in the `Pointwise` locale. -/
+protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
+  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
 #align submodule.has_distrib_pointwise_neg Submodule.hasDistribPointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.hasDistribPointwiseNeg
@@ -369,13 +352,13 @@ theorem mul_eq_span_mul_set (s t : Submodule R A) : s * t = span R ((s : Set A) 
   map₂_eq_span_image2 _ s t
 #align submodule.mul_eq_span_mul_set Submodule.mul_eq_span_mul_set
 
-theorem supᵢ_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
-  map₂_supᵢ_left _ s t
-#align submodule.supr_mul Submodule.supᵢ_mul
+theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
+  map₂_iSup_left _ s t
+#align submodule.supr_mul Submodule.iSup_mul
 
-theorem mul_supᵢ (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
-  map₂_supᵢ_right _ t s
-#align submodule.mul_supr Submodule.mul_supᵢ
+theorem mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
+  map₂_iSup_right _ t s
+#align submodule.mul_supr Submodule.mul_iSup
 
 theorem mem_span_mul_finite_of_mem_mul {P Q : Submodule R A} {x : A} (hx : x ∈ P * Q) :
     ∃ T T' : Finset A, (T : Set A) ⊆ P ∧ (T' : Set A) ⊆ Q ∧ x ∈ span R (T * T' : Set A) :=
@@ -387,13 +370,13 @@ variable {M N P}
 
 theorem mem_span_singleton_mul {x y : A} : x ∈ span R {y} * P ↔ ∃ z ∈ P, y * z = x := by
   --porting note: need both `*` and `Mul.mul`
-  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map, exists_prop]
+  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map]
   rfl
 #align submodule.mem_span_singleton_mul Submodule.mem_span_singleton_mul
 
 theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P, z * y = x := by
   --porting note: need both `*` and `Mul.mul`
-  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map_flip, exists_prop]
+  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map_flip]
   rfl
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
 
@@ -431,8 +414,7 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 #align submodule.pow_mem_pow Submodule.pow_mem_pow
 
-theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n :=
-  by
+theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction' n with n ih
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
@@ -454,7 +436,8 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (hadd : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (hmul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul hm hx))
-    {x : A} {n : ℕ}
+    -- porting note: swapped argument order to match order of `C`
+    {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
@@ -473,7 +456,8 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (hmul :
       ∀ i x hx, C i x hx →
         ∀ m (hm : m ∈ M), C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx hm))
-    {x : A} {n : ℕ} (hx : x ∈ M ^ n) : C n x hx := by
+    -- porting note: swapped argument order to match order of `C`
+    {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
@@ -578,7 +562,7 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
 
 section
 
-variable {α : Type _} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]
+variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
@@ -619,7 +603,7 @@ protected theorem mul_comm : M * N = N * M :=
 instance : IdemCommSemiring (Submodule R A) :=
   { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
 
-theorem prod_span {ι : Type _} (s : Finset ι) (M : ι → Set A) :
+theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
     (∏ i in s, Submodule.span R (M i)) = Submodule.span R (∏ i in s, M i) := by
   letI := Classical.decEq ι
   refine' Finset.induction_on s _ _
@@ -628,7 +612,7 @@ theorem prod_span {ι : Type _} (s : Finset ι) (M : ι → Set A) :
     rw [Finset.prod_insert H, Finset.prod_insert H, ih, span_mul_span]
 #align submodule.prod_span Submodule.prod_span
 
-theorem prod_span_singleton {ι : Type _} (s : Finset ι) (x : ι → A) :
+theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i in s, span R ({x i} : Set A)) = span R {∏ i in s, x i} := by
   rw [prod_span, Set.finset_prod_singleton]
 #align submodule.prod_span_singleton Submodule.prod_span_singleton
@@ -641,13 +625,13 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
+    simp_rw [HSMul.hSMul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
   mul_smul s t P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
+    simp_rw [HSMul.hSMul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
   one_smul P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
+    simp_rw [HSMul.hSMul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
   zero_smul P := by
-    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
+    simp_rw [HSMul.hSMul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _
 #align submodule.module_set Submodule.moduleSet
 
@@ -740,7 +724,7 @@ theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
 #align submodule.mul_one_div_le_one Submodule.mul_one_div_le_one
 
 @[simp]
-protected theorem map_div {B : Type _} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
+protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
     (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem]

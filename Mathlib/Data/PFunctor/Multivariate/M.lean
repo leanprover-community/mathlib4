@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfunctor.multivariate.M
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Univariate.M
+
+#align_import data.pfunctor.multivariate.M from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -85,7 +82,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
   let f := PFunctor.M.children x
   ⟨M.Path.root _ a f
       (PFunctor.M.casesOn' x
-        (r:=fun _ => PFunctor.M.dest x = ⟨a, f⟩)
+        (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
         intros; simp [PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
       _ default⟩
@@ -165,8 +162,7 @@ def M.corecContents {α : TypeVec.{u} n}
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
-    have h₁ : f j = M.corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j)) :=
-      by
+    have h₁ : f j = M.corecShape P g₀ g₂ (g₂ b (castLastB P h₀ j)) := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
       cases h'
       rfl
@@ -291,8 +287,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   cases' x with a₁ f₁
   cases' y with a₂ f₂
   dsimp [mp] at *
-  have : a₁ = a₂ :=
-    by
+  have : a₁ = a₂ := by
     refine'
       PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) _ _ _
         ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
@@ -335,8 +330,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   injection h with h₀ h₁
   subst ay
   simp at h₁
-  have Hdrop : dropFun fx = dropFun fy :=
-    by
+  have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy

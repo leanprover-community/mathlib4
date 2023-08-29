@@ -2,22 +2,19 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.essentially_small
-! leanprover-community/mathlib commit f7707875544ef1f81b32cb68c79e0e24e45a0e76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Small.Basic
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Tactic.Constructor
+
+#align_import category_theory.essentially_small from "leanprover-community/mathlib"@"f7707875544ef1f81b32cb68c79e0e24e45a0e76"
 
 /-!
 # Essentially small categories.
 
 A category given by `(C : Type u) [Category.{v} C]` is `w`-essentially small
-if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]`.
+if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]` and an
+equivalence `C ≌ SmallModel C`.
 
 A category is `w`-locally small if every hom type is `w`-small.
 
@@ -138,16 +135,16 @@ namespace ShrinkHoms
 
 section
 
-variable {C' : Type _}
+variable {C' : Type*}
 
 -- a fresh variable with no category instance attached
 /-- Help the typechecker by explicitly translating from `C` to `ShrinkHoms C`. -/
-def toShrinkHoms {C' : Type _} (X : C') : ShrinkHoms C' :=
+def toShrinkHoms {C' : Type*} (X : C') : ShrinkHoms C' :=
   X
 #align category_theory.shrink_homs.to_shrink_homs CategoryTheory.ShrinkHoms.toShrinkHoms
 
 /-- Help the typechecker by explicitly translating from `ShrinkHoms C` to `C`. -/
-def fromShrinkHoms {C' : Type _} (X : ShrinkHoms C') : C' :=
+def fromShrinkHoms {C' : Type*} (X : ShrinkHoms C') : C' :=
   X
 #align category_theory.shrink_homs.from_shrink_homs CategoryTheory.ShrinkHoms.fromShrinkHoms
 
@@ -193,8 +190,8 @@ noncomputable def inverse : ShrinkHoms C ⥤ C
 @[simps!]
 noncomputable def equivalence : C ≌ ShrinkHoms C :=
   Equivalence.mk (functor C) (inverse C)
-    (NatIso.ofComponents (fun X => Iso.refl X) <| by simp)
-    (NatIso.ofComponents (fun X => Iso.refl X) <| by simp)
+    (NatIso.ofComponents fun X => Iso.refl X)
+    (NatIso.ofComponents fun X => Iso.refl X)
 #align category_theory.shrink_homs.equivalence CategoryTheory.ShrinkHoms.equivalence
 
 end ShrinkHoms

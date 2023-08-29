@@ -2,11 +2,6 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
-
-! This file was ported from Lean 3 source module category_theory.groupoid.vertex_group
-! leanprover-community/mathlib commit 47b51515e69f59bca5cf34ef456e6000fe205a69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PathCategory
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
+
+#align_import category_theory.groupoid.vertex_group from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Vertex group

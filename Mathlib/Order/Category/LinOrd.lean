@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.LinOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.Lat
+
+#align_import order.category.LinOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # Category of linear orders
@@ -34,20 +31,21 @@ instance : BundledHom.ParentProjection @LinearOrder.toPartialOrder :=
 
 deriving instance LargeCategory for LinOrd
 
+-- Porting note: Probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory LinOrd :=
   BundledHom.concreteCategory _
 
-instance : CoeSort LinOrd (Type _) :=
+instance : CoeSort LinOrd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
-def of (α : Type _) [LinearOrder α] : LinOrd :=
+def of (α : Type*) [LinearOrder α] : LinOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align LinOrd.of LinOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [LinearOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align LinOrd.coe_of LinOrd.coe_of
@@ -92,15 +90,15 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : LinOrd ≌ LinOrd where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align LinOrd.dual_equiv LinOrd.dualEquiv
 
 end LinOrd
 
-theorem linOrdCat_dual_comp_forget_to_Lat :
+theorem linOrd_dual_comp_forget_to_Lat :
     LinOrd.dual ⋙ forget₂ LinOrd Lat = forget₂ LinOrd Lat ⋙ Lat.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align LinOrd_dual_comp_forget_to_Lat linOrdCat_dual_comp_forget_to_Lat
+#align LinOrd_dual_comp_forget_to_Lat linOrd_dual_comp_forget_to_Lat
