@@ -186,7 +186,7 @@ theorem memℒp_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (
   memℒp_approxOn fmeas hf (y₀ := 0) (by simp) zero_memℒp n
 #align measure_theory.simple_func.mem_ℒp_approx_on_range MeasureTheory.SimpleFunc.memℒp_approxOn_range
 
-theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞)
+theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} (hp_ne_top : p ≠ ∞)
     {μ : Measure β} (fmeas : Measurable f) [SeparableSpace (range f ∪ {0} : Set E)]
     (hf : Memℒp f p μ) :
     Tendsto

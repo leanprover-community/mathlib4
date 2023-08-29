@@ -601,14 +601,23 @@ instance instSMulCommClass [SMulCommClass 𝕜 𝕜' E] : SMulCommClass 𝕜 �
 instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsScalarTower 𝕜 𝕜' (Lp E p μ) where
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
+protected theorem nnnorm_smul_le (r : 𝕜) (f : Lp E p μ) : ‖r • f‖₊ ≤ ‖r‖₊ * ‖f‖₊ := by
+  push_cast [← ENNReal.coe_le_coe, snorm_congr_ae (coeFn_smul _ _)]
+  exact snorm_const_smul_le r f
+
+protected theorem norm_smul_le (r : 𝕜) (f : Lp E p μ) : ‖r • f‖ ≤ ‖r‖ * ‖f‖ :=
+  Lp.nnnorm_smul_le r f
+
+protected theorem dist_smul_le (r : 𝕜) (f g : Lp E p μ) :
+    dist (r • f) (r • g) ≤ ‖r‖₊ * dist f g := by
+  simpa only [dist, smul_sub] using Lp.norm_smul_le r (f - g)
+
 instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
-  -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
-  BoundedSMul.of_norm_smul_le fun r f => by
-    suffices (‖r • f‖₊ : ℝ≥0∞) ≤ ‖r‖₊ * ‖f‖₊ by exact_mod_cast this
-    rw [nnnorm_def, nnnorm_def, ENNReal.coe_toNNReal (Lp.snorm_ne_top _),
-      snorm_congr_ae (coeFn_smul _ _), ENNReal.coe_toNNReal (Lp.snorm_ne_top _)]
-    exact snorm_const_smul_le r f
+  BoundedSMul.of_norm_smul_le Lp.norm_smul_le
 #align measure_theory.Lp.has_bounded_smul MeasureTheory.Lp.instBoundedSMul
+
+instance : ContinuousSMul 𝕜 (Lp E p μ) :=
+  .of_nhds_zero _ _ _
 
 end BoundedSMul
 
@@ -619,6 +628,15 @@ variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
   norm_smul_le _ _ := norm_smul_le _ _
 #align measure_theory.Lp.normed_space MeasureTheory.Lp.instNormedSpace
+
+@[simp]
+protected theorem nnnorm_smul (r : 𝕜) (f : Lp E p μ) : ‖r • f‖₊ = ‖r‖₊ * ‖f‖₊ := by
+  push_cast [← ENNReal.coe_eq_coe, snorm_congr_ae (coeFn_smul _ _)]
+  exact snorm_const_smul r f
+
+@[simp]
+protected theorem norm_smul (r : 𝕜) (f : Lp E p μ) : ‖r • f‖ = ‖r‖ * ‖f‖₊ :=
+  congr_arg NNReal.toReal (Lp.nnnorm_smul r f)
 
 end NormedSpace
 

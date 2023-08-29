@@ -78,7 +78,6 @@ variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Fi
 We define uniform convergence and locally uniform convergence, on a set or in the whole space.
 -/
 
-
 /-- A sequence of functions `Fₙ` converges uniformly on a filter `p'` to a limiting function `f`
 with respect to the filter `p` if, for any entourage of the diagonal `u`, one has
 `p ×ˢ p'`-eventually `(f x, Fₙ x) ∈ u`. -/
