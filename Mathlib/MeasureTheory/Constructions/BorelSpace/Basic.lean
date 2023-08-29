@@ -1500,6 +1500,122 @@ lemma Iic_ciInf {ι : Type*} [Nonempty ι] {f : ι → α} (hf : BddBelow (range
     apply le_ciInf
     simpa using hx
 
+lemma nonempty_iInter_Iic_iff {f : ι → α} :
+    (⋂ (i : ι), Iic (f i)).Nonempty ↔ BddBelow (range f) := by
+  have : (⋂ (i : ι), Iic (f i)) = lowerBounds (range f) := by
+    ext c; simp [lowerBounds]
+  simp [this, BddBelow]
+
+/-- Given an indexed family of sets `s j` and a function `f`, then `liminf_reparam j` is equal
+to `j` if `f` is bounded below on `s j`, and otherwise to some index `k` such that `f` is bounded
+below on `s k` (if there exists one). To ensure good measurability behavior, this index `k` is
+chosen as the minimal suitable index. -/
+def liminf_reparam {ι ι' : Type*} (f : ι → α) (s : ι' → Set ι) [Countable ι'] [Nonempty ι']
+    (j : ι') : ι' :=
+  let m : Set ι' := {j | BddBelow (range (fun (i : s j) ↦ f i))}
+  let g : ℕ → ι' := choose (exists_surjective_nat ι')
+  have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
+    by_cases H : ∃ j, j ∈ m
+    · rcases H with ⟨j, hj⟩
+      rcases choose_spec (exists_surjective_nat ι') j with ⟨n, rfl⟩
+      exact ⟨n, Or.inl hj⟩
+    · push_neg at H
+      exact ⟨0, Or.inr H⟩
+  if j ∈ m then j else g (Nat.find Z)
+
+theorem Filter.HasBasis.liminf_eq_ciSup_ciInf {ι ι' : Type*} {f : ι → α} {v : Filter ι}
+    {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
+    (hv : v.HasBasis p s) (hs : ∀ (j : Subtype p), (s j).Nonempty)
+    (H : ∃ (j : Subtype p), BddBelow (range (fun (i : s j) ↦ f i))) :
+    liminf f v =
+      ⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i := by
+  rcases H with ⟨j0, hj0⟩
+  let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
+  let g : ℕ → Subtype p := choose (exists_surjective_nat (Subtype p))
+  have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
+    rcases choose_spec (exists_surjective_nat (Subtype p)) j0 with ⟨n, rfl⟩
+    exact ⟨n, Or.inl hj0⟩
+  set reparam : Subtype p → Subtype p := fun j ↦ if j ∈ m then j else g (Nat.find Z) with hr
+  have : ∀ (j : Subtype p), Nonempty (s j) := fun j ↦ Nonempty.coe_sort (hs j)
+  change liminf f v = ⨆ (j : Subtype p), ⨅ (i : s (reparam j)), f i
+  have A : liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
+    simp_rw [liminf_eq, hv.eventually_iff]
+    congr
+    ext x
+    simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
+      exists_prop]
+  have B : ⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i) =
+         ⋃ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) := by
+    apply Subset.antisymm
+    · apply iUnion_subset (fun j ↦ ?_)
+      by_cases hj : j ∈ m
+      · have : j = reparam j := by simp only [hj, ite_true]
+        conv_lhs => rw [this]
+        apply subset_iUnion _ j
+      · simp only [mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
+        simp only [hj, empty_subset]
+    · apply iUnion_subset (fun j ↦ ?_)
+      exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (reparam j)
+  have C : ∀ (j : Subtype p), ⋂ (i : s (reparam j)), Iic (f i) =
+      Iic (⨅ (i : s (reparam j)), f i) := by
+    intro j
+    apply Eq.symm
+    apply Iic_ciInf
+    change reparam j ∈ m
+    by_cases Hj : j ∈ m
+    · simpa only [hr, if_pos Hj] using Hj
+    · simp only [hr, if_neg Hj]
+      rcases Nat.find_spec Z with hZ|hZ
+      · exact hZ
+      · exact (hZ j0 hj0).elim
+  simp_rw [A, B, C, sSup_iUnion_Iic]
+
+theorem Filter.HasBasis.liminf_eq_ite {ι ι' : Type*} {f : ι → α} {v : Filter ι}
+    {p : ι' → Prop} {s : ι' → Set ι} [Countable (Subtype p)] [Nonempty (Subtype p)]
+    (hv : v.HasBasis p s) :
+    liminf f v = if ∃ (j : Subtype p), s j = ∅ then sSup univ else
+    if (∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))) then sSup ∅
+    else (⨆ (j : Subtype p), ⨅ (i : s ((liminf_reparam f (fun (j : Subtype p) ↦ s j)) j)), f i) := by
+  by_cases H : ∃ (j : Subtype p), s j = ∅
+  · rw [if_pos H]
+    rcases H with ⟨j, hj⟩
+    simp [hv.liminf_eq_sSup_univ_of_empty j j.2 hj]
+  rw [if_neg H]
+  by_cases H' : ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i))
+  · have A : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
+      simp_rw [← not_nonempty_iff_eq_empty, nonempty_iInter_Iic_iff]
+      exact H'
+    have B : liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
+      simp_rw [liminf_eq, hv.eventually_iff]
+      congr
+      ext x
+      simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
+        exists_prop]
+    simp_rw [if_pos H', B, A, iUnion_empty]
+  rw [if_neg H']
+  apply hv.liminf_eq_ciSup_ciInf
+  · push_neg at H
+    simpa only [nonempty_iff_ne_empty] using H
+  · push_neg at H'
+    exact H'
+
+#exit
+
+
+  by_cases H : ∀ j, j ∉ m
+  · have I : ∀ (j : Subtype p), ⋂ (i : s j), Iic (f i) = ∅ := by
+      intro j
+      rw [← not_nonempty_iff_eq_empty, iInter_Iic]
+      simpa using H j
+    have J : ∀ (j : Subtype p), ⨅ (i : s j), f i = sInf ∅ := by
+      intro j
+      apply csInf_of_not_bddBelow
+      simpa using H j
+    simp only [I, iUnion_empty, J]
+    simp
+    sorry
+
+
 /-- `liminf` over a general filter is measurable. See `measurable_liminf` for the version over `ℕ`.
 -/
 theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf : ∀ i, Measurable (f i))
