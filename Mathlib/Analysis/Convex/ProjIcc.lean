@@ -77,23 +77,23 @@ protected theorem ConcaveOn.IicExtend (hf : ConcaveOn 𝕜 s f) (hf' : MonotoneO
 /-- A convex monotone function extended constantly towards minus infinity is convex. -/
 protected theorem ConvexOn.IciExtend_of_monotone (hf : ConvexOn 𝕜 univ f) (hf' : Monotone f) :
     ConvexOn 𝕜 univ (IciExtend $ restrict (Ici z) f) :=
-  hf.IciExtend $ hf'.MonotoneOn _
+  hf.IciExtend $ hf'.monotoneOn _
 #align convex_on.Ici_extend_of_monotone ConvexOn.IciExtend_of_monotone
 
 /-- A convex antitone function extended constantly towards infinity is convex. -/
 protected theorem ConvexOn.IicExtend_of_antitone (hf : ConvexOn 𝕜 univ f) (hf' : Antitone f) :
     ConvexOn 𝕜 univ (IicExtend $ restrict (Iic z) f) :=
-  hf.IicExtend $ hf'.AntitoneOn _
+  hf.IicExtend $ hf'.antitoneOn _
 #align convex_on.Iic_extend_of_antitone ConvexOn.IicExtend_of_antitone
 
 /-- A concave antitone function extended constantly minus towards infinity is concave. -/
 protected theorem ConcaveOn.IciExtend_of_antitone (hf : ConcaveOn 𝕜 univ f) (hf' : Antitone f) :
     ConcaveOn 𝕜 univ (IciExtend $ restrict (Ici z) f) :=
-  hf.IciExtend $ hf'.AntitoneOn _
+  hf.IciExtend $ hf'.antitoneOn _
 #align concave_on.Ici_extend_of_antitone ConcaveOn.IciExtend_of_antitone
 
 /-- A concave monotone function extended constantly towards infinity is concave. -/
 protected theorem ConcaveOn.IicExtend_of_monotone (hf : ConcaveOn 𝕜 univ f) (hf' : Monotone f) :
     ConcaveOn 𝕜 univ (IicExtend $ restrict (Iic z) f) :=
-  hf.IicExtend $ hf'.MonotoneOn _
+  hf.IicExtend $ hf'.monotoneOn _
 #align concave_on.Iic_extend_of_monotone ConcaveOn.IicExtend_of_monotone
