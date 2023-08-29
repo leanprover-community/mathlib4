@@ -430,12 +430,12 @@ theorem shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (sh
   shiftl_add _ _ _
 #align int.shiftl_sub Int.shiftl_sub
 
-theorem shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * ↑(2 ^ n)
+theorem shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * (2 ^ n : ℕ)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftl_eq_mul_pow
 
-theorem shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
+theorem shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / (2 ^ n : ℕ)
   | (m : ℕ), n => by rw [shiftr_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
   | -[m+1], n => by
     rw [shiftr_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; rfl

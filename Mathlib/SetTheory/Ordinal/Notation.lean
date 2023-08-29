@@ -828,12 +828,12 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   haveI := (nf_repr_split' e₂).1
   cases' a with a0 n a'
   · cases' m with m
-    · by_cases o₂ = 0 <;> simp [(· ^ ·), Pow.pow, pow, opow, opowAux2, *]
+    · by_cases o₂ = 0 <;> simp [HPow.hPow, Pow.pow, pow, opow, opowAux2, *]
     · by_cases m = 0
-      · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, *, zero_def]
-      · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
+      · simp only [HPow.hPow, Pow.pow, pow, opow, opowAux2, *, zero_def]
+      · simp only [HPow.hPow, Pow.pow, pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
         infer_instance
-  · simp [(· ^ ·),Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
+  · simp [HPow.hPow, Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
     cases' k with k <;> simp
     · infer_instance
@@ -885,9 +885,9 @@ set_option linter.unusedVariables false in
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
-    (k ≠ 0 → R < ((ω ^ repr a0) ^ succ ↑k)) ∧
-      ((ω ^ repr a0) ^ k) * ((ω ^ repr a0) * (n : ℕ) + repr a') + R =
-        ((ω ^ repr a0) * (n : ℕ) + repr a' + m) ^ succ ↑k := by
+    (k ≠ 0 → R < ((ω ^ repr a0) ^ succ (k : Ordinal))) ∧
+      ((ω ^ repr a0) ^ (k : Ordinal)) * ((ω ^ repr a0) * (n : ℕ) + repr a') + R =
+        ((ω ^ repr a0) * (n : ℕ) + repr a' + m) ^ (succ ↑k : Ordinal) := by
   intro R'
   haveI No : NF (oadd a0 n a') :=
     N0.oadd n (Na'.below_of_lt' <| lt_of_le_of_lt (le_add_right _ _) h)
@@ -897,15 +897,16 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
   let ω0 := ω ^ repr a0
   let α' := ω0 * n + repr a'
-  change (k ≠ 0 → R < (ω0 ^ succ ↑k)) ∧ (ω0 ^ k) * α' + R = (α' + m) ^ succ ↑k at IH
-  have RR : R' = (ω0 ^ k) * (α' * m) + R := by
+  change (k ≠ 0 → R < (ω0 ^ succ (k : Ordinal))) ∧ (ω0 ^ (k : Ordinal)) * α' + R
+    = (α' + m) ^ (succ ↑k : Ordinal) at IH
+  have RR : R' = ω0 ^ (k : Ordinal) * (α' * m) + R := by
     by_cases h : m = 0
     · simp only [h, ONote.ofNat, Nat.cast_zero, zero_add, ONote.repr, mul_zero, ONote.opowAux,
         add_zero]
     · simp only [ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux, ONote.repr_ofNat,
         ONote.repr_mul, ONote.repr_add, Ordinal.opow_mul, ONote.zero_add]
   have α0 : 0 < α' := by simpa [lt_def, repr] using oadd_pos a0 n a'
-  have ω00 : 0 < (ω0 ^ k) := opow_pos _ (opow_pos _ omega_pos)
+  have ω00 : 0 < ω0 ^ (k : Ordinal) := opow_pos _ (opow_pos _ omega_pos)
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
     · simp [k0]
@@ -930,21 +931,22 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
           (opow_le_opow_right omega_pos <|
             mul_le_mul_left' (succ_le_succ_iff.2 (nat_cast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
-    (ω0 ^ k.succ) * α' + R'
-    _ = (ω0 ^ succ ↑k) * α' + ((ω0 ^ k) * α' * m + R) := by rw [nat_cast_succ, RR, ← mul_assoc]
-    _ = ((ω0 ^ k) * α' + R) * α' + ((ω0 ^ k) * α' + R) * m := ?_
-    _ = (α' + m) ^ succ ↑k.succ := by rw [← mul_add, nat_cast_succ, opow_succ, IH.2]
+    (ω0 ^ (k.succ : Ordinal)) * α' + R'
+    _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) :=
+        by rw [nat_cast_succ, RR, ← mul_assoc]
+    _ = ((ω0 ^ (k : Ordinal)) * α' + R) * α' + ((ω0 ^ (k : Ordinal)) * α' + R) * m := ?_
+    _ = (α' + m) ^ succ (k.succ : Ordinal) := by rw [← mul_add, nat_cast_succ, opow_succ, IH.2]
   congr 1
   · have αd : ω ∣ α' :=
       dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
-    rw [mul_add (ω0^k), add_assoc, ← mul_assoc, ← opow_succ,
+    rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_limit _ (isLimit_iff_omega_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
       @mul_omega_dvd n (nat_cast_pos.2 n.pos) (nat_lt_omega _) _ αd]
     apply @add_absorp _ (repr a0 * succ ↑k)
     · refine' principal_add_omega_opow _ _ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
       exact No.snd'.repr_lt
-    · have := mul_le_mul_left' (one_le_iff_pos.2 <| nat_cast_pos.2 n.pos) (ω0^succ k)
+    · have := mul_le_mul_left' (one_le_iff_pos.2 <| nat_cast_pos.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
       simpa [-opow_succ]
   · cases m
