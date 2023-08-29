@@ -159,15 +159,13 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
     apply NullMeasurableSet.congr mble.nullMeasurableSet
     rw [eventuallyEq_iff_exists_mem] at *
     obtain ⟨s, ⟨s_null, f_eq_f₀_on_s⟩⟩ := f_aeeq_f₀
-    refine ⟨s ×ˢ univ, ⟨?_, ?_⟩⟩
-    · suffices : (μ.prod (volume : Measure ℝ)) (sᶜ ×ˢ univ) = 0
-      · simp only [Measure.ae, Filter.mem_mk, mem_setOf_eq]
-        convert this
-        ext p
-        simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
-      simpa [Measure.ae] using s_null
-    · intro p p_in_sR
-      simp [setOf, f_eq_f₀_on_s p_in_sR.1]
+    refine ⟨s ×ˢ univ, ⟨?_, fun p hp ↦ by simp [setOf, f_eq_f₀_on_s hp.1]⟩⟩
+    simp only [Measure.ae, Filter.mem_mk, mem_setOf_eq] at *
+    suffices : (μ.prod (volume : Measure ℝ)) (sᶜ ×ˢ univ) = 0
+    · convert this
+      ext p
+      simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
+    rw [Measure.prod_prod, s_null, zero_mul]
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀ mble₀
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable
 
