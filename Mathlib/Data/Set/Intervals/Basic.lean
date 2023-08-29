@@ -1724,14 +1724,14 @@ variable [Lattice β] {f : α → β}
 
 theorem _root_.MonotoneOn.image_Icc_subset (hf : MonotoneOn f (Icc a b)) :
     f '' Icc a b ⊆ Icc (f a) (f b) :=
-  image_subset_iff.2 fun c hc =>
+  image_subset_iff.2 fun _c hc =>
     ⟨hf (left_mem_Icc.2 <| hc.1.trans hc.2) hc hc.1,
       hf hc (right_mem_Icc.2 <| hc.1.trans hc.2) hc.2⟩
 #align monotone_on.image_Icc_subset MonotoneOn.image_Icc_subset
 
 theorem _root_.AntitoneOn.image_Icc_subset (hf : AntitoneOn f (Icc a b)) :
     f '' Icc a b ⊆ Icc (f b) (f a) :=
-  image_subset_iff.2 fun c hc =>
+  image_subset_iff.2 fun _c hc =>
     ⟨hf hc (right_mem_Icc.2 <| hc.1.trans hc.2) hc.2,
       hf (left_mem_Icc.2 <| hc.1.trans hc.2) hc hc.1⟩
 #align antitone_on.image_Icc_subset AntitoneOn.image_Icc_subset
