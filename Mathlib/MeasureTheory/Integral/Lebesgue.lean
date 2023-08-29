@@ -2115,8 +2115,8 @@ end SigmaFinite
 
 section TendstoIndicator
 
-variable {α : Type _} [MeasurableSpace α] {A : Set α}
-variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then

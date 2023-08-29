@@ -25,6 +25,11 @@ namespace MeasureTheory
 
 section TendstoIndicator
 
+open Filter ENNReal Topology
+
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
 and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
 tend to the measure of `A`. -/
