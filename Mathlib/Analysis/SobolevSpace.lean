@@ -5,6 +5,7 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 open scoped Classical BigOperators Topology ENNReal
 open Filter MeasureTheory NormedSpace
+set_option autoImplicit true
 
 noncomputable section
 
