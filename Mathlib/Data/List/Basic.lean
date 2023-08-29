@@ -2582,16 +2582,16 @@ private lemma middle_xYz_left {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
   ] at middle
   exact get?_mem middle
 
-lemma todo_refactor {a b c d : ℕ}
+private lemma todo_refactor {a b c d : ℕ}
     (total : a + b = c + d) (a_lt_c : a < c) :
     d < b := by
   by_contra contr
   rw [not_lt] at contr
   have impossi : a + b < c + d
   · exact add_lt_add_of_lt_of_le a_lt_c contr
-  have neq : a + b ≠ c + d
+  have impossineq : a + b ≠ c + d
   · exact Nat.ne_of_lt impossi
-  exact neq total
+  exact impossineq total
 
 lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
     (together : x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂) (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
