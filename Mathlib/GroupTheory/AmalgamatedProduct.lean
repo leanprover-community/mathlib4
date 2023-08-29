@@ -330,7 +330,7 @@ theorem ext_smul {w₁ w₂ : NormalWord φ} (i : ι)
 
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord φ) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) :  NormalWord φ :=
+    (hgr : g ∉ (φ i).range) : NormalWord φ :=
   letI n := normalizeSingle φ (g * (φ i w.left))
   letI w' := Word.cons n.2 w.toWord hmw
     (mt (mem_range_iff_normalizeSingle_snd_eq_one hφ _).1
@@ -351,7 +351,6 @@ noncomputable def rcons {i : ι} (p : Pair φ i) : NormalWord φ :=
     normalized := fun i g hg => by
         dsimp at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
-        dsimp at hg
         rcases hg with hg | ⟨_, rfl, rfl⟩
         · exact p.normalized _ _ hg
         · simp }
@@ -474,8 +473,7 @@ def prod (w : NormalWord φ) : AmalgamatedProduct φ :=
   base w.left * ofCoprodI (w.toWord).prod
 
 theorem cons_eq_summandToPermNormalWord {i : ι} (g : G i) (w : NormalWord φ) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) :
-    cons hφ g w hmw hgr = summandToPermNormalWord hφ i g w := by
+    (hgr : g ∉ (φ i).range) : cons hφ g w hmw hgr = summandToPermNormalWord hφ i g w := by
   apply ext_smul hφ i
   simp only [cons, ne_eq, Word.cons_eq_smul, summandToPermNormalWord_apply, equivPair, rcons,
     Word.equivPair_symm, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, Word.rcons_eq_smul]
