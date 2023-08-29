@@ -36,8 +36,9 @@ and it would be interesting to try optimizing these
 (or dynamically updating them,
 adding weight to tokens that persistently appear on one side of the equation but not the other.)
 
-Currently the `rw?` tactic (for generating a single rewrite) will not rewrite by a local hypothesis.
-Similarly, it will not use local hypotheses to discharge side conditions during rewriting.
+The `rw_search` tactic will rewrite by local hypotheses,
+but will not use local hypotheses to discharge side conditions. 
+This limitation would need to be resolved in the `rw?` tactic first.
 
 -/
 
