@@ -32,7 +32,7 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Imo2013Q5
 
@@ -60,7 +60,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
   have hNp : 0 < N := by exact_mod_cast (one_div_pos.mpr hxmy).trans hN
   have :=
     calc
-      1 = (x - y) * (1 / (x - y)) := by field_simp [ne_of_gt hxmy]
+      1 = (x - y) * (1 / (x - y)) := by field_simp
       _ < (x - y) * N := by gcongr
       _ ≤ x ^ N - y ^ N := hn N hNp
   linarith [h N hNp]

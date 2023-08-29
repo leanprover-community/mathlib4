@@ -17,6 +17,8 @@ This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
 
+set_option autoImplicit true
+
 
 open Function
 
@@ -923,7 +925,7 @@ def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computatio
     (c₁, c₂ ())
 #align computation.orelse Computation.orElse
 
-instance : Alternative Computation :=
+instance instAlternativeComputation : Alternative Computation :=
   { Computation.monad with
     orElse := @orElse
     failure := @empty }

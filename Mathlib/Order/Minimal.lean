@@ -24,10 +24,12 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 Do we need a `Finset` version?
 -/
 
+set_option autoImplicit true
+
 
 open Function Set
 
-variable {α : Type _} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
+variable {α : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
 
 /-- Turns a set into an antichain by keeping only the "maximal" elements. -/
 def maximals : Set α :=

@@ -28,7 +28,7 @@ open Pointwise
 
 local postfix:max "⋆" => star
 
-variable {α : Type _} {s t : Set α} {a : α}
+variable {α : Type*} {s t : Set α} {a : α}
 
 /-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in locale `pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
@@ -81,12 +81,12 @@ theorem union_star [Star α] : (s ∪ t)⋆ = s⋆ ∪ t⋆ := preimage_union
 #align set.union_star Set.union_star
 
 @[simp]
-theorem iInter_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
+theorem iInter_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
   preimage_iInter
 #align set.Inter_star Set.iInter_star
 
 @[simp]
-theorem iUnion_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
+theorem iUnion_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
   preimage_iUnion
 #align set.Union_star Set.iUnion_star
 
@@ -112,7 +112,7 @@ theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Fini
   hs.preimage <| star_injective.injOn _
 #align set.finite.star Set.Finite.star
 
-theorem star_singleton {β : Type _} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
+theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
   ext1 y
   rw [mem_star, mem_singleton_iff, mem_singleton_iff, star_eq_iff_star_eq, eq_comm]
 #align set.star_singleton Set.star_singleton
@@ -147,7 +147,7 @@ protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s
 end Set
 
 @[simp]
-lemma StarMemClass.star_coe_eq {S α : Type _} [InvolutiveStar α] [SetLike S α]
+lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
   ext x
   simp only [Set.mem_star, SetLike.mem_coe]

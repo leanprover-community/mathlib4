@@ -54,7 +54,7 @@ instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
 #align lie_submodule.quotient.add_comm_group LieSubmodule.Quotient.addCommGroup
 
-instance module' {S : Type _} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (M ⧸ N) :=
   Submodule.Quotient.module' _
 #align lie_submodule.quotient.module' LieSubmodule.Quotient.module'
@@ -63,7 +63,7 @@ instance module : Module R (M ⧸ N) :=
   Submodule.Quotient.module _
 #align lie_submodule.quotient.module LieSubmodule.Quotient.module
 
-instance isCentralScalar {S : Type _} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
+instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     [SMul Sᵐᵒᵖ R] [Module Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
     IsCentralScalar S (M ⧸ N) :=
   Submodule.Quotient.isCentralScalar _
@@ -219,7 +219,7 @@ end LieSubmodule
 
 namespace LieHom
 
-variable {R L L' : Type _}
+variable {R L L' : Type*}
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 

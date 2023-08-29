@@ -129,14 +129,14 @@ theorem not_bddBelow_iff' : ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, ¬x ≤ y :=
 
 /-- A set `s` is not bounded above if and only if for each `x` there exists `y ∈ s` that is greater
 than `x`. A version for preorders is called `not_bddAbove_iff'`. -/
-theorem not_bddAbove_iff {α : Type _} [LinearOrder α] {s : Set α} :
+theorem not_bddAbove_iff {α : Type*} [LinearOrder α] {s : Set α} :
     ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, x < y := by
   simp only [not_bddAbove_iff', not_le]
 #align not_bdd_above_iff not_bddAbove_iff
 
 /-- A set `s` is not bounded below if and only if for each `x` there exists `y ∈ s` that is less
 than `x`. A version for preorders is called `not_bddBelow_iff'`. -/
-theorem not_bddBelow_iff {α : Type _} [LinearOrder α] {s : Set α} :
+theorem not_bddBelow_iff {α : Type*} [LinearOrder α] {s : Set α} :
     ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, y < x :=
   @not_bddAbove_iff αᵒᵈ _ _
 #align not_bdd_below_iff not_bddBelow_iff
@@ -989,6 +989,16 @@ protected theorem OrderBot.bddBelow [OrderBot α] (s : Set α) : BddBelow s :=
   ⟨⊥, fun a _ => OrderBot.bot_le a⟩
 #align order_bot.bdd_below OrderBot.bddBelow
 
+/-- Sets are automatically bounded or cobounded in complete lattices. To use the same statements
+in complete and conditionally complete lattices but let automation fill automatically the
+boundedness proofs in complete lattices, we use the tactic `bddDefault` in the statements,
+in the form `(hA : BddAbove A := by bddDefault)`. -/
+
+macro "bddDefault" : tactic =>
+  `(tactic| first
+    | apply OrderTop.bddAbove
+    | apply OrderBot.bddBelow)
+
 /-!
 #### Pair
 -/
@@ -1552,7 +1562,7 @@ end Image2
 
 section Pi
 
-variable {π : α → Type _} [∀ a, Preorder (π a)]
+variable {π : α → Type*} [∀ a, Preorder (π a)]
 
 lemma bddAbove_pi {s : Set (∀ a, π a)} :
     BddAbove s ↔ ∀ a, BddAbove (Function.eval a '' s) :=
