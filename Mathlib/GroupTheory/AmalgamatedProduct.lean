@@ -12,9 +12,13 @@ open Monoid CoprodI Subgroup Coprod Function
 
 variable {ι : Type*} {G : ι → Type*} {H : Type*} {K : Type*} [Monoid K]
 
+def AmalgamatedProduct.con [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) :
+    Con (Coprod (CoprodI G) H) :=
+  conGen (fun x y : Coprod (CoprodI G) H =>
+    ∃ i x', x = inl (of (φ i x')) ∧ y = inr x')
+
 def AmalgamatedProduct [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) : Type _ :=
-  (conGen (fun x y : Coprod (CoprodI G) H =>
-    ∃ i x', x = inl (of (φ i x')) ∧ y = inr x')).Quotient
+  (AmalgamatedProduct.con φ).Quotient
 
 namespace AmalgamatedProduct
 
@@ -22,7 +26,7 @@ section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-instance : Monoid (AmalgamatedProduct φ) := by
+instance monoid : Monoid (AmalgamatedProduct φ) := by
   delta AmalgamatedProduct; infer_instance
 
 def of {i : ι} : G i →* AmalgamatedProduct φ :=
@@ -114,12 +118,9 @@ end Monoid
 
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
-instance : Group (AmalgamatedProduct φ) := by
-  letI t : Group (AmalgamatedProduct φ) := by
-    delta AmalgamatedProduct; infer_instance
-  exact
-    { t with
-      toMonoid := inferInstance }
+instance : Group (AmalgamatedProduct φ) :=
+  { (Con.group (AmalgamatedProduct.con φ)) with
+    toMonoid := AmalgamatedProduct.monoid }
 
 namespace NormalWord
 
