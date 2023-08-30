@@ -350,7 +350,7 @@ theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α
   ⟨⟨range u, countable_range u, hu⟩⟩
 #align topological_space.separable_space_of_dense_range TopologicalSpace.SeparableSpace.of_denseRange
 
-alias SeparableSpace.of_denseRange ← _root_.DenseRange.separableSpace'
+alias _root_.DenseRange.separableSpace' := SeparableSpace.of_denseRange
 
 /-- If `α` is a separable space and `f : α → β` is a continuous map with dense range, then `β` is
 a separable space as well. E.g., the completion of a separable uniform space is separable. -/

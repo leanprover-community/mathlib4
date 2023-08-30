@@ -382,6 +382,7 @@ class Algebra.IsPushout : Prop where
 
 variable {R S R' S'}
 
+@[symm]
 theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
   let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
   let e : R' ⊗[R] S ≃ₗ[R'] S' := by

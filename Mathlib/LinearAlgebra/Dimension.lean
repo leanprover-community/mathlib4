@@ -935,6 +935,17 @@ theorem rank_eq_card_chooseBasisIndex : Module.rank K V = #(ChooseBasisIndex K V
   (chooseBasis K V).mk_eq_rank''.symm
 #align module.free.rank_eq_card_choose_basis_index Module.Free.rank_eq_card_chooseBasisIndex
 
+/-- The rank of a free module `V` over an infinite scalar ring `K` is the cardinality of `V`
+whenever `#R < #V`. -/
+lemma rank_eq_mk_of_infinite_lt [Infinite K] (h_lt : lift.{v} #K < lift.{u} #V) :
+    Module.rank K V = #V := by
+  have : Infinite V := infinite_iff.mpr <| lift_le.mp <| le_trans (by simp) h_lt.le
+  have h : lift #V = lift #(ChooseBasisIndex K V →₀ K) := lift_mk_eq'.mpr ⟨(chooseBasis K V).repr⟩
+  simp only [mk_finsupp_lift_of_infinite', lift_id', ← rank_eq_card_chooseBasisIndex, lift_max,
+    lift_lift] at h
+  refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left
+  exact (lift_umax.{v, u}.symm ▸ h_lt).ne
+
 end Module.Free
 
 open Module.Free

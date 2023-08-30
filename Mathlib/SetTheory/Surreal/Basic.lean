@@ -135,14 +135,14 @@ theorem le_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) :
   not_lf.1 (lf_asymm ox oy h)
 #align pgame.le_of_lf SetTheory.PGame.le_of_lf
 
-alias le_of_lf ← Lf.le
+alias Lf.le := le_of_lf
 #align pgame.lf.le SetTheory.PGame.Lf.le
 
 theorem lt_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) : x < y :=
   (lt_or_fuzzy_of_lf h).resolve_right (not_fuzzy_of_le (h.le ox oy))
 #align pgame.lt_of_lf SetTheory.PGame.lt_of_lf
 
-alias lt_of_lf ← Lf.lt
+alias Lf.lt := lt_of_lf
 #align pgame.lf.lt SetTheory.PGame.Lf.lt
 
 theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ x < y :=
