@@ -98,6 +98,8 @@ example (h : p → ¬ q) : ¬ (p ∧ q) := by
   guard_target = p → ¬q
   exact h
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
   push_neg
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
@@ -113,11 +115,15 @@ example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ 
   guard_hyp h : ∀ k, ¬(m < k)
   exact h₂
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(s.lt a b → r.lt a b) := by
   push_neg
   guard_target = s.lt a b ∧ r.le b a
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt a b) := by
   push_neg
   guard_target = r.lt a b ∧ ¬ s.lt a b

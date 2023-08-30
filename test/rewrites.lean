@@ -82,11 +82,15 @@ example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
   rw?! at hyp
   assumption
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs(warning) in
 example : ∀ (x y : ℕ), x ≤ y := by
   intros x y
   rw? -- Used to be an error here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
   admit
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example : ∀ (x y : ℕ), x ≤ y := by
   -- Used to be a panic here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
   success_if_fail_with_msg "Could not find any lemmas which can rewrite the goal" rw?
@@ -95,12 +99,18 @@ example : ∀ (x y : ℕ), x ≤ y := by
 axiom K : Type
 @[instance] axiom K.ring : Ring K
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def foo : K → K := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs(warning) in
 example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
   rw? -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
   admit
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 lemma six_eq_seven : 6 = 7 := sorry
 
 -- This test also verifies that we are removing duplicate results;
@@ -120,6 +130,8 @@ example : ∀ (x : ℕ), x ≤ 6 := by
   guard_target = ∀ (x : ℕ), x ≤ 7
   admit
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs(warning) in
 example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
   rw?!
   guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
@@ -164,6 +176,8 @@ def zero : Nat := 0
 
 -- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
 -- rather than `withReducible` `rfl`.
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs(warning) in
 example : zero = 0 := by
   rw?!
   sorry

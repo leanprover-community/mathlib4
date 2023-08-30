@@ -660,6 +660,8 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example : 1 + 1 = 2 := by
   fail_if_success
     norm_num [this_doesnt_exist]
@@ -668,7 +670,11 @@ example : 1 + 1 = 2 := by
 example : 1 + 100 + a = a + 101 := by
   norm_num [add_comm]
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance : LinearOrderedField (R a b) := sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by

@@ -41,10 +41,14 @@ example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := sorry
   linarith
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := sorry
   linarith [h]
@@ -507,7 +511,11 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   linarith
 
 -- simulate the type of MvPolynomial
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def P : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance : LinearOrderedField (P c d) := sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by

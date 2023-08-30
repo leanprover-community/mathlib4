@@ -61,6 +61,8 @@ theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : H
     rw [h]
     exact hz.symm
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 theorem ex15 (p q : Nat → Prop) :
     (∀ ε > 0, p ε) ↔ ∀ ε > 0, q ε := by
   congr! 2 with ε hε
@@ -68,7 +70,9 @@ theorem ex15 (p q : Nat → Prop) :
   guard_target = p ε ↔ q ε
   sorry
 
-/-- Generating type equalities is OK if it's possible they're the same type. -/
+/- Generating type equalities is OK if it's possible they're the same type. -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr! 1
   guard_target = Subtype s = Subtype t
@@ -76,7 +80,9 @@ example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   guard_target = s = t
   sorry
 
-/-- `Subtype s = Subtype t` is plausible -/
+/- `Subtype s = Subtype t` is plausible -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
@@ -85,7 +91,9 @@ example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
   · guard_target = HEq f g
     sorry
 
-/-- `ι = κ` is not plausible -/
+/- `ι = κ` is not plausible -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : ι → α) (g : κ → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
@@ -96,13 +104,17 @@ example (f : ι → α) (g : κ → α) :
   · guard_target = HEq f g
     sorry
 
-/-- Generating type equalities is not OK if they're not likely to be the same type. -/
+/- Generating type equalities is not OK if they're not likely to be the same type. -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Set α) (t : Set β) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr!
   guard_target = Subtype s = Subtype t
   sorry
 
-/-- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/
+/- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (m n : Nat) (h : m = n) (x : Fin m) (y : Fin n) : HEq (x + x) (y + y) := by
   congr!
   guard_target = HEq x y
@@ -110,13 +122,17 @@ example (m n : Nat) (h : m = n) (x : Fin m) (y : Fin n) : HEq (x + x) (y + y) :=
   guard_target = HEq x y
   sorry
 
-/-- Props are types, but prop equalities are totally plausible. -/
+/- Props are types, but prop equalities are totally plausible. -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (p q r : Prop) : p ∧ q ↔ p ∧ r := by
   congr!
   guard_target = q ↔ r
   sorry
 
-/-- Congruence here is not OK by default since `α = β` is not generally plausible. -/
+/- Congruence here is not OK by default since `α = β` is not generally plausible. -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x) (y + y) := by
   congr!
   guard_target = HEq (x + x) (y + y)
@@ -129,6 +145,8 @@ example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x
   guard_target = HEq x y
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr!
@@ -137,6 +155,8 @@ example (prime : Nat → Prop) (n : Nat) :
   · guard_target = 2 = n
     sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr! (config := {etaExpand := true})
@@ -145,6 +165,8 @@ example (prime : Nat → Prop) (n : Nat) :
   · guard_target = 2 = n
     sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr! 2

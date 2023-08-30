@@ -15,15 +15,21 @@ This file checks that this and similar tricks have had the desired effect:
 
 set_option autoImplicit true
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example {a b : α} [LinearOrderedField α] : a / 2 ≤ b / 2 := by
   fail_if_success with_reducible_and_instances apply mul_le_mul -- fails, as desired
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example {a b : ℚ} : a / 2 ≤ b / 2 := by
   fail_if_success with_reducible_and_instances apply mul_le_mul -- fails, as desired
   apply mul_le_mul
   repeat sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example {a b : ℝ} : a / 2 ≤ b / 2 := by
   fail_if_success with_reducible_and_instances apply mul_le_mul -- fails, as desired
   apply mul_le_mul

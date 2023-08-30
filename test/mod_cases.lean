@@ -1,5 +1,7 @@
 import Mathlib.Tactic.ModCases
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (n : ℤ) : 3 ∣ n ^ 3 - n := by
   mod_cases n % 3
   · guard_hyp H :ₛ n ≡ 0 [ZMOD 3]; guard_target = 3 ∣ n ^ 3 - n; sorry
@@ -7,6 +9,8 @@ example (n : ℤ) : 3 ∣ n ^ 3 - n := by
   · guard_hyp H :ₛ n ≡ 2 [ZMOD 3]; guard_target = 3 ∣ n ^ 3 - n; sorry
 
 -- test case for https://github.com/leanprover-community/mathlib4/issues/1851
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (n : ℕ) (z : ℤ) : n = n := by
   induction n with
   | zero => rfl

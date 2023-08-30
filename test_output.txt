@@ -1,0 +1,1673 @@
+Requested labels: pr
+Job defined at: leanprover-community/mathlib4/.github/workflows/build.yml@refs/heads/master
+Waiting for a runner to pick up this job...
+Job is about to start running on the runner: hoskinson3 (organization)
+Current runner version: '2.308.0'
+Runner name: 'hoskinson3'
+Runner group name: 'Default'
+Machine name: '1477649d818f'
+##[group]GITHUB_TOKEN Permissions
+Actions: write
+Checks: write
+Contents: write
+Deployments: write
+Discussions: write
+Issues: write
+Metadata: read
+Packages: write
+Pages: write
+PullRequests: write
+RepositoryProjects: write
+SecurityEvents: write
+Statuses: write
+##[endgroup]
+Secret source: Actions
+Prepare workflow directory
+Prepare all required actions
+Getting action download info
+Download action repository 'actions/checkout@v3' (SHA:f43a0e5ff2bd294095638e18286ca9a3d1956744)
+Download action repository 'liskin/gh-problem-matcher-wrap@v2' (SHA:d8afa2cfb66dd3f982b1950429e652bc14d0d7d2)
+Complete job name: Build
+##[group]Run find . -name . -o -prune -exec rm -rf -- {} +
+[36;1mfind . -name . -o -prune -exec rm -rf -- {} +[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+##[group]Run set -o pipefail
+[36;1mset -o pipefail[0m
+[36;1mcurl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz[0m
+[36;1m./elan-init -y --default-toolchain none[0m
+[36;1mecho "$HOME/.elan/bin" >> $GITHUB_PATH[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+info: skipping toolchain installation
+2023-08-30T08:17:06.3406677Z
+##[group]Run actions/checkout@v3
+with:
+  repository: leanprover-community/mathlib4
+  token: ***
+  ssh-strict: true
+  persist-credentials: true
+  clean: true
+  sparse-checkout-cone-mode: true
+  fetch-depth: 1
+  fetch-tags: false
+  lfs: false
+  submodules: false
+  set-safe-directory: true
+##[endgroup]
+Syncing repository: leanprover-community/mathlib4
+##[group]Getting Git version info
+Working directory is '/home/lean/actions-runner/_work/mathlib4/mathlib4'
+[command]/usr/bin/git version
+git version 2.34.1
+##[endgroup]
+Temporarily overriding HOME='/home/lean/actions-runner/_work/_temp/73377157-b80b-485a-bb67-445a3ac53a82' before making global git config changes
+Adding repository directory to the temporary git global config as a safe directory
+[command]/usr/bin/git config --global --add safe.directory /home/lean/actions-runner/_work/mathlib4/mathlib4
+Deleting the contents of '/home/lean/actions-runner/_work/mathlib4/mathlib4'
+##[group]Initializing the repository
+[command]/usr/bin/git init /home/lean/actions-runner/_work/mathlib4/mathlib4
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+Initialized empty Git repository in /home/lean/actions-runner/_work/mathlib4/mathlib4/.git/
+[command]/usr/bin/git remote add origin https://github.com/leanprover-community/mathlib4
+##[endgroup]
+##[group]Disabling automatic garbage collection
+[command]/usr/bin/git config --local gc.auto 0
+##[endgroup]
+##[group]Setting up auth
+[command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+[command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+[command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+##[endgroup]
+##[group]Fetching the repository
+[command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +cc016b6463c62bb4ae5ddb751734ee4d41a6f811:refs/remotes/origin/master
+remote: Enumerating objects: 4259, done.
+remote: Counting objects:   0% (1/4259)
+remote: Counting objects:   1% (43/4259)
+remote: Counting objects:   2% (86/4259)
+remote: Counting objects:   3% (128/4259)
+remote: Counting objects:   4% (171/4259)
+remote: Counting objects:   5% (213/4259)
+remote: Counting objects:   6% (256/4259)
+remote: Counting objects:   7% (299/4259)
+remote: Counting objects:   8% (341/4259)
+remote: Counting objects:   9% (384/4259)
+remote: Counting objects:  10% (426/4259)
+remote: Counting objects:  11% (469/4259)
+remote: Counting objects:  12% (512/4259)
+remote: Counting objects:  13% (554/4259)
+remote: Counting objects:  14% (597/4259)
+remote: Counting objects:  15% (639/4259)
+remote: Counting objects:  16% (682/4259)
+remote: Counting objects:  17% (725/4259)
+remote: Counting objects:  18% (767/4259)
+remote: Counting objects:  19% (810/4259)
+remote: Counting objects:  20% (852/4259)
+remote: Counting objects:  21% (895/4259)
+remote: Counting objects:  22% (937/4259)
+remote: Counting objects:  23% (980/4259)
+remote: Counting objects:  24% (1023/4259)
+remote: Counting objects:  25% (1065/4259)
+remote: Counting objects:  26% (1108/4259)
+remote: Counting objects:  27% (1150/4259)
+remote: Counting objects:  28% (1193/4259)
+remote: Counting objects:  29% (1236/4259)
+remote: Counting objects:  30% (1278/4259)
+remote: Counting objects:  31% (1321/4259)
+remote: Counting objects:  32% (1363/4259)
+remote: Counting objects:  33% (1406/4259)
+remote: Counting objects:  34% (1449/4259)
+remote: Counting objects:  35% (1491/4259)
+remote: Counting objects:  36% (1534/4259)
+remote: Counting objects:  37% (1576/4259)
+remote: Counting objects:  38% (1619/4259)
+remote: Counting objects:  39% (1662/4259)
+remote: Counting objects:  40% (1704/4259)
+remote: Counting objects:  41% (1747/4259)
+remote: Counting objects:  42% (1789/4259)
+remote: Counting objects:  43% (1832/4259)
+remote: Counting objects:  44% (1874/4259)
+remote: Counting objects:  45% (1917/4259)
+remote: Counting objects:  46% (1960/4259)
+remote: Counting objects:  47% (2002/4259)
+remote: Counting objects:  48% (2045/4259)
+remote: Counting objects:  49% (2087/4259)
+remote: Counting objects:  50% (2130/4259)
+remote: Counting objects:  51% (2173/4259)
+remote: Counting objects:  52% (2215/4259)
+remote: Counting objects:  53% (2258/4259)
+remote: Counting objects:  54% (2300/4259)
+remote: Counting objects:  55% (2343/4259)
+remote: Counting objects:  56% (2386/4259)
+remote: Counting objects:  57% (2428/4259)
+remote: Counting objects:  58% (2471/4259)
+remote: Counting objects:  59% (2513/4259)
+remote: Counting objects:  60% (2556/4259)
+remote: Counting objects:  61% (2598/4259)
+remote: Counting objects:  62% (2641/4259)
+remote: Counting objects:  63% (2684/4259)
+remote: Counting objects:  64% (2726/4259)
+remote: Counting objects:  65% (2769/4259)
+remote: Counting objects:  66% (2811/4259)
+remote: Counting objects:  67% (2854/4259)
+remote: Counting objects:  68% (2897/4259)
+remote: Counting objects:  69% (2939/4259)
+remote: Counting objects:  70% (2982/4259)
+remote: Counting objects:  71% (3024/4259)
+remote: Counting objects:  72% (3067/4259)
+remote: Counting objects:  73% (3110/4259)
+remote: Counting objects:  74% (3152/4259)
+remote: Counting objects:  75% (3195/4259)
+remote: Counting objects:  76% (3237/4259)
+remote: Counting objects:  77% (3280/4259)
+remote: Counting objects:  78% (3323/4259)
+remote: Counting objects:  79% (3365/4259)
+remote: Counting objects:  80% (3408/4259)
+remote: Counting objects:  81% (3450/4259)
+remote: Counting objects:  82% (3493/4259)
+remote: Counting objects:  83% (3535/4259)
+remote: Counting objects:  84% (3578/4259)
+remote: Counting objects:  85% (3621/4259)
+remote: Counting objects:  86% (3663/4259)
+remote: Counting objects:  87% (3706/4259)
+remote: Counting objects:  88% (3748/4259)
+remote: Counting objects:  89% (3791/4259)
+remote: Counting objects:  90% (3834/4259)
+remote: Counting objects:  91% (3876/4259)
+remote: Counting objects:  92% (3919/4259)
+remote: Counting objects:  93% (3961/4259)
+remote: Counting objects:  94% (4004/4259)
+remote: Counting objects:  95% (4047/4259)
+remote: Counting objects:  96% (4089/4259)
+remote: Counting objects:  97% (4132/4259)
+remote: Counting objects:  98% (4174/4259)
+remote: Counting objects:  99% (4217/4259)
+remote: Counting objects: 100% (4259/4259)
+remote: Counting objects: 100% (4259/4259), done.
+remote: Compressing objects:   0% (1/4132)
+remote: Compressing objects:   1% (42/4132)
+remote: Compressing objects:   2% (83/4132)
+remote: Compressing objects:   3% (124/4132)
+remote: Compressing objects:   4% (166/4132)
+remote: Compressing objects:   5% (207/4132)
+remote: Compressing objects:   6% (248/4132)
+remote: Compressing objects:   7% (290/4132)
+remote: Compressing objects:   8% (331/4132)
+remote: Compressing objects:   9% (372/4132)
+remote: Compressing objects:  10% (414/4132)
+remote: Compressing objects:  11% (455/4132)
+remote: Compressing objects:  12% (496/4132)
+remote: Compressing objects:  13% (538/4132)
+remote: Compressing objects:  14% (579/4132)
+remote: Compressing objects:  15% (620/4132)
+remote: Compressing objects:  16% (662/4132)
+remote: Compressing objects:  17% (703/4132)
+remote: Compressing objects:  18% (744/4132)
+remote: Compressing objects:  19% (786/4132)
+remote: Compressing objects:  20% (827/4132)
+remote: Compressing objects:  21% (868/4132)
+remote: Compressing objects:  22% (910/4132)
+remote: Compressing objects:  23% (951/4132)
+remote: Compressing objects:  24% (992/4132)
+remote: Compressing objects:  25% (1033/4132)
+remote: Compressing objects:  26% (1075/4132)
+remote: Compressing objects:  27% (1116/4132)
+remote: Compressing objects:  28% (1157/4132)
+remote: Compressing objects:  29% (1199/4132)
+remote: Compressing objects:  30% (1240/4132)
+remote: Compressing objects:  31% (1281/4132)
+remote: Compressing objects:  32% (1323/4132)
+remote: Compressing objects:  33% (1364/4132)
+remote: Compressing objects:  34% (1405/4132)
+remote: Compressing objects:  35% (1447/4132)
+remote: Compressing objects:  36% (1488/4132)
+remote: Compressing objects:  37% (1529/4132)
+remote: Compressing objects:  38% (1571/4132)
+remote: Compressing objects:  39% (1612/4132)
+remote: Compressing objects:  40% (1653/4132)
+remote: Compressing objects:  41% (1695/4132)
+remote: Compressing objects:  42% (1736/4132)
+remote: Compressing objects:  43% (1777/4132)
+remote: Compressing objects:  44% (1819/4132)
+remote: Compressing objects:  45% (1860/4132)
+remote: Compressing objects:  46% (1901/4132)
+remote: Compressing objects:  47% (1943/4132)
+remote: Compressing objects:  48% (1984/4132)
+remote: Compressing objects:  49% (2025/4132)
+remote: Compressing objects:  50% (2066/4132)
+remote: Compressing objects:  51% (2108/4132)
+remote: Compressing objects:  52% (2149/4132)
+remote: Compressing objects:  53% (2190/4132)
+remote: Compressing objects:  54% (2232/4132)
+remote: Compressing objects:  55% (2273/4132)
+remote: Compressing objects:  56% (2314/4132)
+remote: Compressing objects:  57% (2356/4132)
+remote: Compressing objects:  58% (2397/4132)
+remote: Compressing objects:  59% (2438/4132)
+remote: Compressing objects:  60% (2480/4132)
+remote: Compressing objects:  61% (2521/4132)
+remote: Compressing objects:  62% (2562/4132)
+remote: Compressing objects:  63% (2604/4132)
+remote: Compressing objects:  63% (2638/4132)
+remote: Compressing objects:  64% (2645/4132)
+remote: Compressing objects:  65% (2686/4132)
+remote: Compressing objects:  66% (2728/4132)
+remote: Compressing objects:  67% (2769/4132)
+remote: Compressing objects:  68% (2810/4132)
+remote: Compressing objects:  69% (2852/4132)
+remote: Compressing objects:  70% (2893/4132)
+remote: Compressing objects:  71% (2934/4132)
+remote: Compressing objects:  72% (2976/4132)
+remote: Compressing objects:  73% (3017/4132)
+remote: Compressing objects:  74% (3058/4132)
+remote: Compressing objects:  75% (3099/4132)
+remote: Compressing objects:  76% (3141/4132)
+remote: Compressing objects:  77% (3182/4132)
+remote: Compressing objects:  78% (3223/4132)
+remote: Compressing objects:  79% (3265/4132)
+remote: Compressing objects:  80% (3306/4132)
+remote: Compressing objects:  81% (3347/4132)
+remote: Compressing objects:  82% (3389/4132)
+remote: Compressing objects:  83% (3430/4132)
+remote: Compressing objects:  83% (3456/4132)
+remote: Compressing objects:  84% (3471/4132)
+remote: Compressing objects:  85% (3513/4132)
+remote: Compressing objects:  86% (3554/4132)
+remote: Compressing objects:  87% (3595/4132)
+remote: Compressing objects:  88% (3637/4132)
+remote: Compressing objects:  89% (3678/4132)
+remote: Compressing objects:  90% (3719/4132)
+remote: Compressing objects:  91% (3761/4132)
+remote: Compressing objects:  92% (3802/4132)
+remote: Compressing objects:  93% (3843/4132)
+remote: Compressing objects:  94% (3885/4132)
+remote: Compressing objects:  95% (3926/4132)
+remote: Compressing objects:  96% (3967/4132)
+remote: Compressing objects:  97% (4009/4132)
+remote: Compressing objects:  98% (4050/4132)
+remote: Compressing objects:  99% (4091/4132)
+remote: Compressing objects: 100% (4132/4132)
+remote: Compressing objects: 100% (4132/4132), done.
+Receiving objects:   0% (1/4259)
+Receiving objects:   1% (43/4259)
+Receiving objects:   2% (86/4259)
+Receiving objects:   3% (128/4259)
+Receiving objects:   4% (171/4259)
+Receiving objects:   5% (213/4259)
+Receiving objects:   6% (256/4259)
+Receiving objects:   7% (299/4259)
+Receiving objects:   8% (341/4259)
+Receiving objects:   9% (384/4259)
+Receiving objects:  10% (426/4259)
+Receiving objects:  11% (469/4259)
+Receiving objects:  12% (512/4259)
+Receiving objects:  13% (554/4259)
+Receiving objects:  14% (597/4259)
+Receiving objects:  15% (639/4259)
+Receiving objects:  16% (682/4259)
+Receiving objects:  17% (725/4259)
+Receiving objects:  18% (767/4259)
+Receiving objects:  19% (810/4259)
+Receiving objects:  20% (852/4259)
+Receiving objects:  21% (895/4259)
+Receiving objects:  22% (937/4259)
+Receiving objects:  23% (980/4259)
+Receiving objects:  24% (1023/4259)
+Receiving objects:  25% (1065/4259)
+Receiving objects:  26% (1108/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  27% (1150/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  28% (1193/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  29% (1236/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  30% (1278/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  31% (1321/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  32% (1363/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  33% (1406/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  34% (1449/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  35% (1491/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  36% (1534/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  37% (1576/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  38% (1619/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  39% (1662/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  40% (1704/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  41% (1747/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  42% (1789/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  43% (1832/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  44% (1874/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  45% (1917/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  46% (1960/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  47% (2002/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  48% (2045/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  49% (2087/4259), 3.41 MiB | 6.81 MiB/s
+Receiving objects:  49% (2118/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  50% (2130/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  51% (2173/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  52% (2215/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  53% (2258/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  54% (2300/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  55% (2343/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  56% (2386/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  57% (2428/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  58% (2471/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  59% (2513/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  60% (2556/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  61% (2598/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  62% (2641/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  63% (2684/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  64% (2726/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  65% (2769/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  66% (2811/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  67% (2854/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  68% (2897/4259), 6.46 MiB | 6.45 MiB/s
+Receiving objects:  69% (2939/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  70% (2982/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  71% (3024/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  72% (3067/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  73% (3110/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  74% (3152/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  75% (3195/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  76% (3237/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  77% (3280/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  78% (3323/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  79% (3365/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  80% (3408/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  81% (3450/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  82% (3493/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  83% (3535/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  84% (3578/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  85% (3621/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  85% (3646/4259), 9.47 MiB | 6.30 MiB/s
+Receiving objects:  86% (3663/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  87% (3706/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  88% (3748/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  89% (3791/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  90% (3834/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  91% (3876/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  92% (3919/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  93% (3961/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  94% (4004/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  95% (4047/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  96% (4089/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  97% (4132/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  98% (4174/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects:  99% (4217/4259), 12.29 MiB | 6.12 MiB/s
+remote: Total 4259 (delta 81), reused 547 (delta 53), pack-reused 0
+Receiving objects: 100% (4259/4259), 12.29 MiB | 6.12 MiB/s
+Receiving objects: 100% (4259/4259), 13.99 MiB | 6.08 MiB/s, done.
+Resolving deltas:   0% (0/81)
+Resolving deltas:   1% (1/81)
+Resolving deltas:   2% (2/81)
+Resolving deltas:   3% (3/81)
+Resolving deltas:   4% (4/81)
+Resolving deltas:   6% (5/81)
+Resolving deltas:   7% (6/81)
+Resolving deltas:   8% (7/81)
+Resolving deltas:   9% (8/81)
+Resolving deltas:  11% (9/81)
+Resolving deltas:  12% (10/81)
+Resolving deltas:  13% (11/81)
+Resolving deltas:  16% (13/81)
+Resolving deltas:  17% (14/81)
+Resolving deltas:  18% (15/81)
+Resolving deltas:  19% (16/81)
+Resolving deltas:  20% (17/81)
+Resolving deltas:  22% (18/81)
+Resolving deltas:  23% (19/81)
+Resolving deltas:  24% (20/81)
+Resolving deltas:  25% (21/81)
+Resolving deltas:  27% (22/81)
+Resolving deltas:  29% (24/81)
+Resolving deltas:  30% (25/81)
+Resolving deltas:  32% (26/81)
+Resolving deltas:  33% (27/81)
+Resolving deltas:  34% (28/81)
+Resolving deltas:  35% (29/81)
+Resolving deltas:  37% (30/81)
+Resolving deltas:  38% (31/81)
+Resolving deltas:  39% (32/81)
+Resolving deltas:  40% (33/81)
+Resolving deltas:  41% (34/81)
+Resolving deltas:  43% (35/81)
+Resolving deltas:  44% (36/81)
+Resolving deltas:  45% (37/81)
+Resolving deltas:  46% (38/81)
+Resolving deltas:  48% (39/81)
+Resolving deltas:  49% (40/81)
+Resolving deltas:  50% (41/81)
+Resolving deltas:  51% (42/81)
+Resolving deltas:  53% (43/81)
+Resolving deltas:  54% (44/81)
+Resolving deltas:  59% (48/81)
+Resolving deltas:  60% (49/81)
+Resolving deltas:  62% (51/81)
+Resolving deltas:  64% (52/81)
+Resolving deltas:  65% (53/81)
+Resolving deltas:  66% (54/81)
+Resolving deltas:  67% (55/81)
+Resolving deltas:  69% (56/81)
+Resolving deltas:  70% (57/81)
+Resolving deltas:  71% (58/81)
+Resolving deltas:  72% (59/81)
+Resolving deltas:  74% (60/81)
+Resolving deltas:  75% (61/81)
+Resolving deltas:  76% (62/81)
+Resolving deltas:  77% (63/81)
+Resolving deltas:  79% (64/81)
+Resolving deltas:  80% (65/81)
+Resolving deltas:  81% (66/81)
+Resolving deltas:  82% (67/81)
+Resolving deltas:  83% (68/81)
+Resolving deltas:  85% (69/81)
+Resolving deltas:  86% (70/81)
+Resolving deltas:  87% (71/81)
+Resolving deltas:  88% (72/81)
+Resolving deltas:  90% (73/81)
+Resolving deltas:  91% (74/81)
+Resolving deltas:  92% (75/81)
+Resolving deltas:  93% (76/81)
+Resolving deltas:  95% (77/81)
+Resolving deltas:  96% (78/81)
+Resolving deltas:  97% (79/81)
+Resolving deltas:  98% (80/81)
+Resolving deltas: 100% (81/81)
+Resolving deltas: 100% (81/81), done.
+From https://github.com/leanprover-community/mathlib4
+ * [new ref]         cc016b6463c62bb4ae5ddb751734ee4d41a6f811 -> origin/master
+##[endgroup]
+##[group]Determining the checkout info
+##[endgroup]
+##[group]Checking out the ref
+[command]/usr/bin/git checkout --progress --force -B master refs/remotes/origin/master
+Reset branch 'master'
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+##[endgroup]
+[command]/usr/bin/git log -1 --format='%H'
+'cc016b6463c62bb4ae5ddb751734ee4d41a6f811'
+##[group]Run find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+[36;1mfind Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+##[group]Run lake exe cache clean
+[36;1mlake exe cache clean[0m
+[36;1mlake exe cache get[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+info: cloning https://github.com/leanprover/std4 to ./lake-packages/std
+info: cloning https://github.com/gebner/quote4 to ./lake-packages/Qq
+info: cloning https://github.com/JLimperg/aesop to ./lake-packages/aesop
+info: cloning https://github.com/mhuisi/lean4-cli.git to ./lake-packages/Cli
+info: cloning https://github.com/EdAyers/ProofWidgets4 to ./lake-packages/proofwidgets
+info: Downloading proofwidgets/v0.0.13/linux-64.tar.gz
+info: Unpacking proofwidgets/v0.0.13/linux-64.tar.gz
+info: [1/9] Building Cache.IO
+info: [2/9] Compiling Cache.IO
+info: [2/9] Building Cache.Hashing
+info: [3/9] Compiling Cache.Hashing
+info: [3/9] Building Cache.Requests
+info: [5/9] Compiling Cache.Requests
+info: [5/9] Building Cache.Main
+info: [7/9] Compiling Cache.Main
+info: [9/9] Linking cache
+No files to download
+Decompressing 3688 file(s)
+unpacked in 5675 ms
+##[group]Run liskin/gh-problem-matcher-wrap@v2
+with:
+  linters: gcc
+  run: bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
+
+##[endgroup]
+Add matcher: /home/lean/actions-runner/_work/_actions/liskin/gh-problem-matcher-wrap/v2/problem-matchers/gcc.json
+[command]/usr/bin/bash -o pipefail -c env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log
+[1303/3714] Compiling Std.Util.TermUnsafe
+[1303/3714] Compiling Std.Data.List.Init.Lemmas
+[1303/3714] Compiling Std.Tactic.Lint.Basic
+[1303/3714] Compiling Std.Lean.NameMapAttribute
+[1303/3714] Compiling Std.Data.Array.Init.Basic
+[1303/3714] Compiling Std.Data.Ord
+[1304/3714] Compiling Std.Tactic.NoMatch
+[1305/3714] Compiling Std.Data.Array.Basic
+[1305/3714] Compiling Std.Tactic.OpenPrivate
+[1305/3714] Compiling Std.Util.LibraryNote
+[1305/3714] Compiling Std.Tactic.Lint.TypeClass
+[1305/3714] Compiling Std.Tactic.Lint
+[1306/3714] Compiling Std.Lean.Util.Path
+[1307/3714] Compiling Std.Tactic.Lint.Misc
+[1308/3714] Compiling Std.Tactic.Lint.Simp
+[1309/3714] Compiling Mathlib.Tactic.ToLevel
+[1310/3714] Compiling Std.Lean.Command
+[1311/3714] Compiling Mathlib.Tactic.PPWithUniv
+[1312/3714] Compiling Mathlib.Mathport.Rename
+[1313/3714] Compiling Mathlib.Lean.CoreM
+[1314/3714] Compiling Std.Tactic.Lint.Frontend
+[1315/3714] Compiling Mathlib.Util.WhatsNew
+[1316/3714] Compiling Mathlib.Tactic.DeriveToExpr
+[1317/3714] Compiling Mathlib.Tactic.ToExpr
+[1353/3714] Building scripts.runLinter
+[1354/3714] Building scripts.checkYaml
+[3471/3714] Compiling scripts.checkYaml
+[3707/3714] Compiling scripts.runLinter
+[3714/3714] Linking runLinter
+[3714/3714] Linking checkYaml
+Remove matcher: gcc
+##[group]Run ! grep "stdout:" stdout.log
+[36;1m! grep "stdout:" stdout.log[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+##[group]Run lake build -KCI MathlibExtras
+[36;1mlake build -KCI MathlibExtras[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+##[group]Run lake exe cache commit || true
+[36;1mlake exe cache commit || true[0m
+[36;1mlake exe cache put || true[0m
+shell: /usr/bin/bash -e {0}
+env:
+  MATHLIB_CACHE_SAS: ***
+##[endgroup]
+Please commit your changes first
+Compressing cache
+Attempting to upload 3688 file(s)
+##[group]Run lake build Archive
+[36;1mlake build Archive[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+[433/943] Building Archive.Arithcc
+[767/1464] Building Archive.Imo.Imo1977Q6
+[861/1637] Building Archive.Imo.Imo2011Q5
+[871/1637] Building Archive.Imo.Imo1959Q1
+[928/1695] Building Archive.Imo.Imo1964Q1
+[948/1695] Building Archive.Examples.PropEncodable
+[956/1695] Building Archive.MiuLanguage.Basic
+[957/1695] Building Archive.Imo.Imo2019Q1
+[967/1695] Building Archive.Imo.Imo1988Q6
+[967/1695] Building Archive.Imo.Imo2001Q6
+[973/1847] Building Archive.Imo.Imo1969Q1
+[984/1866] Building Archive.Wiedijk100Theorems.AscendingDescendingSequences
+[990/1866] Building Archive.Imo.Imo2013Q1
+[1004/1866] Building Archive.Imo.Imo1998Q2
+[1005/1866] Building Archive.Imo.Imo1981Q3
+[1010/1866] Building Archive.OxfordInvariants.Summer2021.Week3P1
+[1032/1866] Building Archive.Imo.Imo1987Q1
+[1039/1866] Building Archive.MiuLanguage.DecisionNec
+[1058/1866] Building Archive.Imo.Imo2021Q1
+[1059/1866] Building Archive.Wiedijk100Theorems.InverseTriangleSum
+[1060/1866] Building Archive.Imo.Imo2011Q3
+[1063/1866] Building Archive.Imo.Imo2008Q2
+[1064/1866] Building Archive.Imo.Imo2005Q3
+[1069/1866] Building Archive.Wiedijk100Theorems.CubingACube
+[1074/1866] Building Archive.Imo.Imo1975Q1
+[1078/1866] Building Archive.Imo.Imo1994Q1
+[1084/1866] Building Archive.MiuLanguage.DecisionSuf
+[1089/1866] Building Archive.Imo.Imo1960Q1
+[1090/1866] Building Archive.Imo.Imo1962Q1
+[1093/1866] Building Archive.Wiedijk100Theorems.Konigsberg
+[1096/1866] Building Archive.Imo.Imo2013Q5
+[1323/1866] Building Archive.Imo.Imo2019Q4
+[1399/1866] Building Archive.Examples.MersennePrimes
+[1403/1866] Building Archive.Imo.Imo2006Q5
+[1483/1866] Building Archive.Wiedijk100Theorems.PerfectNumbers
+[1505/1866] Building Archive.Imo.Imo2008Q4
+[1525/1866] Building Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
+[1531/1866] Building Archive.Wiedijk100Theorems.Partition
+[1551/1866] Building Archive.Imo.Imo1972Q5
+[1555/1866] Building Archive.Sensitivity
+[1632/1866] Building Archive.Wiedijk100Theorems.BallotProblem
+[1635/1866] Building Archive.Imo.Imo2005Q4
+[1650/1866] Building Archive.Wiedijk100Theorems.FriendshipGraphs
+[1710/1866] Building Archive.Imo.Imo2001Q2
+[1743/1866] Building Archive.Imo.Imo2020Q2
+[1744/1866] Building Archive.Wiedijk100Theorems.SolutionOfCubic
+[1791/1866] Building Archive.Imo.Imo2006Q3
+[1820/1866] Building Archive.Imo.Imo2008Q3
+[1825/1866] Building Archive.Wiedijk100Theorems.HeronsFormula
+[1829/1866] Building Archive.Imo.Imo1962Q4
+[1839/1866] Building Archive.Wiedijk100Theorems.AreaOfACircle
+[1844/1866] Building Archive.Imo.Imo2019Q2
+[1848/1866] Building Archive.Wiedijk100Theorems.BirthdayProblem
+[1853/1866] Building Archive.Wiedijk100Theorems.AbelRuffini
+[1865/1866] Building Archive
+##[group]Run lake build Counterexamples
+[36;1mlake build Counterexamples[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+[437/1378] Building Counterexamples.Girard
+[543/1384] Building Counterexamples.LinearOrderWithPosMulPosEqZero
+[1366/1767] Building Counterexamples.DirectSumIsInternal
+[1383/1767] Building Counterexamples.MapFloor
+[1397/1767] Building Counterexamples.Monic_nonRegular
+[1477/1767] Building Counterexamples.CharPZeroNeCharZero
+[1487/1767] Building Counterexamples.ZeroDivisorsInAddMonoidAlgebras
+[1489/1767] Building Counterexamples.CanonicallyOrderedCommSemiringTwoMul
+[1525/1767] Building Counterexamples.HomogeneousPrimeNotPrime
+[1571/1767] Building Counterexamples.SeminormLatticeNotDistrib
+[1633/1767] Building Counterexamples.Pseudoelement
+[1708/1767] Building Counterexamples.QuadraticForm
+[1734/1767] Building Counterexamples.SorgenfreyLine
+[1747/1767] Building Counterexamples.Cyclotomic105
+[1754/1767] Building Counterexamples.Phillips
+[1766/1767] Building Counterexamples
+##[group]Run python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+[36;1mpython3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml[0m
+[36;1mbuild/bin/checkYaml[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+##[group]Run make -j 8 test
+[36;1mmake -j 8 test[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+lake build
+lake env lean test/polyrith.lean
+lake env lean test/rsuffices.lean
+lake env lean test/conv.lean
+lake env lean test/apply_with.lean
+lake env lean test/slim_check.lean
+lake env lean test/solve_by_elim/instances.lean
+lake env lean test/solve_by_elim/basic.lean
+lake env lean test/nomatch.lean
+lake env lean test/SplitIfs.lean
+lake env lean test/Group.lean
+lake env lean test/trace.lean
+lake env lean test/choose.lean
+lake env lean test/Continuity.lean
+lake env lean test/CompileInductive.lean
+lake env lean test/PermuteGoals.lean
+7
+hello world
+lake env lean test/toAdditive.lean
+lake env lean test/interval_cases.lean
+test/slim_check.lean:96:6: warning: unused variable `this` [linter.unusedVariables]
+test/slim_check.lean:103:6: warning: unused variable `this` [linter.unusedVariables]
+lake env lean test/GeneralizeProofs.lean
+lake env lean test/apply_congr.lean
+lake env lean test/GCongr/inequalities.lean
+lake env lean test/GCongr/mod.lean
+test/GeneralizeProofs.lean:7:4: warning: declaration uses 'sorry'
+test/GeneralizeProofs.lean:9:0: warning: declaration uses 'sorry'
+test/GeneralizeProofs.lean:28:0: warning: declaration uses 'sorry'
+test/GeneralizeProofs.lean:35:0: warning: declaration uses 'sorry'
+test/GeneralizeProofs.lean:41:0: warning: declaration uses 'sorry'
+lake env lean test/observe.lean
+lake env lean test/Existsi.lean
+lake env lean test/Clear!.lean
+test/interval_cases.lean:150:6: warning: unused variable `this` [linter.unusedVariables]
+lake env lean test/basicTactics.lean
+lake env lean test/Expr.lean
+lake env lean test/ExtractLets.lean
+lake env lean test/measurability.lean
+lake env lean test/LibrarySearch/observe.lean
+lake env lean test/LibrarySearch/IsCompact.lean
+lake env lean test/LibrarySearch/basic.lean
+before: fun f n₁ n₂ n₃ n₄ => f (f n₁ n₂) (f n₃ n₄)
+after: fun f n₁ n₂ n₃ n₄ => f (f n₄ n₃) (f n₂ n₁)
+new type: (ℕ → ℕ → ℕ) → ℕ → ℕ → ℕ → ℕ → ℕ
+after: fun f n₁ n₂ n₃ n₄ => f (f n₄ n₃) (f n₂ n₁)
+lake env lean test/finset_repr.lean
+lake env lean test/HigherOrder.lean
+lake env lean test/Qify.lean
+test/GCongr/inequalities.lean:111:0: warning: declaration uses 'sorry'
+lake env lean test/nontriviality.lean
+lake env lean test/TypeCheck.lean
+lake env lean test/Have.lean
+2023-08-30T08:21:05.6201934Z
+2023-08-30T08:21:05.6202064Z
+2023-08-30T08:21:05.6202071Z
+2023-08-30T08:21:05.6202193Z
+lake env lean test/Traversable.lean
+lake env lean test/triv.lean
+Type
+Bool
+Nat
+Nat
+Prop
+Prop
+Nat -> Nat
+lake env lean test/trans.lean
+lake env lean test/restate_axiom.lean
+Try this: refine IsCompact.exists_forall_le hK ?ne_s ?hf
+Try this: refine ex_of_PSigma ?a✝
+Try this: refine Iff.mp Set.nonempty_def ?a✝
+Try this: refine Iff.mp Set.inter_nonempty ?a✝
+Try this: refine Iff.mp Set.not_disjoint_iff ?a✝
+Try this: refine ex_of_psig ?a✝
+Try this: refine Iff.mp not_forall_not ?a✝
+Try this: refine Iff.mp bex_def ?a✝
+Try this: refine Iff.mp Filter.frequently_principal ?a✝
+Try this: refine Iff.mp Set.inter_nonempty_iff_exists_left ?a✝
+Try this: refine Iff.mp Set.inter_nonempty_iff_exists_right ?a✝
+Try this: refine ExistsUnique.exists ?a✝
+Try this: refine Iff.mp nonempty_subtype ?a✝
+Try this: refine Iff.mp Filter.frequently_top ?a✝
+Try this: refine Subtype.existsOfSubtype ?a✝
+Try this: refine Set.exists_min_image K (fun a => f a) ?h1 ?a✝
+Try this: refine Iff.mpr IsEmpty.exists_iff ?a✝
+Try this: refine Exists.intro ?w ?h
+Try this: refine exists_of_bex ?a✝
+Try this: refine Filter.Tendsto.exists_within_forall_le ?hs ?hf
+Try this: refine Iff.mpr Unique.exists_iff ?a✝
+Try this: refine Iff.mp exists_unique_iff_exists ?a✝
+Try this: refine Filter.Frequently.exists ?hp
+Try this: refine Iff.mp Decidable.not_forall_not ?a✝
+Try this: refine Iff.mp (exists_congr ?h) ?a✝
+Try this: refine Exists.imp ?h ?a✝
+Try this: refine Iff.mp (exists_ge_and_iff_exists ?hP) ?a✝
+Try this: refine Filter.Eventually.exists ?hp
+Try this: refine Iff.mpr (Equiv.exists_congr_left ?f) ?a✝
+Try this: refine ?self.nonempty
+Try this: refine Dense.exists_mem_open ?hs ?ho ?hne
+Try this: refine Iff.mpr (exists_congr ?h) ?a✝
+Try this: refine Iff.mp (exists_le_and_iff_exists ?hP) ?a✝
+Try this: refine Filter.HasBasis.ex_mem ?h
+Try this: refine Iff.mpr (Function.Surjective.exists ?hf) ?a✝
+Try this: refine ContinuousOn.exists_forall_le' ?hf ?hsc ?h₀ ?hc
+Try this: refine Exists.imp' ?f ?hpq ?a✝
+test/LibrarySearch/IsCompact.lean:5:0: warning: declaration uses 'sorry'
+test/LibrarySearch/IsCompact.lean:5:33: warning: unused variable `hK` [linter.unusedVariables]
+lake env lean test/congrm.lean
+lake env lean test/SwapVar.lean
+test/nontriviality.lean:50:8: warning: declaration uses 'sorry'
+test/nontriviality.lean:56:8: warning: declaration uses 'sorry'
+test/nontriviality.lean:96:4: warning: declaration uses 'sorry'
+test/nontriviality.lean:97:0: warning: declaration uses 'sorry'
+test/nontriviality.lean:99:0: warning: declaration uses 'sorry'
+lake env lean test/Find.lean
+lake env lean test/search/DepthFirst.lean
+A.a' (self : A) : self.x = 1
+A.a (self : A) : self.x = 1
+A.foo (self : A) : self.x = 1
+A.borp_lemma (self : A) : self.x = 2
+lake env lean test/search/BestFirst.lean
+lake env lean test/fail_if_no_progress.lean
+lake env lean test/fin_cases.lean
+test/congrm.lean:13:0: warning: declaration uses 'sorry'
+test/congrm.lean:26:37: warning: unused variable `y` [linter.unusedVariables]
+test/congrm.lean:26:69: warning: unused variable `x` [linter.unusedVariables]
+lake env lean test/recover.lean
+lake env lean test/borelize.lean
+lake env lean test/TermCongr2.lean
+2023-08-30T08:21:10.6288071Z
+lake env lean test/InferParam.lean
+[(10, 10),
+ (11, 10),
+ (9, 10),
+ (8, 10),
+ (7, 10),
+ (6, 10),
+ (6, 11),
+ (6, 9),
+ (7, 9),
+ (6, 8),
+ (7, 8),
+ (6, 7),
+ (7, 7),
+ (6, 6),
+ (7, 6),
+ (8, 6),
+ (8, 7),
+ (9, 6),
+ (9, 7),
+ (8, 8),
+ (10, 6),
+ (9, 8),
+ (8, 9),
+ (10, 7),
+ (11, 6),
+ (9, 9),
+ (11, 7),
+ (10, 8),
+ (12, 6),
+ (10, 9),
+ (11, 8),
+ (13, 6),
+ (12, 7),
+ (11, 9),
+ (12, 8),
+ (13, 7),
+ (12, 9),
+ (13, 8),
+ (14, 7),
+ (13, 9),
+ (12, 10),
+ (14, 8),
+ (13, 10),
+ (12, 11),
+ (15, 7),
+ (14, 6),
+ (15, 6),
+ (15, 8),
+ (14, 9),
+ (16, 6),
+ (15, 9),
+ (14, 10),
+ (16, 8),
+ (17, 6),
+ (16, 7),
+ (15, 10),
+ (14, 11),
+ (17, 7),
+ (15, 11),
+ (13, 11),
+ (13, 12),
+ (14, 12),
+ (12, 12),
+ (11, 12),
+ (10, 12),
+ (9, 12),
+ (8, 12),
+ (7, 12),
+ (6, 12),
+ (6, 13),
+ (7, 13),
+ (7, 11),
+ (8, 11),
+ (9, 11),
+ (10, 11),
+ (6, 14),
+ (11, 11),
+ (7, 14),
+ (6, 15),
+ (8, 14),
+ (7, 15),
+ (9, 14),
+ (8, 15),
+ (8, 13),
+ (9, 13),
+ (10, 13),
+ (6, 16),
+ (11, 13),
+ (10, 14),
+ (12, 13),
+ (11, 14),
+ (7, 16),
+ (6, 17),
+ (10, 15),
+ (8, 16),
+ (7, 17),
+ (13, 13),
+ (12, 14),
+ (9, 16),
+ (8, 17),
+ (11, 15),
+ (9, 15),
+ (10, 16),
+ (9, 17),
+ (14, 13),
+ (13, 14),
+ (11, 16),
+ (10, 17),
+ (14, 14),
+ (13, 15),
+ (15, 13),
+ (12, 16),
+ (11, 17),
+ (15, 14),
+ (14, 15),
+ (16, 13),
+ (15, 12),
+ (16, 12),
+ (13, 16),
+ (12, 17),
+ (12, 15),
+ (17, 12),
+ (16, 11),
+ (17, 11),
+ (16, 10),
+ (17, 10),
+ (16, 9),
+ (17, 9),
+ (18, 9),
+ (17, 8),
+ (18, 8),
+ (19, 8),
+ (18, 7),
+ (19, 7),
+ (18, 6),
+ (19, 6),
+ (20, 6),
+ (21, 6),
+ (20, 7),
+ (20, 5),
+ (21, 5),
+ (20, 4),
+ (21, 4),
+ (20, 3),
+ (21, 3),
+ (19, 3),
+ (18, 3),
+ (17, 3),
+ (16, 3),
+ (15, 3),
+ (14, 3),
+ (13, 3),
+ (12, 3),
+ (11, 3),
+ (10, 3),
+ (9, 3),
+ (8, 3),
+ (7, 3),
+ (6, 3),
+ (5, 3),
+ (4, 3),
+ (3, 3),
+ (2, 3),
+ (1, 3),
+ (0, 3),
+ (-1, 3),
+ (0, 4),
+ (0, 2),
+ (1, 2),
+ (-1, 2),
+ (0, 1),
+ (1, 1),
+ (-1, 1),
+ (0, 0)]
+lake env lean test/irreducibleDef.lean
+lake env lean test/coe.lean
+lake env lean test/NoncommRing.lean
+lake env lean test/Zify.lean
+lake env lean test/lift.lean
+lake env lean test/mod_cases.lean
+lake env lean test/symm.lean
+String.set_next_add: ∀ (s : String) (i : String.Pos) (c : Char) (b₁ b₂ : Nat),
+  (String.next s i).byteIdx + b₁ = (String.endPos s).byteIdx + b₂ →
+    (String.next (String.set s i c) i).byteIdx + b₁ = (String.endPos (String.set s i c)).byteIdx + b₂
+Array.mapIdxM.proof_1: ∀ {α : Type ?u.10097} (as : Array α), Array.size as + 0 = Array.size as + 0
+Nat.add_right_comm: ∀ (n m k : Nat), n + m + k = n + k + m
+String.set_next_add.foo: ∀ (i : String.Pos) (c : Char) (cs : List Char) (a : String.Pos) (b₁ b₂ : Nat),
+  String.csize (String.utf8GetAux cs a i) + b₁ = String.utf8ByteSize.go cs + b₂ →
+    String.csize (String.utf8GetAux (String.utf8SetAux c cs a i) a i) + b₁ =
+      String.utf8ByteSize.go (String.utf8SetAux c cs a i) + b₂
+PUnit.subsingleton: ∀ (a b : PUnit), a = b
+PUnit.eq_punit: ∀ (a : PUnit), a = PUnit.unit
+Array.findIdx?.proof_1: ∀ {α : Type ?u.54034} (as : Array α), Array.size as + 0 = Array.size as + 0
+Nat.add_comm: ∀ (n m : Nat), n + m = m + n
+Nat.add_assoc: ∀ (n m k : Nat), n + m + k = n + (m + k)
+Nat.add_left_comm: ∀ (n m k : Nat), n + (m + k) = m + (n + k)
+add_comm_zero: ∀ {n : Nat}, 0 + n = n + 0
+PUnit.subsingleton: ∀ (a b : PUnit), a = b
+PUnit.eq_punit: ∀ (a : PUnit), a = PUnit.unit
+Nat.add_comm: ∀ (n m : Nat), n + m = m + n
+add_comm_zero: ∀ {n : Nat}, 0 + n = n + 0
+String.set_next_add: ∀ (s : String) (i : String.Pos) (c : Char) (b₁ b₂ : Nat),
+  (String.next s i).byteIdx + b₁ = (String.endPos s).byteIdx + b₂ →
+    (String.next (String.set s i c) i).byteIdx + b₁ = (String.endPos (String.set s i c)).byteIdx + b₂
+Array.mapIdxM.proof_1: ∀ {α : Type ?u.251324} (as : Array α), Array.size as + 0 = Array.size as + 0
+Nat.add_right_comm: ∀ (n m k : Nat), n + m + k = n + k + m
+String.set_next_add.foo: ∀ (i : String.Pos) (c : Char) (cs : List Char) (a : String.Pos) (b₁ b₂ : Nat),
+  String.csize (String.utf8GetAux cs a i) + b₁ = String.utf8ByteSize.go cs + b₂ →
+    String.csize (String.utf8GetAux (String.utf8SetAux c cs a i) a i) + b₁ =
+      String.utf8ByteSize.go (String.utf8SetAux c cs a i) + b₂
+Array.findIdx?.proof_1: ∀ {α : Type ?u.267069} (as : Array α), Array.size as + 0 = Array.size as + 0
+Nat.add_comm: ∀ (n m : Nat), n + m = m + n
+Nat.add_assoc: ∀ (n m k : Nat), n + m + k = n + (m + k)
+Nat.add_left_comm: ∀ (n m k : Nat), n + (m + k) = m + (n + k)
+add_comm_zero: ∀ {n : Nat}, 0 + n = n + 0
+Nat.max: Nat → Nat → Nat
+Fin.val: {n : Nat} → Fin n → Nat
+Nat.land: Nat → Nat → Nat
+Nat.add: Nat → Nat → Nat
+Lean.reduceNat: Nat → Nat
+String.utf16PosToCodepointPos: String → Nat → Nat
+Nat.div: Nat → Nat → Nat
+Nat.imax: Nat → Nat → Nat
+Nat.modCore: Nat → Nat → Nat
+Lean.FileMap.toPosition.toColumn: String.Pos → String → String.Pos → Nat → Nat
+Lean.Expr.headNumArgs.go: Lean.Expr → Nat → Nat
+Nat.nextPowerOfTwo.go: Nat → (power : Nat) → power > 0 → Nat
+Nat.Linear.Var.denote: Nat.Linear.Context → Nat.Linear.Var → Nat
+String.utf16PosToCodepointPosFrom: String → Nat → String.Pos → Nat
+Lean.Level.getOffsetAux: Lean.Level → Nat → Nat
+String.codepointPosToUtf16PosFrom: String → Nat → String.Pos → Nat
+Nat.shiftLeft: Nat → Nat → Nat
+String.offsetOfPosAux: String → String.Pos → String.Pos → Nat → Nat
+Nat.pow: Nat → Nat → Nat
+List.findIdx.go: {α : Type ?u.295259} → (α → Bool) → List α → Nat → Nat
+maximum number of search results reached
+Nat.add_le_add_right: ∀ {n m : Nat}, n ≤ m → ∀ (k : Nat), n + k ≤ m + k
+Nat.add_le_add: ∀ {a b c d : Nat}, a ≤ b → c ≤ d → a + c ≤ b + d
+lake env lean test/matrix.lean
+lake env lean test/InstanceTransparency.lean
+test/Zify.lean:10:0: warning: declaration uses 'sorry'
+lake env lean test/runCmd.lean
+test/mod_cases.lean:3:0: warning: declaration uses 'sorry'
+test/mod_cases.lean:10:0: warning: declaration uses 'sorry'
+lake env lean test/ClearExcept.lean
+lake env lean test/eqns.lean
+MulEquiv : (M N : Type u_1) → [inst : Mul M] → [inst : Mul N] → Type u_1
+lake env lean test/Split.lean
+test/InstanceTransparency.lean:18:0: warning: declaration uses 'sorry'
+test/InstanceTransparency.lean:22:0: warning: declaration uses 'sorry'
+test/InstanceTransparency.lean:27:0: warning: declaration uses 'sorry'
+lake env lean test/classical.lean
+lake env lean test/CategoryTheory/Elementwise.lean
+lake env lean test/CategoryTheory/Coherence.lean
+lake env lean test/CategoryTheory/Slice.lean
+lake env lean test/DefEqTransformations.lean
+lake env lean test/cases.lean
+lake env lean test/Monotonicity.lean
+lake env lean test/simp_intro.lean
+test/DefEqTransformations.lean:19:0: warning: declaration uses 'sorry'
+test/DefEqTransformations.lean:77:0: warning: declaration uses 'sorry'
+test/DefEqTransformations.lean:82:0: warning: declaration uses 'sorry'
+test/DefEqTransformations.lean:105:0: warning: declaration uses 'sorry'
+test/DefEqTransformations.lean:115:0: warning: declaration uses 'sorry'
+test/DefEqTransformations.lean:120:0: warning: declaration uses 'sorry'
+lake env lean test/superscript.lean
+lake env lean test/ClearValue.lean
+lake env lean test/left_right.lean
+lake env lean test/Imports.lean
+lake env lean test/Set.lean
+test/Monotonicity.lean:58:0: warning: declaration uses 'sorry'
+test/Monotonicity.lean:71:0: warning: declaration uses 'sorry'
+lake env lean test/byContra.lean
+0
+2
+lake env lean test/TermCongr.lean
+lake env lean test/LiftLets.lean
+lake env lean test/linear_combination.lean
+test/Set.lean:38:41: warning: unused variable `h` [linter.unusedVariables]
+test/Set.lean:49:9: warning: unused variable `a` [linter.unusedVariables]
+test/Set.lean:49:11: warning: unused variable `b` [linter.unusedVariables]
+test/Set.lean:49:13: warning: unused variable `c` [linter.unusedVariables]
+test/Set.lean:49:15: warning: unused variable `d` [linter.unusedVariables]
+test/Set.lean:49:17: warning: unused variable `e` [linter.unusedVariables]
+test/Set.lean:49:19: warning: unused variable `f` [linter.unusedVariables]
+test/Set.lean:49:21: warning: unused variable `g` [linter.unusedVariables]
+test/Set.lean:49:23: warning: unused variable `h` [linter.unusedVariables]
+test/Set.lean:50:27: warning: unused variable `h` [linter.unusedVariables]
+lake env lean test/Tauto.lean
+lake env lean test/norm_cast.lean
+lake env lean test/casesm.lean
+test/LiftLets.lean:102:0: warning: declaration uses 'sorry'
+lake env lean test/Variable.lean
+lake env lean test/says.lean
+2023-08-30T08:21:27.6279328Z
+Found the following transitively redundant imports:
+Mathlib.Util.Imports
+Mathlib.Util.WhatsNew
+lake env lean test/positivity.lean
+lake env lean test/Polynomial.lean
+lake env lean test/toAdditiveIrredDef.lean
+lake env lean test/DeriveFintype.lean
+lake env lean test/NthRewrite.lean
+lake env lean test/wlog.lean
+lake env lean test/norm_num.lean
+lake env lean test/MkIffOfInductive.lean
+lake env lean test/linarith.lean
+lake env lean test/ExtractGoal.lean
+lake env lean test/SimpRw.lean
+lake env lean test/CommDiag.lean
+tests.A.enumList : List A
+tests.A'.enumList.{u} : List A'
+tests.A''.enumList : List A''
+instFintypeC
+instFintypeC'
+instFintypeC
+instFintypeD
+lake env lean test/rfl.lean
+lake env lean test/congr.lean
+lake env lean test/Explode.lean
+lake env lean test/Real.lean
+lake env lean test/ImplicitUniverses.lean
+lake env lean test/success_if_fail_with_msg.lean
+lake env lean test/GuardGoalNums.lean
+lake env lean test/GuardHypNums.lean
+test/Real.lean:16:8: warning: declaration uses 'sorry'
+test/ImplicitUniverses.lean:4:0: warning: declaration uses 'sorry'
+test/ImplicitUniverses.lean:14:0: warning: declaration uses 'sorry'
+test/ImplicitUniverses.lean:24:0: warning: declaration uses 'sorry'
+test/ImplicitUniverses.lean:34:0: warning: declaration uses 'sorry'
+lake env lean test/Simps.lean
+lake env lean test/DeriveToExpr.lean
+2023-08-30T08:21:37.0514369Z
+lake env lean test/MfldSetTac.lean
+test/congr.lean:64:8: warning: declaration uses 'sorry'
+test/congr.lean:72:0: warning: declaration uses 'sorry'
+test/congr.lean:80:0: warning: declaration uses 'sorry'
+test/congr.lean:89:0: warning: declaration uses 'sorry'
+test/congr.lean:100:0: warning: declaration uses 'sorry'
+test/congr.lean:106:0: warning: declaration uses 'sorry'
+test/congr.lean:114:0: warning: declaration uses 'sorry'
+test/congr.lean:120:0: warning: declaration uses 'sorry'
+test/congr.lean:132:0: warning: declaration uses 'sorry'
+test/congr.lean:140:0: warning: declaration uses 'sorry'
+test/congr.lean:148:0: warning: declaration uses 'sorry'
+test/congr.lean:154:0: warning: declaration uses 'sorry'
+test/congr.lean:174:0: warning: declaration uses 'sorry'
+test/congr.lean:186:0: warning: declaration uses 'sorry'
+test/congr.lean:257:0: warning: declaration uses 'sorry'
+test/congr.lean:267:0: warning: declaration uses 'sorry'
+lake env lean test/FBinop.lean
+lake env lean test/apply_rules.lean
+lake env lean test/UnsetOption.lean
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprMyMaybe✝.{u} {α✝} [Lean.ToExpr✝ α✝] [ToLevel✝.{u}] (x✝ : @tests.MyMaybe✝.{u} α✝) : Expr✝ :=
+         match x✝ with
+         | @tests.MyMaybe.none _ => Expr.app✝ (Expr.const✝ `tests.MyMaybe.none [toLevel✝.{u}]) (toTypeExpr✝ α✝)
+         | @tests.MyMaybe.some _ a✝ =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `tests.MyMaybe.some [toLevel✝.{u}]) (toTypeExpr✝ α✝)) (toExpr✝ a✝)
+     end,
+     instance {α✝} [Lean.ToExpr✝ α✝] [ToLevel✝.{u}] : ToExpr✝ (@tests.MyMaybe✝.{u} α✝)
+         where
+       toExpr✝ := toExprMyMaybe✝.{u}
+       toTypeExpr✝ := Expr.app✝ (Expr.const✝ `tests.MyMaybe [toLevel✝.{u}]) (toTypeExpr✝ α✝)]
+tests.MyMaybe.some 2
+2023-08-30T08:21:39.6133472Z
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprULift✝.{r, s} {α✝} [Lean.ToExpr✝ α✝] [ToLevel✝.{r}] [ToLevel✝.{s}] (x✝ : @ULift✝.{r, s} α✝) :
+           Expr✝ :=
+         match x✝ with
+         | @ULift.up _ a✝ =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `ULift.up [toLevel✝.{r}, toLevel✝.{s}]) (toTypeExpr✝ α✝)) (toExpr✝ a✝)
+     end,
+     instance {α✝} [Lean.ToExpr✝ α✝] [ToLevel✝.{r}] [ToLevel✝.{s}] : ToExpr✝ (@ULift✝.{r, s} α✝)
+         where
+       toExpr✝ := toExprULift✝.{r, s}
+       toTypeExpr✝ := Expr.app✝ (Expr.const✝ `ULift [toLevel✝.{r}, toLevel✝.{s}]) (toTypeExpr✝ α✝)]
+2023-08-30T08:21:39.6138135Z
+2023-08-30T08:21:39.6138140Z
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprList✝.{u} {α✝} [Lean.ToExpr✝ α✝] [ToLevel✝.{u}] (x✝ : @List✝.{u} α✝) : Expr✝ :=
+         match x✝ with
+         | @List.nil _ => Expr.app✝ (Expr.const✝ `List.nil [toLevel✝.{u}]) (toTypeExpr✝ α✝)
+         | @List.cons _ a✝ a✝¹ =>
+           Expr.app✝ (Expr.app✝ (Expr.app✝ (Expr.const✝ `List.cons [toLevel✝.{u}]) (toTypeExpr✝ α✝)) (toExpr✝ a✝))
+             (toExprList✝ a✝¹)
+     end,
+     instance {α✝} [Lean.ToExpr✝ α✝] [ToLevel✝.{u}] : ToExpr✝ (@List✝.{u} α✝)
+         where
+       toExpr✝ := toExprList✝.{u}
+       toTypeExpr✝ := Expr.app✝ (Expr.const✝ `List [toLevel✝.{u}]) (toTypeExpr✝ α✝)]
+[Elab.Deriving.toExpr]
+    [mutual
+       private partial def toExprFoo✝.{} (x✝ : @tests.Foo✝.{}) : Expr✝ :=
+         let localinst✝ : ToExpr✝ (@tests.Foo✝) :=
+           { toExpr✝ := toExprFoo✝, toTypeExpr✝ := (Expr.const✝ `tests.Foo []) };
+         match x✝ with
+         | @tests.Foo.l a✝ => Expr.app✝ (Expr.const✝ `tests.Foo.l []) (toExpr✝ a✝)
+     end,
+     instance : ToExpr✝ (@tests.Foo✝.{}) where
+       toExpr✝ := toExprFoo✝.{}
+       toTypeExpr✝ := (Expr.const✝ `tests.Foo [])]
+2023-08-30T08:21:39.6156052Z
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprBar✝.{} (x✝ : @tests.Bar✝.{}) : Expr✝ :=
+         match x✝ with
+         | @tests.Bar.func a✝ => Expr.app✝ (Expr.const✝ `tests.Bar.func []) (toExpr✝ a✝)
+     end,
+     instance : ToExpr✝ (@tests.Bar✝.{}) where
+       toExpr✝ := toExprBar✝.{}
+       toTypeExpr✝ := (Expr.const✝ `tests.Bar [])]
+2023-08-30T08:21:39.6160256Z
+[Elab.Deriving.toExpr]
+    [mutual
+       private partial def toExprA✝.{} (x✝ : @tests.A✝.{}) : Expr✝ :=
+         let localinst✝ : ToExpr✝ (@tests.A✝) := { toExpr✝ := toExprA✝, toTypeExpr✝ := (Expr.const✝ `tests.A []) };
+         let localinst✝¹ : ToExpr✝ (@tests.B✝) := { toExpr✝ := toExprB✝, toTypeExpr✝ := (Expr.const✝ `tests.B []) };
+         match x✝ with
+         | @tests.A.a => Expr.const✝ `tests.A.a []
+       private partial def toExprB✝.{} (x✝¹ : @tests.B✝.{}) : Expr✝ :=
+         let localinst✝² : ToExpr✝ (@tests.A✝) := { toExpr✝ := toExprA✝, toTypeExpr✝ := (Expr.const✝ `tests.A []) };
+         let localinst✝³ : ToExpr✝ (@tests.B✝) := { toExpr✝ := toExprB✝, toTypeExpr✝ := (Expr.const✝ `tests.B []) };
+         match x✝¹ with
+         | @tests.B.b => Expr.const✝ `tests.B.b []
+     end,
+     instance : ToExpr✝ (@tests.A✝.{}) where
+       toExpr✝ := toExprA✝.{}
+       toTypeExpr✝ := (Expr.const✝ `tests.A []),
+     instance : ToExpr✝ (@tests.B✝.{}) where
+       toExpr✝ := toExprB✝.{}
+       toTypeExpr✝ := (Expr.const✝ `tests.B [])]
+2023-08-30T08:21:39.6198096Z
+[Elab.Deriving.toExpr]
+    [mutual
+       private partial def toExprC✝.{} (x✝ : @tests.C✝.{}) : Expr✝ :=
+         let localinst✝ : ToExpr✝ (@tests.C✝) := { toExpr✝ := toExprC✝, toTypeExpr✝ := (Expr.const✝ `tests.C []) };
+         let localinst✝¹ : ToExpr✝ (@tests.D✝) := { toExpr✝ := toExprD✝, toTypeExpr✝ := (Expr.const✝ `tests.D []) };
+         match x✝ with
+         | @tests.C.c a✝ => Expr.app✝ (Expr.const✝ `tests.C.c []) (toExpr✝ a✝)
+       private partial def toExprD✝.{} (x✝¹ : @tests.D✝.{}) : Expr✝ :=
+         let localinst✝² : ToExpr✝ (@tests.C✝) := { toExpr✝ := toExprC✝, toTypeExpr✝ := (Expr.const✝ `tests.C []) };
+         let localinst✝³ : ToExpr✝ (@tests.D✝) := { toExpr✝ := toExprD✝, toTypeExpr✝ := (Expr.const✝ `tests.D []) };
+         match x✝¹ with
+         | @tests.D.b a✝¹ => Expr.app✝ (Expr.const✝ `tests.D.b []) (toExpr✝ a✝¹)
+     end,
+     instance : ToExpr✝ (@tests.C✝.{}) where
+       toExpr✝ := toExprC✝.{}
+       toTypeExpr✝ := (Expr.const✝ `tests.C []),
+     instance : ToExpr✝ (@tests.D✝.{}) where
+       toExpr✝ := toExprD✝.{}
+       toTypeExpr✝ := (Expr.const✝ `tests.D [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprFVarId✝.{} (x✝ : @Lean.FVarId✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.FVarId.mk a✝ => Expr.app✝ (Expr.const✝ `Lean.FVarId.mk []) (toExpr✝ a✝)
+     end,
+     instance : ToExpr✝ (@Lean.FVarId✝.{}) where
+       toExpr✝ := toExprFVarId✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.FVarId [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprMVarId✝.{} (x✝ : @Lean.MVarId✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.MVarId.mk a✝ => Expr.app✝ (Expr.const✝ `Lean.MVarId.mk []) (toExpr✝ a✝)
+     end,
+     instance : ToExpr✝ (@Lean.MVarId✝.{}) where
+       toExpr✝ := toExprMVarId✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.MVarId [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprLevelMVarId✝.{} (x✝ : @Lean.LevelMVarId✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.LevelMVarId.mk a✝ => Expr.app✝ (Expr.const✝ `Lean.LevelMVarId.mk []) (toExpr✝ a✝)
+     end,
+     instance : ToExpr✝ (@Lean.LevelMVarId✝.{})
+         where
+       toExpr✝ := toExprLevelMVarId✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.LevelMVarId [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprLevel✝.{} (x✝ : @Lean.Level✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.Level.zero => Expr.const✝ `Lean.Level.zero []
+         | @Lean.Level.succ a✝ => Expr.app✝ (Expr.const✝ `Lean.Level.succ []) (toExprLevel✝ a✝)
+         | @Lean.Level.max a✝¹ a✝² =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Level.max []) (toExprLevel✝ a✝¹)) (toExprLevel✝ a✝²)
+         | @Lean.Level.imax a✝³ a✝⁴ =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Level.imax []) (toExprLevel✝ a✝³)) (toExprLevel✝ a✝⁴)
+         | @Lean.Level.param a✝⁵ => Expr.app✝ (Expr.const✝ `Lean.Level.param []) (toExpr✝ a✝⁵)
+         | @Lean.Level.mvar a✝⁶ => Expr.app✝ (Expr.const✝ `Lean.Level.mvar []) (toExpr✝ a✝⁶)
+     end,
+     instance : ToExpr✝ (@Lean.Level✝.{}) where
+       toExpr✝ := toExprLevel✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.Level [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprBinderInfo✝.{} (x✝ : @Lean.BinderInfo✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.BinderInfo.default => Expr.const✝ `Lean.BinderInfo.default []
+         | @Lean.BinderInfo.implicit => Expr.const✝ `Lean.BinderInfo.implicit []
+         | @Lean.BinderInfo.strictImplicit => Expr.const✝ `Lean.BinderInfo.strictImplicit []
+         | @Lean.BinderInfo.instImplicit => Expr.const✝ `Lean.BinderInfo.instImplicit []
+     end,
+     instance : ToExpr✝ (@Lean.BinderInfo✝.{})
+         where
+       toExpr✝ := toExprBinderInfo✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.BinderInfo [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprLiteral✝.{} (x✝ : @Lean.Literal✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.Literal.natVal a✝ => Expr.app✝ (Expr.const✝ `Lean.Literal.natVal []) (toExpr✝ a✝)
+         | @Lean.Literal.strVal a✝¹ => Expr.app✝ (Expr.const✝ `Lean.Literal.strVal []) (toExpr✝ a✝¹)
+     end,
+     instance : ToExpr✝ (@Lean.Literal✝.{}) where
+       toExpr✝ := toExprLiteral✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.Literal [])]
+[Elab.Deriving.toExpr]
+    [mutual
+       private def toExprExpr✝.{} (x✝ : @Lean.Expr✝.{}) : Expr✝ :=
+         match x✝ with
+         | @Lean.Expr.bvar a✝ => Expr.app✝ (Expr.const✝ `Lean.Expr.bvar []) (toExpr✝ a✝)
+         | @Lean.Expr.fvar a✝¹ => Expr.app✝ (Expr.const✝ `Lean.Expr.fvar []) (toExpr✝ a✝¹)
+         | @Lean.Expr.mvar a✝² => Expr.app✝ (Expr.const✝ `Lean.Expr.mvar []) (toExpr✝ a✝²)
+         | @Lean.Expr.sort a✝³ => Expr.app✝ (Expr.const✝ `Lean.Expr.sort []) (toExpr✝ a✝³)
+         | @Lean.Expr.const a✝⁴ a✝⁵ =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.const []) (toExpr✝ a✝⁴)) (toExpr✝ a✝⁵)
+         | @Lean.Expr.app a✝⁶ a✝⁷ =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.app []) (toExprExpr✝ a✝⁶)) (toExprExpr✝ a✝⁷)
+         | @Lean.Expr.lam a✝⁸ a✝⁹ a✝¹⁰ a✝¹¹ =>
+           Expr.app✝
+             (Expr.app✝ (Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.lam []) (toExpr✝ a✝⁸)) (toExprExpr✝ a✝⁹))
+               (toExprExpr✝ a✝¹⁰))
+             (toExpr✝ a✝¹¹)
+         | @Lean.Expr.forallE a✝¹² a✝¹³ a✝¹⁴ a✝¹⁵ =>
+           Expr.app✝
+             (Expr.app✝ (Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.forallE []) (toExpr✝ a✝¹²)) (toExprExpr✝ a✝¹³))
+               (toExprExpr✝ a✝¹⁴))
+             (toExpr✝ a✝¹⁵)
+         | @Lean.Expr.letE a✝¹⁶ a✝¹⁷ a✝¹⁸ a✝¹⁹ a✝²⁰ =>
+           Expr.app✝
+             (Expr.app✝
+               (Expr.app✝ (Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.letE []) (toExpr✝ a✝¹⁶)) (toExprExpr✝ a✝¹⁷))
+                 (toExprExpr✝ a✝¹⁸))
+               (toExprExpr✝ a✝¹⁹))
+             (toExpr✝ a✝²⁰)
+         | @Lean.Expr.lit a✝²¹ => Expr.app✝ (Expr.const✝ `Lean.Expr.lit []) (toExpr✝ a✝²¹)
+         | @Lean.Expr.mdata a✝²² a✝²³ =>
+           Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.mdata []) (toExpr✝ a✝²²)) (toExprExpr✝ a✝²³)
+         | @Lean.Expr.proj a✝²⁴ a✝²⁵ a✝²⁶ =>
+           Expr.app✝ (Expr.app✝ (Expr.app✝ (Expr.const✝ `Lean.Expr.proj []) (toExpr✝ a✝²⁴)) (toExpr✝ a✝²⁵))
+             (toExprExpr✝ a✝²⁶)
+     end,
+     instance : ToExpr✝ (@Lean.Expr✝.{}) where
+       toExpr✝ := toExprExpr✝.{}
+       toTypeExpr✝ := (Expr.const✝ `Lean.Expr [])]
+2023-08-30T08:21:39.6350346Z
+lake env lean test/rewrites.lean
+test/MfldSetTac.lean:25:9: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:27:4: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:29:20: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:34:22: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:38:20: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:42:20: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:51:4: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:53:9: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:55:20: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:59:20: warning: declaration uses 'sorry'
+test/MfldSetTac.lean:63:20: warning: declaration uses 'sorry'
+lake env lean test/Clear_.lean
+test/FBinop.lean:31:0: warning: declaration uses 'sorry'
+test/FBinop.lean:32:0: warning: declaration uses 'sorry'
+test/FBinop.lean:33:0: warning: declaration uses 'sorry'
+test/FBinop.lean:34:0: warning: declaration uses 'sorry'
+test/FBinop.lean:35:0: warning: declaration uses 'sorry'
+test/FBinop.lean:36:0: warning: declaration uses 'sorry'
+test/FBinop.lean:37:0: warning: declaration uses 'sorry'
+test/FBinop.lean:38:0: warning: declaration uses 'sorry'
+test/FBinop.lean:41:0: warning: declaration uses 'sorry'
+test/FBinop.lean:43:0: warning: declaration uses 'sorry'
+test/FBinop.lean:44:0: warning: declaration uses 'sorry'
+test/FBinop.lean:45:0: warning: declaration uses 'sorry'
+test/FBinop.lean:50:0: warning: declaration uses 'sorry'
+test/FBinop.lean:51:0: warning: declaration uses 'sorry'
+test/FBinop.lean:52:0: warning: declaration uses 'sorry'
+{1, 2, 3} ×ˢ' {4, 5, 6} : Finset (ℕ × ℕ)
+test/FBinop.lean:55:0: warning: declaration uses 'sorry'
+lake env lean test/Use.lean
+lake env lean test/Rename.lean
+lake env lean test/Inhabit.lean
+lake env lean test/abel.lean
+lake env lean test/FieldSimp.lean
+lake env lean test/notation3.lean
+lake env lean test/Recall.lean
+Try this: rw [@mul_assoc]
+-- g * (g⁻¹ * h) = h
+Try this: rw [@mul_left_eq_self]
+-- g * g⁻¹ = 1
+Try this: rw [@mul_inv_self]
+-- 1 * h = h
+Try this: rw [← @eq_div_iff_mul_eq']
+-- g * g⁻¹ = h / h
+Try this: rw [← @eq_mul_inv_iff_mul_eq]
+-- g * g⁻¹ = h * h⁻¹
+Try this: rw [← @eq_inv_mul_iff_mul_eq]
+-- h = (g * g⁻¹)⁻¹ * h
+Try this: rw [← @division_def]
+-- g / g * h = h
+Try this: rw [@inv_eq_one_div]
+-- g * (1 / g) * h = h
+Try this: rw [← smul_eq_mul]
+-- (g * g⁻¹) • h = h
+Try this: rw [← @div_inv_eq_mul]
+-- g * g⁻¹ / h⁻¹ = h
+Try this: rw [← @Equiv.divRight_symm_apply]
+-- ↑(Equiv.divRight h).symm (g * g⁻¹) = h
+Try this: rw [← @zpow_neg_one]
+-- g * g ^ (-1) * h = h
+Try this: rw [← Equiv.inv_apply]
+-- g * ↑(Equiv.inv G) g * h = h
+Try this: rw [@mul_one] at hyp
+-- g = h
+Try this: rw [← @eq_div_iff_mul_eq'] at hyp
+-- g = h / 1
+Try this: rw [← @eq_mul_inv_iff_mul_eq] at hyp
+-- g = h * 1⁻¹
+Try this: rw [← @eq_inv_mul_iff_mul_eq] at hyp
+-- 1 = g⁻¹ * h
+Try this: rw [← smul_eq_mul] at hyp
+-- g • 1 = h
+Try this: rw [← @div_inv_eq_mul] at hyp
+-- g / 1⁻¹ = h
+Try this: rw [← @Equiv.divRight_symm_apply] at hyp
+-- ↑(Equiv.divRight 1).symm g = h
+Try this: rw [← @inv_one] at hyp
+-- g * 1⁻¹ = h
+Try this: rw [← @ofLex_one] at hyp
+-- g * ↑ofLex 1 = h
+Try this: rw [← @ofDual_one] at hyp
+-- g * ↑OrderDual.ofDual 1 = h
+Try this: rw [← @toMul_zero] at hyp
+-- g * ↑Additive.toMul 0 = h
+Try this: rw [← @one_div_one] at hyp
+-- g * (1 / 1) = h
+Try this: rw [← @Units.val_one] at hyp
+-- g * ↑1 = h
+Try this: rw [← @WithBot.unbot_one] at hyp
+-- g * WithBot.unbot 1 (_ : ↑1 ≠ ⊥) = h
+Try this: rw [← @WithTop.untop_one] at hyp
+-- g * WithTop.untop 1 (_ : ↑1 ≠ ⊤) = h
+Try this: rw [← @AddOpposite.unop_one] at hyp
+-- g * AddOpposite.unop 1 = h
+Try this: rw [← MulOpposite.unop_one] at hyp
+-- g * MulOpposite.unop 1 = h
+Try this: rw [@Nat.le_iff_lt_or_eq]
+-- x < y ∨ x = y
+Try this: rw [@Nat.mul_self_le_mul_self_iff]
+-- x * x ≤ y * y
+Try this: rw [@le_iff_eq_or_lt]
+-- x = y ∨ x < y
+Try this: rw [@le_iff_exists_add]
+-- ∃ c, y = x + c
+Try this: rw [@le_iff_exists_sup]
+-- ∃ c, y = x ⊔ c
+Try this: rw [@le_iff_exists_add']
+-- ∃ c, y = c + x
+Try this: rw [← @Nat.le_eq]
+-- Nat.le x y
+Try this: rw [← @Nat.ble_eq]
+-- Nat.ble x y = true
+Try this: rw [← @Nat.not_lt]
+-- ¬y < x
+Try this: rw [← @Nat.lt_succ]
+-- x < Nat.succ y
+Try this: rw [← @Int.ofNat_le]
+-- ↑x ≤ ↑y
+Try this: rw [← Nat.not_gt_eq]
+-- ¬x > y
+Try this: rw [← @List.range_subset]
+-- List.range x ⊆ List.range y
+Try this: rw [← @Nat.lt_one_add_iff]
+-- x < 1 + y
+Try this: rw [← @Nat.lt_add_one_iff]
+-- x < y + 1
+Try this: rw [← @List.range_sublist]
+-- List.Sublist (List.range x) (List.range y)
+Try this: rw [← @String.Pos.mk_le_mk]
+-- { byteIdx := x } ≤ { byteIdx := y }
+Try this: rw [← @Nat.bit0_lt_bit1_iff]
+-- bit0 x < bit1 y
+Try this: rw [← @Nat.bit0_le_bit1_iff]
+-- bit0 x ≤ bit1 y
+Try this: rw [← @Nat.succ_le_succ_iff]
+-- Nat.succ x ≤ Nat.succ y
+test/rewrites.lean:85:0: warning: declaration uses 'sorry'
+test/rewrites.lean:90:0: warning: declaration uses 'sorry'
+test/rewrites.lean:98:4: warning: declaration uses 'sorry'
+Try this: rw [@iff_def]
+-- (foo x = 1 → ∃ k, x = ↑k) ∧ ((∃ k, x = ↑k) → foo x = 1)
+Try this: rw [@Iff.comm]
+-- (∃ k, x = ↑k) ↔ foo x = 1
+Try this: rw [@iff_def']
+-- ((∃ k, x = ↑k) → foo x = 1) ∧ (foo x = 1 → ∃ k, x = ↑k)
+Try this: rw [@iff_eq_eq]
+-- (foo x = 1) = ∃ k, x = ↑k
+Try this: rw [@iff_iff_not_or_and_or_not]
+-- (¬foo x = 1 ∨ ∃ k, x = ↑k) ∧ (foo x = 1 ∨ ¬∃ k, x = ↑k)
+Try this: rw [@iff_iff_and_or_not_and_not]
+-- (foo x = 1 ∧ ∃ k, x = ↑k) ∨ ¬foo x = 1 ∧ ¬∃ k, x = ↑k
+Try this: rw [← @ofMul_eq_zero]
+-- ↑Additive.ofMul (foo x) = 0 ↔ ∃ k, x = ↑k
+Try this: rw [← @WithTop.coe_eq_one]
+-- ↑(foo x) = 1 ↔ ∃ k, x = ↑k
+Try this: rw [← @WithTop.one_eq_coe]
+-- 1 = ↑(foo x) ↔ ∃ k, x = ↑k
+Try this: rw [← @AddOpposite.op_eq_one_iff]
+-- AddOpposite.op (foo x) = 1 ↔ ∃ k, x = ↑k
+Try this: rw [← @MulOpposite.op_eq_one_iff]
+-- MulOpposite.op (foo x) = 1 ↔ ∃ k, x = ↑k
+Try this: rw [← @ofLex_one]
+-- foo x = ↑ofLex 1 ↔ ∃ k, x = ↑k
+Try this: rw [← @bit1_zero]
+-- foo x = bit1 0 ↔ ∃ k, x = ↑k
+Try this: rw [← @ofDual_one]
+-- foo x = ↑OrderDual.ofDual 1 ↔ ∃ k, x = ↑k
+Try this: rw [← @neg_one_sq]
+-- foo x = (-1) ^ 2 ↔ ∃ k, x = ↑k
+Try this: rw [← @toMul_zero]
+-- foo x = ↑Additive.toMul 0 ↔ ∃ k, x = ↑k
+Try this: rw [← @Int.cast_one]
+-- foo x = ↑1 ↔ ∃ k, x = ↑k
+Try this: rw [← Ring.inverse_one]
+-- foo x = Ring.inverse 1 ↔ ∃ k, x = ↑k
+Try this: rw [← @WithBot.unbot_one]
+-- foo x = WithBot.unbot 1 (_ : ↑1 ≠ ⊥) ↔ ∃ k, x = ↑k
+Try this: rw [← @WithTop.untop_one]
+-- foo x = WithTop.untop 1 (_ : ↑1 ≠ ⊤) ↔ ∃ k, x = ↑k
+test/rewrites.lean:100:0: warning: declaration uses 'sorry'
+test/rewrites.lean:104:6: warning: declaration uses 'sorry'
+Try this: rw [six_eq_seven]
+-- ∀ (x : ℕ), x ≤ 7 → x ≤ 8
+Try this: rw [← @Nat.cast_eq_ofNat]
+-- ∀ (x : ℕ), x ≤ ↑6 → x ≤ 8
+test/rewrites.lean:123:0: warning: declaration uses 'sorry'
+Try this: rw [@Nat.le_antisymm_iff]
+-- zero ≤ 0 ∧ 0 ≤ zero
+Try this: rw [← @Nat.le_zero]
+-- zero ≤ 0
+Try this: rw [← @Nat.lt_one_iff]
+-- zero < 1
+Try this: rw [← @Nat.one_eq_bit1]
+-- 1 = bit1 zero
+Try this: rw [← @Nat.bit1_eq_one]
+-- bit1 zero = 1
+Try this: rw [← @Nat.bit0_eq_zero]
+-- bit0 zero = 0
+Try this: rw [← @Nat.size_eq_zero]
+-- Nat.size zero = 0
+Try this: rw [← @Nat.sqrt_eq_zero]
+-- Nat.sqrt zero = 0
+Try this: rw [← @List.range_eq_nil]
+-- List.range zero = []
+Try this: rw [← @Int.ofNat_eq_zero]
+-- ↑zero = 0
+Try this: rw [← @Nat.pred_eq_self_iff]
+-- Nat.pred zero = zero
+Try this: rw [← @Int.coe_nat_nonpos_iff]
+-- ↑zero ≤ 0
+Try this: rw [← @Nat.beq_eq]
+-- Nat.beq zero 0 = true
+Try this: rw [← @Nat.bit0_eq_bit0]
+-- bit0 zero = bit0 0
+Try this: rw [← @Nat.bit1_eq_bit1]
+-- bit1 zero = bit1 0
+Try this: rw [← Nat.beq_eq_true_eq]
+-- (zero == 0) = true
+Try this: rw [← @Nat.dvd_left_iff_eq]
+-- ∀ (a : ℕ), a ∣ zero ↔ a ∣ 0
+Try this: rw [← @Nat.dvd_right_iff_eq]
+-- ∀ (a : ℕ), zero ∣ a ↔ 0 ∣ a
+Try this: rw [← Int.cast_eq_cast_iff_Nat]
+-- ↑zero = ↑0
+Try this: rw [← @not_neZero]
+-- ¬NeZero zero
+test/rewrites.lean:167:0: warning: declaration uses 'sorry'
+lake env lean test/Replace.lean
+True
+test/norm_num.lean:663:0: warning: declaration uses 'sorry'
+test/norm_num.lean:671:4: warning: declaration uses 'sorry'
+test/norm_num.lean:672:0: warning: declaration uses 'sorry'
+lake env lean test/propose.lean
+lake env lean test/push_neg.lean
+lake env lean test/Constructor.lean
+lake env lean test/apply_fun.lean
+lake env lean test/norm_num_ext.lean
+lake env lean test/cancel_denoms.lean
+lake env lean test/MaxPowDiv.lean
+test/linarith.lean:44:0: warning: declaration uses 'sorry'
+test/linarith.lean:48:0: warning: declaration uses 'sorry'
+test/linarith.lean:510:4: warning: declaration uses 'sorry'
+test/linarith.lean:511:0: warning: declaration uses 'sorry'
+lake env lean test/ring.lean
+lake env lean test/vec_notation.lean
+test/push_neg.lean:101:0: warning: declaration uses 'sorry'
+test/push_neg.lean:116:0: warning: declaration uses 'sorry'
+test/push_neg.lean:121:0: warning: declaration uses 'sorry'
+lake env lean test/spread.lean
+test/apply_fun.lean:12:0: warning: declaration uses 'sorry'
+test/apply_fun.lean:27:0: warning: declaration uses 'sorry'
+test/apply_fun.lean:234:0: warning: declaration uses 'sorry'
+lake env lean test/convert.lean
+lake env lean test/MLList.lean
+100000
+lake env lean test/tfae.lean
+2023-08-30T08:21:51.6061894Z
+2023-08-30T08:21:51.6061906Z
+2023-08-30T08:21:51.6062062Z
+2023-08-30T08:21:51.6062068Z
+2023-08-30T08:21:51.6062243Z
+2023-08-30T08:21:51.6062589Z
+lake env lean test/Change.lean
+test/convert.lean:61:0: warning: declaration uses 'sorry'
+test/convert.lean:69:0: warning: declaration uses 'sorry'
+test/convert.lean:75:0: warning: declaration uses 'sorry'
+test/convert.lean:95:0: warning: declaration uses 'sorry'
+test/convert.lean:109:0: warning: declaration uses 'sorry'
+lake env lean test/Contrapose.lean
+test/cancel_denoms.lean:91:4: warning: declaration uses 'sorry'
+test/cancel_denoms.lean:92:0: warning: declaration uses 'sorry'
+test/cancel_denoms.lean:93:0: warning: declaration uses 'sorry'
+2023-08-30T08:21:53.8711245Z
+2023-08-30T08:21:53.8711259Z
+2023-08-30T08:21:53.8711557Z
+2023-08-30T08:21:53.8711793Z
+2023-08-30T08:21:53.8711802Z
+test/Change.lean:7:0: warning: declaration uses 'sorry'
+test/Change.lean:12:0: warning: declaration uses 'sorry'
+test/Change.lean:17:0: warning: declaration uses 'sorry'
+test/Change.lean:25:0: warning: declaration uses 'sorry'
+test/Change.lean:32:0: warning: declaration uses 'sorry'
+test/Change.lean:37:0: warning: declaration uses 'sorry'
+Try this: ring_nf
+Try this: ring_nf
+test/ring.lean:121:4: warning: declaration uses 'sorry'
+test/ring.lean:137:4: warning: declaration uses 'sorry'
+test/ring.lean:138:0: warning: declaration uses 'sorry'
+##[group]Run liskin/gh-problem-matcher-wrap@v2
+with:
+  linters: gcc
+  run: env LEAN_ABORT_ON_PANIC=1 make lint
+##[endgroup]
+Add matcher: /home/lean/actions-runner/_work/_actions/liskin/gh-problem-matcher-wrap/v2/problem-matchers/gcc.json
+[command]/usr/bin/env LEAN_ABORT_ON_PANIC=1 make lint
+lake build
+./build/bin/runLinter
+-- Linting passed.Remove matcher: gcc
+Post job cleanup.
+[command]/usr/bin/git version
+git version 2.34.1
+Temporarily overriding HOME='/home/lean/actions-runner/_work/_temp/2991a6f8-6ff0-4345-ba58-c8c7f95c0ede' before making global git config changes
+Adding repository directory to the temporary git global config as a safe directory
+[command]/usr/bin/git config --global --add safe.directory /home/lean/actions-runner/_work/mathlib4/mathlib4
+[command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+[command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+http.https://github.com/.extraheader
+[command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+[command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Cleaning up orphan processes

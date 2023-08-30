@@ -55,6 +55,8 @@ example (x y z : ℤ)
     -- mono
     norm_num
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example {x y z : ℕ} : true := by
   have : y + x ≤ y + z := by
     mono
@@ -68,6 +70,8 @@ example {x y z : ℕ} : true := by
   guard_target = x ≤ z
   admit
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example {x y z w : ℕ} : true := by
   have : x + y ≤ z + w := by
     mono

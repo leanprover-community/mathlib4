@@ -118,6 +118,8 @@ example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
   trivial
 
 -- check that mdata is consumed
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def f : Nat → Nat := sorry
 
 example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
@@ -134,7 +136,11 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
 -- simulate the type of MvPolynomial
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance : CommRing (R a b) := sorry
 
 example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by

@@ -108,6 +108,8 @@ example : (fun (a : Nat) => 1 + a) = (1 + ·) := by
   guard_target =ₛ (fun a ↦ 1 + a) = fun a ↦ 1 + a
   rfl
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : Nat → Nat → Nat) : (fun x => f 1 x) 2 = 3 := by
   eta_expand
   guard_target =ₛ f 1 2 = 3
@@ -118,11 +120,15 @@ example : (fun (a : Nat) => 1 + a) 2 = (1 + ·) 2 := by
   guard_target =ₛ 1 + 2 = 1 + 2
   rfl
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (p : Nat × Nat) : (p.1, p.2) = (p.2, p.1) := by
   eta_struct
   guard_target =ₛ p = (p.2, p.1)
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (p : Nat × Nat) : ((p.1, p.2).1, (p.1, p.2).2) = ((p.1, p.2).2, (p.1, p.2).1) := by
   eta_struct
   guard_target =ₛ p = (p.2, p.1)

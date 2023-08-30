@@ -7,6 +7,8 @@ Authors: Moritz Doll, Robert Y. Lewis
 import Mathlib.Tactic.Zify
 import Std.Tactic.GuardExpr
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
   guard_target =~ (c : ℤ) < (a : ℤ) + 3 * (b : ℤ)
