@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Mohanad Ahmed. All rights reserved.
+Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
@@ -16,13 +16,13 @@ import Mathlib.LinearAlgebra.Vandermonde
 /-!
 # Discrete Fourier Transform (DFT) Matrix and DFT of a (finite) sequence
 
-This file defines the `dft` opertaion on a sequence (also a vecotr) and the DFT operation matrix
+This file defines the `dft` opertaion on a sequence (also a vector) and the DFT operation matrix
 
 ## Main definitions
 
  - `dft v`: given a sequence (v : (Fin n) → ℂ) we can transform it into a sequence (V : (Fin n) →ℂ)
  such that
- $$ V [p] = ∑_{k = 0}^{N - 1} e^{-j*2πkp/n} v [k] $$
+ $$ V [p] = ∑_{k = 0}^{N - 1} e^{-i*2πkp/n} v [k] $$
  - `idft V` : given a sequence (V : (Fin n) → ℂ) we can transform it into a sequence
  (v : (Fin n) → ℂ)
 such that
@@ -39,8 +39,8 @@ $$ Wₙ[k, p] = (1/N) * e^{j2πkp/n} $$
 vector
 - `idft V = Wₙ⁻¹ V` : the idft operation on a sequence is the same as the idft matrix applied to the
 vector
-- `dft (idft v) = dft ( idft v) = v` the dft and idft operations are inverses
-- `Wₙ = vandermonde (w)` : the dft matrix is vandermonde with `w` being the first row of the dft
+- `dft (idft v) = dft (idft v) = v` the dft and idft operations are inverses
+- `Wₙ = vandermonde w` : the dft matrix is vandermonde with `w` being the first row of the dft
 matrix
 - `circulant t = Wₙ⁻¹ ⬝ diagonal (dft t) ⬝ Wₙ` : a circulant matrix is diagonalizable by the dft and
 idft matrix pair.
@@ -55,7 +55,7 @@ open Complex Matrix BigOperators Finset Real
 variable (n : ℕ) [NeZero n]
 
 /-- The DFT operation defined via a Sum -/
-noncomputable def dft (v : (Fin n) → ℂ) : (Fin n) → ℂ :=
+noncomputable def dft (v : (Fin n) → ℂ) : Fin n → ℂ :=
 fun k : Fin n =>  ∑ p : (Fin n),  (Complex.exp (2 * π * I * k * p / n)) * (v p)
 
 /-- The IDFT operation defined via a Sum -/
@@ -151,7 +151,7 @@ theorem dft_eq_Wₙ_mul (v : Fin n → ℂ) : dft n v = mulVec (Wₙ n) v := by
   funext r
   simp only [dft, mulVec, dotProduct, Wₙ_apply]
 
-/-- The IDFT operation and IDFT matrix applied to sequence/vector are tha same -/
+/-- The IDFT operation and IDFT matrix applied to sequence/vector are the same -/
 theorem idft_eq_iWₙ_mul (V : Fin n → ℂ ) : idft n V = mulVec (Wₙ n)⁻¹ V := by
   funext r
   simp only [idft, mulVec, dotProduct, iWₙ_apply]
@@ -247,7 +247,7 @@ theorem circulant_dft  (t : Fin n → ℂ) :
   have h1 : ∀ (x : Fin n), (shiftk_equiv (b)) x = x - b := by
     intro x; unfold shiftk_equiv shiftk; simp only [sub_neg_eq_add, Equiv.coe_fn_mk]
   have h2 : ∀ (x : Fin n), Complex.exp (2 * ↑π * I * (↑↑a * ((x:ℂ) - (b:ℂ))) / ↑n) =
-    Complex.exp ((2*π*I)*(a*(shiftk_equiv (b) x))/n) := by
+    Complex.exp ((2 * π * I) * (a * (shiftk_equiv b x) / n) := by
     intro x; apply cexp_shiftk_invariant n x a b
   simp_rw [← h1, h2]
   rw [Equiv.sum_comp (shiftk_equiv (b)) f]
