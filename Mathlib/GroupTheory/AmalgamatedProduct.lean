@@ -536,25 +536,34 @@ theorem prod_cons {i} (g : G i) (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some
     ← of_apply_eq_base i, normalizeSingle_fst_eq φ]
   simp only [mul_assoc, ← map_mul, ← map_inv, inv_mul_self, mul_one]
 
+theorem prod_smul_empty (w : NormalWord φ hφ) : w.prod • empty = w := by
+  induction w using consRecOn with
+  | h_empty => simp
+  | h_cons i g w _ _ _ _ ih =>
+    rw [prod_cons, mul_smul, ih, cons_eq_smul]
+  | h_base h w _ ih =>
+    rw [prod_smul, mul_smul, ih]
+
 noncomputable def equiv : AmalgamatedProduct φ ≃ NormalWord φ hφ :=
   { toFun := fun g => g • .empty
     invFun := fun w => w.prod
     left_inv := fun g => by
       simp only [prod_smul, prod_empty, mul_one]
-    right_inv := by
-      intro w
-      dsimp
-      refine consRecOn w ?_ ?_ ?_
-      · simp
-      · intro i g w _ _ _ _ ih
-        rw [prod_cons, mul_smul, ih, cons_eq_smul]
-      · intro h w _ ih
-        rw [prod_smul, mul_smul, ih] }
+    right_inv := fun w => prod_smul_empty w }
 
 theorem prod_injective : Function.Injective (prod : NormalWord φ hφ → AmalgamatedProduct φ) := by
   letI := Classical.decEq ι
   letI := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
+
+instance : FaithfulSMul (AmalgamatedProduct φ) (NormalWord φ hφ) :=
+  ⟨fun h => by simpa using congr_arg prod (h empty)⟩
+
+instance (i : ι) : FaithfulSMul (G i) (NormalWord φ hφ) :=
+  ⟨by simp [summand_smul_def', Function.funext_iff]⟩
+
+instance : FaithfulSMul H (NormalWord φ hφ) :=
+  ⟨by simp [base_smul_def', Function.funext_iff]⟩
 
 end NormalWord
 
@@ -564,20 +573,21 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (φ := φ) (i := i)) := by
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
-  refine Function.Injective.of_comp (f :=
-    (. • .)) ?_
-  simp only [Function.comp, toPermNormalWord, lift_of]
-  exact summandToPermNormalWord_injective
+  refine Function.Injective.of_comp
+    (f := ((. • .) : AmalgamatedProduct φ → NormalWord φ hφ → NormalWord φ hφ)) ?_
+  intros _ _ h
+  exact eq_of_smul_eq_smul (fun w : NormalWord φ hφ =>
+    by simp_all [Function.funext_iff, of_smul_eq_smul])
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base (φ := φ)) := by
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := toPermNormalWord (hφ := hφ)) ?_
-  intro _ _
-  simp [Function.comp, toPermNormalWord, lift_base, Equiv.Perm.ext_iff,
-    baseToPermNormalWord_apply]
+    (f := ((. • .) : AmalgamatedProduct φ → NormalWord φ hφ → NormalWord φ hφ)) ?_
+  intros _ _ h
+  exact eq_of_smul_eq_smul (fun w : NormalWord φ hφ =>
+    by simp_all [Function.funext_iff, base_smul_eq_smul])
 
 section Reduced
 
