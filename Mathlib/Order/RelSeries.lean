@@ -117,7 +117,6 @@ lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
   rcases y with ⟨ny, fy⟩
   dsimp at length_eq toFun_eq
   subst length_eq
-  rw [Fin.cast_refl, Function.comp.right_id] at toFun_eq
   subst toFun_eq
   rfl
 
@@ -171,7 +170,7 @@ lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
 
 lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 := by
-  rw [toList, List.length_ofFn]
+  rw [List.length_ofFn]
 
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
@@ -184,14 +183,14 @@ lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
 lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
-  rw [toList, List.mem_ofFn, mem_def]
+  rw [List.mem_ofFn, mem_def]
 
 theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     (hxy : x ≠ y) : 0 < s.length := by
   obtain ⟨i, rfl⟩ := hx
   obtain ⟨j, rfl⟩ := hy
   contrapose! hxy
-  simp only [not_lt, nonpos_iff_eq_zero] at hxy
+  simp only [nonpos_iff_eq_zero] at hxy
   congr
   apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
   · exact Subsingleton.elim (α := Fin 1) _ _
@@ -230,7 +229,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} w
       rw [List.length_ofFn, fromListChain'_length, ←Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
       rw [List.length_pos]
       exact x.2.1
-    · rw [List.get_ofFn, fromListChain'_toFun, Function.comp_apply]
+    · rw [List.get_ofFn, fromListChain'_toFun]
       congr
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
@@ -247,18 +246,15 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   step := fun i => by
     obtain (hi|rfl|hi) :=
       lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
-    · rw [Function.comp_apply, Function.comp_apply]
-      convert p.step ⟨i.1, hi⟩ <;>
+    · convert p.step ⟨i.1, hi⟩ <;>
       · convert Fin.append_left p q _
         rfl
     · convert connect
-      rw [Function.comp_apply]
       convert Fin.append_left p q _
       · rfl
       · convert Fin.append_right p q _
         rfl
-    · rw [Function.comp_apply, Function.comp_apply]
-      set x := _; set y := _
+    · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
         i.2.trans <| by linarith⟩
@@ -273,7 +269,6 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
           exact i.2⟩
       · ext
         change _ = _ + (_ - _)
-        dsimp only [Fin.cast_succ_eq, Nat.add_eq, Nat.add_zero, Nat.rawCast, Nat.cast_id]
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc]
         rw [Nat.add_sub_cancel']
         swap; exact le_of_lt hi
@@ -312,12 +307,11 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
       · change Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         swap; exact hm.trans (lt_add_one _)
-        simp only [Fin.coe_castSucc, Fin.castLT_castSucc, eq_rec_constant]
-      rw [hx]
+        simp only [Fin.castLT_castSucc, eq_rec_constant]
       convert p.step ⟨m, hm.trans i.2⟩
       change Fin.insertNth _ _ _ _ = _
       rw [Fin.insertNth_apply_below]
-      simp only [Fin.coe_castSucc, eq_rec_constant, Fin.succ_mk]
+      simp only [eq_rec_constant]
       congr
       change m.1 + 1 < i.1 + 1
       simpa only [add_lt_add_iff_right]
@@ -328,7 +322,7 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
         · change m.1 < i.1 + 1
           rw [hm]
           exact lt_add_one _
-        simp only [Fin.coe_castSucc, Fin.castLT_castSucc, eq_rec_constant]
+        simp only [Fin.castLT_castSucc, eq_rec_constant]
       rw [hx]
       convert prev_connect
       · ext; exact hm
@@ -342,18 +336,16 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; exact hm
-          simp only [eq_rec_constant, ge_iff_le]
+          simp only [eq_rec_constant]
           congr
-        rw [hx]
         have hy : y = p m
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; exact hm.trans (lt_add_one _)
-          simp only [Nat.zero_eq, Fin.pred_succ, eq_rec_constant]
+          simp only [Fin.pred_succ, eq_rec_constant]
         rw [hy]
         convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
         ext
-        change m.1 = (m.1 - 1) + 1
         symm
         exact Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
       · have hx : x = a
@@ -361,12 +353,11 @@ def insert_nth (p : RelSeries r) (i : Fin p.length) (a : α)
           have H : m.castSucc = i.succ.castSucc
           · ext; change m.1 = i.1 + 1; rw [hm]
           rw [H, Fin.insertNth_apply_same]
-        rw [hx]
         have hy : y = p m
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
-          simp
+          simp only [Fin.pred_succ, eq_rec_constant]
         rw [hy]
         convert connect_next
         ext
@@ -399,11 +390,9 @@ def rev (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
     · linarith [i.2]
     convert p.step ⟨p.length - (i.1 + 1), _⟩
     · ext
-      simp only [Fin.val_rev, Fin.val_succ, ge_iff_le, add_le_add_iff_right,
-        Nat.succ_sub_succ_eq_sub, Fin.coe_castSucc]
+      simp only [Fin.val_rev, Fin.val_succ, Nat.succ_sub_succ_eq_sub, Fin.coe_castSucc]
     · ext
-      simp only [Fin.val_rev, Fin.coe_castSucc, ge_iff_le, add_le_add_iff_right,
-        Nat.succ_sub_succ_eq_sub, Fin.val_succ]
+      simp only [Fin.val_rev, Fin.coe_castSucc, Nat.succ_sub_succ_eq_sub, Fin.val_succ]
       rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel]
       · assumption
       · linarith
@@ -426,10 +415,10 @@ lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
   rw [cons_toFun]
   convert Fin.append_right _ _ _
   ext
-  simp only [Fin.val_succ, Nat.cast_add, Nat.cast_one, Fin.coe_cast, Fin.coe_natAdd, zero_add]
+  simp only [Fin.val_succ, Fin.coe_natAdd]
   rw [add_comm 1 x.1]
   change _ % _ = _
-  simp only [cons_length, Nat.one_mod, Nat.mod_add_mod, Nat.mod_succ_eq_iff_lt, Nat.succ_eq_add_one]
+  simp only [cons_length, Nat.mod_succ_eq_iff_lt]
   linarith [x.2]
 /--
 given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_n a`, there is a series
@@ -447,44 +436,36 @@ lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
 lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i := by
   unfold snoc
-  simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
-    Function.comp_apply, id_eq]
+  simp only [append_toFun]
   exact Fin.append_left _ _ i
 
 lemma head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
     (snoc s a connect).head = s.head := by
   unfold snoc head
-  simp only [append_toFun, singleton_length, Nat.add_zero, Fin.cast_refl,
-    Function.comp_apply, id_eq]
+  simp only [append_toFun]
   exact Fin.append_left _ _ 0
 
 theorem mem_snoc {s : RelSeries r} {x y : α} (connect : r s.last x) :
     y ∈ snoc s x connect ↔ y ∈ s ∨ y = x := by
-  simp only [snoc, mem_def]
+  simp only [snoc]
   constructor
   · rintro ⟨i, rfl⟩
     refine' Fin.lastCases _ (fun i => _) i
     · right
-      simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
-        Function.comp_apply, id_eq]
+      simp only [append_toFun]
       convert Fin.append_right _ _ 0
     · left
-      simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
-        Function.comp_apply, id_eq, Set.mem_range]
+      simp only [append_toFun]
       refine ⟨⟨i.1, ?_⟩, ?_⟩
-      · have H := i.2
-        simp only [append_length, singleton_length, Nat.add_zero, add_zero] at H
-        exact H
+      · exact i.2
       convert (Fin.append_left _ _ _).symm
   · intro h
     rcases h with (⟨i, rfl⟩ | rfl)
     · use Fin.castSucc i
-      simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
-        Function.comp_apply, id_eq]
+      simp only [append_toFun]
       convert Fin.append_left _ _ _
     · use Fin.last _
-      simp only [append_length, singleton_length, Nat.add_zero, append_toFun, Fin.cast_refl,
-        Function.comp_apply, id_eq]
+      simp only [append_toFun]
       convert Fin.append_right _ _ 0
 
 /--
@@ -504,7 +485,7 @@ lemma tail_zero (p : RelSeries r) (h : p.length ≠ 0) : p.tail h 0 = p 1 := by
   rw [tail_toFun]
   congr
   change (0 : ℕ) % (p.length.pred + 1) + 1 = 1 % (p.length + 1)
-  rw [Nat.zero_mod, zero_add, Nat.mod_eq_of_lt]
+  rw [Nat.zero_mod, Nat.mod_eq_of_lt]
   rw [lt_add_iff_pos_left]
   exact Nat.pos_of_ne_zero h
 
@@ -530,7 +511,6 @@ lemma rel_last_eraseLast_last_of_pos_length (p : RelSeries r) (h : 0 < p.length)
   delta last
   congr
   ext
-  dsimp
   exact (Nat.succ_pred_eq_of_pos <| by linarith).symm
 
 theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last) (hxs : x ∈ s) :
@@ -540,9 +520,9 @@ theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last
   dsimp
   congr
   by_cases H : s.length = 0
-  · simp only [H, ge_iff_le, tsub_eq_zero_of_le, zero_add, Nat.mod_succ_eq_iff_lt, Nat.lt_one_iff]
+  · simp only [Nat.mod_succ_eq_iff_lt]
     have H' := i.2
-    simp_rw [H, zero_add] at H'
+    simp_rw [H] at H'
     linarith
   · have H' : s.length - 1 + 1 = s.length
     · exact Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero H)
@@ -575,17 +555,15 @@ def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
       erw [dif_pos h₁, dif_pos h₂]
       convert p.step ⟨i, h₁⟩ using 1
-    · -- rw [not_lt] at h₂
-      erw [dif_neg h₂]
+    · erw [dif_neg h₂]
       by_cases h₁ : i.1 < p.length
       · erw [dif_pos h₁]
-        rw [not_lt] at h₂
         have h₃ : p.length = i.1 + 1
         · linarith
         convert p.step ⟨i, h₁⟩ using 1
         convert connect.symm
         · congr
-          simp only [Fin.val_succ, ge_iff_le, Nat.zero_mod, tsub_eq_zero_iff_le]
+          simp only [Nat.zero_mod, tsub_eq_zero_iff_le]
           simp_rw [h₃]
           rfl
         · congr
@@ -614,10 +592,10 @@ lemma combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
   rw [combine_toFun]
   split_ifs with H
   · congr
-  · simp only [Fin.val_succ, Fin.coe_castAdd, not_lt] at H
+  · simp only [Fin.val_succ, Fin.coe_castAdd] at H
     convert h.symm
     · congr
-      simp only [Fin.val_succ, Fin.coe_castAdd, ge_iff_le, Nat.zero_mod, tsub_eq_zero_iff_le]
+      simp only [Fin.val_succ, Fin.coe_castAdd, Nat.zero_mod, tsub_eq_zero_iff_le]
       linarith [i.2]
     · congr
       ext
@@ -628,25 +606,19 @@ lemma combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : 
     combine s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) := by
   rw [combine_toFun]
   split_ifs with H
-  · simp only [combine_length, Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left,
-      not_lt_zero'] at H
-  · simp only [combine_length, Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero',
-      not_false_eq_true] at H
-    congr
-    change (_ + i.1) - _ = _
+  · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
+  · congr
     exact Nat.add_sub_self_left _ _
 
 lemma combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
     combine s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
   rw [combine_toFun]
   split_ifs with H
-  · simp only [Fin.val_succ, Fin.coe_natAdd] at H
-    rw [add_assoc] at H
-    have H' : s₁.length < s₁.length + (i.1 + 1)
+  · have H' : s₁.length < s₁.length + (i.1 + 1)
     · linarith
     exact (lt_irrefl _ (H.trans H')).elim
   · congr
-    simp only [Fin.val_succ, Fin.coe_natAdd, ge_iff_le]
+    simp only [Fin.val_succ, Fin.coe_natAdd]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
 variable (r)

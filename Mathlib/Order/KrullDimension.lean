@@ -96,7 +96,7 @@ le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
   obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_infiniteDimensional r m
   specialize hm p
   refine (not_lt_of_le hm ?_).elim
-  erw [WithBot.some_eq_coe, WithBot.coe_lt_coe, WithTop.some_eq_coe, WithTop.coe_lt_coe]
+  erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
   assumption
 
 lemma eq_len_of_finiteDimensional [r.FiniteDimensional] :
