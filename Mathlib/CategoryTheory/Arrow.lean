@@ -325,6 +325,8 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
 
 variable (C D)
 
+/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` with sends
+a functor `F : C ⥤ D` to `F.mapArrow`. -/
 @[simps]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
   obj F := F.mapArrow
@@ -335,6 +337,7 @@ def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
 
 variable {C D}
 
+/-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   functor := e.functor.mapArrow
   inverse := e.inverse.mapArrow

@@ -92,15 +92,6 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
               _ ≅ W₂.Q := leftUnitor _)
           (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso)⟩ }
 
-instance (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁] :
-    L₁.IsLocalization W₁.isoClosure := by
-  refine' of_equivalence_source L₁ W₁ L₁ W₁.isoClosure Equivalence.refl _ _ L₁.leftUnitor
-  · intro _ _ f hf
-    simpa only [MorphismProperty.isoClosure_isoClosure, Equivalence.refl_functor]
-      using W₁.subset_isoClosure _ hf
-  · simpa only [MorphismProperty.IsInvertedBy.isoClosure_iff]
-      using Localization.inverts L₁ W₁
-
 /-- If `L₁ : C₁ ⥤ D₁` is a localization functor for `W₁ : MorphismProperty C₁`, then if we
 transport this functor `L₁` via equivalences `C₁ ≌ C₂` and `D₁ ≌ D₂` to get a functor
 `L₂ : C₂ ⥤ D₂`, then `L₂` is also a localization functor for
