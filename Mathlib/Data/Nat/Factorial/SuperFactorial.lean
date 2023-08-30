@@ -20,7 +20,6 @@ This file defines the [superfactorial](https://en.wikipedia.org/wiki/Superfactor
 namespace Nat
 
 /-- `Nat.superFactorial n` is the superfactorial of `n`. -/
-@[simp]
 def superFactorial : ℕ → ℕ
   | 0 => 1
   | succ n => factorial n.succ * superFactorial n
