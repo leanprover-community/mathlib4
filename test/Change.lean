@@ -98,3 +98,21 @@ example : (fun x : Nat => x) 0 = 1 := by
     --   1 = 0
     -- is not defeq to the goal:
     --   (fun x ↦ x) 0 = 1
+open Lean Elab Tactic in
+elab "guard_num_goals" n:num : tactic => do
+  let numGoals := (← getGoals).length
+  unless numGoals == n.getNat do throwError "expected {n} goals, found {numGoals}"
+
+-- Ensure that `change` does not duplicate existing mvars in the infoview
+example : True := by
+  have h2 : Nat.succ 0 = ?a := ?b
+  change 1 = ?a at h2 -- yields 2 case `a`'s, 2 case `b`s before fix
+  trivial
+  guard_num_goals 2
+  case a => exact 1
+  case b => rfl
+
+-- Ensure that `change` discards the temporary goal created when acting on local hypotheses
+example (h : Nat.succ 0 = 0) : True := by
+  change 1 = 0 at h
+  trivial
