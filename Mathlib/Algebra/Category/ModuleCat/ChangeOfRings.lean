@@ -333,7 +333,7 @@ namespace RestrictionCoextensionAdj
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
 -- Porting note: too much time
-set_option maxHeartbeats 600000 in
+set_option maxHeartbeats 500000 in
 /-- Given `R`-module X and `S`-module Y, any `g : (restrictScalars f).obj Y ⟶ X`
 corresponds to `Y ⟶ (coextendScalars f).obj X` by sending `y ↦ (s ↦ g (s • y))`
 -/
