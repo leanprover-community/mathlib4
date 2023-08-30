@@ -35,7 +35,6 @@ variable {n : ℕ}
 theorem superFactorial_zero : (sf 0) = 1 :=
   rfl
 
-@[simp]
 theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * (sf n) :=
   rfl
 
