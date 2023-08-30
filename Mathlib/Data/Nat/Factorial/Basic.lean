@@ -44,7 +44,6 @@ theorem factorial_zero : 0! = 1 :=
   rfl
 #align nat.factorial_zero Nat.factorial_zero
 
-@[simp]
 theorem factorial_succ (n : ℕ) : n.succ ! = (n + 1) * n ! :=
   rfl
 #align nat.factorial_succ Nat.factorial_succ

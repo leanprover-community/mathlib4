@@ -385,7 +385,7 @@ theorem shiftRight_coe_nat (m n : ℕ) : (m : ℤ) >>> (n : ℤ) = m >>> n := by
 #align int.shiftr_coe_nat Int.shiftRight_coe_nat
 
 @[simp]
-theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftl' true m n+1] :=
+theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' true m n+1] :=
   rfl
 #align int.shiftl_neg_succ Int.shiftLeft_negSucc
 
@@ -409,9 +409,9 @@ attribute [local simp] Int.zero_div
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.pow_add, mul_assoc])
-  | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftl'_add _ _ _ _)
+  | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
-    subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftl' false m n) >>> k)
+    subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
         by dsimp; simp [- Nat.shiftLeft_eq, ← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
@@ -421,12 +421,12 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
-      (fun n k i => -[m+1] <<< i = -[(Nat.shiftl' true m n) >>> k+1])
+      (fun n k i => -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
       (fun i n =>
         congr_arg negSucc <| by
-          rw [← Nat.shiftl'_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
+          rw [← Nat.shiftLeft'_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
-      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftl'_sub, tsub_self]
+      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub, tsub_self]
       <;> rfl
 #align int.shiftl_add Int.shiftLeft_add
 
@@ -436,7 +436,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * ↑(2 ^ n)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
-  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftl'_tt_eq_mul_pow _ _)
+  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftLeft_eq_mul_pow
 
 theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / ↑(2 ^ n)

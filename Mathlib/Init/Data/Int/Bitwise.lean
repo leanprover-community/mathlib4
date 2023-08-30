@@ -105,9 +105,9 @@ def lxor' : ℤ → ℤ → ℤ
   is obtained by left-shifting the binary representation of `m` by `n` places -/
 instance : ShiftLeft ℤ where
   shiftLeft
-  | (m : ℕ), (n : ℕ) => Nat.shiftl' false m n
+  | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
   | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
-  | -[m +1], (n : ℕ) => -[Nat.shiftl' true m n +1]
+  | -[m +1], (n : ℕ) => -[Nat.shiftLeft' true m n +1]
   | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
 #align int.shiftl ShiftLeft.shiftLeft
 
