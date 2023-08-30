@@ -72,7 +72,7 @@ structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] 
   t₀ : Icc tMin tMax
   x₀ : E
   (C R L : ℝ≥0)
-  IsPicardLindelof : IsPicardLindelof toFun tMin t₀ tMax x₀ L R C
+  isPicardLindelof : IsPicardLindelof toFun tMin t₀ tMax x₀ L R C
 #align picard_lindelof PicardLindelof
 
 namespace PicardLindelof
@@ -101,20 +101,20 @@ protected theorem nonempty_Icc : (Icc v.tMin v.tMax).Nonempty :=
 
 protected theorem lipschitzOnWith {t} (ht : t ∈ Icc v.tMin v.tMax) :
     LipschitzOnWith v.L (v t) (closedBall v.x₀ v.R) :=
-  v.IsPicardLindelof.lipschitz t ht
+  v.isPicardLindelof.lipschitz t ht
 #align picard_lindelof.lipschitz_on_with PicardLindelof.lipschitzOnWith
 
 protected theorem continuousOn :
     ContinuousOn (uncurry v) (Icc v.tMin v.tMax ×ˢ closedBall v.x₀ v.R) :=
   have : ContinuousOn (uncurry (flip v)) (closedBall v.x₀ v.R ×ˢ Icc v.tMin v.tMax) :=
-    continuousOn_prod_of_continuousOn_lipschitzOnWith _ v.L v.IsPicardLindelof.cont
-      v.IsPicardLindelof.lipschitz
+    continuousOn_prod_of_continuousOn_lipschitzOnWith _ v.L v.isPicardLindelof.cont
+      v.isPicardLindelof.lipschitz
   this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
 #align picard_lindelof.continuous_on PicardLindelof.continuousOn
 
 theorem norm_le {t : ℝ} (ht : t ∈ Icc v.tMin v.tMax) {x : E} (hx : x ∈ closedBall v.x₀ v.R) :
     ‖v t x‖ ≤ v.C :=
-  v.IsPicardLindelof.norm_le _ ht _ hx
+  v.isPicardLindelof.norm_le _ ht _ hx
 #align picard_lindelof.norm_le PicardLindelof.norm_le
 
 /-- The maximum of distances from `t₀` to the endpoints of `[tMin, tMax]`. -/
@@ -211,7 +211,7 @@ protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.
     dist (f t) v.x₀ = dist (f t) (f.toFun v.t₀) := by rw [f.map_t₀']
     _ ≤ v.C * dist t v.t₀ := (f.lipschitz.dist_le_mul _ _)
     _ ≤ v.C * v.tDist := (mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2)
-    _ ≤ v.R := v.IsPicardLindelof.C_mul_le_R
+    _ ≤ v.R := v.isPicardLindelof.C_mul_le_R
 #align picard_lindelof.fun_space.mem_closed_ball PicardLindelof.FunSpace.mem_closedBall
 
 /-- Given a curve $γ \colon [t_{\min}, t_{\max}] → E$, `PicardLindelof.vComp` is the function
