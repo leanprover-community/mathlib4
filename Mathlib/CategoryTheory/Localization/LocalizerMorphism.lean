@@ -112,9 +112,9 @@ noncomputable def isEquivalence_imp [IsEquivalence G] :
 
 lemma nonempty_isEquivalence_iff : Nonempty (IsEquivalence G) ↔ Nonempty (IsEquivalence G') := by
   constructor
-  . rintro ⟨e⟩
+  · rintro ⟨e⟩
     exact ⟨Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G'⟩
-  . rintro ⟨e'⟩
+  · rintro ⟨e'⟩
     exact ⟨Φ.isEquivalence_imp L₁' L₂' G' L₁ L₂ G⟩
 
 end
