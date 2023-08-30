@@ -47,6 +47,7 @@ namespace Rat
 
 open NumberField
 
+@[simp]
 /-- The absolute discriminant of the number field `ℚ` is 1. -/
 theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
@@ -61,5 +62,7 @@ theorem numberField_discr : discr ℚ = 1 := by
         show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
         map_one, mul_one]
     _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
+
+alias _root_.NumberField.discr_rat := numberField_discr
 
 end Rat
