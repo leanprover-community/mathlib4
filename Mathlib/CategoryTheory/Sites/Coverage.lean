@@ -285,6 +285,17 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     intro X S hS
     apply saturate.of _ _ hS
 
+/-- The union of two coverages is a coverage. -/
+@[simps]
+def union (x y : Coverage C) : Coverage C where
+  covering B := x.covering B ∪ y.covering B
+  pullback := by
+    rintro X Y f S (hx | hy)
+    · obtain ⟨T, hT⟩ := x.pullback f S hx
+      exact ⟨T, Or.inl hT.1, hT.2⟩
+    · obtain ⟨T, hT⟩ := y.pullback f S hy
+      exact ⟨T, Or.inr hT.1, hT.2⟩
+
 end Coverage
 
 open Coverage
