@@ -117,6 +117,13 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
     | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
   return mvarId
 
+/-- Exactly like `Lean.Elab.Tactic.filterOldMVars`, but uses `List`s instead of `Array`s. Discards 
+all mvars that were created before `mvarCounterSaved` was recorded. -/
+private def filterOldMVarsList (mvarIds : List MVarId) (mvarCounterSaved : Nat)
+    : MetaM (List MVarId) := do
+  let mctx ← getMCtx
+  return mvarIds.filter fun mvarId => (mctx.getDecl mvarId |>.index) >= mvarCounterSaved
+
 /-- `change` can be used to replace the main goal or its local
 variables with definitionally equal ones.
 
