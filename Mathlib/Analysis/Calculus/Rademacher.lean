@@ -3,9 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Measurable
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+-- import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Rademacher theorem: a Lipschitz function is differentiable almost everywhere
@@ -15,18 +16,9 @@ import Mathlib.Analysis.NormedSpace.FiniteDimension
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
-open Filter
+open Filter MeasureTheory
+open NNReal
 
-/-
-noncomputable def directionalDeriv (f : E → ℝ) (v : E) (x : E) : ℝ :=
-  limsup (fun (n : ℕ) ↦ n • (f (x + ((1 : ℝ)/n) • v) - f x)) (atTop : Filter ℕ)
-
-lemma measurable_directionalDeriv {f : E → ℝ} (hf : Continuous f) (v : E) :
-    Measurable (directionalDeriv f v) := by
-  have Z := measurable_limsup (f := (fun (n : ℕ) (x : E) ↦ n • (f (x + ((1 : ℝ)/n) • v) - f x)))
-
-
-#exit
-
-lemma zoug : trivial := sorry
--/
+theorem foufou {C : ℝ≥0} (f : E × ℝ → ℝ) (hf : LipschitzWith C f) (μ : Measure E) :
+    ∀ᵐ p ∂(μ.prod volume), LineDifferentiableAt ℝ f p (0, 1) := by
+sorry
