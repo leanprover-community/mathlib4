@@ -7,6 +7,7 @@ import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Transvection
+import Mathlib.MeasureTheory.Group.LIntegral
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
@@ -384,15 +385,6 @@ theorem mulVec_stdBasisMatrix {R n m} [Semiring R] [Fintype n] [DecidableEq n] [
   rcases eq_or_ne i i' with rfl|h
   · simp
   simp [h, h.symm]
-
--- we need to reorder some files so that this result isn't in a file that depends on Bochner
--- integration:
--- add import Mathlib.MeasureTheory.Group.Lintegral after #6715 is merged
-@[to_additive]
-theorem _root_.MeasureTheory.lintegral_mul_right_eq_self
-    {G} [MeasurableSpace G] [Group G] {μ : Measure G}
-    [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
-    (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by sorry
 
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
