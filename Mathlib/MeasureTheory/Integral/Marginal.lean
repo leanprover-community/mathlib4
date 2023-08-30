@@ -464,7 +464,7 @@ lintegral_mono' h2 hfg
 --     lintegral μ f = lintegral μ g :=
 -- lintegral_congr hfg
 
-alias ⟨_, ENNReal.monotone2⟩ := ENNReal.coe_le_coe
+alias ⟨_, _root_.ENNReal.monotone2⟩ := ENNReal.coe_le_coe
 attribute [gcongr] ENNReal.monotone2
 
 

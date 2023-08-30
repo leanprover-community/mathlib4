@@ -224,7 +224,7 @@ open Set Function MeasurableSpace Finset
 namespace MeasureTheory
 
 /-- A different formulation of Hölder's inequality for two functions -/
-theorem ENNReal.lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
+theorem _root_.ENNReal.lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q = 1) :
     ∫⁻ a, f a ^ p * g a ^ q ∂μ ≤ (∫⁻ a, f a ∂μ) ^ p * (∫⁻ a, g a ∂μ) ^ q := by
@@ -253,7 +253,7 @@ theorem prod_insert_div [CommGroup β] [DecidableEq α] (ha : a ∉ s) {f : α �
 attribute [gcongr] ENNReal.rpow_le_rpow
 set_option maxHeartbeats 300000 in
 /-- A version of Hölder with multiple arguments -/
-theorem ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
+theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
     (hs : s.Nonempty)
     {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ) {p : ι → ℝ} (hp : ∑ i in s, p i = 1)
     (h2p : ∀ i ∈ s, 0 ≤ p i) :
@@ -311,7 +311,7 @@ theorem ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measu
         _ = ∏ i in insert i₀ s, (∫⁻ a, f i a ∂μ) ^ p i := by simp [hi₀]
 
 /-- A version of Hölder with multiple arguments, one of which plays a distinguished role -/
-theorem ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
+theorem _root_.ENNReal.lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α} (s : Finset ι)
     {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ) (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i in s, p i = 1) (hq :  0 ≤ q)
     (hp : ∀ i ∈ s, 0 ≤ p i) :
