@@ -78,7 +78,7 @@ Data structure containing the history of a rewrite search.
 -/
 structure SearchNode where mk' ::
   /-- The lemmas used so far. -/
-  history : Array (Name × Bool)
+  history : Array (Expr × Bool)
   /-- The metavariable context after rewriting.
   We carry this around so the search can safely backtrack. -/
   mctx : MetavarContext
@@ -101,7 +101,7 @@ structure SearchNode where mk' ::
 namespace SearchNode
 
 /-- Construct a `SearchNode`. -/
-def mk (history : Array (Name × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
+def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
     MetaM (Option SearchNode) := do
   let type ← instantiateMVars (← goal.getType)
   match type.eq? with
@@ -132,9 +132,9 @@ def compute_dist? (n : SearchNode) : SearchNode :=
 /-- Construct an initial `SearchNode` from a goal. -/
 def init (goal : MVarId) : MetaM (Option SearchNode) := mk #[] goal
 /-- Add an additional step to the `SearchNode` history. -/
-def push (n : SearchNode) (name : Name) (symm : Bool) (g : MVarId)
+def push (n : SearchNode) (expr : Expr) (symm : Bool) (g : MVarId)
     (ctx : Option MetavarContext := none) : MetaM (Option SearchNode) :=
-  mk (n.history.push (name, symm)) g ctx
+  mk (n.history.push (expr, symm)) g ctx
 
 instance : Ord SearchNode where
   compare := compareOn SearchNode.ppGoal
@@ -150,7 +150,7 @@ def rewrite (n : SearchNode) (r : Rewrites.RewriteResult) :
     MetaM (Option SearchNode) :=
   withMCtx r.mctx do
     let goal' ← n.goal.replaceTargetEq r.result.eNew r.result.eqProof
-    n.push r.name r.symm goal' (← getMCtx)
+    n.push r.expr r.symm goal' (← getMCtx)
 
 /--
 Given a pair of `DiscrTree` trees
@@ -158,9 +158,10 @@ indexing all rewrite lemmas in the imported files and the current file,
 try rewriting the current goal in the `SearchNode` by one of them,
 returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
-def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+def rewrites (hyps : Array (Expr × Bool × Nat))
+    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (n : SearchNode) : MLList MetaM SearchNode :=
-  rewritesCore lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
+  rewritesCore hyps lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
@@ -168,11 +169,12 @@ Perform best first search on the graph of rewrites from the specified `SearchNod
 def search (n : SearchNode)
     (stopAtRfl := true) (stopAtDistZero := true) (maxQueued : Option Nat := none) :
     MLList MetaM SearchNode := .squash fun _ => do
+  let hyps ← localHypotheses
   let lemmas ← rewriteLemmas.get
   -- TODO think about whether we should use `removeDuplicates := true` here (seems unhelpful)
   -- or if there are other ways we can deduplicate.
   let search := bestFirstSearchCore (maxQueued := maxQueued)
-    prio estimator (rewrites lemmas) n
+    prio estimator (rewrites hyps lemmas) n
   let search := if stopAtRfl then
     search.mapM compute_rfl? |>.takeUpToFirst fun n => n.rfl? = some true
   else
@@ -211,7 +213,6 @@ elab_rules : tactic |
     pure <| t.foldl (init := h) fun r₁ r₂ => if r₁.dist?.getD 0 ≤ r₂.dist?.getD 0 then r₁ else r₂
   setMCtx min.mctx
   replaceMainGoal [min.goal]
-  let rules ← min.history.toList.mapM fun ⟨n, s⟩ => do pure (← mkConstWithFreshMVarLevels n, s)
   let type? := if min.rfl? = some true then none else some (← min.goal.getType)
-  addRewriteSuggestion tk rules
+  addRewriteSuggestion tk min.history.toList
     type? (origSpan? := ← getRef)
