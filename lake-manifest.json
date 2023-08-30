@@ -34,9 +34,9 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/hrmacbeth/std4",
+   {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "57653e5f85f266e3032a9c2556340e324bb5e1cf",
+    "rev": "101f1d041068be39093633e4ebf95f8c6fae2240",
     "opts": {},
     "name": "std",
     "inputRev?": "main",
