@@ -72,7 +72,7 @@ section InfSet
 
 variable [Preorder α] [InfSet α]
 
-/-- `InfSet` structure on a nonempty subset `s` of an preorder with `InfSet`. This definition is
+/-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
 noncomputable def subsetInfSet [Inhabited s] : InfSet s where
