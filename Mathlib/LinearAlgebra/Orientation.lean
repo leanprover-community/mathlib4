@@ -190,7 +190,7 @@ theorem orientation_map [Nontrivial R] (e : Basis ι R M) (f : M ≃ₗ[R] N) :
 #align basis.orientation_map Basis.orientation_map
 
 theorem orientation_reindex [Nontrivial R] (e : Basis ι R M) (eι : ι ≃ ι') :
-    (e.reindex eι).Orientation = Orientation.reindex R M eι e.Orientation := by
+    (e.reindex eι).orientation = Orientation.reindex R M eι e.orientation := by
   simp_rw [Basis.orientation, Orientation.reindex_apply, Basis.det_reindex']
 #align basis.orientation_reindex Basis.orientation_reindex
 
