@@ -2,6 +2,7 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.RegularExtensive
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 
@@ -26,210 +27,21 @@ universe v v₁ u u₁ w
   finite jointly surjective). TODO: unify this into one theorem for categories satisfying this.
 -/
 
-section ExtensiveRegular -- This section is PR #6847
+section EffectiveEpis
 
-section Classes
+open CategoryTheory
 
-open CategoryTheory Opposite CategoryTheory.Limits Functor
+lemma CompHaus.effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := sorry
 
-variable (C : Type u) [Category.{v, u} C]
+lemma Profinite.effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := sorry
 
-class HasPullbacksOfInclusions : Prop where
-    HasPullback : ∀ {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
-    (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α),
-    HasPullback f (i a)
+lemma Stonean.effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := sorry
 
-instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
-    (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
-    HasPullback f (i a) := HasPullbacksOfInclusions.HasPullback f i a
 
-instance [HasPullbacks C] : HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
-
-class Extensive [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] : Prop where
-  sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
-    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
-    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
-
-class EpiStable : Prop where
-  exists_fac : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ Y) [Epi g],
-    (∃ (W : C) (h : W ⟶ X) (_ : Epi h) (i : W ⟶ Z), i ≫ g = h ≫ f)
-
-end Classes
-
-section Coverage
-namespace CategoryTheory
-
-variable {C : Type u} [Category.{v} C]
-
-open Sieve CategoryTheory.Limits Opposite
-
-namespace Coverage
-
-@[simps]
-def union (x y : Coverage C) : Coverage C where
-  covering B := x.covering B ∪ y.covering B
-  pullback := by
-    rintro X Y f S (hx | hy)
-    · obtain ⟨T, hT⟩ := x.pullback f S hx
-      exact ⟨T, Or.inl hT.1, hT.2⟩
-    · obtain ⟨T, hT⟩ := y.pullback f S hy
-      exact ⟨T, Or.inr hT.1, hT.2⟩
-
-end Coverage
-
-namespace Presieve
-
-class extensive [HasFiniteCoproducts C] {B : C} (S : Presieve B) : Prop where
-  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
-    S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π)
-
-class regular {B : C} (S : Presieve B) : Prop where
-  single_epi : ∃ (X : C) (f : X ⟶ B), S = Presieve.ofArrows (fun (_ : Unit) ↦ X)
-    (fun (_ : Unit) ↦ f) ∧ Epi f
-
-end Presieve
-
-variable (C)
-
-@[simps]
-def ExtensiveCoverage [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] [Extensive C] :
-    Coverage C where
-  covering B := {S : Presieve B | S.extensive}
-  pullback := by
-    intro X Y f S ⟨α, hα, Z, π, hS, h_iso⟩
-    let Z' : α → C := fun a ↦ pullback f (π a)
-    let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst
-    refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
-    · constructor
-      exact ⟨α, hα, Z', π', ⟨by simp only, Extensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
-    · intro W g hg
-      rcases hg with ⟨a⟩
-      refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
-      rw [hS]
-      refine Presieve.ofArrows.mk a
-
-@[simps]
-def RegularCoverage [EpiStable C] : Coverage C where
-  covering B := {S : Presieve B | S.regular}
-  pullback := by
-    intro X Y f S ⟨Z, π, hπ, h_epi⟩
-    have := EpiStable.exists_fac f π
-    obtain ⟨W, h, _, i, this⟩ := this
-    refine ⟨Presieve.singleton h, ⟨?_, ?_⟩⟩
-    · exact ⟨W, h, by {rw [Presieve.ofArrows_pUnit h]}, inferInstance⟩
-    · intro W g hg
-      cases hg
-      refine ⟨Z, i, π, ⟨?_, this⟩⟩
-      cases hπ
-      rw [Presieve.ofArrows_pUnit]
-      exact Presieve.singleton.mk
-
-@[simps!]
-def ExtensiveRegularCoverage [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] [EpiStable C]
-    [Extensive C] : Coverage C :=
-  (ExtensiveCoverage C).union (RegularCoverage C)
-
-variable [HasFiniteCoproducts C] [HasPullbacksOfInclusions C] {C}
-
-instance {X : C} (S : Presieve X) [S.extensive] :
-    S.hasPullbacks where
-  has_pullbacks := by
-    obtain ⟨_, _, _, _, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (S := S)
-    intro _ _ f hf _ hg
-    rw [hS] at hf hg
-    cases' hg with b
-    apply HasPullbacksOfInclusions.HasPullback f
-
-namespace ExtensiveSheafConditionProof
-
-lemma sigma_surjective {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) :
-    Function.Surjective (fun a => ⟨Z a, π a, Presieve.ofArrows.mk a⟩ :
-    α → Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) :=
-  fun ⟨_, ⟨_, hf⟩⟩ ↦ by cases' hf with a _; exact ⟨a, rfl⟩
-
-instance {α : Type} {Z : α → C} {X : C} {π : (a : α) → Z a ⟶ X} [Fintype α] :
-    HasProduct fun (x : Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) ↦ (op x.1) :=
-  haveI := Finite.of_surjective _ (sigma_surjective π)
-  inferInstance
-
-noncomputable
-def prod_map {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
-    (F : Cᵒᵖ ⥤ Type max u v) :
-    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) => F.obj (op f.1)) ⟶
-    ∏ fun a => F.obj (op (Z a)) :=
-  Pi.lift (fun a => Pi.π _ ⟨Z a, π a, Presieve.ofArrows.mk a⟩) ≫ 𝟙 _
-
-noncomputable
-def firstObj_to_base {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
-  (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] [IsIso (Sigma.desc π)] :
-    Equalizer.FirstObj F (Presieve.ofArrows Z π) ⟶ F.obj (op X) :=
-  haveI : PreservesLimit (Discrete.functor fun a => op (Z a)) F :=
-    (PreservesFiniteProducts.preserves α).preservesLimit
-  prod_map π F ≫ ((Limits.PreservesProduct.iso F (fun a => op <| Z a)).inv ≫
-    F.map (opCoproductIsoProduct Z).inv ≫ F.map (inv (Sigma.desc π).op))
-
-lemma comp_inv_desc_eq_ι {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
-    [IsIso (Sigma.desc π)] (a : α) : π a ≫ inv (Sigma.desc π) = Sigma.ι _ a := by
-  simp only [IsIso.comp_inv_eq, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-
-@[simp]
-lemma PreservesProduct.isoInvCompMap {C : Type u} [Category C] {D : Type v} [Category D] (F : C ⥤ D)
-    {J : Type w} {f : J → C} [HasProduct f] [HasProduct (fun j => F.obj (f j))]
-    [PreservesLimit (Discrete.functor f) F] (j : J) :
-    (PreservesProduct.iso F f).inv ≫ F.map (Pi.π _ j) = Pi.π _ j :=
-  IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) (⟨j⟩ : Discrete J)
-
-instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
-    [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
-  (PreservesFiniteProducts.preserves α).preservesLimit
-
-instance {X : C} (S : Presieve X) [S.extensive]
-    {F : Cᵒᵖ ⥤ Type max u v} [PreservesFiniteProducts F] : IsIso (Equalizer.forkMap F S) := by
-  obtain ⟨α, _, Z, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (S := S)
-  subst hS
-  refine' ⟨firstObj_to_base π F,_,_⟩
-  · simp only [firstObj_to_base, ← Category.assoc, Functor.map_inv,
-      IsIso.comp_inv_eq, Category.id_comp, ← Functor.mapIso_inv, Iso.comp_inv_eq,
-      Functor.mapIso_hom, Iso.comp_inv_eq, ← Functor.map_comp,
-      desc_op_comp_opCoproductIsoProduct_hom, PreservesProduct.iso_hom, map_lift_piComparison,
-      colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    funext s
-    ext a
-    simp only [prod_map, types_comp_apply, types_id_apply, Types.Limit.lift_π_apply,
-      Fan.mk_pt, Equalizer.forkMap, Fan.mk_π_app, Types.pi_lift_π_apply]
-  · refine Limits.Pi.hom_ext _ _ (fun f => ?_)
-    simp only [Equalizer.forkMap, Category.assoc, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
-      Category.id_comp]
-    obtain ⟨a, ha⟩ := sigma_surjective π f
-    rw [firstObj_to_base, Category.assoc, Category.assoc, Category.assoc, ← Functor.map_comp, ← op_inv,
-      ← op_comp, ← ha, comp_inv_desc_eq_ι, ← Functor.map_comp, opCoproductIsoProduct_inv_comp_ι,
-      PreservesProduct.isoInvCompMap F a]
-    simp only [prod_map, Category.comp_id, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
-
-end ExtensiveSheafConditionProof
-
-open ExtensiveSheafConditionProof in
-lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
-    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
-    Presieve.IsSheafFor F S := by
-  refine' (Equalizer.Presieve.sheaf_condition F S).2 _
-  rw [Limits.Types.type_equalizer_iff_unique]
-  dsimp [Equalizer.FirstObj]
-  suffices : IsIso (Equalizer.forkMap F S)
-  · intro y _
-    refine' ⟨inv (Equalizer.forkMap F S) y, _, fun y₁ hy₁ => _⟩
-    · change (inv (Equalizer.forkMap F S) ≫ (Equalizer.forkMap F S)) y = y
-      rw [IsIso.inv_hom_id, types_id_apply]
-    · replace hy₁ := congr_arg (inv (Equalizer.forkMap F S)) hy₁
-      change ((Equalizer.forkMap F S) ≫ inv (Equalizer.forkMap F S)) _ = _ at hy₁
-      rwa [IsIso.hom_inv_id, types_id_apply] at hy₁
-  infer_instance
-
-end CategoryTheory
-
-end Coverage
-
-end ExtensiveRegular
+end EffectiveEpis
 
 section StoneanPullback -- This section is PR #6779
 
@@ -570,124 +382,14 @@ instance : Extensive CompHaus where
       Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
       pullback.cone_pt, pullback.cone_π]
 
-instance : EpiStable CompHaus where
+instance : Regular CompHaus where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
-    rw [CompHaus.epi_iff_surjective] at hπ ⊢
+    rw [CompHaus.effectiveEpi_iff_surjective] at hπ ⊢
     intro y
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
-
-lemma extensiveRegular_generates_coherent :
-    (ExtensiveRegularCoverage CompHaus).toGrothendieck =
-    (coherentTopology CompHaus) := by
-  ext X S
-  constructor
-  <;> intro h
-  · dsimp [Coverage.toGrothendieck] at *
-    induction h with
-    | of Y T hT =>
-      · apply Coverage.saturate.of
-        dsimp [coherentCoverage]
-        dsimp [ExtensiveRegularCoverage] at hT
-        apply Or.elim hT
-        <;> intro h
-        · obtain ⟨α, x, Xmap, π, h⟩ := h
-          use α
-          use x
-          use Xmap
-          use π
-          refine' ⟨h.1,_⟩
-          have he := (effectiveEpiFamily_tfae Xmap π).out 0 1
-          rw [he]
-          letI := h.2
-          exact inferInstance
-        · obtain ⟨Z, f, h⟩ := h
-          use Unit
-          use inferInstance
-          use (fun _ ↦ Z)
-          use (fun _ ↦ f)
-          refine' ⟨h.1,_⟩
-          have he := (effectiveEpiFamily_tfae (fun (_ : Unit) ↦ Z) (fun _ ↦ f)).out 0 1
-          rw [he]
-          rw [CompHaus.epi_iff_surjective _] at h ⊢
-          intro x
-          obtain ⟨y,hy⟩ := h.2 x
-          use Sigma.ι (fun (_ : Unit) ↦ Z) Unit.unit y
-          rw [← hy]
-          suffices : (f : Z → Y) = Sigma.ι (fun (_ : Unit) ↦ Z) Unit.unit ≫ Sigma.desc (fun _ ↦ f)
-          · rw [this]
-            rfl
-          simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
-  · induction h with
-    | of Y T hT =>
-      · dsimp [coherentCoverage] at hT
-        obtain ⟨I, hI, Xmap, f, ⟨h, hT⟩⟩ := hT
-        have he := (effectiveEpiFamily_tfae Xmap f).out 0 1
-        rw [he] at hT
-        let φ := fun (i : I) ↦ Sigma.ι Xmap i
-        let F := Sigma.desc f
-        let Z := Sieve.generate T
-        let Xs := (∐ fun (i : I) => Xmap i)
-        let Zf : Sieve Y := Sieve.generate
-          (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
-        apply Coverage.saturate.transitive Y Zf
-        · apply Coverage.saturate.of
-          dsimp [ExtensiveRegularCoverage]
-          simp only [Set.mem_union, Set.mem_setOf_eq]
-          right
-          use Xs
-          use F
-        · intro R g hZfg
-          dsimp at hZfg
-          rw [Presieve.ofArrows_pUnit] at hZfg
-          obtain ⟨W, ψ, σ, ⟨hW, hW'⟩⟩ := hZfg
-          dsimp [Presieve.singleton] at hW
-          induction hW
-          rw [← hW', Sieve.pullback_comp Z]
-          suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            (ExtensiveRegularCoverage _).toGrothendieck R
-          · exact this
-          apply GrothendieckTopology.pullback_stable'
-          dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate (ExtensiveRegularCoverage _) Xs (Z.pullback F)
-          · exact this
-          suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
-          · apply Coverage.saturate_of_superset _ this
-            apply Coverage.saturate.of
-            dsimp [ExtensiveRegularCoverage]
-            left
-            refine' ⟨I, hI, Xmap, φ, ⟨rfl, _⟩⟩
-            suffices : Sigma.desc φ = 𝟙 _
-            · rw [this]
-              exact inferInstance
-            ext
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
-          intro Q q hq
-          simp only [Sieve.pullback_apply, Sieve.generate_apply]
-          simp only [Sieve.generate_apply] at hq
-          obtain ⟨E, e, r, hq⟩ := hq
-          refine' ⟨E, e, r ≫ F, ⟨_, _⟩⟩
-          · rw [h]
-            induction hq.1
-            dsimp
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-            exact Presieve.ofArrows.mk _
-          · rw [← hq.2]
-            rfl
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
 
 def MapToEqualizer (P : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {W X B : CompHaus} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
@@ -738,21 +440,21 @@ def EqualizerSecondObjIso (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {B X : CompHau
     op (Limits.pullback π π) ≅ op (CompHaus.pullback π π)))
 
 lemma isSheafFor_of_Dagur {B : CompHaus} {S : Presieve B}
-    (hS : S ∈ (ExtensiveRegularCoverage CompHaus).covering B)
+    (hS : S ∈ ((extensiveCoverage CompHaus).union (regularCoverage CompHaus)).covering B)
     {F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
     (hFecs : EqualizerCondition F) :
     S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
-  · simp only [ExtensiveCoverage_covering, Set.mem_setOf_eq] at hSIso
-    haveI := hSIso
+  · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
+    haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
   · rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
     intro y h
-    simp only [RegularCoverage_covering, Set.mem_setOf_eq] at hSSingle
+    simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
     obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hSSingle
     rw [Presieve.ofArrows_pUnit] at hS
     subst hS
-    rw [CompHaus.epi_iff_surjective] at πsurj
+    rw [CompHaus.effectiveEpi_iff_surjective] at πsurj
     specialize hFecs X B π πsurj
     have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
         F.map π.op
@@ -831,7 +533,7 @@ theorem final (A : Type (u+2)) [Category.{u+1} A] {F : CompHaus.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F]
     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
   Presheaf.IsSheaf (coherentTopology CompHaus) F := by
-  rw [← extensiveRegular_generates_coherent]
+  rw [← extensive_union_regular_generates_coherent]
   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
   intro B S hS
   exact isSheafFor_of_Dagur hS (hF' E)
@@ -841,7 +543,8 @@ theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     [PreservesFiniteProducts (F ⋙ G)] (hF' : EqualizerCondition (F ⋙ G)) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
-    isSheaf_iff_isSheaf_of_type, ← extensiveRegular_generates_coherent, Presieve.isSheaf_coverage]
+    isSheaf_iff_isSheaf_of_type, ← extensive_union_regular_generates_coherent,
+    Presieve.isSheaf_coverage]
   intro B S' hS
   exact isSheafFor_of_Dagur hS hF'
 
@@ -957,124 +660,14 @@ instance : Extensive Profinite where
       Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
       pullback.cone_pt, pullback.cone_π]
 
-instance : EpiStable Profinite where
+instance : Regular Profinite where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
-    rw [Profinite.epi_iff_surjective] at hπ ⊢
+    rw [Profinite.effectiveEpi_iff_surjective] at hπ ⊢
     intro y
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
-
-lemma extensiveRegular_generates_coherent :
-    (ExtensiveRegularCoverage Profinite).toGrothendieck =
-    (coherentTopology Profinite) := by
-  ext X S
-  constructor
-  <;> intro h
-  · dsimp [Coverage.toGrothendieck] at *
-    induction h with
-    | of Y T hT =>
-      · apply Coverage.saturate.of
-        dsimp [coherentCoverage]
-        dsimp [ExtensiveRegularCoverage] at hT
-        apply Or.elim hT
-        <;> intro h
-        · obtain ⟨α, x, Xmap, π, h⟩ := h
-          use α
-          use x
-          use Xmap
-          use π
-          refine' ⟨h.1,_⟩
-          have he := (effectiveEpiFamily_tfae Xmap π).out 0 1
-          rw [he]
-          letI := h.2
-          exact inferInstance
-        · obtain ⟨Z, f, h⟩ := h
-          use Unit
-          use inferInstance
-          use (fun _ ↦ Z)
-          use (fun _ ↦ f)
-          refine' ⟨h.1,_⟩
-          have he := (effectiveEpiFamily_tfae (fun (_ : Unit) ↦ Z) (fun _ ↦ f)).out 0 1
-          rw [he]
-          rw [Profinite.epi_iff_surjective _] at h ⊢
-          intro x
-          obtain ⟨y,hy⟩ := h.2 x
-          use Sigma.ι (fun (_ : Unit) ↦ Z) Unit.unit y
-          rw [← hy]
-          suffices : (f : Z → Y) = Sigma.ι (fun (_ : Unit) ↦ Z) Unit.unit ≫ Sigma.desc (fun _ ↦ f)
-          · rw [this]
-            rfl
-          simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
-  · induction h with
-    | of Y T hT =>
-      · dsimp [coherentCoverage] at hT
-        obtain ⟨I, hI, Xmap, f, ⟨h, hT⟩⟩ := hT
-        have he := (effectiveEpiFamily_tfae Xmap f).out 0 1
-        rw [he] at hT
-        let φ := fun (i : I) ↦ Sigma.ι Xmap i
-        let F := Sigma.desc f
-        let Z := Sieve.generate T
-        let Xs := (∐ fun (i : I) => Xmap i)
-        let Zf : Sieve Y := Sieve.generate
-          (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
-        apply Coverage.saturate.transitive Y Zf
-        · apply Coverage.saturate.of
-          dsimp [ExtensiveRegularCoverage]
-          simp only [Set.mem_union, Set.mem_setOf_eq]
-          right
-          use Xs
-          use F
-        · intro R g hZfg
-          dsimp at hZfg
-          rw [Presieve.ofArrows_pUnit] at hZfg
-          obtain ⟨W, ψ, σ, ⟨hW, hW'⟩⟩ := hZfg
-          dsimp [Presieve.singleton] at hW
-          induction hW
-          rw [← hW', Sieve.pullback_comp Z]
-          suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            (ExtensiveRegularCoverage _).toGrothendieck R
-          · exact this
-          apply GrothendieckTopology.pullback_stable'
-          dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate (ExtensiveRegularCoverage _) Xs (Z.pullback F)
-          · exact this
-          suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
-          · apply Coverage.saturate_of_superset _ this
-            apply Coverage.saturate.of
-            dsimp [ExtensiveRegularCoverage]
-            left
-            refine' ⟨I, hI, Xmap, φ, ⟨rfl, _⟩⟩
-            suffices : Sigma.desc φ = 𝟙 _
-            · rw [this]
-              exact inferInstance
-            ext
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
-          intro Q q hq
-          simp only [Sieve.pullback_apply, Sieve.generate_apply]
-          simp only [Sieve.generate_apply] at hq
-          obtain ⟨E, e, r, hq⟩ := hq
-          refine' ⟨E, e, r ≫ F, ⟨_, _⟩⟩
-          · rw [h]
-            induction hq.1
-            dsimp
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-            exact Presieve.ofArrows.mk _
-          · rw [← hq.2]
-            rfl
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
 
 def MapToEqualizer (P : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {W X B : Profinite} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
@@ -1125,21 +718,21 @@ def EqualizerSecondObjIso (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {B X : Profin
     op (Limits.pullback π π) ≅ op (Profinite.pullback π π)))
 
 lemma isSheafFor_of_Dagur {B : Profinite} {S : Presieve B}
-    (hS : S ∈ (ExtensiveRegularCoverage Profinite).covering B)
+    (hS : S ∈ ((extensiveCoverage Profinite).union (regularCoverage Profinite)).covering B)
     {F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
     (hFecs : EqualizerCondition F) :
     S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
-  · simp only [ExtensiveCoverage_covering, Set.mem_setOf_eq] at hSIso
-    haveI := hSIso
+  · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
+    haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
   · rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
     intro y h
-    simp only [RegularCoverage_covering, Set.mem_setOf_eq] at hSSingle
+    simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
     obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hSSingle
     rw [Presieve.ofArrows_pUnit] at hS
     subst hS
-    rw [Profinite.epi_iff_surjective] at πsurj
+    rw [Profinite.effectiveEpi_iff_surjective] at πsurj
     specialize hFecs X B π πsurj
     have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
         F.map π.op
@@ -1213,7 +806,7 @@ theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Profinite.{u}ᵒᵖ ⥤ A
     [PreservesFiniteProducts F]
     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
   Presheaf.IsSheaf (coherentTopology Profinite) F := by
-  rw [← extensiveRegular_generates_coherent]
+  rw [← extensive_union_regular_generates_coherent]
   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
   intro B S hS
   exact isSheafFor_of_Dagur hS (hF' E)
@@ -1224,7 +817,8 @@ theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     [PreservesFiniteProducts (F ⋙ G)] (hF' : EqualizerCondition (F ⋙ G)) :
     Presheaf.IsSheaf (coherentTopology Profinite) F := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
-    isSheaf_iff_isSheaf_of_type, ← extensiveRegular_generates_coherent, Presieve.isSheaf_coverage]
+    isSheaf_iff_isSheaf_of_type, ← extensive_union_regular_generates_coherent,
+    Presieve.isSheaf_coverage]
   intro B S' hS
   exact isSheafFor_of_Dagur hS hF'
 
@@ -1343,130 +937,26 @@ instance everything_proj (X : Stonean) : Projective X where
     ext
     exact congr_fun h.right _
 
-instance : EpiStable Stonean where
+def EffectiveEpiStructId {C : Type u} [Category.{v} C] {X : C} : EffectiveEpiStruct (𝟙 X) where
+  desc e _ := e
+  fac _ _ := by simp only [Category.id_comp]
+  uniq _ _ _ h := by simp only [Category.id_comp] at h; exact h
+
+instance {C : Type u} [Category.{v} C] {X : C} : EffectiveEpi (𝟙 X) := ⟨⟨EffectiveEpiStructId⟩⟩
+
+instance : Regular Stonean where
   exists_fac := by
     intro X Y Z f π hπ
-    refine ⟨X, 𝟙 X, inferInstance, ?_⟩
-    exact Projective.factors f π
-
-lemma extensiveRegular_generates_coherent :
-    (ExtensiveRegularCoverage Stonean).toGrothendieck =
-    (coherentTopology Stonean) := by
-  ext X S
-  constructor
-  <;> intro h
-  · dsimp [Coverage.toGrothendieck] at *
-    induction h with
-    | of Y T hT =>
-      · apply Coverage.saturate.of
-        dsimp [coherentCoverage]
-        dsimp [ExtensiveRegularCoverage] at hT
-        apply Or.elim hT
-        <;> intro h
-        · obtain ⟨α, x, Xmap, π, h⟩ := h
-          use α
-          use x
-          use Xmap
-          use π
-          refine' ⟨h.1,_⟩
-          have he := (effectiveEpiFamily_tfae Xmap π).out 0 1
-          rw [he]
-          letI := h.2
-          exact inferInstance
-        · obtain ⟨Z, f, h⟩ := h
-          use Unit
-          use inferInstance
-          use (fun _ ↦ Z)
-          use (fun _ ↦ f)
-          refine' ⟨h.1,_⟩
-          have he := (effectiveEpiFamily_tfae (fun (_ : Unit) ↦ Z) (fun _ ↦ f)).out 0 1
-          rw [he]
-          rw [Stonean.epi_iff_surjective _] at h ⊢
-          intro x
-          obtain ⟨y,hy⟩ := h.2 x
-          use Sigma.ι (fun (_ : Unit) ↦ Z) Unit.unit y
-          rw [← hy]
-          suffices : (f : Z → Y) = Sigma.ι (fun (_ : Unit) ↦ Z) Unit.unit ≫ Sigma.desc (fun _ ↦ f)
-          · rw [this]
-            rfl
-          simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
-  · induction h with
-    | of Y T hT =>
-      · dsimp [coherentCoverage] at hT
-        obtain ⟨I, hI, Xmap, f, ⟨h, hT⟩⟩ := hT
-        have he := (effectiveEpiFamily_tfae Xmap f).out 0 1
-        rw [he] at hT
-        let φ := fun (i : I) ↦ Sigma.ι Xmap i
-        let F := Sigma.desc f
-        let Z := Sieve.generate T
-        let Xs := (∐ fun (i : I) => Xmap i)
-        let Zf : Sieve Y := Sieve.generate
-          (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
-        apply Coverage.saturate.transitive Y Zf
-        · apply Coverage.saturate.of
-          dsimp [ExtensiveRegularCoverage]
-          simp only [Set.mem_union, Set.mem_setOf_eq]
-          right
-          use Xs
-          use F
-        · intro R g hZfg
-          dsimp at hZfg
-          rw [Presieve.ofArrows_pUnit] at hZfg
-          obtain ⟨W, ψ, σ, ⟨hW, hW'⟩⟩ := hZfg
-          dsimp [Presieve.singleton] at hW
-          induction hW
-          rw [← hW', Sieve.pullback_comp Z]
-          suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            (ExtensiveRegularCoverage _).toGrothendieck R
-          · exact this
-          apply GrothendieckTopology.pullback_stable'
-          dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate (ExtensiveRegularCoverage _) Xs (Z.pullback F)
-          · exact this
-          suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
-          · apply Coverage.saturate_of_superset _ this
-            apply Coverage.saturate.of
-            dsimp [ExtensiveRegularCoverage]
-            left
-            refine' ⟨I, hI, Xmap, φ, ⟨rfl, _⟩⟩
-            suffices : Sigma.desc φ = 𝟙 _
-            · rw [this]
-              exact inferInstance
-            ext
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
-          intro Q q hq
-          simp only [Sieve.pullback_apply, Sieve.generate_apply]
-          simp only [Sieve.generate_apply] at hq
-          obtain ⟨E, e, r, hq⟩ := hq
-          refine' ⟨E, e, r ≫ F, ⟨_, _⟩⟩
-          · rw [h]
-            induction hq.1
-            dsimp
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-            exact Presieve.ofArrows.mk _
-          · rw [← hq.2]
-            rfl
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
+    exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
 
 lemma isSheafForRegularSieve {X : Stonean} (S : Presieve X) [S.regular]
     (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) : IsSheafFor F S := by
-  obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (S := S)
+  obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
   have proj : Projective (toCompHaus.obj X) := inferInstanceAs (Projective X.compHaus)
   have : Epi (toCompHaus.map f) := by
     rw [CompHaus.epi_iff_surjective]
     change Function.Surjective f
-    rwa [← Stonean.epi_iff_surjective]
+    rwa [← Stonean.effectiveEpi_iff_surjective]
   set g := toCompHaus.preimage <| Projective.factorThru (𝟙 _) (toCompHaus.map f) with hg
   have hfg : g ≫ f = 𝟙 _ := by
     refine' toCompHaus.map_injective _
@@ -1484,19 +974,19 @@ lemma isSheafForRegularSieve {X : Stonean} (S : Presieve X) [S.regular]
       F.map_id, types_id_apply] at this
 
 lemma isSheafFor_of_extensiveRegular {X : Stonean} {S : Presieve X}
-  (hS : S ∈ (ExtensiveRegularCoverage Stonean).covering X)
+  (hS : S ∈ ((extensiveCoverage Stonean).union (regularCoverage Stonean)).covering X)
   {F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F] : S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
-  · simp only [ExtensiveCoverage_covering, Set.mem_setOf_eq] at hSIso
-    haveI := hSIso
+  · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
+    haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
-  · simp only [RegularCoverage_covering, Set.mem_setOf_eq] at hSSingle
-    haveI := hSSingle
+  · simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
+    haveI : S.regular := ⟨hSSingle⟩
     exact isSheafForRegularSieve S F
 
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Stonean.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F] : Presheaf.IsSheaf (coherentTopology Stonean) F := by
-  rw [← extensiveRegular_generates_coherent]
+  rw [← extensive_union_regular_generates_coherent]
   exact fun E => (Presieve.isSheaf_coverage _ _).2 <| fun S hS => isSheafFor_of_extensiveRegular hS
 
 end Stonean
