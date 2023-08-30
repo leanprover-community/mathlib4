@@ -1146,6 +1146,15 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
 #align add_con.nsmul AddCon.nsmul
 
 @[to_additive]
+instance one [MulOneClass M] (c : Con M) : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
+
+@[to_additive]
 theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
     {w x : M} (h : c w x) : c (a • w) (a • x) := by
   simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
@@ -1186,7 +1195,8 @@ an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
   { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
-    toSemigroup := Con.semigroup _ }
+    toSemigroup := Con.semigroup _
+    toOne := Con.one _ }
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
 
