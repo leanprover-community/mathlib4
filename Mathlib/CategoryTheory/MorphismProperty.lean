@@ -351,6 +351,10 @@ def IsInvertedBy (P : MorphismProperty C) (F : C ⥤ D) : Prop :=
 
 namespace IsInvertedBy
 
+lemma of_subset (P Q : MorphismProperty C) (F : C ⥤ D) (hQ : Q.IsInvertedBy F) (h : P ⊆ Q) :
+    P.IsInvertedBy F :=
+  fun _ _ _ hf => hQ _ (h _ hf)
+
 theorem of_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (hF : W.IsInvertedBy F) (G : C₂ ⥤ C₃) :
     W.IsInvertedBy (F ⋙ G) := fun X Y f hf => by
@@ -562,16 +566,8 @@ def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category D] (F : 
 
 theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) :
     W.IsInvertedBy F₁ ↔ W.IsInvertedBy F₂ := by
-  suffices ∀ (X Y : C) (f : X ⟶ Y), IsIso (F₁.map f) ↔ IsIso (F₂.map f) by
-    constructor
-    exact fun h X Y f hf => by
-      rw [← this]
-      exact h f hf
-    exact fun h X Y f hf => by
-      rw [this]
-      exact h f hf
-  intro X Y f
-  exact (RespectsIso.isomorphisms D).arrow_mk_iso_iff (Arrow.isoMk (e.app X) (e.app Y) (by simp))
+  dsimp [IsInvertedBy]
+  simp only [NatIso.isIso_map_iff e]
 #align category_theory.morphism_property.is_inverted_by.iff_of_iso CategoryTheory.MorphismProperty.IsInvertedBy.iff_of_iso
 
 @[simp]
@@ -621,6 +617,15 @@ lemma map_subset_iff (P : MorphismProperty C) (F : C ⥤ D)
   · intro h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
     exact (hQ.arrow_mk_iso_iff e).1 (h _ _ _ hf')
 
+lemma IsInvertedBy.iff_map_subset_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
+    W.IsInvertedBy F ↔ W.map F ⊆ isomorphisms D := by
+  rw [map_subset_iff _ _ _ (RespectsIso.isomorphisms D)]
+  constructor
+  · intro h X Y f hf
+    exact h f hf
+  · intro h X Y f hf
+    exact h X Y f hf
+
 @[simp]
 lemma map_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
     P.isoClosure.map F = P.map F := by
@@ -653,6 +658,11 @@ lemma map_map (P : MorphismProperty C) (F : C ⥤ D) {E : Type*} [Category E] (G
   · rw [map_subset_iff _ _ _ (map_respectsIso _ G)]
     intro X Y f hf
     exact map_mem_map _ _ _ (map_mem_map _ _ _ hf)
+
+lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+    (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
+    (W.map F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
+  simp only [IsInvertedBy.iff_map_subset_isomorphisms, map_map]
 
 lemma map_eq_of_iso (P : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) :
     P.map F = P.map G := by
