@@ -551,7 +551,7 @@ lemma map_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).map F ⊆ P.isoClosure := fun _ _ _ ⟨_, _, f', hf', ⟨e⟩⟩ =>
   ⟨_, _, F.map f', hf', ⟨e⟩⟩
 
-lemma map_inverseImage_isoClosure_of_isEquivalence (P : MorphismProperty D) (hP : P.RespectsIso)
+lemma map_inverseImage_eq_of_isEquivalence (P : MorphismProperty D) (hP : P.RespectsIso)
     (F : C ⥤ D) [IsEquivalence F] :
   (P.inverseImage F).map F = P := by
   apply le_antisymm
@@ -563,7 +563,7 @@ lemma map_inverseImage_isoClosure_of_isEquivalence (P : MorphismProperty D) (hP 
         F.asEquivalence.counitIso.symm).app (Arrow.mk f))).1 hf,
         ⟨((Functor.mapArrowFunctor _ _).mapIso F.asEquivalence.counitIso).app (Arrow.mk f)⟩⟩
 
-lemma inverseImage_equivalenceInverse (P : MorphismProperty C) (E : C ≌ D) :
+lemma isoClosure_inverseImage_equivalenceInverse (P : MorphismProperty C) (E : C ≌ D) :
     P.isoClosure.inverseImage E.inverse = P.map E.functor := by
   apply le_antisymm
   . intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
@@ -575,7 +575,7 @@ lemma inverseImage_equivalenceInverse (P : MorphismProperty C) (E : C ≌ D) :
 
 lemma inverseImage_functorInv (P : MorphismProperty C) (F : C ⥤ D) [IsEquivalence F] :
     P.isoClosure.inverseImage F.inv = P.map F :=
-  P.inverseImage_equivalenceInverse F.asEquivalence
+  P.isoClosure_inverseImage_equivalenceInverse F.asEquivalence
 
 variable (C)
 

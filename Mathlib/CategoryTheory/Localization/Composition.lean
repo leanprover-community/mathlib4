@@ -7,7 +7,7 @@ namespace CategoryTheory
 
 namespace Localization
 
-/-- under some conditions on the `MorphismProperty`, functors satisfying the strict
+/-- Under some conditions on the `MorphismProperty`, functors satisfying the strict
 universal property of the localization are stable under composition -/
 def StrictUniversalPropertyFixedTarget.comp
   {C₁ C₂ C₃ E : Type _} [Category C₁] [Category C₂] [Category C₃] [Category E]
@@ -67,7 +67,7 @@ lemma comp {C₁ C₂ C₃ : Type _} [Category C₁] [Category C₂] [Category C
       (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (compUniqFunctor L₁' L₁ W₁) _
   haveI : Φ.IsLocalizedEquivalence :=
     LocalizerMorphism.IsLocalizedEquivalence.of_equivalence Φ
-      (by rw [MorphismProperty.map_inverseImage_isoClosure_of_isEquivalence W₂.isoClosure
+      (by rw [MorphismProperty.map_inverseImage_eq_of_isEquivalence W₂.isoClosure
         W₂.isoClosure_respectsIso Φ.functor, MorphismProperty.subset_iff_le])
   have hW₃' : W₃.IsInvertedBy (L₁' ⋙ L₂') := fun _ _ f hf => by
     haveI : IsIso ((Φ.localizedFunctor W₂'.Q L₂).map ((L₁' ⋙ L₂').map f)) :=
