@@ -12,27 +12,27 @@ open Monoid CoprodI Subgroup Coprod Function
 
 variable {ι : Type*} {G : ι → Type*} {H : Type*} {K : Type*} [Monoid K]
 
-def AmalgamatedProduct.con [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) :
+def Pushout.con [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) :
     Con (Coprod (CoprodI G) H) :=
   conGen (fun x y : Coprod (CoprodI G) H =>
     ∃ i x', x = inl (of (φ i x')) ∧ y = inr x')
 
-def AmalgamatedProduct [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) : Type _ :=
-  (AmalgamatedProduct.con φ).Quotient
+def Pushout [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) : Type _ :=
+  (Pushout.con φ).Quotient
 
-namespace AmalgamatedProduct
+namespace Pushout
 
 section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-instance monoid : Monoid (AmalgamatedProduct φ) := by
-  delta AmalgamatedProduct; infer_instance
+instance monoid : Monoid (Pushout φ) := by
+  delta Pushout; infer_instance
 
-def of {i : ι} : G i →* AmalgamatedProduct φ :=
+def of {i : ι} : G i →* Pushout φ :=
   (Con.mk' _).comp <| inl.comp CoprodI.of
 
-def base : H →* AmalgamatedProduct φ :=
+def base : H →* Pushout φ :=
   (Con.mk' _).comp inr
 
 theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
@@ -47,7 +47,7 @@ theorem of_apply_eq_base (i : ι) (x : H) : of (φ i x) = base (φ := φ) x := b
 
 def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
-    AmalgamatedProduct φ →* K :=
+    Pushout φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
     apply Con.conGen_le <| fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
@@ -57,19 +57,19 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
-    {i : ι} (g : G i) : (lift f k hf) (of g : AmalgamatedProduct φ) = f i g := by
-  delta AmalgamatedProduct lift of
+    {i : ι} (g : G i) : (lift f k hf) (of g : Pushout φ) = f i g := by
+  delta Pushout lift of
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inl, CoprodI.lift_of]
 
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
-    (g : H) : (lift f k hf) (base g : AmalgamatedProduct φ) = k g := by
-  delta AmalgamatedProduct lift base
+    (g : H) : (lift f k hf) (base g : Pushout φ) = k g := by
+  delta Pushout lift base
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inr]
 
 @[ext 1199]
-theorem hom_ext {f g : AmalgamatedProduct φ →* K}
+theorem hom_ext {f g : Pushout φ →* K}
     (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _))
     (hbase : f.comp base = g.comp base) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
@@ -79,7 +79,7 @@ theorem hom_ext {f g : AmalgamatedProduct φ →* K}
 
 @[ext high]
 theorem hom_ext_nonempty [hn : Nonempty ι]
-    {f g : AmalgamatedProduct φ →* K}
+    {f g : Pushout φ →* K}
     (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _)) : f = g :=
   hom_ext h <| by
     cases hn with
@@ -87,20 +87,20 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       ext
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
-def ofCoprodI : CoprodI G →* AmalgamatedProduct φ :=
+def ofCoprodI : CoprodI G →* Pushout φ :=
   CoprodI.lift (fun _ => of)
 
 @[simp]
 theorem ofCoprodI_of (i : ι) (g : G i) :
-    (ofCoprodI (CoprodI.of g) : AmalgamatedProduct φ) = of g := by
+    (ofCoprodI (CoprodI.of g) : Pushout φ) = of g := by
   simp [ofCoprodI]
 
-theorem induction_on {motive : AmalgamatedProduct φ → Prop}
-    (x : AmalgamatedProduct φ)
+theorem induction_on {motive : Pushout φ → Prop}
+    (x : Pushout φ)
     (of  : ∀ (i : ι) (g : G i), motive (of g))
     (base : ∀ h, motive (base h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
-  delta AmalgamatedProduct AmalgamatedProduct.of AmalgamatedProduct.base at *
+  delta Pushout Pushout.of Pushout.base at *
   induction x using Con.induction_on with
   | H x =>
     induction x using Coprod.induction_on with
@@ -118,9 +118,9 @@ end Monoid
 
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
-instance : Group (AmalgamatedProduct φ) :=
-  { (Con.group (AmalgamatedProduct.con φ)) with
-    toMonoid := AmalgamatedProduct.monoid }
+instance : Group (Pushout φ) :=
+  { (Con.group (Pushout.con φ)) with
+    toMonoid := Pushout.monoid }
 
 namespace NormalWord
 
@@ -243,7 +243,7 @@ open List
 
 variable (φ)
 
-structure _root_.AmalgamatedProduct.NormalWord (hφ : ∀ i, Injective (φ i))
+structure _root_.Pushout.NormalWord (hφ : ∀ i, Injective (φ i))
     extends CoprodI.Word G where
   left : H
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → (normalizeSingle φ g).2 = g
@@ -416,7 +416,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord φ hφ) :
         head := g * (equivPair i w).head } := rfl
 
 noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
-    MulAction (AmalgamatedProduct φ) (NormalWord φ hφ) :=
+    MulAction (Pushout φ) (NormalWord φ hφ) :=
   MulAction.ofEndHom <|
     lift
       (fun i => MulAction.toEndHom)
@@ -478,7 +478,7 @@ noncomputable def consRecOn {motive : NormalWord φ hφ → Sort _} (w : NormalW
       · rwa [← mem_range_iff_normalizeSingle_snd_eq_one hφ,
           h3 _ _ (List.mem_cons_self _ _)]
 
-def prod (w : NormalWord φ hφ) : AmalgamatedProduct φ :=
+def prod (w : NormalWord φ hφ) : Pushout φ :=
   base w.left * ofCoprodI (w.toWord).prod
 
 theorem cons_eq_smul {i : ι} (g : G i)
@@ -517,9 +517,9 @@ theorem prod_base_smul (h : H) (w : NormalWord φ hφ) :
   simp only [base_smul_def', prod, map_mul, mul_assoc]
 
 @[simp]
-theorem prod_smul (g : AmalgamatedProduct φ) (w : NormalWord φ hφ) :
+theorem prod_smul (g : Pushout φ) (w : NormalWord φ hφ) :
     (g • w).prod = g * w.prod := by
-  induction g using AmalgamatedProduct.induction_on generalizing w with
+  induction g using Pushout.induction_on generalizing w with
   | of i g => rw [of_smul_eq_smul, prod_summand_smul]
   | base h => rw [base_smul_eq_smul, prod_base_smul]
   | mul x y ihx ihy => rw [mul_smul, ihx, ihy, mul_assoc]
@@ -544,19 +544,19 @@ theorem prod_smul_empty (w : NormalWord φ hφ) : w.prod • empty = w := by
   | h_base h w _ ih =>
     rw [prod_smul, mul_smul, ih]
 
-noncomputable def equiv : AmalgamatedProduct φ ≃ NormalWord φ hφ :=
+noncomputable def equiv : Pushout φ ≃ NormalWord φ hφ :=
   { toFun := fun g => g • .empty
     invFun := fun w => w.prod
     left_inv := fun g => by
       simp only [prod_smul, prod_empty, mul_one]
     right_inv := fun w => prod_smul_empty w }
 
-theorem prod_injective : Function.Injective (prod : NormalWord φ hφ → AmalgamatedProduct φ) := by
+theorem prod_injective : Function.Injective (prod : NormalWord φ hφ → Pushout φ) := by
   letI := Classical.decEq ι
   letI := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
 
-instance : FaithfulSMul (AmalgamatedProduct φ) (NormalWord φ hφ) :=
+instance : FaithfulSMul (Pushout φ) (NormalWord φ hφ) :=
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord φ hφ) :=
@@ -574,7 +574,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((. • .) : AmalgamatedProduct φ → NormalWord φ hφ → NormalWord φ hφ)) ?_
+    (f := ((. • .) : Pushout φ → NormalWord φ hφ → NormalWord φ hφ)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord φ hφ =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
@@ -584,7 +584,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((. • .) : AmalgamatedProduct φ → NormalWord φ hφ → NormalWord φ hφ)) ?_
+    (f := ((. • .) : Pushout φ → NormalWord φ hφ → NormalWord φ hφ)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord φ hφ =>
     by simp_all [Function.funext_iff, base_smul_eq_smul])
@@ -668,4 +668,4 @@ theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij 
           rintro _ ⟨h, rfl⟩
           exact MonoidHom.mem_range.2 ⟨φ j h, rfl⟩))
 
-end AmalgamatedProduct
+end Pushout
