@@ -1005,43 +1005,43 @@ https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.
 -/
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
-  zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
-  smul_zero x := by simp only [(· • ·), map_zero]
-  smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
-  add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
+  zero_smul m := by simp only [HSMul.hSMul, map_zero, LinearMap.zero_apply]
+  smul_zero x := by simp only [HSMul.hSMul, map_zero]
+  smul_add x m₁ m₂ := by simp only [HSMul.hSMul, map_add]
+  add_smul x y m := by simp only [HSMul.hSMul, map_add, LinearMap.add_apply]
   one_smul m := by
     -- porting note: was one `simp only` not two in lean 3
-    simp only [(· • ·), Algebra.TensorProduct.one_def]
+    simp only [HSMul.hSMul, Algebra.TensorProduct.one_def]
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
     refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
-    · simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
+    · simp only [HSMul.hSMul, mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [HSMul.hSMul, zero_mul, map_zero, LinearMap.zero_apply]
     · intro z w _ _
-      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [HSMul.hSMul, zero_mul, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [HSMul.hSMul, mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
       -- porting note; was one `simp only` not two and a `rw` in mathlib3
-      simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
+      simp only [HSMul.hSMul, Algebra.TensorProduct.tmul_mul_tmul]
       simp only [moduleAux_apply, mul_smul]
       rw [smul_comm a₁ b₂]
     · intro z w hz hw a b
       --porting note: was one `simp only` but random stuff doesn't work
-      simp only [(· • ·)] at hz hw ⊢
+      simp only [HSMul.hSMul] at hz hw ⊢
       simp only [moduleAux_apply]
       rw [mul_add]  -- simp only doesn't work
       simp only [LinearMap.map_add, LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
     · intro z w _ _
-      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [HSMul.hSMul, mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
-      simp only [(· • ·)] at hz hw
-      simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp only [HSMul.hSMul] at hz hw
+      simp only [HSMul.hSMul, LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
-      simp only [(· • ·)] at hz hw
+      simp only [HSMul.hSMul] at hz hw
       -- porting note: no idea why this is such a struggle
-      simp only [(· • ·)]
+      simp only [HSMul.hSMul]
       rw [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw]
       simp only [LinearMap.map_add, LinearMap.add_apply]
       rw [add_add_add_comm]

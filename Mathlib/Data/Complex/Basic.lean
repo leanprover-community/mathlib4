@@ -372,10 +372,10 @@ variable {R : Type*} [SMul R ℝ]
 instance instSMulRealComplex : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
+theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [HSMul.hSMul, SMul.smul]
 #align complex.smul_re Complex.smul_re
 
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
+theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [HSMul.hSMul, SMul.smul]
 #align complex.smul_im Complex.smul_im
 
 @[simp]

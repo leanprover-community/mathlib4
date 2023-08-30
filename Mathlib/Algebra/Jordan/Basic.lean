@@ -168,7 +168,7 @@ variable {A} [NonUnitalNonAssocRing A] [IsCommJordan A]
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped
 with a Lie Bracket via `Ring.bracket`.
 -/
-
+--local macro_rules | `($x • $y) => `(HSMul.hSMul $x $y)
 
 theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
@@ -208,7 +208,7 @@ private theorem aux1 {a b c : A} :
   rw [add_lie, add_lie]
   iterate 15 rw [lie_add]
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 350000 in
 private theorem aux2 {a b c : A} :
     ⁅L a, L (a * a)⁆ + ⁅L a, L (b * b)⁆ + ⁅L a, L (c * c)⁆ +
     ⁅L a, 2 • L (a * b)⁆ + ⁅L a, 2 • L (c * a)⁆ + ⁅L a, 2 • L (b * c)⁆ +
@@ -223,6 +223,7 @@ private theorem aux2 {a b c : A} :
     (2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆) := by
   rw [(commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq,
     (commute_lmul_lmul_sq c).lie_eq, zero_add, add_zero, add_zero]
+  dsimp only -- for beta reducing terms such as (fun x ↦ AddMonoid.End A) (b * c)
   simp only [lie_nsmul]
   abel
 
