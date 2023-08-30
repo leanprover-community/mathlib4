@@ -30,8 +30,8 @@ derivative. We define in particular the following objects:
 * `LineDifferentiableAt 𝕜 f x v`
 * `HasLineDerivWithinAt 𝕜 f f' s x v`
 * `HasLineDerivAt 𝕜 f s x v`
-* `lineDerivWithinAt 𝕜 f s x v`
-* `lineDerivAt 𝕜 f x v`
+* `lineDerivWithin 𝕜 f s x v`
+* `lineDeriv 𝕜 f x v`
 
 and develop about them a basic API inspired by the one for the Fréchet derivative.
 
