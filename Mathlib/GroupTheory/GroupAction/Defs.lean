@@ -630,9 +630,9 @@ def compHom [Monoid N] (g : N →* M) :
     MulAction N α where
   smul := SMul.comp.smul g
   -- Porting note: was `by simp [g.map_one, MulAction.one_smul]`
-  one_smul _ := by simp [(· • ·)]; apply MulAction.one_smul
+  one_smul _ := by simp [HSMul.hSMul]; apply MulAction.one_smul
   -- Porting note: was `by simp [g.map_mul, MulAction.mul_smul]`
-  mul_smul _ _ _ := by simp [(· • ·)]; apply MulAction.mul_smul
+  mul_smul _ _ _ := by simp [HSMul.hSMul]; apply MulAction.mul_smul
 #align mul_action.comp_hom MulAction.compHom
 #align add_action.comp_hom AddAction.compHom
 
