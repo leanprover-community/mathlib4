@@ -286,10 +286,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
 /-- Engel's theorem. -/
 theorem LieModule.isNilpotent_iff_forall :
     LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x :=
-  ⟨by
-    intro h
-    obtain ⟨k, hk⟩ := nilpotent_endo_of_nilpotent_module R L M
-    exact fun x => ⟨k, hk x⟩, fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
+  ⟨fun _ ↦ isNilpotent_toEndomorphism_of_isNilpotent R L M,
+   fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
 #align lie_module.is_nilpotent_iff_forall LieModule.isNilpotent_iff_forall
 
 /-- Engel's theorem. -/

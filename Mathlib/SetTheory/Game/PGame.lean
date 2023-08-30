@@ -95,6 +95,8 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
+set_option autoImplicit true
+
 open Function Relation
 
 -- We'd like to be able to use multi-character auto-implicits in this file.
@@ -469,14 +471,14 @@ theorem moveLeft_lf_of_le {x y : PGame} (h : x ≤ y) (i) : x.moveLeft i ⧏ y :
   (le_iff_forall_lf.1 h).1 i
 #align pgame.move_left_lf_of_le PGame.moveLeft_lf_of_le
 
-alias moveLeft_lf_of_le ← _root_.LE.le.moveLeft_lf
+alias _root_.LE.le.moveLeft_lf := moveLeft_lf_of_le
 #align has_le.le.move_left_lf LE.le.moveLeft_lf
 
 theorem lf_moveRight_of_le {x y : PGame} (h : x ≤ y) (j) : x ⧏ y.moveRight j :=
   (le_iff_forall_lf.1 h).2 j
 #align pgame.lf_move_right_of_le PGame.lf_moveRight_of_le
 
-alias lf_moveRight_of_le ← _root_.LE.le.lf_moveRight
+alias _root_.LE.le.lf_moveRight := lf_moveRight_of_le
 #align has_le.le.lf_move_right LE.le.lf_moveRight
 
 theorem lf_of_moveRight_le {x y : PGame} {j} (h : x.moveRight j ≤ y) : x ⧏ y :=
@@ -545,7 +547,7 @@ theorem lf_of_lt {x y : PGame} (h : x < y) : x ⧏ y :=
   h.2
 #align pgame.lf_of_lt PGame.lf_of_lt
 
-alias lf_of_lt ← _root_.LT.lt.lf
+alias _root_.LT.lt.lf := lf_of_lt
 #align has_lt.lt.lf LT.lt.lf
 
 theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
@@ -573,10 +575,10 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
 -- Porting note: added
 instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
-alias lf_of_le_of_lf ← _root_.LE.le.trans_lf
+alias _root_.LE.le.trans_lf := lf_of_le_of_lf
 #align has_le.le.trans_lf LE.le.trans_lf
 
-alias lf_of_lf_of_le ← Lf.trans_le
+alias Lf.trans_le := lf_of_lf_of_le
 #align pgame.lf.trans_le PGame.Lf.trans_le
 
 @[trans]
@@ -589,10 +591,10 @@ theorem lf_of_lf_of_lt {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y < z) : x ⧏ z
   h₁.trans_le h₂.le
 #align pgame.lf_of_lf_of_lt PGame.lf_of_lf_of_lt
 
-alias lf_of_lt_of_lf ← _root_.LT.lt.trans_lf
+alias _root_.LT.lt.trans_lf := lf_of_lt_of_lf
 #align has_lt.lt.trans_lf LT.lt.trans_lf
 
-alias lf_of_lf_of_lt ← Lf.trans_lt
+alias Lf.trans_lt := lf_of_lf_of_lt
 #align pgame.lf.trans_lt PGame.Lf.trans_lt
 
 theorem moveLeft_lf {x : PGame} : ∀ i, x.moveLeft i ⧏ x :=
@@ -955,7 +957,7 @@ theorem lf_of_fuzzy {x y : PGame} (h : x ‖ y) : x ⧏ y :=
   lf_iff_lt_or_fuzzy.2 (Or.inr h)
 #align pgame.lf_of_fuzzy PGame.lf_of_fuzzy
 
-alias lf_of_fuzzy ← Fuzzy.lf
+alias Fuzzy.lf := lf_of_fuzzy
 #align pgame.fuzzy.lf PGame.Fuzzy.lf
 
 theorem lt_or_fuzzy_of_lf {x y : PGame} : x ⧏ y → x < y ∨ x ‖ y :=

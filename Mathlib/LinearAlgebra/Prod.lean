@@ -111,8 +111,8 @@ theorem snd_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : (snd R M₂ M�
 theorem pair_fst_snd : prod (fst R M M₂) (snd R M M₂) = LinearMap.id := rfl
 #align linear_map.pair_fst_snd LinearMap.pair_fst_snd
 
-theorem prod_comp [AddCommMonoid M₁] [Module R M₁] (f : M₁ →ₗ[R] M₂) (g : M₁ →ₗ[R] M₃)
-    (h : M →ₗ[R] M₁) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
+theorem prod_comp (f : M₂ →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄)
+    (h : M →ₗ[R] M₂) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
   rfl
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
@@ -745,14 +745,14 @@ def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [M
 
 section prodComm
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
 
 theorem fst_comp_prodComm :
-    (LinearMap.fst R N M).comp (prodComm R M N).toLinearMap = (LinearMap.snd R M N) := by
+    (LinearMap.fst R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.snd R M M₂) := by
   ext <;> simp
 
 theorem snd_comp_prodComm :
-    (LinearMap.snd R N M).comp (prodComm R M N).toLinearMap = (LinearMap.fst R M N) := by
+    (LinearMap.snd R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.fst R M M₂) := by
   ext <;> simp
 
 end prodComm

@@ -48,6 +48,8 @@ which are lattices with only two elements, and related ideas.
 
 -/
 
+set_option autoImplicit true
+
 
 variable {α β : Type*}
 
@@ -101,7 +103,7 @@ theorem bot_covby_iff : ⊥ ⋖ a ↔ IsAtom a := by
   simp only [Covby, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
 #align bot_covby_iff bot_covby_iff
 
-alias bot_covby_iff ↔ Covby.is_atom IsAtom.bot_covby
+alias ⟨Covby.is_atom, IsAtom.bot_covby⟩ := bot_covby_iff
 #align covby.is_atom Covby.is_atom
 #align is_atom.bot_covby IsAtom.bot_covby
 
@@ -146,10 +148,10 @@ theorem isAtom_dual_iff_isCoatom [OrderTop α] {a : α} :
   Iff.rfl
 #align is_atom_dual_iff_is_coatom isAtom_dual_iff_isCoatom
 
-alias isCoatom_dual_iff_isAtom ↔ _ IsAtom.dual
+alias ⟨_, IsAtom.dual⟩ := isCoatom_dual_iff_isAtom
 #align is_atom.dual IsAtom.dual
 
-alias isAtom_dual_iff_isCoatom ↔ _ IsCoatom.dual
+alias ⟨_, IsCoatom.dual⟩ := isAtom_dual_iff_isCoatom
 #align is_coatom.dual IsCoatom.dual
 
 variable [OrderTop α] {a x : α}
@@ -189,7 +191,7 @@ theorem covby_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
   toDual_covby_toDual_iff.symm.trans bot_covby_iff
 #align covby_top_iff covby_top_iff
 
-alias covby_top_iff ↔ Covby.is_coatom IsCoatom.covby_top
+alias ⟨Covby.is_coatom, IsCoatom.covby_top⟩ := covby_top_iff
 #align covby.is_coatom Covby.is_coatom
 #align is_coatom.covby_top IsCoatom.covby_top
 
@@ -596,9 +598,9 @@ theorem eq_top_of_lt : b = ⊤ :=
   (IsSimpleOrder.eq_bot_or_eq_top _).resolve_left h.ne_bot
 #align is_simple_order.eq_top_of_lt IsSimpleOrder.eq_top_of_lt
 
-alias eq_bot_of_lt ← LT.lt.eq_bot
+alias LT.lt.eq_bot := eq_bot_of_lt
 
-alias eq_top_of_lt ← LT.lt.eq_top
+alias LT.lt.eq_top := eq_top_of_lt
 
 end Preorder
 

@@ -148,7 +148,7 @@ def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matr
 ```lean
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
-     a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
+     a₂₁, a₂₂] * !![b₁₁, b₁₂;
                     b₂₁, b₂₂] =
   !![a₁₁*b₁₁ + a₁₂*b₂₁, a₁₁*b₁₂ + a₁₂*b₂₂;
      a₂₁*b₁₁ + a₂₂*b₂₁, a₂₁*b₁₂ + a₂₂*b₂₂] :=
@@ -157,13 +157,13 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 -/
 @[simp]
 theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
-    (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A.mul B := by
-  simp [mulᵣ, Function.comp, Matrix.mul, Matrix.transpose]
+    (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
+  simp [mulᵣ, Function.comp, Matrix.transpose]
   rfl
 #align matrix.mulᵣ_eq Matrix.mulᵣ_eq
 
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
-    !![a₁₁, a₁₂; a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂; b₂₁, b₂₂] =
+    !![a₁₁, a₁₂; a₂₁, a₂₂] * !![b₁₁, b₁₂; b₂₁, b₂₂] =
       !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
         a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
   (mulᵣ_eq _ _).symm

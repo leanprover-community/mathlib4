@@ -18,6 +18,8 @@ Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
 name clashes.  -/
 
+set_option autoImplicit true
+
 open Nat Function Option
 
 namespace Stream'
@@ -360,7 +362,6 @@ theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate 
   induction' n with n' ih
   · rfl
   · unfold map iterate nth
-    dsimp
     rw [map, nth] at ih
     rw [iterate]
     exact congrArg f ih

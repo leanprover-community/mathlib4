@@ -169,8 +169,8 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [
   have I1 : snorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← snorm_neg, neg_sub, ← indicator_diff st]
     exact hη _ μs.le
-  obtain ⟨k, k_compact, sk, -⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k ∧ k ⊆ univ
-  exact exists_compact_between s_compact isOpen_univ (subset_univ _)
+  obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
+    exists_compact_superset s_compact
   rcases exists_continuous_snorm_sub_le_of_closed hp s_compact.isClosed isOpen_interior sk hsμ.ne c
       δpos.ne' with
     ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩

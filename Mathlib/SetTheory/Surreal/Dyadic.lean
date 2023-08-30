@@ -242,7 +242,7 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
       have h₂ : 1 < (2 : ℤ).natAbs := one_lt_two
       have hpow₂ := Submonoid.log_pow_int_eq_self h₂
       simp_rw [Submonoid.pow_apply] at hpow₂
-      simp_rw [Localization.add_mk, Localization.liftOn_mk, Subtype.coe_mk,
+      simp_rw [Localization.add_mk, Localization.liftOn_mk,
         Submonoid.log_mul (Int.pow_right_injective h₂), hpow₂]
       calc
         (2 ^ b' * c + 2 ^ d' * a) • powHalf (b' + d') =

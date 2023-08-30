@@ -56,7 +56,6 @@ linear algebra, vector space, module
 
 -/
 
-
 open Function
 
 open BigOperators Pointwise
@@ -981,7 +980,7 @@ end SemilinearMap
 
 section OrderIso
 
-variable [SemilinearEquivClass F σ₁₂ M M₂]
+variable {F : Type*} [SemilinearEquivClass F σ₁₂ M M₂]
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
@@ -996,7 +995,7 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
 
 end OrderIso
 
-variable [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
 
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}
@@ -2122,12 +2121,12 @@ def ofLinear (h₁ : f.comp g = LinearMap.id) (h₂ : g.comp f = LinearMap.id) :
 #align linear_equiv.of_linear LinearEquiv.ofLinear
 
 @[simp]
-theorem ofLinear_apply (x : M) : ofLinear f g h₁ h₂ x = f x :=
+theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 #align linear_equiv.of_linear_apply LinearEquiv.ofLinear_apply
 
 @[simp]
-theorem ofLinear_symm_apply (x : M₂) : (ofLinear f g h₁ h₂).symm x = g x :=
+theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
   rfl
 #align linear_equiv.of_linear_symm_apply LinearEquiv.ofLinear_symm_apply
 
