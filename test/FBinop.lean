@@ -28,30 +28,62 @@ instance : SProd' (Finset α) (Finset β) (Finset (α × β)) := ⟨Finset.produ
 example (s : Set α) (t : Set β) : s ×ˢ' t = s ×ˢ' t := rfl
 example {α : Type u} {β : Type v} (s : Finset α) (t : Finset β) : s ×ˢ' t = s ×ˢ' t := rfl
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s : Set (α × α)) : s.InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Set α) : (s ×ˢ' t).InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set (α × α)).InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set _).InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Finset α) : (s ×ˢ' t : Set _).InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Finset α) : ((s : Set _) ×ˢ' (t : Set _)).InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Finset α) : ((s : Set _) ×ˢ' (t : Set _)).InjOn f := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : α × α → β) (s t : Finset α) : Set.InjOn f (s ×ˢ' t) := sorry
 
 axiom Nat.card : Sort u → Nat
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Finset α) (t : Finset γ) : Nat.card (s ×ˢ' t) = 0 := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {n | 0 < n} = t := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Set α) (t : Set (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Set α) (t : Set (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := sorry
 
 -- These need `fbinop%`. (Comment out `macro_rules` above to check.)
 
 example {α : Type u} {β : Type v} (s : Finset α) (t : Set β) : s ×ˢ' t = s ×ˢ' t := rfl
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Finset α) (t : Finset (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Finset α) (t : Finset (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Finset α) (t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 22 := sorry
 #check ({1,2,3} ×ˢ' {4,5,6} : Finset _)
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (s : Finset α) (t : Set β) (u : Finset γ) : Nat.card (s ×ˢ' t ×ˢ' u) = 0 := sorry
 
 example (s : Finset α) (t : Finset β) :

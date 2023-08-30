@@ -58,6 +58,8 @@ example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b 
 
 end convert_to
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
   convert h
@@ -66,12 +68,16 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
   · guard_target = n = 2
     sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
   convert (config := .unfoldSameFun) h
   guard_target = n + n = 2 * n
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
   convert h using 2 with ε hε
@@ -92,6 +98,8 @@ axiom instFintypeBool : Fintype Bool
 example : @Fintype.card Bool instFintypeBool = 2 := by
   convert Fintype.foo _
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example : @Fintype.card Bool instFintypeBool = 2 := by
   convert Fintype.foo' _ using 1
   guard_target = Fintype (Option Bool)
@@ -106,6 +114,8 @@ example : True := by
   · simp
   · simp
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example [Fintype α] [Fintype β] : Fintype.card α = Fintype.card β := by
   congr!
   guard_target = Fintype.card α = Fintype.card β

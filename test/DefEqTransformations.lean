@@ -16,6 +16,8 @@ example : (fun x => 1 + x) 1 = 2 := by
   guard_target =ₛ 1 + 1 = 2
   rfl
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example : (fun x => 1 + x) 2 = (fun y => 2 + y) 3 := by
   conv =>
     lhs
@@ -74,11 +76,15 @@ example : 1 + 2 = 2 + 1 := by
   guard_target =ₛ Nat.add (nat_lit 1) (nat_lit 2) = Nat.add (nat_lit 2) (nat_lit 1)
   rfl
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (m n : Nat) : (m == n) = true := by
   unfold_projs
   guard_target =ₛ Nat.beq m n = true
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : Nat → Nat) : (fun a => f a) = (fun a => f (f a)) := by
   eta_expand
   guard_target =ₛ (fun a => f a) = (fun a => f (f a))

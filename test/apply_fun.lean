@@ -9,6 +9,8 @@ import Mathlib.Data.Matrix.Basic
 set_option autoImplicit true
 open Function
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
   apply_fun f
   · guard_target = f x = f y
@@ -24,6 +26,8 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (
   · apply hinj
 
 -- Uses `refine`-style rules for placeholders:
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (f : ℕ → ℕ → ℕ) : x = y := by
   fail_if_success apply_fun f _
   sorry
@@ -231,6 +235,8 @@ example (x : ℕ) : x = x := by
   rfl
 
 -- Check that locals are elaborated properly in apply_fun
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only

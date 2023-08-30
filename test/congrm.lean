@@ -10,6 +10,8 @@ section docs
 
 /-! These are the examples from the tactic documentation -/
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example {a b c d : ℕ} :
     Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by
   congrm Nat.pred (Nat.succ ?h1) * (?h2 + ?h3)

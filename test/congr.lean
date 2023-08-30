@@ -151,6 +151,8 @@ example (prime : Nat → Prop) (n : Nat) :
   guard_target = 2 * n = n + n
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr! (config := .unfoldSameFun)
@@ -171,6 +173,8 @@ def walk.map (f : α → β) (w : walk α x y) : walk β (f x) (f y) :=
   match x, y, w with
   | _, _, .nil n => .nil (f n)
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (w'.map f) := by
   congr!
   guard_target = x = x'
@@ -183,6 +187,8 @@ example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (
   guard_target = HEq w w'
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (w'.map f) := by
   congr! with rfl rfl
   guard_target = x = x'
@@ -254,6 +260,8 @@ example (x y z : Nat) (h : x = z) (hy : y = 2) : 1 + x + y = g z + 2 := by
   funext
   simp [g, Nat.add_comm]
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (Fintype : Type → Type)
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!
@@ -264,6 +272,8 @@ example (Fintype : Type → Type)
 Since these are explicit type arguments with no forward dependencies, this reduces to `α = β`.
 Generating a type equality seems like the right thing to do in this context.
 Usually `HEq inst inst'` wouldn't be generated as a subgoal with the default `typeEqs := false`. -/
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (Fintype : Type → Type) [∀ γ, Subsingleton (Fintype γ)]
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!

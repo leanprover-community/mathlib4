@@ -88,8 +88,14 @@ end
 
 section
 -- simulate the type of complex numbers
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def C : Type := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance : Field C := sorry
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance : CharZero C := sorry
 variable (a b c d : C)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by

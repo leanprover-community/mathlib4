@@ -22,23 +22,35 @@ section stub_lemmas
 
 structure LocalHomeomorph (α : Type u) (β : Type u) extends LocalEquiv α β
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance LocalHomeomorph.has_coe_to_fun : CoeFun (LocalHomeomorph α β) (λ _ => α → β) := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def LocalHomeomorph.symm (e : LocalHomeomorph α β) : LocalHomeomorph β α := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] lemma LocalHomeomorph.left_inv (e : LocalHomeomorph α β) {x : α}
   (h : x ∈ e.toLocalEquiv.source) :
   e.symm (e x) = x :=
 sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] theorem LocalHomeomorph.symm_to_LocalEquiv (e : LocalHomeomorph α β) :
   e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
 sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] lemma LocalHomeomorph.coe_coe (e : LocalHomeomorph α β) :
   (e.toLocalEquiv : α → β) = e :=
 sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] lemma LocalHomeomorph.coe_coe_symm (e : LocalHomeomorph α β) :
   (e.toLocalEquiv.symm : β → α) = (e.symm : β → α) :=
 sorry
@@ -48,18 +60,28 @@ structure ModelWithCorners (𝕜 E H : Type u) extends LocalEquiv H E :=
 
 attribute [mfld_simps] ModelWithCorners.source_eq
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def ModelWithCorners.symm (I : ModelWithCorners 𝕜 E H) : LocalEquiv E H := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] lemma ModelWithCorners.left_inv (I : ModelWithCorners 𝕜 E H) (x : H) :
   I.symm (I x) = x :=
 sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe (I : ModelWithCorners 𝕜 E H) :
   (I.toLocalEquiv : H → E) = I :=
 sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 @[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe_symm (I : ModelWithCorners 𝕜 E H) :
   (I.toLocalEquiv.symm : E → H) = I.symm :=
 sorry

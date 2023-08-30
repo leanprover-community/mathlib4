@@ -4,8 +4,12 @@ import Std.Tactic.GuardExpr
 import Mathlib.Tactic.LibrarySearch
 
 set_option autoImplicit true
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def List.nthLe (l : List α) (n) (h : n < l.length) : α := sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1 2].nth_le 1 _ = 2
   generalize_proofs h
@@ -25,6 +29,8 @@ example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = C
   guard_target = Classical.choose a = Classical.choose a
   rfl
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
   generalize_proofs a
@@ -32,12 +38,16 @@ example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   guard_target = Classical.choose a = Classical.choose _
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
   generalize_proofs
   guard_target = Classical.choose _ = Classical.choose _
   sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
   generalize_proofs _ a
