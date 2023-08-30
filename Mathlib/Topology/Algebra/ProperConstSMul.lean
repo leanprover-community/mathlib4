@@ -28,7 +28,9 @@ class ProperConstVAdd (M X : Type*) [VAdd M X] [TopologicalSpace X] : Prop where
   /-- `(c +ᵥ ·)` is a proper map. -/
   isProperMap_vadd (c : M) : IsProperMap ((c +ᵥ ·) : X → X)
 
-/-- A mixin typeclass saying that `(c • ·)` is a proper map for all `c`. -/
+/-- A mixin typeclass saying that `(c • ·)` is a proper map for all `c`.
+
+Note that this is **not** the same as a proper multiplicative action (not yet in `Mathlib`). -/
 @[to_additive]
 class ProperConstSMul (M X : Type*) [SMul M X] [TopologicalSpace X] : Prop where
   /-- `(c • ·)` is a proper map. -/
