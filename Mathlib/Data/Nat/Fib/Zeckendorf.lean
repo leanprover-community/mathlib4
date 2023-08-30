@@ -33,7 +33,7 @@ fibonacci, zeckendorf, digit
 open List Nat
 open scoped BigOperators
 
-local instance : IsTrans ℕ λ a b ↦ b + 2 ≤ a where
+local instance : IsTrans ℕ fun a b ↦ b + 2 ≤ a where
   trans _a _b _c hba hcb := hcb.trans $ le_self_add.trans hba
 
 namespace List
@@ -44,7 +44,7 @@ increasing sequence of non-consecutive numbers greater than or equal to `2`.
 This is relevant for Zeckendorf's theorem, since if we write a natural `n` as a sum of Fibonacci
 numbers `(l.map fib).sum`, `IsZeckendorfRep l` exactly means that we can't simplify any expression
 of the form `fib n + fib (n + 1) = fib (n + 2)`, `fib 1 = fib 2` or `fib 0 = 0` in the sum. -/
-def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).Chain' (λ a b ↦ b + 2 ≤ a)
+def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).Chain' (fun a b ↦ b + 2 ≤ a)
 
 lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (l ++ [0]).head?, a < n) →
   (l.map fib).sum < fib n
@@ -52,7 +52,7 @@ lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (
 | n, a :: l, hl, hn => by
   simp only [IsZeckendorfRep, cons_append, chain'_iff_pairwise, pairwise_cons] at hl
   have : ∀ b, b ∈ head? (l ++ [0]) → b < a - 1 :=
-    λ b hb ↦ lt_tsub_iff_right.2 $ hl.1 _ $ mem_of_mem_head? hb
+    fun b hb ↦ lt_tsub_iff_right.2 $ hl.1 _ $ mem_of_mem_head? hb
   simp only [mem_append, mem_singleton, ←chain'_iff_pairwise, or_imp, forall_and, forall_eq,
     zero_add] at hl
   simp only [map, List.sum_cons]
@@ -66,17 +66,17 @@ namespace Nat
 variable {l : List ℕ} {a m n : ℕ}
 
 /-- The index of the greatest Fibonacci number less than or equal to `n`. -/
-def greatestFib (n : ℕ) : ℕ := (n + 1).findGreatest (λ k ↦ fib k ≤ n)
+def greatestFib (n : ℕ) : ℕ := (n + 1).findGreatest (fun k ↦ fib k ≤ n)
 
 lemma fib_greatestFib_le (n : ℕ) : fib (greatestFib n) ≤ n :=
-findGreatest_spec (P := (λ k ↦ fib k ≤ n)) (zero_le _) $ zero_le _
+findGreatest_spec (P := (fun k ↦ fib k ≤ n)) (zero_le _) $ zero_le _
 
 lemma greatestFib_mono : Monotone greatestFib :=
-λ _a _b hab ↦ findGreatest_mono (λ _k ↦ hab.trans') $ add_le_add_right hab _
+fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') $ add_le_add_right hab _
 
 @[simp] lemma le_greatestFib : m ≤ greatestFib n ↔ fib m ≤ n :=
-⟨λ h ↦ (fib_mono h).trans $ fib_greatestFib_le _,
-  λ h ↦ le_findGreatest (m.le_fib_add_one.trans $ add_le_add_right h _) h⟩
+⟨fun h ↦ (fib_mono h).trans $ fib_greatestFib_le _,
+  fun h ↦ le_findGreatest (m.le_fib_add_one.trans $ add_le_add_right h _) h⟩
 
 @[simp] lemma greatestFib_lt : greatestFib m < n ↔ m < fib n :=
 lt_iff_lt_of_le_iff_le le_greatestFib
@@ -87,10 +87,10 @@ greatestFib_lt.1 $ lt_succ_self _
 @[simp] lemma greatestFib_fib : ∀ {n}, n ≠ 1 → greatestFib (fib n) = n
 | 0, _ => rfl
 | _n + 2, _ => findGreatest_eq_iff.2
-  ⟨le_fib_add_one _, λ _ ↦ le_rfl, λ _m hnm _ ↦ ((fib_lt_fib le_add_self).2 hnm).not_le⟩
+  ⟨le_fib_add_one _, fun _ ↦ le_rfl, fun _m hnm _ ↦ ((fib_lt_fib le_add_self).2 hnm).not_le⟩
 
 @[simp] lemma greatestFib_eq_zero : greatestFib n = 0 ↔ n = 0 :=
-⟨λ h ↦ by simpa using findGreatest_eq_zero_iff.1 h zero_lt_one le_add_self, by rintro rfl; rfl⟩
+⟨fun h ↦ by simpa using findGreatest_eq_zero_iff.1 h zero_lt_one le_add_self, by rintro rfl; rfl⟩
 
 lemma greatestFib_ne_zero : greatestFib n ≠ 0 ↔ n ≠ 0 := greatestFib_eq_zero.not
 
@@ -129,7 +129,7 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
 | n + 1 => by
   rw [zeckendorf_succ, IsZeckendorfRep, List.cons_append]
   have := zeckendorf_aux n.succ_pos
-  refine (isZeckendorfRep_zeckendorf _).cons' (λ a ha ↦ ?_)
+  refine (isZeckendorfRep_zeckendorf _).cons' (fun a ha ↦ ?_)
   obtain h | h := eq_zero_or_pos (n + 1 - fib (greatestFib (n + 1)))
   · simp only [h, zeckendorf_zero, nil_append, head?_cons, Option.mem_some_iff] at ha
     subst ha
@@ -152,7 +152,7 @@ lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib)
     add_tsub_cancel_left, zeckendorf_sum_fib hl.2]
   simp only [add_comm, add_assoc, greatestFib, findGreatest_eq_iff, ne_eq, ha.ne',
     not_false_eq_true, le_add_iff_nonneg_left, _root_.zero_le, forall_true_left, not_le, true_and]
-  refine ⟨le_add_of_le_right $ le_fib_add_one _, λ n hn _ ↦ ?_⟩
+  refine ⟨le_add_of_le_right $ le_fib_add_one _, fun n hn _ ↦ ?_⟩
   rw [add_comm, ←List.sum_cons, ←map_cons]
   exact hl'.sum_fib_lt (by simpa)
 
