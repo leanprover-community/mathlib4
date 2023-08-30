@@ -1499,18 +1499,11 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 #align topological_group.regular_space TopologicalGroup.regularSpace
 #align topological_add_group.regular_space TopologicalAddGroup.regularSpace
 
-@[to_additive]
-theorem TopologicalGroup.t3Space [T0Space G] : T3Space G :=
-  ⟨⟩
-#align topological_group.t3_space TopologicalGroup.t3Space
-#align topological_add_group.t3_space TopologicalAddGroup.t3Space
-
-@[to_additive]
-theorem TopologicalGroup.t2Space [T0Space G] : T2Space G := by
-  haveI := TopologicalGroup.t3Space G
-  infer_instance
-#align topological_group.t2_space TopologicalGroup.t2Space
-#align topological_add_group.t2_space TopologicalAddGroup.t2Space
+-- `inferInstance` can find these instances now
+#align topological_group.t3_space inferInstance
+#align topological_add_group.t3_space inferInstance
+#align topological_group.t2_space inferInstance
+#align topological_add_group.t2_space inferInstance
 
 variable {G}
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
@@ -1520,7 +1513,7 @@ instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
     [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
   haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
-  exact TopologicalGroup.t3Space _
+  infer_instance
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
 
