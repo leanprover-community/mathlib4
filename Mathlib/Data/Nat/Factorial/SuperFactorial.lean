@@ -9,11 +9,11 @@ import Mathlib.Data.Nat.Factorial.Basic
 # Superfactorial
 
 This file defines the [superfactorial](https://en.wikipedia.org/wiki/Superfactorial)
-`1! * 2! * 3! * ...* n!`.
+`sf n = 1! * 2! * 3! * ...* n!`.
 
 ## Main declarations
 
-* `Nat.superFactorial`: The superfactorial.
+* `Nat.superFactorial`: The superfactorial, denoted by `sf`.
 -/
 
 
