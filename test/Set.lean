@@ -34,6 +34,7 @@ example (x : Nat) (h : x - x = 0) : x = x := by
   set! p : x - x = 0 := h with _eq2
   rfl
 
+set_option linter.unusedVariables false in
 example : True := by
   set g : Nat → Int := (fun ε => ε) with h
   trivial
@@ -46,6 +47,7 @@ elab "test" : term => do
 
 -- this will timeout if test is elaborated multiple times
 set_option maxHeartbeats 3000 in
+set_option linter.unusedVariables false in
 example {a b c d e f g h : Nat} : 1 = 1 := by
   set a : Nat := test with h
   trivial

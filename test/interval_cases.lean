@@ -146,6 +146,7 @@ example (n : ℕ) : n % 2 = 0 ∨ n % 2 = 1 := by
                --^ hover says `hrv : r = 1` and jumps to `hrv :` above
 
 /- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/interval_cases.20bug -/
+set_option linter.unusedVariables false in
 example {x : ℕ} (hx2 : x < 2) (h : False) : False := by
   have : x ≤ 1
   -- `interval_cases` deliberately not focussed,
