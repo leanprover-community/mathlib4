@@ -436,6 +436,11 @@ theorem baseToPermNormalWord_apply (h : H) :
   (baseToPermNormalWord h : NormalWord φ hφ → NormalWord φ hφ) =
     fun w => { w with left := h * w.left } := rfl
 
+theorem base_smul_injective : Function.Injective
+    ((. • .) : H → NormalWord φ hφ → NormalWord φ hφ) := by
+  intros x y
+  simp [base_smul_def, Function.funext_iff]
+
 @[simp]
 theorem summandToPermNormalWord_app_eq_base {i : ι} (h : H) (w : NormalWord φ hφ) :
     summandToPermNormalWord i (φ i h) w = baseToPermNormalWord h w := by
@@ -564,6 +569,16 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   refine Function.Injective.of_comp (f := toPermNormalWord (hφ := hφ)) ?_
   simp only [Function.comp, toPermNormalWord, lift_of]
   exact summandToPermNormalWord_injective
+
+theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
+    Function.Injective (base (φ := φ)) := by
+  let _ := Classical.decEq ι
+  let _ := fun i => Classical.decEq (G i)
+  refine Function.Injective.of_comp
+    (f := toPermNormalWord (hφ := hφ)) ?_
+  intro _ _
+  simp [Function.comp, toPermNormalWord, lift_base, Equiv.Perm.ext_iff,
+    baseToPermNormalWord_apply]
 
 section Reduced
 
