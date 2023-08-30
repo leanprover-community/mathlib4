@@ -168,7 +168,6 @@ variable {A} [NonUnitalNonAssocRing A] [IsCommJordan A]
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped
 with a Lie Bracket via `Ring.bracket`.
 -/
---local macro_rules | `($x • $y) => `(HSMul.hSMul $x $y)
 
 theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by

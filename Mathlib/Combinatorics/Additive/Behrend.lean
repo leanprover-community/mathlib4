@@ -248,7 +248,8 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
     exact (cast_add_one_pos _).ne'
 #align behrend.exists_large_sphere_aux Behrend.exists_large_sphere_aux
 
-theorem exists_large_sphere (n d : ℕ) : ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ (sphere n d k).card := by
+theorem exists_large_sphere (n d : ℕ) :
+    ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ (sphere n d k).card := by
   obtain ⟨k, -, hk⟩ := exists_large_sphere_aux n d
   refine' ⟨k, _⟩
   obtain rfl | hn := n.eq_zero_or_pos
