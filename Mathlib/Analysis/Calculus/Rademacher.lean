@@ -21,4 +21,4 @@ open NNReal
 
 theorem foufou {C : ℝ≥0} (f : E × ℝ → ℝ) (hf : LipschitzWith C f) (μ : Measure E) :
     ∀ᵐ p ∂(μ.prod volume), LineDifferentiableAt ℝ f p (0, 1) := by
-sorry
+  apply ae_prod_mem_of_ae_ae_mem

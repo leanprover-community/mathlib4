@@ -449,6 +449,11 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p 
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
 #align measure_theory.measure.ae_ae_of_ae_prod MeasureTheory.Measure.ae_ae_of_ae_prod
+
+theorem ae_prod_mem_of_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s)
+    (h : ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s) : ∀ᵐ z ∂μ.prod ν, z ∈ s :=
+  (measure_prod_null hs.compl).2 h
+
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
 noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
