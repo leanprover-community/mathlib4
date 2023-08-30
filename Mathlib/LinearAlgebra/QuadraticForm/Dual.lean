@@ -9,17 +9,17 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
 #align_import linear_algebra.quadratic_form.dual from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
 /-!
-# Quadratic form structures related to `module.dual`
+# Quadratic form structures related to `Module.Dual`
 
 ## Main definitions
 
-* `bilin_form.dual_prod R M`, the bilinear form on `(f, x) : module.dual R M × M` defined as
+* `BilinForm.dualProd R M`, the bilinear form on `(f, x) : Module.Dual R M × M` defined as
   `f x`.
-* `quadratic_form.dual_prod R M`, the quadratic form on `(f, x) : module.dual R M × M` defined as
+* `QuadraticForm.dualProd R M`, the quadratic form on `(f, x) : Module.Dual R M × M` defined as
   `f x`.
-* `quadratic_form.to_dual_prod : M × M →ₗ[R] module.dual R M × M` a form-preserving map from
-  `(Q.prod $ -Q)` to `quadratic_form.dual_prod R M`. Note that we do not have the morphism
-  version of `quadratic_form.isometry`, so for now this is stated without full bundling.
+* `QuadraticForm.toDualProd : M × M →ₗ[R] Module.Dual R M × M` a form-preserving map from
+  `(Q.prod $ -Q)` to `QuadraticForm.dualProd R M`. Note that we do not have the morphism
+  version of `QuadraticForm.IsometryEquiv`, so for now this is stated without full bundling.
 
 -/
 
@@ -32,7 +32,7 @@ section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- The symmetric bilinear form on `module.dual R M × M` defined as
+/-- The symmetric bilinear form on `Module.Dual R M × M` defined as
 `B (f, x) (g, y) = f y + g x`. -/
 @[simps!]
 def dualProd : BilinForm R (Module.Dual R M × M) :=
@@ -86,7 +86,7 @@ section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
-/-- The quadratic form on `module.dual R M × M` defined as `Q (f, x) = f x`. -/
+/-- The quadratic form on `Module.Dual R M × M` defined as `Q (f, x) = f x`. -/
 @[simps]
 def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun p := p.1 p.2
@@ -117,7 +117,7 @@ def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualPro
   map_app' x := FunLike.congr_arg x.fst <| f.symm_apply_apply _
 #align quadratic_form.dual_prod_isometry QuadraticForm.dualProdIsometry
 
-/-- `quadratic_form.dual_prod` commutes (isometrically) with `quadratic_form.prod`. -/
+/-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
 @[simps!]
 def dualProdProdIsometry : (dualProd R (M × N)).IsometryEquiv ((dualProd R M).prod (dualProd R N))
     where
@@ -136,7 +136,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 
 variable {R M}
 
-/-- The isometry sending `(Q.prod $ -Q)` to `(quadratic_form.dual_prod R M)`.
+/-- The isometry sending `(Q.prod $ -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of
 [*Hermitian K-Theory and Geometric Applications*][hyman1973]; though we swap the order of the pairs.
