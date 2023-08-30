@@ -221,13 +221,14 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
 
 /-- [Stacks: Lemma 0052 (3)](https://stacks.math.columbia.edu/tag/0052) -/
 theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponents [NoetherianSpace α]
-    (Z : Set α) (H : Z ∈ irreducibleComponents α) : ∃ (o : Set α) (_ : IsOpen o) (_ : o ≠ ∅), o ≤ Z := by
+    (Z : Set α) (H : Z ∈ irreducibleComponents α) :
+    ∃ (o : Set α) (_ : IsOpen o) (_ : o ≠ ∅), o ≤ Z := by
   classical
 
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
-  have hι : ι.Finite := (NoetherianSpace.finite_irreducibleComponents (α := α)).subset (Set.diff_subset _ _)
-  have hι' : Finite ι
-  · rwa [Set.finite_coe_iff]
+  have hι : ι.Finite := (NoetherianSpace.finite_irreducibleComponents (α := α)).subset
+    (Set.diff_subset _ _)
+  have hι' : Finite ι := by rwa [Set.finite_coe_iff]
 
   let U := Z \ ⋃ (x : ι), x
   have hU0 : U ≠ ∅ := λ r ↦ by
