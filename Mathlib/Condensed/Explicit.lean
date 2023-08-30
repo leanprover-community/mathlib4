@@ -11,7 +11,7 @@ universe v v₁ u u₁ w
 - The sections `isSheafForPullBackSieve` and `ProdCoprod` are independent and can be PR-ed
   separately (DONE, see #6750 (merged) and #6758 (merged)).
 - The section `ExtensiveRegular` depends on section `isSheafForPullBackSieve` but does not
-  mention `Stonean`, `Profinite` or `CompHaus` explicitly. TODO: PR
+  mention `Stonean`, `Profinite` or `CompHaus` explicitly. (PR #6847, awaiting review)
 - The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
   in a separate PR and does not depend on any of the previous stuff in this file
   (DONE, see #6771 (merged) and #6774 (merged)).
@@ -19,14 +19,14 @@ universe v v₁ u u₁ w
 - The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
 - The section `StoneanPrecoherent` can be removed once #6725 is merged. (DONE)
 - The sections `CompHausExplicitSheaves` and `ProfiniteExplicitSheaves` are identical except for
-  the words `CompHaus` and `Profinite`. I think this is unavoidable. These sections depend on
-  `isSheafForPullBackSieve`, `ProdCoprod`, and `ExtensiveRegular`
-- The section `StoneanExplicitSheaves` is similar to its counterparts for `Profinite` and
-  `CompHaus` but additionally depends on sections `OpenEmbedding`, `StoneanProjective` and
-  `StoneanPrecoherent`
+  the words `CompHaus` and `Profinite`. The section `StoneanExplicitSheaves` is very similar. In
+  particular, the proofs of the three versions of `extensiveRegular_generates_coherent` are nearly
+  identical. The common properties of these three categories used in that proof are
+  `epi_iff_surjective` and `effectiveEpiFamily_tfae` (basically that effective epi families are
+  finite jointly surjective). TODO: unify this into one theorem for categories satisfying this.
 -/
 
-section ExtensiveRegular -- Working on PR
+section ExtensiveRegular -- This section is PR #6847
 
 section Classes
 
