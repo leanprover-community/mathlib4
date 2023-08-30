@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
     "subDir?": null,
-    "rev": "b25b443cbe9b47a8cb10a7b515e27cffd13c5cfd",
+    "rev": "21dac2e9cc7e3cf7da5800814787b833e680b2fd",
     "opts": {},
     "name": "Cli",
     "inputRev?": "nightly",
@@ -20,7 +20,7 @@
   {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "81cc13c524a68d0072561dbac276cd61b65872a6",
+    "rev": "e75daed95ad1c92af4e577fea95e234d7a8401c1",
     "opts": {},
     "name": "Qq",
     "inputRev?": "master",
@@ -28,10 +28,10 @@
   {"git":
    {"url": "https://github.com/semorrison/aesop",
     "subDir?": null,
-    "rev": "bb0ff4341b6dbe7a687dda219bab60252d4376f3",
+    "rev": "a45d474666e76fa12e307d11436bd3640e4c698f",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "v4.0.0-rc3",
+    "inputRev?": "v4.0.0-rc4",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
