@@ -47,14 +47,14 @@ def directedClosure (s : Set α) :=
 
 lemma directedClosure_directedOn (s : Set α) :
     DirectedOn (. ≤ .) (directedClosure s) := by classical
-  rintro a ⟨Fa,⟨hFa1,⟨hnFa,ha⟩⟩⟩ b ⟨Fb,⟨hFb1,⟨hnFb,hb⟩⟩⟩
+  rintro a ⟨Fa,⟨hFane,⟨hFas,ha⟩⟩⟩ b ⟨Fb,⟨_,⟨hFbs,hb⟩⟩⟩
   use a⊔b
   constructor
   · use (Fa ⊔ Fb)
     simp
     constructor
-    · exact ⟨hnFa, hnFb⟩
-    · use (Finset.Nonempty.inl hFa1)
+    · exact ⟨hFas, hFbs⟩
+    · use (Finset.Nonempty.inl hFane)
       rw [le_antisymm_iff]
       constructor
       · rw [sup_le_iff]
