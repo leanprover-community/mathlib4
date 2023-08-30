@@ -74,7 +74,7 @@ instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y :
 /--
 If `C` has pullbacks then it has the pullbacks relevant to `HasPullbacksOfInclusions`.
 -/
-instance (priority := 1) [HasPullbacks C] :
+instance (priority := 10) [HasPullbacks C] :
   HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
 
 /--
