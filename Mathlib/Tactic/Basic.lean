@@ -117,7 +117,7 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
     | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
   return mvarId
 
-/-- Exactly like `Lean.Elab.Tactic.filterOldMVars`, but uses `List`s instead of `Array`s. Discards 
+/-- Exactly like `Lean.Elab.Tactic.filterOldMVars`, but uses `List`s instead of `Array`s. Discards
 all mvars that were created before `mvarCounterSaved` was recorded. -/
 private def filterOldMVarsList (mvarIds : List MVarId) (mvarCounterSaved : Nat)
     : MetaM (List MVarId) := do
