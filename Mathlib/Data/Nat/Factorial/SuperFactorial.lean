@@ -25,7 +25,7 @@ def superFactorial : ℕ → ℕ
   | succ n => factorial n.succ * superFactorial n
 
 /-- `sf` notation for super factorial -/
-scoped notation  "sf" n => Nat.superFactorial n
+scoped notation:10000 "sf" n => Nat.superFactorial n
 
 section SuperFactorial
 
@@ -35,7 +35,7 @@ variable {n : ℕ}
 theorem superFactorial_zero : (sf 0) = 1 :=
   rfl
 
-theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * (sf n) :=
+theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * sf n :=
   rfl
 
 @[simp]
