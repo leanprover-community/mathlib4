@@ -196,13 +196,13 @@ theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x in range n, (x + 1
 #align finset.prod_range_add_one_eq_factorial Finset.prod_range_add_one_eq_factorial
 
 @[simp]
-theorem prod_Ico_id_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n + 1), x !) = sf n
+theorem prod_Ico_factorial_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n + 1), x !) = sf n
   | 0 => rfl
   | n + 1 => by
     rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
       prod_Ico_id_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one, mul_comm]
 
--- (x + 1) is simplified to (x + 1) * x !
+-- `(x + 1)!` is simplified to `(x + 1) * x!`
 @[simp, nolint simpNF]
 theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
   | 0 => rfl
