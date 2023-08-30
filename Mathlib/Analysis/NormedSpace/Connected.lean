@@ -26,23 +26,35 @@ section TopologicalVectorSpace
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
-lemma segment_inter_eq_endpoint_of_linearIndependent
-    {x y : E} (h : LinearIndependent ℝ ![x, y]) {s t : ℝ} (hs : s ≠ t) (c : E) :
-    [c + x -[ℝ] c + t • y] ∩ [c + x -[ℝ] c + s • y] ⊆ {c + x} := by
+lemma segment_inter_eq_endpoint_of_linearIndependent_sub
+    {c x y : E} (h : LinearIndependent ℝ ![x - c, y - c]) :
+    [c -[ℝ] x] ∩ [c -[ℝ] y] = {c} := by
+  apply Subset.antisymm; swap
+  · simp [singleton_subset_iff, left_mem_segment]
   intro z ⟨hzt, hzs⟩
   rw [segment_eq_image, mem_image] at hzt hzs
   rcases hzt with ⟨p, ⟨p0, p1⟩, rfl⟩
   rcases hzs with ⟨q, ⟨q0, q1⟩, H⟩
-  have H' : (1 - q) • x + (q * s) • y = (1 - p) • x + (p * t) • y := by
-    rw [← sub_eq_zero] at H ⊢
-    rw [← H]
-    simp only [smul_smul, smul_add, sub_smul]
-    abel
-  obtain rfl : q = p := by simpa using (h.eq_of_pair H').1
-  rcases q0.eq_or_gt with rfl|hq0'
-  · simp
-  · have A : s = t := by simpa [mul_eq_mul_left_iff, hq0'.ne'] using (h.eq_of_pair H').2
-    exact (hs A).elim
+  have Hx : x = (x - c) + c := by abel
+  have Hy : y = (y - c) + c := by abel
+  rw [Hx, Hy, smul_add, smul_add] at H
+  have : c + q • (y - c) = c + p • (x - c) := by
+    convert H using 1 <;> simp [sub_smul]
+  obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this ).symm
+  simp
+
+lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
+    {x y : E} (h : LinearIndependent ℝ ![x, y]) {s t : ℝ} (hs : s ≠ t) (c : E) :
+    [c + x -[ℝ] c + t • y] ∩ [c + x -[ℝ] c + s • y] = {c + x} := by
+  apply segment_inter_eq_endpoint_of_linearIndependent_sub
+  simp only [add_sub_add_left_eq_sub]
+  suffices H : LinearIndependent ℝ ![(-1 : ℝ) • x + t • y, (-1 : ℝ) • x + s • y] by
+    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
+  apply h.linear_combination_pair_of_det_ne_zero
+  contrapose! hs
+  apply Eq.symm
+  simpa [neg_mul, one_mul, mul_neg, mul_one, sub_neg_eq_add, add_comm _ t,
+    ← sub_eq_add_neg, sub_eq_zero] using hs
 
 variable [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
@@ -87,7 +99,8 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
       simpa only [singleton_inter_eq_empty, mem_compl_iff, Ib] using hb
     rw [inter_assoc, inter_comm s, inter_assoc, inter_self, ← inter_assoc, ← subset_empty_iff, ← N]
     apply inter_subset_inter_left
-    apply segment_inter_eq_endpoint_of_linearIndependent hy htt'.symm
+    apply Eq.subset
+    apply segment_inter_eq_endpoint_of_linearIndependent_of_ne hy htt'.symm
   have B : Set.Countable {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty} := by
     apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
     intro t t' htt'
@@ -97,7 +110,8 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     rw [inter_assoc, inter_comm s, inter_assoc, inter_self, ← inter_assoc, ← subset_empty_iff, ← N]
     apply inter_subset_inter_left
     rw [sub_eq_add_neg _ x]
-    apply segment_inter_eq_endpoint_of_linearIndependent _ htt'.symm
+    apply Eq.subset
+    apply segment_inter_eq_endpoint_of_linearIndependent_of_ne _ htt'.symm
     convert hy.units_smul ![-1, 1]
     simp [← List.ofFn_inj]
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
