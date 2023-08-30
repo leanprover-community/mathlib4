@@ -380,7 +380,7 @@ theorem zsmul_coeff (m : ℤ) (x : 𝕎 R) (n : ℕ) :
 #align witt_vector.zsmul_coeff WittVector.zsmul_coeff
 
 theorem pow_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) : (x ^ m).coeff n = peval (wittPow p m n) ![x.coeff] :=
-  by simp [(· ^ ·), Pow.pow, eval, Matrix.cons_fin_one, coeff_mk]
+  by simp [HPow.hPow, Pow.pow, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.pow_coeff WittVector.pow_coeff
 
 theorem add_coeff_zero (x y : 𝕎 R) : (x + y).coeff 0 = x.coeff 0 + y.coeff 0 := by

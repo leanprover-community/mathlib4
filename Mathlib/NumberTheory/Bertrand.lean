@@ -99,17 +99,15 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
-    have : (512 : ℝ) = 2 ^ (9 : ℕ)
-    · rw [rpow_nat_cast 2 9]; norm_num1
-    conv_lhs => rw [this]
-    have : (1024 : ℝ) = 2 ^ (10 : ℕ)
-    · rw [rpow_nat_cast 2 10]; norm_num1
-    rw [this, ← rpow_mul, ← rpow_add] <;> norm_num1
-    have : (4 : ℝ) = 2 ^ (2 : ℕ)
-    · rw [rpow_nat_cast 2 2]; norm_num1
-    rw [this, ← rpow_mul] <;> norm_num1
-    apply rpow_le_rpow_of_exponent_le <;> norm_num1
-    apply rpow_pos_of_pos four_pos
+    · conv in 512 => equals 2 ^ 9 => norm_num1
+      conv in 1024 => equals 2 ^ 10 => norm_num1
+      conv in 32 => rw [← Nat.cast_ofNat]
+      rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+      conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
+      rw [← rpow_mul, ← rpow_nat_cast]
+      apply rpow_le_rpow_of_exponent_le
+      all_goals norm_num1
+    · apply rpow_pos_of_pos four_pos
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
 
 end Bertrand
