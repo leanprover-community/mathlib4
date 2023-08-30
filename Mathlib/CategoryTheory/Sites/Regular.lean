@@ -128,9 +128,8 @@ def extensiveCoverage [Extensive C] : Coverage C where
 lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Precoherent C] :
     ((extensiveCoverage C).union (regularCoverage C)).toGrothendieck =
     (coherentTopology C) := by
-  ext X S
-  constructor
-  <;> intro h
+  ext B S
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · dsimp [Coverage.toGrothendieck] at *
     induction h with
     | of Y T hT =>
@@ -140,12 +139,13 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
           Set.mem_setOf_eq] at hT
         apply Or.elim hT
         <;> intro h
-        · obtain ⟨α, x, Xmap, π, h⟩ := h
-          refine ⟨α, x, Xmap, π, ⟨h.1, ?_⟩⟩
-          sorry -- TODO: prove that jointly isomorphic families are effective epimorphic
-        · obtain ⟨Z, f, h⟩ := h
-          refine ⟨Unit, inferInstance, (fun _ ↦ Z), (fun _ ↦ f), ⟨h.1, ?_⟩⟩
-          sorry -- TODO: prove that a single effective epi is an effective epimorphic family
+        · obtain ⟨α, x, X, π, h⟩ := h
+          refine ⟨α, x, X, π, ⟨h.1, ?_⟩⟩
+          letI := h.2
+          infer_instance
+        · obtain ⟨Z, f, ⟨hh, h⟩⟩  := h
+          refine ⟨Unit, inferInstance, (fun _ ↦ Z), (fun _ ↦ f), ⟨hh, ?_⟩⟩
+          infer_instance
     | top =>
       · apply Coverage.saturate.top
     | transitive Y T =>
@@ -155,11 +155,11 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
   · induction h with
     | of Y T hT =>
       · dsimp [coherentCoverage] at hT
-        obtain ⟨I, hI, Xmap, f, ⟨h, hT⟩⟩ := hT
-        let φ := fun (i : I) ↦ Sigma.ι Xmap i
+        obtain ⟨I, hI, X, f, ⟨h, hT⟩⟩ := hT
+        let φ := fun (i : I) ↦ Sigma.ι X i
         let F := Sigma.desc f
         let Z := Sieve.generate T
-        let Xs := (∐ fun (i : I) => Xmap i)
+        let Xs := (∐ fun (i : I) => X i)
         let Zf : Sieve Y := Sieve.generate
           (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
         apply Coverage.saturate.transitive Y Zf
@@ -168,7 +168,7 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
             Set.mem_setOf_eq]
           right
           refine ⟨Xs, F, ⟨rfl, ?_⟩⟩
-          sorry -- TODO: prove that `Sigma.desc` of an effective epi family is an effective epi
+          infer_instance
         · intro R g hZfg
           dsimp at hZfg
           rw [Presieve.ofArrows_pUnit] at hZfg
@@ -184,13 +184,13 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
           suffices : Coverage.saturate ((extensiveCoverage C).union (regularCoverage C)) Xs
             (Z.pullback F)
           · exact this
-          suffices : Sieve.generate (Presieve.ofArrows Xmap φ) ≤ Z.pullback F
+          suffices : Sieve.generate (Presieve.ofArrows X φ) ≤ Z.pullback F
           · apply Coverage.saturate_of_superset _ this
             apply Coverage.saturate.of
             simp only [Coverage.union, extensiveCoverage, regularCoverage, Set.mem_union,
               Set.mem_setOf_eq]
             left
-            refine ⟨I, hI, Xmap, φ, ⟨rfl, ?_⟩⟩
+            refine ⟨I, hI, X, φ, ⟨rfl, ?_⟩⟩
             suffices : Sigma.desc φ = 𝟙 _
             · rw [this]
               exact inferInstance
