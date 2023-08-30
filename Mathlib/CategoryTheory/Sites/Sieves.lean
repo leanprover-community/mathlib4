@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, E. W. Ayers
 import Mathlib.Order.CompleteLattice
 import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Data.Set.Lattice
 
 #align_import category_theory.sites.sieves from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
@@ -190,6 +190,20 @@ class hasPullbacks (R : Presieve X) : Prop where
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
 
 instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
+
+/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
+coproduct to the target. -/
+class extensive [HasFiniteCoproducts C] (R : Presieve X) : Prop where
+  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
+  coproduct of their sources. -/
+  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
+    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
+
+/-- A presieve is *regular* if it consists of a single epimorphism. -/
+class regular (R : Presieve X) : Prop where
+  /-- `R` consists of a single epimorphism. -/
+  single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)
+    (fun (_ : Unit) ↦ f) ∧ Epi f
 
 section FunctorPushforward
 
