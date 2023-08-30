@@ -26,11 +26,13 @@ below proof is free, then the proof works nearly verbatim.
 
 open scoped BigOperators Polynomial
 
+/- Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
+
 namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
 
-def InductionHyp : Prop :=
+private def InductionHyp : Prop :=
   ∀ R : Subring D, R < ⊤ → ∀ ⦃x y⦄, x ∈ R → y ∈ R → x * y = y * x
 
 namespace InductionHyp
@@ -39,7 +41,7 @@ open FiniteDimensional Polynomial
 
 variable {D}
 
-protected def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
+private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
   [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
@@ -47,7 +49,7 @@ protected def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
 
 -- this proof is currently hard to read through because of `(config := {zeta := false})` expanding
 -- all local definitions.
-theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
+private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   set Z := Subring.center D
@@ -128,7 +130,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
 
 end InductionHyp
 
-theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
+private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   suffices
@@ -149,6 +151,10 @@ theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
 
 end LittleWedderburn
 
+/-- A finite division ring is a field. Indeed, a finite domain is a field, but this requires
+creating data (the inverses + `rat_cast` + `qsmul`) - therefore, we do not do this, and instead
+require the `DivisionRing` structure to exist already. See `Finite.isDomain_to_isField` and
+`Fintype.divisionRingOfIsDomain` to tie everything together. -/
 def littleWedderburn (D : Type*) [DivisionRing D] [Finite D] : Field D :=
   { ‹DivisionRing D› with
     mul_comm := fun x y ↦ eq_top_iff.mp (LittleWedderburn.center_eq_top D) (Subring.mem_top y) x }
