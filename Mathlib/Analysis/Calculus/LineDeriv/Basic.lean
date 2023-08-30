@@ -41,8 +41,6 @@ on the direction would make them barely usable:
 * We do not define `LineDifferentiableOn` nor `LineDifferentiable`.
 -/
 
-universe u v w
-
 noncomputable section
 
 open scoped Topology BigOperators Filter ENNReal
@@ -51,8 +49,8 @@ open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section Module
 /-!
@@ -60,7 +58,7 @@ Results that do not rely on a topological structure on `E`
 -/
 
 variable (𝕜)
-variable {E : Type w} [AddCommGroup E] [Module 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
 
 /-- `f` has the derivative `f'` at the point `x` along the direction `v` in the set `s`.
 That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
@@ -213,7 +211,7 @@ section NormedSpace
 Results that need a normed space structure on `E`
 -/
 
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f f₀ f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
 
 theorem HasLineDerivWithinAt.mono_of_mem
@@ -360,3 +358,24 @@ theorem Filter.EventuallyEq.lineDeriv_eq (h : f₁ =ᶠ[𝓝 x] f) :
   rw [← lineDerivWithin_univ, ← lineDerivWithin_univ, h.lineDerivWithin_eq_nhds]
 
 end NormedSpace
+
+section Zero
+
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E → F} {s : Set E} {x : E}
+
+theorem hasLineDerivWithinAt_zero : HasLineDerivWithinAt 𝕜 f 0 s x 0 := by
+  simp [HasLineDerivWithinAt, hasDerivWithinAt_const]
+
+theorem hasLineDerivAt_zero : HasLineDerivAt 𝕜 f 0 x 0 := by
+  simp [HasLineDerivAt, hasDerivAt_const]
+
+theorem lineDifferentiableWithinAt_zero : LineDifferentiableWithinAt 𝕜 f s x 0 :=
+  hasLineDerivWithinAt_zero.lineDifferentiableWithinAt
+
+theorem lineDifferentiableAt_zero : LineDifferentiableAt 𝕜 f x 0 :=
+  hasLineDerivAt_zero.lineDifferentiableAt
+
+theorem lineDeriv_zero : lineDeriv 𝕜 f x 0 = 0 :=
+  hasLineDerivAt_zero.lineDeriv
+
+end Zero
