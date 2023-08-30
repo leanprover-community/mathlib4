@@ -6,25 +6,26 @@ Authors: Moritz Firsching
 import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
-# Super factorial
+# Superfactorial
 
-This file defines the super factorial `1! * 2! * 3! * ...* n!`.
+This file defines the [superfactorial](https://en.wikipedia.org/wiki/Superfactorial)
+`1! * 2! * 3! * ...* n!`.
 
 ## Main declarations
 
-* `Nat.superFactorial`: The super factorial.
+* `Nat.superFactorial`: The superfactorial.
 -/
 
 
 namespace Nat
 
-/-- `Nat.superFactorial n` is the super factorial of `n`. -/
+/-- `Nat.superFactorial n` is the superfactorial of `n`. -/
 @[simp]
 def superFactorial : ℕ → ℕ
   | 0 => 1
   | succ n => factorial n.succ * superFactorial n
 
-/-- `sf` notation for super factorial -/
+/-- `sf` notation for superfactorial -/
 scoped notation:10000 "sf" n => Nat.superFactorial n
 
 section SuperFactorial
