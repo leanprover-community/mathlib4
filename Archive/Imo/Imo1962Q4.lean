@@ -17,8 +17,6 @@ Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Real
 
 open scoped Real
