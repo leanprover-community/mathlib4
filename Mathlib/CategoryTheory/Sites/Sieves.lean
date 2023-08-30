@@ -199,12 +199,6 @@ class extensive [HasFiniteCoproducts C] (R : Presieve X) : Prop where
   arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
     R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
 
-/-- A presieve is *regular* if it consists of a single epimorphism. -/
-class regular (R : Presieve X) : Prop where
-  /-- `R` consists of a single effective epimorphism. -/
-  single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)
-    (fun (_ : Unit) ↦ f) ∧ EffectiveEpi f
-
 section FunctorPushforward
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
