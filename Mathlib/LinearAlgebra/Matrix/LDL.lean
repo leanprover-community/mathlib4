@@ -43,7 +43,7 @@ local notation "⟪" x ", " y "⟫ₑ" =>
 
 open Matrix
 
-open scoped Matrix
+open scoped Matrix ComplexOrder
 
 variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 

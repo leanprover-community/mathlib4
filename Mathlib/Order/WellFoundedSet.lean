@@ -782,8 +782,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
   have : ∀ n, (f n).headI ∈ s
-  · simp only [Set.range_subset_iff, Function.comp_apply]
-    exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  · exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
