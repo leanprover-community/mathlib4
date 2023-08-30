@@ -15,6 +15,12 @@ This file proves Wedderburn's Little Theorem.
 ## Main Declarations
 
 * `littleWedderburn`: a finite division ring is a field.
+
+## Future work
+If interested, generalisations to semifields could be explored. The theory of semi-vector spaces is
+not clear, but assuming that such a theory could be found where every module considered in the
+below proof is free, then the proof works nearly verbatim.
+
 -/
 
 
@@ -22,10 +28,7 @@ open scoped BigOperators Polynomial
 
 namespace LittleWedderburn
 
-universe u v
-variable {D : Type u} [DivisionRing D] {R : Type v} [Ring R]
-
-variable (D)
+variable (D : Type*) [DivisionRing D]
 
 def InductionHyp : Prop :=
   ∀ R : Subring D, R < ⊤ → ∀ ⦃x y⦄, x ∈ R → y ∈ R → x * y = y * x
@@ -36,7 +39,7 @@ open FiniteDimensional Polynomial
 
 variable {D}
 
-protected def field (hD : InductionHyp D) (R : Subring D) (hR : R < ⊤)
+protected def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
   [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
@@ -50,7 +53,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   set Z := Subring.center D
   by_contra hZ
   replace hZ := Ne.lt_top hZ
-  letI : Field Z := hD.field Z hZ
+  letI : Field Z := hD.field hZ
   set q := Fintype.card Z with card_Z
   have hq : 1 < q := by rw [card_Z]; exact Fintype.one_lt_card
   let n := finrank Z D
@@ -97,7 +100,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
     simp only [Set.mem_toFinset, ConjClasses.quot_mk_eq_mk] at hx
     refine (ConjClasses.mk_bijOn (Dˣ)).1 (Set.subset_center_units ?_) hx
     exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
-  letI : Field Zx := hD.field _ hZx
+  letI : Field Zx := hD.field hZx
   letI : Algebra Z Zx :=
     (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
@@ -146,6 +149,13 @@ theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
 
 end LittleWedderburn
 
-instance littleWedderburn (D : Type _) [DivisionRing D] [Finite D] : Field D :=
+def littleWedderburn (D : Type*) [DivisionRing D] [Finite D] : Field D :=
   { ‹DivisionRing D› with
     mul_comm := fun x y ↦ eq_top_iff.mp (LittleWedderburn.center_eq_top D) (Subring.mem_top y) x }
+
+theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] : IsField D := by
+  classical
+  cases nonempty_fintype D
+  let _ := Fintype.divisionRingOfIsDomain D
+  let _ := littleWedderburn D
+  exact Field.toIsField D
