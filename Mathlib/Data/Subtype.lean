@@ -22,7 +22,6 @@ such, subtypes can be thought of as bundled sets, the difference being that elem
 still of type `α` while elements of a subtype aren't.
 -/
 
-universe u
 
 open Function
 
@@ -77,7 +76,7 @@ theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x //
          (λ _ => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
 #align subtype.heq_iff_coe_eq Subtype.heq_iff_coe_eq
 
-lemma heq_iff_coe_heq {α β : Sort u} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
+lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
     {b : {y // q y}} (h : α = β) (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β) := by
   subst h
   subst h'

@@ -23,7 +23,7 @@ namespace Function
 
 section
 
-variable {α β γ : Sort*} {f : α → β}
+variable {α β γ : Sort _} {f : α → β}
 
 /-- Evaluate a function at an argument. Useful if you want to talk about the partially applied
   `Function.eval x : (∀ x, β x) → β x`. -/
@@ -97,7 +97,7 @@ theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
 #align function.injective.eq_iff Function.Injective.eq_iff
 
-theorem Injective.beq_eq {α β : Type*} {f : α → β} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β]
+theorem Injective.beq_eq [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β]
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
 
@@ -1005,19 +1005,19 @@ theorem eq_rec_on_bijective {α : Sort*} {C : α → Sort*} :
   | _, _, rfl => ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_rec_on_bijective eq_rec_on_bijective
 
-theorem eq_mp_bijective {α β : Sort u} (h : α = β) : Function.Bijective (Eq.mp h) := by
+theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) := by
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
   -- due to `@[macro_inline]` possibly?
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mp_bijective eq_mp_bijective
 
-theorem eq_mpr_bijective {α β : Sort u} (h : α = β) : Function.Bijective (Eq.mpr h) := by
+theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) := by
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mpr_bijective eq_mpr_bijective
 
-theorem cast_bijective {α β : Sort u} (h : α = β) : Function.Bijective (cast h) := by
+theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) := by
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align cast_bijective cast_bijective
@@ -1033,7 +1033,7 @@ theorem eq_rec_inj {α : Sort*} {a a' : α} (h : a = a') {C : α → Type*} (x y
 #align eq_rec_inj eq_rec_inj
 
 @[simp]
-theorem cast_inj {α β : Type u} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
+theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
   (cast_bijective h).injective.eq_iff
 #align cast_inj cast_inj
 

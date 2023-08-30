@@ -21,7 +21,7 @@ section Equiv
 variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 @[simp]
-theorem Equiv.asEmbedding_range {α : Sort*} {β : Type*} {p : β → Prop} (e : α ≃ Subtype p) :
+theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
     Set.range e.asEmbedding = setOf p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
 #align equiv.as_embedding_range Equiv.asEmbedding_range

@@ -57,7 +57,7 @@ instance (α : Sort*) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtyp
 
 #align pempty PEmpty
 
-theorem congr_heq {α β : Sort u} {γ : Sort*} {f : α → γ} {g : β → γ} {x : α} {y : β}
+theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
     (h₁ : HEq f g) (h₂ : HEq x y) : f x = g y := by
   cases h₂; cases h₁; rfl
 #align congr_heq congr_heq
@@ -67,11 +67,11 @@ theorem congr_arg_heq {α} {β : α → Sort*} (f : ∀ a, β a) :
   | _, _, rfl => HEq.rfl
 #align congr_arg_heq congr_arg_heq
 
-theorem ULift.down_injective {α : Type*} : Function.Injective (@ULift.down α)
+theorem ULift.down_injective {α : Sort _} : Function.Injective (@ULift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr
 #align ulift.down_injective ULift.down_injective
 
-@[simp] theorem ULift.down_inj {α : Type*} {a b : ULift α} : a.down = b.down ↔ a = b :=
+@[simp] theorem ULift.down_inj {α : Sort _} {a b : ULift α} : a.down = b.down ↔ a = b :=
   ⟨fun h ↦ ULift.down_injective h, fun h ↦ by rw [h]⟩
 #align ulift.down_inj ULift.down_inj
 
@@ -621,10 +621,10 @@ end Equality
 section Quantifiers
 section Dependent
 
-variable {β : α → Sort u} {γ : ∀ a, β a → Sort v} {δ : ∀ a b, γ a b → Sort w}
-  {ε : ∀ a b c, δ a b c → Sort z}
+variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
+  {ε : ∀ a b c, δ a b c → Sort*}
 
-theorem pi_congr {β' : α → Sort u} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
+theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
   (funext h : β = β') ▸ rfl
 #align pi_congr pi_congr
 

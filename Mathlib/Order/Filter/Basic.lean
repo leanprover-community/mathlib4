@@ -83,7 +83,7 @@ set_option autoImplicit true
 open Function Set Order
 open Classical hiding by_cases not_not
 
-universe u v w x y z
+universe u v w x y
 
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
@@ -2760,7 +2760,7 @@ theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     exact seq_mem_seq (image_mem_map ht) hu
 #align filter.prod_map_seq_comm Filter.prod_map_seq_comm
 
-theorem seq_eq_filter_seq {α β : Type z} (f : Filter (α → β)) (g : Filter α) :
+theorem seq_eq_filter_seq {α β : Type _} (f : Filter (α → β)) (g : Filter α) :
     f <*> g = seq f g :=
   rfl
 #align filter.seq_eq_filter_seq Filter.seq_eq_filter_seq

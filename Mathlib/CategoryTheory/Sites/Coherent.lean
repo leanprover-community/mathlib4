@@ -33,8 +33,7 @@ namespace CategoryTheory
 
 open Limits
 
-universe v u
-variable (C : Type u) [Category.{v} C]
+variable (C : Type*) [Category C]
 
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the
@@ -152,7 +151,7 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α
     EffectiveEpiFamily
       (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
-  suffices h₂ : (Sieve.generate (Presieve.ofArrows (C := C) (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
+  suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
         (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (coherentTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]

@@ -525,7 +525,7 @@ theorem hasBasis_iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α} {
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
 #align filter.has_basis_infi Filter.hasBasis_iInf
 
-theorem hasBasis_iInf_of_directed' {ι : Type*} {ι' : ι → Type*} [Nonempty ι] {l : ι → Filter α}
+theorem hasBasis_iInf_of_directed' {ι : Type*} {ι' : ι → Sort _} [Nonempty ι] {l : ι → Filter α}
     (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
     (h : Directed (· ≥ ·) l) :
     (⨅ i, l i).HasBasis (fun ii' : Σi, ι' i => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
@@ -534,7 +534,7 @@ theorem hasBasis_iInf_of_directed' {ι : Type*} {ι' : ι → Type*} [Nonempty �
   exact exists_congr fun i => (hl i).mem_iff
 #align filter.has_basis_infi_of_directed' Filter.hasBasis_iInf_of_directed'
 
-theorem hasBasis_iInf_of_directed {ι : Type*} {ι' : Type*} [Nonempty ι] {l : ι → Filter α}
+theorem hasBasis_iInf_of_directed {ι : Type*} {ι' : Sort _} [Nonempty ι] {l : ι → Filter α}
     (s : ι → ι' → Set α) (p : ι → ι' → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
     (h : Directed (· ≥ ·) l) :
     (⨅ i, l i).HasBasis (fun ii' : ι × ι' => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
@@ -543,7 +543,7 @@ theorem hasBasis_iInf_of_directed {ι : Type*} {ι' : Type*} [Nonempty ι] {l : 
   exact exists_congr fun i => (hl i).mem_iff
 #align filter.has_basis_infi_of_directed Filter.hasBasis_iInf_of_directed
 
-theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Type*} {dom : Set ι}
+theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Sort _} {dom : Set ι}
     (hdom : dom.Nonempty) {l : ι → Filter α} (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop)
     (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
     (⨅ i ∈ dom, l i).HasBasis (fun ii' : Σi, ι' i => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
@@ -558,7 +558,7 @@ theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Type*} {dom : Set
     exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
 #align filter.has_basis_binfi_of_directed' Filter.hasBasis_biInf_of_directed'
 
-theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Type*} {dom : Set ι} (hdom : dom.Nonempty)
+theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (hdom : dom.Nonempty)
     {l : ι → Filter α} (s : ι → ι' → Set α) (p : ι → ι' → Prop)
     (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
     (⨅ i ∈ dom, l i).HasBasis (fun ii' : ι × ι' => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>

@@ -894,29 +894,29 @@ theorem mapRange.linearEquiv_toLinearMap (f : M ≃ₗ[R] N) :
 
 /-- An equivalence of domain and a linear equivalence of codomain induce a linear equivalence of the
 corresponding finitely supported functions. -/
-def lcongr {ι κ : Type*} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) : (ι →₀ M) ≃ₗ[R] κ →₀ N :=
+def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) : (ι →₀ M) ≃ₗ[R] κ →₀ N :=
   (Finsupp.domLCongr e₁).trans (mapRange.linearEquiv e₂)
 #align finsupp.lcongr Finsupp.lcongr
 
 @[simp]
-theorem lcongr_single {ι κ : Type*} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (i : ι) (m : M) :
+theorem lcongr_single {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (i : ι) (m : M) :
     lcongr e₁ e₂ (Finsupp.single i m) = Finsupp.single (e₁ i) (e₂ m) := by simp [lcongr]
 #align finsupp.lcongr_single Finsupp.lcongr_single
 
 @[simp]
-theorem lcongr_apply_apply {ι κ : Type*} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (f : ι →₀ M) (k : κ) :
+theorem lcongr_apply_apply {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (f : ι →₀ M) (k : κ) :
     lcongr e₁ e₂ f k = e₂ (f (e₁.symm k)) :=
   rfl
 #align finsupp.lcongr_apply_apply Finsupp.lcongr_apply_apply
 
-theorem lcongr_symm_single {ι κ : Type*} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (k : κ) (n : N) :
+theorem lcongr_symm_single {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) (k : κ) (n : N) :
     (lcongr e₁ e₂).symm (Finsupp.single k n) = Finsupp.single (e₁.symm k) (e₂.symm n) := by
   apply_fun (lcongr e₁ e₂ : (ι →₀ M) → (κ →₀ N)) using (lcongr e₁ e₂).injective
   simp
 #align finsupp.lcongr_symm_single Finsupp.lcongr_symm_single
 
 @[simp]
-theorem lcongr_symm {ι κ : Type*} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) :
+theorem lcongr_symm {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) :
     (lcongr e₁ e₂).symm = lcongr e₁.symm e₂.symm := by
   ext
   rfl
@@ -1164,7 +1164,7 @@ theorem LinearMap.map_finsupp_total (f : M →ₗ[R] N) {ι : Type*} {g : ι →
   simp only [Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum, f.map_sum, f.map_smul, (· ∘ ·)]
 #align linear_map.map_finsupp_total LinearMap.map_finsupp_total
 
-theorem Submodule.exists_finset_of_mem_iSup {ι : Type*} (p : ι → Submodule R M) {m : M}
+theorem Submodule.exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
     (hm : m ∈ ⨆ i, p i) : ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i := by
   have :=
     CompleteLattice.IsCompactElement.exists_finset_of_le_iSup (Submodule R M)
@@ -1174,7 +1174,7 @@ theorem Submodule.exists_finset_of_mem_iSup {ι : Type*} (p : ι → Submodule R
 #align submodule.exists_finset_of_mem_supr Submodule.exists_finset_of_mem_iSup
 
 /-- `Submodule.exists_finset_of_mem_iSup` as an `iff` -/
-theorem Submodule.mem_iSup_iff_exists_finset {ι : Type*} {p : ι → Submodule R M} {m : M} :
+theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule R M} {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i :=
   ⟨Submodule.exists_finset_of_mem_iSup p, fun ⟨_, hs⟩ =>
     iSup_mono (fun i => (iSup_const_le : _ ≤ p i)) hs⟩

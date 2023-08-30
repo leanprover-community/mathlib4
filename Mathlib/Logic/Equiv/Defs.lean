@@ -246,7 +246,7 @@ protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjectiv
 #align equiv.unique Equiv.unique
 
 /-- Equivalence between equal types. -/
-protected def cast {α β : Sort u} (h : α = β) : α ≃ β :=
+protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
   ⟨cast h, cast h.symm, fun _ => by cases h; rfl, fun _ => by cases h; rfl⟩
 #align equiv.cast Equiv.cast
 
@@ -471,7 +471,7 @@ def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsE
 #align equiv.prop_equiv_pempty Equiv.propEquivPEmpty
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
-def equivOfUnique (α β : Sort*) [Unique α] [Unique β] : α ≃ β where
+def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
   left_inv _ := Subsingleton.elim _ _
@@ -769,22 +769,22 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 namespace Perm
 
 /-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
-@[reducible] def sigmaCongrRight {α} {β : α → Type*} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
+@[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
 
-@[simp] theorem sigmaCongrRight_trans {α} {β : α → Type*}
+@[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
   Equiv.sigmaCongrRight_trans F G
 #align equiv.perm.sigma_congr_right_trans Equiv.Perm.sigmaCongrRight_trans
 
-@[simp] theorem sigmaCongrRight_symm {α} {β : α → Type*} (F : ∀ a, Perm (β a)) :
+@[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
   Equiv.sigmaCongrRight_symm F
 #align equiv.perm.sigma_congr_right_symm Equiv.Perm.sigmaCongrRight_symm
 
-@[simp] theorem sigmaCongrRight_refl {α} {β : α → Type*} :
+@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   Equiv.sigmaCongrRight_refl
 #align equiv.perm.sigma_congr_right_refl Equiv.Perm.sigmaCongrRight_refl
@@ -792,7 +792,7 @@ namespace Perm
 end Perm
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
-@[simps apply] def sigmaCongrLeft {β : α₂ → Type*} (e : α₁ ≃ α₂) :
+@[simps apply] def sigmaCongrLeft {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
   toFun a := ⟨e a.1, a.2⟩
   invFun a := ⟨e.symm a.1, (e.right_inv' a.1).symm ▸ a.2⟩
@@ -809,13 +809,13 @@ end Perm
 #align equiv.sigma_congr_left Equiv.sigmaCongrLeft
 
 /-- Transporting a sigma type through an equivalence of the base -/
-def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Type*} (f : α₁ ≃ α₂) :
+def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Sort _} (f : α₁ ≃ α₂) :
     (Σ a : α₁, β a) ≃ Σ a : α₂, β (f.symm a) := (sigmaCongrLeft f.symm).symm
 #align equiv.sigma_congr_left' Equiv.sigmaCongrLeft'
 
 /-- Transporting a sigma type through an equivalence of the base and a family of equivalences
 of matching fibers -/
-def sigmaCongr {α₁ α₂} {β₁ : α₁ → Type*} {β₂ : α₂ → Type*} (f : α₁ ≃ α₂)
+def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort _} (f : α₁ ≃ α₂)
     (F : ∀ a, β₁ a ≃ β₂ (f a)) : Sigma β₁ ≃ Sigma β₂ :=
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 #align equiv.sigma_congr Equiv.sigmaCongr
@@ -830,7 +830,7 @@ def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
 
 /-- If each fiber of a `Sigma` type is equivalent to a fixed type, then the sigma type
 is equivalent to the product. -/
-def sigmaEquivProdOfEquiv {α β} {β₁ : α → Type*} (F : ∀ a, β₁ a ≃ β) : Sigma β₁ ≃ α × β :=
+def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort _} (F : ∀ a, β₁ a ≃ β) : Sigma β₁ ≃ α × β :=
   (sigmaCongrRight F).trans (sigmaEquivProd α β)
 #align equiv.sigma_equiv_prod_of_equiv Equiv.sigmaEquivProdOfEquiv
 

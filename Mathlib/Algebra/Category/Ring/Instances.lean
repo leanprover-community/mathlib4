@@ -13,7 +13,6 @@ import Mathlib.RingTheory.Ideal.LocalRing
 # Ring-theoretic results in terms of categorical languages
 -/
 
-universe u
 
 open CategoryTheory
 
@@ -28,7 +27,7 @@ instance localization_unit_isIso' (R : CommRingCat) :
   exact localization_unit_isIso _
 #align localization_unit_is_iso' localization_unit_isIso'
 
-theorem IsLocalization.epi {R : Type u} [CommRing R] (M : Submonoid R) (S : Type u) [CommRing S]
+theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
     [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=
   ⟨fun {T} _ _ => @IsLocalization.ringHom_ext R _ M S _ _ T _ _ _ _⟩
 #align is_localization.epi IsLocalization.epi

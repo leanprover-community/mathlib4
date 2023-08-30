@@ -84,7 +84,7 @@ theorem coe_finsetBasisIndex [IsNoetherian K V] :
 
 @[simp]
 theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
-    (finsetBasisIndex K V : Type v) = Basis.ofVectorSpaceIndex K V :=
+    (finsetBasisIndex K V : Type _) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coeSort_toFinset _
 #align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
 

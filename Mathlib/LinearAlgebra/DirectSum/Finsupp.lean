@@ -35,7 +35,7 @@ open TensorProduct
 
 open scoped Classical in
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
-def finsuppTensorFinsupp (R M N ι κ : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
     ((TensorProduct.directSum R (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
@@ -43,7 +43,7 @@ def finsuppTensorFinsupp (R M N ι κ : Type*) [CommRing R] [AddCommGroup M] [Mo
 #align finsupp_tensor_finsupp finsuppTensorFinsupp
 
 @[simp]
-theorem finsuppTensorFinsupp_single (R M N ι κ : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (i : ι) (m : M) (k : κ) (n : N) :
     finsuppTensorFinsupp R M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
       Finsupp.single (i, k) (m ⊗ₜ n) :=
@@ -51,7 +51,7 @@ theorem finsuppTensorFinsupp_single (R M N ι κ : Type*) [CommRing R] [AddCommG
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
-theorem finsuppTensorFinsupp_apply (R M N ι κ : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
     finsuppTensorFinsupp R M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k := by
   apply Finsupp.induction_linear f
@@ -74,7 +74,7 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Type*) [CommRing R] [AddCommGr
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
 @[simp]
-theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Type*) [CommRing R] [AddCommGroup M]
+theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M]
     [Module R M] [AddCommGroup N] [Module R N] (i : ι × κ) (m : M) (n : N) :
     (finsuppTensorFinsupp R M N ι κ).symm (Finsupp.single i (m ⊗ₜ n)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 n :=

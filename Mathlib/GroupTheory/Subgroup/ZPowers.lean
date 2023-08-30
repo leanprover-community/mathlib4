@@ -148,7 +148,7 @@ end Ring
 
 end AddSubgroup
 
-@[simp] lemma Int.range_castAddHom {A : Type _} [AddGroupWithOne A] :
+@[simp] lemma Int.range_castAddHom {A : Type*} [AddGroupWithOne A] :
     (Int.castAddHom A).range = AddSubgroup.zmultiples 1 := by
   ext a
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]

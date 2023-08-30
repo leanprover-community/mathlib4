@@ -68,14 +68,14 @@ Show that every qpf is a lawful functor.
 Note: every functor has a field, `map_const`, and `lawfulFunctor` has the defining
 characterization. We can only propagate the assumption.
 -/
-theorem id_map {α : Type u} (x : F α) : id <$> x = x := by
+theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
   rw [← abs_repr x]
   cases' repr x with a f
   rw [← abs_map]
   rfl
 #align qpf.id_map Qpf.id_map
 
-theorem comp_map {α β γ : Type u} (f : α → β) (g : β → γ) (x : F α) :
+theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) (x : F α) :
     (g ∘ f) <$> x = g <$> f <$> x := by
   rw [← abs_repr x]
   cases' repr x with a f
@@ -161,19 +161,19 @@ least fixed point of `F`, and assign a canonical representative to each equivale
 of trees.
 -/
 /-- does recursion on `q.P.W` using `g : F α → α` rather than `g : P α → α` -/
-def recF {α : Type u} (g : F α → α) : q.P.W → α
+def recF {α : Type _} (g : F α → α) : q.P.W → α
   | ⟨a, f⟩ => g (abs ⟨a, fun x => recF g (f x)⟩)
 set_option linter.uppercaseLean3 false in
 #align qpf.recF Qpf.recF
 
-theorem recF_eq {α : Type u} (g : F α → α) (x : q.P.W) :
+theorem recF_eq {α : Type _} (g : F α → α) (x : q.P.W) :
     recF g x = g (abs (recF g <$> x.dest)) := by
   cases x
   rfl
 set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq Qpf.recF_eq
 
-theorem recF_eq' {α : Type u} (g : F α → α) (a : q.P.A) (f : q.P.B a → q.P.W) :
+theorem recF_eq' {α : Type _} (g : F α → α) (a : q.P.A) (f : q.P.B a → q.P.W) :
     recF g ⟨a, f⟩ = g (abs (recF g <$> ⟨a, f⟩)) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -255,7 +255,7 @@ def Fix (F : Type u → Type u) [Functor F] [q : Qpf F] :=
 #align qpf.fix Qpf.Fix
 
 /-- recursor of a type defined by a qpf -/
-def Fix.rec {α : Type u} (g : F α → α) : Fix F → α :=
+def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
   Quot.lift (recF g) (recF_eq_of_Wequiv g)
 #align qpf.fix.rec Qpf.Fix.rec
 
@@ -275,7 +275,7 @@ def Fix.dest : Fix F → F (Fix F) :=
   Fix.rec (Functor.map Fix.mk)
 #align qpf.fix.dest Qpf.Fix.dest
 
-theorem Fix.rec_eq {α : Type u} (g : F α → α) (x : F (Fix F)) :
+theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     Fix.rec g (Fix.mk x) = g (Fix.rec g <$> x) := by
   have : recF g ∘ fixToW = Fix.rec g := by
     apply funext
@@ -369,12 +369,12 @@ variable {F : Type u → Type u} [Functor F] [q : Qpf F]
 open Functor (Liftp Liftr)
 
 /-- does recursion on `q.P.M` using `g : α → F α` rather than `g : α → P α` -/
-def corecF {α : Type u} (g : α → F α) : α → q.P.M :=
+def corecF {α : Type _} (g : α → F α) : α → q.P.M :=
   PFunctor.M.corec fun x => repr (g x)
 set_option linter.uppercaseLean3 false in
 #align qpf.corecF Qpf.corecF
 
-theorem corecF_eq {α : Type u} (g : α → F α) (x : α) :
+theorem corecF_eq {α : Type _} (g : α → F α) (x : α) :
     PFunctor.M.dest (corecF g x) = corecF g <$> repr (g x) := by rw [corecF, PFunctor.M.dest_corec]
 set_option linter.uppercaseLean3 false in
 #align qpf.corecF_eq Qpf.corecF_eq
@@ -399,7 +399,7 @@ instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
   ⟨Quot.mk _ default⟩
 
 /-- corecursor for type defined by `Cofix` -/
-def Cofix.corec {α : Type u} (g : α → F α) (x : α) : Cofix F :=
+def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
 #align qpf.cofix.corec Qpf.Cofix.corec
 

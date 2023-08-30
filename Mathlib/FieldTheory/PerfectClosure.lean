@@ -63,7 +63,7 @@ def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
 #align perfect_closure.lift_on PerfectClosure.liftOn
 
 @[simp]
-theorem liftOn_mk {L : Type*} (f : ℕ × K → L) (hf : ∀ x y, R K p x y → f x = f y) (x : ℕ × K) :
+theorem liftOn_mk {L : Sort _} (f : ℕ × K → L) (hf : ∀ x y, R K p x y → f x = f y) (x : ℕ × K) :
     (mk K p x).liftOn f hf = f x :=
   rfl
 #align perfect_closure.lift_on_mk PerfectClosure.liftOn_mk

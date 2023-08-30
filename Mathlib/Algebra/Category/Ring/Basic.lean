@@ -105,7 +105,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type u} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
@@ -244,7 +244,7 @@ set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type u} [Ring X] [Ring Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
     (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
@@ -327,7 +327,7 @@ set_option linter.uppercaseLean3 false in
 #align CommSemiRing.of_hom CommSemiRingCat.ofHom
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type u} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
     (@FunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
       (fun _ => (forget CommSemiRingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
@@ -443,7 +443,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.of_hom CommRingCat.ofHom
 
 @[simp]
-lemma RingEquiv_coe_eq {X Y : Type u} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
+lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
     (@FunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
       ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
@@ -602,7 +602,7 @@ theorem CommRingCat.comp_eq_ring_hom_comp {R S T : CommRingCat} (f : R ⟶ S) (g
 set_option linter.uppercaseLean3 false in
 #align CommRing.comp_eq_ring_hom_comp CommRingCat.comp_eq_ring_hom_comp
 
-theorem CommRingCat.ringHom_comp_eq_comp {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
+theorem CommRingCat.ringHom_comp_eq_comp {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     (f : R →+* S) (g : S →+* T) : g.comp f = CommRingCat.ofHom f ≫ CommRingCat.ofHom g :=
   rfl
 set_option linter.uppercaseLean3 false in

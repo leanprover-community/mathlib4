@@ -16,11 +16,9 @@ These are implemented as the quotient of a list by permutations.
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
-universe ua ub uc
-
 open List Subtype Nat Function
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
@@ -1150,7 +1148,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
   exact congr_arg _ (List.map_congr h)
 #align multiset.map_congr Multiset.map_congr
 
-theorem map_hcongr {β' : Type ub} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
+theorem map_hcongr {β' : Type _} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
     (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
   subst h; simp at hf
   simp [map_congr rfl hf]

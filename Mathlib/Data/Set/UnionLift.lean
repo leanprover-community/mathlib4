@@ -38,7 +38,7 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 directed union, directed supremum, glue, gluing
 -/
 
-variable {α β': Type*} {ι β : Sort*}
+variable {α : Type*} {ι β : Sort _}
 
 namespace Set
 
@@ -61,9 +61,6 @@ variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
   {hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩} {T : Set α}
   {hT : T ⊆ iUnion S} (hT' : T = iUnion S)
 
-variable {f' : ∀ (i) (_ : S i), β'}
-  {hf' : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f' i ⟨x, hxi⟩ = f' j ⟨x, hxj⟩}
-
 @[simp]
 theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
@@ -79,9 +76,9 @@ theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
     iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
 #align set.Union_lift_of_mem Set.iUnionLift_of_mem
 
-theorem preimage_iUnionLift (t : Set β') :
-    iUnionLift S f' hf' T hT ⁻¹' t =
-      inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' (f' i ⁻¹' t)) := by
+theorem preimage_iUnionLift (t : Set β) :
+    iUnionLift S f hf T hT ⁻¹' t =
+      inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' (f i ⁻¹' t)) := by
   ext x
   simp only [mem_preimage, mem_iUnion, mem_image]
   constructor
@@ -158,9 +155,6 @@ variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
   {hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩}
   {hS : iUnion S = univ}
 
-variable {f' : ∀ (i) (_ : S i), β'}
-  {hf' : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f' i ⟨x, hxi⟩ = f' j ⟨x, hxj⟩}
-
 /-- Glue together functions defined on each of a collection `S` of sets that cover a type. See
   also `Set.iUnionLift`.   -/
 noncomputable def liftCover (S : ι → Set α) (f : ∀ (i) (_ : S i), β)
@@ -179,9 +173,8 @@ theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
   iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
 #align set.lift_cover_of_mem Set.liftCover_of_mem
 
-theorem preimage_liftCover (t : Set β') :
-    liftCover S f' hf' hS ⁻¹' t = ⋃ i, (↑) '' (f' i ⁻¹' t) := by
-  change (iUnionLift S f' hf' univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
+theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
+  change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
   rw [preimage_comp, preimage_iUnionLift]
   ext; simp
 

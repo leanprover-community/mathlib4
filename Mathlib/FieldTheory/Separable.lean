@@ -180,7 +180,7 @@ theorem Separable.mul {f g : R[X]} (hf : f.Separable) (hg : g.Separable) (h : Is
     ((hf.mul_right h).add_mul_left_right _).mul_left ((h.symm.mul_right hg).mul_add_right_right _)
 #align polynomial.separable.mul Polynomial.Separable.mul
 
-theorem separable_prod' {ι : Type*} {f : ι → R[X]} {s : Finset ι} :
+theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
     (∀ x ∈ s, ∀ y ∈ s, x ≠ y → IsCoprime (f x) (f y)) →
       (∀ x ∈ s, (f x).Separable) → (∏ x in s, f x).Separable :=
   Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
@@ -190,12 +190,12 @@ theorem separable_prod' {ι : Type*} {f : ι → R[X]} {s : Finset ι} :
         (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 #align polynomial.separable_prod' Polynomial.separable_prod'
 
-theorem separable_prod {ι : Type*} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
+theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
     (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
   separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
 #align polynomial.separable_prod Polynomial.separable_prod
 
-theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Type*} {f : ι → R} {s : Finset ι}
+theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R} {s : Finset ι}
     (hfs : (∏ i in s, (X - C (f i))).Separable) {x y : ι} (hx : x ∈ s) (hy : y ∈ s)
     (hfxy : f x = f y) : x = y := by
   by_contra hxy
@@ -206,7 +206,7 @@ theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Type*} {f : ι → R}
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable.inj_of_prod_X_sub_C Polynomial.Separable.inj_of_prod_X_sub_C
 
-theorem Separable.injective_of_prod_X_sub_C [Nontrivial R] {ι : Type*} [Fintype ι] {f : ι → R}
+theorem Separable.injective_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} [Fintype ι] {f : ι → R}
     (hfs : (∏ i, (X - C (f i))).Separable) : Function.Injective f := fun _x _y hfxy =>
   hfs.inj_of_prod_X_sub_C (mem_univ _) (mem_univ _) hfxy
 set_option linter.uppercaseLean3 false in
@@ -288,7 +288,7 @@ theorem separable_map (f : F →+* K) {p : F[X]} :
   simp_rw [separable_def, derivative_map, isCoprime_map]
 #align polynomial.separable_map Polynomial.separable_map
 
-theorem separable_prod_X_sub_C_iff' {ι : Type*} {f : ι → F} {s : Finset ι} :
+theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i in s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
   ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
@@ -301,7 +301,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Type*} {f : ι → F} {s : Finset ι} 
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_prod_X_sub_C_iff' Polynomial.separable_prod_X_sub_C_iff'
 
-theorem separable_prod_X_sub_C_iff {ι : Type*} [Fintype ι] {f : ι → F} :
+theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
     (∏ i, (X - C (f i))).Separable ↔ Function.Injective f :=
   separable_prod_X_sub_C_iff'.trans <| by simp_rw [mem_univ, true_imp_iff, Function.Injective]
 set_option linter.uppercaseLean3 false in

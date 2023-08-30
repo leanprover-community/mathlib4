@@ -125,13 +125,13 @@ protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α
 #align sym2.induction_on₂ Sym2.inductionOn₂
 
 -- porting note: `exists` seems to be an invalid identifier
-protected theorem «exists» {α : Type*} {f : Sym2 α → Prop} :
+protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f ⟦(x, y)⟧ :=
   (surjective_quotient_mk _).exists.trans Prod.exists
 #align sym2.exists Sym2.exists
 
 -- porting note: `forall` seems to be an invalid identifier
-protected theorem «forall» {α : Type*} {f : Sym2 α → Prop} :
+protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f ⟦(x, y)⟧ :=
   (surjective_quotient_mk _).forall.trans Prod.forall
 #align sym2.forall Sym2.forall

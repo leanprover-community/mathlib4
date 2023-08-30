@@ -65,9 +65,6 @@ theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd =
   Quotient.inductionOn s <| fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
-/- Porting note: I changed `@antidiagonal` to `@antidiagonal.{u}` because otherwise I got
-`Multiset.antidiagonal_zero.{u_2, u_1} {α : Type (max u_1 u_2)} : ...`, which gave me issues
-and triggered the linter. -/
 @[simp]
 theorem antidiagonal_zero : @antidiagonal α 0 = {(0, 0)} :=
   rfl

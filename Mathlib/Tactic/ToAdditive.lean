@@ -15,7 +15,6 @@ import Std.Data.Option.Basic
 import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
-import Mathlib.Tactic.Basic -- for Type* term
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
@@ -327,7 +326,7 @@ def additiveTest (findTranslation? : Name → Option Name)
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
-def _root_.List.swapFirstTwo {α : Type*} : List α → List α
+def _root_.List.swapFirstTwo {α : Type _} : List α → List α
   | []      => []
   | [x]     => [x]
   | x::y::l => y::x::l

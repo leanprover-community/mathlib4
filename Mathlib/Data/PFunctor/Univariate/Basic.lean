@@ -18,7 +18,7 @@ pfunctor/M.lean.)
 -- "W", "Idx"
 set_option linter.uppercaseLean3 false
 
-universe u v
+universe u
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P.obj α`, which is defined as the sigma type `Σ x, P.B x → α`.
@@ -57,7 +57,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P.Obj α) :=
 
 instance : Functor P.Obj where map := @map P
 
-protected theorem map_eq {α β : Type v} (f : α → β) (a : P.A) (g : P.B a → α) :
+protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a → α) :
     @Functor.map P.Obj _ _ _ f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
@@ -65,7 +65,7 @@ protected theorem map_eq {α β : Type v} (f : α → β) (a : P.A) (g : P.B a �
 protected theorem id_map {α : Type*} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
-protected theorem comp_map {α β γ : Type v} (f : α → β) (g : β → γ) :
+protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
     ∀ x : P.Obj α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.comp_map PFunctor.comp_map
 

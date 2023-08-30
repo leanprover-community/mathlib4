@@ -1756,7 +1756,7 @@ theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (
 #align dfinsupp.sum_neg_index DFinsupp.sum_neg_index
 
 @[to_additive]
-theorem prod_comm {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} [DecidableEq ι₁]
+theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} [DecidableEq ι₁]
     [DecidableEq ι₂] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)]
     [∀ (i) (x : β₂ i), Decidable (x ≠ 0)] [CommMonoid γ] (f₁ : Π₀ i, β₁ i) (f₂ : Π₀ i, β₂ i)
     (h : ∀ i, β₁ i → ∀ i, β₂ i → γ) :
@@ -2002,7 +2002,7 @@ theorem _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [Dec
   SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom p S) x
 #align add_submonoid.mem_bsupr_iff_exists_dfinsupp AddSubmonoid.mem_bsupr_iff_exists_dfinsupp
 
-theorem sumAddHom_comm {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} {γ : Type*}
+theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} {γ : Type*}
     [DecidableEq ι₁] [DecidableEq ι₂] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
     [AddCommMonoid γ] (f₁ : Π₀ i, β₁ i) (f₂ : Π₀ i, β₂ i) (h : ∀ i j, β₁ i →+ β₂ j →+ γ) :
     sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
@@ -2371,12 +2371,12 @@ end
 
 section FiniteInfinite
 
-instance DFinsupp.fintype {ι : Type*} {π : ι → Type*} [DecidableEq ι] [∀ i, Zero (π i)]
+instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [∀ i, Zero (π i)]
     [Fintype ι] [∀ i, Fintype (π i)] : Fintype (Π₀ i, π i) :=
   Fintype.ofEquiv (∀ i, π i) DFinsupp.equivFunOnFintype.symm
 #align dfinsupp.fintype DFinsupp.fintype
 
-instance DFinsupp.infinite_of_left {ι : Type*} {π : ι → Type*} [∀ i, Nontrivial (π i)]
+instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by
   letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i);
     exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
@@ -2384,14 +2384,14 @@ instance DFinsupp.infinite_of_left {ι : Type*} {π : ι → Type*} [∀ i, Nont
 
 /-- See `DFinsupp.infinite_of_right` for this in instance form, with the drawback that
 it needs all `π i` to be infinite. -/
-theorem DFinsupp.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite (π i)]
+theorem DFinsupp.infinite_of_exists_right {ι : Sort _} {π : ι → Sort _} (i : ι) [Infinite (π i)]
     [∀ i, Zero (π i)] : Infinite (Π₀ i, π i) :=
   letI := Classical.decEq ι
   Infinite.of_injective (fun j => DFinsupp.single i j) DFinsupp.single_injective
 #align dfinsupp.infinite_of_exists_right DFinsupp.infinite_of_exists_right
 
 /-- See `DFinsupp.infinite_of_exists_right` for the case that only one `π ι` is infinite. -/
-instance DFinsupp.infinite_of_right {ι : Type*} {π : ι → Type*} [∀ i, Infinite (π i)]
+instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, Infinite (π i)]
     [∀ i, Zero (π i)] [Nonempty ι] : Infinite (Π₀ i, π i) :=
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 #align dfinsupp.infinite_of_right DFinsupp.infinite_of_right

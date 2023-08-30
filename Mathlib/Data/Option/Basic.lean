@@ -32,8 +32,6 @@ along with a term `a : α` if the value is `True`.
 
 -/
 
-universe u
-
 namespace Option
 
 variable {α β γ δ : Type*}
@@ -111,7 +109,7 @@ theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
 #align option.bind_eq_bind Option.bind_eq_bind
 

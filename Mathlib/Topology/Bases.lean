@@ -345,7 +345,7 @@ instance (priority := 100) Countable.to_separableSpace [Countable α] : Separabl
 
 /-- If `f` has a dense range and its domain is countable, then its codomain is a separable space.
 See also `DenseRange.separableSpace`. -/
-theorem SeparableSpace.of_denseRange {ι : Type*} [Countable ι] (u : ι → α) (hu : DenseRange u) :
+theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α) (hu : DenseRange u) :
     SeparableSpace α :=
   ⟨⟨range u, countable_range u, hu⟩⟩
 #align topological_space.separable_space_of_dense_range TopologicalSpace.SeparableSpace.of_denseRange

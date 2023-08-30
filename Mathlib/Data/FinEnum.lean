@@ -16,7 +16,7 @@ enumeration.
 -/
 
 
-universe u v w
+universe u v
 
 open Finset
 
@@ -24,7 +24,7 @@ open Finset
   infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
-class FinEnum (α : Sort w) where
+class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,

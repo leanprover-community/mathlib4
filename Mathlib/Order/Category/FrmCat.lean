@@ -34,7 +34,7 @@ def FrmCat :=
 
 namespace FrmCat
 
-instance : CoeSort FrmCat (Type _) :=
+instance : CoeSort FrmCat (Type*) :=
   Bundled.coeSort
 
 instance (X : FrmCat) : Frame X :=

@@ -225,7 +225,7 @@ open FiniteDimensional
 
 variable [Ring K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂] [Module K V₂]
 
-variable {R M M₂ : Type _} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
+variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 
 variable [Module R M] [Module R M₂]
 
@@ -554,7 +554,7 @@ section SubalgebraRank
 
 open Module
 
-variable {F E : Type _} [CommRing F] [Ring E] [Algebra F E]
+variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
 
 @[simp]
 theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :

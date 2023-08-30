@@ -68,7 +68,7 @@ attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
 attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type _) (P : Type _) where
+class VAdd (G : Type*) (P : Type _) where
   vadd : G → P → P
 #align has_vadd VAdd
 
@@ -79,7 +79,7 @@ class VSub (G : outParam (Type*)) (P : Type*) where
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
-class SMul (M : Type _) (α : Type _) where
+class SMul (M : Type*) (α : Type _) where
   smul : M → α → α
 #align has_smul SMul
 

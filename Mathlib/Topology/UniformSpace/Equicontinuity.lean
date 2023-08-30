@@ -279,24 +279,24 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
   rfl
 #align uniform_equicontinuous_iff_uniform_continuous uniformEquicontinuous_iff_uniformContinuous
 
-theorem equicontinuousAt_iInf_rng {α' : Type _} {u : κ → UniformSpace α'} {F : ι → X → α'}
+theorem equicontinuousAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
     {x₀ : X} :
     @EquicontinuousAt _ _ _ _ (⨅ k, u k) F x₀ ↔ ∀ k, @EquicontinuousAt _ _ _ _ (u k) F x₀ := by
   simp [@equicontinuousAt_iff_continuousAt _ _ _ _ _, UniformFun.topologicalSpace]
   unfold ContinuousAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
-theorem equicontinuous_iInf_rng {α' : Type _} {u : κ → UniformSpace α'} {F : ι → X → α'} :
+theorem equicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'} :
     @Equicontinuous _ _ _ _ (⨅ k, u k) F ↔ ∀ k, @Equicontinuous _ _ _ _ (u k) F := by
   simp_rw [@equicontinuous_iff_continuous _ _ _ _ _, UniformFun.topologicalSpace]
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
 
-theorem uniformEquicontinuous_iInf_rng {α' : Type _} {u : κ → UniformSpace α'} {F : ι → β → α'} :
+theorem uniformEquicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → β → α'} :
     @UniformEquicontinuous _ _ _ (⨅ k, u k) _ F ↔ ∀ k, @UniformEquicontinuous _ _ _ (u k) _ F := by
   simp_rw [@uniformEquicontinuous_iff_uniformContinuous _ _ _ _]
   rw [UniformFun.iInf_eq, uniformContinuous_iInf_rng]
 
-theorem equicontinuousAt_iInf_dom {X' : Type _} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+theorem equicontinuousAt_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {x₀ : X'} {k : κ} (hk : @EquicontinuousAt _ _ _ (t k) _ F x₀) :
     @EquicontinuousAt _ _ _ (⨅ k, t k) _ F x₀ := by
   simp [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢
@@ -304,13 +304,13 @@ theorem equicontinuousAt_iInf_dom {X' : Type _} {t : κ → TopologicalSpace X'}
   rw [nhds_iInf]
   exact tendsto_iInf' k hk
 
-theorem equicontinuous_iInf_dom {X' : Type _} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+theorem equicontinuous_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {k : κ} (hk : @Equicontinuous _ _ _ (t k) _ F) :
     @Equicontinuous _ _ _ (⨅ k, t k) _ F := by
   simp_rw [@equicontinuous_iff_continuous _ _ _ _] at hk ⊢
   exact continuous_iInf_dom hk
 
-theorem uniform_equicontinuous_infi_dom {β' : Type _} {u : κ → UniformSpace β'} {F : ι → β' → α}
+theorem uniform_equicontinuous_infi_dom {β' : Type*} {u : κ → UniformSpace β'} {F : ι → β' → α}
     {k : κ} (hk : @UniformEquicontinuous _ _ _ _ (u k) F) :
     @UniformEquicontinuous _ _ _ _ (⨅ k, u k) F := by
   simp_rw [@uniformEquicontinuous_iff_uniformContinuous _ _ _ _ _] at hk ⊢

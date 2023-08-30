@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
 import Mathlib.Lean.Meta
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.LeftRight
 
 /-!
@@ -237,7 +238,7 @@ Example:
 listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
 -/
-def listBoolMerge {α : Type _} : List Bool → List α → List (Option α)
+def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
 | [], _ => []
 | false :: xs, ys => none :: listBoolMerge xs ys
 | true :: xs, y :: ys => some y :: listBoolMerge xs ys

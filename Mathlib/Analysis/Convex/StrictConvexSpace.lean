@@ -258,7 +258,7 @@ theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = 
       dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right, one_mul]
   rcases eq_or_ne x z with (rfl | hne)
   · obtain rfl : y = x := by simpa
-    simp --; rfl
+    simp
   · rw [← dist_ne_zero] at hne
     rcases this with ⟨a, b, _, hb, _, H⟩
     rw [smul_zero, zero_add] at H

@@ -49,8 +49,7 @@ set_option autoImplicit true
 
 namespace CategoryTheory
 
-universe v u
-variable {C : Type u} [Category.{v} C]
+variable {C : Type _} [Category C]
 
 namespace Presieve
 

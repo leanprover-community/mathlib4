@@ -178,43 +178,42 @@ theorem inr_ne_inl {a : α} {b : β} : inr b ≠ inl a :=
 #align sum.inr_ne_inl Sum.inr_ne_inl
 
 /-- Define a function on `α ⊕ β` by giving separate definitions on `α` and `β`. -/
-protected def elim {α β : Type*} {γ : Sort*} (f : α → γ) (g : β → γ) : Sum α β → γ :=
+protected def elim {α β γ : Sort _} (f : α → γ) (g : β → γ) : Sum α β → γ :=
   fun x ↦ Sum.casesOn x f g
 #align sum.elim Sum.elim
 
 @[simp]
-theorem elim_inl {α β : Type*} {γ : Sort*} (f : α → γ) (g : β → γ) (x : α) :
-    Sum.elim f g (inl x) = f x := rfl
+theorem elim_inl {α β γ : Sort _} (f : α → γ) (g : β → γ) (x : α) : Sum.elim f g (inl x) = f x :=
+  rfl
 #align sum.elim_inl Sum.elim_inl
 
 @[simp]
-theorem elim_inr {α β : Type*} {γ : Sort*} (f : α → γ) (g : β → γ) (x : β) :
-    Sum.elim f g (inr x) = g x := rfl
+theorem elim_inr {α β γ : Sort _} (f : α → γ) (g : β → γ) (x : β) : Sum.elim f g (inr x) = g x :=
+  rfl
 #align sum.elim_inr Sum.elim_inr
 
 @[simp]
-theorem elim_comp_inl {α β : Type*} {γ : Sort*} (f : α → γ) (g : β → γ) : Sum.elim f g ∘ inl = f :=
+theorem elim_comp_inl {α β γ : Sort _} (f : α → γ) (g : β → γ) : Sum.elim f g ∘ inl = f :=
   rfl
 #align sum.elim_comp_inl Sum.elim_comp_inl
 
 @[simp]
-theorem elim_comp_inr {α β : Type*} {γ : Sort*} (f : α → γ) (g : β → γ) : Sum.elim f g ∘ inr = g :=
+theorem elim_comp_inr {α β γ : Sort _} (f : α → γ) (g : β → γ) : Sum.elim f g ∘ inr = g :=
   rfl
 #align sum.elim_comp_inr Sum.elim_comp_inr
 
 @[simp]
-theorem elim_inl_inr {α β : Type*} : @Sum.elim α β _ inl inr = id :=
+theorem elim_inl_inr {α β : Sort _} : @Sum.elim α β _ inl inr = id :=
   funext fun x ↦ Sum.casesOn x (fun _ ↦ rfl) fun _ ↦ rfl
 #align sum.elim_inl_inr Sum.elim_inl_inr
 
-theorem comp_elim {α β : Type*} {γ δ : Sort*} (f : γ → δ) (g : α → γ) (h : β → γ) :
+theorem comp_elim {α β γ δ : Sort _} (f : γ → δ) (g : α → γ) (h : β → γ) :
     f ∘ Sum.elim g h = Sum.elim (f ∘ g) (f ∘ h) :=
   funext fun x ↦ Sum.casesOn x (fun _ ↦ rfl) fun _ ↦ rfl
 #align sum.comp_elim Sum.comp_elim
 
 @[simp]
-theorem elim_comp_inl_inr {α β : Type*} {γ : Sort*} (f : Sum α β → γ) :
-    Sum.elim (f ∘ inl) (f ∘ inr) = f :=
+theorem elim_comp_inl_inr {α β γ : Sort _} (f : Sum α β → γ) : Sum.elim (f ∘ inl) (f ∘ inr) = f :=
   funext fun x ↦ Sum.casesOn x (fun _ ↦ rfl) fun _ ↦ rfl
 #align sum.elim_comp_inl_inr Sum.elim_comp_inl_inr
 
@@ -251,14 +250,12 @@ theorem map_id_id (α β) : Sum.map (@id α) (@id β) = id :=
   funext fun x ↦ Sum.recOn x (fun _ ↦ rfl) fun _ ↦ rfl
 #align sum.map_id_id Sum.map_id_id
 
-theorem elim_map {α β γ δ : Type*} {ε : Sort*}
-    {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} {x} :
+theorem elim_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} {x} :
     Sum.elim f₂ g₂ (Sum.map f₁ g₁ x) = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) x := by
   cases x <;> rfl
 #align sum.elim_map Sum.elim_map
 
-theorem elim_comp_map {α β γ δ : Type*} {ε : Sort*}
-    {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} :
+theorem elim_comp_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} :
     Sum.elim f₂ g₂ ∘ Sum.map f₁ g₁ = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) :=
   funext $ fun _ => elim_map
 #align sum.elim_comp_map Sum.elim_comp_map

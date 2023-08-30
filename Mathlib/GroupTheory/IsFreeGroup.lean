@@ -56,7 +56,7 @@ instance (X : Type*) : IsFreeGroup (FreeGroup X) where
 
 namespace IsFreeGroup
 
-variable (G : Type u) [Group G] [IsFreeGroup G]
+variable (G : Type*) [Group G] [IsFreeGroup G]
 
 /-- Any free group is isomorphic to "the" free group. -/
 def MulEquiv : FreeGroup (Generators G) ≃* G := IsFreeGroup.MulEquiv'
@@ -164,7 +164,7 @@ noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G
 #align is_free_group.of_unique_lift IsFreeGroup.ofUniqueLift
 
 /-- Being a free group transports across group isomorphisms. -/
-def ofMulEquiv {H : Type u} [Group H] (h : G ≃* H) : IsFreeGroup H
+def ofMulEquiv {H : Type _} [Group H] (h : G ≃* H) : IsFreeGroup H
     where
   Generators := Generators G
   MulEquiv' := (MulEquiv G).trans h

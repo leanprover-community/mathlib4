@@ -36,7 +36,7 @@ universe u v w
 
 /-- n-tuples of types, as a category -/
 def TypeVec (n : ℕ) :=
-  Fin2 n → Type _
+  Fin2 n → Type*
 #align typevec TypeVec
 
 instance {n} : Inhabited (TypeVec.{u} n) :=
@@ -102,7 +102,7 @@ def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i => α i.fs
 #align typevec.drop TypeVec.drop
 
 /-- take the last value of a `(n+1)-length` vector -/
-def last (α : TypeVec.{u} (n + 1)) : Type _:=
+def last (α : TypeVec.{u} (n + 1)) : Type _ :=
   α Fin2.fz
 #align typevec.last TypeVec.last
 
@@ -403,7 +403,7 @@ section Liftp'
 open Nat
 
 /-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
-def «repeat» : ∀ (n : ℕ), Type* → TypeVec n
+def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t
 #align typevec.repeat TypeVec.repeat
@@ -474,7 +474,7 @@ def RelLast' (α : TypeVec n) {β : Type*} (p : β → β → Prop) :
 
 /-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
-def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n) : Type _ :=
+def Curry (F : TypeVec.{u} (n + 1) → Type _) (α : Type u) (β : TypeVec.{u} n) : Type* :=
   F (β ::: α)
 #align typevec.curry TypeVec.Curry
 
@@ -490,7 +490,7 @@ def dropRepeat (α : Type*) : ∀ {n}, drop («repeat» (succ n) α) ⟹ «repea
 #align typevec.drop_repeat TypeVec.dropRepeat
 
 /-- projection for a repeat vector -/
-def ofRepeat {α : Type*} : ∀ {n i}, «repeat» n α i → α
+def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
   | _, Fin2.fz   => fun (a : α) => a
   | _, Fin2.fs i => @ofRepeat _ _ i
 #align typevec.of_repeat TypeVec.ofRepeat

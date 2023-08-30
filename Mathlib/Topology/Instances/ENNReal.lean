@@ -517,12 +517,12 @@ theorem inv_map_iSup {ι : Sort*} {x : ι → ℝ≥0∞} : (iSup x)⁻¹ = ⨅ 
   OrderIso.invENNReal.map_iSup x
 #align ennreal.inv_map_supr ENNReal.inv_map_iSup
 
-theorem inv_limsup {ι : Type*} {x : ι → ℝ≥0∞} {l : Filter ι} :
+theorem inv_limsup {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
     (limsup x l)⁻¹ = liminf (fun i => (x i)⁻¹) l :=
   OrderIso.invENNReal.limsup_apply
 #align ennreal.inv_limsup ENNReal.inv_limsup
 
-theorem inv_liminf {ι : Type*} {x : ι → ℝ≥0∞} {l : Filter ι} :
+theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
     (liminf x l)⁻¹ = limsup (fun i => (x i)⁻¹) l :=
   OrderIso.invENNReal.liminf_apply
 #align ennreal.inv_liminf ENNReal.inv_liminf

@@ -254,14 +254,14 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
-def sectl (α : Type*) {β : Type*} (b : β) : α ↪ α × β :=
+def sectl (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
   ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
 #align function.embedding.sectl Function.Embedding.sectl
 #align function.embedding.sectl_apply Function.Embedding.sectl_apply
 
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
-def sectr {α : Type*} (a : α) (β : Type*) : β ↪ α × β :=
+def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
 #align function.embedding.sectr Function.Embedding.sectr
 #align function.embedding.sectr_apply Function.Embedding.sectr_apply

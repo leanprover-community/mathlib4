@@ -725,7 +725,7 @@ theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm <| s
 to the type of dependent functions of two arguments (i.e., functions to the space of functions).
 
 This is `Sigma.curry` and `Sigma.uncurry` together as an equiv. -/
-def piCurry {β : α → Type*} (γ : ∀ a, β a → Type*) :
+def piCurry {β : α → Sort _} (γ : ∀ a, β a → Sort _) :
     (∀ x : Σ i, β i, γ x.1 x.2) ≃ ∀ a b, γ a b where
   toFun := Sigma.curry
   invFun := Sigma.uncurry
@@ -1706,7 +1706,7 @@ theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (
 namespace Perm
 
 @[simp]
-theorem sumCongr_swap_refl {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : α) :
+theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : α) :
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
   ext x
   cases x
@@ -1717,7 +1717,7 @@ theorem sumCongr_swap_refl {α β : Type*} [DecidableEq α] [DecidableEq β] (i 
 #align equiv.perm.sum_congr_swap_refl Equiv.Perm.sumCongr_swap_refl
 
 @[simp]
-theorem sumCongr_refl_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : β) :
+theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : β) :
     Equiv.Perm.sumCongr (Equiv.refl α) (Equiv.swap i j) = Equiv.swap (Sum.inr i) (Sum.inr j) := by
   ext x
   cases x

@@ -1220,12 +1220,12 @@ theorem iInf_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨅ i : s, f i = ⨅ 
   iInf_subtype
 #align infi_subtype'' iInf_subtype''
 
-theorem biSup_const {ι : Type*} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
+theorem biSup_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
   haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 #align bsupr_const biSup_const
 
-theorem biInf_const {ι : Type*} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
+theorem biInf_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
   @biSup_const αᵒᵈ _ ι _ s hs
 #align binfi_const biInf_const
 

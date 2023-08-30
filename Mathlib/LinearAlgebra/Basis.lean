@@ -23,7 +23,7 @@ It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Lig
 ## Main definitions
 
 All definitions are given for families of vectors, i.e. `v : ι → M` where `M` is the module or
-vector space and `ι : Type _` is an arbitrary indexing type.
+vector space and `ι : Type*` is an arbitrary indexing type.
 
 * `Basis ι R M` is the type of `ι`-indexed `R`-bases for a module `M`,
   represented by a linear equiv `M ≃ₗ[R] ι →₀ R`.

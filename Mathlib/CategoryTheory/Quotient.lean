@@ -31,7 +31,7 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category C] (r : HomRel C)
+variable {C : Type _} [Category C] (r : HomRel C)
 
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
@@ -157,7 +157,7 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   · apply Quotient.sound
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type _} [Category D] (F : C ⥤ D)
   (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/

@@ -61,9 +61,9 @@ open Function Cardinal Set Equiv Order
 
 open Classical Cardinal InitialSeg
 
-universe u v w ua ub uc
+universe u v w
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type _} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Well order on an arbitrary type -/
@@ -646,7 +646,7 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 -- Porting note: Needed to add universe hints ULift.down.{v,u} below
 -- @[simp] -- Porting note: Not in simpnf, added aux lemma below
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
-    type (ULift.down.{v,ua} ⁻¹'o r) = lift.{v} (type r) := by
+    type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
   simp
   rfl
 #align ordinal.type_ulift Ordinal.type_uLift
@@ -654,7 +654,7 @@ theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
 -- Porting note: simpNF linter falsely claims that this never applies
 @[simp, nolint simpNF]
 theorem type_uLift_aux (r : α → α → Prop) [IsWellOrder α r] :
-    @type.{max v ua} _ (fun x y => r (ULift.down.{v,ua} x) (ULift.down.{v,ua} y))
+    @type.{max v u} _ (fun x y => r (ULift.down.{v,u} x) (ULift.down.{v,u} y))
       (inferInstanceAs (IsWellOrder (ULift α) (ULift.down ⁻¹'o r))) = lift.{v} (type r) :=
   rfl
 

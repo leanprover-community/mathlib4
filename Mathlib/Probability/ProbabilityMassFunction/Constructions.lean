@@ -43,7 +43,7 @@ def map (f : α → β) (p : Pmf α) : Pmf β :=
 
 variable (f : α → β) (p : Pmf α) (b : β)
 
-theorem monad_map_eq_map {α β : Type u} (f : α → β) (p : Pmf α) : f <$> p = p.map f := rfl
+theorem monad_map_eq_map {α β : Type _} (f : α → β) (p : Pmf α) : f <$> p = p.map f := rfl
 #align pmf.monad_map_eq_map Pmf.monad_map_eq_map
 
 @[simp]
