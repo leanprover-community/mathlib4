@@ -64,7 +64,6 @@ theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
   delta AmalgamatedProduct lift base
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inr]
 
-set_option maxHeartbeats 200000 in
 @[ext 1199]
 theorem hom_ext {f g : AmalgamatedProduct φ →* K}
     (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _))
@@ -606,7 +605,6 @@ theorem Reduced.eq_empty_of_mem_range {w : Word G} (hw : Reduced φ w) :
 
 end Reduced
 
-set_option maxHeartbeats 0 in
 theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij : i ≠ j) :
     (of (i := i)).range ⊓ (of (i := j)).range = (base (φ := φ)).range :=
   le_antisymm
@@ -622,11 +620,11 @@ theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij 
       have hg₁r : g₁ ∉ (φ i).range := by
         rintro ⟨y, rfl⟩
         subst hg₁
-        simp_all [of_apply_eq_base]
+        exact hx (of_apply_eq_base (G:=G) i y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       have hg₂r : g₂ ∉ (φ j).range := by
         rintro ⟨y, rfl⟩
         subst hg₂
-        simp_all [of_apply_eq_base]
+        exact hx (of_apply_eq_base (G:=G) j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
         simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
@@ -639,10 +637,10 @@ theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij 
       simp [Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]
-          rintro _ ⟨_, rfl⟩
-          simp)
+          rintro _ ⟨h, rfl⟩
+          exact MonoidHom.mem_range.2 ⟨φ i h, rfl⟩)
       (by rw [← of_comp_eq_base j]
-          rintro _ ⟨_, rfl⟩
-          simp))
+          rintro _ ⟨h, rfl⟩
+          exact MonoidHom.mem_range.2 ⟨φ j h, rfl⟩))
 
 end AmalgamatedProduct
