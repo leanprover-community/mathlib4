@@ -23,8 +23,7 @@ example {a b c d : ℕ} :
     guard_target = c + a.pred = c + d.pred
     sorry
 
-set_option linter.unusedVariables false in
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
   congrm fun x => ∀ w, ?_ + a = w
   guard_hyp x : ℕ
   guard_hyp w : ℕ

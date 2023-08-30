@@ -92,17 +92,15 @@ issue: 1 < 0 does not hold
 --   admit
 --   trivial
 
-set_option linter.unusedVariables false in
 example : true := by
-  have : ∀ x ∈ [1,2,3], x < 4
+  have _this : ∀ x ∈ [1,2,3], x < 4
   slim_check (config := { randomSeed := some 257, quiet := true })
     -- success
   trivial
 
 -- Making sure that the context is used
-set_option linter.unusedVariables false in
 example : true := by
-  have : ∀ n : ℕ, n = n
+  have _this : ∀ n : ℕ, n = n
   · intro n
     cases n
     · slim_check (config := { randomSeed := some 257, quiet := true })
