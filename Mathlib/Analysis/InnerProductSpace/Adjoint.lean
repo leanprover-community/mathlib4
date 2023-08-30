@@ -222,7 +222,6 @@ theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ Continuous
   Iff.rfl
 #align continuous_linear_map.is_self_adjoint_iff' ContinuousLinearMap.isSelfAdjoint_iff'
 
--- set_option maxHeartbeats 300000 in -- Porting note: Added to prevent timeout.
 instance : CstarRing (E →L[𝕜] E) :=
   ⟨by
     intro A
