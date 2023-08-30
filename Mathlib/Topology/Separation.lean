@@ -348,7 +348,7 @@ theorem t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 #align t0_space_iff_or_not_mem_closure t0Space_iff_or_not_mem_closure
 
-instance [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
+instance Prod.instT0Space [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
 instance Pi.instT0Space {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
@@ -1679,6 +1679,8 @@ section T3
 a T₂.₅ space.  -/
 class T3Space (α : Type u) [TopologicalSpace α] extends T0Space α, RegularSpace α : Prop
 #align t3_space T3Space
+
+instance (priority := 90) [T0Space α] [RegularSpace α] : T3Space α := ⟨⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space α] : T25Space α := by

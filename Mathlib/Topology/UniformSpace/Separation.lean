@@ -81,69 +81,41 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 -/
 
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
-  RegularSpace.ofBasis
-    (fun a => by
-      rw [nhds_eq_comap_uniformity]
-      exact uniformity_hasBasis_closed.comap _)
-    fun a V hV => by exact hV.2.preimage <| continuous_const.prod_mk continuous_id
+  .ofBasis
+    (fun _ => nhds_basis_uniformity' uniformity_hasBasis_closed)
+    fun _ _ h => h.2.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.to_regular_space UniformSpace.to_regularSpace
 
--- porting note: todo: use `Inseparable`
-/-- The separation relation is the intersection of all entourages.
-  Two points which are related by the separation relation are "indistinguishable"
-  according to the uniform structure. -/
-def separationRel (α : Type u) [UniformSpace α] := ⋂₀ (𝓤 α).sets
-#align separation_rel separationRel
+#align separation_rel Inseparable
+#noalign separated_equiv
+#noalign filter.has_basis.mem_separation_rel
+#noalign separation_rel_iff_specializes
+#noalign separation_rel_iff_inseparable
 
-@[inherit_doc]
-scoped[Uniformity] notation "𝓢" => separationRel
+theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
+    (h : (𝓤 α).HasBasis p s) {x y : α} : x ⤳ y ↔ ∀ i, p i → (x, y) ∈ s i :=
+  (nhds_basis_uniformity h).specializes_iff
 
-theorem separated_equiv : Equivalence fun x y => (x, y) ∈ 𝓢 α :=
-  ⟨fun _ _ => refl_mem_uniformity, fun h _s hs => h _ (symm_le_uniformity hs),
-    fun {x y z} (hxy : (x, y) ∈ 𝓢 α) (hyz : (y, z) ∈ 𝓢 α) s (hs : s ∈ 𝓤 α) =>
-    let ⟨t, ht, (h_ts : compRel t t ⊆ s)⟩ := comp_mem_uniformity_sets hs
-    h_ts <| show (x, z) ∈ compRel t t from ⟨y, hxy t ht, hyz t ht⟩⟩
-#align separated_equiv separated_equiv
+theorem Filter.HasBasis.inseparable_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
+    (h : (𝓤 α).HasBasis p s) {x y : α} : Inseparable x y ↔ ∀ i, p i → (x, y) ∈ s i :=
+  specializes_iff_inseparable.symm.trans h.specializes_iff_uniformity
 
-theorem Filter.HasBasis.mem_separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
-    (h : (𝓤 α).HasBasis p s) {a : α × α} : a ∈ 𝓢 α ↔ ∀ i, p i → a ∈ s i :=
-  h.forall_mem_mem
-#align filter.has_basis.mem_separation_rel Filter.HasBasis.mem_separationRel
+#align separated_space T0Space
+#noalign separated_space_iff
 
-theorem separationRel_iff_specializes {a b : α} : (a, b) ∈ 𝓢 α ↔ a ⤳ b := by
-  simp only [(𝓤 α).basis_sets.mem_separationRel, id, mem_setOf_eq,
-    (nhds_basis_uniformity (𝓤 α).basis_sets).specializes_iff]
-#align separation_rel_iff_specializes separationRel_iff_specializes
+theorem t0Space_iff_uniformity :
+    T0Space α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
+  simp only [t0Space_iff_inseparable, (𝓤 α).basis_sets.inseparable_iff_uniformity, id]
+#align separated_def t0Space_iff_uniformity
 
-theorem separationRel_iff_inseparable {a b : α} : (a, b) ∈ 𝓢 α ↔ Inseparable a b :=
-  separationRel_iff_specializes.trans specializes_iff_inseparable
-#align separation_rel_iff_inseparable separationRel_iff_inseparable
+theorem t0Space_iff_uniformity' :
+    T0Space α ↔ ∀ x y, x ≠ y → ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
+  simp [t0Space_iff_not_inseparable, (𝓤 α).basis_sets.inseparable_iff_uniformity]
+#align separated_def' t0Space_iff_uniformity'
 
-/-- A uniform space is separated if its separation relation is trivial (each point
-is related only to itself). -/
-class SeparatedSpace (α : Type u) [UniformSpace α] : Prop where
-  /-- The separation relation is equal to the diagonal `idRel`. -/
-  out : 𝓢 α = idRel
-#align separated_space SeparatedSpace
-
-theorem separatedSpace_iff {α : Type u} [UniformSpace α] : SeparatedSpace α ↔ 𝓢 α = idRel :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
-#align separated_space_iff separatedSpace_iff
-
-theorem separated_def {α : Type u} [UniformSpace α] :
-    SeparatedSpace α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
-  simp only [separatedSpace_iff, Set.ext_iff, Prod.forall, mem_idRel, separationRel, mem_sInter]
-  exact forall₂_congr fun _ _ => ⟨Iff.mp, fun h => ⟨h, fun H U hU => H ▸ refl_mem_uniformity hU⟩⟩
-#align separated_def separated_def
-
-theorem separated_def' {α : Type u} [UniformSpace α] :
-    SeparatedSpace α ↔ ∀ x y, x ≠ y → ∃ r ∈ 𝓤 α, (x, y) ∉ r :=
-  separated_def.trans <| forall₂_congr fun x y => by rw [← not_imp_not]; simp [not_forall]
-#align separated_def' separated_def'
-
-theorem eq_of_uniformity {α : Type*} [UniformSpace α] [SeparatedSpace α] {x y : α}
+theorem eq_of_uniformity {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
     (h : ∀ {V}, V ∈ 𝓤 α → (x, y) ∈ V) : x = y :=
-  separated_def.mp ‹SeparatedSpace α› x y fun _ => h
+  t0Space_iff_uniformity.mp ‹T0Space α› x y @h
 #align eq_of_uniformity eq_of_uniformity
 
 theorem eq_of_uniformity_basis {α : Type*} [UniformSpace α] [SeparatedSpace α] {ι : Type*}
@@ -418,26 +390,7 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
 
 end SeparationQuotient
 
-theorem separation_prod {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) ≈ (a₂, b₂) ↔ a₁ ≈ a₂ ∧ b₁ ≈ b₂ := by
-  constructor
-  · intro h
-    exact
-      ⟨separated_of_uniformContinuous uniformContinuous_fst h,
-        separated_of_uniformContinuous uniformContinuous_snd h⟩
-  · rintro ⟨eqv_α, eqv_β⟩ r r_in
-    rw [uniformity_prod] at r_in
-    rcases r_in with ⟨t_α, ⟨r_α, r_α_in, h_α⟩, t_β, ⟨r_β, r_β_in, h_β⟩, rfl⟩
-    let p_α := fun p : (α × β) × α × β => (p.1.1, p.2.1)
-    let p_β := fun p : (α × β) × α × β => (p.1.2, p.2.2)
-    have key_α : p_α ((a₁, b₁), (a₂, b₂)) ∈ r_α := by simp [eqv_α r_α r_α_in]
-    have key_β : p_β ((a₁, b₁), (a₂, b₂)) ∈ r_β := by simp [eqv_β r_β r_β_in]
-    exact ⟨h_α key_α, h_β key_β⟩
-#align uniform_space.separation_prod UniformSpace.separation_prod
-
-instance Separated.prod [SeparatedSpace α] [SeparatedSpace β] : SeparatedSpace (α × β) :=
-  separated_def.2 fun _ _ H =>
-    Prod.ext (eq_of_separated_of_uniformContinuous uniformContinuous_fst H)
-      (eq_of_separated_of_uniformContinuous uniformContinuous_snd H)
-#align uniform_space.separated.prod UniformSpace.Separated.prod
+#align uniform_space.separation_prod inseparable_prod
+#align uniform_space.separated.prod Prod.instT0Space
 
 end UniformSpace
