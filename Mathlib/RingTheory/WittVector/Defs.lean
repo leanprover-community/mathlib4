@@ -371,12 +371,12 @@ theorem neg_coeff (x : 𝕎 R) (n : ℕ) : (-x).coeff n = peval (wittNeg p n) ![
 
 theorem nsmul_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
     (m • x).coeff n = peval (wittNSMul p m n) ![x.coeff] := by
-  simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
+  simp [HSMul.hSMul, SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.nsmul_coeff WittVector.nsmul_coeff
 
 theorem zsmul_coeff (m : ℤ) (x : 𝕎 R) (n : ℕ) :
     (m • x).coeff n = peval (wittZSMul p m n) ![x.coeff] := by
-  simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
+  simp [HSMul.hSMul, SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.zsmul_coeff WittVector.zsmul_coeff
 
 theorem pow_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) : (x ^ m).coeff n = peval (wittPow p m n) ![x.coeff] :=
