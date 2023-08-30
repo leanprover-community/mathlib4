@@ -201,9 +201,9 @@ class extensive [HasFiniteCoproducts C] (R : Presieve X) : Prop where
 
 /-- A presieve is *regular* if it consists of a single epimorphism. -/
 class regular (R : Presieve X) : Prop where
-  /-- `R` consists of a single epimorphism. -/
+  /-- `R` consists of a single effective epimorphism. -/
   single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)
-    (fun (_ : Unit) ↦ f) ∧ Epi f
+    (fun (_ : Unit) ↦ f) ∧ EffectiveEpi f
 
 section FunctorPushforward
 
