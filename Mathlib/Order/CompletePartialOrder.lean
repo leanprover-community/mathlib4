@@ -65,7 +65,8 @@ def directedClosure (s : Set α) : Set α :=
 @[simp] lemma directedOn_directedClosure (s : Set α) : DirectedOn (. ≤ .) (directedClosure s) := by
   classical
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-  refine' ⟨_, ⟨_, ht.mono $ subset_union_left _ _, _, sup'_union ht hu _⟩, le_sup_left, le_sup_right⟩
+  refine' ⟨_, ⟨_, ht.mono $ subset_union_left _ _, _, sup'_union ht hu _⟩,
+    le_sup_left, le_sup_right⟩
   rw [coe_union]
   exact Set.union_subset hts hus
 
