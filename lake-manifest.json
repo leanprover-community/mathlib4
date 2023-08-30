@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
     "subDir?": null,
-    "rev": "b25b443cbe9b47a8cb10a7b515e27cffd13c5cfd",
+    "rev": "21dac2e9cc7e3cf7da5800814787b833e680b2fd",
     "opts": {},
     "name": "Cli",
     "inputRev?": "nightly",
@@ -28,7 +28,7 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "086c98bb129ca856381d4414dc0afd6e3e4ae2ef",
+    "rev": "8aa27f2f550ecd856aa47aa612aea710022374b0",
     "opts": {},
     "name": "aesop",
     "inputRev?": "master",
