@@ -437,7 +437,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
     have zero_lt_B : 0 < B := B_ineq.trans_lt' $ cast_pos.2 $ fib_pos.2 n.succ_pos
     have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
-      ifp_fr_ne_zero.lt_of_le'$ IntFractPair.nth_stream_fr_nonneg stream_nth_eq
+      ifp_fr_ne_zero.lt_of_le' $ IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
     -- finally, let's do the rewriting
     calc
