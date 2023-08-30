@@ -3,8 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathbin.LinearAlgebra.QuadraticForm.Isometry
-import Mathbin.LinearAlgebra.QuadraticForm.Prod
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 #align_import linear_algebra.quadratic_form.dual from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
@@ -62,8 +62,7 @@ theorem nondenerate_dualProd :
   refine' (Function.Injective.of_comp_iff e.symm.injective (dual_prod R M).toLin).symm.trans _
   rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   change Function.Injective h_d ↔ _
-  have : h_d = LinearMap.prodMap LinearMap.id (Module.Dual.eval R M) :=
-    by
+  have : h_d = LinearMap.prodMap LinearMap.id (Module.Dual.eval R M) := by
     refine' LinearMap.ext fun x => Prod.ext _ _
     · ext
       dsimp [h_d, Module.Dual.eval, LinearEquiv.prodComm]
@@ -88,8 +87,7 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Modu
 
 /-- The quadratic form on `module.dual R M × M` defined as `Q (f, x) = f x`. -/
 @[simps]
-def dualProd : QuadraticForm R (Module.Dual R M × M)
-    where
+def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun p := p.1 p.2
   toFun_smul a p := by
     rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
@@ -111,8 +109,7 @@ variable {R M N}
 
 /-- Any module isomorphism induces a quadratic isomorphism between the corresponding `dual_prod.` -/
 @[simps]
-def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N)
-    where
+def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N) where
   toLinearEquiv := f.dualMap.symm.Prod f
   map_app' x := FunLike.congr_arg x.fst <| f.symm_apply_apply _
 #align quadratic_form.dual_prod_isometry QuadraticForm.dualProdIsometry
@@ -149,8 +146,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] : M × M →ₗ[R] M
 #align quadratic_form.to_dual_prod QuadraticForm.toDualProd
 
 theorem toDualProd_isometry [Invertible (2 : R)] (Q : QuadraticForm R M) (x : M × M) :
-    QuadraticForm.dualProd R M (toDualProd Q x) = (Q.Prod <| -Q) x :=
-  by
+    QuadraticForm.dualProd R M (toDualProd Q x) = (Q.Prod <| -Q) x := by
   dsimp only [to_dual_prod, Associated, associated_hom]
   dsimp
   simp [polar_comm _ x.1 x.2, ← sub_add, mul_sub, sub_mul, smul_sub, Submonoid.smul_def, ←
