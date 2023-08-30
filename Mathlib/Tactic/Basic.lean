@@ -150,9 +150,16 @@ elab_rules : tactic
         let hTy ← h.getType
         -- This is a hack to get the new type to elaborate in the same sort of way that
         -- it would for a `show` expression for the goal.
-        let mvar ← mkFreshExprMVar none
+        let mvar ← mkFreshExprMVar none .syntheticOpaque
+        /- We only want the returned `mvars` to include new mvars encountered during
+        `show ... from`; in particular, we do *not* want to include the `mvar` we've just created.
+        We achieve this by filtering out all older mvars, as determined by their `index`.
+        Due to the nature of the hack, nothing depends on `mvar`, and it should be thrown away. If
+        we fail to do so, we wind up with a spurious unsolved goal. -/
+        let mvarCounterSaved := (← getMCtx).mvarCounter
         let (_, mvars) ← elabTermWithHoles
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
+        let mvars ← filterOldMVarsList mvars mvarCounterSaved
         liftMetaTactic fun mvarId ↦ do
           return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
       (atTarget := evalTactic <| ← `(tactic| refine_lift show $newType from ?_))
