@@ -290,13 +290,13 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
 /-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
-    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)) atTop
+    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
       (𝓝 <| Gamma s) := by
   rw [Gamma_eq_integral hs]
   -- We apply dominated convergence to the following function, which we will show is uniformly
   -- bounded above by the Gamma integrand `exp (-x) * x ^ (re s - 1)`.
   let f : ℕ → ℝ → ℂ := fun n =>
-    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)
+    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)
   -- integrability of f
   have f_ible : ∀ n : ℕ, Integrable (f n) (volume.restrict (Ioi 0)) := by
     intro n
@@ -311,10 +311,10 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
         ((continuous_const.sub (continuous_id'.div_const ↑n)).pow n)
   -- pointwise limit of f
   have f_tends : ∀ x : ℝ, x ∈ Ioi (0 : ℝ) →
-      Tendsto (fun n : ℕ => f n x) atTop (𝓝 <| ↑(Real.exp (-x)) * (x : ℂ) ^ (s - 1)) := by
+      Tendsto (fun n : ℕ => f n x) atTop (𝓝 <| (Real.exp (-x)) * (x : ℂ) ^ (s - 1)) := by
     intro x hx
     apply Tendsto.congr'
-    show ∀ᶠ n : ℕ in atTop, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) = f n x
+    show ∀ᶠ n : ℕ in atTop, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1) = f n x
     · refine' Eventually.mp (eventually_ge_atTop ⌈x⌉₊) (eventually_of_forall fun n hn => _)
       rw [Nat.ceil_le] at hn
       dsimp only
@@ -324,7 +324,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       refine' (Tendsto.comp (continuous_ofReal.tendsto _) _).const_mul _
       convert tendsto_one_plus_div_pow_exp (-x) using 1
       ext1 n
-      rw [neg_div, ← sub_eq_add_neg]; norm_cast
+      rw [neg_div, ← sub_eq_add_neg]
   -- let `convert` identify the remaining goals
   convert tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
     (Real.GammaIntegral_convergent hs) _
