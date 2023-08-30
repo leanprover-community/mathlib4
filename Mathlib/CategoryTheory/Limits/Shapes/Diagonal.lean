@@ -146,6 +146,25 @@ def pullbackDiagonalMapIso :
         · simp only [condition_assoc, Category.assoc, diagonal_snd, Category.comp_id,
             limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
             limit.lift_π_assoc, cospan_right])
+  hom_inv_id := by
+    ext
+    · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, cospan_left,
+        PullbackCone.mk_π_app, Functor.const_obj_obj, cospan_one, cospan_right, limit.lift_π_assoc,
+        pullback_diagonal_map_snd_fst_fst, Category.id_comp]
+    · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, cospan_left,
+        PullbackCone.mk_π_app, Functor.const_obj_obj, cospan_one, cospan_right, Category.comp_id,
+        Category.id_comp]
+    · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, cospan_left,
+        PullbackCone.mk_π_app, Functor.const_obj_obj, cospan_one, cospan_right, Category.comp_id,
+        Category.id_comp]
+  inv_hom_id := by
+    ext
+    · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+        limit.lift_π_assoc, cospan_left, Functor.const_obj_obj, cospan_one, cospan_right,
+        Category.comp_id, Category.id_comp]
+    · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+        limit.lift_π_assoc, cospan_left, Functor.const_obj_obj, cospan_one, cospan_right,
+        Category.comp_id, Category.id_comp]
 #align category_theory.limits.pullback_diagonal_map_iso CategoryTheory.Limits.pullbackDiagonalMapIso
 
 @[reassoc (attr := simp)]

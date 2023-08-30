@@ -104,16 +104,16 @@ instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y :
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
     HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
 
-/-- If `C` has pullbacks then it has the pullbacks relevant to `HasPullbacksOfInclusions` -/
+/-- If `C` has pullbacks then it has the pullbacks relevant to `HasPullbacksOfInclusions`. -/
 instance (priority := 1) [HasPullbacks C] :
   HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
 
-/-- A category is *extensive* if it has all finite coproducts and those coproducts are preserved
-by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacksOfInclusions`). -/
-class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
-  /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
-  sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
-    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
-    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
+-- /-- A category is *extensive* if it has all finite coproducts and those coproducts are preserved
+-- by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacksOfInclusions`). -/
+-- class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
+--   /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
+--   sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
+--     {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
+--     IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
 
 end CategoryTheory.Limits
