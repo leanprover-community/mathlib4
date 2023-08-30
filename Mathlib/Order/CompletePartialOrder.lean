@@ -47,18 +47,14 @@ def directedClosure (s : Set α) :=
 
 lemma directedClosure_directedOn (s : Set α) :
     DirectedOn (. ≤ .) (directedClosure s) := by classical
-  rintro a ⟨Fa,hFa⟩ b ⟨Fb,hFb⟩
+  rintro a ⟨Fa,⟨hFa1,⟨hnFa,ha⟩⟩⟩ b ⟨Fb,⟨hFb1,⟨hnFb,hb⟩⟩⟩
   use a⊔b
   constructor
   · use (Fa ⊔ Fb)
     simp
-    rw [exists_and_left] at hFa
-    rw [exists_and_left] at hFb
     constructor
-    · exact ⟨hFa.1, hFb.1⟩
-    · obtain ⟨hnFa,ha⟩ := hFa.2
-      obtain ⟨hnFb,hb⟩ := hFb.2
-      use (Finset.Nonempty.inl hnFa)
+    · exact ⟨hnFa, hnFb⟩
+    · use (Finset.Nonempty.inl hFa1)
       rw [le_antisymm_iff]
       constructor
       · rw [sup_le_iff]
