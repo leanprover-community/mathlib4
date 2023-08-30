@@ -693,44 +693,18 @@ lemma inverseImage_equivalence_functor_eq_map_inverse
     Q.inverseImage E.inverse = Q.map E.functor :=
   inverseImage_equivalence_inverse_eq_map_functor Q hQ E.symm
 
-lemma subset_map_iff_of_isEquivalence (P : MorphismProperty D) (hP : RespectsIso P)
-    (F : C ⥤ D) (Q : MorphismProperty C) (hQ : RespectsIso Q) [IsEquivalence F] :
-    P ⊆ Q.map F ↔ P.inverseImage F ⊆ Q := by
-  have : P.inverseImage F = P.map F.inv :=
-    inverseImage_equivalence_inverse_eq_map_functor P hP F.asEquivalence
-  rw [this]
-  constructor
-  · intro h
-    refine' (monotone_map _ _ F.inv h).trans (subset_of_eq _)
-    simp only [map_map]
-    exact (Q.map_eq_of_iso F.asEquivalence.unitIso.symm).trans (by simp only [map_id _ hQ])
-  · intro h
-    refine' subset_trans _ (monotone_map _ _ F h)
-    simp only [map_map]
-    erw [P.map_eq_of_iso F.asEquivalence.counitIso]
-    rw [map_id _ hP]
-
 lemma map_inverseImage_eq_of_isEquivalence
     (P : MorphismProperty D) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
     (P.inverseImage F).map F = P := by
-  apply subset_antisymm
-  · rw [map_subset_iff _ _ _ hP]
-    intro X Y f hf
-    exact hf
-  · rw [subset_map_iff_of_isEquivalence _ hP _ _ (hP.inverseImage F)]
+  erw [P.inverseImage_equivalence_inverse_eq_map_functor hP F.asEquivalence, map_map,
+    P.map_eq_of_iso F.asEquivalence.counitIso, map_id _ hP]
 
-lemma isoClosure_inverseImage_equivalence_inverse (P : MorphismProperty C) (E : C ≌ D) :
-    P.isoClosure.inverseImage E.inverse = P.map E.functor := by
-  rw [inverseImage_equivalence_functor_eq_map_inverse P.isoClosure P.isoClosure_respectsIso E,
-    map_isoClosure]
-
-lemma isoClosure_inverseImage_equivalence_functor (P : MorphismProperty D) (E : C ≌ D) :
-    P.isoClosure.inverseImage E.functor = P.map E.inverse :=
-  P.isoClosure_inverseImage_equivalence_inverse E.symm
-
-lemma inverseImage_functor_inv (P : MorphismProperty C) (F : C ⥤ D) [IsEquivalence F] :
-    P.isoClosure.inverseImage F.inv = P.map F :=
-  P.isoClosure_inverseImage_equivalence_inverse F.asEquivalence
+lemma inverseImage_map_eq_of_isEquivalence
+    (P : MorphismProperty C) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
+    (P.map F).inverseImage F = P := by
+  erw [((P.map F).inverseImage_equivalence_inverse_eq_map_functor
+    (P.map_respectsIso F) (F.asEquivalence)), map_map,
+    P.map_eq_of_iso F.asEquivalence.unitIso.symm, map_id _ hP]
 
 section Diagonal
 
