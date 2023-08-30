@@ -47,8 +47,8 @@ namespace Rat
 
 open NumberField
 
-@[simp]
 /-- The absolute discriminant of the number field `ℚ` is 1. -/
+@[simp]
 theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
