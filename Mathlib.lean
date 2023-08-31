@@ -2605,6 +2605,7 @@ import Mathlib.Order.Copy
 import Mathlib.Order.CountableDenseLinearOrder
 import Mathlib.Order.Cover
 import Mathlib.Order.Directed.Basic
+import Mathlib.Order.Directed.Closure
 import Mathlib.Order.Disjoint
 import Mathlib.Order.Disjointed
 import Mathlib.Order.Estimator
