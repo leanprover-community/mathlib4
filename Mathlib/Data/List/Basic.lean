@@ -2593,39 +2593,48 @@ private lemma todo_refactor {a b c d : ℕ}
   · exact Nat.ne_of_lt impossi
   exact impossineq total
 
-lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
-    (together : x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂) (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
-    x₁ = x₂ ∧ z₁ = z₂ := by
-  have xlens : x₁.length = x₂.length
-  · have not_gt : ¬ x₁.length > x₂.length
-    · intro contra_gt
-      apply notin_x
-      exact middle_xYz_left together contra_gt
-    have not_lt : ¬ x₁.length < x₂.length
-    · intro contra_lt
-      apply notin_z
-      have rv := congr_arg reverse together
-      rw [reverse_append_append, reverse_append_append, reverse_singleton, reverse_singleton] at rv
-      rw [← mem_reverse]
-      apply middle_xYz_left rv
-      rw [length_reverse, length_reverse]
-      have total := congr_arg length together
-      rw [length_append_append, length_append_append, length_singleton, length_singleton] at total
-      have xlt : x₁.length + 1 < x₂.length + 1
-      · exact Nat.add_lt_add_right contra_lt 1
-      exact todo_refactor total xlt
-    rw [Nat.not_lt] at not_gt not_lt
-    exact Nat.le_antisymm not_gt not_lt
+lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α} (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
+    x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂ ↔ x₁ = x₂ ∧ Y₁ = Y₂ ∧ z₁ = z₂ := by
   constructor
-  · rw [append_assoc, append_assoc] at together
-    convert congr_arg (take x₁.length) together
-    · rw [take_left]
-    · rw [xlens, take_left]
-  · convert congr_arg (drop x₁.length.succ) together
-    · rw [drop_left']
-      rw [length_append, length_singleton]
-    · rw [xlens, drop_left']
-      rw [length_append, length_singleton]
+  · intro together
+    have xlens : x₁.length = x₂.length
+    · have not_gt : ¬ x₁.length > x₂.length
+      · intro contra_gt
+        apply notin_x
+        exact middle_xYz_left together contra_gt
+      have not_lt : ¬ x₁.length < x₂.length
+      · intro contra_lt
+        apply notin_z
+        have reversed := congr_arg reverse together
+        rw [reverse_append_append, reverse_append_append,
+            reverse_singleton, reverse_singleton] at reversed
+        rw [← mem_reverse]
+        apply middle_xYz_left reversed
+        rw [length_reverse, length_reverse]
+        have total := congr_arg length together
+        rw [length_append_append, length_append_append, length_singleton, length_singleton] at total
+        have xlt : x₁.length + 1 < x₂.length + 1
+        · exact Nat.add_lt_add_right contra_lt 1
+        exact todo_refactor total xlt
+      rw [Nat.not_lt] at not_gt not_lt
+      exact Nat.le_antisymm not_gt not_lt
+    constructor
+    · rw [append_assoc, append_assoc] at together
+      convert congr_arg (take x₁.length) together
+      · rw [take_left]
+      · rw [xlens, take_left]
+    constructor
+    · have chopped := congr_arg (drop x₁.length) together
+      rw [append_assoc, append_assoc, drop_left, xlens, drop_left] at chopped
+      convert congr_arg head? chopped
+      simp
+    · convert congr_arg (drop x₁.length.succ) together
+      · rw [drop_left']
+        rw [length_append, length_singleton]
+      · rw [xlens, drop_left']
+        rw [length_append, length_singleton]
+  · rintro ⟨eqx, eqY, eqz⟩
+    rw [eqx, eqY, eqz]
 
 section Scanl
 
