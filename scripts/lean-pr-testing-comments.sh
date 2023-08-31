@@ -64,7 +64,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
                           -H "Accept: application/vnd.github.v3+json" \
                           "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments" \
-                          | jq '.[] | select(.body | startswith("✅ Mathlib") or startswith("❌ Mathlib") or startswith("💥 Mathlib"))')
+                          | jq '.[] | select(.body | startswith("- ✅ Mathlib") or startswith("- ❌ Mathlib") or startswith("- 💥 Mathlib"))')
   existing_comment_id=$(echo "$existing_comment" | jq -r .id)
   existing_comment_body=$(echo "$existing_comment" | jq -r .body)
 
