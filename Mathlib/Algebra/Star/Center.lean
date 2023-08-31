@@ -12,9 +12,20 @@ import Mathlib.Algebra.Star.Pointwise
 
 variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 
-theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R := by
+theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where
+  comm := by simpa only [star_mul, star_star] using fun g =>
+    congr_arg star (((Set.mem_center_iff R).mp ha).comm <| star g).symm
+  left_assoc := by
+    intros b c
+    calc
+      star a * (b * c) = star a * (b * c)
+
+  mid_assoc := sorry
+  right_assoc := sorry
+/-
   simpa only [star_mul, star_star] using fun g =>
     congr_arg star ((Set.mem_center_iff R).mp ha <| star g).symm
+-/
 
 theorem Set.star_mem_centralizer' (h : ∀ a : R, a ∈ s → star a ∈ s) (ha : a ∈ Set.centralizer s) :
     star a ∈ Set.centralizer s := fun y hy => by simpa using congr_arg star (ha _ (h _ hy)).symm

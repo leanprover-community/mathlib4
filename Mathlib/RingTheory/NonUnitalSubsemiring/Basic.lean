@@ -487,8 +487,9 @@ theorem center_toSubsemigroup (R) [NonUnitalSemiring R] :
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
-theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
+  rw [← Subsemigroup.mem_center_iff]
+  exact Iff.rfl
 #align non_unital_subsemiring.mem_center_iff NonUnitalSubsemiring.mem_center_iff
 
 instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R] :
@@ -543,6 +544,7 @@ theorem centralizer_le {R} [NonUnitalSemiring R] (s t : Set R) (h : s ⊆ t) :
   Set.centralizer_subset h
 #align non_unital_subsemiring.centralizer_le NonUnitalSubsemiring.centralizer_le
 
+/-
 @[simp]
 theorem centralizer_eq_top_iff_subset {R} [NonUnitalSemiring R] {s : Set R} :
     centralizer s = ⊤ ↔ s ⊆ center R :=
@@ -553,6 +555,7 @@ theorem centralizer_eq_top_iff_subset {R} [NonUnitalSemiring R] {s : Set R} :
 theorem centralizer_univ {R} [NonUnitalSemiring R] : centralizer Set.univ = center R :=
   SetLike.ext' (Set.centralizer_univ R)
 #align non_unital_subsemiring.centralizer_univ NonUnitalSubsemiring.centralizer_univ
+-/
 
 end Centralizer
 

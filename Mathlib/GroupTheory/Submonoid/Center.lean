@@ -51,8 +51,9 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
 variable {M}
 
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+  rw [← Subsemigroup.mem_center_iff]
+  exact Iff.rfl
 #align submonoid.mem_center_iff Submonoid.mem_center_iff
 #align add_submonoid.mem_center_iff AddSubmonoid.mem_center_iff
 
@@ -65,11 +66,11 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 /-- The center of a monoid is commutative. -/
 instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid with
-    mul_comm := fun _ b => Subtype.ext <| b.prop _ }
+    mul_comm := fun a _ => Subtype.ext <| a.prop.comm _ }
 
 /-- The center of a monoid acts commutatively on that monoid. -/
 instance center.smulCommClass_left : SMulCommClass (center M) M M
-    where smul_comm m x y := (Commute.left_comm (m.prop x) y).symm
+    where smul_comm m x y := (Commute.left_comm (m.prop.comm x) y)
 #align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
@@ -99,6 +100,7 @@ end Submonoid
 
 variable (M)
 
+/-
 /-- For a monoid, the units of the center inject into the center of the units. This is not an
 equivalence in general; one case when it is is for groups with zero, which is covered in
 `centerUnitsEquivUnitsCenter`. -/
@@ -111,6 +113,7 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
   fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
+-/
 
 -- Guard against import creep
 assert_not_exists Finset
