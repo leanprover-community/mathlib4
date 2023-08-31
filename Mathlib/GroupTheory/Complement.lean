@@ -384,87 +384,83 @@ theorem rightCosetEquivalence_equiv_snd (g : G) :
     RightCosetEquivalence H g ((hHT.equiv g).snd : G) := by
   simp [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]
 
-@[simp]
-theorem equiv_fst_equiv_fst (g : G) : (hSK.equiv (hSK.equiv g).fst).fst = (hSK.equiv g).fst :=
-  equiv_fst_eq_of_leftCosetEquivalence hSK (hSK.leftCosetEquivalence_equiv_fst g).symm
+theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
+    (hST.equiv g).fst = g := by
+  have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
+    rw [equiv, Equiv.ofBijective]; simp
+  conv_lhs => rw [← this, Equiv.apply_symm_apply]
+
+theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
+    (hST.equiv g).snd = g := by
+  have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
+    rw [equiv, Equiv.ofBijective]; simp
+  conv_lhs => rw [← this, Equiv.apply_symm_apply]
+
+theorem equiv_snd_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
+    (hST.equiv g).snd = ⟨1, h1⟩ := by
+  ext
+  rw [equiv_snd_eq_inv_mul, equiv_fst_eq_self_of_mem_of_one_mem _ h1 hg, inv_mul_self]
+
+theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
+    (hST.equiv g).fst = ⟨1, h1⟩ := by
+  ext
+  rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_self]
 
 @[simp]
-theorem equiv_snd_equiv_snd (g : G) : (hHT.equiv (hHT.equiv g).snd).snd = (hHT.equiv g).snd :=
-  equiv_snd_eq_of_rightCosetEquivalence hHT (hHT.rightCosetEquivalence_equiv_snd g).symm
-
-@[simp]
-theorem equiv_fst_mul_right (g : G) (k : K) :
-    (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
-  hSK.equiv_fst_eq_of_leftCosetEquivalence
+theorem equiv_mul_right (g : G) (k : K) :
+    (hSK.equiv (g * k)) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
+  have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
+    hSK.equiv_fst_eq_of_leftCosetEquivalence
       (by simp [LeftCosetEquivalence, leftCoset_eq_iff])
+  ext
+  · rw [this]
+  · rw [coe_mul, equiv_snd_eq_inv_mul, this, equiv_snd_eq_inv_mul, mul_assoc]
 
-theorem equiv_fst_mul_right_of_mem {g k : G} (h : k ∈ K) :
-    (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
-  hSK.equiv_fst_eq_of_leftCosetEquivalence
-      (by simp [LeftCosetEquivalence, leftCoset_eq_iff, h])
+theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
+    (hSK.equiv (g * k)) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
+  equiv_mul_right _ g ⟨k, h⟩
 
 @[simp]
-theorem equiv_snd_mul_left (h : H) (g : G) :
-    (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
-  hHT.equiv_snd_eq_of_rightCosetEquivalence
+theorem equiv_mul_left (h : H) (g : G) :
+    (hHT.equiv (h * g)) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
+  have : (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
+    hHT.equiv_snd_eq_of_rightCosetEquivalence
       (by simp [RightCosetEquivalence, rightCoset_eq_iff])
-
-theorem equiv_snd_mul_left_of_mem {h g : G} (hh : h ∈ H) :
-    (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
-  hHT.equiv_snd_eq_of_rightCosetEquivalence
-      (by simp [RightCosetEquivalence, rightCoset_eq_iff, hh])
-
-@[simp]
-theorem equiv_snd_mul_right (g : G) (k : K) :
-    (hSK.equiv (g * k)).snd = (hSK.equiv g).snd * k := by
   ext
-  rw [coe_mul, equiv_snd_eq_inv_mul, equiv_fst_mul_right,
-    equiv_snd_eq_inv_mul, mul_assoc]
+  · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
+  · rw [this]
 
-@[simp]
-theorem equiv_fst_mul_left (h : H) (g : G) :
-    (hHT.equiv (h * g)).fst = h * (hHT.equiv g).fst := by
-  ext
-  rw [coe_mul, equiv_fst_eq_mul_inv, equiv_snd_mul_left,
-    equiv_fst_eq_mul_inv, ← mul_assoc]
+theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
+    (hHT.equiv (h * g)) = (⟨h, hh⟩ * (hHT.equiv g).fst, (hHT.equiv g).snd) :=
+  equiv_mul_left _ ⟨h, hh⟩ g
 
 theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
     hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
   rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
 
-theorem equiv_fst_eq_one_iff_mem {g : G} (h1 : 1 ∈ S) :
-    ((hSK.equiv g).fst : G) = 1 ↔ g ∈ K := by
+theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
+    ((hST.equiv g).fst : G) = g ↔ g ∈ S := by
   constructor
   · intro h
-    rw [equiv_fst_eq_mul_inv, mul_inv_eq_one] at h
-    rw [h]
-    exact Subtype.prop _
-  · intro h
-    have : ((hSK.equiv 1).fst : G) = 1 := by rw [hSK.equiv_one h1 (one_mem _)]
-    rw [← this, ← Subtype.ext_iff]
-    apply equiv_fst_eq_of_leftCosetEquivalence hSK _
-    rwa [LeftCosetEquivalence, leftCoset_eq_iff, mul_one, Subgroup.inv_mem_iff]
-
-theorem equiv_snd_eq_one_iff_mem {g : G} (h1 : 1 ∈ T) :
-    ((hHT.equiv g).snd : G) = 1 ↔ g ∈ H := by
-  constructor
-  · intro h
-    rw [equiv_snd_eq_inv_mul, inv_mul_eq_one] at h
     rw [← h]
     exact Subtype.prop _
+  · exact hST.equiv_fst_eq_self_of_mem_of_one_mem h1
+
+theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
+    ((hST.equiv g).snd : G) = g ↔ g ∈ T := by
+  constructor
   · intro h
-    have : ((hHT.equiv 1).snd : G) = 1 := by rw [hHT.equiv_one (one_mem _) h1]
-    rw [← this, ← Subtype.ext_iff]
-    apply equiv_snd_eq_of_rightCosetEquivalence hHT _
-    rwa [RightCosetEquivalence, rightCoset_eq_iff, one_mul, Subgroup.inv_mem_iff]
+    rw [← h]
+    exact Subtype.prop _
+  · exact hST.equiv_snd_eq_self_of_mem_of_one_mem h1
 
-theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
-    ((hSK.equiv g).fst : G) = 1 ↔ g ∈ K := by
-  rw [← equiv_fst_eq_one_iff_mem hSK h1, ← hSK.equiv_fst_equiv_fst g]
+theorem equiv_fst_eq_one_iff_mem {g : G} (h1 : 1 ∈ S) :
+    ((hST.equiv g).fst : G) = 1 ↔ g ∈ T := by
+  rw [equiv_fst_eq_mul_inv, mul_inv_eq_one, eq_comm, equiv_snd_eq_self_iff_mem _ h1]
 
-theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
-    ((hHT.equiv g).snd : G) = 1 ↔ g ∈ H := by
-  rw [← equiv_snd_eq_one_iff_mem hHT h1, ← hHT.equiv_snd_equiv_snd g]
+theorem equiv_snd_eq_one_iff_mem {g : G} (h1 : 1 ∈ T) :
+    ((hST.equiv g).snd : G) = 1 ↔ g ∈ S := by
+  rw [equiv_snd_eq_inv_mul, inv_mul_eq_one, equiv_fst_eq_self_iff_mem _ h1]
 
 end IsComplement
 
