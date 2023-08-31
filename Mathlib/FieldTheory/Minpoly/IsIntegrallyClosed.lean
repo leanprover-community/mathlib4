@@ -35,11 +35,11 @@ open Polynomial Set Function minpoly
 
 namespace minpoly
 
-variable {R S : Type _} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
 
 section
 
-variable (K L : Type _) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
+variable (K L : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
   [Algebra S L] [Algebra K L] [IsScalarTower R K L] [IsScalarTower R S L]
 
 variable [IsIntegrallyClosed R]
@@ -162,7 +162,7 @@ theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.t
   rw [← hP, Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
     isIntegrallyClosed_dvd_iff hx] at hP₁
   obtain ⟨Q, hQ⟩ := hP₁
-  rw [← hP, hQ, RingHom.map_mul, mk_self, MulZeroClass.zero_mul]
+  rw [← hP, hQ, RingHom.map_mul, mk_self, zero_mul]
 #align minpoly.to_adjoin.injective minpoly.ToAdjoin.injective
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/

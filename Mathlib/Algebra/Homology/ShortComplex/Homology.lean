@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 
 namespace ShortComplex
 

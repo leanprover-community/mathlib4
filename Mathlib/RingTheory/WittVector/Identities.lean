@@ -30,7 +30,7 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type _} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p

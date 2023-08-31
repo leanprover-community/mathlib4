@@ -43,6 +43,8 @@ As this had no pay-off (everything about limits is non-constructive in mathlib),
 we made everything classical.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -431,7 +433,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whisker_equiv` below.
+-- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
@@ -440,7 +442,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whisker_equiv` below.
+-- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
@@ -583,7 +585,54 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   inv := biproduct.map fun b => (p b).inv
 #align category_theory.limits.biproduct.map_iso CategoryTheory.Limits.biproduct.mapIso
 
-instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
+/-- Two biproducts which differ by an equivalence in the indexing type,
+and up to isomorphism in the factors, are isomorphic.
+
+Unfortunately there are two natural ways to define each direction of this isomorphism
+(because it is true for both products and coproducts separately).
+We give the alternative definitions as lemmas below.
+-/
+@[simps]
+def biproduct.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+    [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
+  hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
+  inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
+
+lemma biproduct.whiskerEquiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
+    (biproduct.whiskerEquiv e w).hom =
+      biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
+  simp only [whiskerEquiv_hom]
+  ext k j
+  by_cases h : k = e j
+  · subst h
+    simp
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · rintro rfl
+      simp at h
+    · exact Ne.symm h
+
+lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+    (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
+    (biproduct.whiskerEquiv e w).inv =
+      biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
+  simp only [whiskerEquiv_inv]
+  ext j k
+  by_cases h : k = e j
+  · subst h
+    simp only [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
+      Equiv.symm_apply_apply, eqToHom_comp_ι, Category.assoc, bicone_ι_π_self, Category.comp_id,
+      lift_π, bicone_ι_π_self_assoc]
+  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+    rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
+    · simp
+    · exact h
+    · rintro rfl
+      simp at h
+
+instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_biproduct := Nonempty.intro
@@ -609,7 +658,7 @@ instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/
 @[simps]
-def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
+def biproductBiproductIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x

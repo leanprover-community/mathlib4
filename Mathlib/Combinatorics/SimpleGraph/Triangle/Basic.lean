@@ -35,7 +35,7 @@ open Classical
 
 namespace SimpleGraph
 
-variable {α 𝕜 : Type _} [Fintype α] [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
+variable {α 𝕜 : Type*} [Fintype α] [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
   {s : Finset α}
 
 /-- A simple graph is *`ε`-triangle-free far* if one must remove at least `ε * (card α)^2` edges to
@@ -48,7 +48,7 @@ theorem farFromTriangleFree_iff : G.FarFromTriangleFree ε ↔ ∀ ⦃H⦄, H �
   ε * (card α ^ 2 : ℕ) ≤ G.edgeFinset.card - H.edgeFinset.card := deleteFar_iff
 #align simple_graph.far_from_triangle_free_iff SimpleGraph.farFromTriangleFree_iff
 
-alias farFromTriangleFree_iff ↔ farFromTriangleFree.le_card_sub_card _
+alias ⟨farFromTriangleFree.le_card_sub_card, _⟩ := farFromTriangleFree_iff
 #align simple_graph.far_from_triangle_free.le_card_sub_card SimpleGraph.farFromTriangleFree.le_card_sub_card
 
 theorem farFromTriangleFree.mono (hε : G.FarFromTriangleFree ε) (h : δ ≤ ε) :

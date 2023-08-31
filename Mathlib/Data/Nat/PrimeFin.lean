@@ -30,7 +30,7 @@ instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_inject
 /-- If `a`, `b` are positive, the prime divisors of `a * b` are the union of those of `a` and `b` -/
 theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factors.toFinset = a.factors.toFinset ∪ b.factors.toFinset :=
-  (List.toFinset.ext fun _ => (mem_factors_mul ha hb).trans List.mem_union.symm).trans <|
+  (List.toFinset.ext fun _ => (mem_factors_mul ha hb).trans List.mem_union_iff.symm).trans <|
     List.toFinset_union _ _
 #align nat.factors_mul_to_finset Nat.factors_mul_toFinset
 

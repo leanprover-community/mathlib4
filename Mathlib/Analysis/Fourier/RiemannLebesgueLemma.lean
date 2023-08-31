@@ -7,7 +7,7 @@ import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Topology.MetricSpace.EMetricParacompact
@@ -44,7 +44,7 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -52,7 +52,7 @@ open MeasureTheory Filter Complex Set FiniteDimensional
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
-variable {E V : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
+variable {E V : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
 
 local notation "e" => Real.fourierChar
 

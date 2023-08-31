@@ -290,7 +290,7 @@ if the import structure permits them to be.
 
 section Semiring
 
-variable {R S : Type _} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+variable {R S : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
 
 /-- Multiplication of an element of a (semi)ring is an `AddMonoidHom` in both arguments.
 

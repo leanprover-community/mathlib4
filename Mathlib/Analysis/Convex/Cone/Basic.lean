@@ -36,7 +36,7 @@ We prove two extension theorems:
   then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
   for all `x`
 
-In `Analysis/Convex/Cone/Dual`, we prove the following theorems:
+In `Mathlib/Analysis/Convex/Cone/Dual.lean`, we prove the following theorems:
 * `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
   This variant of the
   [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
@@ -59,13 +59,13 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 -/
 
 
---assert_not_exists NormedSpace
+assert_not_exists NormedSpace
 
 open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### Definition of `ConvexCone` and basic properties -/
 
@@ -154,11 +154,11 @@ theorem mem_sInf {x : E} {S : Set (ConvexCone 𝕜 E)} : x ∈ sInf S ↔ ∀ s 
 #align convex_cone.mem_Inf ConvexCone.mem_sInf
 
 @[simp]
-theorem coe_iInf {ι : Sort _} (f : ι → ConvexCone 𝕜 E) : ↑(iInf f) = ⋂ i, (f i : Set E) := by
+theorem coe_iInf {ι : Sort*} (f : ι → ConvexCone 𝕜 E) : ↑(iInf f) = ⋂ i, (f i : Set E) := by
   simp [iInf]
 #align convex_cone.coe_infi ConvexCone.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {x : E} {f : ι → ConvexCone 𝕜 E} : x ∈ iInf f ↔ ∀ i, x ∈ f i :=
+theorem mem_iInf {ι : Sort*} {x : E} {f : ι → ConvexCone 𝕜 E} : x ∈ iInf f ↔ ∀ i, x ∈ f i :=
   mem_iInter₂.trans <| by simp
 #align convex_cone.mem_infi ConvexCone.mem_iInf
 
@@ -658,16 +658,16 @@ theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, 
   simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
 #align convex.mem_to_cone Convex.mem_toCone
 
-theorem mem_to_cone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
+theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine' hs.mem_toCone.trans ⟨_, _⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
     exact ⟨c⁻¹, inv_pos.2 hc, by rwa [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
   · rintro ⟨c, hc, hcx⟩
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
-#align convex.mem_to_cone' Convex.mem_to_cone'
+#align convex.mem_to_cone' Convex.mem_toCone'
 
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
-  hs.mem_to_cone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
+  hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 #align convex.subset_to_cone Convex.subset_toCone
 
 /-- `hs.toCone s` is the least cone that includes `s`. -/

@@ -71,7 +71,7 @@ open scoped ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α F F' 𝕜 : Type _} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -290,7 +290,7 @@ theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
     ((condexp_ae_eq_condexpL1 hm _).symm.add (condexp_ae_eq_condexpL1 hm _).symm)
 #align measure_theory.condexp_add MeasureTheory.condexp_add
 
-theorem condexp_finset_sum {ι : Type _} {s : Finset ι} {f : ι → α → F'}
+theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i in s, f i|m] =ᵐ[μ] ∑ i in s, μ[f i|m] := by
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condexp_zero]
