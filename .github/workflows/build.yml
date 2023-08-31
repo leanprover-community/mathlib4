@@ -198,19 +198,19 @@ jobs:
             echo "This is a 'lean-pr-testing-$pr_number' branch, so we need to adjust labels and write a comment."
 
             if ${{ steps.lint.outcome == 'success' }}; then
-              curl -L \
+              curl -L -s \
                 -X DELETE \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer $TOKEN" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
                 https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels/awaiting-mathlib-build
-              curl -L \
+              curl -L -s \
                 -X DELETE \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer $TOKEN" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
                 https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels/breaks-mathlib
-              curl -L \
+              curl -L -s \
                 -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer $TOKEN" \
@@ -218,13 +218,13 @@ jobs:
                 https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels \
                 -d '{"labels":["successful-mathlib-build"]}'
             else
-              curl -L \
+              curl -L -s \
                 -X DELETE \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer $TOKEN" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
                 https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels/successful-mathlib-build
-              curl -L \
+              curl -L -s \
                 -X POST \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer $TOKEN" \
@@ -234,9 +234,9 @@ jobs:
             fi
 
             # Use GitHub API to check if a comment already exists
-            existing_comment=$(curl -H "Authorization: token $TOKEN" \
+            existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
                                     -H "Accept: application/vnd.github.v3+json" \
-                                    "https://api.github.com/repos/leanprover/lean/issues/$pr_number/comments" \
+                                    "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments" \
                                     | jq '.[] | select(.body | startswith("✅ Mathlib has") or startswith("💥 Mathlib build"))')
             existing_comment_id=$(echo "$existing_comment" | jq -r .id)
             existing_comment_body=$(echo "$existing_comment" | jq -r .body)
@@ -257,23 +257,23 @@ jobs:
             # Append new result to the existing comment or post a new comment
             if [ -z "$existing_comment_id" ]; then
               # Post new comment with a bullet point
-              echo "Posting as new comment at leanprover/lean/issues/$pr_number/comments"
-              curl -s \
+              echo "Posting as new comment at leanprover/lean4/issues/$pr_number/comments"
+              curl -L -s \
                 -X POST \
                 -H "Authorization: token $TOKEN" \
                 -H "Accept: application/vnd.github.v3+json" \
                 -d "{\"body\":\"- $message\"}" \
-                "https://api.github.com/repos/leanprover/lean/issues/$pr_number/comments"
+                "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments"
             else
               # Append new result to the existing comment
-              echo "Appending to existing comment at leanprover/lean/issues/$pr_number/comments"
+              echo "Appending to existing comment at leanprover/lean4/issues/$pr_number/comments"
               updated_comment_body="$existing_comment_body\n- $message"
-              curl -s \
+              curl -L -s \
                 -X PATCH \
                 -H "Authorization: token $TOKEN" \
                 -H "Accept: application/vnd.github.v3+json" \
                 -d "{\"body\":\"$updated_comment_body\"}" \
-                "https://api.github.com/repos/leanprover/lean/issues/comments/$existing_comment_id"
+                "https://api.github.com/repos/leanprover/lean4/issues/comments/$existing_comment_id"
             fi
           fi
 
