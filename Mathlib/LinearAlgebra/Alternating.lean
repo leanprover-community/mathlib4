@@ -809,7 +809,7 @@ theorem domDomLcongr_refl :
 
 @[simp]
 theorem domDomLcongr_toAddEquiv (σ : ι ≃ ι') :
-    (domDomLcongr S σ : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι').toAddEquiv =
+    (↑(domDomLcongr S σ : AlternatingMap R M N ι ≃ₗ[S] _) : AlternatingMap R M N ι ≃+ _) =
       domDomCongrEquiv σ :=
   rfl
 #align alternating_map.dom_dom_lcongr_to_add_equiv AlternatingMap.domDomLcongr_toAddEquiv
