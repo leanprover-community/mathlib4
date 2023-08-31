@@ -17,7 +17,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
-open Filter MeasureTheory Measure FiniteDimensional NNReal
+open Filter MeasureTheory Measure FiniteDimensional NNReal ENNReal
 
 theorem LipschitzWith.ae_lineDifferentiableAt_of_prod
     {C : ℝ≥0} {f : E × ℝ → ℝ} (hf : LipschitzWith C f) {μ : Measure E} :
@@ -36,8 +36,10 @@ theorem LipschitzWith.ae_lineDifferentiableAt_of_prod
   simpa only [LineDifferentiableAt, Prod.smul_mk, smul_zero, smul_eq_mul, mul_one, Prod.mk_add_mk,
     add_zero] using h'y.comp 0 this
 
-theorem LipschitzWith.ae_lineDifferentiableAt {C : ℝ≥0} {f : E → ℝ} (hf : LipschitzWith C f)
-    {μ : Measure E} [IsAddHaarMeasure μ] (v : E) :
+variable {μ : Measure E} [IsAddHaarMeasure μ]
+
+theorem LipschitzWith.ae_lineDifferentiableAt
+    {C : ℝ≥0} {f : E → ℝ} (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
   rcases eq_or_ne v 0 with rfl|hv
   · simp [lineDifferentiableAt_zero]
@@ -62,3 +64,13 @@ theorem LipschitzWith.ae_lineDifferentiableAt {C : ℝ≥0} {f : E → ℝ} (hf 
   have h'p : LineDifferentiableAt ℝ (f ∘ (L : (F × ℝ) →ₗ[ℝ] E)) p (0, 1) := hp
   rw [← hL]
   exact LineDifferentiableAt.of_comp h'p
+
+
+
+theorem LipschitzWith.Memℒp {C : ℝ≥0} {f : E → ℝ} (hf : LipschitzWith C f) (v : E) :
+    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ := by
+
+
+theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg : LipschitzWith D g)
+    (h'g : HasCompactSupport g) (v : E) :
+    ∫ x, lineDeriv ℝ f x v * g x ∂μ = - ∫ x, f x * lineDeriv ℝ g x v := by
