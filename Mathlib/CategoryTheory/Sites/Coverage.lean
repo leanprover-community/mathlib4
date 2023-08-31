@@ -287,7 +287,7 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
 
 /-- The union of two coverages is a coverage. -/
 @[simps]
-def union (x y : Coverage C) : Coverage C where
+protected def union (x y : Coverage C) : Coverage C where
   covering B := x.covering B ∪ y.covering B
   pullback := by
     rintro X Y f S (hx | hy)
@@ -307,6 +307,8 @@ instance : SemilatticeSup (Coverage C) where
 lemma sup_covering (x y : Coverage C) (B : C) :
     (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
   union_covering x y B
+
+lemma sup_eq_union (x y : Coverage C) : x ⊔ y = x.union y := rfl
 
 end Coverage
 
