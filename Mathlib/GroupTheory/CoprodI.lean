@@ -280,9 +280,6 @@ def empty : Word M where
 instance : Inhabited (Word M) :=
   ⟨empty⟩
 
-theorem toList_injective : Function.Injective (Word.toList : Word M → List _) := by
-  rintro ⟨_, _, _⟩ ⟨_, _, _⟩; simp
-
 /-- A reduced word determines an element of the free product, given by multiplication. -/
 def prod (w : Word M) : CoprodI M :=
   List.prod (w.toList.map fun l => of l.snd)
