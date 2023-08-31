@@ -252,7 +252,7 @@ theorem inv_injective : Function.Injective (Inv.inv : G → G) :=
 #align neg_injective neg_injective
 
 @[to_additive (attr := simp)]
-theorem inv_inj {a b : G} : a⁻¹ = b⁻¹ ↔ a = b :=
+theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
   inv_injective.eq_iff
 #align inv_inj inv_inj
 #align neg_inj neg_inj
