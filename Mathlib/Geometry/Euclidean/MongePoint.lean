@@ -283,7 +283,7 @@ theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i�
   refine' ⟨_, s.mongePoint_mem_affineSpan⟩
   intro v hv
   rcases Submodule.mem_span_singleton.mp hv with ⟨r, rfl⟩
-  rw [inner_smul_right, s.inner_mongePoint_vsub_face_centroid_vsub, MulZeroClass.mul_zero]
+  rw [inner_smul_right, s.inner_mongePoint_vsub_face_centroid_vsub, mul_zero]
 #align affine.simplex.monge_point_mem_monge_plane Affine.Simplex.mongePoint_mem_mongePlane
 
 /-- The direction of a Monge plane. -/

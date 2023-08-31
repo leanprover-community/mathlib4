@@ -1001,16 +1001,16 @@ end Matrix
 local notation "⟪" x ", " y "⟫ₑ" =>
   @inner 𝕜 _ _ (Equiv.symm (PiLp.equiv 2 _) x) (Equiv.symm (PiLp.equiv 2 _) y)
 
-/-- The inner product of a row of `A` and a row of `B` is an entry of `B ⬝ Aᴴ`. -/
+/-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
-    ⟪A i, B j⟫ₑ = (B ⬝ Aᴴ) j i := by
+    ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
   simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', Matrix.dotProduct_comm,
     Matrix.conjTranspose_apply, Pi.star_def]
 #align inner_matrix_row_row inner_matrix_row_row
 
-/-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ ⬝ B`. -/
+/-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
-    ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ ⬝ B) i j :=
+    ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j :=
   rfl
 #align inner_matrix_col_col inner_matrix_col_col
 

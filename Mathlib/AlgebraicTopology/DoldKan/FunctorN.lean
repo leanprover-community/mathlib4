@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-#align_import algebraic_topology.dold_kan.functor_n from "leanprover-community/mathlib"@"1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa"
+#align_import algebraic_topology.dold_kan.functor_n from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
