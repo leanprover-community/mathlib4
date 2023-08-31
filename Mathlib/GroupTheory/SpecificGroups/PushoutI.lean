@@ -13,25 +13,41 @@ import Mathlib.GroupTheory.Complement
 
 ## Pushouts of Monoids and Groups
 
-This file define Wide Pushouts of monoids and groups and proves some properties
+This file defines wide Pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
 in the diagram are injective).
 
 ## Main definitions
 
-- `Monoid.PushoutI` : the pushout of a diagram of monoids indexed by a type `ι`
+- `Monoid.PushoutI`: the pushout of a diagram of monoids indexed by a type `ι`
+- `Monoid.PushoutI.base`: the map from the amalgamating monoid to the pushout
+- `Monoid.PushoutI.of`: the map from each Monoid in the family to the pushout
+- `Monoid.PushoutI.lift`: the universal property used to define homomorphisms out of the pushout.
+
+- `Monoid.PushoutI.NormalWord`: a normal form for words in the pushout
+- `Monoid.PushoutI.of_injective`: if all the maps in the diagram are injective in a pushout of
+groups then so is `of`
+- `Monoid.PushoutI.Reduced.eq_empty_of_mem_range`: For any word `w` in the coproduct,
+if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
+`w` itself is not in the image of the base monoid.
+
 
 -/
 
-open Monoid CoprodI Subgroup Coprod Function
+namespace Monoid
+
+open CoprodI Subgroup Coprod Function List
 
 variable {ι : Type*} {G : ι → Type*} {H : Type*} {K : Type*} [Monoid K]
 
+/-- The relation we quotient by to form the pushout -/
 def PushoutI.con [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) :
     Con (Coprod (CoprodI G) H) :=
   conGen (fun x y : Coprod (CoprodI G) H =>
     ∃ i x', x = inl (of (φ i x')) ∧ y = inr x')
 
+/-- The indexed pushout of monoids, which is the pushout in the category of monoids,
+or the category of groups. -/
 def PushoutI [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) : Type _ :=
   (PushoutI.con φ).Quotient
 
@@ -44,9 +60,11 @@ variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 instance monoid : Monoid (PushoutI φ) := by
   delta PushoutI; infer_instance
 
+/-- The map from each indexing group into the pushout -/
 def of (i : ι) : G i →* PushoutI φ :=
   (Con.mk' _).comp <| inl.comp CoprodI.of
 
+/-- The map from the base monoid into the pushout -/
 def base : H →* PushoutI φ :=
   (Con.mk' _).comp inr
 
@@ -60,6 +78,8 @@ theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base (φ := φ)) := by
 theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base (φ := φ) x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
+/-- Define a homomorphism out of the pushout of monoids be defining it on each object in the
+diagram -/
 def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
@@ -102,6 +122,7 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       ext
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
+/-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
   CoprodI.lift of
 
@@ -139,17 +160,21 @@ instance : Group (PushoutI φ) :=
 
 namespace NormalWord
 
-open List
-
 variable (φ)
 
-structure Data : Type _ where
+/-- The data we need to pick a normal form for words in the pushout. We need to pick a
+canonical element of each coset. We also need all the maps in the diagram to be injective  -/
+structure Transversal : Type _ where
+  /-- All maps in the diagram are injective -/
   ( injective : ∀i, Injective (φ i) )
+  /-- The underlying set, containing exactly one element of each coset of the base group -/
   ( set : ∀ i, Set (G i) )
+  /-- The chosen element of the base group itself is the identity -/
   ( one_mem : ∀ i, 1 ∈ set i )
+  /-- We have exactly one element of each coset of the base group -/
   ( compl : ∀ i, IsComplement (φ i).range (set i) )
 
-theorem data_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Data φ) := by
+theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
   have := fun i => exists_right_transversal (H := (φ i).range) 1
   simp only [Classical.skolem] at this
   rcases this with ⟨t, ht⟩
@@ -162,21 +187,24 @@ theorem data_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Data φ) := by
 
 variable {φ}
 
-structure _root_.PushoutI.NormalWord (d : Data φ) extends CoprodI.Word G where
+/-- The normal form for words in the pushout. Every element of the pushout is the product of an element
+of the base group and a word made up of letters each of which is in the transversal. -/
+structure _root_.Monoid.PushoutI.NormalWord (d : Transversal φ) extends CoprodI.Word G where
+  /-- Every `NormalWord` is the product of an element of the base group and a word made up
+  of letters each of which is in the transversal. `left` is that element of the base group. -/
   left : H
+  /-- All letter in the word are in the transversal. -/
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ d.set i
 
-/- Inspired by a similar structure in `CoprodI` -/
-structure Pair (d : Data φ) (i : ι) extends CoprodI.Word.Pair G i where
+/-- Similar to `Monoid.CoprodI.Pair` except every letter must be in the transversal
+(not including the head letter). -/
+structure Pair (d : Transversal φ) (i : ι) extends CoprodI.Word.Pair G i where
+  /-- All letters in the word are in the transversal. -/
   normalized : ∀ i g, ⟨i, g⟩ ∈ tail.toList → g ∈ d.set i
 
-variable {d : Data φ}
+variable {d : Transversal φ}
 
-def Pair.toNormalWord {i : ι} (p : Pair d i) : NormalWord d :=
-  { toWord := p.tail,
-    left := 1,
-    normalized := p.normalized }
-
+/-- The empty Normalised word, representing the identity element of the group. -/
 @[simps!]
 def empty : NormalWord d := ⟨CoprodI.Word.empty, 1, fun i g => by simp [CoprodI.Word.empty]⟩
 
@@ -200,8 +228,10 @@ theorem ext_iff {w₁ w₂ : NormalWord d} : w₁ = w₂ ↔ w₁.left = w₂.le
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ => ext h₁ h₂⟩
 
 open Subgroup.IsComplement
-set_option pp.proofs.withType false
 
+/-- Given a word in `CoprodI`, if every letter is in the transversal and when
+we multiply by an element of the base group it still has this property,
+then the element of the base group we multiplied by was one.  -/
 theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     (hw : ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∈ d.set i)
     (hφw : ∀ j g, ⟨j, g⟩ ∈ (CoprodI.of (φ i h) • w).toList → g ∈ d.set j) :
@@ -258,6 +288,8 @@ theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
   rw [inv_mul_eq_one] at this; subst this
   simp
 
+/-- A constructor that multiplies a `NormalWord` by an element, with condition to make
+sure the underlying list does get longer.  -/
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : NormalWord d :=
@@ -273,6 +305,9 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
       · simp
       · exact w.normalized _ _ (by assumption) }
 
+/-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, but
+putting head into normal form first, by making sure it is expressed as an element
+of the base group multiplied by an element of the transversal. -/
 noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   letI n := (d.compl i).equiv p.head
   let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
@@ -296,6 +331,9 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
     h₁, h₃]
   simp
 
+/-- The equivalence between `NormalWord`s and pairs. We can turn a `NormalWord` into a
+pair by taking the head of the `List` if it is in `G i` and multiplying it by the element of the
+base group. -/
 noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
   letI toFun : NormalWord d → Pair d i :=
     fun w =>
@@ -381,6 +419,8 @@ theorem base_smul_eq_smul (h : H) (w : NormalWord d) :
     base (φ := φ) h • w = h • w := by
   rw [base_smul_def, base_smul_def']
 
+/-- Induction principle for `NormalWord`, that corrresponds closely to inducting on
+the underlying list. -/
 @[elab_as_elim]
 noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d)
     (h_empty : motive empty)
@@ -410,6 +450,8 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
 
+/-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
+injective -/
 def prod (w : NormalWord d) : PushoutI φ :=
   base w.left * ofCoprodI (w.toWord).prod
 
@@ -461,6 +503,7 @@ theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
   | h_base h w _ ih =>
     rw [prod_smul, mul_smul, ih]
 
+/-- The equivalence between normal forms and elements of the pushout -/
 noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
   { toFun := fun g => g • .empty
     invFun := fun w => w.prod
@@ -488,7 +531,7 @@ open NormalWord
 
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (φ := φ) (i := i)) := by
-  rcases data_nonempty φ hφ with ⟨d⟩
+  rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
@@ -499,7 +542,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base (φ := φ)) := by
-  rcases data_nonempty φ hφ with ⟨d⟩
+  rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
@@ -514,12 +557,13 @@ open NormalWord
 
 variable (φ)
 
+/-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/
 def Reduced (w : Word G) : Prop :=
   ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
 
 variable {φ}
 
-theorem Reduced.exists_normalWord_prod_eq (d : Data φ) {w : Word G} (hw : Reduced φ w) :
+theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
   letI := Classical.decEq ι
@@ -534,10 +578,13 @@ theorem Reduced.exists_normalWord_prod_eq (d : Data φ) {w : Word G} (hw : Reduc
     · exact hw _ (List.mem_cons_self _ _)
     · simp [hw'prod, hw'map]
 
+/-- For any word `w` in the coproduct,
+if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
+`w` itself is not in the image of the base monoid. -/
 theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
     {w : Word G} (hw : Reduced φ w) :
     ofCoprodI w.prod ∈ (base (φ := φ)).range → w = .empty := by
-  rcases data_nonempty φ hφ with ⟨d⟩
+  rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
   rintro ⟨h, heq⟩
   have : (NormalWord.prod (d := d) ⟨.empty, h, by simp⟩) = base h := by
@@ -590,3 +637,5 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
           exact MonoidHom.mem_range.2 ⟨φ j h, rfl⟩))
 
 end PushoutI
+
+end Monoid
