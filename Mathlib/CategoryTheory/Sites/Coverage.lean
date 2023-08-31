@@ -299,13 +299,9 @@ def union (x y : Coverage C) : Coverage C where
 instance : SemilatticeSup (Coverage C) where
   sup x y := x.union y
   toPartialOrder := inferInstance
-  le_sup_left _ _ _:= by
-    simp only [union_covering, Set.le_eq_subset, Set.subset_union_left]
-  le_sup_right _ _ _ := by
-    simp only [union_covering, Set.le_eq_subset, Set.subset_union_right]
-  sup_le _ _ _ hx hy X := by
-    simp only [union_covering, Set.le_eq_subset, Set.union_subset_iff]
-    exact ⟨hx X, hy X⟩
+  le_sup_left _ _ _ := Set.subset_union_left _ _
+  le_sup_right _ _ _ := Set.subset_union_right _ _
+  sup_le _ _ _ hx hy X := Set.union_subset_iff.mpr ⟨hx X, hy X⟩
 
 end Coverage
 
