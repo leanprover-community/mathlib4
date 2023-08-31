@@ -100,6 +100,16 @@ jobs:
     name: Build (fork)
     runs-on: ubuntu-latest
     steps:
+      - name: Check if toolchain is a lean-pr-release
+        uses: actions/read-file@v1
+        id: lean-toolchain
+        with:
+          path: lean-toolchain
+
+      - name: Uninstall existing lean-pr-release toolchain
+        if: ${{ regexpMatches(steps.lean-toolchain.outputs.content, '^leanprover:lean-pr-releases/pr-release-[0-9]+$') }}
+        run: elan toolchain uninstall ${{ steps.lean-toolchain.outputs.content }}
+
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
