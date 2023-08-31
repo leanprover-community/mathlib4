@@ -26,9 +26,9 @@ instance instInvolutiveStar {S R : Type*} [InvolutiveStar R] [SetLike S R] [Star
     (s : S) : InvolutiveStar s where
   star_involutive r := Subtype.ext <| star_star (r : R)
 
-/-- In a star multiplication (i.e., a multiplication with an antimultiplicative involutive star
+/-- In a star magma (i.e., a multiplication with an antimultiplicative involutive star
 operation), any star-closed subset which is also closed under multiplication is itself a star
-multiplication. -/
+magma. -/
 instance instStarMul {S R : Type*} [Mul R] [StarMul R] [SetLike S R]
     [MulMemClass S R] [StarMemClass S R] (s : S) : StarMul s where
   star_mul _ _ := Subtype.ext <| star_mul _ _
