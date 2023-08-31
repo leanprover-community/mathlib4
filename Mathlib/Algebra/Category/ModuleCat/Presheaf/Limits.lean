@@ -5,7 +5,7 @@ universe v₂ v₁ v u₃ u₂ u₁ u
 
 namespace PresheafOfModules
 
-open CategoryTheory Limits
+open CategoryTheory Category Limits
 
 -- let us not care too much about universes so far...
 
@@ -19,7 +19,10 @@ section
 variable {R : Type u₁} {S : Type u₃} [Ring R] [Ring S] (f : R →+* S)
   {J : Type u₂} [Category.{v₂} J] (F : J ⥤ ModuleCat.{v} S)
 
--- all of this should be generalized...
+-- (if we do not have it already!) this should be generalized to any functor...
+-- definition of the canonical map `G (limit F) ⟶ limit (F ⋙ G)` [first for any limit cone,
+-- and then for the actual limit], then it is iso if `PreservesLimit...`
+-- presumably, the various `Comparison` isos for the various shapes should be refactored to use this only...
 noncomputable def restrictScalarsLimitIso :
     (ModuleCat.restrictScalars f).obj (limit F) ≅ limit (F ⋙ ModuleCat.restrictScalars f) :=
   IsLimit.conePointUniqueUpToIso
@@ -39,22 +42,6 @@ lemma restrictScalarsLimitIso_inv_map_π  (j : J) :
       limit.π (F ⋙ ModuleCat.restrictScalars f) j := by
   rw [← restrictScalarsLimitIso_hom_π, Iso.inv_hom_id_assoc]
 end
-
-
-@[simps]
-def semilinearMapEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
-    (M : ModuleCat.{v} R) (N : ModuleCat.{v} S) :
-    (M →ₛₗ[f] N) ≃ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
-  toFun g :=
-    { toFun := g
-      map_add' := fun x y => by simp
-      map_smul' := fun r x => by simp }
-  invFun g :=
-    { toFun := g
-      map_add' := fun x y => by simp
-      map_smul' := fun r x => g.map_smul r x }
-  left_inv f := rfl
-  right_inv f := rfl
 
 noncomputable example (R : Type u) [Ring R] :
   PreservesLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) :=
@@ -83,30 +70,44 @@ def evaluationJointlyReflectsLimits (c : Cone F)
 
 section
 
-variable [∀ X, HasLimit (F ⋙ evaluation R X)]
-
-noncomputable def limitMkStruct : MkStruct R where
-  obj X := (limit (F ⋙ evaluation R X)).carrier
-  map {X Y} f :=
-    (semilinearMapEquiv (R.map f) _ _).symm (limMap (whiskerLeft F (restriction R f)) ≫ (restrictScalarsLimitIso (R.map f) (F ⋙ evaluation R Y)).inv)
-  map_id := sorry
-  map_comp := sorry
-
-@[simp]
-lemma restriction_app_mk'_limitMkStruct_restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    (restriction R f).app (mk' (limitMkStruct F)) =
-      (limMap (whiskerLeft F (restriction R f)) ≫ (restrictScalarsLimitIso (R.map f) (F ⋙ evaluation R Y)).inv) := by
-  rfl
+@[simps]
+noncomputable def limitBundledMkStruct : BundledMkStruct R where
+  obj X := limit (F ⋙ evaluation R X)
+  map {X Y} f := limMap (whiskerLeft F (restriction R f)) ≫ (restrictScalarsLimitIso (R.map f) (F ⋙ evaluation R Y)).inv
+  map_id := fun X => by
+    dsimp
+    simp only [← cancel_mono (restrictScalarsLimitIso (R.map (𝟙 X)) (F ⋙ evaluation R X)).hom,
+      assoc, Iso.inv_hom_id, comp_id]
+    apply limit.hom_ext
+    intro j
+    simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, assoc]
+    erw [restrictScalarsLimitIso_hom_π, restriction_app_id]
+    ext x
+    dsimp
+    rw [ModuleCat.restrictScalarsId'_inv_apply, ModuleCat.restrictScalarsId'_inv_apply]
+  map_comp {X Y Z} f g := by
+    dsimp
+    simp only [← cancel_mono (restrictScalarsLimitIso (R.map (f ≫ g)) (F ⋙ evaluation R Z)).hom,
+      assoc, Iso.inv_hom_id, comp_id]
+    apply limit.hom_ext
+    intro j
+    simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, Functor.map_comp, assoc]
+    erw [restrictScalarsLimitIso_hom_π]
+    sorry
 
 noncomputable def limitCone : Cone F where
-  pt := mk' (limitMkStruct F)
+  pt := mk'' (limitBundledMkStruct F)
   π :=
-    { app := fun j => Hom.mk'' (fun X => (limit.π _ j : (limit (F ⋙ evaluation R X)) ⟶ _)) (by
-        intro X Y f
+    { app := fun j => Hom.mk'' (fun X => limit.π (F ⋙ evaluation R X) j) (fun X Y f => by
         dsimp
         simp only [Category.assoc, restrictScalarsLimitIso_inv_map_π]
-        exact limMap_π (whiskerLeft F (restriction R f) ≫ (Functor.associator _ _ _).inv) j)
-      naturality := sorry }
+        apply limMap_π)
+      naturality := fun i j φ => by
+        dsimp
+        erw [id_comp]
+        ext1 X
+        simp only [mk''_obj, limitBundledMkStruct_obj, Hom.mk''_app, Hom.comp_app]
+        exact (limit.w (F ⋙ evaluation R X) φ).symm }
 
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
   evaluationJointlyReflectsLimits _ _ (fun _ => limit.isLimit _)
