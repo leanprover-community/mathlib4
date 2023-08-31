@@ -153,7 +153,7 @@ protected theorem Orientation.map_neg {ι : Type*} (f : M ≃ₗ[R] N) (x : Orie
 #align orientation.map_neg Orientation.map_neg
 
 @[simp]
-protected theorem Orientation.reindex_neg {ι ι' : Type _} (e : ι ≃ ι') (x : Orientation R M ι) :
+protected theorem Orientation.reindex_neg {ι ι' : Type*} (e : ι ≃ ι') (x : Orientation R M ι) :
     Orientation.reindex R M e (-x) = -Orientation.reindex R M e x :=
   Module.Ray.map_neg _ x
 #align orientation.reindex_neg Orientation.reindex_neg
