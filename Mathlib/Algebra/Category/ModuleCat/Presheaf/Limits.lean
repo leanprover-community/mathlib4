@@ -7,7 +7,7 @@ namespace PresheafOfModules
 
 open CategoryTheory Category Limits
 
--- let us not care too much about universes so far...
+-- let us not care too much about universes for now...
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
   PreservesLimitsOfSize (ModuleCat.restrictScalars f) := sorry
@@ -82,18 +82,23 @@ noncomputable def limitBundledMkStruct : BundledMkStruct R where
     intro j
     simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, assoc]
     erw [restrictScalarsLimitIso_hom_π, restriction_app_id]
-    ext x
-    dsimp
-    rw [ModuleCat.restrictScalarsId'_inv_apply, ModuleCat.restrictScalarsId'_inv_apply]
+    simp only [← cancel_mono ((ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).hom.app ((F.obj j).obj X)),
+      Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.comp_obj, evaluation_obj,
+      NatTrans.naturality, Functor.id_map, Iso.inv_hom_id_app_assoc]
   map_comp {X Y Z} f g := by
     dsimp
     simp only [← cancel_mono (restrictScalarsLimitIso (R.map (f ≫ g)) (F ⋙ evaluation R Z)).hom,
       assoc, Iso.inv_hom_id, comp_id]
     apply limit.hom_ext
     intro j
-    simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, Functor.map_comp, assoc]
-    erw [restrictScalarsLimitIso_hom_π]
-    sorry
+    simp only [limMap_π, Functor.map_comp, assoc]
+    erw [restrictScalarsLimitIso_hom_π, restriction_app_comp]
+    simp only [evaluation_obj, Functor.comp_obj, Functor.map_comp, ← NatTrans.naturality]
+    dsimp
+    simp only [← Functor.map_comp_assoc, restrictScalarsLimitIso_inv_map_π]
+    erw [limMap_π, Functor.map_comp_assoc, restrictScalarsLimitIso_inv_map_π_assoc,
+      limMap_π_assoc]
+    rfl
 
 noncomputable def limitCone : Cone F where
   pt := mk'' (limitBundledMkStruct F)

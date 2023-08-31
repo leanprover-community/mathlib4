@@ -326,6 +326,18 @@ lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
   ext x
   rw [restriction_app_apply, ModuleCat.restrictScalarsId'_inv_apply, M.map_id, id'_apply]
 
+lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (restriction R (f ≫ g)).app M =
+      (restriction R f).app M ≫
+        (ModuleCat.restrictScalars (R.map f)).map ((restriction R g).app M) ≫
+        (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by
+  ext x
+  rw [restriction_app_apply]
+  simp only [Functor.comp_obj, map_comp, Function.comp_apply,
+    ModuleCat.coe_comp, ModuleCat.restrictScalars.map_apply,
+    LinearMap.coe_comp, Function.comp_apply]
+  rw [ModuleCat.restrictScalarsComp'_inv_apply, restriction_app_apply, restriction_app_apply]
+
 variable (R)
 
 /-- This structure contains the data and axioms in order to
