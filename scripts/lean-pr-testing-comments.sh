@@ -99,7 +99,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -X PATCH \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "{\"body\":\"$updated_comment_body\"}" \
+      -d "$(jq --null-input --arg val "- $updated_comment_body" '{"body": $val}')"
       "https://api.github.com/repos/leanprover/lean4/issues/comments/$existing_comment_id"
   fi
 fi
