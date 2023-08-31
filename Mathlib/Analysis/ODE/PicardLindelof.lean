@@ -395,7 +395,7 @@ variable {v : E → E} (t₀ : ℝ) {x₀ : E}
 
 /-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
   Picard-Lindelöf theorem. -/
-theorem exists_IsPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
+theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
   ∃ ε > (0 : ℝ), ∃ L R C, IsPicardLindelof (fun _ => v) (t₀ - ε) t₀ (t₀ + ε) x₀ L R C := by
   obtain ⟨L, s, hs, hlip⟩ := hv.exists_lipschitzOnWith
   obtain ⟨R₁, hR₁ : 0 < R₁, hball⟩ := Metric.mem_nhds_iff.mp hs
@@ -426,7 +426,7 @@ variable [CompleteSpace E]
 theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
     ∃ ε > (0 : ℝ),
       ∃ f : ℝ → E, f t₀ = x₀ ∧ ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t := by
-  obtain ⟨ε, hε, _, _, _, hpl⟩ := exists_IsPicardLindelof_const_of_contDiffAt t₀ hv
+  obtain ⟨ε, hε, _, _, _, hpl⟩ := exists_isPicardLindelof_const_of_contDiffAt t₀ hv
   obtain ⟨f, hf1, hf2⟩ := hpl.exists_forall_hasDerivWithinAt_Icc_eq x₀
   exact ⟨ε, hε, f, hf1, fun t ht =>
     (hf2 t (Ioo_subset_Icc_self ht)).hasDerivAt (Icc_mem_nhds ht.1 ht.2)⟩
