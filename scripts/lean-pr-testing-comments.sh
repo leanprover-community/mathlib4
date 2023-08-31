@@ -1,4 +1,5 @@
 ## Create comments and labels on a Lean 4 PR after CI has finished on a `lean-pr-testing-NNNN` branch.
+set -e
 
 # This is not meant to be run from the command line, only from CI.
 # The inputs must be prepared as:
