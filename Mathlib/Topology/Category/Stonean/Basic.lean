@@ -164,18 +164,22 @@ def isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   right_inv f := by ext; rfl
 
 /--
-`Fin 2` as an extremally disconnected space.
-Implementation: This is only used in the proof below.
+A finite discrete space as a Stonean space.
 -/
-protected
-def two : Stonean where
-  compHaus := CompHaus.of <| ULift <| Fin 2
+def mkFinite (X : Type*) [Finite X] [TopologicalSpace X] [DiscreteTopology X] : Stonean where
+  compHaus := CompHaus.of X
   extrDisc := by
     dsimp
     constructor
     intro U _
     apply isOpen_discrete (closure U)
 
+/--
+A morphism in `Stonean` is an epi iff it is surjective.
+
+TODO: prove that `forget Stonean` preserves pushouts (in fact it preserves all finite colimits)
+and deduce this from general lemmas about concrete categories.
+-/
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
@@ -189,9 +193,9 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
   obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
   classical
-  let g : Y ⟶ Stonean.two :=
+  let g : Y ⟶ mkFinite (ULift (Fin 2)) :=
     ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-  let h : Y ⟶ Stonean.two := ⟨fun _ => ⟨1⟩, continuous_const⟩
+  let h : Y ⟶ mkFinite (ULift (Fin 2)) := ⟨fun _ => ⟨1⟩, continuous_const⟩
   have H : h = g := by
     rw [← cancel_epi f]
     ext x
