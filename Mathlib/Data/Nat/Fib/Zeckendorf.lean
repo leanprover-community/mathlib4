@@ -15,7 +15,7 @@ distinct non-consecutive Fibonacci numbers.
 
 * `List.IsZeckendorfRep`: Predicate for a list to be an increasing sequence of non-consecutive
   natural numbers greater than or equal to `2`, namely a Zeckendorf representation.
-* `Nat.greatestFib`: Index of the greatest Fibonacci number less than or equal to some natural.
+* `Nat.greatestFib`: Greatest index of a Fibonacci number less than or equal to some natural.
 * `Nat.zeckendorf`: Send a natural number to its Zeckendorf representation.
 * `Nat.zeckendorfEquiv`: Zeckendorf's theorem, in the form of an equivalence between natural numbers
   and Zeckendorf representations.
@@ -67,7 +67,7 @@ end List
 namespace Nat
 variable {l : List ℕ} {a m n : ℕ}
 
-/-- The index of the greatest Fibonacci number less than or equal to `n`. -/
+/-- The greatest index of a Fibonacci number less than or equal to `n`. -/
 def greatestFib (n : ℕ) : ℕ := (n + 1).findGreatest (fun k ↦ fib k ≤ n)
 
 lemma fib_greatestFib_le (n : ℕ) : fib (greatestFib n) ≤ n :=
