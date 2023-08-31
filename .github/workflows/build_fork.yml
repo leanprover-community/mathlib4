@@ -171,6 +171,7 @@ jobs:
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: Install jq
+        if: always()
         run: sudo apt-get install jq
 
       - name: Post comments for lean-pr-testing branch
