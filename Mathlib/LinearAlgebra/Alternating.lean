@@ -760,7 +760,7 @@ theorem domDomCongr_add (σ : ι ≃ ι') (f g : AlternatingMap R M N ι) :
 #align alternating_map.dom_dom_congr_add AlternatingMap.domDomCongr_add
 
 @[simp]
-theorem domDomCongr_smul {S : Type _} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
+theorem domDomCongr_smul {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
     (σ : ι ≃ ι') (c : S) (f : AlternatingMap R M N ι) :
     (c • f).domDomCongr σ = c • f.domDomCongr σ :=
   rfl
@@ -786,7 +786,7 @@ def domDomCongrEquiv (σ : ι ≃ ι') : AlternatingMap R M N ι ≃+ Alternatin
 
 section DomDomLcongr
 
-variable (S : Type _) [Semiring S] [Module S N] [SMulCommClass R S N]
+variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
 /-- `alternating_map.dom_dom_congr` as a linear equivalence. -/
 @[simps apply symm_apply]
