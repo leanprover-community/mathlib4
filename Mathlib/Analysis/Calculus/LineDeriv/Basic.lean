@@ -43,11 +43,9 @@ on the direction would make them barely usable:
 
 noncomputable section
 
-open scoped Topology BigOperators Filter ENNReal
+open scoped Topology BigOperators Filter ENNReal NNReal
 
 open Filter Asymptotics Set
-
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -359,19 +357,70 @@ theorem Filter.EventuallyEq.lineDeriv_eq (h : f₁ =ᶠ[𝓝 x] f) :
 
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
-only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
+on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
+bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
+neighborhood of `x`. -/
 theorem HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
     ‖f'‖ ≤ C * ‖v‖ := by
-  have Z := HasDerivAt.le_of_lip'
-
-#exit
+  apply HasDerivAt.le_of_lip' hf (by positivity)
+  have A : Continuous (fun (t : 𝕜) ↦ x₀ + t • v) := by continuity
+  have : ∀ᶠ x in 𝓝 (x₀ + (0 : 𝕜) • v), ‖f x - f x₀‖ ≤ C * ‖x - x₀‖ := by simpa using hlip
+  filter_upwards [(A.continuousAt (x := 0)).preimage_mem_nhds this] with t ht
+  simp only [preimage_setOf_eq, add_sub_cancel', norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
+  simpa [mul_assoc] using ht
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
-theorem HasFDerivAt.le_of_lip {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
-    {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
+on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
+bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
+neighborhood of `x`. -/
+theorem HasLineDerivAt.le_of_lipschitzOn
+    {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
+    {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) :
+    ‖f'‖ ≤ C * ‖v‖ := by
+  refine hf.le_of_lip' C.coe_nonneg ?_
+  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+then its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`. -/
+theorem HasLineDerivAt.le_of_lipschitz
+    {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C * ‖v‖ :=
+  hf.le_of_lipschitzOn univ_mem (lipschitzOn_univ.2 hlip)
+
+variable (𝕜)
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
+on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
+bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
+neighborhood of `x`.
+Version using `lineDeriv`. -/
+theorem norm_lineDeriv_le_of_lip' {f : E → F} {x₀ : E}
+    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
+    ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ := by
+  apply norm_deriv_le_of_lip' (by positivity)
+  have A : Continuous (fun (t : 𝕜) ↦ x₀ + t • v) := by continuity
+  have : ∀ᶠ x in 𝓝 (x₀ + (0 : 𝕜) • v), ‖f x - f x₀‖ ≤ C * ‖x - x₀‖ := by simpa using hlip
+  filter_upwards [(A.continuousAt (x := 0)).preimage_mem_nhds this] with t ht
+  simp only [preimage_setOf_eq, add_sub_cancel', norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
+  simpa [mul_assoc] using ht
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz on a neighborhood of `x₀`
+then its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`.
+Version using `lineDeriv`. -/
+theorem norm_lineDeriv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
+    {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ := by
+  refine' norm_lineDeriv_le_of_lip' 𝕜 C.coe_nonneg _
+  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz then
+its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`.
+Version using `lineDeriv`. -/
+theorem norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ :=
+  norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOn_univ.2 hlip)
+
+variable {𝕜}
 
 end NormedSpace
 
