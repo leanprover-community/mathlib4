@@ -361,7 +361,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
     (mt (equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
       (mt (mul_mem_cancel_right (by simp)).1 hgr))
   { toWord := w'
-    left := Function.surjInv (MonoidHom.rangeRestrict_surjective _) n.1
+    left := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
       simp only [Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
       rcases hg with ⟨rfl, hg | hg⟩
@@ -372,7 +372,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   letI n := (d.compl i).equiv p.head
   let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
   { toWord := w
-    left := Function.surjInv (MonoidHom.rangeRestrict_surjective _) n.1
+    left := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
         dsimp at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
@@ -386,18 +386,10 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
     Word.Pair.mk.injEq, Pair.mk.injEq, and_imp]
   intro h₁ h₂ h₃
   subst h₂
-  rw [(injective_surjInv _).eq_iff] at h₃
   rw [← equiv_fst_mul_equiv_snd (d.compl i) head₁,
       ← equiv_fst_mul_equiv_snd (d.compl i) head₂,
     h₁, h₃]
   simp
-
-@[simp]
-theorem app_surjInv_rangeRestrict {G H : Type*} [Group G] [Group H] (f : G →* H)
-    (x : MonoidHom.range f) :
-    f (surjInv (MonoidHom.rangeRestrict_surjective f) x) = x := by
-  show Subtype.val (MonoidHom.rangeRestrict f _) = x
-  rw [surjInv_eq (MonoidHom.rangeRestrict_surjective f)]
 
 noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
   letI toFun : NormalWord d → Pair d i :=
@@ -411,9 +403,10 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [rcons, Word.equivPair_symm, Word.equivPair_smul_same, app_surjInv_rangeRestrict,
-        Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, equiv_fst_eq_mul_inv, mul_assoc,
-        map_mul, map_inv, mul_smul, inv_smul_smul, smul_inv_smul]
+      simp only [rcons, MonoidHom.coe_range, Word.equivPair_symm,
+        Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
+        MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
+        mul_smul, inv_smul_smul, smul_inv_smul]
   { toFun := toFun
     invFun := rcons i
     left_inv := leftInv
@@ -459,7 +452,7 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
     simp only [summand_smul_def', equivPair, rcons, Word.equivPair_symm, Equiv.coe_fn_mk,
       Equiv.coe_fn_symm_mk, Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul,
       Word.rcons_eq_smul, equiv_fst_eq_mul_inv, map_mul, map_inv, mul_smul, inv_smul_smul,
-      smul_inv_smul, base_smul_def', app_surjInv_rangeRestrict]
+      smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
     base (φ := φ) h • w = { w with left := h * w.left } := by
@@ -519,7 +512,7 @@ theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
   apply ext_smul i
-  simp only [cons, ne_eq, MonoidHom.coe_range, Word.cons_eq_smul, app_surjInv_rangeRestrict,
+  simp only [cons, ne_eq, MonoidHom.coe_range, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,
     equivPair, rcons, Word.equivPair_symm, Word.rcons_eq_smul, Equiv.coe_fn_mk,
     Word.equivPair_tail_eq_inv_smul, Equiv.coe_fn_symm_mk, smul_inv_smul]
@@ -530,8 +523,8 @@ theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord d) :
   simp only [prod, summand_smul_def', equivPair, rcons, MonoidHom.coe_range, Word.equivPair_symm,
     Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, Word.equivPair_smul_same,
     Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, ← of_apply_eq_base i,
-    app_surjInv_rangeRestrict, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, Word.prod_smul,
-    ofCoprodI_of, inv_mul_cancel_left, mul_inv_cancel_left]
+    MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
+    Word.prod_smul, ofCoprodI_of, inv_mul_cancel_left, mul_inv_cancel_left]
 
 @[simp]
 theorem prod_base_smul (h : H) (w : NormalWord d) :
