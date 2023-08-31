@@ -104,7 +104,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
     -- Since γ is compact and Hausdorff, it is normal, hence T₃.
-    haveI : NormalSpace γ := normalOfCompactT2
+    haveI : T4Space γ := T4Space.of_compact_t2Space
     -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
     -- disjoint open neighborhoods U₁ and U₂.
     obtain

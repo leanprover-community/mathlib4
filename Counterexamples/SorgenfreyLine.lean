@@ -263,9 +263,9 @@ instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} 
       preimage_image_eq _ val_injective⟩
 
 /-- The Sorgenfrey plane `ℝₗ × ℝₗ` is not a normal space. -/
-theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
-  (isClosed_antidiagonal 0).not_normal_of_continuum_le_mk (cardinal_antidiagonal _).ge
-#align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
+theorem not_t4Space_prod : ¬T4Space (ℝₗ × ℝₗ) :=
+  (isClosed_antidiagonal 0).not_t4Space_of_continuum_le_mk (cardinal_antidiagonal _).ge
+#align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_t4Space_prod
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem isSeparable_antidiagonal (c : ℝₗ) : IsSeparable {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
@@ -342,7 +342,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
 theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
   intro
   letI := metrizableSpaceMetric ℝₗ
-  exact not_normalSpace_prod inferInstance
+  exact not_t4Space_prod inferInstance
 #align counterexample.sorgenfrey_line.not_metrizable_space Counterexample.SorgenfreyLine.not_metrizableSpace
 
 /-- Topology on the Sorgenfrey line is not second countable. -/

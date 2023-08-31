@@ -289,7 +289,7 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [LocallyCo
 
 /- Dieudonné's theorem: a paracompact Hausdorff space is normal. Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
-theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace X := by
+theorem T4Space.of_paracompact_t2Space [T2Space X] [ParacompactSpace X] : T4Space X := by
   -- First we show how to go from points to a set on one side.
   have : ∀ s t : Set X, IsClosed s → IsClosed t →
       (∀ x ∈ s, ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v) →
@@ -314,4 +314,4 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
     exact t2_separation (hst.symm.ne_of_mem hy hx))
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
-#align normal_of_paracompact_t2 normal_of_paracompact_t2
+#align normal_of_paracompact_t2 T4Space.of_paracompact_t2Space

@@ -57,8 +57,8 @@ instance : TopologicalSpace.SecondCountableTopology ℍ :=
 instance : T3Space ℍ :=
   Subtype.t3Space
 
-instance : NormalSpace ℍ :=
-  normalSpaceOfT3SecondCountable ℍ
+instance : T4Space ℍ :=
+  t4SpaceOfT3SecondCountable ℍ
 
 instance : ContractibleSpace ℍ :=
   (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩

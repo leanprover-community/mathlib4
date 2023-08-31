@@ -191,7 +191,7 @@ theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
     ⟨c, le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h'⟩
   letI : TopologicalSpace α := ⊥
-  haveI : NormalSpace γ := normalOfCompactT2
+  haveI : T4Space γ := T4Space.of_compact_t2Space
   exact denseInducing_pure.continuous_extend h
 #align continuous_ultrafilter_extend continuous_ultrafilter_extend
 

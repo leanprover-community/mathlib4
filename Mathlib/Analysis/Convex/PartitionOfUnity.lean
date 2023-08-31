@@ -39,7 +39,7 @@ theorem PartitionOfUnity.finsum_smul_mem_convex {s : Set X} (f : PartitionOfUnit
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 #align partition_of_unity.finsum_smul_mem_convex PartitionOfUnity.finsum_smul_mem_convex
 
-variable [NormalSpace X] [ParacompactSpace X] [TopologicalSpace E] [ContinuousAdd E]
+variable [T4Space X] [ParacompactSpace X] [TopologicalSpace E] [ContinuousAdd E]
   [ContinuousSMul ℝ E] {t : X → Set E}
 
 /-- Let `X` be a normal paracompact topological space (e.g., any extended metric space). Let `E` be

@@ -9,7 +9,7 @@ import Mathlib.Topology.TietzeExtension
 /-!
 # Not normal topological spaces
 
-In this file we prove (see `IsClosed.not_normal_of_continuum_le_mk`) that a separable space with a
+In this file we prove (see `IsClosed.not_t4Space_of_continuum_le_mk`) that a separable space with a
 discrete subspace of cardinality continuum is not a normal topological space.
 -/
 
@@ -23,7 +23,7 @@ then `s` has cardinality less than continuum.
 
 The proof follows
 https://en.wikipedia.org/wiki/Moore_plane#Proof_that_the_Moore_plane_is_not_normal -/
-theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
+theorem IsClosed.mk_lt_continuum [T4Space X] {s : Set X} (hs : IsClosed s)
     [DiscreteTopology s] : #s < 𝔠 := by
   -- Proof by contradiction: assume `𝔠 ≤ #s`
   by_contra' h
@@ -54,5 +54,5 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
 
 /-- Let `s` be a closed set in a separable space. If the induced topology on `s` is discrete and `s`
 has cardinality at least continuum, then the ambient space is not a normal space. -/
-theorem IsClosed.not_normal_of_continuum_le_mk {s : Set X} (hs : IsClosed s) [DiscreteTopology s]
-    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_le hmk
+theorem IsClosed.not_t4Space_of_continuum_le_mk {s : Set X} (hs : IsClosed s) [DiscreteTopology s]
+    (hmk : 𝔠 ≤ #s) : ¬T4Space X := fun _ ↦ hs.mk_lt_continuum.not_le hmk

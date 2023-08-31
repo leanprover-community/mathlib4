@@ -289,7 +289,7 @@ paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, se
 `BumpCovering.exists_isSubordinate`. This version assumes that `p : (X → ℝ) → Prop` is a predicate
 that satisfies Urysohn's lemma, and provides a `BumpCovering` such that each function of the
 covering satisfies `p`. -/
-theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X → ℝ) → Prop)
+theorem exists_isSubordinate_of_locallyFinite_of_prop [T4Space X] (p : (X → ℝ) → Prop)
     (h01 : ∀ s t, IsClosed s → IsClosed t → Disjoint s t →
       ∃ f : C(X, ℝ), p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsClosed s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
@@ -315,7 +315,7 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
 closed set `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. If `X` is a
 paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, see
 `BumpCovering.exists_isSubordinate`. -/
-theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) (U : ι → Set X)
+theorem exists_isSubordinate_of_locallyFinite [T4Space X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : BumpCovering ι X s, f.IsSubordinate U :=
   let ⟨f, _, hfU⟩ :=
@@ -330,7 +330,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
 `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. This version assumes that
 `p : (X → ℝ) → Prop` is a predicate that satisfies Urysohn's lemma, and provides a
 `BumpCovering` such that each function of the covering satisfies `p`. -/
-theorem exists_isSubordinate_of_prop [NormalSpace X] [ParacompactSpace X] (p : (X → ℝ) → Prop)
+theorem exists_isSubordinate_of_prop [T4Space X] [ParacompactSpace X] (p : (X → ℝ) → Prop)
     (h01 : ∀ s t, IsClosed s → IsClosed t → Disjoint s t →
       ∃ f : C(X, ℝ), p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsClosed s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
@@ -342,7 +342,7 @@ theorem exists_isSubordinate_of_prop [NormalSpace X] [ParacompactSpace X] (p : (
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
 `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. -/
-theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
+theorem exists_isSubordinate [T4Space X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U := by
   rcases precise_refinement_set hs _ ho hU with ⟨V, hVo, hsV, hVf, hVU⟩
   rcases exists_isSubordinate_of_locallyFinite hs V hVo hVf hsV with ⟨f, hf⟩
@@ -500,7 +500,7 @@ instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
 `s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. If `X` is a
 paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, see
 `BumpCovering.exists_isSubordinate`. -/
-theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) (U : ι → Set X)
+theorem exists_isSubordinate_of_locallyFinite [T4Space X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
   let ⟨f, hf⟩ := BumpCovering.exists_isSubordinate_of_locallyFinite hs U ho hf hU
@@ -509,7 +509,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
 `s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
-theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
+theorem exists_isSubordinate [T4Space X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
   let ⟨f, hf⟩ := BumpCovering.exists_isSubordinate hs U ho hU

@@ -166,8 +166,8 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
 -- see Note [lower instance priority]
-instance (priority := 100) normal_of_emetric [EMetricSpace α] : NormalSpace α :=
-  normal_of_paracompact_t2
+instance (priority := 100) normal_of_emetric [EMetricSpace α] : T4Space α :=
+  .of_paracompact_t2Space
 #align emetric.normal_of_emetric EMetric.normal_of_emetric
 
 end EMetric

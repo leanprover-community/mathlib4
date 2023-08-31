@@ -358,9 +358,9 @@ protected theorem closedEmbedding (h : α ≃ₜ β) : ClosedEmbedding h :=
   closedEmbedding_of_embedding_closed h.embedding h.isClosedMap
 #align homeomorph.closed_embedding Homeomorph.closedEmbedding
 
-protected theorem normalSpace [NormalSpace α] (h : α ≃ₜ β) : NormalSpace β :=
-  h.symm.closedEmbedding.normalSpace
-#align homeomorph.normal_space Homeomorph.normalSpace
+protected theorem t4Space [T4Space α] (h : α ≃ₜ β) : T4Space β :=
+  h.symm.closedEmbedding.t4Space
+#align homeomorph.normal_space Homeomorph.t4Space
 
 theorem preimage_closure (h : α ≃ₜ β) (s : Set β) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _

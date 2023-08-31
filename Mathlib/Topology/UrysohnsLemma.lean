@@ -90,7 +90,7 @@ structure CU (X : Type*) [TopologicalSpace X] where
 instance : Inhabited (CU X) :=
   ⟨⟨∅, univ, isClosed_empty, isOpen_univ, empty_subset _⟩⟩
 
-variable [NormalSpace X]
+variable [T4Space X]
 
 namespace CU
 
@@ -293,7 +293,7 @@ end CU
 
 end Urysohns
 
-variable [NormalSpace X]
+variable [T4Space X]
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
 then there exists a continuous function `f : X → ℝ` such that

@@ -459,12 +459,12 @@ instance [T1Space X] : T1Space (OnePoint X) where
 
 /-- The one point compactification of a locally compact Hausdorff space is a normal (hence,
 Hausdorff and regular) topological space. -/
-instance [LocallyCompactSpace X] [T2Space X] : NormalSpace (OnePoint X) := by
+instance [LocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := by
   have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z => by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
       disjoint_map coe_injective, ← principal_singleton, disjoint_principal_right, compl_infty]
     exact ⟨disjoint_nhds_cocompact z, range_mem_map⟩
-  suffices : T2Space (OnePoint X); exact normalOfCompactT2
+  suffices : T2Space (OnePoint X); exact T4Space.of_compact_t2Space
   refine t2Space_iff_disjoint_nhds.2 fun x y hxy => ?_
   induction x using OnePoint.rec <;> induction y using OnePoint.rec
   · exact (hxy rfl).elim
