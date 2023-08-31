@@ -333,6 +333,133 @@ theorem exists_right_transversal (g : G) : ∃ S ∈ rightTransversals (H : Set 
 #align subgroup.exists_right_transversal Subgroup.exists_right_transversal
 #align add_subgroup.exists_right_transversal AddSubgroup.exists_right_transversal
 
+namespace IsComplement
+
+noncomputable def equiv {S T : Set G} (hST : IsComplement S T) : G ≃ S × T :=
+  (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).symm
+
+variable (hST : IsComplement S T) (hHT : IsComplement H T) (hSK : IsComplement S K)
+
+@[simp]
+theorem equiv_fst_mul_equiv_snd (g : G) : ↑(hST.equiv g).fst * (hST.equiv g).snd = g :=
+  (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).right_inv g
+
+theorem equiv_fst_eq_mul_inv (g : G) : ↑(hST.equiv g).fst = g * ((hST.equiv g).snd : G)⁻¹ :=
+  eq_mul_inv_of_mul_eq (hST.equiv_fst_mul_equiv_snd g)
+
+theorem equiv_snd_eq_inv_mul (g : G) : ↑(hST.equiv g).snd = ((hST.equiv g).fst : G)⁻¹ * g :=
+  eq_inv_mul_of_mul_eq (hST.equiv_fst_mul_equiv_snd g)
+
+theorem equiv_fst_eq_of_leftCosetEquivalence {g₁ g₂ : G}
+    (h : LeftCosetEquivalence K g₁ g₂) : (hSK.equiv g₁).fst = (hSK.equiv g₂).fst := by
+  apply Subtype.val_injective
+  rcases mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁ with ⟨x, hx⟩
+  dsimp at hx
+  rw [hx.2 (hSK.equiv g₁).fst (hSK.equiv_snd_eq_inv_mul g₁ ▸ (hSK.equiv g₁).snd.prop),
+    hx.2 (hSK.equiv g₂).fst]
+  simp only [LeftCosetEquivalence, leftCoset, Set.image_mul_left, Set.ext_iff,
+    Set.mem_preimage, SetLike.mem_coe] at h
+  rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, h,
+    ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, ← hSK.equiv_snd_eq_inv_mul g₂]
+  exact Subtype.property _
+
+theorem equiv_snd_eq_of_rightCosetEquivalence {g₁ g₂ : G}
+    (h : RightCosetEquivalence H g₁ g₂) : (hHT.equiv g₁).snd = (hHT.equiv g₂).snd := by
+  apply Subtype.val_injective
+  rcases mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁ with ⟨x, hx⟩
+  dsimp at hx
+  rw [hx.2 (hHT.equiv g₁).snd (hHT.equiv_fst_eq_mul_inv g₁ ▸ (hHT.equiv g₁).fst.prop),
+    hx.2 (hHT.equiv g₂).snd]
+  simp only [RightCosetEquivalence, rightCoset, Set.image_mul_right, Set.ext_iff,
+    Set.mem_preimage, SetLike.mem_coe] at h
+  rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, h,
+    ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, ← hHT.equiv_fst_eq_mul_inv g₂]
+  exact Subtype.property _
+
+theorem leftCosetEquivalence_equiv_fst (g : G) :
+    LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
+  simp [LeftCosetEquivalence, leftCoset_eq_iff, equiv_fst_eq_mul_inv]
+
+theorem rightCosetEquivalence_equiv_snd (g : G) :
+    RightCosetEquivalence H g ((hHT.equiv g).snd : G) := by
+  simp [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]
+
+@[simp]
+theorem equiv_fst_equiv_fst (g : G) : (hSK.equiv (hSK.equiv g).fst).fst = (hSK.equiv g).fst :=
+  equiv_fst_eq_of_leftCosetEquivalence hSK (hSK.leftCosetEquivalence_equiv_fst g).symm
+
+@[simp]
+theorem equiv_snd_equiv_snd (g : G) : (hHT.equiv (hHT.equiv g).snd).snd = (hHT.equiv g).snd :=
+  equiv_snd_eq_of_rightCosetEquivalence hHT (hHT.rightCosetEquivalence_equiv_snd g).symm
+
+@[simp]
+theorem equiv_fst_mul_right (g : G) (k : K) :
+    (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
+  hSK.equiv_fst_eq_of_leftCosetEquivalence
+      (by simp [LeftCosetEquivalence, leftCoset_eq_iff])
+
+theorem equiv_fst_mul_right_of_mem {g k : G} (h : k ∈ K) :
+    (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
+  hSK.equiv_fst_eq_of_leftCosetEquivalence
+      (by simp [LeftCosetEquivalence, leftCoset_eq_iff, h])
+
+@[simp]
+theorem equiv_snd_mul_left (h : H) (g : G) :
+    (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
+  hHT.equiv_snd_eq_of_rightCosetEquivalence
+      (by simp [RightCosetEquivalence, rightCoset_eq_iff])
+
+theorem equiv_snd_mul_left_of_mem {h g : G} (hh : h ∈ H) :
+    (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
+  hHT.equiv_snd_eq_of_rightCosetEquivalence
+      (by simp [RightCosetEquivalence, rightCoset_eq_iff, hh])
+
+@[simp]
+theorem equiv_snd_mul_right (g : G) (k : K) :
+    (hSK.equiv (g * k)).snd = (hSK.equiv g).snd * k := by
+  ext
+  rw [coe_mul, equiv_snd_eq_inv_mul, equiv_fst_mul_right,
+    equiv_snd_eq_inv_mul, mul_assoc]
+
+@[simp]
+theorem equiv_fst_mul_left (h : H) (g : G) :
+    (hHT.equiv (h * g)).fst = h * (hHT.equiv g).fst := by
+  ext
+  rw [coe_mul, equiv_fst_eq_mul_inv, equiv_snd_mul_left,
+    equiv_fst_eq_mul_inv, ← mul_assoc]
+
+theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
+    hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
+
+theorem mem_iff_equiv_fst_eq_one {g : G} (h1 : 1 ∈ S) :
+    ((hSK.equiv g).fst : G) = 1 ↔ g ∈ K := by
+  constructor
+  · intro h
+    rw [equiv_fst_eq_mul_inv, mul_inv_eq_one] at h
+    rw [h]
+    exact Subtype.prop _
+  · intro h
+    have : ((hSK.equiv 1).fst : G) = 1 := by rw [hSK.equiv_one h1 (one_mem _)]
+    rw [← this, ← Subtype.ext_iff]
+    apply equiv_fst_eq_of_leftCosetEquivalence hSK _
+    rwa [LeftCosetEquivalence, leftCoset_eq_iff, mul_one, Subgroup.inv_mem_iff]
+
+theorem mem_iff_equiv_snd_eq_one {g : G} (h1 : 1 ∈ T) :
+    ((hHT.equiv g).snd : G) = 1 ↔ g ∈ H := by
+  constructor
+  · intro h
+    rw [equiv_snd_eq_inv_mul, inv_mul_eq_one] at h
+    rw [← h]
+    exact Subtype.prop _
+  · intro h
+    have : ((hHT.equiv 1).snd : G) = 1 := by rw [hHT.equiv_one (one_mem _) h1]
+    rw [← this, ← Subtype.ext_iff]
+    apply equiv_snd_eq_of_rightCosetEquivalence hHT _
+    rwa [RightCosetEquivalence, rightCoset_eq_iff, one_mul, Subgroup.inv_mem_iff]
+
+end IsComplement
+
 namespace MemLeftTransversals
 
 /-- A left transversal is in bijection with left cosets. -/
