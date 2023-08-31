@@ -106,27 +106,100 @@ instance : Category (PresheafOfModules R) where
   id := Hom.id
   comp f g := Hom.comp f g
 
-variable {P Q : PresheafOfModules R}
+namespace Hom
+
+variable {P Q T : PresheafOfModules R}
 
 /--
 The `(X : Cᵒᵖ)`-component of morphism between presheaves of modules
 over a presheaf of rings `R`, as an `R.obj X`-linear map. -/
-def Hom.app (f : Hom P Q) (X : Cᵒᵖ) : P.obj X →ₗ[R.obj X] Q.obj X :=
+def app (f : Hom P Q) (X : Cᵒᵖ) : P.obj X →ₗ[R.obj X] Q.obj X :=
   { toAddHom := (f.hom.app X).toAddHom
     map_smul' := f.map_smul X }
 
+@[simp]
+lemma comp_app (f : P ⟶ Q) (g : Q ⟶ T) (X : Cᵒᵖ) :
+    (f ≫ g).app X = (g.app X).comp (f.app X) := rfl
+
 @[ext]
-theorem Hom.ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
+theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   cases f; cases g;
   congr
   ext X x
   exact LinearMap.congr_fun (w X) x
 
+instance : Zero (P ⟶ Q) := ⟨mk 0 (by
+  intros
+  simp only [Limits.zero_app, AddMonoidHom.zero_apply, smul_zero])⟩
+
+variable (P Q)
+
+@[simp]
+lemma zero_app (X : Cᵒᵖ) : (0 : P ⟶ Q).app X = 0 := rfl
+
+variable {P Q}
+
+instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
+  intros
+  simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
+
+@[simp]
+lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
+
+instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
+  intros
+  rw [NatTrans.app_sub, AddMonoidHom.sub_apply, AddMonoidHom.sub_apply,
+    smul_sub, map_smul, map_smul])⟩
+
+@[simp]
+lemma sub_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f - g).app X = f.app X - g.app X := rfl
+
+instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
+  intros
+  rw [NatTrans.app_neg, AddMonoidHom.neg_apply, AddMonoidHom.neg_apply,
+    map_smul, smul_neg])⟩
+
+@[simp]
+lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ): (-f).app X = -f.app X := rfl
+
+instance : AddCommGroup (P ⟶ Q) where
+  add_assoc := by intros; ext1; simp only [add_app, add_assoc]
+  zero_add := by intros; ext1; simp only [add_app, zero_app, zero_add]
+  add_left_neg := by intros; ext1; simp only [add_app, neg_app, add_left_neg, zero_app]
+  add_zero := by intros; ext1; simp only [add_app, zero_app, add_zero]
+  add_comm := by intros; ext1; simp only [add_app]; apply add_comm
+  sub_eq_add_neg := by intros; ext1; simp only [add_app, sub_app, neg_app, sub_eq_add_neg]
+
+instance : Preadditive (PresheafOfModules R) where
+  add_comp := by intros; ext1; simp only [comp_app, add_app, comp_add]
+  comp_add := by intros; ext1; simp only [comp_app, add_app, add_comp]
+
+end Hom
+
+variable (R)
+
 /-- The functor from presheaves of modules over a specified presheaf of rings,
 to presheaves of abelian groups.
 -/
+@[simps obj]
 def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
   obj P := P.presheaf
   map f := f.hom
+
+variable {R}
+
+@[simp]
+lemma toPresheaf_map_app {P Q : PresheafOfModules R}
+    (f : P ⟶ Q) (X : Cᵒᵖ) :
+    ((toPresheaf R).map f).app X = (f.app X).toAddMonoidHom := rfl
+
+instance : (toPresheaf R).Additive where
+
+instance : Faithful (toPresheaf R) where
+  map_injective {P Q} f g h := by
+    ext X x
+    have eq := congr_app h X
+    simp only [toPresheaf_obj, toPresheaf_map_app] at eq
+    simp only [← toAddMonoidHom_coe, eq]
 
 end PresheafOfModules

@@ -174,7 +174,7 @@ theorem add_sq' (a b : R) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
   rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
 #align add_sq' add_sq'
 
-alias add_sq ← add_pow_two
+alias add_pow_two := add_sq
 #align add_pow_two add_pow_two
 
 end CommSemiring
@@ -219,10 +219,10 @@ theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 theorem neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 #align neg_one_sq neg_one_sq
 
-alias neg_sq ← neg_pow_two
+alias neg_pow_two := neg_sq
 #align neg_pow_two neg_pow_two
 
-alias neg_one_sq ← neg_one_pow_two
+alias neg_one_pow_two := neg_one_sq
 #align neg_one_pow_two neg_one_pow_two
 
 end HasDistribNeg
@@ -271,14 +271,14 @@ theorem sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) :=
   (Commute.all a b).sq_sub_sq
 #align sq_sub_sq sq_sub_sq
 
-alias sq_sub_sq ← pow_two_sub_pow_two
+alias pow_two_sub_pow_two := sq_sub_sq
 #align pow_two_sub_pow_two pow_two_sub_pow_two
 
 theorem sub_sq (a b : R) : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
   rw [sub_eq_add_neg, add_sq, neg_sq, mul_neg, ← sub_eq_add_neg]
 #align sub_sq sub_sq
 
-alias sub_sq ← sub_pow_two
+alias sub_pow_two := sub_sq
 #align sub_pow_two sub_pow_two
 
 theorem sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by

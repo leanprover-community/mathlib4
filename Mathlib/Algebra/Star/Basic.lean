@@ -149,7 +149,7 @@ theorem semiconjBy_star_star_star {x y z : R} :
   simp_rw [SemiconjBy, ← star_mul, star_inj, eq_comm]
 #align semiconj_by_star_star_star semiconjBy_star_star_star
 
-alias semiconjBy_star_star_star ↔ _ SemiconjBy.star_star_star
+alias ⟨_, SemiconjBy.star_star_star⟩ := semiconjBy_star_star_star
 #align semiconj_by.star_star_star SemiconjBy.star_star_star
 
 @[simp]
@@ -157,7 +157,7 @@ theorem commute_star_star {x y : R} : Commute (star x) (star y) ↔ Commute x y 
   semiconjBy_star_star_star
 #align commute_star_star commute_star_star
 
-alias commute_star_star ↔ _ Commute.star_star
+alias ⟨_, Commute.star_star⟩ := commute_star_star
 #align commute.star_star Commute.star_star
 
 theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
@@ -413,10 +413,10 @@ theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] [CommSemiring R] [St
 #align ring_hom.star_apply RingHom.star_apply
 
 -- A more convenient name for complex conjugation
-alias starRingEnd_self_apply ← Complex.conj_conj
+alias Complex.conj_conj := starRingEnd_self_apply
 #align complex.conj_conj Complex.conj_conj
 
-alias starRingEnd_self_apply ← IsROrC.conj_conj
+alias IsROrC.conj_conj := starRingEnd_self_apply
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_conj IsROrC.conj_conj
 
