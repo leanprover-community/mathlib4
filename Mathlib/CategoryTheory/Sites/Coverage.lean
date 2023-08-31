@@ -285,19 +285,15 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     intro X S hS
     apply saturate.of _ _ hS
 
-/-- The union of two coverages is a coverage. -/
-@[simps]
-protected def union (x y : Coverage C) : Coverage C where
-  covering B := x.covering B ∪ y.covering B
-  pullback := by
-    rintro X Y f S (hx | hy)
-    · obtain ⟨T, hT⟩ := x.pullback f S hx
-      exact ⟨T, Or.inl hT.1, hT.2⟩
-    · obtain ⟨T, hT⟩ := y.pullback f S hy
-      exact ⟨T, Or.inr hT.1, hT.2⟩
-
 instance : SemilatticeSup (Coverage C) where
-  sup x y := x.union y
+  sup x y :=
+  { covering := fun B ↦ x.covering B ∪ y.covering B
+    pullback := by
+      rintro X Y f S (hx | hy)
+      · obtain ⟨T, hT⟩ := x.pullback f S hx
+        exact ⟨T, Or.inl hT.1, hT.2⟩
+      · obtain ⟨T, hT⟩ := y.pullback f S hy
+        exact ⟨T, Or.inr hT.1, hT.2⟩ }
   toPartialOrder := inferInstance
   le_sup_left _ _ _ := Set.subset_union_left _ _
   le_sup_right _ _ _ := Set.subset_union_right _ _
@@ -307,8 +303,6 @@ instance : SemilatticeSup (Coverage C) where
 lemma sup_covering (x y : Coverage C) (B : C) :
     (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
   rfl
-
-lemma sup_eq_union (x y : Coverage C) : x ⊔ y = x.union y := rfl
 
 end Coverage
 
