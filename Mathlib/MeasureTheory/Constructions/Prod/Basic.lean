@@ -444,15 +444,16 @@ theorem AbsolutelyContinuous.prod [SigmaFinite ν'] (h1 : μ ≪ μ') (h2 : ν �
 #align measure_theory.measure.absolutely_continuous.prod MeasureTheory.Measure.AbsolutelyContinuous.prod
 
 /-- Note: the converse is not true. For a counterexample, see
-  Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
+  Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
+  measurable, see `ae_prod_mem_iff_ae_ae_mem`. -/
 theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p z) :
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
 #align measure_theory.measure.ae_ae_of_ae_prod MeasureTheory.Measure.ae_ae_of_ae_prod
 
-theorem ae_prod_mem_of_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s)
-    (h : ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s) : ∀ᵐ z ∂μ.prod ν, z ∈ s :=
-  (measure_prod_null hs.compl).2 h
+theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
+    (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
+  measure_prod_null hs.compl
 
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
 noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
