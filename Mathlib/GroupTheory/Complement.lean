@@ -432,7 +432,7 @@ theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
     hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
   rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
 
-theorem mem_iff_equiv_fst_eq_one {g : G} (h1 : 1 ∈ S) :
+theorem equiv_fst_eq_one_iff_mem {g : G} (h1 : 1 ∈ S) :
     ((hSK.equiv g).fst : G) = 1 ↔ g ∈ K := by
   constructor
   · intro h
@@ -445,7 +445,7 @@ theorem mem_iff_equiv_fst_eq_one {g : G} (h1 : 1 ∈ S) :
     apply equiv_fst_eq_of_leftCosetEquivalence hSK _
     rwa [LeftCosetEquivalence, leftCoset_eq_iff, mul_one, Subgroup.inv_mem_iff]
 
-theorem mem_iff_equiv_snd_eq_one {g : G} (h1 : 1 ∈ T) :
+theorem equiv_snd_eq_one_iff_mem {g : G} (h1 : 1 ∈ T) :
     ((hHT.equiv g).snd : G) = 1 ↔ g ∈ H := by
   constructor
   · intro h
@@ -457,6 +457,14 @@ theorem mem_iff_equiv_snd_eq_one {g : G} (h1 : 1 ∈ T) :
     rw [← this, ← Subtype.ext_iff]
     apply equiv_snd_eq_of_rightCosetEquivalence hHT _
     rwa [RightCosetEquivalence, rightCoset_eq_iff, one_mul, Subgroup.inv_mem_iff]
+
+theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
+    ((hSK.equiv g).fst : G) = 1 ↔ g ∈ K := by
+  rw [← equiv_fst_eq_one_iff_mem hSK h1, ← hSK.equiv_fst_equiv_fst g]
+
+theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
+    ((hHT.equiv g).snd : G) = 1 ↔ g ∈ H := by
+  rw [← equiv_snd_eq_one_iff_mem hHT h1, ← hHT.equiv_snd_equiv_snd g]
 
 end IsComplement
 
