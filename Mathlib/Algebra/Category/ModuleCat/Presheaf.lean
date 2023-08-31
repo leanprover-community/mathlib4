@@ -48,12 +48,12 @@ def semilinearMapEquiv {R S : Type*} [Ring R] [Ring S] (f : R →+* S)
     (M →ₛₗ[f] N) ≃ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
   toFun g :=
     { toFun := g
-      map_add' := fun x y => by simp
-      map_smul' := fun r x => by simp }
+      map_add' := by simp
+      map_smul' := by simp }
   invFun g :=
     { toFun := g
-      map_add' := fun x y => by simp
-      map_smul' := fun r x => g.map_smul r x }
+      map_add' := by simp
+      map_smul' := g.map_smul }
   left_inv f := rfl
   right_inv f := rfl
 
@@ -70,7 +70,7 @@ lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
   rfl
 
 @[simp]
-lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : (ModuleCat.restrictScalars f).obj M) :
+lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId' f hf).hom.app M x = x := by
   subst hf
   rfl
@@ -88,14 +88,13 @@ def restrictScalarsComp' :
   rfl
 
 @[simp]
-lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : (ModuleCat.restrictScalars gf).obj M) :
+lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp' f g gf hgf).hom.app M x = x := by
   subst hgf
   rfl
 
 @[simp]
-lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃)
-    (x : (ModuleCat.restrictScalars f).obj ((ModuleCat.restrictScalars g).obj M)) :
+lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp' f g gf hgf).inv.app M x = x := by
   subst hgf
   rfl

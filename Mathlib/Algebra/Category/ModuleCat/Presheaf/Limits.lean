@@ -2,88 +2,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
-universe v₃ v₂ v₁ v u₃ u₂ u₁ u
-
-namespace CategoryTheory
-
--- it is actually already there, as `preservesLimitIso`
-namespace Limits
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  {J : Type u₃} [Category.{v₃} J] {K : J ⥤ C}
-
-namespace IsLimit
-
-@[nolint unusedArguments]
-def comparison {c : Cone K} (_ : IsLimit c) (F : C ⥤ D)
-  {c' : Cone (K ⋙ F)} (hc' : IsLimit c') : F.obj c.pt ⟶ c'.pt :=
-  hc'.lift (F.mapCone c)
-
-variable {c : Cone K} (hc : IsLimit c) (F : C ⥤ D) {c' : Cone (K ⋙ F)} (hc' : IsLimit c')
-
-@[reassoc (attr := simp)]
-lemma comparison_π (j : J) :
-    comparison hc F hc' ≫ c'.π.app j = F.map (c.π.app j) :=
-  hc'.fac _ _
-
-variable [PreservesLimit K F]
-
-def comparisonIso : F.obj c.pt ≅ c'.pt :=
-  IsLimit.conePointUniqueUpToIso (isLimitOfPreserves F hc) hc'
-
-@[simp]
-lemma comparisonIso_hom :
-    (comparisonIso hc F hc').hom = comparison hc F hc' := rfl
-
-@[reassoc (attr := simp)]
-lemma comparisonIso_hom_inv_id :
-    comparison hc F hc' ≫ (comparisonIso hc F hc').inv = 𝟙 _ :=
-  (comparisonIso hc F hc').hom_inv_id
-
-@[reassoc (attr := simp)]
-lemma comparisonIso_inv_hom_id :
-     (comparisonIso hc F hc').inv ≫ comparison hc F hc' = 𝟙 _ :=
-  (comparisonIso hc F hc').inv_hom_id
-
-@[reassoc (attr := simp)]
-lemma comparisonInv_inv_map_π (j : J) :
-    (comparisonIso hc F hc').inv ≫ F.map (c.π.app j) = c'.π.app j :=
-  (isLimitOfPreserves F hc).fac _ _
-
-end IsLimit
-
-variable (K) (F : C ⥤ D) [HasLimit K] [HasLimit (K ⋙ F)]
-
-namespace limit
-
-noncomputable def comparison : F.obj (limit K) ⟶ limit (K ⋙ F) :=
-  IsLimit.comparison (limit.isLimit K) F (limit.isLimit (K ⋙ F))
-
-@[reassoc (attr := simp)]
-lemma comparison_π (j : J) :
-    comparison K F ≫ limit.π (K ⋙ F) j = F.map (limit.π K j) :=
-  IsLimit.comparison_π _ _ _ _
-
-variable [PreservesLimit K F]
-
-instance : IsIso (comparison K F) :=
-  IsIso.of_iso (IsLimit.comparisonIso (limit.isLimit K) F (limit.isLimit (K ⋙ F)))
-
-@[reassoc (attr := simp)]
-lemma inv_comparisonInv_map_π (j : J) :
-    inv (comparison K F) ≫ F.map (limit.π K j) = limit.π (K ⋙ F) j := by
-  simp only [← cancel_epi (comparison K F), IsIso.hom_inv_id_assoc, comparison_π]
-
-@[simps!]
-noncomputable def comparisonIso : F.obj (limit K) ≅ limit (K ⋙ F) :=
-  asIso (comparison K F)
-  -- should be replaced by `preservesLimitIso F K`
-
-end limit
-
-end Limits
-
-end CategoryTheory
+universe v₁ v₂ v₃ v u₁ u₂ u₃ u
 
 namespace PresheafOfModules
 
@@ -95,31 +14,6 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
   PreservesLimitsOfSize (ModuleCat.restrictScalars f) := sorry
 
 instance {R : Type u₁} [Ring R] : HasLimitsOfSize (ModuleCat.{v} R) := sorry
-
-section
-
-variable {R : Type u₁} {S : Type u₃} [Ring R] [Ring S] (f : R →+* S)
-  {J : Type u₂} [Category.{v₂} J] (F : J ⥤ ModuleCat.{v} S)
-
-/-noncomputable def restrictScalarsLimitIso :
-    (ModuleCat.restrictScalars.{v} f).obj (limit F) ≅ limit (F ⋙ ModuleCat.restrictScalars.{v} f) :=
-  limit.comparisonIso F (ModuleCat.restrictScalars.{v} f)
-
-@[reassoc (attr := simp)]
-lemma restrictScalarsLimitIso_hom_π (j : J) :
-    (restrictScalarsLimitIso f F).hom ≫ limit.π (F ⋙ ModuleCat.restrictScalars f) j =
-      (ModuleCat.restrictScalars f).map (limit.π F j) := by
-  dsimp only [restrictScalarsLimitIso]
-  simp
-
-@[reassoc (attr := simp)]
-lemma restrictScalarsLimitIso_inv_map_π  (j : J) :
-    (restrictScalarsLimitIso f F).inv ≫ (ModuleCat.restrictScalars f).map (limit.π F j) =
-      limit.π (F ⋙ ModuleCat.restrictScalars f) j := by
-  dsimp only [restrictScalarsLimitIso]
-  simp-/
-
-end
 
 noncomputable example (R : Type u) [Ring R] :
   PreservesLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) :=
@@ -152,32 +46,31 @@ section
 
 noncomputable def limitBundledMkStruct : BundledMkStruct R where
   obj X := limit (F ⋙ evaluation R X)
-  map {X Y} f := limMap (whiskerLeft F (restriction R f)) ≫ (limit.comparisonIso (F ⋙ evaluation R Y) ((ModuleCat.restrictScalars (R.map f)))).inv
+  map {X Y} f := limMap (whiskerLeft F (restriction R f)) ≫ (preservesLimitIso ((ModuleCat.restrictScalars (R.map f))) (F ⋙ evaluation R Y)).inv
   map_id := fun X => by
     dsimp
-    simp only [← cancel_mono (limit.comparisonIso (F ⋙ evaluation R X) ((ModuleCat.restrictScalars (R.map (𝟙 X))))).hom,
-      assoc, Iso.inv_hom_id, comp_id]
+    simp only [← cancel_mono (preservesLimitIso ((ModuleCat.restrictScalars (R.map (𝟙 X)))) (F ⋙ evaluation R X)).hom]
+    simp only [assoc, Iso.inv_hom_id, comp_id]
     apply limit.hom_ext
     intro j
-    simp only [assoc, limit.comparisonIso_hom, limit.comparison_π, limit.inv_comparisonInv_map_π]
-    erw [limMap_π]
+    erw [limMap_π, assoc, preservesLimitsIso_hom_π]
     simp only [← cancel_mono ((ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).hom.app ((F.obj j).obj X)),
       Functor.comp_obj, evaluation_obj, whiskerLeft_app, restriction_app_id,
-      Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id, CategoryTheory.Functor.map_id, NatTrans.naturality,
+      Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id, NatTrans.naturality,
       Functor.id_map, Iso.inv_hom_id_app_assoc]
   map_comp {X Y Z} f g := by
     dsimp
-    rw [← cancel_mono (limit.comparison (F ⋙ evaluation R Z) (ModuleCat.restrictScalars (R.map (f ≫ g))))]
-    simp only [assoc, IsIso.inv_hom_id, comp_id, Functor.map_comp]
+    simp only [← cancel_mono (preservesLimitIso ((ModuleCat.restrictScalars (R.map (f ≫ g)))) (F ⋙ evaluation R Z)).hom,
+      assoc, Iso.inv_hom_id, comp_id]
     apply limit.hom_ext
     intro j
-    simp only [limMap_π, Functor.map_comp, assoc]
-    erw [limit.comparison_π, restriction_app_comp]
-    simp only [evaluation_obj, Functor.comp_obj, Functor.map_comp, ← NatTrans.naturality]
+    simp only [limMap_π, Functor.comp_obj, evaluation_obj, whiskerLeft_app,
+      Functor.map_comp, assoc, restriction_app_comp]
+    erw [preservesLimitsIso_hom_π, ← NatTrans.naturality]
     dsimp
-    simp only [← Functor.map_comp_assoc, limit.inv_comparisonInv_map_π]
-    erw [limMap_π, Functor.map_comp_assoc, limit.inv_comparisonInv_map_π_assoc,
-      limMap_π_assoc]
+    simp only [← Functor.map_comp_assoc]
+    erw [preservesLimitsIso_inv_π, limMap_π, Functor.map_comp_assoc,
+      preservesLimitsIso_inv_π_assoc, limMap_π_assoc]
     rfl
 
 noncomputable def limitCone : Cone F where
@@ -185,7 +78,7 @@ noncomputable def limitCone : Cone F where
   π :=
     { app := fun j => Hom.mk'' (fun X => limit.π (F ⋙ evaluation R X) j) (fun X Y f => by
         dsimp
-        simp only [assoc, limit.inv_comparisonInv_map_π]
+        simp only [assoc, preservesLimitsIso_inv_π]
         apply limMap_π)
       naturality := fun i j φ => by
         dsimp
@@ -199,6 +92,12 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
 
 instance : HasLimitsOfShape J (PresheafOfModules.{v} R) where
   has_limit F := ⟨_, isLimitLimitCone F⟩
+
+noncomputable instance (X : Cᵒᵖ) : PreservesLimitsOfShape J (evaluation R X) where
+  preservesLimit :=
+    preservesLimitOfPreservesLimitCone (isLimitLimitCone _) (limit.isLimit _)
+
+#exit
 
 end
 
