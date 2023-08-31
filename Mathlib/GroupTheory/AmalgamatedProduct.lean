@@ -364,21 +364,20 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (hφ := hφ) i) := 
   simp
 
 noncomputable def equivPair (i) : NormalWord φ hφ ≃ Pair φ i :=
-  let toFun : NormalWord φ hφ → Pair φ i :=
+  letI toFun : NormalWord φ hφ → Pair φ i :=
     fun w =>
-      let p := Word.equivPair i (CoprodI.of (φ i w.left) • w.toWord)
+      letI p := Word.equivPair i (CoprodI.of (φ i w.left) • w.toWord)
       { toPair := p
         normalized := fun j g hg => by
           dsimp only at hg
           rw [Word.of_smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
-  have leftInv : Function.LeftInverse (rcons i) toFun :=
+  haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [rcons, Word.equivPair_symm, Word.smul_eq_of_smul, Eq.ndrec, eq_mp_eq_cast,
-        cast_eq, Word.rcons_eq_smul, ne_eq, id_eq, ← mul_smul, ← map_mul,
-        normalizeSingle_fst_mul_normalizeSingle_snd, Word.equivPair_smul_same]
-      simp only [map_mul, mul_smul, Word.equivPair_head_smul_equivPair_tail]
+      simp only [rcons, Word.equivPair_symm, Word.equivPair_smul_same,
+        Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, normalizeSingle_fst_eq, mul_assoc,
+        map_mul, map_inv, mul_smul, inv_smul_smul, smul_inv_smul]
   { toFun := toFun
     invFun := rcons i
     left_inv := leftInv
@@ -422,9 +421,9 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
     funext w
     apply NormalWord.ext_smul i
     simp only [summand_smul_def', equivPair, rcons, Word.equivPair_symm, Equiv.coe_fn_mk,
-      Equiv.coe_fn_symm_mk, Word.rcons_eq_smul, ← mul_smul, base_smul_def', ← map_mul,
-      normalizeSingle_fst_mul_normalizeSingle_snd, Word.equivPair_smul_same]
-    simp only [map_mul, mul_smul, Word.equivPair_head_smul_equivPair_tail]
+      Equiv.coe_fn_symm_mk, Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul,
+      Word.rcons_eq_smul, normalizeSingle_fst_eq, map_mul, map_inv, mul_smul, inv_smul_smul,
+      smul_inv_smul, base_smul_def']
 
 theorem base_smul_def (h : H) (w : NormalWord φ hφ) :
     base (φ := φ) h • w = { w with left := h * w.left } := by
@@ -479,31 +478,17 @@ theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
   apply ext_smul i
-  simp only [cons, ne_eq, Word.cons_eq_smul, summand_smul_def, equivPair, rcons,
-    Word.equivPair_symm, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, Word.rcons_eq_smul]
-  simp only [← mul_smul, ← map_mul, normalizeSingle_fst_mul_normalizeSingle_snd]
-  simp only [mul_smul, map_mul, Word.equivPair_head_smul_equivPair_tail]
+  simp only [cons, Word.cons_eq_smul, normalizeSingle_fst_eq, mul_assoc, map_mul, map_inv, mul_smul,
+    inv_smul_smul, summand_smul_def, equivPair, rcons, Word.equivPair_symm, Word.rcons_eq_smul,
+    Equiv.coe_fn_mk, Word.equivPair_tail_eq_inv_smul, Equiv.coe_fn_symm_mk, smul_inv_smul]
 
 @[simp]
 theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord φ hφ) :
-    (g • w).prod = of i g * w.prod :=
-  calc (g • w).prod =
-    ((equivPair i).symm
-      { equivPair i w with head := g * (equivPair i w).head }).prod := rfl
-    _ = of i (g * (φ i) w.left * ((Word.equivPair i) w.toWord).head) *
-        ofCoprodI (Word.prod ((Word.equivPair i) w.toWord).tail) := by
-      simp only [prod, rcons, equivPair, Word.rcons_eq_smul, Word.equivPair_symm,
-        Word.prod_smul, Word.equivPair_smul_same]
-      dsimp
-      simp only [Word.prod_smul, map_mul, ofCoprodI_of, ← mul_assoc]
-      simp only [← of_apply_eq_base i, ← map_mul, normalizeSingle_fst_mul_normalizeSingle_snd]
-    _ = of i g * of i ((φ i) w.left) * ofCoprodI
-        (CoprodI.of ((Word.equivPair i) w.toWord).head *
-          Word.prod ((Word.equivPair i) w.toWord).tail) := by
-      rw [map_mul, map_mul, map_mul, ofCoprodI_of, mul_assoc]
-    _ = _ := by
-      rw [← Word.prod_smul, Word.equivPair_head_smul_equivPair_tail, prod, mul_assoc,
-        of_apply_eq_base]
+    (g • w).prod = of i g * w.prod := by
+  simp only [prod, summand_smul_def', equivPair, rcons, Word.equivPair_symm, Equiv.coe_fn_mk,
+    Equiv.coe_fn_symm_mk, Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul,
+    Word.rcons_eq_smul, ← of_apply_eq_base i, normalizeSingle_fst_eq, mul_assoc, map_mul, map_inv,
+    Word.prod_smul, ofCoprodI_of, inv_mul_cancel_left, mul_inv_cancel_left]
 
 @[simp]
 theorem prod_base_smul (h : H) (w : NormalWord φ hφ) :
@@ -525,10 +510,7 @@ theorem prod_empty : (empty : NormalWord φ hφ).prod = 1 := by
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, Word.cons, List.prod_cons,
-    List.map_cons, map_mul, ofCoprodI_of, ← mul_assoc,
-    ← of_apply_eq_base i, normalizeSingle_fst_eq φ]
-  simp only [mul_assoc, ← map_mul, ← map_inv, inv_mul_self, mul_one]
+  simp [prod, cons, Word.prod, List.map, ← of_apply_eq_base i, normalizeSingle_fst_eq φ, mul_assoc]
 
 theorem prod_smul_empty (w : NormalWord φ hφ) : w.prod • empty = w := by
   induction w using consRecOn with

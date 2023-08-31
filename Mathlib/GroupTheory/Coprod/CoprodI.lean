@@ -599,6 +599,11 @@ theorem equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
     of (equivPair i w).head • (equivPair i w).tail = w := by
   rw [← rcons_eq_smul, ← equivPair_symm, Equiv.symm_apply_apply]
 
+theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
+    [∀i, DecidableEq (G i)] {i} (w : Word G) :
+    (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
+  Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
+
 theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
     (h_smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w := by
   induction w using consRecOn with
