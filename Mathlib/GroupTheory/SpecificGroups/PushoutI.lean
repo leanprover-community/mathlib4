@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.GroupTheory.SpecificGroups.CoprodI
+import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.SpecificGroups.Coprod
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Complement
