@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Tactic.Abel
+import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.RingDivision
 
 #align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
@@ -58,6 +60,20 @@ theorem pochhammer_one : pochhammer S 1 = X := by simp [pochhammer]
 theorem pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer S n).comp (X + 1) :=
   by rw [pochhammer]
 #align pochhammer_succ_left pochhammer_succ_left
+
+theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S]:
+    (pochhammer S n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have h := natDegree_X_add_C (1 : S)
+    rw [map_one] at h
+    rw [pochhammer_succ_left, natDegree_mul X_ne_zero, natDegree_comp, hn]
+    · rw [h, mul_one, natDegree_X, Nat.succ_eq_one_add]
+    · induction' n with n _
+      · simp
+      · refine' @ne_zero_of_natDegree_gt _ _ _ 0 _
+        simp only [natDegree_comp, CanonicallyOrderedCommSemiring.mul_pos]
+        exact ⟨Nat.lt_of_sub_eq_succ hn, Nat.lt_of_sub_eq_succ h⟩
 
 section
 
