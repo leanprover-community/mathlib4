@@ -1448,15 +1448,15 @@ instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
       exact Iff.mp nmem_singleton_empty this
     choose a ha using A
     have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
-      apply atTop_eq_generate_of_forall_exists_le
-      intro x
+      apply atTop_eq_generate_of_not_bddAbove
+      intro ⟨x, hx⟩
       simp only [IsTop, not_exists, not_forall, not_le] at h
       rcases h x with ⟨y, hy⟩
       obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
         hb.exists_subset_of_mem_open hy isOpen_Ioi
-      refine ⟨a ⟨s, sb⟩, mem_range_self _, ?_⟩
-      apply le_of_lt (hs _)
-      exact ha _
+      have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
+      have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
+      exact lt_irrefl _ (I.trans_lt J)
     rw [this]
     exact ⟨_, (countable_range _).image _, rfl⟩
 
