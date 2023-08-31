@@ -68,6 +68,16 @@ class HasPullbacksOfInclusions : Prop where
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α),
     HasPullback f (i a)
 
+instance {α : Type _} (Y : (a : α) → C) [HasCoproduct Y] :
+    IsIso (Sigma.desc (fun a ↦ Sigma.ι Y a)) := by
+  suffices (Sigma.desc fun a ↦ Sigma.ι Y a) = 𝟙 _ by rw [this]; infer_instance
+  ext
+  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
+
+instance [HasPullbacksOfInclusions C] {X : C} {α : Type _} (Y : (a : α) → C)
+    [Fintype α] [HasCoproduct Y] (f : X ⟶ ∐ Y) (a : α) :
+    HasPullback f (Sigma.ι Y a) := HasPullbacksOfInclusions.has_pullback f (fun a ↦ Sigma.ι Y a) a
+
 instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
     HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
@@ -125,5 +135,18 @@ def extensiveCoverage [Extensive C] : Coverage C where
       refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
       rw [hS]
       refine Presieve.ofArrows.mk a
+
+instance [Regular C] [Extensive C] : Precoherent C where
+  pullback f α _ X₁ π₁ _ := by
+    haveI : EffectiveEpi (Sigma.desc π₁) := inferInstance
+    obtain ⟨W, h, _, i, hh⟩ := Regular.exists_fac f (Sigma.desc π₁)
+    have hi := Extensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) i inferInstance
+    let P := fun a ↦ pullback i (Sigma.ι X₁ a)
+    refine ⟨α, inferInstance, P, fun a ↦ pullback.fst ≫ h,
+      ⟨inferInstance, ⟨id, fun b ↦ pullback.snd, ?_⟩⟩⟩
+    intro b
+    simp only [id_eq, Category.assoc, ← hh]
+    rw [← Category.assoc, pullback.condition]
+    simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
 
 end CategoryTheory
