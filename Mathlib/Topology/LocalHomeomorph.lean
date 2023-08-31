@@ -49,12 +49,12 @@ open Function Set Filter Topology
 
 open TopologicalSpace (SecondCountableTopology)
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} [TopologicalSpace α]
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
 /-- local homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
-structure LocalHomeomorph (α : Type _) (β : Type _) [TopologicalSpace α]
+structure LocalHomeomorph (α : Type*) (β : Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends LocalEquiv α β where
   open_source : IsOpen source
   open_target : IsOpen target
@@ -194,14 +194,22 @@ protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_homeomorph.surj_on LocalHomeomorph.surjOn
 
-/-- A homeomorphism induces a local homeomorphism on the whole space -/
-@[simps! (config := mfld_cfg)]
-def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β where
-  toLocalEquiv := e.toEquiv.toLocalEquiv
-  open_source := isOpen_univ
-  open_target := isOpen_univ
+/-- Interpret a `Homeomorph` as a `LocalHomeomorph` by restricting it
+to an open set `s` in the domain and to `t` in the codomain. -/
+@[simps! (config := .asFn) apply symm_apply toLocalEquiv,
+  simps! (config := .lemmasOnly) source target]
+def _root_.Homeomorph.toLocalHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α) (hs : IsOpen s)
+    (t : Set β) (h : e '' s = t) : LocalHomeomorph α β where
+  toLocalEquiv := e.toLocalEquivOfImageEq s t h
+  open_source := hs
+  open_target := by simpa [← h]
   continuous_toFun := e.continuous.continuousOn
   continuous_invFun := e.symm.continuous.continuousOn
+
+/-- A homeomorphism induces a local homeomorphism on the whole space -/
+@[simps! (config := mfld_cfg)]
+def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β :=
+  e.toLocalHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
 #align homeomorph.to_local_homeomorph Homeomorph.toLocalHomeomorph
 
 /-- Replace `toLocalEquiv` field to provide better definitional equalities. -/
@@ -506,7 +514,7 @@ theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source �
   LocalEquiv.IsImage.iff_preimage_eq
 #align local_homeomorph.is_image.iff_preimage_eq LocalHomeomorph.IsImage.iff_preimage_eq
 
-alias iff_preimage_eq ↔ preimage_eq of_preimage_eq
+alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 #align local_homeomorph.is_image.preimage_eq LocalHomeomorph.IsImage.preimage_eq
 #align local_homeomorph.is_image.of_preimage_eq LocalHomeomorph.IsImage.of_preimage_eq
 
@@ -514,7 +522,7 @@ theorem iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = 
   symm_iff.symm.trans iff_preimage_eq
 #align local_homeomorph.is_image.iff_symm_preimage_eq LocalHomeomorph.IsImage.iff_symm_preimage_eq
 
-alias iff_symm_preimage_eq ↔ symm_preimage_eq of_symm_preimage_eq
+alias ⟨symm_preimage_eq, of_symm_preimage_eq⟩ := iff_symm_preimage_eq
 #align local_homeomorph.is_image.symm_preimage_eq LocalHomeomorph.IsImage.symm_preimage_eq
 #align local_homeomorph.is_image.of_symm_preimage_eq LocalHomeomorph.IsImage.of_symm_preimage_eq
 
@@ -523,7 +531,7 @@ theorem iff_symm_preimage_eq' :
   rw [iff_symm_preimage_eq, ← image_source_inter_eq, ← image_source_inter_eq']
 #align local_homeomorph.is_image.iff_symm_preimage_eq' LocalHomeomorph.IsImage.iff_symm_preimage_eq'
 
-alias iff_symm_preimage_eq' ↔ symm_preimage_eq' of_symm_preimage_eq'
+alias ⟨symm_preimage_eq', of_symm_preimage_eq'⟩ := iff_symm_preimage_eq'
 #align local_homeomorph.is_image.symm_preimage_eq' LocalHomeomorph.IsImage.symm_preimage_eq'
 #align local_homeomorph.is_image.of_symm_preimage_eq' LocalHomeomorph.IsImage.of_symm_preimage_eq'
 
@@ -531,7 +539,7 @@ theorem iff_preimage_eq' : e.IsImage s t ↔ e.source ∩ e ⁻¹' (e.target ∩
   symm_iff.symm.trans iff_symm_preimage_eq'
 #align local_homeomorph.is_image.iff_preimage_eq' LocalHomeomorph.IsImage.iff_preimage_eq'
 
-alias iff_preimage_eq' ↔ preimage_eq' of_preimage_eq'
+alias ⟨preimage_eq', of_preimage_eq'⟩ := iff_preimage_eq'
 #align local_homeomorph.is_image.preimage_eq' LocalHomeomorph.IsImage.preimage_eq'
 #align local_homeomorph.is_image.of_preimage_eq' LocalHomeomorph.IsImage.of_preimage_eq'
 
@@ -728,7 +736,7 @@ theorem restr_source_inter (s : Set α) : e.restr (e.source ∩ s) = e.restr s :
 
 /-- The identity on the whole space as a local homeomorphism. -/
 @[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
-protected def refl (α : Type _) [TopologicalSpace α] : LocalHomeomorph α α :=
+protected def refl (α : Type*) [TopologicalSpace α] : LocalHomeomorph α α :=
   (Homeomorph.refl α).toLocalHomeomorph
 #align local_homeomorph.refl LocalHomeomorph.refl
 
@@ -1023,13 +1031,13 @@ theorem prod_symm (e : LocalHomeomorph α β) (e' : LocalHomeomorph γ δ) :
 #align local_homeomorph.prod_symm LocalHomeomorph.prod_symm
 
 @[simp]
-theorem refl_prod_refl {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] :
+theorem refl_prod_refl {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] :
     (LocalHomeomorph.refl α).prod (LocalHomeomorph.refl β) = LocalHomeomorph.refl (α × β) :=
   LocalHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) univ_prod_univ
 #align local_homeomorph.refl_prod_refl LocalHomeomorph.refl_prod_refl
 
 @[simp, mfld_simps]
-theorem prod_trans {η : Type _} {ε : Type _} [TopologicalSpace η] [TopologicalSpace ε]
+theorem prod_trans {η : Type*} {ε : Type*} [TopologicalSpace η] [TopologicalSpace ε]
     (e : LocalHomeomorph α β) (f : LocalHomeomorph β γ) (e' : LocalHomeomorph δ η)
     (f' : LocalHomeomorph η ε) : (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
   toLocalEquiv_injective <| e.1.prod_trans ..
@@ -1112,7 +1120,7 @@ end Piecewise
 
 section Pi
 
-variable {ι : Type _} [Fintype ι] {Xi Yi : ι → Type _} [∀ i, TopologicalSpace (Xi i)]
+variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpace (Xi i)]
   [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, LocalHomeomorph (Xi i) (Yi i))
 
 /-- The product of a finite family of `LocalHomeomorph`s. -/

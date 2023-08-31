@@ -7,14 +7,14 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
-# Birkhoff sum and Birkhoff average
+# Birkhoff sums
 
 In this file we define `birkhoffSum f g n x` to be the sum `∑ k in Finset.range n, g (f^[k] x)`.
 This sum (more precisely, the corresponding average `n⁻¹ • birkhoffSum f g n x`)
 appears in various ergodic theorems
 saying that these averages converge to the "space average" `⨍ x, g x ∂μ` in some sense.
 
-See also `birkhoffAverage` defined elsewhere.
+See also `birkhoffAverage` defined in `Dynamics/BirkhoffSum/Average`.
 -/
 
 open Finset Function
@@ -22,7 +22,7 @@ open scoped BigOperators
 
 section AddCommMonoid
 
-variable {α M : Type _} [AddCommMonoid M]
+variable {α M : Type*} [AddCommMonoid M]
 
 /-- The sum of values of `g` on the first `n` points of the orbit of `x` under `f`. -/
 def birkhoffSum (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := ∑ k in range n, g (f^[k] x)
@@ -57,7 +57,7 @@ theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedP
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
-theorem map_birkhoffSum {F N : Type _} [AddCommMonoid N] [AddMonoidHomClass F M N]
+theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [AddMonoidHomClass F M N]
     (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
@@ -66,9 +66,9 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable {α G : Type _} [AddCommGroup G]
+variable {α G : Type*} [AddCommGroup G]
 
-/-- Birkhofff sum is "almost invariant" under `f`:
+/-- Birkhoff sum is "almost invariant" under `f`:
 the difference between `birkhoffSum f g n (f x)` and `birkhoffSum f g n x`
 is equal to `g (f^[n] x) - g x`. -/
 theorem birkhoffSum_apply_sub_birkhoffSum (f : α → α) (g : α → G) (n : ℕ) (x : α) :

@@ -20,7 +20,7 @@ namespace Quiver
 
 universe v v₁ v₂ u u₁ u₂
 
-variable {V : Type _} [Quiver V] {W : Type _} (σ : V → W)
+variable {V : Type*} [Quiver V] {W : Type*} (σ : V → W)
 
 /-- The `Quiver` instance obtained by pushing arrows of `V` along the map `σ : V → W` -/
 @[nolint unusedArguments]
@@ -52,7 +52,7 @@ theorem of_obj : (of σ).obj = σ :=
   rfl
 #align quiver.push.of_obj Quiver.Push.of_obj
 
-variable {W' : Type _} [Quiver W'] (φ : V ⥤q W') (τ : W → W') (h : ∀ x, φ.obj x = τ (σ x))
+variable {W' : Type*} [Quiver W'] (φ : V ⥤q W') (τ : W → W') (h : ∀ x, φ.obj x = τ (σ x))
 
 /-- Given a function `τ : W → W'` and a prefunctor `φ : V ⥤q W'`, one can extend `τ` to be
 a prefunctor `W ⥤q W'` if `τ` and `σ` factorize `φ` at the level of objects, where `W` is given

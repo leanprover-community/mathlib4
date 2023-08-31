@@ -33,7 +33,7 @@ open BigOperators Pointwise
 
 namespace Subgroup
 
-variable {G : Type _} [Group G] (H K : Subgroup G) (S T : Set G)
+variable {G : Type*} [Group G] (H K : Subgroup G) (S T : Set G)
 
 /-- `S` and `T` are complements if `(*) : S × T → G` is a bijection.
   This notion generalizes left transversals, right transversals, and complementary subgroups. -/
@@ -437,7 +437,7 @@ section Action
 
 open Pointwise MulAction MemLeftTransversals
 
-variable {F : Type _} [Group F] [MulAction F G] [QuotientAction F H]
+variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 
 @[to_additive]
 noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
@@ -547,7 +547,7 @@ theorem isComplement'_of_coprime [Fintype G] [Fintype H] [Fintype K]
   isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
 #align subgroup.is_complement'_of_coprime Subgroup.isComplement'_of_coprime
 
-theorem isComplement'_stabilizer {α : Type _} [MulAction G α] (a : α)
+theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
     IsComplement' H (MulAction.stabilizer G a) := by
   refine' isComplement_iff_existsUnique.mpr fun g => _

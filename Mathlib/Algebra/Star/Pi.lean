@@ -43,7 +43,7 @@ instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f 
 instance [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i)
     where star_involutive _ := funext fun _ => star_star _
 
-instance [∀ i, Semigroup (f i)] [∀ i, StarSemigroup (f i)] : StarSemigroup (∀ i, f i)
+instance [∀ i, Mul (f i)] [∀ i, StarMul (f i)] : StarMul (∀ i, f i)
     where star_mul _ _ := funext fun _ => star_mul _ _
 
 instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i)
@@ -70,7 +70,7 @@ theorem update_star [∀ i, Star (f i)] [DecidableEq I] (h : ∀ i : I, f i) (i 
   funext fun j => (apply_update (fun _ => star) h i a j).symm
 #align function.update_star Function.update_star
 
-theorem star_sum_elim {I J α : Type _} (x : I → α) (y : J → α) [Star α] :
+theorem star_sum_elim {I J α : Type*} (x : I → α) (y : J → α) [Star α] :
     star (Sum.elim x y) = Sum.elim (star x) (star y) := by
   ext x; cases x <;> simp only [Pi.star_apply, Sum.elim_inl, Sum.elim_inr]
 #align function.star_sum_elim Function.star_sum_elim
