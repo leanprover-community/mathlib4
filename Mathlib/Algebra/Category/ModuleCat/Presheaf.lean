@@ -302,4 +302,32 @@ the structure `MkStruct`. -/
 def mk' (M : MkStruct R) : PresheafOfModules R where
   presheaf := M.presheaf
 
+@[simp]
+lemma mk'_obj (M : MkStruct R) (X : Cᵒᵖ) :
+    (mk' M).obj X = ModuleCat.of _ (M.obj X) := rfl
+
+namespace Hom
+
+variable {P Q : PresheafOfModules R}
+  (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
+  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+    (restriction R f).app P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
+      ModuleCat.ofHom (app X) ≫ (restriction R f).app Q)
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`, and for which the
+naturality condition is stated using the restriction of scalars. -/
+def mk'' : P ⟶ Q where
+  hom :=
+    { app := fun X => (app X).toAddMonoidHom
+      naturality := fun X Y f => by
+        ext x
+        exact congr_hom (naturality f) x }
+  map_smul X := (app X).map_smul
+
+@[simp]
+lemma mk''_app : (mk'' app naturality).app = app := rfl
+
+end Hom
+
 end PresheafOfModules
