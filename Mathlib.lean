@@ -1,4 +1,8 @@
 import Mathlib.Algebra.Abs
+import Mathlib.Algebra.AddConstMap.Basic
+import Mathlib.Algebra.AddConstMap.Equiv
+import Mathlib.Algebra.AddConstMap.Mono.Basic
+import Mathlib.Algebra.AddConstMap.Order
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear

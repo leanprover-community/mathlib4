@@ -7,7 +7,7 @@ namespace AddConstMap
 
 section Order
 
-variable [Add G] [Add H]
+variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 
 instance (priority := low) [LE H] : LE (G →+c[a, b] H) where
   le f g := (f : G → H) ≤ g
@@ -74,7 +74,7 @@ protected theorem isLUB_sSup {s : Set (G →+c[a, b] H)} (hne : s.Nonempty) (hbd
     rw [coe_sSup hne hbdd]
     exact isLUB_ciSup_set (coe_mono.map_bddAbove hbdd) hne
 
-theorem coe_iSup [Nonempty ι] {f : ι → G →+c[a, b] H} (hf : BddAbove (range f)) :
+theorem coe_iSup {ι : Sort*} [Nonempty ι] {f : ι → G →+c[a, b] H} (hf : BddAbove (range f)) :
     ⇑(⨆ i, f i) = ⨆ i, ⇑(f i) := by
   rw [iSup, coe_sSup (range_nonempty f) hf, iSup_range']
 
@@ -82,7 +82,7 @@ protected theorem sSup_apply {s : Set (G →+c[a, b] H)} (hne : s.Nonempty) (hbd
     (x : G) : sSup s x = ⨆ f : s, f.1 x := by
   rw [coe_sSup hne hbdd, iSup_apply]
 
-protected theorem iSup_apply [Nonempty ι] {f : ι → G →+c[a, b] H}
+protected theorem iSup_apply {ι : Sort*} [Nonempty ι] {f : ι → G →+c[a, b] H}
     (hf : BddAbove (range f)) (x : G) : (⨆ i, f i) x = ⨆ i, f i x := by
   rw [coe_iSup hf, iSup_apply]
 
@@ -97,7 +97,7 @@ protected theorem isGLB_sInf {s : Set (G →+c[a, b] H)} (hne : s.Nonempty) (hbd
     IsGLB s (sInf s) :=
   letI : Inhabited (G →+c[a, b] Hᵒᵈ) := ‹_›; AddConstMap.isLUB_sSup (H := Hᵒᵈ) hne hbdd
 
-theorem coe_iInf [Nonempty ι] {f : ι → G →+c[a, b] H} (hf : BddBelow (range f)) :
+theorem coe_iInf {ι : Sort*} [Nonempty ι] {f : ι → G →+c[a, b] H} (hf : BddBelow (range f)) :
     ⇑(⨅ i, f i) = ⨅ i, ⇑(f i) := by
   rw [iInf, coe_sInf (range_nonempty f) hf, iInf_range']
 
@@ -105,12 +105,12 @@ protected theorem sInf_apply {s : Set (G →+c[a, b] H)} (hne : s.Nonempty) (hbd
     (x : G) : sInf s x = ⨅ f : s, f.1 x := by
   rw [coe_sInf hne hbdd, iInf_apply]
 
-protected theorem iInf_apply [Nonempty ι] {f : ι → G →+c[a, b] H}
+protected theorem iInf_apply {ι : Sort*} [Nonempty ι] {f : ι → G →+c[a, b] H}
     (hf : BddBelow (range f)) (x : G) : (⨅ i, f i) x = ⨅ i, f i x := by
   rw [coe_iInf hf, iInf_apply]
 
 noncomputable instance : ConditionallyCompleteLattice (G →+c[a, b] H) where
-  __ := AddConstMap.lattice
+  toLattice := AddConstMap.lattice
   le_csSup _s f hs hf := (AddConstMap.isLUB_sSup ⟨f, hf⟩ hs).1 hf
   csSup_le _s f hs hf := (AddConstMap.isLUB_sSup hs ⟨f, hf⟩).2 hf
   csInf_le _s f hs hf := (AddConstMap.isGLB_sInf ⟨f, hf⟩ hs).1 hf

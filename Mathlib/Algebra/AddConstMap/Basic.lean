@@ -27,7 +27,7 @@ open Function Set
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
-structure AddConstMap (G H : Type _) [Add G] [Add H] (a : G) (b : H) where
+structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   /-- The underlying function of an `AddConstMap`.
   Use automatic coercion to function instead. -/
   protected toFun : G → H
@@ -42,7 +42,7 @@ notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
 Note that `a` and `b` are `outParam`s,
 so one should not add instances like
 `[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
-class AddConstMapClass (F : Type _) (G H : outParam (Type _)) [Add G] [Add H]
+class AddConstMapClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
     (a : outParam G) (b : outParam H) extends FunLike F G fun _ ↦ H where
   /-- A map of `AddConstMapClass` class semiconjugages shift by `a` to the shift by `b`:
   `∀ x, f (x + a) = f x + b`. -/
@@ -57,6 +57,8 @@ In this section we prove properties like `f (x + n • a) = f x + n • b`.
 -/
 
 attribute [simp] map_add_const
+
+variable {F G H : Type*} {a : G} {b : H}
 
 protected theorem semiconj [Add G] [Add H] [AddConstMapClass F G H a b] (f : F) :
     Semiconj f (· + a) (· + b) :=
@@ -214,8 +216,10 @@ theorem map_int_add' [AddCommGroupWithOne G] [AddGroup H] [AddConstMapClass F G 
 theorem map_int_add [AddCommGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n := by simp
 
-theorem map_fract [LinearOrderedRing R] [FloorRing R] [AddGroup H] [AddConstMapClass F R H 1 b]
-    (f : F) (x : R) : f (Int.fract x) = f x - ⌊x⌋ • b := map_sub_int' ..
+theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
+    [AddConstMapClass F R H 1 b] (f : F) (x : R) :
+    f (Int.fract x) = f x - ⌊x⌋ • b :=
+  map_sub_int' ..
 
 theorem monotone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) : Monotone f ↔ MonotoneOn f (Icc 0 a) := by
@@ -283,7 +287,7 @@ namespace AddConstMap
 
 section Add
 
-variable {G H : Type _} [Add G] [Add H] {a : G} {b : H}
+variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 
 /-!
 ### Coercion to function
@@ -314,7 +318,7 @@ instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
 
 /-- Composition of two `AddConstMap`s. -/
 @[simps (config := .asFn)]
-def comp {K : Type _} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H) :
+def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H) :
     G →+c[a, c] K :=
   ⟨g ∘ f, by simp⟩
 
@@ -333,15 +337,15 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 -/
 
 /-- If `f` is an `AddConstMap`, then so is `(c +ᵥ f ·)`. -/
-instance {K : Type _} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
+instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
 @[simp]
-theorem coe_vadd {K : Type _} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G →+c[a, b] H) :
+theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G →+c[a, b] H) :
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
 
-instance {K : Type _} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
+instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
     AddAction K (G →+c[a, b] H) :=
   FunLike.coe_injective.addAction _ coe_vadd
 
@@ -372,7 +376,7 @@ end Add
 
 section AddZeroClass
 
-variable {G H K : Type _} [Add G] [AddZeroClass H]
+variable {G H K : Type*} [Add G] [AddZeroClass H] {a : G} {b : H}
 
 /-!
 ### Multiplicative action on `(b : H) × (G →+c[a, b] H)`
@@ -394,7 +398,7 @@ end AddZeroClass
 
 section AddMonoid
 
-variable [AddMonoid G] {a : G}
+variable {G : Type*} [AddMonoid G] {a : G}
 
 /-- The map that sends `c` to a translation by `c`
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
@@ -408,7 +412,7 @@ end AddMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup G] [AddCommGroup H] {a : G} {b : H}
+variable {G H : Type*} [AddCommGroup G] [AddCommGroup H] {a : G} {b : H}
 
 /-- If `f : G → H` is an `AddConstMap`, then so is `fun x ↦ -f (-x)`. -/
 @[simps! apply_coe]
@@ -422,7 +426,7 @@ end AddCommGroup
 
 section FloorRing
 
-variable [LinearOrderedRing R] [FloorRing R] [AddGroup G] (a : G)
+variable {R G : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup G] (a : G)
 
 /-- A map `f : R →+c[1, a] G` is defined by its values on `Set.Ico 0 1`. -/
 def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where
