@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v}
 
 namespace Function
 
+open Function (Commute)
+
 variable (f : α → α)
 
 @[simp]
@@ -225,7 +227,7 @@ lemma iterate_add_eq_iterate (hf : Injective f) : f^[m + n] a = f^[n] a ↔ f^[m
   Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
 #align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
-alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
+alias ⟨iterate_cancel_of_add, _⟩ := iterate_add_eq_iterate
 #align function.iterate_cancel_of_add Function.iterate_cancel_of_add
 
 lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a = a := by

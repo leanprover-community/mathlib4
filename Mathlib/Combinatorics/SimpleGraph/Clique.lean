@@ -85,7 +85,7 @@ theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Su
   Set.pairwise_bot_iff
 #align simple_graph.is_clique_bot_iff SimpleGraph.isClique_bot_iff
 
-alias isClique_bot_iff ↔ IsClique.subsingleton _
+alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 #align simple_graph.is_clique.subsingleton SimpleGraph.IsClique.subsingleton
 
 end Clique
@@ -153,7 +153,7 @@ section CliqueFree
 
 variable {m n : ℕ}
 
-/-- `G.clique_free n` means that `G` has no `n`-cliques. -/
+/-- `G.CliqueFree n` means that `G` has no `n`-cliques. -/
 def CliqueFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNClique n t
 #align simple_graph.clique_free SimpleGraph.CliqueFree
@@ -220,13 +220,22 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
-/-- See `simple_graph.clique_free_chromatic_number_succ` for a tighter bound. -/
+/-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine' Nat.lt_le_antisymm hc _
   rw [cliqueFree_iff, not_isEmpty_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 #align simple_graph.clique_free_of_card_lt SimpleGraph.cliqueFree_of_card_lt
+
+/-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
+theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
+    (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
+  rw [cliqueFree_iff, isEmpty_iff]
+  intro f
+  obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
+  rw [← top_adj, ← f.map_adj_iff, comap_Adj, top_adj] at hn
+  exact absurd he hn
 
 end CliqueFree
 
@@ -251,7 +260,7 @@ theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
 #align simple_graph.clique_set_eq_empty_iff SimpleGraph.cliqueSet_eq_empty_iff
 
-alias cliqueSet_eq_empty_iff ↔ _ CliqueFree.cliqueSet
+alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 #align simple_graph.clique_free.clique_set SimpleGraph.CliqueFree.cliqueSet
 
 --attribute [protected] CliqueFree.cliqueSet -- porting note: removed
@@ -295,7 +304,7 @@ theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n :=
   simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
 #align simple_graph.clique_finset_eq_empty_iff SimpleGraph.cliqueFinset_eq_empty_iff
 
-alias cliqueFinset_eq_empty_iff ↔ _ CliqueFree.cliqueFinset
+alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 #align simple_graph.clique_free.clique_finset SimpleGraph.CliqueFree.cliqueFinset
 
 --attribute [protected] CliqueFree.cliqueFinset -- porting note: removed

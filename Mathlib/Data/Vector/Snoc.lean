@@ -16,6 +16,8 @@ import Mathlib.Data.Vector.Basic
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
 
+set_option autoImplicit true
+
 namespace Vector
 
 /-- Append a single element to the end of a vector -/

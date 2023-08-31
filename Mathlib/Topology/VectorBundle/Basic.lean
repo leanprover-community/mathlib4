@@ -54,6 +54,7 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
+set_option autoImplicit true
 
 noncomputable section
 
@@ -1020,7 +1021,7 @@ definition, instead of `Trivialization.continuousLinearEquivAt`, so that
 `ContinuousLinearMap.inCoordinates_eq`).
 
 This is the (second component of the) underlying function of a trivialization of the hom-bundle
-(see `hom_trivialization_at_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
+(see `hom_trivializationAt_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
 defined even when `x` and `y` live in different base sets.
 Therefore, it is also convenient when working with the hom-bundle between pulled back bundles.
 -/

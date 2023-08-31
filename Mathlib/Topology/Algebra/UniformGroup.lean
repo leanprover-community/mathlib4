@@ -289,7 +289,7 @@ theorem uniformity_eq_comap_nhds_one_swapped :
 theorem UniformGroup.ext {G : Type*} [Group G] {u v : UniformSpace G} (hu : @UniformGroup G u _)
     (hv : @UniformGroup G v _)
     (h : @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1) : u = v :=
-  uniformSpace_eq <| by
+  UniformSpace.ext <| by
     rw [@uniformity_eq_comap_nhds_one _ u _ hu, @uniformity_eq_comap_nhds_one _ v _ hv, h]
 #align uniform_group.ext UniformGroup.ext
 #align uniform_add_group.ext UniformAddGroup.ext
