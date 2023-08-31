@@ -17,7 +17,7 @@ In this file we provide two instances:
 
 * `EMetric.ParacompactSpace`: a `PseudoEMetricSpace` is paracompact; formalization is based
   on [MR0236876];
-* `EMetric.normal_of_metric`: an `EMetricSpace` is a normal topological space.
+* `T4Space.of_emetricSpace`: an `EMetricSpace` is a normal topological space.
 
 ## TODO
 
@@ -165,9 +165,9 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     refine' ⟨I.1, _, I.2, hI, Prod.mk.eta.symm⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
--- see Note [lower instance priority]
-instance (priority := 100) normal_of_emetric [EMetricSpace α] : T4Space α :=
-  .of_paracompact_t2Space
-#align emetric.normal_of_emetric EMetric.normal_of_emetric
-
 end EMetric
+
+-- see Note [lower instance priority]
+instance (priority := 100) _root_.T4Space.of_emetricSpace [EMetricSpace α] : T4Space α :=
+  .of_paracompact_t2Space
+#align emetric.normal_of_emetric T4Space.of_emetricSpace
