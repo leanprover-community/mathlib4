@@ -65,12 +65,11 @@ theorem LipschitzWith.ae_lineDifferentiableAt
   rw [← hL]
   exact LineDifferentiableAt.of_comp h'p
 
-
-
-theorem LipschitzWith.Memℒp {C : ℝ≥0} {f : E → ℝ} (hf : LipschitzWith C f) (v : E) :
+theorem LipschitzWith.memℒp_lineDeriv {C : ℝ≥0} {f : E → ℝ} (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ := by
-
+  sorry
 
 theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg : LipschitzWith D g)
     (h'g : HasCompactSupport g) (v : E) :
-    ∫ x, lineDeriv ℝ f x v * g x ∂μ = - ∫ x, f x * lineDeriv ℝ g x v := by
+    ∫ x, lineDeriv ℝ f x v * g x ∂μ = - ∫ x, f x * lineDeriv ℝ g x v ∂μ := by
+  sorry
