@@ -25,38 +25,7 @@ open Convex Set Metric
 section TopologicalVectorSpace
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
-
-lemma segment_inter_eq_endpoint_of_linearIndependent_sub
-    {c x y : E} (h : LinearIndependent ℝ ![x - c, y - c]) :
-    [c -[ℝ] x] ∩ [c -[ℝ] y] = {c} := by
-  apply Subset.antisymm; swap
-  · simp [singleton_subset_iff, left_mem_segment]
-  intro z ⟨hzt, hzs⟩
-  rw [segment_eq_image, mem_image] at hzt hzs
-  rcases hzt with ⟨p, ⟨p0, p1⟩, rfl⟩
-  rcases hzs with ⟨q, ⟨q0, q1⟩, H⟩
-  have Hx : x = (x - c) + c := by abel
-  have Hy : y = (y - c) + c := by abel
-  rw [Hx, Hy, smul_add, smul_add] at H
-  have : c + q • (y - c) = c + p • (x - c) := by
-    convert H using 1 <;> simp [sub_smul]
-  obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this ).symm
-  simp
-
-lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
-    {x y : E} (h : LinearIndependent ℝ ![x, y]) {s t : ℝ} (hs : s ≠ t) (c : E) :
-    [c + x -[ℝ] c + t • y] ∩ [c + x -[ℝ] c + s • y] = {c + x} := by
-  apply segment_inter_eq_endpoint_of_linearIndependent_sub
-  simp only [add_sub_add_left_eq_sub]
-  suffices H : LinearIndependent ℝ ![(-1 : ℝ) • x + t • y, (-1 : ℝ) • x + s • y] by
-    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
-  apply h.linear_combination_pair_of_det_ne_zero
-  contrapose! hs
-  apply Eq.symm
-  simpa [neg_mul, one_mul, mul_neg, mul_one, sub_neg_eq_add, add_comm _ t,
-    ← sub_eq_add_neg, sub_eq_zero] using hs
-
-variable [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+[TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
@@ -183,8 +152,7 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
         simp only [mem_singleton_iff, sub_eq_zero] at H
         simp only [H, mem_sphere_iff_norm, sub_self, norm_zero] at hy
         exact rpos.ne hy
-      · simp at hy
-        simp [hy, mul_inv_cancel rpos.ne']
+      · simp [mem_sphere_iff_norm.1 hy, mul_inv_cancel rpos.ne']
   rwa [this] at C
 
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is connected. -/
