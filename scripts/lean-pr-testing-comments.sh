@@ -89,7 +89,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -X POST \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "{\"body\":\"- $message\"}" \
+      -d "$(jq --null-input --arg val "- $message" '{"body": $val}')"
       "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments"
   else
     # Append new result to the existing comment
