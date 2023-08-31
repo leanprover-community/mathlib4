@@ -393,12 +393,11 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
   simp
 
 @[simp]
-theorem app_surjInv_rangeRestrict {M N : Type*} [Group M] [Group N] (f : M →* N)
+theorem app_surjInv_rangeRestrict {G H : Type*} [Group G] [Group H] (f : G →* H)
     (x : MonoidHom.range f) :
     f (surjInv (MonoidHom.rangeRestrict_surjective f) x) = x := by
   show Subtype.val (MonoidHom.rangeRestrict f _) = x
   rw [surjInv_eq (MonoidHom.rangeRestrict_surjective f)]
-
 
 noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
   letI toFun : NormalWord d → Pair d i :=
