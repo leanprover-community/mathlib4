@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Order.CompleteLattice
-import Mathlib.Order.Directed
+import Mathlib.Order.Directed.Basic
 import Mathlib.Logic.Equiv.Set
 
 #align_import order.complete_boolean_algebra from "leanprover-community/mathlib"@"71b36b6f3bbe3b44e6538673819324d3ee9fcc96"

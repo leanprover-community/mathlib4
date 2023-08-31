@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Data.PNat.Basic
-import Mathlib.Order.Directed
+import Mathlib.Order.Directed.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic

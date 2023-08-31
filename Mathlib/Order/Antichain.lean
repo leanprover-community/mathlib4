@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Directed
+import Mathlib.Order.Directed.Basic
 import Mathlib.Order.Hom.Set
 
 #align_import order.antichain from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
