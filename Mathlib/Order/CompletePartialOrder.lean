@@ -3,7 +3,6 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Directed.Closure
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
@@ -18,8 +17,6 @@ These are partial orders for which every directed set has a least upper bound.
 
 ## Main statements
 
-- `SemilatticeSup.toCompleteSemilatticeSup`: A join-semilattice where every directed set has a least
-  upper bound is automatically complete
 - `CompletePartialOrder.toOmegaCompletePartialOrder`: A complete partial order is an ω-complete
   partial order.
 - `CompleteLattice.toCompletePartialOrder`: A complete lattice is a complete partial order.
@@ -34,21 +31,6 @@ complete partial order, directedly complete partial order
 -/
 
 variable {ι : Sort*} {α β : Type*}
-
-section SemilatticeSup
-variable [SemilatticeSup α] {s : Set α} {a : α}
-
-/--
-A join-semilattice where every directed set has a least upper bound is automatically complete.
--/
-def SemilatticeSup.toCompleteSemilatticeSup (sSup : Set α → α)
-    (h : ∀ d, DirectedOn (. ≤ .) d → IsLUB d (sSup d)) : CompleteSemilatticeSup α where
-  sSup := fun s => sSup (directedClosure s)
-  le_sSup s a ha := (h _ directedOn_directedClosure).1 $ subset_directedClosure ha
-  sSup_le s a ha := (isLUB_le_iff $ h _ directedOn_directedClosure).2 $ by
-    rwa [upperBounds_directedClosure]
-
-end SemilatticeSup
 
 section CompletePartialOrder
 
