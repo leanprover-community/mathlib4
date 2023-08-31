@@ -29,11 +29,13 @@ vice versa.
 
 -/
 
+universe v u w
+
 namespace CategoryTheory
 
 open Limits
 
-variable (C : Type*) [Category C]
+variable (C : Type u) [Category.{v} C]
 
 /--
 The condition `Regular C` is property that effective epis can be "pulled back" along any
@@ -64,7 +66,7 @@ of the morphisms is an inclusion map into the coproduct (up to isomorphism).
 class HasPullbacksOfInclusions : Prop where
     /-- For any morphism `f : X ⟶ Z`, where `Z` is the coproduct of `i : (a : α) → Y a ⟶ Z` with
     `α` finite, the pullback of `f` and `i a` exists for every `a : α`. -/
-    has_pullback : ∀ {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
+    has_pullback : ∀ {X Z : C} {α : Type w} (f : X ⟶ Z) {Y : (a : α) → C}
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α),
     HasPullback f (i a)
 
@@ -78,7 +80,7 @@ instance [HasPullbacksOfInclusions C] {X : C} {α : Type _} (Y : (a : α) → C)
     [Fintype α] [HasCoproduct Y] (f : X ⟶ ∐ Y) (a : α) :
     HasPullback f (Sigma.ι Y a) := HasPullbacksOfInclusions.has_pullback f (fun a ↦ Sigma.ι Y a) a
 
-instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type _} (f : X ⟶ Z) {Y : (a : α) → C}
+instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type w} (f : X ⟶ Z) {Y : (a : α) → C}
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
     HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
 
