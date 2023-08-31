@@ -61,19 +61,19 @@ theorem pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer 
   by rw [pochhammer]
 #align pochhammer_succ_left pochhammer_succ_left
 
+@[simp]
 theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S]:
     (pochhammer S n).natDegree = n := by
   induction' n with n hn
   · simp
-  · have h := natDegree_X_add_C (1 : S)
-    rw [map_one] at h
+  · have : natDegree (X + 1) = 1 := natDegree_X_add_C (1 : S)
     rw [pochhammer_succ_left, natDegree_mul X_ne_zero, natDegree_comp, hn]
-    · rw [h, mul_one, natDegree_X, Nat.succ_eq_one_add]
+    · rw [this, mul_one, natDegree_X, Nat.succ_eq_one_add]
     · induction' n with n _
       · simp
       · refine' @ne_zero_of_natDegree_gt _ _ _ 0 _
         simp only [natDegree_comp, CanonicallyOrderedCommSemiring.mul_pos]
-        exact ⟨Nat.lt_of_sub_eq_succ hn, Nat.lt_of_sub_eq_succ h⟩
+        exact ⟨Nat.lt_of_sub_eq_succ hn, Nat.lt_of_sub_eq_succ this⟩
 
 section
 
