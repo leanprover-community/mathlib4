@@ -306,7 +306,7 @@ instance : SemilatticeSup (Coverage C) where
 @[simp]
 lemma sup_covering (x y : Coverage C) (B : C) :
     (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
-  union_covering x y B
+  rfl
 
 lemma sup_eq_union (x y : Coverage C) : x ⊔ y = x.union y := rfl
 
