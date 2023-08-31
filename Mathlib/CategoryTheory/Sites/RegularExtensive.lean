@@ -25,7 +25,7 @@ In `extensive_union_regular_generates_coherent`, we prove that the union of thes
 generates the coherent topology on `C` if `C` is precoherent, extensive and regular.
 
 TODO: figure out under what conditions `Regular` and `Extensive` are implied by `Precoherent` and
-vice versa. Maybe `Precoherent` 
+vice versa.
 
 -/
 
