@@ -628,7 +628,6 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 #align free_product.word.equiv Monoid.CoprodI.Word.equiv
 
-
 instance : DecidableEq (Word M) :=
   Function.Injective.decidableEq Word.ext
 
