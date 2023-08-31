@@ -66,10 +66,26 @@ theorem LipschitzWith.ae_lineDifferentiableAt
   exact LineDifferentiableAt.of_comp h'p
 
 theorem LipschitzWith.memℒp_lineDeriv {C : ℝ≥0} {f : E → ℝ} (hf : LipschitzWith C f) (v : E) :
-    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ := by
-  sorry
+    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
+  memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
+    (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
+
+open scoped Topology
 
 theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg : LipschitzWith D g)
     (h'g : HasCompactSupport g) (v : E) :
     ∫ x, lineDeriv ℝ f x v * g x ∂μ = - ∫ x, f x * lineDeriv ℝ g x v ∂μ := by
-  sorry
+  have : Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
+              (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
+    apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ C * ‖g x‖)
+    · apply eventually_of_forall (fun t ↦ ?_)
+      apply AEStronglyMeasurable.mul ?_ hg.continuous.aestronglyMeasurable
+      apply aestronglyMeasurable_const.smul
+      apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
+      apply AEMeasurable.aestronglyMeasurable
+      exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
+    · filter_upwards [self_mem_nhdsWithin] with t (ht : 0 < t)
+      apply eventually_of_forall (fun x ↦ ?_)
+      calc ‖t⁻¹ • (f (x + t • v) - f x) * g x‖
+        = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := sorry
+      _ ≤ C * ‖g x‖ := sorry
