@@ -44,8 +44,8 @@ A join-semilattice where every directed set has a least upper bound is automatic
 def SemilatticeSup.toCompleteSemilatticeSup (sSup : Set α → α)
     (h : ∀ d, DirectedOn (. ≤ .) d → IsLUB d (sSup d)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (directedClosure s)
-  le_sSup s a ha := (h _ $ directedOn_directedClosure).1 $ subset_directedClosure ha
-  sSup_le s a ha := (isLUB_le_iff $ h _ $ directedOn_directedClosure).2 $ by
+  le_sSup s a ha := (h _ directedOn_directedClosure).1 $ subset_directedClosure ha
+  sSup_le s a ha := (isLUB_le_iff $ h _ directedOn_directedClosure).2 $ by
     rwa [upperBounds_directedClosure]
 
 end SemilatticeSup
