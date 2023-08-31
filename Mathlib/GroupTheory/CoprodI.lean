@@ -328,6 +328,8 @@ variable {M}
 
 variable [∀ i, DecidableEq (M i)]
 
+/-- Construct a new `Word` without any reduction. The underlying list of
+`cons m w _ _` is `⟨_, m⟩::w`  -/
 @[simps]
 def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) : Word M :=
   { toList := ⟨i, m⟩ :: w.toList,
@@ -396,6 +398,8 @@ theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ s
     prod (cons m w h2 h1) = of m * prod w := by
   simp [cons, prod, List.map_cons, List.prod_cons]
 
+/-- Induct on a word by adding letters one at a time without reduction,
+effectively inducting on the underlying `List`. -/
 @[elab_as_elim]
 def consRecOn {motive : Word M → Sort*} (w : Word M) (h_empty : motive empty)
     (h_cons : ∀ (i) (m : M i) (w) h1 h2, motive w → motive (cons m w h1 h2)) :
@@ -459,7 +463,6 @@ theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
   (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
 #align free_product.word.equiv_pair_eq_of_fst_idx_ne Monoid.CoprodI.Word.equivPair_eq_of_fstIdx_ne
 
-set_option pp.proofs.withType false
 theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail
       ∨ i ≠ j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m⟩ := by
@@ -531,32 +534,15 @@ theorem equivPair_tail {i} (p : Pair M i) :
 theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
     m • w = of m • w := rfl
 
-theorem mem_smul_iff' {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
-    ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
-      ⟨i, m₁⟩ ∈ w.toList.tail
-      ∨ (¬i = j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m₁⟩)
-      ∨ (m₁ ≠ 1 ∧ ∃ (hij : j = i), m₁ = hij ▸
-        (m₂ * (if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = j
-          then h.snd ▸ (w.toList.head h.1).2
-          else 1))) := by
-  rw [of_smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
-
-theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {w : Word M} {m₂ : M j} :
-    ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
-  rw [mem_smul_iff']
-  simp [hij, Ne.symm hij]
-  rcases w with ⟨w, -, -⟩
-  cases w <;> simp [or_comm, eq_comm]
-
-theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
+theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
       ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
         (∃ m', ⟨j, m'⟩ ∈ w.toList.head? ∧ m₁ = hij ▸ (m₂ * m')) ∨
         (w.fstIdx ≠ some j ∧ m₁ = hij ▸ m₂)) := by
+  rw [of_smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
   by_cases hij : i = j
   · subst i
-    rw [mem_smul_iff']
     simp only [not_true, ne_eq, false_and, exists_prop, true_and, false_or]
     by_cases hw : ⟨j, m₁⟩ ∈ w.toList.tail
     · simp [hw, show m₁ ≠ 1 from w.ne_one _ (List.mem_of_mem_tail hw)]
@@ -576,12 +562,16 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {w : Word M} {m₂ : M j} :
               exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
             exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
       · revert h
-        simp [fstIdx]
+        rw [fstIdx]
         cases w.toList
         · simp
         · simp (config := {contextual := true}) [Sigma.ext_iff]
-  · rw [mem_smul_iff_of_ne hij]
-    simp [hij, Ne.symm hij]
+  · rcases w with ⟨_ | _, _, _⟩ <;>
+    simp [or_comm, hij, Ne.symm hij, eq_comm]
+
+theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
+    ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
+  simp [mem_smul_iff, *]
 
 theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
     cons m ls h1 h2 = of m • ls := by
