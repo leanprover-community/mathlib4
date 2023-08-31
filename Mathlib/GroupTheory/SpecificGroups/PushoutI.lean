@@ -190,8 +190,8 @@ theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transve
 
 variable {φ}
 
-/-- The normal form for words in the pushout. Every element of the pushout is the product of an element
-of the base group and a word made up of letters each of which is in the transversal. -/
+/-- The normal form for words in the pushout. Every element of the pushout is the product of an
+element of the base group and a word made up of letters each of which is in the transversal. -/
 structure _root_.Monoid.PushoutI.NormalWord (d : Transversal φ) extends CoprodI.Word G where
   /-- Every `NormalWord` is the product of an element of the base group and a word made up
   of letters each of which is in the transversal. `left` is that element of the base group. -/
@@ -253,7 +253,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
   · apply hh1
     simpa [equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead,
       ((injective_iff_map_eq_one' _).1 (d.injective i))] using this
-  . simp only [Word.mem_smul_iff, not_true, false_and, ne_eq, Option.mem_def, mul_right_inj,
+  · simp only [Word.mem_smul_iff, not_true, false_and, ne_eq, Option.mem_def, mul_right_inj,
       exists_eq_right', mul_right_eq_self, exists_prop, true_and, false_or]
     constructor
     · intro h
