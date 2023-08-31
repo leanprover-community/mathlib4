@@ -133,10 +133,10 @@ theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 #align set.lt_iff_ssubset Set.lt_iff_ssubset
 
-alias le_iff_subset ↔ _root_.LE.le.subset _root_.HasSubset.Subset.le
+alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 #align has_subset.subset.le HasSubset.Subset.le
 
-alias lt_iff_ssubset ↔ _root_.LT.lt.ssubset _root_.HasSSubset.SSubset.lt
+alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 #align has_ssubset.ssubset.lt HasSSubset.SSubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
@@ -446,7 +446,7 @@ theorem nonempty_coe_sort {s : Set α} : Nonempty (↥s) ↔ s.Nonempty :=
   nonempty_subtype
 #align set.nonempty_coe_sort Set.nonempty_coe_sort
 
-alias nonempty_coe_sort ↔ _ Nonempty.coe_sort
+alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 #align set.nonempty.coe_sort Set.Nonempty.coe_sort
 
 theorem nonempty_def : s.Nonempty ↔ ∃ x, x ∈ s :=
@@ -615,7 +615,7 @@ theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
 
-alias nonempty_iff_ne_empty ↔ Nonempty.ne_empty _
+alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 #align set.nonempty.ne_empty Set.Nonempty.ne_empty
 
 @[simp]
@@ -648,7 +648,7 @@ theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
   (@bot_lt_iff_ne_bot (Set α) _ _ _).trans nonempty_iff_ne_empty.symm
 #align set.empty_ssubset Set.empty_ssubset
 
-alias empty_ssubset ↔ _ Nonempty.empty_ssubset
+alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 #align set.nonempty.empty_ssubset Set.Nonempty.empty_ssubset
 
 /-!
@@ -689,7 +689,7 @@ theorem univ_subset_iff {s : Set α} : univ ⊆ s ↔ s = univ :=
   @top_le_iff _ _ _ s
 #align set.univ_subset_iff Set.univ_subset_iff
 
-alias univ_subset_iff ↔ eq_univ_of_univ_subset _
+alias ⟨eq_univ_of_univ_subset, _⟩ := univ_subset_iff
 #align set.eq_univ_of_univ_subset Set.eq_univ_of_univ_subset
 
 theorem eq_univ_iff_forall {s : Set α} : s = univ ↔ ∀ x, x ∈ s :=
@@ -1555,7 +1555,7 @@ lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
 lemma not_disjoint_iff_nonempty_inter : ¬ Disjoint s t ↔ (s ∩ t).Nonempty := not_disjoint_iff
 #align set.not_disjoint_iff_nonempty_inter Set.not_disjoint_iff_nonempty_inter
 
-alias not_disjoint_iff_nonempty_inter ↔ _ Nonempty.not_disjoint
+alias ⟨_, Nonempty.not_disjoint⟩ := not_disjoint_iff_nonempty_inter
 #align set.nonempty.not_disjoint Set.Nonempty.not_disjoint
 
 lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
@@ -1566,7 +1566,7 @@ lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃
   simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
 #align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
 
-alias disjoint_iff_forall_ne ↔ _root_.Disjoint.ne_of_mem _
+alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne
 #align disjoint.ne_of_mem Disjoint.ne_of_mem
 
 lemma disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t := d.mono_left h
@@ -1773,16 +1773,16 @@ theorem disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t :=
   disjoint_compl_right_iff
 #align set.disjoint_compl_right_iff_subset Set.disjoint_compl_right_iff_subset
 
-alias subset_compl_iff_disjoint_right ↔ _ _root_.Disjoint.subset_compl_right
+alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 #align disjoint.subset_compl_right Disjoint.subset_compl_right
 
-alias subset_compl_iff_disjoint_left ↔ _ _root_.Disjoint.subset_compl_left
+alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
 #align disjoint.subset_compl_left Disjoint.subset_compl_left
 
-alias disjoint_compl_left_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_left
+alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
 #align has_subset.subset.disjoint_compl_left HasSubset.Subset.disjoint_compl_left
 
-alias disjoint_compl_right_iff_subset ↔ _ _root_.HasSubset.Subset.disjoint_compl_right
+alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 #align has_subset.subset.disjoint_compl_right HasSubset.Subset.disjoint_compl_right
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
@@ -2451,7 +2451,7 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
 
 /-- A set `s` is `Set.Nontrivial` if it has at least two distinct elements. -/
 protected def Nontrivial (s : Set α) : Prop :=
-  ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x ≠ y
+  ∃ x ∈ s, ∃ y ∈ s, x ≠ y
 #align set.nontrivial Set.Nontrivial
 
 theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.Nontrivial :=
@@ -2463,20 +2463,20 @@ theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x �
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
 protected noncomputable def Nontrivial.choose (hs : s.Nontrivial) : α × α :=
-  (Exists.choose hs, hs.choose_spec.choose_spec.choose)
+  (Exists.choose hs, hs.choose_spec.right.choose)
 #align set.nontrivial.some Set.Nontrivial.choose
 
 protected theorem Nontrivial.choose_fst_mem (hs : s.Nontrivial) : hs.choose.fst ∈ s :=
-  hs.choose_spec.choose
+  hs.choose_spec.left
 #align set.nontrivial.some_fst_mem Set.Nontrivial.choose_fst_mem
 
 protected theorem Nontrivial.choose_snd_mem (hs : s.Nontrivial) : hs.choose.snd ∈ s :=
-  hs.choose_spec.choose_spec.choose_spec.choose
+  hs.choose_spec.right.choose_spec.left
 #align set.nontrivial.some_snd_mem Set.Nontrivial.choose_snd_mem
 
 protected theorem Nontrivial.choose_fst_ne_choose_snd (hs : s.Nontrivial) :
     hs.choose.fst ≠ hs.choose.snd :=
-  hs.choose_spec.choose_spec.choose_spec.choose_spec
+  hs.choose_spec.right.choose_spec.right
 #align set.nontrivial.some_fst_ne_some_snd Set.Nontrivial.choose_fst_ne_choose_snd
 
 theorem Nontrivial.mono (hs : s.Nontrivial) (hst : s ⊆ t) : t.Nontrivial :=
@@ -2609,7 +2609,7 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
     exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
-alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
+alias ⟨_, Nontrivial.coe_sort⟩ := nontrivial_coe_sort
 #align set.nontrivial.coe_sort Set.Nontrivial.coe_sort
 
 /-- A type with a set `s` whose `coe_sort` is a nontrivial type is nontrivial.
@@ -2625,7 +2625,7 @@ theorem nontrivial_mono {α : Type*} {s t : Set α} (hst : s ⊆ t) (hs : Nontri
 
 @[simp]
 theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
-  simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall]
+  simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall, exists_prop]
 #align set.not_subsingleton_iff Set.not_subsingleton_iff
 
 @[simp]
@@ -2633,10 +2633,10 @@ theorem not_nontrivial_iff : ¬s.Nontrivial ↔ s.Subsingleton :=
   Iff.not_left not_subsingleton_iff.symm
 #align set.not_nontrivial_iff Set.not_nontrivial_iff
 
-alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
+alias ⟨_, Subsingleton.not_nontrivial⟩ := not_nontrivial_iff
 #align set.subsingleton.not_nontrivial Set.Subsingleton.not_nontrivial
 
-alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
+alias ⟨_, Nontrivial.not_subsingleton⟩ := not_subsingleton_iff
 #align set.nontrivial.not_subsingleton Set.Nontrivial.not_subsingleton
 
 protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial := by
