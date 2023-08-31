@@ -35,7 +35,7 @@ We also prove the following facts.
   the instance graph.
 
 * Every `EMetricSpace` is a paracompact space, see instance `EMetricSpace.ParacompactSpace` in
-  `Topology/MetricSpace/EMetricParacompact`.
+  `Topology/EMetricSpace/Paracompact`.
 
 ## TODO
 

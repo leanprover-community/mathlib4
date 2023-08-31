@@ -7,7 +7,7 @@ import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.MetricSpace.Metrizable
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Topology.Separation.NotNormal
 
