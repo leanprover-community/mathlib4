@@ -20,7 +20,7 @@ open Function OrderDual Set
 
 universe u
 
-variable {α β K : Type _}
+variable {α β K : Type*}
 
 section DivisionSemiring
 
@@ -261,7 +261,7 @@ end RingHom
 
 section NoncomputableDefs
 
-variable {R : Type _} [Nontrivial R]
+variable {R : Type*} [Nontrivial R]
 
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 noncomputable def divisionRingOfIsUnitOrEqZero [hR : Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :

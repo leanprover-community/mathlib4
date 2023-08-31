@@ -123,79 +123,25 @@ set_option linter.uppercaseLean3 false in
 instance : Inhabited (ColimitType F) := ⟨Quot.mk _ <| .zero⟩
 
 instance : AddCommGroup (ColimitType F) where
-  zero := Quot.mk _ zero
-  neg := Quot.lift (fun t => Quot.mk _ <| neg t) <| fun x x' r => by
-    apply Quot.sound
-    exact Relation.neg_1 _ _ r
-  add := fun x y => Quot.liftOn₂ x y (fun x' y' => Quot.mk _ <| add x' y')
-    (by
-      intro u v w r
-      dsimp
-      apply Quot.sound
-      exact Relation.add_2 _ _ _ r)
-    (by
-      intro u v w r
-      dsimp
-      apply Quot.sound
-      exact Relation.add_1 _ _ _ r)
-  zero_add x := by
-    rcases x
-    dsimp
-    apply Quot.sound
-    apply Relation.zero_add
-  add_zero x := by
-    rcases x
-    dsimp
-    apply Quot.sound
-    apply Relation.add_zero
-  add_left_neg x := by
-    rcases x
-    dsimp
-    apply Quot.sound
-    apply Relation.add_left_neg
-  add_comm := by
-    rintro ⟨x⟩ ⟨y⟩
-    apply Quot.sound
-    apply Relation.add_comm
-  add_assoc := by
-    rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
-    apply Quot.sound
-    apply Relation.add_assoc
+  zero := Quotient.mk _ zero
+  neg := Quotient.map neg Relation.neg_1
+  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.add_assoc _ _ _
 
 instance : Module R (ColimitType F) where
-  smul s := by
-    fapply @Quot.lift
-    · intro x
-      exact Quot.mk _ (smul s x)
-    · intro x x' r
-      apply Quot.sound
-      exact Relation.smul_1 s _ _ r
-  one_smul x := by
-    rcases x
-    dsimp
-    apply Quot.sound
-    apply Relation.one_smul
-  mul_smul s t x := by
-    rcases x
-    dsimp
-    apply Quot.sound
-    apply Relation.mul_smul
-  smul_add s := by
-    rintro ⟨x⟩ ⟨y⟩
-    dsimp
-    apply Quot.sound
-    apply Relation.smul_add
-  smul_zero s := by apply Quot.sound; apply Relation.smul_zero
-  add_smul s t := by
-    rintro ⟨x⟩
-    dsimp
-    apply Quot.sound
-    apply Relation.add_smul
-  zero_smul := by
-    rintro ⟨x⟩
-    dsimp
-    apply Quot.sound
-    apply Relation.zero_smul
+  smul s := Quotient.map (smul s) <| Relation.smul_1 s
+  one_smul := Quotient.ind <| fun _ => Quotient.sound <| Relation.one_smul _
+  mul_smul _s _r := Quotient.ind <| fun _ => Quotient.sound <| Relation.mul_smul _ _ _
+  smul_add _s := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.smul_add _ _ _
+  smul_zero _s := Quotient.sound <| Relation.smul_zero _
+  add_smul _s _t := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_smul _ _ _
+  zero_smul := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_smul _
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=

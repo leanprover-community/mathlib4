@@ -14,6 +14,8 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 set of lemmas with the attribute `@[gcongr]` and by listing `positivity` as a first-pass
 discharger for side goals (`gcongr_discharger`). -/
 
+set_option autoImplicit true
+
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 
 /-! # ≤, - -/

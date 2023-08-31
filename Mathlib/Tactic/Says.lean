@@ -5,6 +5,7 @@ Authors: Kim Liesinger
 -/
 import Std.Data.String.Basic
 import Std.Tactic.GuardMsgs
+import Qq.Match
 
 /-!
 # The `says` tactic combinator.
@@ -103,8 +104,8 @@ elab_rules : tactic
     let stx ← evalTacticCapturingTryThis tac
     match result with
     | some r =>
-        let stx' := (← Lean.PrettyPrinter.ppTactic ⟨stx⟩).pretty
-        let r' := (← Lean.PrettyPrinter.ppTactic ⟨r⟩).pretty
+        let stx' := (← Lean.PrettyPrinter.ppTactic ⟨Syntax.stripPos stx⟩).pretty
+        let r' := (← Lean.PrettyPrinter.ppTactic ⟨Syntax.stripPos r⟩).pretty
         if stx' != r' then
           throwError m!"Tactic `{tac}` produced `{stx'}`,\nbut was expecting it to produce `{r'}`!"
     | none =>

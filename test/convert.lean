@@ -3,6 +3,8 @@ import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
 
+set_option autoImplicit true
+
 namespace Tests
 
 example (P : Prop) (h : P) : P := by convert h

@@ -378,14 +378,14 @@ theorem length_sub [Zero α] [Sub α] {xs ys : List α} :
 #align list.func.length_sub List.Func.length_sub
 
 @[simp]
-theorem nil_sub {α : Type _} [AddGroup α] (as : List α) : sub [] as = neg as := by
+theorem nil_sub {α : Type*} [AddGroup α] (as : List α) : sub [] as = neg as := by
   rw [sub, @nil_pointwise _ _ _ ⟨0⟩ ⟨0⟩]
   congr with x
   exact zero_sub x
 #align list.func.nil_sub List.Func.nil_sub
 
 @[simp]
-theorem sub_nil {α : Type _} [AddGroup α] (as : List α) : sub as [] = as := by
+theorem sub_nil {α : Type*} [AddGroup α] (as : List α) : sub as [] = as := by
   rw [sub, @pointwise_nil _ _ _ ⟨0⟩ ⟨0⟩]
   apply Eq.trans _ (map_id as)
   congr with x

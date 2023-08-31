@@ -62,9 +62,9 @@ namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'} {γ : Type _}
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -149,7 +149,7 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
 
 --Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
-def restrictVarLeft [DecidableEq α] {γ : Type _} :
+def restrictVarLeft [DecidableEq α] {γ : Type*} :
     ∀ (t : L.Term (Sum α γ)) (_f : t.varFinsetLeft → β), L.Term (Sum β γ)
   | var (Sum.inl a), f => var (Sum.inl (f ⟨a, mem_singleton_self a⟩))
   | var (Sum.inr a), _f => var (Sum.inr a)
@@ -1020,17 +1020,17 @@ def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
 #align first_order.language.formula.graph FirstOrder.Language.Formula.graph
 
 /-- The negation of a formula. -/
-protected nonrec def not (φ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
   φ.not
 #align first_order.language.formula.not FirstOrder.Language.Formula.not
 
 /-- The implication between formulas, as a formula. -/
-protected def imp : L.Formula α → L.Formula α → L.Formula α :=
+protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
 /-- The biimplication between formulas, as a formula. -/
-protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 

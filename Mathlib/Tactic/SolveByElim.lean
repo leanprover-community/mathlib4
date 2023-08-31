@@ -188,12 +188,18 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
 def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (g : MVarId) : MetaM (List (MetaM (List MVarId))) := do
+-- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+-- This has better performance that the mathlib3 approach.
+let g ← if cfg.symm then g.symmSaturate else pure g
 let es ← elabContextLemmas g lemmas ctx
 applyTactics cfg.toApplyConfig cfg.transparency es g
 
 /-- Applies the first possible lemma to the goal. -/
 def applyFirstLemma (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (g : MVarId) : MetaM (List MVarId) := do
+-- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+-- This has better performance that the mathlib3 approach.
+let g ← if cfg.symm then g.symmSaturate else pure g
 let es ← elabContextLemmas g lemmas ctx
 applyFirst cfg.toApplyConfig cfg.transparency es g
 
@@ -215,15 +221,6 @@ Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this beha
 -/
 def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (goals : List MVarId) : MetaM (List MVarId) := do
-  -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
-  -- Implementation note:
-  -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)
-  -- I initially reproduced the mathlib3 approach, but it had bad performance so switched to this.
-  let goals ← if cfg.symm then
-    goals.mapM fun g => g.symmSaturate
-  else
-    pure goals
-
   try
     run goals
   catch e => do
@@ -366,8 +363,8 @@ def parseArgs (s : Option (TSyntax ``args)) :
     | _ => panic! "Unreachable parse of solve_by_elim arguments."
   let args := args.toList
   (args.contains none,
-    args.filterMap fun o => o.bind Sum.getLeft,
-    args.filterMap fun o => o.bind Sum.getRight)
+    args.filterMap fun o => o.bind Sum.getLeft?,
+    args.filterMap fun o => o.bind Sum.getRight?)
 
 /-- Parse the `using ...` argument for `solve_by_elim`. -/
 def parseUsing (s : Option (TSyntax ``using_)) : Array Ident :=

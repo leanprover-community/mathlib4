@@ -26,7 +26,7 @@ open Order OrderDual Relation
 
 namespace SimpleGraph
 
-variable (α β : Type _)
+variable (α β : Type*)
 
 section Preorder
 

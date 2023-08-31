@@ -20,7 +20,7 @@ for those subobjects.
 -/
 
 
-variable {M G R : Type _}
+variable {M G R : Type*}
 
 variable [Monoid M] [Group G] [Semiring R]
 
