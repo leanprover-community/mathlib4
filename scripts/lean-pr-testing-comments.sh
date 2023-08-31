@@ -1,6 +1,8 @@
 ## Create comments and labels on a Lean 4 PR after CI has finished on a `lean-pr-testing-NNNN` branch.
 set -e
 
+# TODO: The whole script ought to be rewritten in javascript, to avoid having to use curl for API calls.
+#
 # This is not meant to be run from the command line, only from CI.
 # The inputs must be prepared as:
 # env:
@@ -80,7 +82,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
     message="💥 Mathlib branch $branch failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   fi
 
-  echo $message
+  echo "$message"
 
   # Append new result to the existing comment or post a new comment
   if [ -z "$existing_comment_id" ]; then
