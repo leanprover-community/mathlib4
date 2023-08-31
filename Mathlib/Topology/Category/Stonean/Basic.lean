@@ -178,51 +178,33 @@ def two : Stonean where
 
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
-  constructor
-  · dsimp [Function.Surjective]
-    contrapose!
-    rintro ⟨y, hy⟩ h
-    let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
-    let U := Cᶜ
-    have hyU : y ∈ U := by
-      refine' Set.mem_compl _
-      rintro ⟨y', hy'⟩
-      exact hy y' hy'
-    have hUy : U ∈ nhds y := hC.compl_mem_nhds hyU
-    haveI : TotallyDisconnectedSpace ((forget CompHaus).obj (toCompHaus.obj Y)) :=
-      show TotallyDisconnectedSpace Y from inferInstance
-    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
-    classical
-    let g : Y ⟶ Stonean.two :=
-      ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-    let h : Y ⟶ Stonean.two := ⟨fun _ => ⟨1⟩, continuous_const⟩
-    have H : h = g := by
-      rw [← cancel_epi f]
-      apply ContinuousMap.ext
-      intro x
-      apply ULift.ext
-      change 1 =  _
-      dsimp [LocallyConstant.ofClopen]
-      -- BUG: Should not have to provide instance `(Stonean.instTopologicalSpace Y)` explicitely
-      rw [comp_apply, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace Y),
-      Function.comp_apply, if_neg]
-      refine mt (hVU ·) ?_
-      simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
-      exact ⟨x, rfl⟩
-    apply_fun fun e => (e y).down at H
-    dsimp only [LocallyConstant.ofClopen] at H
-    change 1 = ite _ _ _ at H
-    rw [if_pos hyV] at H
-    exact top_ne_bot H
-  · intro (h : Function.Surjective (toCompHaus.map f))
-    rw [← CompHaus.epi_iff_surjective] at h
-    constructor
-    intro W a b h
-    apply Functor.map_injective toCompHaus
-    apply_fun toCompHaus.map at h
-    simp only [Functor.map_comp] at h
-    rwa [← cancel_epi (toCompHaus.map f)]
+  refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
+  dsimp [Function.Surjective]
+  intro h y
+  by_contra' hy
+  let C := Set.range f
+  have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+  let U := Cᶜ
+  have hUy : U ∈ nhds y := by
+    simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
+  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
+  classical
+  let g : Y ⟶ Stonean.two :=
+    ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+  let h : Y ⟶ Stonean.two := ⟨fun _ => ⟨1⟩, continuous_const⟩
+  have H : h = g := by
+    rw [← cancel_epi f]
+    ext x
+    apply ULift.ext -- why is `ext` not doing this automatically?
+    change 1 = ite _ _ _ -- why is `dsimp` not getting me here?
+    rw [if_neg]
+    refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
+    simpa only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
+      using exists_apply_eq_apply f x
+  apply_fun fun e => (e y).down at H
+  change 1 = ite _ _ _ at H -- why is `dsimp at H` not getting me here?
+  rw [if_pos hyV] at H
+  exact one_ne_zero H
 
 instance {X Y : Stonean} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
   rw [CompHaus.epi_iff_surjective]
