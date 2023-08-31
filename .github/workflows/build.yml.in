@@ -82,16 +82,6 @@ jobs:
     name: BuildJOB_NAME
     runs-on: RUNS_ON
     steps:
-      - name: Check if toolchain is a lean-pr-release
-        uses: actions/read-file@v1
-        id: lean-toolchain
-        with:
-          path: lean-toolchain
-
-      - name: Uninstall existing lean-pr-release toolchain
-        if: ${{ regexpMatches(steps.lean-toolchain.outputs.content, '^leanprover:lean-pr-releases/pr-release-[0-9]+$') }}
-        run: elan toolchain uninstall ${{ steps.lean-toolchain.outputs.content }}
-
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
@@ -110,6 +100,13 @@ jobs:
       - name: update Mathlib.lean
         run: |
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ `cat lean-toolchain` =~ ^leanprover:lean-pr-releases/pr-release-[0-9]+$ ]]; then
+            echo "Uninstalling transient toolchain `cat lean-toolchain`"
+            elan toolchain uninstall `cat lean-toolchain`
+          fi
 
       - name: get cache
         run: |
