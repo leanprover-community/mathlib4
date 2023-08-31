@@ -27,12 +27,15 @@ variable {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpa
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 theorem LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection (f : E →ₗᵢ[𝕜] E) (x : E) :
-    Tendsto (fun N ↦ birkhoffAverage 𝕜 f _root_.id N x) atTop
+    Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
       (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
   set S := LinearMap.eqLocus f 1
   set P := orthogonalProjection S
   set g := f.toContinuousLinearMap
-  
+  suffices : Tendsto (ContinuousLinearMap.apply 𝕜 E x <| birkhoffAverage 𝕜 (g * ·) _root_.id · 1)
+    atTop (𝓝 (P x))
+  · simp_rw [map_birkhoffAverage 𝕜 𝕜, birkhoffAverage_mul_left_one] at this
+    
   
 
 theorem LinearIsometry.tendsto_inv_smul_sum_range_pow_apply_orthogonalProjection'

@@ -62,6 +62,16 @@ theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [AddMonoidHomClass F M N
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
 
+@[to_additive]
+theorem birkhoffSum_mul_left_one {N : Type*} [Monoid N] (g : N → M) (n : ℕ) (x : N) :
+    birkhoffSum (x * ·) g n 1 = ∑ k in range n, g (x ^ k) := by
+  simp [birkhoffSum]
+
+@[to_additive]
+theorem birkhoffSum_mul_right_one {N : Type*} [Monoid N] (g : N → M) (n : ℕ) (x : N) :
+    birkhoffSum (· * x) g n 1 = ∑ k in range n, g (x ^ k) := by
+  simp [birkhoffSum]
+
 end AddCommMonoid
 
 section AddCommGroup
