@@ -1192,6 +1192,12 @@ theorem isCountablyGenerated_top : IsCountablyGenerated (⊤ : Filter α) :=
   @principal_univ α ▸ isCountablyGenerated_principal _
 #align filter.is_countably_generated_top Filter.isCountablyGenerated_top
 
+lemma isCountablyGenerated_of_subsingleton_mem {l : Filter α} {s : Set α} (hs : s.Subsingleton)
+    (h's : s ∈ l) : IsCountablyGenerated l := by
+  rcases eq_bot_or_pure_of_subsingleton_mem hs h's with rfl|⟨x, rfl⟩
+  · exact isCountablyGenerated_bot
+  · exact isCountablyGenerated_pure x
+
 -- porting note: without explicit `Sort u` and `Type v`, Lean 4 uses `ι : Prop`
 universe u v
 
