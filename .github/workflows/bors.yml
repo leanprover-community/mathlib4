@@ -202,9 +202,9 @@ jobs:
             # Depending on the success/failure, set the appropriate message
             if ${{ steps.lint.outcome == 'success' }}; then
               message="✅ Mathlib has successfully built against this PR. ($current_time)"
-            else if ${{ steps.test.outcome == 'success' }}; then
+            elif ${{ steps.test.outcome == 'success' }}; then
               message="❌ Mathlib built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
-            else if ${{ steps.built.outcome == 'success' }}; then
+            elif ${{ steps.built.outcome == 'success' }}; then
               message="❌ Mathlib built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
             else
               message="💥 Mathlib build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
