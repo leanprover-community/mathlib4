@@ -1978,7 +1978,6 @@ import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.AmalgamatedProduct
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ClassEquation
-import Mathlib.GroupTheory.Colimits.PushoutI
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
@@ -2044,6 +2043,7 @@ import Mathlib.GroupTheory.SpecificGroups.Coprod
 import Mathlib.GroupTheory.SpecificGroups.CoprodI
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.GroupTheory.SpecificGroups.PushoutI
 import Mathlib.GroupTheory.SpecificGroups.Quaternion
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Basic
