@@ -28,11 +28,11 @@ open BigOperators Polynomial
 
 section Embeddings
 
-variable (F : Type _) [Field F]
+variable (F : Type*) [Field F]
 -- Porting note: timed out in term mode.
 -- Using `apply` appears to be faster than using `refine/exact`.
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
-def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type _} [CommRing R] [Algebra F R] (x : R) :
+def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
     Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) := by
   refine AlgEquiv.symm ?_
   refine AlgEquiv.ofBijective
@@ -60,7 +60,7 @@ set_option maxHeartbeats 500000 in
 set_option synthInstance.maxHeartbeats 120000 in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
-theorem lift_of_splits {F K L : Type _} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+theorem lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
     (s : Finset K) : (∀ x ∈ s, IsIntegral F x ∧ Polynomial.Splits (algebraMap F L) (minpoly F x)) →
       Nonempty (Algebra.adjoin F (↑s : Set K) →ₐ[F] L) := by
   classical

@@ -179,7 +179,7 @@ open MulOpposite
 /-- A non-unital ring homomorphism `f : R →ₙ+* S` such that `f x` commutes with `f y` for all `x, y`
 defines a non-unital ring homomorphism to `Sᵐᵒᵖ`. -/
 @[simps (config := { fullyApplied := false })]
-def NonUnitalRingHom.toOpposite {R S : Type _} [NonUnitalNonAssocSemiring R]
+def NonUnitalRingHom.toOpposite {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f : R →ₙ+* S) (hf : ∀ x y, Commute (f x) (f y)) : R →ₙ+* Sᵐᵒᵖ :=
   { ((opAddEquiv : S ≃+ Sᵐᵒᵖ).toAddMonoidHom.comp ↑f : R →+ Sᵐᵒᵖ), f.toMulHom.toOpposite hf with
     toFun := MulOpposite.op ∘ f }
@@ -188,7 +188,7 @@ def NonUnitalRingHom.toOpposite {R S : Type _} [NonUnitalNonAssocSemiring R]
 /-- A non-unital ring homomorphism `f : R →ₙ* S` such that `f x` commutes with `f y` for all `x, y`
 defines a non-unital ring homomorphism from `Rᵐᵒᵖ`. -/
 @[simps (config := { fullyApplied := false })]
-def NonUnitalRingHom.fromOpposite {R S : Type _} [NonUnitalNonAssocSemiring R]
+def NonUnitalRingHom.fromOpposite {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f : R →ₙ+* S) (hf : ∀ x y, Commute (f x) (f y)) : Rᵐᵒᵖ →ₙ+* S :=
   { (f.toAddMonoidHom.comp (opAddEquiv : R ≃+ Rᵐᵒᵖ).symm.toAddMonoidHom : Rᵐᵒᵖ →+ S),
     f.toMulHom.fromOpposite hf with toFun := f ∘ MulOpposite.unop }
@@ -216,7 +216,7 @@ def NonUnitalRingHom.unop {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAs
 /-- A ring homomorphism `f : R →+* S` such that `f x` commutes with `f y` for all `x, y` defines
 a ring homomorphism to `Sᵐᵒᵖ`. -/
 @[simps (config := { fullyApplied := false })]
-def RingHom.toOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S)
+def RingHom.toOpposite {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
     (hf : ∀ x y, Commute (f x) (f y)) : R →+* Sᵐᵒᵖ :=
   { ((opAddEquiv : S ≃+ Sᵐᵒᵖ).toAddMonoidHom.comp ↑f : R →+ Sᵐᵒᵖ), f.toMonoidHom.toOpposite hf with
     toFun := MulOpposite.op ∘ f }
@@ -226,7 +226,7 @@ def RingHom.toOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S)
 /-- A ring homomorphism `f : R →+* S` such that `f x` commutes with `f y` for all `x, y` defines
 a ring homomorphism from `Rᵐᵒᵖ`. -/
 @[simps (config := { fullyApplied := false })]
-def RingHom.fromOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S)
+def RingHom.fromOpposite {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
     (hf : ∀ x y, Commute (f x) (f y)) : Rᵐᵒᵖ →+* S :=
   { (f.toAddMonoidHom.comp (opAddEquiv : R ≃+ Rᵐᵒᵖ).symm.toAddMonoidHom : Rᵐᵒᵖ →+ S),
     f.toMonoidHom.fromOpposite hf with toFun := f ∘ MulOpposite.unop }

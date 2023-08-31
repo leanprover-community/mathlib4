@@ -31,6 +31,7 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
  * `TensorProduct.AlgebraTensorModule.map`
  * `TensorProduct.AlgebraTensorModule.mapBilinear`
  * `TensorProduct.AlgebraTensorModule.congr`
+ * `TensorProduct.AlgebraTensorModule.rid`
  * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
  * `TensorProduct.AlgebraTensorModule.assoc`
  * `TensorProduct.AlgebraTensorModule.leftComm`
@@ -257,6 +258,21 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
 
+variable (R A M)
+
+/-- Heterobasic version of `TensorProduct.rid`. -/
+protected def rid : M ⊗[R] R ≃ₗ[A] M :=
+  LinearEquiv.ofLinear
+    (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
+    (mk R A M R |>.flip 1)
+    (LinearMap.ext <| one_smul _)
+    (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+
+variable {R M}
+
+@[simp]
+theorem rid_tmul (r : R) (m : M) : AlgebraTensorModule.rid R A M (m ⊗ₜ r) = r • m := rfl
+
 end Semiring
 
 section CommSemiring
@@ -380,7 +396,7 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
   rfl
 
 @[simp]
-theorem tensorTensorTensorComm_symm_tmul (m : M) (p : P) (q : Q):
+theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorComm R A M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
   rfl
 

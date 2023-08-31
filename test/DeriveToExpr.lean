@@ -3,6 +3,8 @@ import Mathlib.Tactic.DeriveToExpr
 namespace tests
 open Lean
 
+-- TODO this file fails without this line due to a bug in the handler?
+set_option autoImplicit true
 set_option trace.Elab.Deriving.toExpr true
 
 inductive MyMaybe (α : Type u)

@@ -35,7 +35,7 @@ open Filter Function Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology BigOperators
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 --  {y : Fin n → 𝕜} -- Porting note: This is used nowhere and creates problem since it is sometimes
 -- automatically included as a hypothesis

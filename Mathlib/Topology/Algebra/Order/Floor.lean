@@ -28,7 +28,7 @@ This file proves statements about limits and continuity of functions involving `
 
 open Filter Function Int Set Topology
 
-variable {α β γ : Type _} [LinearOrderedRing α] [FloorRing α]
+variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>

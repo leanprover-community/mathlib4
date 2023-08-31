@@ -5,6 +5,7 @@ Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Hom.Basic
 
 /-!
 # The `apply_fun` tactic.
@@ -13,8 +14,6 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 ## Porting notes
 When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
-
-When `Logic.Equiv.Basic` and `Order.Hom.Basic` have been ported some additional testing is required.
 -/
 
 namespace Mathlib.Tactic
@@ -23,8 +22,9 @@ open Lean Parser Tactic Elab Tactic Meta
 initialize registerTraceClass `apply_fun
 
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
     TacticM (List MVarId) := do
+  let using? ← using?.mapM (elabTerm · none)
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
   | (``Eq, #[_, lhs, rhs]) => do
@@ -86,8 +86,13 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   if ok.isSome then return true
   return false
 
+-- for simplicity of the implementation below it is helpful
+-- to have the forward direction of these lemmas
+alias ⟨ApplyFun.le_of_le, _⟩ := OrderIso.le_iff_le
+alias ⟨ApplyFun.lt_of_lt, _⟩ := OrderIso.lt_iff_lt
+
 /-- Apply a function to the main goal. -/
-def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
+def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (List MVarId) := do
   -- handle applying a two-argument theorem whose first argument is f
   let handle (thm : Name) : TacticM (List MVarId) := do
     let ng ← mkFreshExprMVar none
@@ -105,11 +110,10 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
   | (``Not, #[p]) => match p.getAppFnArgs with
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
-  -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
-  -- | (``LE.le, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
-  -- | (``GE.ge, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
-  -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
-  -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
+  | (``LE.le, _)
+  | (``GE.ge, _) => handle ``ApplyFun.le_of_le
+  | (``LT.lt, _)
+  | (``GT.gt, _) => handle ``ApplyFun.lt_of_lt
   | (``Eq, #[_, _, _]) => do
     -- g' is for the `f lhs = f rhs` goal
     let g' ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (← g.getTag)
@@ -124,6 +128,7 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
         let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
         let pf ← Term.ensureHasType (← g.getType) pf
         -- In the current context, let's try proving injectivity since it might fill in some holes
+        let using? ← using?.mapM (Term.elabTerm · (some inj))
         _ ← withAssignableSyntheticOpaque <| maybeProveInjective ginj using?
         Term.synthesizeSyntheticMVarsUsingDefault
         gDefer.mvarId!.assign pf
@@ -170,7 +175,6 @@ placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
     (atTarget := withMainContext do
