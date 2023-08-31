@@ -18,9 +18,8 @@ This module defines and proves properties about triangles in simple graphs.
 
 ## Main declarations
 
-* `SimpleGraph.farFromTriangleFree`: Predicate for a graph to have enough triangles so that
-  a lot of edges must be removed to remove all triangles.
-  This is the crux of the Triangle Removal Lemma.
+* `SimpleGraph.FarFromTriangleFree`: Predicate for a graph such that one must remove a lot of edges
+  from it for it to become triangle-free. This is the crux of the Triangle Removal Lemma.
 
 ## TODO
 
