@@ -353,6 +353,11 @@ theorem isComplex_iff {w : InfinitePlace K} :
 #align number_field.infinite_place.is_complex_iff NumberField.InfinitePlace.isComplex_iff
 
 @[simp]
+theorem conjugate_embedding_eq_of_isReal {w : InfinitePlace K} (h : IsReal w) :
+    ComplexEmbedding.conjugate (embedding w) = embedding w :=
+  ComplexEmbedding.isReal_iff.mpr (isReal_iff.mp h)
+
+@[simp]
 theorem not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex w := by
   rw [isComplex_iff, isReal_iff]
 #align number_field.infinite_place.not_is_real_iff_is_complex NumberField.InfinitePlace.not_isReal_iff_isComplex

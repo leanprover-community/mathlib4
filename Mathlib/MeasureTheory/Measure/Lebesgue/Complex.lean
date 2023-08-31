@@ -3,9 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Analysis.SpecialFunctions.Integrals
 
 #align_import measure_theory.measure.lebesgue.complex from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -41,6 +41,9 @@ def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
   equivRealProdClm.toHomeomorph.toMeasurableEquiv
 #align complex.measurable_equiv_real_prod Complex.measurableEquivRealProd
 
+@[simp]
+theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a.re, a.im) := rfl
+
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi :=
   (measurableEquivPi.symm.measurable.measurePreserving _).symm _
 #align complex.volume_preserving_equiv_pi Complex.volume_preserving_equiv_pi
@@ -49,4 +52,49 @@ theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRea
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
 #align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
 
+instance : Measure.IsAddHaarMeasure (@volume ℂ Complex.measureSpace) :=
+  Measure.MapLinearEquiv.isAddHaarMeasure _ _
+
+-- See: https://github.com/leanprover/lean4/issues/2220
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+
+@[simp]
+theorem volume_ball (a : ℂ) (r : ℝ) :
+    volume (Metric.ball a r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
+  obtain hr | hr := lt_or_le r 0
+  · rw [Metric.ball_eq_empty.mpr (le_of_lt hr), measure_empty, ← ENNReal.zero_eq_ofReal.mpr
+      (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
+  · suffices volume (Metric.ball (0: ℂ) 1) = NNReal.pi by
+      rw [Measure.addHaar_ball _ _ hr, finrank_real_complex, ENNReal.ofReal_pow hr, this, mul_comm]
+    let D := {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < 1}
+    have mes_D : MeasurableSet D :=
+      measurableSet_lt (Measurable.add (by measurability) (by measurability)) (by measurability)
+    have D_eq : D = regionBetween (fun x => - Real.sqrt (1 - x ^ 2))
+        (fun x => Real.sqrt (1 - x ^ 2)) (Set.Ioc (-1) 1) := by
+      ext p
+      simp_rw [regionBetween, Set.mem_Ioc, Set.mem_Ioo, ← Real.sq_lt, lt_tsub_iff_left,
+        Set.mem_setOf_eq, Nat.cast_one]
+      refine iff_and_self.mpr (fun h => And.imp_right le_of_lt ?_)
+      rw [← abs_lt, ← sq_lt_one_iff_abs_lt_one]
+      exact lt_of_add_lt_of_nonneg_left h (sq_nonneg _)
+    calc
+      _ = (volume (measurableEquivRealProd ⁻¹' D)) := by
+            simp_rw [Metric.ball, dist_zero_right, norm_eq_abs, Set.preimage_setOf_eq,
+              measurableEquivRealProd_apply, ← normSq_add_mul_I, re_add_im, normSq_eq_abs,
+              pow_lt_one_iff_of_nonneg (map_nonneg _ _) two_ne_zero]
+      _ = (volume D) := volume_preserving_equiv_real_prod.measure_preimage mes_D
+      _ = ENNReal.ofReal ((2 : ℝ) * ∫ (a : ℝ) in Set.Ioc (-1) 1, Real.sqrt (1 - a ^ 2)) := by
+            rw [D_eq, Measure.volume_eq_prod, volume_regionBetween_eq_integral
+              (Continuous.integrableOn_Ioc (by continuity)) (Continuous.integrableOn_Ioc
+              (by continuity)) measurableSet_Ioc (fun _ _ => neg_le_self (Real.sqrt_nonneg _))]
+            simp_rw [Pi.sub_apply, sub_neg_eq_add, ← two_mul, integral_mul_left]
+      _ = NNReal.pi := by
+            rw [← intervalIntegral.integral_of_le (by norm_num : (-1 : ℝ) ≤ 1), Nat.cast_one,
+              integral_sqrt_one_sub_sq, two_mul, add_halves, ← NNReal.coe_real_pi,
+              ENNReal.ofReal_coe_nnreal]
+
+@[simp]
+theorem volume_closedBall (a : ℂ) (r : ℝ) :
+     volume (Metric.closedBall a r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
+  rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 end Complex
