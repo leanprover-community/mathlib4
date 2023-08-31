@@ -379,3 +379,19 @@ theorem lineDeriv_zero : lineDeriv 𝕜 f x 0 = 0 :=
   hasLineDerivAt_zero.lineDeriv
 
 end Zero
+
+section CompRight
+
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+  {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
+  {f : E → F} {f' : F} {x v : E'} {L : E' →ₗ[𝕜] E}
+
+theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
+    HasLineDerivAt 𝕜 f f' (L x) (L v) := by
+  simpa [HasLineDerivAt] using hf
+
+theorem LineDifferentiableAt.of_comp {v : E'} (hf : LineDifferentiableAt 𝕜 (f ∘ L) x v) :
+    LineDifferentiableAt 𝕜 f (L x) (L v) :=
+  hf.hasLineDerivAt.of_comp.lineDifferentiableAt
+
+end CompRight
