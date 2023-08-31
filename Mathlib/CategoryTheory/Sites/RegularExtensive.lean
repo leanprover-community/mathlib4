@@ -24,7 +24,8 @@ target.
 In `extensive_union_regular_generates_coherent`, we prove that the union of these two coverages
 generates the coherent topology on `C` if `C` is precoherent, extensive and regular.
 
-TODO: figure out under what conditions `Regular` and `Extensive` are implied by `Precoherent`.
+TODO: figure out under what conditions `Regular` and `Extensive` are implied by `Precoherent` and
+vice versa. Maybe `Precoherent` 
 
 -/
 
@@ -125,94 +126,66 @@ def extensiveCoverage [Extensive C] : Coverage C where
       rw [hS]
       refine Presieve.ofArrows.mk a
 
-lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Precoherent C] :
+/-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
+lemma extensive_regular_generate_coherent [Regular C] [Extensive C] [Precoherent C] :
     ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =
     (coherentTopology C) := by
   ext B S
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · dsimp [Coverage.toGrothendieck] at *
-    induction h with
-    | of Y T hT =>
-      · apply Coverage.saturate.of
-        dsimp [coherentCoverage]
-        simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
-          Set.mem_setOf_eq] at hT
-        apply Or.elim hT
-        <;> intro h
-        · obtain ⟨α, x, X, π, h⟩ := h
-          refine ⟨α, x, X, π, ⟨h.1, ?_⟩⟩
-          letI := h.2
-          infer_instance
-        · obtain ⟨Z, f, ⟨hh, h⟩⟩  := h
-          refine ⟨Unit, inferInstance, (fun _ ↦ Z), (fun _ ↦ f), ⟨hh, ?_⟩⟩
-          infer_instance
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
   · induction h with
     | of Y T hT =>
-      · dsimp [coherentCoverage] at hT
-        obtain ⟨I, hI, X, f, ⟨h, hT⟩⟩ := hT
-        let φ := fun (i : I) ↦ Sigma.ι X i
-        let F := Sigma.desc f
-        let Z := Sieve.generate T
-        let Xs := (∐ fun (i : I) => X i)
-        let Zf : Sieve Y := Sieve.generate
-          (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
-        apply Coverage.saturate.transitive Y Zf
-        · apply Coverage.saturate.of
+      apply Coverage.saturate.of
+      simp only [Coverage.sup_covering, Set.mem_union] at hT
+      exact Or.elim hT
+        (fun ⟨α, x, X, π, ⟨h, _⟩⟩ ↦ ⟨α, x, X, π, ⟨h, inferInstance⟩⟩)
+        (fun ⟨Z, f, ⟨h, _⟩⟩ ↦ ⟨Unit, inferInstance, fun _ ↦ Z, fun _ ↦ f, ⟨h, inferInstance⟩⟩)
+    | top => apply Coverage.saturate.top
+    | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
+  · induction h with
+    | of Y T hT =>
+      obtain ⟨I, hI, X, f, ⟨h, hT⟩⟩ := hT
+      let φ := fun (i : I) ↦ Sigma.ι X i
+      let F := Sigma.desc f
+      let Z := Sieve.generate T
+      let Xs := (∐ fun (i : I) => X i)
+      let Zf := Sieve.generate (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
+      apply Coverage.saturate.transitive Y Zf
+      · apply Coverage.saturate.of
+        simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
+          Set.mem_setOf_eq]
+        exact Or.inr ⟨Xs, F, ⟨rfl, inferInstance⟩⟩
+      · intro R g hZfg
+        dsimp at hZfg
+        rw [Presieve.ofArrows_pUnit] at hZfg
+        obtain ⟨W, ψ, σ, ⟨hW, hW'⟩⟩ := hZfg
+        induction hW
+        rw [← hW', Sieve.pullback_comp Z]
+        suffices Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
+          ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R by assumption
+        apply GrothendieckTopology.pullback_stable'
+        suffices Coverage.saturate ((extensiveCoverage C) ⊔ (regularCoverage C)) Xs
+          (Z.pullback F) by assumption
+        suffices : Sieve.generate (Presieve.ofArrows X φ) ≤ Z.pullback F
+        · apply Coverage.saturate_of_superset _ this
+          apply Coverage.saturate.of
           simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
             Set.mem_setOf_eq]
-          right
-          refine ⟨Xs, F, ⟨rfl, ?_⟩⟩
-          infer_instance
-        · intro R g hZfg
-          dsimp at hZfg
-          rw [Presieve.ofArrows_pUnit] at hZfg
-          obtain ⟨W, ψ, σ, ⟨hW, hW'⟩⟩ := hZfg
-          dsimp [Presieve.singleton] at hW
-          induction hW
-          rw [← hW', Sieve.pullback_comp Z]
-          suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R
-          · exact this
-          apply GrothendieckTopology.pullback_stable'
-          dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate ((extensiveCoverage C) ⊔ (regularCoverage C)) Xs
-            (Z.pullback F)
-          · exact this
-          suffices : Sieve.generate (Presieve.ofArrows X φ) ≤ Z.pullback F
-          · apply Coverage.saturate_of_superset _ this
-            apply Coverage.saturate.of
-            simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
-              Set.mem_setOf_eq]
-            left
-            refine ⟨I, hI, X, φ, ⟨rfl, ?_⟩⟩
-            suffices : Sigma.desc φ = 𝟙 _
-            · rw [this]
-              exact inferInstance
-            ext
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
-          intro Q q hq
-          simp only [Sieve.pullback_apply, Sieve.generate_apply]
-          simp only [Sieve.generate_apply] at hq
-          obtain ⟨E, e, r, hq⟩ := hq
-          refine' ⟨E, e, r ≫ F, ⟨_, _⟩⟩
-          · rw [h]
-            induction hq.1
-            dsimp
-            simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-            exact Presieve.ofArrows.mk _
-          · rw [← hq.2]
-            simp only [Category.assoc]
-    | top =>
-      · apply Coverage.saturate.top
-    | transitive Y T =>
-      · apply Coverage.saturate.transitive Y T
-        · assumption
-        · assumption
+          refine Or.inl ⟨I, hI, X, φ, ⟨rfl, ?_⟩⟩
+          suffices Sigma.desc φ = 𝟙 _ by rw [this]; infer_instance
+          ext
+          simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
+        intro Q q hq
+        simp only [Sieve.pullback_apply, Sieve.generate_apply]
+        simp only [Sieve.generate_apply] at hq
+        obtain ⟨E, e, r, hq⟩ := hq
+        refine' ⟨E, e, r ≫ F, ⟨_, _⟩⟩
+        · rw [h]
+          induction hq.1
+          simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+          exact Presieve.ofArrows.mk _
+        · rw [← hq.2]
+          simp only [Category.assoc]
+    | top => apply Coverage.saturate.top
+    | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
 
 end CategoryTheory
