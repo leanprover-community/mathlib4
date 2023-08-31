@@ -126,7 +126,7 @@ def extensiveCoverage [Extensive C] : Coverage C where
       refine Presieve.ofArrows.mk a
 
 lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Precoherent C] :
-    ((extensiveCoverage C).union (regularCoverage C)).toGrothendieck =
+    ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =
     (coherentTopology C) := by
   ext B S
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -135,7 +135,7 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
     | of Y T hT =>
       · apply Coverage.saturate.of
         dsimp [coherentCoverage]
-        simp only [Coverage.union, extensiveCoverage, regularCoverage, Set.mem_union,
+        simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
           Set.mem_setOf_eq] at hT
         apply Or.elim hT
         <;> intro h
@@ -164,7 +164,7 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
           (Presieve.ofArrows (fun (_ : Unit) ↦ Xs) (fun (_ : Unit) ↦ F))
         apply Coverage.saturate.transitive Y Zf
         · apply Coverage.saturate.of
-          simp only [Coverage.union, extensiveCoverage, regularCoverage, Set.mem_union,
+          simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
             Set.mem_setOf_eq]
           right
           refine ⟨Xs, F, ⟨rfl, ?_⟩⟩
@@ -177,17 +177,17 @@ lemma extensive_union_regular_generates_coherent [Regular C] [Extensive C] [Prec
           induction hW
           rw [← hW', Sieve.pullback_comp Z]
           suffices : Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
-            ((extensiveCoverage C).union (regularCoverage C)).toGrothendieck R
+            ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R
           · exact this
           apply GrothendieckTopology.pullback_stable'
           dsimp [Coverage.toGrothendieck]
-          suffices : Coverage.saturate ((extensiveCoverage C).union (regularCoverage C)) Xs
+          suffices : Coverage.saturate ((extensiveCoverage C) ⊔ (regularCoverage C)) Xs
             (Z.pullback F)
           · exact this
           suffices : Sieve.generate (Presieve.ofArrows X φ) ≤ Z.pullback F
           · apply Coverage.saturate_of_superset _ this
             apply Coverage.saturate.of
-            simp only [Coverage.union, extensiveCoverage, regularCoverage, Set.mem_union,
+            simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
               Set.mem_setOf_eq]
             left
             refine ⟨I, hI, X, φ, ⟨rfl, ?_⟩⟩
