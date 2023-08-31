@@ -105,10 +105,8 @@ jobs:
           find . -name . -o -prune -exec rm -rf -- {} +
 
       # The Hoskinson runners may not have jq installed, so do that now.
-      - name: Install jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
 
       - name: install elan
         run: |
