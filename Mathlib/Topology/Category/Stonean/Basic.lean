@@ -364,7 +364,7 @@ lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z 
     [Epi f] : lift e f ≫ f = e := CompHaus.lift_lifts _ _
 
 lemma projective_of_extrDisc {X : Profinite.{u}} (hX : ExtremallyDisconnected X) :
-    Projective X:= by
+    Projective X := by
   show Projective (Stonean.toProfinite.obj ⟨X.toCompHaus⟩)
   exact inferInstance
 
