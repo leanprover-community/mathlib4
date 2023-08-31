@@ -31,6 +31,9 @@ groups then so is `of`
 if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
 `w` itself is not in the image of the base monoid.
 
+## Tags
+
+amalgamated product, pushout, group
 
 -/
 
