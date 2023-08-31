@@ -51,7 +51,6 @@ theorem LipschitzWith.ae_lineDifferentiableAt {C : ℝ≥0} {f : E → ℝ} (hf 
     obtain ⟨N, hN⟩ : ∃ N : E ≃L[ℝ] E, N (M (0, 1)) = v :=
       SeparatingDual.exists_continuousLinearEquiv_apply_eq (by simp) hv
     exact ⟨M.trans N, hN⟩
-  have : LipschitzWith (‖(L : (F × ℝ) →L[ℝ] E)‖₊) L := L.lipschitz
   let ρ : Measure (F × ℝ) := addHaar.prod volume
   have : IsAddHaarMeasure (Measure.map L ρ) := L.isAddHaarMeasure_map ρ
   suffices H : ∀ᵐ p ∂(Measure.map L ρ), LineDifferentiableAt ℝ f p v from
