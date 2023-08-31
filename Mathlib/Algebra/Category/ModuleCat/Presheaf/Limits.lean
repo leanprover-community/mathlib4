@@ -1,11 +1,12 @@
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 universe v₃ v₂ v₁ v u₃ u₂ u₁ u
 
 namespace CategoryTheory
 
--- to be moved...
+-- it is actually already there, as `preservesLimitIso`
 namespace Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -74,7 +75,9 @@ lemma inv_comparisonInv_map_π (j : J) :
   simp only [← cancel_epi (comparison K F), IsIso.hom_inv_id_assoc, comparison_π]
 
 @[simps!]
-noncomputable def comparisonIso : F.obj (limit K) ≅ limit (K ⋙ F) := asIso (comparison K F)
+noncomputable def comparisonIso : F.obj (limit K) ≅ limit (K ⋙ F) :=
+  asIso (comparison K F)
+  -- should be replaced by `preservesLimitIso F K`
 
 end limit
 
