@@ -1975,7 +1975,6 @@ import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.WhitneyEmbedding
 import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.AmalgamatedProduct
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.Commensurable
