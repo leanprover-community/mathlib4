@@ -151,6 +151,10 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 make lint
 
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: Install jq
+        run: sudo apt-get install jq
+
       - name: Post comments for lean-pr-testing branch
         if: always()
         env:
