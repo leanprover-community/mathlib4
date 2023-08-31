@@ -29,20 +29,20 @@ variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 instance monoid : Monoid (Pushout φ) := by
   delta Pushout; infer_instance
 
-def of {i : ι} : G i →* Pushout φ :=
+def of (i : ι) : G i →* Pushout φ :=
   (Con.mk' _).comp <| inl.comp CoprodI.of
 
 def base : H →* Pushout φ :=
   (Con.mk' _).comp inr
 
-theorem of_comp_eq_base (i : ι) : of.comp (φ i) = (base (φ := φ)) := by
+theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base (φ := φ)) := by
   ext x
   apply (Con.eq _).2
   refine ConGen.Rel.of _ _ ?_
   simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
   exact ⟨_, _, rfl, rfl⟩
 
-theorem of_apply_eq_base (i : ι) (x : H) : of (φ i x) = base (φ := φ) x := by
+theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base (φ := φ) x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
 def lift (f : ∀ i, G i →* K) (k : H →* K)
@@ -57,7 +57,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
-    {i : ι} (g : G i) : (lift f k hf) (of g : Pushout φ) = f i g := by
+    {i : ι} (g : G i) : (lift f k hf) (of i g : Pushout φ) = f i g := by
   delta Pushout lift of
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_inl, CoprodI.lift_of]
 
@@ -70,7 +70,7 @@ theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
 
 @[ext 1199]
 theorem hom_ext {f g : Pushout φ →* K}
-    (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _))
+    (h : ∀ i, f.comp (of i : G i →* _) = g.comp (of i : G i →* _))
     (hbase : f.comp base = g.comp base) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.ext_hom _ _
@@ -80,7 +80,7 @@ theorem hom_ext {f g : Pushout φ →* K}
 @[ext high]
 theorem hom_ext_nonempty [hn : Nonempty ι]
     {f g : Pushout φ →* K}
-    (h : ∀ i, f.comp (of : G i →* _) = g.comp (of : G i →* _)) : f = g :=
+    (h : ∀ i, f.comp (of i : G i →* _) = g.comp (of i : G i →* _)) : f = g :=
   hom_ext h <| by
     cases hn with
     | intro i =>
@@ -88,16 +88,16 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
 def ofCoprodI : CoprodI G →* Pushout φ :=
-  CoprodI.lift (fun _ => of)
+  CoprodI.lift of
 
 @[simp]
 theorem ofCoprodI_of (i : ι) (g : G i) :
-    (ofCoprodI (CoprodI.of g) : Pushout φ) = of g := by
+    (ofCoprodI (CoprodI.of g) : Pushout φ) = of i g := by
   simp [ofCoprodI]
 
 theorem induction_on {motive : Pushout φ → Prop}
     (x : Pushout φ)
-    (of  : ∀ (i : ι) (g : G i), motive (of g))
+    (of  : ∀ (i : ι) (g : G i), motive (of i g))
     (base : ∀ h, motive (base h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta Pushout Pushout.of Pushout.base at *
@@ -119,7 +119,7 @@ end Monoid
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
 instance : Group (Pushout φ) :=
-  { (Con.group (Pushout.con φ)) with
+  { Con.group (Pushout.con φ) with
     toMonoid := Pushout.monoid }
 
 namespace NormalWord
@@ -225,12 +225,6 @@ theorem normalizeSingle_one {i : ι} :
   apply hφ i
   rw [Classical.choose_spec h1, map_one]
 
-theorem normalizeSingle_injective (i : ι) :
-    Function.Injective (normalizeSingle φ (i := i)) := by
-  intro g₁ g₂ H
-  rw [← normalizeSingle_fst_mul_normalizeSingle_snd φ g₁,
-    H, normalizeSingle_fst_mul_normalizeSingle_snd]
-
 theorem mem_range_iff_normalizeSingle_snd_eq_one {i : ι} (g : G i) :
     (normalizeSingle φ g).snd = 1 ↔ g ∈ (φ i).range := by
   rw [← mul_right_inj (φ i (normalizeSingle φ g).fst),
@@ -320,7 +314,7 @@ variable {hφ}
 
 theorem ext_smul {w₁ w₂ : NormalWord φ hφ} (i : ι)
     (h : CoprodI.of (φ i w₁.left) • w₁.toWord =
-      CoprodI.of (φ i w₂.left) • w₂.toWord) :
+         CoprodI.of (φ i w₂.left) • w₂.toWord) :
     w₁ = w₂ := by
   rcases w₁ with ⟨w₁, h₁, hw₁⟩
   rcases w₂ with ⟨w₂, h₂, hw₂⟩
@@ -439,7 +433,7 @@ theorem base_smul_def (h : H) (w : NormalWord φ hφ) :
   rfl
 
 theorem summand_smul_def {i : ι} (g : G i) (w : NormalWord φ hφ) :
-    of (φ := φ) g • w = (equivPair i).symm
+    of (φ := φ) i g • w = (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head } := by
   dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
@@ -447,7 +441,7 @@ theorem summand_smul_def {i : ι} (g : G i) (w : NormalWord φ hφ) :
   rfl
 
 theorem of_smul_eq_smul {i : ι} (g : G i) (w : NormalWord φ hφ) :
-    of (φ := φ) g • w = g • w := by
+    of (φ := φ) i g • w = g • w := by
   rw [summand_smul_def, summand_smul_def']
 
 theorem base_smul_eq_smul (h : H) (w : NormalWord φ hφ) :
@@ -483,7 +477,7 @@ def prod (w : NormalWord φ hφ) : Pushout φ :=
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) g  • w := by
+    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
   apply ext_smul i
   simp only [cons, ne_eq, Word.cons_eq_smul, summand_smul_def, equivPair, rcons,
     Word.equivPair_symm, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, Word.rcons_eq_smul]
@@ -492,18 +486,18 @@ theorem cons_eq_smul {i : ι} (g : G i)
 
 @[simp]
 theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord φ hφ) :
-    (g • w).prod = of g * w.prod :=
+    (g • w).prod = of i g * w.prod :=
   calc (g • w).prod =
     ((equivPair i).symm
       { equivPair i w with head := g * (equivPair i w).head }).prod := rfl
-    _ = of (g * (φ i) w.left * ((Word.equivPair i) w.toWord).head) *
+    _ = of i (g * (φ i) w.left * ((Word.equivPair i) w.toWord).head) *
         ofCoprodI (Word.prod ((Word.equivPair i) w.toWord).tail) := by
       simp only [prod, rcons, equivPair, Word.rcons_eq_smul, Word.equivPair_symm,
         Word.prod_smul, Word.equivPair_smul_same]
       dsimp
       simp only [Word.prod_smul, map_mul, ofCoprodI_of, ← mul_assoc]
       simp only [← of_apply_eq_base i, ← map_mul, normalizeSingle_fst_mul_normalizeSingle_snd]
-    _ = of g * of ((φ i) w.left) * ofCoprodI
+    _ = of i g * of i ((φ i) w.left) * ofCoprodI
         (CoprodI.of ((Word.equivPair i) w.toWord).head *
           Word.prod ((Word.equivPair i) w.toWord).tail) := by
       rw [map_mul, map_mul, map_mul, ofCoprodI_of, mul_assoc]
@@ -530,7 +524,7 @@ theorem prod_empty : (empty : NormalWord φ hφ).prod = 1 := by
 
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord φ hφ) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of g * w.prod := by
+    (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
   simp only [prod, cons, Word.prod, Word.cons, List.prod_cons,
     List.map_cons, map_mul, ofCoprodI_of, ← mul_assoc,
     ← of_apply_eq_base i, normalizeSingle_fst_eq φ]
@@ -598,7 +592,7 @@ variable (φ)
 def Reduced (w : Word G) : Prop :=
   ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
 
-variable {φ} (hφ : ∀ _i, Function.Injective (φ _i))
+variable {φ} (hφ : ∀ _i, Injective (φ _i))
 
 theorem Reduced.exists_normalWord_prod_eq {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord φ hφ, w'.prod = ofCoprodI w.prod ∧
@@ -630,8 +624,8 @@ theorem Reduced.eq_empty_of_mem_range {w : Word G} (hw : Reduced φ w) :
 
 end Reduced
 
-theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij : i ≠ j) :
-    (of (i := i)).range ⊓ (of (i := j)).range = (base (φ := φ)).range :=
+theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
+    (of i).range ⊓ (of j).range = (base (φ := φ)).range :=
   le_antisymm
     (by
       intro x hx
@@ -639,9 +633,9 @@ theorem inf_of_range (hφ : ∀ _i, Function.Injective (φ _i)) {i j : ι} (hij 
       by_contra hx
       have hx1 : x ≠ 1 := by rintro rfl; simp_all only [map_one, one_mem]
       have hg₁1 : g₁ ≠ 1 :=
-        ne_of_apply_ne (of (φ := φ)) (by simp_all)
+        ne_of_apply_ne (of (φ := φ) i) (by simp_all)
       have hg₂1 : g₂ ≠ 1 :=
-        ne_of_apply_ne (of (φ := φ)) (by simp_all)
+        ne_of_apply_ne (of (φ := φ) j) (by simp_all)
       have hg₁r : g₁ ∉ (φ i).range := by
         rintro ⟨y, rfl⟩
         subst hg₁
