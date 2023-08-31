@@ -6,6 +6,9 @@
 #   TOKEN: ${{ secrets.LEAN_PR_TESTING }}
 #   GITHUB_CONTEXT: ${{ toJson(github) }}
 #   WORKFLOW_URL: ${{ github.event.workflow_run.html_url }}
+#   LINT_OUTCOME: ${{ steps.lint.outcome }}
+#   TEST_OUTCOME: ${{ steps.test.outcome }}
+#   BUILD_OUTCOME: ${{ steps.build.outcome }}
 
 # Extract branch name and check if it matches the pattern.
 branch_name=$(echo "$GITHUB_CONTEXT" | jq -r .ref | cut -d'/' -f3)
@@ -15,7 +18,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
 
   echo "This is a 'lean-pr-testing-$pr_number' branch, so we need to adjust labels and write a comment."
 
-  if ${{ steps.lint.outcome == 'success' }}; then
+  if [ "$LINT_OUTCOME" == "success" ]; then
     echo "Removing label awaiting-mathlib-build"
     curl -L -s \
       -X DELETE \
@@ -66,11 +69,11 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
 
   branch="[lean-pr-testing-$pr_number](https://github.com/leanprover-community/mathlib4/compare/master...lean-pr-testing-$pr_number)"
   # Depending on the success/failure, set the appropriate message
-  if ${{ steps.lint.outcome == 'success' }}; then
+  if [ "$LINT_OUTCOME" == "success" ]; then
     message="✅ Mathlib branch $branch has successfully built against this PR. ($current_time)"
-  elif ${{ steps.test.outcome == 'success' }}; then
+  elif [ "$TEST_OUTCOME" == "success" ]; then
     message="❌ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
-  elif ${{ steps.built.outcome == 'success' }}; then
+  elif [ "$BUILD_OUTCOME" == "success" ]; then
     message="❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
   else
     message="💥 Mathlib branch $branch failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
