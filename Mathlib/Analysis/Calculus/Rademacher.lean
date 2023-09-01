@@ -77,7 +77,7 @@ theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg 
     ∫ x, lineDeriv ℝ f x v * g x ∂μ = - ∫ x, f x * lineDeriv ℝ g x v ∂μ := by
   have : Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
               (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
-    apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ C * ‖g x‖)
+    apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
     · apply eventually_of_forall (fun t ↦ ?_)
       apply AEStronglyMeasurable.mul ?_ hg.continuous.aestronglyMeasurable
       apply aestronglyMeasurable_const.smul
@@ -87,5 +87,9 @@ theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg 
     · filter_upwards [self_mem_nhdsWithin] with t (ht : 0 < t)
       apply eventually_of_forall (fun x ↦ ?_)
       calc ‖t⁻¹ • (f (x + t • v) - f x) * g x‖
-        = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := sorry
-      _ ≤ C * ‖g x‖ := sorry
+        = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
+      _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
+        gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
+      _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg ht.le]; ring
+    · exact (Continuous.integrable_of_hasCompactSupport hg.continuous h'g).norm.const_mul _
+    ·

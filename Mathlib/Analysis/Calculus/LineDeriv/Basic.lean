@@ -201,6 +201,12 @@ theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   lineDerivWithin_congr hs (hs hx)
 
+theorem HasLineDerivAt.tendsto (h : HasLineDerivAt 𝕜 f f' x v) :
+    Tendsto (fun (t : 𝕜) ↦ t ⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
+
+
+#exit
+
 end Module
 
 section NormedSpace
