@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.Tactic.ApplyFun
 /-!
 # The Regular and Extensive Coverages
 This file defines two coverages on a category `C`.
@@ -192,6 +193,15 @@ section ExtensiveSheaves
 
 variable [Extensive C]
 
+/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
+coproduct to the target. -/
+class _root_.CategoryTheory.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) :
+    Prop where
+  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
+  coproduct of their sources. -/
+  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
+    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
+
 instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
   has_pullbacks := by
     obtain ⟨_, _, _, _, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
@@ -246,14 +256,6 @@ instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
   (PreservesFiniteProducts.preserves α).preservesLimit
 
-/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
-coproduct to the target. -/
-class _root_.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) : Prop where
-  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
-  coproduct of their sources. -/
-  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
-    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
-
 instance {X : C} (S : Presieve X) [S.extensive]
     {F : Cᵒᵖ ⥤ Type max u v} [PreservesFiniteProducts F] : IsIso (Equalizer.forkMap F S) := by
   obtain ⟨α, _, Z, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
@@ -300,9 +302,130 @@ end ExtensiveSheaves
 
 section RegularSheaves
 
-variable [∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], HasPullback f f]
+open Opposite
 
+/-- A presieve is *regular* if it consists of a single effective epimorphism. -/
+class _root_.CategoryTheory.Presieve.regular {X : C} (R : Presieve X) : Prop where
+  /-- `R` consists of a single epimorphism. -/
+  single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)
+    (fun (_ : Unit) ↦ f) ∧ EffectiveEpi f
 
+def MapToEqualizer (P : Cᵒᵖ ⥤ Type (max u v)) {W X B : C} (f : X ⟶ B)
+    (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
+    P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
+  fun t ↦ ⟨P.map f.op t, by
+    change (P.map _ ≫ P.map _) _ = (P.map _ ≫ P.map _) _ ;
+    simp_rw [← P.map_comp, ← op_comp, w] ⟩
+
+def EqualizerCondition (P : Cᵒᵖ ⥤ Type (max u v)) : Prop :=
+  ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
+    (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
+    pullback.condition)
+
+noncomputable
+def EqualizerFirstObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ B)
+     : Equalizer.FirstObj F (Presieve.singleton π) ≅ F.obj (op X) :=
+  CategoryTheory.Equalizer.firstObjEqFamily F (Presieve.singleton π) ≪≫
+  { hom := fun e ↦ e π (Presieve.singleton_self π)
+    inv := fun e _ _ h ↦ by
+      induction h with
+      | mk => exact e
+    hom_inv_id := by
+      funext _ _ _ h
+      induction h with
+      | mk => rfl
+    inv_hom_id := by aesop }
+
+instance {B X : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
+    (Presieve.singleton π).hasPullbacks where
+  has_pullbacks hf _ hg := by
+    cases hf
+    cases hg
+    infer_instance
+
+noncomputable
+def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ B) [EffectiveEpi π]
+    [HasPullback π π] :
+    Equalizer.Presieve.SecondObj F (Presieve.singleton π) ≅ F.obj (op (Limits.pullback π π)) :=
+  Types.productIso.{max u v, max u v} _ ≪≫
+  { hom := fun e ↦ e (⟨X, ⟨π, Presieve.singleton_self π⟩⟩, ⟨X, ⟨π, Presieve.singleton_self π⟩⟩)
+    inv := fun x ⟨⟨_, ⟨_, h₁⟩⟩ , ⟨_, ⟨_, h₂⟩⟩⟩ ↦ by
+      induction h₁
+      induction h₂
+      exact x
+    hom_inv_id := by
+      funext _ ⟨⟨_, ⟨_, h₁⟩⟩ , ⟨_, ⟨_, h₂⟩⟩⟩
+      induction h₁
+      induction h₂
+      rfl
+    inv_hom_id := by aesop }
+
+lemma isSheafFor_regular [Preregular C]
+    [∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], HasPullback f f] {B : C} {S : Presieve B}
+    (hS : S ∈ (regularCoverage C).covering B) {F : Cᵒᵖ ⥤ Type (max u v)} [PreservesFiniteProducts F]
+    (hFecs : EqualizerCondition F) : S.IsSheafFor F := by
+  have hSpb : S.hasPullbacks := by
+    obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hS
+    subst hS
+    constructor
+    intro Y Z f hf g hg
+    cases hf
+    cases hg
+    infer_instance
+  rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
+  intro y h
+  simp only [regularCoverage, Set.mem_setOf_eq] at hS
+  obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hS
+  rw [Presieve.ofArrows_pUnit] at hS
+  subst hS
+  specialize hFecs X B π-- inferInstance
+  have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
+      F.map π.op
+  · dsimp [EqualizerFirstObjIso, Equalizer.forkMap]
+    ext b
+    simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
+  have fmap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.fst (f := π) (g := π)).op =
+      Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
+  · dsimp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.firstMap]
+    ext b
+    simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
+  have smap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.snd (f := π) (g := π)).op =
+      Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
+  · dsimp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.secondMap]
+    ext b
+    simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
+  have iy_mem : F.map (pullback.fst (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y) =
+      F.map (pullback.snd (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y)
+  · change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
+    apply Eq.symm -- how do I avoid this ugly hack?
+    change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
+    rw [fmap_comp, smap_comp]
+    dsimp
+    rw [h]
+  have uniq_F : ∃! x, F.map π.op x = (EqualizerFirstObjIso F π).hom y
+  · rw [Function.bijective_iff_existsUnique] at hFecs
+    specialize hFecs ⟨(EqualizerFirstObjIso F π).hom y, iy_mem⟩
+    obtain ⟨x, hx⟩ := hFecs
+    refine' ⟨x, _⟩
+    dsimp [MapToEqualizer] at *
+    refine' ⟨Subtype.ext_iff.mp hx.1,_⟩
+    intro z hz
+    apply hx.2
+    rwa [Subtype.ext_iff]
+  obtain ⟨x,hx⟩ := uniq_F
+  dsimp at hx
+  rw [← fork_comp] at hx
+  use x
+  dsimp
+  constructor
+  · apply_fun (EqualizerFirstObjIso F π).hom
+    · exact hx.1
+    · apply Function.Bijective.injective
+      rw [← isIso_iff_bijective]
+      exact inferInstance
+  · intro z hz
+    apply_fun (EqualizerFirstObjIso F π).hom at hz
+    exact hx.2 z hz
 
 end RegularSheaves
 
