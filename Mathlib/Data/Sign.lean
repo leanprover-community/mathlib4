@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.sign
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Int.Lemmas
+
+#align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
 # Sign function
 
@@ -74,25 +71,26 @@ instance : Mul SignType :=
     | zero => zero
     | pos => y⟩
 
-/-- The less-than relation on signs. -/
-inductive Le : SignType → SignType → Prop
-  | of_neg (a) : Le neg a
-  | zero : Le zero zero
-  | of_pos (a) : Le a pos
-#align sign_type.le SignType.Le
+/-- The less-than-or-equal relation on signs. -/
+protected inductive LE : SignType → SignType → Prop
+  | of_neg (a) : SignType.LE neg a
+  | zero : SignType.LE zero zero
+  | of_pos (a) : SignType.LE a pos
+#align sign_type.le SignType.LE
 
 instance : LE SignType :=
-  ⟨Le⟩
+  ⟨SignType.LE⟩
 
-instance Le.decidableRel : DecidableRel Le := fun a b => by
+instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 instance decidableEq : DecidableEq SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
+private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
+private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
+  rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
 
-set_option maxHeartbeats 0
--- Porting note: This takes too long, likely fixed by lean4#2003
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
@@ -105,25 +103,31 @@ instance : CommGroupWithZero SignType where
   mul_one a := by cases a <;> rfl
   one_mul a := by cases a <;> rfl
   mul_inv_cancel a ha := by cases a <;> trivial
-  mul_comm a b := by cases a <;> cases b <;> rfl
-  mul_assoc a b c := by cases a <;> cases b <;> cases c <;> rfl
+  mul_comm := mul_comm
+  mul_assoc := mul_assoc
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
+
+private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b := by
+  cases a <;> cases b <;> trivial
+
+private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
+  cases a <;> cases b <;> cases c <;> first | tauto | constructor
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
-  le_antisymm a b ha hb := by cases a <;> cases b <;> trivial
-  le_trans a b c hab hbc := by cases a <;> cases b <;> cases c <;> first | tauto | constructor
-  decidable_le := Le.decidableRel
-  decidable_eq := SignType.decidableEq
+  le_antisymm := le_antisymm
+  le_trans := le_trans
+  decidableLE := LE.decidableRel
+  decidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
-  le_top := Le.of_pos
+  le_top := LE.of_pos
   bot := -1
-  bot_le := Le.of_neg
+  bot_le := LE.of_neg
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
@@ -131,8 +135,7 @@ instance : HasDistribNeg SignType :=
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
 
 /-- `SignType` is equivalent to `Fin 3`. -/
-def fin3Equiv : SignType ≃* Fin 3
-    where
+def fin3Equiv : SignType ≃* Fin 3 where
   toFun a :=
     match a with
     | 0 => ⟨0, by simp⟩
@@ -231,10 +234,10 @@ end CaseBashing
 
 section cast
 
-variable {α : Type _} [Zero α] [One α] [Neg α]
+variable {α : Type*} [Zero α] [One α] [Neg α]
 
 /-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
-only a `has_coe_t` instance: see note [use has_coe_t]. -/
+only a `CoeTC` instance: see note [use has_coe_t]. -/
 @[coe]
 def cast : SignType → α
   | zero => 0
@@ -267,17 +270,16 @@ end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
 @[simps]
-def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
-    where
+def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α where
   toFun := cast
   map_zero' := rfl
   map_one' := rfl
-  map_mul' x y := by  cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
+  map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
 --Porting note: new theorem
-theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} :=
-  by decide
+theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
+  decide
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]
@@ -286,7 +288,7 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
 
 end SignType
 
-variable {α : Type _}
+variable {α : Type*}
 
 open SignType
 
@@ -297,8 +299,7 @@ variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 -- Porting note: needed to rename this from sign to SignType.sign to avoid ambiguity with Int.sign
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
-  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h =>
-    by
+  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
@@ -390,17 +391,30 @@ variable [LinearOrderedRing α] {a b : α}
 
 /- I'm not sure why this is necessary, see https://leanprover.zulipchat.com/#narrow/stream/
 113488-general/topic/type.20class.20inference.20issues/near/276937942 -/
-attribute [local instance] LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLT
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
     simp [hx, hy, mul_pos_of_neg_of_neg, mul_neg_of_neg_of_pos, mul_neg_of_pos_of_neg]
 #align sign_mul sign_mul
 
-/-- `sign` as a `MonoidWithZeroHom` for a nontrivial ordered semiring. Note that linearity
+@[simp] theorem sign_mul_abs (x : α) : (sign x * |x| : α) = x := by
+  rcases lt_trichotomy x 0 with (hx | rfl | hx)
+  · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, neg_one_mul, neg_neg]
+  · rw [abs_zero, mul_zero]
+  · rw [sign_pos hx, abs_of_pos hx, coe_one, one_mul]
+
+@[simp] theorem abs_mul_sign (x : α) : (|x| * sign x : α) = x := by
+  rcases lt_trichotomy x 0 with (hx | rfl | hx)
+  · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, mul_neg_one, neg_neg]
+  · rw [abs_zero, zero_mul]
+  · rw [sign_pos hx, abs_of_pos hx, coe_one, mul_one]
+
+/-- `SignType.sign` as a `MonoidWithZeroHom` for a nontrivial ordered semiring. Note that linearity
 is required; consider ℂ with the order `z ≤ w` iff they have the same imaginary part and
-`z - w ≤ 0` in the reals; then `1 + i` and `1 - i` are incomparable to zero, and thus we have:
-`0 * 0 = sign (1 + i) * sign (1 - i) ≠ sign 2 = 1`. (`Complex.orderedCommRing`) -/
+`z - w ≤ 0` in the reals; then `1 + I` and `1 - I` are incomparable to zero, and thus we have:
+`0 * 0 = SignType.sign (1 + I) * SignType.sign (1 - I) ≠ SignType.sign 2 = 1`.
+(`Complex.orderedCommRing`) -/
 def signHom : α →*₀ SignType where
   toFun := sign
   map_zero' := sign_zero
@@ -408,9 +422,7 @@ def signHom : α →*₀ SignType where
   map_mul' := sign_mul
 #align sign_hom signHom
 
-theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := by
-  change signHom (x ^ n) = signHom x ^ n
-  exact map_pow _ _ _
+theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signHom x n
 #align sign_pow sign_pow
 
 end LinearOrderedRing
@@ -448,16 +460,16 @@ variable [LinearOrderedAddCommGroup α]
 /- I'm not sure why this is necessary, see
 https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.20vs.20decidable_rel
 -/
-attribute [local instance] LinearOrderedAddCommGroup.decidable_lt
+attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 
-theorem sign_sum {ι : Type _} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
+theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
   cases t
-  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h⊢
+  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
     exact Finset.sum_eq_zero h
-  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h⊢
+  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h ⊢
     exact Finset.sum_neg h hs
-  · simp_rw [pos_eq_one, sign_eq_one_iff] at h⊢
+  · simp_rw [pos_eq_one, sign_eq_one_iff] at h ⊢
     exact Finset.sum_pos h hs
 #align sign_sum sign_sum
 
@@ -487,7 +499,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
       fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, _, _⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
   · intro x hx
-    simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm (|f _|),
+    simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
       sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/

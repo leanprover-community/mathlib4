@@ -2,15 +2,12 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module algebra.group_power.basic
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.TypeTags
+
+#align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
 /-!
 # Power operations on monoids and groups
@@ -36,7 +33,7 @@ We adopt the convention that `0^0 = 1`.
 
 universe u v w x y z u₁ u₂
 
-variable {α : Type _} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
+variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
   {R : Type u₁} {S : Type u₂}
 
 /-!
@@ -51,12 +48,12 @@ section Pow
 
 variable [Pow M ℕ]
 
-@[simp]
+@[to_additive (attr := simp) ite_nsmul]
 theorem pow_ite (P : Prop) [Decidable P] (a : M) (b c : ℕ) :
     (a ^ if P then b else c) = if P then a ^ b else a ^ c := by split_ifs <;> rfl
 #align pow_ite pow_ite
 
-@[simp]
+@[to_additive (attr := simp) nsmul_ite]
 theorem ite_pow (P : Prop) [Decidable P] (a b : M) (c : ℕ) :
     (if P then a else b) ^ c = if P then a ^ c else b ^ c := by split_ifs <;> rfl
 #align ite_pow ite_pow
@@ -88,14 +85,15 @@ theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 #align add_nsmul add_nsmul
 
-@[to_additive nsmul_zero, simp]
+-- the attributes are intentionally out of order.
+@[to_additive existing nsmul_zero, simp]
 theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   induction' n with n ih
   · exact pow_zero _
   · rw [pow_succ, ih, one_mul]
 #align one_pow one_pow
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive existing (attr := simp) one_nsmul]
 theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 #align pow_one pow_one
 
@@ -105,16 +103,18 @@ theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 #align pow_two pow_two
 #align two_nsmul two_nsmul
 
-alias pow_two ← sq
+alias sq := pow_two
 #align sq sq
 
+@[to_additive three'_nsmul]
 theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
 #align pow_three' pow_three'
 
+@[to_additive three_nsmul]
 theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ, pow_two]
 #align pow_three pow_three
 
-@[to_additive add_nsmul]
+@[to_additive existing add_nsmul]
 theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]
@@ -150,6 +150,7 @@ theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
 #align pow_mul_comm' pow_mul_comm'
 #align nsmul_add_comm' nsmul_add_comm'
 
+@[to_additive boole_nsmul]
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
 #align pow_boole pow_boole
@@ -174,11 +175,10 @@ theorem pow_sub_mul_pow (a : M) {m n : ℕ} (h : m ≤ n) : a ^ (n - m) * a ^ m 
 
 /-- If `x ^ n = 1`, then `x ^ m` is the same as `x ^ (m % n)` -/
 @[to_additive nsmul_eq_mod_nsmul "If `n • x = 0`, then `m • x` is the same as `(m % n) • x`"]
-theorem pow_eq_pow_mod {M : Type _} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : x ^ n = 1) :
+theorem pow_eq_pow_mod {M : Type*} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) := by
   have t : x ^ m = x ^ (n * (m / n) + m % n) :=
     congr_arg (fun a => x ^ a) ((Nat.add_comm _ _).trans (Nat.mod_add_div _ _)).symm
-  dsimp at t
   rw [t, pow_add, pow_mul, h, one_pow, one_mul]
 #align pow_eq_pow_mod pow_eq_pow_mod
 #align nsmul_eq_mod_nsmul nsmul_eq_mod_nsmul
@@ -237,7 +237,7 @@ theorem dvd_pow {x y : M} (hxy : x ∣ y) : ∀ {n : ℕ} (_ : n ≠ 0), x ∣ y
     exact hxy.mul_right _
 #align dvd_pow dvd_pow
 
-alias dvd_pow ← Dvd.dvd.pow
+alias Dvd.dvd.pow := dvd_pow
 
 theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
   dvd_rfl.pow hn

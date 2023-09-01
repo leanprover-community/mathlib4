@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.group.semiconj
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Units
+
+#align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -30,6 +27,8 @@ Lean does not immediately recognise these terms as equations, so for rewriting w
 This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` etc). Other
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
+
+set_option autoImplicit true
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
 @[to_additive AddSemiconjBy "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
@@ -104,7 +103,7 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a monoid (or, more
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-monoid (or, more generally, on a `AddZeroClass` type) is reflexive."]
+monoid (or, more generally, on an `AddZeroClass` type) is reflexive."]
 protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
 #align semiconj_by.reflexive SemiconjBy.reflexive

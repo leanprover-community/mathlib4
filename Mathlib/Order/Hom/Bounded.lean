@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.hom.bounded
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.BoundedOrder
+
+#align_import order.hom.bounded from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-!
 # Bounded order homomorphisms
@@ -35,10 +32,10 @@ be satisfied by itself and all stricter types.
 
 open Function OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of `⊤`-preserving functions from `α` to `β`. -/
-structure TopHom (α β : Type _) [Top α] [Top β] where
+structure TopHom (α β : Type*) [Top α] [Top β] where
   /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
@@ -46,7 +43,7 @@ structure TopHom (α β : Type _) [Top α] [Top β] where
 #align top_hom TopHom
 
 /-- The type of `⊥`-preserving functions from `α` to `β`. -/
-structure BotHom (α β : Type _) [Bot α] [Bot β] where
+structure BotHom (α β : Type*) [Bot α] [Bot β] where
   /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the bottom element. The preferred spelling is `map_bot`. -/
@@ -54,7 +51,7 @@ structure BotHom (α β : Type _) [Bot α] [Bot β] where
 #align bot_hom BotHom
 
 /-- The type of bounded order homomorphisms from `α` to `β`. -/
-structure BoundedOrderHom (α β : Type _) [Preorder α] [Preorder β] [BoundedOrder α]
+structure BoundedOrderHom (α β : Type*) [Preorder α] [Preorder β] [BoundedOrder α]
   [BoundedOrder β] extends OrderHom α β where
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
   map_top' : toFun ⊤ = ⊤
@@ -67,7 +64,7 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] extends
+class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] extends
   FunLike F α fun _ => β where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -76,7 +73,7 @@ class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] ex
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] extends
+class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] extends
   FunLike F α fun _ => β where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
@@ -85,7 +82,7 @@ class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] ex
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
 You should extend this class when you extend `BoundedOrderHom`. -/
-class BoundedOrderHomClass (F : Type _) (α β : outParam <| Type _) [LE α] [LE β] [BoundedOrder α]
+class BoundedOrderHomClass (F : Type*) (α β : outParam <| Type*) [LE α] [LE β] [BoundedOrder α]
   [BoundedOrder β] extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -101,43 +98,36 @@ export BotHomClass (map_bot)
 
 attribute [simp] map_top map_bot
 
--- Porting note: the `BoundedOrder` parameters can't be inferred through unification in all cases
--- so they should really be instance parameters once this is technically possible.
--- We have to supply these instances through `letI` in some cases as a work-around.
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toTopHomClass {_ : LE α} {_ : LE β}
-    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedOrderHomClass F α β] : TopHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
+    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_top_hom_class BoundedOrderHomClass.toTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toBotHomClass {_ : LE α} {_ : LE β}
-    {_ : BoundedOrder α} {_ : BoundedOrder β} [BoundedOrderHomClass F α β] : BotHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β]
+    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_bot_hom_class BoundedOrderHomClass.toBotHomClass
 
-@[nolint dangerousInstance] -- The `OrderTop`s should be instance parameters but depend on outParams
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toTopHomClass {_ : LE α} {_ : OrderTop α}
-    {_ : PartialOrder β} {_ : OrderTop β} [OrderIsoClass F α β] : TopHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
+    [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 #align order_iso_class.to_top_hom_class OrderIsoClass.toTopHomClass
 
-@[nolint dangerousInstance] -- The `OrderBot`s should be instance parameters but depend on outParams
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBotHomClass {_ : LE α} {_ : OrderBot α}
-    {_ : PartialOrder β} {_ : OrderBot β} [OrderIsoClass F α β] : BotHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
+    [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
   { --⟨λ f, le_bot_iff.1 $ (le_map_inv_iff f).1 bot_le⟩
     show OrderHomClass F α β from inferInstance with
     map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
 
-@[nolint dangerousInstance] -- The `BoundedOrder`s should be instance parameters but depend on
-                            -- outParams
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass {_ : LE α} {_ : BoundedOrder α}
-    {_ : PartialOrder β} {_ : BoundedOrder β} [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
+    [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 #align order_iso_class.to_bounded_order_hom_class OrderIsoClass.toBoundedOrderHomClass
@@ -333,7 +323,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : HasInf (TopHom α β) :=
+instance : Inf (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
@@ -355,7 +345,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : HasSup (TopHom α β) :=
+instance : Sup (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
@@ -523,7 +513,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : HasInf (BotHom α β) :=
+instance : Inf (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
@@ -545,7 +535,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : HasSup (BotHom α β) :=
+instance : Sup (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
@@ -573,6 +563,9 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
 namespace BoundedOrderHom
 

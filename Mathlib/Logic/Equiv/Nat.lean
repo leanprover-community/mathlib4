@@ -2,19 +2,15 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-Ported by: Anatole Dedecker
-
-! This file was ported from Lean 3 source module logic.equiv.nat
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pairing
+
+#align_import logic.equiv.nat from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Equivalences involving `ℕ`
 
-This file defines some additional constructive equivalences using `encodable` and the pairing
+This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
 
@@ -23,7 +19,7 @@ open Nat Function
 
 namespace Equiv
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- An equivalence between `Bool × ℕ` and `ℕ`, by mapping `(true, x)` to `2 * x + 1` and
 `(false, x)` to `2 * x`. -/
@@ -63,7 +59,7 @@ def intEquivNat : ℤ ≃ ℕ :=
 def prodEquivOfEquivNat (e : α ≃ ℕ) : α × α ≃ α :=
   calc
     α × α ≃ ℕ × ℕ := prodCongr e e
-    _ ≃ ℕ := mkpairEquiv
+    _ ≃ ℕ := pairEquiv
     _ ≃ α := e.symm
 #align equiv.prod_equiv_of_equiv_nat Equiv.prodEquivOfEquivNat
 

@@ -6,6 +6,7 @@ example (a : Nat) : a = a := by rfl
 
 open Setoid
 
+universe u
 variable {α : Sort u} [Setoid α]
 
 @[refl] def iseqv_refl (a : α) : a ≈ a :=
@@ -28,3 +29,7 @@ instance : LE Foo := ⟨Foo.le⟩
 
 example (a : Foo) : a ≤ a := by apply Foo.le_refl
 example (a : Foo) : a ≤ a := by rfl
+
+example (x : Nat) : x ≤ x := by
+  show _
+  rfl

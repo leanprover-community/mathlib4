@@ -2,25 +2,24 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.powerset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.Multiset.Nodup
 
+#align_import data.multiset.powerset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+
 /-!
 # The powerset of a multiset
 -/
+
+set_option autoImplicit true
 
 
 namespace Multiset
 
 open List
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-! ### powerset -/
 
@@ -125,7 +124,7 @@ theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
 #align multiset.card_powerset Multiset.card_powerset
 
 theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l := by
-  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, mem_map'] at h
+  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, List.mem_map] at h
   simp only [Prod_map, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists _ _ _ h)
@@ -133,7 +132,7 @@ theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux 
 
 theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux' l)) :
     x.1 + x.2 = ↑l := by
-  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, mem_map'] at h
+  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, List.mem_map] at h
   simp only [Prod_map, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists' _ _ _ h)
@@ -282,7 +281,7 @@ theorem powersetLen_mono (n : ℕ) {s t : Multiset α} (h : s ≤ t) :
 #align multiset.powerset_len_mono Multiset.powersetLen_mono
 
 @[simp]
-theorem powersetLen_empty {α : Type _} (n : ℕ) {s : Multiset α} (h : card s < n) :
+theorem powersetLen_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card s < n) :
     powersetLen n s = 0 :=
   card_eq_zero.mp (Nat.choose_eq_zero_of_lt h ▸ card_powersetLen _ _)
 #align multiset.powerset_len_empty Multiset.powersetLen_empty
@@ -293,7 +292,7 @@ theorem powersetLen_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
   powersetLen_empty _ (lt_add_of_pos_right (card s) hi)
 #align multiset.powerset_len_card_add Multiset.powersetLen_card_add
 
-theorem powersetLen_map {β : Type _} (f : α → β) (n : ℕ) (s : Multiset α) :
+theorem powersetLen_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetLen n (s.map f) = (powersetLen n s).map (map f) := by
   induction' s using Multiset.induction with t s ih generalizing n
   · cases n <;> simp [powersetLen_zero_left, powersetLen_zero_right]
@@ -306,7 +305,7 @@ theorem pairwise_disjoint_powersetLen (s : Multiset α) :
   h (Eq.trans (Multiset.mem_powersetLen.mp hi).right.symm (Multiset.mem_powersetLen.mp hj).right)
 #align multiset.pairwise_disjoint_powerset_len Multiset.pairwise_disjoint_powersetLen
 
-theorem bind_powerset_len {α : Type _} (S : Multiset α) :
+theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetLen k) = S.powerset := by
   induction S using Quotient.inductionOn
   simp_rw [quot_mk_to_coe, powerset_coe', powersetLen_coe, ← coe_range, coe_bind, ← List.bind_map,
@@ -324,7 +323,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
         (h.sublist_ext (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset
 
-alias nodup_powerset ↔ Nodup.ofPowerset Nodup.powerset
+alias ⟨Nodup.ofPowerset, Nodup.powerset⟩ := nodup_powerset
 #align multiset.nodup.of_powerset Multiset.Nodup.ofPowerset
 #align multiset.nodup.powerset Multiset.Nodup.powerset
 

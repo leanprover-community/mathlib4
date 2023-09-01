@@ -1,9 +1,9 @@
 import Mathlib.Tactic.RestateAxiom
 
 structure A :=
-(x : ℕ)
-(a' : x = 1 := by rfl)
-(borp : x = 2 := by rfl)
+  (x : Nat)
+  (a' : x = 1 := by rfl)
+  (borp : x = 2 := by rfl)
 
 #check A.a'
 restate_axiom A.a'

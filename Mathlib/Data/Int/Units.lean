@@ -2,16 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.units
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
-import Mathlib.Tactic.Tauto
+
+#align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
 # Lemmas about units in `ℤ`.
@@ -62,6 +58,11 @@ theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
       rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
+theorem eq_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = w :=
+  (eq_one_or_neg_one_of_mul_eq_one' h).elim
+    (and_imp.2 (·.trans ·.symm)) (and_imp.2 (·.trans ·.symm))
+#align int.eq_of_mul_eq_one Int.eq_of_mul_eq_one
+
 theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} :
     z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   refine' ⟨eq_one_or_neg_one_of_mul_eq_one', fun h => Or.elim h (fun H => _) fun H => _⟩ <;>
@@ -87,7 +88,7 @@ theorem isUnit_iff_natAbs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by
   simp [natAbs_eq_iff, isUnit_iff, Nat.cast_zero]
 #align int.is_unit_iff_nat_abs_eq Int.isUnit_iff_natAbs_eq
 
-alias isUnit_iff_natAbs_eq ↔ IsUnit.natAbs_eq _
+alias ⟨IsUnit.natAbs_eq, _⟩ := isUnit_iff_natAbs_eq
 #align int.is_unit.nat_abs_eq Int.IsUnit.natAbs_eq
 
 -- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,

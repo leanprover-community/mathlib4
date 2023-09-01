@@ -50,15 +50,15 @@ Rationale:
 in eliminating dependencies on propositions.
 -/
 inductive ElimStatus
-| success
-| failure (ts : List Expr)
+  | success
+  | failure (ts : List Expr)
 
 /-- Combine two statuses, keeping a success from either side
 or merging the failures. -/
 def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
-| success, _ => success
-| _, success => success
-| failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
+  | success, _ => success
+  | _, success => success
+  | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
 /-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if ``orig = `_``
 and `orig` otherwise. -/
@@ -144,7 +144,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
 
 /-- A wrapper around `choose1` that parses identifiers and adds variable info to new variables. -/
 def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSyntax ``binderIdent) :
-  TermElabM (ElimStatus × MVarId) := do
+    MetaM (ElimStatus × MVarId) := do
   let n := if let `(binderIdent| $n:ident) := data then n.getId else `_
   let (status, fvar, g) ← choose1 g nondep h n
   g.withContext <| fvar.addLocalVarInfoForBinderIdent data
@@ -152,24 +152,24 @@ def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSynt
 
 /-- A loop around `choose1`. The main entry point for the `choose` tactic. -/
 def elabChoose (nondep : Bool) (h : Option Expr) :
-  List (TSyntax ``binderIdent) → ElimStatus → MVarId → TermElabM MVarId
-| [], _, _ => throwError "expect list of variables"
-| [n], status, g =>
-  match nondep, status with
-  | true, .failure tys => do -- We expected some elimination, but it didn't happen.
-    let mut msg := m!"choose!: failed to synthesize any nonempty instances"
-    for ty in tys do
-      msg := msg ++ m!"{(← mkFreshExprMVar ty).mvarId!}"
-    throwError msg
-  | _, _ => do
-    let (fvar, g) ← match n with
-    | `(binderIdent| $n:ident) => g.intro n.getId
-    | _ => g.intro1
-    g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
-    return g
-| n::ns, status, g => do
-  let (status', g) ← choose1WithInfo g nondep h n
-  elabChoose nondep none ns (status.merge status') g
+    List (TSyntax ``binderIdent) → ElimStatus → MVarId → MetaM MVarId
+  | [], _, _ => throwError "expect list of variables"
+  | [n], status, g =>
+    match nondep, status with
+    | true, .failure tys => do -- We expected some elimination, but it didn't happen.
+      let mut msg := m!"choose!: failed to synthesize any nonempty instances"
+      for ty in tys do
+        msg := msg ++ m!"{(← mkFreshExprMVar ty).mvarId!}"
+      throwError msg
+    | _, _ => do
+      let (fvar, g) ← match n with
+      | `(binderIdent| $n:ident) => g.intro n.getId
+      | _ => g.intro1
+      g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
+      return g
+  | n::ns, status, g => do
+    let (status', g) ← choose1WithInfo g nondep h n
+    elabChoose nondep none ns (status.merge status') g
 
 /--
 * `choose a b h h' using hyp` takes a hypothesis `hyp` of the form
@@ -186,7 +186,7 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
   `h : ∀ (x : X) (y : Y), P x y (a x) (b x)` and
   `h' : ∀ (x : X) (y : Y), Q x y (a x) (b x)`.
 
-The `using hyp` part can be ommited,
+The `using hyp` part can be omitted,
 which will effectively cause `choose` to start with an `intro hyp`.
 
 Examples:
@@ -209,7 +209,7 @@ example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   trivial
 ```
 -/
-syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
+syntax (name := choose) "choose" "!"? (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 elab_rules : tactic
 | `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
   let h ← h.mapM (Elab.Tactic.elabTerm · none)
@@ -217,6 +217,6 @@ elab_rules : tactic
   replaceMainGoal [g]
 
 @[inherit_doc choose]
-syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
+syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 macro_rules
   | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)

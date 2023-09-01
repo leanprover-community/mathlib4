@@ -5,7 +5,7 @@ import Mathlib.Init.Set
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image
-import Mathlib.Data.List.Lemmas
+import Mathlib.Data.Set.List
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.PNat.Defs
 
@@ -111,7 +111,7 @@ example (n : ℤ) (hn : 0 < n) : True := by
   exact 0
 
 instance canLift_subtype (R : Type _) (s : Set R) : CanLift R {x // x ∈ s} ((↑) : {x // x ∈ s} → R) (fun x => x ∈ s) :=
-{ prf := fun x hx => ⟨⟨x, hx⟩, rfl⟩ }
+  { prf := fun x hx => ⟨⟨x, hx⟩, rfl⟩ }
 
 example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by
   lift x to {x // P x} using hx with y hy hx
@@ -199,6 +199,14 @@ example (n : ℕ) (hn : 0 < n) : True := by
   guard_hyp n : ℕ+
   guard_hyp hn : 0 < (n : ℕ)
   trivial
+
+example (n : ℕ) : n = 0 ∨ ∃ p : ℕ+, n = p := by
+  by_cases hn : 0 < n
+  · lift n to ℕ+ using hn
+    right
+    exact ⟨n, rfl⟩
+  · left
+    exact Nat.eq_zero_of_nonpos _ hn
 
 example (n : ℤ) (hn : 0 < n) : True := by
   lift n to ℕ+

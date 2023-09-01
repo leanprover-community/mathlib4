@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module logic.unique
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Common
+
+#align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Types with a unique term
@@ -30,7 +27,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
-  codomain is `unique` as well.
+  codomain is `Unique` as well.
 
 * `Function.Injective.subsingleton`: if the codomain of an injective function is `Subsingleton`,
   then its domain is `Subsingleton` as well.
@@ -46,6 +43,7 @@ for good definitional properties of the default term.
 
 -/
 
+set_option autoImplicit true
 
 universe u v w
 
@@ -85,7 +83,7 @@ equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def uniqueOfSubsingleton {α : Sort _} [Subsingleton α] (a : α) : Unique α where
+def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
@@ -101,7 +99,6 @@ instance PUnit.unique : Unique PUnit.{u} where
 @[simp, nolint simpNF]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
-
 #align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
@@ -152,7 +149,7 @@ theorem default_eq (a : α) : default = a :=
 #align unique.default_eq Unique.default_eq
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
@@ -246,7 +243,7 @@ protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective 
 #align function.injective.unique Function.Injective.unique
 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
-def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
+def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
     (h : Function.Surjective (Function.const α b)) : Unique β :=
   @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ ↦ rfl) b
 #align function.surjective.unique_of_surjective_const Function.Surjective.uniqueOfSurjectiveConst

@@ -2,16 +2,12 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.factors
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Tactic.NthRewrite
+
+#align_import data.nat.factors from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Prime numbers
@@ -24,8 +20,6 @@ This file deals with the factors of natural numbers.
 - `Nat.factors_unique`: uniqueness of the prime factorisation
 
 -/
-
-set_option autoImplicit false
 
 open Bool Subtype
 
@@ -206,7 +200,6 @@ theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · intro p hp
     rw [List.mem_append] at hp
     cases' hp with hp' hp' <;> exact prime_of_mem_factors hp'
-
 #align nat.perm_factors_mul Nat.perm_factors_mul
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
@@ -278,14 +271,14 @@ theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
   · simp [(coprime_zero_left _).mp hab]
   rcases b.eq_zero_or_pos with (rfl | hb)
   · simp [(coprime_zero_right _).mp hab]
-  rw [mem_factors_mul ha.ne' hb.ne', List.mem_union]
+  rw [mem_factors_mul ha.ne' hb.ne', List.mem_union_iff]
 #align nat.mem_factors_mul_of_coprime Nat.mem_factors_mul_of_coprime
 
 open List
 
 /-- If `p` is a prime factor of `a` then `p` is also a prime factor of `a * b` for any `b > 0` -/
-theorem mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) : p ∈ (a * b).factors :=
-  by
+theorem mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) :
+    p ∈ (a * b).factors := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp at hpa
   apply (mem_factors_mul ha hb).2 (Or.inl hpa)
@@ -309,5 +302,4 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 end Nat
 
--- Porting note: `assert_not_exists` is not implemented yet.
---assert_not_exists Multiset
+assert_not_exists Multiset

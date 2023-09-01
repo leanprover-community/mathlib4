@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.countable.basic
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
+
+#align_import data.countable.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # Countable types
@@ -49,7 +46,7 @@ protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : 
 end Embedding
 
 /-!
-### Operations on `Type _`s
+### Operations on `Type*`s
 -/
 
 section type
@@ -67,7 +64,7 @@ instance [Countable α] : Countable (Option α) :=
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
-  exact (Nat.mkpairEquiv.injective.comp <| hf.Prod_map hg).countable
+  exact (Nat.pairEquiv.injective.comp <| hf.Prod_map hg).countable
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
@@ -81,7 +78,7 @@ section sort
 variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 
 /-!
-### Operations on `Sort _`s
+### Operations on `Sort*`s
 -/
 
 instance (priority := 500) SetCoe.countable {α} [Countable α] (s : Set α) : Countable s :=
@@ -109,4 +106,3 @@ instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable
 
 end sort
-
