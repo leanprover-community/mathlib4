@@ -445,6 +445,7 @@ theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
     rw [Sieve.generateFamily_eq]
     apply Nonempty.map (isColimitOfEffectiveEpiFamilyStruct _ _) h
 
+
 section instances
 
 /--
@@ -478,7 +479,7 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
   ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
 
 /--
-An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`
+An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`
 -/
 noncomputable
 def EffectiveEpi_familyStruct {B X : C} (f : X ⟶ B) [EffectiveEpi f] :
