@@ -8,7 +8,7 @@ set -e
 # env:
 #   TOKEN: ${{ secrets.LEAN_PR_TESTING }}
 #   GITHUB_CONTEXT: ${{ toJson(github) }}
-#   WORKFLOW_URL: ${{ github.event.workflow_run.html_url }}
+#   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
 #   LINT_OUTCOME: ${{ steps.lint.outcome }}
 #   TEST_OUTCOME: ${{ steps.test.outcome }}
 #   BUILD_OUTCOME: ${{ steps.build.outcome }}
