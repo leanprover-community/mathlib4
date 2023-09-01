@@ -628,8 +628,7 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
       (RingHom.ker f).map (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] C) ⊔
         (RingHom.ker g).map (Algebra.TensorProduct.includeRight : C →ₐ[R] A ⊗[R] C) := by
   -- rewrite map f g as the composition of two maps
-  have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id R A) g)  := by
-    exact ext rfl rfl
+  have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id R A) g) := ext rfl rfl
   rw [this]
   -- this needs some rewriting to RingHom
   simp only [AlgHom.coe_ker, AlgHom.comp_toRingHom]
