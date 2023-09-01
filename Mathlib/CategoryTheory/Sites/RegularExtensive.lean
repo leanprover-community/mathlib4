@@ -155,27 +155,38 @@ def EffectiveEpi_compStruct {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
     simp only [Category.assoc] at hm
     exact EffectiveEpi.uniq g e _ (f ≫ m) hm
 
-/-- TODO: `IsSplitMono f` or `IsSplitEpi f` is probably enough. -/
 noncomputable
-def EffectiveEpiFamily_compStruct {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
-    [IsIso f] [EffectiveEpi g]  :
-    EffectiveEpiStruct (g ≫ f) where
-  desc e h :=
-    inv f ≫ EffectiveEpi.desc g e (fun g₁ g₂ hg ↦ h g₁ g₂
-    (by rw [← Category.assoc, hg, Category.assoc]))
-  fac e h := by
-    simp only [Category.assoc, IsIso.hom_inv_id_assoc, EffectiveEpi.fac]
-  uniq e h m hm := by
-    simp only [IsIso.eq_inv_comp]
-    simp only [Category.assoc] at hm
-    exact EffectiveEpi.uniq g e _ (f ≫ m) hm
+def EffectiveEpiFamily_compStruct {B Y : C} {α : Type w} [Extensive C] [Fintype α]
+    (X : α → C) (π : (a : α) → (X a ⟶ B)) (g : B ⟶ Y)
+    [IsIso (Sigma.desc π)] [EffectiveEpi g]  :
+    EffectiveEpiFamilyStruct X (fun a ↦ (π a ≫ g)) where
+  desc e h := by
+    apply EffectiveEpi.desc g ((inv (Sigma.desc π)) ≫ (Sigma.desc e))
+    intro Z g₁ g₂ hg
+    let P₁ := fun a ↦ pullback g₁ (π a)
+    let ρ₁ : (a : α) → P₁ a ⟶ Z := fun a ↦ pullback.fst
+    let P₂ := fun a ↦ pullback g₂ (π a)
+    let ρ₂ : (a : α) → P₂ a ⟶ Z := fun a ↦ pullback.fst
+    haveI h₁ := Extensive.sigma_desc_iso π g₁ inferInstance
+    haveI h₂ := Extensive.sigma_desc_iso π g₂ inferInstance
+    have hh₁ : ∀ a, ρ₁ a ≫ g₁ ≫ g = ρ₁ a ≫ g₂ ≫ g := fun a ↦ by rw [hg]
+    have hh₂ : ∀ a, ρ₂ a ≫ g₁ ≫ g = ρ₂ a ≫ g₂ ≫ g := fun a ↦ by rw [hg]
+    have hg₁ := fun a ↦ pullback.condition (f := g₁) (g := π a)
+    have hg₂ := fun a ↦ pullback.condition (f := g₂) (g := π a)
+    sorry
+  fac e h := by sorry
+    -- simp only [Category.assoc, IsIso.hom_inv_id_assoc, EffectiveEpi.fac]
+  uniq e h m hm := by sorry
+    -- simp only [IsIso.eq_inv_comp]
+    -- simp only [Category.assoc] at hm
+    -- exact EffectiveEpi.uniq g e _ (f ≫ m) hm
 
 /--
 Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma.desc π` is an
 `EffectiveEpi`.
 -/
 noncomputable
-def EffectiveEpiFamilyStruct_descStruct {B : C} {α : Type w} [Extensive.{v, u, w} C] [Fintype α]
+def EffectiveEpiFamilyStruct_descStruct {B : C} {α : Type w} [Extensive C] [Fintype α]
     (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpi (Sigma.desc π)]  :
     EffectiveEpiFamilyStruct X π where
   desc e h := by
