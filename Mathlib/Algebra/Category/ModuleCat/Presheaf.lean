@@ -14,7 +14,7 @@ as a presheaf of abelian groups with additional data.
 
 We also provide two alternative constructors :
 * `mk' : MkStruct R → PresheafOfModules R` where `M : MkStruct R` consists of a family
-of unbundled modules
+of unbundled modules over `R.obj X` for all `X`
 * `mk'' : BundledMkStruct R → PresheafOfModules R` where `M : BundledMkStruct R`
 consists of a family of objects in `ModuleCat (R.obj X)` for all `X`
 
