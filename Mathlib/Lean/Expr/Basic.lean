@@ -398,10 +398,8 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
     some (.sort .zero, lhs, .sort .zero, rhs)
   else if let some (ty, lhs, rhs) := ty.eq? then
     some (ty, lhs, ty, rhs)
-  else if let some (tyLhs, lhs, tyRhs, rhs) := ty.heq? then
-    some (tyLhs, lhs, tyRhs, rhs)
   else
-    none
+    ty.heq?
 
 end Expr
 
