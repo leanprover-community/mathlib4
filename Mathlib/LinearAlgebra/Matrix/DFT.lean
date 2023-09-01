@@ -35,15 +35,15 @@ $$ dftMatrix[k, p] = (1/N) * e^{i 2 π k p / n} $$
 
 ## Main results
 
-- `dft n v = dftMatrix n * v` : the dft operation on a sequence is the same as the dft matrix applied to the
-vector
-- `idft n V = dftMatrixInv n * V` : the idft operation on a sequence is the same as the idft matrix applied to the
-vector
+- `dft n v = dftMatrix n * v` : the dft operation on a sequence is the same as the dft matrix
+  applied to the vector
+- `idft n V = dftMatrixInv n * V` : the idft operation on a sequence is the same as the idft matrix
+  applied to the vector
 - `dft n (idft n v) = dft n (idft n v) = v` the dft and idft operations are inverses
-- `dftMatrix n = vandermonde w` : the dft matrix is vandermonde with `w` being the first row of the dft
-matrix
-- `circulant t = dftMatrixInv n⬝ diagonal (dft t) ⬝ dftMatrix n` : a circulant matrix is diagonalizable by the dft and
-idft matrix pair.
+- `dftMatrix n = vandermonde w` : the dft matrix is vandermonde with `w` being the first row of the
+ dft matrix
+- `circulant t = dftMatrixInv n⬝ diagonal (dft t) ⬝ dftMatrix n` : a circulant matrix is
+diagonalizable by the dft and idft matrix pair.
 
 -/
 
@@ -162,14 +162,17 @@ theorem idft_eq_idftMatrix_mul (V : Fin n → ℂ ) : idft n V = mulVec (dftMatr
 /-- IDFT/DFT are bijective pair-/
 theorem idft_dft  (v : Fin n → ℂ) : idft n (dft n v) = v := by
   letI := invertible_dftMatrix n
-  rw [dft_eq_dftMatrix_mul, idft_eq_idftMatrix_mul, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
+  rw [dft_eq_dftMatrix_mul, idft_eq_idftMatrix_mul, mulVec_mulVec, inv_mul_of_invertible,
+    one_mulVec]
 
 theorem dft_idft  (V : Fin n → ℂ) : dft  n (idft n V) = V := by
   letI := invertible_dftMatrix n
-  rw [dft_eq_dftMatrix_mul, idft_eq_idftMatrix_mul, mulVec_mulVec, mul_inv_of_invertible, one_mulVec]
+  rw [dft_eq_dftMatrix_mul, idft_eq_idftMatrix_mul, mulVec_mulVec, mul_inv_of_invertible,
+    one_mulVec]
 
 /-- The IDFT matrix is the scaled conjugate transpose of the DFT matrix-/
-theorem dftMatrix_conjTranspose_eq_idftMatrix :  (dftMatrix n)⁻¹ = ((1:ℂ) / n) • (dftMatrix n)ᴴ := by
+theorem dftMatrix_conjTranspose_eq_idftMatrix :
+    (dftMatrix n)⁻¹ = ((1:ℂ) / n) • (dftMatrix n)ᴴ := by
   funext x y
   by_cases hn: n = 0
   apply False.elim $ Fin.elim0 (by convert x; exact hn.symm)
