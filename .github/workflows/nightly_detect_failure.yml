@@ -25,4 +25,4 @@ jobs:
         type: 'stream'
         topic: 'CI failure on the nightly-testing branch'
         content: |
-          The latest CI for branch#nightly-testing has [failed](${{ github.event.workflow_run.html_url }}).
+          The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
