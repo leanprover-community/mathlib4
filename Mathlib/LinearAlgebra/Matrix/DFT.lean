@@ -189,15 +189,28 @@ lemma Wₙ_transpose_eq_Wₙ : (Wₙ n)ᵀ = Wₙ n := by
 
 def shiftk (N : ℕ) (k : Fin N) : (Fin N → Fin N) := fun n : (Fin N) => (n - k)
 
-def shiftk_equiv {N: ℕ} [NeZero N] (k : Fin N) : (Fin N) ≃ (Fin N) where
+def shiftk_equiv {N: ℕ} (k : Fin N) : (Fin N) ≃ (Fin N) where
   toFun := shiftk N k
   invFun := shiftk N (-k)
-  left_inv := by intro x;  simp only [shiftk, sub_neg_eq_add, sub_add_cancel]
-  right_inv := by intro x; simp only [shiftk, sub_neg_eq_add, add_sub_cancel]
+  left_inv := by
+    intro x
+    by_cases hn: N = 0
+    apply False.elim $ Fin.elim0 (by convert x; exact hn.symm)
+    letI := neZero_iff.2 hn
+    simp only [shiftk, sub_neg_eq_add, sub_add_cancel]
+  right_inv := by
+    intro x
+    by_cases hn: N = 0
+    apply False.elim $ Fin.elim0 (by convert x; exact hn.symm)
+    letI := neZero_iff.2 hn
+    simp only [shiftk, sub_neg_eq_add, add_sub_cancel]
 
-lemma cexp_shiftk_invariant [NeZero n] (x a b : Fin n) :
+lemma cexp_shiftk_invariant (x a b : Fin n) :
     exp (2 * ↑π * I * (↑↑a * ((x:ℂ) - (b:ℂ))) / ↑n) =
     Complex.exp ((2*π*I)*(a*(shiftk_equiv (b) x))/n) := by
+  by_cases hn: n = 0
+  apply False.elim $ Fin.elim0 (by convert a; exact hn.symm)
+  letI := neZero_iff.2 hn
   rw [Complex.exp_eq_exp_iff_exists_int]
   unfold shiftk_equiv shiftk
   simp only [sub_neg_eq_add, Equiv.coe_fn_mk]
