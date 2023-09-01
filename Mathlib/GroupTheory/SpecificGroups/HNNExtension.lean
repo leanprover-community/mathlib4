@@ -90,37 +90,37 @@ def BoolFamily (G : Type*) [Group G] : Bool → Type _
 instance (b : Bool) : Group (BoolFamily G b) := by
   cases b <;> dsimp [BoolFamily] <;> infer_instance
 
-variable (G)
+-- variable (G)
 
-abbrev SumInt : Type _ := Sigma (BoolFamily G)
+-- abbrev SumInt : Type _ := Sigma (BoolFamily G)
 
-variable {G}
+-- variable {G}
 
-def SumInt.ofInt (n : ℤ) : SumInt G := ⟨true, ULift.up (ofAdd n)⟩
+-- def SumInt.ofInt (n : ℤ) : SumInt G := ⟨true, ULift.up (ofAdd n)⟩
 
-def SumInt.ofGroup (g : G) : SumInt G := ⟨false, g⟩
+-- def SumInt.ofGroup (g : G) : SumInt G := ⟨false, g⟩
 
-@[elab_as_elim]
-def SumInt.casesOn {motive : SumInt G → Sort _} (n : SumInt G)
-    (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
-    (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) : motive n :=
-  match n with
-  | ⟨true, ULift.up n⟩ => h₁ n
-  | ⟨false, g⟩ => h₂ g
+-- @[elab_as_elim]
+-- def SumInt.casesOn {motive : SumInt G → Sort _} (n : SumInt G)
+--     (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
+--     (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) : motive n :=
+--   match n with
+--   | ⟨true, ULift.up n⟩ => h₁ n
+--   | ⟨false, g⟩ => h₂ g
 
-@[simp]
-theorem SumInt.casesOn_ofInt {motive : SumInt G → Sort _} (n : ℤ)
-    (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
-    (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) :
-    SumInt.casesOn (SumInt.ofInt n) h₁ h₂ = h₁ n :=
-  rfl
+-- @[simp]
+-- theorem SumInt.casesOn_ofInt {motive : SumInt G → Sort _} (n : ℤ)
+--     (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
+--     (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) :
+--     SumInt.casesOn (SumInt.ofInt n) h₁ h₂ = h₁ n :=
+--   rfl
 
-@[simp]
-theorem SumInt.casesOn_ofGroup {motive : SumInt G → Sort _} (g : G)
-    (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
-    (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) :
-    SumInt.casesOn (SumInt.ofGroup g) h₁ h₂ = h₂ g :=
-  rfl
+-- @[simp]
+-- theorem SumInt.casesOn_ofGroup {motive : SumInt G → Sort _} (g : G)
+--     (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
+--     (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) :
+--     SumInt.casesOn (SumInt.ofGroup g) h₁ h₂ = h₂ g :=
+--  rfl
 
 variable (G A B φ)
 
@@ -147,11 +147,63 @@ instance transversalPair_nonempty  : Nonempty (TransversalPair G A B) := by
 
 variable {G A B}
 
-structure NormalWord (d : TransversalPair G A B) extends Monoid.CoprodI.Word (BoolFamily G) : Type _ :=
-  ( left : ℤ )
-  ( chain : toList.Chain' (fun a b : SumInt G => ∀ (t : ℤ) (g : G),
-      a = SumInt.ofGroup g → b = SumInt.ofInt t →
-      (0 < t → g ∈ d.setB) ∧ (t < 0 → g ∈ d.setA) ) )
+structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _ :=
+  ( left : G )
+  ( toList : List (Units ℤ × G) )
+  ( mem_setA : ∀ {g : G}, (1, g) ∈ toList → g ∈ d.setA )
+  ( mem_setB : ∀ {g : G}, (-1, g) ∈ toList → g ∈ d.setB )
+  ( chain : toList.Chain' (fun a b => a.2 = 1 → a.1 = b.1) )
+
+structure Pair (d : TransversalPair G A B) : Type _ :=
+  ( int : Option (Units ℤ) )
+  ( head : G )
+  ( tail : NormalWord d )
+  ( left_eq_one : tail.left = 1 )
+  ( eq_of_head_eq_one : head = 1 → tail.toList.head?.map Prod.fst = int )
+  ( mem_setA : int = some 1 → head ∈ d.setA )
+  ( mem_setB : int = some (-1) → head ∈ d.setB )
+
+variable {d : TransversalPair G A B}
+
+def empty : NormalWord d :=
+  { left := 1
+    toList := []
+    mem_setA := by simp
+    mem_setB := by simp
+    chain := List.chain'_nil }
+
+def rcons (p : Pair d) : NormalWord d :=
+  match p.int, p.eq_of_head_eq_one, p.mem_setA, p.mem_setB with
+  | none, _, _, _ =>
+    { p.tail with left := p.head }
+  | some n, h₁, h₂, h₃ =>
+    { left := 1
+      toList := ⟨n, p.head⟩  :: p.tail.toList
+      mem_setA := by
+        simp only [Option.some_inj] at h₂ h₃
+        simp only [List.mem_cons, Prod.mk.injEq]
+        rintro g (⟨rfl, rfl⟩ | h)
+        · exact h₂ rfl
+        · exact p.tail.mem_setA h
+      mem_setB := by
+        simp only [Option.some_inj] at h₂ h₃
+        simp only [List.mem_cons, Prod.mk.injEq]
+        rintro g (⟨rfl, rfl⟩ | h)
+        · exact h₃ rfl
+        · exact p.tail.mem_setB h
+      chain := by
+        simp only [List.chain'_cons', Option.mem_def, Prod.forall]
+        constructor
+        · intro u g h hp
+          simp only [Option.map_eq_some', Prod.exists,
+            exists_and_right, exists_eq_right] at h₁
+          rcases h₁ hp with ⟨x, hx⟩
+          rw [h] at hx
+          simp_all
+        · exact p.tail.chain }
+
+def equivPairAux : Normal
+
 
 
 end NormalWord
