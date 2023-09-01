@@ -112,18 +112,6 @@ We can still see that it is a hole in the info view on mouseover. -/
   | `($_ $val $_) => pure val
   | _ => throw ()
 
-/-- Given a proposition, returns `(tyLhs, lhs, tyRhs, rhs)` if it's an eq, iff, or heq. -/
-def sides? (ty : Expr) : MetaM (Option (Expr × Expr × Expr × Expr)) := do
-  let ty ← whnf ty
-  if let some (lhs, rhs) := ty.iff? then
-    return some (.sort .zero, lhs, .sort .zero, rhs)
-  if let some (ty, lhs, rhs) := ty.eq? then
-    return (ty, lhs, ty, rhs)
-  else if let some (tyLhs, lhs, tyRhs, rhs) := ty.heq? then
-    return (tyLhs, lhs, tyRhs, rhs)
-  else
-    return none
-
 /-- Create the congruence hole. Used by `elabCHole`.
 
 Saves the current mvarCounter as a proxy for age. We use this to avoid
@@ -165,7 +153,7 @@ def elabCHole (h : Syntax) (forLhs : Bool) (expectedType? : Option Expr) : Term.
   -- Ensure that `pfTy` is a proposition
   unless ← isDefEq (← inferType pfTy) (.sort .zero) do
     throwError "Hole has type{indentD pfTy}\nbut is expected to be a Prop"
-  if let some (_, lhs, _, rhs) ← sides? pfTy then
+  if let some (_, lhs, _, rhs) := (← whnf pfTy).sides? then
     let val := if forLhs then lhs else rhs
     if let some expectedType := expectedType? then
       -- Propagate type hint:
@@ -435,7 +423,7 @@ where
   /-- Get the sides of the type of `pf` and unify them with the respective `lhs` and `rhs`. -/
   ensureSidesDefeq (pf : Expr) : MetaM Expr := do
     let pfTy ← inferType pf
-    let some (_, lhs', _, rhs') ← sides? pfTy
+    let some (_, lhs', _, rhs') := (← whnf pfTy).sides?
       | panic! "Unexpectedly did not generate an eq or heq"
     unless ← isDefEq lhs lhs' do
       throwError "Congruence hole has type{indentD pfTy}\n{""
@@ -503,7 +491,7 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     -- Defeq checks to unify the lhs and rhs congruence holes.
     unless ← isDefEq (← inferType pf1) (← inferType pf2) do
       throwCongrEx lhs rhs "Elaborated types of congruence holes are not defeq."
-    if let some (_, lhsVal, _, rhsVal) ← sides? (← inferType pf1) then
+    if let some (_, lhsVal, _, rhsVal) := (← whnf <| ← inferType pf1).sides? then
       unless ← isDefEq val1 lhsVal do
         throwError "Left-hand side of congruence hole is{indentD lhsVal}\n{""
           }but is expected to be{indentD val1}"
@@ -680,7 +668,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     let mvarCounterSaved := (← getMCtx).mvarCounter
     -- Case 1: There is an expected type and it's obviously an Iff/Eq/HEq.
     if let some expectedType := expectedType? then
-      if let some (expLhsTy, expLhs, expRhsTy, expRhs) ← sides? expectedType then
+      if let some (expLhsTy, expLhs, expRhsTy, expRhs) := (← whnf expectedType).sides? then
         let lhs ← elaboratePattern t expLhsTy true
         let rhs ← elaboratePattern t expRhsTy false
         -- Note: these defeq checks can leak congruence holes.

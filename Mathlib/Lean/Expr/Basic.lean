@@ -232,6 +232,11 @@ def isConstantApplication (e : Expr) :=
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
 
+/-- Counts the immediate depth of a nested `let` expression. -/
+def letDepth : Expr → Nat
+  | .letE _ _ _ b _ => b.letDepth + 1
+  | _ => 0
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/
@@ -383,6 +388,20 @@ Fails if the rewrite produces any subgoals.
 -/
 def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
+
+/-- Given a proposition `ty` that is an eq, iff, or heq, returns `(tyLhs, lhs, tyRhs, rhs)`,
+where `lhs : tyLhs` and `rhs : tyRhs`.
+
+See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
+def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
+  if let some (lhs, rhs) := ty.iff? then
+    some (.sort .zero, lhs, .sort .zero, rhs)
+  else if let some (ty, lhs, rhs) := ty.eq? then
+    some (ty, lhs, ty, rhs)
+  else if let some (tyLhs, lhs, tyRhs, rhs) := ty.heq? then
+    some (tyLhs, lhs, tyRhs, rhs)
+  else
+    none
 
 end Expr
 

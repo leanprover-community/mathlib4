@@ -45,11 +45,6 @@ where
       let ty' ← mkLetFVars #[fvar] <| mk b'
       mvarId.change ty'
 
-/-- Counts the immediate depth of a nested `let` expression. -/
-def Lean.Expr.letDepth : Expr → Nat
-  | .letE _ _ _ b _ => b.letDepth + 1
-  | _ => 0
-
 /-- A more limited version of `Lean.MVarId.introN` that ensures the goal is a
 nested `let` expression. -/
 def Lean.MVarId.extractLets (mvarId : MVarId) (names : Array Name) :
