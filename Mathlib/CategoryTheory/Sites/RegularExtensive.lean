@@ -360,25 +360,16 @@ def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶
       rfl
     inv_hom_id := by aesop }
 
-lemma isSheafFor_regular [Preregular C]
-    [∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], HasPullback f f] {B : C} {S : Presieve B}
-    (hS : S ∈ (regularCoverage C).covering B) {F : Cᵒᵖ ⥤ Type (max u v)} [PreservesFiniteProducts F]
+lemma isSheafFor_regular {B : C} {S : Presieve B}
+    [S.regular] [∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], HasPullback f f] [Preregular C]
+     {F : Cᵒᵖ ⥤ Type (max u v)} [PreservesFiniteProducts F]
     (hFecs : EqualizerCondition F) : S.IsSheafFor F := by
-  have hSpb : S.hasPullbacks := by
-    obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hS
-    subst hS
-    constructor
-    intro Y Z f hf g hg
-    cases hf
-    cases hg
-    infer_instance
-  rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
-  intro y h
-  simp only [regularCoverage, Set.mem_setOf_eq] at hS
-  obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hS
+  obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := Presieve.regular.single_epi (R := S)
   rw [Presieve.ofArrows_pUnit] at hS
   subst hS
-  specialize hFecs X B π-- inferInstance
+  rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
+  intro y h
+  specialize hFecs X B π
   have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
       F.map π.op
   · dsimp [EqualizerFirstObjIso, Equalizer.forkMap]
