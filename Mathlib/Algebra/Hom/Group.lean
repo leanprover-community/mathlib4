@@ -224,6 +224,11 @@ theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
 #align map_zero map_zero
 
 @[to_additive]
+instance (priority := 100) OneHomClass.subsingleton_left [Subsingleton M] [OneHomClass F M N] :
+    Subsingleton F where
+  allEq f g := FunLike.ext _ _ fun x ↦ by simp [Subsingleton.elim x 1]
+
+@[to_additive]
 theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f) {x : M} :
   f x = 1 ↔ x = 1 := hf.eq_iff' (map_one f)
 #align map_eq_one_iff map_eq_one_iff
