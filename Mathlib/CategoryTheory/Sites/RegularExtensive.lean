@@ -76,7 +76,7 @@ instance {α : Type w} (Y : (a : α) → C) [HasCoproduct Y] :
   ext
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
 
-instance [HasPullbacksOfInclusions C] {X : C} {α : Type w} (Y : (a : α) → C)
+instance ciao [HasPullbacksOfInclusions C] {X : C} {α : Type w} (Y : (a : α) → C)
     [Fintype α] [HasCoproduct Y] (f : X ⟶ ∐ Y) (a : α) :
     HasPullback f (Sigma.ι Y a) := HasPullbacksOfInclusions.has_pullback f (fun a ↦ Sigma.ι Y a) a
 
@@ -138,41 +138,68 @@ def extensiveCoverage [Extensive C] : Coverage C where
       rw [hS]
       refine Presieve.ofArrows.mk a
 
+variable {C}
+
+/-- TODO: `IsSplitMono f` or `IsSplitEpi f` is probably enough. -/
 noncomputable
 def EffectiveEpi_compStruct {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
-    [EffectiveEpi f] [EffectiveEpi g] [Regular C] :
+    [IsIso f] [EffectiveEpi g]  :
     EffectiveEpiStruct (g ≫ f) where
-  desc e h := by
-    let j := EffectiveEpi.desc g e (fun g₁ g₂ hg ↦ h g₁ g₂ (by rw [← Category.assoc, hg, Category.assoc]))
-    refine EffectiveEpi.desc f j ?_
-    intro Z g₁ g₂ hg
-    have := EffectiveEpi.fac g e (fun g₁ g₂ hg ↦ h g₁ g₂ (by rw [← Category.assoc, hg, Category.assoc]))
-    rw [← this] at h
-    sorry
-    -- obtain ⟨W₁, h₁, _, i₁, hh⟩ := Regular.exists_fac g₁ g
-    -- rw [← EffectiveEpi.fac f j, ← Category.assoc, hg, Category.assoc]
-  fac := sorry
-  uniq := sorry
+  desc e h :=
+    inv f ≫ EffectiveEpi.desc g e (fun g₁ g₂ hg ↦ h g₁ g₂
+    (by rw [← Category.assoc, hg, Category.assoc]))
+  fac e h := by
+    simp only [Category.assoc, IsIso.hom_inv_id_assoc, EffectiveEpi.fac]
+  uniq e h m hm := by
+    simp only [IsIso.eq_inv_comp]
+    simp only [Category.assoc] at hm
+    exact EffectiveEpi.uniq g e _ (f ≫ m) hm
 
-
-
+/--
+Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma.desc π` is an
+`EffectiveEpi`.
+-/
 noncomputable
-def EffectiveEpiFamilyStruct_of_comp {B Y : C} {α : Type*} [Fintype α]
-    (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (f : B ⟶ Y) [Extensive C] [Regular C] [IsIso (Sigma.desc π)] [EffectiveEpi f]  :
-    EffectiveEpiFamilyStruct X (fun a ↦ π a ≫ f) where
+def EffectiveEpiFamilyStruct_descStruct {B : C} {α : Type*} [Extensive C] [Fintype α] (X : α → C)
+    (π : (a : α) → (X a ⟶ B))  [EffectiveEpi (Sigma.desc π)]  :
+    EffectiveEpiFamilyStruct X π where
   desc e h := by
-    let g := EffectiveEpi.desc f ((asIso (Sigma.desc π)).inv ≫ (Sigma.desc e))
-    apply g
+    apply EffectiveEpi.desc (Sigma.desc π) (Sigma.desc e)
     intro Z g₁ g₂ hg
+    haveI : ∀ (a : α) (f : Z ⟶ _), HasPullback f (Sigma.ι X a) := sorry
+    let P := fun a ↦ pullback g₁ (Sigma.ι X a)
+    let ρ : (a : α) → P a ⟶ Z := fun a ↦ pullback.fst
+    haveI : IsIso (Sigma.desc ρ) := sorry
+    suffices : inv (Sigma.desc ρ) ≫ Sigma.desc ρ ≫ g₁ ≫ (Sigma.desc e) = inv (Sigma.desc ρ) ≫ (Sigma.desc ρ) ≫ g₂ ≫ (Sigma.desc e)
+    · simp only [IsIso.inv_hom_id_assoc] at this
+      exact this
+    congr 1
+    ext
     sorry
-  fac := sorry
-  uniq := sorry
 
-instance {B Y : C} {α : Type*} [Fintype α]  (X : α → C) (π : (a : α) → (X a ⟶ B)) (f : B ⟶ Y)
-    [Extensive C] [Regular C] [IsIso (Sigma.desc π)] [EffectiveEpi f] :
-    EffectiveEpiFamily X (fun a ↦ π a ≫ f) :=
-  ⟨⟨EffectiveEpiFamilyStruct_of_comp _ _ _ _⟩⟩
+  fac e h := sorry
+  uniq e _ m hm := sorry
+
+instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+    [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
+  ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
+
+-- noncomputable
+-- def EffectiveEpiFamilyStruct_of_iso_desc {B : C} {α : Type*} [Fintype α]
+--     (X : α → C) (π : (a : α) → (X a ⟶ B)) [Extensive C] [IsIso (Sigma.desc π)]  :
+--     EffectiveEpiFamilyStruct X π where
+--   desc e h := inv (Sigma.desc π) ≫ Sigma.desc e
+--   fac e h a := by
+--     have : π a = Sigma.ι X a ≫ Sigma.desc π := by
+--       simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+--     rw [this, Category.assoc]
+--     simp only [IsIso.hom_inv_id_assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+--   uniq := sorry
+
+-- instance {B : C} {α : Type*} [Fintype α]
+--     (X : α → C) (π : (a : α) → (X a ⟶ B)) [Extensive C] [IsIso (Sigma.desc π)]  :
+--     EffectiveEpiFamily X π :=
+--   ⟨⟨EffectiveEpiFamilyStruct_of_iso_desc X π⟩⟩
 
 
 instance [Regular C] [Extensive C] : Precoherent C where
@@ -182,7 +209,7 @@ instance [Regular C] [Extensive C] : Precoherent C where
     have hi := Extensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) i inferInstance
     let P := fun a ↦ pullback i (Sigma.ι X₁ a)
     refine ⟨α, inferInstance, P, fun a ↦ pullback.fst ≫ h,
-      ⟨inferInstance, ⟨id, fun b ↦ pullback.snd, ?_⟩⟩⟩
+      ⟨sorry, ⟨id, fun b ↦ pullback.snd, ?_⟩⟩⟩
     intro b
     simp only [id_eq, Category.assoc, ← hh]
     rw [← Category.assoc, pullback.condition]
