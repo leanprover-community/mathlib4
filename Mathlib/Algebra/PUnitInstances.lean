@@ -69,6 +69,12 @@ theorem inv_eq : x⁻¹ = unit :=
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
 
+@[to_additive] instance [One M] : Subsingleton (OneHom PUnit M) where
+  allEq f g := FunLike.ext _ _ <| Unique.forall_iff.2 <| (map_one f).trans (map_one g).symm
+
+@[to_additive] instance [MulOneClass M] : Subsingleton (PUnit →* M) :=
+  MonoidHom.toOneHom_injective.subsingleton
+
 instance commRing: CommRing PUnit where
   __ := PUnit.commGroup
   __ := PUnit.addCommGroup
@@ -80,6 +86,12 @@ instance commRing: CommRing PUnit where
 
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
+
+instance [MulZeroOneClass M₀] : Subsingleton (PUnit →*₀ M₀) :=
+  MonoidWithZeroHom.toMonoidHom_injective.subsingleton
+
+instance [NonAssocSemiring R] : Subsingleton (PUnit →+* R) :=
+  RingHom.coe_monoidHom_injective.subsingleton
 
 instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
