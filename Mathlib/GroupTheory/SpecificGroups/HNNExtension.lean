@@ -98,7 +98,7 @@ structure TransversalPair : Type _ :=
   /-- The chosen element of the subgroup itself is the identity -/
   ( one_mem : ∀u, 1 ∈ set u )
   /-- We have exactly one element of each coset of the subgroup -/
-  ( compl_A : ∀ u, IsComplement (if u = 1 then A else B) (set u) )
+  ( compl : ∀ u, IsComplement (if u = 1 then A else B) (set u) )
 
 variable {G A B}
 
@@ -140,6 +140,7 @@ theorem smul_def (g : G) (w : NormalWord d) :
 
 instance : FaithfulSMul G (NormalWord d) := ⟨by simp [smul_def]⟩
 
+@[simps]
 def cons (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
     NormalWord d :=
@@ -156,6 +157,7 @@ def cons (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
       rintro ⟨ u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
+@[elab_as_elim]
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
     (cons : ∀ (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
@@ -191,9 +193,59 @@ theorem consRecOn_cons {motive : NormalWord d → Sort*}
     consRecOn (.cons g u w h1 h2) ofGroup cons = cons g u w h1 h2
       (consRecOn w ofGroup cons) := rfl
 
+variable (d)
+noncomputable def powUnitsIntSMulGroup (u : Units ℤ) (g : G) : G × d.set u :=
+  if hu : u = 1
+  then
+    have : IsComplement (A : Set G) (d.set u) := hu ▸ d.compl 1
+    let g' := this.equiv g
+    (φ g'.1, g'.2)
+  else
+    have : IsComplement (B : Set G) (d.set u) := by simpa [hu] using d.compl u
+    let g' := this.equiv g
+    (φ.symm g'.1, g'.2)
+
+variable {d}
+#print Units
+noncomputable def powUnitsIntSMul [DecidableEq G]
+    (u : Units ℤ) (w : NormalWord d) : NormalWord d :=
+  consRecOn w
+    (fun g =>
+      let g' := powUnitsIntSMulGroup φ d u g
+      cons g'.1 u (ofGroup g'.2) (Subtype.prop _)
+        (by simp [powUnitsIntSMulGroup, ofGroup]))
+    (fun g u' w h1 h2 _ =>
+      let g' := powUnitsIntSMulGroup φ d u g
+      if hg' : (g'.2 : G) = 1 ∧ u ≠ u'
+      then g'.1 • w
+      else cons g'.1 u (cons g'.2 u' w h1 h2)
+        (Subtype.property _)
+        (by simpa using hg'))
+set_option pp.proofs.withType false
+theorem powUnitsIntSMulGroup_neg (u : Units ℤ) (g : G) :
+    powUnitsIntSMulGroup φ d (-u) (powUnitsIntSMulGroup φ d u⁻¹ g).1 = sorry := by
+  simp [powUnitsIntSMulGroup]
+  rcases Int.units_eq_one_or u with rfl | rfl
+  · simp
+    ext
+    dsimp
+    rw [IsComplement.equiv_fst_eq_self_of_mem_of_one_mem]
 
 
 
+
+theorem powUnitsIntSMul_neg [DecidableEq G] (u : Units ℤ) (w : NormalWord d) :
+    powUnitsIntSMul φ (-u) (powUnitsIntSMul φ u w) = w :=
+  consRecOn w
+    (fun g => by
+      rw [powUnitsIntSMul, powUnitsIntSMul]
+      simp
+      rw [dif_pos]
+      admit
+      simp [Units.ext_iff, neg_eq_iff_add_eq_zero]
+
+      )
+    _
 
 end NormalWord
 

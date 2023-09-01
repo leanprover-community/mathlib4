@@ -388,13 +388,13 @@ theorem rightCosetEquivalence_equiv_snd (g : G) :
   simp [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]
 
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
-    (hST.equiv g).fst = g := by
+    (hST.equiv g).fst = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
 
 theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
-    (hST.equiv g).snd = g := by
+    (hST.equiv g).snd = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
