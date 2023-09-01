@@ -233,7 +233,7 @@ theorem descPochhammer_zero : descPochhammer R 0 = 1 :=
   rfl
 
 @[simp]
-theorem descPochhammer_one : ascPochhammer R 1 = X := by simp [ascPochhammer]
+theorem descPochhammer_one : descPochhammer R 1 = X := by simp [descPochhammer]
 
 theorem descPochhammer_succ_left (n : ℕ) :
     descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
@@ -334,3 +334,5 @@ theorem Pochhammer_int_eq_descFactorial (a b : ℕ) :
       Nat.add_descFactorial_eq_ascFactorial]
 
 end Ring
+
+#lint
