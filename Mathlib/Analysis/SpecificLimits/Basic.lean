@@ -638,4 +638,8 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x => (⌈x⌉₊ : R) / x) atT
   simpa using tendsto_nat_ceil_mul_div_atTop (zero_le_one' R)
 #align tendsto_nat_ceil_div_at_top tendsto_nat_ceil_div_atTop
 
+lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : a ≠ 0) : Tendsto (λ x ↦ x / a) at_top at_top := by
+  simp_rw [←@nat.floor_div_eq_div ℚ]
+  exact tendsto_nat_floor_atTop.comp (tendsto_nat_cast_atTop_atTop.at_top_div_const $ by positivity)
+
 end
