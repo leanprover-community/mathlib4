@@ -225,6 +225,11 @@ example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
   apply_fun f
   exact h
 
+-- check that `apply_fun` uses the function provided to help elaborate the injectivity lemma
+example (x : ℕ) : x = x := by
+  apply_fun (Nat.cast : ℕ → ℚ) using Nat.cast_injective
+  rfl
+
 -- Check that locals are elaborated properly in apply_fun
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
