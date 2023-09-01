@@ -55,7 +55,8 @@ theorem ascPochhammer_zero : ascPochhammer S 0 = 1 :=
 theorem ascPochhammer_one : ascPochhammer S 1 = X := by simp [ascPochhammer]
 #align pochhammer_one ascPochhammer_one
 
-theorem ascPochhammer_succ_left (n : ℕ) : ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) :=
+theorem ascPochhammer_succ_left (n : ℕ) :
+    ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) :=
   by rw [ascPochhammer]
 #align pochhammer_succ_left ascPochhammer_succ_left
 
@@ -64,7 +65,8 @@ section
 variable {S} {T : Type v} [Semiring T]
 
 @[simp]
-theorem ascPochhammer_map (f : S →+* T) (n : ℕ) : (ascPochhammer S n).map f = ascPochhammer T n := by
+theorem ascPochhammer_map (f : S →+* T) (n : ℕ) :
+    (ascPochhammer S n).map f = ascPochhammer T n := by
   induction' n with n ih
   · simp
   · simp [ih, ascPochhammer_succ_left, map_comp]
@@ -75,8 +77,8 @@ end
 @[simp, norm_cast]
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
-  rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S), eval₂_at_nat_cast,
-    Nat.cast_id, eq_natCast]
+  rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S),
+      eval₂_at_nat_cast,Nat.cast_id, eq_natCast]
 #align pochhammer_eval_cast ascPochhammer_eval_cast
 
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
@@ -102,8 +104,8 @@ theorem ascPochhammer_succ_right (n : ℕ) :
   induction' n with n ih
   · simp
   · conv_lhs =>
-      rw [ascPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← ascPochhammer_succ_left, add_comp, X_comp,
-        nat_cast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
+      rw [ascPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← ascPochhammer_succ_left, add_comp,
+          X_comp, nat_cast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 #align pochhammer_succ_right ascPochhammer_succ_right
 
 theorem ascPochhammer_succ_eval {S : Type*} [Semiring S] (n : ℕ) (k : S) :
@@ -204,7 +206,8 @@ theorem ascPochhammer_nat_eval_succ (r : ℕ) :
 #align pochhammer_nat_eval_succ ascPochhammer_nat_eval_succ
 
 theorem ascPochhammer_eval_succ (r n : ℕ) :
-    (n : S) * (ascPochhammer S r).eval (n + 1 : S) = (n + r) * (ascPochhammer S r).eval (n : S) := by
+    (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
+    (n + r) * (ascPochhammer S r).eval (n : S) := by
   exact_mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
 #align pochhammer_eval_succ ascPochhammer_eval_succ
 

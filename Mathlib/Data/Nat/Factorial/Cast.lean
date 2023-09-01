@@ -36,7 +36,8 @@ theorem cast_ascFactorial : (a.ascFactorial b : S) = (ascPochhammer S b).eval (a
 #align nat.cast_asc_factorial Nat.cast_ascFactorial
 
 -- Porting note: added type ascription around a - (b - 1)
-theorem cast_descFactorial : (a.descFactorial b : S) = (ascPochhammer S b).eval (a - (b - 1) : S) := by
+theorem cast_descFactorial :
+    (a.descFactorial b : S) = (ascPochhammer S b).eval (a - (b - 1) : S) := by
   rw [← ascPochhammer_eval_cast, ascPochhammer_nat_eq_descFactorial]
   induction' b with b
   · simp
@@ -63,9 +64,9 @@ theorem cast_descFactorial_two : (a.descFactorial 2 : S) = a * (a - 1) := by
   rw [cast_descFactorial]
   cases a
   · simp
-  · rw [succ_sub_succ, tsub_zero, cast_succ, add_sub_cancel, ascPochhammer_succ_right, ascPochhammer_one,
-      Polynomial.X_mul, Polynomial.eval_mul_X, Polynomial.eval_add, Polynomial.eval_X, cast_one,
-      Polynomial.eval_one]
+  · rw [succ_sub_succ, tsub_zero, cast_succ, add_sub_cancel, ascPochhammer_succ_right,
+      ascPochhammer_one, Polynomial.X_mul, Polynomial.eval_mul_X, Polynomial.eval_add,
+      Polynomial.eval_X, cast_one, Polynomial.eval_one]
 #align nat.cast_desc_factorial_two Nat.cast_descFactorial_two
 
 end Ring
