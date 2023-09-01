@@ -83,6 +83,8 @@ instance (priority := 10) [HasPullbacks C] :
 /--
 A category is *extensive* if it has all finite coproducts and those coproducts are preserved
 by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacksOfInclusions`).
+
+TODO: relate this to the class `FinitaryExtensive`
 -/
 class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
   /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
