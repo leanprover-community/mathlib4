@@ -83,7 +83,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   elif [ "$LINT_OUTCOME" == "failure" || "$TEST_OUTCOME" == "failure" || "$BUILD_OUTCOME" == "failure" ]; then
     message="💥 Mathlib branch $branch failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   else
-    message="🟡 Mathlib branch $branch against this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="🟡 Mathlib branch $branch build this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
   fi
 
   echo "$message"
