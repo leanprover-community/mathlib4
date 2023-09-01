@@ -273,10 +273,8 @@ theorem descPochhammer_succ_right (n : ℕ) :
     descPochhammer R (n + 1) = descPochhammer R n * (X - (n : R[X])) := by
   suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X]))
   · apply_fun Polynomial.map (algebraMap ℤ R) at h
-    have := descPochhammer_map (algebraMap ℤ R) (n - 1)
-    simp only [Polynomial.map_mul, Polynomial.map_add, map_X,
-      Polynomial.map_int_cast] at this
-    simpa [this] using h
+    simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
+      Polynomial.map_int_cast] using h
   induction' n with n ih
   · simp [descPochhammer]
   · conv_lhs =>
@@ -334,5 +332,3 @@ theorem Pochhammer_int_eq_descFactorial (a b : ℕ) :
       Nat.add_descFactorial_eq_ascFactorial]
 
 end Ring
-
-#lint
