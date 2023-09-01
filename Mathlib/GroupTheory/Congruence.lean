@@ -1204,30 +1204,27 @@ instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotie
 #align con.comm_monoid Con.commMonoid
 #align add_con.add_comm_monoid AddCon.addCommMonoid
 
-/-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation. Usually, the
-inverse operation is defined as `Setoid.map f _` for some `f`. This lemma allows to avoid code
-duplication in the definition of the inverse operation: instead of proving both
-`∀ x y, c x y → c (f x) (f y)` (to define the operation) and `∀ x, c (f x * x) 1` (to prove the
-group laws), one can only prove the latter. -/
-@[to_additive "Sometimes, an additive group is defined as a quotient of a monoid by an additive
-congruence relation. Usually, the inverse operation is defined as `Setoid.map f _` for some
-`f`. This lemma allows to avoid code duplication in the definition of the inverse operation: instead
-of proving both `∀ x y, c x y → c (f x) (f y)` (to define the operation) and `∀ x, c (f x + x) 0`
-(to prove the group laws), one can only prove the latter."]
-theorem map_of_mul_left_rel_one [Monoid M] (c : Con M) (f : M → M) (hf : ∀ x, c (f x * x) 1)
-    ⦃x y⦄ (h : c x y) : c (f x) (f y) := by
-  have h₁ : c (f (f y) * (f y * y) * f y) (f (f y) * f y)
-  · simpa only [mul_one] using (c.mul (c.mul (c.refl (f (f y))) (hf y)) (c.refl (f y)))
-  have h₂ : c (f (f y) * (f y * y) * f y) 1 := c.trans h₁ (hf _)
-  have h₃ : c (f x * (f (f y) * f y) * y * f y) (f x)
-  · simpa only [mul_one, mul_assoc] using c.mul (c.refl (f x)) h₂
-  have h₄ : c (f x * (f (f y) * f y)) (f x)
-  · simpa only [mul_one] using c.mul (c.refl (f x)) (hf (f y))
-  have h₅ : c (f x * (f (f y) * f y) * y * f y) (f x * x * f y) :=
-    c.mul (c.mul h₄ (c.symm h)) (c.refl _)
-  have h₆ : c (f x * x * f y) (f y)
-  · simpa only [one_mul] using c.mul (hf x) (c.refl (f y))
-  exact c.trans (c.symm h₃) (c.trans h₅ h₆)
+/-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
+Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
+This lemma allows to avoid code duplication in the definition of the inverse operation:
+instead of proving both `∀ x y, c x y → c (f x) (f y)` (to define the operation)
+and `∀ x, c (f x * x) 1` (to prove the group laws), one can only prove the latter. -/
+@[to_additive "Sometimes, an additive group is defined as a quotient of a monoid
+  by an additive congruence relation.
+  Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
+  This lemma allows to avoid code duplication in the definition of the inverse operation:
+  instead of proving both `∀ x y, c x y → c (f x) (f y)` (to define the operation)
+  and `∀ x, c (f x + x) 0` (to prove the group laws), one can only prove the latter."]
+theorem map_of_mul_left_rel_one [Monoid M] (c : Con M)
+    (f : M → M) (hf : ∀ x, c (f x * x) 1) {x y} (h : c x y) : c (f x) (f y) := by
+  simp only [← Con.eq, coe_one, coe_mul] at *
+  have hf' : ∀ x : M, (x : c.Quotient) * f x = 1 := fun x ↦
+    calc
+      (x : c.Quotient) * f x = f (f x) * f x * (x * f x) := by simp [hf]
+      _ = f (f x) * (f x * x) * f x := by ac_rfl
+      _ = 1 := by simp [hf]
+  have : (⟨_, _, hf' x, hf x⟩ : c.Quotientˣ) = ⟨_, _, hf' y, hf y⟩ := Units.ext h
+  exact congr_arg Units.inv this
 
 end Monoids
 
