@@ -43,7 +43,7 @@ set_option linter.uppercaseLean3 false -- Porting note: Module
 
 namespace CategoryTheory.ModuleCat
 
-universe v u₁ u₂
+universe v u₁ u₂ u₃
 
 namespace RestrictScalars
 
@@ -124,6 +124,83 @@ instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Rin
   @SMulCommClass.mk R S M (_) _
    <| fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 #align category_theory.Module.smul_comm_class_mk CategoryTheory.ModuleCat.sMulCommClass_mk
+
+/-- Semilinear maps `M →ₛₗ[f] N` identify to
+morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/
+@[simps]
+def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    (M : ModuleCat.{v} R) (N : ModuleCat.{v} S) :
+    (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
+  toFun g :=
+    { toFun := g
+      map_add' := by simp
+      map_smul' := by simp }
+  invFun g :=
+    { toFun := g
+      map_add' := by simp
+      map_smul' := g.map_smul }
+  left_inv g := rfl
+  right_inv g := rfl
+  map_add' g₁ g₂ := rfl
+
+section
+
+variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
+
+/-- The restriction of scalars by a ring morphism that is the identity identify to the
+identity functor. -/
+def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ := by subst hf; rfl
+
+@[simp]
+lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId' f hf).inv.app M x = x := by
+  subst hf
+  rfl
+
+@[simp]
+lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId' f hf).hom.app M x = x := by
+  subst hf
+  rfl
+
+variable (R)
+
+/-- The restriction of scalars by the identity morphisms identify to the
+identity functor. -/
+abbrev restrictScalarsId := restrictScalarsId'.{v} (RingHom.id R) rfl
+
+end
+
+section
+
+variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [Ring R₂] [Ring R₃]
+  (f : R₁ →+* R₂) (g : R₂ →+* R₃) (gf : R₁ →+* R₃) (hgf : gf = g.comp f)
+
+/-- The restriction of scalars by a composition of ring morphisms identify to the
+composition of the restriction of scalars functors. -/
+def restrictScalarsComp' :
+    ModuleCat.restrictScalars.{v} gf ≅
+      ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by
+  subst hgf
+  rfl
+
+@[simp]
+lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp' f g gf hgf).hom.app M x = x := by
+  subst hgf
+  rfl
+
+@[simp]
+lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp' f g gf hgf).inv.app M x = x := by
+  subst hgf
+  rfl
+
+/-- The restriction of scalars by a composition of ring morphisms identify to the
+composition of the restriction of scalars functors. -/
+abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
+
+end
 
 open TensorProduct
 
