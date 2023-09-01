@@ -544,6 +544,13 @@ theorem sub_domain (f g : E →ₗ.[R] F) : (f - g).domain = f.domain ⊓ g.doma
 theorem sub_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
     (f - g) x = f ⟨x, x.prop.1⟩ - g ⟨x, x.prop.2⟩ := rfl
 
+theorem sub_apply' (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule R E))
+    (y : f.domain) (z : g.domain) (hy : (x : E) = y) (hz : (x : E) = z) :
+    (f - g) x = f y - g z := by
+  simp only [sub_apply, inf_coe, hy, Subtype.coe_eta, sub_right_inj]
+  congr 2
+  rw [← hy, ← hz]
+
 instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) where
   add_comm := add_comm
   sub_eq_add_neg f g := by
@@ -756,7 +763,7 @@ theorem domRestrict_le {f : E →ₗ.[R] F} {S : Submodule R E} : f.domRestrict 
 #align linear_pmap.dom_restrict_le LinearPMap.domRestrict_le
 
 /-- The domain of the composition of two `LinearPMap`s is `{x : f.domain | f x ∈ g.domain }`. -/
-def comp_domain (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) : Submodule R E where
+def compDomain (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) : Submodule R E where
   carrier := { x | ∃ y : f.domain, x = y ∧ f y ∈ g.domain }
   add_mem' := by
     rintro x1 x2 ⟨y1, h1⟩ ⟨y2, h2⟩
@@ -775,23 +782,25 @@ def comp_domain (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) : Submodule R E where
     exact Submodule.smul_mem _ c h1.2
 
 @[simp]
-theorem mem_comp_domain {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} (x : E) :
-    x ∈ g.comp_domain f ↔ ∃ y : f.domain, x = y ∧ f y ∈ g.domain := by
+theorem mem_compDomain {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} (x : E) :
+    x ∈ g.compDomain f ↔ ∃ y : f.domain, x = y ∧ f y ∈ g.domain := by
   rfl
 
 theorem comp_domain_le (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) :
-    g.comp_domain f ≤ f.domain := by
+    g.compDomain f ≤ f.domain := by
   rintro x ⟨y, hx⟩
   rw [hx.1]
   exact y.2
 
 /-- Compose two `LinearPMap`s by restricting the domain to `{x : f.domain | f x ∈ g.domain }`. -/
 def comp (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) : E →ₗ.[R] G where
-  domain := g.comp_domain f
+  domain := g.compDomain f
   toFun := g.toFun.comp <| (f.toFun.comp (Submodule.ofLe (comp_domain_le _ _))).codRestrict _
     (fun ⟨_, ⟨_, hx⟩⟩ => by simp [Submodule.ofLe_apply, hx.1, hx.2])
 
-theorem comp_apply {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} ⦃x : g.comp_domain f⦄ ⦃y : g.domain⦄
+theorem comp_domain {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} : (g.comp f).domain = g.compDomain f := rfl
+
+theorem comp_apply {g : F →ₗ.[R] G} {f : E →ₗ.[R] F} ⦃x : g.compDomain f⦄ ⦃y : g.domain⦄
     ⦃x' : f.domain⦄ (hx : (x : E) = x') (h : f x' = y) :
     g.comp f x = g y := by
   simp only [comp, mk_apply, LinearMap.coe_comp, Function.comp_apply, toFun_eq_coe]
@@ -1170,6 +1179,72 @@ theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y)
   rw [← h]
   congr
   simp only [hxy, Subtype.coe_eta]
+
+theorem apply_of_inverse_eq {z : F} {y : (inverse f).domain} {x : f.domain}
+    (hzy : z = y) (hxy : (inverse f) y = x) :
+    f x = z := by
+  have := f.inverse.mem_graph y
+  simp only [hxy, inverse_graph hf, Submodule.mem_map, LinearEquiv.prodComm_apply,
+    Prod.exists, Prod.swap_prod_mk, Prod.mk.injEq, mem_graph_iff] at this
+  rcases this with ⟨x', y', ⟨z', hz1, hz2⟩, h2, h3⟩
+  rw [hzy, ← h2, ← hz2]
+  congr
+  ext
+  rw [hz1, h3]
+
+variable {g : E →ₗ.[R] F} (hg : LinearMap.ker g.toFun = ⊥)
+  (hf' : LinearMap.range f.toFun = ⊤) (hg' : LinearMap.range g.toFun = ⊤)
+
+theorem foo (hdom : f.domain ≤ g.domain) :
+    (g.inverse - f.inverse).domain = ((g.inverse.comp (f - g)).comp f.inverse).domain := by
+  simp only [sub_domain, inverse_domain, hg', hf', le_refl, inf_of_le_left, comp_domain]
+  rw [eq_comm, Submodule.eq_top_iff']
+  intro y
+  simp only [mem_compDomain, comp_domain, inverse_domain, hg', Submodule.mem_top, and_true,
+    Subtype.exists, exists_prop, exists_eq_right', hf', exists_and_left, exists_true_left,
+    exists_eq_left']
+  let z : f.inverse.domain := ⟨y, by simp [inverse_domain, hf']⟩
+  have hz : f.inverse z ∈ f.domain := by simp [← inverse_range hf]
+  exact Submodule.mem_inf.mpr ⟨hz, hdom hz⟩
+
+theorem bar (hdom : f.domain ≤ g.domain) :
+    g.inverse - f.inverse = (g.inverse.comp (f - g)).comp f.inverse := by
+  rw [ext_iff]
+  use foo hf hf' hg' hdom
+  intro x y hxy
+  have hginv : ∀ z, z ∈ g.inverse.domain := by
+    intro z
+    simp [inverse_domain, hg']
+  let x1 : g.inverse.domain := ⟨x.1, hginv _⟩
+  let x2 : f.inverse.domain := ⟨x.1, x.2.2⟩
+  let y1 : f.inverse.domain := ⟨y.1, by simp [inverse_domain, hf']⟩
+  have hz2 : f.inverse y1 ∈ f.domain := by simp [← inverse_range hf]
+  let z1 : (comp (inverse g) (f - g)).domain := ⟨f.inverse y1, by
+    simp only [comp_domain, mem_compDomain, inverse_domain, hg', Submodule.mem_top, and_true,
+      Subtype.exists, exists_prop, exists_eq_right']
+    exact Submodule.mem_inf.mpr ⟨hz2, hdom hz2⟩⟩
+  let z2 : f.domain := ⟨f.inverse y1, hz2⟩
+  let z3 : g.domain := ⟨f.inverse y1, hdom hz2⟩
+  let z4 : (f - g).domain := ⟨f.inverse y1, Submodule.mem_inf.mpr ⟨hz2, hdom hz2⟩⟩
+  let w : g.inverse.domain := ⟨(f - g) z4, hginv _⟩
+  let w1 : g.inverse.domain := ⟨f z2, hginv _⟩
+  let w2 : g.inverse.domain := ⟨g z3, hginv _⟩
+  have hw : w = w1 - w2 := by rfl
+  rw [sub_apply' _ _ x x1 x2 rfl rfl]
+  rw [comp_apply (x := y) (x' := y1) (y := z1) rfl rfl]
+  rw [comp_apply (x := z1) (x' := z4) (y := w) rfl rfl, hw, map_sub]
+  rw [inverse_apply_eq hg (y := w2) (x := z3) rfl]
+  congr
+  · ext
+    rw [hxy, eq_comm]
+    exact apply_of_inverse_eq hf (y := y1) rfl rfl
+  · ext
+    rw [hxy]
+
+example (hdom : f.domain = g.domain) :
+    (g.inverse.comp (f - g)).comp f.inverse = (f.inverse.comp (g - f)).comp g.inverse := by
+  rw [← bar hf hg hf' hg', ← bar hg hf hg' hf']
+  sorry
 
 end inverse
 
