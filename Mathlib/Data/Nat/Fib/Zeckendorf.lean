@@ -119,11 +119,13 @@ def zeckendorf : ℕ → List ℕ
   have := zeckendorf_aux (n.succ_pos.trans_eq $ Eq.symm ‹_›)
   a :: zeckendorf (m - fib a)
 
-@[simp, eqns] lemma zeckendorf_zero : zeckendorf 0 = [] := rfl
+@[simp] lemma zeckendorf_zero : zeckendorf 0 = [] := rfl
 -- The equational lemma `zeckendorf` has an unused `have`
-@[simp, eqns, nolint unusedHavesSuffices] lemma zeckendorf_succ (n : ℕ) :
+@[simp, nolint unusedHavesSuffices] lemma zeckendorf_succ (n : ℕ) :
   zeckendorf (n + 1) = greatestFib (n + 1) :: zeckendorf (n + 1 - fib (greatestFib (n + 1))) := by
   simp [zeckendorf]
+
+attribute [eqns zeckendorf_zero zeckendorf_succ] zeckendorf
 
 @[simp] lemma zeckendorf_of_pos : ∀ {n}, 0 < n →
   zeckendorf n = greatestFib n :: zeckendorf (n - fib (greatestFib n))
