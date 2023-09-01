@@ -191,14 +191,6 @@ class hasPullbacks (R : Presieve X) : Prop where
 
 instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
 
-/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
-coproduct to the target. -/
-class extensive [HasFiniteCoproducts C] (R : Presieve X) : Prop where
-  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
-  coproduct of their sources. -/
-  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
-    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
-
 section FunctorPushforward
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)

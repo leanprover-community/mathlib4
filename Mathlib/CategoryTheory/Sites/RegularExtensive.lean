@@ -3,6 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Sites.Coherent
 /-!
 # The Regular and Extensive Coverages
@@ -122,6 +124,7 @@ def extensiveCoverage [Extensive C] : Coverage C where
       rw [hS]
       refine Presieve.ofArrows.mk a
 
+variable {C}
 
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
 lemma extensive_regular_generate_coherent [Preregular C] [Extensive C] [Precoherent C] :
@@ -242,6 +245,14 @@ lemma PreservesProduct.isoInvCompMap {C : Type u} [Category C] {D : Type v} [Cat
 instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
   (PreservesFiniteProducts.preserves α).preservesLimit
+
+/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
+coproduct to the target. -/
+class _root_.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) : Prop where
+  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
+  coproduct of their sources. -/
+  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
+    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
 
 instance {X : C} (S : Presieve X) [S.extensive]
     {F : Cᵒᵖ ⥤ Type max u v} [PreservesFiniteProducts F] : IsIso (Equalizer.forkMap F S) := by
