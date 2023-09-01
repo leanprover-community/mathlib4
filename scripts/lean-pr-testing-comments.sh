@@ -97,12 +97,11 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   else
     # Append new result to the existing comment
     echo "Appending to existing comment at leanprover/lean4/issues/$pr_number/comments"
-    updated_comment_body="$existing_comment_body\n- $message"
     curl -L -s \
       -X PATCH \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg val "- $updated_comment_body" '{"body": $val}')" \
+      -d "$(jq --null-input --arg existing "$existing_comment_body" --arg message "$message" '{"body":($existing + "\n- " + $message)}')" \
       "https://api.github.com/repos/leanprover/lean4/issues/comments/$existing_comment_id"
   fi
 fi
