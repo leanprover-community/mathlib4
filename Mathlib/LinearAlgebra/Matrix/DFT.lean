@@ -20,29 +20,29 @@ This file defines the `dft` operation on a sequence (also a vector) and the DFT 
 
 ## Main definitions
 
- - `dft v`: given a sequence (v : (Fin n) → ℂ) we can transform it into a sequence (V : (Fin n) →ℂ)
+ - `dft n v`: given a sequence (v : (Fin n) → ℂ) we can transform it into a sequence (V : (Fin n) →ℂ)
  such that
  $$ V [p] = ∑_{k = 0}^{N - 1} e^{-i 2 π k p / n} v (k) $$
- - `idft V` : given a sequence (V : Fin n → ℂ) we can transform it into a sequence
+ - `idft n V` : given a sequence (V : Fin n → ℂ) we can transform it into a sequence
  (v : Fin n → ℂ)
 such that
 $$ v [k] = \frac{1}{N}∑_{p = 0}^{n - 1} e^{i 2 π k p / N} v [p] $$
-- `Wₙ` : the dft matrix with the `k, p` entry equal to
-$$ Wₙ[k, p] = e^{-i 2 π k p/n} $$
-- `Wₙ⁻¹` : the idft matrix with the `k, p` entry equal to
-$$ Wₙ[k, p] = (1/N) * e^{i 2 π k p / n} $$
+- `dftMatrix n` : the n by n dft matrix with the `k, p` entry equal to
+$$ dftMatrix[k, p] = e^{-i 2 π k p/n} $$
+- `dftMatrixInv n` : the n by n the idft matrix with the `k, p` entry equal to
+$$ dftMatrix[k, p] = (1/N) * e^{i 2 π k p / n} $$
 
 
 ## Main results
 
-- `dft v = Wₙ v` : the dft operation on a sequence is the same as the dft matrix applied to the
+- `dft n v = dftMatrix n * v` : the dft operation on a sequence is the same as the dft matrix applied to the
 vector
-- `idft V = Wₙ⁻¹ V` : the idft operation on a sequence is the same as the idft matrix applied to the
+- `idft n V = dftMatrixInv n * V` : the idft operation on a sequence is the same as the idft matrix applied to the
 vector
-- `dft (idft v) = dft (idft v) = v` the dft and idft operations are inverses
-- `Wₙ = vandermonde w` : the dft matrix is vandermonde with `w` being the first row of the dft
+- `dft n (idft n v) = dft n (idft n v) = v` the dft and idft operations are inverses
+- `dftMatrix n = vandermonde w` : the dft matrix is vandermonde with `w` being the first row of the dft
 matrix
-- `circulant t = Wₙ⁻¹ ⬝ diagonal (dft t) ⬝ Wₙ` : a circulant matrix is diagonalizable by the dft and
+- `circulant t = dftMatrixInv n⬝ diagonal (dft t) ⬝ dftMatrix n` : a circulant matrix is diagonalizable by the dft and
 idft matrix pair.
 
 -/
@@ -63,11 +63,10 @@ noncomputable def idft  (V : Fin n → ℂ) : (Fin n) → ℂ :=
 fun p : Fin n =>  ∑ k : Fin n,  ((Complex.exp (-2 * π * I * p * k / n))/ n) * (V k)
 
 /-- The DFT Matrix -/
-noncomputable def Wₙ  : Matrix (Fin n) (Fin n) ℂ :=
+noncomputable def dftMatrix  : Matrix (Fin n) (Fin n) ℂ :=
 Matrix.of (fun (k p : Fin n) => Complex.exp (2 * π * I * k * p / n))
 
--- @[simp]
-lemma Wₙ_apply (k p : Fin n) : Wₙ n k p = exp (2 * π * I * k * p / n) := rfl
+lemma dftMatrix_apply (k p : Fin n) : dftMatrix n k p = exp (2 * π * I * k * p / n) := rfl
 
 lemma mod_eq_mod_neg (m a : ℤ) : Int.mod (-a) m = -Int.mod (a) m := by
   rw [Int.mod_def, Int.mod_def, Int.neg_div, neg_sub', mul_neg, sub_neg_eq_add]
@@ -114,12 +113,12 @@ lemma cexp_sub_ne_one {m : ℕ} (k p : Fin m) (h : (k ≠ p)) :
     apply le_of_lt h1
 
 /-- The IDFT Matrix Invertible "def/instance"-/
-noncomputable def invWₙ : Invertible (Wₙ n) := by
+noncomputable def invertible_dftMatrix : Invertible (dftMatrix n) := by
   apply invertibleOfRightInverse  _ (of (fun (k p : Fin n) => exp (-2 * π * I * k * p / n) / n)) _
   funext k p
   by_cases hn: n = 0
   apply False.elim $ Fin.elim0 (by convert k; exact hn.symm)
-  simp_rw [mul_apply, Wₙ_apply, of_apply, mul_div_assoc', ← Complex.exp_add]
+  simp_rw [mul_apply, dftMatrix_apply, of_apply, mul_div_assoc', ← Complex.exp_add]
   by_cases h : k = p
   · rw [h, one_apply_eq]
     ring_nf
@@ -141,40 +140,40 @@ noncomputable def invWₙ : Invertible (Wₙ n) := by
     apply cexp_sub_ne_one _ _ h
 
 /-- The IDFT Matrix -/
-theorem dftMatrix_inv  [Invertible (Wₙ n)] :
-    ⅟(Wₙ n) = of (fun (k p : Fin n) => exp ( -2 * π * I * k * p / n) / n) := by
-  letI := (invWₙ n)
-  convert (rfl : ⅟(Wₙ n) = _)
+theorem dftMatrix_inv  [Invertible (dftMatrix n)] :
+    ⅟(dftMatrix n) = of (fun (k p : Fin n) => exp ( -2 * π * I * k * p / n) / n) := by
+  letI := (invertible_dftMatrix n)
+  convert (rfl : ⅟(dftMatrix n) = _)
 
-lemma iWₙ_apply (k p : Fin n) : (Wₙ n)⁻¹ k p = exp (-2 * π * I * k * p / n) / n := by
-  letI := invWₙ n
-  rw [← Matrix.invOf_eq_nonsing_inv (Wₙ n), dftMatrix_inv, of_apply]
+lemma idftMatrix_apply (k p : Fin n) : (dftMatrix n)⁻¹ k p = exp (-2 * π * I * k * p / n) / n := by
+  letI := invertible_dftMatrix n
+  rw [← Matrix.invOf_eq_nonsing_inv (dftMatrix n), dftMatrix_inv, of_apply]
 
 /-- The DFT operation and DFT matrix applied to sequence/vector are tha same -/
-theorem dft_eq_Wₙ_mul (v : Fin n → ℂ) : dft n v = mulVec (Wₙ n) v := by
+theorem dft_eq_dftMatrix_mul (v : Fin n → ℂ) : dft n v = mulVec (dftMatrix n) v := by
   funext r
-  simp only [dft, mulVec, dotProduct, Wₙ_apply]
+  simp only [dft, mulVec, dotProduct, dftMatrix_apply]
 
 /-- The IDFT operation and IDFT matrix applied to sequence/vector are the same -/
-theorem idft_eq_iWₙ_mul (V : Fin n → ℂ ) : idft n V = mulVec (Wₙ n)⁻¹ V := by
+theorem idft_eq_idftMatrix_mul (V : Fin n → ℂ ) : idft n V = mulVec (dftMatrix n)⁻¹ V := by
   funext r
-  simp only [idft, mulVec, dotProduct, iWₙ_apply]
+  simp only [idft, mulVec, dotProduct, idftMatrix_apply]
 
 /-- IDFT/DFT are bijective pair-/
 theorem idft_dft  (v : Fin n → ℂ) : idft n (dft n v) = v := by
-  letI := invWₙ n
-  rw [dft_eq_Wₙ_mul, idft_eq_iWₙ_mul, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
+  letI := invertible_dftMatrix n
+  rw [dft_eq_dftMatrix_mul, idft_eq_idftMatrix_mul, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
 
 theorem dft_idft  (V : Fin n → ℂ) : dft  n (idft n V) = V := by
-  letI := invWₙ n
-  rw [dft_eq_Wₙ_mul, idft_eq_iWₙ_mul, mulVec_mulVec, mul_inv_of_invertible, one_mulVec]
+  letI := invertible_dftMatrix n
+  rw [dft_eq_dftMatrix_mul, idft_eq_idftMatrix_mul, mulVec_mulVec, mul_inv_of_invertible, one_mulVec]
 
 /-- The IDFT matrix is the scaled conjugate transpose of the DFT matrix-/
-theorem Wₙ_conjTranspose_eq_iWₙ :  (Wₙ n)⁻¹ = ((1:ℂ) / n) • (Wₙ n)ᴴ := by
+theorem dftMatrix_conjTranspose_eq_idftMatrix :  (dftMatrix n)⁻¹ = ((1:ℂ) / n) • (dftMatrix n)ᴴ := by
   funext x y
   by_cases hn: n = 0
   apply False.elim $ Fin.elim0 (by convert x; exact hn.symm)
-  simp only [iWₙ_apply, smul_apply, conjTranspose_apply, Wₙ_apply, smul_eq_mul]
+  simp only [idftMatrix_apply, smul_apply, conjTranspose_apply, dftMatrix_apply, smul_eq_mul]
   rw [star_def, ← Complex.exp_conj, ← div_mul_comm, mul_one, div_left_inj', ← star_def]
   simp only [star_div', star_natCast, star_mul', conj_I, star_def, conj_ofReal, map_ofNat, neg_mul,
     mul_neg]
@@ -182,9 +181,9 @@ theorem Wₙ_conjTranspose_eq_iWₙ :  (Wₙ n)⁻¹ = ((1:ℂ) / n) • (Wₙ n
   exact (Nat.cast_ne_zero.2 hn)
 
 /-- The DFT matrix is symmetric -/
-lemma Wₙ_transpose_eq_Wₙ : (Wₙ n)ᵀ = Wₙ n := by
+lemma dftMatrix_transpose_eq_dftMatrix : (dftMatrix n)ᵀ = dftMatrix n := by
   funext a b
-  simp only [transpose_apply, Wₙ_apply]
+  simp only [transpose_apply, dftMatrix_apply]
   ring_nf
 
 def shiftk (N : ℕ) (k : Fin N) : (Fin N → Fin N) := fun n : (Fin N) => (n - k)
@@ -249,16 +248,16 @@ lemma cexp_shiftk_invariant (x a b : Fin n) :
 
 /-- A circulant matrix is diagonalized by the IDFT DFT matrix pair -/
 theorem circulant_dft  (t : Fin n → ℂ) :
-    circulant t = (Wₙ n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (Wₙ n) := by
-  letI := invWₙ n
-  apply_fun ((Wₙ n) ⬝ ·)
+    circulant t = (dftMatrix n)⁻¹ ⬝ (diagonal ( dft n t)) ⬝ (dftMatrix n) := by
+  letI := invertible_dftMatrix n
+  apply_fun ((dftMatrix n) ⬝ ·)
   dsimp
   rw [Matrix.mul_assoc, Matrix.mul_inv_cancel_left_of_invertible]
   funext a b
   by_cases hn : n = 0
   apply False.elim $ Fin.elim0 (by convert a; exact hn.symm)
   letI := neZero_iff.2 hn
-  simp only [diagonal_mul, mul_apply, circulant_apply, Wₙ_apply, diagonal_apply, dft]
+  simp only [diagonal_mul, mul_apply, circulant_apply, dftMatrix_apply, diagonal_apply, dft]
   simp_rw [ite_mul, zero_mul, sum_ite_eq, mem_univ, ite_true,
     ← mul_inv_eq_iff_eq_mul₀ (Complex.exp_ne_zero _), ← Complex.exp_neg]
   rw [mul_comm]
@@ -272,22 +271,22 @@ theorem circulant_dft  (t : Fin n → ℂ) :
     intro x; apply cexp_shiftk_invariant n x a b
   simp_rw [← h1, h2]
   rw [Equiv.sum_comp (shiftk_equiv b) f]
-  apply Matrix.mul_right_injective_of_invertible (Wₙ n)
+  apply Matrix.mul_right_injective_of_invertible (dftMatrix n)
 
 /-- The DFT matrix is a vandermonde matrix -/
-theorem Wₙ_eq_vandermonde :
-    (Wₙ n) = vandermonde (fun (k: Fin n) => exp (2 * π * I * k / n)) :=  by
+theorem dftMatrix_eq_vandermonde :
+    (dftMatrix n) = vandermonde (fun (k: Fin n) => exp (2 * π * I * k / n)) :=  by
   funext k n
-  simp only [neg_mul, vandermonde_apply, Wₙ_apply]
+  simp only [neg_mul, vandermonde_apply, dftMatrix_apply]
   rw [← Complex.exp_nat_mul]
   congr
   ring
 
 /-- The IDFT matrix is a vandermonde matrix -/
-theorem iWₙ_eq_vandermonde :
-    (Wₙ n)⁻¹ = (1/(n:ℂ)) • vandermonde (fun (k: Fin n) => (exp (-2 * π * I * k / n))) :=  by
+theorem idftMatrix_eq_vandermonde :
+    (dftMatrix n)⁻¹ = (1/(n:ℂ)) • vandermonde (fun (k: Fin n) => (exp (-2 * π * I * k / n))) :=  by
   funext k n
-  simp only [neg_mul, vandermonde_apply, iWₙ_apply, smul_apply, smul_eq_mul]
+  simp only [neg_mul, vandermonde_apply, idftMatrix_apply, smul_apply, smul_eq_mul]
   rw [div_mul_comm, mul_one, ← Complex.exp_nat_mul]
   congr
   ring
