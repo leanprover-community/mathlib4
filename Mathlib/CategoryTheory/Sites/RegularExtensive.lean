@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.Tactic.ApplyFun
 /-!
@@ -360,12 +361,13 @@ def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶
       rfl
     inv_hom_id := by aesop }
 
-lemma isSheafFor_regular {B : C} {S : Presieve B}
-    [S.regular] [∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], HasPullback f f] [Preregular C]
-     {F : Cᵒᵖ ⥤ Type (max u v)} [PreservesFiniteProducts F]
+lemma isSheafFor_regular_of_hasPullbacks {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
+     {F : Cᵒᵖ ⥤ Type (max u v)}
     (hFecs : EqualizerCondition F) : S.IsSheafFor F := by
   obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := Presieve.regular.single_epi (R := S)
   rw [Presieve.ofArrows_pUnit] at hS
+  haveI hh : (Presieve.singleton π).hasPullbacks := by rw [← hS]; infer_instance
+  haveI : HasPullback π π := hh.has_pullbacks (Presieve.singleton.mk) (Presieve.singleton.mk)
   subst hS
   rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
   intro y h
@@ -417,6 +419,25 @@ lemma isSheafFor_regular {B : C} {S : Presieve B}
   · intro z hz
     apply_fun (EqualizerFirstObjIso F π).hom at hz
     exact hx.2 z hz
+
+lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Projective X]
+    (F : Cᵒᵖ ⥤ Type (max u v)) : S.IsSheafFor F := by
+  obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
+  let g := Projective.factorThru (𝟙 _) f
+  have hfg : g ≫ f = 𝟙 _ := by
+    simp only [Projective.factorThru_comp]
+  intro y hy
+  refine' ⟨F.map g.op <| y f <| Presieve.ofArrows.mk (), fun Z h hZ => _, fun z hz => _⟩
+  · cases' hZ with u
+    have := hy (f₁ := f) (f₂ := f) (𝟙 Y) (f ≫ g) (Presieve.ofArrows.mk ())
+        (Presieve.ofArrows.mk ()) ?_
+    · rw [op_id, F.map_id, types_id_apply] at this
+      rw [← types_comp_apply (F.map g.op) (F.map f.op), ← F.map_comp, ← op_comp]
+      exact this.symm
+    · rw [Category.id_comp, Category.assoc, hfg, Category.comp_id]
+  · have := congr_arg (F.map g.op) <| hz f (Presieve.ofArrows.mk ())
+    rwa [← types_comp_apply (F.map f.op) (F.map g.op), ← F.map_comp, ← op_comp, hfg, op_id,
+      F.map_id, types_id_apply] at this
 
 end RegularSheaves
 
