@@ -76,7 +76,7 @@ instance {α : Type w} (Y : (a : α) → C) [HasCoproduct Y] :
   ext
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
 
-instance ciao [HasPullbacksOfInclusions C] {X : C} {α : Type w} (Y : (a : α) → C)
+instance [HasPullbacksOfInclusions C] {X : C} {α : Type w} (Y : (a : α) → C)
     [Fintype α] [HasCoproduct Y] (f : X ⟶ ∐ Y) (a : α) :
     HasPullback f (Sigma.ι Y a) := HasPullbacksOfInclusions.has_pullback f (fun a ↦ Sigma.ι Y a) a
 
@@ -96,7 +96,7 @@ by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacks
 -/
 class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
   /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
-  sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
+  sigma_desc_iso : ∀ {α : Type w} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
     {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
     IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
 
@@ -155,37 +155,70 @@ def EffectiveEpi_compStruct {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
     simp only [Category.assoc] at hm
     exact EffectiveEpi.uniq g e _ (f ≫ m) hm
 
+/-- TODO: `IsSplitMono f` or `IsSplitEpi f` is probably enough. -/
+noncomputable
+def EffectiveEpiFamily_compStruct {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
+    [IsIso f] [EffectiveEpi g]  :
+    EffectiveEpiStruct (g ≫ f) where
+  desc e h :=
+    inv f ≫ EffectiveEpi.desc g e (fun g₁ g₂ hg ↦ h g₁ g₂
+    (by rw [← Category.assoc, hg, Category.assoc]))
+  fac e h := by
+    simp only [Category.assoc, IsIso.hom_inv_id_assoc, EffectiveEpi.fac]
+  uniq e h m hm := by
+    simp only [IsIso.eq_inv_comp]
+    simp only [Category.assoc] at hm
+    exact EffectiveEpi.uniq g e _ (f ≫ m) hm
+
 /--
 Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma.desc π` is an
 `EffectiveEpi`.
 -/
 noncomputable
-def EffectiveEpiFamilyStruct_descStruct {B : C} {α : Type*} [Extensive C] [Fintype α] (X : α → C)
-    (π : (a : α) → (X a ⟶ B))  [EffectiveEpi (Sigma.desc π)]  :
+def EffectiveEpiFamilyStruct_descStruct {B : C} {α : Type w} [Extensive.{v, u, w} C] [Fintype α]
+    (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpi (Sigma.desc π)]  :
     EffectiveEpiFamilyStruct X π where
   desc e h := by
     apply EffectiveEpi.desc (Sigma.desc π) (Sigma.desc e)
+    have hfac := EffectiveEpi.fac (Sigma.desc π) (Sigma.desc e)
+    have huniq := EffectiveEpi.uniq (Sigma.desc π) (Sigma.desc e)
     intro Z g₁ g₂ hg
-    haveI : ∀ (a : α) (f : Z ⟶ _), HasPullback f (Sigma.ι X a) := sorry
-    let P := fun a ↦ pullback g₁ (Sigma.ι X a)
-    let ρ : (a : α) → P a ⟶ Z := fun a ↦ pullback.fst
-    haveI : IsIso (Sigma.desc ρ) := sorry
-    suffices : inv (Sigma.desc ρ) ≫ Sigma.desc ρ ≫ g₁ ≫ (Sigma.desc e) = inv (Sigma.desc ρ) ≫ (Sigma.desc ρ) ≫ g₂ ≫ (Sigma.desc e)
-    · simp only [IsIso.inv_hom_id_assoc] at this
+    let P₁ := fun a ↦ pullback g₁ (Sigma.ι X a)
+    let ρ₁ : (a : α) → P₁ a ⟶ Z := fun a ↦ pullback.fst
+    haveI := Extensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g₁ inferInstance
+    let P₂ := fun a ↦ pullback g₂ (Sigma.ι X a)
+    let ρ₂ : (a : α) → P₂ a ⟶ Z := fun a ↦ pullback.fst
+    haveI h₁ := Extensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g₁ inferInstance
+    haveI h₂ := Extensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g₂ inferInstance
+    have hh₁ : ∀ a, ρ₁ a ≫ g₁ ≫ Sigma.desc π = ρ₁ a ≫ g₂ ≫ Sigma.desc π := fun a ↦ by rw [hg]
+    have hh₂ : ∀ a, ρ₂ a ≫ g₁ ≫ Sigma.desc π = ρ₂ a ≫ g₂ ≫ Sigma.desc π := fun a ↦ by rw [hg]
+    suffices : (asIso (Sigma.desc ρ₁)).inv ≫ Sigma.desc ρ₁ ≫ g₁ ≫ (Sigma.desc e) =
+        inv (Sigma.desc ρ₂) ≫ (Sigma.desc ρ₂) ≫ g₂ ≫ (Sigma.desc e)
+    · simp only [asIso_inv, IsIso.inv_hom_id_assoc] at this
       exact this
-    congr 1
-    ext
+    rw [Iso.inv_comp_eq (asIso (Sigma.desc ρ₁))]
+    ext b
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app, asIso_hom,
+      IsIso.inv_hom_id_assoc]
+    rw [← Category.assoc, pullback.condition, Category.assoc]
+    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    have hg₁ := pullback.condition (f := g₁) (g := Sigma.ι X b)
+    have hg₂ := pullback.condition (f := g₂) (g := Sigma.ι X b)
+    have hh : pullback.fst (f := g₁) (g := Sigma.ι X b) ≫ g₁ ≫ Sigma.desc π =
+        pullback.fst ≫ g₂ ≫ Sigma.desc π := by rw [hg]
+    rw [← Category.assoc, hg₁] at hh
+    simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hh
+    have := h b b (pullback.snd : P₁ b ⟶ X b)-- ?_--(pullback.fst ≫ Sigma.ι X b)
     sorry
-
   fac e h := sorry
   uniq e _ m hm := sorry
 
-instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+instance {B : C} {α : Type w} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
   ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
 
 -- noncomputable
--- def EffectiveEpiFamilyStruct_of_iso_desc {B : C} {α : Type*} [Fintype α]
+-- def EffectiveEpiFamilyStruct_of_iso_desc {B : C} {α : Type w} [Fintype α]
 --     (X : α → C) (π : (a : α) → (X a ⟶ B)) [Extensive C] [IsIso (Sigma.desc π)]  :
 --     EffectiveEpiFamilyStruct X π where
 --   desc e h := inv (Sigma.desc π) ≫ Sigma.desc e
@@ -196,7 +229,7 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
 --     simp only [IsIso.hom_inv_id_assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
 --   uniq := sorry
 
--- instance {B : C} {α : Type*} [Fintype α]
+-- instance {B : C} {α : Type w} [Fintype α]
 --     (X : α → C) (π : (a : α) → (X a ⟶ B)) [Extensive C] [IsIso (Sigma.desc π)]  :
 --     EffectiveEpiFamily X π :=
 --   ⟨⟨EffectiveEpiFamilyStruct_of_iso_desc X π⟩⟩
@@ -209,10 +242,11 @@ instance [Regular C] [Extensive C] : Precoherent C where
     have hi := Extensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) i inferInstance
     let P := fun a ↦ pullback i (Sigma.ι X₁ a)
     refine ⟨α, inferInstance, P, fun a ↦ pullback.fst ≫ h,
-      ⟨sorry, ⟨id, fun b ↦ pullback.snd, ?_⟩⟩⟩
-    intro b
-    simp only [id_eq, Category.assoc, ← hh]
-    rw [← Category.assoc, pullback.condition]
-    simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+      ⟨?_, ⟨id, fun b ↦ pullback.snd, ?_⟩⟩⟩
+    · sorry
+    · intro b
+      simp only [id_eq, Category.assoc, ← hh]
+      rw [← Category.assoc, pullback.condition]
+      simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
 
 end CategoryTheory
