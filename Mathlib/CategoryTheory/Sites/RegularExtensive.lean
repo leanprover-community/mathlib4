@@ -192,6 +192,15 @@ section ExtensiveSheaves
 
 variable [Extensive C]
 
+/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
+coproduct to the target. -/
+class _root_.CategoryTheory.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) :
+    Prop where
+  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
+  coproduct of their sources. -/
+  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
+    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
+
 instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
   has_pullbacks := by
     obtain ⟨_, _, _, _, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
@@ -245,14 +254,6 @@ lemma PreservesProduct.isoInvCompMap {C : Type u} [Category C] {D : Type v} [Cat
 instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
   (PreservesFiniteProducts.preserves α).preservesLimit
-
-/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
-coproduct to the target. -/
-class _root_.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) : Prop where
-  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
-  coproduct of their sources. -/
-  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
-    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
 
 instance {X : C} (S : Presieve X) [S.extensive]
     {F : Cᵒᵖ ⥤ Type max u v} [PreservesFiniteProducts F] : IsIso (Equalizer.forkMap F S) := by
