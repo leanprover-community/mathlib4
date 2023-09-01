@@ -309,7 +309,7 @@ theorem unitSMul_cancels_iff (u : Units ℤ) (w : NormalWord d) :
   · simp only [unitSMul, dif_neg h]
     simpa [Cancels] using h
 
-theorem unitSMul_neg [DecidableEq G] (u : Units ℤ) (w : NormalWord d) :
+theorem unitSMul_neg (u : Units ℤ) (w : NormalWord d) :
     unitSMul φ (-u) (unitSMul φ u w) = w := by
   rw [unitSMul]
   split_ifs with hcan
@@ -331,6 +331,21 @@ theorem unitSMul_neg [DecidableEq G] (u : Units ℤ) (w : NormalWord d) :
       apply NormalWord.ext
       · simp [this]
       · simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this]
+
+theorem unitSMul_one_group_smul (g : A) (w : NormalWord d) :
+    unitSMul φ 1 ((g : G) • w) = (φ g : G) • (unitSMul φ 1 w) := by
+  unfold unitSMul
+  have : Cancels 1 ((g : G) • w) ↔ Cancels 1 w := by
+    simp [Cancels, Subgroup.mul_mem_cancel_left]
+  by_cases hcan : Cancels 1 w
+  · simp [unitSMulWithCancel, dif_pos (this.2 hcan), dif_pos hcan]
+    cases w using consRecOn
+    · simp [Cancels] at hcan
+    · simp only [smul_cons, consRecOn_cons, mul_smul]
+      rw [← mul_smul, ← Subgroup.coe_mul, ← map_mul φ]
+      rfl
+  · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
+    simp [← mul_smul, mul_assoc, unitSMulGroup]
 
 end NormalWord
 
