@@ -69,17 +69,11 @@ theorem inv_eq : x⁻¹ = unit :=
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
 
-@[to_additive] -- This doesn't work well as an instance
-lemma subsingleton_oneHomClass (F : Type*) {M : Type*} [One M] [OneHomClass F PUnit M] :
-    Subsingleton F where
+@[to_additive] instance [One M] : Subsingleton (OneHom PUnit M) where
   allEq f g := FunLike.ext _ _ <| Unique.forall_iff.2 <| (map_one f).trans (map_one g).symm
 
-@[to_additive]
-def uniqueOneHomClass {F M : Type _} [One M] [OneHomClass F PUnit M] (f : F) : Unique F :=
-  haveI := subsingleton_oneHomClass F; uniqueOfSubsingleton f
-
-@[to_additive] instance [One M] : Unique (OneHom PUnit M) := uniqueOneHomClass 1
-@[to_additive] instance [MulOneClass M] : Unique (PUnit →* M) := uniqueOneHomClass 1
+@[to_additive] instance [MulOneClass M] : Subsingleton (PUnit →* M) :=
+  MonoidHom.toOneHom_injective.subsingleton
 
 instance commRing: CommRing PUnit where
   __ := PUnit.commGroup
@@ -93,8 +87,11 @@ instance commRing: CommRing PUnit where
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
 
-instance [MonoidWithZero M₀] : Subsingleton (PUnit →*₀ M₀) := subsingleton_oneHomClass _
-instance [NonAssocSemiring R] : Subsingleton (PUnit →+* R) := subsingleton_oneHomClass _
+instance [MulZeroOneClass M₀] : Subsingleton (PUnit →*₀ M₀) :=
+  MonoidWithZeroHom.toMonoidHom_injective.subsingleton
+
+instance [NonAssocSemiring R] : Subsingleton (PUnit →+* R) :=
+  RingHom.coe_monoidHom_injective.subsingleton
 
 instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
