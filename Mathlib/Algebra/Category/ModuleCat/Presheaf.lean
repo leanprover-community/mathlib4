@@ -236,12 +236,6 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
   obj M := M.obj X
   map f := f.app X
 
-/-- Forgetting the module structure commutes with the evaluation on presheaves of modules. -/
-def evaluationCompForget₂Iso (X : Cᵒᵖ) :
-    evaluation.{v} R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
-      toPresheaf R ⋙ (CategoryTheory.evaluation Cᵒᵖ AddCommGroupCat).obj X :=
-  Iso.refl _
-
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
 def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
