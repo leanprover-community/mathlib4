@@ -466,14 +466,14 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convex_body_lt`. -/
-noncomputable abbrev constant_factor : ℝ≥0∞ :=
+noncomputable abbrev constant_factor_lt : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     (NNReal.pi : ℝ≥0∞) ^ card {w : InfinitePlace K // IsComplex w}
 
-theorem constant_factor_pos : 0 < (constant_factor K) :=
+theorem constant_factor_lt_pos : 0 < (constant_factor_lt K) :=
   mul_pos (pow_ne_zero _ (two_ne_zero)) (pow_ne_zero _ (coe_ne_zero.mpr pi_ne_zero))
 
-theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
+theorem constant_factor_lt_lt_top : (constant_factor_lt K) < ⊤ := by
   refine mul_lt_top ?_ ?_
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
   · exact ne_of_lt (pow_lt_top coe_lt_top _)
@@ -481,8 +481,8 @@ theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
 /-- The volume of `(convex_body_lt K f)` where `convex_body_lt K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
 theorem convex_body_volume :
-    volume (convex_body_lt K f) = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
-  refine calc
+    volume (convex_body_lt K f) = (constant_factor_lt K) * ∏ w, (f w) ^ (mult w) :=
+  calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ∏ x : {w // InfinitePlace.IsComplex w}, pi * ENNReal.ofReal (f x.val) ^ 2 := by
       simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball, Complex.volume_ball]
@@ -492,9 +492,9 @@ theorem convex_body_volume :
           (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_univ, ofReal_ofNat]
-    _ = (constant_factor K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
+    _ = (constant_factor_lt K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
         (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by ring
-    _ = (constant_factor K) * ∏ w, (f w) ^ (mult w) := by
+    _ = (constant_factor_lt K) * ∏ w, (f w) ^ (mult w) := by
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow]
       congr 2
