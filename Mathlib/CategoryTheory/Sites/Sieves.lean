@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, E. W. Ayers
 import Mathlib.Order.CompleteLattice
 import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.Data.Set.Lattice
 
 #align_import category_theory.sites.sieves from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
