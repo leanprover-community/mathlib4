@@ -155,15 +155,11 @@ def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ := by subst 
 
 @[simp]
 lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).inv.app M x = x := by
-  subst hf
-  rfl
+    (restrictScalarsId' f hf).inv.app M x = x := by subst hf; rfl
 
 @[simp]
 lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).hom.app M x = x := by
-  subst hf
-  rfl
+    (restrictScalarsId' f hf).hom.app M x = x := by subst hf; rfl
 
 variable (R)
 
@@ -182,21 +178,14 @@ variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [R
 composition of the restriction of scalars functors. -/
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
-      ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by
-  subst hgf
-  rfl
-
+      ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by subst hgf; rfl
 @[simp]
 lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).hom.app M x = x := by
-  subst hgf
-  rfl
+    (restrictScalarsComp' f g gf hgf).hom.app M x = x := by subst hgf; rfl
 
 @[simp]
 lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).inv.app M x = x := by
-  subst hgf
-  rfl
+    (restrictScalarsComp' f g gf hgf).inv.app M x = x := by subst hgf; rfl
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
@@ -462,6 +451,7 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restri
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.to_restriction ModuleCat.RestrictionCoextensionAdj.HomEquiv.toRestriction
 
 -- Porting note: add to address timeout in unit'
+/-- Auxiliary definition for `unit'` -/
 def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars f).obj Y :=
   { toFun := fun y : Y =>
       { toFun := fun s : S => (s • y : Y)

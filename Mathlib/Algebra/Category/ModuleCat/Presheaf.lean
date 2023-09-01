@@ -9,8 +9,14 @@ import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 /-!
 # Presheaves of modules over a presheaf of rings.
 
-We give a hands-on description of a presheaf of modules over a fixed presheaf of rings,
+We give a hands-on description of a presheaf of modules over a fixed presheaf of rings `R`,
 as a presheaf of abelian groups with additional data.
+
+We also provide two alternative constructors :
+* `mk' : MkStruct R → PresheafOfModules R` where `M : MkStruct R` consists of a family
+of unbundled modules over `R.obj X` for all `X`
+* `mk'' : BundledMkStruct R → PresheafOfModules R` where `M : BundledMkStruct R`
+consists of a family of objects in `ModuleCat (R.obj X)` for all `X`
 
 ## Future work
 
@@ -229,12 +235,6 @@ variable (R)
 def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) where
   obj M := M.obj X
   map f := f.app X
-
-/-- Forgetting the module structure commutes with the evaluation on presheaves of modules. -/
-def evaluationCompForget₂Iso (X : Cᵒᵖ) :
-    evaluation.{v} R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
-      toPresheaf R ⋙ (CategoryTheory.evaluation Cᵒᵖ AddCommGroupCat).obj X :=
-  Iso.refl _
 
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
