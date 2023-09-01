@@ -518,23 +518,6 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
   ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
 
-noncomputable
-def EffectiveEpiFamilyStruct_of_comp {B Y : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (f : B ⟶ Y) [EffectiveEpiFamily X π] [EffectiveEpi f] :
-    EffectiveEpiFamilyStruct X (fun a ↦ π a ≫ f) where
-  desc e h := by
-    let g := EffectiveEpi.desc f (EffectiveEpiFamily.desc X π e
-      (fun a₁ a₂ g₁ g₂ hg ↦ h a₁ a₂ g₁ g₂ (by rw [← Category.assoc, hg, Category.assoc])))
-    apply g
-    intro Y g₁ g₂ hg
-    sorry
-  fac := sorry
-  uniq := sorry
-
-instance {B Y : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) (f : B ⟶ Y)
-    [EffectiveEpiFamily X π] [EffectiveEpi f] : EffectiveEpiFamily X (fun a ↦ π a ≫ f) :=
-  ⟨⟨EffectiveEpiFamilyStruct_of_comp X π f⟩⟩
-
 end instances
 
 end CategoryTheory

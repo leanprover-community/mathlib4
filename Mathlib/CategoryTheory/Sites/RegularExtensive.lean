@@ -138,6 +138,43 @@ def extensiveCoverage [Extensive C] : Coverage C where
       rw [hS]
       refine Presieve.ofArrows.mk a
 
+noncomputable
+def EffectiveEpi_compStruct {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
+    [EffectiveEpi f] [EffectiveEpi g] [Regular C] :
+    EffectiveEpiStruct (g ≫ f) where
+  desc e h := by
+    let j := EffectiveEpi.desc g e (fun g₁ g₂ hg ↦ h g₁ g₂ (by rw [← Category.assoc, hg, Category.assoc]))
+    refine EffectiveEpi.desc f j ?_
+    intro Z g₁ g₂ hg
+    have := EffectiveEpi.fac g e (fun g₁ g₂ hg ↦ h g₁ g₂ (by rw [← Category.assoc, hg, Category.assoc]))
+    rw [← this] at h
+    sorry
+    -- obtain ⟨W₁, h₁, _, i₁, hh⟩ := Regular.exists_fac g₁ g
+    -- rw [← EffectiveEpi.fac f j, ← Category.assoc, hg, Category.assoc]
+  fac := sorry
+  uniq := sorry
+
+
+
+noncomputable
+def EffectiveEpiFamilyStruct_of_comp {B Y : C} {α : Type*} [Fintype α]
+    (X : α → C) (π : (a : α) → (X a ⟶ B))
+    (f : B ⟶ Y) [Extensive C] [Regular C] [IsIso (Sigma.desc π)] [EffectiveEpi f]  :
+    EffectiveEpiFamilyStruct X (fun a ↦ π a ≫ f) where
+  desc e h := by
+    let g := EffectiveEpi.desc f ((asIso (Sigma.desc π)).inv ≫ (Sigma.desc e))
+    apply g
+    intro Z g₁ g₂ hg
+    sorry
+  fac := sorry
+  uniq := sorry
+
+instance {B Y : C} {α : Type*} [Fintype α]  (X : α → C) (π : (a : α) → (X a ⟶ B)) (f : B ⟶ Y)
+    [Extensive C] [Regular C] [IsIso (Sigma.desc π)] [EffectiveEpi f] :
+    EffectiveEpiFamily X (fun a ↦ π a ≫ f) :=
+  ⟨⟨EffectiveEpiFamilyStruct_of_comp _ _ _ _⟩⟩
+
+
 instance [Regular C] [Extensive C] : Precoherent C where
   pullback f α _ X₁ π₁ _ := by
     haveI : EffectiveEpi (Sigma.desc π₁) := inferInstance
