@@ -236,6 +236,8 @@ def evaluationCompForget₂Iso (X : Cᵒᵖ) :
       toPresheaf R ⋙ (CategoryTheory.evaluation Cᵒᵖ AddCommGroupCat).obj X :=
   Iso.refl _
 
+/-- The restriction natural transformation on presheaves of modules, considered as linear maps
+to restriction of scalars. -/
 def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
   app M := ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
@@ -246,7 +248,7 @@ def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 variable {R}
 
 lemma restriction_app_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules R) (x : M.obj X) :
-    (restriction R f).app M x = (M.map f) x := by
+    (restriction R f).app M x = M.map f x := by
   rfl
 
 lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
@@ -325,11 +327,20 @@ lemma mk'_obj (M : MkStruct R) (X : Cᵒᵖ) :
 
 variable (R)
 
+/-- This structure contains the data and axioms in order to
+produce a `PresheafOfModules R` from a collection of objects
+of type `ModuleCat (R.obj X)` for all `X`, and restriction
+maps expressed as linear maps to restriction of scalars.
+(See the constructor `PresheafOfModules.mk''`.) -/
 structure BundledMkStruct where
+  /-- the datum of a `ModuleCat (R.obj X)` for each object in `Cᵒᵖ` -/
   obj (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X)
+  /-- the restriction maps as linear maps to restriction of scalars -/
   map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f)).obj (obj Y)
+  /-- `map` is compatible with the identities -/
   map_id (X : Cᵒᵖ) :
     map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (obj X)
+  /-- `map` is compatible with the composition -/
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars (R.map f)).map (map g) ≫
       (ModuleCat.restrictScalarsComp' (R.map f) (R.map g) (R.map (f ≫ g))
@@ -340,6 +351,7 @@ namespace BundledMkStruct
 
 variable (M : BundledMkStruct R)
 
+/-- The obvious map `BundledMkStruct R → MkStruct R`. -/
 def toMkStruct : MkStruct R where
   obj X := (M.obj X).carrier
   map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
@@ -354,6 +366,10 @@ def toMkStruct : MkStruct R where
 
 end BundledMkStruct
 
+/-- Constructor for `PresheafOfModules R` based on a collection of objects
+of type `ModuleCat (R.obj X)` for all `X`, and restriction maps expressed
+as linear maps to restriction of scalars, see
+the structure `BundledMkStruct`. -/
 def mk'' (M : BundledMkStruct R) : PresheafOfModules R :=
   mk' M.toMkStruct
 
