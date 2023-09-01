@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.Complement
 
-open Monoid Coprod Multiplicative Subgroup
+open Monoid Coprod Multiplicative Subgroup Function
 
 local notation "C∞ " => Multiplicative ℤ
 
@@ -90,119 +90,108 @@ def BoolFamily (G : Type*) [Group G] : Bool → Type _
 instance (b : Bool) : Group (BoolFamily G b) := by
   cases b <;> dsimp [BoolFamily] <;> infer_instance
 
--- variable (G)
-
--- abbrev SumInt : Type _ := Sigma (BoolFamily G)
-
--- variable {G}
-
--- def SumInt.ofInt (n : ℤ) : SumInt G := ⟨true, ULift.up (ofAdd n)⟩
-
--- def SumInt.ofGroup (g : G) : SumInt G := ⟨false, g⟩
-
--- @[elab_as_elim]
--- def SumInt.casesOn {motive : SumInt G → Sort _} (n : SumInt G)
---     (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
---     (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) : motive n :=
---   match n with
---   | ⟨true, ULift.up n⟩ => h₁ n
---   | ⟨false, g⟩ => h₂ g
-
--- @[simp]
--- theorem SumInt.casesOn_ofInt {motive : SumInt G → Sort _} (n : ℤ)
---     (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
---     (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) :
---     SumInt.casesOn (SumInt.ofInt n) h₁ h₂ = h₁ n :=
---   rfl
-
--- @[simp]
--- theorem SumInt.casesOn_ofGroup {motive : SumInt G → Sort _} (g : G)
---     (h₁ : ∀ n : ℤ, motive (SumInt.ofInt n))
---     (h₂ : ∀ g : G, motive (SumInt.ofGroup g)) :
---     SumInt.casesOn (SumInt.ofGroup g) h₁ h₂ = h₂ g :=
---  rfl
-
 variable (G A B φ)
 
 structure TransversalPair : Type _ :=
-  /-- The transversal of the first subgroup -/
-  ( setA : Set G )
+  /-- The transversal of each subgroup -/
+  ( set : Units ℤ → Set G )
   /-- The chosen element of the subgroup itself is the identity -/
-  ( one_mem_A : 1 ∈ setA )
+  ( one_mem : ∀u, 1 ∈ set u )
   /-- We have exactly one element of each coset of the subgroup -/
-  ( compl_A : IsComplement A setA )
-  /-- The transversal of the second subgroup -/
-  ( setB : Set G )
-  /-- The chosen element of the subgroup itself is the identity -/
-  ( one_mem_B : 1 ∈ setB )
-  /-- We have exactly one element of each coset of the subgroup -/
-  ( compl_B : IsComplement B setB )
-
-instance transversalPair_nonempty  : Nonempty (TransversalPair G A B) := by
-  rcases exists_right_transversal (H := A) 1 with ⟨setA, compl_A, one_mem_A⟩
-  rcases exists_right_transversal (H := B) 1 with ⟨setB, compl_B, one_mem_B⟩
-  exact
-    ⟨{ setA := setA, one_mem_A := one_mem_A, compl_A := compl_A,
-       setB := setB, one_mem_B := one_mem_B, compl_B := compl_B }⟩
+  ( compl_A : ∀ u, IsComplement (if u = 1 then A else B) (set u) )
 
 variable {G A B}
 
 structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _ :=
   ( left : G )
   ( toList : List (Units ℤ × G) )
-  ( mem_setA : ∀ {g : G}, (1, g) ∈ toList → g ∈ d.setA )
-  ( mem_setB : ∀ {g : G}, (-1, g) ∈ toList → g ∈ d.setB )
+  ( mem_set : ∀ (u : Units ℤ) (g : G), (u, g) ∈ toList → g ∈ d.set u )
   ( chain : toList.Chain' (fun a b => a.2 = 1 → a.1 = b.1) )
-
-structure Pair (d : TransversalPair G A B) : Type _ :=
-  ( int : Option (Units ℤ) )
-  ( head : G )
-  ( tail : NormalWord d )
-  ( left_eq_one : tail.left = 1 )
-  ( eq_of_head_eq_one : head = 1 → tail.toList.head?.map Prod.fst = int )
-  ( mem_setA : int = some 1 → head ∈ d.setA )
-  ( mem_setB : int = some (-1) → head ∈ d.setB )
 
 variable {d : TransversalPair G A B}
 
+@[simps]
 def empty : NormalWord d :=
   { left := 1
     toList := []
-    mem_setA := by simp
-    mem_setB := by simp
+    mem_set := by simp
     chain := List.chain'_nil }
 
-def rcons (p : Pair d) : NormalWord d :=
-  match p.int, p.eq_of_head_eq_one, p.mem_setA, p.mem_setB with
-  | none, _, _, _ =>
-    { p.tail with left := p.head }
-  | some n, h₁, h₂, h₃ =>
-    { left := 1
-      toList := ⟨n, p.head⟩  :: p.tail.toList
-      mem_setA := by
-        simp only [Option.some_inj] at h₂ h₃
-        simp only [List.mem_cons, Prod.mk.injEq]
-        rintro g (⟨rfl, rfl⟩ | h)
-        · exact h₂ rfl
-        · exact p.tail.mem_setA h
-      mem_setB := by
-        simp only [Option.some_inj] at h₂ h₃
-        simp only [List.mem_cons, Prod.mk.injEq]
-        rintro g (⟨rfl, rfl⟩ | h)
-        · exact h₃ rfl
-        · exact p.tail.mem_setB h
-      chain := by
-        simp only [List.chain'_cons', Option.mem_def, Prod.forall]
-        constructor
-        · intro u g h hp
-          simp only [Option.map_eq_some', Prod.exists,
-            exists_and_right, exists_eq_right] at h₁
-          rcases h₁ hp with ⟨x, hx⟩
-          rw [h] at hx
-          simp_all
-        · exact p.tail.chain }
+def ofGroup (g : G) : NormalWord d :=
+  { left := g
+    toList := []
+    mem_set := by simp
+    chain := List.chain'_nil }
 
-def equivPairAux : Normal
+instance : Inhabited (NormalWord d) := ⟨empty⟩
+
+structure Pair (d : TransversalPair G A B) : Type _ :=
+  ( head : G )
+  ( int : Units ℤ )
+  ( tail : NormalWord d )
+
+instance : MulAction G (NormalWord d) :=
+  { smul := fun g w => { w with left := g * w.left }
+    one_smul := by simp [instHSMul]
+    mul_smul := by simp [instHSMul, mul_assoc] }
+
+theorem smul_def (g : G) (w : NormalWord d) :
+    g • w = { w with left := g * w.left } := rfl
+
+instance : FaithfulSMul G (NormalWord d) := ⟨by simp [smul_def]⟩
+
+def cons (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
+    NormalWord d :=
+  { left := g,
+    toList := (u, w.left) :: w.toList,
+    mem_set := by
+      intro u' g' h'
+      simp only [List.mem_cons, Prod.mk.injEq] at h'
+      rcases h' with ⟨rfl, rfl⟩ | h'
+      · exact h1
+      · exact w.mem_set _ _ h'
+    chain := by
+      refine List.chain'_cons'.2 ⟨?_, w.chain⟩
+      rintro ⟨ u', g'⟩ hu' hw1
+      exact h2 _ (by simp_all) hw1 }
+
+def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
+    (ofGroup : ∀g, motive (ofGroup g))
+    (cons : ∀ (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u'),
+      motive w → motive (cons g u w h1 h2)) : motive w := by
+  rcases w with ⟨g, l,  mem_set, chain⟩
+  induction l generalizing g with
+  | nil => exact ofGroup _
+  | cons a l ih =>
+    exact cons g a.1 ⟨a.2, l,
+      fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
+      (List.chain'_cons'.1 chain).2⟩
+      (mem_set a.1 a.2 (List.mem_cons_self _ _))
+      (by simpa using (List.chain'_cons'.1 chain).1)
+      (ih _ _ _)
+
+@[simp]
+theorem consRecOn_ofGroup {motive : NormalWord d → Sort*}
+    (g : G) (ofGroup : ∀g, motive (ofGroup g))
+    (cons : ∀ (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u'),
+      motive w → motive (cons g u w h1 h2)) :
+    consRecOn (.ofGroup g) ofGroup cons = ofGroup g := rfl
+
+@[simp]
+theorem consRecOn_cons {motive : NormalWord d → Sort*}
+    (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u')
+    (ofGroup : ∀g, motive (ofGroup g))
+    (cons : ∀ (g : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u'),
+      motive w → motive (cons g u w h1 h2)) :
+    consRecOn (.cons g u w h1 h2) ofGroup cons = cons g u w h1 h2
+      (consRecOn w ofGroup cons) := rfl
+
+
 
 
 
