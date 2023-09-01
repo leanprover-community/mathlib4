@@ -9,22 +9,14 @@ import Mathlib.Topology.Category.Stonean.EffectiveEpi
 universe v v₁ u u₁ w
 
 /-
-- The sections `isSheafForPullBackSieve` and `ProdCoprod` are independent and can be PR-ed
-  separately (DONE, see #6750 (merged) and #6758 (merged)).
+- FIRST TODO: prove the three lemmas in section `EffectiveEpis` and PR it. They should follow easily
+  from existing API and `effectiveEpiFamily_tfae`.
 - The section `ExtensiveRegular` has been moved to a new file, `Condensed/RegularExtensive`. All
-  that material is PR #6876 and #6877, awaiting review.
-- The code in section `OpenEmbedding` should be added to `Mathlib.Topology.Category.Stonean.Limits`
-  in a separate PR and does not depend on any of the previous stuff in this file
-  (DONE, see #6771 (merged) and #6774 (merged)).
-- The section `StoneanPullback` can be PR-ed (DONE, see #6779 (awaiting review)).
-- The section `StoneanProjective` can be removed once #5808 is merged. (DONE)
-- The section `StoneanPrecoherent` can be removed once #6725 is merged. (DONE)
-- The sections `CompHausExplicitSheaves` and `ProfiniteExplicitSheaves` are identical except for
-  the words `CompHaus` and `Profinite`. The section `StoneanExplicitSheaves` is very similar. In
-  particular, the proofs of the three versions of `extensiveRegular_generates_coherent` are nearly
-  identical. The common properties of these three categories used in that proof are
-  `epi_iff_surjective` and `effectiveEpiFamily_tfae` (basically that effective epi families are
-  finite jointly surjective). TODO: unify this into one theorem for categories satisfying this.
+  that material is PRs #6876, #6877, #6896, and #6919 (awaiting review). Once these are merged,
+  the sections `CompHausExplicitSheaves` and  `ProfiniteExplicitSheaves` can be PR-ed.
+- The section `StoneanPullback` is PR #6779 (awaiting review). Once that is merged, in addition to
+  the four PRs mentioned in the previous point, the section `StoneanExplicitSheaves` can be PR-ed.
+- TODO: Do we want to state an equivalent `EqualizerCondition` with the explicit pullbacks?
 -/
 
 section EffectiveEpis
@@ -39,7 +31,6 @@ lemma Profinite.effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
 
 lemma Stonean.effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := sorry
-
 
 end EffectiveEpis
 
@@ -382,7 +373,7 @@ instance : Extensive CompHaus where
       Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
       pullback.cone_pt, pullback.cone_π]
 
-instance : Regular CompHaus where
+instance : Preregular CompHaus where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
@@ -391,56 +382,8 @@ instance : Regular CompHaus where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-def MapToEqualizer (P : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {W X B : CompHaus} (f : X ⟶ B)
-    (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
-    P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
-  fun t ↦ ⟨P.map f.op t, by
-    change (P.map _ ≫ P.map _) _ = (P.map _ ≫ P.map _) _ ;
-    simp_rw [← P.map_comp, ← op_comp, w] ⟩
-
-def EqualizerCondition (P : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) : Prop := ∀
-  (X B : CompHaus) (π : X ⟶ B) (_ : Function.Surjective π),
-  Function.Bijective (MapToEqualizer P π (CompHaus.pullback.fst π π) (CompHaus.pullback.snd π π)
-      (CompHaus.pullback.condition _ _))
-
-noncomputable
-def EqualizerFirstObjIso (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {B X : CompHaus} (π : X ⟶ B)
-     : Equalizer.FirstObj F (Presieve.singleton π) ≅ F.obj (op X) :=
-  CategoryTheory.Equalizer.firstObjEqFamily F (Presieve.singleton π) ≪≫
-  { hom := fun e ↦ e π (Presieve.singleton_self π)
-    inv := fun e _ _ h ↦ by
-      induction h with
-      | mk => exact e
-    hom_inv_id := by
-      funext _ _ _ h
-      induction h with
-      | mk => rfl
-    inv_hom_id := by aesop }
-
-noncomputable
-def EqualizerSecondObjIso_aux (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {B X : CompHaus} (π : X ⟶ B) :
-    Equalizer.Presieve.SecondObj F (Presieve.singleton π) ≅ F.obj (op (Limits.pullback π π)) :=
-  Types.productIso.{u+1, u+1} _ ≪≫
-  { hom := fun e ↦ e (⟨X, ⟨π, Presieve.singleton_self π⟩⟩, ⟨X, ⟨π, Presieve.singleton_self π⟩⟩)
-    inv := fun x ⟨⟨_, ⟨_, h₁⟩⟩ , ⟨_, ⟨_, h₂⟩⟩⟩ ↦ by
-      induction h₁
-      induction h₂
-      exact x
-    hom_inv_id := by
-      funext _ ⟨⟨_, ⟨_, h₁⟩⟩ , ⟨_, ⟨_, h₂⟩⟩⟩
-      induction h₁
-      induction h₂
-      rfl
-    inv_hom_id := by aesop }
-
-noncomputable
-def EqualizerSecondObjIso (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) {B X : CompHaus} (π : X ⟶ B) :
-    Equalizer.Presieve.SecondObj F (Presieve.singleton π) ≅ F.obj (op (CompHaus.pullback π π)) :=
-  EqualizerSecondObjIso_aux F π ≪≫ (F.mapIso ((pullbackIsoPullback π π).op :
-    op (Limits.pullback π π) ≅ op (CompHaus.pullback π π)))
-
-lemma isSheafFor_of_Dagur {B : CompHaus} {S : Presieve B}
-    (hS : S ∈ ((extensiveCoverage CompHaus).union (regularCoverage CompHaus)).covering B)
+lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : CompHaus} {S : Presieve B}
+    (hS : S ∈ ((extensiveCoverage CompHaus) ⊔ (regularCoverage CompHaus)).covering B)
     {F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
     (hFecs : EqualizerCondition F) :
     S.IsSheafFor F := by
@@ -448,81 +391,8 @@ lemma isSheafFor_of_Dagur {B : CompHaus} {S : Presieve B}
   · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
     haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
-  · rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
-    intro y h
-    simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
-    obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hSSingle
-    rw [Presieve.ofArrows_pUnit] at hS
-    subst hS
-    rw [CompHaus.effectiveEpi_iff_surjective] at πsurj
-    specialize hFecs X B π πsurj
-    have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
-        F.map π.op
-    · dsimp [EqualizerFirstObjIso, Equalizer.forkMap]
-      ext b
-      simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-    have fmap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.fst π π).op =
-        Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
-    · dsimp [EqualizerSecondObjIso]
-      have : CompHaus.pullback.fst π π = (pullbackIsoPullback π π).hom ≫ Limits.pullback.fst
-      · simp only [pullbackIsoPullback, limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt,
-          pullback.cone_π]
-      rw [this, op_comp, Functor.map_comp]
-      suffices : (EqualizerFirstObjIso F π).hom ≫ F.map Limits.pullback.fst.op =
-          Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫
-          (EqualizerSecondObjIso_aux F π).hom
-      · simp only [← Category.assoc]
-        rw [this]
-      dsimp [EqualizerFirstObjIso, Equalizer.Presieve.firstMap, EqualizerSecondObjIso_aux]
-      ext b
-      simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-    have smap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.snd π π).op =
-        Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
-    · dsimp [EqualizerSecondObjIso]
-      have : CompHaus.pullback.snd π π = (pullbackIsoPullback π π).hom ≫ Limits.pullback.snd
-      · simp only [pullbackIsoPullback, limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt,
-          pullback.cone_π]
-      rw [this, op_comp, Functor.map_comp]
-      suffices : (EqualizerFirstObjIso F π).hom ≫ F.map Limits.pullback.snd.op =
-          Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫
-          (EqualizerSecondObjIso_aux F π).hom
-      · simp only [← Category.assoc]
-        rw [this]
-      dsimp [EqualizerFirstObjIso, Equalizer.Presieve.secondMap, EqualizerSecondObjIso_aux]
-      ext b
-      simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-    have iy_mem : F.map (pullback.fst π π).op ((EqualizerFirstObjIso F π).hom y) =
-        F.map (pullback.snd π π).op ((EqualizerFirstObjIso F π).hom y)
-    · change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
-      apply Eq.symm -- how do I avoid this ugly hack?
-      change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
-      rw [fmap_comp, smap_comp]
-      dsimp
-      rw [h]
-    have uniq_F : ∃! x, F.map π.op x = (EqualizerFirstObjIso F π).hom y
-    · rw [Function.bijective_iff_existsUnique] at hFecs
-      specialize hFecs ⟨(EqualizerFirstObjIso F π).hom y, iy_mem⟩
-      obtain ⟨x, hx⟩ := hFecs
-      refine' ⟨x, _⟩
-      dsimp [MapToEqualizer] at *
-      refine' ⟨Subtype.ext_iff.mp hx.1,_⟩
-      intro z hz
-      apply hx.2
-      rwa [Subtype.ext_iff]
-    obtain ⟨x,hx⟩ := uniq_F
-    dsimp at hx
-    rw [← fork_comp] at hx
-    use x
-    dsimp
-    constructor
-    · apply_fun (EqualizerFirstObjIso F π).hom
-      · exact hx.1
-      · apply Function.Bijective.injective
-        rw [← isIso_iff_bijective]
-        exact inferInstance
-    · intro z hz
-      apply_fun (EqualizerFirstObjIso F π).hom at hz
-      exact hx.2 z hz
+  · haveI : S.regular := ⟨hSSingle⟩
+    exact isSheafFor_regular_of_hasPullbacks hFecs
 
 instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
     PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
@@ -532,21 +402,21 @@ instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [Preserv
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : CompHaus.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F]
     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
-  Presheaf.IsSheaf (coherentTopology CompHaus) F := by
-  rw [← extensive_union_regular_generates_coherent]
+    Presheaf.IsSheaf (coherentTopology CompHaus) F := by
+  rw [← extensive_regular_generate_coherent]
   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
   intro B S hS
-  exact isSheafFor_of_Dagur hS (hF' E)
+  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS (hF' E)
 
 theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] {F : CompHaus.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts (F ⋙ G)] (hF' : EqualizerCondition (F ⋙ G)) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
-    isSheaf_iff_isSheaf_of_type, ← extensive_union_regular_generates_coherent,
+    isSheaf_iff_isSheaf_of_type, ← extensive_regular_generate_coherent,
     Presieve.isSheaf_coverage]
   intro B S' hS
-  exact isSheafFor_of_Dagur hS hF'
+  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS hF'
 
 end CompHaus
 
@@ -660,7 +530,7 @@ instance : Extensive Profinite where
       Discrete.natIso_hom_app, Cofan.mk_ι_app, limit.conePointUniqueUpToIso_hom_comp,
       pullback.cone_pt, pullback.cone_π]
 
-instance : Regular Profinite where
+instance : Preregular Profinite where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
@@ -669,56 +539,8 @@ instance : Regular Profinite where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-def MapToEqualizer (P : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {W X B : Profinite} (f : X ⟶ B)
-    (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
-    P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
-  fun t ↦ ⟨P.map f.op t, by
-    change (P.map _ ≫ P.map _) _ = (P.map _ ≫ P.map _) _ ;
-    simp_rw [← P.map_comp, ← op_comp, w] ⟩
-
-def EqualizerCondition (P : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) : Prop := ∀
-  (X B : Profinite) (π : X ⟶ B) (_ : Function.Surjective π),
-  Function.Bijective (MapToEqualizer P π (Profinite.pullback.fst π π) (Profinite.pullback.snd π π)
-      (Profinite.pullback.condition _ _))
-
-noncomputable
-def EqualizerFirstObjIso (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {B X : Profinite} (π : X ⟶ B)
-     : Equalizer.FirstObj F (Presieve.singleton π) ≅ F.obj (op X) :=
-  CategoryTheory.Equalizer.firstObjEqFamily F (Presieve.singleton π) ≪≫
-  { hom := fun e ↦ e π (Presieve.singleton_self π)
-    inv := fun e _ _ h ↦ by
-      induction h with
-      | mk => exact e
-    hom_inv_id := by
-      funext _ _ _ h
-      induction h with
-      | mk => rfl
-    inv_hom_id := by aesop }
-
-noncomputable
-def EqualizerSecondObjIso_aux (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {B X : Profinite} (π : X ⟶ B) :
-    Equalizer.Presieve.SecondObj F (Presieve.singleton π) ≅ F.obj (op (Limits.pullback π π)) :=
-  Types.productIso.{u+1, u+1} _ ≪≫
-  { hom := fun e ↦ e (⟨X, ⟨π, Presieve.singleton_self π⟩⟩, ⟨X, ⟨π, Presieve.singleton_self π⟩⟩)
-    inv := fun x ⟨⟨_, ⟨_, h₁⟩⟩ , ⟨_, ⟨_, h₂⟩⟩⟩ ↦ by
-      induction h₁
-      induction h₂
-      exact x
-    hom_inv_id := by
-      funext _ ⟨⟨_, ⟨_, h₁⟩⟩ , ⟨_, ⟨_, h₂⟩⟩⟩
-      induction h₁
-      induction h₂
-      rfl
-    inv_hom_id := by aesop }
-
-noncomputable
-def EqualizerSecondObjIso (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) {B X : Profinite} (π : X ⟶ B) :
-    Equalizer.Presieve.SecondObj F (Presieve.singleton π) ≅ F.obj (op (Profinite.pullback π π)) :=
-  EqualizerSecondObjIso_aux F π ≪≫ (F.mapIso ((pullbackIsoPullback π π).op :
-    op (Limits.pullback π π) ≅ op (Profinite.pullback π π)))
-
-lemma isSheafFor_of_Dagur {B : Profinite} {S : Presieve B}
-    (hS : S ∈ ((extensiveCoverage Profinite).union (regularCoverage Profinite)).covering B)
+lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : Profinite} {S : Presieve B}
+    (hS : S ∈ ((extensiveCoverage Profinite) ⊔ (regularCoverage Profinite)).covering B)
     {F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
     (hFecs : EqualizerCondition F) :
     S.IsSheafFor F := by
@@ -726,90 +548,17 @@ lemma isSheafFor_of_Dagur {B : Profinite} {S : Presieve B}
   · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
     haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
-  · rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
-    intro y h
-    simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
-    obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := hSSingle
-    rw [Presieve.ofArrows_pUnit] at hS
-    subst hS
-    rw [Profinite.effectiveEpi_iff_surjective] at πsurj
-    specialize hFecs X B π πsurj
-    have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
-        F.map π.op
-    · dsimp [EqualizerFirstObjIso, Equalizer.forkMap]
-      ext b
-      simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-    have fmap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.fst π π).op =
-        Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
-    · dsimp [EqualizerSecondObjIso]
-      have : Profinite.pullback.fst π π = (pullbackIsoPullback π π).hom ≫ Limits.pullback.fst
-      · simp only [pullbackIsoPullback, limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt,
-          pullback.cone_π]
-      rw [this, op_comp, Functor.map_comp]
-      suffices : (EqualizerFirstObjIso F π).hom ≫ F.map Limits.pullback.fst.op =
-          Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫
-          (EqualizerSecondObjIso_aux F π).hom
-      · simp only [← Category.assoc]
-        rw [this]
-      dsimp [EqualizerFirstObjIso, Equalizer.Presieve.firstMap, EqualizerSecondObjIso_aux]
-      ext b
-      simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-    have smap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.snd π π).op =
-        Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
-    · dsimp [EqualizerSecondObjIso]
-      have : Profinite.pullback.snd π π = (pullbackIsoPullback π π).hom ≫ Limits.pullback.snd
-      · simp only [pullbackIsoPullback, limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt,
-          pullback.cone_π]
-      rw [this, op_comp, Functor.map_comp]
-      suffices : (EqualizerFirstObjIso F π).hom ≫ F.map Limits.pullback.snd.op =
-          Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫
-          (EqualizerSecondObjIso_aux F π).hom
-      · simp only [← Category.assoc]
-        rw [this]
-      dsimp [EqualizerFirstObjIso, Equalizer.Presieve.secondMap, EqualizerSecondObjIso_aux]
-      ext b
-      simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-    have iy_mem : F.map (pullback.fst π π).op ((EqualizerFirstObjIso F π).hom y) =
-        F.map (pullback.snd π π).op ((EqualizerFirstObjIso F π).hom y)
-    · change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
-      apply Eq.symm -- how do I avoid this ugly hack?
-      change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
-      rw [fmap_comp, smap_comp]
-      dsimp
-      rw [h]
-    have uniq_F : ∃! x, F.map π.op x = (EqualizerFirstObjIso F π).hom y
-    · rw [Function.bijective_iff_existsUnique] at hFecs
-      specialize hFecs ⟨(EqualizerFirstObjIso F π).hom y, iy_mem⟩
-      obtain ⟨x, hx⟩ := hFecs
-      refine' ⟨x, _⟩
-      dsimp [MapToEqualizer] at *
-      refine' ⟨Subtype.ext_iff.mp hx.1,_⟩
-      intro z hz
-      apply hx.2
-      rwa [Subtype.ext_iff]
-    obtain ⟨x,hx⟩ := uniq_F
-    dsimp at hx
-    rw [← fork_comp] at hx
-    use x
-    dsimp
-    constructor
-    · apply_fun (EqualizerFirstObjIso F π).hom
-      · exact hx.1
-      · apply Function.Bijective.injective
-        rw [← isIso_iff_bijective]
-        exact inferInstance
-    · intro z hz
-      apply_fun (EqualizerFirstObjIso F π).hom at hz
-      exact hx.2 z hz
+  · haveI : S.regular := ⟨hSSingle⟩
+    exact isSheafFor_regular_of_hasPullbacks hFecs
 
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Profinite.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F]
     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
   Presheaf.IsSheaf (coherentTopology Profinite) F := by
-  rw [← extensive_union_regular_generates_coherent]
+  rw [← extensive_regular_generate_coherent]
   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
   intro B S hS
-  exact isSheafFor_of_Dagur hS (hF' E)
+  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS (hF' E)
 
 theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G]
@@ -817,15 +566,14 @@ theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     [PreservesFiniteProducts (F ⋙ G)] (hF' : EqualizerCondition (F ⋙ G)) :
     Presheaf.IsSheaf (coherentTopology Profinite) F := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
-    isSheaf_iff_isSheaf_of_type, ← extensive_union_regular_generates_coherent,
+    isSheaf_iff_isSheaf_of_type, ← extensive_regular_generate_coherent,
     Presieve.isSheaf_coverage]
   intro B S' hS
-  exact isSheafFor_of_Dagur hS hF'
+  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS hF'
 
 end Profinite
 
 end ProfiniteExplicitSheaves
-
 
 section StoneanExplicitSheaves
 
@@ -944,37 +692,16 @@ def EffectiveEpiStructId {C : Type u} [Category.{v} C] {X : C} : EffectiveEpiStr
 
 instance {C : Type u} [Category.{v} C] {X : C} : EffectiveEpi (𝟙 X) := ⟨⟨EffectiveEpiStructId⟩⟩
 
-instance : Regular Stonean where
+instance : Preregular Stonean where
   exists_fac := by
     intro X Y Z f π hπ
     exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
 
 lemma isSheafForRegularSieve {X : Stonean} (S : Presieve X) [S.regular]
-    (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) : IsSheafFor F S := by
-  obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
-  have proj : Projective (toCompHaus.obj X) := inferInstanceAs (Projective X.compHaus)
-  have : Epi (toCompHaus.map f) := by
-    rw [CompHaus.epi_iff_surjective]
-    change Function.Surjective f
-    rwa [← Stonean.effectiveEpi_iff_surjective]
-  set g := toCompHaus.preimage <| Projective.factorThru (𝟙 _) (toCompHaus.map f) with hg
-  have hfg : g ≫ f = 𝟙 _ := by
-    refine' toCompHaus.map_injective _
-    rw [map_comp, hg, image_preimage, Projective.factorThru_comp, CategoryTheory.Functor.map_id]
-  intro y hy
-  refine' ⟨F.map g.op <| y f <| ofArrows.mk (), fun Z h hZ => _, fun z hz => _⟩
-  · cases' hZ with u
-    have := hy (f₁ := f) (f₂ := f) (𝟙 Y) (f ≫ g) (ofArrows.mk ()) (ofArrows.mk ()) ?_
-    · rw [op_id, F.map_id, types_id_apply] at this
-      rw [← types_comp_apply (F.map g.op) (F.map f.op), ← F.map_comp, ← op_comp]
-      exact this.symm
-    · rw [Category.id_comp, Category.assoc, hfg, Category.comp_id]
-  · have := congr_arg (F.map g.op) <| hz f (ofArrows.mk ())
-    rwa [← types_comp_apply (F.map f.op) (F.map g.op), ← F.map_comp, ← op_comp, hfg, op_id,
-      F.map_id, types_id_apply] at this
+    (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) : IsSheafFor F S := isSheafFor_regular_of_projective S F
 
 lemma isSheafFor_of_extensiveRegular {X : Stonean} {S : Presieve X}
-  (hS : S ∈ ((extensiveCoverage Stonean).union (regularCoverage Stonean)).covering X)
+  (hS : S ∈ ((extensiveCoverage Stonean) ⊔ (regularCoverage Stonean)).covering X)
   {F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F] : S.IsSheafFor F := by
   cases' hS with hSIso hSSingle
   · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
@@ -986,7 +713,7 @@ lemma isSheafFor_of_extensiveRegular {X : Stonean} {S : Presieve X}
 
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Stonean.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F] : Presheaf.IsSheaf (coherentTopology Stonean) F := by
-  rw [← extensive_union_regular_generates_coherent]
+  rw [← extensive_regular_generate_coherent]
   exact fun E => (Presieve.isSheaf_coverage _ _).2 <| fun S hS => isSheafFor_of_extensiveRegular hS
 
 end Stonean
