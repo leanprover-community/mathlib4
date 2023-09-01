@@ -58,13 +58,13 @@ def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Display `Finsupp` using `fun₀` notation. -/
-instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
+unsafe instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
     if f.support.card = 0 then
       "0"
     else
       let ret := "fun₀" ++
-        Std.Format.join (unsafe f.support.val.unquot.map <|
+        Std.Format.join (f.support.val.unquot.map <|
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
       if p ≥ leadPrec then Format.paren ret else ret
 
