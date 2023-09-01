@@ -298,4 +298,12 @@ lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [
 
 end ExtensiveSheaves
 
+section RegularSheaves
+
+variable [∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], HasPullback f f]
+
+
+
+end RegularSheaves
+
 end CategoryTheory
