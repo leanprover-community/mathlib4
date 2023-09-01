@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Send message on Zulip
       uses: zulip/github-actions-zulip/send-message@v1
       with:
