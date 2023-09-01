@@ -72,9 +72,6 @@ theorem log_stirlingSeq_formula (n : ℕ) : log (stirlingSeq n.succ) =
   rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub] <;> positivity
 #align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formula
 
--- Porting note: the custom discharger of the simp in the theorem below has
--- unreachable tactics for some of its invocations
-set_option linter.unreachableTactic false in
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
    `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`
 -/
