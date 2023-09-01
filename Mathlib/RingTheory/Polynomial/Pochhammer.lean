@@ -61,20 +61,6 @@ theorem pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer 
   by rw [pochhammer]
 #align pochhammer_succ_left pochhammer_succ_left
 
-@[simp]
-theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S]:
-    (pochhammer S n).natDegree = n := by
-  induction' n with n hn
-  · simp
-  · have : natDegree (X + 1) = 1 := natDegree_X_add_C (1 : S)
-    rw [pochhammer_succ_left, natDegree_mul X_ne_zero, natDegree_comp, hn]
-    · rw [this, mul_one, natDegree_X, Nat.succ_eq_one_add]
-    · induction' n with n _
-      · simp
-      · refine' @ne_zero_of_natDegree_gt _ _ _ 0 _
-        simp only [natDegree_comp, CanonicallyOrderedCommSemiring.mul_pos]
-        exact ⟨Nat.lt_of_sub_eq_succ hn, Nat.lt_of_sub_eq_succ this⟩
-
 section
 
 variable {S} {T : Type v} [Semiring T]
@@ -175,6 +161,18 @@ theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
   · rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
       pochhammer_nat_eq_ascFactorial]
 #align pochhammer_nat_eq_desc_factorial pochhammer_nat_eq_descFactorial
+
+@[simp]
+theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S]:
+    (pochhammer S n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have : natDegree (X + (n : S[X])) = 1 := natDegree_X_add_C (n : S)
+    rw [pochhammer_succ_right,
+        natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
+    cases n
+    · simp
+    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 end Semiring
 
