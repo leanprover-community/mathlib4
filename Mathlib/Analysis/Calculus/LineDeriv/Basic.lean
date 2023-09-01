@@ -201,11 +201,17 @@ theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   lineDerivWithin_congr hs (hs hx)
 
-theorem HasLineDerivAt.tendsto (h : HasLineDerivAt 𝕜 f f' x v) :
-    Tendsto (fun (t : 𝕜) ↦ t ⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
+theorem hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero :
+    HasLineDerivAt 𝕜 f f' x v ↔
+      Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
+  simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_nhdsWithin_ne_zero, zero_add,
+    zero_smul, add_zero]
 
+alias ⟨HasLineDerivAt.tendsto_nhdsWithin_ne_zero, _⟩ := hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero
 
-#exit
+theorem HasLineDerivAt.tendsto_nhdsWithin_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+    Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=
+  h.tendsto_nhdsWithin_ne_zero.mono_left (nhds_right'_le_nhds_ne 0)
 
 end Module
 
