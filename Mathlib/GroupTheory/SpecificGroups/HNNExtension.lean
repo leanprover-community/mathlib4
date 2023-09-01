@@ -90,15 +90,47 @@ def BoolFamily (G : Type*) [Group G] : Bool → Type _
 instance (b : Bool) : Group (BoolFamily G b) := by
   cases b <;> dsimp [BoolFamily] <;> infer_instance
 
-variable (G A B φ)
+variable (A B φ)
 
+def toSubgroup (u : Units ℤ) : Subgroup G :=
+  if u = 1 then A else B
+
+@[simp]
+theorem toSubgroup_one : toSubgroup A B 1 = A := rfl
+
+@[simp]
+theorem toSubgroup_neg_one : toSubgroup A B (-1) = B := rfl
+
+
+variable {A B}
+
+def toSubgroupEquiv (u : Units ℤ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
+  if hu : u = 1 then hu ▸ φ else by
+    convert φ.symm <;>
+    cases Int.units_eq_one_or u <;> simp_all
+
+@[simp]
+theorem toSubgroupEquiv_one : toSubgroupEquiv φ 1 = φ := rfl
+
+@[simp]
+theorem toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
+
+@[simp]
+theorem toSubgroupEquiv_neg_apply (u : Units ℤ) (a : toSubgroup A B u):
+    (toSubgroupEquiv φ (-u) (toSubgroupEquiv φ u a) : G) = a := by
+  rcases Int.units_eq_one_or u with rfl | rfl
+  · simp
+  · simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, SetLike.coe_eq_coe]
+    exact φ.apply_symm_apply a
+
+variable (G A B)
 structure TransversalPair : Type _ :=
   /-- The transversal of each subgroup -/
   ( set : Units ℤ → Set G )
   /-- The chosen element of the subgroup itself is the identity -/
   ( one_mem : ∀u, 1 ∈ set u )
   /-- We have exactly one element of each coset of the subgroup -/
-  ( compl : ∀ u, IsComplement (if u = 1 then A else B) (set u) )
+  ( compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u) )
 
 variable {G A B}
 
@@ -110,6 +142,13 @@ structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _ :=
 
 variable {d : TransversalPair G A B}
 
+
+
+@[ext]
+theorem NormalWord.ext {w w' : NormalWord d}
+    (h1 : w.left = w'.left) (h2 : w.toList = w'.toList): w = w' := by
+  cases w; cases w'; simp_all
+
 @[simps]
 def empty : NormalWord d :=
   { left := 1
@@ -117,6 +156,7 @@ def empty : NormalWord d :=
     mem_set := by simp
     chain := List.chain'_nil }
 
+@[simps]
 def ofGroup (g : G) : NormalWord d :=
   { left := g
     toList := []
@@ -125,11 +165,6 @@ def ofGroup (g : G) : NormalWord d :=
 
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
-structure Pair (d : TransversalPair G A B) : Type _ :=
-  ( head : G )
-  ( int : Units ℤ )
-  ( tail : NormalWord d )
-
 instance : MulAction G (NormalWord d) :=
   { smul := fun g w => { w with left := g * w.left }
     one_smul := by simp [instHSMul]
@@ -137,6 +172,12 @@ instance : MulAction G (NormalWord d) :=
 
 theorem smul_def (g : G) (w : NormalWord d) :
     g • w = { w with left := g * w.left } := rfl
+
+@[simp]
+theorem smul_left (g : G) (w : NormalWord d) : (g • w).left = g * w.left := rfl
+
+@[simp]
+theorem smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
 
 instance : FaithfulSMul G (NormalWord d) := ⟨by simp [smul_def]⟩
 
@@ -193,59 +234,103 @@ theorem consRecOn_cons {motive : NormalWord d → Sort*}
     consRecOn (.cons g u w h1 h2) ofGroup cons = cons g u w h1 h2
       (consRecOn w ofGroup cons) := rfl
 
+@[simp]
+theorem smul_cons (g₁ g₂ : G) (u : Units ℤ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
+    g₁ • cons g₂ u w h1 h2 = cons (g₁ * g₂) u w h1 h2 :=
+  rfl
+
+theorem smul_ofGroup (g₁ g₂ : G) :
+    g₁ • (ofGroup g₂ : NormalWord d) = ofGroup (g₁ * g₂) := rfl
+
+
 variable (d)
-noncomputable def powUnitsIntSMulGroup (u : Units ℤ) (g : G) : G × d.set u :=
-  if hu : u = 1
-  then
-    have : IsComplement (A : Set G) (d.set u) := hu ▸ d.compl 1
-    let g' := this.equiv g
-    (φ g'.1, g'.2)
-  else
-    have : IsComplement (B : Set G) (d.set u) := by simpa [hu] using d.compl u
-    let g' := this.equiv g
-    (φ.symm g'.1, g'.2)
+noncomputable def unitSMulGroup (u : Units ℤ) (g : G) :
+    (toSubgroup A B (-u)) × d.set u :=
+  let g' := (d.compl u).equiv g
+  (toSubgroupEquiv φ u g'.1, g'.2)
 
-variable {d}
-#print Units
-noncomputable def powUnitsIntSMul [DecidableEq G]
+theorem unitSMulGroup_snd (u : Units ℤ) (g : G) :
+    (unitSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
+  rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
+
+variable {d} [DecidableEq G]
+
+def Cancels (u : Units ℤ) (w : NormalWord d) : Prop :=
+  (w.left ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
+
+def unitSMulWithCancel (u : Units ℤ) (w : NormalWord d) : Cancels u w → NormalWord d :=
+  consRecOn w
+    (by simp [Cancels, ofGroup]; tauto)
+    (fun g u' w h1 h2 _ can =>
+      (toSubgroupEquiv φ u ⟨g, can.1⟩ : G) • w)
+
+noncomputable def unitSMul
     (u : Units ℤ) (w : NormalWord d) : NormalWord d :=
-  consRecOn w
-    (fun g =>
-      let g' := powUnitsIntSMulGroup φ d u g
-      cons g'.1 u (ofGroup g'.2) (Subtype.prop _)
-        (by simp [powUnitsIntSMulGroup, ofGroup]))
-    (fun g u' w h1 h2 _ =>
-      let g' := powUnitsIntSMulGroup φ d u g
-      if hg' : (g'.2 : G) = 1 ∧ u ≠ u'
-      then g'.1 • w
-      else cons g'.1 u (cons g'.2 u' w h1 h2)
-        (Subtype.property _)
-        (by simpa using hg'))
+  letI := Classical.dec
+  if h : Cancels u w
+  then unitSMulWithCancel φ u w h
+  else let g' := unitSMulGroup φ d u w.left
+    cons g'.1 u ((g'.2 * w.left⁻¹ : G) • w)
+      (by simp [smul_def])
+      (by
+        simp [smul_def]
+        simp only [Cancels, Option.map_eq_some', Prod.exists, exists_and_right, exists_eq_right,
+          not_and, not_exists] at h
+        simp only [unitSMulGroup_snd, IsComplement.equiv_snd_eq_one_iff_mem _ (d.one_mem _)]
+        intro u' x hx hw
+        by_contra huu'
+        rcases Int.units_eq_one_or u' with (rfl | rfl) <;>
+        rcases Int.units_eq_one_or u with (rfl | rfl) <;>
+        simp_all)
+
 set_option pp.proofs.withType false
-theorem powUnitsIntSMulGroup_neg (u : Units ℤ) (g : G) :
-    powUnitsIntSMulGroup φ d (-u) (powUnitsIntSMulGroup φ d u⁻¹ g).1 = sorry := by
-  simp [powUnitsIntSMulGroup]
-  rcases Int.units_eq_one_or u with rfl | rfl
-  · simp
-    ext
-    dsimp
-    rw [IsComplement.equiv_fst_eq_self_of_mem_of_one_mem]
 
+theorem unitSMul_cancels_iff (u : Units ℤ) (w : NormalWord d) :
+    Cancels (-u) (unitSMul φ u w) ↔ ¬ Cancels u w := by
+  by_cases h : Cancels u w
+  · simp only [unitSMul, dif_pos trivial, h, iff_false]
+    induction w using consRecOn with
+    | ofGroup => simp [Cancels, unitSMulWithCancel]
+    | cons g u' w h1 h2 _ =>
+      intro hc
+      simp [Cancels, unitSMulWithCancel,
+        Subgroup.mul_mem_cancel_left] at h hc
+      rcases hc.2 with ⟨x, hx⟩
+      rw [hx] at h2
+      cases h.2
+      have hw : w.left = 1 := by
+        simpa using congr_arg Prod.fst
+          (((d.compl (-u)).existsUnique w.left).unique
+          (y₁ := (⟨w.left, hc.1⟩, ⟨1, d.one_mem (-u)⟩))
+          (y₂ := (1, ⟨w.left, h1⟩)) (by simp) (by simp))
+      have := h2 _ rfl hw
+      simp [Units.ext_iff, neg_eq_iff_add_eq_zero] at this
+  · simp only [unitSMul, dif_neg h]
+    simpa [Cancels] using h
 
-
-
-theorem powUnitsIntSMul_neg [DecidableEq G] (u : Units ℤ) (w : NormalWord d) :
-    powUnitsIntSMul φ (-u) (powUnitsIntSMul φ u w) = w :=
-  consRecOn w
-    (fun g => by
-      rw [powUnitsIntSMul, powUnitsIntSMul]
-      simp
-      rw [dif_pos]
-      admit
-      simp [Units.ext_iff, neg_eq_iff_add_eq_zero]
-
-      )
-    _
+theorem unitSMul_neg [DecidableEq G] (u : Units ℤ) (w : NormalWord d) :
+    unitSMul φ (-u) (unitSMul φ u w) = w := by
+  rw [unitSMul]
+  split_ifs with hcan
+  · have hncan : ¬ Cancels u w := (unitSMul_cancels_iff _ _ _).1 hcan
+    unfold unitSMul
+    simp only [dif_neg hncan]
+    simp [unitSMulWithCancel, unitSMulGroup, (d.compl u).equiv_snd_eq_inv_mul]
+  · have hcan2 : Cancels u w := not_not.1 (mt (unitSMul_cancels_iff _ _ _).2 hcan)
+    unfold unitSMul at hcan ⊢
+    simp only [dif_pos hcan2] at hcan ⊢
+    cases w using consRecOn with
+    | ofGroup => simp [Cancels] at hcan2
+    | cons g u' w h1 h2 ih =>
+      clear ih
+      simp [unitSMulWithCancel, unitSMulGroup]
+      cases hcan2.2
+      have : ((d.compl (-u)).equiv w.left).1 = 1 :=
+        (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
+      apply NormalWord.ext
+      · simp [this]
+      · simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this]
 
 end NormalWord
 
