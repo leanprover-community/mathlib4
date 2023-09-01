@@ -20,7 +20,7 @@ This file defines the `dft` operation on a sequence (also a vector) and the DFT 
 
 ## Main definitions
 
- - `dft n v`: given a sequence (v : (Fin n) → ℂ) we can transform it into a sequence (V : (Fin n) →ℂ)
+ - `dft n v`: given a sequence (v : Fin n → ℂ) we can transform it into a sequence (V : Fin n → ℂ )
  such that
  $$ V [p] = ∑_{k = 0}^{N - 1} e^{-i 2 π k p / n} v (k) $$
  - `idft n V` : given a sequence (V : Fin n → ℂ) we can transform it into a sequence
