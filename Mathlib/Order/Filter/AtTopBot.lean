@@ -442,6 +442,12 @@ lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : 
     have B : Ici y ⊆ Ici x := Ici_subset_Ici.2 hy
     exact sets_of_superset (generate (Ici '' s)) A B
 
+lemma atTop_eq_generate_of_not_bddAbove [LinearOrder α] {s : Set α} (hs : ¬ BddAbove s) :
+    (atTop : Filter α) = generate (Ici '' s) := by
+  refine' atTop_eq_generate_of_forall_exists_le fun x ↦ _
+  obtain ⟨y, hy, hy'⟩ := not_bddAbove_iff.mp hs x
+  exact ⟨y, hy, hy'.le⟩
+
 end Filter
 
 namespace OrderIso

@@ -1311,6 +1311,10 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
   Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
+theorem IsCompact.preimage_continuous [CompactSpace α] [T2Space β] {f : α → β} {s : Set β}
+    (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
+  (hs.isClosed.preimage hf).isCompact
+
 /-- If `V : ι → Set α` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
