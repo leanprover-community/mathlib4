@@ -263,11 +263,12 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul (μ : Measure α) [SigmaFinite �
   have g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t := fun _ _ =>
     intervalIntegral.intervalIntegrable_rpow' one_lt_p
   have key := lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble g_intble g_nn
-  rw [← key, ← lintegral_const_mul (ENNReal.ofReal p)] <;> simp_rw [obs]
+  rw [← key, ← lintegral_const_mul'' (ENNReal.ofReal p)] <;> simp_rw [obs]
   · congr with ω
     rw [← ENNReal.ofReal_mul p_pos.le, mul_div_cancel' (f ω ^ p) p_pos.ne.symm]
-  · --exact ((f_mble.pow measurable_const).div_const p).ennreal_ofReal
-    sorry
+  · have aux := (@measurable_const ℝ α (by infer_instance) (by infer_instance) p).aemeasurable (μ := μ)
+    exact (Measurable.ennreal_ofReal (hf := measurable_id)).comp_aemeasurable
+      ((f_mble.pow aux).div_const p)
 #align measure_theory.lintegral_rpow_eq_lintegral_meas_le_mul MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul
 
 end MeasureTheory
@@ -285,7 +286,7 @@ variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
 namespace Measure
 
 theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) {t : R}
+    [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) {t : R}
     (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) : 0 < μ {a : α | g a = t} := by
   have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
     ext a
@@ -297,17 +298,51 @@ theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [Measurab
     simp only [mem_inter_iff, mem_setOf, mem_empty_iff_false, iff_false_iff, not_and]
     exact ne_of_gt
   have μ_add : μ {a : α | t ≤ g a} = μ {a : α | t < g a} + μ {a : α | g a = t} := by
-    rw [uni,
-      measure_union (disjoint_iff_inter_eq_empty.mpr disj)
-        (g_mble (Finite.measurableSet (finite_singleton t)))]
+    rw [uni]
+    refine measure_union₀ ?_ (Disjoint.aedisjoint (disjoint_iff_inter_eq_empty.mpr disj))
+    exact g_mble (Finite.measurableSet (finite_singleton t))
   by_contra con
   rw [not_lt, nonpos_iff_eq_zero] at con
   rw [con, add_zero] at μ_add
   exact ht μ_add
 #align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_le_ne_meas_lt_subset_meas_pos
 
+/-- If the union of disjoint measurable sets has finite measure, then there are only
+finitely many members of the union whose measure exceeds any given positive number. -/
+theorem finite_const_le_meas_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] (μ : Measure α)
+    {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    Set.Finite { i : ι | ε ≤ μ (As i) } := by
+  apply ENNReal.finite_const_le_of_tsum_ne_top _ ε_pos.ne.symm
+  apply ne_top_of_le_ne_top Union_As_finite
+  have := @tsum_meas_le_meas_iUnion_of_disjoint
+  sorry
+  --ENNReal.finite_const_le_of_tsum_ne_top
+  --  (ne_top_of_le_ne_top Union_As_finite (tsum_meas_le_meas_iUnion_of_disjoint μ As_mble As_disj))
+  --  ε_pos.ne'
+
+/-- If the union of disjoint measurable sets has finite measure, then there are only
+countably many members of the union whose measure is positive. -/
+theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} [MeasurableSpace α]
+    (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    Set.Countable { i : ι | 0 < μ (As i) } := by
+  set posmeas := { i : ι | 0 < μ (As i) } with posmeas_def
+  rcases exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1) with
+    ⟨as, _, as_mem, as_lim⟩
+  set fairmeas := fun n : ℕ => { i : ι | as n ≤ μ (As i) }
+  have countable_union : posmeas = ⋃ n, fairmeas n := by
+    have fairmeas_eq : ∀ n, fairmeas n = (fun i => μ (As i)) ⁻¹' Ici (as n) := fun n => by
+      simp only []
+      rfl
+    simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
+      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
+  rw [countable_union]
+  refine' countable_iUnion fun n => Finite.countable _
+  refine' finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
+
 theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
-    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) :
+    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
   Countable.mono (show _ from fun _ ht => meas_le_ne_meas_lt_subset_meas_pos μ g_mble ht)
     (Measure.countable_meas_level_set_pos g_mble)

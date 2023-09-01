@@ -196,17 +196,25 @@ theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : Pairwis
   measure_biUnion_finset₀ hd.aedisjoint fun b hb => (hm b hb).nullMeasurableSet
 #align measure_theory.measure_bUnion_finset MeasureTheory.measure_biUnion_finset
 
-/-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
-the measures of the sets. -/
-theorem tsum_meas_le_meas_iUnion_of_disjoint {ι : Type*} [MeasurableSpace α] (μ : Measure α)
-    {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
+/-- The measure of an a.e. disjoint union (even uncountable) of null-measurable sets is at least
+the sum of the measures of the sets. -/
+theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} [MeasurableSpace α] (μ : Measure α)
+    {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
   rcases show Summable fun i => μ (As i) from ENNReal.summable with ⟨S, hS⟩
   rw [hS.tsum_eq]
   refine' tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall _)
   intro s
-  simp [← measure_biUnion_finset (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
+  simp [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   exact measure_mono (iUnion₂_subset_iUnion (fun i : ι => i ∈ s) fun i : ι => As i)
+
+/-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
+the measures of the sets. -/
+theorem tsum_meas_le_meas_iUnion_of_disjoint {ι : Type*} [MeasurableSpace α] (μ : Measure α)
+    {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
+    (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) :=
+  tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+    (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))
 #align measure_theory.tsum_meas_le_meas_Union_of_disjoint MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint
 
 /-- If `s` is a countable set, then the measure of its preimage can be found as the sum of measures
