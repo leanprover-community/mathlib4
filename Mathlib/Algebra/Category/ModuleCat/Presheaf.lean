@@ -3,14 +3,20 @@ Copyright (c) 2023 Scott Morrison All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 /-!
 # Presheaves of modules over a presheaf of rings.
 
-We give a hands-on description of a presheaf of modules over a fixed presheaf of rings,
+We give a hands-on description of a presheaf of modules over a fixed presheaf of rings `R`,
 as a presheaf of abelian groups with additional data.
+
+We also provide two alternative constructors :
+* `mk' : MkStruct R → PresheafOfModules R` where `M : MkStruct R` consists of a family
+of unbundled modules
+* `mk'' : BundledMkStruct R → PresheafOfModules R` where `M : BundledMkStruct R`
+consists of a family of objects in `ModuleCat (R.obj X)` for all `X`
 
 ## Future work
 
@@ -22,7 +28,7 @@ as a presheaf of abelian groups with additional data.
 * Pushforward and pullback.
 -/
 
-universe v₁ u₁ u v
+universe v v₁ u₁ u
 
 open CategoryTheory LinearMap Opposite
 
@@ -132,7 +138,7 @@ section
 
 variable (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
   (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
-    app Y (P.presheaf.map f x) = Q.presheaf.map f (app X x))
+    app Y (P.map f x) = Q.map f (app X x))
 
 /-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
 of a family of linear maps over the various rings `R.obj X`. -/
@@ -226,15 +232,50 @@ variable (R)
 /-- Evaluation on an object `X` gives a functor
 `PresheafOfModules R ⥤ ModuleCat (R.obj X)`. -/
 @[simps]
-def evaluation (X : Cᵒᵖ) : PresheafOfModules R ⥤ ModuleCat (R.obj X) where
+def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) where
   obj M := M.obj X
   map f := f.app X
 
 /-- Forgetting the module structure commutes with the evaluation on presheaves of modules. -/
 def evaluationCompForget₂Iso (X : Cᵒᵖ) :
-    evaluation R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
+    evaluation.{v} R X ⋙ (forget₂ (ModuleCat.{v} (R.obj X)) AddCommGroupCat) ≅
       toPresheaf R ⋙ (CategoryTheory.evaluation Cᵒᵖ AddCommGroupCat).obj X :=
   Iso.refl _
+
+/-- The restriction natural transformation on presheaves of modules, considered as linear maps
+to restriction of scalars. -/
+def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
+  app M := ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
+  naturality := fun M N φ => by
+    ext x
+    exact (congr_hom (φ.hom.naturality f) x).symm
+
+variable {R}
+
+lemma restriction_app_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules R) (x : M.obj X) :
+    (restriction R f).app M x = M.map f x := by
+  rfl
+
+lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
+    (restriction R (𝟙 X)).app M =
+      (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by
+  ext x
+  rw [restriction_app_apply, ModuleCat.restrictScalarsId'_inv_apply, M.map_id, id'_apply]
+
+lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (restriction R (f ≫ g)).app M =
+      (restriction R f).app M ≫
+        (ModuleCat.restrictScalars (R.map f)).map ((restriction R g).app M) ≫
+        (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by
+  ext x
+  rw [restriction_app_apply]
+  simp only [Functor.comp_obj, map_comp, Function.comp_apply,
+    ModuleCat.coe_comp, ModuleCat.restrictScalars.map_apply,
+    LinearMap.coe_comp, Function.comp_apply]
+  rw [ModuleCat.restrictScalarsComp'_inv_apply, restriction_app_apply, restriction_app_apply]
+
+variable (R)
 
 /-- This structure contains the data and axioms in order to
 produce a `PresheafOfModules R` from a collection of types
@@ -285,5 +326,89 @@ equipped with module structures over the various rings `R.obj X`, see
 the structure `MkStruct`. -/
 def mk' (M : MkStruct R) : PresheafOfModules R where
   presheaf := M.presheaf
+
+@[simp]
+lemma mk'_obj (M : MkStruct R) (X : Cᵒᵖ) :
+    (mk' M).obj X = ModuleCat.of _ (M.obj X) := rfl
+
+variable (R)
+
+/-- This structure contains the data and axioms in order to
+produce a `PresheafOfModules R` from a collection of objects
+of type `ModuleCat (R.obj X)` for all `X`, and restriction
+maps expressed as linear maps to restriction of scalars.
+(See the constructor `PresheafOfModules.mk''`.) -/
+structure BundledMkStruct where
+  /-- the datum of a `ModuleCat (R.obj X)` for each object in `Cᵒᵖ` -/
+  obj (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X)
+  /-- the restriction maps as linear maps to restriction of scalars -/
+  map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f)).obj (obj Y)
+  /-- `map` is compatible with the identities -/
+  map_id (X : Cᵒᵖ) :
+    map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (obj X)
+  /-- `map` is compatible with the composition -/
+  map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars (R.map f)).map (map g) ≫
+      (ModuleCat.restrictScalarsComp' (R.map f) (R.map g) (R.map (f ≫ g))
+        (R.map_comp f g)).inv.app (obj Z)
+
+variable {R}
+namespace BundledMkStruct
+
+variable (M : BundledMkStruct R)
+
+/-- The obvious map `BundledMkStruct R → MkStruct R`. -/
+def toMkStruct : MkStruct R where
+  obj X := (M.obj X).carrier
+  map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
+  map_id X x := by
+    dsimp
+    rw [M.map_id, ModuleCat.restrictScalarsId'_inv_apply]
+  map_comp {X Y Z} f g x := by
+    dsimp
+    simp only [M.map_comp, ModuleCat.coe_comp, Function.comp_apply,
+      ModuleCat.restrictScalars.map_apply]
+    rw [ModuleCat.restrictScalarsComp'_inv_apply]
+
+end BundledMkStruct
+
+/-- Constructor for `PresheafOfModules R` based on a collection of objects
+of type `ModuleCat (R.obj X)` for all `X`, and restriction maps expressed
+as linear maps to restriction of scalars, see
+the structure `BundledMkStruct`. -/
+def mk'' (M : BundledMkStruct R) : PresheafOfModules R :=
+  mk' M.toMkStruct
+
+@[simp]
+lemma mk''_obj (M : BundledMkStruct R) (X : Cᵒᵖ) :
+    (mk'' M).obj X = (M.obj X).carrier := rfl
+
+@[simp]
+lemma restriction_app_mk'' (M : BundledMkStruct R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    (restriction R f).app (mk'' M) = M.map f := rfl
+
+namespace Hom
+
+variable {P Q : PresheafOfModules R}
+  (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
+  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+    (restriction R f).app P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
+      ModuleCat.ofHom (app X) ≫ (restriction R f).app Q)
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`, and for which the
+naturality condition is stated using the restriction of scalars. -/
+def mk'' : P ⟶ Q where
+  hom :=
+    { app := fun X => (app X).toAddMonoidHom
+      naturality := fun X Y f => by
+        ext x
+        exact congr_hom (naturality f) x }
+  map_smul X := (app X).map_smul
+
+@[simp]
+lemma mk''_app : (mk'' app naturality).app = app := rfl
+
+end Hom
 
 end PresheafOfModules
