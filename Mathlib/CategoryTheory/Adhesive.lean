@@ -44,9 +44,9 @@ namespace CategoryTheory
 
 open Limits
 
-universe v' u' v u
+universe v' u' v u w
 
-variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
+variable {J : Type u'} [Category.{v'} J] {C : Type u} [Category.{v} C]
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
@@ -148,16 +148,16 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
         · refine' ((Category.assoc _ _ _).symm.trans e₁).trans _; symm; exact hc.fac _ _
 #align category_theory.is_coprod_iff_is_pushout CategoryTheory.is_coprod_iff_isPushout
 
-theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
+theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [Extensive.{v, u, w} C]
     [HasPullbacks C] (hc : IsColimit c) (f : W ⟶ X) (h : X ⟶ Z) (i : c.pt ⟶ Z)
     (H : IsPushout f c.inl h i) : H.IsVanKampen := by
   obtain ⟨hc₁⟩ := (is_coprod_iff_isPushout c hc H.1).mpr H
   introv W' hf hg hh hi w
-  obtain ⟨hc₂⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
+  obtain ⟨hc₂⟩ := ((BinaryCofan.isVanKampen_iff _).mp (Extensive.vanKampen.{v, u, w} c hc)
     (BinaryCofan.mk _ pullback.fst) _ _ _ hg.w.symm pullback.condition.symm).mpr
     ⟨hg, IsPullback.of_hasPullback αY c.inr⟩
   refine' (is_coprod_iff_isPushout _ hc₂ w).symm.trans _
-  refine' ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ hc₁)
+  refine' ((BinaryCofan.isVanKampen_iff _).mp (Extensive.vanKampen _ hc₁)
     (BinaryCofan.mk _ _) pullback.snd _ _ _ hh.w.symm).trans _
   · dsimp; rw [← pullback.condition_assoc, Category.assoc, hi.w]
   constructor
@@ -169,7 +169,7 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
       rw [Category.assoc, pullback.lift_snd, hg.w]
     have e₂ : (pullback.fst ≫ cmp : pullback αY c.inr ⟶ _) ≫ pullback.snd = pullback.snd ≫ c.inr :=
       by rw [Category.assoc, pullback.lift_snd, pullback.condition]
-    obtain ⟨hc₄⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
+    obtain ⟨hc₄⟩ := ((BinaryCofan.isVanKampen_iff _).mp (Extensive.vanKampen c hc)
       (BinaryCofan.mk _ _) αW _ _ e₁.symm e₂.symm).mpr <| by
         constructor
         · apply IsPullback.of_right _ e₁ (IsPullback.of_hasPullback _ _)
