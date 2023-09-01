@@ -14,8 +14,8 @@ import Mathlib.RingTheory.TensorProduct
 ## Main definitions
 
 * `CategoryTheory.ModuleCat.restrictScalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`,
-  then `restrictScalars : ModuleCat S ⥤ ModuleCat R` is defined by `M ↦ M` where `M` as `S`-module
-  is seen as `R`-module by `r • m := f r • m` and `S`-linear map `l : M ⟶ M'` is `R`-linear as well.
+  then `restrictScalars : ModuleCat S ⥤ ModuleCat R` is defined by `M ↦ M` where an `S`-module `M`
+  is seen as an `R`-module by `r • m := f r • m` and `S`-linear map `l : M ⟶ M'` is `R`-linear as well.
 
 * `CategoryTheory.ModuleCat.extendScalars`: given **commutative** rings `R, S` and ring homomorphism
   `f : R ⟶ S`, then `extendScalars : ModuleCat R ⥤ ModuleCat S` is defined by `M ↦ S ⨂ M` where the
@@ -24,7 +24,7 @@ import Mathlib.RingTheory.TensorProduct
 
 * `CategoryTheory.ModuleCat.coextendScalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`
   then `coextendScalars : ModuleCat R ⥤ ModuleCat S` is defined by `M ↦ (S →ₗ[R] M)` where `S` is
-  seen as `R`-module by restriction of scalars and `l ↦ l ∘ _`.
+  seen as an `R`-module by restriction of scalars and `l ↦ l ∘ _`.
 
 ## Main results
 
