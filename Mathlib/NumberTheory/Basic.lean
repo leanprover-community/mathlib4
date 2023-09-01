@@ -26,7 +26,7 @@ section
 
 open Ideal Ideal.Quotient
 
-theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
+theorem dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction' k with k ih
   · rwa [pow_one, pow_zero, pow_one, pow_one]

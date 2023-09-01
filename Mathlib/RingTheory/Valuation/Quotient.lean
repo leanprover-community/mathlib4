@@ -20,7 +20,7 @@ on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 namespace Valuation
 
-variable {R Γ₀ : Type _} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
+variable {R Γ₀ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 variable (v : Valuation R Γ₀)
 
@@ -84,7 +84,7 @@ end Valuation
 
 namespace AddValuation
 
-variable {R Γ₀ : Type _}
+variable {R Γ₀ : Type*}
 
 variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 
@@ -109,7 +109,7 @@ theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
   Valuation.onQuot_comap_eq v hJ
 #align add_valuation.on_quot_comap_eq AddValuation.onQuot_comap_eq
 
-theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
+theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Valuation.comap_supp v f
 #align add_valuation.comap_supp AddValuation.comap_supp

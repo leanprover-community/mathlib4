@@ -92,7 +92,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       suffices Integrable (e * f) from this.hasSum_intervalIntegral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
       convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
-      simp_rw [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
+      simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
@@ -126,7 +126,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
 
 section RpowDecay
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `λ x, ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/

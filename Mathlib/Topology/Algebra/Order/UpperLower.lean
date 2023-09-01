@@ -29,14 +29,14 @@ open Pointwise
 /-- Ad hoc class stating that the closure of an upper set is an upper set. This is used to state
 lemmas that do not mention algebraic operations for both the additive and multiplicative versions
 simultaneously. If you find a satisfying replacement for this typeclass, please remove it! -/
-class HasUpperLowerClosure (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+class HasUpperLowerClosure (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
   isUpperSet_closure : ∀ s : Set α, IsUpperSet s → IsUpperSet (closure s)
   isLowerSet_closure : ∀ s : Set α, IsLowerSet s → IsLowerSet (closure s)
   isOpen_upperClosure : ∀ s : Set α, IsOpen s → IsOpen (upperClosure s : Set α)
   isOpen_lowerClosure : ∀ s : Set α, IsOpen s → IsOpen (lowerClosure s : Set α)
 #align has_upper_lower_closure HasUpperLowerClosure
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 -- See note [lower instance priority]
 @[to_additive]

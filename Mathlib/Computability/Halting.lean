@@ -61,7 +61,7 @@ end Nat.Partrec
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -161,7 +161,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type _} {σ : Type _}
+variable {α : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable σ]
 
@@ -377,7 +377,6 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
         exists_congr fun a => (and_congr (iff_of_eq _) Iff.rfl).trans (and_congr_right fun h => _)
       · congr
         funext n
-        simp only [Part.some_inj, PFun.coe_val]
         cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ]; rfl
       · have := Nat.rfind_spec h
         simp only [Part.coe_some, Part.mem_some_iff] at this

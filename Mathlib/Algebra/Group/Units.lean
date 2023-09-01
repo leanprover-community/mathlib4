@@ -89,7 +89,7 @@ attribute [coe] AddUnits.val
 section HasElem
 
 @[to_additive]
-theorem unique_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
+theorem unique_one {α : Type*} [Unique α] [One α] : default = (1 : α) :=
   Unique.default_eq 1
 #align unique_has_one unique_one
 #align unique_has_zero unique_zero
@@ -112,13 +112,21 @@ instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
-/- porting note: the result of these definitions is syntactically equal to `Units.val` and
-`Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
-`simp` projections. -/
+/- porting note: the result of these definitions is syntactically equal to `Units.val` because of
+the way coercions work in Lean 4, so there is no need for these custom `simp` projections. -/
 #noalign units.simps.coe
 #noalign add_units.simps.coe
-#noalign units.simps.coe_inv
-#noalign add_units.simps.coe_neg
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note [custom simps projection]"]
+def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
+#align units.simps.coe_inv Units.Simps.val_inv
+#align add_units.simps.coe_neg AddUnits.Simps.val_neg
+
+initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
+
+initialize_simps_projections AddUnits
+  (as_prefix val, val_neg → null, neg → val_neg, as_prefix val_neg)
 
 -- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
@@ -164,6 +172,10 @@ def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) 
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 #align units.copy Units.copy
 #align add_units.copy AddUnits.copy
+#align units.coe_copy Units.val_copy
+#align add_units.coe_copy AddUnits.val_copy
+#align units.coe_inv_copy Units.val_inv_copy
+#align add_units.coe_neg_copy AddUnits.val_neg_copy
 
 @[to_additive]
 theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
@@ -241,12 +253,9 @@ theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h�
 #noalign units.val_eq_coe
 #noalign add_units.val_eq_coe
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem inv_eq_val_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
   rfl
--- Porting note: the lower priority is needed to appease the `simpNF` linter
--- Note that `to_additive` doesn't copy `simp` priorities, so we use this as a workaround
-attribute [simp 900] Units.inv_eq_val_inv AddUnits.neg_eq_val_neg
 #align units.inv_eq_coe_inv Units.inv_eq_val_inv
 #align add_units.neg_eq_coe_neg AddUnits.neg_eq_val_neg
 
@@ -395,7 +404,7 @@ theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁�
 #align add_units.neg_unique AddUnits.neg_unique
 
 @[to_additive (attr := simp)]
-theorem val_inv_eq_inv_val {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
+theorem val_inv_eq_inv_val {M : Type*} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
 #align units.coe_inv Units.val_inv_eq_inv_val
 
@@ -572,7 +581,7 @@ end CommMonoid
 
 section IsUnit
 
-variable {M : Type _} {N : Type _}
+variable {M : Type*} {N : Type*}
 
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
@@ -669,7 +678,7 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
 "Addition of a `u : AddUnits M` on the left doesn't affect `IsAddUnit`."]
-theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
+theorem Units.isUnit_units_mul {M : Type*} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
@@ -814,7 +823,7 @@ end IsUnit
 -- section
 section NoncomputableDefs
 
-variable {M : Type _}
+variable {M : Type*}
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=

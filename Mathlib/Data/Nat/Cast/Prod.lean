@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.Prod
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Prod
 

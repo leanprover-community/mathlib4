@@ -39,7 +39,7 @@ topological space, separation setoid
 
 open Set Filter Function Topology List
 
-variable {X Y Z α ι : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f : X → Y}
 
 /-!
@@ -103,10 +103,10 @@ theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
   (specializes_TFAE x y).out 0 1
 #align specializes_iff_pure specializes_iff_pure
 
-alias specializes_iff_nhds ↔ Specializes.nhds_le_nhds _
+alias ⟨Specializes.nhds_le_nhds, _⟩ := specializes_iff_nhds
 #align specializes.nhds_le_nhds Specializes.nhds_le_nhds
 
-alias specializes_iff_pure ↔ Specializes.pure_le_nhds _
+alias ⟨Specializes.pure_le_nhds, _⟩ := specializes_iff_pure
 #align specializes.pure_le_nhds Specializes.pure_le_nhds
 
 theorem sInter_nhds_sets_eq_specializes : ⋂₀ (𝓝 x).sets = {y | y ⤳ x} :=
@@ -140,14 +140,14 @@ theorem specializes_iff_mem_closure : x ⤳ y ↔ y ∈ closure ({x} : Set X) :=
   (specializes_TFAE x y).out 0 4
 #align specializes_iff_mem_closure specializes_iff_mem_closure
 
-alias specializes_iff_mem_closure ↔ Specializes.mem_closure _
+alias ⟨Specializes.mem_closure, _⟩ := specializes_iff_mem_closure
 #align specializes.mem_closure Specializes.mem_closure
 
 theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ closure {x} :=
   (specializes_TFAE x y).out 0 5
 #align specializes_iff_closure_subset specializes_iff_closure_subset
 
-alias specializes_iff_closure_subset ↔ Specializes.closure_subset _
+alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 #align specializes.closure_subset Specializes.closure_subset
 
 -- porting note: new lemma

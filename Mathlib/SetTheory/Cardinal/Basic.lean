@@ -163,10 +163,10 @@ theorem mk_congr (e : α ≃ β) : #α = #β :=
   Quot.sound ⟨e⟩
 #align cardinal.mk_congr Cardinal.mk_congr
 
-alias mk_congr ← _root_.Equiv.cardinal_eq
+alias _root_.Equiv.cardinal_eq := mk_congr
 #align equiv.cardinal_eq Equiv.cardinal_eq
 
-/-- Lift a function between `Type _`s to a function between `Cardinal`s. -/
+/-- Lift a function between `Type*`s to a function between `Cardinal`s. -/
 def map (f : Type u → Type v) (hf : ∀ α β, α ≃ β → f α ≃ f β) : Cardinal.{u} → Cardinal.{v} :=
   Quotient.map f fun α β ⟨e⟩ => ⟨hf α β e⟩
 #align cardinal.map Cardinal.map
@@ -177,7 +177,7 @@ theorem map_mk (f : Type u → Type v) (hf : ∀ α β, α ≃ β → f α ≃ f
   rfl
 #align cardinal.map_mk Cardinal.map_mk
 
-/-- Lift a binary operation `Type _ → Type _ → Type _` to a binary operation on `Cardinal`s. -/
+/-- Lift a binary operation `Type* → Type* → Type*` to a binary operation on `Cardinal`s. -/
 def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β → γ ≃ δ → f α γ ≃ f β δ) :
     Cardinal.{u} → Cardinal.{v} → Cardinal.{w} :=
   Quotient.map₂ f fun α β ⟨e₁⟩ γ δ ⟨e₂⟩ => ⟨hf α β γ δ e₁ e₂⟩
@@ -185,6 +185,7 @@ def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β �
 
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
   `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+@[pp_with_univ]
 def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
   map ULift.{u, v} (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) c
 #align cardinal.lift Cardinal.lift
@@ -196,8 +197,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 
 -- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
-/-- `lift.{(max u v) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
@@ -205,8 +205,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 
 -- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
-/-- `lift.{(max v u) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
@@ -429,7 +428,7 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
   le_one_iff_subsingleton.trans s.subsingleton_coe
 #align cardinal.mk_le_one_iff_set_subsingleton Cardinal.mk_le_one_iff_set_subsingleton
 
-alias mk_le_one_iff_set_subsingleton ↔ _ _root_.Set.Subsingleton.cardinal_mk_le_one
+alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_subsingleton
 #align set.subsingleton.cardinal_mk_le_one Set.Subsingleton.cardinal_mk_le_one
 
 instance : Add Cardinal.{u} :=
@@ -871,7 +870,7 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 #align cardinal.le_sum Cardinal.le_sum
 
 @[simp]
-theorem mk_sigma {ι} (f : ι → Type _) : #(Σ i, f i) = sum fun i => #(f i) :=
+theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 #align cardinal.mk_sigma Cardinal.mk_sigma
 
@@ -1492,7 +1491,7 @@ theorem lt_aleph0_iff_set_finite {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
 #align cardinal.lt_aleph_0_iff_set_finite Cardinal.lt_aleph0_iff_set_finite
 
-alias lt_aleph0_iff_set_finite ↔ _ _root_.Set.Finite.lt_aleph0
+alias ⟨_, _root_.Set.Finite.lt_aleph0⟩ := lt_aleph0_iff_set_finite
 #align set.finite.lt_aleph_0 Set.Finite.lt_aleph0
 
 @[simp]
@@ -1515,7 +1514,7 @@ theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable
   rw [mk_le_aleph0_iff, countable_coe_iff]
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
 
-alias le_aleph0_iff_set_countable ↔ _ _root_.Set.Countable.le_aleph0
+alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
 #align set.countable.le_aleph_0 Set.Countable.le_aleph0
 
 @[simp]
@@ -1604,7 +1603,7 @@ theorem power_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : (
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← natCast_pow]; apply nat_lt_aleph0
 #align cardinal.power_lt_aleph_0 Cardinal.power_lt_aleph0
 
-theorem eq_one_iff_unique {α : Type _} : #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
+theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   calc
     #α = 1 ↔ #α ≤ 1 ∧ 1 ≤ #α := le_antisymm_iff
     _ ↔ Subsingleton α ∧ Nonempty α :=
@@ -1621,7 +1620,7 @@ theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
 #align cardinal.aleph_0_le_mk Cardinal.aleph0_le_mk
 
 @[simp]
-theorem mk_eq_aleph0 (α : Type _) [Countable α] [Infinite α] : #α = ℵ₀ :=
+theorem mk_eq_aleph0 (α : Type*) [Countable α] [Infinite α] : #α = ℵ₀ :=
   mk_le_aleph0.antisymm <| aleph0_le_mk _
 #align cardinal.mk_eq_aleph_0 Cardinal.mk_eq_aleph0
 
@@ -1789,7 +1788,7 @@ theorem toNat_eq_one {c : Cardinal} : toNat c = 1 ↔ c = 1 := by
   rw [toNat_eq_iff one_ne_zero, Nat.cast_one]
 #align cardinal.to_nat_eq_one Cardinal.toNat_eq_one
 
-theorem toNat_eq_one_iff_unique {α : Type _} : toNat #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
+theorem toNat_eq_one_iff_unique {α : Type*} : toNat #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   toNat_eq_one.trans eq_one_iff_unique
 #align cardinal.to_nat_eq_one_iff_unique Cardinal.toNat_eq_one_iff_unique
 
@@ -2368,7 +2367,7 @@ theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 #align cardinal.mk_eq_two_iff' Cardinal.mk_eq_two_iff'
 
-theorem exists_not_mem_of_length_lt {α : Type _} (l : List α) (h : ↑l.length < #α) :
+theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
     ∃ z : α, z ∉ l := by
   contrapose! h
   calc
@@ -2378,7 +2377,7 @@ theorem exists_not_mem_of_length_lt {α : Type _} (l : List α) (h : ↑l.length
     _ ≤ l.length := Cardinal.natCast_le.mpr (List.toFinset_card_le l)
 #align cardinal.exists_not_mem_of_length_lt Cardinal.exists_not_mem_of_length_lt
 
-theorem three_le {α : Type _} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
+theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α; simpa using h
   have : ↑(2 : ℕ) < #α; rwa [← succ_le_iff, ← Cardinal.nat_succ]
   have := exists_not_mem_of_length_lt [x, y] this

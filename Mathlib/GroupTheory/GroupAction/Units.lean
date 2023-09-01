@@ -21,7 +21,7 @@ The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
 
 
-variable {G H M N : Type _} {α : Type _}
+variable {G H M N : Type*} {α : Type*}
 
 namespace Units
 

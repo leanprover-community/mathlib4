@@ -32,7 +32,7 @@ open Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -772,7 +772,7 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
     (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
 #align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
 
-@[simp] lemma subsingleton_Icc_iff {α : Type _} [LinearOrder α] {a b : α} :
+@[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
   contrapose! h
@@ -1171,6 +1171,14 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
+
+lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
+  refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
+  by_contra H
+  push_neg at H
+  have : y ∈ Ici x := H.le
+  rw [h, mem_singleton_iff] at this
+  exact lt_irrefl y (this.le.trans_lt H)
 
 open Classical
 

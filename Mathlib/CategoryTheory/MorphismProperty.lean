@@ -35,7 +35,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] {D : Type _} [Category D]
+variable (C : Type u) [Category.{v} C] {D : Type*} [Category D]
 
 /-- A `MorphismProperty C` is a class of morphisms between objects in `C`. -/
 def MorphismProperty :=
@@ -312,7 +312,7 @@ def IsInvertedBy (P : MorphismProperty C) (F : C ⥤ D) : Prop :=
 
 namespace IsInvertedBy
 
-theorem of_comp {C₁ C₂ C₃ : Type _} [Category C₁] [Category C₂] [Category C₃]
+theorem of_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (hF : W.IsInvertedBy F) (G : C₂ ⥤ C₃) :
     W.IsInvertedBy (F ⋙ G) := fun X Y f hf => by
   haveI := hF f hf
@@ -492,7 +492,7 @@ variable {C}
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
-def FunctorsInverting (W : MorphismProperty C) (D : Type _) [Category D] :=
+def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 #align category_theory.morphism_property.functors_inverting CategoryTheory.MorphismProperty.FunctorsInverting
 
@@ -504,7 +504,7 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   subst h
   rfl
 
-instance (W : MorphismProperty C) (D : Type _) [Category D] : Category (FunctorsInverting W D) :=
+instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
 
 -- Porting note: add another `@[ext]` lemma
@@ -516,7 +516,7 @@ lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsIn
   NatTrans.ext _ _ h
 
 /-- A constructor for `W.FunctorsInverting D` -/
-def FunctorsInverting.mk {W : MorphismProperty C} {D : Type _} [Category D] (F : C ⥤ D)
+def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category D] (F : C ⥤ D)
     (hF : W.IsInvertedBy F) : W.FunctorsInverting D :=
   ⟨F, hF⟩
 #align category_theory.morphism_property.functors_inverting.mk CategoryTheory.MorphismProperty.FunctorsInverting.mk
@@ -694,6 +694,57 @@ theorem bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
 #align category_theory.morphism_property.bijective_respects_iso CategoryTheory.MorphismProperty.bijective_respectsIso
 
 end Bijective
+
+/-- Typeclass expressing that a morphism property contain identities. -/
+class ContainsIdentities (W : MorphismProperty C) : Prop :=
+  /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
+  id_mem' : ∀ (X : C), W (𝟙 X)
+
+lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
+  W (𝟙 X) := ContainsIdentities.id_mem' X
+
+namespace ContainsIdentities
+
+instance op (W : MorphismProperty C) [W.ContainsIdentities] :
+    W.op.ContainsIdentities := ⟨fun X => W.id_mem X.unop⟩
+
+instance unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
+    W.unop.ContainsIdentities := ⟨fun X => W.id_mem (Opposite.op X)⟩
+
+lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
+    W.ContainsIdentities := (inferInstance : W.op.unop.ContainsIdentities)
+
+lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
+    W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
+
+end ContainsIdentities
+
+/-- A morphism property is multiplicative if it contains identities and is stable by
+composition. -/
+class IsMultiplicative (W : MorphismProperty C) extends W.ContainsIdentities : Prop :=
+  /-- compatibility of  -/
+  stableUnderComposition : W.StableUnderComposition
+
+lemma comp_mem (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g)
+    [IsMultiplicative W] : W (f ≫ g) :=
+  IsMultiplicative.stableUnderComposition f g hf hg
+
+namespace IsMultiplicative
+
+instance op (W : MorphismProperty C) [IsMultiplicative W] : IsMultiplicative W.op where
+  stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.unop f.unop hg hf
+
+instance unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
+  id_mem' _ := W.id_mem _
+  stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.op f.op hg hf
+
+lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative W :=
+  (inferInstance : IsMultiplicative W.op.unop)
+
+lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
+  (inferInstance : IsMultiplicative W.unop.op)
+
+end IsMultiplicative
 
 end MorphismProperty
 

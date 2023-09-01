@@ -9,12 +9,11 @@ import Mathlib.MeasureTheory.Group.Measure
 #align_import measure_theory.group.integration from "leanprover-community/mathlib"@"ec247d43814751ffceb33b758e8820df2372bf6f"
 
 /-!
-# Integration on Groups
+# Bochner Integration on Groups
 
 We develop properties of integrals with a group as domain.
-This file contains properties about integrability, Lebesgue integration and Bochner integration.
+This file contains properties about integrability and Bochner integration.
 -/
-
 
 namespace MeasureTheory
 
@@ -22,7 +21,7 @@ open Measure TopologicalSpace
 
 open scoped ENNReal
 
-variable {𝕜 M α G E F : Type _} [MeasurableSpace G]
+variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NormedAddCommGroup F]
 
@@ -52,39 +51,6 @@ end MeasurableInv
 section MeasurableMul
 
 variable [Group G] [MeasurableMul G]
-
-/-- Translating a function by left-multiplication does not change its `MeasureTheory.lintegral`
-with respect to a left-invariant measure. -/
-@[to_additive
-      "Translating a function by left-addition does not change its `MeasureTheory.lintegral` with
-      respect to a left-invariant measure."]
-theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
-    (∫⁻ x, f (g * x) ∂μ) = ∫⁻ x, f x ∂μ := by
-  convert (lintegral_map_equiv f <| MeasurableEquiv.mulLeft g).symm
-  simp [map_mul_left_eq_self μ g]
-#align measure_theory.lintegral_mul_left_eq_self MeasureTheory.lintegral_mul_left_eq_self
-#align measure_theory.lintegral_add_left_eq_self MeasureTheory.lintegral_add_left_eq_self
-
-/-- Translating a function by right-multiplication does not change its `MeasureTheory.lintegral`
-with respect to a right-invariant measure. -/
-@[to_additive
-      "Translating a function by right-addition does not change its `MeasureTheory.lintegral` with
-      respect to a right-invariant measure."]
-theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
-    (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by
-  convert (lintegral_map_equiv f <| MeasurableEquiv.mulRight g).symm using 1
-  simp [map_mul_right_eq_self μ g]
-#align measure_theory.lintegral_mul_right_eq_self MeasureTheory.lintegral_mul_right_eq_self
-#align measure_theory.lintegral_add_right_eq_self MeasureTheory.lintegral_add_right_eq_self
-
-@[to_additive] -- Porting note: was `@[simp]`
-theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
-    (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv]
-  -- Porting note: was `simp_rw`
-  rw [lintegral_mul_right_eq_self f g⁻¹]
-#align measure_theory.lintegral_div_right_eq_self MeasureTheory.lintegral_div_right_eq_self
-#align measure_theory.lintegral_sub_right_eq_self MeasureTheory.lintegral_sub_right_eq_self
 
 /-- Translating a function by left-multiplication does not change its integral with respect to a
 left-invariant measure. -/
@@ -206,23 +172,3 @@ theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (
 #align measure_theory.integral_vadd_eq_self MeasureTheory.integral_vadd_eq_self
 
 end SMul
-
-section TopologicalGroup
-
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [BorelSpace G] [IsMulLeftInvariant μ]
-
-/-- For nonzero regular left invariant measures, the integral of a continuous nonnegative function
-  `f` is 0 iff `f` is 0. -/
-@[to_additive
-      "For nonzero regular left invariant measures, the integral of a continuous nonnegative
-      function `f` is 0 iff `f` is 0."]
-theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {f : G → ℝ≥0∞}
-    (hf : Continuous f) : ∫⁻ x, f x ∂μ = 0 ↔ f = 0 := by
-  haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular hμ
-  rw [lintegral_eq_zero_iff hf.measurable, hf.ae_eq_iff_eq μ continuous_zero]
-#align measure_theory.lintegral_eq_zero_of_is_mul_left_invariant MeasureTheory.lintegral_eq_zero_of_isMulLeftInvariant
-#align measure_theory.lintegral_eq_zero_of_is_add_left_invariant MeasureTheory.lintegral_eq_zero_of_isAddLeftInvariant
-
-end TopologicalGroup
-
-end MeasureTheory

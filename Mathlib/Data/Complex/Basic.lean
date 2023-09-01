@@ -365,7 +365,7 @@ instance : Nontrivial ℂ :=
 -- porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
-variable {R : Type _} [SMul R ℝ]
+variable {R : Type*} [SMul R ℝ]
 
 /- The useless `0` multiplication in `smul` is to make sure that
 `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
@@ -1041,7 +1041,7 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
 #align complex.abs_conj Complex.abs_conj
 
 @[simp]
-theorem abs_prod {ι : Type _} (s : Finset ι) (f : ι → ℂ) :
+theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
@@ -1251,7 +1251,7 @@ theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.lim_abs Complex.lim_abs
 
-variable {α : Type _} (s : Finset α)
+variable {α : Type*} (s : Finset α)
 
 @[simp, norm_cast]
 theorem ofReal_prod (f : α → ℝ) : ((∏ i in s, f i : ℝ) : ℂ) = ∏ i in s, (f i : ℂ) :=

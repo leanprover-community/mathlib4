@@ -35,16 +35,18 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
+set_option autoImplicit true
+
 
 open NormedField Set Filter
 
 open BigOperators NNReal Pointwise Topology
 
-variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type _}
+variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
 
 /-- A seminorm on a module over a normed ring is a function to the reals that is positive
 semidefinite, positive homogeneous, and subadditive. -/
-structure Seminorm (𝕜 : Type _) (E : Type _) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
+structure Seminorm (𝕜 : Type*) (E : Type*) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
   AddGroupSeminorm E where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -56,7 +58,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 /-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
-class SeminormClass (F : Type _) (𝕜 E : outParam <| Type _) [SeminormedRing 𝕜] [AddGroup E]
+class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] extends AddGroupSeminormClass F E ℝ where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -76,7 +78,7 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
     (add_le : ∀ x y : E, f (x + y) ≤ f x + f y) (smul : ∀ (a : 𝕜) (x : E), f (a • x) = ‖a‖ * f x) :
     Seminorm 𝕜 E where
   toFun := f
-  map_zero' := by rw [← zero_smul 𝕜 (0 : E), smul, norm_zero, MulZeroClass.zero_mul]
+  map_zero' := by rw [← zero_smul 𝕜 (0 : E), smul, norm_zero, zero_mul]
   add_le' := add_le
   smul' := smul
   neg' x := by rw [← neg_one_smul 𝕜, smul, norm_neg, ← smul, one_smul]
@@ -138,7 +140,7 @@ theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q
 
 instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
-    smul' := fun _ _ => (MulZeroClass.mul_zero _).symm }⟩
+    smul' := fun _ _ => (mul_zero _).symm }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : Seminorm 𝕜 E) = 0 :=
@@ -490,7 +492,7 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
       smul' := by
         intro a x
         obtain rfl | ha := eq_or_ne a 0
-        · rw [norm_zero, MulZeroClass.zero_mul, zero_smul]
+        · rw [norm_zero, zero_mul, zero_smul]
           refine'
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               -- Porting note: the following was previously `fun i => by positivity`
@@ -609,7 +611,7 @@ protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
   Seminorm.coe_sSup_eq' (Seminorm.bddAbove_iff.mp hs)
 #align seminorm.coe_Sup_eq Seminorm.coe_sSup_eq
 
-protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
+protected theorem coe_iSup_eq {ι : Type*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
     ↑(⨆ i, p i) = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
   rw [← sSup_range, Seminorm.coe_sSup_eq hp]
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
@@ -619,7 +621,7 @@ protected theorem sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : 
     (sSup s) x = ⨆ p : s, (p : E → ℝ) x := by
   rw [Seminorm.coe_sSup_eq hp, iSup_apply]
 
-protected theorem iSup_apply {ι : Type _} {p : ι → Seminorm 𝕜 E}
+protected theorem iSup_apply {ι : Type*} {p : ι → Seminorm 𝕜 E}
     (hp : BddAbove (range p)) {x : E} : (⨆ i, p i) x = ⨆ i, p i x := by
   rw [Seminorm.coe_iSup_eq hp, iSup_apply]
 
@@ -990,7 +992,7 @@ theorem closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
   rcases eq_or_ne k 0 with (rfl | hk)
-  · rw [norm_zero, MulZeroClass.zero_mul, ball_eq_emptyset _ le_rfl]
+  · rw [norm_zero, zero_mul, ball_eq_emptyset _ le_rfl]
     exact empty_subset _
   · intro x
     rw [Set.mem_smul_set, Seminorm.mem_ball_zero]
@@ -1118,7 +1120,7 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type _} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will

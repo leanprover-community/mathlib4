@@ -24,7 +24,7 @@ open scoped BigOperators
 
 noncomputable section
 
-variable {σ R A : Type _} [CommSemiring R] [AddCommMonoid A] [Module R A]
+variable {σ R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
   [Module (MvPolynomial σ R) A]
 
 section

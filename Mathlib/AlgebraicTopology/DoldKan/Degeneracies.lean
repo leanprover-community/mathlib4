@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.Tactic.FinCases
 
-#align_import algebraic_topology.dold_kan.degeneracies from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
+#align_import algebraic_topology.dold_kan.degeneracies from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -23,6 +23,8 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 `X.map θ.op ≫ P_infty.f n = 0`. It follows from the more precise
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -33,7 +35,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ} {φ : Y ⟶ X _[n + 1]}
     (v : HigherFacesVanish q φ) (hnbq : n + 1 = b + q) :
