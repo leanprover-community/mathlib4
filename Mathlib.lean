@@ -999,6 +999,7 @@ import Mathlib.CategoryTheory.Filtered
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Functor.AbsoluteKanExtension
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
@@ -1015,7 +1016,6 @@ import Mathlib.CategoryTheory.Functor.KanExtension
 import Mathlib.CategoryTheory.Functor.LeftDerived
 import Mathlib.CategoryTheory.Functor.ReflectsExactSequences
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Functor.UniversalKanExtension
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject

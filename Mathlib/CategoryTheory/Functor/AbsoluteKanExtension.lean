@@ -54,7 +54,7 @@ noncomputable instance [Full ι] [Faithful ι] : Full (leftExtensionPostcomp L F
     · ext1
       exact hφ)
 
-class IsUniversalLeftKanExtension (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
+class IsAbsoluteLeftKanExtension (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
     extends IsLeftKanExtension F' α : Prop where
   universal' : ∀ (J : Type max u₂ u₃ v₂ v₃) [SmallCategory J] (K : D ⥤ J),
     (F' ⋙ K).IsLeftKanExtension (whiskerRight α K)
@@ -68,12 +68,12 @@ class IsUniversalLeftKanExtension (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α
         whiskerLeft F eK'.hom ≫ whiskerRight α' ι := sorry
 
 instance (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
-  [F'.IsUniversalLeftKanExtension α] {J : Type u₅} [Category.{v₅} J] (K : D ⥤ J) :
+  [F'.IsAbsoluteLeftKanExtension α] {J : Type u₅} [Category.{v₅} J] (K : D ⥤ J) :
     (F' ⋙ K).IsLeftKanExtension (whiskerRight α K) :=
   ⟨⟨@Limits.IsInitial.ofUnique _ _ _ (fun (G : LeftExtension L (F ⋙ K)) => Nonempty.some (by
     obtain ⟨J', _, ι, K', eK', G', α', eG, w⟩ := universalLeftKanExtension_aux F' α K G
     have : (F' ⋙ K').IsLeftKanExtension (whiskerRight α K') :=
-      IsUniversalLeftKanExtension.universal' _ _
+      IsAbsoluteLeftKanExtension.universal' _ _
     have : Inhabited (LeftExtension.mk (F' ⋙ K) (whiskerRight α K) ⟶ G) := by
       exact ⟨StructuredArrow.homMk (whiskerLeft F' eK'.hom ≫
         whiskerRight (leftKanExtensionDesc (F' ⋙ K') (whiskerRight α K') G' α') ι ≫ eG.inv)
