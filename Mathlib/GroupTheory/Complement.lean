@@ -447,7 +447,8 @@ theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
   · intro h
     rw [← h]
     exact Subtype.prop _
-  · exact hST.equiv_fst_eq_self_of_mem_of_one_mem h1
+  · intro h
+    rw [hST.equiv_fst_eq_self_of_mem_of_one_mem h1 h]
 
 theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
     ((hST.equiv g).snd : G) = g ↔ g ∈ T := by
@@ -455,7 +456,8 @@ theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
   · intro h
     rw [← h]
     exact Subtype.prop _
-  · exact hST.equiv_snd_eq_self_of_mem_of_one_mem h1
+  · intro h
+    rw [hST.equiv_snd_eq_self_of_mem_of_one_mem h1 h]
 
 theorem equiv_fst_eq_one_iff_mem {g : G} (h1 : 1 ∈ S) :
     ((hST.equiv g).fst : G) = 1 ↔ g ∈ T := by
