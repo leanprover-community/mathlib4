@@ -97,8 +97,6 @@ noncomputable instance (X : Cᵒᵖ) : PreservesLimitsOfShape J (evaluation R X)
   preservesLimit :=
     preservesLimitOfPreservesLimitCone (isLimitLimitCone _) (limit.isLimit _)
 
-#exit
-
 end
 
 end PresheafOfModules

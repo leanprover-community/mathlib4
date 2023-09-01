@@ -38,76 +38,6 @@ structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
   map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
     presheaf.map f (r • x) = R.map f r • presheaf.map f x := by aesop_cat
 
-
--- to be moved
-namespace ModuleCat
-
-@[simps]
-def semilinearMapEquiv {R S : Type*} [Ring R] [Ring S] (f : R →+* S)
-    (M : ModuleCat.{v} R) (N : ModuleCat.{v} S) :
-    (M →ₛₗ[f] N) ≃ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
-  toFun g :=
-    { toFun := g
-      map_add' := by simp
-      map_smul' := by simp }
-  invFun g :=
-    { toFun := g
-      map_add' := by simp
-      map_smul' := g.map_smul }
-  left_inv f := rfl
-  right_inv f := rfl
-
-section
-
-variable {R : Type*} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
-
-def restrictScalarsId' : ModuleCat.restrictScalars f ≅ 𝟭 _ := eqToIso (by rw [hf]; rfl)
-
-@[simp]
-lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).inv.app M x = x := by
-  subst hf
-  rfl
-
-@[simp]
-lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).hom.app M x = x := by
-  subst hf
-  rfl
-
-end
-
-section
-
-variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂] [Ring R₃]
-  (f : R₁ →+* R₂) (g : R₂ →+* R₃) (gf : R₁ →+* R₃) (hgf : gf = g.comp f)
-
-def restrictScalarsComp' :
-    ModuleCat.restrictScalars gf ≅ ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by
-  subst hgf
-  rfl
-
-@[simp]
-lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).hom.app M x = x := by
-  subst hgf
-  rfl
-
-@[simp]
-lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).inv.app M x = x := by
-  subst hgf
-  rfl
-
-end
-
-abbrev restrictScalarsId (R : Type*) [Ring R] := restrictScalarsId' (RingHom.id R) rfl
-
-abbrev restrictScalarsComp {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂] [Ring R₃]
-    (f : R₁ →+* R₂) (g : R₂ →+* R₃) := restrictScalarsComp' f g _ rfl
-
-end ModuleCat
-
 namespace PresheafOfModules
 
 variable {R : Cᵒᵖ ⥤ RingCat.{u}}
@@ -308,7 +238,7 @@ def evaluationCompForget₂Iso (X : Cᵒᵖ) :
 
 def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
-  app M := ModuleCat.semilinearMapEquiv (R.map f) _ _ (M.map f)
+  app M := ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
   naturality := fun M N φ => by
     ext x
     exact (congr_hom (φ.hom.naturality f) x).symm
@@ -412,7 +342,7 @@ variable (M : BundledMkStruct R)
 
 def toMkStruct : MkStruct R where
   obj X := (M.obj X).carrier
-  map {X Y} f := (ModuleCat.semilinearMapEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
+  map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
   map_id X x := by
     dsimp
     rw [M.map_id, ModuleCat.restrictScalarsId'_inv_apply]
