@@ -23,7 +23,7 @@ In fact, in `ModuleCat R` there is a much nicer model of colimits as quotients
 of finitely supported functions, and we really should implement this as well.
 -/
 
-universe w'' w' w u v
+universe w' w u v
 
 open CategoryTheory Category Limits
 
@@ -31,79 +31,6 @@ variable {R : Type w} [Ring R]
 
 namespace ModuleCat
 
-variable (M N : ModuleCat.{v} R)
-
--- this should be moved to `Basic.lean`
-def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGroupCat).obj M) where
-  toFun r :=
-    { toFun := fun (m : M) => r • m
-      map_zero' := by dsimp; rw [smul_zero]
-      map_add' := fun x y => by dsimp; rw [smul_add] }
-  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
-  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul])
-  map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
-  map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
-
-lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
-    (forget₂ (ModuleCat R) AddCommGroupCat).map f ≫ N.smul r =
-      M.smul r ≫ (forget₂ (ModuleCat R) AddCommGroupCat).map f := by
-  ext x
-  exact (f.map_smul r x).symm
-
-@[nolint unusedArguments]
-def mkOfSMul' {A : AddCommGroupCat} (_ : R →+* End A) := A
-
-section
-
-variable {A : AddCommGroupCat} (φ : R →+* End A)
-
-instance : AddCommGroup (mkOfSMul' φ) := by
-  dsimp only [mkOfSMul']
-  infer_instance
-
-instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
-
-@[simp]
-lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
-    r • x = (show A ⟶ A from φ r) x := rfl
-
-instance : Module R (mkOfSMul' φ) where
-  smul_zero _ := map_zero _
-  smul_add _ _ _ := map_add _ _ _
-  one_smul := by simp
-  mul_smul := by simp
-  add_smul _ _ _ := by simp; rfl
-  zero_smul := by simp
-
-abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
-
-@[simp]
-lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
-
-end
-
-section
-
-variable {M N} (φ : (forget₂ (ModuleCat R) AddCommGroupCat).obj M ⟶
-      (forget₂ (ModuleCat R) AddCommGroupCat).obj N)
-    (hφ : ∀ (r : R), φ ≫ N.smul r = M.smul r ≫ φ)
-
-@[simps]
-def homMk : M ⟶ N where
-  toFun := φ
-  map_add' _ _ := map_add _ _ _
-  map_smul' r x := (congr_hom (hφ r) x).symm
-
-lemma forget₂_map_homMk :
-    (forget₂ (ModuleCat R) AddCommGroupCat).map (homMk φ hφ) = φ := rfl
-
-end
-
-end ModuleCat
-
-namespace ModuleCat
-
--- refactor the colimits in `AddCommGroupCat` so as to generalize universes
 variable {J : Type u} [Category.{v} J] (F : J ⥤ ModuleCat.{w'} R)
 
 namespace HasColimit
