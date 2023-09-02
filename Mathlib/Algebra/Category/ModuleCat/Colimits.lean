@@ -111,12 +111,6 @@ noncomputable instance forget₂PreservesColimitsOfSize
     [HasColimitsOfSize.{u, v} AddCommGroupCat.{w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
 
---instance [HasColimitsOfShape J (AddCommGroupCatMax.{w', w''})] :
---  HasColimitsOfShape J (ModuleCatMax.{w', w''} R) where
---
---instance [HasColimitsOfSize.{v, u} (AddCommGroupCatMax.{w', w''})] :
---  HasColimitsOfSize.{v, u} (ModuleCatMax.{w', w''} R) where
-
 noncomputable instance
     [HasColimitsOfSize.{u, v} AddCommGroupCatMax.{w, w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGroupCat) where
