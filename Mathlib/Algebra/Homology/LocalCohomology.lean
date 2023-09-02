@@ -94,6 +94,11 @@ section
 -- along diagrams either in Type, or in the same universe as the ring, and we need to cover both.
 variable {R : Type max u v} [CommRing R] {D : Type v} [SmallCategory D]
 
+lemma hasColimitDiagram (I : D ⥤ Ideal R) (i : ℕ) :
+    HasColimit (diagram I i) := by
+  have : HasColimitsOfShape Dᵒᵖ (AddCommGroupCatMax.{max u v}) := inferInstance
+  infer_instance
+
 /-
 In this definition we do not assume any special property of the diagram `I`, but the relevant case
 will be where `I` is (cofinal with) the diagram of powers of a single given ideal.
@@ -104,8 +109,9 @@ in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
 /-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
-def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCat.{max u v} R ⥤ ModuleCat.{max u v} R :=
-  colimit (diagram.{max u v, v} I i)
+def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCatMax.{u, v} R ⥤ ModuleCatMax.{u, v} R :=
+  have := hasColimitDiagram.{u, v} I i
+  colimit (diagram I i)
 #align local_cohomology.of_diagram localCohomology.ofDiagram
 
 end
@@ -125,7 +131,9 @@ def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
 /-- Local cohomology agrees along precomposition with a cofinal diagram. -/
 def isoOfFinal [Functor.Initial I'] (i : ℕ) :
     ofDiagram.{max u v, v'} (I' ⋙ I) i ≅ ofDiagram.{max u v', v} I i :=
-  HasColimit.isoOfNatIso (diagramComp.{u} _ _ _) ≪≫ Functor.Final.colimitIso _ _
+  have := hasColimitDiagram.{max u v', v} I i
+  have := hasColimitDiagram.{max u v, v'} (I' ⋙ I) i
+  HasColimit.isoOfNatIso (diagramComp.{u} I' I i) ≪≫ Functor.Final.colimitIso _ _
 #align local_cohomology.iso_of_final localCohomology.isoOfFinal
 
 end
@@ -185,7 +193,7 @@ def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} 
 /-- Local cohomology as the direct limit of `Ext^i(R/J', M)` over *all* ideals `J'` with radical
 containing `J`. -/
 def localCohomology.ofSelfLERadical (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
-  ofDiagram.{u} (selfLERadicalDiagram.{u} J) i
+  ofDiagram.{u, u} (selfLERadicalDiagram.{u} J) i
 #align local_cohomology.of_self_le_radical localCohomology.ofSelfLERadical
 
 end ModelsForLocalCohomology
@@ -246,11 +254,6 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
       left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
-
--- FIXME again, this instance is not found by `inferInstance`, but `#synth` finds it just fine.
--- #synth HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R)
-instance : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) :=
-  ModuleCat.Colimits.hasColimitsOfSize_zero_moduleCat.{u, u}
 
 example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local

@@ -23,7 +23,7 @@ In fact, in `ModuleCat R` there is a much nicer model of colimits as quotients
 of finitely supported functions, and we really should implement this as well.
 -/
 
-universe w' w u v
+universe w'' w' w u v
 
 open CategoryTheory Category Limits
 
@@ -182,6 +182,16 @@ noncomputable instance forget₂PreservesColimitsOfSize
     [HasColimitsOfSize.{u, v} AddCommGroupCat.{w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
 
+--instance [HasColimitsOfShape J (AddCommGroupCatMax.{w', w''})] :
+--  HasColimitsOfShape J (ModuleCatMax.{w', w''} R) where
+--
+--instance [HasColimitsOfSize.{v, u} (AddCommGroupCatMax.{w', w''})] :
+--  HasColimitsOfSize.{v, u} (ModuleCatMax.{w', w''} R) where
+
+noncomputable instance
+    [HasColimitsOfSize.{u, v} AddCommGroupCatMax.{w, w'}] :
+    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGroupCat) where
+
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
 example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
   inferInstance
@@ -191,6 +201,9 @@ example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{u, v} R) :=
 
 example (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=
   inferInstance
+
+--example (R : Type max u v) [Ring R] : HasColimitsOfSize.{v, v} (ModuleCatMax.{u, v} R) :=
+--  inferInstance
 
 noncomputable example (R : Type u) [Ring R] :
   PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGroupCat) := inferInstance

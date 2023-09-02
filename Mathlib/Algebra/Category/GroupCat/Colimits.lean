@@ -244,11 +244,13 @@ end Colimits
 
 lemma hasColimit : HasColimit F := ⟨_, Colimits.colimitCoconeIsColimit.{w} F⟩
 
+variable (J)
+
 lemma hasColimitsOfShape : HasColimitsOfShape J AddCommGroupCat.{max u v w} where
   has_colimit F := hasColimit.{w} F
 
 lemma hasColimitsOfSize : HasColimitsOfSize.{v, u} AddCommGroupCat.{max u v w} :=
-  ⟨fun _ => hasColimitsOfShape.{w}⟩
+  ⟨fun _ => hasColimitsOfShape.{w} _⟩
 
 instance hasColimits : HasColimits AddCommGroupCat.{w} := hasColimitsOfSize.{w}
 #align AddCommGroup.colimits.has_colimits_AddCommGroup AddCommGroupCat.hasColimits
