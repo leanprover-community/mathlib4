@@ -401,7 +401,7 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
 
 @[simp]
 theorem equiv_mul_right (g : G) (k : K) :
-    (hSK.equiv (g * k)) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
+    hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
   have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
     hSK.equiv_fst_eq_of_leftCosetEquivalence
       (by simp [LeftCosetEquivalence, leftCoset_eq_iff])
