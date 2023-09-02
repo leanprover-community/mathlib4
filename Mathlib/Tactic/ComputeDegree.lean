@@ -173,13 +173,6 @@ section Tactic
 
 open Lean Elab Tactic Meta Expr
 
-/-- `Lean.Expr.le? p` take `e : Expr` as input.
-If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
-otherwise, it returns `none`. -/
-@[inline] def _root_.Lean.Expr.le? (p : Expr) : Option (Expr × Expr × Expr) := do
-  let (type, _, lhs, rhs) ← p.app4? ``LE.le
-  return (type, lhs, rhs)
-
 /-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
 the `e` looks like `lhs ≤ rhs` or `lhs = rhs` and that `lhs` is one of
 `natDegree f, degree f, coeff f d`.
