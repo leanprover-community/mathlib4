@@ -168,6 +168,8 @@ noncomputable instance : PreservesColimit F (forget₂ _ AddCommGroupCat) :=
 
 end HasColimit
 
+variable (J R)
+
 instance hasColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
     HasColimitsOfShape J (ModuleCat.{w'} R) where
 
@@ -192,6 +194,8 @@ noncomputable instance
     [HasColimitsOfSize.{u, v} AddCommGroupCatMax.{w, w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGroupCat) where
 
+instance : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
+
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
 example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
   inferInstance
@@ -202,8 +206,11 @@ example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{u, v} R) :=
 example (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=
   inferInstance
 
---example (R : Type max u v) [Ring R] : HasColimitsOfSize.{v, v} (ModuleCatMax.{u, v} R) :=
---  inferInstance
+example (R : Type u) [Ring R] : HasCoequalizers (ModuleCat.{u} R) := by
+  infer_instance
+
+-- for some reason, this instance is not found automatically later on
+instance : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
   PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGroupCat) := inferInstance
