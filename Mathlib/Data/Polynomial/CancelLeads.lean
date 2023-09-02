@@ -61,8 +61,7 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     C p.leadingCoeff * q + -(C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p) = 0
   · exact (le_of_eq (by simp only [h0, natDegree_zero])).trans_lt hq
   apply lt_of_le_of_ne
-  · -- porting note: was compute_degree_le; repeat' rwa [Nat.sub_add_cancel]
-    compute_degree!
+  · compute_degree!
     rwa [Nat.sub_add_cancel]
   · contrapose! h0
     rw [← leadingCoeff_eq_zero, leadingCoeff, h0, mul_assoc, X_pow_mul, ← tsub_add_cancel_of_le h,
