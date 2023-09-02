@@ -89,26 +89,22 @@ lemma cexp_sub_ne_one {m : ℕ} (k p : Fin m) (h : (k ≠ p)) :
     norm_cast at hz
     apply h (Fin.ext hz)
     simp only [sub_nonneg, Nat.cast_le, Fin.val_fin_le]
-    apply (h1)
+    exact h1
     rw [← Nat.cast_sub]
     norm_cast
-    apply Nat.sub_lt_right_of_lt_add
-    exact_mod_cast h1
+    apply Nat.sub_lt_right_of_lt_add h1
     apply (Nat.lt_add_right _ _ _ (Fin.is_lt _))
     exact_mod_cast h1
   · push_neg at h1
-    rw [ ← neg_sub, mod_eq_mod_neg, eq_comm, neg_eq_zero] at hz
-    rw [Int.mod_eq_of_lt, sub_eq_zero, eq_comm] at hz
+    rw [ ← neg_sub, mod_eq_mod_neg, eq_comm, neg_eq_zero, Int.mod_eq_of_lt, sub_eq_zero,
+      eq_comm] at hz
     norm_cast at hz
     apply h (Fin.ext hz)
     simp only [neg_sub, sub_nonneg, Nat.cast_le, Fin.val_fin_le]
-    apply le_of_lt
-    apply (h1)
+    apply le_of_lt h1
     rw [← Nat.cast_sub]
     norm_cast
-    apply Nat.sub_lt_right_of_lt_add
-    apply le_of_lt
-    exact_mod_cast h1
+    apply Nat.sub_lt_right_of_lt_add (le_of_lt h1)
     apply (Nat.lt_add_right _ _ _ (Fin.is_lt _))
     apply le_of_lt h1
 
