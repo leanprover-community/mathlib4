@@ -2766,8 +2766,8 @@ theorem ofInjective_apply {f : G →* N} (hf : Function.Injective f) {x : G} :
 
 @[to_additive (attr := simp)]
 theorem apply_ofInjective_symm {f : G →* N} (hf : Function.Injective f) (x : f.range) :
-    f ((ofInjective hf).symm x) = x := by
-  rw [← ofInjective_apply hf, MulEquiv.apply_symm_apply]
+    f ((ofInjective hf).symm x) = x := 
+  Subtype.ext_iff.1 <| (ofInjective hf).apply_symm_apply x
 
 section Ker
 
