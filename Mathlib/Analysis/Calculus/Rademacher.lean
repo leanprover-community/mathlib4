@@ -181,5 +181,13 @@ theorem integral_lineDeriv_mul_eq
 theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f):
     ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
-  refine locallyIntegrable_finset_sum _ (fun i hi ↦ ?_)
-  apply LocallyIntegrable.smul
+    (locallyIntegrable_finset_sum _ (fun i hi ↦  (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
+    (fun g g_smooth g_comp ↦ ?_)
+  simp_rw [Finset.smul_sum]
+  rw [integral_finset_sum]
+  sorry
+  intro i hi
+  simp
+  have : Integrable (fun x ↦ (a i * lineDeriv ℝ f x (v i))) μ := sorry
+  have : Continuous g := sorry
+  change Integrable (fun x ↦ g x • (a i * lineDeriv ℝ f x (v i))) μ
