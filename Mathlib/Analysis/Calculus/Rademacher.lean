@@ -16,14 +16,19 @@ import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 
 -/
 
-open Filter MeasureTheory Measure FiniteDimensional
+open Filter MeasureTheory Measure FiniteDimensional Metric Set
 
-open scoped BigOperators NNReal ENNReal
-
+open scoped BigOperators NNReal ENNReal Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] {C D : ℝ≥0} {f g : E → ℝ}
 
+/-!
+### Step 1: A Lipschitz function is ae differentiable in any given direction
+
+This follows from the one-dimensional result that a Lipschitz function on `ℝ` has bounded
+variation, and is therefore ae differentiable, together with a Fubini argument.
+-/
 
 theorem LipschitzWith.ae_lineDifferentiableAt_of_prod
     {C : ℝ≥0} {f : E × ℝ → ℝ} (hf : LipschitzWith C f) {μ : Measure E} :
@@ -79,8 +84,14 @@ theorem LipschitzWith.locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : 
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
   (hf.memℒp_lineDeriv v).locallyIntegrable le_top
 
-open scoped Topology
-open Metric Set
+/-!
+### Step 2: the ae line derivative is linear
+
+Surprisingly, this is the hardest step. We prove it using an elegant but slightly sophisticated
+argument by Morrey, with a distributional flavor: we integrate against a smooth function, and push
+the derivative to the smooth function by integration by parts. As the derivative of a smooth
+function is linear, this gives the result.
+-/
 
 theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
     (hf : LipschitzWith C f) (hg : Integrable g μ) (v : E) :
@@ -184,10 +195,8 @@ theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf 
     (locallyIntegrable_finset_sum _ (fun i hi ↦  (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
     (fun g g_smooth g_comp ↦ ?_)
   simp_rw [Finset.smul_sum]
-  rw [integral_finset_sum]
+  have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
+    fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
+      ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
+  rw [integral_finset_sum _ A]
   sorry
-  intro i hi
-  simp
-  have : Integrable (fun x ↦ (a i * lineDeriv ℝ f x (v i))) μ := sorry
-  have : Continuous g := sorry
-  change Integrable (fun x ↦ g x • (a i * lineDeriv ℝ f x (v i))) μ
