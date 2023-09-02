@@ -34,27 +34,27 @@ def FrmCat :=
 
 namespace FrmCat
 
-instance : CoeSort FrmCat (Type _) :=
+instance : CoeSort FrmCat (Type*) :=
   Bundled.coeSort
 
 instance (X : FrmCat) : Frame X :=
   X.str
 
 /-- Construct a bundled `FrmCat` from a `Frame`. -/
-def of (α : Type _) [Frame α] : FrmCat :=
+def of (α : Type*) [Frame α] : FrmCat :=
   Bundled.of α
 #align Frm.of FrmCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Frame α] : ↥(of α) = α := rfl
+theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
 #align Frm.coe_of FrmCat.coe_of
 
 instance : Inhabited FrmCat :=
   ⟨of PUnit⟩
 
-/-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `completeLattice`.
+/-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `CompleteLattice`.
 Necessary for the category theory machinery. -/
-abbrev Hom (α β : Type _) [Frame α] [Frame β] : Type _ :=
+abbrev Hom (α β : Type*) [Frame α] [Frame β] : Type _ :=
   FrameHom α β
 #align Frm.hom FrmCat.Hom
 

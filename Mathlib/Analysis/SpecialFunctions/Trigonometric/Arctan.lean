@@ -17,7 +17,7 @@ and `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whol
 
 noncomputable section
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Real
 

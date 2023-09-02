@@ -96,14 +96,14 @@ theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 
   · apply coeff_C
   · have : n + k + 1 + 2 = n + (k + 2) + 1 := by ring
     rw [Nat.succ_eq_add_one, coeff_hermite_succ_succ, add_right_comm, this, ih k, ih (k + 2),
-      MulZeroClass.mul_zero, sub_zero]
+      mul_zero, sub_zero]
 #align polynomial.coeff_hermite_of_lt Polynomial.coeff_hermite_of_lt
 
 @[simp]
 theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
   induction' n with n ih
   · apply coeff_C
-  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, MulZeroClass.mul_zero, sub_zero]
+  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
     simp
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
@@ -137,7 +137,7 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
   · cases' k with k
     · rw [Nat.succ_add_eq_succ_add] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
-    · rw [coeff_hermite_succ_succ, ih, ih, MulZeroClass.mul_zero, sub_zero]
+    · rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
       · rwa [Nat.succ_add_eq_succ_add] at hnk
       · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two

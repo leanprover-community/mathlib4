@@ -15,7 +15,7 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 section regionBetween
 
-variable {α : Type _}
+variable {α : Type*}
 
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
@@ -52,7 +52,7 @@ open ContinuousMap
 that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the the sup norm of `λ x, f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
-theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E] {f : C(ℝ, E)}
+theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine'
@@ -88,7 +88,7 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
-theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
     (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
@@ -99,7 +99,7 @@ theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace �
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
-theorem integral_comp_neg_Ioi {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]

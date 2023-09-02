@@ -21,7 +21,7 @@ In the case in which `N a` is an additive group for all `a`, `DFinsupp.neLocus f
 -/
 
 
-variable {α : Type _} {N : α → Type _}
+variable {α : Type*} {N : α → Type*}
 
 namespace DFinsupp
 
@@ -83,7 +83,7 @@ end NHasZero
 
 section NeLocusAndMaps
 
-variable {M P : α → Type _} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Zero (P a)]
+variable {M P : α → Type*} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Zero (P a)]
 
 theorem subset_mapRange_neLocus [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (M a)] (f g : Π₀ a, N a)
     {F : ∀ a, N a → M a} (F0 : ∀ a, F a 0 = 0) :

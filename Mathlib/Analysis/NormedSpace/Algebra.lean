@@ -29,7 +29,7 @@ normed algebra, character space, continuous functional calculus
 -/
 
 
-variable {𝕜 : Type _} {A : Type _}
+variable {𝕜 : Type*} {A : Type*}
 
 namespace WeakDual
 

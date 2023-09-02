@@ -26,6 +26,8 @@ Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence
 pullbacks and finite wide pullbacks.
 -/
 
+set_option autoImplicit true
+
 
 universe w w' v u
 
@@ -61,6 +63,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pullback_shape.hom CategoryTheory.Limits.WidePullbackShape.Hom
 
+-- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+-- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
 instance struct : CategoryStruct (WidePullbackShape J) where
@@ -176,6 +180,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pushout_shape.hom CategoryTheory.Limits.WidePushoutShape.Hom
 
+-- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+-- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
 instance struct : CategoryStruct (WidePushoutShape J) where

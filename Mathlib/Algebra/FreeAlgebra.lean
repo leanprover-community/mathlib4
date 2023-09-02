@@ -50,9 +50,9 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 -/
 
 
-variable (R : Type _) [CommSemiring R]
+variable (R : Type*) [CommSemiring R]
 
-variable (X : Type _)
+variable (X : Type*)
 
 namespace FreeAlgebra
 
@@ -109,7 +109,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
 -- Porting note: recOn was replaced to preserve computability, see lean4#2049
-def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
+def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
   | .add a b => liftFun f a + liftFun f b
@@ -138,8 +138,8 @@ inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central
   | right_distrib {a b c : Pre R X} :
       Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
 
-  | MulZeroClass.zero_mul {a : Pre R X} : Rel (0 * a) 0
-  | MulZeroClass.mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
+  | zero_mul {a : Pre R X} : Rel (0 * a) 0
+  | mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
 
   | add_compat_left {a b c : Pre R X} : Rel a b → Rel (a + c) (b + c)
   | add_compat_right {a b c : Pre R X} : Rel a b → Rel (c + a) (c + b)
@@ -197,10 +197,10 @@ instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
     exact Quot.sound Rel.mul_one
   zero_mul := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.zero_mul
+    exact Quot.sound Rel.zero_mul
   mul_zero := by
     rintro ⟨⟩
-    exact Quot.sound Rel.MulZeroClass.mul_zero
+    exact Quot.sound Rel.mul_zero
 
 instance instDistrib : Distrib (FreeAlgebra R X) where
   left_distrib := by
@@ -229,7 +229,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     rintro ⟨⟩
     change Quot.mk _ (_ * _) = _
     rw [map_zero]
-    exact Quot.sound Rel.MulZeroClass.zero_mul
+    exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp only [HSMul.hSMul, instSMul, Quot.map]
@@ -280,7 +280,7 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
-instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
+instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond
@@ -298,7 +298,7 @@ irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
 #align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
-variable {A : Type _} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where

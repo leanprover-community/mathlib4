@@ -25,7 +25,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable (L : Language) {M : Type _}
+variable (L : Language) {M : Type*}
 
 open FirstOrder
 
@@ -70,7 +70,7 @@ theorem relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
   rw [Quotient.finChoice_eq, Quotient.lift_mk]
 #align first_order.language.rel_map_quotient_mk FirstOrder.Language.relMap_quotient_mk'
 
-theorem Term.realize_quotient_mk' {β : Type _} (t : L.Term β) (x : β → M) :
+theorem Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
     (t.realize fun i => (⟦x i⟧ : Quotient s)) = ⟦@Term.realize _ _ ps.toStructure _ x t⟧ := by
   induction' t with _ _ _ _ ih
   · rfl

@@ -76,6 +76,14 @@ theorem zero_mk (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
 #align rat.zero_mk_nat Rat.zero_mkRat
 #align rat.zero_mk Rat.zero_divInt
 
+@[simp]
+lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
+  induction q
+  constructor
+  · rintro rfl
+    exact zero_mk _ _ _
+  · exact congr_arg num
+
 private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a :=
   Int.dvd_natAbs.1 <| Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left (Int.natAbs a) b
 -- Porting note: no #align here as the declaration is private.
@@ -327,13 +335,7 @@ instance commRing : CommRing ℚ where
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
-  { Rat.commRing with
-    zero := 0
-    one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    div := (· / ·)
-    exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
+  { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := by
       change Rat.inv 0 = 0
       rw [Rat.inv_def]
