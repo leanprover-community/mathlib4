@@ -194,7 +194,7 @@ def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} 
 /-- Local cohomology as the direct limit of `Ext^i(R/J', M)` over *all* ideals `J'` with radical
 containing `J`. -/
 def localCohomology.ofSelfLERadical (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
-  ofDiagram.{u, u} (selfLERadicalDiagram.{u} J) i
+  ofDiagram.{u} (selfLERadicalDiagram.{u} J) i
 #align local_cohomology.of_self_le_radical localCohomology.ofSelfLERadical
 
 end ModelsForLocalCohomology
