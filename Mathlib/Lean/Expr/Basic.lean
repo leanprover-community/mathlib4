@@ -290,6 +290,19 @@ otherwise, it returns `none`. -/
   let (type, _, lhs, rhs) ← p.app4? ``LE.le
   return (type, lhs, rhs)
 
+/-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
+where `lhs : tyLhs` and `rhs : tyRhs`,
+and where `lhs` is related to `rhs` by the respective relation.
+
+See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
+def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
+  if let some (lhs, rhs) := ty.iff? then
+    some (.sort .zero, lhs, .sort .zero, rhs)
+  else if let some (ty, lhs, rhs) := ty.eq? then
+    some (ty, lhs, ty, rhs)
+  else
+    ty.heq?
+
 end recognizers
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
@@ -399,18 +412,6 @@ Fails if the rewrite produces any subgoals.
 -/
 def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
-
-/-- Given a proposition `ty` that is an eq, iff, or heq, returns `(tyLhs, lhs, tyRhs, rhs)`,
-where `lhs : tyLhs` and `rhs : tyRhs`.
-
-See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
-def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
-  if let some (lhs, rhs) := ty.iff? then
-    some (.sort .zero, lhs, .sort .zero, rhs)
-  else if let some (ty, lhs, rhs) := ty.eq? then
-    some (ty, lhs, ty, rhs)
-  else
-    ty.heq?
 
 end Expr
 
