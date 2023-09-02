@@ -8,7 +8,6 @@ import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fin.Interval
-import Mathlib.Tactic.FinCases
 
 #align_import data.fin.tuple.sort from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -110,15 +109,6 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
 #align tuple.monotone_sort Tuple.monotone_sort
 
 end Tuple
-
-theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
-    Fintype.card {i : Fin n // i < m} = m := by
-  conv_rhs => rw [← Fintype.card_fin m]
-  apply Fintype.card_congr
-  exact { toFun := fun ⟨⟨i, _⟩, hi⟩ ↦ ⟨i, hi⟩
-          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩
-          left_inv := fun i ↦ rfl
-          right_inv := fun i ↦ rfl }
 
 namespace Tuple
 
