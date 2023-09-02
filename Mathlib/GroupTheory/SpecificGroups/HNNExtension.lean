@@ -9,16 +9,39 @@ import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.Complement
 
+/-!
+
+## HNN Extensions of Groups
+
+This file defines the HNN extensions of groups.
+
+## Main definitions
+
+- `HNNExtension G A B φ` : The HNN Extension of a group `G`, where `A` and `B` are subgroups and `φ`
+  is an isomorphism between `A` and `B`.
+- `HNNExtension.of` : The canonical embedding of `G` into `HNNExtension G A B φ`.
+- `HNNExtension.t` : The stable letter of the HNN extension.
+- `HNNExtension.lift` : Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t`
+- `HNNExtension.of_injective` : The canonical embedding `G →* HNNExtension G A B φ` is injective.
+- `HNNExtension.ReducedWord.toList_eq_nil_of_mem_of_range` : Britton's Lemma. If an element of
+  `G` is represented by a reduced word, then this reduced word does not contain `t`.
+
+-/
+
 open Monoid Coprod Multiplicative Subgroup Function
 
-local notation "C∞ " => Multiplicative ℤ
-
-def HNNExtension.con (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Con (G ∗ C∞) :=
+/-- The relation we quotient the coproduct by to form an `HNNExtension`. -/
+def HNNExtension.con (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) :
+    Con (G ∗ Multiplicative ℤ) :=
   conGen (fun x y => ∃ (a : A),
     x = inr (ofAdd 1) * inl (a : G) ∧
     y = inl (φ a : G) * inr (ofAdd 1))
 
-def HNNExtension  (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Type _ :=
+/-- The HNN Extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`, subgroups `A` and
+`B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such that for
+any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canoncial
+map from `G` into the `HNNExtension`.  -/
+def HNNExtension (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Type _ :=
   (HNNExtension.con G A B φ).Quotient
 
 variable {G : Type*} [Group G] {A B : Subgroup G} {φ : A ≃* B} {H : Type*}
@@ -29,9 +52,11 @@ instance : Group (HNNExtension G A B φ) := by
 
 namespace HNNExtension
 
+/-- The canonical embedding `G →* HNNExtension G A B φ` -/
 def of : G →* HNNExtension G A B φ :=
   (HNNExtension.con G A B φ).mk'.comp inl
 
+/-- The stable letter of the `HNNExtension` -/
 def t : HNNExtension G A B φ :=
   (HNNExtension.con G A B φ).mk'.comp inr (ofAdd 1)
 
@@ -59,6 +84,7 @@ theorem of_mul_inv_t (a : A) :
     (of (a : G) : HNNExtension G A B φ) * t⁻¹ = t⁻¹ * of (φ a : G) := by
   rw [equiv_eq_conj]; simp [mul_assoc]
 
+/-- Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t` -/
 def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     HNNExtension G A B φ →* H :=
   Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le <| by
@@ -102,6 +128,10 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
 
 variable (A B φ)
 
+/-- To avoid duplicating code, we define `toSubgroup A B u` and `toSubgroupEquiv u`
+where `u : ℤˣ` is `1` or `-1`. `toSubgroup A B u` is `A` when `u = 1` and `B` when `u = -1`,
+and `toSubgroupEquiv` is `φ` when `u = 1` and `φ⁻¹` when `u = -1`. `toSubgroup u` is the subgroup
+such that for any `a ∈ toSubgroup u`, `t ^ (u : ℤ) * a = toSubgroupEquiv a * t ^ (u : ℤ)`. -/
 def toSubgroup (u : ℤˣ) : Subgroup G :=
   if u = 1 then A else B
 
@@ -113,6 +143,10 @@ theorem toSubgroup_neg_one : toSubgroup A B (-1) = B := rfl
 
 variable {A B}
 
+/-- To avoid duplicating code, we define `toSubgroup A B u` and `toSubgroupEquiv u`
+where `u : ℤˣ` is `1` or `-1`. `toSubgroup A B u` is `A` when `u = 1` and `B` when `u = -1`,
+and `toSubgroupEquiv` is the group ismorphism from `toSubgroup A B u` to `toSubgroup A B (-u)`.
+It is defined to be `φ` when `u = 1` and `φ⁻¹` when `u = -1`. -/
 def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
   if hu : u = 1 then hu ▸ φ else by
     convert φ.symm <;>
@@ -125,7 +159,7 @@ theorem toSubgroupEquiv_one : toSubgroupEquiv φ 1 = φ := rfl
 theorem toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
 
 @[simp]
-theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u):
+theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
     (toSubgroupEquiv φ (-u) (toSubgroupEquiv φ u a) : G) = a := by
   rcases Int.units_eq_one_or u with rfl | rfl
   · simp
