@@ -75,6 +75,10 @@ theorem LipschitzWith.memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
   memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
+theorem LipschitzWith.locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
+    LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
+  (hf.memℒp_lineDeriv v).locallyIntegrable le_top
+
 open scoped Topology
 open Metric Set
 
@@ -174,16 +178,6 @@ theorem integral_lineDeriv_mul_eq
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
-theorem Memℒp.locallyIntegrable {μ : Measure E} [IsLocallyFiniteMeasure μ] {p : ℝ≥0∞} (hp : 1 ≤ p)
-    {f : E → ℝ} (hf : Memℒp f p μ) : LocallyIntegrable f μ := by
-  sorry
-
-
-#exit
-
-
 theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f):
     ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
-  apply ae_eq_of_integral_contDiff_smul_eq
-  have Z := hf.memℒp_lineDeriv (∑ i in s, a i • v i) (μ := μ)
-  have T := memℒp.locallyIntegrable
+  apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
