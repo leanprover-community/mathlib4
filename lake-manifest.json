@@ -36,7 +36,7 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "dd3a248c2a22c37644ad21029ecfa38f6a36d813",
+    "rev": "101f1d041068be39093633e4ebf95f8c6fae2240",
     "opts": {},
     "name": "std",
     "inputRev?": "main",
