@@ -71,13 +71,15 @@ theorem LipschitzWith.memℒp_lineDeriv {C : ℝ≥0} {f : E → ℝ} (hf : Lips
     (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
 open scoped Topology
+open Metric
 
 theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg : LipschitzWith D g)
     (h'g : HasCompactSupport g) (v : E) :
     ∫ x, lineDeriv ℝ f x v * g x ∂μ = - ∫ x, f x * lineDeriv ℝ g x v ∂μ := by
   have : Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
               (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
-    apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
+    sorry
+    /- apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
     · apply eventually_of_forall (fun t ↦ ?_)
       apply AEStronglyMeasurable.mul ?_ hg.continuous.aestronglyMeasurable
       apply aestronglyMeasurable_const.smul
@@ -92,4 +94,12 @@ theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg 
         gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
       _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg ht.le]; ring
     · exact (Continuous.integrable_of_hasCompactSupport hg.continuous h'g).norm.const_mul _
-    ·
+    · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
+      exact hx.hasLineDerivAt.tendsto_nhdsWithin_right.mul tendsto_const_nhds
+    -/
+  have : Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (g (x + t • v) - g x)) * f x ∂μ) (𝓝[>] 0)
+              (𝓝 (∫ x, lineDeriv ℝ g x v * f x ∂μ)) := by
+    let Z := cthickening (C * ‖v‖) (tsupport g)
+    have : IsCompact (tsupport g) := by exact h'g
+    have : IsCompact Z := by
+      apply isCompact_of_isClosed_bounded
