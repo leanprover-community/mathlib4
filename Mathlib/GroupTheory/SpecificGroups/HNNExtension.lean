@@ -497,6 +497,13 @@ structure ReducedWord : Type _ :=
 
 namespace ReducedWord
 
+@[simps]
+def empty : ReducedWord G A B :=
+  { left := 1
+    toList := []
+    eq_one_of_mem := by simp
+    chain := List.chain'_nil }
+
 variable {G A B}
 def prod : ReducedWord G A B → HNNExtension G A B φ :=
   fun w => of w.left * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
@@ -555,6 +562,31 @@ theorem exists_normalWord_prod_eq
       erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.smul_def,
         t_pow_smul_eq_unitsSMul, unitSMul, dif_neg this, ← hw'2]
       simp [mul_assoc, unitSMulGroup, (d.compl _).equiv_snd_eq_one_iff_mem]
+
+theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
+    (hprod : w₁.prod φ = w₂.prod φ) :
+    w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
+     ∀ u ∈ w₁.toList.head?.map Prod.fst,
+      w₁.left⁻¹ * w₂.left ∈ toSubgroup A B (-u) := by
+  rcases TransversalPair.nonempty G A B with ⟨d⟩
+  rcases exists_normalWord_prod_eq φ d w₁ with ⟨w₁', hw₁'1, hw₁'2, hw₁'3⟩
+  rcases exists_normalWord_prod_eq φ d w₂ with ⟨w₂', hw₂'1, hw₂'2, hw₂'3⟩
+  have : w₁' = w₂' :=
+    NormalWord.prod_injective φ d (by rw [hw₁'1, hw₂'1, hprod])
+  subst this
+  refine ⟨by rw [← hw₁'2, hw₂'2], ?_⟩
+  simp only [← leftCoset_eq_iff] at *
+  intro u hu
+  rw [← hw₁'3 _ hu, ← hw₂'3 _]
+  rwa [← List.head?_map, ← hw₂'2, hw₁'2, List.head?_map]
+
+theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
+    (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
+    w.toList = [] := by
+  rcases hw with ⟨g, hg⟩
+  let w' : ReducedWord G A B := { empty G A B with left := g }
+  have : w.prod φ = w'.prod φ := by simp [prod, hg]
+  simpa using (map_fst_eq_and_of_prod_eq φ this).1
 
 end ReducedWord
 
