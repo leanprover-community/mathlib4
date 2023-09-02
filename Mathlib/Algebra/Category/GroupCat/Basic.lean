@@ -514,7 +514,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget_reflects_isos AddCommGroupCat.forget_reflects_isos
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`
--- as the `Category` instance in not found on the additive variant
+-- as the `Category` instance is not found on the additive variant
 -- this variant is then renamed with a `Aux` suffix
 
 /-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
