@@ -351,6 +351,9 @@ def generate (g : Set (Set α)) : Filter α where
   inter_sets := GenerateSets.inter
 #align filter.generate Filter.generate
 
+lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
+    U ∈ generate s := GenerateSets.basic h
+
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
   Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
@@ -2677,6 +2680,31 @@ instance pure_neBot {α : Type u} {a : α} : NeBot (pure a) :=
 theorem le_pure_iff {f : Filter α} {a : α} : f ≤ pure a ↔ {a} ∈ f := by
   rw [← principal_singleton, le_principal_iff]
 #align filter.le_pure_iff Filter.le_pure_iff
+
+lemma le_pure_iff_eq_pure {l : Filter α} [hl : NeBot l] :
+    l ≤ pure x ↔ l = pure x := by
+  refine' ⟨fun h ↦ _, fun h ↦ h.le⟩
+  have hx := le_pure_iff.1 h
+  ext s
+  simp only [mem_pure]
+  refine ⟨fun h ↦ ?_, fun h ↦ mem_of_superset hx (singleton_subset_iff.2 h)⟩
+  by_contra H
+  have : s ∩ {x} ∈ l := inter_mem h hx
+  rw [inter_singleton_eq_empty.2 H, empty_mem_iff_bot] at this
+  exact NeBot.ne hl this
+
+lemma eq_pure_iff_singleton_mem {l : Filter α} [hl : NeBot l] {x : α} :
+    l = pure x ↔ {x} ∈ l := by
+  rw [← le_pure_iff_eq_pure, le_pure_iff]
+
+lemma eq_bot_or_pure_of_subsingleton_mem {l : Filter α} {s : Set α} (hs : s.Subsingleton)
+    (h's : s ∈ l) : l = ⊥ ∨ ∃ x, l = pure x := by
+  rcases l.eq_or_neBot with rfl|hl
+  · exact Or.inl rfl
+  · rcases hs.eq_empty_or_singleton with rfl|⟨x, rfl⟩
+    · rw [empty_mem_iff_bot.1 h's]
+      exact Or.inl rfl
+    · exact Or.inr ⟨x, eq_pure_iff_singleton_mem.2 h's⟩
 
 theorem mem_seq_def {f : Filter (α → β)} {g : Filter α} {s : Set β} :
     s ∈ f.seq g ↔ ∃ u ∈ f, ∃ t ∈ g, ∀ x ∈ u, ∀ y ∈ t, (x : α → β) y ∈ s :=
