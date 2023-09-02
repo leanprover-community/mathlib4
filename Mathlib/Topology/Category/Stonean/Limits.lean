@@ -66,7 +66,7 @@ lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (
 
 lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
-  ext ⟨a,x⟩
+  ext ⟨a, x⟩
   specialize h a
   apply_fun (fun q => q x) at h
   exact h
