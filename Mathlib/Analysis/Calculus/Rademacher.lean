@@ -71,7 +71,12 @@ theorem LipschitzWith.memℒp_lineDeriv {C : ℝ≥0} {f : E → ℝ} (hf : Lips
     (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
 open scoped Topology
-open Metric
+open Metric Set
+
+/-- Deplacer, et utiliser dans locallyuniformlimit-/
+theorem IsCompact.cthickening {α : Type*} [PseudoMetricSpace α] [ProperSpace α] {s : Set α}
+    (hs : IsCompact s) {r : ℝ} : IsCompact (cthickening r s) :=
+  isCompact_of_isClosed_bounded isClosed_cthickening (bounded hs).cthickening
 
 theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg : LipschitzWith D g)
     (h'g : HasCompactSupport g) (v : E) :
@@ -99,7 +104,40 @@ theorem glouglou {C D : ℝ≥0} {f g : E → ℝ} (hf : LipschitzWith C f) (hg 
     -/
   have : Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (g (x + t • v) - g x)) * f x ∂μ) (𝓝[>] 0)
               (𝓝 (∫ x, lineDeriv ℝ g x v * f x ∂μ)) := by
-    let Z := cthickening (C * ‖v‖) (tsupport g)
-    have : IsCompact (tsupport g) := by exact h'g
-    have : IsCompact Z := by
-      apply isCompact_of_isClosed_bounded
+    let K := cthickening (‖v‖) (tsupport g)
+    have : IsCompact K := IsCompact.cthickening h'g
+    apply tendsto_integral_filter_of_dominated_convergence
+        (K.indicator (fun x ↦ (D * ‖v‖) * ‖f x‖))
+    · apply eventually_of_forall (fun t ↦ ?_)
+      apply AEStronglyMeasurable.mul ?_ hf.continuous.aestronglyMeasurable
+      apply aestronglyMeasurable_const.smul
+      apply AEStronglyMeasurable.sub _ hg.continuous.measurable.aestronglyMeasurable
+      apply AEMeasurable.aestronglyMeasurable
+      exact hg.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
+    · filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t ht
+      have t_pos : 0 < t := ht.1
+      apply eventually_of_forall (fun x ↦ ?_)
+      by_cases hx : x ∈ K
+      · calc ‖t⁻¹ • (g (x + t • v) - g x) * f x‖
+          = (t⁻¹ * ‖g (x + t • v) - g x‖) * ‖f x‖ := by simp [norm_mul, t_pos.le]
+        _ ≤ (t⁻¹ * (D * ‖(x + t • v) - x‖)) * ‖f x‖ := by
+          gcongr; exact LipschitzWith.norm_sub_le hg (x + t • v) x
+        _ = (D * ‖v‖) *‖f x‖ := by field_simp [norm_smul, abs_of_nonneg t_pos.le]; ring
+        _ = K.indicator (fun x ↦ (D * ‖v‖) * ‖f x‖) x := by rw [indicator_of_mem hx]
+      · have A : g x = 0 := by
+          rw [← Function.nmem_support]
+          contrapose! hx
+          exact self_subset_cthickening _ (subset_tsupport _ hx)
+        have B : g (x + t • v) = 0 := by
+          rw [← Function.nmem_support]
+          contrapose! hx
+          apply mem_cthickening_of_dist_le _ _  (‖v‖) (tsupport g) (subset_tsupport _ hx)
+          simp only [dist_eq_norm, sub_add_cancel', norm_neg, norm_smul, Real.norm_eq_abs,
+            abs_of_nonneg t_pos.le, norm_pos_iff]
+          exact mul_le_of_le_one_left (norm_nonneg v) ht.2
+        simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]
+        exact indicator_nonneg (fun y hy ↦ by positivity) _
+    ·
+      sorry -- exact (Continuous.integrable_of_hasCompactSupport hg.continuous h'g).norm.const_mul _
+    · filter_upwards [hg.ae_lineDifferentiableAt v] with x hx
+      exact hx.hasLineDerivAt.tendsto_nhdsWithin_right.mul tendsto_const_nhds
