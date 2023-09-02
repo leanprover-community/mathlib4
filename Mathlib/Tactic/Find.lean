@@ -142,8 +142,8 @@ structure Result where
   header : MessageData
   /-- Total number of matches -/
   count : Nat
-  /-- Matching definition (with defining module)  -/
-  hits : Array (ConstantInfo × Name)
+  /-- Matching definition (with defining module, if imported)  -/
+  hits : Array (ConstantInfo × Option Name)
 
 /-- The core of the `#find` tactic with all parsing/printing factored out, for
 programmatic use.  -/
@@ -180,14 +180,27 @@ def find (args : Arguments) (maxShown := 200) : MetaM (Except MessageData Result
     -- Filter by term patterns
     let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
 
-    -- Add defining module name (when would this fail?)
-    let hits5 := hits4.filterMap fun ci => do pure (ci, ← env.getModuleFor? ci.name)
+    -- Add defining module index
+    let hits5 := hits4.map fun ci => (ci, env.getModuleIdxFor? ci.name)
 
-    -- Sort to bring lemmas with small names to the top, and keep related lemmas together
-    let hits6 := hits5.qsort fun ci1 ci2 => Name.lt ci1.1.name ci2.1.name
+    -- Sort by modindex and then by name.
+    -- A ModIdx of none means locally defined, we put them first.
+    -- The modindex corresponds to a topological sort of the modules, so basic lemmas come earlier.
+    let hits6 := hits5.qsort fun (ci1, mi1) (ci2, mi2) =>
+      match mi1, mi2 with
+      | none, none => Name.lt ci1.name ci2.name
+      | none, some _ => true
+      | some _, none => false
+      | some mi1, some mi2 =>
+        Nat.blt mi1 mi2 || Nat.beq mi1 mi2 && Name.lt ci1.name ci2.name
 
     -- Apply maxShown limit
     let hits7 := hits6.extract 0 maxShown
+
+    -- Resolve ModIndex to module name
+    let hits8 := hits7.map fun (ci, mi) =>
+      let modName : Option Name := do env.header.moduleNames[(← mi).toNat]!
+      (ci, modName)
 
     let summary ← IO.mkRef MessageData.nil
     let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
@@ -199,9 +212,9 @@ def find (args : Arguments) (maxShown := 200) : MetaM (Except MessageData Result
       addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
     unless (pats.isEmpty) do
       addLine $ m!"Of these, {hits4.size} match your patterns."
-    unless (hits6.size ≤ maxShown) do
+    unless (hits7.size ≤ maxShown) do
       addLine $ m!"Of these, only the first {maxShown} are shown."
-    return .ok ⟨← summary.get, hits4.size, hits7⟩
+    return .ok ⟨← summary.get, hits4.size, hits8⟩
 
 /-!
 ## The #find command, syntax and parsing
