@@ -202,6 +202,7 @@ end ZeroHom
 section AddMonoidHom
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable {F : Type*} [AddMonoidHomClass F M N]
 
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
 -/
@@ -232,14 +233,14 @@ theorem mapRange.addMonoidHom_toZeroHom (f : M →+ N) :
   ZeroHom.ext fun _ => rfl
 #align finsupp.map_range.add_monoid_hom_to_zero_hom Finsupp.mapRange.addMonoidHom_toZeroHom
 
-theorem mapRange_multiset_sum (f : M →+ N) (m : Multiset (α →₀ M)) :
-    mapRange f f.map_zero m.sum = (m.map fun x => mapRange f f.map_zero x).sum :=
-  (mapRange.addMonoidHom f : (α →₀ _) →+ _).map_multiset_sum _
+theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
+    mapRange f (map_zero f) m.sum = (m.map fun x => mapRange f (map_zero f) x).sum :=
+  (mapRange.addMonoidHom (f : M →+ N) : (α →₀ _) →+ _).map_multiset_sum _
 #align finsupp.map_range_multiset_sum Finsupp.mapRange_multiset_sum
 
-theorem mapRange_finset_sum (f : M →+ N) (s : Finset ι) (g : ι → α →₀ M) :
-    mapRange f f.map_zero (∑ x in s, g x) = ∑ x in s, mapRange f f.map_zero (g x) :=
-  (mapRange.addMonoidHom f : (α →₀ _) →+ _).map_sum _ _
+theorem mapRange_finset_sum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
+    mapRange f (map_zero f) (∑ x in s, g x) = ∑ x in s, mapRange f (map_zero f) (g x) :=
+  (mapRange.addMonoidHom (f : M →+ N) : (α →₀ _) →+ _).map_sum _ _
 #align finsupp.map_range_finset_sum Finsupp.mapRange_finset_sum
 
 /-- `Finsupp.mapRange.AddMonoidHom` as an equiv. -/

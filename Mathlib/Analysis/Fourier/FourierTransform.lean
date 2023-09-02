@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
@@ -231,7 +231,7 @@ namespace Real
 /-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
 def fourierChar : Multiplicative ℝ →* 𝕊 where
   toFun z := expMapCircle (2 * π * Multiplicative.toAdd z)
-  map_one' := by simp only; rw [toAdd_one, MulZeroClass.mul_zero, expMapCircle_zero]
+  map_one' := by simp only; rw [toAdd_one, mul_zero, expMapCircle_zero]
   map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 

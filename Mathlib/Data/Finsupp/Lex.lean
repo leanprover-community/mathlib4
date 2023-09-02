@@ -105,7 +105,7 @@ We assume `CovariantClass` with *strict* inequality `<` also when proving the on
 *weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to be
 monotone, when it is "just" monotone on `N`.
 
-See `counterexamples.zero_divisors_in_add_monoid_algebras` for a counterexample. -/
+See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample. -/
 
 
 section Left

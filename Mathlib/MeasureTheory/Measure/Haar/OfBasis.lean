@@ -163,7 +163,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       simp only [smul_eq_mul, Pi.mul_apply]
       cases' eq_or_ne (a i) 0 with hai hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
-        rw [hai, ← h, zero_div, MulZeroClass.zero_mul]
+        rw [hai, ← h, zero_div, zero_mul]
       · rw [div_mul_cancel _ hai]
 #align parallelepiped_single parallelepiped_single
 
@@ -265,15 +265,15 @@ instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
 instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
-/-- `PiLp.equiv` as a `MeasurableEquiv`. -/
+/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]
 protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
-  toEquiv := PiLp.equiv _ _
+  toEquiv := WithLp.equiv _ _
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 #align euclidean_space.measurable_equiv EuclideanSpace.measurableEquiv
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = PiLp.equiv 2 _ := rfl
+theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
 
 end EuclideanSpace

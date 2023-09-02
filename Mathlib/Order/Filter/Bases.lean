@@ -708,7 +708,7 @@ theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t)
   rw [← subset_compl_iff_disjoint_left, disjoint_principal_left, mem_principal]
 #align filter.disjoint_principal_principal Filter.disjoint_principal_principal
 
-alias disjoint_principal_principal ↔ _ _root_.Disjoint.filter_principal
+alias ⟨_, _root_.Disjoint.filter_principal⟩ := disjoint_principal_principal
 #align disjoint.filter_principal Disjoint.filter_principal
 
 @[simp]
@@ -1191,6 +1191,12 @@ theorem isCountablyGenerated_bot : IsCountablyGenerated (⊥ : Filter α) :=
 theorem isCountablyGenerated_top : IsCountablyGenerated (⊤ : Filter α) :=
   @principal_univ α ▸ isCountablyGenerated_principal _
 #align filter.is_countably_generated_top Filter.isCountablyGenerated_top
+
+lemma isCountablyGenerated_of_subsingleton_mem {l : Filter α} {s : Set α} (hs : s.Subsingleton)
+    (h's : s ∈ l) : IsCountablyGenerated l := by
+  rcases eq_bot_or_pure_of_subsingleton_mem hs h's with rfl|⟨x, rfl⟩
+  · exact isCountablyGenerated_bot
+  · exact isCountablyGenerated_pure x
 
 -- porting note: without explicit `Sort u` and `Type v`, Lean 4 uses `ι : Prop`
 universe u v

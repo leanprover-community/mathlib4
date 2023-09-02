@@ -247,7 +247,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_neg, RingHom.map_one, Int.cast_neg, Int.cast_one]
     · rintro _ ⟨z, hzs, rfl⟩ _ _
       use 0
-      rw [RingHom.map_mul, lift_of, if_pos hzs, MulZeroClass.zero_mul]
+      rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
       refine' ⟨q + r, _⟩
