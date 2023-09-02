@@ -341,7 +341,7 @@ noncomputable def equiv {S T : Set G} (hST : IsComplement S T) : G ≃ S × T :=
 
 variable (hST : IsComplement S T) (hHT : IsComplement H T) (hSK : IsComplement S K)
 
-theorem equiv_symm_apply (x : S × T) : (hST.equiv.symm x : G) = x.1.1 * x.2.1 := rfl
+@[simp] theorem equiv_symm_apply (x : S × T) : (hST.equiv.symm x : G) = x.1.1 * x.2.1 := rfl
 
 @[simp]
 theorem equiv_fst_mul_equiv_snd (g : G) : ↑(hST.equiv g).fst * (hST.equiv g).snd = g :=
