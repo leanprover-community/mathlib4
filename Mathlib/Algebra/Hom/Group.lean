@@ -223,6 +223,7 @@ theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
 #align map_one map_one
 #align map_zero map_zero
 
+/-- In principle this could be an instance, but in practice it causes performance issues. -/
 @[to_additive]
 theorem Subsingleton.of_oneHomClass [Subsingleton M] [OneHomClass F M N] :
     Subsingleton F where
