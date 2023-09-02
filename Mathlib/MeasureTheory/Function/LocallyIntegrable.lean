@@ -26,7 +26,7 @@ on compact sets.
 
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace
 
-open scoped Topology Interval ENNReal
+open scoped Topology Interval ENNReal BigOperators
 
 variable {X Y E R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 
@@ -276,6 +276,12 @@ theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
   (locallyIntegrable_const c).locallyIntegrableOn s
 #align measure_theory.locally_integrable_on_const MeasureTheory.locallyIntegrableOn_const
 
+theorem locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : E)) μ :=
+  (integrable_zero X E μ).locallyIntegrable
+
+theorem locallyIntegrableOn_zero : LocallyIntegrableOn (fun _ ↦ (0 : E)) s μ :=
+  locallyIntegrable_zero.locallyIntegrableOn s
+
 theorem LocallyIntegrable.indicator (hf : LocallyIntegrable f μ) {s : Set X}
     (hs : MeasurableSet s) : LocallyIntegrable (s.indicator f) μ := by
   intro x
@@ -306,6 +312,15 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
+
+theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
+    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i in s, f i) μ :=
+  Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
+    locallyIntegrable_zero hf
+
+theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}
+    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i in s, f i a) μ := by
+  simpa only [← Finset.sum_apply] using locallyIntegrable_finset_sum' s hf
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
