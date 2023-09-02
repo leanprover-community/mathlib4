@@ -355,29 +355,19 @@ theorem equiv_snd_eq_inv_mul (g : G) : ↑(hST.equiv g).snd = ((hST.equiv g).fst
 
 theorem equiv_fst_eq_of_leftCosetEquivalence {g₁ g₂ : G}
     (h : LeftCosetEquivalence K g₁ g₂) : (hSK.equiv g₁).fst = (hSK.equiv g₂).fst := by
-  apply Subtype.val_injective
-  rcases mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁ with ⟨x, hx⟩
-  dsimp at hx
-  rw [hx.2 (hSK.equiv g₁).fst (hSK.equiv_snd_eq_inv_mul g₁ ▸ (hSK.equiv g₁).snd.prop),
-    hx.2 (hSK.equiv g₂).fst]
-  simp only [LeftCosetEquivalence, leftCoset, Set.image_mul_left, Set.ext_iff,
-    Set.mem_preimage, SetLike.mem_coe] at h
-  rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, h,
-    ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, ← hSK.equiv_snd_eq_inv_mul g₂]
-  exact Subtype.property _
+  rw [LeftCosetEquivalence, leftCoset_eq_iff] at h
+  apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
+  · simp [equiv_fst_eq_mul_inv]
+  · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
+    simp [equiv_fst_eq_mul_inv, mul_assoc]
 
 theorem equiv_snd_eq_of_rightCosetEquivalence {g₁ g₂ : G}
     (h : RightCosetEquivalence H g₁ g₂) : (hHT.equiv g₁).snd = (hHT.equiv g₂).snd := by
-  apply Subtype.val_injective
-  rcases mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁ with ⟨x, hx⟩
-  dsimp at hx
-  rw [hx.2 (hHT.equiv g₁).snd (hHT.equiv_fst_eq_mul_inv g₁ ▸ (hHT.equiv g₁).fst.prop),
-    hx.2 (hHT.equiv g₂).snd]
-  simp only [RightCosetEquivalence, rightCoset, Set.image_mul_right, Set.ext_iff,
-    Set.mem_preimage, SetLike.mem_coe] at h
-  rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, h,
-    ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv, ← hHT.equiv_fst_eq_mul_inv g₂]
-  exact Subtype.property _
+  rw [RightCosetEquivalence, rightCoset_eq_iff] at h
+  apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
+  · simp [equiv_snd_eq_inv_mul]
+  · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
+    simp [equiv_snd_eq_inv_mul, mul_assoc]
 
 theorem leftCosetEquivalence_equiv_fst (g : G) :
     LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
