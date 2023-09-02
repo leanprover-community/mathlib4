@@ -5,6 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.Monic
+import Mathlib.Data.Polynomial.RingDivision
 
 #align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
@@ -238,6 +240,15 @@ theorem descPochhammer_one : descPochhammer R 1 = X := by simp [descPochhammer]
 theorem descPochhammer_succ_left (n : ℕ) :
     descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
   by rw [descPochhammer]
+
+theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
+    Monic <| descPochhammer R n := by
+  induction' n with n hn
+  · simp
+  · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
+    have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
+    rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
+        one_mul, one_mul, h, one_pow]
 
 section
 
