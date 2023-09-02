@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          token: ${{ secrets.NIGHTLY_TESTING }}
 
       - name: Configure Git User
         run: |

@@ -13,6 +13,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: nightly-testing # checkout nightly-testing branch
+        token: ${{ secrets.NIGHTLY_TESTING }}
 
     - name: Get latest release tag from leanprover/lean4-nightly
       id: get-latest-release
