@@ -224,9 +224,11 @@ theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
 #align map_zero map_zero
 
 @[to_additive]
-instance (priority := 100) OneHomClass.subsingleton_left [Subsingleton M] [OneHomClass F M N] :
+theorem Subsingleton.of_oneHomClass [Subsingleton M] [OneHomClass F M N] :
     Subsingleton F where
   allEq f g := FunLike.ext _ _ fun x ↦ by simp [Subsingleton.elim x 1]
+
+@[to_additive] instance [Subsingleton M] : Subsingleton (OneHom M N) := .of_oneHomClass
 
 @[to_additive]
 theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f) {x : M} :
@@ -390,6 +392,8 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] MonoidHomClass.toOneHomClass
 
+@[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := .of_oneHomClass
+
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
 @[to_additive (attr := coe)
@@ -516,6 +520,8 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
   map_one := MonoidWithZeroHom.map_one'
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
+
+instance [Subsingleton M] : Subsingleton (M →*₀ N) := .of_oneHomClass
 
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F M N` into an actual
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `M →*₀ N`. -/
