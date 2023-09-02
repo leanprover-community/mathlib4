@@ -129,6 +129,7 @@ def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
 #align local_cohomology.diagram_comp localCohomology.diagramComp
 
 /-- Local cohomology agrees along precomposition with a cofinal diagram. -/
+@[nolint unusedHavesSuffices]
 def isoOfFinal [Functor.Initial I'] (i : ℕ) :
     ofDiagram.{max u v, v'} (I' ⋙ I) i ≅ ofDiagram.{max u v', v} I i :=
   have := hasColimitDiagram.{max u v', v} I i
