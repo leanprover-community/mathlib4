@@ -35,7 +35,6 @@ variable {J : Type v} [SmallCategory J]
   "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
 abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
 
-
 namespace GroupCat
 
 @[to_additive]
