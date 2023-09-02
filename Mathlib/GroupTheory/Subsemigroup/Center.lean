@@ -27,36 +27,36 @@ variable {M : Type*}
 
 namespace Set
 
-structure IsAddCentralizer [Add M] (z : M) (S : Set M) : Prop where
-  comm (a : S) : z + a = a + z
-  left_assoc (b c : S) : z + (b + c) = (z + b) + c
-  mid_assoc (a c : S) : (a + z) + c = a + (z + c)
-  right_assoc (a b : S) : (a + b) + z = a + (b + z)
+structure IsAddCentral [Add M] (z : M) : Prop where
+  comm (a : M) : z + a = a + z
+  left_assoc (b c : M) : z + (b + c) = (z + b) + c
+  mid_assoc (a c : M) : (a + z) + c = a + (z + c)
+  right_assoc (a b : M) : (a + b) + z = a + (b + z)
 
 @[to_additive]
-structure IsMulCentralizer [Mul M] (z : M) (S : Set M) : Prop where
-  comm (a : S): z * a = a * z
-  left_assoc (b c : S) : z * (b * c) = (z * b) * c
-  mid_assoc (a c : S) : (a * z) * c = a * (z * c)
-  right_assoc (a b : S) : (a * b) * z = a * (b * z)
+structure IsMulCentral [Mul M] (z : M) : Prop where
+  comm (a : M): z * a = a * z
+  left_assoc (b c : M) : z * (b * c) = (z * b) * c
+  mid_assoc (a c : M) : (a * z) * c = a * (z * c)
+  right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
 variable (M)
 
 /-- The center of a magma. -/
 @[to_additive addCenter " The center of an additive magma. "]
 def center [Mul M] : Set M :=
-   { z | (IsMulCentralizer z univ) }
+   { z | (IsMulCentral z) }
 #align set.center Set.center
 #align set.add_center Set.addCenter
 
 -- porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
-theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ IsMulCentralizer z univ :=
+theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
 #align set.mem_center_iff Set.mem_center_iff
 #align set.mem_add_center Set.mem_addCenter_iff
 
-instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| IsMulCentralizer a univ] :
+instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| IsMulCentral a] :
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (mem_center_iff M)
 #align set.decidable_mem_center Set.decidableMemCenter
 
@@ -79,13 +79,10 @@ theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M where
 
 variable {M}
 
-lemma test (a : M) : a ∈ univ := by
-  exact trivial
-
 @[to_additive (attr := simp) add_mem_addCenter]
-theorem mul_mem_center [Mul M] {z₁ z₂ ∈ univ} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
+theorem mul_mem_center [Mul M] {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
     z₁ * z₂ ∈ Set.center M where
-  comm (a : Set.univ) := calc
+  comm a := calc
     z₁ * z₂ * a = z₂ * z₁ * a := by rw [hz₁.comm]
     _ = z₂ * (z₁ * a) := by rw [hz₁.mid_assoc z₂]
     _ = (a * z₁) * z₂ := by rw [hz₁.comm, hz₂.comm]
