@@ -285,7 +285,8 @@ variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
 
 namespace Measure
 
-theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [MeasurableSpace R]
+theorem meas_le_ne_meas_lt_subset_meas_pos₀
+    {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R] [MeasurableSpace R]
     [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) {t : R}
     (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) : 0 < μ {a : α | g a = t} := by
   have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
@@ -305,51 +306,35 @@ theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [Measurab
   rw [not_lt, nonpos_iff_eq_zero] at con
   rw [con, add_zero] at μ_add
   exact ht μ_add
+
+theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [MeasurableSpace R]
+    [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) {t : R}
+    (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) : 0 < μ {a : α | g a = t} :=
+  meas_le_ne_meas_lt_subset_meas_pos₀ (μ := μ) g_mble.nullMeasurable ht
 #align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_le_ne_meas_lt_subset_meas_pos
-
-/-- If the union of disjoint measurable sets has finite measure, then there are only
-finitely many members of the union whose measure exceeds any given positive number. -/
-theorem finite_const_le_meas_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] (μ : Measure α)
-    {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
-    (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
-    Set.Finite { i : ι | ε ≤ μ (As i) } :=
-  ENNReal.finite_const_le_of_tsum_ne_top
-    (ne_top_of_le_ne_top Union_As_finite (tsum_meas_le_meas_iUnion_of_disjoint₀ μ As_mble As_disj))
-    ε_pos.ne'
-
-/-- If the union of disjoint measurable sets has finite measure, then there are only
-countably many members of the union whose measure is positive. -/
-theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} [MeasurableSpace α]
-    (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
-    (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
-    Set.Countable { i : ι | 0 < μ (As i) } := by
-  set posmeas := { i : ι | 0 < μ (As i) } with posmeas_def
-  rcases exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1) with
-    ⟨as, _, as_mem, as_lim⟩
-  set fairmeas := fun n : ℕ => { i : ι | as n ≤ μ (As i) }
-  have countable_union : posmeas = ⋃ n, fairmeas n := by
-    have fairmeas_eq : ∀ n, fairmeas n = (fun i => μ (As i)) ⁻¹' Ici (as n) := fun n => by
-      simp only []
-      rfl
-    simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
-      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
-  rw [countable_union]
-  refine' countable_iUnion fun n => Finite.countable _
-  refine' finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
 
 theorem countable_meas_le_ne_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R]
     [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
-  --Countable.mono (show _ from fun _ ht => meas_le_ne_meas_lt_subset_meas_pos μ g_mble ht)
-  --  (Measure.countable_meas_level_set_pos₀ g_mble)
-  sorry
+  Countable.mono (fun t ht ↦ meas_le_ne_meas_lt_subset_meas_pos₀ g_mble ht)
+    (Measure.countable_meas_level_set_pos₀ g_mble)
+
+theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
+    [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) :
+    {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
+  countable_meas_le_ne_meas_lt₀ (μ := μ) g_mble.nullMeasurable
 #align measure.countable_meas_le_ne_meas_lt Measure.countable_meas_le_ne_meas_lt
+
+theorem meas_le_ae_eq_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
+    [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R}
+    (g_mble : NullMeasurable g μ) :
+    (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
+  Set.Countable.measure_zero (Measure.countable_meas_le_ne_meas_lt₀ μ g_mble) _
 
 theorem meas_le_ae_eq_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R] [MeasurableSpace R]
     [MeasurableSingletonClass R] (ν : Measure R) [NoAtoms ν] {g : α → R} (g_mble : Measurable g) :
     (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
-  --Set.Countable.measure_zero (Measure.countable_meas_le_ne_meas_lt μ g_mble) _
-  sorry
+  Set.Countable.measure_zero (Measure.countable_meas_le_ne_meas_lt μ g_mble) _
 #align measure.meas_le_ae_eq_meas_lt Measure.meas_le_ae_eq_meas_lt
 
 end Measure
@@ -368,14 +353,16 @@ Roughly speaking, the statement is: `∫⁻ (G ∘ f) ∂μ = ∫⁻ t in (0).. 
 
 See `lintegral_comp_eq_lintegral_meas_le_mul` for a version with sets of the form `{ω | f(ω) ≥ t}`
 instead. -/
-theorem lintegral_comp_eq_lintegral_meas_lt_mul (μ : Measure α) [SigmaFinite μ] (f_nn : 0 ≤ f)
-    (f_mble : Measurable f) (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t)
+theorem lintegral_comp_eq_lintegral_meas_lt_mul (μ : Measure α) [SigmaFinite μ]
+    (f_nn : 0 ≤ f) -- a.e.?
+    (f_mble : AEMeasurable f μ) (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t)
     (g_nn : ∀ᵐ t ∂volume.restrict (Ioi 0), 0 ≤ g t) :
     (∫⁻ ω, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ) =
       ∫⁻ t in Ioi 0, μ {a : α | t < f a} * ENNReal.ofReal (g t) := by
-  rw [lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble.aemeasurable g_intble g_nn]
+  rw [lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble g_intble g_nn]
   apply lintegral_congr_ae
-  filter_upwards [Measure.meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f_mble] with t ht
+  filter_upwards [Measure.meas_le_ae_eq_meas_lt₀ μ (volume.restrict (Ioi 0)) f_mble.nullMeasurable]
+    with t ht
   rw [ht]
 #align lintegral_comp_eq_lintegral_meas_lt_mul lintegral_comp_eq_lintegral_meas_lt_mul
 
@@ -386,12 +373,14 @@ be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in (0).. ∞, μ {�
 
 See `lintegral_eq_lintegral_meas_le` for a version with sets of the form `{ω | f(ω) ≥ t}`
 instead. -/
-theorem lintegral_eq_lintegral_meas_lt (μ : Measure α) [SigmaFinite μ] (f_nn : 0 ≤ f)
-    (f_mble : Measurable f) :
+theorem lintegral_eq_lintegral_meas_lt (μ : Measure α) [SigmaFinite μ]
+    (f_nn : 0 ≤ f) -- a.e.?
+    (f_mble : AEMeasurable f μ) :
     (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioi 0, μ {a : α | t < f a} := by
-  rw [lintegral_eq_lintegral_meas_le μ f_nn f_mble.aemeasurable]
+  rw [lintegral_eq_lintegral_meas_le μ f_nn f_mble]
   apply lintegral_congr_ae
-  filter_upwards [Measure.meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f_mble] with t ht
+  filter_upwards [Measure.meas_le_ae_eq_meas_lt₀ μ (volume.restrict (Ioi 0)) f_mble.nullMeasurable]
+    with t ht
   rw [ht]
 #align lintegral_eq_lintegral_meas_lt lintegral_eq_lintegral_meas_lt
 
@@ -402,14 +391,16 @@ be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in (0).. ∞,
 
 See `lintegral_rpow_eq_lintegral_meas_le_mul` for a version with sets of the form `{ω | f(ω) ≥ t}`
 instead. -/
-theorem lintegral_rpow_eq_lintegral_meas_lt_mul (μ : Measure α) [SigmaFinite μ] (f_nn : 0 ≤ f)
-    (f_mble : Measurable f) {p : ℝ} (p_pos : 0 < p) :
+theorem lintegral_rpow_eq_lintegral_meas_lt_mul (μ : Measure α) [SigmaFinite μ]
+    (f_nn : 0 ≤ f) -- a.e.?
+    (f_mble : AEMeasurable f μ) {p : ℝ} (p_pos : 0 < p) :
     (∫⁻ ω, ENNReal.ofReal (f ω ^ p) ∂μ) =
       ENNReal.ofReal p * ∫⁻ t in Ioi 0, μ {a : α | t < f a} * ENNReal.ofReal (t ^ (p - 1)) := by
-  rw [lintegral_rpow_eq_lintegral_meas_le_mul μ f_nn f_mble.aemeasurable p_pos]
+  rw [lintegral_rpow_eq_lintegral_meas_le_mul μ f_nn f_mble p_pos]
   apply congr_arg fun z => ENNReal.ofReal p * z
   apply lintegral_congr_ae
-  filter_upwards [Measure.meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f_mble] with t ht
+  filter_upwards [Measure.meas_le_ae_eq_meas_lt₀ μ (volume.restrict (Ioi 0)) f_mble.nullMeasurable]
+    with t ht
   rw [ht]
 #align lintegral_rpow_eq_lintegral_meas_lt_mul lintegral_rpow_eq_lintegral_meas_lt_mul
 
