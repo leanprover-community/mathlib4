@@ -66,7 +66,7 @@ lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (
 
 lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
-  ext ⟨a,x⟩
+  ext ⟨a, x⟩
   specialize h a
   apply_fun (fun q => q x) at h
   exact h
@@ -125,6 +125,21 @@ noncomputable
 def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 Limits.IsColimit.coconePointUniqueUpToIso
   (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
+
+/-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
+lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+    OpenEmbedding (finiteCoproduct.ι Z a) :=
+  openEmbedding_sigmaMk (σ := fun a => (Z a))
+
+/-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
+lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+    OpenEmbedding (Sigma.ι Z a) := by
+  refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
+  convert finiteCoproduct.openEmbedding_ι Z a
+  ext x
+  change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
+  simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
+    finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
 
 end FiniteCoproducts
 

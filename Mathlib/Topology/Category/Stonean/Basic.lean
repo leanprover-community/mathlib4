@@ -61,8 +61,8 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   have : Epi g' := by
     rw [CompHaus.epi_iff_surjective]
     assumption
-  obtain ⟨h,hh⟩ := Projective.factors f' g'
-  refine ⟨h,h.2,?_⟩
+  obtain ⟨h, hh⟩ := Projective.factors f' g'
+  refine ⟨h, h.2, ?_⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh
@@ -126,8 +126,8 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 @[simps]
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
-  { toCompHaus := X.compHaus,
-    IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+    { toCompHaus := X.compHaus,
+      IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
@@ -141,6 +141,27 @@ instance : Faithful toProfinite := {}
     factors through profinite spaces. -/
 example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
   rfl
+
+/-- Construct an isomorphism from a homeomorphism. -/
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+
+/-- Construct a homeomorphism from an isomorphism. -/
+@[simps!]
+def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (toCompHaus.mapIso f)
+
+/-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
+of topological spaces. -/
+@[simps!]
+noncomputable
+def isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
 
 /-- Every Stonean space is projective in `CompHaus` -/
 instance (X : Stonean) : Projective X.compHaus where

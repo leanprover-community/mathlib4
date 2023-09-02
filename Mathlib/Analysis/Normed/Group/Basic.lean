@@ -426,6 +426,11 @@ theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_re
 #align norm_inv' norm_inv'
 #align norm_neg norm_neg
 
+@[to_additive]
+theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
+    dist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖ := by
+  rw [dist_eq_norm_div, Set.apply_mulIndicator_symmDiff norm_inv']
+
 @[to_additive (attr := simp)]
 theorem dist_mul_self_right (a b : E) : dist b (a * b) = ‖a‖ := by
   rw [← dist_one_left, ← dist_mul_right 1 a b, one_mul]
@@ -933,6 +938,11 @@ theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
 #align nnnorm_neg nnnorm_neg
 
 @[to_additive]
+theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
+    nndist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ :=
+  NNReal.eq <| dist_mulIndicator s t f x
+
+@[to_additive]
 theorem nnnorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_div_le _ _
 #align nnnorm_div_le nnnorm_div_le
@@ -985,6 +995,11 @@ theorem edist_eq_coe_nnnorm' (x : E) : edist x 1 = (‖x‖₊ : ℝ≥0∞) := 
   rw [edist_eq_coe_nnnorm_div, div_one]
 #align edist_eq_coe_nnnorm' edist_eq_coe_nnnorm'
 #align edist_eq_coe_nnnorm edist_eq_coe_nnnorm
+
+@[to_additive]
+theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
+    edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
+  rw [edist_nndist, nndist_mulIndicator]
 
 @[to_additive]
 theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r ↔ ↑‖a‖₊ < r := by
