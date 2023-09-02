@@ -70,30 +70,22 @@ example [Ring R] (h : (0 : R) = 6) : coeff (1 : R[X]) 1 = 6 := by compute_degree
 error: The given degree is '0'.  However,
 
 * the coefficient of degree 0 may be zero
-* there may be a term of naïve degree 2
 * there is at least one term of naïve degree 2
+* there may be a term of naïve degree 2
 -/
 #guard_msgs in
 example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 
 /--
-error: 'compute_degree' inapplicable.  The goal
-
-   natDegree X ≠ 0
-
-is expected to be '≤' or '=', instead of 'Ne'.
+error: 'compute_degree' inapplicable. The goal
+  natDegree X ≠ 0
+is expected to be '≤' or '='.
 -/
 #guard_msgs in
 example : natDegree (X : ℕ[X]) ≠ 0 := by compute_degree!
 
 /--
-error: 'compute_degree' inapplicable.  The LHS of
-
-   0 ≤ 0
-
-begins with 'OfNat.ofNat'.  There is support only for
-
-   'natDegree'   'degree'   or   'coeff'
+error: 'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
 -/
 #guard_msgs in
 example : 0 ≤ 0 := by compute_degree!
