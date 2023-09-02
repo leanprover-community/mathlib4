@@ -177,10 +177,8 @@ elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => 
     unless ← matcher c do
       logErrorAt s "Pattern does not match when it should!"
 
-/-- error: Pattern does not match when it should! -/
-#guard_msgs in
 #assert_match List.map (?a -> ?b) -> List ?a -> List ?b
-
+#assert_match List.map List ?a → (?a -> ?b) -> List ?b
 #assert_match List.map |- (?a -> ?b) -> List ?a -> List ?b
 
 end ListMapTest
