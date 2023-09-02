@@ -84,10 +84,8 @@ theorem radon_partition {ι : Type*} {f : ι → E}
 
   use p
   apply Set.mem_inter
-
   · apply (convex_convexHull 𝕜 _).sum_mem (fun i _ ↦ h6 i) h5_I
     exact fun i hi ↦ subset_convexHull _ _ (Set.mem_image_of_mem _ hi)
-
   · rw [h4]
     apply (convex_convexHull 𝕜 _).sum_mem (fun i _ ↦ h6 i) h5_J
     intro i hi1
@@ -100,31 +98,7 @@ convex hulls of `I` and `s \ I` intersect. -/
 theorem radon_set_partition (s : Set E)
     (h : ¬AffineIndependent 𝕜 ((↑) : s → E)) : ∃ (I : Set E), (I ⊆ s) ∧
     (Set.Nonempty ((convexHull 𝕜 I) ∩ (convexHull 𝕜 (s \ I)))) := by
-  obtain ⟨I, h1⟩ := radon_partition h
-  use I; constructor
-  exact Set.coe_subset
-
-  have h2 : Subtype.val '' I = Lean.Internal.coeM I := by
-    apply Set.ext
-    intro x; rw [Set.mem_image]; constructor
-    · intro ⟨x1, hx1, hx2⟩
-      rw [← hx2]
-      simp [Set.mem_coe_of_mem, hx1]
-    · intro hx
-      repeat constructor
-      exact Set.mem_of_mem_coe hx; rfl
-
-  have h3 : Subtype.val '' Iᶜ = s \ Lean.Internal.coeM I := by
-    apply Set.ext
-    intro x; rw [Set.mem_image]; constructor
-    · intro ⟨x1, hx1, hx2⟩
-      rw [← hx2, Set.mem_diff]; simp only [Subtype.coe_prop, true_and]
-      intro hx3
-      exact hx1 (Set.mem_of_mem_coe hx3)
-    · intro hx
-      rw [Set.mem_diff] at hx; rcases hx with ⟨hx1, hx2⟩
-      use {val := x, property := hx1}; simp only [mem_compl_iff, and_true]
-      intro hx3
-      apply hx2 (Set.mem_coe_of_mem _ hx3)
-
-  rwa [← h3, ← h2]
+  obtain ⟨I, hI⟩ := radon_partition h
+  use (↑) '' I; constructor
+  · exact Subtype.coe_image_subset _ _
+  · rwa [compl_eq_univ_diff, image_diff Subtype.val_injective, image_univ, Subtype.range_coe] at hI
