@@ -2764,11 +2764,6 @@ theorem ofInjective_apply {f : G →* N} (hf : Function.Injective f) {x : G} :
 #align monoid_hom.of_injective_apply MonoidHom.ofInjective_apply
 #align add_monoid_hom.of_injective_apply AddMonoidHom.ofInjective_apply
 
-@[to_additive (attr := simp)]
-theorem apply_ofInjective_symm {f : G →* N} (hf : Function.Injective f) (x : f.range) :
-    f ((ofInjective hf).symm x) = x := by
-  rw [← ofInjective_apply hf, MulEquiv.apply_symm_apply]
-
 section Ker
 
 variable {M : Type*} [MulOneClass M]
