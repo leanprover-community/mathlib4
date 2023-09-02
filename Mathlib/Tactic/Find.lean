@@ -79,22 +79,27 @@ def matchConclusion (t : Expr) : MetaM ConstMatcher := withReducible do
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     matchUpToHyps pat head cTy
 
+/-- A wrapper around `Lean.Meta.forEachExpr'` that checks if any subexpression matches the
+predicate.  -/
+def Lean.Meta.anyExpr (input : Expr) (pred : Expr → MetaM Bool) : MetaM Bool := do
+  let found  ← IO.mkRef false
+  Lean.Meta.forEachExpr' input fun sub_e => do
+    if ← pred sub_e then found.set true
+    -- keep searching if we haven't found it yet
+    not <$> found.get
+  found.get
+
 /-- Takes a pattern (of type `Expr`), and returns a matcher that succeeds if _any_ subexpression
 matches that patttern. If the pattern is a function type, it matches up to parameter reordering. -/
 def matchAnywhere (t : Expr) : MetaM ConstMatcher := withReducible do
   let head := (← forallMetaTelescopeReducing t).2.2.toHeadIndex
   let pat ← abstractMVars (← instantiateMVars t)
   pure fun (c : ConstantInfo) => withReducible do
-    let found  ← IO.mkRef false
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
-    -- NB: Lean.Meta.forEachExpr' handles nested foralls in one go, so
+    -- NB: Lean.Meta.forEachExpr`' handles nested foralls in one go, so
     -- in `(a → b → c)`, it will never vist `b → c`.
     -- But since we use `matchUpToHyps` instead of `isDefEq` directly, this is ok.
-    Lean.Meta.forEachExpr' cTy fun sub_e => do
-      if ← matchUpToHyps pat head sub_e then found.set true
-      -- keep searching if we haven't found it yet
-      not <$> found.get
-    found.get
+    Lean.Meta.anyExpr cTy $ matchUpToHyps pat head
 
 /-!
 ## The find tactic engine: Cache and matching
