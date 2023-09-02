@@ -24,18 +24,15 @@ on compact sets.
   integrable on `s`.
 -/
 
-set_option autoImplicit true
-
-
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace
 
-open scoped Topology Interval
+open scoped Topology Interval ENNReal
 
 variable {X Y E R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 
-variable [NormedAddCommGroup E] {f : X → E} {μ : Measure X} {s : Set X}
+variable [NormedAddCommGroup E] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -260,12 +257,18 @@ theorem LocallyIntegrable.exists_nat_integrableOn [SecondCountableTopology X]
   refine' ⟨u, u_open, eq_univ_of_univ_subset u_union, fun n ↦ _⟩
   simpa only [inter_univ] using hu n
 
-theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
-    LocallyIntegrable (fun _ => c) μ := by
+theorem Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p : ℝ≥0∞}
+    (hf : Memℒp f p μ) (hp : 1 ≤ p) : LocallyIntegrable f μ := by
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
+  have : Fact (μ U < ⊤) := ⟨h'U⟩
   refine' ⟨U, hU, _⟩
-  simp only [h'U, integrableOn_const, or_true_iff]
+  rw [IntegrableOn, ← memℒp_one_iff_integrable]
+  apply (hf.restrict U).memℒp_of_exponent_le hp
+
+theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
+    LocallyIntegrable (fun _ => c) μ :=
+  (memℒp_top_const c).locallyIntegrable le_top
 #align measure_theory.locally_integrable_const MeasureTheory.locallyIntegrable_const
 
 theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
