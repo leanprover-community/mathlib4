@@ -29,10 +29,6 @@ universe w u v
 
 open CategoryTheory Limits
 
-/-- An alias for `AddCommGroupCat.{max v₁ v₂}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev AddCommGroupCatMax.{v₁, v₂} := AddCommGroupCat.{max v₁ v₂}
-
 -- [ROBOT VOICE]:
 -- You should pretend for now that this file was automatically generated.
 -- It follows the same template as colimits in Mon.

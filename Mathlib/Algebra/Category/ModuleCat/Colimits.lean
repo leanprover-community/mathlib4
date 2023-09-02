@@ -183,7 +183,6 @@ noncomputable instance forget₂PreservesColimitsOfSize
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
-
 example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
   inferInstance
 
