@@ -21,8 +21,8 @@ open Lean Meta Elab
 -/
 
 /-- Puts `MessageData` into a bulleted list -/
-def MessageData.bulletList (xs : List MessageData) : MessageData :=
-  MessageData.joinSep (xs.map (m!"• " ++ ·)) Format.line
+def MessageData.bulletList (xs : Array MessageData) : MessageData :=
+  MessageData.joinSep (xs.toList.map (m!"• " ++ ·)) Format.line
 
 /-- Puts `MessageData` into a comma-separated list with `"and"` at the back (no Oxford comma).
 Best used on non-empty arrays; returns `"– none –"` for an empty array.  -/
@@ -34,7 +34,7 @@ def MessageData.andList (xs : Array MessageData) : MessageData :=
 
 /-- Formats a list of names, as you would expect from a lemma-searching command.  -/
 def MessageData.bulletListOfConsts {m} [Monad m] [MonadEnv m] [MonadError m]
-  (names : List Name) : m MessageData := do
+  (names : Array Name) : m MessageData := do
     let es ← names.mapM mkConstWithLevelParams
     pure (MessageData.bulletList (es.map ppConst))
 
@@ -136,10 +136,18 @@ structure Arguments where
   /-- Term patterns to search for. The boolean indicates conclusion patterns. -/
   terms : Array (Bool × Expr)
 
+/-- Result of `find` -/
+structure Result where
+  /-- Statistical summary -/
+  header : MessageData
+  /-- Total number of matches -/
+  count : Nat
+  /-- Matching definition (with defining module)  -/
+  hits : Array (ConstantInfo × Name)
+
 /-- The core of the `#find` tactic with all parsing/printing factored out, for
 programmatic use.  -/
-def find (args : Arguments) (maxShown := 200) :
-  MetaM (Except MessageData (MessageData × List Name)) := do
+def find (args : Arguments) (maxShown := 200) : MetaM (Except MessageData Result) := do
   profileitM Exception "#find" (← getOptions) do
     -- Collect set of names to query the index by
     let needles : NameSet :=
@@ -165,14 +173,21 @@ def find (args : Arguments) (maxShown := 200) :
     let hits2 := hits.toArray.filter fun n => nameMatchers.all fun m =>
       m.find? n.toString |>.isSome
 
+    -- Obtain ConstantInfos
+    let env ← getEnv
+    let hits3 := hits2.filterMap env.find?
+
     -- Filter by term patterns
-    let hits3 ← hits2.filterM fun n => do
-      let env ← getEnv
-      if let some ci := env.find? n then do pats.allM (· ci)
-      else return false
+    let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
+
+    -- Add defining module name (when would this fail?)
+    let hits5 := hits4.filterMap fun ci => do pure (ci, ← env.getModuleFor? ci.name)
 
     -- Sort to bring lemmas with small names to the top, and keep related lemmas together
-    let hits4 := hits3.qsort Name.lt
+    let hits6 := hits5.qsort fun ci1 ci2 => Name.lt ci1.1.name ci2.1.name
+
+    -- Apply maxShown limit
+    let hits7 := hits6.extract 0 maxShown
 
     let summary ← IO.mkRef MessageData.nil
     let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
@@ -183,10 +198,10 @@ def find (args : Arguments) (maxShown := 200) :
       let nameList := MessageData.andList <| args.namePats.map fun s => m!"\"{s}\""
       addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
     unless (pats.isEmpty) do
-      addLine $ m!"Of these, {hits3.size} match your patterns."
-    unless (hits4.size ≤ maxShown) do
+      addLine $ m!"Of these, {hits4.size} match your patterns."
+    unless (hits6.size ≤ maxShown) do
       addLine $ m!"Of these, only the first {maxShown} are shown."
-    return .ok (← summary.get, hits4.toList.take maxShown)
+    return .ok ⟨← summary.get, hits4.size, hits7⟩
 
 /-!
 ## The #find command, syntax and parsing
@@ -309,5 +324,6 @@ elab s:"#find " args:find_filters : command => liftTermElabM do
     match ← find (← parseFindFilters args) with
     | .error warn =>
       Lean.logWarningAt s warn
-    | .ok (summary, hits) =>
-      Lean.logInfo $ summary ++ (← MessageData.bulletListOfConsts hits)
+    | .ok result =>
+      let names := result.hits.map (·.1.name)
+      Lean.logInfo $ result.header ++ (← MessageData.bulletListOfConsts names)
