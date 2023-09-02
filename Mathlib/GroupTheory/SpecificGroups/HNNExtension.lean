@@ -156,7 +156,7 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 variable {G A B}
 
 structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _ :=
-  ( left : G )
+  ( head : G )
   ( toList : List (ℤˣ × G) )
   ( mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u )
   ( chain : toList.Chain' (fun a b => a.2 = 1 → a.1 = b.1) )
@@ -165,19 +165,19 @@ variable {d : TransversalPair G A B}
 
 @[ext]
 theorem NormalWord.ext {w w' : NormalWord d}
-    (h1 : w.left = w'.left) (h2 : w.toList = w'.toList): w = w' := by
+    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
   cases w; cases w'; simp_all
 
 @[simps]
 def empty : NormalWord d :=
-  { left := 1
+  { head := 1
     toList := []
     mem_set := by simp
     chain := List.chain'_nil }
 
 @[simps]
 def ofGroup (g : G) : NormalWord d :=
-  { left := g
+  { head := g
     toList := []
     mem_set := by simp
     chain := List.chain'_nil }
@@ -185,15 +185,15 @@ def ofGroup (g : G) : NormalWord d :=
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
 instance : MulAction G (NormalWord d) :=
-  { smul := fun g w => { w with left := g * w.left }
+  { smul := fun g w => { w with head := g * w.head }
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
 
 theorem smul_def (g : G) (w : NormalWord d) :
-    g • w = { w with left := g * w.left } := rfl
+    g • w = { w with head := g * w.head } := rfl
 
 @[simp]
-theorem smul_left (g : G) (w : NormalWord d) : (g • w).left = g * w.left := rfl
+theorem smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head := rfl
 
 @[simp]
 theorem smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
@@ -201,11 +201,11 @@ theorem smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := 
 instance : FaithfulSMul G (NormalWord d) := ⟨by simp [smul_def]⟩
 
 @[simps]
-def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
+def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u') :
     NormalWord d :=
-  { left := g,
-    toList := (u, w.left) :: w.toList,
+  { head := g,
+    toList := (u, w.head) :: w.toList,
     mem_set := by
       intro u' g' h'
       simp only [List.mem_cons, Prod.mk.injEq] at h'
@@ -220,8 +220,8 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
 @[elab_as_elim]
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
-    (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u'),
+    (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u'),
       motive w → motive (cons g u w h1 h2)) : motive w := by
   rcases w with ⟨g, l,  mem_set, chain⟩
   induction l generalizing g with
@@ -237,25 +237,25 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
 @[simp]
 theorem consRecOn_ofGroup {motive : NormalWord d → Sort*}
     (g : G) (ofGroup : ∀g, motive (ofGroup g))
-    (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u'),
+    (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u'),
       motive w → motive (cons g u w h1 h2)) :
     consRecOn (.ofGroup g) ofGroup cons = ofGroup g := rfl
 
 @[simp]
 theorem consRecOn_cons {motive : NormalWord d → Sort*}
-    (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u')
+    (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u')
     (ofGroup : ∀g, motive (ofGroup g))
-    (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u'),
+    (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u'),
       motive w → motive (cons g u w h1 h2)) :
     consRecOn (.cons g u w h1 h2) ofGroup cons = cons g u w h1 h2
       (consRecOn w ofGroup cons) := rfl
 
 @[simp]
-theorem smul_cons (g₁ g₂ : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
+theorem smul_cons (g₁ g₂ : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u') :
     g₁ • cons g₂ u w h1 h2 = cons (g₁ * g₂) u w h1 h2 :=
   rfl
 
@@ -276,7 +276,7 @@ theorem unitSMulGroup_snd (u : ℤˣ) (g : G) :
 variable {d} [DecidableEq G]
 
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
-  (w.left ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
+  (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
 
 def unitSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
   consRecOn w
@@ -289,8 +289,8 @@ noncomputable def unitSMul
   letI := Classical.dec
   if h : Cancels u w
   then unitSMulWithCancel φ u w h
-  else let g' := unitSMulGroup φ d u w.left
-    cons g'.1 u ((g'.2 * w.left⁻¹ : G) • w)
+  else let g' := unitSMulGroup φ d u w.head
+    cons g'.1 u ((g'.2 * w.head⁻¹ : G) • w)
       (by simp [smul_def])
       (by
         simp [smul_def]
@@ -306,18 +306,18 @@ noncomputable def unitSMul
 set_option pp.proofs.withType false
 
 theorem not_cancels_of_cons_hyps (u : ℤˣ) (w : NormalWord d)
-    (h1 : w.left ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
+    (h1 : w.head ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u') :
     ¬ Cancels u w := by
   simp only [Cancels, Option.map_eq_some', Prod.exists,
     exists_and_right, exists_eq_right, not_and, not_exists]
   intro hw x hx
   rw [hx] at h2
-  have hw : w.left = 1 := by
+  have hw : w.head = 1 := by
     simpa using congr_arg Prod.fst
-      (((d.compl u).existsUnique w.left).unique
-      (y₁ := (⟨w.left, hw⟩, ⟨1, d.one_mem u⟩))
-      (y₂ := (1, ⟨w.left, h1⟩)) (by simp) (by simp))
+      (((d.compl u).existsUnique w.head).unique
+      (y₁ := (⟨w.head, hw⟩, ⟨1, d.one_mem u⟩))
+      (y₂ := (1, ⟨w.head, h1⟩)) (by simp) (by simp))
   simpa [Units.ext_iff, eq_neg_iff_add_eq_zero] using h2 (-u) rfl hw
 
 theorem unitSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
@@ -329,7 +329,7 @@ theorem unitSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     | cons g u' w h1 h2 _ =>
       intro hc
       apply not_cancels_of_cons_hyps _ _ h1 h2
-      simp only [Cancels, cons_left, cons_toList, List.head?_cons,
+      simp only [Cancels, cons_head, cons_toList, List.head?_cons,
         Option.map_some', Option.some.injEq] at h
       cases h.2
       simpa [Cancels, unitSMulWithCancel,
@@ -354,7 +354,7 @@ theorem unitSMul_neg (u : ℤˣ) (w : NormalWord d) :
       clear ih
       simp [unitSMulWithCancel, unitSMulGroup]
       cases hcan2.2
-      have : ((d.compl (-u)).equiv w.left).1 = 1 :=
+      have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
       apply NormalWord.ext
       · simp [this]
@@ -390,7 +390,7 @@ noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
       simp [unitSMul_one_group_smul])
 
 def prod (w : NormalWord d) : HNNExtension G A B φ :=
-  of w.left * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
+  of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
 @[simp]
 theorem prod_group_smul (g : G) (w : NormalWord d) :
@@ -411,8 +411,8 @@ theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
   rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp [Equiv.Perm.inv_def]
 
 @[simp]
-theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.left ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.left = 1 → u = u') :
+theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u') :
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
   simp [prod, cons, smul_def, mul_assoc]
 
@@ -490,7 +490,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
 
 variable (G A B)
 structure ReducedWord : Type _ :=
-  ( left : G )
+  ( head : G )
   ( toList : List (ℤˣ × G) )
   ( eq_one_of_mem : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ toSubgroup A B u → g = 1 )
   ( chain : toList.Chain' (fun a b => a.2 = 1 → a.1 = b.1) )
@@ -499,14 +499,14 @@ namespace ReducedWord
 
 @[simps]
 def empty : ReducedWord G A B :=
-  { left := 1
+  { head := 1
     toList := []
     eq_one_of_mem := by simp
     chain := List.chain'_nil }
 
 variable {G A B}
 def prod : ReducedWord G A B → HNNExtension G A B φ :=
-  fun w => of w.left * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
+  fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
 set_option pp.proofs.withType false
 theorem exists_normalWord_prod_eq
@@ -514,17 +514,17 @@ theorem exists_normalWord_prod_eq
     ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
-      w'.left⁻¹ * w.left ∈ toSubgroup A B (-u) := by
+      w'.head⁻¹ * w.head ∈ toSubgroup A B (-u) := by
   suffices : ∀ w : ReducedWord G A B,
-      w.left = 1 → ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
+      w.head = 1 → ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
-      w'.left ∈ toSubgroup A B (-u)
-  · by_cases hw1 : w.left = 1
+      w'.head ∈ toSubgroup A B (-u)
+  · by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
       exact this w hw1
     · rcases  this ⟨1, w.toList, w.eq_one_of_mem, w.chain⟩ rfl with ⟨w', hw'⟩
-      exact ⟨w.left • w', by
+      exact ⟨w.head • w', by
         simpa [prod, NormalWord.prod, mul_assoc] using hw'⟩
   intro w hw1
   rcases w with ⟨g, l, eq_one_of_mem, chain⟩
@@ -532,7 +532,7 @@ theorem exists_normalWord_prod_eq
   induction l with
   | nil =>
     exact
-      ⟨{ left := 1
+      ⟨{ head := 1
          toList := []
          mem_set := by simp
          chain := List.chain'_nil }, by simp [prod, NormalWord.prod]⟩
@@ -544,12 +544,12 @@ theorem exists_normalWord_prod_eq
     · rw [prod_smul, hw'1]
       simp [ReducedWord.prod]
     · have : ¬ Cancels a.1 (a.2 • w') := by
-        simp only [Cancels, smul_left, smul_toList, Option.map_eq_some',
+        simp only [Cancels, smul_head, smul_toList, Option.map_eq_some',
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
         have hx' := congr_arg (Option.map Prod.fst) hx
         rw [← List.head?_map, hw'2, List.head?_map, Option.map_some'] at hx'
-        have : w'.left ∈ toSubgroup A B a.fst := by
+        have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'
         rw [mul_mem_cancel_right this] at hS
         have : a.2 = 1 := eq_one_of_mem a.1 a.2 (List.mem_cons_self _ _) hS
@@ -567,7 +567,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
     w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
      ∀ u ∈ w₁.toList.head?.map Prod.fst,
-      w₁.left⁻¹ * w₂.left ∈ toSubgroup A B (-u) := by
+      w₁.head⁻¹ * w₂.head ∈ toSubgroup A B (-u) := by
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   rcases exists_normalWord_prod_eq φ d w₁ with ⟨w₁', hw₁'1, hw₁'2, hw₁'3⟩
   rcases exists_normalWord_prod_eq φ d w₂ with ⟨w₂', hw₂'1, hw₂'2, hw₂'3⟩
@@ -584,7 +584,7 @@ theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by
   rcases hw with ⟨g, hg⟩
-  let w' : ReducedWord G A B := { empty G A B with left := g }
+  let w' : ReducedWord G A B := { empty G A B with head := g }
   have : w.prod φ = w'.prod φ := by simp [prod, hg]
   simpa using (map_fst_eq_and_of_prod_eq φ this).1
 
