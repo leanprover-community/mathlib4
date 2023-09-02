@@ -313,6 +313,10 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
+protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+    [BoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
+    LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
+
 theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i in s, f i) μ :=
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)

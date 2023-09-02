@@ -207,7 +207,8 @@ theorem hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero :
   simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_nhdsWithin_ne_zero, zero_add,
     zero_smul, add_zero]
 
-alias ⟨HasLineDerivAt.tendsto_nhdsWithin_ne_zero, _⟩ := hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero
+alias ⟨HasLineDerivAt.tendsto_nhdsWithin_ne_zero, _⟩ :=
+  hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero
 
 theorem HasLineDerivAt.tendsto_nhdsWithin_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=

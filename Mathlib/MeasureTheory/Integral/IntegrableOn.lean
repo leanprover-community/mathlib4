@@ -419,6 +419,12 @@ protected theorem IntegrableAtFilter.sub {f g : α → E}
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
+protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+    [BoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
+    IntegrableAtFilter (c • f) l μ := by
+  rcases hf with ⟨s, sl, hs⟩
+  refine ⟨s, sl, hs.smul c⟩
+
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
   let ⟨s, hs, hsf⟩ := hl'
