@@ -83,51 +83,6 @@ variable {R : Type*}
 section semiring
 variable [Semiring R]
 
-section PRed_lemmas
-
-/- `Data.Polynomial.Basic` -/
-theorem coeff_nat_cast_ite {n a : ℕ} : (Nat.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
-  simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
-
-/- `Data.Polynomial.EraseLead` -/
-theorem coeff_mul_add_of_le_natDegree_of_eq {df dg : ℕ} {f g : R[X]}
-    (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
-    (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
-  revert hdg g
-  apply f.induction_with_natDegree_le (P_0 := by simp)
-  · intros n r _r0 hn g hdg
-    rw [mul_assoc, coeff_C_mul, coeff_C_mul, coeff_X_pow_mul', coeff_X_pow,
-      if_pos (le_add_right hn)]
-    split_ifs with H
-    · simp [H]
-    · rw [mul_zero, zero_mul]
-      apply mul_eq_zero_of_right
-      apply coeff_eq_zero_of_natDegree_lt
-      apply hdg.trans_lt
-      rw [add_comm, Nat.add_sub_assoc hn]
-      apply Nat.lt_add_of_pos_right
-      apply Nat.sub_pos_of_lt
-      exact Ne.lt_of_le' H hn
-  · intros f g _fg _gle hf hg h hle
-    rw [add_mul, coeff_add, coeff_add, add_mul]
-    congr <;> solve_by_elim
-  · assumption
-
-/- `Mathlib.Data.Polynomial.Degree.Lemmas` -/
-theorem coeff_pow_of_natDegree_le_of_eq_ite [Semiring R] {m n o : ℕ} {p : R[X]}
-    (pn : natDegree p ≤ n) (mno : m * n ≤ o) :
-    coeff (p ^ m) o = if o = m * n then (coeff p n) ^ m else 0 := by
-  split_ifs with h
-  · subst h
-    rw [mul_comm]
-    apply coeff_pow_of_natDegree_le pn
-  · apply coeff_eq_zero_of_natDegree_lt
-    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne mno ?_)
-    · exact natDegree_pow_le_of_le m pn
-    · exact Iff.mp ne_comm h
-
-end PRed_lemmas
-
 theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 
 theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
