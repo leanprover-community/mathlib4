@@ -36,7 +36,7 @@ This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 
@@ -192,10 +192,10 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
       ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
-open Classical in
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
+  classical
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [prod_edist_eq_card, eq_comm]
   · simp only [prod_edist_eq_sup, edist_comm]
@@ -579,7 +579,7 @@ theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 norm. -/
 instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (WithLp p (α × β)) where
-  dist_eq := fun x y => by
+  dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
     · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
       rfl
@@ -746,10 +746,9 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
 instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
-  norm_smul_le := fun c f => by
+  norm_smul_le c f := by
     rcases p.dichotomy with (rfl | hp)
-    · letI : Module 𝕜 (WithLp ∞ (α × β)) := Prod.instModule
-      suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
       simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
       rfl
     · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
@@ -765,11 +764,11 @@ variable {𝕜 p α β}
 
 /-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
-def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β :=
-  { WithLp.equiv ∞ (α × β) with
-    map_add' := fun f g => rfl
-    map_smul' := fun c f => rfl
-    norm_map' := fun f => by simp [Norm.norm] }
+def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
+  __ := WithLp.equiv ∞ (α × β)
+  map_add' f g := rfl
+  map_smul' c f := rfl
+  norm_map' f := by simp [Norm.norm]
 
 end NormedSpace
 
