@@ -29,23 +29,54 @@ namespace Set
 
 variable (S)
 
+structure IsAddCentralizer [Add M] (z : M) : Prop where
+  comm (a : S) : z + a = a + z
+  lmulc_mul_lmuls_lmul_lmul (a : S) (b : M) : z + (a + b) = (z + a) + b -- L_zL_a = L_{za}
+  lmuls_mul_lmulc_lmul_rmul (a : S) (b : M) : a + (z + b) = (a + z) + b -- L_aL_z = L_{az}
+  rmuls_mul_rmulc_rmul_rmul (a : S) (b : M) : (b + z) + a = b + (a + z) -- R_aR_z = R_{az}
+  rmulc_mul_rmuls_rmul_lmul (a : S) (b : M) : (b + a) + z = b + (z + a) -- R_zR_a = R_{za}
+  rmulc_comm_lmuls (a : S) (b : M) : (a + b) + z = a + (b + z) -- R_zL_a = L_aR_z
+  lmulc_comm_rmuls (a : S) (b : M) : z + (b + a) = (z + b) + a -- L_zR_a = R_aL_z
+
+-- lmulc - left multiplication by an element of the centralizer of the set
+-- lmuls - left multiplication by an element of the set
+@[to_additive]
+structure IsMulCentralizer [Mul M] (z : M) : Prop where
+  comm (a : S) : z * a = a * z
+  lmulc_mul_lmuls_lmul_lmul (a : S) (b : M) : z * (a * b) = (z * a) * b -- L_zL_a = L_{za}
+  lmuls_mul_lmulc_lmul_rmul (a : S) (b : M) : a * (z * b) = (a * z) * b -- L_aL_z = L_{az}
+  rmuls_mul_rmulc_rmul_rmul (a : S) (b : M) : (b * z) * a = b * (a * z) -- R_aR_z = R_{az}
+  rmulc_mul_rmuls_rmul_lmul (a : S) (b : M) : (b * a) * z = b * (z * a) -- R_zR_a = R_{za}
+  rmulc_comm_lmuls (a : S) (b : M) : (a * b) * z = a * (b * z) -- R_zL_a = L_aR_z
+  lmulc_comm_rmuls (a : S) (b : M) : z * (b * a) = (z * b) * a -- L_zR_a = R_aL_z
+
+-- L_zL_a = L_aL_z
+lemma lmulc_comm_lmuls [Mul M] {z : M} {a : S} {b : M} (h : IsMulCentralizer S z) :
+  z * (a * b) = a * (z * b) := by
+  rw [h.lmulc_mul_lmuls_lmul_lmul, h.comm, h.lmuls_mul_lmulc_lmul_rmul]
+
+-- R_zR_a = R_aR_z
+lemma rmulc_comm_rmuls [Mul M] (z : M) (a : S) (b : M) (h : IsMulCentralizer S z) :
+  (b * a) * z = (b * z) * a := by
+  rw [h.rmulc_mul_rmuls_rmul_lmul, h.comm, h.rmuls_mul_rmulc_rmul_rmul]
+
 /-- The centralizer of a subset of a magma. -/
 @[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
 def centralizer [Mul M] : Set M :=
-  { c | ∀ m ∈ S, m * c = c * m }
+  { c | IsMulCentralizer S c }
 #align set.centralizer Set.centralizer
 #align set.add_centralizer Set.addCentralizer
 
 variable {S}
 
 @[to_additive mem_addCentralizer]
-theorem mem_centralizer_iff [Mul M] {c : M} : c ∈ centralizer S ↔ ∀ m ∈ S, m * c = c * m :=
+theorem mem_centralizer_iff [Mul M] {c : M} : c ∈ centralizer S ↔ IsMulCentralizer S c :=
   Iff.rfl
 #align set.mem_centralizer_iff Set.mem_centralizer_iff
 #align set.mem_add_centralizer Set.mem_addCentralizer
 
 @[to_additive decidableMemAddCentralizer]
-instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
+instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| IsMulCentralizer S a] :
     DecidablePred (· ∈ centralizer S) := fun _ => decidable_of_iff' _ mem_centralizer_iff
 #align set.decidable_mem_centralizer Set.decidableMemCentralizer
 #align set.decidable_mem_add_centralizer Set.decidableMemAddCentralizer
@@ -53,22 +84,58 @@ instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b
 variable (S)
 
 @[to_additive (attr := simp) zero_mem_addCentralizer]
-theorem one_mem_centralizer [MulOneClass M] : (1 : M) ∈ centralizer S := by
-  simp [mem_centralizer_iff]
+theorem one_mem_centralizer [MulOneClass M] : (1 : M) ∈ centralizer S where
+  comm _  := by rw [one_mul, mul_one]
+  lmulc_mul_lmuls_lmul_lmul _ _ := by rw [one_mul, one_mul]
+  lmuls_mul_lmulc_lmul_rmul _ _ := by rw [one_mul, mul_one]
+  rmuls_mul_rmulc_rmul_rmul _ _ := by rw [mul_one, mul_one]
+  rmulc_mul_rmuls_rmul_lmul _ _ := by rw [one_mul, mul_one]
+  rmulc_comm_lmuls _ _ := by rw [mul_one, mul_one]
+  lmulc_comm_rmuls _ _ := by rw [one_mul, one_mul]
 #align set.one_mem_centralizer Set.one_mem_centralizer
 #align set.zero_mem_add_centralizer Set.zero_mem_addCentralizer
 
 @[simp]
-theorem zero_mem_centralizer [MulZeroClass M] : (0 : M) ∈ centralizer S := by
-  simp [mem_centralizer_iff]
+theorem zero_mem_centralizer [MulZeroClass M] : (0 : M) ∈ centralizer S where
+  comm _ := by rw [zero_mul, mul_zero]
+  lmulc_mul_lmuls_lmul_lmul _ _ := by rw [zero_mul, zero_mul, zero_mul]
+  lmuls_mul_lmulc_lmul_rmul _ _ := by rw [zero_mul, mul_zero, zero_mul]
+  rmuls_mul_rmulc_rmul_rmul _ _ := by rw [mul_zero, mul_zero, zero_mul, mul_zero]
+  rmulc_mul_rmuls_rmul_lmul _ _ := by rw [zero_mul, mul_zero, mul_zero]
+  rmulc_comm_lmuls _ _ := by rw [mul_zero, mul_zero, mul_zero]
+  lmulc_comm_rmuls _ _ := by rw [zero_mul, zero_mul, zero_mul]
 #align set.zero_mem_centralizer Set.zero_mem_centralizer
 
 variable {S} {a b : M}
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
-theorem mul_mem_centralizer [Semigroup M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
-    a * b ∈ centralizer S := fun g hg => by
-  rw [mul_assoc, ← hb g hg, ← mul_assoc, ha g hg, mul_assoc]
+theorem mul_mem_centralizer [Mul M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
+    a * b ∈ centralizer S where
+  comm c := calc
+    (a * b) * c = a * (b * c) := by rw [ha.lmulc_comm_rmuls]
+    _ = a * (c * b) := by rw [hb.comm]
+    _ = c * (a * b) := by rw [(lmulc_comm_lmuls S ha)]
+  lmulc_mul_lmuls_lmul_lmul c d :=
+/-
+      a * b * c = b * a * c := by rw [ha.comm]
+      _ = b * (a * c) := by rw [ha.mid_assoc b]
+      _ = (c * a) * b := by rw [ha.comm, hb.comm]
+      _ = c * (a * b) := by rw [hb.right_assoc c a]
+  left_assoc (b c : M) := calc
+    z₁ * z₂ * (b * c) = z₁ * (z₂ * (b * c)) := by rw [hz₂.mid_assoc]
+    _ = z₁ * ((z₂ * b) * c) := by rw [hz₂.left_assoc]
+    _ = (z₁ * (z₂ * b)) * c := by rw [hz₁.left_assoc]
+    _ = z₁ * z₂ * b * c := by rw [hz₂.mid_assoc]
+  mid_assoc (a c : M) := calc
+    a * (z₁ * z₂) * c = ((a * z₁) * z₂) * c := by rw [hz₁.mid_assoc]
+    _ = (a * z₁) * (z₂ * c) := by rw [hz₂.mid_assoc]
+    _ = a * (z₁ * (z₂ * c)) := by rw [hz₁.mid_assoc]
+    _ = a * (z₁ * z₂ * c) := by rw [hz₂.mid_assoc]
+  right_assoc (a b : M) := calc
+    a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
+    _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
+    _ =  a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
+    _ = a * (b * (z₁ * z₂)) := by rw [hz₁.mid_assoc]-/
 #align set.mul_mem_centralizer Set.mul_mem_centralizer
 #align set.add_mem_add_centralizer Set.add_mem_addCentralizer
 
