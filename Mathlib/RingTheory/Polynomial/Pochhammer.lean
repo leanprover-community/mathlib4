@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Tactic.Abel
+import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.RingDivision
 
 #align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
@@ -282,6 +284,18 @@ theorem descPochhammer_succ_right (n : ℕ) :
           X_comp, nat_cast_comp]
     nth_rw 1 [Nat.succ_eq_add_one]
     rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
+
+@[simp]
+theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R]:
+    (descPochhammer R n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have : natDegree (X - (n : R[X])) = 1 := natDegree_X_sub_C (n : R)
+    rw [descPochhammer_succ_right,
+        natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
+    cases n
+    · simp
+    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 theorem descPochhammer_succ_eval {S : Type*} [Ring S] (n : ℕ) (k : S) :
     (descPochhammer S (n + 1)).eval k = (descPochhammer S n).eval k * (k - n) := by
