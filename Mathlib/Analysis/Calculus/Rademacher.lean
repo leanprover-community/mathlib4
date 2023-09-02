@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.BoundedVariation
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Analysis.Distribution.AEEqofIntegralContDiff
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 
 /-!
 # Rademacher theorem: a Lipschitz function is differentiable almost everywhere
