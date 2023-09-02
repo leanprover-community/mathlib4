@@ -194,8 +194,8 @@ variable {φ}
 element of the base group and a word made up of letters each of which is in the transversal. -/
 structure _root_.Monoid.PushoutI.NormalWord (d : Transversal φ) extends CoprodI.Word G where
   /-- Every `NormalWord` is the product of an element of the base group and a word made up
-  of letters each of which is in the transversal. `left` is that element of the base group. -/
-  left : H
+  of letters each of which is in the transversal. `head` is that element of the base group. -/
+  head : H
   /-- All letter in the word are in the transversal. -/
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ d.set i
 
@@ -221,13 +221,13 @@ instance (i : ι) : Inhabited (Pair d i) :=
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
 @[ext]
-theorem ext {w₁ w₂ : NormalWord d} (hleft : w₁.left = w₂.left)
+theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
     (hlist : w₁.toList = w₂.toList) : w₁ = w₂ := by
   rcases w₁ with ⟨⟨_, _, _⟩, _, _⟩
   rcases w₂ with ⟨⟨_, _, _⟩, _, _⟩
   simp_all
 
-theorem ext_iff {w₁ w₂ : NormalWord d} : w₁ = w₂ ↔ w₁.left = w₂.left ∧ w₁.toList = w₂.toList :=
+theorem ext_iff {w₁ w₂ : NormalWord d} : w₁ = w₂ ↔ w₁.head = w₂.head ∧ w₁.toList = w₂.toList :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ => ext h₁ h₂⟩
 
 open Subgroup.IsComplement
@@ -278,8 +278,8 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
-    (h : CoprodI.of (φ i w₁.left) • w₁.toWord =
-         CoprodI.of (φ i w₂.left) • w₂.toWord) :
+    (h : CoprodI.of (φ i w₁.head) • w₁.toWord =
+         CoprodI.of (φ i w₂.head) • w₂.toWord) :
     w₁ = w₂ := by
   rcases w₁ with ⟨w₁, h₁, hw₁⟩
   rcases w₂ with ⟨w₂, h₂, hw₂⟩
@@ -296,12 +296,12 @@ sure the underlying list does get longer.  -/
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : NormalWord d :=
-  letI n := (d.compl i).equiv (g * (φ i w.left))
+  letI n := (d.compl i).equiv (g * (φ i w.head))
   letI w' := Word.cons (n.2 : G i) w.toWord hmw
     (mt (equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
       (mt (mul_mem_cancel_right (by simp)).1 hgr))
   { toWord := w'
-    left := (MonoidHom.ofInjective (d.injective i)).symm n.1
+    head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
       simp only [Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
       rcases hg with ⟨rfl, hg | hg⟩
@@ -315,7 +315,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   letI n := (d.compl i).equiv p.head
   let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
   { toWord := w
-    left := (MonoidHom.ofInjective (d.injective i)).symm n.1
+    head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
         dsimp at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
@@ -340,7 +340,7 @@ base group. -/
 noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
   letI toFun : NormalWord d → Pair d i :=
     fun w =>
-      letI p := Word.equivPair i (CoprodI.of (φ i w.left) • w.toWord)
+      letI p := Word.equivPair i (CoprodI.of (φ i w.head) • w.toWord)
       { toPair := p
         normalized := fun j g hg => by
           dsimp only at hg
@@ -371,12 +371,12 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
 
 instance baseAction : MulAction H (NormalWord d) :=
-  { smul := fun h w => { w with left := h * w.left },
+  { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
 
 theorem base_smul_def' (h : H) (w : NormalWord d) :
-    h • w = { w with left := h * w.left } := rfl
+    h • w = { w with head := h * w.head } := rfl
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
     g • w = (equivPair i).symm
@@ -401,7 +401,7 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
-    base (φ := φ) h • w = { w with left := h * w.left } := by
+    base (φ := φ) h • w = { w with head := h * w.head } := by
   dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
   rw [lift_base]
   rfl
@@ -428,12 +428,12 @@ the underlying list. -/
 noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d)
     (h_empty : motive empty)
     (h_cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-      (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.left = 1),
+      (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
       motive w →  motive (cons g w hmw hgr))
-    (h_base : ∀ (h : H) (w : NormalWord d), w.left = 1 → motive w → motive
+    (h_base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base (φ := φ) h • w)) : motive w := by
-  rcases w with ⟨w, left, h3⟩
-  convert h_base left ⟨w, 1, h3⟩ rfl ?_
+  rcases w with ⟨w, head, h3⟩
+  convert h_base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
     | h_empty => exact h_empty
@@ -456,7 +456,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
 /-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
 injective -/
 def prod (w : NormalWord d) : PushoutI φ :=
-  base w.left * ofCoprodI (w.toWord).prod
+  base w.head * ofCoprodI (w.toWord).prod
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
