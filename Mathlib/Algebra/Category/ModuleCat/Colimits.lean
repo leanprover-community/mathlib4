@@ -37,6 +37,8 @@ namespace HasColimit
 
 variable [HasColimit (F ⋙ forget₂ _ AddCommGroupCat)]
 
+/-- The induced scalar multiplication on
+`colimit (F ⋙ forget₂ _ AddCommGroupCat)`. -/
 @[simps]
 noncomputable def coconePointSMul :
     R →+* End (colimit (F ⋙ forget₂ _ AddCommGroupCat)) where
@@ -51,6 +53,8 @@ noncomputable def coconePointSMul :
     simp only [ι_colimMap, Functor.comp_obj, forget₂_obj])
   map_mul' r s := colimit.hom_ext (fun j => by simp)
 
+/-- The cocone for `F` constructed from the colimit of
+`(F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)`. -/
 @[simps]
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
@@ -65,6 +69,8 @@ noncomputable def colimitCocone : Cocone F where
         dsimp
         erw [colimit.w (F ⋙ forget₂ _ AddCommGroupCat), comp_id] }
 
+/-- The cocone for `F` constructed from the colimit of
+`(F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)` is a colimit cocone. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
   desc s := homMk (colimit.desc _ ((forget₂ _ AddCommGroupCat).mapCocone s)) (fun r => by
     apply colimit.hom_ext
