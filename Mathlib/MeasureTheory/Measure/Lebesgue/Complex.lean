@@ -47,7 +47,6 @@ theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRea
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
 #align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
 
-instance : Measure.IsAddHaarMeasure (@volume ℂ Complex.measureSpace) :=
-  Measure.MapLinearEquiv.isAddHaarMeasure _ _
+instance : Measure.IsAddHaarMeasure (@volume ℂ _) := Measure.MapLinearEquiv.isAddHaarMeasure _ _
 
 end Complex
