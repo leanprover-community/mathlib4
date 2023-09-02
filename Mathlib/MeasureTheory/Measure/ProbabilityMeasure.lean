@@ -505,23 +505,22 @@ noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : 
    ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
                   preimage_univ, measure_univ]⟩⟩
 
---#check Subtype.map
--- Q: Can I tell Lean not to use `Subtype.map` but instead `ProbabilityMeasure.map`
--- when `ν.map` is written?
+/-- Note that this is an equality of elements of `ℝ≥0∞`. See also
+`MeasureTheory.ProbabilityMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f_aemble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+    (ν.map f_aemble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
   Measure.map_apply_of_aemeasurable f_aemble A_mble
 
 lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
     (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f_aemble) A = ν (f ⁻¹' A) := by
-  have key := ProbabilityMeasure.map_apply' ν f_aemble A_mble
-  exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr key
+    (ν.map f_aemble) A = ν (f ⁻¹' A) := by
+  have := ν.map_apply' f_aemble A_mble
+  exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
 
 @[simp] lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ProbabilityMeasure.map ν f_aemble) A = ν (f ⁻¹' A) :=
+    (ν.map f_aemble) A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_aemble A_mble
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
@@ -530,7 +529,7 @@ variable [TopologicalSpace Ω'] [BorelSpace Ω']
 /-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
 convergence (in distribution) of `ProbabilityMeasure`s on `X` implies convergence (in
 distribution) of the push-forwards of these measures by `f`. -/
-lemma tendsto_map_of_tendsto_of_continuous {L : Filter ι}
+lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
     {f : Ω → Ω'} (f_cont : Continuous f) :
     Tendsto (fun i ↦ ProbabilityMeasure.map (νs i) f_cont.measurable.aemeasurable) L
@@ -538,7 +537,7 @@ lemma tendsto_map_of_tendsto_of_continuous {L : Filter ι}
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
   convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
-  · simp [ProbabilityMeasure.map]
+  · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
 
