@@ -130,16 +130,15 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     MorphismProperty.HasLeftCalculusOfFractions.toSq s₁ hs₁ T₂.mor₁
   obtain ⟨Y₂', b', s₂', hs₂', hb'⟩ :=
     MorphismProperty.HasLeftCalculusOfFractions.fac L W (b ≫ L.map s₂)
-  dsimp at ha' hb'
   have := Localization.inverts L W s₁ hs₁
-  have := Localization.inverts L W s₂' hs₂'
   have hf₂' := L.congr_map hf₂
   simp only [L.map_comp] at hf₂'
   obtain ⟨Y₂'', s₂'', hs₂'', fac₂⟩ :=
     (MorphismProperty.HasLeftCalculusOfFractions.map_eq_iff L W
       (a' ≫ f₂ ≫ s₂') (T₁.mor₁ ≫ b')).mp (by
-        simp only [assoc, L.map_comp, ← cancel_mono (inv (L.map s₂')), ← hb', IsIso.hom_inv_id,
-          comp_id, reassoc_of% fac₁, ha', hf₂', IsIso.inv_hom_id_assoc])
+        simp only [assoc, L.map_comp, ← cancel_mono (Localization.isoOfHom L W s₂' hs₂').inv,
+          ← hb', Localization.isoOfHom_hom_inv_id,
+          comp_id, reassoc_of% fac₁, ha', hf₂', Localization.isoOfHom_inv_hom_id_assoc])
   simp only [assoc] at fac₂
   obtain ⟨Y₃, g, h, hT₃⟩ := Pretriangulated.distinguished_cocone_triangle (f₂ ≫ s₂' ≫ s₂'')
   let T₃ := Triangle.mk (f₂ ≫ s₂' ≫ s₂'') g h
@@ -155,12 +154,12 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   refine' ⟨L.map c ≫ inv (L.map α), _, _⟩
   . simp only [assoc, ← cancel_mono (L.map α), IsIso.inv_hom_id, comp_id, ← L.map_comp, hc₁, hα₁]
     simp only [Triangle.mk_obj₃, Triangle.mk_obj₂, Triangle.mk_mor₂, Functor.map_comp,
-      reassoc_of% hb', IsIso.inv_hom_id_assoc]
+      reassoc_of% hb', Localization.isoOfHom_inv_hom_id_assoc]
   . simp only [ha', Functor.map_comp, assoc, ← L.commShiftIso_hom_naturality_assoc a' (1 : ℤ)]
     simp only [← Functor.map_comp_assoc, hc₂, Triangle.mk_mor₃, assoc,
       ← cancel_mono ((L.commShiftIso (1 : ℤ)).hom.app T₂.obj₁), Iso.inv_hom_id_app]
     simp only [comp_id, Functor.comp_obj, ← cancel_mono ((L.map s₁)⟦(1 : ℤ)⟧'), assoc,
-      ← Functor.map_comp, IsIso.inv_hom_id, Functor.map_id]
+      ← Functor.map_comp, Functor.map_id, Localization.isoOfHom_inv_hom_id]
     simp only [← L.commShiftIso_hom_naturality s₁ (1 : ℤ), ← Functor.map_comp_assoc, hα₂]
     simp only [Functor.map_comp, assoc, Triangle.mk_mor₃, IsIso.inv_hom_id_assoc]
 
