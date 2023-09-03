@@ -187,25 +187,46 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
       -- one_mem := fun i => (ht i).2
       compl := fun i => (ht i).1 }
 
+/-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
+There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
+`toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
+structure ReducedWord : Type _ :=
+  /-- Every `ReduceddWord` is the product of an element of the group and a word made up
+  of letters each of which is in the transversal. `head` is that element of the base group. -/
+  ( head : G )
+  /-- The list of pairs `(ℤˣ × G)`, where each pair `(u, g)` represents the element `t^u * g` of
+  `HNNExtension G A B φ` -/
+  ( toList : List (ℤˣ × G) )
+  /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u` -/
+  ( chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1) )
+
+/-- The empty reduced word. -/
+@[simps]
+def ReducedWord.empty : ReducedWord G A B :=
+  { head := 1
+    toList := []
+    chain := List.chain'_nil }
+
 variable {G A B}
+/-- The product of a `ReducedWord` as an element of the `HNNExtension` -/
+def ReducedWord.prod : ReducedWord G A B → HNNExtension G A B φ :=
+  fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
 /-- Given a `TransversalPair`, we can make a normal form for words in the `HNNExtension G A B φ`.
 The normal form is a `head`, which is an element of `G`, followed by the product list of pairs,
 `t ^ u * g`, where `u` is `1` or `-1` and `g` is the chosen element of its right coset of
-`toSubgroup A B u`. There should also be no sequences of the form `t^u * 1 * t^-u`  -/
-structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _ :=
-  /--  -/
-  ( head : G )
-  ( toList : List (ℤˣ × G) )
+`toSubgroup A B u`. There should also be no sequences of the form `t^u * g * t^-u`
+where `g ∈ toSubgroup A B u` -/
+structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) extends ReducedWord G A B : Type _ :=
+  /-- Every element `g : G` in the list is the chosen element of its coset -/
   ( mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u )
-  ( chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1) )
 
 variable {d : TransversalPair G A B}
 
 @[ext]
 theorem ext {w w' : NormalWord d}
     (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
-  cases w; cases w'; simp_all
+  rcases w with ⟨⟨⟩, _⟩; cases w'; simp_all
 
 /-- The empty word -/
 @[simps]
@@ -270,13 +291,15 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
       (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
         w.head ∈ toSubgroup A B u → u = u'),
       motive w → motive (cons g u w h1 h2)) : motive w := by
-  rcases w with ⟨g, l,  mem_set, chain⟩
+  rcases w with ⟨⟨g, l, chain⟩, mem_set⟩
   induction l generalizing g with
   | nil => exact ofGroup _
   | cons a l ih =>
-    exact cons g a.1 ⟨a.2, l,
-      fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
-      (List.chain'_cons'.1 chain).2⟩
+    exact cons g a.1
+      { head := a.2
+        toList := l
+        mem_set := fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
+        chain := (List.chain'_cons'.1 chain).2 }
       (mem_set a.1 a.2 (List.mem_cons_self _ _))
       (by simpa using (List.chain'_cons'.1 chain).1)
       (ih _ _ _)
@@ -441,14 +464,10 @@ noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
       ext : 1
       simp [unitsSMul_one_group_smul])
 
-/-- The product of a `NormalWord`, as an element of the `HNNExtension` -/
-def prod (w : NormalWord d) : HNNExtension G A B φ :=
-  of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
-
 @[simp]
 theorem prod_group_smul (g : G) (w : NormalWord d) :
     (g • w).prod φ = of g * (w.prod φ) := by
-  simp [prod, smul_def, mul_assoc]
+  simp [ReducedWord.prod, smul_def, mul_assoc]
 
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
@@ -468,7 +487,7 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
       w.head ∈ toSubgroup A B u → u = u') :
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
-  simp [prod, cons, smul_def, mul_assoc]
+  simp [ReducedWord.prod, cons, smul_def, mul_assoc]
 
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (unitsSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
@@ -488,7 +507,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
 
 @[simp]
 theorem prod_empty : (empty : NormalWord d).prod φ = 1 := by
-  simp [prod]
+  simp [ReducedWord.prod]
 
 @[simp]
 theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
@@ -506,7 +525,7 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
   induction w using consRecOn with
-  | ofGroup => simp [ofGroup, prod, of_smul_eq_smul, group_smul_def]
+  | ofGroup => simp [ofGroup, ReducedWord.prod, of_smul_eq_smul, group_smul_def]
   | cons g u w h1 h2 ih =>
     rw [prod_cons, ← mul_assoc, mul_smul, ih, mul_smul, t_pow_smul_eq_unitsSMul,
       of_smul_eq_smul, unitsSMul]
@@ -524,11 +543,11 @@ noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
     right_inv := fun w => by simp }
 
 theorem prod_injective : Injective
-    (prod φ : NormalWord d → HNNExtension G A B φ) :=
+    (fun w => w.prod φ : NormalWord d → HNNExtension G A B φ) :=
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg (prod φ) (h empty)⟩
+  ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
 
 end NormalWord
 
@@ -542,28 +561,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
 
-variable (G A B)
-/-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
-There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
-`toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
-structure ReducedWord : Type _ :=
-  ( head : G )
-  ( toList : List (ℤˣ × G) )
-  ( chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1) )
-
 namespace ReducedWord
-
-/-- The empty reduced word. -/
-@[simps]
-def empty : ReducedWord G A B :=
-  { head := 1
-    toList := []
-    chain := List.chain'_nil }
-
-variable {G A B}
-/-- The product of a `ReducedWord` as an element of the `HNNExtension` -/
-def prod : ReducedWord G A B → HNNExtension G A B φ :=
-  fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
 theorem exists_normalWord_prod_eq
     (d : TransversalPair G A B) (w : ReducedWord G A B) :
@@ -579,9 +577,9 @@ theorem exists_normalWord_prod_eq
   · by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
       exact this w hw1
-    · rcases  this ⟨1, w.toList, w.chain⟩ rfl with ⟨w', hw'⟩
+    · rcases this ⟨1, w.toList, w.chain⟩ rfl with ⟨w', hw'⟩
       exact ⟨w.head • w', by
-        simpa [prod, NormalWord.prod, mul_assoc] using hw'⟩
+        simpa [ReducedWord.prod, mul_assoc] using hw'⟩
   intro w hw1
   rcases w with ⟨g, l, chain⟩
   dsimp at hw1; subst hw1
@@ -591,7 +589,7 @@ theorem exists_normalWord_prod_eq
       ⟨{ head := 1
          toList := []
          mem_set := by simp
-         chain := List.chain'_nil }, by simp [prod, NormalWord.prod]⟩
+         chain := List.chain'_nil }, by simp [prod]⟩
   | cons a l ih =>
     rcases ih (List.chain'_cons'.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
     clear ih
@@ -630,7 +628,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   rcases exists_normalWord_prod_eq φ d w₁ with ⟨w₁', hw₁'1, hw₁'2, hw₁'3⟩
   rcases exists_normalWord_prod_eq φ d w₂ with ⟨w₂', hw₂'1, hw₂'2, hw₂'3⟩
   have : w₁' = w₂' :=
-    NormalWord.prod_injective φ d (by rw [hw₁'1, hw₂'1, hprod])
+    NormalWord.prod_injective φ d (by dsimp only; rw [hw₁'1, hw₂'1, hprod])
   subst this
   refine ⟨by rw [← hw₁'2, hw₂'2], ?_⟩
   simp only [← leftCoset_eq_iff] at *
@@ -644,8 +642,8 @@ theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by
   rcases hw with ⟨g, hg⟩
-  let w' : ReducedWord G A B := { empty G A B with head := g }
-  have : w.prod φ = w'.prod φ := by simp [prod, hg]
+  let w' : ReducedWord G A B := { ReducedWord.empty G A B with head := g }
+  have : w.prod φ = w'.prod φ := by simp [ReducedWord.prod, hg]
   simpa using (map_fst_eq_and_of_prod_eq φ this).1
 
 end ReducedWord
