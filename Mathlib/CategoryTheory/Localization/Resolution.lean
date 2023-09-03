@@ -19,8 +19,7 @@ structure RightResolution (X₂ : C₂) where
   w : X₂ ⟶ Φ.functor.obj X₁
   hw : W₂ w
 
-class HasRightResolutions : Prop where
-  nonempty_rightResolution (X₂ : C₂) : Nonempty (Φ.RightResolution X₂)
+abbrev HasRightResolutions := ∀ (X₂ : C₂), Nonempty (Φ.RightResolution X₂)
 
 namespace RightResolution
 

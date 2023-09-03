@@ -162,6 +162,15 @@ lemma IsLocalizedEquivalence.of_equivalence [IsEquivalence Φ.functor]
     exact h
   exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
 
+-- should be moved to MorphismProperty.lean
+def _root_.CategoryTheory.MorphismProperty.arrow (W : MorphismProperty C₁) :
+    MorphismProperty (Arrow C₁) := fun _ _ f => W f.left ∧ W f.right
+
+@[simps]
+def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
+  functor := Φ.functor.mapArrow
+  map := fun _ _ _ ⟨hf₁, hf₂⟩ => ⟨Φ.map _ hf₁, Φ.map _ hf₂⟩
+
 end LocalizerMorphism
 
 end CategoryTheory

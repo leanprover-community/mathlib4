@@ -15,8 +15,11 @@ namespace LocalizerMorphism
 
 variable (Φ : LocalizerMorphism W₁ W₂)
 
-class IsRightDerivabilityStructure extends Φ.HasRightResolutions : Prop where
+class IsRightDerivabilityStructure : Prop where
+  hasRightResolutions : Φ.HasRightResolutions := by infer_instance
   guitartExact' : TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom
+
+attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
 
 variable {D₁ D₂ : Type*} [Category D₁] [Category D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
@@ -25,8 +28,8 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e' : Φ.functor
     Φ.IsRightDerivabilityStructure ↔
       TwoSquare.GuitartExact e'.hom := by
   have : Φ.IsRightDerivabilityStructure ↔
-    TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom :=
-      ⟨fun h => h.guitartExact', fun h => ⟨h⟩⟩
+      TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom :=
+    ⟨fun h => h.guitartExact', fun h => ⟨inferInstance, h⟩⟩
   rw [this]
   let e := (Φ.catCommSq W₁.Q W₂.Q).iso
   let E₁ := Localization.uniq W₁.Q L₁ W₁

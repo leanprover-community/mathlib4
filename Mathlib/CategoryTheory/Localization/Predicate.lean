@@ -165,11 +165,21 @@ theorem inverts : W.IsInvertedBy L :=
 
 /-- The isomorphism `L.obj X ≅ L.obj Y` that is deduced from a morphism `f : X ⟶ Y` which
 belongs to `W`, when `L.IsLocalization W`. -/
-@[simps!]
+@[simps! hom]
 def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   haveI : IsIso (L.map f) := inverts L W f hf
   asIso (L.map f)
 #align category_theory.localization.iso_of_hom CategoryTheory.Localization.isoOfHom
+
+@[reassoc (attr := simp)]
+lemma isoOfHom_hom_inv_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    L.map f ≫ (isoOfHom L W f hf).inv = 𝟙 _ :=
+  (isoOfHom L W f hf).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoOfHom_inv_hom_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    (isoOfHom L W f hf).inv ≫ L.map f = 𝟙 _ :=
+  (isoOfHom L W f hf).inv_hom_id
 
 instance : IsEquivalence (Localization.Construction.lift L (inverts L W)) :=
   (inferInstance : L.IsLocalization W).nonempty_isEquivalence.some
