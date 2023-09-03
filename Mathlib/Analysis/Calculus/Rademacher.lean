@@ -20,6 +20,8 @@ open Filter MeasureTheory Measure FiniteDimensional Metric Set
 
 open scoped BigOperators NNReal ENNReal Topology
 
+namespace LipschitzWith
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] {C D : ℝ≥0} {f g : E → ℝ}
 
@@ -30,7 +32,7 @@ This follows from the one-dimensional result that a Lipschitz function on `ℝ` 
 variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
-theorem LipschitzWith.ae_lineDifferentiableAt_of_prod
+theorem ae_lineDifferentiableAt_of_prod
     {C : ℝ≥0} {f : E × ℝ → ℝ} (hf : LipschitzWith C f) {μ : Measure E} :
     ∀ᵐ p ∂(μ.prod volume), LineDifferentiableAt ℝ f p (0, 1) := by
   apply (ae_prod_mem_iff_ae_ae_mem (measurableSet_lineDifferentiableAt hf.continuous)).2
@@ -49,7 +51,7 @@ theorem LipschitzWith.ae_lineDifferentiableAt_of_prod
 
 variable {μ : Measure E} [IsAddHaarMeasure μ]
 
-theorem LipschitzWith.ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
+theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
   rcases eq_or_ne v 0 with rfl|hv
   · simp [lineDifferentiableAt_zero]
@@ -75,12 +77,12 @@ theorem LipschitzWith.ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
   rw [← hL]
   exact LineDifferentiableAt.of_comp h'p
 
-theorem LipschitzWith.memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
+theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
-theorem LipschitzWith.locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
+theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
   (hf.memℒp_lineDeriv v).locallyIntegrable le_top
 
@@ -163,6 +165,10 @@ them is compactly supported. -/
 theorem integral_lineDeriv_mul_eq
     (hf : LipschitzWith C f) (hg : LipschitzWith D g) (h'g : HasCompactSupport g) (v : E) :
     ∫ x, lineDeriv ℝ f x v * g x ∂μ = ∫ x, lineDeriv ℝ g x (-v) * f x ∂μ := by
+  /- Write down the line derivative as the limit of `(f (x + t v) - f x) / t` and
+  `(g (x - t v) - g x) / t`, and therefore the integrals as limits of the corresponding integrals
+  thanks to the dominated convergence theorem. At fixed positive `t`, the integrals coincide
+  (with the change of variables `y = x + t v`), so the limits also coincide. -/
   have A : Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
               (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) :=
     integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
@@ -189,8 +195,14 @@ theorem integral_lineDeriv_mul_eq
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
-theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f):
+/-- The line derivative of a Lipschitz function is almost everywhere linear with respect to fixed
+coefficients. -/
+theorem ae_lineDeriv_sum_eq
+    {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f) :
     ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
+  /- Clever argument by Morrey: integrate against a smooth compactly supported function `g`, switch
+  the derivative to `g` by integration by parts, and use the linearity of the derivative of `g` to
+  conclude that the initial integrals coincide. -/
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
     (locallyIntegrable_finset_sum _ (fun i hi ↦  (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
     (fun g g_smooth g_comp ↦ ?_)
@@ -214,9 +226,18 @@ theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf 
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
     simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_mul_left]
-  intro i hi
-  apply Integrable.const_mul
-  apply Continuous.integrable_of_hasCompactSupport
-  have az : Continuous (fun x ↦ fderiv ℝ g x) := g_smooth.continuous_fderiv le_top
-  have : Continuous (fun x ↦ fderiv ℝ g x (v i)) := by
-    have Z := Continuous.comp az
+  intro i _hi
+  let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
+  have L_cont : Continuous L := (ContinuousLinearMap.apply ℝ (Fₗ := ℝ) (v i)).continuous
+  change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
+  refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
+  · exact (L_cont.comp (g_smooth.continuous_fderiv le_top)).mul hf.continuous
+  · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
+
+/-!
+### Step 3: construct the derivative using the line derivatives along a basis
+-/
+
+
+
+end LipschitzWith
