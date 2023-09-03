@@ -394,27 +394,24 @@ theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a
   exact h.tendstoLocallyUniformlyOn
 #align continuous_map.tendsto_of_tendsto_locally_uniformly ContinuousMap.tendsto_of_tendstoLocallyUniformly
 
-/-- If every point has a compact neighbourhood, then convergence in the compact-open topology
-implies locally uniform convergence.
+/-- In a weakly locally compact space,
+convergence in the compact-open topology is the same as locally uniform convergence.
 
-See also `ContinuousMap.tendsto_iff_tendstoLocallyUniformly`, especially for T2 spaces. -/
-theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
-    TendstoLocallyUniformly (fun i a => F i a) f p := fun V hV x ↦ by
+The right-to-left implication holds in any topological space,
+see `ContinuousMap.tendsto_of_tendstoLocallyUniformly`. -/
+theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
+    Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p := by
+  refine ⟨fun h V hV x ↦ ?_, tendsto_of_tendstoLocallyUniformly⟩
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn] at h
   obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
   exact ⟨n, hn₂, h n hn₁ V hV⟩
-#align continuous_map.tendsto_locally_uniformly_of_tendsto ContinuousMap.tendstoLocallyUniformly_of_tendsto
-
-/-- Convergence in the compact-open topology is the same as locally uniform convergence on a locally
-compact space.
-
-For non-T2 spaces, the assumption `LocallyCompactSpace α` is stronger than we need and in fact
-the `←` direction is true unconditionally. See `ContinuousMap.tendstoLocallyUniformly_of_tendsto`
-and `ContinuousMap.tendsto_of_tendstoLocallyUniformly` for versions requiring weaker hypotheses. -/
-theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
-    Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p :=
-  ⟨tendstoLocallyUniformly_of_tendsto, tendsto_of_tendstoLocallyUniformly⟩
 #align continuous_map.tendsto_iff_tendsto_locally_uniformly ContinuousMap.tendsto_iff_tendstoLocallyUniformly
+
+@[deprecated tendsto_iff_tendstoLocallyUniformly]
+theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
+    TendstoLocallyUniformly (fun i a => F i a) f p :=
+  tendsto_iff_tendstoLocallyUniformly.1 h
+#align continuous_map.tendsto_locally_uniformly_of_tendsto ContinuousMap.tendstoLocallyUniformly_of_tendsto
 
 section CompactDomain
 

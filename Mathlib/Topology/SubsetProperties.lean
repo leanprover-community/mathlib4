@@ -32,11 +32,13 @@ We define the following properties for sets in a topological space:
 
 For each of these definitions (except for `IsClopen`), we also have a class stating that the whole
 space satisfies that property:
-`CompactSpace`, `IrreducibleSpace`
+`CompactSpace`, `PreirreducibleSpace`, `IrreducibleSpace`.
 
-Furthermore, we have three more classes:
-* `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
-  neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
+Furthermore, we have four more classes:
+* `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
+* `LocallyCompactSpace`: for every point `x`,
+  every open neighborhood of `x` contains a compact neighborhood of `x`.
+  The definition is formulated in terms of the neighborhood filter.
 * `SigmaCompactSpace`: a space that is the union of a countably many compact subspaces;
 * `NoncompactSpace`: a space that is not a compact space.
 
@@ -1112,10 +1114,14 @@ theorem exists_compact_superset [WeaklyLocallyCompactSpace α] {K : Set α} (hK 
   exact iUnion₂_subset fun x hx ↦ interior_mono <| subset_iUnion₂ (s := fun x _ ↦ s x) x hx
 #align exists_compact_superset exists_compact_superset
 
-/-- There are various definitions of "locally compact space" in the literature, which agree for
-Hausdorff spaces but not in general. This one is the precise condition on X needed for the
-evaluation map `C(X, Y) × X → Y` to be continuous for all `Y` when `C(X, Y)` is given the
-compact-open topology. -/
+/-- There are various definitions of "locally compact space" in the literature,
+which agree for Hausdorff spaces but not in general.
+This one is the precise condition on X needed
+for the evaluation map `C(X, Y) × X → Y` to be continuous for all `Y`
+when `C(X, Y)` is given the compact-open topology.
+
+See also `WeaklyLocallyCompactSpace`, a typeclass that only assumes
+that each point has a compact neighborhood. -/
 class LocallyCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- In a locally compact space,
     every neighbourhood of every point contains a compact neighbourhood of that same point. -/

@@ -60,8 +60,9 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   these results are part of the typeclass inference system (e.g. `Embedding.t2Space`)
 * `Set.EqOn.closure`: If two functions are equal on some set `s`, they are equal on its closure.
 * `IsCompact.isClosed`: All compact sets are closed.
-* `WeaklyLocallyCompactSpace.locallyCompactSpace`: A weakly locally compact Hausdorff space
-  is locally compact.
+* `WeaklyLocallyCompactSpace.locallyCompactSpace`: If a topological space is both
+  weakly locally compact (i.e., each point has a compact neighbourhood)
+  and is T₂, then it is locally compact.
 * `totallySeparatedSpace_of_t1_of_basis_clopen`: If `α` has a clopen basis, then
   it is a `TotallySeparatedSpace`.
 * `loc_compact_t2_tot_disc_iff_tot_sep`: A locally compact T₂ space is totally disconnected iff
