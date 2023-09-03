@@ -189,30 +189,6 @@ theorem integral_lineDeriv_mul_eq
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
-
-#exit
-
-theorem ContDiff.lipschitzWith
-    {𝕜 : Type*} [IsROrC 𝕜] {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {n : ℕ∞}
-    (hf : HasCompactSupport f) (h'f : ContDiff 𝕜 n f) (hn : 1 ≤ n) : ∃ C, LipschitzWith C f := by
-  have : NormedSpace ℝ E := sorry
-  have A : IsCompact (range (fderiv 𝕜 f)) :=
-    (hf.fderiv 𝕜).isCompact_range (h'f.continuous_fderiv hn)
-  obtain ⟨C, C_pos, hC⟩ : ∃ C, 0 < C ∧ range (fderiv 𝕜 f) ⊆ closedBall 0 C :=
-    A.bounded.subset_ball_lt 0 _
-  refine ⟨⟨C, C_pos.le⟩, ?_⟩
-  apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
-  have : fderiv ℝ f x ∈ closedBall 0 C := hC (mem_range_self _)
-  simpa using this
-
-#find_home
-
-
-
-#exit
-
-
 theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f):
     ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
