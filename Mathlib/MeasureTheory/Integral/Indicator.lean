@@ -18,9 +18,9 @@ in `Mathlib.MeasureTheory.Integral.Lebesgue`.
 
 ## Todo
 
-The result `measurableSet_of_tendsto_indicator` could be proved without integration, if we
-had convergence of measures results for countably generated filters. Ideally, the present
-file would then become unnecessary: lemmas such as
+The result `MeasureTheory.tendsto_measure_of_tendsto_indicator` here could be proved without
+integration, if we had convergence of measures results for countably generated filters. Ideally,
+the present file would then become unnecessary: lemmas such as
 `MeasureTheory.tendsto_measure_of_ae_tendsto_indicator` would not need integration so could be
 moved out of `Mathlib.MeasureTheory.Integral.Lebesgue`, and the lemmas in this file could be
 moved to, e.g., `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`.
