@@ -702,6 +702,10 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   exact norm_of_nonneg (Nat.cast_nonneg n)
 #align is_R_or_C.norm_nat_cast IsROrC.norm_natCast
 
+@[simp]
+theorem norm_ratCast (x : ℚ) : ‖(x : K)‖ = |(x : ℝ)| := by
+  rw [← map_ratCast (algebraMap ℝ K), norm_algebraMap']; rfl
+
 @[simp, isROrC_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
