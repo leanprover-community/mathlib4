@@ -696,15 +696,8 @@ theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
   (norm_ofReal _).trans (abs_of_nonneg h)
 #align is_R_or_C.norm_of_nonneg IsROrC.norm_of_nonneg
 
-@[simp, isROrC_simps, norm_cast]
-theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
-  rw [← ofReal_natCast]
-  exact norm_of_nonneg (Nat.cast_nonneg n)
-#align is_R_or_C.norm_nat_cast IsROrC.norm_natCast
-
-@[simp, isROrC_simps]
-theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
-  norm_natCast n
+attribute [isROrC_simps] Nat.norm_cast norm_ofNat
+#align is_R_or_C.norm_nat_cast Nat.norm_cast
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 #align is_R_or_C.mul_self_norm IsROrC.mul_self_norm
