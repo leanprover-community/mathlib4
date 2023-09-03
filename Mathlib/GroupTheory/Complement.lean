@@ -353,21 +353,33 @@ theorem equiv_fst_eq_mul_inv (g : G) : ↑(hST.equiv g).fst = g * ((hST.equiv g)
 theorem equiv_snd_eq_inv_mul (g : G) : ↑(hST.equiv g).snd = ((hST.equiv g).fst : G)⁻¹ * g :=
   eq_inv_mul_of_mul_eq (hST.equiv_fst_mul_equiv_snd g)
 
-theorem equiv_fst_eq_of_leftCosetEquivalence {g₁ g₂ : G}
-    (h : LeftCosetEquivalence K g₁ g₂) : (hSK.equiv g₁).fst = (hSK.equiv g₂).fst := by
-  rw [LeftCosetEquivalence, leftCoset_eq_iff] at h
-  apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
-  · simp [equiv_fst_eq_mul_inv]
-  · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
-    simp [equiv_fst_eq_mul_inv, mul_assoc]
+theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
+    LeftCosetEquivalence K g₁ g₂ ↔ (hSK.equiv g₁).fst = (hSK.equiv g₂).fst := by
+  rw [LeftCosetEquivalence, leftCoset_eq_iff]
+  constructor
+  · intro h
+    apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
+    · simp [equiv_fst_eq_mul_inv]
+    · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
+      simp [equiv_fst_eq_mul_inv, ← mul_assoc]
+  · intro h
+    rw [← hSK.equiv_fst_mul_equiv_snd g₂, ←hSK.equiv_fst_mul_equiv_snd g₁, ← h,
+      mul_inv_rev, ← mul_assoc, inv_mul_cancel_right, ← coe_inv, ← coe_mul]
+    exact Subtype.property _
 
-theorem equiv_snd_eq_of_rightCosetEquivalence {g₁ g₂ : G}
-    (h : RightCosetEquivalence H g₁ g₂) : (hHT.equiv g₁).snd = (hHT.equiv g₂).snd := by
-  rw [RightCosetEquivalence, rightCoset_eq_iff] at h
-  apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
-  · simp [equiv_snd_eq_inv_mul]
-  · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
-    simp [equiv_snd_eq_inv_mul, mul_assoc]
+theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
+    RightCosetEquivalence H g₁ g₂ ↔ (hHT.equiv g₁).snd = (hHT.equiv g₂).snd := by
+  rw [RightCosetEquivalence, rightCoset_eq_iff]
+  constructor 
+  · intro h
+    apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
+    · simp [equiv_snd_eq_inv_mul]
+    · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
+      simp [equiv_snd_eq_inv_mul, mul_assoc]
+  · intro h
+    rw [← hHT.equiv_fst_mul_equiv_snd g₂, ←hHT.equiv_fst_mul_equiv_snd g₁, ← h,
+      mul_inv_rev, mul_assoc, mul_inv_cancel_left, ← coe_inv, ← coe_mul]
+    exact Subtype.property _
 
 theorem leftCosetEquivalence_equiv_fst (g : G) :
     LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
@@ -378,13 +390,13 @@ theorem rightCosetEquivalence_equiv_snd (g : G) :
   simp [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]
 
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
-    (hST.equiv g).fst = g := by
+    (hST.equiv g).fst = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
 
 theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
-    (hST.equiv g).snd = g := by
+    (hST.equiv g).snd = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
@@ -403,7 +415,7 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
 theorem equiv_mul_right (g : G) (k : K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
   have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
-    hSK.equiv_fst_eq_of_leftCosetEquivalence
+    hSK.equiv_fst_eq_iff_leftCosetEquivalence.1
       (by simp [LeftCosetEquivalence, leftCoset_eq_iff])
   ext
   · rw [this]
@@ -417,7 +429,7 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
-    hHT.equiv_snd_eq_of_rightCosetEquivalence
+    hHT.equiv_snd_eq_iff_rightCosetEquivalence.1
       (by simp [RightCosetEquivalence, rightCoset_eq_iff])
   ext
   · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
@@ -437,7 +449,8 @@ theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
   · intro h
     rw [← h]
     exact Subtype.prop _
-  · exact hST.equiv_fst_eq_self_of_mem_of_one_mem h1
+  · intro h
+    rw [hST.equiv_fst_eq_self_of_mem_of_one_mem h1 h]
 
 theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
     ((hST.equiv g).snd : G) = g ↔ g ∈ T := by
@@ -445,7 +458,8 @@ theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
   · intro h
     rw [← h]
     exact Subtype.prop _
-  · exact hST.equiv_snd_eq_self_of_mem_of_one_mem h1
+  · intro h
+    rw [hST.equiv_snd_eq_self_of_mem_of_one_mem h1 h]
 
 theorem coe_equiv_fst_eq_one_iff_mem {g : G} (h1 : 1 ∈ S) :
     ((hST.equiv g).fst : G) = 1 ↔ g ∈ T := by
