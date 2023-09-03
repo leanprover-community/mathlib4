@@ -298,7 +298,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
     (hgr : g ∉ (φ i).range) : NormalWord d :=
   letI n := (d.compl i).equiv (g * (φ i w.head))
   letI w' := Word.cons (n.2 : G i) w.toWord hmw
-    (mt (equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
+    (mt (coe_equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
       (mt (mul_mem_cancel_right (by simp)).1 hgr))
   { toWord := w'
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
@@ -449,7 +449,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · rwa [← SetLike.mem_coe,
-          ← equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
+          ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
 
