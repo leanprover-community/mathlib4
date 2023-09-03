@@ -362,8 +362,11 @@ variable {M}
 
 private theorem FractionRing.isAlgebraic :
     letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+    letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
+  have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   intro
   exact
     (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
@@ -373,6 +376,10 @@ private theorem FractionRing.isAlgebraic :
   closed extension of R. -/
 noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI := FractionRing.liftAlgebra R M
+  letI := FractionRing.liftAlgebra R (FractionRing S)
+  have := FractionRing.isScalarTower_liftAlgebra R M
+  have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
     FractionRing.isAlgebraic hS
   let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M this
