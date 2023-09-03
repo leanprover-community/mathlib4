@@ -200,6 +200,7 @@ theorem blouk2 {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E →
   obtain ⟨C, C_pos, hC⟩ : ∃ C, 0 < C ∧ range (fderiv ℝ f) ⊆ closedBall 0 C :=
     A.bounded.subset_ball_lt 0 _
   refine ⟨⟨C, C_pos.le⟩, ?_⟩
+  have Z := lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn)
 
 
 

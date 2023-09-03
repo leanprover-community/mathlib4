@@ -552,7 +552,7 @@ theorem lipschitzOnWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Dif
 
 /-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
 `C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
-theorem lipschitzWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : Differentiable 𝕜 f)
+theorem _root_.lipschitzWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
   rw [← lipschitzOn_univ]
   exact lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ
