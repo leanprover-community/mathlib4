@@ -34,8 +34,8 @@ namespace PointedCone
 
 
 section SMul
-variable {𝕜} [OrderedSemiring 𝕜]
-variable {E} [AddCommMonoid E] [SMul 𝕜 E]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {E : Type*} [AddCommMonoid E] [SMul 𝕜 E]
 
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) :=
   ⟨fun K => K.1⟩
@@ -68,8 +68,8 @@ end SMul
 section Maps
 variable [LinearOrderedField 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
-variable {F} [AddCommMonoid F] [Module 𝕜 F]
-variable {G} [AddCommMonoid G] [Module 𝕜 G]
+variable {F : Type*} [AddCommMonoid F] [Module 𝕜 F]
+variable {G : Type*} [AddCommMonoid G] [Module 𝕜 G]
 
 /-- The image of a convex cone under a `𝕜`-linear map is a convex cone· -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F where
@@ -146,7 +146,7 @@ type of submodules of the ambient space when the scalars are restricted to being
 
 variable [OrderedSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
-variable {S} {S : PointedCone 𝕜 E}
+variable {S : Type*} {S : PointedCone 𝕜 E}
 
 local instance : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
