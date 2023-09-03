@@ -187,6 +187,7 @@ instance instAddCommMonoid : AddCommMonoid S :=
     rfl (by aesop) coe_nsmul
     -- Note: linter says `coe_add` is a syntactic tautology
 
+/-- `addMonoidHom` structure on the inclusion map of a pointed cone inside the ambient space. -/
 def subtype.addMonoidHom : S →+ E where
   toFun := Subtype.val
   map_zero' := rfl
@@ -200,11 +201,14 @@ instance instModule : Module { c : 𝕜 // 0 ≤ c } S := by
   simp only [coeSubtype.addMonoidHom, Subtype.coe_injective]
   simp -- a single `simp` does not work!
 
+/-- `linearMap` structure on the inclusion map of a pointed cone inside the ambient space. -/
 def subtype.linearMap : S →ₗ[{ c : 𝕜 // 0 ≤ c }] E where
   toFun := Subtype.val
   map_add' := by simp
   map_smul' := by simp
 
+/-- A pointed cone is a submodule of the ambient when the scalars are restricted to be
+non-negative. -/
 def toSubmodule (S : PointedCone 𝕜 E) : Submodule { c : 𝕜 // 0 ≤ c } E where
   carrier := S
   add_mem' := fun hx hy => S.add_mem hx hy
@@ -218,13 +222,14 @@ def toSubmodule (S : PointedCone 𝕜 E) : Submodule { c : 𝕜 // 0 ≤ c } E w
       convert hpos
       exact hx
 
+/-- Any submodule (over non-negative scalars) of the ambient space is a pointed cone. -/
 def ofSubmodule (M : Submodule { c : 𝕜 // 0 ≤ c } E) : (PointedCone 𝕜 E) where
   carrier := M
   smul_mem' := fun c hc _ hx => M.smul_mem ⟨c, le_of_lt hc⟩ hx
   add_mem' := fun _ hx _ hy => M.add_mem hx hy
   zero_mem' := M.zero_mem
 
-/- The equivalence between pointed cones and submodules· -/
+/-- The equivalence between pointed cones and submodules· -/
 def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c } E) where
   toFun := toSubmodule
   invFun := ofSubmodule
