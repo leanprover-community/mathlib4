@@ -1438,7 +1438,7 @@ every compact set has an open neighborhood with compact closure. -/
 theorem exists_open_superset_and_isCompact_closure [WeaklyLocallyCompactSpace α] [T2Space α]
     {K : Set α} (hK : IsCompact K) : ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
   rcases exists_compact_superset hK with ⟨K', hK', hKK'⟩
-  refine' ⟨interior K', isOpen_interior, hKK',
+  exact ⟨interior K', isOpen_interior, hKK',
     isCompact_closure_of_subset_compact hK' interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
 
