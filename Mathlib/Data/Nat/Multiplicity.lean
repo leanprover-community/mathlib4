@@ -189,13 +189,13 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p (n + k)`. -/
-theorem multiplicity_choose' {p n k b : ℕ} (hp : p.Prime)  (hnb : log p (n + k) < b) :
+theorem multiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
     multiplicity p (choose (n + k) k) =
       ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
   have h₁ :
-    multiplicity p (choose (n + k) k) + multiplicity p (k ! * n !) =
-      ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card +
-        multiplicity p (k ! * n !) := by
+      multiplicity p (choose (n + k) k) + multiplicity p (k ! * n !) =
+        ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card +
+          multiplicity p (k ! * n !) := by
     rw [← hp.multiplicity_mul, ← mul_assoc]
     have := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [this, hp.multiplicity_factorial hnb, hp.multiplicity_mul,
