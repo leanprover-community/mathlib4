@@ -189,19 +189,24 @@ theorem integral_lineDeriv_mul_eq
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
-theorem blouk {f : E → ℝ} (hf : HasCompactSupport f) (h'f : Continuous f) :
-    IsCompact (range f) := by
-  exact HasCompactSupport.isCompact_range hf h'f
 
-theorem blouk2 {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {n : ℕ∞}
-    (hf : HasCompactSupport f) (h'f : ContDiff ℝ n f) (hn : 1 ≤ n) : ∃ D, LipschitzWith D f := by
-  have A : IsCompact (range (fderiv ℝ f)) :=
-    (hf.fderiv ℝ).isCompact_range (h'f.continuous_fderiv hn)
-  obtain ⟨C, C_pos, hC⟩ : ∃ C, 0 < C ∧ range (fderiv ℝ f) ⊆ closedBall 0 C :=
+#exit
+
+theorem ContDiff.lipschitzWith
+    {𝕜 : Type*} [IsROrC 𝕜] {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {n : ℕ∞}
+    (hf : HasCompactSupport f) (h'f : ContDiff 𝕜 n f) (hn : 1 ≤ n) : ∃ C, LipschitzWith C f := by
+  have : NormedSpace ℝ E := sorry
+  have A : IsCompact (range (fderiv 𝕜 f)) :=
+    (hf.fderiv 𝕜).isCompact_range (h'f.continuous_fderiv hn)
+  obtain ⟨C, C_pos, hC⟩ : ∃ C, 0 < C ∧ range (fderiv 𝕜 f) ⊆ closedBall 0 C :=
     A.bounded.subset_ball_lt 0 _
   refine ⟨⟨C, C_pos.le⟩, ?_⟩
-  have Z := lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn)
+  apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
+  have : fderiv ℝ f x ∈ closedBall 0 C := hC (mem_range_self _)
+  simpa using this
 
+#find_home
 
 
 
