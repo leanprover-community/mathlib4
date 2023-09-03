@@ -544,7 +544,6 @@ theorem centralizer_le {R} [NonUnitalSemiring R] (s t : Set R) (h : s ⊆ t) :
   Set.centralizer_subset h
 #align non_unital_subsemiring.centralizer_le NonUnitalSubsemiring.centralizer_le
 
-/-
 @[simp]
 theorem centralizer_eq_top_iff_subset {R} [NonUnitalSemiring R] {s : Set R} :
     centralizer s = ⊤ ↔ s ⊆ center R :=
@@ -555,7 +554,6 @@ theorem centralizer_eq_top_iff_subset {R} [NonUnitalSemiring R] {s : Set R} :
 theorem centralizer_univ {R} [NonUnitalSemiring R] : centralizer Set.univ = center R :=
   SetLike.ext' (Set.centralizer_univ R)
 #align non_unital_subsemiring.centralizer_univ NonUnitalSubsemiring.centralizer_univ
--/
 
 end Centralizer
 

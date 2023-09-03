@@ -33,10 +33,6 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
     _ = star ((a * star c) * star b) := by rw [ha.left_assoc]
     _ = b * star (a * star c) := by rw [star_mul, star_star]
     _ = b * (c * star a) := by rw [star_mul, star_star]
-/-
-  simpa only [star_mul, star_star] using fun g =>
-    congr_arg star ((Set.mem_center_iff R).mp ha <| star g).symm
--/
 
 theorem Set.star_mem_centralizer' (h : ∀ a : R, a ∈ s → star a ∈ s) (ha : a ∈ Set.centralizer s) :
     star a ∈ Set.centralizer s := fun y hy => by simpa using congr_arg star (ha _ (h _ hy)).symm

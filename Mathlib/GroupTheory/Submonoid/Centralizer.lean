@@ -82,7 +82,6 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 #align submonoid.centralizer_le Submonoid.centralizer_le
 #align add_submonoid.centralizer_le AddSubmonoid.centralizer_le
 
-
 @[to_additive (attr := simp)]
 theorem centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
@@ -96,7 +95,6 @@ theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align submonoid.centralizer_univ Submonoid.centralizer_univ
 #align add_submonoid.centralizer_univ AddSubmonoid.centralizer_univ
-
 
 end
 

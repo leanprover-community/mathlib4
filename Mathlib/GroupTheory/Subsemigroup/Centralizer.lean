@@ -147,19 +147,10 @@ theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
     · intro h
       apply Subset.antisymm (subset_univ (centralizer s))
       exact (fun _ _ _ hm => (h hm).comm _)
-
-/-
-@[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
-theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
-    centralizer s = Set.univ ↔ s ⊆ center M :=
-  eq_top_iff.trans <| ⟨fun h _ hx _ => (h trivial _ hx).symm
-  , fun h x _ _ hm => (h hm x).symm⟩
 #align set.centralizer_eq_top_iff_subset Set.centralizer_eq_top_iff_subset
 #align set.add_centralizer_eq_top_iff_subset Set.addCentralizer_eq_top_iff_subset
--/
 
 variable (M)
-
 
 @[to_additive (attr := simp) addCentralizer_univ]
 theorem centralizer_univ [Semigroup M] : centralizer univ = center M :=
@@ -180,7 +171,6 @@ theorem centralizer_univ [Semigroup M] : centralizer univ = center M :=
     (fun _ ha b _ => (ha.comm b).symm)
 #align set.centralizer_univ Set.centralizer_univ
 #align set.add_centralizer_univ Set.addCentralizer_univ
-
 
 variable {M} (S)
 
@@ -239,7 +229,6 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 #align subsemigroup.centralizer_le Subsemigroup.centralizer_le
 #align add_subsemigroup.centralizer_le AddSubsemigroup.centralizer_le
 
-/-
 @[to_additive (attr := simp)]
 theorem centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
@@ -252,7 +241,7 @@ theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align subsemigroup.centralizer_univ Subsemigroup.centralizer_univ
 #align add_subsemigroup.centralizer_univ AddSubsemigroup.centralizer_univ
--/
+
 end
 
 end Subsemigroup
