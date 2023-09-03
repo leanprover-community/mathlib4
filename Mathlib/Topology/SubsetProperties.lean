@@ -1086,6 +1086,7 @@ class WeaklyLocallyCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   exists_compact_mem_nhds (x : α) : ∃ s, IsCompact s ∧ s ∈ 𝓝 x
 
 export WeaklyLocallyCompactSpace (exists_compact_mem_nhds)
+#align exists_compact_mem_nhds WeaklyLocallyCompactSpace.exists_compact_mem_nhds
 
 instance [WeaklyLocallyCompactSpace α] [WeaklyLocallyCompactSpace β] :
     WeaklyLocallyCompactSpace (α × β) where
