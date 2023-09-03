@@ -5,8 +5,6 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.GroupTheory.SpecificGroups.Coprod
-import Mathlib.GroupTheory.CoprodI
-import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.Complement
 
 /-!
@@ -411,6 +409,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       · simp [this]
       · simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this]
 
+/-- the equivalence given by multiplication on the left by `t`  -/
 @[simps]
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
 { toFun := unitsSMul φ 1
@@ -440,6 +439,7 @@ noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
       ext : 1
       simp [unitsSMul_one_group_smul])
 
+/-- The product of a `NormalWord`, as an element of the `HNNExtension` -/
 def prod (w : NormalWord d) : HNNExtension G A B φ :=
   of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
@@ -514,6 +514,7 @@ theorem prod_smul_empty (w : NormalWord d) :
     ext <;> simp
 
 variable (d)
+/-- The equivalence between elements of the HNN extension and words in normal form. -/
 noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
   { toFun := fun g => g • empty,
     invFun := fun w => w.prod φ,
@@ -540,22 +541,25 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
     by simp_all [Function.funext_iff, of_smul_eq_smul])
 
 variable (G A B)
+/-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
+There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
+`toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
 structure ReducedWord : Type _ :=
   ( head : G )
   ( toList : List (ℤˣ × G) )
-  ( eq_one_of_mem : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ toSubgroup A B u → g = 1 )
-  ( chain : toList.Chain' (fun a b => a.2 = 1 → a.1 = b.1) )
+  ( chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1) )
 
 namespace ReducedWord
 
+/-- The empty reduced word. -/
 @[simps]
 def empty : ReducedWord G A B :=
   { head := 1
     toList := []
-    eq_one_of_mem := by simp
     chain := List.chain'_nil }
 
 variable {G A B}
+/-- The product of a `ReducedWord` as an element of the `HNNExtension` -/
 def prod : ReducedWord G A B → HNNExtension G A B φ :=
   fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
@@ -573,11 +577,11 @@ theorem exists_normalWord_prod_eq
   · by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
       exact this w hw1
-    · rcases  this ⟨1, w.toList, w.eq_one_of_mem, w.chain⟩ rfl with ⟨w', hw'⟩
+    · rcases  this ⟨1, w.toList, w.chain⟩ rfl with ⟨w', hw'⟩
       exact ⟨w.head • w', by
         simpa [prod, NormalWord.prod, mul_assoc] using hw'⟩
   intro w hw1
-  rcases w with ⟨g, l, eq_one_of_mem, chain⟩
+  rcases w with ⟨g, l, chain⟩
   dsimp at hw1; subst hw1
   induction l with
   | nil =>
@@ -587,8 +591,7 @@ theorem exists_normalWord_prod_eq
          mem_set := by simp
          chain := List.chain'_nil }, by simp [prod, NormalWord.prod]⟩
   | cons a l ih =>
-    rcases ih (fun _ _ h => eq_one_of_mem _ _ (List.mem_cons_of_mem _ h))
-       (List.chain'_cons'.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
+    rcases ih (List.chain'_cons'.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
     clear ih
     refine ⟨(t^(a.1 : ℤ) * of a.2 : HNNExtension G A B φ) • w', ?_, ?_⟩
     · rw [prod_smul, hw'1]
@@ -602,17 +605,20 @@ theorem exists_normalWord_prod_eq
         have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'
         rw [mul_mem_cancel_right this] at hS
-        have : a.2 = 1 := eq_one_of_mem a.1 a.2 (List.mem_cons_self _ _) hS
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.chain'_cons'.1 chain).1 (l.head hl)
-            (List.head?_eq_head _ _) this
+            (List.head?_eq_head _ _) hS
           rwa [List.head?_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
         simp [Units.ext_iff, eq_neg_iff_add_eq_zero] at this
       erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
       simp [mul_assoc, unitsSMulGroup, (d.compl _).equiv_snd_eq_one_iff_mem]
 
+/-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
+length corresponding list, with the same pattern of occurences of `t^1` and `t^(-1)`,
+and also the `head` is in the same left coset of `toSubgroup A B (-u)`, where `u : ℤˣ`
+is the exponent of the first occurence of `t` in the word. -/
 theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
     w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
@@ -630,6 +636,8 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   rw [← hw₁'3 _ hu, ← hw₂'3 _]
   rwa [← List.head?_map, ← hw₂'2, hw₁'2, List.head?_map]
 
+/-- **Britton's Lemma**. Any reduced word whose product is an element of `G`, has no
+occurences of `t`.  -/
 theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by
