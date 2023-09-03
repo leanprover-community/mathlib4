@@ -125,24 +125,62 @@ theorem center_subset_centralizer [Mul M] (S : Set M) : Set.center M ⊆ S.centr
 #align set.center_subset_centralizer Set.center_subset_centralizer
 #align set.add_center_subset_add_centralizer Set.addCenter_subset_addCentralizer
 
+@[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
+theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
+    centralizer s = Set.univ ↔ s ⊆ center M := by
+    constructor
+    · intro h
+      --simp at h
+      intro a ha
+      have h' : ⊤ ≤ centralizer s := by
+        rw [← eq_top_iff]
+        exact h
+      constructor
+      · intro a
+        apply h' trivial _ ha
+      · intro b c
+        rw [mul_assoc]
+      · intro b c
+        rw [mul_assoc]
+      · intro b c
+        rw [mul_assoc]
+    · intro h
+      apply Subset.antisymm (subset_univ (centralizer s))
+      exact (fun _ _ _ hm => (h hm).comm _)
+
 /-
 @[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
-theorem centralizer_eq_top_iff_subset {s : Set M} [Mul M] :
+theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
     centralizer s = Set.univ ↔ s ⊆ center M :=
-  eq_top_iff.trans <| ⟨fun h _ hx _ => (h trivial _ hx).symm, fun h x _ _ hm => (h hm x).symm⟩
+  eq_top_iff.trans <| ⟨fun h _ hx _ => (h trivial _ hx).symm
+  , fun h x _ _ hm => (h hm x).symm⟩
 #align set.centralizer_eq_top_iff_subset Set.centralizer_eq_top_iff_subset
 #align set.add_centralizer_eq_top_iff_subset Set.addCentralizer_eq_top_iff_subset
 -/
 
 variable (M)
 
-/-
+
 @[to_additive (attr := simp) addCentralizer_univ]
-theorem centralizer_univ [Mul M] : centralizer univ = center M :=
-  Subset.antisymm (fun _ ha b => ha b (Set.mem_univ b)) fun _ ha b _ => ha b
+theorem centralizer_univ [Semigroup M] : centralizer univ = center M :=
+  Subset.antisymm
+    (by
+      intro z hz
+      constructor
+      · intro a
+        rw [hz]
+        simp only [mem_univ]
+      · intro b c
+        rw [mul_assoc]
+      · intro b c
+        rw [mul_assoc]
+      · intro b c
+        rw [mul_assoc]
+    )
+    (fun _ ha b _ => (ha.comm b).symm)
 #align set.centralizer_univ Set.centralizer_univ
 #align set.add_centralizer_univ Set.addCentralizer_univ
--/
+
 
 variable {M} (S)
 
