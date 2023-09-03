@@ -17,19 +17,25 @@ We also restate some lemmas about `WithTop` for `ENat` to have versions that use
 of `WithTop.some`.
 -/
 
+open Set WithTop
+
 -- porting notes: was `deriving instance` but "default handlers have not been implemented yet"
 -- porting notes: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
 namespace ENat
+variable {ι : Sort*} {f : ι → ℕ} {s : Set ℕ∞}
+tretre zrej rjkleg
 
-variable {ι : Sort*} {f : ι → ℕ}
+lemma iSup_coe_eq_top : ⨆ i, (f i : ℕ∞) = ⊤ ↔ ¬ BddAbove (range f) := iSup_coe_eq_top
+lemma iSup_coe_lt_top : ⨆ i, (f i : ℕ∞) < ⊤ ↔ BddAbove (range f) := iSup_coe_lt_top
+lemma iInf_coe_eq_top : ⨅ i, (f i : ℕ∞) = ⊤ ↔ IsEmpty ι := iInf_coe_eq_top
+lemma iInf_coe_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := iInf_coe_lt_top
 
-lemma iSup_coe_lt_top : (⨆ x, ↑(f x) : ℕ∞) < ⊤ ↔ BddAbove (Set.range f) :=
-  WithTop.iSup_coe_lt_top f
-
-theorem coe_iSup (h : BddAbove (Set.range f)) : ↑(⨆ i, f i) = (⨆ i, f i : ℕ∞) :=
-  WithTop.coe_iSup _ h
+lemma coe_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := coe_sSup
+lemma coe_sInf : s.Nonempty → ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) := coe_sInf
+lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := coe_iSup _
+@[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) := coe_iInf _
 
 end ENat
