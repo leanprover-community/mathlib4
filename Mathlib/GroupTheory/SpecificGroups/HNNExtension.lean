@@ -191,7 +191,7 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
 `toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
 structure ReducedWord : Type _ :=
-  /-- Every `ReduceddWord` is the product of an element of the group and a word made up
+  /-- Every `ReducedWord` is the product of an element of the group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
   ( head : G )
   /-- The list of pairs `(ℤˣ × G)`, where each pair `(u, g)` represents the element `t^u * g` of
