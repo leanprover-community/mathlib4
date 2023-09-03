@@ -877,4 +877,22 @@ theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsC
 
 end Filtered
 
+namespace Functor
+
+variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+  (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃)
+
+instance [L₁.Initial] [L₂.Initial] : (L₁ ⋙ L₂).Initial where
+  out X₃ :=
+    isConnected_of_isConnected_costructuredArrow (CostructuredArrow.pre L₁ L₂ X₃) (by
+      intro f
+      exact isConnected_of_equivalent
+        (costructuredArrowCostructuredArrowPreEquivalence L₁ L₂ f).symm)
+
+instance [L₁.Final] [L₂.Final] : (L₁ ⋙ L₂).Final := by
+  have : (L₁ ⋙ L₂).op.Initial := (inferInstance : (L₁.op ⋙ L₂.op).Initial)
+  apply final_of_initial_op
+
+end Functor
+
 end CategoryTheory

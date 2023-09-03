@@ -13,6 +13,10 @@ namespace TwoSquare
 
 variable {T L R B}
 
+@[ext]
+lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) : w = w' :=
+  NatTrans.ext _ _ (funext h)
+
 variable (w : TwoSquare T L R B)
 
 @[simps!]
@@ -140,6 +144,56 @@ instance [hw : GuitartExact w] (X₂ : C₂) :
     (structuredArrowDownwards w X₂).Initial := by
   rw [guitartExact_iff_initial] at hw
   apply hw
+
+instance [IsEquivalence L] [IsEquivalence R] [IsIso w] : GuitartExact w := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  have := StructuredArrow.isEquivalencePost X₂ T R
+  have : IsEquivalence (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤ StructuredArrow (R.obj X₂) _) :=
+    IsEquivalence.ofEquivalence (Comma.mapRightIso _ (asIso w))
+  have := StructuredArrow.isEquivalencePre (R.obj X₂) L B
+  dsimp only [structuredArrowDownwards]
+  infer_instance
+
+@[simps!]
+def whiskerVertical {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ L') (β : R' ⟶ R) :
+    TwoSquare T L' R' B :=
+  whiskerLeft _ β ≫ w ≫ whiskerRight α _
+
+namespace GuitartExact
+
+lemma whiskerVertical [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
+    (α : L ≅ L') (β : R ≅ R') : (w.whiskerVertical α.hom β.inv).GuitartExact := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
+      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
+    NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
+      dsimp
+      simp only [NatTrans.naturality_assoc, assoc, NatIso.cancel_natIso_inv_left, ← B.map_comp,
+        Iso.hom_inv_id_app, B.map_id, comp_id])) (by aesop_cat)
+  rw [Functor.initial_natIso_iff e]
+  infer_instance
+
+@[simp]
+lemma whiskerVertical_iff {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
+    (α : L ≅ L') (β : R ≅ R') :
+    (w.whiskerVertical α.hom β.inv).GuitartExact ↔ w.GuitartExact := by
+  constructor
+  · intro h
+    convert whiskerVertical (w.whiskerVertical α.hom β.inv) α.symm β.symm
+    ext X₁
+    simp only [Functor.comp_obj, Iso.symm_hom, Iso.symm_inv,
+      whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
+      ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
+  · intro h
+    exact whiskerVertical w α β
+
+instance [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ L') (β : R' ⟶ R)
+    [IsIso α] [IsIso β] : (w.whiskerVertical α β).GuitartExact :=
+  whiskerVertical w (asIso α) (asIso β).symm
+
+end GuitartExact
 
 end TwoSquare
 
