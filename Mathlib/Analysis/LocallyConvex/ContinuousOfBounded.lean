@@ -105,7 +105,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   by_contra h
   -- We use a decreasing balanced basis for 0 : E and a balanced basis for 0 : F
   -- and reformulate non-continuity in terms of these bases
-  rcases(nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
+  rcases (nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
   simp only [id.def] at bE
   have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n := by
     refine' bE.1.to_hasBasis _ _
@@ -120,7 +120,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       rw [← hy]
       refine' (bE1 (n + 1)).2.smul_mem _ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos
-      rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, IsROrC.norm_natCast, Nat.cast_add, Nat.cast_one,
+      norm_cast
+      rw [norm_inv, Nat.norm_cast, Nat.cast_add, Nat.cast_one,
         inv_le h' zero_lt_one]
       simp
     intro n hn
@@ -157,7 +158,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   cases' exists_nat_gt r with n hn
   -- We now find a contradiction between `f (u n) ∉ V` and the absorbing property
   have h1 : r ≤ ‖(n : 𝕜')‖ := by
-    rw [IsROrC.norm_natCast]
+    rw [Nat.norm_cast]
     exact hn.le
   have hn' : 0 < ‖(n : 𝕜')‖ := lt_of_lt_of_le hr h1
   rw [norm_pos_iff, Ne.def, Nat.cast_eq_zero] at hn'
