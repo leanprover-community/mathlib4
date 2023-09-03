@@ -24,6 +24,7 @@ We give methods for computing coefficients of the characteristic polynomial.
 - `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
   coefficient of the characteristic polynomial, where d is the dimension of the matrix.
   For a nonzero ring, this is the second-highest coefficient.
+- `Matrix.charpolyRev` the reverse of the characteristic polynomial.
 - `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 
 -/
@@ -152,7 +153,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   apply h
 #align matrix.charpoly_monic Matrix.charpoly_monic
 
-/-- See also `Matrix.trace_eq_neg_coeff_det_one_sub_X_smul_C`. -/
+/-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     trace M = -M.charpoly.coeff (Fintype.card n - 1) := by
   rw [charpoly_coeff_eq_prod_coeff_of_le _ le_rfl, Fintype.card,
@@ -271,13 +272,15 @@ section reverse
 open Polynomial
 open LaurentPolynomial hiding C
 
-/-- The right hand side of the equality in this lemma statement is sometimes called the
-"characteristic power series" of a matrix.
+/-- The reverse of the characteristic polynomial of a matrix.
 
 It has some advantages over the characteristic polynomial, including the fact that it can be
-extended to infinite dimensions (for appropriate operators). -/
+extended to infinite dimensions (for appropriate operators). In such settings it is known as the
+"characteristic power series". -/
+def charpolyRev (M : Matrix n n R) : R[X] := det (1 - (X : R[X]) • M.map C)
+
 lemma reverse_charpoly (M : Matrix n n R) :
-    M.charpoly.reverse = det (1 - (X : R[X]) • M.map C) := by
+    M.charpoly.reverse = M.charpolyRev := by
   nontriviality R
   let t : R[T;T⁻¹] := T 1
   let t_inv : R[T;T⁻¹] := T (-1)
@@ -286,8 +289,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
   have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
     simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
-  have hq : toLaurentAlg (det (1 - (X : R[X]) • M.map C)) = q := by
-    simp [AlgHom.map_det, map_sub, map_smul']
+  have hq : toLaurentAlg M.charpolyRev = q := by
+    simp [charpolyRev, AlgHom.map_det, map_sub, map_smul']
   suffices : t_inv ^ Fintype.card n * p = invert q
   · apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
@@ -296,21 +299,21 @@ lemma reverse_charpoly (M : Matrix n n R) :
   rw [← det_smul, smul_sub, coe_scalar, ← smul_assoc, smul_eq_mul, ht, one_smul, invert.map_det]
   simp [map_smul']
 
-@[simp] lemma eval_zero_det_one_sub_X_smul_C :
-    eval 0 (det (1 - (X : R[X]) • M.map C)) = 1 := by
-  rw [← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
+@[simp] lemma eval_charpolyRev :
+    eval 0 M.charpolyRev = 1 := by
+  rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
     ext i j; cases' eq_or_ne i j with hij hij <;> simp [hij]
   congr
 
-lemma trace_eq_neg_coeff_det_one_sub_X_smul_C (M : Matrix n n R) :
-    trace M = - coeff (det (1 - (X : R[X]) • M.map C)) 1 := by
+@[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :
+    coeff M.charpolyRev 1 = - trace M := by
   nontriviality R
-  cases isEmpty_or_nonempty n; simp [coeff_one]
+  cases isEmpty_or_nonempty n; simp [charpolyRev, coeff_one]
   simp [trace_eq_neg_charpoly_coeff M, ← M.reverse_charpoly, nextCoeff]
 
-lemma isUnit_det_one_sub_X_smul_C_of_IsNilpotent (hM : IsNilpotent M) :
-    IsUnit (det (1 - (X : R[X]) • M.map C)) := by
+lemma isUnit_charpolyRev_of_IsNilpotent (hM : IsNilpotent M) :
+    IsUnit M.charpolyRev := by
   obtain ⟨k, hk⟩ := hM
   replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
     convert one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
@@ -322,19 +325,19 @@ lemma isUnit_det_one_sub_X_smul_C_of_IsNilpotent (hM : IsNilpotent M) :
 lemma isNilpotent_trace_of_isNilpotent (hM : IsNilpotent M) :
     IsNilpotent (trace M) := by
   cases isEmpty_or_nonempty n; simp
-  rw [trace_eq_neg_coeff_det_one_sub_X_smul_C M, isNilpotent_neg_iff]
-  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_det_one_sub_X_smul_C_of_IsNilpotent hM)).2
+  suffices IsNilpotent (coeff (charpolyRev M) 1) by simpa using this
+  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_charpolyRev_of_IsNilpotent hM)).2
     _ one_ne_zero
 
 lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
     IsNilpotent (M.charpoly - X ^ (Fintype.card n)) := by
   nontriviality R
-  let p : R[X] := det (1 - (X : R[X]) • map M C)
+  let p : R[X] := M.charpolyRev
   have hp : p - 1 = X * (p /ₘ X) := by
     conv_lhs => rw [← modByMonic_add_div p monic_X]
     simp [modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
-    (Polynomial.isUnit_iff'.mp (isUnit_det_one_sub_X_smul_C_of_IsNilpotent hM)).2
+    (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_IsNilpotent hM)).2
   have aux : (M.charpoly - X ^ (Fintype.card n)).natDegree ≤ M.charpoly.natDegree :=
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
