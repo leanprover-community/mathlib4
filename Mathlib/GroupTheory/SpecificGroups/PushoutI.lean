@@ -605,8 +605,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
     (of i).range ⊓ (of j).range = (base (φ := φ)).range :=
   le_antisymm
     (by
-      intro x hx
-      rcases hx with ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
+      intro x ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
       by_contra hx
       have hx1 : x ≠ 1 := by rintro rfl; simp_all only [map_one, one_mem]
       have hg₁1 : g₁ ≠ 1 :=
