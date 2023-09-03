@@ -28,6 +28,8 @@ The main definitions are
    a finite measure;
  * `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
    (returns junk for the zero measure).
+ * `MeasureTheory.ProbabilityMeasure.map`: The push-forward `f* μ` of a probability measure
+   `μ` on `Ω` along a measurable function `f : Ω → Ω'`.
 
 ## Main results
 
@@ -41,6 +43,9 @@ The main definitions are
  * `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
    measures to a nonzero limit is characterized by the convergence of the probability-normalized
    versions and of the total masses.
+ * `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
+   push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
+   continuous.
 
 TODO:
  * Probability measures form a convex space.
@@ -532,8 +537,8 @@ distribution) of the push-forwards of these measures by `f`. -/
 lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
     {f : Ω → Ω'} (f_cont : Continuous f) :
-    Tendsto (fun i ↦ ProbabilityMeasure.map (νs i) f_cont.measurable.aemeasurable) L
-      (𝓝 (ProbabilityMeasure.map ν f_cont.measurable.aemeasurable)) := by
+    Tendsto (fun i ↦ (νs i).map f_cont.measurable.aemeasurable) L
+      (𝓝 (ν.map f_cont.measurable.aemeasurable)) := by
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
   convert lim (g.compContinuous ⟨f, f_cont⟩) <;>

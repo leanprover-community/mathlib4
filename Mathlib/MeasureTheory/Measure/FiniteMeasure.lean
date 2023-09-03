@@ -22,11 +22,16 @@ measure is continuous.
 ## Main definitions
 
 The main definitions are
- * the type `MeasureTheory.FiniteMeasure Ω` with the topology of weak convergence;
- * `MeasureTheory.FiniteMeasure.toWeakDualBCNN : FiniteMeasure Ω → (WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0))`
-   allowing to interpret a finite measure as a continuous linear functional on the space of
+ * `MeasureTheory.FiniteMeasure Ω`: The type of finite measures on `Ω` with the topology of weak
+   convergence of measures.
+ * `MeasureTheory.FiniteMeasure.toWeakDualBCNN : FiniteMeasure Ω → (WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0))`:
+   Interpret a finite measure as a continuous linear functional on the space of
    bounded continuous nonnegative functions on `Ω`. This is used for the definition of the
    topology of weak convergence.
+ * `MeasureTheory.FiniteMeasure.map`: The push-forward `f* μ` of a finite measure `μ` on `Ω`
+   along a measurable function `f : Ω → Ω'`.
+ * `MeasureTheory.FiniteMeasure.mapClm`: The push-forward along a given continuous `f : Ω → Ω'`
+   as a continuous linear map `f* : FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω'`.
 
 ## Main results
 
@@ -39,6 +44,8 @@ The main definitions are
    of weak convergence of measures. A similar characterization by the convergence of integrals (in
    the `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative functions is
    `MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto`.
+ * `MeasureTheory.FiniteMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
+   push-forward of finite measures `f* : FiniteMeasure Ω → FiniteMeasure Ω'` is continuous.
 
 ## Implementation notes
 
@@ -796,19 +803,19 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
 
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω)  :
-    FiniteMeasure.map (ν₁ + ν₂) f = FiniteMeasure.map ν₁ f + FiniteMeasure.map ν₂ f := by
+    (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
   ext s s_mble
   simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add]
 
 @[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω)  :
-    FiniteMeasure.map (c • ν) f = c • FiniteMeasure.map ν f := by
+    (c • ν).map f = c • (ν.map f) := by
   ext s s_mble
   simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_smul]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
-  toFun := fun ν ↦ FiniteMeasure.map ν f
+  toFun := fun ν ↦ ν.map f
   map_add' := map_add f_mble
   map_smul' := map_smul f_mble
 
