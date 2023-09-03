@@ -24,7 +24,7 @@ variable {D₁ D₂ : Type*} [Category D₁] [Category D₂]
 namespace Constructor
 
 variable {L₁ L₂ F} (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F)
-  {X₂ : C₂} {X₃ : D₁} (g : L₂.obj X₂ ⟶ F.obj X₃)
+  {X₂ X₂' : C₂} {X₃ : D₁} (g : L₂.obj X₂ ⟶ F.obj X₃)
 
 namespace FromRightResolution
 
@@ -59,14 +59,43 @@ noncomputable def fromRightResolution : Φ.RightResolution X₂ ⥤
   obj := FromRightResolution.obj Φ e g
   map := FromRightResolution.map Φ e g
 
+set_option maxHeartbeats 800000 in
+@[simps]
+def costructuredArrowStructuredArrowDownwardsPrecomp (γ : X₂' ⟶ X₂) :
+    TwoSquare.costructuredArrowStructuredArrowDownwards e.hom g ⥤
+      TwoSquare.costructuredArrowStructuredArrowDownwards e.hom (L₂.map γ ≫ g) where
+  obj f := by
+    apply CostructuredArrow.mk
+    swap
+    · exact StructuredArrow.mk (γ ≫ f.left.hom : X₂' ⟶ Φ.functor.obj f.left.right)
+    · exact StructuredArrow.homMk f.hom.right (by simpa using L₂.map γ ≫= StructuredArrow.w f.hom)
+  map {f₁ f₂} φ := CostructuredArrow.homMk (StructuredArrow.homMk φ.left.right) (by
+    ext
+    have eq := CostructuredArrow.w φ
+    dsimp at eq ⊢
+    rw [← eq]
+    rfl)
+
 /-lemma isConnected_costructuredArrowStructuredArrowDownwards :
     IsConnected (TwoSquare.costructuredArrowStructuredArrowDownwards e.hom g) := by
   have : Nonempty (TwoSquare.costructuredArrowStructuredArrowDownwards e.hom g) :=
     ⟨(fromRightResolution Φ e g).obj (Classical.arbitrary _)⟩
+  suffices ∀ (X : TwoSquare.costructuredArrowStructuredArrowDownwards e.hom g),
+      ∃ (Y : Φ.RightResolution X₂), Zigzag X ((fromRightResolution Φ e g).obj Y) by
+    refine' zigzag_isConnected (fun X X' => _)
+    obtain ⟨Y, hX⟩ := this X
+    obtain ⟨Y', hX'⟩ := this X'
+    exact hX.trans ((zigzag_obj_of_zigzag _ (isConnected_zigzag Y Y')).trans (zigzag_symmetric hX'))
+  intro γ
+  have R : Φ.arrow.RightResolution (Arrow.mk γ.left.hom) := Classical.arbitrary _
+  --let t'' := R.w.left
+  --let t' := R.w.right
+  --dsimp at t'' t'
   sorry-/
 
 end Constructor
 
+-- Kahn-Maltsiniotis, Lemme 6.5
 /-def mk' [CatCommSq Φ.functor L₁ L₂ F] : Φ.IsRightDerivabilityStructure := by
   rw [Φ.isRightDerivabilityStructure_iff L₁ L₂ F (CatCommSq.iso _ _ _ _)]
   rw [TwoSquare.guitartExact_iff_isConnected_downwards]
