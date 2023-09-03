@@ -302,18 +302,6 @@ theorem OrderBot.atBot_eq (α) [PartialOrder α] [OrderBot α] : (atBot : Filter
   @OrderTop.atTop_eq αᵒᵈ _ _
 #align filter.order_bot.at_bot_eq Filter.OrderBot.atBot_eq
 
-lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
-    (atTop : Filter α) = pure x := by
-  have : Nonempty α := ⟨x⟩
-  have : (atTop : Filter α).NeBot := atTop_basis.neBot_iff.2 (fun _ ↦ ⟨x, hx _⟩)
-  apply eq_pure_iff_singleton_mem.2
-  convert Ici_mem_atTop x using 1
-  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
-
-lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
-    (atBot : Filter α) = pure x :=
-  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
-
 @[nontriviality]
 theorem Subsingleton.atTop_eq (α) [Subsingleton α] [Preorder α] : (atTop : Filter α) = ⊤ := by
   refine' top_unique fun s hs x => _
