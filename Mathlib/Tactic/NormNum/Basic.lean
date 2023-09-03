@@ -15,6 +15,8 @@ import Mathlib.Util.Qq
 This file adds `norm_num` plugins for `+`, `*` and `^` along with other basic operations.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib
 open Lean hiding Rat mkRat
 open Meta

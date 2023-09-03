@@ -35,11 +35,11 @@ open Polynomial Set Function minpoly
 
 namespace minpoly
 
-variable {R S : Type _} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [Algebra R S]
 
 section
 
-variable (K L : Type _) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
+variable (K L : Type*) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [Algebra R L]
   [Algebra S L] [Algebra K L] [IsScalarTower R K L] [IsScalarTower R S L]
 
 variable [IsIntegrallyClosed R]
@@ -80,6 +80,8 @@ theorem isIntegrallyClosed_dvd [Nontrivial R] {s : S} (hs : IsIntegral R s) {p :
     (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p := by
   let K := FractionRing R
   let L := FractionRing S
+  let _ : Algebra K L := FractionRing.liftAlgebra R L
+  have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
     refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
@@ -162,7 +164,7 @@ theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.t
   rw [← hP, Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
     isIntegrallyClosed_dvd_iff hx] at hP₁
   obtain ⟨Q, hQ⟩ := hP₁
-  rw [← hP, hQ, RingHom.map_mul, mk_self, MulZeroClass.zero_mul]
+  rw [← hP, hQ, RingHom.map_mul, mk_self, zero_mul]
 #align minpoly.to_adjoin.injective minpoly.ToAdjoin.injective
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/

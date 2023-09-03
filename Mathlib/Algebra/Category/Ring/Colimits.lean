@@ -12,9 +12,10 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of commutative rings has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Mon/colimits.lean`.
+This file uses a "pre-automated" approach, just as for
+`Mathlib/Algebra/Category/MonCat/Colimits.lean`.
 It is a very uniform approach, that conceivably could be synthesised directly
-by a tactic that analyses the shape of `comm_ring` and `ring_hom`.
+by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
 
 
@@ -28,7 +29,7 @@ open CategoryTheory.Limits
 -- You should pretend for now that this file was automatically generated.
 -- It follows the same template as colimits in Mon.
 /-
-`#print comm_ring` says:
+`#print comm_ring` used to say:
 
 structure comm_ring : Type u → Type u
 fields:
@@ -55,7 +56,7 @@ comm_ring.right_distrib : ∀ {α : Type u} [c : comm_ring α] (a b c_1 : α),
 namespace CommRingCat.Colimits
 
 /-!
-We build the colimit of a diagram in `CommRing` by constructing the
+We build the colimit of a diagram in `CommRingCat` by constructing the
 free commutative ring on the disjoint union of all the commutative rings in the diagram,
 then taking the quotient by the commutative ring laws within each commutative ring,
 and the identifications given by the morphisms in the diagram.
@@ -134,7 +135,7 @@ def colimitSetoid : Setoid (Prequotient F) where
 
 attribute [instance] colimitSetoid
 
-/-- The underlying type of the colimit of a diagram in `CommRing`.
+/-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
@@ -242,8 +243,7 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
-  rw [← cocone_naturality F f]
-  rfl
+  rw [← cocone_naturality F f, comp_apply]
 #align CommRing.colimits.cocone_naturality_components CommRingCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit commutative ring. -/
@@ -330,13 +330,12 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | mul x y ih_x ih_y => erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]
 #align CommRing.colimits.colimit_is_colimit CommRingCat.Colimits.colimitIsColimit
 
-instance hasColimits_commRingCat : HasColimits CommRingCat
-  where has_colimits_of_shape _ _ :=
-  {
-    has_colimit := fun F =>
-      HasColimit.mk
-        { cocone := colimitCocone F
-          isColimit := colimitIsColimit F } }
+instance hasColimits_commRingCat : HasColimits CommRingCat where
+  has_colimits_of_shape _ _ :=
+    { has_colimit := fun F =>
+        HasColimit.mk
+          { cocone := colimitCocone F
+            isColimit := colimitIsColimit F } }
 #align CommRing.colimits.has_colimits_CommRing CommRingCat.Colimits.hasColimits_commRingCat
 
 end CommRingCat.Colimits

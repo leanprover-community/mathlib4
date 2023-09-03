@@ -11,7 +11,7 @@ import Mathlib.Algebra.Group.Prod
 # Lemmas about the divisibility relation in product (semi)groups
 -/
 
-variable {G₁ : Type _} {G₂ : Type _} [Semigroup G₁] [Semigroup G₂]
+variable {G₁ : Type*} {G₂ : Type*} [Semigroup G₁] [Semigroup G₂]
 
 theorem prod_dvd_iff {x y : G₁ × G₂} :
     x ∣ y ↔ x.1 ∣ y.1 ∧ x.2 ∣ y.2 := by

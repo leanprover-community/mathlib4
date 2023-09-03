@@ -31,11 +31,13 @@ Relations are also known as set-valued functions, or partial multifunctions.
 * `Function.graph`: Graph of a function as a relation.
 -/
 
+set_option autoImplicit true
 
-variable {α β γ : Type _}
+
+variable {α β γ : Type*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
-def Rel (α β : Type _) :=
+def Rel (α β : Type*) :=
   α → β → Prop -- deriving CompleteLattice, Inhabited
 #align rel Rel
 

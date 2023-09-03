@@ -50,7 +50,7 @@ namespace CompHaus
 instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type _) :=
+instance : CoeSort CompHaus (Type*) :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
@@ -72,13 +72,13 @@ set_option linter.uppercaseLean3 false in
 /-
 -- Porting note: This is now a syntactic tautology.
 @[simp]
-theorem coe_toTop {X : CompHaus} : (X.toTop : Type _) = X :=
+theorem coe_toTop {X : CompHaus} : (X.toTop : Type*) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_to_Top CompHaus.coe_toTop
 -/
 
-variable (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+variable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
 /-- A constructor for objects of the category `CompHaus`,
 taking a type, and bundling the compact Hausdorff topology
