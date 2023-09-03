@@ -100,7 +100,7 @@ theorem rTensor.surjective (hg : Function.Surjective g) :
 -- Johan, Kevin : do you prefer this?
 example (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
-  rw [← LinearMap.flipEquiv_comp_lTensor_comp_flipEquiv_eq]
+  rw [← LinearMap.comm_comp_lTensor_comp_comm_eq]
   simp only [coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective,
     EquivLike.surjective_comp, EquivLike.comp_surjective]
   exact lTensor.surjective Q hg
