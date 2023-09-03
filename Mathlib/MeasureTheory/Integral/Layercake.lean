@@ -92,16 +92,15 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
       ENNReal.ofReal (∫ t in (0)..f ω, g t) = (∫⁻ t in Ioc 0 (f ω), ENNReal.ofReal (g t)) := by
     filter_upwards [f_nn] with ω fω_nn
     have g_ae_nn : 0 ≤ᵐ[volume.restrict (Ioc 0 (f ω))] g := by
-      filter_upwards [self_mem_ae_restrict (measurableSet_Ioc : MeasurableSet (Ioc 0 (f ω)))] with x
-        hx using g_nn x hx.1
+      filter_upwards [self_mem_ae_restrict (measurableSet_Ioc : MeasurableSet (Ioc 0 (f ω)))]
+        with x hx using g_nn x hx.1
     rw [← ofReal_integral_eq_lintegral_ofReal (g_intble' (f ω) fω_nn).1 g_ae_nn]
     congr
     exact intervalIntegral.integral_of_le fω_nn
   rw [lintegral_congr_ae integrand_eq]
   simp_rw [← lintegral_indicator (fun t => ENNReal.ofReal (g t)) measurableSet_Ioc]
   -- Porting note: was part of `simp_rw` on the previous line, but didn't trigger.
-  rw [← lintegral_indicator _ measurableSet_Ioi]
-  rw [lintegral_lintegral_swap]
+  rw [← lintegral_indicator _ measurableSet_Ioi, lintegral_lintegral_swap]
   · apply congr_arg
     funext s
     have aux₁ :
@@ -115,8 +114,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
       · have h_copy := h
         simp only [mem_Ioc, not_and, not_le] at h
         by_cases h' : 0 < s
-        · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
-            mul_zero]
+        · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le, mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
           simp only [this, h', indicator_of_not_mem, not_false_iff, mul_zero,
             zero_mul, mem_Ioc, false_and_iff]
@@ -124,9 +122,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
     rw [lintegral_const_mul']
     swap;
     · apply ENNReal.mul_ne_top ENNReal.ofReal_ne_top
-      -- Porting note: was
-      -- by_cases s ∈ Ioi (0 : ℝ) <;> · simp [h]
-      by_cases h : (0 : ℝ) < s <;> · simp [indicator_apply, h]
+      by_cases h : (0 : ℝ) < s <;> · simp [h]
     simp_rw [show
         (fun a => (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f a)) = fun a =>
           {a : α | s ≤ f a}.indicator (fun _ => 1) a
@@ -169,8 +165,6 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
     rw [Measure.prod_prod, s_null, zero_mul]
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀ mble₀
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable
-
-
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 
@@ -222,7 +216,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) [SigmaFinite �
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a sigma-finite measure space, the Lebesgue integral of `f` can
-be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in (0).. ∞, μ {ω | f(ω) ≥ t}`.
+be written (roughly speaking) as: `∫⁻ f ∂μ = ∫⁻ t in 0..∞, μ {ω | f(ω) ≥ t}`.
 
 See `lintegral_eq_lintegral_meas_lt` for a version with sets of the form `{ω | f(ω) > t}`
 instead. -/
@@ -244,7 +238,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) [SigmaFinite μ] (f_nn 
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a sigma-finite measure space, the Lebesgue integral of `f` can
-be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in (0).. ∞, t^(p-1) * μ {ω | f(ω) ≥ t}`.
+be written (roughly speaking) as: `∫⁻ f^p ∂μ = p * ∫⁻ t in 0..∞, t^(p-1) * μ {ω | f(ω) ≥ t}`.
 
 See `lintegral_rpow_eq_lintegral_meas_lt_mul` for a version with sets of the form `{ω | f(ω) > t}`
 instead. -/
@@ -319,7 +313,7 @@ theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [Measurab
 theorem countable_meas_le_ne_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R]
     [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
-  Countable.mono (fun t ht ↦ meas_le_ne_meas_lt_subset_meas_pos₀ g_mble ht)
+  Countable.mono (fun _ h ↦ meas_le_ne_meas_lt_subset_meas_pos₀ g_mble h)
     (Measure.countable_meas_level_set_pos₀ g_mble)
 
 theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
