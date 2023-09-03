@@ -66,8 +66,8 @@ end SMul
 
 
 section Maps
-variable [LinearOrderedField 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E]
+variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {E : Type*} [AddCommMonoid E] [Module 𝕜 E]
 variable {F : Type*} [AddCommMonoid F] [Module 𝕜 F]
 variable {G : Type*} [AddCommMonoid G] [Module 𝕜 G]
 
@@ -144,8 +144,8 @@ type of submodules of the ambient space when the scalars are restricted to being
 
 -/
 
-variable [OrderedSemiring 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E]
+variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {E : Type*} [AddCommMonoid E] [Module 𝕜 E]
 variable {S : Type*} {S : PointedCone 𝕜 E}
 
 local instance : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
@@ -173,7 +173,8 @@ protected theorem nsmul_eq_smul_cast (x : S) (n : ℕ) :
 
 @[simp]
 theorem coe_nsmul (x : S) (n : ℕ) : (n • x : E) = n • (x : E) := by
-  simp_rw [PointedCone.coe_smul, PointedCone.nsmul_eq_smul_cast]; rfl
+  -- simp_rw [PointedCone.coe_smul, PointedCone.nsmul_eq_smul_cast]; rfl
+  simp_rw [PointedCone.nsmul_eq_smul_cast]; rfl
 
 theorem add_mem ⦃x⦄ (hx : x ∈ S) ⦃y⦄ (hy : y ∈ S) : x + y ∈ S :=
   S.add_mem' hx hy
@@ -233,7 +234,7 @@ def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c
 end Module
 
 section Dual
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 /-- The inner dual cone of a pointed cone is a pointed cone· -/
 def dual (S : PointedCone ℝ E) : PointedCone ℝ E where
