@@ -169,6 +169,8 @@ theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
 namespace NormalWord
 
 variable (G A B)
+/-- To put word in the HNN Extension into a normal form, we must choose an element of each right
+coset of both `A` and `B`, such that the chosen element of the subgroup itself is `1`. -/
 structure TransversalPair : Type _ :=
   /-- The transversal of each subgroup -/
   ( set : ℤˣ → Set G )
@@ -189,6 +191,10 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 
 variable {G A B}
 
+/-- Given a `TransversalPair`, we can make a normal form for words in the `HNNExtension G A B φ`.
+The normal form is a `head`, which is an element of `G`, followed by the product list of pairs,
+`t ^ u * g`, where `u` is `1` or `-1` and `g` is the chosen element of its right coset of
+`toSubgroup A B u`. There should also be no sequences of the form `t^u * 1 * t^-u`  -/
 structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _ :=
   ( head : G )
   ( toList : List (ℤˣ × G) )
@@ -202,6 +208,7 @@ theorem NormalWord.ext {w w' : NormalWord d}
     (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
   cases w; cases w'; simp_all
 
+/-- The empty word -/
 @[simps]
 def empty : NormalWord d :=
   { head := 1
@@ -209,6 +216,8 @@ def empty : NormalWord d :=
     mem_set := by simp
     chain := List.chain'_nil }
 
+/-- The `NormalWord` representing an element `g` of the group `G`, which is just the element `g`
+itself. -/
 @[simps]
 def ofGroup (g : G) : NormalWord d :=
   { head := g
@@ -223,17 +232,20 @@ instance : MulAction G (NormalWord d) :=
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
 
-theorem smul_def (g : G) (w : NormalWord d) :
+theorem group_smul_def (g : G) (w : NormalWord d) :
     g • w = { w with head := g * w.head } := rfl
 
 @[simp]
-theorem smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head := rfl
+theorem group_smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head := rfl
 
 @[simp]
-theorem smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
+theorem group_smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
 
-instance : FaithfulSMul G (NormalWord d) := ⟨by simp [smul_def]⟩
+instance : FaithfulSMul G (NormalWord d) := ⟨by simp [group_smul_def]⟩
 
+/-- A constructor to append an element `g` of `G` and `u : ℤˣ` to a word `w` with sufficient
+hypotheses that no normalization or cancellation need take place for the result to be in normal form
+-/
 @[simps]
 def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u') :
@@ -251,6 +263,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       rintro ⟨ u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
+/-- A recursor to induct on a `NormalWord`, by proving the propert is preserved under `cons` -/
 @[elab_as_elim]
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
@@ -298,47 +311,51 @@ theorem smul_ofGroup (g₁ g₂ : G) :
     g₁ • (ofGroup g₂ : NormalWord d) = ofGroup (g₁ * g₂) := rfl
 
 variable (d)
-noncomputable def unitSMulGroup (u : ℤˣ) (g : G) :
+/-- The action of `t^u` on `ofGroup g`. The normal form will be
+`a * t^u * g'` where `a ∈ toSubgroup A B (-u)` -/
+noncomputable def unitsSMulGroup (u : ℤˣ) (g : G) :
     (toSubgroup A B (-u)) × d.set u :=
   let g' := (d.compl u).equiv g
   (toSubgroupEquiv φ u g'.1, g'.2)
 
-theorem unitSMulGroup_snd (u : ℤˣ) (g : G) :
-    (unitSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
+theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
+    (unitsSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
 
 variable {d} [DecidableEq G]
 
+/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
+of `t^-u` when when we multiply `t^u` by `w`. -/
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
   (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
 
-def unitSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
+/-- Multiplying `t^u` by `w` in the special case where cancellation happens -/
+def unitsSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
   consRecOn w
     (by simp [Cancels, ofGroup]; tauto)
     (fun g u' w h1 h2 _ can =>
       (toSubgroupEquiv φ u ⟨g, can.1⟩ : G) • w)
 
-noncomputable def unitSMul
-    (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
+/-- Multiplying `t^u` by a `NormalWord`, `w` and putting the result in normal form. -/
+noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
   letI := Classical.dec
   if h : Cancels u w
-  then unitSMulWithCancel φ u w h
-  else let g' := unitSMulGroup φ d u w.head
+  then unitsSMulWithCancel φ u w h
+  else let g' := unitsSMulGroup φ d u w.head
     cons g'.1 u ((g'.2 * w.head⁻¹ : G) • w)
       (by simp [smul_def])
       (by
         simp [smul_def]
         simp only [Cancels, Option.map_eq_some', Prod.exists, exists_and_right, exists_eq_right,
           not_and, not_exists] at h
-        simp only [unitSMulGroup_snd, IsComplement.equiv_snd_eq_one_iff_mem _ (d.one_mem _)]
+        simp only [unitsSMulGroup_snd, IsComplement.equiv_snd_eq_one_iff_mem _ (d.one_mem _)]
         intro u' x hx hw
         by_contra huu'
         rcases Int.units_eq_one_or u' with (rfl | rfl) <;>
         rcases Int.units_eq_one_or u with (rfl | rfl) <;>
         simp_all)
 
-set_option pp.proofs.withType false
-
+/-- A condition for not cancelling whose hypothese are the same as those of the `cons` function. -/
 theorem not_cancels_of_cons_hyps (u : ℤˣ) (w : NormalWord d)
     (h1 : w.head ∈ d.set u)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head = 1 → u = u') :
@@ -354,39 +371,39 @@ theorem not_cancels_of_cons_hyps (u : ℤˣ) (w : NormalWord d)
       (y₂ := (1, ⟨w.head, h1⟩)) (by simp) (by simp))
   simpa [Units.ext_iff, eq_neg_iff_add_eq_zero] using h2 (-u) rfl hw
 
-theorem unitSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
-    Cancels (-u) (unitSMul φ u w) ↔ ¬ Cancels u w := by
+theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
+    Cancels (-u) (unitsSMul φ u w) ↔ ¬ Cancels u w := by
   by_cases h : Cancels u w
-  · simp only [unitSMul, dif_pos trivial, h, iff_false]
+  · simp only [unitsSMul, dif_pos trivial, h, iff_false]
     induction w using consRecOn with
-    | ofGroup => simp [Cancels, unitSMulWithCancel]
+    | ofGroup => simp [Cancels, unitsSMulWithCancel]
     | cons g u' w h1 h2 _ =>
       intro hc
       apply not_cancels_of_cons_hyps _ _ h1 h2
       simp only [Cancels, cons_head, cons_toList, List.head?_cons,
         Option.map_some', Option.some.injEq] at h
       cases h.2
-      simpa [Cancels, unitSMulWithCancel,
+      simpa [Cancels, unitsSMulWithCancel,
         Subgroup.mul_mem_cancel_left] using hc
-  · simp only [unitSMul, dif_neg h]
+  · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-theorem unitSMul_neg (u : ℤˣ) (w : NormalWord d) :
-    unitSMul φ (-u) (unitSMul φ u w) = w := by
-  rw [unitSMul]
+theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
+    unitsSMul φ (-u) (unitsSMul φ u w) = w := by
+  rw [unitsSMul]
   split_ifs with hcan
-  · have hncan : ¬ Cancels u w := (unitSMul_cancels_iff _ _ _).1 hcan
-    unfold unitSMul
+  · have hncan : ¬ Cancels u w := (unitsSMul_cancels_iff _ _ _).1 hcan
+    unfold unitsSMul
     simp only [dif_neg hncan]
-    simp [unitSMulWithCancel, unitSMulGroup, (d.compl u).equiv_snd_eq_inv_mul]
-  · have hcan2 : Cancels u w := not_not.1 (mt (unitSMul_cancels_iff _ _ _).2 hcan)
-    unfold unitSMul at hcan ⊢
+    simp [unitsSMulWithCancel, unitsSMulGroup, (d.compl u).equiv_snd_eq_inv_mul]
+  · have hcan2 : Cancels u w := not_not.1 (mt (unitsSMul_cancels_iff _ _ _).2 hcan)
+    unfold unitsSMul at hcan ⊢
     simp only [dif_pos hcan2] at hcan ⊢
     cases w using consRecOn with
     | ofGroup => simp [Cancels] at hcan2
     | cons g u' w h1 h2 ih =>
       clear ih
-      simp [unitSMulWithCancel, unitSMulGroup]
+      simp [unitsSMulWithCancel, unitsSMulGroup]
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
@@ -395,33 +412,33 @@ theorem unitSMul_neg (u : ℤˣ) (w : NormalWord d) :
       · simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this]
 
 @[simps]
-noncomputable def unitSMulEquiv : NormalWord d ≃ NormalWord d :=
-{ toFun := unitSMul φ 1
-  invFun := unitSMul φ (-1),
-  left_inv := fun _ => by rw [unitSMul_neg]
-  right_inv := fun w => by convert unitSMul_neg _ _ w; simp }
+noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
+{ toFun := unitsSMul φ 1
+  invFun := unitsSMul φ (-1),
+  left_inv := fun _ => by rw [unitsSMul_neg]
+  right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
 
-theorem unitSMul_one_group_smul (g : A) (w : NormalWord d) :
-    unitSMul φ 1 ((g : G) • w) = (φ g : G) • (unitSMul φ 1 w) := by
-  unfold unitSMul
+theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
+    unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
+  unfold unitsSMul
   have : Cancels 1 ((g : G) • w) ↔ Cancels 1 w := by
     simp [Cancels, Subgroup.mul_mem_cancel_left]
   by_cases hcan : Cancels 1 w
-  · simp [unitSMulWithCancel, dif_pos (this.2 hcan), dif_pos hcan]
+  · simp [unitsSMulWithCancel, dif_pos (this.2 hcan), dif_pos hcan]
     cases w using consRecOn
     · simp [Cancels] at hcan
     · simp only [smul_cons, consRecOn_cons, mul_smul]
       rw [← mul_smul, ← Subgroup.coe_mul, ← map_mul φ]
       rfl
   · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
-    simp [← mul_smul, mul_assoc, unitSMulGroup]
+    simp [← mul_smul, mul_assoc, unitsSMulGroup]
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
   MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
-    (HNNExtension.lift (MulAction.toPermHom _ _) (unitSMulEquiv φ) <| by
+    (HNNExtension.lift (MulAction.toPermHom _ _) (unitsSMulEquiv φ) <| by
       intro a
       ext : 1
-      simp [unitSMul_one_group_smul])
+      simp [unitsSMul_one_group_smul])
 
 def prod (w : NormalWord d) : HNNExtension G A B φ :=
   of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
@@ -436,11 +453,11 @@ theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
   simp [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
-    (t : HNNExtension G A B φ) • w = unitSMul φ 1 w := by
+    (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
   simp [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
-    (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitSMul φ u w := by
+    (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   simp [instHSMul, SMul.smul, MulAction.toEndHom]
   rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp [Equiv.Perm.inv_def]
 
@@ -451,17 +468,17 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
   simp [prod, cons, smul_def, mul_assoc]
 
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
-    (unitSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
-  rw [unitSMul]
+    (unitsSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
+  rw [unitsSMul]
   split_ifs with hcan
   · cases w using consRecOn
     · simp [Cancels] at hcan
     · cases hcan.2
-      simp [unitSMulWithCancel]
+      simp [unitsSMulWithCancel]
       rcases Int.units_eq_one_or u with (rfl | rfl)
       · simp [equiv_eq_conj, mul_assoc]
       · simp [equiv_symm_eq_conj, mul_assoc]
-  · simp [unitSMulGroup]
+  · simp [unitsSMulGroup]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
     · simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
@@ -486,13 +503,13 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
   induction w using consRecOn with
-  | ofGroup => simp [ofGroup, prod, of_smul_eq_smul, smul_def]
+  | ofGroup => simp [ofGroup, prod, of_smul_eq_smul, group_smul_def]
   | cons g u w h1 h2 ih =>
     rw [prod_cons, ← mul_assoc, mul_smul, ih, mul_smul, t_pow_smul_eq_unitsSMul,
-      of_smul_eq_smul, unitSMul]
+      of_smul_eq_smul, unitsSMul]
     rw [dif_neg (not_cancels_of_cons_hyps u w h1 h2)]
     have := not_cancels_of_cons_hyps u w h1 h2
-    simp [unitSMulGroup, (d.compl u).equiv_snd_eq_inv_mul, mul_assoc,
+    simp [unitsSMulGroup, (d.compl u).equiv_snd_eq_inv_mul, mul_assoc,
       (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
     ext <;> simp
 
@@ -542,7 +559,6 @@ variable {G A B}
 def prod : ReducedWord G A B → HNNExtension G A B φ :=
   fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
 
-set_option pp.proofs.withType false
 theorem exists_normalWord_prod_eq
     (d : TransversalPair G A B) (w : ReducedWord G A B) :
     ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
@@ -578,7 +594,7 @@ theorem exists_normalWord_prod_eq
     · rw [prod_smul, hw'1]
       simp [ReducedWord.prod]
     · have : ¬ Cancels a.1 (a.2 • w') := by
-        simp only [Cancels, smul_head, smul_toList, Option.map_eq_some',
+        simp only [Cancels, group_smul_head, group_smul_toList, Option.map_eq_some',
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
         have hx' := congr_arg (Option.map Prod.fst) hx
@@ -593,9 +609,9 @@ theorem exists_normalWord_prod_eq
             (List.head?_eq_head _ _) this
           rwa [List.head?_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
         simp [Units.ext_iff, eq_neg_iff_add_eq_zero] at this
-      erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.smul_def,
-        t_pow_smul_eq_unitsSMul, unitSMul, dif_neg this, ← hw'2]
-      simp [mul_assoc, unitSMulGroup, (d.compl _).equiv_snd_eq_one_iff_mem]
+      erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
+        t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
+      simp [mul_assoc, unitsSMulGroup, (d.compl _).equiv_snd_eq_one_iff_mem]
 
 theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
