@@ -16,8 +16,14 @@ This file has a few measure theoretic or integration-related results on indicato
 This file exists to avoid importing `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
 in `Mathlib.MeasureTheory.Integral.Lebesgue`.
 
-If other results besides those related to indicators require similar imports, the file could be
-renamed appropriately.
+## Todo
+
+The result `measurableSet_of_tendsto_indicator` could be proved without integration, if we
+had convergence of measures results for countably generated filters. Ideally, the present
+file would then become unnecessary: lemmas such as
+`MeasureTheory.tendsto_measure_of_ae_tendsto_indicator` would not need integration so could be
+moved out of `Mathlib.MeasureTheory.Integral.Lebesgue`, and the lemmas in this file could be
+moved to, e.g., `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`.
 
 -/
 
