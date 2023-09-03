@@ -189,6 +189,24 @@ theorem integral_lineDeriv_mul_eq
     · exact h'g.mul_left
   · exact (hf.continuous.mul hg.continuous).integrable_of_hasCompactSupport h'g.mul_left
 
+theorem blouk {f : E → ℝ} (hf : HasCompactSupport f) (h'f : Continuous f) :
+    IsCompact (range f) := by
+  exact HasCompactSupport.isCompact_range hf h'f
+
+theorem blouk2 {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {n : ℕ∞}
+    (hf : HasCompactSupport f) (h'f : ContDiff ℝ n f) (hn : 1 ≤ n) : ∃ D, LipschitzWith D f := by
+  have A : IsCompact (range (fderiv ℝ f)) :=
+    (hf.fderiv ℝ).isCompact_range (h'f.continuous_fderiv hn)
+  obtain ⟨C, C_pos, hC⟩ : ∃ C, 0 < C ∧ range (fderiv ℝ f) ⊆ closedBall 0 C :=
+    A.bounded.subset_ball_lt 0 _
+  refine ⟨⟨C, C_pos.le⟩, ?_⟩
+
+
+
+
+#exit
+
+
 theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f):
     ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
@@ -199,4 +217,9 @@ theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf 
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
       ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
   rw [integral_finset_sum _ A]
-  sorry
+  suffices B : ∫ (x : E), lineDeriv ℝ f x (∑ i in s, a i • v i) * g x ∂μ
+      = ∑ x in s, a x * ∫ (a : E), lineDeriv ℝ f a (v x) * g a ∂μ by
+    dsimp only [smul_eq_mul, Pi.smul_apply]
+    simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_mul_left, mul_comm (g _), B]
+  have : ∃ D, LipschitzWith D g := by
+    exact?
