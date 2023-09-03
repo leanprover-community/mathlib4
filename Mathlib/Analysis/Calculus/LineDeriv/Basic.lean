@@ -243,7 +243,7 @@ theorem LineDifferentiableWithinAt.lineDifferentiableAt (h : LineDifferentiableW
     (hs : s ∈ 𝓝 x) : LineDifferentiableAt 𝕜 f x v :=
   (h.hasLineDerivWithinAt.hasLineDerivAt hs).lineDifferentiableAt
 
-lemma HasFDerivWithinAt.hasLineDerivWithinAt (hf : HasFDerivWithinAt f L s x) :
+lemma HasFDerivWithinAt.hasLineDerivWithinAt (hf : HasFDerivWithinAt f L s x) (v : E) :
     HasLineDerivWithinAt 𝕜 f (L v) s x v := by
   let F := fun (t : 𝕜) ↦ x + t • v
   rw [show x = F (0 : 𝕜) by simp] at hf
@@ -252,10 +252,14 @@ lemma HasFDerivWithinAt.hasLineDerivWithinAt (hf : HasFDerivWithinAt f L s x) :
   simp only [one_smul, zero_add] at A
   exact hf.comp_hasDerivWithinAt (x := (0 : 𝕜)) A (mapsTo_preimage F s)
 
-lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) :
+lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) (v : E) :
     HasLineDerivAt 𝕜 f (L v) x v := by
   rw [← hasLineDerivWithinAt_univ]
-  exact hf.hasFDerivWithinAt.hasLineDerivWithinAt
+  exact hf.hasFDerivWithinAt.hasLineDerivWithinAt v
+
+lemma DifferentiableAt.lineDeriv_eq_fderiv (hf : DifferentiableAt 𝕜 f x) :
+    lineDeriv 𝕜 f x v = fderiv 𝕜 f x v :=
+  (hf.hasFDerivAt.hasLineDerivAt v).lineDeriv
 
 theorem LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hst : s ∈ 𝓝[t] x) : LineDifferentiableWithinAt 𝕜 f t x v :=

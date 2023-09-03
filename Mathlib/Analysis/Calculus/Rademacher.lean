@@ -199,9 +199,24 @@ theorem foobar {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf 
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
       ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
   rw [integral_finset_sum _ A]
-  suffices B : ∫ (x : E), lineDeriv ℝ f x (∑ i in s, a i • v i) * g x ∂μ
-      = ∑ x in s, a x * ∫ (a : E), lineDeriv ℝ f a (v x) * g a ∂μ by
+  suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i in s, a i • v i) * g x ∂μ
+      = ∑ i in s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
     dsimp only [smul_eq_mul, Pi.smul_apply]
-    simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_mul_left, mul_comm (g _), B]
-  have : ∃ D, LipschitzWith D g := by
-    exact?
+    simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_mul_left, mul_comm (g _), S1]
+  suffices S2 : ∫ x, (∑ i in s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
+                  ∑ i in s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
+    obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
+      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
+    simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
+    simp_rw [(g_smooth.differentiable le_top).differentiableAt.lineDeriv_eq_fderiv]
+    simp only [map_neg, ContinuousLinearMap.map_sum, SMulHomClass.map_smul, smul_eq_mul, neg_mul]
+    simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
+    exact S2
+  suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
+    simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_mul_left]
+  intro i hi
+  apply Integrable.const_mul
+  apply Continuous.integrable_of_hasCompactSupport
+  have az : Continuous (fun x ↦ fderiv ℝ g x) := g_smooth.continuous_fderiv le_top
+  have : Continuous (fun x ↦ fderiv ℝ g x (v i)) := by
+    have Z := Continuous.comp az
