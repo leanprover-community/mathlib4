@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Init.Data.Nat.Basic
 
 #align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
 
@@ -14,6 +14,15 @@ import Mathlib.Init.Data.Nat.Notation
 A stream `Stream' α` is an infinite sequence of elements of `α`. One can also think about it as an
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
+
+## Main definitions
+
+Given a type `α` and a function `f : ℕ → α`:
+
+* `Stream' α` : the type of streams whose elements have type `α`
+* `strmOf f : Stream' α` : the stream whose `n`-th element is `f n`.
+* `s[ f n | n ] : Stream' α` :
+  the stream whose `n`-th element is `f n`, this is an notation of `strmOf fun n => f n`.
 -/
 
 set_option autoImplicit true
@@ -22,76 +31,105 @@ set_option autoImplicit true
 def Stream' (α : Type u) := ℕ → α
 #align stream Stream'
 
+/-- `strmOf f` is the stream whose `n`-th element is `f n` -/
+@[always_inline, inline]
+def strmOf (f : ℕ → α) : Stream' α := f
+
+open Lean Macro in
+/--
+`s[ f n | n ]` is the stream whose `n`-th element is `f n`,
+this is an notation of `strmOf fun n => f n`. -/
+macro "s[ " t:term " | " b:binderIdent  " ]" : term =>
+  match b with
+  | `(binderIdent| $i:ident) => `(strmOf fun $i => $t)
+  | `(binderIdent| _)        => `(strmOf fun _ => $t)
+  | _                        => throwUnsupported
+
+/-- Unexpand `fun` expressions to `strm` expressions. -/
+@[app_unexpander strmOf] def unexpandStrmOf : Lean.PrettyPrinter.Unexpander
+  | `($(_) fun $x:ident => $b)                     => `(s[ $b | $x:ident ])
+  | `($(_) fun ($x:ident : $_) => $b)              => `(s[ $b | $x:ident ])
+  | _                                              => throw ()
+
 namespace Stream'
 
+/-- Get the `n`-th element of a stream. -/
+@[always_inline, inline]
+def get (s : Stream' α) (n : ℕ) : α := s n
+#align stream.nth Stream'.get
+
+@[simp]
+theorem get_strmOf {f : ℕ → α} {m : ℕ} : get s[ f n | n ] m = f m :=
+  rfl
+
 /-- Prepend an element to a stream. -/
-def cons (a : α) (s : Stream' α) : Stream' α
-  | 0 => a
-  | n + 1 => s n
+def cons (a : α) (s : Stream' α) : Stream' α :=
+  s[ (match m with
+      | 0 => a
+      | n + 1 => get s n) | m ]
 #align stream.cons Stream'.cons
 
-scoped infixr:67 " :: " => cons
+infixr:67 " ::ₛ " => cons
 
-/-- `n`-th element of a stream. -/
-def nth (s : Stream' α) (n : ℕ) : α := s n
-#align stream.nth Stream'.nth
-
-/-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
-abbrev head (s : Stream' α) : α := s.nth 0
+/-- Head of a stream: `Stream'.head s = Stream'.get s 0`. -/
+abbrev head (s : Stream' α) : α := s.get 0
 #align stream.head Stream'.head
 
-/-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-def tail (s : Stream' α) : Stream' α := fun i => s.nth (i + 1)
+/-- Tail of a stream: `Stream'.tail (h ::ₛ t) = t`. -/
+def tail (s : Stream' α) : Stream' α := s[ s.get (i + 1) | i ]
 #align stream.tail Stream'.tail
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.nth (i + n)
+def drop (n : Nat) (s : Stream' α) : Stream' α := s[ s.get (i + n) | i ]
 #align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
-def All (p : α → Prop) (s : Stream' α) := ∀ n, p (nth s n)
+def All (p : α → Prop) (s : Stream' α) := ∀ n, p (get s n)
 #align stream.all Stream'.All
 
 /-- Proposition saying that at least one element of a stream satisfies a predicate. -/
-def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (nth s n)
+def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 #align stream.any Stream'.Any
 
-/-- `a ∈ s` means that `a = Stream'.nth n s` for some `n`. -/
+/-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
   ⟨fun a s => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
-def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (nth s n)
+def map (f : α → β) (s : Stream' α) : Stream' β := s[ f (get s n) | n ]
 #align stream.map Stream'.map
 
 /-- Zip two streams using a binary operation:
-`Stream'.nth n (Stream'.zip f s₁ s₂) = f (Stream'.nth s₁) (Stream'.nth s₂)`. -/
+`Stream'.get (Stream'.zip f s₁ s₂) n = f (Stream'.get s₁ n) (Stream'.get s₂ n)`. -/
 def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
-  fun n => f (nth s₁ n) (nth s₂ n)
+  s[ f (get s₁ n) (get s₂ n) | n ]
 #align stream.zip Stream'.zip
 
 /-- Enumerate a stream by tagging each element with its index. -/
-def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.nth n)
+def enum (s : Stream' α) : Stream' (ℕ × α) := s[ (n, s.get n) | n ]
 #align stream.enum Stream'.enum
 
-/-- The constant stream: `Stream'.nth n (Stream'.const a) = a`. -/
-def const (a : α) : Stream' α := fun _ => a
+/-- The constant stream: `Stream'.get (Stream'.const a) n = a`. -/
+def const (a : α) : Stream' α := s[ a | _ ]
 #align stream.const Stream'.const
 
--- porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
-def iterate (f : α → α) (a : α) : Stream' α
-  | 0 => a
-  | n + 1 => f (iterate f a n)
+def iterate (f : α → α) (a : α) : Stream' α :=
+  s[ Nat.recOn n a (fun _ r => f r) | n ]
 #align stream.iterate Stream'.iterate
 
+/-- `corec f g b` is the corecursor for `Stream' α` as a coinductive type.
+  `head (corec f g a) = f a`, and `tail (corec f g a) = corec f g (g a)`. -/
 def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
 #align stream.corec Stream'.corec
 
+/-- `corecOn` is `corec` with swapped arguments. -/
 def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 #align stream.corec_on Stream'.corecOn
 
+/-- `corec' f a` is the corecursor for `Stream' α` as a coinductive type.
+  `head (corec' f a) = (f a).1`, and `tail (corec' f a) = corec f (f a).2`. -/
 def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
 #align stream.corec' Stream'.corec'
@@ -105,13 +143,14 @@ def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
 #align stream.corec_state Stream'.corecState
 
 -- corec is also known as unfold
+/-- Alias of `corec`. -/
 abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
   corec g f a
 #align stream.unfolds Stream'.unfolds
 
 /-- Interleave two streams. -/
 def interleave (s₁ s₂ : Stream' α) : Stream' α :=
-  corecOn (s₁, s₂) (fun ⟨s₁, _⟩ => head s₁) fun ⟨s₁, s₂⟩ => (s₂, tail s₁)
+  corecOn (s₁, s₂) (fun (s₁, _) => head s₁) (fun (s₁, s₂) => (s₂, tail s₁))
 #align stream.interleave Stream'.interleave
 
 infixl:65 " ⋈ " => interleave
@@ -128,16 +167,17 @@ def odd (s : Stream' α) : Stream' α :=
 
 /-- Append a stream to a list. -/
 def appendStream' : List α → Stream' α → Stream' α
-  | [], s => s
-  | List.cons a l, s => a::appendStream' l s
+  | []    , s => s
+  | a :: l, s => a ::ₛ appendStream' l s
 #align stream.append_stream Stream'.appendStream'
 
-infixl:65 " ++ₛ " => appendStream'
+instance : HAppend (List α) (Stream' α) (Stream' α) where
+  hAppend := appendStream'
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
 def take : ℕ → Stream' α → List α
-  | 0, _ => []
-  | n + 1, s => List.cons (head s) (take n (tail s))
+  | 0    , _ => []
+  | n + 1, s => head s :: take n (tail s)
 #align stream.take Stream'.take
 
 /-- An auxiliary definition for `Stream'.cycle` corecursive def -/
@@ -147,14 +187,14 @@ protected def cycleF : α × List α × α × List α → α
 
 /-- An auxiliary definition for `Stream'.cycle` corecursive def -/
 protected def cycleG : α × List α × α × List α → α × List α × α × List α
-  | (_, [], v₀, l₀) => (v₀, l₀, v₀, l₀)
-  | (_, List.cons v₂ l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
+  | (_, []      , v₀, l₀) => (v₀, l₀, v₀, l₀)
+  | (_, v₂ :: l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
 #align stream.cycle_g Stream'.cycleG
 
 /-- Interpret a nonempty list as a cyclic stream. -/
 def cycle : ∀ l : List α, l ≠ [] → Stream' α
-  | [], h => absurd rfl h
-  | List.cons a l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
+  | []    , h => absurd rfl h
+  | a :: l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
 #align stream.cycle Stream'.cycle
 
 /-- Tails of a stream, starting with `Stream'.tail s`. -/
@@ -164,9 +204,7 @@ def tails (s : Stream' α) : Stream' (Stream' α) :=
 
 /-- An auxiliary definition for `Stream'.inits`. -/
 def initsCore (l : List α) (s : Stream' α) : Stream' (List α) :=
-  corecOn (l, s) (fun ⟨a, _⟩ => a) fun p =>
-    match p with
-    | (l', s') => (l' ++ [head s'], tail s')
+  corecOn (l, s) (fun (a, _) => a) (fun (l', s') => (l' ++ [head s'], tail s'))
 #align stream.inits_core Stream'.initsCore
 
 /-- Nonempty initial segments of a stream. -/
@@ -180,14 +218,13 @@ def pure (a : α) : Stream' α :=
 #align stream.pure Stream'.pure
 
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
-def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (nth f n) (nth s n)
+def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := s[ get f n (get s n) | n ]
 #align stream.apply Stream'.apply
 
 infixl:75 " ⊛ " => apply
--- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
 
-/-- The stream of natural numbers: `Stream'.nth n Stream'.nats = n`. -/
-def nats : Stream' Nat := fun n => n
+/-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
+def nats : Stream' Nat := s[ n | n ]
 #align stream.nats Stream'.nats
 
 end Stream'

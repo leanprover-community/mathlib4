@@ -3,7 +3,6 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
@@ -124,7 +123,7 @@ theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
 #align part.fix.le_f_of_mem_approx Part.Fix.le_f_of_mem_approx
 
 theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
-  Stream'.mem_of_nth_eq rfl
+  Exists.intro _ rfl
 #align part.fix.approx_mem_approx_chain Part.Fix.approx_mem_approxChain
 
 end Fix

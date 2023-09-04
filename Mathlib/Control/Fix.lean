@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
-import Mathlib.Data.Stream.Defs
 
 #align_import control.fix from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -46,7 +45,7 @@ variable (f : (∀ a, Part (β a)) → (∀ a, Part (β a)))
 
 /-- A series of successive, finite approximation of the fixed point of `f`, defined by
 `approx f n = f^[n] ⊥`. The limit of this chain is the fixed point of `f`. -/
-def Fix.approx : Stream' (∀ a, Part (β a))
+def Fix.approx : ℕ → (∀ a, Part (β a))
   | 0 => ⊥
   | Nat.succ i => f (Fix.approx i)
 #align part.fix.approx Part.Fix.approx
