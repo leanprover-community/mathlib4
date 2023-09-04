@@ -27,7 +27,7 @@ to use the Module API to work with convex cones.
 /-- A pointed cone is a convex cone that contains  `0`· -/
 structure PointedCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
      [SMul 𝕜 E] extends ConvexCone 𝕜 E where
--- `0` is in the carrier
+/-- `0` is in the carrier -/
   zero_mem' : 0 ∈ carrier
 
 namespace PointedCone
@@ -148,6 +148,7 @@ variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 variable {E : Type*} [AddCommMonoid E] [Module 𝕜 E]
 variable {S : Type*} {S : PointedCone 𝕜 E}
 
+/-- We consider the ambient space `E` as a module over just the positive scalars. -/
 local instance : Module { c : 𝕜 // 0 ≤ c } E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
 protected theorem smul_mem {c : 𝕜} {x : E} (hc : 0 ≤ c) (hx : x ∈ S) : c • x ∈ S := by
