@@ -1,7 +1,6 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.CategoryTheory.Shift.ShiftedHom
-import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 
 universe w v u
 

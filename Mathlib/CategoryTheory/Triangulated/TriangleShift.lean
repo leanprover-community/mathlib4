@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
+import Mathlib.Algebra.GroupPower.NegOnePow
 
 open CategoryTheory Category Preadditive
 

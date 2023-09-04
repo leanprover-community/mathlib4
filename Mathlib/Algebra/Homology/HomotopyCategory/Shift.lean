@@ -1,6 +1,6 @@
+import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.Linear
-import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.Tactic.Linarith
 
