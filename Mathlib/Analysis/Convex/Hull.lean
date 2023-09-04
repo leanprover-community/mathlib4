@@ -82,8 +82,7 @@ theorem convexHull_mono (hst : s ⊆ t) : convexHull 𝕜 s ⊆ convexHull 𝕜 
   (convexHull 𝕜).monotone hst
 #align convex_hull_mono convexHull_mono
 
-theorem Convex.convexHull_eq (hs : Convex 𝕜 s) : convexHull 𝕜 s = s :=
-  ClosureOperator.mem_mk₃_closed hs
+theorem Convex.convexHull_eq : Convex 𝕜 s → convexHull 𝕜 s = s := ClosureOperator.mem_mk₃_closed.2
 #align convex.convex_hull_eq Convex.convexHull_eq
 
 @[simp]
