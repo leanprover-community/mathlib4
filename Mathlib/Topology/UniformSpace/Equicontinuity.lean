@@ -533,6 +533,9 @@ theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι
     ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
 #align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
 
+/-- If `F : ι → X → α`` is an equicontinuous family of functions,
+`f : X → α` is a continuous function, and `l` is a filter on `ι`,
+then `{x | Filter.Tendsto (F · x) l (𝓝 (f x))}` is a closed set. -/
 theorem Equicontinuous.isClosed_setOf_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
     (hF : Equicontinuous F) (hf : Continuous f) :
     IsClosed {x | Tendsto (F · x) l (𝓝 (f x))} := by
