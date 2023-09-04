@@ -47,6 +47,10 @@ of carries when `k` and `n - k` are added in base `p`. This sum is expressed ove
 `Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
 same result but stated in the language of prime multiplicity.
 
+* `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
+`p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
+the digits of `n - k` minus the sum of digits of `n`, all base `p`.
+
 ## References
 
 * [F. Q. Gouvêa, *p-adic numbers*][gouvea1997]
@@ -612,6 +616,44 @@ theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hn
     ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
   PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos hkn) ▸
   Prime.multiplicity_choose hp.out hkn hnb
+
+/-- **Kummer's Theorem**
+
+The `p`-adic valuation of `(n + k).choose k` is the number of carries when `k` and `n` are added
+in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
+`log p (n + k)`. -/
+theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
+    padicValNat p (choose (n + k) k) =
+    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card :=
+  PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos <|
+  Nat.le_add_left k n)▸ Prime.multiplicity_choose' hp.out hnb
+
+/-- **Kummer's Theorem**
+Taking (`p - 1`) times the `p`-adic valuation of the binomial `n + k` over `k` equals the sum of the
+digits of `k` plus the sum of the digits of `n` minus the sum of digits of `n + k`, all base `p`.
+-/
+theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact p.Prime] :
+    (p - 1) * padicValNat p (choose (n + k) k) =
+    (p.digits k).sum + (p.digits n).sum - (p.digits (n + k)).sum := by
+  have h : k ≤ n + k := by exact Nat.le_add_left k n
+  simp only [Nat.choose_eq_factorial_div_factorial h]
+  rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
+      padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
+  simp only [sub_one_mul_padicValNat_factorial_eq_sub_sum_digits]
+  rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
+      digit_sum_le p n, Nat.sub_sub (k + n),  ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
+      add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
+      (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), zero_add, add_comm]
+
+/-- **Kummer's Theorem**
+Taking (`p - 1`) times the `p`-adic valuation of the binomial `n` over `k` equals the sum of the
+digits of `k` plus the sum of the digits of `n - k` minus the sum of digits of `n`, all base `p`.
+-/
+theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact p.Prime]
+    (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
+    (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
+  convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ _
+  all_goals exact Nat.eq_add_of_sub_eq h rfl
 
 end padicValNat
 
