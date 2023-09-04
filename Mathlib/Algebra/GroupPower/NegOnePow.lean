@@ -19,7 +19,7 @@ namespace Int
 
 /-- The map `ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
 @[pp_dot]
-def negOnePow (n : ℤ) : ℤ := (-1 : Units ℤ) ^ n
+def negOnePow (n : ℤ) : ℤ := (-1 : ℤˣ) ^ n
 
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : Units ℤ) ^ n := rfl
 
