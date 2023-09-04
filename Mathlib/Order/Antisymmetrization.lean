@@ -71,7 +71,7 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] {a b : α} : Antisymm
   antisymm_iff
 #align antisymm_rel_iff_eq antisymmRel_iff_eq
 
-alias antisymmRel_iff_eq ↔ AntisymmRel.eq _
+alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 #align antisymm_rel.eq AntisymmRel.eq
 
 end Relation

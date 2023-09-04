@@ -330,9 +330,7 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
-    -- Porting note: was
-    -- apply_fun (χ a * ·) using IsUnit.mul_right_injective h
-    apply IsUnit.mul_right_injective h
+    apply_fun (χ a * ·) using IsUnit.mul_right_injective h
     dsimp only
     -- Porting note: was
     -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]
