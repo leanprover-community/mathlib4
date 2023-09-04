@@ -11,7 +11,7 @@ import Mathlib.Algebra.Module.Submodule.Basic
 /-!
 # Pointed cones
 
-We define pointed cone as a convex cone which contains `0`. This is a bundled version of
+A *pointed cone* is defined to be a convex cone which contains `0`. This is a bundled version of
 `ConvexCone.Pointed`. Pointed cones have a nicer algebraic structure than convex cones. They form
 a submodule of the ambient space when the scalars are restricted to being positive. This allows us
 to use the `Module` API to work with convex cones.
