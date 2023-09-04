@@ -228,10 +228,9 @@ theorem ae_lineDeriv_sum_eq
     simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_mul_left]
   intro i _hi
   let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
-  have L_cont : Continuous L := (ContinuousLinearMap.apply ℝ (Fₗ := ℝ) (v i)).continuous
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
-  · exact (L_cont.comp (g_smooth.continuous_fderiv le_top)).mul hf.continuous
+  · exact ((g_smooth.continuous_fderiv le_top).clm_apply continuous_const).mul hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
 /-!
