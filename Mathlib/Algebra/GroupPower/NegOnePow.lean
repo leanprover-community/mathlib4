@@ -73,7 +73,7 @@ lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
   simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
 
 lemma negOnePow_sub (n₁ n₂ : ℤ) :
-    (n₁ - n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
+    (n₁ - n₂).negOnePow = n₁.negOnePow * n₂.negOnePow := by
   simp only [sub_eq_add_neg, negOnePow_add, negOnePow_neg]
 
 lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
