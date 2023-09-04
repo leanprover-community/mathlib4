@@ -15,7 +15,8 @@ the Birkhoff averages
 ```
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
 ```
-converge to the orthogonal projection of `x` to the subspace of fixed points of `f`.
+converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
+see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Filter Finset Function
@@ -55,6 +56,7 @@ theorem LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection (f : E →�
   apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure f.lipschitz
   · exact orthogonalProjection_mem_subspace_eq_self (K := LinearMap.eqLocus f 1)
   · clear x
+    -- In fact, these two submodules are equal. TODO: move it to a lemma
     rw [ker_orthogonalProjection, ← Submodule.topologicalClosure_coe, SetLike.coe_subset_coe,
       ← Submodule.orthogonal_orthogonal_eq_closure]
     refine Submodule.orthogonal_le fun x hx ↦ ?_

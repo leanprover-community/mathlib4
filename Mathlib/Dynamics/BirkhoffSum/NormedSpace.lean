@@ -7,6 +7,14 @@ import Mathlib.Data.IsROrC.Basic
 import Mathlib.Dynamics.BirkhoffSum.Average
 
 /-!
+# Birkhoff average in a normed space
+
+In this file we prove some lemmas about the Birkhoff average (`birkhoffAverage`)
+of a function which takes values in a normed space over `ℝ` or `ℂ`.
+
+At the time of writing, all lemmas in this file
+are motivated by the proof of the von Neumann Mean Ergodic Theorem,
+see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Function Set Filter
