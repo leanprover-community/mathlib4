@@ -226,6 +226,7 @@ import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -1984,6 +1985,7 @@ import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Coprod
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
