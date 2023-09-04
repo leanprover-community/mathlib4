@@ -549,6 +549,7 @@ theorem card_pos [h : Nonempty α] : 0 < card α :=
   card_pos_iff.mpr h
 #align fintype.card_pos Fintype.card_pos
 
+@[simp]
 theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
