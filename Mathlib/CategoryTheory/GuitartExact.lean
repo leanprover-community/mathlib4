@@ -7,6 +7,32 @@ open Category
 variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
+section
+
+variable {T}
+
+abbrev StructuredArrow.mk' {X₂ : C₂} (X₁ : C₁) (g : X₂ ⟶ T.obj X₁) : StructuredArrow X₂ T :=
+  StructuredArrow.mk g
+
+theorem StructuredArrow.cases {X₂ : C₂} (f : StructuredArrow X₂ T) :
+    ∃ (X₁ : C₁) (g : X₂ ⟶ T.obj X₁), f = mk g := ⟨_, _, eq_mk f⟩
+
+theorem StructuredArrow.hom_cases {X₂ : C₂} {f g : StructuredArrow X₂ T} (φ : f ⟶ g) :
+    ∃ (ψ : f.right ⟶ g.right) (hψ : f.hom ≫ T.map ψ = g.hom),
+      φ = StructuredArrow.homMk ψ hψ := ⟨φ.right, StructuredArrow.w φ, rfl⟩
+
+abbrev CostructuredArrow.mk' {X₂ : C₂} (X₁ : C₁) (g : T.obj X₁ ⟶ X₂) : CostructuredArrow T X₂ :=
+  CostructuredArrow.mk g
+
+theorem CostructuredArrow.cases {X₂ : C₂} (f : CostructuredArrow T X₂) :
+    ∃ (X₁ : C₁) (g :T.obj X₁ ⟶ X₂), f = mk g := ⟨_, _, eq_mk f⟩
+
+theorem CostructuredArrow.hom_cases {X₂ : C₂} {f g : CostructuredArrow T X₂} (φ : f ⟶ g) :
+    ∃ (ψ : f.left ⟶ g.left) (hψ : T.map ψ ≫ g.hom = f.hom),
+      φ = CostructuredArrow.homMk ψ hψ := ⟨φ.left, CostructuredArrow.w φ, rfl⟩
+
+end
+
 def TwoSquare := T ⋙ R ⟶ L ⋙ B
 
 namespace TwoSquare
@@ -35,18 +61,52 @@ section
 
 variable {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃)
 
-abbrev structuredArrowCostructuredArrowRightwards :=
+abbrev JRightwards :=
   StructuredArrow (CostructuredArrow.mk g) (costructuredArrowRightwards w X₃)
 
-abbrev costructuredArrowStructuredArrowDownwards :=
+abbrev JDownwards :=
   CostructuredArrow (structuredArrowDownwards w X₂) (StructuredArrow.mk g)
 
-namespace BistructuredArrowEquivalence
+section
+
+variable {g}
+
+@[simps!]
+def JDownwards.mk
+    (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+      w.JDownwards g :=
+  CostructuredArrow.mk' (StructuredArrow.mk a) (StructuredArrow.homMk b (by simpa using comm))
+
+lemma JDownwards.cases
+    (f : w.JDownwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
+      f = mk w X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := CostructuredArrow.cases f
+  obtain ⟨X₁, a, rfl⟩ := g.cases
+  obtain ⟨b, hb, rfl⟩ := StructuredArrow.hom_cases φ
+  exact ⟨X₁, a, b, by simpa using hb, rfl⟩
+
+@[simps!]
+def JRightwards.mk
+    (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+      w.JRightwards g :=
+  StructuredArrow.mk' (CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
+
+lemma JRightwards.cases
+    (f : w.JRightwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
+      f = mk w X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := StructuredArrow.cases f
+  obtain ⟨X₁, b, rfl⟩ := g.cases
+  obtain ⟨a, ha, rfl⟩ := CostructuredArrow.hom_cases φ
+  exact ⟨X₁, a, b, by simpa using ha, rfl⟩
+
+end
+
+namespace EquivalenceJ
 
 @[simps]
-def functor :
-    structuredArrowCostructuredArrowRightwards w g ⥤
-      costructuredArrowStructuredArrowDownwards w g where
+def functor : JRightwards w g ⥤ JDownwards w g where
   obj f := CostructuredArrow.mk
       (StructuredArrow.homMk f.right.hom (by simpa using CostructuredArrow.w f.hom) :
       (structuredArrowDownwards w X₂).obj
@@ -59,9 +119,7 @@ def functor :
   map_comp _ _ := rfl
 
 @[simps]
-def inverse :
-    costructuredArrowStructuredArrowDownwards w g ⥤
-      structuredArrowCostructuredArrowRightwards w g where
+def inverse : JDownwards w g ⥤ JRightwards w g where
   obj f := StructuredArrow.mk
       (CostructuredArrow.homMk f.left.hom (by simpa using StructuredArrow.w f.hom) :
     CostructuredArrow.mk g ⟶
@@ -72,35 +130,34 @@ def inverse :
   map_id _ := rfl
   map_comp _ _ := rfl
 
-end BistructuredArrowEquivalence
+end EquivalenceJ
 
-def bistructuredArrowEquivalence :
-  structuredArrowCostructuredArrowRightwards w g ≌
-    costructuredArrowStructuredArrowDownwards w g where
-  functor := BistructuredArrowEquivalence.functor w g
-  inverse := BistructuredArrowEquivalence.inverse w g
+def equivalenceJ :
+  JRightwards w g ≌ JDownwards w g where
+  functor := EquivalenceJ.functor w g
+  inverse := EquivalenceJ.inverse w g
   unitIso := Iso.refl _
   counitIso := Iso.refl _
   functor_unitIso_comp X := by ext; dsimp; simp
 
-lemma isConnected_structuredArrowCostructuredArrowRightwards_iff :
-    IsConnected (structuredArrowCostructuredArrowRightwards w g) ↔
-      IsConnected (costructuredArrowStructuredArrowDownwards w g) := by
+lemma isConnected_JRightwards_iff :
+    IsConnected (JRightwards w g) ↔
+      IsConnected (JDownwards w g) := by
   constructor
   · intro
-    exact isConnected_of_equivalent (bistructuredArrowEquivalence w g)
+    exact isConnected_of_equivalent (equivalenceJ w g)
   · intro
-    exact isConnected_of_equivalent (bistructuredArrowEquivalence w g).symm
+    exact isConnected_of_equivalent (equivalenceJ w g).symm
 
 end
 
 class GuitartExact : Prop where
   isConnected' {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃) :
-    IsConnected (structuredArrowCostructuredArrowRightwards w g)
+    IsConnected (JRightwards w g)
 
 lemma guitartExact_iff_isConnected_rightwards :
     GuitartExact w ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
-      IsConnected (structuredArrowCostructuredArrowRightwards w g) := by
+      IsConnected (JRightwards w g) := by
   constructor
   · intro h
     exact h.isConnected'
@@ -109,9 +166,9 @@ lemma guitartExact_iff_isConnected_rightwards :
 
 lemma guitartExact_iff_isConnected_downwards :
     GuitartExact w ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
-      IsConnected (costructuredArrowStructuredArrowDownwards w g) := by
+      IsConnected (JDownwards w g) := by
   simp only [guitartExact_iff_isConnected_rightwards,
-    isConnected_structuredArrowCostructuredArrowRightwards_iff]
+    isConnected_JRightwards_iff]
 
 instance [hw : GuitartExact w] {X₃ : C₃} (g : CostructuredArrow R (B.obj X₃)) :
     IsConnected (StructuredArrow g (costructuredArrowRightwards w X₃)) := by
