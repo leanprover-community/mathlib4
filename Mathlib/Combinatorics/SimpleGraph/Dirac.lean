@@ -1,9 +1,12 @@
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Trails
 
-variable {V : Type} {G : SimpleGraph V} {u v : V}
+open Classical
 
-def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop := sorry
+variable {V : Type} [Fintype V] {G : SimpleGraph V} {u v : V}
+
+def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
+  ∀ v : V, p.support.count v = 1
 
 -- See
 #check SimpleGraph.Walk.IsEulerian
