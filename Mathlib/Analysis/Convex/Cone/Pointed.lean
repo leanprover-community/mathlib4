@@ -11,10 +11,10 @@ import Mathlib.Algebra.Module.Submodule.Basic
 /-!
 # Pointed cones
 
-We define a pointed cones as convex cones which contain `0`. This is a bundled version of
+We define pointed cone as a convex cone which contains `0`. This is a bundled version of
 `ConvexCone.Pointed`. Pointed cones have a nicer algebraic structure than convex cones. They form
 a submodule of the ambient space when the scalars are restricted to being positive. This allows us
-to use the Module API to work with convex cones.
+to use the `Module` API to work with convex cones.
 
 
 ## TODO
@@ -24,7 +24,7 @@ to use the Module API to work with convex cones.
 
 -/
 
-/-- A pointed cone is a convex cone that contains  `0`. -/
+/-- A pointed cone is a convex cone that contains `0`. -/
 structure PointedCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
      [SMul 𝕜 E] extends ConvexCone 𝕜 E where
 /-- `0` is in the carrier -/
@@ -40,12 +40,13 @@ variable {E : Type*} [AddCommMonoid E] [SMul 𝕜 E]
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) :=
   ⟨fun K => K.1⟩
 
-theorem ext' : Function.Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
+theorem coe_injective : Function.Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
+  fun S T h => by
   cases S; cases T; congr
 
 instance instSetLike : SetLike (PointedCone 𝕜 E) E where
   coe K := K.carrier
-  coe_injective' _ _ h := PointedCone.ext' (SetLike.coe_injective h)
+  coe_injective' _ _ h := PointedCone.coe_injective (SetLike.coe_injective h)
 
 @[ext]
 theorem ext {S T : PointedCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
@@ -76,9 +77,13 @@ def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F whe
   toConvexCone := (S.toConvexCone).map f
   zero_mem' := ⟨0, by simp⟩
 
+@[simp, norm_cast]
+lemma coe_map (S : PointedCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
+  rfl
+
 @[simp]
 theorem mem_map {f : E →ₗ[𝕜] F} {S : PointedCone 𝕜 E} {y : F} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
-  Set.mem_image f S y
+  Iff.rfl
 
 theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) :
     (S.map f).map g = S.map (g.comp f) :=
@@ -93,7 +98,7 @@ def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E w
   toConvexCone := ConvexCone.comap (f : E →ₗ[𝕜] F) S
   zero_mem' := by simp [ConvexCone.comap]
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : (S.comap f : Set E) = f ⁻¹' S :=
   rfl
 
@@ -163,7 +168,7 @@ instance hasSmul : SMul { c : 𝕜 // 0 ≤ c } S where
 instance hasNsmul : SMul ℕ S where
   smul := fun n x => (n : { c : 𝕜 // 0 ≤ c }) • x
 
-@[simp]
+@[simp, norm_cast]
 protected theorem coe_smul (x : S) (n : { c : 𝕜 // 0 ≤ c }) : n • x = n • (x : E) :=
   rfl
 
@@ -189,21 +194,21 @@ instance instAddCommMonoid : AddCommMonoid S :=
     -- Note: linter says `coe_add` is a syntactic tautology
 
 /-- `addMonoidHom` structure on the inclusion map of a pointed cone inside the ambient space. -/
-def subtype.addMonoidHom : S →+ E where
+def coe_addMonoidHom : S →+ E where
   toFun := Subtype.val
   map_zero' := rfl
   map_add' := by simp
 
 @[simp]
-theorem coeSubtype.addMonoidHom : (subtype.addMonoidHom : S → E) = Subtype.val := rfl
+theorem coeSubtype.addMonoidHom : (coe_addMonoidHom : S → E) = Subtype.val := rfl
 
 instance instModule : Module { c : 𝕜 // 0 ≤ c } S := by
-  apply Function.Injective.module ({ c : 𝕜 // 0 ≤ c }) subtype.addMonoidHom
+  apply Function.Injective.module ({ c : 𝕜 // 0 ≤ c }) coe_addMonoidHom
   simp only [coeSubtype.addMonoidHom, Subtype.coe_injective]
   simp -- a single `simp` does not work!
 
 /-- `linearMap` structure on the inclusion map of a pointed cone inside the ambient space. -/
-def subtype.linearMap : S →ₗ[{ c : 𝕜 // 0 ≤ c }] E where
+def coe_linearMap : S →ₗ[{ c : 𝕜 // 0 ≤ c }] E where
   toFun := Subtype.val
   map_add' := by simp
   map_smul' := by simp
@@ -231,7 +236,7 @@ def ofSubmodule (M : Submodule { c : 𝕜 // 0 ≤ c } E) : (PointedCone 𝕜 E)
   zero_mem' := M.zero_mem
 
 /-- The equivalence between pointed cones and submodules. -/
-def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c } E) where
+def toSubmoduleEquiv : PointedCone 𝕜 E ≃ Submodule { c : 𝕜 // 0 ≤ c } E where
   toFun := toSubmodule
   invFun := ofSubmodule
   left_inv := fun S => by aesop
