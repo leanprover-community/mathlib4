@@ -32,18 +32,16 @@ we can perform backtracking search based on applying a list of lemmas.
 calls to `apply` succeeded or failed.
 -/
 def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
-    (lemmas : List Expr) :
-    MVarId → Nondet MetaM (List MVarId) :=
-  fun g =>
-    (Nondet.ofList lemmas).filterMapM fun e => try? do
-      withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
-        let goals ← withTransparency transparency (g.apply e cfg)
-        -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
-        -- deals with closing new typeclass goals by calling
-        -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
-        -- It seems we can't reuse that machinery down here in `MetaM`,
-        -- so we just settle for trying to close each subgoal using `inferInstance`.
-        goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
+    (lemmas : List Expr) (g : MVarId) : Nondet MetaM (List MVarId) :=
+  (Nondet.ofList lemmas).filterMapM fun e => try? do
+    withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
+      let goals ← withTransparency transparency (g.apply e cfg)
+      -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
+      -- deals with closing new typeclass goals by calling
+      -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
+      -- It seems we can't reuse that machinery down here in `MetaM`,
+      -- so we just settle for trying to close each subgoal using `inferInstance`.
+      goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
 
 /--
 `applyFirst lemmas goal` applies the first of the `lemmas`
@@ -52,9 +50,8 @@ which can be successfully applied to `goal`, and fails if none apply.
 We use this in `apply_rules` and `apply_assumption` where backtracking is not needed.
 -/
 def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
-    (lemmas : List Expr) : MVarId → MetaM (List MVarId) :=
-  fun g => do
-    (applyTactics cfg transparency lemmas g).firstM (fun t => pure (some t))
+    (lemmas : List Expr) (g : MVarId) : MetaM (List MVarId) :=
+  (applyTactics cfg transparency lemmas g).head
 
 /--
 Configuration structure to control the behaviour of `solve_by_elim`:

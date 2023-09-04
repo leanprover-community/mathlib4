@@ -96,9 +96,9 @@ def ppMVarIds (gs : List MVarId) : MetaM (List Format) := do
 
 /--
 Attempts to solve the `goals`, by recursively calling `alternatives g` on each subgoal that appears.
-`alternatives` returns a list of list of goals (wrapped in `MetaM`).
-The outermost list corresponds to alternative outcomes,
-while the innermost list is the subgoals generated in that outcome.
+`alternatives` returns a nondeterministic list of goals
+(this is essentially a lazy list of `List MVarId`,
+with the extra state required to backtrack in `MetaM`).
 
 `backtrack` performs a backtracking search, attempting to close all subgoals.
 
