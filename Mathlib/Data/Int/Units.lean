@@ -46,18 +46,6 @@ theorem isUnit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
   | ⟨_, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg Units.val) (congr_arg Units.val)
 #align int.is_unit_eq_one_or Int.isUnit_eq_one_or
 
-@[simp]
-theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
-  rcases units_eq_one_or u with rfl | rfl <;> decide
-
-@[simp]
-theorem neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
-
-theorem units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
-  rcases units_eq_one_or u with rfl | rfl <;>
-  rcases units_eq_one_or u' with rfl | rfl <;>
-  decide
-
 theorem isUnit_iff {a : ℤ} : IsUnit a ↔ a = 1 ∨ a = -1 := by
   refine' ⟨fun h => isUnit_eq_one_or h, fun h => _⟩
   rcases h with (rfl | rfl)
