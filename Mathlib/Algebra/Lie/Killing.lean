@@ -80,8 +80,7 @@ lemma traceForm_apply_lie_apply (x y z : L) :
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEndomorphism_of_isNilpotent₂ R L M x y
 
-/-- This is barely worth having since it follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
-except over non-reduced rings. -/
+-- This is barely worth having: it usually follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
 @[simp] lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
     traceForm R L M = 0 := by
   ext x y
@@ -181,6 +180,7 @@ namespace LieAlgebra
 NB: The is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
 class IsKilling : Prop :=
+  /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
@@ -189,6 +189,8 @@ instance IsKilling.isSemisimple [IsKilling R L] : IsSemisimple R L := by
   refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
   rw [eq_bot_iff, ← IsKilling.killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
+
+-- TODO: formalize a positive-characteristic counterexample to the above instance
 
 end LieAlgebra
 
