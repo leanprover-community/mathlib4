@@ -495,10 +495,10 @@ theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous, then the limit is continuous. -/
-theorem Filter.Tendsto.continuous_of_equicontinuous_at {l : Filter ι} [l.NeBot] {F : ι → X → α}
+theorem Filter.Tendsto.continuous_of_equicontinuousAt {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : Equicontinuous F) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x => h₁.continuousAt_of_equicontinuousAt (h₂ x)
-#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuous_at
+#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuousAt
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
