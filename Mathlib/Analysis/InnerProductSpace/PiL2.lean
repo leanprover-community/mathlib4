@@ -166,12 +166,12 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
 #align finrank_euclidean_space_fin finrank_euclideanSpace_fin
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = Matrix.dotProduct (star <| PiLp.equiv _ _ x) (PiLp.equiv _ _ y) :=
+    ⟪x, y⟫ = Matrix.dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
   rfl
 #align euclidean_space.inner_eq_star_dot_product EuclideanSpace.inner_eq_star_dotProduct
 
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(PiLp.equiv 2 _).symm x, (PiLp.equiv 2 _).symm y⟫ = Matrix.dotProduct (star x) y :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = Matrix.dotProduct (star x) y :=
   rfl
 #align euclidean_space.inner_pi_Lp_equiv_symm EuclideanSpace.inner_piLp_equiv_symm
 
@@ -227,7 +227,7 @@ variable {ι 𝕜}
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a linear map. -/
 @[simps!]
 def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :=
-  (LinearMap.proj i).comp (PiLp.linearEquiv 2 𝕜 fun _ : ι => 𝕜 : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
+  (LinearMap.proj i).comp (WithLp.linearEquiv 2 𝕜 (ι → 𝕜) : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
 #align euclidean_space.projₗ EuclideanSpace.projₗ
 #align euclidean_space.projₗ_apply EuclideanSpace.projₗ_apply
 
@@ -245,25 +245,25 @@ def EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 :=
 /-- The vector given in euclidean space by being `1 : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
 all other coordinates. -/
 def EuclideanSpace.single [DecidableEq ι] (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι :=
-  (PiLp.equiv _ _).symm (Pi.single i a)
+  (WithLp.equiv _ _).symm (Pi.single i a)
 #align euclidean_space.single EuclideanSpace.single
 
 @[simp]
-theorem PiLp.equiv_single [DecidableEq ι] (i : ι) (a : 𝕜) :
-    PiLp.equiv _ _ (EuclideanSpace.single i a) = Pi.single i a :=
+theorem WithLp.equiv_single [DecidableEq ι] (i : ι) (a : 𝕜) :
+    WithLp.equiv _ _ (EuclideanSpace.single i a) = Pi.single i a :=
   rfl
-#align pi_Lp.equiv_single PiLp.equiv_single
+#align pi_Lp.equiv_single WithLp.equiv_single
 
 @[simp]
-theorem PiLp.equiv_symm_single [DecidableEq ι] (i : ι) (a : 𝕜) :
-    (PiLp.equiv _ _).symm (Pi.single i a) = EuclideanSpace.single i a :=
+theorem WithLp.equiv_symm_single [DecidableEq ι] (i : ι) (a : 𝕜) :
+    (WithLp.equiv _ _).symm (Pi.single i a) = EuclideanSpace.single i a :=
   rfl
-#align pi_Lp.equiv_symm_single PiLp.equiv_symm_single
+#align pi_Lp.equiv_symm_single WithLp.equiv_symm_single
 
 @[simp]
 theorem EuclideanSpace.single_apply [DecidableEq ι] (i : ι) (a : 𝕜) (j : ι) :
     (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
-  rw [EuclideanSpace.single, PiLp.equiv_symm_apply, ← Pi.single_apply i a j]
+  rw [EuclideanSpace.single, WithLp.equiv_symm_pi_apply, ← Pi.single_apply i a j]
 #align euclidean_space.single_apply EuclideanSpace.single_apply
 
 theorem EuclideanSpace.inner_single_left [DecidableEq ι] (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
@@ -351,14 +351,14 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
       classical
-        rw [← LinearMap.cancel_right (PiLp.linearEquiv 2 𝕜 (fun _ => 𝕜)).symm.surjective]
+        rw [← LinearMap.cancel_right (WithLp.linearEquiv 2 𝕜 (_ → 𝕜)).symm.surjective]
         simp only [LinearIsometryEquiv.toLinearEquiv_symm]
         refine LinearMap.pi_ext fun i k => ?_
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, SMulHomClass.map_smul, LinearEquiv.coe_coe,
-          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, PiLp.equiv_symm_single,
+          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_single,
           LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
         rw [h]
 
@@ -972,20 +972,20 @@ variable [Fintype m] [Fintype n] [DecidableEq n]
 /-- `Matrix.toLin'` adapted for `EuclideanSpace 𝕜 _`. -/
 def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
   Matrix.toLin' ≪≫ₗ
-    LinearEquiv.arrowCongr (PiLp.linearEquiv _ 𝕜 fun _ : n => 𝕜).symm
-      (PiLp.linearEquiv _ 𝕜 fun _ : m => 𝕜).symm
+    LinearEquiv.arrowCongr (WithLp.linearEquiv _ 𝕜 (n → 𝕜)).symm
+      (WithLp.linearEquiv _ 𝕜 (m → 𝕜)).symm
 #align matrix.to_euclidean_lin Matrix.toEuclideanLin
 
 @[simp]
 theorem toEuclideanLin_piLp_equiv_symm (A : Matrix m n 𝕜) (x : n → 𝕜) :
-    Matrix.toEuclideanLin A ((PiLp.equiv _ _).symm x) =
-      (PiLp.equiv _ _).symm (Matrix.toLin' A x) :=
+    Matrix.toEuclideanLin A ((WithLp.equiv _ _).symm x) =
+      (WithLp.equiv _ _).symm (Matrix.toLin' A x) :=
   rfl
 #align matrix.to_euclidean_lin_pi_Lp_equiv_symm Matrix.toEuclideanLin_piLp_equiv_symm
 
 @[simp]
 theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    PiLp.equiv _ _ (Matrix.toEuclideanLin A x) = Matrix.toLin' A (PiLp.equiv _ _ x) :=
+    WithLp.equiv _ _ (Matrix.toEuclideanLin A x) = Matrix.toLin' A (WithLp.equiv _ _ x) :=
   rfl
 #align matrix.pi_Lp_equiv_to_euclidean_lin Matrix.piLp_equiv_toEuclideanLin
 
@@ -999,7 +999,7 @@ theorem toEuclideanLin_eq_toLin :
 end Matrix
 
 local notation "⟪" x ", " y "⟫ₑ" =>
-  @inner 𝕜 _ _ (Equiv.symm (PiLp.equiv 2 _) x) (Equiv.symm (PiLp.equiv 2 _) y)
+  @inner 𝕜 _ _ (Equiv.symm (WithLp.equiv 2 _) x) (Equiv.symm (WithLp.equiv 2 _) y)
 
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
