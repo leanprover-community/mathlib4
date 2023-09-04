@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
