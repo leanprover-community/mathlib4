@@ -854,11 +854,11 @@ theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f :
 #align add_monoid_hom_class.uniform_continuous_of_bound AddMonoidHomClass.uniformContinuous_of_bound
 
 @[to_additive IsCompact.exists_bound_of_continuousOn]
-theorem IsCompact.exists_bound_of_continuous_on' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
+theorem IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
     {f : α → E} (hf : ContinuousOn f s) : ∃ C, ∀ x ∈ s, ‖f x‖ ≤ C :=
   (bounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).bounded).imp fun _C hC _x hx =>
     hC _ <| Set.mem_image_of_mem _ hx
-#align is_compact.exists_bound_of_continuous_on' IsCompact.exists_bound_of_continuous_on'
+#align is_compact.exists_bound_of_continuous_on' IsCompact.exists_bound_of_continuousOn'
 #align is_compact.exists_bound_of_continuous_on IsCompact.exists_bound_of_continuousOn
 
 @[to_additive]
