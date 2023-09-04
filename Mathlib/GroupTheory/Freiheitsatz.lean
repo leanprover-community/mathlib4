@@ -35,4 +35,10 @@ theorem lift_of (f : α → G) (hf : FreeGroup.lift f r = 1) (x : α) :
     lift f hf (of x) = f x := by
   rw [lift, of, QuotientGroup.lift_mk', FreeGroup.lift.of]
 
+@[ext high]
+theorem hom_ext {f g : OneRelator r →* G} (h : ∀ x, f (of x) = g (of x)) : f = g := by
+  delta OneRelator
+  ext
+  exact h _
+
 end OneRelator
