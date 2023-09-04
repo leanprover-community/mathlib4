@@ -241,7 +241,7 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
-    ↑(toEven Q (reverse (Q := Q) (involute x))) =
+    ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
   induction x using CliffordAlgebra.induction
   case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]

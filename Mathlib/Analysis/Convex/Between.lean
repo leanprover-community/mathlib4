@@ -274,14 +274,14 @@ theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
   rw [Wbtw, Wbtw, affineSegment_comm]
 #align wbtw_comm wbtw_comm
 
-alias wbtw_comm ↔ Wbtw.symm _
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
 #align wbtw.symm Wbtw.symm
 
 theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
   rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
 #align sbtw_comm sbtw_comm
 
-alias sbtw_comm ↔ Sbtw.symm _
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 #align sbtw.symm Sbtw.symm
 
 variable (R)

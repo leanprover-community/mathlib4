@@ -29,11 +29,13 @@ such a structure could be used as a basis for the *definition* of homology.
 
 -/
 
+universe v u
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (S : ShortComplex C)
   {S₁ S₂ S₃ S₄ : ShortComplex C}
 
 namespace ShortComplex
@@ -56,8 +58,8 @@ attribute [reassoc (attr := simp)] HomologyData.comm
 
 variable (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
 
-/-- An homology map data for a morphism `φ : S₁ ⟶ S₂` where both `S₁` and `S₂` are
-equipped with homology data consist of left and right homology map data. -/
+/-- A homology map data for a morphism `φ : S₁ ⟶ S₂` where both `S₁` and `S₂` are
+equipped with homology data consists of left and right homology map data. -/
 structure HomologyMapData where
   /-- a left homology map data -/
   left : LeftHomologyMapData φ h₁.left h₂.left
@@ -195,7 +197,7 @@ end HomologyData
 
 /-- A short complex `S` has homology when there exists a `S.HomologyData` -/
 class HasHomology : Prop where
-  /-- the condition that there exists an homology data -/
+  /-- the condition that there exists a homology data -/
   condition : Nonempty S.HomologyData
 
 end ShortComplex
