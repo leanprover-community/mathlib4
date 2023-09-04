@@ -14,7 +14,7 @@ that `F` sends morphisms in `W₁` to morphisms in `W₂`.
 
 If `Φ : LocalizerMorphism W₁ W₂`, we introduce the condition
 `Φ.IsLocalizedEquivalence` which expresses that the induced functor
-on the localized categories is a equivalence. This condition is
+on the localized categories is an equivalence. This condition is
 independent of the choice of the localized categories.
 
 ## References
