@@ -30,6 +30,18 @@ theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
 #align int.units_eq_one_or Int.units_eq_one_or
 
+@[simp]
+theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
+  rcases units_eq_one_or u with rfl | rfl <;> decide
+
+@[simp]
+theorem neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
+
+theorem units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
+  rcases units_eq_one_or u with rfl | rfl <;>
+  rcases units_eq_one_or u' with rfl | rfl <;>
+  decide
+
 theorem isUnit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
   | ⟨_, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg Units.val) (congr_arg Units.val)
 #align int.is_unit_eq_one_or Int.isUnit_eq_one_or
@@ -88,7 +100,7 @@ theorem isUnit_iff_natAbs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by
   simp [natAbs_eq_iff, isUnit_iff, Nat.cast_zero]
 #align int.is_unit_iff_nat_abs_eq Int.isUnit_iff_natAbs_eq
 
-alias isUnit_iff_natAbs_eq ↔ IsUnit.natAbs_eq _
+alias ⟨IsUnit.natAbs_eq, _⟩ := isUnit_iff_natAbs_eq
 #align int.is_unit.nat_abs_eq Int.IsUnit.natAbs_eq
 
 -- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,
