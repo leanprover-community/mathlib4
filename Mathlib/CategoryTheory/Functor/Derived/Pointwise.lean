@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
 namespace CategoryTheory
 
@@ -8,9 +9,6 @@ namespace Functor
 
 variable {C D H : Type _} [Category C] [Category D] [Category H]
   (F : C ⥤ H) (L : C ⥤ D) (W : MorphismProperty C)
-
-abbrev HasPointwiseLeftKanExtensionAt (Y : D) :=
-  HasColimit (CostructuredArrow.proj L Y ⋙ F)
 
 class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
   hasColimit' : F.HasPointwiseLeftKanExtensionAt W.Q (W.Q.obj X)
@@ -22,7 +20,7 @@ class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
 
 section
 
-variable [∀ X, F.HasPointwiseRightDerivedFunctorAt W X] :
+variable [∀ X, F.HasPointwiseRightDerivedFunctorAt W X]
 
 lemma hasRightDerivedFunctor_of_pointwise :
     F.HasRightDerivedFunctor W := sorry
