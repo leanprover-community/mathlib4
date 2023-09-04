@@ -89,7 +89,7 @@ instance : MonadLift m (Nondet m) where
 Lift a list of monadic values to a nondeterministic value.
 We ensure that each monadic value is evaluated with the same backtrackable state.
 -/
-def ofMLList [Alternative m] (L : List (m α)) : Nondet m α :=
+def ofListM [Alternative m] (L : List (m α)) : Nondet m α :=
   MLList.squash fun _ => do
     let s ← saveState
     return MLList.ofList L |>.mapM fun x => do
@@ -102,18 +102,12 @@ Lift a list of values to a nondeterministic value.
 (The backtrackable state in each will be identical:
 whatever the state was when we first read from the result.)
 -/
-def ofList [Alternative m] (L : List α) : Nondet m α := ofMLList (L.map pure)
+def ofList [Alternative m] (L : List α) : Nondet m α := ofListM (L.map pure)
 
 /--
 Squash a monadic nondeterministic value to a nondeterministic value.
 -/
 def squash (L : Unit → m (Nondet m α)) : Nondet m α := MLList.squash L
-
-/--
-Lift a list of monadic values in the monad to a nondeterministic value.
--/
-def ofMLList' [Alternative m] (L : m (List (m α))) : Nondet m α :=
-  .squash fun _ => (.ofMLList <$> L)
 
 /-- Apply a function which returns values in the monad to every alternative of a `Nondet m α`. -/
 partial def mapM (f : α → m β) (L : Nondet m α) : Nondet m β :=

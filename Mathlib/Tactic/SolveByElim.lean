@@ -34,8 +34,8 @@ calls to `apply` succeeded or failed.
 def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
     (lemmas : List Expr) :
     MVarId → Nondet MetaM (List MVarId) :=
-  fun g => Nondet.ofListM <|
-    lemmas.map fun e =>
+  fun g =>
+    (Nondet.ofList lemmas).filterMapM fun e => try? do
       withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
         let goals ← withTransparency transparency (g.apply e cfg)
         -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
@@ -187,7 +187,7 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
 def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (g : MVarId) : Nondet MetaM (List MVarId) := Nondet.squash do
+    (g : MVarId) : Nondet MetaM (List MVarId) := Nondet.squash fun _ => do
   -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
   -- This has better performance that the mathlib3 approach.
   let g ← if cfg.symm then g.symmSaturate else pure g
