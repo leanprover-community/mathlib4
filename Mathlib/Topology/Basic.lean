@@ -1146,17 +1146,29 @@ theorem Ultrafilter.clusterPt_iff {x : α} {f : Ultrafilter α} : ClusterPt x f 
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
 #align ultrafilter.cluster_pt_iff Ultrafilter.clusterPt_iff
 
+theorem clusterPt_iff_ultrafilter {x : α} {f : Filter α} : ClusterPt x f ↔
+    ∃ u : Ultrafilter α, u ≤ f ∧ u ≤ 𝓝 x := by
+  simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
+
 /-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
 of `map u F`. -/
 def MapClusterPt {ι : Type*} (x : α) (F : Filter ι) (u : ι → α) : Prop :=
   ClusterPt x (map u F)
 #align map_cluster_pt MapClusterPt
 
+theorem mapClusterPt_def {ι : Type*} (x : α) (F : Filter ι) (u : ι → α) :
+    MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+
 theorem mapClusterPt_iff {ι : Type*} (x : α) (F : Filter ι) (u : ι → α) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
   rfl
 #align map_cluster_pt_iff mapClusterPt_iff
+
+theorem mapClusterPt_iff_ultrafilter {ι : Type*} {x : α} {F : Filter ι} {φ : ι → α} :
+    MapClusterPt x F φ ↔ ∃ u : Ultrafilter ι, u ≤ F ∧ Tendsto φ u (𝓝 x) := by
+  simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
+    ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
 theorem mapClusterPt_of_comp {ι δ : Type*} {F : Filter ι} {φ : δ → ι} {p : Filter δ} {x : α}
     {u : ι → α} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
