@@ -12,4 +12,4 @@ def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop := sorry
 
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop := sorry
 
-def Dirac {G : SimpleGraph V} (degree_condition : sorry) : G.IsHamiltonian := sorry
+theorem Dirac {G : SimpleGraph V} (degree_condition : sorry) : G.IsHamiltonian := sorry
