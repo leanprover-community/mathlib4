@@ -1819,34 +1819,23 @@ theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u})
   exact choice_mem_aux x h y yx
 #align Set.choice_mem ZFSet.choice_mem
 
-/-- The noncomputable inverse of `ZFSet.toSet` as an equivalence. -/
-noncomputable def fromSet: { s : Set ZFSet.{u} // Small.{u} s } ≃ ZFSet.{u} :=
-  let toFun | ⟨s, h⟩ => ZFSet.mk (PSet.mk (Shrink s) fun x => ((equivShrink s).symm x).1.out)
-  let invFun | s => ⟨s.toSet, s.small_toSet⟩
-  have left_inv := by
-    intro ⟨s, h⟩
+private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
+  (mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
-    simp only [ZFSet.mem_toSet]
-    constructor
-    · intro xs
-      rw [←ZFSet.mk_out x, ZFSet.mk_mem_iff] at xs
-      dsimp [Membership.mem, PSet.Mem] at xs
-      rcases xs with ⟨b, h2⟩
-      rw [←ZFSet.eq, ZFSet.mk_out, ZFSet.mk_out] at h2
+    rw [mem_toSet, ←mk_out x, mk_mem_iff, mk_out]
+    refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    · rintro ⟨b, h2⟩
+      rw [←ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]
-    · intro xs
-      rw [←ZFSet.mk_out x, ZFSet.mk_mem_iff]
-      use (equivShrink s) (Subtype.mk x xs)
-      simp [PSet.Equiv.refl]
-  {
-    toFun := toFun
-    invFun := invFun
-    left_inv := left_inv
-    right_inv := by
-      apply Function.rightInverse_of_injective_of_leftInverse
-      · intro x y
-        simp
-      apply left_inv
-  }
+    · simp [PSet.Equiv.refl]
+
+/-- `ZFSet.toSet` as an equivalence. -/
+@[simps apply_coe]
+noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
+  toFun x := ⟨x.toSet, x.small_toSet⟩
+  invFun := λ ⟨s, h⟩ ↦ mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
+    λ s ↦ Subtype.coe_injective $ toSet_equiv_aux s.2
+  right_inv s := Subtype.coe_injective $ toSet_equiv_aux s.2
 
 end ZFSet
