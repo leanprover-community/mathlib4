@@ -180,6 +180,7 @@ import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupRingAction.Basic
@@ -249,8 +250,11 @@ import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Refinements
 import Mathlib.Algebra.Homology.ShortComplex.Ab
+=======
+>>>>>>> origin
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
@@ -781,6 +785,7 @@ import Mathlib.Analysis.NormedSpace.CompactOperator
 import Mathlib.Analysis.NormedSpace.Complemented
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
+import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.Analysis.NormedSpace.ContinuousAffineMap
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Dual
@@ -1244,12 +1249,15 @@ import Mathlib.CategoryTheory.RespectsIso
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.CategoryTheory.Shift.Linear
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Shift.ShiftedHom
+=======
+>>>>>>> origin
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
@@ -2091,6 +2099,7 @@ import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Coprod
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
@@ -2518,6 +2527,7 @@ import Mathlib.MeasureTheory.Integral.CircleTransform
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.Indicator
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Integral.IntervalAverage
@@ -2642,6 +2652,7 @@ import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Units
@@ -2705,6 +2716,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.CompletePartialOrder
 import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
@@ -2798,6 +2810,7 @@ import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 import Mathlib.Order.SuccPred.Relation
+import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
@@ -3208,7 +3221,6 @@ import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
-import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic

@@ -351,6 +351,9 @@ def generate (g : Set (Set α)) : Filter α where
   inter_sets := GenerateSets.inter
 #align filter.generate Filter.generate
 
+lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
+    U ∈ generate s := GenerateSets.basic h
+
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
   Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
