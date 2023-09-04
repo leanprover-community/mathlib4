@@ -9,6 +9,11 @@ open Category Localization
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
+@[simp]
+lemma Localization.isoOfHom_id (L : C₁ ⥤ C₂) (W : MorphismProperty C₁)
+    [L.IsLocalization W] (X : C₁) (hX : W (𝟙 X)) :
+    isoOfHom L W (𝟙 X) hX = Iso.refl _ := by aesop_cat
+
 lemma Arrow.cases (f : Arrow C₁) : ∃ (X Y : C₁) (g : X ⟶ Y), f = Arrow.mk g := ⟨_, _, f.hom, rfl⟩
 lemma Arrow.hom_cases {f g : Arrow C₁} (φ : f ⟶ g) :
   ∃ (φ₁ : f.left ⟶ g.left) (φ₂ : f.right ⟶ g.right) (comm : φ₁ ≫ g.hom = f.hom ≫ φ₂),
@@ -66,22 +71,25 @@ noncomputable def fromRightResolution : Φ.RightResolution X₂ ⥤
   obj := FromRightResolution.obj Φ e g
   map := FromRightResolution.map Φ e g
 
-/-set_option maxHeartbeats 800000 in
+-- this is extravagant...
+set_option maxHeartbeats 1600000 in
 @[simps]
-def precompJDownwards (γ : X₂' ⟶ X₂) :
-    TwoSquare.JDownwards e.hom g ⥤ TwoSquare.JDownwards e.hom (L₂.map γ ≫ g) where
+def precompJDownwards (γ : X₂' ⟶ X₂) (g' : L₂.obj X₂' ⟶ F.obj X₃) (hg' : L₂.map γ ≫ g = g'):
+    TwoSquare.JDownwards e.hom g ⥤ TwoSquare.JDownwards e.hom g' where
   obj f := CostructuredArrow.mk' (StructuredArrow.mk' f.left.right (γ ≫ f.left.hom))
-      (StructuredArrow.homMk f.hom.right (by simpa using L₂.map γ ≫= StructuredArrow.w f.hom))
+      (StructuredArrow.homMk f.hom.right (by
+        have eq := L₂.map γ ≫= StructuredArrow.w f.hom
+        dsimp at eq ⊢
+        simp only [Functor.map_comp, assoc] at eq ⊢
+        rw [eq, hg']))
   map {f₁ f₂} φ := CostructuredArrow.homMk (StructuredArrow.homMk φ.left.right) (by
     ext
     have eq := CostructuredArrow.w φ
     dsimp at eq ⊢
     rw [← eq]
-    rfl)-/
+    rfl)
 
-example : ℕ := 42
-
-/-lemma isConnected_JDownwards :
+lemma isConnected_JDownwards :
     IsConnected (TwoSquare.JDownwards e.hom g) := by
   have : Nonempty (TwoSquare.JDownwards e.hom g) :=
     ⟨(fromRightResolution Φ e g).obj (Classical.arbitrary _)⟩
@@ -158,24 +166,36 @@ example : ℕ := 42
       simp only [Functor.map_comp, isoOfHom_inv_hom_id_assoc]
       erw [e.inv.naturality f]
       rfl)
-  let κ : Φ.RightResolution d' ⥤ TwoSquare.JDownwards e.hom g := sorry
-  have hκ₁ : γ₀ ⟶ κ.obj R₁ := sorry
-  have hκ₂ : κ.obj R₂ ⟶ cgx' := sorry
+  let κ : Φ.RightResolution d' ⥤ TwoSquare.JDownwards e.hom g :=
+    fromRightResolution Φ e (e.hom.app c ≫ y') ⋙
+      precompJDownwards Φ e (e.hom.app c ≫ y') γ g comm
+  have hκ₁ : γ₀ ⟶ κ.obj R₁ := by
+    rw [hγ₀]
+    refine' CostructuredArrow.homMk (StructuredArrow.homMk (𝟙 _)) _
+    ext
+    apply F.map_injective
+    dsimp
+    simp
+  have hκ₂ : κ.obj R₂ ⟶ cgx' :=
+    CostructuredArrow.homMk (StructuredArrow.homMk (𝟙 _)) (by
+      ext
+      apply F.map_injective
+      dsimp
+      simp [hz])
   have zigzag₁ : Zigzag γ₀ cgx' :=
     (Relation.ReflTransGen.single (Or.inl ⟨hκ₁⟩) : Zigzag γ₀ (κ.obj R₁)).trans
       ((zigzag_obj_of_zigzag κ (isConnected_zigzag R₁ R₂)).trans (Relation.ReflTransGen.single (Or.inl ⟨hκ₂⟩)))
   have zigzag₂ : Zigzag cgx' cgx'' :=
     Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk (StructuredArrow.homMk f commf)⟩)
-  exact ⟨R₃, zigzag₁.trans (zigzag₂.trans (Relation.ReflTransGen.single (Or.inl ⟨hR₃⟩)))⟩-/
+  exact ⟨R₃, zigzag₁.trans (zigzag₂.trans (Relation.ReflTransGen.single (Or.inl ⟨hR₃⟩)))⟩
 
 end Constructor
 
-/-
 -- Kahn-Maltsiniotis, Lemme 6.5
 lemma mk' [CatCommSq Φ.functor L₁ L₂ F] : Φ.IsRightDerivabilityStructure := by
-  rw [Φ.isRightDerivabilityStructure_iff L₁ L₂ F (CatCommSq.iso _ _ _ _)]
-  rw [TwoSquare.guitartExact_iff_isConnected_downwards]
-  apply Constructor.isConnected_JDownwards-/
+  rw [Φ.isRightDerivabilityStructure_iff L₁ L₂ F (CatCommSq.iso _ _ _ _),
+    TwoSquare.guitartExact_iff_isConnected_downwards]
+  apply Constructor.isConnected_JDownwards
 
 end IsRightDerivabilityStructure
 
