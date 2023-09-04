@@ -8,7 +8,7 @@ import Mathlib.Data.Int.Parity
 /-!
 # Integer powers of (-1)
 
-This file defines the map `negOnePow : ℤ → ℤ` which sends `n` to `(-1 : Units ℤ) ^ n`.
+This file defines the map `negOnePow : ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`.
 
 The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
