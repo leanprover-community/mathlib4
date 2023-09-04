@@ -86,6 +86,10 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
+
       - name: install elan
         run: |
           set -o pipefail
@@ -101,12 +105,20 @@ jobs:
         run: |
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            echo "Uninstalling transient toolchain `cat lean-toolchain`"
+            elan toolchain uninstall `cat lean-toolchain`
+          fi
+
       - name: get cache
         run: |
           lake exe cache clean
           lake exe cache get
 
       - name: build mathlib
+        id: build
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
@@ -140,13 +152,27 @@ jobs:
           build/bin/checkYaml
 
       - name: test mathlib
+        id: test
         run: make -j 8 test
 
       - name: lint mathlib
+        id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 make lint
+
+      - name: Post comments for lean-pr-testing branch
+        if: always()
+        env:
+          TOKEN: ${{ secrets.LEAN_PR_TESTING }}
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          TEST_OUTCOME: ${{ steps.test.outcome }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+        run: |
+          scripts/lean-pr-testing-comments.sh
 
   final:
     name: Post-CI jobJOB_NAME

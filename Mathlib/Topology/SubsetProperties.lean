@@ -32,11 +32,13 @@ We define the following properties for sets in a topological space:
 
 For each of these definitions (except for `IsClopen`), we also have a class stating that the whole
 space satisfies that property:
-`CompactSpace`, `IrreducibleSpace`
+`CompactSpace`, `PreirreducibleSpace`, `IrreducibleSpace`.
 
-Furthermore, we have three more classes:
-* `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
-  neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
+Furthermore, we have four more classes:
+* `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
+* `LocallyCompactSpace`: for every point `x`,
+  every open neighborhood of `x` contains a compact neighborhood of `x`.
+  The definition is formulated in terms of the neighborhood filter.
 * `SigmaCompactSpace`: a space that is the union of a countably many compact subspaces;
 * `NoncompactSpace`: a space that is not a compact space.
 
@@ -1092,10 +1094,50 @@ instance Quotient.compactSpace {s : Setoid α} [CompactSpace α] : CompactSpace 
   Quot.compactSpace
 #align quotient.compact_space Quotient.compactSpace
 
-/-- There are various definitions of "locally compact space" in the literature, which agree for
-Hausdorff spaces but not in general. This one is the precise condition on X needed for the
-evaluation `map C(X, Y) × X → Y` to be continuous for all `Y` when `C(X, Y)` is given the
-compact-open topology. -/
+/-- We say that a topological space is a *weakly locally compact space*,
+if each point of this space admits a compact neighborhood. -/
+class WeaklyLocallyCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
+  /-- Every point of a weakly locally compact space admits a compact neighborhood. -/
+  exists_compact_mem_nhds (x : α) : ∃ s, IsCompact s ∧ s ∈ 𝓝 x
+
+export WeaklyLocallyCompactSpace (exists_compact_mem_nhds)
+#align exists_compact_mem_nhds WeaklyLocallyCompactSpace.exists_compact_mem_nhds
+
+instance [WeaklyLocallyCompactSpace α] [WeaklyLocallyCompactSpace β] :
+    WeaklyLocallyCompactSpace (α × β) where
+  exists_compact_mem_nhds x :=
+    let ⟨s₁, hc₁, h₁⟩ := exists_compact_mem_nhds x.1
+    let ⟨s₂, hc₂, h₂⟩ := exists_compact_mem_nhds x.2
+    ⟨s₁ ×ˢ s₂, hc₁.prod hc₂, prod_mem_nhds h₁ h₂⟩
+
+instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
+    [(i : ι) → WeaklyLocallyCompactSpace (X i)] :
+    WeaklyLocallyCompactSpace ((i : ι) → X i) where
+  exists_compact_mem_nhds := fun f ↦ by
+    choose s hsc hs using fun i ↦ exists_compact_mem_nhds (f i)
+    exact ⟨pi univ s, isCompact_univ_pi hsc, set_pi_mem_nhds univ.toFinite fun i _ ↦ hs i⟩
+
+instance (priority := 100) [CompactSpace α] : WeaklyLocallyCompactSpace α where
+  exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩
+
+/-- In a weakly locally compact space,
+every compact set is contained in the interior of a compact set. -/
+theorem exists_compact_superset [WeaklyLocallyCompactSpace α] {K : Set α} (hK : IsCompact K) :
+    ∃ K', IsCompact K' ∧ K ⊆ interior K' := by
+  choose s hc hmem using fun x : α ↦ exists_compact_mem_nhds x
+  rcases hK.elim_nhds_subcover _ fun x _ ↦ interior_mem_nhds.2 (hmem x) with ⟨I, -, hIK⟩
+  refine ⟨⋃ x ∈ I, s x, I.isCompact_biUnion fun _ _ ↦ hc _, hIK.trans ?_⟩
+  exact iUnion₂_subset fun x hx ↦ interior_mono <| subset_iUnion₂ (s := fun x _ ↦ s x) x hx
+#align exists_compact_superset exists_compact_superset
+
+/-- There are various definitions of "locally compact space" in the literature,
+which agree for Hausdorff spaces but not in general.
+This one is the precise condition on X needed
+for the evaluation map `C(X, Y) × X → Y` to be continuous for all `Y`
+when `C(X, Y)` is given the compact-open topology.
+
+See also `WeaklyLocallyCompactSpace`, a typeclass that only assumes
+that each point has a compact neighborhood. -/
 class LocallyCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- In a locally compact space,
     every neighbourhood of every point contains a compact neighbourhood of that same point. -/
@@ -1188,11 +1230,10 @@ theorem exists_compact_subset [LocallyCompactSpace α] {x : α} {U : Set α} (hU
   exact ⟨K, h3K, mem_interior_iff_mem_nhds.2 h1K, h2K⟩
 #align exists_compact_subset exists_compact_subset
 
-/-- In a locally compact space every point has a compact neighborhood. -/
-theorem exists_compact_mem_nhds [LocallyCompactSpace α] (x : α) : ∃ K, IsCompact K ∧ K ∈ 𝓝 x :=
-  let ⟨K, hKc, hx, _⟩ := exists_compact_subset isOpen_univ (mem_univ x)
-  ⟨K, hKc, mem_interior_iff_mem_nhds.1 hx⟩
-#align exists_compact_mem_nhds exists_compact_mem_nhds
+instance (priority := 100) [LocallyCompactSpace α] : WeaklyLocallyCompactSpace α where
+  exists_compact_mem_nhds (x : α) :=
+    let ⟨K, hKc, hx, _⟩ := exists_compact_subset isOpen_univ (mem_univ x)
+    ⟨K, hKc, mem_interior_iff_mem_nhds.1 hx⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
@@ -1207,13 +1248,6 @@ theorem exists_compact_between [hα : LocallyCompactSpace α] {K U : Set α} (hK
   rcases mem_iUnion₂.1 (ht hx) with ⟨y, hyt, hy⟩
   exact interior_mono (subset_iUnion₂ y hyt) hy
 #align exists_compact_between exists_compact_between
-
-/-- In a locally compact space, every compact set is contained in the interior of a compact set. -/
-theorem exists_compact_superset [LocallyCompactSpace α] {K : Set α} (hK : IsCompact K) :
-    ∃ K', IsCompact K' ∧ K ⊆ interior K' :=
-  let ⟨L, hLc, hKL, _⟩ := exists_compact_between hK isOpen_univ K.subset_univ
-  ⟨L, hLc, hKL⟩
-#align exists_compact_superset exists_compact_superset
 
 protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace β] {f : α → β}
     (hf : ClosedEmbedding f) : LocallyCompactSpace α :=
@@ -1541,8 +1575,8 @@ theorem mem_diff_shiftr_find (x : α) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr
 
 /-- A choice of an
 [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets)
-of a locally compact sigma compact space. -/
-noncomputable def choice (X : Type*) [TopologicalSpace X] [LocallyCompactSpace X]
+of a weakly locally compact σ-compact space. -/
+noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] : CompactExhaustion X := by
   apply Classical.choice
   let K : ℕ → { s : Set X // IsCompact s } := fun n =>
