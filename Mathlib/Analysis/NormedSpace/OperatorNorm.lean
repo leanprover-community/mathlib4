@@ -2066,7 +2066,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_have 6 ↔ 8
   · simp_rw [bddAbove_def, Set.forall_range_iff]
   tfae_have 8 ↔ 9
-  · rw [ENNReal.iSup_coe_lt_top (fun i ↦ ‖f i‖₊), ← NNReal.bddAbove_coe, ← Set.range_comp]
+  · rw [ENNReal.iSup_coe_lt_top, ← NNReal.bddAbove_coe, ← Set.range_comp]
     rfl
   -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
   -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns
