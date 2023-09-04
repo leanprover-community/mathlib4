@@ -5,7 +5,6 @@ Authors: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Tactic.Eqns
-import Mathlib.Data.Subtype
 
 /-!
 # Irreducible definitions
