@@ -66,7 +66,8 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : �
 
 end
 
-variable {X 𝕜 E : Type*} [PseudoEMetricSpace X] [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) {X E : Type*}
+  [PseudoEMetricSpace X] [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f : X → X} {g : X → E} {l : X → E}
 
 theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : UniformContinuous g) :
@@ -90,4 +91,4 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
 theorem isClosed_setOf_tendsto_birkhoffAverage
     (hf : LipschitzWith 1 f) (hg : UniformContinuous g) (hl : Continuous l) :
     IsClosed {x | Tendsto (birkhoffAverage 𝕜 f g · x) atTop (𝓝 (l x))} :=
-  (uniformEquicontinuous_birkhoffAverage hf hg).equicontinuous.isClosed_setOf_tendsto hl 
+  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOf_tendsto hl 

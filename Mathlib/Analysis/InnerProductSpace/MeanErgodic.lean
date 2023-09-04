@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Dynamics.BirkhoffSum.Average
+import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
 /-!
 # Mean Ergodic Theorem in a Hilbert Space
@@ -21,82 +21,45 @@ converge to the orthogonal projection of `x` to the subspace of fixed points of 
 open Filter Finset Function
 open scoped BigOperators Topology
 
-variable {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [CompleteSpace E]
+variable {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E]
+
+theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace 𝕜 E]
+    (f : E →ₗ[𝕜] E) (hf : LipschitzWith 1 f) (g : E →L[𝕜] LinearMap.eqLocus f 1)
+    (hg_proj : ∀ x : LinearMap.eqLocus f 1, g x = x)
+    (hg_ker : (LinearMap.ker g : Set E) ⊆ closure (LinearMap.range (f - 1))) (x : E) :
+    Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 (g x)) := by
+  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y, g y = 0 ∧ ∃ z, IsFixedPt f z ∧ x = y + z :=
+    ⟨x - g x, by simp [hg_proj], g x, (g x).2, by simp⟩
+  suffices : Tendsto (birkhoffAverage 𝕜 f _root_.id · y) atTop (𝓝 0)
+  · have hgz : g z = z := congr_arg Subtype.val (hg_proj ⟨z, hz⟩)
+    simpa [hy, hgz, birkhoffAverage, birkhoffSum, Finset.sum_add_distrib, smul_add]
+      using this.add (hz.tendsto_birkhoffAverage 𝕜 _root_.id)
+  have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
+    isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
+  refine closure_minimal (Set.forall_range_iff.2 fun x ↦ ?_) this (hg_ker hy)
+  have : Metric.Bounded (Set.range (_root_.id <| f^[·] x)) :=
+    bounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_range_iff.2 fun n ↦ by
+      have H : f^[n] 0 = 0 := (f : E →+ E).iterate_map_zero n
+      simpa [H] using (hf.iterate n).dist_le_mul x 0⟩
+  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := (f : E →+ E).iterate_map_sub
+  simpa [birkhoffAverage, birkhoffSum, Finset.sum_sub_distrib, smul_sub, H]
+    using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 this
+
+variable  [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 theorem LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection (f : E →ₗᵢ[𝕜] E) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
       (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
-  set S := LinearMap.eqLocus f 1
-  set P := orthogonalProjection S
-  set g := f.toContinuousLinearMap
-  suffices : Tendsto (ContinuousLinearMap.apply 𝕜 E x <| birkhoffAverage 𝕜 (g * ·) _root_.id · 1)
-    atTop (𝓝 (P x))
-  · simp_rw [map_birkhoffAverage 𝕜 𝕜, birkhoffAverage_mul_left_one] at this
-    
-  
-
-theorem LinearIsometry.tendsto_inv_smul_sum_range_pow_apply_orthogonalProjection'
-    (f : E →ₗᵢ[𝕜] E) (x : E) :
-    Tendsto (fun N : ℕ ↦ (N : 𝕜)⁻¹ • ∑ n in range N, (f ^ n) x) atTop
-      (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
-  set S := LinearMap.eqLocus f 1
-  set P := orthogonalProjection S
-  set g := f.toContinuousLinearMap
-  set avg := fun N : ℕ ↦ (N : 𝕜)⁻¹ • ∑ n in range N, g ^ n
-  have havg_norm : ∀ N x, ‖avg N x‖ ≤ ‖x‖ := fun N x ↦
-    calc
-      ‖avg N x‖ = ‖∑ n in range N, (f^n) x‖ / N := by simp [norm_smul, div_eq_inv_mul]
-      _ ≤ (∑ n in range N, ‖(f ^ n) x‖) / N := by gcongr; apply norm_sum_le
-      _ = (N / N) * ‖x‖ := by simp only [norm_map]; simp [mul_div_right_comm]
-      _ ≤ ‖x‖ := mul_le_of_le_one_left (norm_nonneg _) (div_self_le_one _)
-  suffices : Tendsto (avg · x) atTop (𝓝 (P x))
-  · simpa using this
-  have havgS : ∀ (y : S) {N : ℕ}, N ≠ 0 → avg N y = y := fun y N hN ↦
-    calc
-      avg N y = (N : 𝕜)⁻¹ • (N : 𝕜) • y := by simp [iterate_fixed y.2, ← nsmul_eq_smul_cast]
-      _ = y := inv_smul_smul₀ (Nat.cast_ne_zero.2 hN) _
-  suffices : Tendsto (avg · (x - P x)) atTop (𝓝 0)
-  · refine tendsto_sub_nhds_zero_iff.1 (this.congr' <| (eventually_ne_atTop 0).mono fun N hN ↦ ?_)
-    simp only [map_sub, havgS _ hN]
-  -- TODO: move to a separate lemma; what's the right generality?
-  have H₁ : (LinearMap.range (1 - g))ᗮ = S
-  · ext x
-    suffices : (∀ (a : E), ⟪a, x⟫ = ⟪f a, x⟫) ↔ f x = x
-    · simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero]
-    refine ⟨fun h ↦ ?_, fun h a ↦ ?_⟩
-    · rw [← sub_eq_zero, ← inner_self_eq_zero (𝕜 := 𝕜), inner_sub_right,
-        inner_sub_left, inner_sub_left, f.inner_map_map, ← h, ← inner_conj_symm x (f x), ← h,
-        inner_self_conj, sub_self]
-    · rw [← f.inner_map_map, h]
-  have H₂ : Sᗮ = (LinearMap.range (1 - g)).topologicalClosure
-  · rw [← H₁, Submodule.orthogonal_orthogonal_eq_closure]
-  have H₃ : x - P x ∈ closure (LinearMap.range (1 - g))
-  · rw [← Submodule.topologicalClosure_coe, ← H₂]
-    apply sub_orthogonalProjection_mem_orthogonal
-  have H₄ : ∀ y, Tendsto (‖avg · (y - f y)‖) atTop (𝓝 0) := fun y ↦ by
-    have : ∀ N, avg N (y - f y) = (N : 𝕜) ⁻¹ • ((f ^ (0 : ℕ)) y - (f ^ N) y) := fun N ↦ by
-      rw [← sum_range_sub' (fun n : ℕ ↦ (f ^ n) y) N]
-      simp [pow_succ', ← smul_sub]
-    have : ∀ N : ℕ, ‖avg N (y - f y)‖ ≤ (N : ℝ)⁻¹ * (‖y‖ + ‖y‖)
-    · intro N
-      rw [this, norm_smul, norm_inv, IsROrC.norm_natCast]
-      gcongr
-      exact norm_sub_le_of_le (norm_map _ _).le (norm_map _ _).le
-    refine squeeze_zero (fun _ ↦ norm_nonneg _) this ?_
-    rw [← zero_mul (‖y‖ + ‖y‖)]
-    refine Tendsto.mul ?_ tendsto_const_nhds
-    exact tendsto_inv_atTop_zero.comp tendsto_nat_cast_atTop_atTop
-  refine NormedAddCommGroup.tendsto_nhds_zero.2 fun ε εpos ↦ ?_
-  rcases SeminormedAddCommGroup.mem_closure_iff.1 H₃ _ (half_pos εpos) with ⟨_, ⟨y, rfl⟩, hy⟩
-  refine ((H₄ y).eventually (gt_mem_nhds <| half_pos εpos)).mono fun N hN ↦ ?_
-  calc
-    ‖avg N (x - P x)‖ = ‖avg N (x - P x - (y - f y)) + avg N (y - f y)‖ := by
-      rw [map_sub _ (x - P x), sub_add_cancel]
-    _ ≤ ‖avg N (x - P x - (y - f y))‖ + ‖avg N (y - f y)‖ := norm_add_le _ _
-    _ ≤ ‖x - P x - (y - f y)‖ + ‖avg N (y - f y)‖ :=
-      add_le_add_right (havg_norm _ _) _
-    _ < ε / 2 + ε / 2 := add_lt_add hy hN
-    _ = ε := add_halves _
+  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure f.lipschitz
+  · exact orthogonalProjection_mem_subspace_eq_self (K := LinearMap.eqLocus f 1)
+  · clear x
+    rw [ker_orthogonalProjection, ← Submodule.topologicalClosure_coe, SetLike.coe_subset_coe,
+      ← Submodule.orthogonal_orthogonal_eq_closure]
+    refine Submodule.orthogonal_le fun x hx ↦ ?_
+    replace hx : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
+      simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
+    suffices ⟪f x - x, f x - x⟫ = 0 by simpa [sub_eq_zero] using this
+    rw [inner_sub_right, inner_sub_left, inner_sub_left, f.inner_map_map, hx,
+      ← inner_conj_symm x (f x), hx, inner_self_conj, sub_self]
