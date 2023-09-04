@@ -150,8 +150,8 @@ theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜
   simp only [this, lipschitzOnWith_iff_norm_sub_le, ApproximatesLinearOn]
 #align approximates_linear_on.approximates_linear_on_iff_lipschitz_on_with ApproximatesLinearOn.approximatesLinearOn_iff_lipschitzOnWith
 
-alias approximatesLinearOn_iff_lipschitzOnWith ↔
-  lipschitzOnWith _root_.LipschitzOnWith.approximatesLinearOn
+alias ⟨lipschitzOnWith, _root_.LipschitzOnWith.approximatesLinearOn⟩ :=
+  approximatesLinearOn_iff_lipschitzOnWith
 #align approximates_linear_on.lipschitz_on_with ApproximatesLinearOn.lipschitzOnWith
 #align lipschitz_on_with.approximates_linear_on LipschitzOnWith.approximatesLinearOn
 
@@ -482,7 +482,7 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
   have fg : EqOn f g s := fun x hx => by simp_rw [← uf hx, Pi.sub_apply, add_sub_cancel'_right]
   have hg : ApproximatesLinearOn g (f' : E →L[ℝ] F) univ (lipschitzExtensionConstant F * c) := by
     apply LipschitzOnWith.approximatesLinearOn
-    rw [lipschitz_on_univ]
+    rw [lipschitzOn_univ]
     convert hu
     ext x
     simp only [add_sub_cancel', ContinuousLinearEquiv.coe_coe, Pi.sub_apply]

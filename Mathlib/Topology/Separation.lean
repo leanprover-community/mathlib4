@@ -60,8 +60,9 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   these results are part of the typeclass inference system (e.g. `Embedding.t2Space`)
 * `Set.EqOn.closure`: If two functions are equal on some set `s`, they are equal on its closure.
 * `IsCompact.isClosed`: All compact sets are closed.
-* `locally_compact_of_compact_nhds`: If every point has a compact neighbourhood,
-  then the space is locally compact.
+* `WeaklyLocallyCompactSpace.locallyCompactSpace`: If a topological space is both
+  weakly locally compact (i.e., each point has a compact neighbourhood)
+  and is T₂, then it is locally compact.
 * `totallySeparatedSpace_of_t1_of_basis_clopen`: If `α` has a clopen basis, then
   it is a `TotallySeparatedSpace`.
 * `loc_compact_t2_tot_disc_iff_tot_sep`: A locally compact T₂ space is totally disconnected iff
@@ -109,7 +110,7 @@ theorem separatedNhds_iff_disjoint {s t : Set α} : SeparatedNhds s t ↔ Disjoi
     exists_and_left, and_assoc, and_comm, and_left_comm]
 #align separated_nhds_iff_disjoint separatedNhds_iff_disjoint
 
-alias separatedNhds_iff_disjoint ↔ SeparatedNhds.disjoint_nhdsSet _
+alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 
 namespace SeparatedNhds
 
@@ -1311,6 +1312,10 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
   Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
+theorem IsCompact.preimage_continuous [CompactSpace α] [T2Space β] {f : α → β} {s : Set β}
+    (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
+  (hs.isClosed.preimage hf).isCompact
+
 /-- If `V : ι → Set α` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
@@ -1408,13 +1413,13 @@ theorem IsCompact.finite_compact_cover [T2Space α] {s : Set α} (hs : IsCompact
 
 end
 
-/-- If every points of a Hausdorff space admits a compact neighborhood, then this space is locally
-compact. -/
-theorem locally_compact_of_compact_nhds [T2Space α] (h : ∀ x : α, ∃ s, s ∈ 𝓝 x ∧ IsCompact s) :
+-- see Note [lower instance priority]
+/-- A weakly locally compact Hausdorff space is locally compact. -/
+instance WeaklyLocallyCompactSpace.locallyCompactSpace [WeaklyLocallyCompactSpace α] [T2Space α] :
     LocallyCompactSpace α :=
   ⟨fun x _n hn =>
     let ⟨_u, un, uo, xu⟩ := mem_nhds_iff.mp hn
-    let ⟨k, kx, kc⟩ := h x
+    let ⟨k, kc, kx⟩ := exists_compact_mem_nhds x
     -- K is compact but not necessarily contained in N.
     -- K \ U is again compact and doesn't contain x, so
     -- we may find open sets V, W separating x from K \ U.
@@ -1425,30 +1430,30 @@ theorem locally_compact_of_compact_nhds [T2Space α] (h : ∀ x : α, ∃ s, s �
     have wn : wᶜ ∈ 𝓝 x :=
       mem_nhds_iff.mpr ⟨v, vw.subset_compl_right, vo, singleton_subset_iff.mp xv⟩
     ⟨k \ w, Filter.inter_mem kx wn, Subset.trans (diff_subset_comm.mp kuw) un, kc.diff wo⟩⟩
-#align locally_compact_of_compact_nhds locally_compact_of_compact_nhds
+#align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
--- see Note [lower instance priority]
-instance (priority := 100) locally_compact_of_compact [T2Space α] [CompactSpace α] :
+@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace]
+theorem locally_compact_of_compact [T2Space α] [CompactSpace α] :
     LocallyCompactSpace α :=
-  locally_compact_of_compact_nhds fun _ => ⟨univ, isOpen_univ.mem_nhds trivial, isCompact_univ⟩
+  inferInstance
 #align locally_compact_of_compact locally_compact_of_compact
 
-/-- In a locally compact T₂ space, every point has an open neighborhood with compact closure -/
-theorem exists_open_with_compact_closure [LocallyCompactSpace α] [T2Space α] (x : α) :
-    ∃ U : Set α, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
-  rcases exists_compact_mem_nhds x with ⟨K, hKc, hxK⟩
-  rcases mem_nhds_iff.1 hxK with ⟨t, h1t, h2t, h3t⟩
-  exact ⟨t, h2t, h3t, isCompact_closure_of_subset_compact hKc h1t⟩
-#align exists_open_with_compact_closure exists_open_with_compact_closure
-
-/-- In a locally compact T₂ space, every compact set has an open neighborhood with compact closure.
--/
-theorem exists_open_superset_and_isCompact_closure [LocallyCompactSpace α] [T2Space α] {K : Set α}
-    (hK : IsCompact K) : ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
+/-- In a weakly locally compact T₂ space,
+every compact set has an open neighborhood with compact closure. -/
+theorem exists_open_superset_and_isCompact_closure [WeaklyLocallyCompactSpace α] [T2Space α]
+    {K : Set α} (hK : IsCompact K) : ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
   rcases exists_compact_superset hK with ⟨K', hK', hKK'⟩
-  refine'
-    ⟨interior K', isOpen_interior, hKK', isCompact_closure_of_subset_compact hK' interior_subset⟩
+  exact ⟨interior K', isOpen_interior, hKK',
+    isCompact_closure_of_subset_compact hK' interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
+
+/-- In a weakly locally compact T₂ space,
+every point has an open neighborhood with compact closure. -/
+theorem exists_open_with_compact_closure [WeaklyLocallyCompactSpace α] [T2Space α] (x : α) :
+    ∃ U : Set α, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
+  simpa only [singleton_subset_iff]
+    using exists_open_superset_and_isCompact_closure isCompact_singleton
+#align exists_open_with_compact_closure exists_open_with_compact_closure
 
 /-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find an
 open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is inside `U`.
@@ -1608,7 +1613,7 @@ theorem specializes_comm {a b : α} : a ⤳ b ↔ b ⤳ a := by
   simp only [← (disjoint_nhds_nhds_iff_not_specializes (α := α)).not_left, disjoint_comm]
 #align specializes_comm specializes_comm
 
-alias specializes_comm ↔ Specializes.symm _
+alias ⟨Specializes.symm, _⟩ := specializes_comm
 #align specializes.symm Specializes.symm
 
 theorem specializes_iff_inseparable {a b : α} : a ⤳ b ↔ Inseparable a b :=
@@ -1983,6 +1988,9 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace α ↔ Totall
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 
 variable [TotallyDisconnectedSpace α]
+
+/-- A totally disconnected compact Hausdorff space is totally separated. -/
+instance : TotallySeparatedSpace α := compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 
 theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ s ∧ IsClopen s) id :=
   ⟨fun U => by

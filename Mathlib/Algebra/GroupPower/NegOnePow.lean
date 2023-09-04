@@ -8,7 +8,7 @@ import Mathlib.Data.Int.Parity
 /-!
 # Integer powers of (-1)
 
-This file defines the map `negOnePow : ℤ → ℤ` which sends `n` to `(-1 : Units ℤ) ^ n`.
+This file defines the map `negOnePow : ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`.
 
 The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
@@ -17,11 +17,11 @@ Johan Commelin to the Liquid Tensor Experiment.
 
 namespace Int
 
-/-- The map `ℤ → ℤ` which sends `n` to `(-1 : Units ℤ) ^ n`. --/
+/-- The map `ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
 @[pp_dot]
-def negOnePow (n : ℤ) : ℤ := (-1 : Units ℤ) ^ n
+def negOnePow (n : ℤ) : ℤ := (-1 : ℤˣ) ^ n
 
-lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : Units ℤ) ^ n := rfl
+lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
 
 lemma negOnePow_add (n₁ n₂ : ℤ) :
     (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
@@ -73,7 +73,7 @@ lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
   simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
 
 lemma negOnePow_sub (n₁ n₂ : ℤ) :
-    (n₁ - n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
+    (n₁ - n₂).negOnePow = n₁.negOnePow * n₂.negOnePow := by
   simp only [sub_eq_add_neg, negOnePow_add, negOnePow_neg]
 
 lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
