@@ -30,10 +30,6 @@ theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
 #align int.units_eq_one_or Int.units_eq_one_or
 
-theorem isUnit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
-  | ⟨_, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg Units.val) (congr_arg Units.val)
-#align int.is_unit_eq_one_or Int.isUnit_eq_one_or
-
 @[simp]
 theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
   rcases units_eq_one_or u with rfl | rfl <;> decide
@@ -52,6 +48,10 @@ theorem isUnit_iff {a : ℤ} : IsUnit a ↔ a = 1 ∨ a = -1 := by
   · exact isUnit_one
   · exact isUnit_one.neg
 #align int.is_unit_iff Int.isUnit_iff
+
+theorem isUnit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
+  | ⟨_, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg Units.val) (congr_arg Units.val)
+#align int.is_unit_eq_one_or Int.isUnit_eq_one_or
 
 theorem isUnit_eq_or_eq_neg {a b : ℤ} (ha : IsUnit a) (hb : IsUnit b) : a = b ∨ a = -b := by
   rcases isUnit_eq_one_or hb with (rfl | rfl)
