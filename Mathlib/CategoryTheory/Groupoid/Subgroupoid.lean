@@ -419,7 +419,7 @@ end GeneratedSubgroupoid
 
 section Hom
 
-variable {D : Type _} [Groupoid D] (φ : C ⥤ D)
+variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
@@ -445,7 +445,7 @@ theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap �
 #align category_theory.subgroupoid.is_normal_comap CategoryTheory.Subgroupoid.isNormal_comap
 
 @[simp]
-theorem comap_comp {E : Type _} [Groupoid E] (ψ : D ⥤ E) : comap (φ ⋙ ψ) = comap φ ∘ comap ψ :=
+theorem comap_comp {E : Type*} [Groupoid E] (ψ : D ⥤ E) : comap (φ ⋙ ψ) = comap φ ∘ comap ψ :=
   rfl
 #align category_theory.subgroupoid.comap_comp CategoryTheory.Subgroupoid.comap_comp
 
@@ -464,7 +464,7 @@ theorem ker_isNormal : (ker φ).IsNormal :=
 #align category_theory.subgroupoid.ker_is_normal CategoryTheory.Subgroupoid.ker_isNormal
 
 @[simp]
-theorem ker_comp {E : Type _} [Groupoid E] (ψ : D ⥤ E) : ker (φ ⋙ ψ) = comap φ (ker ψ) :=
+theorem ker_comp {E : Type*} [Groupoid E] (ψ : D ⥤ E) : ker (φ ⋙ ψ) = comap φ (ker ψ) :=
   rfl
 #align category_theory.subgroupoid.ker_comp CategoryTheory.Subgroupoid.ker_comp
 
@@ -484,7 +484,7 @@ theorem Map.arrows_iff (hφ : Function.Injective φ.obj) (S : Subgroupoid C) {c 
 
 /-- The "forward" image of a subgroupoid under a functor injective on objects -/
 def map (hφ : Function.Injective φ.obj) (S : Subgroupoid C) : Subgroupoid D where
-  arrows := Map.Arrows φ hφ S
+  arrows c d := {x | Map.Arrows φ hφ S c d x}
   inv := by
     rintro _ _ _ ⟨⟩
     rw [inv_eq_inv, ← Functor.map_inv, ← inv_eq_inv]
@@ -628,7 +628,7 @@ theorem isTotallyDisconnected_iff :
 
 /-- The isotropy subgroupoid of `S` -/
 def disconnect : Subgroupoid C where
-  arrows c d f := c = d ∧ f ∈ S.arrows c d
+  arrows c d := {f | c = d ∧ f ∈ S.arrows c d}
   inv := by rintro _ _ _ ⟨rfl, h⟩; exact ⟨rfl, S.inv h⟩
   mul := by rintro _ _ _ _ ⟨rfl, h⟩ _ ⟨rfl, h'⟩; exact ⟨rfl, S.mul h h'⟩
 #align category_theory.subgroupoid.disconnect CategoryTheory.Subgroupoid.disconnect
@@ -661,7 +661,7 @@ variable (D : Set C)
 
 /-- The full subgroupoid on a set `D : Set C` -/
 def full : Subgroupoid C where
-  arrows c d _ := c ∈ D ∧ d ∈ D
+  arrows c d := {_f | c ∈ D ∧ d ∈ D}
   inv := by rintro _ _ _ ⟨⟩; constructor <;> assumption
   mul := by rintro _ _ _ _ ⟨⟩ _ ⟨⟩; constructor <;> assumption
 #align category_theory.subgroupoid.full CategoryTheory.Subgroupoid.full

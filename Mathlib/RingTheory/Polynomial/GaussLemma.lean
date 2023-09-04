@@ -39,7 +39,7 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 open scoped nonZeroDivisors Polynomial
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 section IsIntegrallyClosed
 
@@ -49,7 +49,7 @@ open integralClosure
 
 open IsIntegrallyClosed
 
-variable (K : Type _) [Field K] [Algebra R K]
+variable (K : Type*) [Field K] [Algebra R K]
 
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
@@ -97,8 +97,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)
         g_mul_dvd)
   refine' ⟨map algeq.toAlgHom.toRingHom _, _⟩
-  · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
-    exact Classical.choose H
+  · use! Classical.choose H
   · rw [map_map, this]
     exact Classical.choose_spec H
 set_option linter.uppercaseLean3 false in
@@ -110,7 +109,7 @@ namespace Polynomial
 
 section
 
-variable {S : Type _} [CommRing S] [IsDomain S]
+variable {S : Type*} [CommRing S] [IsDomain S]
 
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
 
@@ -136,7 +135,7 @@ end
 
 section FractionMap
 
-variable {K : Type _} [Field K] [Algebra R K] [IsFractionRing R K]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem IsPrimitive.isUnit_iff_isUnit_map {p : R[X]} (hp : p.IsPrimitive) :
     IsUnit p ↔ IsUnit (p.map (algebraMap R K)) :=

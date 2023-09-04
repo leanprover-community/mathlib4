@@ -44,7 +44,7 @@ open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
 
 open Classical Topology
 
-variable {ι : Type _} {α : Type _} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
+variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
 namespace MeasureTheory
 
@@ -198,7 +198,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
   refine' ⟨f^[k] x, hk, m, _, _⟩
   · intro hm
-    rw [hm, MulZeroClass.mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
+    rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
     exact this.not_lt hkl
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
     exact hkl.le

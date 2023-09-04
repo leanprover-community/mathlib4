@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Init.IteSimp
@@ -17,9 +18,8 @@ all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + 
 -/
 
 
-noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 namespace Finsupp
 
@@ -27,7 +27,7 @@ open Finset
 
 universe u
 
-variable {α : Type u}
+variable {α : Type u} [DecidableEq α]
 
 /-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
@@ -46,7 +46,8 @@ def antidiagonal (f : α →₀ ℕ) : Finset ((α →₀ ℕ) × (α →₀ ℕ
 theorem mem_antidiagonal {f : α →₀ ℕ} {p : (α →₀ ℕ) × (α →₀ ℕ)} :
     p ∈ antidiagonal f ↔ p.1 + p.2 = f := by
   rcases p with ⟨p₁, p₂⟩
-  simp [antidiagonal, antidiagonal', ← and_assoc, ← Finsupp.toMultiset.apply_eq_iff_eq]
+  simp [antidiagonal, antidiagonal', ← and_assoc, Multiset.toFinsupp_eq_iff,
+    ← Multiset.toFinsupp_eq_iff (f := f)]
 #align finsupp.mem_antidiagonal Finsupp.mem_antidiagonal
 
 theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α →₀ ℕ)} :
@@ -85,12 +86,11 @@ theorem antidiagonal_filter_snd_eq (f g : α →₀ ℕ)
 #align finsupp.antidiagonal_filter_snd_eq Finsupp.antidiagonal_filter_snd_eq
 
 @[simp]
-theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := by
-  rw [antidiagonal, antidiagonal', Multiset.toFinsupp_support]; rfl
+theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
-theorem prod_antidiagonal_swap {M : Type _} [CommMonoid M] (n : α →₀ ℕ)
+theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
     ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
   Finset.prod_bij (fun p _hp ↦ p.swap) (fun _p ↦ swap_mem_antidiagonal.2) (fun _p _hp ↦ rfl)
@@ -98,5 +98,26 @@ theorem prod_antidiagonal_swap {M : Type _} [CommMonoid M] (n : α →₀ ℕ)
     ⟨p.swap, swap_mem_antidiagonal.2 hp, p.swap_swap.symm⟩
 #align finsupp.prod_antidiagonal_swap Finsupp.prod_antidiagonal_swap
 #align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap
+
+@[simp]
+theorem antidiagonal_single (a : α) (n : ℕ) :
+    antidiagonal (single a n) = (Finset.Nat.antidiagonal n).map
+      (Function.Embedding.prodMap ⟨_, single_injective a⟩ ⟨_, single_injective a⟩) := by
+  ext ⟨x, y⟩
+  simp only [mem_antidiagonal, mem_map, Nat.mem_antidiagonal, Function.Embedding.coe_prodMap,
+    Function.Embedding.coeFn_mk, Prod_map, Prod.mk.injEq, Prod.exists]
+  constructor
+  · intro h
+    refine ⟨x a, y a, FunLike.congr_fun h a |>.trans single_eq_same, ?_⟩
+    simp_rw [FunLike.ext_iff, ←forall_and]
+    intro i
+    replace h := FunLike.congr_fun h i
+    simp_rw [single_apply, Finsupp.add_apply] at h ⊢
+    obtain rfl | hai := Decidable.eq_or_ne a i
+    · exact ⟨if_pos rfl, if_pos rfl⟩
+    · simp_rw [if_neg hai, _root_.add_eq_zero_iff] at h ⊢
+      exact h.imp Eq.symm Eq.symm
+  · rintro ⟨a, b, rfl, rfl, rfl⟩
+    exact (single_add _ _ _).symm
 
 end Finsupp

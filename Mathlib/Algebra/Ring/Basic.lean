@@ -2,7 +2,6 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-Ported by: Moritz Doll
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Hom.Group
@@ -20,6 +19,8 @@ the present file is about their interaction.
 
 For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
+
+set_option autoImplicit true
 
 open Function
 
@@ -43,7 +44,7 @@ end AddHom
 
 section AddHomClass
 
-variable {F : Type _} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
+variable {F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
 
 set_option linter.deprecated false in
 /-- Additive homomorphisms preserve `bit0`. -/

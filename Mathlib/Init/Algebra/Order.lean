@@ -208,7 +208,7 @@ def decidableEqOfDecidableLE [@DecidableRel α (· ≤ ·)] : DecidableEq α
 
 namespace Decidable
 
-variable [@DecidableRel α (. ≤ .)]
+variable [@DecidableRel α (· ≤ ·)]
 
 theorem lt_or_eq_of_le {a b : α} (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)
@@ -271,11 +271,11 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (. ≤ . : α → α → Prop)
+  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (. < . : α → α → Prop) :=
+  decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
@@ -405,7 +405,7 @@ instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·)
 #align is_strict_total_order_of_linear_order isStrictTotalOrder_of_linearOrder
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
-def ltByCases (x y : α) {P : Sort _} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
+def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 #align lt_by_cases ltByCases
@@ -431,7 +431,7 @@ theorem compare_gt_iff_gt {a b : α} : (compare a b = .gt) ↔ a > b := by
 
 theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only []
+  split_ifs <;> try simp only []
   case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h

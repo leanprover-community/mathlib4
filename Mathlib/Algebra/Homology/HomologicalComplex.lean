@@ -40,7 +40,7 @@ universe v u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V]
 
@@ -92,32 +92,84 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
 
+/-- The obvious isomorphism `K.X p ≅ K.X q` when `p = q`. -/
+def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
+  K.X p ≅ K.X q := eqToIso (by rw [h])
+
+@[simp]
+lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
+  K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
+    (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₁₂ : p₁ = p₂) (h₃₂ : p₃ = p₂) :
+    (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₁₂.trans h₃₂.symm)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₂₁ : p₂ = p₁) (h₂₃ : p₂ = p₃) :
+    (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₂₁.symm.trans h₂₃)).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₂₁ : p₂ = p₁) (h₃₂ : p₃ = p₂) :
+    (K.XIsoOfEq h₂₁).inv ≫ (K.XIsoOfEq h₃₂).inv = (K.XIsoOfEq (h₃₂.trans h₂₁).symm).hom := by
+  dsimp [XIsoOfEq]
+  simp only [eqToHom_trans]
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
+    (K.XIsoOfEq h).hom ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_d (K : HomologicalComplex V c) {p₂ p₁ : ι} (h : p₂ = p₁) (p₃ : ι) :
+    (K.XIsoOfEq h).inv ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
+
+@[reassoc (attr := simp)]
+lemma d_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₂ = p₃) (p₁ : ι) :
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).hom = K.d p₁ p₃ := by subst h; simp
+
+@[reassoc (attr := simp)]
+lemma d_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₃ = p₂) (p₁ : ι) :
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).inv = K.d p₁ p₃ := by subst h; simp
+
 end HomologicalComplex
 
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `j + 1 = i`.
 -/
-abbrev ChainComplex (α : Type _) [AddRightCancelSemigroup α] [One α] : Type _ :=
+abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.down α)
 #align chain_complex ChainComplex
 
 /-- An `α`-indexed cochain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `i + 1 = j`.
 -/
-abbrev CochainComplex (α : Type _) [AddRightCancelSemigroup α] [One α] : Type _ :=
+abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.up α)
 #align cochain_complex CochainComplex
 
 namespace ChainComplex
 
 @[simp]
-theorem prev (α : Type _) [AddRightCancelSemigroup α] [One α] (i : α) :
+theorem prev (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
     (ComplexShape.down α).prev i = i + 1 :=
   (ComplexShape.down α).prev_eq' rfl
 #align chain_complex.prev ChainComplex.prev
 
 @[simp]
-theorem next (α : Type _) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
+theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
   (ComplexShape.down α).next_eq' <| sub_add_cancel _ _
 #align chain_complex.next ChainComplex.next
 
@@ -140,12 +192,12 @@ end ChainComplex
 namespace CochainComplex
 
 @[simp]
-theorem prev (α : Type _) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
+theorem prev (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
   (ComplexShape.up α).prev_eq' <| sub_add_cancel _ _
 #align cochain_complex.prev CochainComplex.prev
 
 @[simp]
-theorem next (α : Type _) [AddRightCancelSemigroup α] [One α] (i : α) :
+theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
     (ComplexShape.up α).next i = i + 1 :=
   (ComplexShape.up α).next_eq' rfl
 #align cochain_complex.next CochainComplex.next
@@ -609,7 +661,7 @@ namespace ChainComplex
 
 section Of
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
@@ -648,7 +700,7 @@ end Of
 
 section OfHom
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
@@ -876,7 +928,7 @@ namespace CochainComplex
 
 section Of
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
@@ -919,7 +971,7 @@ end Of
 
 section OfHom
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)

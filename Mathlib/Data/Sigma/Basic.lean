@@ -15,33 +15,34 @@ import Mathlib.Logic.Function.Basic
 This file proves basic results about sigma types.
 
 A sigma type is a dependent pair type. Like `α × β` but where the type of the second component
-depends on the first component. More precisely, given `β : ι → Type _`, `Sigma β` is made of stuff
+depends on the first component. More precisely, given `β : ι → Type*`, `Sigma β` is made of stuff
 which is of type `β i` for some `i : ι`, so the sigma type is a disjoint union of types.
 For example, the sum type `X ⊕ Y` can be emulated using a sigma type, by taking `ι` with
 exactly two elements (see `Equiv.sumEquivSigmaBool`).
 
 `Σ x, A x` is notation for `Sigma A` (note that this is `\Sigma`, not the sum operator `∑`).
 `Σ x y z ..., A x y z ...` is notation for `Σ x, Σ y, Σ z, ..., A x y z ...`. Here we have
-`α : Type _`, `β : α → Type _`, `γ : Π a : α, β a → Type _`, ...,
-`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _` with `x : α` `y : β x`, `z : γ x y`, ...
+`α : Type*`, `β : α → Type*`, `γ : Π a : α, β a → Type*`, ...,
+`A : Π (a : α) (b : β a) (c : γ a b) ..., Type*` with `x : α` `y : β x`, `z : γ x y`, ...
 
 ## Notes
 
-The definition of `Sigma` takes values in `Type _`. This effectively forbids `Prop`- valued sigma
-types. To that effect, we have `PSigma`, which takes value in `Sort _` and carries a more
+The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`- valued sigma
+types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more
 complicated universe signature as a consequence.
 -/
 
 section Sigma
 
-variable {α α₁ α₂ : Type _} {β : α → Type _} {β₁ : α₁ → Type _} {β₂ : α₂ → Type _}
+variable {α α₁ α₂ : Type*} {β : α → Type*} {β₁ : α₁ → Type*} {β₂ : α₂ → Type*}
 
 namespace Sigma
 
-instance [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
+instance instInhabitedSigma [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
   ⟨⟨default, default⟩⟩
 
-instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (Sigma β)
+instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] :
+    DecidableEq (Sigma β)
   | ⟨a₁, b₁⟩, ⟨a₂, b₂⟩ =>
     match a₁, b₁, a₂, b₂, h₁ a₁ a₂ with
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
@@ -73,7 +74,7 @@ theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq
 #align sigma.ext_iff Sigma.ext_iff
 
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
-theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type _} [Nonempty γ]
+theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
     {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :
     a = b ∧ HEq f g := by
   rcases ‹Nonempty γ› with ⟨i⟩
@@ -82,12 +83,12 @@ theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type _} [Nonempty γ]
 
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]
-theorem subtype_ext {β : Type _} {p : α → β → Prop} :
+theorem subtype_ext {β : Type*} {p : α → β → Prop} :
     ∀ {x₀ x₁ : Σa, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl, rfl => rfl
 #align sigma.subtype_ext Sigma.subtype_ext
 
-theorem subtype_ext_iff {β : Type _} {p : α → β → Prop} {x₀ x₁ : Σa, Subtype (p a)} :
+theorem subtype_ext_iff {β : Type*} {p : α → β → Prop} {x₀ x₁ : Σa, Subtype (p a)} :
     x₀ = x₁ ↔ x₀.fst = x₁.fst ∧ (x₀.snd : β) = x₁.snd :=
   ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ subtype_ext h₁ h₂⟩
 #align sigma.subtype_ext_iff Sigma.subtype_ext_iff
@@ -146,25 +147,25 @@ theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β
 /-- Interpret a function on `Σ x : α, β x` as a dependent function with two arguments.
 
 This also exists as an `Equiv` as `Equiv.piCurry γ`. -/
-def Sigma.curry {γ : ∀ a, β a → Type _} (f : ∀ x : Sigma β, γ x.1 x.2) (x : α) (y : β x) : γ x y :=
+def Sigma.curry {γ : ∀ a, β a → Type*} (f : ∀ x : Sigma β, γ x.1 x.2) (x : α) (y : β x) : γ x y :=
   f ⟨x, y⟩
 #align sigma.curry Sigma.curry
 
 /-- Interpret a dependent function with two arguments as a function on `Σ x : α, β x`.
 
 This also exists as an `Equiv` as `(Equiv.piCurry γ).symm`. -/
-def Sigma.uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) (x : Sigma β) : γ x.1 x.2 :=
+def Sigma.uncurry {γ : ∀ a, β a → Type*} (f : ∀ (x) (y : β x), γ x y) (x : Sigma β) : γ x.1 x.2 :=
   f x.1 x.2
 #align sigma.uncurry Sigma.uncurry
 
 @[simp]
-theorem Sigma.uncurry_curry {γ : ∀ a, β a → Type _} (f : ∀ x : Sigma β, γ x.1 x.2) :
+theorem Sigma.uncurry_curry {γ : ∀ a, β a → Type*} (f : ∀ x : Sigma β, γ x.1 x.2) :
     Sigma.uncurry (Sigma.curry f) = f :=
   funext fun ⟨_, _⟩ ↦ rfl
 #align sigma.uncurry_curry Sigma.uncurry_curry
 
 @[simp]
-theorem Sigma.curry_uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) :
+theorem Sigma.curry_uncurry {γ : ∀ a, β a → Type*} (f : ∀ (x) (y : β x), γ x y) :
     Sigma.curry (Sigma.uncurry f) = f :=
   rfl
 #align sigma.curry_uncurry Sigma.curry_uncurry
@@ -200,7 +201,7 @@ end Sigma
 
 namespace PSigma
 
-variable {α : Sort _} {β : α → Sort _}
+variable {α : Sort*} {β : α → Sort*}
 
 /-- Nondependent eliminator for `PSigma`. -/
 def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
@@ -257,17 +258,17 @@ theorem «exists» {p : (Σ'a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨
 
 /-- A specialized ext lemma for equality of `PSigma` types over an indexed subtype. -/
 @[ext]
-theorem subtype_ext {β : Sort _} {p : α → β → Prop} :
+theorem subtype_ext {β : Sort*} {p : α → β → Prop} :
     ∀ {x₀ x₁ : Σ'a, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl, rfl => rfl
 #align psigma.subtype_ext PSigma.subtype_ext
 
-theorem subtype_ext_iff {β : Sort _} {p : α → β → Prop} {x₀ x₁ : Σ'a, Subtype (p a)} :
+theorem subtype_ext_iff {β : Sort*} {p : α → β → Prop} {x₀ x₁ : Σ'a, Subtype (p a)} :
     x₀ = x₁ ↔ x₀.fst = x₁.fst ∧ (x₀.snd : β) = x₁.snd :=
   ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ subtype_ext h₁ h₂⟩
 #align psigma.subtype_ext_iff PSigma.subtype_ext_iff
 
-variable {α₁ : Sort _} {α₂ : Sort _} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort _}
+variable {α₁ : Sort*} {α₂ : Sort*} {β₁ : α₁ → Sort*} {β₂ : α₂ → Sort*}
 
 /-- Map the left and right components of a sigma -/
 def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) : PSigma β₁ → PSigma β₂

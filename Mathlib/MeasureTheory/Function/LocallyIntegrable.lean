@@ -24,12 +24,14 @@ on compact sets.
   integrable on `s`.
 -/
 
+set_option autoImplicit true
+
 
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace
 
 open scoped Topology Interval
 
-variable {X Y E R : Type _} [MeasurableSpace X] [TopologicalSpace X]
+variable {X Y E R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 
@@ -302,6 +304,44 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
+/-- If `f` is locally integrable and `g` is continuous with compact support,
+then `g • f` is integrable. -/
+theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
+    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X]
+    (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    Integrable (fun x ↦ g x • f x) μ := by
+  let K := tsupport g
+  have hK : IsCompact K := h'g
+  have : K.indicator (fun x ↦ g x • f x) = (fun x ↦ g x • f x) := by
+    apply indicator_eq_self.2
+    apply support_subset_iff'.2
+    intros x hx
+    simp [image_eq_zero_of_nmem_tsupport hx]
+  rw [← this, indicator_smul]
+  apply Integrable.smul_of_top_right
+  · rw [integrable_indicator_iff hK.measurableSet]
+    exact hf.integrableOn_isCompact hK
+  · exact hg.memℒp_top_of_hasCompactSupport h'g μ
+
+/-- If `f` is locally integrable and `g` is continuous with compact support,
+then `f • g` is integrable. -/
+theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
+    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → ℝ} (hf : LocallyIntegrable f μ)
+    {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    Integrable (fun x ↦ f x • g x) μ := by
+  let K := tsupport g
+  have hK : IsCompact K := h'g
+  have : K.indicator (fun x ↦ f x • g x) = (fun x ↦ f x • g x) := by
+    apply indicator_eq_self.2
+    apply support_subset_iff'.2
+    intros x hx
+    simp [image_eq_zero_of_nmem_tsupport hx]
+  rw [← this, indicator_smul_left]
+  apply Integrable.smul_of_top_left
+  · rw [integrable_indicator_iff hK.measurableSet]
+    exact hf.integrableOn_isCompact hK
+  · exact hg.memℒp_top_of_hasCompactSupport h'g μ
+
 end MeasureTheory
 
 open MeasureTheory
@@ -488,7 +528,7 @@ end Mul
 
 section Smul
 
-variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
 theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
@@ -528,7 +568,7 @@ theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [NormedRing R]
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).mul_continuousOn (hg.mono hk_sub) hk_c
 #align measure_theory.locally_integrable_on.mul_continuous_on MeasureTheory.LocallyIntegrableOn.mul_continuousOn
 
-theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type _} [NormedField 𝕜]
+theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
     [SecondCountableTopologyEither X 𝕜] [NormedSpace 𝕜 E] {f : X → E} {g : X → 𝕜} {s : Set X}
     (hs : IsOpen s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => g x • f x) s μ := by
@@ -536,7 +576,7 @@ theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type _} [N
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_smul (hg.mono hk_sub) hk_c
 #align measure_theory.locally_integrable_on.continuous_on_smul MeasureTheory.LocallyIntegrableOn.continuousOn_smul
 
-theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type _} [NormedField 𝕜]
+theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
     [SecondCountableTopologyEither X E] [NormedSpace 𝕜 E] {f : X → 𝕜} {g : X → E} {s : Set X}
     (hs : IsOpen s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => f x • g x) s μ := by

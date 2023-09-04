@@ -29,7 +29,7 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 ## Implementation Notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
-However, using the explicit subtype has a big advantage: when writing and element explicitly
+However, using the explicit subtype has a big advantage: when writing an element explicitly
 with a proof of nonnegativity as `⟨x, hx⟩`, the `hx` is expected to have type `0 ≤ x`. If we would
 use `Ici 0`, then the type is expected to be `x ∈ Ici 0`. Although these types are definitionally
 equal, this often confuses the elaborator. Similar problems arise when doing cases on an element.
@@ -39,7 +39,7 @@ The disadvantage is that we have to duplicate some instances about `Set.Ici` to 
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nonneg
 
@@ -72,7 +72,7 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
 
 instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
-  show DenselyOrdered (Ici a) from instDenselyOrderedElemLtToLTMemSetInstMembershipSet
+  show DenselyOrdered (Ici a) from Set.instDenselyOrdered
 #align nonneg.densely_ordered Nonneg.densely_ordered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/

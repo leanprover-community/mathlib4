@@ -499,7 +499,7 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type _}
+variable [Semiring R] {p q : R[X]} {ι : Type*}
 
 theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
     (h : trailingDegree p < trailingDegree q) : coeff q (natTrailingDegree p) = 0 :=

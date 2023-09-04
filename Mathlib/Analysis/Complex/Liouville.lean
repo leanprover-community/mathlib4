@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.NormedSpace.Completion
 
 #align_import analysis.complex.liouville from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -23,7 +23,7 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory
 

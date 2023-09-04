@@ -10,7 +10,7 @@ import Mathlib.Analysis.Convex.Join
 /-!
 # Stone's separation theorem
 
-This file prove Stone's separation theorem. This tells us that any two disjoint convex sets can be
+This file proves Stone's separation theorem. This tells us that any two disjoint convex sets can be
 separated by a convex set whose complement is also convex.
 
 In locally convex real topological vector spaces, the Hahn-Banach separation theorems provide
@@ -21,7 +21,7 @@ complement is convex.
 
 open Set BigOperators
 
-variable {𝕜 E ι : Type _} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable {𝕜 E ι : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 /-- In a tetrahedron with vertices `x`, `y`, `p`, `q`, any segment `[u, v]` joining the opposite
 edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z` where

@@ -2,7 +2,6 @@
 Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
-Ported by: Winston Yin
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.Units
@@ -66,7 +65,7 @@ end MonoidHomClass
 
 namespace Units
 
-variable {α : Type _} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
 @[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
@@ -143,7 +142,7 @@ theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
 #align divp_eq_div divp_eq_div
 
 @[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type _} [MonoidHomClass F M α] (f : F) (u : Units M) :
+theorem _root_.map_units_inv {F : Type*} [MonoidHomClass F M α] (f : F) (u : Units M) :
   f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 #align map_units_inv map_units_inv
 #align map_add_units_neg map_addUnits_neg
@@ -193,7 +192,7 @@ and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -
   "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
   then its image lies in the `AddUnits` of `M`,
   and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
-def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
+def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
   Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_self _),
     map_mul_eq_one f (inv_mul_self _)⟩)
     fun _ => rfl
@@ -201,7 +200,7 @@ def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :
 #align add_monoid_hom.to_hom_add_units AddMonoidHom.toHomAddUnits
 
 @[to_additive (attr := simp)]
-theorem coe_toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) (g : G) :
+theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
   (f.toHomUnits g : M) = f g := rfl
 #align monoid_hom.coe_to_hom_units MonoidHom.coe_toHomUnits
 #align add_monoid_hom.coe_to_hom_add_units AddMonoidHom.coe_toHomAddUnits
@@ -210,7 +209,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type _}
+variable {F G α M N : Type*}
 
 section Monoid
 
@@ -273,7 +272,7 @@ variable [DivisionMonoid α] {a b c : α}
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
 opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
 useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps val)
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
   computable and comes from the negation on `α`. This is useful to transfer properties of negation
@@ -282,6 +281,13 @@ def unit' (h : IsUnit a) : αˣ :=
   ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
 #align is_unit.unit' IsUnit.unit'
 #align is_add_unit.add_unit' IsAddUnit.addUnit'
+#align is_unit.coe_unit' IsUnit.val_unit'
+#align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
+
+-- Porting note: TODO: `simps val_inv` fails
+@[to_additive] theorem val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
+#align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
+#align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'
 
 @[to_additive (attr := simp)]
 protected theorem mul_inv_cancel_left (h : IsUnit a) : ∀ b, a * (a⁻¹ * b) = b :=
