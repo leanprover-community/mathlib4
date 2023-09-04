@@ -141,10 +141,20 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build archive
-        run: lake build Archive
+        run: |
+          lake exe cache get Archive.lean
+          lake build Archive
+          lake exe cache put Archive.lean
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build counterexamples
-        run: lake build Counterexamples
+        run: |
+          lake exe cache get Counterexamples.lean
+          lake build Counterexamples
+          lake exe cache put Counterexamples.lean
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: check declarations in db files
         run: |

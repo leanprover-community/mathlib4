@@ -61,9 +61,14 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack"]
 
-open Cache IO Hashing Requests in
+open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  let hashMemo ← getHashMemo
+  -- We pass any following arguments to `getHashMemo`,
+  -- so we can use the cache on `Archive` or `Counterexamples`.
+  let extraRoots := match args with
+  | [] => #[]
+  | _ :: t => t.toArray.map FilePath.mk
+  let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
