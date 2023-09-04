@@ -11,9 +11,9 @@ import Mathlib.Algebra.Module.Submodule.Basic
 /-!
 # Pointed cones
 
-We define a pointed cones as convex cones which contain `0`· This is a bundled version of
-`ConvexCone.Pointed`· Pointed cones have a nicer algebraic structure than convex cones· They form
-a submodule of the ambient space when the scalars are restricted to being positive· This allows us
+We define a pointed cones as convex cones which contain `0`. This is a bundled version of
+`ConvexCone.Pointed`. Pointed cones have a nicer algebraic structure than convex cones. They form
+a submodule of the ambient space when the scalars are restricted to being positive. This allows us
 to use the Module API to work with convex cones.
 
 
@@ -24,7 +24,7 @@ to use the Module API to work with convex cones.
 
 -/
 
-/-- A pointed cone is a convex cone that contains  `0`· -/
+/-- A pointed cone is a convex cone that contains  `0`. -/
 structure PointedCone (𝕜 : Type _) (E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E]
      [SMul 𝕜 E] extends ConvexCone 𝕜 E where
 /-- `0` is in the carrier -/
@@ -71,7 +71,7 @@ variable {E : Type*} [AddCommMonoid E] [Module 𝕜 E]
 variable {F : Type*} [AddCommMonoid F] [Module 𝕜 F]
 variable {G : Type*} [AddCommMonoid G] [Module 𝕜 G]
 
-/-- The image of a convex cone under a `𝕜`-linear map is a convex cone· -/
+/-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F where
   toConvexCone := (S.toConvexCone).map f
   zero_mem' := ⟨0, by simp⟩
@@ -88,7 +88,7 @@ theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : PointedCone �
 theorem map_id (S : PointedCone 𝕜 E) : S.map LinearMap.id = S :=
   SetLike.coe_injective <| Set.image_id _
 
-/-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone· -/
+/-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
 def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E where
   toConvexCone := ConvexCone.comap (f : E →ₗ[𝕜] F) S
   zero_mem' := by simp [ConvexCone.comap]
@@ -118,7 +118,7 @@ variable (𝕜 E)
 variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
-module· -/
+module. -/
 def positive : PointedCone 𝕜 E where
   toConvexCone := ConvexCone.positive 𝕜 E
   zero_mem' := ConvexCone.pointed_positive _ _
@@ -230,7 +230,7 @@ def ofSubmodule (M : Submodule { c : 𝕜 // 0 ≤ c } E) : (PointedCone 𝕜 E)
   add_mem' := fun _ hx _ hy => M.add_mem hx hy
   zero_mem' := M.zero_mem
 
-/-- The equivalence between pointed cones and submodules· -/
+/-- The equivalence between pointed cones and submodules. -/
 def toSubmoduleEquiv : (PointedCone 𝕜 E) ≃ (Submodule { c : 𝕜 // 0 ≤ c } E) where
   toFun := toSubmodule
   invFun := ofSubmodule
@@ -242,7 +242,7 @@ end Module
 section Dual
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-/-- The inner dual cone of a pointed cone is a pointed cone· -/
+/-- The inner dual cone of a pointed cone is a pointed cone. -/
 def dual (S : PointedCone ℝ E) : PointedCone ℝ E where
   toConvexCone := (S : Set E).innerDualCone
   zero_mem' := pointed_innerDualCone (S : Set E)
