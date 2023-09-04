@@ -89,8 +89,9 @@ def main (args : List String) : IO Unit := do
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
-  | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
+  -- We allow arguments for `put` and `put!` so they can be added to the `roots`.
+  | "put" :: _ => putFiles (← packCache hashMap false) false (← getToken)
+  | "put!" :: _ => putFiles (← packCache hashMap false) true (← getToken)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)
