@@ -2071,8 +2071,7 @@ theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
   obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)
   refine ⟨⟨max C 0, le_max_right _ _⟩, ?_⟩
   apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
-  have : fderiv 𝕂 f x ∈ Metric.closedBall 0 C := hC (mem_range_self _)
-  simpa using this
+  simp [← NNReal.coe_le_coe, hC x]
 
 end Real
 
