@@ -495,10 +495,10 @@ theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous, then the limit is continuous. -/
-theorem Filter.Tendsto.continuous_of_equicontinuous_at {l : Filter ι} [l.NeBot] {F : ι → X → α}
+theorem Filter.Tendsto.continuous_of_equicontinuousAt {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : Equicontinuous F) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x => h₁.continuousAt_of_equicontinuousAt (h₂ x)
-#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuous_at
+#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuousAt
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
@@ -532,6 +532,17 @@ theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι
   (uniformEquicontinuous_at_iff_range.mp h₂).closure.uniformContinuous
     ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
 #align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
+
+theorem Equicontinuous.isClosed_setOf_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
+    (hF : Equicontinuous F) (hf : Continuous f) :
+    IsClosed {x | Tendsto (F · x) l (𝓝 (f x))} := by
+  simp only [isClosed_iff_frequently, mem_setOf_eq,
+    (nhds_basis_uniformity (𝓤 α).basis_sets).tendsto_right_iff]
+  intro x hx U hU
+  rcases comp_comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVs, hVU⟩
+  rcases (hx.and_eventually <| (hF x V hV).and (hf.continuousAt (ball_mem_nhds _ hV))).exists
+    with ⟨y, hy, hyV, hfV⟩
+  exact (hy V hV).mono fun i hi ↦ hVU ⟨_, ⟨_, hyV i, hi⟩, (mem_ball_symmetry hVs).2 hfV⟩
 
 end
 
