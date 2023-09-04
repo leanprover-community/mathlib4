@@ -178,6 +178,7 @@ import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupRingAction.Basic
