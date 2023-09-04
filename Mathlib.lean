@@ -1980,6 +1980,7 @@ import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Coprod
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
@@ -2037,7 +2038,6 @@ import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.SpecificGroups.Coprod
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Quaternion
