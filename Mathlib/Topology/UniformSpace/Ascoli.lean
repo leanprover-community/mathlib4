@@ -228,19 +228,78 @@ theorem Equicontinuous.tendsto_uniformOnFun_iff_pi
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl, show restrict (⋃₀ 𝔖) f = φ.symm f by rfl,
       φ.symm.inducing.tendsto_nhds_iff]
 
-theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
+theorem Equicontinuous.isClosed_range_pi_of_uniformOnFun'
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F))
+    (H : IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F)) :
+    IsClosed (range <| (⋃₀ 𝔖).restrict ∘ F) := by
+  -- Do we have no equivalent of `nontriviality`?
+  rcases isEmpty_or_nonempty α with _ | _
+  · simp [isClosed_discrete]
+  simp_rw [isClosed_iff_clusterPt, ← Filter.map_top, ← mapClusterPt_def,
+    mapClusterPt_iff_ultrafilter, range_comp, Subtype.coe_injective.surjective_comp_right.forall,
+    ← restrict_eq, ← Equicontinuous.tendsto_uniformOnFun_iff_pi' h𝔖 hF]
+  exact fun f ⟨u, _, hu⟩ ↦ mem_image_of_mem _ <| H.mem_of_tendsto hu <|
+    eventually_of_forall mem_range_self
+
+theorem Equicontinuous.isClosed_range_uniformOnFun_iff_pi [TopologicalSpace ι]
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+    IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    IsClosed (range F) := by
+  simp_rw [isClosed_iff_clusterPt, ← Filter.map_top, ← mapClusterPt_def,
+    mapClusterPt_iff_ultrafilter, range_comp, (UniformOnFun.ofFun 𝔖).surjective.forall,
+    ← Equicontinuous.tendsto_uniformOnFun_iff_pi h𝔖 𝔖_covers hF,
+    (UniformOnFun.ofFun 𝔖).injective.mem_set_image]
+
+alias ⟨Equicontinuous.isClosed_range_pi_of_uniformOnFun, _⟩ :=
+  Equicontinuous.isClosed_range_uniformOnFun_iff_pi
+
+theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
-    (F_cl : IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_cl : IsClosed <| range <| (⋃₀ 𝔖).restrict ∘ F)
     (F_eqcont : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F))
     (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
     CompactSpace ι := by
   have : Inducing (restrict (⋃₀ 𝔖) ∘ F) := by
     rwa [Equicontinuous.inducing_uniformOnFun_iff_pi' h𝔖 F_eqcont] at F_ind
-  have F_closed : IsClosed <| range <| (⋃₀ 𝔖).restrict ∘ F := sorry
   choose K K_compact F_in_K using F_pointwiseCompact
   rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
-  refine isCompact_of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_closed
+  refine isCompact_of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
     (range_subset_iff.mpr fun i ⟨x, _⟩ _ ↦ F_in_K x i)
+
+theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
+    (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_cl : IsClosed (range F))
+    (F_eqcont : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F))
+    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
+    CompactSpace ι := by
+  have : Inducing F := by
+    rwa [Equicontinuous.inducing_uniformOnFun_iff_pi 𝔖_covers h𝔖 F_eqcont] at F_ind
+  choose K K_compact F_in_K using F_pointwiseCompact
+  rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
+  refine isCompact_of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
+    (range_subset_iff.mpr fun i x _ ↦ F_in_K x i)
+
+theorem ArzelaAscoli.compactSpace_of_closedEmbedding' [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_eqcont : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F))
+    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
+    CompactSpace ι :=
+  ArzelaAscoli.compactSpace_of_closed_inducing' h𝔖 F_clemb.toInducing
+    (Equicontinuous.isClosed_range_pi_of_uniformOnFun' h𝔖 F_eqcont F_clemb.closed_range)
+    F_eqcont F_pointwiseCompact
+
+theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
+    (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_eqcont : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F))
+    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
+    CompactSpace ι :=
+  ArzelaAscoli.compactSpace_of_closed_inducing h𝔖 𝔖_covers F_clemb.toInducing
+    (Equicontinuous.isClosed_range_pi_of_uniformOnFun h𝔖 𝔖_covers F_eqcont F_clemb.closed_range)
+    F_eqcont F_pointwiseCompact
 
 #exit
 
