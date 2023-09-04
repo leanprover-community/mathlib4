@@ -27,7 +27,7 @@ IsSubfield, subfield
 -/
 
 
-variable {F : Type _} [Field F] (S : Set F)
+variable {F : Type*} [Field F] (S : Set F)
 
 /-- `IsSubfield (S : Set F)` is the predicate saying that a given subset of a field is
 the set underlying a subfield. This structure is deprecated; use the bundled variant
@@ -57,7 +57,7 @@ theorem Univ.isSubfield : IsSubfield (@Set.univ F) :=
     inv_mem := fun _ ↦ trivial }
 #align univ.is_subfield Univ.isSubfield
 
-theorem Preimage.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set K} (hs : IsSubfield s) :
+theorem Preimage.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set K} (hs : IsSubfield s) :
     IsSubfield (f ⁻¹' s) :=
   { f.isSubring_preimage hs.toIsSubring with
     inv_mem := fun {a} (ha : f a ∈ s) ↦ show f a⁻¹ ∈ s by
@@ -65,13 +65,13 @@ theorem Preimage.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set K} (
       exact hs.inv_mem ha }
 #align preimage.is_subfield Preimage.isSubfield
 
-theorem Image.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set F} (hs : IsSubfield s) :
+theorem Image.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set F} (hs : IsSubfield s) :
     IsSubfield (f '' s) :=
   { f.isSubring_image hs.toIsSubring with
     inv_mem := fun ⟨x, xmem, ha⟩ ↦ ⟨x⁻¹, hs.inv_mem xmem, ha ▸ map_inv₀ f x⟩ }
 #align image.is_subfield Image.isSubfield
 
-theorem Range.isSubfield {K : Type _} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
+theorem Range.isSubfield {K : Type*} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
   rw [← Set.image_univ]
   apply Image.isSubfield _ Univ.isSubfield
 #align range.is_subfield Range.isSubfield
@@ -146,7 +146,7 @@ theorem closure_mono {s t : Set F} (H : s ⊆ t) : closure s ⊆ closure t :=
 
 end Field
 
-theorem isSubfield_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set F}
+theorem isSubfield_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set F}
     (hs : ∀ i, IsSubfield (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubfield (⋃ i, s i) :=
   { inv_mem := fun hx ↦
@@ -161,7 +161,7 @@ theorem IsSubfield.inter {S₁ S₂ : Set F} (hS₁ : IsSubfield S₁) (hS₂ : 
     inv_mem := fun hx ↦ ⟨hS₁.inv_mem hx.1, hS₂.inv_mem hx.2⟩ }
 #align is_subfield.inter IsSubfield.inter
 
-theorem IsSubfield.iInter {ι : Sort _} {S : ι → Set F} (h : ∀ y : ι, IsSubfield (S y)) :
+theorem IsSubfield.iInter {ι : Sort*} {S : ι → Set F} (h : ∀ y : ι, IsSubfield (S y)) :
     IsSubfield (Set.iInter S) :=
   { IsSubring.iInter fun y ↦ (h y).toIsSubring with
     inv_mem := fun hx ↦ Set.mem_iInter.2 fun y ↦ (h y).inv_mem <| Set.mem_iInter.1 hx y }

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
@@ -65,8 +65,8 @@ open FourierTransform
 
 namespace VectorFourier
 
-variable {𝕜 : Type _} [CommRing 𝕜] {V : Type _} [AddCommGroup V] [Module 𝕜 V] [MeasurableSpace V]
-  {W : Type _} [AddCommGroup W] [Module 𝕜 W] {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {𝕜 : Type*} [CommRing 𝕜] {V : Type*} [AddCommGroup V] [Module 𝕜 V] [MeasurableSpace V]
+  {W : Type*} [AddCommGroup W] [Module 𝕜 W] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 section Defs
 
@@ -184,7 +184,7 @@ end VectorFourier
 
 namespace Fourier
 
-variable {𝕜 : Type _} [CommRing 𝕜] [MeasurableSpace 𝕜] {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [CommRing 𝕜] [MeasurableSpace 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace ℂ E]
 
 section Defs
@@ -231,7 +231,7 @@ namespace Real
 /-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
 def fourierChar : Multiplicative ℝ →* 𝕊 where
   toFun z := expMapCircle (2 * π * Multiplicative.toAdd z)
-  map_one' := by simp only; rw [toAdd_one, MulZeroClass.mul_zero, expMapCircle_zero]
+  map_one' := by simp only; rw [toAdd_one, mul_zero, expMapCircle_zero]
   map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
@@ -244,10 +244,10 @@ theorem continuous_fourierChar : Continuous Real.fourierChar :=
   (map_continuous expMapCircle).comp (continuous_const.mul continuous_toAdd)
 #align real.continuous_fourier_char Real.continuous_fourierChar
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type _} [AddCommGroup V] [Module ℝ V]
-    [MeasurableSpace V] {W : Type _} [AddCommGroup W] [Module ℝ W] (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ)
+theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V] [Module ℝ V]
+    [MeasurableSpace V] {W : Type*} [AddCommGroup W] [Module ℝ W] (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ)
     (μ : Measure V) (f : V → E) (w : W) :
     VectorFourier.fourierIntegral fourierChar μ L f w =
       ∫ v : V, Complex.exp (↑(-2 * π * L v w) * Complex.I) • f v ∂μ :=
@@ -267,7 +267,7 @@ theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
 
 scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 
-theorem fourierIntegral_eq_integral_exp_smul {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+theorem fourierIntegral_eq_integral_exp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
   simp_rw [fourierIntegral_def, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]

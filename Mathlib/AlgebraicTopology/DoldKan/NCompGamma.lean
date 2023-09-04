@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
-#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e"
+#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -18,6 +18,8 @@ It is then shown that `Γ₂N₂.natTrans` is an isomorphism by using
 that it becomes an isomorphism after the application of the functor
 `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 which reflects isomorphisms.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -31,7 +33,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
@@ -184,6 +186,12 @@ lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
+
+lemma compatibility_Γ₂N₁_Γ₂N₂_inv_app (X : SimplicialObject C) :
+    compatibility_Γ₂N₁_Γ₂N₂.inv.app X =
+      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+  rw [← cancel_mono (compatibility_Γ₂N₁_Γ₂N₂.hom.app X), Iso.inv_hom_id_app,
+    compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_trans, eqToHom_refl]
 
 namespace Γ₂N₂
 

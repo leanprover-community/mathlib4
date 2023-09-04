@@ -37,7 +37,7 @@ namespace Equiv.Perm
 
 open Equiv List Multiset
 
-variable {α : Type _} [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section CycleType
 
@@ -270,7 +270,7 @@ theorem isConj_iff_cycleType_eq {σ τ : Perm α} : IsConj σ τ ↔ σ.cycleTyp
 #align equiv.perm.is_conj_iff_cycle_type_eq Equiv.Perm.isConj_iff_cycleType_eq
 
 @[simp]
-theorem cycleType_extendDomain {β : Type _} [Fintype β] [DecidableEq β] {p : β → Prop}
+theorem cycleType_extendDomain {β : Type*} [Fintype β] [DecidableEq β] {p : β → Prop}
     [DecidablePred p] (f : α ≃ Subtype p) {g : Perm α} :
     cycleType (g.extendDomain f) = cycleType g := by
   induction g using cycle_induction_on with
@@ -330,6 +330,24 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
   · exact Finset.card_le_univ _
 #align equiv.perm.card_compl_support_modeq Equiv.Perm.card_compl_support_modEq
 
+open Function in
+/-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
+and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
+theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ}
+    [hp : Fact p.Prime] (hf : f ^ p ^ n = 1) :
+    Fintype.card α ≡ Fintype.card f.fixedPoints [MOD p] := by
+  let σ : α ≃ α := ⟨f, f ^ (p ^ n - 1),
+    leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
+    leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
+  have hσ : σ ^ p ^ n = 1
+  · rw [FunLike.ext'_iff, coe_pow]
+    exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
+  suffices : Fintype.card f.fixedPoints = (support σ)ᶜ.card
+  · exact this ▸ (card_compl_support_modEq hσ).symm
+  suffices : f.fixedPoints = (support σ)ᶜ
+  · simp only [this]; apply Fintype.card_coe
+  simp [Set.ext_iff, IsFixedPt]
+
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
     {σ : Perm α} (hσ : σ ^ p ^ n = 1) : ∃ a : α, σ a = a := by
   classical
@@ -364,7 +382,7 @@ theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
 
 section Cauchy
 
-variable (G : Type _) [Group G] (n : ℕ)
+variable (G : Type*) [Group G] (n : ℕ)
 
 /-- The type of vectors with terms from `G`, length `n`, and product equal to `1:G`. -/
 def vectorsProdEqOne : Set (Vector G n) :=
@@ -452,7 +470,7 @@ end VectorsProdEqOne
 
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
-theorem _root_.exists_prime_orderOf_dvd_card {G : Type _} [Group G] [Fintype G] (p : ℕ)
+theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, orderOf x = p := by
   have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_lt hp.out.one_lt)
   have Scard :=
@@ -485,7 +503,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type _} [Group G] [Fintype G] 
 
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
-theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type _} [AddGroup G] [Fintype G] (p : ℕ)
+theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
   @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
 #align exists_prime_add_order_of_dvd_card exists_prime_addOrderOf_dvd_card

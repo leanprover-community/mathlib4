@@ -17,6 +17,8 @@ TODO: Define pullbacks of open embeddings.
 
 -/
 
+set_option autoImplicit true
+
 open CategoryTheory
 
 namespace Stonean
@@ -64,7 +66,7 @@ lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (
 
 lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
-  ext ⟨a,x⟩
+  ext ⟨a, x⟩
   specialize h a
   apply_fun (fun q => q x) at h
   exact h
@@ -96,6 +98,48 @@ instance hasFiniteCoproducts : HasFiniteCoproducts Stonean.{u} where
       exists_colimit := ⟨{
         cocone := finiteCoproduct.cocone F
         isColimit := finiteCoproduct.isColimit F }⟩ } }
+
+/--
+A coproduct cocone associated to the explicit finite coproduct with cone point `finiteCoproduct X`.
+-/
+@[simps]
+def finiteCoproduct.explicitCocone : Limits.Cocone (Discrete.functor X) where
+  pt := finiteCoproduct X
+  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+
+/--
+The more explicit finite coproduct cocone is a colimit cocone.
+-/
+@[simps]
+def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocone X) where
+  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
+  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
+  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
+    specialize hm ⟨a⟩
+    ext t
+    apply_fun (fun q => q t) at hm
+    exact hm
+
+/-- The isomorphism from the explicit finite coproducts to the abstract coproduct. -/
+noncomputable
+def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
+Limits.IsColimit.coconePointUniqueUpToIso
+  (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
+
+/-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
+lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+    OpenEmbedding (finiteCoproduct.ι Z a) :=
+  openEmbedding_sigmaMk (σ := fun a => (Z a))
+
+/-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
+lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+    OpenEmbedding (Sigma.ι Z a) := by
+  refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
+  convert finiteCoproduct.openEmbedding_ι Z a
+  ext x
+  change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
+  simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
+    finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
 
 end FiniteCoproducts
 

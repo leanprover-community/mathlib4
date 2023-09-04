@@ -110,7 +110,6 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
   cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
   cases' hI
   simp at hm
-  dsimp at Ffac Ffac'
   congr
   · apply (cancel_mono Fm).1
     rw [Ffac, hm, Ffac']
@@ -1041,7 +1040,7 @@ namespace CategoryTheory.Functor
 
 open CategoryTheory.Limits
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type*} [Category C] [Category D]
 
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
