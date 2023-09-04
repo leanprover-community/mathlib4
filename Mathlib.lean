@@ -2043,6 +2043,7 @@ import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.SpecificGroups.Coprod
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.GroupTheory.SpecificGroups.HNNExtension
 import Mathlib.GroupTheory.SpecificGroups.PushoutI
 import Mathlib.GroupTheory.SpecificGroups.Quaternion
 import Mathlib.GroupTheory.Subgroup.Actions
