@@ -1393,6 +1393,10 @@ theorem isClosed_iff_clusterPt {s : Set α} : IsClosed s ↔ ∀ a, ClusterPt a 
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
+theorem isClosed_iff_ultrafilter {s : Set α} : IsClosed s ↔
+    ∀ x, ∀ u : Ultrafilter α, ↑u ≤ 𝓝 x → s ∈ u → x ∈ s := by
+  simp [isClosed_iff_clusterPt, ClusterPt, ← exists_ultrafilter_iff]
+
 theorem isClosed_iff_nhds {s : Set α} : IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s :=
   by simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
 #align is_closed_iff_nhds isClosed_iff_nhds

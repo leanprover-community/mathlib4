@@ -228,6 +228,26 @@ theorem Equicontinuous.tendsto_uniformOnFun_iff_pi
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl, show restrict (⋃₀ 𝔖) f = φ.symm f by rfl,
       φ.symm.inducing.tendsto_nhds_iff]
 
+#check isClosed_iff_clusterPt
+
+theorem Equicontinuous.isClosed_range_uniformOnFun_iff_pi'
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+    IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    IsClosed (range <| (⋃₀ 𝔖).restrict ∘ F) := by
+  rcases isEmpty_or_nonempty α with _ | _
+  · simp [isClosed_discrete]
+  simp_rw [isClosed_iff_clusterPt, ClusterPt, ← Filter.map_top, ← Filter.push_pull', map_neBot_iff,
+    inf_top_eq, ← exists_ultrafilter_iff, ← tendsto_iff_comap, UniformOnFun.toFun]
+  refine ⟨fun H ↦ ?_, _⟩
+
+theorem Equicontinuous.isClosedMap_uniformOnFun_iff_pi' [TopologicalSpace ι]
+    {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
+    (hF : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F)) :
+    IsClosedMap (UniformOnFun.ofFun 𝔖 ∘ F) ↔
+    IsClosedMap F := by
+  sorry
+
 theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_cl : IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F))
