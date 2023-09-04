@@ -69,22 +69,24 @@ abbrev JDownwards :=
 
 section
 
-variable {g}
-
 @[simps!]
 def JDownwards.mk
     (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
       w.JDownwards g :=
   CostructuredArrow.mk' (StructuredArrow.mk a) (StructuredArrow.homMk b (by simpa using comm))
 
+variable {g}
+
 lemma JDownwards.cases
     (f : w.JDownwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
-      f = mk w X₁ a b comm := by
+      f = mk w g X₁ a b comm := by
   obtain ⟨g, φ, rfl⟩ := CostructuredArrow.cases f
   obtain ⟨X₁, a, rfl⟩ := g.cases
   obtain ⟨b, hb, rfl⟩ := StructuredArrow.hom_cases φ
   exact ⟨X₁, a, b, by simpa using hb, rfl⟩
+
+variable (g)
 
 @[simps!]
 def JRightwards.mk
@@ -92,10 +94,12 @@ def JRightwards.mk
       w.JRightwards g :=
   StructuredArrow.mk' (CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
+variable {g}
+
 lemma JRightwards.cases
     (f : w.JRightwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
-      f = mk w X₁ a b comm := by
+      f = mk w g X₁ a b comm := by
   obtain ⟨g, φ, rfl⟩ := StructuredArrow.cases f
   obtain ⟨X₁, b, rfl⟩ := g.cases
   obtain ⟨a, ha, rfl⟩ := CostructuredArrow.hom_cases φ

@@ -19,6 +19,16 @@ structure RightResolution (X₂ : C₂) where
   w : X₂ ⟶ Φ.functor.obj X₁
   hw : W₂ w
 
+section
+
+variable {Φ X₂}
+
+lemma RightResolution.cases (R : Φ.RightResolution X₂) :
+    ∃ (X₁ : C₁) (w : X₂ ⟶ Φ.functor.obj X₁) (hw : W₂ w), R = RightResolution.mk w hw :=
+  ⟨_, R.w, R.hw, rfl⟩
+
+end
+
 abbrev HasRightResolutions := ∀ (X₂ : C₂), Nonempty (Φ.RightResolution X₂)
 
 namespace RightResolution
