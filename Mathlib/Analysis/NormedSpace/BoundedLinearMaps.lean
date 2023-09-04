@@ -62,6 +62,7 @@ open Metric ContinuousLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {α : Type*} [TopologicalSpace α]
 
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
@@ -451,6 +452,12 @@ theorem isBoundedBilinearMap_comp :
   (compL 𝕜 E F G).isBoundedBilinearMap
 #align is_bounded_bilinear_map_comp isBoundedBilinearMap_comp
 
+@[continuity]
+theorem ContinuousLinearMap.continuous_comp
+    {f : α → (F →L[𝕜] G)} (hf : Continuous f) {g : α → (E →L[𝕜] F)} (hg : Continuous g) :
+    Continuous (fun x ↦ (f x).comp (g x)) :=
+  isBoundedBilinearMap_comp.continuous.comp₂ hf hg
+
 theorem ContinuousLinearMap.isBoundedLinearMap_comp_left (g : F →L[𝕜] G) :
     IsBoundedLinearMap 𝕜 fun f : E →L[𝕜] F => ContinuousLinearMap.comp g f :=
   isBoundedBilinearMap_comp.isBoundedLinearMap_right _
@@ -461,9 +468,14 @@ theorem ContinuousLinearMap.isBoundedLinearMap_comp_right (f : E →L[𝕜] F) :
   isBoundedBilinearMap_comp.isBoundedLinearMap_left _
 #align continuous_linear_map.is_bounded_linear_map_comp_right ContinuousLinearMap.isBoundedLinearMap_comp_right
 
-theorem isBoundedBilinearMapApply : IsBoundedBilinearMap 𝕜 fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
+theorem isBoundedBilinearMap_apply : IsBoundedBilinearMap 𝕜 fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
   (ContinuousLinearMap.flip (apply 𝕜 F : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F)).isBoundedBilinearMap
-#align is_bounded_bilinear_map_apply isBoundedBilinearMapApply
+#align is_bounded_bilinear_map_apply isBoundedBilinearMap_apply
+
+@[continuity]
+theorem ContinuousLinearMap.continuous_apply {f : α → (E →L[𝕜] F)} {g : α → E}
+    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) (g x)) :=
+  isBoundedBilinearMap_apply.continuous.comp₂ hf hg
 
 /-- The function `ContinuousLinearMap.smulRight`, associating to a continuous linear map
 `f : E → 𝕜` and a scalar `c : F` the tensor product `f ⊗ c` as a continuous linear map from `E` to
