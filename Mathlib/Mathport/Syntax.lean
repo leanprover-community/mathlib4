@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Std.Tactic.Ext
+import Std.Tactic.LeftRight
 import Std.Tactic.RCases
 import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
@@ -47,7 +48,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith

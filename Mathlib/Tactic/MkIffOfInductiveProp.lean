@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, David Renshaw
 import Lean
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.LeftRight
+import Std.Tactic.LeftRight
 
 /-!
 # mk_iff_of_inductive_prop
@@ -30,15 +30,16 @@ namespace Mathlib.Tactic.MkIff
 
 open Lean Meta Elab
 
+open Std.Tactic.NthConstructor in
 /-- `select m n` runs `right` `m` times, and then `left` `(n-m)` times.
 Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
   | 0, 0             => pure goal
-  | 0, (_ + 1)       => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `left 0 2 goal
+  | 0, (_ + 1)       => do let [new_goal] ← nthConstructor `left 0 (some 2) goal
                                 | throwError "expected only one new goal"
                            pure new_goal
-  | (m + 1), (n + 1) => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `right 1 2 goal
+  | (m + 1), (n + 1) => do let [new_goal] ← nthConstructor `right 1 (some 2) goal
                                 | throwError "expected only one new goal"
                            select m n new_goal
   | _, _             => failure
