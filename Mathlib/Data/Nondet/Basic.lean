@@ -3,9 +3,9 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean
 import Std.Tactic.Lint
 import Std.Data.MLList.Basic
+import Mathlib.Data.MLList.Basic
 
 /-!
 # A nondeterminism monad.
@@ -24,16 +24,6 @@ we eventually mark `Nondet` as irreducible.
 -/
 
 set_option autoImplicit true
-
-namespace MLList
-
-def singletonM [Monad m] (x : m α) : MLList m α :=
-  .squash fun _ => do return .cons (← x) .nil
-
-def singleton [Monad m] (x : α) : MLList m α :=
-  .singletonM (pure x)
-
-end MLList
 
 open Lean
 

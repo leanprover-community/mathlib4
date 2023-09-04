@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
-import Mathlib.Tactic.Nondet
+import Mathlib.Data.Nondet.Basic
 import Lean.Meta.Tactic.Util
 import Mathlib.Control.Basic
 import Mathlib.Lean.Meta
