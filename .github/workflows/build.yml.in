@@ -142,6 +142,13 @@ jobs:
 
       - name: build archive
         run: |
+          # Note: we should not be including `Archive` and `Countexamples` in the cache.
+          # We do this for now for the sake of not rebuilding them in every CI run
+          # even when they are not touched.
+          # Since `Archive` and `Counterexamples` files have very simple dependencies,
+          # it should be possible to determine whether they need to be built without actually
+          # storing and transferring oleans over the network.
+          # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
           lake exe cache get Archive.lean
           lake build Archive
           lake exe cache put Archive.lean
