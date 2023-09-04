@@ -417,7 +417,7 @@ theorem norm_eq_tsum_rpow (hp : 0 < p.toReal) (f : lp E p) :
 theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
-  · field_simp [hp.ne']
+  · field_simp
   apply tsum_nonneg
   intro i
   calc
@@ -1253,7 +1253,7 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
 
 theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)} (K : ℝ≥0) :
     LipschitzWith K f ↔ ∀ i : ι, LipschitzWith K (fun a : α ↦ f a i) := by
-  simp_rw [← lipschitz_on_univ]
+  simp_rw [← lipschitzOn_univ]
   apply LipschitzOnWith.coordinate
 
 end Lipschitz

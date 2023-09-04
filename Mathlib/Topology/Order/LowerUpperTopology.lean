@@ -494,13 +494,13 @@ instance (priority := 90) UpperTopology.continuousInf : ContinuousSup α :=
 
 end CompleteLattice_UpperTopology
 
-lemma UpperDual_iff_Lower [Preorder α] [TopologicalSpace α] :
+lemma upper_dual_iff_lower [Preorder α] [TopologicalSpace α] :
     UpperTopology αᵒᵈ ↔ LowerTopology α := by
   constructor
   · apply UpperTopology.instLowerTopologyDual
   · apply LowerTopology.instUpperTopologyDual
 
-lemma LowerDual_iff_Upper [Preorder α] [TopologicalSpace α] :
+lemma lower_dual_iff_upper [Preorder α] [TopologicalSpace α] :
     LowerTopology αᵒᵈ ↔ UpperTopology α := by
   constructor
   · apply LowerTopology.instUpperTopologyDual
