@@ -2,11 +2,12 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
-
 -/
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
+
+#align_import data.bool.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Booleans
