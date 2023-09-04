@@ -29,12 +29,29 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
 
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
-namespace IsUniversalOfPointwise
-
-/-def isUniversalOfPointwise (h : ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y) :
-    E.IsUniversal := sorry-/
-
-end IsUniversalOfPointwise
+def isUniversalOfPointwise (h : ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y) :
+    E.IsUniversal :=
+  IsInitial.ofUniqueHom (fun G => StructuredArrow.homMk
+        { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
+          naturality := fun Y₁ Y₂ φ => by
+            apply (h Y₁).hom_ext
+            intro X
+            rw [(h Y₁).fac_assoc (coconeAt G Y₁) X]
+            simpa using (h Y₂).fac (coconeAt G Y₂) ((CostructuredArrow.map φ).obj X) }
+      (by
+        ext X
+        simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _))))
+    (fun G => by
+      suffices ∀ (m₁ m₂ : E ⟶ G), m₁ = m₂ by intros; apply this
+      intro m₁ m₂
+      ext Y
+      apply (h Y).hom_ext
+      intro X
+      have eq₁ := congr_app (StructuredArrow.w m₁) X.left
+      have eq₂ := congr_app (StructuredArrow.w m₂) X.left
+      dsimp at eq₁ eq₂ ⊢
+      simp only [assoc, NatTrans.naturality]
+      rw [reassoc_of% eq₁, reassoc_of% eq₂])
 
 end LeftExtension
 
@@ -94,14 +111,14 @@ noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtensionAt (X : D)
     rw [id_comp]
     rfl))
 
-/-def pointwiseLeftKanExtensionIsUniversal :
+noncomputable def pointwiseLeftKanExtensionIsUniversal :
     (F.pointwiseLeftKanExtension L).IsUniversal :=
   (F.pointwiseLeftKanExtension L).isUniversalOfPointwise
     (F.pointwiseLeftKanExtensionIsPointwiseLeftKanExtensionAt L)
 
 instance : (F.pointwiseLeftKanExtensionFunctor L).IsLeftKanExtension
     (F.pointwiseLeftKanExtensionNatTrans L) where
-  nonempty_isUniversal := ⟨F.pointwiseLeftKanExtensionIsUniversal L⟩-/
+  nonempty_isUniversal := ⟨F.pointwiseLeftKanExtensionIsUniversal L⟩
 
 end
 
