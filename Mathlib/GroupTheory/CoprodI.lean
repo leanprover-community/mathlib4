@@ -234,8 +234,7 @@ theorem inv_def (x : CoprodI G) :
 #align free_product.inv_def Monoid.CoprodI.inv_def
 
 instance : Group (CoprodI G) :=
-  { toInv := inferInstanceAs (Inv (CoprodI G)),
-    toMonoid := inferInstanceAs (Monoid (CoprodI G)),
+  { inferInstanceAs (Inv (CoprodI G)), inferInstanceAs (Monoid (CoprodI G)) with
     mul_left_inv := by
       intro m
       rw [inv_def]
@@ -280,9 +279,6 @@ def empty : Word M where
 
 instance : Inhabited (Word M) :=
   ⟨empty⟩
-
-theorem toList_injective : Function.Injective (Word.toList : Word M → List _) := by
-  rintro ⟨_, _, _⟩ ⟨_, _, _⟩; simp
 
 /-- A reduced word determines an element of the free product, given by multiplication. -/
 def prod (w : Word M) : CoprodI M :=
@@ -631,7 +627,6 @@ def equiv : CoprodI M ≃ Word M where
       intro i m w ih
       rw [prod_smul, mul_smul, ih]
 #align free_product.word.equiv Monoid.CoprodI.Word.equiv
-
 
 instance : DecidableEq (Word M) :=
   Function.Injective.decidableEq Word.ext
