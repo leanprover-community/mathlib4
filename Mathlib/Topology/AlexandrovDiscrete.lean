@@ -30,7 +30,7 @@ a family of open sets is open. -/
 class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
   /-- The intersection of a family of open sets is an open set. Use `isOpen_sInter` in the root
   namespace instead. -/
-  isOpen_sInter : ∀ s : Set (Set α), (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s)
+  protected isOpen_sInter : ∀ s : Set (Set α), (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s)
 
 variable {ι : Sort*} {α : Type*} [TopologicalSpace α] [AlexandrovDiscrete α] {S : Set (Set α)}
   {f : ι → Set α}
