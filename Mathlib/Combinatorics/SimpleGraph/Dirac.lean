@@ -16,7 +16,7 @@ lemma SimpleGraph.Walk.IsHamiltonian.contains_vertex (p : G.Walk u v) (hp : p.Is
 
 /-- If `p` is a Hamiltonian path -/
 lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltonian) :
-    p.length = Fintype.card V := by
+    p.length = Fintype.card V - 1 := by
   sorry
 
 /-- A *Hamiltonian cycle* is a Walk that visits every vertex once, except the initial
@@ -25,7 +25,7 @@ def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
   (∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
-  p.length = Fintype.card V + 1 := by
+  p.length = Fintype.card V := by
   sorry
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
