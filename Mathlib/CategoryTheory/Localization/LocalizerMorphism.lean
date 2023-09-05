@@ -12,10 +12,12 @@ A morphism of localizers consists of a functor `F : C₁ ⥤ C₂` between
 two categories equipped with morphism properties `W₁` and `W₂` such
 that `F` sends morphisms in `W₁` to morphisms in `W₂`.
 
-If `Φ : LocalizerMorphism W₁ W₂`, we introduce the condition
-`Φ.IsLocalizedEquivalence` which expresses that the induced functor
-on the localized categories is an equivalence. This condition is
-independent of the choice of the localized categories.
+If `Φ : LocalizerMorphism W₁ W₂`, and that `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂`
+are localization functors for `W₁` and `W₂`, the induced functor `D₁ ⥤ D₂`
+is denoted `Φ.localizedFunctor L₁ L₂`; we introduce the condition
+`Φ.IsLocalizedEquivalence` which expresses that this functor is an equivalence
+of categories. This condition is independent of the choice of the
+localized categories.
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
