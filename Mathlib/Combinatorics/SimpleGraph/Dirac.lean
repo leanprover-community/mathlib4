@@ -4,7 +4,7 @@ import Mathlib.Combinatorics.SimpleGraph.Trails
 open Classical
 
 variable {V : Type} [Fintype V] {G : SimpleGraph V} {u v : V}
-
+#check Fintype.card V
 -- #check SimpleGraph.Walk.IsEulerian
 
 /-- A *Hamiltonian path* is a walk `p` that visits every vertex exactly once. -/
@@ -20,6 +20,6 @@ def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
 
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
-theorem Dirac {G : SimpleGraph V} (degree_condition : G.minDegree ≥ sorry/2 ∧ sorry ) : G.IsHamiltonian :=
+theorem Dirac {G : SimpleGraph V} (degree_condition : Fintype.card V ≥ 3 ∧ G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian :=
   -- |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is hamiltonian
   sorry
