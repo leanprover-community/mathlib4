@@ -236,6 +236,7 @@ import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
@@ -244,6 +245,9 @@ import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+=======
+import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+>>>>>>> origin
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
