@@ -242,7 +242,7 @@ section shift
 
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
-    ext ⟨p, q, hpq⟩
+    ext p q hpq
     dsimp
     simp only [Cochain.δ_shift, δ_snd, Cochain.shift_neg, smul_neg,
       Cochain.neg_v, Cochain.zsmul_v, Cochain.shift_v, Cochain.comp_zero_cochain_v,

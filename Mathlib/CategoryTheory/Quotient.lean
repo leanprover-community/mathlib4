@@ -239,11 +239,11 @@ variable {r}
 
 lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
     (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
-  NatTrans.ext _ _ (by ext1 ⟨X⟩ ; exact NatTrans.congr_app h X)
+  NatTrans.ext _ _ (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
 
 variable (r)
 
-/-- in order to define a natural transformation `F ⟶ G` with `F G : Quotient r ⥤ D`, it suffices
+/-- In order to define a natural transformation `F ⟶ G` with `F G : Quotient r ⥤ D`, it suffices
 to do so after precomposing with `Quotient.functor r`. -/
 def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) :
     F ⟶ G where
@@ -267,6 +267,8 @@ lemma comp_natTransLift {F G H : Quotient r ⥤ D}
 lemma natTransLift_id (F : Quotient r ⥤ D) :
     natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by aesop_cat
 
+/-- In order to define a natural isomorphism `F ≅ G` with `F G : Quotient r ⥤ D`, it suffices
+to do so after precomposing with `Quotient.functor r`. -/
 @[simps]
 def natIsoLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ≅ Quotient.functor r ⋙ G) :
     F ≅ G where
@@ -277,12 +279,12 @@ def natIsoLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ≅ Quoti
 
 variable (D)
 
-instance full_whiskeringLeft_quotient_functor :
-    Full ((whiskeringLeft C _ D).obj (Quotient.functor r)) where
+instance full_whiskeringLeft_functor :
+    Full ((whiskeringLeft C _ D).obj (functor r)) where
   preimage := natTransLift r
 
-instance faithful_whiskeringLeft_quotient_functor :
-    Faithful ((whiskeringLeft C _ D).obj (Quotient.functor r)) := ⟨by apply natTrans_ext⟩
+instance faithful_whiskeringLeft_functor :
+    Faithful ((whiskeringLeft C _ D).obj (functor r)) := ⟨by apply natTrans_ext⟩
 
 end Quotient
 

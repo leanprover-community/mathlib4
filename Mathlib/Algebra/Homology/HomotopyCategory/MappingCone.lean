@@ -47,7 +47,7 @@ noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
 noncomputable def inr : G ⟶ mappingCone φ :=
   Cocycle.homOf (Cocycle.mk
     (Cochain.mk (fun p q hpq => (Cochain.ofHom (𝟙 G)).v p q hpq ≫ biprod.inr)) 1 (zero_add 1) (by
-      ext ⟨p, _, rfl⟩
+      ext p _ rfl
       dsimp [mappingCone]
       simp only [δ_v 0 1 (zero_add 1) _ p _ rfl p (p+1) (by linarith) rfl, zero_add,
         Int.negOnePow_one,
@@ -59,7 +59,7 @@ noncomputable def inr : G ⟶ mappingCone φ :=
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
   Cocycle.mk (Cochain.mk (fun p q hpq =>
     biprod.fst ≫ (Cochain.ofHom (𝟙 F)).v (p+1) q (by rw [add_zero, hpq]))) 2 (by linarith) (by
-    ext ⟨p, q, hpq⟩
+    ext p q hpq
     obtain rfl : q = p + 1 + 1 := by linarith
     dsimp [mappingCone]
     simp only [δ_v 1 2 (by linarith) _ p (p+1+1) (by linarith) (p+1) (p+1) (by linarith) rfl,
@@ -98,7 +98,7 @@ lemma inl_v_snd_v (p q : ℤ) (hpq : p+(-1) = q) :
 @[simp]
 lemma inl_snd :
     (inl φ) •[add_zero (-1)] (snd φ) = 0 := by
-  ext ⟨p, q, hpq⟩
+  ext p q hpq
   simp [Cochain.comp_v _ _ (add_zero (-1)) p q q (by linarith) (by linarith)]
 
 @[simp]
@@ -115,7 +115,7 @@ lemma inr_f_fst_v (p q : ℤ) (hpq : p+1 = q) :
 @[simp]
 lemma inr_fst :
     Cochain.ofHom (inr φ) •[zero_add 1] (fst φ : Cochain (mappingCone φ) F 1) = 0 := by
-  ext ⟨p, q, hpq⟩
+  ext p q hpq
   simp [Cochain.comp_v _ _ (zero_add 1) p p q (by linarith) (by linarith)]
 
 @[simp]
@@ -190,7 +190,7 @@ lemma cochain_from_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : C
   . rintro rfl
     tauto
   . rintro ⟨h₁, h₂⟩
-    ext ⟨p, q, hpq⟩
+    ext p q hpq
     dsimp
     rw [from_ext_iff _ _ _ _ rfl]
     constructor
@@ -207,7 +207,7 @@ lemma cochain_to_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : Coc
   . rintro rfl
     tauto
   . rintro ⟨h₁, h₂⟩
-    ext ⟨p, q, hpq⟩
+    ext p q hpq
     dsimp
     rw [to_ext_iff _ _ _ _ rfl]
     constructor
@@ -286,7 +286,7 @@ lemma diff_comp_fst :
   (Cochain.diff (mappingCone φ)) •[show 1 + 1 = 2 by rfl]
     (fst φ : Cochain (mappingCone φ) F 1) =
       -(fst φ : Cochain (mappingCone φ) F 1) •[show 1 + 1 = 2 by rfl] (Cochain.diff F) := by
-  ext ⟨p, q, hpq⟩
+  ext p q hpq
   dsimp
   simp only [Cochain.comp_v _ _ (show 1 + 1 = 2 by rfl) p (p+1) q (by linarith) (by linarith),
     Cochain.diff_v, d_fst_v]
@@ -296,7 +296,7 @@ lemma diff_comp_snd :
   (Cochain.diff (mappingCone φ)) •[add_zero 1] (snd φ) =
     (fst φ : Cochain (mappingCone φ) F 1) •[add_zero 1] (Cochain.ofHom φ) +
       (snd φ) •[zero_add 1] (Cochain.diff G) := by
-  ext ⟨p, q, hpq⟩
+  ext p q hpq
   dsimp
   simp only [Cochain.comp_v _ _ (add_zero 1) p q q hpq (add_zero q),
     Cochain.comp_v _ _ (zero_add 1) p p q (add_zero p) hpq,

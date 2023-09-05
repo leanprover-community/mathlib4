@@ -588,11 +588,11 @@ lemma shiftFunctorComm_eq (i j k : A) (h : i + j = k) :
 
 @[simp]
 lemma shiftFunctorComm_eq_refl (i : A) :
-  shiftFunctorComm C i i = Iso.refl _ := by
+    shiftFunctorComm C i i = Iso.refl _ := by
   rw [shiftFunctorComm_eq C i i (i + i) rfl, Iso.symm_self_id]
 
 lemma shiftFunctorComm_symm (i j : A) :
-  (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
+    (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
   ext1
   dsimp
   rw [shiftFunctorComm_eq C i j (i+j) rfl, shiftFunctorComm_eq C j i (i+j) (add_comm j i)]

@@ -10,13 +10,13 @@ import Mathlib.CategoryTheory.Localization.HasLocalization
 /-!
 # The shift induced on a localized category
 
-Let `C` be a category equipped with a shift by a monoid `A`. If `W : MorphismProperty C`
-is compatible with the shift, then the corresponding localized can be equipped with
-a shift by `A`. This condition `[W.IsCompatibleWithShift]` expresses that for any
-`a : A`, a morphism `f` is in `W` iff `f⟦a⟧'` is.
+Let `C` be a category equipped with a shift by a monoid `A`. A morphism property `W`
+on `C` satisfies `W.IsCompatibleWithShift A` when for all `a : A`,
+a morphism `f` is in `W` iff `f⟦a⟧'` is. When this compatibility is satisfied,
+then the corresponding localized category can be equipped with
+a shift by `A`, and the localization functor is compatible with the shift.
 
 --/
-
 
 universe v₁ v₂ u₁ u₂ w
 
@@ -60,10 +60,11 @@ that is compatible with the shift by a monoid `A` on `C`, this is the induced
 shift on the category `D`. -/
 noncomputable def HasShift.localized  : HasShift D A :=
   HasShift.induced L A
-    (fun a => Localization.lift (shiftFunctor C a ⋙ L) (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
+    (fun a => Localization.lift (shiftFunctor C a ⋙ L)
+      (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
-    ⟨⟨(inferInstance : Full ((Localization.whiskeringLeftFunctor' L W D)))⟩,
-      (inferInstance : Faithful ((Localization.whiskeringLeftFunctor' L W D)))⟩
+    ⟨⟨(inferInstance : Full (Localization.whiskeringLeftFunctor' L W D))⟩,
+      (inferInstance : Faithful (Localization.whiskeringLeftFunctor' L W D))⟩
 
 /-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
 noncomputable def Functor.CommShift.localized :

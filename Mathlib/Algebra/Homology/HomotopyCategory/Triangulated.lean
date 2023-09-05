@@ -32,7 +32,7 @@ namespace MappingConeCompHomotopyEquiv
 noncomputable def hom : mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
   lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) (by
-    ext ⟨p, _, rfl⟩
+    ext p _ rfl
     dsimp [mappingConeCompTriangle, map']
     simp [from_ext_iff _ _ _ _ rfl,
       inl_v_d_assoc _ (p+1) p (p+2) (by linarith) (by linarith)])

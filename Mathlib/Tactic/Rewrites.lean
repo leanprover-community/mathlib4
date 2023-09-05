@@ -8,7 +8,8 @@ import Std.Data.MLList.Heartbeats
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Lean.Meta
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
 

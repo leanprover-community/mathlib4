@@ -132,8 +132,8 @@ noncomputable instance :
   Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
-    ⟨⟨Quotient.full_whiskeringLeft_quotient_functor _ _⟩,
-      Quotient.faithful_whiskeringLeft_quotient_functor _ _⟩
+    ⟨⟨Quotient.full_whiskeringLeft_functor _ _⟩,
+      Quotient.faithful_whiskeringLeft_functor _ _⟩
 
 lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
   ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a a' ha').hom.app
