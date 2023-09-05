@@ -376,7 +376,7 @@ theorem interior_iInter_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.interior_iInter f <;> simp
-#align interior_Inter interior_iInter
+#align interior_Inter interior_iInter_of_finite
 
 theorem interior_union_isClosed_of_interior_empty {s t : Set α} (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
