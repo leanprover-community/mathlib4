@@ -45,7 +45,7 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
-      graph := graph.dependenciesOf (NameSet.empty.insert f)
+      graph := graph.downstreamOf (NameSet.empty.insert f)
     if ¬(args.hasFlag "include-deps") then
       let p := getModule to
       graph := graph.filterMap (fun n i =>
@@ -67,6 +67,10 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
           |>.toList.eraseDup.toArray))
       -- add the new node `«Mathlib.Tactics»`
       graph := graph.insert `«Mathlib.Tactics» tacticImports
+      -- Finally, as we have removed edges, we need to filter to remove nodes
+      -- which are imported only via `«Mathlib.Tactics»`,
+      -- and which would otherwise not have edges down to `to` at this point.
+      graph := Lean.NameMap.upstreamOf graph (NameSet.empty.insert to)
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph

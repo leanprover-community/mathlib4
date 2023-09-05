@@ -95,9 +95,19 @@ def transitiveReduction (m : NameMap (Array Name)) : NameMap (Array Name) :=
     r.insert n (a.foldr (fun i b => b.filter (fun j => ! ((c.find? i).getD {}).contains j)) a)) {}
 
 /-- Restrict an import graph to only the downstream dependencies of some set of modules. -/
-def dependenciesOf (m : NameMap (Array Name)) (targets : NameSet) : NameMap (Array Name) :=
+def downstreamOf (m : NameMap (Array Name)) (targets : NameSet) : NameMap (Array Name) :=
   let tc := transitiveClosure m
-  let P (n : Name):= targets.contains n || ((tc.find? n).getD {}).any fun j => targets.contains j
+  let P (n : Name) := targets.contains n || ((tc.find? n).getD {}).any fun j => targets.contains j
+  m.fold (init := {}) fun r n i =>
+    if P n then
+      r.insert n (i.filter P)
+    else
+      r
+
+/-- Restrict an import graph to only the transitive imports of some set of modules. -/
+def upstreamOf (m : NameMap (Array Name)) (targets : NameSet) : NameMap (Array Name) :=
+  let tc := transitiveClosure m
+  let P (n : Name) := targets.contains n || targets.any fun t => ((tc.find? t).getD {}).contains n
   m.fold (init := {}) fun r n i =>
     if P n then
       r.insert n (i.filter P)
