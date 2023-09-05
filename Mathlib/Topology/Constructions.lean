@@ -1269,20 +1269,24 @@ theorem Pi.continuous_postcomp [TopologicalSpace β] {g : α → β} (hg : Conti
     Continuous (g ∘ · : (ι → α) → (ι → β)) :=
   Pi.continuous_postcomp' fun _ ↦ hg
 
+lemma Pi.continuous_restrict (S : Set ι) :
+    Continuous (S.restrict : (∀ i : ι, π i) → (∀ i : S, π i)) :=
+  Pi.continuous_precomp' ((↑) : S → ι)
+
 lemma Pi.induced_precomp' {ι' : Type*} (φ : ι' → ι) :
     induced (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) (T (φ i')) := by
   simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp]
 
-lemma Pi.induced_restrict (S : Set ι) :
-    induced (S.restrict) Pi.topologicalSpace =
-    ⨅ i ∈ S, induced (eval i) (T i) := by
-  simp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι), Set.restrict]
-
 lemma Pi.induced_precomp [TopologicalSpace β] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace β› :=
   induced_precomp' φ
+
+lemma Pi.induced_restrict (S : Set ι) :
+    induced (S.restrict) Pi.topologicalSpace =
+    ⨅ i ∈ S, induced (eval i) (T i) := by
+  simp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι), Set.restrict]
 
 lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
     induced ((⋃₀ 𝔖).restrict) (Pi.topologicalSpace (β := fun i : (⋃₀ 𝔖) ↦ π i)) =
