@@ -98,7 +98,7 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     Finset.sum_univ_ite]
 
 theorem Basis.parallelepiped_measurable {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] (b : Basis ι ℝ E) :
+    [NormedSpace ℝ E] [MeasurableSpace E] [OpensMeasurableSpace E] (b : Basis ι ℝ E) :
     MeasurableSet (b.parallelepiped : Set E) := by
   rw [Basis.parallelepiped_eq_map, PositiveCompacts.coe_map, LinearEquiv.image_symm_eq_preimage]
   exact (continuous_equivFun_basis _).measurable (PositiveCompacts.piIcc01_measurable ι)
@@ -106,7 +106,7 @@ theorem Basis.parallelepiped_measurable {ι E : Type*} [Fintype ι] [NormedAddCo
 open MeasureTheory MeasureTheory.Measure
 
 theorem Basis.addHaar_map {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]  (b : Basis ι ℝ E)
+    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] (b : Basis ι ℝ E)
     [NormedAddCommGroup F] [NormedSpace ℝ F] [TopologicalSpace.SecondCountableTopology F]
     [SigmaCompactSpace F] [MeasurableSpace F] [BorelSpace F] (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
