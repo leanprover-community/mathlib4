@@ -11,11 +11,12 @@ def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
 
 /-- If `p` is a Hamiltonian path and `w` is a member of the vertex set, `w` is in the vertex set of `p`. -/
 lemma SimpleGraph.Walk.IsHamiltonian.contains_vertex (p : G.Walk u v) (hp : p.IsHamiltonian)
-  (w : V) : w ∈ p.support :=
+  (w : V) : w ∈ p.support := by
   sorry
 
+/-- If `p` is a Hamiltonian path -/
 lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltonian) :
-  p.length = card V :=
+  p.length = Fintype.card V := by
   sorry
 
 /-- A *Hamiltonian cycle* is a *Hamiltonian path* that is a *Cycle* -/
@@ -27,6 +28,6 @@ def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
 
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
-theorem Dirac {G : SimpleGraph V} (degree_condition: Fintype.card V ≥ 3 ∧ G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian :=
+theorem Dirac {G : SimpleGraph V} (CardinalityCondition: Fintype.card V ≥ 3) (MinDegreeCondition: G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian := by
   -- |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is hamiltonian
   sorry
