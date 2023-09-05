@@ -11,11 +11,11 @@ def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
 #check SimpleGraph.Walk.IsEulerian
 
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
-  -- ∃ W : SimpleGraph.Walk.IsHamiltonian V ∧ Walk is from v to v.
+  -- ∃ W : SimpleGraph.Walk.IsHamiltonian V ∧ Walk is from v to v / cycle.
   sorry
 
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
-  -- ∃ W : SimpleGraph.Walk.IsHamiltonianCycle ∧ |W| = |V|
+  -- ∃ W : SimpleGraph.Walk.IsHamiltonianCycle
   sorry
 
 theorem Dirac {G : SimpleGraph V} (degree_condition : sorry) : G.IsHamiltonian :=
