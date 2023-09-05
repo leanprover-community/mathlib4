@@ -531,8 +531,8 @@ theorem exists_dvd_and_dvd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m *
     simp
   · obtain ⟨a, ha⟩ := gcd_dvd_left k m
     refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-    suffices h : gcd k m * a ∣ gcd k m * n
-    · cases' h with b hb
+    suffices h : gcd k m * a ∣ gcd k m * n by
+      cases' h with b hb
       use b
       rw [mul_assoc] at hb
       apply mul_left_cancel₀ h0 hb
