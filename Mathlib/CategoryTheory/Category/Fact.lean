@@ -47,8 +47,11 @@ variable {X Y : C} {f : X ⟶ Y}
 commutativity conditions. -/
 @[ext]
 protected structure Hom (d e : Fact f) : Type (max u v) where
+  /-- The morphism between the midpoints of the factorizations. -/
   h : d.D ⟶ e.D
+  /-- The left commuting triangle of the factorization morphism. -/
   ι_h : d.ι ≫ h = e.ι := by aesop_cat
+  /-- The right commuting triangle of the factorization morphism. -/
   h_π : h ≫ e.π = d.π := by aesop_cat
 
 attribute [simp] Fact.Hom.ι_h Fact.Hom.h_π
