@@ -8,7 +8,7 @@ import Mathlib.Topology.Inseparable
 import Mathlib.Topology.SubsetProperties
 
 /-!
-# Alexandroff-discrete topological spaces
+# Alexandrov-discrete topological spaces
 
 This file defines Alexandrov-discrete spaces, aka finitely generated spaces.
 
@@ -20,7 +20,7 @@ Rest of the API
 
 ## Tags
 
-Alexandrov, discrete, finitely generated, fg space
+Alexandroff, discrete, finitely generated, fg space
 -/
 
 open Set TopologicalSpace

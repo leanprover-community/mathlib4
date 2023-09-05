@@ -173,7 +173,8 @@ theorem Set.Finite.isOpen_biInter {s : Set β} {f : β → Set α} (hs : s.Finit
   sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
 
-theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) : IsOpen (⋂ i, s i) :=
+theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) :
+  IsOpen (⋂ i, s i) :=
   (finite_range _).isOpen_sInter  (forall_range_iff.2 h)
 #align is_open_Inter isOpen_iInter_of_finite
 
@@ -258,6 +259,10 @@ theorem Set.Finite.isClosed_biUnion {s : Set β} {f : β → Set α} (hs : s.Fin
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h
 #align is_closed_bUnion Set.Finite.isClosed_biUnion
+
+lemma isClosed_biUnion_finset {s : Finset β} {f : β → Set α} (h : ∀ i ∈ s, IsClosed (f i)) :
+    IsClosed (⋃ i ∈ s, f i) :=
+  s.finite_toSet.isClosed_biUnion h
 
 theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set α} (h : ∀ i, IsClosed (s i)) :
     IsClosed (⋃ i, s i) := by
