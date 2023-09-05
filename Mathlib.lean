@@ -137,6 +137,7 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Algebra.Expr
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
