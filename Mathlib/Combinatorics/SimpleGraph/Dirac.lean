@@ -22,6 +22,10 @@ def SimpleGraph.IsConneted (G: SimpleGraph V) : Prop :=
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   ∃ p : SimpleGraph.Walk.IsHamiltonianCycle p ∧ G SimpleGraph.IsConnected
 
+/-- -/
+def SimpleGraph.MinDegree  (G : SimpleGraph V) : Prop :=
+  sorry
+
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
 theorem Dirac {G : SimpleGraph V} (degree_condition : sorry) : G.IsHamiltonian :=
   -- |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is hamiltonian
