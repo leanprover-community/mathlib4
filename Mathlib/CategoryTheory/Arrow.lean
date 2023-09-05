@@ -325,7 +325,7 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
 
 variable (C D)
 
-/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` with sends
+/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
 a functor `F : C ⥤ D` to `F.mapArrow`. -/
 @[simps]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
