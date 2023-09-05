@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro
 -/
 import Lean
-import Mathlib.Lean.Expr.Basic
 
 /-!
 # Infer an optional parameter
