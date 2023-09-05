@@ -137,6 +137,7 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Algebra.Expr
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
@@ -1600,6 +1601,7 @@ import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
@@ -2324,7 +2326,8 @@ import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
