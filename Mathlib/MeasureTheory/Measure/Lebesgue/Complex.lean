@@ -41,8 +41,8 @@ theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
-    measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
-    ContinuousLinearEquiv.coe_toHomeomorph_symm, ← LinearEquiv.coe_toContinuousLinearEquiv_symm',
+    measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe]
+  rw [ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
     Basis.addHaar_map]
   exact Basis.addHaar_eq.mpr Complex.orthonormalBasisOneI.volume_parallelepiped
 #align complex.volume_preserving_equiv_pi Complex.volume_preserving_equiv_pi
