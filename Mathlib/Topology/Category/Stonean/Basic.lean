@@ -61,8 +61,8 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   have : Epi g' := by
     rw [CompHaus.epi_iff_surjective]
     assumption
-  obtain ⟨h,hh⟩ := Projective.factors f' g'
-  refine ⟨h,h.2,?_⟩
+  obtain ⟨h, hh⟩ := Projective.factors f' g'
+  refine ⟨h, h.2, ?_⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh
@@ -126,8 +126,8 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 @[simps]
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
-  { toCompHaus := X.compHaus,
-    IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+    { toCompHaus := X.compHaus,
+      IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
