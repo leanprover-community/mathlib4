@@ -29,8 +29,14 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHami
   p.length = Fintype.card V := by
   sorry
 
+lemma SimpleGraph.Walk.IsHamiltonianCycle.not_nil (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
+    p ≠ nil := by
+  rw 
+
 lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.IsCycle := by
+  rw [SimpleGraph.Walk.IsHamiltonianCycle] at hp
+
   sorry
 
 /-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
