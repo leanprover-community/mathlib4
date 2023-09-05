@@ -282,7 +282,7 @@ variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
 
 namespace Measure
 
-theorem meas_le_ne_meas_lt_subset_meas_pos
+theorem meas_eq_pos_of_meas_le_ne_meas_lt
     {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R] [MeasurableSpace R]
     {g : α → R} {t : R} (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) :
     0 < μ {a : α | g a = t} := by
@@ -297,12 +297,12 @@ theorem meas_le_ne_meas_lt_subset_meas_pos
   rw [show {a : α | t = g a} = {a : α | g a = t} by simp_rw [eq_comm]] at uni
   have μ_le_add := measure_union_le (μ := μ) {a : α | t < g a} {a : α | g a = t}
   rwa [con, add_zero, ← uni] at μ_le_add
-#align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_le_ne_meas_lt_subset_meas_pos
+#align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_eq_pos_of_meas_le_ne_meas_lt
 
 theorem countable_meas_le_ne_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R]
     [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
-  Countable.mono (fun _ h ↦ meas_le_ne_meas_lt_subset_meas_pos h)
+  Countable.mono (fun _ h ↦ meas_eq_pos_of_meas_le_ne_meas_lt h)
     (Measure.countable_meas_level_set_pos₀ g_mble)
 
 theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
