@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Logic.Nontrivial
@@ -372,31 +372,8 @@ theorem mul_sub_right_distrib (a b c : α) : (a - b) * c = a * c - b * c := by
 alias sub_mul := mul_sub_right_distrib
 #align sub_mul sub_mul
 
-variable {a b c d e : α}
-
-/-- An iff statement following from right distributivity in rings and the definition
-  of subtraction. -/
-theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b) * e + c = d :=
-  calc
-    a * e + c = b * e + d ↔ a * e + c = d + b * e := by simp [add_comm]
-    _ ↔ a * e + c - b * e = d :=
-      Iff.intro
-        (fun h => by
-          rw [h]
-          simp)
-        fun h => by
-        rw [← h]
-        simp
-    _ ↔ (a - b) * e + c = d := by simp [sub_mul, sub_add_eq_add_sub]
-#align mul_add_eq_mul_add_iff_sub_mul_add_eq mul_add_eq_mul_add_iff_sub_mul_add_eq
-
-/-- A simplification of one side of an equation exploiting right distributivity in rings
-  and the definition of subtraction. -/
-theorem sub_mul_add_eq_of_mul_add_eq_mul_add (h : a * e + c = b * e + d) : (a - b) * e + c = d :=
-  calc
-    (a - b) * e + c = a * e + c - b * e := by simp [sub_mul, sub_add_eq_add_sub]
-    _ = d := by rw [h]; simp [@add_sub_cancel α]
-#align sub_mul_add_eq_of_mul_add_eq_mul_add sub_mul_add_eq_of_mul_add_eq_mul_add
+#noalign mul_add_eq_mul_add_iff_sub_mul_add_eq
+#noalign sub_mul_add_eq_of_mul_add_eq_mul_add
 
 end NonUnitalNonAssocRing
 
