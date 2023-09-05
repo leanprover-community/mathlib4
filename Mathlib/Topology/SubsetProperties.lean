@@ -660,6 +660,12 @@ theorem inCompact.isBounded_iff : @IsBounded _ (inCompact α) s ↔ ∃ t, IsCom
 
 end Bornology
 
+#noalign nhds_contain_boxes
+#noalign nhds_contain_boxes.symm
+#noalign nhds_contain_boxes.comm
+#noalign nhds_contain_boxes_of_singleton
+#noalign nhds_contain_boxes_of_compact
+
 /-- If `s` and `t` are compact sets, then set neighborhoods filter of `s ×ˢ t`
 is the product of set neighborhoods filters for `s` and `t`.
 
