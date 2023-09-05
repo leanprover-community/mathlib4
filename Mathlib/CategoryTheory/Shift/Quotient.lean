@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Quotient
 
 /-!
-# This shift on a quotient category
+# The shift on a quotient category
 
 Let `C` be a category equipped a shift by a monoid `A`. If we have a relation
 on morphisms `r : HomRel C` that is compatible with the shift (i.e. if two
