@@ -22,7 +22,7 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
 /-- A *Hamiltonian cycle* is a Walk that visits every vertex once, except the initial
 vertex, which is visited twice. -/
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
-  ∀ u : V, u ≠ v → p.support.count u = 1 ∧ p.support.count v = 2
+  (∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2
 
 /-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
