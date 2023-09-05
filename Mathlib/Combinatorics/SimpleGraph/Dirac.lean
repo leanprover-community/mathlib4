@@ -18,11 +18,9 @@ def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
 def SimpleGraph.IsConneted (G: SimpleGraph V) : Prop :=
   ∀ u : V, ∀ v : V, ∃ p : G.Walk u v
 
-/-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle* -/
+/-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
-  -- struct
-  -- ∃ p : SimpleGraph.Walk.IsHamiltonianCycle p
-  -- G is connected
+  ∃ p : SimpleGraph.Walk.IsHamiltonianCycle p ∧ G SimpleGraph.IsConnected
 
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
 theorem Dirac {G : SimpleGraph V} (degree_condition : sorry) : G.IsHamiltonian :=
