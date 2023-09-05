@@ -878,7 +878,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   obtain ⟨u, u_open, au, hu⟩ : ∃ u, IsOpen u ∧ a ∈ u ∧ ∀ (p : α × E),
       p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
     have C : Continuous (fun (p : α × E) ↦ f a p.2) := by continuity
-    have D : ∀ (p : α × E), p ∈ {a} ×ˢ closedBall x t → Function.uncurry f p = f a p.2 := by
+    have D : ({a} ×ˢ closedBall x t).EqOn f.uncurry (fun p ↦ f a p.2) := by
       rintro ⟨b, y⟩ ⟨hb, -⟩
       simp at hb
       simp [hb]
