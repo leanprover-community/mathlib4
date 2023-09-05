@@ -282,38 +282,27 @@ variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
 
 namespace Measure
 
-theorem meas_le_ne_meas_lt_subset_meas_pos₀
+theorem meas_le_ne_meas_lt_subset_meas_pos
     {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) {t : R}
-    (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) : 0 < μ {a : α | g a = t} := by
-  have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
-    ext a
-    simp only [mem_setOf, mem_union]
-    apply le_iff_lt_or_eq
-  rw [show {a : α | t = g a} = {a : α | g a = t} by simp_rw [eq_comm]] at uni
-  have disj : {a : α | t < g a} ∩ {a : α | g a = t} = ∅ := by
-    ext a
-    simp only [mem_inter_iff, mem_setOf, mem_empty_iff_false, iff_false_iff, not_and]
-    exact ne_of_gt
-  have μ_add : μ {a : α | t ≤ g a} = μ {a : α | t < g a} + μ {a : α | g a = t} := by
-    rw [uni]
-    refine measure_union₀ ?_ (Disjoint.aedisjoint (disjoint_iff_inter_eq_empty.mpr disj))
-    exact g_mble (Finite.measurableSet (finite_singleton t))
+    {g : α → R} {t : R} (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) :
+    0 < μ {a : α | g a = t} := by
   by_contra con
   rw [not_lt, nonpos_iff_eq_zero] at con
-  rw [con, add_zero] at μ_add
-  exact ht μ_add
-
-theorem meas_le_ne_meas_lt_subset_meas_pos {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    [MeasurableSingletonClass R] {g : α → R} (g_mble : Measurable g) {t : R}
-    (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) : 0 < μ {a : α | g a = t} :=
-  meas_le_ne_meas_lt_subset_meas_pos₀ (μ := μ) g_mble.nullMeasurable ht
+  apply ht
+  -- Without the "redundant" `by exact` in the following, one gets a strange goal.
+  apply le_antisymm ?_ (by exact (measure_mono (fun a ha ↦ le_of_lt ha)))
+  have uni : {a : α | t ≤ g a} = {a : α | t < g a} ∪ {a : α | t = g a} := by
+    ext a
+    simpa only [mem_setOf, mem_union] using le_iff_lt_or_eq
+  rw [show {a : α | t = g a} = {a : α | g a = t} by simp_rw [eq_comm]] at uni
+  have μ_le_add := measure_union_le (μ := μ) {a : α | t < g a} {a : α | g a = t}
+  rwa [con, add_zero, ← uni] at μ_le_add
 #align measure.meas_le_ne_meas_lt_subset_meas_pos Measure.meas_le_ne_meas_lt_subset_meas_pos
 
 theorem countable_meas_le_ne_meas_lt₀ [SigmaFinite μ] {R : Type*} [LinearOrder R]
     [MeasurableSpace R] [MeasurableSingletonClass R] {g : α → R} (g_mble : NullMeasurable g μ) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable :=
-  Countable.mono (fun _ h ↦ meas_le_ne_meas_lt_subset_meas_pos₀ g_mble h)
+  Countable.mono (fun _ h ↦ meas_le_ne_meas_lt_subset_meas_pos h)
     (Measure.countable_meas_level_set_pos₀ g_mble)
 
 theorem countable_meas_le_ne_meas_lt [SigmaFinite μ] {R : Type*} [LinearOrder R]
