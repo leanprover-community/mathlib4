@@ -168,7 +168,7 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
   have := hx.hasFDerivAt
   simp only [HasFDerivAt, HasFDerivAtFilter, isLittleO_iff] at this
   let δ := (ε/2)/2
-  have hδ : 0 < δ := half_pos (half_pos hε)
+  have hδ : 0 < δ := by positivity
   rcases eventually_nhds_iff_ball.1 (this hδ) with ⟨R, R_pos, hR⟩
   refine' ⟨R, R_pos, fun r hr => _⟩
   have : r ∈ Ioc (r / 2) r := ⟨half_lt_self hr.1, le_rfl⟩

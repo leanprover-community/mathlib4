@@ -1984,7 +1984,7 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     refine ⟨u, u_open, xu, fun y hy ↦ ?_⟩
     have I1 : (f y, f x) ∈ t :=  (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
-    rw [hfg x hx] at I1
+    rw [hfg hx] at I1
     exact htr (prod_mk_mem_compRel I1 I2)
   choose! t t_open xt ht using A
   refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), ?_⟩
