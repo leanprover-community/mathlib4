@@ -1,5 +1,8 @@
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Trails
+import Mathlib.Algebra.BigOperators.Basic
+
+open BigOperators
 
 variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {u v : V}
 
@@ -27,7 +30,19 @@ def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
-  sorry
+  dsimp only [IsHamiltonianCycle] at hp
+  have length_relation : p.length + 1 = p.support.length
+  · cases p
+    case nil =>
+      rfl
+    case cons h' p' =>
+      simp -- what happened here?
+  · have : p.support.length = Fintype.card V + 1
+    · have : ∑ u : V, p.support.count u = Fintype.card V + 1
+      · sorry
+      · sorry
+    · rw [this] at length_relation
+      exact Iff.mp Nat.succ_inj' length_relation
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.support_tail_nodup (p : G.Walk v v)
   (hp : p.IsHamiltonianCycle) : (support p).tail.Nodup := by
