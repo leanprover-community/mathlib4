@@ -70,6 +70,36 @@ namespace MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
 
+-- A generaliztion of `measurableSet_regionBetween` to null-measurable and a.e.-measurable.
+-- (But is the latter still too much to require?)
+-- Should generalize also the variants `measurableSet_region_between_oc` etc.
+lemma nullMeasurableSet_region_between (μ : Measure α) [SigmaFinite μ]
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
+  obtain ⟨f₀, ⟨mble_f₀, f_aeeq_f₀⟩⟩ := f_mble
+  obtain ⟨g₀, ⟨mble_g₀, g_aeeq_g₀⟩⟩ := g_mble
+  obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+  have mble := measurableSet_regionBetween mble_f₀ mble_g₀ mble_s₀
+  apply NullMeasurableSet.congr mble.nullMeasurableSet
+  rw [eventuallyEq_iff_exists_mem] at *
+  obtain ⟨A, ⟨A_null, f_eq_f₀_on_A⟩⟩ := f_aeeq_f₀
+  obtain ⟨B, ⟨B_null, g_eq_g₀_on_B⟩⟩ := g_aeeq_g₀
+  obtain ⟨C, ⟨C_null, s_eq_s₀_on_C⟩⟩ := s_aeeq_s₀
+  have ABC_null : A ∩ B ∩ C ∈ Measure.ae μ :=
+    Filter.inter_mem (Filter.inter_mem A_null B_null) C_null
+  refine ⟨(A ∩ B ∩ C) ×ˢ univ, ⟨?_, ?_⟩⟩
+  · simp only [Measure.ae, Filter.mem_mk, mem_setOf_eq] at *
+    suffices : (μ.prod (volume : Measure ℝ)) ((A ∩ B ∩ C)ᶜ ×ˢ univ) = 0
+    · convert this
+      ext p
+      simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
+    rw [Measure.prod_prod, ABC_null, zero_mul]
+  · intro p hp
+    obtain ⟨⟨pfst_in_A, pfst_in_B⟩, pfst_in_C⟩ := hp.1
+    simp [regionBetween, setOf, f_eq_f₀_on_A pfst_in_A, g_eq_g₀_on_B pfst_in_B,
+          show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀_on_C pfst_in_C)]
+
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions.
