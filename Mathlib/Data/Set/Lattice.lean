@@ -1166,7 +1166,7 @@ theorem sUnion_powerset_gc :
     GaloisConnection (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
   gc_sSup_Iic
 
-theorem sUnion_powerset_gi :
+def sUnion_powerset_gi :
     GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
   gi_sSup_Iic
 

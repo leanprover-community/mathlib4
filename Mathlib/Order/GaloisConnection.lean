@@ -945,11 +945,11 @@ end lift
 
 end GaloisCoinsertion
 
-theorem gi_sSup_Iic [CompleteSemilatticeSup α] :
+def gi_sSup_Iic [CompleteSemilatticeSup α] :
     GaloisInsertion (sSup : Set α → α) (Iic : α → Set α) :=
   gc_sSup_Iic.toGaloisInsertion fun _ ↦ le_sSup le_rfl
 
-theorem gci_Ici_sInf [CompleteSemilatticeInf α] :
+def gci_Ici_sInf [CompleteSemilatticeInf α] :
     GaloisCoinsertion (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   gc_Ici_sInf.toGaloisCoinsertion fun _ ↦ sInf_le le_rfl
 
