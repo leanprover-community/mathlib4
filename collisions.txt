@@ -1,0 +1,2017 @@
+Field collision at '[env]' in Std.Lean.Command
+Field collision at '[traces]' in Std.Lean.Command
+Field collision at '[opts]' in Std.Lean.Command
+Field collision at '[openDecls]' in Std.Tactic.OpenPrivate
+Field collision at '[decls]' in Std.Lean.Meta.Basic
+Field collision at '[dAssignment]' in Std.Lean.Meta.Basic
+Field collision at '[eAssignment, dAssignment]' in Std.Lean.Meta.Basic
+Field collision at '[decls]' in Std.Lean.Meta.Basic
+Field collision at '[lctx]' in Std.Lean.Meta.Basic
+Field collision at '[namePrefix]' in Std.Lean.Meta.Basic
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.CasesM
+Field collision at '[visited]' in Qq.SortLocalDecls
+Field collision at '[result]' in Qq.SortLocalDecls
+Field collision at '[currNamespace]' in Mathlib.Util.WithWeakNamespace
+Field collision at '[currNamespace]' in Mathlib.Util.WithWeakNamespace
+Field collision at '[env]' in Mathlib.Util.WithWeakNamespace
+Field collision at '[opts]' in Mathlib.Tactic.SudoSetOption
+Field collision at '[maxRecDepth]' in Mathlib.Tactic.SudoSetOption
+Field collision at '[options, maxRecDepth]' in Mathlib.Tactic.SudoSetOption
+Field collision at '[line]' in Mathlib.Tactic.Explode.Datatypes
+Field collision at '[name, levelParams, type, value]' in Mathlib.Util.AddRelatedDecl
+Field collision at '[name, levelParams, type, value]' in Mathlib.Util.AddRelatedDecl
+Field collision at '[name, levelParams, type, value]' in Mathlib.Util.AddRelatedDecl
+Field collision at '[expr]' in Mathlib.Tactic.PPWithUniv
+Field collision at '[kind]' in Mathlib.Tactic.PPWithUniv
+Field collision at '[simpTheorems]' in Mathlib.Tactic.SimpIntro
+Field collision at '[onAnyTactic]' in Std.CodeAction.Attr
+Field collision at '[onTactic]' in Std.CodeAction.Attr
+Field collision at '[onAnyCmd]' in Std.CodeAction.Attr
+Field collision at '[onCmd]' in Std.CodeAction.Attr
+Field collision at '[names]' in Mathlib.Util.Export
+Field collision at '[levels]' in Mathlib.Util.Export
+Field collision at '[exprs]' in Mathlib.Util.Export
+Field collision at '[defs]' in Mathlib.Util.Export
+Field collision at '[result]' in Std.Tactic.PrintDependents
+Field collision at '[result]' in Std.Tactic.PrintDependents
+Field collision at '[simpTheorems]' in Mathlib.Lean.Meta.Simp
+Field collision at '[type]' in Std.Lean.Meta.InstantiateMVars
+Field collision at '[lctx]' in Std.Lean.Meta.InstantiateMVars
+Field collision at '[lctx]' in Std.Lean.Meta.InstantiateMVars
+Field collision at '[opts]' in Mathlib.Tactic.UnsetOption
+Field collision at '[maxRecDepth]' in Mathlib.Tactic.UnsetOption
+Field collision at '[used]' in Std.Linter.UnnecessarySeqFocus
+Field collision at '[used]' in Std.Linter.UnnecessarySeqFocus
+Field collision at '[mctx]' in Std.CodeAction.Basic
+Field collision at '[mctx]' in Std.CodeAction.Basic
+Field collision at '[mctx]' in Std.CodeAction.Basic
+Field collision at '[name]' in Mathlib.Util.CompileInductive
+Field collision at '[name]' in Mathlib.Util.CompileInductive
+Field collision at '[name]' in Mathlib.Util.CompileInductive
+Field collision at '[autoUnfold]' in Std.Tactic.Simpa
+Field collision at '[config]' in Std.Tactic.Simpa
+Field collision at '[failIfUnchanged]' in Std.Tactic.Simpa
+Field collision at '[start, h₁]' in Std.Data.Array.Basic
+Field collision at '[decide]' in Std.Tactic.Lint.Simp
+Field collision at '[equalLMVarIds]' in Aesop.Util.EqualUpToIds
+Field collision at '[equalFVarIds]' in Aesop.Util.EqualUpToIds
+Field collision at '[equalMVarIds]' in Aesop.Util.EqualUpToIds
+Field collision at '[messages]' in Std.Tactic.GuardMsgs
+Field collision at '[messages]' in Std.Tactic.GuardMsgs
+Field collision at '[messages]' in Std.Tactic.GuardMsgs
+Field collision at '[edit?]' in Std.Tactic.GuardMsgs
+Field collision at '[edit?]' in Std.CodeAction.Deprecated
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[stop]' in Std.CodeAction.Misc
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.Variable
+Field collision at '[varDecls, varUIds]' in Mathlib.Tactic.Variable
+Field collision at '[stx]' in Std.Tactic.Alias
+Field collision at '[name, value]' in Std.Tactic.Alias
+Field collision at '[name]' in Std.Tactic.Alias
+Field collision at '[isNoncomputable, isUnsafe, attrs]' in Std.Tactic.Alias
+Field collision at '[name, type, value]' in Std.Tactic.Alias
+Field collision at '[attrs]' in Std.Tactic.Alias
+Field collision at '[maxS?]' in Mathlib.Tactic.FBinop
+Field collision at '[maxS?]' in Mathlib.Tactic.FBinop
+Field collision at '[hasUncomparable]' in Mathlib.Tactic.FBinop
+Field collision at '[trees]' in Mathlib.Tactic.FBinop
+Field collision at '[levelSubst, levelBackSubst]' in Qq.Macro
+Field collision at '[mvars, levelSubst, levelBackSubst]' in Qq.Macro
+Field collision at '[mvars, exprSubst, exprBackSubst]' in Qq.Macro
+Field collision at '[exprSubst, unquoted, exprBackSubst, abstractedFVars]' in Qq.Macro
+Field collision at '[levelSubst]' in Qq.Macro
+Field collision at '[levelSubst, levelNames]' in Qq.Macro
+Field collision at '[exprSubst, unquoted, exprBackSubst]' in Qq.Macro
+Field collision at '[unquoted, exprBackSubst]' in Qq.Macro
+Field collision at '[exprSubst, unquoted, exprBackSubst]' in Qq.Macro
+Field collision at '[mvars, exprSubst, exprBackSubst]' in Qq.Macro
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[expr]' in Qq.Delab
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[erased]' in Std.Tactic.Ext.Attr
+Field collision at '[arith]' in Std.Data.BinomialHeap.Basic
+Field collision at '[arith]' in Std.Data.BinomialHeap.Basic
+Field collision at '[ty]' in Qq.Match
+Field collision at '[levelBackSubst]' in Qq.Match
+Field collision at '[exprBackSubst]' in Qq.Match
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[name]' in Mathlib.Lean.Expr.Basic
+Field collision at '[type]' in Mathlib.Lean.Expr.Basic
+Field collision at '[levelParams]' in Mathlib.Lean.Expr.Basic
+Field collision at '[value]' in Mathlib.Lean.Expr.Basic
+Field collision at '[value]' in Mathlib.Lean.Expr.Basic
+Field collision at '[value]' in Mathlib.Lean.Expr.Basic
+Field collision at '[num, reduced]' in Std.Data.Rat.Basic
+Field collision at '[decls]' in Mathlib.Util.Tactic
+Field collision at '[type]' in Mathlib.Util.Tactic
+Field collision at '[lctx]' in Mathlib.Util.Tactic
+Field collision at '[decls]' in Mathlib.Tactic.SwapVar
+Field collision at '[lctx]' in Mathlib.Tactic.SwapVar
+Field collision at '[nextIdx]' in Mathlib.Tactic.GeneralizeProofs
+Field collision at '[curIdx]' in Mathlib.Tactic.GeneralizeProofs
+Field collision at '[arith]' in Std.Data.List.Lemmas
+Field collision at '[mvarId]' in Mathlib.Lean.Meta
+Field collision at '[pendingMVars]' in Mathlib.Lean.Meta
+Field collision at '[pendingMVars]' in Mathlib.Lean.Meta
+Field collision at '[arith]' in Std.Data.Array.Lemmas
+Field collision at '[arith]' in Std.Data.Array.Lemmas
+Field collision at '[state]' in Std.Data.Array.Match
+Field collision at '[state]' in Std.Data.Array.Match
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[foldState]' in Mathlib.Mathport.Notation
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[scopeState]' in Mathlib.Mathport.Notation
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[startPos, stopPos]' in Std.Data.String.Basic
+Field collision at '[startPos, stopPos]' in Std.Data.String.Basic
+Field collision at '[stopPos]' in Std.Data.String.Basic
+Field collision at '[startPos]' in Std.Data.String.Basic
+Field collision at '[startPos]' in Std.Data.String.Basic
+Field collision at '[stopPos]' in Std.Data.String.Basic
+Field collision at '[messages]' in Mathlib.Tactic.Says
+Field collision at '[messages]' in Mathlib.Tactic.Says
+Field collision at '[parents]' in Aesop.Util.UnionFind
+Field collision at '[patterns]' in Mathlib.Tactic.Congr!
+Field collision at '[goals]' in Mathlib.Tactic.Congr!
+Field collision at '[start, h₁]' in Aesop.Util.Basic
+Field collision at '[erased]' in Aesop.Util.Basic
+Field collision at '[toUnfold]' in Aesop.Util.Basic
+Field collision at '[lemmaNames, erased]' in Aesop.Util.Basic
+Field collision at '[toUnfold]' in Aesop.Util.Basic
+Field collision at '[toUnfoldThms]' in Aesop.Util.Basic
+Field collision at '[priority]' in Aesop.Util.Basic
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.Convert
+Field collision at '[expr]' in Aesop.Util.Tactic
+Field collision at '[unindexed]' in Aesop.Index
+Field collision at '[byTarget]' in Aesop.Index
+Field collision at '[byHyp]' in Aesop.Index
+Field collision at '[simpTheorems]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[projNrs]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, newName, newStx]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, isDefault]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, isDefault]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, isPrefix]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr?, projNrs, isCustom]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr?, projNrs]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr?]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[isDefault]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr, projNrs]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[simpRhs, rhsMd]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[simpRhs, rhsMd]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[visibleGoals, invisibleGoals]' in Aesop.Script
+Field collision at '[visibleGoals]' in Aesop.Script
+Field collision at '[pos, errorMsg]' in Mathlib.Util.Superscript
+Field collision at '[declName]' in Mathlib.Util.Superscript
+Field collision at '[extra]' in Aesop.Rule.Basic
+Field collision at '[extra]' in Aesop.Rule.Basic
+Field collision at '[goals]' in Aesop.RuleTac.RuleApplicationWithMVarInfo
+Field collision at '[userName]' in Aesop.RuleTac.Forward
+Field collision at '[extra]' in Aesop.Tree.UnsafeQueue
+Field collision at '[value]' in Mathlib.Tactic.ToAdditive
+Field collision at '[parent?]' in Aesop.Tree.Data
+Field collision at '[goals]' in Aesop.Tree.Data
+Field collision at '[isIrrelevant]' in Aesop.Tree.Data
+Field collision at '[state]' in Aesop.Tree.Data
+Field collision at '[id]' in Aesop.Tree.Data
+Field collision at '[parent]' in Aesop.Tree.Data
+Field collision at '[children]' in Aesop.Tree.Data
+Field collision at '[origin]' in Aesop.Tree.Data
+Field collision at '[depth]' in Aesop.Tree.Data
+Field collision at '[isIrrelevant]' in Aesop.Tree.Data
+Field collision at '[isForcedUnprovable]' in Aesop.Tree.Data
+Field collision at '[preNormGoal]' in Aesop.Tree.Data
+Field collision at '[normalizationState]' in Aesop.Tree.Data
+Field collision at '[mvars]' in Aesop.Tree.Data
+Field collision at '[successProbability]' in Aesop.Tree.Data
+Field collision at '[addedInIteration]' in Aesop.Tree.Data
+Field collision at '[lastExpandedInIteration]' in Aesop.Tree.Data
+Field collision at '[unsafeRulesSelected]' in Aesop.Tree.Data
+Field collision at '[unsafeQueue]' in Aesop.Tree.Data
+Field collision at '[state]' in Aesop.Tree.Data
+Field collision at '[failedRapps]' in Aesop.Tree.Data
+Field collision at '[id]' in Aesop.Tree.Data
+Field collision at '[parent]' in Aesop.Tree.Data
+Field collision at '[children]' in Aesop.Tree.Data
+Field collision at '[state]' in Aesop.Tree.Data
+Field collision at '[isIrrelevant]' in Aesop.Tree.Data
+Field collision at '[appliedRule]' in Aesop.Tree.Data
+Field collision at '[scriptBuilder?]' in Aesop.Tree.Data
+Field collision at '[originalSubgoals]' in Aesop.Tree.Data
+Field collision at '[successProbability]' in Aesop.Tree.Data
+Field collision at '[metaState]' in Aesop.Tree.Data
+Field collision at '[introducedMVars]' in Aesop.Tree.Data
+Field collision at '[assignedMVars]' in Aesop.Tree.Data
+Field collision at '[ruleSelection]' in Aesop.Profiling
+Field collision at '[ruleApplications]' in Aesop.Profiling
+Field collision at '[numGoals]' in Aesop.Tree.TreeM
+Field collision at '[numRapps]' in Aesop.Tree.TreeM
+Field collision at '[nextGoalId]' in Aesop.Tree.TreeM
+Field collision at '[nextRappId]' in Aesop.Tree.TreeM
+Field collision at '[config]' in Mathlib.Tactic.SplitIfs
+Field collision at '[failIfUnchanged]' in Mathlib.Tactic.SplitIfs
+Field collision at '[decls]' in Aesop.Tree.ExtractProof
+Field collision at '[goals]' in Aesop.Tree.ExtractProof
+Field collision at '[ruleNames, erased]' in Aesop.RuleSet
+Field collision at '[normRules]' in Aesop.RuleSet
+Field collision at '[unsafeRules]' in Aesop.RuleSet
+Field collision at '[safeRules]' in Aesop.RuleSet
+Field collision at '[normSimpLemmas, normSimpLemmaDescrs]' in Aesop.RuleSet
+Field collision at '[localNormSimpLemmas]' in Aesop.RuleSet
+Field collision at '[unfoldRules]' in Aesop.RuleSet
+Field collision at '[normSimpLemmas, normSimpLemmaDescrs, localNormSimpLemmas, ruleNames, erased]' in Aesop.RuleSet
+Field collision at '[normRules, unsafeRules, safeRules]' in Aesop.RuleSet
+Field collision at '[config, simpTheorems]' in Aesop.Search.Expansion.Simp.Basic
+Field collision at '[normSimpLemmas]' in Aesop.Frontend.Extension
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpGoal
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpGoal
+Field collision at '[goals]' in Aesop.Search.Queue
+Field collision at '[pos]' in Aesop.Search.Queue
+Field collision at '[autoUnfold]' in Mathlib.Init.Data.Nat.Lemmas
+Field collision at '[autoUnfold]' in Mathlib.Init.Data.Nat.Lemmas
+Field collision at '[autoUnfold]' in Mathlib.Init.Data.Nat.Lemmas
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[entries]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[modified]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[usedSimps]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[modified, anyModified]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[id, type, proof]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[usedSimps]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[modified, anyModified, mvarId]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[profile]' in Aesop.Search.SearchM
+Field collision at '[profile]' in Aesop.Search.SearchM
+Field collision at '[config, simpTheorems]' in Aesop.Search.SearchM
+Field collision at '[iteration]' in Aesop.Search.SearchM
+Field collision at '[queue]' in Aesop.Search.SearchM
+Field collision at '[queue]' in Aesop.Search.SearchM
+Field collision at '[maxRuleApplicationDepthReached]' in Aesop.Search.SearchM
+Field collision at '[mayPostpone,
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[immediateHyps]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[patterns]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[phase]' in Aesop.Frontend.RuleExpr
+Field collision at '[priority]' in Aesop.Frontend.RuleExpr
+Field collision at '[builder]' in Aesop.Frontend.RuleExpr
+Field collision at '[ident]' in Aesop.Frontend.RuleExpr
+Field collision at '[ruleSets]' in Aesop.Frontend.RuleExpr
+Field collision at '[phase]' in Aesop.Frontend.RuleExpr
+Field collision at '[ident]' in Aesop.Frontend.RuleExpr
+Field collision at '[builder]' in Aesop.Frontend.RuleExpr
+Field collision at '[ruleSets]' in Aesop.Frontend.RuleExpr
+Field collision at '[pf?]' in Mathlib.Tactic.TermCongr
+Field collision at '[lhs, rhs]' in Mathlib.Tactic.TermCongr
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Norm
+Field collision at '[profile]' in Aesop.Search.Expansion.Norm
+Field collision at '[additionalRules]' in Aesop.Frontend.Tactic
+Field collision at '[erasedRules]' in Aesop.Frontend.Tactic
+Field collision at '[enabledRuleSets]' in Aesop.Frontend.Tactic
+Field collision at '[options]' in Aesop.Frontend.Tactic
+Field collision at '[simpConfig, simpConfigSyntax?]' in Aesop.Frontend.Tactic
+Field collision at '[traceScript]' in Aesop.Frontend.Tactic
+Field collision at '[name]' in Mathlib.Tactic.IrreducibleDef
+Field collision at '[discharge]' in Mathlib.Tactic.SolveByElim
+Field collision at '[proc]' in Mathlib.Tactic.SolveByElim
+Field collision at '[discharge]' in Mathlib.Tactic.SolveByElim
+Field collision at '[proc]' in Mathlib.Tactic.SolveByElim
+Field collision at '[backtracking]' in Mathlib.Tactic.SolveByElim
+Field collision at '[maxDepth, backtracking]' in Mathlib.Tactic.SolveByElim
+Field collision at '[backtracking]' in Mathlib.Tactic.SolveByElim
+Field collision at '[transparency, exfalso, backtracking]' in Mathlib.Tactic.Monotonicity.Basic
+Field collision at '[rfl?]' in Mathlib.Tactic.Rewrites
+Field collision at '[rfl?]' in Mathlib.Tactic.Rewrites
+Field collision at '[configParsing]' in Aesop.Main
+Field collision at '[ruleSetConstruction]' in Aesop.Main
+Field collision at '[search]' in Aesop.Main
+Field collision at '[total]' in Aesop.Main
+Field collision at '[one, mul]' in Mathlib.GroupTheory.EckmannHilton
+Field collision at '[autoUnfold]' in Mathlib.Control.Applicative
+Field collision at '[config]' in Mathlib.Tactic.NormCast.Tactic
+Field collision at '[failIfUnchanged]' in Mathlib.Tactic.NormCast.Tactic
+Field collision at '[zero_mul, mul_zero]' in Mathlib.Algebra.Ring.Defs
+Field collision at '[zero_mul, mul_zero]' in Mathlib.Algebra.Ring.Defs
+Field collision at '[mul_inv_cancel]' in Mathlib.Algebra.Field.Defs
+Field collision at '[mul_inv_cancel]' in Mathlib.Algebra.Field.Defs
+Field collision at '[one]' in Mathlib.Algebra.Group.Units
+Field collision at '[mul]' in Mathlib.Algebra.Group.InjSurj
+Field collision at '[mul]' in Mathlib.Algebra.Group.InjSurj
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Group
+Field collision at '[inv]' in Mathlib.Algebra.GroupWithZero.Basic
+Field collision at '[inf_le_left, inf_le_right, le_inf]' in Mathlib.Order.Lattice
+Field collision at '[zero, add, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[one, mul, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[add, zero, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[mul, one, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[add, zero, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[mul, one, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[add, zero, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[mul, one, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[coe]' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[toFun]' in Mathlib.Order.RelIso.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Hom.Equiv.Units.Basic
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[toFun]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Units
+Field collision at '[simpTheorems]' in Mathlib.Tactic.DeriveTraversable
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Group.Prod
+Field collision at '[toFun]' in Mathlib.Algebra.Group.WithOne.Basic
+Field collision at '[map_rel_iff']' in Mathlib.Order.Hom.Basic
+Field collision at '[map_rel_iff']' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Antisymmetrization
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Monoid.WithTop
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Monoid.WithTop
+Field collision at '[toFun]' in Mathlib.Order.Hom.Bounded
+Field collision at '[sdiff]' in Mathlib.Order.BooleanAlgebra
+Field collision at '[compl]' in Mathlib.Order.BooleanAlgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Order.Hom.Monoid
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Hom.Monoid
+Field collision at '[toFun]' in Mathlib.Order.Hom.Lattice
+Field collision at '[sup, le, lt, inf, compl, sdiff, top, bot]' in Mathlib.Data.Set.Basic
+Field collision at '[lt]' in Mathlib.Data.Nat.Order.Basic
+Field collision at '[toFun]' in Mathlib.Order.Heyting.Hom
+Field collision at '[toFun]' in Mathlib.Order.Heyting.Hom
+Field collision at '[toLatticeHom, toLatticeHom]' in Mathlib.Order.Heyting.Hom
+Field collision at '[toFun]' in Mathlib.Order.Heyting.Hom
+Field collision at '[le]' in Mathlib.Data.SetLike.Basic
+Field collision at '[add, zero, mul, one, neg]' in Mathlib.Algebra.EuclideanDomain.Instances
+Field collision at '[toFun]' in Mathlib.Logic.Embedding.Set
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Ring
+Field collision at '[autoUnfold]' in Mathlib.Logic.Equiv.Embedding
+Field collision at '[autoUnfold]' in Mathlib.Logic.Equiv.Embedding
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun]' in Mathlib.Data.Nat.Cast.Basic
+Field collision at '[map_add]' in Mathlib.Deprecated.Ring
+Field collision at '[toFun, toFun]' in Mathlib.Deprecated.Ring
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Basic
+Field collision at '[mul, zero]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[mul, zero]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[mul, zero]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[smul]' in Mathlib.Algebra.SMulWithZero
+Field collision at '[parent]' in Mathlib.Data.UnionFind
+Field collision at '[parent]' in Mathlib.Data.UnionFind
+Field collision at '[parent]' in Mathlib.Data.UnionFind
+Field collision at '[rank]' in Mathlib.Data.UnionFind
+Field collision at '[toFun]' in Mathlib.Algebra.Group.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[toFun, toFun, toFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[coe]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[toFun, invFun, toFun, invFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[app]' in Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+Field collision at '[natCast, add, zero, nsmul, one]' in Mathlib.Algebra.Ring.ULift
+Field collision at '[natCast, add, zero, nsmul, one]' in Mathlib.Algebra.Ring.ULift
+Field collision at '[add, zero, nsmul, mul, one, natCast, npow]' in Mathlib.Algebra.Ring.ULift
+Field collision at '[add]' in Mathlib.Data.Fin.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, invFun, toFun, invFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[bot]' in Mathlib.Order.GaloisConnection
+Field collision at '[sSup, sInf]' in Mathlib.Order.GaloisConnection
+Field collision at '[inf, inf_le_left, inf_le_right, le_inf, top, bot, le_top, bot_le]' in Mathlib.Data.Setoid.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Centroid
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Centroid
+Field collision at '[inf]' in Mathlib.Order.Hom.Order
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Destutter
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Destutter
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[sup, inf]' in Mathlib.Order.Concept
+Field collision at '[sup, inf]' in Mathlib.Order.ConditionallyCompleteLattice.Basic
+Field collision at '[le,
+Field collision at '[toFun, toFun]' in Mathlib.Order.Hom.CompleteLattice
+Field collision at '[val]' in Mathlib.Order.FixedPoints
+Field collision at '[inf]' in Mathlib.Order.FixedPoints
+Field collision at '[invFun]' in Mathlib.Logic.Equiv.Fin
+Field collision at '[toEquiv]' in Mathlib.Logic.Equiv.Fin
+Field collision at '[erased]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[simpTheorems]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[simpTheorems]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[arith]' in Mathlib.Data.List.Sublists
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[le,
+Field collision at '[sup, le, inf]' in Mathlib.Order.Copy
+Field collision at '[bot]' in Mathlib.Algebra.Order.Kleene
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Rotate
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Rotate
+Field collision at '[smul, smul]' in Mathlib.Algebra.GroupRingAction.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.Subsemigroup.Operations
+Field collision at '[toFun, toFun, invFun]' in Mathlib.GroupTheory.Subsemigroup.Operations
+Field collision at '[toFun]' in Mathlib.Algebra.Ring.Fin
+Field collision at '[arith]' in Mathlib.Control.Fold
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.Positivity.Core
+Field collision at '[succ]' in Mathlib.Data.Int.SuccPred
+Field collision at '[toFun]' in Mathlib.GroupTheory.Submonoid.Operations
+Field collision at '[dischargeDepth]' in Mathlib.Tactic.FieldSimp
+Field collision at '[usedTheorems]' in Mathlib.Tactic.FieldSimp
+Field collision at '[simpTheorems]' in Mathlib.Tactic.FieldSimp
+Field collision at '[traceDiscarded, traceSuccesses, traceShrink, traceShrinkCandidates]' in Mathlib.Tactic.SlimCheck
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[star]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun]' in Mathlib.Data.PNat.Factors
+Field collision at '[toFun]' in Mathlib.Data.PNat.Factors
+Field collision at '[inf,
+Field collision at '[toFun]' in Mathlib.GroupTheory.Congruence
+Field collision at '[smul]' in Mathlib.GroupTheory.Congruence
+Field collision at '[atoms]' in Mathlib.Util.AtomM
+Field collision at '[add, zero, add, zero, one]' in Mathlib.Data.Num.Lemmas
+Field collision at '[one]' in Mathlib.Data.Num.Lemmas
+Field collision at '[smul]' in Mathlib.RingTheory.Congruence
+Field collision at '[le, lt, mul, one, npow]' in Mathlib.Algebra.Order.Pi
+Field collision at '[mul, one, npow, mul, one, npow, le, lt]' in Mathlib.Algebra.Order.Pi
+Field collision at '[simpTheorems]' in Mathlib.Tactic.Abel
+Field collision at '[red]' in Mathlib.Tactic.Abel
+Field collision at '[red]' in Mathlib.Tactic.Abel
+Field collision at '[smul, smul]' in Mathlib.Algebra.Module.Basic
+Field collision at '[add_le_add_left]' in Mathlib.Algebra.PUnitInstances
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Hom.GroupAction
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Hom.GroupAction
+Field collision at '[simpTheorems]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[red]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[red]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[red]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[mul, one, mul]' in Mathlib.Data.Set.Semiring
+Field collision at '[coeffs]' in Mathlib.Tactic.Linarith.Datatypes
+Field collision at '[discharger, transparency]' in Mathlib.Tactic.Linarith.Datatypes
+Field collision at '[mul]' in Mathlib.Algebra.Order.UpperLower
+Field collision at '[mul]' in Mathlib.Algebra.Order.UpperLower
+Field collision at '[c, src]' in Mathlib.Tactic.Linarith.Elimination
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[coe]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[coe]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[natCast,
+Field collision at '[add, zero, mul, one, add, zero]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[smul, smul]' in Mathlib.Algebra.GroupRingAction.Subobjects
+Field collision at '[inf,
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun, map_smul', toFun, invFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[preprocessors]' in Mathlib.Tactic.Linarith.Frontend
+Field collision at '[hom]' in Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+Field collision at '[hom]' in Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.ULift
+Field collision at '[mul, one, mul]' in Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+Field collision at '[head]' in Mathlib.Computability.TuringMachine
+Field collision at '[obj]' in Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+Field collision at '[smul_mem']' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[add, zero]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[smul]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[add, zero, neg]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[le,
+Field collision at '[le]' in Mathlib.Combinatorics.SimpleGraph.Basic
+Field collision at '[sup, le, inf]' in Mathlib.Combinatorics.SimpleGraph.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Submodule.Lattice
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Submodule.Lattice
+Field collision at '[le]' in Mathlib.Combinatorics.SimpleGraph.Subgraph
+Field collision at '[sup, le, inf]' in Mathlib.Combinatorics.SimpleGraph.Subgraph
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Real.Basic
+Field collision at '[le]' in Mathlib.Data.Real.Basic
+Field collision at '[proj]' in Mathlib.Computability.PartrecCode
+Field collision at '[autoUnfold]' in Mathlib.Computability.PartrecCode
+Field collision at '[autoUnfold]' in Mathlib.Computability.PartrecCode
+Field collision at '[autoUnfold]' in Mathlib.Computability.PartrecCode
+Field collision at '[toFun, map_one', map_mul']' in Mathlib.GroupTheory.MonoidLocalization
+Field collision at '[toFun]' in Mathlib.Data.DFinsupp.Basic
+Field collision at '[mul]' in Mathlib.Order.Filter.Germ
+Field collision at '[mul]' in Mathlib.Order.Filter.Germ
+Field collision at '[toFun, toFun]' in Mathlib.Order.Filter.Germ
+Field collision at '[le]' in Mathlib.Order.Filter.Germ
+Field collision at '[decide]' in Mathlib.Tactic.CategoryTheory.Elementwise
+Field collision at '[le, lt]' in Mathlib.MeasureTheory.MeasurableSpaceDef
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Basic
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[add_left_neg]' in Mathlib.CategoryTheory.Preadditive.Basic
+Field collision at '[w]' in Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+Field collision at '[w]' in Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+Field collision at '[add, zero, mul, one]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[add, zero, mul, add, zero, neg]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[add, zero, mul, one, neg, add, zero, mul, one]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[arith]' in Mathlib.Data.Nat.Digits
+Field collision at '[arith]' in Mathlib.Data.Nat.Digits
+Field collision at '[sup, le, lt, inf, sup, le, lt, inf, top, bot, le, lt]' in Mathlib.Data.Nat.PartENat
+Field collision at '[zero_le_one]' in Mathlib.Order.Filter.FilterProduct
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[carrier]' in Mathlib.Algebra.Category.GroupCat.Limits
+Field collision at '[neg]' in Mathlib.GroupTheory.Submonoid.Pointwise
+Field collision at '[mul, one, mul]' in Mathlib.GroupTheory.Submonoid.Pointwise
+Field collision at '[le]' in Mathlib.Topology.Order
+Field collision at '[toFun]' in Mathlib.Data.Finsupp.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[carrier, carrier]' in Mathlib.Algebra.Category.Ring.Limits
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Category.Ring.Limits
+Field collision at '[carrier, carrier]' in Mathlib.Algebra.Category.Ring.Limits
+Field collision at '[map_rel']' in Mathlib.ModelTheory.Basic
+Field collision at '[toFun]' in Mathlib.ModelTheory.Basic
+Field collision at '[toFun, invFun]' in Mathlib.SetTheory.Ordinal.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.QuotientGroup
+Field collision at '[toFun]' in Mathlib.GroupTheory.QuotientGroup
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun, invFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.Abelianization
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Basic
+Field collision at '[le, lt]' in Mathlib.Topology.Inseparable
+Field collision at '[r]' in Mathlib.Topology.Inseparable
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Span
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Submodule.Pointwise
+Field collision at '[add, zero, bot]' in Mathlib.Algebra.Module.Submodule.Pointwise
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[mul]' in Mathlib.GroupTheory.FreeAbelianGroup
+Field collision at '[mul]' in Mathlib.GroupTheory.FreeAbelianGroup
+Field collision at '[toFun]' in Mathlib.GroupTheory.FreeAbelianGroup
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Quotient
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Finsupp
+Field collision at '[toFun, toFun, invFun]' in Mathlib.LinearAlgebra.Finsupp
+Field collision at '[carrier]' in Mathlib.FieldTheory.Subfield
+Field collision at '[toFun, toFun]' in Mathlib.FieldTheory.Subfield
+Field collision at '[inf, inf_le_left, inf_le_right, le_inf, top, le_top]' in Mathlib.FieldTheory.Subfield
+Field collision at '[carrier]' in Mathlib.FieldTheory.Subfield
+Field collision at '[coe]' in Mathlib.Algebra.Hom.NonUnitalAlg
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.NonUnitalAlg
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[add, zero]' in Mathlib.LinearAlgebra.Multilinear.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Isomorphisms
+Field collision at '[carrier]' in Mathlib.GroupTheory.OrderOfElement
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Prod
+Field collision at '[toFun, invFun]' in Mathlib.LinearAlgebra.Prod
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Opposite
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Opposite
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, inv, coe]' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[toFun]' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+Field collision at '[map_zero', map_add']' in Mathlib.RingTheory.Ideal.Quotient
+Field collision at '[head]' in Mathlib.GroupTheory.CoprodI
+Field collision at '[head]' in Mathlib.GroupTheory.CoprodI
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Module
+Field collision at '[smul]' in Mathlib.LinearAlgebra.TensorProduct
+Field collision at '[smul]' in Mathlib.LinearAlgebra.AffineSpace.AffineMap
+Field collision at '[toFun]' in Mathlib.Algebra.TrivSqZeroExt
+Field collision at '[toFun]' in Mathlib.Algebra.TrivSqZeroExt
+Field collision at '[toFun, invFun]' in Mathlib.Data.Real.EReal
+Field collision at '[add, zero]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul, add, zero, mul, one]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, nsmul, nsmul_zero, nsmul_succ]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul, add, zero, mul, one]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[nsmul, nsmul_zero, nsmul_succ]' in Mathlib.Algebra.RingQuot
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Unitization
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Unitization
+Field collision at '[le,
+Field collision at '[toFun]' in Mathlib.RingTheory.Localization.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Localization.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Localization.Basic
+Field collision at '[smul]' in Mathlib.LinearAlgebra.PiTensorProduct
+Field collision at '[toEquiv]' in Mathlib.Topology.Homeomorph
+Field collision at '[toFun]' in Mathlib.Algebra.Star.NonUnitalSubalgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Star.NonUnitalSubalgebra
+Field collision at '[carrier]' in Mathlib.Algebra.Star.NonUnitalSubalgebra
+Field collision at '[add, zero]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun, toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun, left_inv, right_inv]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basis
+Field collision at '[toFun, map_smul']' in Mathlib.LinearAlgebra.TensorProduct.Tower
+Field collision at '[map_smul']' in Mathlib.LinearAlgebra.TensorProduct.Tower
+Field collision at '[map_smul']' in Mathlib.LinearAlgebra.TensorProduct.Tower
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Block
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Block
+Field collision at '[toFun, map_one', map_mul', map_zero', map_add', commutes']' in Mathlib.RingTheory.AlgebraTower
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.DFinsupp
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.DFinsupp
+Field collision at '[toFun, invFun, toFun]' in Mathlib.LinearAlgebra.DFinsupp
+Field collision at '[sSup]' in Mathlib.Topology.Sets.Opens
+Field collision at '[sInf]' in Mathlib.Topology.Sets.Closeds
+Field collision at '[r]' in Mathlib.Topology.LocalHomeomorph
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Module
+Field collision at '[toFun, toFun]' in Mathlib.Topology.LocallyConstant.Algebra
+Field collision at '[toFun,
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Algebra
+Field collision at '[toEquiv]' in Mathlib.Topology.UniformSpace.Equiv
+Field collision at '[toFun]' in Mathlib.RingTheory.Ideal.Operations
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Group.Basic
+Field collision at '[top, bot, inf, inf, top, bot]' in Mathlib.Topology.Algebra.Group.Basic
+Field collision at '[toUniformSpace, uniformity_dist]' in Mathlib.Topology.MetricSpace.Basic
+Field collision at '[toBornology, cobounded_sets]' in Mathlib.Topology.MetricSpace.Basic
+Field collision at '[toBornology, toBornology]' in Mathlib.Topology.MetricSpace.Basic
+Field collision at '[le, lt]' in Mathlib.Analysis.Convex.Cone.Basic
+Field collision at '[carrier, carrier]' in Mathlib.Topology.Algebra.Ring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.Topology.Algebra.Ring.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[le]' in Mathlib.Analysis.BoxIntegral.Box.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Ideal.QuotientOperations
+Field collision at '[toFun]' in Mathlib.RingTheory.Valuation.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Valuation.Basic
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Ring.Ideal
+Field collision at '[toInf, toPartialOrder]' in Mathlib.Topology.Algebra.OpenSubgroup
+Field collision at '[toPartialOrder, toPartialOrder]' in Mathlib.Topology.Algebra.OpenSubgroup
+Field collision at '[algebraMap_mem']' in Mathlib.Algebra.Algebra.Subalgebra.Tower
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Field
+Field collision at '[le_of_mem', tag_mem_Icc]' in Mathlib.Analysis.BoxIntegral.Partition.Tagged
+Field collision at '[algebraMap_mem']' in Mathlib.RingTheory.Adjoin.Basic
+Field collision at '[map_add']' in Mathlib.RingTheory.GradedAlgebra.Basic
+Field collision at '[map_add']' in Mathlib.RingTheory.GradedAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Subalgebra
+Field collision at '[toFun, toFun, map_smul']' in Mathlib.Algebra.Star.Subalgebra
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[map_add']' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[map_add']' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[toFun]' in Mathlib.RingTheory.Derivation.ToSquareZero
+Field collision at '[smul]' in Mathlib.Topology.Algebra.GroupCompletion
+Field collision at '[smul]' in Mathlib.Topology.Algebra.GroupCompletion
+Field collision at '[smul, smul]' in Mathlib.Topology.Algebra.GroupCompletion
+Field collision at '[toFun]' in Mathlib.Data.MvPolynomial.Basic
+Field collision at '[toFun]' in Mathlib.CategoryTheory.Monoidal.Internal.Module
+Field collision at '[smul]' in Mathlib.Algebra.Polynomial.GroupRingAction
+Field collision at '[le]' in Mathlib.Algebra.Lie.Subalgebra
+Field collision at '[inf,
+Field collision at '[smul]' in Mathlib.Algebra.Module.GradedModule
+Field collision at '[smul]' in Mathlib.Algebra.Module.GradedModule
+Field collision at '[toFun]' in Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+Field collision at '[toFun]' in Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+Field collision at '[toFun]' in Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+Field collision at '[toFun]' in Mathlib.Data.MvPolynomial.Rename
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[coe, coe_injective']' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[mul, one]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[add, zero, nsmul]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[mul, one]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toLinearEquiv]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toFun]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[toFun, cont]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[toFun]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[toFun]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[le,
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.Algebra
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Algebra
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.ContinuousAffineMap
+Field collision at '[cont]' in Mathlib.Topology.Algebra.Module.WeakDual
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.StarSubalgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.OfAssociative
+Field collision at '[toFun]' in Mathlib.Data.MvPolynomial.Equiv
+Field collision at '[toFun, toFun]' in Mathlib.Data.MvPolynomial.Equiv
+Field collision at '[carrier]' in Mathlib.Topology.ContinuousFunction.Algebra
+Field collision at '[carrier]' in Mathlib.Topology.ContinuousFunction.Algebra
+Field collision at '[toFun]' in Mathlib.Topology.ContinuousFunction.Algebra
+Field collision at '[toContinuousMultilinearMap]' in Mathlib.Topology.Algebra.Module.Alternating
+Field collision at '[bracket]' in Mathlib.Algebra.Lie.Quotient
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Quotient
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Quotient
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Abelian
+Field collision at '[add, zero, one]' in Mathlib.Data.Complex.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.DirectSum
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.DirectSum
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.DirectSum
+Field collision at '[add, zero, one]' in Mathlib.NumberTheory.Zsqrtd.Basic
+Field collision at '[zero]' in Mathlib.Algebra.Symmetrized
+Field collision at '[toFun]' in Mathlib.Analysis.Normed.Ring.Seminorm
+Field collision at '[coe, coe_injective']' in Mathlib.Analysis.NormedSpace.LinearIsometry
+Field collision at '[toFun, invFun]' in Mathlib.Analysis.NormedSpace.LinearIsometry
+Field collision at '[carrier]' in Mathlib.Analysis.Normed.Field.UnitBall
+Field collision at '[add, zero, add, zero, one]' in Mathlib.NumberTheory.Dioph
+Field collision at '[le, lt]' in Mathlib.Analysis.NormedSpace.ENorm
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Quaternion
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Quaternion
+Field collision at '[toFun, invFun]' in Mathlib.Analysis.NormedSpace.WithLp
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.Reindex
+Field collision at '[carrier]' in Mathlib.Algebra.Category.ModuleCat.Limits
+Field collision at '[inf_le_left, inf_le_right, le_inf]' in Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[smul']' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.RingTheory.FiniteType
+Field collision at '[bot, bot_le]' in Mathlib.MeasureTheory.Measure.MeasureSpace
+Field collision at '[map_smul']' in Mathlib.RingTheory.TensorProduct
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Bimodule
+Field collision at '[carrier, smul_mem']' in Mathlib.Algebra.Module.Bimodule
+Field collision at '[carrier, smul_mem']' in Mathlib.Algebra.Module.Bimodule
+Field collision at '[toFun]' in Mathlib.RingTheory.FinitePresentation
+Field collision at '[map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[toFun, map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[toFun, invFun]' in Mathlib.Topology.Algebra.Module.StrongTopology
+Field collision at '[toFun]' in Mathlib.RingTheory.PowerSeries.Basic
+Field collision at '[map_smul']' in Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+Field collision at '[add, zero, mul, add]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[add, zero, mul]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[add, zero, one, add, zero, mul]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[add, zero, mul, one, add, zero, mul]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Matrix
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+Field collision at '[commutes']' in Mathlib.RingTheory.Etale
+Field collision at '[commutes']' in Mathlib.RingTheory.Etale
+Field collision at '[commutes']' in Mathlib.RingTheory.Etale
+Field collision at '[mul, one, npow, add, zero, nsmul, neg, sub, zsmul]' in Mathlib.FieldTheory.RatFunc
+Field collision at '[map_smul']' in Mathlib.RepresentationTheory.Rep
+Field collision at '[map_smul']' in Mathlib.RepresentationTheory.Rep
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+Field collision at '[carrier, carrier]' in Mathlib.FieldTheory.IntermediateField
+Field collision at '[carrier]' in Mathlib.Analysis.NormedSpace.lpSpace
+Field collision at '[carrier]' in Mathlib.Analysis.NormedSpace.lpSpace
+Field collision at '[toFun]' in Mathlib.Analysis.NormedSpace.ContinuousAffineMap
+Field collision at '[smul]' in Mathlib.Analysis.NormedSpace.Completion
+Field collision at '[toFun]' in Mathlib.Analysis.NormedSpace.Completion
+Field collision at '[toFun]' in Mathlib.RingTheory.AdjoinRoot
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+Field collision at '[dist]' in Mathlib.Topology.ContinuousFunction.Compact
+Field collision at '[map_smul']' in Mathlib.RepresentationTheory.GroupCohomology.Resolution
+Field collision at '[Hom]' in Mathlib.AlgebraicGeometry.Scheme
+Field collision at '[toFun]' in Mathlib.Topology.ContinuousFunction.Ideals
+Field collision at '[toFun]' in Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+Field collision at '[toFun]' in Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+Field collision at '[commutes']' in Mathlib.FieldTheory.Normal
+Field collision at '[algebraMap_mem']' in Mathlib.FieldTheory.NormalClosure
+Field collision at '[toPresheafedSpace]' in Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+Field collision at '[toFun]' in Mathlib.RingTheory.WittVector.Frobenius
+Field collision at '[toFun]' in Mathlib.RingTheory.IsAdjoinRoot
+Field collision at '[toFun]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[toFun]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[coordChange, continuousOn_coordChange]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[carrier]' in Mathlib.FieldTheory.Galois
+Field collision at '[toFun]' in Mathlib.RingTheory.DedekindDomain.IntegralClosure
+Field collision at '[edist, edist_dist]' in Mathlib.MeasureTheory.Function.LpSpace
+Field collision at '[norm]' in Mathlib.Analysis.Matrix
+Field collision at '[toFun, invFun]' in Mathlib.Analysis.Quaternion
+Field collision at '[toFun, invFun, source]' in Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+Field collision at '[toFun]' in Mathlib.Analysis.NormedSpace.Spectrum
+Field collision at '[toFun, toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun, toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun, toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun]' in Mathlib.Geometry.Manifold.PartitionOfUnity
+Field collision at '[toFun]' in Mathlib.Geometry.Manifold.PartitionOfUnity
+Field collision at '[coe, coe]' in Mathlib.Analysis.NormedSpace.Star.Spectrum
+Field collision at '[coe]' in Mathlib.Analysis.NormedSpace.Star.Spectrum
+Field collision at '[ht₀]' in Mathlib.Analysis.ODE.PicardLindelof
+Field collision at '[env]' in Std.Lean.Command
+Field collision at '[traces]' in Std.Lean.Command
+Field collision at '[opts]' in Std.Lean.Command
+Field collision at '[openDecls]' in Std.Tactic.OpenPrivate
+Field collision at '[decls]' in Std.Lean.Meta.Basic
+Field collision at '[dAssignment]' in Std.Lean.Meta.Basic
+Field collision at '[eAssignment, dAssignment]' in Std.Lean.Meta.Basic
+Field collision at '[decls]' in Std.Lean.Meta.Basic
+Field collision at '[lctx]' in Std.Lean.Meta.Basic
+Field collision at '[namePrefix]' in Std.Lean.Meta.Basic
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.CasesM
+Field collision at '[visited]' in Qq.SortLocalDecls
+Field collision at '[result]' in Qq.SortLocalDecls
+Field collision at '[currNamespace]' in Mathlib.Util.WithWeakNamespace
+Field collision at '[currNamespace]' in Mathlib.Util.WithWeakNamespace
+Field collision at '[env]' in Mathlib.Util.WithWeakNamespace
+Field collision at '[opts]' in Mathlib.Tactic.SudoSetOption
+Field collision at '[maxRecDepth]' in Mathlib.Tactic.SudoSetOption
+Field collision at '[options, maxRecDepth]' in Mathlib.Tactic.SudoSetOption
+Field collision at '[line]' in Mathlib.Tactic.Explode.Datatypes
+Field collision at '[name, levelParams, type, value]' in Mathlib.Util.AddRelatedDecl
+Field collision at '[name, levelParams, type, value]' in Mathlib.Util.AddRelatedDecl
+Field collision at '[name, levelParams, type, value]' in Mathlib.Util.AddRelatedDecl
+Field collision at '[expr]' in Mathlib.Tactic.PPWithUniv
+Field collision at '[kind]' in Mathlib.Tactic.PPWithUniv
+Field collision at '[simpTheorems]' in Mathlib.Tactic.SimpIntro
+Field collision at '[onAnyTactic]' in Std.CodeAction.Attr
+Field collision at '[onTactic]' in Std.CodeAction.Attr
+Field collision at '[onAnyCmd]' in Std.CodeAction.Attr
+Field collision at '[onCmd]' in Std.CodeAction.Attr
+Field collision at '[names]' in Mathlib.Util.Export
+Field collision at '[levels]' in Mathlib.Util.Export
+Field collision at '[exprs]' in Mathlib.Util.Export
+Field collision at '[defs]' in Mathlib.Util.Export
+Field collision at '[result]' in Std.Tactic.PrintDependents
+Field collision at '[result]' in Std.Tactic.PrintDependents
+Field collision at '[simpTheorems]' in Mathlib.Lean.Meta.Simp
+Field collision at '[type]' in Std.Lean.Meta.InstantiateMVars
+Field collision at '[lctx]' in Std.Lean.Meta.InstantiateMVars
+Field collision at '[lctx]' in Std.Lean.Meta.InstantiateMVars
+Field collision at '[opts]' in Mathlib.Tactic.UnsetOption
+Field collision at '[maxRecDepth]' in Mathlib.Tactic.UnsetOption
+Field collision at '[used]' in Std.Linter.UnnecessarySeqFocus
+Field collision at '[used]' in Std.Linter.UnnecessarySeqFocus
+Field collision at '[mctx]' in Std.CodeAction.Basic
+Field collision at '[mctx]' in Std.CodeAction.Basic
+Field collision at '[mctx]' in Std.CodeAction.Basic
+Field collision at '[name]' in Mathlib.Util.CompileInductive
+Field collision at '[name]' in Mathlib.Util.CompileInductive
+Field collision at '[name]' in Mathlib.Util.CompileInductive
+Field collision at '[autoUnfold]' in Std.Tactic.Simpa
+Field collision at '[config]' in Std.Tactic.Simpa
+Field collision at '[failIfUnchanged]' in Std.Tactic.Simpa
+Field collision at '[start, h₁]' in Std.Data.Array.Basic
+Field collision at '[decide]' in Std.Tactic.Lint.Simp
+Field collision at '[equalLMVarIds]' in Aesop.Util.EqualUpToIds
+Field collision at '[equalFVarIds]' in Aesop.Util.EqualUpToIds
+Field collision at '[equalMVarIds]' in Aesop.Util.EqualUpToIds
+Field collision at '[messages]' in Std.Tactic.GuardMsgs
+Field collision at '[messages]' in Std.Tactic.GuardMsgs
+Field collision at '[messages]' in Std.Tactic.GuardMsgs
+Field collision at '[edit?]' in Std.Tactic.GuardMsgs
+Field collision at '[edit?]' in Std.CodeAction.Deprecated
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[stop]' in Std.CodeAction.Misc
+Field collision at '[edit?]' in Std.CodeAction.Misc
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.Variable
+Field collision at '[varDecls, varUIds]' in Mathlib.Tactic.Variable
+Field collision at '[stx]' in Std.Tactic.Alias
+Field collision at '[name, value]' in Std.Tactic.Alias
+Field collision at '[name]' in Std.Tactic.Alias
+Field collision at '[isNoncomputable, isUnsafe, attrs]' in Std.Tactic.Alias
+Field collision at '[name, type, value]' in Std.Tactic.Alias
+Field collision at '[attrs]' in Std.Tactic.Alias
+Field collision at '[maxS?]' in Mathlib.Tactic.FBinop
+Field collision at '[maxS?]' in Mathlib.Tactic.FBinop
+Field collision at '[hasUncomparable]' in Mathlib.Tactic.FBinop
+Field collision at '[trees]' in Mathlib.Tactic.FBinop
+Field collision at '[levelSubst, levelBackSubst]' in Qq.Macro
+Field collision at '[mvars, levelSubst, levelBackSubst]' in Qq.Macro
+Field collision at '[mvars, exprSubst, exprBackSubst]' in Qq.Macro
+Field collision at '[exprSubst, unquoted, exprBackSubst, abstractedFVars]' in Qq.Macro
+Field collision at '[levelSubst]' in Qq.Macro
+Field collision at '[levelSubst, levelNames]' in Qq.Macro
+Field collision at '[exprSubst, unquoted, exprBackSubst]' in Qq.Macro
+Field collision at '[unquoted, exprBackSubst]' in Qq.Macro
+Field collision at '[exprSubst, unquoted, exprBackSubst]' in Qq.Macro
+Field collision at '[mvars, exprSubst, exprBackSubst]' in Qq.Macro
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[arith]' in Std.Data.PairingHeap
+Field collision at '[expr]' in Qq.Delab
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[arith]' in Std.Data.Array.Merge
+Field collision at '[erased]' in Std.Tactic.Ext.Attr
+Field collision at '[arith]' in Std.Data.BinomialHeap.Basic
+Field collision at '[arith]' in Std.Data.BinomialHeap.Basic
+Field collision at '[ty]' in Qq.Match
+Field collision at '[levelBackSubst]' in Qq.Match
+Field collision at '[exprBackSubst]' in Qq.Match
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[toConstantVal]' in Mathlib.Lean.Expr.Basic
+Field collision at '[name]' in Mathlib.Lean.Expr.Basic
+Field collision at '[type]' in Mathlib.Lean.Expr.Basic
+Field collision at '[levelParams]' in Mathlib.Lean.Expr.Basic
+Field collision at '[value]' in Mathlib.Lean.Expr.Basic
+Field collision at '[value]' in Mathlib.Lean.Expr.Basic
+Field collision at '[value]' in Mathlib.Lean.Expr.Basic
+Field collision at '[num, reduced]' in Std.Data.Rat.Basic
+Field collision at '[decls]' in Mathlib.Util.Tactic
+Field collision at '[type]' in Mathlib.Util.Tactic
+Field collision at '[lctx]' in Mathlib.Util.Tactic
+Field collision at '[decls]' in Mathlib.Tactic.SwapVar
+Field collision at '[lctx]' in Mathlib.Tactic.SwapVar
+Field collision at '[nextIdx]' in Mathlib.Tactic.GeneralizeProofs
+Field collision at '[curIdx]' in Mathlib.Tactic.GeneralizeProofs
+Field collision at '[arith]' in Std.Data.List.Lemmas
+Field collision at '[mvarId]' in Mathlib.Lean.Meta
+Field collision at '[pendingMVars]' in Mathlib.Lean.Meta
+Field collision at '[pendingMVars]' in Mathlib.Lean.Meta
+Field collision at '[arith]' in Std.Data.Array.Lemmas
+Field collision at '[arith]' in Std.Data.Array.Lemmas
+Field collision at '[state]' in Std.Data.Array.Match
+Field collision at '[state]' in Std.Data.Array.Match
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[foldState]' in Mathlib.Mathport.Notation
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[scopeState]' in Mathlib.Mathport.Notation
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[vars]' in Mathlib.Mathport.Notation
+Field collision at '[startPos, stopPos]' in Std.Data.String.Basic
+Field collision at '[startPos, stopPos]' in Std.Data.String.Basic
+Field collision at '[stopPos]' in Std.Data.String.Basic
+Field collision at '[startPos]' in Std.Data.String.Basic
+Field collision at '[startPos]' in Std.Data.String.Basic
+Field collision at '[stopPos]' in Std.Data.String.Basic
+Field collision at '[messages]' in Mathlib.Tactic.Says
+Field collision at '[messages]' in Mathlib.Tactic.Says
+Field collision at '[parents]' in Aesop.Util.UnionFind
+Field collision at '[patterns]' in Mathlib.Tactic.Congr!
+Field collision at '[goals]' in Mathlib.Tactic.Congr!
+Field collision at '[start, h₁]' in Aesop.Util.Basic
+Field collision at '[erased]' in Aesop.Util.Basic
+Field collision at '[toUnfold]' in Aesop.Util.Basic
+Field collision at '[lemmaNames, erased]' in Aesop.Util.Basic
+Field collision at '[toUnfold]' in Aesop.Util.Basic
+Field collision at '[toUnfoldThms]' in Aesop.Util.Basic
+Field collision at '[priority]' in Aesop.Util.Basic
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.Convert
+Field collision at '[expr]' in Aesop.Util.Tactic
+Field collision at '[unindexed]' in Aesop.Index
+Field collision at '[byTarget]' in Aesop.Index
+Field collision at '[byHyp]' in Aesop.Index
+Field collision at '[simpTheorems]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[projNrs]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, newName, newStx]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, isDefault]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, isDefault]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[strStx, isPrefix]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr?, projNrs, isCustom]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr?, projNrs]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr?]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[isDefault]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[expr, projNrs]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[simpRhs, rhsMd]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[simpRhs, rhsMd]' in Mathlib.Tactic.Simps.Basic
+Field collision at '[visibleGoals, invisibleGoals]' in Aesop.Script
+Field collision at '[visibleGoals]' in Aesop.Script
+Field collision at '[pos, errorMsg]' in Mathlib.Util.Superscript
+Field collision at '[declName]' in Mathlib.Util.Superscript
+Field collision at '[extra]' in Aesop.Rule.Basic
+Field collision at '[extra]' in Aesop.Rule.Basic
+Field collision at '[goals]' in Aesop.RuleTac.RuleApplicationWithMVarInfo
+Field collision at '[userName]' in Aesop.RuleTac.Forward
+Field collision at '[extra]' in Aesop.Tree.UnsafeQueue
+Field collision at '[value]' in Mathlib.Tactic.ToAdditive
+Field collision at '[parent?]' in Aesop.Tree.Data
+Field collision at '[goals]' in Aesop.Tree.Data
+Field collision at '[isIrrelevant]' in Aesop.Tree.Data
+Field collision at '[state]' in Aesop.Tree.Data
+Field collision at '[id]' in Aesop.Tree.Data
+Field collision at '[parent]' in Aesop.Tree.Data
+Field collision at '[children]' in Aesop.Tree.Data
+Field collision at '[origin]' in Aesop.Tree.Data
+Field collision at '[depth]' in Aesop.Tree.Data
+Field collision at '[isIrrelevant]' in Aesop.Tree.Data
+Field collision at '[isForcedUnprovable]' in Aesop.Tree.Data
+Field collision at '[preNormGoal]' in Aesop.Tree.Data
+Field collision at '[normalizationState]' in Aesop.Tree.Data
+Field collision at '[mvars]' in Aesop.Tree.Data
+Field collision at '[successProbability]' in Aesop.Tree.Data
+Field collision at '[addedInIteration]' in Aesop.Tree.Data
+Field collision at '[lastExpandedInIteration]' in Aesop.Tree.Data
+Field collision at '[unsafeRulesSelected]' in Aesop.Tree.Data
+Field collision at '[unsafeQueue]' in Aesop.Tree.Data
+Field collision at '[state]' in Aesop.Tree.Data
+Field collision at '[failedRapps]' in Aesop.Tree.Data
+Field collision at '[id]' in Aesop.Tree.Data
+Field collision at '[parent]' in Aesop.Tree.Data
+Field collision at '[children]' in Aesop.Tree.Data
+Field collision at '[state]' in Aesop.Tree.Data
+Field collision at '[isIrrelevant]' in Aesop.Tree.Data
+Field collision at '[appliedRule]' in Aesop.Tree.Data
+Field collision at '[scriptBuilder?]' in Aesop.Tree.Data
+Field collision at '[originalSubgoals]' in Aesop.Tree.Data
+Field collision at '[successProbability]' in Aesop.Tree.Data
+Field collision at '[metaState]' in Aesop.Tree.Data
+Field collision at '[introducedMVars]' in Aesop.Tree.Data
+Field collision at '[assignedMVars]' in Aesop.Tree.Data
+Field collision at '[ruleSelection]' in Aesop.Profiling
+Field collision at '[ruleApplications]' in Aesop.Profiling
+Field collision at '[numGoals]' in Aesop.Tree.TreeM
+Field collision at '[numRapps]' in Aesop.Tree.TreeM
+Field collision at '[nextGoalId]' in Aesop.Tree.TreeM
+Field collision at '[nextRappId]' in Aesop.Tree.TreeM
+Field collision at '[config]' in Mathlib.Tactic.SplitIfs
+Field collision at '[failIfUnchanged]' in Mathlib.Tactic.SplitIfs
+Field collision at '[decls]' in Aesop.Tree.ExtractProof
+Field collision at '[goals]' in Aesop.Tree.ExtractProof
+Field collision at '[ruleNames, erased]' in Aesop.RuleSet
+Field collision at '[normRules]' in Aesop.RuleSet
+Field collision at '[unsafeRules]' in Aesop.RuleSet
+Field collision at '[safeRules]' in Aesop.RuleSet
+Field collision at '[normSimpLemmas, normSimpLemmaDescrs]' in Aesop.RuleSet
+Field collision at '[localNormSimpLemmas]' in Aesop.RuleSet
+Field collision at '[unfoldRules]' in Aesop.RuleSet
+Field collision at '[normSimpLemmas, normSimpLemmaDescrs, localNormSimpLemmas, ruleNames, erased]' in Aesop.RuleSet
+Field collision at '[normRules, unsafeRules, safeRules]' in Aesop.RuleSet
+Field collision at '[config, simpTheorems]' in Aesop.Search.Expansion.Simp.Basic
+Field collision at '[normSimpLemmas]' in Aesop.Frontend.Extension
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpGoal
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpGoal
+Field collision at '[goals]' in Aesop.Search.Queue
+Field collision at '[pos]' in Aesop.Search.Queue
+Field collision at '[autoUnfold]' in Mathlib.Init.Data.Nat.Lemmas
+Field collision at '[autoUnfold]' in Mathlib.Init.Data.Nat.Lemmas
+Field collision at '[autoUnfold]' in Mathlib.Init.Data.Nat.Lemmas
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[entries]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[modified]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[usedSimps]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[modified, anyModified]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[id, type, proof]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[usedSimps]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[modified, anyModified, mvarId]' in Aesop.Search.Expansion.Simp.SimpAll
+Field collision at '[profile]' in Aesop.Search.SearchM
+Field collision at '[profile]' in Aesop.Search.SearchM
+Field collision at '[config, simpTheorems]' in Aesop.Search.SearchM
+Field collision at '[iteration]' in Aesop.Search.SearchM
+Field collision at '[queue]' in Aesop.Search.SearchM
+Field collision at '[queue]' in Aesop.Search.SearchM
+Field collision at '[maxRuleApplicationDepthReached]' in Aesop.Search.SearchM
+Field collision at '[mayPostpone,
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[immediateHyps]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[patterns]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexingMode?]' in Aesop.Frontend.RuleExpr
+Field collision at '[transparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[indexTransparency]' in Aesop.Frontend.RuleExpr
+Field collision at '[phase]' in Aesop.Frontend.RuleExpr
+Field collision at '[priority]' in Aesop.Frontend.RuleExpr
+Field collision at '[builder]' in Aesop.Frontend.RuleExpr
+Field collision at '[ident]' in Aesop.Frontend.RuleExpr
+Field collision at '[ruleSets]' in Aesop.Frontend.RuleExpr
+Field collision at '[phase]' in Aesop.Frontend.RuleExpr
+Field collision at '[ident]' in Aesop.Frontend.RuleExpr
+Field collision at '[builder]' in Aesop.Frontend.RuleExpr
+Field collision at '[ruleSets]' in Aesop.Frontend.RuleExpr
+Field collision at '[pf?]' in Mathlib.Tactic.TermCongr
+Field collision at '[lhs, rhs]' in Mathlib.Tactic.TermCongr
+Field collision at '[simpTheorems]' in Aesop.Search.Expansion.Norm
+Field collision at '[profile]' in Aesop.Search.Expansion.Norm
+Field collision at '[additionalRules]' in Aesop.Frontend.Tactic
+Field collision at '[erasedRules]' in Aesop.Frontend.Tactic
+Field collision at '[enabledRuleSets]' in Aesop.Frontend.Tactic
+Field collision at '[options]' in Aesop.Frontend.Tactic
+Field collision at '[simpConfig, simpConfigSyntax?]' in Aesop.Frontend.Tactic
+Field collision at '[traceScript]' in Aesop.Frontend.Tactic
+Field collision at '[name]' in Mathlib.Tactic.IrreducibleDef
+Field collision at '[discharge]' in Mathlib.Tactic.SolveByElim
+Field collision at '[proc]' in Mathlib.Tactic.SolveByElim
+Field collision at '[discharge]' in Mathlib.Tactic.SolveByElim
+Field collision at '[proc]' in Mathlib.Tactic.SolveByElim
+Field collision at '[backtracking]' in Mathlib.Tactic.SolveByElim
+Field collision at '[maxDepth, backtracking]' in Mathlib.Tactic.SolveByElim
+Field collision at '[backtracking]' in Mathlib.Tactic.SolveByElim
+Field collision at '[transparency, exfalso, backtracking]' in Mathlib.Tactic.Monotonicity.Basic
+Field collision at '[rfl?]' in Mathlib.Tactic.Rewrites
+Field collision at '[rfl?]' in Mathlib.Tactic.Rewrites
+Field collision at '[configParsing]' in Aesop.Main
+Field collision at '[ruleSetConstruction]' in Aesop.Main
+Field collision at '[search]' in Aesop.Main
+Field collision at '[total]' in Aesop.Main
+Field collision at '[one, mul]' in Mathlib.GroupTheory.EckmannHilton
+Field collision at '[autoUnfold]' in Mathlib.Control.Applicative
+Field collision at '[config]' in Mathlib.Tactic.NormCast.Tactic
+Field collision at '[failIfUnchanged]' in Mathlib.Tactic.NormCast.Tactic
+Field collision at '[zero_mul, mul_zero]' in Mathlib.Algebra.Ring.Defs
+Field collision at '[zero_mul, mul_zero]' in Mathlib.Algebra.Ring.Defs
+Field collision at '[mul_inv_cancel]' in Mathlib.Algebra.Field.Defs
+Field collision at '[mul_inv_cancel]' in Mathlib.Algebra.Field.Defs
+Field collision at '[one]' in Mathlib.Algebra.Group.Units
+Field collision at '[mul]' in Mathlib.Algebra.Group.InjSurj
+Field collision at '[mul]' in Mathlib.Algebra.Group.InjSurj
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Group
+Field collision at '[inv]' in Mathlib.Algebra.GroupWithZero.Basic
+Field collision at '[inf_le_left, inf_le_right, le_inf]' in Mathlib.Order.Lattice
+Field collision at '[zero, add, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[one, mul, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[add, zero, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[mul, one, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[add, zero, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[mul, one, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[add, zero, add]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[mul, one, mul]' in Mathlib.Algebra.Group.TypeTags
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[coe]' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Hom.Equiv.Basic
+Field collision at '[toFun]' in Mathlib.Order.RelIso.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Hom.Equiv.Units.Basic
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[toFun]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul, smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Defs
+Field collision at '[smul]' in Mathlib.GroupTheory.GroupAction.Units
+Field collision at '[simpTheorems]' in Mathlib.Tactic.DeriveTraversable
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Group.Prod
+Field collision at '[toFun]' in Mathlib.Algebra.Group.WithOne.Basic
+Field collision at '[map_rel_iff']' in Mathlib.Order.Hom.Basic
+Field collision at '[map_rel_iff']' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Hom.Basic
+Field collision at '[toFun]' in Mathlib.Order.Antisymmetrization
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Monoid.WithTop
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Monoid.WithTop
+Field collision at '[toFun]' in Mathlib.Order.Hom.Bounded
+Field collision at '[sdiff]' in Mathlib.Order.BooleanAlgebra
+Field collision at '[compl]' in Mathlib.Order.BooleanAlgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Order.Hom.Monoid
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Hom.Monoid
+Field collision at '[toFun]' in Mathlib.Order.Hom.Lattice
+Field collision at '[sup, le, lt, inf, compl, sdiff, top, bot]' in Mathlib.Data.Set.Basic
+Field collision at '[lt]' in Mathlib.Data.Nat.Order.Basic
+Field collision at '[toFun]' in Mathlib.Order.Heyting.Hom
+Field collision at '[toFun]' in Mathlib.Order.Heyting.Hom
+Field collision at '[toLatticeHom, toLatticeHom]' in Mathlib.Order.Heyting.Hom
+Field collision at '[toFun]' in Mathlib.Order.Heyting.Hom
+Field collision at '[le]' in Mathlib.Data.SetLike.Basic
+Field collision at '[add, zero, mul, one, neg]' in Mathlib.Algebra.EuclideanDomain.Instances
+Field collision at '[toFun]' in Mathlib.Logic.Embedding.Set
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Ring
+Field collision at '[autoUnfold]' in Mathlib.Logic.Equiv.Embedding
+Field collision at '[autoUnfold]' in Mathlib.Logic.Equiv.Embedding
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Opposite
+Field collision at '[toFun]' in Mathlib.Data.Nat.Cast.Basic
+Field collision at '[map_add]' in Mathlib.Deprecated.Ring
+Field collision at '[toFun, toFun]' in Mathlib.Deprecated.Ring
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Basic
+Field collision at '[mul, zero]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[mul, zero]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[mul, zero]' in Mathlib.Algebra.Order.Ring.WithTop
+Field collision at '[smul]' in Mathlib.Algebra.SMulWithZero
+Field collision at '[parent]' in Mathlib.Data.UnionFind
+Field collision at '[parent]' in Mathlib.Data.UnionFind
+Field collision at '[parent]' in Mathlib.Data.UnionFind
+Field collision at '[rank]' in Mathlib.Data.UnionFind
+Field collision at '[toFun]' in Mathlib.Algebra.Group.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Pi
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[toFun, toFun, toFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[coe]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[toFun, invFun, toFun, invFun]' in Mathlib.Algebra.Ring.Equiv
+Field collision at '[app]' in Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+Field collision at '[natCast, add, zero, nsmul, one]' in Mathlib.Algebra.Ring.ULift
+Field collision at '[natCast, add, zero, nsmul, one]' in Mathlib.Algebra.Ring.ULift
+Field collision at '[add, zero, nsmul, mul, one, natCast, npow]' in Mathlib.Algebra.Ring.ULift
+Field collision at '[add]' in Mathlib.Data.Fin.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[toFun, invFun, toFun, invFun]' in Mathlib.Algebra.Ring.Prod
+Field collision at '[bot]' in Mathlib.Order.GaloisConnection
+Field collision at '[sSup, sInf]' in Mathlib.Order.GaloisConnection
+Field collision at '[inf, inf_le_left, inf_le_right, le_inf, top, bot, le_top, bot_le]' in Mathlib.Data.Setoid.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Centroid
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.Centroid
+Field collision at '[inf]' in Mathlib.Order.Hom.Order
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Destutter
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Destutter
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[autoUnfold]' in Mathlib.Data.Vector.Basic
+Field collision at '[sup, inf]' in Mathlib.Order.Concept
+Field collision at '[sup, inf]' in Mathlib.Order.ConditionallyCompleteLattice.Basic
+Field collision at '[le,
+Field collision at '[toFun, toFun]' in Mathlib.Order.Hom.CompleteLattice
+Field collision at '[val]' in Mathlib.Order.FixedPoints
+Field collision at '[inf]' in Mathlib.Order.FixedPoints
+Field collision at '[invFun]' in Mathlib.Logic.Equiv.Fin
+Field collision at '[toEquiv]' in Mathlib.Logic.Equiv.Fin
+Field collision at '[erased]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[simpTheorems]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[simpTheorems]' in Mathlib.Tactic.NormNum.Core
+Field collision at '[arith]' in Mathlib.Data.List.Sublists
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[autoUnfold]' in Mathlib.Control.Traversable.Instances
+Field collision at '[le,
+Field collision at '[sup, le, inf]' in Mathlib.Order.Copy
+Field collision at '[bot]' in Mathlib.Algebra.Order.Kleene
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Rotate
+Field collision at '[autoUnfold]' in Mathlib.Data.List.Rotate
+Field collision at '[smul, smul]' in Mathlib.Algebra.GroupRingAction.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.Subsemigroup.Operations
+Field collision at '[toFun, toFun, invFun]' in Mathlib.GroupTheory.Subsemigroup.Operations
+Field collision at '[toFun]' in Mathlib.Algebra.Ring.Fin
+Field collision at '[arith]' in Mathlib.Control.Fold
+Field collision at '[ignoreTCFailures]' in Mathlib.Tactic.Positivity.Core
+Field collision at '[succ]' in Mathlib.Data.Int.SuccPred
+Field collision at '[toFun]' in Mathlib.GroupTheory.Submonoid.Operations
+Field collision at '[dischargeDepth]' in Mathlib.Tactic.FieldSimp
+Field collision at '[usedTheorems]' in Mathlib.Tactic.FieldSimp
+Field collision at '[simpTheorems]' in Mathlib.Tactic.FieldSimp
+Field collision at '[traceDiscarded, traceSuccesses, traceShrink, traceShrinkCandidates]' in Mathlib.Tactic.SlimCheck
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Star.Basic
+Field collision at '[star]' in Mathlib.Algebra.Star.Basic
+Field collision at '[toFun]' in Mathlib.Data.PNat.Factors
+Field collision at '[toFun]' in Mathlib.Data.PNat.Factors
+Field collision at '[inf,
+Field collision at '[toFun]' in Mathlib.GroupTheory.Congruence
+Field collision at '[smul]' in Mathlib.GroupTheory.Congruence
+Field collision at '[atoms]' in Mathlib.Util.AtomM
+Field collision at '[add, zero, add, zero, one]' in Mathlib.Data.Num.Lemmas
+Field collision at '[one]' in Mathlib.Data.Num.Lemmas
+Field collision at '[smul]' in Mathlib.RingTheory.Congruence
+Field collision at '[le, lt, mul, one, npow]' in Mathlib.Algebra.Order.Pi
+Field collision at '[mul, one, npow, mul, one, npow, le, lt]' in Mathlib.Algebra.Order.Pi
+Field collision at '[simpTheorems]' in Mathlib.Tactic.Abel
+Field collision at '[red]' in Mathlib.Tactic.Abel
+Field collision at '[red]' in Mathlib.Tactic.Abel
+Field collision at '[smul, smul]' in Mathlib.Algebra.Module.Basic
+Field collision at '[add_le_add_left]' in Mathlib.Algebra.PUnitInstances
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Hom.GroupAction
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Hom.GroupAction
+Field collision at '[simpTheorems]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[red]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[red]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[red]' in Mathlib.Tactic.Ring.RingNF
+Field collision at '[mul, one, mul]' in Mathlib.Data.Set.Semiring
+Field collision at '[coeffs]' in Mathlib.Tactic.Linarith.Datatypes
+Field collision at '[discharger, transparency]' in Mathlib.Tactic.Linarith.Datatypes
+Field collision at '[mul]' in Mathlib.Algebra.Order.UpperLower
+Field collision at '[mul]' in Mathlib.Algebra.Order.UpperLower
+Field collision at '[c, src]' in Mathlib.Tactic.Linarith.Elimination
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[carrier]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.Subgroup.Basic
+Field collision at '[coe]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[coe]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[natCast,
+Field collision at '[add, zero, mul, one, add, zero]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[toFun]' in Mathlib.Algebra.Module.LinearMap
+Field collision at '[smul, smul]' in Mathlib.Algebra.GroupRingAction.Subobjects
+Field collision at '[inf,
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun, map_smul', toFun, invFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.Equiv
+Field collision at '[preprocessors]' in Mathlib.Tactic.Linarith.Frontend
+Field collision at '[hom]' in Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+Field collision at '[hom]' in Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.ULift
+Field collision at '[mul, one, mul]' in Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+Field collision at '[head]' in Mathlib.Computability.TuringMachine
+Field collision at '[obj]' in Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+Field collision at '[smul_mem']' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[add, zero]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[smul]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[add, zero, neg]' in Mathlib.Algebra.Module.Submodule.Basic
+Field collision at '[le,
+Field collision at '[le]' in Mathlib.Combinatorics.SimpleGraph.Basic
+Field collision at '[sup, le, inf]' in Mathlib.Combinatorics.SimpleGraph.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Subsemiring.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Submodule.Lattice
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Submodule.Lattice
+Field collision at '[le]' in Mathlib.Combinatorics.SimpleGraph.Subgraph
+Field collision at '[sup, le, inf]' in Mathlib.Combinatorics.SimpleGraph.Subgraph
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.NonUnitalSubring.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Real.Basic
+Field collision at '[le]' in Mathlib.Data.Real.Basic
+Field collision at '[proj]' in Mathlib.Computability.PartrecCode
+Field collision at '[autoUnfold]' in Mathlib.Computability.PartrecCode
+Field collision at '[autoUnfold]' in Mathlib.Computability.PartrecCode
+Field collision at '[autoUnfold]' in Mathlib.Computability.PartrecCode
+Field collision at '[toFun, map_one', map_mul']' in Mathlib.GroupTheory.MonoidLocalization
+Field collision at '[toFun]' in Mathlib.Data.DFinsupp.Basic
+Field collision at '[mul]' in Mathlib.Order.Filter.Germ
+Field collision at '[mul]' in Mathlib.Order.Filter.Germ
+Field collision at '[toFun, toFun]' in Mathlib.Order.Filter.Germ
+Field collision at '[le]' in Mathlib.Order.Filter.Germ
+Field collision at '[decide]' in Mathlib.Tactic.CategoryTheory.Elementwise
+Field collision at '[le, lt]' in Mathlib.MeasureTheory.MeasurableSpaceDef
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[toFun, toFun]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[inf,
+Field collision at '[carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[carrier]' in Mathlib.RingTheory.Subring.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Basic
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[autoUnfold]' in Mathlib.Combinatorics.SimpleGraph.Connectivity
+Field collision at '[add_left_neg]' in Mathlib.CategoryTheory.Preadditive.Basic
+Field collision at '[w]' in Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+Field collision at '[w]' in Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+Field collision at '[add, zero, mul, one]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[add, zero, mul, add, zero, neg]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[add, zero, mul, one, neg, add, zero, mul, one]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Ring
+Field collision at '[arith]' in Mathlib.Data.Nat.Digits
+Field collision at '[arith]' in Mathlib.Data.Nat.Digits
+Field collision at '[sup, le, lt, inf, sup, le, lt, inf, top, bot, le, lt]' in Mathlib.Data.Nat.PartENat
+Field collision at '[zero_le_one]' in Mathlib.Order.Filter.FilterProduct
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[sets]' in Mathlib.Order.Filter.Pointwise
+Field collision at '[carrier]' in Mathlib.Algebra.Category.GroupCat.Limits
+Field collision at '[neg]' in Mathlib.GroupTheory.Submonoid.Pointwise
+Field collision at '[mul, one, mul]' in Mathlib.GroupTheory.Submonoid.Pointwise
+Field collision at '[le]' in Mathlib.Topology.Order
+Field collision at '[toFun]' in Mathlib.Data.Finsupp.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[toFun, invFun]' in Mathlib.Data.Finsupp.ToDFinsupp
+Field collision at '[carrier, carrier]' in Mathlib.Algebra.Category.Ring.Limits
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Category.Ring.Limits
+Field collision at '[carrier, carrier]' in Mathlib.Algebra.Category.Ring.Limits
+Field collision at '[map_rel']' in Mathlib.ModelTheory.Basic
+Field collision at '[toFun]' in Mathlib.ModelTheory.Basic
+Field collision at '[toFun, invFun]' in Mathlib.SetTheory.Ordinal.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.QuotientGroup
+Field collision at '[toFun]' in Mathlib.GroupTheory.QuotientGroup
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun, invFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Basic
+Field collision at '[toFun]' in Mathlib.GroupTheory.Abelianization
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Basic
+Field collision at '[le, lt]' in Mathlib.Topology.Inseparable
+Field collision at '[r]' in Mathlib.Topology.Inseparable
+Field collision at '[carrier]' in Mathlib.LinearAlgebra.Span
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Submodule.Pointwise
+Field collision at '[add, zero, bot]' in Mathlib.Algebra.Module.Submodule.Pointwise
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Hom
+Field collision at '[mul]' in Mathlib.GroupTheory.FreeAbelianGroup
+Field collision at '[mul]' in Mathlib.GroupTheory.FreeAbelianGroup
+Field collision at '[toFun]' in Mathlib.GroupTheory.FreeAbelianGroup
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Quotient
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Finsupp
+Field collision at '[toFun, toFun, invFun]' in Mathlib.LinearAlgebra.Finsupp
+Field collision at '[carrier]' in Mathlib.FieldTheory.Subfield
+Field collision at '[toFun, toFun]' in Mathlib.FieldTheory.Subfield
+Field collision at '[inf, inf_le_left, inf_le_right, le_inf, top, le_top]' in Mathlib.FieldTheory.Subfield
+Field collision at '[carrier]' in Mathlib.FieldTheory.Subfield
+Field collision at '[coe]' in Mathlib.Algebra.Hom.NonUnitalAlg
+Field collision at '[toFun]' in Mathlib.Algebra.Hom.NonUnitalAlg
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Equiv
+Field collision at '[add, zero]' in Mathlib.LinearAlgebra.Multilinear.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Isomorphisms
+Field collision at '[carrier]' in Mathlib.GroupTheory.OrderOfElement
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Pi
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Prod
+Field collision at '[toFun, invFun]' in Mathlib.LinearAlgebra.Prod
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Opposite
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Opposite
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, coe_injective']' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[coe, inv, coe]' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[toFun]' in Mathlib.Algebra.Star.StarAlgHom
+Field collision at '[toFun, toFun]' in Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+Field collision at '[map_zero', map_add']' in Mathlib.RingTheory.Ideal.Quotient
+Field collision at '[head]' in Mathlib.GroupTheory.CoprodI
+Field collision at '[head]' in Mathlib.GroupTheory.CoprodI
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Module
+Field collision at '[smul]' in Mathlib.LinearAlgebra.TensorProduct
+Field collision at '[smul]' in Mathlib.LinearAlgebra.AffineSpace.AffineMap
+Field collision at '[toFun]' in Mathlib.Algebra.TrivSqZeroExt
+Field collision at '[toFun]' in Mathlib.Algebra.TrivSqZeroExt
+Field collision at '[toFun, invFun]' in Mathlib.Data.Real.EReal
+Field collision at '[add, zero]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul, add, zero, mul, one]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, nsmul, nsmul_zero, nsmul_succ]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[add, zero, mul, add, zero, mul, one]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.MonoidAlgebra.Basic
+Field collision at '[nsmul, nsmul_zero, nsmul_succ]' in Mathlib.Algebra.RingQuot
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Unitization
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Unitization
+Field collision at '[le,
+Field collision at '[toFun]' in Mathlib.RingTheory.Localization.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Localization.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Localization.Basic
+Field collision at '[smul]' in Mathlib.LinearAlgebra.PiTensorProduct
+Field collision at '[toEquiv]' in Mathlib.Topology.Homeomorph
+Field collision at '[toFun]' in Mathlib.Algebra.Star.NonUnitalSubalgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Star.NonUnitalSubalgebra
+Field collision at '[carrier]' in Mathlib.Algebra.Star.NonUnitalSubalgebra
+Field collision at '[add, zero]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun, toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun, left_inv, right_inv]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, toFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Data.Matrix.Basic
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Basis
+Field collision at '[toFun, map_smul']' in Mathlib.LinearAlgebra.TensorProduct.Tower
+Field collision at '[map_smul']' in Mathlib.LinearAlgebra.TensorProduct.Tower
+Field collision at '[map_smul']' in Mathlib.LinearAlgebra.TensorProduct.Tower
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Block
+Field collision at '[toFun]' in Mathlib.Data.Matrix.Block
+Field collision at '[toFun, map_one', map_mul', map_zero', map_add', commutes']' in Mathlib.RingTheory.AlgebraTower
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.DFinsupp
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.DFinsupp
+Field collision at '[toFun, invFun, toFun]' in Mathlib.LinearAlgebra.DFinsupp
+Field collision at '[sSup]' in Mathlib.Topology.Sets.Opens
+Field collision at '[sInf]' in Mathlib.Topology.Sets.Closeds
+Field collision at '[r]' in Mathlib.Topology.LocalHomeomorph
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Module
+Field collision at '[toFun, toFun]' in Mathlib.Topology.LocallyConstant.Algebra
+Field collision at '[toFun,
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Alternating
+Field collision at '[toFun]' in Mathlib.Algebra.DirectSum.Algebra
+Field collision at '[toEquiv]' in Mathlib.Topology.UniformSpace.Equiv
+Field collision at '[toFun]' in Mathlib.RingTheory.Ideal.Operations
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.MonoidAlgebra.ToDirectSum
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Group.Basic
+Field collision at '[top, bot, inf, inf, top, bot]' in Mathlib.Topology.Algebra.Group.Basic
+Field collision at '[toUniformSpace, uniformity_dist]' in Mathlib.Topology.MetricSpace.Basic
+Field collision at '[toBornology, cobounded_sets]' in Mathlib.Topology.MetricSpace.Basic
+Field collision at '[toBornology, toBornology]' in Mathlib.Topology.MetricSpace.Basic
+Field collision at '[le, lt]' in Mathlib.Analysis.Convex.Cone.Basic
+Field collision at '[carrier, carrier]' in Mathlib.Topology.Algebra.Ring.Basic
+Field collision at '[carrier, carrier]' in Mathlib.Topology.Algebra.Ring.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[carrier]' in Mathlib.Algebra.Algebra.Subalgebra.Basic
+Field collision at '[le]' in Mathlib.Analysis.BoxIntegral.Box.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Ideal.QuotientOperations
+Field collision at '[toFun]' in Mathlib.RingTheory.Valuation.Basic
+Field collision at '[toFun]' in Mathlib.RingTheory.Valuation.Basic
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Ring.Ideal
+Field collision at '[toInf, toPartialOrder]' in Mathlib.Topology.Algebra.OpenSubgroup
+Field collision at '[toPartialOrder, toPartialOrder]' in Mathlib.Topology.Algebra.OpenSubgroup
+Field collision at '[algebraMap_mem']' in Mathlib.Algebra.Algebra.Subalgebra.Tower
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Field
+Field collision at '[le_of_mem', tag_mem_Icc]' in Mathlib.Analysis.BoxIntegral.Partition.Tagged
+Field collision at '[algebraMap_mem']' in Mathlib.RingTheory.Adjoin.Basic
+Field collision at '[map_add']' in Mathlib.RingTheory.GradedAlgebra.Basic
+Field collision at '[map_add']' in Mathlib.RingTheory.GradedAlgebra.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Star.Subalgebra
+Field collision at '[toFun, toFun, map_smul']' in Mathlib.Algebra.Star.Subalgebra
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[map_add']' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[map_add']' in Mathlib.LinearAlgebra.Matrix.ToLin
+Field collision at '[toFun]' in Mathlib.RingTheory.Derivation.ToSquareZero
+Field collision at '[smul]' in Mathlib.Topology.Algebra.GroupCompletion
+Field collision at '[smul]' in Mathlib.Topology.Algebra.GroupCompletion
+Field collision at '[smul, smul]' in Mathlib.Topology.Algebra.GroupCompletion
+Field collision at '[toFun]' in Mathlib.Data.MvPolynomial.Basic
+Field collision at '[toFun]' in Mathlib.CategoryTheory.Monoidal.Internal.Module
+Field collision at '[smul]' in Mathlib.Algebra.Polynomial.GroupRingAction
+Field collision at '[le]' in Mathlib.Algebra.Lie.Subalgebra
+Field collision at '[inf,
+Field collision at '[smul]' in Mathlib.Algebra.Module.GradedModule
+Field collision at '[smul]' in Mathlib.Algebra.Module.GradedModule
+Field collision at '[toFun]' in Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+Field collision at '[toFun]' in Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+Field collision at '[toFun]' in Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+Field collision at '[toFun]' in Mathlib.Data.MvPolynomial.Rename
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[coe, coe_injective']' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[mul, one]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[add, zero, nsmul]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[mul, one]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toLinearEquiv]' in Mathlib.Topology.Algebra.Module.Basic
+Field collision at '[toFun]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[toFun, cont]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[toFun]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[toFun]' in Mathlib.Topology.Instances.TrivSqZeroExt
+Field collision at '[le,
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.Algebra
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.Algebra
+Field collision at '[toFun]' in Mathlib.Topology.Algebra.ContinuousAffineMap
+Field collision at '[cont]' in Mathlib.Topology.Algebra.Module.WeakDual
+Field collision at '[carrier]' in Mathlib.Topology.Algebra.StarSubalgebra
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.OfAssociative
+Field collision at '[toFun]' in Mathlib.Data.MvPolynomial.Equiv
+Field collision at '[toFun, toFun]' in Mathlib.Data.MvPolynomial.Equiv
+Field collision at '[carrier]' in Mathlib.Topology.ContinuousFunction.Algebra
+Field collision at '[carrier]' in Mathlib.Topology.ContinuousFunction.Algebra
+Field collision at '[toFun]' in Mathlib.Topology.ContinuousFunction.Algebra
+Field collision at '[toContinuousMultilinearMap]' in Mathlib.Topology.Algebra.Module.Alternating
+Field collision at '[bracket]' in Mathlib.Algebra.Lie.Quotient
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Quotient
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Quotient
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Abelian
+Field collision at '[add, zero, one]' in Mathlib.Data.Complex.Basic
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.DirectSum
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.DirectSum
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.DirectSum
+Field collision at '[add, zero, one]' in Mathlib.NumberTheory.Zsqrtd.Basic
+Field collision at '[zero]' in Mathlib.Algebra.Symmetrized
+Field collision at '[toFun]' in Mathlib.Analysis.Normed.Ring.Seminorm
+Field collision at '[coe, coe_injective']' in Mathlib.Analysis.NormedSpace.LinearIsometry
+Field collision at '[toFun, invFun]' in Mathlib.Analysis.NormedSpace.LinearIsometry
+Field collision at '[carrier]' in Mathlib.Analysis.Normed.Field.UnitBall
+Field collision at '[add, zero, add, zero, one]' in Mathlib.NumberTheory.Dioph
+Field collision at '[le, lt]' in Mathlib.Analysis.NormedSpace.ENorm
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Quaternion
+Field collision at '[toFun, invFun]' in Mathlib.Algebra.Quaternion
+Field collision at '[toFun, invFun]' in Mathlib.Analysis.NormedSpace.WithLp
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.Reindex
+Field collision at '[carrier]' in Mathlib.Algebra.Category.ModuleCat.Limits
+Field collision at '[inf_le_left, inf_le_right, le_inf]' in Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.Analysis.Seminorm
+Field collision at '[smul']' in Mathlib.Analysis.Seminorm
+Field collision at '[toFun]' in Mathlib.RingTheory.FiniteType
+Field collision at '[bot, bot_le]' in Mathlib.MeasureTheory.Measure.MeasureSpace
+Field collision at '[map_smul']' in Mathlib.RingTheory.TensorProduct
+Field collision at '[carrier]' in Mathlib.Algebra.Module.Bimodule
+Field collision at '[carrier, smul_mem']' in Mathlib.Algebra.Module.Bimodule
+Field collision at '[carrier, smul_mem']' in Mathlib.Algebra.Module.Bimodule
+Field collision at '[toFun]' in Mathlib.RingTheory.FinitePresentation
+Field collision at '[map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[toFun, map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[map_smul']' in Mathlib.RingTheory.IsTensorProduct
+Field collision at '[toFun, invFun]' in Mathlib.Topology.Algebra.Module.StrongTopology
+Field collision at '[toFun]' in Mathlib.RingTheory.PowerSeries.Basic
+Field collision at '[map_smul']' in Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+Field collision at '[add, zero, mul, add]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[add, zero, mul]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[add, zero, one, add, zero, mul]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[add, zero, mul, one, add, zero, mul]' in Mathlib.RingTheory.HahnSeries
+Field collision at '[toFun]' in Mathlib.Algebra.Lie.Matrix
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+Field collision at '[commutes']' in Mathlib.RingTheory.Etale
+Field collision at '[commutes']' in Mathlib.RingTheory.Etale
+Field collision at '[commutes']' in Mathlib.RingTheory.Etale
+Field collision at '[mul, one, npow, add, zero, nsmul, neg, sub, zsmul]' in Mathlib.FieldTheory.RatFunc
+Field collision at '[map_smul']' in Mathlib.RepresentationTheory.Rep
+Field collision at '[map_smul']' in Mathlib.RepresentationTheory.Rep
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+Field collision at '[carrier, carrier]' in Mathlib.FieldTheory.IntermediateField
+Field collision at '[carrier]' in Mathlib.Analysis.NormedSpace.lpSpace
+Field collision at '[carrier]' in Mathlib.Analysis.NormedSpace.lpSpace
+Field collision at '[toFun]' in Mathlib.Analysis.NormedSpace.ContinuousAffineMap
+Field collision at '[smul]' in Mathlib.Analysis.NormedSpace.Completion
+Field collision at '[toFun]' in Mathlib.Analysis.NormedSpace.Completion
+Field collision at '[toFun]' in Mathlib.RingTheory.AdjoinRoot
+Field collision at '[toFun]' in Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+Field collision at '[dist]' in Mathlib.Topology.ContinuousFunction.Compact
+Field collision at '[map_smul']' in Mathlib.RepresentationTheory.GroupCohomology.Resolution
+Field collision at '[Hom]' in Mathlib.AlgebraicGeometry.Scheme
+Field collision at '[toFun]' in Mathlib.Topology.ContinuousFunction.Ideals
+Field collision at '[toFun]' in Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+Field collision at '[toFun]' in Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+Field collision at '[commutes']' in Mathlib.FieldTheory.Normal
+Field collision at '[algebraMap_mem']' in Mathlib.FieldTheory.NormalClosure
+Field collision at '[toPresheafedSpace]' in Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+Field collision at '[toFun]' in Mathlib.RingTheory.WittVector.Frobenius
+Field collision at '[toFun]' in Mathlib.RingTheory.IsAdjoinRoot
+Field collision at '[toFun]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[toFun]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[toFun, invFun]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[coordChange, continuousOn_coordChange]' in Mathlib.Topology.VectorBundle.Basic
+Field collision at '[carrier]' in Mathlib.FieldTheory.Galois
+Field collision at '[toFun]' in Mathlib.RingTheory.DedekindDomain.IntegralClosure
+Field collision at '[edist, edist_dist]' in Mathlib.MeasureTheory.Function.LpSpace
+Field collision at '[norm]' in Mathlib.Analysis.Matrix
+Field collision at '[toFun, invFun]' in Mathlib.Analysis.Quaternion
+Field collision at '[toFun, invFun, source]' in Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+Field collision at '[toFun]' in Mathlib.Analysis.NormedSpace.Spectrum
+Field collision at '[toFun, toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun, toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun, toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun]' in Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+Field collision at '[toFun]' in Mathlib.Geometry.Manifold.PartitionOfUnity
+Field collision at '[toFun]' in Mathlib.Geometry.Manifold.PartitionOfUnity
+Field collision at '[coe, coe]' in Mathlib.Analysis.NormedSpace.Star.Spectrum
+Field collision at '[coe]' in Mathlib.Analysis.NormedSpace.Star.Spectrum
+Field collision at '[ht₀]' in Mathlib.Analysis.ODE.PicardLindelof
+
