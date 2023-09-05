@@ -53,12 +53,18 @@ section Maps
 variable {F : Type*} [AddCommMonoid F] [Module 𝕜 F]
 variable {G : Type*} [AddCommMonoid G] [Module 𝕜 G]
 
+variable {EF : Type*} [SemilinearMapClass EF (RingHom.id { c : 𝕜 // 0 ≤ c }) E F]
+variable {FG : Type*} [SemilinearMapClass FG (RingHom.id { c : 𝕜 // 0 ≤ c }) F G]
+
+/-- This section is likely no longer relevant as maps between submodules are already defined.
+The only thing I should figure out how to add is the coercion between maps between PointedCones
+and maps between ConvexCones.
+-/
+
 @[simp, norm_cast]
-lemma coe_map (S : PointedCone 𝕜 E)
-    {𝔽 : Type*} [SemilinearMapClass 𝔽 (RingHom.id 𝕜) E F]
-    (f : 𝔽) :
-    (S.map f : Set F) = f '' S := by
-  sorry
+lemma map_coe (S : PointedCone 𝕜 E)
+    (f : EF) :
+    (S.map f : Set F) = f '' S := Submodule.map_coe _ _
 
 end Maps
 
