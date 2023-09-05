@@ -38,6 +38,5 @@ def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
 
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
-theorem Dirac {G : SimpleGraph V} [DecidableRel G.Adj] (CardinalityCondition: Fintype.card V ≥ 3): G.IsHamiltonian := by
-
+theorem Dirac {G : SimpleGraph V} [DecidableRel G.Adj] (CardinalityCondition: Fintype.card V ≥ 3) (MinDegreeCondition: G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian := by
   sorry
