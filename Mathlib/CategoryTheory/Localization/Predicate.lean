@@ -35,14 +35,12 @@ and natural isomorphisms between functors.
 
 noncomputable section
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
-
 namespace CategoryTheory
 
 open Category
 
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D)
-  (W : MorphismProperty C) (E : Type u₃) [Category.{v₃} E]
+variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
+  [Category E]
 
 namespace Functor
 
