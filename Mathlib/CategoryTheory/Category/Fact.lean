@@ -13,6 +13,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 `Fact f` is the category containing as objects all factorisations of a morphism `f`.
 
 We show that `Fact f` always has an initial and a terminal object.
+
+TODO: Show that `Fact f` is isomorphic to a comma category in two ways.
+
+TODO: Make `MonoFactorisation f` a special case of a `Fact f`.
 -/
 
 namespace CategoryTheory
