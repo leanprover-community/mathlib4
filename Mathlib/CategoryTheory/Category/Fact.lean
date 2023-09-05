@@ -7,18 +7,30 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
-universe v u
+/-!
+# The Factorisation Category of a Category
+
+`Fact f` is the category containing as objects all factorisations of a morphism `f`.
+
+We show that `Fact f` always has an initial and a terminal object.
+-/
 
 namespace CategoryTheory
 
-section
+universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+/-- Factorisations of a morphism `f` as a structure, containing, one object, two morphisms,
+and the condition that their composition equals `f`. -/
 structure Fact {X Y : C} (f : X ⟶ Y) where
+  /-- The midpoint of the factorisation. -/
   D   : C
+  /-- The morphism into the factorisation midpoint. -/
   ι   : X ⟶ D
+  /-- The morphism out of the factorisation midpoint. -/
   π   : D ⟶ Y
+  /-- The factorisation condition. -/
   ι_π : ι ≫ π = f := by aesop_cat
 
 attribute [simp] Fact.ι_π
@@ -27,6 +39,8 @@ namespace Fact
 
 variable {X Y : C} {f : X ⟶ Y}
 
+/-- Morphisms of `Fact f` consist of morphism between their midpoints and the obvious
+commutativity conditions. -/
 @[ext]
 protected structure Hom (d e : Fact f) : Type (max u v) where
   h : d.D ⟶ e.D
@@ -35,10 +49,12 @@ protected structure Hom (d e : Fact f) : Type (max u v) where
 
 attribute [simp] Fact.Hom.ι_h Fact.Hom.h_π
 
+/-- The identity morphism of `Fact f`. -/
 @[simps]
 protected def Hom.id (d : Fact f) : Fact.Hom d d where
   h := 𝟙 _
 
+/-- Composition of morphisms in `Fact f`. -/
 @[simps]
 protected def Hom.comp {d₁ d₂ d₃ : Fact f} (f : Fact.Hom d₁ d₂) (g : Fact.Hom d₂ d₃) :
     Fact.Hom d₁ d₃ where
@@ -53,48 +69,52 @@ instance : Category.{max u v} (Fact f) where
 
 variable (d : Fact f)
 
+/-- The initial object in `Fact f`, with the domain of `f` as its midpoint. -/
 @[simps]
 protected def initial : Fact f where
   D := X
   ι := 𝟙 _
   π := f
 
+/-- The unique morphism out of `Fact.initial f`. -/
 @[simps]
 protected def initialHom (d : Fact f) : Fact.Hom (Fact.initial : Fact f) d where
   h := d.ι
 
 instance : Unique ((Fact.initial : Fact f) ⟶ d) where
   default := Fact.initialHom d
-  uniq f := by
-    change Fact.Hom _ _ at f
-    show f = _
-    ext
-    simp only [initial_D, initialHom_h, ← f.ι_h]
-    simp
+  uniq f := by apply Fact.Hom.ext; simp [← f.ι_h]
 
+/-- The terminal object in `Fact f`, with the codomain of `f` as its midpoint. -/
 @[simps]
 protected def terminal : Fact f where
   D := Y
   ι := f
   π := 𝟙 _
 
+/-- The unique morphism into `Fact.terminal f`. -/
 @[simps]
 protected def terminalHom (d : Fact f) : Fact.Hom d (Fact.terminal : Fact f) where
   h := d.π
 
 instance : Unique (d ⟶ (Fact.terminal : Fact f)) where
   default := Fact.terminalHom d
-  uniq f := by
-    change Fact.Hom _ _ at f
-    show f = _
-    ext
-    simp only [terminal_D, terminalHom_h, ← f.h_π]
-    simp
+  uniq f := by apply Fact.Hom.ext; simp [← f.h_π]
 
 open Limits
 
-def IsInitialId : IsInitial (Fact.initial : Fact f) := IsInitial.ofUnique _
+instance : IsInitial (Fact.initial : Fact f) := IsInitial.ofUnique _
 
-def IsTerminalId : IsTerminal (Fact.terminal : Fact f) := IsTerminal.ofUnique _
+instance : HasInitial (Fact f) := Limits.hasInitial_of_unique Fact.initial
+
+instance : IsTerminal (Fact.terminal : Fact f) := IsTerminal.ofUnique _
+
+instance : HasTerminal (Fact f) := Limits.hasTerminal_of_unique Fact.terminal
+
+/-- The forgetful functor from `Fact f` to the underlying category `C`. -/
+@[simps]
+def forget : Fact f ⥤ C where
+  obj := Fact.D
+  map f := f.h
 
 end Fact
