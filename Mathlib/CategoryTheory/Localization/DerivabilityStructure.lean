@@ -20,6 +20,7 @@ class IsRightDerivabilityStructure : Prop where
   guitartExact' : TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom
 
 attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
+  IsRightDerivabilityStructure.guitartExact'
 
 variable {D₁ D₂ : Type*} [Category D₁] [Category D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)

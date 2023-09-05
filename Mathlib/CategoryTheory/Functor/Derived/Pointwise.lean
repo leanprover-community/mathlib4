@@ -13,9 +13,19 @@ variable {C D D' H : Type _} [Category C] [Category D] [Category D'] [Category H
 class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
   hasColimit' : F.HasPointwiseLeftKanExtensionAt W.Q (W.Q.obj X)
 
-/-lemma hasPointwiseRightDerivedFunctorAt_iff [L.IsLocalization W] (X : C) :
+lemma hasPointwiseRightDerivedFunctorAt_iff [L.IsLocalization W] (X : C) :
     F.HasPointwiseRightDerivedFunctorAt W X ↔
-      F.HasPointwiseLeftKanExtensionAt L (L.obj X) := sorry-/
+      F.HasPointwiseLeftKanExtensionAt L (L.obj X) := by
+  rw [← F.hasPointwiseLeftKanExtensionAt_iff_of_equivalence W.Q L
+    (Localization.uniq W.Q L W) (Localization.compUniqFunctor W.Q L W) (W.Q.obj X) (L.obj X)
+    ((Localization.compUniqFunctor W.Q L W).app X)]
+  exact ⟨fun h => h.hasColimit', fun h => ⟨h⟩⟩
+
+lemma hasPointwiseRightDerivedFunctorAt_iff_of_mem {X Y : C} (w : X ⟶ Y) (hw : W w) :
+    F.HasPointwiseRightDerivedFunctorAt W X ↔
+      F.HasPointwiseRightDerivedFunctorAt W Y := by
+  simp only [F.hasPointwiseRightDerivedFunctorAt_iff W.Q W]
+  exact F.hasPointwiseLeftKanExtensionAt_iff_of_iso W.Q (Localization.isoOfHom W.Q W w hw)
 
 section
 

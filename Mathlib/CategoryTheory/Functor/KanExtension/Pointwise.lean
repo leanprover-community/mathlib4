@@ -6,7 +6,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C D H : Type _} [Category C] [Category D] [Category H]
+variable {C D D' H : Type _} [Category C] [Category D] [Category D'] [Category H]
   (F : C ⥤ H) (L : C ⥤ D)
 
 abbrev HasPointwiseLeftKanExtensionAt (Y : D) :=
@@ -22,6 +22,50 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y�
   intro Y₁ Y₂ e _
   change HasColimit ((CostructuredArrow.mapIso e.symm).functor ⋙ CostructuredArrow.proj L Y₁ ⋙ F)
   infer_instance
+
+variable {L}
+
+lemma hasPointwiseLeftKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+    F.HasPointwiseLeftKanExtensionAt L Y ↔
+      F.HasPointwiseLeftKanExtensionAt L' Y := by
+  revert L L' e
+  suffices ∀ ⦃L L' : C ⥤ D⦄ (_ : L ≅ L') [F.HasPointwiseLeftKanExtensionAt L Y],
+      F.HasPointwiseLeftKanExtensionAt L' Y from
+    fun L L' e => ⟨fun _ => this e, fun _ => this e.symm⟩
+  intro L L' e _
+  let Φ : CostructuredArrow L' Y ≌ CostructuredArrow L Y := Comma.mapLeftIso _ e.symm
+  have : HasColimit (Φ.functor ⋙ CostructuredArrow.proj L Y ⋙ F) := inferInstance
+  let e' : CostructuredArrow.proj L' Y ⋙ F ≅
+    Φ.functor ⋙ CostructuredArrow.proj L Y ⋙ F := Iso.refl _
+  exact hasColimitOfIso e'
+
+variable (L)
+
+lemma hasPointwiseLeftKanExtensionAt_of_equivalence (L' : C ⥤ D')
+    (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y')
+    [F.HasPointwiseLeftKanExtensionAt L Y] :
+    F.HasPointwiseLeftKanExtensionAt L' Y' := by
+  rw [← F.hasPointwiseLeftKanExtensionAt_iff_of_iso' eL,
+    F.hasPointwiseLeftKanExtensionAt_iff_of_iso _ e.symm]
+  let Φ := CostructuredArrow.post L E.functor Y
+  have : IsEquivalence Φ := CostructuredArrow.isEquivalencePost _ _ _
+  have : HasColimit ((asEquivalence Φ).functor ⋙
+    CostructuredArrow.proj (L ⋙ E.functor) (E.functor.obj Y) ⋙ F) :=
+    (inferInstance : F.HasPointwiseLeftKanExtensionAt L Y)
+  exact hasColimit_of_equivalence_comp (asEquivalence Φ)
+
+lemma hasPointwiseLeftKanExtensionAt_iff_of_equivalence (L' : C ⥤ D')
+    (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y') :
+    F.HasPointwiseLeftKanExtensionAt L Y ↔
+      F.HasPointwiseLeftKanExtensionAt L' Y' := by
+  constructor
+  · intro
+    exact F.hasPointwiseLeftKanExtensionAt_of_equivalence L L' E eL Y Y' e
+  · intro
+    exact F.hasPointwiseLeftKanExtensionAt_of_equivalence L' L E.symm
+      (isoWhiskerRight eL.symm _ ≪≫ Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft L E.unitIso.symm ≪≫ L.rightUnitor) Y' Y
+      (E.inverse.mapIso e.symm ≪≫ E.unitIso.symm.app Y)
 
 namespace LeftExtension
 
