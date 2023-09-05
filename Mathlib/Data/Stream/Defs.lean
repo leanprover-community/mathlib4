@@ -62,7 +62,7 @@ instance : GetElem (Stream' α) ℕ α (fun _ _ => True) where
   getElem s n _ := get s n
 
 @[simp]
-theorem getElem_eq_get {s : Stream' α} {n : ℕ} {h : True} : s[n]'h = get s n :=
+theorem getElem_eq_get (s : Stream' α) (n : ℕ) (h : True) : s[n]'h = get s n :=
   rfl
 
 @[simp]
@@ -128,11 +128,11 @@ instance : Pure Stream' where
   pure a := const a
 
 @[simp]
-theorem map_eq_map {f : α → β} : Functor.map f = map f :=
+theorem map_eq_map (f : α → β) : Functor.map f = map f :=
   rfl
 
 @[simp]
-theorem mapConst_eq_const {a : α} {s : Stream' β} : Functor.mapConst a s = const a :=
+theorem mapConst_eq_const (a : α) (s : Stream' β) : Functor.mapConst a s = const a :=
   rfl
 
 /-- Iterates of a function as a stream. -/
