@@ -35,7 +35,7 @@ namespace LocalizerMorphism
 variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
 
 -- similar to Kahn-Maltsiniotis Lemme 5.5
-lemma hasPointwiseRightDerivedFunctorAt_iff (F : C₂ ⥤ H) (X : C₁) :
+lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (F : C₂ ⥤ H) (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseRightDerivedFunctorAt W₁ X ↔
       F.HasPointwiseRightDerivedFunctorAt W₂ (Φ.functor.obj X) := by
   let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _  := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
@@ -49,16 +49,16 @@ lemma hasPointwiseRightDerivedFunctorAt_iff (F : C₂ ⥤ H) (X : C₁) :
   apply hasColimit_iff_of_iso
   apply Iso.refl
 
-lemma hasPointwiseRightDerivedFunctor_iff (F : C₂ ⥤ H) :
-    (∀ X₂, F.HasPointwiseRightDerivedFunctorAt W₂ X₂) ↔
-      (∀ X₁, (Φ.functor ⋙ F).HasPointwiseRightDerivedFunctorAt W₁ X₁) := by
+lemma hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure (F : C₂ ⥤ H) :
+    F.HasPointwiseRightDerivedFunctor W₂ ↔
+      ((Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁) := by
   constructor
   · intro hF X₁
-    rw [hasPointwiseRightDerivedFunctorAt_iff]
+    rw [hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure]
     apply hF
   · intro hF X₂
     have R : Φ.RightResolution X₂ := Classical.arbitrary _
-    simpa only [hasPointwiseRightDerivedFunctorAt_iff,
+    simpa only [hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure,
       ← F.hasPointwiseRightDerivedFunctorAt_iff_of_mem W₂ R.w R.hw ] using hF R.X₁
 
 -- TODO: comparison iso when the conditions above are satisfied

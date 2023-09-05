@@ -12,6 +12,8 @@ variable {C D D' H : Type _} [Category C] [Category D] [Category D'] [Category H
 abbrev HasPointwiseLeftKanExtensionAt (Y : D) :=
   HasColimit (CostructuredArrow.proj L Y ⋙ F)
 
+abbrev HasPointwiseLeftKanExtension := ∀ (Y : D), F.HasPointwiseLeftKanExtensionAt L Y
+
 lemma hasPointwiseLeftKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y₂) :
     F.HasPointwiseLeftKanExtensionAt L Y₁ ↔
       F.HasPointwiseLeftKanExtensionAt L Y₂ := by
@@ -69,7 +71,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_equivalence (L' : C ⥤ D')
 
 namespace LeftExtension
 
-variable {F L} (E : LeftExtension L F)
+variable {F L} (E E' : LeftExtension L F)
 
 @[simps]
 def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
@@ -82,9 +84,50 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
         simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
+variable (L F)
+
+@[simps]
+def coconeAtFunctor (Y : D) : LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
+  obj E := E.coconeAt Y
+  map {E E'} φ := CoconeMorphism.mk (φ.right.app Y) (fun G => by
+    dsimp
+    rw [← StructuredArrow.w φ]
+    simp only [assoc, NatTrans.naturality, const_obj_obj, whiskeringLeft_obj_obj, whiskeringLeft_obj_map,
+      NatTrans.comp_app, comp_obj, whiskerLeft_app])
+
+variable {L F}
+
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
-def isUniversalOfPointwise (h : ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y) :
+abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
+
+variable {E E'}
+
+lemma isPointwiseLeftKanExtensionAt_iff_of_iso (e : E ≅ E') (Y : D) :
+    E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y where
+  toFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor F L Y).mapIso e)
+  invFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor F L Y).mapIso e.symm)
+  left_inv h := by
+    dsimp only [IsPointwiseLeftKanExtensionAt]
+    apply Subsingleton.elim
+  right_inv h := by
+    dsimp only [IsPointwiseLeftKanExtensionAt]
+    apply Subsingleton.elim
+
+lemma isPointwiseLeftKanExtension_iff_of_iso (e : E ≅ E') :
+    E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
+  toFun h := fun Y => (isPointwiseLeftKanExtensionAt_iff_of_iso e Y) (h Y)
+  invFun h := fun Y => (isPointwiseLeftKanExtensionAt_iff_of_iso e Y).symm (h Y)
+  left_inv h := by
+    aesop_cat
+    funext
+  right_inv h := by
+    aesop
+    funext
+
+variable (E E')
+
+def isUniversalOfPointwise (h : E.IsPointwiseLeftKanExtension) :
     E.IsUniversal :=
   IsInitial.ofUniqueHom (fun G => StructuredArrow.homMk
         { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
@@ -112,7 +155,7 @@ end LeftExtension
 
 section
 
-variable [∀ (Y : D), F.HasPointwiseLeftKanExtensionAt L Y]
+variable [F.HasPointwiseLeftKanExtension L]
 
 @[simps]
 noncomputable def pointwiseLeftKanExtensionFunctor : D ⥤ H where
@@ -157,8 +200,8 @@ noncomputable def pointwiseLeftKanExtensionNatTrans : F ⟶ L ⋙ F.pointwiseLef
 noncomputable def pointwiseLeftKanExtension : LeftExtension L F :=
   StructuredArrow.mk (F.pointwiseLeftKanExtensionNatTrans L)
 
-noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtensionAt (X : D) :
-    (F.pointwiseLeftKanExtension L).IsPointwiseLeftKanExtensionAt X :=
+noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
+    (F.pointwiseLeftKanExtension L).IsPointwiseLeftKanExtension := fun X =>
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (fun j => by
     dsimp
     simp only [comp_id, colimit.ι_desc, CostructuredArrow.map_mk]
@@ -169,7 +212,7 @@ noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtensionAt (X : D)
 noncomputable def pointwiseLeftKanExtensionIsUniversal :
     (F.pointwiseLeftKanExtension L).IsUniversal :=
   (F.pointwiseLeftKanExtension L).isUniversalOfPointwise
-    (F.pointwiseLeftKanExtensionIsPointwiseLeftKanExtensionAt L)
+    (F.pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L)
 
 instance : (F.pointwiseLeftKanExtensionFunctor L).IsLeftKanExtension
     (F.pointwiseLeftKanExtensionNatTrans L) where
@@ -177,6 +220,16 @@ instance : (F.pointwiseLeftKanExtensionFunctor L).IsLeftKanExtension
 
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk' _ (F.pointwiseLeftKanExtensionNatTrans L)
+
+variable {F L}
+
+lemma isPointwiseLeftKanExtension_of_isLeftKanExtension (F' : D ⥤ H) (α : F ⟶ L ⋙ F')
+    [F'.IsLeftKanExtension α] :
+    (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
+  LeftExtension.isPointwiseLeftKanExtension_iff_of_iso
+    (IsColimit.coconePointUniqueUpToIso (F.pointwiseLeftKanExtensionIsUniversal L)
+      (F'.leftKanExtensionUniversal α))
+    (F.pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L)
 
 end
 

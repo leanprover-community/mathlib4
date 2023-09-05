@@ -13,6 +13,8 @@ variable {C D D' H : Type _} [Category C] [Category D] [Category D'] [Category H
 class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
   hasColimit' : F.HasPointwiseLeftKanExtensionAt W.Q (W.Q.obj X)
 
+abbrev HasPointwiseRightDerivedFunctor := ∀ (X : C), F.HasPointwiseRightDerivedFunctorAt W X
+
 lemma hasPointwiseRightDerivedFunctorAt_iff [L.IsLocalization W] (X : C) :
     F.HasPointwiseRightDerivedFunctorAt W X ↔
       F.HasPointwiseLeftKanExtensionAt L (L.obj X) := by
@@ -29,19 +31,29 @@ lemma hasPointwiseRightDerivedFunctorAt_iff_of_mem {X Y : C} (w : X ⟶ Y) (hw :
 
 section
 
-variable [∀ X, F.HasPointwiseRightDerivedFunctorAt W X]
+variable [F.HasPointwiseRightDerivedFunctor W]
+
+lemma hasPointwiseLeftKanExtension [L.IsLocalization W] :
+      F.HasPointwiseLeftKanExtension L := fun Y => by
+    have := Localization.essSurj L W
+    rw [← F.hasPointwiseLeftKanExtensionAt_iff_of_iso _ (L.objObjPreimageIso Y),
+      ← F.hasPointwiseRightDerivedFunctorAt_iff L W]
+    infer_instance
 
 lemma hasRightDerivedFunctor_of_pointwise :
     F.HasRightDerivedFunctor W where
   hasLeftKanExtension' := by
-    have : ∀ X, F.HasPointwiseLeftKanExtensionAt W.Q (W.Q.obj X) :=
-      fun X => HasPointwiseRightDerivedFunctorAt.hasColimit'
-    -- this should be an instance
-    have : EssSurj W.Q := Localization.essSurj _ W
-    have : ∀ Y, F.HasPointwiseLeftKanExtensionAt W.Q Y := fun Y => by
-      rw [← F.hasPointwiseLeftKanExtensionAt_iff_of_iso _ (W.Q.objObjPreimageIso Y)]
-      infer_instance
+    have pif := F.hasPointwiseLeftKanExtension W.Q W
     infer_instance
+
+variable {F L}
+
+lemma isPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor
+    (F' : D ⥤ H) (α : F ⟶ L ⋙ F') [L.IsLocalization W] [F'.IsRightDerivedFunctor α W] :
+    (LeftExtension.mk _ α).IsPointwiseLeftKanExtension := by
+  have := hasPointwiseLeftKanExtension F L
+  have := IsRightDerivedFunctor.isLeftKanExtension F' α W
+  exact isPointwiseLeftKanExtension_of_isLeftKanExtension F' α
 
 end
 
