@@ -135,15 +135,9 @@ theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
       have h' : ⊤ ≤ centralizer s := by
         rw [← eq_top_iff]
         exact h
-      constructor
-      · intro a
-        apply h' trivial _ ha
-      · intro b c
-        rw [mul_assoc]
-      · intro b c
-        rw [mul_assoc]
-      · intro b c
-        rw [mul_assoc]
+      rw [Subsemigroup.mem_center_iff]
+      intro b
+      rw [(h' trivial _ ha)]
     · intro h
       apply Subset.antisymm (subset_univ (centralizer s))
       exact (fun _ _ _ hm => (h hm).comm _)

@@ -270,6 +270,8 @@ def center : Subsemigroup M where
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
+
+
 -- porting note: `coe_center` is now redundant
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
@@ -277,7 +279,7 @@ def center : Subsemigroup M where
 variable {M}
 
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+theorem mem_center_iff {z : M} : z ∈ Set.center M ↔ ∀ g, g * z = z * g := by
   constructor
   · exact fun a g ↦ by rw [Set.IsMulCentral.comm a g]
   · intro h
