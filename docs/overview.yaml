@@ -474,7 +474,7 @@ Logic and computation:
     Turing machine: 'Turing.TM0.Machine'
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
-    combinatorial game: 'Game'
+    combinatorial game: 'SetTheory.Game'
   Set theory:
     ordinal: 'Ordinal'
     cardinal: 'Cardinal'
