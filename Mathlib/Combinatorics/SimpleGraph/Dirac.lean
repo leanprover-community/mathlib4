@@ -24,6 +24,10 @@ vertex, which is visited twice. -/
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
   (∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2
 
+lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
+  p.length = Fintype.card V + 1 := by
+  sorry
+
 /-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
