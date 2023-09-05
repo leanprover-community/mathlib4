@@ -741,18 +741,6 @@ theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * si
   by field_simp [integral_cos_pow, add_sub_assoc]
 #align integral_cos_sq integral_cos_sq
 
-theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, sqrt ((1 : ℝ) - x ^ 2) = π / 2 :=
-  calc
-    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), sqrt (↑1 - x ^ 2) := by rw [sin_neg, sin_pi_div_two]
-    _ = ∫ x in (-(π / 2))..(π / 2), sqrt (↑1 - sin x ^ 2) * cos x :=
-          (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
-            (by continuity)).symm
-    _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
-          refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
-          rw [uIoc_of_le (neg_le_self (le_of_lt (half_pos Real.pi_pos))), Set.mem_Ioc] at h
-          rw [ ← Real.cos_eq_sqrt_one_sub_sin_sq (le_of_lt h.1) h.2, pow_two]
-    _ = π / 2 := by simp
-
 /-! ### Integral of `sin x ^ m * cos x ^ n` -/
 
 
@@ -855,3 +843,18 @@ theorem integral_sin_sq_mul_cos_sq :
   · exact intervalIntegrable_const
   · exact h2.intervalIntegrable a b
 #align integral_sin_sq_mul_cos_sq integral_sin_sq_mul_cos_sq
+
+/-! ### Integral of misc. functions -/
+
+
+theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, sqrt ((1 : ℝ) - x ^ 2) = π / 2 :=
+  calc
+    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), sqrt (↑1 - x ^ 2) := by rw [sin_neg, sin_pi_div_two]
+    _ = ∫ x in (-(π / 2))..(π / 2), sqrt (↑1 - sin x ^ 2) * cos x :=
+          (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
+            (by continuity)).symm
+    _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
+          refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
+          rw [uIoc_of_le (neg_le_self (le_of_lt (half_pos Real.pi_pos))), Set.mem_Ioc] at h
+          rw [ ← Real.cos_eq_sqrt_one_sub_sin_sq (le_of_lt h.1) h.2, pow_two]
+    _ = π / 2 := by simp
