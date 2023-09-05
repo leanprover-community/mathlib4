@@ -91,9 +91,9 @@ def empty (α) : Computation α :=
 instance : Inhabited (Computation α) :=
   ⟨empty _⟩
 
-/-- `run_for c n` evaluates `c` for `n` steps and returns the result, or `none`
+/-- `runFor c n` evaluates `c` for `n` steps and returns the result, or `none`
   if it did not terminate after `n` steps. -/
-def runFor (c :Computation α) (n : ℕ) : Option α :=
+def runFor (c : Computation α) (n : ℕ) : Option α :=
   c.val.get n
 #align computation.run_for Computation.runFor
 
@@ -270,10 +270,6 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
--- mathport name: «expr ~ »
-/-- bisimilarity relation-/
-local infixl:50 " ~ " => R
-
 /-- Bisimilarity over a sum of `Computation`s-/
 def BisimO : Sum α (Computation α) → Sum α (Computation α) → Prop
   | Sum.inl a, Sum.inl a' => a = a'
@@ -285,11 +281,11 @@ attribute [simp] BisimO
 
 /-- Attribute expressing bisimilarity over two `Computation`s-/
 def IsBisimulation :=
-  ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
+  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → BisimO R (destruct s₁) (destruct s₂)
 #align computation.is_bisimulation Computation.IsBisimulation
 
 -- If two computations are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
+theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Computation α, s.1 = x ∧ s'.1 = y ∧ R s s'
   dsimp [Stream'.IsBisimulation]
@@ -435,7 +431,7 @@ def Promises (s : Computation α) (a : α) : Prop :=
 -- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
-scoped infixl:50 " ~> " => Promises
+infixl:50 " ~> " => Promises
 
 theorem mem_promises {s : Computation α} {a : α} : a ∈ s → s ~> a := fun h _ => mem_unique h
 #align computation.mem_promises Computation.mem_promises
@@ -929,12 +925,12 @@ instance instAlternativeComputation : Alternative Computation :=
 
 -- Porting note: Added unfolds as the code does not work without it
 @[simp]
-theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a :=
+theorem pure_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a :=
   destruct_eq_pure <| by
     unfold HOrElse.hOrElse instHOrElse
     unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
     simp [orElse]
-#align computation.ret_orelse Computation.ret_orElse
+#align computation.ret_orelse Computation.pure_orElse
 
 -- Porting note: Added unfolds as the code does not work without it
 @[simp]
