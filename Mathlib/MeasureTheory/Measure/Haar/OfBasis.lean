@@ -226,9 +226,19 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
+instance [TopologicalSpace.SecondCountableTopology E] (b : Basis ι ℝ E) :
+    SigmaFinite b.addHaar := by
+  rw [Basis.addHaar_def]; exact MeasureTheory.Measure.sigmaFinite_addHaarMeasure
+
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
+
+theorem Basis.addHaar_eq  {ι' : Type*} [Fintype ι'] [TopologicalSpace.SecondCountableTopology E]
+    {b : Basis ι ℝ E} {b' : Basis ι' ℝ E} :
+    b.addHaar = b'.addHaar ↔ b.addHaar b'.parallelepiped = 1 :=
+  ⟨fun h => h ▸ Basis.addHaar_self b',
+    fun h => by rw [addHaarMeasure_unique b.addHaar b'.parallelepiped, h, one_smul, addHaar]⟩
 
 end NormedSpace
 

@@ -3,20 +3,21 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 #align_import measure_theory.measure.lebesgue.complex from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Lebesgue measure on `ℂ`
 
-In this file we define Lebesgue measure on `ℂ`. Since `ℂ` is defined as a `structure` as the
-push-forward of the volume on `ℝ²` under the natural isomorphism. There are (at least) two
-frequently used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`. We define measurable
-equivalences (`MeasurableEquiv`) to both types and prove that both of them are volume preserving
-(in the sense of `MeasureTheory.measurePreserving`).
+In this file, we consider the Lebesgue measure on `ℂ` defined as the push-forward of the volume
+on `ℝ²` under the natural isomorphism and prove that it is equal to the measure `volume` of `ℂ`
+coming from its `InnerProductSpace` structure over `ℝ`. For that, we consider the two frequently
+used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, define measurable equivalences
+(`MeasurableEquiv`) to both types and prove that both of them are volume preserving (in the sense
+of `MeasureTheory.measurePreserving`).
 -/
 
 
@@ -25,11 +26,6 @@ open MeasureTheory
 noncomputable section
 
 namespace Complex
-
-/-- Lebesgue measure on `ℂ`. -/
-instance measureSpace : MeasureSpace ℂ :=
-  ⟨Measure.map basisOneI.equivFun.symm volume⟩
-#align complex.measure_space Complex.measureSpace
 
 /-- Measurable equivalence between `ℂ` and `ℝ² = Fin 2 → ℝ`. -/
 def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
@@ -44,16 +40,18 @@ def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
 @[simp]
 theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a.re, a.im) := rfl
 
-theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi :=
-  (measurableEquivPi.symm.measurable.measurePreserving _).symm _
+theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
+  convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
+  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
+    measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
+    ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
+    Basis.addHaar_map]
+  exact Basis.addHaar_eq.mpr Complex.orthonormalBasisOneI.volume_parallelepiped
 #align complex.volume_preserving_equiv_pi Complex.volume_preserving_equiv_pi
 
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
 #align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
-
-instance : Measure.IsAddHaarMeasure (@volume ℂ Complex.measureSpace) :=
-  Measure.MapLinearEquiv.isAddHaarMeasure _ _
 
 -- See: https://github.com/leanprover/lean4/issues/2220
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
