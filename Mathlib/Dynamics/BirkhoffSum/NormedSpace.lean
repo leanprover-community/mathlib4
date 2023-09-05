@@ -24,6 +24,11 @@ section
 
 variable {α E : Type*}
 
+/-- The Birkhoff averages of a function `g` over the orbit of a fixed point `x` of `f`
+tend to `g x` as `N → ∞`. In fact, they are equal to `g x` for all `N ≠ 0`,
+see `Function.IsFixedPt.birkhoffAverage_eq`.
+
+TODO: add a version for a periodic orbit. -/
 theorem Function.IsFixedPt.tendsto_birkhoffAverage
     (R : Type*) [DivisionSemiring R] [CharZero R]
     [AddCommMonoid E] [TopologicalSpace E] [Module R E]
@@ -61,6 +66,10 @@ theorem dist_birkhoffAverage_apply_birkhoffAverage (f : α → α) (g : α → E
       dist (g (f^[n] x)) (g x) / n := by
   simp [dist_birkhoffAverage_birkhoffAverage, dist_birkhoffSum_apply_birkhoffSum]
 
+/-- If a function `g` is bounded along the positive orbit of `x` under `f`,
+then the difference between Birkhoff averages of `g`
+along the orbit of `f x` and along the orbit of `x`
+tends to zero. -/
 theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : α → E} {x : α}
     (h : Metric.Bounded (range (g <| f^[·] x))) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) := by
@@ -78,6 +87,9 @@ variable (𝕜 : Type*) {X E : Type*}
   [PseudoEMetricSpace X] [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f : X → X} {g : X → E} {l : X → E}
 
+/-- If `f` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`)
+and `g` is a uniformly continuous, then the Birkhoff averages of `g` along orbits of `f`
+is a uniformly equicontinuous family of functions. -/
 theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : UniformContinuous g) :
     UniformEquicontinuous (birkhoffAverage 𝕜 f g) := by
   refine Metric.uniformity_basis_dist_le.uniformEquicontinuous_iff_right.2 fun ε hε ↦ ?_
@@ -96,6 +108,11 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
     _ ≤ ε := by
       rcases eq_or_ne n 0 with hn | hn <;> field_simp [hn, hε.le, mul_div_cancel_left]
 
+/-- If `f : X → X` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`),
+`g : X → E` is a uniformly continuous, and `l : X → E` is a continuous function,
+then the set of points `x`
+such that the Birkhoff average of `g` along the orbit of `x` tends to `l x`
+is a closed set. -/
 theorem isClosed_setOf_tendsto_birkhoffAverage
     (hf : LipschitzWith 1 f) (hg : UniformContinuous g) (hl : Continuous l) :
     IsClosed {x | Tendsto (birkhoffAverage 𝕜 f g · x) atTop (𝓝 (l x))} :=
