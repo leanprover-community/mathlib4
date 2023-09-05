@@ -5,19 +5,23 @@ open Classical
 
 variable {V : Type} [Fintype V] {G : SimpleGraph V} {u v : V}
 
+-- #check SimpleGraph.Walk.IsEulerian
+
+/-- A *Hamiltonian path* is a walk `p` that visits every vertex exactly once. -/
 def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
   ∀ v : V, p.support.count v = 1
--- See
-#check SimpleGraph.Walk.IsEulerian
 
+/-- A *Hamiltonian cycle* is a *Hamiltonian path* that is a *Cycle* -/
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
-  -- ∃ W : SimpleGraph.Walk.IsHamiltonian V ∧ Walk is from v to v / cycle.
+  -- ∃ p : SimpleGraph.Walk.IsHamiltonian V ∧ Walk is from v to v / cycle.
   sorry
 
+/-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle* -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
-  -- ∃ W : SimpleGraph.Walk.IsHamiltonianCycle
+  -- ∃ W : SimpleGraph.Walk.IsHamiltonianCycle ∧ G.isConnected
   sorry
-
+/-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*.
+    -/
 theorem Dirac {G : SimpleGraph V} (degree_condition : sorry) : G.IsHamiltonian :=
   -- |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is hamiltonian
   sorry
