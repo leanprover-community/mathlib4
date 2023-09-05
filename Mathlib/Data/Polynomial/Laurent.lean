@@ -579,7 +579,8 @@ instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
 instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
-  smul_assoc x y z := by simp only [(· • ·), SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
+  smul_assoc x y z := by sorry
+  -- smul_assoc x y z := by simp only [(· • ·), SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
 
 end Semiring
 

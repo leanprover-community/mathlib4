@@ -119,8 +119,6 @@ end MulZeroClass
 instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
     MulZeroOneClass (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
-    mul := (· * ·)
-    one := 1, zero := 0
     one_mul := fun a =>
       match a with
       | ⊤ => mul_top (mt coe_eq_coe.1 one_ne_zero)
@@ -156,8 +154,6 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
 instance instSemigroupWithZeroWithTop [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
-    mul := (· * ·)
-    zero := 0
     mul_assoc := fun a b c => by
       rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
       rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
@@ -178,8 +174,6 @@ instance monoidWithZero [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] 
 instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) :=
   { WithTop.monoidWithZero with
-    mul := (· * ·)
-    zero := 0,
     mul_comm := fun _ _ => ite_congr (propext or_comm) (fun _ => rfl)
       (fun _ => Option.map₂_comm mul_comm) }
 

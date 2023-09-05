@@ -147,7 +147,6 @@ variable [ContinuousAdd M]
 a submodule. -/
 def Submodule.topologicalClosure (s : Submodule R M) : Submodule R M :=
   { s.toAddSubmonoid.topologicalClosure with
-    carrier := closure (s : Set M)
     smul_mem' := s.mapsTo_smul_closure }
 #align submodule.topological_closure Submodule.topologicalClosure
 
@@ -350,7 +349,6 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂))) : M₁ →ₛₗ[σ] M₂ :=
   { @addMonoidHomOfMemClosureRangeCoe M₁ M₂ _ _ _ _ _ (M₁ →ₛₗ[σ] M₂)
       (SemilinearMapClass.addMonoidHomClass _) f hf with
-    toFun := f
     map_smul' := (isClosed_setOf_map_smul M₁ M₂ σ).closure_subset_iff.2
       (Set.range_subset_iff.2 LinearMap.map_smulₛₗ) hf }
 #align linear_map_of_mem_closure_range_coe linearMapOfMemClosureRangeCoe
@@ -866,8 +864,6 @@ theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
   { ContinuousLinearMap.monoidWithZero,
     ContinuousLinearMap.addCommMonoid with
-    mul := (· * ·)
-    one := 1
     left_distrib := fun f g h => ext fun x => map_add f (g x) (h x)
     right_distrib := fun _ _ _ => ext fun _ => LinearMap.add_apply _ _ _ }
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
@@ -1418,8 +1414,6 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
   refine'
     { ContinuousLinearMap.addCommMonoid with
-      zero := 0
-      add := (· + ·)
       neg := (-·)
       sub := (· - ·)
       sub_eq_add_neg := _
@@ -1480,9 +1474,7 @@ theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 
 instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) :=
   { ContinuousLinearMap.semiring,
-    ContinuousLinearMap.addCommGroup with
-    mul := (· * ·)
-    one := 1 }
+    ContinuousLinearMap.addCommGroup with }
 #align continuous_linear_map.ring ContinuousLinearMap.ring
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
@@ -2212,7 +2204,6 @@ inverse of each other. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
-    toFun := f₁
     continuous_toFun := f₁.continuous
     invFun := f₂
     continuous_invFun := f₂.continuous

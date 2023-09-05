@@ -583,11 +583,8 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
 
 instance instCommRing : CommRing (RatFunc K) :=
   { instCommMonoid K, instAddCommGroup K with
-    add := (· + ·)
     zero := 0
-    neg := Neg.neg
     sub := Sub.sub
-    mul := (· * ·)
     zero_mul := by frac_tac
     mul_zero := by frac_tac
     left_distrib := by frac_tac
