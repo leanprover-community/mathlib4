@@ -13,11 +13,11 @@ def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
 
 /-- A *Hamiltonian cycle* is a *Hamiltonian path* that is a *Cycle* -/
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
-  SimpleGraph.Walk.IsHamiltonian p ∧ p.IsCycle
+  p.IsHamiltonian ∧ p.IsCycle
 
 /-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
-  G.Connected ∧ ∃ v, ∃ p : G.Walk v v, SimpleGraph.Walk.IsHamiltonianCycle p
+  G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
 
 /-- -/
 def SimpleGraph.MinDegree  (G : SimpleGraph V) : Prop :=
