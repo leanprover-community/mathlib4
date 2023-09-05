@@ -448,7 +448,7 @@ instance instLowerTopologyProd [Preorder α] [TopologicalSpace α] [LowerTopolog
     simp_rw [coe_upperClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
     -- without `let`, `refine` tries to use the product topology and fails
     let _ : TopologicalSpace (α × β) := generateFrom { s | ∃ a, (Ici a)ᶜ = s }
-    refine (isOpen_biInter hs fun a _ => ?_).inter (isOpen_biInter ht fun b _ => ?_)
+    refine (hs.isOpen_biInter fun a _ => ?_).inter (ht.isOpen_biInter fun b _ => ?_)
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 

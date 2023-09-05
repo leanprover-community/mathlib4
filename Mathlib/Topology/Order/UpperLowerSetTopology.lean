@@ -3,12 +3,13 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.Homeomorph
 
 /-!
 # UpperSet and LowerSet topologies
@@ -279,9 +280,7 @@ lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
   rfl
 
 instance toAlexandrovDiscrete : AlexandrovDiscrete α where
-  isOpen_sInter s hs := by
-    simp_rw [IsOpen_iff_IsUpperSet] at *
-    exact isUpperSet_sInter hf
+  isOpen_sInter S := by simpa only [IsOpen_iff_IsUpperSet] using isUpperSet_sInter (α := α)
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
