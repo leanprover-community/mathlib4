@@ -372,7 +372,7 @@ theorem Finset.interior_iInter {ι : Type*} (s : Finset ι) (f : ι → Set α) 
 
 -- todo: generalize to `ι : Sort*`
 @[simp]
-theorem interior_iInter {ι : Type*} [Finite ι] (f : ι → Set α) :
+theorem interior_iInter_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.interior_iInter f <;> simp
@@ -544,11 +544,11 @@ theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) 
 #align finset.closure_bUnion Finset.closure_biUnion
 
 @[simp]
-theorem closure_iUnion {ι : Type*} [Finite ι] (f : ι → Set α) :
+theorem closure_Union_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
     closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.closure_biUnion f <;> simp
-#align closure_Union closure_iUnion
+#align closure_Union closure_Union_of_finite
 
 theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
