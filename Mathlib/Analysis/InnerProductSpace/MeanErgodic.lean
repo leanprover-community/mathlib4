@@ -46,7 +46,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   simpa [birkhoffAverage, birkhoffSum, Finset.sum_sub_distrib, smul_sub, H]
     using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 this
 
-variable  [InnerProductSpace 𝕜 E] [CompleteSpace E]
+variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
