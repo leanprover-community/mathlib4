@@ -12,6 +12,17 @@ variable {C D H : Type _} [Category C] [Category D] [Category H]
 abbrev HasPointwiseLeftKanExtensionAt (Y : D) :=
   HasColimit (CostructuredArrow.proj L Y ⋙ F)
 
+lemma hasPointwiseLeftKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y₂) :
+    F.HasPointwiseLeftKanExtensionAt L Y₁ ↔
+      F.HasPointwiseLeftKanExtensionAt L Y₂ := by
+  revert Y₁ Y₂ e
+  suffices ∀ ⦃Y₁ Y₂ : D⦄ (_ : Y₁ ≅ Y₂) [F.HasPointwiseLeftKanExtensionAt L Y₁],
+      F.HasPointwiseLeftKanExtensionAt L Y₂ from
+    fun Y₁ Y₂ e => ⟨fun _ => this e, fun _ => this e.symm⟩
+  intro Y₁ Y₂ e _
+  change HasColimit ((CostructuredArrow.mapIso e.symm).functor ⋙ CostructuredArrow.proj L Y₁ ⋙ F)
+  infer_instance
+
 namespace LeftExtension
 
 variable {F L} (E : LeftExtension L F)
@@ -119,6 +130,9 @@ noncomputable def pointwiseLeftKanExtensionIsUniversal :
 instance : (F.pointwiseLeftKanExtensionFunctor L).IsLeftKanExtension
     (F.pointwiseLeftKanExtensionNatTrans L) where
   nonempty_isUniversal := ⟨F.pointwiseLeftKanExtensionIsUniversal L⟩
+
+instance : HasLeftKanExtension L F :=
+  HasLeftKanExtension.mk' _ (F.pointwiseLeftKanExtensionNatTrans L)
 
 end
 
