@@ -7,7 +7,8 @@ variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRe
 def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
   ∀ v : V, p.support.count v = 1
 
-/-- If `p` is a Hamiltonian path and `w` is a member of the vertex set, `w` is in the vertex set of `p`. -/
+/-- If `p` is a Hamiltonian path and `w` is a member of the vertex set,
+`w` is in the vertex set of `p`. -/
 lemma SimpleGraph.Walk.IsHamiltonian.contains_vertex (p : G.Walk u v) (hp : p.IsHamiltonian)
     (w : V) : w ∈ p.support := by
   specialize hp w
@@ -37,6 +38,6 @@ def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
 
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
-theorem Dirac {G : SimpleGraph V} (CardinalityCondition: Fintype.card V ≥ 3) (MinDegreeCondition: G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian := by
-  -- |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is hamiltonian
+theorem Dirac {G : SimpleGraph V} [DecidableRel G.Adj] (CardinalityCondition: Fintype.card V ≥ 3): G.IsHamiltonian := by
+
   sorry
