@@ -203,15 +203,6 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (congr_arg _root_.parallelepiped (b.coe_reindex e)).trans (parallelepiped_comp_equiv b e.symm)
 #align basis.parallelepiped_reindex Basis.parallelepiped_reindex
 
--- theorem Basis.mem_parallelepiped [DecidableEq ι] {b : Basis ι ℝ E} {a : E} :
---     a ∈ (b.parallelepiped : Set E) ↔ ∀ i, b.repr a i ∈ Set.Icc 0 1 := by
---   simp_rw [coe_parallelepiped, mem_parallelepiped_iff, Set.mem_Icc, Pi.le_def, ← forall_and]
---   refine ⟨?_, fun h => ⟨b.repr a, fun i => h i, (b.sum_repr a).symm⟩⟩
---   rintro ⟨_, h, rfl⟩ i
---   simpa only [LinearEquiv.map_sum, SMulHomClass.map_smul, repr_self, Finsupp.smul_single,
---     smul_eq_mul, mul_one, Finset.sum_apply', Finsupp.single_apply, Finset.sum_ite_eq',
---     Finset.mem_univ, ite_true] using h i
-
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
     (have := FiniteDimensional.of_fintype_basis b
