@@ -325,7 +325,7 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
 
 variable (C D)
 
-/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` with sends
+/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
 a functor `F : C ⥤ D` to `F.mapArrow`. -/
 @[simps]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
@@ -344,7 +344,7 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
 
-instance mapArrow_isEquivalence (F : C ⥤ D) [IsEquivalence F] :
+instance isEquivalenceMapArrow (F : C ⥤ D) [IsEquivalence F] :
     IsEquivalence F.mapArrow :=
   IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
 
