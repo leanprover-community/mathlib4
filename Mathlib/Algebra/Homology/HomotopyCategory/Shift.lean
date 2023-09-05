@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Tactic.Linarith
 
 /-!
-# The shift on cochain complexes and on the homotopy category
+# The shift on cochain complexes and on homotopy category
 
 In this file, we show `[HasShift (CochainComplex C ℤ) ℤ]` for any preadditive
 category `C`.
