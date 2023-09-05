@@ -159,10 +159,27 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build archive
-        run: lake build Archive
+        run: |
+          # Note: we should not be including `Archive` and `Countexamples` in the cache.
+          # We do this for now for the sake of not rebuilding them in every CI run
+          # even when they are not touched.
+          # Since `Archive` and `Counterexamples` files have very simple dependencies,
+          # it should be possible to determine whether they need to be built without actually
+          # storing and transferring oleans over the network.
+          # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
+          lake exe cache get Archive.lean
+          lake build Archive
+          lake exe cache put Archive.lean
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build counterexamples
-        run: lake build Counterexamples
+        run: |
+          lake exe cache get Counterexamples.lean
+          lake build Counterexamples
+          lake exe cache put Counterexamples.lean
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: check declarations in db files
         run: |
