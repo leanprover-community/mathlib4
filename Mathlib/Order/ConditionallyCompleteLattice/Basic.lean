@@ -1701,8 +1701,10 @@ noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
   { WithBot.WithTop.completeLattice, WithBot.linearOrder with }
 #align with_bot.with_top.complete_linear_order WithBot.WithTop.completeLinearOrder
 
-theorem WithTop.iSup_coe_eq_top {ι : Sort*} {α : Type*} [ConditionallyCompleteLinearOrderBot α]
-    (f : ι → α) : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (Set.range f) := by
+namespace WithTop
+variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
+
+lemma iSup_coe_eq_top : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (range f) := by
   rw [iSup_eq_top, not_bddAbove_iff]
   refine' ⟨fun hf r => _, fun hf a ha => _⟩
   · rcases hf r (WithTop.coe_lt_top r) with ⟨i, hi⟩
@@ -1711,11 +1713,16 @@ theorem WithTop.iSup_coe_eq_top {ι : Sort*} {α : Type*} [ConditionallyComplete
     exact ⟨i, by simpa only [WithTop.coe_untop _ ha.ne] using WithTop.coe_lt_coe.mpr hi⟩
 #align with_top.supr_coe_eq_top WithTop.iSup_coe_eq_top
 
-theorem WithTop.iSup_coe_lt_top {ι : Sort*} {α : Type*} [ConditionallyCompleteLinearOrderBot α]
-    (f : ι → α) : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (Set.range f) :=
-  lt_top_iff_ne_top.trans <| (WithTop.iSup_coe_eq_top f).not.trans not_not
+lemma iSup_coe_lt_top : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (range f) :=
+  lt_top_iff_ne_top.trans iSup_coe_eq_top.not_left
 #align with_top.supr_coe_lt_top WithTop.iSup_coe_lt_top
 
+lemma iInf_coe_eq_top : ⨅ x, (f x : WithTop α) = ⊤ ↔ IsEmpty ι := by simp [isEmpty_iff]
+
+lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
+  rw [lt_top_iff_ne_top, Ne.def, iInf_coe_eq_top, not_isEmpty_iff]
+
+end WithTop
 end WithTopBot
 
 -- Guard against import creep
