@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Projection
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -307,6 +308,13 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
     trace R M f = (finrank R p : R) := by
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 #align linear_map.is_proj.trace LinearMap.IsProj.trace
+
+lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) :
+    IsNilpotent (trace R M f) := by
+  let b : Basis _ R M := Module.Free.chooseBasis R M
+  rw [trace_eq_matrix_trace R b]
+  apply Matrix.isNilpotent_trace_of_isNilpotent
+  simpa
 
 end
 
