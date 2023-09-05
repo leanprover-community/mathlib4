@@ -286,7 +286,7 @@ instance : ClosedIciTopology α :=
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
-  exact isClosed_biUnion h fun _ _ => isClosed_Ici
+  exact h.isClosed_biUnion fun _ _ => isClosed_Ici
 #align lower_topology.is_closed_upper_closure LowerTopology.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/

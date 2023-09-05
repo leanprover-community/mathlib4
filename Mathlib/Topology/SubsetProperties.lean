@@ -684,7 +684,7 @@ theorem nhdsContainBoxes_of_compact {s : Set α} (hs : IsCompact s) (t : Set β)
   let u := ⋃ i ∈ s0, (uvs i).1
   let v := ⋂ i ∈ s0, (uvs i).2
   have : IsOpen u := isOpen_biUnion fun i _ => (h i).1
-  have : IsOpen v := isOpen_biInter s0.finite_toSet fun i _ => (h i).2.1
+  have : IsOpen v := isOpen_biInter_finset fun i _ => (h i).2.1
   have : t ⊆ v := subset_iInter₂ fun i _ => (h i).2.2.2.1
   have : u ×ˢ v ⊆ n := fun ⟨x', y'⟩ ⟨hx', hy'⟩ =>
     have : ∃ i ∈ s0, x' ∈ (uvs i).1 := by simpa using hx'
@@ -1637,34 +1637,34 @@ theorem IsClopen.prod {s : Set α} {t : Set β} (hs : IsClopen s) (ht : IsClopen
   ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 #align is_clopen.prod IsClopen.prod
 
-theorem isClopen_iUnion {β : Type*} [Finite β] {s : β → Set α} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iUnion_of_finite {β : Type*} [Finite β] {s : β → Set α} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋃ i, s i) :=
-  ⟨isOpen_iUnion (forall_and.1 h).1, isClosed_iUnion (forall_and.1 h).2⟩
-#align is_clopen_Union isClopen_iUnion
+  ⟨isOpen_iUnion (forall_and.1 h).1, isClosed_iUnion_of_finite (forall_and.1 h).2⟩
+#align is_clopen_Union isClopen_iUnion_of_finite
 
-theorem isClopen_biUnion {β : Type*} {s : Set β} {f : β → Set α} (hs : s.Finite)
+theorem Set.Finite.isClopen_biUnion {β : Type*} {s : Set β} {f : β → Set α} (hs : s.Finite)
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
-  ⟨isOpen_biUnion fun i hi => (h i hi).1, isClosed_biUnion hs fun i hi => (h i hi).2⟩
-#align is_clopen_bUnion isClopen_biUnion
+  ⟨isOpen_biUnion fun i hi => (h i hi).1, hs.isClosed_biUnion fun i hi => (h i hi).2⟩
+#align is_clopen_bUnion Set.Finite.isClopen_biUnion
 
 theorem isClopen_biUnion_finset {β : Type*} {s : Finset β} {f : β → Set α}
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
-  isClopen_biUnion s.finite_toSet h
+ s.finite_toSet.isClopen_biUnion  h
 #align is_clopen_bUnion_finset isClopen_biUnion_finset
 
-theorem isClopen_iInter {β : Type*} [Finite β] {s : β → Set α} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iInter_of_finite {β : Type*} [Finite β] {s : β → Set α} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋂ i, s i) :=
-  ⟨isOpen_iInter (forall_and.1 h).1, isClosed_iInter (forall_and.1 h).2⟩
-#align is_clopen_Inter isClopen_iInter
+  ⟨isOpen_iInter_of_finite (forall_and.1 h).1, isClosed_iInter (forall_and.1 h).2⟩
+#align is_clopen_Inter isClopen_iInter_of_finite
 
-theorem isClopen_biInter {β : Type*} {s : Set β} (hs : s.Finite) {f : β → Set α}
+theorem Set.Finite.isClopen_biInter {β : Type*} {s : Set β} (hs : s.Finite) {f : β → Set α}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
-  ⟨isOpen_biInter hs fun i hi => (h i hi).1, isClosed_biInter fun i hi => (h i hi).2⟩
-#align is_clopen_bInter isClopen_biInter
+  ⟨hs.isOpen_biInter fun i hi => (h i hi).1, isClosed_biInter fun i hi => (h i hi).2⟩
+#align is_clopen_bInter Set.Finite.isClopen_biInter
 
 theorem isClopen_biInter_finset {β : Type*} {s : Finset β} {f : β → Set α}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
-  isClopen_biInter s.finite_toSet h
+  s.finite_toSet.isClopen_biInter h
 #align is_clopen_bInter_finset isClopen_biInter_finset
 
 theorem IsClopen.preimage {s : Set β} (h : IsClopen s) {f : α → β} (hf : Continuous f) :
@@ -1963,7 +1963,7 @@ theorem isIrreducible_iff_sInter {s : Set α} :
     case insert u U _ IH =>
       rw [Finset.coe_insert, sInter_insert]
       rw [Finset.forall_mem_insert] at hu hU
-      exact h.2 _ _ hu.1 (isOpen_sInter U.finite_toSet hu.2) hU.1 (IH hu.2 hU.2)
+      exact h.2 _ _ hu.1 (U.finite_toSet.isOpen_sInter hu.2) hU.1 (IH hu.2 hU.2)
   · simpa using h ∅
   · intro u v hu hv hu' hv'
     simpa [*] using h {u, v}
