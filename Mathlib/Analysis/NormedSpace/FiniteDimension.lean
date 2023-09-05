@@ -466,7 +466,7 @@ theorem finiteDimensional_of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
 theorem finiteDimensional_of_locallyCompactSpace [LocallyCompactSpace E] :
     FiniteDimensional 𝕜 E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
-  exact finiteDimensional_of_isCompact_closed_ball₀ 𝕜 rpos hr
+  exact finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos hr
 
 /-- If a function has compact multiplicative support, then either the function is trivial or the
 space is finite-dimensional. -/
