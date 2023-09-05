@@ -19,9 +19,10 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
   p.length = Fintype.card V := by
   sorry
 
-/-- A *Hamiltonian cycle* is a *Hamiltonian path* that is a *Cycle* -/
+/-- A *Hamiltonian cycle* is a Walk that visits every vertex once, except the initial
+vertex, which is visited twice. -/
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
-  p.IsHamiltonian ∧ p.IsCycle
+  ∀ u : V, u ≠ v → p.support.count u = 1 ∧ p.support.count v = 2
 
 /-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
