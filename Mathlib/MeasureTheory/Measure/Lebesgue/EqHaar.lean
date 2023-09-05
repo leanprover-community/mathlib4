@@ -70,6 +70,10 @@ def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Fintype ι] :
       imp_true_iff, zero_lt_one]
 #align topological_space.positive_compacts.pi_Icc01 TopologicalSpace.PositiveCompacts.piIcc01
 
+theorem TopologicalSpace.PositiveCompacts.piIcc01_measurable (ι : Type*) [Fintype ι] :
+    MeasurableSet (TopologicalSpace.PositiveCompacts.piIcc01 ι : Set (ι → ℝ)) := by
+  exact MeasurableSet.pi countable_univ (fun _ _ => measurableSet_Icc)
+
 /-- The parallelepiped formed from the standard basis for `ι → ℝ` is `[0,1]^ι` -/
 theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     (Pi.basisFun ℝ ι).parallelepiped = TopologicalSpace.PositiveCompacts.piIcc01 ι :=
@@ -78,6 +82,42 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · classical convert parallelepiped_single (ι := ι) 1
     · exact zero_le_one
 #align basis.parallelepiped_basis_fun Basis.parallelepiped_basisFun
+
+ /-- A parallelepiped can be expressed on the standard basis. -/
+ theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (b : Basis ι ℝ E) :
+    b.parallelepiped = (TopologicalSpace.PositiveCompacts.piIcc01 ι).map b.equivFun.symm
+    b.equivFunL.symm.continuous
+      (by have := FiniteDimensional.of_fintype_basis b
+          exact LinearMap.isOpenMap_of_finiteDimensional _ b.equivFun.symm.surjective) := by
+  rw [← Basis.parallelepiped_basisFun]
+  refine (congrArg _ ?_).trans (Basis.parallelepiped_map _ _)
+  classical
+  ext
+  simp only [map_apply, Pi.basisFun_apply, equivFun_symm_apply, LinearMap.stdBasis_apply',
+    Finset.sum_univ_ite]
+
+theorem Basis.parallelepiped_measurable {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] (b : Basis ι ℝ E) :
+    MeasurableSet (b.parallelepiped : Set E) := by
+  rw [Basis.parallelepiped_eq_map, PositiveCompacts.coe_map, LinearEquiv.image_symm_eq_preimage]
+  exact (continuous_equivFun_basis _).measurable (PositiveCompacts.piIcc01_measurable ι)
+
+open MeasureTheory MeasureTheory.Measure
+
+theorem Basis.addHaar_map {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]  (b : Basis ι ℝ E)
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [TopologicalSpace.SecondCountableTopology F]
+    [SigmaCompactSpace F] [MeasurableSpace F] [BorelSpace F] (f : E ≃L[ℝ] F) :
+    map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
+  have : IsAddHaarMeasure (map f b.addHaar) :=
+  AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
+  have : SigmaFinite (map f b.addHaar) := MeasureTheory.Measure.IsAddHaarMeasure.sigmaFinite _
+  rw [(map f b.addHaar).addHaarMeasure_unique (b.map f.toLinearEquiv).parallelepiped,
+    Measure.map_apply f.continuous.measurable (parallelepiped_measurable _),
+    Basis.coe_parallelepiped, Basis.coe_map]
+  erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
+  rw [one_smul, Basis.addHaar]
 
 namespace MeasureTheory
 

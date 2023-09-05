@@ -203,14 +203,14 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (congr_arg _root_.parallelepiped (b.coe_reindex e)).trans (parallelepiped_comp_equiv b e.symm)
 #align basis.parallelepiped_reindex Basis.parallelepiped_reindex
 
-theorem Basis.mem_parallelepiped [DecidableEq ι] {b : Basis ι ℝ E} {a : E} :
-    a ∈ (b.parallelepiped : Set E) ↔ ∀ i, b.repr a i ∈ Set.Icc 0 1 := by
-  simp_rw [coe_parallelepiped, mem_parallelepiped_iff, Set.mem_Icc, Pi.le_def, ← forall_and]
-  refine ⟨?_, fun h => ⟨b.repr a, fun i => h i, (b.sum_repr a).symm⟩⟩
-  rintro ⟨_, h, rfl⟩ i
-  simpa only [LinearEquiv.map_sum, SMulHomClass.map_smul, repr_self, Finsupp.smul_single,
-    smul_eq_mul, mul_one, Finset.sum_apply', Finsupp.single_apply, Finset.sum_ite_eq',
-    Finset.mem_univ, ite_true] using h i
+-- theorem Basis.mem_parallelepiped [DecidableEq ι] {b : Basis ι ℝ E} {a : E} :
+--     a ∈ (b.parallelepiped : Set E) ↔ ∀ i, b.repr a i ∈ Set.Icc 0 1 := by
+--   simp_rw [coe_parallelepiped, mem_parallelepiped_iff, Set.mem_Icc, Pi.le_def, ← forall_and]
+--   refine ⟨?_, fun h => ⟨b.repr a, fun i => h i, (b.sum_repr a).symm⟩⟩
+--   rintro ⟨_, h, rfl⟩ i
+--   simpa only [LinearEquiv.map_sum, SMulHomClass.map_smul, repr_self, Finsupp.smul_single,
+--     smul_eq_mul, mul_one, Finset.sum_apply', Finsupp.single_apply, Finset.sum_ite_eq',
+--     Finset.mem_univ, ite_true] using h i
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
@@ -244,36 +244,11 @@ theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepip
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 
-theorem Basis.parallelepiped_measurable [DecidableEq ι] (b : Basis ι ℝ E) :
-    MeasurableSet (b.parallelepiped : Set E) := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
-  rw [show b.parallelepiped = b.equivFun.toLinearMap ⁻¹'
-      (Set.pi Set.univ fun _ : ι => Set.Icc (0 : ℝ) 1) by
-    ext; simp only [Basis.mem_parallelepiped, Set.mem_Icc, forall_and, LinearEquiv.coe_coe,
-      Pi.le_def, Set.pi_univ_Icc, Set.mem_preimage, equivFun_apply]]
-  refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
-  exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Icc
-
 theorem Basis.addHaar_eq  {ι' : Type*} [Fintype ι'] [TopologicalSpace.SecondCountableTopology E]
     {b : Basis ι ℝ E} {b' : Basis ι' ℝ E} :
     b.addHaar = b'.addHaar ↔ b.addHaar b'.parallelepiped = 1 :=
   ⟨fun h => h ▸ Basis.addHaar_self b',
     fun h => by rw [addHaarMeasure_unique b.addHaar b'.parallelepiped, h, one_smul, addHaar]⟩
-
-theorem Basis.addHaar_map {F : Type*} [DecidableEq ι] (b : Basis ι ℝ E)
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [TopologicalSpace.SecondCountableTopology F]
-    [SigmaCompactSpace F] [MeasurableSpace F] [BorelSpace F] (f : E ≃L[ℝ] F) :
-    map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
-  have : IsAddHaarMeasure (map f b.addHaar) :=
-    AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
-  have : SigmaFinite (map f b.addHaar) := MeasureTheory.Measure.IsAddHaarMeasure.sigmaFinite _
-  convert (map f b.addHaar).addHaarMeasure_unique (b.map f.toLinearEquiv).parallelepiped
-  suffices (map f b.addHaar) ((b.map f.toLinearEquiv)).parallelepiped = 1 by
-    rw [this, one_smul, Basis.addHaar]
-  rw [Measure.map_apply f.continuous.measurable (parallelepiped_measurable (b.map f.toLinearEquiv)),
-    Basis.coe_parallelepiped, Basis.coe_map]
-  erw [← image_parallelepiped f.toLinearMap b, Equiv.preimage_image f.toEquiv _]
-  exact addHaar_self b
 
 end NormedSpace
 
