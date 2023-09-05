@@ -29,13 +29,36 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHami
   p.length = Fintype.card V := by
   sorry
 
+lemma SimpleGraph.Walk.IsHamiltonianCycle.support_tail_nodup (p : G.Walk v v)
+  (hp : p.IsHamiltonianCycle) : (support p).tail.Nodup := by
+  unfold IsHamiltonianCycle at hp
+  rw [List.nodup_iff_count_le_one]
+  intro u
+  have h₁ : support p = v :: (support p).tail := by
+    rw [←support_eq_cons]
+  by_cases u = v
+  · subst u
+    replace hp := hp.2
+    rw [h₁, List.count_cons] at hp
+    simp at hp
+    rw [hp]
+  replace hp := hp.1 u h
+  rw [h₁, List.count_cons] at hp
+  simp [h] at hp
+  rw [hp]
+
 lemma SimpleGraph.Walk.IsHamiltonianCycle.not_nil (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
     p ≠ nil := by
-  rw 
+  unfold IsHamiltonianCycle at hp
+  rintro rfl
+  rw [support_nil, List.count_singleton] at hp
+  simp at hp
 
+-- BM: `cons_isCycle_iff` will be useful for going between hamiltonian cycles and paths
 lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
-  p.IsCycle := by
+    p.IsCycle := by
   rw [SimpleGraph.Walk.IsHamiltonianCycle] at hp
+  rw [SimpleGraph.Walk.isCycle_def]
 
   sorry
 
