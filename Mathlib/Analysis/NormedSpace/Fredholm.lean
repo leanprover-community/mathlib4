@@ -17,9 +17,9 @@ lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRa
     dsimp only [isFiniteRank]
     calc
       rank (A + B) ≤ rank A + rank B := by apply rank_add_le
-                 _ < ℵ₀              := by show add_lt_aleph0 by assumption
+                 _ < ℵ₀              := by apply add_lt_aleph0 <;> assumption
 
-lemma rightCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hB : isFiniteRank B):
+lemma rightCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hB : isFiniteRank B) :
     isFiniteRank (A ∘ₗ B) := by
   dsimp only [isFiniteRank]
   calc
