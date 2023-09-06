@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.Defs
 
 #align_import data.part from "leanprover-community/mathlib"@"80c43012d26f63026d362c3aba28f3c3bafb07e6"
 
@@ -667,7 +668,12 @@ theorem bind_dom {f : Part α} {g : α → Part β} : (f.bind g).Dom ↔ ∃ h :
 
 section Instances
 
--- We define several instances for constants and operations on `Part α` inherited from `α`.
+/-!
+We define several instances for constants and operations on `Part α` inherited from `α`.
+
+This section could be moved to a separate file to avoid the import of `Mathlib.Algebra.Group.Defs`.
+-/
+
 @[to_additive]
 instance [One α] : One (Part α) where one := pure 1
 
