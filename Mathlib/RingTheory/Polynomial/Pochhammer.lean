@@ -163,7 +163,7 @@ theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
 #align pochhammer_nat_eq_desc_factorial pochhammer_nat_eq_descFactorial
 
 @[simp]
-theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S]:
+theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
     (pochhammer S n).natDegree = n := by
   induction' n with n hn
   · simp
