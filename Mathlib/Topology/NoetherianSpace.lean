@@ -77,7 +77,7 @@ protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β �
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.1 (NoetherianSpace.isCompact _)
 #align topological_space.inducing.noetherian_space Inducing.noetherianSpace
 
-/-- [Stacks: 0052 (1) ](https://stacks.math.columbia.edu/tag/0052)-/
+/-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   inducing_subtype_val.noetherianSpace
 #align topological_space.noetherian_space.set TopologicalSpace.NoetherianSpace.set
@@ -220,7 +220,7 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
 #align topological_space.noetherian_space.finite_irreducible_components TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
 
 /-- [Stacks: Lemma 0052 (3)](https://stacks.math.columbia.edu/tag/0052) -/
-theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponents [NoetherianSpace α]
+theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ (o : Set α) (_ : IsOpen o) (_ : o ≠ ∅), o ≤ Z := by
   classical
