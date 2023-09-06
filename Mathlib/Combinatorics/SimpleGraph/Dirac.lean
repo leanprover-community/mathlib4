@@ -35,14 +35,26 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
       · rw [this] at length_relation
         -- exact Iff.mp Nat.succ_inj' length_relation
 
+lemma Nil_iff_eq_nil {v : V} : ∀ p : G.Walk v v, p.Nil ↔ p = SimpleGraph.Walk.nil
+| .nil | .cons _ _ => by simp
+
 /-- A *Hamiltonian cycle* is a Walk that visits every vertex once, except the initial
 vertex, which is visited twice. -/
-def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
-  (∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2
+structure SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle : Prop :=
+(path_hamiltonian : (p.tail (by
+  intro np
+  rw [Nil_iff_eq_nil p] at np
+  contradiction
+)).IsHamiltonian)
+  -- ∃ h : p.IsCycle, (p.tail (by sorry)).IsHamiltonian
+
+lemma new_definition_implies_old (p : G.Walk v v) : p.IsHamiltonianCycle →
+  ((∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2) :=
+  sorry
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
-  unfold IsHamiltonianCycle at hp
+  replace hp := new_definition_implies_old p hp
   rw [←List.count_pos_iff_mem]
   by_cases w = v
   · subst h
@@ -54,7 +66,7 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp :
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
-  dsimp only [IsHamiltonianCycle] at hp
+  replace hp := new_definition_implies_old p hp
   have length_relation : p.length + 1 = p.support.length
   · cases p
     case nil =>
@@ -105,7 +117,7 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHami
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.support_tail_nodup (p : G.Walk v v)
   (hp : p.IsHamiltonianCycle) : (support p).tail.Nodup := by
-  unfold IsHamiltonianCycle at hp
+  replace hp := new_definition_implies_old p hp
   rw [List.nodup_iff_count_le_one]
   intro u
   have h₁ : support p = v :: (support p).tail := by
@@ -123,20 +135,25 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.support_tail_nodup (p : G.Walk v v)
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.not_nil (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
     p ≠ nil := by
-  unfold IsHamiltonianCycle at hp
+  replace hp := new_definition_implies_old p hp
   rintro rfl
   rw [support_nil, List.count_singleton] at hp
   simp at hp
 
+lemma SupportNodupImpliesTrail (p : G.Walk v v) (h : p.support.tail.Nodup) : p.IsTrail :=
+  sorry
+
 -- BM: `cons_isCycle_iff` will be useful for going between hamiltonian cycles and paths
 lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
     p.IsCycle := by
-  rw [SimpleGraph.Walk.IsHamiltonianCycle] at hp
+  replace hp := new_definition_implies_old p hp
+  -- rw [SimpleGraph.Walk.IsHamiltonianCycle] at hp
   rw [SimpleGraph.Walk.isCycle_def]
-
   sorry
 
-/-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*. -/
+/-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*.
+    NOTE: We may need to add the singleton graph, which is considered Hamiltonian by convention.
+-/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
 
