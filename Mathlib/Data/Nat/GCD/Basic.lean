@@ -110,8 +110,7 @@ theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
     rw [←dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ←lcm_dvd_iff]
 
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
-  simp_rw [mul_comm]; rw [mul_comm]
-  exact lcm_mul_left
+ rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]
 
 /-!
 ### `coprime`
