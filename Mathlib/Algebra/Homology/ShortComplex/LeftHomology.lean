@@ -14,7 +14,7 @@ maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we sha
 here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
 notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
 data of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
-`K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
+`K` with the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` with the cokernel
 of the induced map `f' : X₁ ⟶ K`.
 
 When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
