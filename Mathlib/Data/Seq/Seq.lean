@@ -479,7 +479,7 @@ theorem ofList_cons (a : α) (l : List α) : (a :: l : Seq α) = a ::ₑ ↑l :=
 theorem ofList_injective : Function.Injective ((↑) : List α → Seq α) := by
   intro l₁ l₂ h
   ext1 n
-  simp only [← ofList_get?, h]
+  rw [← ofList_get?, ← ofList_get?, h]
 
 @[simp, norm_cast]
 theorem ofList_inj {l₁ l₂ : List α} : (l₁ : Seq α) = ↑l₂ ↔ l₁ = l₂ :=
@@ -498,6 +498,15 @@ instance coeStream : Coe (Stream' α) (Seq α) :=
 @[simp, norm_cast]
 theorem ofStream_get? (s : Stream' α) (n : ℕ) : (s : Seq α).get? n = some (s.get n) :=
   rfl
+
+theorem ofStream_injective : Function.Injective ((↑) : Stream' α → Seq α) := by
+  intro s₁ s₂ h
+  ext1 n
+  rw [← Option.some_inj, ← ofStream_get?, ← ofStream_get?, h]
+
+@[simp, norm_cast]
+theorem ofStream_inj {s₁ s₂ : Stream' α} : (s₁ : Seq α) = ↑s₂ ↔ s₁ = s₂ :=
+  ofStream_injective.eq_iff
 
 /-- Embed a `LazyList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
@@ -872,7 +881,7 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
     (fun ⟨l, s⟩ =>
       match destruct s with
       | none => Sum.inl l.reverse
-      | some (a, s') => Sum.inr (a::l, s'))
+      | some (a, s') => Sum.inr (a :: l, s'))
     ([], s)
 #align stream.seq.to_list' Stream'.Seq.toList'
 
@@ -1080,8 +1089,6 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  -- Porting note: Instead of `apply recOn s <;> intros`, `induction'` are used to
-  --   give names to variables.
   induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
   · cases' x_1 with x t
     induction t using recOn <;> simp
