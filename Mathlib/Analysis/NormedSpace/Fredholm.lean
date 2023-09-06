@@ -36,8 +36,11 @@ lemma leftCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hA : isFiniteR
     rank (A ∘ₗ B) ≤ rank A := by apply rank_comp_le_left
                 _ < ℵ₀     := by assumption
 
-
-lemma smulFiniteRank (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFiniteRank (c • A) := sorry
+lemma smulFiniteRank (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFiniteRank (c • A) := by
+  suffices : isFiniteRank ((c • id) ∘ₗ A)
+  · exact this -- "suffices + exact" cannot be changed to "change" (?!)
+  apply rightCompFiniteRank
+  assumption
 
 theorem zeroFiniteRank : isFiniteRank (0 : V →ₗ[K] W) := by
   dsimp only [isFiniteRank]
@@ -54,8 +57,12 @@ theorem eqUpToFiniteRank_refl (A : V →ₗ[K] W) :  A =ᶠ A := by
   exact zeroFiniteRank
 
 @[symm]
-theorem eqUpToFiniteRank_symm (A B : V →ₗ[K] W) (h: A =ᶠ B): B =ᶠ A :=
-  sorry
+theorem eqUpToFiniteRank_symm (A B : V →ₗ[K] W) (h: A =ᶠ B): B =ᶠ A := by
+  dsimp only [eqUpToFiniteRank]
+  have : B - A = (-1 : K) • (A - B) := by simp only [neg_smul, one_smul, neg_sub]
+  rw [this]
+  apply smulFiniteRank
+  assumption
 
 @[trans]
 theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W) (hAB : A =ᶠ B) (hBC : B =ᶠ C) : A =ᶠ C := by
