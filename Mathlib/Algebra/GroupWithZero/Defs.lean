@@ -30,18 +30,6 @@ set_option autoImplicit true
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
 variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
 
--- Porting note:
--- This theorem was introduced during ad-hoc porting
--- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
-theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
-  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
-
--- Porting note:
--- This theorem was introduced during ad-hoc porting
--- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
-theorem pow_succ'' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
-  Monoid.npow_succ
-
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
