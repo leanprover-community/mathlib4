@@ -264,8 +264,8 @@ theorem isMulLeftInvariant_map_smul
     (smulInvariantMeasure_map_smul μ a).measure_preimage_smul x hs
 
 /-- The image of a left invariant measure under right multiplication is left invariant. -/
-@[to_additive isMulLeftInvariant_add_right]
-theorem isMulLeftInvariant_mul_right [IsMulLeftInvariant μ] (g : G) :
+@[to_additive isMulLeftInvariant_map_add_right]
+theorem isMulLeftInvariant_map_mul_right [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) :=
   isMulLeftInvariant_map_smul (MulOpposite.op g)
 
@@ -785,9 +785,9 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 #align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isAddHaarMeasure_map
 
 /-- The image of a Haar measure under map of a left action is again a Haar measure. -/
-@[to_additive isHaarMeasure_map_add_right
-"The image of a Haar measure under map of a left additive action is again a Haar measure"]
-theorem isHaarMeasure_map_mul_right {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
+@[to_additive
+   "The image of a Haar measure under map of a left additive action is again a Haar measure"]
+theorem isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
     [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
@@ -798,11 +798,11 @@ theorem isHaarMeasure_map_mul_right {α} [BorelSpace G] [TopologicalGroup G] [T2
     refine (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
 
 /-- The image of a Haar measure under right multiplication is again a Haar measure. -/
-@[to_additive isHaarMeasure_add_right
+@[to_additive isHaarMeasure_map_add_right
   "The image of a Haar measure under right addition is again a Haar measure."]
-theorem isHaarMeasure_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
+theorem isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) := by
-      exact isHaarMeasure_map_mul_right μ (MulOpposite.op g)
+      exact isHaarMeasure_map_smul μ (MulOpposite.op g)
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
