@@ -29,12 +29,10 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-@[default_target]
 lean_exe runLinter where
   root := `scripts.runLinter
   supportInterpreter := true
 
-@[default_target]
 lean_exe checkYaml where
   root := `scripts.checkYaml
   supportInterpreter := true

@@ -186,7 +186,7 @@ jobs:
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
-          build/bin/checkYaml
+          lake exe checkYaml
 
       - name: test mathlib
         id: test
@@ -197,7 +197,7 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 make lint
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
 
       - name: Post comments for lean-pr-testing branch
         if: always()
