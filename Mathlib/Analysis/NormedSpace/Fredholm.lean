@@ -21,6 +21,11 @@ lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRa
       (A + B).rank ≤ A.rank + B.rank := by apply LinearMap.rank_add_le
                  _ < ℵ₀              := by apply add_lt_aleph0 hA hB
 
+theorem zeroFiniteRank : isFiniteRank (0 : V →ₗ[K] W) := by
+  dsimp only [isFiniteRank]
+  rw [rank_zero]
+  exact aleph0_pos
+
 @[trans]
 theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W)
     (hAB : eqUpToFiniteRank A B)
@@ -28,6 +33,13 @@ theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W)
   dsimp only [eqUpToFiniteRank]
   rw [← sub_add_sub_cancel]
   apply sumFiniteRank (A - B) (B - C) hAB hBC
+
+@[refl]
+theorem eqUpToFiniteRank_refl (A : V →ₗ[K] W) : eqUpToFiniteRank A A := by
+  dsimp only [eqUpToFiniteRank]
+  rw [sub_self]
+  exact zeroFiniteRank
+
 
 infix:50 " =ᶠ " => eqUpToFiniteRank
 
