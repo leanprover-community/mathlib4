@@ -260,8 +260,6 @@ def center : Subsemigroup M where
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
-
-
 -- porting note: `coe_center` is now redundant
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
