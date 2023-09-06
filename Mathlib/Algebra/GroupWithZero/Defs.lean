@@ -188,6 +188,26 @@ The type is required to come with an “inverse” function, and the inverse of 
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
 
+section GroupWithZero
+
+variable [GroupWithZero G₀] {a b c g h x : G₀}
+
+@[simp]
+theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
+  calc
+    a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
+    _ = a := by simp [h]
+#align mul_inv_cancel_right₀ mul_inv_cancel_right₀
+
+@[simp]
+theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
+  calc
+    a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm
+    _ = b := by simp [h]
+#align mul_inv_cancel_left₀ mul_inv_cancel_left₀
+
+end GroupWithZero
+
 section MulZeroClass
 
 variable [MulZeroClass M₀]

@@ -40,3 +40,23 @@ theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f
     rw [zero, one]
     exact zero_ne_one⟩⟩
 #align pullback_nonzero pullback_nonzero
+
+section GroupWithZero
+
+variable [GroupWithZero G₀] {a b c g h x : G₀}
+
+-- Porting note: used `simpa` to prove `False` in lean3
+theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
+  have := mul_inv_cancel h
+  simp only [a_eq_0, mul_zero, zero_ne_one] at this
+#align inv_ne_zero inv_ne_zero
+
+@[simp]
+theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
+  calc
+    a⁻¹ * a = a⁻¹ * a * a⁻¹ * a⁻¹⁻¹ := by simp [inv_ne_zero h]
+    _ = a⁻¹ * a⁻¹⁻¹ := by simp [h]
+    _ = 1 := by simp [inv_ne_zero h]
+#align inv_mul_cancel inv_mul_cancel
+
+end GroupWithZero
