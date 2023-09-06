@@ -94,7 +94,7 @@ theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 #align ring.inverse_unit Ring.inverse_unit
 
-theorem inverse_isUnit (x : M₀) (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
+theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 alias Ring.inverse_isUnit ← _root_.IsUnit.ringInverse
 
