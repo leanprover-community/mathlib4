@@ -49,7 +49,7 @@ the continuum hypothesis*][flypitch_itp]
 -/
 
 
-universe u v w u' v' w'
+universe u v w u' v'
 
 namespace FirstOrder
 
@@ -59,7 +59,7 @@ variable {L : Language.{u, v}} {L' : Language}
 
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'} {γ : Type w'}
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
 
