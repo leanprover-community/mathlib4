@@ -2081,10 +2081,11 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
     Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
   toFun := MonoidHom.toHomUnits <|
-    { toFun := fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
-        rcases eq_or_ne r 0 with (rfl | hr)
-        · rw [mul_zero, zero_mul]
-        exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩
+    { toFun := fun u ↦ ⟨(u : G₀ˣ),
+      (Submonoid.mem_center_iff.mpr (fun r ↦ by
+          rcases eq_or_ne r 0 with (rfl | hr)
+          · rw [mul_zero, zero_mul]
+          exact congrArg Units.val <| (u.2.comm <| Units.mk0 r hr).symm))⟩
       map_one' := rfl
       map_mul' := fun _ _ ↦ rfl }
   invFun u := unitsCenterToCenterUnits G₀ u
@@ -2095,8 +2096,9 @@ def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
 variable {G}
 
 @[to_additive]
-theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
+  rw [← Subsemigroup.mem_center_iff]
+  exact Iff.rfl
 #align subgroup.mem_center_iff Subgroup.mem_center_iff
 #align add_subgroup.mem_center_iff AddSubgroup.mem_center_iff
 
