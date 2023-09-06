@@ -908,8 +908,8 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iAlls
-    [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) (v : β → M) : (φ.iAlls f).Realize v ↔
+    [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iAlls f).Realize v ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iAlls]
@@ -926,16 +926,16 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
       exact i.elim0
 
 @[simp]
-theorem realize_iAlls [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
+theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
     BoundedFormula.Realize (φ.iAlls f) v v' ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_iAlls f φ v, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iExs
-    [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) (v : β → M) : (φ.iExs f).Realize v ↔
+    [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iExs f).Realize v ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iExs]
@@ -953,11 +953,11 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
       exact i.elim0
 
 @[simp]
-theorem realize_iExs [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) (v : β → M) (v' : Fin 0 → M) :
+theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
     BoundedFormula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_iExs f φ v, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp
 
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
