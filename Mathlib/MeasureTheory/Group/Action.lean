@@ -126,7 +126,7 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = map f μ S  := (map_apply hf hS).symm
 
 @[to_additive]
-theorem smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
+instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
     [MeasurableSMul M α] [MeasurableSMul N α]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (n : N) :
     SMulInvariantMeasure M α (map (n • ·) μ) :=
