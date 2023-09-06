@@ -93,10 +93,10 @@ set_option maxHeartbeats 300000 in
 instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
-  have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
-    dsimp; infer_instance
-  exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
-    (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
+  apply @isReduced_of_injective _ _ _ _ _ _ (StructureSheaf.stalkIso R x).hom
+    (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective ?_
+  dsimp
+  infer_instance
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Scheme.Spec.obj <| op R) ↔ _root_.IsReduced R := by

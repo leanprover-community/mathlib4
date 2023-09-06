@@ -26,8 +26,6 @@ instance distrib [Distrib α] : Distrib αᵐᵒᵖ :=
     right_distrib := fun x y z => unop_injective <| mul_add (unop z) (unop x) (unop y) }
 
 instance mulZeroClass [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
-  zero := 0
-  mul := (· * ·)
   zero_mul x := unop_injective <| mul_zero <| unop x
   mul_zero x := unop_injective <| zero_mul <| unop x
 
@@ -196,7 +194,7 @@ def NonUnitalRingHom.fromOpposite {R S : Type*} [NonUnitalNonAssocSemiring R]
 
 /-- A non-unital ring hom `α →ₙ+* β` can equivalently be viewed as a non-unital ring hom
 `αᵐᵒᵖ →+* βᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
-@[simps]
+@[simps!]
 def NonUnitalRingHom.op {α β} [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] :
   (α →ₙ+* β) ≃ (αᵐᵒᵖ →ₙ+* βᵐᵒᵖ) where
   toFun f := { AddMonoidHom.mulOp f.toAddMonoidHom, MulHom.op f.toMulHom with }
