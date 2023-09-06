@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Rat.Order
-import Mathlib.Data.Rat.Lemmas
--- import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Rat.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Util.Qq
 
