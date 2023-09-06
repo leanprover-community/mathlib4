@@ -916,4 +916,7 @@ theorem isometryEquivMap.toAffineMap_eq (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : Af
   rfl
 #align affine_subspace.isometry_equiv_map.to_affine_map_eq AffineSubspace.isometryEquivMap.toAffineMap_eq
 
+attribute [nolint simpNF] linear_equivMapOfInjective_symm_apply_coe
+  equivMapOfInjective_invFun_coe
+
 end AffineSubspace
