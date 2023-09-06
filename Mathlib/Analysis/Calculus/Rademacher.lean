@@ -275,13 +275,52 @@ theorem ae_exists_fderiv_of_countable
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
+open Asymptotics
+
 /-- If a Lipschitz functions has line derivatives in a dense set of directions which are given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
 theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
     {L : E →L[ℝ] F} {x : E} (hL : ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v) :
-    HasFDerivAt f L x :=
-  sorry
+    HasFDerivAt f L x := by
+  rw [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
+  intro ε εpos
+  have δ : ℝ := sorry
+  have δpos : 0 < δ := sorry
+  obtain ⟨q, hqs, q_fin, hq⟩ : ∃ q, q ⊆ s ∧ q.Finite ∧ sphere 0 1 ⊆ ⋃ y ∈ q, ball y δ := by
+    have A : IsCompact (sphere (0 : E) 1) := isCompact_sphere 0 1
+    have B : ∀ y ∈ s, IsOpen (ball y δ) := fun y hy ↦ isOpen_ball
+    have C : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
+      apply hs.trans (fun z hz ↦ ?_)
+      obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, dist z y < δ := Metric.mem_closure_iff.1 hz δ δpos
+      exact mem_biUnion ys hy
+    exact A.elim_finite_subcover_image B C
+  have I : ∀ᶠ t in 𝓝 (0 : ℝ), ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
+    apply (Finite.eventually_all q_fin).2 (fun v hv ↦ ?_)
+    apply Asymptotics.IsLittleO.def ?_ δpos
+    exact hasLineDerivAt_iff_isLittleO_nhds_zero.1 (hL v (hqs hv))
+  obtain ⟨r, r_pos, hr⟩ : ∃ (r : ℝ), 0 < r ∧ ∀ (t : ℝ), ‖t‖ < r →
+      ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
+    rcases Metric.mem_nhds_iff.1 I with ⟨r, r_pos, hr⟩
+    exact ⟨r, r_pos, fun t ht v hv ↦ hr (mem_ball_zero_iff.2 ht) v hv⟩
+  apply Metric.mem_nhds_iff.2 ⟨r, r_pos, fun v hv ↦ ?_⟩
+  rcases eq_or_ne v 0 with rfl|hv
+  · simp
+  let w : E := ‖v‖⁻¹ •  v
+  have : w ∈ sphere 0 1 := by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 hv)]
+  have : ∃ y ∈ q, ‖w - y‖ < δ := by
+    sorry
+
+
+
+
+
+
+
+
+#exit
+
+(hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i)
 
 theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
