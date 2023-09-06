@@ -9,48 +9,75 @@ variable (C : Type u) [Category.{v} C] [Preadditive C] [HasZeroObject C]
 
 namespace CochainComplex
 
-namespace SingleFunctors
-
 open HomologicalComplex
 
 variable {C}
 
-noncomputable def shiftIsoAppX (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) :
-  ((single C (ComplexShape.up ℤ) a').obj X)⟦n⟧.X i ≅
-    ((single C (ComplexShape.up ℤ) a).obj X).X i :=
-  if h : a = i then
-    shiftFunctorObjXIso ((single C (ComplexShape.up ℤ) a').obj X) n i a' (by linarith) ≪≫
-      singleObjXSelf C (ComplexShape.up ℤ) a' X ≪≫
-      (singleObjXSelf C (ComplexShape.up ℤ) a X).symm ≪≫ XIsoOfEq _ h
-  else
-    { hom := 0
-      inv := 0
-      hom_inv_id := IsZero.eq_of_tgt (isZeroSingleObjX C (ComplexShape.up ℤ) _ _ _
-        (fun h' => h (by linarith))) _ _
-      inv_hom_id := IsZero.eq_of_tgt (isZeroSingleObjX C (ComplexShape.up ℤ) _ _ _
-        (fun h' => h (by linarith))) _ _ }
+lemma singleFunctor_aux (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) :
+    (((single C (ComplexShape.up ℤ) a').obj X)⟦n⟧).X i =
+      ((single C (ComplexShape.up ℤ) a).obj X).X i := by
+  dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor]
+  obtain rfl : a' = a + n := by linarith
+  by_cases i = a
+  · subst h
+    simp only [ite_true]
+  · rw [if_neg h, if_neg (fun h' => h (by linarith))]
 
 variable (C)
 
-noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
-    (single C (ComplexShape.up ℤ) a' ⋙
-      CategoryTheory.shiftFunctor (CochainComplex C ℤ) n ≅
-        single C (ComplexShape.up ℤ) a) :=
-  NatIso.ofComponents (fun X => Hom.isoOfComponents (shiftIsoAppX n a a' ha' X) (by simp))
-    (fun {X Y} f => by
-      ext i
-      by_cases i = a
-      · dsimp [shiftIsoAppX]
-        rw [dif_pos (by linarith), dif_pos h, dif_pos h.symm, dif_pos h.symm]
-        simp [XIsoOfEq]
-      · exact IsZero.eq_of_tgt (isZeroSingleObjX _ _ _ _ _ h) _ _)
-
-end SingleFunctors
-
-/-noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
+noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
   functor n := HomologicalComplex.single _ _ n
-  shiftIso := SingleFunctors.shiftIso C
-  shiftIso_zero := sorry
-  shiftIso_add := sorry-/
+  shiftIso n a a' ha' := NatIso.ofComponents
+    (fun X => HomologicalComplex.Hom.isoOfComponents
+      (fun i => eqToIso (singleFunctor_aux n a a' ha' X i)) (by simp))
+    (fun {X Y} f => by
+      obtain rfl : a' = a + n := by linarith
+      ext i
+      dsimp
+      by_cases i = a
+      · subst h
+        simp only [dite_true, assoc, eqToHom_trans, eqToHom_trans_assoc]
+      · rw [dif_neg h, dif_neg (fun _ => h (by linarith)), zero_comp, comp_zero])
+  shiftIso_zero a := by
+    ext X i
+    by_cases i = a
+    · subst h
+      dsimp
+      simp [shiftFunctorZero_eq, XIsoOfEq]
+    · exact (isZeroSingleObjX _ _ _ _ _ h).eq_of_tgt _ _
+  shiftIso_add n m a a' a'' ha' ha'' := by
+    ext X i
+    by_cases i = a
+    · subst h
+      dsimp
+      simp [shiftFunctorAdd_eq, XIsoOfEq]
+    · exact (isZeroSingleObjX _ _ _ _ _ h).eq_of_tgt _ _
+
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+variable {C}
+
+lemma singleFunctors_shiftIso_hom_app_f (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
+    (((singleFunctors C).shiftIso n a a' ha').hom.app X).f i =
+      (singleObjXIsoOfEq C (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).hom ≫
+        (singleObjXIsoOfEq C (ComplexShape.up ℤ) a X i hi).inv := by
+  dsimp [singleObjXIsoOfEq, singleFunctors]
+  rw [eqToHom_trans]
+
+lemma singleFunctors_shiftIso_inv_app_f (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
+    (((singleFunctors C).shiftIso n a a' ha').inv.app X).f i =
+        (singleObjXIsoOfEq C (ComplexShape.up ℤ) a X i hi).hom ≫
+      (singleObjXIsoOfEq C (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
+  dsimp [singleObjXIsoOfEq, singleFunctors]
+  rw [eqToHom_trans]
 
 end CochainComplex
+
+namespace HomotopyCategory
+
+noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ :=
+  (CochainComplex.singleFunctors C).postComp (HomotopyCategory.quotient _ _)
+
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+end HomotopyCategory
