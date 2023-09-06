@@ -3,7 +3,6 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Algebra.Lie.Abelian
