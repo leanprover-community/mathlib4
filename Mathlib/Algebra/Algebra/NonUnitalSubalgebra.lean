@@ -948,17 +948,13 @@ theorem _root_.Set.smul_mem_center {R A : Type*} [CommSemiring R] [NonUnitalNonA
   apply (Set.mem_center_iff A).mp
   constructor
   · intro
-    simp [mul_smul_comm, smul_mul_assoc]
-    rw [ha.comm]
+    rw [mul_smul_comm, smul_mul_assoc, ha.comm]
   · intros
-    simp [mul_smul_comm, smul_mul_assoc]
-    rw [ha.left_assoc]
+    rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
   · intros
-    simp [mul_smul_comm, smul_mul_assoc]
-    rw [ha.mid_assoc]
+    rw [mul_smul_comm, smul_mul_assoc, smul_mul_assoc, mul_smul_comm, ha.mid_assoc]
   · intros
-    simp [mul_smul_comm, smul_mul_assoc]
-    rw [ha.right_assoc]
+    rw [mul_smul_comm, mul_smul_comm, mul_smul_comm, ha.right_assoc]
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
