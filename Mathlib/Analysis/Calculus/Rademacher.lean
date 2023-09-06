@@ -137,7 +137,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
     _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg ht.le]; ring
   · exact hg.norm.const_mul _
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
-    exact hx.hasLineDerivAt.tendsto_nhdsWithin_right.mul tendsto_const_nhds
+    exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
 
 theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     (hf : LipschitzWith C f) (h'f : HasCompactSupport f) (hg : Continuous g) (v : E) :
@@ -180,7 +180,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     apply ContinuousOn.integrableOn_compact K_compact
     exact (Continuous.mul continuous_const hg.norm).continuousOn
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
-    exact hx.hasLineDerivAt.tendsto_nhdsWithin_right.mul tendsto_const_nhds
+    exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
 
 /-- Integration by parts formula for the line derivative of Lipschitz functions, assuming one of
 them is compactly supported. -/
@@ -220,7 +220,7 @@ theorem integral_lineDeriv_mul_eq
 /-- The line derivative of a Lipschitz function is almost everywhere linear with respect to fixed
 coefficients. -/
 theorem ae_lineDeriv_sum_eq
-    {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} (hf : LipschitzWith C f) :
+    (hf : LipschitzWith C f) {ι : Type*} (s : Finset ι) (a : ι → ℝ) (v : ι → E) :
     ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
   /- Clever argument by Morrey: integrate against a smooth compactly supported function `g`, switch
   the derivative to `g` by integration by parts, and use the linearity of the derivative of `g` to
@@ -262,7 +262,20 @@ theorem ae_lineDeriv_sum_eq
 theorem ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
     ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
-  sorry
+  let ι : Type _ := Basis.ofVectorSpaceIndex ℝ E
+  have B : Basis ι ℝ E := Basis.ofVectorSpace ℝ E
+  have : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i : ι, (B.repr v i) • B i) =
+      ∑ i : ι, B.repr v i • lineDeriv ℝ f x (B i) :=
+    (ae_ball_iff hs).2 (fun v hv ↦ hf.ae_lineDeriv_sum_eq _ _ _)
+  filter_upwards [this] with x hx
+
+  have : Fintype ι := by infer_instance
+  have : ∀ v, v = ∑ i : ι, (B.repr v i) • B i := fun v ↦ (Basis.sum_repr B v).symm
+  have v : E := sorry
+  have Z := hf.ae_lineDeriv_sum_eq (Finset.univ : Finset ι) (B.repr v) B (μ := μ)
+  let L := (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i))).toContinuousLinearMap
+
+
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions which are given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
