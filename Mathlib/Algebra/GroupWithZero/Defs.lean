@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Nontrivial
-import Mathlib.Algebra.NeZero
+import Mathlib.Logic.Nontrivial.Defs
 
 #align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
@@ -29,18 +28,6 @@ set_option autoImplicit true
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
 variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
-
--- Porting note:
--- This theorem was introduced during ad-hoc porting
--- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
-theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
-  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
-
--- Porting note:
--- This theorem was introduced during ad-hoc porting
--- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
-theorem pow_succ'' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
-  Monoid.npow_succ
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
@@ -200,36 +187,6 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
-
-section NeZero
-
-variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
-
-variable (M₀)
-
-/-- In a nontrivial monoid with zero, zero and one are different. -/
-instance NeZero.one : NeZero (1 : M₀) := ⟨by
-  intro h
-  rcases exists_pair_ne M₀ with ⟨x, y, hx⟩
-  apply hx
-  calc
-    x = 1 * x := by rw [one_mul]
-    _ = 0 := by rw [h, zero_mul]
-    _ = 1 * y := by rw [h, zero_mul]
-    _ = y := by rw [one_mul]⟩
-#align ne_zero.one NeZero.one
-
-variable {M₀}
-
-/-- Pullback a `Nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
-theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
-    Nontrivial M₀' :=
-  ⟨⟨0, 1, mt (congr_arg f) <| by
-    rw [zero, one]
-    exact zero_ne_one⟩⟩
-#align pullback_nonzero pullback_nonzero
-
-end NeZero
 
 section MulZeroClass
 
