@@ -111,7 +111,7 @@ variable {M : Type uM} {N : Type uN}  {α : Type uα} {β : Type uβ}
   [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α] [MeasurableSpace β]
 
 @[to_additive]
-theorem SMulInvariantMeasure_map [SMul M α] [SMul M β]
+theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     [MeasurableSMul M β]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α → β)
     (hsmul : ∀ (m : M) a, f (m • a) = m • f a) (hf : Measurable f) :
@@ -126,11 +126,11 @@ theorem SMulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = map f μ S  := (map_apply hf hS).symm
 
 @[to_additive]
-theorem SMulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
+theorem smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
     [MeasurableSMul M α] [MeasurableSMul N α]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (n : N) :
     SMulInvariantMeasure M α (map (n • ·) μ) :=
-  SMulInvariantMeasure_map μ _ (smul_comm n) <| measurable_const_smul _
+  smulInvariantMeasure_map μ _ (smul_comm n) <| measurable_const_smul _
 
 end SMulHomClass
 
