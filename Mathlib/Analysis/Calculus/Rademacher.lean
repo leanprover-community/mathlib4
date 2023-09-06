@@ -304,12 +304,31 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     rcases Metric.mem_nhds_iff.1 I with ⟨r, r_pos, hr⟩
     exact ⟨r, r_pos, fun t ht v hv ↦ hr (mem_ball_zero_iff.2 ht) v hv⟩
   apply Metric.mem_nhds_iff.2 ⟨r, r_pos, fun v hv ↦ ?_⟩
-  rcases eq_or_ne v 0 with rfl|hv
+  rcases eq_or_ne v 0 with rfl|v_ne
   · simp
-  let w : E := ‖v‖⁻¹ •  v
-  have w_mem : w ∈ sphere 0 1 := by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 hv)]
-  obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by
-    have Z := hq w_mem
+  obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
+    refine ⟨‖v‖⁻¹ •  v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
+    simp [smul_smul, mul_inv_cancel (norm_ne_zero_iff.2 v_ne)]
+  have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
+  have rho_pos : 0 ≤ ρ := by simp [hρ]
+  obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
+  calc
+        ‖f (x + v) - f x - L v‖
+      = ‖f (x + ρ • w) - f x - ρ • L w‖ := by simp [hvw]
+    _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
+          + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel
+    _ ≤ ‖f (x + ρ • w) - f (x + ρ • y)‖ + ‖ρ • L y - ρ • L w‖
+          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le _ _ _
+    _ ≤ C * ‖(x + ρ • w) - (x + ρ • y)‖ + ρ * (‖L‖ * ‖y - w‖) + δ * ρ := by
+      gcongr
+      · exact hf.norm_sub_le _ _
+      · rw [← smul_sub, norm_smul, norm_rho]
+        gcongr
+        exact L.lipschitz.norm_sub_le _ _
+      · conv_rhs => rw [← norm_rho]
+        apply hr _ _ _ yq
+        simpa [norm_rho, hρ] using hv
+    _ ≤ ε * ‖v‖ := sorry
 
 
 
