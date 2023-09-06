@@ -139,6 +139,21 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root this hx
 #align is_alg_closed.of_exists_root IsAlgClosed.of_exists_root
 
+theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
+    [IsAlgClosed k] : IsAlgClosed k' := by
+  apply IsAlgClosed.of_exists_root
+  intro p hmp hp
+  have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
+    rw [degree_map]
+    exact ne_of_gt (degree_pos_of_irreducible hp)
+  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm) hpe with ⟨x, hx⟩
+  use e x
+  rw [IsRoot] at hx
+  apply e.symm.injective
+  rw [map_zero, ← hx]
+  clear hx hpe hp hmp
+  induction p using Polynomial.induction_on <;> simp_all
+
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)

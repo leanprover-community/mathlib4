@@ -28,7 +28,7 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "1a0cded2be292b5496e659b730d2accc742de098",
+    "rev": "572947f0835fb3af49b600f9d2a1142421c43317",
     "opts": {},
     "name": "aesop",
     "inputRev?": "master",
@@ -36,7 +36,7 @@
   {"git":
    {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "c8dc16ca569be406d59d6a4c6845e56dd03b4b60",
+    "rev": "d4a234e026892fa4f77287b4a7183cf2926cd7de",
     "opts": {},
     "name": "std",
     "inputRev?": "LeftRight",
