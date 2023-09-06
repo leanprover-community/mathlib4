@@ -64,12 +64,13 @@ theorem ascPochhammer_succ_left (n : ℕ) :
 #align pochhammer_succ_left ascPochhammer_succ_left
 
 theorem monic_pochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
-    Monic <| pochhammer S n := by
+    Monic <| ascPochhammer S n := by
   induction' n with n hn
   · simp
   · have : leadingCoeff (X + 1 : S[X]) = 1 := leadingCoeff_X_add_C 1
-    rw [pochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp (ne_zero_of_eq_one <|
-        natDegree_X_add_C 1 : natDegree (X + 1) ≠ 0), hn, monic_X, one_mul, one_mul, this, one_pow]
+    rw [ascPochhammer_succ_left, Monic.def, leadingCoeff_mul,
+      leadingCoeff_comp (ne_zero_of_eq_one <| natDegree_X_add_C 1 : natDegree (X + 1) ≠ 0), hn,
+      monic_X, one_mul, one_mul, this, one_pow]
 
 section
 
@@ -235,4 +236,3 @@ theorem ascPochhammer_eval_succ (r n : ℕ) :
 #align pochhammer_eval_succ ascPochhammer_eval_succ
 
 end Factorial
-
