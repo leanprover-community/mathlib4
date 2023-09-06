@@ -31,7 +31,7 @@ Define local rings as commutative rings having a unique maximal ideal.
 
 universe u v w u'
 
-variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
+variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'} {F : Type*}
 
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.
 Note that `LocalRing` is a predicate. -/
