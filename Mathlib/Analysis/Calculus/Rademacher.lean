@@ -20,11 +20,12 @@ open Filter MeasureTheory Measure FiniteDimensional Metric Set
 
 open scoped BigOperators NNReal ENNReal Topology
 
-namespace LipschitzWith
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {C D : ℝ≥0} {f g : E → ℝ}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {C D : ℝ≥0} {f g : E → ℝ} {s : Set E}
+  {μ : Measure E} [IsAddHaarMeasure μ]
+
+namespace LipschitzWith
 
 /-!
 ### Step 1: A Lipschitz function is ae differentiable in any given direction
@@ -50,7 +51,6 @@ theorem ae_lineDifferentiableAt_of_prod
   simpa only [LineDifferentiableAt, Prod.smul_mk, smul_zero, smul_eq_mul, mul_one, Prod.mk_add_mk,
     add_zero] using h'y.comp 0 this
 
-variable {μ : Measure E} [IsAddHaarMeasure μ]
 
 theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
@@ -253,11 +253,17 @@ theorem hasFderivAt_of_hasLineDerivAt_of_countable {f : E → F}
 
 theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
-  obtain ⟨s, s_count, hs⟩ : ∃ (s : Set E), s.Countable ∧ sphere 0 1 ⊆ closure s := sorry
+  obtain ⟨s, s_count, s_dense⟩ : ∃ (s : Set E), s.Countable ∧ Dense s :=
+    TopologicalSpace.exists_countable_dense E
+  have hs : sphere 0 1 ⊆ closure s := by rw [s_dense.closure_eq]; exact subset_univ _
   filter_upwards [hf.ae_exists_fderiv_of_countable s_count]
   rintro x ⟨L, hL⟩
   exact (hf.hasFderivAt_of_hasLineDerivAt_of_countable hs hL).differentiableAt
 
-
-
 end LipschitzWith
+
+theorem LipschitzOnWith.ae_differentiableWithinAt_of_real (hf : LipschitzOnWith C f s) :
+    ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
+  obtain ⟨g, g_lip, hg⟩ : ∃ (g : E → ℝ), LipschitzWith C g ∧ EqOn f g s := hf.extend_real
+  filter_upwards [g_lip.ae_differentiableAt_of_real] with x hx xs
+  exact hx.differentiableWithinAt.congr hg (hg xs)
