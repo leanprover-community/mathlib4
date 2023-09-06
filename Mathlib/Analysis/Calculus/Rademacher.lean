@@ -23,7 +23,8 @@ open scoped BigOperators NNReal ENNReal Topology
 namespace LipschitzWith
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E] {C D : ℝ≥0} {f g : E → ℝ}
+  [MeasurableSpace E] [BorelSpace E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {C D : ℝ≥0} {f g : E → ℝ}
 
 /-!
 ### Step 1: A Lipschitz function is ae differentiable in any given direction
@@ -38,7 +39,7 @@ theorem ae_lineDifferentiableAt_of_prod
   apply (ae_prod_mem_iff_ae_ae_mem (measurableSet_lineDifferentiableAt hf.continuous)).2
   apply eventually_of_forall (fun x ↦ ?_)
   have : ∀ᵐ (y : ℝ), DifferentiableAt ℝ (fun z ↦ f (x, z)) y := by
-    apply LipschitzWith.ae_differentiableAt (C := C)
+    apply LipschitzWith.ae_differentiableAt_real (C := C)
     intro z z'
     convert hf (x, z) (x, z')
     simp [Prod.edist_eq]
@@ -236,6 +237,26 @@ theorem ae_lineDeriv_sum_eq
 /-!
 ### Step 3: construct the derivative using the line derivatives along a basis
 -/
+
+theorem ae_exists_fderiv_of_countable
+    (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
+    ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
+  sorry
+
+/-- If a Lipschitz functions has line derivatives in a dense set of directions which are given by
+a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
+theorem hasFderivAt_of_hasLineDerivAt_of_countable {f : E → F}
+    (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
+    {L : E →L[ℝ] F} {x : E} (hL : ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v) :
+    HasFDerivAt f L x :=
+  sorry
+
+theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
+    ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
+  obtain ⟨s, s_count, hs⟩ : ∃ (s : Set E), s.Countable ∧ sphere 0 1 ⊆ closure s := sorry
+  filter_upwards [hf.ae_exists_fderiv_of_countable s_count]
+  rintro x ⟨L, hL⟩
+  exact (hf.hasFderivAt_of_hasLineDerivAt_of_countable hs hL).differentiableAt
 
 
 
