@@ -131,7 +131,7 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bounded s
       _ ≤ ε / R * R :=
         (mul_le_mul (mem_closedBall_zero_iff.1 hr) (mem_closedBall_zero_iff.1 (hR zs))
           (norm_nonneg _) (div_pos εpos Rpos).le)
-      _ = ε := by field_simp [Rpos.ne']
+      _ = ε := by field_simp
   have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
   apply hε
   simpa only [this, dist_eq_norm, add_sub_cancel', mem_closedBall] using I

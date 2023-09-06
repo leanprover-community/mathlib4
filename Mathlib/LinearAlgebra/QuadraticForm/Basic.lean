@@ -3,7 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
@@ -882,6 +881,11 @@ theorem associated_linMulLin (f g : M →ₗ[R₁] R₁) :
     LinearMap.map_add]
   ring
 #align quadratic_form.associated_lin_mul_lin QuadraticForm.associated_linMulLin
+
+@[simp]
+lemma associated_sq : associated (R₁ := R₁) sq = LinearMap.toBilin (LinearMap.mul R₁ R₁) :=
+  (associated_linMulLin (LinearMap.id) (LinearMap.id)).trans <|
+    by simp only [smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
 
 end Associated
 

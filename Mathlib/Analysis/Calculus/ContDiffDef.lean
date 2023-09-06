@@ -524,7 +524,7 @@ theorem contDiffWithinAt_insert {y : E} :
   simp_rw [ContDiffWithinAt, insert_comm x y, nhdsWithin_insert_of_ne h]
 #align cont_diff_within_at_insert contDiffWithinAt_insert
 
-alias contDiffWithinAt_insert ↔ ContDiffWithinAt.of_insert ContDiffWithinAt.insert'
+alias ⟨ContDiffWithinAt.of_insert, ContDiffWithinAt.insert'⟩ := contDiffWithinAt_insert
 #align cont_diff_within_at.of_insert ContDiffWithinAt.of_insert
 #align cont_diff_within_at.insert' ContDiffWithinAt.insert'
 
@@ -1714,7 +1714,7 @@ theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
 continuous. -/
 theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
-  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMapApply.continuous
+  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B

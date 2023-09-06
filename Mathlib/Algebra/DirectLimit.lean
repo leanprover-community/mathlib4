@@ -733,7 +733,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
 -- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 500000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]
