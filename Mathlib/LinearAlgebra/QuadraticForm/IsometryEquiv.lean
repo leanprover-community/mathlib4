@@ -98,7 +98,7 @@ def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.Iso
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
 
-/-- Isometries are isometric maps -/
+/-- Isometric equivalences are isometric maps -/
 @[simps]
 def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
   toFun x := g x
