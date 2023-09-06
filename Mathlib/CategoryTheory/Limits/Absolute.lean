@@ -23,10 +23,16 @@ instance : Subsingleton (IsAbsoluteColimit c) :=
   ⟨fun ⟨_, _⟩ ⟨_, _⟩ => by simp⟩
 
 namespace IsAbsoluteColimit
-
+#check ReflectsColimit
 variable {c} (hc : IsAbsoluteColimit c) {D : Type u₃} [Category.{v₃} D]
 
 /-def isColimitMapCocone (G : C ⥤ D) : IsColimit (G.mapCocone c) := by
+  let yD := yoneda ⋙ (whiskeringRight Dᵒᵖ _ _).obj uliftFunctor.{max u₁ v₂}
+  let yC := yoneda ⋙ (whiskeringRight Cᵒᵖ _ _).obj uliftFunctor.{max u₁}
+  have : Full yD := sorry
+  have : ReflectsColimitsOfSize.{v₁, u₁} yD := fullyFaithfulReflectsColimits _
+  suffices IsColimit ((G ⋙ yD).mapCocone c) from isColimitOfReflects yD this
+  have : IsColimit (yC.mapCocone c) := hc.isColimitMapCoconeYoneda
   have := hc
   sorry
 
