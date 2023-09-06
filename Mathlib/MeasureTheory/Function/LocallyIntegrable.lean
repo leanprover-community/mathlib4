@@ -526,7 +526,7 @@ theorem IntegrableOn.continuousOn_mul [T2Space X] (hg : ContinuousOn g K)
 
 end Mul
 
-section Smul
+section SMul
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
@@ -550,7 +550,7 @@ theorem IntegrableOn.smul_continuousOn [T2Space X] [SecondCountableTopologyEithe
   · exact hf.1.smul (hg.aestronglyMeasurable hK.measurableSet)
 #align measure_theory.integrable_on.smul_continuous_on MeasureTheory.IntegrableOn.smul_continuousOn
 
-end Smul
+end SMul
 
 namespace LocallyIntegrableOn
 

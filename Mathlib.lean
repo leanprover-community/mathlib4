@@ -242,7 +242,9 @@ import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Invertible.Basic
+import Mathlib.Algebra.Invertible.Defs
+import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
@@ -1067,6 +1069,7 @@ import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
+import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
@@ -2280,6 +2283,7 @@ import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
 import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
+import Mathlib.LinearAlgebra.QuadraticForm.Dual
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.LinearAlgebra.QuadraticForm.Real
@@ -3251,6 +3255,7 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Projective
+import Mathlib.Topology.Category.Stonean.Adjunctions
 import Mathlib.Topology.Category.Stonean.Basic
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
