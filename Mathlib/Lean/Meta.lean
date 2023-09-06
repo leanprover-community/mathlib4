@@ -7,9 +7,11 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
-import Std.Data.List.Basic
+import Std.Data.List.Count
 
 /-! ## Additional utilities in `Lean.MVarId` -/
+
+set_option autoImplicit true
 
 open Lean Meta
 
@@ -101,7 +103,7 @@ Check if a goal is "independent" of a list of other goals.
 We say a goal is independent of other goals if assigning a value to it
 can not change the solvability of the other goals.
 
-This function only calculates an approximation of this condition
+This function only calculates a conservative approximation of this condition.
 -/
 def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
   let t ← instantiateMVars (← g.getType)
@@ -118,8 +120,8 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
     return true
   -- Finally, we check if the goal `g` appears in the type of any of the goals `L`.
   L.allM fun g' => do
-    let t' ← instantiateMVars (← g'.getType)
-    pure <| !(← exprDependsOn' t' (.mvar g))
+    let mvars ← Meta.getMVars (← g'.getType)
+    pure <| !(mvars.contains g)
 
 end Lean.MVarId
 
@@ -135,7 +137,7 @@ def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
 /-- Count how many local hypotheses appear in an expression. -/
 def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
   let e' ← instantiateMVars e
-  return (← getLocalHyps).toList.countp fun h => h.occurs e'
+  return (← getLocalHyps).toList.countP fun h => h.occurs e'
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,

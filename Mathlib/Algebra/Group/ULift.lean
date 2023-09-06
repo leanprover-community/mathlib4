@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.InjSurj
@@ -22,7 +23,7 @@ We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 
 universe u v
 
-variable {α : Type u} {β : Type _} {x y : ULift.{v} α}
+variable {α : Type u} {β : Type*} {x y : ULift.{v} α}
 
 namespace ULift
 

@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
@@ -653,7 +653,7 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U :=
       compact_open_separated_add_right hK' U_open K'U
     have : ((w ∩ s) ×ˢ ({q₀.2} + V) : Set (P × G)) ∈ 𝓝[s ×ˢ univ] q₀ := by
-      conv_rhs => rw [← @Prod.mk.eta _ _ q₀, nhdsWithin_prod_eq, nhdsWithin_univ]
+      conv_rhs => rw [nhdsWithin_prod_eq, nhdsWithin_univ]
       refine' Filter.prod_mem_prod _ (singleton_add_mem_nhds_of_nhds_zero q₀.2 V_mem)
       exact mem_nhdsWithin_iff_exists_mem_nhds_inter.2 ⟨w, w_open.mem_nhds q₀w, Subset.rfl⟩
     filter_upwards [this]
@@ -679,7 +679,6 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     change ContinuousWithinAt (fun q : P × G => (↿g) (q.1, q.2 - a)) (s ×ˢ univ) q₀
     have : ContinuousAt (fun q : P × G => (q.1, q.2 - a)) (q₀.1, q₀.2) :=
       (continuous_fst.prod_mk (continuous_snd.sub continuous_const)).continuousAt
-    rw [← @Prod.mk.eta _ _ q₀]
     have h'q₀ : (q₀.1, q₀.2 - a) ∈ (s ×ˢ univ : Set (P × G)) := ⟨hq₀, mem_univ _⟩
     refine' ContinuousWithinAt.comp (hg _ h'q₀) this.continuousWithinAt _
     rintro ⟨q, x⟩ ⟨hq, -⟩
@@ -737,7 +736,7 @@ theorem HasCompactSupport.continuous_convolution_right (hcg : HasCompactSupport 
 
 /-- The convolution is continuous if one function is integrable and the other is bounded and
 continuous. -/
-theorem BddAbove.continuous_convolution_right_of_integrable [SecondCountableTopology G]
+theorem BddAbove.continuous_convolution_right_of_integrable [SecondCountableTopologyEither G E']
     (hbg : BddAbove (range fun x => ‖g x‖)) (hf : Integrable f μ) (hg : Continuous g) :
     Continuous (f ⋆[L, μ] g) := by
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
@@ -823,7 +822,8 @@ theorem HasCompactSupport.continuous_convolution_left [FirstCountableTopology G]
   exact hcf.continuous_convolution_right L.flip hg hf
 #align has_compact_support.continuous_convolution_left HasCompactSupport.continuous_convolution_left
 
-theorem BddAbove.continuous_convolution_left_of_integrable [SecondCountableTopology G]
+theorem BddAbove.continuous_convolution_left_of_integrable
+    [FirstCountableTopology G] [SecondCountableTopologyEither G E]
     (hbf : BddAbove (range fun x => ‖f x‖)) (hf : Continuous f) (hg : Integrable g μ) :
     Continuous (f ⋆[L, μ] g) := by
   rw [← convolution_flip]

@@ -3,10 +3,10 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
-import Mathlib.Util.Pickle
+import Std.Util.Pickle
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Data.ListM.Heartbeats
+import Std.Data.MLList.Heartbeats
 
 /-!
 # Library search
@@ -138,19 +138,22 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
       let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
       pure (← getMCtx, subgoals)
     catch _ =>
-      pure (← getMCtx, newGoals)
+      if required.isEmpty then
+        pure (← getMCtx, newGoals)
+      else
+        failure
 
 /--
 Returns a lazy list of the results of applying a library lemma,
 then calling `solveByElim` on the resulting goals.
 -/
 def librarySearchCore (goal : MVarId)
-    (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
-  .squash do
+    (required : List Expr) (solveByElimDepth := 6) : MLList MetaM (MetavarContext × List MVarId) :=
+  .squash fun _ => do
     let ty ← goal.getType
     let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
-    return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
+    return (MLList.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /--
@@ -158,8 +161,8 @@ Run `librarySearchCore` on both the goal and `symm` applied to the goal.
 -/
 def librarySearchSymm (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) :
-    ListM MetaM (MetavarContext × List MVarId) :=
-  .append (librarySearchCore goal required solveByElimDepth) <| .squash do
+    MLList MetaM (MetavarContext × List MVarId) :=
+  .append (librarySearchCore goal required solveByElimDepth) <| fun _ => .squash fun _ => do
     if let some symm ← try? goal.symm then
       return librarySearchCore symm required solveByElimDepth
     else
@@ -274,11 +277,11 @@ def exact? (tk : Syntax) (required : Option (Array (TSyntax `term))) (requireClo
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
 
-elab_rules : tactic | `(tactic| exact?%$tk $[using $[$required],*]?) => do
-  exact? tk required true
+elab_rules : tactic | `(tactic| exact? $[using $[$required],*]?) => do
+  exact? (← getRef) required true
 
-elab_rules : tactic | `(tactic| apply?%$tk $[using $[$required],*]?) => do
-  exact? tk required false
+elab_rules : tactic | `(tactic| apply? $[using $[$required],*]?) => do
+  exact? (← getRef) required false
 
 elab tk:"library_search" : tactic => do
   logWarning ("`library_search` has been renamed to `apply?`" ++

@@ -11,7 +11,7 @@ universe u
 
 section
 
-open Decidable Tactic
+open Decidable
 
 variable {α : Type u} [LinearOrder α]
 

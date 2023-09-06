@@ -29,7 +29,7 @@ open EuclideanDomain Set Ideal
 
 section GCDMonoid
 
-variable {R : Type _} [EuclideanDomain R] [GCDMonoid R] {p q : R}
+variable {R : Type*} [EuclideanDomain R] [GCDMonoid R] {p q : R}
 
 theorem gcd_ne_zero_of_left (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_left p q)
@@ -81,7 +81,7 @@ def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   lcm_zero_right := lcm_zero_right
 #align euclidean_domain.gcd_monoid EuclideanDomain.gcdMonoid
 
-variable {α : Type _} [EuclideanDomain α] [DecidableEq α]
+variable {α : Type*} [EuclideanDomain α] [DecidableEq α]
 
 theorem span_gcd (x y : α) :
     span ({gcd x y} : Set α) = span ({x, y} : Set α) :=

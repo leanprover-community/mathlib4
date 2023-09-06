@@ -15,7 +15,7 @@ This file defines `Set.sigma`, the indexed sum of sets.
 
 namespace Set
 
-variable {ι ι' : Type _} {α β : ι → Type _} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
+variable {ι ι' : Type*} {α β : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
   {u : Set (Σ i, α i)} {x : Σ i, α i} {i j : ι} {a : α i}
 
 @[simp]
@@ -33,13 +33,13 @@ theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :
   simp [h.symm]
 #align set.preimage_image_sigma_mk_of_ne Set.preimage_image_sigmaMk_of_ne
 
-theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type _} (f : ι → ι')
+theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → ι')
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i '' (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) :=
   image_subset_iff.2 fun x hx ↦ ⟨g i x, hx, rfl⟩
 #align set.image_sigma_mk_preimage_sigma_map_subset Set.image_sigmaMk_preimage_sigmaMap_subset
 
-theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type _} {f : ι → ι'} (hf : Function.Injective f)
+theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
   refine' (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm _
@@ -169,7 +169,7 @@ theorem sigma_preimage_right {g : ∀ i, β i → α i} :
   rfl
 #align set.sigma_preimage_right Set.sigma_preimage_right
 
-theorem preimage_sigmaMap_sigma {α' : ι' → Type _} (f : ι → ι') (g : ∀ i, α i → α' (f i))
+theorem preimage_sigmaMap_sigma {α' : ι' → Type*} (f : ι → ι') (g : ∀ i, α i → α' (f i))
     (s : Set ι') (t : ∀ i, Set (α' i)) :
     Sigma.map f g ⁻¹' s.Sigma t = (f ⁻¹' s).Sigma fun i ↦ g i ⁻¹' t (f i) :=
   rfl
@@ -189,7 +189,7 @@ theorem mk_preimage_sigma_eq_if [DecidablePred (· ∈ s)] :
     Sigma.mk i ⁻¹' s.Sigma t = if i ∈ s then t i else ∅ := by split_ifs <;> simp [*]
 #align set.mk_preimage_sigma_eq_if Set.mk_preimage_sigma_eq_if
 
-theorem mk_preimage_sigma_fn_eq_if {β : Type _} [DecidablePred (· ∈ s)] (g : β → α i) :
+theorem mk_preimage_sigma_fn_eq_if {β : Type*} [DecidablePred (· ∈ s)] (g : β → α i) :
     (fun b ↦ Sigma.mk i (g b)) ⁻¹' s.Sigma t = if i ∈ s then g ⁻¹' t i else ∅ :=
   ext fun _ ↦ by split_ifs <;> simp [*]
 #align set.mk_preimage_sigma_fn_eq_if Set.mk_preimage_sigma_fn_eq_if

@@ -12,6 +12,8 @@ import Mathlib.Order.Hom.Set
 # Lemmas about images of intervals under order isomorphisms.
 -/
 
+set_option autoImplicit true
+
 open Set
 
 namespace OrderIso

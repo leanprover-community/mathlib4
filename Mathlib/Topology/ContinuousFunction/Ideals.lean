@@ -78,7 +78,7 @@ open TopologicalSpace
 
 section TopologicalRing
 
-variable {X R : Type _} [TopologicalSpace X] [Semiring R]
+variable {X R : Type*} [TopologicalSpace X] [Semiring R]
 
 variable [TopologicalSpace R] [TopologicalSemiring R]
 
@@ -90,7 +90,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
   add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
   zero_mem' _ _ := rfl
-  smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
+  smul_mem' c f hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
 theorem idealOfSet_closed [T2Space R] (s : Set X) :
@@ -108,7 +108,7 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
 #align continuous_map.mem_ideal_of_set ContinuousMap.mem_idealOfSet
 
 theorem not_mem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
-  simp_rw [mem_idealOfSet, exists_prop]; push_neg; rfl
+  simp_rw [mem_idealOfSet]; push_neg; rfl
 #align continuous_map.not_mem_ideal_of_set ContinuousMap.not_mem_idealOfSet
 
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
@@ -124,7 +124,7 @@ theorem not_mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
-  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf, exists_prop]; push_neg; rfl
+  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push_neg; rfl
 #align continuous_map.mem_set_of_ideal ContinuousMap.mem_setOfIdeal
 
 theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
@@ -176,7 +176,7 @@ section IsROrC
 
 open IsROrC
 
-variable {X 𝕜 : Type _} [IsROrC 𝕜] [TopologicalSpace X]
+variable {X 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
 
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
@@ -404,7 +404,7 @@ namespace CharacterSpace
 
 open Function ContinuousMap
 
-variable (X 𝕜 : Type _) [TopologicalSpace X]
+variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 

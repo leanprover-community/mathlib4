@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.GroupAction.BigOperators
 
 open BigOperators
 
-variable {α β R M ι : Type _}
+variable {α β R M ι : Type*}
 
 section AddCommMonoid
 

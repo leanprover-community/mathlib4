@@ -30,7 +30,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Heyting
 
