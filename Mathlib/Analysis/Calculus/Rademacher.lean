@@ -262,20 +262,18 @@ theorem ae_lineDeriv_sum_eq
 theorem ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
     ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
-  let ι : Type _ := Basis.ofVectorSpaceIndex ℝ E
-  have B : Basis ι ℝ E := Basis.ofVectorSpace ℝ E
-  have : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i : ι, (B.repr v i) • B i) =
-      ∑ i : ι, B.repr v i • lineDeriv ℝ f x (B i) :=
-    (ae_ball_iff hs).2 (fun v hv ↦ hf.ae_lineDeriv_sum_eq _ _ _)
-  filter_upwards [this] with x hx
-
-  have : Fintype ι := by infer_instance
-  have : ∀ v, v = ∑ i : ι, (B.repr v i) • B i := fun v ↦ (Basis.sum_repr B v).symm
-  have v : E := sorry
-  have Z := hf.ae_lineDeriv_sum_eq (Finset.univ : Finset ι) (B.repr v) B (μ := μ)
-  let L := (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i))).toContinuousLinearMap
-
-
+  have B := Basis.ofVectorSpace ℝ E
+  have I1 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i, (B.repr v i) • B i) =
+                                  ∑ i, B.repr v i • lineDeriv ℝ f x (B i) :=
+    (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDeriv_sum_eq _ _ _)
+  have I2 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, LineDifferentiableAt ℝ f x v :=
+    (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDifferentiableAt v)
+  filter_upwards [I1, I2] with x hx h'x
+  let L : E →L[ℝ] ℝ :=
+    LinearMap.toContinuousLinearMap ((B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i))))
+  refine ⟨L, fun v hv ↦ ?_⟩
+  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [B.sum_repr v]
+  simpa [J] using (h'x v hv).hasLineDerivAt
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions which are given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
