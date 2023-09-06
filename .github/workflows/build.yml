@@ -105,6 +105,12 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
+          # Delete any elan toolchains older than two weeks.
+          find $HOME/.elan/toolchains/ -maxdepth 1 -type d -ctime +14 -exec rm -rf {} || true
+
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
 
       - name: install elan
         run: |
@@ -121,12 +127,20 @@ jobs:
         run: |
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            echo "Uninstalling transient toolchain `cat lean-toolchain`"
+            elan toolchain uninstall `cat lean-toolchain`
+          fi
+
       - name: get cache
         run: |
           lake exe cache clean
           lake exe cache get
 
       - name: build mathlib
+        id: build
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
@@ -149,24 +163,55 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build archive
-        run: lake build Archive
+        run: |
+          # Note: we should not be including `Archive` and `Countexamples` in the cache.
+          # We do this for now for the sake of not rebuilding them in every CI run
+          # even when they are not touched.
+          # Since `Archive` and `Counterexamples` files have very simple dependencies,
+          # it should be possible to determine whether they need to be built without actually
+          # storing and transferring oleans over the network.
+          # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
+          lake exe cache get Archive.lean
+          lake build Archive
+          lake exe cache put Archive.lean
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build counterexamples
-        run: lake build Counterexamples
+        run: |
+          lake exe cache get Counterexamples.lean
+          lake build Counterexamples
+          lake exe cache put Counterexamples.lean
+        env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
-          build/bin/checkYaml
+          lake exe checkYaml
 
       - name: test mathlib
+        id: test
         run: make -j 8 test
 
       - name: lint mathlib
+        id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 make lint
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
+
+      - name: Post comments for lean-pr-testing branch
+        if: always()
+        env:
+          TOKEN: ${{ secrets.LEAN_PR_TESTING }}
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          TEST_OUTCOME: ${{ steps.test.outcome }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+        run: |
+          scripts/lean-pr-testing-comments.sh
 
   final:
     name: Post-CI job

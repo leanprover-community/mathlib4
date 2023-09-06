@@ -143,18 +143,22 @@ instance (priority := 100) instMonoidHomClass
         _ = e 1 * e (MulEquivClass.toEquivLike.inv e (1 : N) : M) :=
           congr_arg _ (MulEquivClass.toEquivLike.right_inv e 1).symm
         _ = e (MulEquivClass.toEquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
-        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1
-         }
+        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1 }
+
+-- See note [lower instance priority]
+instance (priority := 100) toZeroHomClass
+    [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
+    ZeroHomClass F α β where
+  map_zero := fun e =>
+    calc
+      e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
+        _ = 0 := by simp
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
     [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
-  MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass _ with
-    map_zero := fun e =>
-      calc
-        e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp }
+    MonoidWithZeroHomClass F α β :=
+  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass F with }
 #align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
 
 variable {F}

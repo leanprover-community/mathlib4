@@ -89,7 +89,7 @@ theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by 
 #align is_square_iff_exists_sq isSquare_iff_exists_sq
 #align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
-alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
+alias ⟨IsSquare.exists_sq, isSquare_of_exists_sq⟩ := isSquare_iff_exists_sq
 #align is_square.exists_sq IsSquare.exists_sq
 #align is_square_of_exists_sq isSquare_of_exists_sq
 
@@ -169,7 +169,7 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
 #align is_square_inv isSquare_inv
 #align even_neg even_neg
 
-alias isSquare_inv ↔ _ IsSquare.inv
+alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 #align is_square.inv IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
@@ -234,7 +234,7 @@ theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
-alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
+alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 #align even.exists_bit0 Even.exists_bit0
 
 section Semiring
@@ -248,7 +248,7 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
 theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
-alias even_iff_two_dvd ↔ Even.two_dvd _
+alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
 #align even.two_dvd Even.two_dvd
 
 theorem Even.trans_dvd (hm : Even m) (hn : m ∣ n) : Even n :=
@@ -310,7 +310,7 @@ theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
     rfl
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
-alias odd_iff_exists_bit1 ↔ Odd.exists_bit1 _
+alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
 set_option linter.deprecated false in

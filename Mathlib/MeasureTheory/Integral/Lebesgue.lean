@@ -29,6 +29,8 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
+assert_not_exists NormedSpace
+
 set_option autoImplicit true
 
 noncomputable section
@@ -350,7 +352,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     have : s x ≠ 0 := by
       refine' mt _ this
       intro h
-      rw [h, MulZeroClass.mul_zero]
+      rw [h, mul_zero]
     have : (rs.map c) x < ⨆ n : ℕ, f n x := by
       refine' lt_of_lt_of_le (ENNReal.coe_lt_coe.2 _) (hsf x)
       suffices : r * s x < 1 * s x
@@ -767,7 +769,6 @@ theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : 
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
   have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
   rw [set_lintegral_congr_fun _ this]
-  dsimp
   rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
   exact hf (measurableSet_singleton r)
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const
@@ -1805,7 +1806,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
         filter_upwards [ae_restrict_mem M]
         intro x hx
         simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
-        simp only [hx, MulZeroClass.zero_mul, Pi.mul_apply]
+        simp only [hx, zero_mul, Pi.mul_apply]
     _ = ∫⁻ a : α, (f * g) a ∂μ := by
       apply lintegral_congr_ae
       filter_upwards [hf.ae_eq_mk]
@@ -1847,7 +1848,7 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) 
   intro x h'x
   rcases eq_or_ne (f x) 0 with (hx | hx)
   · have := hi x
-    simp only [hx, MulZeroClass.zero_mul, Pi.mul_apply, nonpos_iff_eq_zero] at this
+    simp only [hx, zero_mul, Pi.mul_apply, nonpos_iff_eq_zero] at this
     simp [this]
   · apply le_of_eq _
     dsimp
@@ -2034,7 +2035,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       ENNReal.coe_indicator, Function.const_apply] at hL
     have c_ne_zero : c ≠ 0 := by
       intro hc
-      simp only [hc, ENNReal.coe_zero, MulZeroClass.zero_mul, not_lt_zero] at hL
+      simp only [hc, ENNReal.coe_zero, zero_mul, not_lt_zero] at hL
     have : L / c < μ s := by
       rwa [ENNReal.div_lt_iff, mul_comm]
       · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
@@ -2111,5 +2112,42 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
 
 end SigmaFinite
+
+section TendstoIndicator
+
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+
+/-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
+of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
+the measures of `Aᵢ` tend to the measure of `A`. -/
+lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : MeasurableSet A)
+    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
+    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
+      L (𝓝 (A.indicator 1 x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble,
+           ← MeasureTheory.lintegral_indicator_one (As_mble _)]
+  refine tendsto_lintegral_filter_of_dominated_convergence (B.indicator (1 : α → ℝ≥0∞))
+          (eventually_of_forall ?_) ?_ ?_ h_lim
+  · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
+  · filter_upwards [As_le_B] with i hi
+    exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
+  · rwa [← lintegral_indicator_one B_mble] at B_finmeas
+
+/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
+almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
+the measure `μ A`. -/
+lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGenerated L]
+    {μ : Measure α} [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
+    (As_mble : ∀ i, MeasurableSet (As i))
+    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
+      L (𝓝 (A.indicator 1 x))) :
+    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
+  tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
+    (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
+
+end TendstoIndicator -- section
 
 end MeasureTheory

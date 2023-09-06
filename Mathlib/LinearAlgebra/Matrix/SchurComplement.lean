@@ -456,14 +456,12 @@ end Det
 
 end CommRing
 
-/-! ### Lemmas about `ℝ` and `ℂ`-/
+/-! ### Lemmas about `ℝ` and `ℂ` and other `StarOrderedRing`s -/
 
 
-section IsROrC
+section StarOrderedRing
 
-open scoped Matrix
-
-variable {𝕜 : Type*} [IsROrC 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
@@ -526,7 +524,7 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
   · refine' fun h => ⟨h.1, fun x => _⟩
-    rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1, map_add]
+    rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
     · rw [← dotProduct_mulVec]
       apply hA.posSemidef.2
@@ -545,6 +543,6 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
     | simp
 #align matrix.pos_semidef.from_blocks₂₂ Matrix.PosSemidef.fromBlocks₂₂
 
-end IsROrC
+end StarOrderedRing
 
 end Matrix

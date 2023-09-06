@@ -1797,7 +1797,7 @@ theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
     (j : n) (x : R) : (diagonal v).mulVec (Pi.single j x) = Pi.single j (v j * x) := by
   ext i
   rw [mulVec_diagonal]
-  exact Pi.apply_single (fun i x => v i * x) (fun i => MulZeroClass.mul_zero _) j x i
+  exact Pi.apply_single (fun i x => v i * x) (fun i => mul_zero _) j x i
 #align matrix.diagonal_mul_vec_single Matrix.diagonal_mulVec_single
 
 -- @[simp] -- Porting note: not in simpNF
@@ -1805,7 +1805,7 @@ theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
     (j : n) (x : R) : vecMul (Pi.single j x) (diagonal v) = Pi.single j (x * v j) := by
   ext i
   rw [vecMul_diagonal]
-  exact Pi.apply_single (fun i x => x * v i) (fun i => MulZeroClass.zero_mul _) j x i
+  exact Pi.apply_single (fun i x => x * v i) (fun i => zero_mul _) j x i
 #align matrix.single_vec_mul_diagonal Matrix.single_vecMul_diagonal
 
 end NonUnitalNonAssocSemiring
@@ -1966,11 +1966,19 @@ theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   rfl
 #align matrix.transpose_transpose Matrix.transpose_transpose
 
+theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
+  fun _ _ h => ext fun i j => ext_iff.2 h j i
+
+@[simp] theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
+
 @[simp]
 theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
   ext
   rfl
 #align matrix.transpose_zero Matrix.transpose_zero
+
+@[simp]
+theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 := transpose_inj
 
 @[simp]
 theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
@@ -1980,6 +1988,10 @@ theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)�
   · simp only [h, diagonal_apply_eq]
   · simp only [diagonal_apply_ne _ h, diagonal_apply_ne' _ h]
 #align matrix.transpose_one Matrix.transpose_one
+
+@[simp]
+theorem transpose_eq_one [DecidableEq n] [Zero α] [One α] {M : Matrix n n α} : Mᵀ = 1 ↔ M = 1 :=
+  (Function.Involutive.eq_iff transpose_transpose).trans <| by rw [transpose_one]
 
 @[simp]
 theorem transpose_add [Add α] (M : Matrix m n α) (N : Matrix m n α) : (M + N)ᵀ = Mᵀ + Nᵀ := by
@@ -2132,15 +2144,33 @@ theorem conjTranspose_conjTranspose [InvolutiveStar α] (M : Matrix m n α) : M�
   Matrix.ext <| by simp
 #align matrix.conj_transpose_conj_transpose Matrix.conjTranspose_conjTranspose
 
+theorem conjTranspose_injective [InvolutiveStar α] :
+    Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
+  (map_injective star_injective).comp transpose_injective
+
+@[simp] theorem conjTranspose_inj [InvolutiveStar α] {A B : Matrix m n α} : Aᴴ = Bᴴ ↔ A = B :=
+  conjTranspose_injective.eq_iff
+
 @[simp]
 theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n α)ᴴ = 0 :=
   Matrix.ext <| by simp
 #align matrix.conj_transpose_zero Matrix.conjTranspose_zero
 
 @[simp]
+theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
+    Mᴴ = 0 ↔ M = 0 :=
+  by rw [←conjTranspose_inj (A := M), conjTranspose_zero]
+
+@[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
   simp [conjTranspose]
 #align matrix.conj_transpose_one Matrix.conjTranspose_one
+
+@[simp]
+theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Matrix n n α} :
+    Mᴴ = 1 ↔ M = 1 :=
+  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
+    by rw [conjTranspose_one]
 
 @[simp]
 theorem conjTranspose_add [AddMonoid α] [StarAddMonoid α] (M N : Matrix m n α) :
@@ -2180,7 +2210,7 @@ theorem conjTranspose_smul_non_comm [Star R] [Star α] [SMul R α] [SMul Rᵐᵒ
 #align matrix.conj_transpose_smul_non_comm Matrix.conjTranspose_smul_non_comm
 
 -- @[simp] -- Porting note: simp can prove this
-theorem conjTranspose_smul_self [Semigroup α] [StarSemigroup α] (c : α) (M : Matrix m n α) :
+theorem conjTranspose_smul_self [Mul α] [StarMul α] (c : α) (M : Matrix m n α) :
     (c • M)ᴴ = MulOpposite.op (star c) • Mᴴ :=
   conjTranspose_smul_non_comm c M star_mul
 #align matrix.conj_transpose_smul_self Matrix.conjTranspose_smul_self
@@ -2654,6 +2684,15 @@ Simplification lemmas for `Matrix.row` and `Matrix.col`.
 
 open Matrix
 
+theorem col_injective : Function.Injective (col : (m → α) → _) :=
+  fun _x _y h => funext fun i => congr_fun₂ h i ()
+
+@[simp] theorem col_inj {v w : m → α} : col v = col w ↔ v = w := col_injective.eq_iff
+
+@[simp] theorem col_zero [Zero α] : col (0 : m → α) = 0 := rfl
+
+@[simp] theorem col_eq_zero [Zero α] (v : m → α) : col v = 0 ↔ v = 0 := col_inj
+
 @[simp]
 theorem col_add [Add α] (v w : m → α) : col (v + w) = col v + col w := by
   ext
@@ -2665,6 +2704,15 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col (x • v) = x • col 
   ext
   rfl
 #align matrix.col_smul Matrix.col_smul
+
+theorem row_injective : Function.Injective (row : (n → α) → _) :=
+  fun _x _y h => funext fun j => congr_fun₂ h () j
+
+@[simp] theorem row_inj {v w : n → α} : row v = row w ↔ v = w := row_injective.eq_iff
+
+@[simp] theorem row_zero [Zero α] : row (0 : n → α) = 0 := rfl
+
+@[simp] theorem row_eq_zero [Zero α] (v : n → α) : row v = 0 ↔ v = 0 := row_inj
 
 @[simp]
 theorem row_add [Add α] (v w : m → α) : row (v + w) = row v + row w := by
