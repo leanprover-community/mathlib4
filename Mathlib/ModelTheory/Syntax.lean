@@ -1038,6 +1038,22 @@ protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
+/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
+
+/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
