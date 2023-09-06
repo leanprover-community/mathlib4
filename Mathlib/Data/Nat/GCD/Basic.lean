@@ -104,13 +104,10 @@ theorem lcm_pos {m n : ℕ} : 0 < m → 0 < n → 0 < m.lcm n := by
 #align nat.lcm_pos Nat.lcm_pos
 
 theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
-  unfold lcm
-  by_cases hm : m = 0
-  · simp_rw [hm, zero_mul]
-  rw [gcd_mul_left, ←Nat.div_div_eq_div_mul, mul_assoc, Nat.mul_div_cancel_left
-    _ (Nat.pos_of_ne_zero hm), ←Nat.mul_div_assoc, Nat.mul_left_comm]
-  calc _ ∣ n := gcd_dvd_left ..
-       _ ∣ _ := Nat.dvd_mul_right ..
+  apply dvd_antisymm
+  · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
+  · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
+    rw [←dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ←lcm_dvd_iff]
 
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
   simp_rw [mul_comm]; rw [mul_comm]
