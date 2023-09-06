@@ -614,8 +614,9 @@ theorem center_toNonUnitalSubsemiring :
 
 variable {R}
 
-theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
+  rw [← Subsemigroup.mem_center_iff]
+  exact Iff.rfl
 
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff

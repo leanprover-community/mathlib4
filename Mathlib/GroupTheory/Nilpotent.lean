@@ -152,7 +152,13 @@ theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, center, Set.center,
     mem_mk, mem_bot, Set.mem_setOf_eq]
-  exact forall_congr' fun y => by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
+  constructor
+  · intro h
+    rw [← Set.mem_center_iff, Subsemigroup.mem_center_iff]
+    intro g
+    rw [eq_comm, ← mul_inv_eq_iff_eq_mul, ← mul_inv_eq_one, ← h g]
+  · intro h g
+    rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, h.comm]
 #align upper_central_series_one upperCentralSeries_one
 
 /-- The `n+1`st term of the upper central series `H i` has underlying set equal to the `x` such

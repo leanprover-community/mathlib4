@@ -945,7 +945,20 @@ section Center
 theorem _root_.Set.smul_mem_center {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
   [Module R A] [IsScalarTower R A A] [SMulCommClass R A A](r : R) {a : A} (ha : a ∈ Set.center A) :
     r • a ∈ Set.center A := by
-  simp [Set.mem_center_iff, mul_smul_comm, smul_mul_assoc, (Set.mem_center_iff A).mp ha]
+  apply (Set.mem_center_iff A).mp
+  constructor
+  · intro
+    simp [mul_smul_comm, smul_mul_assoc]
+    rw [ha.comm]
+  · intros
+    simp [mul_smul_comm, smul_mul_assoc]
+    rw [ha.left_assoc]
+  · intros
+    simp [mul_smul_comm, smul_mul_assoc]
+    rw [ha.mid_assoc]
+  · intros
+    simp [mul_smul_comm, smul_mul_assoc]
+    rw [ha.right_assoc]
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
@@ -982,8 +995,9 @@ instance center.instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
   NonUnitalSubring.center.instNonUnitalCommRing
 
-theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
-  Iff.rfl
+theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b := by
+  rw [← Subsemigroup.mem_center_iff]
+  exact Iff.rfl
 
 end Center
 
