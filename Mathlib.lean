@@ -2085,8 +2085,6 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Algebra.Functions
-import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
 import Mathlib.Init.CCLemmas
 import Mathlib.Init.Classes.Order
@@ -2128,6 +2126,8 @@ import Mathlib.Init.Function
 import Mathlib.Init.IteSimp
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Order.Defs
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
