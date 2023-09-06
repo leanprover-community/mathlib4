@@ -307,9 +307,9 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   rcases eq_or_ne v 0 with rfl|hv
   · simp
   let w : E := ‖v‖⁻¹ •  v
-  have : w ∈ sphere 0 1 := by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 hv)]
-  have : ∃ y ∈ q, ‖w - y‖ < δ := by
-    sorry
+  have w_mem : w ∈ sphere 0 1 := by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 hv)]
+  obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by
+    have Z := hq w_mem
 
 
 
