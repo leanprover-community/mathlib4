@@ -7,6 +7,13 @@ import Mathlib.Init.Order.Defs
 
 #align_import init.algebra.functions from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
+/-!
+# Basic lemmas about linear orders.
+
+The contents of this file came from `init.algebra.functions` in Lean 3,
+and it would be good to find everything a better home.
+-/
+
 universe u
 
 section
