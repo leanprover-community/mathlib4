@@ -7,16 +7,16 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
 /-!
-# Mean Ergodic Theorem in a Hilbert Space
+# Von Neumann Mean Ergodic Theorem in a Hilbert Space
 
 In this file we prove the von Neumann Mean Ergodic Theorem for an operator in a Hilbert space.
-It says that for a linear isometry `f : E →ₗᵢ[𝕜] E` of a Hilbert space,
+It says that for a contracting linear self-map `f : E →ₗ[𝕜] E` of a Hilbert space,
 the Birkhoff averages
 ```
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
-see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
+see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Filter Finset Function
@@ -24,6 +24,22 @@ open scoped BigOperators Topology
 
 variable {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E]
 
+/-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
+
+Let `f : E → E` be a contracting linear self-map of a normed space.
+Let `S` be the subspace of fixed points of `f`.
+Let `g : E → S` be a continuous linear projection, `g|_S=id`.
+If the range of `f - id` is dense in the kernel of `g`,
+then for each `x`, the Birkhoff averages
+```
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+```
+converge to `g x` as `N → ∞`.
+
+Usually, this fact is not formulated as a separate lemma.
+I chose to do it in order to isolate parts of the proof that do not rely
+on the inner product space structure.
+-/
 theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace 𝕜 E]
     (f : E →ₗ[𝕜] E) (hf : LipschitzWith 1 f) (g : E →L[𝕜] LinearMap.eqLocus f 1)
     (hg_proj : ∀ x : LinearMap.eqLocus f 1, g x = x)
@@ -50,18 +66,24 @@ variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
-theorem LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection (f : E →ₗᵢ[𝕜] E) (x : E) :
+/-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
+For a contracting linear self-map `f : E →ₗ[𝕜] E` of a Hilbert space,
+the Birkhoff averages
+```
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+```
+converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
+theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
+    (hf : LipschitzWith 1 f) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
       (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
-  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure f.lipschitz
+  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure hf
   · exact orthogonalProjection_mem_subspace_eq_self (K := LinearMap.eqLocus f 1)
   · clear x
-    -- In fact, these two submodules are equal. TODO: move it to a lemma
     rw [ker_orthogonalProjection, ← Submodule.topologicalClosure_coe, SetLike.coe_subset_coe,
       ← Submodule.orthogonal_orthogonal_eq_closure]
-    refine Submodule.orthogonal_le fun x hx ↦ ?_
-    replace hx : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
-      simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
-    suffices ⟪f x - x, f x - x⟫ = 0 by simpa [sub_eq_zero] using this
-    rw [inner_sub_right, inner_sub_left, inner_sub_left, f.inner_map_map, hx,
-      ← inner_conj_symm x (f x), hx, inner_self_conj, sub_self]
+    refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
+    · simpa using hf.dist_le_mul x 0
+    · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
+        simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
+      simp [this, ← norm_sq_eq_inner]
