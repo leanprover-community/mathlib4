@@ -297,10 +297,5 @@ end
 
 end Subsemigroup
 
-namespace Set
-
-end Set
-
-
 -- Guard against import creep
 assert_not_exists Finset
