@@ -126,6 +126,12 @@ lemma isProperMap_iff_ultrafilter : IsProperMap f ↔ Continuous f ∧
     rcases H (tendsto_iff_comap.mpr <| hy.trans inf_le_left) with ⟨x, hxy, hx⟩
     exact ⟨x, hxy, 𝒰, le_inf hx (hy.trans inf_le_right)⟩
 
+lemma isProperMap_iff_ultrafilter_of_t2 [T2Space Y] : IsProperMap f ↔ Continuous f ∧
+    ∀ ⦃𝒰 : Ultrafilter X⦄, ∀ ⦃y : Y⦄, Tendsto f 𝒰 (𝓝 y) → ∃ x, 𝒰.1 ≤ 𝓝 x :=
+  isProperMap_iff_ultrafilter.trans <| and_congr_right fun hc ↦ forall₃_congr fun _𝒰 _y hy ↦
+    exists_congr fun x ↦ and_iff_right_of_imp fun h ↦
+      tendsto_nhds_unique ((hc.tendsto x).mono_left h) hy
+
 /-- If `f` is proper and converges to `y` along some ultrafilter `𝒰`, then `𝒰` converges to some
 `x` such that `f x = y`. -/
 lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : Ultrafilter X⦄ ⦃y : Y⦄
@@ -234,29 +240,32 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
   exact isCompact_of_isClosed_subset hK (isClosed_singleton.preimage f_cont)
     (compl_le_compl_iff_le.mp hKy)
 
+/-- A continuous map from a compact space to a T₂ space is a proper map. -/
+theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
+  isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
+
 /-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
 such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
+theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
   constructor <;> intro H
   -- The direct implication follows from the previous results
   · exact ⟨H.continuous, fun K hK ↦ H.isCompact_preimage hK⟩
-  · rw [isProperMap_iff_ultrafilter]
-  -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
+  · rw [isProperMap_iff_ultrafilter_of_t2]
+    -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
     refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-  -- Pick `K` some compact neighborhood of `y`, which exists by local compactness.
+    -- Pick `K` some compact neighborhood of `y`, which exists by local compactness.
     rcases exists_compact_mem_nhds y with ⟨K, hK, hKy⟩
-  -- Then `map f 𝒰 ≤ 𝓝 y ≤ 𝓟 K`, hence `𝒰 ≤ 𝓟 (f ⁻¹' K)`
+    -- Then `map f 𝒰 ≤ 𝓝 y ≤ 𝓟 K`, hence `𝒰 ≤ 𝓟 (f ⁻¹' K)`
     have : 𝒰 ≤ 𝓟 (f ⁻¹' K) := by
       simpa only [← comap_principal, ← tendsto_iff_comap] using
         hy.mono_right (le_principal_iff.mpr hKy)
-  -- By compactness of `f ⁻¹' K`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
+    -- By compactness of `f ⁻¹' K`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
     rcases (H.2 hK).ultrafilter_le_nhds _ this with ⟨x, -, hx⟩
-  -- Finally, `f` tends to `f x` along `𝒰` by continuity, thus `f x = y`.
-    refine ⟨x, tendsto_nhds_unique ((H.1.tendsto _).comp hx) hy, hx⟩
+    exact ⟨x, hx⟩
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
-lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [LocallyCompactSpace Y] :
+lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
   simp_rw [isProperMap_iff_isCompact_preimage, hasBasis_cocompact.tendsto_right_iff,
     ← mem_preimage, eventually_mem_set, preimage_compl]
