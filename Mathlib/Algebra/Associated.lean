@@ -14,7 +14,7 @@ import Mathlib.Algebra.Parity
 -/
 
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {F : Type*}
 
 section Prime
 
@@ -238,7 +238,7 @@ theorem Irreducible.dvd_comm [Monoid α] {p q : α} (hp : Irreducible p) (hq : I
   ⟨hp.dvd_symm hq, hq.dvd_symm hp⟩
 #align irreducible.dvd_comm Irreducible.dvd_comm
 
-theorem Irreducible.of_map [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F)
+theorem Irreducible.of_map [Monoid α] [Monoid β] [MonoidHomClass F α β] (f : F)
   [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
   ⟨fun hu => hfx.not_unit <| hu.map f,
    fun p q hx =>
