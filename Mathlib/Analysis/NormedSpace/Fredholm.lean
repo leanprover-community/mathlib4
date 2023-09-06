@@ -4,6 +4,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 open Cardinal
+open Function
 
 namespace LinearMap
 
@@ -90,13 +91,76 @@ example : isFredholm (1 : E →L[ℂ] E) := by
     sorry
   · sorry
 
-protected def comp (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S.comp T) := by
+  protected def compOld (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S.comp T) := by
   obtain ⟨T', hTl, hTr⟩ := hT
   obtain ⟨S', hSl, hSr⟩ := hS
   use (T' ∘L S')
   constructor
   · sorry
   · sorry
+
+-- TODO maybe get rid of fixed u
+universe u
+
+-- The preimage of a finite rank module has finite rank, given that the map has finite rank kernel
+lemma comap_fin_dim (A B : Type u)
+    [AddCommGroup A] [Module ℂ A] [AddCommGroup B] [Module ℂ B]
+    (R : A →ₗ[ℂ] B) (B' : Submodule ℂ B)
+    (hR : FiniteDimensional ℂ (LinearMap.ker R))
+    (hB' : FiniteDimensional ℂ B')
+    : FiniteDimensional ℂ (Submodule.comap R B') := by
+  let A' := Submodule.comap R B'
+  let hA' : ∀ x : A, x ∈ A' → R x ∈ B' := by
+      intro x a
+      simp_all only [Submodule.mem_comap]
+  let R' := R.restrict hA'
+  set rKer := Module.rank ℂ (LinearMap.ker R')
+  have hKer : rKer ≤ Module.rank ℂ (LinearMap.ker R) := by
+    sorry
+  have hSurj : Surjective R' := by
+    sorry
+  have hRank : Module.rank ℂ A' = Module.rank ℂ B' + rKer := rank_eq_of_surjective R' hSurj
+  suffices : Module.rank ℂ A' ≤ (Module.rank ℂ B') + (Module.rank ℂ (LinearMap.ker R))
+  · sorry
+  calc Module.rank ℂ A' = Module.rank ℂ B' + rKer := by rw [hRank]
+    _ ≤ Module.rank ℂ B' + (Module.rank ℂ (LinearMap.ker R))
+      := add_le_add_left hKer (Module.rank ℂ B')
+
+lemma map_fin_codim (A B : Type u)
+    [AddCommGroup A] [Module ℂ A] [AddCommGroup B] [Module ℂ B]
+    (R : A →ₗ[ℂ] B) (A' : Submodule ℂ A)
+    (hR : FiniteDimensional ℂ (B ⧸ (LinearMap.range R)) )
+    (hA' : FiniteDimensional ℂ (A ⧸ A'))
+    : FiniteDimensional ℂ (B ⧸ (Submodule.map R A')) := by
+  let B' := Submodule.map R A'
+  let hA' : ∀ x : A, x ∈ A' → R x ∈ B' := by
+      aesop
+  let R' := R.restrict hA'
+  have hRank : Module.rank ℂ (B ⧸ B') + Module.rank ℂ B' = Module.rank ℂ B :=
+    rank_quotient_add_rank (Submodule.map R A')
+  suffices : True
+  · sorry
+  sorry
+
+-- Stability under composition; proof via the iff_finiteDimensional_ker_coker definition
+protected lemma comp (hT : isFredholm T) (hS : isFredholm S)
+    : isFredholm (S.comp T) := by
+  rw [iff_finiteDimensional_ker_coker]
+  rw [iff_finiteDimensional_ker_coker] at hT
+  rw [iff_finiteDimensional_ker_coker] at hS
+  constructor
+  · change FiniteDimensional ℂ (LinearMap.ker ((S : F →ₗ[ℂ] G).comp (T : E →ₗ[ℂ] F) ))
+    rw [LinearMap.ker_comp]
+    apply comap_fin_dim
+    · exact hT.1
+    · exact hS.1
+  · change FiniteDimensional ℂ (G ⧸ LinearMap.range ((S : F →ₗ[ℂ] G).comp (T : E →ₗ[ℂ] F) ))
+    rw [LinearMap.range_comp]
+    apply map_fin_codim
+    · exact hS.2
+    · exact hT.2
+
+
 
 noncomputable def index : ℤ :=
   (finrank ℂ (LinearMap.ker T) : ℤ) - (finrank ℂ (F ⧸ LinearMap.range T) : ℤ)
