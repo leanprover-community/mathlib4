@@ -645,6 +645,7 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
 #align first_order.language.bounded_formula.relabel_sum_inl FirstOrder.Language.BoundedFormula.relabel_sum_inl
 
 /-- Substitutes the variables in a given formula with terms. -/
+@[simp]
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
   φ.mapTermRel (fun _ t => t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
     (fun _ => id) fun _ => id
@@ -676,10 +677,7 @@ noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.Bo
 noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   (s.toList.map f).foldr (. ⊓ .) ⊤
 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
 
 variable {v : α → M} {xs : Fin l → M}
