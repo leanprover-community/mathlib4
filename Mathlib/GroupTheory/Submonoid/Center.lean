@@ -108,12 +108,12 @@ equivalence in general; one case when it is is for groups with zero, which is co
 def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) where
   toFun := fun x => {
     val := (Units.map (Submonoid.center M).subtype) x
-    property := {
-      comm := fun a ↦ Units.ext <| x.1.prop.comm a
-      left_assoc := fun a b ↦ Units.ext <| x.1.prop.left_assoc a b
-      mid_assoc := fun a b ↦ Units.ext <| x.1.prop.mid_assoc a b
-      right_assoc := fun a b ↦ Units.ext <| x.1.prop.right_assoc a b
-    }
+    property := by
+      rw [Submonoid.mem_center_iff]
+      intro a
+      apply Units.ext
+      rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
+        Submonoid.coe_subtype, x.1.prop.comm a]
   }
   map_one' := rfl
   map_mul' := fun _ _ ↦ rfl
