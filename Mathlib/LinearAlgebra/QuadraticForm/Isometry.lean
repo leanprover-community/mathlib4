@@ -11,6 +11,10 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 ## Main definitions
 
 * `QuadraticForm.Isometry`: `LinearMap`s which map between two different quadratic forms
+
+## Notation
+
+`Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
 
 variable {ι R M M₁ M₂ M₃ M₄ : Type*}
@@ -25,10 +29,12 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R 
 /-- An isometry between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear map between `M₁` and `M₂` that commutes with the quadratic forms. -/
 structure Isometry (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) extends M₁ →ₗ[R] M₂ where
+  /-- The quadratic form agrees across the map. -/
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m
 
 namespace Isometry
 
+@[inherit_doc]
 notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
