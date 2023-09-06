@@ -27,7 +27,7 @@ theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p
 
 namespace Prod
 
-@[simp, deprecated]
+@[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
   | (_, _) => rfl
 
