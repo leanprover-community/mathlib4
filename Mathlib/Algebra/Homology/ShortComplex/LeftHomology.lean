@@ -13,8 +13,8 @@ Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
 here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
 notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
-data of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
-`K` with the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` with the cokernel
+datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
+`K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
 of the induced map `f' : X₁ ⟶ K`.
 
 When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
@@ -358,7 +358,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
 @[simps]
@@ -369,7 +369,7 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
   φK := 𝟙 _
   φH := c.π
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data
 `LeftHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
