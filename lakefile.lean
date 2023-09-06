@@ -17,8 +17,7 @@ def moreLeanArgs := moreServerArgs
 -- or inconsistent behavior may result
 def weakLeanArgs : Array String :=
   if get_config? CI |>.isSome then
-    #[]
-    -- #["-DwarningAsError=true"]
+    #["-DwarningAsError=true"]
   else
     #[]
 

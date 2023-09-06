@@ -222,7 +222,6 @@ theorem foldr'_ι (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
   congr_arg Prod.snd (foldr_ι _ _ _ _ _)
 #align clifford_algebra.foldr'_ι CliffordAlgebra.foldr'_ι
 
-set_option linter.deprecated false in -- FIXME: remove
 theorem foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) (x) :
     foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) := by

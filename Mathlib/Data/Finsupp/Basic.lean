@@ -1238,7 +1238,6 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 #align finsupp.uncurry Finsupp.uncurry
 
-set_option linter.deprecated false in -- FIXME: remove
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M)

@@ -2104,7 +2104,6 @@ theorem Trivialization.mdifferentiable (e : Trivialization F (π F Z)) [MemTrivi
     e.toLocalHomeomorph.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨(e.smoothOn I).mdifferentiableOn, (e.smoothOn_symm I).mdifferentiableOn⟩
 
-set_option linter.deprecated false in -- FIXME: remove
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
     (hs : UniqueMDiffWithinAt I s p.proj) :
     UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by

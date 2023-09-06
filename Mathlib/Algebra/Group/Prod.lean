@@ -759,7 +759,6 @@ section
 
 variable [Monoid M] [Monoid N]
 
-set_option linter.deprecated false in -- FIXME: remove
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
     units of each monoid. -/
 @[to_additive prodAddUnits

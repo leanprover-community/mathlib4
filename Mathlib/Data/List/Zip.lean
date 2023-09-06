@@ -241,7 +241,6 @@ theorem unzip_zip_right {l₁ : List α} {l₂ : List β} (h : length l₂ ≤ l
     (unzip (zip l₁ l₂)).2 = l₂ := by rw [← zip_swap, unzip_swap]; exact unzip_zip_left h
 #align list.unzip_zip_right List.unzip_zip_right
 
-set_option linter.deprecated false in -- FIXME: remove
 theorem unzip_zip {l₁ : List α} {l₂ : List β} (h : length l₁ = length l₂) :
     unzip (zip l₁ l₂) = (l₁, l₂) := by
   rw [← Prod.mk.eta (p := unzip (zip l₁ l₂)),
