@@ -99,6 +99,8 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
+          # Delete any elan toolchains older than two weeks.
+          find $HOME/.elan/toolchains/ -maxdepth 1 -type d -ctime +14 -exec rm -rf {} || true
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
