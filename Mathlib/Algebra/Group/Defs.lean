@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Common
@@ -1057,6 +1056,18 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
   DivisionMonoid.inv_eq_of_mul _ _
 #align inv_eq_of_mul_eq_one_right inv_eq_of_mul_eq_one_right
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
+
+@[to_additive]
+theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
+  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
+#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
+#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
+
+@[to_additive]
+theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
+  (inv_eq_of_mul_eq_one_left h).symm
+#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
+#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
 
 end DivisionMonoid
 
