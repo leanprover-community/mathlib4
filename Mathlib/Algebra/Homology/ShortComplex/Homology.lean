@@ -16,7 +16,8 @@ left homology data `left` involves an object `left.H` that is a cokernel of the 
 map `S.X₁ ⟶ K` where `K` is a kernel of `g`. On the other hand, the dual notion `right.H`
 is a kernel of the canonical morphism `Q ⟶ S.X₃` when `Q` is a cokernel of `f`.
 The compatibility that is required involves an isomorphism `left.H ≅ right.H` which
-makes a certain pentagon commute.
+makes a certain pentagon commute. When such a homology data exists, `S.homology`
+shall be defined as `h.left.H` for a chosen `h : S.HomologyData`.
 
 This definition requires very little assumption on the category (only the existence
 of zero morphisms). We shall prove that in abelian categories, all short complexes
