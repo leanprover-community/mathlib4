@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Complement
 
 This file defines the HNN extensions of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
 subgroups `A` and `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such
-that for any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canoncial map
+that for any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canonical map
 from `G` into the `HNNExtension`.
 
 ## Main definitions
@@ -40,7 +40,7 @@ def HNNExtension.con (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) :
 
 /-- The HNN Extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`, subgroups `A` and
 `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such that for
-any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canoncial
+any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canonical
 map from `G` into the `HNNExtension`.  -/
 def HNNExtension (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Type _ :=
   (HNNExtension.con G A B φ).Quotient
