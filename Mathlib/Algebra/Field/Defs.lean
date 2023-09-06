@@ -174,3 +174,8 @@ instance (priority := 100) Field.toSemifield : Semifield K :=
 #align field.to_semifield Field.toSemifield
 
 end Field
+
+/-
+`NeZero` should not be needed in the basic algebraic hierarchy.
+-/
+assert_not_exists NeZero
