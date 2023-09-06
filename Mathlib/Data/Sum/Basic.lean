@@ -583,21 +583,23 @@ theorem Lex.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r s₁ x y
 #align sum.lex.mono_right Sum.Lex.mono_right
 
 theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
-  induction' aca with a _ IH
-  constructor
-  intro y h
-  cases' h with a' _ h'
-  exact IH _ h'
+  induction aca with
+  | intro _ _ IH =>
+    constructor
+    intro y h
+    cases h with
+    | inl h' => exact IH _ h'
 #align sum.lex_acc_inl Sum.lex_acc_inl
 
 theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) :
     Acc (Lex r s) (inr b) := by
-  induction' acb with b _ IH
-  constructor
-  intro y h
-  cases' h with _ _ _ b' _ h' a
-  · exact IH _ h'
-  · exact aca _
+  induction acb with
+  | intro _ _ IH =>
+    constructor
+    intro y h
+    cases h with
+    | inr h' => exact IH _ h'
+    | sep => exact aca _
 #align sum.lex_acc_inr Sum.lex_acc_inr
 
 theorem lex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (Lex r s) :=
