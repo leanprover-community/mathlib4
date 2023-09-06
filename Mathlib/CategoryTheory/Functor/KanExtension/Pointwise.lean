@@ -84,6 +84,13 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
         simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
+@[simps!]
+def coconeAtIso {Y Y' : D} (e : Y ≅ Y') :
+    (E.coconeAt Y').whisker (CostructuredArrow.mapIso e).functor ≅ E.coconeAt Y :=
+  Cocones.ext (E.right.mapIso e.symm) (fun j => by
+    dsimp
+    simp only [assoc, ← map_comp, e.hom_inv_id, comp_id])
+
 variable (L F)
 
 @[simps]
@@ -125,8 +132,21 @@ lemma isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     aesop
     funext
 
-/-def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
-    E.IsPointwiseLeftKanExtensionAt Y ≃ E.IsPointwiseLeftKanExtensionAt Y' := sorry-/
+def isPointwiseLeftKanExtensionAtOfIso'
+    {Y : D} (hY : E.IsPointwiseLeftKanExtensionAt Y) {Y' : D} (e : Y ≅ Y') :
+    E.IsPointwiseLeftKanExtensionAt Y' :=
+  IsColimit.ofIsoColimit (hY.whiskerEquivalence _) (E.coconeAtIso e.symm)
+
+def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
+    E.IsPointwiseLeftKanExtensionAt Y ≃ E.IsPointwiseLeftKanExtensionAt Y' where
+  toFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e
+  invFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e.symm
+  left_inv h := by
+    dsimp only [IsPointwiseLeftKanExtensionAt]
+    apply Subsingleton.elim
+  right_inv h := by
+    dsimp only [IsPointwiseLeftKanExtensionAt]
+    apply Subsingleton.elim
 
 variable (E E')
 
