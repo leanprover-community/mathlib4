@@ -255,7 +255,7 @@ variable [Semigroup G] [MeasurableMul G]
 /-- The image of a left invariant measure under a left action is left invariant, assuming that
 the action preserves multiplication. -/
 @[to_additive "The image of a left invariant measure under a left additive action is left invariant,
-assuming that the action preserves multiplication."]
+assuming that the action preserves addition."]
 theorem isMulLeftInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
@@ -263,10 +263,10 @@ theorem isMulLeftInvariant_map_smul
   (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
     (smulInvariantMeasure_map_smul μ a).measure_preimage_smul x hs
 
-/-- The image of a right invariant measure under a right action is right invariant, assuming that
+/-- The image of a right invariant measure under a left action is right invariant, assuming that
 the action preserves multiplication. -/
-@[to_additive "The image of a right invariant measure under a right additive action is right
- invariant, assuming that the action preserves multiplication."]
+@[to_additive "The image of a right invariant measure under a left additive action is right
+ invariant, assuming that the action preserves addition."]
 theorem isMulRightInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulRightInvariant μ] (a : α) :
@@ -282,9 +282,9 @@ instance isMulLeftInvariant_map_mul_right [IsMulLeftInvariant μ] (g : G) :
   isMulLeftInvariant_map_smul (MulOpposite.op g)
 
 /-- The image of a right invariant measure under left multiplication is right invariant. -/
-@[to_additive isMulRightInvariant_map_add_right
+@[to_additive isMulRightInvariant_map_add_left
 "The image of a right invariant measure under left addition is right invariant."]
-instance isMulRightInvariant_map_mul_right [IsMulRightInvariant μ] (g : G) :
+instance isMulRightInvariant_map_mul_left [IsMulRightInvariant μ] (g : G) :
     IsMulRightInvariant (map (g * ·) μ) :=
   isMulRightInvariant_map_smul g
 
@@ -806,7 +806,7 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 /-- The image of a Haar measure under map of a left action is again a Haar measure. -/
 @[to_additive
    "The image of a Haar measure under map of a left additive action is again a Haar measure"]
-theorem isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
+instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
     [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
@@ -821,7 +821,7 @@ theorem isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space
   "The image of a Haar measure under right addition is again a Haar measure."]
 instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) := by
-      exact isHaarMeasure_map_smul μ (MulOpposite.op g)
+  exact isHaarMeasure_map_smul μ (MulOpposite.op g)
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
