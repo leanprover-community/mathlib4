@@ -1,7 +1,7 @@
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Algebra.BigOperators.Basic
-
+import Mathlib.Tactic.Linarith
 open BigOperators
 
 variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {u v : V}
@@ -42,6 +42,10 @@ vertex, which is visited twice. -/
 def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
   (∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2
 
+lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
+    (w : V) : w ∈ p.support := by
+  sorry
+
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
   dsimp only [IsHamiltonianCycle] at hp
@@ -53,8 +57,43 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHami
       simp -- what happened here?
   · have : p.support.length = Fintype.card V + 1
     · have : ∑ u : V, p.support.count u = Fintype.card V + 1
-      · sorry
-      · sorry
+      · rw [←Finset.add_sum_erase Finset.univ p.support.count (Finset.mem_univ v)]
+        rw [hp.2]
+        have : ∑ u in Finset.erase Finset.univ v, p.support.count u = ∑ u in Finset.erase Finset.univ v, 1
+        · apply Finset.sum_congr
+          · rfl
+          · intro x hx
+            have hpx := hp.1 x
+            rw [Finset.mem_erase] at hx
+            rw [hpx hx.1]
+        · rw [this]
+          have : ∑ u in Finset.erase Finset.univ v, 1 = Fintype.card V - 1
+          · rw [@Finset.erase_eq]
+            rw [← @Finset.card_eq_sum_ones]
+            rw [@Finset.card_univ_diff]
+            simp
+          · rw [this]
+            have : 1 ≤ Fintype.card V
+            · rw [@Nat.succ_le]
+              rw [Fintype.card_pos_iff]
+              exact Nonempty.intro u
+            · rw [←add_tsub_assoc_of_le this]
+              simp
+              ring
+      · rw [←this]
+        have h₁ := Multiset.toFinset_sum_count_eq (support p : Multiset V)
+        simp only [List.toFinset_coe, Multiset.mem_coe, Multiset.coe_nodup, Multiset.coe_count,
+          Multiset.coe_card, length_support] at h₁
+        have h₂ : p.support.toFinset = Finset.univ
+        · ext a
+          constructor
+          · exact fun a_1 ↦ Finset.mem_univ a
+          · intro ha
+            rw [List.mem_toFinset]
+            exact SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex p hp a
+        · rw [←h₂]
+          rw [h₁]
+          rw [length_relation]
     · rw [this] at length_relation
       exact Iff.mp Nat.succ_inj' length_relation
 
