@@ -23,9 +23,9 @@ assert_not_exists Set.range
 
 namespace List
 
-universe u v w x
+universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -95,6 +95,9 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 #align list.not_mem_append List.not_mem_append
 
 #align list.ne_nil_of_mem List.ne_nil_of_mem
+
+lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
+  rw [mem_cons, mem_singleton]
 
 theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
   induction' l with b l ih; {cases h}; rcases h with (_ | ⟨_, h⟩)
@@ -819,12 +822,12 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
 
-theorem surjective_head [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
-#align list.surjective_head List.surjective_head
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+#align list.surjective_head List.surjective_head!
 
-theorem surjective_head' : Surjective (@head? α) :=
+theorem surjective_head? : Surjective (@head? α) :=
   Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
-#align list.surjective_head' List.surjective_head'
+#align list.surjective_head' List.surjective_head?
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -887,6 +890,9 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 #align list.head_mem_self List.head!_mem_self
+
+theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
+  cases l <;> simp
 
 @[simp]
 theorem head?_map (f : α → β) (l) : head? (map f l) = (head? l).map f := by cases l <;> rfl

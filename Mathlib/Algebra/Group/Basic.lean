@@ -252,7 +252,7 @@ theorem inv_injective : Function.Injective (Inv.inv : G → G) :=
 #align neg_injective neg_injective
 
 @[to_additive (attr := simp)]
-theorem inv_inj {a b : G} : a⁻¹ = b⁻¹ ↔ a = b :=
+theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
   inv_injective.eq_iff
 #align inv_inj inv_inj
 #align neg_inj neg_inj
@@ -352,18 +352,6 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a b c : α}
 
 attribute [local simp] mul_assoc div_eq_mul_inv
-
-@[to_additive]
-theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
-  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
-#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
-#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
-
-@[to_additive]
-theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
-  (inv_eq_of_mul_eq_one_left h).symm
-#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
-#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
 
 @[to_additive]
 theorem eq_inv_of_mul_eq_one_right (h : a * b = 1) : b = a⁻¹ :=
