@@ -26,7 +26,7 @@ def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremWith ℕ n
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
 
 lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α m) :
-  FermatLastTheoremWith α n := by
+    FermatLastTheoremWith α n := by
   rintro a b c ha hb hc
   obtain ⟨k, rfl⟩ := hmn
   simp_rw [pow_mul']
