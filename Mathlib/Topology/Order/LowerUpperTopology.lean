@@ -286,7 +286,7 @@ instance : ClosedIciTopology α :=
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
-  exact isClosed_biUnion h fun _ _ => isClosed_Ici
+  exact h.isClosed_biUnion fun _ _ => isClosed_Ici
 #align lower_topology.is_closed_upper_closure LowerTopology.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/
@@ -448,7 +448,7 @@ instance instLowerTopologyProd [Preorder α] [TopologicalSpace α] [LowerTopolog
     simp_rw [coe_upperClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
     -- without `let`, `refine` tries to use the product topology and fails
     let _ : TopologicalSpace (α × β) := generateFrom { s | ∃ a, (Ici a)ᶜ = s }
-    refine (isOpen_biInter hs fun a _ => ?_).inter (isOpen_biInter ht fun b _ => ?_)
+    refine (hs.isOpen_biInter fun a _ => ?_).inter (ht.isOpen_biInter fun b _ => ?_)
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 
@@ -494,13 +494,13 @@ instance (priority := 90) UpperTopology.continuousInf : ContinuousSup α :=
 
 end CompleteLattice_UpperTopology
 
-lemma UpperDual_iff_Lower [Preorder α] [TopologicalSpace α] :
+lemma upper_dual_iff_lower [Preorder α] [TopologicalSpace α] :
     UpperTopology αᵒᵈ ↔ LowerTopology α := by
   constructor
   · apply UpperTopology.instLowerTopologyDual
   · apply LowerTopology.instUpperTopologyDual
 
-lemma LowerDual_iff_Upper [Preorder α] [TopologicalSpace α] :
+lemma lower_dual_iff_upper [Preorder α] [TopologicalSpace α] :
     LowerTopology αᵒᵈ ↔ UpperTopology α := by
   constructor
   · apply LowerTopology.instUpperTopologyDual
