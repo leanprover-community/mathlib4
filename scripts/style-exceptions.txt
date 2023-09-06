@@ -112,7 +112,6 @@ Mathlib/Tactic/Expect.lean : line 9 : ERR_MOD : Module docstring missing, or too
 Mathlib/Tactic/Have.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/LeftRight.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/NormCast/Tactic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/PermuteGoals.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PrintPrefix.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Recover.lean : line 10 : ERR_MOD : Module docstring missing, or too late

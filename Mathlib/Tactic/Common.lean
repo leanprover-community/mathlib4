@@ -68,7 +68,6 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose

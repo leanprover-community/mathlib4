@@ -60,7 +60,6 @@ import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
