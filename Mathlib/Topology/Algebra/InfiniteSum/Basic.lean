@@ -1549,7 +1549,7 @@ end
 
 section
 
-variable {G : Type _} [AddGroup G] {Γ : AddSubgroup G}
+variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
 
 /-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
