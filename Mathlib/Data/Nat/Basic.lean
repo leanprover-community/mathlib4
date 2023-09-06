@@ -945,6 +945,3 @@ instance decidableExistsLe {P : ℕ → Prop} [DecidablePred P] :
 #align nat.decidable_exists_le Nat.decidableExistsLe
 
 end Nat
-
-/-- A formal statement of Fermat's Last Theorem. -/
-def FermatsLastTheorem : Prop := ∀ a b c n : ℕ, 2 < n ∧ 0 < a ∧ 0 < b → a^n + b^n ≠ c^n
