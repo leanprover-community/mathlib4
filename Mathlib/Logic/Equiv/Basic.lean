@@ -908,7 +908,7 @@ section
 def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
-  left_inv := fun f => funext fun c => Prod.mk.eta
+  left_inv := fun f => rfl
   right_inv := fun p => by cases p; rfl
 #align equiv.arrow_prod_equiv_prod_arrow Equiv.arrowProdEquivProdArrow
 
