@@ -18,10 +18,6 @@ variable {K U V W : Type} [Field K]
 def isFiniteRank (A : V →ₗ[K] W) : Prop :=
   rank A < ℵ₀
 
-def eqUpToFiniteRank (A B : V →ₗ[K] W) : Prop := isFiniteRank (A - B)
-infix:50 " =ᶠ " => eqUpToFiniteRank
-
-
 lemma isFiniteRank_sum (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRank B) :
     isFiniteRank (A + B) := by
   dsimp only [isFiniteRank]
@@ -49,6 +45,14 @@ lemma isFiniteRank_smul (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFi
   apply isFiniteRank_comp_right
   assumption
 
+theorem isFiniteRank_zero : isFiniteRank (0 : V →ₗ[K] W) := by
+  dsimp only [isFiniteRank]
+  rw [rank_zero]
+  exact aleph0_pos
+
+def eqUpToFiniteRank (A B : V →ₗ[K] W) : Prop := isFiniteRank (A - B)
+infix:50 " =ᶠ " => eqUpToFiniteRank
+
 theorem isFiniteRank_iff_eqUpToFiniteRank_zero (A : V →ₗ[K] W) :
   isFiniteRank A ↔ A =ᶠ 0 := by
   constructor
@@ -59,11 +63,6 @@ theorem isFiniteRank_iff_eqUpToFiniteRank_zero (A : V →ₗ[K] W) :
     dsimp only [eqUpToFiniteRank] at hA'
     simp at hA'
     assumption
-
-theorem isFiniteRank_zero : isFiniteRank (0 : V →ₗ[K] W) := by
-  dsimp only [isFiniteRank]
-  rw [rank_zero]
-  exact aleph0_pos
 
 lemma eqUpToFiniteRankLeft_of_eqUpToFiniteRank (A B : U →ₗ[K] V) (C : V →ₗ[K]  W)
     (hAB : A =ᶠ B) : C ∘ₗ A =ᶠ C ∘ₗ B := by
