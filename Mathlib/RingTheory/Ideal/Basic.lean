@@ -32,7 +32,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
@@ -847,8 +847,8 @@ theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
 
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]
-theorem map_mem_nonunits_iff [Monoid M] [Monoid N] [MonoidHomClass F M N] (f : F)
-    [IsLocalRingHom f] (a) : f a ∈ nonunits N ↔ a ∈ nonunits M :=
+theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [MonoidHomClass F α β] (f : F)
+    [IsLocalRingHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
   ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
 #align map_mem_nonunits_iff map_mem_nonunits_iff
 
