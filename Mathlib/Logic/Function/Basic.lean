@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Nonempty
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Tactic.Cases
 import Mathlib.Init.Set
 
 #align_import logic.function.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
@@ -878,10 +878,6 @@ end Uncurry
 def Involutive {α} (f : α → α) : Prop :=
   ∀ x, f (f x) = x
 #align function.involutive Function.Involutive
-
-theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
-  funext_iff.symm
-#align function.involutive_iff_iter_2_eq_id Function.involutive_iff_iter_2_eq_id
 
 theorem _root_.Bool.involutive_not : Involutive not :=
   Bool.not_not

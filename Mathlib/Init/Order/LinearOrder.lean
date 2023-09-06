@@ -3,7 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 
 #align_import init.algebra.functions from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 

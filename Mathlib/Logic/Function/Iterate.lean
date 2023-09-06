@@ -34,6 +34,14 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
+/-- Iterate a function. -/
+def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
+  | 0, a => a
+  | succ k, a => iterate op k (op a)
+#align nat.iterate Nat.iterate
+
+notation:max f "^["n"]" => Nat.iterate f n
+
 namespace Function
 
 open Function (Commute)
@@ -231,10 +239,14 @@ alias ⟨iterate_cancel_of_add, _⟩ := iterate_add_eq_iterate
 #align function.iterate_cancel_of_add Function.iterate_cancel_of_add
 
 lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a = a := by
-  obtain h | h := le_total m n
+  obtain h | h := Nat.le_total m n
   { simp [Nat.sub_eq_zero_of_le h] }
   { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
 #align function.iterate_cancel Function.iterate_cancel
+
+theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
+  funext_iff.symm
+#align function.involutive_iff_iter_2_eq_id Function.involutive_iff_iter_2_eq_id
 
 end Function
 
