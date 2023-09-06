@@ -207,6 +207,7 @@ theorem Measurable.map_prod_mk_right {μ : Measure α} [SigmaFinite μ] :
   exact measurable_measure_prod_mk_right hs
 #align measurable.map_prod_mk_right Measurable.map_prod_mk_right
 
+set_option linter.deprecated false in -- FIXME: remove
 theorem MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : α → β}
     {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :

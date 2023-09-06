@@ -260,6 +260,7 @@ property on `ℝ` to all these spaces. -/
 variable {Ω : Type*} [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
   [Nonempty Ω] (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
 
+set_option linter.deprecated false in -- FIXME: remove
 /-- Existence of a conditional kernel. Use the definition `condKernel` to get that kernel. -/
 theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
     ∃ (η : kernel α Ω) (_h : IsMarkovKernel η), kernel.const γ ρ =

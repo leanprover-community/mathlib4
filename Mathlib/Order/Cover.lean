@@ -540,6 +540,7 @@ theorem _root_.Wcovby.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
   ⟨h.1.2, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_le hc.2⟩⟩
 #align wcovby.snd Wcovby.snd
 
+set_option linter.deprecated false in -- FIXME: remove
 theorem mk_wcovby_mk_iff_left : (a₁, b) ⩿ (a₂, b) ↔ a₁ ⩿ a₂ := by
   refine' ⟨Wcovby.fst, (And.imp mk_le_mk_iff_left.2) fun h c h₁ h₂ => _⟩
   have : c.2 = b := h₂.le.2.antisymm h₁.le.2

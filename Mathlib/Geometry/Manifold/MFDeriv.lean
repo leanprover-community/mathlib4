@@ -1559,7 +1559,6 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
         mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
           mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
   dsimp only
-  rw [← @Prod.mk.eta _ _ p] at hf
   erw [mfderiv_comp_of_eq hf ((mdifferentiableAt_fst I I').prod_mk (mdifferentiableAt_const _ _))
       rfl,
     mfderiv_comp_of_eq hf ((mdifferentiableAt_const _ _).prod_mk (mdifferentiableAt_snd I I')) rfl,
@@ -2105,6 +2104,7 @@ theorem Trivialization.mdifferentiable (e : Trivialization F (π F Z)) [MemTrivi
     e.toLocalHomeomorph.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨(e.smoothOn I).mdifferentiableOn, (e.smoothOn_symm I).mdifferentiableOn⟩
 
+set_option linter.deprecated false in -- FIXME: remove
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
     (hs : UniqueMDiffWithinAt I s p.proj) :
     UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
