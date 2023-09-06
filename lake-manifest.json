@@ -36,8 +36,8 @@
   {"git":
    {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "1e8abf103d136727ad10d4f6fd0fa384f72e5ef4",
+    "rev": "ce98ff6f235b6670b0a2e31c8a8144dc52351547",
     "opts": {},
     "name": "std",
-    "inputRev?": "permute_goals",
+    "inputRev?": "classical",
     "inherited": false}}]}

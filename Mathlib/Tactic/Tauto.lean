@@ -5,8 +5,8 @@ Authors: Simon Hudon, David Renshaw
 -/
 
 import Lean
+import Std.Tactic.Classical
 import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
 import Qq
