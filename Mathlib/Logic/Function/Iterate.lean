@@ -40,6 +40,7 @@ def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
   | succ k, a => iterate op k (op a)
 #align nat.iterate Nat.iterate
 
+@[inherit_doc Nat.iterate]
 notation:max f "^["n"]" => Nat.iterate f n
 
 namespace Function
