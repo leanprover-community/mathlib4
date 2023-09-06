@@ -29,11 +29,11 @@ variable {C : Type u} [Category.{v} C]
 and the condition that their composition equals `f`. -/
 structure Fact {X Y : C} (f : X ⟶ Y) where
   /-- The midpoint of the factorisation. -/
-  D   : C
+  mid   : C
   /-- The morphism into the factorisation midpoint. -/
-  ι   : X ⟶ D
+  ι   : X ⟶ mid
   /-- The morphism out of the factorisation midpoint. -/
-  π   : D ⟶ Y
+  π   : mid ⟶ Y
   /-- The factorisation condition. -/
   ι_π : ι ≫ π = f := by aesop_cat
 
@@ -48,7 +48,7 @@ commutativity conditions. -/
 @[ext]
 protected structure Hom (d e : Fact f) : Type (max u v) where
   /-- The morphism between the midpoints of the factorizations. -/
-  h : d.D ⟶ e.D
+  h : d.mid ⟶ e.mid
   /-- The left commuting triangle of the factorization morphism. -/
   ι_h : d.ι ≫ h = e.ι := by aesop_cat
   /-- The right commuting triangle of the factorization morphism. -/
@@ -79,7 +79,7 @@ variable (d : Fact f)
 /-- The initial object in `Fact f`, with the domain of `f` as its midpoint. -/
 @[simps]
 protected def initial : Fact f where
-  D := X
+  mid := X
   ι := 𝟙 _
   π := f
 
@@ -95,7 +95,7 @@ instance : Unique ((Fact.initial : Fact f) ⟶ d) where
 /-- The terminal object in `Fact f`, with the codomain of `f` as its midpoint. -/
 @[simps]
 protected def terminal : Fact f where
-  D := Y
+  mid := Y
   ι := f
   π := 𝟙 _
 
@@ -121,7 +121,7 @@ instance : HasTerminal (Fact f) := Limits.hasTerminal_of_unique Fact.terminal
 /-- The forgetful functor from `Fact f` to the underlying category `C`. -/
 @[simps]
 def forget : Fact f ⥤ C where
-  obj := Fact.D
+  obj := Fact.mid
   map f := f.h
 
 end Fact
