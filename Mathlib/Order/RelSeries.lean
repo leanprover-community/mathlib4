@@ -88,17 +88,18 @@ lemma longestRelSeries_is_longest [r.FiniteDimensional] (x : RelSeries r) :
 
 /-- a relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
-class InfiniteDimensional : Prop where
-  /-- a relation `r` is said to be infinite dimensional iff there exists relation series of
-    arbitrary length. -/
-  infinite : ∀ (n : ℕ), ∃ (x : RelSeries r), n ≤ x.length
-
+class InfiniteDimensional where
+  /-- there should a relation series with length at least `n` for all natural number `n` -/
+  longRelSeries : ℕ → RelSeries r
+  /-- there should a relation series with length at least `n` for all natural number `n` -/
+  longRelSeries_length : ∀ (n : ℕ), n ≤ (longRelSeries n).length
 /-- a relation series with length at least `n` if the relation is infinite dimensional -/
+
 noncomputable def relSeriesOfInfiniteDimensional [InfiniteDimensional r] (n : ℕ) : RelSeries r :=
-  (InfiniteDimensional.infinite n).choose
+  (InfiniteDimensional.longRelSeries n)
 
 lemma le_relSeriesOfInfiniteDimensional_length [InfiniteDimensional r] (n : ℕ) :
-  n ≤ (r.relSeriesOfInfiniteDimensional n).length := (InfiniteDimensional.infinite n).choose_spec
+  n ≤ (r.relSeriesOfInfiniteDimensional n).length := InfiniteDimensional.longRelSeries_length n
 
 /-- if a relation on `α` is infinite dimensional, then `α` is inhabited -/
 noncomputable def inhabited_of_infiniteDimensional [r.InfiniteDimensional] : Inhabited α :=
@@ -640,7 +641,7 @@ abbrev LTSeries := RelSeries ((. < .) : Rel α α)
 /-- A preordered type is finite dimensional, if its preorder is a finite dimensional relation -/
 class FiniteDimensionalType extends Rel.FiniteDimensional ((. < .) : α → α → Prop)
 /-- A preordered type is infinite dimensional, if its preorder is a infinite dimensional relation -/
-class InfiniteDimensionalType extends Rel.InfiniteDimensional ((. < .) : α → α → Prop) : Prop
+class InfiniteDimensionalType extends Rel.InfiniteDimensional ((. < .) : α → α → Prop)
 
 /-- if a preordered set is finite dimensional, then it has a longest series of `(. < .)`. -/
 noncomputable def longestLTSeries [FiniteDimensionalType α] : LTSeries α :=
