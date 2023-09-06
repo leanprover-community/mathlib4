@@ -31,7 +31,7 @@ open scoped BigOperators
 
 section ForMathlib
 
-theorem Ideal.comap_span_le {R : Type _} {S : Type _} [Semiring R] [Semiring S] (f : S →+* R)
+theorem Ideal.comap_span_le {R : Type*} {S : Type*} [Semiring R] [Semiring S] (f : S →+* R)
     (g : R →+* S) (h : Function.LeftInverse g f) (s : Set R) :
     Ideal.comap f (Ideal.span s) ≤ Ideal.span (g '' s) := by
   rintro x (hx : f x ∈ Ideal.span s)
@@ -39,26 +39,20 @@ theorem Ideal.comap_span_le {R : Type _} {S : Type _} [Semiring R] [Semiring S] 
   rw [Ideal.map_span, Subtype.coe_mk, h x] at this
   exact this
 
-/-- `char_p.quotient'` as an `iff`. -/
-theorem CharP.quotient_iff' (R : Type _) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
+/-- `CharP.quotient'` as an `Iff`. -/
+theorem CharP.quotient_iff' (R : Type*) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
     CharP (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 := by
-  refine' ⟨fun (i : CharP (R ⧸ I) n) x hx => _, CharP.quotient' n I⟩
-  skip
-  have := CharP.cast_eq_zero_iff (R ⧸ I) n
-  rw [CharP.cast_eq_zero_iff R n]
-  refine' (this _).mp _
+  refine ⟨fun _ x hx => ?_, CharP.quotient' n I⟩
+  rw [CharP.cast_eq_zero_iff R n, ←CharP.cast_eq_zero_iff (R ⧸ I) n _]
   exact (Submodule.Quotient.mk_eq_zero I).mpr hx
 
-theorem Ideal.span_le_bot {R : Type _} [Semiring R] (s : Set R) : Ideal.span s ≤ ⊥ ↔ s ≤ {0} :=
+theorem Ideal.span_le_bot {R : Type*} [Semiring R] (s : Set R) : Ideal.span s ≤ ⊥ ↔ s ≤ {0} :=
   Submodule.span_le
 
 /-- `char_p.quotient'` as an `iff`. -/
-theorem CharP.quotient_iff'' (R : Type _) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
-    CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) :=
-  (CharP.quotient_iff' _ _ _).trans
-    (by
-      rw [RingHom.ker_eq_comap_bot]
-      exact Iff.rfl)
+theorem CharP.quotient_iff'' (R : Type*) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
+    CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) := by
+  rw [CharP.quotient_iff', RingHom.ker_eq_comap_bot]; rfl
 
 theorem Finsupp.equivFunOnFinite_const {α β} [Fintype α] [AddCommMonoid β] (b : β) :
     Finsupp.equivFunOnFinite.symm (fun _ => b : α → β) = ∑ i : α, Finsupp.single i b := by
@@ -179,17 +173,17 @@ def lFunc : (Fin 3 → K) →ₗ[K] K :=
   α • proj 0 - β • proj 1 - γ • proj 2
 
 /-- The quotient of `K^3` by the specified relation. -/
-abbrev L : Type _ :=  _ ⧸ LinearMap.ker lFunc
+abbrev L : Type _ := _ ⧸ LinearMap.ker lFunc
 
 /-- The quadratic form corresponding to squaring a single coefficient. -/
-def sq {ι R : Type _} [CommRing R] (i : ι) : QuadraticForm R (ι → R) :=
+def sq {ι R : Type*} [CommRing R] (i : ι) : QuadraticForm R (ι → R) :=
   QuadraticForm.sq.comp <| LinearMap.proj i
 
-theorem sq_map_add_char_two {ι R : Type _} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
+theorem sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a + b) = sq i a + sq i b :=
   CharTwo.add_mul_self _ _
 
-theorem sq_map_sub_char_two {ι R : Type _} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
+theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a - b) = sq i a - sq i b := by
   haveI : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
