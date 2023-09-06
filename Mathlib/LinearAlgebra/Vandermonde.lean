@@ -156,7 +156,7 @@ theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
 
 @[simp]
 theorem det_vandermonde_add {n : ℕ} (v : Fin n → R) (a : R) :
-    (Matrix.vandermonde fun i ↦ v i + a).det =( Matrix.vandermonde v).det := by
+    (Matrix.vandermonde fun i ↦ v i + a).det = (Matrix.vandermonde v).det := by
   simp [Matrix.det_vandermonde]
 
 @[simp]
