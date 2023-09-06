@@ -527,6 +527,8 @@ end IsUnit
 
 section IsLocalRingHom
 
+variable {G R S T F : Type*}
+
 /-- A local ring homomorphism is a homomorphism `f` between monoids such that `a` in the domain
   is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
