@@ -24,18 +24,16 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
     dsimp only [IsHamiltonian] at hp
     have length_relation : p.length = p.support.length - 1
     · cases p
-      case nil => 
+      case nil =>
         rfl
       case cons h' p' =>
-      simp 
+      simp
     · have : p.support.length = Fintype.card V
       · have : ∑ u : V, p.support.count u = Fintype.card V - 1
         · sorry
-        . sorry 
+        . sorry
       · rw [this] at length_relation
         -- exact Iff.mp Nat.succ_inj' length_relation
-    
-
 
 /-- A *Hamiltonian cycle* is a Walk that visits every vertex once, except the initial
 vertex, which is visited twice. -/
@@ -44,7 +42,15 @@ def SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) : Prop :=
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
-  sorry
+  unfold IsHamiltonianCycle at hp
+  rw [←List.count_pos_iff_mem]
+  by_cases w = v
+  · subst h
+    rw [hp.2]
+    norm_num
+  · have := hp.1 w h
+    rw [this]
+    exact Nat.one_pos
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
