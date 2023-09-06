@@ -354,18 +354,6 @@ variable [DivisionMonoid α] {a b c : α}
 attribute [local simp] mul_assoc div_eq_mul_inv
 
 @[to_additive]
-theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
-  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
-#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
-#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
-
-@[to_additive]
-theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
-  (inv_eq_of_mul_eq_one_left h).symm
-#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
-#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
-
-@[to_additive]
 theorem eq_inv_of_mul_eq_one_right (h : a * b = 1) : b = a⁻¹ :=
   (inv_eq_of_mul_eq_one_right h).symm
 #align eq_inv_of_mul_eq_one_right eq_inv_of_mul_eq_one_right
