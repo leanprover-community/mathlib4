@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Logic.Nontrivial
+import Mathlib.Util.AssertExists
 
 #align_import algebra.ring.defs from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
@@ -30,7 +31,6 @@ the present file is about their interaction.
 
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
-
 
 universe u v w x
 
@@ -461,3 +461,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
+
+/-!
+Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
+files, without importing `.Basic` theory development.
+
+These `assert_not_exists` statements guard against this returning.
+-/
+assert_not_exists DivisionMonoid.toDivInvOneMonoid
+assert_not_exists mul_rotate
