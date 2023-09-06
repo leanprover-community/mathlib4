@@ -20,6 +20,10 @@ import Mathlib.GroupTheory.Subsemigroup.Operations
 
 We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSubgroup.center`,
 `Subsemiring.center`, and `Subring.center` in other files.
+
+## References
+
+* [Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1]
 -/
 
 
