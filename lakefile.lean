@@ -15,7 +15,7 @@ def moreLeanArgs := moreServerArgs
 -- so they can be enabled in CI and disabled locally or vice versa.
 -- Warning: Do not put any options here that actually change the olean files,
 -- or inconsistent behavior may result
-def weakLeanArgs :=
+def weakLeanArgs : Array String :=
   if get_config? CI |>.isSome then
     #["-DwarningAsError=true"]
   else
