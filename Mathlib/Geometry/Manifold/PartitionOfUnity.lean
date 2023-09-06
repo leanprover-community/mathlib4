@@ -85,6 +85,8 @@ any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `Sm
 subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
 compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
 
+set_option autoImplicit true
+
 
 variable (ι M)
 
@@ -234,7 +236,7 @@ theorem isSubordinate_toPartitionOfUnity :
   Iff.rfl
 #align smooth_partition_of_unity.is_subordinate_to_partition_of_unity SmoothPartitionOfUnity.isSubordinate_toPartitionOfUnity
 
-alias isSubordinate_toPartitionOfUnity ↔ _ IsSubordinate.toPartitionOfUnity
+alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUnity
 #align smooth_partition_of_unity.is_subordinate.to_partition_of_unity SmoothPartitionOfUnity.IsSubordinate.toPartitionOfUnity
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
@@ -259,7 +261,7 @@ end SmoothPartitionOfUnity
 
 namespace BumpCovering
 
--- Repeat variables to drop [finite_dimensional ℝ E] and [smooth_manifold_with_corners I M]
+-- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[SmoothManifoldWithCorners I M]`
 theorem smooth_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
@@ -339,8 +341,8 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
     ∃ (ι : Type uM) (f : SmoothBumpCovering ι I M s), f.IsSubordinate U := by
   -- First we deduce some missing instances
-  haveI : LocallyCompactSpace H := I.locally_compact
-  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompact H M
+  haveI : LocallyCompactSpace H := I.locallyCompactSpace
+  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   haveI : NormalSpace M := normal_of_paracompact_t2
   -- Next we choose a covering by supports of smooth bump functions
   have hB := fun x hx => SmoothBumpFunction.nhds_basis_support I (hU x hx)
@@ -429,7 +431,7 @@ theorem isSubordinate_toBumpCovering {f : SmoothBumpCovering ι I M s} {U : M �
   Iff.rfl
 #align smooth_bump_covering.is_subordinate_to_bump_covering SmoothBumpCovering.isSubordinate_toBumpCovering
 
-alias isSubordinate_toBumpCovering ↔ _ IsSubordinate.toBumpCovering
+alias ⟨_, IsSubordinate.toBumpCovering⟩ := isSubordinate_toBumpCovering
 #align smooth_bump_covering.is_subordinate.to_bump_covering SmoothBumpCovering.IsSubordinate.toBumpCovering
 
 /-- Every `SmoothBumpCovering` defines a smooth partition of unity. -/
@@ -519,10 +521,11 @@ variable [T2Space M] [SigmaCompactSpace M]
 `s`, then there exists a `SmoothPartitionOfUnity ι M s` that is subordinate to `U`. -/
 theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (ho : ∀ i, IsOpen (U i))
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
-  haveI : LocallyCompactSpace H := I.locally_compact
-  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompact H M
+  haveI : LocallyCompactSpace H := I.locallyCompactSpace
+  haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   haveI : NormalSpace M := normal_of_paracompact_t2
-  -- porting note: split `rcases` into `have` + `rcases`
+  -- porting note(https://github.com/leanprover/std4/issues/116):
+  -- split `rcases` into `have` + `rcases`
   have := BumpCovering.exists_isSubordinate_of_prop (Smooth I 𝓘(ℝ)) ?_ hs U ho hU
   · rcases this with ⟨f, hf, hfU⟩
     exact ⟨f.toSmoothPartitionOfUnity hf, hfU.toSmoothPartitionOfUnity hf⟩
@@ -553,7 +556,7 @@ be a family of convex sets. Suppose that for each point `x : M` there exists a n
 `y ∈ U`. Then there exists a $C^n$ smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
 for all `x`. See also `exists_smooth_forall_mem_convex_of_local` and
 `exists_smooth_forall_mem_convex_of_local_const`. -/
-theorem exists_cont_mdiff_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
+theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
   choose U hU g hgs hgt using Hloc
@@ -564,25 +567,25 @@ theorem exists_cont_mdiff_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t 
       hf.contMDiff_finsum_smul (fun i => isOpen_interior) fun i => (hgs i).mono interior_subset⟩,
     fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ _) (ht _)⟩
   exact interior_subset (hf _ <| subset_closure hi)
-#align exists_cont_mdiff_forall_mem_convex_of_local exists_cont_mdiff_forall_mem_convex_of_local
+#align exists_cont_mdiff_forall_mem_convex_of_local exists_contMDiffOn_forall_mem_convex_of_local
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
 Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
-See also `exists_cont_mdiff_forall_mem_convex_of_local` and
+See also `exists_contMDiffOn_forall_mem_convex_of_local` and
 `exists_smooth_forall_mem_convex_of_local_const`. -/
 theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, SmoothOn I 𝓘(ℝ, F) g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
-  exists_cont_mdiff_forall_mem_convex_of_local I ht Hloc
+  exists_contMDiffOn_forall_mem_convex_of_local I ht Hloc
 #align exists_smooth_forall_mem_convex_of_local exists_smooth_forall_mem_convex_of_local
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
 for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
 `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.  See also
-`exists_cont_mdiff_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
+`exists_contMDiffOn_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
 theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   exists_smooth_forall_mem_convex_of_local I ht fun x =>

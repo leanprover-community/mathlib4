@@ -27,13 +27,6 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 
 namespace Algebra
 
-theorem adjoin_algebraMap (R : Type u) (S : Type v) (A : Type w) [CommSemiring R] [CommSemiring S]
-    [Semiring A] [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (s : Set S) :
-    adjoin R (algebraMap S A '' s) = (adjoin R s).map (IsScalarTower.toAlgHom R S A) :=
-  le_antisymm (adjoin_le <| Set.image_subset_iff.2 fun y hy => ⟨y, subset_adjoin hy, rfl⟩)
-    (Subalgebra.map_le.2 <| adjoin_le fun y hy => subset_adjoin ⟨y, hy, rfl⟩)
-#align algebra.adjoin_algebra_map Algebra.adjoin_algebraMap
-
 theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D] [CommSemiring E]
     [Algebra C D] [Algebra C E] [Algebra D E] [IsScalarTower C D E] (S : Set E) :
     (Algebra.adjoin D S).restrictScalars C =
@@ -71,15 +64,14 @@ section
 
 open Classical
 
-theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
     (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG :=
   let ⟨s, hs⟩ := hRS
   let ⟨t, ht⟩ := hSA
   ⟨s.image (algebraMap S A) ∪ t, by
-    rw [Finset.coe_union, Finset.coe_image, Algebra.adjoin_union_eq_adjoin_adjoin,
-      Algebra.adjoin_algebraMap, hs, Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ht,
-      Subalgebra.restrictScalars_top]⟩
+    rw [Finset.coe_union, Finset.coe_image, Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
+      hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top, Subalgebra.restrictScalars_top]⟩
 #align algebra.fg_trans' Algebra.fg_trans'
 
 end
@@ -164,7 +156,8 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
   Algebra.fg_trans' (B₀.fg_top.2 hAB₀) <|
     Subalgebra.fg_of_submodule_fg <|
       have : IsNoetherianRing B₀ := isNoetherianRing_of_fg hAB₀
-      have : IsNoetherian B₀ C := isNoetherian_of_fg_of_noetherian' hB₀C
+      have : Module.Finite B₀ C := ⟨hB₀C⟩
+      have : IsNoetherian B₀ C := isNoetherian_of_isNoetherianRing_of_finite B₀ C
       fg_of_injective (IsScalarTower.toAlgHom B₀ B C).toLinearMap hBCi
 #align fg_of_fg_of_fg fg_of_fg_of_fg
 

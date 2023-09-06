@@ -15,6 +15,8 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 quotient
 -/
 
+set_option autoImplicit true
+
 
 variable {α : Sort*} {β : Sort*}
 

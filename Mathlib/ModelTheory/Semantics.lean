@@ -332,7 +332,7 @@ theorem realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs 
     (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, BoundedFormula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
-  · simp_rw [List.foldr_cons, realize_sup, ih, exists_prop, List.mem_cons, or_and_right, exists_or,
+  · simp_rw [List.foldr_cons, realize_sup, ih, List.mem_cons, or_and_right, exists_or,
       exists_eq_left]
 #align first_order.language.bounded_formula.realize_foldr_sup FirstOrder.Language.BoundedFormula.realize_foldr_sup
 
@@ -394,6 +394,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
   · simp [mapTermRel, Realize, ih, hv]
 #align first_order.language.bounded_formula.realize_map_term_rel_add_cast_le FirstOrder.Language.BoundedFormula.realize_mapTermRel_add_castLe
 
+@[simp]
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum β (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
@@ -934,6 +935,20 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
           simp
     · exact Fin.elim0 x
 #align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.BoundedFormula.realize_toFormula
+
+@[simp]
+theorem realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
+    (v : α → M) (v' : Fin n → M) :
+    (iSup s f).Realize v v' ↔ ∃ b ∈ s, (f b).Realize v v' := by
+  simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList,
+    exists_exists_and_eq_and]
+
+@[simp]
+theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
+    (v : α → M) (v' : Fin n → M) :
+    (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
+  simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
 end BoundedFormula
 

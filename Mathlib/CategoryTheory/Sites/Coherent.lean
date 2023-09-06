@@ -27,6 +27,8 @@ coherent Grothendieck topology in terms of finite effective epimorphic families.
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Limits

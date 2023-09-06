@@ -768,7 +768,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     have B : Tendsto (fun m => ‖(f n - f m) v‖) atTop (𝓝 ‖(f n - Fcont) v‖) :=
       Tendsto.norm (tendsto_const_nhds.sub (hF v))
     exact le_of_tendsto B A
-  erw [tendsto_iff_norm_tendsto_zero]
+  erw [tendsto_iff_norm_sub_tendsto_zero]
   exact squeeze_zero (fun n => norm_nonneg _) this b_lim
 end ContinuousMultilinearMap
 
@@ -1025,7 +1025,6 @@ theorem _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_apply (g : G 
   rfl
 #align continuous_linear_equiv.comp_continuous_multilinear_mapL_apply ContinuousLinearEquiv.compContinuousMultilinearMapL_apply
 
-set_option maxHeartbeats 250000 in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]
@@ -1093,7 +1092,7 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
     (max C 0) fun x => by
       rw [LinearMap.coe_mk, AddHom.coe_mk] -- Porting note: added
       exact ((f x).mkContinuous_norm_le' _).trans_eq <| by
-        rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
+        rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
 #align multilinear_map.mk_continuous_linear MultilinearMap.mkContinuousLinear
 
 theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
@@ -1124,7 +1123,7 @@ def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G
     (max C 0) fun m => by
       simp only [coe_mk]
       refine ((f m).mkContinuous_norm_le' _).trans_eq ?_
-      rw [max_mul_of_nonneg, MulZeroClass.zero_mul]
+      rw [max_mul_of_nonneg, zero_mul]
       exact prod_nonneg fun _ _ => norm_nonneg _
 #align multilinear_map.mk_continuous_multilinear MultilinearMap.mkContinuousMultilinear
 
@@ -1429,7 +1428,6 @@ def continuousMultilinearCurryLeftEquiv :
 
 variable {𝕜 Ei G}
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem continuousMultilinearCurryLeftEquiv_apply
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (v : ∀ i, Ei i) :
@@ -1437,7 +1435,6 @@ theorem continuousMultilinearCurryLeftEquiv_apply
   rfl
 #align continuous_multilinear_curry_left_equiv_apply continuousMultilinearCurryLeftEquiv_apply
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem continuousMultilinearCurryLeftEquiv_symm_apply (f : ContinuousMultilinearMap 𝕜 Ei G)
     (x : Ei 0) (v : ∀ i : Fin n, Ei i.succ) :
@@ -1866,7 +1863,6 @@ def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k) (hl : s�
 
 variable {𝕜 G G'}
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem curryFinFinset_apply (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
@@ -1874,7 +1870,6 @@ theorem curryFinFinset_apply (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]�
   rfl
 #align continuous_multilinear_map.curry_fin_finset_apply ContinuousMultilinearMap.curryFinFinset_apply
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (m : Fin n → G) : (curryFinFinset 𝕜 G G' hk hl).symm f m =
@@ -1883,7 +1878,6 @@ theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
   rfl
 #align continuous_multilinear_map.curry_fin_finset_symm_apply ContinuousMultilinearMap.curryFinFinset_symm_apply
 
-set_option synthInstance.maxHeartbeats 25000 in
 -- @[simp] -- Porting note: simp removed: simp can reduce LHS
 theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
@@ -1892,7 +1886,6 @@ theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.c
   MultilinearMap.curryFinFinset_symm_apply_piecewise_const hk hl _ x y
 #align continuous_multilinear_map.curry_fin_finset_symm_apply_piecewise_const ContinuousMultilinearMap.curryFinFinset_symm_apply_piecewise_const
 
-set_option synthInstance.maxHeartbeats 25000 in
 @[simp]
 theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x : G) :
@@ -1900,7 +1893,6 @@ theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
   rfl
 #align continuous_multilinear_map.curry_fin_finset_symm_apply_const ContinuousMultilinearMap.curryFinFinset_symm_apply_const
 
-set_option synthInstance.maxHeartbeats 25000 in
 -- @[simp] -- Porting note: simp removed: simp can reduce LHS
 theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =

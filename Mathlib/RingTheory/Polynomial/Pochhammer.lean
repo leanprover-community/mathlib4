@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Tactic.Abel
+import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.RingDivision
 
 #align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
@@ -119,7 +121,6 @@ theorem pochhammer_succ_comp_X_add_one (n : ℕ) :
       pochhammer ℕ (n + 1) + (n + 1) * (pochhammer ℕ n).comp (X + 1)
     by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
   nth_rw 2 [pochhammer_succ_left]
-  simp only
   rw [← add_mul, pochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp,
     add_comm, ← add_assoc]
   ring
@@ -160,6 +161,18 @@ theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
   · rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
       pochhammer_nat_eq_ascFactorial]
 #align pochhammer_nat_eq_desc_factorial pochhammer_nat_eq_descFactorial
+
+@[simp]
+theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
+    (pochhammer S n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have : natDegree (X + (n : S[X])) = 1 := natDegree_X_add_C (n : S)
+    rw [pochhammer_succ_right,
+        natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
+    cases n
+    · simp
+    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 end Semiring
 

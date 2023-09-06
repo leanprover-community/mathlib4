@@ -19,6 +19,8 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
 
+set_option autoImplicit true
+
 
 universe u v
 
@@ -510,3 +512,23 @@ set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget_reflects_isos AddCommGroupCat.forget_reflects_isos
+
+-- note: in the following definitions, there is a problem with `@[to_additive]`
+-- as the `Category` instance is not found on the additive variant
+-- this variant is then renamed with a `Aux` suffix
+
+/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
+@[to_additive (attr := nolint checkUnivs) GroupCatMaxAux
+  "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
+abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
+/-- An alias for `AddGroupCat.{max u v}`, to deal around unification issues. -/
+@[nolint checkUnivs]
+abbrev AddGroupCatMax.{u1, u2} := AddGroupCat.{max u1 u2}
+
+/-- An alias for `CommGroupCat.{max u v}`, to deal around unification issues. -/
+@[to_additive (attr := nolint checkUnivs) AddCommGroupCatMaxAux
+  "An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues."]
+abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
+/-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
+@[nolint checkUnivs]
+abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}

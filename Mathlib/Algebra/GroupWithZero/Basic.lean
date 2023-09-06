@@ -3,9 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Group.OrderSynonym
 
 #align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -126,7 +125,7 @@ theorem subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
   ⟨fun h => haveI := uniqueOfZeroEqOne h; inferInstance, fun h => @Subsingleton.elim _ h _ _⟩
 #align subsingleton_iff_zero_eq_one subsingleton_iff_zero_eq_one
 
-alias subsingleton_iff_zero_eq_one ↔ subsingleton_of_zero_eq_one _
+alias ⟨subsingleton_of_zero_eq_one, _⟩ := subsingleton_iff_zero_eq_one
 #align subsingleton_of_zero_eq_one subsingleton_of_zero_eq_one
 
 theorem eq_of_zero_eq_one (h : (0 : M₀) = 1) (a b : M₀) : a = b :=
@@ -188,7 +187,6 @@ theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
     _ ↔ b = 1 ∨ a = 0 := mul_eq_mul_left_iff
 #align mul_right_eq_self₀ mul_right_eq_self₀
 
-
 theorem mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
   calc
     a * b = b ↔ a * b = 1 * b := by rw [one_mul]
@@ -230,37 +228,6 @@ end CancelMonoidWithZero
 section GroupWithZero
 
 variable [GroupWithZero G₀] {a b c g h x : G₀}
-
-@[simp]
-theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
-  calc
-    a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
-    _ = a := by simp [h]
-#align mul_inv_cancel_right₀ mul_inv_cancel_right₀
-
-
-@[simp]
-theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
-  calc
-    a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm
-    _ = b := by simp [h]
-#align mul_inv_cancel_left₀ mul_inv_cancel_left₀
-
-
--- Porting note: used `simpa` to prove `False` in lean3
-theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
-  have := mul_inv_cancel h
-  simp [a_eq_0] at this
-#align inv_ne_zero inv_ne_zero
-
-@[simp]
-theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
-  calc
-    a⁻¹ * a = a⁻¹ * a * a⁻¹ * a⁻¹⁻¹ := by simp [inv_ne_zero h]
-    _ = a⁻¹ * a⁻¹⁻¹ := by simp [h]
-    _ = 1 := by simp [inv_ne_zero h]
-#align inv_mul_cancel inv_mul_cancel
-
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by

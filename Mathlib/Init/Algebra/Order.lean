@@ -3,10 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Logic
+import Mathlib.Mathport.Rename
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.SplitIfs
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
@@ -431,7 +430,7 @@ theorem compare_gt_iff_gt {a b : α} : (compare a b = .gt) ↔ a > b := by
 
 theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only []
+  split_ifs <;> try simp only []
   case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h

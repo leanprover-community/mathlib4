@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.NormNum.CharZero
+import Mathlib.Tactic.NormNum.OrderedRing
+import Mathlib.Data.Rat.Cast
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
@@ -14,6 +17,8 @@ import Mathlib.Util.Qq
 
 This file adds `norm_num` plugins for `+`, `*` and `^` along with other basic operations.
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib
 open Lean hiding Rat mkRat
