@@ -1,29 +1,45 @@
+/-
+Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ashvni Narayanan, Moritz Firsching
+-/
 import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 import Mathlib.Data.ZMod.Algebra
 
-lemma Nat.le_one {n : ℕ} (h : n ≤ 1) : n = 0 ∨ n = 1 := by
-  cases n
-  · left
-    simp
-  · right
-    rw [Nat.succ_le_succ_iff, Nat.le_zero] at h
-    rw [h]
+/-!
+# Dirichlet Characters
 
+Let `R` be a monoid. A Dirichlet character `χ` of level `n` over `R` is a homomorphism from the unit
+group `(ZMod n)ˣ` to `Rˣ`. We then obtain some properties of `ofUnitHom χ`.
+
+Main definitions:
+
+- `DirichletCharacter`: The type representing a Dirichlet character.
+- `change_level`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
+
+## Tags
+
+dirichlet character, periodic, modulus
+-/
+-- TODO: move to Data.ZMod.Basic?!
 @[simp]
 lemma cast_hom_self {n : ℕ} : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
   RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
 
-@[reducible]def dirichlet_character (R : Type) [Monoid R] (n : ℕ) := (ZMod n)ˣ →* Rˣ
+@[reducible]
+def DirichletCharacter (R : Type) [Monoid R] (n : ℕ) := (ZMod n)ˣ →* Rˣ
 
+-- TODO: move to NumberTheory.LegendreSymbol.MulCharacter?!
 namespace MulChar
-lemma coe_toMonoidHom {R R' : Type} [CommMonoid R] [CommMonoidWithZero R'] (χ : MulChar R R') (x : R) : χ.toMonoidHom x = χ x := by solve_by_elim
+lemma coe_toMonoidHom {R R' : Type} [CommMonoid R] [CommMonoidWithZero R'] (χ : MulChar R R')
+(x : R) : χ.toMonoidHom x = χ x := by solve_by_elim
 end MulChar
 
 open MulChar
 -- a difference is that originally asso_dirichlet_char only required MonoidWithZero, dont know why the Comm is needed here
-variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : dirichlet_character R n)
+variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
 
-namespace dirichlet_character
+namespace DirichletCharacter
 lemma ofUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
   ofUnitHom χ a = χ ha.unit := by
   conv_lhs => rw [← (IsUnit.unit_spec ha)]
@@ -35,30 +51,30 @@ lemma ofUnitHom_eq_zero {a : ZMod n} (ha : ¬ IsUnit a) :
   simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe] at this
   rw [← coe_toMonoidHom, this]
 
-lemma ofUnitHom_eq_iff (ψ : dirichlet_character R n) :
+lemma ofUnitHom_eq_iff (ψ : DirichletCharacter R n) :
   χ = ψ ↔ ofUnitHom χ = ofUnitHom ψ := by simp only [ofUnitHom_eq, EmbeddingLike.apply_eq_iff_eq]
 
 --Comm required from here
 lemma ofUnitHom_eval_sub (x : ZMod n) :
   ofUnitHom χ (n - x) = ofUnitHom χ (-x) := by simp
 
-lemma is_periodic (m : ℕ) (hm : n ∣ m) (a : ℤ) :
+lemma isPeriodic (m : ℕ) (hm : n ∣ m) (a : ℤ) :
   ofUnitHom χ (a + m) = ofUnitHom χ a := by
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
 
 /-- Extends the Dirichlet character χ of level n to level m, where n ∣ m. -/
-def change_level {m : ℕ} (hm : n ∣ m) : dirichlet_character R n →* dirichlet_character R m :=
+def change_level {m : ℕ} (hm : n ∣ m) : DirichletCharacter R n →* DirichletCharacter R m :=
 { toFun := λ ψ => ψ.comp (Units.map (ZMod.castHom hm (ZMod n))),
   map_one' := by simp,
   map_mul' := λ ψ₁ ψ₂ => MonoidHom.mul_comp _ _ _, }
 
-lemma change_level_def {m : ℕ} (hm : n ∣ m) : change_level hm χ = χ.comp (Units.map (ZMod.castHom hm (ZMod n))) := rfl
+lemma change_level_def {m : ℕ} (hm : n ∣ m) :
+    change_level hm χ = χ.comp (Units.map (ZMod.castHom hm (ZMod n))) := rfl
 
 namespace change_level
 lemma self : change_level (dvd_refl n) χ = χ := by
-  rw [change_level_def] --, asso_dirichlet_character_eq_iff]
-  simp
+  simp [change_level_def]
 
 lemma trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
   change_level (dvd_trans hm hd) χ = change_level hd (change_level hm χ) := by
@@ -66,7 +82,7 @@ lemma trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
   rw [MonoidHom.comp_assoc, ←Units.map_comp]
   change _ = χ.comp (Units.map ↑((ZMod.castHom hm (ZMod n)).comp (ZMod.castHom hd (ZMod m))))
   congr
-  simp -- this was not needed previously, i wonder why
+  simp
 
 lemma ofUnitHom_eq {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
   ofUnitHom (change_level hm χ) a = ofUnitHom χ a := by
@@ -80,7 +96,7 @@ lemma ofUnitHom_eq {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
   simp only [change_level_def, ofUnitHom_eq, Units.isUnit, not_true, equivToUnitHom_symm_coe, MonoidHom.coe_comp,
     Function.comp_apply]
   congr
-  simp -- if I unfold this goal does not get proved
+  simp
   congr
   rw [← Units.eq_iff]
   simp
@@ -95,7 +111,7 @@ end change_level
 /-- χ₀ of level d factors through χ of level n if d ∣ n and χ₀ = χ ∘ (ZMod n → ZMod d). -/
 structure factors_through (d : ℕ) : Prop :=
 (dvd : d ∣ n)
-(ind_char : ∃ χ₀ : dirichlet_character R d, χ = change_level dvd χ₀)
+(ind_char : ∃ χ₀ : DirichletCharacter R d, χ = change_level dvd χ₀)
 
 namespace factors_through
 lemma spec {d : ℕ} (h : factors_through χ d) :
@@ -139,11 +155,11 @@ lemma eq_one (hχ : χ.conductor = 1) : χ = 1 := by
     infer_instance
   refine Subsingleton.elim _ _
 
-lemma one (hn : 0 < n) : (1 : dirichlet_character R n).conductor = 1 := by
-  suffices : (1 : dirichlet_character R n).conductor ≤ 1
-  · cases' Nat.le_one this with h1 h2
+lemma one (hn : 0 < n) : (1 : DirichletCharacter R n).conductor = 1 := by
+  suffices : (1 : DirichletCharacter R n).conductor ≤ 1
+  · cases' Nat.le_one_iff_eq_zero_or_eq_one.mp this with h1 h2
     · exfalso
-      have := factors_through.dvd (factors_through (1 : dirichlet_character R n))
+      have := factors_through.dvd (factors_through (1 : DirichletCharacter R n))
       rw [h1, zero_dvd_iff] at this
       rw [this] at hn
       apply lt_irrefl _ hn
@@ -158,16 +174,16 @@ lemma eq_one_iff (hn : 0 < n) : χ = 1 ↔ χ.conductor = 1 :=
 ⟨λ h => by { rw [h, one hn] }, λ h => by { rw [eq_one χ h] }⟩
 
 lemma eq_zero_iff_level_eq_zero : χ.conductor = 0 ↔ n = 0 :=
-⟨λ h => by {
+⟨λ h => by
   rw [←zero_dvd_iff]
   convert dvd_lev χ
-  rw [h] },
-  λ h => by {
+  rw [h],
+  λ h => by
   rw [conductor, Nat.sInf_eq_zero]
   left
   refine ⟨zero_dvd_iff.2 h,
   ⟨change_level (by {rw [h]}) χ,
-  by { rw [←change_level.trans _ _ _, change_level.self _] }⟩ ⟩ }⟩
+  by rw [←change_level.trans _ _ _, change_level.self _]⟩ ⟩ ⟩
 end conductor
 
 /-- A character is primitive if its level is equal to its conductor. -/
@@ -176,9 +192,9 @@ def is_primitive : Prop := χ.conductor = n
 lemma is_primitive_def : χ.is_primitive ↔ χ.conductor = n := ⟨λ h => h, λ h => h⟩
 
 namespace is_primitive
-lemma one : is_primitive (1 : dirichlet_character R 1) := Nat.dvd_one.1 (conductor.dvd_lev _)
+lemma one : is_primitive (1 : DirichletCharacter R 1) := Nat.dvd_one.1 (conductor.dvd_lev _)
 
-lemma one_lev_zero : (1 : dirichlet_character R 0).is_primitive :=
+lemma one_lev_zero : (1 : DirichletCharacter R 0).is_primitive :=
 by
   rw [is_primitive_def, conductor, Nat.sInf_eq_zero]
   left
@@ -190,20 +206,18 @@ by
 
 end is_primitive
 
-lemma conductor_one_dvd (n : ℕ) : conductor (1 : dirichlet_character R 1) ∣ n :=
-by
+lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(is_primitive_def _).1 is_primitive.one]
   apply one_dvd _
 
 /-- If m = n are positive natural numbers, then ZMod m ≃ ZMod n. -/
-def ZMod.mul_equiv {a b : ℕ} (h : a = b) : ZMod a ≃* ZMod b :=
-by { rw [h] }
+def ZMod.mul_equiv {a b : ℕ} (h : a = b) : ZMod a ≃* ZMod b := by rw [h]
 
 /-- If m = n are positive natural numbers, then their Dirichlet character spaces are the same. -/
-def equiv {a b : ℕ} (h : a = b) : dirichlet_character R a ≃* dirichlet_character R b := by { rw [h] }
+def equiv {a b : ℕ} (h : a = b) : DirichletCharacter R a ≃* DirichletCharacter R b := by { rw [h] }
 
 /-- The primitive character associated to a Dirichlet character. -/
-noncomputable def reduction : dirichlet_character R χ.conductor :=
+noncomputable def reduction : DirichletCharacter R χ.conductor :=
   Classical.choose ((conductor.factors_through χ).ind_char)
 
 lemma mem_conductor_set_eq_conductor {d : ℕ} (hd : d ∈ χ.conductor_set) :
@@ -238,8 +252,7 @@ by
     change change_level _ _ = _
     apply (factors_through.spec _ (conductor.factors_through _)).symm
 
-lemma reduction_is_primitive : (χ.reduction).is_primitive :=
-by
+lemma reduction_is_primitive : (χ.reduction).is_primitive := by
   by_cases χ.conductor = 0
   · rw [is_primitive_def]
     conv_rhs => rw [h]
@@ -247,43 +260,40 @@ by
   refine le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor.dvd_lev _))
     (mem_conductor_set_eq_conductor _ (conductor.mem_conductor_set _))
 
-lemma reduction_one (hn : 0 < n) :
-  (1 : dirichlet_character R n).reduction = 1 :=
-by
+lemma reduction_one (hn : 0 < n) : (1 : DirichletCharacter R n).reduction = 1 := by
   rw [conductor.eq_one_iff _]
-  · have := reduction_is_primitive (1 : dirichlet_character R n)
+  · have := reduction_is_primitive (1 : DirichletCharacter R n)
     rw [is_primitive_def] at this
     rw [this, conductor.one hn]
-    --convert reduction_is_primitive (1 : dirichlet_character R n)
+    --convert reduction_is_primitive (1 : DirichletCharacter R n)
     --rw [conductor.one hn]
   · rw [conductor.one hn]
     apply Nat.one_pos
 
-lemma ofUnitHom_mul (ψ : dirichlet_character R n) :
-  ofUnitHom (χ * ψ) = (ofUnitHom χ) * (ofUnitHom ψ) :=
-by
+lemma ofUnitHom_mul (ψ : DirichletCharacter R n) :
+  ofUnitHom (χ * ψ) = (ofUnitHom χ) * (ofUnitHom ψ) := by
   ext
   simp
 
-lemma asso_primitive_conductor_eq {n : ℕ} (χ : dirichlet_character R n) :
-  χ.reduction.conductor = χ.conductor :=
+lemma asso_primitive_conductor_eq {n : ℕ} (χ : DirichletCharacter R n) :
+    χ.reduction.conductor = χ.conductor :=
 (is_primitive_def χ.reduction).1 (reduction_is_primitive χ)
 
 open Nat
 /-- Primitive character associated to multiplication of Dirichlet characters,
   after changing both levels to the same -/
-noncomputable def mul {m : ℕ} (χ₁ : dirichlet_character R n) (χ₂ : dirichlet_character R m) :=
+noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :=
 reduction (change_level (dvd_lcm_left n m) χ₁ * change_level (dvd_lcm_right n m) χ₂)
 
-lemma mul_def {n m : ℕ} {χ : dirichlet_character R n} {ψ : dirichlet_character R m} :
+lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter R m} :
   χ.mul ψ = reduction (change_level _ χ * change_level _ ψ) := rfl
 
 namespace is_primitive
-lemma mul {m : ℕ} (ψ : dirichlet_character R m) : (mul χ ψ).is_primitive :=
+lemma mul {m : ℕ} (ψ : DirichletCharacter R m) : (mul χ ψ).is_primitive :=
 reduction_is_primitive _
 end is_primitive
 
-variable {S : Type} [CommRing S] {m : ℕ} (ψ : dirichlet_character S m)
+variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
 
 /-- A Dirichlet character is odd if its value at -1 is -1. -/
 def is_odd : Prop := ψ (-1) = -1
@@ -316,8 +326,7 @@ by
     rw [neg_one_sq, Units.val_one]
 
 lemma odd_ofUnitHom_eval_neg_one (hψ : ψ.is_odd) :
-  ofUnitHom ψ (-1) = -1 :=
-by
+  ofUnitHom ψ (-1) = -1 := by
   rw [is_odd] at hψ
   -- really requires ψ to be given explicitly
   convert ofUnitHom_coe ψ (-1)
@@ -325,27 +334,24 @@ by
   simp
 
 lemma even_ofUnitHom_eval_neg_one (hψ : ψ.is_even) :
-  ofUnitHom ψ (-1) = 1 :=
-by
+  ofUnitHom ψ (-1) = 1 := by
   rw [is_even] at hψ
   convert ofUnitHom_coe ψ (-1)
   rw [hψ]
   simp
 
-lemma asso_odd_dirichlet_character_eval_sub (x : ZMod m) (hψ : ψ.is_odd) :
-  ofUnitHom ψ (m - x) = -(ofUnitHom ψ x) :=
-by
+lemma asso_odd_DirichletCharacter_eval_sub (x : ZMod m) (hψ : ψ.is_odd) :
+  ofUnitHom ψ (m - x) = -(ofUnitHom ψ x) := by
   rw [ofUnitHom_eval_sub, ←neg_one_mul, ←MulChar.coe_toMonoidHom,
     MonoidHom.map_mul _ _ x, MulChar.coe_toMonoidHom,
     odd_ofUnitHom_eval_neg_one _ hψ]
   simp [MulChar.coe_toMonoidHom] --make Mulchar.map_mul
 
-lemma asso_even_dirichlet_character_eval_sub (x : ZMod m) (hψ : ψ.is_even) :
-  ofUnitHom ψ (m - x) = ofUnitHom ψ x :=
-by
+lemma asso_even_DirichletCharacter_eval_sub (x : ZMod m) (hψ : ψ.is_even) :
+  ofUnitHom ψ (m - x) = ofUnitHom ψ x := by
   rw [ofUnitHom_eval_sub, ←neg_one_mul, ←MulChar.coe_toMonoidHom,
     MonoidHom.map_mul, MulChar.coe_toMonoidHom,
     even_ofUnitHom_eval_neg_one _ hψ]
   simp [MulChar.coe_toMonoidHom]
 
-end dirichlet_character
+end DirichletCharacter
