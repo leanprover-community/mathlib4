@@ -935,6 +935,20 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
     · exact Fin.elim0 x
 #align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.BoundedFormula.realize_toFormula
 
+@[simp]
+theorem realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
+    (v : α → M) (v' : Fin n → M) :
+    (iSup s f).Realize v v' ↔ ∃ b ∈ s, (f b).Realize v v' := by
+  simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList,
+    exists_exists_and_eq_and]
+
+@[simp]
+theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
+    (v : α → M) (v' : Fin n → M) :
+    (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
+  simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+
 end BoundedFormula
 
 namespace Equiv
