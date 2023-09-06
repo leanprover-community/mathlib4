@@ -70,6 +70,9 @@ theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W) (hAB : A =ᶠ B) (hBC : B
   rw [← sub_add_sub_cancel]
   apply sumFiniteRank (A - B) (B - C) hAB hBC
 
+-- This is not be necessary. I just cannot structure proofs properly.
+lemma eqUpToFiniteRank_lift_eq (A B : V →ₗ[K] W) (h : A = B) : A =ᶠ B := by rw [h]
+
 def isQuasiInv (A : V →ₗ[K] W) (B : W →ₗ[K] V) : Prop :=
   1 =ᶠ B ∘ₗ A ∧ 1 =ᶠ A ∘ₗ B
 
@@ -94,11 +97,15 @@ lemma iff_finiteDimensional_ker_coker :
     FiniteDimensional ℂ (LinearMap.ker T) ∧ FiniteDimensional ℂ (F ⧸ LinearMap.range T) := by
   sorry
 
-example : isFredholm (1 : E →L[ℂ] E) := by
-  constructor
-  · --rw [LinearMap.mem_ker.mp]
-    sorry
-  · sorry
+lemma isFredholm_equiv (A : E ≃L[ℂ] F) : isFredholm (A : E →L[ℂ] F) := by
+  use A.symm
+  constructor <;> {
+    apply LinearMap.eqUpToFiniteRank_lift_eq
+    rw [←ContinuousLinearMap.coe_comp]
+    first | rw [ContinuousLinearEquiv.coe_symm_comp_coe]
+          | rw [ContinuousLinearEquiv.coe_comp_coe_symm]
+    rw [LinearMap.one_eq_id, ContinuousLinearMap.coe_id]
+  }
 
 -- TODO maybe get rid of fixed u
 universe u
