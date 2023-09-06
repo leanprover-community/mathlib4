@@ -1,22 +1,38 @@
 import Mathlib.Analysis.NormedSpace.CompactOperator
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 open Cardinal
 
 namespace LinearMap
 
-variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
+variable {K U V W : Type 0} [Field K] [AddCommGroup U] [Module K U] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
 
 def isFiniteRank (A : V →ₗ[K] W) : Prop :=
-  A.rank < ℵ₀
+  rank A < ℵ₀
 
 lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRank B):
     isFiniteRank (A + B) := by
     dsimp only [isFiniteRank]
     calc
-      (A + B).rank ≤ A.rank + B.rank := by apply LinearMap.rank_add_le
-                 _ < ℵ₀              := by apply add_lt_aleph0 hA hB
+      rank (A + B) ≤ rank A + rank B := by apply rank_add_le
+                 _ < ℵ₀              := by show add_lt_aleph0 by assumption
+
+lemma rightCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hB : isFiniteRank B):
+    isFiniteRank (A ∘ₗ B) := by
+  dsimp only [isFiniteRank]
+  calc
+    rank (A ∘ₗ B) ≤ rank B := by apply rank_comp_le_right
+                _ < ℵ₀     := by assumption
+
+lemma leftCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hA : isFiniteRank A):
+    isFiniteRank (A ∘ₗ B) := by
+  dsimp only [isFiniteRank]
+  calc
+    rank (A ∘ₗ B) ≤ rank A := by apply rank_comp_le_left
+                _ < ℵ₀     := by assumption
+
 
 lemma smulFiniteRank (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFiniteRank (c • A) := sorry
 
