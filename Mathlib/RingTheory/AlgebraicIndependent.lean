@@ -462,8 +462,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_some AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 40000 in
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) :
     RingHom.comp
