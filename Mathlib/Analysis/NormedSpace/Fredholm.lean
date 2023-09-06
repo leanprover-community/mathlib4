@@ -22,31 +22,31 @@ def eqUpToFiniteRank (A B : V →ₗ[K] W) : Prop := isFiniteRank (A - B)
 infix:50 " =ᶠ " => eqUpToFiniteRank
 
 
-lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRank B) :
+lemma isFiniteRank_sum (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRank B) :
     isFiniteRank (A + B) := by
   dsimp only [isFiniteRank]
   calc
     rank (A + B) ≤ rank A + rank B := by apply rank_add_le
                _ < ℵ₀              := by apply add_lt_aleph0 <;> assumption
 
-lemma rightCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hB : isFiniteRank B) :
+lemma isFiniteRank_comp_right (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hB : isFiniteRank B) :
     isFiniteRank (A ∘ₗ B) := by
   dsimp only [isFiniteRank]
   calc
     rank (A ∘ₗ B) ≤ rank B := by apply rank_comp_le_right
                 _ < ℵ₀     := by assumption
 
-lemma leftCompFiniteRank (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hA : isFiniteRank A) :
+lemma isFiniteRank_comp_left (A : V →ₗ[K] W) (B : U →ₗ[K] V) (hA : isFiniteRank A) :
     isFiniteRank (A ∘ₗ B) := by
   dsimp only [isFiniteRank]
   calc
     rank (A ∘ₗ B) ≤ rank A := by apply rank_comp_le_left
                 _ < ℵ₀     := by assumption
 
-lemma smulFiniteRank (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFiniteRank (c • A) := by
+lemma isFiniteRank_smul (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFiniteRank (c • A) := by
   suffices : isFiniteRank ((c • id) ∘ₗ A)
   · exact this -- "suffices + exact" cannot be changed to "change" (?!)
-  apply rightCompFiniteRank
+  apply isFiniteRank_comp_right
   assumption
 
 theorem isFiniteRank_iff_eqUpToFiniteRank_zero (A : V →ₗ[K] W) :
@@ -60,7 +60,7 @@ theorem isFiniteRank_iff_eqUpToFiniteRank_zero (A : V →ₗ[K] W) :
     simp at hA'
     assumption
 
-theorem zeroFiniteRank : isFiniteRank (0 : V →ₗ[K] W) := by
+theorem isFiniteRank_zero : isFiniteRank (0 : V →ₗ[K] W) := by
   dsimp only [isFiniteRank]
   rw [rank_zero]
   exact aleph0_pos
@@ -68,32 +68,32 @@ theorem zeroFiniteRank : isFiniteRank (0 : V →ₗ[K] W) := by
 lemma eqUpToFiniteRankLeft_of_eqUpToFiniteRank (A B : U →ₗ[K] V) (C : V →ₗ[K]  W)
     (hAB : A =ᶠ B) : C ∘ₗ A =ᶠ C ∘ₗ B := by
   dsimp only [eqUpToFiniteRank]
-  convert rightCompFiniteRank C (A - B) hAB using 1
+  convert isFiniteRank_comp_right C (A - B) hAB using 1
   rw [comp_sub]
 
 lemma eqUpToFiniteRankRight_of_eqUpToFiniteRank (A B : V →ₗ[K] W) (C : U →ₗ[K]  V)
     (hAB : A =ᶠ B) : A ∘ₗ C =ᶠ B ∘ₗ C := by
   dsimp only [eqUpToFiniteRank]
-  convert leftCompFiniteRank (A - B) C hAB  using 1
+  convert isFiniteRank_comp_left (A - B) C hAB  using 1
 
 @[refl]
 theorem eqUpToFiniteRank_refl (A : V →ₗ[K] W) :  A =ᶠ A := by
   dsimp only [eqUpToFiniteRank]
   rw [sub_self]
-  exact zeroFiniteRank
+  exact isFiniteRank_zero
 
 @[symm]
 theorem eqUpToFiniteRank_symm (A B : V →ₗ[K] W) (h: A =ᶠ B): B =ᶠ A := by
   dsimp only [eqUpToFiniteRank]
   have : B - A = (-1 : K) • (A - B) := by simp only [neg_smul, one_smul, neg_sub]
   rw [this]
-  apply smulFiniteRank
+  apply isFiniteRank_smul
   assumption
 
 @[trans]
 theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W) (hAB : A =ᶠ B) (hBC : B =ᶠ C) : A =ᶠ C := by
   dsimp only [eqUpToFiniteRank]
-  convert sumFiniteRank (A - B) (B - C) hAB hBC using 1
+  convert isFiniteRank_sum (A - B) (B - C) hAB hBC using 1
   simp
 
 -- This is not be necessary. I just cannot structure proofs properly.
@@ -133,7 +133,8 @@ lemma isFredholm_equiv (A : E ≃L[ℂ] F) : isFredholm (A : E →L[ℂ] F) := b
     rw [LinearMap.one_eq_id, ContinuousLinearMap.coe_id]
   }
 
-protected def compOld (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S.comp T) := by
+-- composition using eqUpToFiniteRank
+protected def comp' (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S.comp T) := by
   obtain ⟨T', hTl, hTr⟩ := hT
   obtain ⟨S', hSl, hSr⟩ := hS
   use (T' ∘L S')
