@@ -8,7 +8,7 @@ open Category Limits
 namespace Functor
 
 variable {C D D' H : Type _} [Category C] [Category D] [Category D'] [Category H]
-  (F : C ⥤ H) (L : C ⥤ D) (W : MorphismProperty C)
+  (F' : D ⥤ H) (F : C ⥤ H) (L : C ⥤ D) (α : F ⟶ L ⋙ F') (W : MorphismProperty C)
 
 class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
   hasColimit' : F.HasPointwiseLeftKanExtensionAt W.Q (W.Q.obj X)
@@ -49,7 +49,7 @@ lemma hasRightDerivedFunctor_of_pointwise :
 variable {F L}
 
 lemma isPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor
-    (F' : D ⥤ H) (α : F ⟶ L ⋙ F') [L.IsLocalization W] [F'.IsRightDerivedFunctor α W] :
+     [L.IsLocalization W] [F'.IsRightDerivedFunctor α W] :
     (LeftExtension.mk _ α).IsPointwiseLeftKanExtension := by
   have := hasPointwiseLeftKanExtension F L
   have := IsRightDerivedFunctor.isLeftKanExtension F' α W
