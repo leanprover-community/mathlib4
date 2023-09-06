@@ -1,20 +1,31 @@
 import Mathlib.Analysis.NormedSpace.CompactOperator
 import Mathlib.Analysis.Complex.Basic
+import Mathlib.SetTheory.Cardinal.Basic
+
+open Cardinal
 
 namespace LinearMap
 
 variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
 
 def isFiniteRank (A : V →ₗ[K] W) : Prop :=
-  FiniteDimensional K (LinearMap.range A)
+  A.rank < ℵ₀
 
 def eqUpToFiniteRank (A B : V →ₗ[K] W) : Prop :=
   isFiniteRank (A - B)
 
+lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRank B):
+    isFiniteRank (A + B) := by
+    dsimp only [isFiniteRank]
+    calc
+      (A + B).rank ≤ A.rank + B.rank := by apply LinearMap.rank_add_le
+                 _ < ℵ₀              := by apply add_lt_aleph0 hA hB
+
 @[trans]
 theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W)
     (hAB : eqUpToFiniteRank A B)
-    (hBC : eqUpToFiniteRank B C) : eqUpToFiniteRank A C := sorry
+    (hBC : eqUpToFiniteRank B C) : eqUpToFiniteRank A C := by sorry
+
 
 infix:50 " =ᶠ " => eqUpToFiniteRank
 
