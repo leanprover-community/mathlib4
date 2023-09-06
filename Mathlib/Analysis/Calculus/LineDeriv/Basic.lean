@@ -6,6 +6,7 @@ Authors: Gabriel Ebner, Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Slope
 
 #align_import analysis.calculus.deriv.basic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -201,18 +202,21 @@ theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   lineDerivWithin_congr hs (hs hx)
 
-theorem hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero :
+theorem hasLineDerivAt_iff_tendsto_slope_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
-  simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_nhdsWithin_ne_zero, zero_add,
+  simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_slope_zero, zero_add,
     zero_smul, add_zero]
 
-alias ⟨HasLineDerivAt.tendsto_nhdsWithin_ne_zero, _⟩ :=
-  hasLineDerivAt_iff_tendsto_nhdsWithin_ne_zero
+alias ⟨HasLineDerivAt.tendsto_slope_zero, _⟩ := hasLineDerivAt_iff_tendsto_slope_zero
 
-theorem HasLineDerivAt.tendsto_nhdsWithin_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+theorem HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=
-  h.tendsto_nhdsWithin_ne_zero.mono_left (nhds_right'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
+
+theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+    Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
+  h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
 end Module
 
