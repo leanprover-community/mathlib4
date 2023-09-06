@@ -11,9 +11,6 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
 def isFiniteRank (A : V →ₗ[K] W) : Prop :=
   A.rank < ℵ₀
 
-def eqUpToFiniteRank (A B : V →ₗ[K] W) : Prop :=
-  isFiniteRank (A - B)
-
 lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRank B):
     isFiniteRank (A + B) := by
     dsimp only [isFiniteRank]
@@ -21,27 +18,31 @@ lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRa
       (A + B).rank ≤ A.rank + B.rank := by apply LinearMap.rank_add_le
                  _ < ℵ₀              := by apply add_lt_aleph0 hA hB
 
+lemma smulFiniteRank (c : K) (A : V →ₗ[K] W) (hA : isFiniteRank A) : isFiniteRank (c • A) := sorry
+
 theorem zeroFiniteRank : isFiniteRank (0 : V →ₗ[K] W) := by
   dsimp only [isFiniteRank]
   rw [rank_zero]
   exact aleph0_pos
 
-@[trans]
-theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W)
-    (hAB : eqUpToFiniteRank A B)
-    (hBC : eqUpToFiniteRank B C) : eqUpToFiniteRank A C := by
-  dsimp only [eqUpToFiniteRank]
-  rw [← sub_add_sub_cancel]
-  apply sumFiniteRank (A - B) (B - C) hAB hBC
+def eqUpToFiniteRank (A B : V →ₗ[K] W) : Prop := isFiniteRank (A - B)
+infix:50 " =ᶠ " => eqUpToFiniteRank
 
 @[refl]
-theorem eqUpToFiniteRank_refl (A : V →ₗ[K] W) : eqUpToFiniteRank A A := by
+theorem eqUpToFiniteRank_refl (A : V →ₗ[K] W) :  A =ᶠ A := by
   dsimp only [eqUpToFiniteRank]
   rw [sub_self]
   exact zeroFiniteRank
 
+@[symm]
+theorem eqUpToFiniteRank_symm (A B : V →ₗ[K] W) (h: A =ᶠ B): B =ᶠ A :=
+  sorry
 
-infix:50 " =ᶠ " => eqUpToFiniteRank
+@[trans]
+theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W) (hAB : A =ᶠ B) (hBC : B =ᶠ C) : A =ᶠ C := by
+  dsimp only [eqUpToFiniteRank]
+  rw [← sub_add_sub_cancel]
+  apply sumFiniteRank (A - B) (B - C) hAB hBC
 
 def isQuasiInv (A : V →ₗ[K] W) (B : W →ₗ[K] V) : Prop :=
   1 =ᶠ B ∘ₗ A ∧ 1 =ᶠ A ∘ₗ B
