@@ -69,13 +69,13 @@ theorem _root_.Subsemigroup.mem_center_iff [Semigroup M] {z : M} :
   · exact fun a g ↦ by rw [Set.IsMulCentral.comm a g]
   · intro h
     constructor
-    · intro a
+    · intro _
       rw [h]
-    · intros b c
+    · intros _ _
       rw [mul_assoc]
-    · intros a c
+    · intros _ _
       rw [mul_assoc]
-    · intros a b
+    · intros _ _
       rw [mul_assoc]
 #align subsemigroup.mem_center_iff Subsemigroup.mem_center_iff
 #align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
