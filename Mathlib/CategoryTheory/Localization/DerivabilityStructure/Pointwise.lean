@@ -119,8 +119,8 @@ variable [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁]
   have : (F.HasPointwiseRightDerivedFunctor W₂) := by
     rw [Φ.hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure]
     infer_instance
-  have hF₁ := (F₁.isPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor α₁ W₁) Y
-  have hF₂ := (F₂.isPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor α₂ W₂)
+  have hF₁ := (F₁.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₁ W₁) Y
+  have hF₂ := (F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂)
     ((Φ.localizedFunctor L₁ L₂).obj Y)
   sorry
 

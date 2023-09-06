@@ -48,12 +48,12 @@ lemma hasRightDerivedFunctor_of_pointwise :
 
 variable {F L}
 
-lemma isPointwiseLeftKanExtension_of_hasPointwiseRightDerivedFunctor
+noncomputable def isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor
      [L.IsLocalization W] [F'.IsRightDerivedFunctor α W] :
     (LeftExtension.mk _ α).IsPointwiseLeftKanExtension := by
   have := hasPointwiseLeftKanExtension F L
   have := IsRightDerivedFunctor.isLeftKanExtension F' α W
-  exact isPointwiseLeftKanExtension_of_isLeftKanExtension F' α
+  exact isPointwiseLeftKanExtensionOfIsLeftKanExtension F' α
 
 end
 

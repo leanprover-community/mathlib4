@@ -103,7 +103,7 @@ abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtension
 
 variable {E E'}
 
-lemma isPointwiseLeftKanExtensionAt_iff_of_iso (e : E ≅ E') (Y : D) :
+lemma isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
     E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y where
   toFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor F L Y).mapIso e)
   invFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor F L Y).mapIso e.symm)
@@ -114,16 +114,19 @@ lemma isPointwiseLeftKanExtensionAt_iff_of_iso (e : E ≅ E') (Y : D) :
     dsimp only [IsPointwiseLeftKanExtensionAt]
     apply Subsingleton.elim
 
-lemma isPointwiseLeftKanExtension_iff_of_iso (e : E ≅ E') :
+lemma isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
-  toFun h := fun Y => (isPointwiseLeftKanExtensionAt_iff_of_iso e Y) (h Y)
-  invFun h := fun Y => (isPointwiseLeftKanExtensionAt_iff_of_iso e Y).symm (h Y)
+  toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
+  invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
   left_inv h := by
     aesop_cat
     funext
   right_inv h := by
     aesop
     funext
+
+/-def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
+    E.IsPointwiseLeftKanExtensionAt Y ≃ E.IsPointwiseLeftKanExtensionAt Y' := sorry-/
 
 variable (E E')
 
@@ -223,10 +226,10 @@ instance : HasLeftKanExtension L F :=
 
 variable {F L}
 
-lemma isPointwiseLeftKanExtension_of_isLeftKanExtension (F' : D ⥤ H) (α : F ⟶ L ⋙ F')
+noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H) (α : F ⟶ L ⋙ F')
     [F'.IsLeftKanExtension α] :
     (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
-  LeftExtension.isPointwiseLeftKanExtension_iff_of_iso
+  LeftExtension.isPointwiseLeftKanExtensionEquivOfIso
     (IsColimit.coconePointUniqueUpToIso (F.pointwiseLeftKanExtensionIsUniversal L)
       (F'.leftKanExtensionUniversal α))
     (F.pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L)
