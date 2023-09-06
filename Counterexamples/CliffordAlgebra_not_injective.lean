@@ -99,19 +99,19 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
       and_imp, forall_apply_eq_imp_iff₂, ← add_assoc, ←
       Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_const,
       Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_toFun] at h
-    refine' (h _ hm).imp fun i hi => ⟨Set.mem_univ _, _⟩
+    refine (h _ hm).imp fun i hi => ⟨Set.mem_univ _, ?_⟩
     rintro hmi
     rw [hmi] at hi
     norm_num at hi
   rw [as_sum x, CharTwo.sum_mul_self]
-  refine' sum_mem fun m hm => _
+  refine sum_mem fun m hm => ?_
   rw [mem_kIdeal_iff, monomial_mul]
   intro m' hm'
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
   obtain ⟨i, _, hi⟩ := this m hm
   simp_rw [←one_add_one_eq_two]
-  refine' ⟨i, Nat.add_le_add _ _⟩ <;> rwa [Nat.one_le_iff_ne_zero]
+  refine ⟨i, Nat.add_le_add ?_ ?_⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
 def K : Type _ := _ ⧸ kIdeal
@@ -124,8 +124,8 @@ instance : AddCommGroup K := by dsimp only [K]; infer_instance
 instance : AddCommMonoid K := by dsimp only [K]; infer_instance
 
 theorem comap_C_span_le_bot : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) ≤ ⊥ := by
-  refine' (Ideal.comap_span_le _ _ (constantCoeff_C _) _).trans _
-  refine' (Ideal.span_le_bot _).2 _
+  refine (Ideal.comap_span_le _ _ (constantCoeff_C _) _).trans ?_
+  refine (Ideal.span_le_bot _).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
   rw [RingHom.map_mul, constantCoeff_X, MulZeroClass.mul_zero, Set.mem_singleton_iff]
 
@@ -305,7 +305,7 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
   fun h => algebraMap_not_injective fun x y hxy => by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     let uQ := Q.comp uU.toLinearMap
-    refine' h K (ULift L) (Q.comp uU.toLinearMap) _
+    refine h K (ULift L) (Q.comp uU.toLinearMap) ?_
     let uC := CliffordAlgebra.map Q uQ uU.symm.toLinearMap fun _ => rfl
     have := uC.congr_arg hxy
     rwa [AlgHom.commutes, AlgHom.commutes] at this
