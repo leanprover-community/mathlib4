@@ -191,7 +191,7 @@ end MulActionHom
 /-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
 homomorphism. -/
 @[simps]
-def SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
+def SMulCommClass.toMulActionHom {M} (N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α]
     (c : M) : α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
