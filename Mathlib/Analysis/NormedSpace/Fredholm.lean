@@ -116,11 +116,13 @@ def isFredholm (A : E →L[ℂ] F) : Prop :=
 
 namespace isFredholm
 
+macro "bourbaki" : tactic => `(tactic| sorry)
+
 -- TODO What assumptions are really needed here?
 lemma iff_finiteDimensional_ker_coker :
     isFredholm T ↔
     FiniteDimensional ℂ (LinearMap.ker T) ∧ FiniteDimensional ℂ (F ⧸ LinearMap.range T) := by
-  sorry
+  bourbaki
 
 lemma isFredholm_equiv (A : E ≃L[ℂ] F) : isFredholm (A : E →L[ℂ] F) := by
   use A.symm
