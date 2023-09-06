@@ -891,7 +891,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Limit
-import Mathlib.CategoryTheory.Category.Fact
+import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Category.GaloisConnection
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Category.Init
