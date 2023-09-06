@@ -192,6 +192,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -3262,6 +3263,7 @@ import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction

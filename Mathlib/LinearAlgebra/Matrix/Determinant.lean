@@ -638,7 +638,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     rw [mem_preserving_snd] at hσ
     obtain ⟨⟨k, x⟩, hkx⟩ := not_forall.mp hσ
     rw [Finset.prod_eq_zero (Finset.mem_univ (k, x)), mul_zero]
-    rw [← @Prod.mk.eta _ _ (σ (k, x)), blockDiagonal_apply_ne]
+    rw [blockDiagonal_apply_ne]
     exact hkx
 #align matrix.det_block_diagonal Matrix.det_blockDiagonal
 

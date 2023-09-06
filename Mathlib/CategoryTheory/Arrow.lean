@@ -68,12 +68,12 @@ theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
 
 -- porting note: added to ease automation
-@[simp]
+@[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
   (f ≫ g).left = f.left ≫ g.left := rfl
 
 -- porting note: added to ease automation
-@[simp]
+@[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
   (f ≫ g).right = f.right ≫ g.right := rfl
 
@@ -324,6 +324,8 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
 
 variable (C D)
 
+/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
+a functor `F : C ⥤ D` to `F.mapArrow`. -/
 @[simps]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
   obj F := F.mapArrow
@@ -334,6 +336,7 @@ def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
 
 variable {C D}
 
+/-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   functor := e.functor.mapArrow
   inverse := e.inverse.mapArrow
@@ -341,7 +344,8 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
 
 instance mapArrow_isEquivalence (F : C ⥤ D) [IsEquivalence F] :
-  IsEquivalence F.mapArrow := IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
+    IsEquivalence F.mapArrow :=
+  IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
 
 end Functor
 
