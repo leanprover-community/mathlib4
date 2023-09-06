@@ -57,7 +57,7 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (W₃ : MorphismProperty C₁) (hW₃ : W₃.IsInvertedBy (L₁ ⋙ L₂))
     (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.map L₁) :
     (L₁ ⋙ L₂).IsLocalization W₃ := by
-  -- The proof proceed by reducing to the case of the constructed
+  -- The proof proceeds by reducing to the case of the constructed
   -- localized categories, which satisfy the strict universal property
   -- of the localization. In order to do this, we introduce
   -- an equivalence of categories `E₂ : C₂ ≅ W₁.Localization`. Via
