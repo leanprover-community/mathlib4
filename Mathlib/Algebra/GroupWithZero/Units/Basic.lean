@@ -97,7 +97,7 @@ theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
 
 theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
-alias Ring.inverse_of_isUnit ← _root_.IsUnit.ringInverse
+alias _root_.IsUnit.ringInverse := Ring.inverse_of_isUnit
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
 @[simp]
