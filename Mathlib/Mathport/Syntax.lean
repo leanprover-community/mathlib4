@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
+import Std.Tactic.SplitIfs
 import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
@@ -81,7 +82,6 @@ import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto

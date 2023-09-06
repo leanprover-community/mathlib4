@@ -34,10 +34,10 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/std4",
+   {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "e8c27f7d90ee71470558efd1bc197fe55068c748",
+    "rev": "989014d19888215284d7cdb0c40cbad920248541",
     "opts": {},
     "name": "std",
-    "inputRev?": "main",
+    "inputRev?": "split_ifs",
     "inherited": false}}]}

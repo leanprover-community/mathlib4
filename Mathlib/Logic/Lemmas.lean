@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Convert
-import Mathlib.Tactic.SplitIfs
+import Std.Tactic.SplitIfs
 
 #align_import logic.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
