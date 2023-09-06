@@ -24,8 +24,10 @@ lemma sumFiniteRank (A B : V →ₗ[K] W) (hA : isFiniteRank A) (hB : isFiniteRa
 @[trans]
 theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W)
     (hAB : eqUpToFiniteRank A B)
-    (hBC : eqUpToFiniteRank B C) : eqUpToFiniteRank A C := by sorry
-
+    (hBC : eqUpToFiniteRank B C) : eqUpToFiniteRank A C := by
+  dsimp only [eqUpToFiniteRank]
+  rw [← sub_add_sub_cancel]
+  apply sumFiniteRank (A - B) (B - C) hAB hBC
 
 infix:50 " =ᶠ " => eqUpToFiniteRank
 
