@@ -676,6 +676,10 @@ noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.Bo
 noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   (s.toList.map f).foldr (. ⊓ .) ⊤
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
 
 variable {v : α → M} {xs : Fin l → M}

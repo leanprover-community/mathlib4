@@ -99,8 +99,8 @@ variable (R)
 
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
- -/
+This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+-/
 @[mk_iff charP_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
   cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
@@ -466,6 +466,9 @@ theorem charP_to_charZero (R : Type*) [AddGroupWithOne R] [CharP R 0] : CharZero
   charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)
 #align char_p.char_p_to_char_zero CharP.charP_to_charZero
 
+theorem charP_zero_iff_charZero (R : Type*) [AddGroupWithOne R] : CharP R 0 ↔ CharZero R :=
+  ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
+
 theorem cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
@@ -483,6 +486,9 @@ theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=
   char_ne_zero_of_finite R (ringChar R)
 #align char_p.ring_char_ne_zero_of_finite CharP.ringChar_ne_zero_of_finite
+
+theorem ringChar_zero_iff_CharZero [NonAssocRing R] : ringChar R = 0 ↔ CharZero R := by
+  rw [ringChar.eq_iff, charP_zero_iff_charZero]
 
 end
 

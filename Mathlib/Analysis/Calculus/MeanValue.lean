@@ -361,7 +361,7 @@ theorem norm_image_sub_le_of_norm_deriv_le_segment' {f' : ℝ → E} {C : ℝ}
   refine'
     norm_image_sub_le_of_norm_deriv_right_le_segment (fun x hx => (hf x hx).continuousWithinAt)
       (fun x hx => _) bound
-  exact (hf x <| Ico_subset_Icc_self hx).nhdsWithin (Icc_mem_nhdsWithin_Ici hx)
+  exact (hf x <| Ico_subset_Icc_self hx).mono_of_mem (Icc_mem_nhdsWithin_Ici hx)
 #align norm_image_sub_le_of_norm_deriv_le_segment' norm_image_sub_le_of_norm_deriv_le_segment'
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
@@ -427,9 +427,9 @@ theorem eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
     (hderiv : EqOn (derivWithin f (Icc a b)) (derivWithin g (Icc a b)) (Ico a b)) (hi : f a = g a) :
     ∀ y ∈ Icc a b, f y = g y := by
   have A : ∀ y ∈ Ico a b, HasDerivWithinAt f (derivWithin f (Icc a b) y) (Ici y) y := fun y hy =>
-    (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.nhdsWithin (Icc_mem_nhdsWithin_Ici hy)
+    (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem (Icc_mem_nhdsWithin_Ici hy)
   have B : ∀ y ∈ Ico a b, HasDerivWithinAt g (derivWithin g (Icc a b) y) (Ici y) y := fun y hy =>
-    (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.nhdsWithin (Icc_mem_nhdsWithin_Ici hy)
+    (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem (Icc_mem_nhdsWithin_Ici hy)
   exact
     eq_of_has_deriv_right_eq A (fun y hy => (hderiv hy).symm ▸ B y hy) fdiff.continuousOn
       gdiff.continuousOn hi
@@ -684,7 +684,7 @@ theorem lipschitzOnWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Diff
 then the function is `C`-Lipschitz. Version with `deriv` and `LipschitzWith`. -/
 theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖deriv f x‖₊ ≤ C) : LipschitzWith C f :=
-  lipschitz_on_univ.1 <|
+  lipschitzOn_univ.1 <|
     convex_univ.lipschitzOnWith_of_nnnorm_deriv_le (fun x _ => hf x) fun x _ => bound x
 #align lipschitz_with_of_nnnorm_deriv_le lipschitzWith_of_nnnorm_deriv_le
 

@@ -77,12 +77,6 @@ instance inv [Inv α] : Inv (WithOne α) :=
 #align with_zero.has_neg WithZero.neg
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
-  { WithOne.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
-@[to_additive]
 instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
   { WithOne.one, WithOne.inv with inv_one := rfl }
 
@@ -295,11 +289,6 @@ theorem inv_zero [Inv α] : (0 : WithZero α)⁻¹ = 0 :=
   rfl
 #align with_zero.inv_zero WithZero.inv_zero
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
-  { WithZero.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
 instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
 
@@ -347,25 +336,6 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
 
 instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) :=
   { WithZero.divInvMonoid, WithZero.invOneClass with }
-
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { WithZero.divInvMonoid, WithZero.involutiveInv with
-    mul_inv_rev := fun a b =>
-      match a, b with
-      | none, none => rfl
-      | none, some b => rfl
-      | some a, none => rfl
-      | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
-      match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
-        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
-
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
-  { WithZero.divisionMonoid, WithZero.commSemigroup with }
 
 section Group
 
