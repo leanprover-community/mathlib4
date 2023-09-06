@@ -72,6 +72,10 @@ example (x : ℝ) : deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(s
 by { simp, ring }
 ```
 
+The relationship between the derivative of a function and its definition from a standard
+undergraduate course as the limit of the slope `(f y - f x) / (y - x)` as `y` tends to `𝓝[≠] x`
+is developped in the file `Slope.lean`.
+
 ## Implementation notes
 
 Most of the theorems are direct restatements of the corresponding theorems
@@ -282,37 +286,6 @@ theorem hasDerivAt_iff_tendsto :
     HasDerivAt f f' x ↔ Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - (x' - x) • f'‖) (𝓝 x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 #align has_deriv_at_iff_tendsto hasDerivAt_iff_tendsto
-
-theorem hasDerivAt_iff_tendsto_nhdsWithin_ne_zero :
-    HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
-  calc HasDerivAt f f' x
-    ↔ (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[𝓝 x] fun x' => x' - x :=
-        hasDerivAt_iff_isLittleO
-  _ ↔ (fun t : 𝕜 => f (x + t) - f x - t • f') =o[𝓝 0] fun t => t := by
-        simp only [← (map_add_left_nhds_zero x), isLittleO_map, Function.comp, add_sub_cancel']
-  _ ↔ (fun t : 𝕜 => f (x + t) - f x - t • f') =o[𝓝[≠] 0] fun t => t := by
-        have : 𝓝 (0 : 𝕜) = 𝓝[≠] 0 ⊔ principal {0} := by
-          rw [← nhdsWithin_univ, ← union_compl_self {(0 : 𝕜)}]
-          simp only [singleton_union, mem_compl_iff, mem_singleton_iff, not_true, nhdsWithin_insert,
-            pure_zero, nonpos_iff, principal_singleton, sup_comm]
-        simp only [this, nonpos_iff, isLittleO_sup, and_iff_left_iff_imp, implies_true,
-          isLittleO_principal, mem_singleton_iff, forall_eq, add_zero, sub_self, zero_smul]
-  _ ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
-        have A : (fun t ↦ t⁻¹ • (f (x + t) - f x) - f') =ᶠ[𝓝[≠] 0]
-          (fun t ↦ t⁻¹ • (f (x + t) - f x - t • f')) := by
-          filter_upwards [self_mem_nhdsWithin] with t (ht : t ≠ 0)
-          simp [smul_add, smul_sub, smul_smul, inv_mul_cancel ht]
-        have B : ∀ (t : 𝕜), ‖t‖ = 0 → ‖f (x + t) - f x - t • f'‖ = 0 := by
-          intro t ht; simp [norm_eq_zero.1 ht]
-        rw [← tendsto_sub_nhds_zero_iff, tendsto_congr' A, tendsto_zero_iff_norm_tendsto_zero]
-        simp_rw [norm_smul, norm_inv, ← div_eq_inv_mul, ← isLittleO_iff_tendsto B]
-        rw [isLittleO_norm_norm]
-
-alias ⟨HasDerivAt.tendsto_nhdsWithin_ne_zero, _⟩ := hasDerivAt_iff_tendsto_nhdsWithin_ne_zero
-
-theorem HasDerivAt.tendsto_nhdsWithin_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
-    Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[>] 0) (𝓝 f') :=
-  h.tendsto_nhdsWithin_ne_zero.mono_left (nhds_right'_le_nhds_ne 0)
 
 theorem HasDerivAtFilter.isBigO_sub (h : HasDerivAtFilter f f' x L) :
     (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
