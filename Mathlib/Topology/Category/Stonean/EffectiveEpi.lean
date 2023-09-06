@@ -244,9 +244,9 @@ theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
 instance instPrecoherent: Precoherent Stonean.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
-  refine ⟨α, inferInstance, fun a => (pullback f (π₁ a)).presentation, fun a =>
-    toCompHaus.preimage (presentation.π _ ≫ (pullback.fst _ _)), ?_, id, fun a =>
-    toCompHaus.preimage (presentation.π _ ≫ (pullback.snd _ _ )), fun a => ?_⟩
+  refine ⟨α, inferInstance, fun a => (CompHaus.pullback f (π₁ a)).presentation, fun a =>
+    toCompHaus.preimage (presentation.π _ ≫ (CompHaus.pullback.fst _ _)), ?_, id, fun a =>
+    toCompHaus.preimage (presentation.π _ ≫ (CompHaus.pullback.snd _ _ )), fun a => ?_⟩
   · refine ((effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
     have h₁' := ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).1 h₁.toCompHaus
     obtain ⟨a, x, h⟩ := h₁' (f b)
