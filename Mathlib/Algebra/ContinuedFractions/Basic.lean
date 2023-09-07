@@ -73,25 +73,7 @@ def map {β : Type*} (f : α → β) (gp : Pair α) : Pair β :=
   ⟨f gp.a, f gp.b⟩
 #align generalized_continued_fraction.pair.map GeneralizedContinuedFraction.Pair.map
 
-section coe
-
--- Fix another type `β` which we will convert to.
-variable {β : Type*} [Coe α β]
-
--- Porting note: added so we can add the `@[coe]` attribute
-/-- The coercion between numerator-denominator pairs happens componentwise. -/
-@[coe]
-def coeFn : Pair α → Pair β := map (↑)
-
-/-- Coerce a pair by elementwise coercion. -/
-instance : Coe (Pair α) (Pair β) :=
-  ⟨coeFn⟩
-
-@[simp, norm_cast]
-theorem coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
-#align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
-
-end coe
+#noalign generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair
 
 end GeneralizedContinuedFraction.Pair
 
@@ -158,31 +140,7 @@ def Terminates (g : GeneralizedContinuedFraction α) : Prop :=
   g.s.Terminates
 #align generalized_continued_fraction.terminates GeneralizedContinuedFraction.Terminates
 
-section coe
-
-/-! Interlude: define some expected coercions. -/
-
--- Fix another type `β` which we will convert to.
-variable {β : Type*} [Coe α β]
-
--- Porting note: Added to put `@[coe]` attr on it.
-/-- The coercion between `GeneralizedContinuedFraction` happens on the head term
-and all numerator-denominator pairs componentwise. -/
-@[coe]
-def coeFn : GeneralizedContinuedFraction α → GeneralizedContinuedFraction β :=
-  fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩
-
-/-- Coerce a gcf by elementwise coercion. -/
-instance : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction β) :=
-  ⟨coeFn⟩
-
-@[simp, norm_cast]
-theorem coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
-    (g : GeneralizedContinuedFraction β) =
-      ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
-#align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_toGeneralizedContinuedFraction
-
-end coe
+#noalign generalized_continued_fraction.coe_to_generalized_continued_fraction
 
 end GeneralizedContinuedFraction
 
