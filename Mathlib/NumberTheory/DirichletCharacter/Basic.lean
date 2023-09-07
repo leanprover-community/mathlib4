@@ -91,8 +91,8 @@ lemma ofUnitHom_eq {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     rw [←Units.coe_map (ZMod.castHom hm (ZMod n) : ZMod m →* ZMod n) a]
     apply Units.isUnit
   rw [ofUnitHom_eq_char' _ ha]
-  simp only [change_level_def, ofUnitHom_eq, Units.isUnit, not_true, equivToUnitHom_symm_coe, MonoidHom.coe_comp,
-    Function.comp_apply]
+  simp only [change_level_def, ofUnitHom_eq, Units.isUnit, not_true, equivToUnitHom_symm_coe,
+      MonoidHom.coe_comp, Function.comp_apply]
   congr
   simp
   congr
