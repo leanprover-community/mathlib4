@@ -44,20 +44,26 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     -- A backslash preceding any other letter is ignored.
     -- ```
     -- If this becomes an issue we can implement the curl spec.
+
+    -- Note we append a '_' to the filenames here,
+    -- which `downloadFiles` then removes when the download is successful.
     pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
-      (IO.CACHEDIR / fileName).toString.quote}\n"
+      (IO.CACHEDIR / (fileName ++ "_")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
   let fileName := hash.asLTar
   let url ← mkFileURL fileName none
   let path := IO.CACHEDIR / fileName
+  let fileName_ := fileName ++ "_"
+  let path_ := IO.CACHEDIR / fileName_
   let out ← IO.Process.output
-    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", path.toString] }
+    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", path_.toString] }
   if out.exitCode = 0 then
+    IO.FS.rename path_ path
     pure true
   else
-    IO.FS.removeFile path
+    IO.FS.removeFile path_
     pure false
 
 /-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
@@ -79,7 +85,11 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         if !line.isEmpty then
           let result ← IO.ofExcept <| Lean.Json.parse line
           match result.getObjValAs? Nat "http_code" with
-          | .ok 200 => success := success + 1
+          | .ok 200 =>
+            if let .ok fn := result.getObjValAs? String "filename_effective" then
+              if (← System.FilePath.pathExists fn) && fn.endsWith "_" then
+                IO.FS.rename fn (fn.dropRight 1)
+            success := success + 1
           | .ok 404 => pure ()
           | _ =>
             failed := failed + 1
