@@ -10,15 +10,14 @@ variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRe
 def SimpleGraph.Walk.IsHamiltonian (p : G.Walk u v) : Prop :=
   ∀ v : V, p.support.count v = 1
 
-/-- If `p` is a Hamiltonian path and `w` is a member of the vertex set,
-`w` is in the vertex set of `p`. -/
+/-- If `p` is a Hamiltonian path and `w` is a member of the vertex set of `p`. -/
 lemma SimpleGraph.Walk.IsHamiltonian.contains_vertex (p : G.Walk u v) (hp : p.IsHamiltonian)
     (w : V) : w ∈ p.support := by
   specialize hp w
   rw [←List.count_pos_iff_mem, hp]
   norm_num1
 
-/-- If `p` is a Hamiltonian path -/
+/-- If `p` is a Hamiltonian path of a graph `G` its length is equal to the number of vertices of `G`.-/
 lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltonian) :
     p.length = Fintype.card V - 1 := by
     dsimp only [IsHamiltonian] at hp
@@ -121,7 +120,7 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHami
           · exact fun a_1 ↦ Finset.mem_univ a
           · intro ha
             rw [List.mem_toFinset]
-            exact SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex p hp a
+            exact SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex p hp a -- this doesn't work
         · rw [←h₂]
           rw [h₁]
           rw [length_relation]
@@ -166,6 +165,6 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamil
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
   (G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle) ∨ (Fintype.card V = 1)
 
-/-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
-theorem Dirac {G : SimpleGraph V} [DecidableRel G.Adj] (CardinalityCondition: Fintype.card V ≥ 3) (MinDegreeCondition: G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian := by
-  sorry
+-- /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
+-- theorem Dirac {G : SimpleGraph V} [DecidableRel G.Adj] (CardinalityCondition: Fintype.card V ≥ 3) (MinDegreeCondition: G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian := by
+--  sorry
