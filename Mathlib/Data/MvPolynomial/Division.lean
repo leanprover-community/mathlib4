@@ -368,10 +368,4 @@ lemma prime_X (i : σ) [IsDomain R'] : Prime (X (R := R') i) := by
   rwa [X_dvd_iff_modMonomial_eq_zero, mul_modMonomial_finsupp_single, mul_eq_zero,
     ← X_dvd_iff_modMonomial_eq_zero, ← X_dvd_iff_modMonomial_eq_zero] at h
 
-lemma prime_X_sub_C (i : σ) (c : R') [IsDomain R'] : Prime (X i - C c) := by
-  refine ⟨X_sub_C_ne_zero i c, X_sub_C_not_isUnit i c, ?_⟩
-  intro a b h
-  rwa [X_dvd_iff_modMonomial_eq_zero, mul_modMonomial_finsupp_single, mul_eq_zero,
-    ← X_dvd_iff_modMonomial_eq_zero, ← X_dvd_iff_modMonomial_eq_zero] at h
-
 end MvPolynomial
