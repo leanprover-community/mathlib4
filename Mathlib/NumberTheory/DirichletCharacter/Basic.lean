@@ -15,7 +15,11 @@ group `(ZMod n)ˣ` to `Rˣ`. We then obtain some properties of `ofUnitHom χ`.
 Main definitions:
 
 - `DirichletCharacter`: The type representing a Dirichlet character.
+
+## TODO
+
 - `change_level`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
+- definition of conductor
 
 ## Tags
 
@@ -61,49 +65,5 @@ lemma isPeriodic (m : ℕ) (hm : n ∣ m) (a : ℤ) :
   ofUnitHom χ (a + m) = ofUnitHom χ a := by
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
-
-/-- Extends the Dirichlet character χ of level n to level m, where n ∣ m. -/
-def change_level {m : ℕ} (hm : n ∣ m) : DirichletCharacter R n →* DirichletCharacter R m :=
-{ toFun := λ ψ => ψ.comp (Units.map (ZMod.castHom hm (ZMod n))),
-  map_one' := by simp,
-  map_mul' := λ ψ₁ ψ₂ => MonoidHom.mul_comp _ _ _, }
-
-lemma change_level_def {m : ℕ} (hm : n ∣ m) :
-    change_level hm χ = χ.comp (Units.map (ZMod.castHom hm (ZMod n))) := rfl
-
-namespace change_level
-lemma self : change_level (dvd_refl n) χ = χ := by
-  simp [change_level_def]
-
-lemma trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
-  change_level (dvd_trans hm hd) χ = change_level hd (change_level hm χ) := by
-  repeat rw [change_level_def]
-  rw [MonoidHom.comp_assoc, ←Units.map_comp]
-  change _ = χ.comp (Units.map ↑((ZMod.castHom hm (ZMod n)).comp (ZMod.castHom hd (ZMod m))))
-  congr
-  simp
-
-lemma ofUnitHom_eq {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
-  ofUnitHom (change_level hm χ) a = ofUnitHom χ a := by
-  have ha : IsUnit ((a : ZMod m) : ZMod n)
-  · rw [←@ZMod.castHom_apply _ _ _ n _ hm (a : ZMod m)]
-    change IsUnit ((ZMod.castHom hm (ZMod n) : ZMod m →* ZMod n) ↑a)
-    rw [←Units.coe_map (ZMod.castHom hm (ZMod n) : ZMod m →* ZMod n) a]
-    apply Units.isUnit
-  rw [ofUnitHom_eq_char' _ ha]
-  simp only [change_level_def, ofUnitHom_eq, Units.isUnit, not_true, equivToUnitHom_symm_coe,
-      MonoidHom.coe_comp, Function.comp_apply]
-  congr
-  simp
-  congr
-  rw [← Units.eq_iff]
-  simp
-
-lemma ofUnitHom_eq' {m : ℕ} (hm : n ∣ m) {a : ZMod m} (ha : IsUnit a) :
-ofUnitHom (change_level hm χ) a = ofUnitHom χ a := by
-  rw [←IsUnit.unit_spec ha]
-  rw [ofUnitHom_eq]
-
-end change_level
 
 end DirichletCharacter
