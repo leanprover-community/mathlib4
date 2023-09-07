@@ -2,15 +2,12 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.dual
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.LocallyConvex.Polar
+
+#align_import analysis.normed_space.dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The topological dual of a normed space
@@ -21,16 +18,16 @@ dual.
 
 For base field `𝕜 = ℝ` or `𝕜 = ℂ`, this map is actually an isometric embedding; we provide a
 version `NormedSpace.inclusionInDoubleDualLi` of the map which is of type a bundled linear
-isometric embedding, `E →ₗᵢ[𝕜] (dual 𝕜 (dual 𝕜 E))`.
+isometric embedding, `E →ₗᵢ[𝕜] (Dual 𝕜 (Dual 𝕜 E))`.
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
 
 ## Main definitions
 
-* `inclusion_in_double_dual` and `inclusion_in_double_dual_li` are the inclusion of a normed space
+* `inclusionInDoubleDual` and `inclusionInDoubleDualLi` are the inclusion of a normed space
   in its double dual, considered as a bounded linear map and as a linear isometry, respectively.
-* `polar 𝕜 s` is the subset of `dual 𝕜 E` consisting of those functionals `x'` for which
+* `polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals `x'` for which
   `‖x' z‖ ≤ 1` for every `z ∈ s`.
 
 ## Tags
@@ -49,11 +46,11 @@ namespace NormedSpace
 
 section General
 
-variable (𝕜 : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 
-variable (E : Type _) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable (F : Type _) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
 def Dual :=
@@ -181,16 +178,16 @@ section PolarSets
 open Metric Set NormedSpace
 
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`), the polar
-`polar 𝕜 s` is the subset of `dual 𝕜 E` consisting of those functionals which
+`polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals which
 evaluate to something of norm at most one at all points `z ∈ s`. -/
-def polar (𝕜 : Type _) [NontriviallyNormedField 𝕜] {E : Type _} [SeminormedAddCommGroup E]
+def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
 #align normed_space.polar NormedSpace.polar
 
-variable (𝕜 : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
@@ -261,12 +258,11 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
         (dist_nonneg.trans hx'))
     _ = r / r := (inv_mul_eq_div _ _)
     _ ≤ 1 := div_self_le_one r
-
 #align normed_space.closed_ball_inv_subset_polar_closed_ball NormedSpace.closedBall_inv_subset_polar_closedBall
 
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with
 inverse radius. -/
-theorem polar_closedBall {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_closedBall {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
   refine' Subset.antisymm _ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h

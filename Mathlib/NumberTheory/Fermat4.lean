@@ -2,15 +2,12 @@
 Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
-
-! This file was ported from Lean 3 source module number_theory.fermat4
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.LinearCombination
+
+#align_import number_theory.fermat4 from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # Fermat's Last Theorem for the case n = 4
@@ -77,7 +74,6 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
     use Int.natAbs c
     rw [Set.mem_setOf_eq]
     use ⟨a, ⟨b, c⟩⟩
-    tauto
   let m : ℕ := Nat.find S_nonempty
   have m_mem : m ∈ S := Nat.find_spec S_nonempty
   rcases m_mem with ⟨s0, hs0, hs1⟩
@@ -86,7 +82,6 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
   rw [← hs1]
   apply Nat.find_min'
   use ⟨a1, ⟨b1, c1⟩⟩
-  tauto
 #align fermat_42.exists_minimal Fermat42.exists_minimal
 
 /-- a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` must have `a` and `b` coprime. -/
@@ -147,7 +142,6 @@ theorem exists_pos_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
   obtain ⟨a0, b0, c0, hf, hc⟩ := exists_odd_minimal h
   rcases lt_trichotomy 0 c0 with (h1 | h1 | h1)
   · use a0, b0, c0
-    tauto
   · exfalso
     exact ne_zero hf.1 h1.symm
   · use a0, b0, -c0, neg_of_minimal hf, hc

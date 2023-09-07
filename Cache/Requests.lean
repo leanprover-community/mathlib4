@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
+set_option autoImplicit true
+
 namespace Cache.Requests
 
 /-- Azure blob URL -/
@@ -28,14 +30,26 @@ section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded -/
 def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
-  let l ← hashMap.foldM (init := []) fun acc _ hash => do
-    let fileName := hash.asTarGz
-    pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
-  return "\n".intercalate l
+  -- We sort the list so that the large files in `MathlibExtras` are requested first.
+  hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
+    |>.foldlM (init := "") fun acc ⟨_, hash⟩ => do
+    let fileName := hash.asLTar
+    -- Below we use `String.quote`, which is intended for quoting for use in Lean code
+    -- this does not exactly match the requirements for quoting for curl:
+    -- ```
+    -- If the parameter contains whitespace (or starts with : or =),
+    --  the parameter must be enclosed within quotes.
+    -- Within double quotes, the following escape sequences are available:
+    --  \, ", \t, \n, \r and \v.
+    -- A backslash preceding any other letter is ignored.
+    -- ```
+    -- If this becomes an issue we can implement the curl spec.
+    pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
+      (IO.CACHEDIR / fileName).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
-  let fileName := hash.asTarGz
+  let fileName := hash.asLTar
   let url ← mkFileURL fileName none
   let path := IO.CACHEDIR / fileName
   let out ← IO.Process.output
@@ -48,7 +62,7 @@ def downloadFile (hash : UInt64) : IO Bool := do
 
 /-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
-  let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
+  let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
@@ -57,13 +71,17 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let (_, failed, done) ← IO.runCurlStreaming args (← IO.monoMsNow, 0, 0) fun a line => do
-        let mut (last, failed, done) := a
+      let (_, success, failed, done) ←
+          IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
+        let mut (last, success, failed, done) := a
         -- output errors other than 404 and remove corresponding partial downloads
         let line := line.trim
         if !line.isEmpty then
           let result ← IO.ofExcept <| Lean.Json.parse line
-          if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
+          match result.getObjValAs? Nat "http_code" with
+          | .ok 200 => success := success + 1
+          | .ok 404 => pure ()
+          | _ =>
             failed := failed + 1
             if let .ok e := result.getObjValAs? String "errormsg" then
               IO.println e
@@ -74,19 +92,23 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           done := done + 1
           let now ← IO.monoMsNow
           if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded {done}/{size} file(s) [{100*done/size}%]"
+            let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
             if failed != 0 then
-              msg := msg ++ ", {failed} failed"
+              msg := msg ++ s!", {failed} failed"
             IO.eprint msg
             last := now
-        pure (last, failed, done)
+        pure (last, success, failed, done)
       if done > 0 then
         -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded {size}/{size} file(s) [100%]"
+        let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
         if failed != 0 then
-          msg := msg ++ ", {failed} failed"
+          msg := msg ++ s!", {failed} failed"
         IO.eprintln msg
       IO.FS.removeFile IO.CURLCFG
+      if success + failed < done then
+        IO.eprintln "Warning: some files were not found in the cache."
+        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
@@ -98,17 +120,17 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) (decompress : Bool) :
+def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO Unit := do
   downloadFiles hashMap forceDownload parallel
   if decompress then
-    IO.unpackCache hashMap
+    IO.unpackCache hashMap forceUnpack
 
 end Get
 
 section Put
 
-/-- Formats the config file for `curl`, containing the list of files to be uploades -/
+/-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
   let l ← fileNames.data.mapM fun fileName : String => do
     pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {← mkFileURL fileName (some token)}"
@@ -143,7 +165,7 @@ def getGitCommitHash : IO String := do
   | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
 
 /--
-Sends a commit file to the server, containing the hashes of the respective commited files.
+Sends a commit file to the server, containing the hashes of the respective committed files.
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/

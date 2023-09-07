@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.order_dual
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+
+#align_import algebra.order.monoid.order_dual from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-! # Ordered monoid structures on the order dual. -/
 
@@ -84,7 +81,7 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
-  { OrderDual.partialOrder α, instCommMonoidOrderDual with
+  { OrderDual.instPartialOrder α, instCommMonoidOrderDual with
     mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 #align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
 #align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
@@ -108,10 +105,10 @@ instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCom
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
     LinearOrderedCancelCommMonoid αᵒᵈ :=
-  { OrderDual.linearOrder α, OrderDual.orderedCancelCommMonoid with }
+  { OrderDual.instLinearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
 instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
-  { OrderDual.linearOrder α, OrderDual.orderedCommMonoid with }
+  { OrderDual.instLinearOrder α, OrderDual.orderedCommMonoid with }
 
 end OrderDual

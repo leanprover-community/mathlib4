@@ -2,17 +2,14 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module category_theory.action
-! leanprover-community/mathlib commit aa812bd12a4dbbd2c129b38205f222df282df26d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.SemidirectProduct
+
+#align_import category_theory.action from "leanprover-community/mathlib"@"aa812bd12a4dbbd2c129b38205f222df282df26d"
 
 /-!
 # Actions as functors and as categories
@@ -22,7 +19,7 @@ types, mapping the single object of M to X and an element `m : M` to map `X → 
 multiplication by `m`.
   This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
-where M is a group, this category is a groupoid -- the `action groupoid'.
+where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
 
 
@@ -32,7 +29,7 @@ namespace CategoryTheory
 
 universe u
 
-variable (M : Type _) [Monoid M] (X : Type u) [MulAction M X]
+variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
@@ -44,7 +41,7 @@ def actionAsFunctor : SingleObj M ⥤ Type u where
   map_comp f g := funext fun x => (smul_smul g f x).symm
 #align category_theory.action_as_functor CategoryTheory.actionAsFunctor
 
-/-- A multiplicative action M ↻ X induces a category strucure on X, where a morphism
+/-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
  from x to y is a scalar taking x to y. Due to implementation details, the object type
  of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
@@ -89,7 +86,7 @@ theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
 #align category_theory.action_category.coe_back CategoryTheory.ActionCategory.coe_back
 
 @[simp]
-theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x ; rfl
+theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x; rfl
 #align category_theory.action_category.back_coe CategoryTheory.ActionCategory.back_coe
 
 variable (M X)
@@ -151,7 +148,7 @@ instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :
 
 section Group
 
-variable {G : Type _} [Group G] [MulAction G X]
+variable {G : Type*} [Group G] [MulAction G X]
 
 noncomputable instance : Groupoid (ActionCategory G X) :=
   CategoryTheory.groupoidOfElements _
@@ -173,7 +170,7 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 #align category_theory.action_category.hom_of_pair.val CategoryTheory.ActionCategory.homOfPair.val
 
 /-- Any morphism in the action groupoid is given by some pair. -/
-protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort _}
+protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
   refine' cast _ (hyp b.back f.val)
   rcases a with ⟨⟨⟩, a : X⟩
@@ -185,12 +182,12 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort 
 
 -- porting note: added to ease the proof of `uncurry`
 lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
-    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b)  (hg : a = g⁻¹ • b),
+    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
   revert a' b' f
   exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
 
-variable {H : Type _} [Group H]
+variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
     can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/

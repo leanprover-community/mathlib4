@@ -2,15 +2,12 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.mul_character
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Fintype.Units
+
+#align_import number_theory.legendre_symbol.mul_character from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Multiplicative characters of finite rings and fields
@@ -74,11 +71,17 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-/-- This is the corresponding extension of `monoid_hom_class`. -/
-class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
+instance funLike : FunLike (MulChar R R') R (fun _ => R') :=
+  ⟨fun χ => χ.toFun,
+    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
+
+/-- This is the corresponding extension of `MonoidHomClass`. -/
+class MulCharClass (F : Type*) (R R' : outParam <| Type*) [CommMonoid R]
   [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass
+
+initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
 
 attribute [simp] MulCharClass.map_nonunit
 
@@ -93,21 +96,6 @@ variable {R : Type u} [CommMonoid R]
 
 -- The target
 variable {R' : Type v} [CommMonoidWithZero R']
-
-@[coe]
-nonrec def toFun' (χ : MulChar R R') : R → R' :=
-  χ.toFun
-
-instance coeToFun : CoeFun (MulChar R R') fun _ => R → R' :=
-  ⟨MulChar.toFun'⟩
-#align mul_char.coe_to_fun MulChar.coeToFun
-
-/-- See note [custom simps projection] -/
-protected def Simps.apply (χ : MulChar R R') : R → R' :=
-  χ
-#align mul_char.simps.apply MulChar.Simps.apply
-
-initialize_simps_projections MulChar (toMonoidHom_toFun → apply, -toMonoidHom)
 
 section trivial
 
@@ -130,16 +118,6 @@ noncomputable def trivial : MulChar R R' where
 #align mul_char.trivial MulChar.trivial
 
 end trivial
-
-@[simp]
-theorem coe_coe (χ : MulChar R R') : (χ.toMonoidHom : R → R') = χ :=
-  rfl
-#align mul_char.coe_coe MulChar.coe_coe
-
-@[simp]
-theorem toFun_eq_coe (χ : MulChar R R') : χ.toFun = χ :=
-  rfl
-#align mul_char.to_fun_eq_coe MulChar.toFun_eq_coe
 
 @[simp]
 theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
@@ -215,8 +193,8 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
           have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
           rw [hm, map_mul]
           norm_cast
-        · simp only [hy, not_false_iff, dif_neg, MulZeroClass.mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, MulZeroClass.zero_mul]
+        · simp only [hy, not_false_iff, dif_neg, mul_zero]
+      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, zero_mul]
   map_nonunit' := by
     intro a ha
     simp only [ha, not_false_iff, dif_neg]
@@ -255,9 +233,9 @@ theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ
 #align mul_char.coe_equiv_to_unit_hom MulChar.coe_equivToUnitHom
 
 @[simp]
-theorem equiv_unit_hom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
+theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
-#align mul_char.equiv_unit_hom_symm_coe MulChar.equiv_unit_hom_symm_coe
+#align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
 
 /-!
 ### Commutative group structure on multiplicative characters
@@ -275,7 +253,7 @@ protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (�
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
-/-- If the domain is a ring `R`, then `χ (ring_char R) = 0`. -/
+/-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 #align mul_char.map_ring_char MulChar.map_ringChar
@@ -325,8 +303,7 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
-  { MonoidWithZero.inverse.toMonoidHom.comp
-      χ.toMonoidHom with
+  { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
     toFun := fun a => MonoidWithZero.inverse (χ a)
     map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
 #align mul_char.inv MulChar.inv
@@ -353,9 +330,7 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
-    -- Porting note: was
-    -- apply_fun (χ a * ·) using IsUnit.mul_right_injective h
-    apply IsUnit.mul_right_injective h
+    apply_fun (χ a * ·) using IsUnit.mul_right_injective h
     dsimp only
     -- Porting note: was
     -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]
@@ -477,7 +452,7 @@ theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' �
     (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
   obtain ⟨a, ha⟩ := hχ
   use a
-  rw [ringHomComp_apply, ← RingHom.map_one f]
+  simp_rw [ringHomComp_apply, ← RingHom.map_one f]
   exact fun h => ha (hf h)
 #align mul_char.is_nontrivial.comp MulChar.IsNontrivial.comp
 
@@ -537,13 +512,12 @@ open BigOperators
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
 theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
-    (hχ : χ.IsNontrivial) : (∑ a, χ a) = 0 := by
+    (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine' eq_zero_of_mul_eq_self_left hb _
   -- POrting note: `map_mul` isn't applied
   simp only [Finset.mul_sum, ← map_mul]
-  refine Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => ?_
-  exact (map_mul χ (b : R) x).symm
+  refine Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
 #align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is

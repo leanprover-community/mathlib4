@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.filtered_colimit_commutes_finite_limit
-! leanprover-community/mathlib commit 3f409bd9df181d26dd223170da7b6830ece18442
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.limits.filtered_colimit_commutes_finite_limit from "leanprover-community/mathlib"@"3f409bd9df181d26dd223170da7b6830ece18442"
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -39,10 +36,10 @@ namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 
-/-- `(G ⋙ lim).obj S` = `limit (G.obj S)` definitionally, so this
+/-- `(G ⋙ lim).obj j` = `limit (G.obj j)` definitionally, so this
 is just a variant of `limit_ext'`. -/
-@[ext] lemma comp_lim_obj_ext {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj S) (w : ∀ (j : K),
-    limit.π (G.obj S) j x = limit.π (G.obj S) j y) : x = y :=
+@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj j)
+    (w : ∀ (k : K), limit.π (G.obj j) k x = limit.π (G.obj j) k y) : x = y :=
   limit_ext' _ x y w
 
 variable (F : J × K ⥤ Type v)
@@ -96,12 +93,12 @@ theorem colimitLimitToLimitColimit_injective :
     have kxO : kx ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kyO : ky ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kjO : ∀ j, k j ∈ O := fun j => Finset.mem_union.mpr (Or.inl (by simp))
-    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
+    let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       (Finset.univ.image fun j : J =>
           ⟨kx, k j, kxO, Finset.mem_union.mpr (Or.inl (by simp)), f j⟩) ∪
         Finset.univ.image fun j : J => ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
     obtain ⟨S, T, W⟩ := IsFiltered.sup_exists O H
-    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
+    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inl
@@ -110,7 +107,8 @@ theorem colimitLimitToLimitColimit_injective :
               Finset.mem_image, heq_iff_eq]
             refine' ⟨j, _⟩
             simp only [heq_iff_eq] ))
-    have gH : ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
+    have gH :
+      ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inr
@@ -231,7 +229,7 @@ theorem colimitLimitToLimitColimit_surjective :
             refine' ⟨f, Finset.mem_univ _, _⟩
             rfl))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
-    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
+    let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       Finset.univ.biUnion fun j : J =>
         Finset.univ.biUnion fun j' : J =>
           Finset.univ.biUnion fun f : j ⟶ j' =>

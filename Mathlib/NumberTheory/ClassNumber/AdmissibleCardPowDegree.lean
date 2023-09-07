@@ -2,16 +2,13 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.admissible_card_pow_degree
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Data.Polynomial.Degree.CardPowDegree
+
+#align_import number_theory.class_number.admissible_card_pow_degree from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Admissible absolute values on polynomials
@@ -32,7 +29,7 @@ open Polynomial
 
 open AbsoluteValue Real
 
-variable {Fq : Type _} [Fintype Fq]
+variable {Fq : Type*} [Fintype Fq]
 
 /-- If `A` is a family of enough low-degree polynomials over a finite semiring, there is a
 pair of equal elements in `A`. -/
@@ -121,13 +118,11 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   · obtain ⟨i₀, i₁, i_ne, mod_eq⟩ :=
       exists_eq_polynomial le_rfl b le_b (fun i => A i % b) fun i => EuclideanDomain.mod_lt (A i) hb
     refine' ⟨i₀, i₁, i_ne, _⟩
-    simp only at mod_eq
     rwa [mod_eq, sub_self, map_zero, Int.cast_zero]
   -- Otherwise, it suffices to choose two elements whose difference is of small enough degree.
   rw [not_le] at le_b
   obtain ⟨i₀, i₁, i_ne, deg_lt⟩ := exists_approx_polynomial_aux le_rfl b (fun i => A i % b) fun i =>
     EuclideanDomain.mod_lt (A i) hb
-  simp only at deg_lt
   use i₀, i₁, i_ne
   -- Again, if the remainders are equal we are done.
   by_cases h : A i₁ % b = A i₀ % b

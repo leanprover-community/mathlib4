@@ -2,14 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.seq.wseq
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Seq.Seq
+
+#align_import data.seq.wseq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Partially defined possibly infinite lists
@@ -795,7 +792,7 @@ theorem append_assoc (s t u : WSeq α) : append (append s t) u = append s (appen
   Seq.append_assoc _ _ _
 #align stream.wseq.append_assoc Stream'.WSeq.append_assoc
 
-/-- auxilary defintion of tail over weak sequences-/
+/-- auxiliary definition of tail over weak sequences-/
 @[simp]
 def tail.aux : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => Computation.pure none
@@ -807,7 +804,7 @@ theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.au
   apply congr_arg; ext1 (_ | ⟨a, s⟩) <;> apply (@pure_bind Computation _ _ _ _ _ _).trans _ <;> simp
 #align stream.wseq.destruct_tail Stream'.WSeq.destruct_tail
 
-/-- auxilary defintion of drop over weak sequences-/
+/-- auxiliary definition of drop over weak sequences-/
 @[simp]
 def drop.aux : ℕ → Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | 0 => Computation.pure
@@ -893,8 +890,8 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
 
 theorem get?_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
     Terminates (get? s n) → Terminates (get? s m) := by
-  induction' h with m' _ IH <;> [exact id;
-    exact fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
+  induction' h with m' _ IH
+  exacts [id, fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
 #align stream.wseq.nth_terminates_le Stream'.WSeq.get?_terminates_le
 
 theorem head_terminates_of_get?_terminates {s : WSeq α} {n} :
@@ -1442,10 +1439,10 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
   intro ss h; apply mem_rec_on h <;> [intro b ss o; intro ss IH] <;> intro s S
   · induction' s using WSeq.recOn with b' s s <;>
       [induction' S using WSeq.recOn with s S S; skip; skip] <;>
-      intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this;
-      try cases this; try contradiction
+      intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
+      simp at this; try cases this; try contradiction
     substs b' ss
-    simp at m⊢
+    simp at m ⊢
     cases' o with e IH
     · simp [e]
     cases' m with e m
@@ -1466,7 +1463,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       simp at m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
-    · simp at m IH⊢
+    · simp at m IH ⊢
       apply IH _ _ rfl m
 #align stream.wseq.exists_of_mem_join Stream'.WSeq.exists_of_mem_join
 
@@ -1513,7 +1510,7 @@ theorem map_congr (f : α → β) {s t : WSeq α} (h : s ~ʷ t) : map f s ~ʷ ma
   liftRel_map _ _ h fun {_ _} => congr_arg _
 #align stream.wseq.map_congr Stream'.WSeq.map_congr
 
-/-- auxilary defintion of `destruct_append` over weak sequences-/
+/-- auxiliary definition of `destruct_append` over weak sequences-/
 @[simp]
 def destruct_append.aux (t : WSeq α) : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => destruct t
@@ -1534,7 +1531,7 @@ theorem destruct_append (s t : WSeq α) :
   · exact ⟨s, t, rfl, rfl⟩
 #align stream.wseq.destruct_append Stream'.WSeq.destruct_append
 
-/-- auxilary defintion of `destruct_join` over weak sequences-/
+/-- auxiliary definition of `destruct_join` over weak sequences-/
 @[simp]
 def destruct_join.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Option (α × WSeq α))
   | none => Computation.pure none
@@ -1720,7 +1717,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
       _ _ _
       (let ⟨s, S, T, h1, h2⟩ := h
       ⟨s, S, T, congr_arg destruct h1, congr_arg destruct h2⟩)
-  rintro c1 c2  ⟨s, S, T, rfl, rfl⟩
+  rintro c1 c2 ⟨s, S, T, rfl, rfl⟩
   induction' s using WSeq.recOn with a s s <;> simp
   · induction' S using WSeq.recOn with s S S <;> simp
     · induction' T using WSeq.recOn with s T T <;> simp
@@ -1817,10 +1814,10 @@ instance monad : Monad WSeq where
   this type of construction.
 
 instance lawfulMonad : LawfulMonad WSeq :=
-{ id_map := @map_id,
-  bind_pure_comp := @bind_ret,
-  pure_bind := @ret_bind,
-  bind_assoc := @bind_assoc }
+  { id_map := @map_id,
+    bind_pure_comp := @bind_ret,
+    pure_bind := @ret_bind,
+    bind_assoc := @bind_assoc }
 -/
 end WSeq
 

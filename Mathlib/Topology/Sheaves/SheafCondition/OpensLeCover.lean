@@ -2,19 +2,16 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.opens_le_cover
-! leanprover-community/mathlib commit 85d6221d32c37e68f05b2e42cde6cee658dae5e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
+
+#align_import topology.sheaves.sheaf_condition.opens_le_cover from "leanprover-community/mathlib"@"85d6221d32c37e68f05b2e42cde6cee658dae5e9"
 
 /-!
 # Another version of the sheaf condition.
 
 Given a family of open sets `U : ι → opens X` we can form the subcategory
-`{ V : opens X // ∃ i, V ≤ U i }`, which has `supr U` as a cocone.
+`{ V : opens X // ∃ i, V ≤ U i }`, which has `iSup U` as a cocone.
 
 The sheaf condition on a presheaf `F` is equivalent to
 `F` sending the opposite of this cocone to a limit cone in `C`, for every `U`.
@@ -26,7 +23,7 @@ or equivalently whether we're looking at the first or second object in an equali
 
 ## Main statement
 
-`Top.presheaf.is_sheaf_iff_is_sheaf_opens_le_cover`: for a presheaf on a topological space,
+`TopCat.Presheaf.isSheaf_iff_isSheafOpensLeCover`: for a presheaf on a topological space,
 the sheaf condition in terms of Grothendieck topology is equivalent to the `opens_le_cover`
 sheaf condition. This result will be used to further connect to other sheaf conditions on spaces,
 like `pairwise_intersections` and `equalizer_products`.
@@ -85,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 
 end OpensLeCover
 
-/-- `supr U` as a cocone over the opens sets contained in some element of the cover.
+/-- `iSup U` as a cocone over the opens sets contained in some element of the cover.
 
 (In fact this is a colimit cocone.)
 -/
@@ -104,7 +101,7 @@ open SheafCondition
 `is_sheaf_iff_is_sheaf_opens_le_cover`).
 
 A presheaf is a sheaf if `F` sends the cone `(opens_le_cover_cocone U).op` to a limit cone.
-(Recall `opens_le_cover_cocone U`, has cone point `supr U`,
+(Recall `opens_le_cover_cocone U`, has cone point `iSup U`,
 mapping down to any `V` which is contained in some `U i`.)
 -/
 def IsSheafOpensLeCover : Prop :=
@@ -228,7 +225,7 @@ def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
     IsLimit (F.mapCone (opensLeCoverCocone (coveringOfPresieve Y R)).op) ≃
       IsLimit (F.mapCone (Sieve.generate R).arrows.cocone.op) := by
   convert isLimitOpensLeEquivGenerate₁ F (coveringOfPresieve Y R)
-      (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using 2
+      (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using 1
   rw [covering_presieve_eq_self R]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_limit_opens_le_equiv_generate₂ TopCat.Presheaf.isLimitOpensLeEquivGenerate₂

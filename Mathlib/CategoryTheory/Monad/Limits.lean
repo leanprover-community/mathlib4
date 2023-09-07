@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.monad.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Limits and colimits in the category of algebras
@@ -259,7 +256,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
                 ext1
                 dsimp
                 erw [comp_id, c.w] } }
-      validLift := Cocones.ext (Iso.refl _) (by aesop_cat)
+      validLift := Cocones.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 #align category_theory.monad.forget_creates_colimit CategoryTheory.Monad.forgetCreatesColimit
 
@@ -271,7 +268,7 @@ noncomputable instance forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T 
     CreatesColimitsOfSize.{v, u} (forget T) where CreatesColimitsOfShape := by infer_instance
 #align category_theory.monad.forget_creates_colimits CategoryTheory.Monad.forgetCreatesColimits
 
-/-- For `D : J ⥤ algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
+/-- For `D : J ⥤ Algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
 of shape `J` are preserved by `T`.
 -/
 theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (T : C ⥤ C)]
@@ -366,10 +363,10 @@ theorem hasLimitsOfShape_of_reflective [HasLimitsOfShape J C] (R : D ⥤ C) [Ref
 #align category_theory.has_limits_of_shape_of_reflective CategoryTheory.hasLimitsOfShape_of_reflective
 
 /-- If `C` has limits then any reflective subcategory has limits. -/
-theorem has_limits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflective R] :
+theorem hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflective R] :
     HasLimitsOfSize.{v, u} D :=
   ⟨fun _ => hasLimitsOfShape_of_reflective R⟩
-#align category_theory.has_limits_of_reflective CategoryTheory.has_limits_of_reflective
+#align category_theory.has_limits_of_reflective CategoryTheory.hasLimits_of_reflective
 
 /-- If `C` has colimits of shape `J` then any reflective subcategory has colimits of shape `J`. -/
 theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
@@ -385,10 +382,10 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
 #align category_theory.has_colimits_of_shape_of_reflective CategoryTheory.hasColimitsOfShape_of_reflective
 
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
-theorem has_colimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
+theorem hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
     HasColimitsOfSize.{v, u} D :=
   ⟨fun _ => hasColimitsOfShape_of_reflective R⟩
-#align category_theory.has_colimits_of_reflective CategoryTheory.has_colimits_of_reflective
+#align category_theory.has_colimits_of_reflective CategoryTheory.hasColimits_of_reflective
 
 /-- The reflector always preserves terminal objects. Note this in general doesn't apply to any other
 limit.

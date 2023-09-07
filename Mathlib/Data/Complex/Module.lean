@@ -2,17 +2,14 @@
 Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
-
-! This file was ported from Lean 3 source module data.complex.module
-! leanprover-community/mathlib commit c7bce2818663f456335892ddbdd1809f111a5b72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.SMul
-import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
 import Mathlib.Algebra.CharP.Invertible
+
+#align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -51,28 +48,7 @@ namespace Complex
 
 open ComplexConjugate
 
-variable {R : Type _} {S : Type _}
-
-section
-
-variable [SMul R ℝ]
-
-/- The useless `0` multiplication in `smul` is to make sure that
-`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance : SMul R ℂ where smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
-
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
-#align complex.smul_re Complex.smul_re
-
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
-#align complex.smul_im Complex.smul_im
-
-@[simp]
-theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
-  rfl
-#align complex.real_smul Complex.real_smul
-
-end
+variable {R : Type*} {S : Type*}
 
 instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
@@ -114,7 +90,7 @@ theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → �
 
 section
 
-variable {A : Type _} [Semiring A] [Algebra ℝ A]
+variable {A : Type*} [Semiring A] [Algebra ℝ A]
 
 /-- We need this lemma since `Complex.coe_algebraMap` diverts the simp-normal form away from
 `AlgHom.commutes`. -/
@@ -129,18 +105,6 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
   ext ⟨x, y⟩
   simp only [mk_eq_add_mul_I, AlgHom.map_add, AlgHom.map_coe_real_complex, AlgHom.map_mul, h]
 #align complex.alg_hom_ext Complex.algHom_ext
-
-end
-
-section
-
-open ComplexOrder
-
-protected theorem orderedSMul : OrderedSMul ℝ ℂ :=
-  OrderedSMul.mk' fun a b r hab hr => ⟨by simp [hr, hab.1.le], by simp [hab.2]⟩
-#align complex.ordered_smul Complex.orderedSMul
-
-scoped[ComplexOrder] attribute [instance] Complex.orderedSMul
 
 end
 
@@ -205,47 +169,47 @@ end Complex
 
 /- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
-instance (priority := 900) Module.complexToReal (E : Type _) [AddCommGroup E] [Module ℂ E] :
+instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
 
-instance Module.real_complex_tower (E : Type _) [AddCommGroup E] [Module ℂ E] :
+instance Module.real_complex_tower (E : Type*) [AddCommGroup E] [Module ℂ E] :
     IsScalarTower ℝ ℂ E :=
   RestrictScalars.isScalarTower ℝ ℂ E
 #align module.real_complex_tower Module.real_complex_tower
 
 @[simp, norm_cast]
-theorem Complex.coe_smul {E : Type _} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
+theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
     (x : ℂ) • y = x • y :=
   rfl
 #align complex.coe_smul Complex.coe_smul
 
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` commutes with
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
-instance (priority := 900) SMulCommClass.complexToReal {M E : Type _} [AddCommGroup E] [Module ℂ E]
+instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E
     where smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
 
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type _) [AddCommGroup E]
+instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 #align finite_dimensional.complex_to_real FiniteDimensional.complexToReal
 
-theorem rank_real_of_complex (E : Type _) [AddCommGroup E] [Module ℂ E] :
+theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module.rank ℝ E = 2 * Module.rank ℂ E :=
   Cardinal.lift_inj.1 <| by
     rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
     simp only [Cardinal.lift_id']
 #align rank_real_of_complex rank_real_of_complex
 
-theorem finrank_real_of_complex (E : Type _) [AddCommGroup E] [Module ℂ E] :
+theorem finrank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     FiniteDimensional.finrank ℝ E = 2 * FiniteDimensional.finrank ℂ E := by
   rw [← FiniteDimensional.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
 #align finrank_real_of_complex finrank_real_of_complex
 
-instance (priority := 900) StarModule.complexToReal {E : Type _} [AddCommGroup E] [Star E]
+instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
   ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
 #align star_module.complex_to_real StarModule.complexToReal
@@ -306,7 +270,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 @[simp]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
-  ext (i j)
+  ext i j
   -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 #align complex.to_matrix_conj_ae Complex.toMatrix_conjAe
@@ -316,7 +280,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
     refine' fun h => algHom_ext _
-  exacts[h, conj_I.symm ▸ h]
+  exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
@@ -335,14 +299,14 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
 
 section lift
 
-variable {A : Type _} [Ring A] [Algebra ℝ A]
+variable {A : Type*} [Ring A] [Algebra ℝ A]
 
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
-    ((Algebra.ofId ℝ A).toLinearMap.comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
+    ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
     (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [RingHom.map_one, zero_smul, add_zero])
     fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
     show
@@ -403,7 +367,7 @@ section RealImaginaryPart
 
 open Complex
 
-variable {A : Type _} [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
+variable {A : Type*} [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
 /-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
 `-Complex.I`. -/
@@ -508,3 +472,24 @@ theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + 
 #align imaginary_part_smul imaginaryPart_smul
 
 end RealImaginaryPart
+
+section Rational
+
+open Cardinal Module
+
+@[simp]
+lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ ?_).trans mk_real
+  simpa [mk_real] using aleph0_lt_continuum
+
+@[simp]
+lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
+  simpa using aleph0_lt_continuum
+
+/-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
+as additive groups. -/
+theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
+  LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
+
+end Rational

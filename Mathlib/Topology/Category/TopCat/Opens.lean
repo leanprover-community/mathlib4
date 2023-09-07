@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.Top.opens
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.category.Top.opens from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # The category of open sets in a topological space.
@@ -73,7 +70,7 @@ noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
 
 /-- The inclusion `U i ⟶ supr U` as a morphism in the category of open sets.
 -/
-noncomputable def leSupr {ι : Type _} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
+noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 #align topological_space.opens.le_supr TopologicalSpace.Opens.leSupr
 
@@ -103,7 +100,7 @@ theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
 #align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLELeft_apply_mk
 
 @[simp]
-theorem leSupr_apply_mk {ι : Type _} (U : ι → Opens X) (i : ι) (x) (m) :
+theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i : _) m⟩ :=
   rfl
 #align topological_space.opens.le_supr_apply_mk TopologicalSpace.Opens.leSupr_apply_mk
@@ -218,7 +215,7 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
   rfl
 #align topological_space.opens.op_map_comp_obj TopologicalSpace.Opens.op_map_comp_obj
 
-theorem map_iSup (f : X ⟶ Y) {ι : Type _} (U : ι → Opens Y) :
+theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
   ext1; rw [iSup_def, iSup_def, map_obj]
   dsimp; rw [Set.preimage_iUnion]; rfl
@@ -262,7 +259,7 @@ theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map 
 then the functors `Opens Y ⥤ Opens X` they induce are isomorphic.
 -/
 def mapIso (f g : X ⟶ Y) (h : f = g) : map f ≅ map g :=
-  NatIso.ofComponents (fun U => eqToIso (by rw [congr_arg map h])) (by aesop_cat)
+  NatIso.ofComponents fun U => eqToIso (by rw [congr_arg map h])
 #align topological_space.opens.map_iso TopologicalSpace.Opens.mapIso
 
 theorem map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
@@ -295,12 +292,8 @@ TODO: define `OrderIso.equivalence`, use it.
 def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   functor := map H.hom
   inverse := map H.inv
-  unitIso :=
-    NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
-      (by intros; simp)
-  counitIso :=
-    NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
-      (by intros; simp)
+  unitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
+  counitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
 #align topological_space.opens.map_map_iso TopologicalSpace.Opens.mapMapIso
 
 end TopologicalSpace.Opens
@@ -359,10 +352,10 @@ theorem adjunction_counit_app_self {X : TopCat} (U : Opens X) :
 theorem inclusion_top_functor (X : TopCat) :
     (@Opens.openEmbedding X ⊤).isOpenMap.functor = map (inclusionTopIso X).inv := by
   refine' CategoryTheory.Functor.ext _ _
-  . intro U
+  · intro U
     ext x
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
-  . intros U V f
+  · intros U V f
     apply Subsingleton.elim
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
@@ -381,9 +374,9 @@ lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     Set.range ((forget TopCat).map (inclusion U)) = (U : Set X) := by
   ext x
   constructor
-  . rintro ⟨x, rfl⟩
+  · rintro ⟨x, rfl⟩
     exact x.2
-  . intro h
+  · intro h
     exact ⟨⟨x, h⟩, rfl⟩
 
 @[simp]
@@ -391,7 +384,7 @@ theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion).obj V) = V ⊓ U := by
   ext1
   refine' Set.image_preimage_eq_inter_range.trans _
-  rw [set_range_forget_map_inclusion U]
+  erw [set_range_forget_map_inclusion U]
   rfl
 #align topological_space.opens.functor_map_eq_inf TopologicalSpace.Opens.functor_map_eq_inf
 
@@ -409,7 +402,7 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
-      eqToHom (by dsimp ; rw [map_functor_eq V]) :=
+      eqToHom (by dsimp; rw [map_functor_eq V]) :=
   by apply Subsingleton.elim
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 

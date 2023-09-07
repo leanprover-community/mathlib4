@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.localization_localization
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
+
+#align_import ring_theory.localization.localization_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Localizations of localizations
@@ -25,19 +22,17 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
-open Function
-
-open BigOperators
+open Function BigOperators
 
 namespace IsLocalization
 
 section LocalizationLocalization
 
-variable (N : Submonoid S) (T : Type _) [CommRing T] [Algebra R T]
+variable (N : Submonoid S) (T : Type*) [CommRing T] [Algebra R T]
 
 section
 
@@ -45,7 +40,7 @@ variable [Algebra S T] [IsScalarTower R S T]
 
 -- This should only be defined when `S` is the localization `M⁻¹R`, hence the nolint.
 /-- Localizing wrt `M ⊆ R` and then wrt `N ⊆ S = M⁻¹R` is equal to the localization of `R` wrt this
-module. See `localization_localization_is_localization`.
+module. See `localization_localization_isLocalization`.
 -/
 @[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=
@@ -57,7 +52,7 @@ variable {M N}
 @[simp]
 theorem mem_localizationLocalizationSubmodule {x : R} :
     x ∈ localizationLocalizationSubmodule M N ↔
-      ∃ (y : N)(z : M), algebraMap R S x = y * algebraMap R S z := by
+      ∃ (y : N) (z : M), algebraMap R S x = y * algebraMap R S z := by
   rw [localizationLocalizationSubmodule, Submonoid.mem_comap, Submonoid.mem_sup]
   constructor
   · rintro ⟨y, hy, _, ⟨z, hz, rfl⟩, e⟩
@@ -103,7 +98,6 @@ theorem localization_localization_eq_iff_exists [IsLocalization N T] (x y : R) :
   · rintro ⟨z, eq₁⟩
     rcases IsLocalization.surj M (z : S) with ⟨⟨z', s⟩, eq₂⟩
     dsimp only at eq₂
-    let _a := (x * z' : R)
     suffices : (algebraMap R S) (x * z' : R) = (algebraMap R S) (y * z')
     · obtain ⟨c, eq₃ : ↑c * (x * z') = ↑c * (y * z')⟩ := (IsLocalization.eq_iff_exists M S).mp this
       refine ⟨⟨c * z', ?_⟩, ?_⟩
@@ -224,8 +218,8 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
       obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
       refine' Iff.trans _ (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).symm
-      dsimp only at e₁ e₂⊢
-      suffices :  algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) ↔
+      dsimp only at e₁ e₂ ⊢
+      suffices : algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) ↔
         ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁))
       · have h₁ := @IsUnit.mul_left_inj T _ _ (algebraMap S T x₁) (algebraMap S T x₂)
           (IsLocalization.map_units T ⟨(s₁ : R), h s₁.prop⟩)
@@ -277,7 +271,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-theorem isFractionRing_of_isLocalization (S T : Type _) [CommRing S] [CommRing T] [Algebra R S]
+theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
@@ -293,10 +287,10 @@ theorem isFractionRing_of_isLocalization (S T : Type _) [CommRing S] [CommRing T
     rw [map_zero]
     apply hx
     rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero,
-      MulZeroClass.zero_mul]
+      zero_mul]
 #align is_fraction_ring.is_fraction_ring_of_is_localization IsFractionRing.isFractionRing_of_isLocalization
 
-theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type _) [CommRing S]
+theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
     [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [IsLocalization M S] [IsFractionRing R T] : IsFractionRing S T := by
   haveI := IsFractionRing.nontrivial R T

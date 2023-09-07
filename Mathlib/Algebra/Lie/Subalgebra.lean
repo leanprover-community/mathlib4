@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.subalgebra
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.RingTheory.Noetherian
+
+#align_import algebra.lie.subalgebra from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 # Lie subalgebras
@@ -42,7 +39,7 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
 structure LieSubalgebra extends Submodule R L where
-  /-- An Lie subalgebra is closed under Lie bracket. -/
+  /-- A Lie subalgebra is closed under Lie bracket. -/
   lie_mem' : ∀ {x y}, x ∈ carrier → y ∈ carrier → ⁅x, y⁆ ∈ carrier
 #align lie_subalgebra LieSubalgebra
 
@@ -76,7 +73,7 @@ instance : AddSubgroupClass (LieSubalgebra R L) L
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
-instance (L' : LieSubalgebra R L) : LieRing L'
+instance lieRing (L' : LieSubalgebra R L) : LieRing L'
     where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
@@ -98,7 +95,7 @@ instance (L' : LieSubalgebra R L) : LieRing L'
 
 section
 
-variable {R₁ : Type _} [Semiring R₁]
+variable {R₁ : Type*} [Semiring R₁]
 
 /-- A Lie subalgebra inherits module structures from `L`. -/
 instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) : Module R₁ L' :=
@@ -119,7 +116,7 @@ instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance (L' : LieSubalgebra R L) : LieAlgebra R L'
+instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L'
     where lie_smul := by
     { intros
       apply SetCoe.ext
@@ -237,7 +234,7 @@ variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieM
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance : LieRingModule L' M where
+instance lieRingModule : LieRingModule L' M where
   bracket x m := ⁅(x : L), m⁆
   add_lie x y m := add_lie (x : L) y m
   lie_add x y m := lie_add (x : L) y m
@@ -252,7 +249,7 @@ variable [Module R M] [LieModule R L M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance : LieModule R L' M
+instance lieModule : LieModule R L' M
     where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]

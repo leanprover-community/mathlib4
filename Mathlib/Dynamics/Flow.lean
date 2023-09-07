@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
-
-! This file was ported from Lean 3 source module dynamics.flow
-! leanprover-community/mathlib commit 717c073262cd9d59b1a1dcda7e8ab570c5b63370
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Logic.Function.Iterate
+
+#align_import dynamics.flow from "leanprover-community/mathlib"@"717c073262cd9d59b1a1dcda7e8ab570c5b63370"
 
 /-!
 # Flows and invariant sets
@@ -27,7 +24,7 @@ commutative) monoid, we additionally define forward invariance, where
 `t` ranges over those elements which are nonnegative.
 
 Additionally, we define such constructions as the restriction of a
-flow onto an invariant subset, and the time-reveral of a flow by a
+flow onto an invariant subset, and the time-reversal of a flow by a
 group.
 -/
 
@@ -41,7 +38,7 @@ open Set Function Filter
 
 section Invariant
 
-variable {τ : Type _} {α : Type _}
+variable {τ : Type*} {α : Type*}
 
 /-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if
     `ϕ t s ⊆ s` for all `t` in `τ`. -/
@@ -85,9 +82,9 @@ end Invariant
 -/
 
 
-/-- A flow on a topological space `α` by an a additive topological
+/-- A flow on a topological space `α` by an additive topological
     monoid `τ` is a continuous monoid action of `τ` on `α`.-/
-structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type _)
+structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type*)
   [TopologicalSpace α] where
   toFun : τ → α → α
   cont' : Continuous (uncurry toFun)
@@ -97,7 +94,7 @@ structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd
 
 namespace Flow
 
-variable {τ : Type _} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type _}
+variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type*}
   [TopologicalSpace α] (ϕ : Flow τ α)
 
 instance : Inhabited (Flow τ α) :=
@@ -117,12 +114,12 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 #align flow.ext Flow.ext
 
 @[continuity]
-protected theorem continuous {β : Type _} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
+protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prod_mk hf)
 #align flow.continuous Flow.continuous
 
-alias Flow.continuous ← _root_.Continuous.flow
+alias _root_.Continuous.flow := Flow.continuous
 #align continuous.flow Continuous.flow
 
 theorem map_add (t₁ t₂ : τ) (x : α) : ϕ (t₁ + t₂) x = ϕ t₁ (ϕ t₂ x) := ϕ.map_add' _ _ _
@@ -138,7 +135,7 @@ theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 /-- Iterations of a continuous function from a topological space `α`
     to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
-  toFun n x := (g^[n]) x
+  toFun n x := g^[n] x
   cont' := continuous_uncurry_of_discreteTopology_left (Continuous.iterate h)
   map_add' := iterate_add_apply _
   map_zero' _x := rfl
@@ -156,7 +153,7 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type _} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type _}
+variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type*}
   [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=

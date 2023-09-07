@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.partrec
-! leanprover-community/mathlib commit 9ee02c6c2208fd7795005aa394107c0374906cca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Primrec
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.PFun
+
+#align_import computability.partrec from "leanprover-community/mathlib"@"9ee02c6c2208fd7795005aa394107c0374906cca"
 
 /-!
 # The partial recursive functions
@@ -141,7 +138,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine' ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
-    simp at this⊢
+    simp at this ⊢
     cases' Option.isSome_iff_exists.1 this.symm with a e
     rw [e]; trivial⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
@@ -178,22 +175,25 @@ theorem of_eq_tot {f : ℕ →. ℕ} {g : ℕ → ℕ} (hf : Partrec f) (H : ∀
 #align nat.partrec.of_eq_tot Nat.Partrec.of_eq_tot
 
 theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Partrec f := by
-  induction hf
-  case zero => exact zero
-  case succ => exact succ
-  case left => exact left
-  case right => exact right
-  case pair f g _ _ pf pg =>
+  induction hf with
+  | zero => exact zero
+  | succ => exact succ
+  | left => exact left
+  | right => exact right
+  | pair _ _ pf pg =>
     refine' (pf.pair pg).of_eq_tot fun n => _
     simp [Seq.seq]
-  case comp f g _ _ pf pg =>
+  | comp _ _ pf pg =>
     refine' (pf.comp pg).of_eq_tot fun n => _
     simp
-  case prec f g _ _ pf pg =>
+  | prec _ _ pf pg =>
     refine' (pf.prec pg).of_eq_tot fun n => _
-    simp
-    induction' n.unpair.2 with m IH; · simp
-    simp; exact ⟨_, IH, rfl⟩
+    simp only [unpaired, PFun.coe_val, bind_eq_bind]
+    induction n.unpair.2 with
+    | zero => simp
+    | succ m IH =>
+      simp only [mem_bind_iff, mem_some_iff]
+      exact ⟨_, IH, rfl⟩
 #align nat.partrec.of_primrec Nat.Partrec.of_primrec
 
 protected theorem some : Partrec some :=
@@ -272,7 +272,7 @@ protected theorem Computable₂.partrec₂ {α β σ} [Primcodable α] [Primcoda
 
 namespace Computable
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -420,7 +420,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -472,7 +472,7 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
     cases' e : decode (α := α) n with a <;> simp [e]
     induction' f a with m IH <;> simp
     rw [IH, Part.bind_map]
-    congr ; funext s
+    congr; funext s
     simp [encodek]
 #align partrec.nat_elim Partrec.nat_rec
 
@@ -492,7 +492,7 @@ end Partrec
 
 namespace Partrec₂
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -519,7 +519,7 @@ end Partrec₂
 
 namespace Computable
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -537,7 +537,7 @@ end Computable
 
 namespace Computable₂
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -555,7 +555,7 @@ end Computable₂
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -566,7 +566,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
     fun n => by
     cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
-    congr ; funext n
+    congr; funext n
     simp [Part.map_map, (· ∘ ·)]
     refine map_id' (fun b => ?_) _
     cases b <;> rfl
@@ -623,7 +623,7 @@ theorem Vector.mOfFn_part_some {α n} :
 
 namespace Computable
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -756,7 +756,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -764,14 +764,10 @@ open Computable
 
 theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.some) ↔ Partrec f :=
   ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by
-      simp [Part.bind_assoc]
-      -- Porting note: `simp` can't match `Part.some ∘ f` with `fun x => Part.some (f x)`,
-      --               so `conv` & `erw` are needed.
-      conv_lhs =>
-        congr
-        · skip
-        · ext x
-          erw [bind_some_eq_map],
+      -- Porting note: needed to help with applying bind_some_eq_map because `Function.comp` got
+      -- less reducible.
+      simp [Part.bind_assoc, ← Function.comp_apply (f := Part.some) (g := encode), bind_some_eq_map,
+        -Function.comp_apply],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 #align partrec.option_some_iff Partrec.option_some_iff
 

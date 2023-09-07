@@ -3,13 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.pow.nnreal
-! leanprover-community/mathlib commit 4fa54b337f7d52805480306db1b1439c741848c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+#align_import analysis.special_functions.pow.nnreal from "leanprover-community/mathlib"@"4fa54b337f7d52805480306db1b1439c741848c8"
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`
@@ -21,7 +18,7 @@ We construct the power functions `x ^ y` where
 We also prove basic properties of these functions.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -140,6 +137,66 @@ theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := by
 theorem mul_rpow {x y : ℝ≥0} {z : ℝ} : (x * y) ^ z = x ^ z * y ^ z :=
   NNReal.eq <| Real.mul_rpow x.2 y.2
 #align nnreal.mul_rpow NNReal.mul_rpow
+
+/-- `rpow` as a `MonoidHom`-/
+@[simps]
+def rpowMonoidHom (r : ℝ) : ℝ≥0 →* ℝ≥0 where
+  toFun := (· ^ r)
+  map_one' := one_rpow _
+  map_mul' _x _y := mul_rpow
+
+/-- `rpow` variant of `List.prod_map_pow` for `ℝ≥0`-/
+theorem list_prod_map_rpow (l : List ℝ≥0) (r : ℝ) :
+    (l.map (· ^ r)).prod = l.prod ^ r :=
+  l.prod_hom (rpowMonoidHom r)
+
+theorem list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ≥0) (r : ℝ) :
+    (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
+  rw [←list_prod_map_rpow, List.map_map]; rfl
+
+/-- `rpow` version of `Multiset.prod_map_pow` for `ℝ≥0`. -/
+lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    (s.map (f · ^ r)).prod = (s.map f).prod ^ r :=
+  s.prod_hom' (rpowMonoidHom r) _
+
+/-- `rpow` version of `Finset.prod_pow` for `ℝ≥0`. -/
+lemma finset_prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+  multiset_prod_map_rpow _ _ _
+
+-- note: these don't really belong here, but they're much easier to prove in terms of the above
+
+section Real
+
+/-- `rpow` version of `List.prod_map_pow` for `Real`. -/
+theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : ℝ) ≤ x) (r : ℝ) :
+    (l.map (· ^ r)).prod = l.prod ^ r := by
+  lift l to List ℝ≥0 using hl
+  have := congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.list_prod_map_rpow l r)
+  push_cast at this
+  rw [List.map_map] at this ⊢
+  exact_mod_cast this
+
+theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
+    (hl : ∀ i ∈ l, (0 : ℝ) ≤ f i) (r : ℝ) :
+    (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
+  rw [←Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
+  simpa using hl
+
+/-- `rpow` version of `Multiset.prod_map_pow`. -/
+theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ)
+    (hs : ∀ i ∈ s, (0 : ℝ) ≤ f i) (r : ℝ) :
+    (s.map (f · ^ r)).prod = (s.map f).prod ^ r := by
+  induction' s using Quotient.inductionOn with l
+  simpa using Real.list_prod_map_rpow' l f hs r
+
+/-- `rpow` version of `Finset.prod_pow`. -/
+theorem _root_.Real.finset_prod_rpow
+    {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
+    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+  Real.multiset_prod_map_rpow s.val f hs r
+
+end Real
 
 theorem rpow_le_rpow {x y : ℝ≥0} {z : ℝ} (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z :=
   Real.rpow_le_rpow x.2 h₁ h₂
@@ -279,6 +336,26 @@ theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
   rw [← NNReal.coe_rpow, Real.toNNReal_coe]
 #align real.to_nnreal_rpow_of_nonneg Real.toNNReal_rpow_of_nonneg
 
+theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0 => x ^ z :=
+  fun x y hxy => by simp only [NNReal.rpow_lt_rpow hxy h, coe_lt_coe]
+
+theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0 => x ^ z :=
+  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+    (strictMono_rpow_of_pos h0).monotone
+
+/-- Bundles `fun x : ℝ≥0 => x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
+@[simps! apply]
+def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
+    fun x => by
+      dsimp
+      rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
+
+theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
+    (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
+  simp only [orderIsoRpow, one_div_one_div]; rfl
+
 end NNReal
 
 namespace ENNReal
@@ -345,7 +422,7 @@ theorem zero_rpow_def (y : ℝ) : (0 : ℝ≥0∞) ^ y = if 0 < y then 0 else if
 theorem zero_rpow_mul_self (y : ℝ) : (0 : ℝ≥0∞) ^ y * (0 : ℝ≥0∞) ^ y = (0 : ℝ≥0∞) ^ y := by
   rw [zero_rpow_def]
   split_ifs
-  exacts[MulZeroClass.zero_mul _, one_mul _, top_mul_top]
+  exacts [zero_mul _, one_mul _, top_mul_top]
 #align ennreal.zero_rpow_mul_self ENNReal.zero_rpow_mul_self
 
 @[norm_cast]
@@ -546,8 +623,8 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
     (strictMono_rpow_of_pos h0).monotone
 #align ennreal.monotone_rpow_of_nonneg ENNReal.monotone_rpow_of_nonneg
 
-/-- Bundles `λ x : ℝ≥0∞, x ^ y` into an order isomorphism when `y : ℝ` is positive,
-where the inverse is `λ x : ℝ≥0∞, x ^ (1 / y)`. -/
+/-- Bundles `fun x : ℝ≥0∞ => x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0∞ => x ^ (1 / y)`. -/
 @[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
   (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
@@ -608,9 +685,9 @@ theorem rpow_le_rpow_of_exponent_le {x : ℝ≥0∞} {y z : ℝ} (hx : 1 ≤ x) 
     x ^ y ≤ x ^ z := by
   cases x
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
-          rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-        simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos, le_refl] <;>
-      linarith
+    rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
+    simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos, le_refl] <;>
+    linarith
   · simp only [one_le_coe_iff, some_eq_coe] at hx
     simp [coe_rpow_of_ne_zero (ne_of_gt (lt_of_lt_of_le zero_lt_one hx)),
       NNReal.rpow_le_rpow_of_exponent_le hx hyz]
@@ -627,11 +704,10 @@ theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1)
     x ^ y ≤ x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx1 coe_lt_top)
   by_cases h : x = 0
-  ·
-    rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
-          rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-        simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos, le_refl] <;>
-      linarith
+  · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
+    rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
+    simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos, le_refl] <;>
+    linarith
   · rw [coe_le_one_iff] at hx1
     simp [coe_rpow_of_ne_zero h,
       NNReal.rpow_le_rpow_of_exponent_ge (bot_lt_iff_ne_bot.mpr h) hx1 hyz]
@@ -708,14 +784,14 @@ theorem one_le_rpow {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (hz : 0 < z) : 1 �
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x < 1)
     (hz : z < 0) : 1 < x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_lt_of_le hx2 le_top)
-  simp only [coe_lt_one_iff, coe_pos] at hx1 hx2⊢
+  simp only [coe_lt_one_iff, coe_pos] at hx1 hx2 ⊢
   simp [coe_rpow_of_ne_zero (ne_of_gt hx1), NNReal.one_lt_rpow_of_pos_of_lt_one_of_neg hx1 hx2 hz]
 #align ennreal.one_lt_rpow_of_pos_of_lt_one_of_neg ENNReal.one_lt_rpow_of_pos_of_lt_one_of_neg
 
 theorem one_le_rpow_of_pos_of_le_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x ≤ 1)
     (hz : z < 0) : 1 ≤ x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx2 coe_lt_top)
-  simp only [coe_le_one_iff, coe_pos] at hx1 hx2⊢
+  simp only [coe_le_one_iff, coe_pos] at hx1 hx2 ⊢
   simp [coe_rpow_of_ne_zero (ne_of_gt hx1),
     NNReal.one_le_rpow_of_pos_of_le_one_of_nonpos hx1 hx2 (le_of_lt hz)]
 #align ennreal.one_le_rpow_of_pos_of_le_one_of_neg ENNReal.one_le_rpow_of_pos_of_le_one_of_neg
@@ -772,6 +848,7 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 
 end ENNReal
 
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 -- section Tactics
 
 -- /-!
@@ -799,12 +876,12 @@ end ENNReal
 --   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_nat_cast]
 -- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
--- /-- Evaluate `nnreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
 -- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
--- /-- Evaluate `ennreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `ENNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
 -- #align norm_num.prove_ennrpow norm_num.prove_ennrpow

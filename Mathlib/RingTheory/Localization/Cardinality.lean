@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module ring_theory.localization.cardinality
-! leanprover-community/mathlib commit 3b09a2601bb7690643936643e99bba0fedfbf6ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.RingTheory.Artinian
+
+#align_import ring_theory.localization.cardinality from "leanprover-community/mathlib"@"3b09a2601bb7690643936643e99bba0fedfbf6ed"
 
 /-!
 # Cardinality of localizations
@@ -38,7 +35,7 @@ variable {R : Type u} [CommRing R] (S : Submonoid R) {L : Type u} [CommRing L] [
   [IsLocalization S L]
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem card_le : (#L) ≤ (#R) := by
+theorem card_le : #L ≤ #R := by
   classical
     cases fintypeOrInfinite R
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
@@ -54,7 +51,7 @@ theorem card_le : (#L) ≤ (#R) := by
 variable (L)
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem card (hS : S ≤ R⁰) : (#R) = (#L) :=
+theorem card (hS : S ≤ R⁰) : #R = #L :=
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
 #align is_localization.card IsLocalization.card
 

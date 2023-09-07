@@ -2,15 +2,12 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.hom_orthogonal
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+
+#align_import category_theory.preadditive.hom_orthogonal from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # Hom orthogonal families.
@@ -52,13 +49,13 @@ variable {C : Type u} [Category.{v} C]
 there is at most one morphism between distinct objects.
 
 (In a category with zero morphisms, that must be the zero morphism.) -/
-def HomOrthogonal {ι : Type _} (s : ι → C) : Prop :=
+def HomOrthogonal {ι : Type*} (s : ι → C) : Prop :=
   ∀ i j, i ≠ j → Subsingleton (s i ⟶ s j)
 #align category_theory.hom_orthogonal CategoryTheory.HomOrthogonal
 
 namespace HomOrthogonal
 
-variable {ι : Type _} {s : ι → C}
+variable {ι : Type*} {s : ι → C}
 
 theorem eq_zero [HasZeroMorphisms C] (o : HomOrthogonal s) {i j : ι} (w : i ≠ j) (f : s i ⟶ s j) :
     f = 0 := by
@@ -93,7 +90,7 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     biproduct.matrix fun j k =>
       if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
   left_inv z := by
-    ext (j k)
+    ext j k
     simp only [biproduct.matrix_π, biproduct.ι_desc]
     split_ifs with h
     · simp
@@ -101,9 +98,8 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     · symm
       apply o.eq_zero h
   right_inv z := by
-    ext (i ⟨j, w⟩ ⟨k, ⟨⟩⟩)
+    ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
     simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
-    simp only [Set.mem_preimage, Set.mem_singleton_iff]
     split_ifs with h
     · simp
     · exfalso
@@ -132,7 +128,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f : α → ι} (i : ι) :
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
-  ext (⟨b, ⟨⟩⟩⟨a, j_property⟩)
+  ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
     Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
@@ -149,8 +145,8 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
     [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
-    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i := by
-  ext (⟨c, ⟨⟩⟩⟨a, j_property⟩)
+    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
+  ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,
     HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,
@@ -171,7 +167,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintyp
 
 section
 
-variable {R : Type _} [Semiring R] [Linear R C]
+variable {R : Type*} [Semiring R] [Linear R C]
 
 /-- `HomOrthogonal.MatrixDecomposition` as an `R`-linear equivalence. -/
 @[simps]

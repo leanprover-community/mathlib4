@@ -2,19 +2,16 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.circle
-! leanprover-community/mathlib commit f333194f5ecd1482191452c5ea60b37d4d6afa08
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
+#align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
+
 /-!
 # Maps on the unit circle
 
-In this file we prove some basic lemmas about `exp_map_circle` and the restriction of `Complex.arg`
+In this file we prove some basic lemmas about `expMapCircle` and the restriction of `Complex.arg`
 to the unit circle. These two maps define a local equivalence between `circle` and `ℝ`, see
 `circle.argLocalEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
@@ -48,8 +45,8 @@ theorem expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
 
 namespace circle
 
-/-- `complex.arg ∘ (↑)` and `exp_map_circle` define a local equivalence between `circle` and `ℝ`
-with `source = set.univ` and `target = set.Ioc (-π) π`. -/
+/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a local equivalence between `circle` and `ℝ`
+with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps (config := { fullyApplied := false })]
 noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   toFun := arg ∘ (↑)
@@ -62,7 +59,7 @@ noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   right_inv' _ hx := arg_expMapCircle hx.1 hx.2
 #align circle.arg_local_equiv circle.argLocalEquiv
 
-/-- `complex.arg` and `exp_map_circle` define an equivalence between `circle` and `(-π, π]`. -/
+/-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
 @[simps (config := { fullyApplied := false })]
 noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩

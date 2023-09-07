@@ -2,20 +2,17 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module data.polynomial.module
-! leanprover-community/mathlib commit 63417e01fbc711beaf25fa73b6edb395c0cfddd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.FiniteType
+
+#align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
 /-!
 # Polynomial module
 
 In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R[X]`-module `M[X]`.
 
-This is defined as an type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
+This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 
 -/
@@ -48,10 +45,10 @@ See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.231
 for the full discussion.
 -/
 @[nolint unusedArguments]
-def PolynomialModule (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
+def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
 #align polynomial_module PolynomialModule
 
-variable (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 --porting note: stated instead of deriving
 noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.inhabited
@@ -59,7 +56,7 @@ noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.addCommG
 
 variable {M}
 
-variable {S : Type _} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
 
@@ -150,7 +147,7 @@ theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : �
   · simp only [smul_zero, zero_apply, ite_self]
   · simp only [smul_add, add_apply, hp, hq]
     split_ifs
-    exacts[rfl, zero_add 0]
+    exacts [rfl, zero_add 0]
   · rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
     congr
     rw [eq_iff_iff]
@@ -167,7 +164,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
   induction' f using Polynomial.induction_on' with p q hp hq
   · rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
     split_ifs
-    exacts[rfl, zero_add 0]
+    exacts [rfl, zero_add 0]
   · rw [monomial_smul_single, single_apply, coeff_monomial, ite_smul, zero_smul]
     by_cases h : i ≤ n
     · simp_rw [eq_tsub_iff_add_eq_of_le h, if_pos h]
@@ -232,12 +229,12 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
 #align polynomial_module.equiv_polynomial_self PolynomialModule.equivPolynomialSelf
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
-noncomputable def equivPolynomial {S : Type _} [CommRing S] [Algebra R S] :
+noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
     PolynomialModule R S ≃ₗ[R] S[X] :=
   { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
 #align polynomial_module.equiv_polynomial PolynomialModule.equivPolynomial
 
-variable (R' : Type _) {M' : Type _} [CommRing R'] [AddCommGroup M'] [Module R' M']
+variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
 
 variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 

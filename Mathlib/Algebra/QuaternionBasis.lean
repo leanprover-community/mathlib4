@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.quaternion_basis
-! leanprover-community/mathlib commit 3aa5b8a9ed7a7cabd36e6e1d022c9858ab8a8c2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Quaternion
 import Mathlib.Tactic.Ring
+
+#align_import algebra.quaternion_basis from "leanprover-community/mathlib"@"3aa5b8a9ed7a7cabd36e6e1d022c9858ab8a8c2d"
 
 /-!
 # Basis on a quaternion-like algebra
@@ -37,7 +34,7 @@ namespace QuaternionAlgebra
 
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
 determines it. -/
-structure Basis {R : Type _} (A : Type _) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ : R) where
+structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ : R) where
   (i j k : A)
   i_mul_i : i * i = c₁ • (1 : A)
   j_mul_j : j * j = c₂ • (1 : A)
@@ -45,7 +42,7 @@ structure Basis {R : Type _} (A : Type _) [CommRing R] [Ring A] [Algebra R A] (c
   j_mul_i : j * i = -k
 #align quaternion_algebra.basis QuaternionAlgebra.Basis
 
-variable {R : Type _} {A B : Type _} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 variable {c₁ c₂ : R}
 
@@ -128,9 +125,7 @@ theorem lift_add (x y : ℍ[R,c₁,c₂]) : q.lift (x + y) = q.lift x + q.lift y
 
 theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y := by
   simp only [lift, Algebra.algebraMap_eq_smul_one]
-  simp only [add_mul]
-  simp_rw [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, ← Algebra.smul_def,
-    smul_add, smul_smul]
+  simp_rw [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, smul_smul]
   simp only [i_mul_i, j_mul_j, i_mul_j, j_mul_i, i_mul_k, k_mul_i, k_mul_j, j_mul_k, k_mul_k]
   simp only [smul_smul, smul_neg, sub_eq_add_neg, add_smul, ← add_assoc, mul_neg, neg_smul]
   simp only [mul_right_comm _ _ (c₁ * c₂), mul_comm _ (c₁ * c₂)]

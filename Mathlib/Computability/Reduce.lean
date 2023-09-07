@@ -2,13 +2,10 @@
 Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.reduce
-! leanprover-community/mathlib commit d13b3a4a392ea7273dfa4727dbd1892e26cfd518
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Halting
+
+#align_import computability.reduce from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
 /-!
 # Strong reducibility and degrees.
@@ -128,7 +125,7 @@ theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneRe
 
 namespace ComputablePred
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -285,12 +282,12 @@ theorem OneOneEquiv.congr_right {α β γ} [Primcodable α] [Primcodable β] [Pr
 #align one_one_equiv.congr_right OneOneEquiv.congr_right
 
 @[simp]
-theorem Ulower.down_computable {α} [Primcodable α] : (Ulower.equiv α).Computable :=
+theorem ULower.down_computable {α} [Primcodable α] : (ULower.equiv α).Computable :=
   ⟨Primrec.ulower_down.to_comp, Primrec.ulower_up.to_comp⟩
-#align ulower.down_computable Ulower.down_computable
+#align ulower.down_computable ULower.down_computable
 
-theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (p ∘ Ulower.up) p :=
-  ManyOneEquiv.of_equiv Ulower.down_computable.symm
+theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (p ∘ ULower.up) p :=
+  ManyOneEquiv.of_equiv ULower.down_computable.symm
 #align many_one_equiv_up manyOneEquiv_up
 
 -- mathport name: «expr ⊕' »

@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.separable
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
+
+#align_import field_theory.separable from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 
@@ -30,9 +27,7 @@ properties about separable polynomials here.
 
 universe u v w
 
-open Classical BigOperators Polynomial
-
-open Finset
+open Classical BigOperators Polynomial Finset
 
 namespace Polynomial
 
@@ -99,12 +94,12 @@ theorem Separable.of_dvd {f g : R[X]} (hf : f.Separable) (hfg : g ∣ f) : g.Sep
   exact Separable.of_mul_left hf
 #align polynomial.separable.of_dvd Polynomial.Separable.of_dvd
 
-theorem separable_gcd_left {F : Type _} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
+theorem separable_gcd_left {F : Type*} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hf (EuclideanDomain.gcd_dvd_left f g)
 #align polynomial.separable_gcd_left Polynomial.separable_gcd_left
 
-theorem separable_gcd_right {F : Type _} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
+theorem separable_gcd_right {F : Type*} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hg (EuclideanDomain.gcd_dvd_right f g)
 #align polynomial.separable_gcd_right Polynomial.separable_gcd_right
@@ -164,10 +159,7 @@ theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : 
 
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   rw [multiplicity.squarefree_iff_multiplicity_le_one p]
-  intro f
-  by_cases hunit : IsUnit f
-  · exact Or.inr hunit
-  exact Or.inl (multiplicity_le_one_of_separable hunit hsep)
+  exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
 #align polynomial.separable.squarefree Polynomial.Separable.squarefree
 
 end CommSemiring
@@ -338,7 +330,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 #align polynomial.separable_or Polynomial.separable_or
 
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
-    ∃ (n : ℕ)(g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
+    ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
   induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
@@ -353,7 +345,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
     have hg1 : g.natDegree * p = N.succ := by rwa [← natDegree_expand, hgf]
     have hg2 : g.natDegree ≠ 0 := by
       intro this
-      rw [this, MulZeroClass.zero_mul] at hg1
+      rw [this, zero_mul] at hg1
       cases hg1
     have hg3 : g.natDegree < N.succ := by
       rw [← mul_one g.natDegree, ← hg1]
@@ -369,7 +361,7 @@ theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
   rintro hn : n ≠ 0
   have hf2 : derivative (expand F (p ^ n) f) = 0 := by
     rw [derivative_expand, Nat.cast_pow, CharP.cast_eq_zero, zero_pow hn.bot_lt,
-      MulZeroClass.zero_mul, MulZeroClass.mul_zero]
+      zero_mul, mul_zero]
   rw [separable_def, hf2, isCoprime_zero_right, isUnit_iff] at hf
   rcases hf with ⟨r, hr, hrf⟩
   rw [eq_comm, expand_eq_C (pow_pos hp _)] at hrf
@@ -418,7 +410,7 @@ theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
-  rw [hn', C_0, MulZeroClass.zero_mul, isCoprime_zero_right] at h
+  rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
   exact not_isUnit_X_pow_sub_one F n h
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_separable_iff Polynomial.X_pow_sub_one_separable_iff
@@ -487,13 +479,13 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type _) [CommRing F] [Ring K] [Algebra F K]
+variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
--- Note that right now a Galois extension (class `is_galois`) is defined to be an extension which
+-- Note that right now a Galois extension (class `IsGalois`) is defined to be an extension which
 -- is separable and normal, so if the definition of separable changes here at some point
--- to allow non-algebraic extensions, then the definition of `is_galois` must also be changed.
+-- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable.
 
@@ -501,21 +493,21 @@ We define this for general (commutative) rings and only assume `F` and `K` are f
 is needed for a proof.
 -/
 class IsSeparable : Prop where
-  is_integral' (x : K) : IsIntegral F x
+  isIntegral' (x : K) : IsIntegral F x
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
-variable (F : Type _) {K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable (F : Type*) {K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
-  IsSeparable.is_integral'
+  IsSeparable.isIntegral'
 #align is_separable.is_integral IsSeparable.isIntegral
 
 theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separable :=
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-variable {F K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable {F K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
   ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
@@ -524,15 +516,16 @@ theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (min
 
 end CommRing
 
-instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
-  ⟨fun x => isIntegral_algebraMap, fun x => by
+instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
+  ⟨fun x => isIntegral_algebraMap,
+   fun x => by
     rw [minpoly.eq_X_sub_C']
     exact separable_X_sub_C⟩
 #align is_separable_self isSeparable_self
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field K] [Algebra F K]
+instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
   have : ∀ x : K, IsIntegral F x := fun _x => Algebra.isIntegral_of_finite _ _ _
   ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
@@ -540,7 +533,7 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field
 
 section IsSeparableTower
 
-variable (F K E : Type _) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
+variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
@@ -562,7 +555,7 @@ theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable
 
 variable {E}
 
-theorem IsSeparable.of_algHom (E' : Type _) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
+theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
     [IsSeparable F E'] : IsSeparable F E := by
   letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
@@ -573,9 +566,9 @@ end IsSeparableTower
 
 section CardAlgHom
 
-variable {R S T : Type _} [CommRing S]
+variable {R S T : Type*} [CommRing S]
 
-variable {K L F : Type _} [Field K] [Field L] [Field F]
+variable {K L F : Type*} [Field K] [Field L] [Field F]
 
 variable [Algebra K S] [Algebra K L]
 

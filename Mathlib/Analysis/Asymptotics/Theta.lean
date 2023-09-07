@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.asymptotics.theta
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
+
+#align_import analysis.asymptotics.theta from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Asymptotic equivalence up to a constant
@@ -26,9 +23,9 @@ namespace Asymptotics
 
 set_option linter.uppercaseLean3 false -- is_Theta
 
-variable {α : Type _} {β : Type _} {E : Type _} {F : Type _} {G : Type _} {E' : Type _}
-  {F' : Type _} {G' : Type _} {E'' : Type _} {F'' : Type _} {G'' : Type _} {R : Type _}
-  {R' : Type _} {𝕜 : Type _} {𝕜' : Type _}
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {R : Type*}
+  {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 
@@ -57,6 +54,10 @@ notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
 theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
   ⟨h₁, h₂⟩
 #align asymptotics.is_O.antisymm Asymptotics.IsBigO.antisymm
+
+lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
+
+lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
 
 @[refl]
 theorem isTheta_refl (f : α → E) (l : Filter α) : f =Θ[l] f :=
@@ -154,11 +155,11 @@ theorem isTheta_norm_left : (fun x ↦ ‖f' x‖) =Θ[l] g ↔ f' =Θ[l] g := b
 theorem isTheta_norm_right : (f =Θ[l] fun x ↦ ‖g' x‖) ↔ f =Θ[l] g' := by simp [IsTheta]
 #align asymptotics.is_Theta_norm_right Asymptotics.isTheta_norm_right
 
-alias isTheta_norm_left ↔ IsTheta.of_norm_left IsTheta.norm_left
+alias ⟨IsTheta.of_norm_left, IsTheta.norm_left⟩ := isTheta_norm_left
 #align asymptotics.is_Theta.of_norm_left Asymptotics.IsTheta.of_norm_left
 #align asymptotics.is_Theta.norm_left Asymptotics.IsTheta.norm_left
 
-alias isTheta_norm_right ↔ IsTheta.of_norm_right IsTheta.norm_right
+alias ⟨IsTheta.of_norm_right, IsTheta.norm_right⟩ := isTheta_norm_right
 #align asymptotics.is_Theta.of_norm_right Asymptotics.IsTheta.of_norm_right
 #align asymptotics.is_Theta.norm_right Asymptotics.IsTheta.norm_right
 
@@ -283,7 +284,7 @@ theorem isTheta_const_smul_left [NormedSpace 𝕜 E'] {c : 𝕜} (hc : c ≠ 0) 
   and_congr (isBigO_const_smul_left hc) (isBigO_const_smul_right hc)
 #align asymptotics.is_Theta_const_smul_left Asymptotics.isTheta_const_smul_left
 
-alias isTheta_const_smul_left ↔ IsTheta.of_const_smul_left IsTheta.const_smul_left
+alias ⟨IsTheta.of_const_smul_left, IsTheta.const_smul_left⟩ := isTheta_const_smul_left
 #align asymptotics.is_Theta.of_const_smul_left Asymptotics.IsTheta.of_const_smul_left
 #align asymptotics.is_Theta.const_smul_left Asymptotics.IsTheta.const_smul_left
 
@@ -292,7 +293,7 @@ theorem isTheta_const_smul_right [NormedSpace 𝕜 F'] {c : 𝕜} (hc : c ≠ 0)
   and_congr (isBigO_const_smul_right hc) (isBigO_const_smul_left hc)
 #align asymptotics.is_Theta_const_smul_right Asymptotics.isTheta_const_smul_right
 
-alias isTheta_const_smul_right ↔ IsTheta.of_const_smul_right IsTheta.const_smul_right
+alias ⟨IsTheta.of_const_smul_right, IsTheta.const_smul_right⟩ := isTheta_const_smul_right
 #align asymptotics.is_Theta.of_const_smul_right Asymptotics.IsTheta.of_const_smul_right
 #align asymptotics.is_Theta.const_smul_right Asymptotics.IsTheta.const_smul_right
 
@@ -301,7 +302,7 @@ theorem isTheta_const_mul_left {c : 𝕜} {f : α → 𝕜} (hc : c ≠ 0) :
   simpa only [← smul_eq_mul] using isTheta_const_smul_left hc
 #align asymptotics.is_Theta_const_mul_left Asymptotics.isTheta_const_mul_left
 
-alias isTheta_const_mul_left ↔ IsTheta.of_const_mul_left IsTheta.const_mul_left
+alias ⟨IsTheta.of_const_mul_left, IsTheta.const_mul_left⟩ := isTheta_const_mul_left
 #align asymptotics.is_Theta.of_const_mul_left Asymptotics.IsTheta.of_const_mul_left
 #align asymptotics.is_Theta.const_mul_left Asymptotics.IsTheta.const_mul_left
 
@@ -310,8 +311,12 @@ theorem isTheta_const_mul_right {c : 𝕜} {g : α → 𝕜} (hc : c ≠ 0) :
   simpa only [← smul_eq_mul] using isTheta_const_smul_right hc
 #align asymptotics.is_Theta_const_mul_right Asymptotics.isTheta_const_mul_right
 
-alias isTheta_const_mul_right ↔ IsTheta.of_const_mul_right IsTheta.const_mul_right
+alias ⟨IsTheta.of_const_mul_right, IsTheta.const_mul_right⟩ := isTheta_const_mul_right
 #align asymptotics.is_Theta.of_const_mul_right Asymptotics.IsTheta.of_const_mul_right
 #align asymptotics.is_Theta.const_mul_right Asymptotics.IsTheta.const_mul_right
+
+lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'}
+    (h : f₂ =o[l] f₁) : (f₁ + f₂) =Θ[l] f₁ :=
+  ⟨(isBigO_refl _ _).add_isLittleO h, by rw [add_comm]; exact h.right_isBigO_add⟩
 
 end Asymptotics

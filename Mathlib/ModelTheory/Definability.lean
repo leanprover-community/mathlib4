@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.definability
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.ModelTheory.Semantics
+
+#align_import model_theory.definability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Definable Sets
@@ -41,7 +38,7 @@ variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) [L.Structure 
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
-variable {α : Type u₁} {β : Type _}
+variable {α : Type u₁} {β : Type*}
 
 /-- A subset of a finite Cartesian product of a structure is definable over a set `A` when
   membership in the set is given by a first-order formula with parameters from `A`. -/
@@ -109,7 +106,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
   rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
 #align set.definable.union Set.Definable.union
 
-theorem definable_finset_inf {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
+theorem definable_finset_inf {ι : Type*} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
   classical
     refine' Finset.induction definable_univ (fun i s _ h => _) s
@@ -117,7 +114,7 @@ theorem definable_finset_inf {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).inter h
 #align set.definable_finset_inf Set.definable_finset_inf
 
-theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
+theorem definable_finset_sup {ι : Type*} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.sup f) := by
   classical
     refine' Finset.induction definable_empty (fun i s _ h => _) s
@@ -125,20 +122,20 @@ theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).union h
 #align set.definable_finset_sup Set.definable_finset_sup
 
-theorem definable_finset_biInter {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biInter {ι : Type*} {f : ∀ _ : ι, Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 #align set.definable_finset_bInter Set.definable_finset_biInter
 
-theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biUnion {ι : Type*} {f : ∀ _ : ι, Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
 #align set.definable_finset_bUnion Set.definable_finset_biUnion
 
 @[simp]
-theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
+theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
   ext v
@@ -178,7 +175,7 @@ theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → 
   refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
   ext x
   simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
-    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.cast_refl]
+    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.castIso_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact
@@ -196,7 +193,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
       (congr rfl (ext fun x => _)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
-                (Fintype.equivFin (↥((range f)ᶜ))).symm)).image_comp_sum_inl_fin
+                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
     refine' exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => _)
@@ -285,23 +282,19 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 #align first_order.language.definable_set.has_bot FirstOrder.Language.DefinableSet.instBot
 
--- Porting note: added `noncomputable`
-noncomputable instance instSup : Sup (L.DefinableSet A α) :=
+instance instSup : Sup (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
 #align first_order.language.definable_set.has_sup FirstOrder.Language.DefinableSet.instSup
 
--- Porting note: added `noncomputable`
-noncomputable instance instInf : Inf (L.DefinableSet A α) :=
+instance instInf : Inf (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 #align first_order.language.definable_set.has_inf FirstOrder.Language.DefinableSet.instInf
 
--- Porting note: added `noncomputable`
-noncomputable instance instHasCompl : HasCompl (L.DefinableSet A α) :=
+instance instHasCompl : HasCompl (L.DefinableSet A α) :=
   ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
 #align first_order.language.definable_set.has_compl FirstOrder.Language.DefinableSet.instHasCompl
 
--- Porting note: added `noncomputable`
-noncomputable instance instSDiff : SDiff (L.DefinableSet A α) :=
+instance instSDiff : SDiff (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
 #align first_order.language.definable_set.has_sdiff FirstOrder.Language.DefinableSet.instSDiff
 
@@ -377,8 +370,7 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
   rfl
 #align first_order.language.definable_set.coe_sdiff FirstOrder.Language.DefinableSet.coe_sdiff
 
--- Porting note: added `noncomputable`
-noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
+instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
   Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
 #align first_order.language.definable_set.boolean_algebra FirstOrder.Language.DefinableSet.instBooleanAlgebra

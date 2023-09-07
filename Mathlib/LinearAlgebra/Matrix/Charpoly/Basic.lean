@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.RingTheory.PolynomialAlgebra
+
+#align_import linear_algebra.matrix.charpoly.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -17,11 +14,11 @@ import Mathlib.RingTheory.PolynomialAlgebra
 We define characteristic polynomials of matrices and
 prove the Cayley–Hamilton theorem over arbitrary commutative rings.
 
-See the file `matrix/charpoly/coeff` for corollaries of this theorem.
+See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries of this theorem.
 
 ## Main definitions
 
-* `matrix.charpoly` is the characteristic polynomial of a matrix.
+* `Matrix.charpoly` is the characteristic polynomial of a matrix.
 
 ## Implementation details
 
@@ -36,9 +33,7 @@ noncomputable section
 
 universe u v w
 
-open Polynomial Matrix
-
-open BigOperators Polynomial
+open Polynomial Matrix BigOperators Polynomial
 
 variable {R : Type u} [CommRing R]
 
@@ -46,7 +41,7 @@ variable {n : Type w} [DecidableEq n] [Fintype n]
 
 open Finset
 
-/-- The "characteristic matrix" of `M : matrix n n R` is the matrix of polynomials $t I - M$.
+/-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
 The determinant of this matrix is the characteristic polynomial.
 -/
 def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
@@ -73,7 +68,7 @@ theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
 #align charmatrix_apply_ne charmatrix_apply_ne
 
 theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
-  ext (k i j)
+  ext k i j
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
   by_cases h : i = j
   · subst h
@@ -86,7 +81,7 @@ theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M)
 
 theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
-  ext (i j x)
+  ext i j x
   by_cases h : i = j
   all_goals simp [h]
 #align charmatrix_reindex charmatrix_reindex
@@ -109,23 +104,23 @@ applied to the matrix itself, is zero.
 
 This holds over any commutative ring.
 
-See `linear_map.aeval_self_charpoly` for the equivalent statement about endomorphisms.
+See `LinearMap.aeval_self_charpoly` for the equivalent statement about endomorphisms.
 -/
 theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- We begin with the fact $χ_M(t) I = adjugate (t I - M) * (t I - M)$,
-  -- as an identity in `matrix n n R[X]`.
+  -- as an identity in `Matrix n n R[X]`.
   have h : M.charpoly • (1 : Matrix n n R[X]) = adjugate (charmatrix M) * charmatrix M :=
     (adjugate_mul _).symm
-  -- Using the algebra isomorphism `matrix n n R[X] ≃ₐ[R] polynomial (matrix n n R)`,
-  -- we have the same identity in `polynomial (matrix n n R)`.
-  apply_fun matPolyEquiv  at h
+  -- Using the algebra isomorphism `Matrix n n R[X] ≃ₐ[R] Polynomial (Matrix n n R)`,
+  -- we have the same identity in `Polynomial (Matrix n n R)`.
+  apply_fun matPolyEquiv at h
   simp only [matPolyEquiv.map_mul, matPolyEquiv_charmatrix] at h
-  -- Because the coefficient ring `matrix n n R` is non-commutative,
+  -- Because the coefficient ring `Matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$
   -- is sent to zero, because the evaluation function puts the polynomial variable
   -- to the right of any coefficients, so everything telescopes.
-  apply_fun fun p => p.eval M  at h
+  apply_fun fun p => p.eval M at h
   rw [eval_mul_X_sub_C] at h
   -- Now $χ_M (t) I$, when thought of as a polynomial of matrices
   -- and evaluated at some `N` is exactly $χ_M (N)$.

@@ -2,6 +2,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Nat.Notation
 
+set_option autoImplicit true
 example (x : α × β × γ) : True := by
   cases' x with a b; cases' b with b c
   guard_hyp a : α
@@ -29,9 +30,9 @@ example (x : ℕ) : True := by
   case soo => guard_hyp h : x = y + 1; trivial
 
 inductive Foo (α β)
-| A (a : α)
-| B (a' : α) (b' : β)
-| C (a'' : α) (b'' : β) (c'' : Foo α β)
+  | A (a : α)
+  | B (a' : α) (b' : β)
+  | C (a'' : α) (b'' : β) (c'' : Foo α β)
 
 example (x : Foo α β) : True := by
   cases' x with a₀ a₁ _ a₂ b₂ c₂
@@ -40,8 +41,8 @@ example (x : Foo α β) : True := by
   · guard_hyp a₂ : α; guard_hyp b₂ : β; guard_hyp c₂ : Foo α β; trivial
 
 inductive Bar : ℕ → Type
-| A (a b : Nat) : Bar 1
-| B (c d : Nat) : Bar (c + 1) → Bar c
+  | A (a b : Nat) : Bar 1
+  | B (c d : Nat) : Bar (c + 1) → Bar c
 
 example (x : Bar 0) : True := by
   cases' x with a b c d h

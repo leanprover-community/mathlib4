@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.real.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.CauSeqCompletion
+
+#align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
 /-!
 # Real numbers from Cauchy sequences
@@ -232,7 +229,7 @@ instance commRing : CommRing ℝ := by
         | apply mul_assoc
         | apply mul_comm
 
-/-- `real.equiv_Cauchy` as a ring equivalence. -/
+/-- `Real.equivCauchy` as a ring equivalence. -/
 @[simps]
 def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   { equivCauchy with
@@ -381,7 +378,7 @@ instance partialOrder : PartialOrder ℝ where
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa using lt_iff_le_not_le
-  le_refl a :=  by
+  le_refl a := by
     induction' a using Real.ind_mk with a
     rw [mk_le]
   le_trans a b c := by
@@ -764,7 +761,9 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ :=
     le_csSup := fun s a hs ha => (Real.isLUB_sSup s ⟨a, ha⟩ hs).1 ha
     csSup_le := fun s a hs ha => (Real.isLUB_sSup s hs ⟨a, ha⟩).2 ha
     csInf_le := fun s a hs ha => (Real.is_glb_sInf s ⟨a, ha⟩ hs).1 ha
-    le_csInf := fun s a hs ha => (Real.is_glb_sInf s hs ⟨a, ha⟩).2 ha }
+    le_csInf := fun s a hs ha => (Real.is_glb_sInf s hs ⟨a, ha⟩).2 ha
+    csSup_of_not_bddAbove := fun s hs ↦ by simp [hs, sSup_def]
+    csInf_of_not_bddBelow := fun s hs ↦ by simp [hs, sInf_def, sSup_def] }
 
 theorem lt_sInf_add_pos {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) :
     ∃ a ∈ s, a < sInf s + ε :=
@@ -799,7 +798,7 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 #align real.Sup_empty Real.sSup_empty
 
-theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) = 0 := by
+theorem ciSup_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
   rw [Set.range_eq_empty_iff]
@@ -807,7 +806,7 @@ theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) =
 #align real.csupr_empty Real.ciSup_empty
 
 @[simp]
-theorem ciSup_const_zero {α : Sort _} : (⨆ _i : α, (0 : ℝ)) = 0 := by
+theorem ciSup_const_zero {α : Sort*} : ⨆ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciSup_empty _
   · exact ciSup_const
@@ -817,8 +816,8 @@ theorem sSup_of_not_bddAbove {s : Set ℝ} (hs : ¬BddAbove s) : sSup s = 0 :=
   dif_neg fun h => hs h.2
 #align real.Sup_of_not_bdd_above Real.sSup_of_not_bddAbove
 
-theorem iSup_of_not_bddAbove {α : Sort _} {f : α → ℝ} (hf : ¬BddAbove (Set.range f)) :
-    (⨆ i, f i) = 0 :=
+theorem iSup_of_not_bddAbove {α : Sort*} {f : α → ℝ} (hf : ¬BddAbove (Set.range f)) :
+    ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 #align real.supr_of_not_bdd_above Real.iSup_of_not_bddAbove
 
@@ -830,12 +829,12 @@ theorem sSup_univ : sSup (@Set.univ ℝ) = 0 :=
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 #align real.Inf_empty Real.sInf_empty
 
-theorem ciInf_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨅ i, f i) = 0 := by
+theorem ciInf_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align real.cinfi_empty Real.ciInf_empty
 
 @[simp]
-theorem ciInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ)) = 0 := by
+theorem ciInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciInf_empty _
   · exact ciInf_const
@@ -845,14 +844,14 @@ theorem sInf_of_not_bddBelow {s : Set ℝ} (hs : ¬BddBelow s) : sInf s = 0 :=
   neg_eq_zero.2 <| sSup_of_not_bddAbove <| mt bddAbove_neg.1 hs
 #align real.Inf_of_not_bdd_below Real.sInf_of_not_bddBelow
 
-theorem iInf_of_not_bddBelow {α : Sort _} {f : α → ℝ} (hf : ¬BddBelow (Set.range f)) :
-    (⨅ i, f i) = 0 :=
+theorem iInf_of_not_bddBelow {α : Sort*} {f : α → ℝ} (hf : ¬BddBelow (Set.range f)) :
+    ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
 #align real.infi_of_not_bdd_below Real.iInf_of_not_bddBelow
 
 /--
 As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
-suffices to show that `S` is bounded below by `0` to show that `0 ≤ sInf S`.
+suffices to show that `S` is bounded below by `0` to show that `0 ≤ sSup S`.
 -/
 theorem sSup_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sSup S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
@@ -860,12 +859,34 @@ theorem sSup_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sS
   · apply dite _ (fun h => le_csSup_of_le h hy <| hS y hy) fun h => (sSup_of_not_bddAbove h).ge
 #align real.Sup_nonneg Real.sSup_nonneg
 
+/--
+As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
+suffices to show that `f i` is nonnegative to show that `0 ≤ ⨆ i, f i`.
+-/
+protected theorem iSup_nonneg {ι : Sort*} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i :=
+  sSup_nonneg _ <| Set.forall_range_iff.2 hf
+#align real.supr_nonneg Real.iSup_nonneg
+
+/--
+As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
+suffices to show that all elements of `S` are bounded by a nonnegative number to show that `sSup S`
+is bounded by this number.
+-/
+protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (ha : 0 ≤ a) : sSup S ≤ a := by
+  rcases S.eq_empty_or_nonempty with (rfl | hS₂)
+  exacts [sSup_empty.trans_le ha, csSup_le hS₂ hS]
+#align real.Sup_le Real.sSup_le
+
+protected theorem iSup_le {ι : Sort*} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
+    ⨆ i, f i ≤ a :=
+  Real.sSup_le (Set.forall_range_iff.2 hS) ha
+#align real.supr_le Real.iSup_le
+
 /-- As `0` is the default value for `Real.sSup` of the empty set, it suffices to show that `S` is
 bounded above by `0` to show that `sSup S ≤ 0`.
 -/
-theorem sSup_nonpos (S : Set ℝ) (hS : ∀ x ∈ S, x ≤ (0 : ℝ)) : sSup S ≤ 0 := by
-  rcases S.eq_empty_or_nonempty with (rfl | hS₂)
-  exacts[sSup_empty.le, csSup_le hS₂ hS]
+theorem sSup_nonpos (S : Set ℝ) (hS : ∀ x ∈ S, x ≤ (0 : ℝ)) : sSup S ≤ 0 :=
+  Real.sSup_le hS le_rfl
 #align real.Sup_nonpos Real.sSup_nonpos
 
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `S` is
@@ -873,7 +894,7 @@ bounded below by `0` to show that `0 ≤ sInf S`.
 -/
 theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sInf S := by
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
-  exacts[sInf_empty.ge, le_csInf hS₂ hS]
+  exacts [sInf_empty.ge, le_csInf hS₂ hS]
 #align real.Inf_nonneg Real.sInf_nonneg
 
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `f i` is
@@ -919,5 +940,32 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
 
 instance : CauSeq.IsComplete ℝ abs :=
   ⟨cauSeq_converges⟩
+
+open Set
+
+theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
+    (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
+  refine' le_antisymm _ _
+  · have : Nonempty { r' : ℚ // x < ↑r' } := by
+      obtain ⟨r, hrx⟩ := exists_rat_gt x
+      exact ⟨⟨r, hrx⟩⟩
+    refine' le_ciInf fun r => _
+    obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
+    refine' ciInf_set_le hf (hxy.trans _)
+    exact_mod_cast hyr
+  · refine' le_ciInf fun q => _
+    have hq := q.prop
+    rw [mem_Ioi] at hq
+    obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
+    refine' (ciInf_le _ _).trans _
+    · refine' ⟨hf.some, fun z => _⟩
+      rintro ⟨u, rfl⟩
+      suffices hfu : f u ∈ f '' Ioi x
+      exact hf.choose_spec hfu
+      exact ⟨u, u.prop, rfl⟩
+    · exact ⟨y, hxy⟩
+    · refine' hf_mono (le_trans _ hyq.le)
+      norm_cast
+#align infi_Ioi_eq_infi_rat_gt Real.iInf_Ioi_eq_iInf_rat_gt
 
 end Real

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.continuous_function.cocompact_map
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.continuous_function.cocompact_map from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Cocompact continuous maps
@@ -44,7 +41,7 @@ section
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
@@ -54,10 +51,17 @@ end
 
 namespace CocompactMapClass
 
-variable {F α β : Type _} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
+
+/-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
+`CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
+@[coe]
+def toCocompactMap (f : F) : CocompactMap α β :=
+  { (f : C(α, β)) with
+    cocompact_tendsto' := cocompact_tendsto f }
 
 instance : CoeTC F (CocompactMap α β) :=
-  ⟨fun f => ⟨f, cocompact_tendsto f⟩⟩
+  ⟨toCocompactMap⟩
 
 end CocompactMapClass
 
@@ -67,7 +71,7 @@ namespace CocompactMap
 
 section Basics
 
-variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
 instance : CocompactMapClass (CocompactMap α β) α β where
@@ -198,9 +202,9 @@ end Basics
 
 end CocompactMap
 
-/-- A homemomorphism is a cocompact map. -/
+/-- A homeomorphism is a cocompact map. -/
 @[simps]
-def Homeomorph.toCocompactMap {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     (f : α ≃ₜ β) : CocompactMap α β where
   toFun := f
   continuous_toFun := f.continuous

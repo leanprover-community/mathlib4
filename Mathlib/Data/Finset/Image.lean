@@ -2,20 +2,17 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.image
-! leanprover-community/mathlib commit b685f506164f8d17a6404048bc4d696739c5d976
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
 
+#align_import data.finset.image from "leanprover-community/mathlib"@"b685f506164f8d17a6404048bc4d696739c5d976"
+
 /-! # Image and map operations on finite sets
 
-Thie file provides the finite analog of `Set.image`, along with some other similar functions.
+This file provides the finite analog of `Set.image`, along with some other similar functions.
 
 Note there are two ways to take the image over a finset; via `Finset.image` which applies the
 function then removes duplicates (requiring `DecidableEq`), or via `Finset.map` which exploits
@@ -26,13 +23,13 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
-* `Finset.subtype`: `s.subtype p` is the the finset of `Subtype p` whose elements belong to `s`.
+* `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Multiset
 
@@ -65,13 +62,13 @@ theorem map_empty (f : α ↪ β) : (∅ : Finset α).map f = ∅ :=
 
 variable {f : α ↪ β} {s : Finset α}
 
---Porting note: Lower priority because `mem_map_equiv` is better when it applies
-@[simp 900]
+@[simp]
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   mem_map.trans <| by simp only [exists_prop]; rfl
 #align finset.mem_map Finset.mem_map
 
-@[simp]
+--Porting note: Higher priority to apply before `mem_map`.
+@[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
   exact
@@ -80,6 +77,10 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
       simpa, fun h => ⟨_, h, by simp⟩⟩
 #align finset.mem_map_equiv Finset.mem_map_equiv
 
+-- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 #align finset.mem_map' Finset.mem_map'
@@ -247,7 +248,7 @@ theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
-alias map_nonempty ↔ _ Nonempty.map
+alias ⟨_, Nonempty.map⟩ := map_nonempty
 #align finset.nonempty.map Finset.Nonempty.map
 
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
@@ -539,7 +540,7 @@ theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : 
     (s ∆ t).image f = s.image f ∆ t.image f :=
   coe_injective <| by
     push_cast
-    exact Set.image_symm_diff hf _ _
+    exact Set.image_symmDiff hf _ _
 #align finset.image_symm_diff Finset.image_symmDiff
 
 @[simp]
@@ -606,8 +607,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
     Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
-  -- Porting note: was `convert`
-  rw [←disjoint_map ⟨_, hf⟩]
+  convert disjoint_map ⟨_, hf⟩ using 1
   simp [map_eq_image]
 #align finset.disjoint_image Finset.disjoint_image
 
@@ -652,7 +652,7 @@ end Image
 
 section Subtype
 
-/-- Given a finset `s` and a predicate `p`, `s.subtype p` is the finset of `subtype p` whose
+/-- Given a finset `s` and a predicate `p`, `s.subtype p` is the finset of `Subtype p` whose
 elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map

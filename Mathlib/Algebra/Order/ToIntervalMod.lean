@@ -2,11 +2,6 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module algebra.order.to_interval_mod
-! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Basic
@@ -16,6 +11,8 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
+
+#align_import algebra.order.to_interval_mod from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # Reducing to an interval modulo its length
@@ -39,7 +36,7 @@ noncomputable section
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
+variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
 
 /--
@@ -604,10 +601,10 @@ theorem modEq_iff_toIocMod_eq_right : a ≡ b [PMOD p] ↔ toIocMod hp a b = a +
   · rwa [add_one_zsmul, add_left_comm, ← sub_eq_iff_eq_add']
 #align add_comm_group.modeq_iff_to_Ioc_mod_eq_right AddCommGroup.modEq_iff_toIocMod_eq_right
 
-alias modEq_iff_toIcoMod_eq_left ↔ ModEq.toIcoMod_eq_left _
+alias ⟨ModEq.toIcoMod_eq_left, _⟩ := modEq_iff_toIcoMod_eq_left
 #align add_comm_group.modeq.to_Ico_mod_eq_left AddCommGroup.ModEq.toIcoMod_eq_left
 
-alias modEq_iff_toIocMod_eq_right ↔ ModEq.toIcoMod_eq_right _
+alias ⟨ModEq.toIcoMod_eq_right, _⟩ := modEq_iff_toIocMod_eq_right
 #align add_comm_group.modeq.to_Ico_mod_eq_right AddCommGroup.ModEq.toIcoMod_eq_right
 
 variable (a b)
@@ -682,7 +679,7 @@ theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [P
   simp_rw [toIcoMod_eq_toIcoMod, modEq_iff_eq_add_zsmul, sub_eq_iff_eq_add']
 #align to_Ico_mod_inj toIcoMod_inj
 
-alias toIcoMod_inj ↔ _ AddCommGroup.ModEq.toIcoMod_eq_toIcoMod
+alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 #align add_comm_group.modeq.to_Ico_mod_eq_to_Ico_mod AddCommGroup.ModEq.toIcoMod_eq_toIcoMod
 
 theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
@@ -918,7 +915,7 @@ private theorem toIxxMod_trans {x₁ x₂ x₃ x₄ : α}
     by_contra h
     rw [(modEq_iff_toIcoMod_eq_left hp).1 h] at h₁₂₃
     exact h₁₂₃.2 (left_lt_toIocMod _ _ _).le
-  · rw [not_le] at h₁₂₃ h₂₃₄⊢
+  · rw [not_le] at h₁₂₃ h₂₃₄ ⊢
     exact (h₁₂₃.2.trans_le (toIcoMod_le_toIocMod _ x₃ x₂)).trans h₂₃₄.2
 
 namespace QuotientAddGroup
@@ -947,7 +944,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
     induction x₁ using QuotientAddGroup.induction_on'
     induction x₂ using QuotientAddGroup.induction_on'
     induction x₃ using QuotientAddGroup.induction_on'
-    simp_rw [btw_coe_iff] at h⊢
+    simp_rw [btw_coe_iff] at h ⊢
     apply toIxxMod_cyclic_left _ h
   sbtw := _
   sbtw_iff_btw_not_btw := Iff.rfl
@@ -957,7 +954,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
       induction x₂ using QuotientAddGroup.induction_on'
       induction x₃ using QuotientAddGroup.induction_on'
       induction x₄ using QuotientAddGroup.induction_on'
-      simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄⊢
+      simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄ ⊢
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
 #align quotient_add_group.circular_preorder QuotientAddGroup.circularPreorder
 
@@ -992,7 +989,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable {α : Type _} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
+variable {α : Type*} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico hp _
@@ -1018,7 +1015,7 @@ theorem toIcoDiv_zero_one (b : α) : toIcoDiv (zero_lt_one' α) 0 b = ⌊b⌋ :=
 theorem toIcoMod_eq_add_fract_mul (a b : α) :
     toIcoMod hp a b = a + Int.fract ((b - a) / p) * p := by
   rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
-  field_simp [hp.ne.symm]
+  field_simp
   ring
 #align to_Ico_mod_eq_add_fract_mul toIcoMod_eq_add_fract_mul
 
@@ -1029,7 +1026,7 @@ theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p
 theorem toIocMod_eq_sub_fract_mul (a b : α) :
     toIocMod hp a b = a + p - Int.fract ((a + p - b) / p) * p := by
   rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
-  field_simp [hp.ne.symm]
+  field_simp
   ring
 #align to_Ioc_mod_eq_sub_fract_mul toIocMod_eq_sub_fract_mul
 
@@ -1048,9 +1045,9 @@ open Set Int
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
 
-theorem iUnion_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p)) = univ := by
+theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
   rcases sub_toIocDiv_zsmul_mem_Ioc hp a b with ⟨hl, hr⟩
   refine' ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, _⟩⟩
@@ -1058,7 +1055,7 @@ theorem iUnion_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • 
   convert sub_le_iff_le_add.mp hr using 1; abel
 #align Union_Ioc_add_zsmul iUnion_Ioc_add_zsmul
 
-theorem iUnion_Ico_add_zsmul : (⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p)) = univ := by
+theorem iUnion_Ico_add_zsmul : ⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p) = univ := by
   refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
   rcases sub_toIcoDiv_zsmul_mem_Ico hp a b with ⟨hl, hr⟩
   refine' ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, _⟩⟩
@@ -1066,20 +1063,20 @@ theorem iUnion_Ico_add_zsmul : (⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • 
   convert sub_lt_iff_lt_add.mp hr using 1; abel
 #align Union_Ico_add_zsmul iUnion_Ico_add_zsmul
 
-theorem iUnion_Icc_add_zsmul : (⋃ n : ℤ, Icc (a + n • p) (a + (n + 1) • p)) = univ := by
+theorem iUnion_Icc_add_zsmul : ⋃ n : ℤ, Icc (a + n • p) (a + (n + 1) • p) = univ := by
   simpa only [iUnion_Ioc_add_zsmul hp a, univ_subset_iff] using
     iUnion_mono fun n : ℤ => (Ioc_subset_Icc_self : Ioc (a + n • p) (a + (n + 1) • p) ⊆ Icc _ _)
 #align Union_Icc_add_zsmul iUnion_Icc_add_zsmul
 
-theorem iUnion_Ioc_zsmul : (⋃ n : ℤ, Ioc (n • p) ((n + 1) • p)) = univ := by
+theorem iUnion_Ioc_zsmul : ⋃ n : ℤ, Ioc (n • p) ((n + 1) • p) = univ := by
   simpa only [zero_add] using iUnion_Ioc_add_zsmul hp 0
 #align Union_Ioc_zsmul iUnion_Ioc_zsmul
 
-theorem iUnion_Ico_zsmul : (⋃ n : ℤ, Ico (n • p) ((n + 1) • p)) = univ := by
+theorem iUnion_Ico_zsmul : ⋃ n : ℤ, Ico (n • p) ((n + 1) • p) = univ := by
   simpa only [zero_add] using iUnion_Ico_add_zsmul hp 0
 #align Union_Ico_zsmul iUnion_Ico_zsmul
 
-theorem iUnion_Icc_zsmul : (⋃ n : ℤ, Icc (n • p) ((n + 1) • p)) = univ := by
+theorem iUnion_Icc_zsmul : ⋃ n : ℤ, Icc (n • p) ((n + 1) • p) = univ := by
   simpa only [zero_add] using iUnion_Icc_add_zsmul hp 0
 #align Union_Icc_zsmul iUnion_Icc_zsmul
 
@@ -1087,34 +1084,34 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedRing
 
-variable {α : Type _} [LinearOrderedRing α] [Archimedean α] (a : α)
+variable {α : Type*} [LinearOrderedRing α] [Archimedean α] (a : α)
 
-theorem iUnion_Ioc_add_int_cast : (⋃ n : ℤ, Ioc (a + n) (a + n + 1)) = Set.univ := by
+theorem iUnion_Ioc_add_int_cast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ioc_add_zsmul zero_lt_one a
 #align Union_Ioc_add_int_cast iUnion_Ioc_add_int_cast
 
-theorem iUnion_Ico_add_int_cast : (⋃ n : ℤ, Ico (a + n) (a + n + 1)) = Set.univ := by
+theorem iUnion_Ico_add_int_cast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ico_add_zsmul zero_lt_one a
 #align Union_Ico_add_int_cast iUnion_Ico_add_int_cast
 
-theorem iUnion_Icc_add_int_cast : (⋃ n : ℤ, Icc (a + n) (a + n + 1)) = Set.univ := by
+theorem iUnion_Icc_add_int_cast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Icc_add_zsmul zero_lt_one a
 #align Union_Icc_add_int_cast iUnion_Icc_add_int_cast
 
 variable (α)
 
-theorem iUnion_Ioc_int_cast : (⋃ n : ℤ, Ioc (n : α) (n + 1)) = Set.univ := by
+theorem iUnion_Ioc_int_cast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Ioc_add_int_cast (0 : α)
 #align Union_Ioc_int_cast iUnion_Ioc_int_cast
 
-theorem iUnion_Ico_int_cast : (⋃ n : ℤ, Ico (n : α) (n + 1)) = Set.univ := by
+theorem iUnion_Ico_int_cast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Ico_add_int_cast (0 : α)
 #align Union_Ico_int_cast iUnion_Ico_int_cast
 
-theorem iUnion_Icc_int_cast : (⋃ n : ℤ, Icc (n : α) (n + 1)) = Set.univ := by
+theorem iUnion_Icc_int_cast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Icc_add_int_cast (0 : α)
 #align Union_Icc_int_cast iUnion_Icc_int_cast
 
