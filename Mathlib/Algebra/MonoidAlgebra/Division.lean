@@ -204,12 +204,15 @@ lemma neg_modOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) %ᵒᶠ g = - (x %ᵒ
   rwa [add_left_inj, eq_comm] at eq1
 
 -- Need `k''` to find commutativity
-lemma add_modOf (x y : AddMonoidAlgebra k'' G) (g : G) : (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
+lemma add_modOf [IsCancelAdd k] (x y : AddMonoidAlgebra k G) (g : G) : (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
   have eq1 : _ + _ = _ + _ := (congr_arg₂ (. + .) (modOf_add_divOf x g) (modOf_add_divOf y g)).trans
     (modOf_add_divOf (x + y) g).symm
-  rwa [add_divOf, mul_add, show ∀ (a b c d), a + b + (c + d) = a + c + b + d from ?_, add_assoc,
-    add_left_inj, eq_comm] at eq1
-  intros; ring
+  letI missing : IsCancelAdd (G →₀ k) := {
+    add_left_cancel := fun a b c h => Finsupp.ext <| fun x => add_left_cancel (FunLike.congr_fun h x)
+    add_right_cancel := fun a b c h => Finsupp.ext <| fun x => add_right_cancel (FunLike.congr_fun h x)
+  }
+  letI also_missing : IsCancelAdd (AddMonoidAlgebra k G) := missing
+  rwa [add_divOf, mul_add, add_add_add_comm, add_left_inj, eq_comm] at eq1
 
 lemma sub_modOf (x y : AddMonoidAlgebra k'' G) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g := by
   rw [sub_eq_add_neg, add_modOf, neg_modOf, sub_eq_add_neg]
