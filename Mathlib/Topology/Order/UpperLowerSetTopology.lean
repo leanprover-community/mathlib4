@@ -279,7 +279,7 @@ lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rfl
 
 instance toAlexandrovDiscrete : AlexandrovDiscrete α where
-  isOpen_sInter S := by simpa only [IsOpen_iff_IsUpperSet] using isUpperSet_sInter (α := α)
+  isOpen_sInter S := by simpa only [isOpen_iff_isUpperSet] using isUpperSet_sInter (α := α)
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
