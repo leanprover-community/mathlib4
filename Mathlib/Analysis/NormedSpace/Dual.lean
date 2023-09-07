@@ -57,7 +57,7 @@ abbrev Dual :=
   E →L[𝕜] 𝕜
 #align normed_space.dual NormedSpace.Dual
 
--- Note: for undergrad list and helper below
+-- Note: helper below
 instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
 
 -- Note: helper for below
