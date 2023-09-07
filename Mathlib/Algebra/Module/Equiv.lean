@@ -49,7 +49,8 @@ section
 --Porting note: TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
-  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
+  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
+    FunLikeFlatHack._, LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
 attribute [coe] LinearEquiv.toLinearMap
@@ -152,9 +153,9 @@ def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toE
 #align linear_equiv.to_equiv LinearEquiv.toEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂) :=
-  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ h =>
-    (LinearEquiv.mk.injEq _ _ _ _ _ _ _ _).mpr
-      ⟨LinearMap.ext (congr_fun (Equiv.mk.inj h).1), (Equiv.mk.inj h).2⟩
+  fun ⟨⟨⟩, _, _, _, _, _, _⟩ ⟨⟨⟩, _, _, _, _, _, _⟩ h =>
+    (LinearEquiv.mk.injEq _ _ _ _ _ _ _ _ _ _ _ _ _ _).mpr
+      ⟨congr_arg Equiv.toFun h, congr_arg Equiv.invFun h⟩
 #align linear_equiv.to_equiv_injective LinearEquiv.toEquiv_injective
 
 @[simp]

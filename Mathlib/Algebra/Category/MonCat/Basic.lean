@@ -403,7 +403,7 @@ add_decl_doc addEquivIsoAddCommMonCatIso
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv (by aesop)
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact IsIso.of_iso e.toMonCatIso
 set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos
@@ -414,9 +414,7 @@ set_option linter.uppercaseLean3 false in
 instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv
-      -- Porting FIXME: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
-      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact IsIso.of_iso e.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
 #align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
