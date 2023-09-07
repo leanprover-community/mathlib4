@@ -135,12 +135,23 @@ lemma isFredholm_equiv (A : E ≃L[ℂ] F) : isFredholm (A : E →L[ℂ] F) := b
   }
 
 -- composition using eqUpToFiniteRank
-protected def comp' (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S.comp T) := by
+protected def comp' (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S ∘L T) := by
   obtain ⟨T', hTl, hTr⟩ := hT
   obtain ⟨S', hSl, hSr⟩ := hS
   use (T' ∘L S')
   constructor
-  · sorry
+  simp only [ContinuousLinearMap.coe_comp] at *
+  · /-  show 1 =ᶠ (T' ∘ₗ S') ∘ₗ (S ∘ₗ T)
+        have h : isFiniteRank (T' ∘ₗ (1- S' ∘ₗ S) ∘ₗ T) := by pre- post-composing
+        calc
+          1 =ᶠ T' ∘ₗ T
+          _ =ᶠ T' ∘ₗ T - T' ∘ₗ (1- S' ∘ₗ S) ∘ₗ T := by apply add_finiteRank ; exact h
+          _ =ᶠ T' ∘ₗ 1 ∘ₗ T - T' ∘ₗ 1 ∘ₗ T + T' ∘ₗ (S' ∘ₗ S) ∘ₗ T := by apply lift_eq ; ring
+          _ =ᶠ T' ∘ₗ (S' ∘ₗ S) ∘ₗ T := like above
+          _ =ᶠ (T' ∘ₗ S') ∘ₗ (S ∘ₗ T) := like above
+    -/
+    --have : T' ∘L (S' ∘L S) ∘L T =ᶠ (T' ∘L S') ∘L (S ∘L T) := by sorry
+    sorry
   · sorry
 
 -- TODO maybe get rid of fixed u
