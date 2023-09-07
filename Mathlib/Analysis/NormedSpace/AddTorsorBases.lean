@@ -74,7 +74,7 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
       rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
     ext
-    simp only [this, interior_iInter, ←
+    simp only [this, interior_iInter_of_finite, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
       interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]

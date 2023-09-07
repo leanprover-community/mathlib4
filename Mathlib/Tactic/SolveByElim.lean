@@ -5,10 +5,6 @@ Authors: Scott Morrison, David Renshaw
 -/
 import Mathlib.Tactic.Backtrack
 import Lean.Meta.Tactic.Apply
-import Mathlib.Lean.LocalContext
-import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.LabelAttr
-import Mathlib.Control.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
