@@ -262,7 +262,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
       · exact ⟨i, Or.inr i.2, hi⟩
 
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
-  exact isClosed_iUnion λ i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
+  exact isClosed_iUnion_of_finite λ i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
 
 
 end TopologicalSpace
