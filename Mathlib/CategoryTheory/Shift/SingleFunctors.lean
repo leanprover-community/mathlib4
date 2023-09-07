@@ -154,6 +154,8 @@ lemma inv_hom_id_hom_app (e : F ≅ G) (n : A) (X : C) :
 instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
   (inferInstance : IsIso ((evaluation C D n).map f))
 
+variable (F)
+
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
 def postComp (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C E A where
@@ -175,6 +177,19 @@ def postComp (G : D ⥤ E) [G.CommShift A] :
       Functor.commShiftIso_inv_naturality_assoc]
     simp only [← G.map_comp, Iso.inv_hom_id_app_assoc]
 
+variable (C A)
+
+def postCompFunctor (G : D ⥤ E) [G.CommShift A] :
+    SingleFunctors C D A ⥤ SingleFunctors C E A where
+  obj F := F.postComp G
+  map {F₁ F₂} φ :=
+    { hom := fun a => whiskerRight (φ.hom a) G
+      comm := fun n a a' ha' => by
+        ext X
+        simpa using G.congr_map (congr_app (φ.comm n a a' ha') X) }
+
+variable {C} {E'} {A}
+
 @[simps!]
 def postCompPostCompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :
     (F.postComp G).postComp G' ≅ F.postComp (G ⋙ G') :=
@@ -182,9 +197,11 @@ def postCompPostCompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
+
+
 section
 
-variable (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
+variable {F} (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
   (e : F' ≅ F.postComp G) (n a a' : A) (ha' : n + a = a') (X : C)
 
 lemma postComp_shiftIso_hom_app' :

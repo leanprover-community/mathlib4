@@ -269,8 +269,9 @@ namespace ShortExact
 
 noncomputable def singleδ : (singleFunctor C 0).obj S.X₃ ⟶
     ((singleFunctor C 0).obj S.X₁)⟦(1 : ℤ)⟧ :=
-  triangleOfSESδ (hS.map_of_exact
-    (HomologicalComplex.single C (ComplexShape.up ℤ) 0))
+  (((SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostCompQIso C)).hom.app S.X₃) ≫
+    triangleOfSESδ (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) ≫
+    (((SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostCompQIso C)).inv.app S.X₁)⟦(1 : ℤ)⟧'
 
 @[simps!]
 noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
@@ -279,8 +280,17 @@ noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
 
 lemma singleTriangle_distinguished :
     hS.singleTriangle ∈ distTriang (DerivedCategory C) :=
-  triangleOfSES_distinguished (hS.map_of_exact
-    (HomologicalComplex.single C (ComplexShape.up ℤ) 0))
+  isomorphic_distinguished _ (triangleOfSES_distinguished (hS.map_of_exact
+    (HomologicalComplex.single C (ComplexShape.up ℤ) 0))) _ (by
+    let e := (SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostCompQIso C)
+    refine' Triangle.isoMk _ _ (e.app S.X₁) (e.app S.X₂) (e.app S.X₃) _ _ _
+    · aesop_cat
+    · aesop_cat
+    · dsimp [singleδ]
+      simp only [assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app,
+        SingleFunctors.postComp_functor, Functor.comp_obj]
+      erw [Functor.map_id, comp_id]
+      rfl)
 
 noncomputable def extClass : newExt S.X₃ S.X₁ 1 :=
   newExt.mk hS.singleδ

@@ -150,7 +150,8 @@ lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] 
   dsimp only [singleFunctor, Functor.comp_obj]
   obtain ⟨Y, _, _, ⟨e⟩⟩ := X.exists_iso_Q_obj_of_isGE_of_isLE n n
   obtain ⟨A, ⟨e'⟩⟩ := Y.exists_iso_single n
-  exact ⟨A, ⟨e ≪≫ Q.mapIso e'⟩⟩
+  exact ⟨A, ⟨e ≪≫ Q.mapIso e' ≪≫
+    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)).symm.app A⟩⟩
 
 instance (n : ℤ) : Faithful (singleFunctor C n) := ⟨fun {A B} f₁ f₂ h => by
   have eq₁ := NatIso.naturality_1 (singleFunctorCompHomologyFunctorIso C n) f₁
@@ -161,19 +162,16 @@ instance (n : ℤ) : Faithful (singleFunctor C n) := ⟨fun {A B} f₁ f₂ h =>
 noncomputable instance (n : ℤ) : Full (CochainComplex.singleFunctor C n) :=
   (inferInstance : Full (HomologicalComplex.single _ _ _))
 
-noncomputable instance (n : ℤ) : Full (singleFunctor C n) := by
+noncomputable instance (n : ℤ) : Full (CochainComplex.singleFunctor C n ⋙ Q) := by
   apply Functor.fullOfSurjective
   intro A B f
-  dsimp only [singleFunctor, Functor.comp] at f
   suffices ∃ (f' : (CochainComplex.singleFunctor C n).obj A ⟶
     (CochainComplex.singleFunctor C n).obj B), f = Q.map f' by
     obtain ⟨f', rfl⟩ := this
     obtain ⟨g, hg⟩ := (CochainComplex.singleFunctor C n).map_surjective f'
     refine' ⟨g, _⟩
-    dsimp only [singleFunctor, singleFunctors, SingleFunctors.postComp, HomotopyCategory.singleFunctors,
-      Functor.comp]
+    dsimp
     rw [hg]
-    rfl
   obtain ⟨X, _, _, s, hs, g, fac⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE _ _ n n f
   have : IsIso s := by
     obtain ⟨A', ⟨e⟩⟩ := X.exists_iso_single n
@@ -188,9 +186,16 @@ noncomputable instance (n : ℤ) : Full (singleFunctor C n) := by
       rw [hφ]
       rw [Q.map_comp]
       infer_instance
-    change IsIso ((homologyFunctor C n).map (Q.map ((CochainComplex.singleFunctor C n).map φ)))
+    have : IsIso ((singleFunctor C n).map φ) :=
+      (NatIso.isIso_map_iff ((SingleFunctors.evaluation _ _ n).mapIso
+        (singleFunctorsPostCompQIso C)) φ).2 this
+    dsimp
     infer_instance
   exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
+
+noncomputable instance (n : ℤ) : Full (singleFunctor C n) := by
+  have : _ ≅ (CochainComplex.singleFunctor C n ⋙ Q) := ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C))
+  exact Full.ofIso this.symm
 
 lemma singleFunctor_preimage {A B : C} {n : ℤ}
     (f : (singleFunctor C n).obj A ⟶  (singleFunctor C n).obj B) :

@@ -187,7 +187,8 @@ noncomputable def singleFunctorsPostCompQhIso :
 
 noncomputable def singleFunctorsPostCompQIso :
     singleFunctors C ≅ (CochainComplex.singleFunctors C).postComp Q :=
-  SingleFunctors.postCompPostCompIso _ _ _
+  (SingleFunctors.postCompFunctor C ℤ (Qh : _ ⥤ DerivedCategory C)).mapIso (HomotopyCategory.singleFunctorsPostCompQuotientIso C)
+    ≪≫ (CochainComplex.singleFunctors C).postCompPostCompIso (HomotopyCategory.quotient _ _) Qh
 
 /-noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
   HomologicalComplex.single _ _ n ⋙ Q
@@ -240,7 +241,7 @@ noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n �
 
 noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
-  Functor.associator _ _ _ ≪≫ Functor.associator _ _ _ ≪≫
+  isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)) _ ≪≫ Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
     HomologicalComplex.singleCompHomologyFunctorIso C (ComplexShape.up ℤ) n
 

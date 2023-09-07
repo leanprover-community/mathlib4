@@ -239,11 +239,13 @@ lemma distTriang₃_isGE_iff (T : Triangle (DerivedCategory C)) (hT : T ∈ dist
         exact h₁
 
 instance (A : C) (n : ℤ) : IsLE ((singleFunctor C n).obj A) n := by
-  change IsLE (Q.obj ((CochainComplex.singleFunctor C n).obj A)) n
-  infer_instance
+  have e : (singleFunctor C n).obj A ≅ Q.obj ((CochainComplex.singleFunctor C n).obj A) :=
+    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)).app A
+  exact isLE_of_iso e.symm n
 
 instance (A : C) (n : ℤ) : IsGE ((singleFunctor C n).obj A) n := by
-  change IsGE (Q.obj ((CochainComplex.singleFunctor C n).obj A)) n
-  infer_instance
+  have e : (singleFunctor C n).obj A ≅ Q.obj ((CochainComplex.singleFunctor C n).obj A) :=
+    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)).app A
+  exact isGE_of_iso e.symm n
 
 end DerivedCategory

@@ -92,8 +92,10 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postComp]
   infer_instance
 
-noncomputable def singleFunctorsPostCompIso :
+noncomputable def singleFunctorsPostCompQuotientIso :
     singleFunctors C ≅ (CochainComplex.singleFunctors C).postComp (HomotopyCategory.quotient _ _) :=
   Iso.refl _
+
+attribute [irreducible] singleFunctors singleFunctorsPostCompQuotientIso
 
 end HomotopyCategory
