@@ -726,15 +726,16 @@ lemma compZ_comm' :
 --lemma compatibility :
 --    sgn₂ m m' • E.shiftedHom m hm •[show (m : ℤ) + m' = m'' by linarith] E'.shiftedHom m' hm' =
 --      (comp E E' hn'').shiftedHom m'' (by linarith) := by
+--  rw [ShiftedHom.γhmul_eq]
+--  dsimp [shiftedHom]
+--  simp only [← compZToZ_comp_ZToX₁, DerivedCategory.Q.map_comp, IsIso.inv_comp, assoc,
+--    ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m') (by linarith) (-m'') (by linarith),
+--    Functor.map_comp, compZ_comm'_assoc E E' hn'' m m' hm hm' (-m) (by linarith),
+--    Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
+--  congr 3
+--  simp only [SingleFunctors.postComp_shiftIso_inv_app' _ (DerivedCategory.singleFunctorsPostCompQIso C)]
+--  simp only [assoc]
 --  sorry
-  --rw [ShiftedHom.γhmul_eq]
-  --dsimp [shiftedHom]
-  --simp only [← compZToZ_comp_ZToX₁, DerivedCategory.Q.map_comp, IsIso.inv_comp, assoc,
-  --  ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m') (by linarith) (-m'') (by linarith),
-  --  Functor.map_comp, compZ_comm'_assoc E E' hn'' m m' hm hm' (-m) (by linarith),
-  --  Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
-  --congr 3
-  --simp only [DerivedCategory.singleFunctorShiftIso_inv_app, assoc]
   --congr 1
   --rw [← cancel_epi (DerivedCategory.Q.map (E'.ZToX₁⟦(m : ℤ)⟧')), IsIso.hom_inv_id_assoc]
   --erw [(DerivedCategory.Q.commShiftIso (m : ℤ)).hom.naturality_assoc (E'.ZToX₁)]
