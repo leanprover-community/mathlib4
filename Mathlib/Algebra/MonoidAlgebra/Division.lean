@@ -203,13 +203,11 @@ lemma neg_modOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) %ᵒᶠ g = - (x %ᵒ
   simp only [neg_add_rev, neg_divOf, mul_neg, add_comm] at eq1
   rwa [add_left_inj, eq_comm] at eq1
 
--- Need `k''` to find commutativity
-lemma add_modOf (x y : AddMonoidAlgebra k'' G) (g : G) : (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
+lemma add_modOf (x y : AddMonoidAlgebra k' G) (g : G) : (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
   have eq1 : _ + _ = _ + _ := (congr_arg₂ (. + .) (modOf_add_divOf x g) (modOf_add_divOf y g)).trans
     (modOf_add_divOf (x + y) g).symm
-  rwa [add_divOf, mul_add, show ∀ (a b c d), a + b + (c + d) = a + c + b + d from ?_, add_assoc,
-    add_left_inj, eq_comm] at eq1
-  intros; ring
+  rwa [add_divOf, mul_add, show ∀ (a b c d), a + b + (c + d) = a + c + b + d by intros; abel,
+    add_assoc, add_left_inj, eq_comm] at eq1
 
 lemma sub_modOf (x y : AddMonoidAlgebra k'' G) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g := by
   rw [sub_eq_add_neg, add_modOf, neg_modOf, sub_eq_add_neg]
