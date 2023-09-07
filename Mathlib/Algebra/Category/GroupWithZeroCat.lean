@@ -54,12 +54,7 @@ instance : LargeCategory.{u} GroupWithZeroCat where
 
 -- porting note: was not necessary in mathlib
 instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
-  ⟨fun f => f.toFun, fun f g h => by
-    cases f
-    cases g
-    congr
-    apply FunLike.coe_injective'
-    exact h⟩
+  inferInstanceAs (FunLike (MonoidWithZeroHom M N) _ _)
 
 -- porting note: added
 lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
