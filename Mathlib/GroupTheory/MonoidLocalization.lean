@@ -553,8 +553,9 @@ abbrev toMap (f : LocalizationMap S N) := f.toMonoidHom
 theorem ext {f g : LocalizationMap S N} (h : ∀ x, f.toMap x = g.toMap x) : f = g := by
   rcases f with ⟨⟨⟩⟩
   rcases g with ⟨⟨⟩⟩
-  simp only [mk.injEq, MonoidHom.mk.injEq]
-  exact OneHom.ext h
+  congr
+  ext
+  exact h _
 #align submonoid.localization_map.ext Submonoid.LocalizationMap.ext
 #align add_submonoid.localization_map.ext AddSubmonoid.LocalizationMap.ext
 
