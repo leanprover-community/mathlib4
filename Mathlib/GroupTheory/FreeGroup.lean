@@ -1117,7 +1117,6 @@ theorem reduce.cons (x) :
 #align free_group.reduce.cons FreeGroup.reduce.cons
 #align free_add_group.reduce.cons FreeAddGroup.reduce.cons
 
-set_option trace.Tactic.trans true
 /-- The first theorem that characterises the function `reduce`: a word reduces to its maximal
   reduction. -/
 @[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
