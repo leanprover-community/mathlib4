@@ -1877,4 +1877,9 @@ unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ 
         f.support.val.unquot.map fun i => "finsupp.single " ++ repr i ++ " " ++ repr (f i)
 -/
 
+protected instance IsCancelAdd [Add α] [IsCancelAdd α] [AddZeroClass β] [IsCancelAdd β] :
+    IsCancelAdd (α →₀ β) where
+  add_left_cancel := λ _ _ _ h ↦ Finsupp.ext <| fun x => add_left_cancel (FunLike.congr_fun h x)
+  add_right_cancel := λ _ _ _ h ↦ Finsupp.ext <| fun x => add_right_cancel (FunLike.congr_fun h x)
+
 end Finsupp

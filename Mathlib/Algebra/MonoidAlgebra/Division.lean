@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Finsupp.Antidiagonal
 
 #align_import algebra.monoid_algebra.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
@@ -203,16 +202,16 @@ lemma neg_modOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) %ᵒᶠ g = - (x %ᵒ
   simp only [neg_add_rev, neg_divOf, mul_neg, add_comm] at eq1
   rwa [add_left_inj, eq_comm] at eq1
 
-lemma add_modOf (x y : AddMonoidAlgebra k' G) (g : G) : (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
+lemma add_modOf [IsCancelAdd k] (x y : AddMonoidAlgebra k G) (g : G) :
+    (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
   have eq1 : _ + _ = _ + _ := (congr_arg₂ (. + .) (modOf_add_divOf x g) (modOf_add_divOf y g)).trans
     (modOf_add_divOf (x + y) g).symm
-  rwa [add_divOf, mul_add, show ∀ (a b c d), a + b + (c + d) = a + c + b + d by intros; abel,
-    add_assoc, add_left_inj, eq_comm] at eq1
+  rwa [add_divOf, mul_add, add_add_add_comm, add_left_inj, eq_comm] at eq1
 
-lemma sub_modOf (x y : AddMonoidAlgebra k'' G) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g := by
+lemma sub_modOf (x y : AddMonoidAlgebra k' G) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g := by
   rw [sub_eq_add_neg, add_modOf, neg_modOf, sub_eq_add_neg]
 
-lemma modOf_idem (x : AddMonoidAlgebra k'' G) (g : G) : (x %ᵒᶠ g) %ᵒᶠ g = x %ᵒᶠ g := by
+lemma modOf_idem (x : AddMonoidAlgebra k' G) (g : G) : (x %ᵒᶠ g) %ᵒᶠ g = x %ᵒᶠ g := by
   have eq1 : modOf _ g = modOf _ g := congr_arg (modOf . g)
     (sub_eq_iff_eq_add.mpr (divOf_add_modOf x g).symm)
   rwa [sub_modOf, of'_mul_modOf, sub_eq_zero, eq_comm] at eq1

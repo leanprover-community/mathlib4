@@ -1205,6 +1205,10 @@ instance AddMonoidAlgebra.coeFun : CoeFun (AddMonoidAlgebra k G) fun _ => G → 
   Finsupp.coeFun
 #align add_monoid_algebra.has_coe_to_fun AddMonoidAlgebra.coeFun
 
+protected instance AddMonoidAlgebra.IsCancelAdd [IsCancelAdd k] [AddZeroClass G] [IsCancelAdd G] :
+    IsCancelAdd (AddMonoidAlgebra k G) := by
+  delta AddMonoidAlgebra
+  exact Finsupp.IsCancelAdd (α := G) (β := k)
 end
 
 namespace AddMonoidAlgebra
