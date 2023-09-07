@@ -813,15 +813,15 @@ instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Spac
   lt_top_of_isCompact K hK := by
     rw [map_apply (measurable_const_smul _) hK.measurableSet]
     exact IsCompact.measure_lt_top <| (Homeomorph.isCompact_preimage (Homeomorph.smul a)).2 hK
-  toIsOpenPosMeasure := by
-    refine (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
+  toIsOpenPosMeasure :=
+    (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
 
 /-- The image of a Haar measure under right multiplication is again a Haar measure. -/
 @[to_additive isHaarMeasure_map_add_right
   "The image of a Haar measure under right addition is again a Haar measure."]
 instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
-    IsHaarMeasure (Measure.map (· * g) μ) := by
-  exact isHaarMeasure_map_smul μ (MulOpposite.op g)
+    IsHaarMeasure (Measure.map (· * g) μ) :=
+  isHaarMeasure_map_smul μ (MulOpposite.op g)
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
