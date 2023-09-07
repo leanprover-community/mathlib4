@@ -8,6 +8,7 @@ import Mathlib.Tactic.NormNum.CharZero
 import Mathlib.Tactic.NormNum.OrderedRing
 import Mathlib.Data.Rat.Cast
 import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.Clear!
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Util.Qq
