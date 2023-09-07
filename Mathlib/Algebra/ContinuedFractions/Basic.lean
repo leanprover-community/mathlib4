@@ -21,8 +21,9 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 1. Generalised continued fractions (gcfs)
 2. Simple continued fractions (scfs)
 3. (Regular) continued fractions ((r)cfs)
-4. Computation of convergents using the recurrence relation in `convergents`.
-5. Computation of convergents by directly evaluating the fraction described by the gcf in
+4. Integer continued fractions (icfs)
+5. Computation of convergents using the recurrence relation in `convergents`.
+6. Computation of convergents by directly evaluating the fraction described by the gcf in
 `convergents'`.
 
 ## Implementation notes
@@ -44,21 +45,18 @@ numerics, number theory, approximations, fractions
 -- Fix a carrier `α`.
 variable (α : Type*)
 
-/-!### Definitions-/
+/-! ### Definitions -/
 
--- Porting note: Originally `protected structure GeneralizedContinuedFraction.Pair`
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/
 structure GeneralizedContinuedFraction.Pair where
   /-- Partial numerator -/
-  a : α
+  protected a : α
   /-- Partial denominator -/
-  b : α
+  protected b : α
   deriving Inhabited
 #align generalized_continued_fraction.pair GeneralizedContinuedFraction.Pair
 
 open GeneralizedContinuedFraction
-
-/-! Interlude: define some expected coercions and instances. -/
 
 namespace GeneralizedContinuedFraction.Pair
 
@@ -69,29 +67,10 @@ instance [Repr α] : Repr (Pair α) :=
   ⟨fun p _ ↦ "(a : " ++ repr p.a ++ ", b : " ++ repr p.b ++ ")"⟩
 
 /-- Maps a function `f` on both components of a given pair. -/
+@[simps]
 def map {β : Type*} (f : α → β) (gp : Pair α) : Pair β :=
   ⟨f gp.a, f gp.b⟩
 #align generalized_continued_fraction.pair.map GeneralizedContinuedFraction.Pair.map
-
-section coe
-
--- Fix another type `β` which we will convert to.
-variable {β : Type*} [Coe α β]
-
--- Porting note: added so we can add the `@[coe]` attribute
-/-- The coercion between numerator-denominator pairs happens componentwise. -/
-@[coe]
-def coeFn : Pair α → Pair β := map (↑)
-
-/-- Coerce a pair by elementwise coercion. -/
-instance : Coe (Pair α) (Pair β) :=
-  ⟨coeFn⟩
-
-@[simp, norm_cast]
-theorem coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
-#align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
-
-end coe
 
 end GeneralizedContinuedFraction.Pair
 
@@ -112,9 +91,9 @@ For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),
 @[ext]
 structure GeneralizedContinuedFraction where
   /-- Head term -/
-  h : α
+  protected h : α
   /-- Sequence of partial numerator and denominator pairs. -/
-  s : Stream'.Seq <| Pair α
+  protected s : Stream'.Seq (Pair α)
 #align generalized_continued_fraction GeneralizedContinuedFraction
 #align generalized_continued_fraction.ext_iff GeneralizedContinuedFraction.ext_iff
 #align generalized_continued_fraction.ext GeneralizedContinuedFraction.ext
@@ -124,6 +103,7 @@ variable {α}
 namespace GeneralizedContinuedFraction
 
 /-- Constructs a generalized continued fraction without fractional part. -/
+@[simps]
 def ofInteger (a : α) : GeneralizedContinuedFraction α :=
   ⟨a, Stream'.Seq.nil⟩
 #align generalized_continued_fraction.of_integer GeneralizedContinuedFraction.ofInteger
@@ -158,34 +138,6 @@ def Terminates (g : GeneralizedContinuedFraction α) : Prop :=
   g.s.Terminates
 #align generalized_continued_fraction.terminates GeneralizedContinuedFraction.Terminates
 
-section coe
-
-/-! Interlude: define some expected coercions. -/
-
--- Fix another type `β` which we will convert to.
-variable {β : Type*} [Coe α β]
-
--- Porting note: Added to put `@[coe]` attr on it.
-/-- The coercion between `GeneralizedContinuedFraction` happens on the head term
-and all numerator-denominator pairs componentwise. -/
-@[coe]
-def coeFn : GeneralizedContinuedFraction α → GeneralizedContinuedFraction β :=
-  fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩
-
-/-- Coerce a gcf by elementwise coercion. -/
-instance : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction β) :=
-  ⟨coeFn⟩
-
-@[simp, norm_cast]
-theorem coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
-    (g : GeneralizedContinuedFraction β) =
-      ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
-#align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_toGeneralizedContinuedFraction
-
-end coe
-
-end GeneralizedContinuedFraction
-
 /-- A generalized continued fraction is a *simple continued fraction* if all partial numerators are
 equal to one.
 $$
@@ -196,116 +148,67 @@ $$
                                                    {b_3 + \dots}}}}
 $$
 -/
-def GeneralizedContinuedFraction.IsSimpleContinuedFraction (g : GeneralizedContinuedFraction α)
-    [One α] : Prop :=
-  ∀ (n : ℕ) (aₙ : α), g.partialNumerators.get? n = some aₙ → aₙ = 1
+class IsSimpleContinuedFraction [One α]
+    (g : GeneralizedContinuedFraction α) : Prop where
+  /- All partial numerators are equal to one. -/
+  partNum_eq_one : ∀ {n aₙ}, g.partialNumerators.get? n = some aₙ → aₙ = 1
 #align generalized_continued_fraction.is_simple_continued_fraction GeneralizedContinuedFraction.IsSimpleContinuedFraction
 
-variable (α)
+#noalign simple_continued_fraction
 
-/-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
-numerators are equal to one.
-$$
-  h + \dfrac{1}
-            {b_0 + \dfrac{1}
-                         {b_1 + \dfrac{1}
-                                      {b_2 + \dfrac{1}
-                                                   {b_3 + \dots}}}}
-$$
-For convenience, one often writes `[h; b₀, b₁, b₂,...]`.
-It is encoded as the subtype of gcfs that satisfy
-`GeneralizedContinuedFraction.IsSimpleContinuedFraction`.
- -/
-def SimpleContinuedFraction [One α] :=
-  { g : GeneralizedContinuedFraction α // g.IsSimpleContinuedFraction }
-#align simple_continued_fraction SimpleContinuedFraction
+instance IsSimpleContinuedFraction.ofInteger [One α] (a : α) :
+    (ofInteger a).IsSimpleContinuedFraction where
+  partNum_eq_one h := nomatch h
+#align simple_continued_fraction.of_integer GeneralizedContinuedFraction.IsSimpleContinuedFraction.ofInteger
 
-variable {α}
+#noalign simple_continued_fraction.inhabited
 
--- Interlude: define some expected coercions.
-namespace SimpleContinuedFraction
+#noalign simple_continued_fraction.has_coe_to_generalized_continued_fraction
 
-variable [One α]
-
-/-- Constructs a simple continued fraction without fractional part. -/
-def ofInteger (a : α) : SimpleContinuedFraction α :=
-  ⟨GeneralizedContinuedFraction.ofInteger a, fun n aₙ h ↦ by cases h⟩
-#align simple_continued_fraction.of_integer SimpleContinuedFraction.ofInteger
-
-instance : Inhabited (SimpleContinuedFraction α) :=
-  ⟨ofInteger 1⟩
-
-/-- Lift a scf to a gcf using the inclusion map. -/
-instance : Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
-  -- Porting note: originally `by unfold SimpleContinuedFraction; infer_instance`
-  ⟨Subtype.val⟩
-
--- Porting note: Syntactic tautology due to change in `Coe` above.
--- theorem coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
---     (↑s : GeneralizedContinuedFraction α) = s.val := rfl
 #noalign simple_continued_fraction.coe_to_generalized_continued_fraction
-
-end SimpleContinuedFraction
 
 /--
 A simple continued fraction is a *(regular) continued fraction* ((r)cf) if all partial denominators
 `bᵢ` are positive, i.e. `0 < bᵢ`.
 -/
-def SimpleContinuedFraction.IsContinuedFraction [One α] [Zero α] [LT α]
-    (s : SimpleContinuedFraction α) : Prop :=
-  ∀ (n : ℕ) (bₙ : α),
-    (↑s : GeneralizedContinuedFraction α).partialDenominators.get? n = some bₙ → 0 < bₙ
-#align simple_continued_fraction.is_continued_fraction SimpleContinuedFraction.IsContinuedFraction
+class IsContinuedFraction [One α] [Zero α] [LT α]
+    (g : GeneralizedContinuedFraction α) extends IsSimpleContinuedFraction g : Prop where
+  /- All partial denominator are positive. -/
+  zero_lt_partDenom : ∀ {n bₙ}, g.partialDenominators.get? n = some bₙ → 0 < bₙ
+#align simple_continued_fraction.is_continued_fraction GeneralizedContinuedFraction.IsContinuedFraction
 
-variable (α)
+#noalign continued_fraction
 
-/-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
-denominators are all positive. It is the subtype of scfs that satisfy
-`SimpleContinuedFraction.IsContinuedFraction`.
- -/
-def ContinuedFraction [One α] [Zero α] [LT α] :=
-  { s : SimpleContinuedFraction α // s.IsContinuedFraction }
-#align continued_fraction ContinuedFraction
+instance IsContinuedFraction.ofInteger [One α] [Zero α] [LT α] (a : α) :
+    (ofInteger a).IsContinuedFraction where
+  zero_lt_partDenom h := nomatch h
+#align continued_fraction.of_integer GeneralizedContinuedFraction.IsContinuedFraction.ofInteger
 
-variable {α}
+#noalign continued_fraction.inhabited
 
-/-! Interlude: define some expected coercions. -/
+#noalign continued_fraction.has_coe_to_simple_continued_fraction
 
-namespace ContinuedFraction
-
-variable [One α] [Zero α] [LT α]
-
-/-- Constructs a continued fraction without fractional part. -/
-def ofInteger (a : α) : ContinuedFraction α :=
-  ⟨SimpleContinuedFraction.ofInteger a, fun n bₙ h ↦ by cases h⟩
-#align continued_fraction.of_integer ContinuedFraction.ofInteger
-
-instance : Inhabited (ContinuedFraction α) :=
-  ⟨ofInteger 0⟩
-
-/-- Lift a cf to a scf using the inclusion map. -/
-instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
-  -- Porting note: originally `by unfold ContinuedFraction; infer_instance`
-  ⟨Subtype.val⟩
-
--- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_to_simpleContinuedFraction {c : ContinuedFraction α} :
---     (↑c : SimpleContinuedFraction α) = c.val := rfl
 #noalign continued_fraction.coe_to_simple_continued_fraction
 
-/-- Lift a cf to a scf using the inclusion map. -/
-instance : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
-  ⟨fun c ↦ c.val⟩
-  -- Porting note: was `fun c ↦ ↑(↑c : SimpleContinuedFraction α)`
+#noalign continued_fraction.has_coe_to_generalized_continued_fraction
 
--- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
---     (↑c : GeneralizedContinuedFraction α) = c.val := rfl
 #noalign continued_fraction.coe_to_generalized_continued_fraction
 
-end ContinuedFraction
+/--
+A continued fraction is an *integer continued fraction* (icf) if the head term and all partial
+denominators `bᵢ` are integer.
+-/
+class IsIntegerContinuedFraction [One α] [Zero α] [LT α] [IntCast α]
+    (g : GeneralizedContinuedFraction α) extends IsContinuedFraction g : Prop where
+  /- The head term is integer. -/
+  h_eq_int : ∃ (m : ℤ), g.h = m
+  /- All partial denominator are integer. -/
+  partDenom_eq_int : ∀ {n bₙ}, g.partialDenominators.get? n = some bₙ → ∃ (m : ℤ), bₙ = m
 
-namespace GeneralizedContinuedFraction
+instance IsIntegerContinuedFraction.ofInteger [One α] [Zero α] [LT α] [IntCast α] (n : ℤ) :
+    (ofInteger (n : α)).IsIntegerContinuedFraction where
+  h_eq_int := ⟨n, rfl⟩
+  partDenom_eq_int h := nomatch h
 
 /-!
 ### Computation of Convergents
@@ -328,56 +231,42 @@ We start with the definition of the recurrence relation. Given a gcf `g`, for al
 *nth denominator* of `g`. The *nth convergent* of `g` is given by `Aₙ / Bₙ`.
 -/
 
-/-- Returns the next numerator `Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, where `predA` is `Aₙ₋₁`,
-`ppredA` is `Aₙ₋₂`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
--/
-def nextNumerator (a b ppredA predA : K) : K :=
-  b * predA + a * ppredA
-#align generalized_continued_fraction.next_numerator GeneralizedContinuedFraction.nextNumerator
+#noalign generalized_continued_fraction.next_numerator
 
-/-- Returns the next denominator `Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`, where `predB` is `Bₙ₋₁` and
-`ppredB` is `Bₙ₋₂`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
--/
-def nextDenominator (aₙ bₙ ppredB predB : K) : K :=
-  bₙ * predB + aₙ * ppredB
-#align generalized_continued_fraction.next_denominator GeneralizedContinuedFraction.nextDenominator
+#noalign generalized_continued_fraction.next_denominator
 
-/--
-Returns the next continuants `⟨Aₙ, Bₙ⟩` using `nextNumerator` and `nextDenominator`, where `pred`
-is `⟨Aₙ₋₁, Bₙ₋₁⟩`, `ppred` is `⟨Aₙ₋₂, Bₙ₋₂⟩`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
--/
-def nextContinuants (a b : K) (ppred pred : Pair K) : Pair K :=
-  ⟨nextNumerator a b ppred.a pred.a, nextDenominator a b ppred.b pred.b⟩
-#align generalized_continued_fraction.next_continuants GeneralizedContinuedFraction.nextContinuants
+#noalign generalized_continued_fraction.next_continuants
 
 /-- Returns the continuants `⟨Aₙ₋₁, Bₙ₋₁⟩` of `g`. -/
-def continuantsAux (g : GeneralizedContinuedFraction K) : Stream' (Pair K)
+def continuantsAux (g : GeneralizedContinuedFraction K) : ℕ → Pair K
   | 0 => ⟨1, 0⟩
   | 1 => ⟨g.h, 1⟩
   | n + 2 =>
     match g.s.get? n with
     | none => continuantsAux g (n + 1)
-    | some gp => nextContinuants gp.a gp.b (continuantsAux g n) (continuantsAux g (n + 1))
+    | some gp =>
+      ⟨gp.b * (continuantsAux g (n + 1)).a + gp.a * (continuantsAux g n).a,
+        gp.b * (continuantsAux g (n + 1)).b + gp.a * (continuantsAux g n).b⟩
 #align generalized_continued_fraction.continuants_aux GeneralizedContinuedFraction.continuantsAux
 
 /-- Returns the continuants `⟨Aₙ, Bₙ⟩` of `g`. -/
-def continuants (g : GeneralizedContinuedFraction K) : Stream' (Pair K) :=
-  g.continuantsAux.tail
+def continuants (g : GeneralizedContinuedFraction K) (n : ℕ) : Pair K :=
+  g.continuantsAux (n + 1)
 #align generalized_continued_fraction.continuants GeneralizedContinuedFraction.continuants
 
 /-- Returns the numerators `Aₙ` of `g`. -/
-def numerators (g : GeneralizedContinuedFraction K) : Stream' K :=
-  g.continuants.map Pair.a
+def numerators (g : GeneralizedContinuedFraction K) (n : ℕ) : K :=
+  (g.continuants n).a
 #align generalized_continued_fraction.numerators GeneralizedContinuedFraction.numerators
 
 /-- Returns the denominators `Bₙ` of `g`. -/
-def denominators (g : GeneralizedContinuedFraction K) : Stream' K :=
-  g.continuants.map Pair.b
+def denominators (g : GeneralizedContinuedFraction K) (n : ℕ) : K :=
+  (g.continuants n).b
 #align generalized_continued_fraction.denominators GeneralizedContinuedFraction.denominators
 
 /-- Returns the convergents `Aₙ / Bₙ` of `g`, where `Aₙ, Bₙ` are the nth continuants of `g`. -/
-def convergents (g : GeneralizedContinuedFraction K) : Stream' K :=
-  fun n : ℕ ↦ g.numerators n / g.denominators n
+def convergents (g : GeneralizedContinuedFraction K) (n : ℕ) : K :=
+  g.numerators n / g.denominators n
 #align generalized_continued_fraction.convergents GeneralizedContinuedFraction.convergents
 
 /--

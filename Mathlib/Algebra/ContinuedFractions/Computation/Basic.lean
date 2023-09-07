@@ -71,8 +71,8 @@ variable (K : Type*)
 `⟨b, fr⟩`.
 -/
 structure IntFractPair where
-  b : ℤ
-  fr : K
+  protected b : ℤ
+  protected fr : K
 #align generalized_continued_fraction.int_fract_pair GeneralizedContinuedFraction.IntFractPair
 
 variable {K}
@@ -92,36 +92,11 @@ instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
 
 /-- Maps a function `f` on the fractional components of a given pair.
 -/
+@[simps]
 def mapFr {β : Type*} (f : K → β) (gp : IntFractPair K) : IntFractPair β :=
   ⟨gp.b, f gp.fr⟩
 set_option linter.uppercaseLean3 false in
 #align generalized_continued_fraction.int_fract_pair.mapFr GeneralizedContinuedFraction.IntFractPair.mapFr
-
-section coe
-
-/-! Interlude: define some expected coercions. -/
-
-
--- Fix another type `β` which we will convert to.
-variable {β : Type*} [Coe K β]
-
--- Porting note: added so we can add the `@[coe]` attribute
-/-- The coercion between integer-fraction pairs happens componentwise. -/
-@[coe]
-def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)
-
-/-- Coerce a pair by coercing the fractional component. -/
-instance coe : Coe (IntFractPair K) (IntFractPair β) where
-  coe := coeFn
-#align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.coe
-
-@[simp, norm_cast]
-theorem coe_to_intFractPair {b : ℤ} {fr : K} :
-    (↑(IntFractPair.mk b fr) : IntFractPair β) = IntFractPair.mk b (↑fr : β) :=
-  rfl
-#align generalized_continued_fraction.int_fract_pair.coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.coe_to_intFractPair
-
-end coe
 
 -- Note: this could be relaxed to something like `LinearOrderedDivisionRing` in the future.
 -- Fix a discrete linear ordered field with `floor` function.

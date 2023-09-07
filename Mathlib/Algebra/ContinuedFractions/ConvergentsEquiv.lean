@@ -53,8 +53,8 @@ The corresponding lemma in this file is `succ_nth_convergent_eq_squashGCF_nth_co
 
 - `GeneralizedContinuedFraction.convergents_eq_convergents'` shows the equivalence under a strict
 positivity restriction on the sequence.
-- `continued_fractions.convergents_eq_convergents'` shows the equivalence for (regular) continued
-fractions.
+- `GeneralizedContinuedFraction.convergents_eq_convergents'` shows the equivalence for (regular)
+continued fractions.
 
 ## References
 
@@ -91,7 +91,7 @@ combines `⟨aₙ, bₙ⟩` and `⟨aₙ₊₁, bₙ₊₁⟩` at position `n` t
 `squashSeq s 0 = [(a₀, bₒ + a₁ / b₁), (a₁, b₁),...]`.
 If `s.TerminatedAt (n + 1)`, then `squashSeq s n = s`.
 -/
-def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
+def squashSeq (s : Stream'.Seq (Pair K)) (n : ℕ) : Stream'.Seq (Pair K) :=
   match Prod.mk (s.get? n) (s.get? (n + 1)) with
   | ⟨some gp_n, some gp_succ_n⟩ =>
     Stream'.Seq.nats.zipWith
@@ -271,13 +271,13 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
     simp only [this, convergents_stable_of_terminated n.le_succ terminated_at_n]
   · obtain ⟨⟨a, b⟩, s_nth_eq⟩ : ∃ gp_n, g.s.get? n = some gp_n
     exact Option.ne_none_iff_exists'.mp not_terminated_at_n
-    have b_ne_zero : b ≠ 0 := nth_part_denom_ne_zero (part_denom_eq_s_b s_nth_eq)
+    have b_ne_zero : b ≠ 0 := nth_part_denom_ne_zero (partDenom_eq_s_b s_nth_eq)
     cases' n with n'
     case zero =>
       suffices (b * g.h + a) / b = g.h + a / b by
         simpa [squashGCF, s_nth_eq, convergent_eq_conts_a_div_conts_b,
-          continuants_recurrenceAux s_nth_eq zeroth_continuant_aux_eq_one_zero
-            first_continuant_aux_eq_h_one]
+          continuants_recurrenceAux s_nth_eq zeroth_continuantAux_eq_one_zero
+            first_continuantAux_eq_h_one]
       calc
         (b * g.h + a) / b = b * g.h / b + a / b := by ring
         -- requires `Field`, not `DivisionRing`
@@ -386,29 +386,24 @@ theorem convergents_eq_convergents' [LinearOrderedField K]
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_convergent_eq_squashGCF_nth_convergent`.
       have : ∀ ⦃b⦄, g.partialDenominators.get? n = some b → b ≠ 0 := by
-        intro b nth_part_denom_eq
+        intro b nth_partDenom_eq
         obtain ⟨gp, s_nth_eq, ⟨refl⟩⟩ : ∃ gp, g.s.get? n = some gp ∧ gp.b = b
-        exact exists_s_b_of_part_denom nth_part_denom_eq
+        exact exists_s_b_of_partDenom nth_partDenom_eq
         exact (ne_of_lt (s_pos (lt_add_one n) s_nth_eq).right).symm
       exact succ_nth_convergent_eq_squashGCF_nth_convergent @this
 #align generalized_continued_fraction.convergents_eq_convergents' GeneralizedContinuedFraction.convergents_eq_convergents'
 
-end GeneralizedContinuedFraction
-
-open GeneralizedContinuedFraction
-
-namespace ContinuedFraction
-
 /-- Shows that the recurrence relation (`convergents`) and direct evaluation (`convergents'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convergents_eq_convergents' [LinearOrderedField K] {c : ContinuedFraction K} :
-    (↑c : GeneralizedContinuedFraction K).convergents =
-    (↑c : GeneralizedContinuedFraction K).convergents' := by
+theorem convergents_eq_convergents'_of_isContinuedFraction [LinearOrderedField K]
+    (g : GeneralizedContinuedFraction K) [g.IsContinuedFraction] :
+    g.convergents = g.convergents' := by
   ext n
   apply convergents_eq_convergents'
   intro gp m _ s_nth_eq
-  exact ⟨zero_lt_one.trans_le ((c : SimpleContinuedFraction K).property m gp.a
-    (part_num_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| part_denom_eq_s_b s_nth_eq⟩
-#align continued_fraction.convergents_eq_convergents' ContinuedFraction.convergents_eq_convergents'
+  exact ⟨zero_lt_one.trans_le
+    (IsSimpleContinuedFraction.partNum_eq_one (partNum_eq_s_a s_nth_eq)).symm.le,
+    IsContinuedFraction.zero_lt_partDenom <| partDenom_eq_s_b s_nth_eq⟩
+#align continued_fraction.convergents_eq_convergents' GeneralizedContinuedFraction.convergents_eq_convergents'_of_isContinuedFraction
 
-end ContinuedFraction
+end GeneralizedContinuedFraction

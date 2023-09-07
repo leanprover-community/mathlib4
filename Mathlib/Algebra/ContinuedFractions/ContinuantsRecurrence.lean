@@ -27,14 +27,14 @@ theorem continuantsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? 
     (nth_conts_aux_eq : g.continuantsAux n = ppred)
     (succ_nth_conts_aux_eq : g.continuantsAux (n + 1) = pred) :
     g.continuantsAux (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
-  by simp [*, continuantsAux, nextContinuants, nextDenominator, nextNumerator]
+  by simp [*, continuantsAux]
 #align generalized_continued_fraction.continuants_aux_recurrence GeneralizedContinuedFraction.continuantsAux_recurrence
 
 theorem continuants_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
     (nth_conts_aux_eq : g.continuantsAux n = ppred)
     (succ_nth_conts_aux_eq : g.continuantsAux (n + 1) = pred) :
     g.continuants (n + 1) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
-  simp [nth_cont_eq_succ_nth_cont_aux,
+  simp [nth_cont_eq_succ_nth_contAux,
     continuantsAux_recurrence nth_s_eq nth_conts_aux_eq succ_nth_conts_aux_eq]
 #align generalized_continued_fraction.continuants_recurrence_aux GeneralizedContinuedFraction.continuants_recurrenceAux
 
@@ -42,7 +42,7 @@ theorem continuants_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? 
 theorem continuants_recurrence {gp ppred pred : Pair K} (succ_nth_s_eq : g.s.get? (n + 1) = some gp)
     (nth_conts_eq : g.continuants n = ppred) (succ_nth_conts_eq : g.continuants (n + 1) = pred) :
     g.continuants (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
-  rw [nth_cont_eq_succ_nth_cont_aux] at nth_conts_eq succ_nth_conts_eq
+  rw [nth_cont_eq_succ_nth_contAux] at nth_conts_eq succ_nth_conts_eq
   exact continuants_recurrenceAux succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
 #align generalized_continued_fraction.continuants_recurrence GeneralizedContinuedFraction.continuants_recurrence
 

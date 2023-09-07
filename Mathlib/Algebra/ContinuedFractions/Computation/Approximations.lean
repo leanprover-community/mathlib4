@@ -29,11 +29,11 @@ the error term indeed gets smaller. As a corollary, we will be able to show that
 
 ## Main Theorems
 
-- `GeneralizedContinuedFraction.of_part_num_eq_one`: shows that all partial numerators `aᵢ` are
+- `GeneralizedContinuedFraction.of_partNum_eq_one`: shows that all partial numerators `aᵢ` are
   equal to one.
-- `GeneralizedContinuedFraction.exists_int_eq_of_part_denom`: shows that all partial denominators
+- `GeneralizedContinuedFraction.exists_int_eq_of_partDenom`: shows that all partial denominators
   `bᵢ` correspond to an integer.
-- `GeneralizedContinuedFraction.of_one_le_get?_part_denom`: shows that `1 ≤ bᵢ`.
+- `GeneralizedContinuedFraction.of_one_le_get?_partDenom`: shows that `1 ≤ bᵢ`.
 - `GeneralizedContinuedFraction.succ_nth_fib_le_of_nth_denom`: shows that the `n`th denominator
   `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `Nat.fib (n + 1)`.
 - `GeneralizedContinuedFraction.le_of_succ_get?_denom`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
@@ -55,7 +55,8 @@ open GeneralizedContinuedFraction (of)
 
 open Int
 
-variable {K : Type*} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {v : K} {n : ℕ}
+         [LinearOrderedField K] [FloorRing K]
 
 namespace IntFractPair
 
@@ -136,9 +137,9 @@ fraction `GeneralizedContinuedFraction.of`.
 
 /-- Shows that the integer parts of the continued fraction are at least one. -/
 theorem of_one_le_get?_part_denom {b : K}
-    (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) : 1 ≤ b := by
+    (nth_partDenom_eq : (of v).partialDenominators.get? n = some b) : 1 ≤ b := by
   obtain ⟨gp_n, nth_s_eq, ⟨-⟩⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b;
-  exact exists_s_b_of_part_denom nth_part_denom_eq
+  exact exists_s_b_of_partDenom nth_partDenom_eq
   obtain ⟨ifp_n, succ_nth_stream_eq, ifp_n_b_eq_gp_n_b⟩ :
     ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b
   exact IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
@@ -150,7 +151,7 @@ theorem of_one_le_get?_part_denom {b : K}
 Shows that the partial numerators `aᵢ` of the continued fraction are equal to one and the partial
 denominators `bᵢ` correspond to integers.
 -/
-theorem of_part_num_eq_one_and_exists_int_part_denom_eq {gp : GeneralizedContinuedFraction.Pair K}
+theorem of_partNum_eq_one_and_exists_int_partDenom_eq {gp : GeneralizedContinuedFraction.Pair K}
     (nth_s_eq : (of v).s.get? n = some gp) : gp.a = 1 ∧ ∃ z : ℤ, gp.b = (z : K) := by
   obtain ⟨ifp, stream_succ_nth_eq, -⟩ : ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ _
   exact IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
@@ -160,25 +161,41 @@ theorem of_part_num_eq_one_and_exists_int_part_denom_eq {gp : GeneralizedContinu
     have : some gp = some ⟨1, ifp.b⟩ := by rwa [nth_s_eq] at this
     injection this
   simp [this]
-#align generalized_continued_fraction.of_part_num_eq_one_and_exists_int_part_denom_eq GeneralizedContinuedFraction.of_part_num_eq_one_and_exists_int_part_denom_eq
+#align generalized_continued_fraction.of_part_num_eq_one_and_exists_int_part_denom_eq GeneralizedContinuedFraction.of_partNum_eq_one_and_exists_int_partDenom_eq
 
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
-theorem of_part_num_eq_one {a : K} (nth_part_num_eq : (of v).partialNumerators.get? n = some a) :
+theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partialNumerators.get? n = some a) :
     a = 1 := by
   obtain ⟨gp, nth_s_eq, gp_a_eq_a_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.a = a;
-  exact exists_s_a_of_part_num nth_part_num_eq
-  have : gp.a = 1 := (of_part_num_eq_one_and_exists_int_part_denom_eq nth_s_eq).left
+  exact exists_s_a_of_partNum nth_partNum_eq
+  have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDenom_eq nth_s_eq).left
   rwa [gp_a_eq_a_n] at this
-#align generalized_continued_fraction.of_part_num_eq_one GeneralizedContinuedFraction.of_part_num_eq_one
+#align generalized_continued_fraction.of_part_num_eq_one GeneralizedContinuedFraction.of_partNum_eq_one
+
+instance IsSimpleContinuedFraction.of : (of v).IsSimpleContinuedFraction where
+  partNum_eq_one h := of_partNum_eq_one h
+#align generalized_continued_fraction.of_is_simple_continued_fraction GeneralizedContinuedFraction.IsSimpleContinuedFraction.of
+
+#noalign simple_continued_fraction.of
+
+instance IsContinuedFraction.of : (of v).IsContinuedFraction where
+  zero_lt_partDenom h := lt_of_lt_of_le zero_lt_one (of_one_le_get?_part_denom h)
+#align simple_continued_fraction.of_is_continued_fraction GeneralizedContinuedFraction.IsContinuedFraction.of
+
+#noalign continued_fraction.of
 
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
-theorem exists_int_eq_of_part_denom {b : K}
+theorem exists_int_eq_of_partDenom {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
   obtain ⟨gp, nth_s_eq, gp_b_eq_b_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b;
-  exact exists_s_b_of_part_denom nth_part_denom_eq
-  have : ∃ z : ℤ, gp.b = (z : K) := (of_part_num_eq_one_and_exists_int_part_denom_eq nth_s_eq).right
+  exact exists_s_b_of_partDenom nth_part_denom_eq
+  have : ∃ z : ℤ, gp.b = (z : K) := (of_partNum_eq_one_and_exists_int_partDenom_eq nth_s_eq).right
   rwa [gp_b_eq_b_n] at this
-#align generalized_continued_fraction.exists_int_eq_of_part_denom GeneralizedContinuedFraction.exists_int_eq_of_part_denom
+#align generalized_continued_fraction.exists_int_eq_of_part_denom GeneralizedContinuedFraction.exists_int_eq_of_partDenom
+
+instance IsIntegerContinuedFraction.of : (of v).IsIntegerContinuedFraction where
+  h_eq_int := ⟨⌊v⌋, of_h_eq_floor⟩
+  partDenom_eq_int h := exists_int_eq_of_partDenom h
 
 /-!
 One of our next goals is to show that `bₙ * Bₙ ≤ Bₙ₊₁`. For this, we first show that the partial
@@ -190,16 +207,15 @@ denominators `Bₙ` are bounded from below by the fibonacci sequence `Nat.fib`. 
 -- open `Nat` as we will make use of fibonacci numbers.
 open Nat
 
-theorem fib_le_of_continuantsAux_b :
-    n ≤ 1 ∨ ¬(of v).TerminatedAt (n - 2) → (fib n : K) ≤ ((of v).continuantsAux n).b :=
+theorem fib_le_continuantsAux_b [g.IsIntegerContinuedFraction] :
+    n ≤ 1 ∨ ¬g.TerminatedAt (n - 2) → (fib n : K) ≤ (g.continuantsAux n).b :=
   Nat.strong_induction_on n
     (by
       intro n IH hyp
       rcases n with (_ | _ | n)
       · simp [fib_add_two, continuantsAux] -- case n = 0
       · simp [fib_add_two, continuantsAux] -- case n = 1
-      · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by linarith
+      · have : ¬n + 2 ≤ 1 := by linarith
         have not_terminated_at_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp
         exact Option.ne_none_iff_exists'.mp not_terminated_at_n
@@ -211,7 +227,7 @@ theorem fib_le_of_continuantsAux_b :
             continuantsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
         -- make use of the fact that `gp.a = 1`
         suffices (fib n : K) + fib (n + 1) ≤ ppconts.b + gp.b * pconts.b by
-          simpa [of_part_num_eq_one <| part_num_eq_s_a s_ppred_nth_eq]
+          simpa [IsSimpleContinuedFraction.partNum_eq_one <| partNum_eq_s_a s_ppred_nth_eq]
         have not_terminated_at_pred_n : ¬g.TerminatedAt (n - 1) :=
           mt (terminated_stable <| Nat.sub_le n 1) not_terminated_at_n
         have not_terminated_at_ppred_n : ¬TerminatedAt g (n - 2) :=
@@ -223,25 +239,29 @@ theorem fib_le_of_continuantsAux_b :
         solve_by_elim [_root_.add_le_add ppred_nth_fib_le_ppconts_B]
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
-        have one_le_gp_b : (1 : K) ≤ gp.b :=
-          of_one_le_get?_part_denom (part_denom_eq_s_b s_ppred_nth_eq)
+        have one_le_gp_b : (1 : K) ≤ gp.b := by
+          rcases IsIntegerContinuedFraction.partDenom_eq_int (partDenom_eq_s_b s_ppred_nth_eq)
+            with ⟨m, hm⟩
+          have hgpb := IsContinuedFraction.zero_lt_partDenom (partDenom_eq_s_b s_ppred_nth_eq)
+          rw [hm] at hgpb ⊢; norm_cast0 at hgpb ⊢; rwa [← Int.sub_one_lt_iff, Int.sub_self]
         have : (0 : K) ≤ fib (n + 1) := by exact_mod_cast (fib (n + 1)).zero_le
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
         mono
         · norm_num
         · tauto)
-#align generalized_continued_fraction.fib_le_of_continuants_aux_b GeneralizedContinuedFraction.fib_le_of_continuantsAux_b
+#align generalized_continued_fraction.fib_le_of_continuants_aux_b GeneralizedContinuedFraction.fib_le_continuantsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/
-theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
-    (fib (n + 1) : K) ≤ (of v).denominators n := by
-  rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]
-  have : n + 1 ≤ 1 ∨ ¬(of v).TerminatedAt (n - 1) := by
+theorem succ_nth_fib_le_of_nth_denom [g.IsIntegerContinuedFraction]
+    (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
+    (fib (n + 1) : K) ≤ g.denominators n := by
+  rw [denom_eq_conts_b, nth_cont_eq_succ_nth_contAux]
+  have : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n - 1) := by
     cases' n with n
     case zero => exact Or.inl <| le_refl 1
     case succ => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
-  exact fib_le_of_continuantsAux_b this
+  exact fib_le_continuantsAux_b this
 #align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom GeneralizedContinuedFraction.succ_nth_fib_le_of_nth_denom
 
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
