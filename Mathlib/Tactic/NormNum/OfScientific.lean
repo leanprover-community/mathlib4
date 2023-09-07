@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 ## `norm_num` plugin for scientific notation.

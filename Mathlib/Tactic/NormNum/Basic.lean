@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Basic
 import Mathlib.Algebra.Invertible.Basic

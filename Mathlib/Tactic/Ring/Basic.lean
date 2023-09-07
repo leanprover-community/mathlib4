@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Aurélien Saue, Tim Baanen
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
+import Mathlib.Data.Rat.Order
 
 /-!
 # `ring` tactic

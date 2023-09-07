@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
