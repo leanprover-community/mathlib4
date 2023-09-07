@@ -8,6 +8,7 @@ import Mathlib.Data.Prod.Basic
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
+set_option autoImplicit true
 
 open Lean Meta Elab Term Command Simps
 
@@ -803,8 +804,7 @@ example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus1.s = x := by
 def Nat.SetPlus2 : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
 
 example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus2.s = x := by
-  dsimp only [Nat.SetPlus2_s]
-  -- successIfFail { rw [h] } -- todo
+  fail_if_success { rw [h] }
   exact h
 
 @[simps (config := {rhsMd := .default})]
@@ -941,13 +941,12 @@ example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A
   guard_target = { _x : Fin 3 // True } = Unit
   /- note: calling only one of `simp` or `dsimp` does not produce the current target
   as the following tests show. -/
-  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp x : { _x : Fin 3 // true } }
   dsimp at x
-  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp x : { _x : Fin 3 // true } }
   simp at y
-  -- successIfFail { guard_hyp y : { x : Fin 3 // true } }
+  fail_if_success { guard_hyp y : { _x : Fin 3 // true } }
   simp at x
-  dsimp at y
   guard_hyp x : { _x : Fin 3 // True }
   guard_hyp y : { _x : Fin 3 // True }
   contradiction

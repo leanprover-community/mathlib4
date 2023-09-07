@@ -437,7 +437,7 @@ def unflip {X α β : Type*} [Finite α] [TopologicalSpace X] (f : α → Locall
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
-    exact isOpen_iInter fun a => (f a).isLocallyConstant _
+    exact isOpen_iInter_of_finite fun a => (f a).isLocallyConstant _
 #align locally_constant.unflip LocallyConstant.unflip
 
 @[simp]
@@ -590,17 +590,18 @@ section Equiv
 
 /-- The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
     homeomorphism `X ≃ₜ Y` -/
+@[simps]
 noncomputable
 def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
-  toFun := comap e.invFun
-  invFun := comap e.toFun
+  toFun := comap e.symm
+  invFun := comap e
   left_inv := by
-    intro x
-    rw [comap_comap _ _ e.continuous_toFun e.continuous_invFun x]
+    intro
+    rw [comap_comap _ _ e.continuous e.symm.continuous]
     simp
   right_inv := by
-    intro x
-    rw [comap_comap _ _ e.continuous_invFun e.continuous_toFun]
+    intro
+    rw [comap_comap _ _ e.symm.continuous e.continuous]
     simp
 
 end Equiv

@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 
-#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"5b8284148e8149728f4b90624888d98c36284454"
+#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -24,6 +24,8 @@ By construction, `Γ₀.obj K` is a split simplicial object whose splitting is `
 
 We also construct `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C)`
 which shall be an equivalence for any additive category `C`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

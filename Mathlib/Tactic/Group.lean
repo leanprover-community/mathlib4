@@ -56,7 +56,7 @@ syntax (name := aux_group₁) "aux_group₁" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₁ $[at $location]?) =>
-  `(tactic| simp (config := {decide := false}) only
+  `(tactic| simp (config := {decide := false, failIfUnchanged := false}) only
     [commutatorElement_def, mul_one, one_mul,
       ←zpow_neg_one, ←zpow_ofNat, ←zpow_mul,
       Int.ofNat_add, Int.ofNat_mul,

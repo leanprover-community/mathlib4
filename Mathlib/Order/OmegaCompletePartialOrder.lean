@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
+import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
 
@@ -109,6 +110,10 @@ variable (g : β →o γ)
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
+lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
+
+lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
+
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
 -- @[simps! (config := { fullyApplied := false })]
@@ -129,6 +134,7 @@ theorem exists_of_mem_map {b : β} : b ∈ c.map f → ∃ a, a ∈ c ∧ f a = 
   fun ⟨i, h⟩ => ⟨c i, ⟨i, rfl⟩, h.symm⟩
 #align omega_complete_partial_order.chain.exists_of_mem_map OmegaCompletePartialOrder.Chain.exists_of_mem_map
 
+@[simp]
 theorem mem_map_iff {b : β} : b ∈ c.map f ↔ ∃ a, a ∈ c ∧ f a = b :=
   ⟨exists_of_mem_map _, fun h => by
     rcases h with ⟨w, h, h'⟩

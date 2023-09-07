@@ -3,12 +3,13 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.LowerUpperTopology
+import Mathlib.Topology.Homeomorph
 
 /-!
 # UpperSet and LowerSet topologies
@@ -22,8 +23,12 @@ topology does not coincide with the lower topology.
 
 ## Main statements
 
+<<<<<<< HEAD
 - `UpperSetTopology.isOpen_sInter` - the intersection of any set of open sets is open
 - `UpperSetTopology.isOpen_iInter` - the intersection of any indexed collection of open sets is open
+=======
+- `UpperSetTopology.toAlexandrovDiscrete`: The upper set topology is Alexandrov-discrete.
+>>>>>>> master
 - `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
 - `UpperSetTopology.monotone_iff_continuous` - the continuous functions are the monotone functions
@@ -54,6 +59,8 @@ Furthermore, the `UpperSetTopology` is used in the construction of the Scott Top
 
 upper set topology, lower set topology, preorder, Alexandrov
 -/
+
+set_option autoImplicit true
 
 
 variable (α β : Type*)
@@ -263,7 +270,7 @@ variable {α}
 instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetTopology α] :
     LowerSetTopology (αᵒᵈ) where
   topology_eq_lowerSetTopology := by
-    refine topologicalSpace_eq ?_
+    ext
     rw [(UpperSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
@@ -276,6 +283,7 @@ lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
   rfl
 
+<<<<<<< HEAD
 -- Alexandrov property, set formulation
 theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
   simp_rw [isOpen_iff_isUpperSet] at *
@@ -289,6 +297,10 @@ theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (�
   apply isUpperSet_iInter
   intros i
   exact hf i
+=======
+instance toAlexandrovDiscrete : AlexandrovDiscrete α where
+  isOpen_sInter S := by simpa only [IsOpen_iff_IsUpperSet] using isUpperSet_sInter (α := α)
+>>>>>>> master
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
@@ -368,7 +380,7 @@ variable {α}
 instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetTopology α] :
     UpperSetTopology (αᵒᵈ) where
   topology_eq_upperSetTopology := by
-    refine topologicalSpace_eq ?_
+    ext
     rw [(LowerSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to
@@ -381,6 +393,7 @@ lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by
   rw [topology_eq α]
   rfl
 
+<<<<<<< HEAD
 -- Alexandrov property, set formulation
 theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
   UpperSetTopology.isOpen_sInter (α := αᵒᵈ) (fun s a ↦ hf s a)
@@ -388,6 +401,10 @@ theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (
 -- Alexandrov property, index formulation
 theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
   UpperSetTopology.isOpen_iInter (α := αᵒᵈ) hf
+=======
+instance toAlexandrovDiscrete : AlexandrovDiscrete α :=
+UpperSetTopology.toAlexandrovDiscrete (α := αᵒᵈ)
+>>>>>>> master
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
