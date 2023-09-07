@@ -277,7 +277,7 @@ theorem ae_exists_fderiv_of_countable
 
 open Asymptotics
 
-/-- If a Lipschitz functions has line derivatives in a dense set of directions which are given by
+/-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
 theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
@@ -285,11 +285,11 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     HasFDerivAt f L x := by
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
   intro ε εpos
-  have δ : ℝ := sorry
-  have δpos : 0 < δ := sorry
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (C + ‖L‖ + 1) * δ = ε :=
+    ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel' ε (by positivity)⟩
   obtain ⟨q, hqs, q_fin, hq⟩ : ∃ q, q ⊆ s ∧ q.Finite ∧ sphere 0 1 ⊆ ⋃ y ∈ q, ball y δ := by
     have A : IsCompact (sphere (0 : E) 1) := isCompact_sphere 0 1
-    have B : ∀ y ∈ s, IsOpen (ball y δ) := fun y hy ↦ isOpen_ball
+    have B : ∀ y ∈ s, IsOpen (ball y δ) := fun y _hy ↦ isOpen_ball
     have C : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
       apply hs.trans (fun z hz ↦ ?_)
       obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, dist z y < δ := Metric.mem_closure_iff.1 hz δ δpos
@@ -312,8 +312,8 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
   have rho_pos : 0 ≤ ρ := by simp [hρ]
   obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
-  calc
-        ‖f (x + v) - f x - L v‖
+  have : ‖y - w‖ < δ := by rw [norm_sub_rev]; exact hy
+  calc  ‖f (x + v) - f x - L v‖
       = ‖f (x + ρ • w) - f x - ρ • L w‖ := by simp [hvw]
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
           + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel
@@ -328,19 +328,15 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
       · conv_rhs => rw [← norm_rho]
         apply hr _ _ _ yq
         simpa [norm_rho, hρ] using hv
-    _ ≤ ε * ‖v‖ := sorry
+    _ ≤ C * (ρ * δ) + ρ * (‖L‖ * δ) + δ * ρ := by
+      simp only [add_sub_add_left_eq_sub, ← smul_sub, norm_smul, norm_rho]; gcongr
+    _ = ((C + ‖L‖ + 1) * δ) * ρ := by ring
+    _ = ε * ‖v‖ := by rw [hδ, hρ]
 
-
-
-
-
-
-
-
-#exit
-
-(hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i)
-
+/-- A real-valued function on a finite-dimensional space which is Lipschitz is
+differentiable almost everywere. Superseded by
+`LipschitzOnWith.ae_differentiableWithinAt` which works for functions taking value in any
+finite-dimensional space. -/
 theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
   obtain ⟨s, s_count, s_dense⟩ : ∃ (s : Set E), s.Countable ∧ Dense s :=
@@ -370,7 +366,7 @@ theorem ae_differentiableWithinAt_of_mem_of_real (hf : LipschitzOnWith C f s) :
 product space is differentiable almost everywere in this set. Superseded by
 `LipschitzOnWith.ae_differentiableWithinAt_of_mem` which works for functions taking value in any
 finite-dimensional space. -/
-theorem ae_differentiableWithinAt_of_mem_pi_of_real
+theorem ae_differentiableWithinAt_of_mem_pi
     {ι : Type*} [Fintype ι] {f : E → ι → ℝ} {s : Set E}
     (hf : LipschitzOnWith C f s) : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   have A : ∀ i : ι, LipschitzWith 1 fun x : ι → ℝ => x i := fun i => LipschitzWith.eval i
@@ -391,7 +387,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
       simp only [ContinuousLinearEquiv.symm_comp_self, Function.comp.left_id]
     rw [this]
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
-  apply ae_differentiableWithinAt_of_mem_pi_of_real
+  apply ae_differentiableWithinAt_of_mem_pi
   exact A.lipschitz.comp_lipschitzOnWith hf
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
