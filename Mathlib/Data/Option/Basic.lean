@@ -8,6 +8,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 #align_import data.option.basic from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 

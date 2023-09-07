@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Data.Set.Lattice
