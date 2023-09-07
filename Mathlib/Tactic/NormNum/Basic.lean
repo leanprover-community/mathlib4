@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.CharZero
 import Mathlib.Tactic.NormNum.OrderedRing
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
