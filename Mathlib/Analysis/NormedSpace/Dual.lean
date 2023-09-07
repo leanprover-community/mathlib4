@@ -53,35 +53,13 @@ variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
-def Dual :=
+abbrev Dual :=
   E →L[𝕜] 𝕜
 #align normed_space.dual NormedSpace.Dual
 
--- Porting note: added manually
-section DerivedInstances
+instance : Norm (Dual 𝕜 E →L[𝕜] Dual 𝕜 E) := inferInstance
 
-instance : Inhabited (Dual 𝕜 E) :=
-  inferInstanceAs (Inhabited (E →L[𝕜] 𝕜))
-
-instance : SeminormedAddCommGroup (Dual 𝕜 E) :=
-  inferInstanceAs (SeminormedAddCommGroup (E →L[𝕜] 𝕜))
-
-instance : NormedSpace 𝕜 (Dual 𝕜 E) :=
-  inferInstanceAs (NormedSpace 𝕜 (E →L[𝕜] 𝕜))
-
-end DerivedInstances
-
-instance : ContinuousLinearMapClass (Dual 𝕜 E) 𝕜 E 𝕜 :=
-  ContinuousLinearMap.continuousSemilinearMapClass
-
-instance : CoeFun (Dual 𝕜 E) fun _ => E → 𝕜 :=
-  FunLike.hasCoeToFun
-
-instance : NormedAddCommGroup (Dual 𝕜 F) :=
-  ContinuousLinearMap.toNormedAddCommGroup
-
-instance [FiniteDimensional 𝕜 E] : FiniteDimensional 𝕜 (Dual 𝕜 E) :=
-  inferInstanceAs (FiniteDimensional 𝕜 (E →L[𝕜] 𝕜))
+instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
    as a bounded linear map. -/
