@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.Core
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Basic
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Util.Qq
 
