@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Cases
 
 #align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
