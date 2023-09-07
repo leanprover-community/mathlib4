@@ -54,23 +54,9 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
       let filterMeta : Name → Bool := fun n => (
         isPrefixOf `Mathlib.Tactic n ∨
         isPrefixOf `Mathlib.Lean n ∨
+        isPrefixOf `Mathlib.Mathport n ∨
         isPrefixOf `Mathlib.Util n)
-      -- create a list of all files imported by any of the filtered files
-      -- and remove all imports starting with `Mathlib` to avoid loops
-      let mut tacticImports := graph.toList.bind
-        (fun ⟨n, i⟩ => if filterMeta n then i.toList else [])
-        |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
-      -- iterate over the graph, removing all filtered nodes and
-      -- replace any filtered import with `«Mathlib.Tactics»`
-      graph := graph.filterMap (fun n i => if filterMeta n then none else some <|
-        (i.map (fun name => if filterMeta name then `«Mathlib.Tactics» else name)
-          |>.toList.eraseDup.toArray))
-      -- add the new node `«Mathlib.Tactics»`
-      graph := graph.insert `«Mathlib.Tactics» tacticImports
-      -- Finally, as we have removed edges, we need to filter to remove nodes
-      -- which are imported only via `«Mathlib.Tactics»`,
-      -- and which would otherwise not have edges down to `to` at this point.
-      graph := Lean.NameMap.upstreamOf graph (NameSet.empty.insert to)
+      graph := graph.filterGraph filterMeta (replacement := `«Mathlib.Tactics»)
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -93,7 +79,7 @@ def graph : Cmd := `[Cli|
     reduce;               "Remove transitively redundant edges."
     to : ModuleName;      "Only show the upstream imports of the specified module."
     "from" : ModuleName;  "Only show the downstream dependencies of the specified module."
-    "exclude-meta";       "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "exclude-meta";       "Exclude any files starting with `Mathlib.[Tactic|Lean|Util|Mathport]`."
     "include-deps";       "Include used files from other projects (e.g. lake packages)"
 
   ARGS:

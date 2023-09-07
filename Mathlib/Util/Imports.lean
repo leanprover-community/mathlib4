@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Data.NameMap
+
 
 /-!
 # Tools for analyzing imports.
@@ -113,6 +115,59 @@ def upstreamOf (m : NameMap (Array Name)) (targets : NameSet) : NameMap (Array N
       r.insert n (i.filter P)
     else
       r
+
+/--
+Filter the list of edges `… → node` inside `graph` by the function `filter`.
+
+Any such upstream node `source` where `filter source` returns true will be replaced
+by all its upstream nodes. This results in a list of all unfiltered nodes
+in the `graph` that either had an edge to `node`
+or had an indirect edge to `node` going through filtered nodes.
+
+Will panic if the `node` is not in the `graph`.
+-/
+partial
+def transitiveFilteredUpstream (node : Name) (graph : NameMap (Array Name))
+    (filter : Name → Bool) (replacement : Option Name := none):
+    List Name :=
+  (graph.find! node).toList.bind fun source =>
+    ( if filter source then
+        -- Add the transitive edges going through the filtered node `source`.
+        -- If there is a replacement node, add an additional edge `repl → node`.
+        match replacement with
+        | none => transitiveFilteredUpstream source graph filter
+        | some repl => .cons repl <| transitiveFilteredUpstream source graph filter
+      -- If the node is not filtered, we leave the edge `source → node` intact.
+      else [source]).eraseDup
+
+/--
+Filters the `graph` removing all nodes where `filter n` returns false. Additionally,
+replace edges from removed nodes by all the transitive edges.
+
+This means there is a path between two nodes in the filtered graph iff there exists
+such a path in the original graph.
+
+If the optional `(replacement : Name)` is provided, a corresponding node will be
+added together with edges to all nodes which had an incoming edge from any
+filtered node.
+-/
+def filterGraph (graph : NameMap (Array Name)) (filter : Name → Bool)
+    (replacement : Option Name := none) : NameMap (Array Name) :=
+  -- Create a list of all files imported by any of the filtered files
+  -- and remove all imports starting with `Mathlib` to avoid loops.
+  let replImports := graph.toList.bind
+    (fun ⟨n, i⟩ => if filter n then i.toList else [])
+    |>.eraseDup |>.filter (¬ Name.isPrefixOf `Mathlib ·) |>.toArray
+  let graph := graph.filterMap (fun node edges => if filter node then none else some <|
+    -- If the node `node` is not filtered, modify the `edges` going into `node`.
+    edges.toList.bind (fun source =>
+      if filter source then
+        transitiveFilteredUpstream source graph filter (replacement := replacement)
+      else [source]) |>.eraseDup.toArray)
+  -- Add a replacement node if provided.
+  match replacement with
+  | none => graph
+  | some repl => graph.insert repl replImports
 
 end Lean.NameMap
 
