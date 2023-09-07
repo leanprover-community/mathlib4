@@ -113,7 +113,7 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
 
 lemma Fin.succ_mem_piFinset_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀ i, α i)
   (S : ∀ i, Finset (α i)) :
-    p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ (Fin.tail p) ∈ Fintype.piFinset (Fin.tail S) := by
+    p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
   simp only [Fintype.mem_piFinset]
   constructor
   · intros ha_1
