@@ -134,7 +134,7 @@ lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, in
   simp_rw [sInter_eq_biInter, interior_iInter]
 
 lemma closure_iUnion (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) :=
-compl_injective $ by simpa only [←interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
+  compl_injective $ by simpa only [←interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
 
 lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, closure s := by
   simp_rw [sUnion_eq_biUnion, closure_iUnion]
@@ -149,12 +149,8 @@ def exterior (s : Set α) : Set α := (𝓝ˢ s).ker
 
 lemma exterior_singleton_eq_ker_nhds (a : α) : exterior {a} = (𝓝 a).ker := by simp [exterior]
 
-lemma exterior_def (s : Set α) : exterior s = ⋂₀ {t : Set α | IsOpen t ∧ s ⊆ t} := by
-  ext a
-  simp only [exterior, mem_ker, mem_sInter, mem_setOf_eq, and_imp, mem_nhdsSet_iff_forall]
-  refine' ⟨λ hs t ht hts ↦ hs _ λ b hb ↦ ht.mem_nhds $ hts hb, λ hs t ht ↦ interior_subset $
-    hs (interior t) isOpen_interior _⟩
-  simpa only [←mem_interior_iff_mem_nhds] using ht
+lemma exterior_def (s : Set α) : exterior s = ⋂₀ {t : Set α | IsOpen t ∧ s ⊆ t} :=
+  (hasBasis_nhdsSet _).ker.trans $ by rw [sInter_eq_biInter]; rfl
 
 lemma mem_exterior : a ∈ exterior s ↔ ∀ U, IsOpen U → s ⊆ U → a ∈ U := by simp [exterior_def]
 

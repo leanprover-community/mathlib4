@@ -147,9 +147,7 @@ theorem countable_compl_ker [l.IsCountablyGenerated] (h : cofinite ≤ l) :
 then for all but countably many elements, `f x ∈ ⋂₀ l.sets`. -/
 theorem Tendsto.countable_compl_preimage_ker {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
-    Set.Countable (f ⁻¹' (⋂₀ l.sets))ᶜ := by
-  erw [preimage_sInter, ← sInter_comap_sets]
-  exact countable_compl_ker h.le_comap
+    Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [←ker_comap]; exact countable_compl_ker h.le_comap
 
 end Filter
 
