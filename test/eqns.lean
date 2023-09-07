@@ -28,7 +28,7 @@ will not have the desired effect supported
 -/
 #guard_msgs in
 attribute [eqns t_def] t
--- the above should error as the
+-- the above should error as the above equation would not have changed the output of the below
 example (n : Nat) : t = n := by
   rw [t]
   sorry
