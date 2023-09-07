@@ -176,11 +176,11 @@ theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
 
 @[simp]
 theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
-    (pochhammer S n).natDegree = n := by
+    (ascPochhammer S n).natDegree = n := by
   induction' n with n hn
   · simp
   · have : natDegree (X + (n : S[X])) = 1 := natDegree_X_add_C (n : S)
-    rw [pochhammer_succ_right,
+    rw [ascPochhammer_succ_right,
         natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
     cases n
     · simp
