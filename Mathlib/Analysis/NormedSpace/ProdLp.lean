@@ -128,7 +128,7 @@ end equiv
 section DistNorm
 
 /-!
-### Definition of `edist`, `dist` and `norm` on `ProdLp`
+### Definition of `edist`, `dist` and `norm` on `WithLp p (α × β)`
 
 In this section we define the `edist`, `dist` and `norm` functions on `WithLp p (α × β)` without
 assuming `[Fact (1 ≤ p)]` or metric properties of the spaces `α` and `β`. This allows us to provide
@@ -142,7 +142,7 @@ variable [EDist α] [EDist β]
 
 open Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
-separate from `ProdLp.instPseudoEMetric` since the latter requires the type class hypothesis
+separate from `WithLp.instProdPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future emetric-like structure on `WithLp p (α × β)` for
@@ -182,7 +182,9 @@ section EDistProp
 variable {α β}
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
-/-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
+/-- The distance from one point to itself is always zero.
+
+This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
@@ -192,7 +194,9 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
       ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
-/-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
+/-- The distance is symmetric.
+
+This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
   classical
@@ -244,7 +248,7 @@ end Dist
 
 section Norm
 
-variable [Norm α] [Zero α] [Norm β] [Zero β]
+variable [Norm α] [Norm β]
 
 open Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
@@ -256,7 +260,7 @@ Registering this separately allows for a future norm-like structure on `WithLp p
 instance instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
     if _hp : p = 0 then
-      (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1)
+      (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1)
     else if p = ∞ then
       ‖f.fst‖ ⊔ ‖f.snd‖
     else
@@ -266,7 +270,7 @@ variable {p α β}
 
 @[simp]
 theorem prod_norm_eq_card (f : WithLp 0 (α × β)) [DecidableEq α] [DecidableEq β] :
-    ‖f‖ = (if f.fst = 0 then 0 else 1) + (if f.snd = 0 then 0 else 1) := by
+    ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
   convert if_pos rfl
 
 theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
@@ -567,7 +571,7 @@ theorem prod_antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (α × β)) :=
   prod_antilipschitzWith_equiv_aux p α β
 
-theorem infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+theorem prod_infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (WithLp.equiv ∞ (α × β)) :=
   fun x y =>
   le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using prod_lipschitzWith_equiv ∞ α β x y)
@@ -630,40 +634,6 @@ theorem prod_norm_eq_of_nat (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
   simp only [one_div, h, Real.rpow_nat_cast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
     prod_norm_eq_add this]
 
-theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
-  rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
-  norm_cast
-
-theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
-    ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=
-  NNReal.eq <| by
-    push_cast
-    exact prod_norm_eq_of_L2 x
-
-variable (α β)
-
-theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
-  suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
-  rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
-
-variable {α β}
-
-theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
-    dist x y = (dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2).sqrt := by
-  simp_rw [dist_eq_norm, prod_norm_eq_of_L2]
-  rfl
-
-theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
-    nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
-  NNReal.eq <| by
-    push_cast
-    exact prod_dist_eq_of_L2 _ _
-
-theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
-    edist x y = (edist x.fst y.fst ^ 2 + edist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
-  simp [prod_edist_eq_add]
-
 end norm_of
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
@@ -701,42 +671,42 @@ theorem norm_equiv_symm_snd (y : β) : ‖(WithLp.equiv p (α × β)).symm (0, y
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_snd p α β y
 
 @[simp]
-theorem nndist_equiv_symm_single_fst (x₁ x₂ : α) :
+theorem nndist_equiv_symm_fst (x₁ x₂ : α) :
     nndist ((WithLp.equiv p (α × β)).symm (x₁, 0)) ((WithLp.equiv p (α × β)).symm (x₂, 0)) =
       nndist x₁ x₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← WithLp.equiv_symm_sub, Prod.mk_sub_mk, sub_zero,
     nnnorm_equiv_symm_fst]
 
 @[simp]
-theorem nndist_equiv_symm_single_snd (y₁ y₂ : β) :
+theorem nndist_equiv_symm_snd (y₁ y₂ : β) :
     nndist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
       nndist y₁ y₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← WithLp.equiv_symm_sub, Prod.mk_sub_mk, sub_zero,
     nnnorm_equiv_symm_snd]
 
 @[simp]
-theorem dist_equiv_symm_single_fst (x₁ x₂ : α) :
+theorem dist_equiv_symm_fst (x₁ x₂ : α) :
     dist ((WithLp.equiv p (α × β)).symm (x₁, 0)) ((WithLp.equiv p (α × β)).symm (x₂, 0)) =
       dist x₁ x₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_fst p α β x₁ x₂
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_fst p α β x₁ x₂
 
 @[simp]
-theorem dist_equiv_symm_single_snd (y₁ y₂ : β) :
+theorem dist_equiv_symm_snd (y₁ y₂ : β) :
     dist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
       dist y₁ y₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_snd p α β y₁ y₂
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_snd p α β y₁ y₂
 
 @[simp]
-theorem edist_equiv_symm_single_fst (x₁ x₂ : α) :
+theorem edist_equiv_symm_fst (x₁ x₂ : α) :
     edist ((WithLp.equiv p (α × β)).symm (x₁, 0)) ((WithLp.equiv p (α × β)).symm (x₂, 0)) =
       edist x₁ x₂ := by
-  simp only [edist_nndist, nndist_equiv_symm_single_fst p α β x₁ x₂]
+  simp only [edist_nndist, nndist_equiv_symm_fst p α β x₁ x₂]
 
 @[simp]
-theorem edist_equiv_symm_single_snd (y₁ y₂ : β) :
+theorem edist_equiv_symm_snd (y₁ y₂ : β) :
     edist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
       edist y₁ y₂ := by
-  simp only [edist_nndist, nndist_equiv_symm_single_snd p α β y₁ y₂]
+  simp only [edist_nndist, nndist_equiv_symm_snd p α β y₁ y₂]
 
 end Single
 
