@@ -23,12 +23,7 @@ topology does not coincide with the lower topology.
 
 ## Main statements
 
-<<<<<<< HEAD
-- `UpperSetTopology.isOpen_sInter` - the intersection of any set of open sets is open
-- `UpperSetTopology.isOpen_iInter` - the intersection of any indexed collection of open sets is open
-=======
 - `UpperSetTopology.toAlexandrovDiscrete`: The upper set topology is Alexandrov-discrete.
->>>>>>> master
 - `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
 - `UpperSetTopology.monotone_iff_continuous` - the continuous functions are the monotone functions
@@ -283,24 +278,8 @@ lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
   rfl
 
-<<<<<<< HEAD
--- Alexandrov property, set formulation
-theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
-  simp_rw [isOpen_iff_isUpperSet] at *
-  apply isUpperSet_sInter
-  intros s hs
-  exact hf _ hs
-
--- Alexandrov property, index formulation
-theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
-  simp_rw [isOpen_iff_isUpperSet] at *
-  apply isUpperSet_iInter
-  intros i
-  exact hf i
-=======
 instance toAlexandrovDiscrete : AlexandrovDiscrete α where
   isOpen_sInter S := by simpa only [IsOpen_iff_IsUpperSet] using isUpperSet_sInter (α := α)
->>>>>>> master
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
@@ -393,18 +372,8 @@ lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by
   rw [topology_eq α]
   rfl
 
-<<<<<<< HEAD
--- Alexandrov property, set formulation
-theorem isOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
-  UpperSetTopology.isOpen_sInter (α := αᵒᵈ) (fun s a ↦ hf s a)
-
--- Alexandrov property, index formulation
-theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  UpperSetTopology.isOpen_iInter (α := αᵒᵈ) hf
-=======
 instance toAlexandrovDiscrete : AlexandrovDiscrete α :=
 UpperSetTopology.toAlexandrovDiscrete (α := αᵒᵈ)
->>>>>>> master
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
