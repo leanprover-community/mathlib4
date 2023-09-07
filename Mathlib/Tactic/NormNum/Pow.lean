@@ -7,9 +7,7 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
 
 /-!
-## `norm_num` basic plugins
-
-This file adds `norm_num` plugins for `+`, `*` and `^` along with other basic operations.
+## `norm_num` plugin for `^`.
 -/
 
 set_option autoImplicit true

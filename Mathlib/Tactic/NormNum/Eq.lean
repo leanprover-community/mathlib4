@@ -7,7 +7,7 @@ import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Algebra.Order.Invertible
 
 /-!
-# Helper functions for synthesizing `CharZero` expressions.
+# `norm_num` extension for equalities
 -/
 
 set_option autoImplicit true

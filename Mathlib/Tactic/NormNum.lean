@@ -1,6 +1,4 @@
-import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.NormNum.OrderedRing
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.Ineq

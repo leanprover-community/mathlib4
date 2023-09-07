@@ -8,7 +8,7 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Data.Rat.Cast
 
 /-!
-# Helper functions for synthesizing `CharZero` expressions.
+# `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
 
 set_option autoImplicit true
