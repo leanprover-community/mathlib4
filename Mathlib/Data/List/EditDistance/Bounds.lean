@@ -69,8 +69,7 @@ theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
   obtain ⟨a', suff', rfl⟩ := m
   apply List.minimum_le_of_mem'
   simp only [List.mem_map, List.mem_tails]
-  suffices ∃ a, a <:+ xs ∧ levenshtein C a ys = levenshtein C a' ys by
-    simpa
+  suffices ∃ a, a <:+ xs ∧ levenshtein C a ys = levenshtein C a' ys by simpa
   exact ⟨a', suff'.trans suff, rfl⟩
 
 theorem le_suffixLevenshtein_append_minimum (xs : List α) (ys₁ ys₂) :
