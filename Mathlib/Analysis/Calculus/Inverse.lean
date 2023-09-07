@@ -563,11 +563,10 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
     ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
       ApproximatesLinearOn f (f' : E →L[𝕜] F) s (‖(f'.symm : F →L[𝕜] E)‖₊⁻¹ / 2) := by
   simp only [← and_assoc]
-  refine' ((nhds_basis_opens a).exists_iff _).1 _
-  · exact fun s t => ApproximatesLinearOn.mono_set
-  · exact
-      hf.approximates_deriv_on_nhds <|
-        f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
+  refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 ?_
+  exact
+    hf.approximates_deriv_on_nhds <|
+      f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
 #align has_strict_fderiv_at.approximates_deriv_on_open_nhds HasStrictFDerivAt.approximates_deriv_on_open_nhds
 
 variable (f)
