@@ -57,8 +57,10 @@ abbrev Dual :=
   E →L[𝕜] 𝕜
 #align normed_space.dual NormedSpace.Dual
 
-instance : Norm (Dual 𝕜 E →L[𝕜] Dual 𝕜 E) := inferInstance
+-- Note: for undergrad list and helper below
+instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
 
+-- Note: helper for below
 instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
