@@ -236,6 +236,9 @@ instance [Preorder α] : LowerTopology (WithLowerTopology α) :=
 instance [Preorder α] : UpperTopology (WithUpperTopology α) :=
   ⟨rfl⟩
 
+/--
+The lower topology is homeomorphic to the upper topology on the dual order
+-/
 def WithLowerTopology.toDualHomeomorph [Preorder α] : WithLowerTopology α ≃ₜ WithUpperTopology αᵒᵈ
     where
   toFun := OrderDual.toDual

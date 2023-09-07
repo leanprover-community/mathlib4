@@ -212,6 +212,9 @@ def toLowerSetOrderIso : OrderIso α (WithLowerSetTopology α) :=
 
 end WithLowerSetTopology
 
+/--
+The Upper Set topology is homeomorphic to the Lower Set topology on the dual order
+-/
 def WithUpperSetTopology.toDualHomeomorph [Preorder α] :
     WithUpperSetTopology α ≃ₜ WithLowerSetTopology αᵒᵈ where
   toFun := OrderDual.toDual
