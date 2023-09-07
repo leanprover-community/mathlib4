@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alistair Tucker
+Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.Basic
@@ -644,3 +644,71 @@ theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnect
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
   @ContinuousOn.surjOn_of_tendsto α _ _ _ _ δᵒᵈ _ _ _ _ _ _ hs hf hbot htop
 #align continuous_on.surj_on_of_tendsto' ContinuousOn.surjOn_of_tendsto'
+
+/-- Suppose f : [a, b] → δ is continuous and injective. Then f is strictly monotone.
+Here is the case where f is strictly increasing. -/
+theorem continuous_inj_is_monotone_Icc {a b : α} {f : α → δ} (h1 : a < b) (h2 : f a < f b)
+    (p1 : ContinuousOn f (Set.Icc a b)) (p2 : Set.InjOn f (Set.Icc a b)) :
+    StrictMonoOn f (Set.Icc a b) := by
+-- I learned this proof from
+-- <https://www.math.cuhk.edu.hk/course_builder/2021/math1050b/1050b-l14h-3.pdf>
+  unfold StrictMonoOn
+  intro s hs t ht h3
+  have h4 : f s ≠ f t := by
+    by_contra'
+    have : s = t := p2 hs ht this
+    rw [this] at h3
+    exact LT.lt.false h3
+  by_contra' h5
+  have h6 : f t < f s := Ne.lt_of_le (id (Ne.symm h4)) h5
+  by_cases h7 : f s ≤ f a
+  · have h9 : Set.Icc t b ⊆ Set.Icc a b := Set.Icc_subset_Icc_left ht.1
+    have p3 : ContinuousOn f (Set.Icc t b) := ContinuousOn.mono p1 h9
+    have h10 := intermediate_value_Ioo ht.2 p3
+    have h11 : f a ∈ Set.Ioo (f t) (f b) := ⟨(LT.lt.trans_le h6 h7), h2⟩
+    have h12 : f a ∈ f '' Set.Ioo t b := h10 h11
+    choose u hu using h12
+    have h13 : u = a :=
+      p2 (h9 (Set.Ioo_subset_Icc_self hu.1)) (Set.left_mem_Icc.mpr (le_of_lt h1)) hu.2
+    have h14 : a < u := lt_of_lt_of_le' hu.1.1 ht.1
+    rw [h13] at h14
+    exact LT.lt.false h14
+  · have h8 : a < t := lt_of_lt_of_le' h3 hs.1
+    have h9 : f a ≠ f t := by
+      by_contra' this
+      have : a = t := p2 (Set.left_mem_Icc.mpr (le_of_lt h1)) ht this
+      rw [this] at h8
+      exact LT.lt.false h8
+    by_cases h10 : f a < f t
+    · have h11 : Set.Icc a s ⊆ Set.Icc a b := Set.Icc_subset_Icc_right hs.2
+      have p3 : ContinuousOn f (Set.Icc a s) := ContinuousOn.mono p1 h11
+      have h12 := intermediate_value_Ioo hs.1 p3
+      have h13 : f t ∈ Set.Ioo (f a) (f s) := ⟨h10, h6⟩
+      choose u hu using h12 h13
+      have h14 : u = t := p2 (h11 (Set.Ioo_subset_Icc_self hu.1)) ht hu.2
+      have h15 : u < t := lt_trans hu.1.2 h3
+      rw [h14] at h15
+      exact LT.lt.false h15
+    · push_neg at h10
+      have h11 : f t < f a := Ne.lt_of_le (id (Ne.symm h9)) h10
+      have h12 : Set.Icc s t ⊆ Set.Icc a b := Set.Icc_subset_Icc hs.1 ht.2
+      have p3 : ContinuousOn f (Set.Icc s t) := ContinuousOn.mono p1 h12
+      push_neg at h7
+      have h13 := intermediate_value_Ioo' (le_of_lt h3) p3
+      have h14 : f a ∈ Set.Ioo (f t) (f s) := ⟨h11, h7⟩
+      choose u hu using h13 h14
+      have h15 : u = a :=
+        p2 (h12 (Set.Ioo_subset_Icc_self hu.1)) (Set.left_mem_Icc.mpr (le_of_lt h1)) hu.2
+      have h16 : a < u := lt_of_lt_of_le' hu.1.1 hs.1
+      rw [h15] at h16
+      exact LT.lt.false h16
+/-- Suppose f : [a, b] → δ is continuous and injective. Then f is strictly monotone.
+Here is the case where f is strictly decreasing. -/
+theorem continuous_inj_is_monotone_Icc' {a b : α} {f : α → δ} (h1 : a < b) (h2 : f b < f a)
+    (p1 : ContinuousOn f (Set.Icc a b)) (p2 : Set.InjOn f (Set.Icc a b)) :
+    StrictAntiOn f (Set.Icc a b) := by
+    let g (x : α) : OrderDual δ := f x
+    have h2' : g a < g b := h2
+    have p1' : ContinuousOn g (Set.Icc a b) := p1
+    have p2' : Set.InjOn g (Set.Icc a b) := p2
+    exact continuous_inj_is_monotone_Icc h1 h2' p1' p2'
