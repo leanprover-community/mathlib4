@@ -8,6 +8,10 @@ open CategoryTheory Category Limits
 variable (C : Type u) [Category.{v} C] [Preadditive C] [HasZeroObject C]
 
 namespace CochainComplex
+-- this should be moved (and generalized)
+
+instance {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (n : ι) :
+  (HomologicalComplex.single C c n).Additive where
 
 open HomologicalComplex
 
@@ -53,6 +57,10 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
       simp [shiftFunctorAdd_eq, XIsoOfEq]
     · exact (isZeroSingleObjX _ _ _ _ _ h).eq_of_tgt _ _
 
+instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
+  dsimp only [singleFunctors]
+  infer_instance
+
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
 variable {C}
@@ -79,5 +87,9 @@ noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (Complex
   (CochainComplex.singleFunctors C).postComp (HomotopyCategory.quotient _ _)
 
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp only [singleFunctor, singleFunctors, SingleFunctors.postComp]
+  infer_instance
 
 end HomotopyCategory

@@ -188,7 +188,7 @@ lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
   dsimp [XIsoOfEq]
   apply eqToHom_trans
 
-section
+/-section
 
 variable [HasZeroObject C] (n a a' : ℤ) (ha' : n + a = a')
 
@@ -303,7 +303,7 @@ lemma singleShiftIso_add'_inv_app (X : C) :
 
 end
 
-end
+end-/
 
 end CochainComplex
 

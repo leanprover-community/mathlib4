@@ -335,7 +335,7 @@ noncomputable def shiftedHom (m : ℕ) (hm : n + 1 = m) :
       ((DerivedCategory.singleFunctor C 0).obj X₂) ↑m :=
   inv (DerivedCategory.Q.map E.ZToX₁) ≫
     DerivedCategory.Q.map (E.ZToX₂ (-m) (by simp [← hm])) ≫
-    (DerivedCategory.singleFunctorShiftIso C m (-m) 0 (add_right_neg _)).inv.app X₂
+    ((DerivedCategory.singleFunctors C).shiftIso m (-m) 0 (add_right_neg _)).inv.app X₂
 
 noncomputable def extClass (m : ℕ) (hm : n + 1 = m) : newExt X₁ X₂ m :=
   newExt.mk (shiftedHom E m hm)
@@ -668,7 +668,7 @@ noncomputable def compZToShiftZ : (comp E E' hn'').Z ⟶ E'.Z⟦(m : ℤ)⟧ whe
 
 lemma compZToShiftZ_comp_ZToZ₂ :
     compZToShiftZ E E' hn'' m hm ≫ (E'.ZToX₂ k' (by linarith))⟦(m : ℤ)⟧' ≫
-      (CochainComplex.singleShiftIso C m k'' k' (by linarith)).hom.app X₃ =
+      ((CochainComplex.singleFunctors C).shiftIso m k'' k' (by linarith)).hom.app X₃ =
     (comp E E' hn'').ZToX₂ k'' (by linarith) := by
   obtain rfl : k' = k'' + m := by linarith
   apply (HomologicalComplex.toSingleEquiv _ _ (k''-1) k'' (by simp)).injective
@@ -676,10 +676,10 @@ lemma compZToShiftZ_comp_ZToZ₂ :
   dsimp [HomologicalComplex.toSingleEquiv, compZToShiftZ]
   rw [compZToShiftZf_eq E E' hn'' m hm k'' 0 (-n'-1) (by linarith)
     (by linarith) (by linarith), sgn₁_rel₂ m (n'+1) k'' (by linarith), one_smul]
-  dsimp [CochainComplex.singleShiftIso, CochainComplex.singleShiftIso_hom_app]
-  rw [dif_pos rfl, ZToX₂_f_self, ZToX₂_f_self]
+  rw [CochainComplex.singleFunctors_shiftIso_hom_app_f _ _ _ _ _ _ rfl]
+  rw [ZToX₂_f_self, ZToX₂_f_self]
   dsimp [comp, ZXIso, Z.XIso, compKXIso', HomologicalComplex.XIsoOfEq,
-    HomologicalComplex.singleObjXIsoOfEq ]
+    HomologicalComplex.singleObjXIsoOfEq]
   simp only [eqToHom_trans, id_comp, assoc, eqToHom_trans_assoc, eqToHom_refl, comp_id]
 
 def sgn₂ (a b : ℤ) : ℤ := (a * b).negOnePow
@@ -690,7 +690,7 @@ lemma sgn₂_mul_self (a b : ℤ) : sgn₂ a b * sgn₂ a b = 1 := Int.negOnePow
 @[reassoc]
 lemma compZ_comm : compZToZ E E' hn'' ≫ E.ZToX₂ k (by linarith) =
     sgn₂ m m' • compZToShiftZ E E' hn'' m (by linarith) ≫ E'.ZToX₁⟦(m : ℤ)⟧' ≫
-      (CochainComplex.singleShiftIso C m k 0 (by linarith)).hom.app X₂ := by
+      ((CochainComplex.singleFunctors C).shiftIso m k 0 (by linarith)).hom.app X₂ := by
   obtain rfl : k = -n-1 := by linarith
   have sgn₂_rel : sgn₂ m m' * sgn₁ m (n' + 1) (-n - 1) = 1 := by
     rw [show (n' : ℤ)+1 = m' by linarith, show -(n : ℤ)-1 = -m by linarith]
@@ -706,16 +706,16 @@ lemma compZ_comm : compZToZ E E' hn'' ≫ E.ZToX₂ k (by linarith) =
     eqToHom_trans, eqToHom_refl, comp_id, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
     CochainComplex.shiftFunctorObjXIso, Iso.cancel_iso_hom_left,
     ← HomologicalComplex.XIsoOfEq_inv_naturality_assoc, ZToX₁_f_0]
-  dsimp [HomologicalComplex.XIsoOfEq, CochainComplex.singleShiftIso,
-    CochainComplex.singleShiftIso_hom_app, HomologicalComplex.singleObjXIsoOfEq]
-  simp only [eqToHom_trans, dite_true, eqToHom_refl, comp_id]
+  rw [CochainComplex.singleFunctors_shiftIso_hom_app_f _ _ _ _ _ _ rfl]
+  dsimp [HomologicalComplex.XIsoOfEq, HomologicalComplex.singleObjXIsoOfEq]
+  simp only [eqToHom_trans, eqToHom_refl, comp_id]
 
 @[reassoc]
 lemma compZ_comm' :
     inv (DerivedCategory.Q.map (compZToZ E E' hn'')) ≫
     DerivedCategory.Q.map (compZToShiftZ E E' hn'' m (by linarith)) =
         sgn₂ m m' • DerivedCategory.Q.map (E.ZToX₂ k (by linarith)) ≫
-          DerivedCategory.Q.map ((CochainComplex.singleShiftIso C m k 0 (by linarith)).inv.app X₂) ≫
+          DerivedCategory.Q.map (((CochainComplex.singleFunctors C).shiftIso m k 0 (by linarith)).inv.app X₂) ≫
           inv (DerivedCategory.Q.map (E'.ZToX₁⟦(m : ℤ)⟧')) := by
   simp only [← cancel_epi (DerivedCategory.Q.map (compZToZ E E' hn'')), IsIso.hom_inv_id_assoc,
     ← Functor.map_comp_assoc, Preadditive.comp_zsmul, compZ_comm_assoc E E' hn'' m m' hm hm' k hk,
@@ -723,38 +723,39 @@ lemma compZ_comm' :
   erw [Iso.hom_inv_id_app, comp_id, Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
   simp only [smul_smul, sgn₂_mul_self, one_smul]
 
-lemma compatibility :
-    sgn₂ m m' • E.shiftedHom m hm •[show (m : ℤ) + m' = m'' by linarith] E'.shiftedHom m' hm' =
-      (comp E E' hn'').shiftedHom m'' (by linarith) := by
-  rw [ShiftedHom.γhmul_eq]
-  dsimp [shiftedHom]
-  simp only [← compZToZ_comp_ZToX₁, DerivedCategory.Q.map_comp, IsIso.inv_comp, assoc,
-    ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m') (by linarith) (-m'') (by linarith),
-    Functor.map_comp, compZ_comm'_assoc E E' hn'' m m' hm hm' (-m) (by linarith),
-    Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
-  congr 3
-  simp only [DerivedCategory.singleFunctorShiftIso_inv_app, assoc]
-  congr 1
-  rw [← cancel_epi (DerivedCategory.Q.map (E'.ZToX₁⟦(m : ℤ)⟧')), IsIso.hom_inv_id_assoc]
-  erw [(DerivedCategory.Q.commShiftIso (m : ℤ)).hom.naturality_assoc (E'.ZToX₁)]
-  dsimp
-  rw [← Functor.map_comp_assoc, IsIso.hom_inv_id, Functor.map_id, id_comp]
-  erw [← NatTrans.naturality_assoc]
-  dsimp
-  congr 1
-  simp only [Functor.map_comp, assoc]
-  erw [← NatTrans.naturality_assoc]
-  dsimp
-  rw [CochainComplex.singleShiftIso_add'_inv_app m' m m'' (by linarith) (-(m'' : ℤ)) (-m') 0 (by linarith) (by linarith) X₃,
-    ← DerivedCategory.Q.map_comp_assoc, Iso.hom_inv_id_app_assoc]
-  simp only [DerivedCategory.Q.map_comp, assoc]
-  congr 1
-  rw [(DerivedCategory.Q : _ ⥤ DerivedCategory C).commShiftIso_add' (show (m' : ℤ) + m = m'' by linarith),
-    Functor.CommShift.isoAdd'_hom_app]
-  save
-  simp only [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, Functor.map_id,
-    id_comp]
-  rfl
+--lemma compatibility :
+--    sgn₂ m m' • E.shiftedHom m hm •[show (m : ℤ) + m' = m'' by linarith] E'.shiftedHom m' hm' =
+--      (comp E E' hn'').shiftedHom m'' (by linarith) := by
+--  sorry
+  --rw [ShiftedHom.γhmul_eq]
+  --dsimp [shiftedHom]
+  --simp only [← compZToZ_comp_ZToX₁, DerivedCategory.Q.map_comp, IsIso.inv_comp, assoc,
+  --  ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m') (by linarith) (-m'') (by linarith),
+  --  Functor.map_comp, compZ_comm'_assoc E E' hn'' m m' hm hm' (-m) (by linarith),
+  --  Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
+  --congr 3
+  --simp only [DerivedCategory.singleFunctorShiftIso_inv_app, assoc]
+  --congr 1
+  --rw [← cancel_epi (DerivedCategory.Q.map (E'.ZToX₁⟦(m : ℤ)⟧')), IsIso.hom_inv_id_assoc]
+  --erw [(DerivedCategory.Q.commShiftIso (m : ℤ)).hom.naturality_assoc (E'.ZToX₁)]
+  --dsimp
+  --rw [← Functor.map_comp_assoc, IsIso.hom_inv_id, Functor.map_id, id_comp]
+  --erw [← NatTrans.naturality_assoc]
+  --dsimp
+  --congr 1
+  --simp only [Functor.map_comp, assoc]
+  --erw [← NatTrans.naturality_assoc]
+  --dsimp
+  --rw [CochainComplex.singleShiftIso_add'_inv_app m' m m'' (by linarith) (-(m'' : ℤ)) (-m') 0 (by linarith) (by linarith) X₃,
+  --  ← DerivedCategory.Q.map_comp_assoc, Iso.hom_inv_id_app_assoc]
+  --simp only [DerivedCategory.Q.map_comp, assoc]
+  --congr 1
+  --rw [(DerivedCategory.Q : _ ⥤ DerivedCategory C).commShiftIso_add' (show (m' : ℤ) + m = m'' by linarith),
+  --  Functor.CommShift.isoAdd'_hom_app]
+  --save
+  --simp only [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, Functor.map_id,
+  --  id_comp]
+  --rfl
 
 -- TODO:
 -- should E.extClass be E.shiftedHom, or (-1)^m E.shiftedHom [presumably this is the latter]

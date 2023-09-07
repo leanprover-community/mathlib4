@@ -124,6 +124,36 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
         rw [← cancel_mono (iso a).hom, assoc, assoc, Iso.inv_hom_id, comp_id, comm,
           ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id', id_comp] }
 
+variable (C D)
+
+@[simps]
+def evaluation (n : A) : SingleFunctors C D A ⥤ C ⥤ D where
+  obj F := F.functor n
+  map {F G} φ := φ.hom n
+
+variable {C D}
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_hom (e : F ≅ G) (n : A) : e.hom.hom n ≫ e.inv.hom n = 𝟙 _ := by
+  rw [← comp_hom, e.hom_inv_id, id_hom]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_hom (e : F ≅ G) (n : A) : e.inv.hom n ≫ e.hom.hom n = 𝟙 _ := by
+  rw [← comp_hom, e.inv_hom_id, id_hom]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_hom_app (e : F ≅ G) (n : A) (X : C) :
+    (e.hom.hom n).app X ≫ (e.inv.hom n).app X = 𝟙 _ := by
+  rw [← NatTrans.comp_app, hom_inv_id_hom, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_hom_app (e : F ≅ G) (n : A) (X : C) :
+    (e.inv.hom n).app X ≫ (e.hom.hom n).app X = 𝟙 _ := by
+  rw [← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app]
+
+instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
+  (inferInstance : IsIso ((evaluation C D n).map f))
+
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
 def postComp (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C E A where
@@ -151,6 +181,51 @@ def postCompPostCompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
   isoMk (fun a => Functor.associator _ _ _) (fun n a a' ha' => by
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
+
+section
+
+variable (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
+  (e : F' ≅ F.postComp G) (n a a' : A) (ha' : n + a = a') (X : C)
+
+lemma postComp_shiftIso_hom_app' :
+    (F'.shiftIso n a a' ha').hom.app X =
+      ((e.hom.hom a').app X)⟦n⟧' ≫ (G.commShiftIso n).inv.app ((F.functor a').obj X) ≫
+        G.map ((F.shiftIso n a a' ha').hom.app X) ≫ (e.inv.hom a).app X := by
+  have eq := congr_app (e.hom.comm n a a' ha') X
+  dsimp at eq
+  rw [← cancel_mono ((e.hom.hom a).app X), eq]
+  simp only [Functor.comp_obj, postComp_functor, postComp_shiftIso_hom_app, assoc,
+    ← NatTrans.comp_app, inv_hom_id_hom, id_hom, NatTrans.id_app, comp_id]
+
+lemma postComp_shiftIso_inv_app' :
+    (F'.shiftIso n a a' ha').inv.app X =
+        (e.hom.hom a).app X ≫
+        G.map ((F.shiftIso n a a' ha').inv.app X) ≫
+      (G.commShiftIso n).hom.app ((F.functor a').obj X) ≫
+      ((e.inv.hom a').app X)⟦n⟧' := by
+  rw [← cancel_mono ((F'.shiftIso n a a' ha').hom.app X), Iso.inv_hom_id_app,
+    postComp_shiftIso_hom_app' G e]
+  simp only [assoc, ← Functor.map_comp_assoc, ← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app,
+    postComp_functor, Functor.comp_obj, Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
+    Iso.inv_hom_id, hom_inv_id_hom]
+
+lemma map_shiftIso_inv_app :
+    G.map ((F.shiftIso n a a' ha').inv.app X) =
+      (e.inv.hom a).app X ≫ (F'.shiftIso n a a' ha').inv.app X ≫
+        ((e.hom.hom a').app X)⟦n⟧' ≫ (G.commShiftIso n).inv.app ((F.functor a').obj X) := by
+  simp only [postComp_shiftIso_inv_app' G e, Functor.comp_obj, postComp_functor, assoc,
+    inv_hom_id_hom_app_assoc, ← Functor.map_comp_assoc, inv_hom_id_hom_app,
+    Functor.map_id, id_comp, Iso.hom_inv_id_app, comp_id]
+
+lemma map_shiftIso_hom_app :
+    G.map ((F.shiftIso n a a' ha').hom.app X) =
+      (G.commShiftIso n).hom.app ((F.functor a').obj X) ≫ ((e.inv.hom a').app X)⟦n⟧' ≫
+      (F'.shiftIso n a a' ha').hom.app X ≫ (e.hom.hom a).app X := by
+  simp only [postComp_shiftIso_hom_app' G e, assoc, ← Functor.map_comp_assoc,
+    inv_hom_id_hom_app, postComp_functor, Functor.comp_obj, Functor.map_id, id_comp,
+    Iso.hom_inv_id_app_assoc, comp_id]
+
+end
 
 end SingleFunctors
 

@@ -158,32 +158,37 @@ instance (n : ℤ) : Faithful (singleFunctor C n) := ⟨fun {A B} f₁ f₂ h =>
   dsimp at eq₁ eq₂
   rw [← eq₁, ← eq₂, h]⟩
 
+noncomputable instance (n : ℤ) : Full (CochainComplex.singleFunctor C n) :=
+  (inferInstance : Full (HomologicalComplex.single _ _ _))
+
 noncomputable instance (n : ℤ) : Full (singleFunctor C n) := by
   apply Functor.fullOfSurjective
   intro A B f
   dsimp only [singleFunctor, Functor.comp] at f
-  suffices ∃ (f' : (HomologicalComplex.single C (ComplexShape.up ℤ) n).obj A ⟶
-    (HomologicalComplex.single C (ComplexShape.up ℤ) n).obj B), f = Q.map f' by
+  suffices ∃ (f' : (CochainComplex.singleFunctor C n).obj A ⟶
+    (CochainComplex.singleFunctor C n).obj B), f = Q.map f' by
     obtain ⟨f', rfl⟩ := this
-    obtain ⟨g, hg⟩ := (HomologicalComplex.single C (ComplexShape.up ℤ) n).map_surjective f'
+    obtain ⟨g, hg⟩ := (CochainComplex.singleFunctor C n).map_surjective f'
     refine' ⟨g, _⟩
-    dsimp only [singleFunctor, Functor.comp]
+    dsimp only [singleFunctor, singleFunctors, SingleFunctors.postComp, HomotopyCategory.singleFunctors,
+      Functor.comp]
     rw [hg]
+    rfl
   obtain ⟨X, _, _, s, hs, g, fac⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE _ _ n n f
   have : IsIso s := by
     obtain ⟨A', ⟨e⟩⟩ := X.exists_iso_single n
-    have ⟨φ, hφ⟩ := (HomologicalComplex.single _ _ _).map_surjective (e.inv ≫ s)
+    have ⟨φ, hφ⟩ := (CochainComplex.singleFunctor C n).map_surjective (e.inv ≫ s)
     suffices IsIso φ by
       have : IsIso (e.inv ≫ s) := by
         rw [← hφ]
         infer_instance
       exact IsIso.of_isIso_comp_left e.inv s
     apply (NatIso.isIso_map_iff (singleFunctorCompHomologyFunctorIso C n) φ).1
-    have : IsIso (Q.map ((HomologicalComplex.single C (ComplexShape.up ℤ) n).map φ)) := by
+    have : IsIso (Q.map ((CochainComplex.singleFunctor C n).map φ)) := by
       rw [hφ]
       rw [Q.map_comp]
       infer_instance
-    dsimp [singleFunctor]
+    change IsIso ((homologyFunctor C n).map (Q.map ((CochainComplex.singleFunctor C n).map φ)))
     infer_instance
   exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
 

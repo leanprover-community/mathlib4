@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
@@ -171,11 +172,16 @@ lemma induction_Q_obj (P : DerivedCategory C → Prop)
   hP₂ (Q.objObjPreimageIso X) (hP₁ _)
 
 variable (C)
+noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
+  (HomotopyCategory.singleFunctors C).postComp Qh
 
--- this should be moved (and generalized)
-instance (n : ℤ) : (HomologicalComplex.single C (ComplexShape.up ℤ) n).Additive where
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
-noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp [singleFunctor, singleFunctors]
+  infer_instance
+
+/-noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
   HomologicalComplex.single _ _ n ⋙ Q
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
@@ -202,9 +208,7 @@ lemma singleFunctorShiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (X : C) :
       Q.map ((CochainComplex.singleShiftIso C n a a' ha').inv.app X) ≫
       (Q.commShiftIso n).hom.app ((HomologicalComplex.single C (ComplexShape.up ℤ) a').obj X) := by
   dsimp [singleFunctorShiftIso]
-  erw [comp_id, comp_id]
-
-variable (C)
+  erw [comp_id, comp_id]-/
 
 lemma homologyFunctor_inverts_qis (n : ℤ) :
     (HomotopyCategory.qis C).IsInvertedBy
@@ -228,7 +232,8 @@ noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n �
 
 noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
-  Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
+  Functor.associator _ _ _ ≪≫ Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
     HomologicalComplex.singleCompHomologyFunctorIso C (ComplexShape.up ℤ) n
 
 instance (n : ℤ) : (homologyFunctor C n).PreservesZeroMorphisms :=

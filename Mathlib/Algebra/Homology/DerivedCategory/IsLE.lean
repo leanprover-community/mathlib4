@@ -121,10 +121,18 @@ instance (A : C) (n : ℤ) :
     exact isZero_zero _⟩
 
 instance (A : C) (n : ℤ) :
+    IsStrictlyLE ((singleFunctor C n).obj A) n :=
+  (inferInstance : IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n)
+
+instance (A : C) (n : ℤ) :
     IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
     dsimp
     rw [if_neg (by linarith)]
     exact isZero_zero _⟩
+
+instance (A : C) (n : ℤ) :
+    IsStrictlyGE ((singleFunctor C n).obj A) n :=
+  (inferInstance : IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n)
 
 end CochainComplex
 
@@ -231,11 +239,11 @@ lemma distTriang₃_isGE_iff (T : Triangle (DerivedCategory C)) (hT : T ∈ dist
         exact h₁
 
 instance (A : C) (n : ℤ) : IsLE ((singleFunctor C n).obj A) n := by
-  dsimp only [singleFunctor, Functor.comp]
+  change IsLE (Q.obj ((CochainComplex.singleFunctor C n).obj A)) n
   infer_instance
 
 instance (A : C) (n : ℤ) : IsGE ((singleFunctor C n).obj A) n := by
-  dsimp only [singleFunctor, Functor.comp]
+  change IsGE (Q.obj ((CochainComplex.singleFunctor C n).obj A)) n
   infer_instance
 
 end DerivedCategory
