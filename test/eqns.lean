@@ -26,7 +26,7 @@ theorem t_def' : t = 1 := by rw [t]
 error: There already exist stored eqns for 't' registering new equations
 will not have the desired effect supported
 -/
-#guard_msgs in
+#guard_msgs(error) in
 attribute [eqns t_def] t
 -- the above should error as the
 example (n : Nat) : t = n := by
