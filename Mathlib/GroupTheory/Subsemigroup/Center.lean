@@ -31,17 +31,27 @@ variable {M : Type*}
 
 namespace Set
 
+/-- Conditions for an element to be additively central -/
 structure IsAddCentral [Add M] (z : M) : Prop where
+  /-- addition commutes -/
   comm (a : M) : z + a = a + z
+  /-- associative property for left addition -/
   left_assoc (b c : M) : z + (b + c) = (z + b) + c
+  /-- middle associative addition property -/
   mid_assoc (a c : M) : (a + z) + c = a + (z + c)
+  /-- associative property for right addition -/
   right_assoc (a b : M) : (a + b) + z = a + (b + z)
 
+/-- Conditions for an element to be multiplicatively central -/
 @[to_additive]
 structure IsMulCentral [Mul M] (z : M) : Prop where
+  /-- multiplication commutes -/
   comm (a : M): z * a = a * z
+  /-- associative property for left multiplication -/
   left_assoc (b c : M) : z * (b * c) = (z * b) * c
+  /-- middle associative multiplication property -/
   mid_assoc (a c : M) : (a * z) * c = a * (z * c)
+  /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
 variable (M)
