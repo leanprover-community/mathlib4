@@ -76,13 +76,13 @@ lemma eqUpToFiniteRankRight_of_eqUpToFiniteRank (A B : V →ₗ[K] W) (C : U →
   convert isFiniteRank_comp_left (A - B) C hAB  using 1
 
 @[refl]
-theorem eqUpToFiniteRank_refl (A : V →ₗ[K] W) :  A =ᶠ A := by
+theorem eqUpToFiniteRank_refl {A : V →ₗ[K] W} :  A =ᶠ A := by
   dsimp only [eqUpToFiniteRank]
   rw [sub_self]
   exact isFiniteRank_zero
 
 @[symm]
-theorem eqUpToFiniteRank_symm (A B : V →ₗ[K] W) (h: A =ᶠ B): B =ᶠ A := by
+theorem eqUpToFiniteRank_symm {A B : V →ₗ[K] W} (h: A =ᶠ B) : B =ᶠ A := by
   dsimp only [eqUpToFiniteRank]
   have : B - A = (-1 : K) • (A - B) := by simp only [neg_smul, one_smul, neg_sub]
   rw [this]
@@ -90,7 +90,7 @@ theorem eqUpToFiniteRank_symm (A B : V →ₗ[K] W) (h: A =ᶠ B): B =ᶠ A := b
   assumption
 
 @[trans]
-theorem eqUpToFiniteRank_trans (A B C : V →ₗ[K] W) (hAB : A =ᶠ B) (hBC : B =ᶠ C) : A =ᶠ C := by
+theorem eqUpToFiniteRank_trans {A B C : V →ₗ[K] W} (hAB : A =ᶠ B) (hBC : B =ᶠ C) : A =ᶠ C := by
   dsimp only [eqUpToFiniteRank]
   convert isFiniteRank_sum (A - B) (B - C) hAB hBC using 1
   simp
