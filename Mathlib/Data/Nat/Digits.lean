@@ -428,16 +428,14 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
 
 theorem digits_append_digits {b m n : ℕ} (hb : 1 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
-  rcases Decidable.eq_or_ne m 0 with (rfl | hm)
-  · simp
-  have : n + b ^ (digits b n).length * m = ofDigits b (digits b n ++ digits b m)
-  · simp [ofDigits_append, ofDigits_digits, add_comm, mul_comm]
-  rw [this, digits_ofDigits _ hb]
-  · simp [forall_and, or_imp]
-    constructor <;> exact (fun x hx ↦ digits_lt_base hb hx)
-  · intro hnz
-    rw[List.getLast_append' _ _ (digits_ne_nil_iff_ne_zero.mpr hm)]
-    exact getLast_digit_ne_zero _ hm
+  rw [← ofDigits_digits_append_digits]
+  refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
+  · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
+  · by_cases digits b m = []
+    · simp only [h, List.append_nil] at h_append ⊢
+      exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
+    · exact (List.getLast_append' _ _ h) ▸
+          (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
 
 theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
