@@ -181,6 +181,14 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
 
+noncomputable def singleFunctorsPostCompQhIso :
+    singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postComp Qh :=
+  Iso.refl _
+
+noncomputable def singleFunctorsPostCompQIso :
+    singleFunctors C ≅ (CochainComplex.singleFunctors C).postComp Q :=
+  SingleFunctors.postCompPostCompIso _ _ _
+
 /-noncomputable def singleFunctor (n : ℤ) : C ⥤ DerivedCategory C :=
   HomologicalComplex.single _ _ n ⋙ Q
 
