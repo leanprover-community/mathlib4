@@ -66,9 +66,9 @@ krullDim.le_of_strictMono (PrimeSpectrum.comap f) (Monotone.strictMono_of_inject
 /--
 If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`.
 -/
-theorem le_of_quot (R : Type _) [CommRing R] (I : PrimeSpectrum R) :
-  ringKrullDim (R ⧸ I.asIdeal) ≤ ringKrullDim R :=
-le_of_surj _ _ (Ideal.Quotient.mk I.asIdeal) Ideal.Quotient.mk_surjective
+theorem le_of_quot (R : Type _) [CommRing R] (I : Ideal R) :
+  ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
+le_of_surj _ _ (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
 
 /--
 If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`.
@@ -179,12 +179,12 @@ refine' krullDim.eq_iSup_height.trans $ le_antisymm ?_ ?_
   exact iSup_le_iSup_of_subset $ λ _ _ ↦ rfl
 
 /-
-Here we aim to show that for any prime ideal `I` of a commutative ring `R`, the
-height of `I` equals the Krull dimension of `Localization.AtPrime I.asIdeal`.
+Here we aim to show that for any prime ideal `𝔭` of a commutative ring `R`, the
+height of `𝔭` equals the Krull dimension of `Localization.AtPrime 𝔭.asIdeal`.
 -/
 section aboutHeightAndLocalization
 
-variable {R : Type _} [CommRing R] (J : Ideal R) (I : PrimeSpectrum R)
+variable {R : Type _} [CommRing R] (J : Ideal R) (𝔭 : PrimeSpectrum R)
 
 /--
 For any ideal `J` and submonoid `x` of `R`, `Ideal.localization J x` is
@@ -194,12 +194,12 @@ abbrev _root_.Ideal.localization (x : Submonoid R) : Ideal (Localization x) :=
   J.map (algebraMap R (Localization x))
 
 /--
-For any ideals `J` and `I` of `R` such that `I` is prime, `Ideal.localizationAtPrime J I`
-is defined as `J.localization I.asIdeal.primeCompl`.
+For any ideals `J` and `𝔭` of `R` such that `𝔭` is prime, `Ideal.localizationAtPrime J 𝔭`
+is defined as `J.localization 𝔭.asIdeal.primeCompl`.
 -/
-abbrev _root_.Ideal.localizationAtPrime := J.localization I.asIdeal.primeCompl
+abbrev _root_.Ideal.localizationAtPrime := J.localization 𝔭.asIdeal.primeCompl
 
-/-- The canonical map from the ideal J of R to its image JR_I in the localisation. -/
+/-- The canonical map from the ideal J of R to its image JR_𝔭 in the localisation. -/
 @[simps apply] def _root_.Ideal.toLocalization (x : Submonoid R) :
   J →ₗ[R] J.localization x where
   toFun := λ x ↦ ⟨Localization.mk x 1, Submodule.subset_span ⟨_, x.2, rfl⟩⟩
@@ -247,12 +247,12 @@ lemma _root_.Ideal.localization'_eq_localization (y : Submonoid R) :
     exact Ideal.mul_mem_left _ _ (Ideal.mem_map_of_mem _ ha)) <|
   J.mem_localization'_of_mem_localization _
 
-instance _root_.Ideal.localization'_IsPrime (J : Set.Iic I) :
-  (J.1.asIdeal.localization' I.asIdeal.primeCompl).IsPrime where
+instance _root_.Ideal.localization'_IsPrime (J : Set.Iic 𝔭) :
+  (J.1.asIdeal.localization' 𝔭.asIdeal.primeCompl).IsPrime where
 ne_top' := fun hit => by
   rw [Ideal.eq_top_iff_one] at hit
   rcases hit with ⟨a, ⟨b, hb⟩⟩
-  exact (IsLocalization.AtPrime.isUnit_mk'_iff (Localization.AtPrime I.asIdeal) _
+  exact (IsLocalization.AtPrime.isUnit_mk'_iff (Localization.AtPrime 𝔭.asIdeal) _
     (a : R) b).mp (by simpa only [←Localization.mk_eq_mk', ←hb] using isUnit_one) (J.2 a.2)
 mem_or_mem' := by
     intro x y
@@ -269,55 +269,55 @@ mem_or_mem' := by
         (fun h => Or.intro_right _ ⟨⟨b1, h⟩, ⟨_, rfl⟩⟩)
 
 /--
-There is a canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`.
+There is a canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`.
 -/
 def _root_.PrimeSpectrum.IicToLocalizationAtPrime :
-  Set.Iic I → PrimeSpectrum (Localization.AtPrime I.asIdeal) :=
-λ I' ↦ ⟨I'.1.asIdeal.localization' I.asIdeal.primeCompl, inferInstance⟩
+  Set.Iic 𝔭 → PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal) :=
+λ 𝔭' ↦ ⟨𝔭'.1.asIdeal.localization' 𝔭.asIdeal.primeCompl, inferInstance⟩
 
 /--
-There is a canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I`.
+There is a canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭`.
 -/
 @[simp]
  def _root_.PrimeSpectrum.LocalizationAtPrimeToIic :
-   PrimeSpectrum (Localization.AtPrime I.asIdeal) → Set.Iic I :=
-   λ J ↦ ⟨⟨_, Ideal.IsPrime.comap (hK := J.2) (algebraMap R (Localization.AtPrime I.asIdeal))⟩,
+   PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal) → Set.Iic 𝔭 :=
+   λ J ↦ ⟨⟨_, Ideal.IsPrime.comap (hK := J.2) (algebraMap R (Localization.AtPrime 𝔭.asIdeal))⟩,
      λ z hz ↦
      @Decidable.byContradiction _ (Classical.dec _) $ λ hnz ↦ J.IsPrime.ne_top $ eq_top_iff.mpr $
      False.elim $ J.IsPrime.1 $ (Ideal.eq_top_iff_one _).mpr <| show 1 ∈ J.asIdeal by
-       rw [show (1 : Localization.AtPrime I.asIdeal) = Localization.mk z 1 * Localization.mk 1
-         (⟨z, hnz⟩ : I.asIdeal.primeCompl) by simpa only
+       rw [show (1 : Localization.AtPrime 𝔭.asIdeal) = Localization.mk z 1 * Localization.mk 1
+         (⟨z, hnz⟩ : 𝔭.asIdeal.primeCompl) by simpa only
            [Localization.mk_one_eq_algebraMap, ←Algebra.smul_def, Localization.smul_mk, smul_eq_mul,
-             mul_one, eq_comm] using Localization.mk_self (⟨z, hnz⟩ : I.asIdeal.primeCompl)]
+             mul_one, eq_comm] using Localization.mk_self (⟨z, hnz⟩ : 𝔭.asIdeal.primeCompl)]
        exact Ideal.mul_mem_right _ _ hz⟩
 
 /--
-The canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I` is a left
-inverse to the canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`.
+The canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭` is a left
+inverse to the canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`.
 -/
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse :
-  Function.LeftInverse (PrimeSpectrum.LocalizationAtPrimeToIic I)
-    (PrimeSpectrum.IicToLocalizationAtPrime I) := by
+  Function.LeftInverse (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭)
+    (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
 { intro J; ext x; constructor
   · intro hx
-    change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal I.asIdeal.primeCompl at hx
+    change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal 𝔭.asIdeal.primeCompl at hx
     rcases hx with ⟨a, b, hab⟩
     erw [Localization.mk_eq_mk_iff, Localization.r_iff_exists, one_mul] at hab
     rcases hab with ⟨c, hc⟩
     rw [←mul_assoc] at hc
     exact (or_iff_not_imp_left.1 (Ideal.IsPrime.mem_or_mem J.val.2 (@Set.mem_of_eq_of_mem R
       (↑c * ↑b * x) (↑c * ↑a) J.val.asIdeal hc (Ideal.mul_mem_left J.val.asIdeal ↑c a.2))))
-        (λ hi ↦ (Submonoid.mul_mem I.asIdeal.primeCompl c.2 b.2) (J.2 hi))
+        (λ hi ↦ (Submonoid.mul_mem 𝔭.asIdeal.primeCompl c.2 b.2) (J.2 hi))
   · intro hx
     exact ⟨⟨x, hx⟩, ⟨1, rfl⟩⟩ }
 
 /--
-The canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I` is a right
-inverse to the canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`.
+The canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭` is a right
+inverse to the canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`.
 -/
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse :
-  Function.RightInverse (PrimeSpectrum.LocalizationAtPrimeToIic I)
-    (PrimeSpectrum.IicToLocalizationAtPrime I) := by
+  Function.RightInverse (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭)
+    (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
 { intro J; ext x; constructor
   · intro hx
     rcases hx with ⟨⟨a, ha⟩, ⟨b, hab⟩⟩
@@ -333,94 +333,94 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse :
         exact Ideal.mul_mem_left J.asIdeal (Localization.mk b 1) hab }
 
 /--
-The canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`
+The canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`
 is bijective (not necessary for the proof).
 -/
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime.bijective :
-  Function.Bijective (PrimeSpectrum.IicToLocalizationAtPrime I) := by
+  Function.Bijective (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
 rw [Function.bijective_iff_has_inverse]
-exact ⟨PrimeSpectrum.LocalizationAtPrimeToIic I,
-  ⟨PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse I,
-    PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse I⟩⟩
+exact ⟨PrimeSpectrum.LocalizationAtPrimeToIic 𝔭,
+  ⟨PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse 𝔭,
+    PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse 𝔭⟩⟩
 
 /--
-The canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I`
+The canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭`
 is bijective (not necessary for the proof).
 -/
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic.bijective :
-  Function.Bijective (PrimeSpectrum.LocalizationAtPrimeToIic I) := by
+  Function.Bijective (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭) := by
 rw [Function.bijective_iff_has_inverse]
-exact ⟨PrimeSpectrum.IicToLocalizationAtPrime I,
-  ⟨PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse I,
-    PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse I⟩⟩
+exact ⟨PrimeSpectrum.IicToLocalizationAtPrime 𝔭,
+  ⟨PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse 𝔭,
+    PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse 𝔭⟩⟩
 
 /--
-The canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`
+The canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`
 is monotone.
 -/
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_isMonotone :
-  Monotone (PrimeSpectrum.IicToLocalizationAtPrime I) := by
+  Monotone (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
 { intro J1 J2 H x hx; rcases hx with ⟨a, ⟨b, hab⟩⟩; exact ⟨⟨a, H a.2⟩, ⟨b, hab⟩⟩ }
 
 /--
-The canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to `Set.Iic I`
+The canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭`
 is monotone.
 -/
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone :
-  Monotone (PrimeSpectrum.LocalizationAtPrimeToIic I) := by
+  Monotone (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭) := by
 { intro J1 J2 H x hx; exact H hx }
 
 /--
-We can regard the canonical map from `Set.Iic I` to `PrimeSpectrum (Localization.AtPrime I.asIdeal)`
+We can regard the canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`
 as an equivalence.
 -/
 def _root_.PrimeSpectrum.IicToLocalizationAtPrimeEquiv :
-  (Set.Iic I) ≃ (PrimeSpectrum (Localization.AtPrime I.asIdeal)) where
-    toFun := PrimeSpectrum.IicToLocalizationAtPrime I
-    invFun := PrimeSpectrum.LocalizationAtPrimeToIic I
-    left_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse I
-    right_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse I
+  (Set.Iic 𝔭) ≃ (PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)) where
+    toFun := PrimeSpectrum.IicToLocalizationAtPrime 𝔭
+    invFun := PrimeSpectrum.LocalizationAtPrimeToIic 𝔭
+    left_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse 𝔭
+    right_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse 𝔭
 
 /--
-We can regard the canonical map from `PrimeSpectrum (Localization.AtPrime I.asIdeal)` to
-`Set.Iic I` as an equivalence.
+We can regard the canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to
+`Set.Iic 𝔭` as an equivalence.
 -/
 def _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv :
-  (PrimeSpectrum (Localization.AtPrime I.asIdeal)) ≃ (Set.Iic I) where
-    toFun := PrimeSpectrum.LocalizationAtPrimeToIic I
-    invFun := PrimeSpectrum.IicToLocalizationAtPrime I
-    left_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse I
-    right_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse I
+  (PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)) ≃ (Set.Iic 𝔭) where
+    toFun := PrimeSpectrum.LocalizationAtPrimeToIic 𝔭
+    invFun := PrimeSpectrum.IicToLocalizationAtPrime 𝔭
+    left_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse 𝔭
+    right_inv := PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse 𝔭
 
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrimeEquiv_IsMonotone :
-  Monotone (PrimeSpectrum.IicToLocalizationAtPrimeEquiv I) := by
-{ exact PrimeSpectrum.IicToLocalizationAtPrime_isMonotone I }
+  Monotone (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭) := by
+{ exact PrimeSpectrum.IicToLocalizationAtPrime_isMonotone 𝔭 }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_IsMonotone :
-  Monotone (PrimeSpectrum.LocalizationAtPrimeToIicEquiv I) := by
-{ exact PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone I }
+  Monotone (PrimeSpectrum.LocalizationAtPrimeToIicEquiv 𝔭) := by
+{ exact PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone 𝔭 }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_is_symm :
-  PrimeSpectrum.LocalizationAtPrimeToIicEquiv I =
-    (PrimeSpectrum.IicToLocalizationAtPrimeEquiv I).symm := rfl
+  PrimeSpectrum.LocalizationAtPrimeToIicEquiv 𝔭 =
+    (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭).symm := rfl
 
 /--
-We have a canonical order isomorphism from `Set.Iic I` to
-`PrimeSpectrum (Localization.AtPrime I.asIdeal)`.
+We have a canonical order isomorphism from `Set.Iic 𝔭` to
+`PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`.
 -/
 @[simp]
 def _root_.PrimeSpectrum.IicToLocalizationAtPrime_OrderIso :
-  (Set.Iic I) ≃o (PrimeSpectrum (Localization.AtPrime I.asIdeal)) := by
-exact Equiv.toOrderIso (PrimeSpectrum.IicToLocalizationAtPrimeEquiv I)
-  (PrimeSpectrum.IicToLocalizationAtPrimeEquiv_IsMonotone I)
-    (PrimeSpectrum.LocalizationAtPrimeToIicEquiv_IsMonotone I)
+  (Set.Iic 𝔭) ≃o (PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)) := by
+exact Equiv.toOrderIso (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭)
+  (PrimeSpectrum.IicToLocalizationAtPrimeEquiv_IsMonotone 𝔭)
+    (PrimeSpectrum.LocalizationAtPrimeToIicEquiv_IsMonotone 𝔭)
 
 /--
-The height of `I` is equal to the Krull dimension of `localization.at_prime I.as_ideal`.
+The height of `𝔭` is equal to the Krull dimension of `localization.at_prime 𝔭.as_ideal`.
 -/
 theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
-  height (PrimeSpectrum R) I = ringKrullDim (Localization.AtPrime I.asIdeal) :=
-krullDim.eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso I)
+  height (PrimeSpectrum R) 𝔭 = ringKrullDim (Localization.AtPrime 𝔭.asIdeal) :=
+krullDim.eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso 𝔭)
 
 end aboutHeightAndLocalization
 
