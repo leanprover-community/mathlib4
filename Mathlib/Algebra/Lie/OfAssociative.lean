@@ -78,7 +78,7 @@ theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
 #align lie_ring.of_associative_ring_bracket LieRing.of_associative_ring_bracket
 
 @[simp]
-theorem lie_apply {α : Type _} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a, g a⁆ :=
+theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a, g a⁆ :=
   rfl
 #align lie_ring.lie_apply LieRing.lie_apply
 
@@ -137,7 +137,7 @@ Lie algebra via the ring commutator.
 
 See the comment at `LieRingModule.ofAssociativeModule` for why the possibility `M = A` means
 this cannot be a global instance. -/
-def LieModule.ofAssociativeModule : LieModule R A M where
+theorem LieModule.ofAssociativeModule : LieModule R A M where
   smul_lie := smul_assoc
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule

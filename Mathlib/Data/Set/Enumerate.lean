@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -25,7 +26,7 @@ namespace Set
 section Enumerate
 
 /- porting note : The original used parameters -/
-variable {α : Type _} (sel : Set α → Option α)
+variable {α : Type*} (sel : Set α → Option α)
 
 /-- Given a choice function `sel`, enumerates the elements of a set in the order
 `a 0 = sel s`, `a 1 = sel (s \ {a 0})`, `a 2 = sel (s \ {a 0, a 1})`, ... and stops when

@@ -13,8 +13,8 @@ Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
 here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
 notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
-datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
-`K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
+data of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
+`K` with the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` with the cokernel
 of the induced map `f' : X₁ ⟶ K`.
 
 When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
@@ -28,13 +28,15 @@ and `S.homology` (TODO).
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
   {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
@@ -964,13 +966,13 @@ lemma liftCycles_leftHomologyπ_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k =
   LeftHomologyData.liftK_π_eq_zero_of_boundary _ k x hx
 
 @[reassoc (attr := simp)]
-lemma toCycles_comp_leftHomology_π : S.toCycles ≫ S.leftHomologyπ = 0 :=
+lemma toCycles_comp_leftHomologyπ : S.toCycles ≫ S.leftHomologyπ = 0 :=
   S.liftCycles_leftHomologyπ_eq_zero_of_boundary S.f (𝟙 _) (by rw [id_comp])
 
 /-- Via `S.leftHomologyπ : S.cycles ⟶ S.leftHomology`, the object `S.leftHomology` identifies
 to the cokernel of `S.toCycles : S.X₁ ⟶ S.cycles`. -/
 noncomputable def leftHomologyIsCokernel :
-    IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomology_π) :=
+    IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomologyπ) :=
   S.leftHomologyData.hπ
 
 @[reassoc (attr := simp)]
@@ -1018,6 +1020,29 @@ noncomputable def leftHomologyIsoCokernelLift [S.HasLeftHomology] [HasKernel S.g
     [HasCokernel (kernel.lift S.g S.f S.zero)] :
     S.leftHomology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
   (LeftHomologyData.ofHasKernelOfHasCokernel S).leftHomologyIso
+
+/-! The following lemmas and instance gives a sufficient condition for a morphism
+of short complexes to induce an isomorphism on cycles. -/
+
+lemma isIso_cyclesMap'_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    IsIso (cyclesMap' φ h₁ h₂) := by
+  refine' ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) _, _, _⟩
+  · simp only [assoc, ← cancel_mono φ.τ₃, zero_comp, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, h₂.wi]
+  · simp only [← cancel_mono h₁.i, assoc, h₁.liftK_i, cyclesMap'_i_assoc,
+      IsIso.hom_inv_id, comp_id, id_comp]
+  · simp only [← cancel_mono h₂.i, assoc, cyclesMap'_i, h₁.liftK_i_assoc,
+      IsIso.inv_hom_id, comp_id, id_comp]
+
+lemma isIso_cyclesMap_of_isIso_of_mono' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    IsIso (cyclesMap φ) :=
+  isIso_cyclesMap'_of_isIso_of_mono φ h₂ h₃ _ _
+
+instance isIso_cyclesMap_of_isIso_of_mono (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Mono φ.τ₃]
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    IsIso (cyclesMap φ) :=
+  isIso_cyclesMap_of_isIso_of_mono' φ inferInstance inferInstance
 
 end ShortComplex
 

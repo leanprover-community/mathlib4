@@ -53,7 +53,7 @@ open Classical Topology BigOperators ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
-variable {α β γ δ : Type _} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
+variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 
 variable [NormedAddCommGroup β]
 
@@ -98,7 +98,7 @@ theorem lintegral_nnnorm_neg {f : α → β} : (∫⁻ a, ‖(-f) a‖₊ ∂μ)
   simp only [Pi.neg_apply, nnnorm_neg]
 #align measure_theory.lintegral_nnnorm_neg MeasureTheory.lintegral_nnnorm_neg
 
-/-! ### The predicate `has_finite_integral` -/
+/-! ### The predicate `HasFiniteIntegral` -/
 
 
 /-- `HasFiniteIntegral f μ` means that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
@@ -265,8 +265,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
   by_cases hfx : f x = ∞
   · simp [hfx]
   · lift f x to ℝ≥0 using hfx with fx h
-    simp [← h]
-    rfl
+    simp [← h, ← NNReal.coe_le_coe]
 #align measure_theory.has_finite_integral_to_real_of_lintegral_ne_top MeasureTheory.hasFiniteIntegral_toReal_of_lintegral_ne_top
 
 theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteIntegral f μ) :
@@ -335,21 +334,23 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
       ENNReal.ofReal ‖F n a - f a‖ ≤ ENNReal.ofReal ‖F n a‖ + ENNReal.ofReal ‖f a‖ := by
         rw [← ENNReal.ofReal_add]
         apply ofReal_le_ofReal
-        · { apply norm_sub_le }; · { exact norm_nonneg _ }; · { exact norm_nonneg _ }
+        · apply norm_sub_le
+        · exact norm_nonneg _
+        · exact norm_nonneg _
       _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := (add_le_add h₁ h₂)
       _ = b a := by rw [← two_mul]
   -- On the other hand, `F n a --> f a` implies that `‖F n a - f a‖ --> 0`
   have h : ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a - f a‖) atTop (𝓝 0) := by
     rw [← ENNReal.ofReal_zero]
     refine' h_lim.mono fun a h => (continuous_ofReal.tendsto _).comp _
-    rwa [← tendsto_iff_norm_tendsto_zero]
+    rwa [← tendsto_iff_norm_sub_tendsto_zero]
   /- Therefore, by the dominated convergence theorem for nonnegative integration, have
     ` ∫ ‖f a - F n a‖ --> 0 ` -/
   suffices h : Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ))
   · rwa [lintegral_zero] at h
   -- Using the dominated convergence theorem.
   refine' tendsto_lintegral_of_dominated_convergence' _ _ hb _ _
-  -- Show `λa, ‖f a - F n a‖` is almost everywhere measurable for all `n`
+  -- Show `fun a => ‖f a - F n a‖` is almost everywhere measurable for all `n`
   · exact fun n =>
       measurable_ofReal.comp_aemeasurable ((F_measurable n).sub f_measurable).norm.aemeasurable
   -- Show `2 * bound` `HasFiniteIntegral`
@@ -387,7 +388,7 @@ end PosPart
 
 section NormedSpace
 
-variable {𝕜 : Type _}
+variable {𝕜 : Type*}
 
 theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [BoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} : HasFiniteIntegral f μ → HasFiniteIntegral (c • f) μ := by
@@ -423,7 +424,7 @@ theorem HasFiniteIntegral.mul_const [NormedRing 𝕜] {f : α → 𝕜} (h : Has
 
 end NormedSpace
 
-/-! ### The predicate `integrable` -/
+/-! ### The predicate `Integrable` -/
 
 
 -- variables [measurable_space β] [measurable_space γ] [measurable_space δ]
@@ -709,7 +710,7 @@ theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf :
   exact hf.abs
 #align measure_theory.integrable.abs MeasureTheory.Integrable.abs
 
-theorem Integrable.bdd_mul {F : Type _} [NormedDivisionRing F] {f g : α → F} (hint : Integrable g μ)
+theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (hint : Integrable g μ)
     (hm : AEStronglyMeasurable f μ) (hfbdd : ∃ C, ∀ x, ‖f x‖ ≤ C) :
     Integrable (fun x => f x * g x) μ := by
   cases' isEmpty_or_nonempty α with hα hα
@@ -730,34 +731,34 @@ theorem Integrable.bdd_mul {F : Type _} [NormedDivisionRing F] {f g : α → F} 
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
-theorem Integrable.essSup_smul {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 β] {f : α → β}
-    (hf : Integrable f μ) {g : α → 𝕜} (g_ae_strongly_measurable : AEStronglyMeasurable g μ)
+theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β] {f : α → β}
+    (hf : Integrable f μ) {g : α → 𝕜} (g_aestronglyMeasurable : AEStronglyMeasurable g μ)
     (ess_sup_g : essSup (fun x => (‖g x‖₊ : ℝ≥0∞)) μ ≠ ∞) :
     Integrable (fun x : α => g x • f x) μ := by
   rw [← memℒp_one_iff_integrable] at *
-  refine' ⟨g_ae_strongly_measurable.smul hf.1, _⟩
+  refine' ⟨g_aestronglyMeasurable.smul hf.1, _⟩
   have h : (1 : ℝ≥0∞) / 1 = 1 / ∞ + 1 / 1 := by norm_num
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
     snorm (fun x : α => g x • f x) 1 μ ≤ _ :=
-      MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_ae_strongly_measurable h
+      MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
     _ < ∞ := ENNReal.mul_lt_top hg' hf.2.ne
 #align measure_theory.integrable.ess_sup_smul MeasureTheory.Integrable.essSup_smul
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
 scalar-valued function by a vector-value function with finite essential supremum is integrable. -/
-theorem Integrable.smul_essSup {𝕜 : Type _} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
     {f : α → 𝕜} (hf : Integrable f μ) {g : α → β}
-    (g_ae_strongly_measurable : AEStronglyMeasurable g μ)
+    (g_aestronglyMeasurable : AEStronglyMeasurable g μ)
     (ess_sup_g : essSup (fun x => (‖g x‖₊ : ℝ≥0∞)) μ ≠ ∞) :
     Integrable (fun x : α => f x • g x) μ := by
   rw [← memℒp_one_iff_integrable] at *
-  refine' ⟨hf.1.smul g_ae_strongly_measurable, _⟩
+  refine' ⟨hf.1.smul g_aestronglyMeasurable, _⟩
   have h : (1 : ℝ≥0∞) / 1 = 1 / 1 + 1 / ∞ := by norm_num
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
     snorm (fun x : α => f x • g x) 1 μ ≤ _ :=
-      MeasureTheory.snorm_smul_le_mul_snorm g_ae_strongly_measurable hf.1 h
+      MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
     _ < ∞ := ENNReal.mul_lt_top hf.2.ne hg'
 #align measure_theory.integrable.smul_ess_sup MeasureTheory.Integrable.smul_essSup
 
@@ -842,7 +843,7 @@ theorem coe_toNNReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < �
 
 section
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf : Measurable f)
     {g : α → E} :
@@ -872,7 +873,7 @@ theorem integrable_withDensity_iff_integrable_smul' {f : α → ℝ≥0∞} (hf 
     Integrable g (μ.withDensity f) ↔ Integrable (fun x => (f x).toReal • g x) μ := by
   rw [← withDensity_congr_ae (coe_toNNReal_ae_eq hflt),
     integrable_withDensity_iff_integrable_smul]
-  · rfl
+  · simp_rw [NNReal.smul_def, ENNReal.toReal]
   · exact hf.ennreal_toNNReal
 #align measure_theory.integrable_with_density_iff_integrable_smul' MeasureTheory.integrable_withDensity_iff_integrable_smul'
 
@@ -910,7 +911,7 @@ theorem integrable_withDensity_iff {f : α → ℝ≥0∞} (hf : Measurable f) (
 
 section
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem memℒ1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f)
     (u : Lp E 1 (μ.withDensity fun x => f x)) : Memℒp (fun x => f x • u x) 1 μ :=
@@ -1013,7 +1014,7 @@ end PosPart
 
 section BoundedSMul
 
-variable {𝕜 : Type _}
+variable {𝕜 : Type*}
 
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [BoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ :=
@@ -1053,9 +1054,9 @@ end BoundedSMul
 
 section NormedSpaceOverCompleteField
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     Integrable (fun x => f x • c) μ ↔ Integrable f μ := by
@@ -1070,7 +1071,7 @@ end NormedSpaceOverCompleteField
 
 section NormedRing
 
-variable {𝕜 : Type _} [NormedRing 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [NormedRing 𝕜] {f : α → 𝕜}
 
 theorem Integrable.const_mul {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable (fun x => c * f x) μ :=
@@ -1115,7 +1116,7 @@ end NormedRing
 
 section NormedDivisionRing
 
-variable {𝕜 : Type _} [NormedDivisionRing 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {f : α → 𝕜}
 
 theorem Integrable.div_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable (fun x => f x / c) μ := by simp_rw [div_eq_mul_inv, h.mul_const]
@@ -1125,7 +1126,7 @@ end NormedDivisionRing
 
 section IsROrC
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [IsROrC 𝕜] {f : α → 𝕜}
 
 theorem Integrable.ofReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => (f x : 𝕜)) μ := by
@@ -1154,7 +1155,7 @@ end IsROrC
 
 section Trim
 
-variable {H : Type _} [NormedAddCommGroup H] {m0 : MeasurableSpace α} {μ' : Measure α} {f : α → H}
+variable {H : Type*} [NormedAddCommGroup H] {m0 : MeasurableSpace α} {μ' : Measure α} {f : α → H}
 
 theorem Integrable.trim (hm : m ≤ m0) (hf_int : Integrable f μ') (hf : StronglyMeasurable[m] f) :
     Integrable f (μ'.trim hm) := by
@@ -1177,7 +1178,7 @@ end Trim
 
 section SigmaFinite
 
-variable {E : Type _} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
+variable {E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) (hC : C < ∞) {f : α → E} (hf_meas : AEStronglyMeasurable f μ)
@@ -1194,7 +1195,7 @@ theorem integrable_of_forall_fin_meas_le [SigmaFinite μ] (C : ℝ≥0∞) (hC :
 
 end SigmaFinite
 
-/-! ### The predicate `integrable` on measurable functions modulo a.e.-equality -/
+/-! ### The predicate `Integrable` on measurable functions modulo a.e.-equality -/
 
 
 namespace AEEqFun
@@ -1252,7 +1253,7 @@ end
 
 section BoundedSMul
 
-variable {𝕜 : Type _} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
   induction_on f fun _f hfm hfi => (integrable_mk _).2 <| ((integrable_mk hfm).1 hfi).smul _
@@ -1413,7 +1414,7 @@ theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
   simp [edist_eq_coe_nnnorm]
 #align measure_theory.integrable.edist_to_L1_zero MeasureTheory.Integrable.edist_toL1_zero
 
-variable {𝕜 : Type _} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
 theorem toL1_smul (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
     toL1 (fun a => k • f a) (hf.smul k) = k • toL1 f hf :=
@@ -1431,8 +1432,8 @@ end MeasureTheory
 
 open MeasureTheory
 
-variable {E : Type _} [NormedAddCommGroup E] {𝕜 : Type _} [NontriviallyNormedField 𝕜]
-  [NormedSpace 𝕜 E] {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+variable {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=

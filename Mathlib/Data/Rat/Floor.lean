@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
 
 #align_import data.rat.floor from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
@@ -28,7 +28,7 @@ open Int
 
 namespace Rat
 
-variable {α : Type _} [LinearOrderedField α] [FloorRing α]
+variable {α : Type*} [LinearOrderedField α] [FloorRing α]
 
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]

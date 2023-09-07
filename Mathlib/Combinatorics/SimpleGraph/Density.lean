@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.GCongr
@@ -30,7 +31,7 @@ open Finset
 
 open BigOperators
 
-variable {𝕜 ι κ α β : Type _}
+variable {𝕜 ι κ α β : Type*}
 
 /-! ### Density of a relation -/
 

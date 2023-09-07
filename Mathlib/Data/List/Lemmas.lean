@@ -14,10 +14,12 @@ import Mathlib.Init.Data.List.Lemmas
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
+set_option autoImplicit true
+
 
 open List
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace List
 

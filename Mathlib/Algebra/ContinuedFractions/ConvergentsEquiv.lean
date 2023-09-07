@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -66,7 +67,7 @@ fractions, recurrence, equivalence
 -/
 
 
-variable {K : Type _} {n : ℕ}
+variable {K : Type*} {n : ℕ}
 
 namespace GeneralizedContinuedFraction
 

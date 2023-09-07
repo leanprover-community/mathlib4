@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Factorization.Basic
 
 #align_import number_theory.arithmetic_function from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -62,7 +61,7 @@ open BigOperators
 
 namespace Nat
 
-variable (R : Type _)
+variable (R : Type*)
 
 /-- An arithmetic function is a function from `ℕ` that maps 0 to 0. In the literature, they are
   often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
@@ -252,7 +251,7 @@ instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
 
 section SMul
 
-variable {M : Type _} [Zero R] [AddCommMonoid M] [SMul R M]
+variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
@@ -297,7 +296,7 @@ theorem intCoe_mul [Ring R] {f g : ArithmeticFunction ℤ} :
 
 section Module
 
-variable {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     (f * g) • h = f • g • h := by
@@ -392,10 +391,10 @@ instance instSemiring : Semiring (ArithmeticFunction R) :=
     ArithmeticFunction.instAddCommMonoid with
     zero_mul := fun f => by
       ext
-      simp only [mul_apply, MulZeroClass.zero_mul, sum_const_zero, zero_apply]
+      simp only [mul_apply, zero_mul, sum_const_zero, zero_apply]
     mul_zero := fun f => by
       ext
-      simp only [mul_apply, sum_const_zero, MulZeroClass.mul_zero, zero_apply]
+      simp only [mul_apply, sum_const_zero, mul_zero, zero_apply]
     left_distrib := fun a b c => by
       ext
       simp only [← sum_add_distrib, mul_add, mul_apply, add_apply]
@@ -418,7 +417,7 @@ instance [CommRing R] : CommRing (ArithmeticFunction R) :=
     add_left_neg := add_left_neg
     mul_comm := mul_comm }
 
-instance {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] :
+instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
   one_smul := one_smul'
   mul_smul := mul_smul'
@@ -615,7 +614,7 @@ theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) 
 
 end MonoidWithZero
 
-theorem map_prod {ι : Type _} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.ArithmeticFunction R}
+theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.ArithmeticFunction R}
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (coprime on g)) :
     f (∏ i in s, g i) = ∏ i in s, f (g i) := by
   classical
@@ -830,7 +829,7 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
       intro m n hm _hn hmn
       rcases eq_or_ne m 1 with (rfl | hm')
       · simp
-      rw [one_apply_ne, one_apply_ne hm', MulZeroClass.zero_mul]
+      rw [one_apply_ne, one_apply_ne hm', zero_mul]
       rw [Ne.def, mul_eq_one, not_and_or]
       exact Or.inl hm'⟩
 #align nat.arithmetic_function.is_multiplicative_one Nat.ArithmeticFunction.isMultiplicative_one
@@ -1027,8 +1026,6 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
     zero_mul, mul_zero]
   rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
   simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
-  simp only [Nat.isUnit_iff, ZeroHom.toFun_eq_coe, IsUnit.mul_iff, mul_ite, ite_mul,
-    zero_mul, mul_zero]
   rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
   split_ifs <;>  -- porting note: added
   simp           -- porting note: added
@@ -1042,7 +1039,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   refine' recOnPosPrimePosCoprime _ _ _ _ n
   · intro p n hp hn
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
-    simp_rw [Function.Embedding.coeFn_mk, pow_zero, moebius_apply_one,
+    simp_rw [pow_zero, moebius_apply_one,
       moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj', sum_ite_eq', mem_range,
       if_pos hn, add_left_neg]
     rw [one_apply_ne]

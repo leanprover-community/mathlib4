@@ -8,6 +8,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree
 import Mathlib.Util.Qq
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # A tactic for canceling numeric denominators
@@ -25,6 +26,8 @@ There are likely some rough edges to it.
 
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
+
+set_option autoImplicit true
 
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 

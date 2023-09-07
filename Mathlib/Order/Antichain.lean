@@ -30,7 +30,7 @@ open Function Set
 
 section General
 
-variable {α β : Type _} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
+variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
 protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
   hr <| h hr'
@@ -347,7 +347,7 @@ end General
 
 section Pi
 
-variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
   {a b c : ∀ i, α i}
 
 
