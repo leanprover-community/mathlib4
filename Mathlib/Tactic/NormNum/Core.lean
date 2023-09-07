@@ -6,7 +6,8 @@ Authors: Mario Carneiro
 import Std.Lean.Parser
 import Std.Lean.Meta.DiscrTree
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Invertible.GroupWithZero
+import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Util.Qq
