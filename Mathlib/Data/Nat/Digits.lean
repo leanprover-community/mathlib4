@@ -426,6 +426,19 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 #align nat.of_digits_digits_append_digits Nat.ofDigits_digits_append_digits
 
+theorem digits_append_digits {b m n : ℕ} (hb : 1 < b) :
+    digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
+  rcases Decidable.eq_or_ne m 0 with (rfl | hm)
+  · simp
+  have : n + b ^ (digits b n).length * m = ofDigits b (digits b n ++ digits b m)
+  · simp [ofDigits_append, ofDigits_digits, add_comm, mul_comm]
+  rw [this, digits_ofDigits _ hb]
+  · simp [forall_and, or_imp]
+    constructor <;> exact (fun x hx ↦ digits_lt_base hb hx)
+  · intro hnz
+    rw[List.getLast_append' _ _ (digits_ne_nil_iff_ne_zero.mpr hm)]
+    exact getLast_digit_ne_zero _ hm
+
 theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
