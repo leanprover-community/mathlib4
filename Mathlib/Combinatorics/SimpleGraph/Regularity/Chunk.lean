@@ -39,13 +39,13 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finpartition Finset Fintype Rel Nat
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped BigOperators Classical SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 
-variable {α : Type _} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
+variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
   (G : SimpleGraph α) (ε : ℝ) {U : Finset α} (hU : U ∈ P.parts) (V : Finset α)
 
 local notation3 (prettyPrint := false)
@@ -470,7 +470,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   left; linarith
   right; linarith
 
-set_option maxHeartbeats 350000 in
+set_option maxHeartbeats 300000 in
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)

@@ -10,6 +10,8 @@ import Lean.Data.HashMap
 
 -/
 
+set_option autoImplicit true
+
 open ShareCommon
 
 private unsafe abbrev ObjectMap := @Lean.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩

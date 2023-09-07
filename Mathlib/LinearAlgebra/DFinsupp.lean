@@ -34,7 +34,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
+variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 variable [dec_ι : DecidableEq ι]
 
@@ -119,8 +119,8 @@ instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
 variable (S)
 
 
-instance {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
-    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type _) (M₂ : Type _)
+instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
@@ -180,7 +180,7 @@ The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 
 section mapRange
 
-variable {β β₁ β₂ : ι → Type _}
+variable {β β₁ β₂ : ι → Type*}
 
 variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
 
@@ -262,21 +262,20 @@ variable [DecidableEq ι] [∀ x : N, Decidable (x ≠ 0)]
 `(Π₀ i, M i) →ₗ[R] N` which sends `x : Π₀ i, M i` to the sum over `i` of `f i` applied to `x i`.
 This is the map coming from the universal property of `Π₀ i, M i` as the coproduct of the `M i`.
 See also `LinearMap.coprod` for the binary product version. -/
-noncomputable def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
-  (Finsupp.lsum ℕ fun _ : ι => LinearMap.id) ∘ₗ
-    (@finsuppLequivDFinsupp ι R N _ _ _ _ _).symm.toLinearMap ∘ₗ DFinsupp.mapRange.linearMap f
+def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
+  (DFinsupp.lsum ℕ fun _ : ι => LinearMap.id) ∘ₗ DFinsupp.mapRange.linearMap f
 #align dfinsupp.coprod_map DFinsupp.coprodMap
 
 theorem coprodMap_apply (f : ∀ i : ι, M i →ₗ[R] N) (x : Π₀ i, M i) :
     coprodMap f x =
-      Finsupp.sum (mapRange (fun i => f i) (fun _ => LinearMap.map_zero _) x).toFinsupp fun _ =>
+      DFinsupp.sum (mapRange (fun i => f i) (fun _ => LinearMap.map_zero _) x) fun _ =>
         id :=
-  rfl
+  DFinsupp.sumAddHom_apply _ _
 #align dfinsupp.coprod_map_apply DFinsupp.coprodMap_apply
 
 theorem coprodMap_apply_single (f : ∀ i : ι, M i →ₗ[R] N) (i : ι) (x : M i) :
     coprodMap f (single i x) = f i x := by
-  simp [coprodMap_apply]
+  simp [coprodMap]
 
 end CoprodMap
 
@@ -285,7 +284,7 @@ section Basis
 /-- The direct sum of free modules is free.
 
 Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
-noncomputable def basis {η : ι → Type _} (b : ∀ i, Basis (η i) R (M i)) :
+noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
@@ -301,13 +300,13 @@ variable [Semiring R] [AddCommMonoid N] [Module R N]
 
 open DFinsupp
 
-theorem dfinsupp_sum_mem {β : ι → Type _} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+theorem dfinsupp_sum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     (S : Submodule R N) (f : Π₀ i, β i) (g : ∀ i, β i → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     f.sum g ∈ S :=
   _root_.dfinsupp_sum_mem S f g h
 #align submodule.dfinsupp_sum_mem Submodule.dfinsupp_sum_mem
 
-theorem dfinsupp_sumAddHom_mem {β : ι → Type _} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
+theorem dfinsupp_sumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
     (f : Π₀ i, β i) (g : ∀ i, β i →+ N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     DFinsupp.sumAddHom g f ∈ S :=
   _root_.dfinsupp_sumAddHom_mem S f g h
@@ -490,7 +489,7 @@ are `CompleteLattice.Independent`.
 Note that this is not generally true for `[Semiring R]`, for instance when `A` is the
 `ℕ`-submodules of the positive and negative integers.
 
-See `counterexamples/direct_sum_is_internal.lean` for a proof of this fact. -/
+See `Counterexamples/DirectSumIsInternal.lean` for a proof of this fact. -/
 theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Independent p) :
     Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`

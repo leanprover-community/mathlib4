@@ -8,6 +8,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 #align_import data.option.basic from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
@@ -34,7 +35,7 @@ along with a term `a : α` if the value is `True`.
 
 namespace Option
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
@@ -42,6 +43,14 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
 
 theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 #align option.mem_map Option.mem_map
+
+-- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
+theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
+    f a ∈ o.map f ↔ a ∈ o := by
+  aesop
 
 theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
     (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
@@ -63,7 +72,7 @@ theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → 
   fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
-theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
+theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 #align option.some_injective Option.some_injective
 
 /-- `Option.map f` is injective if `f` is injective. -/
@@ -394,7 +403,7 @@ section
 
 open Classical
 
-theorem choice_eq_none (α : Type _) [IsEmpty α] : choice α = none :=
+theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)
 #align option.choice_eq_none Option.choice_eq_none
 

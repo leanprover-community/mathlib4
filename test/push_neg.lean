@@ -5,8 +5,9 @@ Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Tactic.PushNeg
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 
+set_option autoImplicit true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
 
 example : (¬p ∧ ¬q) → ¬(p ∨ q) := by

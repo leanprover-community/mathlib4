@@ -34,7 +34,18 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
+/-- Iterate a function. -/
+def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
+  | 0, a => a
+  | succ k, a => iterate op k (op a)
+#align nat.iterate Nat.iterate
+
+@[inherit_doc Nat.iterate]
+notation:max f "^["n"]" => Nat.iterate f n
+
 namespace Function
+
+open Function (Commute)
 
 variable (f : α → α)
 
@@ -187,14 +198,14 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
 #align function.comp_iterate_pred_of_pos Function.comp_iterate_pred_of_pos
 
 /-- A recursor for the iterate of a function. -/
-def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
+def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p (f^[n] a) :=
   match n with
   | 0 => ha
   | m+1 => Iterate.rec p h (h _ ha) m
 #align function.iterate.rec Function.Iterate.rec
 
-theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
+theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
   rfl
 #align function.iterate.rec_zero Function.Iterate.rec_zero
@@ -225,14 +236,18 @@ lemma iterate_add_eq_iterate (hf : Injective f) : f^[m + n] a = f^[n] a ↔ f^[m
   Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
 #align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
-alias iterate_add_eq_iterate ↔ iterate_cancel_of_add _
+alias ⟨iterate_cancel_of_add, _⟩ := iterate_add_eq_iterate
 #align function.iterate_cancel_of_add Function.iterate_cancel_of_add
 
 lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a = a := by
-  obtain h | h := le_total m n
+  obtain h | h := Nat.le_total m n
   { simp [Nat.sub_eq_zero_of_le h] }
   { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
 #align function.iterate_cancel Function.iterate_cancel
+
+theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
+  funext_iff.symm
+#align function.involutive_iff_iter_2_eq_id Function.involutive_iff_iter_2_eq_id
 
 end Function
 

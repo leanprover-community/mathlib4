@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.Basic
@@ -203,7 +203,7 @@ instance : WellFoundedRelation ℕ+ :=
   measure (fun (a : ℕ+) => (a : ℕ))
 
 /-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort _} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
+def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by _ => n.1
 #align pnat.strong_induction_on PNat.strongInductionOn

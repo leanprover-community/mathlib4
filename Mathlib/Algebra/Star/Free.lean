@@ -21,9 +21,9 @@ to avoid importing `Algebra.Star.Basic` into the entire hierarchy.
 
 namespace FreeMonoid
 
-variable {α : Type _}
+variable {α : Type*}
 
-instance : StarSemigroup (FreeMonoid α) where
+instance : StarMul (FreeMonoid α) where
   star := List.reverse
   star_involutive := List.reverse_reverse
   star_mul := List.reverse_append
@@ -43,7 +43,7 @@ end FreeMonoid
 
 namespace FreeAlgebra
 
-variable {R : Type _} [CommSemiring R] {X : Type _}
+variable {R : Type*} [CommSemiring R] {X : Type*}
 
 /-- The star ring formed by reversing the elements of products -/
 instance : StarRing (FreeAlgebra R X) where

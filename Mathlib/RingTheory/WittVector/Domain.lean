@@ -42,7 +42,7 @@ namespace WittVector
 
 open Function
 
-variable {p : ℕ} {R : Type _}
+variable {p : ℕ} {R : Type*}
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 

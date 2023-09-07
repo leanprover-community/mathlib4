@@ -15,7 +15,7 @@ import Mathlib.Init.Classical
 -/
 
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 namespace SemiconjBy
 

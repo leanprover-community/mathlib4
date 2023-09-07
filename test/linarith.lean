@@ -4,6 +4,7 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
 
 set_option linter.unusedVariables false
+set_option autoImplicit true
 
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith

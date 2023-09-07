@@ -55,7 +55,7 @@ open IsROrC
 
 open scoped ComplexConjugate Classical
 
-variable {𝕜 E F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -73,6 +73,7 @@ def IsFormalAdjoint (T : E →ₗ.[𝕜] F) (S : F →ₗ.[𝕜] E) : Prop :=
 
 variable {T : E →ₗ.[𝕜] F} {S : F →ₗ.[𝕜] E}
 
+@[symm]
 protected theorem IsFormalAdjoint.symm (h : T.IsFormalAdjoint S) :
     S.IsFormalAdjoint T := fun y _ => by
   rw [← inner_conj_symm, ← inner_conj_symm (y : F), h]
