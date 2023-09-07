@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Siddhartha Gadgil, Mario Carneiro
+Authors: Siddhartha Gadgil, Mario Carneiro, Scott Morrison
 -/
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Elab.Tactic.Basic
@@ -90,20 +90,26 @@ def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
       getExplicitRelArgCore tgt rel' x z
   | _ => return (rel ,x)
 
-def _root_.Lean.Expr.rel? (t : Expr) : MetaM (Option (Expr × Expr × Expr)) := do
-  match t with
+/--
+If `e` of the form `x ~ z`? If so return the triple `(~, x, z)`.
+-/
+def _root_.Lean.Expr.rel? (e : Expr) : MetaM (Option (Expr × Expr × Expr)) := do
+  match e with
   | Expr.app f z =>
-    match (← getExplicitRelArg? t f z) with
+    match (← getExplicitRelArg? e f z) with
     | some (rel, x) =>
-      let (rel, x) ← getExplicitRelArgCore t rel x z
+      let (rel, x) ← getExplicitRelArgCore e rel x z
       pure (rel, x, z)
     | none => pure none
   | _ => pure none
 
+/--
+Implementation of `Lean.MVarId.trans` and the user-facing `trans` tactic.
+-/
 def _root_.Lean.MVarId.transCore (g : MVarId) (lem : Name) (rel x z : Expr) (y ty : Option Expr) :
     MetaM (List MVarId) := do
-  let lemTy ← inferType (← mkConstWithLevelParams lem)
-  let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ => pure es.size
+  let arity ← withReducible <| forallTelescopeReducing (← inferType (← mkConstWithLevelParams lem))
+    fun es _ => pure es.size
   let y ← y.getDM (mkFreshExprMVar ty)
   let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
   let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
@@ -111,8 +117,20 @@ def _root_.Lean.MVarId.transCore (g : MVarId) (lem : Name) (rel x z : Expr) (y t
   pure <| [g₁.mvarId!, g₂.mvarId!] ++ (← getMVars y).toList
 
 /--
+Apply a transitivity lemma to the goal, optionally specifying the value `y` of the intermediate
+term, or specifying its type `ty`. (If specifying both the type is not used.)
+-/
+def _root_.Lean.MVarId.trans (g : MVarId) (y ty : Option Expr := none) : MetaM (List MVarId) := do
+  let tgt ← g.getType
+  match ← tgt.rel? with
+  | none => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
+  | some (rel, x, z) =>
+    (``Trans.simple :: ``HEq.trans :: (← (transExt.getState (← getEnv)).getUnify rel).toList)
+      |>.firstM fun lem => do g.transCore lem rel x z y ty
+
+/--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
-that is, a relation which has a transitivity lemma tagged with the attribute [trans].
+that is, a relation which has a transitivity lemma tagged with the attribute `@[trans]`.
 
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
@@ -122,27 +140,18 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   match ← tgt.rel? with
   | none => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
   | some (rel, x, z) =>
-  trace[Tactic.trans]"goal decomposed"
-  trace[Tactic.trans]"rel: {indentExpr rel}"
-  trace[Tactic.trans]"x: {indentExpr x}"
-  trace[Tactic.trans]"z: {indentExpr z}"
-
-  let lemmas := (← (transExt.getState (← getEnv)).getUnify rel)
-  let ty ← inferType x
-  -- first trying the homogeneous case
-  (do
-    let t₁ := (← t?.mapM (elabTermWithHoles · ty (← getMainTag))).map (·.1)
-    trace[Tactic.trans]"trying homogeneous case"
-    liftMetaTactic fun g ↦ (lemmas.push ``Trans.simple).toList.firstM fun lem => do
-      trace[Tactic.trans]"trying lemma {lem}"
-      g.transCore lem rel x z t₁ ty
-    return) <|>
-  (do
-    let t₂ := (← t?.mapM (elabTermWithHoles · none (← getMainTag))).map (·.1)
-    trace[Tactic.trans]"trying heterogeneous case"
-    liftMetaTactic fun g ↦ (lemmas.push ``HEq.trans).toList.firstM fun lem => do
-      trace[Tactic.trans]"trying lemma {lem}"
-      g.transCore lem rel x z t₂ none
-    return) <|>
-  throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
-"
+    let t (ty : Option Expr) :=
+      do pure <| (← t?.mapM (elabTermWithHoles · ty (← getMainTag))).map (·.1)
+    let lemmas := (← (transExt.getState (← getEnv)).getUnify rel)
+    let ty ← inferType x
+    -- First try assuming the types are homogeneous.
+    (do
+      let t' ← t ty
+      liftMetaTactic fun g ↦ (lemmas.push ``Trans.simple).toList.firstM fun lem => do
+        g.transCore lem rel x z t' ty) <|>
+    -- If that fails, try again but with a metavariable for the type of the middle term.
+    (do
+      let t' ← t none
+      liftMetaTactic fun g ↦ (lemmas.push ``HEq.trans).toList.firstM fun lem => do
+        g.transCore lem rel x z t' none) <|>
+    throwError m!"no applicable transitivity lemma found for {indentExpr tgt}"
