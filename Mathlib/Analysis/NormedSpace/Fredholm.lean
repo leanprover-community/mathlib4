@@ -2,6 +2,8 @@ import Mathlib.Analysis.NormedSpace.CompactOperator
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+import Mathlib.Analysis.NormedSpace.Complemented
+import Mathlib.FieldTheory.Finiteness
 
 open Cardinal
 open Function
@@ -91,18 +93,23 @@ example : isFredholm (1 : E →L[ℂ] E) := by
     sorry
   · sorry
 
-  protected def compOld (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S.comp T) := by
-  obtain ⟨T', hTl, hTr⟩ := hT
-  obtain ⟨S', hSl, hSr⟩ := hS
-  use (T' ∘L S')
-  constructor
-  · sorry
-  · sorry
-
 -- TODO maybe get rid of fixed u
 universe u
 
--- The preimage of a finite rank module has finite rank, given that the map has finite rank kernel
+open FiniteDimensional
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+
+example (p : Submodule K V) :
+    (⊤ : Submodule K p) ≃ₗ[K] p :=
+  LinearEquiv.ofTop ⊤ rfl
+
+example (p : Submodule K V) :
+    Module.rank K (⊤ : Submodule K p) = Module.rank K p := by
+  apply LinearEquiv.rank_eq
+  exact LinearEquiv.ofTop ⊤ rfl
+
+/-- The preimage of a finite rank module has finite rank, given that the map has finite rank kernel -/
 lemma comap_fin_dim (A B : Type u)
     [AddCommGroup A] [Module ℂ A] [AddCommGroup B] [Module ℂ B]
     (R : A →ₗ[ℂ] B) (B' : Submodule ℂ B)
@@ -110,21 +117,42 @@ lemma comap_fin_dim (A B : Type u)
     (hB' : FiniteDimensional ℂ B')
     : FiniteDimensional ℂ (Submodule.comap R B') := by
   let A' := Submodule.comap R B'
-  let hA' : ∀ x : A, x ∈ A' → R x ∈ B' := by
-      intro x a
-      simp_all only [Submodule.mem_comap]
-  let R' := R.restrict hA'
+  let R' := R.domRestrict A'
   set rKer := Module.rank ℂ (LinearMap.ker R')
+  set rIm := Module.rank ℂ (LinearMap.range R')
   have hKer : rKer ≤ Module.rank ℂ (LinearMap.ker R) := by
+    --have hSubK : (LinearMap.ker R') ≤ (LinearMap.ker R) := by
+    --  sorry
     sorry
-  have hSurj : Surjective R' := by
-    sorry
-  have hRank : Module.rank ℂ A' = Module.rank ℂ B' + rKer := rank_eq_of_surjective R' hSurj
+  have hIm : rIm ≤ Module.rank ℂ B' := by
+    have hSubI : (LinearMap.range R') ≤ B' := by
+      rw [LinearMap.range_le_iff_comap, Submodule.eq_top_iff']
+      aesop
+    exact rank_le_of_submodule (LinearMap.range R') B' hSubI
+  have hRank : rIm + rKer = Module.rank ℂ A' := rank_range_add_rank_ker R'
   suffices : Module.rank ℂ A' ≤ (Module.rank ℂ B') + (Module.rank ℂ (LinearMap.ker R))
-  · sorry
-  calc Module.rank ℂ A' = Module.rank ℂ B' + rKer := by rw [hRank]
-    _ ≤ Module.rank ℂ B' + (Module.rank ℂ (LinearMap.ker R))
-      := add_le_add_left hKer (Module.rank ℂ B')
+  · have hFin : Module.rank ℂ A' < ℵ₀ := by
+      rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0] at hR
+      rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0] at hB'
+      calc Module.rank ℂ A' ≤ (Module.rank ℂ B') + (Module.rank ℂ (LinearMap.ker R)) := this
+        _ < ℵ₀ := by apply add_lt_aleph0 <;> assumption
+    rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0]
+    apply hFin
+  calc Module.rank ℂ A' = rIm + rKer := by rw [hRank]
+    _ ≤ rIm + Module.rank ℂ (LinearMap.ker R) := add_le_add_left hKer (rIm)
+    _ ≤ Module.rank ℂ B' + (Module.rank ℂ (LinearMap.ker R)) := add_le_add_right hIm (Module.rank ℂ (LinearMap.ker R))
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+
+example (p : Submodule K V) :
+    (⊤ : Submodule K p) ≃ₗ[K] p :=
+  LinearEquiv.ofTop ⊤ rfl
+
+example (p : Submodule K V) :
+    Module.rank K (⊤ : Submodule K p) = Module.rank K p := by
+  apply LinearEquiv.rank_eq
+  exact LinearEquiv.ofTop ⊤ rfl
+
 
 lemma map_fin_codim (A B : Type u)
     [AddCommGroup A] [Module ℂ A] [AddCommGroup B] [Module ℂ B]
