@@ -443,7 +443,7 @@ theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α →* β) (h₁ h₂ h₃ h₄) : ((⟨⟨⟩, f, h₁, h₂, h₃, h₄⟩ : α →+* β) : α → β) = f :=
+theorem coe_mk (f : α → β) (h₁ h₂ h₃ h₄) : ((⟨⟨⟩, f, h₁, h₂, h₃, h₄⟩ : α →+* β) : α → β) = f :=
   rfl
 #align ring_hom.coe_mk RingHom.coe_mk
 
