@@ -126,32 +126,23 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   trace[Tactic.trans]"rel: {indentExpr rel}"
   trace[Tactic.trans]"x: {indentExpr x}"
   trace[Tactic.trans]"z: {indentExpr z}"
-  -- first trying the homogeneous case
-  try
-    let ty ← inferType x
-    let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
-    let s ← saveState
-    trace[Tactic.trans]"trying homogeneous case"
-    for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
-      trace[Tactic.trans]"trying lemma {lem}"
-      try
-        liftMetaTactic fun g ↦ do
-          g.transCore lem rel x z (t'?.map (·.1)) ty
-        return
-      catch _ => s.restore
-    pure ()
-  catch _ =>
-  trace[Tactic.trans]"trying heterogeneous case"
-  let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
-  let s ← saveState
-  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``HEq.trans do
-    try
-      liftMetaTactic fun g ↦ do
-          g.transCore lem rel x z (t'?.map (·.1)) none
-      return
-    catch e =>
-      trace[Tactic.trans]"failed: {e.toMessageData}"
-      s.restore
 
+  let lemmas := (← (transExt.getState (← getEnv)).getUnify rel)
+  let ty ← inferType x
+  -- first trying the homogeneous case
+  (do
+    let t₁ := (← t?.mapM (elabTermWithHoles · ty (← getMainTag))).map (·.1)
+    trace[Tactic.trans]"trying homogeneous case"
+    liftMetaTactic fun g ↦ (lemmas.push ``Trans.simple).toList.firstM fun lem => do
+      trace[Tactic.trans]"trying lemma {lem}"
+      g.transCore lem rel x z t₁ ty
+    return) <|>
+  (do
+    let t₂ := (← t?.mapM (elabTermWithHoles · none (← getMainTag))).map (·.1)
+    trace[Tactic.trans]"trying heterogeneous case"
+    liftMetaTactic fun g ↦ (lemmas.push ``HEq.trans).toList.firstM fun lem => do
+      trace[Tactic.trans]"trying lemma {lem}"
+      g.transCore lem rel x z t₂ none
+    return) <|>
   throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
 "

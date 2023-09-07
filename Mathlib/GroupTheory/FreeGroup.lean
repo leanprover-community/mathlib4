@@ -1117,6 +1117,7 @@ theorem reduce.cons (x) :
 #align free_group.reduce.cons FreeGroup.reduce.cons
 #align free_add_group.reduce.cons FreeAddGroup.reduce.cons
 
+set_option trace.Tactic.trans true
 /-- The first theorem that characterises the function `reduce`: a word reduces to its maximal
   reduction. -/
 @[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
@@ -1134,14 +1135,13 @@ theorem reduce.red : Red L (reduce L) := by
     case cons =>
       dsimp only
       split_ifs with h
-      · trans
-        · cases hd1
-          cases hd2
-          cases h
-          dsimp at *
-          subst_vars
-          apply Red.trans (Red.cons_cons ih)
-          exact Red.Step.cons_not_rev.to_red
+      · cases hd1
+        cases hd2
+        cases h
+        dsimp at *
+        subst_vars
+        apply Red.trans (Red.cons_cons ih)
+        exact Red.Step.cons_not_rev.to_red
       · exact Red.cons_cons ih
 #align free_group.reduce.red FreeGroup.reduce.red
 #align free_add_group.reduce.red FreeAddGroup.reduce.red
