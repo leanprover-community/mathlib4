@@ -7,7 +7,6 @@ import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.Measure.Count
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
 #align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -29,6 +28,8 @@ We introduce the following notation for the lower Lebesgue integral of a functio
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 
 -/
+
+assert_not_exists NormedSpace
 
 set_option autoImplicit true
 
@@ -997,7 +998,7 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
       simp only [liminf_eq_iSup_iInf_of_nat]
     _ = ⨆ n : ℕ, ∫⁻ a, ⨅ i ≥ n, f i a ∂μ :=
-      (lintegral_iSup' (fun n => aemeasurable_biInf _ (to_countable _) h_meas)
+      (lintegral_iSup' (fun n => aemeasurable_biInf _ (to_countable _) (fun i _ ↦ h_meas i))
         (ae_of_all μ fun a n m hnm => iInf_le_iInf_of_subset fun i hi => le_trans hnm hi))
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := (iSup_mono fun n => le_iInf₂_lintegral _)
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
@@ -1020,7 +1021,7 @@ theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0�
     _ = ∫⁻ a, ⨅ n : ℕ, ⨆ i ≥ n, f i a ∂μ := by
       refine' (lintegral_iInf _ _ _).symm
       · intro n
-        exact measurable_biSup _ (to_countable _) hf_meas
+        exact measurable_biSup _ (to_countable _) (fun i _ ↦ hf_meas i)
       · intro n m hnm a
         exact iSup_le_iSup_of_subset fun i hi => le_trans hnm hi
       · refine' ne_top_of_le_ne_top h_fin (lintegral_mono_ae _)
@@ -2114,8 +2115,8 @@ end SigmaFinite
 
 section TendstoIndicator
 
-variable {α : Type _} [MeasurableSpace α] {A : Set α}
-variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
 of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
@@ -2146,28 +2147,6 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure [IsCountablyGen
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
   tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
     (measure_ne_top μ univ) (eventually_of_forall (fun i ↦ subset_univ (As i))) h_lim
-
-/-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
-and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
-tend to the measure of `A`. -/
-lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
-    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
-    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
-    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
-    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  apply tendsto_measure_of_ae_tendsto_indicator L ?_ As_mble B_mble B_finmeas As_le_B
-  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
-  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
-
-/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise to
-the indicator of a set `A`, then the measures `μ Aᵢ` tend to the measure `μ A`. -/
-lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
-    (μ : Measure α) [IsFiniteMeasure μ] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
-    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble
-  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
-  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
 
 end TendstoIndicator -- section
 
