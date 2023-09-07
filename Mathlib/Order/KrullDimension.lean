@@ -128,13 +128,10 @@ lemma eq_len_of_finiteDimensionalType [FiniteDimensionalType α] :
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
   is `β`. -/
 lemma infiniteDimensional_of_strictMono
-    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalType α] :
-  InfiniteDimensionalType β where
-    infinite := λ n ↦ by
-      obtain ⟨x, h⟩ := RelSeries.exists_len_gt_of_infiniteDimensional ((. < .) : Rel α α) (n + 1)
-      refine' ⟨LTSeries.map x f hf, _⟩
-      simp only [LTSeries.map_length]
-      linarith
+    (f : α → β) (hf : StrictMono f) [h : InfiniteDimensionalType α] :
+    InfiniteDimensionalType β where
+  longRelSeries := λ n ↦ LTSeries.map (h.longRelSeries n) f hf
+  longRelSeries_length := λ n ↦ h.longRelSeries_length n
 
 lemma eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   rw [eq_len_of_finiteDimensionalType]
