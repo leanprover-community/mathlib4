@@ -197,8 +197,6 @@ def postCompPostCompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
-
-
 section
 
 variable {F} (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
@@ -243,6 +241,10 @@ lemma map_shiftIso_hom_app :
     Iso.hom_inv_id_app_assoc, comp_id]
 
 end
+
+@[simps!]
+def evaluationIso {F G : SingleFunctors C D A} (e : F ≅ G) (n : A) : F.functor n ≅ G.functor n :=
+  (evaluation C D n).mapIso e
 
 end SingleFunctors
 

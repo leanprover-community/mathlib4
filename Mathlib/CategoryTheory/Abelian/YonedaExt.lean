@@ -333,9 +333,11 @@ instance : QuasiIso E.ZToX₁ where
 noncomputable def shiftedHom (m : ℕ) (hm : n + 1 = m) :
     ShiftedHom ℤ ((DerivedCategory.singleFunctor C 0).obj X₁)
       ((DerivedCategory.singleFunctor C 0).obj X₂) ↑m :=
-  inv (DerivedCategory.Q.map E.ZToX₁) ≫
-    DerivedCategory.Q.map (E.ZToX₂ (-m) (by simp [← hm])) ≫
-    ((DerivedCategory.singleFunctors C).shiftIso m (-m) 0 (add_right_neg _)).inv.app X₂
+    (SingleFunctors.evaluationIso (DerivedCategory.singleFunctorsPostCompQIso C) 0).hom.app X₁ ≫
+      inv (DerivedCategory.Q.map E.ZToX₁) ≫
+      DerivedCategory.Q.map (E.ZToX₂ (-m) (by simp [← hm])) ≫
+      (SingleFunctors.evaluationIso (DerivedCategory.singleFunctorsPostCompQIso C) (-m)).inv.app X₂ ≫
+      ((DerivedCategory.singleFunctors C).shiftIso m (-m) 0 (add_right_neg _)).inv.app X₂
 
 noncomputable def extClass (m : ℕ) (hm : n + 1 = m) : newExt X₁ X₂ m :=
   newExt.mk (shiftedHom E m hm)
@@ -726,6 +728,7 @@ lemma compZ_comm' :
 --lemma compatibility :
 --    sgn₂ m m' • E.shiftedHom m hm •[show (m : ℤ) + m' = m'' by linarith] E'.shiftedHom m' hm' =
 --      (comp E E' hn'').shiftedHom m'' (by linarith) := by
+--  sorry
 --  rw [ShiftedHom.γhmul_eq]
 --  dsimp [shiftedHom]
 --  simp only [← compZToZ_comp_ZToX₁, DerivedCategory.Q.map_comp, IsIso.inv_comp, assoc,
