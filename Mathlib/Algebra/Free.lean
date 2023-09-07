@@ -373,7 +373,7 @@ instance : Semigroup (AssocQuotient α) where
 
 /-- Embedding from magma to its free semigroup. -/
 @[to_additive "Embedding from additive magma to its free additive semigroup."]
-def of : α →ₙ* AssocQuotient α := ⟨Quot.mk _, fun _x _y ↦ rfl⟩
+def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y := rfl
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]
