@@ -95,8 +95,19 @@ theorem eqUpToFiniteRank_trans {A B C : V →ₗ[K] W} (hAB : A =ᶠ B) (hBC : B
   convert isFiniteRank_sum (A - B) (B - C) hAB hBC using 1
   simp
 
+-- For calc proofs
+instance : Trans (· =ᶠ · : (V →ₗ[K] W) → (V →ₗ[K] W) → Prop) (· =ᶠ ·) (· =ᶠ ·) where
+  trans := eqUpToFiniteRank_trans
+
 -- This is not be necessary. I just cannot structure proofs properly.
-lemma eqUpToFiniteRank_lift_eq (A B : V →ₗ[K] W) (h : A = B) : A =ᶠ B := by rw [h]
+lemma eqUpToFiniteRank_lift_eq {A B : V →ₗ[K] W} (h : A = B) : A =ᶠ B := by rw [h]
+
+example {A B C D A' : V →ₗ[K] W} (hAB : A =ᶠ B) (hBC : B = C) (hCD : C =ᶠ D) (hDA : D = A') : A =ᶠ A' := by
+  calc
+    A =ᶠ B  := hAB
+    _ =  C  := hBC
+    _ =ᶠ D  := hCD
+    _ =  A' := hDA
 
 def isQuasiInv (A : V →ₗ[K] W) (B : W →ₗ[K] V) : Prop :=
   1 =ᶠ B ∘ₗ A ∧ 1 =ᶠ A ∘ₗ B
@@ -141,7 +152,14 @@ protected def comp' (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S ∘L
   use (T' ∘L S')
   constructor
   simp only [ContinuousLinearMap.coe_comp] at *
-  · /-  show 1 =ᶠ (T' ∘ₗ S') ∘ₗ (S ∘ₗ T)
+  · show (1 : E →ₗ[ℂ] E) =ᶠ (T' ∘L S') ∘L (S ∘L T)
+    calc
+      (1 : E →ₗ[ℂ] E) =ᶠ T' ∘L T := by exact hTl
+                    _ =ᶠ T' ∘L T + T' ∘L (S' ∘L S - 1) ∘L T := by sorry
+                    _ = T' ∘L ( S' ∘L S) ∘L T := by sorry
+                    _ =ᶠ (T' ∘L S') ∘L (S ∘L T) := by sorry
+
+    /-  show 1 =ᶠ (T' ∘ₗ S') ∘ₗ (S ∘ₗ T)
         have h : isFiniteRank (T' ∘ₗ (1- S' ∘ₗ S) ∘ₗ T) := by pre- post-composing
         calc
           1 =ᶠ T' ∘ₗ T
@@ -151,7 +169,7 @@ protected def comp' (hT : isFredholm T) (hS : isFredholm S) : isFredholm (S ∘L
           _ =ᶠ (T' ∘ₗ S') ∘ₗ (S ∘ₗ T) := like above
     -/
     --have : T' ∘L (S' ∘L S) ∘L T =ᶠ (T' ∘L S') ∘L (S ∘L T) := by sorry
-    sorry
+
   · sorry
 
 -- TODO maybe get rid of fixed u
