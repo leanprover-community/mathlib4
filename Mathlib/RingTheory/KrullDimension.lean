@@ -281,10 +281,10 @@ There is a canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)
 @[simp]
  def _root_.PrimeSpectrum.LocalizationAtPrimeToIic :
    PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal) → Set.Iic 𝔭 :=
-   λ J ↦ ⟨⟨_, Ideal.IsPrime.comap (hK := J.2) (algebraMap R (Localization.AtPrime 𝔭.asIdeal))⟩,
+   λ 𝔭' ↦ ⟨⟨_, Ideal.IsPrime.comap (hK := 𝔭'.2) (algebraMap R (Localization.AtPrime 𝔭.asIdeal))⟩,
      λ z hz ↦
-     @Decidable.byContradiction _ (Classical.dec _) $ λ hnz ↦ J.IsPrime.ne_top $ eq_top_iff.mpr $
-     False.elim $ J.IsPrime.1 $ (Ideal.eq_top_iff_one _).mpr <| show 1 ∈ J.asIdeal by
+     @Decidable.byContradiction _ (Classical.dec _) $ λ hnz ↦ 𝔭'.IsPrime.ne_top $ eq_top_iff.mpr $
+     False.elim $ 𝔭'.IsPrime.1 $ (Ideal.eq_top_iff_one _).mpr <| show 1 ∈ 𝔭'.asIdeal by
        rw [show (1 : Localization.AtPrime 𝔭.asIdeal) = Localization.mk z 1 * Localization.mk 1
          (⟨z, hnz⟩ : 𝔭.asIdeal.primeCompl) by simpa only
            [Localization.mk_one_eq_algebraMap, ←Algebra.smul_def, Localization.smul_mk, smul_eq_mul,
@@ -298,16 +298,16 @@ inverse to the canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsLeftInverse :
   Function.LeftInverse (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭)
     (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
-{ intro J; ext x; constructor
+{ intro 𝔭'; ext x; constructor
   · intro hx
-    change Localization.mk x 1 ∈ _root_.Ideal.localization' J.val.asIdeal 𝔭.asIdeal.primeCompl at hx
+    change Localization.mk x 1 ∈ _root_.Ideal.localization' 𝔭'.val.asIdeal 𝔭.asIdeal.primeCompl at hx
     rcases hx with ⟨a, b, hab⟩
     erw [Localization.mk_eq_mk_iff, Localization.r_iff_exists, one_mul] at hab
     rcases hab with ⟨c, hc⟩
     rw [←mul_assoc] at hc
-    exact (or_iff_not_imp_left.1 (Ideal.IsPrime.mem_or_mem J.val.2 (@Set.mem_of_eq_of_mem R
-      (↑c * ↑b * x) (↑c * ↑a) J.val.asIdeal hc (Ideal.mul_mem_left J.val.asIdeal ↑c a.2))))
-        (λ hi ↦ (Submonoid.mul_mem 𝔭.asIdeal.primeCompl c.2 b.2) (J.2 hi))
+    exact (or_iff_not_imp_left.1 (Ideal.IsPrime.mem_or_mem 𝔭'.val.2 (@Set.mem_of_eq_of_mem R
+      (↑c * ↑b * x) (↑c * ↑a) 𝔭'.val.asIdeal hc (Ideal.mul_mem_left 𝔭'.val.asIdeal ↑c a.2))))
+        (λ hi ↦ (Submonoid.mul_mem 𝔭.asIdeal.primeCompl c.2 b.2) (𝔭'.2 hi))
   · intro hx
     exact ⟨⟨x, hx⟩, ⟨1, rfl⟩⟩ }
 
@@ -318,19 +318,19 @@ inverse to the canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_IsRightInverse :
   Function.RightInverse (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭)
     (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
-{ intro J; ext x; constructor
+{ intro 𝔭'; ext x; constructor
   · intro hx
     rcases hx with ⟨⟨a, ha⟩, ⟨b, hab⟩⟩
     dsimp at ha hab
     rw [←one_mul a, ←mul_one b, ←Localization.mk_mul] at hab; rw [hab]
-    exact Ideal.mul_mem_left J.asIdeal (Localization.mk 1 b) ha
+    exact Ideal.mul_mem_left 𝔭'.asIdeal (Localization.mk 1 b) ha
   · refine Localization.induction_on x ?_
     · rintro ⟨a, b⟩ hab
       refine' ⟨⟨a, ?_⟩, b, rfl⟩
-      · change Localization.mk a 1 ∈ J.asIdeal
+      · change Localization.mk a 1 ∈ 𝔭'.asIdeal
         rw [←show (Localization.mk (b : R) 1) * (Localization.mk a b) = Localization.mk a 1 by
           rw [Localization.mk_mul, mul_comm, ←Localization.mk_mul, Localization.mk_self, mul_one]]
-        exact Ideal.mul_mem_left J.asIdeal (Localization.mk b 1) hab }
+        exact Ideal.mul_mem_left 𝔭'.asIdeal (Localization.mk b 1) hab }
 
 /--
 The canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`
@@ -360,7 +360,7 @@ is monotone.
 -/
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_isMonotone :
   Monotone (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
-{ intro J1 J2 H x hx; rcases hx with ⟨a, ⟨b, hab⟩⟩; exact ⟨⟨a, H a.2⟩, ⟨b, hab⟩⟩ }
+{ intro _ _ H x hx; rcases hx with ⟨a, ⟨b, hab⟩⟩; exact ⟨⟨a, H a.2⟩, ⟨b, hab⟩⟩ }
 
 /--
 The canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭`
@@ -368,7 +368,7 @@ is monotone.
 -/
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone :
   Monotone (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭) := by
-{ intro J1 J2 H x hx; exact H hx }
+{ intro _ _ H x hx; exact H hx }
 
 /--
 We can regard the canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`
