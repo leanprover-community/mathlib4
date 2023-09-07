@@ -426,8 +426,10 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 #align nat.of_digits_digits_append_digits Nat.ofDigits_digits_append_digits
 
-theorem digits_append_digits {b m n : ℕ} (hb : 1 < b) :
+theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
+  rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
+  · simp [List.replicate_add]
   rw [← ofDigits_digits_append_digits]
   refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
