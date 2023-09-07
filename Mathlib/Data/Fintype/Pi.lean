@@ -137,7 +137,7 @@ lemma Fin.succ_mem_piFinset_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀
   (S : ∀ i, Finset (α i)) :
     p ∈ Fintype.piFinset S
       ↔
-    (Fin.init p) ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
+    Fin.init p ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
   simp only [Fintype.mem_piFinset]
   constructor
   · intros h1
