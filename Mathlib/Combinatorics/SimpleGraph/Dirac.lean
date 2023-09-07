@@ -38,8 +38,7 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
 lemma Nil_iff_eq_nil {v : V} : ∀ p : G.Walk v v, p.Nil ↔ p = SimpleGraph.Walk.nil
 | .nil | .cons _ _ => by simp
 
-/-- A *Hamiltonian cycle* is a Walk that visits every vertex once, except the initial
-vertex, which is visited twice. -/
+/-- A *Hamiltonian cycle* is a cycle `p` that visits every vertex once.-/
 structure SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle : Prop :=
 (path_hamiltonian : (p.tail (by
   intro np
@@ -56,7 +55,11 @@ lemma new_definition_implies_old (p : G.Walk v v) : p.IsHamiltonianCycle →
   constructor
   · have := hp.path_hamiltonian
     -- to do linus
-    · sorry
+    · intro u hu
+      rw [@SimpleGraph.Walk.support_eq_cons]
+      rw [List.count_cons]
+      simp [hu]
+      sorry
   · have v_ge_2 : 2 ≤ p.support.count v
     · sorry
     · have tail_nodup := hp.support_nodup
@@ -158,11 +161,10 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamil
     p.IsCycle := by
   exact hp.toIsCycle
 
-/-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*.
-    NOTE: We may need to add the singleton graph, which is considered Hamiltonian by convention.
--/
+/-- A *Hamiltonian graph* `G` is a *connected graph* that contains a *Hamiltonian cycle* `p`.
+    By convention, the singleton graph is considered to be Hamiltonian. -/
 def SimpleGraph.IsHamiltonian (G : SimpleGraph V) : Prop :=
-  G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle
+  (G.Connected ∧ ∃ v, ∃ p : G.Walk v v, p.IsHamiltonianCycle) ∨ (Fintype.card V = 1)
 
 /-- Dirac's theorem (1952): Let |G| = n ≥ 3 ∧ δ(G) ≥ n/2 → G is *hamiltonian*. -/
 theorem Dirac {G : SimpleGraph V} [DecidableRel G.Adj] (CardinalityCondition: Fintype.card V ≥ 3) (MinDegreeCondition: G.minDegree ≥ Fintype.card V/2) : G.IsHamiltonian := by
