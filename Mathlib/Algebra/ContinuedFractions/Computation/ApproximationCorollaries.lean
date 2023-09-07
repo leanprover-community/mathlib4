@@ -25,10 +25,6 @@ convergents computations for `GeneralizedContinuedFraction.of` are equivalent.
 Moreover, we show the convergence of the continued fractions computations, that is
 `(GeneralizedContinuedFraction.of v).convergents` indeed computes `v` in the limit.
 
-## Main Definitions
-
-- `ContinuedFraction.of` returns the (regular) continued fraction of a value.
-
 ## Main Theorems
 
 - `GeneralizedContinuedFraction.of_convergents_eq_convergents'` shows that the convergents
@@ -46,32 +42,10 @@ variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)
 
-open GeneralizedContinuedFraction
-
-theorem GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
-    (of v).IsSimpleContinuedFraction := fun _ _ nth_part_num_eq =>
-  of_part_num_eq_one nth_part_num_eq
-#align generalized_continued_fraction.of_is_simple_continued_fraction GeneralizedContinuedFraction.of_isSimpleContinuedFraction
-
-/-- Creates the simple continued fraction of a value. -/
-nonrec def SimpleContinuedFraction.of : SimpleContinuedFraction K :=
-  ⟨of v, GeneralizedContinuedFraction.of_isSimpleContinuedFraction v⟩
-#align simple_continued_fraction.of SimpleContinuedFraction.of
-
-theorem SimpleContinuedFraction.of_isContinuedFraction :
-    (SimpleContinuedFraction.of v).IsContinuedFraction := fun _ _ nth_part_denom_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_part_denom nth_part_denom_eq)
-#align simple_continued_fraction.of_is_continued_fraction SimpleContinuedFraction.of_isContinuedFraction
-
-/-- Creates the continued fraction of a value. -/
-def ContinuedFraction.of : ContinuedFraction K :=
-  ⟨SimpleContinuedFraction.of v, SimpleContinuedFraction.of_isContinuedFraction v⟩
-#align continued_fraction.of ContinuedFraction.of
-
 namespace GeneralizedContinuedFraction
 
 theorem of_convergents_eq_convergents' : (of v).convergents = (of v).convergents' :=
-  @ContinuedFraction.convergents_eq_convergents' _ _ (ContinuedFraction.of v)
+  convergents_eq_convergents'_of_isContinuedFraction (of v)
 #align generalized_continued_fraction.of_convergents_eq_convergents' GeneralizedContinuedFraction.of_convergents_eq_convergents'
 
 /-- The recurrence relation for the `convergents` of the continued fraction expansion
@@ -154,9 +128,7 @@ theorem of_convergence_epsilon :
         mul_le_mul B_ineq nB_ineq (by exact_mod_cast (fib (n + 2)).zero_le) (le_of_lt zero_lt_B)
 #align generalized_continued_fraction.of_convergence_epsilon GeneralizedContinuedFraction.of_convergence_epsilon
 
-attribute [local instance] Preorder.topology
-
-theorem of_convergence [OrderTopology K] :
+theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
     Filter.Tendsto (of v).convergents Filter.atTop <| nhds v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
 #align generalized_continued_fraction.of_convergence GeneralizedContinuedFraction.of_convergence
