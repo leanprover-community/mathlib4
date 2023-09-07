@@ -109,7 +109,7 @@ alias ⟨Specializes.nhds_le_nhds, _⟩ := specializes_iff_nhds
 alias ⟨Specializes.pure_le_nhds, _⟩ := specializes_iff_pure
 #align specializes.pure_le_nhds Specializes.pure_le_nhds
 
-theorem sInter_nhds_sets_eq_specializes : ⋂₀ (𝓝 x).sets = {y | y ⤳ x} :=
+theorem ker_nhds_eq_specializes : (𝓝 x).ker = {y | y ⤳ x} :=
   Set.ext fun _ ↦ specializes_iff_pure.symm
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=

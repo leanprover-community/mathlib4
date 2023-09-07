@@ -136,15 +136,14 @@ theorem disjoint_cofinite_right : Disjoint l cofinite ↔ ∃ s ∈ l, Set.Finit
   disjoint_comm.trans disjoint_cofinite_left
 #align filter.disjoint_cofinite_right Filter.disjoint_cofinite_right
 
-/-- If `l ≥ Filter.cofinite` is a countably generated filter, then `⋂₀ l.sets` is cocountable. -/
-theorem countable_compl_ker [l.IsCountablyGenerated] (h : cofinite ≤ l) :
-    Set.Countable l.kerᶜ := by
+/-- If `l ≥ Filter.cofinite` is a countably generated filter, then `l.ker` is cocountable. -/
+theorem countable_compl_ker [l.IsCountablyGenerated] (h : cofinite ≤ l) : Set.Countable l.kerᶜ := by
   rcases exists_antitone_basis l with ⟨s, hs⟩
   simp only [hs.ker, iInter_true, compl_iInter]
   exact countable_iUnion fun n ↦ Set.Finite.countable <| h <| hs.mem _
 
 /-- If `f` tends to a countably generated filter `l` along `Filter.cofinite`,
-then for all but countably many elements, `f x ∈ ⋂₀ l.sets`. -/
+then for all but countably many elements, `f x ∈ l.ker`. -/
 theorem Tendsto.countable_compl_preimage_ker {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
     Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [←ker_comap]; exact countable_compl_ker h.le_comap

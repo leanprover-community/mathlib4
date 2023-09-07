@@ -92,7 +92,7 @@ instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
 /-- The separation relation is the intersection of all entourages.
   Two points which are related by the separation relation are "indistinguishable"
   according to the uniform structure. -/
-def separationRel (α : Type u) [UniformSpace α] := ⋂₀ (𝓤 α).sets
+def separationRel (α : Type u) [UniformSpace α] := (𝓤 α).ker
 #align separation_rel separationRel
 
 @[inherit_doc]
