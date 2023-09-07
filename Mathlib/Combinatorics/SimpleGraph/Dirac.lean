@@ -55,7 +55,8 @@ lemma new_definition_implies_old (p : G.Walk v v) : p.IsHamiltonianCycle →
   intro hp
   constructor
   · have := hp.path_hamiltonian
-    sorry
+    -- to do linus
+    · sorry
   · have v_ge_2 : 2 ≤ p.support.count v
     · sorry
     · have tail_nodup := hp.support_nodup
@@ -155,10 +156,7 @@ lemma SupportNodupImpliesTrail (p : G.Walk v v) (h : p.support.tail.Nodup) : p.I
 -- BM: `cons_isCycle_iff` will be useful for going between hamiltonian cycles and paths
 lemma SimpleGraph.Walk.IsHamiltonianCycle.cycle (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
     p.IsCycle := by
-  replace hp := new_definition_implies_old p hp
-  -- rw [SimpleGraph.Walk.IsHamiltonianCycle] at hp
-  rw [SimpleGraph.Walk.isCycle_def]
-  sorry
+  exact hp.toIsCycle
 
 /-- A *Hamiltonian graph* is a *connected graph* that contains a *Hamiltonian cycle*.
     NOTE: We may need to add the singleton graph, which is considered Hamiltonian by convention.
