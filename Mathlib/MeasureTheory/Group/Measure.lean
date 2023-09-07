@@ -250,7 +250,7 @@ end Mul
 
 section Semigroup
 
-variable [Semigroup G] [MeasurableMul G]
+variable [Semigroup G] [MeasurableMul G] {μ : Measure G}
 
 /-- The image of a left invariant measure under a left action is left invariant, assuming that
 the action preserves multiplication. -/
