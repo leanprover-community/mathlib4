@@ -213,7 +213,7 @@ attribute [-instance] Quotient.instMeasurableSpace
 @[to_additive "This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
   additive  group `G`, the integral of a function `f` on `G` with respect to a right-invariant
   measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`."]
-lemma QuotientGroup.integral_eq_integral_automorphize {E : Type _} [NormedAddCommGroup E]
+lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :
     ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
@@ -232,7 +232,7 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type _} [NormedAddCom
   function `f` on `G` times the lift to `G` of a function `g` on the quotient `G ⧸ Γ` with respect
   to a right-invariant measure `μ` on `G`, is equal to the integral over the quotient of the
   automorphization of `f` times `g`. -/
-lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type _} [NormedField K]
+lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [NormedField K]
     [NormedSpace ℝ K] [μ.IsMulRightInvariant] {f : G → K}
     (f_ℒ_1 : Integrable f μ) {g : G ⧸ Γ → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (fun x ↦ ↑‖g x‖₊) μ_𝓕 ≠ ∞)
@@ -264,7 +264,7 @@ end
 
 section
 
-variable {G' : Type _} [AddGroup G'] [MeasurableSpace G'] [TopologicalSpace G']
+variable {G' : Type*} [AddGroup G'] [MeasurableSpace G'] [TopologicalSpace G']
   [TopologicalAddGroup G'] [BorelSpace G']
   {μ' : Measure G'}
   {Γ' : AddSubgroup G'}
@@ -277,7 +277,7 @@ local notation "μ_𝓕" => Measure.map (@QuotientAddGroup.mk G' _ Γ') (μ'.res
   integral of a function `f` on `G'` times the lift to `G'` of a function `g` on the quotient
   `G' ⧸ Γ'` with respect to a right-invariant measure `μ` on `G'`, is equal to the integral over
   the quotient of the automorphization of `f` times `g`. -/
-lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type _} [NormedField K]
+lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [NormedField K]
     [NormedSpace ℝ K] [μ'.IsAddRightInvariant] {f : G' → K}
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 ≠ ∞)

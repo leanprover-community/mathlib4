@@ -1291,7 +1291,7 @@ theorem tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) : ∑' i, b • 
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
-lemma tsum_const_smul' {γ : Type _} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
+lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
   by_cases hf : Summable f
   · exact tsum_const_smul g hf
@@ -1307,7 +1307,7 @@ lemma tsum_const_smul' {γ : Type _} [Group γ] [DistribMulAction γ α] [Contin
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionRing`; no summability hypothesis. This could be made to work for a
   `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
-lemma tsum_const_smul'' {γ : Type _} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
+lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
   by_cases hf : Summable f
   · exact tsum_const_smul g hf
@@ -1462,7 +1462,7 @@ end ContinuousStar
 
 section automorphize
 
-variable {M : Type _} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type _}
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type*}
   [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
 
 /-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
@@ -1525,7 +1525,7 @@ attribute [to_additive existing MulAction.automorphize_smul_left] AddAction.auto
 
 section
 
-variable {G : Type _} [Group G] {Γ : Subgroup G}
+variable {G : Type*} [Group G] {Γ : Subgroup G}
 
 /-- Given a subgroup `Γ` of a group `G`, and a function `f : G → M`, we "automorphize" `f` to a
   function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/

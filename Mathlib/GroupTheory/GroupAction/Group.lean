@@ -268,7 +268,7 @@ def DistribMulAction.toAddAut : α →* AddAut β where
 /-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
 `AddMonoid` on which it acts distributively.
 This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
-def DistribMulAction.toAddEquiv₀ {α : Type _} (β : Type _) [GroupWithZero α] [AddMonoid β]
+def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
     [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
   { DistribMulAction.toAddMonoidHom β x with
     invFun := fun b ↦ x⁻¹ • b
