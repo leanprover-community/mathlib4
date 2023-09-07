@@ -127,6 +127,19 @@ def TerminatedAt (s : Seq α) (n : ℕ) : Prop :=
   s.get? n = none
 #align stream.seq.terminated_at Stream'.Seq.TerminatedAt
 
+@[simp]
+theorem nil_terminatedAt (n : ℕ) : (nil : Seq α).TerminatedAt n :=
+  rfl
+
+@[simp]
+theorem not_cons_terminatedAt_zero (a : α) (s : Seq α) : ¬(a ::ₑ s).TerminatedAt 0 :=
+  Option.some_ne_none a
+
+@[simp]
+theorem cons_terminatedAt_succ (a : α) (s : Seq α) (n : ℕ) :
+    (a ::ₑ s).TerminatedAt (n + 1) ↔ s.TerminatedAt n :=
+  Iff.rfl
+
 /-- It is decidable whether a sequence terminates at a given position. -/
 instance terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) :=
   decidable_of_iff' (s.get? n).isNone <| by unfold TerminatedAt; cases s.get? n <;> simp
@@ -149,6 +162,17 @@ theorem get?_eq_getElem {s : Seq α} {n : ℕ} (h : ¬s.TerminatedAt n) : get? s
 def Terminates (s : Seq α) : Prop :=
   ∃ n : ℕ, s.TerminatedAt n
 #align stream.seq.terminates Stream'.Seq.Terminates
+
+theorem terminates_of_terminatedAt {s : Seq α} {n : ℕ} (h : s.TerminatedAt n) : s.Terminates :=
+  Exists.intro n h
+
+@[simp]
+theorem nil_terminates : (nil : Seq α).Terminates :=
+  terminates_of_terminatedAt <| nil_terminatedAt 0
+
+@[simp]
+theorem cons_terminates (a : α) (s : Seq α) : (a ::ₑ s).Terminates ↔ s.Terminates := by
+  unfold Terminates; nth_rw 1 [← Nat.or_exists_succ]; simp
 
 theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
   simp only [Terminates, not_terminatedAt_iff, not_exists]
@@ -180,6 +204,9 @@ protected def Mem (a : α) (s : Seq α) :=
 
 instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
+
+theorem mem_def (a : α) (s : Seq α) : a ∈ s ↔ some a ∈ s.val :=
+  Iff.rfl
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   cases' s with f al
@@ -467,9 +494,9 @@ theorem ofList_nil : (([] : List α) : Seq α) = nil :=
 #align stream.seq.of_list_nil Stream'.Seq.ofList_nil
 
 @[simp, norm_cast]
-theorem ofList_get? (l : List α) (n : ℕ) : (l : Seq α).get? n = l.get? n :=
+theorem get?_ofList (l : List α) (n : ℕ) : (l : Seq α).get? n = l.get? n :=
   rfl
-#align stream.seq.of_list_nth Stream'.Seq.ofList_get?
+#align stream.seq.of_list_nth Stream'.Seq.get?_ofList
 
 @[simp, norm_cast]
 theorem ofList_cons (a : α) (l : List α) : (a :: l : Seq α) = a ::ₑ ↑l := by
@@ -479,11 +506,23 @@ theorem ofList_cons (a : α) (l : List α) : (a :: l : Seq α) = a ::ₑ ↑l :=
 theorem ofList_injective : Function.Injective ((↑) : List α → Seq α) := by
   intro l₁ l₂ h
   ext1 n
-  rw [← ofList_get?, ← ofList_get?, h]
+  rw [← get?_ofList, ← get?_ofList, h]
 
 @[simp, norm_cast]
 theorem ofList_inj {l₁ l₂ : List α} : (l₁ : Seq α) = ↑l₂ ↔ l₁ = l₂ :=
   ofList_injective.eq_iff
+
+theorem ofList_terminatedAt_length (l : List α) : (l : Seq α).TerminatedAt l.length :=
+  List.get?_length l
+
+@[simp]
+theorem ofList_terminatedAt_iff {l : List α} {n : ℕ} :
+    (l : Seq α).TerminatedAt n ↔ l.length ≤ n := by
+  rw [TerminatedAt, get?_ofList, List.get?_eq_none]
+
+@[simp]
+theorem ofList_terminates (l : List α) : (l : Seq α).Terminates :=
+  Exists.intro l.length <| ofList_terminatedAt_length l
 
 /-- Embed an infinite stream as a sequence -/
 @[coe]
@@ -507,6 +546,14 @@ theorem ofStream_injective : Function.Injective ((↑) : Stream' α → Seq α) 
 @[simp, norm_cast]
 theorem ofStream_inj {s₁ s₂ : Stream' α} : (s₁ : Seq α) = ↑s₂ ↔ s₁ = s₂ :=
   ofStream_injective.eq_iff
+
+@[simp]
+theorem not_ofStream_terminatedAt (s : Stream' α) (n : ℕ) : ¬(s : Seq α).TerminatedAt n :=
+  Option.some_ne_none (get s n)
+
+@[simp]
+theorem not_ofStream_terminates (s : Stream' α) : ¬(s : Seq α).Terminates :=
+  fun ⟨n, h⟩ => not_ofStream_terminatedAt s n h
 
 /-- Embed a `LazyList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
@@ -561,6 +608,19 @@ def append (s₁ s₂ : Seq α) : Seq α :=
     (s₁, s₂)
 #align stream.seq.append Stream'.Seq.append
 
+instance : Append (Seq α) where
+  append := append
+
+theorem append_def (s₁ s₂ : Seq α) :
+    s₁ ++ s₂ =
+      @corec α (Seq α × Seq α)
+        (fun ⟨s₁, s₂⟩ =>
+          match destruct s₁ with
+          | none => omap (fun s₂ => (nil, s₂)) (destruct s₂)
+          | some (a, s₁') => some (a, s₁', s₂))
+        (s₁, s₂) :=
+  rfl
+
 /-- Map a function over a sequence. -/
 def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
@@ -589,12 +649,31 @@ def join : Seq (Seq1 α) → Seq α :=
 #align stream.seq.join Stream'.Seq.join
 
 /-- Remove the first `n` elements from the sequence. -/
-def drop (s : Seq α) : ℕ → Seq α
-  | 0 => s
-  | n + 1 => tail (drop s n)
-#align stream.seq.drop Stream'.Seq.drop
+@[simp]
+def drop : ℕ → Seq α → Seq α
+  | 0    , s => s
+  | n + 1, s => drop n (tail s)
+#align stream.seq.drop Stream'.Seq.dropₓ
 
-attribute [simp] drop
+@[simp]
+theorem drop_nil : ∀ n, drop n (nil : Seq α) = nil
+  | 0     => rfl
+  | n + 1 => by rw [drop, tail_nil, drop_nil n]
+
+theorem drop_add (m) : ∀ (n) (s : Seq α), drop (m + n) s = drop m (drop n s)
+  | 0    , _ => rfl
+  | n + 1, s => drop_add m n (tail s)
+#align stream.seq.dropn_add Stream'.Seq.drop_addₓ
+
+theorem tail_drop (n) (s : Seq α) : tail (drop n s) = drop (n + 1) s := by
+  rw [add_comm]; symm; apply drop_add
+#align stream.seq.dropn_tail Stream'.Seq.tail_dropₓ
+
+@[simp]
+theorem head_drop (n) (s : Seq α) : head (drop n s) = get? s n := by
+  induction' n with n IH generalizing s; · rfl
+  rw [Nat.succ_eq_add_one, ← get?_tail, drop]; apply IH
+#align stream.seq.head_dropn Stream'.Seq.head_dropₓ
 
 /-- Take the first `n` elements of the sequence (producing a list) -/
 def take : ℕ → Seq α → List α
@@ -604,6 +683,22 @@ def take : ℕ → Seq α → List α
     | none => []
     | some (x, r) => x :: take n r
 #align stream.seq.take Stream'.Seq.take
+
+@[simp]
+theorem get?_take :
+    ∀ (m n : ℕ) (s : Seq α), List.get? (take n s) m = if m < n then get? s m else none
+  | 0     , 0     , s => rfl
+  | 0     , n' + 1, s => by
+    simp [take]
+    induction s using recOn <;> rfl
+  | m' + 1, 0     , s => rfl
+  | m' + 1, n' + 1, s => by
+    simp [take]
+    induction s using recOn with
+    | nil       => simp
+    | cons a s' =>
+      simp
+      exact get?_take m' n' s'
 
 /-- Split a sequence at `n`, producing a finite initial segment
   and an infinite tail. -/
@@ -616,6 +711,15 @@ def splitAt : ℕ → Seq α → List α × Seq α
       let (l, r) := splitAt n s'
       (x :: l, r)
 #align stream.seq.split_at Stream'.Seq.splitAt
+
+@[simp]
+theorem splitAt_eq_take_drop : ∀ (n : ℕ) (s : Seq α), splitAt n s = (take n s, drop n s)
+  | 0    , s => rfl
+  | n + 1, s => by
+    simp [splitAt, take]
+    induction s using recOn with
+    | nil       => simp
+    | cons a s' => simp [splitAt_eq_take_drop n s']
 
 section ZipWith
 
@@ -670,23 +774,67 @@ def toList (s : Seq α) (h : s.Terminates) : List α :=
   take (Nat.find h) s
 #align stream.seq.to_list Stream'.Seq.toList
 
+@[simp]
+theorem get?_toList {s : Seq α} (h : s.Terminates) (n : ℕ) :
+    List.get? (toList s h) n = get? s n := by
+  simp [toList]
+  intro m hmn ht
+  symm; exact Seq.terminated_stable s hmn ht
+
+@[simp, norm_cast]
+theorem toList_ofList {l : List α} (h : (l : Seq α).Terminates) : toList ↑l h = l := by
+  ext1 n; rw [get?_toList, get?_ofList]
+
+@[simp, norm_cast]
+theorem ofList_toList {s : Seq α} (h : s.Terminates) : (toList s h : List α) = s := by
+  ext1 n; rw [get?_ofList, get?_toList]
+
+instance : CanLift (Seq α) (List α) (↑) (·.Terminates) where
+  prf s h := ⟨toList s h, ofList_toList h⟩
+
 /-- Convert a sequence which is known not to terminate into a stream -/
 def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α :=
   ₛ[ Option.get _ <| not_terminates_iff.1 h n | n ]
 #align stream.seq.to_stream Stream'.Seq.toStream
 
+@[simp]
+theorem get_toStream {s : Seq α} (h : ¬s.Terminates) (n : ℕ) :
+    Stream'.get (toStream s h) n = Option.get (get? s n) (not_terminates_iff.1 h n) :=
+  rfl
+
+@[simp, norm_cast]
+theorem toStream_ofStream {s : Stream' α} (h : ¬(s : Seq α).Terminates) : toStream ↑s h = s :=
+  rfl
+
+@[simp, norm_cast]
+theorem ofStream_toStream {s : Seq α} (h : ¬s.Terminates) : (toStream s h : Seq α) = s := by
+  ext1 n; rw [ofStream_get?, get_toStream, Option.some_get]
+
+instance : CanLift (Seq α) (Stream' α) (↑) (¬·.Terminates) where
+  prf s h := ⟨toStream s h, ofStream_toStream h⟩
+
 /-- Convert a sequence into either a list or a stream depending on whether
   it is finite or infinite. (Without decidability of the infiniteness predicate,
   this is not constructively possible.) -/
-def toListOrStream (s : Seq α) [Decidable s.Terminates] : Sum (List α) (Stream' α) :=
+@[simp]
+def toListOrStream (s : Seq α) [Decidable s.Terminates] : List α ⊕ Stream' α :=
   if h : s.Terminates then Sum.inl (toList s h) else Sum.inr (toStream s h)
 #align stream.seq.to_list_or_stream Stream'.Seq.toListOrStream
 
+open Classical in
+/-- `Seq α` is (noncomputably) equivalent to `List α ⊕ Stream' α` -/
+@[simps]
+noncomputable def _root_.Equiv.seqEquivListSumStream : Seq α ≃ List α ⊕ Stream' α where
+  toFun s := toListOrStream s
+  invFun := Sum.elim (↑) (↑)
+  left_inv s := by by_cases h : s.Terminates <;> simp [h]
+  right_inv s := by cases s <;> simp
+
 @[simp]
-theorem nil_append (s : Seq α) : append nil s = s := by
+theorem nil_append (s : Seq α) : nil ++ s = s := by
   apply coinduction2; intro s
-  dsimp [append]; rw [corec_eq]
-  dsimp [append]
+  dsimp [append_def]; rw [corec_eq]
+  dsimp [append_def]
   induction s using recOn with
   | nil => trivial
   | cons x s =>
@@ -696,14 +844,14 @@ theorem nil_append (s : Seq α) : append nil s = s := by
 #align stream.seq.nil_append Stream'.Seq.nil_append
 
 @[simp]
-theorem cons_append (a : α) (s t) : append (a ::ₑ s) t = a ::ₑ (append s t) :=
+theorem cons_append (a : α) (s t) : a ::ₑ s ++ t = a ::ₑ (s ++ t) :=
   destruct_eq_cons <| by
-    dsimp [append]; rw [corec_eq]
-    dsimp [append]; rw [destruct_cons]
+    dsimp [append_def]; rw [corec_eq]
+    dsimp [append_def]; rw [destruct_cons]
 #align stream.seq.cons_append Stream'.Seq.cons_append
 
 @[simp]
-theorem append_nil (s : Seq α) : append s nil = s := by
+theorem append_nil (s : Seq α) : s ++ nil = s := by
   apply coinduction2 s; intro s
   induction s using recOn with
   | nil => trivial
@@ -714,8 +862,8 @@ theorem append_nil (s : Seq α) : append s nil = s := by
 #align stream.seq.append_nil Stream'.Seq.append_nil
 
 @[simp]
-theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
-  apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
+theorem append_assoc (s t u : Seq α) : s ++ t ++ u = s ++ (t ++ u) := by
+  apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = s ++ t ++ u ∧ s2 = s ++ (t ++ u)
   · intro s1 s2 h
     exact
       match s1, s2, h with
@@ -759,9 +907,9 @@ theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f)
 #align stream.seq.map_comp Stream'.Seq.map_comp
 
 @[simp]
-theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
+theorem map_append (f : α → β) (s t) : map f (s ++ t) = map f s ++ map f t := by
   apply
-    eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t)) _
+    eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (s ++ t) ∧ s2 = map f s ++ map f t) _
       ⟨s, t, rfl, rfl⟩
   intro s1 s2 h
   exact
@@ -814,10 +962,10 @@ theorem join_cons_cons (a b : α) (s S) :
 #align stream.seq.join_cons_cons Stream'.Seq.join_cons_cons
 
 @[simp]
-theorem join_cons (a : α) (s S) : join ((a, s) ::ₑ S) = a ::ₑ (append s (join S)) := by
+theorem join_cons (a : α) (s S) : join ((a, s) ::ₑ S) = a ::ₑ (s ++ (join S)) := by
   apply
     eq_of_bisim
-      (fun s1 s2 => s1 = s2 ∨ ∃ a s S, s1 = join ((a, s) ::ₑ S) ∧ s2 = a ::ₑ append s (join S))
+      (fun s1 s2 => s1 = s2 ∨ ∃ a s S, s1 = join ((a, s) ::ₑ S) ∧ s2 = a ::ₑ (s ++ (join S)))
       _ (Or.inr ⟨a, s, S, rfl, rfl⟩)
   intro s1 s2 h
   exact
@@ -837,10 +985,10 @@ theorem join_cons (a : α) (s S) : join ((a, s) ::ₑ S) = a ::ₑ (append s (jo
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
 @[simp]
-theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
+theorem join_append (S T : Seq (Seq1 α)) : join (S ++ T) = join S ++ join T := by
   apply
     eq_of_bisim fun s1 s2 =>
-      ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T))
+      ∃ s S T, s1 = s ++ join (S ++ T) ∧ s2 = s ++ (join S ++ join T)
   · intro s1 s2 h
     exact
       match s1, s2, h with
@@ -863,13 +1011,13 @@ theorem ofStream_cons (a : α) (s) : (a ::ₛ s : Seq α) = a ::ₑ ↑s := by
 #align stream.seq.of_stream_cons Stream'.Seq.ofStream_cons
 
 @[simp, norm_cast]
-theorem ofList_append (l l' : List α) : ((l ++ l' : List α) : Seq α) = append ↑l ↑l' := by
+theorem ofList_append (l l' : List α) : ((l ++ l' : List α) : Seq α) = (l : Seq α) ++ ↑l' := by
   induction l <;> simp [*]
 #align stream.seq.of_list_append Stream'.Seq.ofList_append
 
 @[simp, norm_cast]
 theorem ofStream_append (l : List α) (s : Stream' α) :
-    ((l ++ s : Stream' α) : Seq α) = append ↑l ↑s := by
+    ((l ++ s : Stream' α) : Seq α) = (l : Seq α) ++ ↑s := by
   induction l <;> simp [*, Stream'.nil_append, Stream'.cons_append]
 #align stream.seq.of_stream_append Stream'.Seq.ofStream_append
 
@@ -877,28 +1025,13 @@ theorem ofStream_append (l : List α) (s : Stream' α) :
   the possibility of infinite sequences (in which case the computation
   never returns anything). -/
 def toList' {α} (s : Seq α) : Computation (List α) :=
-  @Computation.corec (List α) (List α × Seq α)
+  Computation.corec
     (fun ⟨l, s⟩ =>
       match destruct s with
       | none => Sum.inl l.reverse
       | some (a, s') => Sum.inr (a :: l, s'))
     ([], s)
 #align stream.seq.to_list' Stream'.Seq.toList'
-
-theorem drop_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
-  | 0 => rfl
-  | n + 1 => congr_arg tail (drop_add s _ n)
-#align stream.seq.dropn_add Stream'.Seq.drop_add
-
-theorem drop_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
-  rw [add_comm]; symm; apply drop_add
-#align stream.seq.dropn_tail Stream'.Seq.drop_tail
-
-@[simp]
-theorem head_drop (s : Seq α) (n) : head (drop s n) = get? s n := by
-  induction' n with n IH generalizing s; · rfl
-  rw [Nat.succ_eq_add_one, ← get?_tail, ← drop_tail]; apply IH
-#align stream.seq.head_dropn Stream'.Seq.head_drop
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
@@ -913,8 +1046,8 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
     · injection oe with h'; exact ⟨a, om, h'⟩
 #align stream.seq.exists_of_mem_map Stream'.Seq.exists_of_mem_map
 
-theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
-  generalize e : append s₁ s₂ = ss at h
+theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁ ++ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
+  generalize e : s₁ ++ s₂ = ss at h
   induction h using mem_rec_on generalizing s₁ with
   | mem_cons s' =>
     induction s₁ using recOn with
@@ -935,7 +1068,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
       simp [o e, or_assoc]
 #align stream.seq.of_mem_append Stream'.Seq.of_mem_append
 
-theorem mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ append s₁ s₂ := by
+theorem mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ s₁ ++ s₂ := by
   induction h using mem_rec_on <;> simp [*]
 #align stream.seq.mem_append_left Stream'.Seq.mem_append_left
 
@@ -996,14 +1129,14 @@ theorem join_cons (a b : α) (s S) :
   dsimp [join]; rw [destruct_cons]
 #align stream.seq1.join_cons Stream'.Seq1.join_cons
 
-/-- The `return` operator for the `Seq1` monad,
+/-- The `pure` operator for the `Seq1` monad,
   which produces a singleton sequence. -/
-def ret (a : α) : Seq1 α :=
+def pure (a : α) : Seq1 α :=
   (a, nil)
-#align stream.seq1.ret Stream'.Seq1.ret
+#align stream.seq1.ret Stream'.Seq1.pure
 
 instance [Inhabited α] : Inhabited (Seq1 α) :=
-  ⟨ret default⟩
+  ⟨pure default⟩
 
 /-- The `bind` operator for the `Seq1` monad,
   which maps `f` on each element of `s` and appends the results together.
@@ -1014,32 +1147,32 @@ def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
 #align stream.seq1.bind Stream'.Seq1.bind
 
 @[simp]
-theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
-  apply coinduction2 s; intro s; induction s using recOn <;> simp [ret]
-#align stream.seq1.join_map_ret Stream'.Seq1.join_map_ret
+theorem join_map_pure (s : Seq α) : Seq.join (Seq.map pure s) = s := by
+  apply coinduction2 s; intro s; induction s using recOn <;> simp [pure]
+#align stream.seq1.join_map_ret Stream'.Seq1.join_map_pure
 
 @[simp]
-theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
+theorem bind_pure (f : α → β) : ∀ s, bind s (pure ∘ f) = map f s
   | ⟨a, s⟩ => by
     dsimp [bind, map]
-    -- Porting note: Was `rw [map_comp]; simp [Function.comp, ret]`
-    rw [map_comp, ret]
+    -- Porting note: Was `rw [map_comp]; simp [Function.comp, pure]`
+    rw [map_comp, pure]
     simp
-#align stream.seq1.bind_ret Stream'.Seq1.bind_ret
+#align stream.seq1.bind_ret Stream'.Seq1.bind_pure
 
 @[simp]
-theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
-  simp [ret, bind, map]
+theorem pure_bind (a : α) (f : α → Seq1 β) : bind (pure a) f = f a := by
+  simp [pure, bind, map]
   cases' f a with a s
   induction s using recOn <;> simp
-#align stream.seq1.ret_bind Stream'.Seq1.ret_bind
+#align stream.seq1.ret_bind Stream'.Seq1.pure_bind
 
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
     Seq.eq_of_bisim fun s1 s2 =>
       ∃ s S,
-        s1 = Seq.append s (Seq.map f (Seq.join S)) ∧ s2 = append s (Seq.join (Seq.map (map f) S))
+        s1 = s ++ Seq.map f (Seq.join S) ∧ s2 = s ++ Seq.join (Seq.map (map f) S)
   · intro s1 s2 h
     exact
       match s1, s2, h with
@@ -1063,7 +1196,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
   apply
     Seq.eq_of_bisim fun s1 s2 =>
       ∃ s SS,
-        s1 = Seq.append s (Seq.join (Seq.join SS)) ∧ s2 = Seq.append s (Seq.join (Seq.map join SS))
+        s1 = s ++ Seq.join (Seq.join SS) ∧ s2 = s ++ Seq.join (Seq.map join SS)
   · intro s1 s2 h
     exact
       match s1, s2, h with
@@ -1073,7 +1206,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
           · cases' S with s S; cases' s with x s; simp [map]
             induction' s using recOn with x s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
-            · refine' ⟨x ::ₑ append s (Seq.join S), SS, _, _⟩ <;> simp
+            · refine' ⟨x ::ₑ (s ++ Seq.join S), SS, _, _⟩ <;> simp
         · exact ⟨s, SS, rfl, rfl⟩
   · refine' ⟨nil, SS, _, _⟩ <;> simp
 #align stream.seq1.join_join Stream'.Seq1.join_join
@@ -1097,14 +1230,14 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
 
 instance monad : Monad Seq1 where
   map := @map
-  pure := @ret
+  pure := @pure
   bind := @bind
 #align stream.seq1.monad Stream'.Seq1.monad
 
 instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
   (id_map := @map_id)
-  (bind_pure_comp := @bind_ret)
-  (pure_bind := @ret_bind)
+  (bind_pure_comp := @bind_pure)
+  (pure_bind := @pure_bind)
   (bind_assoc := @bind_assoc)
 #align stream.seq1.is_lawful_monad Stream'.Seq1.lawfulMonad
 

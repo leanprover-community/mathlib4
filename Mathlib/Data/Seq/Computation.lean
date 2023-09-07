@@ -331,6 +331,9 @@ protected def Mem (a : α) (s : Computation α) :=
 instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
+theorem mem_def (a : α) (s : Computation α) : a ∈ s ↔ some a ∈ s.val :=
+  Iff.rfl
+
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) :
     s.1.get m = some a → s.1.get n = some a := by
   cases' s with f al
@@ -642,7 +645,7 @@ set_option linter.uppercaseLean3 false in
 @[elab_as_elim]
 def memRecOn {a} {C : (s : Computation α) → a ∈ s → Sort v} {s} (M : a ∈ s)
     (mem_pure : C (pure a) (mem_pure a))
-    (mem_think : (s : _) → (h : a ∈ s) → C s h → C (think s) (mem_think h)) : C s M := by
+    (mem_think : {s : _} → (h : a ∈ s) → C s h → C (think s) (mem_think h)) : C s M := by
   haveI T := terminates_of_mem M
   have M' := M
   revert M
@@ -651,7 +654,7 @@ def memRecOn {a} {C : (s : Computation α) → a ∈ s → Sort v} {s} (M : a �
   intro M
   change C (thinkN (pure a) n) ((mem_thinkN (n := n)).mpr (Computation.mem_pure a))
   clear M M'
-  induction' n with n IH; exacts [mem_pure, mem_think _ _ IH]
+  induction' n with n IH; exacts [mem_pure, mem_think _ IH]
 #align computation.mem_rec_on Computation.memRecOnₓ
 
 /-- Recursor based on assertion of `Terminates` -/
@@ -662,7 +665,7 @@ def terminatesRecOn
     (think_terminates :
       (s : _) → (h : Terminates s) → C s h → C (think s) (@think_terminates _ _ h)) : C s M :=
   memRecOn (C := fun s' h => C s' (terminates_of_mem h)) (get_mem s) (pure_terminates (get s))
-    (fun s' h ih => think_terminates s' (terminates_of_mem h) ih)
+    (fun {s'} h ih => think_terminates s' (terminates_of_mem h) ih)
 #align computation.terminates_rec_on Computation.terminatesRecOnₓ
 
 /-- Map a function on the result of a computation. -/
@@ -815,7 +818,7 @@ theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} 
     rw [pure_bind]
     rw [h1.len_unique (results_pure _)]
     exact h2
-  | mem_think _ _ h3 =>
+  | mem_think _ h3 =>
     rw [think_bind]
     cases' of_results_think h1 with m' h
     cases' h with h1 e

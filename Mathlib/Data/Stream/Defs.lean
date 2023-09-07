@@ -184,13 +184,13 @@ def odd (s : Stream' α) : Stream' α :=
 #align stream.odd Stream'.odd
 
 /-- Append a stream to a list. -/
-def appendStream : List α → Stream' α → Stream' α
+def appendList : List α → Stream' α → Stream' α
   | []    , s => s
-  | a :: l, s => a ::ₛ appendStream l s
-#align stream.append_stream Stream'.appendStream
+  | a :: l, s => a ::ₛ appendList l s
+#align stream.append_stream Stream'.appendList
 
 instance : HAppend (List α) (Stream' α) (Stream' α) where
-  hAppend := appendStream
+  hAppend := appendList
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
 def take : ℕ → Stream' α → List α
