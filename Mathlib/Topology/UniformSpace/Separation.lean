@@ -176,7 +176,7 @@ theorem separationRel_comap {f : α → β}
     𝓢 α = Prod.map f f ⁻¹' 𝓢 β := by
   subst h
   dsimp [separationRel]
-  simp_rw [uniformity_comap, (Filter.comap_hasBasis (Prod.map f f) (𝓤 β)).sInter_sets, ←
+  simp_rw [uniformity_comap, (Filter.comap_hasBasis (Prod.map f f) (𝓤 β)).ker, ←
     preimage_iInter, sInter_eq_biInter]
   rfl
 #align separation_rel_comap separationRel_comap
@@ -184,7 +184,7 @@ theorem separationRel_comap {f : α → β}
 protected theorem Filter.HasBasis.separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_ : p i), s i := by
   unfold separationRel
-  rw [h.sInter_sets]
+  rw [h.ker]
 #align filter.has_basis.separation_rel Filter.HasBasis.separationRel
 
 theorem separationRel_eq_inter_closure : 𝓢 α = ⋂₀ (closure '' (𝓤 α).sets) := by
