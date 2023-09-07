@@ -391,7 +391,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
         map_smul' := fun r (s : S) => by
           dsimp
           erw [smul_eq_mul, mul_smul]
-          simp}
+          simp }
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
