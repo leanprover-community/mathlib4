@@ -15,8 +15,8 @@ like binomial coefficients.
 
 According to our main reference [Elliott] (which lists many equivalent conditions), a binomial ring
 is a torsion-free commutative ring R such that for any `x ∈ R` and any `k ∈ ℕ`, the product
-`x(x-1)⋯(x-k+1)` is divisible by `k!`.  The torsion-free condition lets us divide by `k!` unambiguously, so we get
-uniquely defined binomial coefficients.
+`x(x-1)⋯(x-k+1)` is divisible by `k!`.  The torsion-free condition lets us divide by `k!`
+unambiguously, so we get uniquely defined binomial coefficients.
 
 The defining condition doesn't require commutativity, and we get a theory with essentially the same
 power by replacing subtraction with addition.  Thus, we consider a semiring R in which
@@ -35,7 +35,7 @@ universe u
 
 variable {R: Type u}
 
-section Semiring 
+section Semiring
 
 variable [Semiring R]
 
