@@ -38,11 +38,11 @@ noncomputable def specZIsTerminal : IsTerminal (Scheme.Spec.obj (op <| CommRingC
     (terminalOpOfInitial CommRingCat.zIsInitial)
 #align algebraic_geometry.Spec_Z_is_terminal AlgebraicGeometry.specZIsTerminal
 
-instance : HasTerminal Scheme :=
+instance : HasTerminal Scheme.{u} :=
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
 instance : IsAffine (⊤_ Scheme.{u}) :=
-  isAffineOfIso (PreservesTerminal.iso Scheme.Spec).inv
+  isAffineOfIso (PreservesTerminal.iso Scheme.Spec.{u}).inv
 
 instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
