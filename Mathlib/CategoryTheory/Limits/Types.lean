@@ -300,6 +300,7 @@ example : HasLimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
 
 example : HasLimitsOfSize.{v, u} (Type u) := inferInstance
+--instance : HasLimitsOfSize.{v, 0} (Type u) := inferInstance
 
 end instances
 
@@ -368,6 +369,8 @@ instance hasColimit' (F : J ⥤ Type v) : HasColimit F :=
 
 instance hasColimitsOfSize' : HasColimitsOfSize.{w, u} (Type u) :=
   hasColimitsOfSize.{u, u}
+
+--instance : HasColimitsOfSize.{w, 0} (Type u) := inferInstance
 
 /-- The equivalence between the abstract colimit of `F` in `Type u`
 and the "concrete" definition as a quotient.

@@ -98,7 +98,9 @@ instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) 
   apply HasFiniteColimits.out
 #align category_theory.limits.has_colimits_of_shape_of_has_finite_colimits CategoryTheory.Limits.hasColimitsOfShape_of_hasFiniteColimits
 
-instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
+-- This lemma could be a dangerous instance because there are universes in the assumptions
+-- which do not appear in the conclusion
+lemma hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
     HasFiniteColimits C where
   out := fun J hJ hJ' =>
     haveI := hasColimitsOfSize_shrink.{0, 0} C
@@ -106,6 +108,10 @@ instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOf
     @hasColimitsOfShape_of_equivalence (@FinCategory.AsType J (@FinCategory.fintypeObj J hJ hJ'))
     (@FinCategory.categoryAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ') _ _ J hJ F _
 #align category_theory.limits.has_finite_colimits_of_has_colimits_of_size CategoryTheory.Limits.hasFiniteColimits_of_hasColimitsOfSize
+
+instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize' [HasColimitsOfSize.{0, 0} C] :
+    HasFiniteColimits C :=
+  hasFiniteColimits_of_hasColimitsOfSize.{0} _
 
 /-- We can always derive `HasFiniteColimits C` by providing colimits at an
 arbitrary universe. -/
