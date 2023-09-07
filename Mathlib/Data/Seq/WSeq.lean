@@ -65,10 +65,6 @@ def toSeqO (s : WSeq α) : Seq (Option α) := s
 theorem toSeqO_inj {s₁ s₂ : WSeq α} : s₁.toSeqO = s₂.toSeqO ↔ s₁ = s₂ :=
   Iff.rfl
 
-@[ext]
-theorem ext {s₁ s₂ : WSeq α} (h : s₁.toSeqO = s₂.toSeqO) : s₁ = s₂ :=
-  h
-
 @[simp]
 theorem toSeqO_wseqOf (s : Seq (Option α)) : toSeqO (wseqOf s) = s :=
   rfl
@@ -716,7 +712,7 @@ theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
 
 @[simp]
 theorem flatten_think (c : Computation (WSeq α)) : flatten c.think = think (flatten c) :=
-  ext <| Seq.destruct_eq_cons <| by simp [flatten, think]
+  toSeqO_inj.mp <| Seq.destruct_eq_cons <| by simp [flatten, think]
 #align stream.wseq.flatten_think Stream'.WSeq.flatten_think
 
 @[simp]
@@ -1759,7 +1755,7 @@ theorem pure_bind (a : α) (f : α → WSeq β) : bind (pure a) f ≈ f a := by 
 
 @[simp]
 theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := by
-  ext1
+  rw [← toSeqO_inj]
   apply
     Seq.eq_of_bisim fun s1 s2 =>
       ∃ s S, wseqOf s1 = s ++ map f (join S) ∧ wseqOf s2 = s ++ join (map (map f) S)

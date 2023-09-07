@@ -105,7 +105,7 @@ theorem terminates_parallel.aux :
             match o with
             | Sum.inl a => Sum.inl a
             | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
-          (Sum.inr List.nil) l with a' ls <;> erw [e] at e'
+          (Sum.inr []) l with a' ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
         simp [parallel.aux2] at e'
