@@ -544,7 +544,6 @@ instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace 
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   -- porting note: 1st and 3rd `haveI`s were not needed in Lean 3
   haveI := Subgroup.t3_quotient_of_isClosed N
-  haveI := @PolishSpace.secondCountableTopology G
   haveI := QuotientGroup.secondCountableTopology (Γ := N)
   Quotient.borelSpace
 #align quotient_group.borel_space QuotientGroup.borelSpace

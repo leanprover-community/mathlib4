@@ -62,15 +62,11 @@ other way around as this is the most common use case.
 
 To endow a Polish space with a complete metric space structure, do `letI := upgradePolishSpace α`.
 -/
-class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop where
-  secondCountableTopology : SecondCountableTopology α
+class PolishSpace (α : Type*) [h : TopologicalSpace α]
+    extends SecondCountableTopology α : Prop where
   complete : ∃ m : MetricSpace α, m.toUniformSpace.toTopologicalSpace = h ∧
     @CompleteSpace α m.toUniformSpace
 #align polish_space PolishSpace
-
-instance secondCountable_of_polish [TopologicalSpace α] [h : PolishSpace α] :
-    SecondCountableTopology α :=
-  h.secondCountableTopology
 
 /-- A convenience class, for a Polish space endowed with a complete metric. No instance of this
 class should be registered: It should be used as `letI := upgradePolishSpace α` to endow a Polish
@@ -80,8 +76,7 @@ class UpgradedPolishSpace (α : Type*) extends MetricSpace α, SecondCountableTo
 #align upgraded_polish_space UpgradedPolishSpace
 
 instance (priority := 100) polishSpace_of_complete_second_countable [m : MetricSpace α]
-    [h : SecondCountableTopology α] [h' : CompleteSpace α] : PolishSpace α where
-  secondCountableTopology := h
+    [SecondCountableTopology α] [h' : CompleteSpace α] : PolishSpace α where
   complete := ⟨m, rfl, h'⟩
 #align polish_space_of_complete_second_countable polishSpace_of_complete_second_countable
 
@@ -101,7 +96,7 @@ theorem complete_polishSpaceMetric (α : Type*) [ht : TopologicalSpace α] [h : 
 def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
     UpgradedPolishSpace α :=
   letI := polishSpaceMetric α
-  { complete_polishSpaceMetric α, PolishSpace.secondCountableTopology with }
+  { complete_polishSpaceMetric α with }
 #align upgrade_polish_space upgradePolishSpace
 
 namespace PolishSpace
