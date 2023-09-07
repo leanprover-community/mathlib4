@@ -48,9 +48,18 @@ structure SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle
 )).IsHamiltonian)
   -- ∃ h : p.IsCycle, (p.tail (by sorry)).IsHamiltonian
 
+/--We previously had an incorrect weaker definition, in terms of which we wrote some other proofs.
+   We should eventually remove this. -/
 lemma new_definition_implies_old (p : G.Walk v v) : p.IsHamiltonianCycle →
-  ((∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2) :=
-  sorry
+  ((∀ u : V, u ≠ v → p.support.count u = 1) ∧ p.support.count v = 2) := by
+  intro hp
+  constructor
+  · have := hp.path_hamiltonian
+    sorry
+  · have v_ge_2 : 2 ≤ p.support.count v
+    · sorry
+    · have tail_nodup := hp.support_nodup
+      sorry
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
