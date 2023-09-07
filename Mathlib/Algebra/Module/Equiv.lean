@@ -183,7 +183,7 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    (⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun := rfl
+    (⟨⟨⟩, to_fun, map_add, map_smul, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun := rfl
 #align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
@@ -223,8 +223,7 @@ theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
   rfl
 #align linear_equiv.coe_to_linear_map LinearEquiv.coe_toLinearMap
 
--- porting note: no longer a `simp`
-theorem toFun_eq_coe : e.toFun = e := rfl
+@[simp] theorem toFun_eq_coe : e.toFun = e := rfl
 #align linear_equiv.to_fun_eq_coe LinearEquiv.toFun_eq_coe
 
 section
@@ -434,6 +433,7 @@ theorem eq_comp_toLinearMap_symm (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ �
   · simp [← H, ← e₁₂.toEquiv.eq_comp_symm f g]
 #align linear_equiv.eq_comp_to_linear_map_symm LinearEquiv.eq_comp_toLinearMap_symm
 
+
 theorem comp_toLinearMap_symm_eq (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     g.comp e₁₂.symm.toLinearMap = f ↔ g = f.comp e₁₂.toLinearMap := by
   constructor <;> intro H <;> ext
@@ -484,7 +484,7 @@ theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M
 #align linear_equiv.comp_coe LinearEquiv.comp_coe
 
 @[simp]
-theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M₂) = e :=
+theorem mk_coe (f h₁ h₂ h₃ h₄) : (LinearEquiv.mk ⟨⟩ e h₁ h₂ f h₃ h₄ : M ≃ₛₗ[σ] M₂) = e :=
   ext fun _ => rfl
 #align linear_equiv.mk_coe LinearEquiv.mk_coe
 
@@ -527,16 +527,14 @@ theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [Rin
 
 @[simp]
 theorem mk_coe' (f h₁ h₂ h₃ h₄) :
-    (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
+    (LinearEquiv.mk ⟨⟩ f h₁ h₂ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align linear_equiv.mk_coe' LinearEquiv.mk_coe'
 
 @[simp]
 theorem symm_mk (f h₁ h₂ h₃ h₄) :
-    (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
-      {
-        (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ]
-              M₂).symm with
+    (⟨⟨⟩, e, h₁, h₂, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
+      { (⟨⟨⟩, e, h₁, h₂, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm with
         toFun := f
         invFun := e } :=
   rfl
@@ -545,7 +543,7 @@ theorem symm_mk (f h₁ h₂ h₃ h₄) :
 @[simp]
 theorem coe_symm_mk [Module R M] [Module R M₂]
     {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
+    ⇑(⟨⟨⟩, to_fun, map_add, map_smul, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 #align linear_equiv.coe_symm_mk LinearEquiv.coe_symm_mk
 
@@ -664,7 +662,7 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
 
 /-- Restriction from `R`-linear automorphisms of `M` to `R`-linear endomorphisms of `M`,
 promoted to a monoid hom. -/
-@[simps]
+@[simps apply]
 def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M where
   toFun e := e.toLinearMap
   map_one' := rfl
