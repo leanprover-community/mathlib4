@@ -247,10 +247,12 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
         refine IsLimit.ofFaithful (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u})
           (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _)
           (fun s : Cone F => CommSemiRingCat.ofHom
-            ⟨⟨⟨_, Subtype.ext <| funext fun j => by exact (s.π.app j).map_one⟩,
-            fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y⟩,
-            Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero,
-            fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y⟩)
+            { toFun := _
+              map_one' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_one
+              map_mul' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y
+              map_zero' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero
+              map_add' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y
+              })
           fun s => rfl }
 
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.
