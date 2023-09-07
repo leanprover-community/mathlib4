@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.TypeTags
 variable {G H : Type*}
 
 /-- Reinterpret `G ≃+ H` as `Multiplicative G ≃* Multiplicative H`. -/
-@[simps?]
+@[simps]
 def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
     G ≃+ H ≃ (Multiplicative G ≃* Multiplicative H) where
   toFun f :=
