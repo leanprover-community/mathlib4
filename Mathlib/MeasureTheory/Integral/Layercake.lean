@@ -70,10 +70,83 @@ namespace MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
 
--- A generaliztion of `measurableSet_regionBetween` to null-measurable and a.e.-measurable.
+#check AEMeasurable.nullMeasurable
+#check measurableSet_regionBetween
+
+/-
+theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
+    MeasurableSet (regionBetween f g s) := by
+  dsimp only [regionBetween, Ioo, mem_setOf_eq, setOf_and]
+  refine'
+    MeasurableSet.inter _
+      ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
+        (measurableSet_lt measurable_snd (hg.comp measurable_fst)))
+  exact measurable_fst hs
+ -/
+
+#check Measure.ae_ae_of_ae_prod
+
+lemma prod_univ_ae_of_ae {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_ae_univ : μ sᶜ = 0) :
+    μ.prod ν (s ×ˢ univ)ᶜ = 0 := by
+  convert show (μ.prod ν) (sᶜ ×ˢ (univ : Set β)) = 0 by
+    simpa only [Measure.prod_prod, mul_eq_zero] using Or.inl s_ae_univ
+  ext p
+  simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
+
+-- A generalization of `measurableSet_regionBetween` to null-measurable and a.e.-measurable.
 -- (But is the latter still too much to require?)
 -- Should generalize also the variants `measurableSet_region_between_oc` etc.
 lemma nullMeasurableSet_region_between (μ : Measure α) [SigmaFinite μ]
+    {f g : α → ℝ} (f_mble : NullMeasurable f μ) (g_mble : NullMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioo, setOf_and]
+  refine NullMeasurableSet.inter ?_ ?_
+  · obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+    refine ⟨s₀ ×ˢ univ, ⟨mble_s₀.prod MeasurableSet.univ, ?_⟩⟩
+    rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
+    simp only [Filter.mem_mk, mem_setOf_eq] at *
+    rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
+    refine ⟨t ×ˢ univ, ⟨prod_univ_ae_of_ae t_mem, ?_⟩⟩
+    intro p hp
+    simp only [setOf, show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
+    simp only [show (s₀ ×ˢ univ) p ↔ p ∈ s₀ ×ˢ univ by rfl, mem_prod, mem_univ, and_true]
+  · refine NullMeasurableSet.inter ?_ ?_
+    · apply nullMeasurableSet_lt _ measurable_snd.aemeasurable
+      sorry
+    · apply nullMeasurableSet_lt measurable_snd.aemeasurable _
+      sorry
+/-
+  obtain ⟨f₀, ⟨mble_f₀, f_aeeq_f₀⟩⟩ := f_mble
+  obtain ⟨g₀, hg₀⟩ := g_mble
+  --obtain ⟨g₀, ⟨mble_g₀, g_aeeq_g₀⟩⟩ := g_mble
+  obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+  have mble := measurableSet_regionBetween mble_f₀ mble_g₀ mble_s₀
+  apply NullMeasurableSet.congr mble.nullMeasurableSet
+  rw [eventuallyEq_iff_exists_mem] at *
+  obtain ⟨A, ⟨A_null, f_eq_f₀_on_A⟩⟩ := f_aeeq_f₀
+  obtain ⟨B, ⟨B_null, g_eq_g₀_on_B⟩⟩ := g_aeeq_g₀
+  obtain ⟨C, ⟨C_null, s_eq_s₀_on_C⟩⟩ := s_aeeq_s₀
+  have ABC_null : A ∩ B ∩ C ∈ Measure.ae μ :=
+    Filter.inter_mem (Filter.inter_mem A_null B_null) C_null
+  refine ⟨(A ∩ B ∩ C) ×ˢ univ, ⟨?_, ?_⟩⟩
+  · simp only [Measure.ae, Filter.mem_mk, mem_setOf_eq] at *
+    suffices : (μ.prod (volume : Measure ℝ)) ((A ∩ B ∩ C)ᶜ ×ˢ univ) = 0
+    · convert this
+      ext p
+      simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
+    rw [Measure.prod_prod, ABC_null, zero_mul]
+  · intro p hp
+    obtain ⟨⟨pfst_in_A, pfst_in_B⟩, pfst_in_C⟩ := hp.1
+    simp [regionBetween, setOf, f_eq_f₀_on_A pfst_in_A, g_eq_g₀_on_B pfst_in_B,
+          show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀_on_C pfst_in_C)]
+ -/
+
+-- A generaliztion of `measurableSet_regionBetween` to null-measurable and a.e.-measurable.
+-- (But is the latter still too much to require?)
+-- Should generalize also the variants `measurableSet_region_between_oc` etc.
+lemma nullMeasurableSet_region_between' (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
