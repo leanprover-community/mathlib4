@@ -2756,7 +2756,7 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 
 @[simp]
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
-    (s.filter fun a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
+    (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
 #align finset.filter_const Finset.filter_const
 
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
