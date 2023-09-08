@@ -115,7 +115,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   { toFun := liftAux f
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
-  left_inv f := by rfl
+  left_inv f := rfl
   right_inv F := by ext; rfl
 #align free_magma.lift FreeMagma.lift
 
