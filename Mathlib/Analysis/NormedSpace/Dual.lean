@@ -56,10 +56,12 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 #align normed_space.dual NormedSpace.Dual
 
--- Note: helper below
+-- TODO: helper for elaboration of inclusionInDoubleDual_norm_eq until
+-- leanprover/lean4#2522 is resolved; remove once fixed
 instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
 
--- Note: helper for below
+-- TODO: helper for elaboration of inclusionInDoubleDual_norm_le until
+-- leanprover/lean4#2522 is resolved; remove once fixed
 instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
