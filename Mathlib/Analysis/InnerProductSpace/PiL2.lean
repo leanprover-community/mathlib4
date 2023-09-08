@@ -612,6 +612,38 @@ protected theorem repr_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι')
 
 end OrthonormalBasis
 
+section EuclideanSpace
+
+variable (𝕜 ι) [IsROrC 𝕜] [Fintype ι] [DecidableEq ι]
+
+/-- The basis `Pi.basisFun` bundled as an orthormal basis of `EuclideanSpace 𝕜 ι`. -/
+noncomputable def EuclideanSpace.basisFun :
+    OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) := by
+  refine Basis.toOrthonormalBasis (PiLp.basisFun 2 𝕜 ι) (orthonormal_iff_ite.mpr ?_)
+  simp_rw [PiLp.basisFun_apply, WithLp.equiv_symm_single, PiLp.inner_apply, single_apply,
+    IsROrC.inner_apply, RingHom.map_ite_one_zero, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
+    Finset.mem_univ, ite_true, eq_comm]
+  exact fun _ _ => trivial
+
+theorem EuclideanSpace.basisFun_apply (i : ι) :
+    (EuclideanSpace.basisFun ι 𝕜) i = (EuclideanSpace.equiv ι 𝕜).symm (Pi.single i 1) := by
+  simp only [basisFun, Basis.coe_toOrthonormalBasis, PiLp.basisFun_apply,
+    WithLp.equiv_symm_single, PiLp.continuousLinearEquiv_symm_apply]
+
+theorem EuclideanSpace.basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) :
+    (EuclideanSpace.basisFun ι 𝕜).repr x i = x i := rfl
+
+theorem EuclideanSpace.basisFun_equivFun :
+    (EuclideanSpace.basisFun ι 𝕜).toBasis.equivFun = (EuclideanSpace.equiv ι 𝕜).toLinearEquiv := rfl
+
+theorem EuclideanSpace.basisFun_toBasis :
+    (EuclideanSpace.basisFun ι 𝕜).toBasis.map (EuclideanSpace.equiv ι 𝕜).toLinearEquiv
+      = Pi.basisFun 𝕜 ι := rfl
+
+end EuclideanSpace
+
+section Complex
+
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
 def Complex.orthonormalBasisOneI : OrthonormalBasis (Fin 2) ℝ ℂ :=
   Complex.basisOneI.toOrthonormalBasis
@@ -670,6 +702,8 @@ theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F)
   rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
   simp [← v.sum_repr_symm]
 #align complex.isometry_of_orthonormal_apply Complex.isometryOfOrthonormal_apply
+
+end Complex
 
 open FiniteDimensional
 
