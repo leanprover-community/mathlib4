@@ -75,6 +75,22 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
 
+theorem mulVec_stdBasisMatrix [Fintype n] [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
+    mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
+  ext i'
+  simp_rw [mulVec, dotProduct, stdBasisMatrix, ite_mul, zero_mul]
+  rcases eq_or_ne i i' with rfl|h
+  · simp
+  simp [h, h.symm]
+
+theorem vecMul_stdBasisMatrix [Fintype n] [Fintype m] (i : n) (j : m) (c : α) (x : n → α) :
+    vecMul x (stdBasisMatrix i j c) = Function.update (0 : m → α) j (x i * c) := by
+  ext j'
+  simp_rw [vecMul, dotProduct, stdBasisMatrix, mul_ite, mul_zero]
+  rcases eq_or_ne j j' with rfl|h
+  · simp
+  simp [h, h.symm]
+
 -- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
