@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Opposites
 

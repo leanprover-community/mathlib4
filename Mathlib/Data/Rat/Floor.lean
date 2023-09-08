@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
 
 #align_import data.rat.floor from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
@@ -111,12 +111,11 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
     have : (⌊q⌋ : ℚ) = q - fract q := eq_sub_of_add_eq <| floor_add_fract q
     rwa [this]
   suffices (q.num : ℚ) < q.num + (1 - fract q) * q.den by
-    have : (q - fract q + 1) * q.den = q.num + (1 - fract q) * q.den
-    calc
-      (q - fract q + 1) * q.den = (q + (1 - fract q)) * q.den := by ring
-      _ = q * q.den + (1 - fract q) * q.den := by rw [add_mul]
-      _ = q.num + (1 - fract q) * q.den := by simp
-
+    have : (q - fract q + 1) * q.den = q.num + (1 - fract q) * q.den := by
+      calc
+        (q - fract q + 1) * q.den = (q + (1 - fract q)) * q.den := by ring
+        _ = q * q.den + (1 - fract q) * q.den := by rw [add_mul]
+        _ = q.num + (1 - fract q) * q.den := by simp
     rwa [this]
   suffices 0 < (1 - fract q) * q.den by
     rw [← sub_lt_iff_lt_add']
