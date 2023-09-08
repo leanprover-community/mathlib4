@@ -80,13 +80,19 @@ section Reverse
 
 open MulOpposite
 
-/-- `CliffordAlgebra.reverse` as an `AlgHom` to the opposite algebra -/
-def reverseOp : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
-  CliffordAlgebra.lift Q
-    ⟨(MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ ι Q, fun m => unop_injective <| by simp⟩
+/-- `CliffordAlgebra.reverse` as an `AlgEquiv` to the opposite algebra -/
+def reverseOp : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
+  letI hom : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ := CliffordAlgebra.lift Q
+      ⟨(MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ ι Q, fun m => unop_injective <| by simp⟩
+  AlgEquiv.ofAlgHom hom (AlgHom.opComm hom)
+    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext <| fun _ => by simp)
+    (hom_ext <| LinearMap.ext <| fun _ => by simp)
 
 @[simp]
 theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply _ _ _
+
+@[simp]
+theorem reverseOp_opComm : AlgEquiv.opComm (reverseOp (Q := Q)) = reverseOp.symm := rfl
 
 /-- Grade reversion, inverting the multiplication order of basis vectors.
 Also called *transpose* in some literature. -/
@@ -120,22 +126,14 @@ theorem reverse.map_mul (a b : CliffordAlgebra Q) :
 #align clifford_algebra.reverse.map_mul CliffordAlgebra.reverse.map_mul
 
 @[simp]
-theorem reverse_comp_reverse :
-    reverse.comp reverse = (LinearMap.id : _ →ₗ[R] CliffordAlgebra Q) := by
-  ext m
-  simp only [LinearMap.id_apply, LinearMap.comp_apply]
-  induction m using CliffordAlgebra.induction
-  -- simp can close these goals, but is slow
-  case h_grade0 => rw [reverse.commutes, reverse.commutes]
-  case h_grade1 => rw [reverse_ι, reverse_ι]
-  case h_mul a b ha hb => rw [reverse.map_mul, reverse.map_mul, ha, hb]
-  case h_add a b ha hb => rw [reverse.map_add, reverse.map_add, ha, hb]
-#align clifford_algebra.reverse_comp_reverse CliffordAlgebra.reverse_comp_reverse
+theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
+  AlgHom.congr_fun reverseOp.symm_comp
+#align clifford_algebra.reverse_involutive CliffordAlgebra.reverse_involutive
 
 @[simp]
-theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
-  LinearMap.congr_fun reverse_comp_reverse
-#align clifford_algebra.reverse_involutive CliffordAlgebra.reverse_involutive
+theorem reverse_comp_reverse :
+    reverse.comp reverse = (LinearMap.id : _ →ₗ[R] CliffordAlgebra Q) :=
+  LinearMap.ext reverse_involutive
 
 @[simp]
 theorem reverse_reverse : ∀ a : CliffordAlgebra Q, reverse (reverse a) = a :=
