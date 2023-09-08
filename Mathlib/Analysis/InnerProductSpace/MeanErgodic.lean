@@ -67,7 +67,7 @@ variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
-For a contracting linear self-map `f : E →ₗ[𝕜] E` of a Hilbert space,
+For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
 the Birkhoff averages
 ```
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
