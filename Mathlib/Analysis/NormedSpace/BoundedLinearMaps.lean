@@ -62,7 +62,6 @@ open Metric ContinuousLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {α : Type*} [TopologicalSpace α]
 
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
