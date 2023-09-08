@@ -296,8 +296,8 @@ instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) [QuasiIso φ] : IsIso (Q.ma
   simpa only [isIso_Q_map_iff_quasiIso]
 
 instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := by
-  refine' Functor.IsLocalization.comp (HomotopyCategory.quotient _ _)
-    (HomologicalComplex.homotopyEquivalences _ _) Qh (HomotopyCategory.qis C) _ _ _ _
+  refine' Functor.IsLocalization.comp (HomotopyCategory.quotient _ _) Qh
+    (HomologicalComplex.homotopyEquivalences _ _) (HomotopyCategory.qis C) _ _ _ _
   . intro X Y f hf
     exact (isIso_Q_map_iff f).2 hf
   . apply HomologicalComplex.homotopyEquivalences_subset_qis

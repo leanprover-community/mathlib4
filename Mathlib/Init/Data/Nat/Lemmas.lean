@@ -6,7 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Std.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Div
-import Mathlib.Init.Algebra.Functions
+import Mathlib.Init.Order.LinearOrder
+import Mathlib.Tactic.Cases
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -672,16 +673,6 @@ instance decidableDvd : @DecidableRel ℕ (· ∣ ·) := fun _m _n =>
 #align nat.dvd_of_mul_dvd_mul_left Nat.dvd_of_mul_dvd_mul_leftₓ
 
 #align nat.dvd_of_mul_dvd_mul_right Nat.dvd_of_mul_dvd_mul_rightₓ
-
-/-! iterate -/
-
-
-def iterate {α : Sort u} (op : α → α) : ℕ → α → α
-  | 0, a => a
-  | succ k, a => iterate op k (op a)
-#align nat.iterate Nat.iterate
-
-notation:max f "^["n"]" => iterate f n
 
 /-! find -/
 

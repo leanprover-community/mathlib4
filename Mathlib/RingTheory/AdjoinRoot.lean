@@ -552,8 +552,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
       rfl
     · simp only [RingHom.comp_apply, mk_X, lift_root]
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
-    Nat.cast_withBot, Nat.cast_withBot, -- porting note: added
-    WithBot.coe_le_coe, natDegree_mul hf, natDegree_C, add_zero]
+    Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   apply natDegree_le_of_dvd
   · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
     exact mk_eq_zero.1 this

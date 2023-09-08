@@ -41,7 +41,7 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
---open Classical
+open Classical
 
 noncomputable section
 
@@ -137,16 +137,14 @@ instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // 
 Returns `i` otherwise.
 -/
 def next (c : ComplexShape ι) (i : ι) : ι :=
-  by classical
-  exact if h : ∃ j, c.Rel i j then h.choose else i
+  if h : ∃ j, c.Rel i j then h.choose else i
 #align complex_shape.next ComplexShape.next
 
 /-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/
 def prev (c : ComplexShape ι) (j : ι) : ι :=
-  by classical
-  exact if h : ∃ i, c.Rel i j then h.choose else j
+  if h : ∃ i, c.Rel i j then h.choose else j
 #align complex_shape.prev ComplexShape.prev
 
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by

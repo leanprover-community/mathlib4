@@ -343,7 +343,7 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
 
-instance mapArrow_isEquivalence (F : C ⥤ D) [IsEquivalence F] :
+instance isEquivalenceMapArrow (F : C ⥤ D) [IsEquivalence F] :
     IsEquivalence F.mapArrow :=
   IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
 

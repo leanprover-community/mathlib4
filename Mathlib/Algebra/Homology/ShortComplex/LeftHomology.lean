@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
-here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
+here the "left homology" `S.leftHomology` of `S`. For this, we introduce the
 notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
 data of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
 `K` with the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` with the cokernel
@@ -24,7 +24,7 @@ Similarly, we define `S.cycles` to be the `K` field.
 The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
 when `S` has two compatible left and right homology data (i.e. they give
 the same `H` up to a canonical isomorphism), we shall define `[S.HasHomology]`
-and `S.homology` (TODO).
+and `S.homology`.
 
 -/
 
