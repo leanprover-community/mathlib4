@@ -119,10 +119,12 @@ theorem iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Sem
 
 theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| n + 1)) (n k : ℕ) :
     Semiconj f^[n] (g k) (g <| n + k) := by
-  induction' n with n ihn generalizing k
-  · rw [Nat.zero_add]
+  induction n generalizing k with
+  | zero =>
+    rw [Nat.zero_add]
     exact id_left
-  · rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
+  | succ n ihn =>
+    rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
     exact (H k).comp_left (ihn (k + 1))
 #align function.semiconj.iterate_left Function.Semiconj.iterate_left
 
@@ -151,10 +153,11 @@ theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
 #align function.commute.iterate_eq_of_map_eq Function.Commute.iterate_eq_of_map_eq
 
 theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
-  induction' n with n ihn
-  · rfl
-  funext x
-  simp only [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
+  induction n with
+  | zero => rfl
+  | succ n ihn =>
+    funext x
+    simp only [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
 #align function.commute.comp_iterate Function.Commute.comp_iterate
 
 variable (f)
@@ -257,9 +260,9 @@ open Function
 
 theorem foldl_const (f : α → α) (a : α) (l : List β) :
     l.foldl (fun b _ ↦ f b) a = f^[l.length] a := by
-  induction' l with b l H generalizing a
-  · rfl
-  · rw [length_cons, foldl, iterate_succ_apply, H]
+  induction l generalizing a with
+  | nil => rfl
+  | cons b l H => rw [length_cons, foldl, iterate_succ_apply, H]
 #align list.foldl_const List.foldl_const
 
 theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = f^[l.length] b
