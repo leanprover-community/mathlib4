@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Generate.ToAdditive
 
 #align_import algebra.pempty_instances from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
