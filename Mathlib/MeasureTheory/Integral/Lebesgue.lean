@@ -998,7 +998,7 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
       simp only [liminf_eq_iSup_iInf_of_nat]
     _ = ⨆ n : ℕ, ∫⁻ a, ⨅ i ≥ n, f i a ∂μ :=
-      (lintegral_iSup' (fun n => aemeasurable_biInf _ (to_countable _) h_meas)
+      (lintegral_iSup' (fun n => aemeasurable_biInf _ (to_countable _) (fun i _ ↦ h_meas i))
         (ae_of_all μ fun a n m hnm => iInf_le_iInf_of_subset fun i hi => le_trans hnm hi))
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := (iSup_mono fun n => le_iInf₂_lintegral _)
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
@@ -1021,7 +1021,7 @@ theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0�
     _ = ∫⁻ a, ⨅ n : ℕ, ⨆ i ≥ n, f i a ∂μ := by
       refine' (lintegral_iInf _ _ _).symm
       · intro n
-        exact measurable_biSup _ (to_countable _) hf_meas
+        exact measurable_biSup _ (to_countable _) (fun i _ ↦ hf_meas i)
       · intro n m hnm a
         exact iSup_le_iSup_of_subset fun i hi => le_trans hnm hi
       · refine' ne_top_of_le_ne_top h_fin (lintegral_mono_ae _)

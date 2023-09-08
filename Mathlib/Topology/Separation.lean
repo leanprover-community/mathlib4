@@ -349,7 +349,7 @@ theorem t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 #align t0_space_iff_or_not_mem_closure t0Space_iff_or_not_mem_closure
 
-instance [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
+instance Prod.instT0Space [TopologicalSpace β] [T0Space α] [T0Space β] : T0Space (α × β) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
 instance Pi.instT0Space {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
@@ -422,7 +422,7 @@ theorem isOpen_setOf_eventually_nhdsWithin [T1Space α] {p : α → Prop} :
 
 protected theorem Set.Finite.isClosed [T1Space α] {s : Set α} (hs : Set.Finite s) : IsClosed s := by
   rw [← biUnion_of_singleton s]
-  exact isClosed_biUnion hs fun i _ => isClosed_singleton
+  exact hs.isClosed_biUnion fun i _ => isClosed_singleton
 #align set.finite.is_closed Set.Finite.isClosed
 
 theorem TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne [T1Space α] {b : Set (Set α)}
@@ -1685,6 +1685,8 @@ a T₂.₅ space.  -/
 class T3Space (α : Type u) [TopologicalSpace α] extends T0Space α, RegularSpace α : Prop
 #align t3_space T3Space
 
+instance (priority := 90) [T0Space α] [RegularSpace α] : T3Space α := ⟨⟩
+
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space α] : T25Space α := by
   refine' ⟨fun x y hne => _⟩
@@ -1818,8 +1820,8 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
     · rw [biUnion_range]
       exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
     · simp only [← iSup_eq_iUnion, iSup_and']
-      exact isClosed_biUnion (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
-        inter_subset_right _ _) fun u _ => isClosed_closure
+      exact (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
+        inter_subset_right _ _).isClosed_biUnion fun u _ => isClosed_closure
   refine' ⟨fun s t hs ht hd => _⟩
   rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
   rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
