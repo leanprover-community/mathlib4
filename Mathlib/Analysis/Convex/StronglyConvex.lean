@@ -6,13 +6,13 @@ Authors: Chenyi Li, Ziyu Wang
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
-# Stongly convex functions from ℝⁿ to ℝ 
+# Stongly convex functions from ℝⁿ to ℝ
 
-In this file, we define the strongly convex functions and prove the basic properties 
+In this file, we define the strongly convex functions and prove the basic properties
 of a strongly convex function.
 We prove the equivalent definitions for a strongly convex functions.
 We prove the tighter bound for a strongly bound comparing with a general convex function.
-We prove that if a strongly convex function admits a feasible global minima, 
+We prove that if a strongly convex function admits a feasible global minima,
 then the minima is unique.
 
 ## TODO
@@ -22,7 +22,7 @@ Connect with L_smooth property and prove more theorems.
 -/
 
 variable {n : Type _} [Fintype n]  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-/- 
+/-
 Function f (x) is m - strongly convex iff
   f (x) - m * ‖x‖ ^ 2 / 2 is a convex function
 -/
@@ -30,25 +30,25 @@ Function f (x) is m - strongly convex iff
 def StronglyConvexOn (s : Set E) (m : ℝ) (f : E → ℝ) : Prop :=
  m > 0 ∧ ConvexOn ℝ s (fun x ↦ f x - m / 2 * ‖x‖ ^ 2)
 
-variable (s : Set E) {f : E → ℝ} 
+variable (s : Set E) {f : E → ℝ}
 
 lemma equiv_lemma {x y : E} {o m: ℝ} (h₁ : o > 0) (h₂ : o < 1):
-o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2) 
-  + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2 = 
-o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := 
+o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2)
+  + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2 =
+o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 :=
   calc o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2)
-           + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2  
-    _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * (‖x‖ ^ 2 - 2 * inner x y + ‖y‖ ^ 2) := by 
+           + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2
+    _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * (‖x‖ ^ 2 - 2 * inner x y + ‖y‖ ^ 2) := by
       simp only [Real.rpow_two]
       rw [norm_add_sq_real (o • x), norm_smul, norm_smul, real_inner_smul_left, inner_smul_right]
       simp only [Real.norm_eq_abs]
       rw [abs_of_pos (by linarith), abs_of_pos (by linarith), mul_pow, mul_pow]; ring_nf
-    _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := by 
+    _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := by
           simp only [Real.rpow_two]; rw [← norm_sub_sq_real]
 
 theorem Strongly_Convex_Bound (m : ℝ) (strongly_convex: StronglyConvexOn s m f):
 m > 0 ∧ ∀ (x : E), x ∈ s → ∀ (y : E) , y ∈ s
-→ ∀ (θ : ℝ), θ > 0 → θ < 1 → f (θ • x + (1 - θ) • y) ≤ 
+→ ∀ (θ : ℝ), θ > 0 → θ < 1 → f (θ • x + (1 - θ) • y) ≤
 θ * f x + (1 - θ) * f y - m / 2 * θ * (1 - θ) * ‖x - y‖ ^ 2 := by
   rcases strongly_convex with ⟨hm, _, hh⟩
   constructor; exact hm
@@ -59,8 +59,8 @@ m > 0 ∧ ∀ (x : E), x ∈ s → ∀ (y : E) , y ∈ s
   exact hh
 
 theorem Strongly_Convex_Def (hs : Convex ℝ s) (m : ℝ) (hm : m > 0)
-(hfun : ∀ (x :E), x ∈ s → ∀ (y : E) , y ∈ s → 
-  ∀ (θ : ℝ), θ > 0 → θ < 1 → f (θ • x + (1 - θ) • y) 
+(hfun : ∀ (x :E), x ∈ s → ∀ (y : E) , y ∈ s →
+  ∀ (θ : ℝ), θ > 0 → θ < 1 → f (θ • x + (1 - θ) • y)
     ≤ θ * f x + (1 - θ) * f y - m / 2 * θ * (1 - θ) * ‖x - y‖ ^ 2) :
 StronglyConvexOn s m f := by
   constructor
@@ -79,15 +79,15 @@ StronglyConvexOn s m f := by
   have hol: o < 1 := Ne.lt_of_le h' (by linarith)
   rw [add_comm, ← eq_sub_iff_add_eq] at hop
   rw [hop, sub_le_iff_le_add, equiv_lemma hog (by linarith)]
-  exact hfun x hx y hy o hog hol 
+  exact hfun x hx y hy o hog hol
 
 /-
-  m - strongly convex function ↔ ∀ x, y in domain s, ∀ θ ∈ (0, 1),  
-    f (θ • x + (1 - θ) • y) ≤ θ * f x + (1 - θ) * f y - m / 2 * θ * (1 - θ) * ‖x - y‖ ^ 2 
+  m - strongly convex function ↔ ∀ x, y in domain s, ∀ θ ∈ (0, 1),
+    f (θ • x + (1 - θ) • y) ≤ θ * f x + (1 - θ) * f y - m / 2 * θ * (1 - θ) * ‖x - y‖ ^ 2
 -/
 theorem Strongly_Convex_Iff (hs : Convex ℝ s) (m : ℝ):
   StronglyConvexOn s m f ↔ m > 0 ∧ ∀ (x :E),
-    x ∈ s → ∀ (y : E) , y ∈ s → ∀ (θ : ℝ), θ > 0 → θ < 1 
+    x ∈ s → ∀ (y : E) , y ∈ s → ∀ (θ : ℝ), θ > 0 → θ < 1
       → f (θ • x + (1 - θ) • y) ≤ θ * f x + (1 - θ) * f y - m / 2 * θ * (1 - θ) * ‖x - y‖ ^ 2 := by
   constructor
   · intro h
@@ -149,4 +149,3 @@ theorem Strongly_Convex_Unique_Minima (m : ℝ) {xm xm': E} (hsc: StronglyConvex
       exact @hs xm hxm xm' hxm' (1 / 2) (1 - 1 / 2) (by norm_num) (by norm_num) (by ring)
     apply min' this
   linarith
-  
