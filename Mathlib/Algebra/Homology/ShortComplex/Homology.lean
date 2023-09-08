@@ -541,7 +541,7 @@ def leftRightHomologyComparison' (h₁ : S.LeftHomologyData) (h₂ : S.RightHomo
     (by rw [← cancel_epi h₁.π, LeftHomologyData.π_descH_assoc, assoc,
       RightHomologyData.p_g', LeftHomologyData.wi, comp_zero])
 
-lemma leftRightHomologyComparison'_eq₁ (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
+lemma leftRightHomologyComparison'_eq_liftH (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     leftRightHomologyComparison' h₁ h₂ =
   h₂.liftH (h₁.descH (h₁.i ≫ h₂.p) (by simp))
     (by rw [← cancel_epi h₁.π, LeftHomologyData.π_descH_assoc, assoc,
@@ -550,10 +550,10 @@ lemma leftRightHomologyComparison'_eq₁ (h₁ : S.LeftHomologyData) (h₂ : S.R
 @[reassoc (attr := simp)]
 lemma π_leftRightHomologyComparison'_ι (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     h₁.π ≫ leftRightHomologyComparison' h₁ h₂ ≫ h₂.ι = h₁.i ≫ h₂.p :=
-  by simp only [leftRightHomologyComparison'_eq₁,
+  by simp only [leftRightHomologyComparison'_eq_liftH,
     RightHomologyData.liftH_ι, LeftHomologyData.π_descH]
 
-lemma leftRightHomologyComparison'_eq₂ (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
+lemma leftRightHomologyComparison'_eq_descH (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     leftRightHomologyComparison' h₁ h₂ =
   h₁.descH (h₂.liftH (h₁.i ≫ h₂.p) (by simp))
     (by rw [← cancel_mono h₂.ι, assoc, RightHomologyData.liftH_ι,
