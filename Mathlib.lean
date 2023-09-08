@@ -2032,6 +2032,7 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.GroupTheory.MonoidLocalization
@@ -2058,11 +2059,8 @@ import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.SpecificGroups.Coprod
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.GroupTheory.SpecificGroups.HNNExtension
-import Mathlib.GroupTheory.SpecificGroups.PushoutI
 import Mathlib.GroupTheory.SpecificGroups.Quaternion
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Basic
