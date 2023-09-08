@@ -891,12 +891,12 @@ theorem ContDiffOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F
 
 theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x) (g x) :=
-  isBoundedBilinearMapApply.contDiff.comp₂ hf hg
+  isBoundedBilinearMap_apply.contDiff.comp₂ hf hg
 #align cont_diff.clm_apply ContDiff.clm_apply
 
 theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x) (g x)) s :=
-  isBoundedBilinearMapApply.contDiff.comp_contDiff_on₂ hf hg
+  isBoundedBilinearMap_apply.contDiff.comp_contDiff_on₂ hf hg
 #align cont_diff_on.clm_apply ContDiffOn.clm_apply
 
 -- porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
@@ -2094,7 +2094,7 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
     · ext x; rfl
     simp_rw [this]
     apply ContDiff.comp_contDiffOn _ h
-    exact (isBoundedBilinearMapApply.isBoundedLinearMap_left _).contDiff
+    exact (isBoundedBilinearMap_apply.isBoundedLinearMap_left _).contDiff
   · intro h
     have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂
     · ext x; simp [derivWithin]
@@ -2345,7 +2345,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       (fun i j => ‖iteratedFDerivWithin 𝕜 i f s x‖ * ‖iteratedFDerivWithin 𝕜 j g s x‖) n).symm
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear_aux ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux
 
-set_option maxHeartbeats 900000 in -- 4.5× the default limit
+set_option maxHeartbeats 700000 in -- 3.5× the default limit
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear:
 `‖D^n (x ↦ B (f x) (g x))‖ ≤ ‖B‖ ∑_{k ≤ n} n.choose k ‖D^k f‖ ‖D^{n-k} g‖` -/
@@ -2542,7 +2542,6 @@ theorem norm_iteratedFDeriv_mul_le {f : E → A} {g : E → A} {N : ℕ∞} (hf 
 
 end
 
-set_option maxHeartbeats 300000 in
 /-- If the derivatives within a set of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 within a set of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.
