@@ -59,7 +59,7 @@ variable {L : Language.{u, v}} {L' : Language}
 
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
 
@@ -447,6 +447,7 @@ theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α �
   rw [if_pos i.is_lt]
 #align first_order.language.bounded_formula.realize_lift_at_one_self FirstOrder.Language.BoundedFormula.realize_liftAt_one_self
 
+@[simp]
 theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : β → M} {xs : Fin n → M} :
     (φ.subst tf).Realize v xs ↔ φ.Realize (fun a => (tf a).realize v) xs :=
   realize_mapTermRel_id
@@ -906,6 +907,59 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
       rw [← Fin.snoc_init_self xs] at h
       exact ⟨_, _, h⟩
 #align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iAlls
+    [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iAlls f).Realize v ↔
+      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  rw [Formula.iAlls]
+  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
+    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+  refine Equiv.forall_congr ?_ ?_
+  · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+      fun _ => by simp [Function.comp],
+      fun _ => by simp [Function.comp]⟩
+  · intro x
+    rw [Formula.Realize, iff_iff_eq]
+    congr
+    · funext i
+      exact i.elim0
+
+@[simp]
+theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iAlls f) v v' ↔
+      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iExs
+    [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iExs f).Realize v ↔
+      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  rw [Formula.iExs]
+  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
+    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+  rw [← not_iff_not, not_exists, not_exists]
+  refine Equiv.forall_congr ?_ ?_
+  · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+      fun _ => by simp [Function.comp],
+      fun _ => by simp [Function.comp]⟩
+  · intro x
+    rw [Formula.Realize, iff_iff_eq]
+    congr
+    · funext i
+      exact i.elim0
+
+@[simp]
+theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iExs f) v v' ↔
+      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp
 
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :

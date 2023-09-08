@@ -1069,6 +1069,7 @@ import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
+import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
@@ -1742,7 +1743,9 @@ import Mathlib.Data.QPF.Univariate.Basic
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Denumerable
 import Mathlib.Data.Rat.Encodable
@@ -2084,8 +2087,6 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Algebra.Functions
-import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
 import Mathlib.Init.CCLemmas
 import Mathlib.Init.Classes.Order
@@ -2127,6 +2128,8 @@ import Mathlib.Init.Function
 import Mathlib.Init.IteSimp
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Order.Defs
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
@@ -2282,6 +2285,7 @@ import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
 import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
+import Mathlib.LinearAlgebra.QuadraticForm.Dual
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.LinearAlgebra.QuadraticForm.Real
@@ -3381,6 +3385,7 @@ import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Hom.Esakia
 import Mathlib.Topology.Order.Lattice
@@ -3426,6 +3431,7 @@ import Mathlib.Topology.Sheaves.Skyscraper
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
+import Mathlib.Topology.Specialization
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.SubsetProperties
