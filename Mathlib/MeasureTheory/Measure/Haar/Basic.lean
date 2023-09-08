@@ -700,9 +700,9 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
 
 @[to_additive]
 theorem  haarMeasure_eq (K₀ K₁ : TopologicalSpace.PositiveCompacts G) :
-    haarMeasure K₀ = haarMeasure K₁ ↔ (haarMeasure K₀) K₁ = 1 := by
-    refine ⟨fun h => h.symm ▸ haarMeasure_self,
-      fun h => by rw [haarMeasure_unique (haarMeasure K₀) K₁, h, one_smul]⟩
+    haarMeasure K₀ = haarMeasure K₁ ↔ (haarMeasure K₀) K₁ = 1 :=
+  ⟨fun h => h.symm ▸ haarMeasure_self,
+    fun h => by rw [haarMeasure_unique (haarMeasure K₀) K₁, h, one_smul]⟩
 
 example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
     μ = μ K₀.1 • haarMeasure K₀ :=
