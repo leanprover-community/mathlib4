@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
+import Mathlib.Data.Rat.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.NeZero
@@ -43,7 +44,7 @@ See the implementation notes for remarks about non-associative and non-unital al
   * `algebraNat`
   * `algebraInt`
   * `algebraRat`
-  * `module.End.algebra`
+  * `Module.End.instAlgebra`
 
 ## Implementation notes
 

@@ -1105,7 +1105,7 @@ theorem continuousAt_codRestrict_iff {f : α → β} {t : Set β} (h1 : ∀ x, f
   inducing_subtype_val.continuousAt_iff
 #align continuous_at_cod_restrict_iff continuousAt_codRestrict_iff
 
-alias continuousAt_codRestrict_iff ↔ _ ContinuousAt.codRestrict
+alias ⟨_, ContinuousAt.codRestrict⟩ := continuousAt_codRestrict_iff
 #align continuous_at.cod_restrict ContinuousAt.codRestrict
 
 theorem ContinuousAt.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t) {x : s}
@@ -1306,7 +1306,7 @@ theorem Continuous.fin_insertNth {n} {π : Fin (n + 1) → Type*} [∀ i, Topolo
 
 theorem isOpen_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hi : i.Finite)
     (hs : ∀ a ∈ i, IsOpen (s a)) : IsOpen (pi i s) := by
-  rw [pi_def]; exact isOpen_biInter hi fun a ha => (hs _ ha).preimage (continuous_apply _)
+  rw [pi_def]; exact hi.isOpen_biInter fun a ha => (hs _ ha).preimage (continuous_apply _)
 #align is_open_set_pi isOpen_set_pi
 
 theorem isOpen_pi_iff {s : Set (∀ a, π a)} :

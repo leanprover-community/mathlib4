@@ -229,29 +229,170 @@ lemma contractible_distinguished₂ (X : C) :
     (by aesop_cat) (by aesop_cat)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
-lemma yoneda_exact₂ (T : Triangle C) (hT : T ∈ distTriang C) {X : C}
-    (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) : ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
+namespace Triangle
+
+variable (T : Triangle C) (hT : T ∈ distTriang C)
+
+lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
+    ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
   obtain ⟨g, ⟨hg₁, _⟩⟩ := complete_distinguished_triangle_morphism T _ hT
     (contractible_distinguished₁ X) 0 f (by aesop_cat)
   exact ⟨g, by simpa using hg₁.symm⟩
 
-lemma yoneda_exact₃ (T : Triangle C) (hT : T ∈ distTriang C) {X : C}
-    (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) : ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
+lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
+    ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
   yoneda_exact₂ _ (rot_of_dist_triangle _ hT) f hf
 
-lemma coyoneda_exact₂ (T : Triangle C) (hT : T ∈ distTriang C) {X : C} (f : X ⟶ T.obj₂)
-    (hf : f ≫ T.mor₂ = 0) : ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
+lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
+    ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
   obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ T
     (contractible_distinguished X) hT f 0 (by aesop_cat)
   exact ⟨a, by simpa using ha₁⟩
 
-lemma coyoneda_exact₁ (T : Triangle C) (hT : T ∈ distTriang C) {X : C}
-    (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) : ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
+lemma coyoneda_exact₁ {X : C} (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) :
+    ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
   coyoneda_exact₂ _ (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)) f (by aesop_cat)
 
-lemma coyoneda_exact₃ (T : Triangle C) (hT : T ∈ distTriang C) {X : C} (f : X ⟶ T.obj₃)
-    (hf : f ≫ T.mor₃ = 0) : ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=
+lemma coyoneda_exact₃ {X : C} (f : X ⟶ T.obj₃) (hf : f ≫ T.mor₃ = 0) :
+    ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=
   coyoneda_exact₂ _ (rot_of_dist_triangle _ hT) f hf
+
+lemma mor₃_eq_zero_iff_epi₂ : T.mor₃ = 0 ↔ Epi T.mor₂ := by
+  constructor
+  · intro h
+    rw [epi_iff_cancel_zero]
+    intro X g hg
+    obtain ⟨f, rfl⟩ := yoneda_exact₃ T hT g hg
+    rw [h, zero_comp]
+  · intro
+    rw [← cancel_epi T.mor₂, comp_dist_triangle_mor_zero₂₃ _ hT, comp_zero]
+
+lemma mor₂_eq_zero_iff_epi₁ : T.mor₂ = 0 ↔ Epi T.mor₁ := by
+  have h := mor₃_eq_zero_iff_epi₂ _ (inv_rot_of_dist_triangle _ hT)
+  dsimp at h
+  rw [← h, IsIso.comp_right_eq_zero]
+
+lemma mor₁_eq_zero_iff_epi₃ : T.mor₁ = 0 ↔ Epi T.mor₃ := by
+  have h := mor₃_eq_zero_iff_epi₂ _ (rot_of_dist_triangle _ hT)
+  dsimp at h
+  rw [← h, neg_eq_zero]
+  constructor
+  · intro h
+    simp only [h, Functor.map_zero]
+  · intro h
+    rw [← (CategoryTheory.shiftFunctor C (1 : ℤ)).map_eq_zero_iff, h]
+
+lemma mor₃_eq_zero_of_epi₂ (h : Epi T.mor₂) : T.mor₃ = 0 := (T.mor₃_eq_zero_iff_epi₂ hT).2 h
+lemma mor₂_eq_zero_of_epi₁ (h : Epi T.mor₁) : T.mor₂ = 0 := (T.mor₂_eq_zero_iff_epi₁ hT).2 h
+lemma mor₁_eq_zero_of_epi₃ (h : Epi T.mor₃) : T.mor₁ = 0 := (T.mor₁_eq_zero_iff_epi₃ hT).2 h
+
+lemma epi₂ (h : T.mor₃ = 0) : Epi T.mor₂ := (T.mor₃_eq_zero_iff_epi₂ hT).1 h
+lemma epi₁ (h : T.mor₂ = 0) : Epi T.mor₁ := (T.mor₂_eq_zero_iff_epi₁ hT).1 h
+lemma epi₃ (h : T.mor₁ = 0) : Epi T.mor₃ := (T.mor₁_eq_zero_iff_epi₃ hT).1 h
+
+lemma mor₁_eq_zero_iff_mono₂ : T.mor₁ = 0 ↔ Mono T.mor₂ := by
+  constructor
+  · intro h
+    rw [mono_iff_cancel_zero]
+    intro X g hg
+    obtain ⟨f, rfl⟩ := coyoneda_exact₂ T hT g hg
+    rw [h, comp_zero]
+  · intro
+    rw [← cancel_mono T.mor₂, comp_dist_triangle_mor_zero₁₂ _ hT, zero_comp]
+
+lemma mor₂_eq_zero_iff_mono₃ : T.mor₂ = 0 ↔ Mono T.mor₃ :=
+  mor₁_eq_zero_iff_mono₂ _ (rot_of_dist_triangle _ hT)
+
+lemma mor₃_eq_zero_iff_mono₁ : T.mor₃ = 0 ↔ Mono T.mor₁ := by
+  have h := mor₁_eq_zero_iff_mono₂ _ (inv_rot_of_dist_triangle _ hT)
+  dsimp at h
+  rw [← h, neg_eq_zero, IsIso.comp_right_eq_zero]
+  constructor
+  · intro h
+    simp only [h, Functor.map_zero]
+  · intro h
+    rw [← (CategoryTheory.shiftFunctor C (-1 : ℤ)).map_eq_zero_iff, h]
+
+lemma mor₁_eq_zero_of_mono₂ (h : Mono T.mor₂) : T.mor₁ = 0 := (T.mor₁_eq_zero_iff_mono₂ hT).2 h
+lemma mor₂_eq_zero_of_mono₃ (h : Mono T.mor₃) : T.mor₂ = 0 := (T.mor₂_eq_zero_iff_mono₃ hT).2 h
+lemma mor₃_eq_zero_of_mono₁ (h : Mono T.mor₁) : T.mor₃ = 0 := (T.mor₃_eq_zero_iff_mono₁ hT).2 h
+
+lemma mono₂ (h : T.mor₁ = 0) : Mono T.mor₂ := (T.mor₁_eq_zero_iff_mono₂ hT).1 h
+lemma mono₃ (h : T.mor₂ = 0) : Mono T.mor₃ := (T.mor₂_eq_zero_iff_mono₃ hT).1 h
+lemma mono₁ (h : T.mor₃ = 0) : Mono T.mor₁ := (T.mor₃_eq_zero_iff_mono₁ hT).1 h
+
+lemma isZero₂_iff : IsZero T.obj₂ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
+  constructor
+  · intro h
+    exact ⟨h.eq_of_tgt _ _, h.eq_of_src _ _⟩
+  · intro ⟨h₁, h₂⟩
+    obtain ⟨f, hf⟩ := coyoneda_exact₂ T hT (𝟙 _) (by rw [h₂, comp_zero])
+    rw [IsZero.iff_id_eq_zero, hf, h₁, comp_zero]
+
+lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
+  refine' (isZero₂_iff _ (inv_rot_of_dist_triangle _ hT)).trans _
+  dsimp
+  simp [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
+  tauto
+
+lemma isZero₃_iff : IsZero T.obj₃ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by
+  refine' (isZero₂_iff _ (rot_of_dist_triangle _ hT)).trans _
+  dsimp
+  tauto
+
+lemma isZero₁_of_isZero₂₃ (h₂ : IsZero T.obj₂) (h₃ : IsZero T.obj₃) : IsZero T.obj₁ := by
+  rw [T.isZero₁_iff hT]
+  exact ⟨h₂.eq_of_tgt _ _, h₃.eq_of_src _ _⟩
+
+lemma isZero₂_of_isZero₁₃ (h₁ : IsZero T.obj₁) (h₃ : IsZero T.obj₃) : IsZero T.obj₂ := by
+  rw [T.isZero₂_iff hT]
+  exact ⟨h₁.eq_of_src _ _, h₃.eq_of_tgt _ _⟩
+
+lemma isZero₃_of_isZero₁₂ (h₁ : IsZero T.obj₁) (h₂ : IsZero T.obj₂) : IsZero T.obj₃ :=
+  isZero₂_of_isZero₁₃ _ (rot_of_dist_triangle _ hT) h₂ (by
+    dsimp
+    simp only [IsZero.iff_id_eq_zero] at h₁ ⊢
+    rw [← Functor.map_id, h₁, Functor.map_zero])
+
+lemma isZero₁_iff_isIso₂ :
+    IsZero T.obj₁ ↔ IsIso T.mor₂ := by
+  rw [T.isZero₁_iff hT]
+  constructor
+  · intro ⟨h₁, h₃⟩
+    have := T.epi₂ hT h₃
+    obtain ⟨f, hf⟩ := yoneda_exact₂ T hT (𝟙 _) (by rw [h₁, zero_comp])
+    exact ⟨f, hf.symm, by rw [← cancel_epi T.mor₂, comp_id, ← reassoc_of% hf]⟩
+  · intro
+    rw [T.mor₁_eq_zero_iff_mono₂ hT, T.mor₃_eq_zero_iff_epi₂ hT]
+    constructor <;> infer_instance
+
+lemma isZero₂_iff_isIso₃ : IsZero T.obj₂ ↔ IsIso T.mor₃ :=
+  isZero₁_iff_isIso₂ _ (rot_of_dist_triangle _ hT)
+
+lemma isZero₃_iff_isIso₁ : IsZero T.obj₃ ↔ IsIso T.mor₁ := by
+  refine' Iff.trans _ (Triangle.isZero₁_iff_isIso₂ _ (inv_rot_of_dist_triangle _ hT))
+  dsimp
+  simp only [IsZero.iff_id_eq_zero, ← Functor.map_id, Functor.map_eq_zero_iff]
+
+lemma isZero₁_of_isIso₂ (h : IsIso T.mor₂) : IsZero T.obj₁ := (T.isZero₁_iff_isIso₂ hT).2 h
+lemma isZero₂_of_isIso₃ (h : IsIso T.mor₃) : IsZero T.obj₂ := (T.isZero₂_iff_isIso₃ hT).2 h
+lemma isZero₃_of_isIso₁ (h : IsIso T.mor₁) : IsZero T.obj₃ := (T.isZero₃_iff_isIso₁ hT).2 h
+
+end Triangle
+
+instance : SplitEpiCategory C where
+  isSplitEpi_of_epi f hf := by
+    obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
+    obtain ⟨r, hr⟩ := Triangle.coyoneda_exact₂ _ hT (𝟙 _)
+      (by rw [Triangle.mor₂_eq_zero_of_epi₁ _ hT hf, comp_zero])
+    exact ⟨r, hr.symm⟩
+
+instance : SplitMonoCategory C where
+  isSplitMono_of_mono f hf := by
+    obtain ⟨X, g, h, hT⟩ := distinguished_cocone_triangle₁ f
+    obtain ⟨r, hr⟩ := Triangle.yoneda_exact₂ _ hT (𝟙 _) (by
+      rw [Triangle.mor₁_eq_zero_of_mono₂ _ hT hf, zero_comp])
+    exact ⟨r, hr.symm⟩
 
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
