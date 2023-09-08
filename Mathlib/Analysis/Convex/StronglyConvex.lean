@@ -33,7 +33,7 @@ def StronglyConvexOn (s : Set E) (m : ℝ) (f : E → ℝ) : Prop :=
 
 variable (s : Set E) {f : E → ℝ} 
 
-lemma equiv_lemma {x y : E} {o : ℝ} (h₁ : o > 0) (h₂ : o < 1):
+lemma equiv_lemma {x y : E} {o m: ℝ} (h₁ : o > 0) (h₂ : o < 1):
 o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2) + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2 = 
 o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := 
   calc o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2)
