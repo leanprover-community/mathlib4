@@ -256,7 +256,7 @@ theorem Embedding.closure_eq_preimage_closure_image {e : α → β} (he : Embedd
   he.1.closure_eq_preimage_closure_image s
 #align embedding.closure_eq_preimage_closure_image Embedding.closure_eq_preimage_closure_image
 
-/-- The topology induced under an inclusion `f : X → Y` from the discrete topological space `Y`
+/-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
 is the discrete topology on `X`.
 
 See also `DiscreteTopology.of_continuous_injective`. -/
