@@ -84,6 +84,8 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
     exact zero_mk _ _ _
   · exact congr_arg num
 
+lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
+
 private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a :=
   Int.dvd_natAbs.1 <| Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left (Int.natAbs a) b
 -- Porting note: no #align here as the declaration is private.
