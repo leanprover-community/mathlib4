@@ -67,3 +67,23 @@ theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
   rw [← o.measure_eq_volume]
   exact o.measure_orthonormalBasis b
 #align orthonormal_basis.volume_parallelepiped OrthonormalBasis.volume_parallelepiped
+
+/-- The Haar measure defined by any orthonormal basis of a finite-dimensional inner product space
+is equal to its volume measure. -/
+theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAddCommGroup F]
+    [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F]
+    (b : OrthonormalBasis ι ℝ F) :
+    b.toBasis.addHaar = volume := by
+  dsimp only [volume]
+  rw [eq_comm, Basis.addHaar_eq]
+  exact b.volume_parallelepiped
+
+/-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
+theorem EuclideanSpace.volume_preserving_measurableEquiv (ι : Type*) [Fintype ι] :
+    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
+  classical
+  convert ((EuclideanSpace.measurableEquiv ι).measurable.measurePreserving _)
+  rw [coe_measurableEquiv, ← (EuclideanSpace.basisFun _ _).addHaar_eq_volume,
+    ← addHaarMeasure_eq_volume_pi, Basis.addHaar_map, ← Basis.parallelepiped_basisFun,
+    Basis.addHaar_def, addHaarMeasure_eq, EuclideanSpace.basisFun_toBasis]
+  exact  addHaarMeasure_self
