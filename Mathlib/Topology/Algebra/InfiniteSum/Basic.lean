@@ -1550,9 +1550,9 @@ variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
 /-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
-  QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-    = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
-AddAction.automorphize_smul_left f g
+    QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
+  AddAction.automorphize_smul_left f g
 
 end
 
