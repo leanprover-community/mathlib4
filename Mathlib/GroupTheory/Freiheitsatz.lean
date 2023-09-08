@@ -4,8 +4,8 @@ Released under Apahe 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.GroupTheory.SpecificGroups.PushoutI
-import Mathlib.GroupTheory.SpecificGroups.HNNExtension
+import Mathlib.GroupTheory.PushoutI
+import Mathlib.GroupTheory.HNNExtension
 
 variable {α G : Type*} [Group G] (r : FreeGroup α)
 
