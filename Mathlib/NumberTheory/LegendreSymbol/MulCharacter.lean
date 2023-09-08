@@ -143,6 +143,24 @@ theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
   χ.map_nonunit' a ha
 #align mul_char.map_nonunit MulChar.map_nonunit
 
+@[simp]
+lemma toMonoidHom_coe (χ : MulChar R R') : χ.toMonoidHom = χ :=
+  rfl
+
+@[simp]
+lemma toMonoidHom_coe' (χ : MulChar R R') (x : R) : χ.toMonoidHom x = χ x :=
+  rfl
+
+@[simp]
+lemma toMonoidHom_toFun_coe (χ : MulChar R R') : χ.toMonoidHom.toFun = χ :=
+  rfl
+
+@[simp]
+lemma toMonoidHom_toFun_coe' (χ : MulChar R R') (x : R) : χ.toMonoidHom.toFun x = χ x :=
+  rfl
+
+#lint
+
 /-- Extensionality. Since `MulChar`s always take the value zero on non-units, it is sufficient
 to compare the values on units. -/
 @[ext]
