@@ -1426,15 +1426,12 @@ open Submodule
 -- Porting note: remove this at some point; this spends a lot of time
 -- checking that AddCommGroup structures on V₁ ⧸ W.dualAnnihilator are defEq
 -- was much worse with implicit universe variables
-set_option maxHeartbeats 400000 in
 theorem dualPairing_eq (W : Subspace K V₁) :
     W.dualPairing = W.quotAnnihilatorEquiv.toLinearMap := by
   ext
   rfl
 #align subspace.dual_pairing_eq Subspace.dualPairing_eq
 
--- Porting note: remove this
-set_option maxHeartbeats 400000 in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]
