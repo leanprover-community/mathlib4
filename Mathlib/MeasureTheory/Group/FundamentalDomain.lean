@@ -903,6 +903,16 @@ theorem measurePreserving_quotient_mk_of_quotientVolumeEqVolumePreimage
     rw [QuotientVolumeEqVolumePreimage.eq_quotientMeasure (μ := μ) (fund_dom_s := h𝓕),
       meas_𝓕.quotientMeasure_eq_map_restrict]
 
+/-- If a fundamental domain has volume 0, then `QuotientVolumeEqVolumePreimage` holds. -/
+theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_of_volume_zero
+    {s : Set α} (fund_dom_s : IsFundamentalDomain G s) (meas_s : MeasurableSet s)
+    (vol_s : volume s = 0) :
+    _root_.MeasureTheory.QuotientVolumeEqVolumePreimage (0 : Measure (Quotient α_mod_G)) := by
+  apply fund_dom_s.QuotientVolumeEqVolumePreimage meas_s
+  intro U _
+  simp only [zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
+  exact Eq.symm (measure_inter_null_of_null_right (Quotient.mk α_mod_G ⁻¹' U) vol_s)
+
 end QuotientVolumeEqVolume
 
 end MeasureTheory
