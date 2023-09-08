@@ -725,9 +725,8 @@ theorem center_toSubmonoid (R) [Semiring R] : (center R).toSubmonoid = Submonoid
   rfl
 #align subsemiring.center_to_submonoid Subsemiring.center_toSubmonoid
 
-theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
-  rw [← Subsemigroup.mem_center_iff]
-  exact Iff.rfl
+theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
+  Subsemigroup.mem_center_iff
 #align subsemiring.mem_center_iff Subsemiring.mem_center_iff
 
 instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
