@@ -30,7 +30,7 @@ dirichlet character, multiplicative character
 lemma cast_hom_self {n : ℕ} : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
   RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
 
-/-- The Dirichlet character of level `n`. -/
+/-- The type of Dirichlet characters of level `n`. -/
 @[reducible]
 def DirichletCharacter (R : Type) [Monoid R] (n : ℕ) := (ZMod n)ˣ →* Rˣ
 
@@ -46,7 +46,7 @@ variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R 
 namespace DirichletCharacter
 lemma ofUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) :
   ofUnitHom χ a = χ ha.unit := by
-  conv_lhs => rw [← (IsUnit.unit_spec ha)]
+  conv_lhs => rw [← ha.unit_spec]
   simp only [ofUnitHom_eq, MulChar.equivToUnitHom_symm_coe]
 
 lemma ofUnitHom_eq_zero {a : ZMod n} (ha : ¬ IsUnit a) :
