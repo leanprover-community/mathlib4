@@ -1973,7 +1973,7 @@ Then there is an open neighborhood of `s` on which `f` and `g` are uniformly clo
 lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     [TopologicalSpace β] {r : Set (α × α)} {s : Set β}
     {f g : β → α} (hf : ∀ x ∈ s, ContinuousAt f x) (hg : ∀ x ∈ s, ContinuousAt g x)
-    (hfg : ∀ x ∈ s, f x = g x) (hr : r ∈ 𝓤 α) :
+    (hfg : s.EqOn f g) (hr : r ∈ 𝓤 α) :
     ∃ t, IsOpen t ∧ s ⊆ t ∧ ∀ x ∈ t, (f x, g x) ∈ r := by
   have A : ∀ x ∈ s, ∃ t, IsOpen t ∧ x ∈ t ∧ ∀ z ∈ t, (f z, g z) ∈ r := by
     intro x hx
@@ -1984,7 +1984,7 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     refine ⟨u, u_open, xu, fun y hy ↦ ?_⟩
     have I1 : (f y, f x) ∈ t :=  (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
-    rw [hfg x hx] at I1
+    rw [hfg hx] at I1
     exact htr (prod_mk_mem_compRel I1 I2)
   choose! t t_open xt ht using A
   refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), ?_⟩

@@ -518,7 +518,6 @@ lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
   rcases L.exists with ⟨n, hn⟩
   exact isCompact_of_isClosed_subset (M n x) isClosed_ball (closedBall_subset_closedBall hn)
 
-
 end Riesz
 
 open ContinuousLinearMap

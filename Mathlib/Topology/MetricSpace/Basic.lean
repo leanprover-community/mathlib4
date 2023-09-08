@@ -1961,8 +1961,7 @@ lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
     ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
   have : ∀ᶠ r in 𝓝[>] 0, IsCompact (closedBall x r) :=
     eventually_nhdsWithin_of_eventually_nhds (eventually_isCompact_closedBall x)
-  rcases (this.and self_mem_nhdsWithin).exists with ⟨r, hr, h'r⟩
-  exact ⟨r, h'r, hr⟩
+  simpa only [and_comm] using (this.and self_mem_nhdsWithin).exists
 
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
   forall_congr' fun x => by
