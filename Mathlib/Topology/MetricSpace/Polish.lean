@@ -153,6 +153,7 @@ theorem _root_.ClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpa
   infer_instance
 #align closed_embedding.polish_space ClosedEmbedding.polishSpace
 
+/-- Any countable discrete space is Polish. -/
 instance (priority := 50) polish_of_countable [TopologicalSpace α]
     [h : Countable α] [DiscreteTopology α] : PolishSpace α := by
   obtain ⟨f, hf⟩ := h.exists_injective_nat
