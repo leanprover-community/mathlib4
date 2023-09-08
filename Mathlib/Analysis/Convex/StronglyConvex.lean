@@ -3,7 +3,6 @@ Copyright (c) 2023 Chenyi Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chenyi Li, Ziyu Wang
 -/
-import Mathlib.Tactic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -34,16 +33,17 @@ def StronglyConvexOn (s : Set E) (m : ℝ) (f : E → ℝ) : Prop :=
 variable (s : Set E) {f : E → ℝ} 
 
 lemma equiv_lemma {x y : E} {o m: ℝ} (h₁ : o > 0) (h₂ : o < 1):
-o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2) + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2 = 
+o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2) 
+  + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2 = 
 o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := 
   calc o * (f x - m / 2 * ‖x‖ ^ 2) + (1 - o) * (f y - m / 2 * ‖y‖ ^ 2)
            + m / 2 * ‖o • x + (1 - o) • y‖ ^ 2  
-       _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * (‖x‖ ^ 2 - 2 * inner x y + ‖y‖ ^ 2) := by 
-          simp only [Real.rpow_two]
-          rw [norm_add_sq_real (o • x), norm_smul, norm_smul, real_inner_smul_left, inner_smul_right]
-          simp; rw [abs_of_pos (by linarith), abs_of_pos (by linarith), mul_pow, mul_pow]
-          ring_nf;
-       _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := by 
+    _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * (‖x‖ ^ 2 - 2 * inner x y + ‖y‖ ^ 2) := by 
+      simp only [Real.rpow_two]
+      rw [norm_add_sq_real (o • x), norm_smul, norm_smul, real_inner_smul_left, inner_smul_right]
+      simp only [Real.norm_eq_abs]
+      rw [abs_of_pos (by linarith), abs_of_pos (by linarith), mul_pow, mul_pow]; ring_nf
+    _ = o * f x + (1 - o) * f y - m / 2 * o * (1 - o) * ‖x - y‖ ^ 2 := by 
           simp only [Real.rpow_two]; rw [← norm_sub_sq_real]
 
 theorem Strongly_Convex_Bound (m : ℝ) (strongly_convex: StronglyConvexOn s m f):
