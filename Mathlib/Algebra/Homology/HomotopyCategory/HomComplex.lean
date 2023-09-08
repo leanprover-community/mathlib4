@@ -194,11 +194,11 @@ def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G
 
 @[simp]
 lemma ofHomotopy_ofEq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
-    ofHomotopy (Homotopy.ofEq h) = 0 := by rfl
+    ofHomotopy (Homotopy.ofEq h) = 0 := rfl
 
 @[simp]
 lemma ofHomotopy_refl (φ : F ⟶ G) :
-    ofHomotopy (Homotopy.refl φ) = 0 := by rfl
+    ofHomotopy (Homotopy.refl φ) = 0 := rfl
 
 @[reassoc]
 lemma v_comp_XIsoOfEq_hom

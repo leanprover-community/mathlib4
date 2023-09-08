@@ -357,7 +357,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.ofReal_mul_re]
     · -- Porting note: was `change ... with ...`
-      have : Complex.re = IsROrC.re := by rfl
+      have : Complex.re = IsROrC.re := rfl
       rw [this, ← integral_re]; rfl
       refine' intervalIntegrable_iff.mp _
       cases' h' with h' h'
