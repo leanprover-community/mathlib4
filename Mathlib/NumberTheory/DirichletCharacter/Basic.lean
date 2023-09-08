@@ -61,7 +61,7 @@ lemma ofUnitHom_eq_iff (ψ : DirichletCharacter R n) :
 lemma ofUnitHom_eval_sub (x : ZMod n) :
   ofUnitHom χ (n - x) = ofUnitHom χ (-x) := by simp
 
-lemma isPeriodic (m : ℕ) (hm : n ∣ m) (a : ℤ) :
+lemma isPeriodic {m : ℕ} (hm : n ∣ m) (a : ℤ) :
   ofUnitHom χ (a + m) = ofUnitHom χ a := by
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
