@@ -187,7 +187,7 @@ variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [Topologic
   [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
   [SecondCountableTopology (G ⧸ Γ)] [Countable Γ] [Subgroup.Normal Γ]
   [IsMulLeftInvariant (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)]
-  {μ : Measure (G ⧸ Γ)} [IsHaarMeasure μ] [SigmaFinite μ]
+  {μ : Measure (G ⧸ Γ)} [IsMulLeftInvariant μ] [SigmaFinite μ]
   -- Note: couldn't get uniqueness without sigma finiteness
 
 local notation "π" => @QuotientGroup.mk G _ Γ
@@ -200,7 +200,7 @@ invariant measures, if normalized by a single positive finite-measured set. -/
 theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage_ofSet
     {s : Set G} (fund_dom_s : IsFundamentalDomain (Subgroup.opposite Γ) s)
     (meas_s : MeasurableSet s) (finiteVol : volume s ≠ ⊤)
-    {V : Set (G ⧸ Γ)} (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (neTopV : μ V ≠ ⊤)
+    {V : Set (G ⧸ Γ)} (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0)
     (hV : μ V = volume (π ⁻¹' V ∩ s)) : QuotientVolumeEqVolumePreimage μ := by
   apply fund_dom_s.QuotientVolumeEqVolumePreimage meas_s
   intro U meas_U
@@ -215,6 +215,11 @@ theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage_ofSet
     MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotient
   have : IsFiniteMeasure μ' :=
     QuotientVolumeEqVolumePreimage.Finite_quotient fin_coVol
+  have neTopV : μ V ≠ ⊤
+  · contrapose! finiteVol
+    rw [hV] at finiteVol
+    refine top_unique (trans finiteVol.symm ?_)
+    exact measure_mono (Set.inter_subset_right _ _)
   suffices : μ = μ'
   · rw [this, MeasurableSet.quotientMeasure_apply]
     exact meas_U
@@ -241,8 +246,6 @@ theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
     (meas_s := meas_s) (finiteVol := finiteCovol) (meas_V := MeasurableSet.univ)
   · rw [← h]
     exact meas_s_ne_zero
-  · rw [← h]
-    exact finiteCovol
   · rw [← h]
     simp
 
@@ -284,31 +287,22 @@ theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_HaarMeasure [Subgroup
     [BorelSpace (G ⧸ Γ)] [IsMulRightInvariant (volume : Measure G)] {𝓕 : Set G}
     (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
     (meas_𝓕 : MeasurableSet 𝓕) (h𝓕_finite : volume 𝓕 ≠ ⊤)
-    (μ : Measure (G ⧸ Γ)) [IsHaarMeasure μ] [SigmaFinite μ]
-    (hμK : μ K = volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) :
+    (μ : Measure (G ⧸ Γ)) [IsMulLeftInvariant μ] [SigmaFinite μ]
+    {V : Set (G ⧸ Γ)} (hV : (interior V).Nonempty) (meas_V : MeasurableSet V)
+    (hμK : μ V = volume ((QuotientGroup.mk' Γ ⁻¹' V) ∩ 𝓕)) :
     QuotientVolumeEqVolumePreimage μ := by
-  set c := volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
-  have c_nonzero : c ≠ 0
+  apply MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage_ofSet (fund_dom_s := h𝓕)
+    (meas_s := meas_𝓕) (finiteVol := h𝓕_finite) (meas_V := meas_V)
   · intro c_eq_zero
-    apply Measure.IsOpenPosMeasure.open_pos (interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))))
-      (μ := volume)
+    apply Measure.IsOpenPosMeasure.open_pos (interior (QuotientGroup.mk' Γ ⁻¹' V)) (μ := volume)
     · simp
     · apply Set.Nonempty.mono (preimage_interior_subset_interior_preimage continuous_coinduced_rng)
-      apply K.interior_nonempty.preimage'
+      apply hV.preimage'
       simp
     · apply measure_mono_null (h := interior_subset)
       apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientGroup.sound _ _)
+      rw [← hμK]
       exact c_eq_zero
-  have c_ne_top : c ≠ ⊤
-  · contrapose! h𝓕_finite
-    have : volume (↑(QuotientGroup.mk' Γ) ⁻¹' ↑K ∩ 𝓕) ≤ volume 𝓕 :=
-      measure_mono (Set.inter_subset_right _ _)
-    rw [h𝓕_finite] at this
-    exact top_unique this
-  apply MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage_ofSet (fund_dom_s := h𝓕)
-    (meas_s := meas_𝓕) (finiteVol := h𝓕_finite) (meas_V := K.isCompact.measurableSet)
-  · convert c_nonzero
-  · convert c_ne_top
   · exact hμK
 
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
@@ -322,17 +316,6 @@ theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_bubHaarMeasure [Subgr
     QuotientVolumeEqVolumePreimage
       ((volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) • Measure.haarMeasure K) := by
   set c := volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
-  have c_nonzero : c ≠ 0
-  · intro c_eq_zero
-    apply Measure.IsOpenPosMeasure.open_pos (interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))))
-      (μ := volume)
-    · simp
-    · apply Set.Nonempty.mono (preimage_interior_subset_interior_preimage continuous_coinduced_rng)
-      apply K.interior_nonempty.preimage'
-      simp
-    · apply measure_mono_null (h := interior_subset)
-      apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientGroup.sound _ _)
-      exact c_eq_zero
   have c_ne_top : c ≠ ⊤
   · contrapose! h𝓕_finite
     have : volume (↑(QuotientGroup.mk' Γ) ⁻¹' ↑K ∩ 𝓕) ≤ volume 𝓕 :=
@@ -341,15 +324,14 @@ theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_bubHaarMeasure [Subgr
     exact top_unique this
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [Measure.haarMeasure_self]
-  haveI : IsHaarMeasure μ := IsHaarMeasure.smul _ c_nonzero c_ne_top
+  haveI : IsMulLeftInvariant μ := isMulLeftInvariant_smul _
   haveI : SigmaFinite μ := by
     clear_value c
     lift c to NNReal using c_ne_top
     exact SMul.sigmaFinite c
-  apply MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage_ofSet (fund_dom_s := h𝓕)
-    (meas_s := meas_𝓕) (finiteVol := h𝓕_finite) (meas_V := K.isCompact.measurableSet)
-  · convert c_nonzero
-  · convert c_ne_top
+  apply IsFundamentalDomain.QuotientVolumeEqVolumePreimage_HaarMeasure (h𝓕 := h𝓕)
+    (meas_𝓕 := meas_𝓕) (h𝓕_finite := h𝓕_finite) (meas_V := K.isCompact.measurableSet) (μ := μ)
+  · exact K.interior_nonempty
   · exact hμK
 
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
