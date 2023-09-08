@@ -47,8 +47,8 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 (g x)) := by
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y, g y = 0 ∧ ∃ z, IsFixedPt f z ∧ x = y + z :=
     ⟨x - g x, by simp [hg_proj], g x, (g x).2, by simp⟩
-  suffices : Tendsto (birkhoffAverage 𝕜 f _root_.id · y) atTop (𝓝 0)
-  · have hgz : g z = z := congr_arg Subtype.val (hg_proj ⟨z, hz⟩)
+  suffices Tendsto (birkhoffAverage 𝕜 f _root_.id · y) atTop (𝓝 0) by
+    have hgz : g z = z := congr_arg Subtype.val (hg_proj ⟨z, hz⟩)
     simpa [hy, hgz, birkhoffAverage, birkhoffSum, Finset.sum_add_distrib, smul_add]
       using this.add (hz.tendsto_birkhoffAverage 𝕜 _root_.id)
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
