@@ -1,0 +1,3 @@
+[submodule "lake-packages/Cli"]
+	path = lake-packages/Cli
+	url = https://github.com/mhuisi/lean4-cli.git
