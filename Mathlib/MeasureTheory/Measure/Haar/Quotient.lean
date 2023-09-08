@@ -131,7 +131,7 @@ instance MeasureTheory.QuotientVolumeEqVolumePreimage.smulInvariantMeasure_quoti
   to a fundamental domain is measure-preserving with respect to `μ`. -/
 theorem measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
     [IsMulLeftInvariant (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)]
-    (𝓕 : Set G) (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
+    {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
     (meas_𝓕 : MeasurableSet 𝓕) (μ : Measure (G ⧸ Γ))
     [QuotientVolumeEqVolumePreimage μ] :
     MeasurePreserving (@QuotientGroup.mk G _ Γ) (volume.restrict 𝓕) μ :=
@@ -276,7 +276,6 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar [Subgroup.
 -- Lemma: behavior under scaling
 
 
-
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is
   measure-preserving between appropriate multiples of Haar measure on `G` and `G ⧸ Γ`. -/
@@ -289,25 +288,17 @@ theorem MeasurePreserving_QuotientGroup.TestCase [Subgroup.Normal Γ]
       ((volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) •
       MeasureTheory.Measure.haarMeasure K) := by
   set c := volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
-  have vol_int_nonzero : volume (interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ)))) ≠ 0
-  · have : (QuotientGroup.mk' Γ ⁻¹' (interior (K : Set (G ⧸ Γ)))) ⊆
-      (interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ)))) :=
-      preimage_interior_subset_interior_preimage continuous_coinduced_rng
-    have : Set.Nonempty (interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))))
-    · apply Set.Nonempty.mono this
-      apply Set.Nonempty.preimage' K.interior_nonempty
-      simp
-    refine @MeasureTheory.Measure.IsOpenPosMeasure.open_pos G _ _ volume _ _ ?_ this
-    simp
-  have : volume (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ≠ 0
-  · intro h_v
-    have : interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ⊆
-        QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ)) :=
-      interior_subset
-    exact vol_int_nonzero (@MeasureTheory.measure_mono_null _ _ _ _ _ this h_v)
   have c_nonzero : c ≠ 0
-  · contrapose! this
-    apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientGroup.sound _ _) (hts := this)
+  · intro c_eq_zero
+    apply Measure.IsOpenPosMeasure.open_pos (interior (QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))))
+      (μ := volume)
+    · simp
+    · apply Set.Nonempty.mono (preimage_interior_subset_interior_preimage continuous_coinduced_rng)
+      apply K.interior_nonempty.preimage'
+      simp
+    · apply measure_mono_null (h := interior_subset)
+      apply h𝓕.measure_zero_of_invariant (ht := fun g ↦ QuotientGroup.sound _ _)
+      exact c_eq_zero
   have c_ne_top : c ≠ ⊤
   · contrapose! h𝓕_finite
     have : volume (↑(QuotientGroup.mk' Γ) ⁻¹' ↑K ∩ 𝓕) ≤ volume 𝓕 :=
@@ -315,30 +306,18 @@ theorem MeasurePreserving_QuotientGroup.TestCase [Subgroup.Normal Γ]
     rw [h𝓕_finite] at this
     exact top_unique this
   set μ := c • haarMeasure K
+  have hμK : μ K = c := by simp [Measure.haarMeasure_self]
   haveI : IsHaarMeasure μ := IsHaarMeasure.smul _ c_nonzero c_ne_top
   haveI : SigmaFinite μ := by
-    let c' := ENNReal.toNNReal c
-    have c'_eq_c : c = c' := (ENNReal.coe_toNNReal c_ne_top).symm
-    have := @MeasureTheory.Measure.sigmaFinite_haarMeasure (K₀ := K) _ _ _ _ _ _ _
-    convert @MeasureTheory.SMul.sigmaFinite (c := c') (μ := haarMeasure K) this
-    ext U _
-    simp only [nnreal_smul_coe_apply]
-    congr
-  haveI hasDom : HasFundamentalDomain (Subgroup.opposite Γ) G := ⟨⟨𝓕, h𝓕, meas_𝓕⟩⟩
+    clear_value c
+    lift c to NNReal using c_ne_top
+    exact SMul.sigmaFinite c
   haveI : QuotientVolumeEqVolumePreimage μ := by
     apply MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage_ofSet (fund_dom_s := h𝓕)
       (meas_s := meas_𝓕) (finiteVol := h𝓕_finite) (meas_V := K.isCompact.measurableSet)
     · convert c_nonzero
-      rw [Measure.smul_apply, Measure.haarMeasure_self]
-      simp
     · convert c_ne_top
-      rw [Measure.smul_apply, Measure.haarMeasure_self]
-      simp
-    · rw [Measure.smul_apply, Measure.haarMeasure_self]
-      simp
-  apply measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
-  · exact h𝓕
-  · exact meas_𝓕
-
+    · exact hμK
+  apply measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage h𝓕 meas_𝓕
 
 end QuotientIsHaar
