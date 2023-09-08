@@ -26,4 +26,22 @@ def harmonic : ℕ  → ℚ
 | 0 => 0
 | (k+1) => 1 / (k+1) + harmonic k
 
-theorem harmonic_not_int : ∀ n, n ≥ 2 -> (harmonic n).isInt = False := sorry
+theorem not_int_of_not_padic_int (a : ℚ) : padicNorm 2 a >1 → a.isInt = False := by {
+  intro H
+  by_cases (a = 0)
+  {
+    rw [h] at H h
+    dsimp [padicNorm] at *
+    simp at H
+  }
+  {
+    dsimp [padicNorm] at *
+    sorry
+  }
+}
+
+theorem harmonic_not_int : ∀ n, n ≥ 2 -> (harmonic n).isInt = False := by {
+  intro n Hn
+  apply not_int_of_not_padic_int
+
+}
