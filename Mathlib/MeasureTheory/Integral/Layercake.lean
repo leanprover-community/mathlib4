@@ -94,11 +94,11 @@ lemma prod_univ_ae_of_ae {α β : Type*} [MeasurableSpace α] [MeasurableSpace �
   ext p
   simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
 
--- A generalization of `measurableSet_regionBetween` to null-measurable and a.e.-measurable.
--- (But is the latter still too much to require?)
+
 -- Should generalize also the variants `measurableSet_region_between_oc` etc.
-lemma nullMeasurableSet_region_between (μ : Measure α) [SigmaFinite μ]
-    {f g : α → ℝ} (f_mble : NullMeasurable f μ) (g_mble : NullMeasurable g μ)
+/-- A generalization of `measurableSet_regionBetween` to null-measurable and a.e.-measurable. -/
+lemma nullMeasurableSet_regionBetween (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
   dsimp only [Ioo, setOf_and]
@@ -113,40 +113,83 @@ lemma nullMeasurableSet_region_between (μ : Measure α) [SigmaFinite μ]
     simp only [setOf, show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
     simp only [show (s₀ ×ˢ univ) p ↔ p ∈ s₀ ×ˢ univ by rfl, mem_prod, mem_univ, and_true]
   · refine NullMeasurableSet.inter ?_ ?_
-    · apply nullMeasurableSet_lt _ measurable_snd.aemeasurable
-      sorry
-    · apply nullMeasurableSet_lt measurable_snd.aemeasurable _
-      sorry
-/-
-  obtain ⟨f₀, ⟨mble_f₀, f_aeeq_f₀⟩⟩ := f_mble
-  obtain ⟨g₀, hg₀⟩ := g_mble
-  --obtain ⟨g₀, ⟨mble_g₀, g_aeeq_g₀⟩⟩ := g_mble
-  obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
-  have mble := measurableSet_regionBetween mble_f₀ mble_g₀ mble_s₀
-  apply NullMeasurableSet.congr mble.nullMeasurableSet
-  rw [eventuallyEq_iff_exists_mem] at *
-  obtain ⟨A, ⟨A_null, f_eq_f₀_on_A⟩⟩ := f_aeeq_f₀
-  obtain ⟨B, ⟨B_null, g_eq_g₀_on_B⟩⟩ := g_aeeq_g₀
-  obtain ⟨C, ⟨C_null, s_eq_s₀_on_C⟩⟩ := s_aeeq_s₀
-  have ABC_null : A ∩ B ∩ C ∈ Measure.ae μ :=
-    Filter.inter_mem (Filter.inter_mem A_null B_null) C_null
-  refine ⟨(A ∩ B ∩ C) ×ˢ univ, ⟨?_, ?_⟩⟩
-  · simp only [Measure.ae, Filter.mem_mk, mem_setOf_eq] at *
-    suffices : (μ.prod (volume : Measure ℝ)) ((A ∩ B ∩ C)ᶜ ×ˢ univ) = 0
-    · convert this
-      ext p
-      simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
-    rw [Measure.prod_prod, ABC_null, zero_mul]
-  · intro p hp
-    obtain ⟨⟨pfst_in_A, pfst_in_B⟩, pfst_in_C⟩ := hp.1
-    simp [regionBetween, setOf, f_eq_f₀_on_A pfst_in_A, g_eq_g₀_on_B pfst_in_B,
-          show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀_on_C pfst_in_C)]
- -/
+    · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+    · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
 
--- A generaliztion of `measurableSet_regionBetween` to null-measurable and a.e.-measurable.
--- (But is the latter still too much to require?)
--- Should generalize also the variants `measurableSet_region_between_oc` etc.
-lemma nullMeasurableSet_region_between' (μ : Measure α)
+lemma nullMeasurableSet_region_between_oc (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioc, setOf_and]
+  refine NullMeasurableSet.inter ?_ ?_
+  · obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+    refine ⟨s₀ ×ˢ univ, ⟨mble_s₀.prod MeasurableSet.univ, ?_⟩⟩
+    rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
+    simp only [Filter.mem_mk, mem_setOf_eq] at *
+    rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
+    refine ⟨t ×ˢ univ, ⟨prod_univ_ae_of_ae t_mem, ?_⟩⟩
+    intro p hp
+    simp only [setOf, show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
+    simp only [show (s₀ ×ˢ univ) p ↔ p ∈ s₀ ×ˢ univ by rfl, mem_prod, mem_univ, and_true]
+  · refine NullMeasurableSet.inter ?_ ?_
+    · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+    · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+      rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+            ext p
+            simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+      exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+
+lemma nullMeasurableSet_region_between_co (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioc, setOf_and]
+  refine NullMeasurableSet.inter ?_ ?_
+  · obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+    refine ⟨s₀ ×ˢ univ, ⟨mble_s₀.prod MeasurableSet.univ, ?_⟩⟩
+    rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
+    simp only [Filter.mem_mk, mem_setOf_eq] at *
+    rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
+    refine ⟨t ×ˢ univ, ⟨prod_univ_ae_of_ae t_mem, ?_⟩⟩
+    intro p hp
+    simp only [setOf, show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
+    simp only [show (s₀ ×ˢ univ) p ↔ p ∈ s₀ ×ˢ univ by rfl, mem_prod, mem_univ, and_true]
+  · refine NullMeasurableSet.inter ?_ ?_
+    · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+      rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+            ext p
+            simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+      exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+    · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+
+lemma nullMeasurableSet_region_between_cc (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioc, setOf_and]
+  refine NullMeasurableSet.inter ?_ ?_
+  · obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+    refine ⟨s₀ ×ˢ univ, ⟨mble_s₀.prod MeasurableSet.univ, ?_⟩⟩
+    rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
+    simp only [Filter.mem_mk, mem_setOf_eq] at *
+    rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
+    refine ⟨t ×ˢ univ, ⟨prod_univ_ae_of_ae t_mem, ?_⟩⟩
+    intro p hp
+    simp only [setOf, show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
+    simp only [show (s₀ ×ˢ univ) p ↔ p ∈ s₀ ×ˢ univ by rfl, mem_prod, mem_univ, and_true]
+  · refine NullMeasurableSet.inter ?_ ?_
+    · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+      rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+            ext p
+            simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+      exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+    · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+      rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+            ext p
+            simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+      exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+
+lemma nullMeasurableSet_regionBetween' (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
