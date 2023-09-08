@@ -74,16 +74,16 @@ birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
-    (hf : LipschitzWith 1 f) (x : E) :
+    (hf : ‖f‖ ≤ 1) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
       (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
-  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure hf
+  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure (f.lipschitz.weaken hf)
   · exact orthogonalProjection_mem_subspace_eq_self (K := LinearMap.eqLocus f 1)
   · clear x
     rw [ker_orthogonalProjection, ← Submodule.topologicalClosure_coe, SetLike.coe_subset_coe,
       ← Submodule.orthogonal_orthogonal_eq_closure]
     refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
-    · simpa using hf.dist_le_mul x 0
+    · simpa using f.le_of_op_norm_le hf x
     · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
         simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
       simp [this, ← norm_sq_eq_inner]
