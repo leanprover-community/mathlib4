@@ -111,7 +111,7 @@ instance : ShiftLeft ℤ where
   | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
 #align int.shiftl ShiftLeft.shiftLeft
 
-/-- `shiftr m n` produces an integer whose binary representation
+/-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
 instance : ShiftRight ℤ where
   shiftRight m n := m <<< (-n)
