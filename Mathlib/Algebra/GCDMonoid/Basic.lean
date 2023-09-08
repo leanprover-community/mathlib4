@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Common
 
 #align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -531,8 +532,8 @@ theorem exists_dvd_and_dvd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m *
     simp
   · obtain ⟨a, ha⟩ := gcd_dvd_left k m
     refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-    suffices h : gcd k m * a ∣ gcd k m * n
-    · cases' h with b hb
+    suffices h : gcd k m * a ∣ gcd k m * n by
+      cases' h with b hb
       use b
       rw [mul_assoc] at hb
       apply mul_left_cancel₀ h0 hb

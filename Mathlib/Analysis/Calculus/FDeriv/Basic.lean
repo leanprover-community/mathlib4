@@ -87,7 +87,7 @@ characterized in terms of the `Tendsto` relation.
 We also introduce predicates `DifferentiableWithinAt 𝕜 f s x` (where `𝕜` is the base field,
 `f` the function to be differentiated, `x` the point at which the derivative is asserted to exist,
 and `s` the set along which the derivative is defined), as well as `DifferentiableAt 𝕜 f x`,
-`Differentiable_on 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
+`DifferentiableOn 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
 
 To be able to compute with derivatives, we write `fderivWithin 𝕜 f s x` and `fderiv 𝕜 f x`
 for some choice of a derivative if it exists, and the zero function otherwise. This choice only
@@ -357,6 +357,7 @@ theorem HasFDerivWithinAt.mono_of_mem (h : HasFDerivWithinAt f f' t x) (hst : t 
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
 #align has_fderiv_within_at.mono_of_mem HasFDerivWithinAt.mono_of_mem
+#align has_fderiv_within_at.nhds_within HasFDerivWithinAt.mono_of_mem
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -488,11 +489,6 @@ theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
   simp only [HasFDerivWithinAt, nhdsWithin_union]
   exact hs.sup ht
 #align has_fderiv_within_at.union HasFDerivWithinAt.union
-
-protected theorem HasFDerivWithinAt.nhdsWithin (h : HasFDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
-    HasFDerivWithinAt f f' t x :=
-  (hasFDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_fderiv_within_at.nhds_within HasFDerivWithinAt.nhdsWithin
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasFDerivAt f f' x := by
