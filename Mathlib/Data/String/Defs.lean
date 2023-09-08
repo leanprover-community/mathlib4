@@ -45,10 +45,6 @@ def mapTokens (c : Char) (f : String → String) : String → String :=
   intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 #align string.map_tokens String.mapTokens
 
-/-- Count the occurrences of a character in a string. -/
-def count (s : String) (c : Char) : Nat :=
-  s.foldl (fun n d => if d = c then n + 1 else n) 0
-
 /-- `getRest s t` returns `some r` if `s = t ++ r`.
 If `t` is not a prefix of `s`, it returns `none`. -/
 def getRest (s t : String) : Option String :=

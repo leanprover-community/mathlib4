@@ -72,13 +72,16 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
 
+/-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
+This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
+@[coe]
+def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+  { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
+
 instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) where
-  coe f :=
-    { (f : A ≃+* B) with
-      toFun := f
-      invFun := EquivLike.inv f
-      commutes' := AlgHomClass.commutes f }
+    [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+  ⟨toAlgEquiv⟩
 end AlgEquivClass
 
 namespace AlgEquiv
@@ -833,10 +836,3 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
 end
 
 end MulSemiringAction
-
--- porting note: disable `dupNamespace` linter for aux lemmas
-open Lean in
-run_cmd do
-  for i in List.range 2 do
-    Elab.Command.elabCommand (← `(attribute [nolint dupNamespace]
-      $(mkCIdent (.num `Mathlib.Algebra.Algebra.Equiv._auxLemma (i + 1)))))

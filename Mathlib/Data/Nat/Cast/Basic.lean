@@ -9,6 +9,7 @@ import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Group.Opposite
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
@@ -198,7 +199,7 @@ theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : 
   map_dvd (Nat.castRingHom α) h
 #align nat.coe_nat_dvd Nat.coe_nat_dvd
 
-alias coe_nat_dvd ← _root_.Dvd.dvd.natCast
+alias _root_.Dvd.dvd.natCast := coe_nat_dvd
 
 end Nat
 
