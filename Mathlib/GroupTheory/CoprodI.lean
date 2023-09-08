@@ -234,8 +234,7 @@ theorem inv_def (x : CoprodI G) :
 #align free_product.inv_def Monoid.CoprodI.inv_def
 
 instance : Group (CoprodI G) :=
-  { inferInstanceAs (Inv (CoprodI G)), inferInstanceAs (Monoid (CoprodI G)) with
-    mul_left_inv := by
+  { mul_left_inv := by
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
@@ -507,7 +506,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
 instance : MulAction (CoprodI M) (Word M) :=
   MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
 
-theorem smul_def (i) (w : Word M) (m : M i) :
+theorem smul_def {i} (m : M i) (w : Word M) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 

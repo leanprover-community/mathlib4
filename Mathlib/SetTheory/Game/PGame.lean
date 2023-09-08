@@ -524,10 +524,10 @@ instance : Preorder PGame :=
       exact
         le_of_forall_lf (fun i => lf_of_le_moveLeft (IHl i)) fun i => lf_of_moveRight_le (IHr i)
     le_trans := by
-      suffices :
+      suffices
         ∀ {x y z : PGame},
-          (x ≤ y → y ≤ z → x ≤ z) ∧ (y ≤ z → z ≤ x → y ≤ x) ∧ (z ≤ x → x ≤ y → z ≤ y)
-      exact fun x y z => this.1
+          (x ≤ y → y ≤ z → x ≤ z) ∧ (y ≤ z → z ≤ x → y ≤ x) ∧ (z ≤ x → x ≤ y → z ≤ y) from
+        fun x y z => this.1
       intro x y z
       induction' x with xl xr xL xR IHxl IHxr generalizing y z
       induction' y with yl yr yL yR IHyl IHyr generalizing z
