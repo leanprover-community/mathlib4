@@ -229,7 +229,7 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
 instance [TopologicalSpace.SecondCountableTopology E] (b : Basis ι ℝ E) :
     SigmaFinite b.addHaar := by
   rw [Basis.addHaar_def]; exact MeasureTheory.Measure.sigmaFinite_addHaarMeasure
-  
+
 theorem Basis.addHaar_eq  {ι' : Type*} [Fintype ι'] [TopologicalSpace.SecondCountableTopology E]
     {b : Basis ι ℝ E} {b' : Basis ι' ℝ E} :
     b.addHaar = b'.addHaar ↔ b.addHaar b'.parallelepiped = 1 := by

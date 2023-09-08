@@ -118,7 +118,7 @@ theorem Basis.addHaar_map {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E]
     Basis.coe_parallelepiped, Basis.coe_map]
   erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
   rw [one_smul, Basis.addHaar]
-  
+
 namespace MeasureTheory
 
 open Measure TopologicalSpace.PositiveCompacts FiniteDimensional
