@@ -5,17 +5,21 @@ Authors: Miyahara Kō
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Data.Nat.Parity
+import Mathlib.Topology.Instances.Real
 
 /-!
-# Convergence of integer continued fractions
+# Correspondence between integer continued fractions and real numbers
 
-This file proves that integer continued fractions are cauchy sequences and converge to a
-real number.
+This file proves that integer continued fractions converge to a real number.
 -/
 
 universe u v
 
-open Nat
+open Nat Filter
+
+open GeneralizedContinuedFraction (of)
+
+noncomputable section
 
 namespace GeneralizedContinuedFraction
 
@@ -43,7 +47,7 @@ theorem convergents_lt_convergents_succ_of_even
     · rw [inv_pos]; exact zero_lt_denom n
   · rw [inv_pos]; exact zero_lt_denom (n + 1)
 
-theorem convergents_succ_lt_convergents_of_odd
+theorem convergents_gt_convergents_succ_of_odd
     {g : GeneralizedContinuedFraction K} [g.IsIntegerContinuedFraction] {n : ℕ} (hno : Odd n)
     (hg : ¬g.TerminatedAt n) : convergents g (n + 1) < convergents g n := by
   rw [← sub_pos, convergents_sub_convergents_succ hg]
@@ -123,7 +127,7 @@ theorem convergents_lt_convergents_add_two_of_even
     · rw [inv_pos]; exact zero_lt_denom (n + 1)
   · rw [sub_pos]; exact inv_lt_inv_of_lt (zero_lt_denom n) (denom_lt_denom_add_two hg)
 
-theorem convergents_add_two_lt_convergents_of_odd
+theorem convergents_gt_convergents_add_two_of_odd
     {g : GeneralizedContinuedFraction K} [g.IsIntegerContinuedFraction] {n : ℕ} (hno : Odd n)
     (hg : ¬g.TerminatedAt (n + 1)) : convergents g (n + 2) < convergents g n := by
   rw [← sub_pos, convergents_sub_convergents_add_two hg]
@@ -161,7 +165,7 @@ theorem convergents_lt_convergents_of_even
     · exact convergents_lt_convergents_add_two_of_even
         ((hme.add (even_two_mul k'')).add even_two) hg
 
-theorem convergents_lt_convergents_of_odd
+theorem convergents_gt_convergents_of_odd
     {g : GeneralizedContinuedFraction K} [g.IsIntegerContinuedFraction]
     {m n : ℕ} (hg : ¬g.TerminatedAt (n - 1)) (hmo : Odd m) (hmn : m < n) :
     g.convergents n < g.convergents m := by
@@ -170,7 +174,7 @@ theorem convergents_lt_convergents_of_odd
   wlog hk : Odd k generalizing k hg
   · rw [← even_iff_not_odd, even_iff_exists_two_mul] at hk; rcases hk with ⟨k', rfl⟩
     apply lt_of_lt_of_le (b := g.convergents (m + 2 * k'))
-    · exact convergents_succ_lt_convergents_of_odd (hmo.add_even (even_two_mul k')) hg
+    · exact convergents_gt_convergents_succ_of_odd (hmo.add_even (even_two_mul k')) hg
     · cases k' using Nat.casesAuxOn with
       | zero     => rfl
       | succ k'' =>
@@ -181,11 +185,11 @@ theorem convergents_lt_convergents_of_odd
   rcases hk with ⟨k', rfl⟩
   simp only [← add_assoc] at hg ⊢
   induction k' using Nat.recAuxOn with
-  | zero        => exact convergents_add_two_lt_convergents_of_odd hmo hg
+  | zero        => exact convergents_gt_convergents_add_two_of_odd hmo hg
   | succ k'' ih =>
     simp only [mul_add, mul_one, ← add_assoc] at hg ⊢
     trans g.convergents (m + 2 * k'' + 2)
-    · exact convergents_add_two_lt_convergents_of_odd
+    · exact convergents_gt_convergents_add_two_of_odd
         ((hmo.add_even (even_two_mul k'')).add_even even_two) hg
     · exact ih (mt (terminated_stable ((m + 2 * k'' + 1).le_add_right 2)) hg)
 
@@ -208,7 +212,7 @@ theorem convergents_le_convergents_of_even
             (le_trans (Nat.find_min' het hg) (Nat.sub_le n 1)) (Nat.find_spec het))
     · exact le_of_lt (convergents_lt_convergents_of_even hg hme hmn)
 
-theorem convergents_le_convergents_of_odd
+theorem convergents_ge_convergents_of_odd
     {g : GeneralizedContinuedFraction K} [g.IsIntegerContinuedFraction]
     {m n : ℕ} (hme : Odd m) (hmn : m ≤ n) : g.convergents n ≤ g.convergents m := by
   rw [le_iff_eq_or_lt] at hmn; rcases hmn with rfl | hmn
@@ -224,8 +228,8 @@ theorem convergents_le_convergents_of_odd
             lt_of_not_le (fun hfm => hg' (terminated_stable hfm (Nat.find_spec het)))
           have hg'' : ¬g.TerminatedAt (Nat.find het - 1) :=
             Nat.find_min het (Nat.sub_lt (Nat.zero_lt_of_lt hmf) Nat.zero_lt_one)
-          exact le_of_lt (convergents_lt_convergents_of_odd hg'' hme hmf)
-    · exact le_of_lt (convergents_lt_convergents_of_odd hg hme hmn)
+          exact le_of_lt (convergents_gt_convergents_of_odd hg'' hme hmf)
+    · exact le_of_lt (convergents_gt_convergents_of_odd hg hme hmn)
 
 theorem cauchySeq'_convergents [Archimedean K]
     {g : GeneralizedContinuedFraction K} [g.IsIntegerContinuedFraction] :
@@ -244,17 +248,17 @@ theorem cauchySeq'_convergents [Archimedean K]
         min_eq_right (convergents_le_convergents_of_even (g := g) heN (N.le_add_right 1)),
         max_le_iff, le_min_iff]
       exact
-        ⟨⟨convergents_le_convergents_of_odd (heN.add_odd odd_one) hn,
-          convergents_le_convergents_of_odd (heN.add_odd odd_one) hm⟩,
+        ⟨⟨convergents_ge_convergents_of_odd (heN.add_odd odd_one) hn,
+          convergents_ge_convergents_of_odd (heN.add_odd odd_one) hm⟩,
           ⟨convergents_le_convergents_of_even heN (le_trans (N.le_add_right 1) hn),
             convergents_le_convergents_of_even heN (le_trans (N.le_add_right 1) hm)⟩⟩
     | inr hoN =>
-      rw [max_eq_right (convergents_le_convergents_of_odd (g := g) hoN (N.le_add_right 1)),
-        min_eq_left (convergents_le_convergents_of_odd (g := g) hoN (N.le_add_right 1)),
+      rw [max_eq_right (convergents_ge_convergents_of_odd (g := g) hoN (N.le_add_right 1)),
+        min_eq_left (convergents_ge_convergents_of_odd (g := g) hoN (N.le_add_right 1)),
         max_le_iff, le_min_iff]
       exact
-        ⟨⟨convergents_le_convergents_of_odd hoN (le_trans (N.le_add_right 1) hn),
-          convergents_le_convergents_of_odd hoN (le_trans (N.le_add_right 1) hm)⟩,
+        ⟨⟨convergents_ge_convergents_of_odd hoN (le_trans (N.le_add_right 1) hn),
+          convergents_ge_convergents_of_odd hoN (le_trans (N.le_add_right 1) hm)⟩,
           ⟨convergents_le_convergents_of_even (hoN.add_odd odd_one) hn,
             convergents_le_convergents_of_even (hoN.add_odd odd_one) hm⟩⟩
   · by_cases hg : g.TerminatedAt N
@@ -279,5 +283,76 @@ theorem cauchySeq'_convergents [Archimedean K]
             (by exact_mod_cast (fib (N + 2)).zero_le)
             zero_le_denom
 
+theorem cauchySeq_convergents
+    {g : GeneralizedContinuedFraction ℝ} [g.IsIntegerContinuedFraction] :
+    CauchySeq g.convergents :=
+  Metric.cauchySeq_iff.2 cauchySeq'_convergents
+
+/-- Convert integer continued fraction to a real number by considering limit. -/
+@[nolint unusedArguments]
+def toReal (g : GeneralizedContinuedFraction ℝ) [g.IsIntegerContinuedFraction] : ℝ :=
+  limUnder atTop g.convergents
+
+variable {g : GeneralizedContinuedFraction ℝ} [g.IsIntegerContinuedFraction]
+
+theorem convergents_tendsTo_toReal : Tendsto g.convergents atTop (nhds g.toReal) :=
+  cauchySeq_convergents.tendsto_limUnder
+
+theorem toReal_eq_of_terminatedAt {n} (hg : g.TerminatedAt n) : g.toReal = g.convergents n :=
+  Tendsto.limUnder_eq <| tendsto_atTop_of_eventually_const
+    fun (i) (hi : n ≤ i) => convergents_stable_of_terminated hi hg
+
+theorem convergents_le_toReal_of_even {n : ℕ} (hn : Even n) : g.convergents n ≤ g.toReal :=
+  ge_of_tendsto convergents_tendsTo_toReal
+    (Filter.eventually_atTop.mpr
+      ⟨n, fun _ h => convergents_le_convergents_of_even hn h⟩)
+
+theorem convergents_ge_toReal_of_odd {n : ℕ} (hn : Odd n) : g.toReal ≤ g.convergents n :=
+  le_of_tendsto convergents_tendsTo_toReal
+    (Filter.eventually_atTop.mpr
+      ⟨n, fun _ h => convergents_ge_convergents_of_odd hn h⟩)
+
+theorem floor_toReal
+    (hg : g.partialDenominators.get? 0 = some 1 → g.partialDenominators.get? 1 ≠ none) :
+    (⌊g.toReal⌋ : ℝ) = g.h := by
+  obtain ⟨gh, hgh⟩ := ‹g.IsIntegerContinuedFraction›.h_eq_int
+  rw [hgh, Int.cast_inj, Int.floor_eq_iff, ← hgh]
+  constructor
+  · rw [← zeroth_convergent_eq_h]
+    exact convergents_le_toReal_of_even even_zero
+  · by_cases hgt : g.TerminatedAt 0
+    · simp [toReal_eq_of_terminatedAt hgt]
+    · rw [terminatedAt_iff_s_none, ← Ne.def, Option.ne_none_iff_exists'] at hgt
+      rcases hgt with ⟨gp, hgp⟩
+      have hgpa := partNum_eq_s_a hgp; have hgpb := partDenom_eq_s_b hgp
+      by_cases hgpb' : gp.b = 1
+      · suffices hgl : g.toReal < g.convergents 1
+        · convert hgl using 1
+          simp [convergents_eq_convergents'_of_isContinuedFraction, convergents',
+            convergents'Aux, Stream'.Seq.head, hgp,
+            IsSimpleContinuedFraction.partNum_eq_one hgpa, hgpb']
+        rw [hgpb'] at hgpb; replace hg := hg hgpb
+        rw [Ne.def, ← terminatedAt_iff_partDenom_none] at hg
+        by_cases hgt : g.TerminatedAt 2
+        · rw [toReal_eq_of_terminatedAt hgt]
+          exact convergents_gt_convergents_succ_of_odd odd_one hg
+        · apply lt_of_le_of_lt (b := g.convergents 3)
+          · apply convergents_ge_toReal_of_odd; decide
+          · exact convergents_gt_convergents_add_two_of_odd odd_one hgt
+      · apply lt_of_le_of_lt (b := g.convergents 1)
+        · exact convergents_ge_toReal_of_odd odd_one
+        · simp [convergents_eq_convergents'_of_isContinuedFraction, convergents',
+            convergents'Aux, Stream'.Seq.head, hgp,
+            IsSimpleContinuedFraction.partNum_eq_one hgpa]
+          apply inv_lt_one
+          obtain ⟨n, hn⟩ := IsIntegerContinuedFraction.partDenom_eq_int hgpb
+          rw_mod_cast [hn, Int.lt_iff_le_and_ne]
+          constructor
+          · rw [← Int.sub_one_lt_iff, Int.sub_self]
+            have hgpb'' := IsContinuedFraction.zero_lt_partDenom hgpb
+            rw [hn] at hgpb''; exact_mod_cast hgpb''
+          · symm; rw [hn] at hgpb'; exact_mod_cast hgpb'
 
 end GeneralizedContinuedFraction
+
+end
