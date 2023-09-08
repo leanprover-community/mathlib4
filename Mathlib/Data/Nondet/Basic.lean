@@ -10,17 +10,14 @@ import Mathlib.Data.MLList.Basic
 /-!
 # A nondeterminism monad.
 
-We represent nondeterministic values in a type `α` as `MLList m (σ × α)`,
-i.e. as a monadic lazy list of possible values, each equipped with the backtrackable state
+We represent nondeterministic values in a type `α` as a single field structure containing an
+`MLList m (σ × α)`, i.e. as a monadic lazy list of possible values,
+each equipped with the backtrackable state
 required to run further computations in the ambient monad.
 
-We define the type synonym `Nondet m α` for this, as we need to equip it with a different
-`Monad` instance (that backtracks state appropriately in `bind`) than the default provided
-for `MLList`.
-
-Similarly, various monadic functions need to be redefined (e.g. `mapM` and `filterMapM`),
-and to avoid confusion resulting from using the `MLList` API,
-we eventually mark `Nondet` as irreducible.
+We provide an `Alternative` `Monad` instance, as well as functions `bind`, `mapM`, and `filterMapM`,
+and functions `singletonM`, `ofListM`, `ofOptionM`, and `firstM`
+for entering and leaving the nondeterministic world.
 -/
 
 set_option autoImplicit true
