@@ -5,6 +5,7 @@ Authors: Eric Wieser, Jireh Loreaux
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.GroupTheory.Subsemigroup.Operations
+import Mathlib.Tactic.LibrarySearch
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -90,8 +91,9 @@ theorem _root_.Semigroup.mem_center_iff [Semigroup M] {z : M} :
 
 variable (M)
 
-instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| IsMulCentral a] :
-    DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (mem_center_iff M)
+-- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
+instance decidableMemCenter [Semigroup M] [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
+    DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (Semigroup.mem_center_iff)
 #align set.decidable_mem_center Set.decidableMemCenter
 
 @[to_additive (attr := simp) zero_mem_addCenter]
