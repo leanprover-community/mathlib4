@@ -62,8 +62,8 @@ Finally, we glue them together to obtain the main statement
 ## Related results
 
 Are you looking for a result on approximation by continuous functions (not just semicontinuous)?
-See result `measure_theory.Lp.continuous_map_dense`, in the file
-`measure_theory.continuous_map_dense`.
+See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
+`Mathlib/MeasureTheory/Function/ContinuousMapDense.lean`.
 
 ## References
 
@@ -81,7 +81,6 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 /-! ### Lower semicontinuous upper bound for nonnegative functions -/
@@ -400,7 +399,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     refine' ⟨fs, fun x => by simpa only [ENNReal.coe_le_coe] using fs_le_f x, _⟩
     convert int_fs.le
     rw [← SimpleFunc.lintegral_eq_lintegral]
-    rfl
+    simp only [SimpleFunc.coe_map, Function.comp_apply]
   have int_fs_lt_top : (∫⁻ x, fs x ∂μ) ≠ ∞ := by
     refine' ne_top_of_le_ne_top int_f (lintegral_mono fun x => _)
     simpa only [ENNReal.coe_le_coe] using fs_le_f x

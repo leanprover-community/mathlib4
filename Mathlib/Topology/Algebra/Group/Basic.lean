@@ -1471,9 +1471,7 @@ variable (G) [TopologicalSpace G] [Group G] [ContinuousMul G]
 
 @[to_additive]
 theorem TopologicalGroup.t1Space (h : @IsClosed G _ {1}) : T1Space G :=
-  ⟨fun x => by
-    convert isClosedMap_mul_right x _ h
-    simp⟩
+  ⟨fun x => by simpa using isClosedMap_mul_right x _ h⟩
 #align topological_group.t1_space TopologicalGroup.t1Space
 #align topological_add_group.t1_space TopologicalAddGroup.t1Space
 
@@ -1499,20 +1497,31 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 #align topological_group.regular_space TopologicalGroup.regularSpace
 #align topological_add_group.regular_space TopologicalAddGroup.regularSpace
 
-@[to_additive]
-theorem TopologicalGroup.t3Space [T0Space G] : T3Space G :=
-  ⟨⟩
-#align topological_group.t3_space TopologicalGroup.t3Space
-#align topological_add_group.t3_space TopologicalAddGroup.t3Space
-
-@[to_additive]
-theorem TopologicalGroup.t2Space [T0Space G] : T2Space G := by
-  haveI := TopologicalGroup.t3Space G
-  infer_instance
-#align topological_group.t2_space TopologicalGroup.t2Space
-#align topological_add_group.t2_space TopologicalAddGroup.t2Space
+-- `inferInstance` can find these instances now
+#align topological_group.t3_space inferInstance
+#align topological_add_group.t3_space inferInstance
+#align topological_group.t2_space inferInstance
+#align topological_add_group.t2_space inferInstance
 
 variable {G}
+
+@[to_additive]
+theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) :=
+  ⟨fun _ ↦ isClosed_singleton, fun h ↦
+    have := TopologicalGroup.t1Space G h; inferInstance⟩
+#align topological_group.t2_space_iff_one_closed TopologicalGroup.t2Space_iff_one_closed
+#align topological_add_group.t2_space_iff_zero_closed TopologicalAddGroup.t2Space_iff_zero_closed
+
+@[to_additive]
+theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) :
+    T2Space G := by
+  suffices T1Space G from inferInstance
+  refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
+  rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
+  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
+#align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
+#align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
+
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 @[to_additive]
@@ -1520,7 +1529,7 @@ instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
     [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
   haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
-  exact TopologicalGroup.t3Space _
+  infer_instance
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
 
@@ -1652,14 +1661,13 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 #align compact_covered_by_mul_left_translates compact_covered_by_mul_left_translates
 #align compact_covered_by_add_left_translates compact_covered_by_add_left_translates
 
-/-- Every locally compact separable topological group is σ-compact.
+/-- Every weakly locally compact separable topological group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis. -/
-@[to_additive SeparableLocallyCompactAddGroup.sigmaCompactSpace
-  "Every locally
-  compact separable topological group is σ-compact.
+@[to_additive SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
+  "Every weakly locally compact separable topological additive group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis."]
-instance (priority := 100) SeparableLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
-    [LocallyCompactSpace G] : SigmaCompactSpace G := by
+instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
+    [WeaklyLocallyCompactSpace G] : SigmaCompactSpace G := by
   obtain ⟨L, hLc, hL1⟩ := exists_compact_mem_nhds (1 : G)
   refine' ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, _, _⟩⟩
   · intro n
@@ -1670,8 +1678,8 @@ instance (priority := 100) SeparableLocallyCompactGroup.sigmaCompactSpace [Separ
       exact (denseRange_denseSeq G).inter_nhds_nonempty
           ((Homeomorph.mulLeft x).continuous.continuousAt <| hL1)
     exact ⟨n, hn⟩
-#align separable_locally_compact_group.sigma_compact_space SeparableLocallyCompactGroup.sigmaCompactSpace
-#align separable_locally_compact_add_group.sigma_compact_space SeparableLocallyCompactAddGroup.sigmaCompactSpace
+#align separable_locally_compact_group.sigma_compact_space SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace
+#align separable_locally_compact_add_group.sigma_compact_space SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
 
 /-- Given two compact sets in a noncompact topological group, there is a translate of the second
 one that is disjoint from the first one. -/
@@ -1728,7 +1736,7 @@ theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set 
 variable (G)
 
 @[to_additive]
-theorem exists_isCompact_isClosed_nhds_one [LocallyCompactSpace G] :
+theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
   let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
   let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1

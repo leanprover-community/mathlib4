@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
-import Mathlib.Topology.MetricSpace.EMetricSpace
+import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8047de4d911cdef39c2d646165eea972f7f9f539"
@@ -1950,6 +1950,18 @@ theorem closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
       mem_closure_iff.2 fun _ε ε0 => ⟨x, mem_singleton x, (mem_closedBall.1 hy).trans_lt ε0⟩)
     (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_ball)
 #align metric.closed_ball_zero' Metric.closedBall_zero'
+
+lemma eventually_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+    ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
+  rcases local_compact_nhds (x := x) (n := univ) univ_mem with ⟨s, hs, -, s_compact⟩
+  filter_upwards [eventually_closedBall_subset hs] with r hr
+  exact isCompact_of_isClosed_subset s_compact isClosed_ball hr
+
+lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+    ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
+  have : ∀ᶠ r in 𝓝[>] 0, IsCompact (closedBall x r) :=
+    eventually_nhdsWithin_of_eventually_nhds (eventually_isCompact_closedBall x)
+  simpa only [and_comm] using (this.and self_mem_nhdsWithin).exists
 
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
   forall_congr' fun x => by
