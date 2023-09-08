@@ -424,7 +424,7 @@ theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   fun _ => isIntegral_of_mem_of_FG ⊤ h.1 _ trivial
 #align ring_hom.finite.to_is_integral RingHom.Finite.to_isIntegral
 
-alias RingHom.Finite.to_isIntegral ← RingHom.IsIntegral.of_finite
+alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 #align ring_hom.is_integral.of_finite RingHom.IsIntegral.of_finite
 
 theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.Finite := by
@@ -436,7 +436,7 @@ theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.
   exact FG_adjoin_of_finite (Set.toFinite _) fun x _ => h x
 #align ring_hom.is_integral.to_finite RingHom.IsIntegral.to_finite
 
-alias RingHom.IsIntegral.to_finite ← RingHom.Finite.of_isIntegral_of_finiteType
+alias RingHom.Finite.of_isIntegral_of_finiteType := RingHom.IsIntegral.to_finite
 #align ring_hom.finite.of_is_integral_of_finite_type RingHom.Finite.of_isIntegral_of_finiteType
 
 /-- finite = integral + finite type -/

@@ -571,7 +571,7 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 #align nat.prime_iff Nat.prime_iff
 
-alias prime_iff ↔ Prime.prime _root_.Prime.nat_prime
+alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 #align nat.prime.prime Nat.Prime.prime
 #align prime.nat_prime Prime.nat_prime
 

@@ -35,7 +35,7 @@ vector space and `ι : Type*` is an arbitrary indexing type.
   (saving you from having to work with `Finsupp`). The converse, turning this isomorphism into
   a basis, is called `Basis.ofEquivFun`.
 
-* `Basis.constr hv f` constructs a linear map `M₁ →ₗ[R] M₂` given the values `f : ι → M₂` at the
+* `Basis.constr b R f` constructs a linear map `M₁ →ₗ[R] M₂` given the values `f : ι → M₂` at the
   basis elements `⇑b : ι → M₁`.
 * `Basis.reindex` uses an equiv to map a basis to a different indexing set.
 * `Basis.map` uses a linear equiv to map a basis to a different module.
@@ -291,7 +291,7 @@ theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
   simp only [← FunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 #align basis.ext_elem_iff Basis.ext_elem_iff
 
-alias ext_elem_iff ↔ _ _root_.Basis.ext_elem
+alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
 #align basis.ext_elem Basis.ext_elem
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
@@ -594,7 +594,9 @@ variable (S : Type*) [Semiring S] [Module S M']
 
 variable [SMulCommClass R S M']
 
-/-- Construct a linear map given the value at the basis.
+/-- Construct a linear map given the value at the basis, called `Basis.constr b S f` where `b` is
+a basis, `f` is the value of the linear map over the elements of the basis, and `S` is an
+extra semiring (typically `S = R` or `S = ℕ`).
 
 This definition is parameterized over an extra `Semiring S`,
 such that `SMulCommClass R S M'` holds.

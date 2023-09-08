@@ -99,8 +99,8 @@ variable (R)
 
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
- -/
+This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+-/
 @[mk_iff charP_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
   cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x

@@ -1144,7 +1144,7 @@ It is of $j$-invariant $0$ (see `EllipticCurve.ofJ0_j`). -/
 def ofJ0 [Invertible (3 : R)] : EllipticCurve R :=
   have := invertibleNeg (3 ^ 3 : R)
   ⟨WeierstrassCurve.ofJ0 R, unitOfInvertible (-3 ^ 3 : R),
-    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
+    by rw [val_unitOfInvertible, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
 
 lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
   simp only [j, ofJ0, WeierstrassCurve.ofJ0_c₄]
@@ -1155,10 +1155,10 @@ It is of $j$-invariant $1728$ (see `EllipticCurve.ofJ1728_j`). -/
 def ofJ1728 [Invertible (2 : R)] : EllipticCurve R :=
   have := invertibleNeg (2 ^ 6 : R)
   ⟨WeierstrassCurve.ofJ1728 R, unitOfInvertible (-2 ^ 6 : R),
-    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
+    by rw [val_unitOfInvertible, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
-  field_simp [j, ofJ1728, @unitOfInvertible_val _ _ _ <| invertibleNeg _,
+  field_simp [j, ofJ1728, @val_unitOfInvertible _ _ _ <| invertibleNeg _,
     WeierstrassCurve.ofJ1728_c₄]
   norm_num1
 
@@ -1173,7 +1173,7 @@ def ofJ' (j : R) [Invertible j] [Invertible (j - 1728)] : EllipticCurve R :=
     (WeierstrassCurve.ofJ_Δ j).symm⟩
 
 lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := by
-  field_simp [EllipticCurve.j, ofJ', @unitOfInvertible_val _ _ _ <| invertibleMul _ _,
+  field_simp [EllipticCurve.j, ofJ', @val_unitOfInvertible _ _ _ <| invertibleMul _ _,
     WeierstrassCurve.ofJ_c₄]
   ring1
 
