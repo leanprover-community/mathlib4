@@ -183,7 +183,8 @@ theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p 
 #align nat.dvd_of_factorization_pos Nat.dvd_of_factorization_pos
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
-    0 < n.factorization p := by rwa [← factors_count_eq, count_pos, mem_factors_iff_dvd hn hp]
+    0 < n.factorization p := by
+    rwa [← factors_count_eq, count_pos_iff_mem, mem_factors_iff_dvd hn hp]
 #align nat.prime.factorization_pos_of_dvd Nat.Prime.factorization_pos_of_dvd
 
 theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r) :

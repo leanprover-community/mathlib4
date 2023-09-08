@@ -89,17 +89,14 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 namespace Module
 
 -- Porting note: max u v universe issues so name and specific below
-universe u uA v v' v'' w u₁ u₂
+universe uR uA uM uM' uM''
 
-variable (R : Type u) (A : Type uA) (M : Type v)
+variable (R : Type uR) (A : Type uA) (M : Type uM)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -124,9 +121,6 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : FunLike (Dual R M) M fun _ => R :=
-  inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
-
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
 def eval : M →ₗ[R] Dual R (Dual R M) :=
@@ -138,7 +132,7 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 #align module.dual.eval_apply Module.Dual.eval_apply
 
-variable {R M} {M' : Type v'}
+variable {R M} {M' : Type uM'}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
@@ -152,7 +146,7 @@ theorem transpose_apply (u : M →ₗ[R] M') (l : Dual R M') : transpose (R := R
   rfl
 #align module.dual.transpose_apply Module.Dual.transpose_apply
 
-variable {M'' : Type v''} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type uM''} [AddCommMonoid M''] [Module R M'']
 
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
 theorem transpose_comp (u : M' →ₗ[R] M'') (v : M →ₗ[R] M') :
@@ -164,7 +158,7 @@ end Dual
 
 section Prod
 
-variable (M' : Type v') [AddCommMonoid M'] [Module R M']
+variable (M' : Type uM') [AddCommMonoid M'] [Module R M']
 
 /-- Taking duals distributes over products. -/
 @[simps!]
@@ -185,6 +179,8 @@ end Module
 section DualMap
 
 open Module
+
+universe u v v'
 
 variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
 
@@ -280,7 +276,8 @@ open Module Module.Dual Submodule LinearMap Cardinal Function
 
 open BigOperators
 
-variable {R : Type u} {M : Type v} {K : Type u₁} {V : Type u₂} {ι : Type w}
+universe uR uM uK uV uι
+variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -504,11 +501,11 @@ theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : 
 
 -- Porting note: universes very dodgy in Cardinals...
 theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
-    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) := by
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
   classical
     cases nonempty_fintype ι
     have := LinearEquiv.lift_rank_eq b.toDualEquiv
-    rw [Cardinal.lift_umax.{u₂,u₁}] at this
+    rw [Cardinal.lift_umax.{uV,uK}] at this
     rw [this, ← Cardinal.lift_umax]
     apply Cardinal.lift_id
 #align basis.dual_rank_eq Basis.dual_rank_eq
@@ -517,7 +514,8 @@ end Basis
 
 namespace Module
 
-variable {K : Type u₁} {V : Type u₂}
+universe uK uV
+variable {K : Type uK} {V : Type uV}
 
 variable [CommRing K] [AddCommGroup V] [Module K V] [Module.Free K V]
 
@@ -568,7 +566,7 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
 end
 
 theorem dual_rank_eq [Module.Finite K V] :
-    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) :=
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) :=
   (Module.Free.chooseBasis K V).dual_rank_eq
 #align module.dual_rank_eq Module.dual_rank_eq
 
@@ -581,7 +579,7 @@ section IsReflexive
 
 open Function
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- A reflexive module is one for which the natural map to its double dual is a bijection.
 
@@ -640,8 +638,7 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
 
-instance _root_.Prod.instModuleIsReflexive
-    {N : Type*} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
     IsReflexive R (M × N) where
   bijective_dual_eval' := by
     let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
@@ -653,19 +650,22 @@ instance _root_.Prod.instModuleIsReflexive
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
 
-instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) where
+variable {R M N} in
+lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
   bijective_dual_eval' := by
-    let e : Dual R (Dual R (MulOpposite M)) ≃ₗ[R] Dual R (Dual R M) :=
-      LinearEquiv.dualMap <| LinearEquiv.dualMap <| MulOpposite.opLinearEquiv _ |>.symm
-    have : Dual.eval R (MulOpposite M) = e.symm.comp ((Dual.eval R M).comp
-        <| MulOpposite.opLinearEquiv _ |>.symm.toLinearMap) := by
-      ext m f; rfl
+    let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
+    have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
+      ext m f
+      exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
--- TODO: add `ULift.instModuleIsReflexive : IsReflexive R (ULift.{v} M)` once we have
--- `LinearEquiv.ulift`
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
+  equiv <| MulOpposite.opLinearEquiv _
+
+instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
+  equiv ULift.moduleEquiv.symm
 
 end IsReflexive
 
@@ -1198,7 +1198,8 @@ open Module
 
 namespace LinearMap
 
-variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
+universe uR uM₁ uM₂
+variable {R : Type uR} [CommSemiring R] {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
@@ -1377,8 +1378,9 @@ end CommRing
 
 section VectorSpace
 
--- Porting note: adding `u` to avoid timeouts in `dualPairing_eq`
-variable {K : Type u} [Field K] {V₁ : Type v'} {V₂ : Type v''}
+-- Porting note: adding `uK` to avoid timeouts in `dualPairing_eq`
+universe uK uV₁ uV₂
+variable {K : Type uK} [Field K] {V₁ : Type uV₁} {V₂ : Type uV₂}
 
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
@@ -1424,15 +1426,12 @@ open Submodule
 -- Porting note: remove this at some point; this spends a lot of time
 -- checking that AddCommGroup structures on V₁ ⧸ W.dualAnnihilator are defEq
 -- was much worse with implicit universe variables
-set_option maxHeartbeats 400000 in
 theorem dualPairing_eq (W : Subspace K V₁) :
     W.dualPairing = W.quotAnnihilatorEquiv.toLinearMap := by
   ext
   rfl
 #align subspace.dual_pairing_eq Subspace.dualPairing_eq
 
--- Porting note: remove this
-set_option maxHeartbeats 400000 in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Factorization.Basic
 
 #align_import number_theory.arithmetic_function from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -392,10 +391,10 @@ instance instSemiring : Semiring (ArithmeticFunction R) :=
     ArithmeticFunction.instAddCommMonoid with
     zero_mul := fun f => by
       ext
-      simp only [mul_apply, MulZeroClass.zero_mul, sum_const_zero, zero_apply]
+      simp only [mul_apply, zero_mul, sum_const_zero, zero_apply]
     mul_zero := fun f => by
       ext
-      simp only [mul_apply, sum_const_zero, MulZeroClass.mul_zero, zero_apply]
+      simp only [mul_apply, sum_const_zero, mul_zero, zero_apply]
     left_distrib := fun a b c => by
       ext
       simp only [← sum_add_distrib, mul_add, mul_apply, add_apply]
@@ -830,7 +829,7 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
       intro m n hm _hn hmn
       rcases eq_or_ne m 1 with (rfl | hm')
       · simp
-      rw [one_apply_ne, one_apply_ne hm', MulZeroClass.zero_mul]
+      rw [one_apply_ne, one_apply_ne hm', zero_mul]
       rw [Ne.def, mul_eq_one, not_and_or]
       exact Or.inl hm'⟩
 #align nat.arithmetic_function.is_multiplicative_one Nat.ArithmeticFunction.isMultiplicative_one

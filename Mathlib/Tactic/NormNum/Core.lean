@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
 import Std.Lean.Meta.DiscrTree
-import Mathlib.Algebra.Invertible
-import Mathlib.Data.Rat.Cast
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Invertible.GroupWithZero
+import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Int.Basic
-import Mathlib.Tactic.Conv
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Util.Qq
 
 /-!
@@ -125,9 +125,6 @@ def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
 /-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
-/-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
-def instRingInt : Ring ℤ := inferInstance
-
 /--
 Assert that an element of a ring is equal to `num / denom`
 (and `denom` is invertible so that this makes sense).
@@ -186,12 +183,6 @@ def mkRawRatLit (q : ℚ) : Q(ℚ) :=
   let nlit : Q(ℤ) := mkRawIntLit q.num
   let dlit : Q(ℕ) := mkRawNatLit q.den
   q(mkRat $nlit $dlit)
-
-/-- A shortcut (non)instance for `Ring ℚ` to shrink generated proofs. -/
-def instRingRat : Ring ℚ := inferInstance
-
-/-- A shortcut (non)instance for `DivisionRing ℚ` to shrink generated proofs. -/
-def instDivisionRingRat : DivisionRing ℚ := inferInstance
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
@@ -293,60 +284,10 @@ def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
-/-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
-def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
-  return ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u)) <|>
-    throwError "not an ordered semiring"
-
-/-- Helper function to synthesize a typed `OrderedRing α` expression. -/
-def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
-  return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not an ordered ring"
-
-/-- Helper function to synthesize a typed `LinearOrderedField α` expression. -/
-def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
-  return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
-    throwError "not a linear ordered field"
-
-/-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
-def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
-    MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
-    throwError "not a characteristic zero ring"
-
-/-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`, if it exists. -/
-def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
-    MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
-
-/-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
-def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
-    (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
-    throwError "not a characteristic zero AddMonoidWithOne"
-
-/-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`, if it
-exists. -/
-def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
-    (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
-      MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
-
-/-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
-def inferCharZeroOfDivisionRing {α : Q(Type u)}
-    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
-    throwError "not a characteristic zero division ring"
-
 /-- Helper function to synthesize a typed `OfScientific α` expression given `DivisionRing α`. -/
 def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
   return ← synthInstanceQ (q(OfScientific $α) : Q(Type u)) <|>
     throwError "does not support scientific notation"
-
-/-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
-exists. -/
-def inferCharZeroOfDivisionRing? {α : Q(Type u)}
-    (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
 
 /-- Helper function to synthesize a typed `RatCast α` expression. -/
 def inferRatCast (α : Q(Type u)) : MetaM Q(RatCast $α) :=
@@ -818,7 +759,7 @@ def getSimpContext (args : Syntax) (simpOnly := false) :
     TacticM Simp.Context := do
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args (eraseLocal := false) (kind := .simp)
+  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
     { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems

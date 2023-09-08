@@ -65,10 +65,9 @@ example : True := by
   trivial
 
 set_option says.verify true in
-example : Nat := by
-  simp? says simp only
+example (x y : List α) : (x ++ y).length = x.length + y.length := by
+  simp? says simp only [List.length_append]
   -- This is a comment to test that `says` ignores following comments.
-  exact 0
 
 set_option says.no_verify_in_CI true in
 example : True := by
