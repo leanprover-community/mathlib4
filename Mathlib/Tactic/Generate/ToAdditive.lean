@@ -635,7 +635,7 @@ def warnParametricAttr (stx : Syntax) (attr : ParametricAttribute β)
   (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
-/-- `runAndAdditivize names desc t` runs `t` on all elements of `names`
+/-- `additivizeLemmas names desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
