@@ -87,8 +87,6 @@ theorem _root_.Semigroup.mem_center_iff [Semigroup M] {z : M} :
       rw [mul_assoc]
     · intros _ _
       rw [mul_assoc]
-#align subsemigroup.mem_center_iff Subsemigroup.mem_center_iff
-#align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
 
 variable (M)
 
@@ -143,7 +141,7 @@ theorem mul_mem_center [Mul M] {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (
 
 @[to_additive (attr := simp) neg_mem_addCenter]
 theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
-  rw [_root_.Subsemigroup.mem_center_iff]
+  rw [_root_.Semigroup.mem_center_iff]
   intro _
   rw [← inv_inj, mul_inv_rev, inv_inv, ha.comm, mul_inv_rev, inv_inv]
 #align set.inv_mem_center Set.inv_mem_center
@@ -170,7 +168,7 @@ theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
   fun a ha => by
-  rw [_root_.Subsemigroup.mem_center_iff]
+  rw [_root_.Semigroup.mem_center_iff]
   intro _
   rw [←Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
 #align set.subset_center_units Set.subset_center_units
@@ -178,7 +176,7 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
 
 theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
   fun a ha => by
-    rw [mem_preimage, _root_.Subsemigroup.mem_center_iff]
+    rw [mem_preimage, _root_.Semigroup.mem_center_iff]
     intro b
     obtain rfl | hb := eq_or_ne b 0
     · rw [zero_mul, mul_zero]
@@ -221,7 +219,7 @@ variable (M)
 theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
   (Subset.antisymm (subset_univ _)) (by
     intros _ _
-    rw [_root_.Subsemigroup.mem_center_iff]
+    rw [_root_.Semigroup.mem_center_iff]
     intro _
     rw [mul_comm]
     )
@@ -278,7 +276,7 @@ variable {M}
 
 @[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
-  decidable_of_iff' _ mem_center_iff
+  decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter
 #align add_subsemigroup.decidable_mem_center AddSubsemigroup.decidableMemCenter
 

@@ -488,7 +488,7 @@ theorem center_toSubsemigroup (R) [NonUnitalSemiring R] :
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
-  rw [← Subsemigroup.mem_center_iff]
+  rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 #align non_unital_subsemiring.mem_center_iff NonUnitalSubsemiring.mem_center_iff
 

@@ -2097,7 +2097,7 @@ variable {G}
 
 @[to_additive]
 theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
-  rw [← Subsemigroup.mem_center_iff]
+  rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 #align subgroup.mem_center_iff Subgroup.mem_center_iff
 #align add_subgroup.mem_center_iff AddSubgroup.mem_center_iff
