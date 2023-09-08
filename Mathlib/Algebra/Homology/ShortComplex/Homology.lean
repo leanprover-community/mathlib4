@@ -409,7 +409,7 @@ variable {S}
 /-- Given a morphism `φ : S₁ ⟶ S₂` of short complexes and homology data `h₁` and `h₂`
 for `S₁` and `S₂` respectively, this is the induced homology map `h₁.left.H ⟶ h₁.left.H`. -/
 def homologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
-  h₁.left.H ⟶ h₂.left.H := leftHomologyMap' φ _ _
+    h₁.left.H ⟶ h₂.left.H := leftHomologyMap' φ _ _
 
 /-- The homology map `S₁.homology ⟶ S₂.homology` induced by a morphism
 `S₁ ⟶ S₂` of short complexes. -/
@@ -527,7 +527,7 @@ instance isIso_homologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
 `S₁ ≅ S₂` of short complexes. -/
 @[simps]
 noncomputable def homologyMapIso (e : S₁ ≅ S₂) [S₁.HasHomology]
-  [S₂.HasHomology] : S₁.homology ≅ S₂.homology where
+    [S₂.HasHomology] : S₁.homology ≅ S₂.homology where
   hom := homologyMap e.hom
   inv := homologyMap e.inv
   hom_inv_id := by rw [← homologyMap_comp, e.hom_inv_id, homologyMap_id]
