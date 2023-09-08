@@ -56,18 +56,13 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
     obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
-    use closure U
-    use (closure U)ᶜ
-    refine ⟨ExtremallyDisconnected.open_closure U hUV.1,
+    refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
-    simp only [Set.mem_compl_iff]
-    rw [mem_closure_iff]
+    rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
     refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
-    rw [Set.nonempty_iff_ne_empty]
-    simp only [not_not]
-    rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
+    rw [Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
 end TotallySeparated
@@ -209,7 +204,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
 in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open sets,
 then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint. -/
-lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_IsOpen [ExtremallyDisconnected A]
+lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisconnected A]
     {U₁ U₂ : Set A} (h : Disjoint U₁ U₂) (hU₁ : IsOpen U₁) (hU₂ : IsOpen U₂) :
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
@@ -234,7 +229,7 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
       image_univ_of_surjective ρ_surj]
   -- apply Lemma 2.2 to prove their closures are disjoint
   have disj'' : Disjoint (closure (ρ '' G₁ᶜ)ᶜ) (closure (ρ '' G₂ᶜ)ᶜ) :=
-    disjoint_closure_of_disjoint_IsOpen disj' G₁_open' G₂_open'
+    disjoint_closure_of_disjoint_isOpen disj' G₁_open' G₂_open'
   -- apply Lemma 2.1 to prove $\rho(x_1) = \rho(x_2)$ lies in their intersection
   have hx₁' := image_subset_closure_compl_image_compl_of_isOpen ρ_cont ρ_surj zorn_subset G₁_open <|
     mem_image_of_mem ρ hx₁
@@ -297,19 +292,15 @@ instance instExtremallyDisconnected {π : ι → Type*} [∀ i, TopologicalSpace
   rw [isOpen_sigma_iff] at hs ⊢
   intro i
   rcases h₀ i with ⟨h₀⟩
-  have h₁ : IsOpen (closure (Sigma.mk i ⁻¹' s))
-  · apply h₀
-    exact hs i
-  suffices h₂ : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
-  · rwa [h₂]
+  suffices h : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
+  · rw [h]
+    exact h₀ _ (hs i)
   apply IsOpenMap.preimage_closure_eq_closure_preimage
-  intro U _
-  · rw [isOpen_sigma_iff]
+  · intro U _
+    rw [isOpen_sigma_iff]
     intro j
     by_cases ij : i = j
-    · rw [← ij]
-      rw [sigma_mk_preimage_image_eq_self]
-      assumption
+    · rwa [← ij, sigma_mk_preimage_image_eq_self]
     · rw [sigma_mk_preimage_image' ij]
-      apply isOpen_empty
+      exact isOpen_empty
   · continuity
