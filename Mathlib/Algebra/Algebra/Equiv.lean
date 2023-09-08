@@ -603,7 +603,7 @@ theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinea
 #align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.toAlgHom_toLinearMap
 
 theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
-    (ofAlgHom f g h₁ h₂).toLinearMap = f :=
+    (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
   LinearMap.ext fun _ => rfl
 
 @[simp]
