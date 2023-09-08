@@ -674,7 +674,7 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space α] {x y : α} {s t : Se
 
 @[simp]
 theorem ker_nhds [T1Space α] (x : α) : (𝓝 x).ker = {x} := by
-  simp [sInter_nhds_sets_eq_specializes]
+  simp [ker_nhds_eq_specializes]
 
 theorem biInter_basis_nhds [T1Space α] {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {x : α}
     (h : (𝓝 x).HasBasis p s) : ⋂ (i) (_ : p i), s i = {x} := by
