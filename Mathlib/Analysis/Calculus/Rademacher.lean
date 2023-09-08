@@ -38,7 +38,7 @@ it follows that `f` is Fréchet-differentiable at these points.
 See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 -/
 
-open Filter MeasureTheory Measure FiniteDimensional Metric Set
+open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
 
 open scoped BigOperators NNReal ENNReal Topology
 
@@ -270,12 +270,10 @@ theorem ae_exists_fderiv_of_countable
     (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDifferentiableAt v)
   filter_upwards [I1, I2] with x hx h'x
   let L : E →L[ℝ] ℝ :=
-    LinearMap.toContinuousLinearMap ((B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i))))
+    LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
-
-open Asymptotics
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
@@ -288,13 +286,11 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (C + ‖L‖ + 1) * δ = ε :=
     ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel' ε (by positivity)⟩
   obtain ⟨q, hqs, q_fin, hq⟩ : ∃ q, q ⊆ s ∧ q.Finite ∧ sphere 0 1 ⊆ ⋃ y ∈ q, ball y δ := by
-    have A : IsCompact (sphere (0 : E) 1) := isCompact_sphere 0 1
-    have B : ∀ y ∈ s, IsOpen (ball y δ) := fun y _hy ↦ isOpen_ball
-    have C : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
+    have : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
       apply hs.trans (fun z hz ↦ ?_)
       obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, dist z y < δ := Metric.mem_closure_iff.1 hz δ δpos
       exact mem_biUnion ys hy
-    exact A.elim_finite_subcover_image B C
+    exact (isCompact_sphere 0 1).elim_finite_subcover_image (fun y _hy ↦ isOpen_ball) this
   have I : ∀ᶠ t in 𝓝 (0 : ℝ), ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
     apply (Finite.eventually_all q_fin).2 (fun v hv ↦ ?_)
     apply Asymptotics.IsLittleO.def ?_ δpos
@@ -312,7 +308,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
   have rho_pos : 0 ≤ ρ := by simp [hρ]
   obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
-  have : ‖y - w‖ < δ := by rw [norm_sub_rev]; exact hy
+  have : ‖y - w‖ < δ := by rwa [norm_sub_rev]
   calc  ‖f (x + v) - f x - L v‖
       = ‖f (x + ρ • w) - f x - ρ • L w‖ := by simp [hvw]
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
@@ -400,7 +396,7 @@ theorem ae_differentiableWithinAt {f : E → F} (hf : LipschitzOnWith C f s)
 
 end LipschitzOnWith
 
-/-- *Rademacher's theorem*: a Lipschiz function between finite-dimensional real vector spaces is
+/-- *Rademacher's theorem*: a Lipschitz function between finite-dimensional real vector spaces is
 differentiable almost everywhere. -/
 theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
