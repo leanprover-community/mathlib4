@@ -323,7 +323,7 @@ theorem le_succ_get?_denom [g.IsContinuedFraction] {b : K}
 #align generalized_continued_fraction.le_of_succ_nth_denom GeneralizedContinuedFraction.le_succ_get?_denomₓ
 
 /-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
-theorem of_denom_mono [g.IsIntegerContinuedFraction] :
+theorem denom_mono [g.IsIntegerContinuedFraction] :
     g.denominators n ≤ g.denominators (n + 1) := by
   cases' Decidable.em <| g.partialDenominators.TerminatedAt n with terminated not_terminated
   · have : g.partialDenominators.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
@@ -343,7 +343,7 @@ theorem of_denom_mono [g.IsIntegerContinuedFraction] :
       g.denominators n ≤ b * g.denominators n := by
         simpa using mul_le_mul_of_nonneg_right this zero_le_denom
       _ ≤ g.denominators (n + 1) := le_succ_get?_denom nth_partDenom_eq
-#align generalized_continued_fraction.of_denom_mono GeneralizedContinuedFraction.of_denom_monoₓ
+#align generalized_continued_fraction.of_denom_mono GeneralizedContinuedFraction.denom_monoₓ
 
 section Determinant
 
