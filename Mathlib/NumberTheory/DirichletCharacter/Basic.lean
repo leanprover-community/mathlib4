@@ -25,10 +25,6 @@ Main definitions:
 
 dirichlet character, multiplicative character
 -/
--- TODO: move to Data.ZMod.Basic?!
-@[simp]
-lemma cast_hom_self {n : ℕ} : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
-  RingHom.ext_zmod (ZMod.castHom dvd_rfl (ZMod n)) (RingHom.id (ZMod n))
 
 /-- The type of Dirichlet characters of level `n`. -/
 @[reducible]
