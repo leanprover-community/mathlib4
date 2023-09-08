@@ -275,6 +275,13 @@ def center : Subsemigroup M where
 variable {M}
 
 @[to_additive]
+theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+  rw [← Semigroup.mem_center_iff]
+  exact Iff.rfl
+#align subsemigroup.mem_center_iff Subsemigroup.mem_center_iff
+#align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
+
+@[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter
