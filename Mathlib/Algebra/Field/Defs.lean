@@ -179,3 +179,8 @@ end Field
 `NeZero` should not be needed in the basic algebraic hierarchy.
 -/
 assert_not_exists NeZero
+
+/-
+Check that we have not imported `Mathlib.Tactic.Common` yet.
+-/
+assert_not_exists Mathlib.Tactic.LibrarySearch.librarySearch
