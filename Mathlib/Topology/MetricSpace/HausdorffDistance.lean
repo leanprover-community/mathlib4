@@ -1147,6 +1147,11 @@ theorem Bounded.cthickening {α : Type*} [PseudoMetricSpace α] {δ : ℝ} {E : 
     ((lt_add_one _).trans_le (le_max_left _ _)) _
 #align metric.bounded.cthickening Metric.Bounded.cthickening
 
+protected theorem _root_.IsCompact.cthickening
+    {α : Type*} [PseudoMetricSpace α] [ProperSpace α] {s : Set α}
+    (hs : IsCompact s) {r : ℝ} : IsCompact (cthickening r s) :=
+  isCompact_of_isClosed_bounded isClosed_cthickening hs.bounded.cthickening
+
 theorem thickening_subset_interior_cthickening (δ : ℝ) (E : Set α) :
     thickening δ E ⊆ interior (cthickening δ E) :=
   (subset_interior_iff_isOpen.mpr isOpen_thickening).trans
@@ -1290,6 +1295,13 @@ theorem _root_.IsCompact.exists_cthickening_subset_open (hs : IsCompact s) (ht :
   (hst.disjoint_compl_right.exists_cthickenings hs ht.isClosed_compl).imp fun _ h =>
     ⟨h.1, disjoint_compl_right_iff_subset.1 <| h.2.mono_right <| self_subset_cthickening _⟩
 #align is_compact.exists_cthickening_subset_open IsCompact.exists_cthickening_subset_open
+
+theorem _root_.IsCompact.exists_isCompact_cthickening [LocallyCompactSpace α] (hs : IsCompact s) :
+    ∃ δ, 0 < δ ∧ IsCompact (cthickening δ s) := by
+  rcases exists_compact_superset hs with ⟨K, K_compact, hK⟩
+  rcases hs.exists_cthickening_subset_open isOpen_interior hK with ⟨δ, δpos, hδ⟩
+  refine ⟨δ, δpos, ?_⟩
+  exact isCompact_of_isClosed_subset K_compact isClosed_cthickening (hδ.trans interior_subset)
 
 theorem _root_.IsCompact.exists_thickening_subset_open (hs : IsCompact s) (ht : IsOpen t)
     (hst : s ⊆ t) : ∃ δ, 0 < δ ∧ thickening δ s ⊆ t :=

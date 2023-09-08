@@ -77,6 +77,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
+set_option autoImplicit true
+
 
 open Function Set Order
 open Classical hiding by_cases not_not
@@ -190,7 +192,7 @@ theorem biInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
   biInter_mem is.finite_toSet
 #align filter.bInter_finset_mem Filter.biInter_finset_mem
 
-alias biInter_finset_mem ← _root_.Finset.iInter_mem_sets
+alias _root_.Finset.iInter_mem_sets := biInter_finset_mem
 #align finset.Inter_mem_sets Finset.iInter_mem_sets
 
 -- attribute [protected] Finset.iInter_mem_sets porting note: doesn't work
@@ -348,6 +350,9 @@ def generate (g : Set (Set α)) : Filter α where
   sets_of_superset := GenerateSets.superset
   inter_sets := GenerateSets.inter
 #align filter.generate Filter.generate
+
+lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
+    U ∈ generate s := GenerateSets.basic h
 
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
   Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
@@ -730,8 +735,8 @@ theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V 
 theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) := by
-  have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1
-  · simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
+  have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1 := by
+    simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
   choose! s t hst using this
   refine' ⟨fun i => ⋂ j, s i j ∩ t j i, fun i => _, fun i j hij => _⟩
   exacts [iInter_mem.2 fun j => inter_mem (@s i j).2 (@t j i).2,
@@ -988,7 +993,7 @@ theorem principal_neBot_iff {s : Set α} : NeBot (𝓟 s) ↔ s.Nonempty :=
   neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans nonempty_iff_ne_empty.symm
 #align filter.principal_ne_bot_iff Filter.principal_neBot_iff
 
-alias principal_neBot_iff ↔ _ _root_.Set.Nonempty.principal_neBot
+alias ⟨_, _root_.Set.Nonempty.principal_neBot⟩ := principal_neBot_iff
 #align set.nonempty.principal_ne_bot Set.Nonempty.principal_neBot
 
 theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 sᶜ) :=
@@ -1167,7 +1172,7 @@ theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → 
   simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
 #align filter.eventually_all_finite Filter.eventually_all_finite
 
-alias eventually_all_finite ← _root_.Set.Finite.eventually_all
+alias _root_.Set.Finite.eventually_all := eventually_all_finite
 #align set.finite.eventually_all Set.Finite.eventually_all
 
 -- attribute [protected] Set.Finite.eventually_all
@@ -1177,7 +1182,7 @@ alias eventually_all_finite ← _root_.Set.Finite.eventually_all
   I.finite_toSet.eventually_all
 #align filter.eventually_all_finset Filter.eventually_all_finset
 
-alias eventually_all_finset ← _root_.Finset.eventually_all
+alias _root_.Finset.eventually_all := eventually_all_finset
 #align finset.eventually_all Finset.eventually_all
 
 -- attribute [protected] Finset.eventually_all
@@ -1447,7 +1452,7 @@ theorem eventuallyEq_set {s t : Set α} {l : Filter α} : s =ᶠ[l] t ↔ ∀ᶠ
   eventually_congr <| eventually_of_forall fun _ => ⟨Eq.to_iff, Iff.to_eq⟩
 #align filter.eventually_eq_set Filter.eventuallyEq_set
 
-alias eventuallyEq_set ↔ EventuallyEq.mem_iff Eventually.set_eq
+alias ⟨EventuallyEq.mem_iff, Eventually.set_eq⟩ := eventuallyEq_set
 #align filter.eventually_eq.mem_iff Filter.EventuallyEq.mem_iff
 #align filter.eventually.set_eq Filter.Eventually.set_eq
 
@@ -1855,6 +1860,10 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
   f.sets_of_superset hs <| subset_preimage_image m s
 #align filter.image_mem_map Filter.image_mem_map
 
+-- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 #align filter.image_mem_map_iff Filter.image_mem_map_iff
@@ -2879,6 +2888,43 @@ theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
 
 end ListTraverse
 
+section ker
+variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
+open Function Set
+
+/-- The *kernel* of a filter is the intersection of all its sets. -/
+def ker (f : Filter α) : Set α := ⋂ s ∈ f, s
+
+@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_iInter₂
+@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_iInter₂_iff
+
+/-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
+def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
+GaloisConnection.toGaloisCoinsertion (λ s f ↦ by simp [principal_le_iff]) $ by
+  simp only [le_iff_subset, subset_def, mem_ker, mem_principal]; aesop
+
+lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
+lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
+
+@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := iInter₂_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
+@[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
+@[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans $ by simp
+@[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf
+@[simp] lemma ker_iInf (f : ι → Filter α) : ker (⨅ i, f i) = ⨅ i, ker (f i) :=
+gi_principal_ker.gc.u_iInf
+@[simp] lemma ker_sInf (S : Set (Filter α)) : ker (sInf S) = ⨅ f ∈ S, ker f :=
+gi_principal_ker.gc.u_sInf
+@[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
+
+@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [←principal_singleton, ker_principal]
+
+@[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
+  ext a
+  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
+  exact forall₂_congr λ s _ ↦ ⟨λ h ↦ h _ Subset.rfl, λ ha t ht ↦ ht ha⟩
+
+end ker
+
 /-! ### Limits -/
 
 /-- `Filter.Tendsto` is the generic "limit of a function" predicate.
@@ -2942,7 +2988,7 @@ theorem tendsto_iff_comap {f : α → β} {l₁ : Filter α} {l₂ : Filter β} 
   map_le_iff_le_comap
 #align filter.tendsto_iff_comap Filter.tendsto_iff_comap
 
-alias tendsto_iff_comap ↔ Tendsto.le_comap _
+alias ⟨Tendsto.le_comap, _⟩ := tendsto_iff_comap
 #align filter.tendsto.le_comap Filter.Tendsto.le_comap
 
 protected theorem Tendsto.disjoint {f : α → β} {la₁ la₂ : Filter α} {lb₁ lb₂ : Filter β}
@@ -3006,7 +3052,7 @@ theorem tendsto_map'_iff {f : β → γ} {g : α → β} {x : Filter α} {y : Fi
   rw [Tendsto, Tendsto, map_map]
 #align filter.tendsto_map'_iff Filter.tendsto_map'_iff
 
-alias tendsto_map'_iff ↔ _ tendsto_map'
+alias ⟨_, tendsto_map'⟩ := tendsto_map'_iff
 #align filter.tendsto_map' Filter.tendsto_map'
 
 theorem tendsto_comap {f : α → β} {x : Filter β} : Tendsto f (comap f x) x :=

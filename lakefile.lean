@@ -4,6 +4,7 @@ open Lake DSL
 
 def moreServerArgs := #[
   "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
+  "-DautoImplicit=false",
   "-DrelaxedAutoImplicit=false"
 ]
 
@@ -14,7 +15,7 @@ def moreLeanArgs := moreServerArgs
 -- so they can be enabled in CI and disabled locally or vice versa.
 -- Warning: Do not put any options here that actually change the olean files,
 -- or inconsistent behavior may result
-def weakLeanArgs :=
+def weakLeanArgs : Array String :=
   if get_config? CI |>.isSome then
     #["-DwarningAsError=true"]
   else
@@ -28,12 +29,10 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-@[default_target]
 lean_exe runLinter where
   root := `scripts.runLinter
   supportInterpreter := true
 
-@[default_target]
 lean_exe checkYaml where
   root := `scripts.checkYaml
   supportInterpreter := true

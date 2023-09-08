@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
 import Mathlib.Algebra.Order.SMul
-import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
 import Mathlib.Algebra.CharP.Invertible
@@ -472,3 +472,24 @@ theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + 
 #align imaginary_part_smul imaginaryPart_smul
 
 end RealImaginaryPart
+
+section Rational
+
+open Cardinal Module
+
+@[simp]
+lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ ?_).trans mk_real
+  simpa [mk_real] using aleph0_lt_continuum
+
+@[simp]
+lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
+  simpa using aleph0_lt_continuum
+
+/-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
+as additive groups. -/
+theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
+  LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
+
+end Rational

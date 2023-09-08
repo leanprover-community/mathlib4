@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 
-#align_import algebraic_topology.dold_kan.faces from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+#align_import algebraic_topology.dold_kan.faces from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 

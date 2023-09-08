@@ -299,6 +299,15 @@ theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
   List.length_finRange n
 #align fintype.card_fin Fintype.card_fin
 
+theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
+    Fintype.card {i : Fin n // i < m} = m := by
+  conv_rhs => rw [← Fintype.card_fin m]
+  apply Fintype.card_congr
+  exact { toFun := fun ⟨⟨i, _⟩, hi⟩ ↦ ⟨i, hi⟩
+          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩
+          left_inv := fun i ↦ rfl
+          right_inv := fun i ↦ rfl }
+
 @[simp]
 theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by
   rw [Finset.card_univ, Fintype.card_fin]
@@ -540,6 +549,7 @@ theorem card_pos [h : Nonempty α] : 0 < card α :=
   card_pos_iff.mpr h
 #align fintype.card_pos Fintype.card_pos
 
+@[simp]
 theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
@@ -643,14 +653,15 @@ theorem injective_iff_surjective_of_equiv {f : α → β} (e : α ≃ β) : Inje
     simpa [Function.comp] using e.injective.comp (this.2 (e.symm.surjective.comp hsurj))⟩
 #align finite.injective_iff_surjective_of_equiv Finite.injective_iff_surjective_of_equiv
 
-alias injective_iff_bijective ↔ _root_.Function.Injective.bijective_of_finite _
+alias ⟨_root_.Function.Injective.bijective_of_finite, _⟩ := injective_iff_bijective
 #align function.injective.bijective_of_finite Function.Injective.bijective_of_finite
 
-alias surjective_iff_bijective ↔ _root_.Function.Surjective.bijective_of_finite _
+alias ⟨_root_.Function.Surjective.bijective_of_finite, _⟩ := surjective_iff_bijective
 #align function.surjective.bijective_of_finite Function.Surjective.bijective_of_finite
 
-alias injective_iff_surjective_of_equiv ↔
-  _root_.Function.Injective.surjective_of_fintype _root_.Function.Surjective.injective_of_fintype
+alias ⟨_root_.Function.Injective.surjective_of_fintype,
+    _root_.Function.Surjective.injective_of_fintype⟩ :=
+  injective_iff_surjective_of_equiv
 #align function.injective.surjective_of_fintype Function.Injective.surjective_of_fintype
 #align function.surjective.injective_of_fintype Function.Surjective.injective_of_fintype
 
@@ -1062,7 +1073,7 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
 #align prod.infinite_of_left Prod.infinite_of_left
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
-    Infinite { p : α × α // _root_.Commute p.1 p.2 } :=
+    Infinite { p : α × α // Commute p.1 p.2 } :=
   Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 namespace Infinite

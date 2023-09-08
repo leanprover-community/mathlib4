@@ -14,6 +14,8 @@ import Mathlib.Tactic.Relation.Trans
 
 /-! ### alignments from lean 3 `init.core` -/
 
+set_option autoImplicit true
+
 #align id id -- align this first so idDelta doesn't take priority
 #align id_delta id
 

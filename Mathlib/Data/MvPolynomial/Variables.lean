@@ -686,7 +686,7 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
 theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
     (a ^ n).totalDegree ≤ n * a.totalDegree := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, MulZeroClass.zero_mul, pow_zero, totalDegree_one]
+  · simp only [Nat.zero_eq, zero_mul, pow_zero, totalDegree_one]
   rw [pow_succ]
   calc
     totalDegree (a * a ^ n) ≤ a.totalDegree + (a ^ n).totalDegree := totalDegree_mul _ _
@@ -809,7 +809,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       rw [Finset.nonempty_iff_ne_empty, Ne.def, Finsupp.support_eq_empty]
       rintro rfl
       contradiction
-    rw [Finsupp.prod, Finset.prod_eq_zero hi, MulZeroClass.mul_zero]
+    rw [Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]
     rw [hp, zero_pow (Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hi)]
     rw [mem_vars]
     exact ⟨d, hd, hi⟩
