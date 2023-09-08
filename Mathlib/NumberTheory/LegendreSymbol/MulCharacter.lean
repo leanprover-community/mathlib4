@@ -159,8 +159,6 @@ lemma toMonoidHom_toFun_coe (χ : MulChar R R') : χ.toMonoidHom.toFun = χ :=
 lemma toMonoidHom_toFun_coe' (χ : MulChar R R') (x : R) : χ.toMonoidHom.toFun x = χ x :=
   rfl
 
-#lint
-
 /-- Extensionality. Since `MulChar`s always take the value zero on non-units, it is sufficient
 to compare the values on units. -/
 @[ext]
