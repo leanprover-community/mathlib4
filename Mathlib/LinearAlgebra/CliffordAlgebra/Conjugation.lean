@@ -80,19 +80,24 @@ section Reverse
 
 open MulOpposite
 
-/-- `CliffordAlgebra.reverse` as an `AlgEquiv` to the opposite algebra -/
-def reverseOp : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
-  letI hom : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ := CliffordAlgebra.lift Q
-      ⟨(MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ ι Q, fun m => unop_injective <| by simp⟩
-  AlgEquiv.ofAlgHom hom (AlgHom.opComm hom)
-    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext <| fun _ => by simp)
-    (hom_ext <| LinearMap.ext <| fun _ => by simp)
+/-- `CliffordAlgebra.reverse` as an `AlgHom` to the opposite algebra -/
+def reverseOp : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
+  CliffordAlgebra.lift Q
+    ⟨(MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ ι Q, fun m => unop_injective <| by simp⟩
 
 @[simp]
 theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply _ _ _
 
+/-- `CliffordAlgebra.reverseEquiv` as an `AlgEquiv` to the opposite algebra -/
+@[simps! apply]
+def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
+  AlgEquiv.ofAlgHom reverseOp (AlgHom.opComm reverseOp)
+    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext <| fun _ => by simp)
+    (hom_ext <| LinearMap.ext <| fun _ => by simp)
+
 @[simp]
-theorem reverseOp_opComm : AlgEquiv.opComm (reverseOp (Q := Q)) = reverseOp.symm := rfl
+theorem reverseOpEquiv_opComm :
+  AlgEquiv.opComm (reverseOpEquiv (Q := Q)) = reverseOpEquiv.symm := rfl
 
 /-- Grade reversion, inverting the multiplication order of basis vectors.
 Also called *transpose* in some literature. -/
@@ -127,7 +132,7 @@ theorem reverse.map_mul (a b : CliffordAlgebra Q) :
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
-  AlgHom.congr_fun reverseOp.symm_comp
+  AlgHom.congr_fun reverseOpEquiv.symm_comp
 #align clifford_algebra.reverse_involutive CliffordAlgebra.reverse_involutive
 
 @[simp]
