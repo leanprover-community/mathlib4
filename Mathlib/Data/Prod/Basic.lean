@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Init.Core
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
 
 #align_import data.prod.basic from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 

@@ -1477,9 +1477,9 @@ lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchim
   rintro ⟨m, hm⟩
   have hm' : ∀ a, f a ≤ m := λ a ↦ hm $ Set.mem_range_self _
   obtain ⟨a₀⟩ := ‹Nonempty α›
-  suffices : ∀ b, f a₀ ≤ b → ∃ a, b < f a
-  { obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
-    exact ha.not_le (hm' a) }
+  suffices ∀ b, f a₀ ≤ b → ∃ a, b < f a by
+    obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
+    exact ha.not_le (hm' a)
   have h : ∀ a, ∃ a', f a < f a' := λ a ↦ (exists_gt a).imp (λ a' h ↦ hf h)
   apply Succ.rec
   { exact h a₀ }
