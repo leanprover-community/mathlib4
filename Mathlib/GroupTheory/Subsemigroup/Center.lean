@@ -73,7 +73,7 @@ theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ IsMulCentral z :=
 variable {M}
 
 @[to_additive]
-theorem _root_.Subsemigroup.mem_center_iff [Semigroup M] {z : M} :
+theorem _root_.Semigroup.mem_center_iff [Semigroup M] {z : M} :
     z ∈ Set.center M ↔ ∀ g, g * z = z * g := by
   constructor
   · exact fun a g ↦ by rw [Set.IsMulCentral.comm a g]
