@@ -20,6 +20,11 @@ composition of functions which are line-differentiable is not line-differentiabl
 The Fréchet derivative should therefore be favored over this one in general, although the line
 derivative may sometimes prove handy.
 
+The line derivative in direction `v` is also called the Gateaux derivative in direction `v`,
+although the term "Gateaux derivative" is sometimes reserved for the situation where there is
+such a derivative in all directions, for the map `v ↦ lineDeriv 𝕜 f x v` (which doesn't have to be
+linear in general).
+
 ## Main definition and results
 
 We mimick the definitions and statements for the Fréchet derivative and the one-dimensional
@@ -59,14 +64,14 @@ variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
 
 /-- `f` has the derivative `f'` at the point `x` along the direction `v` in the set `s`.
 That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
-Note that this definition is less well behaved that the total Fréchet derivative, which
+Note that this definition is less well behaved than the total Fréchet derivative, which
 should generally be favored over this one. -/
 def HasLineDerivWithinAt (f : E → F) (f' : F) (s : Set E) (x : E) (v : E) :=
   HasDerivWithinAt (fun t ↦ f (x + t • v)) f' ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜)
 
 /-- `f` has the derivative `f'` at the point `x` along the direction `v`.
 That is, `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `0`.
-Note that this definition is less well behaved that the total Fréchet derivative, which
+Note that this definition is less well behaved than the total Fréchet derivative, which
 should generally be favored over this one. -/
 def HasLineDerivAt (f : E → F) (f' : F) (x : E) (v : E) :=
   HasDerivAt (fun t ↦ f (x + t • v)) f' (0 : 𝕜)
@@ -93,8 +98,8 @@ def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
 
 /-- Line derivative of `f` at the point `x` in the direction `v`, if it exists.  Zero otherwise.
 
-If the derivative exists (i.e., `∃ f', HasLineDerivAt 𝕜 f f' x v`), then
-`f (x + t v) = f x + t lineDerivWithin 𝕜 f x v + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
+If the line derivative exists (i.e., `∃ f', HasLineDerivAt 𝕜 f f' x v`), then
+`f (x + t v) = f x + t lineDeriv 𝕜 f x v + o (t)` when `t` tends to `0`.
 -/
 def lineDeriv (f : E → F) (x : E) (v : E) : F :=
   deriv (fun t ↦ f (x + t • v)) (0 : 𝕜)
@@ -374,8 +379,7 @@ theorem Filter.EventuallyEq.lineDeriv_eq (h : f₁ =ᶠ[𝓝 x] f) :
     lineDeriv 𝕜 f₁ x v = lineDeriv 𝕜 f x v := by
   rw [← lineDerivWithin_univ, ← lineDerivWithin_univ, h.lineDerivWithin_eq_nhds]
 
-
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+/-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
 bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
 neighborhood of `x`. -/
@@ -389,7 +393,7 @@ theorem HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLin
   simp only [preimage_setOf_eq, add_sub_cancel', norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
   simpa [mul_assoc] using ht
 
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+/-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
 bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
 neighborhood of `x`. -/
@@ -400,7 +404,7 @@ theorem HasLineDerivAt.le_of_lipschitzOn
   refine hf.le_of_lip' C.coe_nonneg ?_
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+/-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
 then its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`. -/
 theorem HasLineDerivAt.le_of_lipschitz
     {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
