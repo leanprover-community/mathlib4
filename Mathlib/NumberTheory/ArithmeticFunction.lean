@@ -51,7 +51,7 @@ All notation is localized in the namespace `ArithmeticFunction`.
 
 The arithmetic functions `ζ`, `σ`, `ω`, `Ω` and `μ` have Greek letter names.
 
-The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation `∏ᵖ f` or
+The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
 `∏ᵖ p ∣ n, f p` when applied to `n`.
 
 ## Tags
@@ -608,11 +608,6 @@ scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67
 scoped macro_rules (kind := bigproddvd)
   | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodToFinsetFactors (fun $x ↦ $r) $n)
 
-/-- `∏ᵖ f` is custom notation for `prodToFinsetFactors f` -/
-scoped syntax (name := bigproddvdarith) "∏ᵖ " term:67 : term
-scoped macro_rules (kind := bigproddvdarith)
-  | `(∏ᵖ $f) => `(prodToFinsetFactors $f)
-
 @[simp]
 theorem prodToFinsetFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} [hn : NeZero n] :
     ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
@@ -804,7 +799,8 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   exact h p _ (Nat.prime_of_mem_factors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers Nat.ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
-theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : IsMultiplicative (∏ᵖ f) := by
+theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) :
+    IsMultiplicative (prodToFinsetFactors f) := by
   rw [iff_ne_zero]
   constructor
   · apply prodToFinsetFactors_apply
