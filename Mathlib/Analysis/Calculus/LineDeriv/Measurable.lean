@@ -12,6 +12,9 @@ We prove in `measurable_lineDeriv` that the line derivative of a function (with 
 locally compact scalar field) is measurable, provided the function is continuous.
 -/
 
+open MeasureTheory
+open TopologicalSpace (SecondCountableTopology)
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [LocallyCompactSpace 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
