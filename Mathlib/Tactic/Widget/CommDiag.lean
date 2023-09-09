@@ -58,13 +58,13 @@ open scoped Jsx in
 display as labels in the diagram. -/
 def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, Html.ofTHtml <InteractiveCode fmt={← Widget.ppExprTagged h} />)
-  return Html.ofTHtml
+      return (s, <InteractiveCode fmt={← Widget.ppExprTagged h} />)
+  return (
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
-      sub={sub} />
+      sub={sub} />)
 
 /-! ## Commutative triangles -/
 
