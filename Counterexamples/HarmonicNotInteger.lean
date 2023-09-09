@@ -49,7 +49,8 @@ lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := by {
   }
 }
 
-theorem not_int_of_not_padic_int (a : ℚ) : padicNorm 2 a > 1 → ¬ a.isInt := by {
+theorem not_int_of_not_padic_int (a : ℚ) :
+  padicNorm 2 a > 1 → ¬ a.isInt := by {
   intro H
   suffices : a.den ≠ 1; simpa [Rat.isInt]
   by_cases (a = 0)
@@ -66,7 +67,7 @@ theorem not_int_of_not_padic_int (a : ℚ) : padicNorm 2 a > 1 → ¬ a.isInt :=
     intro Hden
     rw [Hden] at this
     simp only [padicValNat.one, sub_zero] at this
-    norm_cast
+    norm_cast at H
     have Hz : 0 = -0 := by {norm_num}
     rw [Hz]
     apply lt_neg_of_lt_neg
@@ -88,7 +89,12 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 -> ¬ (harmonic n).isInt := by {
     linarith
   }
   {
-    norm_cast
+    apply one_lt_zpow; try simp
+    apply lt_neg.mp
+    rw [neg_zero]
+
+
+
 
   }
 
