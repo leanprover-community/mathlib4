@@ -1332,3 +1332,8 @@ theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)â
 #align strict_anti_on.neg StrictAntiOn.neg
 
 end
+
+/-
+`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+-/
+assert_not_exists NeZero

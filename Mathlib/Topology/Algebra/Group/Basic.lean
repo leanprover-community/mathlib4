@@ -1497,32 +1497,25 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 #align topological_group.regular_space TopologicalGroup.regularSpace
 #align topological_add_group.regular_space TopologicalAddGroup.regularSpace
 
-@[to_additive]
-theorem TopologicalGroup.t3Space [T0Space G] : T3Space G :=
-  ⟨⟩
-#align topological_group.t3_space TopologicalGroup.t3Space
-#align topological_add_group.t3_space TopologicalAddGroup.t3Space
-
-@[to_additive]
-theorem TopologicalGroup.t2Space [T0Space G] : T2Space G := by
-  haveI := TopologicalGroup.t3Space G
-  infer_instance
-#align topological_group.t2_space TopologicalGroup.t2Space
-#align topological_add_group.t2_space TopologicalAddGroup.t2Space
+-- `inferInstance` can find these instances now
+#align topological_group.t3_space inferInstance
+#align topological_add_group.t3_space inferInstance
+#align topological_group.t2_space inferInstance
+#align topological_add_group.t2_space inferInstance
 
 variable {G}
 
 @[to_additive]
 theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) :=
   ⟨fun _ ↦ isClosed_singleton, fun h ↦
-    have := TopologicalGroup.t1Space G h; TopologicalGroup.t2Space G⟩
+    have := TopologicalGroup.t1Space G h; inferInstance⟩
 #align topological_group.t2_space_iff_one_closed TopologicalGroup.t2Space_iff_one_closed
 #align topological_add_group.t2_space_iff_zero_closed TopologicalAddGroup.t2Space_iff_zero_closed
 
 @[to_additive]
 theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) :
     T2Space G := by
-  suffices T1Space G from TopologicalGroup.t2Space G
+  suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
   rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
@@ -1536,7 +1529,7 @@ instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
     [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
   haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
-  exact TopologicalGroup.t3Space _
+  infer_instance
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
 
