@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Tactic.NthRewrite
 
 #align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -87,6 +88,33 @@ theorem gcd_self_add_left (m n : ℕ) : gcd (m + n) m = gcd n m := by rw [add_co
 theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
   rw [add_comm, gcd_add_self_right]
 #align nat.gcd_self_add_right Nat.gcd_self_add_right
+
+-- Lemmas where one argument consists of a subtraction of the other
+
+theorem gcd_self_sub_symm (m n : ℕ) (h : m ≤ n) : gcd (n - m) n = gcd (n - m) m := by
+  nth_rw 2 [← Nat.add_sub_cancel' h]
+  rw [gcd_add_self_right, gcd_comm]
+
+theorem gcd_sub_self_symm (m n : ℕ) (h : m ≤ n) : gcd n (n - m) = gcd m (n - m) := by
+  rw [gcd_comm, gcd_self_sub_symm m n h, gcd_comm]
+
+@[simp]
+theorem gcd_sub_self_left (m n : ℕ) (h : m ≤ n) : gcd (n - m) n = gcd n m := by
+  have := Nat.sub_add_cancel h
+  rw [← this, gcd_add_self_left (n - m) m]
+  convert gcd_self_sub_symm _ _ h
+
+@[simp]
+theorem gcd_self_sub_left (m n : ℕ) (h : m ≤ n) : gcd (n - m) n = gcd m n := by
+  rw [gcd_sub_self_left _ _ h, gcd_comm]
+
+@[simp]
+theorem gcd_sub_self_right (m n : ℕ) (h : m ≤ n) : gcd n (n - m) = gcd n m := by
+  rw [gcd_comm, gcd_sub_self_left _ _ h]
+
+@[simp]
+theorem gcd_self_sub_right (m n : ℕ) (h : m ≤ n) : gcd n (n - m) = gcd m n := by
+  rw [gcd_comm, gcd_self_sub_left _ _ h]
 
 /-! ### `lcm` -/
 
@@ -185,6 +213,14 @@ theorem coprime_mul_right_add_left (m n k : ℕ) : coprime (k * n + m) n ↔ cop
 theorem coprime_mul_left_add_left (m n k : ℕ) : coprime (n * k + m) n ↔ coprime m n := by
   rw [coprime, coprime, gcd_mul_left_add_left]
 #align nat.coprime_mul_left_add_left Nat.coprime_mul_left_add_left
+
+@[simp]
+theorem coprime_self_sub_left (m n : ℕ) (h : m ≤ n) : coprime (n - m) n ↔ coprime m n:= by
+  rw [coprime, coprime, gcd_self_sub_left _ _ h]
+
+@[simp]
+theorem coprime_self_sub_right (m n : ℕ) (h : m ≤ n) : coprime n (n - m) ↔ coprime m n:= by
+  rw [coprime, coprime, gcd_self_sub_right _ _ h]
 
 @[simp]
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
