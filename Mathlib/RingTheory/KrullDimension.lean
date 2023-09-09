@@ -356,7 +356,7 @@ exact ⟨PrimeSpectrum.IicToLocalizationAtPrime 𝔭,
 
 /--
 The canonical map from `Set.Iic 𝔭` to `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`
-is monotone.
+is monotone (not necessary for the proof).
 -/
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_isMonotone :
   Monotone (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
@@ -364,7 +364,7 @@ lemma _root_.PrimeSpectrum.IicToLocalizationAtPrime_isMonotone :
 
 /--
 The canonical map from `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)` to `Set.Iic 𝔭`
-is monotone.
+is monotone (not necessary for the proof).
 -/
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone :
   Monotone (PrimeSpectrum.LocalizationAtPrimeToIic 𝔭) := by
@@ -394,15 +394,11 @@ def _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv :
 
 lemma _root_.PrimeSpectrum.IicToLocalizationAtPrimeEquiv_IsMonotone :
   Monotone (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭) := by
-{ exact PrimeSpectrum.IicToLocalizationAtPrime_isMonotone 𝔭 }
+{ intro _ _ H x hx; rcases hx with ⟨a, ⟨b, hab⟩⟩; exact ⟨⟨a, H a.2⟩, ⟨b, hab⟩⟩ }
 
 lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_IsMonotone :
   Monotone (PrimeSpectrum.LocalizationAtPrimeToIicEquiv 𝔭) := by
-{ exact PrimeSpectrum.LocalizationAtPrimeToIic_isMonotone 𝔭 }
-
-lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_is_symm :
-  PrimeSpectrum.LocalizationAtPrimeToIicEquiv 𝔭 =
-    (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭).symm := rfl
+{ intro _ _ H x hx; exact H hx }
 
 /--
 We have a canonical order isomorphism from `Set.Iic 𝔭` to
