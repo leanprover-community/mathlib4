@@ -175,7 +175,7 @@ theorem of_mulOpposite
     (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
     UniqueMul A B a0 b0 := by
   intros a b aA bB ab
-  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by erw [← op_mul, ab, op_mul])
+  have := h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (by simpa using congr_arg op ab)
   simpa [and_comm] using this
 
 end UniqueMul
