@@ -219,7 +219,7 @@ theorem coprime_self_sub_left (m n : ℕ) (h : m ≤ n) : coprime (n - m) n ↔ 
   rw [coprime, coprime, gcd_self_sub_left _ _ h]
 
 @[simp]
-theorem coprime_self_sub_right (m n : ℕ) (h : m ≤ n) : coprime n (n - m) ↔ coprime m n:= by
+theorem coprime_self_sub_right (m n : ℕ) (h : m ≤ n) : coprime n (n - m) ↔ coprime m n := by
   rw [coprime, coprime, gcd_self_sub_right _ _ h]
 
 @[simp]
