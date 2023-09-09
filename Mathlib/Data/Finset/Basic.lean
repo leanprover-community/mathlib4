@@ -828,8 +828,9 @@ theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = 
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 #align finset.nonempty.exists_eq_singleton_or_nontrivial Finset.Nonempty.exists_eq_singleton_or_nontrivial
 
-instance [Nonempty α] : Nontrivial (Finset α) :=
+instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
+#align finset.nontrivial' Finset.instNontrivial
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅

@@ -119,9 +119,7 @@ theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := 
 #align finset.le_sup_of_le Finset.le_sup_of_le
 
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
-  Finset.induction_on s₁
-    (by rw [empty_union, sup_empty, bot_sup_eq])
-    (fun a s _ ih => by rw [insert_union, sup_insert, sup_insert, ih, sup_assoc])
+  eq_of_forall_ge_iff fun c => by simp [or_imp, forall_and]
 #align finset.sup_union Finset.sup_union
 
 @[simp]
@@ -363,26 +361,7 @@ theorem _root_.map_finset_inf [SemilatticeInf β] [OrderTop β] [InfTopHomClass 
     rw [inf_cons, inf_cons, map_inf, h, Function.comp_apply]
 #align map_finset_inf map_finset_inf
 
-theorem inf_union [DecidableEq β] : (s₁ ∪ s₂).inf f = s₁.inf f ⊓ s₂.inf f :=
-  @sup_union αᵒᵈ _ _ _ _ _ _ _
-#align finset.inf_union Finset.inf_union
-
-@[simp]
-theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
-    (s.biUnion t).inf f = s.inf fun x => (t x).inf f :=
-  @sup_biUnion αᵒᵈ _ _ _ _ _ _ _ _
-#align finset.inf_bUnion Finset.inf_biUnion
-
-theorem inf_const {s : Finset β} (h : s.Nonempty) (c : α) : (s.inf fun _ => c) = c :=
-  @sup_const αᵒᵈ _ _ _ _ h _
-#align finset.inf_const Finset.inf_const
-
-@[simp]
-theorem inf_top (s : Finset β) : (s.inf fun _ => ⊤) = (⊤ : α) :=
-  @sup_bot αᵒᵈ _ _ _ _
-#align finset.inf_top Finset.inf_top
-
-protected theorem le_inf_iff {a : α} : a ≤ s.inf f ↔ ∀ b ∈ s, a ≤ f b :=
+@[simp] protected theorem le_inf_iff {a : α} : a ≤ s.inf f ↔ ∀ b ∈ s, a ≤ f b :=
   @Finset.sup_le_iff αᵒᵈ _ _ _ _ _ _
 #align finset.le_inf_iff Finset.le_inf_iff
 
@@ -402,6 +381,25 @@ theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
 theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
 #align finset.inf_le_of_le Finset.inf_le_of_le
 
+theorem inf_union [DecidableEq β] : (s₁ ∪ s₂).inf f = s₁.inf f ⊓ s₂.inf f :=
+  eq_of_forall_le_iff fun c ↦ by simp [or_imp, forall_and]
+#align finset.inf_union Finset.inf_union
+
+@[simp] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
+    (s.biUnion t).inf f = s.inf fun x => (t x).inf f :=
+  @sup_biUnion αᵒᵈ _ _ _ _ _ _ _ _
+#align finset.inf_bUnion Finset.inf_biUnion
+
+theorem inf_const (h : s.Nonempty) (c : α) : (s.inf fun _ => c) = c := @sup_const αᵒᵈ _ _ _ _ h _
+#align finset.inf_const Finset.inf_const
+
+@[simp] theorem inf_top (s : Finset β) : (s.inf fun _ => ⊤) = (⊤ : α) := @sup_bot αᵒᵈ _ _ _ _
+#align finset.inf_top Finset.inf_top
+
+theorem inf_ite (p : β → Prop) [DecidablePred p] :
+    (s.inf fun i ↦ ite (p i) (f i) (g i)) = (s.filter p).inf f ⊓ (s.filter fun i ↦ ¬ p i).inf g :=
+  fold_ite _
+
 theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f ≤ s.inf g :=
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 #align finset.inf_mono_fun Finset.inf_mono_fun
@@ -410,14 +408,14 @@ theorem inf_mono (h : s₁ ⊆ s₂) : s₂.inf f ≤ s₁.inf f :=
   Finset.le_inf (fun _ hb => inf_le (h hb))
 #align finset.inf_mono Finset.inf_mono
 
-theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x => f x) = s.inf f :=
-  @sup_attach αᵒᵈ _ _ _ _ _
-#align finset.inf_attach Finset.inf_attach
-
 protected theorem inf_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
     (s.inf fun b => t.inf (f b)) = t.inf fun c => s.inf fun b => f b c :=
   @Finset.sup_comm αᵒᵈ _ _ _ _ _ _ _
 #align finset.inf_comm Finset.inf_comm
+
+theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x => f x) = s.inf f :=
+  @sup_attach αᵒᵈ _ _ _ _ _
+#align finset.inf_attach Finset.inf_attach
 
 theorem inf_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).inf f = s.inf fun i => t.inf fun i' => f ⟨i, i'⟩ :=
