@@ -2893,10 +2893,12 @@ variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
 open Function Set
 
 /-- The *kernel* of a filter is the intersection of all its sets. -/
-def ker (f : Filter α) : Set α := ⋂ s ∈ f, s
+def ker (f : Filter α) : Set α := ⋂₀ f.sets
 
-@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_iInter₂
-@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_iInter₂_iff
+lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
+
+@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter
+@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_sInter_iff
 
 /-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
 def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
@@ -2906,7 +2908,7 @@ GaloisConnection.toGaloisCoinsertion (λ s f ↦ by simp [principal_le_iff]) $ b
 lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
 lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
 
-@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := iInter₂_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
+@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := sInter_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
 @[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
 @[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans $ by simp
 @[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf
