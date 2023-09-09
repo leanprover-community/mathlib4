@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
-/-! RightHomology of short complexes
+/-!
+# Right Homology of short complexes
 
 In this file, we define the dual notions to those defined in
 `Algebra.Homology.ShortComplex.LeftHomology`. In particular, if `S : ShortComplex C` is

@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-/-! LeftHomology of short complexes
+/-!
+# Left Homology of short complexes
 
 Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
