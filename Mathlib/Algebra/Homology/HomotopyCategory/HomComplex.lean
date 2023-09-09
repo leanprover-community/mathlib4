@@ -468,7 +468,8 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
   ext p q hpq
   dsimp
   rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by linarith),
-    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by linarith) p (p+n₁+1) q (by linarith) (by linarith),
+    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by linarith) p (p+n₁+1) q
+      (by linarith) (by linarith),
     δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by linarith) rfl,
     z₁.comp_v z₂ rfl p _ _ rfl rfl,
     z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by linarith) (by linarith),
