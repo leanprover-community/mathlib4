@@ -48,6 +48,37 @@ def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a ring"
 
+/--
+Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
+the instance is equal to the result of `Nat.cast` on the given `AddMonoidWithOne` instance.
+
+This function is performance-critical, as many higher level tactics have to construct numerals.
+So rather than using typeclass search we hardcode the (relatively small) set of solutions
+to the typeclass problem.
+-/
+def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
+    MetaM ((a' : Q($α)) × Q($lit = $a')) := do
+  if α.isConstOf ``Nat then
+    let a' : Q(ℕ) := q(OfNat.ofNat $lit : ℕ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else if α.isConstOf ``Int then
+    let a' : Q(ℤ) := q(OfNat.ofNat $lit : ℤ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else if α.isConstOf ``Rat then
+    let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else
+    let some n := lit.natLit? | failure
+    match n with
+    | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
+    | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
+    | k+2 =>
+      let k : Q(ℕ) := mkRawNatLit k
+      let _x : Q(Nat.AtLeastTwo $lit) :=
+        (q(instNatAtLeastTwo (n := $k)) : Expr)
+      let a' : Q($α) := q(OfNat.ofNat $lit)
+      pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
 structure IsNat [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
   /-- The element is equal to the coercion of the natural number. -/
@@ -376,37 +407,6 @@ def Result.toRatNZ : Result e → Option (Rat × Option Expr)
   | .isNat _ lit _ => some (lit.natLit!, none)
   | .isNegNat _ lit _ => some (-lit.natLit!, none)
   | .isRat _ q _ _ p => some (q, q(IsRat.den_nz $p))
-
-/--
-Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
-the instance is equal to the result of `Nat.cast` on the given `AddMonoidWithOne` instance.
-
-This function is performance-critical, as many higher level tactics have to construct numerals.
-So rather than using typeclass search we hardcode the (relatively small) set of solutions
-to the typeclass problem.
--/
-def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
-    MetaM ((a' : Q($α)) × Q($lit = $a')) := do
-  if α.isConstOf ``Nat then
-    let a' : Q(ℕ) := q(OfNat.ofNat $lit : ℕ)
-    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
-  else if α.isConstOf ``Int then
-    let a' : Q(ℤ) := q(OfNat.ofNat $lit : ℤ)
-    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
-  else if α.isConstOf ``Rat then
-    let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
-    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
-  else
-    let some n := lit.natLit? | failure
-    match n with
-    | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
-    | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
-    | k+2 =>
-      let k : Q(ℕ) := mkRawNatLit k
-      let _x : Q(Nat.AtLeastTwo $lit) :=
-        (q(instNatAtLeastTwo (n := $k)) : Expr)
-      let a' : Q($α) := q(OfNat.ofNat $lit)
-      pure ⟨a', (q(Eq.refl $a') : Expr)⟩
 
 /-- Convert a `Result` to a `Simp.Result`. -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
