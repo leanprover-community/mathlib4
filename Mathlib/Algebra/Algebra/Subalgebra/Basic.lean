@@ -1338,8 +1338,7 @@ end Actions
 section Center
 
 theorem _root_.Set.algebraMap_mem_center (r : R) : algebraMap R A r ∈ Set.center A := by
-  rw [Subsemigroup.mem_center_iff]
-  simp [Algebra.commutes, Set.mem_center_iff]
+  simp only [Semigroup.mem_center_iff, commutes, forall_const]
 #align set.algebra_map_mem_center Set.algebraMap_mem_center
 
 variable (R A)
@@ -1378,9 +1377,8 @@ instance : CommSemiring (center R A) :=
 instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
   inferInstanceAs (CommRing (Subring.center A))
 
-theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b := by
-  rw [← Subsemigroup.mem_center_iff]
-  exact Iff.rfl
+theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
+  Subsemigroup.mem_center_iff
 #align subalgebra.mem_center_iff Subalgebra.mem_center_iff
 
 end Center

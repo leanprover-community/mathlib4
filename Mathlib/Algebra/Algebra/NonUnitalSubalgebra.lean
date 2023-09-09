@@ -991,9 +991,9 @@ instance center.instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
   NonUnitalSubring.center.instNonUnitalCommRing
 
-theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b := by
-  rw [← Subsemigroup.mem_center_iff]
-  exact Iff.rfl
+theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
+  Subsemigroup.mem_center_iff
+
 
 end Center
 
