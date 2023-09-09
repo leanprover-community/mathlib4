@@ -313,7 +313,6 @@ theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_bubHaarMeasure
     exact top_unique this
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [haarMeasure_self]
-  haveI : IsMulLeftInvariant μ := isMulLeftInvariant_smul _
   haveI : SigmaFinite μ := by
     clear_value c
     lift c to NNReal using c_ne_top
